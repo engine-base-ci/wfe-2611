@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-15T23:13:01",
+ "generated_at": "2026-09-15T23:42:05",
  "inputs": {
   "tickets": "07_tasks/tickets.json",
   "roster": "07_tasks/roster.json",
@@ -1361,7 +1361,7 @@
    ],
    "assignee": "claude-01",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [],
@@ -1426,7 +1426,7 @@
    ],
    "assignee": "claude-01",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [],
@@ -1490,7 +1490,7 @@
    ],
    "assignee": "claude-01",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [],
@@ -19862,7 +19862,7 @@
    "sub": "test",
    "title": "L1 FND-C5-001 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-11",
-   "status": "done",
+   "status": "todo",
    "links": {
     "qa_rows": [
      "FND-C5-001"
@@ -19875,7 +19875,7 @@
    "sub": "test",
    "title": "L1 FND-C5-002 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-11",
-   "status": "done",
+   "status": "todo",
    "links": {
     "qa_rows": [
      "FND-C5-002"
@@ -19888,7 +19888,7 @@
    "sub": "test",
    "title": "L1 FND-C5-003 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-11",
-   "status": "done",
+   "status": "todo",
    "links": {
     "qa_rows": [
      "FND-C5-003"
@@ -19901,7 +19901,7 @@
    "sub": "test",
    "title": "L1 FND-C5-004 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-11",
-   "status": "done",
+   "status": "todo",
    "links": {
     "qa_rows": [
      "FND-C5-004"
@@ -19914,7 +19914,7 @@
    "sub": "test",
    "title": "L1 FND-C5-005 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-11",
-   "status": "done",
+   "status": "todo",
    "links": {
     "qa_rows": [
      "FND-C5-005"
@@ -19927,7 +19927,7 @@
    "sub": "test",
    "title": "L1 FND-C5-006 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-11",
-   "status": "done",
+   "status": "todo",
    "links": {
     "qa_rows": [
      "FND-C5-006"
@@ -19940,7 +19940,7 @@
    "sub": "test",
    "title": "L1 FND-C5-007 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-11",
-   "status": "done",
+   "status": "todo",
    "links": {
     "qa_rows": [
      "FND-C5-007"
@@ -19953,7 +19953,7 @@
    "sub": "test",
    "title": "L1 FND-C5-008 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-11",
-   "status": "done",
+   "status": "todo",
    "links": {
     "qa_rows": [
      "FND-C5-008"
@@ -20005,7 +20005,7 @@
    "sub": "test",
    "title": "L1 FND-C6-001 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-12",
-   "status": "done",
+   "status": "todo",
    "links": {
     "qa_rows": [
      "FND-C6-001"
@@ -20018,7 +20018,7 @@
    "sub": "test",
    "title": "L1 FND-C6-002 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-12",
-   "status": "done",
+   "status": "todo",
    "links": {
     "qa_rows": [
      "FND-C6-002"
@@ -20031,7 +20031,7 @@
    "sub": "test",
    "title": "L1 FND-C6-003 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-12",
-   "status": "done",
+   "status": "todo",
    "links": {
     "qa_rows": [
      "FND-C6-003"
@@ -20044,7 +20044,7 @@
    "sub": "test",
    "title": "L1 FND-C6-004 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-12",
-   "status": "done",
+   "status": "todo",
    "links": {
     "qa_rows": [
      "FND-C6-004"
@@ -20057,7 +20057,7 @@
    "sub": "test",
    "title": "L1 FND-C6-005 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-12",
-   "status": "done",
+   "status": "todo",
    "links": {
     "qa_rows": [
      "FND-C6-005"
@@ -20070,7 +20070,7 @@
    "sub": "test",
    "title": "L1 FND-C6-006 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-12",
-   "status": "done",
+   "status": "todo",
    "links": {
     "qa_rows": [
      "FND-C6-006"
@@ -20083,7 +20083,7 @@
    "sub": "test",
    "title": "L1 FND-C6-007 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-12",
-   "status": "done",
+   "status": "todo",
    "links": {
     "qa_rows": [
      "FND-C6-007"
@@ -20096,7 +20096,7 @@
    "sub": "test",
    "title": "L1 FND-C6-008 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-12",
-   "status": "done",
+   "status": "todo",
    "links": {
     "qa_rows": [
      "FND-C6-008"
@@ -20148,7 +20148,7 @@
    "sub": "test",
    "title": "L1 FND-C7-001 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-13",
-   "status": "done",
+   "status": "todo",
    "links": {
     "qa_rows": [
      "FND-C7-001"
@@ -20161,7 +20161,7 @@
    "sub": "test",
    "title": "L1 FND-C7-002 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-13",
-   "status": "done",
+   "status": "todo",
    "links": {
     "qa_rows": [
      "FND-C7-002"
@@ -20174,7 +20174,7 @@
    "sub": "test",
    "title": "L1 FND-C7-003 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-13",
-   "status": "done",
+   "status": "todo",
    "links": {
     "qa_rows": [
      "FND-C7-003"
@@ -20187,7 +20187,7 @@
    "sub": "test",
    "title": "L1 FND-C7-004 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-13",
-   "status": "done",
+   "status": "todo",
    "links": {
     "qa_rows": [
      "FND-C7-004"
@@ -20200,7 +20200,7 @@
    "sub": "test",
    "title": "L1 FND-C7-005 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-13",
-   "status": "done",
+   "status": "todo",
    "links": {
     "qa_rows": [
      "FND-C7-005"
@@ -20213,7 +20213,7 @@
    "sub": "test",
    "title": "L1 FND-C7-006 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-13",
-   "status": "done",
+   "status": "todo",
    "links": {
     "qa_rows": [
      "FND-C7-006"
@@ -20226,7 +20226,7 @@
    "sub": "test",
    "title": "L1 FND-C7-007 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-13",
-   "status": "done",
+   "status": "todo",
    "links": {
     "qa_rows": [
      "FND-C7-007"
@@ -20239,7 +20239,7 @@
    "sub": "test",
    "title": "L1 FND-C7-008 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-13",
-   "status": "done",
+   "status": "todo",
    "links": {
     "qa_rows": [
      "FND-C7-008"
@@ -20291,7 +20291,7 @@
    "sub": "test",
    "title": "L1 FND-C8-001 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-14",
-   "status": "done",
+   "status": "todo",
    "links": {
     "qa_rows": [
      "FND-C8-001"
@@ -20304,7 +20304,7 @@
    "sub": "test",
    "title": "L1 FND-C8-002 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-14",
-   "status": "done",
+   "status": "todo",
    "links": {
     "qa_rows": [
      "FND-C8-002"
@@ -20317,7 +20317,7 @@
    "sub": "test",
    "title": "L1 FND-C8-003 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-14",
-   "status": "done",
+   "status": "todo",
    "links": {
     "qa_rows": [
      "FND-C8-003"
@@ -20330,7 +20330,7 @@
    "sub": "test",
    "title": "L1 FND-C8-004 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-14",
-   "status": "done",
+   "status": "todo",
    "links": {
     "qa_rows": [
      "FND-C8-004"
@@ -20343,7 +20343,7 @@
    "sub": "test",
    "title": "L1 FND-C8-005 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-14",
-   "status": "done",
+   "status": "todo",
    "links": {
     "qa_rows": [
      "FND-C8-005"
@@ -20356,7 +20356,7 @@
    "sub": "test",
    "title": "L1 FND-C8-006 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-14",
-   "status": "done",
+   "status": "todo",
    "links": {
     "qa_rows": [
      "FND-C8-006"
@@ -20369,7 +20369,7 @@
    "sub": "test",
    "title": "L1 FND-C8-007 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-14",
-   "status": "done",
+   "status": "todo",
    "links": {
     "qa_rows": [
      "FND-C8-007"
@@ -20382,7 +20382,7 @@
    "sub": "test",
    "title": "L1 FND-C8-008 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-14",
-   "status": "done",
+   "status": "todo",
    "links": {
     "qa_rows": [
      "FND-C8-008"
@@ -20395,7 +20395,7 @@
    "sub": "impl",
    "title": ".github/workflows/ci.yml (new)",
    "parent": "T-F-15",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      ".github/workflows/ci.yml (new)"
@@ -20408,7 +20408,7 @@
    "sub": "impl",
    "title": "packages/db/migrations/0001_foundation.sql (new)",
    "parent": "T-F-15",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/migrations/0001_foundation.sql (new)"
@@ -20421,7 +20421,7 @@
    "sub": "impl",
    "title": "packages/gateways/README.md (new)",
    "parent": "T-F-15",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/gateways/README.md (new)"
@@ -20434,7 +20434,7 @@
    "sub": "impl",
    "title": "package.json (modify)",
    "parent": "T-F-15",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "package.json (modify)"
@@ -20551,7 +20551,7 @@
    "sub": "impl",
    "title": ".github/workflows/ci.yml (new)",
    "parent": "T-F-16",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      ".github/workflows/ci.yml (new)"
@@ -20564,7 +20564,7 @@
    "sub": "impl",
    "title": "packages/db/migrations/0001_foundation.sql (new)",
    "parent": "T-F-16",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/migrations/0001_foundation.sql (new)"
@@ -20577,7 +20577,7 @@
    "sub": "impl",
    "title": "packages/gateways/README.md (new)",
    "parent": "T-F-16",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/gateways/README.md (new)"
@@ -20590,7 +20590,7 @@
    "sub": "impl",
    "title": "package.json (modify)",
    "parent": "T-F-16",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "package.json (modify)"
@@ -20707,7 +20707,7 @@
    "sub": "impl",
    "title": "packages/db/migrations/002_07.sql (new)",
    "parent": "T-F-17",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/migrations/002_07.sql (new)"
@@ -20720,7 +20720,7 @@
    "sub": "impl",
    "title": "packages/db/policies/07.sql (new)",
    "parent": "T-F-17",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/policies/07.sql (new)"
@@ -20733,7 +20733,7 @@
    "sub": "impl",
    "title": "package.json (modify)",
    "parent": "T-F-17",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "package.json (modify)"

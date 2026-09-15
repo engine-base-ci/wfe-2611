@@ -589,7 +589,7 @@
 - 行為 A03 / 画面 invite-accept / 表 members layers permissions invitations / 関門 —（モデル呼び出し）
 - 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-08 T-D-12
 - 根拠（逐語）：D-026「スコープ4層(運営/会社/部署/個人)を担当業務・ルール・テンプレ・覚えた操作・記憶すべてに同じ形で使う」 ／ D-037「AI社員の出どころは運営配布/会社作成/個人作成の3経路。託されたAI社員は使えるが定義は編集できない。個人ルールだけは」
-- 触るファイル：apps/api/src/routes/invitations.ts (new)、packages/api/src/app.ts (modify)
+- 触るファイル：apps/api/src/routes/invitations.ts (new)、apps/api/src/app.ts (modify)
 - AC（Tier 1）：UBIQUITOUS: GET /api/v1/invitations は 08_api/openapi.yaml の operation getInvitat
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/invitations が「招待リンクを押して名前を入れる」として呼ばれたとき THEN Kana ／ UNWANTED: IF 10/min/ip を超えたら、Kaname は 429 と retry_after_sec を返す ／ UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す
 - L1 行 10（['API-02-001', 'API-02-002', 'API-02-003'] …）／ L2 ['J-01']
@@ -601,7 +601,7 @@
 - 行為 A31 A36 A61 A74 / 画面 account member-detail members password-reset / 表 members ai_employees audit_events layers permissions invitations / 関門 C2 C6 C8
 - 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-06 T-D-08 T-D-12 T-F-02
 - 根拠（逐語）：D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」 ／ D-053「画面は行為から導出する。画面から始めると『この画面で何をしたいか分からない』が必ず起きる。役割×用事→行為の背骨→オブジ」
-- 触るファイル：apps/api/src/routes/members.ts (new)、packages/api/src/app.ts (modify)
+- 触るファイル：apps/api/src/routes/members.ts (new)、apps/api/src/app.ts (modify)
 - AC（Tier 1）：UBIQUITOUS: PATCH /api/v1/members/:id は 08_api/openapi.yaml の operation patchMem
 - AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「メールで入り直す／回復コードを使う」として呼ばれたとき THEN  ／ EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「人を招いて見える範囲を決める」として呼ばれたとき THEN Kan ／ EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「1人の権限を決める」として呼ばれたとき THEN Kaname は
 - L1 行 15（['API-03-001', 'API-03-002', 'API-03-003'] …）／ L2 ['J-06']
@@ -625,7 +625,7 @@
 - 行為 A17 A48 A50 A51 A56 A57 A58 / 画面 tasks today / 表 goals goal_versions tasks task_handovers daily_plans messages / 関門 C2 C3 C6
 - 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-02 T-D-05 T-D-06 T-F-02 T-F-03
 - 根拠（逐語）：D-002「65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集」 ／ D-003「スキルは堀ではない。堀は『閉じたループ』(目標→逆算→配布→実行→測定→再計画)と会社モデル」
-- 触るファイル：apps/api/src/routes/messages.ts (new)、apps/api/src/routes/tasks.ts (new)、packages/api/src/app.ts (modify)
+- 触るファイル：apps/api/src/routes/messages.ts (new)、apps/api/src/routes/tasks.ts (new)、apps/api/src/app.ts (modify)
 - AC（Tier 1）：UBIQUITOUS: DELETE /api/v1/messages/:id は 08_api/openapi.yaml の operation delete ／ UBIQUITOUS: GET /api/v1/tasks は 08_api/openapi.yaml の operation getTasks どおりの入出力
 - AC（Tier 2）：EVENT-DRIVEN: WHEN DELETE /api/v1/messages/:id が「残りを 消す／明日へ／引き継いでもらう に振り分ける」として呼 ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）
 - L1 行 30（['API-05-001', 'API-05-002', 'API-05-003'] …）／ L2 ['J-03', 'J-04']
@@ -661,7 +661,7 @@
 - 行為 A35 A50 A57 / 画面 policies tasks / 表 goals goal_versions tasks task_handovers policies service_registry / 関門 C2 C3 C6
 - 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-02 T-D-05 T-D-10 T-F-02 T-F-03
 - 根拠（逐語）：D-003「スキルは堀ではない。堀は『閉じたループ』(目標→逆算→配布→実行→測定→再計画)と会社モデル」 ／ D-008「ペルソナ1=高本本人。一人で受託・キャパ限界・人に任せたい・目標は決めているだけで実行が回らない」
-- 触るファイル：apps/api/src/routes/policies.ts (new)、apps/api/src/routes/tasks.ts (new)、packages/api/src/app.ts (modify)
+- 触るファイル：apps/api/src/routes/policies.ts (new)、apps/api/src/routes/tasks.ts (new)、apps/api/src/app.ts (modify)
 - AC（Tier 1）：UBIQUITOUS: PATCH /api/v1/policies/:id は 08_api/openapi.yaml の operation patchPo ／ UBIQUITOUS: POST /api/v1/tasks は 08_api/openapi.yaml の operation postTasks どおりの入
 - AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/policies/:id が「やらせる範囲を変える」として呼ばれたとき THEN Kaname ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）
 - L1 行 18（['API-08-001', 'API-08-002', 'API-08-003'] …）／ L2 ['J-02', 'J-03', 'J-06', 'J-07']
@@ -673,7 +673,7 @@
 - 行為 A18 A19 A21 A24 A44 A47 A48 A58 / 画面 ledger-def record-detail records search tasks / 表 goals goal_versions ledger_definitions ledger_fields ledger_stages ledger_views / 関門 C2 C3
 - 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-02 T-D-03 T-D-04 T-D-05 T-D-06
 - 根拠（逐語）：D-006「スコープの採否は『抜いてもループが閉じるか』。CRM・請求・経理を切ると目標の数値が出せなくなるので切らない」 ／ D-007「数値はAI社員が会話で出す。分析系の固定画面(ランキング・チャネル別・期間比較)を一切作らない」
-- 触るファイル：apps/api/src/routes/ledger_definitions.ts (new)、apps/api/src/routes/ledger_records.ts (new)、apps/api/src/routes/tasks.ts (new)、packages/api/src/app.ts (modify)
+- 触るファイル：apps/api/src/routes/ledger_definitions.ts (new)、apps/api/src/routes/ledger_records.ts (new)、apps/api/src/routes/tasks.ts (new)、apps/api/src/app.ts (modify)
 - AC（Tier 1）：UBIQUITOUS: GET /api/v1/ledger_definitions は 08_api/openapi.yaml の operation get ／ UBIQUITOUS: PATCH /api/v1/ledger_definitions/:id は 08_api/openapi.yaml の operati
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/ledger_definitions が「言葉で探す」として呼ばれたとき THEN Kaname  ／ EVENT-DRIVEN: WHEN GET /api/v1/ledger_definitions が「一覧を見る」として呼ばれたとき THEN Kaname  ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）
 - L1 行 35（['API-09-001', 'API-09-002', 'API-09-003'] …）／ L2 ['J-03', 'J-04', 'J-05']
@@ -697,7 +697,7 @@
 - 行為 A22 A26 A27 A52 A54 / 画面 goal-edit goals hypotheses review / 表 units goals goal_allocations goal_contributions goal_versions hypotheses / 関門 C2 C3
 - 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-02 T-D-05 T-F-02 T-F-03 T-F-04
 - 根拠（逐語）：D-003「スキルは堀ではない。堀は『閉じたループ』(目標→逆算→配布→実行→測定→再計画)と会社モデル」 ／ D-006「スコープの採否は『抜いてもループが閉じるか』。CRM・請求・経理を切ると目標の数値が出せなくなるので切らない」
-- 触るファイル：apps/api/src/routes/goals.ts (new)、apps/api/src/routes/hypotheses.ts (new)、packages/api/src/app.ts (modify)
+- 触るファイル：apps/api/src/routes/goals.ts (new)、apps/api/src/routes/hypotheses.ts (new)、apps/api/src/app.ts (modify)
 - AC（Tier 1）：UBIQUITOUS: GET /api/v1/goals は 08_api/openapi.yaml の operation getGoals どおりの入出力 ／ UBIQUITOUS: GET /api/v1/hypotheses は 08_api/openapi.yaml の operation getHypothes
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/goals が「届くか見る」として呼ばれたとき THEN Kaname は「目標と実績を突き合わせ ／ EVENT-DRIVEN: WHEN GET /api/v1/goals が「無くす目標を選び、紐づくものの行き先を決める」として呼ばれたとき THEN Kan ／ EVENT-DRIVEN: WHEN GET /api/v1/goals が「かけたものと出たものを並べて見る」として呼ばれたとき THEN Kaname は「
 - L1 行 24（['API-11-001', 'API-11-002', 'API-11-003'] …）／ L2 ['J-04', 'J-05']
@@ -721,7 +721,7 @@
 - 行為 A17 A48 A50 A51 A57 A58 / 画面 tasks / 表 goals goal_versions tasks task_handovers / 関門 C2 C3 C6
 - 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-02 T-D-05 T-F-02 T-F-03 T-F-04
 - 根拠（逐語）：D-003「スキルは堀ではない。堀は『閉じたループ』(目標→逆算→配布→実行→測定→再計画)と会社モデル」 ／ D-004「LLMは顧客のサブスク内(Bridge)が既定。APIは顧客負担。運営マネージドは既定OFFの管理者トグル」
-- 触るファイル：apps/api/src/routes/tasks.ts (new)、packages/api/src/app.ts (modify)
+- 触るファイル：apps/api/src/routes/tasks.ts (new)、apps/api/src/app.ts (modify)
 - AC（Tier 1）：UBIQUITOUS: GET /api/v1/tasks は 08_api/openapi.yaml の operation getTasks どおりの入出力 ／ UBIQUITOUS: POST /api/v1/tasks は 08_api/openapi.yaml の operation postTasks どおりの入
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/tasks が「残っている仕事から引き継ぐ」として呼ばれたとき THEN Kaname は「タスク ／ EVENT-DRIVEN: WHEN GET /api/v1/tasks が「見え方を切り替える（URL に残る）」として呼ばれたとき THEN Kaname  ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）
 - L1 行 24（['API-13-001', 'API-13-002', 'API-13-003'] …）／ L2 ['J-03', 'J-07', 'J-09']
@@ -733,7 +733,7 @@
 - 行為 A07 A08 A12 A24 A28 A44 A45 / 画面 company-model duties ledger-def onboard-draft onboard-golive records / 表 tenants goals ledger_definitions ledger_fields ledger_stages ledger_views / 関門 C2 C3
 - 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-02 T-D-03 T-D-04 T-F-02
 - 根拠（逐語）：D-003「スキルは堀ではない。堀は『閉じたループ』(目標→逆算→配布→実行→測定→再計画)と会社モデル」 ／ D-010「製品の背骨。会社モデル(目標・台帳定義・担当業務・組織・ポリシー・記憶)を1つの定義に。画面もAI社員も自動実行もこの定」
-- 触るファイル：apps/api/src/routes/duties.ts (new)、apps/api/src/routes/ledger_definitions.ts (new)、apps/api/src/routes/tenants.ts (new)、packages/api/src/app.ts (modify)
+- 触るファイル：apps/api/src/routes/duties.ts (new)、apps/api/src/routes/ledger_definitions.ts (new)、apps/api/src/routes/tenants.ts (new)、apps/api/src/app.ts (modify)
 - AC（Tier 1）：UBIQUITOUS: PATCH /api/v1/duties/:id は 08_api/openapi.yaml の operation patchDuti ／ UBIQUITOUS: PATCH /api/v1/ledger_definitions/:id は 08_api/openapi.yaml の operati
 - AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/duties/:id が「担当業務を書き換える」として呼ばれたとき THEN Kaname は ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）
 - L1 行 27（['API-14-001', 'API-14-002', 'API-14-003'] …）／ L2 ['J-05']
@@ -769,7 +769,7 @@
 - 行為 A43 A60 A64 A70 / 画面 ops-home ops-support ops-tenant / 表 tenants goals conversations inquiries plans plan_versions / 関門 C2 C6
 - 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-02 T-D-06 T-D-11 T-F-02
 - 根拠（逐語）：D-030「構築メタスキル群は運営の資産で顧客に見えない。会社モデル構築・担当業務の定義・台帳の設計・目標の分解・改善提案・自分のA」 ／ D-037「AI社員の出どころは運営配布/会社作成/個人作成の3経路。託されたAI社員は使えるが定義は編集できない。個人ルールだけは」
-- 触るファイル：apps/api/src/routes/inquiries.ts (new)、apps/api/src/routes/plans.ts (new)、packages/api/src/app.ts (modify)
+- 触るファイル：apps/api/src/routes/inquiries.ts (new)、apps/api/src/routes/plans.ts (new)、apps/api/src/app.ts (modify)
 - AC（Tier 1）：UBIQUITOUS: POST /api/v1/inquiries は 08_api/openapi.yaml の operation postInquiri ／ UBIQUITOUS: PATCH /api/v1/inquiries/:id は 08_api/openapi.yaml の operation patchI
 - AC（Tier 2）：EVENT-DRIVEN: WHEN POST /api/v1/inquiries が「問い合わせに答える」として呼ばれたとき THEN Kaname は「受信 ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）
 - L1 行 29（['API-17-001', 'API-17-002', 'API-17-003'] …）／ L2 ['J-09']
@@ -781,7 +781,7 @@
 - 行為 A67 A68 A69 / 画面 billing inquiry notices / 表 conversations audit_events ops_audit_events inquiries notices notice_deliveries / 関門 C2 C6
 - 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-06 T-D-10 T-D-11 T-F-02 T-F-03
 - 根拠（逐語）：D-002「65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集」 ／ D-037「AI社員の出どころは運営配布/会社作成/個人作成の3経路。託されたAI社員は使えるが定義は編集できない。個人ルールだけは」
-- 触るファイル：apps/api/src/routes/inquiries.ts (new)、apps/api/src/routes/notices.ts (new)、apps/api/src/routes/plans.ts (new)、packages/api/src/app.ts (modify)
+- 触るファイル：apps/api/src/routes/inquiries.ts (new)、apps/api/src/routes/notices.ts (new)、apps/api/src/routes/plans.ts (new)、apps/api/src/app.ts (modify)
 - AC（Tier 1）：UBIQUITOUS: GET /api/v1/inquiries は 08_api/openapi.yaml の operation getInquiries ／ UBIQUITOUS: PATCH /api/v1/notices/:id は 08_api/openapi.yaml の operation patchNot
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/inquiries が「問い合わせを書く」として呼ばれたとき THEN Kaname は「問い合わ ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）
 - L1 行 29（['API-18-001', 'API-18-002', 'API-18-003'] …）／ L2 ['J-07']
@@ -817,7 +817,7 @@
 - 行為 A37 A46 A53 A59 A78 A79 A80 / 画面 ai-activity ai-staff ai-staff-detail ops-catalog ops-services ops-skills / 表 members clones ai_employees duties duty_versions policies / 関門 C2 C4 C6
 - 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-04 T-D-05 T-D-10 T-D-13
 - 根拠（逐語）：D-030「構築メタスキル群は運営の資産で顧客に見えない。会社モデル構築・担当業務の定義・台帳の設計・目標の分解・改善提案・自分のA」 ／ D-037「AI社員の出どころは運営配布/会社作成/個人作成の3経路。託されたAI社員は使えるが定義は編集できない。個人ルールだけは」
-- 触るファイル：apps/api/src/routes/ai_employees.ts (new)、apps/api/src/routes/service_registry.ts (new)、apps/api/src/routes/skills.ts (new)、packages/api/src/app.ts (modify)
+- 触るファイル：apps/api/src/routes/ai_employees.ts (new)、apps/api/src/routes/service_registry.ts (new)、apps/api/src/routes/skills.ts (new)、apps/api/src/app.ts (modify)
 - AC（Tier 1）：UBIQUITOUS: GET /api/v1/ai_employees は 08_api/openapi.yaml の operation getAiEmpl ／ UBIQUITOUS: PATCH /api/v1/service_registry/:id は 08_api/openapi.yaml の operation
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/ai_employees が「AI社員を増やす・人に託す」として呼ばれたとき THEN Kanam ／ EVENT-DRIVEN: WHEN GET /api/v1/ai_employees が「このAI社員の中身を見る」として呼ばれたとき THEN Kaname ／ EVENT-DRIVEN: WHEN GET /api/v1/ai_employees が「木を開いて、止まっているところを見る」として呼ばれたとき THEN 
 - L1 行 27（['API-21-001', 'API-21-002', 'API-21-003'] …）／ L2 ['J-09']
@@ -829,7 +829,7 @@
 - 行為 A63 A64 A65 / 画面 ops-audit ops-review ops-tenant / 表 members duties duty_versions artifacts audit_events distributions / 関門 C2
 - 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-04 T-D-06 T-D-10 T-D-11
 - 根拠（逐語）：D-010「製品の背骨。会社モデル(目標・台帳定義・担当業務・組織・ポリシー・記憶)を1つの定義に。画面もAI社員も自動実行もこの定」 ／ D-019「実装順序。Bridge(万能実行器)を最初に作る」
-- 触るファイル：apps/api/src/routes/audit_events.ts (new)、apps/api/src/routes/distributions.ts (new)、apps/api/src/routes/plans.ts (new)、packages/api/src/app.ts (modify)
+- 触るファイル：apps/api/src/routes/audit_events.ts (new)、apps/api/src/routes/distributions.ts (new)、apps/api/src/routes/plans.ts (new)、apps/api/src/app.ts (modify)
 - AC（Tier 1）：UBIQUITOUS: PATCH /api/v1/audit_events/:id は 08_api/openapi.yaml の operation pat ／ UBIQUITOUS: POST /api/v1/distributions は 08_api/openapi.yaml の operation postDis
 - AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/audit_events/:id が「運営の証跡を見る」として呼ばれたとき THEN Kana ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）
 - L1 行 24（['API-22-001', 'API-22-002', 'API-22-003'] …）／ L2 ['J-09']
@@ -841,7 +841,7 @@
 - 行為 A37 A46 A53 A59 A60 A79 / 画面 ai-activity ai-staff ai-staff-detail ops-catalog ops-home / 表 members clones ai_employees duties duty_versions plans / 関門 —（モデル呼び出し）
 - 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-04 T-D-11
 - 根拠（逐語）：D-026「スコープ4層(運営/会社/部署/個人)を担当業務・ルール・テンプレ・覚えた操作・記憶すべてに同じ形で使う」 ／ D-027「テンプレは自動共有しない。運営配布＋各社作成＋明示的な公開のみ。最初の1社のものが自動でテンプレになるという記述は破棄」
-- 触るファイル：apps/api/src/routes/ai_employees.ts (new)、apps/api/src/routes/plans.ts (new)、packages/api/src/app.ts (modify)
+- 触るファイル：apps/api/src/routes/ai_employees.ts (new)、apps/api/src/routes/plans.ts (new)、apps/api/src/app.ts (modify)
 - AC（Tier 1）：UBIQUITOUS: GET /api/v1/ai_employees は 08_api/openapi.yaml の operation getAiEmpl ／ UBIQUITOUS: GET /api/v1/plans は 08_api/openapi.yaml の operation getPlans どおりの入出力
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/ai_employees が「AI社員を増やす・人に託す」として呼ばれたとき THEN Kanam ／ EVENT-DRIVEN: WHEN GET /api/v1/ai_employees が「このAI社員の中身を見る」として呼ばれたとき THEN Kaname ／ EVENT-DRIVEN: WHEN GET /api/v1/ai_employees が「木を開いて、止まっているところを見る」として呼ばれたとき THEN 
 - L1 行 17（['API-23-001', 'API-23-002', 'API-23-003'] …）／ L2 ['J-09']
@@ -1885,7 +1885,7 @@
 - 行為 A80 / 画面 ops-skills / 表 — / 関門 C4
 - 依存 T-U-49 T-A-21
 - 根拠（逐語）：D-080「D-078 は器（保存・版・装着）。ここで中身を決める。スキルは SKILL.md ＋ references ＋ eva」 ／ D-078「§30（構築メタスキル群）と §63（目標スキル）は決めたのに、運営がスキルを構築・アップロード・テスト・版管理・配布し」
-- 触るファイル：10_skills/README.md (new)、10_skills/_template/SKILL.md (new)、scripts/ci/skill_pkg_gate.py (new)、packages/api/skills/validate.ts (new)
+- 触るファイル：10_skills/README.md (new)、10_skills/_template/SKILL.md (new)、scripts/ci/skill_pkg_gate.py (new)、apps/api/skills/validate.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 10_skills/_template の一式（SKILL.md＋references＋evals/scenarios.json）が D
 - AC（Tier 2）：EVENT-DRIVEN: WHEN 運営がスキルの一式を上げたら、システムは skill_pkg_gate と同じ検査（必須の節・禁止の中身・場面 5・版）を ／ UNWANTED: IF 一式に資格情報・会社名・個人名が含まれていたら、版を作らず、どの節で落ちたかを返す（中身は証跡に残さない） ／ UBIQUITOUS: 会社側の画面には名前・目的・版だけが見え、一式の中身は見えない（D-078）
 - L1 行 6（['SKL-00-001', 'SKL-00-002', 'SKL-00-003'] …）／ L2 —

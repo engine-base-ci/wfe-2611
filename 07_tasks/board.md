@@ -1,16 +1,9 @@
 # 盤（board）
 
-生成 2026-09-15T23:13:01
+生成 2026-09-15T23:42:05
 
 ## todo
 - **E-foundation foundation の層**
-  - T-F-11 関門 C5 プロセス起動（生 API の直接呼び出し禁止・CI で迂回検出） ｜ foundation ｜ 0.8h ｜ 2026-09-24→2026-09-24 ｜ claude-02 ｜ 孫 11
-  - T-F-12 関門 C6 通知送出（生 API の直接呼び出し禁止・CI で迂回検出） ｜ foundation ｜ 0.8h ｜ 2026-09-25→2026-09-28 ｜ takamoto ｜ 孫 11
-  - T-F-13 関門 C7 決済・課金（生 API の直接呼び出し禁止・CI で迂回検出） ｜ foundation ｜ 4.0h ｜ 2026-09-24→2026-09-24 ｜ claude-02 ｜ 孫 11
-  - T-F-14 関門 C8 秘密の読み出し（生 API の直接呼び出し禁止・CI で迂回検出） ｜ foundation ｜ 4.0h ｜ 2026-09-28→2026-09-29 ｜ takamoto ｜ 孫 11
-  - T-F-15 OpenAPI → TS 型生成・契約テスト・endpoint 実在性チェック（API ↦ UI の依存方向を固定） ｜ foundation ｜ 0.8h ｜ 2026-09-24→2026-09-24 ｜ claude-01 ｜ 孫 12
-  - T-F-16 外部リソースのコード化（バケット・Resend・Infisical・DNS・staging）と起動時の存在確認 ｜ foundation ｜ 1.1h ｜ 2026-09-24→2026-09-24 ｜ claude-01 ｜ 孫 12
-  - T-F-17 エラー一覧の実行時（error_events・文言と次の一手を errors.json から引く・出せないエラーの検出） ｜ foundation ｜ 1.0h ｜ 2026-09-24→2026-09-24 ｜ claude-01 ｜ 孫 11
   - T-D-01 データ層 1. テナント・組織・メンバー（6 表・migration・RLS・索引・seed） ｜ foundation ｜ 3.3h ｜ 2026-09-24→2026-09-25 ｜ claude-02 ｜ 孫 17
   - T-D-02 データ層 2. 会社モデル ── 目標（10 表・migration・RLS・索引・seed） ｜ foundation ｜ 5.3h ｜ 2026-09-29→2026-10-01 ｜ takamoto ｜ 孫 19
   - T-D-03 データ層 3. 会社モデル ── 台帳（5 表・migration・RLS・索引・seed） ｜ foundation ｜ 2.8h ｜ 2026-09-24→2026-09-25 ｜ claude-01 ｜ 孫 14
@@ -186,3 +179,10 @@
   - T-F-08 関門 C2 永続化（書き込み）（生 API の直接呼び出し禁止・CI で迂回検出） ｜ foundation ｜ 0.8h ｜ 2026-09-22→2026-09-22 ｜ claude-02 ｜ 孫 11
   - T-F-09 関門 C3 モデル呼び出し（生 API の直接呼び出し禁止・CI で迂回検出） ｜ foundation ｜ 0.8h ｜ 2026-09-22→2026-09-24 ｜ claude-02 ｜ 孫 11
   - T-F-10 関門 C4 ファイル / オブジェクト（生 API の直接呼び出し禁止・CI で迂回検出） ｜ foundation ｜ 0.8h ｜ 2026-09-25→2026-09-25 ｜ takamoto ｜ 孫 11
+  - T-F-11 関門 C5 プロセス起動（生 API の直接呼び出し禁止・CI で迂回検出） ｜ foundation ｜ 0.8h ｜ 2026-09-24→2026-09-24 ｜ claude-02 ｜ 孫 11
+  - T-F-12 関門 C6 通知送出（生 API の直接呼び出し禁止・CI で迂回検出） ｜ foundation ｜ 0.8h ｜ 2026-09-25→2026-09-28 ｜ takamoto ｜ 孫 11
+  - T-F-13 関門 C7 決済・課金（生 API の直接呼び出し禁止・CI で迂回検出） ｜ foundation ｜ 4.0h ｜ 2026-09-24→2026-09-24 ｜ claude-02 ｜ 孫 11
+  - T-F-14 関門 C8 秘密の読み出し（生 API の直接呼び出し禁止・CI で迂回検出） ｜ foundation ｜ 4.0h ｜ 2026-09-28→2026-09-29 ｜ takamoto ｜ 孫 11
+  - T-F-15 OpenAPI → TS 型生成・契約テスト・endpoint 実在性チェック（API ↦ UI の依存方向を固定） ｜ foundation ｜ 0.8h ｜ 2026-09-24→2026-09-24 ｜ claude-01 ｜ 孫 12
+  - T-F-16 外部リソースのコード化（バケット・Resend・Infisical・DNS・staging）と起動時の存在確認 ｜ foundation ｜ 1.1h ｜ 2026-09-24→2026-09-24 ｜ claude-01 ｜ 孫 12
+  - T-F-17 エラー一覧の実行時（error_events・文言と次の一手を errors.json から引く・出せないエラーの検出） ｜ foundation ｜ 1.0h ｜ 2026-09-24→2026-09-24 ｜ claude-01 ｜ 孫 11
