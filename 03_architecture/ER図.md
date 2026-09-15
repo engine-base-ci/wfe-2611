@@ -265,7 +265,7 @@ erDiagram
 | **`review_requests`** | `<common>` / `subject_type`（template / duty）/ `subject_id` / `anonymization_check jsonb` / `status_id`（pending / approved / rejected / returned）/ `reviewer_ops_member_id` / `decided_at` / `reason` | **★新設（D-027・D-074.4・D-077.3）。**会社が明示的に公開したものの審査。承認・却下は会社の詳細の「審査」で行う。公開時の出どころは業種名だけ |
 | **`ops_members`** | `<common>`（tenant_id＝運営）/ `member_id` / `ops_role_id`（support / billing / catalog / admin）/ `revoked_at` | **★新設（D-073.7・D-074.4）。**運営メンバーと権限。運営の権限も 誰に×何に×できること |
 | **`ops_audit_events`** | `<common>`（tenant_id＝運営）/ `ops_member_id` / `target_tenant_id` / `action` / `target_type` / `target_id` / `grant_id` / `payload jsonb` / `occurred_at` | **★新設（D-074.4・D-077.7）。追記専用。**運営が「どの会社に何をしたか」。同じ行を対象会社の `audit_events` にも書く（顧客が自分の証跡で見られる） |
-| **`security_events`** | `<common>` / `kind_id`（login_failed / key_revoked / suspicious_connection / mfa_reset）/ `member_id` / `ip_region` / `detail jsonb` / `occurred_at` | **★新設（D-075.6）。**セキュリティの出来事。会社側「できること・できないこと」と運営側「運営の証跡」の両方から読む |
+| **`security_events`** | `<common>` / `kind_id`（login_failed / key_revoked / suspicious_connection / mfa_reset）/ `member_id` / `ip_region` / `detail jsonb` / `occurred_at` | **★新設（D-075.6）。追記専用。**セキュリティの出来事。会社側「できること・できないこと」と運営側「運営の証跡」の両方から読む |
 
 ---
 

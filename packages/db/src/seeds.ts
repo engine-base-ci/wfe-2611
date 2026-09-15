@@ -3,7 +3,13 @@ import type pg from "pg";
 import type { Seeded } from "./matrix.js";
 
 export async function seedAccessMatrix(c: pg.PoolClient): Promise<Seeded> {
-  await c.query("truncate permissions, support_access_grants, members, scopes, layers, tenants cascade");
+  // 証跡は行の DELETE を許さないが TRUNCATE は行トリガを通らない（テストの種の入れ替えだけに使う）。運営テナントは入れ直す
+  await c.query(
+    "truncate audit_events, ops_audit_events, security_events, export_jobs, permissions, support_access_grants, members, scopes, layers, tenants cascade",
+  );
+  await c.query(
+    "insert into tenants (id, tenant_id, name) values (app.ops_tenant_id(), app.ops_tenant_id(), '運営') on conflict do nothing",
+  );
   for (const m of ["member_kinds", "target_kinds", "abilities"])
     await c.query(`delete from ${m} where key = $1`, ["k9"]); // 前回の場合表が入れた試し行
   const one = async (sql: string, p: unknown[] = []) => (await c.query<{ id: string }>(sql, p)).rows[0]!.id;
@@ -58,6 +64,60 @@ export async function seedAccessMatrix(c: pg.PoolClient): Promise<Seeded> {
     "insert into support_access_grants (tenant_id, scope, expires_at) values ($1, 'all', now() - interval '1 hour') returning id",
     [tenantB],
   ); // 期限切れ
+  // 証跡：関門の関数で作る（直接 INSERT は無い）。会社 a は担当者の文脈、会社 b は別会社の代表の文脈、運営は運営の文脈
+  const rec = async (tenant: string, user: string, role: string, sql: string, params: unknown[]) => {
+    await c.query("begin");
+    await c.query(
+      "select set_config('app.tenant_id', $1, true), set_config('app.user_id', $2, true), set_config('app.role', $3, true)",
+      [tenant, user, role],
+    );
+    const id = (await c.query<{ id: string }>(sql, params)).rows[0]!.id;
+    await c.query("commit");
+    return id;
+  };
+  const auditA = await rec(
+    tenantA,
+    staffA,
+    "member",
+    "select app.record_audit('seed', 'layers', 'x', 'C2', '{}'::jsonb) as id",
+    [],
+  );
+  const auditB = await rec(
+    tenantB,
+    bossB,
+    "member",
+    "select app.record_audit('seed', 'layers', 'x', 'C2', '{}'::jsonb) as id",
+    [],
+  );
+  const secA = await rec(
+    tenantA,
+    staffA,
+    "member",
+    "select app.record_security_event($1, 'login_failed', $2, 'JP', '{}'::jsonb) as id",
+    [tenantA, staffA],
+  );
+  const secB = await rec(
+    tenantB,
+    bossB,
+    "member",
+    "select app.record_security_event($1, 'login_failed', $2, 'JP', '{}'::jsonb) as id",
+    [tenantB, bossB],
+  );
+  const opsA = await rec(
+    tenantA,
+    opsId,
+    "ops",
+    "select app.record_ops_audit($1::uuid, 'seed', 'tenant', $1::text, null, '{}'::jsonb) as id",
+    [tenantA],
+  );
+  const expA = await one(
+    "insert into export_jobs (tenant_id, requested_by, kind_id) values ($1, $2, 'all') returning id",
+    [tenantA, staffA],
+  );
+  const expB = await one(
+    "insert into export_jobs (tenant_id, requested_by, kind_id) values ($1, $2, 'all') returning id",
+    [tenantB, bossB],
+  );
   return {
     tenantA,
     tenantB,
@@ -111,6 +171,45 @@ export async function seedAccessMatrix(c: pg.PoolClient): Promise<Seeded> {
       member_kinds: { visible: "human", hiddenLayer: null, other: "human", insert: () => ({ key: "k9", label: "x" }) },
       target_kinds: { visible: "goal", hiddenLayer: null, other: "goal", insert: () => ({ key: "k9", label: "x" }) },
       abilities: { visible: "view", hiddenLayer: null, other: "view", insert: () => ({ key: "k9", label: "x" }) },
+      audit_events: {
+        visible: auditA,
+        hiddenLayer: null,
+        other: auditB,
+        insert: null,
+        record: {
+          ctx: "member",
+          sql: "select app.record_audit('matrix', 'layers', 'x', 'C2', '{}'::jsonb) as id",
+          params: [],
+        },
+      },
+      security_events: {
+        visible: secA,
+        hiddenLayer: null,
+        other: secB,
+        insert: null,
+        record: {
+          ctx: "member",
+          sql: "select app.record_security_event($1, 'login_failed', $2, 'JP', '{}'::jsonb) as id",
+          params: [tenantA, staffA],
+        },
+      },
+      ops_audit_events: {
+        visible: opsA,
+        hiddenLayer: null,
+        other: opsA,
+        insert: null,
+        record: {
+          ctx: "ops",
+          sql: "select app.record_ops_audit($1::uuid, 'matrix', 'tenant', $1::text, null, '{}'::jsonb) as id",
+          params: [tenantA],
+        },
+      },
+      export_jobs: {
+        visible: expA,
+        hiddenLayer: null,
+        other: expB,
+        insert: (t) => ({ tenant_id: t, requested_by: t === tenantA ? bossA : bossB, kind_id: "all" }),
+      },
     },
   };
 }

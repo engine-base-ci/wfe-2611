@@ -811,8 +811,6 @@
     "approvals_ops_read_with_grant",
     "audit_events_tenant_read",
     "audit_events_ops_read_with_grant",
-    "ops_audit_events_tenant_read",
-    "ops_audit_events_ops_read_with_grant",
     "security_events_tenant_read",
     "security_events_ops_read_with_grant"
    ],
@@ -910,11 +908,7 @@
    "rate_limit": "60/min/user",
    "access_control_policies": [
     "approvals_self_only_write",
-    "approvals_permission_write",
-    "audit_events_permission_write",
-    "ops_audit_events_permission_write",
-    "security_events_self_only_write",
-    "security_events_permission_write"
+    "approvals_permission_write"
    ],
    "outputs_4xx": [
     {
@@ -1025,11 +1019,7 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "members_permission_write",
-    "audit_events_permission_write",
-    "ops_audit_events_permission_write",
-    "security_events_self_only_write",
-    "security_events_permission_write"
+    "members_permission_write"
    ],
    "outputs_4xx": [
     {
@@ -1146,11 +1136,7 @@
    "rate_limit": "60/min/user",
    "access_control_policies": [
     "approvals_self_only_write",
-    "approvals_permission_write",
-    "audit_events_permission_write",
-    "ops_audit_events_permission_write",
-    "security_events_self_only_write",
-    "security_events_permission_write"
+    "approvals_permission_write"
    ],
    "outputs_4xx": [
     {
@@ -1631,8 +1617,7 @@
    "access_control_policies": [
     "duties_permission_write",
     "duty_versions_ops_write",
-    "artifacts_permission_write",
-    "distributions_permission_write"
+    "artifacts_permission_write"
    ],
    "outputs_4xx": [
     {
@@ -2730,8 +2715,6 @@
     "conversations_ops_read_with_grant",
     "audit_events_tenant_read",
     "audit_events_ops_read_with_grant",
-    "ops_audit_events_tenant_read",
-    "ops_audit_events_ops_read_with_grant",
     "inquiries_tenant_read",
     "inquiries_ops_read_with_grant"
    ],
@@ -3146,8 +3129,6 @@
    },
    "rate_limit": "120/min/user",
    "access_control_policies": [
-    "plans_tenant_read",
-    "plans_ops_read_with_grant",
     "plan_versions_all_read",
     "invoices_tenant_read",
     "invoices_ops_read_with_grant",
@@ -3948,7 +3929,6 @@
     "members_permission_write",
     "ai_employees_self_only_write",
     "ai_employees_permission_write",
-    "audit_events_permission_write",
     "layers_permission_write",
     "permissions_permission_write",
     "invitations_permission_write"
@@ -4670,11 +4650,8 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "notices_permission_write",
     "notice_deliveries_self_only_write",
-    "notice_deliveries_permission_write",
-    "status_incidents_permission_write",
-    "plans_permission_write"
+    "notice_deliveries_permission_write"
    ],
    "outputs_4xx": [
     {
@@ -4789,10 +4766,8 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "notices_permission_write",
     "notice_deliveries_self_only_write",
     "notice_deliveries_permission_write",
-    "status_incidents_permission_write",
     "notifications_self_only_write",
     "notifications_permission_write"
    ],
@@ -4904,8 +4879,6 @@
    },
    "rate_limit": "120/min/user",
    "access_control_policies": [
-    "plans_tenant_read",
-    "plans_ops_read_with_grant",
     "plan_versions_all_read",
     "subscriptions_tenant_read",
     "subscriptions_ops_read_with_grant",
@@ -5005,7 +4978,6 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "plans_permission_write",
     "plan_versions_ops_write",
     "subscriptions_permission_write",
     "usage_meters_permission_write"
@@ -5122,7 +5094,6 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "plans_permission_write",
     "plan_versions_ops_write",
     "subscriptions_permission_write",
     "usage_meters_permission_write"
@@ -5240,7 +5211,6 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "plans_permission_write",
     "plan_versions_ops_write",
     "subscriptions_permission_write",
     "usage_meters_permission_write"
@@ -5717,8 +5687,6 @@
     "audit_events_ops_read_with_grant",
     "sessions_tenant_read",
     "sessions_ops_read_with_grant",
-    "ops_audit_events_tenant_read",
-    "ops_audit_events_ops_read_with_grant",
     "security_events_tenant_read",
     "security_events_ops_read_with_grant"
    ],
@@ -5948,7 +5916,6 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "skills_permission_write",
     "skill_versions_ops_write",
     "skill_test_runs_permission_write",
     "skill_attachments_permission_write"

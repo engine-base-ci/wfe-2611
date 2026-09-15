@@ -4,7 +4,7 @@ export const TENANT_SETTING = "app.tenant_id" as const;
 export const USER_SETTING = "app.user_id" as const;
 
 /** 適用する migration の順（ファイル名の 4 桁が順序。飛び番・重複は起動時に落とす）。 */
-export const MIGRATIONS = ["0001_foundation.sql", "0002_access_control.sql"] as const;
+export const MIGRATIONS = ["0001_foundation.sql", "0002_access_control.sql", "0003_audit.sql"] as const;
 
 /** migration 名の並びを検査する。重複・順序違い・4 桁でない名前があれば理由を返す。 */
 export function checkMigrationOrder(names: readonly string[]): { ok: true } | { ok: false; reason: string } {

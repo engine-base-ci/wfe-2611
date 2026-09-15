@@ -57,11 +57,13 @@ CASES = {"select": [("同じ会社・見える範囲", "OK"), ("同じ会社・�
          "insert,update,delete": [("権限あり・自分の範囲", "OK"), ("権限なし（担当者・閲覧のみ）", "NG（403・副作用なし）"), ("他の会社", "NG（0 行・副作用なし）"), ("SET LOCAL を飛ばす", "NG（エラー）")]}
 ROLE_JA = {"member": "会社の人（R1〜R4・権限で分かれる）", "ops": "運営（R6）", "authenticated": "ログイン済み（本人のもの）"}
 CASES_AUTH = [("ログイン済み（会社の人）", "OK"), ("SET LOCAL を飛ばす", "NG（0 行）")]
+CASES_SYSTEM = [("関門の関数（app.record_*）から", "OK"), ("会社の人が直接 INSERT", "NG（弾く）"), ("UPDATE／DELETE（誰でも）", "NG（追記専用）")]
+CASES_OPS_OWN = [("運営の文脈", "OK"), ("会社の人（自社の文脈）", "NG（0 行）"), ("SET LOCAL を飛ばす", "NG（0 行）")]
 CASES_OPS_WRITE = [("運営の文脈", "OK"), ("会社の人（運営でない）", "NG（弾く・副作用なし）"), ("SET LOCAL を飛ばす", "NG（弾く）")]
 am = []
 for en in EN:
     for p in en["access_control_policies"]:
-        cases = CASES_AUTH if p["role"] == "authenticated" else (CASES_OPS_WRITE if p["role"] == "ops" and p["operation"] != "select" else CASES.get(p["operation"], CASES["select"]))
+        cases = CASES_OPS_OWN if p["name"].endswith(("_ops_own", "_ops_all")) else CASES_SYSTEM if p["role"] == "system" else CASES_AUTH if p["role"] == "authenticated" else (CASES_OPS_WRITE if p["role"] == "ops" and p["operation"] != "select" else CASES.get(p["operation"], CASES["select"]))
         for case, exp in cases:
             if p["role"] == "ops" and "他の会社" in case: exp = "NG（顧客が許可した範囲・期限の中だけ OK）"
             if p["name"].endswith("self_only_write") and "権限なし" in case: exp = "OK（自分の行だけ）・他人の行は NG"

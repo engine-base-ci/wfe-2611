@@ -4,13 +4,15 @@
  role: member → app.role() in ('member', 'owner') 相当（= 会社の人。権限の差は predicate の has_permission が持つ）／ ops → app.role() = 'ops'／ authenticated → 誰でも（ログイン済み）
  operation 'insert,update,delete' → INSERT(WITH CHECK)・UPDATE(USING+WITH CHECK)・DELETE(USING) の 3 本。select → SELECT(USING)"""
 import argparse, json, re
-ap = argparse.ArgumentParser(); ap.add_argument("--entities", default="07_functional/entities.json"); ap.add_argument("--tables", nargs="+", required=True); ap.add_argument("-o", required=True); ap.add_argument("--grant-table", default="support_access_grants", help="運営への許可の表（policy から直接引くと再帰するので関数に寄せる）"); ap.add_argument("--grant-fn", default="app.ops_grant_ok"); ap.add_argument("--member-fn", default="app.member_ok"); ap.add_argument("--tenant-fn", default="app.tenant_id()"); ap.add_argument("--user-fn", default="app.user_id()"); a = ap.parse_args()
+ap = argparse.ArgumentParser(); ap.add_argument("--entities", default="07_functional/entities.json"); ap.add_argument("--tables", nargs="+", required=True); ap.add_argument("-o", required=True); ap.add_argument("--app-role", default="kaname_app"); ap.add_argument("--grant-table", default="support_access_grants", help="運営への許可の表（policy から直接引くと再帰するので関数に寄せる）"); ap.add_argument("--grant-fn", default="app.ops_grant_ok"); ap.add_argument("--member-fn", default="app.member_ok"); ap.add_argument("--tenant-fn", default="app.tenant_id()"); ap.add_argument("--user-fn", default="app.user_id()"); a = ap.parse_args()
 EN = json.load(open(a.entities, encoding="utf-8")); EN = EN.get("entities") or EN["items"]; by = {e["table_name"]: e for e in EN}
 out = ["-- RLS（機械生成：scripts/ci/gen_rls.py ← 07_functional/entities.json の access_control_policies。手で直さない）", ""]
 for tb in a.tables:
     e = by[tb]; out += [f"alter table {tb} enable row level security;", f"alter table {tb} force row level security;"]
     for p in e["access_control_policies"]:
         pred = p["predicate"]; ops = [x.strip() for x in p["operation"].split(",")]
+        if p["role"] == "system":   # 追記専用：直接の書き込み policy は出さない（＝弾く）。update/delete は権限ごと剥がす
+            out.append(f"-- {p['name']}: {p['rationale']}"); out.append(f"revoke update, delete on {tb} from {a.app_role};"); continue
         # 文脈が無いとき（SET LOCAL を飛ばした要求）は '' が入るので、::uuid の直キャストは落ちる → null 安全な関数に寄せる（意味は同じ）
         pred = pred.replace("current_setting('app.tenant_id', true)::uuid", a.tenant_fn).replace("current_setting('app.user_id', true)::uuid", a.user_fn)
         # 役の柵：member の policy は運営（app.role='ops'）には効かせない（運営は grant の policy だけ）。authenticated は app.user_id が入っていること
@@ -21,7 +23,8 @@ for tb in a.tables:
         elif p["role"] == "authenticated": pred = f"coalesce(current_setting('app.user_id', true), '') <> '' AND ({pred})"
         for op in ops:
             name = f"{p['name']}_{op}" if len(ops) > 1 else p["name"]; out.append(f"drop policy if exists {name} on {tb};")
-            if op == "select": out.append(f"create policy {name} on {tb} for select using ({pred});")
+            if op == "all": out.append(f"create policy {name} on {tb} for all using ({pred}) with check ({pred});")
+            elif op == "select": out.append(f"create policy {name} on {tb} for select using ({pred});")
             elif op == "insert": out.append(f"create policy {name} on {tb} for insert with check ({pred});")
             elif op == "update": out.append(f"create policy {name} on {tb} for update using ({pred}) with check ({pred});")
             elif op == "delete": out.append(f"create policy {name} on {tb} for delete using ({pred});")

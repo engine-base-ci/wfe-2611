@@ -46,7 +46,7 @@ for line in ER.split("\n"):
         if not c: continue
         fname = re.split(r"[（(\s]", c)[0]
         fields.append({"name": fname, "note": c[len(fname):].strip("（）() ") or None})
-    is_ops = "運営" in note and "tenant_id＝運営" in note
+    is_ops = "tenant_id＝運営" in cols or "tenant_id＝運営" in note   # 運営の表（行は運営テナント）。列の欄の（tenant_id＝運営）が印
     iso = "ops_scoped" if is_ops else ("scope_layered" if "<scoped>" in cols or "<versioned>" in cols else ("account_scoped" if "<common>" in cols or "tenant_id" in cols else "none"))
     owner = any(f["name"] in ("owner_member_id", "member_id", "opened_by_member_id", "requested_by", "grantee_member_id") for f in fields)
     pol = []
@@ -54,13 +54,15 @@ for line in ER.split("\n"):
         pol = [{"name": f"{name}_all_read", "operation": "select", "role": "authenticated", "predicate": "true", "rationale": "マスタ。全員が読む", "source": ["D-026"]},
                {"name": f"{name}_ops_write", "operation": "insert,update,delete", "role": "ops", "predicate": "current_setting('app.role', true) = 'ops'", "rationale": "マスタは運営だけが変える", "source": ["D-037", "D-077.4"]}]
     elif iso == "ops_scoped":
-        pol = [{"name": f"{name}_ops_all", "operation": "all", "role": "ops", "predicate": "tenant_id = current_setting('app.ops_tenant_id', true)::uuid AND current_setting('app.role', true) = 'ops'", "rationale": "運営テナントの行。顧客は読めない", "source": ["D-073.7", "D-077.4"]}]
+        pol = [{"name": f"{name}_ops_all", "operation": "all", "role": "ops", "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'", "rationale": "運営テナントの行。顧客は読めない", "source": ["D-073.7", "D-077.4"]}]
     else:
         pol = [{"name": f"{name}_tenant_read", "operation": "select", "role": "member", "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid" + (" AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))" if iso == "scope_layered" else ""), "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）", "source": ["D-026.1", "D-058.5", "D-073.1"]},
                {"name": f"{name}_permission_write", "operation": "insert,update,delete", "role": "member", "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, '" + name + "', scope_id, 'edit')" if iso == "scope_layered" else "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, '" + name + "', NULL, 'edit')", "rationale": "権限＝誰に×何に×どの層で×できること", "source": ["D-073.1", "D-073.2", "D-073.3"]},
                {"name": f"{name}_ops_read_with_grant", "operation": "select", "role": "ops", "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = " + name + ".tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)", "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ", "source": ["D-074.5", "D-077.7"]}]
         # 権限そのもの・運営への許可・セッションは「本人のもの」でも自分で書けない（自分に権限を付与できてしまう。T-F-02 の RLS テストで発覚・2026-09-15）
         if owner and name not in ("permissions", "support_access_grants", "sessions", "ops_members", "invitations"): pol.insert(1, {"name": f"{name}_self_only_write", "operation": "insert,update,delete", "role": "member", "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND " + next(f["name"] for f in fields if f["name"] in ("owner_member_id", "member_id", "opened_by_member_id", "requested_by", "grantee_member_id")) + " = current_setting('app.user_id', true)::uuid", "rationale": "本人のもの（個人の範囲）は権限なしで自由", "source": ["D-073.1"]})
+    if "追記専用" in note:   # 証跡は関門の関数（app.record_*・security definer）だけが書く。直接の INSERT/UPDATE/DELETE は無い（ER 注記 3）
+        pol = [p if p["operation"] == "select" else {**p, "operation": "select"} for p in pol if p["operation"] in ("select", "all")] + [{"name": f"{name}_append_only", "operation": "insert,update,delete", "role": "system", "predicate": "false", "rationale": "追記専用。書き込みは関門の関数 app.record_*（security definer）だけ。UPDATE/DELETE は誰にも無い", "source": ["D-042.3", "D-074.4"]}]
     src = sorted(set(D(note)) | tbl_dec.get(name, set()) | set(sec_dec))
     if not src: src = ["D-010"]   # 会社モデル＝1 つの定義（§1〜§6 の表は D-010 の背骨）
     entities.append({"id": f"E-{len(entities)+1:03d}", "name": name, "table_name": name, "section": sec.strip("# ").split("（")[0], "fields": fields, "relations": rels.get(name, []),

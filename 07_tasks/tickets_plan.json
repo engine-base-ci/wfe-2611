@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-15T22:19:56",
+ "generated_at": "2026-09-15T22:37:47",
  "inputs": {
   "tickets": "07_tasks/tickets.json",
   "roster": "07_tasks/roster.json",
@@ -8,10 +8,10 @@
  "summary": {
   "epic": 15,
   "story": 158,
-  "subtask": 3735,
+  "subtask": 3734,
   "subtask_by": {
    "impl": 395,
-   "test": 3140,
+   "test": 3139,
    "mock": 200
   },
   "critical_path": [
@@ -2185,8 +2185,7 @@
     "T-D-09.t13",
     "T-D-09.t14",
     "T-D-09.t15",
-    "T-D-09.t16",
-    "T-D-09.t17"
+    "T-D-09.t16"
    ],
    "depends_on": [
     "T-F-01",
@@ -2243,8 +2242,7 @@
      "RLS-D09-013",
      "RLS-D09-014",
      "RLS-D09-015",
-     "RLS-D09-016",
-     "RLS-D09-017"
+     "RLS-D09-016"
     ],
     "errors": [],
     "spec": [
@@ -22713,19 +22711,6 @@
    "links": {
     "qa_rows": [
      "RLS-D09-016"
-    ]
-   }
-  },
-  {
-   "id": "T-D-09.t17",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 RLS-D09-017 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-D-09",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "RLS-D09-017"
     ]
    }
   },

@@ -71,7 +71,7 @@
   "calendar_days_human": 605,
   "total_estimate_hours": 896.5,
   "total_estimate_sessions": 300,
-  "qa_rows_total": 3140,
+  "qa_rows_total": 3139,
   "journeys": 9
  },
  "waves": [
@@ -1045,17 +1045,17 @@
    },
    "access_policies_required": [
     "audit_events_tenant_read",
-    "audit_events_permission_write",
     "audit_events_ops_read_with_grant",
-    "ops_audit_events_tenant_read",
-    "ops_audit_events_permission_write",
-    "ops_audit_events_ops_read_with_grant",
+    "audit_events_append_only",
+    "ops_audit_events_ops_all",
+    "ops_audit_events_append_only",
     "security_events_tenant_read",
-    "security_events_self_only_write",
-    "security_events_permission_write",
     "security_events_ops_read_with_grant",
+    "security_events_append_only",
     "export_jobs_tenant_read",
-    "export_jobs_self_only_write"
+    "export_jobs_self_only_write",
+    "export_jobs_permission_write",
+    "export_jobs_ops_read_with_grant"
    ],
    "spec_links": [
     "03_architecture/アーキテクチャ設計書.md",
@@ -4656,8 +4656,8 @@
     "artifacts_permission_write",
     "artifacts_ops_read_with_grant",
     "audit_events_tenant_read",
-    "audit_events_permission_write",
-    "audit_events_ops_read_with_grant"
+    "audit_events_ops_read_with_grant",
+    "audit_events_append_only"
    ],
    "spec_links": [
     "03_architecture/ER図.md",
@@ -5275,12 +5275,12 @@
     ],
     "functional": [
      "UNWANTED: IF 他テナントの行を SELECT/UPDATE しようとしたら 0 行／403 で副作用が起きない（distributions_tenant_read）",
-     "UBIQUITOUS: distributions_tenant_read",
-     "UBIQUITOUS: distributions_permission_write",
-     "UBIQUITOUS: distributions_ops_read_with_grant",
+     "UBIQUITOUS: distributions_ops_all",
      "UBIQUITOUS: distribution_versions_all_read",
      "UBIQUITOUS: distribution_versions_ops_write",
-     "UBIQUITOUS: tenant_distributions_tenant_read"
+     "UBIQUITOUS: tenant_distributions_tenant_read",
+     "UBIQUITOUS: tenant_distributions_permission_write",
+     "UBIQUITOUS: tenant_distributions_ops_read_with_grant"
     ],
     "regression": [
      "pnpm test（該当パッケージ）PASS",
@@ -5293,9 +5293,7 @@
     ]
    },
    "access_policies_required": [
-    "distributions_tenant_read",
-    "distributions_permission_write",
-    "distributions_ops_read_with_grant",
+    "distributions_ops_all",
     "distribution_versions_all_read",
     "distribution_versions_ops_write",
     "tenant_distributions_tenant_read",
@@ -5310,16 +5308,12 @@
     "review_requests_tenant_read",
     "review_requests_permission_write",
     "review_requests_ops_read_with_grant",
-    "ops_members_tenant_read",
-    "ops_members_permission_write",
-    "ops_members_ops_read_with_grant",
-    "ops_audit_events_tenant_read",
-    "ops_audit_events_permission_write",
-    "ops_audit_events_ops_read_with_grant",
+    "ops_members_ops_all",
+    "ops_audit_events_ops_all",
+    "ops_audit_events_append_only",
     "security_events_tenant_read",
-    "security_events_self_only_write",
-    "security_events_permission_write",
-    "security_events_ops_read_with_grant"
+    "security_events_ops_read_with_grant",
+    "security_events_append_only"
    ],
    "spec_links": [
     "03_architecture/ER図.md",
@@ -5344,8 +5338,7 @@
      "RLS-D09-013",
      "RLS-D09-014",
      "RLS-D09-015",
-     "RLS-D09-016",
-     "RLS-D09-017"
+     "RLS-D09-016"
     ],
     "l2_flows": []
    },
@@ -5403,17 +5396,7 @@
      },
      {
       "type": "UBIQUITOUS",
-      "text": "UBIQUITOUS: distributions_tenant_read",
-      "critical": false
-     },
-     {
-      "type": "UBIQUITOUS",
-      "text": "UBIQUITOUS: distributions_permission_write",
-      "critical": false
-     },
-     {
-      "type": "UBIQUITOUS",
-      "text": "UBIQUITOUS: distributions_ops_read_with_grant",
+      "text": "UBIQUITOUS: distributions_ops_all",
       "critical": false
      },
      {
@@ -5429,6 +5412,16 @@
      {
       "type": "UBIQUITOUS",
       "text": "UBIQUITOUS: tenant_distributions_tenant_read",
+      "critical": false
+     },
+     {
+      "type": "UBIQUITOUS",
+      "text": "UBIQUITOUS: tenant_distributions_permission_write",
+      "critical": false
+     },
+     {
+      "type": "UBIQUITOUS",
+      "text": "UBIQUITOUS: tenant_distributions_ops_read_with_grant",
       "critical": false
      }
     ],
@@ -5535,8 +5528,8 @@
      "UBIQUITOUS: inquiries_self_only_write",
      "UBIQUITOUS: inquiries_permission_write",
      "UBIQUITOUS: inquiries_ops_read_with_grant",
-     "UBIQUITOUS: notices_tenant_read",
-     "UBIQUITOUS: notices_permission_write"
+     "UBIQUITOUS: notices_ops_all",
+     "UBIQUITOUS: notice_deliveries_tenant_read"
     ],
     "regression": [
      "pnpm test（該当パッケージ）PASS",
@@ -5553,16 +5546,12 @@
     "inquiries_self_only_write",
     "inquiries_permission_write",
     "inquiries_ops_read_with_grant",
-    "notices_tenant_read",
-    "notices_permission_write",
-    "notices_ops_read_with_grant",
+    "notices_ops_all",
     "notice_deliveries_tenant_read",
     "notice_deliveries_self_only_write",
     "notice_deliveries_permission_write",
     "notice_deliveries_ops_read_with_grant",
-    "status_incidents_tenant_read",
-    "status_incidents_permission_write",
-    "status_incidents_ops_read_with_grant",
+    "status_incidents_ops_all",
     "notification_preferences_tenant_read",
     "notification_preferences_self_only_write",
     "notification_preferences_permission_write",
@@ -5571,9 +5560,7 @@
     "notifications_self_only_write",
     "notifications_permission_write",
     "notifications_ops_read_with_grant",
-    "plans_tenant_read",
-    "plans_permission_write",
-    "plans_ops_read_with_grant",
+    "plans_ops_all",
     "plan_versions_all_read",
     "plan_versions_ops_write",
     "subscriptions_tenant_read",
@@ -5708,12 +5695,12 @@
      },
      {
       "type": "UBIQUITOUS",
-      "text": "UBIQUITOUS: notices_tenant_read",
+      "text": "UBIQUITOUS: notices_ops_all",
       "critical": false
      },
      {
       "type": "UBIQUITOUS",
-      "text": "UBIQUITOUS: notices_permission_write",
+      "text": "UBIQUITOUS: notice_deliveries_tenant_read",
       "critical": false
      }
     ],
@@ -6035,12 +6022,12 @@
     ],
     "functional": [
      "UNWANTED: IF 他テナントの行を SELECT/UPDATE しようとしたら 0 行／403 で副作用が起きない（skills_tenant_read）",
-     "UBIQUITOUS: skills_tenant_read",
-     "UBIQUITOUS: skills_permission_write",
-     "UBIQUITOUS: skills_ops_read_with_grant",
+     "UBIQUITOUS: skills_ops_all",
      "UBIQUITOUS: skill_versions_all_read",
      "UBIQUITOUS: skill_versions_ops_write",
-     "UBIQUITOUS: skill_test_runs_tenant_read"
+     "UBIQUITOUS: skill_test_runs_tenant_read",
+     "UBIQUITOUS: skill_test_runs_permission_write",
+     "UBIQUITOUS: skill_test_runs_ops_read_with_grant"
     ],
     "regression": [
      "pnpm test（該当パッケージ）PASS",
@@ -6053,9 +6040,7 @@
     ]
    },
    "access_policies_required": [
-    "skills_tenant_read",
-    "skills_permission_write",
-    "skills_ops_read_with_grant",
+    "skills_ops_all",
     "skill_versions_all_read",
     "skill_versions_ops_write",
     "skill_test_runs_tenant_read",
@@ -6129,17 +6114,7 @@
      },
      {
       "type": "UBIQUITOUS",
-      "text": "UBIQUITOUS: skills_tenant_read",
-      "critical": false
-     },
-     {
-      "type": "UBIQUITOUS",
-      "text": "UBIQUITOUS: skills_permission_write",
-      "critical": false
-     },
-     {
-      "type": "UBIQUITOUS",
-      "text": "UBIQUITOUS: skills_ops_read_with_grant",
+      "text": "UBIQUITOUS: skills_ops_all",
       "critical": false
      },
      {
@@ -6155,6 +6130,16 @@
      {
       "type": "UBIQUITOUS",
       "text": "UBIQUITOUS: skill_test_runs_tenant_read",
+      "critical": false
+     },
+     {
+      "type": "UBIQUITOUS",
+      "text": "UBIQUITOUS: skill_test_runs_permission_write",
+      "critical": false
+     },
+     {
+      "type": "UBIQUITOUS",
+      "text": "UBIQUITOUS: skill_test_runs_ops_read_with_grant",
       "critical": false
      }
     ],
@@ -6375,7 +6360,6 @@
     "permissions_ops_read_with_grant",
     "permissions_tenant_read",
     "plan_versions_ops_write",
-    "plans_permission_write",
     "sessions_permission_write",
     "subscriptions_permission_write",
     "tenants_ops_read_with_grant",
@@ -7012,8 +6996,8 @@
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "UBIQUITOUS: 行レベル制御 ai_employees_permission_write が効く",
      "UBIQUITOUS: 行レベル制御 ai_employees_self_only_write が効く",
-     "UBIQUITOUS: 行レベル制御 audit_events_permission_write が効く",
-     "UBIQUITOUS: 行レベル制御 invitations_permission_write が効く"
+     "UBIQUITOUS: 行レベル制御 invitations_permission_write が効く",
+     "UBIQUITOUS: 行レベル制御 layers_permission_write が効く"
     ],
     "regression": [
      "pnpm test（該当パッケージ）PASS",
@@ -7030,7 +7014,6 @@
    "access_policies_required": [
     "ai_employees_permission_write",
     "ai_employees_self_only_write",
-    "audit_events_permission_write",
     "invitations_permission_write",
     "layers_permission_write",
     "members_permission_write",
@@ -7132,12 +7115,12 @@
      },
      {
       "type": "UBIQUITOUS",
-      "text": "UBIQUITOUS: 行レベル制御 audit_events_permission_write が効く",
+      "text": "UBIQUITOUS: 行レベル制御 invitations_permission_write が効く",
       "critical": false
      },
      {
       "type": "UBIQUITOUS",
-      "text": "UBIQUITOUS: 行レベル制御 invitations_permission_write が効く",
+      "text": "UBIQUITOUS: 行レベル制御 layers_permission_write が効く",
       "critical": false
      }
     ],
@@ -8822,7 +8805,6 @@
     "approvals_self_only_write",
     "approvals_tenant_read",
     "audit_events_ops_read_with_grant",
-    "audit_events_permission_write",
     "audit_events_tenant_read",
     "clones_ops_read_with_grant",
     "clones_permission_write",
@@ -8838,12 +8820,7 @@
     "messages_tenant_read",
     "notifications_permission_write",
     "notifications_self_only_write",
-    "ops_audit_events_ops_read_with_grant",
-    "ops_audit_events_permission_write",
-    "ops_audit_events_tenant_read",
     "security_events_ops_read_with_grant",
-    "security_events_permission_write",
-    "security_events_self_only_write",
     "security_events_tenant_read"
    ],
    "spec_links": [
@@ -11080,7 +11057,6 @@
     "approvals_ops_read_with_grant",
     "approvals_tenant_read",
     "audit_events_ops_read_with_grant",
-    "audit_events_permission_write",
     "audit_events_tenant_read",
     "clones_ops_read_with_grant",
     "clones_tenant_read",
@@ -11098,8 +11074,6 @@
     "members_tenant_read",
     "messages_ops_read_with_grant",
     "messages_tenant_read",
-    "ops_audit_events_ops_read_with_grant",
-    "ops_audit_events_tenant_read",
     "permissions_permission_write",
     "security_events_ops_read_with_grant",
     "security_events_tenant_read"
@@ -12402,7 +12376,6 @@
     "approvals_permission_write",
     "approvals_self_only_write",
     "audit_events_ops_read_with_grant",
-    "audit_events_permission_write",
     "audit_events_tenant_read",
     "export_jobs_permission_write",
     "export_jobs_self_only_write",
@@ -12414,15 +12387,10 @@
     "members_ops_read_with_grant",
     "members_permission_write",
     "members_tenant_read",
-    "ops_audit_events_ops_read_with_grant",
-    "ops_audit_events_permission_write",
-    "ops_audit_events_tenant_read",
     "permissions_ops_read_with_grant",
     "permissions_permission_write",
     "permissions_tenant_read",
     "security_events_ops_read_with_grant",
-    "security_events_permission_write",
-    "security_events_self_only_write",
     "security_events_tenant_read",
     "sessions_ops_read_with_grant",
     "sessions_tenant_read",
@@ -13310,9 +13278,6 @@
     "inquiries_self_only_write",
     "plan_versions_all_read",
     "plan_versions_ops_write",
-    "plans_ops_read_with_grant",
-    "plans_permission_write",
-    "plans_tenant_read",
     "subscriptions_ops_read_with_grant",
     "subscriptions_permission_write",
     "subscriptions_tenant_read",
@@ -13710,14 +13675,9 @@
     "inquiries_tenant_read",
     "notice_deliveries_permission_write",
     "notice_deliveries_self_only_write",
-    "notices_permission_write",
     "notifications_permission_write",
     "notifications_self_only_write",
-    "ops_audit_events_ops_read_with_grant",
-    "ops_audit_events_tenant_read",
     "plan_versions_ops_write",
-    "plans_permission_write",
-    "status_incidents_permission_write",
     "subscriptions_permission_write",
     "usage_meters_permission_write"
    ],
@@ -14108,18 +14068,11 @@
     "members_tenant_read",
     "notice_deliveries_permission_write",
     "notice_deliveries_self_only_write",
-    "notices_permission_write",
-    "ops_audit_events_ops_read_with_grant",
-    "ops_audit_events_tenant_read",
     "payments_ops_read_with_grant",
     "payments_tenant_read",
     "plan_versions_all_read",
-    "plans_ops_read_with_grant",
-    "plans_permission_write",
-    "plans_tenant_read",
     "security_events_ops_read_with_grant",
     "security_events_tenant_read",
-    "status_incidents_permission_write",
     "tenants_permission_write"
    ],
    "spec_links": [
@@ -14522,7 +14475,7 @@
      "UBIQUITOUS: 行レベル制御 ai_employees_permission_write が効く",
      "UBIQUITOUS: 行レベル制御 ai_employees_self_only_write が効く",
      "UBIQUITOUS: 行レベル制御 attachments_permission_write が効く",
-     "UBIQUITOUS: 行レベル制御 audit_events_permission_write が効く"
+     "UBIQUITOUS: 行レベル制御 credentials_permission_write が効く"
     ],
     "regression": [
      "pnpm test（該当パッケージ）PASS",
@@ -14540,7 +14493,6 @@
     "ai_employees_permission_write",
     "ai_employees_self_only_write",
     "attachments_permission_write",
-    "audit_events_permission_write",
     "credentials_permission_write",
     "credentials_self_only_write",
     "duties_permission_write",
@@ -14790,7 +14742,7 @@
      },
      {
       "type": "UBIQUITOUS",
-      "text": "UBIQUITOUS: 行レベル制御 audit_events_permission_write が効く",
+      "text": "UBIQUITOUS: 行レベル制御 credentials_permission_write が効く",
       "critical": false
      }
     ],
@@ -14977,8 +14929,7 @@
     "service_requests_self_only_write",
     "skill_attachments_permission_write",
     "skill_test_runs_permission_write",
-    "skill_versions_ops_write",
-    "skills_permission_write"
+    "skill_versions_ops_write"
    ],
    "spec_links": [
     "08_api/openapi.yaml",
@@ -15323,9 +15274,9 @@
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "UBIQUITOUS: 行レベル制御 artifacts_permission_write が効く",
-     "UBIQUITOUS: 行レベル制御 audit_events_permission_write が効く",
-     "UBIQUITOUS: 行レベル制御 distributions_permission_write が効く",
-     "UBIQUITOUS: 行レベル制御 duties_permission_write が効く"
+     "UBIQUITOUS: 行レベル制御 duties_permission_write が効く",
+     "UBIQUITOUS: 行レベル制御 duty_versions_ops_write が効く",
+     "UBIQUITOUS: 行レベル制御 members_permission_write が効く"
     ],
     "regression": [
      "pnpm test（該当パッケージ）PASS",
@@ -15341,16 +15292,10 @@
    },
    "access_policies_required": [
     "artifacts_permission_write",
-    "audit_events_permission_write",
-    "distributions_permission_write",
     "duties_permission_write",
     "duty_versions_ops_write",
     "members_permission_write",
-    "ops_audit_events_permission_write",
     "plan_versions_ops_write",
-    "plans_permission_write",
-    "security_events_permission_write",
-    "security_events_self_only_write",
     "subscriptions_permission_write",
     "usage_meters_permission_write"
    ],
@@ -15536,17 +15481,17 @@
      },
      {
       "type": "UBIQUITOUS",
-      "text": "UBIQUITOUS: 行レベル制御 audit_events_permission_write が効く",
-      "critical": false
-     },
-     {
-      "type": "UBIQUITOUS",
-      "text": "UBIQUITOUS: 行レベル制御 distributions_permission_write が効く",
-      "critical": false
-     },
-     {
-      "type": "UBIQUITOUS",
       "text": "UBIQUITOUS: 行レベル制御 duties_permission_write が効く",
+      "critical": false
+     },
+     {
+      "type": "UBIQUITOUS",
+      "text": "UBIQUITOUS: 行レベル制御 duty_versions_ops_write が効く",
+      "critical": false
+     },
+     {
+      "type": "UBIQUITOUS",
+      "text": "UBIQUITOUS: 行レベル制御 members_permission_write が効く",
       "critical": false
      }
     ],
@@ -15702,8 +15647,6 @@
     "members_ops_read_with_grant",
     "members_tenant_read",
     "plan_versions_all_read",
-    "plans_ops_read_with_grant",
-    "plans_tenant_read",
     "subscriptions_ops_read_with_grant",
     "subscriptions_tenant_read",
     "usage_meters_ops_read_with_grant",

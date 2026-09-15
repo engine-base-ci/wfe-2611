@@ -3934,18 +3934,6 @@
      ]
     },
     {
-     "name": "audit_events_permission_write",
-     "operation": "insert,update,delete",
-     "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'audit_events', NULL, 'edit')",
-     "rationale": "権限＝誰に×何に×どの層で×できること",
-     "source": [
-      "D-073.1",
-      "D-073.2",
-      "D-073.3"
-     ]
-    },
-    {
      "name": "audit_events_ops_read_with_grant",
      "operation": "select",
      "role": "ops",
@@ -3954,6 +3942,17 @@
      "source": [
       "D-074.5",
       "D-077.7"
+     ]
+    },
+    {
+     "name": "audit_events_append_only",
+     "operation": "insert,update,delete",
+     "role": "system",
+     "predicate": "false",
+     "rationale": "追記専用。書き込みは関門の関数 app.record_*（security definer）だけ。UPDATE/DELETE は誰にも無い",
+     "source": [
+      "D-042.3",
+      "D-074.4"
      ]
     }
    ],
@@ -4930,44 +4929,20 @@
    "indexes": [],
    "computed": [],
    "tenant_isolation": {
-    "type": "account_scoped",
+    "type": "ops_scoped",
     "column": "tenant_id",
     "fk_table": "tenants"
    },
    "access_control_policies": [
     {
-     "name": "distributions_tenant_read",
-     "operation": "select",
-     "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
-     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
-     "source": [
-      "D-026.1",
-      "D-058.5",
-      "D-073.1"
-     ]
-    },
-    {
-     "name": "distributions_permission_write",
-     "operation": "insert,update,delete",
-     "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'distributions', NULL, 'edit')",
-     "rationale": "権限＝誰に×何に×どの層で×できること",
-     "source": [
-      "D-073.1",
-      "D-073.2",
-      "D-073.3"
-     ]
-    },
-    {
-     "name": "distributions_ops_read_with_grant",
-     "operation": "select",
+     "name": "distributions_ops_all",
+     "operation": "all",
      "role": "ops",
-     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = distributions.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
-     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
+     "rationale": "運営テナントの行。顧客は読めない",
      "source": [
-      "D-074.5",
-      "D-077.7"
+      "D-073.7",
+      "D-077.4"
      ]
     }
    ],
@@ -5496,44 +5471,20 @@
    "indexes": [],
    "computed": [],
    "tenant_isolation": {
-    "type": "account_scoped",
+    "type": "ops_scoped",
     "column": "tenant_id",
     "fk_table": "tenants"
    },
    "access_control_policies": [
     {
-     "name": "ops_members_tenant_read",
-     "operation": "select",
-     "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
-     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
-     "source": [
-      "D-026.1",
-      "D-058.5",
-      "D-073.1"
-     ]
-    },
-    {
-     "name": "ops_members_permission_write",
-     "operation": "insert,update,delete",
-     "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'ops_members', NULL, 'edit')",
-     "rationale": "権限＝誰に×何に×どの層で×できること",
-     "source": [
-      "D-073.1",
-      "D-073.2",
-      "D-073.3"
-     ]
-    },
-    {
-     "name": "ops_members_ops_read_with_grant",
-     "operation": "select",
+     "name": "ops_members_ops_all",
+     "operation": "all",
      "role": "ops",
-     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ops_members.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
-     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
+     "rationale": "運営テナントの行。顧客は読めない",
      "source": [
-      "D-074.5",
-      "D-077.7"
+      "D-073.7",
+      "D-077.4"
      ]
     }
    ],
@@ -5605,44 +5556,31 @@
    "indexes": [],
    "computed": [],
    "tenant_isolation": {
-    "type": "account_scoped",
+    "type": "ops_scoped",
     "column": "tenant_id",
     "fk_table": "tenants"
    },
    "access_control_policies": [
     {
-     "name": "ops_audit_events_tenant_read",
-     "operation": "select",
-     "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
-     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
-     "source": [
-      "D-026.1",
-      "D-058.5",
-      "D-073.1"
-     ]
-    },
-    {
-     "name": "ops_audit_events_permission_write",
-     "operation": "insert,update,delete",
-     "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'ops_audit_events', NULL, 'edit')",
-     "rationale": "権限＝誰に×何に×どの層で×できること",
-     "source": [
-      "D-073.1",
-      "D-073.2",
-      "D-073.3"
-     ]
-    },
-    {
-     "name": "ops_audit_events_ops_read_with_grant",
+     "name": "ops_audit_events_ops_all",
      "operation": "select",
      "role": "ops",
-     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ops_audit_events.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
-     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
+     "rationale": "運営テナントの行。顧客は読めない",
      "source": [
-      "D-074.5",
-      "D-077.7"
+      "D-073.7",
+      "D-077.4"
+     ]
+    },
+    {
+     "name": "ops_audit_events_append_only",
+     "operation": "insert,update,delete",
+     "role": "system",
+     "predicate": "false",
+     "rationale": "追記専用。書き込みは関門の関数 app.record_*（security definer）だけ。UPDATE/DELETE は誰にも無い",
+     "source": [
+      "D-042.3",
+      "D-074.4"
      ]
     }
    ],
@@ -5716,28 +5654,6 @@
      ]
     },
     {
-     "name": "security_events_self_only_write",
-     "operation": "insert,update,delete",
-     "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND member_id = current_setting('app.user_id', true)::uuid",
-     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
-     "source": [
-      "D-073.1"
-     ]
-    },
-    {
-     "name": "security_events_permission_write",
-     "operation": "insert,update,delete",
-     "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'security_events', NULL, 'edit')",
-     "rationale": "権限＝誰に×何に×どの層で×できること",
-     "source": [
-      "D-073.1",
-      "D-073.2",
-      "D-073.3"
-     ]
-    },
-    {
      "name": "security_events_ops_read_with_grant",
      "operation": "select",
      "role": "ops",
@@ -5747,10 +5663,21 @@
       "D-074.5",
       "D-077.7"
      ]
+    },
+    {
+     "name": "security_events_append_only",
+     "operation": "insert,update,delete",
+     "role": "system",
+     "predicate": "false",
+     "rationale": "追記専用。書き込みは関門の関数 app.record_*（security definer）だけ。UPDATE/DELETE は誰にも無い",
+     "source": [
+      "D-042.3",
+      "D-074.4"
+     ]
     }
    ],
    "legacy_drift_notes": null,
-   "note": "**★新設（D-075.6）。**セキュリティの出来事。会社側「できること・できないこと」と運営側「運営の証跡」の両方から読む",
+   "note": "**★新設（D-075.6）。追記専用。**セキュリティの出来事。会社側「できること・できないこと」と運営側「運営の証跡」の両方から読む",
    "status": "decided",
    "decided_at": "2026-09-15",
    "source": [
@@ -5928,44 +5855,20 @@
    "indexes": [],
    "computed": [],
    "tenant_isolation": {
-    "type": "account_scoped",
+    "type": "ops_scoped",
     "column": "tenant_id",
     "fk_table": "tenants"
    },
    "access_control_policies": [
     {
-     "name": "notices_tenant_read",
-     "operation": "select",
-     "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
-     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
-     "source": [
-      "D-026.1",
-      "D-058.5",
-      "D-073.1"
-     ]
-    },
-    {
-     "name": "notices_permission_write",
-     "operation": "insert,update,delete",
-     "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'notices', NULL, 'edit')",
-     "rationale": "権限＝誰に×何に×どの層で×できること",
-     "source": [
-      "D-073.1",
-      "D-073.2",
-      "D-073.3"
-     ]
-    },
-    {
-     "name": "notices_ops_read_with_grant",
-     "operation": "select",
+     "name": "notices_ops_all",
+     "operation": "all",
      "role": "ops",
-     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = notices.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
-     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
+     "rationale": "運営テナントの行。顧客は読めない",
      "source": [
-      "D-074.5",
-      "D-077.7"
+      "D-073.7",
+      "D-077.4"
      ]
     }
    ],
@@ -6123,44 +6026,20 @@
    "indexes": [],
    "computed": [],
    "tenant_isolation": {
-    "type": "account_scoped",
+    "type": "ops_scoped",
     "column": "tenant_id",
     "fk_table": "tenants"
    },
    "access_control_policies": [
     {
-     "name": "status_incidents_tenant_read",
-     "operation": "select",
-     "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
-     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
-     "source": [
-      "D-026.1",
-      "D-058.5",
-      "D-073.1"
-     ]
-    },
-    {
-     "name": "status_incidents_permission_write",
-     "operation": "insert,update,delete",
-     "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'status_incidents', NULL, 'edit')",
-     "rationale": "権限＝誰に×何に×どの層で×できること",
-     "source": [
-      "D-073.1",
-      "D-073.2",
-      "D-073.3"
-     ]
-    },
-    {
-     "name": "status_incidents_ops_read_with_grant",
-     "operation": "select",
+     "name": "status_incidents_ops_all",
+     "operation": "all",
      "role": "ops",
-     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = status_incidents.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
-     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
+     "rationale": "運営テナントの行。顧客は読めない",
      "source": [
-      "D-074.5",
-      "D-077.7"
+      "D-073.7",
+      "D-077.4"
      ]
     }
    ],
@@ -6442,44 +6321,20 @@
    "indexes": [],
    "computed": [],
    "tenant_isolation": {
-    "type": "account_scoped",
+    "type": "ops_scoped",
     "column": "tenant_id",
     "fk_table": "tenants"
    },
    "access_control_policies": [
     {
-     "name": "plans_tenant_read",
-     "operation": "select",
-     "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
-     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
-     "source": [
-      "D-026.1",
-      "D-058.5",
-      "D-073.1"
-     ]
-    },
-    {
-     "name": "plans_permission_write",
-     "operation": "insert,update,delete",
-     "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'plans', NULL, 'edit')",
-     "rationale": "権限＝誰に×何に×どの層で×できること",
-     "source": [
-      "D-073.1",
-      "D-073.2",
-      "D-073.3"
-     ]
-    },
-    {
-     "name": "plans_ops_read_with_grant",
-     "operation": "select",
+     "name": "plans_ops_all",
+     "operation": "all",
      "role": "ops",
-     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = plans.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
-     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
+     "rationale": "運営テナントの行。顧客は読めない",
      "source": [
-      "D-074.5",
-      "D-077.7"
+      "D-073.7",
+      "D-077.4"
      ]
     }
    ],
@@ -7735,44 +7590,20 @@
    "indexes": [],
    "computed": [],
    "tenant_isolation": {
-    "type": "account_scoped",
+    "type": "ops_scoped",
     "column": "tenant_id",
     "fk_table": "tenants"
    },
    "access_control_policies": [
     {
-     "name": "skills_tenant_read",
-     "operation": "select",
-     "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
-     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
-     "source": [
-      "D-026.1",
-      "D-058.5",
-      "D-073.1"
-     ]
-    },
-    {
-     "name": "skills_permission_write",
-     "operation": "insert,update,delete",
-     "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'skills', NULL, 'edit')",
-     "rationale": "権限＝誰に×何に×どの層で×できること",
-     "source": [
-      "D-073.1",
-      "D-073.2",
-      "D-073.3"
-     ]
-    },
-    {
-     "name": "skills_ops_read_with_grant",
-     "operation": "select",
+     "name": "skills_ops_all",
+     "operation": "all",
      "role": "ops",
-     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = skills.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
-     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
+     "rationale": "運営テナントの行。顧客は読めない",
      "source": [
-      "D-074.5",
-      "D-077.7"
+      "D-073.7",
+      "D-077.4"
      ]
     }
    ],

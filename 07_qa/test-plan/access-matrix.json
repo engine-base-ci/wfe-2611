@@ -4,8 +4,8 @@
  "_doc": "entities.json の access_control_policies × 場合（見える範囲／見えない層／他の会社／SET LOCAL 無し／権限なし）。1 行 1 test。pnpm ci:access-matrix が全行を実 Postgres で流す",
  "counts": {
   "entities": 83,
-  "policies": 252,
-  "cases": 969
+  "policies": 238,
+  "cases": 903
  },
  "cases": [
   {
@@ -7126,70 +7126,6 @@
   {
    "entity": "E-041",
    "table": "audit_events",
-   "policy": "audit_events_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "権限あり・自分の範囲",
-   "expected": "OK",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'audit_events', NULL, 'edit')",
-   "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
-   ]
-  },
-  {
-   "entity": "E-041",
-   "table": "audit_events",
-   "policy": "audit_events_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "権限なし（担当者・閲覧のみ）",
-   "expected": "NG（403・副作用なし）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'audit_events', NULL, 'edit')",
-   "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
-   ]
-  },
-  {
-   "entity": "E-041",
-   "table": "audit_events",
-   "policy": "audit_events_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "他の会社",
-   "expected": "NG（0 行・副作用なし）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'audit_events', NULL, 'edit')",
-   "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
-   ]
-  },
-  {
-   "entity": "E-041",
-   "table": "audit_events",
-   "policy": "audit_events_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "SET LOCAL を飛ばす",
-   "expected": "NG（エラー）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'audit_events', NULL, 'edit')",
-   "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
-   ]
-  },
-  {
-   "entity": "E-041",
-   "table": "audit_events",
    "policy": "audit_events_ops_read_with_grant",
    "role": "ops",
    "role_ja": "運営（R6）",
@@ -7245,6 +7181,51 @@
    "source": [
     "D-074.5",
     "D-077.7"
+   ]
+  },
+  {
+   "entity": "E-041",
+   "table": "audit_events",
+   "policy": "audit_events_append_only",
+   "role": "system",
+   "role_ja": "system",
+   "operation": "insert,update,delete",
+   "case": "関門の関数（app.record_*）から",
+   "expected": "OK",
+   "predicate": "false",
+   "source": [
+    "D-042.3",
+    "D-074.4"
+   ]
+  },
+  {
+   "entity": "E-041",
+   "table": "audit_events",
+   "policy": "audit_events_append_only",
+   "role": "system",
+   "role_ja": "system",
+   "operation": "insert,update,delete",
+   "case": "会社の人が直接 INSERT",
+   "expected": "NG（弾く）",
+   "predicate": "false",
+   "source": [
+    "D-042.3",
+    "D-074.4"
+   ]
+  },
+  {
+   "entity": "E-041",
+   "table": "audit_events",
+   "policy": "audit_events_append_only",
+   "role": "system",
+   "role_ja": "system",
+   "operation": "insert,update,delete",
+   "case": "UPDATE／DELETE（誰でも）",
+   "expected": "NG（追記専用）",
+   "predicate": "false",
+   "source": [
+    "D-042.3",
+    "D-074.4"
    ]
   },
   {
@@ -8956,189 +8937,46 @@
   {
    "entity": "E-052",
    "table": "distributions",
-   "policy": "distributions_tenant_read",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "select",
-   "case": "同じ会社・見える範囲",
+   "policy": "distributions_ops_all",
+   "role": "ops",
+   "role_ja": "運営（R6）",
+   "operation": "all",
+   "case": "運営の文脈",
    "expected": "OK",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+   "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
    "source": [
-    "D-026.1",
-    "D-058.5",
-    "D-073.1"
+    "D-073.7",
+    "D-077.4"
    ]
   },
   {
    "entity": "E-052",
    "table": "distributions",
-   "policy": "distributions_tenant_read",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "select",
-   "case": "同じ会社・見えない層",
+   "policy": "distributions_ops_all",
+   "role": "ops",
+   "role_ja": "運営（R6）",
+   "operation": "all",
+   "case": "会社の人（自社の文脈）",
    "expected": "NG（0 行）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+   "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
    "source": [
-    "D-026.1",
-    "D-058.5",
-    "D-073.1"
+    "D-073.7",
+    "D-077.4"
    ]
   },
   {
    "entity": "E-052",
    "table": "distributions",
-   "policy": "distributions_tenant_read",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "select",
-   "case": "他の会社（SET LOCAL を別テナントに）",
+   "policy": "distributions_ops_all",
+   "role": "ops",
+   "role_ja": "運営（R6）",
+   "operation": "all",
+   "case": "SET LOCAL を飛ばす",
    "expected": "NG（0 行）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+   "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
    "source": [
-    "D-026.1",
-    "D-058.5",
-    "D-073.1"
-   ]
-  },
-  {
-   "entity": "E-052",
-   "table": "distributions",
-   "policy": "distributions_tenant_read",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "select",
-   "case": "SET LOCAL を飛ばす",
-   "expected": "NG（0 行・エラー）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
-   "source": [
-    "D-026.1",
-    "D-058.5",
-    "D-073.1"
-   ]
-  },
-  {
-   "entity": "E-052",
-   "table": "distributions",
-   "policy": "distributions_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "権限あり・自分の範囲",
-   "expected": "OK",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'distributions', NULL, 'edit')",
-   "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
-   ]
-  },
-  {
-   "entity": "E-052",
-   "table": "distributions",
-   "policy": "distributions_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "権限なし（担当者・閲覧のみ）",
-   "expected": "NG（403・副作用なし）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'distributions', NULL, 'edit')",
-   "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
-   ]
-  },
-  {
-   "entity": "E-052",
-   "table": "distributions",
-   "policy": "distributions_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "他の会社",
-   "expected": "NG（0 行・副作用なし）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'distributions', NULL, 'edit')",
-   "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
-   ]
-  },
-  {
-   "entity": "E-052",
-   "table": "distributions",
-   "policy": "distributions_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "SET LOCAL を飛ばす",
-   "expected": "NG（エラー）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'distributions', NULL, 'edit')",
-   "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
-   ]
-  },
-  {
-   "entity": "E-052",
-   "table": "distributions",
-   "policy": "distributions_ops_read_with_grant",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "select",
-   "case": "同じ会社・見える範囲",
-   "expected": "OK",
-   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = distributions.tenant_id AND g.expires_at > now()",
-   "source": [
-    "D-074.5",
-    "D-077.7"
-   ]
-  },
-  {
-   "entity": "E-052",
-   "table": "distributions",
-   "policy": "distributions_ops_read_with_grant",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "select",
-   "case": "同じ会社・見えない層",
-   "expected": "NG（0 行）",
-   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = distributions.tenant_id AND g.expires_at > now()",
-   "source": [
-    "D-074.5",
-    "D-077.7"
-   ]
-  },
-  {
-   "entity": "E-052",
-   "table": "distributions",
-   "policy": "distributions_ops_read_with_grant",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "select",
-   "case": "他の会社（SET LOCAL を別テナントに）",
-   "expected": "NG（顧客が許可した範囲・期限の中だけ OK）",
-   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = distributions.tenant_id AND g.expires_at > now()",
-   "source": [
-    "D-074.5",
-    "D-077.7"
-   ]
-  },
-  {
-   "entity": "E-052",
-   "table": "distributions",
-   "policy": "distributions_ops_read_with_grant",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "select",
-   "case": "SET LOCAL を飛ばす",
-   "expected": "NG（0 行・エラー）",
-   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = distributions.tenant_id AND g.expires_at > now()",
-   "source": [
-    "D-074.5",
-    "D-077.7"
+    "D-073.7",
+    "D-077.4"
    ]
   },
   {
@@ -9910,377 +9748,136 @@
   {
    "entity": "E-058",
    "table": "ops_members",
-   "policy": "ops_members_tenant_read",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "select",
-   "case": "同じ会社・見える範囲",
+   "policy": "ops_members_ops_all",
+   "role": "ops",
+   "role_ja": "運営（R6）",
+   "operation": "all",
+   "case": "運営の文脈",
    "expected": "OK",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+   "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
    "source": [
-    "D-026.1",
-    "D-058.5",
-    "D-073.1"
+    "D-073.7",
+    "D-077.4"
    ]
   },
   {
    "entity": "E-058",
    "table": "ops_members",
-   "policy": "ops_members_tenant_read",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "select",
-   "case": "同じ会社・見えない層",
+   "policy": "ops_members_ops_all",
+   "role": "ops",
+   "role_ja": "運営（R6）",
+   "operation": "all",
+   "case": "会社の人（自社の文脈）",
    "expected": "NG（0 行）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+   "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
    "source": [
-    "D-026.1",
-    "D-058.5",
-    "D-073.1"
+    "D-073.7",
+    "D-077.4"
    ]
   },
   {
    "entity": "E-058",
    "table": "ops_members",
-   "policy": "ops_members_tenant_read",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "select",
-   "case": "他の会社（SET LOCAL を別テナントに）",
-   "expected": "NG（0 行）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
-   "source": [
-    "D-026.1",
-    "D-058.5",
-    "D-073.1"
-   ]
-  },
-  {
-   "entity": "E-058",
-   "table": "ops_members",
-   "policy": "ops_members_tenant_read",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "select",
+   "policy": "ops_members_ops_all",
+   "role": "ops",
+   "role_ja": "運営（R6）",
+   "operation": "all",
    "case": "SET LOCAL を飛ばす",
-   "expected": "NG（0 行・エラー）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
-   "source": [
-    "D-026.1",
-    "D-058.5",
-    "D-073.1"
-   ]
-  },
-  {
-   "entity": "E-058",
-   "table": "ops_members",
-   "policy": "ops_members_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "権限あり・自分の範囲",
-   "expected": "OK",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'ops_members', NULL, 'edit')",
-   "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
-   ]
-  },
-  {
-   "entity": "E-058",
-   "table": "ops_members",
-   "policy": "ops_members_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "権限なし（担当者・閲覧のみ）",
-   "expected": "NG（403・副作用なし）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'ops_members', NULL, 'edit')",
-   "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
-   ]
-  },
-  {
-   "entity": "E-058",
-   "table": "ops_members",
-   "policy": "ops_members_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "他の会社",
-   "expected": "NG（0 行・副作用なし）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'ops_members', NULL, 'edit')",
-   "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
-   ]
-  },
-  {
-   "entity": "E-058",
-   "table": "ops_members",
-   "policy": "ops_members_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "SET LOCAL を飛ばす",
-   "expected": "NG（エラー）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'ops_members', NULL, 'edit')",
-   "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
-   ]
-  },
-  {
-   "entity": "E-058",
-   "table": "ops_members",
-   "policy": "ops_members_ops_read_with_grant",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "select",
-   "case": "同じ会社・見える範囲",
-   "expected": "OK",
-   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ops_members.tenant_id AND g.expires_at > now() A",
-   "source": [
-    "D-074.5",
-    "D-077.7"
-   ]
-  },
-  {
-   "entity": "E-058",
-   "table": "ops_members",
-   "policy": "ops_members_ops_read_with_grant",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "select",
-   "case": "同じ会社・見えない層",
    "expected": "NG（0 行）",
-   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ops_members.tenant_id AND g.expires_at > now() A",
+   "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
    "source": [
-    "D-074.5",
-    "D-077.7"
+    "D-073.7",
+    "D-077.4"
    ]
   },
   {
-   "entity": "E-058",
-   "table": "ops_members",
-   "policy": "ops_members_ops_read_with_grant",
+   "entity": "E-059",
+   "table": "ops_audit_events",
+   "policy": "ops_audit_events_ops_all",
    "role": "ops",
    "role_ja": "運営（R6）",
    "operation": "select",
-   "case": "他の会社（SET LOCAL を別テナントに）",
-   "expected": "NG（顧客が許可した範囲・期限の中だけ OK）",
-   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ops_members.tenant_id AND g.expires_at > now() A",
+   "case": "運営の文脈",
+   "expected": "OK",
+   "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
    "source": [
-    "D-074.5",
-    "D-077.7"
+    "D-073.7",
+    "D-077.4"
    ]
   },
   {
-   "entity": "E-058",
-   "table": "ops_members",
-   "policy": "ops_members_ops_read_with_grant",
+   "entity": "E-059",
+   "table": "ops_audit_events",
+   "policy": "ops_audit_events_ops_all",
+   "role": "ops",
+   "role_ja": "運営（R6）",
+   "operation": "select",
+   "case": "会社の人（自社の文脈）",
+   "expected": "NG（0 行）",
+   "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
+   "source": [
+    "D-073.7",
+    "D-077.4"
+   ]
+  },
+  {
+   "entity": "E-059",
+   "table": "ops_audit_events",
+   "policy": "ops_audit_events_ops_all",
    "role": "ops",
    "role_ja": "運営（R6）",
    "operation": "select",
    "case": "SET LOCAL を飛ばす",
-   "expected": "NG（0 行・エラー）",
-   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ops_members.tenant_id AND g.expires_at > now() A",
-   "source": [
-    "D-074.5",
-    "D-077.7"
-   ]
-  },
-  {
-   "entity": "E-059",
-   "table": "ops_audit_events",
-   "policy": "ops_audit_events_tenant_read",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "select",
-   "case": "同じ会社・見える範囲",
-   "expected": "OK",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
-   "source": [
-    "D-026.1",
-    "D-058.5",
-    "D-073.1"
-   ]
-  },
-  {
-   "entity": "E-059",
-   "table": "ops_audit_events",
-   "policy": "ops_audit_events_tenant_read",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "select",
-   "case": "同じ会社・見えない層",
    "expected": "NG（0 行）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+   "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
    "source": [
-    "D-026.1",
-    "D-058.5",
-    "D-073.1"
+    "D-073.7",
+    "D-077.4"
    ]
   },
   {
    "entity": "E-059",
    "table": "ops_audit_events",
-   "policy": "ops_audit_events_tenant_read",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "select",
-   "case": "他の会社（SET LOCAL を別テナントに）",
-   "expected": "NG（0 行）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
-   "source": [
-    "D-026.1",
-    "D-058.5",
-    "D-073.1"
-   ]
-  },
-  {
-   "entity": "E-059",
-   "table": "ops_audit_events",
-   "policy": "ops_audit_events_tenant_read",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "select",
-   "case": "SET LOCAL を飛ばす",
-   "expected": "NG（0 行・エラー）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
-   "source": [
-    "D-026.1",
-    "D-058.5",
-    "D-073.1"
-   ]
-  },
-  {
-   "entity": "E-059",
-   "table": "ops_audit_events",
-   "policy": "ops_audit_events_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
+   "policy": "ops_audit_events_append_only",
+   "role": "system",
+   "role_ja": "system",
    "operation": "insert,update,delete",
-   "case": "権限あり・自分の範囲",
+   "case": "関門の関数（app.record_*）から",
    "expected": "OK",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'ops_audit_events', NULL, 'edit')",
+   "predicate": "false",
    "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
+    "D-042.3",
+    "D-074.4"
    ]
   },
   {
    "entity": "E-059",
    "table": "ops_audit_events",
-   "policy": "ops_audit_events_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
+   "policy": "ops_audit_events_append_only",
+   "role": "system",
+   "role_ja": "system",
    "operation": "insert,update,delete",
-   "case": "権限なし（担当者・閲覧のみ）",
-   "expected": "NG（403・副作用なし）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'ops_audit_events', NULL, 'edit')",
+   "case": "会社の人が直接 INSERT",
+   "expected": "NG（弾く）",
+   "predicate": "false",
    "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
+    "D-042.3",
+    "D-074.4"
    ]
   },
   {
    "entity": "E-059",
    "table": "ops_audit_events",
-   "policy": "ops_audit_events_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
+   "policy": "ops_audit_events_append_only",
+   "role": "system",
+   "role_ja": "system",
    "operation": "insert,update,delete",
-   "case": "他の会社",
-   "expected": "NG（0 行・副作用なし）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'ops_audit_events', NULL, 'edit')",
+   "case": "UPDATE／DELETE（誰でも）",
+   "expected": "NG（追記専用）",
+   "predicate": "false",
    "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
-   ]
-  },
-  {
-   "entity": "E-059",
-   "table": "ops_audit_events",
-   "policy": "ops_audit_events_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "SET LOCAL を飛ばす",
-   "expected": "NG（エラー）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'ops_audit_events', NULL, 'edit')",
-   "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
-   ]
-  },
-  {
-   "entity": "E-059",
-   "table": "ops_audit_events",
-   "policy": "ops_audit_events_ops_read_with_grant",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "select",
-   "case": "同じ会社・見える範囲",
-   "expected": "OK",
-   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ops_audit_events.tenant_id AND g.expires_at > no",
-   "source": [
-    "D-074.5",
-    "D-077.7"
-   ]
-  },
-  {
-   "entity": "E-059",
-   "table": "ops_audit_events",
-   "policy": "ops_audit_events_ops_read_with_grant",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "select",
-   "case": "同じ会社・見えない層",
-   "expected": "NG（0 行）",
-   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ops_audit_events.tenant_id AND g.expires_at > no",
-   "source": [
-    "D-074.5",
-    "D-077.7"
-   ]
-  },
-  {
-   "entity": "E-059",
-   "table": "ops_audit_events",
-   "policy": "ops_audit_events_ops_read_with_grant",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "select",
-   "case": "他の会社（SET LOCAL を別テナントに）",
-   "expected": "NG（顧客が許可した範囲・期限の中だけ OK）",
-   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ops_audit_events.tenant_id AND g.expires_at > no",
-   "source": [
-    "D-074.5",
-    "D-077.7"
-   ]
-  },
-  {
-   "entity": "E-059",
-   "table": "ops_audit_events",
-   "policy": "ops_audit_events_ops_read_with_grant",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "select",
-   "case": "SET LOCAL を飛ばす",
-   "expected": "NG（0 行・エラー）",
-   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ops_audit_events.tenant_id AND g.expires_at > no",
-   "source": [
-    "D-074.5",
-    "D-077.7"
+    "D-042.3",
+    "D-074.4"
    ]
   },
   {
@@ -10345,126 +9942,6 @@
     "D-026.1",
     "D-058.5",
     "D-073.1"
-   ]
-  },
-  {
-   "entity": "E-060",
-   "table": "security_events",
-   "policy": "security_events_self_only_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "権限あり・自分の範囲",
-   "expected": "OK",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND member_id = current_setting('app.user_id', true)::uuid",
-   "source": [
-    "D-073.1"
-   ]
-  },
-  {
-   "entity": "E-060",
-   "table": "security_events",
-   "policy": "security_events_self_only_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "権限なし（担当者・閲覧のみ）",
-   "expected": "OK（自分の行だけ）・他人の行は NG",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND member_id = current_setting('app.user_id', true)::uuid",
-   "source": [
-    "D-073.1"
-   ]
-  },
-  {
-   "entity": "E-060",
-   "table": "security_events",
-   "policy": "security_events_self_only_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "他の会社",
-   "expected": "NG（0 行・副作用なし）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND member_id = current_setting('app.user_id', true)::uuid",
-   "source": [
-    "D-073.1"
-   ]
-  },
-  {
-   "entity": "E-060",
-   "table": "security_events",
-   "policy": "security_events_self_only_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "SET LOCAL を飛ばす",
-   "expected": "NG（エラー）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND member_id = current_setting('app.user_id', true)::uuid",
-   "source": [
-    "D-073.1"
-   ]
-  },
-  {
-   "entity": "E-060",
-   "table": "security_events",
-   "policy": "security_events_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "権限あり・自分の範囲",
-   "expected": "OK",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'security_events', NULL, 'edit')",
-   "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
-   ]
-  },
-  {
-   "entity": "E-060",
-   "table": "security_events",
-   "policy": "security_events_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "権限なし（担当者・閲覧のみ）",
-   "expected": "NG（403・副作用なし）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'security_events', NULL, 'edit')",
-   "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
-   ]
-  },
-  {
-   "entity": "E-060",
-   "table": "security_events",
-   "policy": "security_events_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "他の会社",
-   "expected": "NG（0 行・副作用なし）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'security_events', NULL, 'edit')",
-   "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
-   ]
-  },
-  {
-   "entity": "E-060",
-   "table": "security_events",
-   "policy": "security_events_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "SET LOCAL を飛ばす",
-   "expected": "NG（エラー）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'security_events', NULL, 'edit')",
-   "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
    ]
   },
   {
@@ -10525,6 +10002,51 @@
    "source": [
     "D-074.5",
     "D-077.7"
+   ]
+  },
+  {
+   "entity": "E-060",
+   "table": "security_events",
+   "policy": "security_events_append_only",
+   "role": "system",
+   "role_ja": "system",
+   "operation": "insert,update,delete",
+   "case": "関門の関数（app.record_*）から",
+   "expected": "OK",
+   "predicate": "false",
+   "source": [
+    "D-042.3",
+    "D-074.4"
+   ]
+  },
+  {
+   "entity": "E-060",
+   "table": "security_events",
+   "policy": "security_events_append_only",
+   "role": "system",
+   "role_ja": "system",
+   "operation": "insert,update,delete",
+   "case": "会社の人が直接 INSERT",
+   "expected": "NG（弾く）",
+   "predicate": "false",
+   "source": [
+    "D-042.3",
+    "D-074.4"
+   ]
+  },
+  {
+   "entity": "E-060",
+   "table": "security_events",
+   "policy": "security_events_append_only",
+   "role": "system",
+   "role_ja": "system",
+   "operation": "insert,update,delete",
+   "case": "UPDATE／DELETE（誰でも）",
+   "expected": "NG（追記専用）",
+   "predicate": "false",
+   "source": [
+    "D-042.3",
+    "D-074.4"
    ]
   },
   {
@@ -10774,189 +10296,46 @@
   {
    "entity": "E-062",
    "table": "notices",
-   "policy": "notices_tenant_read",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "select",
-   "case": "同じ会社・見える範囲",
+   "policy": "notices_ops_all",
+   "role": "ops",
+   "role_ja": "運営（R6）",
+   "operation": "all",
+   "case": "運営の文脈",
    "expected": "OK",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+   "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
    "source": [
-    "D-026.1",
-    "D-058.5",
-    "D-073.1"
+    "D-073.7",
+    "D-077.4"
    ]
   },
   {
    "entity": "E-062",
    "table": "notices",
-   "policy": "notices_tenant_read",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "select",
-   "case": "同じ会社・見えない層",
+   "policy": "notices_ops_all",
+   "role": "ops",
+   "role_ja": "運営（R6）",
+   "operation": "all",
+   "case": "会社の人（自社の文脈）",
    "expected": "NG（0 行）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+   "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
    "source": [
-    "D-026.1",
-    "D-058.5",
-    "D-073.1"
+    "D-073.7",
+    "D-077.4"
    ]
   },
   {
    "entity": "E-062",
    "table": "notices",
-   "policy": "notices_tenant_read",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "select",
-   "case": "他の会社（SET LOCAL を別テナントに）",
+   "policy": "notices_ops_all",
+   "role": "ops",
+   "role_ja": "運営（R6）",
+   "operation": "all",
+   "case": "SET LOCAL を飛ばす",
    "expected": "NG（0 行）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+   "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
    "source": [
-    "D-026.1",
-    "D-058.5",
-    "D-073.1"
-   ]
-  },
-  {
-   "entity": "E-062",
-   "table": "notices",
-   "policy": "notices_tenant_read",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "select",
-   "case": "SET LOCAL を飛ばす",
-   "expected": "NG（0 行・エラー）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
-   "source": [
-    "D-026.1",
-    "D-058.5",
-    "D-073.1"
-   ]
-  },
-  {
-   "entity": "E-062",
-   "table": "notices",
-   "policy": "notices_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "権限あり・自分の範囲",
-   "expected": "OK",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'notices', NULL, 'edit')",
-   "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
-   ]
-  },
-  {
-   "entity": "E-062",
-   "table": "notices",
-   "policy": "notices_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "権限なし（担当者・閲覧のみ）",
-   "expected": "NG（403・副作用なし）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'notices', NULL, 'edit')",
-   "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
-   ]
-  },
-  {
-   "entity": "E-062",
-   "table": "notices",
-   "policy": "notices_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "他の会社",
-   "expected": "NG（0 行・副作用なし）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'notices', NULL, 'edit')",
-   "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
-   ]
-  },
-  {
-   "entity": "E-062",
-   "table": "notices",
-   "policy": "notices_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "SET LOCAL を飛ばす",
-   "expected": "NG（エラー）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'notices', NULL, 'edit')",
-   "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
-   ]
-  },
-  {
-   "entity": "E-062",
-   "table": "notices",
-   "policy": "notices_ops_read_with_grant",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "select",
-   "case": "同じ会社・見える範囲",
-   "expected": "OK",
-   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = notices.tenant_id AND g.expires_at > now() AND g",
-   "source": [
-    "D-074.5",
-    "D-077.7"
-   ]
-  },
-  {
-   "entity": "E-062",
-   "table": "notices",
-   "policy": "notices_ops_read_with_grant",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "select",
-   "case": "同じ会社・見えない層",
-   "expected": "NG（0 行）",
-   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = notices.tenant_id AND g.expires_at > now() AND g",
-   "source": [
-    "D-074.5",
-    "D-077.7"
-   ]
-  },
-  {
-   "entity": "E-062",
-   "table": "notices",
-   "policy": "notices_ops_read_with_grant",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "select",
-   "case": "他の会社（SET LOCAL を別テナントに）",
-   "expected": "NG（顧客が許可した範囲・期限の中だけ OK）",
-   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = notices.tenant_id AND g.expires_at > now() AND g",
-   "source": [
-    "D-074.5",
-    "D-077.7"
-   ]
-  },
-  {
-   "entity": "E-062",
-   "table": "notices",
-   "policy": "notices_ops_read_with_grant",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "select",
-   "case": "SET LOCAL を飛ばす",
-   "expected": "NG（0 行・エラー）",
-   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = notices.tenant_id AND g.expires_at > now() AND g",
-   "source": [
-    "D-074.5",
-    "D-077.7"
+    "D-073.7",
+    "D-077.4"
    ]
   },
   {
@@ -11206,189 +10585,46 @@
   {
    "entity": "E-064",
    "table": "status_incidents",
-   "policy": "status_incidents_tenant_read",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "select",
-   "case": "同じ会社・見える範囲",
+   "policy": "status_incidents_ops_all",
+   "role": "ops",
+   "role_ja": "運営（R6）",
+   "operation": "all",
+   "case": "運営の文脈",
    "expected": "OK",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+   "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
    "source": [
-    "D-026.1",
-    "D-058.5",
-    "D-073.1"
+    "D-073.7",
+    "D-077.4"
    ]
   },
   {
    "entity": "E-064",
    "table": "status_incidents",
-   "policy": "status_incidents_tenant_read",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "select",
-   "case": "同じ会社・見えない層",
+   "policy": "status_incidents_ops_all",
+   "role": "ops",
+   "role_ja": "運営（R6）",
+   "operation": "all",
+   "case": "会社の人（自社の文脈）",
    "expected": "NG（0 行）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+   "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
    "source": [
-    "D-026.1",
-    "D-058.5",
-    "D-073.1"
+    "D-073.7",
+    "D-077.4"
    ]
   },
   {
    "entity": "E-064",
    "table": "status_incidents",
-   "policy": "status_incidents_tenant_read",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "select",
-   "case": "他の会社（SET LOCAL を別テナントに）",
+   "policy": "status_incidents_ops_all",
+   "role": "ops",
+   "role_ja": "運営（R6）",
+   "operation": "all",
+   "case": "SET LOCAL を飛ばす",
    "expected": "NG（0 行）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+   "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
    "source": [
-    "D-026.1",
-    "D-058.5",
-    "D-073.1"
-   ]
-  },
-  {
-   "entity": "E-064",
-   "table": "status_incidents",
-   "policy": "status_incidents_tenant_read",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "select",
-   "case": "SET LOCAL を飛ばす",
-   "expected": "NG（0 行・エラー）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
-   "source": [
-    "D-026.1",
-    "D-058.5",
-    "D-073.1"
-   ]
-  },
-  {
-   "entity": "E-064",
-   "table": "status_incidents",
-   "policy": "status_incidents_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "権限あり・自分の範囲",
-   "expected": "OK",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'status_incidents', NULL, 'edit')",
-   "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
-   ]
-  },
-  {
-   "entity": "E-064",
-   "table": "status_incidents",
-   "policy": "status_incidents_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "権限なし（担当者・閲覧のみ）",
-   "expected": "NG（403・副作用なし）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'status_incidents', NULL, 'edit')",
-   "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
-   ]
-  },
-  {
-   "entity": "E-064",
-   "table": "status_incidents",
-   "policy": "status_incidents_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "他の会社",
-   "expected": "NG（0 行・副作用なし）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'status_incidents', NULL, 'edit')",
-   "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
-   ]
-  },
-  {
-   "entity": "E-064",
-   "table": "status_incidents",
-   "policy": "status_incidents_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "SET LOCAL を飛ばす",
-   "expected": "NG（エラー）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'status_incidents', NULL, 'edit')",
-   "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
-   ]
-  },
-  {
-   "entity": "E-064",
-   "table": "status_incidents",
-   "policy": "status_incidents_ops_read_with_grant",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "select",
-   "case": "同じ会社・見える範囲",
-   "expected": "OK",
-   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = status_incidents.tenant_id AND g.expires_at > no",
-   "source": [
-    "D-074.5",
-    "D-077.7"
-   ]
-  },
-  {
-   "entity": "E-064",
-   "table": "status_incidents",
-   "policy": "status_incidents_ops_read_with_grant",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "select",
-   "case": "同じ会社・見えない層",
-   "expected": "NG（0 行）",
-   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = status_incidents.tenant_id AND g.expires_at > no",
-   "source": [
-    "D-074.5",
-    "D-077.7"
-   ]
-  },
-  {
-   "entity": "E-064",
-   "table": "status_incidents",
-   "policy": "status_incidents_ops_read_with_grant",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "select",
-   "case": "他の会社（SET LOCAL を別テナントに）",
-   "expected": "NG（顧客が許可した範囲・期限の中だけ OK）",
-   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = status_incidents.tenant_id AND g.expires_at > no",
-   "source": [
-    "D-074.5",
-    "D-077.7"
-   ]
-  },
-  {
-   "entity": "E-064",
-   "table": "status_incidents",
-   "policy": "status_incidents_ops_read_with_grant",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "select",
-   "case": "SET LOCAL を飛ばす",
-   "expected": "NG（0 行・エラー）",
-   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = status_incidents.tenant_id AND g.expires_at > no",
-   "source": [
-    "D-074.5",
-    "D-077.7"
+    "D-073.7",
+    "D-077.4"
    ]
   },
   {
@@ -11882,189 +11118,46 @@
   {
    "entity": "E-067",
    "table": "plans",
-   "policy": "plans_tenant_read",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "select",
-   "case": "同じ会社・見える範囲",
+   "policy": "plans_ops_all",
+   "role": "ops",
+   "role_ja": "運営（R6）",
+   "operation": "all",
+   "case": "運営の文脈",
    "expected": "OK",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+   "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
    "source": [
-    "D-026.1",
-    "D-058.5",
-    "D-073.1"
+    "D-073.7",
+    "D-077.4"
    ]
   },
   {
    "entity": "E-067",
    "table": "plans",
-   "policy": "plans_tenant_read",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "select",
-   "case": "同じ会社・見えない層",
+   "policy": "plans_ops_all",
+   "role": "ops",
+   "role_ja": "運営（R6）",
+   "operation": "all",
+   "case": "会社の人（自社の文脈）",
    "expected": "NG（0 行）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+   "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
    "source": [
-    "D-026.1",
-    "D-058.5",
-    "D-073.1"
+    "D-073.7",
+    "D-077.4"
    ]
   },
   {
    "entity": "E-067",
    "table": "plans",
-   "policy": "plans_tenant_read",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "select",
-   "case": "他の会社（SET LOCAL を別テナントに）",
+   "policy": "plans_ops_all",
+   "role": "ops",
+   "role_ja": "運営（R6）",
+   "operation": "all",
+   "case": "SET LOCAL を飛ばす",
    "expected": "NG（0 行）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+   "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
    "source": [
-    "D-026.1",
-    "D-058.5",
-    "D-073.1"
-   ]
-  },
-  {
-   "entity": "E-067",
-   "table": "plans",
-   "policy": "plans_tenant_read",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "select",
-   "case": "SET LOCAL を飛ばす",
-   "expected": "NG（0 行・エラー）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
-   "source": [
-    "D-026.1",
-    "D-058.5",
-    "D-073.1"
-   ]
-  },
-  {
-   "entity": "E-067",
-   "table": "plans",
-   "policy": "plans_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "権限あり・自分の範囲",
-   "expected": "OK",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'plans', NULL, 'edit')",
-   "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
-   ]
-  },
-  {
-   "entity": "E-067",
-   "table": "plans",
-   "policy": "plans_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "権限なし（担当者・閲覧のみ）",
-   "expected": "NG（403・副作用なし）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'plans', NULL, 'edit')",
-   "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
-   ]
-  },
-  {
-   "entity": "E-067",
-   "table": "plans",
-   "policy": "plans_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "他の会社",
-   "expected": "NG（0 行・副作用なし）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'plans', NULL, 'edit')",
-   "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
-   ]
-  },
-  {
-   "entity": "E-067",
-   "table": "plans",
-   "policy": "plans_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "SET LOCAL を飛ばす",
-   "expected": "NG（エラー）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'plans', NULL, 'edit')",
-   "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
-   ]
-  },
-  {
-   "entity": "E-067",
-   "table": "plans",
-   "policy": "plans_ops_read_with_grant",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "select",
-   "case": "同じ会社・見える範囲",
-   "expected": "OK",
-   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = plans.tenant_id AND g.expires_at > now() AND g.r",
-   "source": [
-    "D-074.5",
-    "D-077.7"
-   ]
-  },
-  {
-   "entity": "E-067",
-   "table": "plans",
-   "policy": "plans_ops_read_with_grant",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "select",
-   "case": "同じ会社・見えない層",
-   "expected": "NG（0 行）",
-   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = plans.tenant_id AND g.expires_at > now() AND g.r",
-   "source": [
-    "D-074.5",
-    "D-077.7"
-   ]
-  },
-  {
-   "entity": "E-067",
-   "table": "plans",
-   "policy": "plans_ops_read_with_grant",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "select",
-   "case": "他の会社（SET LOCAL を別テナントに）",
-   "expected": "NG（顧客が許可した範囲・期限の中だけ OK）",
-   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = plans.tenant_id AND g.expires_at > now() AND g.r",
-   "source": [
-    "D-074.5",
-    "D-077.7"
-   ]
-  },
-  {
-   "entity": "E-067",
-   "table": "plans",
-   "policy": "plans_ops_read_with_grant",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "select",
-   "case": "SET LOCAL を飛ばす",
-   "expected": "NG（0 行・エラー）",
-   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = plans.tenant_id AND g.expires_at > now() AND g.r",
-   "source": [
-    "D-074.5",
-    "D-077.7"
+    "D-073.7",
+    "D-077.4"
    ]
   },
   {
@@ -14379,189 +13472,46 @@
   {
    "entity": "E-080",
    "table": "skills",
-   "policy": "skills_tenant_read",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "select",
-   "case": "同じ会社・見える範囲",
+   "policy": "skills_ops_all",
+   "role": "ops",
+   "role_ja": "運営（R6）",
+   "operation": "all",
+   "case": "運営の文脈",
    "expected": "OK",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+   "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
    "source": [
-    "D-026.1",
-    "D-058.5",
-    "D-073.1"
+    "D-073.7",
+    "D-077.4"
    ]
   },
   {
    "entity": "E-080",
    "table": "skills",
-   "policy": "skills_tenant_read",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "select",
-   "case": "同じ会社・見えない層",
+   "policy": "skills_ops_all",
+   "role": "ops",
+   "role_ja": "運営（R6）",
+   "operation": "all",
+   "case": "会社の人（自社の文脈）",
    "expected": "NG（0 行）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+   "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
    "source": [
-    "D-026.1",
-    "D-058.5",
-    "D-073.1"
+    "D-073.7",
+    "D-077.4"
    ]
   },
   {
    "entity": "E-080",
    "table": "skills",
-   "policy": "skills_tenant_read",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "select",
-   "case": "他の会社（SET LOCAL を別テナントに）",
+   "policy": "skills_ops_all",
+   "role": "ops",
+   "role_ja": "運営（R6）",
+   "operation": "all",
+   "case": "SET LOCAL を飛ばす",
    "expected": "NG（0 行）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+   "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
    "source": [
-    "D-026.1",
-    "D-058.5",
-    "D-073.1"
-   ]
-  },
-  {
-   "entity": "E-080",
-   "table": "skills",
-   "policy": "skills_tenant_read",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "select",
-   "case": "SET LOCAL を飛ばす",
-   "expected": "NG（0 行・エラー）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
-   "source": [
-    "D-026.1",
-    "D-058.5",
-    "D-073.1"
-   ]
-  },
-  {
-   "entity": "E-080",
-   "table": "skills",
-   "policy": "skills_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "権限あり・自分の範囲",
-   "expected": "OK",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'skills', NULL, 'edit')",
-   "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
-   ]
-  },
-  {
-   "entity": "E-080",
-   "table": "skills",
-   "policy": "skills_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "権限なし（担当者・閲覧のみ）",
-   "expected": "NG（403・副作用なし）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'skills', NULL, 'edit')",
-   "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
-   ]
-  },
-  {
-   "entity": "E-080",
-   "table": "skills",
-   "policy": "skills_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "他の会社",
-   "expected": "NG（0 行・副作用なし）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'skills', NULL, 'edit')",
-   "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
-   ]
-  },
-  {
-   "entity": "E-080",
-   "table": "skills",
-   "policy": "skills_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "SET LOCAL を飛ばす",
-   "expected": "NG（エラー）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'skills', NULL, 'edit')",
-   "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
-   ]
-  },
-  {
-   "entity": "E-080",
-   "table": "skills",
-   "policy": "skills_ops_read_with_grant",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "select",
-   "case": "同じ会社・見える範囲",
-   "expected": "OK",
-   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = skills.tenant_id AND g.expires_at > now() AND g.",
-   "source": [
-    "D-074.5",
-    "D-077.7"
-   ]
-  },
-  {
-   "entity": "E-080",
-   "table": "skills",
-   "policy": "skills_ops_read_with_grant",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "select",
-   "case": "同じ会社・見えない層",
-   "expected": "NG（0 行）",
-   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = skills.tenant_id AND g.expires_at > now() AND g.",
-   "source": [
-    "D-074.5",
-    "D-077.7"
-   ]
-  },
-  {
-   "entity": "E-080",
-   "table": "skills",
-   "policy": "skills_ops_read_with_grant",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "select",
-   "case": "他の会社（SET LOCAL を別テナントに）",
-   "expected": "NG（顧客が許可した範囲・期限の中だけ OK）",
-   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = skills.tenant_id AND g.expires_at > now() AND g.",
-   "source": [
-    "D-074.5",
-    "D-077.7"
-   ]
-  },
-  {
-   "entity": "E-080",
-   "table": "skills",
-   "policy": "skills_ops_read_with_grant",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "select",
-   "case": "SET LOCAL を飛ばす",
-   "expected": "NG（0 行・エラー）",
-   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = skills.tenant_id AND g.expires_at > now() AND g.",
-   "source": [
-    "D-074.5",
-    "D-077.7"
+    "D-073.7",
+    "D-077.4"
    ]
   },
   {

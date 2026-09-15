@@ -1,6 +1,6 @@
 # 盤（board）
 
-生成 2026-09-15T22:19:56
+生成 2026-09-15T22:37:47
 
 ## todo
 - **E-foundation foundation の層**
@@ -29,7 +29,7 @@
   - T-D-06 データ層 6. 会話・成果物・証跡（4 表・migration・RLS・索引・seed） ｜ foundation ｜ 2.3h ｜ 2026-10-01→2026-10-02 ｜ takamoto ｜ 孫 13
   - T-D-07 データ層 9. 層と権限（4 表・migration・RLS・索引・seed） ｜ foundation ｜ 8.0h ｜ 2026-09-25→2026-09-28 ｜ claude-02 ｜ 孫 13
   - T-D-08 データ層 10. 口座状態の出来事・失効・サポートアクセス（6 表・migration・RLS・索引・seed） ｜ foundation ｜ 11.0h ｜ 2026-10-02→2026-10-07 ｜ takamoto ｜ 孫 16
-  - T-D-09 データ層 11. 運営（9 表・migration・RLS・索引・seed） ｜ foundation ｜ 4.8h ｜ 2026-09-28→2026-09-29 ｜ claude-02 ｜ 孫 20
+  - T-D-09 データ層 11. 運営（9 表・migration・RLS・索引・seed） ｜ foundation ｜ 4.8h ｜ 2026-09-28→2026-09-29 ｜ claude-02 ｜ 孫 19
   - ★T-D-10 データ層 12. 運営と顧客の間で往復するもの・自分で整えるもの（14 表・migration・RLS・索引・seed） ｜ foundation ｜ 23.0h ｜ 2026-10-07→2026-10-20 ｜ takamoto ｜ 孫 29
   - T-D-11 データ層 13. 取り込み・正規連携・招待・持ち出し・添付（5 表・migration・RLS・索引・seed） ｜ foundation ｜ 2.8h ｜ 2026-09-29→2026-09-29 ｜ claude-02 ｜ 孫 15
   - T-D-12 データ層 14. スキル（4 表・migration・RLS・索引・seed） ｜ foundation ｜ 2.3h ｜ 2026-09-29→2026-09-29 ｜ claude-01 ｜ 孫 13

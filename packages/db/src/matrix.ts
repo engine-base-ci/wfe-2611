@@ -28,6 +28,8 @@ export interface Seeded {
       hiddenLayer: string | null;
       other: string;
       insert: ((tenant: string) => Record<string, unknown>) | null;
+      /** 追記専用の表：関門の関数の呼び方（ctx＝誰の文脈で） */
+      record?: { ctx: "member" | "ops"; sql: string; params: unknown[] };
     }
   >;
 }
@@ -99,6 +101,68 @@ export async function runMatrix(
     const wantNG = isNG(cs.expected);
     let got = "";
     let ok = false;
+    if (cs.role === "system") {
+      // 追記専用：関門の関数からは書ける／直接 INSERT は弾く／UPDATE・DELETE は誰でも弾く
+      if (cs.case.includes("関門の関数")) {
+        const rec = seedRow.record;
+        if (!rec) {
+          res.failed.push({ case: cs, got: "種に record（関門の関数の呼び方）が無い" });
+          continue;
+        }
+        const r = await tryWrite(rec.ctx === "ops" ? ctxOps : ctxStaff, rec.sql, rec.params);
+        got = r;
+        ok = r === "ok";
+      } else if (cs.case.includes("直接 INSERT")) {
+        const DIRECT: Record<string, [string, unknown[]]> = {
+          audit_events: [
+            "insert into audit_events (tenant_id, actor_role, action, target_type) values ($1, 'member', 'x', 'x')",
+            [S.tenantA],
+          ],
+          ops_audit_events: [
+            "insert into ops_audit_events (tenant_id, target_tenant_id, action, target_type) values ($1, $1, 'x', 'x')",
+            [S.tenantA],
+          ],
+          security_events: ["insert into security_events (tenant_id, kind_id) values ($1, 'x')", [S.tenantA]],
+        };
+        const d = DIRECT[cs.table];
+        if (!d) {
+          res.failed.push({ case: cs, got: "直接 INSERT の見本が無い" });
+          continue;
+        }
+        const r = await tryWrite(ctxBoss, d[0], d[1]);
+        got = r;
+        ok = r !== "ok";
+      } else {
+        const r1 = await tryWrite(
+          ctxBoss,
+          `update "${cs.table}" set payload = '{}'::jsonb where ${pk} = $1`.replace(
+            "payload = '{}'::jsonb",
+            cs.table === "security_events" ? "detail = '{}'::jsonb" : "payload = '{}'::jsonb",
+          ),
+          [seedRow.visible],
+        );
+        const r2 = await tryWrite(ctxBoss, `delete from "${cs.table}" where ${pk} = $1`, [seedRow.visible]);
+        got = `update=${r1} delete=${r2}`;
+        ok = r1 !== "ok" && r2 !== "ok";
+      }
+      if (ok) res.passed++;
+      else res.failed.push({ case: cs, got });
+      continue;
+    }
+    if (cs.policy.endsWith("_ops_own") || cs.policy.endsWith("_ops_all")) {
+      // 運営の表：運営の文脈で見える／会社の人は 0 行／文脈なしは 0 行
+      const ctx: TenantContext | null = cs.case.includes("運営の文脈")
+        ? ctxOps
+        : cs.case.includes("会社の人")
+          ? ctxBoss
+          : null;
+      const n = await count(ctx, `select ${pk} from "${cs.table}" where ${pk} = $1`, [seedRow.visible]);
+      got = `rows=${n}`;
+      ok = wantNG ? n === 0 : n > 0;
+      if (ok) res.passed++;
+      else res.failed.push({ case: cs, got });
+      continue;
+    }
     if (cs.operation === "select") {
       // 読む：会社 a の代表（見える範囲）／担当者（見えない層）／別テナント／SET LOCAL なし／運営
       let ctx: TenantContext | null = ctxBoss;
