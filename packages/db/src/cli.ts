@@ -2,6 +2,7 @@
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { migrate } from "./migrate.js";
+import { MIGRATIONS } from "./index.js";
 import { noVendorSql, rlsEnabled } from "./ci.js";
 import { runMatrix } from "./matrix.js";
 import { seedAccessMatrix } from "./seeds.js";
@@ -36,6 +37,30 @@ async function main(): Promise<number> {
         : `[G4] RLS が無い・force でない表: ${r.missing.join(", ")}`,
     );
     return r.ok ? 0 : 1;
+  }
+  if (cmd === "fresh-migrate") {
+    // G12：まっさらな DB に全 migration＋policy（＋認証の表は packages/auth の cli）を当て、記録と RLS を確かめて捨てる
+    const name = `kaname_ci_${Date.now().toString(36)}`;
+    const adminUrl = new URL(url);
+    const dbName = adminUrl.pathname.slice(1);
+    adminUrl.pathname = "/postgres";
+    const admin = new pg.Client({ connectionString: adminUrl.toString() });
+    await admin.connect();
+    try {
+      await admin.query(`create database "${name}"`);
+      const fresh = new URL(url);
+      fresh.pathname = `/${name}`;
+      const r = await migrate(fresh.toString(), pkg);
+      const rls = await rlsEnabled(fresh.toString());
+      const ok = r.applied.length === MIGRATIONS.length && rls.ok;
+      console.log(
+        `[G12] fresh DB ${name}: migration ${r.applied.length}/${MIGRATIONS.length} 適用・RLS ${rls.ok ? "全表 OK" : "不足 " + rls.missing.join(",")}（元 DB ${dbName} は触らない）`,
+      );
+      await admin.query(`drop database "${name}"`);
+      return ok ? 0 : 1;
+    } finally {
+      await admin.end();
+    }
   }
   if (cmd === "access-matrix") {
     const file = process.argv[3] ?? join(pkg, "..", "..", "07_qa", "test-plan", "access-matrix.json");

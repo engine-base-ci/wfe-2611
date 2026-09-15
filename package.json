@@ -25,9 +25,9 @@
     "ci:boundary": "node scripts/ci/gate_pending.mjs G7 T-F-05",
     "ci:license-boundary": "node scripts/ci/gate_pending.mjs G8 T-F-05",
     "ci:ledger-sync": "node scripts/ci/gate_pending.mjs G9 T-F-05",
-    "ci:no-sql-concat": "node scripts/ci/gate_pending.mjs G10 T-F-06",
+    "ci:no-sql-concat": "node scripts/ci/sql_guard.mjs --no-sql-concat",
     "ci:openapi-diff": "node scripts/ci/gate_pending.mjs G11 T-F-15",
-    "ci:migration-integration": "node scripts/ci/gate_pending.mjs G12 T-F-08",
+    "ci:migration-integration": "tsx packages/db/src/cli.ts fresh-migrate",
     "ci:env-audit": "node scripts/ci/gate_pending.mjs G13 T-F-16",
     "ci:choke": "node scripts/ci/choke.mjs",
     "ci:no-dynamic-call": "node scripts/ci/choke.mjs --no-dynamic",
@@ -35,11 +35,12 @@
     "ci:task-choke-declared": "node scripts/ci/gate_pending.mjs G26 T-F-09",
     "ci:access-matrix": "tsx packages/db/src/cli.ts access-matrix",
     "ci:ears-mapping": "node scripts/ci/gate_pending.mjs G34 T-F-15",
-    "ci:resource-static": "node scripts/ci/gate_pending.mjs G35 T-F-08",
+    "ci:resource-static": "node scripts/ci/sql_guard.mjs --resource-static",
     "ci:schemathesis": "node scripts/ci/gate_pending.mjs G36 T-F-15",
     "db:migrate": "tsx packages/db/src/cli.ts migrate && tsx packages/auth/src/cli.ts",
     "ci:choke:all": "node scripts/ci/choke.mjs --all",
-    "ci:choke:selftest": "node scripts/ci/choke.test.mjs"
+    "ci:choke:selftest": "node scripts/ci/choke.test.mjs",
+    "ci:sql-guard:selftest": "node scripts/ci/sql_guard.test.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",
