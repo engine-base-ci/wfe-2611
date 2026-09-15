@@ -8,10 +8,11 @@ import { runMatrix } from "./matrix.js";
 import { seedAccessMatrix } from "./seeds.js";
 import { readFileSync } from "node:fs";
 import pg from "pg";
+import { requireEnv } from "@kaname/config";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const pkg = join(here, "..");
-const url = process.env["DATABASE_URL"] ?? "";
+const url = requireEnv("DATABASE_URL");
 const cmd = process.argv[2];
 
 async function main(): Promise<number> {

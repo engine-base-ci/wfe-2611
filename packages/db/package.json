@@ -12,7 +12,8 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "pg": "^8.23.0"
+    "pg": "^8.23.0",
+    "@kaname/config": "workspace:*"
   },
   "exports": {
     ".": "./src/index.ts",

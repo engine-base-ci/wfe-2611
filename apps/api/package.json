@@ -10,7 +10,10 @@
   "dependencies": {
     "@kaname/db": "workspace:*",
     "hono": "^4.10.0",
-    "@kaname/auth": "workspace:*"
+    "@kaname/auth": "workspace:*",
+    "@kaname/errors": "workspace:*",
+    "@kaname/config": "workspace:*",
+    "@kaname/storage": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.9.3",

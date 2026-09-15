@@ -1,9 +1,6 @@
+import { requireEnv } from "@kaname/config";
 import { migrateAuth } from "./migrate.js";
-const app = process.env["DATABASE_URL"] ?? "";
-if (!app) {
-  console.error("DATABASE_URL が無い");
-  process.exit(1);
-}
+const app = requireEnv("DATABASE_URL");
 migrateAuth(app).then(
   (t) => {
     console.log(`auth の表 ${t.length ? "作成 " + t.join(", ") : "済み"}`);

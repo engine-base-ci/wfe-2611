@@ -118,3 +118,5 @@ export class NotifyGateway {
     return { deliveries, auditId };
   }
 }
+
+export { resendMail, resendTransport, type MailLike } from "./resend.js";
