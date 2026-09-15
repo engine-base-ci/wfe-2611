@@ -60,6 +60,10 @@ export const TABLES = [
   "conversations",
   "messages",
   "artifacts",
+  "account_events",
+  "account_event_items",
+  "retention_holds",
+  "erasure_certificates",
 ] as const;
 /** 追記専用（関門の関数 app.record_* だけが書く。repository の create/update/softDelete は拒否） */
 export const APPEND_ONLY: ReadonlySet<string> = new Set(["audit_events", "ops_audit_events", "security_events"]);
