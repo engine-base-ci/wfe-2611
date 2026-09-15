@@ -41,6 +41,12 @@ export const TABLES = [
   "ledger_stages",
   "ledger_views",
   "ledger_records",
+  "duties",
+  "duty_versions",
+  "learned_procedures",
+  "procedure_steps",
+  "memory_kinds",
+  "memories",
 ] as const;
 /** 追記専用（関門の関数 app.record_* だけが書く。repository の create/update/softDelete は拒否） */
 export const APPEND_ONLY: ReadonlySet<string> = new Set(["audit_events", "ops_audit_events", "security_events"]);
@@ -54,6 +60,7 @@ const MASTERS: ReadonlySet<string> = new Set([
   "revoke_reasons",
   "goal_kinds",
   "rollup_kinds",
+  "memory_kinds",
 ]);
 
 export type Row = Record<string, unknown>;

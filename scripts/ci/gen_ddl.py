@@ -158,7 +158,7 @@ def ddl_for(e) -> tuple[str, list[str]]:
             if rt in existing or rt in new_names or rt == t:
                 cols.append(f"{n} {ty}{notnull} references {rt}({rc})")
             else:
-                cols.append(f"{n} {ty}{notnull}  -- FK → {rt}({rc}) は {rt} を作る migration で足す")
+                cols.append(f"{n} {ty}{notnull} /* FK → {rt}({rc}) は {rt} を作る migration で足す */")
             if ty == "uuid" and rt != t: idx.append(f"create index if not exists {t}_{n}_idx on {t} ({n});")
             if parent_fk is None and not tenant and ty == "uuid": parent_fk = n
         else:
