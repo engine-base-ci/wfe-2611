@@ -36,6 +36,11 @@ export const TABLES = [
   "hypotheses",
   "measures",
   "validations",
+  "ledger_definitions",
+  "ledger_fields",
+  "ledger_stages",
+  "ledger_views",
+  "ledger_records",
 ] as const;
 /** 追記専用（関門の関数 app.record_* だけが書く。repository の create/update/softDelete は拒否） */
 export const APPEND_ONLY: ReadonlySet<string> = new Set(["audit_events", "ops_audit_events", "security_events"]);
