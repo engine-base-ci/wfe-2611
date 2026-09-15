@@ -53,6 +53,7 @@ def error_rows(sid, aid):
     for e in (ERR_BY_SCREEN.get(sid, []) if sid else []) + (ERR_BY_ACT.get(aid, []) if aid else []):
         ids += [f'{e["id"]}-A', f'{e["id"]}-B', f'{e["id"]}-C']
     return sorted(set(ids))
+PREV_STATUS = {x["id"]: x.get("status", "todo") for x in (json.load(open("07_tasks/tickets.json", encoding="utf-8"))["tasks"] if os.path.exists("07_tasks/tickets.json") else [])}   # 再生成で done を todo に戻さない（状態は実装の結果）
 tasks = []; tid_of_feature = {}
 def newtask(tid, title, group, layer, phase, kind, feature_ids, **kw):
     crit = kw.pop("critical", False); h = kw.pop("hours"); ta = two_axis(h, kind, crit)
@@ -61,7 +62,7 @@ def newtask(tid, title, group, layer, phase, kind, feature_ids, **kw):
          "depends_on": kw.pop("depends_on", []), "choke_points": kw.pop("choke_points", []), "choke_points_rationale": kw.pop("choke_rationale", ""), "forbidden_direct_apis_reminder": ["fetch", "axios", "undici", "pg / drizzle の生クライアント（関門の外）", "child_process", "fs（関門の外）", "nodemailer / resend（関門の外）", "anthropic / openai SDK（関門の外）"],
          "files_changed": kw.pop("files_changed", []), "files_changed_predicted": kw.pop("fcp", {"new": [], "modify": [], "shared_read": [], "forbidden": ["packages/gateways/**（関門の実装は Group F だけ）"]}),
          "acceptance_criteria": kw.pop("ac", {"structural": [], "functional": [], "regression": REG_BASE}), "access_policies_required": kw.pop("policies", []), "spec_links": kw.pop("spec_links", []),
-         "audit_md_path": f"07_tasks/audit/{tid}.md", "status": "todo", "qa_rows": kw.pop("qa_rows", {"l1": [], "l2_flows": []}), "test_scenarios_inline": kw.pop("scenarios", []), "source": src, "decision_summaries": dsum(src), "critical": crit, "why": kw.pop("why", "")}
+         "audit_md_path": f"07_tasks/audit/{tid}.md", "status": PREV_STATUS.get(tid, "todo"), "qa_rows": kw.pop("qa_rows", {"l1": [], "l2_flows": []}), "test_scenarios_inline": kw.pop("scenarios", []), "source": src, "decision_summaries": dsum(src), "critical": crit, "why": kw.pop("why", "")}
     t["acceptance_criteria_inline"] = {"tier_1_structural": t["acceptance_criteria"]["structural"], "tier_2_functional": [{"type": x.split(":")[0], "text": x, "critical": x.startswith("UNWANTED") and crit} for x in t["acceptance_criteria"]["functional"]], "tier_3_regression": t["acceptance_criteria"]["regression"]}
     t.update(ta); tasks.append(t)
     for f in feature_ids: tid_of_feature.setdefault(f, []).append(tid)
@@ -251,7 +252,16 @@ for fp, rows in qa_files.items():
     if fp.endswith("plan.json"): continue
     os.makedirs(os.path.dirname(fp), exist_ok=True)
     title = os.path.basename(fp).replace(".md", "")
-    body = f"# {title} テスト仕様（L1・機械生成）\n\n> 05_flow/build_tasks.py がタスクと同時に生成。ID は変えない。途中変更は qa_delta.py で差分。結果列は staging で流した人が書く。\n\n" + HDR + "".join("| " + " | ".join(str(c).replace("|", "／") for c in r) + " |\n" for r in rows)
+    # 正本の行は ID を変えない・作り直さない（test-ladder §9）。再生成しても「結果」列（実装者が staging で書いた PASS／BLOCKED）は残す
+    prev_res = {}
+    if os.path.exists(fp):
+        for ln in open(fp, encoding="utf-8"):
+            if ln.startswith("| ") and not ln.startswith("| ID "):
+                cells = [c.strip() for c in ln.strip().strip("|").split("|")]
+                if len(cells) >= 11 and cells[7]: prev_res[cells[0]] = cells[7]
+    rows = [(r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7] or prev_res.get(r[0], ""), r[8], r[9], r[10]) for r in rows]
+    kept = sum(1 for r in rows if r[7])
+    body = f"# {title} テスト仕様（L1・機械生成）\n\n> 05_flow/build_tasks.py がタスクと同時に生成。ID は変えない。途中変更は qa_delta.py で差分。結果列は staging で流した人が書く（再生成しても残る。結果あり {kept} 行）。\n\n" + HDR + "".join("| " + " | ".join(str(c).replace("|", "／") for c in r) + " |\n" for r in rows)
     open(fp, "w", encoding="utf-8").write(body)
 # ---------------------------------------------------------------- tickets.json ほか
 by = lambda key: {k: sum(1 for t in tasks if t[key] == k) for k in sorted({t[key] for t in tasks})}

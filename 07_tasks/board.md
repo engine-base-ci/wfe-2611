@@ -1,19 +1,9 @@
 # 盤（board）
 
-生成 2026-09-15T22:47:41
+生成 2026-09-15T23:13:01
 
 ## todo
 - **E-foundation foundation の層**
-  - T-F-01 monorepo と CI（lint・型・カバレッジ 80%・EARS validator・layer_audit） ｜ foundation ｜ 1.6h ｜ 2026-09-22→2026-09-22 ｜ takamoto ｜ 孫 12
-  - T-F-02 アクセス制御の土台（RLS・app.tenant_id / app.user_id / app.role・has_per（1/2） ｜ foundation ｜ 6.0h ｜ 2026-09-22→2026-09-22 ｜ claude-01 ｜ 孫 11
-  - ★T-F-03 アクセス制御の土台（RLS・app.tenant_id / app.user_id / app.role・has_per（2/2） ｜ foundation ｜ 6.0h ｜ 2026-09-22→2026-09-22 ｜ claude-02 ｜ 孫 11
-  - T-F-04 証跡の土台（audit_events / ops_audit_events / security_events 追記専用 ｜ foundation ｜ 1.3h ｜ 2026-09-22→2026-09-22 ｜ takamoto ｜ 孫 11
-  - T-F-05 認証とセッション（Better Auth・sessions 表・全失効・2 段階認証・端末）（1/2） ｜ foundation ｜ 5.0h ｜ 2026-09-22→2026-09-25 ｜ takamoto ｜ 孫 11
-  - T-F-06 認証とセッション（Better Auth・sessions 表・全失効・2 段階認証・端末）（2/2） ｜ foundation ｜ 5.0h ｜ 2026-09-22→2026-09-24 ｜ claude-01 ｜ 孫 11
-  - T-F-07 関門 C1 ネットワーク（生 API の直接呼び出し禁止・CI で迂回検出） ｜ foundation ｜ 0.8h ｜ 2026-09-22→2026-09-22 ｜ claude-02 ｜ 孫 11
-  - T-F-08 関門 C2 永続化（書き込み）（生 API の直接呼び出し禁止・CI で迂回検出） ｜ foundation ｜ 0.8h ｜ 2026-09-22→2026-09-22 ｜ claude-02 ｜ 孫 11
-  - T-F-09 関門 C3 モデル呼び出し（生 API の直接呼び出し禁止・CI で迂回検出） ｜ foundation ｜ 0.8h ｜ 2026-09-22→2026-09-24 ｜ claude-02 ｜ 孫 11
-  - T-F-10 関門 C4 ファイル / オブジェクト（生 API の直接呼び出し禁止・CI で迂回検出） ｜ foundation ｜ 0.8h ｜ 2026-09-25→2026-09-25 ｜ takamoto ｜ 孫 11
   - T-F-11 関門 C5 プロセス起動（生 API の直接呼び出し禁止・CI で迂回検出） ｜ foundation ｜ 0.8h ｜ 2026-09-24→2026-09-24 ｜ claude-02 ｜ 孫 11
   - T-F-12 関門 C6 通知送出（生 API の直接呼び出し禁止・CI で迂回検出） ｜ foundation ｜ 0.8h ｜ 2026-09-25→2026-09-28 ｜ takamoto ｜ 孫 11
   - T-F-13 関門 C7 決済・課金（生 API の直接呼び出し禁止・CI で迂回検出） ｜ foundation ｜ 4.0h ｜ 2026-09-24→2026-09-24 ｜ claude-02 ｜ 孫 11
@@ -185,3 +175,14 @@
 ## blocked
 
 ## done
+- **E-foundation foundation の層**
+  - T-F-01 monorepo と CI（lint・型・カバレッジ 80%・EARS validator・layer_audit） ｜ foundation ｜ 1.6h ｜ 2026-09-22→2026-09-22 ｜ takamoto ｜ 孫 12
+  - T-F-02 アクセス制御の土台（RLS・app.tenant_id / app.user_id / app.role・has_per（1/2） ｜ foundation ｜ 6.0h ｜ 2026-09-22→2026-09-22 ｜ claude-01 ｜ 孫 11
+  - ★T-F-03 アクセス制御の土台（RLS・app.tenant_id / app.user_id / app.role・has_per（2/2） ｜ foundation ｜ 6.0h ｜ 2026-09-22→2026-09-22 ｜ claude-02 ｜ 孫 11
+  - T-F-04 証跡の土台（audit_events / ops_audit_events / security_events 追記専用 ｜ foundation ｜ 1.3h ｜ 2026-09-22→2026-09-22 ｜ takamoto ｜ 孫 11
+  - T-F-05 認証とセッション（Better Auth・sessions 表・全失効・2 段階認証・端末）（1/2） ｜ foundation ｜ 5.0h ｜ 2026-09-22→2026-09-25 ｜ takamoto ｜ 孫 11
+  - T-F-06 認証とセッション（Better Auth・sessions 表・全失効・2 段階認証・端末）（2/2） ｜ foundation ｜ 5.0h ｜ 2026-09-22→2026-09-24 ｜ claude-01 ｜ 孫 11
+  - T-F-07 関門 C1 ネットワーク（生 API の直接呼び出し禁止・CI で迂回検出） ｜ foundation ｜ 0.8h ｜ 2026-09-22→2026-09-22 ｜ claude-02 ｜ 孫 11
+  - T-F-08 関門 C2 永続化（書き込み）（生 API の直接呼び出し禁止・CI で迂回検出） ｜ foundation ｜ 0.8h ｜ 2026-09-22→2026-09-22 ｜ claude-02 ｜ 孫 11
+  - T-F-09 関門 C3 モデル呼び出し（生 API の直接呼び出し禁止・CI で迂回検出） ｜ foundation ｜ 0.8h ｜ 2026-09-22→2026-09-24 ｜ claude-02 ｜ 孫 11
+  - T-F-10 関門 C4 ファイル / オブジェクト（生 API の直接呼び出し禁止・CI で迂回検出） ｜ foundation ｜ 0.8h ｜ 2026-09-25→2026-09-25 ｜ takamoto ｜ 孫 11

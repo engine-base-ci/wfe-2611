@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-15T22:47:41",
+ "generated_at": "2026-09-15T23:13:01",
  "inputs": {
   "tickets": "07_tasks/tickets.json",
   "roster": "07_tasks/roster.json",
@@ -33,9 +33,9 @@
   "milestone_overrun": [],
   "estimate_default": [],
   "delta": {
-   "added": 1,
-   "updated": 22,
-   "unchanged": 136,
+   "added": 0,
+   "updated": 0,
+   "unchanged": 159,
    "dropped": 0
   },
   "load": {
@@ -428,7 +428,7 @@
    ],
    "assignee": "takamoto",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [],
@@ -492,7 +492,7 @@
    ],
    "assignee": "claude-01",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [],
@@ -559,7 +559,7 @@
    ],
    "assignee": "claude-02",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [],
@@ -626,7 +626,7 @@
    ],
    "assignee": "takamoto",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [],
@@ -691,7 +691,7 @@
    ],
    "assignee": "takamoto",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [],
@@ -756,7 +756,7 @@
    ],
    "assignee": "claude-01",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [],
@@ -821,7 +821,7 @@
    ],
    "assignee": "claude-02",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [],
@@ -890,7 +890,7 @@
    ],
    "assignee": "claude-02",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [],
@@ -958,7 +958,7 @@
    ],
    "assignee": "claude-02",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [],
@@ -1024,7 +1024,7 @@
    ],
    "assignee": "takamoto",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [],
@@ -2070,7 +2070,7 @@
      "07_tasks/tickets.json#T-D-07"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -2143,7 +2143,7 @@
      "07_tasks/tickets.json#T-D-08"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -2225,7 +2225,7 @@
      "07_tasks/tickets.json#T-D-09"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -2316,7 +2316,7 @@
      "07_tasks/tickets.json#T-D-10"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -2427,7 +2427,7 @@
      "07_tasks/tickets.json#T-D-11"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -2508,7 +2508,7 @@
      "07_tasks/tickets.json#T-D-12"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -2584,7 +2584,7 @@
      "07_tasks/tickets.json#T-D-13"
     ]
    },
-   "delta": "added",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -2805,7 +2805,7 @@
      "07_tasks/tickets.json#T-A-01"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -2891,7 +2891,7 @@
      "07_tasks/tickets.json#T-A-02"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -3009,7 +3009,7 @@
      "07_tasks/tickets.json#T-A-03"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -3237,7 +3237,7 @@
      "07_tasks/tickets.json#T-A-04"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -3660,7 +3660,7 @@
      "07_tasks/tickets.json#T-A-06"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -3910,7 +3910,7 @@
      "07_tasks/tickets.json#T-A-07"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -4059,7 +4059,7 @@
      "07_tasks/tickets.json#T-A-08"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -4909,7 +4909,7 @@
      "07_tasks/tickets.json#T-A-12"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -5468,7 +5468,7 @@
      "07_tasks/tickets.json#T-A-15"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -5807,7 +5807,7 @@
      "07_tasks/tickets.json#T-A-17"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -5965,7 +5965,7 @@
      "07_tasks/tickets.json#T-A-18"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -6143,7 +6143,7 @@
      "07_tasks/tickets.json#T-A-19"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -6340,7 +6340,7 @@
      "07_tasks/tickets.json#T-A-20"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -6514,7 +6514,7 @@
      "07_tasks/tickets.json#T-A-21"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -6657,7 +6657,7 @@
      "07_tasks/tickets.json#T-A-22"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -6785,7 +6785,7 @@
      "07_tasks/tickets.json#T-A-23"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -18380,7 +18380,7 @@
    "sub": "impl",
    "title": ".github/workflows/ci.yml (new)",
    "parent": "T-F-01",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      ".github/workflows/ci.yml (new)"
@@ -18393,7 +18393,7 @@
    "sub": "impl",
    "title": "packages/db/migrations/0001_foundation.sql (new)",
    "parent": "T-F-01",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/migrations/0001_foundation.sql (new)"
@@ -18406,7 +18406,7 @@
    "sub": "impl",
    "title": "packages/gateways/README.md (new)",
    "parent": "T-F-01",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/gateways/README.md (new)"
@@ -18419,7 +18419,7 @@
    "sub": "impl",
    "title": "package.json (modify)",
    "parent": "T-F-01",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "package.json (modify)"
@@ -18536,7 +18536,7 @@
    "sub": "impl",
    "title": "packages/db/migrations/002_02.sql (new)",
    "parent": "T-F-02",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/migrations/002_02.sql (new)"
@@ -18549,7 +18549,7 @@
    "sub": "impl",
    "title": "packages/db/policies/02.sql (new)",
    "parent": "T-F-02",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/policies/02.sql (new)"
@@ -18562,7 +18562,7 @@
    "sub": "impl",
    "title": "package.json (modify)",
    "parent": "T-F-02",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "package.json (modify)"
@@ -18679,7 +18679,7 @@
    "sub": "impl",
    "title": "packages/db/migrations/003_02.sql (new)",
    "parent": "T-F-03",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/migrations/003_02.sql (new)"
@@ -18692,7 +18692,7 @@
    "sub": "impl",
    "title": "packages/db/policies/02.sql (new)",
    "parent": "T-F-03",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/policies/02.sql (new)"
@@ -18705,7 +18705,7 @@
    "sub": "impl",
    "title": "package.json (modify)",
    "parent": "T-F-03",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "package.json (modify)"
@@ -18822,7 +18822,7 @@
    "sub": "impl",
    "title": "packages/db/migrations/002_03.sql (new)",
    "parent": "T-F-04",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/migrations/002_03.sql (new)"
@@ -18835,7 +18835,7 @@
    "sub": "impl",
    "title": "packages/db/policies/03.sql (new)",
    "parent": "T-F-04",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/policies/03.sql (new)"
@@ -18848,7 +18848,7 @@
    "sub": "impl",
    "title": "package.json (modify)",
    "parent": "T-F-04",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "package.json (modify)"
@@ -18965,7 +18965,7 @@
    "sub": "impl",
    "title": "packages/db/migrations/002_04.sql (new)",
    "parent": "T-F-05",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/migrations/002_04.sql (new)"
@@ -18978,7 +18978,7 @@
    "sub": "impl",
    "title": "packages/db/policies/04.sql (new)",
    "parent": "T-F-05",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/policies/04.sql (new)"
@@ -18991,7 +18991,7 @@
    "sub": "impl",
    "title": "package.json (modify)",
    "parent": "T-F-05",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "package.json (modify)"
@@ -19108,7 +19108,7 @@
    "sub": "impl",
    "title": "packages/db/migrations/003_04.sql (new)",
    "parent": "T-F-06",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/migrations/003_04.sql (new)"
@@ -19121,7 +19121,7 @@
    "sub": "impl",
    "title": "packages/db/policies/04.sql (new)",
    "parent": "T-F-06",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/policies/04.sql (new)"
@@ -19134,7 +19134,7 @@
    "sub": "impl",
    "title": "package.json (modify)",
    "parent": "T-F-06",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "package.json (modify)"
@@ -19251,7 +19251,7 @@
    "sub": "impl",
    "title": "packages/gateways/c1/index.ts (new)",
    "parent": "T-F-07",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/gateways/c1/index.ts (new)"
@@ -19264,7 +19264,7 @@
    "sub": "impl",
    "title": "scripts/ci/choke_c1.py (new)",
    "parent": "T-F-07",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "scripts/ci/choke_c1.py (new)"
@@ -19277,7 +19277,7 @@
    "sub": "impl",
    "title": "package.json (modify)",
    "parent": "T-F-07",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "package.json (modify)"
@@ -19394,7 +19394,7 @@
    "sub": "impl",
    "title": "packages/gateways/c2/index.ts (new)",
    "parent": "T-F-08",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/gateways/c2/index.ts (new)"
@@ -19407,7 +19407,7 @@
    "sub": "impl",
    "title": "scripts/ci/choke_c2.py (new)",
    "parent": "T-F-08",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "scripts/ci/choke_c2.py (new)"
@@ -19420,7 +19420,7 @@
    "sub": "impl",
    "title": "package.json (modify)",
    "parent": "T-F-08",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "package.json (modify)"
@@ -19537,7 +19537,7 @@
    "sub": "impl",
    "title": "packages/gateways/c3/index.ts (new)",
    "parent": "T-F-09",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/gateways/c3/index.ts (new)"
@@ -19550,7 +19550,7 @@
    "sub": "impl",
    "title": "scripts/ci/choke_c3.py (new)",
    "parent": "T-F-09",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "scripts/ci/choke_c3.py (new)"
@@ -19563,7 +19563,7 @@
    "sub": "impl",
    "title": "package.json (modify)",
    "parent": "T-F-09",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "package.json (modify)"
@@ -19680,7 +19680,7 @@
    "sub": "impl",
    "title": "packages/gateways/c4/index.ts (new)",
    "parent": "T-F-10",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/gateways/c4/index.ts (new)"
@@ -19693,7 +19693,7 @@
    "sub": "impl",
    "title": "scripts/ci/choke_c4.py (new)",
    "parent": "T-F-10",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "scripts/ci/choke_c4.py (new)"
@@ -19706,7 +19706,7 @@
    "sub": "impl",
    "title": "package.json (modify)",
    "parent": "T-F-10",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "package.json (modify)"

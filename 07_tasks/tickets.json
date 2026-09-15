@@ -513,7 +513,7 @@
     "03_architecture/ER図.md"
    ],
    "audit_md_path": "07_tasks/audit/T-F-01.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "FND-01-001",
@@ -693,7 +693,7 @@
     "03_architecture/ER図.md"
    ],
    "audit_md_path": "07_tasks/audit/T-F-02.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "FND-02-001",
@@ -880,7 +880,7 @@
     "03_architecture/ER図.md"
    ],
    "audit_md_path": "07_tasks/audit/T-F-03.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "FND-02-009",
@@ -1064,7 +1064,7 @@
     "03_architecture/ER図.md"
    ],
    "audit_md_path": "07_tasks/audit/T-F-04.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "FND-03-001",
@@ -1244,7 +1244,7 @@
     "03_architecture/ER図.md"
    ],
    "audit_md_path": "07_tasks/audit/T-F-05.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "FND-04-001",
@@ -1424,7 +1424,7 @@
     "03_architecture/ER図.md"
    ],
    "audit_md_path": "07_tasks/audit/T-F-06.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "FND-04-009",
@@ -1594,7 +1594,7 @@
     "03_architecture/ER図.md"
    ],
    "audit_md_path": "07_tasks/audit/T-F-07.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "FND-C1-001",
@@ -1770,7 +1770,7 @@
     "03_architecture/ER図.md"
    ],
    "audit_md_path": "07_tasks/audit/T-F-08.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "FND-C2-001",
@@ -1945,7 +1945,7 @@
     "03_architecture/ER図.md"
    ],
    "audit_md_path": "07_tasks/audit/T-F-09.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "FND-C3-001",
@@ -2118,7 +2118,7 @@
     "03_architecture/ER図.md"
    ],
    "audit_md_path": "07_tasks/audit/T-F-10.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "FND-C4-001",
