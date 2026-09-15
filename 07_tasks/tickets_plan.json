@@ -1091,7 +1091,7 @@
    ],
    "assignee": "claude-02",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [],
@@ -1157,7 +1157,7 @@
    ],
    "assignee": "takamoto",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [],
@@ -1225,7 +1225,7 @@
    ],
    "assignee": "claude-02",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [],
@@ -1293,7 +1293,7 @@
    ],
    "assignee": "takamoto",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [],
@@ -19823,7 +19823,7 @@
    "sub": "impl",
    "title": "packages/gateways/c5/index.ts (new)",
    "parent": "T-F-11",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/gateways/c5/index.ts (new)"
@@ -19836,7 +19836,7 @@
    "sub": "impl",
    "title": "scripts/ci/choke_c5.py (new)",
    "parent": "T-F-11",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "scripts/ci/choke_c5.py (new)"
@@ -19849,7 +19849,7 @@
    "sub": "impl",
    "title": "package.json (modify)",
    "parent": "T-F-11",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "package.json (modify)"
@@ -19862,7 +19862,7 @@
    "sub": "test",
    "title": "L1 FND-C5-001 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-11",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "FND-C5-001"
@@ -19875,7 +19875,7 @@
    "sub": "test",
    "title": "L1 FND-C5-002 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-11",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "FND-C5-002"
@@ -19888,7 +19888,7 @@
    "sub": "test",
    "title": "L1 FND-C5-003 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-11",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "FND-C5-003"
@@ -19901,7 +19901,7 @@
    "sub": "test",
    "title": "L1 FND-C5-004 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-11",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "FND-C5-004"
@@ -19914,7 +19914,7 @@
    "sub": "test",
    "title": "L1 FND-C5-005 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-11",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "FND-C5-005"
@@ -19927,7 +19927,7 @@
    "sub": "test",
    "title": "L1 FND-C5-006 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-11",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "FND-C5-006"
@@ -19940,7 +19940,7 @@
    "sub": "test",
    "title": "L1 FND-C5-007 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-11",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "FND-C5-007"
@@ -19953,7 +19953,7 @@
    "sub": "test",
    "title": "L1 FND-C5-008 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-11",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "FND-C5-008"
@@ -19966,7 +19966,7 @@
    "sub": "impl",
    "title": "packages/gateways/c6/index.ts (new)",
    "parent": "T-F-12",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/gateways/c6/index.ts (new)"
@@ -19979,7 +19979,7 @@
    "sub": "impl",
    "title": "scripts/ci/choke_c6.py (new)",
    "parent": "T-F-12",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "scripts/ci/choke_c6.py (new)"
@@ -19992,7 +19992,7 @@
    "sub": "impl",
    "title": "package.json (modify)",
    "parent": "T-F-12",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "package.json (modify)"
@@ -20005,7 +20005,7 @@
    "sub": "test",
    "title": "L1 FND-C6-001 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-12",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "FND-C6-001"
@@ -20018,7 +20018,7 @@
    "sub": "test",
    "title": "L1 FND-C6-002 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-12",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "FND-C6-002"
@@ -20031,7 +20031,7 @@
    "sub": "test",
    "title": "L1 FND-C6-003 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-12",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "FND-C6-003"
@@ -20044,7 +20044,7 @@
    "sub": "test",
    "title": "L1 FND-C6-004 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-12",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "FND-C6-004"
@@ -20057,7 +20057,7 @@
    "sub": "test",
    "title": "L1 FND-C6-005 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-12",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "FND-C6-005"
@@ -20070,7 +20070,7 @@
    "sub": "test",
    "title": "L1 FND-C6-006 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-12",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "FND-C6-006"
@@ -20083,7 +20083,7 @@
    "sub": "test",
    "title": "L1 FND-C6-007 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-12",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "FND-C6-007"
@@ -20096,7 +20096,7 @@
    "sub": "test",
    "title": "L1 FND-C6-008 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-12",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "FND-C6-008"
@@ -20109,7 +20109,7 @@
    "sub": "impl",
    "title": "packages/gateways/c7/index.ts (new)",
    "parent": "T-F-13",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/gateways/c7/index.ts (new)"
@@ -20122,7 +20122,7 @@
    "sub": "impl",
    "title": "scripts/ci/choke_c7.py (new)",
    "parent": "T-F-13",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "scripts/ci/choke_c7.py (new)"
@@ -20135,7 +20135,7 @@
    "sub": "impl",
    "title": "package.json (modify)",
    "parent": "T-F-13",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "package.json (modify)"
@@ -20148,7 +20148,7 @@
    "sub": "test",
    "title": "L1 FND-C7-001 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-13",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "FND-C7-001"
@@ -20161,7 +20161,7 @@
    "sub": "test",
    "title": "L1 FND-C7-002 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-13",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "FND-C7-002"
@@ -20174,7 +20174,7 @@
    "sub": "test",
    "title": "L1 FND-C7-003 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-13",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "FND-C7-003"
@@ -20187,7 +20187,7 @@
    "sub": "test",
    "title": "L1 FND-C7-004 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-13",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "FND-C7-004"
@@ -20200,7 +20200,7 @@
    "sub": "test",
    "title": "L1 FND-C7-005 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-13",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "FND-C7-005"
@@ -20213,7 +20213,7 @@
    "sub": "test",
    "title": "L1 FND-C7-006 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-13",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "FND-C7-006"
@@ -20226,7 +20226,7 @@
    "sub": "test",
    "title": "L1 FND-C7-007 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-13",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "FND-C7-007"
@@ -20239,7 +20239,7 @@
    "sub": "test",
    "title": "L1 FND-C7-008 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-13",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "FND-C7-008"
@@ -20252,7 +20252,7 @@
    "sub": "impl",
    "title": "packages/gateways/c8/index.ts (new)",
    "parent": "T-F-14",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/gateways/c8/index.ts (new)"
@@ -20265,7 +20265,7 @@
    "sub": "impl",
    "title": "scripts/ci/choke_c8.py (new)",
    "parent": "T-F-14",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "scripts/ci/choke_c8.py (new)"
@@ -20278,7 +20278,7 @@
    "sub": "impl",
    "title": "package.json (modify)",
    "parent": "T-F-14",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "package.json (modify)"
@@ -20291,7 +20291,7 @@
    "sub": "test",
    "title": "L1 FND-C8-001 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-14",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "FND-C8-001"
@@ -20304,7 +20304,7 @@
    "sub": "test",
    "title": "L1 FND-C8-002 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-14",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "FND-C8-002"
@@ -20317,7 +20317,7 @@
    "sub": "test",
    "title": "L1 FND-C8-003 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-14",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "FND-C8-003"
@@ -20330,7 +20330,7 @@
    "sub": "test",
    "title": "L1 FND-C8-004 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-14",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "FND-C8-004"
@@ -20343,7 +20343,7 @@
    "sub": "test",
    "title": "L1 FND-C8-005 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-14",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "FND-C8-005"
@@ -20356,7 +20356,7 @@
    "sub": "test",
    "title": "L1 FND-C8-006 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-14",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "FND-C8-006"
@@ -20369,7 +20369,7 @@
    "sub": "test",
    "title": "L1 FND-C8-007 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-14",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "FND-C8-007"
@@ -20382,7 +20382,7 @@
    "sub": "test",
    "title": "L1 FND-C8-008 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-F-14",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "FND-C8-008"

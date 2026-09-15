@@ -3,7 +3,7 @@
   "skill_name": "spec-sync-orchestrator",
   "skill_version": "1.0",
   "run_id": "20260914-threepane-D072",
-  "executed_at": "2026-09-15T23:10:16.476836",
+  "executed_at": "2026-09-15T23:18:39.313542",
   "project_root": "/Users/masato0420/Downloads/受託開発/自社事業/kaname",
   "status": "completed",
   "display_mode": "silent",
@@ -62,7 +62,8 @@
      "v35 (2026-09-15): T-F-06 認証（2/2）。0005（accept_invitation・revoke_own_session）、packages/auth two_factor／invitations／devices、Hono に /api/auth/* と resolver を配線。54 tests PASS・G33 165/165。W0 は T-F-01〜06 完了、残り T-F-07〜10（関門 C1〜C4）。",
      "v36 (2026-09-15): T-F-07 関門 C1。scripts/ci/choke.mjs（AST で import／require／dynamic import／グローバル呼び出し／タグ付きテンプレ。全関門共通・G24・G25・自己検査）、packages/actions ActionGateway（hooks・既定 approve・レート・タイムアウト・証跡）。例外台帳に X-003（auth の pg）・X-004（db の fs）。61 tests・C1〜C8 迂回なし。",
      "v37 (2026-09-15): T-F-08 関門 C2 の CI 固め。sql_guard.mjs（G10 文字列連結・G35 関門外の接続と timeout・自己検査）、fresh-migrate（G12）、packages/db README。61 tests・全ゲート緑。",
-     "v38 (2026-09-15): T-F-09 関門 C3（packages/llm LlmGateway：ENABLED_ROUTES={bridge}・プラン上限・Bridge 接続確認・guardExternal・completionId 必須・timeout・証跡）と T-F-10 関門 C4（packages/storage ObjectStore：tenants/<id>/<v7> の参照・50MB・保持期間・HMAC 署名 URL・localDriver）。75 tests PASS・C1〜C8 迂回なし。W0（T-F-01〜10）完了。次は W1 T-F-11〜17。"
+     "v38 (2026-09-15): T-F-09 関門 C3（packages/llm LlmGateway：ENABLED_ROUTES={bridge}・プラン上限・Bridge 接続確認・guardExternal・completionId 必須・timeout・証跡）と T-F-10 関門 C4（packages/storage ObjectStore：tenants/<id>/<v7> の参照・50MB・保持期間・HMAC 署名 URL・localDriver）。75 tests PASS・C1〜C8 迂回なし。W0（T-F-01〜10）完了。次は W1 T-F-11〜17。",
+     "v39 (2026-09-15): W0 締め（wave_gate.py STATUS 完了・T-F-01〜10 done・main に ff）。正本の再生成で結果列が消えていた事故（24 行）→ build_tasks が結果を引き継ぐ・mark_done は gate PASS が条件。W1：T-F-11 C5（packages/runtime：環境変数の遮断・完了信号・timeout・出力上限）、T-F-12 C6（packages/notify：宛先解決・購読・重複抑止・再送）、T-F-13 C7（packages/billing：冪等性・認可・Webhook 署名）、T-F-14 C8（packages/secrets：HKDF のテナント鍵・参照 ID だけ・マスク・失効）。96 tests PASS・C1〜C8 迂回なし。"
     ]
    }
   ]
