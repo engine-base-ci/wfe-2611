@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-15T21:50:02",
+ "generated_at": "2026-09-15T21:56:12",
  "inputs": {
   "tickets": "07_tasks/tickets.json",
   "roster": "07_tasks/roster.json",
@@ -36692,12 +36692,12 @@
    "id": "T-U-01.s1",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/web/app/(app)/signup/page.tsx (new)",
+   "title": "apps/web/app/(public)/signup/page.tsx (new)",
    "parent": "T-U-01",
    "status": "todo",
    "links": {
     "file": [
-     "apps/web/app/(app)/signup/page.tsx (new)"
+     "apps/web/app/(public)/signup/page.tsx (new)"
     ]
    }
   },
@@ -37059,12 +37059,12 @@
    "id": "T-U-02.s1",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/web/app/(app)/verify-email/page.tsx (new)",
+   "title": "apps/web/app/(public)/verify-email/page.tsx (new)",
    "parent": "T-U-02",
    "status": "todo",
    "links": {
     "file": [
-     "apps/web/app/(app)/verify-email/page.tsx (new)"
+     "apps/web/app/(public)/verify-email/page.tsx (new)"
     ]
    }
   },
@@ -37361,12 +37361,12 @@
    "id": "T-U-03.s1",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/web/app/(app)/invite-accept/page.tsx (new)",
+   "title": "apps/web/app/(public)/invite/[token]/page.tsx (new)",
    "parent": "T-U-03",
    "status": "todo",
    "links": {
     "file": [
-     "apps/web/app/(app)/invite-accept/page.tsx (new)"
+     "apps/web/app/(public)/invite/[token]/page.tsx (new)"
     ]
    }
   },
@@ -37689,12 +37689,12 @@
    "id": "T-U-04.s1",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/web/app/(app)/mfa-setup/page.tsx (new)",
+   "title": "apps/web/app/(public)/mfa-setup/page.tsx (new)",
    "parent": "T-U-04",
    "status": "todo",
    "links": {
     "file": [
-     "apps/web/app/(app)/mfa-setup/page.tsx (new)"
+     "apps/web/app/(public)/mfa-setup/page.tsx (new)"
     ]
    }
   },
@@ -38030,12 +38030,12 @@
    "id": "T-U-05.s1",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/web/app/(app)/login/page.tsx (new)",
+   "title": "apps/web/app/(public)/login/page.tsx (new)",
    "parent": "T-U-05",
    "status": "todo",
    "links": {
     "file": [
-     "apps/web/app/(app)/login/page.tsx (new)"
+     "apps/web/app/(public)/login/page.tsx (new)"
     ]
    }
   },
@@ -38501,12 +38501,12 @@
    "id": "T-U-06.s1",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/web/app/(app)/password-reset/page.tsx (new)",
+   "title": "apps/web/app/(public)/password-reset/page.tsx (new)",
    "parent": "T-U-06",
    "status": "todo",
    "links": {
     "file": [
-     "apps/web/app/(app)/password-reset/page.tsx (new)"
+     "apps/web/app/(public)/password-reset/page.tsx (new)"
     ]
    }
   },
@@ -38855,12 +38855,12 @@
    "id": "T-U-07.s1",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/web/app/(app)/onboard-interview/page.tsx (new)",
+   "title": "apps/web/app/(public)/onboard/interview/page.tsx (new)",
    "parent": "T-U-07",
    "status": "todo",
    "links": {
     "file": [
-     "apps/web/app/(app)/onboard-interview/page.tsx (new)"
+     "apps/web/app/(public)/onboard/interview/page.tsx (new)"
     ]
    }
   },
@@ -39222,12 +39222,12 @@
    "id": "T-U-08.s1",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/web/app/(app)/onboard-draft/page.tsx (new)",
+   "title": "apps/web/app/(public)/onboard/draft/page.tsx (new)",
    "parent": "T-U-08",
    "status": "todo",
    "links": {
     "file": [
-     "apps/web/app/(app)/onboard-draft/page.tsx (new)"
+     "apps/web/app/(public)/onboard/draft/page.tsx (new)"
     ]
    }
   },
@@ -39576,12 +39576,12 @@
    "id": "T-U-09.s1",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/web/app/(app)/bridge-setup/page.tsx (new)",
+   "title": "apps/web/app/(app)/setup/bridge/page.tsx (new)",
    "parent": "T-U-09",
    "status": "todo",
    "links": {
     "file": [
-     "apps/web/app/(app)/bridge-setup/page.tsx (new)"
+     "apps/web/app/(app)/setup/bridge/page.tsx (new)"
     ]
    }
   },
@@ -40060,12 +40060,12 @@
    "id": "T-U-10.s1",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/web/app/(app)/credentials/page.tsx (new)",
+   "title": "apps/web/app/(app)/settings/credentials/page.tsx (new)",
    "parent": "T-U-10",
    "status": "todo",
    "links": {
     "file": [
-     "apps/web/app/(app)/credentials/page.tsx (new)"
+     "apps/web/app/(app)/settings/credentials/page.tsx (new)"
     ]
    }
   },
@@ -40596,12 +40596,12 @@
    "id": "T-U-11.s1",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/web/app/(app)/onboard-testrun/page.tsx (new)",
+   "title": "apps/web/app/(public)/onboard/testrun/page.tsx (new)",
    "parent": "T-U-11",
    "status": "todo",
    "links": {
     "file": [
-     "apps/web/app/(app)/onboard-testrun/page.tsx (new)"
+     "apps/web/app/(public)/onboard/testrun/page.tsx (new)"
     ]
    }
   },
@@ -40976,12 +40976,12 @@
    "id": "T-U-12.s1",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/web/app/(app)/onboard-golive/page.tsx (new)",
+   "title": "apps/web/app/(public)/onboard/golive/page.tsx (new)",
    "parent": "T-U-12",
    "status": "todo",
    "links": {
     "file": [
-     "apps/web/app/(app)/onboard-golive/page.tsx (new)"
+     "apps/web/app/(public)/onboard/golive/page.tsx (new)"
     ]
    }
   },
@@ -42363,12 +42363,12 @@
    "id": "T-U-15.s1",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/web/app/(app)/clone-thread/page.tsx (new)",
+   "title": "apps/web/app/(app)/ai/thread/page.tsx (new)",
    "parent": "T-U-15",
    "status": "todo",
    "links": {
     "file": [
-     "apps/web/app/(app)/clone-thread/page.tsx (new)"
+     "apps/web/app/(app)/ai/thread/page.tsx (new)"
     ]
    }
   },
@@ -43565,12 +43565,12 @@
    "id": "T-U-17.s1",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/web/app/(app)/clone-chat/page.tsx (new)",
+   "title": "apps/web/app/(app)/ai/chat/page.tsx (new)",
    "parent": "T-U-17",
    "status": "todo",
    "links": {
     "file": [
-     "apps/web/app/(app)/clone-chat/page.tsx (new)"
+     "apps/web/app/(app)/ai/chat/page.tsx (new)"
     ]
    }
   },
@@ -44283,12 +44283,12 @@
    "id": "T-U-18.s1",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/web/app/(app)/ai-activity/page.tsx (new)",
+   "title": "apps/web/app/(app)/ai-staff/activity/page.tsx (new)",
    "parent": "T-U-18",
    "status": "todo",
    "links": {
     "file": [
-     "apps/web/app/(app)/ai-activity/page.tsx (new)"
+     "apps/web/app/(app)/ai-staff/activity/page.tsx (new)"
     ]
    }
   },
@@ -45813,12 +45813,12 @@
    "id": "T-U-21.s1",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/web/app/(app)/record-detail/page.tsx (new)",
+   "title": "apps/web/app/(app)/records/[id]/page.tsx (new)",
    "parent": "T-U-21",
    "status": "todo",
    "links": {
     "file": [
-     "apps/web/app/(app)/record-detail/page.tsx (new)"
+     "apps/web/app/(app)/records/[id]/page.tsx (new)"
     ]
    }
   },
@@ -46898,12 +46898,12 @@
    "id": "T-U-23.s1",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/web/app/(app)/goal-allocation/page.tsx (new)",
+   "title": "apps/web/app/(app)/goals/[id]/allocation/page.tsx (new)",
    "parent": "T-U-23",
    "status": "todo",
    "links": {
     "file": [
-     "apps/web/app/(app)/goal-allocation/page.tsx (new)"
+     "apps/web/app/(app)/goals/[id]/allocation/page.tsx (new)"
     ]
    }
   },
@@ -47408,12 +47408,12 @@
    "id": "T-U-24.s1",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/web/app/(app)/goal-edit/page.tsx (new)",
+   "title": "apps/web/app/(app)/goals/[id]/edit/page.tsx (new)",
    "parent": "T-U-24",
    "status": "todo",
    "links": {
     "file": [
-     "apps/web/app/(app)/goal-edit/page.tsx (new)"
+     "apps/web/app/(app)/goals/[id]/edit/page.tsx (new)"
     ]
    }
   },
@@ -49750,12 +49750,12 @@
    "id": "T-U-29.s1",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/web/app/(app)/clone-memory/page.tsx (new)",
+   "title": "apps/web/app/(app)/ai/memory/page.tsx (new)",
    "parent": "T-U-29",
    "status": "todo",
    "links": {
     "file": [
-     "apps/web/app/(app)/clone-memory/page.tsx (new)"
+     "apps/web/app/(app)/ai/memory/page.tsx (new)"
     ]
    }
   },
@@ -50221,12 +50221,12 @@
    "id": "T-U-30.s1",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/web/app/(app)/ledger-def/page.tsx (new)",
+   "title": "apps/web/app/(app)/settings/ledgers/page.tsx (new)",
    "parent": "T-U-30",
    "status": "todo",
    "links": {
     "file": [
-     "apps/web/app/(app)/ledger-def/page.tsx (new)"
+     "apps/web/app/(app)/settings/ledgers/page.tsx (new)"
     ]
    }
   },
@@ -51111,12 +51111,12 @@
    "id": "T-U-32.s1",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/web/app/(app)/automation-repair/page.tsx (new)",
+   "title": "apps/web/app/(app)/automations/[id]/repair/page.tsx (new)",
    "parent": "T-U-32",
    "status": "todo",
    "links": {
     "file": [
-     "apps/web/app/(app)/automation-repair/page.tsx (new)"
+     "apps/web/app/(app)/automations/[id]/repair/page.tsx (new)"
     ]
    }
   },
@@ -53557,12 +53557,12 @@
    "id": "T-U-37.s1",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/web/app/(app)/ai-staff-detail/page.tsx (new)",
+   "title": "apps/web/app/(app)/ai-staff/[id]/page.tsx (new)",
    "parent": "T-U-37",
    "status": "todo",
    "links": {
     "file": [
-     "apps/web/app/(app)/ai-staff-detail/page.tsx (new)"
+     "apps/web/app/(app)/ai-staff/[id]/page.tsx (new)"
     ]
    }
   },
@@ -54015,12 +54015,12 @@
    "id": "T-U-38.s1",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/web/app/(app)/security-brief/page.tsx (new)",
+   "title": "apps/web/app/(app)/security/page.tsx (new)",
    "parent": "T-U-38",
    "status": "todo",
    "links": {
     "file": [
-     "apps/web/app/(app)/security-brief/page.tsx (new)"
+     "apps/web/app/(app)/security/page.tsx (new)"
     ]
    }
   },
@@ -54892,12 +54892,12 @@
    "id": "T-U-40.s1",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/web/app/(app)/account-close/page.tsx (new)",
+   "title": "apps/web/app/(app)/settings/close/page.tsx (new)",
    "parent": "T-U-40",
    "status": "todo",
    "links": {
     "file": [
-     "apps/web/app/(app)/account-close/page.tsx (new)"
+     "apps/web/app/(app)/settings/close/page.tsx (new)"
     ]
    }
   },
@@ -55402,12 +55402,12 @@
    "id": "T-U-41.s1",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/web/app/(app)/ops-support/page.tsx (new)",
+   "title": "apps/web/app/(app)/ops/support/page.tsx (new)",
    "parent": "T-U-41",
    "status": "todo",
    "links": {
     "file": [
-     "apps/web/app/(app)/ops-support/page.tsx (new)"
+     "apps/web/app/(app)/ops/support/page.tsx (new)"
     ]
    }
   },
@@ -55769,12 +55769,12 @@
    "id": "T-U-42.s1",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/web/app/(app)/ops-home/page.tsx (new)",
+   "title": "apps/web/app/(app)/ops/page.tsx (new)",
    "parent": "T-U-42",
    "status": "todo",
    "links": {
     "file": [
-     "apps/web/app/(app)/ops-home/page.tsx (new)"
+     "apps/web/app/(app)/ops/page.tsx (new)"
     ]
    }
   },
@@ -56201,12 +56201,12 @@
    "id": "T-U-43.s1",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/web/app/(app)/ops-catalog/page.tsx (new)",
+   "title": "apps/web/app/(app)/ops/catalog/page.tsx (new)",
    "parent": "T-U-43",
    "status": "todo",
    "links": {
     "file": [
-     "apps/web/app/(app)/ops-catalog/page.tsx (new)"
+     "apps/web/app/(app)/ops/catalog/page.tsx (new)"
     ]
    }
   },
@@ -57117,12 +57117,12 @@
    "id": "T-U-45.s1",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/web/app/(app)/company-settings/page.tsx (new)",
+   "title": "apps/web/app/(app)/settings/company/page.tsx (new)",
    "parent": "T-U-45",
    "status": "todo",
    "links": {
     "file": [
-     "apps/web/app/(app)/company-settings/page.tsx (new)"
+     "apps/web/app/(app)/settings/company/page.tsx (new)"
     ]
    }
   },
@@ -58400,12 +58400,12 @@
    "id": "T-U-48.s1",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/web/app/(app)/ops-services/page.tsx (new)",
+   "title": "apps/web/app/(app)/ops/services/page.tsx (new)",
    "parent": "T-U-48",
    "status": "todo",
    "links": {
     "file": [
-     "apps/web/app/(app)/ops-services/page.tsx (new)"
+     "apps/web/app/(app)/ops/services/page.tsx (new)"
     ]
    }
   },
@@ -58767,12 +58767,12 @@
    "id": "T-U-49.s1",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/web/app/(app)/ops-skills/page.tsx (new)",
+   "title": "apps/web/app/(app)/ops/skills/page.tsx (new)",
    "parent": "T-U-49",
    "status": "todo",
    "links": {
     "file": [
-     "apps/web/app/(app)/ops-skills/page.tsx (new)"
+     "apps/web/app/(app)/ops/skills/page.tsx (new)"
     ]
    }
   },
@@ -60651,12 +60651,12 @@
    "id": "T-U-53.s1",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/web/app/(app)/ops-notices/page.tsx (new)",
+   "title": "apps/web/app/(app)/ops/notices/page.tsx (new)",
    "parent": "T-U-53",
    "status": "todo",
    "links": {
     "file": [
-     "apps/web/app/(app)/ops-notices/page.tsx (new)"
+     "apps/web/app/(app)/ops/notices/page.tsx (new)"
     ]
    }
   },
@@ -61057,12 +61057,12 @@
    "id": "T-U-54.s1",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/web/app/(app)/ops-billing/page.tsx (new)",
+   "title": "apps/web/app/(app)/ops/billing/page.tsx (new)",
    "parent": "T-U-54",
    "status": "todo",
    "links": {
     "file": [
-     "apps/web/app/(app)/ops-billing/page.tsx (new)"
+     "apps/web/app/(app)/ops/billing/page.tsx (new)"
     ]
    }
   },
@@ -61424,12 +61424,12 @@
    "id": "T-U-55.s1",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/web/app/(app)/ops-tenant/page.tsx (new)",
+   "title": "apps/web/app/(app)/ops/tenants/[id]/page.tsx (new)",
    "parent": "T-U-55",
    "status": "todo",
    "links": {
     "file": [
-     "apps/web/app/(app)/ops-tenant/page.tsx (new)"
+     "apps/web/app/(app)/ops/tenants/[id]/page.tsx (new)"
     ]
    }
   },
@@ -61778,12 +61778,12 @@
    "id": "T-U-56.s1",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/web/app/(app)/ops-review/page.tsx (new)",
+   "title": "apps/web/app/(app)/ops/review/page.tsx (new)",
    "parent": "T-U-56",
    "status": "todo",
    "links": {
     "file": [
-     "apps/web/app/(app)/ops-review/page.tsx (new)"
+     "apps/web/app/(app)/ops/review/page.tsx (new)"
     ]
    }
   },
@@ -62145,12 +62145,12 @@
    "id": "T-U-57.s1",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/web/app/(app)/ops-audit/page.tsx (new)",
+   "title": "apps/web/app/(app)/ops/audit/page.tsx (new)",
    "parent": "T-U-57",
    "status": "todo",
    "links": {
     "file": [
-     "apps/web/app/(app)/ops-audit/page.tsx (new)"
+     "apps/web/app/(app)/ops/audit/page.tsx (new)"
     ]
    }
   },
@@ -62551,12 +62551,12 @@
    "id": "T-U-58.s1",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/web/app/(app)/member-detail/page.tsx (new)",
+   "title": "apps/web/app/(app)/members/[id]/page.tsx (new)",
    "parent": "T-U-58",
    "status": "todo",
    "links": {
     "file": [
-     "apps/web/app/(app)/member-detail/page.tsx (new)"
+     "apps/web/app/(app)/members/[id]/page.tsx (new)"
     ]
    }
   },

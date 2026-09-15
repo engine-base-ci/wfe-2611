@@ -489,6 +489,20 @@ PRODUCT_STATES = [
  ("PS4","AI が止まっている ── PC が閉じている／覚え直し待ち。データはある。AI は話せない","A32",["model","data","staff","stopped","app"],["D-055","D-018"]),
 ]
 
+# 各画面の URL（ルート）。画面 ID から機械的に決め、flow.json → screens.json → tickets（apps/web の page パス）→ モックの第2ナビ に流す。
+# 1 件の画面は :id。外（needs_login=false）は / 直下、運営は /ops、設定の類は /settings。G22 が「無い・重複・1 件画面に :id が無い」を落とす
+ROUTES = {
+ "signup": "/signup", "verify-email": "/verify-email", "invite-accept": "/invite/:token", "mfa-setup": "/mfa-setup", "billing-setup": "/billing-setup",
+ "login": "/login", "password-reset": "/password-reset", "onboard-interview": "/onboard/interview", "onboard-draft": "/onboard/draft", "onboard-testrun": "/onboard/testrun", "onboard-golive": "/onboard/golive",
+ "bridge-setup": "/setup/bridge", "credentials": "/settings/credentials", "today": "/today", "approvals": "/approvals", "clone-thread": "/ai/thread", "tasks": "/tasks", "clone-chat": "/ai/chat",
+ "ai-activity": "/ai-staff/activity", "search": "/search", "records": "/records", "record-detail": "/records/:id", "goals": "/goals", "goal-allocation": "/goals/:id/allocation", "goal-edit": "/goals/:id/edit",
+ "my-progress": "/my-progress", "review": "/review", "hypotheses": "/hypotheses", "duties": "/duties", "clone-memory": "/ai/memory", "ledger-def": "/settings/ledgers", "company-model": "/company-model",
+ "automation-repair": "/automations/:id/repair", "audit": "/audit", "policies": "/policies", "members": "/members", "member-detail": "/members/:id", "ai-staff": "/ai-staff", "ai-staff-detail": "/ai-staff/:id",
+ "security-brief": "/security", "export": "/export", "account-close": "/settings/close", "account": "/account", "company-settings": "/settings/company", "import": "/import", "services": "/services",
+ "inquiry": "/inquiry", "notices": "/notices", "billing": "/billing",
+ "ops-home": "/ops", "ops-tenant": "/ops/tenants/:id", "ops-catalog": "/ops/catalog", "ops-support": "/ops/support", "ops-review": "/ops/review", "ops-audit": "/ops/audit", "ops-services": "/ops/services", "ops-skills": "/ops/skills", "ops-notices": "/ops/notices", "ops-billing": "/ops/billing",
+}
+
 # 最初の段階（v1）でないものは、実行者が勝手に決めない。決定 ID か user の OK を書く（flow_gate G17・D-074 由来）
 DEFERRED = {
  "billing-setup": "D-002／D-081.2 決済事業者への登録は段階 2（§81 の段階表）。v1 は請求書払いで運営が入金を記録する",

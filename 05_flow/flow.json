@@ -5055,6 +5055,7 @@
     "R1",
     "R2"
    ],
+   "route": "/signup",
    "release": "v1",
    "needs_login": false,
    "has_shell": false,
@@ -5084,6 +5085,7 @@
     "R1",
     "R2"
    ],
+   "route": "/verify-email",
    "release": "v1",
    "needs_login": false,
    "has_shell": false,
@@ -5110,6 +5112,7 @@
     "R3",
     "R4"
    ],
+   "route": "/invite/:token",
    "release": "v1",
    "needs_login": false,
    "has_shell": false,
@@ -5137,6 +5140,7 @@
     "R2",
     "R3"
    ],
+   "route": "/mfa-setup",
    "release": "v1",
    "needs_login": false,
    "has_shell": false,
@@ -5163,6 +5167,7 @@
     "R1",
     "R2"
    ],
+   "route": "/billing-setup",
    "release": "v2",
    "needs_login": false,
    "has_shell": false,
@@ -5188,6 +5193,7 @@
     "R3",
     "R4"
    ],
+   "route": "/login",
    "release": "v1",
    "needs_login": false,
    "has_shell": false,
@@ -5218,6 +5224,7 @@
     "R2",
     "R3"
    ],
+   "route": "/password-reset",
    "release": "v1",
    "needs_login": false,
    "has_shell": false,
@@ -5244,6 +5251,7 @@
     "R1",
     "R2"
    ],
+   "route": "/onboard/interview",
    "release": "v1",
    "needs_login": false,
    "has_shell": false,
@@ -5284,6 +5292,7 @@
     "R1",
     "R2"
    ],
+   "route": "/onboard/draft",
    "release": "v1",
    "needs_login": false,
    "has_shell": false,
@@ -5317,6 +5326,7 @@
     "R1",
     "R2"
    ],
+   "route": "/setup/bridge",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -5355,6 +5365,7 @@
     "R1",
     "R2"
    ],
+   "route": "/settings/credentials",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -5391,6 +5402,7 @@
     "R1",
     "R2"
    ],
+   "route": "/onboard/testrun",
    "release": "v1",
    "needs_login": false,
    "has_shell": false,
@@ -5420,6 +5432,7 @@
     "R1",
     "R2"
    ],
+   "route": "/onboard/golive",
    "release": "v1",
    "needs_login": false,
    "has_shell": false,
@@ -5453,6 +5466,7 @@
     "R2",
     "R3"
    ],
+   "route": "/today",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -5511,6 +5525,7 @@
     "R2",
     "R3"
    ],
+   "route": "/approvals",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -5555,6 +5570,7 @@
     "R2",
     "R3"
    ],
+   "route": "/ai/thread",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -5596,6 +5612,7 @@
     "R3",
     "R4"
    ],
+   "route": "/tasks",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -5651,6 +5668,7 @@
     "R3",
     "R4"
    ],
+   "route": "/ai/chat",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -5703,6 +5721,7 @@
     "R2",
     "R3"
    ],
+   "route": "/ai-staff/activity",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -5739,6 +5758,7 @@
     "R3",
     "R4"
    ],
+   "route": "/search",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -5768,6 +5788,7 @@
     "R3",
     "R4"
    ],
+   "route": "/records",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -5811,6 +5832,7 @@
     "R3",
     "R4"
    ],
+   "route": "/records/:id",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -5845,6 +5867,7 @@
     "R2",
     "R3"
    ],
+   "route": "/goals",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -5906,6 +5929,7 @@
     "R1",
     "R2"
    ],
+   "route": "/goals/:id/allocation",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -5953,6 +5977,7 @@
     "R1",
     "R2"
    ],
+   "route": "/goals/:id/edit",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -5989,6 +6014,7 @@
     "R3",
     "R4"
    ],
+   "route": "/my-progress",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -6023,6 +6049,7 @@
     "R1",
     "R2"
    ],
+   "route": "/review",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -6061,6 +6088,7 @@
     "R1",
     "R2"
    ],
+   "route": "/hypotheses",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -6102,6 +6130,7 @@
     "R1",
     "R2"
    ],
+   "route": "/duties",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -6147,6 +6176,7 @@
     "R3",
     "R4"
    ],
+   "route": "/ai/memory",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -6191,6 +6221,7 @@
     "R1",
     "R2"
    ],
+   "route": "/settings/ledgers",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -6232,6 +6263,7 @@
     "R1",
     "R2"
    ],
+   "route": "/company-model",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -6270,6 +6302,7 @@
     "R1",
     "R2"
    ],
+   "route": "/automations/:id/repair",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -6311,6 +6344,7 @@
     "R1",
     "R2"
    ],
+   "route": "/audit",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -6342,6 +6376,7 @@
     "R3",
     "R4"
    ],
+   "route": "/policies",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -6387,6 +6422,7 @@
     "R1",
     "R2"
    ],
+   "route": "/members",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -6425,6 +6461,7 @@
     "R1",
     "R2"
    ],
+   "route": "/ai-staff",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -6459,6 +6496,7 @@
     "R1",
     "R2"
    ],
+   "route": "/ai-staff/:id",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -6495,6 +6533,7 @@
     "R1",
     "R2"
    ],
+   "route": "/security",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -6529,6 +6568,7 @@
     "R1",
     "R2"
    ],
+   "route": "/export",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -6560,6 +6600,7 @@
     "R1",
     "R2"
    ],
+   "route": "/settings/close",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -6588,6 +6629,7 @@
    "roles": [
     "R6"
    ],
+   "route": "/ops/support",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -6615,6 +6657,7 @@
    "roles": [
     "R6"
    ],
+   "route": "/ops",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -6644,6 +6687,7 @@
    "roles": [
     "R6"
    ],
+   "route": "/ops/catalog",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -6687,6 +6731,7 @@
     "R3",
     "R4"
    ],
+   "route": "/account",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -6712,6 +6757,7 @@
     "R1",
     "R2"
    ],
+   "route": "/settings/company",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -6744,6 +6790,7 @@
     "R1",
     "R2"
    ],
+   "route": "/import",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -6775,6 +6822,7 @@
     "R1",
     "R2"
    ],
+   "route": "/services",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -6807,6 +6855,7 @@
    "roles": [
     "R6"
    ],
+   "route": "/ops/services",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -6835,6 +6884,7 @@
    "roles": [
     "R6"
    ],
+   "route": "/ops/skills",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -6872,6 +6922,7 @@
     "R3",
     "R4"
    ],
+   "route": "/inquiry",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -6898,6 +6949,7 @@
     "R3",
     "R4"
    ],
+   "route": "/notices",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -6929,6 +6981,7 @@
     "R1",
     "R2"
    ],
+   "route": "/billing",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -6958,6 +7011,7 @@
    "roles": [
     "R6"
    ],
+   "route": "/ops/notices",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -6983,6 +7037,7 @@
    "roles": [
     "R6"
    ],
+   "route": "/ops/billing",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -7023,6 +7078,7 @@
    "roles": [
     "R6"
    ],
+   "route": "/ops/tenants/:id",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -7058,6 +7114,7 @@
    "roles": [
     "R6"
    ],
+   "route": "/ops/review",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -7091,6 +7148,7 @@
    "roles": [
     "R6"
    ],
+   "route": "/ops/audit",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,
@@ -7123,6 +7181,7 @@
     "R1",
     "R2"
    ],
+   "route": "/members/:id",
    "release": "v1",
    "needs_login": true,
    "has_shell": true,

@@ -912,8 +912,8 @@
 - 行為 A01 / 画面 signup / 表 plans plan_versions subscriptions usage_meters plan_change_requests / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-01
 - 根拠（逐語）：D-001「2028-09までに200社→65社に修正。自社SaaS外販。初期顧客が自力で回せることが前提」 ／ D-011「製品名はKaname(要)。jobrainから改名」
-- 触るファイル：apps/web/app/(app)/signup/page.tsx (new)、apps/web/tests/screens/signup.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 signup が描画中 THEN h1「アカウントを作る」・第2ナビ ・状態 2（通常、既に登録済み）がモック 0 ／ STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- 触るファイル：apps/web/app/(public)/signup/page.tsx (new)、apps/web/tests/screens/signup.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 signup は URL /signup で開く（apps/web/app/(public)/signup/page.tsx。遷移 ／ STATE-DRIVEN: WHILE 画面 signup が描画中 THEN h1「アカウントを作る」・第2ナビ ・状態 2（通常、既に登録済み）がモック 0
 - AC（Tier 2）：EVENT-DRIVEN: WHEN POST /api/v1/plans が「会社名とメールを入れる」として呼ばれたとき THEN Kaname は「アカウン ／ EVENT-DRIVEN: WHEN POST /api/v1/plans が「支払い方法を入れる」として呼ばれたとき THEN Kaname は「決済事業者に ／ EVENT-DRIVEN: WHEN 「はじめる」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 25（['SCR-SIGNUP-001', 'SCR-SIGNUP-002', 'SCR-SIGNUP-003'] …）／ L2 ['J-01']
 - audit: 07_tasks/audit/T-U-01.md
@@ -924,8 +924,8 @@
 - 行為 A02 / 画面 verify-email / 表 members permissions layers / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-01 T-A-04 T-A-15
 - 根拠（逐語）：D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」 ／ D-053「画面は行為から導出する。画面から始めると『この画面で何をしたいか分からない』が必ず起きる。役割×用事→行為の背骨→オブジ」
-- 触るファイル：apps/web/app/(app)/verify-email/page.tsx (new)、apps/web/tests/screens/verify-email.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 verify-email が描画中 THEN h1「メールを確認する」・第2ナビ ・状態 3（送信済み、確認できた ／ STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- 触るファイル：apps/web/app/(public)/verify-email/page.tsx (new)、apps/web/tests/screens/verify-email.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 verify-email は URL /verify-email で開く（apps/web/app/(public)/verify ／ STATE-DRIVEN: WHILE 画面 verify-email が描画中 THEN h1「メールを確認する」・第2ナビ ・状態 3（送信済み、確認できた
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/members が「届いたリンクを押す」として呼ばれたとき THEN Kaname は「本人確認を ／ EVENT-DRIVEN: WHEN GET /api/v1/members が「認証アプリを登録する」として呼ばれたとき THEN Kaname は「TOTP ／ EVENT-DRIVEN: WHEN 「はじめの設定をはじめる」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映
 - L1 行 20（['SCR-VERIFY-EMAIL-001', 'SCR-VERIFY-EMAIL-002', 'SCR-VERIFY-EMAIL-003'] …）／ L2 ['J-01']
 - audit: 07_tasks/audit/T-U-02.md
@@ -936,8 +936,8 @@
 - 行為 A03 / 画面 invite-accept / 表 invitations members permissions layers / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-02
 - 根拠（逐語）：D-026「スコープ4層(運営/会社/部署/個人)を担当業務・ルール・テンプレ・覚えた操作・記憶すべてに同じ形で使う」 ／ D-037「AI社員の出どころは運営配布/会社作成/個人作成の3経路。託されたAI社員は使えるが定義は編集できない。個人ルールだけは」
-- 触るファイル：apps/web/app/(app)/invite-accept/page.tsx (new)、apps/web/tests/screens/invite-accept.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 invite-accept が描画中 THEN h1「招待を受けて参加する」・第2ナビ ・状態 3（担当者として、 ／ STATE-DRIVEN: WHILE 役割 R3/R4 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- 触るファイル：apps/web/app/(public)/invite/[token]/page.tsx (new)、apps/web/tests/screens/invite-accept.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 invite-accept は URL /invite/:token で開く（apps/web/app/(public)/invi ／ STATE-DRIVEN: WHILE 画面 invite-accept が描画中 THEN h1「招待を受けて参加する」・第2ナビ ・状態 3（担当者として、
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/invitations が「招待リンクを押して名前を入れる」として呼ばれたとき THEN Kana ／ UNWANTED: IF 10/min/ip を超えたら、Kaname は 429 と retry_after_sec を返す ／ EVENT-DRIVEN: WHEN 「参加する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 22（['SCR-INVITE-ACCEPT-001', 'SCR-INVITE-ACCEPT-002', 'SCR-INVITE-ACCEPT-003'] …）／ L2 ['J-01']
 - audit: 07_tasks/audit/T-U-03.md
@@ -948,8 +948,8 @@
 - 行為 A04 / 画面 mfa-setup / 表 members permissions layers audit_events ops_audit_events security_events / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-01 T-A-04 T-A-15
 - 根拠（逐語）：D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」 ／ D-051「ネイティブアプリは今4つだけ決める(認証をトークンベースに等)。後からアプリを足すのが画面を作るだけになる」
-- 触るファイル：apps/web/app/(app)/mfa-setup/page.tsx (new)、apps/web/tests/screens/mfa-setup.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 mfa-setup が描画中 THEN h1「2段階認証を設定する」・第2ナビ ・状態 2（登録、回復コード）がモ ／ STATE-DRIVEN: WHILE 役割 R1/R2/R3 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- 触るファイル：apps/web/app/(public)/mfa-setup/page.tsx (new)、apps/web/tests/screens/mfa-setup.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 mfa-setup は URL /mfa-setup で開く（apps/web/app/(public)/mfa-setup/pa ／ STATE-DRIVEN: WHILE 画面 mfa-setup が描画中 THEN h1「2段階認証を設定する」・第2ナビ ・状態 2（登録、回復コード）がモ
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/members が「届いたリンクを押す」として呼ばれたとき THEN Kaname は「本人確認を ／ EVENT-DRIVEN: WHEN GET /api/v1/members が「認証アプリを登録する」として呼ばれたとき THEN Kaname は「TOTP ／ EVENT-DRIVEN: WHEN 「登録する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 23（['SCR-MFA-SETUP-001', 'SCR-MFA-SETUP-002', 'SCR-MFA-SETUP-003'] …）／ L2 ['J-01']
 - audit: 07_tasks/audit/T-U-04.md
@@ -960,8 +960,8 @@
 - 行為 A13 / 画面 login / 表 members permissions layers / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-01 T-A-04 T-A-15
 - 根拠（逐語）：D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」 ／ D-051「ネイティブアプリは今4つだけ決める(認証をトークンベースに等)。後からアプリを足すのが画面を作るだけになる」
-- 触るファイル：apps/web/app/(app)/login/page.tsx (new)、apps/web/tests/screens/login.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 login が描画中 THEN h1「ログインする」・第2ナビ ・状態 3（通常、6桁の入力、失敗）がモック 06 ／ STATE-DRIVEN: WHILE 役割 R1/R2/R3/R4 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- 触るファイル：apps/web/app/(public)/login/page.tsx (new)、apps/web/tests/screens/login.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 login は URL /login で開く（apps/web/app/(public)/login/page.tsx。遷移の h ／ STATE-DRIVEN: WHILE 画面 login が描画中 THEN h1「ログインする」・第2ナビ ・状態 3（通常、6桁の入力、失敗）がモック 06
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/members が「届いたリンクを押す」として呼ばれたとき THEN Kaname は「本人確認を ／ EVENT-DRIVEN: WHEN GET /api/v1/members が「認証アプリを登録する」として呼ばれたとき THEN Kaname は「TOTP ／ EVENT-DRIVEN: WHEN 「ログイン」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 33（['SCR-LOGIN-001', 'SCR-LOGIN-002', 'SCR-LOGIN-003'] …）／ L2 ['J-03']
 - audit: 07_tasks/audit/T-U-05.md
@@ -972,8 +972,8 @@
 - 行為 A31 / 画面 password-reset / 表 members permissions layers audit_events ops_audit_events security_events / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-03 T-A-12 T-A-20
 - 根拠（逐語）：D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」 ／ D-053「画面は行為から導出する。画面から始めると『この画面で何をしたいか分からない』が必ず起きる。役割×用事→行為の背骨→オブジ」
-- 触るファイル：apps/web/app/(app)/password-reset/page.tsx (new)、apps/web/tests/screens/password-reset.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 password-reset が描画中 THEN h1「入り直す」・第2ナビ ・状態 3（入り直す、送信後、新しい ／ STATE-DRIVEN: WHILE 役割 R1/R2/R3 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- 触るファイル：apps/web/app/(public)/password-reset/page.tsx (new)、apps/web/tests/screens/password-reset.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 password-reset は URL /password-reset で開く（apps/web/app/(public)/pa ／ STATE-DRIVEN: WHILE 画面 password-reset が描画中 THEN h1「入り直す」・第2ナビ ・状態 3（入り直す、送信後、新しい
 - AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「メールで入り直す／回復コードを使う」として呼ばれたとき THEN  ／ EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「人を招いて見える範囲を決める」として呼ばれたとき THEN Kan ／ EVENT-DRIVEN: WHEN 「再設定メールを送る」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 24（['SCR-PASSWORD-RESET-001', 'SCR-PASSWORD-RESET-002', 'SCR-PASSWORD-RESET-003'] …）／ L2 ['J-06']
 - audit: 07_tasks/audit/T-U-06.md
@@ -984,8 +984,8 @@
 - 行為 A06 / 画面 onboard-interview / 表 clones members conversations messages memories / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-01 T-A-16
 - 根拠（逐語）：D-028「テストモード。OJTの入口を『見せてください』から『まず作ってみます』に変える。外に一切出さず実データは読む。納得したら」 ／ D-030「構築メタスキル群は運営の資産で顧客に見えない。会社モデル構築・担当業務の定義・台帳の設計・目標の分解・改善提案・自分のA」
-- 触るファイル：apps/web/app/(app)/onboard-interview/page.tsx (new)、apps/web/tests/screens/onboard-interview.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 onboard-interview が描画中 THEN h1「高本AIと話す」・第2ナビ ・状態 4（Bridge ／ STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- 触るファイル：apps/web/app/(public)/onboard/interview/page.tsx (new)、apps/web/tests/screens/onboard-interview.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 onboard-interview は URL /onboard/interview で開く（apps/web/app/(publ ／ STATE-DRIVEN: WHILE 画面 onboard-interview が描画中 THEN h1「高本AIと話す」・第2ナビ ・状態 4（Bridge
 - AC（Tier 2）：EVENT-DRIVEN: WHEN POST /api/v1/clones が「自分のAIの質問に答える」として呼ばれたとき THEN Kaname は「会話 ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「次の質問へ」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 25（['SCR-ONBOARD-INTERVIEW-001', 'SCR-ONBOARD-INTERVIEW-002', 'SCR-ONBOARD-INTERVIEW-003'] …）／ L2 ['J-02']
 - audit: 07_tasks/audit/T-U-07.md
@@ -996,8 +996,8 @@
 - 行為 A07 A08 / 画面 onboard-draft / 表 tenants goals ledger_definitions duties scopes policies / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-01 T-A-06 T-A-10 T-A-14
 - 根拠（逐語）：D-010「製品の背骨。会社モデル(目標・台帳定義・担当業務・組織・ポリシー・記憶)を1つの定義に。画面もAI社員も自動実行もこの定」 ／ D-028「テストモード。OJTの入口を『見せてください』から『まず作ってみます』に変える。外に一切出さず実データは読む。納得したら」
-- 触るファイル：apps/web/app/(app)/onboard-draft/page.tsx (new)、apps/web/tests/screens/onboard-draft.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 onboard-draft が描画中 THEN h1「たたき台を確かめる」・第2ナビ ・状態 3（たたき台、会話で ／ STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- 触るファイル：apps/web/app/(public)/onboard/draft/page.tsx (new)、apps/web/tests/screens/onboard-draft.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 onboard-draft は URL /onboard/draft で開く（apps/web/app/(public)/onbo ／ STATE-DRIVEN: WHILE 画面 onboard-draft が描画中 THEN h1「たたき台を確かめる」・第2ナビ ・状態 3（たたき台、会話で
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/tenants が「出てきたたたき台を見る」として呼ばれたとき THEN Kaname は「会社モ ／ EVENT-DRIVEN: WHEN GET /api/v1/tenants が「違うところを言う」として呼ばれたとき THEN Kaname は「会社モデルの ／ EVENT-DRIVEN: WHEN 「これでいく」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 24（['SCR-ONBOARD-DRAFT-001', 'SCR-ONBOARD-DRAFT-002', 'SCR-ONBOARD-DRAFT-003'] …）／ L2 ['J-02']
 - audit: 07_tasks/audit/T-U-08.md
@@ -1008,8 +1008,8 @@
 - 行為 A09 / 画面 bridge-setup / 表 sessions action_runs / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-01 T-A-06
 - 根拠（逐語）：D-055「段階1で AI が動く経路は Bridge（顧客PCで本人のサブスクの公式CLI）だけ。BYOK・運営マネージドは段階2」 ／ D-015「Bridgeは顧客PCで動く万能実行器。本人のIP・本人のログイン済みセッションで動くのでCAPTCHA/bot検知に到」
-- 触るファイル：apps/web/app/(app)/bridge-setup/page.tsx (new)、apps/web/tests/screens/bridge-setup.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 bridge-setup が描画中 THEN h1「自分のPCをつなぐ」・第2ナビ 接続 / この端末 / 動く条 ／ STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- 触るファイル：apps/web/app/(app)/setup/bridge/page.tsx (new)、apps/web/tests/screens/bridge-setup.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 bridge-setup は URL /setup/bridge で開く（apps/web/app/(app)/setup/bri ／ STATE-DRIVEN: WHILE 画面 bridge-setup が描画中 THEN h1「自分のPCをつなぐ」・第2ナビ 接続 / この端末 / 動く条
 - AC（Tier 2）：EVENT-DRIVEN: WHEN POST /api/v1/sessions が「インストーラを入れて許可する」として呼ばれたとき THEN Kaname  ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「接続を確かめる」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 34（['SCR-BRIDGE-SETUP-001', 'SCR-BRIDGE-SETUP-002', 'SCR-BRIDGE-SETUP-003'] …）／ L2 ['J-02']
 - audit: 07_tasks/audit/T-U-09.md
@@ -1020,8 +1020,8 @@
 - 行為 A10 / 画面 credentials / 表 credentials service_registry service_registry_versions service_requests policies / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-06
 - 根拠（逐語）：D-017「vaultにID/PW＋TOTPシークレットを暗号化保管し実行器が直接入力。AIには一切渡さない(参照IDのみ)」 ／ D-041「サービス台帳で外部サービスごとの自動操作可否を持つ(api/allowed/unspecified/forbidden/」
-- 触るファイル：apps/web/app/(app)/credentials/page.tsx (new)、apps/web/tests/screens/credentials.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 credentials が描画中 THEN h1「ログイン情報を預ける」・第2ナビ 預けたもの / 自動操作の可否 ／ STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- 触るファイル：apps/web/app/(app)/settings/credentials/page.tsx (new)、apps/web/tests/screens/credentials.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 credentials は URL /settings/credentials で開く（apps/web/app/(app)/se ／ STATE-DRIVEN: WHILE 画面 credentials が描画中 THEN h1「ログイン情報を預ける」・第2ナビ 預けたもの / 自動操作の可否
 - AC（Tier 2）：EVENT-DRIVEN: WHEN POST /api/v1/credentials が「使うサービスを選びログイン情報を入れる」として呼ばれたとき THEN ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「保存する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 38（['SCR-CREDENTIALS-001', 'SCR-CREDENTIALS-002', 'SCR-CREDENTIALS-003'] …）／ L2 ['J-02']
 - audit: 07_tasks/audit/T-U-10.md
@@ -1032,8 +1032,8 @@
 - 行為 A11 / 画面 onboard-testrun / 表 action_runs ai_employees members audit_events ops_audit_events security_events / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-07
 - 根拠（逐語）：D-028「テストモード。OJTの入口を『見せてください』から『まず作ってみます』に変える。外に一切出さず実データは読む。納得したら」 ／ D-040「CAPTCHAは突破しない。本人環境・本人資格情報・本人のペースで動くので到達しない。突破は運営の安全ルールで禁止」
-- 触るファイル：apps/web/app/(app)/onboard-testrun/page.tsx (new)、apps/web/tests/screens/onboard-testrun.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 onboard-testrun が描画中 THEN h1「テストで動かす」・第2ナビ ・状態 3（動かした、最初、 ／ STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- 触るファイル：apps/web/app/(public)/onboard/testrun/page.tsx (new)、apps/web/tests/screens/onboard-testrun.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 onboard-testrun は URL /onboard/testrun で開く（apps/web/app/(public)/ ／ STATE-DRIVEN: WHILE 画面 onboard-testrun が描画中 THEN h1「テストで動かす」・第2ナビ ・状態 3（動かした、最初、
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/action_runs が「試しに動かして結果を見る」として呼ばれたとき THEN Kaname  ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「本番に切り替える」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 26（['SCR-ONBOARD-TESTRUN-001', 'SCR-ONBOARD-TESTRUN-002', 'SCR-ONBOARD-TESTRUN-003'] …）／ L2 ['J-02']
 - audit: 07_tasks/audit/T-U-11.md
@@ -1044,8 +1044,8 @@
 - 行為 A12 / 画面 onboard-golive / 表 tenants goals ledger_definitions duties scopes policies / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-01 T-A-06 T-A-10 T-A-14
 - 根拠（逐語）：D-028「テストモード。OJTの入口を『見せてください』から『まず作ってみます』に変える。外に一切出さず実データは読む。納得したら」 ／ D-019「実装順序。Bridge(万能実行器)を最初に作る」
-- 触るファイル：apps/web/app/(app)/onboard-golive/page.tsx (new)、apps/web/tests/screens/onboard-golive.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 onboard-golive が描画中 THEN h1「本番に切り替える」・第2ナビ ・状態 2（確認、切り替えた ／ STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- 触るファイル：apps/web/app/(public)/onboard/golive/page.tsx (new)、apps/web/tests/screens/onboard-golive.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 onboard-golive は URL /onboard/golive で開く（apps/web/app/(public)/on ／ STATE-DRIVEN: WHILE 画面 onboard-golive が描画中 THEN h1「本番に切り替える」・第2ナビ ・状態 2（確認、切り替えた
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/tenants が「出てきたたたき台を見る」として呼ばれたとき THEN Kaname は「会社モ ／ EVENT-DRIVEN: WHEN GET /api/v1/tenants が「違うところを言う」として呼ばれたとき THEN Kaname は「会社モデルの ／ EVENT-DRIVEN: WHEN 「切り替える」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 23（['SCR-ONBOARD-GOLIVE-001', 'SCR-ONBOARD-GOLIVE-002', 'SCR-ONBOARD-GOLIVE-003'] …）／ L2 ['J-02']
 - audit: 07_tasks/audit/T-U-12.md
@@ -1057,7 +1057,7 @@
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-04 T-A-05
 - 根拠（逐語）：D-008「ペルソナ1=高本本人。一人で受託・キャパ限界・人に任せたい・目標は決めているだけで実行が回らない」 ／ D-024「主役は会社モデル(Hub)＋ループ。用語と部品の正確な定義。自分のAI（旧称自分のAI／COO）は1人1体」
 - 触るファイル：apps/web/app/(app)/today/page.tsx (new)、apps/web/tests/screens/today.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 today が描画中 THEN h1「今日」・第2ナビ 申し送り / 朝の計画 / 承認待ち / 今日のタスク / ／ STATE-DRIVEN: WHILE 役割 R1/R2/R3 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- AC（Tier 1）：UBIQUITOUS: 画面 today は URL /today で開く（apps/web/app/(app)/today/page.tsx。遷移の href ／ STATE-DRIVEN: WHILE 画面 today が描画中 THEN h1「今日」・第2ナビ 申し送り / 朝の計画 / 承認待ち / 今日のタスク /
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/messages が「申し送りを読む」として呼ばれたとき THEN Kaname は「タスクと承認 ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN PATCH /api/v1/messages/:id が「候補にチェックを入れて「今日を確定」を押す」として呼ばれたとき 
 - L1 行 36（['SCR-TODAY-001', 'SCR-TODAY-002', 'SCR-TODAY-003'] …）／ L2 ['J-03']
 - audit: 07_tasks/audit/T-U-13.md
@@ -1069,7 +1069,7 @@
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-07
 - 根拠（逐語）：D-012「AIは直接変えない。必ず提案として出し人が承認して反映。ただし動線が増えすぎるUX低下は避ける。プルリクエスト的な形は採」 ／ D-037「AI社員の出どころは運営配布/会社作成/個人作成の3経路。託されたAI社員は使えるが定義は編集できない。個人ルールだけは」
 - 触るファイル：apps/web/app/(app)/approvals/page.tsx (new)、apps/web/tests/screens/approvals.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 approvals が描画中 THEN h1「承認待ち」・第2ナビ 未処理 / 止めたもの / 履歴・状態 4（通 ／ STATE-DRIVEN: WHILE 役割 R1/R2/R3 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- AC（Tier 1）：UBIQUITOUS: 画面 approvals は URL /approvals で開く（apps/web/app/(app)/approvals/page. ／ STATE-DRIVEN: WHILE 画面 approvals が描画中 THEN h1「承認待ち」・第2ナビ 未処理 / 止めたもの / 履歴・状態 4（通
 - AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/approvals/:id が「中身を見て押す／止める」として呼ばれたとき THEN Kana ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「承認する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 38（['SCR-APPROVALS-001', 'SCR-APPROVALS-002', 'SCR-APPROVALS-003'] …）／ L2 ['J-03']
 - audit: 07_tasks/audit/T-U-14.md
@@ -1080,8 +1080,8 @@
 - 行為 A16 / 画面 clone-thread / 表 approvals messages clones members ai_employees / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-07 T-A-12
 - 根拠（逐語）：D-060「旧称 COO → クローン → 自分のAI。文書上の用語は「自分のAI」。画面では本人の名前＋AI（高本AI／佐藤AI）」 ／ D-037「AI社員の出どころは運営配布/会社作成/個人作成の3経路。託されたAI社員は使えるが定義は編集できない。個人ルールだけは」
-- 触るファイル：apps/web/app/(app)/clone-thread/page.tsx (new)、apps/web/tests/screens/clone-thread.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 clone-thread が描画中 THEN h1「高本AIとAI社員のやりとり」・第2ナビ 差し戻し中 / やり ／ STATE-DRIVEN: WHILE 役割 R1/R2/R3 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- 触るファイル：apps/web/app/(app)/ai/thread/page.tsx (new)、apps/web/tests/screens/clone-thread.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 clone-thread は URL /ai/thread で開く（apps/web/app/(app)/ai/thread/pa ／ STATE-DRIVEN: WHILE 画面 clone-thread が描画中 THEN h1「高本AIとAI社員のやりとり」・第2ナビ 差し戻し中 / やり
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/approvals が「自分のAIとAI社員のやりとりを見る」として呼ばれたとき THEN Kan ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「AI社員に伝える」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 36（['SCR-CLONE-THREAD-001', 'SCR-CLONE-THREAD-002', 'SCR-CLONE-THREAD-003'] …）／ L2 ['J-03']
 - audit: 07_tasks/audit/T-U-15.md
@@ -1093,7 +1093,7 @@
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-05 T-A-08 T-A-09 T-A-10
 - 根拠（逐語）：D-008「ペルソナ1=高本本人。一人で受託・キャパ限界・人に任せたい・目標は決めているだけで実行が回らない」 ／ D-034「目標は双方向。降ろす(逆算)と積み上げる(実績)が同じ画面に出る」
 - 触るファイル：apps/web/app/(app)/tasks/page.tsx (new)、apps/web/tests/screens/tasks.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 tasks が描画中 THEN h1「タスク」・第2ナビ 今日 / 今週 / 詰まっている / 期限切れ / 引き ／ STATE-DRIVEN: WHILE 役割 R1/R2/R3/R4 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- AC（Tier 1）：UBIQUITOUS: 画面 tasks は URL /tasks で開く（apps/web/app/(app)/tasks/page.tsx。遷移の href ／ STATE-DRIVEN: WHILE 画面 tasks が描画中 THEN h1「タスク」・第2ナビ 今日 / 今週 / 詰まっている / 期限切れ / 引き
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/tasks が「残っている仕事から引き継ぐ」として呼ばれたとき THEN Kaname は「タスク ／ EVENT-DRIVEN: WHEN GET /api/v1/tasks が「見え方を切り替える（URL に残る）」として呼ばれたとき THEN Kaname  ／ EVENT-DRIVEN: WHEN POST /api/v1/tasks が「やることを書いて、どの目標かを選ぶ」として呼ばれたとき THEN Kaname 
 - L1 行 50（['SCR-TASKS-001', 'SCR-TASKS-002', 'SCR-TASKS-003'] …）／ L2 ['J-03']
 - audit: 07_tasks/audit/T-U-16.md
@@ -1104,8 +1104,8 @@
 - 行為 A20 / 画面 clone-chat / 表 conversations messages clones members memories goals / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-04 T-A-10 T-A-16
 - 根拠（逐語）：D-062「会話は1本で見え方が2つ。A 会話モード（Claude/LINE 型の専用画面）と B 作業モード（中央＝反映先の画面、」 ／ D-066「会話の部品は1組で、会話モード・右パネル・はじめの設定の会話が同じものを使う。①質問には選択肢チップ＋必ず「その他（自由」
-- 触るファイル：apps/web/app/(app)/clone-chat/page.tsx (new)、apps/web/tests/screens/clone-chat.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 clone-chat が描画中 THEN h1「高本AIと話す」・第2ナビ 営業 / 経理 / 会社全体・目標 / ／ STATE-DRIVEN: WHILE 役割 R1/R2/R3/R4 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- 触るファイル：apps/web/app/(app)/ai/chat/page.tsx (new)、apps/web/tests/screens/clone-chat.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 clone-chat は URL /ai/chat で開く（apps/web/app/(app)/ai/chat/page.tsx ／ STATE-DRIVEN: WHILE 画面 clone-chat が描画中 THEN h1「高本AIと話す」・第2ナビ 営業 / 経理 / 会社全体・目標 /
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/conversations が「聞く・頼む」として呼ばれたとき THEN Kaname は「会話を ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「送る」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 52（['SCR-CLONE-CHAT-001', 'SCR-CLONE-CHAT-002', 'SCR-CLONE-CHAT-003'] …）／ L2 ['J-03']
 - audit: 07_tasks/audit/T-U-17.md
@@ -1116,8 +1116,8 @@
 - 行為 A53 / 画面 ai-activity / 表 ai_employees members clones audit_events ops_audit_events security_events / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-06 T-A-07 T-A-12 T-A-21
 - 根拠（逐語）：D-062「会話は1本で見え方が2つ。A 会話モード（Claude/LINE 型の専用画面）と B 作業モード（中央＝反映先の画面、」 ／ D-037「AI社員の出どころは運営配布/会社作成/個人作成の3経路。託されたAI社員は使えるが定義は編集できない。個人ルールだけは」
-- 触るファイル：apps/web/app/(app)/ai-activity/page.tsx (new)、apps/web/tests/screens/ai-activity.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 ai-activity が描画中 THEN h1「AI社員の動き」・第2ナビ 今日の動き / 止まっている / A ／ STATE-DRIVEN: WHILE 役割 R1/R2/R3 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- 触るファイル：apps/web/app/(app)/ai-staff/activity/page.tsx (new)、apps/web/tests/screens/ai-activity.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 ai-activity は URL /ai-staff/activity で開く（apps/web/app/(app)/ai-st ／ STATE-DRIVEN: WHILE 画面 ai-activity が描画中 THEN h1「AI社員の動き」・第2ナビ 今日の動き / 止まっている / A
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/ai_employees が「AI社員を増やす・人に託す」として呼ばれたとき THEN Kanam ／ EVENT-DRIVEN: WHEN GET /api/v1/ai_employees が「このAI社員の中身を見る」として呼ばれたとき THEN Kaname ／ EVENT-DRIVEN: WHEN 「止まっているところへ」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映す
 - L1 行 38（['SCR-AI-ACTIVITY-001', 'SCR-AI-ACTIVITY-002', 'SCR-AI-ACTIVITY-003'] …）／ L2 ['J-03']
 - audit: 07_tasks/audit/T-U-18.md
@@ -1129,7 +1129,7 @@
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-09
 - 根拠（逐語）：D-007「数値はAI社員が会話で出す。分析系の固定画面(ランキング・チャネル別・期間比較)を一切作らない」 ／ D-029「アップロードは形式を指定しない。何でも受け取ってAIが読む」
 - 触るファイル：apps/web/app/(app)/search/page.tsx (new)、apps/web/tests/screens/search.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 search が描画中 THEN h1「探す」・第2ナビ 台帳 / 記憶 / 証跡・状態 3（結果、最初、AI が ／ STATE-DRIVEN: WHILE 役割 R1/R2/R3/R4 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- AC（Tier 1）：UBIQUITOUS: 画面 search は URL /search で開く（apps/web/app/(app)/search/page.tsx。遷移の h ／ STATE-DRIVEN: WHILE 画面 search が描画中 THEN h1「探す」・第2ナビ 台帳 / 記憶 / 証跡・状態 3（結果、最初、AI が
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/ledger_definitions が「言葉で探す」として呼ばれたとき THEN Kaname  ／ EVENT-DRIVEN: WHEN GET /api/v1/ledger_definitions が「一覧を見る」として呼ばれたとき THEN Kaname  ／ EVENT-DRIVEN: WHEN 「探す」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 32（['SCR-SEARCH-001', 'SCR-SEARCH-002', 'SCR-SEARCH-003'] …）／ L2 ['J-03']
 - audit: 07_tasks/audit/T-U-19.md
@@ -1141,7 +1141,7 @@
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-09 T-A-14
 - 根拠（逐語）：D-038「台帳は『計算しないが、結果は持つ』。CRM/会計の計算は担わないが結果は台帳に持つ」 ／ D-039「業界別パッケージ(別製品)は作らない。業界別テンプレ(定義のスナップショット)は作る。各企業ごとに専用の会社モデルができ」
 - 触るファイル：apps/web/app/(app)/records/page.tsx (new)、apps/web/tests/screens/records.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 records が描画中 THEN h1「台帳」・第2ナビ すべて / 止まっている / 自分の担当・状態 6（カ ／ STATE-DRIVEN: WHILE 役割 R1/R2/R3/R4 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- AC（Tier 1）：UBIQUITOUS: 画面 records は URL /records で開く（apps/web/app/(app)/records/page.tsx。遷移 ／ STATE-DRIVEN: WHILE 画面 records が描画中 THEN h1「台帳」・第2ナビ すべて / 止まっている / 自分の担当・状態 6（カ
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/ledger_definitions が「言葉で探す」として呼ばれたとき THEN Kaname  ／ EVENT-DRIVEN: WHEN GET /api/v1/ledger_definitions が「一覧を見る」として呼ばれたとき THEN Kaname  ／ EVENT-DRIVEN: WHEN PATCH /api/v1/ledger_definitions/:id が「止まっている案件を動かす」として呼ばれたとき
 - L1 行 38（['SCR-RECORDS-001', 'SCR-RECORDS-002', 'SCR-RECORDS-003'] …）／ L2 ['J-03', 'J-04']
 - audit: 07_tasks/audit/T-U-20.md
@@ -1152,8 +1152,8 @@
 - 行為 A18 A19 / 画面 record-detail / 表 ledger_records ledger_stages tasks task_handovers attachments audit_events / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-09
 - 根拠（逐語）：D-038「台帳は『計算しないが、結果は持つ』。CRM/会計の計算は担わないが結果は台帳に持つ」 ／ D-039「業界別パッケージ(別製品)は作らない。業界別テンプレ(定義のスナップショット)は作る。各企業ごとに専用の会社モデルができ」
-- 触るファイル：apps/web/app/(app)/record-detail/page.tsx (new)、apps/web/tests/screens/record-detail.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 record-detail が描画中 THEN h1「台帳の1件」・第2ナビ 中身 / タスク / 添付 / 証跡 ／ STATE-DRIVEN: WHILE 役割 R1/R2/R3/R4 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- 触るファイル：apps/web/app/(app)/records/[id]/page.tsx (new)、apps/web/tests/screens/record-detail.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 record-detail は URL /records/:id で開く（apps/web/app/(app)/records/[ ／ STATE-DRIVEN: WHILE 画面 record-detail が描画中 THEN h1「台帳の1件」・第2ナビ 中身 / タスク / 添付 / 証跡
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/ledger_records が「1件を開いて中を見る」として呼ばれたとき THEN Kaname ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN PATCH /api/v1/ledger_records/:id が「段階を次へ動かす」として呼ばれたとき THEN Ka
 - L1 行 38（['SCR-RECORD-DETAIL-001', 'SCR-RECORD-DETAIL-002', 'SCR-RECORD-DETAIL-003'] …）／ L2 ['J-03']
 - audit: 07_tasks/audit/T-U-21.md
@@ -1165,7 +1165,7 @@
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-10 T-A-11
 - 根拠（逐語）：D-058「目標の層は可変（会社＞事業＞部署＞…＞個人＞AI社員）で、必ずログイン中の個人まで落とす。個人の層は本人が画面で管理する」 ／ D-032「目標の階層と配分。スコープ層と目標階層は別概念。未配分の可視化。配る権限。合意/指示の2通り。AI社員にも配れる。未達は」
 - 触るファイル：apps/web/app/(app)/goals/page.tsx (new)、apps/web/tests/screens/goals.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 goals が描画中 THEN h1「目標」・第2ナビ 階層で見る / 降ろした数 / 積み上がった数 / 未配分 ／ STATE-DRIVEN: WHILE 役割 R1/R2/R3 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- AC（Tier 1）：UBIQUITOUS: 画面 goals は URL /goals で開く（apps/web/app/(app)/goals/page.tsx。遷移の href ／ STATE-DRIVEN: WHILE 画面 goals が描画中 THEN h1「目標」・第2ナビ 階層で見る / 降ろした数 / 積み上がった数 / 未配分
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/goals が「届くか見る」として呼ばれたとき THEN Kaname は「目標と実績を突き合わせ ／ EVENT-DRIVEN: WHEN GET /api/v1/goals が「無くす目標を選び、紐づくものの行き先を決める」として呼ばれたとき THEN Kan ／ EVENT-DRIVEN: WHEN 「配分を見直す」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 39（['SCR-GOALS-001', 'SCR-GOALS-002', 'SCR-GOALS-003'] …）／ L2 ['J-04']
 - audit: 07_tasks/audit/T-U-22.md
@@ -1176,8 +1176,8 @@
 - 行為 A23 / 画面 goal-allocation / 表 goal_allocations goal_contributions goals goal_versions units members / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-04 T-A-10
 - 根拠（逐語）：D-058「目標の層は可変（会社＞事業＞部署＞…＞個人＞AI社員）で、必ずログイン中の個人まで落とす。個人の層は本人が画面で管理する」 ／ D-032「目標の階層と配分。スコープ層と目標階層は別概念。未配分の可視化。配る権限。合意/指示の2通り。AI社員にも配れる。未達は」
-- 触るファイル：apps/web/app/(app)/goal-allocation/page.tsx (new)、apps/web/tests/screens/goal-allocation.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 goal-allocation が描画中 THEN h1「目標の配分」・第2ナビ 階層 / 未配分 / 見せる範囲 ／ STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- 触るファイル：apps/web/app/(app)/goals/[id]/allocation/page.tsx (new)、apps/web/tests/screens/goal-allocation.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 goal-allocation は URL /goals/:id/allocation で開く（apps/web/app/(app ／ STATE-DRIVEN: WHILE 画面 goal-allocation が描画中 THEN h1「目標の配分」・第2ナビ 階層 / 未配分 / 見せる範囲
 - AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/goal_allocations/:id が「誰に・どれだけ降ろすか決める」として呼ばれたとき ／ EVENT-DRIVEN: WHEN PATCH /api/v1/goal_allocations/:id が「自分の目標を直す・自主目標を足す」として呼ばれた ／ EVENT-DRIVEN: WHEN 「配る」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 36（['SCR-GOAL-ALLOCATION-001', 'SCR-GOAL-ALLOCATION-002', 'SCR-GOAL-ALLOCATION-003'] …）／ L2 ['J-04']
 - audit: 07_tasks/audit/T-U-23.md
@@ -1188,8 +1188,8 @@
 - 行為 A29 A52 / 画面 goal-edit / 表 goals goal_versions units goal_allocations goal_contributions tasks / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-10 T-A-11
 - 根拠（逐語）：D-032「目標の階層と配分。スコープ層と目標階層は別概念。未配分の可視化。配る権限。合意/指示の2通り。AI社員にも配れる。未達は」 ／ D-034「目標は双方向。降ろす(逆算)と積み上げる(実績)が同じ画面に出る」
-- 触るファイル：apps/web/app/(app)/goal-edit/page.tsx (new)、apps/web/tests/screens/goal-edit.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 goal-edit が描画中 THEN h1「目標を改訂する」・第2ナビ 改訂 / 無くす / 下への影響 / 版 ／ STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- 触るファイル：apps/web/app/(app)/goals/[id]/edit/page.tsx (new)、apps/web/tests/screens/goal-edit.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 goal-edit は URL /goals/:id/edit で開く（apps/web/app/(app)/goals/[id] ／ STATE-DRIVEN: WHILE 画面 goal-edit が描画中 THEN h1「目標を改訂する」・第2ナビ 改訂 / 無くす / 下への影響 / 版
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/goals が「届くか見る」として呼ばれたとき THEN Kaname は「目標と実績を突き合わせ ／ EVENT-DRIVEN: WHEN GET /api/v1/goals が「無くす目標を選び、紐づくものの行き先を決める」として呼ばれたとき THEN Kan ／ EVENT-DRIVEN: WHEN PATCH /api/v1/goals/:id が「目標を改訂する」として呼ばれたとき THEN Kaname は「目標を
 - L1 行 35（['SCR-GOAL-EDIT-001', 'SCR-GOAL-EDIT-002', 'SCR-GOAL-EDIT-003'] …）／ L2 ['J-05']
 - audit: 07_tasks/audit/T-U-24.md
@@ -1201,7 +1201,7 @@
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-04 T-A-10
 - 根拠（逐語）：D-058「目標の層は可変（会社＞事業＞部署＞…＞個人＞AI社員）で、必ずログイン中の個人まで落とす。個人の層は本人が画面で管理する」 ／ D-026「スコープ4層(運営/会社/部署/個人)を担当業務・ルール・テンプレ・覚えた操作・記憶すべてに同じ形で使う」
 - 触るファイル：apps/web/app/(app)/my-progress/page.tsx (new)、apps/web/tests/screens/my-progress.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 my-progress が描画中 THEN h1「自分の目標」・第2ナビ 配られた分 / 自主目標 / 自分のAI ／ STATE-DRIVEN: WHILE 役割 R1/R2/R3/R4 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- AC（Tier 1）：UBIQUITOUS: 画面 my-progress は URL /my-progress で開く（apps/web/app/(app)/my-progress ／ STATE-DRIVEN: WHILE 画面 my-progress が描画中 THEN h1「自分の目標」・第2ナビ 配られた分 / 自主目標 / 自分のAI
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/goal_allocations が「自分の担当分の進みを見る」として呼ばれたとき THEN Ka ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN PATCH /api/v1/goal_allocations/:id が「誰に・どれだけ降ろすか決める」として呼ばれたとき
 - L1 行 32（['SCR-MY-PROGRESS-001', 'SCR-MY-PROGRESS-002', 'SCR-MY-PROGRESS-003'] …）／ L2 ['J-04']
 - audit: 07_tasks/audit/T-U-25.md
@@ -1213,7 +1213,7 @@
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-11
 - 根拠（逐語）：D-035「目標とタスクの間に仮説と施策を置く。目標→現状分析→仮説→施策→タスク→検証→次の仮説。効かなかった仮説も残す」 ／ D-006「スコープの採否は『抜いてもループが閉じるか』。CRM・請求・経理を切ると目標の数値が出せなくなるので切らない」
 - 触るファイル：apps/web/app/(app)/review/page.tsx (new)、apps/web/tests/screens/review.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 review が描画中 THEN h1「ふりかえり」・第2ナビ 差分 / 要因の候補 / 前期との比較・状態 5（ ／ STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- AC（Tier 1）：UBIQUITOUS: 画面 review は URL /review で開く（apps/web/app/(app)/review/page.tsx。遷移の h ／ STATE-DRIVEN: WHILE 画面 review が描画中 THEN h1「ふりかえり」・第2ナビ 差分 / 要因の候補 / 前期との比較・状態 5（
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/hypotheses が「ふりかえりを読む」として呼ばれたとき THEN Kaname は「期間の ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「仮説を見る」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 32（['SCR-REVIEW-001', 'SCR-REVIEW-002', 'SCR-REVIEW-003'] …）／ L2 ['J-05']
 - audit: 07_tasks/audit/T-U-26.md
@@ -1225,7 +1225,7 @@
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-11
 - 根拠（逐語）：D-035「目標とタスクの間に仮説と施策を置く。目標→現状分析→仮説→施策→タスク→検証→次の仮説。効かなかった仮説も残す」 ／ D-063「営業目標の件数・工程・数値・FB・目的を決めるのは運営が作る目標スキル（§30）で、実装ではなくアップロード物。Kana」
 - 触るファイル：apps/web/app/(app)/hypotheses/page.tsx (new)、apps/web/tests/screens/hypotheses.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 hypotheses が描画中 THEN h1「仮説と施策」・第2ナビ 採る候補 / 動いている施策 / タイムラ ／ STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- AC（Tier 1）：UBIQUITOUS: 画面 hypotheses は URL /hypotheses で開く（apps/web/app/(app)/hypotheses/pa ／ STATE-DRIVEN: WHILE 画面 hypotheses が描画中 THEN h1「仮説と施策」・第2ナビ 採る候補 / 動いている施策 / タイムラ
 - AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/hypotheses/:id が「採る仮説と施策を決める」として呼ばれたとき THEN Kan ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「採る」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 32（['SCR-HYPOTHESES-001', 'SCR-HYPOTHESES-002', 'SCR-HYPOTHESES-003'] …）／ L2 ['J-05']
 - audit: 07_tasks/audit/T-U-27.md
@@ -1237,7 +1237,7 @@
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-14
 - 根拠（逐語）：D-030「構築メタスキル群は運営の資産で顧客に見えない。会社モデル構築・担当業務の定義・台帳の設計・目標の分解・改善提案・自分のA」 ／ D-022「覚えた操作は担当業務の下に畳む。ユーザーが普段見るのは担当業務まで。飽和させない」
 - 触るファイル：apps/web/app/(app)/duties/page.tsx (new)、apps/web/tests/screens/duties.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 duties が描画中 THEN h1「担当業務」・第2ナビ 担当業務 / 覚えた操作 / 効く範囲 / テストで ／ STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- AC（Tier 1）：UBIQUITOUS: 画面 duties は URL /duties で開く（apps/web/app/(app)/duties/page.tsx。遷移の h ／ STATE-DRIVEN: WHILE 画面 duties が描画中 THEN h1「担当業務」・第2ナビ 担当業務 / 覚えた操作 / 効く範囲 / テストで
 - AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/duties/:id が「担当業務を書き換える」として呼ばれたとき THEN Kaname は ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「保存する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 33（['SCR-DUTIES-001', 'SCR-DUTIES-002', 'SCR-DUTIES-003'] …）／ L2 ['J-05']
 - audit: 07_tasks/audit/T-U-28.md
@@ -1248,8 +1248,8 @@
 - 行為 A30 / 画面 clone-memory / 表 memories clones members / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-16
 - 根拠（逐語）：D-060「旧称 COO → クローン → 自分のAI。文書上の用語は「自分のAI」。画面では本人の名前＋AI（高本AI／佐藤AI）」 ／ D-024「主役は会社モデル(Hub)＋ループ。用語と部品の正確な定義。自分のAI（旧称自分のAI／COO）は1人1体」
-- 触るファイル：apps/web/app/(app)/clone-memory/page.tsx (new)、apps/web/tests/screens/clone-memory.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 clone-memory が描画中 THEN h1「高本AIの記憶」・第2ナビ 運営 / 会社 / 層ごと / 個 ／ STATE-DRIVEN: WHILE 役割 R1/R2/R3/R4 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- 触るファイル：apps/web/app/(app)/ai/memory/page.tsx (new)、apps/web/tests/screens/clone-memory.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 clone-memory は URL /ai/memory で開く（apps/web/app/(app)/ai/memory/pa ／ STATE-DRIVEN: WHILE 画面 clone-memory が描画中 THEN h1「高本AIの記憶」・第2ナビ 運営 / 会社 / 層ごと / 個
 - AC（Tier 2）：EVENT-DRIVEN: WHEN POST /api/v1/memories が「自分の考え方を教える」として呼ばれたとき THEN Kaname は「記憶 ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「教える」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 33（['SCR-CLONE-MEMORY-001', 'SCR-CLONE-MEMORY-002', 'SCR-CLONE-MEMORY-003'] …）／ L2 ['J-05']
 - audit: 07_tasks/audit/T-U-29.md
@@ -1260,8 +1260,8 @@
 - 行為 A44 / 画面 ledger-def / 表 ledger_definitions ledger_fields ledger_stages ledger_views / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-09 T-A-14
 - 根拠（逐語）：D-038「台帳は『計算しないが、結果は持つ』。CRM/会計の計算は担わないが結果は台帳に持つ」 ／ D-039「業界別パッケージ(別製品)は作らない。業界別テンプレ(定義のスナップショット)は作る。各企業ごとに専用の会社モデルができ」
-- 触るファイル：apps/web/app/(app)/ledger-def/page.tsx (new)、apps/web/tests/screens/ledger-def.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 ledger-def が描画中 THEN h1「台帳の形」・第2ナビ 項目 / 段階 / 既存への影響・状態 3（ ／ STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- 触るファイル：apps/web/app/(app)/settings/ledgers/page.tsx (new)、apps/web/tests/screens/ledger-def.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 ledger-def は URL /settings/ledgers で開く（apps/web/app/(app)/setting ／ STATE-DRIVEN: WHILE 画面 ledger-def が描画中 THEN h1「台帳の形」・第2ナビ 項目 / 段階 / 既存への影響・状態 3（
 - AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/ledger_definitions/:id が「止まっている案件を動かす」として呼ばれたとき ／ EVENT-DRIVEN: WHEN PATCH /api/v1/ledger_definitions/:id が「台帳の項目・段階を変える」として呼ばれたとき ／ EVENT-DRIVEN: WHEN 「保存する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 30（['SCR-LEDGER-DEF-001', 'SCR-LEDGER-DEF-002', 'SCR-LEDGER-DEF-003'] …）／ L2 ['J-05']
 - audit: 07_tasks/audit/T-U-30.md
@@ -1273,7 +1273,7 @@
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-01 T-A-06 T-A-10 T-A-14
 - 根拠（逐語）：D-010「製品の背骨。会社モデル(目標・台帳定義・担当業務・組織・ポリシー・記憶)を1つの定義に。画面もAI社員も自動実行もこの定」 ／ D-024「主役は会社モデル(Hub)＋ループ。用語と部品の正確な定義。自分のAI（旧称自分のAI／COO）は1人1体」
 - 触るファイル：apps/web/app/(app)/company-model/page.tsx (new)、apps/web/tests/screens/company-model.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 company-model が描画中 THEN h1「会社モデル」・第2ナビ 全体 / 版の履歴 / テンプレ・状 ／ STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- AC（Tier 1）：UBIQUITOUS: 画面 company-model は URL /company-model で開く（apps/web/app/(app)/company ／ STATE-DRIVEN: WHILE 画面 company-model が描画中 THEN h1「会社モデル」・第2ナビ 全体 / 版の履歴 / テンプレ・状
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/tenants が「出てきたたたき台を見る」として呼ばれたとき THEN Kaname は「会社モ ／ EVENT-DRIVEN: WHEN GET /api/v1/tenants が「違うところを言う」として呼ばれたとき THEN Kaname は「会社モデルの ／ EVENT-DRIVEN: WHEN 「中身を見る」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 32（['SCR-COMPANY-MODEL-001', 'SCR-COMPANY-MODEL-002', 'SCR-COMPANY-MODEL-003'] …）／ L2 ['J-05']
 - audit: 07_tasks/audit/T-U-31.md
@@ -1284,8 +1284,8 @@
 - 行為 A32 / 画面 automation-repair / 表 learned_procedures procedure_steps action_runs sessions error_events / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-06
 - 根拠（逐語）：D-018「画面が変わる/毎回要望が違うへの対応は3層。座標でなく意味で記録し、壊れたらAIが覚え直す」 ／ D-014「ブラウザ操作が標準の万能手段。API/MCPは後からの最適化。API主・ブラウザは逃げ道という順序付けは誤りとして撤回」
-- 触るファイル：apps/web/app/(app)/automation-repair/page.tsx (new)、apps/web/tests/screens/automation-repair.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 automation-repair が描画中 THEN h1「覚え直させる」・第2ナビ 止まっているもの / 覚え ／ STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- 触るファイル：apps/web/app/(app)/automations/[id]/repair/page.tsx (new)、apps/web/tests/screens/automation-repair.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 automation-repair は URL /automations/:id/repair で開く（apps/web/app/ ／ STATE-DRIVEN: WHILE 画面 automation-repair が描画中 THEN h1「覚え直させる」・第2ナビ 止まっているもの / 覚え
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/learned_procedures が「何が変わったかを見せて覚え直させる」として呼ばれたとき  ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「覚え直させる」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 30（['SCR-AUTOMATION-REPAIR-001', 'SCR-AUTOMATION-REPAIR-002', 'SCR-AUTOMATION-REPAIR-003'] …）／ L2 ['J-06']
 - audit: 07_tasks/audit/T-U-32.md
@@ -1297,7 +1297,7 @@
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-07 T-A-12 T-A-15 T-A-19
 - 根拠（逐語）：D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」 ／ D-012「AIは直接変えない。必ず提案として出し人が承認して反映。ただし動線が増えすぎるUX低下は避ける。プルリクエスト的な形は採」
 - 触るファイル：apps/web/app/(app)/audit/page.tsx (new)、apps/web/tests/screens/audit.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 audit が描画中 THEN h1「証跡」・第2ナビ すべて / 承認 / AIの実行 / 取り消し / 運営の ／ STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- AC（Tier 1）：UBIQUITOUS: 画面 audit は URL /audit で開く（apps/web/app/(app)/audit/page.tsx。遷移の href ／ STATE-DRIVEN: WHILE 画面 audit が描画中 THEN h1「証跡」・第2ナビ すべて / 承認 / AIの実行 / 取り消し / 運営の
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/audit_events が「いつ何をしたかを追う」として呼ばれたとき THEN Kaname は ／ EVENT-DRIVEN: WHEN GET /api/v1/audit_events が「誰が何をしたかを確認する」として呼ばれたとき THEN Kaname ／ EVENT-DRIVEN: WHEN POST /api/v1/audit_events が「全操作の証跡を出す」として呼ばれたとき THEN Kaname は
 - L1 行 36（['SCR-AUDIT-001', 'SCR-AUDIT-002', 'SCR-AUDIT-003'] …）／ L2 ['J-06', 'J-07', 'J-08']
 - audit: 07_tasks/audit/T-U-33.md
@@ -1309,7 +1309,7 @@
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-08
 - 根拠（逐語）：D-040「CAPTCHAは突破しない。本人環境・本人資格情報・本人のペースで動くので到達しない。突破は運営の安全ルールで禁止」 ／ D-041「サービス台帳で外部サービスごとの自動操作可否を持つ(api/allowed/unspecified/forbidden/」
 - 触るファイル：apps/web/app/(app)/policies/page.tsx (new)、apps/web/tests/screens/policies.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 policies が描画中 THEN h1「ルール」・第2ナビ 運営 / 会社 / 部署 / 個人・状態 3（ルー ／ STATE-DRIVEN: WHILE 役割 R1/R2/R3/R4 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- AC（Tier 1）：UBIQUITOUS: 画面 policies は URL /policies で開く（apps/web/app/(app)/policies/page.tsx ／ STATE-DRIVEN: WHILE 画面 policies が描画中 THEN h1「ルール」・第2ナビ 運営 / 会社 / 部署 / 個人・状態 3（ルー
 - AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/policies/:id が「やらせる範囲を変える」として呼ばれたとき THEN Kaname ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「保存する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 35（['SCR-POLICIES-001', 'SCR-POLICIES-002', 'SCR-POLICIES-003'] …）／ L2 ['J-06']
 - audit: 07_tasks/audit/T-U-34.md
@@ -1321,7 +1321,7 @@
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-03 T-A-12 T-A-20
 - 根拠（逐語）：D-026「スコープ4層(運営/会社/部署/個人)を担当業務・ルール・テンプレ・覚えた操作・記憶すべてに同じ形で使う」 ／ D-002「65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集」
 - 触るファイル：apps/web/app/(app)/members/page.tsx (new)、apps/web/tests/screens/members.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 members が描画中 THEN h1「メンバー」・第2ナビ 組織図 / 一覧と招待 / 層と権限・状態 7（組 ／ STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- AC（Tier 1）：UBIQUITOUS: 画面 members は URL /members で開く（apps/web/app/(app)/members/page.tsx。遷移 ／ STATE-DRIVEN: WHILE 画面 members が描画中 THEN h1「メンバー」・第2ナビ 組織図 / 一覧と招待 / 層と権限・状態 7（組
 - AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「メールで入り直す／回復コードを使う」として呼ばれたとき THEN  ／ EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「人を招いて見える範囲を決める」として呼ばれたとき THEN Kan ／ EVENT-DRIVEN: WHEN 「招待する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 37（['SCR-MEMBERS-001', 'SCR-MEMBERS-002', 'SCR-MEMBERS-003'] …）／ L2 ['J-07']
 - audit: 07_tasks/audit/T-U-35.md
@@ -1333,7 +1333,7 @@
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-06 T-A-07 T-A-12 T-A-21
 - 根拠（逐語）：D-037「AI社員の出どころは運営配布/会社作成/個人作成の3経路。託されたAI社員は使えるが定義は編集できない。個人ルールだけは」 ／ D-027「テンプレは自動共有しない。運営配布＋各社作成＋明示的な公開のみ。最初の1社のものが自動でテンプレになるという記述は破棄」
 - 触るファイル：apps/web/app/(app)/ai-staff/page.tsx (new)、apps/web/tests/screens/ai-staff.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 ai-staff が描画中 THEN h1「AI社員」・第2ナビ 会社のAI社員 / 託されたAI社員 / 作る・ ／ STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- AC（Tier 1）：UBIQUITOUS: 画面 ai-staff は URL /ai-staff で開く（apps/web/app/(app)/ai-staff/page.tsx ／ STATE-DRIVEN: WHILE 画面 ai-staff が描画中 THEN h1「AI社員」・第2ナビ 会社のAI社員 / 託されたAI社員 / 作る・
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/ai_employees が「AI社員を増やす・人に託す」として呼ばれたとき THEN Kanam ／ EVENT-DRIVEN: WHEN GET /api/v1/ai_employees が「このAI社員の中身を見る」として呼ばれたとき THEN Kaname ／ EVENT-DRIVEN: WHEN 「AI社員を作る」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 34（['SCR-AI-STAFF-001', 'SCR-AI-STAFF-002', 'SCR-AI-STAFF-003'] …）／ L2 ['J-07']
 - audit: 07_tasks/audit/T-U-36.md
@@ -1344,8 +1344,8 @@
 - 行為 A46 A81 / 画面 ai-staff-detail / 表 ai_employees members duties duty_versions policies audit_events / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-06 T-A-07 T-A-12 T-A-21
 - 根拠（逐語）：D-037「AI社員の出どころは運営配布/会社作成/個人作成の3経路。託されたAI社員は使えるが定義は編集できない。個人ルールだけは」 ／ D-026「スコープ4層(運営/会社/部署/個人)を担当業務・ルール・テンプレ・覚えた操作・記憶すべてに同じ形で使う」
-- 触るファイル：apps/web/app/(app)/ai-staff-detail/page.tsx (new)、apps/web/tests/screens/ai-staff-detail.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 ai-staff-detail が描画中 THEN h1「AI社員の1体」・第2ナビ やること / 託し先 / 守 ／ STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- 触るファイル：apps/web/app/(app)/ai-staff/[id]/page.tsx (new)、apps/web/tests/screens/ai-staff-detail.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 ai-staff-detail は URL /ai-staff/:id で開く（apps/web/app/(app)/ai-sta ／ STATE-DRIVEN: WHILE 画面 ai-staff-detail が描画中 THEN h1「AI社員の1体」・第2ナビ やること / 託し先 / 守
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/ai_employees が「AI社員を増やす・人に託す」として呼ばれたとき THEN Kanam ／ EVENT-DRIVEN: WHEN GET /api/v1/ai_employees が「このAI社員の中身を見る」として呼ばれたとき THEN Kaname ／ EVENT-DRIVEN: WHEN PATCH /api/v1/ai_employees/:id が「使えるスキルを見て絞る」として呼ばれたとき THEN K
 - L1 行 32（['SCR-AI-STAFF-DETAIL-001', 'SCR-AI-STAFF-DETAIL-002', 'SCR-AI-STAFF-DETAIL-003'] …）／ L2 ['J-07', 'J-09']
 - audit: 07_tasks/audit/T-U-37.md
@@ -1356,8 +1356,8 @@
 - 行為 A39 / 画面 security-brief / 表 sessions audit_events ops_audit_events security_events credentials policies / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-15
 - 根拠（逐語）：D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」 ／ D-015「Bridgeは顧客PCで動く万能実行器。本人のIP・本人のログイン済みセッションで動くのでCAPTCHA/bot検知に到」
-- 触るファイル：apps/web/app/(app)/security-brief/page.tsx (new)、apps/web/tests/screens/security-brief.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 security-brief が描画中 THEN h1「この製品でできること・できないこと」・第2ナビ できること ／ STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- 触るファイル：apps/web/app/(app)/security/page.tsx (new)、apps/web/tests/screens/security-brief.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 security-brief は URL /security で開く（apps/web/app/(app)/security/pa ／ STATE-DRIVEN: WHILE 画面 security-brief が描画中 THEN h1「この製品でできること・できないこと」・第2ナビ できること
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/sessions が「何ができるアプリかを見せる」として呼ばれたとき THEN Kaname は「 ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「PDFで出す」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 29（['SCR-SECURITY-BRIEF-001', 'SCR-SECURITY-BRIEF-002', 'SCR-SECURITY-BRIEF-003'] …）／ L2 ['J-08']
 - audit: 07_tasks/audit/T-U-38.md
@@ -1369,7 +1369,7 @@
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-15
 - 根拠（逐語）：D-025「編集の3経路。(1)画面で直接編集=人が変える時は即反映(承認を挟まない) (2)AIに頼む(会話)=AIが変える時だけ」 ／ D-050「ポータビリティは3つの仕組みで担保。境界ディレクトリ＋CI検査＋台帳。追跡しなければ『後で移行できる』は必ず嘘になる」
 - 触るファイル：apps/web/app/(app)/export/page.tsx (new)、apps/web/tests/screens/export.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 export が描画中 THEN h1「持ち出す」・第2ナビ 会社モデル / 台帳 / まとめて・状態 2（持ち出 ／ STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- AC（Tier 1）：UBIQUITOUS: 画面 export は URL /export で開く（apps/web/app/(app)/export/page.tsx。遷移の h ／ STATE-DRIVEN: WHILE 画面 export が描画中 THEN h1「持ち出す」・第2ナビ 会社モデル / 台帳 / まとめて・状態 2（持ち出
 - AC（Tier 2）：EVENT-DRIVEN: WHEN POST /api/v1/export_jobs が「データを全部持ち出す」として呼ばれたとき THEN Kaname は ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「書き出す」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 32（['SCR-EXPORT-001', 'SCR-EXPORT-002', 'SCR-EXPORT-003'] …）／ L2 ['J-08']
 - audit: 07_tasks/audit/T-U-39.md
@@ -1380,8 +1380,8 @@
 - 行為 A42 / 画面 account-close / 表 members permissions layers export_jobs audit_events ops_audit_events / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-12 T-A-15
 - 根拠（逐語）：D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」 ／ D-074「人が抜ける（無効化・退会）と会社が退会するときに、flow.json の全オブジェクトで何が起きるかを 1 つの表で決め」
-- 触るファイル：apps/web/app/(app)/account-close/page.tsx (new)、apps/web/tests/screens/account-close.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 account-close が描画中 THEN h1「退会する」・第2ナビ 依存の確認 / 持ち出す / 退会・状 ／ STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- 触るファイル：apps/web/app/(app)/settings/close/page.tsx (new)、apps/web/tests/screens/account-close.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 account-close は URL /settings/close で開く（apps/web/app/(app)/settin ／ STATE-DRIVEN: WHILE 画面 account-close が描画中 THEN h1「退会する」・第2ナビ 依存の確認 / 持ち出す / 退会・状
 - AC（Tier 2）：EVENT-DRIVEN: WHEN DELETE /api/v1/members/:id が「退会する」として呼ばれたとき THEN Kaname は「トーク ／ EVENT-DRIVEN: WHEN DELETE /api/v1/members/:id が「抜ける人の依存を片づける」として呼ばれたとき THEN Kana ／ EVENT-DRIVEN: WHEN 「退会する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 36（['SCR-ACCOUNT-CLOSE-001', 'SCR-ACCOUNT-CLOSE-002', 'SCR-ACCOUNT-CLOSE-003'] …）／ L2 ['J-08']
 - audit: 07_tasks/audit/T-U-40.md
@@ -1392,8 +1392,8 @@
 - 行為 A43 A70 / 画面 ops-support / 表 inquiries conversations tenants goals ledger_definitions duties / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-17 T-A-19
 - 根拠（逐語）：D-030「構築メタスキル群は運営の資産で顧客に見えない。会社モデル構築・担当業務の定義・台帳の設計・目標の分解・改善提案・自分のA」 ／ D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」
-- 触るファイル：apps/web/app/(app)/ops-support/page.tsx (new)、apps/web/tests/screens/ops-support.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 ops-support が描画中 THEN h1「運営の支援」・第2ナビ 受信箱 / 失敗の型 / 返答と対処・状 ／ STATE-DRIVEN: WHILE 役割 R6 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- 触るファイル：apps/web/app/(app)/ops/support/page.tsx (new)、apps/web/tests/screens/ops-support.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 ops-support は URL /ops/support で開く（apps/web/app/(app)/ops/support ／ STATE-DRIVEN: WHILE 画面 ops-support が描画中 THEN h1「運営の支援」・第2ナビ 受信箱 / 失敗の型 / 返答と対処・状
 - AC（Tier 2）：EVENT-DRIVEN: WHEN POST /api/v1/inquiries が「問い合わせに答える」として呼ばれたとき THEN Kaname は「受信 ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN PATCH /api/v1/inquiries/:id が「顧客のデータを見ずに直す」として呼ばれたとき THEN Kan
 - L1 行 25（['SCR-OPS-SUPPORT-001', 'SCR-OPS-SUPPORT-002', 'SCR-OPS-SUPPORT-003'] …）／ L2 ['J-09']
 - audit: 07_tasks/audit/T-U-41.md
@@ -1404,8 +1404,8 @@
 - 行為 A60 / 画面 ops-home / 表 plans plan_versions subscriptions usage_meters plan_change_requests ai_employees / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-17 T-A-23
 - 根拠（逐語）：D-037「AI社員の出どころは運営配布/会社作成/個人作成の3経路。託されたAI社員は使えるが定義は編集できない。個人ルールだけは」 ／ D-030「構築メタスキル群は運営の資産で顧客に見えない。会社モデル構築・担当業務の定義・台帳の設計・目標の分解・改善提案・自分のA」
-- 触るファイル：apps/web/app/(app)/ops-home/page.tsx (new)、apps/web/tests/screens/ops-home.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 ops-home が描画中 THEN h1「運営：会社の一覧」・第2ナビ 会社の一覧 / 詰まっている / プラン ／ STATE-DRIVEN: WHILE 役割 R6 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- 触るファイル：apps/web/app/(app)/ops/page.tsx (new)、apps/web/tests/screens/ops-home.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 ops-home は URL /ops で開く（apps/web/app/(app)/ops/page.tsx。遷移の href  ／ STATE-DRIVEN: WHILE 画面 ops-home が描画中 THEN h1「運営：会社の一覧」・第2ナビ 会社の一覧 / 詰まっている / プラン
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/plans が「会社の一覧を見る」として呼ばれたとき THEN Kaname は「各社のプラン・体 ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「詰まりを開く」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 30（['SCR-OPS-HOME-001', 'SCR-OPS-HOME-002', 'SCR-OPS-HOME-003'] …）／ L2 ['J-09']
 - audit: 07_tasks/audit/T-U-42.md
@@ -1416,8 +1416,8 @@
 - 行為 A59 A79 / 画面 ops-catalog / 表 ai_employees members duties duty_versions policies distributions / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-06 T-A-07 T-A-12 T-A-21
 - 根拠（逐語）：D-027「テンプレは自動共有しない。運営配布＋各社作成＋明示的な公開のみ。最初の1社のものが自動でテンプレになるという記述は破棄」 ／ D-037「AI社員の出どころは運営配布/会社作成/個人作成の3経路。託されたAI社員は使えるが定義は編集できない。個人ルールだけは」
-- 触るファイル：apps/web/app/(app)/ops-catalog/page.tsx (new)、apps/web/tests/screens/ops-catalog.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 ops-catalog が描画中 THEN h1「運営：配るもの」・第2ナビ AI社員 / 担当業務 / ルール  ／ STATE-DRIVEN: WHILE 役割 R6 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- 触るファイル：apps/web/app/(app)/ops/catalog/page.tsx (new)、apps/web/tests/screens/ops-catalog.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 ops-catalog は URL /ops/catalog で開く（apps/web/app/(app)/ops/catalog ／ STATE-DRIVEN: WHILE 画面 ops-catalog が描画中 THEN h1「運営：配るもの」・第2ナビ AI社員 / 担当業務 / ルール 
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/ai_employees が「AI社員を増やす・人に託す」として呼ばれたとき THEN Kanam ／ EVENT-DRIVEN: WHEN GET /api/v1/ai_employees が「このAI社員の中身を見る」として呼ばれたとき THEN Kaname ／ EVENT-DRIVEN: WHEN 「版を出す」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 30（['SCR-OPS-CATALOG-001', 'SCR-OPS-CATALOG-002', 'SCR-OPS-CATALOG-003'] …）／ L2 ['J-09']
 - audit: 07_tasks/audit/T-U-43.md
@@ -1429,7 +1429,7 @@
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-03 T-A-12 T-A-20
 - 根拠（逐語）：D-076「全体見直し（01_hearing/全体見直し_20260915.md）の §2・§3・§6 を決定にする。顧客側に 自分」 ／ D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」
 - 触るファイル：apps/web/app/(app)/account/page.tsx (new)、apps/web/tests/screens/account.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 account が描画中 THEN h1「自分のアカウント」・第2ナビ 基本 / パスワードと 2 段階認証 /  ／ STATE-DRIVEN: WHILE 役割 R1/R2/R3/R4 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- AC（Tier 1）：UBIQUITOUS: 画面 account は URL /account で開く（apps/web/app/(app)/account/page.tsx。遷移 ／ STATE-DRIVEN: WHILE 画面 account が描画中 THEN h1「自分のアカウント」・第2ナビ 基本 / パスワードと 2 段階認証 / 
 - AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「メールで入り直す／回復コードを使う」として呼ばれたとき THEN  ／ EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「人を招いて見える範囲を決める」として呼ばれたとき THEN Kan ／ EVENT-DRIVEN: WHEN 「保存する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 34（['SCR-ACCOUNT-001', 'SCR-ACCOUNT-002', 'SCR-ACCOUNT-003'] …）／ L2 ['J-07']
 - audit: 07_tasks/audit/T-U-44.md
@@ -1440,8 +1440,8 @@
 - 行為 A75 / 画面 company-settings / 表 tenants goals ledger_definitions duties scopes policies / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-20
 - 根拠（逐語）：D-076「全体見直し（01_hearing/全体見直し_20260915.md）の §2・§3・§6 を決定にする。顧客側に 自分」 ／ D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」
-- 触るファイル：apps/web/app/(app)/company-settings/page.tsx (new)、apps/web/tests/screens/company-settings.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 company-settings が描画中 THEN h1「会社の設定」・第2ナビ 会社 / データの所在 / A ／ STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- 触るファイル：apps/web/app/(app)/settings/company/page.tsx (new)、apps/web/tests/screens/company-settings.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 company-settings は URL /settings/company で開く（apps/web/app/(app)/s ／ STATE-DRIVEN: WHILE 画面 company-settings が描画中 THEN h1「会社の設定」・第2ナビ 会社 / データの所在 / A
 - AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/tenants/:id が「会社の設定を決める」として呼ばれたとき THEN Kaname は ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「保存する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 29（['SCR-COMPANY-SETTINGS-001', 'SCR-COMPANY-SETTINGS-002', 'SCR-COMPANY-SETTINGS-003'] …）／ L2 ['J-07']
 - audit: 07_tasks/audit/T-U-45.md
@@ -1453,7 +1453,7 @@
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-20
 - 根拠（逐語）：D-076「全体見直し（01_hearing/全体見直し_20260915.md）の §2・§3・§6 を決定にする。顧客側に 自分」 ／ D-029「アップロードは形式を指定しない。何でも受け取ってAIが読む」
 - 触るファイル：apps/web/app/(app)/import/page.tsx (new)、apps/web/tests/screens/import.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 import が描画中 THEN h1「取り込み」・第2ナビ 入れる / 読んだ結果 / 取り込み済み・状態 3（ ／ STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- AC（Tier 1）：UBIQUITOUS: 画面 import は URL /import で開く（apps/web/app/(app)/import/page.tsx。遷移の h ／ STATE-DRIVEN: WHILE 画面 import が描画中 THEN h1「取り込み」・第2ナビ 入れる / 読んだ結果 / 取り込み済み・状態 3（
 - AC（Tier 2）：EVENT-DRIVEN: WHEN POST /api/v1/attachments が「取り込む」として呼ばれたとき THEN Kaname は「添付を保存 ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「取り込む」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 30（['SCR-IMPORT-001', 'SCR-IMPORT-002', 'SCR-IMPORT-003'] …）／ L2 ['J-07']
 - audit: 07_tasks/audit/T-U-46.md
@@ -1465,7 +1465,7 @@
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-20
 - 根拠（逐語）：D-076「全体見直し（01_hearing/全体見直し_20260915.md）の §2・§3・§6 を決定にする。顧客側に 自分」 ／ D-041「サービス台帳で外部サービスごとの自動操作可否を持つ(api/allowed/unspecified/forbidden/」
 - 触るファイル：apps/web/app/(app)/services/page.tsx (new)、apps/web/tests/screens/services.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 services が描画中 THEN h1「外部サービスの連携」・第2ナビ 使っているサービス / 正規連携 /  ／ STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- AC（Tier 1）：UBIQUITOUS: 画面 services は URL /services で開く（apps/web/app/(app)/services/page.tsx ／ STATE-DRIVEN: WHILE 画面 services が描画中 THEN h1「外部サービスの連携」・第2ナビ 使っているサービス / 正規連携 / 
 - AC（Tier 2）：EVENT-DRIVEN: WHEN POST /api/v1/service_registry が「外部サービスの連携と可否を見る」として呼ばれたとき THE ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「つなぐ」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 30（['SCR-SERVICES-001', 'SCR-SERVICES-002', 'SCR-SERVICES-003'] …）／ L2 ['J-07']
 - audit: 07_tasks/audit/T-U-47.md
@@ -1476,8 +1476,8 @@
 - 行為 A78 / 画面 ops-services / 表 service_registry service_registry_versions service_requests policies / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-21
 - 根拠（逐語）：D-076「全体見直し（01_hearing/全体見直し_20260915.md）の §2・§3・§6 を決定にする。顧客側に 自分」 ／ D-041「サービス台帳で外部サービスごとの自動操作可否を持つ(api/allowed/unspecified/forbidden/」
-- 触るファイル：apps/web/app/(app)/ops-services/page.tsx (new)、apps/web/tests/screens/ops-services.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 ops-services が描画中 THEN h1「運営：サービス台帳」・第2ナビ サービス台帳 / 版の履歴 / ／ STATE-DRIVEN: WHILE 役割 R6 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- 触るファイル：apps/web/app/(app)/ops/services/page.tsx (new)、apps/web/tests/screens/ops-services.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 ops-services は URL /ops/services で開く（apps/web/app/(app)/ops/servi ／ STATE-DRIVEN: WHILE 画面 ops-services が描画中 THEN h1「運営：サービス台帳」・第2ナビ サービス台帳 / 版の履歴 /
 - AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/service_registry/:id が「サービス台帳を更新する」として呼ばれたとき TH ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「版を出す」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 25（['SCR-OPS-SERVICES-001', 'SCR-OPS-SERVICES-002', 'SCR-OPS-SERVICES-003'] …）／ L2 ['J-09']
 - audit: 07_tasks/audit/T-U-48.md
@@ -1488,8 +1488,8 @@
 - 行為 A80 / 画面 ops-skills / 表 skills skill_versions skill_test_runs skill_attachments distributions distribution_versions / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-21
 - 根拠（逐語）：D-030「構築メタスキル群は運営の資産で顧客に見えない。会社モデル構築・担当業務の定義・台帳の設計・目標の分解・改善提案・自分のA」 ／ D-063「営業目標の件数・工程・数値・FB・目的を決めるのは運営が作る目標スキル（§30）で、実装ではなくアップロード物。Kana」
-- 触るファイル：apps/web/app/(app)/ops-skills/page.tsx (new)、apps/web/tests/screens/ops-skills.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 ops-skills が描画中 THEN h1「運営：スキル」・第2ナビ スキル / 1 つの中身 / アップロー ／ STATE-DRIVEN: WHILE 役割 R6 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- 触るファイル：apps/web/app/(app)/ops/skills/page.tsx (new)、apps/web/tests/screens/ops-skills.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 ops-skills は URL /ops/skills で開く（apps/web/app/(app)/ops/skills/pa ／ STATE-DRIVEN: WHILE 画面 ops-skills が描画中 THEN h1「運営：スキル」・第2ナビ スキル / 1 つの中身 / アップロー
 - AC（Tier 2）：EVENT-DRIVEN: WHEN POST /api/v1/skills が「スキルを構築・アップロード・テストして配る」として呼ばれたとき THEN Ka ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「版を出す」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 30（['SCR-OPS-SKILLS-001', 'SCR-OPS-SKILLS-002', 'SCR-OPS-SKILLS-003'] …）／ L2 ['J-09']
 - audit: 07_tasks/audit/T-U-49.md
@@ -1501,7 +1501,7 @@
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-18
 - 根拠（逐語）：D-075「運営と顧客の間で往復するものは 6 つ（問い合わせ／お知らせと稼働状況／通知の届け先／プランと利用量／請求と入金／セキュ」 ／ D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」
 - 触るファイル：apps/web/app/(app)/inquiry/page.tsx (new)、apps/web/tests/screens/inquiry.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 inquiry が描画中 THEN h1「問い合わせ」・第2ナビ 問い合わせる / 返答待ち / 返答あり / 解 ／ STATE-DRIVEN: WHILE 役割 R1/R2/R3/R4 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- AC（Tier 1）：UBIQUITOUS: 画面 inquiry は URL /inquiry で開く（apps/web/app/(app)/inquiry/page.tsx。遷移 ／ STATE-DRIVEN: WHILE 画面 inquiry が描画中 THEN h1「問い合わせ」・第2ナビ 問い合わせる / 返答待ち / 返答あり / 解
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/inquiries が「問い合わせを書く」として呼ばれたとき THEN Kaname は「問い合わ ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「問い合わせる」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 37（['SCR-INQUIRY-001', 'SCR-INQUIRY-002', 'SCR-INQUIRY-003'] …）／ L2 ['J-07']
 - audit: 07_tasks/audit/T-U-50.md
@@ -1513,7 +1513,7 @@
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-18
 - 根拠（逐語）：D-075「運営と顧客の間で往復するものは 6 つ（問い合わせ／お知らせと稼働状況／通知の届け先／プランと利用量／請求と入金／セキュ」 ／ D-043「ネイティブアプリはレスポンシブとは別物。プッシュ通知が本質(承認待ちの通知)。段階2でPWA」
 - 触るファイル：apps/web/app/(app)/notices/page.tsx (new)、apps/web/tests/screens/notices.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 notices が描画中 THEN h1「お知らせと通知」・第2ナビ お知らせ / 稼働状況 / 通知の届け先・状 ／ STATE-DRIVEN: WHILE 役割 R1/R2/R3/R4 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- AC（Tier 1）：UBIQUITOUS: 画面 notices は URL /notices で開く（apps/web/app/(app)/notices/page.tsx。遷移 ／ STATE-DRIVEN: WHILE 画面 notices が描画中 THEN h1「お知らせと通知」・第2ナビ お知らせ / 稼働状況 / 通知の届け先・状
 - AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/notices/:id が「お知らせを読む・通知の届け先を選ぶ」として呼ばれたとき THEN  ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「通知の届け先を保存する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映
 - L1 行 35（['SCR-NOTICES-001', 'SCR-NOTICES-002', 'SCR-NOTICES-003'] …）／ L2 ['J-07']
 - audit: 07_tasks/audit/T-U-51.md
@@ -1525,7 +1525,7 @@
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-18
 - 根拠（逐語）：D-075「運営と顧客の間で往復するものは 6 つ（問い合わせ／お知らせと稼働状況／通知の届け先／プランと利用量／請求と入金／セキュ」 ／ D-002「65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集」
 - 触るファイル：apps/web/app/(app)/billing/page.tsx (new)、apps/web/tests/screens/billing.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 billing が描画中 THEN h1「プランと請求」・第2ナビ プラン / 使った量 / 請求書 / 支払い方 ／ STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- AC（Tier 1）：UBIQUITOUS: 画面 billing は URL /billing で開く（apps/web/app/(app)/billing/page.tsx。遷移 ／ STATE-DRIVEN: WHILE 画面 billing が描画中 THEN h1「プランと請求」・第2ナビ プラン / 使った量 / 請求書 / 支払い方
 - AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/plans/:id が「プランと請求書を見る」として呼ばれたとき THEN Kaname は「 ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「プランを変える」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 30（['SCR-BILLING-001', 'SCR-BILLING-002', 'SCR-BILLING-003'] …）／ L2 ['J-07']
 - audit: 07_tasks/audit/T-U-52.md
@@ -1536,8 +1536,8 @@
 - 行為 A71 / 画面 ops-notices / 表 notices notice_deliveries status_incidents plans plan_versions subscriptions / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-19
 - 根拠（逐語）：D-075「運営と顧客の間で往復するものは 6 つ（問い合わせ／お知らせと稼働状況／通知の届け先／プランと利用量／請求と入金／セキュ」 ／ D-077「請求・問い合わせ・配布したもの・証跡・公開審査・お知らせは会社ごとに違う。運営の対応は 会社の 1 社（詳細）の 8 面」
-- 触るファイル：apps/web/app/(app)/ops-notices/page.tsx (new)、apps/web/tests/screens/ops-notices.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 ops-notices が描画中 THEN h1「運営：お知らせ」・第2ナビ 出す / 出したもの / 稼働状況・ ／ STATE-DRIVEN: WHILE 役割 R6 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- 触るファイル：apps/web/app/(app)/ops/notices/page.tsx (new)、apps/web/tests/screens/ops-notices.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 ops-notices は URL /ops/notices で開く（apps/web/app/(app)/ops/notices ／ STATE-DRIVEN: WHILE 画面 ops-notices が描画中 THEN h1「運営：お知らせ」・第2ナビ 出す / 出したもの / 稼働状況・
 - AC（Tier 2）：EVENT-DRIVEN: WHEN POST /api/v1/notices が「お知らせを出す」として呼ばれたとき THEN Kaname は「お知らせ・稼 ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「出す」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 28（['SCR-OPS-NOTICES-001', 'SCR-OPS-NOTICES-002', 'SCR-OPS-NOTICES-003'] …）／ L2 ['J-09']
 - audit: 07_tasks/audit/T-U-53.md
@@ -1548,8 +1548,8 @@
 - 行為 A72 / 画面 ops-billing / 表 invoices payments plans plan_versions subscriptions usage_meters / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-19
 - 根拠（逐語）：D-075「運営と顧客の間で往復するものは 6 つ（問い合わせ／お知らせと稼働状況／通知の届け先／プランと利用量／請求と入金／セキュ」 ／ D-002「65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集」
-- 触るファイル：apps/web/app/(app)/ops-billing/page.tsx (new)、apps/web/tests/screens/ops-billing.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 ops-billing が描画中 THEN h1「運営：請求と入金」・第2ナビ 請求と入金 / 未収 / 利用量と ／ STATE-DRIVEN: WHILE 役割 R6 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- 触るファイル：apps/web/app/(app)/ops/billing/page.tsx (new)、apps/web/tests/screens/ops-billing.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 ops-billing は URL /ops/billing で開く（apps/web/app/(app)/ops/billing ／ STATE-DRIVEN: WHILE 画面 ops-billing が描画中 THEN h1「運営：請求と入金」・第2ナビ 請求と入金 / 未収 / 利用量と
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/invoices が「請求・入金・利用量を見る」として呼ばれたとき THEN Kaname は「各 ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「未収に連絡する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 25（['SCR-OPS-BILLING-001', 'SCR-OPS-BILLING-002', 'SCR-OPS-BILLING-003'] …）／ L2 ['J-09']
 - audit: 07_tasks/audit/T-U-54.md
@@ -1560,8 +1560,8 @@
 - 行為 A64 / 画面 ops-tenant / 表 plans plan_versions subscriptions usage_meters plan_change_requests ai_employees / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-17 T-A-22
 - 根拠（逐語）：D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」 ／ D-037「AI社員の出どころは運営配布/会社作成/個人作成の3経路。託されたAI社員は使えるが定義は編集できない。個人ルールだけは」
-- 触るファイル：apps/web/app/(app)/ops-tenant/page.tsx (new)、apps/web/tests/screens/ops-tenant.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 ops-tenant が描画中 THEN h1「運営：会社の 1 社」・第2ナビ 構成と状態 / 請求と入金 /  ／ STATE-DRIVEN: WHILE 役割 R6 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- 触るファイル：apps/web/app/(app)/ops/tenants/[id]/page.tsx (new)、apps/web/tests/screens/ops-tenant.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 ops-tenant は URL /ops/tenants/:id で開く（apps/web/app/(app)/ops/tena ／ STATE-DRIVEN: WHILE 画面 ops-tenant が描画中 THEN h1「運営：会社の 1 社」・第2ナビ 構成と状態 / 請求と入金 / 
 - AC（Tier 2）：EVENT-DRIVEN: WHEN DELETE /api/v1/plans/:id が「会社の 1 社を扱う」として呼ばれたとき THEN Kaname は ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「対処を送る」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 24（['SCR-OPS-TENANT-001', 'SCR-OPS-TENANT-002', 'SCR-OPS-TENANT-003'] …）／ L2 ['J-09']
 - audit: 07_tasks/audit/T-U-55.md
@@ -1572,8 +1572,8 @@
 - 行為 A63 / 画面 ops-review / 表 distributions artifacts duties duty_versions audit_events ops_audit_events / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-22
 - 根拠（逐語）：D-027「テンプレは自動共有しない。運営配布＋各社作成＋明示的な公開のみ。最初の1社のものが自動でテンプレになるという記述は破棄」 ／ D-073「自分のもの（個人の範囲・自主目標・自分のAIの記憶・自分が作ったAI社員）は権限なしで作る・直す・消す。それ以外は権限の」
-- 触るファイル：apps/web/app/(app)/ops-review/page.tsx (new)、apps/web/tests/screens/ops-review.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 ops-review が描画中 THEN h1「運営：公開の審査」・第2ナビ 審査待ち / 匿名化の確認 / 承認 ／ STATE-DRIVEN: WHILE 役割 R6 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- 触るファイル：apps/web/app/(app)/ops/review/page.tsx (new)、apps/web/tests/screens/ops-review.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 ops-review は URL /ops/review で開く（apps/web/app/(app)/ops/review/pa ／ STATE-DRIVEN: WHILE 画面 ops-review が描画中 THEN h1「運営：公開の審査」・第2ナビ 審査待ち / 匿名化の確認 / 承認
 - AC（Tier 2）：EVENT-DRIVEN: WHEN POST /api/v1/distributions が「公開の申請を審査する」として呼ばれたとき THEN Kaname ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「承認する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 25（['SCR-OPS-REVIEW-001', 'SCR-OPS-REVIEW-002', 'SCR-OPS-REVIEW-003'] …）／ L2 ['J-09']
 - audit: 07_tasks/audit/T-U-56.md
@@ -1584,8 +1584,8 @@
 - 行為 A65 A73 / 画面 ops-audit / 表 audit_events ops_audit_events security_events members permissions layers / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-07 T-A-12 T-A-19 T-A-22
 - 根拠（逐語）：D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」 ／ D-073「自分のもの（個人の範囲・自主目標・自分のAIの記憶・自分が作ったAI社員）は権限なしで作る・直す・消す。それ以外は権限の」
-- 触るファイル：apps/web/app/(app)/ops-audit/page.tsx (new)、apps/web/tests/screens/ops-audit.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 ops-audit が描画中 THEN h1「運営：運営の証跡」・第2ナビ 運営の証跡 / セキュリティの出来事  ／ STATE-DRIVEN: WHILE 役割 R6 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- 触るファイル：apps/web/app/(app)/ops/audit/page.tsx (new)、apps/web/tests/screens/ops-audit.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 ops-audit は URL /ops/audit で開く（apps/web/app/(app)/ops/audit/page. ／ STATE-DRIVEN: WHILE 画面 ops-audit が描画中 THEN h1「運営：運営の証跡」・第2ナビ 運営の証跡 / セキュリティの出来事 
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/audit_events が「いつ何をしたかを追う」として呼ばれたとき THEN Kaname は ／ EVENT-DRIVEN: WHEN GET /api/v1/audit_events が「誰が何をしたかを確認する」として呼ばれたとき THEN Kaname ／ EVENT-DRIVEN: WHEN PATCH /api/v1/audit_events/:id が「運営の証跡を見る」として呼ばれたとき THEN Kana
 - L1 行 28（['SCR-OPS-AUDIT-001', 'SCR-OPS-AUDIT-002', 'SCR-OPS-AUDIT-003'] …）／ L2 ['J-09']
 - audit: 07_tasks/audit/T-U-57.md
@@ -1596,8 +1596,8 @@
 - 行為 A61 A62 / 画面 member-detail / 表 members permissions layers ai_employees account_events account_event_items / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-03 T-A-12 T-A-15 T-A-20
 - 根拠（逐語）：D-026「スコープ4層(運営/会社/部署/個人)を担当業務・ルール・テンプレ・覚えた操作・記憶すべてに同じ形で使う」 ／ D-037「AI社員の出どころは運営配布/会社作成/個人作成の3経路。託されたAI社員は使えるが定義は編集できない。個人ルールだけは」
-- 触るファイル：apps/web/app/(app)/member-detail/page.tsx (new)、apps/web/tests/screens/member-detail.spec.ts (new)
-- AC（Tier 1）：STATE-DRIVEN: WHILE 画面 member-detail が描画中 THEN h1「メンバーの1人」・第2ナビ 基本 / 権限 / 託されたAI ／ STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い
+- 触るファイル：apps/web/app/(app)/members/[id]/page.tsx (new)、apps/web/tests/screens/member-detail.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 member-detail は URL /members/:id で開く（apps/web/app/(app)/members/[ ／ STATE-DRIVEN: WHILE 画面 member-detail が描画中 THEN h1「メンバーの1人」・第2ナビ 基本 / 権限 / 託されたAI
 - AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「メールで入り直す／回復コードを使う」として呼ばれたとき THEN  ／ EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「人を招いて見える範囲を決める」として呼ばれたとき THEN Kan ／ EVENT-DRIVEN: WHEN DELETE /api/v1/members/:id が「退会する」として呼ばれたとき THEN Kaname は「トーク
 - L1 行 34（['SCR-MEMBER-DETAIL-001', 'SCR-MEMBER-DETAIL-002', 'SCR-MEMBER-DETAIL-003'] …）／ L2 ['J-07']
 - audit: 07_tasks/audit/T-U-58.md

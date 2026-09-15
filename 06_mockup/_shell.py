@@ -115,7 +115,7 @@ def _subnav(sid, ver, counts=None, sub=None):
     meta = f'<!-- acts: {" ".join(s["acts"])} / roles: {" ".join(s.get("roles", []))} / source: {" ".join(s.get("source", []))} -->'
     sec_key = SEC_OF.get(sid); crumb = next((x["label"] for x in SECT if x["key"] == sec_key), "")
     mode = SUB_MODE.get(sid, "column")
-    return (f'<aside class="subnav" data-mode="{mode}" data-requires="app">{meta}<div class="subnav-h"><div class="crumb">{crumb}</div><div class="ttl">{s["name"]}</div>'
+    return (f'<aside class="subnav" data-mode="{mode}" data-requires="app">{meta}<div class="subnav-h"><div class="crumb">{crumb}</div><div class="ttl">{s["name"]}</div><div class="path" style="font-size:11px;color:var(--on-sv);font-family:ui-monospace,SFMono-Regular,monospace;margin-top:2px">{s.get("route", "")}</div>'
             f'<div class="why">{s["purpose"]}</div></div>'
             f'<div class="subnav-b">{"".join(rows)}</div></aside>')
 

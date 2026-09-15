@@ -124,6 +124,15 @@ def main():
                 bad_def.append(f'{x["id"]}（release {x.get("release")}）: flow.json の deferred に「決定 ID か user の OK」を書く')
     ng("G17", "後回しにした画面・行為に、決定か user の理由が無い（実行者の判断で後回しにしてはならない）", bad_def)
 
+    # G22 ルート（各画面の URL・2026-09-15）：無い／重複／1 件の画面に :id が無い／外の画面が /ops や /settings の下にある
+    routes = {s["id"]: s.get("route") for s in screens}; bad_r = [k for k, v in routes.items() if not v or not str(v).startswith("/")]
+    seen_r = {}
+    for k, v in routes.items(): seen_r.setdefault(v, []).append(k)
+    bad_r += [f"重複 {v}: {' '.join(ks)}" for v, ks in seen_r.items() if v and len(ks) > 1]
+    bad_r += [f'{s["id"]}（1 件の画面なのに :id が無い）' for s in screens if re.search(r"-(detail|edit|allocation|repair)$", s["id"]) and ":" not in str(s.get("route", ""))]
+    bad_r += [f'{s["id"]}（外の画面が {s.get("route")}）' for s in screens if not s.get("needs_login", True) and str(s.get("route", "")).startswith(("/ops", "/settings"))]
+    ng("G22", "画面のルート（URL）が無い・重複・1 件の画面に :id が無い・外の画面の置き場が違う", bad_r)
+
     # G10 ナビの実在
     bad_nav = []
     for r, ss in nav.get("by_role", {}).items():
@@ -144,7 +153,7 @@ def main():
     print(f"役割 {len(roles)} / 用事 {len(jobs)} / 行為 {len(act_ids)} / "
           f"オブジェクト {len(F.get('objects',[]))} / 画面 {len(scr_ids)}")
     if not fails:
-        print("\nPASS — G1〜G10・G17 すべて緑。ui-mockup に進めます。"); return 0
+        print("\nPASS — G1〜G10・G17・G22 すべて緑。ui-mockup に進めます。"); return 0
     print(f"\nFAIL — {len(fails)} 件\n")
     for g, t, items in fails:
         print(f"[{g}] {t}: {len(items)} 件")

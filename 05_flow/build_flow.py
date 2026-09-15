@@ -50,7 +50,7 @@ flow = {
  "surface_map": D.SURFACE_MAP,
  "screens": [{"id": sid, "name": n, "acts": sorted(s2a[sid]), "purpose": p,
               "primary_action": pa, "objects": o, "roles": s2r.get(sid, []),
-              "release": rel, "needs_login": sh, "has_shell": sh, "source": s}
+              "route": D.ROUTES[sid], "release": rel, "needs_login": sh, "has_shell": sh, "source": s}
              for sid, (n, p, pa, o, rel, sh, s) in D.SCREENS.items()],
  "navigation": {
    "_rule": "主ナビは6本まで。フェーズ順で並べ、役割で出る本数が変わる。中は第2ナビ（タブ）で分ける。"
