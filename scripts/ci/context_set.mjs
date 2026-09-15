@@ -1,7 +1,7 @@
 // G6 テナント文脈の網羅（静的）：packages/api の routes が DB に触る道は c.get("repo") だけ。pg／Pool／withTenant の直接使用と、/api 配下の app.use(tenantContext) の有無を見る。
 import { readdirSync, readFileSync, statSync, existsSync } from "node:fs";
 import { join } from "node:path";
-const API = "packages/api/src";
+const API = "apps/api/src"; // 設計書の配置：apps/api（Hono）。関門は packages/*
 const bad = [];
 function walk(d) {
   if (!existsSync(d)) return [];

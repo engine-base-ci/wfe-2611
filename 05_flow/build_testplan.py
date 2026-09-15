@@ -48,7 +48,7 @@ for e in EARS:
     for line in e["ears_ac_seed"]:
         n += 1; form, code, level, gate, kind = classify(line); k = f"{kind}"; seen[k] = seen.get(k, 0) + 1; fn = f"test_{sl}_{k}" + (f"_{seen[k]}" if seen[k] > 1 else "")
         mappings.append({"test_id": f"TC-{n:03d}", "endpoint": e["endpoint"], "feature_id": e["feature_id"], "acts": e["acts"], "screens": e["screen_ids"], "ears_form": form, "http_code": code, "ears_text": line,
-                         "test_file": f"packages/api/test/generated/{sl}.test.ts", "test_function": fn, "test_level": level, "gate": gate, "ladder": "L1", "tasks": task_by_text.get(line, [])})
+                         "test_file": f"apps/api/test/generated/{sl}.test.ts", "test_function": fn, "test_level": level, "gate": gate, "ladder": "L1", "tasks": task_by_text.get(line, [])})
 json.dump({"version": "v3", "skill": "test-verification", "created_at": TODAY, "_doc": "08_api/ears-ac-seed.json の 1 文 = 1 test。05_flow/build_testplan.py が生成。tickets の tier_2 と同じ文なので、実装者は tasks の列で自分の分を引く",
            "generator": "packages/api/test/generate_from_ears.ts（EARS の文 → vitest/jest の骨組み。EVENT-DRIVEN=正常・UNWANTED=異常・UBIQUITOUS=契約の形）", "counts": {"endpoints": len(EARS), "tests": len(mappings), "by_form": {f: sum(1 for m in mappings if m["ears_form"] == f) for f in ("EVENT-DRIVEN", "UNWANTED", "UBIQUITOUS")}},
            "mappings": mappings}, open(f"{OUT}/ears-test-mapping.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)

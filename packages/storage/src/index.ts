@@ -22,8 +22,8 @@ export interface StoreOptions {
   defaultRetentionDays?: number | null;
 }
 export type Outcome<T> =
-  | { status: "done"; value: T; auditId?: string }
-  | { status: "denied" | "failed"; reason: string; handoff: string; auditId?: string };
+  | { status: "done"; value: T; auditId?: string | undefined }
+  | { status: "denied" | "failed"; reason: string; handoff: string; auditId?: string | undefined };
 export const MAX_BYTES_DEFAULT = 50 * 1024 * 1024;
 
 /** 参照は必ずテナントの名前空間の中（tenants/<tenant_id>/<uuid>）。文字列連結で他社の鍵を作れない */
@@ -151,3 +151,5 @@ export class ObjectStore {
     return want.length === got.length && timingSafeEqual(want, got);
   }
 }
+
+export { s3Client, s3Driver, ensureBucket, type S3Settings, type S3Like } from "./s3.js";

@@ -26,9 +26,9 @@
     "ci:license-boundary": "node scripts/ci/gate_pending.mjs G8 T-F-05",
     "ci:ledger-sync": "node scripts/ci/gate_pending.mjs G9 T-F-05",
     "ci:no-sql-concat": "node scripts/ci/sql_guard.mjs --no-sql-concat",
-    "ci:openapi-diff": "node scripts/ci/gate_pending.mjs G11 T-F-15",
+    "ci:openapi-diff": "node scripts/ci/contract.mjs check",
     "ci:migration-integration": "tsx packages/db/src/cli.ts fresh-migrate",
-    "ci:env-audit": "node scripts/ci/gate_pending.mjs G13 T-F-16",
+    "ci:env-audit": "node scripts/ci/env_audit.mjs",
     "ci:choke": "node scripts/ci/choke.mjs",
     "ci:no-dynamic-call": "node scripts/ci/choke.mjs --no-dynamic",
     "ci:choke-exceptions": "node scripts/ci/choke.mjs --exceptions",
@@ -40,7 +40,15 @@
     "db:migrate": "tsx packages/db/src/cli.ts migrate && tsx packages/auth/src/cli.ts",
     "ci:choke:all": "node scripts/ci/choke.mjs --all",
     "ci:choke:selftest": "node scripts/ci/choke.test.mjs",
-    "ci:sql-guard:selftest": "node scripts/ci/sql_guard.test.mjs"
+    "ci:sql-guard:selftest": "node scripts/ci/sql_guard.test.mjs",
+    "ci:contract:gen": "node scripts/ci/contract.mjs gen",
+    "ci:endpoints": "node scripts/ci/contract.mjs endpoints",
+    "ci:errors-used": "node scripts/ci/errors_used.mjs",
+    "ci:errors:gen": "node scripts/ci/errors_used.mjs gen",
+    "provision:bucket": "tsx infra/provision/bucket.ts",
+    "ci:contract:selftest": "node scripts/ci/contract.test.mjs",
+    "ci:env-audit:selftest": "node scripts/ci/env_audit.test.mjs",
+    "ci:errors-used:selftest": "node scripts/ci/errors_used.test.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",

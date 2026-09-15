@@ -2,7 +2,7 @@
   "files": [],
   "references": [
     { "path": "packages/db" },
-    { "path": "packages/api" },
+    { "path": "apps/api" },
     { "path": "packages/auth" },
     { "path": "packages/actions" }
   ]

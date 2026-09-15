@@ -23734,12 +23734,12 @@
    "id": "T-A-01.s6",
    "kind": "subtask",
    "sub": "impl",
-   "title": "packages/api/src/app.ts (modify)",
+   "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-01",
    "status": "todo",
    "links": {
     "file": [
-     "packages/api/src/app.ts (modify)"
+     "apps/api/src/app.ts (modify)"
     ]
    }
   },
@@ -24372,12 +24372,12 @@
    "id": "T-A-02.s2",
    "kind": "subtask",
    "sub": "impl",
-   "title": "packages/api/src/app.ts (modify)",
+   "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-02",
    "status": "todo",
    "links": {
     "file": [
-     "packages/api/src/app.ts (modify)"
+     "apps/api/src/app.ts (modify)"
     ]
    }
   },
@@ -24544,12 +24544,12 @@
    "id": "T-A-03.s2",
    "kind": "subtask",
    "sub": "impl",
-   "title": "packages/api/src/app.ts (modify)",
+   "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-03",
    "status": "todo",
    "links": {
     "file": [
-     "packages/api/src/app.ts (modify)"
+     "apps/api/src/app.ts (modify)"
     ]
    }
   },
@@ -24868,12 +24868,12 @@
    "id": "T-A-04.s5",
    "kind": "subtask",
    "sub": "impl",
-   "title": "packages/api/src/app.ts (modify)",
+   "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-04",
    "status": "todo",
    "links": {
     "file": [
-     "packages/api/src/app.ts (modify)"
+     "apps/api/src/app.ts (modify)"
     ]
    }
   },
@@ -25513,12 +25513,12 @@
    "id": "T-A-05.s3",
    "kind": "subtask",
    "sub": "impl",
-   "title": "packages/api/src/app.ts (modify)",
+   "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-05",
    "status": "todo",
    "links": {
     "file": [
-     "packages/api/src/app.ts (modify)"
+     "apps/api/src/app.ts (modify)"
     ]
    }
   },
@@ -26013,12 +26013,12 @@
    "id": "T-A-06.s6",
    "kind": "subtask",
    "sub": "impl",
-   "title": "packages/api/src/app.ts (modify)",
+   "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-06",
    "status": "todo",
    "links": {
     "file": [
-     "packages/api/src/app.ts (modify)"
+     "apps/api/src/app.ts (modify)"
     ]
    }
   },
@@ -26745,12 +26745,12 @@
    "id": "T-A-07.s5",
    "kind": "subtask",
    "sub": "impl",
-   "title": "packages/api/src/app.ts (modify)",
+   "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-07",
    "status": "todo",
    "links": {
     "file": [
-     "packages/api/src/app.ts (modify)"
+     "apps/api/src/app.ts (modify)"
     ]
    }
   },
@@ -27539,12 +27539,12 @@
    "id": "T-A-08.s3",
    "kind": "subtask",
    "sub": "impl",
-   "title": "packages/api/src/app.ts (modify)",
+   "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-08",
    "status": "todo",
    "links": {
     "file": [
-     "packages/api/src/app.ts (modify)"
+     "apps/api/src/app.ts (modify)"
     ]
    }
   },
@@ -27857,12 +27857,12 @@
    "id": "T-A-09.s4",
    "kind": "subtask",
    "sub": "impl",
-   "title": "packages/api/src/app.ts (modify)",
+   "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-09",
    "status": "todo",
    "links": {
     "file": [
-     "packages/api/src/app.ts (modify)"
+     "apps/api/src/app.ts (modify)"
     ]
    }
   },
@@ -28470,12 +28470,12 @@
    "id": "T-A-10.s6",
    "kind": "subtask",
    "sub": "impl",
-   "title": "packages/api/src/app.ts (modify)",
+   "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-10",
    "status": "todo",
    "links": {
     "file": [
-     "packages/api/src/app.ts (modify)"
+     "apps/api/src/app.ts (modify)"
     ]
    }
   },
@@ -29238,12 +29238,12 @@
    "id": "T-A-11.s3",
    "kind": "subtask",
    "sub": "impl",
-   "title": "packages/api/src/app.ts (modify)",
+   "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-11",
    "status": "todo",
    "links": {
     "file": [
-     "packages/api/src/app.ts (modify)"
+     "apps/api/src/app.ts (modify)"
     ]
    }
   },
@@ -29679,12 +29679,12 @@
    "id": "T-A-12.s5",
    "kind": "subtask",
    "sub": "impl",
-   "title": "packages/api/src/app.ts (modify)",
+   "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-12",
    "status": "todo",
    "links": {
     "file": [
-     "packages/api/src/app.ts (modify)"
+     "apps/api/src/app.ts (modify)"
     ]
    }
   },
@@ -30547,12 +30547,12 @@
    "id": "T-A-13.s2",
    "kind": "subtask",
    "sub": "impl",
-   "title": "packages/api/src/app.ts (modify)",
+   "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-13",
    "status": "todo",
    "links": {
     "file": [
-     "packages/api/src/app.ts (modify)"
+     "apps/api/src/app.ts (modify)"
     ]
    }
   },
@@ -30927,12 +30927,12 @@
    "id": "T-A-14.s4",
    "kind": "subtask",
    "sub": "impl",
-   "title": "packages/api/src/app.ts (modify)",
+   "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-14",
    "status": "todo",
    "links": {
     "file": [
-     "packages/api/src/app.ts (modify)"
+     "apps/api/src/app.ts (modify)"
     ]
    }
   },
@@ -31439,12 +31439,12 @@
    "id": "T-A-15.s5",
    "kind": "subtask",
    "sub": "impl",
-   "title": "packages/api/src/app.ts (modify)",
+   "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-15",
    "status": "todo",
    "links": {
     "file": [
-     "packages/api/src/app.ts (modify)"
+     "apps/api/src/app.ts (modify)"
     ]
    }
   },
@@ -32204,12 +32204,12 @@
    "id": "T-A-16.s5",
    "kind": "subtask",
    "sub": "impl",
-   "title": "packages/api/src/app.ts (modify)",
+   "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-16",
    "status": "todo",
    "links": {
     "file": [
-     "packages/api/src/app.ts (modify)"
+     "apps/api/src/app.ts (modify)"
     ]
    }
   },
@@ -32768,12 +32768,12 @@
    "id": "T-A-17.s3",
    "kind": "subtask",
    "sub": "impl",
-   "title": "packages/api/src/app.ts (modify)",
+   "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-17",
    "status": "todo",
    "links": {
     "file": [
-     "packages/api/src/app.ts (modify)"
+     "apps/api/src/app.ts (modify)"
     ]
    }
   },
@@ -33245,12 +33245,12 @@
    "id": "T-A-18.s4",
    "kind": "subtask",
    "sub": "impl",
-   "title": "packages/api/src/app.ts (modify)",
+   "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-18",
    "status": "todo",
    "links": {
     "file": [
-     "packages/api/src/app.ts (modify)"
+     "apps/api/src/app.ts (modify)"
     ]
    }
   },
@@ -33735,12 +33735,12 @@
    "id": "T-A-19.s5",
    "kind": "subtask",
    "sub": "impl",
-   "title": "packages/api/src/app.ts (modify)",
+   "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-19",
    "status": "todo",
    "links": {
     "file": [
-     "packages/api/src/app.ts (modify)"
+     "apps/api/src/app.ts (modify)"
     ]
    }
   },
@@ -34322,12 +34322,12 @@
    "id": "T-A-20.s5",
    "kind": "subtask",
    "sub": "impl",
-   "title": "packages/api/src/app.ts (modify)",
+   "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-20",
    "status": "todo",
    "links": {
     "file": [
-     "packages/api/src/app.ts (modify)"
+     "apps/api/src/app.ts (modify)"
     ]
    }
   },
@@ -34915,12 +34915,12 @@
    "id": "T-A-21.s4",
    "kind": "subtask",
    "sub": "impl",
-   "title": "packages/api/src/app.ts (modify)",
+   "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-21",
    "status": "todo",
    "links": {
     "file": [
-     "packages/api/src/app.ts (modify)"
+     "apps/api/src/app.ts (modify)"
     ]
    }
   },
@@ -35414,12 +35414,12 @@
    "id": "T-A-22.s4",
    "kind": "subtask",
    "sub": "impl",
-   "title": "packages/api/src/app.ts (modify)",
+   "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-22",
    "status": "todo",
    "links": {
     "file": [
-     "packages/api/src/app.ts (modify)"
+     "apps/api/src/app.ts (modify)"
     ]
    }
   },
@@ -35813,12 +35813,12 @@
    "id": "T-A-23.s3",
    "kind": "subtask",
    "sub": "impl",
-   "title": "packages/api/src/app.ts (modify)",
+   "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-23",
    "status": "todo",
    "links": {
     "file": [
-     "packages/api/src/app.ts (modify)"
+     "apps/api/src/app.ts (modify)"
     ]
    }
   },
@@ -64927,12 +64927,12 @@
    "id": "T-S-01.s4",
    "kind": "subtask",
    "sub": "impl",
-   "title": "packages/api/skills/validate.ts (new)",
+   "title": "apps/api/skills/validate.ts (new)",
    "parent": "T-S-01",
    "status": "todo",
    "links": {
     "file": [
-     "packages/api/skills/validate.ts (new)"
+     "apps/api/skills/validate.ts (new)"
     ]
    }
   },

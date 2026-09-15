@@ -3453,7 +3453,7 @@
     ],
     "forbidden": [
      "apps/**",
-     "packages/api/**"
+     "apps/api/**"
     ]
    },
    "acceptance_criteria": {
@@ -3689,7 +3689,7 @@
     ],
     "forbidden": [
      "apps/**",
-     "packages/api/**"
+     "apps/api/**"
     ]
    },
    "acceptance_criteria": {
@@ -3931,7 +3931,7 @@
     ],
     "forbidden": [
      "apps/**",
-     "packages/api/**"
+     "apps/api/**"
     ]
    },
    "acceptance_criteria": {
@@ -4145,7 +4145,7 @@
     ],
     "forbidden": [
      "apps/**",
-     "packages/api/**"
+     "apps/api/**"
     ]
    },
    "acceptance_criteria": {
@@ -4367,7 +4367,7 @@
     ],
     "forbidden": [
      "apps/**",
-     "packages/api/**"
+     "apps/api/**"
     ]
    },
    "acceptance_criteria": {
@@ -4620,7 +4620,7 @@
     ],
     "forbidden": [
      "apps/**",
-     "packages/api/**"
+     "apps/api/**"
     ]
    },
    "acceptance_criteria": {
@@ -4831,7 +4831,7 @@
     ],
     "forbidden": [
      "apps/**",
-     "packages/api/**"
+     "apps/api/**"
     ]
    },
    "acceptance_criteria": {
@@ -5012,7 +5012,7 @@
     ],
     "forbidden": [
      "apps/**",
-     "packages/api/**"
+     "apps/api/**"
     ]
    },
    "acceptance_criteria": {
@@ -5218,7 +5218,7 @@
     ],
     "forbidden": [
      "apps/**",
-     "packages/api/**"
+     "apps/api/**"
     ]
    },
    "acceptance_criteria": {
@@ -5446,7 +5446,7 @@
     ],
     "forbidden": [
      "apps/**",
-     "packages/api/**"
+     "apps/api/**"
     ]
    },
    "acceptance_criteria": {
@@ -5695,7 +5695,7 @@
     ],
     "forbidden": [
      "apps/**",
-     "packages/api/**"
+     "apps/api/**"
     ]
    },
    "acceptance_criteria": {
@@ -5965,7 +5965,7 @@
     ],
     "forbidden": [
      "apps/**",
-     "packages/api/**"
+     "apps/api/**"
     ]
    },
    "acceptance_criteria": {
@@ -6193,7 +6193,7 @@
     ],
     "forbidden": [
      "apps/**",
-     "packages/api/**"
+     "apps/api/**"
     ]
    },
    "acceptance_criteria": {
@@ -6449,7 +6449,7 @@
     "apps/api/src/routes/plans.ts (new)",
     "apps/api/src/routes/sessions.ts (new)",
     "apps/api/src/routes/tenants.ts (new)",
-    "packages/api/src/app.ts (modify)"
+    "apps/api/src/app.ts (modify)"
    ],
    "files_changed_predicted": {
     "new": [
@@ -6458,11 +6458,11 @@
      "apps/api/src/routes/plans.ts",
      "apps/api/src/routes/sessions.ts",
      "apps/api/src/routes/tenants.ts",
-     "packages/api/src/services/00.ts",
-     "packages/api/tests/00.spec.ts"
+     "apps/api/src/services/00.ts",
+     "apps/api/tests/00.spec.ts"
     ],
     "modify": [
-     "packages/api/src/app.ts"
+     "apps/api/src/app.ts"
     ],
     "shared_read": [
      "08_api/openapi.yaml",
@@ -6892,16 +6892,16 @@
    ],
    "files_changed": [
     "apps/api/src/routes/invitations.ts (new)",
-    "packages/api/src/app.ts (modify)"
+    "apps/api/src/app.ts (modify)"
    ],
    "files_changed_predicted": {
     "new": [
      "apps/api/src/routes/invitations.ts",
-     "packages/api/src/services/0b.ts",
-     "packages/api/tests/0b.spec.ts"
+     "apps/api/src/services/0b.ts",
+     "apps/api/tests/0b.spec.ts"
     ],
     "modify": [
-     "packages/api/src/app.ts"
+     "apps/api/src/app.ts"
     ],
     "shared_read": [
      "08_api/openapi.yaml",
@@ -7144,16 +7144,16 @@
    ],
    "files_changed": [
     "apps/api/src/routes/members.ts (new)",
-    "packages/api/src/app.ts (modify)"
+    "apps/api/src/app.ts (modify)"
    ],
    "files_changed_predicted": {
     "new": [
      "apps/api/src/routes/members.ts",
-     "packages/api/src/services/0c.ts",
-     "packages/api/tests/0c.spec.ts"
+     "apps/api/src/services/0c.ts",
+     "apps/api/tests/0c.spec.ts"
     ],
     "modify": [
-     "packages/api/src/app.ts"
+     "apps/api/src/app.ts"
     ],
     "shared_read": [
      "08_api/openapi.yaml",
@@ -7416,7 +7416,7 @@
     "apps/api/src/routes/goal_allocations.ts (new)",
     "apps/api/src/routes/members.ts (new)",
     "apps/api/src/routes/messages.ts (new)",
-    "packages/api/src/app.ts (modify)"
+    "apps/api/src/app.ts (modify)"
    ],
    "files_changed_predicted": {
     "new": [
@@ -7424,11 +7424,11 @@
      "apps/api/src/routes/goal_allocations.ts",
      "apps/api/src/routes/members.ts",
      "apps/api/src/routes/messages.ts",
-     "packages/api/src/services/01.ts",
-     "packages/api/tests/01.spec.ts"
+     "apps/api/src/services/01.ts",
+     "apps/api/tests/01.spec.ts"
     ],
     "modify": [
-     "packages/api/src/app.ts"
+     "apps/api/src/app.ts"
     ],
     "shared_read": [
      "08_api/openapi.yaml",
@@ -7938,17 +7938,17 @@
    "files_changed": [
     "apps/api/src/routes/messages.ts (new)",
     "apps/api/src/routes/tasks.ts (new)",
-    "packages/api/src/app.ts (modify)"
+    "apps/api/src/app.ts (modify)"
    ],
    "files_changed_predicted": {
     "new": [
      "apps/api/src/routes/messages.ts",
      "apps/api/src/routes/tasks.ts",
-     "packages/api/src/services/01.ts",
-     "packages/api/tests/01.spec.ts"
+     "apps/api/src/services/01.ts",
+     "apps/api/tests/01.spec.ts"
     ],
     "modify": [
-     "packages/api/src/app.ts"
+     "apps/api/src/app.ts"
     ],
     "shared_read": [
      "08_api/openapi.yaml",
@@ -8402,7 +8402,7 @@
     "apps/api/src/routes/learned_procedures.ts (new)",
     "apps/api/src/routes/sessions.ts (new)",
     "apps/api/src/routes/tenants.ts (new)",
-    "packages/api/src/app.ts (modify)"
+    "apps/api/src/app.ts (modify)"
    ],
    "files_changed_predicted": {
     "new": [
@@ -8411,11 +8411,11 @@
      "apps/api/src/routes/learned_procedures.ts",
      "apps/api/src/routes/sessions.ts",
      "apps/api/src/routes/tenants.ts",
-     "packages/api/src/services/02.ts",
-     "packages/api/tests/02.spec.ts"
+     "apps/api/src/services/02.ts",
+     "apps/api/tests/02.spec.ts"
     ],
     "modify": [
-     "packages/api/src/app.ts"
+     "apps/api/src/app.ts"
     ],
     "shared_read": [
      "08_api/openapi.yaml",
@@ -8903,7 +8903,7 @@
     "apps/api/src/routes/ai_employees.ts (new)",
     "apps/api/src/routes/approvals.ts (new)",
     "apps/api/src/routes/audit_events.ts (new)",
-    "packages/api/src/app.ts (modify)"
+    "apps/api/src/app.ts (modify)"
    ],
    "files_changed_predicted": {
     "new": [
@@ -8911,11 +8911,11 @@
      "apps/api/src/routes/ai_employees.ts",
      "apps/api/src/routes/approvals.ts",
      "apps/api/src/routes/audit_events.ts",
-     "packages/api/src/services/03.ts",
-     "packages/api/tests/03.spec.ts"
+     "apps/api/src/services/03.ts",
+     "apps/api/tests/03.spec.ts"
     ],
     "modify": [
-     "packages/api/src/app.ts"
+     "apps/api/src/app.ts"
     ],
     "shared_read": [
      "08_api/openapi.yaml",
@@ -9413,17 +9413,17 @@
    "files_changed": [
     "apps/api/src/routes/policies.ts (new)",
     "apps/api/src/routes/tasks.ts (new)",
-    "packages/api/src/app.ts (modify)"
+    "apps/api/src/app.ts (modify)"
    ],
    "files_changed_predicted": {
     "new": [
      "apps/api/src/routes/policies.ts",
      "apps/api/src/routes/tasks.ts",
-     "packages/api/src/services/03.ts",
-     "packages/api/tests/03.spec.ts"
+     "apps/api/src/services/03.ts",
+     "apps/api/tests/03.spec.ts"
     ],
     "modify": [
-     "packages/api/src/app.ts"
+     "apps/api/src/app.ts"
     ],
     "shared_read": [
      "08_api/openapi.yaml",
@@ -9764,18 +9764,18 @@
     "apps/api/src/routes/ledger_definitions.ts (new)",
     "apps/api/src/routes/ledger_records.ts (new)",
     "apps/api/src/routes/tasks.ts (new)",
-    "packages/api/src/app.ts (modify)"
+    "apps/api/src/app.ts (modify)"
    ],
    "files_changed_predicted": {
     "new": [
      "apps/api/src/routes/ledger_definitions.ts",
      "apps/api/src/routes/ledger_records.ts",
      "apps/api/src/routes/tasks.ts",
-     "packages/api/src/services/04.ts",
-     "packages/api/tests/04.spec.ts"
+     "apps/api/src/services/04.ts",
+     "apps/api/tests/04.spec.ts"
     ],
     "modify": [
-     "packages/api/src/app.ts"
+     "apps/api/src/app.ts"
     ],
     "shared_read": [
      "08_api/openapi.yaml",
@@ -10236,7 +10236,7 @@
     "apps/api/src/routes/goals.ts (new)",
     "apps/api/src/routes/tasks.ts (new)",
     "apps/api/src/routes/tenants.ts (new)",
-    "packages/api/src/app.ts (modify)"
+    "apps/api/src/app.ts (modify)"
    ],
    "files_changed_predicted": {
     "new": [
@@ -10245,11 +10245,11 @@
      "apps/api/src/routes/goals.ts",
      "apps/api/src/routes/tasks.ts",
      "apps/api/src/routes/tenants.ts",
-     "packages/api/src/services/05.ts",
-     "packages/api/tests/05.spec.ts"
+     "apps/api/src/services/05.ts",
+     "apps/api/tests/05.spec.ts"
     ],
     "modify": [
-     "packages/api/src/app.ts"
+     "apps/api/src/app.ts"
     ],
     "shared_read": [
      "08_api/openapi.yaml",
@@ -10761,17 +10761,17 @@
    "files_changed": [
     "apps/api/src/routes/goals.ts (new)",
     "apps/api/src/routes/hypotheses.ts (new)",
-    "packages/api/src/app.ts (modify)"
+    "apps/api/src/app.ts (modify)"
    ],
    "files_changed_predicted": {
     "new": [
      "apps/api/src/routes/goals.ts",
      "apps/api/src/routes/hypotheses.ts",
-     "packages/api/src/services/06.ts",
-     "packages/api/tests/06.spec.ts"
+     "apps/api/src/services/06.ts",
+     "apps/api/tests/06.spec.ts"
     ],
     "modify": [
-     "packages/api/src/app.ts"
+     "apps/api/src/app.ts"
     ],
     "shared_read": [
      "08_api/openapi.yaml",
@@ -11157,7 +11157,7 @@
     "apps/api/src/routes/approvals.ts (new)",
     "apps/api/src/routes/audit_events.ts (new)",
     "apps/api/src/routes/members.ts (new)",
-    "packages/api/src/app.ts (modify)"
+    "apps/api/src/app.ts (modify)"
    ],
    "files_changed_predicted": {
     "new": [
@@ -11165,11 +11165,11 @@
      "apps/api/src/routes/approvals.ts",
      "apps/api/src/routes/audit_events.ts",
      "apps/api/src/routes/members.ts",
-     "packages/api/src/services/07.ts",
-     "packages/api/tests/07.spec.ts"
+     "apps/api/src/services/07.ts",
+     "apps/api/tests/07.spec.ts"
     ],
     "modify": [
-     "packages/api/src/app.ts"
+     "apps/api/src/app.ts"
     ],
     "shared_read": [
      "08_api/openapi.yaml",
@@ -11676,16 +11676,16 @@
    ],
    "files_changed": [
     "apps/api/src/routes/tasks.ts (new)",
-    "packages/api/src/app.ts (modify)"
+    "apps/api/src/app.ts (modify)"
    ],
    "files_changed_predicted": {
     "new": [
      "apps/api/src/routes/tasks.ts",
-     "packages/api/src/services/07.ts",
-     "packages/api/tests/07.spec.ts"
+     "apps/api/src/services/07.ts",
+     "apps/api/tests/07.spec.ts"
     ],
     "modify": [
-     "packages/api/src/app.ts"
+     "apps/api/src/app.ts"
     ],
     "shared_read": [
      "08_api/openapi.yaml",
@@ -12076,18 +12076,18 @@
     "apps/api/src/routes/duties.ts (new)",
     "apps/api/src/routes/ledger_definitions.ts (new)",
     "apps/api/src/routes/tenants.ts (new)",
-    "packages/api/src/app.ts (modify)"
+    "apps/api/src/app.ts (modify)"
    ],
    "files_changed_predicted": {
     "new": [
      "apps/api/src/routes/duties.ts",
      "apps/api/src/routes/ledger_definitions.ts",
      "apps/api/src/routes/tenants.ts",
-     "packages/api/src/services/08.ts",
-     "packages/api/tests/08.spec.ts"
+     "apps/api/src/services/08.ts",
+     "apps/api/tests/08.spec.ts"
     ],
     "modify": [
-     "packages/api/src/app.ts"
+     "apps/api/src/app.ts"
     ],
     "shared_read": [
      "08_api/openapi.yaml",
@@ -12478,7 +12478,7 @@
     "apps/api/src/routes/export_jobs.ts (new)",
     "apps/api/src/routes/members.ts (new)",
     "apps/api/src/routes/sessions.ts (new)",
-    "packages/api/src/app.ts (modify)"
+    "apps/api/src/app.ts (modify)"
    ],
    "files_changed_predicted": {
     "new": [
@@ -12486,11 +12486,11 @@
      "apps/api/src/routes/export_jobs.ts",
      "apps/api/src/routes/members.ts",
      "apps/api/src/routes/sessions.ts",
-     "packages/api/src/services/09.ts",
-     "packages/api/tests/09.spec.ts"
+     "apps/api/src/services/09.ts",
+     "apps/api/tests/09.spec.ts"
     ],
     "modify": [
-     "packages/api/src/app.ts"
+     "apps/api/src/app.ts"
     ],
     "shared_read": [
      "08_api/openapi.yaml",
@@ -12970,7 +12970,7 @@
     "apps/api/src/routes/conversations.ts (new)",
     "apps/api/src/routes/memories.ts (new)",
     "apps/api/src/routes/tenants.ts (new)",
-    "packages/api/src/app.ts (modify)"
+    "apps/api/src/app.ts (modify)"
    ],
    "files_changed_predicted": {
     "new": [
@@ -12978,11 +12978,11 @@
      "apps/api/src/routes/conversations.ts",
      "apps/api/src/routes/memories.ts",
      "apps/api/src/routes/tenants.ts",
-     "packages/api/src/services/11.ts",
-     "packages/api/tests/11.spec.ts"
+     "apps/api/src/services/11.ts",
+     "apps/api/tests/11.spec.ts"
     ],
     "modify": [
-     "packages/api/src/app.ts"
+     "apps/api/src/app.ts"
     ],
     "shared_read": [
      "08_api/openapi.yaml",
@@ -13389,17 +13389,17 @@
    "files_changed": [
     "apps/api/src/routes/inquiries.ts (new)",
     "apps/api/src/routes/plans.ts (new)",
-    "packages/api/src/app.ts (modify)"
+    "apps/api/src/app.ts (modify)"
    ],
    "files_changed_predicted": {
     "new": [
      "apps/api/src/routes/inquiries.ts",
      "apps/api/src/routes/plans.ts",
-     "packages/api/src/services/10.ts",
-     "packages/api/tests/10.spec.ts"
+     "apps/api/src/services/10.ts",
+     "apps/api/tests/10.spec.ts"
     ],
     "modify": [
-     "packages/api/src/app.ts"
+     "apps/api/src/app.ts"
     ],
     "shared_read": [
      "08_api/openapi.yaml",
@@ -13787,18 +13787,18 @@
     "apps/api/src/routes/inquiries.ts (new)",
     "apps/api/src/routes/notices.ts (new)",
     "apps/api/src/routes/plans.ts (new)",
-    "packages/api/src/app.ts (modify)"
+    "apps/api/src/app.ts (modify)"
    ],
    "files_changed_predicted": {
     "new": [
      "apps/api/src/routes/inquiries.ts",
      "apps/api/src/routes/notices.ts",
      "apps/api/src/routes/plans.ts",
-     "packages/api/src/services/14.ts",
-     "packages/api/tests/14.spec.ts"
+     "apps/api/src/services/14.ts",
+     "apps/api/tests/14.spec.ts"
     ],
     "modify": [
-     "packages/api/src/app.ts"
+     "apps/api/src/app.ts"
     ],
     "shared_read": [
      "08_api/openapi.yaml",
@@ -14169,7 +14169,7 @@
     "apps/api/src/routes/inquiries.ts (new)",
     "apps/api/src/routes/invoices.ts (new)",
     "apps/api/src/routes/notices.ts (new)",
-    "packages/api/src/app.ts (modify)"
+    "apps/api/src/app.ts (modify)"
    ],
    "files_changed_predicted": {
     "new": [
@@ -14177,11 +14177,11 @@
      "apps/api/src/routes/inquiries.ts",
      "apps/api/src/routes/invoices.ts",
      "apps/api/src/routes/notices.ts",
-     "packages/api/src/services/15.ts",
-     "packages/api/tests/15.spec.ts"
+     "apps/api/src/services/15.ts",
+     "apps/api/tests/15.spec.ts"
     ],
     "modify": [
-     "packages/api/src/app.ts"
+     "apps/api/src/app.ts"
     ],
     "shared_read": [
      "08_api/openapi.yaml",
@@ -14605,7 +14605,7 @@
     "apps/api/src/routes/members.ts (new)",
     "apps/api/src/routes/service_registry.ts (new)",
     "apps/api/src/routes/tenants.ts (new)",
-    "packages/api/src/app.ts (modify)"
+    "apps/api/src/app.ts (modify)"
    ],
    "files_changed_predicted": {
     "new": [
@@ -14613,11 +14613,11 @@
      "apps/api/src/routes/members.ts",
      "apps/api/src/routes/service_registry.ts",
      "apps/api/src/routes/tenants.ts",
-     "packages/api/src/services/16.ts",
-     "packages/api/tests/16.spec.ts"
+     "apps/api/src/services/16.ts",
+     "apps/api/tests/16.spec.ts"
     ],
     "modify": [
-     "packages/api/src/app.ts"
+     "apps/api/src/app.ts"
     ],
     "shared_read": [
      "08_api/openapi.yaml",
@@ -15033,18 +15033,18 @@
     "apps/api/src/routes/ai_employees.ts (new)",
     "apps/api/src/routes/service_registry.ts (new)",
     "apps/api/src/routes/skills.ts (new)",
-    "packages/api/src/app.ts (modify)"
+    "apps/api/src/app.ts (modify)"
    ],
    "files_changed_predicted": {
     "new": [
      "apps/api/src/routes/ai_employees.ts",
      "apps/api/src/routes/service_registry.ts",
      "apps/api/src/routes/skills.ts",
-     "packages/api/src/services/17.ts",
-     "packages/api/tests/17.spec.ts"
+     "apps/api/src/services/17.ts",
+     "apps/api/tests/17.spec.ts"
     ],
     "modify": [
-     "packages/api/src/app.ts"
+     "apps/api/src/app.ts"
     ],
     "shared_read": [
      "08_api/openapi.yaml",
@@ -15411,18 +15411,18 @@
     "apps/api/src/routes/audit_events.ts (new)",
     "apps/api/src/routes/distributions.ts (new)",
     "apps/api/src/routes/plans.ts (new)",
-    "packages/api/src/app.ts (modify)"
+    "apps/api/src/app.ts (modify)"
    ],
    "files_changed_predicted": {
     "new": [
      "apps/api/src/routes/audit_events.ts",
      "apps/api/src/routes/distributions.ts",
      "apps/api/src/routes/plans.ts",
-     "packages/api/src/services/13.ts",
-     "packages/api/tests/13.spec.ts"
+     "apps/api/src/services/13.ts",
+     "apps/api/tests/13.spec.ts"
     ],
     "modify": [
-     "packages/api/src/app.ts"
+     "apps/api/src/app.ts"
     ],
     "shared_read": [
      "08_api/openapi.yaml",
@@ -15763,17 +15763,17 @@
    "files_changed": [
     "apps/api/src/routes/ai_employees.ts (new)",
     "apps/api/src/routes/plans.ts (new)",
-    "packages/api/src/app.ts (modify)"
+    "apps/api/src/app.ts (modify)"
    ],
    "files_changed_predicted": {
     "new": [
      "apps/api/src/routes/ai_employees.ts",
      "apps/api/src/routes/plans.ts",
-     "packages/api/src/services/12.ts",
-     "packages/api/tests/12.spec.ts"
+     "apps/api/src/services/12.ts",
+     "apps/api/tests/12.spec.ts"
     ],
     "modify": [
-     "packages/api/src/app.ts"
+     "apps/api/src/app.ts"
     ],
     "shared_read": [
      "08_api/openapi.yaml",
@@ -36099,7 +36099,7 @@
     "10_skills/README.md (new)",
     "10_skills/_template/SKILL.md (new)",
     "scripts/ci/skill_pkg_gate.py (new)",
-    "packages/api/skills/validate.ts (new)"
+    "apps/api/skills/validate.ts (new)"
    ],
    "files_changed_predicted": {
     "new": [
@@ -36107,7 +36107,7 @@
      "10_skills/_template/SKILL.md",
      "10_skills/_template/evals/scenarios.json",
      "scripts/ci/skill_pkg_gate.py",
-     "packages/api/skills/validate.ts"
+     "apps/api/skills/validate.ts"
     ],
     "modify": [
      "10_skills/catalog.json"
