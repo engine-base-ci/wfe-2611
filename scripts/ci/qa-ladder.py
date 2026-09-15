@@ -33,7 +33,7 @@ ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_SPEC = ROOT / "07_qa/test-specs"
 DEFAULT_TICKETS = ROOT / "07_tasks/tickets.json"
 
-TASK_ID = re.compile(r"\bT-[A-Z]+(?:-[A-Z]+)?-\d+[a-z]?\b")
+TASK_ID = re.compile(r"\bT-[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)?-\d+[a-z]?\b")
 ROW_ID = re.compile(r"^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*-\d{2,3}(?:-[A-C])?$")   # errors.md（E-…-A/B/C＝出る／出ない／文言と一手）も行
 PASS = re.compile(r"\b(PASS|FIXED)\b|完了")
 BLOCKED = re.compile(r"\bBLOCKED\b")
@@ -42,6 +42,7 @@ LEVEL = re.compile(r"\bL([1-5])\b")
 
 SPEC_FILES = (
     "screens/*.md",
+    "spec-work.md",         # 後回し（段階 2）の仕様づくりの行（Group V2）
     "skills.md",            # スキル一式の 5 場面（D-080・build_tasks Group S が生成）
     "errors.md",            # 第13軸（error_catalog.py rows が生成。11 列）
     "ai-runtime-matrix.md",

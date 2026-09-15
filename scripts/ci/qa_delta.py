@@ -26,7 +26,7 @@ from collections import defaultdict
 from pathlib import Path
 
 ROW_ID = re.compile(r"^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*-\d{2,3}$")
-TASK_ID = re.compile(r"^T-[A-Z]+(?:-[A-Z]+)?-\d+[a-z]?$")
+TASK_ID = re.compile(r"^T-[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)?-\d+[a-z]?$")
 API_ID = re.compile(r"^(GET|POST|PUT|PATCH|DELETE)\s+/")
 DEC_ID = re.compile(r"^D-\d{3}$")
 

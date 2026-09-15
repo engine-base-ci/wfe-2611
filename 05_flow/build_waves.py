@@ -8,8 +8,8 @@ J = lambda p: json.load(open(p, encoding="utf-8"))
 T = J("07_tasks/tickets.json"); TASKS = {t["id"]: t for t in T["tasks"]}; PLAN = {x["id"]: x for x in J("07_tasks/tickets_plan.json")["tickets"] if x.get("kind") == "story"}
 MS = J(f"{OUT}/milestones.json"); JR = J("07_qa/test-specs/journeys/plan.json")["rows"]; ST = J("02_tech_stack/selected-stack.json")
 staging = ST["stack"].get("environments", {}).get("staging") or ST.get("environments", {}).get("staging")
-PHASE = {"F": ("1_foundation", "Foundation"), "D": ("2_data", "Data Layer"), "A": ("3_api", "API Layer"), "U-shared": ("4_ui_foundation", "UI Foundation"), "U-screen": ("5_ui_parallel", "UI Parallel"), "I": ("6_integration", "Integration & Polish"), "S": ("7_content", "スキル制作（運営の資産・開発と並行）")}
-SP = {"F": "F", "D": "D", "A": "A", "U-shared": "U0-", "U-screen": "U", "I": "I", "S": "S"}
+PHASE = {"F": ("1_foundation", "Foundation"), "D": ("2_data", "Data Layer"), "A": ("3_api", "API Layer"), "U-shared": ("4_ui_foundation", "UI Foundation"), "U-screen": ("5_ui_parallel", "UI Parallel"), "I": ("6_integration", "Integration & Polish"), "S": ("7_content", "スキル制作（運営の資産・開発と並行）"), "V2": ("8_spec_v2", "段階 2 の仕様づくり（実装と並行・D-081）")}
+SP = {"F": "F", "D": "D", "A": "A", "U-shared": "U0-", "U-screen": "U", "I": "I", "S": "S", "V2": "V2-"}
 # 流れ（L2）: runnable_after が揃う最初の Wave に付ける
 flows = collections.OrderedDict()
 for r in JR: flows.setdefault(r["journey"], {"name": r["name"], "after": set()})["after"] |= set(r["runnable_after"])
@@ -26,11 +26,11 @@ for w in T["waves"]:
                   "goal": f"{ph_name}：{', '.join(TASKS[t]['title'][:18] for t in w['tasks'][:3])}{' …' if len(w['tasks']) > 3 else ''}",
                   "qa_scope": {"l1_tasks": list(w["tasks"]), "l1_rows": sum(len(TASKS[t]["qa_rows"]["l1"]) for t in w["tasks"]), "l2_flows": l2, "regression_from": [x["id"] for x in waves], "gate": "bash scripts/ci/completion_gate.sh --wave " + f"W{w['wave']}"},
                   "done_when": ["Wave 内の全タスクが qa-ladder gate --task PASS（L1）", "揃った流れ（l2_flows）が staging で全行 PASS（L2）", "前 Wave の回帰（regression_from の差分）PASS", "completion_gate.sh STATUS 完了 → 次の Wave を始める"],
-                  "runnable": bool(staging) or g == "S", "preconditions": [] if staging or g == "S" else ["staging が selected-stack.json の environments.staging に無い（GAP-246）。本番と同じ migration／deploy で作れる構成を user と決めてから L1 を流す"]})
+                  "runnable": bool(staging) or g in ("S", "V2"), "preconditions": [] if staging or g in ("S", "V2") else ["staging が selected-stack.json の environments.staging に無い（GAP-246）。本番と同じ migration／deploy で作れる構成を user と決めてから L1 を流す"]})
 unclaimed = [j for j in flows if j not in claimed]
 CAP = T["summary"]["parallel_capacity"]; velocity = {"definition": "gate PASS（L1＋解禁 L2）までを 1 タスクの完了と数える。テスト消化を工数に含める", "per_wave_wall_clock_h_ai": [w["wall_clock_h_ai"] for w in waves], "capacity_per_day_ai_h": CAP * 6, "calendar_days_ai": T["summary"]["calendar_days_ai"], "calendar_days_human": T["summary"]["calendar_days_human"]}
 sched = {"version": "v3", "project": "Kaname", "created_at": TODAY, "skill": "sprint-planning", "_doc": "05_flow/build_waves.py が tickets.json の Wave・tickets_plan.json の日付・milestones・journeys から機械生成。手で直さない", "source": T["source"], "decomposition_mode": T["decomposition_mode"],
-         "principles": ["Phase 順序を守る（Foundation → Data → API → UI 共通 → UI 並列 → 結線）。Phase をまたいで並列にしない", "Phase 内は並列上限まで並列（CAP " + str(CAP) + "）", "Phase 3 の最後（A の最終 Wave）で契約凍結：OpenAPI・TS 型・画面 ↔ API 100%（既に 08_api で凍結済み）", "スキル制作（S）は開発と並行。Wave の締めには含めるが Phase 順序には縛られない", "Wave の締め＝completion_gate.sh STATUS 完了。全 PR の auto-merge は締めではない"],
+         "principles": ["Phase 順序を守る（Foundation → Data → API → UI 共通 → UI 並列 → 結線）。Phase をまたいで並列にしない", "Phase 内は並列上限まで並列（CAP " + str(CAP) + "）", "Phase 3 の最後（A の最終 Wave）で契約凍結：OpenAPI・TS 型・画面 ↔ API 100%（既に 08_api で凍結済み）", "スキル制作（S）と段階 2 の仕様づくり（V2）は開発と並行。Wave の締めには含めるが Phase 順序には縛られない", "Wave の締め＝completion_gate.sh STATUS 完了。全 PR の auto-merge は締めではない"],
          "staging": {"defined": bool(staging), "value": staging, "gap": None if staging else "GAP-246：environments.staging 未確定。W0 の最初に置く（user 確認）"},
          "milestones": MS["milestones"], "start": MS["start"], "holidays": MS["holidays"], "velocity": velocity, "totals": {"waves": len(waves), "tasks": sum(len(w["tasks"]) for w in waves), "estimate_hours_human": T["summary"]["total_estimate_hours_human"], "estimate_hours_ai_compute": T["summary"]["total_estimate_hours_ai_compute"], "human_review_total_h": T["summary"]["human_review_total_h"], "total_wall_clock_h_ai_parallel": T["summary"]["total_wall_clock_h_ai_parallel"], "parallel_capacity": CAP, "l2_flows_total": len(flows), "l2_flows_unassigned": unclaimed},
          "events": {"planning": "各 Wave の開始日に dispatch.sh で並列起動（人は blocking の解除と致命級のレビュー）", "daily": "AI の動きは PR と qa-ladder の結果で見る（デイリー会議はしない）", "review": "Wave の締め（finish）に completion_gate と高本レビュー", "retro": "Wave 締めで qa_delta と layer_audit の warn を棚卸し"},

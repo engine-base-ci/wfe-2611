@@ -14,7 +14,7 @@ E = {e["id"]: e for e in json.load(open("07_functional/entities.json", encoding=
 EP = {e["id"]: e for e in json.load(open("08_api/endpoints.json", encoding="utf-8"))["endpoints"]}
 ERR = json.load(open("07_qa/test-specs/errors.json", encoding="utf-8"))["errors"]
 LOG = open("01_hearing/決定ログ_進行中.md", encoding="utf-8").read()
-SUMM = {m.group(1): m.group(2).strip() for m in re.finditer(r"decision: (D-\d{3})\n.*?summary: ([^\n]*)", LOG, re.S)}
+SUMM = {m.group(1): re.sub(r"\s*-->\s*$", "", m.group(2)).strip() for m in re.finditer(r"decision: (D-\d{3})\n.*?summary: ([^\n]*)", LOG, re.S)}
 TODAY = datetime.date.today().isoformat(); CAP = 10; SPEC = "07_qa/test-specs"
 acts = {a["id"]: a for ph in F["backbone"] for a in ph["acts"]}
 ERR_BY_SCREEN, ERR_BY_ACT = {}, {}
@@ -176,6 +176,31 @@ for i, c in enumerate(CAT, 2):
     newtask(tid, f"スキル制作 {KIND_JA[c['kind']]}「{c['name']}」（元ネタ {'・'.join(c['origin'][:2])}）", "S", "content", "7_content", "spec", [], category="spec", hours=KIND_H[c["kind"]], critical=True, acts=["A80", "A81"], screen_ids=["ops-skills"], depends_on=["T-S-01"], choke_points=[], choke_rationale="中身の制作。外界には触れない（テストはテスト会社の中）",
             fcp={"new": [f"10_skills/{c['id']}/SKILL.md", f"10_skills/{c['id']}/evals/scenarios.json", f"10_skills/{c['id']}/references/"], "modify": ["10_skills/catalog.json"], "shared_read": ["10_skills/_template/SKILL.md", "10_skills/README.md"], "forbidden": ["packages/**", "apps/**"]}, files_changed=[f"10_skills/{c['id']}/SKILL.md (new)", f"10_skills/{c['id']}/evals/scenarios.json (new)", "10_skills/catalog.json (modify)"],
             ac={"structural": [f"UBIQUITOUS: 10_skills/{c['id']} が雛形の節を全部持ち、skill_pkg_gate.py が PASS（catalog の status が draft → 版を出したら released）"], "functional": [f"EVENT-DRIVEN: WHEN 自分のAIが「{c['name']}」の発動条件に当たったら、システムはこのスキルを読み、出す出力のオブジェクトを変える（案として。人が確定する）", f"UNWANTED: IF テスト会社の 5 場面のうち 1 つでも期待と違ったら、版は出せない（配布先に届かない）", "UNWANTED: IF スキルが外に出る操作や資格情報の参照を含んでいたら、検査で落ちる"], "regression": REG_BASE[4:5] + ["python3 scripts/ci/skill_pkg_gate.py 10_skills PASS", "運営のテスト会社で evals の全場面 PASS を skill_test_runs に記録"]}, spec_links=[f"10_skills/{c['id']}/SKILL.md", "10_skills/README.md"], qa_rows={"l1": rows, "l2_flows": []}, scenarios=[{"name": "5 場面", "steps": ["テスト会社で場面 1〜5"], "expected": "全部 then どおり"}], source=c["source"] + ["D-080.2", "D-080.7"], why=f"{KIND_JA[c['kind']]}の中身を HQ の {'・'.join(c['origin'])} から汎用化して作る（D-080）")
+# ---------------------------------------------------------------- Group V2（後回し＝段階 2 の仕様づくり）← 決定ログの「段階 2：…」の文と flow.json の deferred
+# 後回しにした決定の文は、実装タスクにならないだけでなく「仕様づくり」のタスクにもならず日程から消えていた（2026-09-15・user「v2 のモックとか仕様書とかいつ作るの？」）。
+# 文（D-xxx.n）ごとに 1 タスク。段階 2 の実装タスクは、その仕様が揃って flow の release に入った時点で本スクリプトが通常の Group として生成する。
+LOG = open("01_hearing/決定ログ_進行中.md", encoding="utf-8").read(); DEFER = []
+for sec in re.split(r"\n(?=## \d+\. )", LOG):
+    m = re.search(r"decision: (D-\d{3})", sec); st = re.search(r"status: (\w+)", sec)
+    if not m or not st or st.group(1) != "confirmed": continue
+    tb = sec.split("### 決めたこと", 1)
+    if len(tb) < 2: continue
+    rows = [r for r in tb[1].split("\n") if r.startswith("| ") and not r.startswith("| 項目") and not r.startswith("|---")]
+    for i, r in enumerate(rows, 1):
+        cells = [c.strip() for c in r.strip().strip("|").split("|")]
+        if re.match(r"^段階 ?2", cells[0]): DEFER.append({"clause": f"{m.group(1)}.{i}", "item": (re.sub(r"^段階 ?2\s*[：:]?\s*(で足す|以降)?\s*", "", cells[0]).strip() or (cells[1] if len(cells) > 1 else "")[:40]), "text": cells[1] if len(cells) > 1 else "", "refs": sorted(set(re.findall(r"D-\d{3}(?:\.\d+)?", cells[1] if len(cells) > 1 else "")))})
+flow_defer = {k: v for k, v in F.get("deferred", {}).items()}
+F_last = [t["id"] for t in tasks if t["group"] == "F"][-1:]
+sp = f"{SPEC}/spec-work.md"
+for i, d in enumerate(DEFER, 1):
+    tid = f"T-V2-{i:02d}"; pre = f"SPC-{i:02d}"; rows = []; scr = [k for k, v in flow_defer.items() if d["clause"] in v and not k.startswith("A")]; acts_ = [k for k, v in flow_defer.items() if d["clause"] in v and k.startswith("A")]
+    for k, it, exp in [("決定ログ", f"{d['item']}：決定ログに節（decision／status／reflect_in／決めたこと表）が足され、trace_gate T1〜T10 が緑", "trace_gate PASS"), ("画面と行為", f"{d['item']}：flow.json に行為・画面が入り、G17 の deferred からこの文が消える（release を v1 か次の段階に）", "flow_gate G1〜G10・G17 PASS"), ("モック", f"{d['item']}：モックが時点・役割・空／止まっている を持ち、治具（状態・横溢れ・レイアウト）が緑", "mock_state・role_gate・ui_lint・治具 ★0"), ("DB と設計書", f"{d['item']}：オブジェクトに ER 図の表と設計書の節がある（G20）。エラー一覧に異常状態が足されている（E1〜E9）", "er_gate・error_catalog gate PASS"), ("下流の再生成", f"{d['item']}：functional → api → features → tasks → tickets → waves → test-plan を再生成し、実装タスクが日程に出る", "layer_audit --run PASS・ticket_gate PASS")]:
+        rows.append(qrow(sp, pre, "仕様", k, it, "この文が後回しのまま", "仕様づくりを 1 周回す", exp, d["clause"], tid))
+    newtask(tid, f"段階 2 の仕様づくり：{d['item'][:40]}", "V2", "spec", "8_spec_v2", "spec", [], category="spec", hours=16, critical=False, acts=acts_, screen_ids=[], depends_on=F_last, choke_points=[], choke_rationale="仕様の作業。外界には触れない",
+            fcp={"new": ["01_hearing/決定ログ_進行中.md#新しい節", "06_mockup/s_p11.py"], "modify": ["05_flow/data.py", "03_architecture/ER図.md", "03_architecture/アーキテクチャ設計書.md", "07_qa/test-specs/errors.json"], "shared_read": ["01_hearing/ヒアリングサマリー.md#段階リリース", "05_flow/flow.json#deferred"], "forbidden": ["apps/**", "packages/**（仕様が揃うまで実装しない）"]},
+            files_changed=["01_hearing/決定ログ_進行中.md (modify)", "05_flow/data.py (modify)", "06_mockup/s_p11.py (new)", "03_architecture/ER図.md (modify)"],
+            ac={"structural": [f"UBIQUITOUS: {d['item']} の画面・行為が flow.json の release に入り、G17 の deferred から {d['clause']} が消えている"], "functional": [f"EVENT-DRIVEN: WHEN 決定ログに {d['item']} の節を足したら、システム（ゲート）は trace_gate T1〜T10・flow_gate G17・er_gate G20・layer_audit G21 を全部緑で通す", "UNWANTED: IF 決定の無い後回しや、オブジェクトの無い『作る・配る・版』の文が残ったら、G17／T10 が赤のまま実装タスクを生成しない"], "regression": ["python3 scripts/ci/layer_audit.py --run PASS", "python3 scripts/ci/td_gate.py（TD11：後回しの文に仕様づくりのタスク）PASS"]},
+            spec_links=["01_hearing/ヒアリングサマリー.md", "05_flow/flow.json"], qa_rows={"l1": rows, "l2_flows": []}, scenarios=[{"name": "仕様を 1 周回す", "steps": ["決定 → flow → モック → ER → 下流"], "expected": "実装タスクが日程に出る"}], source=[d["clause"]] + d["refs"], why=f"後回しにした文 {d['clause']}「{d['item']}」の仕様を作る（D-081.7：後回しは日程に載せる）")
 # ---------------------------------------------------------------- エラー一覧の行（errors.md）をタスクに割り当て、タスク列を埋める
 by_choke = {t["choke_points"][0]: t["id"] for t in tasks if t["group"] == "F" and t["choke_points"] and t["choke_points"][0].startswith("C")}
 fallback = next((t["id"] for t in tasks if t["group"] == "I" and "セキュリティ監査" in t["title"]), tasks[-1]["id"])
@@ -207,7 +232,7 @@ for j in FD["journeys"]:
         if t["group"] == "I" and any(jc["id"] == j["id"] for jc in FEAT.get(t["feature_id"], {}).get("journey_candidates", [])): t["qa_rows"]["l2_flows"] = sorted(set(t["qa_rows"]["l2_flows"]) | {j["id"]})
 json.dump({"version": "v3.2", "created_at": TODAY, "_doc": "背骨のフェーズ → 流れ（J-xx）。runnable_after は揃うべきタスク。05_flow/build_tasks.py が生成", "rows": jrows}, open(f"{SPEC}/journeys/plan.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 # ---------------------------------------------------------------- Wave（依存順・CAP）
-order = ["F", "D", "A", "U-shared", "U-screen", "I", "S"]; w = 0; waves = []
+order = ["F", "D", "V2", "A", "U-shared", "U-screen", "I", "S"]; w = 0; waves = []
 for g in order:
     fs = [t for t in tasks if t["group"] == g]
     for i in range(0, len(fs), CAP):
@@ -233,7 +258,7 @@ json.dump({"version": "v3.2", "project": "Kaname", "created_at": TODAY, "decompo
 json.dump({"meta": {"project": "Kaname", "created_at": TODAY, "skill_version": "v3.2-machine", "total_tasks": len(tasks)}, "context": {"project_type": "SaaS（マルチテナント・AI社員・運営）", "team_type": f"並列セッション {CAP}", "decomposition_granularity": "AI 8h 以内／1 PR", "done_definition": "3-tier AC 全 pass ＋ CI gate ＋ 結線（stub は完了でない）", "deliverable_layer_order": "foundation → backend → ui → integration → polish（content＝スキル制作は開発と並行）", "decomposition_mode": "api_first（複数クライアント・並列 AI・モック先行・RLS が多い）"},
            "decision_log": [{"decision": "api_first（横切り）", "reason": "Web・Bridge・将来のアプリが同じ契約を叩き、AI が 10 並列で画面を作る。仕様は凍結済み", "alternatives": ["縦切り（垂直スライス）"], "tradeoffs": "触れるものが出るのは UI 並列の Wave まで遅い → 流れ J-01（登録〜はじめの設定）を最初の UI Wave に寄せて早く触れるようにする", "source": ["D-043.2", "D-053.1"]},
                             {"decision": "L1 行をタスクと同時に機械生成", "reason": "実装後に全体を見て書くと細部が抜ける（test-ladder）", "alternatives": ["human-grade-qa で後からまとめて"], "tradeoffs": "行数が多い（機械生成なので保守は再生成）", "source": ["D-069.6"]}],
-           "task_patterns": [{"pattern_name": "関門先行 Foundation ＋ 用事ごとの API ＋ 画面ごとの UI ＋ 結線 I", "applicable_to": "モック先行・並列 AI の SaaS", "description": "F/D/A/U-shared/U-screen/I の 6 Group ＋ S（スキル制作・運営の資産・D-080）、Wave は CAP で分割"}],
+           "task_patterns": [{"pattern_name": "関門先行 Foundation ＋ 用事ごとの API ＋ 画面ごとの UI ＋ 結線 I", "applicable_to": "モック先行・並列 AI の SaaS", "description": "F/D/A/U-shared/U-screen/I の 6 Group ＋ S（スキル制作・D-080）＋ V2（後回しの仕様づくり・D-081）、Wave は CAP で分割"}],
            "risk_flags": [{"task_id": t["id"], "risk_type": "致命級（人のレビュー）", "description": t["title"][:50], "mitigation": "human_review_h を持つ。上流を故意に壊す検証"} for t in tasks if t["critical"]][:20],
            "research": {"sources": [], "findings": ["機械生成のため件数は入力ではなく出力"], "research_date": TODAY}}, open("07_tasks/td-decisions.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 md = [f"# Kaname v3 タスク分解結果（api_first・{TODAY}）", "", "## サマリー", "", f"- 総タスク数：{len(tasks)}（{' / '.join(f'{k} {v}' for k, v in summary['by_group'].items())}）", f"- 画面の被覆：{summary['by_screen_coverage']['covered_screens']}/{summary['by_screen_coverage']['total_screens']}", f"- L1 テスト行：{summary['qa_rows_total']}（正本 07_qa/test-specs）／ 流れ（L2）：{summary['journeys']}",

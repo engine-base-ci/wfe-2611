@@ -1,17 +1,17 @@
 {
- "generated_at": "2026-09-15T21:32:01",
+ "generated_at": "2026-09-15T21:50:02",
  "inputs": {
   "tickets": "07_tasks/tickets.json",
   "roster": "07_tasks/roster.json",
   "milestones": "08_schedule/milestones.json"
  },
  "summary": {
-  "epic": 14,
-  "story": 153,
-  "subtask": 3693,
+  "epic": 15,
+  "story": 158,
+  "subtask": 3738,
   "subtask_by": {
-   "impl": 375,
-   "test": 3118,
+   "impl": 395,
+   "test": 3143,
    "mock": 200
   },
   "critical_path": [
@@ -28,14 +28,14 @@
   "ghost_dependencies": [],
   "unassignable": [],
   "tentative": 0,
-  "assigned": 153,
+  "assigned": 158,
   "broken_links": [],
   "milestone_overrun": [],
   "estimate_default": [],
   "delta": {
    "added": 0,
    "updated": 0,
-   "unchanged": 153,
+   "unchanged": 158,
    "dropped": 0
   },
   "load": {
@@ -49,7 +49,7 @@
    "claude-07": 27.4,
    "claude-08": 27.9,
    "claude-09": 76.2,
-   "claude-10": 72.4
+   "claude-10": 85.9
   }
  },
  "tickets": [
@@ -368,6 +368,23 @@
     "T-S-13",
     "T-S-14",
     "T-S-15"
+   ],
+   "depends_on": [],
+   "status": "todo",
+   "links": {},
+   "delta": "unchanged"
+  },
+  {
+   "id": "E-spec",
+   "kind": "epic",
+   "title": "spec の層",
+   "parent": null,
+   "children": [
+    "T-V2-01",
+    "T-V2-02",
+    "T-V2-03",
+    "T-V2-04",
+    "T-V2-05"
    ],
    "depends_on": [],
    "status": "todo",
@@ -17998,6 +18015,301 @@
     "errors": [],
     "spec": [
      "07_tasks/tickets.json#T-S-15"
+    ]
+   },
+   "delta": "unchanged",
+   "dropped_reason": null
+  },
+  {
+   "id": "T-V2-01",
+   "kind": "story",
+   "title": "段階 2 の仕様づくり：payment（課金）の E-PAY-*。C7 は N/A（理由つき）",
+   "parent": "E-spec",
+   "children": [
+    "T-V2-01.s1",
+    "T-V2-01.s2",
+    "T-V2-01.s3",
+    "T-V2-01.s4",
+    "T-V2-01.t1",
+    "T-V2-01.t2",
+    "T-V2-01.t3",
+    "T-V2-01.t4",
+    "T-V2-01.t5"
+   ],
+   "depends_on": [
+    "T-F-17"
+   ],
+   "blocked_by": [],
+   "wave": "W0",
+   "layer": "spec",
+   "estimate_hours": 2.7,
+   "estimate_default": false,
+   "start": "2026-09-25",
+   "finish": "2026-09-25",
+   "critical": false,
+   "tentative": false,
+   "assignable": [
+    "takamoto",
+    "claude-10"
+   ],
+   "assignee": "claude-10",
+   "assigned_by": "auto",
+   "status": "todo",
+   "external": {},
+   "links": {
+    "mock": [],
+    "screens": [],
+    "decisions": [
+     "D-069.8"
+    ],
+    "acts": [],
+    "qa_rows": [
+     "SPC-01-001",
+     "SPC-01-002",
+     "SPC-01-003",
+     "SPC-01-004",
+     "SPC-01-005"
+    ],
+    "errors": [],
+    "spec": [
+     "07_tasks/tickets.json#T-V2-01"
+    ]
+   },
+   "delta": "unchanged",
+   "dropped_reason": null
+  },
+  {
+   "id": "T-V2-02",
+   "kind": "story",
+   "title": "段階 2 の仕様づくり：Stripe 課金",
+   "parent": "E-spec",
+   "children": [
+    "T-V2-02.s1",
+    "T-V2-02.s2",
+    "T-V2-02.s3",
+    "T-V2-02.s4",
+    "T-V2-02.t1",
+    "T-V2-02.t2",
+    "T-V2-02.t3",
+    "T-V2-02.t4",
+    "T-V2-02.t5"
+   ],
+   "depends_on": [
+    "T-F-17"
+   ],
+   "blocked_by": [],
+   "wave": "W0",
+   "layer": "spec",
+   "estimate_hours": 2.7,
+   "estimate_default": false,
+   "start": "2026-09-25",
+   "finish": "2026-09-25",
+   "critical": false,
+   "tentative": false,
+   "assignable": [
+    "takamoto",
+    "claude-10"
+   ],
+   "assignee": "claude-10",
+   "assigned_by": "auto",
+   "status": "todo",
+   "external": {},
+   "links": {
+    "mock": [],
+    "screens": [],
+    "decisions": [
+     "D-081.2",
+     "D-002"
+    ],
+    "acts": [
+     "A05"
+    ],
+    "qa_rows": [
+     "SPC-02-001",
+     "SPC-02-002",
+     "SPC-02-003",
+     "SPC-02-004",
+     "SPC-02-005"
+    ],
+    "errors": [],
+    "spec": [
+     "07_tasks/tickets.json#T-V2-02"
+    ]
+   },
+   "delta": "unchanged",
+   "dropped_reason": null
+  },
+  {
+   "id": "T-V2-03",
+   "kind": "story",
+   "title": "段階 2 の仕様づくり：LLM の経路の追加",
+   "parent": "E-spec",
+   "children": [
+    "T-V2-03.s1",
+    "T-V2-03.s2",
+    "T-V2-03.s3",
+    "T-V2-03.s4",
+    "T-V2-03.t1",
+    "T-V2-03.t2",
+    "T-V2-03.t3",
+    "T-V2-03.t4",
+    "T-V2-03.t5"
+   ],
+   "depends_on": [
+    "T-F-17"
+   ],
+   "blocked_by": [],
+   "wave": "W0",
+   "layer": "spec",
+   "estimate_hours": 2.7,
+   "estimate_default": false,
+   "start": "2026-09-25",
+   "finish": "2026-09-28",
+   "critical": false,
+   "tentative": false,
+   "assignable": [
+    "takamoto",
+    "claude-10"
+   ],
+   "assignee": "claude-10",
+   "assigned_by": "auto",
+   "status": "todo",
+   "external": {},
+   "links": {
+    "mock": [],
+    "screens": [],
+    "decisions": [
+     "D-081.3",
+     "D-043",
+     "D-055"
+    ],
+    "acts": [],
+    "qa_rows": [
+     "SPC-03-001",
+     "SPC-03-002",
+     "SPC-03-003",
+     "SPC-03-004",
+     "SPC-03-005"
+    ],
+    "errors": [],
+    "spec": [
+     "07_tasks/tickets.json#T-V2-03"
+    ]
+   },
+   "delta": "unchanged",
+   "dropped_reason": null
+  },
+  {
+   "id": "T-V2-04",
+   "kind": "story",
+   "title": "段階 2 の仕様づくり：PWA",
+   "parent": "E-spec",
+   "children": [
+    "T-V2-04.s1",
+    "T-V2-04.s2",
+    "T-V2-04.s3",
+    "T-V2-04.s4",
+    "T-V2-04.t1",
+    "T-V2-04.t2",
+    "T-V2-04.t3",
+    "T-V2-04.t4",
+    "T-V2-04.t5"
+   ],
+   "depends_on": [
+    "T-F-17"
+   ],
+   "blocked_by": [],
+   "wave": "W0",
+   "layer": "spec",
+   "estimate_hours": 2.7,
+   "estimate_default": false,
+   "start": "2026-09-28",
+   "finish": "2026-09-28",
+   "critical": false,
+   "tentative": false,
+   "assignable": [
+    "takamoto",
+    "claude-10"
+   ],
+   "assignee": "claude-10",
+   "assigned_by": "auto",
+   "status": "todo",
+   "external": {},
+   "links": {
+    "mock": [],
+    "screens": [],
+    "decisions": [
+     "D-081.4"
+    ],
+    "acts": [],
+    "qa_rows": [
+     "SPC-04-001",
+     "SPC-04-002",
+     "SPC-04-003",
+     "SPC-04-004",
+     "SPC-04-005"
+    ],
+    "errors": [],
+    "spec": [
+     "07_tasks/tickets.json#T-V2-04"
+    ]
+   },
+   "delta": "unchanged",
+   "dropped_reason": null
+  },
+  {
+   "id": "T-V2-05",
+   "kind": "story",
+   "title": "段階 2 の仕様づくり：情シス向けの開示資料",
+   "parent": "E-spec",
+   "children": [
+    "T-V2-05.s1",
+    "T-V2-05.s2",
+    "T-V2-05.s3",
+    "T-V2-05.s4",
+    "T-V2-05.t1",
+    "T-V2-05.t2",
+    "T-V2-05.t3",
+    "T-V2-05.t4",
+    "T-V2-05.t5"
+   ],
+   "depends_on": [
+    "T-F-17"
+   ],
+   "blocked_by": [],
+   "wave": "W0",
+   "layer": "spec",
+   "estimate_hours": 2.7,
+   "estimate_default": false,
+   "start": "2026-09-28",
+   "finish": "2026-09-28",
+   "critical": false,
+   "tentative": false,
+   "assignable": [
+    "takamoto",
+    "claude-10"
+   ],
+   "assignee": "claude-10",
+   "assigned_by": "auto",
+   "status": "todo",
+   "external": {},
+   "links": {
+    "mock": [],
+    "screens": [],
+    "decisions": [
+     "D-081.5"
+    ],
+    "acts": [],
+    "qa_rows": [
+     "SPC-05-001",
+     "SPC-05-002",
+     "SPC-05-003",
+     "SPC-05-004",
+     "SPC-05-005"
+    ],
+    "errors": [],
+    "spec": [
+     "07_tasks/tickets.json#T-V2-05"
     ]
    },
    "delta": "unchanged",
@@ -66609,6 +66921,591 @@
     ],
     "screens": [
      "ops-skills"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-01.s1",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "01_hearing/決定ログ_進行中.md (modify)",
+   "parent": "T-V2-01",
+   "status": "todo",
+   "links": {
+    "file": [
+     "01_hearing/決定ログ_進行中.md (modify)"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-01.s2",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "05_flow/data.py (modify)",
+   "parent": "T-V2-01",
+   "status": "todo",
+   "links": {
+    "file": [
+     "05_flow/data.py (modify)"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-01.s3",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "06_mockup/s_p11.py (new)",
+   "parent": "T-V2-01",
+   "status": "todo",
+   "links": {
+    "file": [
+     "06_mockup/s_p11.py (new)"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-01.s4",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "03_architecture/ER図.md (modify)",
+   "parent": "T-V2-01",
+   "status": "todo",
+   "links": {
+    "file": [
+     "03_architecture/ER図.md (modify)"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-01.t1",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SPC-01-001 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-V2-01",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SPC-01-001"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-01.t2",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SPC-01-002 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-V2-01",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SPC-01-002"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-01.t3",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SPC-01-003 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-V2-01",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SPC-01-003"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-01.t4",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SPC-01-004 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-V2-01",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SPC-01-004"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-01.t5",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SPC-01-005 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-V2-01",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SPC-01-005"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-02.s1",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "01_hearing/決定ログ_進行中.md (modify)",
+   "parent": "T-V2-02",
+   "status": "todo",
+   "links": {
+    "file": [
+     "01_hearing/決定ログ_進行中.md (modify)"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-02.s2",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "05_flow/data.py (modify)",
+   "parent": "T-V2-02",
+   "status": "todo",
+   "links": {
+    "file": [
+     "05_flow/data.py (modify)"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-02.s3",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "06_mockup/s_p11.py (new)",
+   "parent": "T-V2-02",
+   "status": "todo",
+   "links": {
+    "file": [
+     "06_mockup/s_p11.py (new)"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-02.s4",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "03_architecture/ER図.md (modify)",
+   "parent": "T-V2-02",
+   "status": "todo",
+   "links": {
+    "file": [
+     "03_architecture/ER図.md (modify)"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-02.t1",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SPC-02-001 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-V2-02",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SPC-02-001"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-02.t2",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SPC-02-002 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-V2-02",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SPC-02-002"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-02.t3",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SPC-02-003 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-V2-02",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SPC-02-003"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-02.t4",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SPC-02-004 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-V2-02",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SPC-02-004"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-02.t5",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SPC-02-005 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-V2-02",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SPC-02-005"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-03.s1",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "01_hearing/決定ログ_進行中.md (modify)",
+   "parent": "T-V2-03",
+   "status": "todo",
+   "links": {
+    "file": [
+     "01_hearing/決定ログ_進行中.md (modify)"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-03.s2",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "05_flow/data.py (modify)",
+   "parent": "T-V2-03",
+   "status": "todo",
+   "links": {
+    "file": [
+     "05_flow/data.py (modify)"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-03.s3",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "06_mockup/s_p11.py (new)",
+   "parent": "T-V2-03",
+   "status": "todo",
+   "links": {
+    "file": [
+     "06_mockup/s_p11.py (new)"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-03.s4",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "03_architecture/ER図.md (modify)",
+   "parent": "T-V2-03",
+   "status": "todo",
+   "links": {
+    "file": [
+     "03_architecture/ER図.md (modify)"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-03.t1",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SPC-03-001 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-V2-03",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SPC-03-001"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-03.t2",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SPC-03-002 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-V2-03",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SPC-03-002"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-03.t3",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SPC-03-003 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-V2-03",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SPC-03-003"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-03.t4",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SPC-03-004 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-V2-03",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SPC-03-004"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-03.t5",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SPC-03-005 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-V2-03",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SPC-03-005"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-04.s1",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "01_hearing/決定ログ_進行中.md (modify)",
+   "parent": "T-V2-04",
+   "status": "todo",
+   "links": {
+    "file": [
+     "01_hearing/決定ログ_進行中.md (modify)"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-04.s2",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "05_flow/data.py (modify)",
+   "parent": "T-V2-04",
+   "status": "todo",
+   "links": {
+    "file": [
+     "05_flow/data.py (modify)"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-04.s3",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "06_mockup/s_p11.py (new)",
+   "parent": "T-V2-04",
+   "status": "todo",
+   "links": {
+    "file": [
+     "06_mockup/s_p11.py (new)"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-04.s4",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "03_architecture/ER図.md (modify)",
+   "parent": "T-V2-04",
+   "status": "todo",
+   "links": {
+    "file": [
+     "03_architecture/ER図.md (modify)"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-04.t1",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SPC-04-001 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-V2-04",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SPC-04-001"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-04.t2",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SPC-04-002 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-V2-04",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SPC-04-002"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-04.t3",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SPC-04-003 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-V2-04",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SPC-04-003"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-04.t4",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SPC-04-004 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-V2-04",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SPC-04-004"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-04.t5",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SPC-04-005 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-V2-04",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SPC-04-005"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-05.s1",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "01_hearing/決定ログ_進行中.md (modify)",
+   "parent": "T-V2-05",
+   "status": "todo",
+   "links": {
+    "file": [
+     "01_hearing/決定ログ_進行中.md (modify)"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-05.s2",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "05_flow/data.py (modify)",
+   "parent": "T-V2-05",
+   "status": "todo",
+   "links": {
+    "file": [
+     "05_flow/data.py (modify)"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-05.s3",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "06_mockup/s_p11.py (new)",
+   "parent": "T-V2-05",
+   "status": "todo",
+   "links": {
+    "file": [
+     "06_mockup/s_p11.py (new)"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-05.s4",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "03_architecture/ER図.md (modify)",
+   "parent": "T-V2-05",
+   "status": "todo",
+   "links": {
+    "file": [
+     "03_architecture/ER図.md (modify)"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-05.t1",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SPC-05-001 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-V2-05",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SPC-05-001"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-05.t2",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SPC-05-002 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-V2-05",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SPC-05-002"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-05.t3",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SPC-05-003 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-V2-05",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SPC-05-003"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-05.t4",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SPC-05-004 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-V2-05",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SPC-05-004"
+    ]
+   }
+  },
+  {
+   "id": "T-V2-05.t5",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SPC-05-005 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-V2-05",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SPC-05-005"
     ]
    }
   }

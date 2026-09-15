@@ -26,10 +26,10 @@ m = [w["id"] for i, w in enumerate(W) if w["qa_scope"]["regression_from"] != [x[
 if m: fails.append(("SP4", f"regression_from が前の全 Wave でない {m[:5]}"))
 order = {"F": 0, "D": 1, "A": 2, "U-shared": 3, "U-screen": 4, "I": 5}; last = -1; m = []
 for w in W:
-    if w["group"] == "S": continue
+    if w["group"] in ("S", "V2"): continue
     if order[w["group"]] < last: m.append(w["id"])
     last = max(last, order[w["group"]])
-fw = max((i for i, w in enumerate(W) if w["group"] == "F"), default=-1); m += [w["id"] for i, w in enumerate(W) if w["group"] == "S" and i <= fw]
+fw = max((i for i, w in enumerate(W) if w["group"] == "F"), default=-1); m += [w["id"] for i, w in enumerate(W) if w["group"] in ("S", "V2") and i <= fw]
 if m: fails.append(("SP5", f"Phase 順序違反 {m[:5]}"))
 R = max(x["due"] for x in S["milestones"]); m = [w["id"] for w in W if not w["start"] or not w["finish"] or w["start"] > w["finish"] or w["finish"] > R or w["start"] < S["start"]]
 if m: fails.append(("SP6", f"日付が範囲外 {m[:5]}"))

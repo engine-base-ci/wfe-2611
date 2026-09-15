@@ -1,6 +1,6 @@
 # 盤（board）
 
-生成 2026-09-15T21:32:01
+生成 2026-09-15T21:50:02
 
 ## todo
 - **E-foundation foundation の層**
@@ -170,6 +170,12 @@
   - T-S-13 スキル制作 業務スキル「請求書の作成（税込・内訳）」（元ネタ invoice-create） ｜ content ｜ 3.0h ｜ 2026-11-17→2026-11-18 ｜ claude-10 ｜ 孫 11
   - T-S-14 スキル制作 業務スキル「入金の照合（正規連携）」（元ネタ payment-management・ai-tax-accountant） ｜ content ｜ 3.0h ｜ 2026-11-18→2026-11-18 ｜ claude-09 ｜ 孫 11
   - T-S-15 スキル制作 業務スキル「問い合わせの一次返信」（元ネタ support-response・customer-followup） ｜ content ｜ 3.0h ｜ 2026-11-18→2026-11-18 ｜ claude-10 ｜ 孫 11
+- **E-spec spec の層**
+  - T-V2-01 段階 2 の仕様づくり：payment（課金）の E-PAY-*。C7 は N/A（理由つき） ｜ spec ｜ 2.7h ｜ 2026-09-25→2026-09-25 ｜ claude-10 ｜ 孫 9
+  - T-V2-02 段階 2 の仕様づくり：Stripe 課金 ｜ spec ｜ 2.7h ｜ 2026-09-25→2026-09-25 ｜ claude-10 ｜ 孫 9
+  - T-V2-03 段階 2 の仕様づくり：LLM の経路の追加 ｜ spec ｜ 2.7h ｜ 2026-09-25→2026-09-28 ｜ claude-10 ｜ 孫 9
+  - T-V2-04 段階 2 の仕様づくり：PWA ｜ spec ｜ 2.7h ｜ 2026-09-28→2026-09-28 ｜ claude-10 ｜ 孫 9
+  - T-V2-05 段階 2 の仕様づくり：情シス向けの開示資料 ｜ spec ｜ 2.7h ｜ 2026-09-28→2026-09-28 ｜ claude-10 ｜ 孫 9
 
 ## in_progress
 

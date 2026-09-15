@@ -3,7 +3,7 @@
   "skill_name": "spec-sync-orchestrator",
   "skill_version": "1.0",
   "run_id": "20260914-threepane-D072",
-  "executed_at": "2026-09-15T21:38:55.349304",
+  "executed_at": "2026-09-15T21:49:27.090244",
   "project_root": "/Users/masato0420/Downloads/受託開発/自社事業/kaname",
   "status": "completed",
   "display_mode": "silent",
@@ -52,7 +52,8 @@
      "v25 (2026-09-15): user がテスト道具を Vitest に決定（selected-stack stack.testing）。S13 sprint-planning を機械生成に：05_flow/build_waves.py → 08_schedule/wave-schedule.json（Wave 19・Phase × Sprint・二軸・qa_scope L1/L2/回帰・9/22→11/19）＋ sprint.md/html、検査 sp_gate.py SP1〜SP8。流れ 9 は全部 Wave に付いた。staging（environments.staging・GAP-246）が未確定 → W0 の前提に書き user に確認。次は S14 dispatch.sh T-F-01（staging 確定後）。",
      "v26 (2026-09-15): user が staging を「本番と同じ構成をもう 1 組」に決定（selected-stack environments.staging・ADR 追加・GAP-246 解消）。wave-schedule を再生成（W0 の前提が消えた）。次は S14：実装リポジトリを作り dispatch.sh T-F-01 から。",
      "v27 (2026-09-15): user「v2 は？」→ サマリーの段階表が D-073〜D-080 の後も古いままだった。D-081：v1＝release v1 の 58 画面（旧段階 0〜3 の中身）、段階 2＝Stripe 課金／LLM 経路の追加／PWA／情シス開示資料、段階 3 以降＝MDM・SSO・ISMS。段階表を 3 段に書き換え、billing-setup／A05 の source と flow.json deferred に D-081.2。下流を再生成（差分 0）。全ゲート緑・G21 PASS。",
-     "v28 (2026-09-15): S14 開始。実装は kaname の中（apps/・packages/。CI が仕様と実装のゲートを同じ repo で回すため）。git init（main）→ task/T-F-01。T-F-01：pnpm workspace・tsconfig strict・eslint（no-eval）・prettier・vitest coverage 80/70・gate_pending.mjs（未実装ゲート 20 本は Foundation の PR だけ通す）・packages/db（app.tenant_id() 等の 0001 migration・migration の並び検査）・packages/gateways/README・packages/api（Hono GET /health）。lint／type-check／test（7 本・coverage 100/85.7）PASS、qa-ladder gate --task T-F-01 PASS（8 行：PASS 6・BLOCKED 2 は T-F-16／T-F-02）。監査 07_tasks/audit/T-F-01.md。remote 無し → PR は未作成。"
+     "v28 (2026-09-15): S14 開始。実装は kaname の中（apps/・packages/。CI が仕様と実装のゲートを同じ repo で回すため）。git init（main）→ task/T-F-01。T-F-01：pnpm workspace・tsconfig strict・eslint（no-eval）・prettier・vitest coverage 80/70・gate_pending.mjs（未実装ゲート 20 本は Foundation の PR だけ通す）・packages/db（app.tenant_id() 等の 0001 migration・migration の並び検査）・packages/gateways/README・packages/api（Hono GET /health）。lint／type-check／test（7 本・coverage 100/85.7）PASS、qa-ladder gate --task T-F-01 PASS（8 行：PASS 6・BLOCKED 2 は T-F-16／T-F-02）。監査 07_tasks/audit/T-F-01.md。remote 無し → PR は未作成。",
+     "v29 (2026-09-15): user「v2 の仕様づくりを日程に載せていないのはなぜ」「ガントで押して詳細を見られるか」。原因：決定つきの後回しは G17 で合法になるが、下流は release v1 だけを入力にするので仕様づくりのタスクにもならなかった（L-013）。対策：build_tasks が決定ログの「段階 2：」の文と flow の deferred から Group V2（層 spec・spec-work.md に 5 行）を生成（5 本：課金のエラー・Stripe・LLM 経路・PWA・情シス資料）、td_gate TD11、qa-ladder/qa_delta の TASK_ID に数字を許可、名簿に spec。ticket-planning build_tickets が schedule.html（ガント・押すと詳細・Human/AI 二軸・フィルタ）を出し ticket_gate K9 が検査。Wave 20・story 158・subtask 3,738。規則 screen-derivation §12・L-013。スキル更新：task-decomposition・ticket-planning・sprint-planning・human-grade-qa（3 か所・再パッケージ）。全ゲート緑・G21 PASS。"
     ]
    }
   ]
