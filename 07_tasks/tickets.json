@@ -3505,7 +3505,7 @@
     "07_functional/entities.json"
    ],
    "audit_md_path": "07_tasks/audit/T-D-01.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "RLS-D01-001",
@@ -3750,7 +3750,7 @@
     "07_functional/entities.json"
    ],
    "audit_md_path": "07_tasks/audit/T-D-02.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "RLS-D02-001",
@@ -3980,7 +3980,7 @@
     "07_functional/entities.json"
    ],
    "audit_md_path": "07_tasks/audit/T-D-03.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "RLS-D03-001",
@@ -4197,7 +4197,7 @@
     "07_functional/entities.json"
    ],
    "audit_md_path": "07_tasks/audit/T-D-04.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "RLS-D04-001",
@@ -4434,7 +4434,7 @@
     "07_functional/entities.json"
    ],
    "audit_md_path": "07_tasks/audit/T-D-05.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "RLS-D05-001",
@@ -4667,7 +4667,7 @@
     "07_functional/entities.json"
    ],
    "audit_md_path": "07_tasks/audit/T-D-06.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "RLS-D06-001",
@@ -4868,7 +4868,7 @@
     "07_functional/entities.json"
    ],
    "audit_md_path": "07_tasks/audit/T-D-07.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "RLS-D07-001",
@@ -5057,7 +5057,7 @@
     "07_functional/entities.json"
    ],
    "audit_md_path": "07_tasks/audit/T-D-08.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "RLS-D08-001",
@@ -5272,7 +5272,7 @@
     "07_functional/entities.json"
    ],
    "audit_md_path": "07_tasks/audit/T-D-09.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "RLS-D09-001",
@@ -5503,7 +5503,7 @@
     "07_functional/entities.json"
    ],
    "audit_md_path": "07_tasks/audit/T-D-10.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "RLS-D10-001",
@@ -5772,7 +5772,7 @@
     "07_functional/entities.json"
    ],
    "audit_md_path": "07_tasks/audit/T-D-11.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "RLS-D11-001",
@@ -6017,7 +6017,7 @@
     "07_functional/entities.json"
    ],
    "audit_md_path": "07_tasks/audit/T-D-12.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "RLS-D12-001",
@@ -6238,7 +6238,7 @@
     "07_functional/entities.json"
    ],
    "audit_md_path": "07_tasks/audit/T-D-13.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "RLS-D13-001",

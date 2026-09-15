@@ -1,22 +1,8 @@
 # 盤（board）
 
-生成 2026-09-15T23:42:05
+生成 2026-09-16T00:04:28
 
 ## todo
-- **E-foundation foundation の層**
-  - T-D-01 データ層 1. テナント・組織・メンバー（6 表・migration・RLS・索引・seed） ｜ foundation ｜ 3.3h ｜ 2026-09-24→2026-09-25 ｜ claude-02 ｜ 孫 17
-  - T-D-02 データ層 2. 会社モデル ── 目標（10 表・migration・RLS・索引・seed） ｜ foundation ｜ 5.3h ｜ 2026-09-29→2026-10-01 ｜ takamoto ｜ 孫 19
-  - T-D-03 データ層 3. 会社モデル ── 台帳（5 表・migration・RLS・索引・seed） ｜ foundation ｜ 2.8h ｜ 2026-09-24→2026-09-25 ｜ claude-01 ｜ 孫 14
-  - T-D-04 データ層 4. 会社モデル ── 担当業務・記憶（6 表・migration・RLS・索引・seed） ｜ foundation ｜ 3.3h ｜ 2026-09-25→2026-09-25 ｜ claude-02 ｜ 孫 16
-  - T-D-05 データ層 5. 実行・統制（10 表・migration・RLS・索引・seed） ｜ foundation ｜ 17.0h ｜ 2026-09-25→2026-09-29 ｜ claude-01 ｜ 孫 22
-  - T-D-06 データ層 6. 会話・成果物・証跡（4 表・migration・RLS・索引・seed） ｜ foundation ｜ 2.3h ｜ 2026-10-01→2026-10-02 ｜ takamoto ｜ 孫 13
-  - T-D-07 データ層 7. マスタ（2 表・migration・RLS・索引・seed） ｜ foundation ｜ 1.3h ｜ 2026-09-25→2026-09-25 ｜ claude-02 ｜ 孫 11
-  - T-D-08 データ層 9. 層と権限（4 表・migration・RLS・索引・seed） ｜ foundation ｜ 8.0h ｜ 2026-10-02→2026-10-06 ｜ takamoto ｜ 孫 13
-  - T-D-09 データ層 10. 口座状態の出来事・失効・サポートアクセス（6 表・migration・RLS・索引・seed） ｜ foundation ｜ 11.0h ｜ 2026-09-25→2026-09-29 ｜ claude-02 ｜ 孫 16
-  - T-D-10 データ層 11. 運営（9 表・migration・RLS・索引・seed） ｜ foundation ｜ 4.8h ｜ 2026-10-06→2026-10-08 ｜ takamoto ｜ 孫 19
-  - ★T-D-11 データ層 12. 運営と顧客の間で往復するもの・自分で整えるもの（14 表・migration・RLS・索引・seed） ｜ foundation ｜ 23.0h ｜ 2026-09-29→2026-10-01 ｜ claude-02 ｜ 孫 29
-  - T-D-12 データ層 13. 取り込み・正規連携・招待・持ち出し・添付（5 表・migration・RLS・索引・seed） ｜ foundation ｜ 2.8h ｜ 2026-09-29→2026-09-29 ｜ claude-01 ｜ 孫 15
-  - T-D-13 データ層 14. スキル（4 表・migration・RLS・索引・seed） ｜ foundation ｜ 2.3h ｜ 2026-10-08→2026-10-09 ｜ takamoto ｜ 孫 13
 - **J-01 P0 契約・登録（1回だけ）**
   - ★T-A-01 API 契約してから、自力で動く状態まで持っていきたい — データ・API・（5 endpoint） ｜ backend ｜ 30.0h ｜ 2026-10-13→2026-10-19 ｜ claude-03 ｜ 孫 51
   - T-A-02 API 招かれたので、自分がやることだけ分かる状態にしたい — データ・AP（1 endpoint） ｜ backend ｜ 7.5h ｜ 2026-10-16→2026-10-19 ｜ claude-05 ｜ 孫 13
@@ -186,3 +172,16 @@
   - T-F-15 OpenAPI → TS 型生成・契約テスト・endpoint 実在性チェック（API ↦ UI の依存方向を固定） ｜ foundation ｜ 0.8h ｜ 2026-09-24→2026-09-24 ｜ claude-01 ｜ 孫 12
   - T-F-16 外部リソースのコード化（バケット・Resend・Infisical・DNS・staging）と起動時の存在確認 ｜ foundation ｜ 1.1h ｜ 2026-09-24→2026-09-24 ｜ claude-01 ｜ 孫 12
   - T-F-17 エラー一覧の実行時（error_events・文言と次の一手を errors.json から引く・出せないエラーの検出） ｜ foundation ｜ 1.0h ｜ 2026-09-24→2026-09-24 ｜ claude-01 ｜ 孫 11
+  - T-D-01 データ層 1. テナント・組織・メンバー（6 表・migration・RLS・索引・seed） ｜ foundation ｜ 3.3h ｜ 2026-09-24→2026-09-25 ｜ claude-02 ｜ 孫 17
+  - T-D-02 データ層 2. 会社モデル ── 目標（10 表・migration・RLS・索引・seed） ｜ foundation ｜ 5.3h ｜ 2026-09-29→2026-10-01 ｜ takamoto ｜ 孫 19
+  - T-D-03 データ層 3. 会社モデル ── 台帳（5 表・migration・RLS・索引・seed） ｜ foundation ｜ 2.8h ｜ 2026-09-24→2026-09-25 ｜ claude-01 ｜ 孫 14
+  - T-D-04 データ層 4. 会社モデル ── 担当業務・記憶（6 表・migration・RLS・索引・seed） ｜ foundation ｜ 3.3h ｜ 2026-09-25→2026-09-25 ｜ claude-02 ｜ 孫 16
+  - T-D-05 データ層 5. 実行・統制（10 表・migration・RLS・索引・seed） ｜ foundation ｜ 17.0h ｜ 2026-09-25→2026-09-29 ｜ claude-01 ｜ 孫 22
+  - T-D-06 データ層 6. 会話・成果物・証跡（4 表・migration・RLS・索引・seed） ｜ foundation ｜ 2.3h ｜ 2026-10-01→2026-10-02 ｜ takamoto ｜ 孫 13
+  - T-D-07 データ層 7. マスタ（2 表・migration・RLS・索引・seed） ｜ foundation ｜ 1.3h ｜ 2026-09-25→2026-09-25 ｜ claude-02 ｜ 孫 11
+  - T-D-08 データ層 9. 層と権限（4 表・migration・RLS・索引・seed） ｜ foundation ｜ 8.0h ｜ 2026-10-02→2026-10-06 ｜ takamoto ｜ 孫 13
+  - T-D-09 データ層 10. 口座状態の出来事・失効・サポートアクセス（6 表・migration・RLS・索引・seed） ｜ foundation ｜ 11.0h ｜ 2026-09-25→2026-09-29 ｜ claude-02 ｜ 孫 16
+  - T-D-10 データ層 11. 運営（9 表・migration・RLS・索引・seed） ｜ foundation ｜ 4.8h ｜ 2026-10-06→2026-10-08 ｜ takamoto ｜ 孫 19
+  - ★T-D-11 データ層 12. 運営と顧客の間で往復するもの・自分で整えるもの（14 表・migration・RLS・索引・seed） ｜ foundation ｜ 23.0h ｜ 2026-09-29→2026-10-01 ｜ claude-02 ｜ 孫 29
+  - T-D-12 データ層 13. 取り込み・正規連携・招待・持ち出し・添付（5 表・migration・RLS・索引・seed） ｜ foundation ｜ 2.8h ｜ 2026-09-29→2026-09-29 ｜ claude-01 ｜ 孫 15
+  - T-D-13 データ層 14. スキル（4 表・migration・RLS・索引・seed） ｜ foundation ｜ 2.3h ｜ 2026-10-08→2026-10-09 ｜ takamoto ｜ 孫 13

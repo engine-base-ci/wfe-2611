@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-15T23:42:05",
+ "generated_at": "2026-09-16T00:04:28",
  "inputs": {
   "tickets": "07_tasks/tickets.json",
   "roster": "07_tasks/roster.json",
@@ -1564,7 +1564,7 @@
    ],
    "assignee": "claude-02",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [],
@@ -1648,7 +1648,7 @@
    ],
    "assignee": "takamoto",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [],
@@ -1730,7 +1730,7 @@
    ],
    "assignee": "claude-01",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [],
@@ -1805,7 +1805,7 @@
    ],
    "assignee": "claude-02",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [],
@@ -1888,7 +1888,7 @@
    ],
    "assignee": "claude-01",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [],
@@ -1976,7 +1976,7 @@
    ],
    "assignee": "takamoto",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [],
@@ -2046,7 +2046,7 @@
    ],
    "assignee": "claude-02",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [],
@@ -2114,7 +2114,7 @@
    ],
    "assignee": "takamoto",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [],
@@ -2190,7 +2190,7 @@
    ],
    "assignee": "claude-02",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [],
@@ -2275,7 +2275,7 @@
    ],
    "assignee": "takamoto",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [],
@@ -2376,7 +2376,7 @@
    ],
    "assignee": "claude-02",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [],
@@ -2473,7 +2473,7 @@
    ],
    "assignee": "claude-01",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [],
@@ -2552,7 +2552,7 @@
    ],
    "assignee": "takamoto",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [],
@@ -20850,7 +20850,7 @@
    "sub": "impl",
    "title": "packages/db/migrations/0101_1..sql (new)",
    "parent": "T-D-01",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/migrations/0101_1..sql (new)"
@@ -20863,7 +20863,7 @@
    "sub": "impl",
    "title": "packages/db/policies/tenants.sql (new)",
    "parent": "T-D-01",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/policies/tenants.sql (new)"
@@ -20876,7 +20876,7 @@
    "sub": "impl",
    "title": "packages/db/schema.ts (modify)",
    "parent": "T-D-01",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/schema.ts (modify)"
@@ -21071,7 +21071,7 @@
    "sub": "impl",
    "title": "packages/db/migrations/0102_2..sql (new)",
    "parent": "T-D-02",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/migrations/0102_2..sql (new)"
@@ -21084,7 +21084,7 @@
    "sub": "impl",
    "title": "packages/db/policies/goal_kinds.sql (new)",
    "parent": "T-D-02",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/policies/goal_kinds.sql (new)"
@@ -21097,7 +21097,7 @@
    "sub": "impl",
    "title": "packages/db/schema.ts (modify)",
    "parent": "T-D-02",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/schema.ts (modify)"
@@ -21318,7 +21318,7 @@
    "sub": "impl",
    "title": "packages/db/migrations/0103_3..sql (new)",
    "parent": "T-D-03",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/migrations/0103_3..sql (new)"
@@ -21331,7 +21331,7 @@
    "sub": "impl",
    "title": "packages/db/policies/ledger_definitions.sql (new)",
    "parent": "T-D-03",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/policies/ledger_definitions.sql (new)"
@@ -21344,7 +21344,7 @@
    "sub": "impl",
    "title": "packages/db/schema.ts (modify)",
    "parent": "T-D-03",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/schema.ts (modify)"
@@ -21500,7 +21500,7 @@
    "sub": "impl",
    "title": "packages/db/migrations/0104_4..sql (new)",
    "parent": "T-D-04",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/migrations/0104_4..sql (new)"
@@ -21513,7 +21513,7 @@
    "sub": "impl",
    "title": "packages/db/policies/duties.sql (new)",
    "parent": "T-D-04",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/policies/duties.sql (new)"
@@ -21526,7 +21526,7 @@
    "sub": "impl",
    "title": "packages/db/schema.ts (modify)",
    "parent": "T-D-04",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/schema.ts (modify)"
@@ -21708,7 +21708,7 @@
    "sub": "impl",
    "title": "packages/db/migrations/0105_5..sql (new)",
    "parent": "T-D-05",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/migrations/0105_5..sql (new)"
@@ -21721,7 +21721,7 @@
    "sub": "impl",
    "title": "packages/db/policies/tasks.sql (new)",
    "parent": "T-D-05",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/policies/tasks.sql (new)"
@@ -21734,7 +21734,7 @@
    "sub": "impl",
    "title": "packages/db/schema.ts (modify)",
    "parent": "T-D-05",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/schema.ts (modify)"
@@ -21994,7 +21994,7 @@
    "sub": "impl",
    "title": "packages/db/migrations/0106_6..sql (new)",
    "parent": "T-D-06",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/migrations/0106_6..sql (new)"
@@ -22007,7 +22007,7 @@
    "sub": "impl",
    "title": "packages/db/policies/conversations.sql (new)",
    "parent": "T-D-06",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/policies/conversations.sql (new)"
@@ -22020,7 +22020,7 @@
    "sub": "impl",
    "title": "packages/db/schema.ts (modify)",
    "parent": "T-D-06",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/schema.ts (modify)"
@@ -22163,7 +22163,7 @@
    "sub": "impl",
    "title": "packages/db/migrations/0107_7..sql (new)",
    "parent": "T-D-07",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/migrations/0107_7..sql (new)"
@@ -22176,7 +22176,7 @@
    "sub": "impl",
    "title": "packages/db/policies/session_kinds.sql (new)",
    "parent": "T-D-07",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/policies/session_kinds.sql (new)"
@@ -22189,7 +22189,7 @@
    "sub": "impl",
    "title": "packages/db/schema.ts (modify)",
    "parent": "T-D-07",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/schema.ts (modify)"
@@ -22306,7 +22306,7 @@
    "sub": "impl",
    "title": "packages/db/migrations/0108_9..sql (new)",
    "parent": "T-D-08",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/migrations/0108_9..sql (new)"
@@ -22319,7 +22319,7 @@
    "sub": "impl",
    "title": "packages/db/policies/layers.sql (new)",
    "parent": "T-D-08",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/policies/layers.sql (new)"
@@ -22332,7 +22332,7 @@
    "sub": "impl",
    "title": "packages/db/schema.ts (modify)",
    "parent": "T-D-08",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/schema.ts (modify)"
@@ -22475,7 +22475,7 @@
    "sub": "impl",
    "title": "packages/db/migrations/0109_10.sql (new)",
    "parent": "T-D-09",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/migrations/0109_10.sql (new)"
@@ -22488,7 +22488,7 @@
    "sub": "impl",
    "title": "packages/db/policies/account_events.sql (new)",
    "parent": "T-D-09",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/policies/account_events.sql (new)"
@@ -22501,7 +22501,7 @@
    "sub": "impl",
    "title": "packages/db/schema.ts (modify)",
    "parent": "T-D-09",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/schema.ts (modify)"
@@ -22683,7 +22683,7 @@
    "sub": "impl",
    "title": "packages/db/migrations/0110_11.sql (new)",
    "parent": "T-D-10",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/migrations/0110_11.sql (new)"
@@ -22696,7 +22696,7 @@
    "sub": "impl",
    "title": "packages/db/policies/distributions.sql (new)",
    "parent": "T-D-10",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/policies/distributions.sql (new)"
@@ -22709,7 +22709,7 @@
    "sub": "impl",
    "title": "packages/db/schema.ts (modify)",
    "parent": "T-D-10",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/schema.ts (modify)"
@@ -22930,7 +22930,7 @@
    "sub": "impl",
    "title": "packages/db/migrations/0111_12.sql (new)",
    "parent": "T-D-11",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/migrations/0111_12.sql (new)"
@@ -22943,7 +22943,7 @@
    "sub": "impl",
    "title": "packages/db/policies/inquiries.sql (new)",
    "parent": "T-D-11",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/policies/inquiries.sql (new)"
@@ -22956,7 +22956,7 @@
    "sub": "impl",
    "title": "packages/db/schema.ts (modify)",
    "parent": "T-D-11",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/schema.ts (modify)"
@@ -23307,7 +23307,7 @@
    "sub": "impl",
    "title": "packages/db/migrations/0112_13.sql (new)",
    "parent": "T-D-12",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/migrations/0112_13.sql (new)"
@@ -23320,7 +23320,7 @@
    "sub": "impl",
    "title": "packages/db/policies/imports.sql (new)",
    "parent": "T-D-12",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/policies/imports.sql (new)"
@@ -23333,7 +23333,7 @@
    "sub": "impl",
    "title": "packages/db/schema.ts (modify)",
    "parent": "T-D-12",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/schema.ts (modify)"
@@ -23502,7 +23502,7 @@
    "sub": "impl",
    "title": "packages/db/migrations/0113_14.sql (new)",
    "parent": "T-D-13",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/migrations/0113_14.sql (new)"
@@ -23515,7 +23515,7 @@
    "sub": "impl",
    "title": "packages/db/policies/skills.sql (new)",
    "parent": "T-D-13",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/policies/skills.sql (new)"
@@ -23528,7 +23528,7 @@
    "sub": "impl",
    "title": "packages/db/schema.ts (modify)",
    "parent": "T-D-13",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/schema.ts (modify)"
