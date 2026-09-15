@@ -56,10 +56,13 @@ json.dump({"version": "v3", "skill": "test-verification", "created_at": TODAY, "
 CASES = {"select": [("同じ会社・見える範囲", "OK"), ("同じ会社・見えない層", "NG（0 行）"), ("他の会社（SET LOCAL を別テナントに）", "NG（0 行）"), ("SET LOCAL を飛ばす", "NG（0 行・エラー）")],
          "insert,update,delete": [("権限あり・自分の範囲", "OK"), ("権限なし（担当者・閲覧のみ）", "NG（403・副作用なし）"), ("他の会社", "NG（0 行・副作用なし）"), ("SET LOCAL を飛ばす", "NG（エラー）")]}
 ROLE_JA = {"member": "会社の人（R1〜R4・権限で分かれる）", "ops": "運営（R6）", "authenticated": "ログイン済み（本人のもの）"}
+CASES_AUTH = [("ログイン済み（会社の人）", "OK"), ("SET LOCAL を飛ばす", "NG（0 行）")]
+CASES_OPS_WRITE = [("運営の文脈", "OK"), ("会社の人（運営でない）", "NG（弾く・副作用なし）"), ("SET LOCAL を飛ばす", "NG（弾く）")]
 am = []
 for en in EN:
     for p in en["access_control_policies"]:
-        for case, exp in CASES.get(p["operation"], CASES["select"]):
+        cases = CASES_AUTH if p["role"] == "authenticated" else (CASES_OPS_WRITE if p["role"] == "ops" and p["operation"] != "select" else CASES.get(p["operation"], CASES["select"]))
+        for case, exp in cases:
             if p["role"] == "ops" and "他の会社" in case: exp = "NG（顧客が許可した範囲・期限の中だけ OK）"
             if p["name"].endswith("self_only_write") and "権限なし" in case: exp = "OK（自分の行だけ）・他人の行は NG"
             am.append({"entity": en["id"], "table": en["table_name"], "policy": p["name"], "role": p["role"], "role_ja": ROLE_JA.get(p["role"], p["role"]), "operation": p["operation"], "case": case, "expected": exp, "predicate": p["predicate"][:160], "source": p.get("source", [])})

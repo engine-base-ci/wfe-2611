@@ -5,7 +5,7 @@
  "counts": {
   "entities": 83,
   "policies": 252,
-  "cases": 1008
+  "cases": 969
  },
  "cases": [
   {
@@ -391,7 +391,7 @@
    "role": "authenticated",
    "role_ja": "ログイン済み（本人のもの）",
    "operation": "select",
-   "case": "同じ会社・見える範囲",
+   "case": "ログイン済み（会社の人）",
    "expected": "OK",
    "predicate": "true",
    "source": [
@@ -405,36 +405,8 @@
    "role": "authenticated",
    "role_ja": "ログイン済み（本人のもの）",
    "operation": "select",
-   "case": "同じ会社・見えない層",
-   "expected": "NG（0 行）",
-   "predicate": "true",
-   "source": [
-    "D-026"
-   ]
-  },
-  {
-   "entity": "E-003",
-   "table": "member_kinds",
-   "policy": "member_kinds_all_read",
-   "role": "authenticated",
-   "role_ja": "ログイン済み（本人のもの）",
-   "operation": "select",
-   "case": "他の会社（SET LOCAL を別テナントに）",
-   "expected": "NG（0 行）",
-   "predicate": "true",
-   "source": [
-    "D-026"
-   ]
-  },
-  {
-   "entity": "E-003",
-   "table": "member_kinds",
-   "policy": "member_kinds_all_read",
-   "role": "authenticated",
-   "role_ja": "ログイン済み（本人のもの）",
-   "operation": "select",
    "case": "SET LOCAL を飛ばす",
-   "expected": "NG（0 行・エラー）",
+   "expected": "NG（0 行）",
    "predicate": "true",
    "source": [
     "D-026"
@@ -447,7 +419,7 @@
    "role": "ops",
    "role_ja": "運営（R6）",
    "operation": "insert,update,delete",
-   "case": "権限あり・自分の範囲",
+   "case": "運営の文脈",
    "expected": "OK",
    "predicate": "current_setting('app.role', true) = 'ops'",
    "source": [
@@ -462,23 +434,8 @@
    "role": "ops",
    "role_ja": "運営（R6）",
    "operation": "insert,update,delete",
-   "case": "権限なし（担当者・閲覧のみ）",
-   "expected": "NG（403・副作用なし）",
-   "predicate": "current_setting('app.role', true) = 'ops'",
-   "source": [
-    "D-037",
-    "D-077.4"
-   ]
-  },
-  {
-   "entity": "E-003",
-   "table": "member_kinds",
-   "policy": "member_kinds_ops_write",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "insert,update,delete",
-   "case": "他の会社",
-   "expected": "NG（顧客が許可した範囲・期限の中だけ OK）",
+   "case": "会社の人（運営でない）",
+   "expected": "NG（弾く・副作用なし）",
    "predicate": "current_setting('app.role', true) = 'ops'",
    "source": [
     "D-037",
@@ -493,7 +450,7 @@
    "role_ja": "運営（R6）",
    "operation": "insert,update,delete",
    "case": "SET LOCAL を飛ばす",
-   "expected": "NG（エラー）",
+   "expected": "NG（弾く）",
    "predicate": "current_setting('app.role', true) = 'ops'",
    "source": [
     "D-037",
@@ -1183,7 +1140,7 @@
    "role": "authenticated",
    "role_ja": "ログイン済み（本人のもの）",
    "operation": "select",
-   "case": "同じ会社・見える範囲",
+   "case": "ログイン済み（会社の人）",
    "expected": "OK",
    "predicate": "true",
    "source": [
@@ -1197,36 +1154,8 @@
    "role": "authenticated",
    "role_ja": "ログイン済み（本人のもの）",
    "operation": "select",
-   "case": "同じ会社・見えない層",
-   "expected": "NG（0 行）",
-   "predicate": "true",
-   "source": [
-    "D-026"
-   ]
-  },
-  {
-   "entity": "E-007",
-   "table": "goal_kinds",
-   "policy": "goal_kinds_all_read",
-   "role": "authenticated",
-   "role_ja": "ログイン済み（本人のもの）",
-   "operation": "select",
-   "case": "他の会社（SET LOCAL を別テナントに）",
-   "expected": "NG（0 行）",
-   "predicate": "true",
-   "source": [
-    "D-026"
-   ]
-  },
-  {
-   "entity": "E-007",
-   "table": "goal_kinds",
-   "policy": "goal_kinds_all_read",
-   "role": "authenticated",
-   "role_ja": "ログイン済み（本人のもの）",
-   "operation": "select",
    "case": "SET LOCAL を飛ばす",
-   "expected": "NG（0 行・エラー）",
+   "expected": "NG（0 行）",
    "predicate": "true",
    "source": [
     "D-026"
@@ -1239,7 +1168,7 @@
    "role": "ops",
    "role_ja": "運営（R6）",
    "operation": "insert,update,delete",
-   "case": "権限あり・自分の範囲",
+   "case": "運営の文脈",
    "expected": "OK",
    "predicate": "current_setting('app.role', true) = 'ops'",
    "source": [
@@ -1254,23 +1183,8 @@
    "role": "ops",
    "role_ja": "運営（R6）",
    "operation": "insert,update,delete",
-   "case": "権限なし（担当者・閲覧のみ）",
-   "expected": "NG（403・副作用なし）",
-   "predicate": "current_setting('app.role', true) = 'ops'",
-   "source": [
-    "D-037",
-    "D-077.4"
-   ]
-  },
-  {
-   "entity": "E-007",
-   "table": "goal_kinds",
-   "policy": "goal_kinds_ops_write",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "insert,update,delete",
-   "case": "他の会社",
-   "expected": "NG（顧客が許可した範囲・期限の中だけ OK）",
+   "case": "会社の人（運営でない）",
+   "expected": "NG（弾く・副作用なし）",
    "predicate": "current_setting('app.role', true) = 'ops'",
    "source": [
     "D-037",
@@ -1285,7 +1199,7 @@
    "role_ja": "運営（R6）",
    "operation": "insert,update,delete",
    "case": "SET LOCAL を飛ばす",
-   "expected": "NG（エラー）",
+   "expected": "NG（弾く）",
    "predicate": "current_setting('app.role', true) = 'ops'",
    "source": [
     "D-037",
@@ -1487,7 +1401,7 @@
    "role": "authenticated",
    "role_ja": "ログイン済み（本人のもの）",
    "operation": "select",
-   "case": "同じ会社・見える範囲",
+   "case": "ログイン済み（会社の人）",
    "expected": "OK",
    "predicate": "true",
    "source": [
@@ -1501,36 +1415,8 @@
    "role": "authenticated",
    "role_ja": "ログイン済み（本人のもの）",
    "operation": "select",
-   "case": "同じ会社・見えない層",
-   "expected": "NG（0 行）",
-   "predicate": "true",
-   "source": [
-    "D-026"
-   ]
-  },
-  {
-   "entity": "E-009",
-   "table": "rollup_kinds",
-   "policy": "rollup_kinds_all_read",
-   "role": "authenticated",
-   "role_ja": "ログイン済み（本人のもの）",
-   "operation": "select",
-   "case": "他の会社（SET LOCAL を別テナントに）",
-   "expected": "NG（0 行）",
-   "predicate": "true",
-   "source": [
-    "D-026"
-   ]
-  },
-  {
-   "entity": "E-009",
-   "table": "rollup_kinds",
-   "policy": "rollup_kinds_all_read",
-   "role": "authenticated",
-   "role_ja": "ログイン済み（本人のもの）",
-   "operation": "select",
    "case": "SET LOCAL を飛ばす",
-   "expected": "NG（0 行・エラー）",
+   "expected": "NG（0 行）",
    "predicate": "true",
    "source": [
     "D-026"
@@ -1543,7 +1429,7 @@
    "role": "ops",
    "role_ja": "運営（R6）",
    "operation": "insert,update,delete",
-   "case": "権限あり・自分の範囲",
+   "case": "運営の文脈",
    "expected": "OK",
    "predicate": "current_setting('app.role', true) = 'ops'",
    "source": [
@@ -1558,23 +1444,8 @@
    "role": "ops",
    "role_ja": "運営（R6）",
    "operation": "insert,update,delete",
-   "case": "権限なし（担当者・閲覧のみ）",
-   "expected": "NG（403・副作用なし）",
-   "predicate": "current_setting('app.role', true) = 'ops'",
-   "source": [
-    "D-037",
-    "D-077.4"
-   ]
-  },
-  {
-   "entity": "E-009",
-   "table": "rollup_kinds",
-   "policy": "rollup_kinds_ops_write",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "insert,update,delete",
-   "case": "他の会社",
-   "expected": "NG（顧客が許可した範囲・期限の中だけ OK）",
+   "case": "会社の人（運営でない）",
+   "expected": "NG（弾く・副作用なし）",
    "predicate": "current_setting('app.role', true) = 'ops'",
    "source": [
     "D-037",
@@ -1589,7 +1460,7 @@
    "role_ja": "運営（R6）",
    "operation": "insert,update,delete",
    "case": "SET LOCAL を飛ばす",
-   "expected": "NG（エラー）",
+   "expected": "NG（弾く）",
    "predicate": "current_setting('app.role', true) = 'ops'",
    "source": [
     "D-037",
@@ -2167,7 +2038,7 @@
    "role": "authenticated",
    "role_ja": "ログイン済み（本人のもの）",
    "operation": "select",
-   "case": "同じ会社・見える範囲",
+   "case": "ログイン済み（会社の人）",
    "expected": "OK",
    "predicate": "true",
    "source": [
@@ -2181,36 +2052,8 @@
    "role": "authenticated",
    "role_ja": "ログイン済み（本人のもの）",
    "operation": "select",
-   "case": "同じ会社・見えない層",
-   "expected": "NG（0 行）",
-   "predicate": "true",
-   "source": [
-    "D-026"
-   ]
-  },
-  {
-   "entity": "E-013",
-   "table": "goal_versions",
-   "policy": "goal_versions_all_read",
-   "role": "authenticated",
-   "role_ja": "ログイン済み（本人のもの）",
-   "operation": "select",
-   "case": "他の会社（SET LOCAL を別テナントに）",
-   "expected": "NG（0 行）",
-   "predicate": "true",
-   "source": [
-    "D-026"
-   ]
-  },
-  {
-   "entity": "E-013",
-   "table": "goal_versions",
-   "policy": "goal_versions_all_read",
-   "role": "authenticated",
-   "role_ja": "ログイン済み（本人のもの）",
-   "operation": "select",
    "case": "SET LOCAL を飛ばす",
-   "expected": "NG（0 行・エラー）",
+   "expected": "NG（0 行）",
    "predicate": "true",
    "source": [
     "D-026"
@@ -2223,7 +2066,7 @@
    "role": "ops",
    "role_ja": "運営（R6）",
    "operation": "insert,update,delete",
-   "case": "権限あり・自分の範囲",
+   "case": "運営の文脈",
    "expected": "OK",
    "predicate": "current_setting('app.role', true) = 'ops'",
    "source": [
@@ -2238,23 +2081,8 @@
    "role": "ops",
    "role_ja": "運営（R6）",
    "operation": "insert,update,delete",
-   "case": "権限なし（担当者・閲覧のみ）",
-   "expected": "NG（403・副作用なし）",
-   "predicate": "current_setting('app.role', true) = 'ops'",
-   "source": [
-    "D-037",
-    "D-077.4"
-   ]
-  },
-  {
-   "entity": "E-013",
-   "table": "goal_versions",
-   "policy": "goal_versions_ops_write",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "insert,update,delete",
-   "case": "他の会社",
-   "expected": "NG（顧客が許可した範囲・期限の中だけ OK）",
+   "case": "会社の人（運営でない）",
+   "expected": "NG（弾く・副作用なし）",
    "predicate": "current_setting('app.role', true) = 'ops'",
    "source": [
     "D-037",
@@ -2269,7 +2097,7 @@
    "role_ja": "運営（R6）",
    "operation": "insert,update,delete",
    "case": "SET LOCAL を飛ばす",
-   "expected": "NG（エラー）",
+   "expected": "NG（弾く）",
    "predicate": "current_setting('app.role', true) = 'ops'",
    "source": [
     "D-037",
@@ -3975,7 +3803,7 @@
    "role": "authenticated",
    "role_ja": "ログイン済み（本人のもの）",
    "operation": "select",
-   "case": "同じ会社・見える範囲",
+   "case": "ログイン済み（会社の人）",
    "expected": "OK",
    "predicate": "true",
    "source": [
@@ -3989,36 +3817,8 @@
    "role": "authenticated",
    "role_ja": "ログイン済み（本人のもの）",
    "operation": "select",
-   "case": "同じ会社・見えない層",
-   "expected": "NG（0 行）",
-   "predicate": "true",
-   "source": [
-    "D-026"
-   ]
-  },
-  {
-   "entity": "E-023",
-   "table": "duty_versions",
-   "policy": "duty_versions_all_read",
-   "role": "authenticated",
-   "role_ja": "ログイン済み（本人のもの）",
-   "operation": "select",
-   "case": "他の会社（SET LOCAL を別テナントに）",
-   "expected": "NG（0 行）",
-   "predicate": "true",
-   "source": [
-    "D-026"
-   ]
-  },
-  {
-   "entity": "E-023",
-   "table": "duty_versions",
-   "policy": "duty_versions_all_read",
-   "role": "authenticated",
-   "role_ja": "ログイン済み（本人のもの）",
-   "operation": "select",
    "case": "SET LOCAL を飛ばす",
-   "expected": "NG（0 行・エラー）",
+   "expected": "NG（0 行）",
    "predicate": "true",
    "source": [
     "D-026"
@@ -4031,7 +3831,7 @@
    "role": "ops",
    "role_ja": "運営（R6）",
    "operation": "insert,update,delete",
-   "case": "権限あり・自分の範囲",
+   "case": "運営の文脈",
    "expected": "OK",
    "predicate": "current_setting('app.role', true) = 'ops'",
    "source": [
@@ -4046,23 +3846,8 @@
    "role": "ops",
    "role_ja": "運営（R6）",
    "operation": "insert,update,delete",
-   "case": "権限なし（担当者・閲覧のみ）",
-   "expected": "NG（403・副作用なし）",
-   "predicate": "current_setting('app.role', true) = 'ops'",
-   "source": [
-    "D-037",
-    "D-077.4"
-   ]
-  },
-  {
-   "entity": "E-023",
-   "table": "duty_versions",
-   "policy": "duty_versions_ops_write",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "insert,update,delete",
-   "case": "他の会社",
-   "expected": "NG（顧客が許可した範囲・期限の中だけ OK）",
+   "case": "会社の人（運営でない）",
+   "expected": "NG（弾く・副作用なし）",
    "predicate": "current_setting('app.role', true) = 'ops'",
    "source": [
     "D-037",
@@ -4077,7 +3862,7 @@
    "role_ja": "運営（R6）",
    "operation": "insert,update,delete",
    "case": "SET LOCAL を飛ばす",
-   "expected": "NG（エラー）",
+   "expected": "NG（弾く）",
    "predicate": "current_setting('app.role', true) = 'ops'",
    "source": [
     "D-037",
@@ -4467,7 +4252,7 @@
    "role": "authenticated",
    "role_ja": "ログイン済み（本人のもの）",
    "operation": "select",
-   "case": "同じ会社・見える範囲",
+   "case": "ログイン済み（会社の人）",
    "expected": "OK",
    "predicate": "true",
    "source": [
@@ -4481,36 +4266,8 @@
    "role": "authenticated",
    "role_ja": "ログイン済み（本人のもの）",
    "operation": "select",
-   "case": "同じ会社・見えない層",
-   "expected": "NG（0 行）",
-   "predicate": "true",
-   "source": [
-    "D-026"
-   ]
-  },
-  {
-   "entity": "E-026",
-   "table": "memory_kinds",
-   "policy": "memory_kinds_all_read",
-   "role": "authenticated",
-   "role_ja": "ログイン済み（本人のもの）",
-   "operation": "select",
-   "case": "他の会社（SET LOCAL を別テナントに）",
-   "expected": "NG（0 行）",
-   "predicate": "true",
-   "source": [
-    "D-026"
-   ]
-  },
-  {
-   "entity": "E-026",
-   "table": "memory_kinds",
-   "policy": "memory_kinds_all_read",
-   "role": "authenticated",
-   "role_ja": "ログイン済み（本人のもの）",
-   "operation": "select",
    "case": "SET LOCAL を飛ばす",
-   "expected": "NG（0 行・エラー）",
+   "expected": "NG（0 行）",
    "predicate": "true",
    "source": [
     "D-026"
@@ -4523,7 +4280,7 @@
    "role": "ops",
    "role_ja": "運営（R6）",
    "operation": "insert,update,delete",
-   "case": "権限あり・自分の範囲",
+   "case": "運営の文脈",
    "expected": "OK",
    "predicate": "current_setting('app.role', true) = 'ops'",
    "source": [
@@ -4538,23 +4295,8 @@
    "role": "ops",
    "role_ja": "運営（R6）",
    "operation": "insert,update,delete",
-   "case": "権限なし（担当者・閲覧のみ）",
-   "expected": "NG（403・副作用なし）",
-   "predicate": "current_setting('app.role', true) = 'ops'",
-   "source": [
-    "D-037",
-    "D-077.4"
-   ]
-  },
-  {
-   "entity": "E-026",
-   "table": "memory_kinds",
-   "policy": "memory_kinds_ops_write",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "insert,update,delete",
-   "case": "他の会社",
-   "expected": "NG（顧客が許可した範囲・期限の中だけ OK）",
+   "case": "会社の人（運営でない）",
+   "expected": "NG（弾く・副作用なし）",
    "predicate": "current_setting('app.role', true) = 'ops'",
    "source": [
     "D-037",
@@ -4569,7 +4311,7 @@
    "role_ja": "運営（R6）",
    "operation": "insert,update,delete",
    "case": "SET LOCAL を飛ばす",
-   "expected": "NG（エラー）",
+   "expected": "NG（弾く）",
    "predicate": "current_setting('app.role', true) = 'ops'",
    "source": [
     "D-037",
@@ -6443,7 +6185,7 @@
    "role": "authenticated",
    "role_ja": "ログイン済み（本人のもの）",
    "operation": "select",
-   "case": "同じ会社・見える範囲",
+   "case": "ログイン済み（会社の人）",
    "expected": "OK",
    "predicate": "true",
    "source": [
@@ -6457,36 +6199,8 @@
    "role": "authenticated",
    "role_ja": "ログイン済み（本人のもの）",
    "operation": "select",
-   "case": "同じ会社・見えない層",
-   "expected": "NG（0 行）",
-   "predicate": "true",
-   "source": [
-    "D-026"
-   ]
-  },
-  {
-   "entity": "E-036",
-   "table": "credential_kinds",
-   "policy": "credential_kinds_all_read",
-   "role": "authenticated",
-   "role_ja": "ログイン済み（本人のもの）",
-   "operation": "select",
-   "case": "他の会社（SET LOCAL を別テナントに）",
-   "expected": "NG（0 行）",
-   "predicate": "true",
-   "source": [
-    "D-026"
-   ]
-  },
-  {
-   "entity": "E-036",
-   "table": "credential_kinds",
-   "policy": "credential_kinds_all_read",
-   "role": "authenticated",
-   "role_ja": "ログイン済み（本人のもの）",
-   "operation": "select",
    "case": "SET LOCAL を飛ばす",
-   "expected": "NG（0 行・エラー）",
+   "expected": "NG（0 行）",
    "predicate": "true",
    "source": [
     "D-026"
@@ -6499,7 +6213,7 @@
    "role": "ops",
    "role_ja": "運営（R6）",
    "operation": "insert,update,delete",
-   "case": "権限あり・自分の範囲",
+   "case": "運営の文脈",
    "expected": "OK",
    "predicate": "current_setting('app.role', true) = 'ops'",
    "source": [
@@ -6514,23 +6228,8 @@
    "role": "ops",
    "role_ja": "運営（R6）",
    "operation": "insert,update,delete",
-   "case": "権限なし（担当者・閲覧のみ）",
-   "expected": "NG（403・副作用なし）",
-   "predicate": "current_setting('app.role', true) = 'ops'",
-   "source": [
-    "D-037",
-    "D-077.4"
-   ]
-  },
-  {
-   "entity": "E-036",
-   "table": "credential_kinds",
-   "policy": "credential_kinds_ops_write",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "insert,update,delete",
-   "case": "他の会社",
-   "expected": "NG（顧客が許可した範囲・期限の中だけ OK）",
+   "case": "会社の人（運営でない）",
+   "expected": "NG（弾く・副作用なし）",
    "predicate": "current_setting('app.role', true) = 'ops'",
    "source": [
     "D-037",
@@ -6545,7 +6244,7 @@
    "role_ja": "運営（R6）",
    "operation": "insert,update,delete",
    "case": "SET LOCAL を飛ばす",
-   "expected": "NG（エラー）",
+   "expected": "NG（弾く）",
    "predicate": "current_setting('app.role', true) = 'ops'",
    "source": [
     "D-037",
@@ -7743,7 +7442,7 @@
    "role": "authenticated",
    "role_ja": "ログイン済み（本人のもの）",
    "operation": "select",
-   "case": "同じ会社・見える範囲",
+   "case": "ログイン済み（会社の人）",
    "expected": "OK",
    "predicate": "true",
    "source": [
@@ -7757,36 +7456,8 @@
    "role": "authenticated",
    "role_ja": "ログイン済み（本人のもの）",
    "operation": "select",
-   "case": "同じ会社・見えない層",
-   "expected": "NG（0 行）",
-   "predicate": "true",
-   "source": [
-    "D-026"
-   ]
-  },
-  {
-   "entity": "E-043",
-   "table": "target_kinds",
-   "policy": "target_kinds_all_read",
-   "role": "authenticated",
-   "role_ja": "ログイン済み（本人のもの）",
-   "operation": "select",
-   "case": "他の会社（SET LOCAL を別テナントに）",
-   "expected": "NG（0 行）",
-   "predicate": "true",
-   "source": [
-    "D-026"
-   ]
-  },
-  {
-   "entity": "E-043",
-   "table": "target_kinds",
-   "policy": "target_kinds_all_read",
-   "role": "authenticated",
-   "role_ja": "ログイン済み（本人のもの）",
-   "operation": "select",
    "case": "SET LOCAL を飛ばす",
-   "expected": "NG（0 行・エラー）",
+   "expected": "NG（0 行）",
    "predicate": "true",
    "source": [
     "D-026"
@@ -7799,7 +7470,7 @@
    "role": "ops",
    "role_ja": "運営（R6）",
    "operation": "insert,update,delete",
-   "case": "権限あり・自分の範囲",
+   "case": "運営の文脈",
    "expected": "OK",
    "predicate": "current_setting('app.role', true) = 'ops'",
    "source": [
@@ -7814,23 +7485,8 @@
    "role": "ops",
    "role_ja": "運営（R6）",
    "operation": "insert,update,delete",
-   "case": "権限なし（担当者・閲覧のみ）",
-   "expected": "NG（403・副作用なし）",
-   "predicate": "current_setting('app.role', true) = 'ops'",
-   "source": [
-    "D-037",
-    "D-077.4"
-   ]
-  },
-  {
-   "entity": "E-043",
-   "table": "target_kinds",
-   "policy": "target_kinds_ops_write",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "insert,update,delete",
-   "case": "他の会社",
-   "expected": "NG（顧客が許可した範囲・期限の中だけ OK）",
+   "case": "会社の人（運営でない）",
+   "expected": "NG（弾く・副作用なし）",
    "predicate": "current_setting('app.role', true) = 'ops'",
    "source": [
     "D-037",
@@ -7845,7 +7501,7 @@
    "role_ja": "運営（R6）",
    "operation": "insert,update,delete",
    "case": "SET LOCAL を飛ばす",
-   "expected": "NG（エラー）",
+   "expected": "NG（弾く）",
    "predicate": "current_setting('app.role', true) = 'ops'",
    "source": [
     "D-037",
@@ -7859,7 +7515,7 @@
    "role": "authenticated",
    "role_ja": "ログイン済み（本人のもの）",
    "operation": "select",
-   "case": "同じ会社・見える範囲",
+   "case": "ログイン済み（会社の人）",
    "expected": "OK",
    "predicate": "true",
    "source": [
@@ -7873,36 +7529,8 @@
    "role": "authenticated",
    "role_ja": "ログイン済み（本人のもの）",
    "operation": "select",
-   "case": "同じ会社・見えない層",
-   "expected": "NG（0 行）",
-   "predicate": "true",
-   "source": [
-    "D-026"
-   ]
-  },
-  {
-   "entity": "E-044",
-   "table": "abilities",
-   "policy": "abilities_all_read",
-   "role": "authenticated",
-   "role_ja": "ログイン済み（本人のもの）",
-   "operation": "select",
-   "case": "他の会社（SET LOCAL を別テナントに）",
-   "expected": "NG（0 行）",
-   "predicate": "true",
-   "source": [
-    "D-026"
-   ]
-  },
-  {
-   "entity": "E-044",
-   "table": "abilities",
-   "policy": "abilities_all_read",
-   "role": "authenticated",
-   "role_ja": "ログイン済み（本人のもの）",
-   "operation": "select",
    "case": "SET LOCAL を飛ばす",
-   "expected": "NG（0 行・エラー）",
+   "expected": "NG（0 行）",
    "predicate": "true",
    "source": [
     "D-026"
@@ -7915,7 +7543,7 @@
    "role": "ops",
    "role_ja": "運営（R6）",
    "operation": "insert,update,delete",
-   "case": "権限あり・自分の範囲",
+   "case": "運営の文脈",
    "expected": "OK",
    "predicate": "current_setting('app.role', true) = 'ops'",
    "source": [
@@ -7930,23 +7558,8 @@
    "role": "ops",
    "role_ja": "運営（R6）",
    "operation": "insert,update,delete",
-   "case": "権限なし（担当者・閲覧のみ）",
-   "expected": "NG（403・副作用なし）",
-   "predicate": "current_setting('app.role', true) = 'ops'",
-   "source": [
-    "D-037",
-    "D-077.4"
-   ]
-  },
-  {
-   "entity": "E-044",
-   "table": "abilities",
-   "policy": "abilities_ops_write",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "insert,update,delete",
-   "case": "他の会社",
-   "expected": "NG（顧客が許可した範囲・期限の中だけ OK）",
+   "case": "会社の人（運営でない）",
+   "expected": "NG（弾く・副作用なし）",
    "predicate": "current_setting('app.role', true) = 'ops'",
    "source": [
     "D-037",
@@ -7961,7 +7574,7 @@
    "role_ja": "運営（R6）",
    "operation": "insert,update,delete",
    "case": "SET LOCAL を飛ばす",
-   "expected": "NG（エラー）",
+   "expected": "NG（弾く）",
    "predicate": "current_setting('app.role', true) = 'ops'",
    "source": [
     "D-037",
@@ -9535,7 +9148,7 @@
    "role": "authenticated",
    "role_ja": "ログイン済み（本人のもの）",
    "operation": "select",
-   "case": "同じ会社・見える範囲",
+   "case": "ログイン済み（会社の人）",
    "expected": "OK",
    "predicate": "true",
    "source": [
@@ -9549,36 +9162,8 @@
    "role": "authenticated",
    "role_ja": "ログイン済み（本人のもの）",
    "operation": "select",
-   "case": "同じ会社・見えない層",
-   "expected": "NG（0 行）",
-   "predicate": "true",
-   "source": [
-    "D-026"
-   ]
-  },
-  {
-   "entity": "E-053",
-   "table": "distribution_versions",
-   "policy": "distribution_versions_all_read",
-   "role": "authenticated",
-   "role_ja": "ログイン済み（本人のもの）",
-   "operation": "select",
-   "case": "他の会社（SET LOCAL を別テナントに）",
-   "expected": "NG（0 行）",
-   "predicate": "true",
-   "source": [
-    "D-026"
-   ]
-  },
-  {
-   "entity": "E-053",
-   "table": "distribution_versions",
-   "policy": "distribution_versions_all_read",
-   "role": "authenticated",
-   "role_ja": "ログイン済み（本人のもの）",
-   "operation": "select",
    "case": "SET LOCAL を飛ばす",
-   "expected": "NG（0 行・エラー）",
+   "expected": "NG（0 行）",
    "predicate": "true",
    "source": [
     "D-026"
@@ -9591,7 +9176,7 @@
    "role": "ops",
    "role_ja": "運営（R6）",
    "operation": "insert,update,delete",
-   "case": "権限あり・自分の範囲",
+   "case": "運営の文脈",
    "expected": "OK",
    "predicate": "current_setting('app.role', true) = 'ops'",
    "source": [
@@ -9606,23 +9191,8 @@
    "role": "ops",
    "role_ja": "運営（R6）",
    "operation": "insert,update,delete",
-   "case": "権限なし（担当者・閲覧のみ）",
-   "expected": "NG（403・副作用なし）",
-   "predicate": "current_setting('app.role', true) = 'ops'",
-   "source": [
-    "D-037",
-    "D-077.4"
-   ]
-  },
-  {
-   "entity": "E-053",
-   "table": "distribution_versions",
-   "policy": "distribution_versions_ops_write",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "insert,update,delete",
-   "case": "他の会社",
-   "expected": "NG（顧客が許可した範囲・期限の中だけ OK）",
+   "case": "会社の人（運営でない）",
+   "expected": "NG（弾く・副作用なし）",
    "predicate": "current_setting('app.role', true) = 'ops'",
    "source": [
     "D-037",
@@ -9637,7 +9207,7 @@
    "role_ja": "運営（R6）",
    "operation": "insert,update,delete",
    "case": "SET LOCAL を飛ばす",
-   "expected": "NG（エラー）",
+   "expected": "NG（弾く）",
    "predicate": "current_setting('app.role', true) = 'ops'",
    "source": [
     "D-037",
@@ -9839,7 +9409,7 @@
    "role": "authenticated",
    "role_ja": "ログイン済み（本人のもの）",
    "operation": "select",
-   "case": "同じ会社・見える範囲",
+   "case": "ログイン済み（会社の人）",
    "expected": "OK",
    "predicate": "true",
    "source": [
@@ -9853,36 +9423,8 @@
    "role": "authenticated",
    "role_ja": "ログイン済み（本人のもの）",
    "operation": "select",
-   "case": "同じ会社・見えない層",
-   "expected": "NG（0 行）",
-   "predicate": "true",
-   "source": [
-    "D-026"
-   ]
-  },
-  {
-   "entity": "E-055",
-   "table": "service_registry_versions",
-   "policy": "service_registry_versions_all_read",
-   "role": "authenticated",
-   "role_ja": "ログイン済み（本人のもの）",
-   "operation": "select",
-   "case": "他の会社（SET LOCAL を別テナントに）",
-   "expected": "NG（0 行）",
-   "predicate": "true",
-   "source": [
-    "D-026"
-   ]
-  },
-  {
-   "entity": "E-055",
-   "table": "service_registry_versions",
-   "policy": "service_registry_versions_all_read",
-   "role": "authenticated",
-   "role_ja": "ログイン済み（本人のもの）",
-   "operation": "select",
    "case": "SET LOCAL を飛ばす",
-   "expected": "NG（0 行・エラー）",
+   "expected": "NG（0 行）",
    "predicate": "true",
    "source": [
     "D-026"
@@ -9895,7 +9437,7 @@
    "role": "ops",
    "role_ja": "運営（R6）",
    "operation": "insert,update,delete",
-   "case": "権限あり・自分の範囲",
+   "case": "運営の文脈",
    "expected": "OK",
    "predicate": "current_setting('app.role', true) = 'ops'",
    "source": [
@@ -9910,23 +9452,8 @@
    "role": "ops",
    "role_ja": "運営（R6）",
    "operation": "insert,update,delete",
-   "case": "権限なし（担当者・閲覧のみ）",
-   "expected": "NG（403・副作用なし）",
-   "predicate": "current_setting('app.role', true) = 'ops'",
-   "source": [
-    "D-037",
-    "D-077.4"
-   ]
-  },
-  {
-   "entity": "E-055",
-   "table": "service_registry_versions",
-   "policy": "service_registry_versions_ops_write",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "insert,update,delete",
-   "case": "他の会社",
-   "expected": "NG（顧客が許可した範囲・期限の中だけ OK）",
+   "case": "会社の人（運営でない）",
+   "expected": "NG（弾く・副作用なし）",
    "predicate": "current_setting('app.role', true) = 'ops'",
    "source": [
     "D-037",
@@ -9941,7 +9468,7 @@
    "role_ja": "運営（R6）",
    "operation": "insert,update,delete",
    "case": "SET LOCAL を飛ばす",
-   "expected": "NG（エラー）",
+   "expected": "NG（弾く）",
    "predicate": "current_setting('app.role', true) = 'ops'",
    "source": [
     "D-037",
@@ -12547,7 +12074,7 @@
    "role": "authenticated",
    "role_ja": "ログイン済み（本人のもの）",
    "operation": "select",
-   "case": "同じ会社・見える範囲",
+   "case": "ログイン済み（会社の人）",
    "expected": "OK",
    "predicate": "true",
    "source": [
@@ -12561,36 +12088,8 @@
    "role": "authenticated",
    "role_ja": "ログイン済み（本人のもの）",
    "operation": "select",
-   "case": "同じ会社・見えない層",
-   "expected": "NG（0 行）",
-   "predicate": "true",
-   "source": [
-    "D-026"
-   ]
-  },
-  {
-   "entity": "E-068",
-   "table": "plan_versions",
-   "policy": "plan_versions_all_read",
-   "role": "authenticated",
-   "role_ja": "ログイン済み（本人のもの）",
-   "operation": "select",
-   "case": "他の会社（SET LOCAL を別テナントに）",
-   "expected": "NG（0 行）",
-   "predicate": "true",
-   "source": [
-    "D-026"
-   ]
-  },
-  {
-   "entity": "E-068",
-   "table": "plan_versions",
-   "policy": "plan_versions_all_read",
-   "role": "authenticated",
-   "role_ja": "ログイン済み（本人のもの）",
-   "operation": "select",
    "case": "SET LOCAL を飛ばす",
-   "expected": "NG（0 行・エラー）",
+   "expected": "NG（0 行）",
    "predicate": "true",
    "source": [
     "D-026"
@@ -12603,7 +12102,7 @@
    "role": "ops",
    "role_ja": "運営（R6）",
    "operation": "insert,update,delete",
-   "case": "権限あり・自分の範囲",
+   "case": "運営の文脈",
    "expected": "OK",
    "predicate": "current_setting('app.role', true) = 'ops'",
    "source": [
@@ -12618,23 +12117,8 @@
    "role": "ops",
    "role_ja": "運営（R6）",
    "operation": "insert,update,delete",
-   "case": "権限なし（担当者・閲覧のみ）",
-   "expected": "NG（403・副作用なし）",
-   "predicate": "current_setting('app.role', true) = 'ops'",
-   "source": [
-    "D-037",
-    "D-077.4"
-   ]
-  },
-  {
-   "entity": "E-068",
-   "table": "plan_versions",
-   "policy": "plan_versions_ops_write",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "insert,update,delete",
-   "case": "他の会社",
-   "expected": "NG（顧客が許可した範囲・期限の中だけ OK）",
+   "case": "会社の人（運営でない）",
+   "expected": "NG（弾く・副作用なし）",
    "predicate": "current_setting('app.role', true) = 'ops'",
    "source": [
     "D-037",
@@ -12649,7 +12133,7 @@
    "role_ja": "運営（R6）",
    "operation": "insert,update,delete",
    "case": "SET LOCAL を飛ばす",
-   "expected": "NG（エラー）",
+   "expected": "NG（弾く）",
    "predicate": "current_setting('app.role', true) = 'ops'",
    "source": [
     "D-037",
@@ -15087,7 +14571,7 @@
    "role": "authenticated",
    "role_ja": "ログイン済み（本人のもの）",
    "operation": "select",
-   "case": "同じ会社・見える範囲",
+   "case": "ログイン済み（会社の人）",
    "expected": "OK",
    "predicate": "true",
    "source": [
@@ -15101,36 +14585,8 @@
    "role": "authenticated",
    "role_ja": "ログイン済み（本人のもの）",
    "operation": "select",
-   "case": "同じ会社・見えない層",
-   "expected": "NG（0 行）",
-   "predicate": "true",
-   "source": [
-    "D-026"
-   ]
-  },
-  {
-   "entity": "E-081",
-   "table": "skill_versions",
-   "policy": "skill_versions_all_read",
-   "role": "authenticated",
-   "role_ja": "ログイン済み（本人のもの）",
-   "operation": "select",
-   "case": "他の会社（SET LOCAL を別テナントに）",
-   "expected": "NG（0 行）",
-   "predicate": "true",
-   "source": [
-    "D-026"
-   ]
-  },
-  {
-   "entity": "E-081",
-   "table": "skill_versions",
-   "policy": "skill_versions_all_read",
-   "role": "authenticated",
-   "role_ja": "ログイン済み（本人のもの）",
-   "operation": "select",
    "case": "SET LOCAL を飛ばす",
-   "expected": "NG（0 行・エラー）",
+   "expected": "NG（0 行）",
    "predicate": "true",
    "source": [
     "D-026"
@@ -15143,7 +14599,7 @@
    "role": "ops",
    "role_ja": "運営（R6）",
    "operation": "insert,update,delete",
-   "case": "権限あり・自分の範囲",
+   "case": "運営の文脈",
    "expected": "OK",
    "predicate": "current_setting('app.role', true) = 'ops'",
    "source": [
@@ -15158,23 +14614,8 @@
    "role": "ops",
    "role_ja": "運営（R6）",
    "operation": "insert,update,delete",
-   "case": "権限なし（担当者・閲覧のみ）",
-   "expected": "NG（403・副作用なし）",
-   "predicate": "current_setting('app.role', true) = 'ops'",
-   "source": [
-    "D-037",
-    "D-077.4"
-   ]
-  },
-  {
-   "entity": "E-081",
-   "table": "skill_versions",
-   "policy": "skill_versions_ops_write",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "insert,update,delete",
-   "case": "他の会社",
-   "expected": "NG（顧客が許可した範囲・期限の中だけ OK）",
+   "case": "会社の人（運営でない）",
+   "expected": "NG（弾く・副作用なし）",
    "predicate": "current_setting('app.role', true) = 'ops'",
    "source": [
     "D-037",
@@ -15189,7 +14630,7 @@
    "role_ja": "運営（R6）",
    "operation": "insert,update,delete",
    "case": "SET LOCAL を飛ばす",
-   "expected": "NG（エラー）",
+   "expected": "NG（弾く）",
    "predicate": "current_setting('app.role', true) = 'ops'",
    "source": [
     "D-037",

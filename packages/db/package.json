@@ -17,6 +17,10 @@
   "exports": {
     ".": "./src/index.ts",
     "./migrate": "./src/migrate.ts",
-    "./context": "./src/context.ts"
+    "./context": "./src/context.ts",
+    "./repository": "./src/repository.ts",
+    "./pool": "./src/pool.ts",
+    "./id": "./src/id.ts",
+    "./matrix": "./src/matrix.ts"
   }
 }
