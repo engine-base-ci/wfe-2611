@@ -4,7 +4,7 @@
 
 - 総タスク数：158（A 23 / D 12 / F 17 / I 22 / S 15 / U-screen 58 / U-shared 6 / V2 5）
 - 画面の被覆：58/59
-- L1 テスト行：3143（正本 07_qa/test-specs）／ 流れ（L2）：9
+- L1 テスト行：3140（正本 07_qa/test-specs）／ 流れ（L2）：9
 - 工数：Human 4838.0 h（605 日）／ AI 計算 847.5 h ＋ 人のレビュー 49.0 h → wall-clock 206.9 h（35 日・並列 10）
 - Wave 数：20
 
@@ -42,9 +42,9 @@
 | T-D-04 | データ層 4. 会社モデル ── 担当業務・記憶（6 表・migration・RLS・索引・seed | db | foundation | 40 | 3.3 | 3.3 | 2 | 3 | 13 |
 | T-D-05 | データ層 5. 実行・統制（10 表・migration・RLS・索引・seed） | db | foundation | 64 | 16.0 | 17.0 | 2 | 3 | 19 |
 | T-D-06 | データ層 6. 会話・成果物・証跡（4 表・migration・RLS・索引・seed） | db | foundation | 28 | 2.3 | 2.3 | 2 | 3 | 10 |
-| T-D-07 | データ層 9. 層と権限（4 表・migration・RLS・索引・seed） | db | foundation | 28 | 7.0 | 8.0 | 2 | 3 | 11 |
-| T-D-08 | データ層 10. 口座状態の出来事・失効・サポートアクセス（6 表・migration・RLS・索引 | db | foundation | 40 | 10.0 | 11.0 | 2 | 3 | 14 |
-| T-D-09 | データ層 11. 運営（9 表・migration・RLS・索引・seed） | db | foundation | 58 | 4.8 | 4.8 | 2 | 3 | 18 |
+| T-D-07 | データ層 9. 層と権限（4 表・migration・RLS・索引・seed） | db | foundation | 28 | 7.0 | 8.0 | 2 | 3 | 10 |
+| T-D-08 | データ層 10. 口座状態の出来事・失効・サポートアクセス（6 表・migration・RLS・索引 | db | foundation | 40 | 10.0 | 11.0 | 2 | 3 | 13 |
+| T-D-09 | データ層 11. 運営（9 表・migration・RLS・索引・seed） | db | foundation | 58 | 4.8 | 4.8 | 2 | 3 | 17 |
 | T-D-10 | データ層 12. 運営と顧客の間で往復するもの・自分で整えるもの（14 表・migration・RL | db | foundation | 88 | 22.0 | 23.0 | 2 | 3 | 26 |
 | T-D-11 | データ層 13. 取り込み・正規連携・招待・持ち出し・添付（5 表・migration・RLS・索引 | db | foundation | 34 | 2.8 | 2.8 | 3 | 3 | 12 |
 | T-D-12 | データ層 14. スキル（4 表・migration・RLS・索引・seed） | db | foundation | 28 | 2.3 | 2.3 | 3 | 3 | 10 |
@@ -495,7 +495,7 @@
 - 触るファイル：packages/db/migrations/0107_9..sql (new)、packages/db/policies/layers.sql (new)、packages/db/schema.ts (modify)
 - AC（Tier 1）：UBIQUITOUS: 表 layers, target_kinds, abilities, permissions が ER 図 §9. 層と権限 の列・型・
 - AC（Tier 2）：UNWANTED: IF 他テナントの行を SELECT/UPDATE しようとしたら 0 行／403 で副作用が起きない（layers_tenant_read ／ UBIQUITOUS: layers_tenant_read ／ UBIQUITOUS: layers_permission_write
-- L1 行 11（['RLS-D07-001', 'RLS-D07-002', 'RLS-D07-003'] …）／ L2 —
+- L1 行 10（['RLS-D07-001', 'RLS-D07-002', 'RLS-D07-003'] …）／ L2 —
 - audit: 07_tasks/audit/T-D-07.md
 
 ### T-D-08 データ層 10. 口座状態の出来事・失効・サポートアクセス（6 表・migration・RLS・索引・seed）
@@ -507,7 +507,7 @@
 - 触るファイル：packages/db/migrations/0108_10.sql (new)、packages/db/policies/account_events.sql (new)、packages/db/schema.ts (modify)
 - AC（Tier 1）：UBIQUITOUS: 表 account_events, account_event_items, sessions, support_access_gran
 - AC（Tier 2）：UNWANTED: IF 他テナントの行を SELECT/UPDATE しようとしたら 0 行／403 で副作用が起きない（account_events_ten ／ UBIQUITOUS: account_events_tenant_read ／ UBIQUITOUS: account_events_self_only_write
-- L1 行 14（['RLS-D08-001', 'RLS-D08-002', 'RLS-D08-003'] …）／ L2 —
+- L1 行 13（['RLS-D08-001', 'RLS-D08-002', 'RLS-D08-003'] …）／ L2 —
 - audit: 07_tasks/audit/T-D-08.md
 
 ### T-D-09 データ層 11. 運営（9 表・migration・RLS・索引・seed）
@@ -519,7 +519,7 @@
 - 触るファイル：packages/db/migrations/0109_11.sql (new)、packages/db/policies/distributions.sql (new)、packages/db/schema.ts (modify)
 - AC（Tier 1）：UBIQUITOUS: 表 distributions, distribution_versions, tenant_distributions, servic
 - AC（Tier 2）：UNWANTED: IF 他テナントの行を SELECT/UPDATE しようとしたら 0 行／403 で副作用が起きない（distributions_tena ／ UBIQUITOUS: distributions_tenant_read ／ UBIQUITOUS: distributions_permission_write
-- L1 行 18（['RLS-D09-001', 'RLS-D09-002', 'RLS-D09-003'] …）／ L2 —
+- L1 行 17（['RLS-D09-001', 'RLS-D09-002', 'RLS-D09-003'] …）／ L2 —
 - audit: 07_tasks/audit/T-D-09.md
 
 ### T-D-10 データ層 12. 運営と顧客の間で往復するもの・自分で整えるもの（14 表・migration・RLS・索引・seed）

@@ -71,7 +71,7 @@
   "calendar_days_human": 605,
   "total_estimate_hours": 896.5,
   "total_estimate_sessions": 300,
-  "qa_rows_total": 3143,
+  "qa_rows_total": 3140,
   "journeys": 9
  },
  "waves": [
@@ -1231,7 +1231,6 @@
     "members_permission_write",
     "members_ops_read_with_grant",
     "sessions_tenant_read",
-    "sessions_self_only_write",
     "sessions_permission_write",
     "sessions_ops_read_with_grant",
     "invitations_tenant_read",
@@ -1412,7 +1411,6 @@
     "members_permission_write",
     "members_ops_read_with_grant",
     "sessions_tenant_read",
-    "sessions_self_only_write",
     "sessions_permission_write",
     "sessions_ops_read_with_grant",
     "invitations_tenant_read",
@@ -4869,7 +4867,6 @@
     "abilities_all_read",
     "abilities_ops_write",
     "permissions_tenant_read",
-    "permissions_self_only_write",
     "permissions_permission_write",
     "permissions_ops_read_with_grant"
    ],
@@ -4890,8 +4887,7 @@
      "RLS-D07-007",
      "RLS-D07-008",
      "RLS-D07-009",
-     "RLS-D07-010",
-     "RLS-D07-011"
+     "RLS-D07-010"
     ],
     "l2_flows": []
    },
@@ -5077,7 +5073,6 @@
     "account_event_items_permission_write",
     "account_event_items_ops_read_with_grant",
     "sessions_tenant_read",
-    "sessions_self_only_write",
     "sessions_permission_write",
     "sessions_ops_read_with_grant",
     "support_access_grants_tenant_read",
@@ -5110,8 +5105,7 @@
      "RLS-D08-010",
      "RLS-D08-011",
      "RLS-D08-012",
-     "RLS-D08-013",
-     "RLS-D08-014"
+     "RLS-D08-013"
     ],
     "l2_flows": []
    },
@@ -5317,7 +5311,6 @@
     "review_requests_permission_write",
     "review_requests_ops_read_with_grant",
     "ops_members_tenant_read",
-    "ops_members_self_only_write",
     "ops_members_permission_write",
     "ops_members_ops_read_with_grant",
     "ops_audit_events_tenant_read",
@@ -5352,8 +5345,7 @@
      "RLS-D09-014",
      "RLS-D09-015",
      "RLS-D09-016",
-     "RLS-D09-017",
-     "RLS-D09-018"
+     "RLS-D09-017"
     ],
     "l2_flows": []
    },
@@ -6385,7 +6377,6 @@
     "plan_versions_ops_write",
     "plans_permission_write",
     "sessions_permission_write",
-    "sessions_self_only_write",
     "subscriptions_permission_write",
     "tenants_ops_read_with_grant",
     "tenants_tenant_read",
@@ -7043,8 +7034,7 @@
     "invitations_permission_write",
     "layers_permission_write",
     "members_permission_write",
-    "permissions_permission_write",
-    "permissions_self_only_write"
+    "permissions_permission_write"
    ],
    "spec_links": [
     "08_api/openapi.yaml",
@@ -8347,7 +8337,6 @@
     "service_requests_self_only_write",
     "sessions_ops_read_with_grant",
     "sessions_permission_write",
-    "sessions_self_only_write",
     "sessions_tenant_read",
     "tenants_ops_read_with_grant",
     "tenants_tenant_read"
@@ -11112,7 +11101,6 @@
     "ops_audit_events_ops_read_with_grant",
     "ops_audit_events_tenant_read",
     "permissions_permission_write",
-    "permissions_self_only_write",
     "security_events_ops_read_with_grant",
     "security_events_tenant_read"
    ],
@@ -12431,7 +12419,6 @@
     "ops_audit_events_tenant_read",
     "permissions_ops_read_with_grant",
     "permissions_permission_write",
-    "permissions_self_only_write",
     "permissions_tenant_read",
     "security_events_ops_read_with_grant",
     "security_events_permission_write",
@@ -14565,7 +14552,6 @@
     "ledger_views_permission_write",
     "members_permission_write",
     "permissions_permission_write",
-    "permissions_self_only_write",
     "service_registry_permission_write",
     "service_registry_versions_ops_write",
     "service_requests_permission_write",

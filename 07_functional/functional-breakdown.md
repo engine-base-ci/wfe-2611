@@ -59,10 +59,10 @@
 | E-042 | `layers` | 9. 層と権限 | account_scoped | 3 | D-073 D-073.4 |
 | E-043 | `target_kinds` | 9. 層と権限 | none | 2 | D-073 |
 | E-044 | `abilities` | 9. 層と権限 | none | 2 | D-073 |
-| E-045 | `permissions` | 9. 層と権限 | account_scoped | 4 | D-073 D-073.1 D-073.3 |
+| E-045 | `permissions` | 9. 層と権限 | account_scoped | 3 | D-073 D-073.1 D-073.3 |
 | E-046 | `account_events` | 10. 口座状態の出来事・失効・サポートアクセス | account_scoped | 4 | D-074 D-074.1 D-076 D-076.13 |
 | E-047 | `account_event_items` | 10. 口座状態の出来事・失効・サポートアクセス | account_scoped | 3 | D-074 D-076.13 |
-| E-048 | `sessions` | 10. 口座状態の出来事・失効・サポートアクセス | account_scoped | 4 | D-074 D-076 D-076.1 D-076.13 |
+| E-048 | `sessions` | 10. 口座状態の出来事・失効・サポートアクセス | account_scoped | 3 | D-074 D-076 D-076.1 D-076.13 |
 | E-049 | `support_access_grants` | 10. 口座状態の出来事・失効・サポートアクセス | account_scoped | 3 | D-074 D-074.5 D-076.13 |
 | E-050 | `retention_holds` | 10. 口座状態の出来事・失効・サポートアクセス | account_scoped | 3 | D-074 D-074.3 D-076.13 |
 | E-051 | `erasure_certificates` | 10. 口座状態の出来事・失効・サポートアクセス | account_scoped | 3 | D-074 D-074.3 D-076.13 |
@@ -72,7 +72,7 @@
 | E-055 | `service_registry_versions` | 11. 運営 | none | 2 | D-073.7 D-074.4 D-076 D-076.10 |
 | E-056 | `service_requests` | 11. 運営 | account_scoped | 4 | D-073.7 D-074.4 D-076 D-076.10 |
 | E-057 | `review_requests` | 11. 運営 | account_scoped | 3 | D-027 D-073.7 D-074 D-074.4 |
-| E-058 | `ops_members` | 11. 運営 | account_scoped | 4 | D-073 D-073.7 D-074.4 D-076.10 |
+| E-058 | `ops_members` | 11. 運営 | account_scoped | 3 | D-073 D-073.7 D-074.4 D-076.10 |
 | E-059 | `ops_audit_events` | 11. 運営 | account_scoped | 3 | D-073.7 D-074 D-074.4 D-076.10 |
 | E-060 | `security_events` | 11. 運営 | account_scoped | 4 | D-073.7 D-074.4 D-075 D-075.6 |
 | E-061 | `inquiries` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 4 | D-069 D-075 D-075.1 D-076 |

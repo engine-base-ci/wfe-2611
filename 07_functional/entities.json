@@ -4255,16 +4255,6 @@
      ]
     },
     {
-     "name": "permissions_self_only_write",
-     "operation": "insert,update,delete",
-     "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND grantee_member_id = current_setting('app.user_id', true)::uuid",
-     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
-     "source": [
-      "D-073.1"
-     ]
-    },
-    {
      "name": "permissions_permission_write",
      "operation": "insert,update,delete",
      "role": "member",
@@ -4577,16 +4567,6 @@
      "source": [
       "D-026.1",
       "D-058.5",
-      "D-073.1"
-     ]
-    },
-    {
-     "name": "sessions_self_only_write",
-     "operation": "insert,update,delete",
-     "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND member_id = current_setting('app.user_id', true)::uuid",
-     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
-     "source": [
       "D-073.1"
      ]
     },
@@ -5530,16 +5510,6 @@
      "source": [
       "D-026.1",
       "D-058.5",
-      "D-073.1"
-     ]
-    },
-    {
-     "name": "ops_members_self_only_write",
-     "operation": "insert,update,delete",
-     "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND member_id = current_setting('app.user_id', true)::uuid",
-     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
-     "source": [
       "D-073.1"
      ]
     },

@@ -1541,7 +1541,6 @@
     "plan_versions_ops_write",
     "plans_permission_write",
     "sessions_permission_write",
-    "sessions_self_only_write",
     "subscriptions_permission_write",
     "tenants_ops_read_with_grant",
     "tenants_tenant_read",
@@ -1753,7 +1752,6 @@
      "plan_versions_ops_write",
      "plans_permission_write",
      "sessions_permission_write",
-     "sessions_self_only_write",
      "subscriptions_permission_write",
      "tenants_ops_read_with_grant",
      "tenants_tenant_read",
@@ -2037,8 +2035,7 @@
     "invitations_permission_write",
     "layers_permission_write",
     "members_permission_write",
-    "permissions_permission_write",
-    "permissions_self_only_write"
+    "permissions_permission_write"
    ],
    "ears_ac_seed": [
     "EVENT-DRIVEN: WHEN R1／R2／R3 が「メールで入り直す／回復コードを使う」したとき THEN Kaname は「トークンを失効させて再発行」を行う",
@@ -2160,8 +2157,7 @@
      "invitations_permission_write",
      "layers_permission_write",
      "members_permission_write",
-     "permissions_permission_write",
-     "permissions_self_only_write"
+     "permissions_permission_write"
     ],
     "tests": [
      "契約テスト（OpenAPI）",
@@ -2715,7 +2711,6 @@
     "service_requests_self_only_write",
     "sessions_ops_read_with_grant",
     "sessions_permission_write",
-    "sessions_self_only_write",
     "sessions_tenant_read",
     "tenants_ops_read_with_grant",
     "tenants_tenant_read"
@@ -2944,7 +2939,6 @@
      "service_requests_self_only_write",
      "sessions_ops_read_with_grant",
      "sessions_permission_write",
-     "sessions_self_only_write",
      "sessions_tenant_read",
      "tenants_ops_read_with_grant",
      "tenants_tenant_read"
@@ -4730,7 +4724,6 @@
     "ops_audit_events_ops_read_with_grant",
     "ops_audit_events_tenant_read",
     "permissions_permission_write",
-    "permissions_self_only_write",
     "security_events_ops_read_with_grant",
     "security_events_tenant_read",
     "task_handovers_ops_read_with_grant",
@@ -5028,7 +5021,6 @@
      "ops_audit_events_ops_read_with_grant",
      "ops_audit_events_tenant_read",
      "permissions_permission_write",
-     "permissions_self_only_write",
      "security_events_ops_read_with_grant",
      "security_events_tenant_read",
      "task_handovers_ops_read_with_grant",
@@ -5485,7 +5477,6 @@
     "ops_audit_events_tenant_read",
     "permissions_ops_read_with_grant",
     "permissions_permission_write",
-    "permissions_self_only_write",
     "permissions_tenant_read",
     "security_events_ops_read_with_grant",
     "security_events_permission_write",
@@ -5737,7 +5728,6 @@
      "ops_audit_events_tenant_read",
      "permissions_ops_read_with_grant",
      "permissions_permission_write",
-     "permissions_self_only_write",
      "permissions_tenant_read",
      "security_events_ops_read_with_grant",
      "security_events_permission_write",
@@ -7100,7 +7090,6 @@
     "ledger_views_permission_write",
     "members_permission_write",
     "permissions_permission_write",
-    "permissions_self_only_write",
     "service_registry_permission_write",
     "service_registry_versions_ops_write",
     "service_requests_permission_write",
@@ -7305,7 +7294,6 @@
      "ledger_views_permission_write",
      "members_permission_write",
      "permissions_permission_write",
-     "permissions_self_only_write",
      "service_registry_permission_write",
      "service_registry_versions_ops_write",
      "service_requests_permission_write",

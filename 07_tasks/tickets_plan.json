@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-15T21:56:12",
+ "generated_at": "2026-09-15T22:19:56",
  "inputs": {
   "tickets": "07_tasks/tickets.json",
   "roster": "07_tasks/roster.json",
@@ -8,10 +8,10 @@
  "summary": {
   "epic": 15,
   "story": 158,
-  "subtask": 3738,
+  "subtask": 3735,
   "subtask_by": {
    "impl": 395,
-   "test": 3143,
+   "test": 3140,
    "mock": 200
   },
   "critical_path": [
@@ -2024,8 +2024,7 @@
     "T-D-07.t7",
     "T-D-07.t8",
     "T-D-07.t9",
-    "T-D-07.t10",
-    "T-D-07.t11"
+    "T-D-07.t10"
    ],
    "depends_on": [
     "T-F-01",
@@ -2070,8 +2069,7 @@
      "RLS-D07-007",
      "RLS-D07-008",
      "RLS-D07-009",
-     "RLS-D07-010",
-     "RLS-D07-011"
+     "RLS-D07-010"
     ],
     "errors": [],
     "spec": [
@@ -2102,8 +2100,7 @@
     "T-D-08.t10",
     "T-D-08.t11",
     "T-D-08.t12",
-    "T-D-08.t13",
-    "T-D-08.t14"
+    "T-D-08.t13"
    ],
    "depends_on": [
     "T-F-01",
@@ -2154,8 +2151,7 @@
      "RLS-D08-010",
      "RLS-D08-011",
      "RLS-D08-012",
-     "RLS-D08-013",
-     "RLS-D08-014"
+     "RLS-D08-013"
     ],
     "errors": [],
     "spec": [
@@ -2190,8 +2186,7 @@
     "T-D-09.t14",
     "T-D-09.t15",
     "T-D-09.t16",
-    "T-D-09.t17",
-    "T-D-09.t18"
+    "T-D-09.t17"
    ],
    "depends_on": [
     "T-F-01",
@@ -2249,8 +2244,7 @@
      "RLS-D09-014",
      "RLS-D09-015",
      "RLS-D09-016",
-     "RLS-D09-017",
-     "RLS-D09-018"
+     "RLS-D09-017"
     ],
     "errors": [],
     "spec": [
@@ -22268,19 +22262,6 @@
    }
   },
   {
-   "id": "T-D-07.t11",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 RLS-D07-011 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-D-07",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "RLS-D07-011"
-    ]
-   }
-  },
-  {
    "id": "T-D-08.s1",
    "kind": "subtask",
    "sub": "impl",
@@ -22485,19 +22466,6 @@
    "links": {
     "qa_rows": [
      "RLS-D08-013"
-    ]
-   }
-  },
-  {
-   "id": "T-D-08.t14",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 RLS-D08-014 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-D-08",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "RLS-D08-014"
     ]
    }
   },
@@ -22758,19 +22726,6 @@
    "links": {
     "qa_rows": [
      "RLS-D09-017"
-    ]
-   }
-  },
-  {
-   "id": "T-D-09.t18",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 RLS-D09-018 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-D-09",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "RLS-D09-018"
     ]
    }
   },

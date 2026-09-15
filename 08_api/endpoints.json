@@ -3950,7 +3950,6 @@
     "ai_employees_permission_write",
     "audit_events_permission_write",
     "layers_permission_write",
-    "permissions_self_only_write",
     "permissions_permission_write",
     "invitations_permission_write"
    ],
@@ -4085,7 +4084,6 @@
     "ai_employees_self_only_write",
     "ai_employees_permission_write",
     "layers_permission_write",
-    "permissions_self_only_write",
     "permissions_permission_write",
     "export_jobs_self_only_write",
     "export_jobs_permission_write"
@@ -5822,7 +5820,6 @@
    "rate_limit": "60/min/user",
    "access_control_policies": [
     "action_runs_permission_write",
-    "sessions_self_only_write",
     "sessions_permission_write"
    ],
    "outputs_4xx": [
