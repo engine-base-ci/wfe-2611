@@ -1,0 +1,8118 @@
+{
+ "meta": {
+  "version": "v3.1",
+  "created_at": "2026-09-15",
+  "_doc": "05_flow/build_functional.py が flow.json・ER図・モック・errors.json から生成。手で直さない。",
+  "source": [
+   "D-053.1",
+   "D-053.2",
+   "D-010"
+  ]
+ },
+ "entities": [
+  {
+   "id": "E-001",
+   "name": "tenants",
+   "table_name": "tenants",
+   "section": "1. テナント・組織・メンバー",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "name",
+     "note": null
+    },
+    {
+     "name": "plan_id",
+     "note": null
+    },
+    {
+     "name": "status_id",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "to": "scopes",
+     "label": "has"
+    },
+    {
+     "to": "members",
+     "label": "has"
+    },
+    {
+     "to": "layers",
+     "label": "会社が決めた層 0〜n"
+    },
+    {
+     "to": "account_events",
+     "label": "出来事"
+    },
+    {
+     "to": "support_access_grants",
+     "label": "運営への許可"
+    },
+    {
+     "to": "retention_holds",
+     "label": "法令保管"
+    },
+    {
+     "to": "erasure_certificates",
+     "label": "消去の証明"
+    },
+    {
+     "to": "tenant_distributions",
+     "label": "使っている・上書き"
+    },
+    {
+     "to": "review_requests",
+     "label": "公開の申請"
+    },
+    {
+     "to": "inquiries",
+     "label": "問い合わせ"
+    },
+    {
+     "to": "subscriptions",
+     "label": "契約"
+    },
+    {
+     "to": "usage_meters",
+     "label": "利用量"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "tenants_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "tenants_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'tenants', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "tenants_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = tenants.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "契約の単位",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-076"
+   ]
+  },
+  {
+   "id": "E-002",
+   "name": "scopes",
+   "table_name": "scopes",
+   "section": "1. テナント・組織・メンバー",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "parent_id",
+     "note": null
+    },
+    {
+     "name": "layer_id",
+     "note": null
+    },
+    {
+     "name": "name",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "tenants",
+     "label": "has"
+    },
+    {
+     "to": "scopes",
+     "label": "parent"
+    },
+    {
+     "from": "scopes",
+     "label": "parent"
+    },
+    {
+     "from": "policies",
+     "label": "層ごと"
+    },
+    {
+     "from": "layers",
+     "label": "層の実体"
+    },
+    {
+     "from": "permissions",
+     "label": "どの層で"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "scopes_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "scopes_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'scopes', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "scopes_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = scopes.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**4 層の実体**（運営／会社／部署／個人）。層は省略可",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-026"
+   ]
+  },
+  {
+   "id": "E-003",
+   "name": "member_kinds",
+   "table_name": "member_kinds",
+   "section": "1. テナント・組織・メンバー",
+   "fields": [
+    {
+     "name": "key",
+     "note": null
+    },
+    {
+     "name": "label",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "members",
+     "label": "is"
+    }
+   ],
+   "soft_delete": false,
+   "timestamps": true,
+   "tenant_field": null,
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "none",
+    "column": null,
+    "fk_table": null
+   },
+   "access_control_policies": [
+    {
+     "name": "member_kinds_all_read",
+     "operation": "select",
+     "role": "authenticated",
+     "predicate": "true",
+     "rationale": "マスタ。全員が読む",
+     "source": [
+      "D-026"
+     ]
+    },
+    {
+     "name": "member_kinds_ops_write",
+     "operation": "insert,update,delete",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops'",
+     "rationale": "マスタは運営だけが変える",
+     "source": [
+      "D-037",
+      "D-077.4"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**マスタ**（human / ai_employee / clone / 将来 guest） ← E20",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-010"
+   ]
+  },
+  {
+   "id": "E-004",
+   "name": "members",
+   "table_name": "members",
+   "section": "1. テナント・組織・メンバー",
+   "fields": [
+    {
+     "name": "<scoped>",
+     "note": null
+    },
+    {
+     "name": "kind_id",
+     "note": null
+    },
+    {
+     "name": "display_name",
+     "note": null
+    },
+    {
+     "name": "role_id",
+     "note": null
+    },
+    {
+     "name": "manager_member_id",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "tenants",
+     "label": "has"
+    },
+    {
+     "to": "clones",
+     "label": "1人に1体"
+    },
+    {
+     "to": "member_kinds",
+     "label": "is"
+    },
+    {
+     "from": "ai_employees",
+     "label": "member として並ぶ"
+    },
+    {
+     "to": "daily_plans",
+     "label": "朝に確定"
+    },
+    {
+     "to": "permissions",
+     "label": "誰に"
+    },
+    {
+     "to": "sessions",
+     "label": "端末・Bridge"
+    },
+    {
+     "to": "notification_preferences",
+     "label": "届け先"
+    },
+    {
+     "from": "notifications",
+     "label": "宛先"
+    },
+    {
+     "from": "skill_attachments",
+     "label": "自分のAI か AI社員"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "scope_layered",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "members_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "members_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'members', scope_id, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "members_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = members.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**人間と AI が同じ席に座る**",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-037"
+   ]
+  },
+  {
+   "id": "E-005",
+   "name": "clones",
+   "table_name": "clones",
+   "section": "1. テナント・組織・メンバー",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "owner_member_id",
+     "note": null
+    },
+    {
+     "name": "persona",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "members",
+     "label": "1人に1体"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "clones_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "clones_self_only_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND owner_member_id = current_setting('app.user_id', true)::uuid",
+     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "source": [
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "clones_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'clones', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "clones_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = clones.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "各個人の写し。1 人 1 体",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-073"
+   ]
+  },
+  {
+   "id": "E-006",
+   "name": "ai_employees",
+   "table_name": "ai_employees",
+   "section": "1. テナント・組織・メンバー",
+   "fields": [
+    {
+     "name": "<scoped>",
+     "note": null
+    },
+    {
+     "name": "member_id",
+     "note": null
+    },
+    {
+     "name": "provisioning_id",
+     "note": null
+    },
+    {
+     "name": "template_ref",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "to": "members",
+     "label": "member として並ぶ"
+    },
+    {
+     "to": "duties",
+     "label": "持つ"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "scope_layered",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "ai_employees_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "ai_employees_self_only_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND member_id = current_setting('app.user_id', true)::uuid",
+     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "source": [
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "ai_employees_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'ai_employees', scope_id, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "ai_employees_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ai_employees.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "← E19（出どころ）",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-010"
+   ]
+  },
+  {
+   "id": "E-007",
+   "name": "goal_kinds",
+   "table_name": "goal_kinds",
+   "section": "2. 会社モデル ── 目標",
+   "fields": [
+    {
+     "name": "key",
+     "note": null
+    },
+    {
+     "name": "label",
+     "note": null
+    },
+    {
+     "name": "progress_strategy",
+     "note": null
+    }
+   ],
+   "relations": [],
+   "soft_delete": false,
+   "timestamps": true,
+   "tenant_field": null,
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "none",
+    "column": null,
+    "fk_table": null
+   },
+   "access_control_policies": [
+    {
+     "name": "goal_kinds_all_read",
+     "operation": "select",
+     "role": "authenticated",
+     "predicate": "true",
+     "rationale": "マスタ。全員が読む",
+     "source": [
+      "D-026"
+     ]
+    },
+    {
+     "name": "goal_kinds_ops_write",
+     "operation": "insert,update,delete",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops'",
+     "rationale": "マスタは運営だけが変える",
+     "source": [
+      "D-037",
+      "D-077.4"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**マスタ**（numeric / state / habit）← **E14**",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-010"
+   ]
+  },
+  {
+   "id": "E-008",
+   "name": "units",
+   "table_name": "units",
+   "section": "2. 会社モデル ── 目標",
+   "fields": [
+    {
+     "name": "<scoped>",
+     "note": null
+    },
+    {
+     "name": "key",
+     "note": null
+    },
+    {
+     "name": "label",
+     "note": null
+    },
+    {
+     "name": "symbol",
+     "note": null
+    },
+    {
+     "name": "value_type_id",
+     "note": null
+    },
+    {
+     "name": "decimals",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "goals",
+     "label": "単位（顧客が作れる）"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "scope_layered",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "units_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "units_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'units', scope_id, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "units_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = units.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設マスタ。顧客が作れる。**運営が列挙しない（円・件・%・時間・回・独自スコア…）",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-010"
+   ]
+  },
+  {
+   "id": "E-009",
+   "name": "rollup_kinds",
+   "table_name": "rollup_kinds",
+   "section": "2. 会社モデル ── 目標",
+   "fields": [
+    {
+     "name": "key",
+     "note": null
+    },
+    {
+     "name": "label",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "goals",
+     "label": "親への積み上がり方"
+    }
+   ],
+   "soft_delete": false,
+   "timestamps": true,
+   "tenant_field": null,
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "none",
+    "column": null,
+    "fk_table": null
+   },
+   "access_control_policies": [
+    {
+     "name": "rollup_kinds_all_read",
+     "operation": "select",
+     "role": "authenticated",
+     "predicate": "true",
+     "rationale": "マスタ。全員が読む",
+     "source": [
+      "D-026"
+     ]
+    },
+    {
+     "name": "rollup_kinds_ops_write",
+     "operation": "insert,update,delete",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops'",
+     "rationale": "マスタは運営だけが変える",
+     "source": [
+      "D-037",
+      "D-077.4"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設マスタ。**親への積み上がり方 = `sum`（そのまま足す）/ `convert`（変換して足す）/ `none`（足さない）",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-010"
+   ]
+  },
+  {
+   "id": "E-010",
+   "name": "goals",
+   "table_name": "goals",
+   "section": "2. 会社モデル ── 目標",
+   "fields": [
+    {
+     "name": "<versioned>",
+     "note": null
+    },
+    {
+     "name": "ended_at",
+     "note": "無くす＝消さない"
+    },
+    {
+     "name": "parent_id",
+     "note": null
+    },
+    {
+     "name": "rollup_kind_id",
+     "note": null
+    },
+    {
+     "name": "rollup_spec",
+     "note": "jsonb"
+    },
+    {
+     "name": "kind_id",
+     "note": null
+    },
+    {
+     "name": "period_start",
+     "note": null
+    },
+    {
+     "name": "period_end",
+     "note": null
+    },
+    {
+     "name": "target_value",
+     "note": null
+    },
+    {
+     "name": "unit_id",
+     "note": null
+    },
+    {
+     "name": "origin_id",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "to": "goals",
+     "label": "parent（年→四半期→月→週→日）"
+    },
+    {
+     "from": "goals",
+     "label": "parent（年→四半期→月→週→日）"
+    },
+    {
+     "to": "units",
+     "label": "単位（顧客が作れる）"
+    },
+    {
+     "to": "rollup_kinds",
+     "label": "親への積み上がり方"
+    },
+    {
+     "to": "goal_allocations",
+     "label": "配る（sum のときだけ）"
+    },
+    {
+     "to": "goal_contributions",
+     "label": "寄与（none のとき・仮説で繋ぐ）"
+    },
+    {
+     "to": "goal_versions",
+     "label": "history"
+    },
+    {
+     "to": "hypotheses",
+     "label": "なぜ届かないか"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "scope_layered",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "goals_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "goals_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'goals', scope_id, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "goals_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = goals.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "`origin` = 配られた／自主。**`rollup_kind` は「この目標が親にどう積み上がるか」**。`rollup_spec` は変換の定義（式・係数）を入れる**開いた器**。中身は目標設定スキルが決める",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-032",
+    "D-034",
+    "D-058"
+   ]
+  },
+  {
+   "id": "E-011",
+   "name": "goal_allocations",
+   "table_name": "goal_allocations",
+   "section": "2. 会社モデル ── 目標",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "goal_id",
+     "note": null
+    },
+    {
+     "name": "assignee_member_id",
+     "note": null
+    },
+    {
+     "name": "allocated_value",
+     "note": null
+    },
+    {
+     "name": "agreement_status_id",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "goals",
+     "label": "配る（sum のときだけ）"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "goal_allocations_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "goal_allocations_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'goal_allocations', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "goal_allocations_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = goal_allocations.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**`rollup_kind = sum` のときだけ使う。** 未配分＝親の target − 子の合計",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-058"
+   ]
+  },
+  {
+   "id": "E-012",
+   "name": "goal_contributions",
+   "table_name": "goal_contributions",
+   "section": "2. 会社モデル ── 目標",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "child_goal_id",
+     "note": null
+    },
+    {
+     "name": "parent_goal_id",
+     "note": null
+    },
+    {
+     "name": "hypothesis_id",
+     "note": null
+    },
+    {
+     "name": "verdict_id",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "goals",
+     "label": "寄与（none のとき・仮説で繋ぐ）"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "goal_contributions_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "goal_contributions_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'goal_contributions', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "goal_contributions_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = goal_contributions.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設。`rollup_kind = none` のとき、どの仮説で親に効くかを繋ぐ。**効いたかは `validations` で検証する",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-010"
+   ]
+  },
+  {
+   "id": "E-013",
+   "name": "goal_versions",
+   "table_name": "goal_versions",
+   "section": "2. 会社モデル ── 目標",
+   "fields": [
+    {
+     "name": "goal_id",
+     "note": null
+    },
+    {
+     "name": "version",
+     "note": null
+    },
+    {
+     "name": "snapshot",
+     "note": "jsonb"
+    },
+    {
+     "name": "changed_at",
+     "note": null
+    },
+    {
+     "name": "changed_by",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "goals",
+     "label": "history"
+    }
+   ],
+   "soft_delete": false,
+   "timestamps": true,
+   "tenant_field": null,
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "none",
+    "column": null,
+    "fk_table": null
+   },
+   "access_control_policies": [
+    {
+     "name": "goal_versions_all_read",
+     "operation": "select",
+     "role": "authenticated",
+     "predicate": "true",
+     "rationale": "マスタ。全員が読む",
+     "source": [
+      "D-026"
+     ]
+    },
+    {
+     "name": "goal_versions_ops_write",
+     "operation": "insert,update,delete",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops'",
+     "rationale": "マスタは運営だけが変える",
+     "source": [
+      "D-037",
+      "D-077.4"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "期中変更の履歴",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-061"
+   ]
+  },
+  {
+   "id": "E-014",
+   "name": "hypotheses",
+   "table_name": "hypotheses",
+   "section": "2. 会社モデル ── 目標",
+   "fields": [
+    {
+     "name": "<scoped>",
+     "note": null
+    },
+    {
+     "name": "goal_id",
+     "note": null
+    },
+    {
+     "name": "statement",
+     "note": null
+    },
+    {
+     "name": "evidence",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "goals",
+     "label": "なぜ届かないか"
+    },
+    {
+     "to": "measures",
+     "label": "打ち手"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "scope_layered",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "hypotheses_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "hypotheses_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'hypotheses', scope_id, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "hypotheses_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = hypotheses.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**目標とタスクの間の層**",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-035"
+   ]
+  },
+  {
+   "id": "E-015",
+   "name": "measures",
+   "table_name": "measures",
+   "section": "2. 会社モデル ── 目標",
+   "fields": [
+    {
+     "name": "<scoped>",
+     "note": null
+    },
+    {
+     "name": "hypothesis_id",
+     "note": null
+    },
+    {
+     "name": "statement",
+     "note": null
+    },
+    {
+     "name": "expected_effect",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "hypotheses",
+     "label": "打ち手"
+    },
+    {
+     "to": "validations",
+     "label": "効いたか"
+    },
+    {
+     "to": "tasks",
+     "label": "実行単位"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "scope_layered",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "measures_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "measures_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'measures', scope_id, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "measures_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = measures.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "施策",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-010"
+   ]
+  },
+  {
+   "id": "E-016",
+   "name": "validations",
+   "table_name": "validations",
+   "section": "2. 会社モデル ── 目標",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "measure_id",
+     "note": null
+    },
+    {
+     "name": "measured_value",
+     "note": null
+    },
+    {
+     "name": "verdict_id",
+     "note": null
+    },
+    {
+     "name": "measured_at",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "measures",
+     "label": "効いたか"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "validations_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "validations_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'validations', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "validations_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = validations.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "検証",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-010"
+   ]
+  },
+  {
+   "id": "E-017",
+   "name": "ledger_definitions",
+   "table_name": "ledger_definitions",
+   "section": "3. 会社モデル ── 台帳",
+   "fields": [
+    {
+     "name": "<versioned>",
+     "note": null
+    },
+    {
+     "name": "kind_id",
+     "note": null
+    },
+    {
+     "name": "name",
+     "note": null
+    },
+    {
+     "name": "json_schema",
+     "note": "jsonb"
+    }
+   ],
+   "relations": [
+    {
+     "to": "ledger_fields",
+     "label": "has"
+    },
+    {
+     "to": "ledger_stages",
+     "label": "has"
+    },
+    {
+     "to": "ledger_views",
+     "label": "has"
+    },
+    {
+     "to": "ledger_records",
+     "label": "行"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "scope_layered",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "ledger_definitions_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "ledger_definitions_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'ledger_definitions', scope_id, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "ledger_definitions_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ledger_definitions.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "`kind` = funnel / transaction ← **E4**",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-038"
+   ]
+  },
+  {
+   "id": "E-018",
+   "name": "ledger_fields",
+   "table_name": "ledger_fields",
+   "section": "3. 会社モデル ── 台帳",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "definition_id",
+     "note": null
+    },
+    {
+     "name": "key",
+     "note": null
+    },
+    {
+     "name": "label",
+     "note": null
+    },
+    {
+     "name": "data_type_id",
+     "note": null
+    },
+    {
+     "name": "required",
+     "note": null
+    },
+    {
+     "name": "options_master_id",
+     "note": null
+    },
+    {
+     "name": "order_no",
+     "note": null
+    },
+    {
+     "name": "is_filterable",
+     "note": null
+    },
+    {
+     "name": "is_sortable",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "ledger_definitions",
+     "label": "has"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "ledger_fields_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "ledger_fields_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'ledger_fields', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "ledger_fields_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ledger_fields.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "`is_filterable=true` の項目に**式インデックスを自動生成**",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-010"
+   ]
+  },
+  {
+   "id": "E-019",
+   "name": "ledger_stages",
+   "table_name": "ledger_stages",
+   "section": "3. 会社モデル ── 台帳",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "definition_id",
+     "note": null
+    },
+    {
+     "name": "key",
+     "note": null
+    },
+    {
+     "name": "label",
+     "note": null
+    },
+    {
+     "name": "order_no",
+     "note": null
+    },
+    {
+     "name": "rules",
+     "note": "jsonb"
+    }
+   ],
+   "relations": [
+    {
+     "from": "ledger_definitions",
+     "label": "has"
+    },
+    {
+     "to": "ledger_records",
+     "label": "現在の段階"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "ledger_stages_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "ledger_stages_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'ledger_stages', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "ledger_stages_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ledger_stages.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "`rules` ← **E18**（値域・状態遷移・しきい値・期限）",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-010"
+   ]
+  },
+  {
+   "id": "E-020",
+   "name": "ledger_views",
+   "table_name": "ledger_views",
+   "section": "3. 会社モデル ── 台帳",
+   "fields": [
+    {
+     "name": "<scoped>",
+     "note": null
+    },
+    {
+     "name": "definition_id",
+     "note": null
+    },
+    {
+     "name": "kind_id",
+     "note": null
+    },
+    {
+     "name": "filters",
+     "note": "jsonb"
+    },
+    {
+     "name": "sorts",
+     "note": "jsonb"
+    },
+    {
+     "name": "columns",
+     "note": "jsonb"
+    }
+   ],
+   "relations": [
+    {
+     "from": "ledger_definitions",
+     "label": "has"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "scope_layered",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "ledger_views_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "ledger_views_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'ledger_views', scope_id, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "ledger_views_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ledger_views.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "`kind` = list / kanban / calendar / chart ← **E17**",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-010"
+   ]
+  },
+  {
+   "id": "E-021",
+   "name": "ledger_records",
+   "table_name": "ledger_records",
+   "section": "3. 会社モデル ── 台帳",
+   "fields": [
+    {
+     "name": "<scoped>",
+     "note": null
+    },
+    {
+     "name": "definition_id",
+     "note": null
+    },
+    {
+     "name": "stage_id",
+     "note": null
+    },
+    {
+     "name": "amount",
+     "note": "numeric(18,4"
+    },
+    {
+     "name": "occurred_on",
+     "note": "date"
+    },
+    {
+     "name": "assignee_id",
+     "note": null
+    },
+    {
+     "name": "goal_id",
+     "note": "任意"
+    },
+    {
+     "name": "measure_id",
+     "note": "任意"
+    },
+    {
+     "name": "data",
+     "note": "jsonb"
+    }
+   ],
+   "relations": [
+    {
+     "from": "ledger_definitions",
+     "label": "行"
+    },
+    {
+     "from": "ledger_stages",
+     "label": "現在の段階"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "scope_layered",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "ledger_records_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "ledger_records_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'ledger_records', scope_id, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "ledger_records_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ledger_records.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**太字＝固定列**（目標の集計に使う）。それ以外は `data`",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-010"
+   ]
+  },
+  {
+   "id": "E-022",
+   "name": "duties",
+   "table_name": "duties",
+   "section": "4. 会社モデル ── 担当業務・記憶",
+   "fields": [
+    {
+     "name": "<versioned>",
+     "note": null
+    },
+    {
+     "name": "ai_employee_id",
+     "note": null
+    },
+    {
+     "name": "name",
+     "note": null
+    },
+    {
+     "name": "definition_md",
+     "note": null
+    },
+    {
+     "name": "constraints",
+     "note": "jsonb"
+    },
+    {
+     "name": "visibility_id",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "to": "duty_versions",
+     "label": "history"
+    },
+    {
+     "to": "learned_procedures",
+     "label": "覚えた操作"
+    },
+    {
+     "from": "ai_employees",
+     "label": "持つ"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "scope_layered",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "duties_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "duties_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'duties', scope_id, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "duties_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = duties.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "← **E9**。`visibility` で中身非公開の配布に対応",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-010"
+   ]
+  },
+  {
+   "id": "E-023",
+   "name": "duty_versions",
+   "table_name": "duty_versions",
+   "section": "4. 会社モデル ── 担当業務・記憶",
+   "fields": [
+    {
+     "name": "duty_id",
+     "note": null
+    },
+    {
+     "name": "version",
+     "note": null
+    },
+    {
+     "name": "snapshot",
+     "note": "jsonb"
+    },
+    {
+     "name": "changed_by",
+     "note": null
+    },
+    {
+     "name": "change_reason",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "duties",
+     "label": "history"
+    }
+   ],
+   "soft_delete": false,
+   "timestamps": true,
+   "tenant_field": null,
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "none",
+    "column": null,
+    "fk_table": null
+   },
+   "access_control_policies": [
+    {
+     "name": "duty_versions_all_read",
+     "operation": "select",
+     "role": "authenticated",
+     "predicate": "true",
+     "rationale": "マスタ。全員が読む",
+     "source": [
+      "D-026"
+     ]
+    },
+    {
+     "name": "duty_versions_ops_write",
+     "operation": "insert,update,delete",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops'",
+     "rationale": "マスタは運営だけが変える",
+     "source": [
+      "D-037",
+      "D-077.4"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**改訂履歴＝堀の実体**",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-010"
+   ]
+  },
+  {
+   "id": "E-024",
+   "name": "learned_procedures",
+   "table_name": "learned_procedures",
+   "section": "4. 会社モデル ── 担当業務・記憶",
+   "fields": [
+    {
+     "name": "<scoped>",
+     "note": null
+    },
+    {
+     "name": "duty_id",
+     "note": null
+    },
+    {
+     "name": "target_service_id",
+     "note": null
+    },
+    {
+     "name": "status_id",
+     "note": null
+    },
+    {
+     "name": "run_count",
+     "note": null
+    },
+    {
+     "name": "avg_ms",
+     "note": null
+    },
+    {
+     "name": "fail_count",
+     "note": null
+    },
+    {
+     "name": "last_verified_at",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "duties",
+     "label": "覚えた操作"
+    },
+    {
+     "to": "procedure_steps",
+     "label": "has"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "scope_layered",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "learned_procedures_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "learned_procedures_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'learned_procedures', scope_id, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "learned_procedures_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = learned_procedures.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "`status` = learning / mastered / needs_review",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-010"
+   ]
+  },
+  {
+   "id": "E-025",
+   "name": "procedure_steps",
+   "table_name": "procedure_steps",
+   "section": "4. 会社モデル ── 担当業務・記憶",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "procedure_id",
+     "note": null
+    },
+    {
+     "name": "order_no",
+     "note": null
+    },
+    {
+     "name": "intent_ja",
+     "note": null
+    },
+    {
+     "name": "locator",
+     "note": "jsonb"
+    },
+    {
+     "name": "is_variable",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "learned_procedures",
+     "label": "has"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "procedure_steps_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "procedure_steps_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'procedure_steps', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "procedure_steps_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = procedure_steps.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**`intent_ja` が顧客に見える日本語**。`locator` は隠す",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-010"
+   ]
+  },
+  {
+   "id": "E-026",
+   "name": "memory_kinds",
+   "table_name": "memory_kinds",
+   "section": "4. 会社モデル ── 担当業務・記憶",
+   "fields": [
+    {
+     "name": "key",
+     "note": null
+    },
+    {
+     "name": "label",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "memories",
+     "label": "is"
+    }
+   ],
+   "soft_delete": false,
+   "timestamps": true,
+   "tenant_field": null,
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "none",
+    "column": null,
+    "fk_table": null
+   },
+   "access_control_policies": [
+    {
+     "name": "memory_kinds_all_read",
+     "operation": "select",
+     "role": "authenticated",
+     "predicate": "true",
+     "rationale": "マスタ。全員が読む",
+     "source": [
+      "D-026"
+     ]
+    },
+    {
+     "name": "memory_kinds_ops_write",
+     "operation": "insert,update,delete",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops'",
+     "rationale": "マスタは運営だけが変える",
+     "source": [
+      "D-037",
+      "D-077.4"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**マスタ**（rule / preference / example）",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-010"
+   ]
+  },
+  {
+   "id": "E-027",
+   "name": "memories",
+   "table_name": "memories",
+   "section": "4. 会社モデル ── 担当業務・記憶",
+   "fields": [
+    {
+     "name": "<scoped>",
+     "note": null
+    },
+    {
+     "name": "kind_id",
+     "note": null
+    },
+    {
+     "name": "owner_member_id",
+     "note": null
+    },
+    {
+     "name": "title",
+     "note": null
+    },
+    {
+     "name": "body",
+     "note": null
+    },
+    {
+     "name": "confidence",
+     "note": "numeric(3,2"
+    },
+    {
+     "name": "source_type_id",
+     "note": null
+    },
+    {
+     "name": "source_ref_id",
+     "note": null
+    },
+    {
+     "name": "embedding",
+     "note": "vector(N"
+    },
+    {
+     "name": "approved_by",
+     "note": null
+    },
+    {
+     "name": "approved_at",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "to": "memory_kinds",
+     "label": "is"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "scope_layered",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "memories_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "memories_self_only_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND owner_member_id = current_setting('app.user_id', true)::uuid",
+     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "source": [
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "memories_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'memories', scope_id, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "memories_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = memories.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**HNSW 索引**。`example` のみ埋め込みを持つ",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-060"
+   ]
+  },
+  {
+   "id": "E-028",
+   "name": "tasks",
+   "table_name": "tasks",
+   "section": "5. 実行・統制",
+   "fields": [
+    {
+     "name": "<scoped>",
+     "note": null
+    },
+    {
+     "name": "goal_id",
+     "note": "null 可＝行き先のないタスク"
+    },
+    {
+     "name": "measure_id",
+     "note": null
+    },
+    {
+     "name": "assignee_member_id",
+     "note": "人でも AI社員でも"
+    },
+    {
+     "name": "status_id",
+     "note": null
+    },
+    {
+     "name": "due_on",
+     "note": null
+    },
+    {
+     "name": "title",
+     "note": null
+    },
+    {
+     "name": "origin_id",
+     "note": "人／自分のAI／AI社員／台帳の段階"
+    },
+    {
+     "name": "goal_changed_at",
+     "note": "目標が改訂された印"
+    },
+    {
+     "name": "next_action",
+     "note": "次の一手・1 行"
+    },
+    {
+     "name": "estimate_minutes",
+     "note": null
+    },
+    {
+     "name": "actual_minutes",
+     "note": null
+    },
+    {
+     "name": "planned_for",
+     "note": "date（朝の計画に入れた日"
+    },
+    {
+     "name": "blocked_reason_id",
+     "note": "返事待ち／承認待ち／PC停止／AI社員停止"
+    },
+    {
+     "name": "blocked_since",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "measures",
+     "label": "実行単位"
+    },
+    {
+     "to": "action_runs",
+     "label": "実行"
+    },
+    {
+     "from": "triggers",
+     "label": "発火して作る"
+    },
+    {
+     "from": "daily_plans",
+     "label": "今日やる分"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "scope_layered",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "tasks_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "tasks_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'tasks', scope_id, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "tasks_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = tasks.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "`status` は **今日／あとで／詰まっている／終わった の 4 つだけ**（優先度フラグは持たない）。詰まっているは理由必須（D-068）",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-068"
+   ]
+  },
+  {
+   "id": "E-029",
+   "name": "task_handovers",
+   "table_name": "task_handovers",
+   "section": "5. 実行・統制",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "task_id",
+     "note": null
+    },
+    {
+     "name": "from_member_id",
+     "note": null
+    },
+    {
+     "name": "to_member_id",
+     "note": null
+    },
+    {
+     "name": "mode_id",
+     "note": "合意／指示"
+    },
+    {
+     "name": "agreement_status_id",
+     "note": null
+    },
+    {
+     "name": "reason",
+     "note": null
+    }
+   ],
+   "relations": [],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "task_handovers_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "task_handovers_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'task_handovers', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "task_handovers_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = task_handovers.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "★新設。引き継いでもらう（push）も引き継ぐ（pull）もここ（画面の言葉は D-068）。**`tasks.goal_id` は変えない**（誰の目標かは変わらない）",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-058",
+    "D-061",
+    "D-068"
+   ]
+  },
+  {
+   "id": "E-030",
+   "name": "daily_plans",
+   "table_name": "daily_plans",
+   "section": "5. 実行・統制",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "member_id",
+     "note": null
+    },
+    {
+     "name": "plan_date",
+     "note": null
+    },
+    {
+     "name": "capacity_minutes",
+     "note": "使える時間"
+    },
+    {
+     "name": "committed_at",
+     "note": "朝の確定"
+    },
+    {
+     "name": "closed_at",
+     "note": "夕方の整理"
+    },
+    {
+     "name": "carry_over",
+     "note": "jsonb（残りをどう振り分けたか"
+    }
+   ],
+   "relations": [
+    {
+     "from": "members",
+     "label": "朝に確定"
+    },
+    {
+     "to": "tasks",
+     "label": "今日やる分"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "daily_plans_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "daily_plans_self_only_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND member_id = current_setting('app.user_id', true)::uuid",
+     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "source": [
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "daily_plans_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'daily_plans', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "daily_plans_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = daily_plans.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "★新設（D-068）。1 人 1 日 1 行。見込みの合計は `tasks.estimate_minutes` から集計",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-068"
+   ]
+  },
+  {
+   "id": "E-031",
+   "name": "triggers",
+   "table_name": "triggers",
+   "section": "5. 実行・統制",
+   "fields": [
+    {
+     "name": "<scoped>",
+     "note": null
+    },
+    {
+     "name": "kind_id",
+     "note": null
+    },
+    {
+     "name": "cron_expr",
+     "note": null
+    },
+    {
+     "name": "timezone",
+     "note": null
+    },
+    {
+     "name": "on_missed_id",
+     "note": null
+    },
+    {
+     "name": "ttl_minutes",
+     "note": null
+    },
+    {
+     "name": "enabled",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "to": "tasks",
+     "label": "発火して作る"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "scope_layered",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "triggers_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "triggers_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'triggers', scope_id, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "triggers_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = triggers.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "`on_missed` = catch_up / latest_only / skip ← **E6**",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-010"
+   ]
+  },
+  {
+   "id": "E-032",
+   "name": "policies",
+   "table_name": "policies",
+   "section": "5. 実行・統制",
+   "fields": [
+    {
+     "name": "<scoped>",
+     "note": null
+    },
+    {
+     "name": "subject_kind_id",
+     "note": null
+    },
+    {
+     "name": "action_kind_id",
+     "note": null
+    },
+    {
+     "name": "mode_id",
+     "note": null
+    },
+    {
+     "name": "params",
+     "note": "jsonb"
+    },
+    {
+     "name": "is_locked",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "to": "scopes",
+     "label": "層ごと"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "scope_layered",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "policies_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "policies_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'policies', scope_id, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "policies_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = policies.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "`mode` = auto / approve / off。`is_locked` ＝ **運営の安全ルール（上書き不可）** ← **E8**",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-060"
+   ]
+  },
+  {
+   "id": "E-033",
+   "name": "approvals",
+   "table_name": "approvals",
+   "section": "5. 実行・統制",
+   "fields": [
+    {
+     "name": "<scoped>",
+     "note": null
+    },
+    {
+     "name": "action_run_id",
+     "note": null
+    },
+    {
+     "name": "requested_by",
+     "note": null
+    },
+    {
+     "name": "approver_member_id",
+     "note": null
+    },
+    {
+     "name": "status_id",
+     "note": null
+    },
+    {
+     "name": "resolved_at",
+     "note": null
+    },
+    {
+     "name": "note",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "action_runs",
+     "label": "承認待ち"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "scope_layered",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "approvals_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "approvals_self_only_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND requested_by = current_setting('app.user_id', true)::uuid",
+     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "source": [
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "approvals_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'approvals', scope_id, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "approvals_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = approvals.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**すべての提案の入口**",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-010"
+   ]
+  },
+  {
+   "id": "E-034",
+   "name": "action_runs",
+   "table_name": "action_runs",
+   "section": "5. 実行・統制",
+   "fields": [
+    {
+     "name": "<scoped>",
+     "note": null
+    },
+    {
+     "name": "task_id",
+     "note": null
+    },
+    {
+     "name": "action_kind_id",
+     "note": null
+    },
+    {
+     "name": "choke_point_id",
+     "note": null
+    },
+    {
+     "name": "service_id",
+     "note": null
+    },
+    {
+     "name": "procedure_id",
+     "note": null
+    },
+    {
+     "name": "status_id",
+     "note": null
+    },
+    {
+     "name": "started_at",
+     "note": null
+    },
+    {
+     "name": "finished_at",
+     "note": null
+    },
+    {
+     "name": "tokens_in",
+     "note": null
+    },
+    {
+     "name": "tokens_out",
+     "note": null
+    },
+    {
+     "name": "cost",
+     "note": null
+    },
+    {
+     "name": "error_summary",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "tasks",
+     "label": "実行"
+    },
+    {
+     "to": "approvals",
+     "label": "承認待ち"
+    },
+    {
+     "to": "service_registry",
+     "label": "対象サービス"
+    },
+    {
+     "to": "skill_versions",
+     "label": "どのスキルが働いたか"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "scope_layered",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "action_runs_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "action_runs_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'action_runs', scope_id, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "action_runs_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = action_runs.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**`choke_point_id` を記録**（どの関門を通ったか）",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-062"
+   ]
+  },
+  {
+   "id": "E-035",
+   "name": "service_registry",
+   "table_name": "service_registry",
+   "section": "5. 実行・統制",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "name",
+     "note": null
+    },
+    {
+     "name": "domain",
+     "note": null
+    },
+    {
+     "name": "automation_verdict_id",
+     "note": null
+    },
+    {
+     "name": "notes",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "action_runs",
+     "label": "対象サービス"
+    },
+    {
+     "to": "service_registry_versions",
+     "label": "可否の版"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "service_registry_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "service_registry_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'service_registry', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "service_registry_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = service_registry.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "`verdict` = api / allowed / unspecified / **forbidden** / **bank**",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-013",
+    "D-041"
+   ]
+  },
+  {
+   "id": "E-036",
+   "name": "credential_kinds",
+   "table_name": "credential_kinds",
+   "section": "5. 実行・統制",
+   "fields": [
+    {
+     "name": "key",
+     "note": null
+    },
+    {
+     "name": "label",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "credentials",
+     "label": "is"
+    }
+   ],
+   "soft_delete": false,
+   "timestamps": true,
+   "tenant_field": null,
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "none",
+    "column": null,
+    "fk_table": null
+   },
+   "access_control_policies": [
+    {
+     "name": "credential_kinds_all_read",
+     "operation": "select",
+     "role": "authenticated",
+     "predicate": "true",
+     "rationale": "マスタ。全員が読む",
+     "source": [
+      "D-026"
+     ]
+    },
+    {
+     "name": "credential_kinds_ops_write",
+     "operation": "insert,update,delete",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops'",
+     "rationale": "マスタは運営だけが変える",
+     "source": [
+      "D-037",
+      "D-077.4"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**マスタ**（password_totp / oauth2 / api_key / basic / email_otp / saml）← **E15**",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-010"
+   ]
+  },
+  {
+   "id": "E-037",
+   "name": "credentials",
+   "table_name": "credentials",
+   "section": "5. 実行・統制",
+   "fields": [
+    {
+     "name": "<scoped>",
+     "note": null
+    },
+    {
+     "name": "service_id",
+     "note": null
+    },
+    {
+     "name": "kind_id",
+     "note": null
+    },
+    {
+     "name": "vault_ref",
+     "note": null
+    },
+    {
+     "name": "owner_member_id",
+     "note": null
+    },
+    {
+     "name": "revoked_at",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "to": "credential_kinds",
+     "label": "is"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "scope_layered",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "credentials_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "credentials_self_only_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND owner_member_id = current_setting('app.user_id', true)::uuid",
+     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "source": [
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "credentials_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'credentials', scope_id, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "credentials_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = credentials.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**実体は持たない。vault の参照 ID のみ**",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-004",
+    "D-017"
+   ]
+  },
+  {
+   "id": "E-038",
+   "name": "conversations",
+   "table_name": "conversations",
+   "section": "6. 会話・成果物・証跡",
+   "fields": [
+    {
+     "name": "<scoped>",
+     "note": null
+    },
+    {
+     "name": "title",
+     "note": null
+    },
+    {
+     "name": "participant_member_ids",
+     "note": "uuid[]"
+    },
+    {
+     "name": "area",
+     "note": "領域＝営業／経理／会社全体…"
+    },
+    {
+     "name": "subject_type",
+     "note": "+ subject_id（対象＝案件・目標・施策・タスク"
+    },
+    {
+     "name": "parent_conversation_id",
+     "note": "流れ＝分岐元"
+    }
+   ],
+   "relations": [
+    {
+     "from": "inquiries",
+     "label": "やりとりは会話"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "scope_layered",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "conversations_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "conversations_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'conversations', scope_id, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "conversations_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = conversations.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "人↔AI・人↔人・AI↔AI を区別しない。**3 層（領域×対象×流れ）で引ける ← D-062**",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-062"
+   ]
+  },
+  {
+   "id": "E-039",
+   "name": "messages",
+   "table_name": "messages",
+   "section": "6. 会話・成果物・証跡",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "conversation_id",
+     "note": null
+    },
+    {
+     "name": "sender_member_id",
+     "note": null
+    },
+    {
+     "name": "body",
+     "note": null
+    },
+    {
+     "name": "attachments",
+     "note": "jsonb"
+    },
+    {
+     "name": "action_run_id",
+     "note": null
+    },
+    {
+     "name": "kind",
+     "note": "text／question／approval／receipt／status／error"
+    },
+    {
+     "name": "options",
+     "note": "jsonb（選択肢。必ず「その他」「あとで」を含む"
+    },
+    {
+     "name": "confidence",
+     "note": "high／check"
+    },
+    {
+     "name": "citations",
+     "note": "jsonb（台帳行・記憶・証跡の参照"
+    },
+    {
+     "name": "parent_message_id",
+     "note": "分岐"
+    },
+    {
+     "name": "undo_action_run_id",
+     "note": "取り消し先"
+    },
+    {
+     "name": "read_at",
+     "note": null
+    }
+   ],
+   "relations": [],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "messages_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "messages_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'messages', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "messages_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = messages.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**会話の部品 1 組を列で持つ ← D-066**。受領・取り消しは `action_runs` / `audit_events` の実体があるときだけ描く",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-066"
+   ]
+  },
+  {
+   "id": "E-040",
+   "name": "artifacts",
+   "table_name": "artifacts",
+   "section": "6. 会話・成果物・証跡",
+   "fields": [
+    {
+     "name": "<scoped>",
+     "note": null
+    },
+    {
+     "name": "task_id",
+     "note": null
+    },
+    {
+     "name": "format_id",
+     "note": null
+    },
+    {
+     "name": "storage_ref",
+     "note": null
+    },
+    {
+     "name": "template_id",
+     "note": null
+    },
+    {
+     "name": "approved_by",
+     "note": null
+    }
+   ],
+   "relations": [],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "scope_layered",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "artifacts_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "artifacts_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'artifacts', scope_id, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "artifacts_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = artifacts.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "`format` = pdf / pptx / xlsx / docx / md / html / csv ← **E13**",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-010"
+   ]
+  },
+  {
+   "id": "E-041",
+   "name": "audit_events",
+   "table_name": "audit_events",
+   "section": "6. 会話・成果物・証跡",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "actor_member_id",
+     "note": null
+    },
+    {
+     "name": "actor_role",
+     "note": null
+    },
+    {
+     "name": "action",
+     "note": null
+    },
+    {
+     "name": "target_type",
+     "note": null
+    },
+    {
+     "name": "target_id",
+     "note": null
+    },
+    {
+     "name": "choke_point_id",
+     "note": null
+    },
+    {
+     "name": "payload",
+     "note": "jsonb"
+    },
+    {
+     "name": "occurred_at",
+     "note": null
+    }
+   ],
+   "relations": [],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "audit_events_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "audit_events_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'audit_events', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "audit_events_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = audit_events.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**追記専用**（UPDATE / DELETE を許可しない）。パーティション",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-010"
+   ]
+  },
+  {
+   "id": "E-042",
+   "name": "layers",
+   "table_name": "layers",
+   "section": "9. 層と権限",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "key",
+     "note": null
+    },
+    {
+     "name": "label",
+     "note": null
+    },
+    {
+     "name": "order_no",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "tenants",
+     "label": "会社が決めた層 0〜n"
+    },
+    {
+     "to": "scopes",
+     "label": "層の実体"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "layers_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "layers_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'layers', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "layers_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = layers.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-073.4）。層は会社ごと。**運営／会社／個人は固定、その間の層（部署・事業…）は会社が 0〜n 個作る。`scopes.layer_id` が指す。画面に「部署」を固定名で書かない",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-073",
+    "D-073.4"
+   ]
+  },
+  {
+   "id": "E-043",
+   "name": "target_kinds",
+   "table_name": "target_kinds",
+   "section": "9. 層と権限",
+   "fields": [
+    {
+     "name": "key",
+     "note": null
+    },
+    {
+     "name": "label",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "permissions",
+     "label": "何に"
+    }
+   ],
+   "soft_delete": false,
+   "timestamps": true,
+   "tenant_field": null,
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "none",
+    "column": null,
+    "fk_table": null
+   },
+   "access_control_policies": [
+    {
+     "name": "target_kinds_all_read",
+     "operation": "select",
+     "role": "authenticated",
+     "predicate": "true",
+     "rationale": "マスタ。全員が読む",
+     "source": [
+      "D-026"
+     ]
+    },
+    {
+     "name": "target_kinds_ops_write",
+     "operation": "insert,update,delete",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops'",
+     "rationale": "マスタは運営だけが変える",
+     "source": [
+      "D-037",
+      "D-077.4"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**マスタ**（memory / rule / goal / duty / ledger / ai_employee / template / procedure / member / plan …＝権限の「何に」）",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-073"
+   ]
+  },
+  {
+   "id": "E-044",
+   "name": "abilities",
+   "table_name": "abilities",
+   "section": "9. 層と権限",
+   "fields": [
+    {
+     "name": "key",
+     "note": null
+    },
+    {
+     "name": "label",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "permissions",
+     "label": "できること"
+    }
+   ],
+   "soft_delete": false,
+   "timestamps": true,
+   "tenant_field": null,
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "none",
+    "column": null,
+    "fk_table": null
+   },
+   "access_control_policies": [
+    {
+     "name": "abilities_all_read",
+     "operation": "select",
+     "role": "authenticated",
+     "predicate": "true",
+     "rationale": "マスタ。全員が読む",
+     "source": [
+      "D-026"
+     ]
+    },
+    {
+     "name": "abilities_ops_write",
+     "operation": "insert,update,delete",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops'",
+     "rationale": "マスタは運営だけが変える",
+     "source": [
+      "D-037",
+      "D-077.4"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**マスタ**（view / edit / create / delete / allocate / approve / invite ＝「できること」）",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-073"
+   ]
+  },
+  {
+   "id": "E-045",
+   "name": "permissions",
+   "table_name": "permissions",
+   "section": "9. 層と権限",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "grantee_member_id",
+     "note": null
+    },
+    {
+     "name": "target_kind_id",
+     "note": null
+    },
+    {
+     "name": "scope_id",
+     "note": null
+    },
+    {
+     "name": "ability_id",
+     "note": null
+    },
+    {
+     "name": "granted_by",
+     "note": null
+    },
+    {
+     "name": "revoked_at",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "members",
+     "label": "誰に"
+    },
+    {
+     "to": "scopes",
+     "label": "どの層で"
+    },
+    {
+     "to": "abilities",
+     "label": "できること"
+    },
+    {
+     "to": "target_kinds",
+     "label": "何に"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "permissions_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "permissions_self_only_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND grantee_member_id = current_setting('app.user_id', true)::uuid",
+     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "source": [
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "permissions_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'permissions', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "permissions_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = permissions.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-073.1〜D-073.3）。権限＝誰に×何に×どの層で×できること。**本人のもの（`owner_member_id = app.user_id` の個人の範囲）は権限なしで自由＝RLS の predicate `self_only` で表し、行を作らない。R3（担当者）・R4（閲覧のみ）も `abilities=view` の行で「見える」を持つ（見えないのが既定ではない）",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-073",
+    "D-073.1",
+    "D-073.3"
+   ]
+  },
+  {
+   "id": "E-046",
+   "name": "account_events",
+   "table_name": "account_events",
+   "section": "10. 口座状態の出来事・失効・サポートアクセス",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "kind_id",
+     "note": "member_leave ／ company_close ／ suspend ／ permission_change ／ plan_change ／ layer_delete ／ staff_delete"
+    },
+    {
+     "name": "subject_type",
+     "note": null
+    },
+    {
+     "name": "subject_id",
+     "note": null
+    },
+    {
+     "name": "requested_by",
+     "note": null
+    },
+    {
+     "name": "status_id",
+     "note": "pending ／ resolving ／ done"
+    },
+    {
+     "name": "resolved_at",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "tenants",
+     "label": "出来事"
+    },
+    {
+     "to": "account_event_items",
+     "label": "オブジェクトごとの処理"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "account_events_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "account_events_self_only_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND requested_by = current_setting('app.user_id', true)::uuid",
+     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "source": [
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "account_events_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'account_events', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "account_events_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = account_events.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-074.1・D-076.13）。**出来事 7 つの実体。画面の依存表（G16）はここから",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-074",
+    "D-074.1",
+    "D-076",
+    "D-076.13"
+   ]
+  },
+  {
+   "id": "E-047",
+   "name": "account_event_items",
+   "table_name": "account_event_items",
+   "section": "10. 口座状態の出来事・失効・サポートアクセス",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "event_id",
+     "note": null
+    },
+    {
+     "name": "object_kind",
+     "note": "flow.json の objects 名"
+    },
+    {
+     "name": "disposition_id",
+     "note": "消える／残る／移る・戻る／止まる／即失効"
+    },
+    {
+     "name": "target_ref",
+     "note": null
+    },
+    {
+     "name": "decided_by",
+     "note": null
+    },
+    {
+     "name": "done_at",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "account_events",
+     "label": "オブジェクトごとの処理"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "account_event_items_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "account_event_items_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'account_event_items', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "account_event_items_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = account_event_items.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設。**オブジェクトごとの「何が起きるか」と引き継ぎ先の決定。全部 done になるまで出来事は終わらない（引き継ぎ先を決めるまで消せない）",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-074",
+    "D-076.13"
+   ]
+  },
+  {
+   "id": "E-048",
+   "name": "sessions",
+   "table_name": "sessions",
+   "section": "10. 口座状態の出来事・失効・サポートアクセス",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "member_id",
+     "note": null
+    },
+    {
+     "name": "kind_id",
+     "note": "web ／ bridge"
+    },
+    {
+     "name": "device_label",
+     "note": null
+    },
+    {
+     "name": "ip_region",
+     "note": null
+    },
+    {
+     "name": "issued_at",
+     "note": null
+    },
+    {
+     "name": "last_seen_at",
+     "note": null
+    },
+    {
+     "name": "revoked_at",
+     "note": null
+    },
+    {
+     "name": "revoke_reason_id",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "members",
+     "label": "端末・Bridge"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "sessions_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "sessions_self_only_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND member_id = current_setting('app.user_id', true)::uuid",
+     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "source": [
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "sessions_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'sessions', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "sessions_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = sessions.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-076.1・G-14）。**端末の一覧。退会・停止・権限変更・パスワード変更で **全行を即 revoked** にし、API と Bridge はこの表を見て拒否する（発行済みトークンの有効期限に頼らない）",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-074",
+    "D-076",
+    "D-076.1",
+    "D-076.13"
+   ]
+  },
+  {
+   "id": "E-049",
+   "name": "support_access_grants",
+   "table_name": "support_access_grants",
+   "section": "10. 口座状態の出来事・失効・サポートアクセス",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "granted_by_member_id",
+     "note": null
+    },
+    {
+     "name": "scope",
+     "note": "jsonb（構成／手順／証跡 …"
+    },
+    {
+     "name": "expires_at",
+     "note": null
+    },
+    {
+     "name": "revoked_at",
+     "note": null
+    },
+    {
+     "name": "ops_member_id",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "tenants",
+     "label": "運営への許可"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "support_access_grants_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "support_access_grants_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'support_access_grants', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "support_access_grants_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = support_access_grants.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-074.5）。**運営は既定で顧客データを見られない。会社が範囲と期限つきで許可したときだけ、この行を根拠に読める。閲覧は会社側 `audit_events` と運営側 `ops_audit_events` の両方に残る",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-074",
+    "D-074.5",
+    "D-076.13"
+   ]
+  },
+  {
+   "id": "E-050",
+   "name": "retention_holds",
+   "table_name": "retention_holds",
+   "section": "10. 口座状態の出来事・失効・サポートアクセス",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "record_type",
+     "note": null
+    },
+    {
+     "name": "record_ref",
+     "note": null
+    },
+    {
+     "name": "retain_until",
+     "note": null
+    },
+    {
+     "name": "legal_basis",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "tenants",
+     "label": "法令保管"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "retention_holds_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "retention_holds_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'retention_holds', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "retention_holds_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = retention_holds.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-074.3）。**退会後も法令で残す記録（請求の記録 7 年 等）。消去バッチはこの表の行を除外する",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-074",
+    "D-074.3",
+    "D-076.13"
+   ]
+  },
+  {
+   "id": "E-051",
+   "name": "erasure_certificates",
+   "table_name": "erasure_certificates",
+   "section": "10. 口座状態の出来事・失効・サポートアクセス",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "issued_at",
+     "note": null
+    },
+    {
+     "name": "content_hash",
+     "note": null
+    },
+    {
+     "name": "sent_to",
+     "note": null
+    },
+    {
+     "name": "storage_ref",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "tenants",
+     "label": "消去の証明"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "erasure_certificates_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "erasure_certificates_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'erasure_certificates', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "erasure_certificates_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = erasure_certificates.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-074.3）。**猶予（30 日・復元可）の後の完全消去で自動生成し、会社の代表に送る",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-074",
+    "D-074.3",
+    "D-076.13"
+   ]
+  },
+  {
+   "id": "E-052",
+   "name": "distributions",
+   "table_name": "distributions",
+   "section": "11. 運営",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": "tenant_id＝運営"
+    },
+    {
+     "name": "kind_id",
+     "note": "ai_employee ／ duty ／ rule ／ template ／ goal_skill"
+    },
+    {
+     "name": "key",
+     "note": null
+    },
+    {
+     "name": "name",
+     "note": null
+    },
+    {
+     "name": "current_version",
+     "note": null
+    },
+    {
+     "name": "plan_ids",
+     "note": "uuid[]"
+    },
+    {
+     "name": "is_locked",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "to": "distribution_versions",
+     "label": "版"
+    },
+    {
+     "to": "tenant_distributions",
+     "label": "会社ごとの配布"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "distributions_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "distributions_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'distributions', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "distributions_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = distributions.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-037・D-076.10・D-077.4）。運営配布物のマスタ。**`ai_employees.provisioning_id` はここを指す。目標スキル（D-063）も配布物の一種。`is_locked`＝上書き不可の安全ルール",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-037",
+    "D-063",
+    "D-073.7",
+    "D-074.4",
+    "D-076.10",
+    "D-076.5",
+    "D-077",
+    "D-077.4"
+   ]
+  },
+  {
+   "id": "E-053",
+   "name": "distribution_versions",
+   "table_name": "distribution_versions",
+   "section": "11. 運営",
+   "fields": [
+    {
+     "name": "distribution_id",
+     "note": null
+    },
+    {
+     "name": "version",
+     "note": null
+    },
+    {
+     "name": "snapshot",
+     "note": "jsonb"
+    },
+    {
+     "name": "released_at",
+     "note": null
+    },
+    {
+     "name": "released_by",
+     "note": null
+    },
+    {
+     "name": "change_reason",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "distributions",
+     "label": "版"
+    }
+   ],
+   "soft_delete": false,
+   "timestamps": true,
+   "tenant_field": null,
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "none",
+    "column": null,
+    "fk_table": null
+   },
+   "access_control_policies": [
+    {
+     "name": "distribution_versions_all_read",
+     "operation": "select",
+     "role": "authenticated",
+     "predicate": "true",
+     "rationale": "マスタ。全員が読む",
+     "source": [
+      "D-026"
+     ]
+    },
+    {
+     "name": "distribution_versions_ops_write",
+     "operation": "insert,update,delete",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops'",
+     "rationale": "マスタは運営だけが変える",
+     "source": [
+      "D-037",
+      "D-077.4"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "版。会社側は版を上げるまで変わらない（D-076.10）",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-073.7",
+    "D-074.4",
+    "D-076.10",
+    "D-076.5",
+    "D-077"
+   ]
+  },
+  {
+   "id": "E-054",
+   "name": "tenant_distributions",
+   "table_name": "tenant_distributions",
+   "section": "11. 運営",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "distribution_id",
+     "note": null
+    },
+    {
+     "name": "version_in_use",
+     "note": null
+    },
+    {
+     "name": "enabled",
+     "note": null
+    },
+    {
+     "name": "override",
+     "note": "jsonb（会社が足した個人ルール等"
+    },
+    {
+     "name": "disabled_by",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "distributions",
+     "label": "会社ごとの配布"
+    },
+    {
+     "from": "tenants",
+     "label": "使っている・上書き"
+    },
+    {
+     "from": "plans",
+     "label": "プランで出し分け"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "tenant_distributions_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "tenant_distributions_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'tenant_distributions', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "tenant_distributions_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = tenant_distributions.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-077.6）。**会社の詳細「配布したもの」＝この会社が使っている配布物・版・上書き。運営はマスタを直し、ここは 1 社への配布の状態",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-073.7",
+    "D-074.4",
+    "D-076.10",
+    "D-076.5",
+    "D-077",
+    "D-077.6"
+   ]
+  },
+  {
+   "id": "E-055",
+   "name": "service_registry_versions",
+   "table_name": "service_registry_versions",
+   "section": "11. 運営",
+   "fields": [
+    {
+     "name": "service_id",
+     "note": null
+    },
+    {
+     "name": "version",
+     "note": null
+    },
+    {
+     "name": "automation_verdict_id",
+     "note": null
+    },
+    {
+     "name": "reason",
+     "note": null
+    },
+    {
+     "name": "released_at",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "service_registry",
+     "label": "可否の版"
+    }
+   ],
+   "soft_delete": false,
+   "timestamps": true,
+   "tenant_field": null,
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "none",
+    "column": null,
+    "fk_table": null
+   },
+   "access_control_policies": [
+    {
+     "name": "service_registry_versions_all_read",
+     "operation": "select",
+     "role": "authenticated",
+     "predicate": "true",
+     "rationale": "マスタ。全員が読む",
+     "source": [
+      "D-026"
+     ]
+    },
+    {
+     "name": "service_registry_versions_ops_write",
+     "operation": "insert,update,delete",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops'",
+     "rationale": "マスタは運営だけが変える",
+     "source": [
+      "D-037",
+      "D-077.4"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-076.5）。**サービス台帳の可否は版で持ち、全社に効く。禁止に変えたら使っている会社に自動でお知らせ",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-073.7",
+    "D-074.4",
+    "D-076",
+    "D-076.10",
+    "D-076.5",
+    "D-077"
+   ]
+  },
+  {
+   "id": "E-056",
+   "name": "service_requests",
+   "table_name": "service_requests",
+   "section": "11. 運営",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "service_name",
+     "note": null
+    },
+    {
+     "name": "url",
+     "note": null
+    },
+    {
+     "name": "requested_by",
+     "note": null
+    },
+    {
+     "name": "verdict_id",
+     "note": null
+    },
+    {
+     "name": "decided_at",
+     "note": null
+    }
+   ],
+   "relations": [],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "service_requests_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "service_requests_self_only_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND requested_by = current_setting('app.user_id', true)::uuid",
+     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "source": [
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "service_requests_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'service_requests', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "service_requests_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = service_requests.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-076.5）。**会社からの「このサービスは触れるか」の申請",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-073.7",
+    "D-074.4",
+    "D-076",
+    "D-076.10",
+    "D-076.5",
+    "D-077"
+   ]
+  },
+  {
+   "id": "E-057",
+   "name": "review_requests",
+   "table_name": "review_requests",
+   "section": "11. 運営",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "subject_type",
+     "note": "template ／ duty"
+    },
+    {
+     "name": "subject_id",
+     "note": null
+    },
+    {
+     "name": "anonymization_check",
+     "note": "jsonb"
+    },
+    {
+     "name": "status_id",
+     "note": "pending ／ approved ／ rejected ／ returned"
+    },
+    {
+     "name": "reviewer_ops_member_id",
+     "note": null
+    },
+    {
+     "name": "decided_at",
+     "note": null
+    },
+    {
+     "name": "reason",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "tenants",
+     "label": "公開の申請"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "review_requests_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "review_requests_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'review_requests', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "review_requests_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = review_requests.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-027・D-074.4・D-077.3）。**会社が明示的に公開したものの審査。承認・却下は会社の詳細の「審査」で行う。公開時の出どころは業種名だけ",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-027",
+    "D-073.7",
+    "D-074",
+    "D-074.4",
+    "D-076.10",
+    "D-076.5",
+    "D-077",
+    "D-077.3"
+   ]
+  },
+  {
+   "id": "E-058",
+   "name": "ops_members",
+   "table_name": "ops_members",
+   "section": "11. 運営",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": "tenant_id＝運営"
+    },
+    {
+     "name": "member_id",
+     "note": null
+    },
+    {
+     "name": "ops_role_id",
+     "note": "support ／ billing ／ catalog ／ admin"
+    },
+    {
+     "name": "revoked_at",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "to": "ops_audit_events",
+     "label": "運営がしたこと"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "ops_members_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "ops_members_self_only_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND member_id = current_setting('app.user_id', true)::uuid",
+     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "source": [
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "ops_members_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'ops_members', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "ops_members_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ops_members.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-073.7・D-074.4）。**運営メンバーと権限。運営の権限も 誰に×何に×できること",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-073",
+    "D-073.7",
+    "D-074.4",
+    "D-076.10",
+    "D-076.5",
+    "D-077"
+   ]
+  },
+  {
+   "id": "E-059",
+   "name": "ops_audit_events",
+   "table_name": "ops_audit_events",
+   "section": "11. 運営",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": "tenant_id＝運営"
+    },
+    {
+     "name": "ops_member_id",
+     "note": null
+    },
+    {
+     "name": "target_tenant_id",
+     "note": null
+    },
+    {
+     "name": "action",
+     "note": null
+    },
+    {
+     "name": "target_type",
+     "note": null
+    },
+    {
+     "name": "target_id",
+     "note": null
+    },
+    {
+     "name": "grant_id",
+     "note": null
+    },
+    {
+     "name": "payload",
+     "note": "jsonb"
+    },
+    {
+     "name": "occurred_at",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "ops_members",
+     "label": "運営がしたこと"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "ops_audit_events_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "ops_audit_events_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'ops_audit_events', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "ops_audit_events_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ops_audit_events.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-074.4・D-077.7）。追記専用。**運営が「どの会社に何をしたか」。同じ行を対象会社の `audit_events` にも書く（顧客が自分の証跡で見られる）",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-073.7",
+    "D-074",
+    "D-074.4",
+    "D-076.10",
+    "D-076.5",
+    "D-077",
+    "D-077.7"
+   ]
+  },
+  {
+   "id": "E-060",
+   "name": "security_events",
+   "table_name": "security_events",
+   "section": "11. 運営",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "kind_id",
+     "note": "login_failed ／ key_revoked ／ suspicious_connection ／ mfa_reset"
+    },
+    {
+     "name": "member_id",
+     "note": null
+    },
+    {
+     "name": "ip_region",
+     "note": null
+    },
+    {
+     "name": "detail",
+     "note": "jsonb"
+    },
+    {
+     "name": "occurred_at",
+     "note": null
+    }
+   ],
+   "relations": [],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "security_events_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "security_events_self_only_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND member_id = current_setting('app.user_id', true)::uuid",
+     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "source": [
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "security_events_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'security_events', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "security_events_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = security_events.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-075.6）。**セキュリティの出来事。会社側「できること・できないこと」と運営側「運営の証跡」の両方から読む",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-073.7",
+    "D-074.4",
+    "D-075",
+    "D-075.6",
+    "D-076.10",
+    "D-076.5",
+    "D-077"
+   ]
+  },
+  {
+   "id": "E-061",
+   "name": "inquiries",
+   "table_name": "inquiries",
+   "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "opened_by_member_id",
+     "note": null
+    },
+    {
+     "name": "kind_id",
+     "note": "howto ／ stuck ／ billing ／ request ／ other"
+    },
+    {
+     "name": "status_id",
+     "note": "waiting ／ answered ／ resolved"
+    },
+    {
+     "name": "conversation_id",
+     "note": null
+    },
+    {
+     "name": "assignee_ops_member_id",
+     "note": null
+    },
+    {
+     "name": "ai_first_answered_at",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "tenants",
+     "label": "問い合わせ"
+    },
+    {
+     "to": "conversations",
+     "label": "やりとりは会話"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "inquiries_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "inquiries_self_only_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND opened_by_member_id = current_setting('app.user_id', true)::uuid",
+     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "source": [
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "inquiries_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'inquiries', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "inquiries_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = inquiries.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-075.1・D-077.1）。**まず自分のAIが答え、解けなければ運営へ。やりとりの本文は `conversations` / `messages`（同じ部品）。運営に届くのは構成と型だけで台帳の中身は送らない",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-069",
+    "D-075",
+    "D-075.1",
+    "D-076",
+    "D-077.1"
+   ]
+  },
+  {
+   "id": "E-062",
+   "name": "notices",
+   "table_name": "notices",
+   "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": "tenant_id＝運営"
+    },
+    {
+     "name": "kind_id",
+     "note": "release ／ incident ／ maintenance ／ rule_version ／ individual"
+    },
+    {
+     "name": "title",
+     "note": null
+    },
+    {
+     "name": "body",
+     "note": null
+    },
+    {
+     "name": "target_plan_ids",
+     "note": "uuid[]"
+    },
+    {
+     "name": "target_tenant_id",
+     "note": null
+    },
+    {
+     "name": "publish_at",
+     "note": null
+    },
+    {
+     "name": "published_by",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "to": "notice_deliveries",
+     "label": "会社ごとの配達"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "notices_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "notices_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'notices', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "notices_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = notices.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-075.2・D-077.8）。**全体のお知らせも会社ごとのお知らせも同じ表（`target_tenant_id` の有無）",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-069",
+    "D-075",
+    "D-075.2",
+    "D-076",
+    "D-077.8"
+   ]
+  },
+  {
+   "id": "E-063",
+   "name": "notice_deliveries",
+   "table_name": "notice_deliveries",
+   "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "notice_id",
+     "note": null
+    },
+    {
+     "name": "member_id",
+     "note": null
+    },
+    {
+     "name": "delivered_at",
+     "note": null
+    },
+    {
+     "name": "read_at",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "notices",
+     "label": "会社ごとの配達"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "notice_deliveries_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "notice_deliveries_self_only_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND member_id = current_setting('app.user_id', true)::uuid",
+     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "source": [
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "notice_deliveries_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'notice_deliveries', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "notice_deliveries_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = notice_deliveries.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "会社側「お知らせ」の既読",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-069",
+    "D-075",
+    "D-076"
+   ]
+  },
+  {
+   "id": "E-064",
+   "name": "status_incidents",
+   "table_name": "status_incidents",
+   "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": "tenant_id＝運営"
+    },
+    {
+     "name": "component_id",
+     "note": "kaname ／ bridge ／ server_route ／ external_service"
+    },
+    {
+     "name": "service_id",
+     "note": null
+    },
+    {
+     "name": "state_id",
+     "note": null
+    },
+    {
+     "name": "started_at",
+     "note": null
+    },
+    {
+     "name": "resolved_at",
+     "note": null
+    },
+    {
+     "name": "note",
+     "note": null
+    }
+   ],
+   "relations": [],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "status_incidents_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "status_incidents_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'status_incidents', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "status_incidents_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = status_incidents.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-075.2・D-076.9）。**稼働状況。会社側は自分の Bridge・経路の状態を `sessions` と `action_runs` から足して表示",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-069",
+    "D-075",
+    "D-075.2",
+    "D-076",
+    "D-076.9"
+   ]
+  },
+  {
+   "id": "E-065",
+   "name": "notification_preferences",
+   "table_name": "notification_preferences",
+   "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "member_id",
+     "note": null
+    },
+    {
+     "name": "event_kind_id",
+     "note": "approval_waiting ／ ai_stopped ／ sole_approver ／ notice_incident ／ notice_release ／ inquiry_answered"
+    },
+    {
+     "name": "channel_id",
+     "note": "in_app ／ email ／ push"
+    },
+    {
+     "name": "enabled",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "members",
+     "label": "届け先"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "notification_preferences_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "notification_preferences_self_only_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND member_id = current_setting('app.user_id', true)::uuid",
+     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "source": [
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "notification_preferences_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'notification_preferences', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "notification_preferences_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = notification_preferences.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-075.3・D-043）。**通知の届け先。関門 C6 が宛先解決に読む",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-043",
+    "D-069",
+    "D-075",
+    "D-075.3",
+    "D-076"
+   ]
+  },
+  {
+   "id": "E-066",
+   "name": "notifications",
+   "table_name": "notifications",
+   "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "member_id",
+     "note": null
+    },
+    {
+     "name": "channel_id",
+     "note": null
+    },
+    {
+     "name": "event_kind_id",
+     "note": null
+    },
+    {
+     "name": "payload",
+     "note": "jsonb"
+    },
+    {
+     "name": "dedupe_key",
+     "note": null
+    },
+    {
+     "name": "sent_at",
+     "note": null
+    },
+    {
+     "name": "failed_at",
+     "note": null
+    },
+    {
+     "name": "retry_count",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "to": "members",
+     "label": "宛先"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "notifications_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "notifications_self_only_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND member_id = current_setting('app.user_id', true)::uuid",
+     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "source": [
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "notifications_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'notifications', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "notifications_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = notifications.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-043・C6）。**送出の outbox。重複抑止・再送・証跡は関門 C6 の責務",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-043",
+    "D-069",
+    "D-075",
+    "D-076"
+   ]
+  },
+  {
+   "id": "E-067",
+   "name": "plans",
+   "table_name": "plans",
+   "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": "tenant_id＝運営"
+    },
+    {
+     "name": "key",
+     "note": "entry ／ standard ／ pro"
+    },
+    {
+     "name": "name",
+     "note": null
+    },
+    {
+     "name": "price_monthly",
+     "note": null
+    },
+    {
+     "name": "limits",
+     "note": "jsonb（AI社員・担当業務・自律実行／日・人・層"
+    },
+    {
+     "name": "current_version",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "to": "tenant_distributions",
+     "label": "プランで出し分け"
+    },
+    {
+     "to": "plan_versions",
+     "label": "版"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "plans_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "plans_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'plans', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "plans_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = plans.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-076.6・D-077.5）。マスタ。**「配るもの」の画面で版管理。段階 2 の注記（注 7）から段階 1 に繰り上げ",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-069",
+    "D-075",
+    "D-076",
+    "D-076.6",
+    "D-077",
+    "D-077.5"
+   ]
+  },
+  {
+   "id": "E-068",
+   "name": "plan_versions",
+   "table_name": "plan_versions",
+   "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
+   "fields": [
+    {
+     "name": "plan_id",
+     "note": null
+    },
+    {
+     "name": "version",
+     "note": null
+    },
+    {
+     "name": "snapshot",
+     "note": "jsonb"
+    },
+    {
+     "name": "released_at",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "plans",
+     "label": "版"
+    }
+   ],
+   "soft_delete": false,
+   "timestamps": true,
+   "tenant_field": null,
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "none",
+    "column": null,
+    "fk_table": null
+   },
+   "access_control_policies": [
+    {
+     "name": "plan_versions_all_read",
+     "operation": "select",
+     "role": "authenticated",
+     "predicate": "true",
+     "rationale": "マスタ。全員が読む",
+     "source": [
+      "D-026"
+     ]
+    },
+    {
+     "name": "plan_versions_ops_write",
+     "operation": "insert,update,delete",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops'",
+     "rationale": "マスタは運営だけが変える",
+     "source": [
+      "D-037",
+      "D-077.4"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "価格・上限の版",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-069",
+    "D-075",
+    "D-076"
+   ]
+  },
+  {
+   "id": "E-069",
+   "name": "subscriptions",
+   "table_name": "subscriptions",
+   "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "plan_id",
+     "note": null
+    },
+    {
+     "name": "status_id",
+     "note": "active ／ suspended ／ closing ／ closed"
+    },
+    {
+     "name": "started_at",
+     "note": null
+    },
+    {
+     "name": "suspended_at",
+     "note": null
+    },
+    {
+     "name": "ended_at",
+     "note": null
+    },
+    {
+     "name": "billing_contact",
+     "note": "jsonb"
+    }
+   ],
+   "relations": [
+    {
+     "from": "tenants",
+     "label": "契約"
+    },
+    {
+     "to": "invoices",
+     "label": "月ごと"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "subscriptions_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "subscriptions_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'subscriptions', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "subscriptions_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = subscriptions.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-075.4）。**会社の契約。休止（D-076.13）は `status=suspended`。請求先は会社の設定（D-076.2）",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-069",
+    "D-075",
+    "D-075.4",
+    "D-076",
+    "D-076.13",
+    "D-076.2"
+   ]
+  },
+  {
+   "id": "E-070",
+   "name": "plan_change_requests",
+   "table_name": "plan_change_requests",
+   "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "from_plan_id",
+     "note": null
+    },
+    {
+     "name": "to_plan_id",
+     "note": null
+    },
+    {
+     "name": "requested_by",
+     "note": null
+    },
+    {
+     "name": "status_id",
+     "note": null
+    },
+    {
+     "name": "dependencies_event_id",
+     "note": null
+    },
+    {
+     "name": "decided_by_ops_member_id",
+     "note": null
+    },
+    {
+     "name": "decided_at",
+     "note": null
+    }
+   ],
+   "relations": [],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "plan_change_requests_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "plan_change_requests_self_only_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND requested_by = current_setting('app.user_id', true)::uuid",
+     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "source": [
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "plan_change_requests_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'plan_change_requests', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "plan_change_requests_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = plan_change_requests.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "下げるときは `account_events(kind=plan_change)` を作って依存を片づけてから",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-069",
+    "D-075",
+    "D-076"
+   ]
+  },
+  {
+   "id": "E-071",
+   "name": "usage_meters",
+   "table_name": "usage_meters",
+   "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "meter_key",
+     "note": "ai_employees ／ duties ／ autonomous_runs_day ／ members ／ layers"
+    },
+    {
+     "name": "period_start",
+     "note": null
+    },
+    {
+     "name": "value",
+     "note": null
+    },
+    {
+     "name": "limit_value",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "tenants",
+     "label": "利用量"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "usage_meters_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "usage_meters_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'usage_meters', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "usage_meters_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = usage_meters.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-075.5）。**上限に近いものを自分のAIが先に言う。上限超過は止まるだけで消えない",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-069",
+    "D-075",
+    "D-075.5",
+    "D-076"
+   ]
+  },
+  {
+   "id": "E-072",
+   "name": "invoices",
+   "table_name": "invoices",
+   "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "subscription_id",
+     "note": null
+    },
+    {
+     "name": "period_start",
+     "note": null
+    },
+    {
+     "name": "period_end",
+     "note": null
+    },
+    {
+     "name": "amount",
+     "note": null
+    },
+    {
+     "name": "issued_at",
+     "note": null
+    },
+    {
+     "name": "due_on",
+     "note": null
+    },
+    {
+     "name": "status_id",
+     "note": "issued ／ paid ／ overdue ／ void"
+    },
+    {
+     "name": "pdf_ref",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "subscriptions",
+     "label": "月ごと"
+    },
+    {
+     "to": "payments",
+     "label": "入金の記録"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "invoices_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "invoices_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'invoices', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "invoices_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = invoices.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-075.4）。段階 1 は請求書払い。**カードは段階 2（D-002）で `payments.method` が増えるだけ",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-002",
+    "D-069",
+    "D-075",
+    "D-075.4",
+    "D-076"
+   ]
+  },
+  {
+   "id": "E-073",
+   "name": "payments",
+   "table_name": "payments",
+   "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "invoice_id",
+     "note": null
+    },
+    {
+     "name": "paid_on",
+     "note": null
+    },
+    {
+     "name": "amount",
+     "note": null
+    },
+    {
+     "name": "method_id",
+     "note": "bank_transfer"
+    },
+    {
+     "name": "recorded_by_ops_member_id",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "invoices",
+     "label": "入金の記録"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "payments_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "payments_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'payments', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "payments_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = payments.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "入金の記録は運営が会社の詳細で行う（D-077.1）。未収 30 日超で休止の案内",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-069",
+    "D-075",
+    "D-076",
+    "D-077.1"
+   ]
+  },
+  {
+   "id": "E-074",
+   "name": "error_events",
+   "table_name": "error_events",
+   "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "error_code",
+     "note": "07_qa／test-specs／errors.json の ID"
+    },
+    {
+     "name": "member_id",
+     "note": null
+    },
+    {
+     "name": "screen_id",
+     "note": null
+    },
+    {
+     "name": "context",
+     "note": "jsonb"
+    },
+    {
+     "name": "shown_at",
+     "note": null
+    },
+    {
+     "name": "next_action_taken_at",
+     "note": null
+    }
+   ],
+   "relations": [],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "error_events_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "error_events_self_only_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND member_id = current_setting('app.user_id', true)::uuid",
+     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "source": [
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "error_events_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'error_events', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "error_events_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = error_events.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-069.3・D-069.4）。**エラー一覧の 1 件が「出た」記録。文言と次の一手は errors.json が正本",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-069",
+    "D-069.3",
+    "D-069.4",
+    "D-075",
+    "D-076"
+   ]
+  },
+  {
+   "id": "E-075",
+   "name": "imports",
+   "table_name": "imports",
+   "section": "13. 取り込み・正規連携・招待・持ち出し・添付",
+   "fields": [
+    {
+     "name": "<scoped>",
+     "note": null
+    },
+    {
+     "name": "file_ref",
+     "note": null
+    },
+    {
+     "name": "detected_kind_id",
+     "note": "ledger_rows ／ template ／ procedure ／ memory"
+    },
+    {
+     "name": "proposal",
+     "note": "jsonb"
+    },
+    {
+     "name": "status_id",
+     "note": "read ／ confirmed ／ applied ／ discarded"
+    },
+    {
+     "name": "applied_at",
+     "note": null
+    },
+    {
+     "name": "applied_by",
+     "note": null
+    }
+   ],
+   "relations": [],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "scope_layered",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "imports_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "imports_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'imports', scope_id, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "imports_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = imports.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-076.3・D-025）。**形式を問わず受け取り自分のAIが読む。本番の台帳には人が押してから入る（3 経路の (3)）",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-025",
+    "D-026",
+    "D-042",
+    "D-076",
+    "D-076.3",
+    "D-076.4"
+   ]
+  },
+  {
+   "id": "E-076",
+   "name": "integrations",
+   "table_name": "integrations",
+   "section": "13. 取り込み・正規連携・招待・持ち出し・添付",
+   "fields": [
+    {
+     "name": "<scoped>",
+     "note": null
+    },
+    {
+     "name": "service_id",
+     "note": null
+    },
+    {
+     "name": "kind_id",
+     "note": "oauth2 ／ api_key"
+    },
+    {
+     "name": "credential_id",
+     "note": "vault 参照"
+    },
+    {
+     "name": "scopes",
+     "note": "text[]"
+    },
+    {
+     "name": "status_id",
+     "note": null
+    },
+    {
+     "name": "connected_at",
+     "note": null
+    },
+    {
+     "name": "revoked_at",
+     "note": null
+    }
+   ],
+   "relations": [],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "scope_layered",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "integrations_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "integrations_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'integrations', scope_id, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "integrations_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = integrations.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-076.4・D-041）。**正規連携（freee / Google …）。資格情報は `credentials` 経由で vault 参照だけ",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-026",
+    "D-041",
+    "D-042",
+    "D-076",
+    "D-076.3",
+    "D-076.4"
+   ]
+  },
+  {
+   "id": "E-077",
+   "name": "invitations",
+   "table_name": "invitations",
+   "section": "13. 取り込み・正規連携・招待・持ち出し・添付",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "email",
+     "note": null
+    },
+    {
+     "name": "scope_id",
+     "note": null
+    },
+    {
+     "name": "role_id",
+     "note": null
+    },
+    {
+     "name": "permission_preset",
+     "note": "jsonb"
+    },
+    {
+     "name": "token_hash",
+     "note": null
+    },
+    {
+     "name": "expires_at",
+     "note": null
+    },
+    {
+     "name": "accepted_member_id",
+     "note": null
+    },
+    {
+     "name": "revoked_at",
+     "note": null
+    }
+   ],
+   "relations": [],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "invitations_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "invitations_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'invitations', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "invitations_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = invitations.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-026・D-037）。**招待。取り消しで `token_hash` は即無効（G-14）",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-026",
+    "D-037",
+    "D-042",
+    "D-076.3",
+    "D-076.4"
+   ]
+  },
+  {
+   "id": "E-078",
+   "name": "export_jobs",
+   "table_name": "export_jobs",
+   "section": "13. 取り込み・正規連携・招待・持ち出し・添付",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "requested_by",
+     "note": null
+    },
+    {
+     "name": "kind_id",
+     "note": "all ／ audit ／ ledger ／ conversations"
+    },
+    {
+     "name": "storage_ref",
+     "note": null
+    },
+    {
+     "name": "status_id",
+     "note": null
+    },
+    {
+     "name": "expires_at",
+     "note": null
+    },
+    {
+     "name": "downloaded_at",
+     "note": null
+    }
+   ],
+   "relations": [],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "export_jobs_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "export_jobs_self_only_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND requested_by = current_setting('app.user_id', true)::uuid",
+     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "source": [
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "export_jobs_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'export_jobs', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "export_jobs_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = export_jobs.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-042）。**持ち出し。関門 C4 を通る。ダウンロード URL は期限つき署名",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-026",
+    "D-042",
+    "D-076.3",
+    "D-076.4"
+   ]
+  },
+  {
+   "id": "E-079",
+   "name": "attachments",
+   "table_name": "attachments",
+   "section": "13. 取り込み・正規連携・招待・持ち出し・添付",
+   "fields": [
+    {
+     "name": "<scoped>",
+     "note": null
+    },
+    {
+     "name": "owner_type",
+     "note": "message ／ task ／ record ／ inquiry"
+    },
+    {
+     "name": "owner_id",
+     "note": null
+    },
+    {
+     "name": "storage_ref",
+     "note": null
+    },
+    {
+     "name": "mime",
+     "note": null
+    },
+    {
+     "name": "size",
+     "note": null
+    },
+    {
+     "name": "scanned_at",
+     "note": null
+    }
+   ],
+   "relations": [],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "scope_layered",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "attachments_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "attachments_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'attachments', scope_id, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "attachments_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = attachments.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設。**添付の実体を 1 表に。`messages.attachments jsonb` は参照だけ持つ",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-026",
+    "D-042",
+    "D-076.3",
+    "D-076.4"
+   ]
+  },
+  {
+   "id": "E-080",
+   "name": "skills",
+   "table_name": "skills",
+   "section": "14. スキル",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": "tenant_id＝運営"
+    },
+    {
+     "name": "kind_id",
+     "note": "meta ／ goal ／ duty"
+    },
+    {
+     "name": "key",
+     "note": null
+    },
+    {
+     "name": "name",
+     "note": null
+    },
+    {
+     "name": "purpose",
+     "note": null
+    },
+    {
+     "name": "current_version",
+     "note": null
+    },
+    {
+     "name": "plan_ids",
+     "note": "uuid[]"
+    },
+    {
+     "name": "visibility_id",
+     "note": "name_only"
+    }
+   ],
+   "relations": [
+    {
+     "to": "skill_versions",
+     "label": "版"
+    },
+    {
+     "to": "skill_attachments",
+     "label": "装着"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "skills_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "skills_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'skills', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "skills_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = skills.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-078.1）。**構築メタスキル 7 種・目標スキル・業務スキルのマスタ。顧客には名前・目的・版だけ見える。`distributions(kind=goal_skill)` はここへ移す",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-078",
+    "D-078.1"
+   ]
+  },
+  {
+   "id": "E-081",
+   "name": "skill_versions",
+   "table_name": "skill_versions",
+   "section": "14. スキル",
+   "fields": [
+    {
+     "name": "skill_id",
+     "note": null
+    },
+    {
+     "name": "version",
+     "note": null
+    },
+    {
+     "name": "package_ref",
+     "note": "C4"
+    },
+    {
+     "name": "changelog",
+     "note": null
+    },
+    {
+     "name": "tested_at",
+     "note": null
+    },
+    {
+     "name": "test_result",
+     "note": "jsonb"
+    },
+    {
+     "name": "released_at",
+     "note": null
+    },
+    {
+     "name": "released_by",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "skills",
+     "label": "版"
+    },
+    {
+     "to": "skill_test_runs",
+     "label": "運営のテスト"
+    },
+    {
+     "from": "action_runs",
+     "label": "どのスキルが働いたか"
+    }
+   ],
+   "soft_delete": false,
+   "timestamps": true,
+   "tenant_field": null,
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "none",
+    "column": null,
+    "fk_table": null
+   },
+   "access_control_policies": [
+    {
+     "name": "skill_versions_all_read",
+     "operation": "select",
+     "role": "authenticated",
+     "predicate": "true",
+     "rationale": "マスタ。全員が読む",
+     "source": [
+      "D-026"
+     ]
+    },
+    {
+     "name": "skill_versions_ops_write",
+     "operation": "insert,update,delete",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops'",
+     "rationale": "マスタは運営だけが変える",
+     "source": [
+      "D-037",
+      "D-077.4"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-078.2）。**出す前に運営がテストで動かす。前の版に戻せる",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-078",
+    "D-078.2"
+   ]
+  },
+  {
+   "id": "E-082",
+   "name": "skill_test_runs",
+   "table_name": "skill_test_runs",
+   "section": "14. スキル",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": "運営"
+    },
+    {
+     "name": "skill_version_id",
+     "note": null
+    },
+    {
+     "name": "ops_member_id",
+     "note": null
+    },
+    {
+     "name": "mode",
+     "note": "test"
+    },
+    {
+     "name": "started_at",
+     "note": null
+    },
+    {
+     "name": "finished_at",
+     "note": null
+    },
+    {
+     "name": "result",
+     "note": "jsonb"
+    }
+   ],
+   "relations": [
+    {
+     "from": "skill_versions",
+     "label": "運営のテスト"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "skill_test_runs_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "skill_test_runs_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'skill_test_runs', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "skill_test_runs_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = skill_test_runs.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "テストは外に出ない（`action_runs.mode_id = test` と同じ規則）",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-078"
+   ]
+  },
+  {
+   "id": "E-083",
+   "name": "skill_attachments",
+   "table_name": "skill_attachments",
+   "section": "14. スキル",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "skill_id",
+     "note": null
+    },
+    {
+     "name": "version_in_use",
+     "note": null
+    },
+    {
+     "name": "target_type",
+     "note": "clone ／ ai_employee"
+    },
+    {
+     "name": "target_id",
+     "note": null
+    },
+    {
+     "name": "enabled",
+     "note": null
+    },
+    {
+     "name": "disabled_by",
+     "note": null
+    },
+    {
+     "name": "attached_at",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "skills",
+     "label": "装着"
+    },
+    {
+     "to": "members",
+     "label": "自分のAI か AI社員"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "skill_attachments_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "skill_attachments_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'skill_attachments', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "skill_attachments_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = skill_attachments.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-078.3・D-078.4）。**会社の詳細「配布したもの」と AI社員の 1 体「使えるスキル」はここを読む。会社の権限者が `enabled=false` にできる。AI社員を消す → 行が消える（D-078.7）",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-078",
+    "D-078.3",
+    "D-078.4",
+    "D-078.7",
+    "D-080"
+   ]
+  }
+ ]
+}

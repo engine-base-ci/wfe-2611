@@ -1,0 +1,91 @@
+{
+ "meta": {
+  "project": "Kaname",
+  "created_at": "2026-09-15",
+  "skill_version": "v3.1",
+  "total_endpoints": 56
+ },
+ "context": {
+  "api_style": "REST（独立 API 層・Hono・OpenAPI が契約）",
+  "auth_method": "セッション（Better Auth・トークンベース・sessions 表で失効）",
+  "versioning": "url（/api/v1）",
+  "contract_test_framework": "OpenAPI-driven（schemathesis 系）＋ 型生成同期 check（未確定：段階 1 凍結時に確認）"
+ },
+ "decision_log": [
+  {
+   "decision": "REST（独立 API 層）",
+   "reason": "Web・Bridge・将来のアプリの 3 クライアントが同じ契約を叩く",
+   "alternatives": [
+    "GraphQL",
+    "tRPC"
+   ],
+   "tradeoffs": "画面ごとの集約は BFF ではなく画面の必要 API を列挙して担保",
+   "source": [
+    "D-043.2",
+    "D-051.1"
+   ]
+  },
+  {
+   "decision": "認証はトークンベース・失効は sessions 表",
+   "reason": "アプリ対応。退会・停止・権限変更・パスワード変更で即失効（G-14）",
+   "alternatives": [
+    "Cookie セッションのみ"
+   ],
+   "tradeoffs": "全リクエストで sessions を引く（インデックス必須）",
+   "source": [
+    "D-051.2",
+    "D-074.2",
+    "D-076.1"
+   ]
+  },
+  {
+   "decision": "副作用の順序を固定",
+   "reason": "認可 → ポリシー → 承認 → 副作用 → 記録。RLS 拒否に頼ると副作用だけ実行される",
+   "alternatives": [],
+   "tradeoffs": "",
+   "source": [
+    "D-042.2",
+    "D-050.2"
+   ]
+  },
+  {
+   "decision": "運営の読み取りは許可がある会社だけ",
+   "reason": "運営は既定で顧客データを読めない",
+   "alternatives": [],
+   "tradeoffs": "サポートは許可待ちになる",
+   "source": [
+    "D-074.5",
+    "D-077.7"
+   ]
+  }
+ ],
+ "api_patterns": [
+  {
+   "pattern_name": "一覧＋1 件＋作成＋更新＋削除",
+   "applicable_to": "台帳・目標・タスク・メンバー等",
+   "endpoints": [
+    "GET /x",
+    "GET /x/:id",
+    "POST /x",
+    "PATCH /x/:id",
+    "DELETE /x/:id"
+   ]
+  },
+  {
+   "pattern_name": "出来事の依存処理",
+   "applicable_to": "退会・停止・権限変更・プラン変更・層を消す・AI社員を消す",
+   "endpoints": [
+    "POST /account_events",
+    "PATCH /account_event_items/:id",
+    "POST /account_events/:id/resolve"
+   ]
+  }
+ ],
+ "research": {
+  "sources": [],
+  "findings": [
+   "契約は OpenAPI 3.0.3。x-acts / x-screens / x-choke-points / x-source で行為・画面・関門・決定に辿れる"
+  ],
+  "research_date": "2026-09-15"
+ }
+}

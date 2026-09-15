@@ -1,0 +1,13 @@
+node_modules/
+dist/
+coverage/
+.turbo/
+*.log
+.env
+.env.*
+!.env.example
+.DS_Store
+06_mockup/v1/_st/
+06_mockup/v1/_st375/
+06_mockup/v1/_m*/
+06_mockup/v1/_ly*/

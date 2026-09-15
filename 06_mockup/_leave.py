@@ -1,0 +1,130 @@
+# -*- coding: utf-8 -*-
+"""抜ける・退会の依存（D-074）。flow.json の objects[] 全部について「何が起きるか」。
+ 決定ログ §74 の表と、退会・抜けるの画面（data-leave 行）は両方ここから作る（1 データ）。G16 leave_gate.py が突き合わせる。
+ 種別: del=消える / keep=残る / move=誰かに移る・戻る / stop=止まる・失効 / na=関係ない"""
+# (オブジェクト, 人が抜ける（無効化・退会）, 種別, 会社が退会, 種別)
+LEAVE = [
+ ("会社モデル", "変わらない。抜ける人が層の長なら、長を再指定するまで赤", "move", "30 日後に消える。持ち出しを先に（JSON で別の Kaname に読める）", "del"),
+ ("自分のAI", "本人のAIは消える（記憶ごと）。会社・層に昇格した記憶は残る", "del", "全員分が消える", "del"),
+ ("AI社員", "個人作成のものは「消す／会社に移す」を選ぶ。託されたものは会社に返す", "move", "全部止まって消える。運営配布の定義は運営に残る（会社の設定だけ消える）", "del"),
+ ("担当業務", "本人が管理者のものは管理者を再指定するまで赤", "move", "消える（運営配布の定義は運営に残る）", "del"),
+ ("覚えた操作", "個人の範囲は消える。会社・層の範囲は残る", "move", "消える", "del"),
+ ("アクション", "本人の実行権は即失効", "stop", "全部失効", "stop"),
+ ("目標", "配られた分は親に戻って未配分（赤）。自主目標は消える", "move", "消える（版の履歴も）", "del"),
+ ("単位", "残る", "keep", "消える", "del"),
+ ("配分", "本人への配分を閉じる → 未配分に戻る", "move", "閉じる", "del"),
+ ("仮説", "本人が担当のものは担当が空く → 行き先のないもの", "move", "消える", "del"),
+ ("施策", "同上。動いている施策は止めるか引き継ぐ", "move", "止めて消える", "del"),
+ ("検証", "判定待ちのものは担当を引き継ぐ", "move", "消える", "del"),
+ ("台帳", "変わらない", "keep", "30 日後に消える（請求の記録は法令で 7 年、運営が別保管）", "del"),
+ ("台帳の定義", "変わらない", "keep", "消える", "del"),
+ ("レコード", "本人が担当のレコードは担当なし → 「止まっている」に出る", "move", "30 日後に消える", "del"),
+ ("段階", "変わらない", "keep", "消える", "del"),
+ ("タスク", "全部「行き先のないもの」へ（§61）。自分のAIが引き継ぎ先の案を出す", "move", "消える", "del"),
+ ("一日の計画", "消える", "del", "消える", "del"),
+ ("承認待ち", "本人宛は他の承認者へ。承認者が本人 1 人なら「承認が止まる」警告", "move", "破棄（外に出ない）", "del"),
+ ("差し戻し", "本人が絡むものは AI社員に戻す", "move", "破棄", "del"),
+ ("申し送り", "消える", "del", "消える", "del"),
+ ("記憶", "個人の範囲は消える。会社・層の範囲は残る。確認待ちは破棄", "move", "消える", "del"),
+ ("ルール", "個人の範囲は消える。会社・層は残る", "move", "消える（運営ルールは運営に残る）", "del"),
+ ("サービス台帳", "変わらない", "keep", "消える", "del"),
+ ("資格情報", "本人が預けたものは即失効・消去。会社で使うものは管理者へ移管を選ぶ", "stop", "即消去・復元不能", "del"),
+ ("Bridge", "本人の端末の接続を即切る", "stop", "全端末の接続を即切る", "stop"),
+ ("サーバー実行経路", "本人の経路を止める", "stop", "止める", "stop"),
+ ("証跡", "残る（本人の操作は記録として残る。名前は残る）", "keep", "法令分は残る。退会前に書き出せる", "keep"),
+ ("メンバー", "無効になる（証跡には名前が残る）", "stop", "全員が無効。全員に通知", "stop"),
+ ("招待", "本人が出した未承諾の招待は取り消す", "stop", "全部取り消す", "stop"),
+ ("効く範囲", "個人の範囲を閉じる。層の長なら再指定", "move", "閉じる", "del"),
+ ("テンプレ", "個人の範囲は消える", "move", "消える（運営配布は運営に残る）", "del"),
+ ("テストモード実行", "止める", "stop", "止める", "stop"),
+ ("添付", "本人が上げたものは残る（会社のもの）", "keep", "30 日後に消える", "del"),
+ ("通知", "本人宛は止める", "stop", "止める", "stop"),
+ ("プラン", "人数枠が 1 空く", "keep", "解約。日割りで最終請求。運営側は退会予定として見える", "stop"),
+ ("会話", "本人の会話は消える（記憶に昇格したものは残る）", "del", "消える", "del"),
+ ("持ち出し", "抜ける前に本人の分を書き出せる", "keep", "退会前に全部書き出す（推奨・退会の画面から）", "keep"),
+ ("かけたもの", "残る（集計のため）", "keep", "消える", "del"),
+ ("問い合わせ", "本人が出した未返答のものは閉じる（運営に「抜けた」と伝わる）", "stop", "全部閉じる。運営側には退会の記録として残る", "stop"),
+ ("お知らせ", "本人宛の通知を止める", "stop", "止める", "stop"),
+ ("請求", "変わらない（人数枠が空くだけ）", "keep", "解約。日割りで最終請求（法令で 7 年保管）", "keep"),
+ ("スキル", "変わらない（運営の資産）", "keep", "会社への装着の状態は消える。マスタは運営に残る", "del"),
+ ("変更履歴", "本人の変更の記録は残る（会社のもの）", "keep", "法令保管の分だけ残り、他は猶予の後に消える", "del"),
+ ("能力表", "関係ない", "na", "関係ない（運営のマスタ）", "na"),
+ ("成果物", "本人が作らせたものは会社に残る", "keep", "30 日後に消える（退会前に書き出せる）", "del"),
+ ("セキュリティ開示資料", "関係ない", "na", "関係ない（運営の資料）", "na"),
+ ("端末", "本人の端末と Bridge は即失効", "stop", "全員の端末と Bridge が即失効", "stop"),
+ ("層", "本人が長の層は長を再指定", "move", "層の定義ごと消える", "del"),
+ ("出来事", "本人の出来事として記録が残る", "keep", "会社の退会が最後の出来事。記録は法令保管の分だけ残る", "keep"),
+ ("サポートアクセス", "本人が許可したものは失効", "stop", "全部失効。運営は読めなくなる", "stop"),
+ ("公開申請", "本人が出した申請は会社に残る（審査は続く）", "keep", "審査中は取り下げ。公開済みは匿名なので残る", "move"),
+ ("取り込み", "読んだ結果で未確定のものは消える", "del", "消える", "del"),
+ ("正規連携", "本人がつないだものは切れる（トークン失効・外部側の許可も取り消す）", "stop", "全部切れる。外部側の許可も取り消す", "stop"),
+ ("エラー", "記録は残る", "keep", "証跡と同じ扱い（法令保管の分だけ残る）", "keep"),
+ ("配布物", "変わらない", "keep", "会社への配布の状態は消える。マスタは運営に残る", "del"),
+ ("運営メンバー", "関係ない", "na", "関係ない（運営側）", "na"),
+ ("定期実行", "本人のAI社員の定期実行は止まる", "stop", "全部止まる", "stop"),
+]
+KIND_JA = {"del": ("消える", "da"), "keep": ("残る", "su"), "move": ("移る・戻る", "wa"), "stop": ("止まる・失効", "ne"), "na": ("関係ない", "ne")}
+
+from _icons import ic
+FLOW_EVENT = {"person": "member-leave", "company": "company-close", "suspend": "suspend", "permission-change": "permission-change",
+              "plan-change": "plan-change", "layer-delete": "layer-delete", "staff-delete": "staff-delete"}
+EVENT_JA = {"person": "人が抜ける", "company": "会社が退会", "suspend": "停止（休止）", "permission-change": "権限変更", "plan-change": "プラン変更（下げる）", "layer-delete": "層を消す", "staff-delete": "AI社員を消す"}
+# 5 つの出来事：既定（残る）に、変わるものだけ上書き。(本文, 種別)
+_DEF = {"suspend": ("残る（休止中は読める）", "keep"), "permission-change": ("残る（見える範囲だけ変わる）", "keep"), "plan-change": ("残る", "keep"), "layer-delete": ("残る", "keep"), "staff-delete": ("残る", "keep")}
+EVENTS = {
+ "suspend": {"定期実行": ("止まる（再開で戻る）", "stop"), "正規連携": ("残る（使わない）", "keep"), "取り込み": ("残る", "keep"), "サポートアクセス": ("残る（期限まで）", "keep"), "自分のAI": ("止まる（記憶は残る）", "stop"), "AI社員": ("止まる。休止中は動かない・消えない", "stop"), "担当業務": ("止まる（定義は残る）", "stop"), "アクション": ("実行権が止まる", "stop"), "テストモード実行": ("止まる", "stop"),
+             "一日の計画": ("消える", "del"), "申し送り": ("止まる", "stop"), "承認待ち": ("残る（外に出ない）", "keep"), "通知": ("止まる（お知らせだけ届く）", "stop"), "Bridge": ("切る", "stop"), "サーバー実行経路": ("止まる", "stop"),
+             "招待": ("止まる（再開で戻る）", "stop"), "請求": ("休止中は請求なし。プランは保持", "keep"), "プラン": ("保持（枠はそのまま）", "keep"), "問い合わせ": ("できる", "keep"), "お知らせ": ("届く", "keep"), "証跡": ("休止・再開が残る", "keep")},
+ "permission-change": {"端末": ("本人の端末と Bridge は即失効", "stop"), "サポートアクセス": ("本人が許可したものは失効", "stop"), "正規連携": ("本人の範囲のものは切れる", "stop"), "効く範囲": ("変わる（層の長を外せば長の権限が消える）", "move"), "目標": ("見える範囲が変わる。見えなくなった目標の配分は上に戻す", "move"), "配分": ("権限外になった配分は未配分に戻る", "move"), "担当業務": ("管理者の権限を失えば管理者を再指定するまで赤", "move"),
+             "承認待ち": ("承認の権限を失えば、本人宛は他の承認者へ", "move"), "台帳": ("見える範囲が変わる。中身は残る", "keep"), "レコード": ("担当のレコードは残る。見えなくなれば担当なしに", "move"), "記憶": ("編集できる範囲が変わる。中身は残る", "keep"), "ルール": ("同上", "keep"), "テンプレ": ("同上", "keep"), "覚えた操作": ("同上", "keep"),
+             "AI社員": ("託されたものは権限次第で返る", "move"), "資格情報": ("権限外のものは使えなくなる", "stop"), "Bridge": ("既存のセッション・接続は即失効（入り直し）", "stop"), "サーバー実行経路": ("既存の経路は止まり、入り直しで戻る", "stop"), "通知": ("見えなくなったものの通知は止まる", "stop"), "自分のAI": ("見える範囲が変わる（記憶は残る）", "keep"), "証跡": ("誰が何を変えたかが残る", "keep")},
+ "plan-change": {"プラン": ("変わる（次の請求から）", "move"), "請求": ("日割り。次の請求から新しい額", "keep"), "AI社員": ("上限を超えた分は止まる（消えない。どれを止めるか選ぶ）", "stop"), "担当業務": ("上限を超えた分は止まる", "stop"), "メンバー": ("上限を超えた分は無効（誰を残すか選ぶ）", "stop"),
+             "効く範囲": ("プロ以外は会社が決めた層が閉じる（層の範囲は会社に畳む。中身は残る）", "move"), "目標": ("層が閉じれば層の目標は会社に戻す", "move"), "配分": ("同上", "move"), "アクション": ("プランで使えない種類は止まる", "stop"), "サーバー実行経路": ("プランに無ければ止まる", "stop"),
+             "添付": ("容量を超えていれば読めるが足せない", "keep"), "証跡": ("変更が残る", "keep"), "お知らせ": ("プラン向けのお知らせが変わる", "keep")},
+ "layer-delete": {"層": ("消える（中身は上の層へ）", "del"), "定期実行": ("層のAI社員の分は上の層へ", "move"), "効く範囲": ("閉じる", "del"), "目標": ("層の目標は親に戻す（未配分・赤）", "move"), "配分": ("閉じる", "del"), "担当業務": ("上の層に移すか消すかを選ぶ", "move"), "記憶": ("同上", "move"), "ルール": ("同上", "move"), "テンプレ": ("同上", "move"), "覚えた操作": ("同上", "move"),
+             "メンバー": ("上の層へ移る", "move"), "AI社員": ("層のAI社員は会社に移る", "move"), "仮説": ("層のものは親へ", "move"), "施策": ("同上", "move"), "検証": ("同上", "move"), "承認待ち": ("層の承認者が消えれば上の承認者へ", "move"), "会社モデル": ("版が上がる", "keep"), "証跡": ("誰が消したかが残る", "keep")},
+ "staff-delete": {"スキル": ("そのAI社員への装着が消える", "del"), "成果物": ("残る（会社のもの）", "keep"), "定期実行": ("そのAI社員の分は消える", "del"), "配布物": ("会社への配布の状態が消える（マスタは残る）", "del"), "AI社員": ("消える", "del"), "担当業務": ("担当なし（赤）。別のAI社員に引き継ぐか止める", "move"), "覚えた操作": ("そのAI社員のものは消える（会社の範囲に昇格したものは残る）", "move"), "アクション": ("そのAI社員の実行権は失効", "stop"), "目標": ("AI社員への配分は親に戻す", "move"), "配分": ("同上", "move"),
+             "タスク": ("そのAI社員のタスクは行き先のないものへ", "move"), "承認待ち": ("そのAI社員の分は破棄", "del"), "差し戻し": ("破棄", "del"), "会話": ("そのAI社員とのやりとりは証跡に残る", "keep"), "記憶": ("AI社員の範囲の記憶は消える", "move"), "資格情報": ("そのAI社員だけが使っていたものは失効", "stop"),
+             "テストモード実行": ("止まる", "stop"), "通知": ("そのAI社員の通知は止まる", "stop"), "サーバー実行経路": ("その経路は止まる", "stop"), "メンバー": ("託されていた人は使えなくなる（返る）", "move"), "証跡": ("誰が消したかが残る", "keep")},
+}
+def cell(event, obj):
+    """(本文, 種別)"""
+    if event == "person": l = next(x for x in LEAVE if x[0] == obj); return l[1], l[2]
+    if event == "company": l = next(x for x in LEAVE if x[0] == obj); return l[3], l[4]
+    return EVENTS[event].get(obj, _DEF[event])
+LEAVE_CSS = """
+.lv-sum{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.lv-sum span{display:inline-flex;gap:6px;align-items:center;font-size:12.5px;padding:5px 11px;border-radius:var(--r-full);background:var(--surface);border:1px solid var(--line)}
+.lv-sum span i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.lv{border:1px solid var(--line);border-radius:var(--r-lg);background:var(--card);overflow:hidden}
+.lv .lh,.lv .lr{display:grid;grid-template-columns:150px 118px minmax(0,1fr);column-gap:12px;align-items:center;padding:0 14px}
+.lv .lh{min-height:32px;font-size:11.5px;font-weight:600;color:var(--on-sv);background:var(--surface);border-bottom:1px solid var(--line)}
+.lv .lr{min-height:40px;padding-top:7px;padding-bottom:7px;border-top:1px solid var(--line-soft);font-size:13px}
+.lv .lr b{font-weight:600}.lv .lr .w{color:var(--on-sv);line-height:1.5}
+.lv .grp{padding:6px 14px;font-size:11.5px;font-weight:700;color:var(--on-sv);background:var(--surface);border-top:1px solid var(--line)}
+.lv .k{display:inline-flex;gap:5px;align-items:center;font-size:11.5px;font-weight:700;padding:2px 9px;border-radius:var(--r-full);white-space:nowrap}
+.lv .k.da{background:#FEE2E2;color:#991B1B}.lv .k.su{background:#DCFCE7;color:#166534}.lv .k.wa{background:#FCEBD5;color:#7E570D}.lv .k.ne{background:var(--sv);color:var(--on-sv)}
+.lv .k i{width:7px;height:7px;border-radius:50%;background:currentColor;display:inline-block}
+@media(max-width:767px){.lv .lh{display:none}.lv .lr{grid-template-columns:1fr auto;row-gap:4px}.lv .lr .w{grid-column:1/-1}}
+"""
+GROUPS = [("会社の定義", ["会社モデル","担当業務","覚えた操作","アクション","単位","台帳の定義","段階","効く範囲","テンプレ","ルール","サービス台帳","プラン","請求"]),
+          ("目標と仕事", ["目標","配分","仮説","施策","検証","タスク","一日の計画","承認待ち","差し戻し","申し送り","かけたもの"]),
+          ("データ", ["台帳","レコード","添付","記憶","会話","持ち出し","証跡"]),
+          ("人と AI", ["自分のAI","AI社員","メンバー","招待","通知","問い合わせ","お知らせ"]),
+          ("運営と口座", ["出来事","サポートアクセス","公開申請","配布物","運営メンバー","取り込み","正規連携","エラー","定期実行","スキル","能力表","セキュリティ開示資料","端末"]),
+          ("会社の形", ["層","変更履歴","成果物"]),
+          ("接続と鍵", ["資格情報","Bridge","サーバー実行経路","テストモード実行"])]
+def leave_table(event):
+    """全オブジェクトの「何が起きるか」の表。行は data-leave（オブジェクト）と data-event（flow.json の出来事 id）を持つ（G16）"""
+    counts = {}
+    for l in LEAVE:
+        k = cell(event, l[0])[1]; counts[k] = counts.get(k, 0) + 1
+    col = {"da": "var(--st-danger)", "su": "var(--st-success)", "wa": "var(--st-warning)", "ne": "var(--on-sv)"}
+    summ = '<div class="lv-sum">' + "".join(f'<span><i style="background:{col[KIND_JA[k][1]]}"></i>{KIND_JA[k][0]} <b>{n}</b></span>' for k, n in counts.items()) + f'<span>全 {len(LEAVE)} 種類</span></div>'
+    rows = ""
+    for g, names in GROUPS:
+        rows += f'<div class="grp">{g}</div>'
+        for n in names:
+            w, k = cell(event, n); ja, cls = KIND_JA[k]
+            rows += f'<div class="lr" data-leave="{n}" data-event="{FLOW_EVENT[event]}"><b>{n}</b><span class="k {cls}"><i></i>{ja}</span><span class="w">{w}</span></div>'
+    return summ + f'<div class="lv"><div class="lh"><span>もの</span><span>どうなる</span><span>中身</span></div>{rows}</div>'

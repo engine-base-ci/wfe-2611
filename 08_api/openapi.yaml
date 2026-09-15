@@ -1,0 +1,7956 @@
+openapi: 3.0.3
+info:
+  title: Kaname API
+  version: 1.0.0
+  description: Mock-Driven Contract Generation。2026-09-15 凍結。信頼源は 08_api/endpoints.json。x-acts / x-screens / x-choke-points / x-source で行為・画面・関門・決定に辿れる
+servers:
+- url: /api/v1
+components:
+  securitySchemes:
+    session:
+      type: http
+      scheme: bearer
+      description: Better Auth のセッション。sessions 表を見て失効を判定
+  schemas:
+    Tenants:
+      type: object
+      properties:
+        name: &id001
+          type: string
+        plan_id: &id002
+          type: string
+          format: uuid
+        status_id: &id003
+          type: string
+          format: uuid
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: tenants
+      x-source:
+      - D-076
+    TenantsInput:
+      type: object
+      properties:
+        name: *id001
+        plan_id: *id002
+        status_id: *id003
+    Scopes:
+      type: object
+      properties:
+        parent_id: &id004
+          type: string
+          format: uuid
+        layer_id: &id005
+          type: string
+          format: uuid
+        name: &id006
+          type: string
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: scopes
+      x-source:
+      - D-026
+    ScopesInput:
+      type: object
+      properties:
+        parent_id: *id004
+        layer_id: *id005
+        name: *id006
+    MemberKinds:
+      type: object
+      properties:
+        key: &id007
+          type: string
+        label: &id008
+          type: string
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: member_kinds
+      x-source:
+      - D-010
+    MemberKindsInput:
+      type: object
+      properties:
+        key: *id007
+        label: *id008
+    Members:
+      type: object
+      properties:
+        kind_id: &id009
+          type: string
+          format: uuid
+        display_name: &id010
+          type: string
+        role_id: &id011
+          type: string
+          format: uuid
+        manager_member_id: &id012
+          type: string
+          format: uuid
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: members
+      x-source:
+      - D-037
+    MembersInput:
+      type: object
+      properties:
+        kind_id: *id009
+        display_name: *id010
+        role_id: *id011
+        manager_member_id: *id012
+    Clones:
+      type: object
+      properties:
+        owner_member_id: &id013
+          type: string
+          format: uuid
+        persona: &id014
+          type: string
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: clones
+      x-source:
+      - D-073
+    ClonesInput:
+      type: object
+      properties:
+        owner_member_id: *id013
+        persona: *id014
+    AiEmployees:
+      type: object
+      properties:
+        member_id: &id015
+          type: string
+          format: uuid
+        provisioning_id: &id016
+          type: string
+          format: uuid
+        template_ref: &id017
+          type: string
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: ai_employees
+      x-source:
+      - D-010
+    AiEmployeesInput:
+      type: object
+      properties:
+        member_id: *id015
+        provisioning_id: *id016
+        template_ref: *id017
+    GoalKinds:
+      type: object
+      properties:
+        key: &id018
+          type: string
+        label: &id019
+          type: string
+        progress_strategy: &id020
+          type: string
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: goal_kinds
+      x-source:
+      - D-010
+    GoalKindsInput:
+      type: object
+      properties:
+        key: *id018
+        label: *id019
+        progress_strategy: *id020
+    Units:
+      type: object
+      properties:
+        key: &id021
+          type: string
+        label: &id022
+          type: string
+        symbol: &id023
+          type: string
+        value_type_id: &id024
+          type: string
+          format: uuid
+        decimals: &id025
+          type: number
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: units
+      x-source:
+      - D-010
+    UnitsInput:
+      type: object
+      properties:
+        key: *id021
+        label: *id022
+        symbol: *id023
+        value_type_id: *id024
+        decimals: *id025
+    RollupKinds:
+      type: object
+      properties:
+        key: &id026
+          type: string
+        label: &id027
+          type: string
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: rollup_kinds
+      x-source:
+      - D-010
+    RollupKindsInput:
+      type: object
+      properties:
+        key: *id026
+        label: *id027
+    Goals:
+      type: object
+      properties:
+        ended_at: &id028
+          type: string
+          format: date-time
+        parent_id: &id029
+          type: string
+          format: uuid
+        rollup_kind_id: &id030
+          type: string
+          format: uuid
+        rollup_spec: &id031
+          type: object
+          additionalProperties: true
+        kind_id: &id032
+          type: string
+          format: uuid
+        period_start: &id033
+          type: string
+        period_end: &id034
+          type: string
+        target_value: &id035
+          type: number
+        unit_id: &id036
+          type: string
+          format: uuid
+        origin_id: &id037
+          type: string
+          format: uuid
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: goals
+      x-source:
+      - D-032
+      - D-034
+      - D-058
+    GoalsInput:
+      type: object
+      properties:
+        ended_at: *id028
+        parent_id: *id029
+        rollup_kind_id: *id030
+        rollup_spec: *id031
+        kind_id: *id032
+        period_start: *id033
+        period_end: *id034
+        target_value: *id035
+        unit_id: *id036
+        origin_id: *id037
+    GoalAllocations:
+      type: object
+      properties:
+        goal_id: &id038
+          type: string
+          format: uuid
+        assignee_member_id: &id039
+          type: string
+          format: uuid
+        allocated_value: &id040
+          type: number
+        agreement_status_id: &id041
+          type: string
+          format: uuid
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: goal_allocations
+      x-source:
+      - D-058
+    GoalAllocationsInput:
+      type: object
+      properties:
+        goal_id: *id038
+        assignee_member_id: *id039
+        allocated_value: *id040
+        agreement_status_id: *id041
+    GoalContributions:
+      type: object
+      properties:
+        child_goal_id: &id042
+          type: string
+          format: uuid
+        parent_goal_id: &id043
+          type: string
+          format: uuid
+        hypothesis_id: &id044
+          type: string
+          format: uuid
+        verdict_id: &id045
+          type: string
+          format: uuid
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: goal_contributions
+      x-source:
+      - D-010
+    GoalContributionsInput:
+      type: object
+      properties:
+        child_goal_id: *id042
+        parent_goal_id: *id043
+        hypothesis_id: *id044
+        verdict_id: *id045
+    GoalVersions:
+      type: object
+      properties:
+        goal_id: &id046
+          type: string
+          format: uuid
+        version:
+          type: string
+        snapshot: &id047
+          type: object
+          additionalProperties: true
+        changed_at: &id048
+          type: string
+          format: date-time
+        changed_by: &id049
+          type: string
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: goal_versions
+      x-source:
+      - D-061
+    GoalVersionsInput:
+      type: object
+      properties:
+        goal_id: *id046
+        snapshot: *id047
+        changed_at: *id048
+        changed_by: *id049
+    Hypotheses:
+      type: object
+      properties:
+        goal_id: &id050
+          type: string
+          format: uuid
+        statement: &id051
+          type: string
+        evidence: &id052
+          type: string
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: hypotheses
+      x-source:
+      - D-035
+    HypothesesInput:
+      type: object
+      properties:
+        goal_id: *id050
+        statement: *id051
+        evidence: *id052
+    Measures:
+      type: object
+      properties:
+        hypothesis_id: &id053
+          type: string
+          format: uuid
+        statement: &id054
+          type: string
+        expected_effect: &id055
+          type: string
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: measures
+      x-source:
+      - D-010
+    MeasuresInput:
+      type: object
+      properties:
+        hypothesis_id: *id053
+        statement: *id054
+        expected_effect: *id055
+    Validations:
+      type: object
+      properties:
+        measure_id: &id056
+          type: string
+          format: uuid
+        measured_value: &id057
+          type: number
+        verdict_id: &id058
+          type: string
+          format: uuid
+        measured_at: &id059
+          type: string
+          format: date-time
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: validations
+      x-source:
+      - D-010
+    ValidationsInput:
+      type: object
+      properties:
+        measure_id: *id056
+        measured_value: *id057
+        verdict_id: *id058
+        measured_at: *id059
+    LedgerDefinitions:
+      type: object
+      properties:
+        kind_id: &id060
+          type: string
+          format: uuid
+        name: &id061
+          type: string
+        json_schema: &id062
+          type: object
+          additionalProperties: true
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: ledger_definitions
+      x-source:
+      - D-038
+    LedgerDefinitionsInput:
+      type: object
+      properties:
+        kind_id: *id060
+        name: *id061
+        json_schema: *id062
+    LedgerFields:
+      type: object
+      properties:
+        definition_id: &id063
+          type: string
+          format: uuid
+        key: &id064
+          type: string
+        label: &id065
+          type: string
+        data_type_id: &id066
+          type: string
+          format: uuid
+        required: &id067
+          type: boolean
+        options_master_id: &id068
+          type: string
+          format: uuid
+        order_no: &id069
+          type: number
+        is_filterable: &id070
+          type: boolean
+        is_sortable: &id071
+          type: boolean
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: ledger_fields
+      x-source:
+      - D-010
+    LedgerFieldsInput:
+      type: object
+      properties:
+        definition_id: *id063
+        key: *id064
+        label: *id065
+        data_type_id: *id066
+        required: *id067
+        options_master_id: *id068
+        order_no: *id069
+        is_filterable: *id070
+        is_sortable: *id071
+    LedgerStages:
+      type: object
+      properties:
+        definition_id: &id072
+          type: string
+          format: uuid
+        key: &id073
+          type: string
+        label: &id074
+          type: string
+        order_no: &id075
+          type: number
+        rules: &id076
+          type: object
+          additionalProperties: true
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: ledger_stages
+      x-source:
+      - D-010
+    LedgerStagesInput:
+      type: object
+      properties:
+        definition_id: *id072
+        key: *id073
+        label: *id074
+        order_no: *id075
+        rules: *id076
+    LedgerViews:
+      type: object
+      properties:
+        definition_id: &id077
+          type: string
+          format: uuid
+        kind_id: &id078
+          type: string
+          format: uuid
+        filters: &id079
+          type: object
+          additionalProperties: true
+        sorts: &id080
+          type: object
+          additionalProperties: true
+        columns: &id081
+          type: object
+          additionalProperties: true
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: ledger_views
+      x-source:
+      - D-010
+    LedgerViewsInput:
+      type: object
+      properties:
+        definition_id: *id077
+        kind_id: *id078
+        filters: *id079
+        sorts: *id080
+        columns: *id081
+    LedgerRecords:
+      type: object
+      properties:
+        definition_id: &id082
+          type: string
+          format: uuid
+        stage_id: &id083
+          type: string
+          format: uuid
+        amount: &id084
+          type: number
+        occurred_on: &id085
+          type: string
+          format: date
+        assignee_id: &id086
+          type: string
+          format: uuid
+        goal_id: &id087
+          type: string
+          format: uuid
+        measure_id: &id088
+          type: string
+          format: uuid
+        data: &id089
+          type: object
+          additionalProperties: true
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: ledger_records
+      x-source:
+      - D-010
+    LedgerRecordsInput:
+      type: object
+      properties:
+        definition_id: *id082
+        stage_id: *id083
+        amount: *id084
+        occurred_on: *id085
+        assignee_id: *id086
+        goal_id: *id087
+        measure_id: *id088
+        data: *id089
+    Duties:
+      type: object
+      properties:
+        ai_employee_id: &id090
+          type: string
+          format: uuid
+        name: &id091
+          type: string
+        definition_md: &id092
+          type: string
+        constraints: &id093
+          type: object
+          additionalProperties: true
+        visibility_id: &id094
+          type: string
+          format: uuid
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: duties
+      x-source:
+      - D-010
+    DutiesInput:
+      type: object
+      properties:
+        ai_employee_id: *id090
+        name: *id091
+        definition_md: *id092
+        constraints: *id093
+        visibility_id: *id094
+    DutyVersions:
+      type: object
+      properties:
+        duty_id: &id095
+          type: string
+          format: uuid
+        version:
+          type: string
+        snapshot: &id096
+          type: object
+          additionalProperties: true
+        changed_by: &id097
+          type: string
+        change_reason: &id098
+          type: string
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: duty_versions
+      x-source:
+      - D-010
+    DutyVersionsInput:
+      type: object
+      properties:
+        duty_id: *id095
+        snapshot: *id096
+        changed_by: *id097
+        change_reason: *id098
+    LearnedProcedures:
+      type: object
+      properties:
+        duty_id: &id099
+          type: string
+          format: uuid
+        target_service_id: &id100
+          type: string
+          format: uuid
+        status_id: &id101
+          type: string
+          format: uuid
+        run_count: &id102
+          type: number
+        avg_ms: &id103
+          type: number
+        fail_count: &id104
+          type: number
+        last_verified_at: &id105
+          type: string
+          format: date-time
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: learned_procedures
+      x-source:
+      - D-010
+    LearnedProceduresInput:
+      type: object
+      properties:
+        duty_id: *id099
+        target_service_id: *id100
+        status_id: *id101
+        run_count: *id102
+        avg_ms: *id103
+        fail_count: *id104
+        last_verified_at: *id105
+    ProcedureSteps:
+      type: object
+      properties:
+        procedure_id: &id106
+          type: string
+          format: uuid
+        order_no: &id107
+          type: number
+        intent_ja: &id108
+          type: string
+        locator:
+          type: object
+          additionalProperties: true
+        is_variable: &id109
+          type: boolean
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: procedure_steps
+      x-source:
+      - D-010
+    ProcedureStepsInput:
+      type: object
+      properties:
+        procedure_id: *id106
+        order_no: *id107
+        intent_ja: *id108
+        is_variable: *id109
+    MemoryKinds:
+      type: object
+      properties:
+        key: &id110
+          type: string
+        label: &id111
+          type: string
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: memory_kinds
+      x-source:
+      - D-010
+    MemoryKindsInput:
+      type: object
+      properties:
+        key: *id110
+        label: *id111
+    Memories:
+      type: object
+      properties:
+        kind_id: &id112
+          type: string
+          format: uuid
+        owner_member_id: &id113
+          type: string
+          format: uuid
+        title: &id114
+          type: string
+        body: &id115
+          type: string
+        confidence: &id116
+          type: number
+        source_type_id: &id117
+          type: string
+          format: uuid
+        source_ref_id: &id118
+          type: string
+          format: uuid
+        embedding:
+          type: string
+        approved_by: &id119
+          type: string
+        approved_at: &id120
+          type: string
+          format: date-time
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: memories
+      x-source:
+      - D-060
+    MemoriesInput:
+      type: object
+      properties:
+        kind_id: *id112
+        owner_member_id: *id113
+        title: *id114
+        body: *id115
+        confidence: *id116
+        source_type_id: *id117
+        source_ref_id: *id118
+        approved_by: *id119
+        approved_at: *id120
+    Tasks:
+      type: object
+      properties:
+        goal_id: &id121
+          type: string
+          format: uuid
+        measure_id: &id122
+          type: string
+          format: uuid
+        assignee_member_id: &id123
+          type: string
+          format: uuid
+        status_id: &id124
+          type: string
+          format: uuid
+        due_on: &id125
+          type: string
+          format: date
+        title: &id126
+          type: string
+        origin_id: &id127
+          type: string
+          format: uuid
+        goal_changed_at: &id128
+          type: string
+          format: date-time
+        next_action: &id129
+          type: string
+        estimate_minutes: &id130
+          type: number
+        actual_minutes: &id131
+          type: number
+        planned_for: &id132
+          type: string
+        blocked_reason_id: &id133
+          type: string
+          format: uuid
+        blocked_since: &id134
+          type: string
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: tasks
+      x-source:
+      - D-068
+    TasksInput:
+      type: object
+      properties:
+        goal_id: *id121
+        measure_id: *id122
+        assignee_member_id: *id123
+        status_id: *id124
+        due_on: *id125
+        title: *id126
+        origin_id: *id127
+        goal_changed_at: *id128
+        next_action: *id129
+        estimate_minutes: *id130
+        actual_minutes: *id131
+        planned_for: *id132
+        blocked_reason_id: *id133
+        blocked_since: *id134
+    TaskHandovers:
+      type: object
+      properties:
+        task_id: &id135
+          type: string
+          format: uuid
+        from_member_id: &id136
+          type: string
+          format: uuid
+        to_member_id: &id137
+          type: string
+          format: uuid
+        mode_id: &id138
+          type: string
+          format: uuid
+        agreement_status_id: &id139
+          type: string
+          format: uuid
+        reason: &id140
+          type: string
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: task_handovers
+      x-source:
+      - D-058
+      - D-061
+      - D-068
+    TaskHandoversInput:
+      type: object
+      properties:
+        task_id: *id135
+        from_member_id: *id136
+        to_member_id: *id137
+        mode_id: *id138
+        agreement_status_id: *id139
+        reason: *id140
+    DailyPlans:
+      type: object
+      properties:
+        member_id: &id141
+          type: string
+          format: uuid
+        plan_date: &id142
+          type: string
+        capacity_minutes: &id143
+          type: number
+        committed_at: &id144
+          type: string
+          format: date-time
+        closed_at: &id145
+          type: string
+          format: date-time
+        carry_over: &id146
+          type: object
+          additionalProperties: true
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: daily_plans
+      x-source:
+      - D-068
+    DailyPlansInput:
+      type: object
+      properties:
+        member_id: *id141
+        plan_date: *id142
+        capacity_minutes: *id143
+        committed_at: *id144
+        closed_at: *id145
+        carry_over: *id146
+    Triggers:
+      type: object
+      properties:
+        kind_id: &id147
+          type: string
+          format: uuid
+        cron_expr: &id148
+          type: string
+        timezone: &id149
+          type: string
+        on_missed_id: &id150
+          type: string
+          format: uuid
+        ttl_minutes: &id151
+          type: string
+        enabled: &id152
+          type: boolean
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: triggers
+      x-source:
+      - D-010
+    TriggersInput:
+      type: object
+      properties:
+        kind_id: *id147
+        cron_expr: *id148
+        timezone: *id149
+        on_missed_id: *id150
+        ttl_minutes: *id151
+        enabled: *id152
+    Policies:
+      type: object
+      properties:
+        subject_kind_id: &id153
+          type: string
+          format: uuid
+        action_kind_id: &id154
+          type: string
+          format: uuid
+        mode_id: &id155
+          type: string
+          format: uuid
+        params: &id156
+          type: object
+          additionalProperties: true
+        is_locked: &id157
+          type: boolean
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: policies
+      x-source:
+      - D-060
+    PoliciesInput:
+      type: object
+      properties:
+        subject_kind_id: *id153
+        action_kind_id: *id154
+        mode_id: *id155
+        params: *id156
+        is_locked: *id157
+    Approvals:
+      type: object
+      properties:
+        action_run_id: &id158
+          type: string
+          format: uuid
+        requested_by: &id159
+          type: string
+        approver_member_id: &id160
+          type: string
+          format: uuid
+        status_id: &id161
+          type: string
+          format: uuid
+        resolved_at: &id162
+          type: string
+          format: date-time
+        note: &id163
+          type: string
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: approvals
+      x-source:
+      - D-010
+    ApprovalsInput:
+      type: object
+      properties:
+        action_run_id: *id158
+        requested_by: *id159
+        approver_member_id: *id160
+        status_id: *id161
+        resolved_at: *id162
+        note: *id163
+    ActionRuns:
+      type: object
+      properties:
+        task_id: &id164
+          type: string
+          format: uuid
+        action_kind_id: &id165
+          type: string
+          format: uuid
+        choke_point_id: &id166
+          type: string
+          format: uuid
+        service_id: &id167
+          type: string
+          format: uuid
+        procedure_id: &id168
+          type: string
+          format: uuid
+        status_id: &id169
+          type: string
+          format: uuid
+        started_at: &id170
+          type: string
+          format: date-time
+        finished_at: &id171
+          type: string
+          format: date-time
+        tokens_in: &id172
+          type: number
+        tokens_out: &id173
+          type: number
+        cost: &id174
+          type: number
+        error_summary: &id175
+          type: string
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: action_runs
+      x-source:
+      - D-062
+    ActionRunsInput:
+      type: object
+      properties:
+        task_id: *id164
+        action_kind_id: *id165
+        choke_point_id: *id166
+        service_id: *id167
+        procedure_id: *id168
+        status_id: *id169
+        started_at: *id170
+        finished_at: *id171
+        tokens_in: *id172
+        tokens_out: *id173
+        cost: *id174
+        error_summary: *id175
+    ServiceRegistry:
+      type: object
+      properties:
+        name: &id176
+          type: string
+        domain: &id177
+          type: string
+        automation_verdict_id: &id178
+          type: string
+          format: uuid
+        notes: &id179
+          type: string
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: service_registry
+      x-source:
+      - D-013
+      - D-041
+    ServiceRegistryInput:
+      type: object
+      properties:
+        name: *id176
+        domain: *id177
+        automation_verdict_id: *id178
+        notes: *id179
+    CredentialKinds:
+      type: object
+      properties:
+        key: &id180
+          type: string
+        label: &id181
+          type: string
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: credential_kinds
+      x-source:
+      - D-010
+    CredentialKindsInput:
+      type: object
+      properties:
+        key: *id180
+        label: *id181
+    Credentials:
+      type: object
+      properties:
+        service_id: &id182
+          type: string
+          format: uuid
+        kind_id: &id183
+          type: string
+          format: uuid
+        vault_ref:
+          type: string
+        owner_member_id: &id184
+          type: string
+          format: uuid
+        revoked_at: &id185
+          type: string
+          format: date-time
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: credentials
+      x-source:
+      - D-004
+      - D-017
+    CredentialsInput:
+      type: object
+      properties:
+        service_id: *id182
+        kind_id: *id183
+        owner_member_id: *id184
+        revoked_at: *id185
+    Conversations:
+      type: object
+      properties:
+        title: &id186
+          type: string
+        participant_member_ids: &id187
+          type: array
+          items:
+            type: string
+            format: uuid
+        area: &id188
+          type: string
+        subject_type: &id189
+          type: string
+        parent_conversation_id: &id190
+          type: string
+          format: uuid
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: conversations
+      x-source:
+      - D-062
+    ConversationsInput:
+      type: object
+      properties:
+        title: *id186
+        participant_member_ids: *id187
+        area: *id188
+        subject_type: *id189
+        parent_conversation_id: *id190
+    Messages:
+      type: object
+      properties:
+        conversation_id: &id191
+          type: string
+          format: uuid
+        sender_member_id: &id192
+          type: string
+          format: uuid
+        body: &id193
+          type: string
+        attachments: &id194
+          type: object
+          additionalProperties: true
+        action_run_id: &id195
+          type: string
+          format: uuid
+        kind: &id196
+          type: string
+        options: &id197
+          type: object
+          additionalProperties: true
+        confidence: &id198
+          type: number
+        citations: &id199
+          type: object
+          additionalProperties: true
+        parent_message_id: &id200
+          type: string
+          format: uuid
+        undo_action_run_id: &id201
+          type: string
+          format: uuid
+        read_at: &id202
+          type: string
+          format: date-time
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: messages
+      x-source:
+      - D-066
+    MessagesInput:
+      type: object
+      properties:
+        conversation_id: *id191
+        sender_member_id: *id192
+        body: *id193
+        attachments: *id194
+        action_run_id: *id195
+        kind: *id196
+        options: *id197
+        confidence: *id198
+        citations: *id199
+        parent_message_id: *id200
+        undo_action_run_id: *id201
+        read_at: *id202
+    Artifacts:
+      type: object
+      properties:
+        task_id: &id203
+          type: string
+          format: uuid
+        format_id: &id204
+          type: string
+          format: uuid
+        storage_ref:
+          type: string
+        template_id: &id205
+          type: string
+          format: uuid
+        approved_by: &id206
+          type: string
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: artifacts
+      x-source:
+      - D-010
+    ArtifactsInput:
+      type: object
+      properties:
+        task_id: *id203
+        format_id: *id204
+        template_id: *id205
+        approved_by: *id206
+    AuditEvents:
+      type: object
+      properties:
+        actor_member_id: &id207
+          type: string
+          format: uuid
+        actor_role: &id208
+          type: string
+        action: &id209
+          type: string
+        target_type: &id210
+          type: string
+        target_id: &id211
+          type: string
+          format: uuid
+        choke_point_id: &id212
+          type: string
+          format: uuid
+        payload: &id213
+          type: object
+          additionalProperties: true
+        occurred_at: &id214
+          type: string
+          format: date-time
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: audit_events
+      x-source:
+      - D-010
+    AuditEventsInput:
+      type: object
+      properties:
+        actor_member_id: *id207
+        actor_role: *id208
+        action: *id209
+        target_type: *id210
+        target_id: *id211
+        choke_point_id: *id212
+        payload: *id213
+        occurred_at: *id214
+    Layers:
+      type: object
+      properties:
+        key: &id215
+          type: string
+        label: &id216
+          type: string
+        order_no: &id217
+          type: number
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: layers
+      x-source:
+      - D-073
+      - D-073.4
+    LayersInput:
+      type: object
+      properties:
+        key: *id215
+        label: *id216
+        order_no: *id217
+    TargetKinds:
+      type: object
+      properties:
+        key: &id218
+          type: string
+        label: &id219
+          type: string
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: target_kinds
+      x-source:
+      - D-073
+    TargetKindsInput:
+      type: object
+      properties:
+        key: *id218
+        label: *id219
+    Abilities:
+      type: object
+      properties:
+        key: &id220
+          type: string
+        label: &id221
+          type: string
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: abilities
+      x-source:
+      - D-073
+    AbilitiesInput:
+      type: object
+      properties:
+        key: *id220
+        label: *id221
+    Permissions:
+      type: object
+      properties:
+        grantee_member_id: &id222
+          type: string
+          format: uuid
+        target_kind_id: &id223
+          type: string
+          format: uuid
+        scope_id:
+          type: string
+          format: uuid
+        ability_id: &id224
+          type: string
+          format: uuid
+        granted_by: &id225
+          type: string
+        revoked_at: &id226
+          type: string
+          format: date-time
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: permissions
+      x-source:
+      - D-073
+      - D-073.1
+      - D-073.3
+    PermissionsInput:
+      type: object
+      properties:
+        grantee_member_id: *id222
+        target_kind_id: *id223
+        ability_id: *id224
+        granted_by: *id225
+        revoked_at: *id226
+    AccountEvents:
+      type: object
+      properties:
+        kind_id: &id227
+          type: string
+          format: uuid
+        subject_type: &id228
+          type: string
+        subject_id: &id229
+          type: string
+          format: uuid
+        requested_by: &id230
+          type: string
+        status_id: &id231
+          type: string
+          format: uuid
+        resolved_at: &id232
+          type: string
+          format: date-time
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: account_events
+      x-source:
+      - D-074
+      - D-074.1
+      - D-076
+      - D-076.13
+    AccountEventsInput:
+      type: object
+      properties:
+        kind_id: *id227
+        subject_type: *id228
+        subject_id: *id229
+        requested_by: *id230
+        status_id: *id231
+        resolved_at: *id232
+    AccountEventItems:
+      type: object
+      properties:
+        event_id: &id233
+          type: string
+          format: uuid
+        object_kind: &id234
+          type: string
+        disposition_id: &id235
+          type: string
+          format: uuid
+        target_ref: &id236
+          type: string
+        decided_by: &id237
+          type: string
+        done_at: &id238
+          type: string
+          format: date-time
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: account_event_items
+      x-source:
+      - D-074
+      - D-076.13
+    AccountEventItemsInput:
+      type: object
+      properties:
+        event_id: *id233
+        object_kind: *id234
+        disposition_id: *id235
+        target_ref: *id236
+        decided_by: *id237
+        done_at: *id238
+    Sessions:
+      type: object
+      properties:
+        member_id: &id239
+          type: string
+          format: uuid
+        kind_id: &id240
+          type: string
+          format: uuid
+        device_label: &id241
+          type: string
+        ip_region: &id242
+          type: string
+        issued_at: &id243
+          type: string
+          format: date-time
+        last_seen_at: &id244
+          type: string
+          format: date-time
+        revoked_at: &id245
+          type: string
+          format: date-time
+        revoke_reason_id: &id246
+          type: string
+          format: uuid
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: sessions
+      x-source:
+      - D-074
+      - D-076
+      - D-076.1
+      - D-076.13
+    SessionsInput:
+      type: object
+      properties:
+        member_id: *id239
+        kind_id: *id240
+        device_label: *id241
+        ip_region: *id242
+        issued_at: *id243
+        last_seen_at: *id244
+        revoked_at: *id245
+        revoke_reason_id: *id246
+    SupportAccessGrants:
+      type: object
+      properties:
+        granted_by_member_id: &id247
+          type: string
+          format: uuid
+        scope: &id248
+          type: object
+          additionalProperties: true
+        expires_at: &id249
+          type: string
+          format: date-time
+        revoked_at: &id250
+          type: string
+          format: date-time
+        ops_member_id: &id251
+          type: string
+          format: uuid
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: support_access_grants
+      x-source:
+      - D-074
+      - D-074.5
+      - D-076.13
+    SupportAccessGrantsInput:
+      type: object
+      properties:
+        granted_by_member_id: *id247
+        scope: *id248
+        expires_at: *id249
+        revoked_at: *id250
+        ops_member_id: *id251
+    RetentionHolds:
+      type: object
+      properties:
+        record_type: &id252
+          type: string
+        record_ref: &id253
+          type: string
+        retain_until: &id254
+          type: string
+        legal_basis: &id255
+          type: string
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: retention_holds
+      x-source:
+      - D-074
+      - D-074.3
+      - D-076.13
+    RetentionHoldsInput:
+      type: object
+      properties:
+        record_type: *id252
+        record_ref: *id253
+        retain_until: *id254
+        legal_basis: *id255
+    ErasureCertificates:
+      type: object
+      properties:
+        issued_at: &id256
+          type: string
+          format: date-time
+        content_hash:
+          type: string
+        sent_to: &id257
+          type: string
+        storage_ref:
+          type: string
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: erasure_certificates
+      x-source:
+      - D-074
+      - D-074.3
+      - D-076.13
+    ErasureCertificatesInput:
+      type: object
+      properties:
+        issued_at: *id256
+        sent_to: *id257
+    Distributions:
+      type: object
+      properties:
+        kind_id: &id258
+          type: string
+          format: uuid
+        key: &id259
+          type: string
+        name: &id260
+          type: string
+        current_version: &id261
+          type: number
+        plan_ids: &id262
+          type: array
+          items:
+            type: string
+            format: uuid
+        is_locked: &id263
+          type: boolean
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: distributions
+      x-source:
+      - D-037
+      - D-063
+      - D-073.7
+      - D-074.4
+      - D-076.10
+      - D-076.5
+      - D-077
+      - D-077.4
+    DistributionsInput:
+      type: object
+      properties:
+        kind_id: *id258
+        key: *id259
+        name: *id260
+        current_version: *id261
+        plan_ids: *id262
+        is_locked: *id263
+    DistributionVersions:
+      type: object
+      properties:
+        distribution_id: &id264
+          type: string
+          format: uuid
+        version:
+          type: string
+        snapshot: &id265
+          type: object
+          additionalProperties: true
+        released_at: &id266
+          type: string
+          format: date-time
+        released_by: &id267
+          type: string
+        change_reason: &id268
+          type: string
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: distribution_versions
+      x-source:
+      - D-073.7
+      - D-074.4
+      - D-076.10
+      - D-076.5
+      - D-077
+    DistributionVersionsInput:
+      type: object
+      properties:
+        distribution_id: *id264
+        snapshot: *id265
+        released_at: *id266
+        released_by: *id267
+        change_reason: *id268
+    TenantDistributions:
+      type: object
+      properties:
+        distribution_id: &id269
+          type: string
+          format: uuid
+        version_in_use: &id270
+          type: number
+        enabled: &id271
+          type: boolean
+        override: &id272
+          type: object
+          additionalProperties: true
+        disabled_by: &id273
+          type: string
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: tenant_distributions
+      x-source:
+      - D-073.7
+      - D-074.4
+      - D-076.10
+      - D-076.5
+      - D-077
+      - D-077.6
+    TenantDistributionsInput:
+      type: object
+      properties:
+        distribution_id: *id269
+        version_in_use: *id270
+        enabled: *id271
+        override: *id272
+        disabled_by: *id273
+    ServiceRegistryVersions:
+      type: object
+      properties:
+        service_id: &id274
+          type: string
+          format: uuid
+        version:
+          type: string
+        automation_verdict_id: &id275
+          type: string
+          format: uuid
+        reason: &id276
+          type: string
+        released_at: &id277
+          type: string
+          format: date-time
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: service_registry_versions
+      x-source:
+      - D-073.7
+      - D-074.4
+      - D-076
+      - D-076.10
+      - D-076.5
+      - D-077
+    ServiceRegistryVersionsInput:
+      type: object
+      properties:
+        service_id: *id274
+        automation_verdict_id: *id275
+        reason: *id276
+        released_at: *id277
+    ServiceRequests:
+      type: object
+      properties:
+        service_name: &id278
+          type: string
+        url: &id279
+          type: string
+        requested_by: &id280
+          type: string
+        verdict_id: &id281
+          type: string
+          format: uuid
+        decided_at: &id282
+          type: string
+          format: date-time
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: service_requests
+      x-source:
+      - D-073.7
+      - D-074.4
+      - D-076
+      - D-076.10
+      - D-076.5
+      - D-077
+    ServiceRequestsInput:
+      type: object
+      properties:
+        service_name: *id278
+        url: *id279
+        requested_by: *id280
+        verdict_id: *id281
+        decided_at: *id282
+    ReviewRequests:
+      type: object
+      properties:
+        subject_type: &id283
+          type: string
+        subject_id: &id284
+          type: string
+          format: uuid
+        anonymization_check: &id285
+          type: object
+          additionalProperties: true
+        status_id: &id286
+          type: string
+          format: uuid
+        reviewer_ops_member_id: &id287
+          type: string
+          format: uuid
+        decided_at: &id288
+          type: string
+          format: date-time
+        reason: &id289
+          type: string
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: review_requests
+      x-source:
+      - D-027
+      - D-073.7
+      - D-074
+      - D-074.4
+      - D-076.10
+      - D-076.5
+      - D-077
+      - D-077.3
+    ReviewRequestsInput:
+      type: object
+      properties:
+        subject_type: *id283
+        subject_id: *id284
+        anonymization_check: *id285
+        status_id: *id286
+        reviewer_ops_member_id: *id287
+        decided_at: *id288
+        reason: *id289
+    OpsMembers:
+      type: object
+      properties:
+        member_id: &id290
+          type: string
+          format: uuid
+        ops_role_id: &id291
+          type: string
+          format: uuid
+        revoked_at: &id292
+          type: string
+          format: date-time
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: ops_members
+      x-source:
+      - D-073
+      - D-073.7
+      - D-074.4
+      - D-076.10
+      - D-076.5
+      - D-077
+    OpsMembersInput:
+      type: object
+      properties:
+        member_id: *id290
+        ops_role_id: *id291
+        revoked_at: *id292
+    OpsAuditEvents:
+      type: object
+      properties:
+        ops_member_id: &id293
+          type: string
+          format: uuid
+        target_tenant_id: &id294
+          type: string
+          format: uuid
+        action: &id295
+          type: string
+        target_type: &id296
+          type: string
+        target_id: &id297
+          type: string
+          format: uuid
+        grant_id: &id298
+          type: string
+          format: uuid
+        payload: &id299
+          type: object
+          additionalProperties: true
+        occurred_at: &id300
+          type: string
+          format: date-time
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: ops_audit_events
+      x-source:
+      - D-073.7
+      - D-074
+      - D-074.4
+      - D-076.10
+      - D-076.5
+      - D-077
+      - D-077.7
+    OpsAuditEventsInput:
+      type: object
+      properties:
+        ops_member_id: *id293
+        target_tenant_id: *id294
+        action: *id295
+        target_type: *id296
+        target_id: *id297
+        grant_id: *id298
+        payload: *id299
+        occurred_at: *id300
+    SecurityEvents:
+      type: object
+      properties:
+        kind_id: &id301
+          type: string
+          format: uuid
+        member_id: &id302
+          type: string
+          format: uuid
+        ip_region: &id303
+          type: string
+        detail: &id304
+          type: object
+          additionalProperties: true
+        occurred_at: &id305
+          type: string
+          format: date-time
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: security_events
+      x-source:
+      - D-073.7
+      - D-074.4
+      - D-075
+      - D-075.6
+      - D-076.10
+      - D-076.5
+      - D-077
+    SecurityEventsInput:
+      type: object
+      properties:
+        kind_id: *id301
+        member_id: *id302
+        ip_region: *id303
+        detail: *id304
+        occurred_at: *id305
+    Inquiries:
+      type: object
+      properties:
+        opened_by_member_id: &id306
+          type: string
+          format: uuid
+        kind_id: &id307
+          type: string
+          format: uuid
+        status_id: &id308
+          type: string
+          format: uuid
+        conversation_id: &id309
+          type: string
+          format: uuid
+        assignee_ops_member_id: &id310
+          type: string
+          format: uuid
+        ai_first_answered_at: &id311
+          type: string
+          format: date-time
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: inquiries
+      x-source:
+      - D-069
+      - D-075
+      - D-075.1
+      - D-076
+      - D-077.1
+    InquiriesInput:
+      type: object
+      properties:
+        opened_by_member_id: *id306
+        kind_id: *id307
+        status_id: *id308
+        conversation_id: *id309
+        assignee_ops_member_id: *id310
+        ai_first_answered_at: *id311
+    Notices:
+      type: object
+      properties:
+        kind_id: &id312
+          type: string
+          format: uuid
+        title: &id313
+          type: string
+        body: &id314
+          type: string
+        target_plan_ids: &id315
+          type: array
+          items:
+            type: string
+            format: uuid
+        target_tenant_id: &id316
+          type: string
+          format: uuid
+        publish_at: &id317
+          type: string
+          format: date-time
+        published_by: &id318
+          type: string
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: notices
+      x-source:
+      - D-069
+      - D-075
+      - D-075.2
+      - D-076
+      - D-077.8
+    NoticesInput:
+      type: object
+      properties:
+        kind_id: *id312
+        title: *id313
+        body: *id314
+        target_plan_ids: *id315
+        target_tenant_id: *id316
+        publish_at: *id317
+        published_by: *id318
+    NoticeDeliveries:
+      type: object
+      properties:
+        notice_id: &id319
+          type: string
+          format: uuid
+        member_id: &id320
+          type: string
+          format: uuid
+        delivered_at: &id321
+          type: string
+          format: date-time
+        read_at: &id322
+          type: string
+          format: date-time
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: notice_deliveries
+      x-source:
+      - D-069
+      - D-075
+      - D-076
+    NoticeDeliveriesInput:
+      type: object
+      properties:
+        notice_id: *id319
+        member_id: *id320
+        delivered_at: *id321
+        read_at: *id322
+    StatusIncidents:
+      type: object
+      properties:
+        component_id: &id323
+          type: string
+          format: uuid
+        service_id: &id324
+          type: string
+          format: uuid
+        state_id: &id325
+          type: string
+          format: uuid
+        started_at: &id326
+          type: string
+          format: date-time
+        resolved_at: &id327
+          type: string
+          format: date-time
+        note: &id328
+          type: string
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: status_incidents
+      x-source:
+      - D-069
+      - D-075
+      - D-075.2
+      - D-076
+      - D-076.9
+    StatusIncidentsInput:
+      type: object
+      properties:
+        component_id: *id323
+        service_id: *id324
+        state_id: *id325
+        started_at: *id326
+        resolved_at: *id327
+        note: *id328
+    NotificationPreferences:
+      type: object
+      properties:
+        member_id: &id329
+          type: string
+          format: uuid
+        event_kind_id: &id330
+          type: string
+          format: uuid
+        channel_id: &id331
+          type: string
+          format: uuid
+        enabled: &id332
+          type: boolean
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: notification_preferences
+      x-source:
+      - D-043
+      - D-069
+      - D-075
+      - D-075.3
+      - D-076
+    NotificationPreferencesInput:
+      type: object
+      properties:
+        member_id: *id329
+        event_kind_id: *id330
+        channel_id: *id331
+        enabled: *id332
+    Notifications:
+      type: object
+      properties:
+        member_id: &id333
+          type: string
+          format: uuid
+        channel_id: &id334
+          type: string
+          format: uuid
+        event_kind_id: &id335
+          type: string
+          format: uuid
+        payload: &id336
+          type: object
+          additionalProperties: true
+        dedupe_key:
+          type: string
+        sent_at: &id337
+          type: string
+          format: date-time
+        failed_at: &id338
+          type: string
+          format: date-time
+        retry_count: &id339
+          type: number
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: notifications
+      x-source:
+      - D-043
+      - D-069
+      - D-075
+      - D-076
+    NotificationsInput:
+      type: object
+      properties:
+        member_id: *id333
+        channel_id: *id334
+        event_kind_id: *id335
+        payload: *id336
+        sent_at: *id337
+        failed_at: *id338
+        retry_count: *id339
+    Plans:
+      type: object
+      properties:
+        key: &id340
+          type: string
+        name: &id341
+          type: string
+        price_monthly: &id342
+          type: number
+        limits: &id343
+          type: object
+          additionalProperties: true
+        current_version: &id344
+          type: number
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: plans
+      x-source:
+      - D-069
+      - D-075
+      - D-076
+      - D-076.6
+      - D-077
+      - D-077.5
+    PlansInput:
+      type: object
+      properties:
+        key: *id340
+        name: *id341
+        price_monthly: *id342
+        limits: *id343
+        current_version: *id344
+    PlanVersions:
+      type: object
+      properties:
+        plan_id: &id345
+          type: string
+          format: uuid
+        version:
+          type: string
+        snapshot: &id346
+          type: object
+          additionalProperties: true
+        released_at: &id347
+          type: string
+          format: date-time
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: plan_versions
+      x-source:
+      - D-069
+      - D-075
+      - D-076
+    PlanVersionsInput:
+      type: object
+      properties:
+        plan_id: *id345
+        snapshot: *id346
+        released_at: *id347
+    Subscriptions:
+      type: object
+      properties:
+        plan_id: &id348
+          type: string
+          format: uuid
+        status_id: &id349
+          type: string
+          format: uuid
+        started_at: &id350
+          type: string
+          format: date-time
+        suspended_at: &id351
+          type: string
+          format: date-time
+        ended_at: &id352
+          type: string
+          format: date-time
+        billing_contact: &id353
+          type: object
+          additionalProperties: true
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: subscriptions
+      x-source:
+      - D-069
+      - D-075
+      - D-075.4
+      - D-076
+      - D-076.13
+      - D-076.2
+    SubscriptionsInput:
+      type: object
+      properties:
+        plan_id: *id348
+        status_id: *id349
+        started_at: *id350
+        suspended_at: *id351
+        ended_at: *id352
+        billing_contact: *id353
+    PlanChangeRequests:
+      type: object
+      properties:
+        from_plan_id: &id354
+          type: string
+          format: uuid
+        to_plan_id: &id355
+          type: string
+          format: uuid
+        requested_by: &id356
+          type: string
+        status_id: &id357
+          type: string
+          format: uuid
+        dependencies_event_id: &id358
+          type: string
+          format: uuid
+        decided_by_ops_member_id: &id359
+          type: string
+          format: uuid
+        decided_at: &id360
+          type: string
+          format: date-time
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: plan_change_requests
+      x-source:
+      - D-069
+      - D-075
+      - D-076
+    PlanChangeRequestsInput:
+      type: object
+      properties:
+        from_plan_id: *id354
+        to_plan_id: *id355
+        requested_by: *id356
+        status_id: *id357
+        dependencies_event_id: *id358
+        decided_by_ops_member_id: *id359
+        decided_at: *id360
+    UsageMeters:
+      type: object
+      properties:
+        meter_key: &id361
+          type: string
+        period_start: &id362
+          type: string
+        value: &id363
+          type: number
+        limit_value: &id364
+          type: number
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: usage_meters
+      x-source:
+      - D-069
+      - D-075
+      - D-075.5
+      - D-076
+    UsageMetersInput:
+      type: object
+      properties:
+        meter_key: *id361
+        period_start: *id362
+        value: *id363
+        limit_value: *id364
+    Invoices:
+      type: object
+      properties:
+        subscription_id: &id365
+          type: string
+          format: uuid
+        period_start: &id366
+          type: string
+        period_end: &id367
+          type: string
+        amount: &id368
+          type: number
+        issued_at: &id369
+          type: string
+          format: date-time
+        due_on: &id370
+          type: string
+          format: date
+        status_id: &id371
+          type: string
+          format: uuid
+        pdf_ref: &id372
+          type: string
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: invoices
+      x-source:
+      - D-002
+      - D-069
+      - D-075
+      - D-075.4
+      - D-076
+    InvoicesInput:
+      type: object
+      properties:
+        subscription_id: *id365
+        period_start: *id366
+        period_end: *id367
+        amount: *id368
+        issued_at: *id369
+        due_on: *id370
+        status_id: *id371
+        pdf_ref: *id372
+    Payments:
+      type: object
+      properties:
+        invoice_id: &id373
+          type: string
+          format: uuid
+        paid_on: &id374
+          type: string
+          format: date
+        amount: &id375
+          type: number
+        method_id: &id376
+          type: string
+          format: uuid
+        recorded_by_ops_member_id: &id377
+          type: string
+          format: uuid
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: payments
+      x-source:
+      - D-069
+      - D-075
+      - D-076
+      - D-077.1
+    PaymentsInput:
+      type: object
+      properties:
+        invoice_id: *id373
+        paid_on: *id374
+        amount: *id375
+        method_id: *id376
+        recorded_by_ops_member_id: *id377
+    ErrorEvents:
+      type: object
+      properties:
+        error_code: &id378
+          type: string
+        member_id: &id379
+          type: string
+          format: uuid
+        screen_id: &id380
+          type: string
+          format: uuid
+        context: &id381
+          type: object
+          additionalProperties: true
+        shown_at: &id382
+          type: string
+          format: date-time
+        next_action_taken_at: &id383
+          type: string
+          format: date-time
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: error_events
+      x-source:
+      - D-069
+      - D-069.3
+      - D-069.4
+      - D-075
+      - D-076
+    ErrorEventsInput:
+      type: object
+      properties:
+        error_code: *id378
+        member_id: *id379
+        screen_id: *id380
+        context: *id381
+        shown_at: *id382
+        next_action_taken_at: *id383
+    Imports:
+      type: object
+      properties:
+        file_ref: &id384
+          type: string
+        detected_kind_id: &id385
+          type: string
+          format: uuid
+        proposal: &id386
+          type: object
+          additionalProperties: true
+        status_id: &id387
+          type: string
+          format: uuid
+        applied_at: &id388
+          type: string
+          format: date-time
+        applied_by: &id389
+          type: string
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: imports
+      x-source:
+      - D-025
+      - D-026
+      - D-042
+      - D-076
+      - D-076.3
+      - D-076.4
+    ImportsInput:
+      type: object
+      properties:
+        file_ref: *id384
+        detected_kind_id: *id385
+        proposal: *id386
+        status_id: *id387
+        applied_at: *id388
+        applied_by: *id389
+    Integrations:
+      type: object
+      properties:
+        service_id: &id390
+          type: string
+          format: uuid
+        kind_id: &id391
+          type: string
+          format: uuid
+        credential_id: &id392
+          type: string
+          format: uuid
+        scopes: &id393
+          type: string
+        status_id: &id394
+          type: string
+          format: uuid
+        connected_at: &id395
+          type: string
+          format: date-time
+        revoked_at: &id396
+          type: string
+          format: date-time
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: integrations
+      x-source:
+      - D-026
+      - D-041
+      - D-042
+      - D-076
+      - D-076.3
+      - D-076.4
+    IntegrationsInput:
+      type: object
+      properties:
+        service_id: *id390
+        kind_id: *id391
+        credential_id: *id392
+        scopes: *id393
+        status_id: *id394
+        connected_at: *id395
+        revoked_at: *id396
+    Invitations:
+      type: object
+      properties:
+        email: &id397
+          type: string
+        scope_id:
+          type: string
+          format: uuid
+        role_id: &id398
+          type: string
+          format: uuid
+        permission_preset: &id399
+          type: object
+          additionalProperties: true
+        token_hash:
+          type: string
+        expires_at: &id400
+          type: string
+          format: date-time
+        accepted_member_id: &id401
+          type: string
+          format: uuid
+        revoked_at: &id402
+          type: string
+          format: date-time
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: invitations
+      x-source:
+      - D-026
+      - D-037
+      - D-042
+      - D-076.3
+      - D-076.4
+    InvitationsInput:
+      type: object
+      properties:
+        email: *id397
+        role_id: *id398
+        permission_preset: *id399
+        expires_at: *id400
+        accepted_member_id: *id401
+        revoked_at: *id402
+    ExportJobs:
+      type: object
+      properties:
+        requested_by: &id403
+          type: string
+        kind_id: &id404
+          type: string
+          format: uuid
+        storage_ref:
+          type: string
+        status_id: &id405
+          type: string
+          format: uuid
+        expires_at: &id406
+          type: string
+          format: date-time
+        downloaded_at: &id407
+          type: string
+          format: date-time
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: export_jobs
+      x-source:
+      - D-026
+      - D-042
+      - D-076.3
+      - D-076.4
+    ExportJobsInput:
+      type: object
+      properties:
+        requested_by: *id403
+        kind_id: *id404
+        status_id: *id405
+        expires_at: *id406
+        downloaded_at: *id407
+    Attachments:
+      type: object
+      properties:
+        owner_type: &id408
+          type: string
+        owner_id: &id409
+          type: string
+          format: uuid
+        storage_ref:
+          type: string
+        mime: &id410
+          type: string
+        size: &id411
+          type: number
+        scanned_at: &id412
+          type: string
+          format: date-time
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: attachments
+      x-source:
+      - D-026
+      - D-042
+      - D-076.3
+      - D-076.4
+    AttachmentsInput:
+      type: object
+      properties:
+        owner_type: *id408
+        owner_id: *id409
+        mime: *id410
+        size: *id411
+        scanned_at: *id412
+    Skills:
+      type: object
+      properties:
+        kind_id: &id413
+          type: string
+          format: uuid
+        key: &id414
+          type: string
+        name: &id415
+          type: string
+        purpose: &id416
+          type: string
+        current_version: &id417
+          type: number
+        plan_ids: &id418
+          type: array
+          items:
+            type: string
+            format: uuid
+        visibility_id: &id419
+          type: string
+          format: uuid
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: skills
+      x-source:
+      - D-078
+      - D-078.1
+    SkillsInput:
+      type: object
+      properties:
+        kind_id: *id413
+        key: *id414
+        name: *id415
+        purpose: *id416
+        current_version: *id417
+        plan_ids: *id418
+        visibility_id: *id419
+    SkillVersions:
+      type: object
+      properties:
+        skill_id: &id420
+          type: string
+          format: uuid
+        version:
+          type: string
+        package_ref:
+          type: string
+        changelog: &id421
+          type: string
+        tested_at: &id422
+          type: string
+          format: date-time
+        test_result: &id423
+          type: object
+          additionalProperties: true
+        released_at: &id424
+          type: string
+          format: date-time
+        released_by: &id425
+          type: string
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: skill_versions
+      x-source:
+      - D-078
+      - D-078.2
+    SkillVersionsInput:
+      type: object
+      properties:
+        skill_id: *id420
+        changelog: *id421
+        tested_at: *id422
+        test_result: *id423
+        released_at: *id424
+        released_by: *id425
+    SkillTestRuns:
+      type: object
+      properties:
+        skill_version_id: &id426
+          type: string
+          format: uuid
+        ops_member_id: &id427
+          type: string
+          format: uuid
+        mode: &id428
+          type: string
+        started_at: &id429
+          type: string
+          format: date-time
+        finished_at: &id430
+          type: string
+          format: date-time
+        result: &id431
+          type: object
+          additionalProperties: true
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: skill_test_runs
+      x-source:
+      - D-078
+    SkillTestRunsInput:
+      type: object
+      properties:
+        skill_version_id: *id426
+        ops_member_id: *id427
+        mode: *id428
+        started_at: *id429
+        finished_at: *id430
+        result: *id431
+    SkillAttachments:
+      type: object
+      properties:
+        skill_id: &id432
+          type: string
+          format: uuid
+        version_in_use: &id433
+          type: number
+        target_type: &id434
+          type: string
+        target_id: &id435
+          type: string
+          format: uuid
+        enabled: &id436
+          type: boolean
+        disabled_by: &id437
+          type: string
+        attached_at: &id438
+          type: string
+          format: date-time
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: skill_attachments
+      x-source:
+      - D-078
+      - D-078.3
+      - D-078.4
+      - D-078.7
+      - D-080
+    SkillAttachmentsInput:
+      type: object
+      properties:
+        skill_id: *id432
+        version_in_use: *id433
+        target_type: *id434
+        target_id: *id435
+        enabled: *id436
+        disabled_by: *id437
+        attached_at: *id438
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            type: object
+        retry_after_sec:
+          type: integer
+      required:
+      - error
+paths:
+  /api/v1/action_runs:
+    get:
+      operationId: getActionRuns
+      summary: 取得（action_runs）— AI社員をテストで動かして結果を見る
+      tags:
+      - action_runs
+      x-acts:
+      - A11
+      x-screens:
+      - onboard-testrun
+      x-choke-points: []
+      x-source:
+      - D-003.7
+      - D-028
+      - D-028.2
+      - D-028.3
+      security:
+      - session: []
+      parameters:
+      - name: scope_id
+        in: query
+        schema:
+          type: string
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: string
+      - name: sort
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ActionRuns'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/ai_employees:
+    get:
+      operationId: getAiEmployees
+      summary: 取得（ai_employees）— AI社員を増やす・人に託す／AI社員1体が何をやるかを確かめる
+      tags:
+      - ai_employees
+      x-acts:
+      - A37
+      - A46
+      - A53
+      - A59
+      - A79
+      x-screens:
+      - ai-activity
+      - ai-staff
+      - ai-staff-detail
+      - ops-catalog
+      x-choke-points: []
+      x-source:
+      - D-022
+      - D-026
+      - D-026.2
+      - D-027
+      - D-027.2
+      - D-030.4
+      - D-030.6
+      - D-037
+      - D-037.1
+      - D-037.2
+      - D-037.3
+      - D-037.5
+      - D-037.9
+      - D-039.3
+      - D-042
+      - D-062
+      - D-062.6
+      - D-063
+      - D-063.1
+      - D-063.2
+      - D-073.7
+      - D-076.10
+      - D-076.13
+      - D-076.6
+      - D-076.8
+      - D-077.4
+      - D-077.5
+      - D-077.6
+      security:
+      - session: []
+      parameters:
+      - name: scope_id
+        in: query
+        schema:
+          type: string
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: string
+      - name: sort
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AiEmployees'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/ai_employees/{id}:
+    patch:
+      operationId: patchAiEmployeesById
+      summary: 更新（ai_employees）— AI社員・自分のAIの使えるスキルを見て、会社の範囲で絞
+      tags:
+      - ai_employees
+      x-acts:
+      - A81
+      x-screens:
+      - ai-staff-detail
+      x-choke-points:
+      - C2
+      x-source:
+      - D-037
+      - D-078.3
+      - D-078.4
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AiEmployeesInput'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/AiEmployees'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/approvals:
+    get:
+      operationId: getApprovals
+      summary: 取得（approvals）— 自分のAIが差し戻したやりとりを見る
+      tags:
+      - approvals
+      x-acts:
+      - A16
+      x-screens:
+      - clone-thread
+      x-choke-points: []
+      x-source:
+      - D-012
+      - D-012.7
+      - D-037
+      - D-037.5
+      - D-060.3
+      security:
+      - session: []
+      parameters:
+      - name: scope_id
+        in: query
+        schema:
+          type: string
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: string
+      - name: sort
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Approvals'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/approvals/{id}:
+    patch:
+      operationId: patchApprovalsById
+      summary: 更新（approvals）— 自分のAIが上げてきたものを承認する／止める
+      tags:
+      - approvals
+      x-acts:
+      - A15
+      x-screens:
+      - approvals
+      x-choke-points:
+      - C1
+      - C2
+      - C6
+      x-source:
+      - D-008.2
+      - D-012
+      - D-012.1
+      - D-013.10
+      - D-013.8
+      - D-037
+      - D-037.5
+      - D-040
+      - D-042.9
+      - D-060.3
+      - D-066.3
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApprovalsInput'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Approvals'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/attachments:
+    post:
+      operationId: postAttachments
+      summary: 作成・実行（attachments）— 既存データ・書類・メールを取り込む（形式を問わず。台帳の
+      tags:
+      - attachments
+      x-acts:
+      - A76
+      x-screens:
+      - import
+      x-choke-points:
+      - C2
+      - C3
+      - C4
+      x-source:
+      - D-025
+      - D-025.5
+      - D-029
+      - D-029.1
+      - D-076.3
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttachmentsInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Attachments'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: CONFLICT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/audit_events:
+    get:
+      operationId: getAuditEvents
+      summary: 取得（audit_events）— 想定外が起きた → 何をしたか追う／誰が何をしたかを確認する
+      tags:
+      - audit_events
+      x-acts:
+      - A33
+      - A38
+      - A73
+      x-screens:
+      - audit
+      - ops-audit
+      x-choke-points: []
+      x-source:
+      - D-012
+      - D-012.2
+      - D-042
+      - D-042.3
+      - D-075.6
+      security:
+      - session: []
+      parameters:
+      - name: scope_id
+        in: query
+        schema:
+          type: string
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: string
+      - name: sort
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AuditEvents'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      operationId: postAuditEvents
+      summary: 作成・実行（audit_events）— 全操作の証跡を出す
+      tags:
+      - audit_events
+      x-acts:
+      - A40
+      x-screens:
+      - audit
+      x-choke-points:
+      - C2
+      - C4
+      x-source:
+      - D-042
+      - D-042.3
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditEventsInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/AuditEvents'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: CONFLICT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/audit_events/{id}:
+    patch:
+      operationId: patchAuditEventsById
+      summary: 更新（audit_events）— 運営の誰が・どの会社に・何をしたかを見る。運営メンバーの
+      tags:
+      - audit_events
+      x-acts:
+      - A65
+      x-screens:
+      - ops-audit
+      x-choke-points:
+      - C2
+      x-source:
+      - D-042
+      - D-074.4
+      - D-077.4
+      - D-077.7
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditEventsInput'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/AuditEvents'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      operationId: deleteAuditEventsById
+      summary: 削除（audit_events）— やってしまったことを取り消す／運営にサポートアクセスを許可する・取り消す（範囲と期限つ
+      tags:
+      - audit_events
+      x-acts:
+      - A34
+      - A66
+      x-screens:
+      - audit
+      x-choke-points:
+      - C1
+      - C2
+      x-source:
+      - D-012
+      - D-012.2
+      - D-042
+      - D-042.6
+      - D-066.4
+      - D-074.5
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/AuditEvents'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/clones:
+    post:
+      operationId: postClones
+      summary: 作成・実行（clones）— 自分のAIに会社のことを話す（訊かれたことに答える）
+      tags:
+      - clones
+      x-acts:
+      - A06
+      x-screens:
+      - onboard-interview
+      x-choke-points:
+      - C2
+      - C3
+      x-source:
+      - D-003.7
+      - D-010
+      - D-010.6
+      - D-028
+      - D-028.1
+      - D-030
+      - D-030.3
+      - D-055
+      - D-055.3
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClonesInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Clones'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: CONFLICT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/conversations:
+    get:
+      operationId: getConversations
+      summary: 取得（conversations）— 自分のAIに指示する・相談する
+      tags:
+      - conversations
+      x-acts:
+      - A20
+      x-screens:
+      - clone-chat
+      x-choke-points: []
+      x-source:
+      - D-003.9
+      - D-007
+      - D-007.2
+      - D-024
+      - D-024.7
+      - D-037
+      - D-037.5
+      - D-060.3
+      security:
+      - session: []
+      parameters:
+      - name: scope_id
+        in: query
+        schema:
+          type: string
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: string
+      - name: sort
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Conversations'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/credentials:
+    post:
+      operationId: postCredentials
+      summary: 作成・実行（credentials）— ログイン情報を預ける
+      tags:
+      - credentials
+      x-acts:
+      - A10
+      x-screens:
+      - credentials
+      x-choke-points:
+      - C2
+      - C8
+      x-source:
+      - D-013.3
+      - D-017
+      - D-017.1
+      - D-041
+      - D-042.8
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CredentialsInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Credentials'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: CONFLICT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/distributions:
+    post:
+      operationId: postDistributions
+      summary: 作成・実行（distributions）— 会社が明示的に公開したものを、匿名化を確かめて審査する
+      tags:
+      - distributions
+      x-acts:
+      - A63
+      x-screens:
+      - ops-review
+      x-choke-points:
+      - C2
+      x-source:
+      - D-010.7
+      - D-019.3
+      - D-022.6
+      - D-027
+      - D-027.4
+      - D-074.4
+      - D-077.3
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DistributionsInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Distributions'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: CONFLICT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/duties/{id}:
+    patch:
+      operationId: patchDutiesById
+      summary: 更新（duties）— 担当業務を書き換える
+      tags:
+      - duties
+      x-acts:
+      - A28
+      x-screens:
+      - duties
+      x-choke-points:
+      - C2
+      - C3
+      x-source:
+      - D-003.3
+      - D-022
+      - D-022.1
+      - D-024.4
+      - D-027
+      - D-027.3
+      - D-030
+      - D-030.4
+      - D-076.7
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DutiesInput'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Duties'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/export_jobs:
+    post:
+      operationId: postExportJobs
+      summary: 作成・実行（export_jobs）— データを全部持ち出す
+      tags:
+      - export_jobs
+      x-acts:
+      - A41
+      x-screens:
+      - export
+      x-choke-points:
+      - C2
+      - C4
+      x-source:
+      - D-010.7
+      - D-025
+      - D-025.6
+      - D-042.7
+      - D-050
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExportJobsInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ExportJobs'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: CONFLICT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/goal_allocations:
+    get:
+      operationId: getGoalAllocations
+      summary: 取得（goal_allocations）— 自分の担当分の進みを見る
+      tags:
+      - goal_allocations
+      x-acts:
+      - A25
+      x-screens:
+      - my-progress
+      x-choke-points: []
+      x-source:
+      - D-002
+      - D-026
+      - D-058
+      - D-058.3
+      - D-058.6
+      security:
+      - session: []
+      parameters:
+      - name: scope_id
+        in: query
+        schema:
+          type: string
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: string
+      - name: sort
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/GoalAllocations'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/goal_allocations/{id}:
+    patch:
+      operationId: patchGoalAllocationsById
+      summary: 更新（goal_allocations）— 目標の下ろし方を決める・直す／自分の層の目標を直す・自主目標を足す・自分のAI社員に配
+      tags:
+      - goal_allocations
+      x-acts:
+      - A23
+      - A49
+      x-screens:
+      - goal-allocation
+      - my-progress
+      x-choke-points:
+      - C2
+      - C3
+      x-source:
+      - D-003.1
+      - D-025.3
+      - D-026.5
+      - D-030.6
+      - D-032
+      - D-032.2
+      - D-032.4
+      - D-032.5
+      - D-032.6
+      - D-032.8
+      - D-036
+      - D-036.1
+      - D-058
+      - D-058.3
+      - D-061.6
+      - D-076.12
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoalAllocationsInput'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/GoalAllocations'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/goals:
+    get:
+      operationId: getGoals
+      summary: 取得（goals）— 目標の進みを見る／目標を無くす・終える ── 紐づくタスク・配分・仮説を付
+      tags:
+      - goals
+      x-acts:
+      - A22
+      - A52
+      - A54
+      x-screens:
+      - goal-edit
+      - goals
+      x-choke-points: []
+      x-source:
+      - D-003.1
+      - D-032
+      - D-034
+      - D-034.1
+      - D-034.3
+      - D-035
+      - D-038.3
+      - D-061
+      - D-061.8
+      - D-063
+      - D-063.3
+      - D-063.4
+      - D-063.6
+      security:
+      - session: []
+      parameters:
+      - name: scope_id
+        in: query
+        schema:
+          type: string
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: string
+      - name: sort
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Goals'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/goals/{id}:
+    patch:
+      operationId: patchGoalsById
+      summary: 更新（goals）— 目標を改訂する（値・期間・単位）── 紐づくタスクと配分
+      tags:
+      - goals
+      x-acts:
+      - A29
+      x-screens:
+      - goal-edit
+      x-choke-points:
+      - C2
+      - C3
+      x-source:
+      - D-003.3
+      - D-032
+      - D-032.7
+      - D-034
+      - D-061
+      - D-061.7
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoalsInput'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Goals'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/hypotheses:
+    get:
+      operationId: getHypotheses
+      summary: 取得（hypotheses）— ふりかえりを読む
+      tags:
+      - hypotheses
+      x-acts:
+      - A26
+      x-screens:
+      - review
+      x-choke-points: []
+      x-source:
+      - D-003.1
+      - D-003.3
+      - D-006
+      - D-030.7
+      - D-035
+      - D-076.11
+      security:
+      - session: []
+      parameters:
+      - name: scope_id
+        in: query
+        schema:
+          type: string
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: string
+      - name: sort
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Hypotheses'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/hypotheses/{id}:
+    patch:
+      operationId: patchHypothesesById
+      summary: 更新（hypotheses）— 仮説と施策を採るか決める
+      tags:
+      - hypotheses
+      x-acts:
+      - A27
+      x-screens:
+      - hypotheses
+      x-choke-points:
+      - C2
+      - C3
+      x-source:
+      - D-003.1
+      - D-003.3
+      - D-030.7
+      - D-035
+      - D-035.1
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HypothesesInput'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Hypotheses'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/inquiries:
+    get:
+      operationId: getInquiries
+      summary: 取得（inquiries）— 運営に問い合わせる（自分のAIがまず答え、解けなければ運
+      tags:
+      - inquiries
+      x-acts:
+      - A67
+      x-screens:
+      - inquiry
+      x-choke-points: []
+      x-source:
+      - D-042
+      - D-075.1
+      security:
+      - session: []
+      parameters:
+      - name: scope_id
+        in: query
+        schema:
+          type: string
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: string
+      - name: sort
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Inquiries'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      operationId: postInquiries
+      summary: 作成・実行（inquiries）— 問い合わせに答える（受信箱。詰まりと同じ場所）
+      tags:
+      - inquiries
+      x-acts:
+      - A70
+      x-screens:
+      - ops-support
+      x-choke-points:
+      - C2
+      - C6
+      x-source:
+      - D-042
+      - D-075.1
+      - D-077.3
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InquiriesInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Inquiries'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: CONFLICT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/inquiries/{id}:
+    patch:
+      operationId: patchInquiriesById
+      summary: 更新（inquiries）— 顧客が詰まったのを、データを見ずに直す
+      tags:
+      - inquiries
+      x-acts:
+      - A43
+      x-screens:
+      - ops-support
+      x-choke-points:
+      - C2
+      x-source:
+      - D-030
+      - D-030.10
+      - D-030.9
+      - D-042
+      - D-042.6
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InquiriesInput'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Inquiries'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/invitations:
+    get:
+      operationId: getInvitations
+      summary: 取得（invitations）— 招待を受けて参加する
+      tags:
+      - invitations
+      x-acts:
+      - A03
+      x-screens:
+      - invite-accept
+      x-choke-points: []
+      x-source:
+      - D-026
+      - D-037
+      security: []
+      parameters:
+      - name: scope_id
+        in: query
+        schema:
+          type: string
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: string
+      - name: sort
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Invitations'
+                  meta:
+                    type: object
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/invoices:
+    get:
+      operationId: getInvoices
+      summary: 取得（invoices）— 各社の請求・入金・利用量と上限を見て、未収とプラン変更を
+      tags:
+      - invoices
+      x-acts:
+      - A72
+      x-screens:
+      - ops-billing
+      x-choke-points: []
+      x-source:
+      - D-002
+      - D-002.2
+      - D-075.4
+      - D-075.5
+      - D-077.3
+      security:
+      - session: []
+      parameters:
+      - name: scope_id
+        in: query
+        schema:
+          type: string
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: string
+      - name: sort
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Invoices'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/learned_procedures:
+    get:
+      operationId: getLearnedProcedures
+      summary: 取得（learned_procedures）— AIが止まった／画面が変わった → 覚え直させる
+      tags:
+      - learned_procedures
+      x-acts:
+      - A32
+      x-screens:
+      - automation-repair
+      x-choke-points: []
+      x-source:
+      - D-013.5
+      - D-014
+      - D-014.1
+      - D-018
+      - D-018.1
+      - D-022.3
+      - D-030.9
+      security:
+      - session: []
+      parameters:
+      - name: scope_id
+        in: query
+        schema:
+          type: string
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: string
+      - name: sort
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LearnedProcedures'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/ledger_definitions:
+    get:
+      operationId: getLedgerDefinitions
+      summary: 取得（ledger_definitions）— 探しているものを見つける／案件・請求の一覧を見る
+      tags:
+      - ledger_definitions
+      x-acts:
+      - A21
+      - A47
+      x-screens:
+      - records
+      - search
+      x-choke-points: []
+      x-source:
+      - D-007
+      - D-010
+      - D-026
+      - D-029
+      - D-038
+      security:
+      - session: []
+      parameters:
+      - name: scope_id
+        in: query
+        schema:
+          type: string
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: string
+      - name: sort
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LedgerDefinitions'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/ledger_definitions/{id}:
+    patch:
+      operationId: patchLedgerDefinitionsById
+      summary: 更新（ledger_definitions）— 止まっている案件を動かす／台帳の項目・段階を変える
+      tags:
+      - ledger_definitions
+      x-acts:
+      - A24
+      - A44
+      x-screens:
+      - ledger-def
+      - records
+      x-choke-points:
+      - C2
+      - C3
+      x-source:
+      - D-010
+      - D-010.5
+      - D-014
+      - D-030.5
+      - D-038
+      - D-039
+      - D-039.4
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LedgerDefinitionsInput'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/LedgerDefinitions'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/ledger_records:
+    get:
+      operationId: getLedgerRecords
+      summary: 取得（ledger_records）— 案件・請求の1件を開いて中を見る
+      tags:
+      - ledger_records
+      x-acts:
+      - A18
+      x-screens:
+      - record-detail
+      x-choke-points: []
+      x-source:
+      - D-010
+      - D-038
+      security:
+      - session: []
+      parameters:
+      - name: scope_id
+        in: query
+        schema:
+          type: string
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: string
+      - name: sort
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LedgerRecords'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/ledger_records/{id}:
+    patch:
+      operationId: patchLedgerRecordsById
+      summary: 更新（ledger_records）— 案件を次の段階へ動かす
+      tags:
+      - ledger_records
+      x-acts:
+      - A19
+      x-screens:
+      - record-detail
+      x-choke-points:
+      - C2
+      - C3
+      x-source:
+      - D-038
+      - D-039
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LedgerRecordsInput'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/LedgerRecords'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/members:
+    get:
+      operationId: getMembers
+      summary: 取得（members）— メールを確認して本人だと示す／2段階認証を設定する
+      tags:
+      - members
+      x-acts:
+      - A02
+      - A04
+      - A13
+      x-screens:
+      - login
+      - mfa-setup
+      - verify-email
+      x-choke-points:
+      - C8
+      x-source:
+      - D-042
+      - D-053.4
+      security: []
+      parameters:
+      - name: scope_id
+        in: query
+        schema:
+          type: string
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: string
+      - name: sort
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Members'
+                  meta:
+                    type: object
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/members/{id}:
+    patch:
+      operationId: patchMembersById
+      summary: 更新（members）— 入れなくなった → 入り直す／人を招いて見える範囲を決める
+      tags:
+      - members
+      x-acts:
+      - A31
+      - A36
+      - A61
+      - A74
+      x-screens:
+      - account
+      - member-detail
+      - members
+      - password-reset
+      x-choke-points:
+      - C2
+      - C6
+      - C8
+      x-source:
+      - D-008.6
+      - D-026
+      - D-026.3
+      - D-032.4
+      - D-037
+      - D-037.8
+      - D-042
+      - D-042.8
+      - D-053.5
+      - D-073.3
+      - D-073.6
+      - D-076.1
+      - D-076.13
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MembersInput'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Members'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      operationId: deleteMembersById
+      summary: 削除（members）— 退会する／抜ける人の依存を片づける（タスク・承認・AI社員・長を引
+      tags:
+      - members
+      x-acts:
+      - A42
+      - A62
+      x-screens:
+      - account-close
+      - member-detail
+      x-choke-points:
+      - C2
+      - C6
+      - C8
+      x-source:
+      - D-004.10
+      - D-042
+      - D-042.7
+      - D-042.8
+      - D-061
+      - D-061.9
+      - D-074.1
+      - D-074.2
+      - D-076.13
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Members'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/memories:
+    post:
+      operationId: postMemories
+      summary: 作成・実行（memories）— 自分のAIに自分の考え方を教える（育成）
+      tags:
+      - memories
+      x-acts:
+      - A30
+      x-screens:
+      - clone-memory
+      x-choke-points:
+      - C2
+      - C3
+      x-source:
+      - D-024
+      - D-024.7
+      - D-025
+      - D-025.4
+      - D-030
+      - D-030.8
+      - D-066.7
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemoriesInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Memories'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: CONFLICT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/messages:
+    get:
+      operationId: getMessages
+      summary: 取得（messages）— 今日ひらいて、自分のAIの申し送りを読む
+      tags:
+      - messages
+      x-acts:
+      - A14
+      x-screens:
+      - today
+      x-choke-points: []
+      x-source:
+      - D-008
+      - D-010
+      - D-024
+      - D-024.1
+      security:
+      - session: []
+      parameters:
+      - name: scope_id
+        in: query
+        schema:
+          type: string
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: string
+      - name: sort
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Messages'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/messages/{id}:
+    patch:
+      operationId: patchMessagesById
+      summary: 更新（messages）— 朝、自分のAIの候補から今日やる分を選んで確定する（見込
+      tags:
+      - messages
+      x-acts:
+      - A55
+      x-screens:
+      - today
+      x-choke-points:
+      - C2
+      - C3
+      x-source:
+      - D-008
+      - D-008.4
+      - D-063
+      - D-068
+      - D-068.2
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessagesInput'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Messages'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      operationId: deleteMessagesById
+      summary: 削除（messages）— 夕方、残ったものを 消す／明日へ／引き継いでもらう に振
+      tags:
+      - messages
+      x-acts:
+      - A56
+      x-screens:
+      - today
+      x-choke-points:
+      - C2
+      - C3
+      - C6
+      x-source:
+      - D-061
+      - D-068
+      - D-068.1
+      - D-068.4
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Messages'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/notices:
+    post:
+      operationId: postNotices
+      summary: 作成・実行（notices）— お知らせと稼働状況を出す（リリース・障害・メンテ・ルール
+      tags:
+      - notices
+      x-acts:
+      - A71
+      x-screens:
+      - ops-notices
+      x-choke-points:
+      - C2
+      - C6
+      x-source:
+      - D-075.2
+      - D-077.4
+      - D-077.8
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoticesInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Notices'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: CONFLICT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/notices/{id}:
+    patch:
+      operationId: patchNoticesById
+      summary: 更新（notices）— お知らせと稼働状況を見て、通知の届け先を決める
+      tags:
+      - notices
+      x-acts:
+      - A68
+      x-screens:
+      - notices
+      x-choke-points:
+      - C2
+      - C6
+      x-source:
+      - D-040.6
+      - D-043
+      - D-043.2
+      - D-075.2
+      - D-075.3
+      - D-076.9
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoticesInput'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Notices'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/plans:
+    get:
+      operationId: getPlans
+      summary: 取得（plans）— 各社の様子（プラン・AI社員の体数・稼働・詰まり）を見る
+      tags:
+      - plans
+      x-acts:
+      - A60
+      x-screens:
+      - ops-home
+      x-choke-points: []
+      x-source:
+      - D-030
+      - D-037
+      - D-073.7
+      security:
+      - session: []
+      parameters:
+      - name: scope_id
+        in: query
+        schema:
+          type: string
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: string
+      - name: sort
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Plans'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      operationId: postPlans
+      summary: 作成・実行（plans）— アカウントを作る／支払い方法を登録する
+      tags:
+      - plans
+      x-acts:
+      - A01
+      - A05
+      x-screens:
+      - billing-setup
+      - signup
+      x-choke-points:
+      - C2
+      - C7
+      x-source:
+      - D-001
+      - D-001.5
+      - D-002
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlansInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Plans'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: CONFLICT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/plans/{id}:
+    patch:
+      operationId: patchPlansById
+      summary: 更新（plans）— プラン・利用量・請求書を見て、プランを変える
+      tags:
+      - plans
+      x-acts:
+      - A69
+      x-screens:
+      - billing
+      x-choke-points:
+      - C2
+      x-source:
+      - D-002
+      - D-002.2
+      - D-037
+      - D-075.4
+      - D-075.5
+      - D-076.13
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlansInput'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Plans'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      operationId: deletePlansById
+      summary: 削除（plans）— 1 社の詳細で、構成・請求と入金・問い合わせ・配布したも
+      tags:
+      - plans
+      x-acts:
+      - A64
+      x-screens:
+      - ops-tenant
+      x-choke-points:
+      - C2
+      x-source:
+      - D-042
+      - D-074.4
+      - D-074.5
+      - D-077.1
+      - D-077.2
+      - D-077.6
+      - D-077.7
+      - D-077.8
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Plans'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/policies/{id}:
+    patch:
+      operationId: patchPoliciesById
+      summary: 更新（policies）— AIにやらせる範囲を変える
+      tags:
+      - policies
+      x-acts:
+      - A35
+      x-screens:
+      - policies
+      x-choke-points:
+      - C2
+      x-source:
+      - D-003.7
+      - D-026
+      - D-037.7
+      - D-040
+      - D-040.1
+      - D-041
+      - D-042.2
+      - D-066.10
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PoliciesInput'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Policies'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/service_registry:
+    post:
+      operationId: postServiceRegistry
+      summary: 作成・実行（service_registry）— 外部サービスの連携と自動操作の可否を見る・正規連携をつな
+      tags:
+      - service_registry
+      x-acts:
+      - A77
+      x-screens:
+      - services
+      x-choke-points:
+      - C1
+      - C2
+      - C8
+      x-source:
+      - D-006.5
+      - D-013.1
+      - D-014.2
+      - D-019.2
+      - D-038.4
+      - D-040.3
+      - D-041
+      - D-041.1
+      - D-045
+      - D-045.3
+      - D-076.4
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceRegistryInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ServiceRegistry'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: CONFLICT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/service_registry/{id}:
+    patch:
+      operationId: patchServiceRegistryById
+      summary: 更新（service_registry）— サービス台帳（外部サービスごとの自動操作の可否）を更新す
+      tags:
+      - service_registry
+      x-acts:
+      - A78
+      x-screens:
+      - ops-services
+      x-choke-points:
+      - C2
+      x-source:
+      - D-041
+      - D-041.1
+      - D-041.8
+      - D-076.5
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceRegistryInput'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ServiceRegistry'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/sessions:
+    get:
+      operationId: getSessions
+      summary: 取得（sessions）— 何ができるアプリかを社内に説明する
+      tags:
+      - sessions
+      x-acts:
+      - A39
+      x-screens:
+      - security-brief
+      x-choke-points: []
+      x-source:
+      - D-015
+      - D-015.2
+      - D-015.3
+      - D-042
+      - D-042.1
+      - D-053.6
+      security:
+      - session: []
+      parameters:
+      - name: scope_id
+        in: query
+        schema:
+          type: string
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: string
+      - name: sort
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Sessions'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      operationId: postSessions
+      summary: 作成・実行（sessions）— 自分のPCをつなぐ（Bridge）── これが無いと自分
+      tags:
+      - sessions
+      x-acts:
+      - A09
+      x-screens:
+      - bridge-setup
+      x-choke-points:
+      - C2
+      - C5
+      x-source:
+      - D-004
+      - D-004.1
+      - D-015
+      - D-015.1
+      - D-015.6
+      - D-019.1
+      - D-040.4
+      - D-055
+      - D-055.1
+      - D-055.2
+      - D-055.3
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessionsInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Sessions'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: CONFLICT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/skills:
+    post:
+      operationId: postSkills
+      summary: 作成・実行（skills）— スキルを構築・アップロード・テストして版を出し、プランと
+      tags:
+      - skills
+      x-acts:
+      - A80
+      x-screens:
+      - ops-skills
+      x-choke-points:
+      - C2
+      - C4
+      - C6
+      x-source:
+      - D-030.2
+      - D-030.3
+      - D-063.1
+      - D-078.1
+      - D-078.2
+      - D-078.3
+      - D-078.5
+      - D-080.4
+      - D-080.5
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkillsInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Skills'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: CONFLICT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/tasks:
+    get:
+      operationId: getTasks
+      summary: 取得（tasks）— 自分の分が終わったら、同じ層の他の人の仕事を引き継ぐ／タスク・案件・施策を目的に合った見え方に切り替える（リス
+      tags:
+      - tasks
+      x-acts:
+      - A48
+      - A58
+      x-screens:
+      - tasks
+      x-choke-points: []
+      x-source:
+      - D-024
+      - D-032
+      - D-058
+      - D-058.7
+      - D-061.3
+      - D-061.5
+      - D-064
+      - D-068
+      - D-068.1
+      - D-068.8
+      - D-068.9
+      security:
+      - session: []
+      parameters:
+      - name: scope_id
+        in: query
+        schema:
+          type: string
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: string
+      - name: sort
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Tasks'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      operationId: postTasks
+      summary: 作成・実行（tasks）— タスクを足す（自分にも、人にも、AI社員にも）。必ず目標／詰まっているタスクの理由を見て一手を打つ（催促する・承認
+      tags:
+      - tasks
+      x-acts:
+      - A50
+      - A57
+      x-screens:
+      - tasks
+      x-choke-points:
+      - C2
+      - C3
+      - C6
+      x-source:
+      - D-003.1
+      - D-008
+      - D-008.6
+      - D-013.9
+      - D-030.9
+      - D-032
+      - D-032.2
+      - D-061
+      - D-061.2
+      - D-066
+      - D-066.9
+      - D-068
+      - D-068.7
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TasksInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Tasks'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: CONFLICT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/tasks/{id}:
+    patch:
+      operationId: patchTasksById
+      summary: 更新（tasks）— 自分のタスクを片づける／タスクを引き継いでもらう・担当を変える（人にもAI社員に
+      tags:
+      - tasks
+      x-acts:
+      - A17
+      - A51
+      x-screens:
+      - tasks
+      x-choke-points:
+      - C2
+      - C6
+      x-source:
+      - D-008
+      - D-008.6
+      - D-032
+      - D-034.2
+      - D-058
+      - D-058.8
+      - D-061
+      - D-061.3
+      - D-061.4
+      - D-068
+      - D-068.1
+      - D-068.3
+      - D-068.8
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TasksInput'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Tasks'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/tenants:
+    get:
+      operationId: getTenants
+      summary: 取得（tenants）— 自分のAIが作ったたたき台（目標・台帳・AI社員）を見る／違うところを言って直させる
+      tags:
+      - tenants
+      x-acts:
+      - A07
+      - A08
+      - A12
+      - A45
+      x-screens:
+      - company-model
+      - onboard-draft
+      - onboard-golive
+      x-choke-points: []
+      x-source:
+      - D-003
+      - D-003.1
+      - D-003.7
+      - D-010
+      - D-010.1
+      - D-010.6
+      - D-019
+      - D-019.1
+      - D-024
+      - D-024.1
+      - D-025
+      - D-025.3
+      - D-025.4
+      - D-028
+      - D-028.1
+      - D-028.4
+      - D-030
+      - D-030.3
+      - D-039.1
+      security:
+      - session: []
+      parameters:
+      - name: scope_id
+        in: query
+        schema:
+          type: string
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: string
+      - name: sort
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Tenants'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/tenants/{id}:
+    patch:
+      operationId: patchTenantsById
+      summary: 更新（tenants）— 会社の設定（会社名・請求先・データの所在・タイムゾーン）
+      tags:
+      - tenants
+      x-acts:
+      - A75
+      x-screens:
+      - company-settings
+      x-choke-points:
+      - C2
+      x-source:
+      - D-042
+      - D-042.5
+      - D-076.2
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TenantsInput'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Tenants'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'

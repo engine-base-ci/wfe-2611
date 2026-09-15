@@ -1,0 +1,5977 @@
+{
+ "meta": {
+  "version": "v3.1",
+  "created_at": "2026-09-15",
+  "_doc": "05_flow/build_functional.py が flow.json・ER図・モック・errors.json から生成。手で直さない。",
+  "source": [
+   "D-053.1",
+   "D-053.2",
+   "D-010"
+  ]
+ },
+ "items": [
+  {
+   "id": "F-001",
+   "name": "契約してから、自力で動く状態まで持っていきたい",
+   "category": "job",
+   "job": "J0",
+   "acts": [
+    "A01",
+    "A02",
+    "A05",
+    "A09",
+    "A06",
+    "A07",
+    "A08"
+   ],
+   "happy_path": [
+    "A01 会社名とメールを入れる",
+    "A02 届いたリンクを押す",
+    "A05 支払い方法を入れる",
+    "A09 インストーラを入れて許可する",
+    "A06 自分のAIの質問に答える",
+    "A07 出てきたたたき台を見る",
+    "A08 違うところを言う"
+   ],
+   "error_paths": [
+    "E-AUTH-003",
+    "E-VAL-004",
+    "E-CONF-001",
+    "E-CONN-001",
+    "E-TO-003"
+   ],
+   "policies": [
+    "C2",
+    "C3",
+    "C5",
+    "C6",
+    "C7"
+   ],
+   "notifications": [
+    "C6 通知送出（届け先は notification_preferences）"
+   ],
+   "audit_logs": [
+    "audit_events（追記専用）"
+   ],
+   "access_roles": [
+    "R1",
+    "R2"
+   ],
+   "external_services": [],
+   "related_screens": [
+    "billing-setup",
+    "bridge-setup",
+    "onboard-draft",
+    "onboard-interview",
+    "signup",
+    "verify-email"
+   ],
+   "related_entities": [
+    "E-001",
+    "E-002",
+    "E-004",
+    "E-005",
+    "E-006",
+    "E-010",
+    "E-013",
+    "E-017",
+    "E-018",
+    "E-019",
+    "E-022",
+    "E-023",
+    "E-027",
+    "E-032",
+    "E-034",
+    "E-038",
+    "E-039",
+    "E-042",
+    "E-045",
+    "E-048",
+    "E-067",
+    "E-068",
+    "E-069",
+    "E-070",
+    "E-071"
+   ],
+   "api_endpoints": [
+    {
+     "act": "A01",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/plans",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-067",
+      "E-068",
+      "E-069",
+      "E-071"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-001",
+      "D-002",
+      "D-001.5"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A02",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/members",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-004",
+      "E-045",
+      "E-042"
+     ],
+     "choke_points": [
+      "C6",
+      "C2"
+     ],
+     "source": [
+      "D-042"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A05",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/plans",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-067",
+      "E-068",
+      "E-069",
+      "E-071"
+     ],
+     "choke_points": [
+      "C7"
+     ],
+     "source": [
+      "D-002"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A09",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/sessions",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-048",
+      "E-034",
+      "E-034"
+     ],
+     "choke_points": [
+      "C5",
+      "C2"
+     ],
+     "source": [
+      "D-055",
+      "D-015",
+      "D-004",
+      "D-004.1",
+      "D-015.1",
+      "D-015.6",
+      "D-019.1",
+      "D-040.4",
+      "D-055.1",
+      "D-055.2",
+      "D-055.3"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A06",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/clones",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-005",
+      "E-004",
+      "E-038",
+      "E-039"
+     ],
+     "choke_points": [
+      "C3",
+      "C2"
+     ],
+     "source": [
+      "D-028",
+      "D-030",
+      "D-010",
+      "D-055",
+      "D-003.7",
+      "D-010.6",
+      "D-028.1",
+      "D-030.3",
+      "D-055.3"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A07",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tenants",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-001",
+      "E-010",
+      "E-017",
+      "E-022"
+     ],
+     "choke_points": [
+      "C3",
+      "C2"
+     ],
+     "source": [
+      "D-028",
+      "D-030",
+      "D-010",
+      "D-003.7",
+      "D-010.1",
+      "D-010.6",
+      "D-028.1",
+      "D-030.3",
+      "D-039.1"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A08",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tenants",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-001",
+      "E-010",
+      "E-017",
+      "E-022"
+     ],
+     "choke_points": [
+      "C3",
+      "C2"
+     ],
+     "source": [
+      "D-028",
+      "D-025",
+      "D-003.7",
+      "D-025.3",
+      "D-025.4",
+      "D-028.1"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    }
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN R1／R2 が「会社名とメールを入れる」したとき THEN Kaname は「アカウントと会社を作る」を行う",
+    "UNWANTED: IF 同じメールアドレスで登録済み THEN Kaname は「このメールアドレスは既に登録されています。ログインするか、パスワードを再設定してください」を出し、ログイン／パスワードを再設定（E-CONF-001）",
+    "EVENT-DRIVEN: WHEN R1／R2 が「届いたリンクを押す」したとき THEN Kaname は「本人確認を記録」を行う",
+    "EVENT-DRIVEN: WHEN R1／R2 が「支払い方法を入れる」したとき THEN Kaname は「決済事業者に登録（カード番号は預からない）」を行う",
+    "EVENT-DRIVEN: WHEN R1／R2 が「インストーラを入れて許可する」したとき THEN Kaname は「端末を登録、トークン発行。LLM経路＝Bridge を確定」を行う（自動側：Bridgeが自己診断して結果を返す。つながるまで自分のAIは話せない）",
+    "UNWANTED: IF 常駐アプリ（Bridge）がつながらない（未起動・古い版・トークン失効） THEN Kaname は「PC につながっていません。段階 1 は PC がつながるまで高本AIは話せません」を出し、もう一度つなぐ／あとでやる（E-CONN-001）",
+    "UNWANTED: IF 常駐アプリを終了した直後（0〜90 秒）に指示を送る（切り替わりの瞬間） THEN Kaname は「PC との接続が切れました。指示は溜めておき、つながったら続けます」を出し、起きたら続き（E-TO-003）",
+    "EVENT-DRIVEN: WHEN R1／R2 が「自分のAIの質問に答える」したとき THEN Kaname は「会話を記憶へ、業種の手がかりを保存」を行う（自動側：自分のAIが訊く順番を決め、答えを記憶に落とす（Bridge 経由・本人のサブスク））",
+    "EVENT-DRIVEN: WHEN R1／R2 が「出てきたたたき台を見る」したとき THEN Kaname は「会社モデルの下書きを保存」を行う（自動側：自分のAIが目標・台帳定義・担当業務・AI社員の初期案を作る）",
+    "EVENT-DRIVEN: WHEN R1／R2 が「違うところを言う」したとき THEN Kaname は「会社モデルの下書きを更新」を行う（自動側：自分のAIが直して出し直す）"
+   ],
+   "checklist": [],
+   "legacy_drift_notes": null,
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-001",
+    "D-001.5",
+    "D-002",
+    "D-002.1",
+    "D-003.7",
+    "D-004",
+    "D-004.1",
+    "D-010",
+    "D-010.1",
+    "D-010.6",
+    "D-015",
+    "D-015.1",
+    "D-015.6",
+    "D-019.1",
+    "D-025",
+    "D-025.3",
+    "D-025.4",
+    "D-028",
+    "D-028.1",
+    "D-030",
+    "D-030.10",
+    "D-030.3",
+    "D-039.1",
+    "D-040.4",
+    "D-042",
+    "D-053.3",
+    "D-055",
+    "D-055.1",
+    "D-055.2",
+    "D-055.3"
+   ]
+  },
+  {
+   "id": "F-002",
+   "name": "招かれたので、自分がやることだけ分かる状態にしたい",
+   "category": "job",
+   "job": "J0b",
+   "acts": [
+    "A03"
+   ],
+   "happy_path": [
+    "A03 招待リンクを押して名前を入れる"
+   ],
+   "error_paths": [
+    "E-NF-001"
+   ],
+   "policies": [
+    "C2",
+    "C3"
+   ],
+   "notifications": [],
+   "audit_logs": [
+    "audit_events（追記専用）"
+   ],
+   "access_roles": [
+    "R3",
+    "R4"
+   ],
+   "external_services": [],
+   "related_screens": [
+    "invite-accept"
+   ],
+   "related_entities": [
+    "E-004",
+    "E-042",
+    "E-045",
+    "E-077"
+   ],
+   "api_endpoints": [
+    {
+     "act": "A03",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/invitations",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-077",
+      "E-004",
+      "E-045",
+      "E-042"
+     ],
+     "choke_points": [
+      "C2",
+      "C3"
+     ],
+     "source": [
+      "D-026",
+      "D-037"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    }
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN R3／R4 が「招待リンクを押して名前を入れる」したとき THEN Kaname は「メンバーを作り、スコープを結ぶ」を行う（自動側：自分のAIが見える範囲を説明する）"
+   ],
+   "checklist": [],
+   "legacy_drift_notes": null,
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-026",
+    "D-037",
+    "D-053.3"
+   ]
+  },
+  {
+   "id": "F-003",
+   "name": "入れなくなったときに、自分で入り直したい",
+   "category": "job",
+   "job": "J0c",
+   "acts": [
+    "A31"
+   ],
+   "happy_path": [
+    "A31 メールで入り直す／回復コードを使う"
+   ],
+   "error_paths": [
+    "E-AUTH-006"
+   ],
+   "policies": [
+    "C2",
+    "C6"
+   ],
+   "notifications": [
+    "C6 通知送出（届け先は notification_preferences）"
+   ],
+   "audit_logs": [
+    "audit_events（追記専用）"
+   ],
+   "access_roles": [
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "external_services": [],
+   "related_screens": [
+    "password-reset"
+   ],
+   "related_entities": [
+    "E-004",
+    "E-041",
+    "E-042",
+    "E-045",
+    "E-059",
+    "E-060"
+   ],
+   "api_endpoints": [
+    {
+     "act": "A31",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/members/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-004",
+      "E-045",
+      "E-042",
+      "E-041"
+     ],
+     "choke_points": [
+      "C6",
+      "C2"
+     ],
+     "source": [
+      "D-042"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    }
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN R1／R2／R3 が「メールで入り直す／回復コードを使う」したとき THEN Kaname は「トークンを失効させて再発行」を行う"
+   ],
+   "checklist": [],
+   "legacy_drift_notes": null,
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-042",
+    "D-053.3"
+   ]
+  },
+  {
+   "id": "F-004",
+   "name": "今日なにをすればいいか、迷わず決めたい",
+   "category": "job",
+   "job": "J1",
+   "acts": [
+    "A13",
+    "A14",
+    "A55",
+    "A17",
+    "A57",
+    "A56",
+    "A50",
+    "A51",
+    "A48",
+    "A20",
+    "A58",
+    "A25",
+    "A49"
+   ],
+   "happy_path": [
+    "A13 メールとパスワードと6桁を入れる",
+    "A14 申し送りを読む",
+    "A55 候補にチェックを入れて「今日を確定」を押す",
+    "A17 自分のタスクを終える",
+    "A57 詰まっている理由を見て、理由ごとの一手を押す",
+    "A56 残りを 消す／明日へ／引き継いでもらう に振り分ける",
+    "A50 やることを書いて、どの目標かを選ぶ",
+    "A51 誰に引き継いでもらうか選ぶ（負荷を見て）",
+    "A48 残っている仕事から引き継ぐ",
+    "A20 聞く・頼む",
+    "A58 見え方を切り替える（URL に残る）",
+    "A25 自分の担当分の進みを見る",
+    "A49 自分の目標を直す・自主目標を足す"
+   ],
+   "error_paths": [
+    "E-AUTH-001",
+    "E-AUTH-002",
+    "E-VAL-001",
+    "E-DEP-001",
+    "E-EXT-003",
+    "E-CONN-002",
+    "E-CONN-003",
+    "E-CONN-004",
+    "E-SIG-002",
+    "E-LIM-002",
+    "E-LIM-003",
+    "E-TO-001",
+    "E-LIM-004",
+    "E-MOCK-024",
+    "E-MOCK-034"
+   ],
+   "policies": [
+    "C2",
+    "C3",
+    "C6"
+   ],
+   "notifications": [
+    "C6 通知送出（届け先は notification_preferences）"
+   ],
+   "audit_logs": [
+    "audit_events（追記専用）"
+   ],
+   "access_roles": [
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "external_services": [],
+   "related_screens": [
+    "clone-chat",
+    "login",
+    "my-progress",
+    "tasks",
+    "today"
+   ],
+   "related_entities": [
+    "E-004",
+    "E-005",
+    "E-006",
+    "E-010",
+    "E-011",
+    "E-012",
+    "E-013",
+    "E-015",
+    "E-027",
+    "E-028",
+    "E-029",
+    "E-030",
+    "E-033",
+    "E-038",
+    "E-039",
+    "E-040",
+    "E-042",
+    "E-045"
+   ],
+   "api_endpoints": [
+    {
+     "act": "A13",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/members",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-004",
+      "E-045",
+      "E-042"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-042",
+      "D-053.4"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A14",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/messages",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-039",
+      "E-030",
+      "E-030",
+      "E-028"
+     ],
+     "choke_points": [
+      "C3",
+      "C2"
+     ],
+     "source": [
+      "D-008",
+      "D-010",
+      "D-024",
+      "D-024.1"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A55",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/messages/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-039",
+      "E-030",
+      "E-030",
+      "E-028"
+     ],
+     "choke_points": [
+      "C2",
+      "C3"
+     ],
+     "source": [
+      "D-068",
+      "D-008",
+      "D-063",
+      "D-008.4",
+      "D-068.2"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A17",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/tasks/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-028",
+      "E-029",
+      "E-010",
+      "E-013"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-008",
+      "D-034.2",
+      "D-061.3",
+      "D-068.3"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A57",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/tasks",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-028",
+      "E-029",
+      "E-010",
+      "E-013"
+     ],
+     "choke_points": [
+      "C2",
+      "C3",
+      "C6"
+     ],
+     "source": [
+      "D-068",
+      "D-066",
+      "D-013.9",
+      "D-030.9",
+      "D-066.9",
+      "D-068.7"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A56",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/messages/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-039",
+      "E-030",
+      "E-030",
+      "E-028"
+     ],
+     "choke_points": [
+      "C2",
+      "C3",
+      "C6"
+     ],
+     "source": [
+      "D-068",
+      "D-061",
+      "D-068.1",
+      "D-068.4"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A50",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/tasks",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-028",
+      "E-029",
+      "E-010",
+      "E-013"
+     ],
+     "choke_points": [
+      "C2",
+      "C3"
+     ],
+     "source": [
+      "D-061",
+      "D-032",
+      "D-008",
+      "D-003.1",
+      "D-008.6",
+      "D-032.2",
+      "D-061.2"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A51",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/tasks/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-028",
+      "E-029",
+      "E-010",
+      "E-013"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-061",
+      "D-058",
+      "D-032",
+      "D-068",
+      "D-008.6",
+      "D-058.8",
+      "D-061.4",
+      "D-068.1",
+      "D-068.8"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A48",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tasks",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-028",
+      "E-029",
+      "E-010",
+      "E-013"
+     ],
+     "choke_points": [
+      "C2",
+      "C3",
+      "C6"
+     ],
+     "source": [
+      "D-058",
+      "D-032",
+      "D-024",
+      "D-068",
+      "D-058.7",
+      "D-061.3",
+      "D-061.5",
+      "D-068.1",
+      "D-068.8"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A20",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/conversations",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-038",
+      "E-039",
+      "E-005",
+      "E-004"
+     ],
+     "choke_points": [
+      "C3",
+      "C2"
+     ],
+     "source": [
+      "D-024",
+      "D-037",
+      "D-007",
+      "D-003.9",
+      "D-007.2",
+      "D-024.7",
+      "D-037.5",
+      "D-060.3"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A58",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tasks",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-028",
+      "E-029",
+      "E-010",
+      "E-013"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-068",
+      "D-064",
+      "D-068.9"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A25",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/goal_allocations",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-011",
+      "E-012",
+      "E-028",
+      "E-029"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-026",
+      "D-002",
+      "D-058",
+      "D-058.3",
+      "D-058.6"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A49",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/goal_allocations/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-011",
+      "E-012",
+      "E-028",
+      "E-029"
+     ],
+     "choke_points": [
+      "C2",
+      "C3"
+     ],
+     "source": [
+      "D-058",
+      "D-032",
+      "D-036",
+      "D-025.3",
+      "D-026.5",
+      "D-032.2",
+      "D-032.4",
+      "D-032.6",
+      "D-058.3",
+      "D-061.6"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    }
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN R1／R2／R3／R4 が「メールとパスワードと6桁を入れる」したとき THEN Kaname は「トークンを発行」を行う",
+    "UNWANTED: IF メールアドレスかパスワードが違う（1〜4 回目は残り回数を出す） THEN Kaname は「メールアドレスかパスワードが違います。あと 4 回で 15 分ロックします」を出し、入力し直す／パスワードを忘れた（E-AUTH-001）",
+    "UNWANTED: IF パスワードを 5 回間違えた（連続失敗でロック） THEN Kaname は「15 分間ロックしました。急ぐときはメールでロックを解除できます」を出し、解除メールを送る／15 分待つ（E-AUTH-002）",
+    "UNWANTED: IF 同時アクセスが集中して資源（DB 接続）が上限に達した（枯渇）。API は待機列で受け、DB 側は接続プールで上限を守る（1 層では守れない） THEN Kaname は「混み合っています。順番にご案内します（およそ 30 秒）」を出し、そのまま待つ（E-LIM-003）",
+    "EVENT-DRIVEN: WHEN R1／R2／R3 が「申し送りを読む」したとき THEN Kaname は「タスクと承認待ちを集約」を行う（自動側：自分のAIが夜間の結果をまとめ、今日の並びを決める）",
+    "EVENT-DRIVEN: WHEN R1／R2／R3 が「候補にチェックを入れて「今日を確定」を押す」したとき THEN Kaname は「daily_plans に確定を保存。tasks.planned_for＝今日」を行う（自動側：自分のAIが目標・期限・持ち越しから今日の候補と見込み時間を出す。見込みの合計が使える時間を超えたら赤）",
+    "EVENT-DRIVEN: WHEN R1／R2／R3 が「自分のタスクを終える」したとき THEN Kaname は「タスクの状態を更新し、目標の実績に積む」を行う",
+    "EVENT-DRIVEN: WHEN R1／R2／R3 が「詰まっている理由を見て、理由ごとの一手を押す」したとき THEN Kaname は「tasks.blocked_reason_id・blocked_since。催促は通知、承認は approvals へ」を行う（自動側：自分のAIが理由（返事待ち／承認待ち／PC停止／AI社員停止）を判定して一手を用意する）",
+    "EVENT-DRIVEN: WHEN R1／R2／R3 が「残りを 消す／明日へ／引き継いでもらう に振り分ける」したとき THEN Kaname は「tasks.planned_for を更新。引き継ぎは task_handovers。消すは ended_at」を行う（自動側：自分のAIが振り分け案を出す（期限・相手の負荷から））",
+    "EVENT-DRIVEN: WHEN R1／R2／R3 が「やることを書いて、どの目標かを選ぶ」したとき THEN Kaname は「タスクを保存。目標が無ければ「行き先のないタスク」に」を行う（自動側：自分のAIが紐づく目標の候補と担当（人／AI社員）を出す）",
+    "EVENT-DRIVEN: WHEN R1／R2／R3 が「誰に引き継いでもらうか選ぶ（負荷を見て）」したとき THEN Kaname は「担当を移す（合意 or 指示）。goal_id は変えない。task_handovers に記録」を行う（自動側：自分のAIが相手の負荷と合意の要否を出す）",
+    "EVENT-DRIVEN: WHEN R1／R2／R3 が「残っている仕事から引き継ぐ」したとき THEN Kaname は「タスクの担当を移す（合意 or そのまま）。task_handovers に記録」を行う（自動側：自分のAIが同じ層の残りから引き継げるものを提案する）",
+    "EVENT-DRIVEN: WHEN R1／R2／R3／R4 が「聞く・頼む」したとき THEN Kaname は「会話を記憶へ。指示をAI社員へ」を行う（自動側：自分のAIが答え、必要ならAI社員に配る。数値もここで出す。配布・承認・記憶は AG-UI イベントで画面へ）",
+    "UNWANTED: IF プランの月間の実行量（トークン・実行時間）の上限に達した THEN Kaname は「今月の AI の実行量が上限に達しました。来月まで待つか、プランを変えると続けられます」を出し、プランを見る／来月まで待つ（E-LIM-004）",
+    "EVENT-DRIVEN: WHEN R1／R2／R3／R4 が「見え方を切り替える（URL に残る）」したとき THEN Kaname は「同じデータを別の見え方で読む（書き込み無し）」を行う",
+    "EVENT-DRIVEN: WHEN R1／R2／R3／R4 が「自分の担当分の進みを見る」したとき THEN Kaname は「自分に配られた分だけを読む」を行う",
+    "EVENT-DRIVEN: WHEN R1／R2／R3 が「自分の目標を直す・自主目標を足す」したとき THEN Kaname は「個人層の目標を保存（本人は即反映）」を行う（自動側：自分のAIが自分のAI社員への配分案を出す）"
+   ],
+   "checklist": [],
+   "legacy_drift_notes": null,
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-002",
+    "D-003.1",
+    "D-003.9",
+    "D-007",
+    "D-007.2",
+    "D-008",
+    "D-008.1",
+    "D-008.4",
+    "D-008.6",
+    "D-010",
+    "D-013.9",
+    "D-024",
+    "D-024.1",
+    "D-024.7",
+    "D-025.3",
+    "D-026",
+    "D-026.5",
+    "D-030.9",
+    "D-032",
+    "D-032.2",
+    "D-032.4",
+    "D-032.6",
+    "D-034.2",
+    "D-036",
+    "D-037",
+    "D-037.5",
+    "D-042",
+    "D-053.4",
+    "D-058",
+    "D-058.3",
+    "D-058.6",
+    "D-058.7",
+    "D-058.8",
+    "D-060.3",
+    "D-061",
+    "D-061.2",
+    "D-061.3",
+    "D-061.4",
+    "D-061.5",
+    "D-061.6",
+    "D-063",
+    "D-064",
+    "D-066",
+    "D-066.9",
+    "D-068",
+    "D-068.1",
+    "D-068.2",
+    "D-068.3",
+    "D-068.4",
+    "D-068.7",
+    "D-068.8",
+    "D-068.9"
+   ]
+  },
+  {
+   "id": "F-005",
+   "name": "手でやっている繰り返しを、自分の代わりにやらせたい",
+   "category": "job",
+   "job": "J2",
+   "acts": [
+    "A09",
+    "A10",
+    "A12",
+    "A32",
+    "A37"
+   ],
+   "happy_path": [
+    "A09 インストーラを入れて許可する",
+    "A10 使うサービスを選びログイン情報を入れる",
+    "A12 本番に切り替える",
+    "A32 何が変わったかを見せて覚え直させる",
+    "A37 AI社員を増やす・人に託す"
+   ],
+   "error_paths": [
+    "E-VAL-003",
+    "E-EXT-002",
+    "E-CONN-001",
+    "E-GATE-003",
+    "E-LIM-001",
+    "E-DATA-001",
+    "E-TO-003",
+    "E-DEP-004",
+    "E-MOCK-005"
+   ],
+   "policies": [
+    "C2",
+    "C3",
+    "C5",
+    "C8"
+   ],
+   "notifications": [],
+   "audit_logs": [
+    "audit_events（追記専用）"
+   ],
+   "access_roles": [
+    "R1",
+    "R2"
+   ],
+   "external_services": [],
+   "related_screens": [
+    "ai-staff",
+    "automation-repair",
+    "bridge-setup",
+    "credentials",
+    "onboard-golive"
+   ],
+   "related_entities": [
+    "E-001",
+    "E-002",
+    "E-004",
+    "E-006",
+    "E-010",
+    "E-017",
+    "E-022",
+    "E-023",
+    "E-024",
+    "E-025",
+    "E-027",
+    "E-032",
+    "E-034",
+    "E-035",
+    "E-037",
+    "E-048",
+    "E-055",
+    "E-056",
+    "E-067",
+    "E-068",
+    "E-069",
+    "E-070",
+    "E-071",
+    "E-074"
+   ],
+   "api_endpoints": [
+    {
+     "act": "A09",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/sessions",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-048",
+      "E-034",
+      "E-034"
+     ],
+     "choke_points": [
+      "C5",
+      "C2"
+     ],
+     "source": [
+      "D-055",
+      "D-015",
+      "D-004",
+      "D-004.1",
+      "D-015.1",
+      "D-015.6",
+      "D-019.1",
+      "D-040.4",
+      "D-055.1",
+      "D-055.2",
+      "D-055.3"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A10",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/credentials",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-037",
+      "E-035",
+      "E-055",
+      "E-056"
+     ],
+     "choke_points": [
+      "C8",
+      "C2"
+     ],
+     "source": [
+      "D-017",
+      "D-041",
+      "D-013.3",
+      "D-017.1",
+      "D-042.8"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A12",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tenants",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-001",
+      "E-010",
+      "E-017",
+      "E-022"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-028",
+      "D-019",
+      "D-003.7",
+      "D-019.1",
+      "D-028.4"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [
+      "E-DEP-004"
+     ],
+     "rate_limit": null
+    },
+    {
+     "act": "A32",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/learned_procedures",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-024",
+      "E-025",
+      "E-034",
+      "E-048"
+     ],
+     "choke_points": [
+      "C5",
+      "C3",
+      "C2"
+     ],
+     "source": [
+      "D-018",
+      "D-014",
+      "D-013.5",
+      "D-014.1",
+      "D-018.1",
+      "D-022.3",
+      "D-030.9"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A37",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ai_employees",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-006",
+      "E-004",
+      "E-022",
+      "E-023"
+     ],
+     "choke_points": [
+      "C2",
+      "C3"
+     ],
+     "source": [
+      "D-037",
+      "D-027",
+      "D-030.4",
+      "D-037.1",
+      "D-037.3"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    }
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN R1／R2 が「インストーラを入れて許可する」したとき THEN Kaname は「端末を登録、トークン発行。LLM経路＝Bridge を確定」を行う（自動側：Bridgeが自己診断して結果を返す。つながるまで自分のAIは話せない）",
+    "UNWANTED: IF 常駐アプリ（Bridge）がつながらない（未起動・古い版・トークン失効） THEN Kaname は「PC につながっていません。段階 1 は PC がつながるまで高本AIは話せません」を出し、もう一度つなぐ／あとでやる（E-CONN-001）",
+    "UNWANTED: IF 常駐アプリを終了した直後（0〜90 秒）に指示を送る（切り替わりの瞬間） THEN Kaname は「PC との接続が切れました。指示は溜めておき、つながったら続けます」を出し、起きたら続き（E-TO-003）",
+    "EVENT-DRIVEN: WHEN R1／R2 が「使うサービスを選びログイン情報を入れる」したとき THEN Kaname は「vaultに暗号化保管。AIには参照IDのみ」を行う（自動側：サービス台帳から自動操作可否を判定して出す）",
+    "UNWANTED: IF サービス台帳で自動操作が禁じられたサービス（LINE・銀行）を AI社員に頼んだ THEN Kaname は「LINE は自動操作が禁じられているので、AI社員は送れません。下書きまで作るので、あなたが送ってください」を出し、下書きを作らせる／やめる（E-GATE-003）",
+    "UNWANTED: IF 預けたログイン情報の復号に失敗した（鍵の不一致） THEN Kaname は「預かった情報が読めません。安全のため、もう一度預け直してください」を出し、預け直す（E-DATA-001）",
+    "EVENT-DRIVEN: WHEN R1／R2 が「本番に切り替える」したとき THEN Kaname は「会社モデルを確定、自動実行を有効化」を行う（自動側：自分のAIが未設定を洗い出して止める）",
+    "UNWANTED: IF 本番に切り替えるとき、未設定（ログイン情報が無い担当業務・目標の無い AI社員）が残っている THEN Kaname は「本番に切り替える前に 2 つ足りません：経理社員の freee のログイン情報／営業社員の目標。埋めると切り替えられます」を出し、足りないものを埋める／その AI社員は止めたまま本番へ（E-DEP-004）",
+    "EVENT-DRIVEN: WHEN R1／R2 が「何が変わったかを見せて覚え直させる」したとき THEN Kaname は「覚えた操作を版で更新」を行う（自動側：AIが画面を見て手順を作り直す）",
+    "EVENT-DRIVEN: WHEN R1／R2 が「AI社員を増やす・人に託す」したとき THEN Kaname は「AI社員を作成・付与。プラン上限を判定」を行う（自動側：自分のAIが担当業務のたたき台を出す）",
+    "UNWANTED: IF プランの AI社員数の上限に達した THEN Kaname は「エントリーで作れる AI社員は 3 体までです。プランを変えると増やせます」を出し、プランを見る／既存を整理する（E-LIM-001）"
+   ],
+   "checklist": [],
+   "legacy_drift_notes": null,
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-003.7",
+    "D-004",
+    "D-004.1",
+    "D-008",
+    "D-008.1",
+    "D-008.2",
+    "D-013.3",
+    "D-013.5",
+    "D-014",
+    "D-014.1",
+    "D-015",
+    "D-015.1",
+    "D-015.6",
+    "D-017",
+    "D-017.1",
+    "D-018",
+    "D-018.1",
+    "D-019",
+    "D-019.1",
+    "D-022.3",
+    "D-027",
+    "D-028",
+    "D-028.4",
+    "D-030.4",
+    "D-030.9",
+    "D-037",
+    "D-037.1",
+    "D-037.3",
+    "D-040.4",
+    "D-041",
+    "D-042.8",
+    "D-055",
+    "D-055.1",
+    "D-055.2",
+    "D-055.3"
+   ]
+  },
+  {
+   "id": "F-006",
+   "name": "AIが勝手に外に出すのが怖い。押す前に中身を見て決めたい",
+   "category": "job",
+   "job": "J3",
+   "acts": [
+    "A11",
+    "A15",
+    "A53",
+    "A16",
+    "A57",
+    "A33",
+    "A34",
+    "A35",
+    "A46"
+   ],
+   "happy_path": [
+    "A11 試しに動かして結果を見る",
+    "A15 中身を見て押す／止める",
+    "A53 木を開いて、止まっているところを見る",
+    "A16 自分のAIとAI社員のやりとりを見る",
+    "A57 詰まっている理由を見て、理由ごとの一手を押す",
+    "A33 いつ何をしたかを追う",
+    "A34 やってしまったことを取り消す",
+    "A35 やらせる範囲を変える",
+    "A46 このAI社員の中身を見る"
+   ],
+   "error_paths": [
+    "E-VAL-001",
+    "E-CONF-003",
+    "E-DEP-001",
+    "E-EXT-001",
+    "E-EXT-004",
+    "E-GATE-001",
+    "E-GATE-002",
+    "E-GATE-004",
+    "E-SIG-001",
+    "E-TO-001",
+    "E-TO-004",
+    "E-EXT-005",
+    "E-MOCK-003",
+    "E-MOCK-004",
+    "E-MOCK-006",
+    "E-MOCK-007",
+    "E-MOCK-010",
+    "E-MOCK-027",
+    "E-MOCK-034"
+   ],
+   "policies": [
+    "C1",
+    "C2",
+    "C3",
+    "C5",
+    "C6"
+   ],
+   "notifications": [
+    "C6 通知送出（届け先は notification_preferences）"
+   ],
+   "audit_logs": [
+    "audit_events（追記専用）"
+   ],
+   "access_roles": [
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "external_services": [
+    "外部サービス（サービス台帳の可否・正規連携）"
+   ],
+   "related_screens": [
+    "ai-activity",
+    "ai-staff-detail",
+    "approvals",
+    "audit",
+    "clone-thread",
+    "onboard-testrun",
+    "policies",
+    "tasks"
+   ],
+   "related_entities": [
+    "E-004",
+    "E-005",
+    "E-006",
+    "E-010",
+    "E-013",
+    "E-015",
+    "E-022",
+    "E-023",
+    "E-028",
+    "E-029",
+    "E-030",
+    "E-032",
+    "E-033",
+    "E-034",
+    "E-035",
+    "E-039",
+    "E-040",
+    "E-041",
+    "E-042",
+    "E-045",
+    "E-046",
+    "E-047",
+    "E-048",
+    "E-049",
+    "E-050",
+    "E-051",
+    "E-055",
+    "E-056",
+    "E-059",
+    "E-060",
+    "E-063",
+    "E-065",
+    "E-066",
+    "E-074",
+    "E-080",
+    "E-081",
+    "E-082",
+    "E-083"
+   ],
+   "api_endpoints": [
+    {
+     "act": "A11",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/action_runs",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-034",
+      "E-006",
+      "E-004",
+      "E-041"
+     ],
+     "choke_points": [
+      "C1",
+      "C3",
+      "C5"
+     ],
+     "source": [
+      "D-028",
+      "D-003.7",
+      "D-028.2",
+      "D-028.3"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": "C1 の規則"
+    },
+    {
+     "act": "A15",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/approvals/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-033",
+      "E-005",
+      "E-004",
+      "E-066"
+     ],
+     "choke_points": [
+      "C1",
+      "C6",
+      "C2"
+     ],
+     "source": [
+      "D-012",
+      "D-037",
+      "D-040",
+      "D-008.2",
+      "D-012.1",
+      "D-013.8",
+      "D-013.10",
+      "D-037.5",
+      "D-042.9",
+      "D-060.3",
+      "D-066.3"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": "C1 の規則"
+    },
+    {
+     "act": "A53",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ai_employees",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-006",
+      "E-004",
+      "E-005",
+      "E-004"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-062",
+      "D-037",
+      "D-042",
+      "D-037.5",
+      "D-062.6"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A16",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/approvals",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-033",
+      "E-039",
+      "E-005",
+      "E-004"
+     ],
+     "choke_points": [
+      "C3"
+     ],
+     "source": [
+      "D-037",
+      "D-012",
+      "D-012.7",
+      "D-037.5",
+      "D-060.3"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A57",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/tasks",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-028",
+      "E-029",
+      "E-010",
+      "E-013"
+     ],
+     "choke_points": [
+      "C2",
+      "C3",
+      "C6"
+     ],
+     "source": [
+      "D-068",
+      "D-066",
+      "D-013.9",
+      "D-030.9",
+      "D-066.9",
+      "D-068.7"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A33",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/audit_events",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-041",
+      "E-059",
+      "E-060",
+      "E-033"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-042",
+      "D-012",
+      "D-012.2",
+      "D-042.3"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A34",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/audit_events/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-041",
+      "E-059",
+      "E-060",
+      "E-033"
+     ],
+     "choke_points": [
+      "C1",
+      "C2"
+     ],
+     "source": [
+      "D-012",
+      "D-012.2",
+      "D-066.4"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [
+      "E-EXT-005"
+     ],
+     "rate_limit": "C1 の規則"
+    },
+    {
+     "act": "A35",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/policies/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-032",
+      "E-035",
+      "E-055",
+      "E-056"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-040",
+      "D-041",
+      "D-026",
+      "D-003.7",
+      "D-037.7",
+      "D-040.1",
+      "D-042.2",
+      "D-066.10"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A46",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ai_employees",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-006",
+      "E-004",
+      "E-022",
+      "E-023"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-037",
+      "D-026",
+      "D-022",
+      "D-076.8",
+      "D-076.13",
+      "D-037.3"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    }
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN R1／R2 が「試しに動かして結果を見る」したとき THEN Kaname は「テスト実行の証跡を残す」を行う（自動側：AI社員が実データを読んで動く。外には一切出さない）",
+    "UNWANTED: IF 外部サービスで CAPTCHA が出た（突破しない・人に渡す） THEN Kaname は「発注ナビで本人確認（CAPTCHA）が出たので止めました。あなたが一度通すと、続きから動きます」を出し、自分で通しに行く／あとで（E-EXT-004）",
+    "EVENT-DRIVEN: WHEN R1／R2／R3 が「中身を見て押す／止める」したとき THEN Kaname は「承認したら実行、止めたらAI社員へ戻る」を行う（自動側：自分のAIが一次確認済みのものだけを上げている）",
+    "UNWANTED: IF 承認を連打・2 人が同時に押した（二重実行の防止） THEN Kaname は「この承認はもう処理されています（山田さんが 1 分前に承認）」を出し、動きを見る（E-CONF-003）",
+    "UNWANTED: IF 外に出る操作をポリシー「承認」で止めた（承認箱に入る） THEN Kaname は「外に出るので承認待ちに入れました。中身を見てから押してください」を出し、承認カードを開く（E-GATE-001）",
+    "EVENT-DRIVEN: WHEN R1／R2／R3 が「木を開いて、止まっているところを見る」したとき THEN Kaname は「AI社員ごとのセッション履歴・関門通過を読む」を行う（自動側：自分のAIが各AI社員のセッションから報告を集める）",
+    "UNWANTED: IF AI社員の実行が完了信号を出さずに終わった（exit 0 で空応答） THEN Kaname は「営業社員の実行が結果を返さずに終わりました。完了とは見なしていません」を出し、もう一度やらせる／動きを見る（E-SIG-001）",
+    "UNWANTED: IF 長い実行がタイムアウトした（10 分）。ワーカーの打ち切りに加え、実行記録の期限で二重に守る THEN Kaname は「営業社員の実行が 10 分を超えたので止めました。途中までの結果は残っています」を出し、続きをやらせる／動きを見る（E-TO-004）",
+    "EVENT-DRIVEN: WHEN R1／R2／R3 が「自分のAIとAI社員のやりとりを見る」したとき THEN Kaname は「差し戻しの履歴」を行う（自動側：自分のAIが何を直させたかを説明する）",
+    "EVENT-DRIVEN: WHEN R1／R2／R3 が「詰まっている理由を見て、理由ごとの一手を押す」したとき THEN Kaname は「tasks.blocked_reason_id・blocked_since。催促は通知、承認は approvals へ」を行う（自動側：自分のAIが理由（返事待ち／承認待ち／PC停止／AI社員停止）を判定して一手を用意する）",
+    "EVENT-DRIVEN: WHEN R1／R2 が「いつ何をしたかを追う」したとき THEN Kaname は「証跡を検索」を行う",
+    "EVENT-DRIVEN: WHEN R1／R2 が「やってしまったことを取り消す」したとき THEN Kaname は「打ち消しの操作を実行し証跡に残す」を行う（自動側：自分のAIが取り消せる範囲を示す）",
+    "UNWANTED: IF 取り消せない操作（送ったメール・外部に書いた値）を取り消そうとした THEN Kaname は「送ったメールは取り消せません。代わりに訂正メールの下書きを作れます」を出し、訂正の下書きを作る／やめる（E-EXT-005）",
+    "EVENT-DRIVEN: WHEN R1／R2／R3／R4 が「やらせる範囲を変える」したとき THEN Kaname は「ルールを更新」を行う（自動側：変更が効くAI社員をその場で出す）",
+    "UNWANTED: IF ポリシーが「しない（off）」の操作を AI社員が試みた THEN Kaname は「この操作は「しない」に設定されています。設定を変えるとできます」を出し、設定を見る（E-GATE-002）",
+    "EVENT-DRIVEN: WHEN R1／R2 が「このAI社員の中身を見る」したとき THEN Kaname は「担当業務・託し先・ルール・証跡を読む」を行う"
+   ],
+   "checklist": [],
+   "legacy_drift_notes": null,
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-003.7",
+    "D-008.2",
+    "D-012",
+    "D-012.1",
+    "D-012.2",
+    "D-012.7",
+    "D-013.10",
+    "D-013.8",
+    "D-013.9",
+    "D-022",
+    "D-026",
+    "D-028",
+    "D-028.2",
+    "D-028.3",
+    "D-030.9",
+    "D-037",
+    "D-037.3",
+    "D-037.5",
+    "D-037.7",
+    "D-040",
+    "D-040.1",
+    "D-041",
+    "D-042",
+    "D-042.2",
+    "D-042.3",
+    "D-042.9",
+    "D-060.3",
+    "D-062",
+    "D-062.6",
+    "D-066",
+    "D-066.10",
+    "D-066.3",
+    "D-066.4",
+    "D-066.9",
+    "D-068",
+    "D-068.7",
+    "D-076.13",
+    "D-076.8"
+   ]
+  },
+  {
+   "id": "F-007",
+   "name": "案件・請求・問い合わせが今どうなっているか、1か所で見たい",
+   "category": "job",
+   "job": "J4",
+   "acts": [
+    "A18",
+    "A19",
+    "A47",
+    "A58",
+    "A21",
+    "A24",
+    "A44"
+   ],
+   "happy_path": [
+    "A18 1件を開いて中を見る",
+    "A19 段階を次へ動かす",
+    "A47 一覧を見る",
+    "A58 見え方を切り替える（URL に残る）",
+    "A21 言葉で探す",
+    "A24 止まっている案件を動かす",
+    "A44 台帳の項目・段階を変える"
+   ],
+   "error_paths": [
+    "E-VAL-001",
+    "E-NF-002",
+    "E-CONF-002",
+    "E-DEP-001",
+    "E-TO-001",
+    "E-TO-002",
+    "E-MOCK-021",
+    "E-MOCK-028",
+    "E-MOCK-029",
+    "E-MOCK-031",
+    "E-MOCK-034"
+   ],
+   "policies": [
+    "C2",
+    "C3"
+   ],
+   "notifications": [],
+   "audit_logs": [
+    "audit_events（追記専用）"
+   ],
+   "access_roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "external_services": [],
+   "related_screens": [
+    "ledger-def",
+    "record-detail",
+    "records",
+    "search",
+    "tasks"
+   ],
+   "related_entities": [
+    "E-004",
+    "E-006",
+    "E-010",
+    "E-013",
+    "E-015",
+    "E-017",
+    "E-018",
+    "E-019",
+    "E-020",
+    "E-021",
+    "E-027",
+    "E-028",
+    "E-029",
+    "E-030",
+    "E-038",
+    "E-039",
+    "E-040",
+    "E-041",
+    "E-042",
+    "E-045",
+    "E-059",
+    "E-060",
+    "E-079"
+   ],
+   "api_endpoints": [
+    {
+     "act": "A18",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ledger_records",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-021",
+      "E-019",
+      "E-028",
+      "E-029"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-038",
+      "D-010"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A19",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/ledger_records/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-021",
+      "E-019",
+      "E-028",
+      "E-029"
+     ],
+     "choke_points": [
+      "C2",
+      "C3"
+     ],
+     "source": [
+      "D-038",
+      "D-039"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A47",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ledger_definitions",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-017",
+      "E-020",
+      "E-021",
+      "E-019"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-038",
+      "D-010",
+      "D-026"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A58",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tasks",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-028",
+      "E-029",
+      "E-010",
+      "E-013"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-068",
+      "D-064",
+      "D-068.9"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A21",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ledger_definitions",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-017",
+      "E-020",
+      "E-027",
+      "E-041"
+     ],
+     "choke_points": [
+      "C3",
+      "C2"
+     ],
+     "source": [
+      "D-007",
+      "D-029"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A24",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/ledger_definitions/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-017",
+      "E-020",
+      "E-021",
+      "E-019"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-038",
+      "D-014"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A44",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/ledger_definitions/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-017",
+      "E-018",
+      "E-019",
+      "E-019"
+     ],
+     "choke_points": [
+      "C2",
+      "C3"
+     ],
+     "source": [
+      "D-038",
+      "D-039",
+      "D-010",
+      "D-010.5",
+      "D-030.5",
+      "D-039.4"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    }
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN R1／R2／R3／R4 が「1件を開いて中を見る」したとき THEN Kaname は「レコードと関連（タスク・添付・証跡）を読む」を行う",
+    "UNWANTED: IF 同じ案件を 2 人が同時に変えた（後から保存した方） THEN Kaname は「田中さんが先にこの案件を変えました。最新を読み込んでから直してください」を出し、最新を読み込む／自分の変更を見る（E-CONF-002）",
+    "EVENT-DRIVEN: WHEN R1／R2／R3 が「段階を次へ動かす」したとき THEN Kaname は「レコード更新→タスク生成→目標の実績」を行う（自動側：段階が変わると自分のAIが次の仕事を配る）",
+    "UNWANTED: IF 同じ案件を 2 人が同時に変えた（後から保存した方） THEN Kaname は「田中さんが先にこの案件を変えました。最新を読み込んでから直してください」を出し、最新を読み込む／自分の変更を見る（E-CONF-002）",
+    "EVENT-DRIVEN: WHEN R1／R2／R3／R4 が「一覧を見る」したとき THEN Kaname は「見える範囲だけのレコードを読む」を行う",
+    "EVENT-DRIVEN: WHEN R1／R2／R3／R4 が「見え方を切り替える（URL に残る）」したとき THEN Kaname は「同じデータを別の見え方で読む（書き込み無し）」を行う",
+    "EVENT-DRIVEN: WHEN R1／R2／R3／R4 が「言葉で探す」したとき THEN Kaname は「台帳・記憶・証跡を横断」を行う（自動側：自分のAIが意味で探す）",
+    "EVENT-DRIVEN: WHEN R1／R2 が「止まっている案件を動かす」したとき THEN Kaname は「レコード一覧」を行う（自動側：止まっている期間で並べ替える）",
+    "EVENT-DRIVEN: WHEN R1／R2 が「台帳の項目・段階を変える」したとき THEN Kaname は「台帳の定義を版で更新」を行う（自動側：自分のAIが既存レコードへの影響を出す）"
+   ],
+   "checklist": [],
+   "legacy_drift_notes": null,
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-006.2",
+    "D-007",
+    "D-010",
+    "D-010.2",
+    "D-010.5",
+    "D-014",
+    "D-026",
+    "D-029",
+    "D-030.5",
+    "D-038",
+    "D-038.5",
+    "D-039",
+    "D-039.4",
+    "D-064",
+    "D-068",
+    "D-068.9"
+   ]
+  },
+  {
+   "id": "F-008",
+   "name": "目標に届くのか、届かないなら何を変えるか知りたい",
+   "category": "job",
+   "job": "J5",
+   "acts": [
+    "A20",
+    "A58",
+    "A22",
+    "A54",
+    "A23",
+    "A49",
+    "A29",
+    "A52",
+    "A45"
+   ],
+   "happy_path": [
+    "A20 聞く・頼む",
+    "A58 見え方を切り替える（URL に残る）",
+    "A22 届くか見る",
+    "A54 かけたものと出たものを並べて見る",
+    "A23 誰に・どれだけ降ろすか決める",
+    "A49 自分の目標を直す・自主目標を足す",
+    "A29 目標を改訂する",
+    "A52 無くす目標を選び、紐づくものの行き先を決める",
+    "A45 会社モデルの全体を見る"
+   ],
+   "error_paths": [
+    "E-PERM-001",
+    "E-PERM-002",
+    "E-VAL-001",
+    "E-VAL-002",
+    "E-DEP-001",
+    "E-DEP-002",
+    "E-DEP-003",
+    "E-EXT-003",
+    "E-CONN-002",
+    "E-SIG-002",
+    "E-LIM-002",
+    "E-TO-001",
+    "E-LIM-004",
+    "E-MOCK-011",
+    "E-MOCK-015",
+    "E-MOCK-016",
+    "E-MOCK-017",
+    "E-MOCK-024",
+    "E-MOCK-034"
+   ],
+   "policies": [
+    "C2",
+    "C3"
+   ],
+   "notifications": [],
+   "audit_logs": [
+    "audit_events（追記専用）"
+   ],
+   "access_roles": [
+    "R1",
+    "R2"
+   ],
+   "external_services": [],
+   "related_screens": [
+    "clone-chat",
+    "company-model",
+    "goal-allocation",
+    "goal-edit",
+    "goals",
+    "my-progress",
+    "tasks"
+   ],
+   "related_entities": [
+    "E-001",
+    "E-002",
+    "E-004",
+    "E-005",
+    "E-006",
+    "E-008",
+    "E-010",
+    "E-011",
+    "E-012",
+    "E-013",
+    "E-014",
+    "E-015",
+    "E-017",
+    "E-018",
+    "E-019",
+    "E-022",
+    "E-023",
+    "E-027",
+    "E-028",
+    "E-029",
+    "E-030",
+    "E-032",
+    "E-038",
+    "E-039",
+    "E-040",
+    "E-041",
+    "E-042",
+    "E-045",
+    "E-052",
+    "E-053",
+    "E-055",
+    "E-068",
+    "E-080",
+    "E-081",
+    "E-082",
+    "E-083"
+   ],
+   "api_endpoints": [
+    {
+     "act": "A20",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/conversations",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-038",
+      "E-039",
+      "E-005",
+      "E-004"
+     ],
+     "choke_points": [
+      "C3",
+      "C2"
+     ],
+     "source": [
+      "D-024",
+      "D-037",
+      "D-007",
+      "D-003.9",
+      "D-007.2",
+      "D-024.7",
+      "D-037.5",
+      "D-060.3"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A58",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tasks",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-028",
+      "E-029",
+      "E-010",
+      "E-013"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-068",
+      "D-064",
+      "D-068.9"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A22",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/goals",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-010",
+      "E-013",
+      "E-011",
+      "E-012"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-032",
+      "D-034",
+      "D-003.1",
+      "D-034.1",
+      "D-034.3",
+      "D-063.4"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A54",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/goals",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-010",
+      "E-013",
+      "E-011",
+      "E-012"
+     ],
+     "choke_points": [
+      "C2",
+      "C3"
+     ],
+     "source": [
+      "D-063",
+      "D-035",
+      "D-038.3",
+      "D-063.3",
+      "D-063.4",
+      "D-063.6"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A23",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/goal_allocations/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-011",
+      "E-012",
+      "E-010",
+      "E-013"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-032",
+      "D-036",
+      "D-076.12",
+      "D-003.1",
+      "D-030.6",
+      "D-032.5",
+      "D-032.8",
+      "D-036.1"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A49",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/goal_allocations/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-011",
+      "E-012",
+      "E-028",
+      "E-029"
+     ],
+     "choke_points": [
+      "C2",
+      "C3"
+     ],
+     "source": [
+      "D-058",
+      "D-032",
+      "D-036",
+      "D-025.3",
+      "D-026.5",
+      "D-032.2",
+      "D-032.4",
+      "D-032.6",
+      "D-058.3",
+      "D-061.6"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A29",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/goals/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-010",
+      "E-013",
+      "E-008",
+      "E-011"
+     ],
+     "choke_points": [
+      "C2",
+      "C3"
+     ],
+     "source": [
+      "D-032",
+      "D-034",
+      "D-061",
+      "D-003.3",
+      "D-032.7",
+      "D-061.7"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A52",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/goals",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-010",
+      "E-013",
+      "E-008",
+      "E-011"
+     ],
+     "choke_points": [
+      "C2",
+      "C3"
+     ],
+     "source": [
+      "D-061",
+      "D-032",
+      "D-061.8"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A45",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tenants",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-001",
+      "E-010",
+      "E-017",
+      "E-022"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-010",
+      "D-024",
+      "D-003",
+      "D-003.1",
+      "D-010.1",
+      "D-024.1"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    }
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN R1／R2／R3／R4 が「聞く・頼む」したとき THEN Kaname は「会話を記憶へ。指示をAI社員へ」を行う（自動側：自分のAIが答え、必要ならAI社員に配る。数値もここで出す。配布・承認・記憶は AG-UI イベントで画面へ）",
+    "UNWANTED: IF プランの月間の実行量（トークン・実行時間）の上限に達した THEN Kaname は「今月の AI の実行量が上限に達しました。来月まで待つか、プランを変えると続けられます」を出し、プランを見る／来月まで待つ（E-LIM-004）",
+    "EVENT-DRIVEN: WHEN R1／R2／R3／R4 が「見え方を切り替える（URL に残る）」したとき THEN Kaname は「同じデータを別の見え方で読む（書き込み無し）」を行う",
+    "EVENT-DRIVEN: WHEN R1／R2／R3 が「届くか見る」したとき THEN Kaname は「目標と実績を突き合わせ、未配分を計算」を行う（自動側：降ろした数と積み上がった数を同じ画面に出す）",
+    "UNWANTED: IF 閲覧のみの役割が、見せない設定の目標画面を直接 URL で開く THEN Kaname は「この権限では見えません。見える範囲は代表が決めています」を出し、今日へ戻る／代表に頼む（E-PERM-001）",
+    "EVENT-DRIVEN: WHEN R1／R2 が「かけたものと出たものを並べて見る」したとき THEN Kaname は「ledger_records/tasks の goal_id・measure_id を読んで集計」を行う（自動側：自分のAIが経費・タスク・活動を目標／施策に紐づける候補を出し、1件あたりのコストを出す）",
+    "UNWANTED: IF 閲覧のみの役割が、見せない設定の目標画面を直接 URL で開く THEN Kaname は「この権限では見えません。見える範囲は代表が決めています」を出し、今日へ戻る／代表に頼む（E-PERM-001）",
+    "EVENT-DRIVEN: WHEN R1／R2 が「誰に・どれだけ降ろすか決める」したとき THEN Kaname は「配分を保存」を行う（自動側：未配分を赤で出す。単位が変わる親子は変換式を訊く）",
+    "UNWANTED: IF 配る権限が無い担当者が配分を保存しようとする THEN Kaname は「配分を変えられるのは部門長と代表です。提案として送れます」を出し、提案として送る／やめる（E-PERM-002）",
+    "EVENT-DRIVEN: WHEN R1／R2／R3 が「自分の目標を直す・自主目標を足す」したとき THEN Kaname は「個人層の目標を保存（本人は即反映）」を行う（自動側：自分のAIが自分のAI社員への配分案を出す）",
+    "EVENT-DRIVEN: WHEN R1／R2 が「目標を改訂する」したとき THEN Kaname は「目標を版で保存。紐づくタスクに印」を行う（自動側：自分のAIが下位への影響（配分・タスク）を出し、再計画を提案）",
+    "UNWANTED: IF タスク・配分・仮説が紐づいたまま目標を無くそうとした THEN Kaname は「この目標には 4 件のタスクと 2 件の仮説が紐づいています。行き先を決めてから終えられます」を出し、行き先を決める／まとめて自主目標に（E-DEP-003）",
+    "EVENT-DRIVEN: WHEN R1／R2 が「無くす目標を選び、紐づくものの行き先を決める」したとき THEN Kaname は「goals.ended_at。孤児のタスク・配分・仮説を赤で残す」を行う（自動側：自分のAIが付け替え／自主化／やめる の振り分け案を出す）",
+    "UNWANTED: IF タスク・配分・仮説が紐づいたまま目標を無くそうとした THEN Kaname は「この目標には 4 件のタスクと 2 件の仮説が紐づいています。行き先を決めてから終えられます」を出し、行き先を決める／まとめて自主目標に（E-DEP-003）",
+    "EVENT-DRIVEN: WHEN R1／R2 が「会社モデルの全体を見る」したとき THEN Kaname は「会社モデルの現在の版を読む」を行う（自動側：自分のAIが直近で変わったところを示す）"
+   ],
+   "checklist": [],
+   "legacy_drift_notes": null,
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-003",
+    "D-003.1",
+    "D-003.3",
+    "D-003.9",
+    "D-007",
+    "D-007.2",
+    "D-010",
+    "D-010.1",
+    "D-024",
+    "D-024.1",
+    "D-024.7",
+    "D-025.3",
+    "D-026.5",
+    "D-030.6",
+    "D-032",
+    "D-032.2",
+    "D-032.4",
+    "D-032.5",
+    "D-032.6",
+    "D-032.7",
+    "D-032.8",
+    "D-034",
+    "D-034.1",
+    "D-034.3",
+    "D-035",
+    "D-036",
+    "D-036.1",
+    "D-037",
+    "D-037.5",
+    "D-038.3",
+    "D-058",
+    "D-058.3",
+    "D-060.3",
+    "D-061",
+    "D-061.6",
+    "D-061.7",
+    "D-061.8",
+    "D-063",
+    "D-063.3",
+    "D-063.4",
+    "D-063.6",
+    "D-064",
+    "D-068",
+    "D-068.9",
+    "D-076.12"
+   ]
+  },
+  {
+   "id": "F-009",
+   "name": "なぜ届かなかったかを言葉にして、次の打ち手を決めたい",
+   "category": "job",
+   "job": "J6",
+   "acts": [
+    "A54",
+    "A26",
+    "A27"
+   ],
+   "happy_path": [
+    "A54 かけたものと出たものを並べて見る",
+    "A26 ふりかえりを読む",
+    "A27 採る仮説と施策を決める"
+   ],
+   "error_paths": [
+    "E-PERM-001",
+    "E-DEP-002",
+    "E-MOCK-017",
+    "E-MOCK-018",
+    "E-MOCK-030"
+   ],
+   "policies": [
+    "C2",
+    "C3"
+   ],
+   "notifications": [],
+   "audit_logs": [
+    "audit_events（追記専用）"
+   ],
+   "access_roles": [
+    "R1",
+    "R2"
+   ],
+   "external_services": [],
+   "related_screens": [
+    "goals",
+    "hypotheses",
+    "review"
+   ],
+   "related_entities": [
+    "E-008",
+    "E-010",
+    "E-011",
+    "E-012",
+    "E-013",
+    "E-014",
+    "E-015",
+    "E-016",
+    "E-021",
+    "E-023",
+    "E-028",
+    "E-029",
+    "E-041",
+    "E-053",
+    "E-055",
+    "E-068",
+    "E-080",
+    "E-081",
+    "E-082",
+    "E-083"
+   ],
+   "api_endpoints": [
+    {
+     "act": "A54",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/goals",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-010",
+      "E-013",
+      "E-011",
+      "E-012"
+     ],
+     "choke_points": [
+      "C2",
+      "C3"
+     ],
+     "source": [
+      "D-063",
+      "D-035",
+      "D-038.3",
+      "D-063.3",
+      "D-063.4",
+      "D-063.6"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A26",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/hypotheses",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-014",
+      "E-010",
+      "E-013",
+      "E-016"
+     ],
+     "choke_points": [
+      "C3",
+      "C2"
+     ],
+     "source": [
+      "D-035",
+      "D-006",
+      "D-076.11",
+      "D-003.1",
+      "D-003.3",
+      "D-030.7"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A27",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/hypotheses/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-014",
+      "E-015",
+      "E-016",
+      "E-028"
+     ],
+     "choke_points": [
+      "C3",
+      "C2"
+     ],
+     "source": [
+      "D-035",
+      "D-003.1",
+      "D-003.3",
+      "D-030.7",
+      "D-035.1"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    }
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN R1／R2 が「かけたものと出たものを並べて見る」したとき THEN Kaname は「ledger_records/tasks の goal_id・measure_id を読んで集計」を行う（自動側：自分のAIが経費・タスク・活動を目標／施策に紐づける候補を出し、1件あたりのコストを出す）",
+    "UNWANTED: IF 閲覧のみの役割が、見せない設定の目標画面を直接 URL で開く THEN Kaname は「この権限では見えません。見える範囲は代表が決めています」を出し、今日へ戻る／代表に頼む（E-PERM-001）",
+    "EVENT-DRIVEN: WHEN R1／R2 が「ふりかえりを読む」したとき THEN Kaname は「期間の実績と目標の差を集計」を行う（自動側：自分のAIが差分と要因の候補を書く）",
+    "EVENT-DRIVEN: WHEN R1／R2 が「採る仮説と施策を決める」したとき THEN Kaname は「仮説・施策・検証を保存」を行う（自動側：自分のAIが仮説を出し、採ったらタスクまで割る）"
+   ],
+   "checklist": [],
+   "legacy_drift_notes": null,
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-003.1",
+    "D-003.3",
+    "D-006",
+    "D-030.7",
+    "D-035",
+    "D-035.1",
+    "D-038.3",
+    "D-063",
+    "D-063.3",
+    "D-063.4",
+    "D-063.6",
+    "D-076.11"
+   ]
+  },
+  {
+   "id": "F-010",
+   "name": "人に任せたい。任せても品質が落ちないようにしたい",
+   "category": "job",
+   "job": "J7",
+   "acts": [
+    "A53",
+    "A16",
+    "A50",
+    "A51",
+    "A48",
+    "A36",
+    "A62",
+    "A61",
+    "A37",
+    "A38",
+    "A46",
+    "A81"
+   ],
+   "happy_path": [
+    "A53 木を開いて、止まっているところを見る",
+    "A16 自分のAIとAI社員のやりとりを見る",
+    "A50 やることを書いて、どの目標かを選ぶ",
+    "A51 誰に引き継いでもらうか選ぶ（負荷を見て）",
+    "A48 残っている仕事から引き継ぐ",
+    "A36 人を招いて見える範囲を決める",
+    "A62 抜ける人の依存を片づける",
+    "A61 1人の権限を決める",
+    "A37 AI社員を増やす・人に託す",
+    "A38 誰が何をしたかを確認する",
+    "A46 このAI社員の中身を見る",
+    "A81 使えるスキルを見て絞る"
+   ],
+   "error_paths": [
+    "E-VAL-001",
+    "E-DEP-001",
+    "E-GATE-004",
+    "E-GATE-005",
+    "E-SIG-001",
+    "E-LIM-001",
+    "E-TO-001",
+    "E-TO-004",
+    "E-EXT-005",
+    "E-MOCK-003",
+    "E-MOCK-004",
+    "E-MOCK-005",
+    "E-MOCK-007",
+    "E-MOCK-010",
+    "E-MOCK-022",
+    "E-MOCK-023",
+    "E-MOCK-034",
+    "E-ACT-035"
+   ],
+   "policies": [
+    "C2",
+    "C3",
+    "C6",
+    "C8"
+   ],
+   "notifications": [
+    "C6 通知送出（届け先は notification_preferences）"
+   ],
+   "audit_logs": [
+    "audit_events（追記専用）"
+   ],
+   "access_roles": [
+    "R1",
+    "R2"
+   ],
+   "external_services": [],
+   "related_screens": [
+    "ai-activity",
+    "ai-staff",
+    "ai-staff-detail",
+    "audit",
+    "clone-thread",
+    "member-detail",
+    "members",
+    "tasks"
+   ],
+   "related_entities": [
+    "E-002",
+    "E-004",
+    "E-005",
+    "E-006",
+    "E-010",
+    "E-013",
+    "E-015",
+    "E-022",
+    "E-023",
+    "E-028",
+    "E-029",
+    "E-030",
+    "E-032",
+    "E-033",
+    "E-039",
+    "E-040",
+    "E-041",
+    "E-042",
+    "E-045",
+    "E-046",
+    "E-047",
+    "E-048",
+    "E-049",
+    "E-050",
+    "E-051",
+    "E-059",
+    "E-060",
+    "E-067",
+    "E-068",
+    "E-069",
+    "E-070",
+    "E-071",
+    "E-074",
+    "E-077",
+    "E-080",
+    "E-081",
+    "E-082",
+    "E-083"
+   ],
+   "api_endpoints": [
+    {
+     "act": "A53",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ai_employees",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-006",
+      "E-004",
+      "E-005",
+      "E-004"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-062",
+      "D-037",
+      "D-042",
+      "D-037.5",
+      "D-062.6"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A16",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/approvals",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-033",
+      "E-039",
+      "E-005",
+      "E-004"
+     ],
+     "choke_points": [
+      "C3"
+     ],
+     "source": [
+      "D-037",
+      "D-012",
+      "D-012.7",
+      "D-037.5",
+      "D-060.3"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A50",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/tasks",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-028",
+      "E-029",
+      "E-010",
+      "E-013"
+     ],
+     "choke_points": [
+      "C2",
+      "C3"
+     ],
+     "source": [
+      "D-061",
+      "D-032",
+      "D-008",
+      "D-003.1",
+      "D-008.6",
+      "D-032.2",
+      "D-061.2"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A51",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/tasks/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-028",
+      "E-029",
+      "E-010",
+      "E-013"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-061",
+      "D-058",
+      "D-032",
+      "D-068",
+      "D-008.6",
+      "D-058.8",
+      "D-061.4",
+      "D-068.1",
+      "D-068.8"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A48",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tasks",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-028",
+      "E-029",
+      "E-010",
+      "E-013"
+     ],
+     "choke_points": [
+      "C2",
+      "C3",
+      "C6"
+     ],
+     "source": [
+      "D-058",
+      "D-032",
+      "D-024",
+      "D-068",
+      "D-058.7",
+      "D-061.3",
+      "D-061.5",
+      "D-068.1",
+      "D-068.8"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A36",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/members/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-004",
+      "E-045",
+      "E-042",
+      "E-077"
+     ],
+     "choke_points": [
+      "C6",
+      "C2"
+     ],
+     "source": [
+      "D-026",
+      "D-037",
+      "D-076.13",
+      "D-008.6",
+      "D-053.5"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A62",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/members/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-004",
+      "E-045",
+      "E-042",
+      "E-006"
+     ],
+     "choke_points": [
+      "C2",
+      "C6",
+      "C8"
+     ],
+     "source": [
+      "D-061",
+      "D-042",
+      "D-074.1",
+      "D-074.2",
+      "D-004.10",
+      "D-042.8",
+      "D-061.9"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [
+      "E-ACT-035"
+     ],
+     "rate_limit": null
+    },
+    {
+     "act": "A61",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/members/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-004",
+      "E-045",
+      "E-042",
+      "E-006"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-026",
+      "D-037",
+      "D-073.3",
+      "D-073.6",
+      "D-076.13",
+      "D-026.3",
+      "D-032.4",
+      "D-037.8"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A37",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ai_employees",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-006",
+      "E-004",
+      "E-022",
+      "E-023"
+     ],
+     "choke_points": [
+      "C2",
+      "C3"
+     ],
+     "source": [
+      "D-037",
+      "D-027",
+      "D-030.4",
+      "D-037.1",
+      "D-037.3"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A38",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/audit_events",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-041",
+      "E-059",
+      "E-060",
+      "E-033"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-042",
+      "D-042.3"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A46",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ai_employees",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-006",
+      "E-004",
+      "E-022",
+      "E-023"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-037",
+      "D-026",
+      "D-022",
+      "D-076.8",
+      "D-076.13",
+      "D-037.3"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A81",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/ai_employees/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-006",
+      "E-004",
+      "E-022",
+      "E-023"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-078.3",
+      "D-078.4",
+      "D-037"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    }
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN R1／R2／R3 が「木を開いて、止まっているところを見る」したとき THEN Kaname は「AI社員ごとのセッション履歴・関門通過を読む」を行う（自動側：自分のAIが各AI社員のセッションから報告を集める）",
+    "UNWANTED: IF AI社員の実行が完了信号を出さずに終わった（exit 0 で空応答） THEN Kaname は「営業社員の実行が結果を返さずに終わりました。完了とは見なしていません」を出し、もう一度やらせる／動きを見る（E-SIG-001）",
+    "UNWANTED: IF 長い実行がタイムアウトした（10 分）。ワーカーの打ち切りに加え、実行記録の期限で二重に守る THEN Kaname は「営業社員の実行が 10 分を超えたので止めました。途中までの結果は残っています」を出し、続きをやらせる／動きを見る（E-TO-004）",
+    "EVENT-DRIVEN: WHEN R1／R2／R3 が「自分のAIとAI社員のやりとりを見る」したとき THEN Kaname は「差し戻しの履歴」を行う（自動側：自分のAIが何を直させたかを説明する）",
+    "EVENT-DRIVEN: WHEN R1／R2／R3 が「やることを書いて、どの目標かを選ぶ」したとき THEN Kaname は「タスクを保存。目標が無ければ「行き先のないタスク」に」を行う（自動側：自分のAIが紐づく目標の候補と担当（人／AI社員）を出す）",
+    "EVENT-DRIVEN: WHEN R1／R2／R3 が「誰に引き継いでもらうか選ぶ（負荷を見て）」したとき THEN Kaname は「担当を移す（合意 or 指示）。goal_id は変えない。task_handovers に記録」を行う（自動側：自分のAIが相手の負荷と合意の要否を出す）",
+    "EVENT-DRIVEN: WHEN R1／R2／R3 が「残っている仕事から引き継ぐ」したとき THEN Kaname は「タスクの担当を移す（合意 or そのまま）。task_handovers に記録」を行う（自動側：自分のAIが同じ層の残りから引き継げるものを提案する）",
+    "EVENT-DRIVEN: WHEN R1／R2 が「人を招いて見える範囲を決める」したとき THEN Kaname は「招待を発行、スコープを結ぶ」を行う",
+    "UNWANTED: IF 宛先がこの会社に紐づかない（外部の宛先へ送ろうとした） THEN Kaname は「この宛先は会社の外です。外に送るには代表の承認が要ります」を出し、承認を頼む／やめる（E-GATE-005）",
+    "EVENT-DRIVEN: WHEN R1／R2 が「抜ける人の依存を片づける」したとき THEN Kaname は「依存の表どおりに移す／失効させる。証跡に残す」を行う（自動側：自分のAIが引き継ぎ先の案を出す（タスク・承認・AI社員・長））",
+    "UNWANTED: IF 抜ける人の依存（タスク・承認待ち・AI社員・層の長）に自分のAIが引き継ぎ先の案を出せない、または引き継ぎ先が未決のまま「無効にする」を押した THEN Kaname は「引き継ぎ先が決まっていないものがあります。決めるまで無効にできません」を出し、自分のAIの案を全部採る／1 件ずつ決める（E-ACT-035）",
+    "EVENT-DRIVEN: WHEN R1／R2 が「1人の権限を決める」したとき THEN Kaname は「層への所属・役割・権限の表を保存。既存セッションを無効化」を行う（自動側：自分のAIが「この人に見えるようになるもの」を列挙する）",
+    "UNWANTED: IF 抜ける人の依存（タスク・承認待ち・AI社員・層の長）に自分のAIが引き継ぎ先の案を出せない、または引き継ぎ先が未決のまま「無効にする」を押した THEN Kaname は「引き継ぎ先が決まっていないものがあります。決めるまで無効にできません」を出し、自分のAIの案を全部採る／1 件ずつ決める（E-ACT-035）",
+    "EVENT-DRIVEN: WHEN R1／R2 が「AI社員を増やす・人に託す」したとき THEN Kaname は「AI社員を作成・付与。プラン上限を判定」を行う（自動側：自分のAIが担当業務のたたき台を出す）",
+    "UNWANTED: IF プランの AI社員数の上限に達した THEN Kaname は「エントリーで作れる AI社員は 3 体までです。プランを変えると増やせます」を出し、プランを見る／既存を整理する（E-LIM-001）",
+    "EVENT-DRIVEN: WHEN R1／R2 が「誰が何をしたかを確認する」したとき THEN Kaname は「証跡を人・期間で集計」を行う",
+    "EVENT-DRIVEN: WHEN R1／R2 が「このAI社員の中身を見る」したとき THEN Kaname は「担当業務・託し先・ルール・証跡を読む」を行う",
+    "EVENT-DRIVEN: WHEN R1／R2 が「使えるスキルを見て絞る」したとき THEN Kaname は「装着の有効／無効を会社の範囲で保存。外したスキルはその AI社員では動かない」を行う"
+   ],
+   "checklist": [],
+   "legacy_drift_notes": null,
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-003.1",
+    "D-004.10",
+    "D-008",
+    "D-008.1",
+    "D-008.6",
+    "D-012",
+    "D-012.7",
+    "D-022",
+    "D-024",
+    "D-026",
+    "D-026.3",
+    "D-027",
+    "D-030.4",
+    "D-032",
+    "D-032.2",
+    "D-032.4",
+    "D-037",
+    "D-037.1",
+    "D-037.3",
+    "D-037.5",
+    "D-037.8",
+    "D-042",
+    "D-042.3",
+    "D-042.8",
+    "D-053.5",
+    "D-058",
+    "D-058.7",
+    "D-058.8",
+    "D-060.3",
+    "D-061",
+    "D-061.2",
+    "D-061.3",
+    "D-061.4",
+    "D-061.5",
+    "D-061.9",
+    "D-062",
+    "D-062.6",
+    "D-068",
+    "D-068.1",
+    "D-068.8",
+    "D-073.3",
+    "D-073.6",
+    "D-074.1",
+    "D-074.2",
+    "D-076.13",
+    "D-076.8",
+    "D-078.3",
+    "D-078.4"
+   ]
+  },
+  {
+   "id": "F-011",
+   "name": "会社のやり方が、人が辞めても消えないようにしたい",
+   "category": "job",
+   "job": "J8",
+   "acts": [
+    "A28",
+    "A44",
+    "A45"
+   ],
+   "happy_path": [
+    "A28 担当業務を書き換える",
+    "A44 台帳の項目・段階を変える",
+    "A45 会社モデルの全体を見る"
+   ],
+   "error_paths": [
+    "E-MOCK-011",
+    "E-MOCK-013",
+    "E-MOCK-021"
+   ],
+   "policies": [
+    "C2",
+    "C3"
+   ],
+   "notifications": [],
+   "audit_logs": [
+    "audit_events（追記専用）"
+   ],
+   "access_roles": [
+    "R1",
+    "R2"
+   ],
+   "external_services": [],
+   "related_screens": [
+    "company-model",
+    "duties",
+    "ledger-def"
+   ],
+   "related_entities": [
+    "E-001",
+    "E-002",
+    "E-004",
+    "E-006",
+    "E-010",
+    "E-013",
+    "E-017",
+    "E-018",
+    "E-019",
+    "E-020",
+    "E-022",
+    "E-023",
+    "E-024",
+    "E-025",
+    "E-027",
+    "E-031",
+    "E-032",
+    "E-040",
+    "E-041",
+    "E-042",
+    "E-045",
+    "E-052",
+    "E-053",
+    "E-055",
+    "E-068"
+   ],
+   "api_endpoints": [
+    {
+     "act": "A28",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/duties/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-022",
+      "E-023",
+      "E-024",
+      "E-025"
+     ],
+     "choke_points": [
+      "C2",
+      "C3"
+     ],
+     "source": [
+      "D-030",
+      "D-027",
+      "D-022",
+      "D-076.7",
+      "D-003.3",
+      "D-022.1",
+      "D-024.4",
+      "D-027.3",
+      "D-030.4"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A44",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/ledger_definitions/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-017",
+      "E-018",
+      "E-019",
+      "E-019"
+     ],
+     "choke_points": [
+      "C2",
+      "C3"
+     ],
+     "source": [
+      "D-038",
+      "D-039",
+      "D-010",
+      "D-010.5",
+      "D-030.5",
+      "D-039.4"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A45",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tenants",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-001",
+      "E-010",
+      "E-017",
+      "E-022"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-010",
+      "D-024",
+      "D-003",
+      "D-003.1",
+      "D-010.1",
+      "D-024.1"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    }
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN R1／R2 が「担当業務を書き換える」したとき THEN Kaname は「担当業務を更新、AI社員に反映」を行う（自動側：自分のAIが影響するAI社員を示す）",
+    "EVENT-DRIVEN: WHEN R1／R2 が「台帳の項目・段階を変える」したとき THEN Kaname は「台帳の定義を版で更新」を行う（自動側：自分のAIが既存レコードへの影響を出す）",
+    "EVENT-DRIVEN: WHEN R1／R2 が「会社モデルの全体を見る」したとき THEN Kaname は「会社モデルの現在の版を読む」を行う（自動側：自分のAIが直近で変わったところを示す）"
+   ],
+   "checklist": [],
+   "legacy_drift_notes": null,
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-003",
+    "D-003.1",
+    "D-003.3",
+    "D-010",
+    "D-010.1",
+    "D-010.5",
+    "D-022",
+    "D-022.1",
+    "D-024",
+    "D-024.1",
+    "D-024.4",
+    "D-027",
+    "D-027.3",
+    "D-030",
+    "D-030.4",
+    "D-030.5",
+    "D-038",
+    "D-039",
+    "D-039.4",
+    "D-076.7"
+   ]
+  },
+  {
+   "id": "F-012",
+   "name": "このツールを入れて安全か、社内（情シス・コンプラ）に説明できるようにしたい",
+   "category": "job",
+   "job": "J9",
+   "acts": [
+    "A04",
+    "A66",
+    "A39",
+    "A40",
+    "A41",
+    "A42"
+   ],
+   "happy_path": [
+    "A04 認証アプリを登録する",
+    "A66 運営にサポートアクセスを許可する",
+    "A39 何ができるアプリかを見せる",
+    "A40 全操作の証跡を出す",
+    "A41 データを全部持ち出す",
+    "A42 退会する"
+   ],
+   "error_paths": [
+    "E-AUTH-004",
+    "E-AUTH-005",
+    "E-DATA-002",
+    "E-EXT-005",
+    "E-MOCK-001",
+    "E-MOCK-007",
+    "E-MOCK-014",
+    "E-MOCK-032"
+   ],
+   "policies": [
+    "C2",
+    "C4",
+    "C8"
+   ],
+   "notifications": [],
+   "audit_logs": [
+    "audit_events（追記専用）"
+   ],
+   "access_roles": [
+    "R1",
+    "R2"
+   ],
+   "external_services": [],
+   "related_screens": [
+    "account-close",
+    "audit",
+    "export",
+    "mfa-setup",
+    "security-brief"
+   ],
+   "related_entities": [
+    "E-001",
+    "E-002",
+    "E-004",
+    "E-006",
+    "E-010",
+    "E-017",
+    "E-020",
+    "E-022",
+    "E-027",
+    "E-032",
+    "E-033",
+    "E-037",
+    "E-041",
+    "E-042",
+    "E-045",
+    "E-046",
+    "E-047",
+    "E-048",
+    "E-049",
+    "E-050",
+    "E-051",
+    "E-059",
+    "E-060",
+    "E-074",
+    "E-078"
+   ],
+   "api_endpoints": [
+    {
+     "act": "A04",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/members",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-004",
+      "E-045",
+      "E-042",
+      "E-041"
+     ],
+     "choke_points": [
+      "C2",
+      "C8"
+     ],
+     "source": [
+      "D-042"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A66",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/audit_events/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-041",
+      "E-059",
+      "E-060",
+      "E-033"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-042",
+      "D-074.5",
+      "D-042.6"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A39",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/sessions",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-048",
+      "E-041",
+      "E-059",
+      "E-060"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-042",
+      "D-015",
+      "D-015.2",
+      "D-015.3",
+      "D-042.1",
+      "D-053.6"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A40",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/audit_events",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-041",
+      "E-059",
+      "E-060",
+      "E-033"
+     ],
+     "choke_points": [
+      "C4",
+      "C2"
+     ],
+     "source": [
+      "D-042",
+      "D-042.3"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A41",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/export_jobs",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-078",
+      "E-001",
+      "E-010",
+      "E-017"
+     ],
+     "choke_points": [
+      "C4",
+      "C2"
+     ],
+     "source": [
+      "D-025",
+      "D-050",
+      "D-010.7",
+      "D-025.6",
+      "D-042.7"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A42",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/members/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-004",
+      "E-045",
+      "E-042",
+      "E-078"
+     ],
+     "choke_points": [
+      "C2",
+      "C8"
+     ],
+     "source": [
+      "D-042",
+      "D-076.13",
+      "D-042.7"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    }
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN R1／R2／R3 が「認証アプリを登録する」したとき THEN Kaname は「TOTPシークレットを暗号化保管」を行う",
+    "UNWANTED: IF 2 段階認証のコードが違う（時刻のずれ・古いコード） THEN Kaname は「コードが違います。認証アプリの時刻が合っているか確かめてください」を出し、もう一度入力する／時刻を合わせる（E-AUTH-004）",
+    "EVENT-DRIVEN: WHEN R1／R2 が「運営にサポートアクセスを許可する」したとき THEN Kaname は「範囲・期限つきの許可を保存。運営が見た記録を顧客の証跡に残す」を行う",
+    "EVENT-DRIVEN: WHEN R1／R2 が「何ができるアプリかを見せる」したとき THEN Kaname は「Bridgeの権限・送るもの/送らないものを列挙」を行う",
+    "EVENT-DRIVEN: WHEN R1／R2 が「全操作の証跡を出す」したとき THEN Kaname は「証跡をファイルに書き出す」を行う",
+    "EVENT-DRIVEN: WHEN R1／R2 が「データを全部持ち出す」したとき THEN Kaname は「会社モデルと台帳を一括で書き出す」を行う",
+    "EVENT-DRIVEN: WHEN R1／R2 が「退会する」したとき THEN Kaname は「トークン・Bridge接続・共有を全部無効化」を行う（自動側：自分のAIが消えるものを列挙する）",
+    "UNWANTED: IF 退会・停止・権限変更の直後に、発行済みのセッション・常駐アプリのトークン・共有リンクで叩く（口座状態の波及） THEN Kaname は「アカウントの状態が変わったので、ログインし直してください」を出し、ログインへ（E-AUTH-005）"
+   ],
+   "checklist": [],
+   "legacy_drift_notes": null,
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-010.7",
+    "D-015",
+    "D-015.2",
+    "D-015.3",
+    "D-025",
+    "D-025.6",
+    "D-042",
+    "D-042.1",
+    "D-042.3",
+    "D-042.6",
+    "D-042.7",
+    "D-050",
+    "D-053.6",
+    "D-074.5",
+    "D-076.13"
+   ]
+  },
+  {
+   "id": "F-013",
+   "name": "自分のAIを、自分の考え方に近づけたい",
+   "category": "job",
+   "job": "J11",
+   "acts": [
+    "A06",
+    "A08",
+    "A20",
+    "A30"
+   ],
+   "happy_path": [
+    "A06 自分のAIの質問に答える",
+    "A08 違うところを言う",
+    "A20 聞く・頼む",
+    "A30 自分の考え方を教える"
+   ],
+   "error_paths": [
+    "E-EXT-003",
+    "E-CONN-002",
+    "E-SIG-002",
+    "E-LIM-002",
+    "E-LIM-004",
+    "E-MOCK-009"
+   ],
+   "policies": [
+    "C2",
+    "C3"
+   ],
+   "notifications": [],
+   "audit_logs": [
+    "audit_events（追記専用）"
+   ],
+   "access_roles": [
+    "R1",
+    "R2"
+   ],
+   "external_services": [],
+   "related_screens": [
+    "clone-chat",
+    "clone-memory",
+    "onboard-draft",
+    "onboard-interview"
+   ],
+   "related_entities": [
+    "E-001",
+    "E-002",
+    "E-004",
+    "E-005",
+    "E-006",
+    "E-010",
+    "E-013",
+    "E-017",
+    "E-018",
+    "E-019",
+    "E-022",
+    "E-023",
+    "E-027",
+    "E-032",
+    "E-038",
+    "E-039"
+   ],
+   "api_endpoints": [
+    {
+     "act": "A06",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/clones",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-005",
+      "E-004",
+      "E-038",
+      "E-039"
+     ],
+     "choke_points": [
+      "C3",
+      "C2"
+     ],
+     "source": [
+      "D-028",
+      "D-030",
+      "D-010",
+      "D-055",
+      "D-003.7",
+      "D-010.6",
+      "D-028.1",
+      "D-030.3",
+      "D-055.3"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A08",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tenants",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-001",
+      "E-010",
+      "E-017",
+      "E-022"
+     ],
+     "choke_points": [
+      "C3",
+      "C2"
+     ],
+     "source": [
+      "D-028",
+      "D-025",
+      "D-003.7",
+      "D-025.3",
+      "D-025.4",
+      "D-028.1"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A20",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/conversations",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-038",
+      "E-039",
+      "E-005",
+      "E-004"
+     ],
+     "choke_points": [
+      "C3",
+      "C2"
+     ],
+     "source": [
+      "D-024",
+      "D-037",
+      "D-007",
+      "D-003.9",
+      "D-007.2",
+      "D-024.7",
+      "D-037.5",
+      "D-060.3"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A30",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/memories",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-027",
+      "E-005",
+      "E-004"
+     ],
+     "choke_points": [
+      "C3",
+      "C2"
+     ],
+     "source": [
+      "D-024",
+      "D-030",
+      "D-025",
+      "D-024.7",
+      "D-025.4",
+      "D-030.8",
+      "D-066.7"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    }
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN R1／R2 が「自分のAIの質問に答える」したとき THEN Kaname は「会話を記憶へ、業種の手がかりを保存」を行う（自動側：自分のAIが訊く順番を決め、答えを記憶に落とす（Bridge 経由・本人のサブスク））",
+    "EVENT-DRIVEN: WHEN R1／R2 が「違うところを言う」したとき THEN Kaname は「会社モデルの下書きを更新」を行う（自動側：自分のAIが直して出し直す）",
+    "EVENT-DRIVEN: WHEN R1／R2／R3／R4 が「聞く・頼む」したとき THEN Kaname は「会話を記憶へ。指示をAI社員へ」を行う（自動側：自分のAIが答え、必要ならAI社員に配る。数値もここで出す。配布・承認・記憶は AG-UI イベントで画面へ）",
+    "UNWANTED: IF プランの月間の実行量（トークン・実行時間）の上限に達した THEN Kaname は「今月の AI の実行量が上限に達しました。来月まで待つか、プランを変えると続けられます」を出し、プランを見る／来月まで待つ（E-LIM-004）",
+    "EVENT-DRIVEN: WHEN R1／R2／R3／R4 が「自分の考え方を教える」したとき THEN Kaname は「記憶をスコープ付きで保存」を行う（自動側：自分のAIが記憶に落として次から参照する）"
+   ],
+   "checklist": [],
+   "legacy_drift_notes": null,
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-003.7",
+    "D-003.9",
+    "D-007",
+    "D-007.2",
+    "D-010",
+    "D-010.6",
+    "D-024",
+    "D-024.7",
+    "D-025",
+    "D-025.3",
+    "D-025.4",
+    "D-028",
+    "D-028.1",
+    "D-030",
+    "D-030.3",
+    "D-030.8",
+    "D-037",
+    "D-037.5",
+    "D-055",
+    "D-055.3",
+    "D-060.3",
+    "D-066.7"
+   ]
+  },
+  {
+   "id": "F-014",
+   "name": "導入した顧客が詰まったとき、データを見ずに直したい",
+   "category": "job",
+   "job": "J10",
+   "acts": [
+    "A43",
+    "A60",
+    "A70",
+    "A64"
+   ],
+   "happy_path": [
+    "A43 顧客のデータを見ずに直す",
+    "A60 会社の一覧を見る",
+    "A70 問い合わせに答える",
+    "A64 会社の 1 社を扱う"
+   ],
+   "error_paths": [
+    "E-MOCK-026"
+   ],
+   "policies": [
+    "C2",
+    "C6"
+   ],
+   "notifications": [
+    "C6 通知送出（届け先は notification_preferences）"
+   ],
+   "audit_logs": [
+    "audit_events（追記専用）"
+   ],
+   "access_roles": [
+    "R6"
+   ],
+   "external_services": [],
+   "related_screens": [
+    "ops-home",
+    "ops-support",
+    "ops-tenant"
+   ],
+   "related_entities": [
+    "E-001",
+    "E-002",
+    "E-004",
+    "E-006",
+    "E-010",
+    "E-017",
+    "E-022",
+    "E-027",
+    "E-032",
+    "E-038",
+    "E-040",
+    "E-041",
+    "E-042",
+    "E-045",
+    "E-046",
+    "E-047",
+    "E-049",
+    "E-050",
+    "E-051",
+    "E-052",
+    "E-053",
+    "E-054",
+    "E-057",
+    "E-059",
+    "E-060",
+    "E-061",
+    "E-062",
+    "E-063",
+    "E-064",
+    "E-067",
+    "E-068",
+    "E-069",
+    "E-070",
+    "E-071",
+    "E-072",
+    "E-073",
+    "E-080",
+    "E-081",
+    "E-082",
+    "E-083"
+   ],
+   "api_endpoints": [
+    {
+     "act": "A43",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/inquiries/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-061",
+      "E-038",
+      "E-001",
+      "E-010"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-030",
+      "D-042",
+      "D-030.9",
+      "D-030.10",
+      "D-042.6"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A60",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/plans",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-067",
+      "E-068",
+      "E-069",
+      "E-071"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-037",
+      "D-030",
+      "D-073.7"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A70",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/inquiries",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-061",
+      "E-038",
+      "E-001",
+      "E-010"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-075.1",
+      "D-042",
+      "D-077.3"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A64",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/plans/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-067",
+      "E-068",
+      "E-069",
+      "E-071"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-042",
+      "D-074.4",
+      "D-074.5",
+      "D-077.1",
+      "D-077.2",
+      "D-077.6",
+      "D-077.7",
+      "D-077.8"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    }
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN R6 が「顧客のデータを見ずに直す」したとき THEN Kaname は「構成と失敗の型だけを見る」を行う",
+    "EVENT-DRIVEN: WHEN R6 が「会社の一覧を見る」したとき THEN Kaname は「各社のプラン・体数・稼働・詰まりの型だけを集計（中身は読まない）」を行う",
+    "EVENT-DRIVEN: WHEN R6 が「問い合わせに答える」したとき THEN Kaname は「受信箱（問い合わせ＋詰まり）。返答は顧客の問い合わせと証跡に残る」を行う",
+    "EVENT-DRIVEN: WHEN R6 が「会社の 1 社を扱う」したとき THEN Kaname は「会社の詳細の 8 面。入金の記録・返答・承認・対処・個別のお知らせはここから。中身は読まない」を行う"
+   ],
+   "checklist": [],
+   "legacy_drift_notes": null,
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-030",
+    "D-030.10",
+    "D-030.9",
+    "D-037",
+    "D-042",
+    "D-042.6",
+    "D-073.7",
+    "D-074.4",
+    "D-074.5",
+    "D-075.1",
+    "D-077.1",
+    "D-077.2",
+    "D-077.3",
+    "D-077.6",
+    "D-077.7",
+    "D-077.8"
+   ]
+  },
+  {
+   "id": "F-015",
+   "name": "困ったら運営に聞きたい。止まっているのが自分のせいか Kaname のせいか知りたい。いくら払っていて、あとどれだけ使えるか知りたい",
+   "category": "job",
+   "job": "J14",
+   "acts": [
+    "A67",
+    "A68",
+    "A69"
+   ],
+   "happy_path": [
+    "A67 問い合わせを書く",
+    "A68 お知らせを読む・通知の届け先を選ぶ",
+    "A69 プランと請求書を見る"
+   ],
+   "error_paths": [
+    "E-MOCK-008",
+    "E-MOCK-020",
+    "E-MOCK-025",
+    "E-ACT-036",
+    "E-ACT-037"
+   ],
+   "policies": [
+    "C2",
+    "C6"
+   ],
+   "notifications": [
+    "C6 通知送出（届け先は notification_preferences）"
+   ],
+   "audit_logs": [
+    "audit_events（追記専用）"
+   ],
+   "access_roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "external_services": [],
+   "related_screens": [
+    "billing",
+    "inquiry",
+    "notices"
+   ],
+   "related_entities": [
+    "E-004",
+    "E-005",
+    "E-006",
+    "E-038",
+    "E-041",
+    "E-042",
+    "E-045",
+    "E-046",
+    "E-047",
+    "E-050",
+    "E-051",
+    "E-059",
+    "E-060",
+    "E-061",
+    "E-062",
+    "E-063",
+    "E-064",
+    "E-065",
+    "E-066",
+    "E-067",
+    "E-068",
+    "E-069",
+    "E-070",
+    "E-071",
+    "E-072",
+    "E-073"
+   ],
+   "api_endpoints": [
+    {
+     "act": "A67",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/inquiries",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-061",
+      "E-038",
+      "E-041",
+      "E-059"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-075.1",
+      "D-042"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [
+      "E-ACT-036"
+     ],
+     "rate_limit": null
+    },
+    {
+     "act": "A68",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/notices/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-062",
+      "E-063",
+      "E-064",
+      "E-066"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-075.2",
+      "D-075.3",
+      "D-043",
+      "D-076.9",
+      "D-040.6",
+      "D-043.2"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [
+      "E-ACT-037"
+     ],
+     "rate_limit": null
+    },
+    {
+     "act": "A69",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/plans/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-067",
+      "E-068",
+      "E-069",
+      "E-071"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-075.4",
+      "D-075.5",
+      "D-002",
+      "D-037",
+      "D-076.13",
+      "D-002.2"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    }
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN R1／R2／R3／R4 が「問い合わせを書く」したとき THEN Kaname は「問い合わせを保存。運営の受信箱へ。証跡に残す」を行う（自動側：自分のAIがまず答える（記憶・お知らせ・稼働状況から）。解けなければ運営に送る）",
+    "UNWANTED: IF 自分のAIが答えを出せない（記憶・お知らせ・稼働状況に該当が無い）か、運営への送信に失敗した（ネットワーク・添付の上限） THEN Kaname は「運営に送れませんでした。内容は下書きに残っています。もう一度送るか、しばらくしてからお試しください」を出し、もう一度送る／下書きを確認する（E-ACT-036）",
+    "EVENT-DRIVEN: WHEN R1／R2／R3／R4 が「お知らせを読む・通知の届け先を選ぶ」したとき THEN Kaname は「お知らせと稼働状況を読む。通知の設定を保存」を行う（自動側：自分のAIが自分に関係あるお知らせだけ要約する）",
+    "UNWANTED: IF お知らせ・稼働状況の読み込みに失敗した、または通知の届け先の保存に失敗した THEN Kaname は「お知らせを読み込めませんでした。前回の内容を表示しています」を出し、再読み込みする（E-ACT-037）",
+    "EVENT-DRIVEN: WHEN R1／R2 が「プランと請求書を見る」したとき THEN Kaname は「プラン・利用量・請求書を読む。プラン変更を申請」を行う（自動側：自分のAIが上限に近いものを先に言う）"
+   ],
+   "checklist": [],
+   "legacy_drift_notes": null,
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-002",
+    "D-002.2",
+    "D-037",
+    "D-040.6",
+    "D-042",
+    "D-043",
+    "D-043.2",
+    "D-075",
+    "D-075.1",
+    "D-075.2",
+    "D-075.3",
+    "D-075.4",
+    "D-075.5",
+    "D-076.13",
+    "D-076.9"
+   ]
+  },
+  {
+   "id": "F-016",
+   "name": "運営として、問い合わせに答え、お知らせと稼働状況を出し、各社の請求・入金・利用量を 1 か所で見たい",
+   "category": "job",
+   "job": "J15",
+   "acts": [
+    "A70",
+    "A71",
+    "A72",
+    "A73"
+   ],
+   "happy_path": [
+    "A70 問い合わせに答える",
+    "A71 お知らせを出す",
+    "A72 請求・入金・利用量を見る",
+    "A73 セキュリティの出来事を見る"
+   ],
+   "error_paths": [
+    "E-ACT-038",
+    "E-ACT-039"
+   ],
+   "policies": [
+    "C2",
+    "C6"
+   ],
+   "notifications": [
+    "C6 通知送出（届け先は notification_preferences）"
+   ],
+   "audit_logs": [
+    "audit_events（追記専用）"
+   ],
+   "access_roles": [
+    "R6"
+   ],
+   "external_services": [],
+   "related_screens": [
+    "ops-audit",
+    "ops-billing",
+    "ops-notices",
+    "ops-support"
+   ],
+   "related_entities": [
+    "E-001",
+    "E-002",
+    "E-004",
+    "E-010",
+    "E-017",
+    "E-022",
+    "E-027",
+    "E-032",
+    "E-038",
+    "E-041",
+    "E-042",
+    "E-045",
+    "E-058",
+    "E-059",
+    "E-060",
+    "E-061",
+    "E-062",
+    "E-063",
+    "E-064",
+    "E-067",
+    "E-068",
+    "E-069",
+    "E-070",
+    "E-071",
+    "E-072",
+    "E-073",
+    "E-074"
+   ],
+   "api_endpoints": [
+    {
+     "act": "A70",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/inquiries",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-061",
+      "E-038",
+      "E-001",
+      "E-010"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-075.1",
+      "D-042",
+      "D-077.3"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A71",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/notices",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-062",
+      "E-063",
+      "E-064",
+      "E-067"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-075.2",
+      "D-077.4",
+      "D-077.8"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [
+      "E-ACT-038"
+     ],
+     "rate_limit": null
+    },
+    {
+     "act": "A72",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/invoices",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-072",
+      "E-073",
+      "E-067",
+      "E-068"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-075.4",
+      "D-075.5",
+      "D-002",
+      "D-077.3",
+      "D-002.2"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A73",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/audit_events",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-041",
+      "E-059",
+      "E-060",
+      "E-004"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-075.6",
+      "D-042"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [
+      "E-ACT-039"
+     ],
+     "rate_limit": null
+    }
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN R6 が「問い合わせに答える」したとき THEN Kaname は「受信箱（問い合わせ＋詰まり）。返答は顧客の問い合わせと証跡に残る」を行う",
+    "EVENT-DRIVEN: WHEN R6 が「お知らせを出す」したとき THEN Kaname は「お知らせ・稼働状況を公開（対象プラン・公開日時）。全社に通知」を行う",
+    "UNWANTED: IF お知らせの公開で対象の会社が 0 件（プラン未選択・該当なし）、公開日時が過去、または全社通知の送出が一部失敗した THEN Kaname は「対象の会社がありません。プランか会社を選んでください」を出し、対象を選び直す／失敗した分を再送する（E-ACT-038）",
+    "EVENT-DRIVEN: WHEN R6 が「請求・入金・利用量を見る」したとき THEN Kaname は「各社の請求・入金・未収・利用量／上限を集計（中身は見ない）」を行う",
+    "EVENT-DRIVEN: WHEN R6 が「セキュリティの出来事を見る」したとき THEN Kaname は「失敗したログイン・鍵の失効・不審な接続の記録」を行う",
+    "UNWANTED: IF セキュリティの出来事（失敗したログイン・鍵の失効・不審な接続）の記録が読めない、または追記に失敗した THEN Kaname は「セキュリティの記録を読み込めませんでした。運営に連絡してください」を出し、再読み込み／運営に連絡する（E-ACT-039）"
+   ],
+   "checklist": [],
+   "legacy_drift_notes": null,
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-002",
+    "D-002.2",
+    "D-042",
+    "D-075",
+    "D-075.1",
+    "D-075.2",
+    "D-075.4",
+    "D-075.5",
+    "D-075.6",
+    "D-077.3",
+    "D-077.4",
+    "D-077.8"
+   ]
+  },
+  {
+   "id": "F-017",
+   "name": "自分のアカウント・会社の設定・既存データの取り込み・外部サービスの連携を、運営に頼らず自分で整えたい",
+   "category": "job",
+   "job": "J16",
+   "acts": [
+    "A74",
+    "A75",
+    "A76",
+    "A77"
+   ],
+   "happy_path": [
+    "A74 自分のアカウントを整える",
+    "A75 会社の設定を決める",
+    "A76 取り込む",
+    "A77 外部サービスの連携と可否を見る"
+   ],
+   "error_paths": [
+    "E-MOCK-002",
+    "E-MOCK-012",
+    "E-MOCK-019",
+    "E-MOCK-033",
+    "E-ACT-040"
+   ],
+   "policies": [
+    "C1",
+    "C2",
+    "C3",
+    "C4",
+    "C6",
+    "C8"
+   ],
+   "notifications": [
+    "C6 通知送出（届け先は notification_preferences）"
+   ],
+   "audit_logs": [
+    "audit_events（追記専用）"
+   ],
+   "access_roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "external_services": [
+    "外部サービス（サービス台帳の可否・正規連携）"
+   ],
+   "related_screens": [
+    "account",
+    "company-settings",
+    "import",
+    "services"
+   ],
+   "related_entities": [
+    "E-001",
+    "E-002",
+    "E-004",
+    "E-005",
+    "E-010",
+    "E-017",
+    "E-020",
+    "E-021",
+    "E-022",
+    "E-027",
+    "E-032",
+    "E-034",
+    "E-035",
+    "E-037",
+    "E-041",
+    "E-042",
+    "E-045",
+    "E-048",
+    "E-055",
+    "E-056",
+    "E-059",
+    "E-060",
+    "E-067",
+    "E-068",
+    "E-069",
+    "E-070",
+    "E-071",
+    "E-072",
+    "E-073",
+    "E-075",
+    "E-076",
+    "E-079"
+   ],
+   "api_endpoints": [
+    {
+     "act": "A74",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/members/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-004",
+      "E-045",
+      "E-042",
+      "E-041"
+     ],
+     "choke_points": [
+      "C2",
+      "C6",
+      "C8"
+     ],
+     "source": [
+      "D-076.1",
+      "D-042",
+      "D-042.8"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [
+      "E-ACT-040"
+     ],
+     "rate_limit": null
+    },
+    {
+     "act": "A75",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/tenants/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-001",
+      "E-010",
+      "E-017",
+      "E-022"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-076.2",
+      "D-042",
+      "D-042.5"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A76",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/attachments",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-079",
+      "E-017",
+      "E-020",
+      "E-021"
+     ],
+     "choke_points": [
+      "C4",
+      "C3",
+      "C2"
+     ],
+     "source": [
+      "D-076.3",
+      "D-029",
+      "D-025",
+      "D-025.5",
+      "D-029.1"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A77",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/service_registry",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-035",
+      "E-055",
+      "E-056",
+      "E-037"
+     ],
+     "choke_points": [
+      "C1",
+      "C8",
+      "C2"
+     ],
+     "source": [
+      "D-076.4",
+      "D-041",
+      "D-045",
+      "D-006.5",
+      "D-013.1",
+      "D-014.2",
+      "D-019.2",
+      "D-038.4",
+      "D-040.3",
+      "D-041.1",
+      "D-045.3"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": "C1 の規則"
+    }
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN R1／R2／R3／R4 が「自分のアカウントを整える」したとき THEN Kaname は「名前・メール・パスワード・2 段階認証・端末を保存。変更は即失効の対象（G-14）」を行う",
+    "UNWANTED: IF 名前・メール・パスワード・2 段階認証の保存に失敗した、または変更後に他の端末と Bridge の失効が実行されなかった THEN Kaname は「保存できませんでした。もう一度お試しください。パスワードを変えた場合は他の端末で入り直しが必要です」を出し、もう一度保存する／端末の一覧で失効を確認する（E-ACT-040）",
+    "EVENT-DRIVEN: WHEN R1／R2 が「会社の設定を決める」したとき THEN Kaname は「会社名・請求先・データの所在・タイムゾーンを保存」を行う（自動側：自分のAIが所在の選択の意味を説明する）",
+    "EVENT-DRIVEN: WHEN R1／R2 が「取り込む」したとき THEN Kaname は「添付を保存し、台帳の下書きレコードを作る（本番には人が押してから）」を行う（自動側：自分のAIが読んで「台帳の項目・書式・手順」の候補を出す）",
+    "EVENT-DRIVEN: WHEN R1／R2 が「外部サービスの連携と可否を見る」したとき THEN Kaname は「サービス台帳を読む。正規連携（OAuth）を関門経由で結ぶ」を行う（自動側：自分のAIが「なぜ触れないか」を説明する）"
+   ],
+   "checklist": [],
+   "legacy_drift_notes": null,
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-006.5",
+    "D-013.1",
+    "D-014.2",
+    "D-019.2",
+    "D-025",
+    "D-025.5",
+    "D-029",
+    "D-029.1",
+    "D-038.4",
+    "D-040.3",
+    "D-041",
+    "D-041.1",
+    "D-042",
+    "D-042.5",
+    "D-042.8",
+    "D-045",
+    "D-045.3",
+    "D-076",
+    "D-076.1",
+    "D-076.2",
+    "D-076.3",
+    "D-076.4"
+   ]
+  },
+  {
+   "id": "F-018",
+   "name": "運営として、外部サービスの可否（サービス台帳）とプランの定義と目標スキルを管理したい",
+   "category": "job",
+   "job": "J17",
+   "acts": [
+    "A78",
+    "A79",
+    "A80"
+   ],
+   "happy_path": [
+    "A78 サービス台帳を更新する",
+    "A79 プランの定義と目標スキルを扱う",
+    "A80 スキルを構築・アップロード・テストして配る"
+   ],
+   "error_paths": [
+    "E-ACT-041"
+   ],
+   "policies": [
+    "C2",
+    "C4",
+    "C6"
+   ],
+   "notifications": [
+    "C6 通知送出（届け先は notification_preferences）"
+   ],
+   "audit_logs": [
+    "audit_events（追記専用）"
+   ],
+   "access_roles": [
+    "R6"
+   ],
+   "external_services": [],
+   "related_screens": [
+    "ops-catalog",
+    "ops-services",
+    "ops-skills"
+   ],
+   "related_entities": [
+    "E-004",
+    "E-005",
+    "E-006",
+    "E-013",
+    "E-022",
+    "E-023",
+    "E-032",
+    "E-035",
+    "E-040",
+    "E-041",
+    "E-052",
+    "E-053",
+    "E-054",
+    "E-055",
+    "E-056",
+    "E-067",
+    "E-068",
+    "E-069",
+    "E-070",
+    "E-071",
+    "E-080",
+    "E-081",
+    "E-082",
+    "E-083"
+   ],
+   "api_endpoints": [
+    {
+     "act": "A78",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/service_registry/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-035",
+      "E-055",
+      "E-056",
+      "E-032"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-076.5",
+      "D-041",
+      "D-041.1",
+      "D-041.8"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A79",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ai_employees",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-006",
+      "E-004",
+      "E-022",
+      "E-023"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-076.6",
+      "D-076.10",
+      "D-037",
+      "D-063",
+      "D-077.5",
+      "D-030.6",
+      "D-037.9",
+      "D-063.1",
+      "D-063.2"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A80",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/skills",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-080",
+      "E-081",
+      "E-082",
+      "E-083"
+     ],
+     "choke_points": [
+      "C2",
+      "C4",
+      "C6"
+     ],
+     "source": [
+      "D-030.2",
+      "D-030.3",
+      "D-063.1",
+      "D-078.1",
+      "D-078.2",
+      "D-078.3",
+      "D-078.5",
+      "D-080.4",
+      "D-080.5"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [
+      "E-ACT-041"
+     ],
+     "rate_limit": null
+    }
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN R6 が「サービス台帳を更新する」したとき THEN Kaname は「可否と理由を版で更新。全社に効く」を行う",
+    "EVENT-DRIVEN: WHEN R6 が「プランの定義と目標スキルを扱う」したとき THEN Kaname は「価格・上限を版で更新。目標スキルは配るものに載せる」を行う",
+    "EVENT-DRIVEN: WHEN R6 が「スキルを構築・アップロード・テストして配る」したとき THEN Kaname は「版を保存（C4）・配布先の会社に版の更新を通知・装着の状況を集計」を行う（自動側：運営のテストで動かす（外に出ない））",
+    "UNWANTED: IF スキルの一式に資格情報・会社名・個人名が混ざっている、テストの場面が 1 つでも失敗している、または版のメモが空のまま「出す」を押した THEN Kaname は「この版は出せません。テストで失敗した場面があります（外部サービスの規約変更）。直して再テストしてください」を出し、失敗した場面を見る／直して「上げてテストで動かす」（E-ACT-041）"
+   ],
+   "checklist": [],
+   "legacy_drift_notes": null,
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-030.2",
+    "D-030.3",
+    "D-030.6",
+    "D-037",
+    "D-037.9",
+    "D-041",
+    "D-041.1",
+    "D-041.8",
+    "D-063",
+    "D-063.1",
+    "D-063.2",
+    "D-076",
+    "D-076.10",
+    "D-076.5",
+    "D-076.6",
+    "D-077.5",
+    "D-078.1",
+    "D-078.2",
+    "D-078.3",
+    "D-078.5",
+    "D-080.4",
+    "D-080.5"
+   ]
+  },
+  {
+   "id": "F-019",
+   "name": "運営として、公開の申請を審査し、顧客が許可したときだけ支援で中を見て、退会の消去を証明したい。全部証跡つきで",
+   "category": "job",
+   "job": "J13",
+   "acts": [
+    "A63",
+    "A64",
+    "A65"
+   ],
+   "happy_path": [
+    "A63 公開の申請を審査する",
+    "A64 会社の 1 社を扱う",
+    "A65 運営の証跡を見る"
+   ],
+   "error_paths": [
+    "E-ACT-039"
+   ],
+   "policies": [
+    "C2"
+   ],
+   "notifications": [],
+   "audit_logs": [
+    "audit_events（追記専用）"
+   ],
+   "access_roles": [
+    "R6"
+   ],
+   "external_services": [],
+   "related_screens": [
+    "ops-audit",
+    "ops-review",
+    "ops-tenant"
+   ],
+   "related_entities": [
+    "E-001",
+    "E-002",
+    "E-004",
+    "E-006",
+    "E-010",
+    "E-017",
+    "E-022",
+    "E-023",
+    "E-027",
+    "E-032",
+    "E-038",
+    "E-040",
+    "E-041",
+    "E-042",
+    "E-045",
+    "E-046",
+    "E-047",
+    "E-049",
+    "E-050",
+    "E-051",
+    "E-052",
+    "E-053",
+    "E-054",
+    "E-057",
+    "E-058",
+    "E-059",
+    "E-060",
+    "E-061",
+    "E-062",
+    "E-063",
+    "E-064",
+    "E-067",
+    "E-068",
+    "E-069",
+    "E-070",
+    "E-071",
+    "E-072",
+    "E-073",
+    "E-074",
+    "E-080",
+    "E-081",
+    "E-082",
+    "E-083"
+   ],
+   "api_endpoints": [
+    {
+     "act": "A63",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/distributions",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-052",
+      "E-040",
+      "E-022",
+      "E-023"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-027",
+      "D-074.4",
+      "D-077.3",
+      "D-010.7",
+      "D-019.3",
+      "D-022.6",
+      "D-027.4"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A64",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/plans/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-067",
+      "E-068",
+      "E-069",
+      "E-071"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-042",
+      "D-074.4",
+      "D-074.5",
+      "D-077.1",
+      "D-077.2",
+      "D-077.6",
+      "D-077.7",
+      "D-077.8"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A65",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/audit_events/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-041",
+      "E-059",
+      "E-060",
+      "E-004"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-042",
+      "D-074.4",
+      "D-077.4",
+      "D-077.7"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    }
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN R6 が「公開の申請を審査する」したとき THEN Kaname は「匿名化の確認・承認／却下を版で記録」を行う",
+    "EVENT-DRIVEN: WHEN R6 が「会社の 1 社を扱う」したとき THEN Kaname は「会社の詳細の 8 面。入金の記録・返答・承認・対処・個別のお知らせはここから。中身は読まない」を行う",
+    "EVENT-DRIVEN: WHEN R6 が「運営の証跡を見る」したとき THEN Kaname は「運営側の操作記録と運営メンバーの権限」を行う",
+    "UNWANTED: IF セキュリティの出来事（失敗したログイン・鍵の失効・不審な接続）の記録が読めない、または追記に失敗した THEN Kaname は「セキュリティの記録を読み込めませんでした。運営に連絡してください」を出し、再読み込み／運営に連絡する（E-ACT-039）"
+   ],
+   "checklist": [],
+   "legacy_drift_notes": null,
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-010.7",
+    "D-019.3",
+    "D-022.6",
+    "D-027",
+    "D-027.4",
+    "D-042",
+    "D-042.6",
+    "D-074.4",
+    "D-074.5",
+    "D-077.1",
+    "D-077.2",
+    "D-077.3",
+    "D-077.4",
+    "D-077.6",
+    "D-077.7",
+    "D-077.8"
+   ]
+  },
+  {
+   "id": "F-020",
+   "name": "運営として、各社に配るもの（AI社員・担当業務・ルール・テンプレ）とプランの様子を1か所で管理したい",
+   "category": "job",
+   "job": "J12",
+   "acts": [
+    "A59",
+    "A60"
+   ],
+   "happy_path": [
+    "A59 配布物を直す・プランに割り当てる",
+    "A60 会社の一覧を見る"
+   ],
+   "error_paths": [
+    "E-MOCK-026"
+   ],
+   "policies": [
+    "C2"
+   ],
+   "notifications": [],
+   "audit_logs": [
+    "audit_events（追記専用）"
+   ],
+   "access_roles": [
+    "R6"
+   ],
+   "external_services": [],
+   "related_screens": [
+    "ops-catalog",
+    "ops-home"
+   ],
+   "related_entities": [
+    "E-001",
+    "E-002",
+    "E-004",
+    "E-006",
+    "E-010",
+    "E-017",
+    "E-022",
+    "E-023",
+    "E-027",
+    "E-032",
+    "E-040",
+    "E-052",
+    "E-067",
+    "E-068",
+    "E-069",
+    "E-070",
+    "E-071"
+   ],
+   "api_endpoints": [
+    {
+     "act": "A59",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ai_employees",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-006",
+      "E-004",
+      "E-022",
+      "E-023"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-027",
+      "D-037",
+      "D-026",
+      "D-073.7",
+      "D-076.10",
+      "D-077.4",
+      "D-077.6",
+      "D-026.2",
+      "D-027.2",
+      "D-037.1",
+      "D-037.2",
+      "D-039.3"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A60",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/plans",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-067",
+      "E-068",
+      "E-069",
+      "E-071"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-037",
+      "D-030",
+      "D-073.7"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    }
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN R6 が「配布物を直す・プランに割り当てる」したとき THEN Kaname は「運営層の定義を版で更新し、各社の「使う／使わない」に反映」を行う",
+    "EVENT-DRIVEN: WHEN R6 が「会社の一覧を見る」したとき THEN Kaname は「各社のプラン・体数・稼働・詰まりの型だけを集計（中身は読まない）」を行う"
+   ],
+   "checklist": [],
+   "legacy_drift_notes": null,
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-026",
+    "D-026.2",
+    "D-027",
+    "D-027.2",
+    "D-030",
+    "D-037",
+    "D-037.1",
+    "D-037.2",
+    "D-039.3",
+    "D-073.7",
+    "D-076.10",
+    "D-077.4",
+    "D-077.6"
+   ]
+  },
+  {
+   "id": "F-021",
+   "name": "関門 C1 ネットワーク",
+   "category": "cross-cutting",
+   "choke_point": "C1",
+   "acts": [
+    "A11",
+    "A15",
+    "A34",
+    "A77"
+   ],
+   "happy_path": [
+    "外界に出る前に ネットワーク の関門を通る"
+   ],
+   "error_paths": [
+    "E-CONF-003",
+    "E-GATE-001",
+    "E-GATE-002",
+    "E-GATE-003",
+    "E-GATE-005"
+   ],
+   "policies": [
+    "認可（誰が実行できるか）",
+    "ポリシー判定（auto / approve / off）",
+    "承認箱への差し込みと待機",
+    "サービス台帳の判定（自動操作が許されるサービスか）",
+    "レート制限・人間らしい速度の強制",
+    "宛先の許可判定（テナントに紐づく宛先か）",
+    "証跡（誰が・いつ・何を・どの権限で）",
+    "課金計測",
+    "失敗時の人へのハンドオフ（黙って止まるを作らない）"
+   ],
+   "notifications": [],
+   "audit_logs": [
+    "audit_events"
+   ],
+   "access_roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4",
+    "R6"
+   ],
+   "external_services": [],
+   "related_screens": [
+    "approvals",
+    "audit",
+    "onboard-testrun",
+    "services"
+   ],
+   "related_entities": [],
+   "api_endpoints": [],
+   "ears_ac_seed": [
+    "UBIQUITOUS: Kaname は ネットワーク を必ず関門 C1 経由で行い、認可（誰が実行できるか） を関門の中で 1 回だけ処理する",
+    "UBIQUITOUS: Kaname は ネットワーク を必ず関門 C1 経由で行い、ポリシー判定（auto / approve / off） を関門の中で 1 回だけ処理する",
+    "UBIQUITOUS: Kaname は ネットワーク を必ず関門 C1 経由で行い、承認箱への差し込みと待機 を関門の中で 1 回だけ処理する"
+   ],
+   "checklist": [],
+   "legacy_drift_notes": null,
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-014",
+    "D-013",
+    "D-040",
+    "D-041",
+    "D-050",
+    "D-040.5",
+    "D-041.6"
+   ]
+  },
+  {
+   "id": "F-022",
+   "name": "関門 C2 永続化（書き込み）",
+   "category": "cross-cutting",
+   "choke_point": "C2",
+   "acts": [
+    "A01",
+    "A02",
+    "A03",
+    "A04",
+    "A06",
+    "A07",
+    "A08",
+    "A09",
+    "A10",
+    "A12",
+    "A13",
+    "A14",
+    "A15",
+    "A17",
+    "A18",
+    "A19",
+    "A20",
+    "A21",
+    "A22",
+    "A23",
+    "A24",
+    "A25",
+    "A26",
+    "A27",
+    "A28",
+    "A29",
+    "A30",
+    "A31",
+    "A32",
+    "A33",
+    "A34",
+    "A35",
+    "A36",
+    "A37",
+    "A38",
+    "A39",
+    "A40",
+    "A41",
+    "A42",
+    "A43",
+    "A44",
+    "A45",
+    "A46",
+    "A47",
+    "A48",
+    "A49",
+    "A50",
+    "A51",
+    "A52",
+    "A53",
+    "A54",
+    "A55",
+    "A56",
+    "A57",
+    "A58",
+    "A59",
+    "A60",
+    "A61",
+    "A62",
+    "A63",
+    "A64",
+    "A65",
+    "A66",
+    "A67",
+    "A68",
+    "A69",
+    "A70",
+    "A71",
+    "A72",
+    "A73",
+    "A74",
+    "A75",
+    "A76",
+    "A77",
+    "A78",
+    "A79",
+    "A80",
+    "A81"
+   ],
+   "happy_path": [
+    "外界に出る前に 永続化（書き込み） の関門を通る"
+   ],
+   "error_paths": [
+    "E-AUTH-005",
+    "E-CONF-002",
+    "E-CONF-003",
+    "E-LIM-003"
+   ],
+   "policies": [
+    "テナント文脈の設定（SET LOCAL app.tenant_id / app.user_id / app.role）",
+    "行レベル制御（RLS）の前提保証",
+    "監査列の自動付与（created_by / updated_by / 時刻）",
+    "論理削除の強制",
+    "スコープ4層の解決",
+    "証跡"
+   ],
+   "notifications": [],
+   "audit_logs": [
+    "audit_events"
+   ],
+   "access_roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4",
+    "R6"
+   ],
+   "external_services": [],
+   "related_screens": [
+    "account",
+    "account-close",
+    "ai-activity",
+    "ai-staff",
+    "ai-staff-detail",
+    "approvals",
+    "audit",
+    "automation-repair",
+    "billing",
+    "bridge-setup",
+    "clone-chat",
+    "clone-memory",
+    "company-model",
+    "company-settings",
+    "credentials",
+    "duties",
+    "export",
+    "goal-allocation",
+    "goal-edit",
+    "goals",
+    "hypotheses",
+    "import",
+    "inquiry",
+    "invite-accept",
+    "ledger-def",
+    "login",
+    "member-detail",
+    "members",
+    "mfa-setup",
+    "my-progress",
+    "notices",
+    "onboard-draft",
+    "onboard-golive",
+    "onboard-interview",
+    "ops-audit",
+    "ops-billing",
+    "ops-catalog",
+    "ops-home",
+    "ops-notices",
+    "ops-review",
+    "ops-services",
+    "ops-skills",
+    "ops-support",
+    "ops-tenant",
+    "password-reset",
+    "policies",
+    "record-detail",
+    "records",
+    "review",
+    "search",
+    "security-brief",
+    "services",
+    "signup",
+    "tasks",
+    "today",
+    "verify-email"
+   ],
+   "related_entities": [],
+   "api_endpoints": [],
+   "ears_ac_seed": [
+    "UBIQUITOUS: Kaname は 永続化（書き込み） を必ず関門 C2 経由で行い、テナント文脈の設定（SET LOCAL app.tenant_id / app.user_id / app.role） を関門の中で 1 回だけ処理する",
+    "UBIQUITOUS: Kaname は 永続化（書き込み） を必ず関門 C2 経由で行い、行レベル制御（RLS）の前提保証 を関門の中で 1 回だけ処理する",
+    "UBIQUITOUS: Kaname は 永続化（書き込み） を必ず関門 C2 経由で行い、監査列の自動付与（created_by / updated_by / 時刻） を関門の中で 1 回だけ処理する"
+   ],
+   "checklist": [],
+   "legacy_drift_notes": null,
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-010",
+    "D-038",
+    "D-026",
+    "D-050",
+    "D-074.1",
+    "D-073.1"
+   ]
+  },
+  {
+   "id": "F-023",
+   "name": "関門 C3 モデル呼び出し",
+   "category": "cross-cutting",
+   "choke_point": "C3",
+   "acts": [
+    "A03",
+    "A06",
+    "A07",
+    "A08",
+    "A11",
+    "A14",
+    "A16",
+    "A19",
+    "A20",
+    "A21",
+    "A26",
+    "A27",
+    "A28",
+    "A29",
+    "A30",
+    "A32",
+    "A37",
+    "A44",
+    "A48",
+    "A49",
+    "A50",
+    "A52",
+    "A54",
+    "A55",
+    "A56",
+    "A57",
+    "A76"
+   ],
+   "happy_path": [
+    "外界に出る前に モデル呼び出し の関門を通る"
+   ],
+   "error_paths": [
+    "E-LIM-004"
+   ],
+   "policies": [
+    "経路解決（Bridge / BYOK / 運営マネージド / ローカル）",
+    "能力表の参照とフォールバック",
+    "支払者の決定",
+    "トークン計測・実行時間計測",
+    "プラン上限の適用",
+    "トレース（langfuse）",
+    "プロンプトインジェクション対策（外部由来はデータ扱い）"
+   ],
+   "notifications": [],
+   "audit_logs": [
+    "audit_events"
+   ],
+   "access_roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4",
+    "R6"
+   ],
+   "external_services": [],
+   "related_screens": [
+    "ai-staff",
+    "automation-repair",
+    "clone-chat",
+    "clone-memory",
+    "clone-thread",
+    "duties",
+    "goal-edit",
+    "goals",
+    "hypotheses",
+    "import",
+    "invite-accept",
+    "ledger-def",
+    "my-progress",
+    "onboard-draft",
+    "onboard-interview",
+    "onboard-testrun",
+    "record-detail",
+    "review",
+    "search",
+    "tasks",
+    "today"
+   ],
+   "related_entities": [],
+   "api_endpoints": [],
+   "ears_ac_seed": [
+    "UBIQUITOUS: Kaname は モデル呼び出し を必ず関門 C3 経由で行い、経路解決（Bridge / BYOK / 運営マネージド / ローカル） を関門の中で 1 回だけ処理する",
+    "UBIQUITOUS: Kaname は モデル呼び出し を必ず関門 C3 経由で行い、能力表の参照とフォールバック を関門の中で 1 回だけ処理する",
+    "UBIQUITOUS: Kaname は モデル呼び出し を必ず関門 C3 経由で行い、支払者の決定 を関門の中で 1 回だけ処理する"
+   ],
+   "checklist": [],
+   "legacy_drift_notes": null,
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-004",
+    "D-007",
+    "D-047",
+    "D-050"
+   ]
+  },
+  {
+   "id": "F-024",
+   "name": "関門 C4 ファイル / オブジェクト",
+   "category": "cross-cutting",
+   "choke_point": "C4",
+   "acts": [
+    "A40",
+    "A41",
+    "A76",
+    "A80"
+   ],
+   "happy_path": [
+    "外界に出る前に ファイル / オブジェクト の関門を通る"
+   ],
+   "error_paths": [
+    "E-LIM-002"
+   ],
+   "policies": [
+    "権限（テナント・スコープ）",
+    "署名URLの発行と有効期限",
+    "保持期間・削除ポリシー",
+    "サイズ・形式の制限",
+    "証跡"
+   ],
+   "notifications": [],
+   "audit_logs": [
+    "audit_events"
+   ],
+   "access_roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4",
+    "R6"
+   ],
+   "external_services": [],
+   "related_screens": [
+    "audit",
+    "export",
+    "import",
+    "ops-skills"
+   ],
+   "related_entities": [],
+   "api_endpoints": [],
+   "ears_ac_seed": [
+    "UBIQUITOUS: Kaname は ファイル / オブジェクト を必ず関門 C4 経由で行い、権限（テナント・スコープ） を関門の中で 1 回だけ処理する",
+    "UBIQUITOUS: Kaname は ファイル / オブジェクト を必ず関門 C4 経由で行い、署名URLの発行と有効期限 を関門の中で 1 回だけ処理する",
+    "UBIQUITOUS: Kaname は ファイル / オブジェクト を必ず関門 C4 経由で行い、保持期間・削除ポリシー を関門の中で 1 回だけ処理する"
+   ],
+   "checklist": [],
+   "legacy_drift_notes": null,
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-029",
+    "D-025",
+    "D-050",
+    "D-076.3",
+    "D-042"
+   ]
+  },
+  {
+   "id": "F-025",
+   "name": "関門 C5 プロセス起動",
+   "category": "cross-cutting",
+   "choke_point": "C5",
+   "acts": [
+    "A09",
+    "A11",
+    "A32"
+   ],
+   "happy_path": [
+    "外界に出る前に プロセス起動 の関門を通る"
+   ],
+   "error_paths": [
+    "E-SIG-001",
+    "E-TO-004"
+   ],
+   "policies": [
+    "隔離（サーバー経路は Microsandbox / Bridge は作業フォルダ制限）",
+    "完了信号の検証（exit 0 を成功と見なさない。result を受け取るまで未完了）",
+    "タイムアウト・強制終了",
+    "標準出力/エラーの上限",
+    "環境変数の遮断（ANTHROPIC_API_KEY 等を子プロセスから除去）",
+    "証跡"
+   ],
+   "notifications": [],
+   "audit_logs": [
+    "audit_events"
+   ],
+   "access_roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4",
+    "R6"
+   ],
+   "external_services": [],
+   "related_screens": [
+    "automation-repair",
+    "bridge-setup",
+    "onboard-testrun"
+   ],
+   "related_entities": [],
+   "api_endpoints": [],
+   "ears_ac_seed": [
+    "UBIQUITOUS: Kaname は プロセス起動 を必ず関門 C5 経由で行い、隔離（サーバー経路は Microsandbox / Bridge は作業フォルダ制限） を関門の中で 1 回だけ処理する",
+    "UBIQUITOUS: Kaname は プロセス起動 を必ず関門 C5 経由で行い、完了信号の検証（exit 0 を成功と見なさない。result を受け取るまで未完了） を関門の中で 1 回だけ処理する",
+    "UBIQUITOUS: Kaname は プロセス起動 を必ず関門 C5 経由で行い、タイムアウト・強制終了 を関門の中で 1 回だけ処理する"
+   ],
+   "checklist": [],
+   "legacy_drift_notes": null,
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-015",
+    "D-044",
+    "D-045",
+    "D-050"
+   ]
+  },
+  {
+   "id": "F-026",
+   "name": "関門 C6 通知送出",
+   "category": "cross-cutting",
+   "choke_point": "C6",
+   "acts": [
+    "A02",
+    "A15",
+    "A31",
+    "A36",
+    "A48",
+    "A51",
+    "A56",
+    "A57",
+    "A61",
+    "A62",
+    "A67",
+    "A68",
+    "A70",
+    "A71",
+    "A74",
+    "A80"
+   ],
+   "happy_path": [
+    "外界に出る前に 通知送出 の関門を通る"
+   ],
+   "error_paths": [
+    "E-EXT-003",
+    "E-GATE-005"
+   ],
+   "policies": [
+    "宛先解決（人間 / AI社員 / 自分のAI で解決規則が違う）",
+    "購読設定・通知の希望",
+    "重複抑止",
+    "失敗時の再送",
+    "証跡"
+   ],
+   "notifications": [],
+   "audit_logs": [
+    "audit_events"
+   ],
+   "access_roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4",
+    "R6"
+   ],
+   "external_services": [],
+   "related_screens": [
+    "account",
+    "approvals",
+    "inquiry",
+    "member-detail",
+    "members",
+    "notices",
+    "ops-notices",
+    "ops-skills",
+    "ops-support",
+    "password-reset",
+    "tasks",
+    "today",
+    "verify-email"
+   ],
+   "related_entities": [],
+   "api_endpoints": [],
+   "ears_ac_seed": [
+    "UBIQUITOUS: Kaname は 通知送出 を必ず関門 C6 経由で行い、宛先解決（人間 / AI社員 / 自分のAI で解決規則が違う） を関門の中で 1 回だけ処理する",
+    "UBIQUITOUS: Kaname は 通知送出 を必ず関門 C6 経由で行い、購読設定・通知の希望 を関門の中で 1 回だけ処理する",
+    "UBIQUITOUS: Kaname は 通知送出 を必ず関門 C6 経由で行い、重複抑止 を関門の中で 1 回だけ処理する"
+   ],
+   "checklist": [],
+   "legacy_drift_notes": null,
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-043",
+    "D-012",
+    "D-050",
+    "D-075.2",
+    "D-075.3",
+    "D-077.8"
+   ]
+  },
+  {
+   "id": "F-027",
+   "name": "関門 C7 決済・課金",
+   "category": "cross-cutting",
+   "choke_point": "C7",
+   "acts": [
+    "A05"
+   ],
+   "happy_path": [
+    "外界に出る前に 決済・課金 の関門を通る"
+   ],
+   "error_paths": [],
+   "policies": [
+    "冪等性キーの付与（二重課金の防止）",
+    "Webhook の署名検証",
+    "認可（誰が課金操作できるか）",
+    "プラン上限との整合",
+    "証跡"
+   ],
+   "notifications": [],
+   "audit_logs": [
+    "audit_events"
+   ],
+   "access_roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4",
+    "R6"
+   ],
+   "external_services": [],
+   "related_screens": [
+    "billing-setup"
+   ],
+   "related_entities": [],
+   "api_endpoints": [],
+   "ears_ac_seed": [
+    "UBIQUITOUS: Kaname は 決済・課金 を必ず関門 C7 経由で行い、冪等性キーの付与（二重課金の防止） を関門の中で 1 回だけ処理する",
+    "UBIQUITOUS: Kaname は 決済・課金 を必ず関門 C7 経由で行い、Webhook の署名検証 を関門の中で 1 回だけ処理する",
+    "UBIQUITOUS: Kaname は 決済・課金 を必ず関門 C7 経由で行い、認可（誰が課金操作できるか） を関門の中で 1 回だけ処理する"
+   ],
+   "checklist": [],
+   "legacy_drift_notes": null,
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-002",
+    "D-004",
+    "D-050",
+    "D-075.4",
+    "D-075.5",
+    "D-077.1"
+   ]
+  },
+  {
+   "id": "F-028",
+   "name": "関門 C8 秘密の読み出し",
+   "category": "cross-cutting",
+   "choke_point": "C8",
+   "acts": [
+    "A04",
+    "A10",
+    "A42",
+    "A62",
+    "A74",
+    "A77"
+   ],
+   "happy_path": [
+    "外界に出る前に 秘密の読み出し の関門を通る"
+   ],
+   "error_paths": [
+    "E-AUTH-005",
+    "E-DATA-001"
+   ],
+   "policies": [
+    "テナントごとの鍵分離と復号",
+    "AIには一切渡さない（参照IDのみを返す）",
+    "ログ・スクリーンショットへの露出防止（マスク）",
+    "失効の即時反映（退会・停止・権限変更）",
+    "全アクセスの証跡"
+   ],
+   "notifications": [],
+   "audit_logs": [
+    "audit_events"
+   ],
+   "access_roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4",
+    "R6"
+   ],
+   "external_services": [],
+   "related_screens": [
+    "account",
+    "account-close",
+    "credentials",
+    "member-detail",
+    "mfa-setup",
+    "services"
+   ],
+   "related_entities": [],
+   "api_endpoints": [],
+   "ears_ac_seed": [
+    "UBIQUITOUS: Kaname は 秘密の読み出し を必ず関門 C8 経由で行い、テナントごとの鍵分離と復号 を関門の中で 1 回だけ処理する",
+    "UBIQUITOUS: Kaname は 秘密の読み出し を必ず関門 C8 経由で行い、AIには一切渡さない（参照IDのみを返す） を関門の中で 1 回だけ処理する",
+    "UBIQUITOUS: Kaname は 秘密の読み出し を必ず関門 C8 経由で行い、ログ・スクリーンショットへの露出防止（マスク） を関門の中で 1 回だけ処理する"
+   ],
+   "checklist": [],
+   "legacy_drift_notes": null,
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-017",
+    "D-042",
+    "D-050",
+    "D-074.5",
+    "D-076.4"
+   ]
+  }
+ ]
+}

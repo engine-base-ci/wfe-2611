@@ -1,0 +1,584 @@
+version: 1.0
+project: Kaname
+generated_at: 2026-09-09
+spec_root: .
+code_root: .
+counters:
+- id: role_count
+  description: 役割の数（flow.json の roles）
+  source_of_truth:
+    type: json_array_length
+    file: 05_flow/flow.json
+    json_path: $.roles
+  expected_value: 5
+  mirrors:
+  - file: 01_hearing/決定ログ_進行中.md
+    regex: \| 役割 \| (\d+)（R1
+  - file: 05_flow/使ってもらい方.md
+    regex: 役割 (\d+) ／ 用事
+- id: job_count
+  description: 用事（JTBD）の数
+  source_of_truth:
+    type: json_array_length
+    file: 05_flow/flow.json
+    json_path: $.jobs
+  expected_value: 20
+  mirrors:
+  - file: 01_hearing/決定ログ_進行中.md
+    regex: \| 用事（JTBD） \| (\d+) \|
+  - file: 05_flow/使ってもらい方.md
+    regex: 用事 (\d+) ／ 行為
+- id: act_count
+  description: 行為の数（背骨の全 acts）
+  source_of_truth:
+    type: json_nested_array_length
+    file: 05_flow/flow.json
+    json_path: $.backbone[*].acts
+  expected_value: 81
+  mirrors:
+  - file: 01_hearing/決定ログ_進行中.md
+    regex: \| 行為 \| (\d+)（段階1
+  - file: 05_flow/使ってもらい方.md
+    regex: 行為 (\d+) ／ オブジェクト
+- id: object_count
+  description: オブジェクト（OOUX）の数
+  source_of_truth:
+    type: json_array_length
+    file: 05_flow/flow.json
+    json_path: $.objects
+  expected_value: 58
+  mirrors:
+  - file: 01_hearing/決定ログ_進行中.md
+    regex: \| オブジェクト \| (\d+) \|
+  - file: 05_flow/使ってもらい方.md
+    regex: オブジェクト (\d+) ／ 画面
+- id: screen_count_all
+  description: 導出された画面の総数（段階1＋段階2）
+  source_of_truth:
+    type: json_array_length
+    file: 05_flow/flow.json
+    json_path: $.screens
+  expected_value: 59
+  mirrors:
+  - file: 01_hearing/決定ログ_進行中.md
+    regex: \| 画面（導出） \| (\d+)（段階1
+  - file: 05_flow/使ってもらい方.md
+    regex: 画面 (\d+) ／ 最初の一周
+- id: screen_count_v1
+  description: 段階1（v1）の画面数。モックのファイル数と一致すること
+  source_of_truth:
+    type: json_filtered_count
+    file: 05_flow/flow.json
+    json_path: $.screens
+    filter:
+      release: v1
+  expected_value: 58
+  mirrors:
+  - file: 01_hearing/決定ログ_進行中.md
+    regex: 画面（導出） \| \d+（段階1が(\d+)
+  - file: 06_mockup/v1/v1-index.html
+    regex: <b>(\d+) 画面。</b>
+- id: choke_point_count
+  description: 関門の数（C1〜C8）
+  source_of_truth:
+    type: json_array_length
+    file: 03_architecture/choke-points.json
+    json_path: $.choke_points
+  expected_value: 8
+  mirrors:
+  - file: 03_architecture/アーキテクチャ設計書.md
+    regex: 外界に影響を与える経路を (\d+) 本に絞り
+- id: walking_skeleton_len
+  description: 最初の一周の手数
+  source_of_truth:
+    type: json_array_length
+    file: 05_flow/flow.json
+    json_path: $.walking_skeleton
+  expected_value: 12
+  mirrors:
+  - file: 01_hearing/決定ログ_進行中.md
+    regex: \| 最初の一周 \| (\d+) 手 \|
+  - file: 05_flow/使ってもらい方.md
+    regex: 最初の一周 (\d+) 手
+references:
+- id_pattern: A\d{2}
+  description: 行為ID。背骨で定義され、ブループリント・画面割当・モックの第2ナビに現れる
+  defined_in:
+    file: 05_flow/flow.json
+    json_path: $.backbone[*].acts[*].id
+  must_exist_in:
+  - file: 05_flow/flow.json
+    json_path: $.blueprint
+    as: key
+    reason: 全行為に裏側の記述が要る（G7）
+  - file: 05_flow/flow.json
+    json_path: $.act_to_screen
+    as: key
+    reason: 全行為に画面の割当が要る（G1）
+  - file: 05_flow/使ってもらい方.md
+    as: text
+    reason: MD は flow.json から自動生成される
+- id_pattern: R[1-6]
+  description: 役割ID
+  defined_in:
+    file: 05_flow/flow.json
+    json_path: $.roles[*].id
+  must_exist_in:
+  - file: 05_flow/flow.json
+    json_path: $.navigation.by_role
+    as: key
+    reason: 全役割に主ナビが要る（G6）
+- id_pattern: C[1-8]
+  description: 関門ID
+  defined_in:
+    file: 03_architecture/choke-points.json
+    json_path: $.choke_points[*].id
+  must_exist_in:
+  - file: 05_flow/flow.json
+    json_path: $.blueprint
+    as: value_member
+    reason: ブループリントの関門IDが実在すること（G8）
+- id_pattern: J\d[a-c]?
+  description: 用事ID（JTBD）
+  defined_in:
+    file: 05_flow/flow.json
+    json_path: $.jobs[*].id
+  must_exist_in:
+  - file: 05_flow/flow.json
+    json_path: $.backbone[*].acts[*].jobs
+    as: value_member
+    reason: どの行為からも辿れない用事は無い（G5）
+deprecated_terms:
+- term: jobrain
+  replacement: Kaname
+  reason: 2026-09-04 に製品名を変更（決定ログ §11）
+  allowed_context: 旧\s*jobrain|旧称\s*jobrain|former_name|old_jobrain|jobrain継続|jobrain_更新版|/jobrain|jobrainを1から|jobrainから改名|jobrainの死因|jobrainが仕様変更|jobrainからKaname|「jobrain」から改名
+  allowed_in:
+  - 00_research/
+  - .spec-sync/
+  - spec-dependencies.yaml
+- term: 未配分・遅れを直す
+  replacement: 目標の下ろし方を決める・直す
+  reason: 配分型を前提にした命名だった。単位が変わる親子関係に対応するため（本変更）
+  allowed_in:
+  - .spec-sync/
+  - 01_hearing/決定ログ_進行中.md
+  - spec-dependencies.yaml
+- term: クローン
+  replacement: 自分のAI（画面では 高本AI のように本人の名前＋AI）
+  reason: 2026-09-10 user 決定（決定ログ §60）。旧称 COO → クローン → 自分のAI
+  allowed_context: 旧称\s*クローン|旧称クローン|→ クローン|クローン（2026-09-04|クローンって呼び方|「クローン」をやめ|クローン、COO）
+  allowed_in:
+  - .spec-sync/
+  - spec-dependencies.yaml
+  - 06_mockup/_old/
+  - _icons.py
+versions:
+- id: flow_version
+  source_of_truth:
+    file: 05_flow/flow.json
+    json_path: $.version
+  expected_value: '1.0'
+alignment_decisions:
+- id: AD-001
+  decision: 画面は行為から導出する。画面一覧を人が列挙しない
+  decided_at: 2026-09-08
+  source: .claude/rules/common/screen-derivation.md
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: screens[].acts が全て非空
+  - file: 06_mockup/v1/
+    check: flow_gate.py --mocks が PASS
+- id: AD-002
+  decision: 外界に影響する操作は関門C1〜C8を必ず通る
+  decided_at: 2026-09-08
+  source: .claude/rules/common/choke-points.md
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: blueprint の全行為に choke_points がある
+- id: AD-003
+  decision: 台帳ごとに画面を作らない。定義が違うだけで画面は1つ
+  decided_at: 2026-09-04
+  source: 01_hearing/決定ログ_進行中.md §39
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: screens に ledger が1つだけ（ledger-pipeline / ledger-invoice を作らない）
+- id: AD-004
+  decision: 一人社長は運営＋個人の2層で成立する。使わない層は画面に出さない
+  decided_at: 2026-09-04
+  source: 01_hearing/決定ログ_進行中.md §36
+  must_be_reflected_in:
+  - file: 06_mockup/v1/v1-members.html
+    check: スコープ4層で未使用の層を薄く出す
+- id: AD-005
+  decision: 目標の親子関係は同一単位とは限らない（本変更で追加）
+  decided_at: 2026-09-09
+  source: 本 spec-sync 実行
+  status: in_progress
+  must_be_reflected_in:
+  - file: 01_hearing/決定ログ_進行中.md
+    check: §32 に親子の関係の型を追記
+  - file: 03_architecture/ER図.md
+    check: goals に親子関係の型・式・寄与の紐づけ
+  - file: 05_flow/flow.json
+    check: A23 の命名と blueprint
+  - file: 06_mockup/v1/v1-goals.html
+    check: 単位と関係の型を表示
+  - file: 06_mockup/v1/v1-goal-allocate.html
+    check: 配分／分解／寄与の3択
+downstream_coverage:
+- id: screen_to_mock
+  description: flow.json の画面が全てモックとして存在する
+  upstream:
+    file: 05_flow/flow.json
+    json_path: $.screens[?(@.release=='v1')].id
+  downstream:
+    glob: 06_mockup/v1/v1-*.html
+    extract: v1-(.+)\.html
+  severity: error
+  command: python3 scripts/ci/flow_gate.py --mocks 06_mockup/v1 --choke 03_architecture/choke-points.json
+- id: act_to_screen
+  description: 全行為に画面が割り当たっている
+  upstream:
+    file: 05_flow/flow.json
+    json_path: $.backbone[*].acts[*].id
+  downstream:
+    file: 05_flow/flow.json
+    json_path: $.act_to_screen
+    as: key
+  severity: error
+  command: python3 scripts/ci/flow_gate.py --choke 03_architecture/choke-points.json
+- id: object_to_table
+  description: flow.json の全オブジェクトに ER 図のテーブル（実体）がある（G20）
+  upstream:
+    file: 05_flow/flow.json
+    json_path: $.objects[*].name
+  downstream:
+    file: 03_architecture/ER図.md
+    note: 「## オブジェクト ↔ テーブル」の表
+  severity: error
+  command: python3 scripts/ci/er_gate.py --flow 05_flow/flow.json --er 03_architecture/ER図.md
+- id: screen_to_feature
+  description: 画面が機能分解に到達している
+  upstream:
+    file: 05_flow/flow.json
+    json_path: $.screens[*].id
+  downstream:
+    file: 07_functional/screens.json
+    json_path: $.screens[*].id
+  severity: error
+  command: python3 scripts/ci/fb_gate.py --flow 05_flow/flow.json --er 03_architecture/ER図.md --dir 07_functional
+- id: act_to_endpoint
+  description: 全行為（v1）に endpoint が 1 本以上・全画面の必要 API がカバー・逆カバレッジ（G2）
+  upstream:
+    file: 05_flow/flow.json
+    json_path: $.backbone[*].acts[*].id
+  downstream:
+    file: 08_api/endpoints.json
+    json_path: $.endpoints[*].acts[*]
+  severity: error
+  command: python3 scripts/ci/api_gate.py --flow 05_flow/flow.json --dir 08_api
+- id: act_to_feature_v3
+  description: 全 v1 行為・画面が Group B/C の機能に含まれ、全部品が結線（D）から参照される
+  upstream:
+    file: 05_flow/flow.json
+    json_path: $.backbone[*].acts[*].id
+  downstream:
+    file: 09_features/features.json
+    json_path: $.items[*].acts[*]
+  severity: error
+  command: python3 scripts/ci/fd_gate.py --flow 05_flow/flow.json --dir 09_features
+- id: feature_to_ticket
+  description: 全 v1 画面・行為がタスクに含まれ、tickets.json の完全性（JIT）とテスト・ラダーの両方向整合が緑
+  upstream:
+    file: 09_features/features.json
+    json_path: $.items[*].id
+  downstream:
+    file: 07_tasks/tickets.json
+    json_path: $.tasks[*].feature_ids[*]
+  severity: error
+  command: PYTHON=python3 bash 09_dispatch/scripts/validate.sh
+dependency_boundaries:
+  file: 03_architecture/dependency-boundaries.json
+  ledger: 03_architecture/portability-ledger.md
+  checks:
+  - kind: import_boundary
+    note: 実装開始後に CI で有効化
+  - kind: vendor_sql
+    note: auth.uid() 等の禁止。実装開始後
+  - kind: license_boundary
+    note: ee/ ディレクトリの import 禁止
+  - kind: ledger_consistency
+    note: portability-ledger.md に無い越境が無いこと
+extension_points:
+  file: 03_architecture/extension-points.json
+  severity: warn
+  note: 関門で守るため、拡張点の列挙漏れは事故にならない（choke-points.md §5）
+choke_points:
+  file: 03_architecture/choke-points.json
+  exceptions: 03_architecture/choke-point-exceptions.md
+  checks:
+  - id: H-1
+    kind: bypass_detection
+    note: 実装開始後に scripts/ci/choke-check.ts で有効化
+  - id: H-2
+    kind: no_dynamic_call
+    note: 同上
+  - id: H-3
+    kind: exception_ledger
+    note: choke-point-exceptions.md に未登録の迂回が無いこと
+  - id: H-4
+    kind: coverage
+    note: 標準6関門＋固有関門が定義され ci_check を持つこと
+flow_gate:
+  file: 05_flow/flow.json
+  command: python3 scripts/ci/flow_gate.py --mocks 06_mockup/v1 --choke 03_architecture/choke-points.json
+  gates:
+  - G1
+  - G2
+  - G3
+  - G4
+  - G5
+  - G6
+  - G7
+  - G8
+  - G9
+  - G10
+  severity: error
+decision_traceability:
+  sources:
+  - file: 01_hearing/決定ログ_進行中.md
+    id_prefix: D-
+    section_regex: ^## (\d+)\.\s*(.+)$
+  products:
+  - file: 05_flow/flow.json
+    elements:
+    - meta
+    - backbone[*].acts[*]
+    - screens[*]
+    - objects[*]
+    - roles[*]
+    - jobs[*]
+    - navigation.sections[*]
+    - navigation.shell_rule
+    - navigation.assistant_panel
+    - navigation.conversation_layers
+    - navigation.sub_mode
+    - navigation.main_width
+    - navigation.layout
+    - product_states[*]
+    - blueprint[*]
+    source_field: source
+  - file: 03_architecture/choke-points.json
+    elements:
+    - choke_points[*]
+    source_field: source
+  - file: 03_architecture/アーキテクチャ設計書.md
+    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+  - file: 03_architecture/ER図.md
+    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+  - file: 06_mockup/v1/v1-*.html
+    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+  - file: 04_design/DESIGN-kaname.md
+    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+  - file: 02_tech_stack/selected-stack.json
+    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+  - file: 03_architecture/portability-ledger.md
+    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+  - file: 03_architecture/dependency-boundaries.json
+    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+  - file: 03_architecture/extension-points.json
+    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+  - file: 01_hearing/ヒアリングサマリー.md
+    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+  - file: 01_hearing/要件一覧.md
+    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+  - file: 00_research/影響マップ.md
+    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+  - file: 00_research/自前実装リスト.md
+    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+  - file: 00_research/UIライブラリ候補.md
+    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+  - file: 07_qa/test-specs/errors.json
+    elements:
+    - meta
+    - errors[*]
+    source_field: source
+  - file: 07_tasks/tickets.json
+    elements:
+    - tasks[*]
+    source_field: source
+  - file: 08_schedule/sprint.md
+    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+  - file: 07_qa/test-plan/test-plan.md
+    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+  - file: 10_skills/catalog.json
+    elements:
+    - skills[*]
+    source_field: source
+  - file: 10_skills/*/SKILL.md
+    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+  - file: 09_features/features.json
+    elements:
+    - meta
+    - items[*]
+    source_field: source
+  - file: 08_api/endpoints.json
+    elements:
+    - meta
+    - endpoints[*]
+    source_field: source
+  - file: 08_api/api-decisions.json
+    elements:
+    - decision_log[*]
+    source_field: source
+  - file: 07_functional/entities.json
+    elements:
+    - meta
+    - entities[*]
+    source_field: source
+  - file: 07_functional/features.json
+    elements:
+    - meta
+    - items[*]
+    source_field: source
+  - file: 07_functional/roles.json
+    elements:
+    - meta
+    - roles[*]
+    source_field: source
+  - file: 07_functional/screens.json
+    elements:
+    - meta
+    - items[*]
+    source_field: source
+  # T7: reflect_in を狭く書いても素通りしないよう、必ず参照されるべき層を固定する
+  # T8: 決定を文（決めたことの表の 1 行 = D-xxx.n）に割り、文ごとに導出物を検査する。since 以降の決定は必ず検査
+  clauses:
+    since: "2026-09-15"
+    ids: []
+    all: true            # T8 を全 confirmed 決定に（since の逃げ道を無くす・2026-09-15）
+    require_table: true  # T9：決めたことの表が無い confirmed は赤
+    # T10：作る・配る・版・台帳 の文はオブジェクトが要る（裏側の動きだけで反映済みにしない）
+  required_layers:
+  - name: 要件
+    files: [01_hearing/要件一覧.md]
+  requirements_index:
+    file: 01_hearing/要件一覧.md
+    title: Kaname 要件一覧（決定ログからの機械生成）
+  out_of_scope:
+  - section: '5'
+    reason: 旧jobrain資産の残す/変える/捨てるの判定記録。成果物に反映する対象ではない
+  - section: '9'
+    reason: OSSライセンスの扱い方の整理。設計判断の前提であって導出物に直接反映しない
+  - section: '16'
+    reason: 採用候補OSSの調査記録。00_research/OSS候補一覧.md が正本
+  - section: '20'
+    reason: 限界の正直な記録。導出物に反映する性質のものではない
+  - section: '21'
+    reason: OSS候補の一覧。別文書に分離済み
+  - section: '33'
+    reason: 図解の公開URL記録
+  - section: '54'
+    reason: 参照ファイルの一覧。決定ではない
+
+# G21 層の棚卸し（layer_audit.py）：全成果物に「機械の検査」か「手で見る理由」を持たせる。検査の無い層は赤。
+layer_checks:
+- file: 05_flow/flow.json
+  check: python3 scripts/ci/flow_gate.py --mocks 06_mockup/v1 --choke 03_architecture/choke-points.json && python3 scripts/ci/trace_gate.py
+- file: 03_architecture/choke-points.json
+  check: python3 scripts/ci/flow_gate.py --choke 03_architecture/choke-points.json
+- file: 03_architecture/ER図.md
+  check: python3 scripts/ci/er_gate.py --flow 05_flow/flow.json --er 03_architecture/ER図.md
+- file: 03_architecture/アーキテクチャ設計書.md
+  manual: 決定の反映先に必ず「アーキテクチャ設計書」を書き、T6 で参照を検査する。節の構成（§2b 運営・§4 権限と出来事・§6b 課金/通知/エラー）が決定と対応しているかは人が読む
+- file: 03_architecture/architecture.json
+  manual: 設計書の機械可読の写し。設計書を更新したら同じ回で更新する（source 付きの節：permission_model / account_lifecycle / ops_console / billing / notifications / error_catalog）
+- file: 03_architecture/portability-ledger.md
+  manual: 境界を越えた箇所だけの台帳。実装が始まるまで空に近い
+- file: 03_architecture/dependency-boundaries.json
+  manual: 関心事ごとの境界。ベンダー確定（段階 1 凍結）で見直す。各境界に source
+- file: 03_architecture/extension-points.json
+  manual: 増えるものの見通し文書。決定でオブジェクトが増えたら source を足す（防御は関門と G20）
+- file: 06_mockup/v1/v1-*.html
+  check: python3 scripts/ci/mock_state_gate.py --flow 05_flow/flow.json --mocks 06_mockup/v1 && python3 scripts/ci/role_gate.py --flow 05_flow/flow.json --mocks 06_mockup/v1 && python3 scripts/ci/ui_lint.py 06_mockup/v1 --config 06_mockup/ui-lint.json && python3 scripts/ci/coverage_review.py --flow 05_flow/flow.json --mocks 06_mockup/v1 --surfaces scripts/ci/references/saas-surfaces.yaml --er 03_architecture/ER図.md --gate
+- file: 04_design/DESIGN-kaname.md
+  manual: 色・書体・部品のトークン。D-067（部品の土台）・D-072（三画面）が最新で、D-073 以降はトークンを増やしていない。トークンが増える決定が出たら手で更新
+- file: 02_tech_stack/selected-stack.json
+  manual: 技術選定は決め打ち禁止（user 合意で確定）。決定で新しい基盤が要るときだけ AskUserQuestion で確認してから更新
+- file: 01_hearing/ヒアリングサマリー.md
+  check: python3 scripts/ci/trace_gate.py
+- file: 01_hearing/要件一覧.md
+  check: python3 scripts/ci/trace_gate.py
+- file: 00_research/影響マップ.md
+  manual: 決定 × 影響レイヤーの調査記録。§2b に D-073〜D-077。新しい決定の節を足すときに行を足す
+- file: 00_research/自前実装リスト.md
+  manual: 自前で作るものの一覧（D-068 時点）。段階 1 凍結時に見直す
+- file: 00_research/UIライブラリ候補.md
+  manual: 調査記録（D-067 で確定）。更新しない
+- file: 07_qa/test-specs/errors.json
+  check: python3 scripts/ci/error_catalog.py gate --catalog 07_qa/test-specs/errors.json --mocks 06_mockup/v1 --spec 07_qa/test-specs --choke 03_architecture/choke-points.json
+- file: 07_qa/test-specs/errors.md
+  check: python3 scripts/ci/error_catalog.py gate --catalog 07_qa/test-specs/errors.json --mocks 06_mockup/v1 --spec 07_qa/test-specs --choke 03_architecture/choke-points.json
+- file: 05_flow/使ってもらい方.md
+  check: python3 scripts/ci/spec_check.py
+- file: 01_hearing/決定ログ_進行中.md
+  check: python3 scripts/ci/trace_gate.py && python3 scripts/ci/spec_check.py
+- file: 07_functional/entities.json
+  check: python3 scripts/ci/fb_gate.py --flow 05_flow/flow.json --er 03_architecture/ER図.md --dir 07_functional
+- file: 07_functional/features.json
+  check: python3 scripts/ci/fb_gate.py --flow 05_flow/flow.json --er 03_architecture/ER図.md --dir 07_functional
+- file: 07_functional/roles.json
+  check: python3 scripts/ci/fb_gate.py --flow 05_flow/flow.json --er 03_architecture/ER図.md --dir 07_functional
+- file: 07_functional/screens.json
+  check: python3 scripts/ci/fb_gate.py --flow 05_flow/flow.json --er 03_architecture/ER図.md --dir 07_functional
+- file: 07_functional/traceability-matrix.json
+  check: python3 scripts/ci/fb_gate.py --flow 05_flow/flow.json --er 03_architecture/ER図.md --dir 07_functional
+- file: 07_functional/functional-breakdown.md
+  manual: JSON からの機械生成の写し（05_flow/build_functional.py）。手で直さない
+- file: 08_api/endpoints.json
+  check: python3 scripts/ci/api_gate.py --flow 05_flow/flow.json --dir 08_api
+- file: 08_api/api-decisions.json
+  check: python3 scripts/ci/api_gate.py --flow 05_flow/flow.json --dir 08_api
+- file: 08_api/openapi.yaml
+  check: python3 -c "import yaml,json;o=yaml.safe_load(open('08_api/openapi.yaml',encoding='utf-8'));e=json.load(open('08_api/endpoints.json',encoding='utf-8'))['endpoints'];n=sum(len(v) for v in o['paths'].values());assert n==len(e),(n,len(e));print('openapi paths',n)"
+- file: 08_api/API-SPEC.md
+  manual: JSON からの機械生成の写し（05_flow/build_api.py）。手で直さない
+- file: 09_features/features.json
+  check: python3 scripts/ci/fd_gate.py --flow 05_flow/flow.json --dir 09_features
+- file: 09_features/DAG.md
+  manual: JSON からの機械生成の写し（05_flow/build_features.py）。手で直さない
+- file: 07_tasks/tickets.json
+  check: PYTHON=python3 bash 09_dispatch/scripts/validate.sh
+- file: 08_schedule/wave-schedule.json
+  check: python3 scripts/ci/sp_gate.py
+- file: 08_schedule/sprint.md
+  manual: JSON からの機械生成の写し（05_flow/build_waves.py）。手で直さない
+- file: 08_schedule/sprint.html
+  manual: JSON からの機械生成の写し（05_flow/build_waves.py）。手で直さない
+- file: 07_qa/test-plan/test-plan.json
+  check: python3 scripts/ci/tv_gate.py
+- file: 07_qa/test-plan/ears-test-mapping.json
+  check: python3 scripts/ci/tv_gate.py
+- file: 07_qa/test-plan/access-matrix.json
+  check: python3 scripts/ci/tv_gate.py
+- file: .github/workflows/v3-gate.yml
+  check: python3 scripts/ci/tv_gate.py
+- file: 07_qa/test-plan/test-plan.md
+  manual: JSON からの機械生成の写し（05_flow/build_testplan.py）。手で直さない
+- file: 07_qa/test-plan/test-plan.html
+  manual: JSON からの機械生成の写し（05_flow/build_testplan.py）。手で直さない
+- file: 03_architecture/v3-gate.yml
+  manual: architecture-design 時点の 26 本の原案。正は .github/workflows/v3-gate.yml（build_testplan.py が foundation_gates.json から生成）
+- file: 10_skills/*/SKILL.md
+  check: python3 scripts/ci/skill_pkg_gate.py 10_skills
+- file: 10_skills/catalog.json
+  check: python3 scripts/ci/skill_pkg_gate.py 10_skills
+- file: 07_tasks/tickets_plan.json
+  check: python3 ~/.claude/skills/ticket-planning/scripts/ticket_gate.py 07_tasks/tickets_plan.json --flow 05_flow/flow.json --mocks 06_mockup/v1
+- file: 07_qa/test-specs/screens/*.md
+  check: python3 scripts/ci/qa-ladder.py validate --spec 07_qa/test-specs --tickets 07_tasks/tickets.json
+- file: 07_qa/test-specs/journeys/plan.json
+  check: python3 scripts/ci/qa-ladder.py validate --spec 07_qa/test-specs --tickets 07_tasks/tickets.json
+- file: 07_tasks/TASK-CARDS.md
+  manual: tickets.json からの機械生成の写し（05_flow/build_tasks.py）。手で直さない

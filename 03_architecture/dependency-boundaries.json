@@ -1,0 +1,186 @@
+{
+  "version": "1.0",
+  "project": "Kaname",
+  "created_at": "2026-09-08",
+  "_doc": "基盤への依存を『追跡』せず『物理的に閉じ込める』。境界は関心事ごとに切る（ベンダーごとではない）。多くが関門(choke point)と同一パスになる。",
+  "boundaries": [
+    {
+      "id": "B1",
+      "concern": "DB",
+      "vendor": "PostgreSQL (Supabase)",
+      "allowed_paths": [
+        "packages/db/"
+      ],
+      "forbidden_import_patterns": [
+        "@supabase/supabase-js",
+        "@supabase/postgrest-js",
+        "pg",
+        "postgres"
+      ],
+      "interface": "Database / repository群",
+      "swap_cost_days": "4〜6",
+      "also_choke_point": "C2",
+      "ci_check": "pnpm ci:boundary -- --id B1",
+      "source": [
+        "D-074.5",
+        "D-077.7"
+      ]
+    },
+    {
+      "id": "B2",
+      "concern": "認証",
+      "vendor": "Better Auth",
+      "allowed_paths": [
+        "packages/auth/"
+      ],
+      "forbidden_import_patterns": [
+        "better-auth"
+      ],
+      "interface": "AuthService",
+      "swap_cost_days": "0",
+      "note": "自前Postgres上のためDBごと移る",
+      "ci_check": "pnpm ci:boundary -- --id B2",
+      "source": [
+        "D-076.1",
+        "D-074.2"
+      ]
+    },
+    {
+      "id": "B3",
+      "concern": "ストレージ",
+      "vendor": "S3互換（Supabase Storage → S3）",
+      "allowed_paths": [
+        "packages/storage/"
+      ],
+      "forbidden_import_patterns": [
+        "@aws-sdk/client-s3",
+        "@supabase/storage-js",
+        "minio"
+      ],
+      "interface": "ObjectStore",
+      "swap_cost_days": "0.5",
+      "also_choke_point": "C4",
+      "ci_check": "pnpm ci:boundary -- --id B3",
+      "source": [
+        "D-078.2"
+      ]
+    },
+    {
+      "id": "B4",
+      "concern": "キュー・ワークフロー",
+      "vendor": "Hatchet",
+      "allowed_paths": [
+        "packages/queue/"
+      ],
+      "forbidden_import_patterns": [
+        "@hatchet-dev"
+      ],
+      "interface": "JobQueue / Scheduler",
+      "swap_cost_days": "2",
+      "ci_check": "pnpm ci:boundary -- --id B4",
+      "source": [
+        "D-075.3"
+      ]
+    },
+    {
+      "id": "B5",
+      "concern": "LLMプロバイダ",
+      "vendor": "複数",
+      "allowed_paths": [
+        "packages/llm/"
+      ],
+      "forbidden_import_patterns": [
+        "@anthropic-ai",
+        "openai",
+        "@google/generative-ai",
+        "@langchain",
+        "ollama"
+      ],
+      "interface": "LlmProvider + 能力表",
+      "swap_cost_days": "—",
+      "also_choke_point": "C3",
+      "ci_check": "pnpm ci:boundary -- --id B5"
+    },
+    {
+      "id": "B6",
+      "concern": "秘密管理",
+      "vendor": "Infisical",
+      "allowed_paths": [
+        "packages/secrets/"
+      ],
+      "forbidden_import_patterns": [
+        "@infisical/sdk"
+      ],
+      "interface": "SecretStore",
+      "swap_cost_days": "1",
+      "also_choke_point": "C8",
+      "ci_check": "pnpm ci:boundary -- --id B6",
+      "source": [
+        "D-017",
+        "D-076.4"
+      ]
+    },
+    {
+      "id": "B7",
+      "concern": "決済",
+      "vendor": "Stripe",
+      "allowed_paths": [
+        "packages/billing/"
+      ],
+      "forbidden_import_patterns": [
+        "stripe",
+        "@stripe/stripe-js"
+      ],
+      "interface": "PaymentGateway",
+      "swap_cost_days": "3",
+      "also_choke_point": "C7",
+      "ci_check": "pnpm ci:boundary -- --id B7",
+      "source": [
+        "D-002",
+        "D-075.4"
+      ]
+    }
+  ],
+  "ci_gates": [
+    {
+      "id": "G-import",
+      "desc": "allowed_paths以外からforbidden_import_patternsをimportしたらfail",
+      "blocking": true
+    },
+    {
+      "id": "G-vendor-sql",
+      "desc": "auth.uid() / auth.jwt() / pgsodium / supabase_vault / pg_graphql がmigration・queryに出たらfail",
+      "blocking": true
+    },
+    {
+      "id": "G-license",
+      "desc": "Open Coreの ee/ を含むパスからのimportでfail（Infisical / langfuse）",
+      "blocking": true
+    },
+    {
+      "id": "G-ledger",
+      "desc": "portability-ledger.md に無い越境でfail",
+      "blocking": true
+    }
+  ],
+  "migration_estimate_days": {
+    "database": "4〜6",
+    "frontend": "1〜2",
+    "total": "5〜8"
+  },
+  "_decisions": {
+    "_doc": "根拠となる決定。trace_gate が読む",
+    "all": [
+      "D-050",
+      "D-046"
+    ],
+    "clauses": [
+      "D-046.3",
+      "D-049.1",
+      "D-049.2",
+      "D-050.2",
+      "D-050.3"
+    ]
+  },
+  "updated_at": "2026-09-15"
+}

@@ -1,0 +1,157 @@
+{
+ "meta": {
+  "skill_name": "spec-sync-orchestrator",
+  "skill_version": "1.0",
+  "run_id": "20260914-threepane-D072",
+  "executed_at": "2026-09-15T21:38:55.349304",
+  "project_root": "/Users/masato0420/Downloads/受託開発/自社事業/kaname",
+  "status": "completed",
+  "display_mode": "silent",
+  "log_path": ".spec-sync/runs/20260914-threepane-D072.json"
+ },
+ "change_declaration": {
+  "raw_input": "Cがいいかな ただチャットは右パネル 中央はしっかり見やすい感じで じゃあモックに完璧に反映して タスク一覧もだね あとspec-syncのスキルも使って完璧にしてください",
+  "parsed_changes": [
+   {
+    "type": "custom",
+    "target": "UI の見え方：三画面（一覧｜中身｜自分のAI）・中間色のサイドバー・チャット右パネル",
+    "decision_id": "D-072",
+    "scope": [
+     "決定ログ§72",
+     "flow.json navigation.layout / sub_by_screen(today の順)",
+     "mockup today/tasks/approvals",
+     "DESIGN-kaname.md",
+     "ヒアリングサマリー",
+     "要件一覧（機械生成）",
+     "spec-dependencies.yaml"
+    ],
+    "revisions": [
+     "v2: 左の一覧をカード型（user が 3 案から B）",
+     "v3: user「大きすぎる・一緒にスクロール・時間が分からない・デザイン性が無い」→ 手本（Linear 密度／Apple・Material split view 独立スクロール／Sunsama 使える時間 vs 見込み／Things 予定と夕方）を調べて作り直し：一覧 380・1 行 48px・罫線・列ごとに別スクロール・時間の帯（使える／やる分／会議／余り・9〜18 時）",
+     "v4: user「親子で開ける」「時間の帯は今日ではなくタスクで。カンバン・リスト・ガントで出せ」→ 親子の行（▸ で子を開く・子も中身を持つ・親の中身に子タスク一覧）、時間の帯をタスクの一覧の頭へ移動、タスクにガント（親の下に子）を追加。flow.json の tasks の目的・決定ログ §72 に追記",
+     "v5: user「文字だらけで単調・ダラダラ並べて何が分かる／この件の動きはガント・リストで出せ」→ 行を印・チップ・輪・期限の丸に（vrow）、群の見出しに色の棒、この件の動きをレーンの流れ図（flow_lanes）に。S5 が .card/.ai の衝突を検出→ inv/aiw に改名",
+     "v6: user「上が大きすぎる」→ 三画面では topbar を消し主ボタンを第2ナビ行へ、状態タブをモック帯へ。1000px で一覧の開始 250→120px。あわせて実画面 4 幅の目視で見つけた崩れ（見え方ボタンの縦割れ・帯の文字重なり・スマホのカレンダー・親の行の ▸・右端のボタンと期限の密着・貼り付く見出し）を直した",
+     "v7 (2026-09-15): user「左の列がくそ／やりとりにチャットが 2 つ／タスクに時間の帯が残っている／AI社員の動きは流れ図で」→ 三画面では第2ナビを常に上の帯に（左に 2 列を作らない）、やりとり画面は右パネル無し、タスク一覧の帯を削除、AI社員の動きを flow_lanes に。流れ図はスマホで横スクロール",
+     "v8 (2026-09-15): user「チャットは動いていい・周りは固定／目標をもう少し見やすく／改訂は逆算だよね／ナレッジは構造的に・会社／部署／個人／AI社員・編集権限はそれで決まる／会社モデルは単調／担当業務は部署ごとにも」→ 固定枠（--fix-top/--fix-bottom、話す・やりとり）／目標＝木の表（gtree）／改訂＝逆算の段（会社→事業→部署→個人→AI社員→施策→タスク・合意者つき）／記憶＝三画面・範囲 4 層・編集できる人を中身に／会社モデル＝定義の箱＋読む 3 つ＋図つきの札 7 枚／担当業務＝全部（部署の群）と部署ごと（カンバン）／メンバー＝組織図／ルール＝範囲の札＋4 段の梯子。静的ゲート（flow G1–G10・S0–S5・ui_lint・links 3153・wide・spec A–C・T1–T7・E1–E9）緑。治具は再生成して再実行（結果は browser_rigs_v8）",
+     "v9 (2026-09-15): user「目標もトグル・層で分け・押して詳細／仮説と施策を徹底／ボタンがくっついている／記憶は権限を付けろ・自分のもの以外は権限がある人だけ／担当者・閲覧のみが見れないのはおかしい／部署があるとは限らない・複数層もある／メンバーの詳細と権限（層単位・個人・作る層）／覚えさせるとできること・できないことのデザイン／アカウントごとの画面／管理運営側」→ D-073 を決定ログ §73 に書き、flow.json に運営の用事 J12・行為 A59〜A61・画面 ops-home / ops-catalog / member-detail（44 画面）・R3/R4 に自分のAI（話す・記憶・目標・ルール）を追加。_org.py（層は会社ごと・役割ごとの見える／直せる）を作り、記憶・ルール・目標・メンバーを役割ごとの塊（data-roles）で出し分け。目標＝畳む・絞る・押して中身。仮説＝1 行 1 検証の表（GrowthBook 手本）。できること＝Trust Center 型（Vanta 手本）。教える＝範囲は直せるものだけ選べる。.acts を全画面共通にしてボタンの隙間を直した。GOALS_JS が 2 回入って畳む→開くで打ち消していた不具合を 1 回だけに",
+     "v10 (2026-09-15): user「管理側・運営側はこれだけなのか」「退会時の依存は徹底しているか」「スキルとローカルの遅れ」→ D-074：抜ける・退会の依存を flow.json の全オブジェクト 39 で表にし（_leave.py＝決定ログ §74 と 1 データ）、退会の画面に「依存の確認」、メンバーの 1 人に「抜ける」（引き継ぎ先を決めるまで無効にできない）、証跡に「運営のアクセス」（範囲・期限つき許可）。運営は 6 画面（＋会社の 1 社／公開の審査／運営の証跡と運営メンバー）。G16 leave_gate.py 新設（39/39）。スキル：ui-mockup 0.10〜0.13・G15 role_gate.py／human-grade-qa 等 6 スキルに差分テスト qa_delta.py／ux-flow-design に G16。全スキルの 3 か所同期を監査し、遅れていた 7 スキル（delivery・operations・product-strategy・strategic-goal-system・tech-stack・write-article・lesson-content）を同期・再パッケージ。治具（最終・状態と証跡の見え方を直したあと再生成して再実行）：状態 94 ★0／横溢れ 192 で 0／レイアウト 24 ★0／G16 39/39。G15 は赤 17 画面（役割ごとの中身が未設計）を残す",
+     "v11 (2026-09-15): user「なんで今更足りなかったとかになる」「スキルの更新もだろ」→ 原因（決定 ID の参照＝中身の被覆ではない／運営を v2 に送って見直さなかった／退会を手で列挙）を構造で止める：trace_gate に T8（決定を「決めたこと」表の 1 行 = D-xxx.n に割り、文ごとに導出物を検査。--clauses で決定ごとの被覆一覧）、flow_gate に G17（v1 でない画面・行為は deferred に決定 ID か user の OK が無ければ落とす）。規約 decision-traceability.md §3/§5・lessons L-010・hearing/ux-flow-design/ui-mockup/spec-sync の 4 スキルに反映し 3 か所同期。Kaname では D-073/D-074 の 14 文を全部 source に紐づけ（T8 14/14）、billing-setup と A05 の後回しに D-002 の理由を書いた（G17 緑）。文の被覆の報告：決めたことの表を持つ 7 決定 68 文のうち 14 文が検査対象で緑、残り 54 文（D-072 の 26 文など）は報告のみ＝次の作業。treated: T7 が T8 の前に要件一覧を照合していたため常に古いと出た不具合を直した。治具（最終）：状態 94 ★0／横溢れ 192 で 0／レイアウト 24 ★0",
+     "v12 (2026-09-15): user「ほんまにもうできた？？ 問い合わせとかその管理とかもない」「一旦全て見直せ」「そのミスはスキル更新したんか」「チケットとして扱えるスキルを作れ」→ D-075（往復するもの 6 つ：問い合わせ・お知らせと稼働状況・通知の届け先・プランと利用量・請求と入金・セキュリティの出来事。仕様のみ、画面 5 つは未作成で G9 赤のまま止めた）。全体見直し（01_hearing/全体見直し_20260915.md）。スキル：ux-flow-design に coverage_review.py（5 方向：T8／G15／G18 時点／G16 全出来事／G19 手本の面）と references/saas-surfaces.yaml、ui-mockup 完了ゲートに追加、規約 screen-derivation §11・L-011。新スキル ticket-planning（親子・依存・日程・担当候補・関連リンク・GitHub/Linear/Jira 書き出し・状態の引き戻し・ticket_gate K1〜K8）を pipeline S09b に登録。Kaname に 5 方向を配線した正直な数：文の未反映 54／役割の無い画面 22（未作成 5 含む）／時点の無い画面 34／出来事 7 のうち表があるのは 2／手本の面の欠け：自分のアカウント・会社の設定・取り込み・外部サービスの連携・運営のプラン定義・サービス台帳の管理",
+     "v13 (2026-09-15): user「そしたらまず更新しろ その完璧にしたスキルで完璧にして」→ 見直し計画 A〜F を全部実行。A: D-076（13 文）を正本・データ・要約に追加、件数の写し（用事 20／行為 79／オブジェクト 42／画面 58・v1 57）を決定ログ・使ってもらい方・spec-dependencies に反映。B: 新モジュール s_p9.py（inquiry・notices・billing・account・company-settings・import・services）、s_p8.py に ops-notices・ops-billing（プランの定義）・ops-services・ops-catalog 目標スキル・ops-support 受信箱。新しい状態：duties テストで動かす／ai-staff-detail 使える手段・消す／review 繰り越し／goal-allocation 配り方／members 層を消す／account-close 休止／member-detail 権限を変えるとき。_leave.py を出来事 7 つの単一の正本に（EVENTS・leave_table(event)・data-event）。C: 役割の無い 17 画面を data-roles の塊に畳み（today/approvals/records/record-detail/my-progress は r3/r4 タブを塊へ、tasks/clone-chat/clone-thread/ai-activity に R3・R4、goal-allocation/goal-edit/duties/company-model に R1 層なし）、review/hypotheses/ai-staff/ai-staff-detail は R1 R2 同じと宣言。D: _ps.py GENERIC → build_all が _generic.py で 空（PS2）・止まっている（PS4）を機械で足す（44 画面）。cover-na を種類ごとに分ける _shell._cover_na。E: 5 出来事の表を各画面に。F: D-067〜D-072 の 54 文を画面の source に、画面にならない 8 文は clauses_out（1 行 YAML）。ゲート：flow G1〜G10・G17 ／ mock_state S0〜S5 ／ ui_lint ／ 404 0（7262 本）／ 横に広い要素 0 ／ role_gate G15 57/57 ／ leave_gate 7 出来事 42/42 ／ trace T1〜T8 文の被覆 88/88 ／ spec_check A/B/C ／ error_catalog E1〜E9 ／ coverage_review 5 方向 PASS。治具：状態 114（1400/375）★0 ／ 横溢れ 232（4 幅）0 ／ レイアウト 171（3 幅 × 57、シェル無し 30 は対象外）★0。スキル：ui-mockup に汎用の空・止まっている状態の作法を追記し 3 か所同期・再パッケージ（ux-flow-design・estimate・proposal も再パッケージ）。",
+     "v14 (2026-09-15): user「売上管理も問い合わせも配布物も証跡も公開審査も各企業ごとに違うのがベース。管理側もテナント企業＞詳細で各種対応の形に。全体のお知らせ・マスタの配布管理・権限は残す」→ D-077（8 文）。運営の対応は 会社の 1 社（ops-tenant）の 8 面（構成と状態／請求と入金／問い合わせ／配布したもの／審査／証跡とサポートアクセス／お知らせ／退会と猶予）で行い、受信箱・請求と入金・審査・運営の証跡は横断の入口（行のボタンが会社の詳細へ）。プランの定義は請求と入金から「配るもの」へ移動（A79 の画面・SURFACE_MAP o.plans・第2ナビ）。data.py：ops-* の purpose と source に D-077.n、A64 の行為文を 8 面に。ゲート全緑（trace 文の被覆 96/96・coverage 5 方向 PASS・G9 57/57）。治具を作り直して再実行。",
+     "v15 (2026-09-15): user「仕様もアーキテクチャも DB の設計も更新してんの？」→ していなかった（ER 図・設計書は D-068・9/11 で停止。D-073〜D-077 の reflect_in に ER 図が無く T6 が素通り＝T7 と同型）。ER 図 v1.1：§9 層と権限（layers/permissions/abilities/target_kinds）・§10 出来事と失効（account_events/account_event_items/sessions/support_access_grants/retention_holds/erasure_certificates）・§11 運営（distributions/distribution_versions/tenant_distributions/service_registry_versions/service_requests/review_requests/ops_members/ops_audit_events/security_events）・§12 往復（inquiries/notices/notice_deliveries/status_incidents/notification_preferences/notifications/plans/plan_versions/subscriptions/plan_change_requests/usage_meters/invoices/payments/error_events）・§13（imports/integrations/invitations/export_jobs/attachments）＝37 → 79 テーブル、注記 7〜11、トレーサビリティ表に D-069/073〜077。設計書 v1.1：§2b 運営コンソール・§4 権限モデルと口座状態の出来事・§6b 課金・通知・エラー・§6 失効と運営のアクセス・§10 に D-069〜D-077。architecture.json に permission_model/account_lifecycle/ops_console/billing/notifications/error_catalog/support_and_inquiry、choke-points C2/C4/C6/C7/C8 の source。flow.json objects に 9 つ（出来事・サポートアクセス・公開申請・取り込み・正規連携・エラー・配布物・運営メンバー・定期実行）→ 42 → 51、_leave.py と §74 の表に 9 行、7 出来事の leave_gate 緑。新ゲート G20 er_gate.py（objects ↔ ER のテーブル、双方向）を coverage_review ⑥ と spec-dependencies downstream_coverage に配線。スキル：architecture-design（rule 6・scripts/er_gate.py）・ux-flow-design（--er）を 3 か所同期・再パッケージ、規約 screen-derivation §11 rule 6・L-011 追記。ゲート全緑（T8 96/96・G20 51/51・spec_check・coverage 6 方向）。治具を作り直して再実行。",
+     "v16 (2026-09-15): user「いまだにあるの？スキルは更新されているのになっているわけ？」→ 層の棚卸しを機械で実行。まだ古かった層：エラー一覧 errors.json（モックの異常状態 34＋行為 6 の計 40 件が未登録。gate を --catalog だけで回して E3/E4/E9 を飛ばし緑を貼っていた）。埋めて 49 → 89 件、errors.md を再生成、error_catalog.py gate は検査を飛ばしたら既定で FAIL（--allow-partial で明示）に変更し human-grade-qa を 3 か所同期。extension-points / dependency-boundaries に D-073〜D-077 の source、影響マップに §2b。新ゲート G21 layer_audit.py（spec-dependencies の layer_checks：全成果物 × 機械の検査 or 手で見る理由。無い層は赤、manual で参照が古い層は warn）を作り spec-sync-orchestrator に同期。手で見る層の warn：UIライブラリ候補（D-068・調査記録）・自前実装リスト（D-068・凍結時に見直す）・selected-stack（D-068・決め打ち禁止）・dependency-boundaries（D-076）・portability-ledger（D-050・実装前は空）・DESIGN（D-072・トークン増なし）。",
+     "v17 (2026-09-15): user「一旦OKです」→ 段階 1 の画面を凍結。手で見る 6 層の見直しに入り、その後 functional-breakdown（S06）へ。",
+     "v18 (2026-09-15): user「スキルを構築・アップロードして AI社員が使う形が無い。できてるの？」→ できていなかった（§30・§63 は裏側の記述だけ）。構造の直し：trace_gate に T9（決めたことの表が無い confirmed は赤）・T10（作る・配る・版・台帳・マスタ の文はオブジェクト必須）を追加し T8 を全決定に（clauses.all）。古い 59 節に 決めたことの表（373 文）を並列 6 本の下書き → apply_clauses.py で機械適用、文の被覆 481/481。オブジェクト 7 つ追加（スキル・変更履歴・能力表・成果物・セキュリティ開示資料・端末・層 → 58）。D-078 スキル（運営の構築・アップロード・テスト・版・配布・装着）：画面 ops-skills（一覧／1 つの中身／アップロード）・AI社員の 1 体「使えるスキル」・AI社員の動きに「どのスキルが働いたか」、行為 A80/A81、ER §14（skills / skill_versions / skill_test_runs / skill_attachments）、設計書 §2b、architecture.json、エラー E-ACT-041。D-079 タイムライン：svar-gantt、棒を押すと右に詳細（goals・hypotheses を timeline() で描き直し、1023 以下は切替）。段階 1 凍結の手で見る層（DESIGN・selected-stack・境界・台帳・自前実装・UI 候補・影響マップ）を更新。スキル：ux-flow-design（T9/T10・apply_clauses）・hearing・spec-sync（layer_audit）・architecture-design・ui-mockup・human-grade-qa を 3 か所同期・再パッケージ、規約 decision-traceability T9/T10。ゲート全緑（flow 59/58・trace 481/481・G20 58/58・E1〜E9 88 件・coverage 6 方向・layer_audit）。治具を作り直して再実行。",
+     "v19 (2026-09-15): user「完璧に進めて」→ S06 functional-breakdown。05_flow/build_functional.py が flow.json・ER図・モック・errors.json から 07_functional/{entities 83, features 28（用事 20＋関門 8）, roles 5, screens 59, traceability-matrix}.json と md/html を機械生成（source は上流を継承）。fb_gate.py FB1〜FB8 緑、trace T1〜T8 緑（products に 4 JSON を追加）、layer_audit 緑。スキル functional-breakdown に機械生成の既定と fb_gate を追加し 3 か所同期・再パッケージ。次は S07 api-design。",
+     "v20 (2026-09-15): S07 api-design。05_flow/build_api.py が 07_functional のマトリクス・エンティティ・関門・エラー一覧から 08_api/{endpoints.json（56 本・acts/screens/choke_points/source/outputs_4xx/ears）, openapi.yaml, types.ts, api-decisions.json, ears-ac-seed.json, lint-mapping.json, screen-api-coverage.json（59/59）, api-field-consumption.json（逆カバレッジ：どの画面にも出ないフィールド 0）, API-SPEC.md, api-spec.html} を機械生成。画面の objects に 出来事・サポートアクセス・公開申請・取り込み・正規連携・定期実行・端末・スキル・変更履歴・成果物・添付 を足して逆カバレッジを閉じた。api_gate.py A1〜A8 緑。スキル api-design に機械生成の既定と api_gate を追加し 3 か所同期・再パッケージ。次は S07b spec-sync（全ゲート）→ S08 feature-decomposition。",
+     "v21 (2026-09-15): S08 feature-decomposition。05_flow/build_features.py が 09_features/{features.json（116 機能：A 15・B 20・C 59・D 18・E 4、Wave 13、並列 10、Human 3,955 h／AI wall-clock 142 h）, DAG.md, feature-decomposition.md/.html, fd-decisions.json} を機械生成。結線（D）8 本＋流れ E2E 9 本、孤立コンポーネント 0、循環 0。fd_gate.py FD1〜FD8 緑。スキル feature-decomposition に機械生成の既定と fd_gate を追加し 3 か所同期。次は S09 task-decomposition → S09b ticket-planning。",
+     "v22 (2026-09-15): S09 task-decomposition ＋ S09b ticket-planning。05_flow/build_tasks.py が 07_tasks/tickets.json（api_first・139 タスク：F 17・D 12・A 23・U-shared 6・U-screen 58・I 22、Wave 17、Human 4,600 h／AI wall-clock 196 h、JIT 用インライン・決定の summary 逐語・choke_points・二軸工数）、TASK-CARDS.md/html、DEPENDENCIES.md、td-decisions.json、L1 正本 07_qa/test-specs（screens/*.md・rls-matrix・prod-smoke・zero-state・visual-fidelity-audit・errors.md のタスク列、約 3,000 行）、L2 journeys/plan.json（9 流れ・80 行・runnable_after）、09_dispatch（CLAUDE.md.template・dispatch.sh・validate.sh）を機械生成。td_gate TD1〜TD10・qa-ladder validate 緑。ticket-planning：tickets_plan.json（epic 13／story 139／subtask 3,545・クリティカルパス 38 営業日・割り当て 139・リンク切れ 0）・board/schedule/assign。ticket_gate K1〜K8 緑。スキル：task-decomposition（機械生成・td_gate・JIT 雛形）・human-grade-qa（qa_ladder：errors.md と -A/B/C）・ticket-planning（--decisions・印と接尾）を 3 か所同期。",
+     "v23 (2026-09-15): user「スキルを格納して使える感じって言っていたよね。それぞれでやること作るのにどうする？」→ 器（D-078）だけで中身が無かった。D-080：一式＝SKILL.md（7 節）＋references＋evals、3 種（構築メタ 7・目標・業務）、元ネタ＝HQ 27 スキル＋strategic-goal-system、作り方＝skill-creator＋10_skills/_template、検査 skill_pkg_gate SK1〜SK6（CI と運営のアップロードで同じ）、テスト＝テスト会社の 5 場面、段階 1 は 14 本を Group S（content 層・T-S-01〜15）で運営が制作。見本 10_skills/goal-sales-contract-dev。ER（skill_versions.package_ref／skill_test_runs.result）・設計書 §2b・architecture.json・影響マップ・自前実装 M15/16・extension-points E22・catalog を同じ回で更新。td_gate に content 層、qa-ladder に skills.md、名簿に content。下流を再生成（tasks 153・L1 3118・epic 14／story 153／subtask 3693・クリティカルパス 40 営業日）。全ゲート緑（trace T1〜T8 490/490・TD・K・SK・G21）。ui_lint で credentials の「ID」を直した。",
+     "v24 (2026-09-15): S11 test-verification を機械生成に。05_flow/build_testplan.py → 07_qa/test-plan/{test-plan.json,md,html, ears-test-mapping.json（EARS 403 文 = 403 test）, access-matrix.json（255 policy × 場合 = 1,020 行）} と .github/workflows/v3-gate.yml（基盤 26 ＋ 仕様の層 G27〜G31 ＋ task/<ID> の L1 行 G32 ＋ RLS 場合表 G33 ＋ EARS 対応 G34 ＋ 資源の静的検査 G35 ＋ Schemathesis G36 ＝ 36 本・auto-merge は static/database/spec/task-gate）。検査 tv_gate.py TV1〜TV8（layer_checks 登録）。unit の枠組み（Vitest／Jest）は決め打ちせず未定 → user 確認。Pact は段階 1 で入れない（OpenAPI 生成型＋openapi-diff で代替）。次は S13 sprint-planning（wave-schedule.json）。",
+     "v25 (2026-09-15): user がテスト道具を Vitest に決定（selected-stack stack.testing）。S13 sprint-planning を機械生成に：05_flow/build_waves.py → 08_schedule/wave-schedule.json（Wave 19・Phase × Sprint・二軸・qa_scope L1/L2/回帰・9/22→11/19）＋ sprint.md/html、検査 sp_gate.py SP1〜SP8。流れ 9 は全部 Wave に付いた。staging（environments.staging・GAP-246）が未確定 → W0 の前提に書き user に確認。次は S14 dispatch.sh T-F-01（staging 確定後）。",
+     "v26 (2026-09-15): user が staging を「本番と同じ構成をもう 1 組」に決定（selected-stack environments.staging・ADR 追加・GAP-246 解消）。wave-schedule を再生成（W0 の前提が消えた）。次は S14：実装リポジトリを作り dispatch.sh T-F-01 から。",
+     "v27 (2026-09-15): user「v2 は？」→ サマリーの段階表が D-073〜D-080 の後も古いままだった。D-081：v1＝release v1 の 58 画面（旧段階 0〜3 の中身）、段階 2＝Stripe 課金／LLM 経路の追加／PWA／情シス開示資料、段階 3 以降＝MDM・SSO・ISMS。段階表を 3 段に書き換え、billing-setup／A05 の source と flow.json deferred に D-081.2。下流を再生成（差分 0）。全ゲート緑・G21 PASS。",
+     "v28 (2026-09-15): S14 開始。実装は kaname の中（apps/・packages/。CI が仕様と実装のゲートを同じ repo で回すため）。git init（main）→ task/T-F-01。T-F-01：pnpm workspace・tsconfig strict・eslint（no-eval）・prettier・vitest coverage 80/70・gate_pending.mjs（未実装ゲート 20 本は Foundation の PR だけ通す）・packages/db（app.tenant_id() 等の 0001 migration・migration の並び検査）・packages/gateways/README・packages/api（Hono GET /health）。lint／type-check／test（7 本・coverage 100/85.7）PASS、qa-ladder gate --task T-F-01 PASS（8 行：PASS 6・BLOCKED 2 は T-F-16／T-F-02）。監査 07_tasks/audit/T-F-01.md。remote 無し → PR は未作成。"
+    ]
+   }
+  ]
+ },
+ "impact_scan": {
+  "scanned_concept": "D-072",
+  "affected_files_count": 12,
+  "hand_edited": [
+   "01_hearing/決定ログ_進行中.md",
+   "01_hearing/ヒアリングサマリー.md",
+   "04_design/DESIGN-kaname.md",
+   "05_flow/data.py",
+   "05_flow/build_flow.py",
+   "spec-dependencies.yaml",
+   "06_mockup/_threepane.py",
+   "06_mockup/_taskdata.py",
+   "06_mockup/_tokens.py",
+   "06_mockup/_shell.py",
+   "06_mockup/s_p2.py",
+   "06_mockup/s_p2b.py"
+  ],
+  "regenerated": [
+   "05_flow/flow.json",
+   "05_flow/flow.html",
+   "05_flow/使ってもらい方.md",
+   "01_hearing/要件一覧.md",
+   "06_mockup/v1/*.html",
+   "06_mockup/v1/_st*/ _m*/ _ly*/"
+  ]
+ },
+ "audit": {
+  "loop_count": 1,
+  "loops": [
+   {
+    "loop_number": 1,
+    "tier_a_numeric_consistency": {
+     "status": "pass"
+    },
+    "tier_b_cross_reference": {
+     "status": "pass"
+    },
+    "tier_c_deprecated_terms": {
+     "status": "pass"
+    },
+    "tier_t_traceability": {
+     "status": "pass",
+     "note": "T1〜T7 緑。決定 72 / 参照 72 / 反映率 100%（--index 再生成後）"
+    },
+    "flow_gate": {
+     "status": "pass",
+     "note": "G1〜G10"
+    },
+    "mock_state_gate": {
+     "status": "pass",
+     "note": "S0〜S5"
+    },
+    "ui_lint": {
+     "status": "pass"
+    },
+    "links": {
+     "status": "pass",
+     "note": "3150 本 404 0"
+    },
+    "wide": {
+     "status": "pass"
+    },
+    "error_catalog": {
+     "status": "pass",
+     "note": "E1〜E9"
+    },
+    "overall": "pass",
+    "browser_rigs": {
+     "state_rig_1400_375": "80 ページ ★0（v5 で 10px の文字 2 種を 11px に）",
+     "measure_375_768_1024_1440": "164 ページ 横溢れ 0",
+     "layout_768_1024_1400": "21 ページ × 4 役割 ★0（v5 で再実行）"
+    },
+    "browser_rigs_v9": {
+     "state_rig_1400_375": "88 ページ（44 画面）★0（途中の赤：仮説の手順の small 10.4px・状態チップの幅・権限の表の固定チップに hover 無し → 直して再実行）",
+     "measure_375_768_1024_1440": "180 ページで横溢れ 0（途中の赤：メンバーの 1 人の 375 幅で select が 41px 溢れ → max-width）",
+     "layout_768_1024_1400": "24 ページ × 4 役割 ★0",
+     "interaction": "目標の畳む／絞る／押して中身、仮説の行を押して中身、記憶の役割切替（R1〜R4）、ルールの R3 表示を実機で確認",
+     "role_gate_G15": "新設。44 画面中 26 が緑（役割ごとの中身あり or 同じと宣言）。赤 18 画面＝役割ごとの中身が未設計（今日・承認待ち・タスク・台帳・話す・やりとり・AI社員の動き・自分の目標・目標の配分／改訂・ふりかえり・仮説・担当業務・会社モデル・AI社員×2）。次の作業"
+    },
+    "browser_rigs_v8": {
+     "state_rig_1400_375": "80 ページ ★0（途中の赤：会社モデルの段階図 10.5px・ルールの鍵アイコン縦ズレ・目標の表の 375 幅の数字はみ出し・逆算の矢印縦ズレ → 直して再実行）",
+     "measure_375_768_1024_1440": "164 ページ 横溢れ 0（途中の赤：目標改訂 1024 で 6px → 逆算の段を 1 列に）",
+     "layout_768_1024_1400": "21 ページ × 4 役割 ★0",
+     "final_rerun": "768 幅の目視で見つけた 2 件（目標の表の % 列が切れる・台帳の段階図が見出しに重なる）と組織の札の人数を直した後に 3 治具を再生成・再実行：状態 80 ★0／横溢れ 164 で 0／レイアウト 21 ★0"
+    },
+    "note": "治具は srcdoc にモック HTML を埋め込むので、モックを直すたびに再生成した（最初の緑は古い HTML を測っていた）"
+   }
+  ],
+  "final_status": "pass"
+ },
+ "output": {
+  "commit_message_draft": "feat(mock): D-072 三画面（一覧｜中身｜自分のAI）を今日・タスク・承認待ちに適用。サイドバーを中間色に、三画面ではレール。flow.json navigation.layout、DESIGN、要件を同期",
+  "recommended_next_actions": [
+   "名簿（07_tasks/roster.json）と節目（08_schedule/milestones.json）を PM が確定",
+   "S10 acceptance-criteria／S11 test-verification（CI gate 配線）→ 実装（S14 jit-task-execution：dispatch.sh T-F-01 から）"
+  ]
+ }
+}

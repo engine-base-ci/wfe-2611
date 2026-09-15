@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kaname V1 — たたき台を確かめる</title>
+<!-- screen: onboard-draft / acts: A07 A08 / source: D-010 D-028 D-025 D-030 D-003.7 D-010.1 D-025.3 D-028.1 D-030.3 D-039.1 / shell: D-052 D-053 D-059 D-060 D-065 D-066 -->
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+2:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#22345C; --on-primary:#FFFFFF; --primary-c:#DCE4F2; --on-primary-c:#101C33;
+  --secondary:#186F69; --on-secondary:#FFFFFF; --secondary-c:#CFEAE7; --on-secondary-c:#0A3330;
+  --tertiary:#6D4AA6; --on-tertiary:#FFFFFF; --tertiary-c:#E9E0F5; --on-tertiary-c:#33235C;
+  --surface:#F7F8FA; --on-surface:#131B27; --sv:#E9ECF1; --on-sv:#4A5563;
+  --error:#B91C1C; --on-error:#FFFFFF; --neutral:#8A94A3;
+  --card:#FFFFFF; --line:#DDE2E9; --line-soft:#EDF0F4;
+
+  --st-success:#166534; --st-warning:#B45309; --st-danger:#B91C1C; --st-progress:#1D4ED8;
+  --d-indigo:#2F4B7C; --d-teal:#186F69; --d-amber:#7E570D; --d-coral:#A34A3E; --d-sage:#516F46; --d-plum:#6B3F5E;
+
+  --s-xs:4px; --s-sm:8px; --s-md:16px; --s-lg:24px; --s-xl:48px; --s-2xl:96px;
+  --r-sm:4px; --r-md:6px; --r-lg:12px; --r-xl:20px; --r-full:9999px;
+
+  --font:'M PLUS 2','Hiragino Sans',sans-serif;
+  --font-code:ui-monospace,SFMono-Regular,Menlo,monospace;
+  --side-bg:#EEF0F4; --side-hover:rgba(19,27,39,.06); --side-on:#FFFFFF;
+  --sidebar-w:216px; --subnav-w:230px; --queue-w:380px; --queue-min:380px;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--surface);color:var(--on-surface);font-family:var(--font);font-size:15px;line-height:1.7;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit}
+svg{width:16px;height:16px;flex:none}
+/* ★hidden 属性は必ず効かせる。作者スタイルの display 指定に負けないように。
+   （.norole{display:grid} が hidden を上書きして、隠れるはずの要素が幅を奪う事故があった） */
+[hidden]{display:none!important}  /* 既定サイズ。個別指定が無くても巨大化しない */
+.num{font-variant-numeric:tabular-nums}
+
+/* ============ 操作の状態（hover / focus / active / disabled / 読み込み中）── 全部品共通。個別に書かない ============ */
+:root{--dur:.15s;--ring:var(--primary)}
+a[href],button,[role=tab],[role=button],.inp,input,textarea,select{transition:background-color var(--dur),color var(--dur),border-color var(--dur),box-shadow var(--dur),opacity var(--dur),transform .08s}
+a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,[tabindex]:focus-visible,[role=tab]:focus-visible,[role=button]:focus-visible{outline:2px solid var(--ring);outline-offset:2px;border-radius:var(--r-sm)}
+.inp:focus-visible{outline-offset:1px}
+/* 文中のリンクは下線で「押せる」を示す。ナビ・ボタン・チップは背景で示すので下線は付けない */
+a[href]:hover{text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+.side a:hover,.subnav a:hover,.tabbar a:hover,a.btn:hover,a.pill:hover,a.chip:hover,.mact a:hover,.opts a:hover,.mockbar a:hover,a.card:hover{text-decoration:none}
+button:not([class]):hover{background:var(--sv);color:var(--on-surface)}
+button,[role=button]{min-height:24px;min-width:24px}   /* WCAG 2.2 2.5.8 */
+.btn:active{transform:translateY(1px)}
+.side-item:active,.sn:active,.tabbar a:active{transform:scale(.985)}
+[disabled],[aria-disabled="true"]{opacity:.55;cursor:not-allowed}
+tbody tr:hover>td{background:var(--surface)}
+.skel{position:relative;overflow:hidden;background:var(--sv);border-radius:var(--r-sm);color:transparent!important;user-select:none}
+.skel::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.65),transparent);animation:sk 1.3s infinite}
+@keyframes sk{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* ============ モック帯（実装には含めない印） ============ */
+.mockbar{position:sticky;top:0;z-index:60;background:var(--on-surface);color:#fff;font-size:11.5px;letter-spacing:.02em;padding:7px 16px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.mockbar b{font-weight:600}
+.mockbar .tagv{background:var(--tertiary);padding:2px 8px;border-radius:var(--r-full);font-weight:600;font-size:10.5px}
+.mockbar a{opacity:.72;border-bottom:1px solid rgba(255,255,255,.32)}
+.mockbar a:hover{opacity:1}
+.mockbar .sp{flex:1}
+.mockbar .wsw{display:inline-flex;gap:3px;align-items:center}
+.mockbar .wsw b{font-size:10.5px;opacity:.6;font-weight:600;margin-right:3px}
+.mockbar .wsw button{font-size:11px;font-weight:600;padding:3px 9px;border-radius:var(--r-full);background:rgba(255,255,255,.14);color:rgba(255,255,255,.78);min-height:22px}
+.mockbar .wsw button:hover{background:rgba(255,255,255,.26);color:#fff}
+@media(max-width:767px){.mockbar .wsw{display:none}}
+
+/* ============ シェル ============ */
+.shell{display:flex;min-height:calc(100vh - 34px)}
+
+/* サイドバー（D-072：中間色。紺の面はやめる。Linear / Notion と同じく本文より半段暗い灰色＋罫線 1 本） */
+.side{width:var(--sidebar-w);flex:none;background:var(--side-bg);color:var(--on-surface);border-right:1px solid var(--line);display:flex;flex-direction:column;position:sticky;top:34px;height:calc(100vh - 34px);overflow-y:auto}
+.side-brand{padding:18px 18px 14px;display:flex;align-items:center;gap:9px;font-size:16px;font-weight:700;letter-spacing:.01em;color:var(--on-surface)}
+.side-brand svg{width:20px;height:20px;color:var(--primary)}
+.side-nav{padding:4px 10px 10px;display:flex;flex-direction:column;gap:1px}
+.side-sec{font-size:11px;font-weight:600;letter-spacing:.12em;color:var(--neutral);padding:14px 10px 5px}
+.side-item{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:var(--r-md);font-size:13.5px;font-weight:500;color:var(--on-sv);position:relative}
+.side-item svg{width:16px;height:16px;opacity:.85}
+.side-item:hover{background:var(--side-hover);color:var(--on-surface)}
+.side-item.on{background:var(--side-on);color:var(--on-surface);font-weight:600;box-shadow:0 0 0 1px var(--line)}
+.side-item.on svg{opacity:1;color:var(--primary)}
+.side-item .badge{margin-left:auto;background:var(--st-warning);color:#fff;font-size:11px;font-weight:600;padding:1px 7px;border-radius:var(--r-full)}
+.side-item .badge.badge-ai{background:var(--tertiary)}
+.side-sub{display:flex;flex-direction:column;gap:1px;padding-left:26px}
+.side-sub a{display:flex;align-items:center;gap:8px;padding:5px 10px;border-radius:var(--r-md);font-size:12.5px;color:var(--on-sv)}
+.side-sub a:hover{background:var(--side-hover);color:var(--on-surface)}
+.side-sub .dot{width:4px;height:4px;border-radius:50%}
+.side-foot{margin-top:auto;border-top:1px solid var(--line);padding:12px 14px;display:flex;align-items:center;gap:10px}
+.side-foot .av{width:30px;height:30px;border-radius:var(--r-full);background:var(--primary-c);color:var(--on-primary-c);display:grid;place-items:center;font-size:12px;font-weight:600;flex:none}
+.side-foot .who{min-width:0}
+.side-foot .nm{font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.side-foot .co{font-size:11px;color:var(--on-sv);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* 本体 */
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{background:var(--card);padding:14px 28px 4px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.topbar h1{font-size:24px;font-weight:700;letter-spacing:-.015em}
+.topbar .crumb{font-size:12px;color:var(--on-sv)}
+.topbar .sp{flex:1}
+.content{padding:24px 32px 64px;width:100%}
+
+/* 状態タブ */
+/* 状態タブはモック専用の帯（実装には無い）。本文の帯と見分けがつくよう暗い帯にする */
+.states{background:#2A3444;padding:0 20px;display:flex;gap:2px;overflow-x:auto}
+.states button{padding:8px 12px;font-size:12px;font-weight:600;color:rgba(255,255,255,.7);border-bottom:2px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:7px;flex:none}   /* flex:none が無いとタブが増えたとき縮んで文字が隣と重なる（375 幅・9 タブで発生） */
+.states button:hover{color:#fff}
+.states button[aria-selected="true"]{color:#fff;border-bottom-color:#fff}
+.states button .mk{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.35)}
+.states button[aria-selected="true"] .mk{background:#fff}
+.statepane[hidden]{display:none!important}
+.state-note{background:var(--sv);border-left:3px solid var(--neutral);border-radius:0 var(--r-md) var(--r-md) 0;padding:9px 14px;font-size:12.5px;color:var(--on-sv);margin-bottom:20px}
+
+/* ============ 部品 ============ */
+/* 箱ではなく段：罫線 1 本と余白で区切る（影より罫線・D-052。1px の箱を並べない・D-071） */
+.card{background:transparent;border:0;border-top:1px solid var(--line);border-radius:0;padding:22px 0 10px}
+.card+.card{margin-top:6px}
+.card:first-child{border-top:0;padding-top:4px}
+.grid>.card{border-top:1px solid var(--line);padding-top:18px}
+.card-h{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.card-h h2{font-size:18px;font-weight:700;letter-spacing:-.01em}
+.card-h .sp{flex:1}
+.muted{color:var(--on-sv)}
+.grid{display:grid;gap:16px}
+.grid>*{min-width:0}   /* 既定の min-width:auto だと、中の表の min-width が列幅を押し広げる */
+.card{min-width:0}
+@media(min-width:768px){.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}.g21{grid-template-columns:2fr 1fr}}
+@media(min-width:1560px){.g21{grid-template-columns:2.4fr 1fr}.g3{grid-template-columns:repeat(4,1fr)}.g3.g3-keep{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:1023px){.g21{grid-template-columns:1fr}.g3{grid-template-columns:1fr 1fr}}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 17px;border-radius:var(--r-md);font-size:13.5px;font-weight:600;transition:.13s}
+.btn svg{width:15px;height:15px}
+.btn-p{background:var(--primary);color:#fff}.btn-p:hover{background:#1a2848}
+.btn-s{background:var(--secondary-c);color:var(--on-secondary-c)}.btn-s:hover{background:#bfe2de}
+.btn-o{border:1.5px solid var(--primary);color:var(--primary)}.btn-o:hover{background:var(--primary-c)}
+.btn-g{color:var(--on-sv)}.btn-g:hover{background:var(--sv);color:var(--on-surface)}
+.btn-d{border:1.5px solid var(--error);color:var(--error)}.btn-d:hover{background:#FBE9E9}
+.btn-sm{padding:6px 12px;font-size:12.5px}
+
+.pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:var(--r-full);font-size:11.5px;font-weight:600;color:#fff;white-space:nowrap}
+.pill svg{width:12px;height:12px}
+.p-su{background:var(--st-success)}.p-wa{background:var(--st-warning)}.p-da{background:var(--st-danger)}.p-pr{background:var(--st-progress)}.p-ne{background:#6B7585}  /* 白文字で 4.6:1 */
+.pill-ai{background:var(--tertiary-c);color:var(--on-tertiary-c)}
+
+.tag{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--on-sv)}
+.tag .dot{width:4px;height:4px;border-radius:50%;flex:none}
+td>svg,th>svg,p>svg,span>svg,b>svg,a>svg{vertical-align:middle;position:relative;top:-1px}
+td:has(>svg:only-child){text-align:center}
+.card-h>svg{align-self:center}
+.dl{display:flex;flex-direction:column;gap:8px;font-size:13.5px}
+.dl>div{display:flex;gap:10px;align-items:center;padding:10px 12px;background:var(--surface);border-radius:var(--r-md)}
+.dl>div>svg{flex:none}
+.rail{border-left:2px solid var(--neutral);padding-left:11px}
+
+.metric{font-size:34px;font-weight:600;letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}
+.metric-sm{font-size:22px;font-weight:600;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.metric-lbl{font-size:11.5px;font-weight:600;letter-spacing:.04em;color:var(--on-sv);margin-bottom:7px}
+.metric-sub{font-size:12.5px;color:var(--on-sv);font-variant-numeric:tabular-nums;margin-top:7px}
+.bar{height:6px;background:var(--sv);border-radius:var(--r-full);overflow:hidden;margin-top:11px}
+.bar>i{display:block;height:100%;background:var(--primary);border-radius:var(--r-full)}
+.bar>i.warn{background:var(--st-warning)}.bar>i.ok{background:var(--st-success)}.bar>i.bad{background:var(--st-danger)}
+
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;font-size:11px;font-weight:600;letter-spacing:.06em;color:var(--on-sv);padding:0 10px 8px 0;border-bottom:1px solid var(--line)}
+th.r,td.r{text-align:right}
+td{padding:11px 10px 11px 0;border-bottom:1px solid var(--line-soft);vertical-align:middle}
+td.n{font-variant-numeric:tabular-nums;text-align:right;font-weight:500}
+tr:last-child td{border-bottom:0}
+.t-wrap{overflow-x:auto}
+
+.ai{background:var(--tertiary-c);color:var(--on-tertiary-c);border-left:3px solid var(--tertiary);border-radius:0 var(--r-md) var(--r-md) 0;padding:14px 16px}
+.ai-h{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:600;letter-spacing:.06em;margin-bottom:7px}
+.ai-h svg{width:13px;height:13px}
+
+.field{margin-bottom:15px}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--on-sv);margin-bottom:6px}
+.inp{width:100%;background:var(--sv);border:1px solid transparent;border-radius:var(--r-md);padding:10px 13px;font-family:inherit;font-size:14px;color:var(--on-surface)}
+.inp:focus{outline:2px solid var(--primary);outline-offset:1px;background:var(--card)}
+.inp.err{outline:2px solid var(--error);background:#FDF2F2}
+.help{font-size:12px;color:var(--on-sv);margin-top:5px}
+.help.err{color:var(--error);font-weight:500;display:flex;gap:6px;align-items:flex-start}
+.help.err svg{width:14px;height:14px;margin-top:3px;flex:none}
+
+.empty{text-align:center;padding:56px 20px;color:var(--on-sv)}
+.empty svg{width:38px;height:38px;opacity:.34;margin-bottom:14px}
+.empty h3{font-size:15px;font-weight:700;color:var(--on-surface);margin-bottom:6px}
+.empty p{font-size:13px;max-width:420px;margin:0 auto 18px}
+
+.kv{display:grid;grid-template-columns:auto 1fr;gap:8px 18px;font-size:13px}
+.kv dt{color:var(--on-sv);white-space:nowrap}
+.kv dd{font-weight:500}
+.code{background:var(--on-surface);color:#D8DEE9;border-radius:var(--r-md);padding:13px 15px;font-family:var(--font-code);font-size:12px;line-height:1.75;white-space:pre;overflow-x:auto}
+
+.spin{width:14px;height:14px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;display:inline-block}
+.spin.dark{border-color:rgba(19,27,39,.2);border-top-color:var(--primary)}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+
+/* ============ 画面ごとの第2サイドバー（画面によって中身が変わる） ============ */
+.subnav{width:var(--subnav-w);flex:none;background:var(--card);border-right:1px solid var(--line);
+        position:sticky;top:34px;height:calc(100vh - 34px);overflow-y:auto;display:flex;flex-direction:column}
+.subnav-h{padding:16px 16px 12px;border-bottom:1px solid var(--line-soft)}
+.subnav-h .ttl{font-size:14px;font-weight:700;margin-bottom:5px}
+.subnav-h .why{font-size:11.5px;color:var(--on-sv);line-height:1.65}
+.subnav-b{padding:10px;display:flex;flex-direction:column;gap:1px}
+.subnav-sec{font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--on-sv);padding:13px 8px 5px}
+.sn{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:var(--r-md);font-size:13px;color:var(--on-sv)}
+.sn:hover{background:var(--sv);color:var(--on-surface)}
+.sn.on{background:var(--primary-c);color:var(--on-primary-c);font-weight:600}
+.sn .dot{width:4px;height:4px;border-radius:50%;flex:none}
+.sn .n{margin-left:auto;font-size:11.5px;font-variant-numeric:tabular-nums;color:var(--on-sv)}
+.sn .n.warn{color:#92400E;font-weight:700}  /* 薄い面の上でも 4.5:1 */
+.subnav-f{margin-top:auto;padding:12px 14px;border-top:1px solid var(--line-soft)}
+
+/* 権限バー（アカウントタイプの切替＝モック用） */
+.rolebar{display:flex;gap:5px;align-items:center}
+.rolebar b{font-size:10.5px;opacity:.6;font-weight:600;letter-spacing:.06em}
+.rolebar button{font-size:11px;font-weight:600;padding:3px 10px;border-radius:var(--r-full);
+  background:rgba(255,255,255,.14);color:rgba(255,255,255,.72)}
+.rolebar button[aria-pressed="true"]{background:#fff;color:var(--on-surface)}
+.side[data-role]{display:none}
+.side[data-role].on{display:flex}
+.norole{flex:1;min-width:0;display:grid;place-content:center;text-align:center;padding:40px 28px}
+.norole>*{max-width:560px}
+.norole svg{width:34px;height:34px;color:var(--on-sv);margin:0 auto 4px}
+.norole h3{font-size:16px;font-weight:700;margin:12px 0 8px}
+.norole p{font-size:13px;color:var(--on-sv);line-height:1.8}
+
+/* 画面の目的（topbar 下） */
+.purpose{display:none!important;background:var(--card);border-bottom:1px solid var(--line);padding:11px 32px;
+  display:flex;gap:11px;align-items:center;font-size:13px;color:var(--on-sv);line-height:1.75}
+.purpose svg{color:var(--primary)}
+.purpose b{color:var(--on-surface)}
+
+/* モバイル下部タブ */
+.tabbar{display:none}
+@media(max-width:767px){
+  .side,.side[data-role].on{display:none}   /* ★役割切替の .on（詳細度が高い）に負けないよう両方書く */
+  .content{padding:18px 16px 92px}
+  .topbar{padding:12px 16px}
+  .topbar h1{font-size:18px}
+  .inp,input:not([type=checkbox]):not([type=radio]),textarea,select{font-size:16px!important}   /* iOS Safari はフォーカス時に 16px 未満の入力欄へ自動ズームする。部品側の指定より必ず勝つ */
+  .states{padding:0 16px}
+  .tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:50;background:var(--card);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+  .tabbar a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;font-size:11px;font-weight:600;color:var(--on-sv);position:relative}
+  .tabbar a svg{width:19px;height:19px}
+  .tabbar a.on{color:var(--primary)}
+  .tabbar a .bdg{position:absolute;top:2px;right:calc(50% - 17px);background:var(--st-warning);color:#fff;font-size:11px;font-weight:700;min-width:17px;height:17px;border-radius:var(--r-full);display:grid;place-items:center;padding:0 4px}
+  .grid.g2,.grid.g3,.grid.g21{grid-template-columns:1fr}
+  .purpose{padding:10px 16px}
+  .subnav{width:100%;height:auto;position:static;border-right:0;border-bottom:1px solid var(--line);flex-direction:column}
+  .subnav-h{display:none}   /* スマホでは見出し・目的は本文の見出しと重複するので出さない。第2ナビは帯（チップ）だけ */
+  .subnav-h .acts{display:none}   /* 行為ID・役割・根拠のチップは開発者向け。スマホでは出さない（本文が下に押し出される） */
+  .subnav-h .why{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .subnav-b{flex-direction:row;overflow-x:auto;gap:6px;padding:10px 16px}
+  .subnav-b .sn{white-space:nowrap;background:var(--sv);flex:none}
+  .subnav-sec{display:none}
+  .subnav-f{display:none}
+  .shell{flex-direction:column}
+  /* 表は縮めずに、表の中だけ横スクロールさせる（本文は絶対に横スクロールさせない） */
+  .t-wrap{margin:0 -16px;padding:0 16px}
+  .t-wrap table{min-width:560px}
+  .card{padding:16px}
+  .metric{font-size:30px}
+}
+
+/* ============ v2 シェル（flow.json 駆動）で足したもの ============ */
+.mockbar .ph{opacity:.55;font-size:11px}
+.mockbar .mut{opacity:.5}
+.topbar .tt{min-width:0}
+.subnav-h .acts{margin-top:9px;display:flex;gap:4px;flex-wrap:wrap}
+.acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:14px}   /* ボタンの並び。くっつけない（全画面共通） */
+.subnav-h .ck.rl{background:var(--sv);color:var(--on-sv)}
+.subnav-h .ck{font-size:10px;font-weight:600;font-family:var(--font-code);background:var(--primary-c);
+  color:var(--on-primary-c);padding:1px 6px;border-radius:var(--r-full)}
+.norole .go{margin-top:14px;font-size:12px;color:var(--on-sv);background:var(--sv);
+  border-radius:var(--r-md);padding:9px 13px;display:inline-block}
+.purpose b{color:var(--on-surface)}
+/* 主アクションは1つだけ。副は枠線・文字だけに落とす */
+.topbar .btn-p{box-shadow:0 1px 0 rgba(0,0,0,.06)}
+
+
+.side-grp{width:100%;text-align:left}
+.side-grp .chev{margin-left:auto;display:flex;opacity:.55;transition:.15s}
+.side-grp .chev svg{width:14px;height:14px}
+.side-grp.open .chev{transform:rotate(180deg)}
+.side-grp .badge{margin-left:auto}
+.side-grp .badge+.chev{margin-left:6px}
+.side-sub a.on{background:var(--side-on);color:var(--on-surface);font-weight:600;box-shadow:0 0 0 1px var(--line)}
+.side-sub a svg{width:13px;height:13px;opacity:.8}
+.side-sub a .badge{margin-left:auto;background:var(--st-warning);color:#fff;font-size:11px;font-weight:600;padding:0 6px;border-radius:var(--r-full)}
+/* レール（アイコン＋小さな名前）。タブレットと、三画面（D-072）の画面で使う。1 か所に書き、接頭辞だけ変える */
+@media(min-width:1180px){
+.shell[data-layout=threepane]{--sidebar-w:72px}
+.shell[data-layout=threepane] .side{width:72px}
+.shell[data-layout=threepane] .side-brand{justify-content:center;padding:16px 0 10px}
+.shell[data-layout=threepane] .side-brand span{display:none}
+.shell[data-layout=threepane] .side-nav{padding:4px 6px}
+.shell[data-layout=threepane] .side-item{flex-direction:column;gap:4px;padding:9px 2px;font-size:11px;line-height:1.2;text-align:center;border-radius:var(--r-md)}
+.shell[data-layout=threepane] .side-item svg{width:20px;height:20px}
+.shell[data-layout=threepane] .side-item .badge{position:absolute;top:4px;right:6px;margin:0}
+.shell[data-layout=threepane] .side-grp .chev{display:none}
+.shell[data-layout=threepane] .side-sub{position:fixed;left:72px;top:34px;bottom:0;width:216px;background:var(--side-bg);border-right:1px solid var(--line);padding:14px 10px;z-index:57;box-shadow:8px 0 24px rgba(0,0,0,.12);gap:2px}
+.shell[data-layout=threepane] .side-sub a{font-size:13px;padding:8px 10px}
+.shell[data-layout=threepane] .side-foot{padding:10px 6px;justify-content:center}
+.shell[data-layout=threepane] .side-foot .who{display:none}
+}
+.sn{flex-direction:column;align-items:flex-start;gap:2px}
+.sn .sn-l{display:flex;align-items:center;gap:8px;width:100%}
+.sn .sn-l .n{margin-left:auto}
+.sn .sn-d{font-size:11px;color:var(--on-sv);line-height:1.5;font-weight:400}
+.sn.on .sn-d{color:var(--on-primary-c);opacity:.8}
+@media(max-width:767px){.sn .sn-d{display:none}}
+.aipanel{width:340px;flex:none;background:var(--card);border-left:1px solid var(--line);position:sticky;top:34px;height:calc(100vh - 34px);display:none;flex-direction:column}
+.shell.panel-open .aipanel.on{display:flex}
+.ap-h{display:flex;gap:10px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line-soft)}
+.ap-h .av{width:32px;height:32px;border-radius:var(--r-full);background:var(--tertiary-c);color:var(--on-tertiary-c);display:grid;place-items:center;flex:none}
+.ap-h .nm{font-size:13.5px;font-weight:700}.ap-h .ctx{font-size:11.5px;color:var(--on-sv);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ap-h .btn-sm{padding:5px 7px}
+.ap-b{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+.pm{max-width:92%;padding:9px 12px;border-radius:var(--r-lg);font-size:13px;line-height:1.75}
+.pm.u{align-self:flex-end;background:var(--primary-c);color:var(--on-primary-c)}
+.pm.a{align-self:flex-start;background:var(--surface);border:1px solid var(--line)}
+.pm .pm-when{display:block;font-size:11.5px;color:var(--tertiary);font-weight:600;margin-bottom:3px}
+.pm .opts{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.ptree{border:1px solid var(--line);border-radius:var(--r-md);padding:8px 11px;font-size:12.5px}
+.ptree summary{cursor:pointer;font-weight:600;color:var(--on-sv);font-size:12px}
+.ptree .tl{margin-top:8px}
+.ptree .tl>div{display:flex;gap:8px;align-items:flex-start;padding:4px 0;font-size:12px}
+.ptree .tl .d{width:7px;height:7px;border-radius:50%;margin-top:5px;flex:none;background:var(--neutral)}
+.ptree .tl .done .d{background:var(--st-success)}.ptree .tl .now .d{background:var(--st-progress)}
+.ap-c{border-top:1px solid var(--line-soft);padding:10px 12px}
+.ap-c .slash{display:flex;gap:6px;margin-bottom:7px}.ap-c .slash span{font-size:11px;background:var(--sv);padding:2px 8px;border-radius:var(--r-full);color:var(--on-sv)}
+.ap-c .box{display:flex;gap:8px;align-items:flex-end;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:8px 10px}
+.ap-c .box svg{margin-bottom:6px;color:var(--on-sv)}
+.ap-c textarea{flex:1;border:0;background:none;font:inherit;font-size:13px;resize:none;min-height:24px}
+.ap-c textarea:focus-visible{outline:none}
+.ap-c:focus-within{outline:2px solid var(--primary);outline-offset:2px;border-radius:var(--r-md)}
+.ap-toggle[aria-pressed="true"]{background:var(--primary-c)}
+.ai-stopped{color:var(--st-warning);font-weight:600}
+/* はじめの設定の枠（運用前）：サイドバー・第2ナビ・下タブは data-requires=app で隠れる。格子も1列に */
+.shell[data-frame="wizard"]{display:block!important}
+.shell[data-frame="wizard"] .main{width:100%}
+.subnav-h .crumb{font-size:12px;color:var(--on-sv);margin-bottom:2px}
+.subnav-h{padding:14px 16px 12px}
+.subnav-h .ttl{font-size:14px;line-height:1.5}
+[data-ps-only]{display:none}
+.ai-fab{display:none}
+/* ============ 本文の最小幅（D-070）：本文が 720px を下回るなら第2ナビを上の帯に畳む。入口画面（anchors）は常に上の帯 ============ */
+@media(min-width:1180px){
+  .shell.sub-chips{display:grid;grid-template-columns:var(--sidebar-w) minmax(0,1fr) auto;grid-template-rows:auto minmax(0,1fr)}
+  .shell.sub-chips .side{grid-column:1;grid-row:1/3}
+  .shell.sub-chips .subnav{grid-column:2;grid-row:1;width:auto;height:auto;position:static;border-right:0;border-bottom:1px solid var(--line);flex-direction:column}
+  .shell.sub-chips .subnav-h{padding:12px 28px 4px}.shell.sub-chips .subnav-h .why{display:none}.shell.sub-chips .subnav-h .crumb{display:none}.shell.sub-chips .subnav-h .ttl{display:none}
+  .shell.sub-chips .subnav-b{flex-direction:row;overflow-x:auto;gap:6px;padding:8px 28px 12px}
+  .shell.sub-chips .subnav-b .sn{white-space:nowrap;background:var(--sv);flex:none;flex-direction:row;padding:6px 12px}
+  .shell.sub-chips .subnav-sec{display:none}.shell.sub-chips .sn .sn-d{display:none}
+  .shell.sub-chips .main{grid-column:2;grid-row:2}
+  .shell.sub-chips .aipanel{grid-column:3;grid-row:1/3}
+  .shell.sub-chips .norole{grid-column:2;grid-row:1/3}
+  .shell.sub-chips .blocked{grid-column:2;grid-row:1/3}
+}
+@media(max-width:767px){
+  .aipanel{position:fixed;left:0;right:0;bottom:0;top:auto;width:auto;height:72vh;z-index:58;border-left:0;border-top:1px solid var(--line);border-radius:var(--r-xl) var(--r-xl) 0 0}
+  .ap-toggle .ap-name{display:none}
+  .shell.panel-open .subnav{display:block}
+}
+.sec-h{display:flex;align-items:center;gap:10px;margin:0 0 12px;font-size:12px;color:var(--on-sv)}
+.sec-h b{font-size:15px;color:var(--on-surface)}
+.src-foot{font-size:11px;color:var(--on-sv);padding:14px 32px 0;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.src-foot .ck{font-size:11px;font-weight:600;font-family:var(--font-code);background:#F4EFDA;color:#5C4A0E;padding:1px 6px;border-radius:var(--r-full)}
+@media(max-width:767px){.src-foot{padding:12px 16px 0}}
+
+/* ============ 上を詰める（D-072）：状態タブはモック帯の中へ、三画面の画面では見出し行を消して主ボタンを第2ナビの行に ============ */
+.mockbar .states{background:none;padding:0;margin-left:6px;gap:0;overflow-x:auto;max-width:46vw}
+.mockbar .states button{padding:3px 8px;font-size:11px;color:rgba(255,255,255,.6);border-bottom:0;border-radius:var(--r-full);gap:5px}
+.mockbar .states button[aria-selected="true"]{color:#fff;background:rgba(255,255,255,.16)}
+.mockbar .states button .mk{display:none}
+.shell[data-layout=threepane] .topbar{display:none}
+.shell[data-layout=threepane] .subnav-h{display:none}
+.shell[data-layout=threepane] .subnav-b{align-items:center;padding:8px 24px}
+.shell[data-layout=threepane] .subnav-b .sn{flex:none}
+.shell[data-layout=threepane] .subnav-b .sn-acts{margin-left:auto;display:flex;gap:8px;flex:none;align-items:center}
+@media(max-width:1023px){
+  .shell[data-layout=threepane] .subnav-b{flex-wrap:wrap;overflow:visible;padding:8px 16px}
+  .shell[data-layout=threepane] .subnav-b .sn-acts{flex-basis:100%;justify-content:flex-end;margin-left:0}
+}
+@media(max-width:767px){.mockbar .states{max-width:100%;flex-basis:100%;order:9}}
+
+/* タブレットは基本規則より後に置く（同じ詳細度では後勝ち） */
+/* ============ タブレット 768〜1179（D-064）：レール＋横チップの第2ナビ＋重なるパネル ============ */
+@media(min-width:768px) and (max-width:1179px){
+  .shell{display:grid;grid-template-columns:72px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);min-height:calc(100vh - 34px)}
+  .side{grid-column:1;grid-row:1/3}
+.side{width:72px}
+.side-brand{justify-content:center;padding:16px 0 10px}
+.side-brand span{display:none}
+.side-nav{padding:4px 6px}
+.side-item{flex-direction:column;gap:4px;padding:9px 2px;font-size:11px;line-height:1.2;text-align:center;border-radius:var(--r-md)}
+.side-item svg{width:20px;height:20px}
+.side-item .badge{position:absolute;top:4px;right:6px;margin:0}
+.side-grp .chev{display:none}
+.side-sub{position:fixed;left:72px;top:34px;bottom:0;width:216px;background:var(--side-bg);border-right:1px solid var(--line);padding:14px 10px;z-index:57;box-shadow:8px 0 24px rgba(0,0,0,.12);gap:2px}
+.side-sub a{font-size:13px;padding:8px 10px}
+.side-foot{padding:10px 6px;justify-content:center}
+.side-foot .who{display:none}
+  .subnav{grid-column:2;grid-row:1;width:auto;height:auto;position:static;border-right:0;border-bottom:1px solid var(--line);flex-direction:column}
+  .subnav-h{padding:12px 20px 6px}.subnav-h .why{display:none}.subnav-h .crumb{display:none}
+  .subnav-b{flex-direction:row;overflow-x:auto;gap:6px;padding:8px 20px 12px}
+  .subnav-b .sn{white-space:nowrap;background:var(--sv);flex:none;flex-direction:row;padding:6px 12px}
+  .subnav-sec{display:none}.sn .sn-d{display:none}
+  .main{grid-column:2;grid-row:2}
+  .norole{grid-column:2;grid-row:1/3}
+  .content{padding:20px 24px 64px}
+  .topbar{padding:12px 20px 4px}.purpose{padding:10px 20px}
+  .aipanel{position:fixed;right:0;top:34px;bottom:0;width:360px;height:auto;z-index:58;box-shadow:-8px 0 24px rgba(0,0,0,.12);border-radius:0}
+  .ap-toggle .ap-name{display:none}
+}
+
+.auth{min-height:calc(100vh - 34px);display:grid;grid-template-columns:1fr 1fr}
+.auth-l{background:var(--primary);color:#fff;padding:52px 44px;display:flex;flex-direction:column}
+.auth-l .brand{display:flex;align-items:center;gap:10px;font-size:21px;font-weight:700;margin-bottom:auto}
+.auth-l .brand svg{width:24px;height:24px}
+.auth-l h2{font-size:28px;font-weight:700;line-height:1.5;letter-spacing:-.01em;margin-bottom:16px}
+.auth-l p{font-size:14px;line-height:1.9;opacity:.82;max-width:420px}
+.auth-l .steps{margin-top:28px;display:flex;flex-direction:column;gap:9px;font-size:13px;opacity:.85}
+.auth-l .steps div{display:flex;gap:9px;align-items:center}
+.auth-r{display:grid;place-items:center;padding:44px 24px;background:var(--card)}
+.auth-box{width:100%;max-width:376px}
+.auth-box h1{font-size:24px;font-weight:700;margin-bottom:5px}
+.auth-box .sub{font-size:13.5px;color:var(--on-sv);margin-bottom:26px;line-height:1.8}
+.auth-box .pz{background:var(--surface);border-radius:var(--r-md);padding:11px 14px;font-size:12.5px;
+  color:var(--on-sv);line-height:1.75;margin-bottom:22px;display:flex;gap:9px}
+@media(max-width:767px){.auth{grid-template-columns:1fr}.auth-l{padding:30px 20px}
+ .auth-l h2{font-size:22px}.auth-l .brand{margin-bottom:26px}.auth-l .steps{display:none}}
+.wiz-steps{display:flex;gap:0;margin-bottom:30px}
+.wiz-steps div{flex:1;text-align:center;font-size:12px;font-weight:600;color:var(--on-sv);
+  padding-bottom:11px;border-bottom:3px solid var(--line)}
+.wiz-steps div.on{color:var(--primary);border-bottom-color:var(--primary)}
+.wiz-steps div.done{color:var(--st-success);border-bottom-color:var(--st-success)}
+
+.ob{max-width:1120px;margin:0 auto;padding:26px 24px 80px}
+.ob-top{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+.ob-top .brand{display:flex;align-items:center;gap:8px;font-weight:700;font-size:16px;color:var(--primary)}
+.ob-top .brand svg{width:20px;height:20px}
+.chat{display:flex;flex-direction:column;gap:14px}
+.msg{display:flex;gap:11px;align-items:flex-start;max-width:min(720px,100%)}
+.chat{min-width:0}
+.msg .av{width:30px;height:30px;border-radius:var(--r-full);display:grid;place-items:center;flex:none;font-size:12px;font-weight:700}
+.msg.c .av{background:var(--tertiary-c);color:var(--on-tertiary-c)}
+.msg.u{margin-left:auto;flex-direction:row-reverse}
+.msg.u .av{background:var(--primary);color:#fff}
+.msg .bub{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:12px 15px;font-size:14px;line-height:1.85;min-width:0;max-width:100%;overflow-wrap:anywhere}
+.msg .bub .t-wrap{margin:0;padding:0;overflow-x:auto}
+.msg .bub table{min-width:0}
+.msg.u .bub{background:var(--primary-c);border-color:transparent}
+.msg .bub .who{font-size:11px;font-weight:600;color:var(--on-sv);margin-bottom:4px;letter-spacing:.04em}
+.msg .bub .opts{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.msg .bub .opts button{border:1.5px solid var(--primary);color:var(--primary);border-radius:var(--r-full);padding:5px 13px;font-size:12.5px;font-weight:600}
+.msg .bub .opts button:hover{background:var(--primary-c)}
+.composer{position:sticky;bottom:0;background:var(--surface);padding:14px 0 0}
+.composer .box{display:flex;gap:9px;align-items:flex-end;background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:10px 12px}
+.composer textarea{flex:1;border:0;background:none;font:inherit;font-size:14px;resize:none;min-height:24px}
+.composer textarea:focus-visible{outline:none}
+.composer:focus-within{outline:2px solid var(--primary);outline-offset:2px}
+.learn{position:sticky;top:50px}
+.learn .it{display:flex;gap:9px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--line-soft);font-size:13px}
+.learn .it svg{color:var(--st-success);margin-top:3px}
+.learn .it .k{font-size:11.5px;color:var(--on-sv)}
+.draft{display:grid;gap:16px}
+@media(min-width:768px){.draft{grid-template-columns:1fr 1fr}}
+.draft .card h2{display:flex;align-items:center;gap:8px}
+.dl{display:flex;flex-direction:column;gap:8px;font-size:13.5px}
+.dl>div{display:flex;gap:10px;align-items:center;padding:10px 12px;background:var(--surface);border-radius:var(--r-md);flex-wrap:wrap}
+.dl>div>*{min-width:0}
+.dl .u{font-size:11.5px;color:var(--on-sv);background:var(--sv);padding:1px 8px;border-radius:var(--r-full);white-space:nowrap}
+.dl .diff{border-left:3px solid var(--tertiary);background:var(--tertiary-c)}
+.dl .del{opacity:.7;text-decoration:line-through}
+
+.opts .alt{border-style:dashed;color:var(--on-sv)}
+.chat,.chat *,.composer,.composer *{min-width:0}
+.slash{flex-wrap:wrap}
+.chat{overflow-wrap:anywhere}   /* メール・URL・金額などの切れない文字列で吹き出しが画面幅を超えない */
+.mact{display:flex;gap:2px;margin-top:6px;flex-wrap:wrap}
+.mact button{color:var(--on-sv);min-height:26px;padding:2px 7px;border-radius:var(--r-sm);display:inline-flex;align-items:center;gap:4px}
+.mact button:hover{background:var(--sv);color:var(--on-surface)}
+.opts button:hover,.branch button:hover{background:var(--primary-c);color:var(--on-primary-c)}
+.branch button{min-width:24px;min-height:24px;border-radius:var(--r-sm)}
+.msg:hover .mact{opacity:1}
+.mact button{font-size:11px;color:var(--on-sv);padding:3px 7px;border-radius:var(--r-md);display:inline-flex;gap:4px;align-items:center}
+.mact button svg{width:12px;height:12px}
+.mact button:hover{background:var(--sv);color:var(--on-surface)}
+.cite{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;background:var(--sv);color:var(--on-sv);padding:2px 8px;min-height:24px;border-radius:var(--r-full);margin:0 2px;vertical-align:middle}
+.cite:hover{background:var(--primary-c);color:var(--on-primary-c)}
+.conf{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:2px 8px;border-radius:var(--r-full);margin-top:8px}
+.conf.hi{background:#DCFCE7;color:var(--st-success)}.conf.lo{background:#FEF6EC;color:var(--st-warning)}
+.typing{display:flex;gap:10px;align-items:center;font-size:13px;color:var(--on-sv)}
+.typing .dots i{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--neutral);margin-right:3px;animation:tp 1s infinite}
+.typing .dots i:nth-child(2){animation-delay:.2s}.typing .dots i:nth-child(3){animation-delay:.4s}
+@keyframes tp{0%,80%,100%{opacity:.3}40%{opacity:1}}
+.daysep{display:flex;align-items:center;gap:12px;font-size:11.5px;color:var(--on-sv);margin:4px 0}
+.daysep::before,.daysep::after{content:"";flex:1;height:1px;background:var(--line)}
+.unread{display:flex;align-items:center;gap:10px;font-size:11.5px;color:var(--st-danger);font-weight:600}
+.unread::before,.unread::after{content:"";flex:1;height:1px;background:var(--st-danger)}
+.tolatest{position:sticky;bottom:96px;align-self:center;background:var(--card);border:1px solid var(--line);border-radius:var(--r-full);padding:6px 14px;font-size:12px;font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.readby{font-size:11px;color:var(--on-sv);text-align:right;margin-top:3px}
+.receipt{border:1px solid var(--line);border-left:3px solid var(--st-success);border-radius:0 var(--r-md) var(--r-md) 0;padding:10px 13px;margin-top:10px;background:#F4FBF6;font-size:13px}
+.receipt .rh{display:flex;gap:8px;align-items:center;font-weight:700;margin-bottom:6px}
+.receipt .rh svg{color:var(--st-success)}
+.attlist{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.attlist span{display:inline-flex;gap:6px;align-items:center;font-size:12px;background:var(--sv);padding:4px 9px;border-radius:var(--r-md)}
+.attlist span svg{width:13px;height:13px}
+.slashpop{border:1px solid var(--line);border-radius:var(--r-md);background:var(--card);padding:6px;margin-bottom:8px;box-shadow:0 4px 16px rgba(0,0,0,.08)}
+.slashpop div{display:flex;gap:10px;align-items:center;padding:7px 9px;border-radius:var(--r-md);font-size:13px}
+.slashpop div.on{background:var(--primary-c)}
+.slashpop div b{font-family:var(--font-code);font-size:12px;min-width:70px}
+.slashpop div span{color:var(--on-sv);font-size:12px}
+.slashpop div.on span{color:var(--on-primary-c)}
+.chint{font-size:11px;color:var(--on-sv);margin-top:6px;display:flex;gap:14px;flex-wrap:wrap}
+.chint kbd{font-family:var(--font-code);font-size:11px;background:var(--sv);padding:1px 5px;border-radius:3px}
+.errbar{display:flex;gap:10px;align-items:flex-start;padding:11px 13px;border-radius:var(--r-md);font-size:13px;line-height:1.7;margin-bottom:12px}
+.errbar.off{background:#FEF6EC;color:#7A4A05}.errbar.fail{background:#FDF2F2;color:var(--error)}
+.errbar svg{margin-top:3px;flex:none}
+.auto{border:1px dashed var(--tertiary);background:var(--tertiary-c);border-radius:var(--r-md);padding:11px 13px;font-size:13px;margin-top:10px}
+.cap{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));margin-top:12px}
+.cap div{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:12px 14px;font-size:12.5px;line-height:1.7}
+.cap b{display:block;font-size:12px;color:var(--on-sv);margin-bottom:4px}
+
+.css-sentinel{visibility:hidden;position:absolute}</style></head><body><i class="css-sentinel" aria-hidden="true"></i>
+<div class="mockbar"><b>モックアップ</b><span class="tagv" style="background:#186F69">V1</span>
+<span class="ph">はじめの設定</span><span class="sp"></span>
+<span class="wsw"><b>幅</b><button data-w="375">スマホ</button><button data-w="768">タブレット</button><button data-w="1024">横</button><button data-w="1440">PC</button></span>
+<a href="v1-index.html">手順の一覧</a><span class="mut">実データ・API連携は含みません</span></div>
+<div class="shell"><!-- role-same: R1 R2 --><!-- cover-na: empty たたき台がある時点だけ --><!-- cover-na: stopped たたき台がある時点だけ --><main class="main"><div class="topbar"><div class="tt"><div class="crumb">はじめの設定</div><h1 title="高本AIが作った目標・台帳・担当業務・AI社員を見て、違うところを言って直させる">たたき台を確かめる</h1></div><div class="sp"></div><button class="btn btn-p"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>これでいく</button></div><div class="purpose"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><div>高本AIが作った目標・台帳・担当業務・AI社員を見て、違うところを言って直させる</div></div><div class="states" role="tablist"><button role="tab" aria-selected="true" data-t="n"><span class="mk"></span>たたき台</button><button role="tab" aria-selected="false" data-t="f"><span class="mk"></span>会話で直す</button><button role="tab" aria-selected="false" data-t="e"><span class="mk"></span>直接編集</button></div><div class="content"><div class="statepane" id="p-n" data-ps="PS2"><div class="ob"><div class="ob-top"><div class="brand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 12 3 5M12 12 3 12M12 12 5 20M12 12l9-7M12 12h9M12 12l7 8"/><circle cx="12" cy="12" r="2.4" fill="currentColor" stroke="none"/></svg>Kaname</div><span class="muted" style="font-size:12.5px">はじめの設定 ── PCをつないで、高本AIと作る</span></div><div class="wiz-steps"><div class="done"><a href="v1-bridge-setup.html" style="display:block">1. PCをつなぐ</a></div><div class="done"><a href="v1-onboard-interview.html" style="display:block">2. 話す</a></div><div class="on"><a href="v1-onboard-draft.html" style="display:block">3. たたき台</a></div><div class=""><a href="v1-credentials.html" style="display:block">4. ログイン情報</a></div><div class=""><a href="v1-onboard-testrun.html" style="display:block">5. テスト</a></div><div class=""><a href="v1-onboard-golive.html" style="display:block">6. 本番へ</a></div></div><h1 style="font-size:22px;font-weight:700;margin-bottom:6px">たたき台を確かめる</h1><div class="muted" style="font-size:13.5px;margin-bottom:20px;line-height:1.8">高本AIが会話と資料から作りました。違うところを言えば直します。自分で直接触っても構いません。</div><div class="draft"><div class="card " style=""><div class="card-h"><h2><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>目標のたたき台</h2><div class="sp"></div><button class="btn btn-g btn-sm" style=""><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>会話で直す</button></div><div class="dl"><div class=""><span style="flex:1">今期の売上</span><b class="num">12,000,000</b><span class="u">円</span><span class="muted" style="font-size:11.5px;white-space:nowrap">会社</span></div><div class=""><span style="flex:1">今期の成約</span><b class="num">8</b><span class="u">件</span><span class="muted" style="font-size:11.5px;white-space:nowrap">会社 → 営業</span></div><div class=""><span style="flex:1">月のアプローチ</span><b class="num">30</b><span class="u">件</span><span class="muted" style="font-size:11.5px;white-space:nowrap">営業 → 週ごと</span></div><div class=""><span style="flex:1">稼働率</span><b class="num">75</b><span class="u">%</span><span class="muted" style="font-size:11.5px;white-space:nowrap">制作</span></div></div><div class="muted" style="font-size:12px;margin-top:10px">単位は目標ごとに違います。売上は円、成約は件、稼働率は%。親子で単位が変わるところは、私が変換のしかたを訊きます。</div></div><div class="card " style=""><div class="card-h"><h2><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>台帳のたたき台</h2><div class="sp"></div><button class="btn btn-g btn-sm" style=""><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>会話で直す</button></div><div class="dl"><div><span style="flex:1">案件</span><span class="muted" style="font-size:12px">引合 → 提案 → 受注 → 制作中 → 納品 → 請求 → 入金 ／ 顧客・金額・着手金・残金・担当</span></div><div><span style="flex:1">請求</span><span class="muted" style="font-size:12px">下書き → 送付 → 入金待ち → 入金 ／ 案件・金額・期日</span></div><div><span style="flex:1">問い合わせ</span><span class="muted" style="font-size:12px">新着 → 返信済 → 商談 → 終了 ／ 出どころ・要件</span></div></div><div class="muted" style="font-size:12px;margin-top:10px">去年の請求一覧から項目を拾いました。台帳ごとに画面は作りません。定義が違うだけです。</div></div><div class="card " style=""><div class="card-h"><h2><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>担当業務とAI社員</h2><div class="sp"></div><button class="btn btn-g btn-sm" style=""><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>会話で直す</button></div><div class="dl"><div><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg><div style="flex:1"><b>営業社員</b><div class="muted" style="font-size:12px">発注ナビの新着を台帳に入れる／アプローチ文を下書きする</div></div><span class="pill p-ne">運営配布</span></div><div><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg><div style="flex:1"><b>経理社員</b><div class="muted" style="font-size:12px">納品済み案件の請求書を作る／入金を照合して台帳に書く</div></div><span class="pill p-ne">運営配布</span></div><div><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg><div style="flex:1"><b>CS社員</b><div class="muted" style="font-size:12px">問い合わせに一次返信する（承認テンプレの範囲で）</div></div><span class="pill p-ne">会社作成</span></div></div><div class="muted" style="font-size:12px;margin-top:10px">AI社員は私（高本AI）が窓口になって指示を配り、上がってきたものを一次確認します。あなたが押すのは最後だけです。</div></div><div class="card " style=""><div class="card-h"><h2><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>最初のルール</h2><div class="sp"></div></div><div class="dl"><div><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span>外に出るもの（メール・請求書・投稿）は必ずあなたが承認してから</span></div><div><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span>銀行はブラウザで触らない（会計ソフトの正規連携だけ）</span></div><div><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span>CAPTCHA は突破しない。出たら止めてあなたに渡す</span></div><div><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span>資格情報は私にもAI社員にも見えない（預かり先の番号だけ）</span></div></div></div></div><div style="display:flex;gap:10px;margin-top:22px;flex-wrap:wrap"><button class="btn btn-o btn-sm" style=""><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>違うところを言う</button><a class="btn btn-p" href="v1-bridge-setup.html"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>これでいく</a></div></div></div><div class="statepane" id="p-f" data-ps="PS2" hidden><div class=state-note>AIが変えるときだけ提案→承認。差分を横に出す。</div><div class="ob"><div class="ob-top"><div class="brand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 12 3 5M12 12 3 12M12 12 5 20M12 12l9-7M12 12h9M12 12l7 8"/><circle cx="12" cy="12" r="2.4" fill="currentColor" stroke="none"/></svg>Kaname</div><span class="muted" style="font-size:12.5px">はじめの設定 ── PCをつないで、高本AIと作る</span></div><div class="wiz-steps"><div class="done"><a href="v1-bridge-setup.html" style="display:block">1. PCをつなぐ</a></div><div class="done"><a href="v1-onboard-interview.html" style="display:block">2. 話す</a></div><div class="on"><a href="v1-onboard-draft.html" style="display:block">3. たたき台</a></div><div class=""><a href="v1-credentials.html" style="display:block">4. ログイン情報</a></div><div class=""><a href="v1-onboard-testrun.html" style="display:block">5. テスト</a></div><div class=""><a href="v1-onboard-golive.html" style="display:block">6. 本番へ</a></div></div><h1 style="font-size:22px;font-weight:700;margin-bottom:6px">たたき台を確かめる</h1><div class="muted" style="font-size:13.5px;margin-bottom:20px;line-height:1.8">違うところを言ってください。</div><div class="grid g21"><div class="col"><div class="chat"><div class="msg c"><div class="av"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M6 21v-2a4 4 0 0 1 4-4h1"/><path d="m17.5 14 .9 2.6 2.6.9-2.6.9-.9 2.6-.9-2.6-2.6-.9 2.6-.9z"/></svg></div><div><div class="bub"><div class="who">高本AI</div>たたき台を見て、違うところがあれば教えてください。</div><div class="mact"><button><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4M16 13H8M16 17H8M10 9H8"/></svg>コピー</button><button><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14M7 22l-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg>もう一度</button><button><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></svg>ここから分岐</button><button><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/></svg>記憶に入れる</button><button><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>根拠を見る</button></div></div></div><div class="msg u"><div class="av">高</div><div><div class="bub">成約は8件じゃなくて10件。あと稼働率は要らない。</div><div class="mact" style="justify-content:flex-end"><button><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>編集して送り直す</button><button><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4M16 13H8M16 17H8M10 9H8"/></svg>コピー</button></div></div></div><div class="msg c"><div class="av"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M6 21v-2a4 4 0 0 1 4-4h1"/><path d="m17.5 14 .9 2.6 2.6.9-2.6.9-.9 2.6-.9-2.6-2.6-.9 2.6-.9z"/></svg></div><div><div class="bub"><div class="who">高本AI</div>直しました。今期の成約を <b>8 → 10件</b> に。稼働率の目標は消しました。<br>成約10件だと、月のアプローチは <b>30 → 38件</b> が目安になります（去年の成約率 2.6% から）。アプローチも上げますか？<div class="opts"><button>38件にする</button><button>30のままでいい</button><button>別の考え方がある</button><button class="alt">その他（自由に書く）</button><button class="alt">あとで</button></div></div><div class="mact"><button><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4M16 13H8M16 17H8M10 9H8"/></svg>コピー</button><button><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14M7 22l-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg>もう一度</button><button><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></svg>ここから分岐</button><button><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/></svg>記憶に入れる</button><button><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>根拠を見る</button></div></div></div></div><div class="composer"><div class="box"><button class="btn btn-g btn-sm" style=""><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg></button><textarea placeholder="違うところを言う"></textarea><button class="btn btn-p btn-sm"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></svg>送る</button></div><div class="muted" style="font-size:11.5px;margin-top:6px">ファイルは形式を選びません。名刺・請求書・スプレッドシート・議事録、何でも読みます。</div></div></div><div class="card " style=""><div class="card-h"><h2>直したところ</h2><div class="sp"></div></div><div class="dl"><div class="diff"><span style="flex:1">今期の成約</span><span class="num"><span class="del">8</span> → <b>10</b></span><span class="u">件</span></div><div class="diff del"><span style="flex:1">稼働率 75%</span><span class="muted" style="font-size:12px">消した</span></div><div class="diff"><span style="flex:1">月のアプローチ</span><span class="num"><span class="del">30</span> → <b>38</b>？</span><span class="u">件</span><span class="muted" style="font-size:11.5px">確認中</span></div></div><div class="muted" style="font-size:12px;margin-top:10px">会話で直したものは、私が提案 → あなたが承認、で反映されます。</div></div></div></div></div><div class="statepane" id="p-e" data-ps="PS2" hidden><div class=state-note>人が変えるときは即反映・承認を挟まない。単位は顧客が作れる。</div><div class="ob"><div class="ob-top"><div class="brand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 12 3 5M12 12 3 12M12 12 5 20M12 12l9-7M12 12h9M12 12l7 8"/><circle cx="12" cy="12" r="2.4" fill="currentColor" stroke="none"/></svg>Kaname</div><span class="muted" style="font-size:12.5px">はじめの設定 ── PCをつないで、高本AIと作る</span></div><div class="wiz-steps"><div class="done"><a href="v1-bridge-setup.html" style="display:block">1. PCをつなぐ</a></div><div class="done"><a href="v1-onboard-interview.html" style="display:block">2. 話す</a></div><div class="on"><a href="v1-onboard-draft.html" style="display:block">3. たたき台</a></div><div class=""><a href="v1-credentials.html" style="display:block">4. ログイン情報</a></div><div class=""><a href="v1-onboard-testrun.html" style="display:block">5. テスト</a></div><div class=""><a href="v1-onboard-golive.html" style="display:block">6. 本番へ</a></div></div><h1 style="font-size:22px;font-weight:700;margin-bottom:6px">たたき台を確かめる</h1><div class="muted" style="font-size:13.5px;margin-bottom:20px;line-height:1.8">自分で直すこともできます。</div><div class="draft"><div class="card " style=""><div class="card-h"><h2><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>目標のたたき台</h2><div class="sp"></div><span class="pill p-pr"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>直接編集中</span></div><div class="dl"><div><span style="flex:1">今期の売上</span><input class="inp num" type="text" value="12,000,000" placeholder="" style="width:120px;text-align:right"><span class="u">円</span></div><div><span style="flex:1">今期の成約</span><input class="inp num" type="text" value="10" placeholder="" style="width:120px;text-align:right"><span class="u">件</span></div><div><span style="flex:1">月のアプローチ</span><input class="inp num" type="text" value="38" placeholder="" style="width:120px;text-align:right"><span class="u">件</span></div><div style="display:flex;gap:8px;align-items:center;padding:10px 12px;border:1.5px dashed var(--line);border-radius:var(--r-md);color:var(--on-sv)"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5v14"/></svg>目標を足す　<span class="muted" style="font-size:12px">／　単位を作る</span></div></div><div class="muted" style="font-size:12px;margin-top:10px"><b>あなたが直接変えたものは、その場で反映されます</b>（承認は挟みません）。提案→承認が要るのはAIが変えるときだけです。</div></div><div class="card " style=""><div class="card-h"><h2><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>台帳のたたき台</h2><div class="sp"></div><button class="btn btn-g btn-sm" style=""><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>会話で直す</button></div><div class="dl"><div><span style="flex:1">案件</span><span class="muted" style="font-size:12px">引合 → 提案 → 受注 → 制作中 → 納品 → 請求 → 入金 ／ 顧客・金額・着手金・残金・担当</span></div><div><span style="flex:1">請求</span><span class="muted" style="font-size:12px">下書き → 送付 → 入金待ち → 入金 ／ 案件・金額・期日</span></div><div><span style="flex:1">問い合わせ</span><span class="muted" style="font-size:12px">新着 → 返信済 → 商談 → 終了 ／ 出どころ・要件</span></div></div><div class="muted" style="font-size:12px;margin-top:10px">去年の請求一覧から項目を拾いました。台帳ごとに画面は作りません。定義が違うだけです。</div></div><div class="card " style=""><div class="card-h"><h2><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>担当業務とAI社員</h2><div class="sp"></div><button class="btn btn-g btn-sm" style=""><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>会話で直す</button></div><div class="dl"><div><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg><div style="flex:1"><b>営業社員</b><div class="muted" style="font-size:12px">発注ナビの新着を台帳に入れる／アプローチ文を下書きする</div></div><span class="pill p-ne">運営配布</span></div><div><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg><div style="flex:1"><b>経理社員</b><div class="muted" style="font-size:12px">納品済み案件の請求書を作る／入金を照合して台帳に書く</div></div><span class="pill p-ne">運営配布</span></div><div><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg><div style="flex:1"><b>CS社員</b><div class="muted" style="font-size:12px">問い合わせに一次返信する（承認テンプレの範囲で）</div></div><span class="pill p-ne">会社作成</span></div></div><div class="muted" style="font-size:12px;margin-top:10px">AI社員は私（高本AI）が窓口になって指示を配り、上がってきたものを一次確認します。あなたが押すのは最後だけです。</div></div><div class="card " style=""><div class="card-h"><h2><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>最初のルール</h2><div class="sp"></div></div><div class="dl"><div><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span>外に出るもの（メール・請求書・投稿）は必ずあなたが承認してから</span></div><div><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span>銀行はブラウザで触らない（会計ソフトの正規連携だけ）</span></div><div><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span>CAPTCHA は突破しない。出たら止めてあなたに渡す</span></div><div><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span>資格情報は私にもAI社員にも見えない（預かり先の番号だけ）</span></div></div></div></div></div></div></div></main></div>
+<script>
+(function(){ const st=document.querySelector('.states'); const mb=document.querySelector('.mockbar'); if(st&&mb){ const sp=mb.querySelector('.sp'); mb.insertBefore(st, sp); }
+ const sh=document.querySelector('.shell'); if(sh&&sh.dataset.layout==='threepane'){ const nb=document.querySelector('.subnav-b'); const tb=document.querySelector('.topbar'); if(nb&&tb){ const acts=document.createElement('span'); acts.className='sn-acts'; [...tb.querySelectorAll('.ap-toggle,.ai-stopped,.btn-p')].forEach(b=>acts.appendChild(b)); nb.appendChild(acts); } }
+ if(window.fitThreePane) setTimeout(window.fitThreePane,0); })();
+(function(){ const fit=()=>{ const els=[...document.querySelectorAll('.statepane:not([hidden]) [data-fix]')]; const wide=window.innerWidth>=1024; if(!els.length) return; document.documentElement.style.overflow=wide?'hidden':''; els.forEach(el=>{ if(!wide){ el.style.removeProperty('--fix-top'); return; } el.style.setProperty('--fix-top', Math.round(el.getBoundingClientRect().top+window.scrollY)+'px'); let b=0, s=el.nextElementSibling; while(s){ const cs=getComputedStyle(s); b+=s.offsetHeight+parseFloat(cs.marginTop)+parseFloat(cs.marginBottom); s=s.nextElementSibling; } el.style.setProperty('--fix-bottom', Math.round(b)+'px'); }); };
+ window.addEventListener('load',fit); window.addEventListener('resize',fit); document.addEventListener('click',()=>setTimeout(fit,0)); setTimeout(fit,0); window.fitFixed=fit; })();
+document.querySelectorAll('.mockbar .wsw button').forEach(b=>b.addEventListener('click',()=>{ const f=location.pathname.split('/').pop(); const top=(window.top===window)?window:window.top; top.location.href='_viewer.html?p='+encodeURIComponent(f)+'&w='+b.dataset.w; }));
+document.querySelectorAll('.states').forEach(b=>b.addEventListener('click',e=>{
+ const t=e.target.closest('button[data-t]'); if(!t)return;
+ b.querySelectorAll('button[data-t]').forEach(x=>x.setAttribute('aria-selected',String(x===t)));
+ document.querySelectorAll('.statepane').forEach(p=>p.hidden=p.id!=='p-'+t.dataset.t);
+ window.scrollTo({top:0,behavior:'instant'});}));
+document.querySelectorAll('.subnav .sn').forEach(a=>a.addEventListener('click',e=>{
+ e.preventDefault(); const nav=a.closest('.subnav'); nav.querySelectorAll('.sn').forEach(x=>x.classList.toggle('on',x===a));
+ if(a.dataset.state){ const b=document.querySelector('.states button[data-t="'+a.dataset.state+'"]'); if(b) b.click(); }
+ const pane=[...document.querySelectorAll('.statepane')].find(p=>!p.hidden); if(!pane) return;
+ const secs=pane.querySelectorAll('[data-sec]'); if(!secs.length) return;
+ if(nav.dataset.mode==='anchors'){ const t=[...secs].find(el=>el.dataset.sec.split(' ').indexOf(a.dataset.i)>=0); if(t) t.scrollIntoView({behavior:'smooth',block:'start'}); return; }   // 入口画面：隠さず、その段へ送る
+ secs.forEach(el=>{ el.hidden = el.dataset.sec.split(' ').indexOf(a.dataset.i)<0; });
+ window.scrollTo({top:0,behavior:'instant'});}));
+if(!document.querySelector('.subnav[data-mode="anchors"]'))
+ document.querySelectorAll('.statepane').forEach(p=>{const secs=p.querySelectorAll('[data-sec]'); secs.forEach(el=>{el.hidden=el.dataset.sec.split(' ').indexOf('0')<0;});});
+(function(){
+ const CAPS={"PS0": ["nobridge"], "PS1": ["bridge", "ai"], "PS2": ["bridge", "ai", "model", "test"], "PS3": ["bridge", "ai", "model", "data", "staff", "app"], "PS4": ["model", "data", "staff", "stopped", "app"]};
+ const applyPS=()=>{ const pane=[...document.querySelectorAll('.statepane')].find(p=>!p.hidden); const ps=pane?pane.dataset.ps:''; const cs=CAPS[ps]||[];
+  document.querySelectorAll('[data-requires]').forEach(el=>{ const ok=el.dataset.requires.split(' ').every(c=>cs.includes(c)); if(!ok){ el.hidden=true; el.dataset.psHid='1'; } else if(el.dataset.psHid){ el.hidden=false; delete el.dataset.psHid; } });   /* 時点で隠したものだけ戻す。畳んだ区分などの自前の hidden は触らない */
+  document.querySelectorAll('[data-ps-only]').forEach(el=>{ el.style.display=(el.dataset.psOnly===ps)?'':'none'; });
+  document.body.dataset.ps=ps; const sh=document.querySelector('.shell'); if(sh) sh.dataset.frame = cs.includes('app') ? 'app' : 'wizard'; };
+ window.applyPS=applyPS; applyPS();
+ document.querySelectorAll('.states').forEach(b=>b.addEventListener('click',()=>setTimeout(applyPS,0)));
+})();
+(function(){
+ const shell=document.querySelector('.shell'); const tg=document.querySelector('.ap-toggle'); if(!shell||!tg) return;
+ const set=o=>{shell.classList.toggle('panel-open',o); tg.setAttribute('aria-pressed',String(o)); if(window.innerWidth>=1180) try{localStorage.setItem('kaname-panel',o?'1':'0')}catch(e){}};   // 覚えるのは広い幅だけ。スマホで閉じた状態を PC に持ち込まない
+ // 本文の最小幅（D-070）：本文 = 幅 − サイドバー216 − 第2ナビ230（列のとき）− パネル340（開いているとき）。720 を下回るなら第2ナビを上の帯に畳む
+ const sub=document.querySelector('.subnav'); const anchors=sub&&sub.dataset.mode==='anchors';
+ const tp=shell.dataset.layout==='threepane'; const sideW=()=>(tp&&window.innerWidth>=1180)?72:216; const queueW=tp?380:0; const needW=tp?640:720;   // 三画面（D-072）：サイドバーはレール、本文＝中央（一覧の最小 360 を引く）。中央は 640 以上で開く
+ const fit=()=>{ const vw=window.innerWidth; if(vw<1180){ shell.classList.remove('sub-chips'); return; }
+   const open=shell.classList.contains('panel-open'); const subCol=!!sub&&!anchors; const mainW=vw-sideW()-(subCol?230:0)-(open?340:0)-queueW;
+   shell.classList.toggle('sub-chips', anchors || tp || (subCol && mainW<720)); };   // 三画面の画面は第2ナビを常に上の帯に（左に列を 2 本作らない）
+ window.addEventListener('resize',fit); window.fitShell=fit;
+ const roomWithPanel=window.innerWidth-sideW()-((sub&&!anchors)?230:0)-340-queueW>=needW;   // パネルの既定は本文が 720（三画面では中央が 640）を保てるときだけ開く
+ let init=roomWithPanel;   // 三画面の画面では自分のAIは右パネルとして常に見える（D-072。D-071 の「入口画面では閉じる」を置き換え）
+ try{const v=localStorage.getItem('kaname-panel'); if(v!==null && window.innerWidth>=1180) init=v==='1';}catch(e){}   // 重なる幅（〜1179）では覚えた状態を使わない。開いたまま別端末で覆われる事故を防ぐ
+ set(init); fit();
+ tg.addEventListener('click',()=>{set(!shell.classList.contains('panel-open')); fit();});
+ document.querySelectorAll('.ap-close').forEach(b=>b.addEventListener('click',()=>set(false)));
+})();
+(function(){ const mq=window.matchMedia('(min-width:768px) and (max-width:1179px)'); const sh=document.querySelector('.shell');
+ const tab={get matches(){ return mq.matches || (!!sh && sh.dataset.layout==='threepane' && window.innerWidth>=1180); }};   // レールのときは開いた section を外側クリックで閉じる
+ const closeAll=()=>document.querySelectorAll('.side-grp.open').forEach(b=>{b.classList.remove('open');b.setAttribute('aria-expanded','false');const sub=b.parentElement.querySelector('.side-sub[data-sec="'+b.dataset.sec+'"]');if(sub) sub.hidden=true;});
+ if(tab.matches) closeAll();
+ document.addEventListener('click',e=>{ if(tab.matches && !e.target.closest('.side-nav')) closeAll(); });
+})();
+document.querySelectorAll('.side-grp').forEach(b=>b.addEventListener('click',()=>{
+ const open=!b.classList.contains('open'); b.classList.toggle('open',open); b.setAttribute('aria-expanded',String(open));
+ const sub=b.parentElement.querySelector('.side-sub[data-sec="'+b.dataset.sec+'"]'); if(sub) sub.hidden=!open;}));
+(function(){
+ const apply=r=>{
+  document.querySelectorAll('.side[data-role]').forEach(s=>s.classList.toggle('on',s.dataset.role===r));
+  document.querySelectorAll('[data-roles]').forEach(el=>el.hidden=!el.dataset.roles.split(' ').includes(r));   // 役割ごとに中身が変わる塊（D-073）
+  if(window.fitThreePane) setTimeout(window.fitThreePane,0); if(window.fitFixed) setTimeout(window.fitFixed,0);
+  document.querySelectorAll('.tabbar[data-role]').forEach(s=>s.style.display=s.dataset.role===r?'':'none');
+  document.querySelectorAll('.aipanel[data-role]').forEach(s=>s.classList.toggle('on',s.dataset.role===r));
+  const apn=document.querySelector('.ap-toggle .ap-name'); if(apn) apn.textContent=({R1:'高本AI',R2:'田中AI',R3:'佐藤AI',R4:'鈴木AI'})[r];
+  const blk=document.querySelector('.norole[data-role="'+r+'"]');
+  document.querySelectorAll('.norole').forEach(n=>n.hidden=true);
+  document.querySelectorAll('.subnav,.main').forEach(el=>el.style.display=blk?'none':'');
+  if(blk) blk.hidden=false;
+  document.querySelectorAll('.rolebar button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.role===r)));
+  const AI={R1:'高本AI',R2:'田中AI',R3:'佐藤AI',R4:'鈴木AI'}[r];
+  document.querySelectorAll('.topbar h1,.purpose div,.subnav-h .ttl,.subnav-h .why').forEach(el=>{
+   if(!el.dataset.o) el.dataset.o=el.textContent; el.textContent=el.dataset.o.replace(/高本AI/g,AI);});
+  try{localStorage.setItem('kaname-role',r)}catch(e){}
+ };
+ let init='R1'; try{init=localStorage.getItem('kaname-role')||'R1'}catch(e){}
+ if(!document.querySelector('.side[data-role="'+init+'"]')) init='R1';
+ document.querySelectorAll('.rolebar button').forEach(b=>b.addEventListener('click',()=>apply(b.dataset.role)));
+ if(document.querySelector('.rolebar')) apply(init);
+})();
+</script></body></html>
