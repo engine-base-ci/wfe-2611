@@ -320,6 +320,50 @@
    "reason": null
   },
   {
+   "entity": "members",
+   "field": "auth_user_id",
+   "consumed_by_screens": [
+    "verify-email",
+    "invite-accept",
+    "mfa-setup",
+    "login",
+    "password-reset",
+    "onboard-interview",
+    "onboard-draft",
+    "onboard-testrun",
+    "onboard-golive",
+    "today",
+    "approvals",
+    "clone-thread",
+    "tasks",
+    "clone-chat",
+    "ai-activity",
+    "goal-allocation",
+    "my-progress",
+    "duties",
+    "clone-memory",
+    "company-model",
+    "audit",
+    "policies",
+    "members",
+    "ai-staff",
+    "ai-staff-detail",
+    "account-close",
+    "ops-home",
+    "ops-catalog",
+    "account",
+    "import",
+    "ops-skills",
+    "inquiry",
+    "billing",
+    "ops-tenant",
+    "ops-audit",
+    "member-detail"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
    "entity": "clones",
    "field": "<common>",
    "consumed_by_screens": [],
@@ -3442,6 +3486,34 @@
    "reason": null
   },
   {
+   "entity": "session_kinds",
+   "field": "key",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "マスタ。label は各画面の札・選択肢として出る"
+  },
+  {
+   "entity": "session_kinds",
+   "field": "label",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "マスタ。label は各画面の札・選択肢として出る"
+  },
+  {
+   "entity": "revoke_reasons",
+   "field": "key",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "マスタ。label は各画面の札・選択肢として出る"
+  },
+  {
+   "entity": "revoke_reasons",
+   "field": "label",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "マスタ。label は各画面の札・選択肢として出る"
+  },
+  {
    "entity": "layers",
    "field": "<common>",
    "consumed_by_screens": [],
@@ -3889,6 +3961,21 @@
   {
    "entity": "sessions",
    "field": "kind_id",
+   "consumed_by_screens": [
+    "bridge-setup",
+    "onboard-golive",
+    "automation-repair",
+    "audit",
+    "security-brief",
+    "account",
+    "services"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "sessions",
+   "field": "auth_session_id",
    "consumed_by_screens": [
     "bridge-setup",
     "onboard-golive",

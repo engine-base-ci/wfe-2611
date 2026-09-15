@@ -61,6 +61,14 @@ export async function runMatrix(
       (r) => r.t,
     ),
   );
+  // 主キーの列名（マスタは key、それ以外は id）を information_schema から
+  const pkOf = new Map<string, string>();
+  for (const r of (
+    await admin.query<{ t: string; c: string }>(
+      "select tc.table_name as t, kcu.column_name as c from information_schema.table_constraints tc join information_schema.key_column_usage kcu on kcu.constraint_name = tc.constraint_name and kcu.table_schema = tc.table_schema where tc.table_schema = 'public' and tc.constraint_type = 'PRIMARY KEY'",
+    )
+  ).rows)
+    pkOf.set(r.t, r.c);
   const res: MatrixResult = { executed: 0, passed: 0, failed: [], skipped: [] };
   const skippedTables = new Set<string>();
   const ctxBoss: TenantContext = { tenantId: S.tenantA, userId: S.bossA, role: "member" };
@@ -97,7 +105,7 @@ export async function runMatrix(
       continue;
     }
     res.executed++;
-    const pk = ["member_kinds", "target_kinds", "abilities"].includes(cs.table) ? "key" : "id";
+    const pk = pkOf.get(cs.table) ?? "id";
     const wantNG = isNG(cs.expected);
     let got = "";
     let ok = false;

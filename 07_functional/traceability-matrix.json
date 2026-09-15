@@ -4,7 +4,7 @@
  "summary": {
   "screens_count": 59,
   "features_count": 28,
-  "entities_count": 83,
+  "entities_count": 85,
   "uncovered_screens": [],
   "uncovered_features": []
  },
@@ -17,11 +17,11 @@
     "F-022"
    ],
    "entities": [
-    "E-067 plans",
-    "E-068 plan_versions",
-    "E-069 subscriptions",
-    "E-071 usage_meters",
-    "E-070 plan_change_requests"
+    "E-069 plans",
+    "E-070 plan_versions",
+    "E-071 subscriptions",
+    "E-073 usage_meters",
+    "E-072 plan_change_requests"
    ],
    "related_apis": [
     "POST /api/plans",
@@ -42,8 +42,8 @@
    ],
    "entities": [
     "E-004 members",
-    "E-045 permissions",
-    "E-042 layers"
+    "E-047 permissions",
+    "E-044 layers"
    ],
    "related_apis": [
     "GET /api/members",
@@ -64,10 +64,10 @@
     "F-023"
    ],
    "entities": [
-    "E-077 invitations",
+    "E-079 invitations",
     "E-004 members",
-    "E-045 permissions",
-    "E-042 layers"
+    "E-047 permissions",
+    "E-044 layers"
    ],
    "related_apis": [
     "GET /api/invitations"
@@ -87,11 +87,11 @@
    ],
    "entities": [
     "E-004 members",
-    "E-045 permissions",
-    "E-042 layers",
+    "E-047 permissions",
+    "E-044 layers",
     "E-041 audit_events",
-    "E-059 ops_audit_events",
-    "E-060 security_events"
+    "E-061 ops_audit_events",
+    "E-062 security_events"
    ],
    "related_apis": [
     "GET /api/members",
@@ -111,11 +111,11 @@
     "F-027"
    ],
    "entities": [
-    "E-067 plans",
-    "E-068 plan_versions",
-    "E-069 subscriptions",
-    "E-071 usage_meters",
-    "E-070 plan_change_requests"
+    "E-069 plans",
+    "E-070 plan_versions",
+    "E-071 subscriptions",
+    "E-073 usage_meters",
+    "E-072 plan_change_requests"
    ],
    "related_apis": [
     "POST /api/plans"
@@ -134,8 +134,8 @@
    ],
    "entities": [
     "E-004 members",
-    "E-045 permissions",
-    "E-042 layers"
+    "E-047 permissions",
+    "E-044 layers"
    ],
    "related_apis": [
     "GET /api/members",
@@ -160,11 +160,11 @@
    ],
    "entities": [
     "E-004 members",
-    "E-045 permissions",
-    "E-042 layers",
+    "E-047 permissions",
+    "E-044 layers",
     "E-041 audit_events",
-    "E-059 ops_audit_events",
-    "E-060 security_events"
+    "E-061 ops_audit_events",
+    "E-062 security_events"
    ],
    "related_apis": [
     "PATCH /api/members/:id",
@@ -254,7 +254,7 @@
     "F-025"
    ],
    "entities": [
-    "E-048 sessions",
+    "E-050 sessions",
     "E-034 action_runs"
    ],
    "related_apis": [
@@ -324,8 +324,8 @@
    "entities": [
     "E-037 credentials",
     "E-035 service_registry",
-    "E-055 service_registry_versions",
-    "E-056 service_requests",
+    "E-057 service_registry_versions",
+    "E-058 service_requests",
     "E-032 policies"
    ],
    "related_apis": [
@@ -398,8 +398,8 @@
     "E-006 ai_employees",
     "E-004 members",
     "E-041 audit_events",
-    "E-059 ops_audit_events",
-    "E-060 security_events"
+    "E-061 ops_audit_events",
+    "E-062 security_events"
    ],
    "related_apis": [
     "GET /api/action_runs",
@@ -431,7 +431,7 @@
     "E-027 memories",
     "E-006 ai_employees",
     "E-004 members",
-    "E-048 sessions"
+    "E-050 sessions"
    ],
    "related_apis": [
     "GET /api/tenants",
@@ -534,9 +534,9 @@
     "E-033 approvals",
     "E-005 clones",
     "E-004 members",
-    "E-066 notifications",
-    "E-065 notification_preferences",
-    "E-063 notice_deliveries"
+    "E-068 notifications",
+    "E-067 notification_preferences",
+    "E-065 notice_deliveries"
    ],
    "related_apis": [
     "PATCH /api/approvals/:id",
@@ -680,8 +680,8 @@
     "E-013 goal_versions",
     "E-015 measures",
     "E-004 members",
-    "E-045 permissions",
-    "E-042 layers",
+    "E-047 permissions",
+    "E-044 layers",
     "E-006 ai_employees",
     "E-030 daily_plans",
     "E-040 artifacts"
@@ -833,13 +833,13 @@
     "E-004 members",
     "E-005 clones",
     "E-041 audit_events",
-    "E-059 ops_audit_events",
-    "E-060 security_events",
+    "E-061 ops_audit_events",
+    "E-062 security_events",
     "E-033 approvals",
-    "E-080 skills",
-    "E-081 skill_versions",
-    "E-082 skill_test_runs",
-    "E-083 skill_attachments",
+    "E-082 skills",
+    "E-083 skill_versions",
+    "E-084 skill_test_runs",
+    "E-085 skill_attachments",
     "E-040 artifacts"
    ],
    "related_apis": [
@@ -909,8 +909,8 @@
     "E-020 ledger_views",
     "E-027 memories",
     "E-041 audit_events",
-    "E-059 ops_audit_events",
-    "E-060 security_events",
+    "E-061 ops_audit_events",
+    "E-062 security_events",
     "E-038 conversations",
     "E-039 messages"
    ],
@@ -1054,10 +1054,10 @@
     "E-019 ledger_stages",
     "E-028 tasks",
     "E-029 task_handovers",
-    "E-079 attachments",
+    "E-081 attachments",
     "E-041 audit_events",
-    "E-059 ops_audit_events",
-    "E-060 security_events",
+    "E-061 ops_audit_events",
+    "E-062 security_events",
     "E-040 artifacts"
    ],
    "related_apis": [
@@ -1132,14 +1132,14 @@
     "E-011 goal_allocations",
     "E-012 goal_contributions",
     "E-008 units",
-    "E-080 skills",
-    "E-081 skill_versions",
-    "E-082 skill_test_runs",
-    "E-083 skill_attachments",
+    "E-082 skills",
+    "E-083 skill_versions",
+    "E-084 skill_test_runs",
+    "E-085 skill_attachments",
     "E-023 duty_versions",
-    "E-068 plan_versions",
-    "E-053 distribution_versions",
-    "E-055 service_registry_versions",
+    "E-070 plan_versions",
+    "E-055 distribution_versions",
+    "E-057 service_registry_versions",
     "E-041 audit_events"
    ],
    "related_apis": [
@@ -1211,8 +1211,8 @@
     "E-013 goal_versions",
     "E-008 units",
     "E-004 members",
-    "E-045 permissions",
-    "E-042 layers",
+    "E-047 permissions",
+    "E-044 layers",
     "E-006 ai_employees"
    ],
    "related_apis": [
@@ -1778,13 +1778,13 @@
     "E-019 ledger_stages",
     "E-023 duty_versions",
     "E-004 members",
-    "E-045 permissions",
-    "E-042 layers",
-    "E-052 distributions",
+    "E-047 permissions",
+    "E-044 layers",
+    "E-054 distributions",
     "E-040 artifacts",
-    "E-068 plan_versions",
-    "E-053 distribution_versions",
-    "E-055 service_registry_versions",
+    "E-070 plan_versions",
+    "E-055 distribution_versions",
+    "E-057 service_registry_versions",
     "E-041 audit_events"
    ],
    "related_apis": [
@@ -1853,8 +1853,8 @@
     "E-024 learned_procedures",
     "E-025 procedure_steps",
     "E-034 action_runs",
-    "E-048 sessions",
-    "E-074 error_events"
+    "E-050 sessions",
+    "E-076 error_events"
    ],
    "related_apis": [
     "GET /api/learned_procedures",
@@ -1922,15 +1922,15 @@
    ],
    "entities": [
     "E-041 audit_events",
-    "E-059 ops_audit_events",
-    "E-060 security_events",
+    "E-061 ops_audit_events",
+    "E-062 security_events",
     "E-033 approvals",
     "E-004 members",
-    "E-045 permissions",
-    "E-042 layers",
-    "E-049 support_access_grants",
-    "E-074 error_events",
-    "E-048 sessions"
+    "E-047 permissions",
+    "E-044 layers",
+    "E-051 support_access_grants",
+    "E-076 error_events",
+    "E-050 sessions"
    ],
    "related_apis": [
     "GET /api/audit_events",
@@ -1999,8 +1999,8 @@
    "entities": [
     "E-032 policies",
     "E-035 service_registry",
-    "E-055 service_registry_versions",
-    "E-056 service_requests",
+    "E-057 service_registry_versions",
+    "E-058 service_requests",
     "E-006 ai_employees",
     "E-004 members"
    ],
@@ -2069,13 +2069,13 @@
    ],
    "entities": [
     "E-004 members",
-    "E-045 permissions",
-    "E-042 layers",
-    "E-077 invitations",
-    "E-046 account_events",
-    "E-047 account_event_items",
-    "E-050 retention_holds",
-    "E-051 erasure_certificates",
+    "E-047 permissions",
+    "E-044 layers",
+    "E-079 invitations",
+    "E-048 account_events",
+    "E-049 account_event_items",
+    "E-052 retention_holds",
+    "E-053 erasure_certificates",
     "E-002 scopes"
    ],
    "related_apis": [
@@ -2146,11 +2146,11 @@
     "E-004 members",
     "E-022 duties",
     "E-023 duty_versions",
-    "E-067 plans",
-    "E-068 plan_versions",
-    "E-069 subscriptions",
-    "E-071 usage_meters",
-    "E-070 plan_change_requests"
+    "E-069 plans",
+    "E-070 plan_versions",
+    "E-071 subscriptions",
+    "E-073 usage_meters",
+    "E-072 plan_change_requests"
    ],
    "related_apis": [
     "GET /api/ai_employees",
@@ -2221,16 +2221,16 @@
     "E-023 duty_versions",
     "E-032 policies",
     "E-041 audit_events",
-    "E-059 ops_audit_events",
-    "E-060 security_events",
-    "E-046 account_events",
-    "E-047 account_event_items",
-    "E-050 retention_holds",
-    "E-051 erasure_certificates",
-    "E-080 skills",
-    "E-081 skill_versions",
-    "E-082 skill_test_runs",
-    "E-083 skill_attachments"
+    "E-061 ops_audit_events",
+    "E-062 security_events",
+    "E-048 account_events",
+    "E-049 account_event_items",
+    "E-052 retention_holds",
+    "E-053 erasure_certificates",
+    "E-082 skills",
+    "E-083 skill_versions",
+    "E-084 skill_test_runs",
+    "E-085 skill_attachments"
    ],
    "related_apis": [
     "GET /api/ai_employees",
@@ -2295,10 +2295,10 @@
     "F-022"
    ],
    "entities": [
-    "E-048 sessions",
+    "E-050 sessions",
     "E-041 audit_events",
-    "E-059 ops_audit_events",
-    "E-060 security_events",
+    "E-061 ops_audit_events",
+    "E-062 security_events",
     "E-037 credentials",
     "E-032 policies"
    ],
@@ -2364,7 +2364,7 @@
     "F-024"
    ],
    "entities": [
-    "E-078 export_jobs",
+    "E-080 export_jobs",
     "E-001 tenants",
     "E-010 goals",
     "E-017 ledger_definitions",
@@ -2437,18 +2437,18 @@
    ],
    "entities": [
     "E-004 members",
-    "E-045 permissions",
-    "E-042 layers",
-    "E-078 export_jobs",
+    "E-047 permissions",
+    "E-044 layers",
+    "E-080 export_jobs",
     "E-041 audit_events",
-    "E-059 ops_audit_events",
-    "E-060 security_events",
+    "E-061 ops_audit_events",
+    "E-062 security_events",
     "E-006 ai_employees",
     "E-033 approvals",
-    "E-046 account_events",
-    "E-047 account_event_items",
-    "E-050 retention_holds",
-    "E-051 erasure_certificates"
+    "E-048 account_events",
+    "E-049 account_event_items",
+    "E-052 retention_holds",
+    "E-053 erasure_certificates"
    ],
    "related_apis": [
     "DELETE /api/members/:id",
@@ -2513,7 +2513,7 @@
     "F-026"
    ],
    "entities": [
-    "E-061 inquiries",
+    "E-063 inquiries",
     "E-038 conversations",
     "E-001 tenants",
     "E-010 goals",
@@ -2523,8 +2523,8 @@
     "E-032 policies",
     "E-027 memories",
     "E-041 audit_events",
-    "E-059 ops_audit_events",
-    "E-060 security_events"
+    "E-061 ops_audit_events",
+    "E-062 security_events"
    ],
    "related_apis": [
     "PATCH /api/inquiries/:id",
@@ -2588,11 +2588,11 @@
     "F-022"
    ],
    "entities": [
-    "E-067 plans",
-    "E-068 plan_versions",
-    "E-069 subscriptions",
-    "E-071 usage_meters",
-    "E-070 plan_change_requests",
+    "E-069 plans",
+    "E-070 plan_versions",
+    "E-071 subscriptions",
+    "E-073 usage_meters",
+    "E-072 plan_change_requests",
     "E-006 ai_employees",
     "E-004 members",
     "E-001 tenants",
@@ -2669,13 +2669,13 @@
     "E-022 duties",
     "E-023 duty_versions",
     "E-032 policies",
-    "E-052 distributions",
+    "E-054 distributions",
     "E-040 artifacts",
-    "E-067 plans",
-    "E-068 plan_versions",
-    "E-069 subscriptions",
-    "E-071 usage_meters",
-    "E-070 plan_change_requests"
+    "E-069 plans",
+    "E-070 plan_versions",
+    "E-071 subscriptions",
+    "E-073 usage_meters",
+    "E-072 plan_change_requests"
    ],
    "related_apis": [
     "GET /api/ai_employees",
@@ -2741,12 +2741,12 @@
    ],
    "entities": [
     "E-004 members",
-    "E-045 permissions",
-    "E-042 layers",
+    "E-047 permissions",
+    "E-044 layers",
     "E-041 audit_events",
-    "E-059 ops_audit_events",
-    "E-060 security_events",
-    "E-048 sessions"
+    "E-061 ops_audit_events",
+    "E-062 security_events",
+    "E-050 sessions"
    ],
    "related_apis": [
     "PATCH /api/members/:id",
@@ -2818,13 +2818,13 @@
     "E-002 scopes",
     "E-032 policies",
     "E-027 memories",
-    "E-072 invoices",
-    "E-073 payments",
-    "E-067 plans",
-    "E-068 plan_versions",
-    "E-069 subscriptions",
-    "E-071 usage_meters",
-    "E-070 plan_change_requests"
+    "E-074 invoices",
+    "E-075 payments",
+    "E-069 plans",
+    "E-070 plan_versions",
+    "E-071 subscriptions",
+    "E-073 usage_meters",
+    "E-072 plan_change_requests"
    ],
    "related_apis": [
     "PATCH /api/tenants/:id",
@@ -2889,13 +2889,13 @@
     "F-024"
    ],
    "entities": [
-    "E-079 attachments",
+    "E-081 attachments",
     "E-017 ledger_definitions",
     "E-020 ledger_views",
     "E-021 ledger_records",
     "E-005 clones",
     "E-004 members",
-    "E-075 imports"
+    "E-077 imports"
    ],
    "related_apis": [
     "POST /api/attachments",
@@ -2961,12 +2961,12 @@
    ],
    "entities": [
     "E-035 service_registry",
-    "E-055 service_registry_versions",
-    "E-056 service_requests",
+    "E-057 service_registry_versions",
+    "E-058 service_requests",
     "E-037 credentials",
-    "E-048 sessions",
+    "E-050 sessions",
     "E-034 action_runs",
-    "E-076 integrations"
+    "E-078 integrations"
    ],
    "related_apis": [
     "POST /api/service_registry",
@@ -3030,8 +3030,8 @@
    ],
    "entities": [
     "E-035 service_registry",
-    "E-055 service_registry_versions",
-    "E-056 service_requests",
+    "E-057 service_registry_versions",
+    "E-058 service_requests",
     "E-032 policies"
    ],
    "related_apis": [
@@ -3096,20 +3096,20 @@
     "F-026"
    ],
    "entities": [
-    "E-080 skills",
-    "E-081 skill_versions",
-    "E-082 skill_test_runs",
-    "E-083 skill_attachments",
-    "E-052 distributions",
-    "E-053 distribution_versions",
-    "E-054 tenant_distributions",
+    "E-082 skills",
+    "E-083 skill_versions",
+    "E-084 skill_test_runs",
+    "E-085 skill_attachments",
+    "E-054 distributions",
+    "E-055 distribution_versions",
+    "E-056 tenant_distributions",
     "E-006 ai_employees",
     "E-004 members",
     "E-005 clones",
     "E-013 goal_versions",
     "E-023 duty_versions",
-    "E-068 plan_versions",
-    "E-055 service_registry_versions",
+    "E-070 plan_versions",
+    "E-057 service_registry_versions",
     "E-041 audit_events"
    ],
    "related_apis": [
@@ -3173,11 +3173,11 @@
     "F-026"
    ],
    "entities": [
-    "E-061 inquiries",
+    "E-063 inquiries",
     "E-038 conversations",
     "E-041 audit_events",
-    "E-059 ops_audit_events",
-    "E-060 security_events",
+    "E-061 ops_audit_events",
+    "E-062 security_events",
     "E-005 clones",
     "E-004 members"
    ],
@@ -3245,11 +3245,11 @@
     "F-026"
    ],
    "entities": [
-    "E-062 notices",
-    "E-063 notice_deliveries",
-    "E-064 status_incidents",
-    "E-066 notifications",
-    "E-065 notification_preferences"
+    "E-064 notices",
+    "E-065 notice_deliveries",
+    "E-066 status_incidents",
+    "E-068 notifications",
+    "E-067 notification_preferences"
    ],
    "related_apis": [
     "PATCH /api/notices/:id",
@@ -3314,21 +3314,21 @@
     "F-022"
    ],
    "entities": [
-    "E-067 plans",
-    "E-068 plan_versions",
-    "E-069 subscriptions",
-    "E-071 usage_meters",
-    "E-070 plan_change_requests",
-    "E-072 invoices",
-    "E-073 payments",
+    "E-069 plans",
+    "E-070 plan_versions",
+    "E-071 subscriptions",
+    "E-073 usage_meters",
+    "E-072 plan_change_requests",
+    "E-074 invoices",
+    "E-075 payments",
     "E-006 ai_employees",
     "E-004 members",
-    "E-045 permissions",
-    "E-042 layers",
-    "E-046 account_events",
-    "E-047 account_event_items",
-    "E-050 retention_holds",
-    "E-051 erasure_certificates"
+    "E-047 permissions",
+    "E-044 layers",
+    "E-048 account_events",
+    "E-049 account_event_items",
+    "E-052 retention_holds",
+    "E-053 erasure_certificates"
    ],
    "related_apis": [
     "PATCH /api/plans/:id",
@@ -3392,14 +3392,14 @@
     "F-026"
    ],
    "entities": [
-    "E-062 notices",
-    "E-063 notice_deliveries",
-    "E-064 status_incidents",
-    "E-067 plans",
-    "E-068 plan_versions",
-    "E-069 subscriptions",
-    "E-071 usage_meters",
-    "E-070 plan_change_requests"
+    "E-064 notices",
+    "E-065 notice_deliveries",
+    "E-066 status_incidents",
+    "E-069 plans",
+    "E-070 plan_versions",
+    "E-071 subscriptions",
+    "E-073 usage_meters",
+    "E-072 plan_change_requests"
    ],
    "related_apis": [
     "POST /api/notices",
@@ -3461,13 +3461,13 @@
     "F-022"
    ],
    "entities": [
-    "E-072 invoices",
-    "E-073 payments",
-    "E-067 plans",
-    "E-068 plan_versions",
-    "E-069 subscriptions",
-    "E-071 usage_meters",
-    "E-070 plan_change_requests",
+    "E-074 invoices",
+    "E-075 payments",
+    "E-069 plans",
+    "E-070 plan_versions",
+    "E-071 subscriptions",
+    "E-073 usage_meters",
+    "E-072 plan_change_requests",
     "E-001 tenants",
     "E-010 goals",
     "E-017 ledger_definitions",
@@ -3537,11 +3537,11 @@
     "F-022"
    ],
    "entities": [
-    "E-067 plans",
-    "E-068 plan_versions",
-    "E-069 subscriptions",
-    "E-071 usage_meters",
-    "E-070 plan_change_requests",
+    "E-069 plans",
+    "E-070 plan_versions",
+    "E-071 subscriptions",
+    "E-073 usage_meters",
+    "E-072 plan_change_requests",
     "E-006 ai_employees",
     "E-004 members",
     "E-001 tenants",
@@ -3551,32 +3551,32 @@
     "E-002 scopes",
     "E-032 policies",
     "E-027 memories",
-    "E-072 invoices",
-    "E-073 payments",
-    "E-061 inquiries",
+    "E-074 invoices",
+    "E-075 payments",
+    "E-063 inquiries",
     "E-038 conversations",
-    "E-052 distributions",
+    "E-054 distributions",
     "E-040 artifacts",
     "E-041 audit_events",
-    "E-059 ops_audit_events",
-    "E-060 security_events",
-    "E-062 notices",
-    "E-063 notice_deliveries",
-    "E-064 status_incidents",
-    "E-045 permissions",
-    "E-042 layers",
-    "E-049 support_access_grants",
-    "E-046 account_events",
-    "E-047 account_event_items",
-    "E-050 retention_holds",
-    "E-051 erasure_certificates",
-    "E-057 review_requests",
-    "E-053 distribution_versions",
-    "E-054 tenant_distributions",
-    "E-080 skills",
-    "E-081 skill_versions",
-    "E-082 skill_test_runs",
-    "E-083 skill_attachments"
+    "E-061 ops_audit_events",
+    "E-062 security_events",
+    "E-064 notices",
+    "E-065 notice_deliveries",
+    "E-066 status_incidents",
+    "E-047 permissions",
+    "E-044 layers",
+    "E-051 support_access_grants",
+    "E-048 account_events",
+    "E-049 account_event_items",
+    "E-052 retention_holds",
+    "E-053 erasure_certificates",
+    "E-059 review_requests",
+    "E-055 distribution_versions",
+    "E-056 tenant_distributions",
+    "E-082 skills",
+    "E-083 skill_versions",
+    "E-084 skill_test_runs",
+    "E-085 skill_attachments"
    ],
    "related_apis": [
     "DELETE /api/plans/:id",
@@ -3638,14 +3638,14 @@
     "F-022"
    ],
    "entities": [
-    "E-052 distributions",
+    "E-054 distributions",
     "E-040 artifacts",
     "E-022 duties",
     "E-023 duty_versions",
     "E-041 audit_events",
-    "E-059 ops_audit_events",
-    "E-060 security_events",
-    "E-057 review_requests"
+    "E-061 ops_audit_events",
+    "E-062 security_events",
+    "E-059 review_requests"
    ],
    "related_apis": [
     "POST /api/distributions",
@@ -3709,13 +3709,13 @@
    ],
    "entities": [
     "E-041 audit_events",
-    "E-059 ops_audit_events",
-    "E-060 security_events",
+    "E-061 ops_audit_events",
+    "E-062 security_events",
     "E-004 members",
-    "E-045 permissions",
-    "E-042 layers",
-    "E-058 ops_members",
-    "E-074 error_events"
+    "E-047 permissions",
+    "E-044 layers",
+    "E-060 ops_members",
+    "E-076 error_events"
    ],
    "related_apis": [
     "PATCH /api/audit_events/:id",
@@ -3781,13 +3781,13 @@
    ],
    "entities": [
     "E-004 members",
-    "E-045 permissions",
-    "E-042 layers",
+    "E-047 permissions",
+    "E-044 layers",
     "E-006 ai_employees",
-    "E-046 account_events",
-    "E-047 account_event_items",
-    "E-050 retention_holds",
-    "E-051 erasure_certificates"
+    "E-048 account_events",
+    "E-049 account_event_items",
+    "E-052 retention_holds",
+    "E-053 erasure_certificates"
    ],
    "related_apis": [
     "PATCH /api/members/:id",
@@ -18758,6 +18758,18 @@
   },
   {
    "entity_id": "E-042",
+   "entity_name": "session_kinds",
+   "used_by_screens": [],
+   "used_by_features": []
+  },
+  {
+   "entity_id": "E-043",
+   "entity_name": "revoke_reasons",
+   "used_by_screens": [],
+   "used_by_features": []
+  },
+  {
+   "entity_id": "E-044",
    "entity_name": "layers",
    "used_by_screens": [
     "verify-email",
@@ -18796,19 +18808,19 @@
    ]
   },
   {
-   "entity_id": "E-043",
+   "entity_id": "E-045",
    "entity_name": "target_kinds",
    "used_by_screens": [],
    "used_by_features": []
   },
   {
-   "entity_id": "E-044",
+   "entity_id": "E-046",
    "entity_name": "abilities",
    "used_by_screens": [],
    "used_by_features": []
   },
   {
-   "entity_id": "E-045",
+   "entity_id": "E-047",
    "entity_name": "permissions",
    "used_by_screens": [
     "verify-email",
@@ -18847,7 +18859,7 @@
    ]
   },
   {
-   "entity_id": "E-046",
+   "entity_id": "E-048",
    "entity_name": "account_events",
    "used_by_screens": [
     "members",
@@ -18867,7 +18879,7 @@
    ]
   },
   {
-   "entity_id": "E-047",
+   "entity_id": "E-049",
    "entity_name": "account_event_items",
    "used_by_screens": [
     "members",
@@ -18887,7 +18899,7 @@
    ]
   },
   {
-   "entity_id": "E-048",
+   "entity_id": "E-050",
    "entity_name": "sessions",
    "used_by_screens": [
     "bridge-setup",
@@ -18908,7 +18920,7 @@
    ]
   },
   {
-   "entity_id": "E-049",
+   "entity_id": "E-051",
    "entity_name": "support_access_grants",
    "used_by_screens": [
     "audit",
@@ -18923,7 +18935,7 @@
    ]
   },
   {
-   "entity_id": "E-050",
+   "entity_id": "E-052",
    "entity_name": "retention_holds",
    "used_by_screens": [
     "members",
@@ -18943,7 +18955,7 @@
    ]
   },
   {
-   "entity_id": "E-051",
+   "entity_id": "E-053",
    "entity_name": "erasure_certificates",
    "used_by_screens": [
     "members",
@@ -18963,7 +18975,7 @@
    ]
   },
   {
-   "entity_id": "E-052",
+   "entity_id": "E-054",
    "entity_name": "distributions",
    "used_by_screens": [
     "company-model",
@@ -18982,7 +18994,7 @@
    ]
   },
   {
-   "entity_id": "E-053",
+   "entity_id": "E-055",
    "entity_name": "distribution_versions",
    "used_by_screens": [
     "goals",
@@ -19000,7 +19012,7 @@
    ]
   },
   {
-   "entity_id": "E-054",
+   "entity_id": "E-056",
    "entity_name": "tenant_distributions",
    "used_by_screens": [
     "ops-skills",
@@ -19013,7 +19025,7 @@
    ]
   },
   {
-   "entity_id": "E-055",
+   "entity_id": "E-057",
    "entity_name": "service_registry_versions",
    "used_by_screens": [
     "credentials",
@@ -19035,7 +19047,7 @@
    ]
   },
   {
-   "entity_id": "E-056",
+   "entity_id": "E-058",
    "entity_name": "service_requests",
    "used_by_screens": [
     "credentials",
@@ -19051,7 +19063,7 @@
    ]
   },
   {
-   "entity_id": "E-057",
+   "entity_id": "E-059",
    "entity_name": "review_requests",
    "used_by_screens": [
     "ops-tenant",
@@ -19063,7 +19075,7 @@
    ]
   },
   {
-   "entity_id": "E-058",
+   "entity_id": "E-060",
    "entity_name": "ops_members",
    "used_by_screens": [
     "ops-audit"
@@ -19074,7 +19086,7 @@
    ]
   },
   {
-   "entity_id": "E-059",
+   "entity_id": "E-061",
    "entity_name": "ops_audit_events",
    "used_by_screens": [
     "mfa-setup",
@@ -19108,7 +19120,7 @@
    ]
   },
   {
-   "entity_id": "E-060",
+   "entity_id": "E-062",
    "entity_name": "security_events",
    "used_by_screens": [
     "mfa-setup",
@@ -19142,7 +19154,7 @@
    ]
   },
   {
-   "entity_id": "E-061",
+   "entity_id": "E-063",
    "entity_name": "inquiries",
    "used_by_screens": [
     "ops-support",
@@ -19157,7 +19169,7 @@
    ]
   },
   {
-   "entity_id": "E-062",
+   "entity_id": "E-064",
    "entity_name": "notices",
    "used_by_screens": [
     "notices",
@@ -19172,7 +19184,7 @@
    ]
   },
   {
-   "entity_id": "E-063",
+   "entity_id": "E-065",
    "entity_name": "notice_deliveries",
    "used_by_screens": [
     "approvals",
@@ -19189,7 +19201,7 @@
    ]
   },
   {
-   "entity_id": "E-064",
+   "entity_id": "E-066",
    "entity_name": "status_incidents",
    "used_by_screens": [
     "notices",
@@ -19204,7 +19216,7 @@
    ]
   },
   {
-   "entity_id": "E-065",
+   "entity_id": "E-067",
    "entity_name": "notification_preferences",
    "used_by_screens": [
     "approvals",
@@ -19216,7 +19228,7 @@
    ]
   },
   {
-   "entity_id": "E-066",
+   "entity_id": "E-068",
    "entity_name": "notifications",
    "used_by_screens": [
     "approvals",
@@ -19228,7 +19240,7 @@
    ]
   },
   {
-   "entity_id": "E-067",
+   "entity_id": "E-069",
    "entity_name": "plans",
    "used_by_screens": [
     "signup",
@@ -19256,7 +19268,7 @@
    ]
   },
   {
-   "entity_id": "E-068",
+   "entity_id": "E-070",
    "entity_name": "plan_versions",
    "used_by_screens": [
     "signup",
@@ -19290,7 +19302,7 @@
    ]
   },
   {
-   "entity_id": "E-069",
+   "entity_id": "E-071",
    "entity_name": "subscriptions",
    "used_by_screens": [
     "signup",
@@ -19318,7 +19330,7 @@
    ]
   },
   {
-   "entity_id": "E-070",
+   "entity_id": "E-072",
    "entity_name": "plan_change_requests",
    "used_by_screens": [
     "signup",
@@ -19346,7 +19358,7 @@
    ]
   },
   {
-   "entity_id": "E-071",
+   "entity_id": "E-073",
    "entity_name": "usage_meters",
    "used_by_screens": [
     "signup",
@@ -19374,7 +19386,7 @@
    ]
   },
   {
-   "entity_id": "E-072",
+   "entity_id": "E-074",
    "entity_name": "invoices",
    "used_by_screens": [
     "company-settings",
@@ -19391,7 +19403,7 @@
    ]
   },
   {
-   "entity_id": "E-073",
+   "entity_id": "E-075",
    "entity_name": "payments",
    "used_by_screens": [
     "company-settings",
@@ -19408,7 +19420,7 @@
    ]
   },
   {
-   "entity_id": "E-074",
+   "entity_id": "E-076",
    "entity_name": "error_events",
    "used_by_screens": [
     "automation-repair",
@@ -19425,7 +19437,7 @@
    ]
   },
   {
-   "entity_id": "E-075",
+   "entity_id": "E-077",
    "entity_name": "imports",
    "used_by_screens": [
     "import"
@@ -19435,7 +19447,7 @@
    ]
   },
   {
-   "entity_id": "E-076",
+   "entity_id": "E-078",
    "entity_name": "integrations",
    "used_by_screens": [
     "services"
@@ -19445,7 +19457,7 @@
    ]
   },
   {
-   "entity_id": "E-077",
+   "entity_id": "E-079",
    "entity_name": "invitations",
    "used_by_screens": [
     "invite-accept",
@@ -19457,7 +19469,7 @@
    ]
   },
   {
-   "entity_id": "E-078",
+   "entity_id": "E-080",
    "entity_name": "export_jobs",
    "used_by_screens": [
     "export",
@@ -19468,7 +19480,7 @@
    ]
   },
   {
-   "entity_id": "E-079",
+   "entity_id": "E-081",
    "entity_name": "attachments",
    "used_by_screens": [
     "record-detail",
@@ -19480,7 +19492,7 @@
    ]
   },
   {
-   "entity_id": "E-080",
+   "entity_id": "E-082",
    "entity_name": "skills",
    "used_by_screens": [
     "ai-activity",
@@ -19500,7 +19512,7 @@
    ]
   },
   {
-   "entity_id": "E-081",
+   "entity_id": "E-083",
    "entity_name": "skill_versions",
    "used_by_screens": [
     "ai-activity",
@@ -19520,7 +19532,7 @@
    ]
   },
   {
-   "entity_id": "E-082",
+   "entity_id": "E-084",
    "entity_name": "skill_test_runs",
    "used_by_screens": [
     "ai-activity",
@@ -19540,7 +19552,7 @@
    ]
   },
   {
-   "entity_id": "E-083",
+   "entity_id": "E-085",
    "entity_name": "skill_attachments",
    "used_by_screens": [
     "ai-activity",
@@ -19590,14 +19602,14 @@
     "E-034",
     "E-038",
     "E-039",
-    "E-042",
-    "E-045",
-    "E-048",
-    "E-067",
-    "E-068",
+    "E-044",
+    "E-047",
+    "E-050",
     "E-069",
     "E-070",
-    "E-071"
+    "E-071",
+    "E-072",
+    "E-073"
    ],
    "api_endpoints_draft": [
     "GET /api/members",
@@ -19615,9 +19627,9 @@
    ],
    "entities": [
     "E-004",
-    "E-042",
-    "E-045",
-    "E-077"
+    "E-044",
+    "E-047",
+    "E-079"
    ],
    "api_endpoints_draft": [
     "GET /api/invitations"
@@ -19632,10 +19644,10 @@
    "entities": [
     "E-004",
     "E-041",
-    "E-042",
-    "E-045",
-    "E-059",
-    "E-060"
+    "E-044",
+    "E-047",
+    "E-061",
+    "E-062"
    ],
    "api_endpoints_draft": [
     "PATCH /api/members/:id"
@@ -19668,8 +19680,8 @@
     "E-038",
     "E-039",
     "E-040",
-    "E-042",
-    "E-045"
+    "E-044",
+    "E-047"
    ],
    "api_endpoints_draft": [
     "DELETE /api/messages/:id",
@@ -19710,15 +19722,15 @@
     "E-034",
     "E-035",
     "E-037",
-    "E-048",
-    "E-055",
-    "E-056",
-    "E-067",
-    "E-068",
+    "E-050",
+    "E-057",
+    "E-058",
     "E-069",
     "E-070",
     "E-071",
-    "E-074"
+    "E-072",
+    "E-073",
+    "E-076"
    ],
    "api_endpoints_draft": [
     "GET /api/ai_employees",
@@ -19760,26 +19772,26 @@
     "E-039",
     "E-040",
     "E-041",
-    "E-042",
-    "E-045",
-    "E-046",
+    "E-044",
     "E-047",
     "E-048",
     "E-049",
     "E-050",
     "E-051",
-    "E-055",
-    "E-056",
-    "E-059",
-    "E-060",
-    "E-063",
+    "E-052",
+    "E-053",
+    "E-057",
+    "E-058",
+    "E-061",
+    "E-062",
     "E-065",
-    "E-066",
-    "E-074",
-    "E-080",
-    "E-081",
+    "E-067",
+    "E-068",
+    "E-076",
     "E-082",
-    "E-083"
+    "E-083",
+    "E-084",
+    "E-085"
    ],
    "api_endpoints_draft": [
     "DELETE /api/audit_events/:id",
@@ -19821,11 +19833,11 @@
     "E-039",
     "E-040",
     "E-041",
-    "E-042",
-    "E-045",
-    "E-059",
-    "E-060",
-    "E-079"
+    "E-044",
+    "E-047",
+    "E-061",
+    "E-062",
+    "E-081"
    ],
    "api_endpoints_draft": [
     "GET /api/ledger_definitions",
@@ -19874,16 +19886,16 @@
     "E-039",
     "E-040",
     "E-041",
-    "E-042",
-    "E-045",
-    "E-052",
-    "E-053",
+    "E-044",
+    "E-047",
+    "E-054",
     "E-055",
-    "E-068",
-    "E-080",
-    "E-081",
+    "E-057",
+    "E-070",
     "E-082",
-    "E-083"
+    "E-083",
+    "E-084",
+    "E-085"
    ],
    "api_endpoints_draft": [
     "GET /api/conversations",
@@ -19916,13 +19928,13 @@
     "E-028",
     "E-029",
     "E-041",
-    "E-053",
     "E-055",
-    "E-068",
-    "E-080",
-    "E-081",
+    "E-057",
+    "E-070",
     "E-082",
-    "E-083"
+    "E-083",
+    "E-084",
+    "E-085"
    ],
    "api_endpoints_draft": [
     "GET /api/goals",
@@ -19961,27 +19973,27 @@
     "E-039",
     "E-040",
     "E-041",
-    "E-042",
-    "E-045",
-    "E-046",
+    "E-044",
     "E-047",
     "E-048",
     "E-049",
     "E-050",
     "E-051",
-    "E-059",
-    "E-060",
-    "E-067",
-    "E-068",
+    "E-052",
+    "E-053",
+    "E-061",
+    "E-062",
     "E-069",
     "E-070",
     "E-071",
-    "E-074",
-    "E-077",
-    "E-080",
-    "E-081",
+    "E-072",
+    "E-073",
+    "E-076",
+    "E-079",
     "E-082",
-    "E-083"
+    "E-083",
+    "E-084",
+    "E-085"
    ],
    "api_endpoints_draft": [
     "DELETE /api/members/:id",
@@ -20023,12 +20035,12 @@
     "E-032",
     "E-040",
     "E-041",
-    "E-042",
-    "E-045",
-    "E-052",
-    "E-053",
+    "E-044",
+    "E-047",
+    "E-054",
     "E-055",
-    "E-068"
+    "E-057",
+    "E-070"
    ],
    "api_endpoints_draft": [
     "GET /api/tenants",
@@ -20060,18 +20072,18 @@
     "E-033",
     "E-037",
     "E-041",
-    "E-042",
-    "E-045",
-    "E-046",
+    "E-044",
     "E-047",
     "E-048",
     "E-049",
     "E-050",
     "E-051",
-    "E-059",
-    "E-060",
-    "E-074",
-    "E-078"
+    "E-052",
+    "E-053",
+    "E-061",
+    "E-062",
+    "E-076",
+    "E-080"
    ],
    "api_endpoints_draft": [
     "DELETE /api/audit_events/:id",
@@ -20137,34 +20149,34 @@
     "E-038",
     "E-040",
     "E-041",
-    "E-042",
-    "E-045",
-    "E-046",
+    "E-044",
     "E-047",
+    "E-048",
     "E-049",
-    "E-050",
     "E-051",
     "E-052",
     "E-053",
     "E-054",
-    "E-057",
+    "E-055",
+    "E-056",
     "E-059",
-    "E-060",
     "E-061",
     "E-062",
     "E-063",
     "E-064",
-    "E-067",
-    "E-068",
+    "E-065",
+    "E-066",
     "E-069",
     "E-070",
     "E-071",
     "E-072",
     "E-073",
-    "E-080",
-    "E-081",
+    "E-074",
+    "E-075",
     "E-082",
-    "E-083"
+    "E-083",
+    "E-084",
+    "E-085"
    ],
    "api_endpoints_draft": [
     "DELETE /api/plans/:id",
@@ -20187,14 +20199,12 @@
     "E-006",
     "E-038",
     "E-041",
-    "E-042",
-    "E-045",
-    "E-046",
+    "E-044",
     "E-047",
-    "E-050",
-    "E-051",
-    "E-059",
-    "E-060",
+    "E-048",
+    "E-049",
+    "E-052",
+    "E-053",
     "E-061",
     "E-062",
     "E-063",
@@ -20207,7 +20217,9 @@
     "E-070",
     "E-071",
     "E-072",
-    "E-073"
+    "E-073",
+    "E-074",
+    "E-075"
    ],
    "api_endpoints_draft": [
     "GET /api/inquiries",
@@ -20235,23 +20247,23 @@
     "E-032",
     "E-038",
     "E-041",
-    "E-042",
-    "E-045",
-    "E-058",
-    "E-059",
+    "E-044",
+    "E-047",
     "E-060",
     "E-061",
     "E-062",
     "E-063",
     "E-064",
-    "E-067",
-    "E-068",
+    "E-065",
+    "E-066",
     "E-069",
     "E-070",
     "E-071",
     "E-072",
     "E-073",
-    "E-074"
+    "E-074",
+    "E-075",
+    "E-076"
    ],
    "api_endpoints_draft": [
     "GET /api/audit_events",
@@ -20285,23 +20297,23 @@
     "E-035",
     "E-037",
     "E-041",
-    "E-042",
-    "E-045",
-    "E-048",
-    "E-055",
-    "E-056",
-    "E-059",
-    "E-060",
-    "E-067",
-    "E-068",
+    "E-044",
+    "E-047",
+    "E-050",
+    "E-057",
+    "E-058",
+    "E-061",
+    "E-062",
     "E-069",
     "E-070",
     "E-071",
     "E-072",
     "E-073",
+    "E-074",
     "E-075",
-    "E-076",
-    "E-079"
+    "E-077",
+    "E-078",
+    "E-081"
    ],
    "api_endpoints_draft": [
     "PATCH /api/members/:id",
@@ -20329,20 +20341,20 @@
     "E-035",
     "E-040",
     "E-041",
-    "E-052",
-    "E-053",
     "E-054",
     "E-055",
     "E-056",
-    "E-067",
-    "E-068",
+    "E-057",
+    "E-058",
     "E-069",
     "E-070",
     "E-071",
-    "E-080",
-    "E-081",
+    "E-072",
+    "E-073",
     "E-082",
-    "E-083"
+    "E-083",
+    "E-084",
+    "E-085"
    ],
    "api_endpoints_draft": [
     "GET /api/ai_employees",
@@ -20372,36 +20384,36 @@
     "E-038",
     "E-040",
     "E-041",
-    "E-042",
-    "E-045",
-    "E-046",
+    "E-044",
     "E-047",
+    "E-048",
     "E-049",
-    "E-050",
     "E-051",
     "E-052",
     "E-053",
     "E-054",
-    "E-057",
-    "E-058",
+    "E-055",
+    "E-056",
     "E-059",
     "E-060",
     "E-061",
     "E-062",
     "E-063",
     "E-064",
-    "E-067",
-    "E-068",
+    "E-065",
+    "E-066",
     "E-069",
     "E-070",
     "E-071",
     "E-072",
     "E-073",
     "E-074",
-    "E-080",
-    "E-081",
+    "E-075",
+    "E-076",
     "E-082",
-    "E-083"
+    "E-083",
+    "E-084",
+    "E-085"
    ],
    "api_endpoints_draft": [
     "DELETE /api/plans/:id",
@@ -20428,12 +20440,12 @@
     "E-027",
     "E-032",
     "E-040",
-    "E-052",
-    "E-067",
-    "E-068",
+    "E-054",
     "E-069",
     "E-070",
-    "E-071"
+    "E-071",
+    "E-072",
+    "E-073"
    ],
    "api_endpoints_draft": [
     "GET /api/ai_employees",

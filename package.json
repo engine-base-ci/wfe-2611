@@ -37,7 +37,7 @@
     "ci:ears-mapping": "node scripts/ci/gate_pending.mjs G34 T-F-15",
     "ci:resource-static": "node scripts/ci/gate_pending.mjs G35 T-F-08",
     "ci:schemathesis": "node scripts/ci/gate_pending.mjs G36 T-F-15",
-    "db:migrate": "tsx packages/db/src/cli.ts migrate"
+    "db:migrate": "tsx packages/db/src/cli.ts migrate && tsx packages/auth/src/cli.ts"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",

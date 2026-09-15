@@ -6,7 +6,7 @@
 
 | 種別 | 件数 | 根拠（source）| 備考 |
 |---|---|---|---|
-| エンティティ | 83 | 全件 | ER図 §1〜§14 の表から。table_name・tenant_isolation・access_control_policies |
+| エンティティ | 85 | 全件 | ER図 §1〜§14 の表から。table_name・tenant_isolation・access_control_policies |
 | 機能 | 28 | 全件 | 用事 20 ＋ 関門 8。api_endpoints（下書き）・ears_ac_seed |
 | ロール | 5 | 全件 | 権限の型（誰に×何に×どの層で×できること）を access_predicate_expr で |
 | 画面 | 59 | 全件 | flow.json と 1 対 1。states はモックの状態タブ、transitions はモックのリンクから |
@@ -56,48 +56,50 @@
 | E-039 | `messages` | 6. 会話・成果物・証跡 | account_scoped | 3 | D-066 |
 | E-040 | `artifacts` | 6. 会話・成果物・証跡 | scope_layered | 3 | D-010 |
 | E-041 | `audit_events` | 6. 会話・成果物・証跡 | account_scoped | 3 | D-010 |
-| E-042 | `layers` | 9. 層と権限 | account_scoped | 3 | D-073 D-073.4 |
-| E-043 | `target_kinds` | 9. 層と権限 | none | 2 | D-073 |
-| E-044 | `abilities` | 9. 層と権限 | none | 2 | D-073 |
-| E-045 | `permissions` | 9. 層と権限 | account_scoped | 3 | D-073 D-073.1 D-073.3 |
-| E-046 | `account_events` | 10. 口座状態の出来事・失効・サポートアクセス | account_scoped | 4 | D-074 D-074.1 D-076 D-076.13 |
-| E-047 | `account_event_items` | 10. 口座状態の出来事・失効・サポートアクセス | account_scoped | 3 | D-074 D-076.13 |
-| E-048 | `sessions` | 10. 口座状態の出来事・失効・サポートアクセス | account_scoped | 3 | D-074 D-076 D-076.1 D-076.13 |
-| E-049 | `support_access_grants` | 10. 口座状態の出来事・失効・サポートアクセス | account_scoped | 3 | D-074 D-074.5 D-076.13 |
-| E-050 | `retention_holds` | 10. 口座状態の出来事・失効・サポートアクセス | account_scoped | 3 | D-074 D-074.3 D-076.13 |
-| E-051 | `erasure_certificates` | 10. 口座状態の出来事・失効・サポートアクセス | account_scoped | 3 | D-074 D-074.3 D-076.13 |
-| E-052 | `distributions` | 11. 運営 | ops_scoped | 1 | D-037 D-063 D-073.7 D-074.4 |
-| E-053 | `distribution_versions` | 11. 運営 | none | 2 | D-073.7 D-074.4 D-076.10 D-076.5 |
-| E-054 | `tenant_distributions` | 11. 運営 | account_scoped | 3 | D-073.7 D-074.4 D-076.10 D-076.5 |
-| E-055 | `service_registry_versions` | 11. 運営 | none | 2 | D-073.7 D-074.4 D-076 D-076.10 |
-| E-056 | `service_requests` | 11. 運営 | account_scoped | 4 | D-073.7 D-074.4 D-076 D-076.10 |
-| E-057 | `review_requests` | 11. 運営 | account_scoped | 3 | D-027 D-073.7 D-074 D-074.4 |
-| E-058 | `ops_members` | 11. 運営 | ops_scoped | 1 | D-073 D-073.7 D-074.4 D-076.10 |
-| E-059 | `ops_audit_events` | 11. 運営 | ops_scoped | 2 | D-073.7 D-074 D-074.4 D-076.10 |
-| E-060 | `security_events` | 11. 運営 | account_scoped | 3 | D-073.7 D-074.4 D-075 D-075.6 |
-| E-061 | `inquiries` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 4 | D-069 D-075 D-075.1 D-076 |
-| E-062 | `notices` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | ops_scoped | 1 | D-069 D-075 D-075.2 D-076 |
-| E-063 | `notice_deliveries` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 4 | D-069 D-075 D-076 |
-| E-064 | `status_incidents` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | ops_scoped | 1 | D-069 D-075 D-075.2 D-076 |
-| E-065 | `notification_preferences` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 4 | D-043 D-069 D-075 D-075.3 |
-| E-066 | `notifications` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 4 | D-043 D-069 D-075 D-076 |
-| E-067 | `plans` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | ops_scoped | 1 | D-069 D-075 D-076 D-076.6 |
-| E-068 | `plan_versions` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | none | 2 | D-069 D-075 D-076 |
-| E-069 | `subscriptions` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 3 | D-069 D-075 D-075.4 D-076 |
-| E-070 | `plan_change_requests` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 4 | D-069 D-075 D-076 |
-| E-071 | `usage_meters` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 3 | D-069 D-075 D-075.5 D-076 |
-| E-072 | `invoices` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 3 | D-002 D-069 D-075 D-075.4 |
-| E-073 | `payments` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 3 | D-069 D-075 D-076 D-077.1 |
-| E-074 | `error_events` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 4 | D-069 D-069.3 D-069.4 D-075 |
-| E-075 | `imports` | 13. 取り込み・正規連携・招待・持ち出し・添付 | scope_layered | 3 | D-025 D-026 D-042 D-076 |
-| E-076 | `integrations` | 13. 取り込み・正規連携・招待・持ち出し・添付 | scope_layered | 3 | D-026 D-041 D-042 D-076 |
-| E-077 | `invitations` | 13. 取り込み・正規連携・招待・持ち出し・添付 | account_scoped | 3 | D-026 D-037 D-042 D-076.3 |
-| E-078 | `export_jobs` | 13. 取り込み・正規連携・招待・持ち出し・添付 | account_scoped | 4 | D-026 D-042 D-076.3 D-076.4 |
-| E-079 | `attachments` | 13. 取り込み・正規連携・招待・持ち出し・添付 | scope_layered | 3 | D-026 D-042 D-076.3 D-076.4 |
-| E-080 | `skills` | 14. スキル | ops_scoped | 1 | D-078 D-078.1 |
-| E-081 | `skill_versions` | 14. スキル | none | 2 | D-078 D-078.2 |
-| E-082 | `skill_test_runs` | 14. スキル | account_scoped | 3 | D-078 |
-| E-083 | `skill_attachments` | 14. スキル | account_scoped | 3 | D-078 D-078.3 D-078.4 D-078.7 |
+| E-042 | `session_kinds` | 7. マスタ | none | 2 | D-010 |
+| E-043 | `revoke_reasons` | 7. マスタ | none | 2 | D-010 |
+| E-044 | `layers` | 9. 層と権限 | account_scoped | 3 | D-073 D-073.4 |
+| E-045 | `target_kinds` | 9. 層と権限 | none | 2 | D-073 |
+| E-046 | `abilities` | 9. 層と権限 | none | 2 | D-073 |
+| E-047 | `permissions` | 9. 層と権限 | account_scoped | 3 | D-073 D-073.1 D-073.3 |
+| E-048 | `account_events` | 10. 口座状態の出来事・失効・サポートアクセス | account_scoped | 4 | D-074 D-074.1 D-076 D-076.13 |
+| E-049 | `account_event_items` | 10. 口座状態の出来事・失効・サポートアクセス | account_scoped | 3 | D-074 D-076.13 |
+| E-050 | `sessions` | 10. 口座状態の出来事・失効・サポートアクセス | account_scoped | 3 | D-074 D-076 D-076.1 D-076.13 |
+| E-051 | `support_access_grants` | 10. 口座状態の出来事・失効・サポートアクセス | account_scoped | 3 | D-074 D-074.5 D-076.13 |
+| E-052 | `retention_holds` | 10. 口座状態の出来事・失効・サポートアクセス | account_scoped | 3 | D-074 D-074.3 D-076.13 |
+| E-053 | `erasure_certificates` | 10. 口座状態の出来事・失効・サポートアクセス | account_scoped | 3 | D-074 D-074.3 D-076.13 |
+| E-054 | `distributions` | 11. 運営 | ops_scoped | 1 | D-037 D-063 D-073.7 D-074.4 |
+| E-055 | `distribution_versions` | 11. 運営 | none | 2 | D-073.7 D-074.4 D-076.10 D-076.5 |
+| E-056 | `tenant_distributions` | 11. 運営 | account_scoped | 3 | D-073.7 D-074.4 D-076.10 D-076.5 |
+| E-057 | `service_registry_versions` | 11. 運営 | none | 2 | D-073.7 D-074.4 D-076 D-076.10 |
+| E-058 | `service_requests` | 11. 運営 | account_scoped | 4 | D-073.7 D-074.4 D-076 D-076.10 |
+| E-059 | `review_requests` | 11. 運営 | account_scoped | 3 | D-027 D-073.7 D-074 D-074.4 |
+| E-060 | `ops_members` | 11. 運営 | ops_scoped | 1 | D-073 D-073.7 D-074.4 D-076.10 |
+| E-061 | `ops_audit_events` | 11. 運営 | ops_scoped | 2 | D-073.7 D-074 D-074.4 D-076.10 |
+| E-062 | `security_events` | 11. 運営 | account_scoped | 3 | D-073.7 D-074.4 D-075 D-075.6 |
+| E-063 | `inquiries` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 4 | D-069 D-075 D-075.1 D-076 |
+| E-064 | `notices` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | ops_scoped | 1 | D-069 D-075 D-075.2 D-076 |
+| E-065 | `notice_deliveries` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 4 | D-069 D-075 D-076 |
+| E-066 | `status_incidents` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | ops_scoped | 1 | D-069 D-075 D-075.2 D-076 |
+| E-067 | `notification_preferences` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 4 | D-043 D-069 D-075 D-075.3 |
+| E-068 | `notifications` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 4 | D-043 D-069 D-075 D-076 |
+| E-069 | `plans` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | ops_scoped | 1 | D-069 D-075 D-076 D-076.6 |
+| E-070 | `plan_versions` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | none | 2 | D-069 D-075 D-076 |
+| E-071 | `subscriptions` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 3 | D-069 D-075 D-075.4 D-076 |
+| E-072 | `plan_change_requests` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 4 | D-069 D-075 D-076 |
+| E-073 | `usage_meters` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 3 | D-069 D-075 D-075.5 D-076 |
+| E-074 | `invoices` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 3 | D-002 D-069 D-075 D-075.4 |
+| E-075 | `payments` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 3 | D-069 D-075 D-076 D-077.1 |
+| E-076 | `error_events` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 4 | D-069 D-069.3 D-069.4 D-075 |
+| E-077 | `imports` | 13. 取り込み・正規連携・招待・持ち出し・添付 | scope_layered | 3 | D-025 D-026 D-042 D-076 |
+| E-078 | `integrations` | 13. 取り込み・正規連携・招待・持ち出し・添付 | scope_layered | 3 | D-026 D-041 D-042 D-076 |
+| E-079 | `invitations` | 13. 取り込み・正規連携・招待・持ち出し・添付 | account_scoped | 3 | D-026 D-037 D-042 D-076.3 |
+| E-080 | `export_jobs` | 13. 取り込み・正規連携・招待・持ち出し・添付 | account_scoped | 4 | D-026 D-042 D-076.3 D-076.4 |
+| E-081 | `attachments` | 13. 取り込み・正規連携・招待・持ち出し・添付 | scope_layered | 3 | D-026 D-042 D-076.3 D-076.4 |
+| E-082 | `skills` | 14. スキル | ops_scoped | 1 | D-078 D-078.1 |
+| E-083 | `skill_versions` | 14. スキル | none | 2 | D-078 D-078.2 |
+| E-084 | `skill_test_runs` | 14. スキル | account_scoped | 3 | D-078 |
+| E-085 | `skill_attachments` | 14. スキル | account_scoped | 3 | D-078 D-078.3 D-078.4 D-078.7 |
 
 ## 機能
 

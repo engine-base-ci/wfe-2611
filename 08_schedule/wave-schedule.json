@@ -72,8 +72,8 @@
   "per_wave_wall_clock_h_ai": [
    6.5,
    4.5,
+   17.5,
    23.5,
-   3.3,
    3.2,
    39.5,
    39.5,
@@ -92,16 +92,16 @@
    4.0
   ],
   "capacity_per_day_ai_h": 60,
-  "calendar_days_ai": 35,
-  "calendar_days_human": 605
+  "calendar_days_ai": 37,
+  "calendar_days_human": 607
  },
  "totals": {
   "waves": 20,
-  "tasks": 158,
-  "estimate_hours_human": 4838.0,
-  "estimate_hours_ai_compute": 847.5,
+  "tasks": 159,
+  "estimate_hours_human": 4854.0,
+  "estimate_hours_ai_compute": 848.8,
   "human_review_total_h": 49.0,
-  "total_wall_clock_h_ai_parallel": 206.9,
+  "total_wall_clock_h_ai_parallel": 221.1,
   "parallel_capacity": 10,
   "l2_flows_total": 9,
   "l2_flows_unassigned": []
@@ -285,15 +285,15 @@
     "T-D-10"
    ],
    "parallel": 10,
-   "estimate_hours_human": 484,
-   "estimate_hours_ai_compute": 76.8,
-   "human_review_h": 4.0,
-   "wall_clock_h_ai": 23.5,
+   "estimate_hours_human": 412,
+   "estimate_hours_ai_compute": 56.1,
+   "human_review_h": 3.0,
+   "wall_clock_h_ai": 17.5,
    "parallel_capacity": 10,
    "start": "2026-09-24",
-   "finish": "2026-10-20",
-   "milestone": "W2",
-   "milestone_due": "2026-10-30",
+   "finish": "2026-10-08",
+   "milestone": "W1",
+   "milestone_due": "2026-10-16",
    "assignees": {
     "claude-02": 4,
     "takamoto": 4,
@@ -301,9 +301,8 @@
    },
    "critical_tasks": [
     "T-D-05",
-    "T-D-07",
     "T-D-08",
-    "T-D-10"
+    "T-D-09"
    ],
    "goal": "Data Layer：データ層 1. テナント・組織・メン, データ層 2. 会社モデル ── 目, データ層 3. 会社モデル ── 台 …",
    "qa_scope": {
@@ -319,7 +318,7 @@
      "T-D-09",
      "T-D-10"
     ],
-    "l1_rows": 148,
+    "l1_rows": 130,
     "l2_flows": [],
     "regression_from": [
      "W0",
@@ -344,30 +343,35 @@
    "group": "D",
    "tasks": [
     "T-D-11",
-    "T-D-12"
+    "T-D-12",
+    "T-D-13"
    ],
-   "parallel": 2,
-   "estimate_hours_human": 62,
-   "estimate_hours_ai_compute": 5.1,
-   "human_review_h": 0.0,
-   "wall_clock_h_ai": 3.3,
+   "parallel": 3,
+   "estimate_hours_human": 150,
+   "estimate_hours_ai_compute": 27.1,
+   "human_review_h": 1.0,
+   "wall_clock_h_ai": 23.5,
    "parallel_capacity": 10,
    "start": "2026-09-29",
-   "finish": "2026-09-29",
-   "milestone": "W0",
-   "milestone_due": "2026-10-02",
+   "finish": "2026-10-09",
+   "milestone": "W1",
+   "milestone_due": "2026-10-16",
    "assignees": {
     "claude-02": 1,
-    "claude-01": 1
+    "claude-01": 1,
+    "takamoto": 1
    },
-   "critical_tasks": [],
-   "goal": "Data Layer：データ層 13. 取り込み・正規連携, データ層 14. スキル（4 表・m",
+   "critical_tasks": [
+    "T-D-11"
+   ],
+   "goal": "Data Layer：データ層 12. 運営と顧客の間で往, データ層 13. 取り込み・正規連携, データ層 14. スキル（4 表・m",
    "qa_scope": {
     "l1_tasks": [
      "T-D-11",
-     "T-D-12"
+     "T-D-12",
+     "T-D-13"
     ],
-    "l1_rows": 22,
+    "l1_rows": 48,
     "l2_flows": [],
     "regression_from": [
      "W0",
@@ -464,8 +468,8 @@
    "human_review_h": 10.0,
    "wall_clock_h_ai": 39.5,
    "parallel_capacity": 10,
-   "start": "2026-10-02",
-   "finish": "2026-10-28",
+   "start": "2026-10-05",
+   "finish": "2026-10-20",
    "milestone": "W2",
    "milestone_due": "2026-10-30",
    "assignees": {
@@ -546,9 +550,9 @@
    "wall_clock_h_ai": 39.5,
    "parallel_capacity": 10,
    "start": "2026-10-02",
-   "finish": "2026-11-09",
-   "milestone": "W3",
-   "milestone_due": "2026-11-20",
+   "finish": "2026-10-29",
+   "milestone": "W2",
+   "milestone_due": "2026-10-30",
    "assignees": {
     "claude-04": 2,
     "claude-01": 2,
@@ -618,8 +622,8 @@
    "human_review_h": 1.0,
    "wall_clock_h_ai": 40.3,
    "parallel_capacity": 10,
-   "start": "2026-10-21",
-   "finish": "2026-10-27",
+   "start": "2026-10-15",
+   "finish": "2026-10-22",
    "milestone": "W2",
    "milestone_due": "2026-10-30",
    "assignees": {
@@ -679,8 +683,8 @@
    "human_review_h": 0.0,
    "wall_clock_h_ai": 3.7,
    "parallel_capacity": 10,
-   "start": "2026-10-27",
-   "finish": "2026-10-27",
+   "start": "2026-10-20",
+   "finish": "2026-10-20",
    "milestone": "W2",
    "milestone_due": "2026-10-30",
    "assignees": {
@@ -747,10 +751,10 @@
    "human_review_h": 0.0,
    "wall_clock_h_ai": 2.4,
    "parallel_capacity": 10,
-   "start": "2026-10-28",
-   "finish": "2026-11-05",
-   "milestone": "W3",
-   "milestone_due": "2026-11-20",
+   "start": "2026-10-21",
+   "finish": "2026-10-27",
+   "milestone": "W2",
+   "milestone_due": "2026-10-30",
    "assignees": {
     "claude-06": 3,
     "claude-08": 3,
@@ -822,10 +826,10 @@
    "human_review_h": 0.0,
    "wall_clock_h_ai": 4.5,
    "parallel_capacity": 10,
-   "start": "2026-10-28",
-   "finish": "2026-11-05",
-   "milestone": "W3",
-   "milestone_due": "2026-11-20",
+   "start": "2026-10-21",
+   "finish": "2026-10-27",
+   "milestone": "W2",
+   "milestone_due": "2026-10-30",
    "assignees": {
     "claude-07": 3,
     "claude-06": 4,
@@ -898,10 +902,10 @@
    "human_review_h": 0.0,
    "wall_clock_h_ai": 2.7,
    "parallel_capacity": 10,
-   "start": "2026-10-30",
-   "finish": "2026-11-06",
-   "milestone": "W3",
-   "milestone_due": "2026-11-20",
+   "start": "2026-10-26",
+   "finish": "2026-10-28",
+   "milestone": "W2",
+   "milestone_due": "2026-10-30",
    "assignees": {
     "claude-07": 3,
     "claude-08": 3,
@@ -976,10 +980,10 @@
    "human_review_h": 0.0,
    "wall_clock_h_ai": 3.0,
    "parallel_capacity": 10,
-   "start": "2026-11-02",
-   "finish": "2026-11-09",
-   "milestone": "W3",
-   "milestone_due": "2026-11-20",
+   "start": "2026-10-27",
+   "finish": "2026-10-29",
+   "milestone": "W2",
+   "milestone_due": "2026-10-30",
    "assignees": {
     "claude-07": 2,
     "claude-06": 3,
@@ -1056,10 +1060,10 @@
    "human_review_h": 0.0,
    "wall_clock_h_ai": 2.8,
    "parallel_capacity": 10,
-   "start": "2026-11-06",
-   "finish": "2026-11-10",
-   "milestone": "W3",
-   "milestone_due": "2026-11-20",
+   "start": "2026-10-28",
+   "finish": "2026-10-30",
+   "milestone": "W2",
+   "milestone_due": "2026-10-30",
    "assignees": {
     "claude-07": 3,
     "claude-08": 3,
@@ -1131,10 +1135,10 @@
    "human_review_h": 0.0,
    "wall_clock_h_ai": 2.3,
    "parallel_capacity": 10,
-   "start": "2026-11-06",
-   "finish": "2026-11-10",
-   "milestone": "W3",
-   "milestone_due": "2026-11-20",
+   "start": "2026-10-28",
+   "finish": "2026-10-30",
+   "milestone": "W2",
+   "milestone_due": "2026-10-30",
    "assignees": {
     "claude-06": 2,
     "claude-07": 2,
@@ -1210,8 +1214,8 @@
    "human_review_h": 4.0,
    "wall_clock_h_ai": 9.5,
    "parallel_capacity": 10,
-   "start": "2026-11-05",
-   "finish": "2026-11-16",
+   "start": "2026-10-27",
+   "finish": "2026-11-06",
    "milestone": "W3",
    "milestone_due": "2026-11-20",
    "assignees": {
@@ -1291,8 +1295,8 @@
    "human_review_h": 1.0,
    "wall_clock_h_ai": 5.5,
    "parallel_capacity": 10,
-   "start": "2026-11-10",
-   "finish": "2026-11-19",
+   "start": "2026-10-30",
+   "finish": "2026-11-11",
    "milestone": "W3",
    "milestone_due": "2026-11-20",
    "assignees": {
@@ -1364,7 +1368,7 @@
    "wall_clock_h_ai": 1.7,
    "parallel_capacity": 10,
    "start": "2026-09-24",
-   "finish": "2026-11-18",
+   "finish": "2026-11-10",
    "milestone": "W3",
    "milestone_due": "2026-11-20",
    "assignees": {
@@ -1434,8 +1438,8 @@
    "human_review_h": 10.0,
    "wall_clock_h_ai": 4.5,
    "parallel_capacity": 10,
-   "start": "2026-11-11",
-   "finish": "2026-11-18",
+   "start": "2026-11-02",
+   "finish": "2026-11-10",
    "milestone": "W3",
    "milestone_due": "2026-11-20",
    "assignees": {
@@ -1520,8 +1524,8 @@
    "human_review_h": 5.0,
    "wall_clock_h_ai": 4.0,
    "parallel_capacity": 10,
-   "start": "2026-11-17",
-   "finish": "2026-11-18",
+   "start": "2026-11-09",
+   "finish": "2026-11-10",
    "milestone": "W3",
    "milestone_due": "2026-11-20",
    "assignees": {

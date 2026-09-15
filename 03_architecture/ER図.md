@@ -39,7 +39,7 @@ erDiagram
 | `tenants` | `<common>` / `name` / `plan_id` / `status_id` | 契約の単位 |
 | `scopes` | `<common>` / `parent_id` / `layer_id` / `name` | **4 層の実体**（運営／会社／部署／個人）。層は省略可 |
 | `member_kinds` | `key` / `label` | **マスタ**（human / ai_employee / clone / 将来 guest） ← E20 |
-| `members` | `<scoped>` / `kind_id` / `display_name` / `role_id` / `manager_member_id` | **人間と AI が同じ席に座る** |
+| `members` | `<scoped>` / `kind_id` / `display_name` / `role_id` / `manager_member_id` / `auth_user_id`（認証の利用者。Better Auth の user。AI社員・自分のAI は null） | **人間と AI が同じ席に座る** |
 | `clones` | `<common>` / `owner_member_id` / `persona` | 各個人の写し。1 人 1 体 |
 | `ai_employees` | `<scoped>` / `member_id` / `provisioning_id` / `template_ref` | ← E19（出どころ）|
 
@@ -172,7 +172,12 @@ erDiagram
 ## 7. マスタ（enum の代わり・8）
 
 `member_kinds` ／ `goal_kinds` ／ `memory_kinds` ／ `credential_kinds` ／
-`ledger_kinds` ／ `view_kinds` ／ `action_kinds` ／ `status_masters`（各種ステータスを 1 テーブルに集約 ＋ `domain` 列で区別）
+`ledger_kinds` ／ `view_kinds` ／ `action_kinds` ／ `status_masters`（各種ステータスを 1 テーブルに集約 ＋ `domain` 列で区別）／ `session_kinds`（web / bridge / api）／ `revoke_reasons`（失効の理由）
+
+| テーブル | 主な列 | 備考 |
+|---|---|---|
+| `session_kinds` | `key` / `label` | **マスタ**（web / bridge / api。sessions.kind_id） |
+| `revoke_reasons` | `key` / `label` | **マスタ**（logout / password_changed / permission_changed / member_left / suspended / tenant_closed / invite_revoked / expired / admin。sessions.revoke_reason_id） |
 
 **Postgres enum を使わない理由**：値の追加が migration ＋ 型再生成 ＋ 全分岐の見直しになるため。
 
@@ -235,7 +240,7 @@ erDiagram
 |---|---|---|
 | **`account_events`** | `<common>` / `kind_id`（member_leave / company_close / suspend / permission_change / plan_change / layer_delete / staff_delete）/ `subject_type` / `subject_id` / `requested_by` / `status_id`（pending / resolving / done）/ `resolved_at` | **★新設（D-074.1・D-076.13）。**出来事 7 つの実体。画面の依存表（G16）はここから |
 | **`account_event_items`** | `<common>` / `event_id` / `object_kind`（flow.json の objects 名）/ `disposition_id`（消える／残る／移る・戻る／止まる／即失効）/ `target_ref` / `decided_by` / `done_at` | **★新設。**オブジェクトごとの「何が起きるか」と引き継ぎ先の決定。全部 done になるまで出来事は終わらない（引き継ぎ先を決めるまで消せない） |
-| **`sessions`** | `<common>` / `member_id` / `kind_id`（web / bridge）/ `device_label` / `ip_region` / `issued_at` / `last_seen_at` / `revoked_at` / `revoke_reason_id` | **★新設（D-076.1・G-14）。**端末の一覧。退会・停止・権限変更・パスワード変更で **全行を即 revoked** にし、API と Bridge はこの表を見て拒否する（発行済みトークンの有効期限に頼らない） |
+| **`sessions`** | `<common>` / `member_id` / `kind_id`（web / bridge / api）/ `auth_session_id`（Better Auth のセッション。失効の判定はこの表が正） / `device_label` / `ip_region` / `issued_at` / `last_seen_at` / `revoked_at` / `revoke_reason_id` | **★新設（D-076.1・G-14）。**端末の一覧。退会・停止・権限変更・パスワード変更で **全行を即 revoked** にし、API と Bridge はこの表を見て拒否する（発行済みトークンの有効期限に頼らない） |
 | **`support_access_grants`** | `<common>` / `granted_by_member_id` / `scope jsonb`（構成／手順／証跡 …）/ `expires_at` / `revoked_at` / `ops_member_id` | **★新設（D-074.5）。**運営は既定で顧客データを見られない。会社が範囲と期限つきで許可したときだけ、この行を根拠に読める。閲覧は会社側 `audit_events` と運営側 `ops_audit_events` の両方に残る |
 | **`retention_holds`** | `<common>` / `record_type` / `record_ref` / `retain_until` / `legal_basis` | **★新設（D-074.3）。**退会後も法令で残す記録（請求の記録 7 年 等）。消去バッチはこの表の行を除外する |
 | **`erasure_certificates`** | `<common>` / `issued_at` / `content_hash` / `sent_to` / `storage_ref` | **★新設（D-074.3）。**猶予（30 日・復元可）の後の完全消去で自動生成し、会社の代表に送る |

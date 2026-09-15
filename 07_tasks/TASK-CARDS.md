@@ -2,10 +2,10 @@
 
 ## サマリー
 
-- 総タスク数：158（A 23 / D 12 / F 17 / I 22 / S 15 / U-screen 58 / U-shared 6 / V2 5）
+- 総タスク数：159（A 23 / D 13 / F 17 / I 22 / S 15 / U-screen 58 / U-shared 6 / V2 5）
 - 画面の被覆：58/59
-- L1 テスト行：3139（正本 07_qa/test-specs）／ 流れ（L2）：9
-- 工数：Human 4838.0 h（605 日）／ AI 計算 847.5 h ＋ 人のレビュー 49.0 h → wall-clock 206.9 h（35 日・並列 10）
+- L1 テスト行：3147（正本 07_qa/test-specs）／ 流れ（L2）：9
+- 工数：Human 4854.0 h（607 日）／ AI 計算 848.8 h ＋ 人のレビュー 49.0 h → wall-clock 221.1 h（37 日・並列 10）
 - Wave 数：20
 
 ## Group 別タスク一覧
@@ -42,12 +42,13 @@
 | T-D-04 | データ層 4. 会社モデル ── 担当業務・記憶（6 表・migration・RLS・索引・seed | db | foundation | 40 | 3.3 | 3.3 | 2 | 3 | 13 |
 | T-D-05 | データ層 5. 実行・統制（10 表・migration・RLS・索引・seed） | db | foundation | 64 | 16.0 | 17.0 | 2 | 3 | 19 |
 | T-D-06 | データ層 6. 会話・成果物・証跡（4 表・migration・RLS・索引・seed） | db | foundation | 28 | 2.3 | 2.3 | 2 | 3 | 10 |
-| T-D-07 | データ層 9. 層と権限（4 表・migration・RLS・索引・seed） | db | foundation | 28 | 7.0 | 8.0 | 2 | 3 | 10 |
-| T-D-08 | データ層 10. 口座状態の出来事・失効・サポートアクセス（6 表・migration・RLS・索引 | db | foundation | 40 | 10.0 | 11.0 | 2 | 3 | 13 |
-| T-D-09 | データ層 11. 運営（9 表・migration・RLS・索引・seed） | db | foundation | 58 | 4.8 | 4.8 | 2 | 3 | 16 |
-| T-D-10 | データ層 12. 運営と顧客の間で往復するもの・自分で整えるもの（14 表・migration・RL | db | foundation | 88 | 22.0 | 23.0 | 2 | 3 | 26 |
-| T-D-11 | データ層 13. 取り込み・正規連携・招待・持ち出し・添付（5 表・migration・RLS・索引 | db | foundation | 34 | 2.8 | 2.8 | 3 | 3 | 12 |
-| T-D-12 | データ層 14. スキル（4 表・migration・RLS・索引・seed） | db | foundation | 28 | 2.3 | 2.3 | 3 | 3 | 10 |
+| T-D-07 | データ層 7. マスタ（2 表・migration・RLS・索引・seed） | db | foundation | 16 | 1.3 | 1.3 | 2 | 3 | 8 |
+| T-D-08 | データ層 9. 層と権限（4 表・migration・RLS・索引・seed） | db | foundation | 28 | 7.0 | 8.0 | 2 | 3 | 10 |
+| T-D-09 | データ層 10. 口座状態の出来事・失効・サポートアクセス（6 表・migration・RLS・索引 | db | foundation | 40 | 10.0 | 11.0 | 2 | 3 | 13 |
+| T-D-10 | データ層 11. 運営（9 表・migration・RLS・索引・seed） | db | foundation | 58 | 4.8 | 4.8 | 2 | 3 | 16 |
+| T-D-11 | データ層 12. 運営と顧客の間で往復するもの・自分で整えるもの（14 表・migration・RL | db | foundation | 88 | 22.0 | 23.0 | 3 | 3 | 26 |
+| T-D-12 | データ層 13. 取り込み・正規連携・招待・持ち出し・添付（5 表・migration・RLS・索引 | db | foundation | 34 | 2.8 | 2.8 | 3 | 3 | 12 |
+| T-D-13 | データ層 14. スキル（4 表・migration・RLS・索引・seed） | db | foundation | 28 | 2.3 | 2.3 | 3 | 3 | 10 |
 
 ### Group V2
 
@@ -486,77 +487,89 @@
 - L1 行 10（['RLS-D06-001', 'RLS-D06-002', 'RLS-D06-003'] …）／ L2 —
 - audit: 07_tasks/audit/T-D-06.md
 
-### T-D-07 データ層 9. 層と権限（4 表・migration・RLS・索引・seed）
+### T-D-07 データ層 7. マスタ（2 表・migration・RLS・索引・seed）
+
+- group D / layer foundation / phase 2_data / wave 2 / Human 16 h・AI 1.3 h・wall-clock 1.3 h
+- 行為 — / 画面 — / 表 session_kinds revoke_reasons / 関門 C2
+- 依存 T-F-01 T-F-02 T-F-03
+- 根拠（逐語）：D-010「製品の背骨。会社モデル(目標・台帳定義・担当業務・組織・ポリシー・記憶)を1つの定義に。画面もAI社員も自動実行もこの定」
+- 触るファイル：packages/db/migrations/0107_7..sql (new)、packages/db/policies/session_kinds.sql (new)、packages/db/schema.ts (modify)
+- AC（Tier 1）：UBIQUITOUS: 表 session_kinds, revoke_reasons が ER 図 §7. マスタ の列・型・関係どおりに存在し、全表に RL
+- AC（Tier 2）：UNWANTED: IF 他テナントの行を SELECT/UPDATE しようとしたら 0 行／403 で副作用が起きない（session_kinds_tena ／ UBIQUITOUS: session_kinds_all_read ／ UBIQUITOUS: session_kinds_ops_write
+- L1 行 8（['RLS-D07-001', 'RLS-D07-002', 'RLS-D07-003'] …）／ L2 —
+- audit: 07_tasks/audit/T-D-07.md
+
+### T-D-08 データ層 9. 層と権限（4 表・migration・RLS・索引・seed）
 
 - group D / layer foundation / phase 2_data / wave 2 / Human 28 h・AI 7.0 h・wall-clock 8.0 h
 - 行為 — / 画面 — / 表 layers target_kinds abilities permissions / 関門 C2
 - 依存 T-F-01 T-F-02 T-F-03
 - 根拠（逐語）：D-073「自分のもの（個人の範囲・自主目標・自分のAIの記憶・自分が作ったAI社員）は権限なしで作る・直す・消す。それ以外は権限の」
-- 触るファイル：packages/db/migrations/0107_9..sql (new)、packages/db/policies/layers.sql (new)、packages/db/schema.ts (modify)
+- 触るファイル：packages/db/migrations/0108_9..sql (new)、packages/db/policies/layers.sql (new)、packages/db/schema.ts (modify)
 - AC（Tier 1）：UBIQUITOUS: 表 layers, target_kinds, abilities, permissions が ER 図 §9. 層と権限 の列・型・
 - AC（Tier 2）：UNWANTED: IF 他テナントの行を SELECT/UPDATE しようとしたら 0 行／403 で副作用が起きない（layers_tenant_read ／ UBIQUITOUS: layers_tenant_read ／ UBIQUITOUS: layers_permission_write
-- L1 行 10（['RLS-D07-001', 'RLS-D07-002', 'RLS-D07-003'] …）／ L2 —
-- audit: 07_tasks/audit/T-D-07.md
+- L1 行 10（['RLS-D08-001', 'RLS-D08-002', 'RLS-D08-003'] …）／ L2 —
+- audit: 07_tasks/audit/T-D-08.md
 
-### T-D-08 データ層 10. 口座状態の出来事・失効・サポートアクセス（6 表・migration・RLS・索引・seed）
+### T-D-09 データ層 10. 口座状態の出来事・失効・サポートアクセス（6 表・migration・RLS・索引・seed）
 
 - group D / layer foundation / phase 2_data / wave 2 / Human 40 h・AI 10.0 h・wall-clock 11.0 h
 - 行為 — / 画面 — / 表 account_events account_event_items sessions support_access_grants retention_holds erasure_certificates / 関門 C2
 - 依存 T-F-01 T-F-02 T-F-03
 - 根拠（逐語）：D-074「人が抜ける（無効化・退会）と会社が退会するときに、flow.json の全オブジェクトで何が起きるかを 1 つの表で決め」 ／ D-076「全体見直し（01_hearing/全体見直し_20260915.md）の §2・§3・§6 を決定にする。顧客側に 自分」
-- 触るファイル：packages/db/migrations/0108_10.sql (new)、packages/db/policies/account_events.sql (new)、packages/db/schema.ts (modify)
+- 触るファイル：packages/db/migrations/0109_10.sql (new)、packages/db/policies/account_events.sql (new)、packages/db/schema.ts (modify)
 - AC（Tier 1）：UBIQUITOUS: 表 account_events, account_event_items, sessions, support_access_gran
 - AC（Tier 2）：UNWANTED: IF 他テナントの行を SELECT/UPDATE しようとしたら 0 行／403 で副作用が起きない（account_events_ten ／ UBIQUITOUS: account_events_tenant_read ／ UBIQUITOUS: account_events_self_only_write
-- L1 行 13（['RLS-D08-001', 'RLS-D08-002', 'RLS-D08-003'] …）／ L2 —
-- audit: 07_tasks/audit/T-D-08.md
+- L1 行 13（['RLS-D09-001', 'RLS-D09-002', 'RLS-D09-003'] …）／ L2 —
+- audit: 07_tasks/audit/T-D-09.md
 
-### T-D-09 データ層 11. 運営（9 表・migration・RLS・索引・seed）
+### T-D-10 データ層 11. 運営（9 表・migration・RLS・索引・seed）
 
 - group D / layer foundation / phase 2_data / wave 2 / Human 58 h・AI 4.8 h・wall-clock 4.8 h
 - 行為 — / 画面 — / 表 distributions distribution_versions tenant_distributions service_registry_versions service_requests review_requests / 関門 C2
 - 依存 T-F-01 T-F-02 T-F-03
 - 根拠（逐語）：D-027「テンプレは自動共有しない。運営配布＋各社作成＋明示的な公開のみ。最初の1社のものが自動でテンプレになるという記述は破棄」 ／ D-037「AI社員の出どころは運営配布/会社作成/個人作成の3経路。託されたAI社員は使えるが定義は編集できない。個人ルールだけは」
-- 触るファイル：packages/db/migrations/0109_11.sql (new)、packages/db/policies/distributions.sql (new)、packages/db/schema.ts (modify)
+- 触るファイル：packages/db/migrations/0110_11.sql (new)、packages/db/policies/distributions.sql (new)、packages/db/schema.ts (modify)
 - AC（Tier 1）：UBIQUITOUS: 表 distributions, distribution_versions, tenant_distributions, servic
 - AC（Tier 2）：UNWANTED: IF 他テナントの行を SELECT/UPDATE しようとしたら 0 行／403 で副作用が起きない（distributions_tena ／ UBIQUITOUS: distributions_ops_all ／ UBIQUITOUS: distribution_versions_all_read
-- L1 行 16（['RLS-D09-001', 'RLS-D09-002', 'RLS-D09-003'] …）／ L2 —
-- audit: 07_tasks/audit/T-D-09.md
+- L1 行 16（['RLS-D10-001', 'RLS-D10-002', 'RLS-D10-003'] …）／ L2 —
+- audit: 07_tasks/audit/T-D-10.md
 
-### T-D-10 データ層 12. 運営と顧客の間で往復するもの・自分で整えるもの（14 表・migration・RLS・索引・seed）
+### T-D-11 データ層 12. 運営と顧客の間で往復するもの・自分で整えるもの（14 表・migration・RLS・索引・seed）
 
-- group D / layer foundation / phase 2_data / wave 2 / Human 88 h・AI 22.0 h・wall-clock 23.0 h
+- group D / layer foundation / phase 2_data / wave 3 / Human 88 h・AI 22.0 h・wall-clock 23.0 h
 - 行為 — / 画面 — / 表 inquiries notices notice_deliveries status_incidents notification_preferences notifications / 関門 C2
 - 依存 T-F-01 T-F-02 T-F-03
 - 根拠（逐語）：D-002「65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集」 ／ D-043「ネイティブアプリはレスポンシブとは別物。プッシュ通知が本質(承認待ちの通知)。段階2でPWA」
-- 触るファイル：packages/db/migrations/0110_12.sql (new)、packages/db/policies/inquiries.sql (new)、packages/db/schema.ts (modify)
+- 触るファイル：packages/db/migrations/0111_12.sql (new)、packages/db/policies/inquiries.sql (new)、packages/db/schema.ts (modify)
 - AC（Tier 1）：UBIQUITOUS: 表 inquiries, notices, notice_deliveries, status_incidents, notificat
 - AC（Tier 2）：UNWANTED: IF 他テナントの行を SELECT/UPDATE しようとしたら 0 行／403 で副作用が起きない（inquiries_tenant_r ／ UBIQUITOUS: inquiries_tenant_read ／ UBIQUITOUS: inquiries_self_only_write
-- L1 行 26（['RLS-D10-001', 'RLS-D10-002', 'RLS-D10-003'] …）／ L2 —
-- audit: 07_tasks/audit/T-D-10.md
+- L1 行 26（['RLS-D11-001', 'RLS-D11-002', 'RLS-D11-003'] …）／ L2 —
+- audit: 07_tasks/audit/T-D-11.md
 
-### T-D-11 データ層 13. 取り込み・正規連携・招待・持ち出し・添付（5 表・migration・RLS・索引・seed）
+### T-D-12 データ層 13. 取り込み・正規連携・招待・持ち出し・添付（5 表・migration・RLS・索引・seed）
 
 - group D / layer foundation / phase 2_data / wave 3 / Human 34 h・AI 2.8 h・wall-clock 2.8 h
 - 行為 — / 画面 — / 表 imports integrations invitations export_jobs attachments / 関門 C2
 - 依存 T-F-01 T-F-02 T-F-03
 - 根拠（逐語）：D-025「編集の3経路。(1)画面で直接編集=人が変える時は即反映(承認を挟まない) (2)AIに頼む(会話)=AIが変える時だけ」 ／ D-026「スコープ4層(運営/会社/部署/個人)を担当業務・ルール・テンプレ・覚えた操作・記憶すべてに同じ形で使う」
-- 触るファイル：packages/db/migrations/0111_13.sql (new)、packages/db/policies/imports.sql (new)、packages/db/schema.ts (modify)
+- 触るファイル：packages/db/migrations/0112_13.sql (new)、packages/db/policies/imports.sql (new)、packages/db/schema.ts (modify)
 - AC（Tier 1）：UBIQUITOUS: 表 imports, integrations, invitations, export_jobs, attachments が ER 
 - AC（Tier 2）：UNWANTED: IF 他テナントの行を SELECT/UPDATE しようとしたら 0 行／403 で副作用が起きない（imports_tenant_rea ／ UBIQUITOUS: imports_tenant_read ／ UBIQUITOUS: imports_permission_write
-- L1 行 12（['RLS-D11-001', 'RLS-D11-002', 'RLS-D11-003'] …）／ L2 —
-- audit: 07_tasks/audit/T-D-11.md
+- L1 行 12（['RLS-D12-001', 'RLS-D12-002', 'RLS-D12-003'] …）／ L2 —
+- audit: 07_tasks/audit/T-D-12.md
 
-### T-D-12 データ層 14. スキル（4 表・migration・RLS・索引・seed）
+### T-D-13 データ層 14. スキル（4 表・migration・RLS・索引・seed）
 
 - group D / layer foundation / phase 2_data / wave 3 / Human 28 h・AI 2.3 h・wall-clock 2.3 h
 - 行為 — / 画面 — / 表 skills skill_versions skill_test_runs skill_attachments / 関門 C2
 - 依存 T-F-01 T-F-02 T-F-03
 - 根拠（逐語）：D-078「§30（構築メタスキル群）と §63（目標スキル）は決めたのに、運営がスキルを構築・アップロード・テスト・版管理・配布し」 ／ D-080「D-078 は器（保存・版・装着）。ここで中身を決める。スキルは SKILL.md ＋ references ＋ eva」
-- 触るファイル：packages/db/migrations/0112_14.sql (new)、packages/db/policies/skills.sql (new)、packages/db/schema.ts (modify)
+- 触るファイル：packages/db/migrations/0113_14.sql (new)、packages/db/policies/skills.sql (new)、packages/db/schema.ts (modify)
 - AC（Tier 1）：UBIQUITOUS: 表 skills, skill_versions, skill_test_runs, skill_attachments が ER 図 
 - AC（Tier 2）：UNWANTED: IF 他テナントの行を SELECT/UPDATE しようとしたら 0 行／403 で副作用が起きない（skills_tenant_read ／ UBIQUITOUS: skills_ops_all ／ UBIQUITOUS: skill_versions_all_read
-- L1 行 10（['RLS-D12-001', 'RLS-D12-002', 'RLS-D12-003'] …）／ L2 —
-- audit: 07_tasks/audit/T-D-12.md
+- L1 行 10（['RLS-D13-001', 'RLS-D13-002', 'RLS-D13-003'] …）／ L2 —
+- audit: 07_tasks/audit/T-D-13.md
 
 ### T-A-01 API 契約してから、自力で動く状態まで持っていきたい — データ・API・（5 endpoint）
 
@@ -574,7 +587,7 @@
 
 - group A / layer backend / phase 3_api / wave 5 / Human 26 h・AI 6.5 h・wall-clock 7.5 h
 - 行為 A03 / 画面 invite-accept / 表 members layers permissions invitations / 関門 —（モデル呼び出し）
-- 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-07 T-D-11
+- 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-08 T-D-12
 - 根拠（逐語）：D-026「スコープ4層(運営/会社/部署/個人)を担当業務・ルール・テンプレ・覚えた操作・記憶すべてに同じ形で使う」 ／ D-037「AI社員の出どころは運営配布/会社作成/個人作成の3経路。託されたAI社員は使えるが定義は編集できない。個人ルールだけは」
 - 触るファイル：apps/api/src/routes/invitations.ts (new)、packages/api/src/app.ts (modify)
 - AC（Tier 1）：UBIQUITOUS: GET /api/v1/invitations は 08_api/openapi.yaml の operation getInvitat
@@ -586,7 +599,7 @@
 
 - group A / layer backend / phase 3_api / wave 5 / Human 38 h・AI 9.5 h・wall-clock 10.5 h
 - 行為 A31 A36 A61 A74 / 画面 account member-detail members password-reset / 表 members ai_employees audit_events layers permissions invitations / 関門 C2 C6 C8
-- 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-06 T-D-07 T-D-11 T-F-02
+- 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-06 T-D-08 T-D-12 T-F-02
 - 根拠（逐語）：D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」 ／ D-053「画面は行為から導出する。画面から始めると『この画面で何をしたいか分からない』が必ず起きる。役割×用事→行為の背骨→オブジ」
 - 触るファイル：apps/api/src/routes/members.ts (new)、packages/api/src/app.ts (modify)
 - AC（Tier 1）：UBIQUITOUS: PATCH /api/v1/members/:id は 08_api/openapi.yaml の operation patchMem
@@ -598,7 +611,7 @@
 
 - group A / layer backend / phase 3_api / wave 5 / Human 62 h・AI 15.5 h・wall-clock 16.5 h
 - 行為 A02 A04 A13 A14 A20 A23 A25 A49 A55 / 画面 clone-chat goal-allocation login mfa-setup my-progress today verify-email / 表 members clones goals goal_allocations goal_contributions goal_versions / 関門 C2 C3 C8
-- 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-02 T-D-05 T-D-06 T-D-07
+- 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-02 T-D-05 T-D-06 T-D-08
 - 根拠（逐語）：D-002「65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集」 ／ D-003「スキルは堀ではない。堀は『閉じたループ』(目標→逆算→配布→実行→測定→再計画)と会社モデル」
 - 触るファイル：apps/api/src/routes/conversations.ts (new)、apps/api/src/routes/goal_allocations.ts (new)、apps/api/src/routes/members.ts (new)、apps/api/src/routes/messages.ts (new)
 - AC（Tier 1）：UBIQUITOUS: GET /api/v1/conversations は 08_api/openapi.yaml の operation getConve ／ UBIQUITOUS: GET /api/v1/goal_allocations は 08_api/openapi.yaml の operation getGo
@@ -634,7 +647,7 @@
 
 - group A / layer backend / phase 3_api / wave 5 / Human 85 h・AI 21.2 h・wall-clock 22.2 h
 - 行為 A11 A15 A16 A33 A34 A37 A38 A46 A53 A59 A66 A73 A79 / 画面 ai-activity ai-staff ai-staff-detail approvals audit clone-thread onboard-testrun ops-audit ops-catalog / 表 members clones ai_employees duties duty_versions approvals / 関門 C1 C2 C6
-- 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-04 T-D-05 T-D-06 T-D-09
+- 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-04 T-D-05 T-D-06 T-D-10
 - 根拠（逐語）：D-003「スキルは堀ではない。堀は『閉じたループ』(目標→逆算→配布→実行→測定→再計画)と会社モデル」 ／ D-008「ペルソナ1=高本本人。一人で受託・キャパ限界・人に任せたい・目標は決めているだけで実行が回らない」
 - 触るファイル：apps/api/src/routes/action_runs.ts (new)、apps/api/src/routes/ai_employees.ts (new)、apps/api/src/routes/approvals.ts (new)、apps/api/src/routes/audit_events.ts (new)
 - AC（Tier 1）：UBIQUITOUS: GET /api/v1/action_runs は 08_api/openapi.yaml の operation getActionR ／ UBIQUITOUS: GET /api/v1/ai_employees は 08_api/openapi.yaml の operation getAiEmpl
@@ -646,7 +659,7 @@
 
 - group A / layer backend / phase 3_api / wave 5 / Human 85 h・AI 21.2 h・wall-clock 22.2 h
 - 行為 A35 A50 A57 / 画面 policies tasks / 表 goals goal_versions tasks task_handovers policies service_registry / 関門 C2 C3 C6
-- 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-02 T-D-05 T-D-09 T-F-02 T-F-03
+- 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-02 T-D-05 T-D-10 T-F-02 T-F-03
 - 根拠（逐語）：D-003「スキルは堀ではない。堀は『閉じたループ』(目標→逆算→配布→実行→測定→再計画)と会社モデル」 ／ D-008「ペルソナ1=高本本人。一人で受託・キャパ限界・人に任せたい・目標は決めているだけで実行が回らない」
 - 触るファイル：apps/api/src/routes/policies.ts (new)、apps/api/src/routes/tasks.ts (new)、packages/api/src/app.ts (modify)
 - AC（Tier 1）：UBIQUITOUS: PATCH /api/v1/policies/:id は 08_api/openapi.yaml の operation patchPo ／ UBIQUITOUS: POST /api/v1/tasks は 08_api/openapi.yaml の operation postTasks どおりの入
@@ -694,7 +707,7 @@
 
 - group A / layer backend / phase 3_api / wave 6 / Human 90 h・AI 22.5 h・wall-clock 23.5 h
 - 行為 A16 A31 A33 A36 A37 A38 A42 A46 A53 A59 A61 A62 A73 A74 A79 A81 / 画面 account account-close ai-activity ai-staff ai-staff-detail audit clone-thread member-detail members ops-audit ops-catalog password-reset / 表 members clones ai_employees duties duty_versions approvals / 関門 C2 C6 C8
-- 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-04 T-D-05 T-D-06 T-D-07
+- 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-04 T-D-05 T-D-06 T-D-08
 - 根拠（逐語）：D-003「スキルは堀ではない。堀は『閉じたループ』(目標→逆算→配布→実行→測定→再計画)と会社モデル」 ／ D-004「LLMは顧客のサブスク内(Bridge)が既定。APIは顧客負担。運営マネージドは既定OFFの管理者トグル」
 - 触るファイル：apps/api/src/routes/ai_employees.ts (new)、apps/api/src/routes/approvals.ts (new)、apps/api/src/routes/audit_events.ts (new)、apps/api/src/routes/members.ts (new)
 - AC（Tier 1）：UBIQUITOUS: GET /api/v1/ai_employees は 08_api/openapi.yaml の operation getAiEmpl ／ UBIQUITOUS: PATCH /api/v1/ai_employees/:id は 08_api/openapi.yaml の operation pat
@@ -754,7 +767,7 @@
 
 - group A / layer backend / phase 3_api / wave 6 / Human 152 h・AI 38.0 h・wall-clock 39.0 h
 - 行為 A43 A60 A64 A70 / 画面 ops-home ops-support ops-tenant / 表 tenants goals conversations inquiries plans plan_versions / 関門 C2 C6
-- 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-02 T-D-06 T-D-10 T-F-02
+- 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-02 T-D-06 T-D-11 T-F-02
 - 根拠（逐語）：D-030「構築メタスキル群は運営の資産で顧客に見えない。会社モデル構築・担当業務の定義・台帳の設計・目標の分解・改善提案・自分のA」 ／ D-037「AI社員の出どころは運営配布/会社作成/個人作成の3経路。託されたAI社員は使えるが定義は編集できない。個人ルールだけは」
 - 触るファイル：apps/api/src/routes/inquiries.ts (new)、apps/api/src/routes/plans.ts (new)、packages/api/src/app.ts (modify)
 - AC（Tier 1）：UBIQUITOUS: POST /api/v1/inquiries は 08_api/openapi.yaml の operation postInquiri ／ UBIQUITOUS: PATCH /api/v1/inquiries/:id は 08_api/openapi.yaml の operation patchI
@@ -766,7 +779,7 @@
 
 - group A / layer backend / phase 3_api / wave 6 / Human 104 h・AI 26.0 h・wall-clock 27.0 h
 - 行為 A67 A68 A69 / 画面 billing inquiry notices / 表 conversations audit_events ops_audit_events inquiries notices notice_deliveries / 関門 C2 C6
-- 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-06 T-D-09 T-D-10 T-F-02 T-F-03
+- 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-06 T-D-10 T-D-11 T-F-02 T-F-03
 - 根拠（逐語）：D-002「65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集」 ／ D-037「AI社員の出どころは運営配布/会社作成/個人作成の3経路。託されたAI社員は使えるが定義は編集できない。個人ルールだけは」
 - 触るファイル：apps/api/src/routes/inquiries.ts (new)、apps/api/src/routes/notices.ts (new)、apps/api/src/routes/plans.ts (new)、packages/api/src/app.ts (modify)
 - AC（Tier 1）：UBIQUITOUS: GET /api/v1/inquiries は 08_api/openapi.yaml の operation getInquiries ／ UBIQUITOUS: PATCH /api/v1/notices/:id は 08_api/openapi.yaml の operation patchNot
@@ -778,7 +791,7 @@
 
 - group A / layer backend / phase 3_api / wave 6 / Human 116 h・AI 29.0 h・wall-clock 30.0 h
 - 行為 A33 A38 A70 A71 A72 A73 / 画面 audit ops-audit ops-billing ops-notices ops-support / 表 tenants members goals approvals conversations audit_events / 関門 C2 C6
-- 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-02 T-D-05 T-D-06 T-D-09
+- 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-02 T-D-05 T-D-06 T-D-10
 - 根拠（逐語）：D-002「65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集」 ／ D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」
 - 触るファイル：apps/api/src/routes/audit_events.ts (new)、apps/api/src/routes/inquiries.ts (new)、apps/api/src/routes/invoices.ts (new)、apps/api/src/routes/notices.ts (new)
 - AC（Tier 1）：UBIQUITOUS: GET /api/v1/audit_events は 08_api/openapi.yaml の operation getAuditE ／ UBIQUITOUS: POST /api/v1/inquiries は 08_api/openapi.yaml の operation postInquiri
@@ -802,7 +815,7 @@
 
 - group A / layer backend / phase 3_api / wave 7 / Human 98 h・AI 8.2 h・wall-clock 8.2 h
 - 行為 A37 A46 A53 A59 A78 A79 A80 / 画面 ai-activity ai-staff ai-staff-detail ops-catalog ops-services ops-skills / 表 members clones ai_employees duties duty_versions policies / 関門 C2 C4 C6
-- 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-04 T-D-05 T-D-09 T-D-12
+- 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-04 T-D-05 T-D-10 T-D-13
 - 根拠（逐語）：D-030「構築メタスキル群は運営の資産で顧客に見えない。会社モデル構築・担当業務の定義・台帳の設計・目標の分解・改善提案・自分のA」 ／ D-037「AI社員の出どころは運営配布/会社作成/個人作成の3経路。託されたAI社員は使えるが定義は編集できない。個人ルールだけは」
 - 触るファイル：apps/api/src/routes/ai_employees.ts (new)、apps/api/src/routes/service_registry.ts (new)、apps/api/src/routes/skills.ts (new)、packages/api/src/app.ts (modify)
 - AC（Tier 1）：UBIQUITOUS: GET /api/v1/ai_employees は 08_api/openapi.yaml の operation getAiEmpl ／ UBIQUITOUS: PATCH /api/v1/service_registry/:id は 08_api/openapi.yaml の operation
@@ -814,7 +827,7 @@
 
 - group A / layer backend / phase 3_api / wave 7 / Human 155 h・AI 38.8 h・wall-clock 39.8 h
 - 行為 A63 A64 A65 / 画面 ops-audit ops-review ops-tenant / 表 members duties duty_versions artifacts audit_events distributions / 関門 C2
-- 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-04 T-D-06 T-D-09 T-D-10
+- 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-04 T-D-06 T-D-10 T-D-11
 - 根拠（逐語）：D-010「製品の背骨。会社モデル(目標・台帳定義・担当業務・組織・ポリシー・記憶)を1つの定義に。画面もAI社員も自動実行もこの定」 ／ D-019「実装順序。Bridge(万能実行器)を最初に作る」
 - 触るファイル：apps/api/src/routes/audit_events.ts (new)、apps/api/src/routes/distributions.ts (new)、apps/api/src/routes/plans.ts (new)、packages/api/src/app.ts (modify)
 - AC（Tier 1）：UBIQUITOUS: PATCH /api/v1/audit_events/:id は 08_api/openapi.yaml の operation pat ／ UBIQUITOUS: POST /api/v1/distributions は 08_api/openapi.yaml の operation postDis
@@ -826,7 +839,7 @@
 
 - group A / layer backend / phase 3_api / wave 7 / Human 74 h・AI 6.2 h・wall-clock 6.2 h
 - 行為 A37 A46 A53 A59 A60 A79 / 画面 ai-activity ai-staff ai-staff-detail ops-catalog ops-home / 表 members clones ai_employees duties duty_versions plans / 関門 —（モデル呼び出し）
-- 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-04 T-D-10
+- 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-04 T-D-11
 - 根拠（逐語）：D-026「スコープ4層(運営/会社/部署/個人)を担当業務・ルール・テンプレ・覚えた操作・記憶すべてに同じ形で使う」 ／ D-027「テンプレは自動共有しない。運営配布＋各社作成＋明示的な公開のみ。最初の1社のものが自動でテンプレになるという記述は破棄」
 - 触るファイル：apps/api/src/routes/ai_employees.ts (new)、apps/api/src/routes/plans.ts (new)、packages/api/src/app.ts (modify)
 - AC（Tier 1）：UBIQUITOUS: GET /api/v1/ai_employees は 08_api/openapi.yaml の operation getAiEmpl ／ UBIQUITOUS: GET /api/v1/plans は 08_api/openapi.yaml の operation getPlans どおりの入出力

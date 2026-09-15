@@ -21,6 +21,8 @@
     "./repository": "./src/repository.ts",
     "./pool": "./src/pool.ts",
     "./id": "./src/id.ts",
-    "./matrix": "./src/matrix.ts"
+    "./matrix": "./src/matrix.ts",
+    "./seeds": "./src/seeds.ts",
+    "./ci": "./src/ci.ts"
   }
 }

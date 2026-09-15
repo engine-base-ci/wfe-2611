@@ -14,10 +14,10 @@
   "D-036.4"
  ],
  "summary": {
-  "total_tasks": 158,
+  "total_tasks": 159,
   "by_group": {
    "A": 23,
-   "D": 12,
+   "D": 13,
    "F": 17,
    "I": 22,
    "S": 15,
@@ -27,19 +27,19 @@
   },
   "by_category": {
    "backend": 23,
-   "db": 18,
+   "db": 19,
    "frontend": 64,
    "infra": 11,
    "spec": 20,
    "test": 22
   },
   "by_label": {
-   "NEW": 158
+   "NEW": 159
   },
   "by_deliverable_layer": {
    "backend": 23,
    "content": 15,
-   "foundation": 29,
+   "foundation": 30,
    "integration": 18,
    "polish": 4,
    "spec": 5,
@@ -47,7 +47,7 @@
   },
   "by_phase": {
    "1_foundation": 17,
-   "2_data": 12,
+   "2_data": 13,
    "3_api": 23,
    "4_ui_foundation": 6,
    "5_ui_parallel": 58,
@@ -62,16 +62,16 @@
     "billing-setup"
    ]
   },
-  "total_estimate_hours_human": 4838.0,
-  "total_estimate_hours_ai_compute": 847.5,
+  "total_estimate_hours_human": 4854.0,
+  "total_estimate_hours_ai_compute": 848.8,
   "human_review_total_h": 49.0,
-  "total_wall_clock_h_ai_parallel": 206.9,
+  "total_wall_clock_h_ai_parallel": 221.1,
   "parallel_capacity": 10,
-  "calendar_days_ai": 35,
-  "calendar_days_human": 605,
-  "total_estimate_hours": 896.5,
-  "total_estimate_sessions": 300,
-  "qa_rows_total": 3139,
+  "calendar_days_ai": 37,
+  "calendar_days_human": 607,
+  "total_estimate_hours": 897.8,
+  "total_estimate_sessions": 301,
+  "qa_rows_total": 3147,
   "journeys": 9
  },
  "waves": [
@@ -128,21 +128,22 @@
     "T-D-10"
    ],
    "parallel": 10,
-   "wall_clock_h_ai": 23.5,
-   "estimate_hours_human": 484,
-   "estimate_hours_ai_compute": 76.8
+   "wall_clock_h_ai": 17.5,
+   "estimate_hours_human": 412,
+   "estimate_hours_ai_compute": 56.1
   },
   {
    "wave": 3,
    "group": "D",
    "tasks": [
     "T-D-11",
-    "T-D-12"
+    "T-D-12",
+    "T-D-13"
    ],
-   "parallel": 2,
-   "wall_clock_h_ai": 3.3,
-   "estimate_hours_human": 62,
-   "estimate_hours_ai_compute": 5.1
+   "parallel": 3,
+   "wall_clock_h_ai": 23.5,
+   "estimate_hours_human": 150,
+   "estimate_hours_ai_compute": 27.1
   },
   {
    "wave": 4,
@@ -608,10 +609,10 @@
     "E-001",
     "E-002",
     "E-004",
-    "E-042",
-    "E-043",
     "E-044",
-    "E-045"
+    "E-045",
+    "E-046",
+    "E-047"
    ],
    "acts": [],
    "legacy_task_id": null,
@@ -795,10 +796,10 @@
     "E-001",
     "E-002",
     "E-004",
-    "E-042",
-    "E-043",
     "E-044",
-    "E-045"
+    "E-045",
+    "E-046",
+    "E-047"
    ],
    "acts": [],
    "legacy_task_id": null,
@@ -980,9 +981,9 @@
    "screen_ids": [],
    "entity_ids": [
     "E-041",
-    "E-059",
-    "E-060",
-    "E-078"
+    "E-061",
+    "E-062",
+    "E-080"
    ],
    "acts": [],
    "legacy_task_id": null,
@@ -1166,8 +1167,8 @@
    "screen_ids": [],
    "entity_ids": [
     "E-004",
-    "E-048",
-    "E-077"
+    "E-050",
+    "E-079"
    ],
    "acts": [],
    "legacy_task_id": null,
@@ -1346,8 +1347,8 @@
    "screen_ids": [],
    "entity_ids": [
     "E-004",
-    "E-048",
-    "E-077"
+    "E-050",
+    "E-079"
    ],
    "acts": [],
    "legacy_task_id": null,
@@ -3242,7 +3243,7 @@
    ],
    "screen_ids": [],
    "entity_ids": [
-    "E-074"
+    "E-076"
    ],
    "acts": [],
    "legacy_task_id": null,
@@ -4775,7 +4776,7 @@
   },
   {
    "id": "T-D-07",
-   "title": "データ層 9. 層と権限（4 表・migration・RLS・索引・seed）",
+   "title": "データ層 7. マスタ（2 表・migration・RLS・索引・seed）",
    "category": "db",
    "label": "NEW",
    "feature_id": null,
@@ -4783,9 +4784,7 @@
    "screen_ids": [],
    "entity_ids": [
     "E-042",
-    "E-043",
-    "E-044",
-    "E-045"
+    "E-043"
    ],
    "acts": [],
    "legacy_task_id": null,
@@ -4813,13 +4812,194 @@
     "anthropic / openai SDK（関門の外）"
    ],
    "files_changed": [
-    "packages/db/migrations/0107_9..sql (new)",
+    "packages/db/migrations/0107_7..sql (new)",
+    "packages/db/policies/session_kinds.sql (new)",
+    "packages/db/schema.ts (modify)"
+   ],
+   "files_changed_predicted": {
+    "new": [
+     "packages/db/migrations/0107_7..sql",
+     "packages/db/policies/session_kinds.sql",
+     "packages/db/seed/session_kinds.ts"
+    ],
+    "modify": [
+     "packages/db/schema.ts"
+    ],
+    "shared_read": [
+     "03_architecture/ER図.md",
+     "07_functional/entities.json"
+    ],
+    "forbidden": [
+     "apps/**",
+     "packages/api/**"
+    ]
+   },
+   "acceptance_criteria": {
+    "structural": [
+     "UBIQUITOUS: 表 session_kinds, revoke_reasons が ER 図 §7. マスタ の列・型・関係どおりに存在し、全表に RLS が定義されている（RLS 未定義の表は CI で作れない）"
+    ],
+    "functional": [
+     "UNWANTED: IF 他テナントの行を SELECT/UPDATE しようとしたら 0 行／403 で副作用が起きない（session_kinds_tenant_read）",
+     "UBIQUITOUS: session_kinds_all_read",
+     "UBIQUITOUS: session_kinds_ops_write",
+     "UBIQUITOUS: revoke_reasons_all_read",
+     "UBIQUITOUS: revoke_reasons_ops_write"
+    ],
+    "regression": [
+     "pnpm test（該当パッケージ）PASS",
+     "pnpm typecheck 0 errors（触ったファイル）",
+     "coverage >= 80%（触ったファイル）",
+     "pnpm lint OK",
+     "python3 scripts/ci/layer_audit.py --run PASS",
+     "関門の迂回検出（choke-points ci_check）PASS",
+     "audit MD（07_tasks/audit/<id>.md）に impl line を記入"
+    ]
+   },
+   "access_policies_required": [
+    "session_kinds_all_read",
+    "session_kinds_ops_write",
+    "revoke_reasons_all_read",
+    "revoke_reasons_ops_write"
+   ],
+   "spec_links": [
+    "03_architecture/ER図.md",
+    "07_functional/entities.json"
+   ],
+   "audit_md_path": "07_tasks/audit/T-D-07.md",
+   "status": "todo",
+   "qa_rows": {
+    "l1": [
+     "RLS-D07-001",
+     "RLS-D07-002",
+     "RLS-D07-003",
+     "RLS-D07-004",
+     "RLS-D07-005",
+     "RLS-D07-006",
+     "RLS-D07-007",
+     "RLS-D07-008"
+    ],
+    "l2_flows": []
+   },
+   "test_scenarios_inline": [
+    {
+     "name": "RLS 越境",
+     "steps": [
+      "テナント A でログイン",
+      "テナント B の id で GET"
+     ],
+     "expected": "0 行"
+    }
+   ],
+   "source": [
+    "D-010"
+   ],
+   "decision_summaries": [
+    {
+     "id": "D-010",
+     "summary": "製品の背骨。会社モデル(目標・台帳定義・担当業務・組織・ポリシー・記憶)を1つの定義に。画面もAI社員も自動実行もこの定義だけを読む。AIが会社の構造を理解して動く"
+    }
+   ],
+   "critical": false,
+   "why": "",
+   "acceptance_criteria_inline": {
+    "tier_1_structural": [
+     "UBIQUITOUS: 表 session_kinds, revoke_reasons が ER 図 §7. マスタ の列・型・関係どおりに存在し、全表に RLS が定義されている（RLS 未定義の表は CI で作れない）"
+    ],
+    "tier_2_functional": [
+     {
+      "type": "UNWANTED",
+      "text": "UNWANTED: IF 他テナントの行を SELECT/UPDATE しようとしたら 0 行／403 で副作用が起きない（session_kinds_tenant_read）",
+      "critical": false
+     },
+     {
+      "type": "UBIQUITOUS",
+      "text": "UBIQUITOUS: session_kinds_all_read",
+      "critical": false
+     },
+     {
+      "type": "UBIQUITOUS",
+      "text": "UBIQUITOUS: session_kinds_ops_write",
+      "critical": false
+     },
+     {
+      "type": "UBIQUITOUS",
+      "text": "UBIQUITOUS: revoke_reasons_all_read",
+      "critical": false
+     },
+     {
+      "type": "UBIQUITOUS",
+      "text": "UBIQUITOUS: revoke_reasons_ops_write",
+      "critical": false
+     }
+    ],
+    "tier_3_regression": [
+     "pnpm test（該当パッケージ）PASS",
+     "pnpm typecheck 0 errors（触ったファイル）",
+     "coverage >= 80%（触ったファイル）",
+     "pnpm lint OK",
+     "python3 scripts/ci/layer_audit.py --run PASS",
+     "関門の迂回検出（choke-points ci_check）PASS",
+     "audit MD（07_tasks/audit/<id>.md）に impl line を記入"
+    ]
+   },
+   "estimate_hours_human": 16,
+   "estimate_hours_ai": 1.3,
+   "human_review_h": 0.0,
+   "wall_clock_h_ai": 1.3,
+   "ai_acceleration_factor": 12,
+   "blocking_dependencies_h": 0,
+   "estimate_method": "reference",
+   "estimate_confidence": "medium",
+   "estimate_hours": 1.3,
+   "estimate_sessions": 1
+  },
+  {
+   "id": "T-D-08",
+   "title": "データ層 9. 層と権限（4 表・migration・RLS・索引・seed）",
+   "category": "db",
+   "label": "NEW",
+   "feature_id": null,
+   "feature_ids": [],
+   "screen_ids": [],
+   "entity_ids": [
+    "E-044",
+    "E-045",
+    "E-046",
+    "E-047"
+   ],
+   "acts": [],
+   "legacy_task_id": null,
+   "phase": "2_data",
+   "wave": 2,
+   "group": "D",
+   "deliverable_layer": "foundation",
+   "depends_on": [
+    "T-F-01",
+    "T-F-02",
+    "T-F-03"
+   ],
+   "choke_points": [
+    "C2"
+   ],
+   "choke_points_rationale": "表と行レベル制御の作成（関門 C2 の中）",
+   "forbidden_direct_apis_reminder": [
+    "fetch",
+    "axios",
+    "undici",
+    "pg / drizzle の生クライアント（関門の外）",
+    "child_process",
+    "fs（関門の外）",
+    "nodemailer / resend（関門の外）",
+    "anthropic / openai SDK（関門の外）"
+   ],
+   "files_changed": [
+    "packages/db/migrations/0108_9..sql (new)",
     "packages/db/policies/layers.sql (new)",
     "packages/db/schema.ts (modify)"
    ],
    "files_changed_predicted": {
     "new": [
-     "packages/db/migrations/0107_9..sql",
+     "packages/db/migrations/0108_9..sql",
      "packages/db/policies/layers.sql",
      "packages/db/seed/layers.ts"
     ],
@@ -4874,20 +5054,20 @@
     "03_architecture/ER図.md",
     "07_functional/entities.json"
    ],
-   "audit_md_path": "07_tasks/audit/T-D-07.md",
+   "audit_md_path": "07_tasks/audit/T-D-08.md",
    "status": "todo",
    "qa_rows": {
     "l1": [
-     "RLS-D07-001",
-     "RLS-D07-002",
-     "RLS-D07-003",
-     "RLS-D07-004",
-     "RLS-D07-005",
-     "RLS-D07-006",
-     "RLS-D07-007",
-     "RLS-D07-008",
-     "RLS-D07-009",
-     "RLS-D07-010"
+     "RLS-D08-001",
+     "RLS-D08-002",
+     "RLS-D08-003",
+     "RLS-D08-004",
+     "RLS-D08-005",
+     "RLS-D08-006",
+     "RLS-D08-007",
+     "RLS-D08-008",
+     "RLS-D08-009",
+     "RLS-D08-010"
     ],
     "l2_flows": []
    },
@@ -4978,7 +5158,7 @@
    "estimate_sessions": 2
   },
   {
-   "id": "T-D-08",
+   "id": "T-D-09",
    "title": "データ層 10. 口座状態の出来事・失効・サポートアクセス（6 表・migration・RLS・索引・seed）",
    "category": "db",
    "label": "NEW",
@@ -4986,12 +5166,12 @@
    "feature_ids": [],
    "screen_ids": [],
    "entity_ids": [
-    "E-046",
-    "E-047",
     "E-048",
     "E-049",
     "E-050",
-    "E-051"
+    "E-051",
+    "E-052",
+    "E-053"
    ],
    "acts": [],
    "legacy_task_id": null,
@@ -5019,13 +5199,13 @@
     "anthropic / openai SDK（関門の外）"
    ],
    "files_changed": [
-    "packages/db/migrations/0108_10.sql (new)",
+    "packages/db/migrations/0109_10.sql (new)",
     "packages/db/policies/account_events.sql (new)",
     "packages/db/schema.ts (modify)"
    ],
    "files_changed_predicted": {
     "new": [
-     "packages/db/migrations/0108_10.sql",
+     "packages/db/migrations/0109_10.sql",
      "packages/db/policies/account_events.sql",
      "packages/db/seed/account_events.ts"
     ],
@@ -5089,23 +5269,23 @@
     "03_architecture/ER図.md",
     "07_functional/entities.json"
    ],
-   "audit_md_path": "07_tasks/audit/T-D-08.md",
+   "audit_md_path": "07_tasks/audit/T-D-09.md",
    "status": "todo",
    "qa_rows": {
     "l1": [
-     "RLS-D08-001",
-     "RLS-D08-002",
-     "RLS-D08-003",
-     "RLS-D08-004",
-     "RLS-D08-005",
-     "RLS-D08-006",
-     "RLS-D08-007",
-     "RLS-D08-008",
-     "RLS-D08-009",
-     "RLS-D08-010",
-     "RLS-D08-011",
-     "RLS-D08-012",
-     "RLS-D08-013"
+     "RLS-D09-001",
+     "RLS-D09-002",
+     "RLS-D09-003",
+     "RLS-D09-004",
+     "RLS-D09-005",
+     "RLS-D09-006",
+     "RLS-D09-007",
+     "RLS-D09-008",
+     "RLS-D09-009",
+     "RLS-D09-010",
+     "RLS-D09-011",
+     "RLS-D09-012",
+     "RLS-D09-013"
     ],
     "l2_flows": []
    },
@@ -5203,7 +5383,7 @@
    "estimate_sessions": 3
   },
   {
-   "id": "T-D-09",
+   "id": "T-D-10",
    "title": "データ層 11. 運営（9 表・migration・RLS・索引・seed）",
    "category": "db",
    "label": "NEW",
@@ -5211,15 +5391,15 @@
    "feature_ids": [],
    "screen_ids": [],
    "entity_ids": [
-    "E-052",
-    "E-053",
     "E-054",
     "E-055",
     "E-056",
     "E-057",
     "E-058",
     "E-059",
-    "E-060"
+    "E-060",
+    "E-061",
+    "E-062"
    ],
    "acts": [],
    "legacy_task_id": null,
@@ -5247,13 +5427,13 @@
     "anthropic / openai SDK（関門の外）"
    ],
    "files_changed": [
-    "packages/db/migrations/0109_11.sql (new)",
+    "packages/db/migrations/0110_11.sql (new)",
     "packages/db/policies/distributions.sql (new)",
     "packages/db/schema.ts (modify)"
    ],
    "files_changed_predicted": {
     "new": [
-     "packages/db/migrations/0109_11.sql",
+     "packages/db/migrations/0110_11.sql",
      "packages/db/policies/distributions.sql",
      "packages/db/seed/distributions.ts"
     ],
@@ -5319,26 +5499,26 @@
     "03_architecture/ER図.md",
     "07_functional/entities.json"
    ],
-   "audit_md_path": "07_tasks/audit/T-D-09.md",
+   "audit_md_path": "07_tasks/audit/T-D-10.md",
    "status": "todo",
    "qa_rows": {
     "l1": [
-     "RLS-D09-001",
-     "RLS-D09-002",
-     "RLS-D09-003",
-     "RLS-D09-004",
-     "RLS-D09-005",
-     "RLS-D09-006",
-     "RLS-D09-007",
-     "RLS-D09-008",
-     "RLS-D09-009",
-     "RLS-D09-010",
-     "RLS-D09-011",
-     "RLS-D09-012",
-     "RLS-D09-013",
-     "RLS-D09-014",
-     "RLS-D09-015",
-     "RLS-D09-016"
+     "RLS-D10-001",
+     "RLS-D10-002",
+     "RLS-D10-003",
+     "RLS-D10-004",
+     "RLS-D10-005",
+     "RLS-D10-006",
+     "RLS-D10-007",
+     "RLS-D10-008",
+     "RLS-D10-009",
+     "RLS-D10-010",
+     "RLS-D10-011",
+     "RLS-D10-012",
+     "RLS-D10-013",
+     "RLS-D10-014",
+     "RLS-D10-015",
+     "RLS-D10-016"
     ],
     "l2_flows": []
    },
@@ -5447,7 +5627,7 @@
    "estimate_sessions": 2
   },
   {
-   "id": "T-D-10",
+   "id": "T-D-11",
    "title": "データ層 12. 運営と顧客の間で往復するもの・自分で整えるもの（14 表・migration・RLS・索引・seed）",
    "category": "db",
    "label": "NEW",
@@ -5455,8 +5635,6 @@
    "feature_ids": [],
    "screen_ids": [],
    "entity_ids": [
-    "E-061",
-    "E-062",
     "E-063",
     "E-064",
     "E-065",
@@ -5468,12 +5646,14 @@
     "E-071",
     "E-072",
     "E-073",
-    "E-074"
+    "E-074",
+    "E-075",
+    "E-076"
    ],
    "acts": [],
    "legacy_task_id": null,
    "phase": "2_data",
-   "wave": 2,
+   "wave": 3,
    "group": "D",
    "deliverable_layer": "foundation",
    "depends_on": [
@@ -5496,13 +5676,13 @@
     "anthropic / openai SDK（関門の外）"
    ],
    "files_changed": [
-    "packages/db/migrations/0110_12.sql (new)",
+    "packages/db/migrations/0111_12.sql (new)",
     "packages/db/policies/inquiries.sql (new)",
     "packages/db/schema.ts (modify)"
    ],
    "files_changed_predicted": {
     "new": [
-     "packages/db/migrations/0110_12.sql",
+     "packages/db/migrations/0111_12.sql",
      "packages/db/policies/inquiries.sql",
      "packages/db/seed/inquiries.ts"
     ],
@@ -5588,36 +5768,36 @@
     "03_architecture/ER図.md",
     "07_functional/entities.json"
    ],
-   "audit_md_path": "07_tasks/audit/T-D-10.md",
+   "audit_md_path": "07_tasks/audit/T-D-11.md",
    "status": "todo",
    "qa_rows": {
     "l1": [
-     "RLS-D10-001",
-     "RLS-D10-002",
-     "RLS-D10-003",
-     "RLS-D10-004",
-     "RLS-D10-005",
-     "RLS-D10-006",
-     "RLS-D10-007",
-     "RLS-D10-008",
-     "RLS-D10-009",
-     "RLS-D10-010",
-     "RLS-D10-011",
-     "RLS-D10-012",
-     "RLS-D10-013",
-     "RLS-D10-014",
-     "RLS-D10-015",
-     "RLS-D10-016",
-     "RLS-D10-017",
-     "RLS-D10-018",
-     "RLS-D10-019",
-     "RLS-D10-020",
-     "RLS-D10-021",
-     "RLS-D10-022",
-     "RLS-D10-023",
-     "RLS-D10-024",
-     "RLS-D10-025",
-     "RLS-D10-026"
+     "RLS-D11-001",
+     "RLS-D11-002",
+     "RLS-D11-003",
+     "RLS-D11-004",
+     "RLS-D11-005",
+     "RLS-D11-006",
+     "RLS-D11-007",
+     "RLS-D11-008",
+     "RLS-D11-009",
+     "RLS-D11-010",
+     "RLS-D11-011",
+     "RLS-D11-012",
+     "RLS-D11-013",
+     "RLS-D11-014",
+     "RLS-D11-015",
+     "RLS-D11-016",
+     "RLS-D11-017",
+     "RLS-D11-018",
+     "RLS-D11-019",
+     "RLS-D11-020",
+     "RLS-D11-021",
+     "RLS-D11-022",
+     "RLS-D11-023",
+     "RLS-D11-024",
+     "RLS-D11-025",
+     "RLS-D11-026"
     ],
     "l2_flows": []
    },
@@ -5726,7 +5906,7 @@
    "estimate_sessions": 6
   },
   {
-   "id": "T-D-11",
+   "id": "T-D-12",
    "title": "データ層 13. 取り込み・正規連携・招待・持ち出し・添付（5 表・migration・RLS・索引・seed）",
    "category": "db",
    "label": "NEW",
@@ -5734,11 +5914,11 @@
    "feature_ids": [],
    "screen_ids": [],
    "entity_ids": [
-    "E-075",
-    "E-076",
     "E-077",
     "E-078",
-    "E-079"
+    "E-079",
+    "E-080",
+    "E-081"
    ],
    "acts": [],
    "legacy_task_id": null,
@@ -5766,13 +5946,13 @@
     "anthropic / openai SDK（関門の外）"
    ],
    "files_changed": [
-    "packages/db/migrations/0111_13.sql (new)",
+    "packages/db/migrations/0112_13.sql (new)",
     "packages/db/policies/imports.sql (new)",
     "packages/db/schema.ts (modify)"
    ],
    "files_changed_predicted": {
     "new": [
-     "packages/db/migrations/0111_13.sql",
+     "packages/db/migrations/0112_13.sql",
      "packages/db/policies/imports.sql",
      "packages/db/seed/imports.ts"
     ],
@@ -5833,22 +6013,22 @@
     "03_architecture/ER図.md",
     "07_functional/entities.json"
    ],
-   "audit_md_path": "07_tasks/audit/T-D-11.md",
+   "audit_md_path": "07_tasks/audit/T-D-12.md",
    "status": "todo",
    "qa_rows": {
     "l1": [
-     "RLS-D11-001",
-     "RLS-D11-002",
-     "RLS-D11-003",
-     "RLS-D11-004",
-     "RLS-D11-005",
-     "RLS-D11-006",
-     "RLS-D11-007",
-     "RLS-D11-008",
-     "RLS-D11-009",
-     "RLS-D11-010",
-     "RLS-D11-011",
-     "RLS-D11-012"
+     "RLS-D12-001",
+     "RLS-D12-002",
+     "RLS-D12-003",
+     "RLS-D12-004",
+     "RLS-D12-005",
+     "RLS-D12-006",
+     "RLS-D12-007",
+     "RLS-D12-008",
+     "RLS-D12-009",
+     "RLS-D12-010",
+     "RLS-D12-011",
+     "RLS-D12-012"
     ],
     "l2_flows": []
    },
@@ -5955,7 +6135,7 @@
    "estimate_sessions": 1
   },
   {
-   "id": "T-D-12",
+   "id": "T-D-13",
    "title": "データ層 14. スキル（4 表・migration・RLS・索引・seed）",
    "category": "db",
    "label": "NEW",
@@ -5963,10 +6143,10 @@
    "feature_ids": [],
    "screen_ids": [],
    "entity_ids": [
-    "E-080",
-    "E-081",
     "E-082",
-    "E-083"
+    "E-083",
+    "E-084",
+    "E-085"
    ],
    "acts": [],
    "legacy_task_id": null,
@@ -5994,13 +6174,13 @@
     "anthropic / openai SDK（関門の外）"
    ],
    "files_changed": [
-    "packages/db/migrations/0112_14.sql (new)",
+    "packages/db/migrations/0113_14.sql (new)",
     "packages/db/policies/skills.sql (new)",
     "packages/db/schema.ts (modify)"
    ],
    "files_changed_predicted": {
     "new": [
-     "packages/db/migrations/0112_14.sql",
+     "packages/db/migrations/0113_14.sql",
      "packages/db/policies/skills.sql",
      "packages/db/seed/skills.ts"
     ],
@@ -6054,20 +6234,20 @@
     "03_architecture/ER図.md",
     "07_functional/entities.json"
    ],
-   "audit_md_path": "07_tasks/audit/T-D-12.md",
+   "audit_md_path": "07_tasks/audit/T-D-13.md",
    "status": "todo",
    "qa_rows": {
     "l1": [
-     "RLS-D12-001",
-     "RLS-D12-002",
-     "RLS-D12-003",
-     "RLS-D12-004",
-     "RLS-D12-005",
-     "RLS-D12-006",
-     "RLS-D12-007",
-     "RLS-D12-008",
-     "RLS-D12-009",
-     "RLS-D12-010"
+     "RLS-D13-001",
+     "RLS-D13-002",
+     "RLS-D13-003",
+     "RLS-D13-004",
+     "RLS-D13-005",
+     "RLS-D13-006",
+     "RLS-D13-007",
+     "RLS-D13-008",
+     "RLS-D13-009",
+     "RLS-D13-010"
     ],
     "l2_flows": []
    },
@@ -6195,13 +6375,13 @@
     "E-038",
     "E-039",
     "E-041",
-    "E-042",
-    "E-045",
-    "E-048",
-    "E-067",
-    "E-068",
+    "E-044",
+    "E-047",
+    "E-050",
     "E-069",
-    "E-071"
+    "E-070",
+    "E-071",
+    "E-073"
    ],
    "acts": [
     "A01",
@@ -6233,9 +6413,9 @@
     "T-D-04",
     "T-D-05",
     "T-D-06",
-    "T-D-07",
     "T-D-08",
-    "T-D-10",
+    "T-D-09",
+    "T-D-11",
     "T-F-02",
     "T-F-03",
     "T-F-04",
@@ -6676,9 +6856,9 @@
    ],
    "entity_ids": [
     "E-004",
-    "E-042",
-    "E-045",
-    "E-077"
+    "E-044",
+    "E-047",
+    "E-079"
    ],
    "acts": [
     "A03"
@@ -6695,8 +6875,8 @@
     "T-F-04",
     "T-F-05",
     "T-D-01",
-    "T-D-07",
-    "T-D-11"
+    "T-D-08",
+    "T-D-12"
    ],
    "choke_points": [],
    "choke_points_rationale": "モデル呼び出し",
@@ -6914,9 +7094,9 @@
     "E-004",
     "E-006",
     "E-041",
-    "E-042",
-    "E-045",
-    "E-077"
+    "E-044",
+    "E-047",
+    "E-079"
    ],
    "acts": [
     "A31",
@@ -6937,8 +7117,8 @@
     "T-F-05",
     "T-D-01",
     "T-D-06",
-    "T-D-07",
-    "T-D-11",
+    "T-D-08",
+    "T-D-12",
     "T-F-02",
     "T-F-03",
     "T-F-04",
@@ -7178,8 +7358,8 @@
     "E-038",
     "E-039",
     "E-041",
-    "E-042",
-    "E-045"
+    "E-044",
+    "E-047"
    ],
    "acts": [
     "A02",
@@ -7207,7 +7387,7 @@
     "T-D-02",
     "T-D-05",
     "T-D-06",
-    "T-D-07",
+    "T-D-08",
     "T-F-02",
     "T-F-03",
     "T-F-04",
@@ -8157,9 +8337,9 @@
     "E-034",
     "E-035",
     "E-037",
-    "E-048",
-    "E-055",
-    "E-056"
+    "E-050",
+    "E-057",
+    "E-058"
    ],
    "acts": [
     "A07",
@@ -8191,8 +8371,8 @@
     "T-D-03",
     "T-D-04",
     "T-D-05",
-    "T-D-08",
     "T-D-09",
+    "T-D-10",
     "T-F-02",
     "T-F-03",
     "T-F-04",
@@ -8659,9 +8839,9 @@
     "E-034",
     "E-039",
     "E-041",
-    "E-059",
-    "E-060",
-    "E-066"
+    "E-061",
+    "E-062",
+    "E-068"
    ],
    "acts": [
     "A11",
@@ -8693,8 +8873,8 @@
     "T-D-04",
     "T-D-05",
     "T-D-06",
-    "T-D-09",
     "T-D-10",
+    "T-D-11",
     "T-F-02",
     "T-F-03",
     "T-F-04",
@@ -9185,8 +9365,8 @@
     "E-029",
     "E-032",
     "E-035",
-    "E-055",
-    "E-056"
+    "E-057",
+    "E-058"
    ],
    "acts": [
     "A35",
@@ -9206,7 +9386,7 @@
     "T-F-05",
     "T-D-02",
     "T-D-05",
-    "T-D-09",
+    "T-D-10",
     "T-F-02",
     "T-F-03",
     "T-F-04",
@@ -10906,12 +11086,12 @@
     "E-033",
     "E-039",
     "E-041",
-    "E-042",
-    "E-045",
-    "E-059",
-    "E-060",
-    "E-077",
-    "E-078"
+    "E-044",
+    "E-047",
+    "E-061",
+    "E-062",
+    "E-079",
+    "E-080"
    ],
    "acts": [
     "A16",
@@ -10946,9 +11126,9 @@
     "T-D-04",
     "T-D-05",
     "T-D-06",
-    "T-D-07",
-    "T-D-09",
-    "T-D-11",
+    "T-D-08",
+    "T-D-10",
+    "T-D-12",
     "T-F-02",
     "T-F-03",
     "T-F-04",
@@ -12227,12 +12407,12 @@
     "E-017",
     "E-033",
     "E-041",
-    "E-042",
-    "E-045",
-    "E-048",
-    "E-059",
-    "E-060",
-    "E-078"
+    "E-044",
+    "E-047",
+    "E-050",
+    "E-061",
+    "E-062",
+    "E-080"
    ],
    "acts": [
     "A02",
@@ -12262,10 +12442,10 @@
     "T-D-03",
     "T-D-05",
     "T-D-06",
-    "T-D-07",
     "T-D-08",
     "T-D-09",
-    "T-D-11",
+    "T-D-10",
+    "T-D-12",
     "T-F-02",
     "T-F-03",
     "T-F-04",
@@ -13158,11 +13338,11 @@
     "E-001",
     "E-010",
     "E-038",
-    "E-061",
-    "E-067",
-    "E-068",
+    "E-063",
     "E-069",
-    "E-071"
+    "E-070",
+    "E-071",
+    "E-073"
    ],
    "acts": [
     "A43",
@@ -13184,7 +13364,7 @@
     "T-D-01",
     "T-D-02",
     "T-D-06",
-    "T-D-10",
+    "T-D-11",
     "T-F-02",
     "T-F-03",
     "T-F-04",
@@ -13552,16 +13732,16 @@
    "entity_ids": [
     "E-038",
     "E-041",
-    "E-059",
     "E-061",
-    "E-062",
     "E-063",
     "E-064",
+    "E-065",
     "E-066",
-    "E-067",
     "E-068",
     "E-069",
-    "E-071"
+    "E-070",
+    "E-071",
+    "E-073"
    ],
    "acts": [
     "A67",
@@ -13580,8 +13760,8 @@
     "T-F-04",
     "T-F-05",
     "T-D-06",
-    "T-D-09",
     "T-D-10",
+    "T-D-11",
     "T-F-02",
     "T-F-03",
     "T-F-04",
@@ -13927,16 +14107,16 @@
     "E-033",
     "E-038",
     "E-041",
-    "E-059",
-    "E-060",
     "E-061",
     "E-062",
     "E-063",
     "E-064",
-    "E-067",
-    "E-068",
-    "E-072",
-    "E-073"
+    "E-065",
+    "E-066",
+    "E-069",
+    "E-070",
+    "E-074",
+    "E-075"
    ],
    "acts": [
     "A33",
@@ -13961,8 +14141,8 @@
     "T-D-02",
     "T-D-05",
     "T-D-06",
-    "T-D-09",
     "T-D-10",
+    "T-D-11",
     "T-F-02",
     "T-F-03",
     "T-F-04",
@@ -14355,12 +14535,12 @@
     "E-035",
     "E-037",
     "E-041",
-    "E-042",
-    "E-045",
-    "E-055",
-    "E-056",
-    "E-077",
-    "E-079"
+    "E-044",
+    "E-047",
+    "E-057",
+    "E-058",
+    "E-079",
+    "E-081"
    ],
    "acts": [
     "A31",
@@ -14388,9 +14568,9 @@
     "T-D-04",
     "T-D-05",
     "T-D-06",
-    "T-D-07",
-    "T-D-09",
-    "T-D-11",
+    "T-D-08",
+    "T-D-10",
+    "T-D-12",
     "T-F-02",
     "T-F-03",
     "T-F-04",
@@ -14794,12 +14974,12 @@
     "E-023",
     "E-032",
     "E-035",
-    "E-055",
-    "E-056",
-    "E-080",
-    "E-081",
+    "E-057",
+    "E-058",
     "E-082",
-    "E-083"
+    "E-083",
+    "E-084",
+    "E-085"
    ],
    "acts": [
     "A37",
@@ -14824,8 +15004,8 @@
     "T-D-01",
     "T-D-04",
     "T-D-05",
-    "T-D-09",
-    "T-D-12",
+    "T-D-10",
+    "T-D-13",
     "T-F-02",
     "T-F-03",
     "T-F-04",
@@ -15179,13 +15359,13 @@
     "E-023",
     "E-040",
     "E-041",
-    "E-052",
-    "E-059",
-    "E-060",
-    "E-067",
-    "E-068",
+    "E-054",
+    "E-061",
+    "E-062",
     "E-069",
-    "E-071"
+    "E-070",
+    "E-071",
+    "E-073"
    ],
    "acts": [
     "A63",
@@ -15206,8 +15386,8 @@
     "T-D-01",
     "T-D-04",
     "T-D-06",
-    "T-D-09",
     "T-D-10",
+    "T-D-11",
     "T-F-02",
     "T-F-03",
     "T-F-04",
@@ -15540,10 +15720,10 @@
     "E-006",
     "E-022",
     "E-023",
-    "E-067",
-    "E-068",
     "E-069",
-    "E-071"
+    "E-070",
+    "E-071",
+    "E-073"
    ],
    "acts": [
     "A37",
@@ -15566,7 +15746,7 @@
     "T-F-05",
     "T-D-01",
     "T-D-04",
-    "T-D-10"
+    "T-D-11"
    ],
    "choke_points": [],
    "choke_points_rationale": "モデル呼び出し",
@@ -16815,11 +16995,11 @@
     "signup"
    ],
    "entity_ids": [
-    "E-067",
-    "E-068",
     "E-069",
+    "E-070",
     "E-071",
-    "E-070"
+    "E-073",
+    "E-072"
    ],
    "acts": [
     "A01"
@@ -17059,8 +17239,8 @@
    ],
    "entity_ids": [
     "E-004",
-    "E-045",
-    "E-042"
+    "E-047",
+    "E-044"
    ],
    "acts": [
     "A02"
@@ -17295,10 +17475,10 @@
     "invite-accept"
    ],
    "entity_ids": [
-    "E-077",
+    "E-079",
     "E-004",
-    "E-045",
-    "E-042"
+    "E-047",
+    "E-044"
    ],
    "acts": [
     "A03"
@@ -17539,11 +17719,11 @@
    ],
    "entity_ids": [
     "E-004",
-    "E-045",
-    "E-042",
+    "E-047",
+    "E-044",
     "E-041",
-    "E-059",
-    "E-060"
+    "E-061",
+    "E-062"
    ],
    "acts": [
     "A04"
@@ -17780,8 +17960,8 @@
    ],
    "entity_ids": [
     "E-004",
-    "E-045",
-    "E-042"
+    "E-047",
+    "E-044"
    ],
    "acts": [
     "A13"
@@ -18038,11 +18218,11 @@
    ],
    "entity_ids": [
     "E-004",
-    "E-045",
-    "E-042",
+    "E-047",
+    "E-044",
     "E-041",
-    "E-059",
-    "E-060"
+    "E-061",
+    "E-062"
    ],
    "acts": [
     "A31"
@@ -18812,7 +18992,7 @@
     "bridge-setup"
    ],
    "entity_ids": [
-    "E-048",
+    "E-050",
     "E-034"
    ],
    "acts": [
@@ -19087,8 +19267,8 @@
    "entity_ids": [
     "E-037",
     "E-035",
-    "E-055",
-    "E-056",
+    "E-057",
+    "E-058",
     "E-032"
    ],
    "acts": [
@@ -19366,8 +19546,8 @@
     "E-006",
     "E-004",
     "E-041",
-    "E-059",
-    "E-060"
+    "E-061",
+    "E-062"
    ],
    "acts": [
     "A11"
@@ -19622,7 +19802,7 @@
     "E-027",
     "E-006",
     "E-004",
-    "E-048"
+    "E-050"
    ],
    "acts": [
     "A12"
@@ -20184,9 +20364,9 @@
     "E-033",
     "E-005",
     "E-004",
-    "E-066",
-    "E-065",
-    "E-063"
+    "E-068",
+    "E-067",
+    "E-065"
    ],
    "acts": [
     "A15"
@@ -20742,8 +20922,8 @@
     "E-013",
     "E-015",
     "E-004",
-    "E-045",
-    "E-042",
+    "E-047",
+    "E-044",
     "E-006",
     "E-030",
     "E-040"
@@ -21391,13 +21571,13 @@
     "E-004",
     "E-005",
     "E-041",
-    "E-059",
-    "E-060",
+    "E-061",
+    "E-062",
     "E-033",
-    "E-080",
-    "E-081",
     "E-082",
     "E-083",
+    "E-084",
+    "E-085",
     "E-040"
    ],
    "acts": [
@@ -21676,8 +21856,8 @@
     "E-020",
     "E-027",
     "E-041",
-    "E-059",
-    "E-060",
+    "E-061",
+    "E-062",
     "E-038",
     "E-039"
    ],
@@ -22216,10 +22396,10 @@
     "E-019",
     "E-028",
     "E-029",
-    "E-079",
+    "E-081",
     "E-041",
-    "E-059",
-    "E-060",
+    "E-061",
+    "E-062",
     "E-040"
    ],
    "acts": [
@@ -22496,14 +22676,14 @@
     "E-011",
     "E-012",
     "E-008",
-    "E-080",
-    "E-081",
     "E-082",
     "E-083",
+    "E-084",
+    "E-085",
     "E-023",
-    "E-068",
-    "E-053",
+    "E-070",
     "E-055",
+    "E-057",
     "E-041"
    ],
    "acts": [
@@ -22808,8 +22988,8 @@
     "E-013",
     "E-008",
     "E-004",
-    "E-045",
-    "E-042",
+    "E-047",
+    "E-044",
     "E-006"
    ],
    "acts": [
@@ -25014,13 +25194,13 @@
     "E-019",
     "E-023",
     "E-004",
-    "E-045",
-    "E-042",
-    "E-052",
+    "E-047",
+    "E-044",
+    "E-054",
     "E-040",
-    "E-068",
-    "E-053",
+    "E-070",
     "E-055",
+    "E-057",
     "E-041"
    ],
    "acts": [
@@ -25296,8 +25476,8 @@
     "E-024",
     "E-025",
     "E-034",
-    "E-048",
-    "E-074"
+    "E-050",
+    "E-076"
    ],
    "acts": [
     "A32"
@@ -25553,15 +25733,15 @@
    ],
    "entity_ids": [
     "E-041",
-    "E-059",
-    "E-060",
+    "E-061",
+    "E-062",
     "E-033",
     "E-004",
-    "E-045",
-    "E-042",
-    "E-049",
-    "E-074",
-    "E-048"
+    "E-047",
+    "E-044",
+    "E-051",
+    "E-076",
+    "E-050"
    ],
    "acts": [
     "A33",
@@ -25855,8 +26035,8 @@
    "entity_ids": [
     "E-032",
     "E-035",
-    "E-055",
-    "E-056",
+    "E-057",
+    "E-058",
     "E-006",
     "E-004"
    ],
@@ -26128,13 +26308,13 @@
    ],
    "entity_ids": [
     "E-004",
-    "E-045",
-    "E-042",
-    "E-077",
-    "E-046",
     "E-047",
-    "E-050",
-    "E-051",
+    "E-044",
+    "E-079",
+    "E-048",
+    "E-049",
+    "E-052",
+    "E-053",
     "E-002"
    ],
    "acts": [
@@ -26414,11 +26594,11 @@
     "E-004",
     "E-022",
     "E-023",
-    "E-067",
-    "E-068",
     "E-069",
+    "E-070",
     "E-071",
-    "E-070"
+    "E-073",
+    "E-072"
    ],
    "acts": [
     "A37"
@@ -26691,16 +26871,16 @@
     "E-023",
     "E-032",
     "E-041",
-    "E-059",
-    "E-060",
-    "E-046",
-    "E-047",
-    "E-050",
-    "E-051",
-    "E-080",
-    "E-081",
+    "E-061",
+    "E-062",
+    "E-048",
+    "E-049",
+    "E-052",
+    "E-053",
     "E-082",
-    "E-083"
+    "E-083",
+    "E-084",
+    "E-085"
    ],
    "acts": [
     "A46",
@@ -26984,10 +27164,10 @@
     "security-brief"
    ],
    "entity_ids": [
-    "E-048",
+    "E-050",
     "E-041",
-    "E-059",
-    "E-060",
+    "E-061",
+    "E-062",
     "E-037",
     "E-032"
    ],
@@ -27235,7 +27415,7 @@
     "export"
    ],
    "entity_ids": [
-    "E-078",
+    "E-080",
     "E-001",
     "E-010",
     "E-017",
@@ -27487,18 +27667,18 @@
    ],
    "entity_ids": [
     "E-004",
-    "E-045",
-    "E-042",
-    "E-078",
+    "E-047",
+    "E-044",
+    "E-080",
     "E-041",
-    "E-059",
-    "E-060",
+    "E-061",
+    "E-062",
     "E-006",
     "E-033",
-    "E-046",
-    "E-047",
-    "E-050",
-    "E-051"
+    "E-048",
+    "E-049",
+    "E-052",
+    "E-053"
    ],
    "acts": [
     "A42"
@@ -27758,7 +27938,7 @@
     "ops-support"
    ],
    "entity_ids": [
-    "E-061",
+    "E-063",
     "E-038",
     "E-001",
     "E-010",
@@ -27768,8 +27948,8 @@
     "E-032",
     "E-027",
     "E-041",
-    "E-059",
-    "E-060"
+    "E-061",
+    "E-062"
    ],
    "acts": [
     "A43",
@@ -28019,11 +28199,11 @@
     "ops-home"
    ],
    "entity_ids": [
-    "E-067",
-    "E-068",
     "E-069",
-    "E-071",
     "E-070",
+    "E-071",
+    "E-073",
+    "E-072",
     "E-006",
     "E-004",
     "E-001",
@@ -28294,13 +28474,13 @@
     "E-022",
     "E-023",
     "E-032",
-    "E-052",
+    "E-054",
     "E-040",
-    "E-067",
-    "E-068",
     "E-069",
+    "E-070",
     "E-071",
-    "E-070"
+    "E-073",
+    "E-072"
    ],
    "acts": [
     "A59",
@@ -28575,12 +28755,12 @@
    ],
    "entity_ids": [
     "E-004",
-    "E-045",
-    "E-042",
+    "E-047",
+    "E-044",
     "E-041",
-    "E-059",
-    "E-060",
-    "E-048"
+    "E-061",
+    "E-062",
+    "E-050"
    ],
    "acts": [
     "A74"
@@ -28822,13 +29002,13 @@
     "E-002",
     "E-032",
     "E-027",
-    "E-072",
-    "E-073",
-    "E-067",
-    "E-068",
+    "E-074",
+    "E-075",
     "E-069",
+    "E-070",
     "E-071",
-    "E-070"
+    "E-073",
+    "E-072"
    ],
    "acts": [
     "A75"
@@ -29070,13 +29250,13 @@
     "import"
    ],
    "entity_ids": [
-    "E-079",
+    "E-081",
     "E-017",
     "E-020",
     "E-021",
     "E-005",
     "E-004",
-    "E-075"
+    "E-077"
    ],
    "acts": [
     "A76"
@@ -29323,12 +29503,12 @@
    ],
    "entity_ids": [
     "E-035",
-    "E-055",
-    "E-056",
+    "E-057",
+    "E-058",
     "E-037",
-    "E-048",
+    "E-050",
     "E-034",
-    "E-076"
+    "E-078"
    ],
    "acts": [
     "A77"
@@ -29584,8 +29764,8 @@
    ],
    "entity_ids": [
     "E-035",
-    "E-055",
-    "E-056",
+    "E-057",
+    "E-058",
     "E-032"
    ],
    "acts": [
@@ -29813,20 +29993,20 @@
     "ops-skills"
    ],
    "entity_ids": [
-    "E-080",
-    "E-081",
     "E-082",
     "E-083",
-    "E-052",
-    "E-053",
+    "E-084",
+    "E-085",
     "E-054",
+    "E-055",
+    "E-056",
     "E-006",
     "E-004",
     "E-005",
     "E-013",
     "E-023",
-    "E-068",
-    "E-055",
+    "E-070",
+    "E-057",
     "E-041"
    ],
    "acts": [
@@ -30091,11 +30271,11 @@
     "inquiry"
    ],
    "entity_ids": [
-    "E-061",
+    "E-063",
     "E-038",
     "E-041",
-    "E-059",
-    "E-060",
+    "E-061",
+    "E-062",
     "E-005",
     "E-004"
    ],
@@ -30349,11 +30529,11 @@
     "notices"
    ],
    "entity_ids": [
-    "E-062",
-    "E-063",
     "E-064",
+    "E-065",
     "E-066",
-    "E-065"
+    "E-068",
+    "E-067"
    ],
    "acts": [
     "A68"
@@ -30608,21 +30788,21 @@
     "billing"
    ],
    "entity_ids": [
-    "E-067",
-    "E-068",
     "E-069",
-    "E-071",
     "E-070",
-    "E-072",
+    "E-071",
     "E-073",
+    "E-072",
+    "E-074",
+    "E-075",
     "E-006",
     "E-004",
-    "E-045",
-    "E-042",
-    "E-046",
     "E-047",
-    "E-050",
-    "E-051"
+    "E-044",
+    "E-048",
+    "E-049",
+    "E-052",
+    "E-053"
    ],
    "acts": [
     "A69"
@@ -30874,14 +31054,14 @@
     "ops-notices"
    ],
    "entity_ids": [
-    "E-062",
-    "E-063",
     "E-064",
-    "E-067",
-    "E-068",
+    "E-065",
+    "E-066",
     "E-069",
+    "E-070",
     "E-071",
-    "E-070"
+    "E-073",
+    "E-072"
    ],
    "acts": [
     "A71"
@@ -31110,13 +31290,13 @@
     "ops-billing"
    ],
    "entity_ids": [
-    "E-072",
-    "E-073",
-    "E-067",
-    "E-068",
+    "E-074",
+    "E-075",
     "E-069",
-    "E-071",
     "E-070",
+    "E-071",
+    "E-073",
+    "E-072",
     "E-001",
     "E-010",
     "E-017",
@@ -31361,11 +31541,11 @@
     "ops-tenant"
    ],
    "entity_ids": [
-    "E-067",
-    "E-068",
     "E-069",
-    "E-071",
     "E-070",
+    "E-071",
+    "E-073",
+    "E-072",
     "E-006",
     "E-004",
     "E-001",
@@ -31375,32 +31555,32 @@
     "E-002",
     "E-032",
     "E-027",
-    "E-072",
-    "E-073",
-    "E-061",
+    "E-074",
+    "E-075",
+    "E-063",
     "E-038",
-    "E-052",
+    "E-054",
     "E-040",
     "E-041",
-    "E-059",
-    "E-060",
+    "E-061",
     "E-062",
-    "E-063",
     "E-064",
-    "E-045",
-    "E-042",
-    "E-049",
-    "E-046",
+    "E-065",
+    "E-066",
     "E-047",
-    "E-050",
+    "E-044",
     "E-051",
-    "E-057",
+    "E-048",
+    "E-049",
+    "E-052",
     "E-053",
-    "E-054",
-    "E-080",
-    "E-081",
+    "E-059",
+    "E-055",
+    "E-056",
     "E-082",
-    "E-083"
+    "E-083",
+    "E-084",
+    "E-085"
    ],
    "acts": [
     "A64"
@@ -31635,14 +31815,14 @@
     "ops-review"
    ],
    "entity_ids": [
-    "E-052",
+    "E-054",
     "E-040",
     "E-022",
     "E-023",
     "E-041",
-    "E-059",
-    "E-060",
-    "E-057"
+    "E-061",
+    "E-062",
+    "E-059"
    ],
    "acts": [
     "A63"
@@ -31883,13 +32063,13 @@
    ],
    "entity_ids": [
     "E-041",
-    "E-059",
-    "E-060",
+    "E-061",
+    "E-062",
     "E-004",
-    "E-045",
-    "E-042",
-    "E-058",
-    "E-074"
+    "E-047",
+    "E-044",
+    "E-060",
+    "E-076"
    ],
    "acts": [
     "A65",
@@ -32146,13 +32326,13 @@
    ],
    "entity_ids": [
     "E-004",
-    "E-045",
-    "E-042",
-    "E-006",
-    "E-046",
     "E-047",
-    "E-050",
-    "E-051"
+    "E-044",
+    "E-006",
+    "E-048",
+    "E-049",
+    "E-052",
+    "E-053"
    ],
    "acts": [
     "A61",

@@ -2,9 +2,9 @@
 
 | 人 | 技能 | 1 日 | 負荷（h） | チケット |
 |---|---|---|---|---|
-| 高本（PM・レビュー） | backend, content, foundation, integration, polish, review, spec | 3.0h | 94.1 | T-F-01, T-F-04, T-F-05, T-F-10, T-F-12, T-F-14, T-D-02, T-D-06, T-D-08, T-D-10, T-A-17 |
-| Claude セッション 01（基盤・DB） | backend, foundation | 8.0h | 108.7 | T-F-02, T-F-06, T-F-15, T-F-16, T-F-17, T-D-03, T-D-05, T-D-12, T-A-08, T-A-12, T-A-18 |
-| Claude セッション 02（基盤・DB） | backend, foundation | 8.0h | 104.4 | T-F-03, T-F-07, T-F-08, T-F-09, T-F-11, T-F-13, T-D-01, T-D-04, T-D-07, T-D-09, T-D-11, T-A-06, T-A-22 |
+| 高本（PM・レビュー） | backend, content, foundation, integration, polish, review, spec | 3.0h | 75.2 | T-F-01, T-F-04, T-F-05, T-F-10, T-F-12, T-F-14, T-D-02, T-D-06, T-D-08, T-D-10, T-D-13, T-A-17 |
+| Claude セッション 01（基盤・DB） | backend, foundation | 8.0h | 109.2 | T-F-02, T-F-06, T-F-15, T-F-16, T-F-17, T-D-03, T-D-05, T-D-12, T-A-08, T-A-12, T-A-18 |
+| Claude セッション 02（基盤・DB） | backend, foundation | 8.0h | 124.1 | T-F-03, T-F-07, T-F-08, T-F-09, T-F-11, T-F-13, T-D-01, T-D-04, T-D-07, T-D-09, T-D-11, T-A-06, T-A-22 |
 | Claude セッション 03（API） | backend, integration | 8.0h | 125.2 | T-A-01, T-A-03, T-A-04, T-A-14, T-A-16, T-A-20 |
 | Claude セッション 04（API） | backend, integration | 8.0h | 100.9 | T-A-05, T-A-10, T-A-11, T-A-19, T-A-21 |
 | Claude セッション 05（API・結線） | backend, integration | 8.0h | 118.0 | T-A-02, T-A-07, T-A-09, T-A-13, T-A-15, T-A-23 |

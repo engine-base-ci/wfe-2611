@@ -19,12 +19,22 @@ export const TABLES = [
   "ops_audit_events",
   "security_events",
   "export_jobs",
+  "sessions",
+  "invitations",
+  "session_kinds",
+  "revoke_reasons",
 ] as const;
 /** 追記専用（関門の関数 app.record_* だけが書く。repository の create/update/softDelete は拒否） */
 export const APPEND_ONLY: ReadonlySet<string> = new Set(["audit_events", "ops_audit_events", "security_events"]);
 export type TableName = (typeof TABLES)[number];
 const IDENT = /^[a-z_][a-z0-9_]{0,62}$/;
-const MASTERS: ReadonlySet<string> = new Set(["member_kinds", "target_kinds", "abilities"]);
+const MASTERS: ReadonlySet<string> = new Set([
+  "member_kinds",
+  "target_kinds",
+  "abilities",
+  "session_kinds",
+  "revoke_reasons",
+]);
 
 export type Row = Record<string, unknown>;
 export interface ListOptions {

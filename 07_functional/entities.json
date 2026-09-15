@@ -329,6 +329,10 @@
     {
      "name": "manager_member_id",
      "note": null
+    },
+    {
+     "name": "auth_user_id",
+     "note": "認証の利用者。Better Auth の user。AI社員・自分のAI は null"
     }
    ],
    "relations": [
@@ -3966,6 +3970,120 @@
   },
   {
    "id": "E-042",
+   "name": "session_kinds",
+   "table_name": "session_kinds",
+   "section": "7. マスタ",
+   "fields": [
+    {
+     "name": "key",
+     "note": null
+    },
+    {
+     "name": "label",
+     "note": null
+    }
+   ],
+   "relations": [],
+   "soft_delete": false,
+   "timestamps": true,
+   "tenant_field": null,
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "none",
+    "column": null,
+    "fk_table": null
+   },
+   "access_control_policies": [
+    {
+     "name": "session_kinds_all_read",
+     "operation": "select",
+     "role": "authenticated",
+     "predicate": "true",
+     "rationale": "マスタ。全員が読む",
+     "source": [
+      "D-026"
+     ]
+    },
+    {
+     "name": "session_kinds_ops_write",
+     "operation": "insert,update,delete",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops'",
+     "rationale": "マスタは運営だけが変える",
+     "source": [
+      "D-037",
+      "D-077.4"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**マスタ**（web / bridge / api。sessions.kind_id）",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-010"
+   ]
+  },
+  {
+   "id": "E-043",
+   "name": "revoke_reasons",
+   "table_name": "revoke_reasons",
+   "section": "7. マスタ",
+   "fields": [
+    {
+     "name": "key",
+     "note": null
+    },
+    {
+     "name": "label",
+     "note": null
+    }
+   ],
+   "relations": [],
+   "soft_delete": false,
+   "timestamps": true,
+   "tenant_field": null,
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "none",
+    "column": null,
+    "fk_table": null
+   },
+   "access_control_policies": [
+    {
+     "name": "revoke_reasons_all_read",
+     "operation": "select",
+     "role": "authenticated",
+     "predicate": "true",
+     "rationale": "マスタ。全員が読む",
+     "source": [
+      "D-026"
+     ]
+    },
+    {
+     "name": "revoke_reasons_ops_write",
+     "operation": "insert,update,delete",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops'",
+     "rationale": "マスタは運営だけが変える",
+     "source": [
+      "D-037",
+      "D-077.4"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**マスタ**（logout / password_changed / permission_changed / member_left / suspended / tenant_closed / invite_revoked / expired / admin。sessions.revoke_reason_id）",
+   "status": "decided",
+   "decided_at": "2026-09-15",
+   "source": [
+    "D-010"
+   ]
+  },
+  {
+   "id": "E-044",
    "name": "layers",
    "table_name": "layers",
    "section": "9. 層と権限",
@@ -4054,7 +4172,7 @@
    ]
   },
   {
-   "id": "E-043",
+   "id": "E-045",
    "name": "target_kinds",
    "table_name": "target_kinds",
    "section": "9. 層と権限",
@@ -4116,7 +4234,7 @@
    ]
   },
   {
-   "id": "E-044",
+   "id": "E-046",
    "name": "abilities",
    "table_name": "abilities",
    "section": "9. 層と権限",
@@ -4178,7 +4296,7 @@
    ]
   },
   {
-   "id": "E-045",
+   "id": "E-047",
    "name": "permissions",
    "table_name": "permissions",
    "section": "9. 層と権限",
@@ -4288,7 +4406,7 @@
    ]
   },
   {
-   "id": "E-046",
+   "id": "E-048",
    "name": "account_events",
    "table_name": "account_events",
    "section": "10. 口座状態の出来事・失効・サポートアクセス",
@@ -4401,7 +4519,7 @@
    ]
   },
   {
-   "id": "E-047",
+   "id": "E-049",
    "name": "account_event_items",
    "table_name": "account_event_items",
    "section": "10. 口座状態の出来事・失効・サポートアクセス",
@@ -4498,7 +4616,7 @@
    ]
   },
   {
-   "id": "E-048",
+   "id": "E-050",
    "name": "sessions",
    "table_name": "sessions",
    "section": "10. 口座状態の出来事・失効・サポートアクセス",
@@ -4513,7 +4631,11 @@
     },
     {
      "name": "kind_id",
-     "note": "web ／ bridge"
+     "note": "web ／ bridge ／ api"
+    },
+    {
+     "name": "auth_session_id",
+     "note": "Better Auth のセッション。失効の判定はこの表が正"
     },
     {
      "name": "device_label",
@@ -4605,7 +4727,7 @@
    ]
   },
   {
-   "id": "E-049",
+   "id": "E-051",
    "name": "support_access_grants",
    "table_name": "support_access_grants",
    "section": "10. 口座状態の出来事・失効・サポートアクセス",
@@ -4699,7 +4821,7 @@
    ]
   },
   {
-   "id": "E-050",
+   "id": "E-052",
    "name": "retention_holds",
    "table_name": "retention_holds",
    "section": "10. 口座状態の出来事・失効・サポートアクセス",
@@ -4789,7 +4911,7 @@
    ]
   },
   {
-   "id": "E-051",
+   "id": "E-053",
    "name": "erasure_certificates",
    "table_name": "erasure_certificates",
    "section": "10. 口座状態の出来事・失効・サポートアクセス",
@@ -4879,7 +5001,7 @@
    ]
   },
   {
-   "id": "E-052",
+   "id": "E-054",
    "name": "distributions",
    "table_name": "distributions",
    "section": "11. 運営",
@@ -4962,7 +5084,7 @@
    ]
   },
   {
-   "id": "E-053",
+   "id": "E-055",
    "name": "distribution_versions",
    "table_name": "distribution_versions",
    "section": "11. 運営",
@@ -5044,7 +5166,7 @@
    ]
   },
   {
-   "id": "E-054",
+   "id": "E-056",
    "name": "tenant_distributions",
    "table_name": "tenant_distributions",
    "section": "11. 運営",
@@ -5149,7 +5271,7 @@
    ]
   },
   {
-   "id": "E-055",
+   "id": "E-057",
    "name": "service_registry_versions",
    "table_name": "service_registry_versions",
    "section": "11. 運営",
@@ -5228,7 +5350,7 @@
    ]
   },
   {
-   "id": "E-056",
+   "id": "E-058",
    "name": "service_requests",
    "table_name": "service_requests",
    "section": "11. 運営",
@@ -5330,7 +5452,7 @@
    ]
   },
   {
-   "id": "E-057",
+   "id": "E-059",
    "name": "review_requests",
    "table_name": "review_requests",
    "section": "11. 運営",
@@ -5437,7 +5559,7 @@
    ]
   },
   {
-   "id": "E-058",
+   "id": "E-060",
    "name": "ops_members",
    "table_name": "ops_members",
    "section": "11. 運営",
@@ -5502,7 +5624,7 @@
    ]
   },
   {
-   "id": "E-059",
+   "id": "E-061",
    "name": "ops_audit_events",
    "table_name": "ops_audit_events",
    "section": "11. 運営",
@@ -5599,7 +5721,7 @@
    ]
   },
   {
-   "id": "E-060",
+   "id": "E-062",
    "name": "security_events",
    "table_name": "security_events",
    "section": "11. 運営",
@@ -5691,7 +5813,7 @@
    ]
   },
   {
-   "id": "E-061",
+   "id": "E-063",
    "name": "inquiries",
    "table_name": "inquiries",
    "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
@@ -5805,7 +5927,7 @@
    ]
   },
   {
-   "id": "E-062",
+   "id": "E-064",
    "name": "notices",
    "table_name": "notices",
    "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
@@ -5885,7 +6007,7 @@
    ]
   },
   {
-   "id": "E-063",
+   "id": "E-065",
    "name": "notice_deliveries",
    "table_name": "notice_deliveries",
    "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
@@ -5985,7 +6107,7 @@
    ]
   },
   {
-   "id": "E-064",
+   "id": "E-066",
    "name": "status_incidents",
    "table_name": "status_incidents",
    "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
@@ -6056,7 +6178,7 @@
    ]
   },
   {
-   "id": "E-065",
+   "id": "E-067",
    "name": "notification_preferences",
    "table_name": "notification_preferences",
    "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
@@ -6158,7 +6280,7 @@
    ]
   },
   {
-   "id": "E-066",
+   "id": "E-068",
    "name": "notifications",
    "table_name": "notifications",
    "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
@@ -6275,7 +6397,7 @@
    ]
   },
   {
-   "id": "E-067",
+   "id": "E-069",
    "name": "plans",
    "table_name": "plans",
    "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
@@ -6352,7 +6474,7 @@
    ]
   },
   {
-   "id": "E-068",
+   "id": "E-070",
    "name": "plan_versions",
    "table_name": "plan_versions",
    "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
@@ -6424,7 +6546,7 @@
    ]
   },
   {
-   "id": "E-069",
+   "id": "E-071",
    "name": "subscriptions",
    "table_name": "subscriptions",
    "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
@@ -6529,7 +6651,7 @@
    ]
   },
   {
-   "id": "E-070",
+   "id": "E-072",
    "name": "plan_change_requests",
    "table_name": "plan_change_requests",
    "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
@@ -6636,7 +6758,7 @@
    ]
   },
   {
-   "id": "E-071",
+   "id": "E-073",
    "name": "usage_meters",
    "table_name": "usage_meters",
    "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
@@ -6727,7 +6849,7 @@
    ]
   },
   {
-   "id": "E-072",
+   "id": "E-074",
    "name": "invoices",
    "table_name": "invoices",
    "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
@@ -6839,7 +6961,7 @@
    ]
   },
   {
-   "id": "E-073",
+   "id": "E-075",
    "name": "payments",
    "table_name": "payments",
    "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
@@ -6934,7 +7056,7 @@
    ]
   },
   {
-   "id": "E-074",
+   "id": "E-076",
    "name": "error_events",
    "table_name": "error_events",
    "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
@@ -7039,7 +7161,7 @@
    ]
   },
   {
-   "id": "E-075",
+   "id": "E-077",
    "name": "imports",
    "table_name": "imports",
    "section": "13. 取り込み・正規連携・招待・持ち出し・添付",
@@ -7135,7 +7257,7 @@
    ]
   },
   {
-   "id": "E-076",
+   "id": "E-078",
    "name": "integrations",
    "table_name": "integrations",
    "section": "13. 取り込み・正規連携・招待・持ち出し・添付",
@@ -7235,7 +7357,7 @@
    ]
   },
   {
-   "id": "E-077",
+   "id": "E-079",
    "name": "invitations",
    "table_name": "invitations",
    "section": "13. 取り込み・正規連携・招待・持ち出し・添付",
@@ -7338,7 +7460,7 @@
    ]
   },
   {
-   "id": "E-078",
+   "id": "E-080",
    "name": "export_jobs",
    "table_name": "export_jobs",
    "section": "13. 取り込み・正規連携・招待・持ち出し・添付",
@@ -7442,7 +7564,7 @@
    ]
   },
   {
-   "id": "E-079",
+   "id": "E-081",
    "name": "attachments",
    "table_name": "attachments",
    "section": "13. 取り込み・正規連携・招待・持ち出し・添付",
@@ -7536,7 +7658,7 @@
    ]
   },
   {
-   "id": "E-080",
+   "id": "E-082",
    "name": "skills",
    "table_name": "skills",
    "section": "14. スキル",
@@ -7617,7 +7739,7 @@
    ]
   },
   {
-   "id": "E-081",
+   "id": "E-083",
    "name": "skill_versions",
    "table_name": "skill_versions",
    "section": "14. スキル",
@@ -7712,7 +7834,7 @@
    ]
   },
   {
-   "id": "E-082",
+   "id": "E-084",
    "name": "skill_test_runs",
    "table_name": "skill_test_runs",
    "section": "14. スキル",
@@ -7808,7 +7930,7 @@
    ]
   },
   {
-   "id": "E-083",
+   "id": "E-085",
    "name": "skill_attachments",
    "table_name": "skill_attachments",
    "section": "14. スキル",

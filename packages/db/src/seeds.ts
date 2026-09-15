@@ -45,7 +45,17 @@ export async function seedAccessMatrix(c: pg.PoolClient): Promise<Seeded> {
     "insert into members (tenant_id, scope_id, kind_id, display_name) values ($1, $2, 'human', '別会社') returning id",
     [tenantB, scopeRootB],
   );
-  for (const k of ["tenants", "layers", "scopes", "members", "permissions", "support_access_grants"])
+  for (const k of [
+    "tenants",
+    "layers",
+    "scopes",
+    "members",
+    "permissions",
+    "support_access_grants",
+    "sessions",
+    "invitations",
+    "export_jobs",
+  ])
     await c.query(
       "insert into permissions (tenant_id, grantee_member_id, target_kind_id, ability_id) values ($1, $2, $3, 'edit')",
       [tenantA, bossA, k],
@@ -113,6 +123,22 @@ export async function seedAccessMatrix(c: pg.PoolClient): Promise<Seeded> {
   const expA = await one(
     "insert into export_jobs (tenant_id, requested_by, kind_id) values ($1, $2, 'all') returning id",
     [tenantA, staffA],
+  );
+  const sesA = await one(
+    "insert into sessions (tenant_id, member_id, kind_id, auth_session_id) values ($1, $2, 'web', 'seed-a') returning id",
+    [tenantA, staffA],
+  );
+  const sesB = await one(
+    "insert into sessions (tenant_id, member_id, kind_id, auth_session_id) values ($1, $2, 'web', 'seed-b') returning id",
+    [tenantB, bossB],
+  );
+  const invA = await one(
+    "insert into invitations (tenant_id, email, token_hash, expires_at) values ($1, 'a@example.test', 'h-a', now() + interval '1 day') returning id",
+    [tenantA],
+  );
+  const invB = await one(
+    "insert into invitations (tenant_id, email, token_hash, expires_at) values ($1, 'b@example.test', 'h-b', now() + interval '1 day') returning id",
+    [tenantB],
   );
   const expB = await one(
     "insert into export_jobs (tenant_id, requested_by, kind_id) values ($1, $2, 'all') returning id",
@@ -203,6 +229,35 @@ export async function seedAccessMatrix(c: pg.PoolClient): Promise<Seeded> {
           sql: "select app.record_ops_audit($1::uuid, 'matrix', 'tenant', $1::text, null, '{}'::jsonb) as id",
           params: [tenantA],
         },
+      },
+      sessions: {
+        visible: sesA,
+        hiddenLayer: null,
+        other: sesB,
+        insert: (t) => ({
+          tenant_id: t,
+          member_id: t === tenantA ? staffA : bossB,
+          kind_id: "web",
+          auth_session_id: `m-${t.slice(0, 8)}-${Date.now()}`,
+        }),
+      },
+      invitations: {
+        visible: invA,
+        hiddenLayer: null,
+        other: invB,
+        insert: (t) => ({
+          tenant_id: t,
+          email: "x@example.test",
+          token_hash: `h-${t.slice(0, 8)}-${Date.now()}`,
+          expires_at: new Date(Date.now() + 3600e3),
+        }),
+      },
+      session_kinds: { visible: "web", hiddenLayer: null, other: "web", insert: () => ({ key: "k9", label: "x" }) },
+      revoke_reasons: {
+        visible: "logout",
+        hiddenLayer: null,
+        other: "logout",
+        insert: () => ({ key: "k9", label: "x" }),
       },
       export_jobs: {
         visible: expA,
