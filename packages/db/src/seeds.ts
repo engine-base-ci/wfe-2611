@@ -144,6 +144,14 @@ export async function seedAccessMatrix(c: pg.PoolClient): Promise<Seeded> {
     "insert into export_jobs (tenant_id, requested_by, kind_id) values ($1, $2, 'all') returning id",
     [tenantB, bossB],
   );
+  const errA = await one(
+    "insert into error_events (tenant_id, error_code, member_id, screen_id) values ($1, 'E-AUTH-001', $2, 'login') returning id",
+    [tenantA, bossA],
+  );
+  const errB = await one(
+    "insert into error_events (tenant_id, error_code, member_id, screen_id) values ($1, 'E-AUTH-001', $2, 'login') returning id",
+    [tenantB, bossB],
+  );
   return {
     tenantA,
     tenantB,
@@ -284,6 +292,17 @@ export async function seedAccessMatrix(c: pg.PoolClient): Promise<Seeded> {
         hiddenLayer: null,
         other: expB,
         insert: (t) => ({ tenant_id: t, requested_by: t === tenantA ? bossA : bossB, kind_id: "all" }),
+      },
+      error_events: {
+        visible: errA,
+        hiddenLayer: null,
+        other: errB,
+        insert: (t) => ({
+          tenant_id: t,
+          error_code: "E-AUTH-001",
+          member_id: t === tenantA ? bossA : bossB,
+          screen_id: "login",
+        }),
       },
     },
   };

@@ -4,6 +4,7 @@ import type { Repository } from "@kaname/db/repository";
 import { tenantContext, type SessionResolver, type Vars } from "./middleware/tenant.js";
 import type { Auth } from "@kaname/auth";
 import type { Resolved } from "@kaname/auth/resolver";
+import { KanameError, recordErrorEvent } from "@kaname/errors";
 
 // 独立 API 層（Hono）。画面は API を叩くだけ。endpoint は T-A-* が 08_api/openapi.yaml どおりに足す（routes/ 配下・c.get("repo") 経由）。
 export interface Health {
@@ -41,5 +42,32 @@ export function createApp(o: AppOptions | string = {}): Hono<Vars> {
     ? async (c) => (await opts.resolve!(c.req.raw.headers))?.ctx ?? null
     : opts.resolveSession;
   if (opts.repo) app.use("/api/*", tenantContext(opts.repo, resolver));
+  // エラーは正本（errors.json）の 1 件として返す（D-069）。出た記録は error_events に（文脈があるときだけ）。正本に無い例外は 500・文言を作らない
+  app.onError(async (err, c) => {
+    if (err instanceof KanameError) {
+      const ctx = c.get("ctx");
+      let eventId: string | null = null;
+      if (opts.repo && ctx) {
+        try {
+          eventId = await recordErrorEvent(opts.repo, ctx, err.code, c.req.header("x-screen-id") ?? null, {
+            path: c.req.path,
+          });
+        } catch {
+          eventId = null; // 記録に失敗しても応答は返す（記録の失敗で二重に落とさない）
+        }
+      }
+      return c.json({ ...err.toJSON(), event_id: eventId }, err.status as 400);
+    }
+    return c.json(
+      {
+        error: "internal",
+        code: null,
+        message: null,
+        action: null,
+        support_code: c.req.header("x-request-id") ?? null,
+      },
+      500,
+    );
+  });
   return app;
 }
