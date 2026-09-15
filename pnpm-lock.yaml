@@ -36,6 +36,22 @@ importers:
         specifier: ^3.2.4
         version: 3.2.7(@types/node@22.20.2)(tsx@4.23.13)
 
+  packages/actions:
+    dependencies:
+      '@kaname/db':
+        specifier: workspace:*
+        version: link:../db
+    devDependencies:
+      '@types/pg':
+        specifier: ^8.15.5
+        version: 8.23.1
+      pg:
+        specifier: ^8.16.3
+        version: 8.23.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
   packages/api:
     dependencies:
       '@kaname/auth':

@@ -29,15 +29,17 @@
     "ci:openapi-diff": "node scripts/ci/gate_pending.mjs G11 T-F-15",
     "ci:migration-integration": "node scripts/ci/gate_pending.mjs G12 T-F-08",
     "ci:env-audit": "node scripts/ci/gate_pending.mjs G13 T-F-16",
-    "ci:choke": "node scripts/ci/gate_pending.mjs G16-23 T-F-07",
-    "ci:no-dynamic-call": "node scripts/ci/gate_pending.mjs G24 T-F-07",
-    "ci:choke-exceptions": "node scripts/ci/gate_pending.mjs G25 T-F-07",
+    "ci:choke": "node scripts/ci/choke.mjs",
+    "ci:no-dynamic-call": "node scripts/ci/choke.mjs --no-dynamic",
+    "ci:choke-exceptions": "node scripts/ci/choke.mjs --exceptions",
     "ci:task-choke-declared": "node scripts/ci/gate_pending.mjs G26 T-F-09",
     "ci:access-matrix": "tsx packages/db/src/cli.ts access-matrix",
     "ci:ears-mapping": "node scripts/ci/gate_pending.mjs G34 T-F-15",
     "ci:resource-static": "node scripts/ci/gate_pending.mjs G35 T-F-08",
     "ci:schemathesis": "node scripts/ci/gate_pending.mjs G36 T-F-15",
-    "db:migrate": "tsx packages/db/src/cli.ts migrate && tsx packages/auth/src/cli.ts"
+    "db:migrate": "tsx packages/db/src/cli.ts migrate && tsx packages/auth/src/cli.ts",
+    "ci:choke:all": "node scripts/ci/choke.mjs --all",
+    "ci:choke:selftest": "node scripts/ci/choke.test.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",

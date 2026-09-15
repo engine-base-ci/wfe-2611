@@ -12,11 +12,13 @@
 3. **期限**を書く。恒久例外は `expires_at: null` とし、理由を明記する
 4. 解消したら削除せず「解消済（タスク ID）」に書き換える
 
-## 現在の例外（2 件・いずれも恒久）
+## 現在の例外（4 件・いずれも恒久）
 
 | ID | 関門 | 迂回箇所 | 理由 | 代替統制 | 期限 | 状態 |
 |----|-----|---------|------|---------|------|------|
 | X-001 | **C4 ファイル** | `apps/bridge/src/workspace/` | Bridge が顧客 PC のローカルファイルを操作するのは**機能そのもの**。サーバー側の objectStore とは対象が違う | 作業フォルダの範囲外アクセスを拒否。範囲チェックを `packages/bridge-guard/` に集約し、**そこ以外からの fs 使用は fail**。全操作を証跡へ送る | 恒久 | 有効 |
+| X-003 | **C2 永続化** | `packages/auth/` | 認証（Better Auth）は境界 B2。schema `auth` の表を自前の接続（ロール kaname_auth）で読み書きするのが機能そのもの。public の表は関門の関数（app.open_session 等）経由 | kaname_auth は schema auth と関門の関数の execute だけ（public の表に権限なし・RLS 素通りなし）。証跡は app.record_security_event。CI G4 が public の全表 RLS を検査 | 恒久 | 有効 |
+| X-004 | **C4 ファイル** | `packages/db/` | migration／policy の SQL ファイルを起動時に読む（関門 C2 の中の作業。利用者のファイルではない） | 読むのは packages/db/migrations と policies だけ・書かない・利用者由来のパスを受け取らない | 恒久 | 有効 |
 | X-002 | **C8 秘密** | `packages/config/` | 起動時のブート設定（DB 接続文字列等）は業務文脈が無く、vault より前に必要 | 起動時に 1 回だけ読み、型付きオブジェクトとして配る。**顧客の資格情報は絶対に扱わない**（CI で検査） | 恒久 | 有効 |
 
 **例外件数：2（恒久 2 / 期限付き 0）**

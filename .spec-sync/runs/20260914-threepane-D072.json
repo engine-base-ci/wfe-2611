@@ -3,7 +3,7 @@
   "skill_name": "spec-sync-orchestrator",
   "skill_version": "1.0",
   "run_id": "20260914-threepane-D072",
-  "executed_at": "2026-09-15T22:56:51.531472",
+  "executed_at": "2026-09-15T23:02:13.397701",
   "project_root": "/Users/masato0420/Downloads/受託開発/自社事業/kaname",
   "status": "completed",
   "display_mode": "silent",
@@ -59,7 +59,8 @@
      "v32 (2026-09-15): T-F-03 関門 C2。repository（init で表の存在確認・識別子の許可リスト・v7・監査列・論理削除）、createPool（timeout）、access-matrix の実走 G33（87/87・未 migration 74 表は skip）、tenant middleware と G6 静的検査。32 tests PASS・coverage 95/86。場合表の期待を役ごとに直した（969 行）。",
      "v33 (2026-09-15): T-F-04 証跡の土台。0003（運営テナント固定 uuid・audit_events/ops_audit_events/security_events 追記専用トリガ・app.record_audit/record_security_event/record_ops_audit・export_jobs）。repository が create/update/delete の同じトランザクションで証跡。仕様側：追記専用→system policy（revoke）、運営の表→ops_all だけ（判定が備考欄を見ていて効いていなかったのを列の欄に）、policy 255→238。39 tests・G33 131/131・G21 PASS。",
      "v34 (2026-09-15): T-F-05 認証とセッション（1/2）。Better Auth 1.7.5 を schema auth（schemaName）・kaname_auth ロールで。public.sessions が失効の正（app.session_alive／revoke_all_sessions・permissions 変更と members 論理削除のトリガ）。packages/auth（createAuth・resolver・migrate）。47 tests PASS。ER に auth_user_id／auth_session_id／session_kinds／revoke_reasons → 下流再生成（entities 85・tasks 159）。",
-     "v35 (2026-09-15): T-F-06 認証（2/2）。0005（accept_invitation・revoke_own_session）、packages/auth two_factor／invitations／devices、Hono に /api/auth/* と resolver を配線。54 tests PASS・G33 165/165。W0 は T-F-01〜06 完了、残り T-F-07〜10（関門 C1〜C4）。"
+     "v35 (2026-09-15): T-F-06 認証（2/2）。0005（accept_invitation・revoke_own_session）、packages/auth two_factor／invitations／devices、Hono に /api/auth/* と resolver を配線。54 tests PASS・G33 165/165。W0 は T-F-01〜06 完了、残り T-F-07〜10（関門 C1〜C4）。",
+     "v36 (2026-09-15): T-F-07 関門 C1。scripts/ci/choke.mjs（AST で import／require／dynamic import／グローバル呼び出し／タグ付きテンプレ。全関門共通・G24・G25・自己検査）、packages/actions ActionGateway（hooks・既定 approve・レート・タイムアウト・証跡）。例外台帳に X-003（auth の pg）・X-004（db の fs）。61 tests・C1〜C8 迂回なし。"
     ]
    }
   ]
