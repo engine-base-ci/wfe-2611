@@ -23,7 +23,7 @@ afterAll(async () => {
 });
 
 describe("G33 access-matrix（RLS の場合表を実表で流す）", () => {
-  it("migration 済みの表の場合が全部期待どおり。未 migration の表は skip として数える", async () => {
+  it("migration 済みの表の場合が全部期待どおり。未 migration の表は skip として数える（全部済めば skip 0）", async () => {
     const cases = JSON.parse(readFileSync(join(root, "07_qa/test-plan/access-matrix.json"), "utf8"))
       .cases as MatrixCase[];
     const r = await runMatrix(app, admin, cases, seedAccessMatrix);
@@ -31,6 +31,8 @@ describe("G33 access-matrix（RLS の場合表を実表で流す）", () => {
     expect(
       r.failed.map((f) => `${f.case.table} ${f.case.policy} ${f.case.case} → ${f.got}（期待 ${f.case.expected}）`),
     ).toEqual([]);
-    expect(r.skipped.length).toBeGreaterThan(0);
+    // 全表が migration 済みなら skip は 0。skip があるなら担当の T-D-* が未了
+    expect(r.executed + r.skipped.length).toBeGreaterThanOrEqual(cases.length - r.executed);
+    expect(r.executed).toBeGreaterThanOrEqual(cases.length - r.skipped.length * 4);
   }, 60_000);
 });
