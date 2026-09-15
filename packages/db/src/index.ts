@@ -9,6 +9,7 @@ export const MIGRATIONS = [
   "0002_access_control.sql",
   "0003_audit.sql",
   "0004_sessions.sql",
+  "0005_auth_flows.sql",
 ] as const;
 
 /** migration 名の並びを検査する。重複・順序違い・4 桁でない名前があれば理由を返す。 */

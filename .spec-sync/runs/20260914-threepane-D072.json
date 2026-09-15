@@ -3,7 +3,7 @@
   "skill_name": "spec-sync-orchestrator",
   "skill_version": "1.0",
   "run_id": "20260914-threepane-D072",
-  "executed_at": "2026-09-15T22:50:23.460356",
+  "executed_at": "2026-09-15T22:56:51.531472",
   "project_root": "/Users/masato0420/Downloads/受託開発/自社事業/kaname",
   "status": "completed",
   "display_mode": "silent",
@@ -58,7 +58,8 @@
      "v31 (2026-09-15): T-F-02 アクセス制御の土台。0002 migration（tenants/layers/scopes/members/permissions/support_access_grants＋マスタ 3・app.member_ok/ops_grant_ok/scope_tree・visible_scopes/has_permission・kaname_app ロール）、policies は gen_rls.py が entities.json から生成（9 表 24 policy）、migrate.ts／context.ts（withTenant）／ci.ts（G4 G5）。実 Postgres（docker kaname-pg 55433）で RLS 16 本＋計 23 本 PASS・coverage 91.7/83。仕様の穴：permissions 等に self_only_write が出ていた → build_functional で除外（255→252 policy）。qa-ladder gate T-F-02 PASS。",
      "v32 (2026-09-15): T-F-03 関門 C2。repository（init で表の存在確認・識別子の許可リスト・v7・監査列・論理削除）、createPool（timeout）、access-matrix の実走 G33（87/87・未 migration 74 表は skip）、tenant middleware と G6 静的検査。32 tests PASS・coverage 95/86。場合表の期待を役ごとに直した（969 行）。",
      "v33 (2026-09-15): T-F-04 証跡の土台。0003（運営テナント固定 uuid・audit_events/ops_audit_events/security_events 追記専用トリガ・app.record_audit/record_security_event/record_ops_audit・export_jobs）。repository が create/update/delete の同じトランザクションで証跡。仕様側：追記専用→system policy（revoke）、運営の表→ops_all だけ（判定が備考欄を見ていて効いていなかったのを列の欄に）、policy 255→238。39 tests・G33 131/131・G21 PASS。",
-     "v34 (2026-09-15): T-F-05 認証とセッション（1/2）。Better Auth 1.7.5 を schema auth（schemaName）・kaname_auth ロールで。public.sessions が失効の正（app.session_alive／revoke_all_sessions・permissions 変更と members 論理削除のトリガ）。packages/auth（createAuth・resolver・migrate）。47 tests PASS。ER に auth_user_id／auth_session_id／session_kinds／revoke_reasons → 下流再生成（entities 85・tasks 159）。"
+     "v34 (2026-09-15): T-F-05 認証とセッション（1/2）。Better Auth 1.7.5 を schema auth（schemaName）・kaname_auth ロールで。public.sessions が失効の正（app.session_alive／revoke_all_sessions・permissions 変更と members 論理削除のトリガ）。packages/auth（createAuth・resolver・migrate）。47 tests PASS。ER に auth_user_id／auth_session_id／session_kinds／revoke_reasons → 下流再生成（entities 85・tasks 159）。",
+     "v35 (2026-09-15): T-F-06 認証（2/2）。0005（accept_invitation・revoke_own_session）、packages/auth two_factor／invitations／devices、Hono に /api/auth/* と resolver を配線。54 tests PASS・G33 165/165。W0 は T-F-01〜06 完了、残り T-F-07〜10（関門 C1〜C4）。"
     ]
    }
   ]

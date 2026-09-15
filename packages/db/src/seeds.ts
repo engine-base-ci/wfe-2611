@@ -11,7 +11,7 @@ export async function seedAccessMatrix(c: pg.PoolClient): Promise<Seeded> {
     "insert into tenants (id, tenant_id, name) values (app.ops_tenant_id(), app.ops_tenant_id(), '運営') on conflict do nothing",
   );
   for (const m of ["member_kinds", "target_kinds", "abilities"])
-    await c.query(`delete from ${m} where key = $1`, ["k9"]); // 前回の場合表が入れた試し行
+    await c.query(`delete from ${m} where key like $1`, ["k9%"]); // 前回の場合表が入れた試し行
   const one = async (sql: string, p: unknown[] = []) => (await c.query<{ id: string }>(sql, p)).rows[0]!.id;
   const tenantA = await one(
     "insert into tenants (id, tenant_id, name) select u, u, '会社 a' from gen_random_uuid() u returning id",
@@ -194,9 +194,24 @@ export async function seedAccessMatrix(c: pg.PoolClient): Promise<Seeded> {
         other: grantB,
         insert: (t) => ({ tenant_id: t, scope: "x", expires_at: new Date(Date.now() + 3600e3) }),
       },
-      member_kinds: { visible: "human", hiddenLayer: null, other: "human", insert: () => ({ key: "k9", label: "x" }) },
-      target_kinds: { visible: "goal", hiddenLayer: null, other: "goal", insert: () => ({ key: "k9", label: "x" }) },
-      abilities: { visible: "view", hiddenLayer: null, other: "view", insert: () => ({ key: "k9", label: "x" }) },
+      member_kinds: {
+        visible: "human",
+        hiddenLayer: null,
+        other: "human",
+        insert: () => ({ key: `k9-${Math.random().toString(36).slice(2, 8)}`, label: "x" }),
+      },
+      target_kinds: {
+        visible: "goal",
+        hiddenLayer: null,
+        other: "goal",
+        insert: () => ({ key: `k9-${Math.random().toString(36).slice(2, 8)}`, label: "x" }),
+      },
+      abilities: {
+        visible: "view",
+        hiddenLayer: null,
+        other: "view",
+        insert: () => ({ key: `k9-${Math.random().toString(36).slice(2, 8)}`, label: "x" }),
+      },
       audit_events: {
         visible: auditA,
         hiddenLayer: null,
@@ -238,7 +253,7 @@ export async function seedAccessMatrix(c: pg.PoolClient): Promise<Seeded> {
           tenant_id: t,
           member_id: t === tenantA ? staffA : bossB,
           kind_id: "web",
-          auth_session_id: `m-${t.slice(0, 8)}-${Date.now()}`,
+          auth_session_id: `m-${t.slice(0, 8)}-${Math.random().toString(36).slice(2)}`,
         }),
       },
       invitations: {
@@ -248,16 +263,21 @@ export async function seedAccessMatrix(c: pg.PoolClient): Promise<Seeded> {
         insert: (t) => ({
           tenant_id: t,
           email: "x@example.test",
-          token_hash: `h-${t.slice(0, 8)}-${Date.now()}`,
+          token_hash: `h-${t.slice(0, 8)}-${Math.random().toString(36).slice(2)}`,
           expires_at: new Date(Date.now() + 3600e3),
         }),
       },
-      session_kinds: { visible: "web", hiddenLayer: null, other: "web", insert: () => ({ key: "k9", label: "x" }) },
+      session_kinds: {
+        visible: "web",
+        hiddenLayer: null,
+        other: "web",
+        insert: () => ({ key: `k9-${Math.random().toString(36).slice(2, 8)}`, label: "x" }),
+      },
       revoke_reasons: {
         visible: "logout",
         hiddenLayer: null,
         other: "logout",
-        insert: () => ({ key: "k9", label: "x" }),
+        insert: () => ({ key: `k9-${Math.random().toString(36).slice(2, 8)}`, label: "x" }),
       },
       export_jobs: {
         visible: expA,
