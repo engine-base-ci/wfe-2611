@@ -1,0 +1,51 @@
+{
+  "name": "kaname",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Kaname（要）— 仕様（01〜10）と実装（apps/・packages/）を同じリポジトリで持ち、CI が両方のゲートを回す",
+  "packageManager": "pnpm@10.28.2",
+  "engines": {
+    "node": ">=22"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "lint": "eslint . && prettier --check \"**/*.{ts,tsx,mjs,json,yml,yaml,md}\"",
+    "format": "prettier --write \"**/*.{ts,tsx,mjs,json,yml,yaml,md}\"",
+    "type-check": "tsc -b tsconfig.json",
+    "test": "vitest run --coverage",
+    "test:watch": "vitest",
+    "ci:ac-validate": "bash 09_dispatch/scripts/validate.sh",
+    "ci:layer-audit": "python3 scripts/ci/layer_audit.py --run",
+    "ci:rls-enabled": "node scripts/ci/gate_pending.mjs G4 T-F-02",
+    "ci:no-vendor-sql": "node scripts/ci/gate_pending.mjs G5 T-F-02",
+    "ci:context-set": "node scripts/ci/gate_pending.mjs G6 T-F-03",
+    "ci:boundary": "node scripts/ci/gate_pending.mjs G7 T-F-05",
+    "ci:license-boundary": "node scripts/ci/gate_pending.mjs G8 T-F-05",
+    "ci:ledger-sync": "node scripts/ci/gate_pending.mjs G9 T-F-05",
+    "ci:no-sql-concat": "node scripts/ci/gate_pending.mjs G10 T-F-06",
+    "ci:openapi-diff": "node scripts/ci/gate_pending.mjs G11 T-F-15",
+    "ci:migration-integration": "node scripts/ci/gate_pending.mjs G12 T-F-08",
+    "ci:env-audit": "node scripts/ci/gate_pending.mjs G13 T-F-16",
+    "ci:choke": "node scripts/ci/gate_pending.mjs G16-23 T-F-07",
+    "ci:no-dynamic-call": "node scripts/ci/gate_pending.mjs G24 T-F-07",
+    "ci:choke-exceptions": "node scripts/ci/gate_pending.mjs G25 T-F-07",
+    "ci:task-choke-declared": "node scripts/ci/gate_pending.mjs G26 T-F-09",
+    "ci:access-matrix": "node scripts/ci/gate_pending.mjs G33 T-F-02",
+    "ci:ears-mapping": "node scripts/ci/gate_pending.mjs G34 T-F-15",
+    "ci:resource-static": "node scripts/ci/gate_pending.mjs G35 T-F-08",
+    "ci:schemathesis": "node scripts/ci/gate_pending.mjs G36 T-F-15"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.0",
+    "@types/node": "^22.19.0",
+    "@vitest/coverage-v8": "^3.2.4",
+    "eslint": "^9.39.0",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.0",
+    "vitest": "^3.2.4"
+  }
+}
