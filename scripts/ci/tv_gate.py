@@ -4,15 +4,16 @@
  TV3 EARS の全文が ears-test-mapping.json にあり、各 test に file/function/gate がある ／ TV4 Group A タスクの tier_2 全文が mapping（EARS）か access-matrix（行レベル制御 <policy>）にある
  TV5 access-matrix.json が全 policy を ≥2 場合で持つ ／ TV6 三層（json/md/html）が揃い md/html が json より古くない ／ TV7 3-tier の structural/functional/regression 全部に段とゲートがある
  TV8 auto-merge の needs に static/database/spec/task-gate が全部あり、test-plan.json の source と ladder L1〜L5 がある"""
-import json, os, re, sys
-J = lambda p: json.load(open(p, encoding="utf-8")); OUT = "07_qa/test-plan"; fails = []
+import json, os, re, sys, argparse
+ap = argparse.ArgumentParser(); ap.add_argument("--dir", default="07_qa/test-plan"); ap.add_argument("--workflow", default=".github/workflows/v3-gate.yml"); ap.add_argument("--gates", default="03_architecture/foundation_gates.json"); ap.add_argument("--ears", default="08_api/ears-ac-seed.json"); ap.add_argument("--tickets", default="07_tasks/tickets.json"); ap.add_argument("--entities", default="07_functional/entities.json"); ap.add_argument("--mocks", default="06_mockup/v1"); ap.add_argument("--spec", default="07_qa/test-specs"); ap.add_argument("--skills", default="10_skills"); a = ap.parse_args()
+J = lambda p: json.load(open(p, encoding="utf-8")); OUT = a.dir; fails = []
 try:
-    P = J(f"{OUT}/test-plan.json"); M = J(f"{OUT}/ears-test-mapping.json"); A = J(f"{OUT}/access-matrix.json"); Y = open(".github/workflows/v3-gate.yml", encoding="utf-8").read()
+    P = J(f"{OUT}/test-plan.json"); M = J(f"{OUT}/ears-test-mapping.json"); A = J(f"{OUT}/access-matrix.json"); Y = open(a.workflow, encoding="utf-8").read()
 except FileNotFoundError as e: print(f"FAIL — 成果物が無い: {e}"); sys.exit(2)
-FG = J("03_architecture/foundation_gates.json"); EARS = J("08_api/ears-ac-seed.json")["ac_seeds"]; T = J("07_tasks/tickets.json")["tasks"]; EN = J("07_functional/entities.json"); EN = EN.get("entities") or EN["items"]
+FG = J(a.gates); EARS = J(a.ears)["ac_seeds"]; T = J(a.tickets)["tasks"]; EN = J(a.entities); EN = EN.get("entities") or EN["items"]
 m = [g["name"] for g in FG["merge_gates"] if g["script"] not in Y]
 if m: fails.append(("TV1", f"v3-gate.yml に無い基盤ゲート {m[:5]}"))
-need = ["layer_audit.py --run", "qa-ladder.py validate", "qa-ladder.py gate", "--task", "error_catalog.py gate --catalog", "--mocks 06_mockup/v1 --spec 07_qa/test-specs --choke", "skill_pkg_gate.py 10_skills", "tv_gate.py"]
+need = ["layer_audit.py --run", "qa-ladder.py validate", "qa-ladder.py gate", "--task", "error_catalog.py gate --catalog", f"--mocks {a.mocks} --spec {a.spec} --choke", f"skill_pkg_gate.py {a.skills}", "tv_gate.py"]
 m = [x for x in need if x not in Y]
 if m: fails.append(("TV2", f"仕様の層のゲートが無い {m}"))
 texts = {x["ears_text"] for x in M["mappings"]}; miss = [l[:60] for e in EARS for l in e["ears_ac_seed"] if l not in texts]; bad = [x["test_id"] for x in M["mappings"] if not (x.get("test_file") and x.get("test_function") and x.get("gate"))]

@@ -3,11 +3,12 @@
  SP1 tickets の全タスクがちょうど 1 つの Wave にある ／ SP2 各 Wave の qa_scope.l1_tasks == tasks ／ SP3 l2_flows が journeys に実在し runnable_after がその Wave までに揃う・全流れがどこかの Wave に付く
  SP4 regression_from ＝ それより前の全 Wave ／ SP5 Phase 順序（F<D<A<U-shared<U-screen<I。S は F の後なら可） ／ SP6 日付が節目の中（最終 finish ≤ R1）で start ≤ finish
  SP7 三層（json/md/html）が揃い md/html が json より古くない ／ SP8 二軸（human／ai_compute／wall_clock／review）が各 Wave にある。staging 未確定は warn（S14 に進む前に確定）"""
-import json, os, sys, collections
-J = lambda p: json.load(open(p, encoding="utf-8")); OUT = "08_schedule"; fails = []
+import json, os, sys, collections, argparse
+ap = argparse.ArgumentParser(); ap.add_argument("--dir", default="08_schedule"); ap.add_argument("--tickets", default="07_tasks/tickets.json"); ap.add_argument("--journeys", default="07_qa/test-specs/journeys/plan.json"); a = ap.parse_args()
+J = lambda p: json.load(open(p, encoding="utf-8")); OUT = a.dir; fails = []
 try: S = J(f"{OUT}/wave-schedule.json")
-except FileNotFoundError: print("FAIL — 08_schedule/wave-schedule.json が無い"); sys.exit(2)
-T = J("07_tasks/tickets.json"); ids = {t["id"] for t in T["tasks"]}; JR = J("07_qa/test-specs/journeys/plan.json")["rows"]; W = S["waves"]
+except FileNotFoundError: print(f"FAIL — {OUT}/wave-schedule.json が無い"); sys.exit(2)
+T = J(a.tickets); ids = {t["id"] for t in T["tasks"]}; JR = J(a.journeys)["rows"]; W = S["waves"]
 c = collections.Counter(t for w in W for t in w["tasks"]); m = [t for t in ids if c[t] != 1] + [t for t in c if t not in ids]
 if m: fails.append(("SP1", f"Wave に 0 回か 2 回以上のタスク {m[:5]}"))
 m = [w["id"] for w in W if set(w["qa_scope"]["l1_tasks"]) != set(w["tasks"])]

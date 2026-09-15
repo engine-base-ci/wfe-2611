@@ -6,7 +6,7 @@
 使い方: python3 td_gate.py --flow 05_flow/flow.json --tickets 07_tasks/tickets.json"""
 import argparse, json, sys
 def main():
-    ap = argparse.ArgumentParser(); ap.add_argument("--flow", required=True); ap.add_argument("--tickets", default="07_tasks/tickets.json"); a = ap.parse_args()
+    ap = argparse.ArgumentParser(); ap.add_argument("--flow", required=True); ap.add_argument("--log", default="01_hearing/決定ログ_進行中.md", help="決定ログ（TD11 が「段階 2：」の文を読む）"); ap.add_argument("--tickets", default="07_tasks/tickets.json"); a = ap.parse_args()
     F = json.load(open(a.flow, encoding="utf-8")); J = json.load(open(a.tickets, encoding="utf-8")); T = J["tasks"]; ids = {t["id"]: t for t in T}; fails = []
     v1s = [s["id"] for s in F["screens"] if s.get("release") == "v1"]; hs = {s for t in T for s in t["screen_ids"] if t["deliverable_layer"] == "ui"}; m = [s for s in v1s if s not in hs]
     if m: fails.append(("TD1", f"UI タスクの無い画面 {m}"))
@@ -37,7 +37,7 @@ def main():
     m = [t["id"] for t in T if t["deliverable_layer"] in ("ui", "backend", "integration") and not t["qa_rows"]["l1"]]
     if m: fails.append(("TD9", f"L1 行が 0 のタスク {m[:8]}"))
     import re as _re
-    LOG = open("01_hearing/決定ログ_進行中.md", encoding="utf-8").read(); need = []
+    LOG = open(a.log, encoding="utf-8").read() if __import__("os").path.exists(a.log) else ""; need = []
     for sec in _re.split(r"\n(?=## \d+\. )", LOG):
         m = _re.search(r"decision: (D-\d{3})", sec); st = _re.search(r"status: (\w+)", sec); tb = sec.split("### 決めたこと", 1)
         if not m or not st or st.group(1) != "confirmed" or len(tb) < 2: continue

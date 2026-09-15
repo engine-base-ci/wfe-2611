@@ -7,10 +7,10 @@
 import argparse, json, re, sys
 from pathlib import Path
 REQ = ["発動条件", "読む入力", "手順", "出す出力", "判定基準", "禁止", "テスト場面"]
-FORBID = [r"password", r"パスワード\s*[:：]", r"api[_-]?key", r"secret", r"token\s*[:：]", r"ENGINE BASE", r"ミナト建装", r"スミレ食品", r"高本", r"佐藤 健", r"田中 誠", r"@[a-z0-9-]+\.(com|jp)"]
+FORBID = [r"password", r"パスワード\s*[:：]", r"api[_-]?key", r"secret", r"token\s*[:：]", r"@[a-z0-9-]+\.(com|jp)"]   # 普遍の禁止（資格情報・メール）。固有名（会社名・人名）は <dir>/skill-lint.json の forbid に置く
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("dir"); ap.add_argument("--log", default="01_hearing/決定ログ_進行中.md"); a = ap.parse_args()
-    root = Path(a.dir); cat = json.load(open(root / "catalog.json", encoding="utf-8"))["skills"]; decs = set(re.findall(r"decision: (D-\d{3})", Path(a.log).read_text(encoding="utf-8"))) if Path(a.log).exists() else set()
+    root = Path(a.dir); cat = json.load(open(root / "catalog.json", encoding="utf-8"))["skills"]; cfg = json.load(open(root / "skill-lint.json", encoding="utf-8")) if (root / "skill-lint.json").exists() else {}; FORBID.extend(cfg.get("forbid", [])); decs = set(re.findall(r"decision: (D-\d{3})", Path(a.log).read_text(encoding="utf-8"))) if Path(a.log).exists() else set()
     fails = []; n = 0
     for d in sorted(p for p in root.iterdir() if p.is_dir() and not p.name.startswith("_")):
         n += 1; sk = d / "SKILL.md"
