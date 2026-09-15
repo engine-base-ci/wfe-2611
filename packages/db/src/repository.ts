@@ -84,6 +84,9 @@ export const TABLES = [
   "usage_meters",
   "invoices",
   "payments",
+  "imports",
+  "integrations",
+  "attachments",
 ] as const;
 /** 追記専用（関門の関数 app.record_* だけが書く。repository の create/update/softDelete は拒否） */
 export const APPEND_ONLY: ReadonlySet<string> = new Set(["audit_events", "ops_audit_events", "security_events"]);
