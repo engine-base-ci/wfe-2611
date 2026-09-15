@@ -102,6 +102,22 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  packages/billing:
+    dependencies:
+      '@kaname/db':
+        specifier: workspace:*
+        version: link:../db
+    devDependencies:
+      '@types/pg':
+        specifier: ^8.15.5
+        version: 8.23.1
+      pg:
+        specifier: ^8.16.3
+        version: 8.23.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
   packages/db:
     dependencies:
       pg:
@@ -116,6 +132,54 @@ importers:
         version: 5.9.3
 
   packages/llm:
+    dependencies:
+      '@kaname/db':
+        specifier: workspace:*
+        version: link:../db
+    devDependencies:
+      '@types/pg':
+        specifier: ^8.15.5
+        version: 8.23.1
+      pg:
+        specifier: ^8.16.3
+        version: 8.23.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/notify:
+    dependencies:
+      '@kaname/db':
+        specifier: workspace:*
+        version: link:../db
+    devDependencies:
+      '@types/pg':
+        specifier: ^8.15.5
+        version: 8.23.1
+      pg:
+        specifier: ^8.16.3
+        version: 8.23.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/runtime:
+    dependencies:
+      '@kaname/db':
+        specifier: workspace:*
+        version: link:../db
+    devDependencies:
+      '@types/pg':
+        specifier: ^8.15.5
+        version: 8.23.1
+      pg:
+        specifier: ^8.16.3
+        version: 8.23.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/secrets:
     dependencies:
       '@kaname/db':
         specifier: workspace:*
