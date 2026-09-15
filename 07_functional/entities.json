@@ -1160,6 +1160,10 @@
    "section": "2. 会社モデル ── 目標",
    "fields": [
     {
+     "name": "<common>",
+     "note": null
+    },
+    {
      "name": "goal_id",
      "note": null
     },
@@ -1186,41 +1190,55 @@
      "label": "history"
     }
    ],
-   "soft_delete": false,
+   "soft_delete": true,
    "timestamps": true,
-   "tenant_field": null,
+   "tenant_field": "tenant_id",
    "indexes": [],
    "computed": [],
    "tenant_isolation": {
-    "type": "none",
-    "column": null,
-    "fk_table": null
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
    },
    "access_control_policies": [
     {
-     "name": "goal_versions_all_read",
+     "name": "goal_versions_tenant_read",
      "operation": "select",
-     "role": "authenticated",
-     "predicate": "true",
-     "rationale": "マスタ。全員が読む",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
      "source": [
-      "D-026"
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
      ]
     },
     {
-     "name": "goal_versions_ops_write",
+     "name": "goal_versions_permission_write",
      "operation": "insert,update,delete",
-     "role": "ops",
-     "predicate": "current_setting('app.role', true) = 'ops'",
-     "rationale": "マスタは運営だけが変える",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'goal_versions', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
      "source": [
-      "D-037",
-      "D-077.4"
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "goal_versions_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = goal_versions.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
      ]
     }
    ],
    "legacy_drift_notes": null,
-   "note": "期中変更の履歴",
+   "note": "期中変更の履歴。会社のデータなので `<common>`（tenant_id で分離。全員が読めるマスタではない）",
    "status": "decided",
    "decided_at": "2026-09-15",
    "source": [
@@ -2102,6 +2120,10 @@
    "section": "4. 会社モデル ── 担当業務・記憶",
    "fields": [
     {
+     "name": "<common>",
+     "note": null
+    },
+    {
      "name": "duty_id",
      "note": null
     },
@@ -2128,41 +2150,55 @@
      "label": "history"
     }
    ],
-   "soft_delete": false,
+   "soft_delete": true,
    "timestamps": true,
-   "tenant_field": null,
+   "tenant_field": "tenant_id",
    "indexes": [],
    "computed": [],
    "tenant_isolation": {
-    "type": "none",
-    "column": null,
-    "fk_table": null
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
    },
    "access_control_policies": [
     {
-     "name": "duty_versions_all_read",
+     "name": "duty_versions_tenant_read",
      "operation": "select",
-     "role": "authenticated",
-     "predicate": "true",
-     "rationale": "マスタ。全員が読む",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
      "source": [
-      "D-026"
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
      ]
     },
     {
-     "name": "duty_versions_ops_write",
+     "name": "duty_versions_permission_write",
      "operation": "insert,update,delete",
-     "role": "ops",
-     "predicate": "current_setting('app.role', true) = 'ops'",
-     "rationale": "マスタは運営だけが変える",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'duty_versions', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
      "source": [
-      "D-037",
-      "D-077.4"
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "duty_versions_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = duty_versions.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
      ]
     }
    ],
    "legacy_drift_notes": null,
-   "note": "**改訂履歴＝堀の実体**",
+   "note": "**改訂履歴＝堀の実体**。会社のデータなので `<common>`",
    "status": "decided",
    "decided_at": "2026-09-15",
    "source": [
@@ -5277,6 +5313,10 @@
    "section": "11. 運営",
    "fields": [
     {
+     "name": "<common>",
+     "note": null
+    },
+    {
      "name": "service_id",
      "note": null
     },
@@ -5303,36 +5343,50 @@
      "label": "可否の版"
     }
    ],
-   "soft_delete": false,
+   "soft_delete": true,
    "timestamps": true,
-   "tenant_field": null,
+   "tenant_field": "tenant_id",
    "indexes": [],
    "computed": [],
    "tenant_isolation": {
-    "type": "none",
-    "column": null,
-    "fk_table": null
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
    },
    "access_control_policies": [
     {
-     "name": "service_registry_versions_all_read",
+     "name": "service_registry_versions_tenant_read",
      "operation": "select",
-     "role": "authenticated",
-     "predicate": "true",
-     "rationale": "マスタ。全員が読む",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
      "source": [
-      "D-026"
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
      ]
     },
     {
-     "name": "service_registry_versions_ops_write",
+     "name": "service_registry_versions_permission_write",
      "operation": "insert,update,delete",
-     "role": "ops",
-     "predicate": "current_setting('app.role', true) = 'ops'",
-     "rationale": "マスタは運営だけが変える",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'service_registry_versions', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
      "source": [
-      "D-037",
-      "D-077.4"
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "service_registry_versions_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = service_registry_versions.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
      ]
     }
    ],

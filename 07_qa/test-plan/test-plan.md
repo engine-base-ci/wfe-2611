@@ -11,8 +11,8 @@
 | ears_endpoints | 56 |
 | ears_tests | 403 |
 | entities | 85 |
-| policies | 242 |
-| access_cases | 913 |
+| policies | 245 |
+| access_cases | 934 |
 | errors | 90 |
 | journey_rows | 80 |
 | critical_tasks | 49 |
@@ -141,13 +141,13 @@
 | UNWANTED | 266 |
 | UBIQUITOUS | 56 |
 
-## RLS の場合表（913 行・access-matrix.json）
+## RLS の場合表（934 行・access-matrix.json）
 
 | 役 | policy 数 | 場合 数 |
 |---|---|---|
-| 会社の人（R1〜R4・権限で分かれる） | 139 | 556 |
-| 運営（R6） | 85 | 318 |
-| ログイン済み（本人のもの） | 15 | 30 |
+| 会社の人（R1〜R4・権限で分かれる） | 145 | 580 |
+| 運営（R6） | 85 | 321 |
+| ログイン済み（本人のもの） | 12 | 24 |
 
 ## 途中変更
 

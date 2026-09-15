@@ -199,7 +199,8 @@
     "ai_employees_ops_read_with_grant",
     "duties_tenant_read",
     "duties_ops_read_with_grant",
-    "duty_versions_all_read"
+    "duty_versions_tenant_read",
+    "duty_versions_ops_read_with_grant"
    ],
    "outputs_4xx": [
     {
@@ -311,7 +312,7 @@
     "ai_employees_self_only_write",
     "ai_employees_permission_write",
     "duties_permission_write",
-    "duty_versions_ops_write"
+    "duty_versions_permission_write"
    ],
    "outputs_4xx": [
     {
@@ -1499,7 +1500,7 @@
     "service_registry_permission_write",
     "credentials_self_only_write",
     "credentials_permission_write",
-    "service_registry_versions_ops_write",
+    "service_registry_versions_permission_write",
     "service_requests_self_only_write",
     "service_requests_permission_write"
    ],
@@ -1616,7 +1617,7 @@
    "rate_limit": "60/min/user",
    "access_control_policies": [
     "duties_permission_write",
-    "duty_versions_ops_write",
+    "duty_versions_permission_write",
     "artifacts_permission_write"
    ],
    "outputs_4xx": [
@@ -1733,7 +1734,7 @@
    "rate_limit": "60/min/user",
    "access_control_policies": [
     "duties_permission_write",
-    "duty_versions_ops_write",
+    "duty_versions_permission_write",
     "learned_procedures_permission_write",
     "procedure_steps_permission_write"
    ],
@@ -2095,7 +2096,7 @@
     "goals_permission_write",
     "goal_allocations_permission_write",
     "goal_contributions_permission_write",
-    "goal_versions_ops_write",
+    "goal_versions_permission_write",
     "tasks_permission_write",
     "task_handovers_permission_write"
    ],
@@ -2240,7 +2241,8 @@
     "goal_allocations_ops_read_with_grant",
     "goal_contributions_tenant_read",
     "goal_contributions_ops_read_with_grant",
-    "goal_versions_all_read"
+    "goal_versions_tenant_read",
+    "goal_versions_ops_read_with_grant"
    ],
    "outputs_4xx": [
     {
@@ -2353,7 +2355,7 @@
     "units_permission_write",
     "goals_permission_write",
     "goal_allocations_permission_write",
-    "goal_versions_ops_write"
+    "goal_versions_permission_write"
    ],
    "outputs_4xx": [
     {
@@ -2478,7 +2480,8 @@
    "access_control_policies": [
     "goals_tenant_read",
     "goals_ops_read_with_grant",
-    "goal_versions_all_read",
+    "goal_versions_tenant_read",
+    "goal_versions_ops_read_with_grant",
     "hypotheses_tenant_read",
     "hypotheses_ops_read_with_grant",
     "validations_tenant_read",
@@ -5319,7 +5322,7 @@
    "access_control_policies": [
     "policies_permission_write",
     "service_registry_permission_write",
-    "service_registry_versions_ops_write",
+    "service_registry_versions_permission_write",
     "service_requests_self_only_write",
     "service_requests_permission_write"
    ],
@@ -5444,7 +5447,7 @@
     "service_registry_permission_write",
     "credentials_self_only_write",
     "credentials_permission_write",
-    "service_registry_versions_ops_write",
+    "service_registry_versions_permission_write",
     "service_requests_self_only_write",
     "service_requests_permission_write"
    ],
@@ -5570,7 +5573,7 @@
    "access_control_policies": [
     "policies_permission_write",
     "service_registry_permission_write",
-    "service_registry_versions_ops_write",
+    "service_registry_versions_permission_write",
     "service_requests_self_only_write",
     "service_requests_permission_write"
    ],
@@ -6039,7 +6042,8 @@
    "access_control_policies": [
     "goals_tenant_read",
     "goals_ops_read_with_grant",
-    "goal_versions_all_read",
+    "goal_versions_tenant_read",
+    "goal_versions_ops_read_with_grant",
     "tasks_tenant_read",
     "tasks_ops_read_with_grant",
     "task_handovers_tenant_read",
@@ -6163,7 +6167,7 @@
    "rate_limit": "60/min/user",
    "access_control_policies": [
     "goals_permission_write",
-    "goal_versions_ops_write",
+    "goal_versions_permission_write",
     "tasks_permission_write",
     "task_handovers_permission_write"
    ],
@@ -6300,7 +6304,7 @@
    "rate_limit": "60/min/user",
    "access_control_policies": [
     "goals_permission_write",
-    "goal_versions_ops_write",
+    "goal_versions_permission_write",
     "tasks_permission_write",
     "task_handovers_permission_write"
    ],

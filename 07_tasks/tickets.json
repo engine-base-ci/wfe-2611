@@ -3732,8 +3732,9 @@
     "goal_contributions_tenant_read",
     "goal_contributions_permission_write",
     "goal_contributions_ops_read_with_grant",
-    "goal_versions_all_read",
-    "goal_versions_ops_write",
+    "goal_versions_tenant_read",
+    "goal_versions_permission_write",
+    "goal_versions_ops_read_with_grant",
     "hypotheses_tenant_read",
     "hypotheses_permission_write",
     "hypotheses_ops_read_with_grant",
@@ -4157,9 +4158,9 @@
      "UBIQUITOUS: duties_tenant_read",
      "UBIQUITOUS: duties_permission_write",
      "UBIQUITOUS: duties_ops_read_with_grant",
-     "UBIQUITOUS: duty_versions_all_read",
-     "UBIQUITOUS: duty_versions_ops_write",
-     "UBIQUITOUS: learned_procedures_tenant_read"
+     "UBIQUITOUS: duty_versions_tenant_read",
+     "UBIQUITOUS: duty_versions_permission_write",
+     "UBIQUITOUS: duty_versions_ops_read_with_grant"
     ],
     "regression": [
      "pnpm test（該当パッケージ）PASS",
@@ -4175,8 +4176,9 @@
     "duties_tenant_read",
     "duties_permission_write",
     "duties_ops_read_with_grant",
-    "duty_versions_all_read",
-    "duty_versions_ops_write",
+    "duty_versions_tenant_read",
+    "duty_versions_permission_write",
+    "duty_versions_ops_read_with_grant",
     "learned_procedures_tenant_read",
     "learned_procedures_permission_write",
     "learned_procedures_ops_read_with_grant",
@@ -4267,17 +4269,17 @@
      },
      {
       "type": "UBIQUITOUS",
-      "text": "UBIQUITOUS: duty_versions_all_read",
+      "text": "UBIQUITOUS: duty_versions_tenant_read",
       "critical": false
      },
      {
       "type": "UBIQUITOUS",
-      "text": "UBIQUITOUS: duty_versions_ops_write",
+      "text": "UBIQUITOUS: duty_versions_permission_write",
       "critical": false
      },
      {
       "type": "UBIQUITOUS",
-      "text": "UBIQUITOUS: learned_procedures_tenant_read",
+      "text": "UBIQUITOUS: duty_versions_ops_read_with_grant",
       "critical": false
      }
     ],
@@ -5479,8 +5481,9 @@
     "tenant_distributions_tenant_read",
     "tenant_distributions_permission_write",
     "tenant_distributions_ops_read_with_grant",
-    "service_registry_versions_all_read",
-    "service_registry_versions_ops_write",
+    "service_registry_versions_tenant_read",
+    "service_registry_versions_permission_write",
+    "service_registry_versions_ops_read_with_grant",
     "service_requests_tenant_read",
     "service_requests_self_only_write",
     "service_requests_permission_write",
@@ -7505,7 +7508,7 @@
     "goal_contributions_ops_read_with_grant",
     "goal_contributions_permission_write",
     "goal_contributions_tenant_read",
-    "goal_versions_ops_write",
+    "goal_versions_permission_write",
     "goals_permission_write",
     "layers_ops_read_with_grant",
     "layers_tenant_read",
@@ -7985,8 +7988,8 @@
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "UBIQUITOUS: 行レベル制御 daily_plans_permission_write が効く",
      "UBIQUITOUS: 行レベル制御 daily_plans_self_only_write が効く",
-     "UBIQUITOUS: 行レベル制御 goal_versions_all_read が効く",
-     "UBIQUITOUS: 行レベル制御 goal_versions_ops_write が効く"
+     "UBIQUITOUS: 行レベル制御 goal_versions_ops_read_with_grant が効く",
+     "UBIQUITOUS: 行レベル制御 goal_versions_permission_write が効く"
     ],
     "regression": [
      "pnpm test（該当パッケージ）PASS",
@@ -8003,8 +8006,9 @@
    "access_policies_required": [
     "daily_plans_permission_write",
     "daily_plans_self_only_write",
-    "goal_versions_all_read",
-    "goal_versions_ops_write",
+    "goal_versions_ops_read_with_grant",
+    "goal_versions_permission_write",
+    "goal_versions_tenant_read",
     "goals_ops_read_with_grant",
     "goals_permission_write",
     "goals_tenant_read",
@@ -8270,12 +8274,12 @@
      },
      {
       "type": "UBIQUITOUS",
-      "text": "UBIQUITOUS: 行レベル制御 goal_versions_all_read が効く",
+      "text": "UBIQUITOUS: 行レベル制御 goal_versions_ops_read_with_grant が効く",
       "critical": false
      },
      {
       "type": "UBIQUITOUS",
-      "text": "UBIQUITOUS: 行レベル制御 goal_versions_ops_write が効く",
+      "text": "UBIQUITOUS: 行レベル制御 goal_versions_permission_write が効く",
       "critical": false
      }
     ],
@@ -8483,7 +8487,8 @@
     "credentials_self_only_write",
     "duties_ops_read_with_grant",
     "duties_tenant_read",
-    "duty_versions_all_read",
+    "duty_versions_ops_read_with_grant",
+    "duty_versions_tenant_read",
     "goals_ops_read_with_grant",
     "goals_tenant_read",
     "learned_procedures_ops_read_with_grant",
@@ -8495,7 +8500,7 @@
     "procedure_steps_ops_read_with_grant",
     "procedure_steps_tenant_read",
     "service_registry_permission_write",
-    "service_registry_versions_ops_write",
+    "service_registry_versions_permission_write",
     "service_requests_permission_write",
     "service_requests_self_only_write",
     "sessions_ops_read_with_grant",
@@ -8992,7 +8997,8 @@
     "clones_tenant_read",
     "duties_ops_read_with_grant",
     "duties_tenant_read",
-    "duty_versions_all_read",
+    "duty_versions_ops_read_with_grant",
+    "duty_versions_tenant_read",
     "members_ops_read_with_grant",
     "members_permission_write",
     "members_tenant_read",
@@ -9449,7 +9455,7 @@
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-     "UBIQUITOUS: 行レベル制御 goal_versions_ops_write が効く",
+     "UBIQUITOUS: 行レベル制御 goal_versions_permission_write が効く",
      "UBIQUITOUS: 行レベル制御 goals_permission_write が効く",
      "UBIQUITOUS: 行レベル制御 policies_permission_write が効く",
      "UBIQUITOUS: 行レベル制御 service_registry_permission_write が効く"
@@ -9467,11 +9473,11 @@
     ]
    },
    "access_policies_required": [
-    "goal_versions_ops_write",
+    "goal_versions_permission_write",
     "goals_permission_write",
     "policies_permission_write",
     "service_registry_permission_write",
-    "service_registry_versions_ops_write",
+    "service_registry_versions_permission_write",
     "service_requests_permission_write",
     "service_requests_self_only_write",
     "task_handovers_permission_write",
@@ -9642,7 +9648,7 @@
      },
      {
       "type": "UBIQUITOUS",
-      "text": "UBIQUITOUS: 行レベル制御 goal_versions_ops_write が効く",
+      "text": "UBIQUITOUS: 行レベル制御 goal_versions_permission_write が効く",
       "critical": false
      },
      {
@@ -9816,8 +9822,8 @@
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "UBIQUITOUS: 行レベル制御 audit_events_ops_read_with_grant が効く",
      "UBIQUITOUS: 行レベル制御 audit_events_tenant_read が効く",
-     "UBIQUITOUS: 行レベル制御 goal_versions_all_read が効く",
-     "UBIQUITOUS: 行レベル制御 goals_ops_read_with_grant が効く"
+     "UBIQUITOUS: 行レベル制御 goal_versions_ops_read_with_grant が効く",
+     "UBIQUITOUS: 行レベル制御 goal_versions_tenant_read が効く"
     ],
     "regression": [
      "pnpm test（該当パッケージ）PASS",
@@ -9834,7 +9840,8 @@
    "access_policies_required": [
     "audit_events_ops_read_with_grant",
     "audit_events_tenant_read",
-    "goal_versions_all_read",
+    "goal_versions_ops_read_with_grant",
+    "goal_versions_tenant_read",
     "goals_ops_read_with_grant",
     "goals_tenant_read",
     "ledger_definitions_ops_read_with_grant",
@@ -10109,12 +10116,12 @@
      },
      {
       "type": "UBIQUITOUS",
-      "text": "UBIQUITOUS: 行レベル制御 goal_versions_all_read が効く",
+      "text": "UBIQUITOUS: 行レベル制御 goal_versions_ops_read_with_grant が効く",
       "critical": false
      },
      {
       "type": "UBIQUITOUS",
-      "text": "UBIQUITOUS: 行レベル制御 goals_ops_read_with_grant が効く",
+      "text": "UBIQUITOUS: 行レベル制御 goal_versions_tenant_read が効く",
       "critical": false
      }
     ],
@@ -10322,8 +10329,9 @@
     "goal_contributions_ops_read_with_grant",
     "goal_contributions_permission_write",
     "goal_contributions_tenant_read",
-    "goal_versions_all_read",
-    "goal_versions_ops_write",
+    "goal_versions_ops_read_with_grant",
+    "goal_versions_permission_write",
+    "goal_versions_tenant_read",
     "goals_ops_read_with_grant",
     "goals_permission_write",
     "goals_tenant_read",
@@ -10824,7 +10832,8 @@
     "goal_allocations_tenant_read",
     "goal_contributions_ops_read_with_grant",
     "goal_contributions_tenant_read",
-    "goal_versions_all_read",
+    "goal_versions_ops_read_with_grant",
+    "goal_versions_tenant_read",
     "goals_ops_read_with_grant",
     "goals_tenant_read",
     "hypotheses_ops_read_with_grant",
@@ -11243,8 +11252,9 @@
     "duties_ops_read_with_grant",
     "duties_permission_write",
     "duties_tenant_read",
-    "duty_versions_all_read",
-    "duty_versions_ops_write",
+    "duty_versions_ops_read_with_grant",
+    "duty_versions_permission_write",
+    "duty_versions_tenant_read",
     "export_jobs_permission_write",
     "export_jobs_self_only_write",
     "invitations_permission_write",
@@ -11716,10 +11726,10 @@
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-     "UBIQUITOUS: 行レベル制御 goal_versions_all_read が効く",
-     "UBIQUITOUS: 行レベル制御 goal_versions_ops_write が効く",
-     "UBIQUITOUS: 行レベル制御 goals_ops_read_with_grant が効く",
-     "UBIQUITOUS: 行レベル制御 goals_permission_write が効く"
+     "UBIQUITOUS: 行レベル制御 goal_versions_ops_read_with_grant が効く",
+     "UBIQUITOUS: 行レベル制御 goal_versions_permission_write が効く",
+     "UBIQUITOUS: 行レベル制御 goal_versions_tenant_read が効く",
+     "UBIQUITOUS: 行レベル制御 goals_ops_read_with_grant が効く"
     ],
     "regression": [
      "pnpm test（該当パッケージ）PASS",
@@ -11734,8 +11744,9 @@
     ]
    },
    "access_policies_required": [
-    "goal_versions_all_read",
-    "goal_versions_ops_write",
+    "goal_versions_ops_read_with_grant",
+    "goal_versions_permission_write",
+    "goal_versions_tenant_read",
     "goals_ops_read_with_grant",
     "goals_permission_write",
     "goals_tenant_read",
@@ -11955,22 +11966,22 @@
      },
      {
       "type": "UBIQUITOUS",
-      "text": "UBIQUITOUS: 行レベル制御 goal_versions_all_read が効く",
+      "text": "UBIQUITOUS: 行レベル制御 goal_versions_ops_read_with_grant が効く",
       "critical": false
      },
      {
       "type": "UBIQUITOUS",
-      "text": "UBIQUITOUS: 行レベル制御 goal_versions_ops_write が効く",
+      "text": "UBIQUITOUS: 行レベル制御 goal_versions_permission_write が効く",
+      "critical": false
+     },
+     {
+      "type": "UBIQUITOUS",
+      "text": "UBIQUITOUS: 行レベル制御 goal_versions_tenant_read が効く",
       "critical": false
      },
      {
       "type": "UBIQUITOUS",
       "text": "UBIQUITOUS: 行レベル制御 goals_ops_read_with_grant が効く",
-      "critical": false
-     },
-     {
-      "type": "UBIQUITOUS",
-      "text": "UBIQUITOUS: 行レベル制御 goals_permission_write が効く",
       "critical": false
      }
     ],
@@ -12121,7 +12132,7 @@
      "UBIQUITOUS: 行レベル制御 duties_ops_read_with_grant が効く",
      "UBIQUITOUS: 行レベル制御 duties_permission_write が効く",
      "UBIQUITOUS: 行レベル制御 duties_tenant_read が効く",
-     "UBIQUITOUS: 行レベル制御 duty_versions_ops_write が効く"
+     "UBIQUITOUS: 行レベル制御 duty_versions_permission_write が効く"
     ],
     "regression": [
      "pnpm test（該当パッケージ）PASS",
@@ -12139,7 +12150,7 @@
     "duties_ops_read_with_grant",
     "duties_permission_write",
     "duties_tenant_read",
-    "duty_versions_ops_write",
+    "duty_versions_permission_write",
     "goals_ops_read_with_grant",
     "goals_tenant_read",
     "learned_procedures_permission_write",
@@ -12353,7 +12364,7 @@
      },
      {
       "type": "UBIQUITOUS",
-      "text": "UBIQUITOUS: 行レベル制御 duty_versions_ops_write が効く",
+      "text": "UBIQUITOUS: 行レベル制御 duty_versions_permission_write が効く",
       "critical": false
      }
     ],
@@ -14685,7 +14696,7 @@
     "members_permission_write",
     "permissions_permission_write",
     "service_registry_permission_write",
-    "service_registry_versions_ops_write",
+    "service_registry_versions_permission_write",
     "service_requests_permission_write",
     "service_requests_self_only_write",
     "tenants_permission_write"
@@ -15099,12 +15110,13 @@
     "clones_tenant_read",
     "duties_ops_read_with_grant",
     "duties_tenant_read",
-    "duty_versions_all_read",
+    "duty_versions_ops_read_with_grant",
+    "duty_versions_tenant_read",
     "members_ops_read_with_grant",
     "members_tenant_read",
     "policies_permission_write",
     "service_registry_permission_write",
-    "service_registry_versions_ops_write",
+    "service_registry_versions_permission_write",
     "service_requests_permission_write",
     "service_requests_self_only_write",
     "skill_attachments_permission_write",
@@ -15455,7 +15467,7 @@
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "UBIQUITOUS: 行レベル制御 artifacts_permission_write が効く",
      "UBIQUITOUS: 行レベル制御 duties_permission_write が効く",
-     "UBIQUITOUS: 行レベル制御 duty_versions_ops_write が効く",
+     "UBIQUITOUS: 行レベル制御 duty_versions_permission_write が効く",
      "UBIQUITOUS: 行レベル制御 members_permission_write が効く"
     ],
     "regression": [
@@ -15473,7 +15485,7 @@
    "access_policies_required": [
     "artifacts_permission_write",
     "duties_permission_write",
-    "duty_versions_ops_write",
+    "duty_versions_permission_write",
     "members_permission_write",
     "plan_versions_ops_write",
     "subscriptions_permission_write",
@@ -15666,7 +15678,7 @@
      },
      {
       "type": "UBIQUITOUS",
-      "text": "UBIQUITOUS: 行レベル制御 duty_versions_ops_write が効く",
+      "text": "UBIQUITOUS: 行レベル制御 duty_versions_permission_write が効く",
       "critical": false
      },
      {
@@ -15823,7 +15835,8 @@
     "clones_tenant_read",
     "duties_ops_read_with_grant",
     "duties_tenant_read",
-    "duty_versions_all_read",
+    "duty_versions_ops_read_with_grant",
+    "duty_versions_tenant_read",
     "members_ops_read_with_grant",
     "members_tenant_read",
     "plan_versions_all_read",

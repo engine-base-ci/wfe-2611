@@ -27,7 +27,7 @@
 | E-010 | `goals` | 2. 会社モデル ── 目標 | scope_layered | 3 | D-032 D-034 D-058 |
 | E-011 | `goal_allocations` | 2. 会社モデル ── 目標 | account_scoped | 3 | D-058 |
 | E-012 | `goal_contributions` | 2. 会社モデル ── 目標 | account_scoped | 3 | D-010 |
-| E-013 | `goal_versions` | 2. 会社モデル ── 目標 | none | 2 | D-061 |
+| E-013 | `goal_versions` | 2. 会社モデル ── 目標 | account_scoped | 3 | D-061 |
 | E-014 | `hypotheses` | 2. 会社モデル ── 目標 | scope_layered | 3 | D-035 |
 | E-015 | `measures` | 2. 会社モデル ── 目標 | scope_layered | 3 | D-010 |
 | E-016 | `validations` | 2. 会社モデル ── 目標 | account_scoped | 3 | D-010 |
@@ -37,7 +37,7 @@
 | E-020 | `ledger_views` | 3. 会社モデル ── 台帳 | scope_layered | 3 | D-010 |
 | E-021 | `ledger_records` | 3. 会社モデル ── 台帳 | scope_layered | 3 | D-010 |
 | E-022 | `duties` | 4. 会社モデル ── 担当業務・記憶 | scope_layered | 3 | D-010 |
-| E-023 | `duty_versions` | 4. 会社モデル ── 担当業務・記憶 | none | 2 | D-010 |
+| E-023 | `duty_versions` | 4. 会社モデル ── 担当業務・記憶 | account_scoped | 3 | D-010 |
 | E-024 | `learned_procedures` | 4. 会社モデル ── 担当業務・記憶 | scope_layered | 3 | D-010 |
 | E-025 | `procedure_steps` | 4. 会社モデル ── 担当業務・記憶 | account_scoped | 3 | D-010 |
 | E-026 | `memory_kinds` | 4. 会社モデル ── 担当業務・記憶 | none | 2 | D-010 |
@@ -71,7 +71,7 @@
 | E-054 | `distributions` | 11. 運営 | ops_scoped | 1 | D-037 D-063 D-073.7 D-074.4 |
 | E-055 | `distribution_versions` | 11. 運営 | none | 2 | D-073.7 D-074.4 D-076.10 D-076.5 |
 | E-056 | `tenant_distributions` | 11. 運営 | account_scoped | 3 | D-073.7 D-074.4 D-076.10 D-076.5 |
-| E-057 | `service_registry_versions` | 11. 運営 | none | 2 | D-073.7 D-074.4 D-076 D-076.10 |
+| E-057 | `service_registry_versions` | 11. 運営 | account_scoped | 3 | D-073.7 D-074.4 D-076 D-076.10 |
 | E-058 | `service_requests` | 11. 運営 | account_scoped | 4 | D-073.7 D-074.4 D-076 D-076.10 |
 | E-059 | `review_requests` | 11. 運営 | account_scoped | 3 | D-027 D-073.7 D-074 D-074.4 |
 | E-060 | `ops_members` | 11. 運営 | ops_scoped | 1 | D-073 D-073.7 D-074.4 D-076.10 |

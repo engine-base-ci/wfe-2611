@@ -69,7 +69,7 @@ erDiagram
 | `goals` | `<versioned>` / **`ended_at`**（無くす＝消さない）/ `parent_id` / **`rollup_kind_id`** / **`rollup_spec jsonb`** / `kind_id` / `period_start` / `period_end` / `target_value` / `unit_id` / `origin_id` | `origin` = 配られた／自主。**`rollup_kind` は「この目標が親にどう積み上がるか」**。`rollup_spec` は変換の定義（式・係数）を入れる**開いた器**。中身は目標設定スキルが決める |
 | `goal_allocations` | `<common>` / `goal_id` / `assignee_member_id` / `allocated_value` / `agreement_status_id` | **`rollup_kind = sum` のときだけ使う。** 未配分＝親の target − 子の合計 |
 | **`goal_contributions`** | `<common>` / `child_goal_id` / `parent_goal_id` / `hypothesis_id` / `verdict_id` | **★新設。`rollup_kind = none` のとき、どの仮説で親に効くかを繋ぐ。**効いたかは `validations` で検証する |
-| `goal_versions` | `goal_id` / `version` / `snapshot jsonb` / `changed_at` / `changed_by` | 期中変更の履歴 |
+| `goal_versions` | `<common>` / `goal_id` / `version` / `snapshot jsonb` / `changed_at` / `changed_by` | 期中変更の履歴。会社のデータなので `<common>`（tenant_id で分離。全員が読めるマスタではない） |
 | `hypotheses` | `<scoped>` / `goal_id` / `statement` / `evidence` | **目標とタスクの間の層** |
 | `measures` | `<scoped>` / `hypothesis_id` / `statement` / `expected_effect` | 施策 |
 | `validations` | `<common>` / `measure_id` / `measured_value` / `verdict_id` / `measured_at` | 検証 |
@@ -121,7 +121,7 @@ erDiagram
 | テーブル | 主な列 | 備考 |
 |---|---|---|
 | `duties` | `<versioned>` / `ai_employee_id` / `name` / `definition_md` / `constraints jsonb` / `visibility_id` | ← **E9**。`visibility` で中身非公開の配布に対応 |
-| `duty_versions` | `duty_id` / `version` / `snapshot jsonb` / `changed_by` / `change_reason` | **改訂履歴＝堀の実体** |
+| `duty_versions` | `<common>` / `duty_id` / `version` / `snapshot jsonb` / `changed_by` / `change_reason` | **改訂履歴＝堀の実体**。会社のデータなので `<common>` |
 | `learned_procedures` | `<scoped>` / `duty_id` / `target_service_id` / `status_id` / `run_count` / `avg_ms` / `fail_count` / `last_verified_at` | `status` = learning / mastered / needs_review |
 | `procedure_steps` | `<common>` / `procedure_id` / `order_no` / `intent_ja` / `locator jsonb` / `is_variable` | **`intent_ja` が顧客に見える日本語**。`locator` は隠す |
 | `memory_kinds` | `key` / `label` | **マスタ**（rule / preference / example） |
@@ -265,7 +265,7 @@ erDiagram
 | **`distributions`** | `<common>`（tenant_id＝運営）/ `kind_id`（ai_employee / duty / rule / template / goal_skill）/ `key` / `name` / `current_version` / `plan_ids uuid[]` / `is_locked` | **★新設（D-037・D-076.10・D-077.4）。運営配布物のマスタ。**`ai_employees.provisioning_id` はここを指す。目標スキル（D-063）も配布物の一種。`is_locked`＝上書き不可の安全ルール |
 | **`distribution_versions`** | `distribution_id` / `version` / `snapshot jsonb` / `released_at` / `released_by` / `change_reason` | 版。会社側は版を上げるまで変わらない（D-076.10） |
 | **`tenant_distributions`** | `<common>` / `distribution_id` / `version_in_use` / `enabled` / `override jsonb`（会社が足した個人ルール等）/ `disabled_by` | **★新設（D-077.6）。**会社の詳細「配布したもの」＝この会社が使っている配布物・版・上書き。運営はマスタを直し、ここは 1 社への配布の状態 |
-| **`service_registry_versions`** | `service_id` / `version` / `automation_verdict_id` / `reason` / `released_at` | **★新設（D-076.5）。**サービス台帳の可否は版で持ち、全社に効く。禁止に変えたら使っている会社に自動でお知らせ |
+| **`service_registry_versions`** | `<common>` / `service_id` / `version` / `automation_verdict_id` / `reason` / `released_at` | **★新設（D-076.5）。**サービス台帳の可否は版で持ち、全社に効く。禁止に変えたら使っている会社に自動でお知らせ |
 | **`service_requests`** | `<common>` / `service_name` / `url` / `requested_by` / `verdict_id` / `decided_at` | **★新設（D-076.5）。**会社からの「このサービスは触れるか」の申請 |
 | **`review_requests`** | `<common>` / `subject_type`（template / duty）/ `subject_id` / `anonymization_check jsonb` / `status_id`（pending / approved / rejected / returned）/ `reviewer_ops_member_id` / `decided_at` / `reason` | **★新設（D-027・D-074.4・D-077.3）。**会社が明示的に公開したものの審査。承認・却下は会社の詳細の「審査」で行う。公開時の出どころは業種名だけ |
 | **`ops_members`** | `<common>`（tenant_id＝運営）/ `member_id` / `ops_role_id`（support / billing / catalog / admin）/ `revoked_at` | **★新設（D-073.7・D-074.4）。**運営メンバーと権限。運営の権限も 誰に×何に×できること |
