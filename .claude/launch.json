@@ -1,7 +1,30 @@
 {
   "version": "0.0.1",
   "configurations": [
-    {"name": "kaname-static", "runtimeExecutable": "python3", "runtimeArgs": ["-m", "http.server", "8765", "--bind", "127.0.0.1"], "port": 8765},
-    {"name": "web", "runtimeExecutable": "pnpm", "runtimeArgs": ["--filter", "@kaname/web", "dev"], "port": 3000}
+    {
+      "name": "kaname-static",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8765",
+        "--bind",
+        "127.0.0.1"
+      ],
+      "port": 8765
+    },
+    {
+      "name": "web",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "--filter",
+        "@kaname/web",
+        "exec",
+        "next",
+        "dev"
+      ],
+      "port": 3123,
+      "autoPort": true
+    }
   ]
 }
