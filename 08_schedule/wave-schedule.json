@@ -77,6 +77,7 @@
   "per_wave_wall_clock_h_ai": [
    6.5,
    4.5,
+   1.8,
    17.5,
    23.5,
    3.2,
@@ -102,15 +103,15 @@
   ],
   "capacity_per_day_ai_h": 60,
   "calendar_days_ai": 47,
-  "calendar_days_human": 691
+  "calendar_days_human": 693
  },
  "totals": {
-  "waves": 24,
-  "tasks": 170,
-  "estimate_hours_human": 5520.5,
-  "estimate_hours_ai_compute": 991.3,
+  "waves": 25,
+  "tasks": 171,
+  "estimate_hours_human": 5540.5,
+  "estimate_hours_ai_compute": 992.6,
   "human_review_total_h": 52.0,
-  "total_wall_clock_h_ai_parallel": 277.0,
+  "total_wall_clock_h_ai_parallel": 278.8,
   "parallel_capacity": 10,
   "l2_flows_total": 9,
   "l2_flows_unassigned": []
@@ -279,6 +280,50 @@
   },
   {
    "id": "W2",
+   "sprint": "F3",
+   "phase": "1_foundation",
+   "phase_name": "Foundation",
+   "group": "F",
+   "stage": "v1",
+   "tasks": [
+    "T-F-18"
+   ],
+   "parallel": 1,
+   "estimate_hours_human": 20,
+   "estimate_hours_ai_compute": 1.3,
+   "human_review_h": 0.0,
+   "wall_clock_h_ai": 1.8,
+   "parallel_capacity": 10,
+   "start": "2026-09-29",
+   "finish": "2026-09-29",
+   "milestone": "W0",
+   "milestone_due": "2026-10-02",
+   "assignees": {},
+   "critical_tasks": [],
+   "goal": "Foundation：配置と staging の実体（ap",
+   "qa_scope": {
+    "l1_tasks": [
+     "T-F-18"
+    ],
+    "l1_rows": 8,
+    "l2_flows": [],
+    "regression_from": [
+     "W0",
+     "W1"
+    ],
+    "gate": "bash scripts/ci/completion_gate.sh --wave W2"
+   },
+   "done_when": [
+    "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
+    "揃った流れ（l2_flows）が staging で全行 PASS（L2）",
+    "前 Wave の回帰（regression_from の差分）PASS",
+    "completion_gate.sh STATUS 完了 → 次の Wave を始める"
+   ],
+   "runnable": true,
+   "preconditions": []
+  },
+  {
+   "id": "W3",
    "sprint": "D1",
    "phase": "2_data",
    "phase_name": "Data Layer",
@@ -334,9 +379,10 @@
     "l2_flows": [],
     "regression_from": [
      "W0",
-     "W1"
+     "W1",
+     "W2"
     ],
-    "gate": "bash scripts/ci/completion_gate.sh --wave W2"
+    "gate": "bash scripts/ci/completion_gate.sh --wave W3"
    },
    "done_when": [
     "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
@@ -348,7 +394,7 @@
    "preconditions": []
   },
   {
-   "id": "W3",
+   "id": "W4",
    "sprint": "D2",
    "phase": "2_data",
    "phase_name": "Data Layer",
@@ -391,9 +437,10 @@
     "regression_from": [
      "W0",
      "W1",
-     "W2"
+     "W2",
+     "W3"
     ],
-    "gate": "bash scripts/ci/completion_gate.sh --wave W3"
+    "gate": "bash scripts/ci/completion_gate.sh --wave W4"
    },
    "done_when": [
     "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
@@ -405,7 +452,7 @@
    "preconditions": []
   },
   {
-   "id": "W4",
+   "id": "W5",
    "sprint": "V2-1",
    "phase": "8_spec_v2",
    "phase_name": "段階 2 の仕様づくり（実装と並行・D-081）",
@@ -424,8 +471,8 @@
    "human_review_h": 0.0,
    "wall_clock_h_ai": 3.2,
    "parallel_capacity": 10,
-   "start": "2026-09-25",
-   "finish": "2026-09-28",
+   "start": "2026-09-30",
+   "finish": "2026-10-01",
    "milestone": "W0",
    "milestone_due": "2026-10-02",
    "assignees": {
@@ -447,9 +494,10 @@
      "W0",
      "W1",
      "W2",
-     "W3"
+     "W3",
+     "W4"
     ],
-    "gate": "bash scripts/ci/completion_gate.sh --wave W4"
+    "gate": "bash scripts/ci/completion_gate.sh --wave W5"
    },
    "done_when": [
     "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
@@ -461,7 +509,7 @@
    "preconditions": []
   },
   {
-   "id": "W5",
+   "id": "W6",
    "sprint": "A1",
    "phase": "3_api",
    "phase_name": "API Layer",
@@ -529,9 +577,10 @@
      "W1",
      "W2",
      "W3",
-     "W4"
+     "W4",
+     "W5"
     ],
-    "gate": "bash scripts/ci/completion_gate.sh --wave W5"
+    "gate": "bash scripts/ci/completion_gate.sh --wave W6"
    },
    "done_when": [
     "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
@@ -543,7 +592,7 @@
    "preconditions": []
   },
   {
-   "id": "W6",
+   "id": "W7",
    "sprint": "A2",
    "phase": "3_api",
    "phase_name": "API Layer",
@@ -610,9 +659,10 @@
      "W2",
      "W3",
      "W4",
-     "W5"
+     "W5",
+     "W6"
     ],
-    "gate": "bash scripts/ci/completion_gate.sh --wave W6"
+    "gate": "bash scripts/ci/completion_gate.sh --wave W7"
    },
    "done_when": [
     "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
@@ -624,7 +674,7 @@
    "preconditions": []
   },
   {
-   "id": "W7",
+   "id": "W8",
    "sprint": "A3",
    "phase": "3_api",
    "phase_name": "API Layer",
@@ -669,9 +719,10 @@
      "W3",
      "W4",
      "W5",
-     "W6"
+     "W6",
+     "W7"
     ],
-    "gate": "bash scripts/ci/completion_gate.sh --wave W7"
+    "gate": "bash scripts/ci/completion_gate.sh --wave W8"
    },
    "done_when": [
     "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
@@ -683,7 +734,7 @@
    "preconditions": []
   },
   {
-   "id": "W8",
+   "id": "W9",
    "sprint": "U0",
    "phase": "4_ui_foundation",
    "phase_name": "UI Foundation",
@@ -719,9 +770,10 @@
      "W4",
      "W5",
      "W6",
-     "W7"
+     "W7",
+     "W8"
     ],
-    "gate": "bash scripts/ci/completion_gate.sh --wave W8"
+    "gate": "bash scripts/ci/completion_gate.sh --wave W9"
    },
    "done_when": [
     "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
@@ -733,7 +785,7 @@
    "preconditions": []
   },
   {
-   "id": "W9",
+   "id": "W10",
    "sprint": "U0",
    "phase": "4_ui_foundation",
    "phase_name": "UI Foundation",
@@ -785,9 +837,10 @@
      "W5",
      "W6",
      "W7",
-     "W8"
+     "W8",
+     "W9"
     ],
-    "gate": "bash scripts/ci/completion_gate.sh --wave W9"
+    "gate": "bash scripts/ci/completion_gate.sh --wave W10"
    },
    "done_when": [
     "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
@@ -799,7 +852,7 @@
    "preconditions": []
   },
   {
-   "id": "W10",
+   "id": "W11",
    "sprint": "U1",
    "phase": "5_ui_parallel",
    "phase_name": "UI Parallel",
@@ -862,9 +915,10 @@
      "W6",
      "W7",
      "W8",
-     "W9"
+     "W9",
+     "W10"
     ],
-    "gate": "bash scripts/ci/completion_gate.sh --wave W10"
+    "gate": "bash scripts/ci/completion_gate.sh --wave W11"
    },
    "done_when": [
     "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
@@ -876,7 +930,7 @@
    "preconditions": []
   },
   {
-   "id": "W11",
+   "id": "W12",
    "sprint": "U2",
    "phase": "5_ui_parallel",
    "phase_name": "UI Parallel",
@@ -940,9 +994,10 @@
      "W7",
      "W8",
      "W9",
-     "W10"
+     "W10",
+     "W11"
     ],
-    "gate": "bash scripts/ci/completion_gate.sh --wave W11"
+    "gate": "bash scripts/ci/completion_gate.sh --wave W12"
    },
    "done_when": [
     "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
@@ -954,7 +1009,7 @@
    "preconditions": []
   },
   {
-   "id": "W12",
+   "id": "W13",
    "sprint": "U3",
    "phase": "5_ui_parallel",
    "phase_name": "UI Parallel",
@@ -1020,9 +1075,10 @@
      "W8",
      "W9",
      "W10",
-     "W11"
+     "W11",
+     "W12"
     ],
-    "gate": "bash scripts/ci/completion_gate.sh --wave W12"
+    "gate": "bash scripts/ci/completion_gate.sh --wave W13"
    },
    "done_when": [
     "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
@@ -1034,7 +1090,7 @@
    "preconditions": []
   },
   {
-   "id": "W13",
+   "id": "W14",
    "sprint": "U4",
    "phase": "5_ui_parallel",
    "phase_name": "UI Parallel",
@@ -1102,9 +1158,10 @@
      "W9",
      "W10",
      "W11",
-     "W12"
+     "W12",
+     "W13"
     ],
-    "gate": "bash scripts/ci/completion_gate.sh --wave W13"
+    "gate": "bash scripts/ci/completion_gate.sh --wave W14"
    },
    "done_when": [
     "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
@@ -1116,7 +1173,7 @@
    "preconditions": []
   },
   {
-   "id": "W14",
+   "id": "W15",
    "sprint": "U5",
    "phase": "5_ui_parallel",
    "phase_name": "UI Parallel",
@@ -1181,9 +1238,10 @@
      "W10",
      "W11",
      "W12",
-     "W13"
+     "W13",
+     "W14"
     ],
-    "gate": "bash scripts/ci/completion_gate.sh --wave W14"
+    "gate": "bash scripts/ci/completion_gate.sh --wave W15"
    },
    "done_when": [
     "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
@@ -1195,7 +1253,7 @@
    "preconditions": []
   },
   {
-   "id": "W15",
+   "id": "W16",
    "sprint": "U6",
    "phase": "5_ui_parallel",
    "phase_name": "UI Parallel",
@@ -1260,9 +1318,10 @@
      "W11",
      "W12",
      "W13",
-     "W14"
+     "W14",
+     "W15"
     ],
-    "gate": "bash scripts/ci/completion_gate.sh --wave W15"
+    "gate": "bash scripts/ci/completion_gate.sh --wave W16"
    },
    "done_when": [
     "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
@@ -1274,7 +1333,7 @@
    "preconditions": []
   },
   {
-   "id": "W16",
+   "id": "W17",
    "sprint": "I1",
    "phase": "6_integration",
    "phase_name": "Integration & Polish",
@@ -1343,9 +1402,10 @@
      "W12",
      "W13",
      "W14",
-     "W15"
+     "W15",
+     "W16"
     ],
-    "gate": "bash scripts/ci/completion_gate.sh --wave W16"
+    "gate": "bash scripts/ci/completion_gate.sh --wave W17"
    },
    "done_when": [
     "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
@@ -1357,7 +1417,7 @@
    "preconditions": []
   },
   {
-   "id": "W17",
+   "id": "W18",
    "sprint": "I2",
    "phase": "6_integration",
    "phase_name": "Integration & Polish",
@@ -1421,9 +1481,10 @@
      "W13",
      "W14",
      "W15",
-     "W16"
+     "W16",
+     "W17"
     ],
-    "gate": "bash scripts/ci/completion_gate.sh --wave W17"
+    "gate": "bash scripts/ci/completion_gate.sh --wave W18"
    },
    "done_when": [
     "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
@@ -1435,7 +1496,7 @@
    "preconditions": []
   },
   {
-   "id": "W18",
+   "id": "W19",
    "sprint": "I3",
    "phase": "6_integration",
    "phase_name": "Integration & Polish",
@@ -1490,9 +1551,10 @@
      "W14",
      "W15",
      "W16",
-     "W17"
+     "W17",
+     "W18"
     ],
-    "gate": "bash scripts/ci/completion_gate.sh --wave W18"
+    "gate": "bash scripts/ci/completion_gate.sh --wave W19"
    },
    "done_when": [
     "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
@@ -1504,7 +1566,7 @@
    "preconditions": []
   },
   {
-   "id": "W19",
+   "id": "W20",
    "sprint": "S1",
    "phase": "7_content",
    "phase_name": "スキル制作（運営の資産・開発と並行）",
@@ -1555,9 +1617,10 @@
      "W15",
      "W16",
      "W17",
-     "W18"
+     "W18",
+     "W19"
     ],
-    "gate": "bash scripts/ci/completion_gate.sh --wave W19"
+    "gate": "bash scripts/ci/completion_gate.sh --wave W20"
    },
    "done_when": [
     "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
@@ -1569,7 +1632,7 @@
    "preconditions": []
   },
   {
-   "id": "W20",
+   "id": "W21",
    "sprint": "S2",
    "phase": "7_content",
    "phase_name": "スキル制作（運営の資産・開発と並行）",
@@ -1649,9 +1712,10 @@
      "W16",
      "W17",
      "W18",
-     "W19"
+     "W19",
+     "W20"
     ],
-    "gate": "bash scripts/ci/completion_gate.sh --wave W20"
+    "gate": "bash scripts/ci/completion_gate.sh --wave W21"
    },
    "done_when": [
     "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
@@ -1663,7 +1727,7 @@
    "preconditions": []
   },
   {
-   "id": "W21",
+   "id": "W22",
    "sprint": "S3",
    "phase": "7_content",
    "phase_name": "スキル制作（運営の資産・開発と並行）",
@@ -1726,9 +1790,10 @@
      "W17",
      "W18",
      "W19",
-     "W20"
+     "W20",
+     "W21"
     ],
-    "gate": "bash scripts/ci/completion_gate.sh --wave W21"
+    "gate": "bash scripts/ci/completion_gate.sh --wave W22"
    },
    "done_when": [
     "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
@@ -1740,7 +1805,7 @@
    "preconditions": []
   },
   {
-   "id": "W22",
+   "id": "W23",
    "sprint": "A4",
    "phase": "9_v2_api",
    "phase_name": "段階 2 API Layer",
@@ -1802,9 +1867,10 @@
      "W18",
      "W19",
      "W20",
-     "W21"
+     "W21",
+     "W22"
     ],
-    "gate": "bash scripts/ci/completion_gate.sh --wave W22"
+    "gate": "bash scripts/ci/completion_gate.sh --wave W23"
    },
    "done_when": [
     "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
@@ -1816,7 +1882,7 @@
    "preconditions": []
   },
   {
-   "id": "W23",
+   "id": "W24",
    "sprint": "U7",
    "phase": "9_v2_ui_parallel",
    "phase_name": "段階 2 UI Parallel",
@@ -1882,9 +1948,10 @@
      "W19",
      "W20",
      "W21",
-     "W22"
+     "W22",
+     "W23"
     ],
-    "gate": "bash scripts/ci/completion_gate.sh --wave W23"
+    "gate": "bash scripts/ci/completion_gate.sh --wave W24"
    },
    "done_when": [
     "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",

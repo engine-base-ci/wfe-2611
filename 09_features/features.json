@@ -10,9 +10,9 @@
   ]
  },
  "summary": {
-  "total_features": 121,
+  "total_features": 122,
   "by_group": {
-   "A": 15,
+   "A": 16,
    "B": 20,
    "C": 64,
    "D": 18,
@@ -20,12 +20,12 @@
   },
   "waves": 14,
   "parallel_capacity": 10,
-  "total_estimate_hours_human": 4112.5,
-  "total_estimate_hours_ai_compute": 730.5,
+  "total_estimate_hours_human": 4132.5,
+  "total_estimate_hours_ai_compute": 731.8,
   "human_review_total_h": 25.0,
   "total_wall_clock_h_ai_parallel": 146.4,
   "calendar_days_ai": 25,
-  "calendar_days_human": 515,
+  "calendar_days_human": 517,
   "orphan_components": [],
   "cycles": []
  },
@@ -1463,6 +1463,95 @@
    "why": "",
    "drift_origin": null,
    "wave": 0
+  },
+  {
+   "id": "F-V3-A-08",
+   "name": "配置と staging の実体（apps/api の起動口 server.ts・Dockerfile・Railway／Vercel／Supabase／Infisical の環境・認証の schema 名を Supabase の auth と衝突させない・役割のパスワードを環境から・本番と同じ手順で起動時確認）",
+   "group": "A",
+   "phase": "Foundation",
+   "kind": "infra",
+   "role": "画面のタスクがブラウザで L1 を流す staging を、本番と同じ migration／deploy で作れる状態にする（G-11）。2026-09-16 user「staging を作る。作り方を出して」で、API の起動口と Dockerfile が無い・Better Auth の schema auth が Supabase と衝突する・役割のパスワードが migration に直書き、が見つかった",
+   "category": "infra",
+   "acts": [],
+   "screen_ids": [],
+   "entity_ids": [],
+   "api_endpoints": [],
+   "access_control_policies": [],
+   "ears_ac_seed": [],
+   "depends_on": [
+    "F-V3-A-05",
+    "F-V3-A-06"
+   ],
+   "wired_by": [],
+   "journey_candidates": [],
+   "combination_points": [
+    {
+     "point": "実行中 × 切替（モード・経路・設定を途中で変える）",
+     "verdict": "N/A：実行を持たない（サーバーの状態を読むだけ）"
+    },
+    {
+     "point": "中断 × 再開（PC が閉じる・Bridge が切れる・タブを閉じる）",
+     "verdict": "N/A：一回の要求で完結する"
+    },
+    {
+     "point": "別ロールの同時操作（承認者 2 人・運営と顧客）",
+     "verdict": "N/A：読み取りだけ"
+    },
+    {
+     "point": "期限切れの瞬間（セッション・招待・サポートアクセス・猶予）",
+     "verdict": "該当"
+    },
+    {
+     "point": "退会・停止中の実行（出来事の途中に要求が来る）",
+     "verdict": "N/A：口座状態を変えない読み取り"
+    }
+   ],
+   "external_resources": [
+    {
+     "resource": "staging（Supabase 別プロジェクト・Railway 環境・Vercel Preview・Infisical staging）と production",
+     "provision": "手順は infra/provision/README.md。口座と課金は PM が作り、コードは同じ migration／deploy を流す",
+     "env": [
+      "staging",
+      "production"
+     ]
+    }
+   ],
+   "account_state_impacts": {
+    "applies": false,
+    "detail": "—",
+    "touches": []
+   },
+   "vertical_slice_components": {},
+   "ci_gates": {
+    "lint": true,
+    "type_check": true,
+    "test_coverage": true,
+    "access_control_coverage": false,
+    "mock_impl_diff": false,
+    "ears_validator": true,
+    "layer_audit": true
+   },
+   "independence": "high",
+   "difficulty": "medium",
+   "risk": "Supabase の auth schema は GoTrue が持つ。Better Auth を同じ名前に置くと auth.users／auth.sessions が衝突する",
+   "status": "decided",
+   "decided_at": "2026-09-16",
+   "source": [
+    "D-053.1",
+    "D-046",
+    "(基盤)"
+   ],
+   "estimate_hours_human": 20,
+   "estimate_hours_ai": 1.3,
+   "human_review_h": 0.0,
+   "wall_clock_h_ai": 1.3,
+   "ai_acceleration_factor": 15,
+   "blocking_dependencies_h": 0,
+   "estimate_method": "reference",
+   "estimate_confidence": "medium",
+   "why": "staging が無いと画面の L1・流れの L2 は流せない（ローカルの緑を staging の PASS と書けない）",
+   "drift_origin": null,
+   "wave": 1
   },
   {
    "id": "F-V3-B-00",
@@ -21369,8 +21458,8 @@
    "group": "A",
    "phase": "Foundation",
    "features": [
-    "F-V3-A-01",
     "F-V3-A-05",
+    "F-V3-A-01",
     "F-V3-A-02",
     "F-V3-A-04",
     "F-V3-A-03",
@@ -21394,12 +21483,13 @@
     "F-V3-A-C1",
     "F-V3-A-C5",
     "F-V3-A-C7",
-    "F-V3-A-06"
+    "F-V3-A-06",
+    "F-V3-A-08"
    ],
-   "parallel": 5,
+   "parallel": 6,
    "wall_clock_h_ai": 4.5,
-   "estimate_hours_human": 64,
-   "estimate_hours_ai_compute": 7.5
+   "estimate_hours_human": 84,
+   "estimate_hours_ai_compute": 8.8
   },
   {
    "wave": 2,

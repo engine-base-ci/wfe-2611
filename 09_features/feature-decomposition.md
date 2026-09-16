@@ -27,6 +27,7 @@
 | F-V3-A-05 | OpenAPI → TS 型生成・契約テスト・endpoint 実在性チェック（API ↦ UI | 0 | 12 | 0.8 | 0.8 | F-V3-D-03 F-V3-D-09 |
 | F-V3-A-06 | 外部リソースのコード化（バケット・Resend・Infisical・DNS・staging）と起 | 0 | 16 | 1.1 | 1.1 |  |
 | F-V3-A-07 | エラー一覧の実行時（error_events・文言と次の一手を errors.json から引く | 0 | 12 | 1.0 | 1.0 |  |
+| F-V3-A-08 | 配置と staging の実体（apps/api の起動口 server.ts・Dockerfi | 2 | 20 | 1.3 | 1.3 |  |
 
 ### Group B（Backend）
 
@@ -162,4 +163,4 @@ Wave 0（Foundation）→ Backend → UI → Integration（結線・流れ）→
 
 | Human | AI 計算 | 人のレビュー | wall-clock（並列 10） | 日数 Human | 日数 AI |
 |---|---|---|---|---|---|
-| 4112.5 h | 730.5 h | 25.0 h | 146.4 h | 515 | 25 |
+| 4132.5 h | 731.8 h | 25.0 h | 146.4 h | 517 | 25 |
