@@ -2,11 +2,11 @@
 
 ## サマリー
 
-- 総タスク数：169（A 26 / D 14 / F 17 / I 22 / S 15 / U-screen 64 / U-shared 6 / V2 5）
+- 総タスク数：170（A 26 / D 14 / F 17 / I 22 / S 15 / U-screen 64 / U-shared 7 / V2 5）
 - 画面の被覆：64/64
-- L1 テスト行：3367（正本 07_qa/test-specs）／ 流れ（L2）：9
-- 工数：Human 5504.5 h（689 日）／ AI 計算 989.7 h ＋ 人のレビュー 52.0 h → wall-clock 268.9 h（45 日・並列 10）
-- Wave 数：22
+- L1 テスト行：3378（正本 07_qa/test-specs）／ 流れ（L2）：9
+- 工数：Human 5520.5 h（691 日）／ AI 計算 991.3 h ＋ 人のレビュー 52.0 h → wall-clock 277.0 h（47 日・並列 10）
+- Wave 数：24
 
 ## Group 別タスク一覧
 
@@ -88,136 +88,137 @@
 | T-A-21 | API 運営として、外部サービスの可否（サービス台帳）とプランの定義と目標ス（3 endpoint） | backend | backend | 98 | 8.2 | 8.2 | 7 | 16 | 27 |
 | T-A-22 | API 運営として、公開の申請を審査し、顧客が許可したときだけ支援で中を見て（3 endpoint） | backend | backend | 155 | 38.8 | 39.8 | 7 | 13 | 24 |
 | T-A-23 | API 運営として、各社に配るもの（AI社員・担当業務・ルール・テンプレ）と（2 endpoint） | backend | backend | 74 | 6.2 | 6.2 | 7 | 8 | 17 |
-| T-A-24 | API このツールを入れて安全か、社内（情シス・コンプラ）に説明できるように（1 endpoint・ | backend | backend | 131 | 32.8 | 33.8 | 20 | 9 | 11 |
-| T-A-25 | API 運営として、問い合わせに答え、お知らせと稼働状況を出し、各社の請求・（2 endpoint・ | backend | backend | 143 | 35.8 | 36.8 | 20 | 13 | 18 |
-| T-A-26 | API 自分のアカウント・会社の設定・既存データの取り込み・外部サービスの連（2 endpoint・ | backend | backend | 164 | 41.0 | 42.0 | 20 | 16 | 18 |
+| T-A-24 | API このツールを入れて安全か、社内（情シス・コンプラ）に説明できるように（1 endpoint・ | backend | backend | 131 | 32.8 | 33.8 | 22 | 9 | 11 |
+| T-A-25 | API 運営として、問い合わせに答え、お知らせと稼働状況を出し、各社の請求・（2 endpoint・ | backend | backend | 143 | 35.8 | 36.8 | 22 | 13 | 18 |
+| T-A-26 | API 自分のアカウント・会社の設定・既存データの取り込み・外部サービスの連（2 endpoint・ | backend | backend | 164 | 41.0 | 42.0 | 22 | 16 | 18 |
 
 ### Group U-shared
 
 | ID | タイトル | category | layer | Human h | AI h | wall-clock | wave | depends_on | L1 行 |
 |---|---|---|---|---|---|---|---|---|---|
-| T-US-01 | シェル（サイドバー・レール・第2ナビ・三画面・下タブ・枠の導出 data-frame・役割の出し分け | frontend | ui | 24 | 2.4 | 2.4 | 8 | 3 | 8 |
-| T-US-02 | 自分のAIのパネルと会話の部品（assistant-ui・AG-UI・選択肢・承認カード・受領・引用 | frontend | ui | 32 | 3.2 | 3.2 | 8 | 3 | 8 |
-| T-US-03 | API クライアントと型（OpenAPI → types.ts・TanStack Query・別 G | frontend | ui | 12 | 1.2 | 1.2 | 8 | 3 | 8 |
-| T-US-04 | 認証の配管（ログイン・2 段階認証・招待・入り直し・端末の失効表示） | frontend | ui | 12 | 1.2 | 1.2 | 8 | 3 | 8 |
-| T-US-05 | デザイントークンと部品（Tailwind @theme・shadcn/ui Base UI・Luci | frontend | ui | 16 | 1.6 | 1.6 | 8 | 3 | 8 |
-| T-US-06 | タイムライン（svar-gantt・棒を押すと詳細・1023 以下は切替）と見え方の切替（リスト／カ | frontend | ui | 16 | 1.6 | 1.6 | 8 | 3 | 8 |
+| T-US-00 | apps/web の土台（Next.js 15 App Router の雛形・Playwright  | frontend | ui | 16 | 1.6 | 1.6 | 8 | 2 | 11 |
+| T-US-01 | シェル（サイドバー・レール・第2ナビ・三画面・下タブ・枠の導出 data-frame・役割の出し分け | frontend | ui | 24 | 2.4 | 2.4 | 9 | 4 | 8 |
+| T-US-02 | 自分のAIのパネルと会話の部品（assistant-ui・AG-UI・選択肢・承認カード・受領・引用 | frontend | ui | 32 | 3.2 | 3.2 | 9 | 4 | 8 |
+| T-US-03 | API クライアントと型（OpenAPI → types.ts・TanStack Query・別 G | frontend | ui | 12 | 1.2 | 1.2 | 9 | 4 | 8 |
+| T-US-04 | 認証の配管（ログイン・2 段階認証・招待・入り直し・端末の失効表示） | frontend | ui | 12 | 1.2 | 1.2 | 9 | 4 | 8 |
+| T-US-05 | デザイントークンと部品（Tailwind @theme・shadcn/ui Base UI・Luci | frontend | ui | 16 | 1.6 | 1.6 | 9 | 4 | 8 |
+| T-US-06 | タイムライン（svar-gantt・棒を押すと詳細・1023 以下は切替）と見え方の切替（リスト／カ | frontend | ui | 16 | 1.6 | 1.6 | 9 | 4 | 8 |
 
 ### Group U-screen
 
 | ID | タイトル | category | layer | Human h | AI h | wall-clock | wave | depends_on | L1 行 |
 |---|---|---|---|---|---|---|---|---|---|
-| T-U-01 | 画面 アカウントを作る（2 状態・R1/R2） | frontend | ui | 12.0 | 1.2 | 1.2 | 9 | 7 | 25 |
-| T-U-02 | 画面 メールを確認する（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 9 | 9 | 20 |
-| T-U-03 | 画面 招待を受けて参加する（3 状態・R3/R4） | frontend | ui | 14.5 | 1.4 | 1.4 | 9 | 7 | 22 |
-| T-U-04 | 画面 2段階認証を設定する（2 状態・R1/R2/R3） | frontend | ui | 13.5 | 1.4 | 1.4 | 9 | 9 | 23 |
-| T-U-05 | 画面 ログインする（3 状態・R1/R2/R3/R4） | frontend | ui | 17.5 | 1.8 | 1.8 | 9 | 9 | 33 |
-| T-U-06 | 画面 入り直す（3 状態・R1/R2/R3） | frontend | ui | 16.0 | 1.6 | 1.6 | 9 | 9 | 24 |
-| T-U-07 | 画面 自分のAIと話す（4 状態・R1/R2） | frontend | ui | 17.0 | 1.7 | 1.7 | 9 | 8 | 25 |
-| T-U-08 | 画面 たたき台を確かめる（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 9 | 11 | 24 |
-| T-U-09 | 画面 自分のPCをつなぐ（4 状態・R1/R2） | frontend | ui | 17.0 | 1.7 | 1.7 | 9 | 8 | 34 |
-| T-U-10 | 画面 ログイン情報を預ける（5 状態・R1/R2） | frontend | ui | 19.5 | 1.9 | 1.9 | 9 | 7 | 38 |
-| T-U-11 | 画面 テストで動かす（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 10 | 7 | 26 |
-| T-U-12 | 画面 本番に切り替える（2 状態・R1/R2） | frontend | ui | 12.0 | 1.2 | 1.2 | 10 | 11 | 23 |
-| T-U-13 | 画面 今日（5 状態・R1/R2/R3） | frontend | ui | 21.0 | 2.1 | 2.1 | 10 | 8 | 36 |
-| T-U-14 | 画面 承認待ち（4 状態・R1/R2/R3） | frontend | ui | 18.5 | 1.9 | 1.9 | 10 | 7 | 38 |
-| T-U-15 | 画面 自分のAIとAI社員のやりとり（5 状態・R1/R2/R3） | frontend | ui | 21.0 | 2.1 | 2.1 | 10 | 8 | 36 |
-| T-U-16 | 画面 タスク（12 状態・R1/R2/R3/R4） | frontend | ui | 40.0 | 4.0 | 4.0 | 10 | 11 | 50 |
-| T-U-17 | 画面 自分のAIと話す（11 状態・R1/R2/R3/R4） | frontend | ui | 37.5 | 3.8 | 3.8 | 10 | 9 | 52 |
-| T-U-18 | 画面 AI社員の動き（4 状態・R1/R2/R3） | frontend | ui | 18.5 | 1.9 | 1.9 | 10 | 11 | 38 |
-| T-U-19 | 画面 探す（3 状態・R1/R2/R3/R4） | frontend | ui | 17.5 | 1.8 | 1.8 | 10 | 7 | 32 |
-| T-U-20 | 画面 台帳（6 状態・R1/R2/R3/R4） | frontend | ui | 25.0 | 2.5 | 2.5 | 10 | 8 | 38 |
-| T-U-21 | 画面 台帳の1件（3 状態・R1/R2/R3/R4） | frontend | ui | 17.5 | 1.8 | 1.8 | 11 | 7 | 38 |
-| T-U-22 | 画面 目標（5 状態・R1/R2/R3） | frontend | ui | 21.0 | 2.1 | 2.1 | 11 | 8 | 39 |
-| T-U-23 | 画面 目標の配分（6 状態・R1/R2） | frontend | ui | 22.0 | 2.2 | 2.2 | 11 | 8 | 36 |
-| T-U-24 | 画面 目標を改訂する（2 状態・R1/R2） | frontend | ui | 12.0 | 1.2 | 1.2 | 11 | 8 | 35 |
-| T-U-25 | 画面 自分の目標（3 状態・R1/R2/R3/R4） | frontend | ui | 17.5 | 1.8 | 1.8 | 11 | 8 | 32 |
-| T-U-26 | 画面 ふりかえり（5 状態・R1/R2） | frontend | ui | 19.5 | 1.9 | 1.9 | 11 | 7 | 32 |
-| T-U-27 | 画面 仮説と施策（5 状態・R1/R2） | frontend | ui | 19.5 | 1.9 | 1.9 | 11 | 7 | 32 |
-| T-U-28 | 画面 担当業務（6 状態・R1/R2） | frontend | ui | 22.0 | 2.2 | 2.2 | 11 | 7 | 33 |
-| T-U-29 | 画面 自分のAIの記憶（4 状態・R1/R2/R3/R4） | frontend | ui | 20.0 | 2.0 | 2.0 | 11 | 7 | 33 |
-| T-U-30 | 画面 台帳の形（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 11 | 8 | 30 |
-| T-U-31 | 画面 会社モデル（5 状態・R1/R2） | frontend | ui | 19.5 | 1.9 | 1.9 | 12 | 11 | 32 |
-| T-U-32 | 画面 覚え直させる（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 12 | 7 | 30 |
-| T-U-33 | 画面 証跡（6 状態・R1/R2） | frontend | ui | 22.0 | 2.2 | 2.2 | 12 | 10 | 36 |
-| T-U-34 | 画面 ルール（3 状態・R1/R2/R3/R4） | frontend | ui | 17.5 | 1.8 | 1.8 | 12 | 7 | 35 |
-| T-U-35 | 画面 メンバー（7 状態・R1/R2） | frontend | ui | 24.5 | 2.5 | 2.5 | 12 | 9 | 37 |
-| T-U-36 | 画面 AI社員（4 状態・R1/R2） | frontend | ui | 17.0 | 1.7 | 1.7 | 12 | 11 | 34 |
-| T-U-37 | 画面 AI社員の1体（5 状態・R1/R2） | frontend | ui | 19.5 | 1.9 | 1.9 | 12 | 11 | 32 |
-| T-U-38 | 画面 この製品でできること・できないこと（2 状態・R1/R2） | frontend | ui | 12.0 | 1.2 | 1.2 | 12 | 7 | 29 |
-| T-U-39 | 画面 持ち出す（2 状態・R1/R2） | frontend | ui | 12.0 | 1.2 | 1.2 | 12 | 7 | 32 |
-| T-U-40 | 画面 退会する（6 状態・R1/R2） | frontend | ui | 22.0 | 2.2 | 2.2 | 12 | 8 | 36 |
-| T-U-41 | 画面 運営の支援（2 状態・R6） | frontend | ui | 10.5 | 1.1 | 1.1 | 13 | 8 | 25 |
-| T-U-42 | 画面 運営：会社の一覧（4 状態・R6） | frontend | ui | 15.5 | 1.6 | 1.6 | 13 | 8 | 30 |
-| T-U-43 | 画面 運営：配るもの（7 状態・R6） | frontend | ui | 23.0 | 2.3 | 2.3 | 13 | 11 | 30 |
-| T-U-44 | 画面 自分のアカウント（2 状態・R1/R2/R3/R4） | frontend | ui | 15.0 | 1.5 | 1.5 | 13 | 9 | 34 |
-| T-U-45 | 画面 会社の設定（2 状態・R1/R2） | frontend | ui | 12.0 | 1.2 | 1.2 | 13 | 7 | 29 |
-| T-U-46 | 画面 取り込み（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 13 | 7 | 30 |
-| T-U-47 | 画面 外部サービスの連携（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 13 | 7 | 30 |
-| T-U-48 | 画面 運営：サービス台帳（2 状態・R6） | frontend | ui | 10.5 | 1.1 | 1.1 | 13 | 7 | 25 |
-| T-U-49 | 画面 運営：スキル（4 状態・R6） | frontend | ui | 15.5 | 1.6 | 1.6 | 13 | 7 | 30 |
-| T-U-50 | 画面 問い合わせ（5 状態・R1/R2/R3/R4） | frontend | ui | 22.5 | 2.2 | 2.2 | 13 | 7 | 37 |
-| T-U-51 | 画面 お知らせと通知（3 状態・R1/R2/R3/R4） | frontend | ui | 17.5 | 1.8 | 1.8 | 14 | 7 | 35 |
-| T-U-52 | 画面 プランと請求（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 14 | 7 | 39 |
-| T-U-53 | 画面 運営：お知らせ（2 状態・R6） | frontend | ui | 10.5 | 1.1 | 1.1 | 14 | 7 | 28 |
-| T-U-54 | 画面 運営：請求と入金（2 状態・R6） | frontend | ui | 10.5 | 1.1 | 1.1 | 14 | 7 | 28 |
-| T-U-55 | 画面 運営：会社の 1 社（1 状態・R6） | frontend | ui | 8.0 | 0.8 | 0.8 | 14 | 8 | 24 |
-| T-U-56 | 画面 運営：公開の審査（2 状態・R6） | frontend | ui | 10.5 | 1.1 | 1.1 | 14 | 7 | 25 |
-| T-U-57 | 画面 運営：運営の証跡（2 状態・R6） | frontend | ui | 10.5 | 1.1 | 1.1 | 14 | 10 | 28 |
-| T-U-58 | 画面 メンバーの1人（4 状態・R1/R2） | frontend | ui | 17.0 | 1.7 | 1.7 | 14 | 10 | 34 |
-| T-U-59 | 画面 支払い方法を登録する（4 状態・R1/R2・段階 2） | frontend | ui | 17.0 | 1.7 | 1.7 | 21 | 7 | 26 |
-| T-U-60 | 画面 開示資料（4 状態・R1/R2・段階 2） | frontend | ui | 17.0 | 1.7 | 1.7 | 21 | 7 | 26 |
-| T-U-61 | 画面 AI の経路（4 状態・R1/R2・段階 2） | frontend | ui | 17.0 | 1.7 | 1.7 | 21 | 7 | 35 |
-| T-U-62 | 画面 アプリと通知（3 状態・R1/R2/R3/R4・段階 2） | frontend | ui | 17.5 | 1.8 | 1.8 | 21 | 7 | 27 |
-| T-U-63 | 画面 運営：AI の経路と使用量（3 状態・R6・段階 2） | frontend | ui | 13.0 | 1.3 | 1.3 | 21 | 7 | 18 |
-| T-U-64 | 画面 運営：開示資料（3 状態・R6・段階 2） | frontend | ui | 13.0 | 1.3 | 1.3 | 21 | 7 | 21 |
+| T-U-01 | 画面 アカウントを作る（2 状態・R1/R2） | frontend | ui | 12.0 | 1.2 | 1.2 | 10 | 8 | 25 |
+| T-U-02 | 画面 メールを確認する（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 10 | 10 | 20 |
+| T-U-03 | 画面 招待を受けて参加する（3 状態・R3/R4） | frontend | ui | 14.5 | 1.4 | 1.4 | 10 | 8 | 22 |
+| T-U-04 | 画面 2段階認証を設定する（2 状態・R1/R2/R3） | frontend | ui | 13.5 | 1.4 | 1.4 | 10 | 10 | 23 |
+| T-U-05 | 画面 ログインする（3 状態・R1/R2/R3/R4） | frontend | ui | 17.5 | 1.8 | 1.8 | 10 | 10 | 33 |
+| T-U-06 | 画面 入り直す（3 状態・R1/R2/R3） | frontend | ui | 16.0 | 1.6 | 1.6 | 10 | 10 | 24 |
+| T-U-07 | 画面 自分のAIと話す（4 状態・R1/R2） | frontend | ui | 17.0 | 1.7 | 1.7 | 10 | 9 | 25 |
+| T-U-08 | 画面 たたき台を確かめる（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 10 | 12 | 24 |
+| T-U-09 | 画面 自分のPCをつなぐ（4 状態・R1/R2） | frontend | ui | 17.0 | 1.7 | 1.7 | 10 | 9 | 34 |
+| T-U-10 | 画面 ログイン情報を預ける（5 状態・R1/R2） | frontend | ui | 19.5 | 1.9 | 1.9 | 10 | 8 | 38 |
+| T-U-11 | 画面 テストで動かす（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 11 | 8 | 26 |
+| T-U-12 | 画面 本番に切り替える（2 状態・R1/R2） | frontend | ui | 12.0 | 1.2 | 1.2 | 11 | 12 | 23 |
+| T-U-13 | 画面 今日（5 状態・R1/R2/R3） | frontend | ui | 21.0 | 2.1 | 2.1 | 11 | 9 | 36 |
+| T-U-14 | 画面 承認待ち（4 状態・R1/R2/R3） | frontend | ui | 18.5 | 1.9 | 1.9 | 11 | 8 | 38 |
+| T-U-15 | 画面 自分のAIとAI社員のやりとり（5 状態・R1/R2/R3） | frontend | ui | 21.0 | 2.1 | 2.1 | 11 | 9 | 36 |
+| T-U-16 | 画面 タスク（12 状態・R1/R2/R3/R4） | frontend | ui | 40.0 | 4.0 | 4.0 | 11 | 12 | 50 |
+| T-U-17 | 画面 自分のAIと話す（11 状態・R1/R2/R3/R4） | frontend | ui | 37.5 | 3.8 | 3.8 | 11 | 10 | 52 |
+| T-U-18 | 画面 AI社員の動き（4 状態・R1/R2/R3） | frontend | ui | 18.5 | 1.9 | 1.9 | 11 | 12 | 38 |
+| T-U-19 | 画面 探す（3 状態・R1/R2/R3/R4） | frontend | ui | 17.5 | 1.8 | 1.8 | 11 | 8 | 32 |
+| T-U-20 | 画面 台帳（6 状態・R1/R2/R3/R4） | frontend | ui | 25.0 | 2.5 | 2.5 | 11 | 9 | 38 |
+| T-U-21 | 画面 台帳の1件（3 状態・R1/R2/R3/R4） | frontend | ui | 17.5 | 1.8 | 1.8 | 12 | 8 | 38 |
+| T-U-22 | 画面 目標（5 状態・R1/R2/R3） | frontend | ui | 21.0 | 2.1 | 2.1 | 12 | 9 | 39 |
+| T-U-23 | 画面 目標の配分（6 状態・R1/R2） | frontend | ui | 22.0 | 2.2 | 2.2 | 12 | 9 | 36 |
+| T-U-24 | 画面 目標を改訂する（2 状態・R1/R2） | frontend | ui | 12.0 | 1.2 | 1.2 | 12 | 9 | 35 |
+| T-U-25 | 画面 自分の目標（3 状態・R1/R2/R3/R4） | frontend | ui | 17.5 | 1.8 | 1.8 | 12 | 9 | 32 |
+| T-U-26 | 画面 ふりかえり（5 状態・R1/R2） | frontend | ui | 19.5 | 1.9 | 1.9 | 12 | 8 | 32 |
+| T-U-27 | 画面 仮説と施策（5 状態・R1/R2） | frontend | ui | 19.5 | 1.9 | 1.9 | 12 | 8 | 32 |
+| T-U-28 | 画面 担当業務（6 状態・R1/R2） | frontend | ui | 22.0 | 2.2 | 2.2 | 12 | 8 | 33 |
+| T-U-29 | 画面 自分のAIの記憶（4 状態・R1/R2/R3/R4） | frontend | ui | 20.0 | 2.0 | 2.0 | 12 | 8 | 33 |
+| T-U-30 | 画面 台帳の形（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 12 | 9 | 30 |
+| T-U-31 | 画面 会社モデル（5 状態・R1/R2） | frontend | ui | 19.5 | 1.9 | 1.9 | 13 | 12 | 32 |
+| T-U-32 | 画面 覚え直させる（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 13 | 8 | 30 |
+| T-U-33 | 画面 証跡（6 状態・R1/R2） | frontend | ui | 22.0 | 2.2 | 2.2 | 13 | 11 | 36 |
+| T-U-34 | 画面 ルール（3 状態・R1/R2/R3/R4） | frontend | ui | 17.5 | 1.8 | 1.8 | 13 | 8 | 35 |
+| T-U-35 | 画面 メンバー（7 状態・R1/R2） | frontend | ui | 24.5 | 2.5 | 2.5 | 13 | 10 | 37 |
+| T-U-36 | 画面 AI社員（4 状態・R1/R2） | frontend | ui | 17.0 | 1.7 | 1.7 | 13 | 12 | 34 |
+| T-U-37 | 画面 AI社員の1体（5 状態・R1/R2） | frontend | ui | 19.5 | 1.9 | 1.9 | 13 | 12 | 32 |
+| T-U-38 | 画面 この製品でできること・できないこと（2 状態・R1/R2） | frontend | ui | 12.0 | 1.2 | 1.2 | 13 | 8 | 29 |
+| T-U-39 | 画面 持ち出す（2 状態・R1/R2） | frontend | ui | 12.0 | 1.2 | 1.2 | 13 | 8 | 32 |
+| T-U-40 | 画面 退会する（6 状態・R1/R2） | frontend | ui | 22.0 | 2.2 | 2.2 | 13 | 9 | 36 |
+| T-U-41 | 画面 運営の支援（2 状態・R6） | frontend | ui | 10.5 | 1.1 | 1.1 | 14 | 9 | 25 |
+| T-U-42 | 画面 運営：会社の一覧（4 状態・R6） | frontend | ui | 15.5 | 1.6 | 1.6 | 14 | 9 | 30 |
+| T-U-43 | 画面 運営：配るもの（7 状態・R6） | frontend | ui | 23.0 | 2.3 | 2.3 | 14 | 12 | 30 |
+| T-U-44 | 画面 自分のアカウント（2 状態・R1/R2/R3/R4） | frontend | ui | 15.0 | 1.5 | 1.5 | 14 | 10 | 34 |
+| T-U-45 | 画面 会社の設定（2 状態・R1/R2） | frontend | ui | 12.0 | 1.2 | 1.2 | 14 | 8 | 29 |
+| T-U-46 | 画面 取り込み（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 14 | 8 | 30 |
+| T-U-47 | 画面 外部サービスの連携（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 14 | 8 | 30 |
+| T-U-48 | 画面 運営：サービス台帳（2 状態・R6） | frontend | ui | 10.5 | 1.1 | 1.1 | 14 | 8 | 25 |
+| T-U-49 | 画面 運営：スキル（4 状態・R6） | frontend | ui | 15.5 | 1.6 | 1.6 | 14 | 8 | 30 |
+| T-U-50 | 画面 問い合わせ（5 状態・R1/R2/R3/R4） | frontend | ui | 22.5 | 2.2 | 2.2 | 14 | 8 | 37 |
+| T-U-51 | 画面 お知らせと通知（3 状態・R1/R2/R3/R4） | frontend | ui | 17.5 | 1.8 | 1.8 | 15 | 8 | 35 |
+| T-U-52 | 画面 プランと請求（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 15 | 8 | 39 |
+| T-U-53 | 画面 運営：お知らせ（2 状態・R6） | frontend | ui | 10.5 | 1.1 | 1.1 | 15 | 8 | 28 |
+| T-U-54 | 画面 運営：請求と入金（2 状態・R6） | frontend | ui | 10.5 | 1.1 | 1.1 | 15 | 8 | 28 |
+| T-U-55 | 画面 運営：会社の 1 社（1 状態・R6） | frontend | ui | 8.0 | 0.8 | 0.8 | 15 | 9 | 24 |
+| T-U-56 | 画面 運営：公開の審査（2 状態・R6） | frontend | ui | 10.5 | 1.1 | 1.1 | 15 | 8 | 25 |
+| T-U-57 | 画面 運営：運営の証跡（2 状態・R6） | frontend | ui | 10.5 | 1.1 | 1.1 | 15 | 11 | 28 |
+| T-U-58 | 画面 メンバーの1人（4 状態・R1/R2） | frontend | ui | 17.0 | 1.7 | 1.7 | 15 | 11 | 34 |
+| T-U-59 | 画面 支払い方法を登録する（4 状態・R1/R2・段階 2） | frontend | ui | 17.0 | 1.7 | 1.7 | 23 | 8 | 26 |
+| T-U-60 | 画面 開示資料（4 状態・R1/R2・段階 2） | frontend | ui | 17.0 | 1.7 | 1.7 | 23 | 8 | 26 |
+| T-U-61 | 画面 AI の経路（4 状態・R1/R2・段階 2） | frontend | ui | 17.0 | 1.7 | 1.7 | 23 | 8 | 35 |
+| T-U-62 | 画面 アプリと通知（3 状態・R1/R2/R3/R4・段階 2） | frontend | ui | 17.5 | 1.8 | 1.8 | 23 | 8 | 27 |
+| T-U-63 | 画面 運営：AI の経路と使用量（3 状態・R6・段階 2） | frontend | ui | 13.0 | 1.3 | 1.3 | 23 | 8 | 18 |
+| T-U-64 | 画面 運営：開示資料（3 状態・R6・段階 2） | frontend | ui | 13.0 | 1.3 | 1.3 | 23 | 8 | 21 |
 
 ### Group I
 
 | ID | タイトル | category | layer | Human h | AI h | wall-clock | wave | depends_on | L1 行 |
 |---|---|---|---|---|---|---|---|---|---|
-| T-I-01 | 実行ループの結線（自分のAI → 配る → AI社員 action_runs → 関門 → 一次確認 | test | integration | 32 | 8.0 | 9.0 | 15 | 19 | 7 |
-| T-I-02 | 認証 → 会社 → 権限 → 画面の解禁（login → sessions → SET LOCAL  | test | integration | 20 | 5.0 | 6.0 | 15 | 9 | 7 |
-| T-I-03 | 画面 → API → DB の通し配線（契約テスト・型生成同期・endpoint 実在性・別 GET | test | integration | 24 | 2.4 | 2.4 | 15 | 24 | 7 |
-| T-I-04 | 運営 ↔ 顧客の往復（問い合わせ → 受信箱 → 会社の詳細で返答 → 顧客の問い合わせに届く／お知 | test | integration | 20 | 2.0 | 2.0 | 15 | 11 | 7 |
-| T-I-05 | 出来事の依存処理 → 全失効（人が抜ける・退会・休止・権限変更・プラン変更・層を消す・AI社員を消す | test | integration | 28 | 7.0 | 8.0 | 15 | 13 | 7 |
-| T-I-06 | スキルの配布 → 装着 → Bridge が読む → どのスキルが働いたかが証跡に出る | test | integration | 20 | 2.0 | 2.0 | 15 | 10 | 7 |
-| T-I-07 | 通知の結線（出来事 → 届け先 → outbox → 配達 → 既読・失敗時の再送） | test | integration | 12 | 1.2 | 1.2 | 15 | 8 | 7 |
-| T-I-08 | 課金の結線（プラン → 契約 → 月次の請求書 → 入金の記録 → 未収 → 休止の案内） | test | integration | 16 | 4.0 | 5.0 | 15 | 9 | 7 |
-| T-I-09 | 流れ J-01 P0 契約・登録（1回だけ） を最後まで通す（L2） | test | integration | 14 | 1.4 | 1.4 | 15 | 8 | 2 |
-| T-I-10 | 流れ J-02 P1 はじめの設定 ── PCをつないで、自分のAIと作る（初日〜3日） を最後まで | test | integration | 20 | 2.0 | 2.0 | 15 | 11 | 2 |
-| T-I-11 | 流れ J-03 P2 毎日 ── 自分のAIと回す を最後まで通す（L2） | test | integration | 42 | 4.2 | 4.2 | 16 | 19 | 2 |
-| T-I-12 | 流れ J-04 P3 毎週 を最後まで通す（L2） | test | integration | 18 | 1.8 | 1.8 | 16 | 9 | 2 |
-| T-I-13 | 流れ J-05 P4 毎月・四半期 を最後まで通す（L2） | test | integration | 22 | 2.2 | 2.2 | 16 | 12 | 2 |
-| T-I-14 | 流れ J-06 P5 例外・困ったとき を最後まで通す（L2） | test | integration | 16 | 1.6 | 1.6 | 16 | 8 | 2 |
-| T-I-15 | 流れ J-07 P6 人が増えたら を最後まで通す（L2） | test | integration | 34 | 3.4 | 3.4 | 16 | 22 | 2 |
-| T-I-16 | 流れ J-08 P7 外に説明する・出る を最後まで通す（L2） | test | integration | 14 | 1.4 | 1.4 | 16 | 6 | 2 |
-| T-I-17 | 流れ J-09 P8 運営（段階2） を最後まで通す（L2） | test | integration | 34 | 3.4 | 3.4 | 16 | 19 | 2 |
-| T-I-18 | drift 検出（モック ↔ 実装：h1・状態・第2ナビ・列の値／仕様 ↔ 実装：states・tr | test | integration | 12 | 1.2 | 1.2 | 16 | 24 | 7 |
-| T-I-19 | 負荷試験（同時接続・集中時の rps・失敗率・接続プール）と有限資源の枯渇 | test | polish | 16 | 1.6 | 1.6 | 16 | 3 | 7 |
-| T-I-20 | セキュリティ監査（RLS を故意に壊す・関門の迂回・運営の越境・資格情報の露出） | test | polish | 16 | 4.0 | 5.0 | 16 | 5 | 7 |
+| T-I-01 | 実行ループの結線（自分のAI → 配る → AI社員 action_runs → 関門 → 一次確認 | test | integration | 32 | 8.0 | 9.0 | 16 | 19 | 7 |
+| T-I-02 | 認証 → 会社 → 権限 → 画面の解禁（login → sessions → SET LOCAL  | test | integration | 20 | 5.0 | 6.0 | 16 | 9 | 7 |
+| T-I-03 | 画面 → API → DB の通し配線（契約テスト・型生成同期・endpoint 実在性・別 GET | test | integration | 24 | 2.4 | 2.4 | 16 | 24 | 7 |
+| T-I-04 | 運営 ↔ 顧客の往復（問い合わせ → 受信箱 → 会社の詳細で返答 → 顧客の問い合わせに届く／お知 | test | integration | 20 | 2.0 | 2.0 | 16 | 11 | 7 |
+| T-I-05 | 出来事の依存処理 → 全失効（人が抜ける・退会・休止・権限変更・プラン変更・層を消す・AI社員を消す | test | integration | 28 | 7.0 | 8.0 | 16 | 13 | 7 |
+| T-I-06 | スキルの配布 → 装着 → Bridge が読む → どのスキルが働いたかが証跡に出る | test | integration | 20 | 2.0 | 2.0 | 16 | 10 | 7 |
+| T-I-07 | 通知の結線（出来事 → 届け先 → outbox → 配達 → 既読・失敗時の再送） | test | integration | 12 | 1.2 | 1.2 | 16 | 8 | 7 |
+| T-I-08 | 課金の結線（プラン → 契約 → 月次の請求書 → 入金の記録 → 未収 → 休止の案内） | test | integration | 16 | 4.0 | 5.0 | 16 | 9 | 7 |
+| T-I-09 | 流れ J-01 P0 契約・登録（1回だけ） を最後まで通す（L2） | test | integration | 14 | 1.4 | 1.4 | 16 | 8 | 2 |
+| T-I-10 | 流れ J-02 P1 はじめの設定 ── PCをつないで、自分のAIと作る（初日〜3日） を最後まで | test | integration | 20 | 2.0 | 2.0 | 16 | 11 | 2 |
+| T-I-11 | 流れ J-03 P2 毎日 ── 自分のAIと回す を最後まで通す（L2） | test | integration | 42 | 4.2 | 4.2 | 17 | 19 | 2 |
+| T-I-12 | 流れ J-04 P3 毎週 を最後まで通す（L2） | test | integration | 18 | 1.8 | 1.8 | 17 | 9 | 2 |
+| T-I-13 | 流れ J-05 P4 毎月・四半期 を最後まで通す（L2） | test | integration | 22 | 2.2 | 2.2 | 17 | 12 | 2 |
+| T-I-14 | 流れ J-06 P5 例外・困ったとき を最後まで通す（L2） | test | integration | 16 | 1.6 | 1.6 | 17 | 8 | 2 |
+| T-I-15 | 流れ J-07 P6 人が増えたら を最後まで通す（L2） | test | integration | 34 | 3.4 | 3.4 | 17 | 22 | 2 |
+| T-I-16 | 流れ J-08 P7 外に説明する・出る を最後まで通す（L2） | test | integration | 14 | 1.4 | 1.4 | 17 | 6 | 2 |
+| T-I-17 | 流れ J-09 P8 運営（段階2） を最後まで通す（L2） | test | integration | 34 | 3.4 | 3.4 | 17 | 19 | 2 |
+| T-I-18 | drift 検出（モック ↔ 実装：h1・状態・第2ナビ・列の値／仕様 ↔ 実装：states・tr | test | integration | 12 | 1.2 | 1.2 | 17 | 24 | 7 |
+| T-I-19 | 負荷試験（同時接続・集中時の rps・失敗率・接続プール）と有限資源の枯渇 | test | polish | 16 | 1.6 | 1.6 | 18 | 3 | 7 |
+| T-I-20 | セキュリティ監査（RLS を故意に壊す・関門の迂回・運営の越境・資格情報の露出） | test | polish | 16 | 4.0 | 5.0 | 18 | 5 | 7 |
 | T-I-21 | ポータビリティと依存の境界の検査（境界外 import・ベンダー固有 SQL・台帳との整合） | test | polish | 8 | 0.8 | 0.8 | 17 | 1 | 7 |
-| T-I-22 | 文書とリリース準備（できること・できないことの開示・API 仕様の公開・変更履歴） | test | polish | 12 | 1.2 | 1.2 | 17 | 18 | 7 |
+| T-I-22 | 文書とリリース準備（できること・できないことの開示・API 仕様の公開・変更履歴） | test | polish | 12 | 1.2 | 1.2 | 18 | 18 | 7 |
 
 ### Group S
 
 | ID | タイトル | category | layer | Human h | AI h | wall-clock | wave | depends_on | L1 行 |
 |---|---|---|---|---|---|---|---|---|---|
-| T-S-01 | スキル一式の形式・雛形・検査（skill_pkg_gate を運営のアップロードに結線） | spec | content | 8 | 2.0 | 3.0 | 18 | 2 | 6 |
-| T-S-02 | スキル制作 構築メタ「会社モデル構築」（元ネタ hearing・business-plan） | spec | content | 12 | 3.0 | 4.0 | 18 | 1 | 7 |
-| T-S-03 | スキル制作 構築メタ「担当業務の定義（OJT の進め方）」（元ネタ sop-create・outso | spec | content | 12 | 3.0 | 4.0 | 18 | 1 | 7 |
-| T-S-04 | スキル制作 構築メタ「台帳の設計（段階・項目・判断基準）」（元ネタ pipeline-managem | spec | content | 12 | 3.0 | 4.0 | 18 | 1 | 7 |
-| T-S-05 | スキル制作 構築メタ「目標の分解（年→四半期→月→週）」（元ネタ strategic-goal-sy | spec | content | 12 | 3.0 | 4.0 | 18 | 1 | 7 |
-| T-S-06 | スキル制作 構築メタ「改善提案の作り方（未達の原因と再計画）」（元ネタ strategic-goal | spec | content | 12 | 3.0 | 4.0 | 18 | 1 | 7 |
-| T-S-07 | スキル制作 構築メタ「自分のAIの育成（好みの引き出し方・記憶への落とし方）」（元ネタ hearin | spec | content | 12 | 3.0 | 4.0 | 18 | 1 | 7 |
-| T-S-08 | スキル制作 構築メタ「トラブル対応（覚えた操作が壊れた・承認が滞留）」（元ネタ support-re | spec | content | 12 | 3.0 | 4.0 | 18 | 1 | 7 |
-| T-S-09 | スキル制作 目標スキル「営業目標（受託開発）」（元ネタ strategic-goal-system・ | spec | content | 10 | 2.5 | 3.5 | 18 | 1 | 7 |
-| T-S-10 | スキル制作 目標スキル「営業目標（飲食）」（元ネタ strategic-goal-system） | spec | content | 10 | 2.5 | 3.5 | 18 | 1 | 7 |
-| T-S-11 | スキル制作 目標スキル「納期遵守（制作）」（元ネタ strategic-goal-system・so | spec | content | 10 | 2.5 | 3.5 | 19 | 1 | 7 |
-| T-S-12 | スキル制作 業務スキル「発注ナビの新着を台帳に入れる」（元ネタ hatchunavi-apply） | spec | content | 8 | 2.0 | 3.0 | 19 | 1 | 7 |
-| T-S-13 | スキル制作 業務スキル「請求書の作成（税込・内訳）」（元ネタ invoice-create） | spec | content | 8 | 2.0 | 3.0 | 19 | 1 | 7 |
-| T-S-14 | スキル制作 業務スキル「入金の照合（正規連携）」（元ネタ payment-management・ai | spec | content | 8 | 2.0 | 3.0 | 19 | 1 | 7 |
-| T-S-15 | スキル制作 業務スキル「問い合わせの一次返信」（元ネタ support-response・custo | spec | content | 8 | 2.0 | 3.0 | 19 | 1 | 7 |
+| T-S-01 | スキル一式の形式・雛形・検査（skill_pkg_gate を運営のアップロードに結線） | spec | content | 8 | 2.0 | 3.0 | 19 | 2 | 6 |
+| T-S-02 | スキル制作 構築メタ「会社モデル構築」（元ネタ hearing・business-plan） | spec | content | 12 | 3.0 | 4.0 | 20 | 1 | 7 |
+| T-S-03 | スキル制作 構築メタ「担当業務の定義（OJT の進め方）」（元ネタ sop-create・outso | spec | content | 12 | 3.0 | 4.0 | 20 | 1 | 7 |
+| T-S-04 | スキル制作 構築メタ「台帳の設計（段階・項目・判断基準）」（元ネタ pipeline-managem | spec | content | 12 | 3.0 | 4.0 | 20 | 1 | 7 |
+| T-S-05 | スキル制作 構築メタ「目標の分解（年→四半期→月→週）」（元ネタ strategic-goal-sy | spec | content | 12 | 3.0 | 4.0 | 20 | 1 | 7 |
+| T-S-06 | スキル制作 構築メタ「改善提案の作り方（未達の原因と再計画）」（元ネタ strategic-goal | spec | content | 12 | 3.0 | 4.0 | 20 | 1 | 7 |
+| T-S-07 | スキル制作 構築メタ「自分のAIの育成（好みの引き出し方・記憶への落とし方）」（元ネタ hearin | spec | content | 12 | 3.0 | 4.0 | 20 | 1 | 7 |
+| T-S-08 | スキル制作 構築メタ「トラブル対応（覚えた操作が壊れた・承認が滞留）」（元ネタ support-re | spec | content | 12 | 3.0 | 4.0 | 20 | 1 | 7 |
+| T-S-09 | スキル制作 目標スキル「営業目標（受託開発）」（元ネタ strategic-goal-system・ | spec | content | 10 | 2.5 | 3.5 | 20 | 1 | 7 |
+| T-S-10 | スキル制作 目標スキル「営業目標（飲食）」（元ネタ strategic-goal-system） | spec | content | 10 | 2.5 | 3.5 | 20 | 1 | 7 |
+| T-S-11 | スキル制作 目標スキル「納期遵守（制作）」（元ネタ strategic-goal-system・so | spec | content | 10 | 2.5 | 3.5 | 20 | 1 | 7 |
+| T-S-12 | スキル制作 業務スキル「発注ナビの新着を台帳に入れる」（元ネタ hatchunavi-apply） | spec | content | 8 | 2.0 | 3.0 | 21 | 1 | 7 |
+| T-S-13 | スキル制作 業務スキル「請求書の作成（税込・内訳）」（元ネタ invoice-create） | spec | content | 8 | 2.0 | 3.0 | 21 | 1 | 7 |
+| T-S-14 | スキル制作 業務スキル「入金の照合（正規連携）」（元ネタ payment-management・ai | spec | content | 8 | 2.0 | 3.0 | 21 | 1 | 7 |
+| T-S-15 | スキル制作 業務スキル「問い合わせの一次返信」（元ネタ support-response・custo | spec | content | 8 | 2.0 | 3.0 | 21 | 1 | 7 |
 
 ## タスクカード（1 枚ずつ）
 
@@ -871,7 +872,7 @@
 
 ### T-A-24 API このツールを入れて安全か、社内（情シス・コンプラ）に説明できるように（1 endpoint・段階 2）
 
-- group A / layer backend / phase 9_v2_api / wave 20 / Human 131 h・AI 32.8 h・wall-clock 33.8 h
+- group A / layer backend / phase 9_v2_api / wave 22 / Human 131 h・AI 32.8 h・wall-clock 33.8 h
 - 行為 A84 / 画面 disclosure / 表 audit_events ops_audit_events disclosure_versions subprocessors / 関門 C4
 - 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-06 T-D-10 T-D-14 T-F-10
 - 根拠（逐語）：D-010「製品の背骨。会社モデル(目標・台帳定義・担当業務・組織・ポリシー・記憶)を1つの定義に。画面もAI社員も自動実行もこの定」 ／ D-015「Bridgeは顧客PCで動く万能実行器。本人のIP・本人のログイン済みセッションで動くのでCAPTCHA/bot検知に到」
@@ -883,7 +884,7 @@
 
 ### T-A-25 API 運営として、問い合わせに答え、お知らせと稼働状況を出し、各社の請求・（2 endpoint・段階 2）
 
-- group A / layer backend / phase 9_v2_api / wave 20 / Human 143 h・AI 35.8 h・wall-clock 36.8 h
+- group A / layer backend / phase 9_v2_api / wave 22 / Human 143 h・AI 35.8 h・wall-clock 36.8 h
 - 行為 A85 A86 / 画面 ops-disclosure ops-llm / 表 notices notice_deliveries invoices payments llm_routes disclosure_versions / 関門 C2 C4 C6
 - 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-11 T-D-14 T-F-02 T-F-03 T-F-04
 - 根拠（逐語）：D-002「65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集」 ／ D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」
@@ -895,7 +896,7 @@
 
 ### T-A-26 API 自分のアカウント・会社の設定・既存データの取り込み・外部サービスの連（2 endpoint・段階 2）
 
-- group A / layer backend / phase 9_v2_api / wave 20 / Human 164 h・AI 41.0 h・wall-clock 42.0 h
+- group A / layer backend / phase 9_v2_api / wave 22 / Human 164 h・AI 41.0 h・wall-clock 42.0 h
 - 行為 A82 A83 / 画面 app-setup llm-routes / 表 credentials sessions notification_preferences notifications llm_routes llm_capabilities / 関門 C2 C3 C6 C8
 - 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-05 T-D-09 T-D-11 T-D-14 T-F-02
 - 根拠（逐語）：D-006「スコープの採否は『抜いてもループが閉じるか』。CRM・請求・経理を切ると目標の数値が出せなくなるので切らない」 ／ D-013「実行層は接続の器を1回作れば設定で増える形にする。連携を1本ずつ書かない」
@@ -905,11 +906,23 @@
 - L1 行 18（['API-26-001', 'API-26-002', 'API-26-003'] …）／ L2 ['J-07']
 - audit: 07_tasks/audit/T-A-26.md
 
+### T-US-00 apps/web の土台（Next.js 15 App Router の雛形・Playwright と実ブラウザの検査・ナビ href ⇔ 実在ルートの照合・CI のブラウザ job・ローカル起動）
+
+- group U-shared / layer ui / phase 4_ui_foundation / wave 8 / Human 16 h・AI 1.6 h・wall-clock 1.6 h
+- 行為 — / 画面 — / 表 — / 関門 —（画面の土台。外界に出ない（API は関門の先））
+- 依存 T-F-01 T-F-15
+- 根拠（逐語）：D-043「ネイティブアプリはレスポンシブとは別物。プッシュ通知が本質(承認待ちの通知)。段階2でPWA」 ／ D-067「部品の土台は shadcn/ui（Base UI 版）。フォームは React Hook Form＋Zod（rjsf は」
+- 触るファイル：apps/web/package.json (new)、apps/web/app/layout.tsx (new)、apps/web/playwright.config.ts (new)、apps/web/tests/reachability.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: apps/web は 02_tech_stack/selected-stack.json の frontend（Next.js 15 A ／ UBIQUITOUS: Playwright の設定と CI のブラウザ job（03_architecture/foundation_gates.json #
+- AC（Tier 2）：EVENT-DRIVEN: WHEN pnpm exec playwright test を流したら THEN 実ブラウザ（Chromium）で 到達性（ナビ・ ／ UNWANTED: IF 実在しないルートを指す href があれば 到達性の検査が赤になり merge できない ／ UNWANTED: IF staging が無いなら、画面の L1 行はローカルの実ブラウザで流し、staging の行は BLOCKED（理由つき）として残す
+- L1 行 11（['USH-00-001', 'USH-00-002', 'USH-00-003'] …）／ L2 —
+- audit: 07_tasks/audit/T-US-00.md
+
 ### T-US-01 シェル（サイドバー・レール・第2ナビ・三画面・下タブ・枠の導出 data-frame・役割の出し分け data-roles）
 
-- group U-shared / layer ui / phase 4_ui_foundation / wave 8 / Human 24 h・AI 2.4 h・wall-clock 2.4 h
+- group U-shared / layer ui / phase 4_ui_foundation / wave 9 / Human 24 h・AI 2.4 h・wall-clock 2.4 h
 - 行為 — / 画面 — / 表 — / 関門 —（画面の部品。外界に出ない（API は関門の先））
-- 依存 T-F-01 T-F-05 T-A-01
+- 依存 T-US-00 T-F-01 T-F-05 T-A-01
 - 根拠（逐語）：D-065「枠は3種。外（ログイン前）＝枠なし／はじめの設定（ログイン後・運用前 PS0〜PS2）＝手順バーだけの枠／アプリ（運用中」 ／ D-070「①本文（.main）は幅 1180 以上で 720px を下回らない。自分のAIのパネルを開いて下回るなら第2ナビを上の」
 - 触るファイル：apps/web/components/shell/*.tsx (new)
 - AC（Tier 1）：STATE-DRIVEN: WHILE アプリの枠で描画中 THEN シェル（サイドバー・レール・第2ナビ・三画面・下タブ・枠の導出 data-fra が DE
@@ -919,9 +932,9 @@
 
 ### T-US-02 自分のAIのパネルと会話の部品（assistant-ui・AG-UI・選択肢・承認カード・受領・引用・取り消し）
 
-- group U-shared / layer ui / phase 4_ui_foundation / wave 8 / Human 32 h・AI 3.2 h・wall-clock 3.2 h
+- group U-shared / layer ui / phase 4_ui_foundation / wave 9 / Human 32 h・AI 3.2 h・wall-clock 3.2 h
 - 行為 — / 画面 — / 表 — / 関門 —（画面の部品。外界に出ない（API は関門の先））
-- 依存 T-F-01 T-F-05 T-A-01
+- 依存 T-US-00 T-F-01 T-F-05 T-A-01
 - 根拠（逐語）：D-057「自分のAI⇄画面の配線は AG-UI 規格（テキスト・ツール呼び出し・状態・承認割り込みのイベント列。Google/La」 ／ D-062「会話は1本で見え方が2つ。A 会話モード（Claude/LINE 型の専用画面）と B 作業モード（中央＝反映先の画面、」
 - 触るファイル：apps/web/components/ai/*.tsx (new)
 - AC（Tier 1）：STATE-DRIVEN: WHILE アプリの枠で描画中 THEN 自分のAIのパネルと会話の部品（assistant-ui・AG-UI・選択肢・承 が DE
@@ -931,9 +944,9 @@
 
 ### T-US-03 API クライアントと型（OpenAPI → types.ts・TanStack Query・別 GET 再取得・401 で入り直し）
 
-- group U-shared / layer ui / phase 4_ui_foundation / wave 8 / Human 12 h・AI 1.2 h・wall-clock 1.2 h
+- group U-shared / layer ui / phase 4_ui_foundation / wave 9 / Human 12 h・AI 1.2 h・wall-clock 1.2 h
 - 行為 — / 画面 — / 表 — / 関門 —（画面の部品。外界に出ない（API は関門の先））
-- 依存 T-F-01 T-F-05 T-A-01
+- 依存 T-US-00 T-F-01 T-F-05 T-A-01
 - 根拠（逐語）：D-043「ネイティブアプリはレスポンシブとは別物。プッシュ通知が本質(承認待ちの通知)。段階2でPWA」 ／ D-051「ネイティブアプリは今4つだけ決める(認証をトークンベースに等)。後からアプリを足すのが画面を作るだけになる」
 - 触るファイル：apps/web/lib/api/*.ts (new)
 - AC（Tier 1）：STATE-DRIVEN: WHILE アプリの枠で描画中 THEN API クライアントと型（OpenAPI → types.ts・TanStack が DE
@@ -943,9 +956,9 @@
 
 ### T-US-04 認証の配管（ログイン・2 段階認証・招待・入り直し・端末の失効表示）
 
-- group U-shared / layer ui / phase 4_ui_foundation / wave 8 / Human 12 h・AI 1.2 h・wall-clock 1.2 h
+- group U-shared / layer ui / phase 4_ui_foundation / wave 9 / Human 12 h・AI 1.2 h・wall-clock 1.2 h
 - 行為 — / 画面 — / 表 — / 関門 —（画面の部品。外界に出ない（API は関門の先））
-- 依存 T-F-01 T-F-05 T-A-01
+- 依存 T-US-00 T-F-01 T-F-05 T-A-01
 - 根拠（逐語）：D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」 ／ D-051「ネイティブアプリは今4つだけ決める(認証をトークンベースに等)。後からアプリを足すのが画面を作るだけになる」
 - 触るファイル：apps/web/app/(auth)/** (new)
 - AC（Tier 1）：STATE-DRIVEN: WHILE アプリの枠で描画中 THEN 認証の配管（ログイン・2 段階認証・招待・入り直し・端末の失効表示） が DESIGN-k
@@ -955,9 +968,9 @@
 
 ### T-US-05 デザイントークンと部品（Tailwind @theme・shadcn/ui Base UI・Lucide・表・カード・札・空状態・止まっている帯）
 
-- group U-shared / layer ui / phase 4_ui_foundation / wave 8 / Human 16 h・AI 1.6 h・wall-clock 1.6 h
+- group U-shared / layer ui / phase 4_ui_foundation / wave 9 / Human 16 h・AI 1.6 h・wall-clock 1.6 h
 - 行為 — / 画面 — / 表 — / 関門 —（画面の部品。外界に出ない（API は関門の先））
-- 依存 T-F-01 T-F-05 T-A-01
+- 依存 T-US-00 T-F-01 T-F-05 T-A-01
 - 根拠（逐語）：D-052「デザインシステム確定。Primary#22345C・M PLUS 2単一書体・色の二層分離(状態色は面/データ色は点と線」 ／ D-067「部品の土台は shadcn/ui（Base UI 版）。フォームは React Hook Form＋Zod（rjsf は」
 - 触るファイル：apps/web/styles/tokens.css (new)、apps/web/components/ui/*.tsx (new)
 - AC（Tier 1）：STATE-DRIVEN: WHILE アプリの枠で描画中 THEN デザイントークンと部品（Tailwind @theme・shadcn/ui Ba が DE
@@ -967,9 +980,9 @@
 
 ### T-US-06 タイムライン（svar-gantt・棒を押すと詳細・1023 以下は切替）と見え方の切替（リスト／カンバン／カレンダー）
 
-- group U-shared / layer ui / phase 4_ui_foundation / wave 8 / Human 16 h・AI 1.6 h・wall-clock 1.6 h
+- group U-shared / layer ui / phase 4_ui_foundation / wave 9 / Human 16 h・AI 1.6 h・wall-clock 1.6 h
 - 行為 — / 画面 — / 表 — / 関門 —（画面の部品。外界に出ない（API は関門の先））
-- 依存 T-F-01 T-F-05 T-A-01
+- 依存 T-US-00 T-F-01 T-F-05 T-A-01
 - 根拠（逐語）：D-079「タイムライン（期間と前後関係）の部品は svar-gantt（MIT）。目標・施策・検証の 3 段、棒＝期間、線＝前後関」 ／ D-068「画面の言葉は「渡す→引き継いでもらう」「引き取る→引き継ぐ」。今日は朝の確定（自分のAIの候補＋見込み時間の合計 vs 」
 - 触るファイル：apps/web/components/views/*.tsx (new)
 - AC（Tier 1）：STATE-DRIVEN: WHILE アプリの枠で描画中 THEN タイムライン（svar-gantt・棒を押すと詳細・1023 以下は切替）と見え が DE
@@ -979,9 +992,9 @@
 
 ### T-U-01 画面 アカウントを作る（2 状態・R1/R2）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 9 / Human 12.0 h・AI 1.2 h・wall-clock 1.2 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 10 / Human 12.0 h・AI 1.2 h・wall-clock 1.2 h
 - 行為 A01 / 画面 signup / 表 plans plan_versions subscriptions usage_meters plan_change_requests / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-01
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-01
 - 根拠（逐語）：D-001「2028-09までに200社→65社に修正。自社SaaS外販。初期顧客が自力で回せることが前提」 ／ D-011「製品名はKaname(要)。jobrainから改名」
 - 触るファイル：apps/web/app/(public)/signup/page.tsx (new)、apps/web/tests/screens/signup.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 signup は URL /signup で開く（apps/web/app/(public)/signup/page.tsx。遷移 ／ STATE-DRIVEN: WHILE 画面 signup が描画中 THEN h1「アカウントを作る」・第2ナビ ・状態 2（通常、既に登録済み）がモック 0
@@ -991,9 +1004,9 @@
 
 ### T-U-02 画面 メールを確認する（3 状態・R1/R2）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 9 / Human 14.5 h・AI 1.4 h・wall-clock 1.4 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 10 / Human 14.5 h・AI 1.4 h・wall-clock 1.4 h
 - 行為 A02 / 画面 verify-email / 表 members permissions layers / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-01 T-A-04 T-A-15
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-01 T-A-04 T-A-15
 - 根拠（逐語）：D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」 ／ D-053「画面は行為から導出する。画面から始めると『この画面で何をしたいか分からない』が必ず起きる。役割×用事→行為の背骨→オブジ」
 - 触るファイル：apps/web/app/(public)/verify-email/page.tsx (new)、apps/web/tests/screens/verify-email.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 verify-email は URL /verify-email で開く（apps/web/app/(public)/verify ／ STATE-DRIVEN: WHILE 画面 verify-email が描画中 THEN h1「メールを確認する」・第2ナビ ・状態 3（送信済み、確認できた
@@ -1003,9 +1016,9 @@
 
 ### T-U-03 画面 招待を受けて参加する（3 状態・R3/R4）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 9 / Human 14.5 h・AI 1.4 h・wall-clock 1.4 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 10 / Human 14.5 h・AI 1.4 h・wall-clock 1.4 h
 - 行為 A03 / 画面 invite-accept / 表 invitations members permissions layers / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-02
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-02
 - 根拠（逐語）：D-026「スコープ4層(運営/会社/部署/個人)を担当業務・ルール・テンプレ・覚えた操作・記憶すべてに同じ形で使う」 ／ D-037「AI社員の出どころは運営配布/会社作成/個人作成の3経路。託されたAI社員は使えるが定義は編集できない。個人ルールだけは」
 - 触るファイル：apps/web/app/(public)/invite/[token]/page.tsx (new)、apps/web/tests/screens/invite-accept.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 invite-accept は URL /invite/:token で開く（apps/web/app/(public)/invi ／ STATE-DRIVEN: WHILE 画面 invite-accept が描画中 THEN h1「招待を受けて参加する」・第2ナビ ・状態 3（担当者として、
@@ -1015,9 +1028,9 @@
 
 ### T-U-04 画面 2段階認証を設定する（2 状態・R1/R2/R3）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 9 / Human 13.5 h・AI 1.4 h・wall-clock 1.4 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 10 / Human 13.5 h・AI 1.4 h・wall-clock 1.4 h
 - 行為 A04 / 画面 mfa-setup / 表 members permissions layers audit_events ops_audit_events security_events / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-01 T-A-04 T-A-15
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-01 T-A-04 T-A-15
 - 根拠（逐語）：D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」 ／ D-051「ネイティブアプリは今4つだけ決める(認証をトークンベースに等)。後からアプリを足すのが画面を作るだけになる」
 - 触るファイル：apps/web/app/(public)/mfa-setup/page.tsx (new)、apps/web/tests/screens/mfa-setup.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 mfa-setup は URL /mfa-setup で開く（apps/web/app/(public)/mfa-setup/pa ／ STATE-DRIVEN: WHILE 画面 mfa-setup が描画中 THEN h1「2段階認証を設定する」・第2ナビ ・状態 2（登録、回復コード）がモ
@@ -1027,9 +1040,9 @@
 
 ### T-U-05 画面 ログインする（3 状態・R1/R2/R3/R4）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 9 / Human 17.5 h・AI 1.8 h・wall-clock 1.8 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 10 / Human 17.5 h・AI 1.8 h・wall-clock 1.8 h
 - 行為 A13 / 画面 login / 表 members permissions layers / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-01 T-A-04 T-A-15
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-01 T-A-04 T-A-15
 - 根拠（逐語）：D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」 ／ D-051「ネイティブアプリは今4つだけ決める(認証をトークンベースに等)。後からアプリを足すのが画面を作るだけになる」
 - 触るファイル：apps/web/app/(public)/login/page.tsx (new)、apps/web/tests/screens/login.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 login は URL /login で開く（apps/web/app/(public)/login/page.tsx。遷移の h ／ STATE-DRIVEN: WHILE 画面 login が描画中 THEN h1「ログインする」・第2ナビ ・状態 3（通常、6桁の入力、失敗）がモック 06
@@ -1039,9 +1052,9 @@
 
 ### T-U-06 画面 入り直す（3 状態・R1/R2/R3）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 9 / Human 16.0 h・AI 1.6 h・wall-clock 1.6 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 10 / Human 16.0 h・AI 1.6 h・wall-clock 1.6 h
 - 行為 A31 / 画面 password-reset / 表 members permissions layers audit_events ops_audit_events security_events / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-03 T-A-12 T-A-20
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-03 T-A-12 T-A-20
 - 根拠（逐語）：D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」 ／ D-053「画面は行為から導出する。画面から始めると『この画面で何をしたいか分からない』が必ず起きる。役割×用事→行為の背骨→オブジ」
 - 触るファイル：apps/web/app/(public)/password-reset/page.tsx (new)、apps/web/tests/screens/password-reset.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 password-reset は URL /password-reset で開く（apps/web/app/(public)/pa ／ STATE-DRIVEN: WHILE 画面 password-reset が描画中 THEN h1「入り直す」・第2ナビ ・状態 3（入り直す、送信後、新しい
@@ -1051,9 +1064,9 @@
 
 ### T-U-07 画面 自分のAIと話す（4 状態・R1/R2）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 9 / Human 17.0 h・AI 1.7 h・wall-clock 1.7 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 10 / Human 17.0 h・AI 1.7 h・wall-clock 1.7 h
 - 行為 A06 / 画面 onboard-interview / 表 clones members conversations messages memories / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-01 T-A-16
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-01 T-A-16
 - 根拠（逐語）：D-028「テストモード。OJTの入口を『見せてください』から『まず作ってみます』に変える。外に一切出さず実データは読む。納得したら」 ／ D-030「構築メタスキル群は運営の資産で顧客に見えない。会社モデル構築・担当業務の定義・台帳の設計・目標の分解・改善提案・自分のA」
 - 触るファイル：apps/web/app/(public)/onboard/interview/page.tsx (new)、apps/web/tests/screens/onboard-interview.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 onboard-interview は URL /onboard/interview で開く（apps/web/app/(publ ／ STATE-DRIVEN: WHILE 画面 onboard-interview が描画中 THEN h1「高本AIと話す」・第2ナビ ・状態 4（Bridge
@@ -1063,9 +1076,9 @@
 
 ### T-U-08 画面 たたき台を確かめる（3 状態・R1/R2）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 9 / Human 14.5 h・AI 1.4 h・wall-clock 1.4 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 10 / Human 14.5 h・AI 1.4 h・wall-clock 1.4 h
 - 行為 A07 A08 / 画面 onboard-draft / 表 tenants goals ledger_definitions duties scopes policies / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-01 T-A-06 T-A-10 T-A-14
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-01 T-A-06 T-A-10
 - 根拠（逐語）：D-010「製品の背骨。会社モデル(目標・台帳定義・担当業務・組織・ポリシー・記憶)を1つの定義に。画面もAI社員も自動実行もこの定」 ／ D-028「テストモード。OJTの入口を『見せてください』から『まず作ってみます』に変える。外に一切出さず実データは読む。納得したら」
 - 触るファイル：apps/web/app/(public)/onboard/draft/page.tsx (new)、apps/web/tests/screens/onboard-draft.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 onboard-draft は URL /onboard/draft で開く（apps/web/app/(public)/onbo ／ STATE-DRIVEN: WHILE 画面 onboard-draft が描画中 THEN h1「たたき台を確かめる」・第2ナビ ・状態 3（たたき台、会話で
@@ -1075,9 +1088,9 @@
 
 ### T-U-09 画面 自分のPCをつなぐ（4 状態・R1/R2）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 9 / Human 17.0 h・AI 1.7 h・wall-clock 1.7 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 10 / Human 17.0 h・AI 1.7 h・wall-clock 1.7 h
 - 行為 A09 / 画面 bridge-setup / 表 sessions action_runs / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-01 T-A-06
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-01 T-A-06
 - 根拠（逐語）：D-055「段階1で AI が動く経路は Bridge（顧客PCで本人のサブスクの公式CLI）だけ。BYOK・運営マネージドは段階2」 ／ D-015「Bridgeは顧客PCで動く万能実行器。本人のIP・本人のログイン済みセッションで動くのでCAPTCHA/bot検知に到」
 - 触るファイル：apps/web/app/(app)/setup/bridge/page.tsx (new)、apps/web/tests/screens/bridge-setup.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 bridge-setup は URL /setup/bridge で開く（apps/web/app/(app)/setup/bri ／ STATE-DRIVEN: WHILE 画面 bridge-setup が描画中 THEN h1「自分のPCをつなぐ」・第2ナビ 接続 / この端末 / 動く条
@@ -1087,9 +1100,9 @@
 
 ### T-U-10 画面 ログイン情報を預ける（5 状態・R1/R2）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 9 / Human 19.5 h・AI 1.9 h・wall-clock 1.9 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 10 / Human 19.5 h・AI 1.9 h・wall-clock 1.9 h
 - 行為 A10 / 画面 credentials / 表 credentials service_registry service_registry_versions service_requests policies / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-06
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-06
 - 根拠（逐語）：D-017「vaultにID/PW＋TOTPシークレットを暗号化保管し実行器が直接入力。AIには一切渡さない(参照IDのみ)」 ／ D-041「サービス台帳で外部サービスごとの自動操作可否を持つ(api/allowed/unspecified/forbidden/」
 - 触るファイル：apps/web/app/(app)/settings/credentials/page.tsx (new)、apps/web/tests/screens/credentials.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 credentials は URL /settings/credentials で開く（apps/web/app/(app)/se ／ STATE-DRIVEN: WHILE 画面 credentials が描画中 THEN h1「ログイン情報を預ける」・第2ナビ 預けたもの / 自動操作の可否
@@ -1099,9 +1112,9 @@
 
 ### T-U-11 画面 テストで動かす（3 状態・R1/R2）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 10 / Human 14.5 h・AI 1.4 h・wall-clock 1.4 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 11 / Human 14.5 h・AI 1.4 h・wall-clock 1.4 h
 - 行為 A11 / 画面 onboard-testrun / 表 action_runs ai_employees members audit_events ops_audit_events security_events / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-07
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-07
 - 根拠（逐語）：D-028「テストモード。OJTの入口を『見せてください』から『まず作ってみます』に変える。外に一切出さず実データは読む。納得したら」 ／ D-040「CAPTCHAは突破しない。本人環境・本人資格情報・本人のペースで動くので到達しない。突破は運営の安全ルールで禁止」
 - 触るファイル：apps/web/app/(public)/onboard/testrun/page.tsx (new)、apps/web/tests/screens/onboard-testrun.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 onboard-testrun は URL /onboard/testrun で開く（apps/web/app/(public)/ ／ STATE-DRIVEN: WHILE 画面 onboard-testrun が描画中 THEN h1「テストで動かす」・第2ナビ ・状態 3（動かした、最初、
@@ -1111,9 +1124,9 @@
 
 ### T-U-12 画面 本番に切り替える（2 状態・R1/R2）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 10 / Human 12.0 h・AI 1.2 h・wall-clock 1.2 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 11 / Human 12.0 h・AI 1.2 h・wall-clock 1.2 h
 - 行為 A12 / 画面 onboard-golive / 表 tenants goals ledger_definitions duties scopes policies / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-01 T-A-06 T-A-10 T-A-14
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-01 T-A-06 T-A-10
 - 根拠（逐語）：D-028「テストモード。OJTの入口を『見せてください』から『まず作ってみます』に変える。外に一切出さず実データは読む。納得したら」 ／ D-019「実装順序。Bridge(万能実行器)を最初に作る」
 - 触るファイル：apps/web/app/(public)/onboard/golive/page.tsx (new)、apps/web/tests/screens/onboard-golive.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 onboard-golive は URL /onboard/golive で開く（apps/web/app/(public)/on ／ STATE-DRIVEN: WHILE 画面 onboard-golive が描画中 THEN h1「本番に切り替える」・第2ナビ ・状態 2（確認、切り替えた
@@ -1123,9 +1136,9 @@
 
 ### T-U-13 画面 今日（5 状態・R1/R2/R3）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 10 / Human 21.0 h・AI 2.1 h・wall-clock 2.1 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 11 / Human 21.0 h・AI 2.1 h・wall-clock 2.1 h
 - 行為 A14 A55 A56 / 画面 today / 表 messages daily_plans tasks task_handovers approvals clones / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-04 T-A-05
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-04 T-A-05
 - 根拠（逐語）：D-008「ペルソナ1=高本本人。一人で受託・キャパ限界・人に任せたい・目標は決めているだけで実行が回らない」 ／ D-024「主役は会社モデル(Hub)＋ループ。用語と部品の正確な定義。自分のAI（旧称自分のAI／COO）は1人1体」
 - 触るファイル：apps/web/app/(app)/today/page.tsx (new)、apps/web/tests/screens/today.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 today は URL /today で開く（apps/web/app/(app)/today/page.tsx。遷移の href ／ STATE-DRIVEN: WHILE 画面 today が描画中 THEN h1「今日」・第2ナビ 申し送り / 朝の計画 / 承認待ち / 今日のタスク /
@@ -1135,9 +1148,9 @@
 
 ### T-U-14 画面 承認待ち（4 状態・R1/R2/R3）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 10 / Human 18.5 h・AI 1.9 h・wall-clock 1.9 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 11 / Human 18.5 h・AI 1.9 h・wall-clock 1.9 h
 - 行為 A15 / 画面 approvals / 表 approvals clones members notifications notification_preferences notice_deliveries / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-07
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-07
 - 根拠（逐語）：D-012「AIは直接変えない。必ず提案として出し人が承認して反映。ただし動線が増えすぎるUX低下は避ける。プルリクエスト的な形は採」 ／ D-037「AI社員の出どころは運営配布/会社作成/個人作成の3経路。託されたAI社員は使えるが定義は編集できない。個人ルールだけは」
 - 触るファイル：apps/web/app/(app)/approvals/page.tsx (new)、apps/web/tests/screens/approvals.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 approvals は URL /approvals で開く（apps/web/app/(app)/approvals/page. ／ STATE-DRIVEN: WHILE 画面 approvals が描画中 THEN h1「承認待ち」・第2ナビ 未処理 / 止めたもの / 履歴・状態 4（通
@@ -1147,9 +1160,9 @@
 
 ### T-U-15 画面 自分のAIとAI社員のやりとり（5 状態・R1/R2/R3）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 10 / Human 21.0 h・AI 2.1 h・wall-clock 2.1 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 11 / Human 21.0 h・AI 2.1 h・wall-clock 2.1 h
 - 行為 A16 / 画面 clone-thread / 表 approvals messages clones members ai_employees / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-07 T-A-12
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-07 T-A-12
 - 根拠（逐語）：D-060「旧称 COO → クローン → 自分のAI。文書上の用語は「自分のAI」。画面では本人の名前＋AI（高本AI／佐藤AI）」 ／ D-037「AI社員の出どころは運営配布/会社作成/個人作成の3経路。託されたAI社員は使えるが定義は編集できない。個人ルールだけは」
 - 触るファイル：apps/web/app/(app)/ai/thread/page.tsx (new)、apps/web/tests/screens/clone-thread.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 clone-thread は URL /ai/thread で開く（apps/web/app/(app)/ai/thread/pa ／ STATE-DRIVEN: WHILE 画面 clone-thread が描画中 THEN h1「高本AIとAI社員のやりとり」・第2ナビ 差し戻し中 / やり
@@ -1159,9 +1172,9 @@
 
 ### T-U-16 画面 タスク（12 状態・R1/R2/R3/R4）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 10 / Human 40.0 h・AI 4.0 h・wall-clock 4.0 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 11 / Human 40.0 h・AI 4.0 h・wall-clock 4.0 h
 - 行為 A17 A48 A50 A51 A57 A58 / 画面 tasks / 表 tasks task_handovers goals goal_versions measures members / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-05 T-A-08 T-A-09 T-A-10
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-05 T-A-08 T-A-09
 - 根拠（逐語）：D-008「ペルソナ1=高本本人。一人で受託・キャパ限界・人に任せたい・目標は決めているだけで実行が回らない」 ／ D-034「目標は双方向。降ろす(逆算)と積み上げる(実績)が同じ画面に出る」
 - 触るファイル：apps/web/app/(app)/tasks/page.tsx (new)、apps/web/tests/screens/tasks.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 tasks は URL /tasks で開く（apps/web/app/(app)/tasks/page.tsx。遷移の href ／ STATE-DRIVEN: WHILE 画面 tasks が描画中 THEN h1「タスク」・第2ナビ 今日 / 今週 / 詰まっている / 期限切れ / 引き
@@ -1171,9 +1184,9 @@
 
 ### T-U-17 画面 自分のAIと話す（11 状態・R1/R2/R3/R4）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 10 / Human 37.5 h・AI 3.8 h・wall-clock 3.8 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 11 / Human 37.5 h・AI 3.8 h・wall-clock 3.8 h
 - 行為 A20 / 画面 clone-chat / 表 conversations messages clones members memories goals / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-04 T-A-10 T-A-16
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-04 T-A-10 T-A-16
 - 根拠（逐語）：D-062「会話は1本で見え方が2つ。A 会話モード（Claude/LINE 型の専用画面）と B 作業モード（中央＝反映先の画面、」 ／ D-066「会話の部品は1組で、会話モード・右パネル・はじめの設定の会話が同じものを使う。①質問には選択肢チップ＋必ず「その他（自由」
 - 触るファイル：apps/web/app/(app)/ai/chat/page.tsx (new)、apps/web/tests/screens/clone-chat.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 clone-chat は URL /ai/chat で開く（apps/web/app/(app)/ai/chat/page.tsx ／ STATE-DRIVEN: WHILE 画面 clone-chat が描画中 THEN h1「高本AIと話す」・第2ナビ 営業 / 経理 / 会社全体・目標 /
@@ -1183,9 +1196,9 @@
 
 ### T-U-18 画面 AI社員の動き（4 状態・R1/R2/R3）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 10 / Human 18.5 h・AI 1.9 h・wall-clock 1.9 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 11 / Human 18.5 h・AI 1.9 h・wall-clock 1.9 h
 - 行為 A53 / 画面 ai-activity / 表 ai_employees members clones audit_events ops_audit_events security_events / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-06 T-A-07 T-A-12 T-A-21
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-06 T-A-07 T-A-12
 - 根拠（逐語）：D-062「会話は1本で見え方が2つ。A 会話モード（Claude/LINE 型の専用画面）と B 作業モード（中央＝反映先の画面、」 ／ D-037「AI社員の出どころは運営配布/会社作成/個人作成の3経路。託されたAI社員は使えるが定義は編集できない。個人ルールだけは」
 - 触るファイル：apps/web/app/(app)/ai-staff/activity/page.tsx (new)、apps/web/tests/screens/ai-activity.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 ai-activity は URL /ai-staff/activity で開く（apps/web/app/(app)/ai-st ／ STATE-DRIVEN: WHILE 画面 ai-activity が描画中 THEN h1「AI社員の動き」・第2ナビ 今日の動き / 止まっている / A
@@ -1195,9 +1208,9 @@
 
 ### T-U-19 画面 探す（3 状態・R1/R2/R3/R4）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 10 / Human 17.5 h・AI 1.8 h・wall-clock 1.8 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 11 / Human 17.5 h・AI 1.8 h・wall-clock 1.8 h
 - 行為 A21 / 画面 search / 表 ledger_definitions ledger_views memories audit_events ops_audit_events security_events / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-09
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-09
 - 根拠（逐語）：D-007「数値はAI社員が会話で出す。分析系の固定画面(ランキング・チャネル別・期間比較)を一切作らない」 ／ D-029「アップロードは形式を指定しない。何でも受け取ってAIが読む」
 - 触るファイル：apps/web/app/(app)/search/page.tsx (new)、apps/web/tests/screens/search.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 search は URL /search で開く（apps/web/app/(app)/search/page.tsx。遷移の h ／ STATE-DRIVEN: WHILE 画面 search が描画中 THEN h1「探す」・第2ナビ 台帳 / 記憶 / 証跡・状態 3（結果、最初、AI が
@@ -1207,9 +1220,9 @@
 
 ### T-U-20 画面 台帳（6 状態・R1/R2/R3/R4）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 10 / Human 25.0 h・AI 2.5 h・wall-clock 2.5 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 11 / Human 25.0 h・AI 2.5 h・wall-clock 2.5 h
 - 行為 A24 A47 / 画面 records / 表 ledger_definitions ledger_views ledger_records ledger_stages / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-09 T-A-14
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-09 T-A-14
 - 根拠（逐語）：D-038「台帳は『計算しないが、結果は持つ』。CRM/会計の計算は担わないが結果は台帳に持つ」 ／ D-039「業界別パッケージ(別製品)は作らない。業界別テンプレ(定義のスナップショット)は作る。各企業ごとに専用の会社モデルができ」
 - 触るファイル：apps/web/app/(app)/records/page.tsx (new)、apps/web/tests/screens/records.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 records は URL /records で開く（apps/web/app/(app)/records/page.tsx。遷移 ／ STATE-DRIVEN: WHILE 画面 records が描画中 THEN h1「台帳」・第2ナビ すべて / 止まっている / 自分の担当・状態 6（カ
@@ -1219,9 +1232,9 @@
 
 ### T-U-21 画面 台帳の1件（3 状態・R1/R2/R3/R4）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 11 / Human 17.5 h・AI 1.8 h・wall-clock 1.8 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 12 / Human 17.5 h・AI 1.8 h・wall-clock 1.8 h
 - 行為 A18 A19 / 画面 record-detail / 表 ledger_records ledger_stages tasks task_handovers attachments audit_events / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-09
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-09
 - 根拠（逐語）：D-038「台帳は『計算しないが、結果は持つ』。CRM/会計の計算は担わないが結果は台帳に持つ」 ／ D-039「業界別パッケージ(別製品)は作らない。業界別テンプレ(定義のスナップショット)は作る。各企業ごとに専用の会社モデルができ」
 - 触るファイル：apps/web/app/(app)/records/[id]/page.tsx (new)、apps/web/tests/screens/record-detail.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 record-detail は URL /records/:id で開く（apps/web/app/(app)/records/[ ／ STATE-DRIVEN: WHILE 画面 record-detail が描画中 THEN h1「台帳の1件」・第2ナビ 中身 / タスク / 添付 / 証跡
@@ -1231,9 +1244,9 @@
 
 ### T-U-22 画面 目標（5 状態・R1/R2/R3）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 11 / Human 21.0 h・AI 2.1 h・wall-clock 2.1 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 12 / Human 21.0 h・AI 2.1 h・wall-clock 2.1 h
 - 行為 A22 A54 / 画面 goals / 表 goals goal_versions goal_allocations goal_contributions units skills / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-10 T-A-11
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-10 T-A-11
 - 根拠（逐語）：D-058「目標の層は可変（会社＞事業＞部署＞…＞個人＞AI社員）で、必ずログイン中の個人まで落とす。個人の層は本人が画面で管理する」 ／ D-032「目標の階層と配分。スコープ層と目標階層は別概念。未配分の可視化。配る権限。合意/指示の2通り。AI社員にも配れる。未達は」
 - 触るファイル：apps/web/app/(app)/goals/page.tsx (new)、apps/web/tests/screens/goals.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 goals は URL /goals で開く（apps/web/app/(app)/goals/page.tsx。遷移の href ／ STATE-DRIVEN: WHILE 画面 goals が描画中 THEN h1「目標」・第2ナビ 階層で見る / 降ろした数 / 積み上がった数 / 未配分
@@ -1243,9 +1256,9 @@
 
 ### T-U-23 画面 目標の配分（6 状態・R1/R2）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 11 / Human 22.0 h・AI 2.2 h・wall-clock 2.2 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 12 / Human 22.0 h・AI 2.2 h・wall-clock 2.2 h
 - 行為 A23 / 画面 goal-allocation / 表 goal_allocations goal_contributions goals goal_versions units members / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-04 T-A-10
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-04 T-A-10
 - 根拠（逐語）：D-058「目標の層は可変（会社＞事業＞部署＞…＞個人＞AI社員）で、必ずログイン中の個人まで落とす。個人の層は本人が画面で管理する」 ／ D-032「目標の階層と配分。スコープ層と目標階層は別概念。未配分の可視化。配る権限。合意/指示の2通り。AI社員にも配れる。未達は」
 - 触るファイル：apps/web/app/(app)/goals/[id]/allocation/page.tsx (new)、apps/web/tests/screens/goal-allocation.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 goal-allocation は URL /goals/:id/allocation で開く（apps/web/app/(app ／ STATE-DRIVEN: WHILE 画面 goal-allocation が描画中 THEN h1「目標の配分」・第2ナビ 階層 / 未配分 / 見せる範囲
@@ -1255,9 +1268,9 @@
 
 ### T-U-24 画面 目標を改訂する（2 状態・R1/R2）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 11 / Human 12.0 h・AI 1.2 h・wall-clock 1.2 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 12 / Human 12.0 h・AI 1.2 h・wall-clock 1.2 h
 - 行為 A29 A52 / 画面 goal-edit / 表 goals goal_versions units goal_allocations goal_contributions tasks / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-10 T-A-11
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-10 T-A-11
 - 根拠（逐語）：D-032「目標の階層と配分。スコープ層と目標階層は別概念。未配分の可視化。配る権限。合意/指示の2通り。AI社員にも配れる。未達は」 ／ D-034「目標は双方向。降ろす(逆算)と積み上げる(実績)が同じ画面に出る」
 - 触るファイル：apps/web/app/(app)/goals/[id]/edit/page.tsx (new)、apps/web/tests/screens/goal-edit.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 goal-edit は URL /goals/:id/edit で開く（apps/web/app/(app)/goals/[id] ／ STATE-DRIVEN: WHILE 画面 goal-edit が描画中 THEN h1「目標を改訂する」・第2ナビ 改訂 / 無くす / 下への影響 / 版
@@ -1267,9 +1280,9 @@
 
 ### T-U-25 画面 自分の目標（3 状態・R1/R2/R3/R4）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 11 / Human 17.5 h・AI 1.8 h・wall-clock 1.8 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 12 / Human 17.5 h・AI 1.8 h・wall-clock 1.8 h
 - 行為 A25 A49 / 画面 my-progress / 表 goal_allocations goal_contributions tasks task_handovers goals goal_versions / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-04 T-A-10
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-04 T-A-10
 - 根拠（逐語）：D-058「目標の層は可変（会社＞事業＞部署＞…＞個人＞AI社員）で、必ずログイン中の個人まで落とす。個人の層は本人が画面で管理する」 ／ D-026「スコープ4層(運営/会社/部署/個人)を担当業務・ルール・テンプレ・覚えた操作・記憶すべてに同じ形で使う」
 - 触るファイル：apps/web/app/(app)/my-progress/page.tsx (new)、apps/web/tests/screens/my-progress.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 my-progress は URL /my-progress で開く（apps/web/app/(app)/my-progress ／ STATE-DRIVEN: WHILE 画面 my-progress が描画中 THEN h1「自分の目標」・第2ナビ 配られた分 / 自主目標 / 自分のAI
@@ -1279,9 +1292,9 @@
 
 ### T-U-26 画面 ふりかえり（5 状態・R1/R2）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 11 / Human 19.5 h・AI 1.9 h・wall-clock 1.9 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 12 / Human 19.5 h・AI 1.9 h・wall-clock 1.9 h
 - 行為 A26 / 画面 review / 表 hypotheses goals goal_versions validations / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-11
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-11
 - 根拠（逐語）：D-035「目標とタスクの間に仮説と施策を置く。目標→現状分析→仮説→施策→タスク→検証→次の仮説。効かなかった仮説も残す」 ／ D-006「スコープの採否は『抜いてもループが閉じるか』。CRM・請求・経理を切ると目標の数値が出せなくなるので切らない」
 - 触るファイル：apps/web/app/(app)/review/page.tsx (new)、apps/web/tests/screens/review.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 review は URL /review で開く（apps/web/app/(app)/review/page.tsx。遷移の h ／ STATE-DRIVEN: WHILE 画面 review が描画中 THEN h1「ふりかえり」・第2ナビ 差分 / 要因の候補 / 前期との比較・状態 5（
@@ -1291,9 +1304,9 @@
 
 ### T-U-27 画面 仮説と施策（5 状態・R1/R2）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 11 / Human 19.5 h・AI 1.9 h・wall-clock 1.9 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 12 / Human 19.5 h・AI 1.9 h・wall-clock 1.9 h
 - 行為 A27 / 画面 hypotheses / 表 hypotheses measures validations tasks task_handovers ledger_records / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-11
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-11
 - 根拠（逐語）：D-035「目標とタスクの間に仮説と施策を置く。目標→現状分析→仮説→施策→タスク→検証→次の仮説。効かなかった仮説も残す」 ／ D-063「営業目標の件数・工程・数値・FB・目的を決めるのは運営が作る目標スキル（§30）で、実装ではなくアップロード物。Kana」
 - 触るファイル：apps/web/app/(app)/hypotheses/page.tsx (new)、apps/web/tests/screens/hypotheses.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 hypotheses は URL /hypotheses で開く（apps/web/app/(app)/hypotheses/pa ／ STATE-DRIVEN: WHILE 画面 hypotheses が描画中 THEN h1「仮説と施策」・第2ナビ 採る候補 / 動いている施策 / タイムラ
@@ -1303,9 +1316,9 @@
 
 ### T-U-28 画面 担当業務（6 状態・R1/R2）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 11 / Human 22.0 h・AI 2.2 h・wall-clock 2.2 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 12 / Human 22.0 h・AI 2.2 h・wall-clock 2.2 h
 - 行為 A28 / 画面 duties / 表 duties duty_versions learned_procedures procedure_steps ai_employees members / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-14
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-14
 - 根拠（逐語）：D-030「構築メタスキル群は運営の資産で顧客に見えない。会社モデル構築・担当業務の定義・台帳の設計・目標の分解・改善提案・自分のA」 ／ D-022「覚えた操作は担当業務の下に畳む。ユーザーが普段見るのは担当業務まで。飽和させない」
 - 触るファイル：apps/web/app/(app)/duties/page.tsx (new)、apps/web/tests/screens/duties.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 duties は URL /duties で開く（apps/web/app/(app)/duties/page.tsx。遷移の h ／ STATE-DRIVEN: WHILE 画面 duties が描画中 THEN h1「担当業務」・第2ナビ 担当業務 / 覚えた操作 / 効く範囲 / テストで
@@ -1315,9 +1328,9 @@
 
 ### T-U-29 画面 自分のAIの記憶（4 状態・R1/R2/R3/R4）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 11 / Human 20.0 h・AI 2.0 h・wall-clock 2.0 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 12 / Human 20.0 h・AI 2.0 h・wall-clock 2.0 h
 - 行為 A30 / 画面 clone-memory / 表 memories clones members / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-16
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-16
 - 根拠（逐語）：D-060「旧称 COO → クローン → 自分のAI。文書上の用語は「自分のAI」。画面では本人の名前＋AI（高本AI／佐藤AI）」 ／ D-024「主役は会社モデル(Hub)＋ループ。用語と部品の正確な定義。自分のAI（旧称自分のAI／COO）は1人1体」
 - 触るファイル：apps/web/app/(app)/ai/memory/page.tsx (new)、apps/web/tests/screens/clone-memory.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 clone-memory は URL /ai/memory で開く（apps/web/app/(app)/ai/memory/pa ／ STATE-DRIVEN: WHILE 画面 clone-memory が描画中 THEN h1「高本AIの記憶」・第2ナビ 運営 / 会社 / 層ごと / 個
@@ -1327,9 +1340,9 @@
 
 ### T-U-30 画面 台帳の形（3 状態・R1/R2）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 11 / Human 14.5 h・AI 1.4 h・wall-clock 1.4 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 12 / Human 14.5 h・AI 1.4 h・wall-clock 1.4 h
 - 行為 A44 / 画面 ledger-def / 表 ledger_definitions ledger_fields ledger_stages ledger_views / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-09 T-A-14
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-09 T-A-14
 - 根拠（逐語）：D-038「台帳は『計算しないが、結果は持つ』。CRM/会計の計算は担わないが結果は台帳に持つ」 ／ D-039「業界別パッケージ(別製品)は作らない。業界別テンプレ(定義のスナップショット)は作る。各企業ごとに専用の会社モデルができ」
 - 触るファイル：apps/web/app/(app)/settings/ledgers/page.tsx (new)、apps/web/tests/screens/ledger-def.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 ledger-def は URL /settings/ledgers で開く（apps/web/app/(app)/setting ／ STATE-DRIVEN: WHILE 画面 ledger-def が描画中 THEN h1「台帳の形」・第2ナビ 項目 / 段階 / 既存への影響・状態 3（
@@ -1339,9 +1352,9 @@
 
 ### T-U-31 画面 会社モデル（5 状態・R1/R2）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 12 / Human 19.5 h・AI 1.9 h・wall-clock 1.9 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 13 / Human 19.5 h・AI 1.9 h・wall-clock 1.9 h
 - 行為 A45 / 画面 company-model / 表 tenants goals ledger_definitions duties scopes policies / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-01 T-A-06 T-A-10 T-A-14
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-01 T-A-06 T-A-10
 - 根拠（逐語）：D-010「製品の背骨。会社モデル(目標・台帳定義・担当業務・組織・ポリシー・記憶)を1つの定義に。画面もAI社員も自動実行もこの定」 ／ D-024「主役は会社モデル(Hub)＋ループ。用語と部品の正確な定義。自分のAI（旧称自分のAI／COO）は1人1体」
 - 触るファイル：apps/web/app/(app)/company-model/page.tsx (new)、apps/web/tests/screens/company-model.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 company-model は URL /company-model で開く（apps/web/app/(app)/company ／ STATE-DRIVEN: WHILE 画面 company-model が描画中 THEN h1「会社モデル」・第2ナビ 全体 / 版の履歴 / テンプレ・状
@@ -1351,9 +1364,9 @@
 
 ### T-U-32 画面 覚え直させる（3 状態・R1/R2）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 12 / Human 14.5 h・AI 1.4 h・wall-clock 1.4 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 13 / Human 14.5 h・AI 1.4 h・wall-clock 1.4 h
 - 行為 A32 / 画面 automation-repair / 表 learned_procedures procedure_steps action_runs sessions error_events / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-06
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-06
 - 根拠（逐語）：D-018「画面が変わる/毎回要望が違うへの対応は3層。座標でなく意味で記録し、壊れたらAIが覚え直す」 ／ D-014「ブラウザ操作が標準の万能手段。API/MCPは後からの最適化。API主・ブラウザは逃げ道という順序付けは誤りとして撤回」
 - 触るファイル：apps/web/app/(app)/automations/[id]/repair/page.tsx (new)、apps/web/tests/screens/automation-repair.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 automation-repair は URL /automations/:id/repair で開く（apps/web/app/ ／ STATE-DRIVEN: WHILE 画面 automation-repair が描画中 THEN h1「覚え直させる」・第2ナビ 止まっているもの / 覚え
@@ -1363,9 +1376,9 @@
 
 ### T-U-33 画面 証跡（6 状態・R1/R2）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 12 / Human 22.0 h・AI 2.2 h・wall-clock 2.2 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 13 / Human 22.0 h・AI 2.2 h・wall-clock 2.2 h
 - 行為 A33 A34 A38 A40 A66 / 画面 audit / 表 audit_events ops_audit_events security_events approvals members permissions / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-07 T-A-12 T-A-15 T-A-19
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-07 T-A-12 T-A-15
 - 根拠（逐語）：D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」 ／ D-012「AIは直接変えない。必ず提案として出し人が承認して反映。ただし動線が増えすぎるUX低下は避ける。プルリクエスト的な形は採」
 - 触るファイル：apps/web/app/(app)/audit/page.tsx (new)、apps/web/tests/screens/audit.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 audit は URL /audit で開く（apps/web/app/(app)/audit/page.tsx。遷移の href ／ STATE-DRIVEN: WHILE 画面 audit が描画中 THEN h1「証跡」・第2ナビ すべて / 承認 / AIの実行 / 取り消し / 運営の
@@ -1375,9 +1388,9 @@
 
 ### T-U-34 画面 ルール（3 状態・R1/R2/R3/R4）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 12 / Human 17.5 h・AI 1.8 h・wall-clock 1.8 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 13 / Human 17.5 h・AI 1.8 h・wall-clock 1.8 h
 - 行為 A35 / 画面 policies / 表 policies service_registry service_registry_versions service_requests ai_employees members / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-08
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-08
 - 根拠（逐語）：D-040「CAPTCHAは突破しない。本人環境・本人資格情報・本人のペースで動くので到達しない。突破は運営の安全ルールで禁止」 ／ D-041「サービス台帳で外部サービスごとの自動操作可否を持つ(api/allowed/unspecified/forbidden/」
 - 触るファイル：apps/web/app/(app)/policies/page.tsx (new)、apps/web/tests/screens/policies.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 policies は URL /policies で開く（apps/web/app/(app)/policies/page.tsx ／ STATE-DRIVEN: WHILE 画面 policies が描画中 THEN h1「ルール」・第2ナビ 運営 / 会社 / 部署 / 個人・状態 3（ルー
@@ -1387,9 +1400,9 @@
 
 ### T-U-35 画面 メンバー（7 状態・R1/R2）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 12 / Human 24.5 h・AI 2.5 h・wall-clock 2.5 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 13 / Human 24.5 h・AI 2.5 h・wall-clock 2.5 h
 - 行為 A36 / 画面 members / 表 members permissions layers invitations account_events account_event_items / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-03 T-A-12 T-A-20
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-03 T-A-12 T-A-20
 - 根拠（逐語）：D-026「スコープ4層(運営/会社/部署/個人)を担当業務・ルール・テンプレ・覚えた操作・記憶すべてに同じ形で使う」 ／ D-002「65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集」
 - 触るファイル：apps/web/app/(app)/members/page.tsx (new)、apps/web/tests/screens/members.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 members は URL /members で開く（apps/web/app/(app)/members/page.tsx。遷移 ／ STATE-DRIVEN: WHILE 画面 members が描画中 THEN h1「メンバー」・第2ナビ 組織図 / 一覧と招待 / 層と権限・状態 7（組
@@ -1399,9 +1412,9 @@
 
 ### T-U-36 画面 AI社員（4 状態・R1/R2）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 12 / Human 17.0 h・AI 1.7 h・wall-clock 1.7 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 13 / Human 17.0 h・AI 1.7 h・wall-clock 1.7 h
 - 行為 A37 / 画面 ai-staff / 表 ai_employees members duties duty_versions plans plan_versions / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-06 T-A-07 T-A-12 T-A-21
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-06 T-A-07 T-A-12
 - 根拠（逐語）：D-037「AI社員の出どころは運営配布/会社作成/個人作成の3経路。託されたAI社員は使えるが定義は編集できない。個人ルールだけは」 ／ D-027「テンプレは自動共有しない。運営配布＋各社作成＋明示的な公開のみ。最初の1社のものが自動でテンプレになるという記述は破棄」
 - 触るファイル：apps/web/app/(app)/ai-staff/page.tsx (new)、apps/web/tests/screens/ai-staff.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 ai-staff は URL /ai-staff で開く（apps/web/app/(app)/ai-staff/page.tsx ／ STATE-DRIVEN: WHILE 画面 ai-staff が描画中 THEN h1「AI社員」・第2ナビ 会社のAI社員 / 託されたAI社員 / 作る・
@@ -1411,9 +1424,9 @@
 
 ### T-U-37 画面 AI社員の1体（5 状態・R1/R2）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 12 / Human 19.5 h・AI 1.9 h・wall-clock 1.9 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 13 / Human 19.5 h・AI 1.9 h・wall-clock 1.9 h
 - 行為 A46 A81 / 画面 ai-staff-detail / 表 ai_employees members duties duty_versions policies audit_events / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-06 T-A-07 T-A-12 T-A-21
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-06 T-A-07 T-A-12
 - 根拠（逐語）：D-037「AI社員の出どころは運営配布/会社作成/個人作成の3経路。託されたAI社員は使えるが定義は編集できない。個人ルールだけは」 ／ D-026「スコープ4層(運営/会社/部署/個人)を担当業務・ルール・テンプレ・覚えた操作・記憶すべてに同じ形で使う」
 - 触るファイル：apps/web/app/(app)/ai-staff/[id]/page.tsx (new)、apps/web/tests/screens/ai-staff-detail.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 ai-staff-detail は URL /ai-staff/:id で開く（apps/web/app/(app)/ai-sta ／ STATE-DRIVEN: WHILE 画面 ai-staff-detail が描画中 THEN h1「AI社員の1体」・第2ナビ やること / 託し先 / 守
@@ -1423,9 +1436,9 @@
 
 ### T-U-38 画面 この製品でできること・できないこと（2 状態・R1/R2）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 12 / Human 12.0 h・AI 1.2 h・wall-clock 1.2 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 13 / Human 12.0 h・AI 1.2 h・wall-clock 1.2 h
 - 行為 A39 / 画面 security-brief / 表 sessions audit_events ops_audit_events security_events credentials policies / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-15
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-15
 - 根拠（逐語）：D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」 ／ D-015「Bridgeは顧客PCで動く万能実行器。本人のIP・本人のログイン済みセッションで動くのでCAPTCHA/bot検知に到」
 - 触るファイル：apps/web/app/(app)/security/page.tsx (new)、apps/web/tests/screens/security-brief.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 security-brief は URL /security で開く（apps/web/app/(app)/security/pa ／ STATE-DRIVEN: WHILE 画面 security-brief が描画中 THEN h1「この製品でできること・できないこと」・第2ナビ できること
@@ -1435,9 +1448,9 @@
 
 ### T-U-39 画面 持ち出す（2 状態・R1/R2）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 12 / Human 12.0 h・AI 1.2 h・wall-clock 1.2 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 13 / Human 12.0 h・AI 1.2 h・wall-clock 1.2 h
 - 行為 A41 / 画面 export / 表 export_jobs tenants goals ledger_definitions duties scopes / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-15
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-15
 - 根拠（逐語）：D-025「編集の3経路。(1)画面で直接編集=人が変える時は即反映(承認を挟まない) (2)AIに頼む(会話)=AIが変える時だけ」 ／ D-050「ポータビリティは3つの仕組みで担保。境界ディレクトリ＋CI検査＋台帳。追跡しなければ『後で移行できる』は必ず嘘になる」
 - 触るファイル：apps/web/app/(app)/export/page.tsx (new)、apps/web/tests/screens/export.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 export は URL /export で開く（apps/web/app/(app)/export/page.tsx。遷移の h ／ STATE-DRIVEN: WHILE 画面 export が描画中 THEN h1「持ち出す」・第2ナビ 会社モデル / 台帳 / まとめて・状態 2（持ち出
@@ -1447,9 +1460,9 @@
 
 ### T-U-40 画面 退会する（6 状態・R1/R2）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 12 / Human 22.0 h・AI 2.2 h・wall-clock 2.2 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 13 / Human 22.0 h・AI 2.2 h・wall-clock 2.2 h
 - 行為 A42 / 画面 account-close / 表 members permissions layers export_jobs audit_events ops_audit_events / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-12 T-A-15
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-12 T-A-15
 - 根拠（逐語）：D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」 ／ D-074「人が抜ける（無効化・退会）と会社が退会するときに、flow.json の全オブジェクトで何が起きるかを 1 つの表で決め」
 - 触るファイル：apps/web/app/(app)/settings/close/page.tsx (new)、apps/web/tests/screens/account-close.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 account-close は URL /settings/close で開く（apps/web/app/(app)/settin ／ STATE-DRIVEN: WHILE 画面 account-close が描画中 THEN h1「退会する」・第2ナビ 依存の確認 / 持ち出す / 退会・状
@@ -1459,9 +1472,9 @@
 
 ### T-U-41 画面 運営の支援（2 状態・R6）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 13 / Human 10.5 h・AI 1.1 h・wall-clock 1.1 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 14 / Human 10.5 h・AI 1.1 h・wall-clock 1.1 h
 - 行為 A43 A70 / 画面 ops-support / 表 inquiries conversations tenants goals ledger_definitions duties / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-17 T-A-19
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-17 T-A-19
 - 根拠（逐語）：D-030「構築メタスキル群は運営の資産で顧客に見えない。会社モデル構築・担当業務の定義・台帳の設計・目標の分解・改善提案・自分のA」 ／ D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」
 - 触るファイル：apps/web/app/(app)/ops/support/page.tsx (new)、apps/web/tests/screens/ops-support.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 ops-support は URL /ops/support で開く（apps/web/app/(app)/ops/support ／ STATE-DRIVEN: WHILE 画面 ops-support が描画中 THEN h1「運営の支援」・第2ナビ 受信箱 / 失敗の型 / 返答と対処・状
@@ -1471,9 +1484,9 @@
 
 ### T-U-42 画面 運営：会社の一覧（4 状態・R6）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 13 / Human 15.5 h・AI 1.6 h・wall-clock 1.6 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 14 / Human 15.5 h・AI 1.6 h・wall-clock 1.6 h
 - 行為 A60 / 画面 ops-home / 表 plans plan_versions subscriptions usage_meters plan_change_requests ai_employees / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-17 T-A-23
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-17 T-A-23
 - 根拠（逐語）：D-037「AI社員の出どころは運営配布/会社作成/個人作成の3経路。託されたAI社員は使えるが定義は編集できない。個人ルールだけは」 ／ D-030「構築メタスキル群は運営の資産で顧客に見えない。会社モデル構築・担当業務の定義・台帳の設計・目標の分解・改善提案・自分のA」
 - 触るファイル：apps/web/app/(app)/ops/page.tsx (new)、apps/web/tests/screens/ops-home.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 ops-home は URL /ops で開く（apps/web/app/(app)/ops/page.tsx。遷移の href  ／ STATE-DRIVEN: WHILE 画面 ops-home が描画中 THEN h1「運営：会社の一覧」・第2ナビ 会社の一覧 / 詰まっている / プラン
@@ -1483,9 +1496,9 @@
 
 ### T-U-43 画面 運営：配るもの（7 状態・R6）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 13 / Human 23.0 h・AI 2.3 h・wall-clock 2.3 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 14 / Human 23.0 h・AI 2.3 h・wall-clock 2.3 h
 - 行為 A59 A79 / 画面 ops-catalog / 表 ai_employees members duties duty_versions policies distributions / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-06 T-A-07 T-A-12 T-A-21
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-06 T-A-07 T-A-12
 - 根拠（逐語）：D-027「テンプレは自動共有しない。運営配布＋各社作成＋明示的な公開のみ。最初の1社のものが自動でテンプレになるという記述は破棄」 ／ D-037「AI社員の出どころは運営配布/会社作成/個人作成の3経路。託されたAI社員は使えるが定義は編集できない。個人ルールだけは」
 - 触るファイル：apps/web/app/(app)/ops/catalog/page.tsx (new)、apps/web/tests/screens/ops-catalog.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 ops-catalog は URL /ops/catalog で開く（apps/web/app/(app)/ops/catalog ／ STATE-DRIVEN: WHILE 画面 ops-catalog が描画中 THEN h1「運営：配るもの」・第2ナビ AI社員 / 担当業務 / ルール 
@@ -1495,9 +1508,9 @@
 
 ### T-U-44 画面 自分のアカウント（2 状態・R1/R2/R3/R4）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 13 / Human 15.0 h・AI 1.5 h・wall-clock 1.5 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 14 / Human 15.0 h・AI 1.5 h・wall-clock 1.5 h
 - 行為 A74 / 画面 account / 表 members permissions layers audit_events ops_audit_events security_events / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-03 T-A-12 T-A-20
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-03 T-A-12 T-A-20
 - 根拠（逐語）：D-076「全体見直し（01_hearing/全体見直し_20260915.md）の §2・§3・§6 を決定にする。顧客側に 自分」 ／ D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」
 - 触るファイル：apps/web/app/(app)/account/page.tsx (new)、apps/web/tests/screens/account.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 account は URL /account で開く（apps/web/app/(app)/account/page.tsx。遷移 ／ STATE-DRIVEN: WHILE 画面 account が描画中 THEN h1「自分のアカウント」・第2ナビ 基本 / パスワードと 2 段階認証 / 
@@ -1507,9 +1520,9 @@
 
 ### T-U-45 画面 会社の設定（2 状態・R1/R2）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 13 / Human 12.0 h・AI 1.2 h・wall-clock 1.2 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 14 / Human 12.0 h・AI 1.2 h・wall-clock 1.2 h
 - 行為 A75 / 画面 company-settings / 表 tenants goals ledger_definitions duties scopes policies / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-20
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-20
 - 根拠（逐語）：D-076「全体見直し（01_hearing/全体見直し_20260915.md）の §2・§3・§6 を決定にする。顧客側に 自分」 ／ D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」
 - 触るファイル：apps/web/app/(app)/settings/company/page.tsx (new)、apps/web/tests/screens/company-settings.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 company-settings は URL /settings/company で開く（apps/web/app/(app)/s ／ STATE-DRIVEN: WHILE 画面 company-settings が描画中 THEN h1「会社の設定」・第2ナビ 会社 / データの所在 / A
@@ -1519,9 +1532,9 @@
 
 ### T-U-46 画面 取り込み（3 状態・R1/R2）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 13 / Human 14.5 h・AI 1.4 h・wall-clock 1.4 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 14 / Human 14.5 h・AI 1.4 h・wall-clock 1.4 h
 - 行為 A76 / 画面 import / 表 attachments ledger_definitions ledger_views ledger_records clones members / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-20
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-20
 - 根拠（逐語）：D-076「全体見直し（01_hearing/全体見直し_20260915.md）の §2・§3・§6 を決定にする。顧客側に 自分」 ／ D-029「アップロードは形式を指定しない。何でも受け取ってAIが読む」
 - 触るファイル：apps/web/app/(app)/import/page.tsx (new)、apps/web/tests/screens/import.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 import は URL /import で開く（apps/web/app/(app)/import/page.tsx。遷移の h ／ STATE-DRIVEN: WHILE 画面 import が描画中 THEN h1「取り込み」・第2ナビ 入れる / 読んだ結果 / 取り込み済み・状態 3（
@@ -1531,9 +1544,9 @@
 
 ### T-U-47 画面 外部サービスの連携（3 状態・R1/R2）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 13 / Human 14.5 h・AI 1.4 h・wall-clock 1.4 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 14 / Human 14.5 h・AI 1.4 h・wall-clock 1.4 h
 - 行為 A77 / 画面 services / 表 service_registry service_registry_versions service_requests credentials sessions action_runs / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-20
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-20
 - 根拠（逐語）：D-076「全体見直し（01_hearing/全体見直し_20260915.md）の §2・§3・§6 を決定にする。顧客側に 自分」 ／ D-041「サービス台帳で外部サービスごとの自動操作可否を持つ(api/allowed/unspecified/forbidden/」
 - 触るファイル：apps/web/app/(app)/services/page.tsx (new)、apps/web/tests/screens/services.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 services は URL /services で開く（apps/web/app/(app)/services/page.tsx ／ STATE-DRIVEN: WHILE 画面 services が描画中 THEN h1「外部サービスの連携」・第2ナビ 使っているサービス / 正規連携 / 
@@ -1543,9 +1556,9 @@
 
 ### T-U-48 画面 運営：サービス台帳（2 状態・R6）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 13 / Human 10.5 h・AI 1.1 h・wall-clock 1.1 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 14 / Human 10.5 h・AI 1.1 h・wall-clock 1.1 h
 - 行為 A78 / 画面 ops-services / 表 service_registry service_registry_versions service_requests policies / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-21
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-21
 - 根拠（逐語）：D-076「全体見直し（01_hearing/全体見直し_20260915.md）の §2・§3・§6 を決定にする。顧客側に 自分」 ／ D-041「サービス台帳で外部サービスごとの自動操作可否を持つ(api/allowed/unspecified/forbidden/」
 - 触るファイル：apps/web/app/(app)/ops/services/page.tsx (new)、apps/web/tests/screens/ops-services.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 ops-services は URL /ops/services で開く（apps/web/app/(app)/ops/servi ／ STATE-DRIVEN: WHILE 画面 ops-services が描画中 THEN h1「運営：サービス台帳」・第2ナビ サービス台帳 / 版の履歴 /
@@ -1555,9 +1568,9 @@
 
 ### T-U-49 画面 運営：スキル（4 状態・R6）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 13 / Human 15.5 h・AI 1.6 h・wall-clock 1.6 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 14 / Human 15.5 h・AI 1.6 h・wall-clock 1.6 h
 - 行為 A80 / 画面 ops-skills / 表 skills skill_versions skill_test_runs skill_attachments distributions distribution_versions / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-21
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-21
 - 根拠（逐語）：D-030「構築メタスキル群は運営の資産で顧客に見えない。会社モデル構築・担当業務の定義・台帳の設計・目標の分解・改善提案・自分のA」 ／ D-063「営業目標の件数・工程・数値・FB・目的を決めるのは運営が作る目標スキル（§30）で、実装ではなくアップロード物。Kana」
 - 触るファイル：apps/web/app/(app)/ops/skills/page.tsx (new)、apps/web/tests/screens/ops-skills.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 ops-skills は URL /ops/skills で開く（apps/web/app/(app)/ops/skills/pa ／ STATE-DRIVEN: WHILE 画面 ops-skills が描画中 THEN h1「運営：スキル」・第2ナビ スキル / 1 つの中身 / アップロー
@@ -1567,9 +1580,9 @@
 
 ### T-U-50 画面 問い合わせ（5 状態・R1/R2/R3/R4）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 13 / Human 22.5 h・AI 2.2 h・wall-clock 2.2 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 14 / Human 22.5 h・AI 2.2 h・wall-clock 2.2 h
 - 行為 A67 / 画面 inquiry / 表 inquiries conversations audit_events ops_audit_events security_events clones / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-18
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-18
 - 根拠（逐語）：D-075「運営と顧客の間で往復するものは 6 つ（問い合わせ／お知らせと稼働状況／通知の届け先／プランと利用量／請求と入金／セキュ」 ／ D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」
 - 触るファイル：apps/web/app/(app)/inquiry/page.tsx (new)、apps/web/tests/screens/inquiry.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 inquiry は URL /inquiry で開く（apps/web/app/(app)/inquiry/page.tsx。遷移 ／ STATE-DRIVEN: WHILE 画面 inquiry が描画中 THEN h1「問い合わせ」・第2ナビ 問い合わせる / 返答待ち / 返答あり / 解
@@ -1579,9 +1592,9 @@
 
 ### T-U-51 画面 お知らせと通知（3 状態・R1/R2/R3/R4）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 14 / Human 17.5 h・AI 1.8 h・wall-clock 1.8 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 15 / Human 17.5 h・AI 1.8 h・wall-clock 1.8 h
 - 行為 A68 / 画面 notices / 表 notices notice_deliveries status_incidents notifications notification_preferences / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-18
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-18
 - 根拠（逐語）：D-075「運営と顧客の間で往復するものは 6 つ（問い合わせ／お知らせと稼働状況／通知の届け先／プランと利用量／請求と入金／セキュ」 ／ D-043「ネイティブアプリはレスポンシブとは別物。プッシュ通知が本質(承認待ちの通知)。段階2でPWA」
 - 触るファイル：apps/web/app/(app)/notices/page.tsx (new)、apps/web/tests/screens/notices.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 notices は URL /notices で開く（apps/web/app/(app)/notices/page.tsx。遷移 ／ STATE-DRIVEN: WHILE 画面 notices が描画中 THEN h1「お知らせと通知」・第2ナビ お知らせ / 稼働状況 / 通知の届け先・状
@@ -1591,9 +1604,9 @@
 
 ### T-U-52 画面 プランと請求（3 状態・R1/R2）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 14 / Human 14.5 h・AI 1.4 h・wall-clock 1.4 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 15 / Human 14.5 h・AI 1.4 h・wall-clock 1.4 h
 - 行為 A69 / 画面 billing / 表 plans plan_versions subscriptions usage_meters plan_change_requests invoices / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-18
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-18
 - 根拠（逐語）：D-075「運営と顧客の間で往復するものは 6 つ（問い合わせ／お知らせと稼働状況／通知の届け先／プランと利用量／請求と入金／セキュ」 ／ D-002「65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集」
 - 触るファイル：apps/web/app/(app)/billing/page.tsx (new)、apps/web/tests/screens/billing.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 billing は URL /billing で開く（apps/web/app/(app)/billing/page.tsx。遷移 ／ STATE-DRIVEN: WHILE 画面 billing が描画中 THEN h1「プランと請求」・第2ナビ プラン / 使った量 / 請求書 / 支払い方
@@ -1603,9 +1616,9 @@
 
 ### T-U-53 画面 運営：お知らせ（2 状態・R6）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 14 / Human 10.5 h・AI 1.1 h・wall-clock 1.1 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 15 / Human 10.5 h・AI 1.1 h・wall-clock 1.1 h
 - 行為 A71 / 画面 ops-notices / 表 notices notice_deliveries status_incidents plans plan_versions subscriptions / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-19
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-19
 - 根拠（逐語）：D-075「運営と顧客の間で往復するものは 6 つ（問い合わせ／お知らせと稼働状況／通知の届け先／プランと利用量／請求と入金／セキュ」 ／ D-077「請求・問い合わせ・配布したもの・証跡・公開審査・お知らせは会社ごとに違う。運営の対応は 会社の 1 社（詳細）の 8 面」
 - 触るファイル：apps/web/app/(app)/ops/notices/page.tsx (new)、apps/web/tests/screens/ops-notices.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 ops-notices は URL /ops/notices で開く（apps/web/app/(app)/ops/notices ／ STATE-DRIVEN: WHILE 画面 ops-notices が描画中 THEN h1「運営：お知らせ」・第2ナビ 出す / 出したもの / 稼働状況・
@@ -1615,9 +1628,9 @@
 
 ### T-U-54 画面 運営：請求と入金（2 状態・R6）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 14 / Human 10.5 h・AI 1.1 h・wall-clock 1.1 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 15 / Human 10.5 h・AI 1.1 h・wall-clock 1.1 h
 - 行為 A72 A87 / 画面 ops-billing / 表 invoices payments plans plan_versions subscriptions usage_meters / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-19
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-19
 - 根拠（逐語）：D-075「運営と顧客の間で往復するものは 6 つ（問い合わせ／お知らせと稼働状況／通知の届け先／プランと利用量／請求と入金／セキュ」 ／ D-002「65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集」
 - 触るファイル：apps/web/app/(app)/ops/billing/page.tsx (new)、apps/web/tests/screens/ops-billing.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 ops-billing は URL /ops/billing で開く（apps/web/app/(app)/ops/billing ／ STATE-DRIVEN: WHILE 画面 ops-billing が描画中 THEN h1「運営：請求と入金」・第2ナビ 請求と入金 / 未収 / 利用量と
@@ -1627,9 +1640,9 @@
 
 ### T-U-55 画面 運営：会社の 1 社（1 状態・R6）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 14 / Human 8.0 h・AI 0.8 h・wall-clock 0.8 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 15 / Human 8.0 h・AI 0.8 h・wall-clock 0.8 h
 - 行為 A64 / 画面 ops-tenant / 表 plans plan_versions subscriptions usage_meters plan_change_requests ai_employees / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-17 T-A-22
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-17 T-A-22
 - 根拠（逐語）：D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」 ／ D-037「AI社員の出どころは運営配布/会社作成/個人作成の3経路。託されたAI社員は使えるが定義は編集できない。個人ルールだけは」
 - 触るファイル：apps/web/app/(app)/ops/tenants/[id]/page.tsx (new)、apps/web/tests/screens/ops-tenant.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 ops-tenant は URL /ops/tenants/:id で開く（apps/web/app/(app)/ops/tena ／ STATE-DRIVEN: WHILE 画面 ops-tenant が描画中 THEN h1「運営：会社の 1 社」・第2ナビ 構成と状態 / 請求と入金 / 
@@ -1639,9 +1652,9 @@
 
 ### T-U-56 画面 運営：公開の審査（2 状態・R6）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 14 / Human 10.5 h・AI 1.1 h・wall-clock 1.1 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 15 / Human 10.5 h・AI 1.1 h・wall-clock 1.1 h
 - 行為 A63 / 画面 ops-review / 表 distributions artifacts duties duty_versions audit_events ops_audit_events / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-22
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-22
 - 根拠（逐語）：D-027「テンプレは自動共有しない。運営配布＋各社作成＋明示的な公開のみ。最初の1社のものが自動でテンプレになるという記述は破棄」 ／ D-073「自分のもの（個人の範囲・自主目標・自分のAIの記憶・自分が作ったAI社員）は権限なしで作る・直す・消す。それ以外は権限の」
 - 触るファイル：apps/web/app/(app)/ops/review/page.tsx (new)、apps/web/tests/screens/ops-review.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 ops-review は URL /ops/review で開く（apps/web/app/(app)/ops/review/pa ／ STATE-DRIVEN: WHILE 画面 ops-review が描画中 THEN h1「運営：公開の審査」・第2ナビ 審査待ち / 匿名化の確認 / 承認
@@ -1651,9 +1664,9 @@
 
 ### T-U-57 画面 運営：運営の証跡（2 状態・R6）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 14 / Human 10.5 h・AI 1.1 h・wall-clock 1.1 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 15 / Human 10.5 h・AI 1.1 h・wall-clock 1.1 h
 - 行為 A65 A73 / 画面 ops-audit / 表 audit_events ops_audit_events security_events members permissions layers / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-07 T-A-12 T-A-19 T-A-22
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-07 T-A-12 T-A-19
 - 根拠（逐語）：D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」 ／ D-073「自分のもの（個人の範囲・自主目標・自分のAIの記憶・自分が作ったAI社員）は権限なしで作る・直す・消す。それ以外は権限の」
 - 触るファイル：apps/web/app/(app)/ops/audit/page.tsx (new)、apps/web/tests/screens/ops-audit.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 ops-audit は URL /ops/audit で開く（apps/web/app/(app)/ops/audit/page. ／ STATE-DRIVEN: WHILE 画面 ops-audit が描画中 THEN h1「運営：運営の証跡」・第2ナビ 運営の証跡 / セキュリティの出来事 
@@ -1663,9 +1676,9 @@
 
 ### T-U-58 画面 メンバーの1人（4 状態・R1/R2）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 14 / Human 17.0 h・AI 1.7 h・wall-clock 1.7 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 15 / Human 17.0 h・AI 1.7 h・wall-clock 1.7 h
 - 行為 A61 A62 / 画面 member-detail / 表 members permissions layers ai_employees account_events account_event_items / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-03 T-A-12 T-A-15 T-A-20
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-03 T-A-12 T-A-15
 - 根拠（逐語）：D-026「スコープ4層(運営/会社/部署/個人)を担当業務・ルール・テンプレ・覚えた操作・記憶すべてに同じ形で使う」 ／ D-037「AI社員の出どころは運営配布/会社作成/個人作成の3経路。託されたAI社員は使えるが定義は編集できない。個人ルールだけは」
 - 触るファイル：apps/web/app/(app)/members/[id]/page.tsx (new)、apps/web/tests/screens/member-detail.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 member-detail は URL /members/:id で開く（apps/web/app/(app)/members/[ ／ STATE-DRIVEN: WHILE 画面 member-detail が描画中 THEN h1「メンバーの1人」・第2ナビ 基本 / 権限 / 託されたAI
@@ -1675,9 +1688,9 @@
 
 ### T-U-59 画面 支払い方法を登録する（4 状態・R1/R2・段階 2）
 
-- group U-screen / layer ui / phase 9_v2_ui / wave 21 / Human 17.0 h・AI 1.7 h・wall-clock 1.7 h
+- group U-screen / layer ui / phase 9_v2_ui / wave 23 / Human 17.0 h・AI 1.7 h・wall-clock 1.7 h
 - 行為 A05 / 画面 billing-setup / 表 plans plan_versions subscriptions usage_meters plan_change_requests payment_methods / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-01
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-01
 - 根拠（逐語）：D-002「65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集」 ／ D-081「サマリーの段階表（段階 2＝課金・オンボーディング・構築メタスキル・運営コンソール）は D-073〜D-080 で v1」
 - 触るファイル：apps/web/app/(public)/billing-setup/page.tsx (new)、apps/web/tests/screens/billing-setup.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 billing-setup は URL /billing-setup で開く（apps/web/app/(public)/bill ／ STATE-DRIVEN: WHILE 画面 billing-setup が描画中 THEN h1「支払い方法を登録する」・第2ナビ ・状態 4（登録、登録でき
@@ -1687,9 +1700,9 @@
 
 ### T-U-60 画面 開示資料（4 状態・R1/R2・段階 2）
 
-- group U-screen / layer ui / phase 9_v2_ui / wave 21 / Human 17.0 h・AI 1.7 h・wall-clock 1.7 h
+- group U-screen / layer ui / phase 9_v2_ui / wave 23 / Human 17.0 h・AI 1.7 h・wall-clock 1.7 h
 - 行為 A84 / 画面 disclosure / 表 disclosure_versions subprocessors audit_events ops_audit_events security_events / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-24
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-24
 - 根拠（逐語）：D-081「サマリーの段階表（段階 2＝課金・オンボーディング・構築メタスキル・運営コンソール）は D-073〜D-080 で v1」 ／ D-085「できる操作の完全な列挙・送るもの／送らないもの・サブプロセッサ一覧・アンインストールの検証結果 は成果物（行為×関門・依」
 - 触るファイル：apps/web/app/(app)/security/disclosure/page.tsx (new)、apps/web/tests/screens/disclosure.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 disclosure は URL /security/disclosure で開く（apps/web/app/(app)/secu ／ STATE-DRIVEN: WHILE 画面 disclosure が描画中 THEN h1「開示資料」・第2ナビ できる操作 / 送るもの／送らないもの / 
@@ -1699,9 +1712,9 @@
 
 ### T-U-61 画面 AI の経路（4 状態・R1/R2・段階 2）
 
-- group U-screen / layer ui / phase 9_v2_ui / wave 21 / Human 17.0 h・AI 1.7 h・wall-clock 1.7 h
+- group U-screen / layer ui / phase 9_v2_ui / wave 23 / Human 17.0 h・AI 1.7 h・wall-clock 1.7 h
 - 行為 A82 / 画面 llm-routes / 表 llm_routes credentials llm_capabilities / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-26
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-26
 - 根拠（逐語）：D-081「サマリーの段階表（段階 2＝課金・オンボーディング・構築メタスキル・運営コンソール）は D-073〜D-080 で v1」 ／ D-083「段階 2 で足す経路は BYOK（顧客の API キー）と運営マネージド（運営のキー・既定 OFF）。提供者は Anth」
 - 触るファイル：apps/web/app/(app)/settings/llm/page.tsx (new)、apps/web/tests/screens/llm-routes.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 llm-routes は URL /settings/llm で開く（apps/web/app/(app)/settings/ll ／ STATE-DRIVEN: WHILE 画面 llm-routes が描画中 THEN h1「AI の経路」・第2ナビ 既定の経路 / PC が閉じているとき 
@@ -1711,9 +1724,9 @@
 
 ### T-U-62 画面 アプリと通知（3 状態・R1/R2/R3/R4・段階 2）
 
-- group U-screen / layer ui / phase 9_v2_ui / wave 21 / Human 17.5 h・AI 1.8 h・wall-clock 1.8 h
+- group U-screen / layer ui / phase 9_v2_ui / wave 23 / Human 17.5 h・AI 1.8 h・wall-clock 1.8 h
 - 行為 A83 / 画面 app-setup / 表 push_devices sessions notifications notification_preferences notice_deliveries / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-26
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-26
 - 根拠（逐語）：D-081「サマリーの段階表（段階 2＝課金・オンボーディング・構築メタスキル・運営コンソール）は D-073〜D-080 で v1」 ／ D-084「PC は Bridge（Electron）の窓に Kaname の画面を出す。スマホは同じ Web を Capacito」
 - 触るファイル：apps/web/app/(app)/settings/app/page.tsx (new)、apps/web/tests/screens/app-setup.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 app-setup は URL /settings/app で開く（apps/web/app/(app)/settings/app ／ STATE-DRIVEN: WHILE 画面 app-setup が描画中 THEN h1「アプリと通知」・第2ナビ PC / スマホ / 通知・状態 3（アプ
@@ -1723,9 +1736,9 @@
 
 ### T-U-63 画面 運営：AI の経路と使用量（3 状態・R6・段階 2）
 
-- group U-screen / layer ui / phase 9_v2_ui / wave 21 / Human 13.0 h・AI 1.3 h・wall-clock 1.3 h
+- group U-screen / layer ui / phase 9_v2_ui / wave 23 / Human 13.0 h・AI 1.3 h・wall-clock 1.3 h
 - 行為 A85 / 画面 ops-llm / 表 llm_routes invoices payments / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-25
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-25
 - 根拠（逐語）：D-083「段階 2 で足す経路は BYOK（顧客の API キー）と運営マネージド（運営のキー・既定 OFF）。提供者は Anth」
 - 触るファイル：apps/web/app/(app)/ops/llm/page.tsx (new)、apps/web/tests/screens/ops-llm.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 ops-llm は URL /ops/llm で開く（apps/web/app/(app)/ops/llm/page.tsx。遷移 ／ STATE-DRIVEN: WHILE 画面 ops-llm が描画中 THEN h1「運営：AI の経路と使用量」・第2ナビ 許可 / 使用量 / 費用・状態
@@ -1735,9 +1748,9 @@
 
 ### T-U-64 画面 運営：開示資料（3 状態・R6・段階 2）
 
-- group U-screen / layer ui / phase 9_v2_ui / wave 21 / Human 13.0 h・AI 1.3 h・wall-clock 1.3 h
+- group U-screen / layer ui / phase 9_v2_ui / wave 23 / Human 13.0 h・AI 1.3 h・wall-clock 1.3 h
 - 行為 A86 / 画面 ops-disclosure / 表 disclosure_versions subprocessors notices notice_deliveries status_incidents / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-25
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-25
 - 根拠（逐語）：D-085「できる操作の完全な列挙・送るもの／送らないもの・サブプロセッサ一覧・アンインストールの検証結果 は成果物（行為×関門・依」
 - 触るファイル：apps/web/app/(app)/ops/disclosure/page.tsx (new)、apps/web/tests/screens/ops-disclosure.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 ops-disclosure は URL /ops/disclosure で開く（apps/web/app/(app)/ops/d ／ STATE-DRIVEN: WHILE 画面 ops-disclosure が描画中 THEN h1「運営：開示資料」・第2ナビ 版 / DPA の雛形 / サ
@@ -1747,7 +1760,7 @@
 
 ### T-I-01 実行ループの結線（自分のAI → 配る → AI社員 action_runs → 関門 → 一次確認 → 承認待ち → 画面）
 
-- group I / layer integration / phase 6_integration / wave 15 / Human 32 h・AI 8.0 h・wall-clock 9.0 h
+- group I / layer integration / phase 6_integration / wave 16 / Human 32 h・AI 8.0 h・wall-clock 9.0 h
 - 行為 — / 画面 — / 表 — / 関門 —（結線・横断試験（部品の関門をそのまま使う））
 - 依存 T-A-04 T-A-05 T-A-07 T-A-08 T-A-09 T-A-10 T-A-12 T-A-13 T-A-16 T-F-07
 - 根拠（逐語）：D-010「製品の背骨。会社モデル(目標・台帳定義・担当業務・組織・ポリシー・記憶)を1つの定義に。画面もAI社員も自動実行もこの定」 ／ D-012「AIは直接変えない。必ず提案として出し人が承認して反映。ただし動線が増えすぎるUX低下は避ける。プルリクエスト的な形は採」
@@ -1759,7 +1772,7 @@
 
 ### T-I-02 認証 → 会社 → 権限 → 画面の解禁（login → sessions → SET LOCAL → RLS → 役割ごとの画
 
-- group I / layer integration / phase 6_integration / wave 15 / Human 20 h・AI 5.0 h・wall-clock 6.0 h
+- group I / layer integration / phase 6_integration / wave 16 / Human 20 h・AI 5.0 h・wall-clock 6.0 h
 - 行為 — / 画面 — / 表 — / 関門 —（結線・横断試験（部品の関門をそのまま使う））
 - 依存 T-F-02 T-F-03 T-F-05 T-F-06 T-U-01 T-U-03 T-U-04 T-U-05 T-U-13
 - 根拠（逐語）：D-073「自分のもの（個人の範囲・自主目標・自分のAIの記憶・自分が作ったAI社員）は権限なしで作る・直す・消す。それ以外は権限の」 ／ D-058「目標の層は可変（会社＞事業＞部署＞…＞個人＞AI社員）で、必ずログイン中の個人まで落とす。個人の層は本人が画面で管理する」
@@ -1771,7 +1784,7 @@
 
 ### T-I-03 画面 → API → DB の通し配線（契約テスト・型生成同期・endpoint 実在性・別 GET で再取得）
 
-- group I / layer integration / phase 6_integration / wave 15 / Human 24 h・AI 2.4 h・wall-clock 2.4 h
+- group I / layer integration / phase 6_integration / wave 16 / Human 24 h・AI 2.4 h・wall-clock 2.4 h
 - 行為 — / 画面 — / 表 — / 関門 —（結線・横断試験（部品の関門をそのまま使う））
 - 依存 T-F-15 T-U-01 T-U-02 T-U-03 T-U-04 T-U-05 T-U-06 T-U-07 T-U-08 T-U-09
 - 根拠（逐語）：D-043「ネイティブアプリはレスポンシブとは別物。プッシュ通知が本質(承認待ちの通知)。段階2でPWA」 ／ D-053「画面は行為から導出する。画面から始めると『この画面で何をしたいか分からない』が必ず起きる。役割×用事→行為の背骨→オブジ」
@@ -1783,7 +1796,7 @@
 
 ### T-I-04 運営 ↔ 顧客の往復（問い合わせ → 受信箱 → 会社の詳細で返答 → 顧客の問い合わせに届く／お知らせ → 配達 → 既読）
 
-- group I / layer integration / phase 6_integration / wave 15 / Human 20 h・AI 2.0 h・wall-clock 2.0 h
+- group I / layer integration / phase 6_integration / wave 16 / Human 20 h・AI 2.0 h・wall-clock 2.0 h
 - 行為 — / 画面 — / 表 — / 関門 —（結線・横断試験（部品の関門をそのまま使う））
 - 依存 T-A-17 T-A-18 T-A-19 T-A-22 T-A-25 T-F-12 T-U-41 T-U-50 T-U-51 T-U-53
 - 根拠（逐語）：D-075「運営と顧客の間で往復するものは 6 つ（問い合わせ／お知らせと稼働状況／通知の届け先／プランと利用量／請求と入金／セキュ」 ／ D-077「請求・問い合わせ・配布したもの・証跡・公開審査・お知らせは会社ごとに違う。運営の対応は 会社の 1 社（詳細）の 8 面」
@@ -1795,7 +1808,7 @@
 
 ### T-I-05 出来事の依存処理 → 全失効（人が抜ける・退会・休止・権限変更・プラン変更・層を消す・AI社員を消す）
 
-- group I / layer integration / phase 6_integration / wave 15 / Human 28 h・AI 7.0 h・wall-clock 8.0 h
+- group I / layer integration / phase 6_integration / wave 16 / Human 28 h・AI 7.0 h・wall-clock 8.0 h
 - 行為 — / 画面 — / 表 — / 関門 —（結線・横断試験（部品の関門をそのまま使う））
 - 依存 T-A-12 T-A-13 T-A-15 T-A-18 T-A-24 T-F-04 T-F-05 T-F-06 T-U-35 T-U-37
 - 根拠（逐語）：D-074「人が抜ける（無効化・退会）と会社が退会するときに、flow.json の全オブジェクトで何が起きるかを 1 つの表で決め」 ／ D-076「全体見直し（01_hearing/全体見直し_20260915.md）の §2・§3・§6 を決定にする。顧客側に 自分」
@@ -1807,7 +1820,7 @@
 
 ### T-I-06 スキルの配布 → 装着 → Bridge が読む → どのスキルが働いたかが証跡に出る
 
-- group I / layer integration / phase 6_integration / wave 15 / Human 20 h・AI 2.0 h・wall-clock 2.0 h
+- group I / layer integration / phase 6_integration / wave 16 / Human 20 h・AI 2.0 h・wall-clock 2.0 h
 - 行為 — / 画面 — / 表 — / 関門 —（結線・横断試験（部品の関門をそのまま使う））
 - 依存 T-A-12 T-A-13 T-A-21 T-A-23 T-F-09 T-F-10 T-U-18 T-U-22 T-U-37 T-U-49
 - 根拠（逐語）：D-078「§30（構築メタスキル群）と §63（目標スキル）は決めたのに、運営がスキルを構築・アップロード・テスト・版管理・配布し」
@@ -1819,7 +1832,7 @@
 
 ### T-I-07 通知の結線（出来事 → 届け先 → outbox → 配達 → 既読・失敗時の再送）
 
-- group I / layer integration / phase 6_integration / wave 15 / Human 12 h・AI 1.2 h・wall-clock 1.2 h
+- group I / layer integration / phase 6_integration / wave 16 / Human 12 h・AI 1.2 h・wall-clock 1.2 h
 - 行為 — / 画面 — / 表 — / 関門 —（結線・横断試験（部品の関門をそのまま使う））
 - 依存 T-A-07 T-A-08 T-A-18 T-A-19 T-A-25 T-F-12 T-U-13 T-U-51
 - 根拠（逐語）：D-043「ネイティブアプリはレスポンシブとは別物。プッシュ通知が本質(承認待ちの通知)。段階2でPWA」 ／ D-075「運営と顧客の間で往復するものは 6 つ（問い合わせ／お知らせと稼働状況／通知の届け先／プランと利用量／請求と入金／セキュ」
@@ -1831,7 +1844,7 @@
 
 ### T-I-08 課金の結線（プラン → 契約 → 月次の請求書 → 入金の記録 → 未収 → 休止の案内）
 
-- group I / layer integration / phase 6_integration / wave 15 / Human 16 h・AI 4.0 h・wall-clock 5.0 h
+- group I / layer integration / phase 6_integration / wave 16 / Human 16 h・AI 4.0 h・wall-clock 5.0 h
 - 行為 — / 画面 — / 表 — / 関門 —（結線・横断試験（部品の関門をそのまま使う））
 - 依存 T-A-18 T-A-19 T-A-21 T-A-25 T-F-10 T-F-13 T-U-52 T-U-54 T-U-55
 - 根拠（逐語）：D-075「運営と顧客の間で往復するものは 6 つ（問い合わせ／お知らせと稼働状況／通知の届け先／プランと利用量／請求と入金／セキュ」 ／ D-077「請求・問い合わせ・配布したもの・証跡・公開審査・お知らせは会社ごとに違う。運営の対応は 会社の 1 社（詳細）の 8 面」
@@ -1843,7 +1856,7 @@
 
 ### T-I-09 流れ J-01 P0 契約・登録（1回だけ） を最後まで通す（L2）
 
-- group I / layer integration / phase 6_integration / wave 15 / Human 14 h・AI 1.4 h・wall-clock 1.4 h
+- group I / layer integration / phase 6_integration / wave 16 / Human 14 h・AI 1.4 h・wall-clock 1.4 h
 - 行為 — / 画面 — / 表 — / 関門 —（結線・横断試験（部品の関門をそのまま使う））
 - 依存 T-A-01 T-A-02 T-A-15 T-A-24 T-U-01 T-U-02 T-U-03 T-U-04
 - 根拠（逐語）：D-001「2028-09までに200社→65社に修正。自社SaaS外販。初期顧客が自力で回せることが前提」 ／ D-002「65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集」
@@ -1855,7 +1868,7 @@
 
 ### T-I-10 流れ J-02 P1 はじめの設定 ── PCをつないで、自分のAIと作る（初日〜3日） を最後まで通す（L2）
 
-- group I / layer integration / phase 6_integration / wave 15 / Human 20 h・AI 2.0 h・wall-clock 2.0 h
+- group I / layer integration / phase 6_integration / wave 16 / Human 20 h・AI 2.0 h・wall-clock 2.0 h
 - 行為 — / 画面 — / 表 — / 関門 —（結線・横断試験（部品の関門をそのまま使う））
 - 依存 T-A-01 T-A-06 T-A-07 T-A-08 T-A-16 T-U-07 T-U-08 T-U-09 T-U-10 T-U-11
 - 根拠（逐語）：D-003「スキルは堀ではない。堀は『閉じたループ』(目標→逆算→配布→実行→測定→再計画)と会社モデル」 ／ D-004「LLMは顧客のサブスク内(Bridge)が既定。APIは顧客負担。運営マネージドは既定OFFの管理者トグル」
@@ -1867,7 +1880,7 @@
 
 ### T-I-11 流れ J-03 P2 毎日 ── 自分のAIと回す を最後まで通す（L2）
 
-- group I / layer integration / phase 6_integration / wave 16 / Human 42 h・AI 4.2 h・wall-clock 4.2 h
+- group I / layer integration / phase 6_integration / wave 17 / Human 42 h・AI 4.2 h・wall-clock 4.2 h
 - 行為 — / 画面 — / 表 — / 関門 —（結線・横断試験（部品の関門をそのまま使う））
 - 依存 T-A-04 T-A-05 T-A-07 T-A-08 T-A-09 T-A-10 T-A-12 T-A-13 T-A-16 T-U-05
 - 根拠（逐語）：D-003「スキルは堀ではない。堀は『閉じたループ』(目標→逆算→配布→実行→測定→再計画)と会社モデル」 ／ D-007「数値はAI社員が会話で出す。分析系の固定画面(ランキング・チャネル別・期間比較)を一切作らない」
@@ -1879,7 +1892,7 @@
 
 ### T-I-12 流れ J-04 P3 毎週 を最後まで通す（L2）
 
-- group I / layer integration / phase 6_integration / wave 16 / Human 18 h・AI 1.8 h・wall-clock 1.8 h
+- group I / layer integration / phase 6_integration / wave 17 / Human 18 h・AI 1.8 h・wall-clock 1.8 h
 - 行為 — / 画面 — / 表 — / 関門 —（結線・横断試験（部品の関門をそのまま使う））
 - 依存 T-A-04 T-A-05 T-A-09 T-A-10 T-A-11 T-U-20 T-U-22 T-U-23 T-U-25
 - 根拠（逐語）：D-002「65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集」 ／ D-003「スキルは堀ではない。堀は『閉じたループ』(目標→逆算→配布→実行→測定→再計画)と会社モデル」
@@ -1891,7 +1904,7 @@
 
 ### T-I-13 流れ J-05 P4 毎月・四半期 を最後まで通す（L2）
 
-- group I / layer integration / phase 6_integration / wave 16 / Human 22 h・AI 2.2 h・wall-clock 2.2 h
+- group I / layer integration / phase 6_integration / wave 17 / Human 22 h・AI 2.2 h・wall-clock 2.2 h
 - 行為 — / 画面 — / 表 — / 関門 —（結線・横断試験（部品の関門をそのまま使う））
 - 依存 T-A-09 T-A-10 T-A-11 T-A-14 T-A-16 T-U-24 T-U-26 T-U-27 T-U-28 T-U-29
 - 根拠（逐語）：D-003「スキルは堀ではない。堀は『閉じたループ』(目標→逆算→配布→実行→測定→再計画)と会社モデル」 ／ D-006「スコープの採否は『抜いてもループが閉じるか』。CRM・請求・経理を切ると目標の数値が出せなくなるので切らない」
@@ -1903,7 +1916,7 @@
 
 ### T-I-14 流れ J-06 P5 例外・困ったとき を最後まで通す（L2）
 
-- group I / layer integration / phase 6_integration / wave 16 / Human 16 h・AI 1.6 h・wall-clock 1.6 h
+- group I / layer integration / phase 6_integration / wave 17 / Human 16 h・AI 1.6 h・wall-clock 1.6 h
 - 行為 — / 画面 — / 表 — / 関門 —（結線・横断試験（部品の関門をそのまま使う））
 - 依存 T-A-03 T-A-06 T-A-07 T-A-08 T-U-06 T-U-32 T-U-33 T-U-34
 - 根拠（逐語）：D-003「スキルは堀ではない。堀は『閉じたループ』(目標→逆算→配布→実行→測定→再計画)と会社モデル」 ／ D-012「AIは直接変えない。必ず提案として出し人が承認して反映。ただし動線が増えすぎるUX低下は避ける。プルリクエスト的な形は採」
@@ -1915,7 +1928,7 @@
 
 ### T-I-15 流れ J-07 P6 人が増えたら を最後まで通す（L2）
 
-- group I / layer integration / phase 6_integration / wave 16 / Human 34 h・AI 3.4 h・wall-clock 3.4 h
+- group I / layer integration / phase 6_integration / wave 17 / Human 34 h・AI 3.4 h・wall-clock 3.4 h
 - 行為 — / 画面 — / 表 — / 関門 —（結線・横断試験（部品の関門をそのまま使う））
 - 依存 T-A-06 T-A-07 T-A-08 T-A-12 T-A-13 T-A-15 T-A-18 T-A-20 T-A-24 T-A-26
 - 根拠（逐語）：D-002「65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集」 ／ D-004「LLMは顧客のサブスク内(Bridge)が既定。APIは顧客負担。運営マネージドは既定OFFの管理者トグル」
@@ -1927,7 +1940,7 @@
 
 ### T-I-16 流れ J-08 P7 外に説明する・出る を最後まで通す（L2）
 
-- group I / layer integration / phase 6_integration / wave 16 / Human 14 h・AI 1.4 h・wall-clock 1.4 h
+- group I / layer integration / phase 6_integration / wave 17 / Human 14 h・AI 1.4 h・wall-clock 1.4 h
 - 行為 — / 画面 — / 表 — / 関門 —（結線・横断試験（部品の関門をそのまま使う））
 - 依存 T-A-15 T-A-24 T-U-33 T-U-38 T-U-39 T-U-40
 - 根拠（逐語）：D-010「製品の背骨。会社モデル(目標・台帳定義・担当業務・組織・ポリシー・記憶)を1つの定義に。画面もAI社員も自動実行もこの定」 ／ D-015「Bridgeは顧客PCで動く万能実行器。本人のIP・本人のログイン済みセッションで動くのでCAPTCHA/bot検知に到」
@@ -1939,7 +1952,7 @@
 
 ### T-I-17 流れ J-09 P8 運営（段階2） を最後まで通す（L2）
 
-- group I / layer integration / phase 6_integration / wave 16 / Human 34 h・AI 3.4 h・wall-clock 3.4 h
+- group I / layer integration / phase 6_integration / wave 17 / Human 34 h・AI 3.4 h・wall-clock 3.4 h
 - 行為 — / 画面 — / 表 — / 関門 —（結線・横断試験（部品の関門をそのまま使う））
 - 依存 T-A-12 T-A-13 T-A-17 T-A-19 T-A-21 T-A-22 T-A-23 T-A-25 T-U-37 T-U-41
 - 根拠（逐語）：D-002「65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集」 ／ D-010「製品の背骨。会社モデル(目標・台帳定義・担当業務・組織・ポリシー・記憶)を1つの定義に。画面もAI社員も自動実行もこの定」
@@ -1951,7 +1964,7 @@
 
 ### T-I-18 drift 検出（モック ↔ 実装：h1・状態・第2ナビ・列の値／仕様 ↔ 実装：states・transitions・rela
 
-- group I / layer integration / phase 6_integration / wave 16 / Human 12 h・AI 1.2 h・wall-clock 1.2 h
+- group I / layer integration / phase 6_integration / wave 17 / Human 12 h・AI 1.2 h・wall-clock 1.2 h
 - 行為 — / 画面 — / 表 — / 関門 —（結線・横断試験（部品の関門をそのまま使う））
 - 依存 T-F-01 T-F-15 T-U-01 T-U-02 T-U-03 T-U-04 T-U-05 T-U-06 T-U-07 T-U-08
 - 根拠（逐語）：D-053「画面は行為から導出する。画面から始めると『この画面で何をしたいか分からない』が必ず起きる。役割×用事→行為の背骨→オブジ」 ／ D-059「行為ID・役割ID・決定IDは設計者の道具であって顧客に見せるものではない。モックの画面上から消し、HTMLコメントにだ」
@@ -1963,7 +1976,7 @@
 
 ### T-I-19 負荷試験（同時接続・集中時の rps・失敗率・接続プール）と有限資源の枯渇
 
-- group I / layer polish / phase 6_integration / wave 16 / Human 16 h・AI 1.6 h・wall-clock 1.6 h
+- group I / layer polish / phase 6_integration / wave 18 / Human 16 h・AI 1.6 h・wall-clock 1.6 h
 - 行為 — / 画面 — / 表 — / 関門 —（結線・横断試験（部品の関門をそのまま使う））
 - 依存 T-I-01 T-I-02 T-I-03
 - 根拠（逐語）：D-004「LLMは顧客のサブスク内(Bridge)が既定。APIは顧客負担。運営マネージドは既定OFFの管理者トグル」
@@ -1975,7 +1988,7 @@
 
 ### T-I-20 セキュリティ監査（RLS を故意に壊す・関門の迂回・運営の越境・資格情報の露出）
 
-- group I / layer polish / phase 6_integration / wave 16 / Human 16 h・AI 4.0 h・wall-clock 5.0 h
+- group I / layer polish / phase 6_integration / wave 18 / Human 16 h・AI 4.0 h・wall-clock 5.0 h
 - 行為 — / 画面 — / 表 — / 関門 —（結線・横断試験（部品の関門をそのまま使う））
 - 依存 T-F-02 T-F-03 T-F-14 T-I-02 T-I-05
 - 根拠（逐語）：D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」 ／ D-074「人が抜ける（無効化・退会）と会社が退会するときに、flow.json の全オブジェクトで何が起きるかを 1 つの表で決め」
@@ -1999,7 +2012,7 @@
 
 ### T-I-22 文書とリリース準備（できること・できないことの開示・API 仕様の公開・変更履歴）
 
-- group I / layer polish / phase 6_integration / wave 17 / Human 12 h・AI 1.2 h・wall-clock 1.2 h
+- group I / layer polish / phase 6_integration / wave 18 / Human 12 h・AI 1.2 h・wall-clock 1.2 h
 - 行為 — / 画面 — / 表 — / 関門 —（結線・横断試験（部品の関門をそのまま使う））
 - 依存 T-I-01 T-I-02 T-I-03 T-I-04 T-I-05 T-I-06 T-I-07 T-I-08 T-I-09 T-I-10
 - 根拠（逐語）：D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」
@@ -2011,7 +2024,7 @@
 
 ### T-S-01 スキル一式の形式・雛形・検査（skill_pkg_gate を運営のアップロードに結線）
 
-- group S / layer content / phase 7_content / wave 18 / Human 8 h・AI 2.0 h・wall-clock 3.0 h
+- group S / layer content / phase 7_content / wave 19 / Human 8 h・AI 2.0 h・wall-clock 3.0 h
 - 行為 A80 / 画面 ops-skills / 表 — / 関門 C4
 - 依存 T-U-49 T-A-21
 - 根拠（逐語）：D-080「D-078 は器（保存・版・装着）。ここで中身を決める。スキルは SKILL.md ＋ references ＋ eva」 ／ D-078「§30（構築メタスキル群）と §63（目標スキル）は決めたのに、運営がスキルを構築・アップロード・テスト・版管理・配布し」
@@ -2023,7 +2036,7 @@
 
 ### T-S-02 スキル制作 構築メタ「会社モデル構築」（元ネタ hearing・business-plan）
 
-- group S / layer content / phase 7_content / wave 18 / Human 12 h・AI 3.0 h・wall-clock 4.0 h
+- group S / layer content / phase 7_content / wave 20 / Human 12 h・AI 3.0 h・wall-clock 4.0 h
 - 行為 A80 A81 / 画面 ops-skills / 表 — / 関門 —（中身の制作。外界には触れない（テストはテスト会社の中））
 - 依存 T-S-01
 - 根拠（逐語）：D-030「構築メタスキル群は運営の資産で顧客に見えない。会社モデル構築・担当業務の定義・台帳の設計・目標の分解・改善提案・自分のA」 ／ D-080「D-078 は器（保存・版・装着）。ここで中身を決める。スキルは SKILL.md ＋ references ＋ eva」
@@ -2035,7 +2048,7 @@
 
 ### T-S-03 スキル制作 構築メタ「担当業務の定義（OJT の進め方）」（元ネタ sop-create・outsource-brief）
 
-- group S / layer content / phase 7_content / wave 18 / Human 12 h・AI 3.0 h・wall-clock 4.0 h
+- group S / layer content / phase 7_content / wave 20 / Human 12 h・AI 3.0 h・wall-clock 4.0 h
 - 行為 A80 A81 / 画面 ops-skills / 表 — / 関門 —（中身の制作。外界には触れない（テストはテスト会社の中））
 - 依存 T-S-01
 - 根拠（逐語）：D-030「構築メタスキル群は運営の資産で顧客に見えない。会社モデル構築・担当業務の定義・台帳の設計・目標の分解・改善提案・自分のA」 ／ D-080「D-078 は器（保存・版・装着）。ここで中身を決める。スキルは SKILL.md ＋ references ＋ eva」
@@ -2047,7 +2060,7 @@
 
 ### T-S-04 スキル制作 構築メタ「台帳の設計（段階・項目・判断基準）」（元ネタ pipeline-management・payment-management）
 
-- group S / layer content / phase 7_content / wave 18 / Human 12 h・AI 3.0 h・wall-clock 4.0 h
+- group S / layer content / phase 7_content / wave 20 / Human 12 h・AI 3.0 h・wall-clock 4.0 h
 - 行為 A80 A81 / 画面 ops-skills / 表 — / 関門 —（中身の制作。外界には触れない（テストはテスト会社の中））
 - 依存 T-S-01
 - 根拠（逐語）：D-030「構築メタスキル群は運営の資産で顧客に見えない。会社モデル構築・担当業務の定義・台帳の設計・目標の分解・改善提案・自分のA」 ／ D-080「D-078 は器（保存・版・装着）。ここで中身を決める。スキルは SKILL.md ＋ references ＋ eva」
@@ -2059,7 +2072,7 @@
 
 ### T-S-05 スキル制作 構築メタ「目標の分解（年→四半期→月→週）」（元ネタ strategic-goal-system・annual-okr）
 
-- group S / layer content / phase 7_content / wave 18 / Human 12 h・AI 3.0 h・wall-clock 4.0 h
+- group S / layer content / phase 7_content / wave 20 / Human 12 h・AI 3.0 h・wall-clock 4.0 h
 - 行為 A80 A81 / 画面 ops-skills / 表 — / 関門 —（中身の制作。外界には触れない（テストはテスト会社の中））
 - 依存 T-S-01
 - 根拠（逐語）：D-030「構築メタスキル群は運営の資産で顧客に見えない。会社モデル構築・担当業務の定義・台帳の設計・目標の分解・改善提案・自分のA」 ／ D-032「目標の階層と配分。スコープ層と目標階層は別概念。未配分の可視化。配る権限。合意/指示の2通り。AI社員にも配れる。未達は」
@@ -2071,7 +2084,7 @@
 
 ### T-S-06 スキル制作 構築メタ「改善提案の作り方（未達の原因と再計画）」（元ネタ strategic-goal-system・analytics）
 
-- group S / layer content / phase 7_content / wave 18 / Human 12 h・AI 3.0 h・wall-clock 4.0 h
+- group S / layer content / phase 7_content / wave 20 / Human 12 h・AI 3.0 h・wall-clock 4.0 h
 - 行為 A80 A81 / 画面 ops-skills / 表 — / 関門 —（中身の制作。外界には触れない（テストはテスト会社の中））
 - 依存 T-S-01
 - 根拠（逐語）：D-030「構築メタスキル群は運営の資産で顧客に見えない。会社モデル構築・担当業務の定義・台帳の設計・目標の分解・改善提案・自分のA」 ／ D-035「目標とタスクの間に仮説と施策を置く。目標→現状分析→仮説→施策→タスク→検証→次の仮説。効かなかった仮説も残す」
@@ -2083,7 +2096,7 @@
 
 ### T-S-07 スキル制作 構築メタ「自分のAIの育成（好みの引き出し方・記憶への落とし方）」（元ネタ hearing）
 
-- group S / layer content / phase 7_content / wave 18 / Human 12 h・AI 3.0 h・wall-clock 4.0 h
+- group S / layer content / phase 7_content / wave 20 / Human 12 h・AI 3.0 h・wall-clock 4.0 h
 - 行為 A80 A81 / 画面 ops-skills / 表 — / 関門 —（中身の制作。外界には触れない（テストはテスト会社の中））
 - 依存 T-S-01
 - 根拠（逐語）：D-030「構築メタスキル群は運営の資産で顧客に見えない。会社モデル構築・担当業務の定義・台帳の設計・目標の分解・改善提案・自分のA」 ／ D-080「D-078 は器（保存・版・装着）。ここで中身を決める。スキルは SKILL.md ＋ references ＋ eva」
@@ -2095,7 +2108,7 @@
 
 ### T-S-08 スキル制作 構築メタ「トラブル対応（覚えた操作が壊れた・承認が滞留）」（元ネタ support-response・dependency-risk）
 
-- group S / layer content / phase 7_content / wave 18 / Human 12 h・AI 3.0 h・wall-clock 4.0 h
+- group S / layer content / phase 7_content / wave 20 / Human 12 h・AI 3.0 h・wall-clock 4.0 h
 - 行為 A80 A81 / 画面 ops-skills / 表 — / 関門 —（中身の制作。外界には触れない（テストはテスト会社の中））
 - 依存 T-S-01
 - 根拠（逐語）：D-030「構築メタスキル群は運営の資産で顧客に見えない。会社モデル構築・担当業務の定義・台帳の設計・目標の分解・改善提案・自分のA」 ／ D-040「CAPTCHAは突破しない。本人環境・本人資格情報・本人のペースで動くので到達しない。突破は運営の安全ルールで禁止」
@@ -2107,7 +2120,7 @@
 
 ### T-S-09 スキル制作 目標スキル「営業目標（受託開発）」（元ネタ strategic-goal-system・pipeline-management）
 
-- group S / layer content / phase 7_content / wave 18 / Human 10 h・AI 2.5 h・wall-clock 3.5 h
+- group S / layer content / phase 7_content / wave 20 / Human 10 h・AI 2.5 h・wall-clock 3.5 h
 - 行為 A80 A81 / 画面 ops-skills / 表 — / 関門 —（中身の制作。外界には触れない（テストはテスト会社の中））
 - 依存 T-S-01
 - 根拠（逐語）：D-063「営業目標の件数・工程・数値・FB・目的を決めるのは運営が作る目標スキル（§30）で、実装ではなくアップロード物。Kana」 ／ D-080「D-078 は器（保存・版・装着）。ここで中身を決める。スキルは SKILL.md ＋ references ＋ eva」
@@ -2119,7 +2132,7 @@
 
 ### T-S-10 スキル制作 目標スキル「営業目標（飲食）」（元ネタ strategic-goal-system）
 
-- group S / layer content / phase 7_content / wave 18 / Human 10 h・AI 2.5 h・wall-clock 3.5 h
+- group S / layer content / phase 7_content / wave 20 / Human 10 h・AI 2.5 h・wall-clock 3.5 h
 - 行為 A80 A81 / 画面 ops-skills / 表 — / 関門 —（中身の制作。外界には触れない（テストはテスト会社の中））
 - 依存 T-S-01
 - 根拠（逐語）：D-063「営業目標の件数・工程・数値・FB・目的を決めるのは運営が作る目標スキル（§30）で、実装ではなくアップロード物。Kana」 ／ D-080「D-078 は器（保存・版・装着）。ここで中身を決める。スキルは SKILL.md ＋ references ＋ eva」
@@ -2131,7 +2144,7 @@
 
 ### T-S-11 スキル制作 目標スキル「納期遵守（制作）」（元ネタ strategic-goal-system・sop-create）
 
-- group S / layer content / phase 7_content / wave 19 / Human 10 h・AI 2.5 h・wall-clock 3.5 h
+- group S / layer content / phase 7_content / wave 20 / Human 10 h・AI 2.5 h・wall-clock 3.5 h
 - 行為 A80 A81 / 画面 ops-skills / 表 — / 関門 —（中身の制作。外界には触れない（テストはテスト会社の中））
 - 依存 T-S-01
 - 根拠（逐語）：D-063「営業目標の件数・工程・数値・FB・目的を決めるのは運営が作る目標スキル（§30）で、実装ではなくアップロード物。Kana」 ／ D-080「D-078 は器（保存・版・装着）。ここで中身を決める。スキルは SKILL.md ＋ references ＋ eva」
@@ -2143,7 +2156,7 @@
 
 ### T-S-12 スキル制作 業務スキル「発注ナビの新着を台帳に入れる」（元ネタ hatchunavi-apply）
 
-- group S / layer content / phase 7_content / wave 19 / Human 8 h・AI 2.0 h・wall-clock 3.0 h
+- group S / layer content / phase 7_content / wave 21 / Human 8 h・AI 2.0 h・wall-clock 3.0 h
 - 行為 A80 A81 / 画面 ops-skills / 表 — / 関門 —（中身の制作。外界には触れない（テストはテスト会社の中））
 - 依存 T-S-01
 - 根拠（逐語）：D-022「覚えた操作は担当業務の下に畳む。ユーザーが普段見るのは担当業務まで。飽和させない」 ／ D-080「D-078 は器（保存・版・装着）。ここで中身を決める。スキルは SKILL.md ＋ references ＋ eva」
@@ -2155,7 +2168,7 @@
 
 ### T-S-13 スキル制作 業務スキル「請求書の作成（税込・内訳）」（元ネタ invoice-create）
 
-- group S / layer content / phase 7_content / wave 19 / Human 8 h・AI 2.0 h・wall-clock 3.0 h
+- group S / layer content / phase 7_content / wave 21 / Human 8 h・AI 2.0 h・wall-clock 3.0 h
 - 行為 A80 A81 / 画面 ops-skills / 表 — / 関門 —（中身の制作。外界には触れない（テストはテスト会社の中））
 - 依存 T-S-01
 - 根拠（逐語）：D-038「台帳は『計算しないが、結果は持つ』。CRM/会計の計算は担わないが結果は台帳に持つ」 ／ D-080「D-078 は器（保存・版・装着）。ここで中身を決める。スキルは SKILL.md ＋ references ＋ eva」
@@ -2167,7 +2180,7 @@
 
 ### T-S-14 スキル制作 業務スキル「入金の照合（正規連携）」（元ネタ payment-management・ai-tax-accountant）
 
-- group S / layer content / phase 7_content / wave 19 / Human 8 h・AI 2.0 h・wall-clock 3.0 h
+- group S / layer content / phase 7_content / wave 21 / Human 8 h・AI 2.0 h・wall-clock 3.0 h
 - 行為 A80 A81 / 画面 ops-skills / 表 — / 関門 —（中身の制作。外界には触れない（テストはテスト会社の中））
 - 依存 T-S-01
 - 根拠（逐語）：D-041「サービス台帳で外部サービスごとの自動操作可否を持つ(api/allowed/unspecified/forbidden/」 ／ D-080「D-078 は器（保存・版・装着）。ここで中身を決める。スキルは SKILL.md ＋ references ＋ eva」
@@ -2179,7 +2192,7 @@
 
 ### T-S-15 スキル制作 業務スキル「問い合わせの一次返信」（元ネタ support-response・customer-followup）
 
-- group S / layer content / phase 7_content / wave 19 / Human 8 h・AI 2.0 h・wall-clock 3.0 h
+- group S / layer content / phase 7_content / wave 21 / Human 8 h・AI 2.0 h・wall-clock 3.0 h
 - 行為 A80 A81 / 画面 ops-skills / 表 — / 関門 —（中身の制作。外界には触れない（テストはテスト会社の中））
 - 依存 T-S-01
 - 根拠（逐語）：D-075「運営と顧客の間で往復するものは 6 つ（問い合わせ／お知らせと稼働状況／通知の届け先／プランと利用量／請求と入金／セキュ」 ／ D-080「D-078 は器（保存・版・装着）。ここで中身を決める。スキルは SKILL.md ＋ references ＋ eva」

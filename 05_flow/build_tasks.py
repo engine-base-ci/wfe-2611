@@ -124,10 +124,24 @@ A_ids = [t["id"] for t in tasks if t["group"] == "A"]
 US = [("シェル（サイドバー・レール・第2ナビ・三画面・下タブ・枠の導出 data-frame・役割の出し分け data-roles）", ["D-065.1", "D-070.1", "D-072.2", "D-072.16", "D-073.8"], 24, ["apps/web/components/shell/*.tsx"]), ("自分のAIのパネルと会話の部品（assistant-ui・AG-UI・選択肢・承認カード・受領・引用・取り消し）", ["D-057.1", "D-062.1", "D-066.1", "D-072.19"], 32, ["apps/web/components/ai/*.tsx"]),
       ("API クライアントと型（OpenAPI → types.ts・TanStack Query・別 GET 再取得・401 で入り直し）", ["D-043.2", "D-051.1", "D-053.2"], 12, ["apps/web/lib/api/*.ts"]), ("認証の配管（ログイン・2 段階認証・招待・入り直し・端末の失効表示）", ["D-042.8", "D-051.2", "D-076.1"], 12, ["apps/web/app/(auth)/**"]),
       ("デザイントークンと部品（Tailwind @theme・shadcn/ui Base UI・Lucide・表・カード・札・空状態・止まっている帯）", ["D-052.1", "D-067.1", "D-071.5", "D-071.6"], 16, ["apps/web/styles/tokens.css", "apps/web/components/ui/*.tsx"]), ("タイムライン（svar-gantt・棒を押すと詳細・1023 以下は切替）と見え方の切替（リスト／カンバン／カレンダー）", ["D-079.1", "D-079.3", "D-079.4", "D-068.9"], 16, ["apps/web/components/views/*.tsx"])]
+# T-US-00：apps/web の土台。画面のタスクは「apps/web がある・Playwright が動く・CI にブラウザの job がある」前提で書かれているのに、それを作るタスクが無かった（2026-09-16 user「そのチケットに行った際にちゃんとそれができる状態か」）
+_sp0 = f"{SPEC}/visual-fidelity-audit.md"; _pre0 = "USH-00"; _tid0 = "T-US-00"
+_rows0 = [qrow(_sp0, _pre0, "共通", "起動", "apps/web（Next.js 15 App Router・Tailwind・shadcn/ui・lucide-react）がローカルで起動し GET / が 200。業務ロジックは持たず API を呼ぶだけ", "pnpm dev", "/ を開く", "200・共通シェル無しでも落ちない", "D-043.3", _tid0),
+          qrow(_sp0, _pre0, "共通", "到達性", "ナビ・カード・ボタンの href 集合 ⇔ 実在ルート集合（flow.json の route）を機械照合する検査がある（apps/web/tests/reachability.spec.ts）", "ルートを 1 つ消す", "検査を流す", "赤になる（消したルートを指す href が出る）・戻すと緑", "G-04", _tid0),
+          qrow(_sp0, _pre0, "共通", "実ブラウザ", "Playwright（Chromium）で 375・768・1024・1440 の scrollWidth − clientWidth を数値で測る土台（apps/web/tests/_lib）が動く", "pnpm exec playwright test", "4 幅で / を開く", "4 幅とも 0・数値が結果に出る", "G-05・L-003", _tid0),
+          qrow(_sp0, _pre0, "共通", "CI", "PR で CI のブラウザ job（foundation_gates #15）が走り、赤なら merge できない", "到達性を故意に壊した PR", "CI を見る", "job が赤・merge がブロックされる", "", _tid0),
+          qrow(_sp0, _pre0, "共通", "実行環境", "画面の L1・流れの L2 を流す staging（本番と同じ構成をもう 1 組）が存在し、apps/web がそこに配られる。無い間は「ローカルの実ブラウザで流し、staging の行は BLOCKED（理由つき）」を備考に書く", "staging の URL", "/ を開く", "200・API と DB が staging のもの", "G-11", _tid0)] + g_rows(_sp0, _pre0, "共通", _tid0, set(), [], "ui")
+newtask(_tid0, "apps/web の土台（Next.js 15 App Router の雛形・Playwright と実ブラウザの検査・ナビ href ⇔ 実在ルートの照合・CI のブラウザ job・ローカル起動）", "U-shared", "ui", "4_ui_foundation", "ui", [], category="frontend", hours=16, depends_on=["T-F-01", "T-F-15"], choke_points=[], choke_rationale="画面の土台。外界に出ない（API は関門の先）",
+        fcp={"new": ["apps/web/package.json", "apps/web/next.config.ts", "apps/web/app/layout.tsx", "apps/web/app/page.tsx", "apps/web/playwright.config.ts", "apps/web/tests/_lib/browser.ts", "apps/web/tests/reachability.spec.ts", ".claude/launch.json"], "modify": [".github/workflows/v3-gate.yml", "pnpm-workspace.yaml"], "shared_read": ["02_tech_stack/selected-stack.json", "05_flow/flow.json#screens.route", "03_architecture/foundation_gates.json#15"], "forbidden": ["packages/**", "apps/web/components/**（部品は T-US-01〜06）"]},
+        files_changed=["apps/web/package.json (new)", "apps/web/app/layout.tsx (new)", "apps/web/playwright.config.ts (new)", "apps/web/tests/reachability.spec.ts (new)", ".github/workflows/v3-gate.yml (modify)"],
+        ac={"structural": ["UBIQUITOUS: apps/web は 02_tech_stack/selected-stack.json の frontend（Next.js 15 App Router・Tailwind・shadcn/ui・lucide-react）で組まれ、業務ロジックを持たず API（08_api）を呼ぶだけ（D-043.3）", "UBIQUITOUS: Playwright の設定と CI のブラウザ job（03_architecture/foundation_gates.json #15）が存在し、UI を含む PR で走る"],
+            "functional": ["EVENT-DRIVEN: WHEN pnpm exec playwright test を流したら THEN 実ブラウザ（Chromium）で 到達性（ナビ・カードの href ⇔ flow.json の route）と 4 幅の横溢れの測定が走り、結果が正本の行に書ける", "UNWANTED: IF 実在しないルートを指す href があれば 到達性の検査が赤になり merge できない", "UNWANTED: IF staging が無いなら、画面の L1 行はローカルの実ブラウザで流し、staging の行は BLOCKED（理由つき）として残す。ローカルの緑を staging の PASS と書かない"],
+            "regression": REG_UI}, spec_links=["02_tech_stack/selected-stack.json", "03_architecture/foundation_gates.json", ".claude/rules/web/testing.md"], qa_rows={"l1": _rows0, "l2_flows": []},
+        scenarios=[{"name": "到達性を壊す", "steps": ["ルートを 1 つ消して検査"], "expected": "赤・戻すと緑"}, {"name": "4 幅", "steps": ["375/768/1024/1440 で /"], "expected": "溢れ 0 が数値で出る"}], source=["D-043.3", "D-067.1", "D-084.1"], why="画面のタスク（T-US-01〜06・T-U-*）が前提にする apps/web・Playwright・CI のブラウザ job を作る。無いと画面のチケットは着手できても動作実証（L-003）ができない")
 for i, (name, src, h, files) in enumerate(US, 1):
     tid = f"T-US-{i:02d}"; sp = f"{SPEC}/visual-fidelity-audit.md"; pre = f"USH-{i:02d}"
     rows = [qrow(sp, pre, "共通", "共通シェル", f"{name[:30]}：共通シェルを含む全画面で scrollWidth - clientWidth <= 1（375・768・1024・1440）", "全画面", "各幅で開く", "溢れ 0・本文 720 以上（1180+）", "G-05", tid), qrow(sp, pre, "共通", "役割の出し分け", "役割を切り替えると data-roles の塊が切り替わり、錠前だけの画面が無い", "4 役割", "切替", "役割ごとの中身が出る（G15）", "", tid)] + g_rows(sp, pre, "共通", tid, set(), [], "ui")
-    newtask(tid, name, "U-shared", "ui", "4_ui_foundation", "ui", [], category="frontend", hours=h, depends_on=["T-F-01", "T-F-05"] + A_ids[:1], choke_points=[], choke_rationale="画面の部品。外界に出ない（API は関門の先）", fcp={"new": files, "modify": ["apps/web/app/layout.tsx"], "shared_read": ["04_design/DESIGN-kaname.md", "06_mockup/_shell.py", "08_api/types.ts"], "forbidden": ["packages/**"]}, files_changed=[x + " (new)" for x in files],
+    newtask(tid, name, "U-shared", "ui", "4_ui_foundation", "ui", [], category="frontend", hours=h, depends_on=["T-US-00", "T-F-01", "T-F-05"] + A_ids[:1], choke_points=[], choke_rationale="画面の部品。外界に出ない（API は関門の先）", fcp={"new": files, "modify": ["apps/web/app/layout.tsx"], "shared_read": ["04_design/DESIGN-kaname.md", "06_mockup/_shell.py", "08_api/types.ts"], "forbidden": ["packages/**"]}, files_changed=[x + " (new)" for x in files],
             ac={"structural": [f"STATE-DRIVEN: WHILE アプリの枠で描画中 THEN {name[:40]} が DESIGN-kaname.md のトークンとモックのシェル（_shell.py）と一致する"], "functional": ["UBIQUITOUS: 共通シェルを含む全画面で横溢れ 0・本文 720 以上（1180+）", "UNWANTED: IF セッションが 401 なら入り直しに落ち、入力途中の内容は失わない"], "regression": REG_UI}, spec_links=["04_design/DESIGN-kaname.md", "06_mockup/_shell.py"], qa_rows={"l1": rows, "l2_flows": []}, scenarios=[{"name": "4 幅で開く", "steps": ["375/768/1024/1440 で全画面"], "expected": "溢れ 0"}], source=src)
 US_ids = [t["id"] for t in tasks if t["group"] == "U-shared"]
 # ---------------------------------------------------------------- Group U-screen（画面ごと）
@@ -245,8 +259,14 @@ json.dump({"version": "v3.2", "created_at": TODAY, "_doc": "背骨のフェー�
 order = ["F", "D", "V2", "A", "U-shared", "U-screen", "I", "S"]; w = 0; waves = []
 for stage, g in [(st, g) for st in ("v1", "v2") for g in order]:   # 段階 1 の全 Wave の後に段階 2（A → U-screen）
     fs = [t for t in tasks if t["group"] == g and t.get("stage", "v1") == stage]
-    for i in range(0, len(fs), CAP):
-        ch = fs[i:i+CAP]
+    # 同じ Group の中の依存（T-US-00 → T-US-01…）は前の Wave に置く：依存の深さで層に分けてから CAP で割る（同じ Wave の中に依存を作らない）
+    byid = {t["id"]: t for t in fs}
+    def depth(t):
+        ds = [d for d in t.get("depends_on", []) if d in byid and d != t["id"]]
+        return 0 if not ds else 1 + max(depth(byid[d]) for d in ds)
+    layers = {}
+    for t in fs: layers.setdefault(depth(t), []).append(t)
+    for ch in [lf[i:i+CAP] for _, lf in sorted(layers.items()) for i in range(0, len(lf), CAP)]:
         waves.append({"wave": w, "group": g, "stage": stage, "tasks": [t["id"] for t in ch], "parallel": len(ch), "wall_clock_h_ai": round(max(t["wall_clock_h_ai"] for t in ch) + 0.5, 1), "estimate_hours_human": sum(t["estimate_hours_human"] for t in ch), "estimate_hours_ai_compute": round(sum(t["estimate_hours_ai"] for t in ch), 1)})
         for t in ch: t["wave"] = w
         w += 1

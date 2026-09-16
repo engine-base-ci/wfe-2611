@@ -200,6 +200,7 @@
   "D-042.9",
   "D-043",
   "D-043.2",
+  "D-043.3",
   "D-044",
   "D-044.2",
   "D-045",
@@ -435,8 +436,8 @@
   "D-085.4"
  ],
  "inputs": {
-  "tickets": 169,
-  "l1_rows": 3367,
+  "tickets": 170,
+  "l1_rows": 3378,
   "ears_endpoints": 60,
   "ears_tests": 432,
   "entities": 92,
@@ -836,7 +837,7 @@
    "script": "pnpm exec playwright test",
    "blocking": true,
    "condition": "UIを含むスライスのみ",
-   "owner_task": "T-F-10",
+   "owner_task": "T-US-00",
    "job": "e2e"
   },
   {

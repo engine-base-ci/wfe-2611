@@ -83,6 +83,7 @@
    39.5,
    42.5,
    40.3,
+   2.1,
    3.7,
    2.4,
    4.5,
@@ -91,24 +92,25 @@
    2.8,
    2.3,
    9.5,
+   4.7,
    5.5,
-   1.7,
+   3.5,
    4.5,
-   4.0,
+   3.5,
    42.5,
    2.3
   ],
   "capacity_per_day_ai_h": 60,
-  "calendar_days_ai": 45,
-  "calendar_days_human": 689
+  "calendar_days_ai": 47,
+  "calendar_days_human": 691
  },
  "totals": {
-  "waves": 22,
-  "tasks": 169,
-  "estimate_hours_human": 5504.5,
-  "estimate_hours_ai_compute": 989.7,
+  "waves": 24,
+  "tasks": 170,
+  "estimate_hours_human": 5520.5,
+  "estimate_hours_ai_compute": 991.3,
   "human_review_total_h": 52.0,
-  "total_wall_clock_h_ai_parallel": 268.9,
+  "total_wall_clock_h_ai_parallel": 277.0,
   "parallel_capacity": 10,
   "l2_flows_total": 9,
   "l2_flows_unassigned": []
@@ -688,6 +690,56 @@
    "group": "U-shared",
    "stage": "v1",
    "tasks": [
+    "T-US-00"
+   ],
+   "parallel": 1,
+   "estimate_hours_human": 16,
+   "estimate_hours_ai_compute": 1.6,
+   "human_review_h": 0.0,
+   "wall_clock_h_ai": 2.1,
+   "parallel_capacity": 10,
+   "start": "2026-09-25",
+   "finish": "2026-09-25",
+   "milestone": "W0",
+   "milestone_due": "2026-10-02",
+   "assignees": {},
+   "critical_tasks": [],
+   "goal": "UI Foundation：apps/web の土台（Next.",
+   "qa_scope": {
+    "l1_tasks": [
+     "T-US-00"
+    ],
+    "l1_rows": 11,
+    "l2_flows": [],
+    "regression_from": [
+     "W0",
+     "W1",
+     "W2",
+     "W3",
+     "W4",
+     "W5",
+     "W6",
+     "W7"
+    ],
+    "gate": "bash scripts/ci/completion_gate.sh --wave W8"
+   },
+   "done_when": [
+    "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
+    "揃った流れ（l2_flows）が staging で全行 PASS（L2）",
+    "前 Wave の回帰（regression_from の差分）PASS",
+    "completion_gate.sh STATUS 完了 → 次の Wave を始める"
+   ],
+   "runnable": true,
+   "preconditions": []
+  },
+  {
+   "id": "W9",
+   "sprint": "U0",
+   "phase": "4_ui_foundation",
+   "phase_name": "UI Foundation",
+   "group": "U-shared",
+   "stage": "v1",
+   "tasks": [
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -732,9 +784,10 @@
      "W4",
      "W5",
      "W6",
-     "W7"
+     "W7",
+     "W8"
     ],
-    "gate": "bash scripts/ci/completion_gate.sh --wave W8"
+    "gate": "bash scripts/ci/completion_gate.sh --wave W9"
    },
    "done_when": [
     "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
@@ -746,7 +799,7 @@
    "preconditions": []
   },
   {
-   "id": "W9",
+   "id": "W10",
    "sprint": "U1",
    "phase": "5_ui_parallel",
    "phase_name": "UI Parallel",
@@ -808,9 +861,10 @@
      "W5",
      "W6",
      "W7",
-     "W8"
+     "W8",
+     "W9"
     ],
-    "gate": "bash scripts/ci/completion_gate.sh --wave W9"
+    "gate": "bash scripts/ci/completion_gate.sh --wave W10"
    },
    "done_when": [
     "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
@@ -822,7 +876,7 @@
    "preconditions": []
   },
   {
-   "id": "W10",
+   "id": "W11",
    "sprint": "U2",
    "phase": "5_ui_parallel",
    "phase_name": "UI Parallel",
@@ -885,9 +939,10 @@
      "W6",
      "W7",
      "W8",
-     "W9"
+     "W9",
+     "W10"
     ],
-    "gate": "bash scripts/ci/completion_gate.sh --wave W10"
+    "gate": "bash scripts/ci/completion_gate.sh --wave W11"
    },
    "done_when": [
     "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
@@ -899,7 +954,7 @@
    "preconditions": []
   },
   {
-   "id": "W11",
+   "id": "W12",
    "sprint": "U3",
    "phase": "5_ui_parallel",
    "phase_name": "UI Parallel",
@@ -964,9 +1019,10 @@
      "W7",
      "W8",
      "W9",
-     "W10"
+     "W10",
+     "W11"
     ],
-    "gate": "bash scripts/ci/completion_gate.sh --wave W11"
+    "gate": "bash scripts/ci/completion_gate.sh --wave W12"
    },
    "done_when": [
     "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
@@ -978,7 +1034,7 @@
    "preconditions": []
   },
   {
-   "id": "W12",
+   "id": "W13",
    "sprint": "U4",
    "phase": "5_ui_parallel",
    "phase_name": "UI Parallel",
@@ -1045,9 +1101,10 @@
      "W8",
      "W9",
      "W10",
-     "W11"
+     "W11",
+     "W12"
     ],
-    "gate": "bash scripts/ci/completion_gate.sh --wave W12"
+    "gate": "bash scripts/ci/completion_gate.sh --wave W13"
    },
    "done_when": [
     "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
@@ -1059,7 +1116,7 @@
    "preconditions": []
   },
   {
-   "id": "W13",
+   "id": "W14",
    "sprint": "U5",
    "phase": "5_ui_parallel",
    "phase_name": "UI Parallel",
@@ -1123,9 +1180,10 @@
      "W9",
      "W10",
      "W11",
-     "W12"
+     "W12",
+     "W13"
     ],
-    "gate": "bash scripts/ci/completion_gate.sh --wave W13"
+    "gate": "bash scripts/ci/completion_gate.sh --wave W14"
    },
    "done_when": [
     "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
@@ -1137,7 +1195,7 @@
    "preconditions": []
   },
   {
-   "id": "W14",
+   "id": "W15",
    "sprint": "U6",
    "phase": "5_ui_parallel",
    "phase_name": "UI Parallel",
@@ -1201,9 +1259,10 @@
      "W10",
      "W11",
      "W12",
-     "W13"
+     "W13",
+     "W14"
     ],
-    "gate": "bash scripts/ci/completion_gate.sh --wave W14"
+    "gate": "bash scripts/ci/completion_gate.sh --wave W15"
    },
    "done_when": [
     "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
@@ -1215,7 +1274,7 @@
    "preconditions": []
   },
   {
-   "id": "W15",
+   "id": "W16",
    "sprint": "I1",
    "phase": "6_integration",
    "phase_name": "Integration & Polish",
@@ -1283,86 +1342,6 @@
      "W11",
      "W12",
      "W13",
-     "W14"
-    ],
-    "gate": "bash scripts/ci/completion_gate.sh --wave W15"
-   },
-   "done_when": [
-    "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
-    "揃った流れ（l2_flows）が staging で全行 PASS（L2）",
-    "前 Wave の回帰（regression_from の差分）PASS",
-    "completion_gate.sh STATUS 完了 → 次の Wave を始める"
-   ],
-   "runnable": true,
-   "preconditions": []
-  },
-  {
-   "id": "W16",
-   "sprint": "I2",
-   "phase": "6_integration",
-   "phase_name": "Integration & Polish",
-   "group": "I",
-   "stage": "v1",
-   "tasks": [
-    "T-I-11",
-    "T-I-12",
-    "T-I-13",
-    "T-I-14",
-    "T-I-15",
-    "T-I-16",
-    "T-I-17",
-    "T-I-18",
-    "T-I-19",
-    "T-I-20"
-   ],
-   "parallel": 10,
-   "estimate_hours_human": 224,
-   "estimate_hours_ai_compute": 24.8,
-   "human_review_h": 1.0,
-   "wall_clock_h_ai": 5.5,
-   "parallel_capacity": 10,
-   "start": "2026-11-20",
-   "finish": "2026-12-02",
-   "milestone": "R1",
-   "milestone_due": "2026-12-11",
-   "assignees": {
-    "claude-10": 8,
-    "claude-09": 2
-   },
-   "critical_tasks": [
-    "T-I-20"
-   ],
-   "goal": "Integration & Polish：流れ J-03 P2 毎日 ── 自, 流れ J-04 P3 毎週 を最後ま, 流れ J-05 P4 毎月・四半期  …",
-   "qa_scope": {
-    "l1_tasks": [
-     "T-I-11",
-     "T-I-12",
-     "T-I-13",
-     "T-I-14",
-     "T-I-15",
-     "T-I-16",
-     "T-I-17",
-     "T-I-18",
-     "T-I-19",
-     "T-I-20"
-    ],
-    "l1_rows": 35,
-    "l2_flows": [],
-    "regression_from": [
-     "W0",
-     "W1",
-     "W2",
-     "W3",
-     "W4",
-     "W5",
-     "W6",
-     "W7",
-     "W8",
-     "W9",
-     "W10",
-     "W11",
-     "W12",
-     "W13",
      "W14",
      "W15"
     ],
@@ -1379,37 +1358,51 @@
   },
   {
    "id": "W17",
-   "sprint": "I3",
+   "sprint": "I2",
    "phase": "6_integration",
    "phase_name": "Integration & Polish",
    "group": "I",
    "stage": "v1",
    "tasks": [
-    "T-I-21",
-    "T-I-22"
+    "T-I-11",
+    "T-I-12",
+    "T-I-13",
+    "T-I-14",
+    "T-I-15",
+    "T-I-16",
+    "T-I-17",
+    "T-I-18",
+    "T-I-21"
    ],
-   "parallel": 2,
-   "estimate_hours_human": 20,
-   "estimate_hours_ai_compute": 2.0,
+   "parallel": 9,
+   "estimate_hours_human": 200,
+   "estimate_hours_ai_compute": 20.0,
    "human_review_h": 0.0,
-   "wall_clock_h_ai": 1.7,
+   "wall_clock_h_ai": 4.7,
    "parallel_capacity": 10,
    "start": "2026-09-24",
-   "finish": "2026-12-02",
+   "finish": "2026-11-30",
    "milestone": "R1",
    "milestone_due": "2026-12-11",
    "assignees": {
-    "claude-09": 1,
-    "claude-10": 1
+    "claude-10": 8,
+    "claude-09": 1
    },
    "critical_tasks": [],
-   "goal": "Integration & Polish：ポータビリティと依存の境界の検査（境, 文書とリリース準備（できること・でき",
+   "goal": "Integration & Polish：流れ J-03 P2 毎日 ── 自, 流れ J-04 P3 毎週 を最後ま, 流れ J-05 P4 毎月・四半期  …",
    "qa_scope": {
     "l1_tasks": [
-     "T-I-21",
-     "T-I-22"
+     "T-I-11",
+     "T-I-12",
+     "T-I-13",
+     "T-I-14",
+     "T-I-15",
+     "T-I-16",
+     "T-I-17",
+     "T-I-18",
+     "T-I-21"
     ],
-    "l1_rows": 14,
+    "l1_rows": 28,
     "l2_flows": [],
     "regression_from": [
      "W0",
@@ -1443,64 +1436,41 @@
   },
   {
    "id": "W18",
-   "sprint": "S1",
-   "phase": "7_content",
-   "phase_name": "スキル制作（運営の資産・開発と並行）",
-   "group": "S",
+   "sprint": "I3",
+   "phase": "6_integration",
+   "phase_name": "Integration & Polish",
+   "group": "I",
    "stage": "v1",
    "tasks": [
-    "T-S-01",
-    "T-S-02",
-    "T-S-03",
-    "T-S-04",
-    "T-S-05",
-    "T-S-06",
-    "T-S-07",
-    "T-S-08",
-    "T-S-09",
-    "T-S-10"
+    "T-I-19",
+    "T-I-20",
+    "T-I-22"
    ],
-   "parallel": 10,
-   "estimate_hours_human": 112,
-   "estimate_hours_ai_compute": 28.0,
-   "human_review_h": 10.0,
-   "wall_clock_h_ai": 4.5,
+   "parallel": 3,
+   "estimate_hours_human": 44,
+   "estimate_hours_ai_compute": 6.8,
+   "human_review_h": 1.0,
+   "wall_clock_h_ai": 5.5,
    "parallel_capacity": 10,
-   "start": "2026-11-02",
-   "finish": "2026-12-01",
+   "start": "2026-11-25",
+   "finish": "2026-12-02",
    "milestone": "R1",
    "milestone_due": "2026-12-11",
    "assignees": {
-    "claude-09": 9,
+    "claude-09": 2,
     "claude-10": 1
    },
    "critical_tasks": [
-    "T-S-01",
-    "T-S-02",
-    "T-S-03",
-    "T-S-04",
-    "T-S-05",
-    "T-S-06",
-    "T-S-07",
-    "T-S-08",
-    "T-S-09",
-    "T-S-10"
+    "T-I-20"
    ],
-   "goal": "スキル制作（運営の資産・開発と並行）：スキル一式の形式・雛形・検査（ski, スキル制作 構築メタ「会社モデル構築, スキル制作 構築メタ「担当業務の定義 …",
+   "goal": "Integration & Polish：負荷試験（同時接続・集中時の rps, セキュリティ監査（RLS を故意に壊, 文書とリリース準備（できること・でき",
    "qa_scope": {
     "l1_tasks": [
-     "T-S-01",
-     "T-S-02",
-     "T-S-03",
-     "T-S-04",
-     "T-S-05",
-     "T-S-06",
-     "T-S-07",
-     "T-S-08",
-     "T-S-09",
-     "T-S-10"
+     "T-I-19",
+     "T-I-20",
+     "T-I-22"
     ],
-    "l1_rows": 69,
+    "l1_rows": 21,
     "l2_flows": [],
     "regression_from": [
      "W0",
@@ -1535,49 +1505,36 @@
   },
   {
    "id": "W19",
-   "sprint": "S2",
+   "sprint": "S1",
    "phase": "7_content",
    "phase_name": "スキル制作（運営の資産・開発と並行）",
    "group": "S",
    "stage": "v1",
    "tasks": [
-    "T-S-11",
-    "T-S-12",
-    "T-S-13",
-    "T-S-14",
-    "T-S-15"
+    "T-S-01"
    ],
-   "parallel": 5,
-   "estimate_hours_human": 42,
-   "estimate_hours_ai_compute": 10.5,
-   "human_review_h": 5.0,
-   "wall_clock_h_ai": 4.0,
+   "parallel": 1,
+   "estimate_hours_human": 8,
+   "estimate_hours_ai_compute": 2.0,
+   "human_review_h": 1.0,
+   "wall_clock_h_ai": 3.5,
    "parallel_capacity": 10,
-   "start": "2026-11-30",
-   "finish": "2026-12-01",
-   "milestone": "R1",
-   "milestone_due": "2026-12-11",
+   "start": "2026-11-02",
+   "finish": "2026-11-02",
+   "milestone": "W3",
+   "milestone_due": "2026-11-20",
    "assignees": {
-    "claude-10": 3,
-    "claude-09": 2
+    "claude-09": 1
    },
    "critical_tasks": [
-    "T-S-11",
-    "T-S-12",
-    "T-S-13",
-    "T-S-14",
-    "T-S-15"
+    "T-S-01"
    ],
-   "goal": "スキル制作（運営の資産・開発と並行）：スキル制作 目標スキル「納期遵守（制, スキル制作 業務スキル「発注ナビの新, スキル制作 業務スキル「請求書の作成 …",
+   "goal": "スキル制作（運営の資産・開発と並行）：スキル一式の形式・雛形・検査（ski",
    "qa_scope": {
     "l1_tasks": [
-     "T-S-11",
-     "T-S-12",
-     "T-S-13",
-     "T-S-14",
-     "T-S-15"
+     "T-S-01"
     ],
-    "l1_rows": 35,
+    "l1_rows": 6,
     "l2_flows": [],
     "regression_from": [
      "W0",
@@ -1613,6 +1570,177 @@
   },
   {
    "id": "W20",
+   "sprint": "S2",
+   "phase": "7_content",
+   "phase_name": "スキル制作（運営の資産・開発と並行）",
+   "group": "S",
+   "stage": "v1",
+   "tasks": [
+    "T-S-02",
+    "T-S-03",
+    "T-S-04",
+    "T-S-05",
+    "T-S-06",
+    "T-S-07",
+    "T-S-08",
+    "T-S-09",
+    "T-S-10",
+    "T-S-11"
+   ],
+   "parallel": 10,
+   "estimate_hours_human": 114,
+   "estimate_hours_ai_compute": 28.5,
+   "human_review_h": 10.0,
+   "wall_clock_h_ai": 4.5,
+   "parallel_capacity": 10,
+   "start": "2026-11-25",
+   "finish": "2026-12-01",
+   "milestone": "R1",
+   "milestone_due": "2026-12-11",
+   "assignees": {
+    "claude-09": 8,
+    "claude-10": 2
+   },
+   "critical_tasks": [
+    "T-S-02",
+    "T-S-03",
+    "T-S-04",
+    "T-S-05",
+    "T-S-06",
+    "T-S-07",
+    "T-S-08",
+    "T-S-09",
+    "T-S-10",
+    "T-S-11"
+   ],
+   "goal": "スキル制作（運営の資産・開発と並行）：スキル制作 構築メタ「会社モデル構築, スキル制作 構築メタ「担当業務の定義, スキル制作 構築メタ「台帳の設計（段 …",
+   "qa_scope": {
+    "l1_tasks": [
+     "T-S-02",
+     "T-S-03",
+     "T-S-04",
+     "T-S-05",
+     "T-S-06",
+     "T-S-07",
+     "T-S-08",
+     "T-S-09",
+     "T-S-10",
+     "T-S-11"
+    ],
+    "l1_rows": 70,
+    "l2_flows": [],
+    "regression_from": [
+     "W0",
+     "W1",
+     "W2",
+     "W3",
+     "W4",
+     "W5",
+     "W6",
+     "W7",
+     "W8",
+     "W9",
+     "W10",
+     "W11",
+     "W12",
+     "W13",
+     "W14",
+     "W15",
+     "W16",
+     "W17",
+     "W18",
+     "W19"
+    ],
+    "gate": "bash scripts/ci/completion_gate.sh --wave W20"
+   },
+   "done_when": [
+    "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
+    "揃った流れ（l2_flows）が staging で全行 PASS（L2）",
+    "前 Wave の回帰（regression_from の差分）PASS",
+    "completion_gate.sh STATUS 完了 → 次の Wave を始める"
+   ],
+   "runnable": true,
+   "preconditions": []
+  },
+  {
+   "id": "W21",
+   "sprint": "S3",
+   "phase": "7_content",
+   "phase_name": "スキル制作（運営の資産・開発と並行）",
+   "group": "S",
+   "stage": "v1",
+   "tasks": [
+    "T-S-12",
+    "T-S-13",
+    "T-S-14",
+    "T-S-15"
+   ],
+   "parallel": 4,
+   "estimate_hours_human": 32,
+   "estimate_hours_ai_compute": 8.0,
+   "human_review_h": 4.0,
+   "wall_clock_h_ai": 3.5,
+   "parallel_capacity": 10,
+   "start": "2026-12-01",
+   "finish": "2026-12-01",
+   "milestone": "R1",
+   "milestone_due": "2026-12-11",
+   "assignees": {
+    "claude-09": 2,
+    "claude-10": 2
+   },
+   "critical_tasks": [
+    "T-S-12",
+    "T-S-13",
+    "T-S-14",
+    "T-S-15"
+   ],
+   "goal": "スキル制作（運営の資産・開発と並行）：スキル制作 業務スキル「発注ナビの新, スキル制作 業務スキル「請求書の作成, スキル制作 業務スキル「入金の照合（ …",
+   "qa_scope": {
+    "l1_tasks": [
+     "T-S-12",
+     "T-S-13",
+     "T-S-14",
+     "T-S-15"
+    ],
+    "l1_rows": 28,
+    "l2_flows": [],
+    "regression_from": [
+     "W0",
+     "W1",
+     "W2",
+     "W3",
+     "W4",
+     "W5",
+     "W6",
+     "W7",
+     "W8",
+     "W9",
+     "W10",
+     "W11",
+     "W12",
+     "W13",
+     "W14",
+     "W15",
+     "W16",
+     "W17",
+     "W18",
+     "W19",
+     "W20"
+    ],
+    "gate": "bash scripts/ci/completion_gate.sh --wave W21"
+   },
+   "done_when": [
+    "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
+    "揃った流れ（l2_flows）が staging で全行 PASS（L2）",
+    "前 Wave の回帰（regression_from の差分）PASS",
+    "completion_gate.sh STATUS 完了 → 次の Wave を始める"
+   ],
+   "runnable": true,
+   "preconditions": []
+  },
+  {
+   "id": "W22",
    "sprint": "A4",
    "phase": "9_v2_api",
    "phase_name": "段階 2 API Layer",
@@ -1672,9 +1800,11 @@
      "W16",
      "W17",
      "W18",
-     "W19"
+     "W19",
+     "W20",
+     "W21"
     ],
-    "gate": "bash scripts/ci/completion_gate.sh --wave W20"
+    "gate": "bash scripts/ci/completion_gate.sh --wave W22"
    },
    "done_when": [
     "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
@@ -1686,7 +1816,7 @@
    "preconditions": []
   },
   {
-   "id": "W21",
+   "id": "W23",
    "sprint": "U7",
    "phase": "9_v2_ui_parallel",
    "phase_name": "段階 2 UI Parallel",
@@ -1750,9 +1880,11 @@
      "W17",
      "W18",
      "W19",
-     "W20"
+     "W20",
+     "W21",
+     "W22"
     ],
-    "gate": "bash scripts/ci/completion_gate.sh --wave W21"
+    "gate": "bash scripts/ci/completion_gate.sh --wave W23"
    },
    "done_when": [
     "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",

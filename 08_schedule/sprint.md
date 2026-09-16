@@ -1,6 +1,6 @@
 # Kaname Wave 編成・スプリント計画（v3・2026-09-16・機械生成）
 
-> 05_flow/build_waves.py が生成。信頼源は wave-schedule.json。根拠の決定：D-053.1 D-036.4。開始 2026-09-22・Wave 22・タスク 169・Human 5504.5 h／AI wall-clock 268.9 h（並列 10）
+> 05_flow/build_waves.py が生成。信頼源は wave-schedule.json。根拠の決定：D-053.1 D-036.4。開始 2026-09-22・Wave 24・タスク 170・Human 5520.5 h／AI wall-clock 277.0 h（並列 10）
 
 ## 原則
 
@@ -37,20 +37,22 @@
 | W5 | A1 | API Layer | 10 | 10 | 855 | 213.6 | 10.0 | 39.5 | 2026-10-05 | 2026-10-20 | W2 | 313 | — | 5 |
 | W6 | A2 | API Layer | 10 | 10 | 1138 | 257.0 | 8.0 | 42.5 | 2026-10-02 | 2026-10-29 | W2 | 321 | — | 6 |
 | W7 | A3 | API Layer | 3 | 3 | 327 | 53.2 | 1.0 | 40.3 | 2026-10-15 | 2026-10-22 | W2 | 68 | — | 7 |
-| W8 | U0 | UI Foundation | 6 | 6 | 112 | 11.2 | 0.0 | 3.7 | 2026-10-20 | 2026-10-20 | W2 | 48 | — | 8 |
-| W9 | U1 | UI Parallel | 10 | 10 | 156.0 | 15.5 | 0.0 | 2.4 | 2026-10-21 | 2026-10-28 | W2 | 268 | J-01 | 9 |
-| W10 | U2 | UI Parallel | 10 | 10 | 225.5 | 22.7 | 0.0 | 4.5 | 2026-10-21 | 2026-10-28 | W2 | 369 | J-02 | 10 |
-| W11 | U3 | UI Parallel | 10 | 10 | 185.5 | 18.5 | 0.0 | 2.7 | 2026-10-26 | 2026-10-29 | W2 | 340 | J-03 J-04 | 11 |
-| W12 | U4 | UI Parallel | 10 | 10 | 180.5 | 18.0 | 0.0 | 3.0 | 2026-10-27 | 2026-10-30 | W2 | 333 | J-05 J-06 J-08 | 12 |
-| W13 | U5 | UI Parallel | 10 | 10 | 153.5 | 15.4 | 0.0 | 2.8 | 2026-10-29 | 2026-10-30 | W2 | 300 | — | 13 |
-| W14 | U6 | UI Parallel | 8 | 8 | 99.0 | 10.1 | 0.0 | 2.3 | 2026-10-29 | 2026-10-30 | W2 | 241 | J-07 J-09 | 14 |
-| W15 | I1 | Integration & Polish | 10 | 10 | 206 | 35.0 | 4.0 | 9.5 | 2026-11-18 | 2026-11-27 | R1 | 60 | — | 15 |
-| W16 | I2 | Integration & Polish | 10 | 10 | 224 | 24.8 | 1.0 | 5.5 | 2026-11-20 | 2026-12-02 | R1 | 35 | — | 16 |
-| W17 | I3 | Integration & Polish | 2 | 2 | 20 | 2.0 | 0.0 | 1.7 | 2026-09-24 | 2026-12-02 | R1 | 14 | — | 17 |
-| W18 | S1 | スキル制作（運営の資産・開発と並行） | 10 | 10 | 112 | 28.0 | 10.0 | 4.5 | 2026-11-02 | 2026-12-01 | R1 | 69 | — | 18 |
-| W19 | S2 | スキル制作（運営の資産・開発と並行） | 5 | 5 | 42 | 10.5 | 5.0 | 4.0 | 2026-11-30 | 2026-12-01 | R1 | 35 | — | 19 |
-| W20 | A4 | 段階 2 API Layer | 3 | 3 | 438 | 109.6 | 3.0 | 42.5 | 2026-10-22 | 2026-11-17 | W3 | 47 | — | 20 |
-| W21 | U7 | 段階 2 UI Parallel | 6 | 6 | 94.5 | 9.5 | 0.0 | 2.3 | 2026-10-30 | 2026-11-18 | W3 | 153 | — | 21 |
+| W8 | U0 | UI Foundation | 1 | 1 | 16 | 1.6 | 0.0 | 2.1 | 2026-09-25 | 2026-09-25 | W0 | 11 | — | 8 |
+| W9 | U0 | UI Foundation | 6 | 6 | 112 | 11.2 | 0.0 | 3.7 | 2026-10-20 | 2026-10-20 | W2 | 48 | — | 9 |
+| W10 | U1 | UI Parallel | 10 | 10 | 156.0 | 15.5 | 0.0 | 2.4 | 2026-10-21 | 2026-10-28 | W2 | 268 | J-01 | 10 |
+| W11 | U2 | UI Parallel | 10 | 10 | 225.5 | 22.7 | 0.0 | 4.5 | 2026-10-21 | 2026-10-28 | W2 | 369 | J-02 | 11 |
+| W12 | U3 | UI Parallel | 10 | 10 | 185.5 | 18.5 | 0.0 | 2.7 | 2026-10-26 | 2026-10-29 | W2 | 340 | J-03 J-04 | 12 |
+| W13 | U4 | UI Parallel | 10 | 10 | 180.5 | 18.0 | 0.0 | 3.0 | 2026-10-27 | 2026-10-30 | W2 | 333 | J-05 J-06 J-08 | 13 |
+| W14 | U5 | UI Parallel | 10 | 10 | 153.5 | 15.4 | 0.0 | 2.8 | 2026-10-29 | 2026-10-30 | W2 | 300 | — | 14 |
+| W15 | U6 | UI Parallel | 8 | 8 | 99.0 | 10.1 | 0.0 | 2.3 | 2026-10-29 | 2026-10-30 | W2 | 241 | J-07 J-09 | 15 |
+| W16 | I1 | Integration & Polish | 10 | 10 | 206 | 35.0 | 4.0 | 9.5 | 2026-11-18 | 2026-11-27 | R1 | 60 | — | 16 |
+| W17 | I2 | Integration & Polish | 9 | 9 | 200 | 20.0 | 0.0 | 4.7 | 2026-09-24 | 2026-11-30 | R1 | 28 | — | 17 |
+| W18 | I3 | Integration & Polish | 3 | 3 | 44 | 6.8 | 1.0 | 5.5 | 2026-11-25 | 2026-12-02 | R1 | 21 | — | 18 |
+| W19 | S1 | スキル制作（運営の資産・開発と並行） | 1 | 1 | 8 | 2.0 | 1.0 | 3.5 | 2026-11-02 | 2026-11-02 | W3 | 6 | — | 19 |
+| W20 | S2 | スキル制作（運営の資産・開発と並行） | 10 | 10 | 114 | 28.5 | 10.0 | 4.5 | 2026-11-25 | 2026-12-01 | R1 | 70 | — | 20 |
+| W21 | S3 | スキル制作（運営の資産・開発と並行） | 4 | 4 | 32 | 8.0 | 4.0 | 3.5 | 2026-12-01 | 2026-12-01 | R1 | 28 | — | 21 |
+| W22 | A4 | 段階 2 API Layer | 3 | 3 | 438 | 109.6 | 3.0 | 42.5 | 2026-10-22 | 2026-11-17 | W3 | 47 | — | 22 |
+| W23 | U7 | 段階 2 UI Parallel | 6 | 6 | 94.5 | 9.5 | 0.0 | 2.3 | 2026-10-30 | 2026-11-18 | W3 | 153 | — | 23 |
 
 ## 各 Wave の中身
 
@@ -126,131 +128,149 @@
 - L3 の範囲：L1 68 行／L2 —／回帰 W0 W1 W2 W3 W4 W5 W6
 - 締め：bash scripts/ci/completion_gate.sh --wave W7
 
-### W8（U0・UI Foundation）2026-10-20〜2026-10-20
+### W8（U0・UI Foundation）2026-09-25〜2026-09-25
+
+- 目標：UI Foundation：apps/web の土台（Next.
+- タスク：T-US-00
+- 担当：—
+- 致命級（人のレビュー）：—
+- L3 の範囲：L1 11 行／L2 —／回帰 W0 W1 W2 W3 W4 W5 W6 W7
+- 締め：bash scripts/ci/completion_gate.sh --wave W8
+
+### W9（U0・UI Foundation）2026-10-20〜2026-10-20
 
 - 目標：UI Foundation：シェル（サイドバー・レール・第2ナビ, 自分のAIのパネルと会話の部品（as, API クライアントと型（OpenA …
 - タスク：T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06
 - 担当：claude-06 1, claude-07 1, claude-08 2, claude-09 2
 - 致命級（人のレビュー）：—
-- L3 の範囲：L1 48 行／L2 —／回帰 W0 W1 W2 W3 W4 W5 W6 W7
-- 締め：bash scripts/ci/completion_gate.sh --wave W8
+- L3 の範囲：L1 48 行／L2 —／回帰 W0 W1 W2 W3 W4 W5 W6 W7 W8
+- 締め：bash scripts/ci/completion_gate.sh --wave W9
 
-### W9（U1・UI Parallel）2026-10-21〜2026-10-28
+### W10（U1・UI Parallel）2026-10-21〜2026-10-28
 
 - 目標：UI Parallel：画面 アカウントを作る（2 状態・R, 画面 メールを確認する（3 状態・R, 画面 招待を受けて参加する（3 状態 …
 - タスク：T-U-01 T-U-02 T-U-03 T-U-04 T-U-05 T-U-06 T-U-07 T-U-08 T-U-09 T-U-10
 - 担当：claude-06 3, claude-08 3, claude-07 2, claude-09 2
 - 致命級（人のレビュー）：—
-- L3 の範囲：L1 268 行／L2 J-01／回帰 W0 W1 W2 W3 W4 W5 W6 W7 W8
-- 締め：bash scripts/ci/completion_gate.sh --wave W9
+- L3 の範囲：L1 268 行／L2 J-01／回帰 W0 W1 W2 W3 W4 W5 W6 W7 W8 W9
+- 締め：bash scripts/ci/completion_gate.sh --wave W10
 
-### W10（U2・UI Parallel）2026-10-21〜2026-10-28
+### W11（U2・UI Parallel）2026-10-21〜2026-10-28
 
 - 目標：UI Parallel：画面 テストで動かす（3 状態・R1, 画面 本番に切り替える（2 状態・R, 画面 今日（5 状態・R1/R2/R …
 - タスク：T-U-11 T-U-12 T-U-13 T-U-14 T-U-15 T-U-16 T-U-17 T-U-18 T-U-19 T-U-20
 - 担当：claude-07 3, claude-06 4, claude-09 2, claude-08 1
 - 致命級（人のレビュー）：—
-- L3 の範囲：L1 369 行／L2 J-02／回帰 W0 W1 W2 W3 W4 W5 W6 W7 W8 W9
-- 締め：bash scripts/ci/completion_gate.sh --wave W10
+- L3 の範囲：L1 369 行／L2 J-02／回帰 W0 W1 W2 W3 W4 W5 W6 W7 W8 W9 W10
+- 締め：bash scripts/ci/completion_gate.sh --wave W11
 
-### W11（U3・UI Parallel）2026-10-26〜2026-10-29
+### W12（U3・UI Parallel）2026-10-26〜2026-10-29
 
 - 目標：UI Parallel：画面 台帳の1件（3 状態・R1/R, 画面 目標（5 状態・R1/R2/R, 画面 目標の配分（6 状態・R1/R …
 - タスク：T-U-21 T-U-22 T-U-23 T-U-24 T-U-25 T-U-26 T-U-27 T-U-28 T-U-29 T-U-30
 - 担当：claude-07 3, claude-08 3, claude-09 2, claude-06 2
 - 致命級（人のレビュー）：—
-- L3 の範囲：L1 340 行／L2 J-03 J-04／回帰 W0 W1 W2 W3 W4 W5 W6 W7 W8 W9 W10
-- 締め：bash scripts/ci/completion_gate.sh --wave W11
+- L3 の範囲：L1 340 行／L2 J-03 J-04／回帰 W0 W1 W2 W3 W4 W5 W6 W7 W8 W9 W10 W11
+- 締め：bash scripts/ci/completion_gate.sh --wave W12
 
-### W12（U4・UI Parallel）2026-10-27〜2026-10-30
+### W13（U4・UI Parallel）2026-10-27〜2026-10-30
 
 - 目標：UI Parallel：画面 会社モデル（5 状態・R1/R, 画面 覚え直させる（3 状態・R1/, 画面 証跡（6 状態・R1/R2） …
 - タスク：T-U-31 T-U-32 T-U-33 T-U-34 T-U-35 T-U-36 T-U-37 T-U-38 T-U-39 T-U-40
 - 担当：claude-07 2, claude-06 3, claude-09 3, claude-08 2
 - 致命級（人のレビュー）：—
-- L3 の範囲：L1 333 行／L2 J-05 J-06 J-08／回帰 W0 W1 W2 W3 W4 W5 W6 W7 W8 W9 W10 W11
-- 締め：bash scripts/ci/completion_gate.sh --wave W12
+- L3 の範囲：L1 333 行／L2 J-05 J-06 J-08／回帰 W0 W1 W2 W3 W4 W5 W6 W7 W8 W9 W10 W11 W12
+- 締め：bash scripts/ci/completion_gate.sh --wave W13
 
-### W13（U5・UI Parallel）2026-10-29〜2026-10-30
+### W14（U5・UI Parallel）2026-10-29〜2026-10-30
 
 - 目標：UI Parallel：画面 運営の支援（2 状態・R6）, 画面 運営：会社の一覧（4 状態・R, 画面 運営：配るもの（7 状態・R6 …
 - タスク：T-U-41 T-U-42 T-U-43 T-U-44 T-U-45 T-U-46 T-U-47 T-U-48 T-U-49 T-U-50
 - 担当：claude-07 3, claude-08 3, claude-06 2, claude-09 2
 - 致命級（人のレビュー）：—
-- L3 の範囲：L1 300 行／L2 —／回帰 W0 W1 W2 W3 W4 W5 W6 W7 W8 W9 W10 W11 W12
-- 締め：bash scripts/ci/completion_gate.sh --wave W13
+- L3 の範囲：L1 300 行／L2 —／回帰 W0 W1 W2 W3 W4 W5 W6 W7 W8 W9 W10 W11 W12 W13
+- 締め：bash scripts/ci/completion_gate.sh --wave W14
 
-### W14（U6・UI Parallel）2026-10-29〜2026-10-30
+### W15（U6・UI Parallel）2026-10-29〜2026-10-30
 
 - 目標：UI Parallel：画面 お知らせと通知（3 状態・R1, 画面 プランと請求（3 状態・R1/, 画面 運営：お知らせ（2 状態・R6 …
 - タスク：T-U-51 T-U-52 T-U-53 T-U-54 T-U-55 T-U-56 T-U-57 T-U-58
 - 担当：claude-06 2, claude-07 2, claude-08 2, claude-09 2
 - 致命級（人のレビュー）：—
-- L3 の範囲：L1 241 行／L2 J-07 J-09／回帰 W0 W1 W2 W3 W4 W5 W6 W7 W8 W9 W10 W11 W12 W13
-- 締め：bash scripts/ci/completion_gate.sh --wave W14
+- L3 の範囲：L1 241 行／L2 J-07 J-09／回帰 W0 W1 W2 W3 W4 W5 W6 W7 W8 W9 W10 W11 W12 W13 W14
+- 締め：bash scripts/ci/completion_gate.sh --wave W15
 
-### W15（I1・Integration & Polish）2026-11-18〜2026-11-27
+### W16（I1・Integration & Polish）2026-11-18〜2026-11-27
 
 - 目標：Integration & Polish：実行ループの結線（自分のAI → 配, 認証 → 会社 → 権限 → 画面の, 画面 → API → DB の通し配 …
 - タスク：T-I-01 T-I-02 T-I-03 T-I-04 T-I-05 T-I-06 T-I-07 T-I-08 T-I-09 T-I-10
 - 担当：claude-10 10
 - 致命級（人のレビュー）：T-I-01 T-I-02 T-I-05 T-I-08
-- L3 の範囲：L1 60 行／L2 —／回帰 W0 W1 W2 W3 W4 W5 W6 W7 W8 W9 W10 W11 W12 W13 W14
-- 締め：bash scripts/ci/completion_gate.sh --wave W15
-
-### W16（I2・Integration & Polish）2026-11-20〜2026-12-02
-
-- 目標：Integration & Polish：流れ J-03 P2 毎日 ── 自, 流れ J-04 P3 毎週 を最後ま, 流れ J-05 P4 毎月・四半期  …
-- タスク：T-I-11 T-I-12 T-I-13 T-I-14 T-I-15 T-I-16 T-I-17 T-I-18 T-I-19 T-I-20
-- 担当：claude-10 8, claude-09 2
-- 致命級（人のレビュー）：T-I-20
-- L3 の範囲：L1 35 行／L2 —／回帰 W0 W1 W2 W3 W4 W5 W6 W7 W8 W9 W10 W11 W12 W13 W14 W15
+- L3 の範囲：L1 60 行／L2 —／回帰 W0 W1 W2 W3 W4 W5 W6 W7 W8 W9 W10 W11 W12 W13 W14 W15
 - 締め：bash scripts/ci/completion_gate.sh --wave W16
 
-### W17（I3・Integration & Polish）2026-09-24〜2026-12-02
+### W17（I2・Integration & Polish）2026-09-24〜2026-11-30
 
-- 目標：Integration & Polish：ポータビリティと依存の境界の検査（境, 文書とリリース準備（できること・でき
-- タスク：T-I-21 T-I-22
-- 担当：claude-09 1, claude-10 1
+- 目標：Integration & Polish：流れ J-03 P2 毎日 ── 自, 流れ J-04 P3 毎週 を最後ま, 流れ J-05 P4 毎月・四半期  …
+- タスク：T-I-11 T-I-12 T-I-13 T-I-14 T-I-15 T-I-16 T-I-17 T-I-18 T-I-21
+- 担当：claude-10 8, claude-09 1
 - 致命級（人のレビュー）：—
-- L3 の範囲：L1 14 行／L2 —／回帰 W0 W1 W2 W3 W4 W5 W6 W7 W8 W9 W10 W11 W12 W13 W14 W15 W16
+- L3 の範囲：L1 28 行／L2 —／回帰 W0 W1 W2 W3 W4 W5 W6 W7 W8 W9 W10 W11 W12 W13 W14 W15 W16
 - 締め：bash scripts/ci/completion_gate.sh --wave W17
 
-### W18（S1・スキル制作（運営の資産・開発と並行））2026-11-02〜2026-12-01
+### W18（I3・Integration & Polish）2026-11-25〜2026-12-02
 
-- 目標：スキル制作（運営の資産・開発と並行）：スキル一式の形式・雛形・検査（ski, スキル制作 構築メタ「会社モデル構築, スキル制作 構築メタ「担当業務の定義 …
-- タスク：T-S-01 T-S-02 T-S-03 T-S-04 T-S-05 T-S-06 T-S-07 T-S-08 T-S-09 T-S-10
-- 担当：claude-09 9, claude-10 1
-- 致命級（人のレビュー）：T-S-01 T-S-02 T-S-03 T-S-04 T-S-05 T-S-06 T-S-07 T-S-08 T-S-09 T-S-10
-- L3 の範囲：L1 69 行／L2 —／回帰 W0 W1 W2 W3 W4 W5 W6 W7 W8 W9 W10 W11 W12 W13 W14 W15 W16 W17
+- 目標：Integration & Polish：負荷試験（同時接続・集中時の rps, セキュリティ監査（RLS を故意に壊, 文書とリリース準備（できること・でき
+- タスク：T-I-19 T-I-20 T-I-22
+- 担当：claude-09 2, claude-10 1
+- 致命級（人のレビュー）：T-I-20
+- L3 の範囲：L1 21 行／L2 —／回帰 W0 W1 W2 W3 W4 W5 W6 W7 W8 W9 W10 W11 W12 W13 W14 W15 W16 W17
 - 締め：bash scripts/ci/completion_gate.sh --wave W18
 
-### W19（S2・スキル制作（運営の資産・開発と並行））2026-11-30〜2026-12-01
+### W19（S1・スキル制作（運営の資産・開発と並行））2026-11-02〜2026-11-02
 
-- 目標：スキル制作（運営の資産・開発と並行）：スキル制作 目標スキル「納期遵守（制, スキル制作 業務スキル「発注ナビの新, スキル制作 業務スキル「請求書の作成 …
-- タスク：T-S-11 T-S-12 T-S-13 T-S-14 T-S-15
-- 担当：claude-10 3, claude-09 2
-- 致命級（人のレビュー）：T-S-11 T-S-12 T-S-13 T-S-14 T-S-15
-- L3 の範囲：L1 35 行／L2 —／回帰 W0 W1 W2 W3 W4 W5 W6 W7 W8 W9 W10 W11 W12 W13 W14 W15 W16 W17 W18
+- 目標：スキル制作（運営の資産・開発と並行）：スキル一式の形式・雛形・検査（ski
+- タスク：T-S-01
+- 担当：claude-09 1
+- 致命級（人のレビュー）：T-S-01
+- L3 の範囲：L1 6 行／L2 —／回帰 W0 W1 W2 W3 W4 W5 W6 W7 W8 W9 W10 W11 W12 W13 W14 W15 W16 W17 W18
 - 締め：bash scripts/ci/completion_gate.sh --wave W19
 
-### W20（A4・段階 2 API Layer）2026-10-22〜2026-11-17
+### W20（S2・スキル制作（運営の資産・開発と並行））2026-11-25〜2026-12-01
+
+- 目標：スキル制作（運営の資産・開発と並行）：スキル制作 構築メタ「会社モデル構築, スキル制作 構築メタ「担当業務の定義, スキル制作 構築メタ「台帳の設計（段 …
+- タスク：T-S-02 T-S-03 T-S-04 T-S-05 T-S-06 T-S-07 T-S-08 T-S-09 T-S-10 T-S-11
+- 担当：claude-09 8, claude-10 2
+- 致命級（人のレビュー）：T-S-02 T-S-03 T-S-04 T-S-05 T-S-06 T-S-07 T-S-08 T-S-09 T-S-10 T-S-11
+- L3 の範囲：L1 70 行／L2 —／回帰 W0 W1 W2 W3 W4 W5 W6 W7 W8 W9 W10 W11 W12 W13 W14 W15 W16 W17 W18 W19
+- 締め：bash scripts/ci/completion_gate.sh --wave W20
+
+### W21（S3・スキル制作（運営の資産・開発と並行））2026-12-01〜2026-12-01
+
+- 目標：スキル制作（運営の資産・開発と並行）：スキル制作 業務スキル「発注ナビの新, スキル制作 業務スキル「請求書の作成, スキル制作 業務スキル「入金の照合（ …
+- タスク：T-S-12 T-S-13 T-S-14 T-S-15
+- 担当：claude-09 2, claude-10 2
+- 致命級（人のレビュー）：T-S-12 T-S-13 T-S-14 T-S-15
+- L3 の範囲：L1 28 行／L2 —／回帰 W0 W1 W2 W3 W4 W5 W6 W7 W8 W9 W10 W11 W12 W13 W14 W15 W16 W17 W18 W19 W20
+- 締め：bash scripts/ci/completion_gate.sh --wave W21
+
+### W22（A4・段階 2 API Layer）2026-10-22〜2026-11-17
 
 - 目標：段階 2 API Layer：API このツールを入れて安全か、社, API 運営として、問い合わせに答え, API 自分のアカウント・会社の設定
 - タスク：T-A-24 T-A-25 T-A-26
 - 担当：takamoto 1, claude-04 1, claude-01 1
 - 致命級（人のレビュー）：T-A-24 T-A-25 T-A-26
-- L3 の範囲：L1 47 行／L2 —／回帰 W0 W1 W2 W3 W4 W5 W6 W7 W8 W9 W10 W11 W12 W13 W14 W15 W16 W17 W18 W19
-- 締め：bash scripts/ci/completion_gate.sh --wave W20
+- L3 の範囲：L1 47 行／L2 —／回帰 W0 W1 W2 W3 W4 W5 W6 W7 W8 W9 W10 W11 W12 W13 W14 W15 W16 W17 W18 W19 W20 W21
+- 締め：bash scripts/ci/completion_gate.sh --wave W22
 
-### W21（U7・段階 2 UI Parallel）2026-10-30〜2026-11-18
+### W23（U7・段階 2 UI Parallel）2026-10-30〜2026-11-18
 
 - 目標：段階 2 UI Parallel：画面 支払い方法を登録する（4 状態, 画面 開示資料（4 状態・R1/R2, 画面 AI の経路（4 状態・R1/ …
 - タスク：T-U-59 T-U-60 T-U-61 T-U-62 T-U-63 T-U-64
 - 担当：claude-07 2, claude-06 2, claude-08 1, claude-09 1
 - 致命級（人のレビュー）：—
-- L3 の範囲：L1 153 行／L2 —／回帰 W0 W1 W2 W3 W4 W5 W6 W7 W8 W9 W10 W11 W12 W13 W14 W15 W16 W17 W18 W19 W20
-- 締め：bash scripts/ci/completion_gate.sh --wave W21
+- L3 の範囲：L1 153 行／L2 —／回帰 W0 W1 W2 W3 W4 W5 W6 W7 W8 W9 W10 W11 W12 W13 W14 W15 W16 W17 W18 W19 W20 W21 W22
+- 締め：bash scripts/ci/completion_gate.sh --wave W23
 
 ## 完了の定義
 

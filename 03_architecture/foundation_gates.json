@@ -19,7 +19,7 @@
     {"id":12,"name":"実Postgresでmigration+seed適用","script":"pnpm ci:migration-integration","blocking":true,"detects":["migrationの順序・冪等性","外部リソースの未作成"],"owner_task":"T-F-08"},
     {"id":13,"name":"env 整合","script":"pnpm ci:env-audit","blocking":true,"detects":["コード参照と .env.example の乖離"],"owner_task":"T-F-08"},
     {"id":14,"name":"AC validator（4-tier）","script":"pnpm ci:ac-validate","blocking":true,"detects":["Tier1-3の不備","Tier4（発注者確認）の欠落"],"owner_task":"T-F-09"},
-    {"id":15,"name":"E2E（Playwright）","script":"pnpm exec playwright test","blocking":true,"condition":"UIを含むスライスのみ","owner_task":"T-F-10"},
+    {"id":15,"name":"E2E（Playwright）","script":"pnpm exec playwright test","blocking":true,"condition":"UIを含むスライスのみ","owner_task":"T-US-00"},
     {"id":16,"name":"関門C1 ネットワークの迂回検出","script":"pnpm ci:choke -- --id C1","blocking":true,"detects":["認可・承認・証跡・課金・サービス台帳判定の迂回"],"source":"choke-points.json","owner_task":"T-F-11","kaname_critical":true},
     {"id":17,"name":"関門C2 永続化の迂回検出","script":"pnpm ci:choke -- --id C2","blocking":true,"detects":["テナント文脈・監査列の欠落"],"owner_task":"T-F-11","kaname_critical":true},
     {"id":18,"name":"関門C3 モデル呼び出しの迂回検出","script":"pnpm ci:choke -- --id C3","blocking":true,"detects":["課金計測・経路解決の迂回"],"owner_task":"T-F-11"},

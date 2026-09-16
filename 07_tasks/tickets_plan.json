@@ -1,17 +1,25 @@
 {
- "generated_at": "2026-09-16T10:59:00",
+ "generated_at": "2026-09-16T11:12:56",
  "inputs": {
   "tickets": "07_tasks/tickets.json",
   "roster": "07_tasks/roster.json",
-  "milestones": "08_schedule/milestones.json"
+  "milestones": "08_schedule/milestones.json",
+  "decisions": "01_hearing/決定ログ_進行中.md",
+  "features": "04_functional_breakdown/feature-decomposition.json",
+  "flow": "05_flow/flow.json",
+  "mocks": "06_mockup/v1",
+  "prefix": "v1-",
+  "spec": "07_qa/test-specs",
+  "journeys": "07_qa/test-specs/journeys/plan.json",
+  "errors": "07_qa/test-specs/errors.json"
  },
  "summary": {
   "epic": 15,
-  "story": 169,
-  "subtask": 3999,
+  "story": 170,
+  "subtask": 4015,
   "subtask_by": {
-   "impl": 421,
-   "test": 3367,
+   "impl": 426,
+   "test": 3378,
    "mock": 211
   },
   "critical_path": [
@@ -26,7 +34,7 @@
   "cycle": [],
   "ghost_dependencies": [],
   "unassignable": [],
-  "tentative": 0,
+  "tentative": 1,
   "assigned": 169,
   "broken_links": [],
   "milestone_overrun": [],
@@ -34,7 +42,7 @@
   "delta": {
    "added": 0,
    "updated": 0,
-   "unchanged": 169,
+   "unchanged": 170,
    "dropped": 0
   },
   "load": {
@@ -44,7 +52,7 @@
    "claude-03": 134.9,
    "claude-04": 144.5,
    "claude-05": 121.0,
-   "claude-06": 30.8,
+   "claude-06": 32.4,
    "claude-07": 30.4,
    "claude-08": 29.6,
    "claude-09": 78.0,
@@ -286,6 +294,7 @@
    "title": "ui の層",
    "parent": null,
    "children": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -7271,6 +7280,83 @@
    "dropped_reason": null
   },
   {
+   "id": "T-US-00",
+   "kind": "story",
+   "title": "apps/web の土台（Next.js 15 App Router の雛形・Playwright と実ブラウザの検査・ナビ href ⇔ 実在ルートの照合・CI のブラウザ job・ローカル起動）",
+   "parent": "E-ui",
+   "children": [
+    "T-US-00.s1",
+    "T-US-00.s2",
+    "T-US-00.s3",
+    "T-US-00.s4",
+    "T-US-00.s5",
+    "T-US-00.t1",
+    "T-US-00.t2",
+    "T-US-00.t3",
+    "T-US-00.t4",
+    "T-US-00.t5",
+    "T-US-00.t6",
+    "T-US-00.t7",
+    "T-US-00.t8",
+    "T-US-00.t9",
+    "T-US-00.t10",
+    "T-US-00.t11"
+   ],
+   "depends_on": [
+    "T-F-01",
+    "T-F-15"
+   ],
+   "blocked_by": [],
+   "wave": "W0",
+   "layer": "ui",
+   "estimate_hours": 1.6,
+   "estimate_default": false,
+   "start": "2026-09-25",
+   "finish": "2026-09-25",
+   "critical": false,
+   "tentative": true,
+   "assignable": [
+    "claude-06",
+    "claude-07",
+    "claude-08",
+    "claude-09"
+   ],
+   "assignee": null,
+   "assigned_by": null,
+   "status": "todo",
+   "external": {},
+   "links": {
+    "mock": [],
+    "screens": [],
+    "decisions": [
+     "D-043.3",
+     "D-067.1",
+     "D-084.1"
+    ],
+    "acts": [],
+    "qa_rows": [
+     "USH-00-001",
+     "USH-00-002",
+     "USH-00-003",
+     "USH-00-004",
+     "USH-00-005",
+     "USH-00-006",
+     "USH-00-007",
+     "USH-00-008",
+     "USH-00-009",
+     "USH-00-010",
+     "USH-00-011"
+    ],
+    "errors": [],
+    "spec": [
+     "07_tasks/tickets.json#T-US-00"
+    ]
+   },
+   "delta": "unchanged",
+   "dropped_reason": null,
+   "tentative_assignee": "claude-06"
+  },
+  {
    "id": "T-US-01",
    "kind": "story",
    "title": "シェル（サイドバー・レール・第2ナビ・三画面・下タブ・枠の導出 data-frame・役割の出し分け data-roles）",
@@ -7287,6 +7373,7 @@
     "T-US-01.t8"
    ],
    "depends_on": [
+    "T-US-00",
     "T-F-01",
     "T-F-05",
     "T-A-01"
@@ -7356,6 +7443,7 @@
     "T-US-02.t8"
    ],
    "depends_on": [
+    "T-US-00",
     "T-F-01",
     "T-F-05",
     "T-A-01"
@@ -7424,6 +7512,7 @@
     "T-US-03.t8"
    ],
    "depends_on": [
+    "T-US-00",
     "T-F-01",
     "T-F-05",
     "T-A-01"
@@ -7491,6 +7580,7 @@
     "T-US-04.t8"
    ],
    "depends_on": [
+    "T-US-00",
     "T-F-01",
     "T-F-05",
     "T-A-01"
@@ -7559,6 +7649,7 @@
     "T-US-05.t8"
    ],
    "depends_on": [
+    "T-US-00",
     "T-F-01",
     "T-F-05",
     "T-A-01"
@@ -7627,6 +7718,7 @@
     "T-US-06.t8"
    ],
    "depends_on": [
+    "T-US-00",
     "T-F-01",
     "T-F-05",
     "T-A-01"
@@ -7714,6 +7806,7 @@
     "T-U-01.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -7834,6 +7927,7 @@
     "T-U-02.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -7945,6 +8039,7 @@
     "T-U-03.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -8058,6 +8153,7 @@
     "T-U-04.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -8185,6 +8281,7 @@
     "T-U-05.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -8321,6 +8418,7 @@
     "T-U-06.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -8439,6 +8537,7 @@
     "T-U-07.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -8562,6 +8661,7 @@
     "T-U-08.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -8695,6 +8795,7 @@
     "T-U-09.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -8850,6 +8951,7 @@
     "T-U-10.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -8997,6 +9099,7 @@
     "T-U-11.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -9119,6 +9222,7 @@
     "T-U-12.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -9251,6 +9355,7 @@
     "T-U-13.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -9429,6 +9534,7 @@
     "T-U-14.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -9593,6 +9699,7 @@
     "T-U-15.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -9754,6 +9861,7 @@
     "T-U-16.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -9966,6 +10074,7 @@
     "T-U-17.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -10159,6 +10268,7 @@
     "T-U-18.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -10313,6 +10423,7 @@
     "T-U-19.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -10450,6 +10561,7 @@
     "T-U-20.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -10609,6 +10721,7 @@
     "T-U-21.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -10763,6 +10876,7 @@
     "T-U-22.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -10945,6 +11059,7 @@
     "T-U-23.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -11105,6 +11220,7 @@
     "T-U-24.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -11253,6 +11369,7 @@
     "T-U-25.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -11394,6 +11511,7 @@
     "T-U-26.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -11535,6 +11653,7 @@
     "T-U-27.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -11680,6 +11799,7 @@
     "T-U-28.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -11830,6 +11950,7 @@
     "T-U-29.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -11978,6 +12099,7 @@
     "T-U-30.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -12116,6 +12238,7 @@
     "T-U-31.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -12260,6 +12383,7 @@
     "T-U-32.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -12401,6 +12525,7 @@
     "T-U-33.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -12551,6 +12676,7 @@
     "T-U-34.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -12710,6 +12836,7 @@
     "T-U-35.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -12864,6 +12991,7 @@
     "T-U-36.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -13008,6 +13136,7 @@
     "T-U-37.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -13150,6 +13279,7 @@
     "T-U-38.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -13287,6 +13417,7 @@
     "T-U-39.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -13427,6 +13558,7 @@
     "T-U-40.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -13561,6 +13693,7 @@
     "T-U-41.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -13683,6 +13816,7 @@
     "T-U-42.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -13812,6 +13946,7 @@
     "T-U-43.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -13958,6 +14093,7 @@
     "T-U-44.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -14093,6 +14229,7 @@
     "T-U-45.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -14224,6 +14361,7 @@
     "T-U-46.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -14354,6 +14492,7 @@
     "T-U-47.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -14484,6 +14623,7 @@
     "T-U-48.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -14603,6 +14743,7 @@
     "T-U-49.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -14746,6 +14887,7 @@
     "T-U-50.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -14887,6 +15029,7 @@
     "T-U-51.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -15034,6 +15177,7 @@
     "T-U-52.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -15182,6 +15326,7 @@
     "T-U-53.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -15305,6 +15450,7 @@
     "T-U-54.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -15431,6 +15577,7 @@
     "T-U-55.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -15554,6 +15701,7 @@
     "T-U-56.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -15676,6 +15824,7 @@
     "T-U-57.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -15812,6 +15961,7 @@
     "T-U-58.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -15957,6 +16107,7 @@
     "T-U-59.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -16081,6 +16232,7 @@
     "T-U-60.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -16215,6 +16367,7 @@
     "T-U-61.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -16359,6 +16512,7 @@
     "T-U-62.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -16476,6 +16630,7 @@
     "T-U-63.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -16577,6 +16732,7 @@
     "T-U-64.m1"
    ],
    "depends_on": [
+    "T-US-00",
     "T-US-01",
     "T-US-02",
     "T-US-03",
@@ -38331,6 +38487,214 @@
     ],
     "screens": [
      "llm-routes"
+    ]
+   }
+  },
+  {
+   "id": "T-US-00.s1",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "apps/web/package.json (new)",
+   "parent": "T-US-00",
+   "status": "todo",
+   "links": {
+    "file": [
+     "apps/web/package.json (new)"
+    ]
+   }
+  },
+  {
+   "id": "T-US-00.s2",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "apps/web/app/layout.tsx (new)",
+   "parent": "T-US-00",
+   "status": "todo",
+   "links": {
+    "file": [
+     "apps/web/app/layout.tsx (new)"
+    ]
+   }
+  },
+  {
+   "id": "T-US-00.s3",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "apps/web/playwright.config.ts (new)",
+   "parent": "T-US-00",
+   "status": "todo",
+   "links": {
+    "file": [
+     "apps/web/playwright.config.ts (new)"
+    ]
+   }
+  },
+  {
+   "id": "T-US-00.s4",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "apps/web/tests/reachability.spec.ts (new)",
+   "parent": "T-US-00",
+   "status": "todo",
+   "links": {
+    "file": [
+     "apps/web/tests/reachability.spec.ts (new)"
+    ]
+   }
+  },
+  {
+   "id": "T-US-00.s5",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": ".github/workflows/v3-gate.yml (modify)",
+   "parent": "T-US-00",
+   "status": "todo",
+   "links": {
+    "file": [
+     ".github/workflows/v3-gate.yml (modify)"
+    ]
+   }
+  },
+  {
+   "id": "T-US-00.t1",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 USH-00-001 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-US-00",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "USH-00-001"
+    ]
+   }
+  },
+  {
+   "id": "T-US-00.t2",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 USH-00-002 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-US-00",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "USH-00-002"
+    ]
+   }
+  },
+  {
+   "id": "T-US-00.t3",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 USH-00-003 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-US-00",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "USH-00-003"
+    ]
+   }
+  },
+  {
+   "id": "T-US-00.t4",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 USH-00-004 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-US-00",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "USH-00-004"
+    ]
+   }
+  },
+  {
+   "id": "T-US-00.t5",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 USH-00-005 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-US-00",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "USH-00-005"
+    ]
+   }
+  },
+  {
+   "id": "T-US-00.t6",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 USH-00-006 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-US-00",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "USH-00-006"
+    ]
+   }
+  },
+  {
+   "id": "T-US-00.t7",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 USH-00-007 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-US-00",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "USH-00-007"
+    ]
+   }
+  },
+  {
+   "id": "T-US-00.t8",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 USH-00-008 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-US-00",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "USH-00-008"
+    ]
+   }
+  },
+  {
+   "id": "T-US-00.t9",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 USH-00-009 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-US-00",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "USH-00-009"
+    ]
+   }
+  },
+  {
+   "id": "T-US-00.t10",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 USH-00-010 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-US-00",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "USH-00-010"
+    ]
+   }
+  },
+  {
+   "id": "T-US-00.t11",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 USH-00-011 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-US-00",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "USH-00-011"
     ]
    }
   },
