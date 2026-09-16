@@ -55,7 +55,8 @@
     "e2e:web": "pnpm --filter @kaname/web exec playwright test",
     "e2e:journeys": "pnpm --filter @kaname/e2e exec playwright test",
     "ci:routes:gen": "node scripts/ci/gen_routes.mjs",
-    "ci:routes": "node scripts/ci/gen_routes.mjs check"
+    "ci:routes": "node scripts/ci/gen_routes.mjs check",
+    "api:dev": "tsx apps/api/src/dev.ts"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",

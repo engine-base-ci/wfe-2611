@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-16T13:15:08",
+ "generated_at": "2026-09-16T16:08:03",
  "inputs": {
   "tickets": "07_tasks/tickets.json",
   "roster": "07_tasks/roster.json",
@@ -7904,7 +7904,7 @@
    ],
    "assignee": "claude-06",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -8027,7 +8027,7 @@
    ],
    "assignee": "claude-08",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -8137,7 +8137,7 @@
    ],
    "assignee": "claude-07",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -8253,7 +8253,7 @@
    ],
    "assignee": "claude-06",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -8381,7 +8381,7 @@
    ],
    "assignee": "claude-09",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -8518,7 +8518,7 @@
    ],
    "assignee": "claude-08",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -8636,7 +8636,7 @@
    ],
    "assignee": "claude-07",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -8763,7 +8763,7 @@
    ],
    "assignee": "claude-06",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -8894,7 +8894,7 @@
    ],
    "assignee": "claude-09",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -9049,7 +9049,7 @@
    ],
    "assignee": "claude-08",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -39673,7 +39673,7 @@
    "sub": "impl",
    "title": "apps/web/app/(public)/signup/page.tsx (new)",
    "parent": "T-U-01",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/app/(public)/signup/page.tsx (new)"
@@ -39686,7 +39686,7 @@
    "sub": "impl",
    "title": "apps/web/tests/screens/signup.spec.ts (new)",
    "parent": "T-U-01",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/tests/screens/signup.spec.ts (new)"
@@ -40040,7 +40040,7 @@
    "sub": "impl",
    "title": "apps/web/app/(public)/verify-email/page.tsx (new)",
    "parent": "T-U-02",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/app/(public)/verify-email/page.tsx (new)"
@@ -40053,7 +40053,7 @@
    "sub": "impl",
    "title": "apps/web/tests/screens/verify-email.spec.ts (new)",
    "parent": "T-U-02",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/tests/screens/verify-email.spec.ts (new)"
@@ -40342,7 +40342,7 @@
    "sub": "impl",
    "title": "apps/web/app/(public)/invite/[token]/page.tsx (new)",
    "parent": "T-U-03",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/app/(public)/invite/[token]/page.tsx (new)"
@@ -40355,7 +40355,7 @@
    "sub": "impl",
    "title": "apps/web/tests/screens/invite-accept.spec.ts (new)",
    "parent": "T-U-03",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/tests/screens/invite-accept.spec.ts (new)"
@@ -40670,7 +40670,7 @@
    "sub": "impl",
    "title": "apps/web/app/(public)/mfa-setup/page.tsx (new)",
    "parent": "T-U-04",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/app/(public)/mfa-setup/page.tsx (new)"
@@ -40683,7 +40683,7 @@
    "sub": "impl",
    "title": "apps/web/tests/screens/mfa-setup.spec.ts (new)",
    "parent": "T-U-04",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/tests/screens/mfa-setup.spec.ts (new)"
@@ -41011,7 +41011,7 @@
    "sub": "impl",
    "title": "apps/web/app/(public)/login/page.tsx (new)",
    "parent": "T-U-05",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/app/(public)/login/page.tsx (new)"
@@ -41024,7 +41024,7 @@
    "sub": "impl",
    "title": "apps/web/tests/screens/login.spec.ts (new)",
    "parent": "T-U-05",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/tests/screens/login.spec.ts (new)"
@@ -41482,7 +41482,7 @@
    "sub": "impl",
    "title": "apps/web/app/(public)/password-reset/page.tsx (new)",
    "parent": "T-U-06",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/app/(public)/password-reset/page.tsx (new)"
@@ -41495,7 +41495,7 @@
    "sub": "impl",
    "title": "apps/web/tests/screens/password-reset.spec.ts (new)",
    "parent": "T-U-06",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/tests/screens/password-reset.spec.ts (new)"
@@ -41836,7 +41836,7 @@
    "sub": "impl",
    "title": "apps/web/app/(public)/onboard/interview/page.tsx (new)",
    "parent": "T-U-07",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/app/(public)/onboard/interview/page.tsx (new)"
@@ -41849,7 +41849,7 @@
    "sub": "impl",
    "title": "apps/web/tests/screens/onboard-interview.spec.ts (new)",
    "parent": "T-U-07",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/tests/screens/onboard-interview.spec.ts (new)"
@@ -42203,7 +42203,7 @@
    "sub": "impl",
    "title": "apps/web/app/(public)/onboard/draft/page.tsx (new)",
    "parent": "T-U-08",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/app/(public)/onboard/draft/page.tsx (new)"
@@ -42216,7 +42216,7 @@
    "sub": "impl",
    "title": "apps/web/tests/screens/onboard-draft.spec.ts (new)",
    "parent": "T-U-08",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/tests/screens/onboard-draft.spec.ts (new)"
@@ -42557,7 +42557,7 @@
    "sub": "impl",
    "title": "apps/web/app/(app)/setup/bridge/page.tsx (new)",
    "parent": "T-U-09",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/app/(app)/setup/bridge/page.tsx (new)"
@@ -42570,7 +42570,7 @@
    "sub": "impl",
    "title": "apps/web/tests/screens/bridge-setup.spec.ts (new)",
    "parent": "T-U-09",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/tests/screens/bridge-setup.spec.ts (new)"
@@ -43041,7 +43041,7 @@
    "sub": "impl",
    "title": "apps/web/app/(app)/settings/credentials/page.tsx (new)",
    "parent": "T-U-10",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/app/(app)/settings/credentials/page.tsx (new)"
@@ -43054,7 +43054,7 @@
    "sub": "impl",
    "title": "apps/web/tests/screens/credentials.spec.ts (new)",
    "parent": "T-U-10",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/tests/screens/credentials.spec.ts (new)"

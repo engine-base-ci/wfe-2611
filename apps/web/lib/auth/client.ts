@@ -8,6 +8,7 @@ export const authClient = createAuthClient({
   basePath: "/api/auth",
   plugins: [twoFactorClient()],
   fetchOptions: {
+    credentials: "omit", // Cookie は使わない（Bearer だけ・D-051.2）
     auth: { type: "Bearer", token: () => getToken() ?? "" },
     onSuccess: (ctx) => {
       const t = ctx.response.headers.get("set-auth-token");

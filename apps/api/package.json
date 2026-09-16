@@ -16,7 +16,9 @@
     "@kaname/db": "workspace:*",
     "@kaname/errors": "workspace:*",
     "@kaname/storage": "workspace:*",
-    "hono": "^4.10.0"
+    "hono": "^4.10.0",
+    "@kaname/secrets": "workspace:*",
+    "@kaname/notify": "workspace:*"
   },
   "devDependencies": {
     "@types/pg": "^8.15.5",

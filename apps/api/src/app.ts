@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { cors } from "hono/cors";
 import { MIGRATIONS, checkMigrationOrder } from "@kaname/db";
 import type { Repository } from "@kaname/db/repository";
 import { tenantContext, type SessionResolver, type Vars } from "./middleware/tenant.js";
@@ -31,17 +32,33 @@ export interface AppOptions {
   resolve?: (headers: Headers) => Promise<Resolved | null>;
   /** 契約の route（08_api/openapi.yaml の 56 endpoint）。repo があれば既定で登録。hooks／上限／冪等の器を差し込める */
   contract?: Partial<ContractDeps> | false;
+  /** 認証の拡張（/api/auth-ext/*：登録・ロック付きログイン・招待・Bridge の接続コード・資格情報を預ける） */
+  authExt?: Hono;
+  /** 画面の origin（別 origin から Bearer で呼ぶ。Cookie は使わない） */
+  corsOrigin?: string | null;
 }
 
 export function createApp(o: AppOptions | string = {}): Hono<Vars> {
   const opts = typeof o === "string" ? { version: o } : o;
   const app = new Hono<Vars>();
+  if (opts.corsOrigin)
+    app.use(
+      "/api/*",
+      cors({
+        origin: opts.corsOrigin,
+        allowHeaders: ["authorization", "content-type", "idempotency-key", "x-screen-id", "x-tenant-id"],
+        exposeHeaders: ["set-auth-token"],
+        credentials: true,
+        maxAge: 600,
+      }),
+    );
   app.get("/health", (c) => {
     const h = health(opts.version ?? "0.1.0");
     return c.json(h, h.ok ? 200 : 503);
   });
   // 認証の endpoint（sign-in／sign-up／2 段階／セッション）。境界 B2 の handler にそのまま渡す
   if (opts.auth) app.on(["GET", "POST"], "/api/auth/*", (c) => opts.auth!.handler(c.req.raw));
+  if (opts.authExt) app.route("/api/auth-ext", opts.authExt);
   // /api/* 配下は全部テナント文脈を通る（SET LOCAL の網羅＝G6）
   const resolver: SessionResolver | undefined = opts.resolve
     ? async (c) => (await opts.resolve!(c.req.raw.headers))?.ctx ?? null
@@ -64,6 +81,7 @@ export function createApp(o: AppOptions | string = {}): Hono<Vars> {
       }
       return c.json({ ...err.toJSON(), event_id: eventId }, err.status as 400);
     }
+    console.error("[api] 500", c.req.method, c.req.path, err instanceof Error ? (err.stack ?? err.message) : err); // 詳細はログにだけ（応答には出さない）
     return c.json(
       {
         error: "internal",

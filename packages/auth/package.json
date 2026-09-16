@@ -10,7 +10,8 @@
     "./two_factor": "./src/two_factor.ts",
     "./invitations": "./src/invitations.ts",
     "./devices": "./src/devices.ts",
-    "./migrate": "./src/migrate.ts"
+    "./migrate": "./src/migrate.ts",
+    "./signup": "./src/signup.ts"
   },
   "scripts": {
     "type-check": "tsc -p tsconfig.json --noEmit"

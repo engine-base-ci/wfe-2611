@@ -18722,7 +18722,7 @@
     "01_hearing/決定ログ_進行中.md#D-002"
    ],
    "audit_md_path": "07_tasks/audit/T-U-01.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "SCR-SIGNUP-001",
@@ -18967,7 +18967,7 @@
     "01_hearing/決定ログ_進行中.md#D-065.2"
    ],
    "audit_md_path": "07_tasks/audit/T-U-02.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "SCR-VERIFY-EMAIL-001",
@@ -19205,7 +19205,7 @@
     "01_hearing/決定ログ_進行中.md#D-053.10"
    ],
    "audit_md_path": "07_tasks/audit/T-U-03.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "SCR-INVITE-ACCEPT-001",
@@ -19454,7 +19454,7 @@
     "01_hearing/決定ログ_進行中.md#D-051.2"
    ],
    "audit_md_path": "07_tasks/audit/T-U-04.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "SCR-MFA-SETUP-001",
@@ -19694,7 +19694,7 @@
     "01_hearing/決定ログ_進行中.md#D-011"
    ],
    "audit_md_path": "07_tasks/audit/T-U-05.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "SCR-LOGIN-001",
@@ -19957,7 +19957,7 @@
     "01_hearing/決定ログ_進行中.md#D-065.2"
    ],
    "audit_md_path": "07_tasks/audit/T-U-06.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "SCR-PASSWORD-RESET-001",
@@ -20201,7 +20201,7 @@
     "01_hearing/決定ログ_進行中.md#D-024"
    ],
    "audit_md_path": "07_tasks/audit/T-U-07.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "SCR-ONBOARD-INTERVIEW-001",
@@ -20481,7 +20481,7 @@
     "01_hearing/決定ログ_進行中.md#D-025"
    ],
    "audit_md_path": "07_tasks/audit/T-U-08.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "SCR-ONBOARD-DRAFT-001",
@@ -20733,7 +20733,7 @@
     "01_hearing/決定ログ_進行中.md#D-045"
    ],
    "audit_md_path": "07_tasks/audit/T-U-09.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "SCR-BRIDGE-SETUP-001",
@@ -21010,7 +21010,7 @@
     "01_hearing/決定ログ_進行中.md#D-040"
    ],
    "audit_md_path": "07_tasks/audit/T-U-10.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "SCR-CREDENTIALS-001",

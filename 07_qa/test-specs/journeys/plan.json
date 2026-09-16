@@ -17,8 +17,10 @@
     "T-A-01",
     "T-U-01"
    ],
-   "result": "",
-   "task": ""
+   "result": "PASS（apps/e2e/journeys・実 Chrome・2026-09-16）",
+   "task": "T-I-09",
+   "status": "PASS",
+   "note": "apps/e2e/journeys・実 Chrome・2026-09-16"
   },
   {
    "id": "J01-02",
@@ -38,8 +40,10 @@
     "T-A-15",
     "T-U-02"
    ],
-   "result": "",
-   "task": ""
+   "result": "PASS（apps/e2e/journeys・実 Chrome・2026-09-16）",
+   "task": "T-I-09",
+   "status": "PASS",
+   "note": "apps/e2e/journeys・実 Chrome・2026-09-16"
   },
   {
    "id": "J01-03",
@@ -57,8 +61,10 @@
     "T-A-02",
     "T-U-03"
    ],
-   "result": "",
-   "task": ""
+   "result": "PASS（apps/e2e/journeys・実 Chrome・2026-09-16）",
+   "task": "T-I-09",
+   "status": "PASS",
+   "note": "apps/e2e/journeys・実 Chrome・2026-09-16"
   },
   {
    "id": "J01-04",
@@ -78,8 +84,10 @@
     "T-A-15",
     "T-U-04"
    ],
-   "result": "",
-   "task": ""
+   "result": "PASS（apps/e2e/journeys・実 Chrome・2026-09-16）",
+   "task": "T-I-09",
+   "status": "PASS",
+   "note": "apps/e2e/journeys・実 Chrome・2026-09-16"
   },
   {
    "id": "J02-01",

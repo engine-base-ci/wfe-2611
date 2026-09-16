@@ -16,6 +16,10 @@ export interface Config {
   };
   secretsMasterKey: string;
   resendApiKey: string | null;
+  /** 画面の URL（メールのリンクの先・CORS）。無ければ null（API と同じ origin） */
+  webBaseUrl: string | null;
+  /** メールの差出人（Resend の送信ドメイン） */
+  mailFrom: string;
   port: number;
 }
 const REQUIRED = [
@@ -40,6 +44,8 @@ export const ENV_KEYS = [
   "DATABASE_ADMIN_URL",
   "KANAME_APP_DB_PASSWORD",
   "KANAME_AUTH_DB_PASSWORD",
+  "WEB_BASE_URL",
+  "MAIL_FROM",
 ] as const;
 export type EnvKey = (typeof ENV_KEYS)[number];
 /** migration が役割に入れるパスワード（T-F-18）。process.env を読むのはここだけ（X-002） */
@@ -89,6 +95,8 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
     },
     secretsMasterKey: mk,
     resendApiKey: env["RESEND_API_KEY"] ?? null,
+    webBaseUrl: env["WEB_BASE_URL"] || null,
+    mailFrom: env["MAIL_FROM"] || "Kaname <noreply@kaname.app>",
     port: Number(env["PORT"] ?? 3001),
   };
 }

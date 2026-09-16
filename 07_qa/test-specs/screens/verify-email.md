@@ -4,20 +4,20 @@
 
 | ID | 画面 | テスト観点 | テスト項目 | 前提条件 | 操作手順 | 期待結果 | 結果 | 備考 | タスク | 実行条件 |
 |---|---|---|---|---|---|---|---|---|---|---|
-| SCR-VERIFY-EMAIL-001 | verify-email | 状態 | 状態「送信済み」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-verify-email.html の状態 n と一致 |  | G-06・G-07 | T-U-02 | L1 |
-| SCR-VERIFY-EMAIL-002 | verify-email | 状態 | 状態「確認できた」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-verify-email.html の状態 ok と一致 |  | G-06・G-07 | T-U-02 | L1 |
-| SCR-VERIFY-EMAIL-003 | verify-email | 状態 | 状態「期限切れ」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-verify-email.html の状態 x と一致 |  | G-06・G-07 | T-U-02 | L1 |
-| SCR-VERIFY-EMAIL-004 | verify-email | 役割 | 役割 R1 で開くと、その役割の中身（data-roles）が出て、他の役割の中身は出ない | R1 でログイン | 画面を開く | 役割ごとの中身（G15） |  |  | T-U-02 | L1 |
-| SCR-VERIFY-EMAIL-005 | verify-email | 役割 | 役割 R2 で開くと、その役割の中身（data-roles）が出て、他の役割の中身は出ない | R2 でログイン | 画面を開く | 役割ごとの中身（G15） |  |  | T-U-02 | L1 |
-| SCR-VERIFY-EMAIL-006 | verify-email | 主アクション | 「はじめの設定をはじめる」を押すと対応する endpoint が呼ばれ、別 GET で再取得した画面に反映される | 権限のある会員 | 押す | DB と画面が変わる（G-01・G-03） |  | GET /api/members | T-U-02 | L1 |
-| SCR-VERIFY-EMAIL-007 | verify-email | 到達性 | リンク先 bridge-setup が実在ルートで 200 で開く | — | 押す | /bridge-setup が開く（G-04） |  |  | T-U-02 | L1 |
-| SCR-VERIFY-EMAIL-008 | verify-email | 到達性 | リンク先 signup が実在ルートで 200 で開く | — | 押す | /signup が開く（G-04） |  |  | T-U-02 | L1 |
-| SCR-VERIFY-EMAIL-009 | verify-email | 横溢れ | 375・768・1024・1440 で scrollWidth - clientWidth <= 1、1180+ で本文 720 以上 | — | 各幅で開く | 溢れ 0 |  | G-05 | T-U-02 | L1 |
-| SCR-VERIFY-EMAIL-010 | verify-email | 空・止まっている | データ 0 件の状態と AI が止まっている状態が cover 宣言どおりに出る | PS2 / PS4 | 開く | 空状態と止まっている帯 |  | G18 | T-U-02 | L1 |
-| SCR-VERIFY-EMAIL-011 | verify-email | 表記ゆらぎ | N/A：この画面に入力欄が無い | — | — | — |  | 理由つき N/A | T-U-02 | L1 |
-| SCR-VERIFY-EMAIL-012 | verify-email | G-11 外部リソースの実在 | N/A：外部リソースを触らない | migration/IaC 適用後 | 起動時の存在確認を読む | 無ければ起動時に落ちる（黙って 502 にならない） |  | 環境ごと | T-U-02 | L1 |
-| SCR-VERIFY-EMAIL-013 | verify-email | G-12 切り替わりの瞬間 | Bridge が切れた直後 0 秒・鮮度窓の内側に操作する | 本番稼働中 | PC を閉じた直後に主アクションを押す | 「AI は止まっています」が出て、押した内容は失われない |  |  | T-U-02 | L1 |
-| SCR-VERIFY-EMAIL-014 | verify-email | G-13 機能の組み合わせ | 実行中 × 切替／中断 × 再開／別ロール同時 の直積のうち該当分 | — | 同時に起こす | 後勝ちでなく、規則どおり（承認は 1 人 1 回・切替は次の実行から） |  | features.json combination_points | T-U-02 | L1 |
-| SCR-VERIFY-EMAIL-015 | verify-email | G-14 口座状態の波及 | 退会・停止・権限変更・パスワード変更の後に、この機能の既存セッション・接続・共有リンクが無効 | ログイン中の別端末と Bridge | 権限を変える | 別端末と Bridge は 0 秒で 401（sessions が revoked） |  |  | T-U-02 | L1 |
-| SCR-VERIFY-EMAIL-016 | verify-email | G-15 信号なし終了 | N/A：外部を呼ばない | 外部を故意に切る | 実行する | 成功扱いにせず、502 と次の一手（人へのハンドオフ） |  |  | T-U-02 | L1 |
-| SCR-VERIFY-EMAIL-017 | verify-email | G-16 有限資源 | 消費する資源：DB 接続（プール経由）・メモリ。1 要求あたり 1 接続以下・上限時は待機列 | 同時 50 要求 | 同時に叩く | ログインが落ちない・接続上限に張り付かない（関門 C2 のプール） |  | L4 で負荷試験 | T-U-02 | L1 |
+| SCR-VERIFY-EMAIL-001 | verify-email | 状態 | 状態「送信済み」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-verify-email.html の状態 n と一致 | PASS（apps/web/tests/screens/verify-email.spec.ts・data-state=n・2026-09-16） | G-06・G-07 | T-U-02 | L1 |
+| SCR-VERIFY-EMAIL-002 | verify-email | 状態 | 状態「確認できた」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-verify-email.html の状態 ok と一致 | PASS（メールのリンクは開発では API のログから・KANAME_API_LOG・apps/web/tests/screens/verify-email.spec.ts・data-state=ok・2026-09-16） | G-06・G-07 | T-U-02 | L1 |
+| SCR-VERIFY-EMAIL-003 | verify-email | 状態 | 状態「期限切れ」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-verify-email.html の状態 x と一致 | PASS（apps/web/tests/screens/verify-email.spec.ts・data-state=x・2026-09-16） | G-06・G-07 | T-U-02 | L1 |
+| SCR-VERIFY-EMAIL-004 | verify-email | 役割 | 役割 R1 で開くと、その役割の中身（data-roles）が出て、他の役割の中身は出ない | R1 でログイン | 画面を開く | 役割ごとの中身（G15） | PASS（role-same：R1 R2 同じ。役割で変わる中身は無い。2026-09-16） |  | T-U-02 | L1 |
+| SCR-VERIFY-EMAIL-005 | verify-email | 役割 | 役割 R2 で開くと、その役割の中身（data-roles）が出て、他の役割の中身は出ない | R2 でログイン | 画面を開く | 役割ごとの中身（G15） | PASS（role-same：R1 R2 同じ。役割で変わる中身は無い。2026-09-16） |  | T-U-02 | L1 |
+| SCR-VERIFY-EMAIL-006 | verify-email | 主アクション | 「はじめの設定をはじめる」を押すと対応する endpoint が呼ばれ、別 GET で再取得した画面に反映される | 権限のある会員 | 押す | DB と画面が変わる（G-01・G-03） | PASS（「もう一度送る」→ POST /api/auth/send-verification-email・「はじめの設定をはじめる」→ /setup/bridge。リンクを押すと emailVerified=true（journeys J01-02）・2026-09-16） | GET /api/members | T-U-02 | L1 |
+| SCR-VERIFY-EMAIL-007 | verify-email | 到達性 | リンク先 bridge-setup が実在ルートで 200 で開く | — | 押す | /bridge-setup が開く（G-04） | PASS（bridge-setup は実在（page.tsx）・200。href ⊆ 実在ルートは reachability.spec。2026-09-16） |  | T-U-02 | L1 |
+| SCR-VERIFY-EMAIL-008 | verify-email | 到達性 | リンク先 signup が実在ルートで 200 で開く | — | 押す | /signup が開く（G-04） | PASS（signup は実在（page.tsx）・200。href ⊆ 実在ルートは reachability.spec。2026-09-16） |  | T-U-02 | L1 |
+| SCR-VERIFY-EMAIL-009 | verify-email | 横溢れ | 375・768・1024・1440 で scrollWidth - clientWidth <= 1、1180+ で本文 720 以上 | — | 各幅で開く | 溢れ 0 | PASS（apps/web/tests/screens/verify-email.spec.ts：375・768・1024・1440 で scrollWidth − clientWidth ≤ 0・200 を必須。2026-09-16） | G-05 | T-U-02 | L1 |
+| SCR-VERIFY-EMAIL-010 | verify-email | 空・止まっている | データ 0 件の状態と AI が止まっている状態が cover 宣言どおりに出る | PS2 / PS4 | 開く | 空状態と止まっている帯 | PASS（該当なし：ログイン前・設定中の画面にデータの 0 件と AI の停止は無い（cover-na）。2026-09-16） | G18 | T-U-02 | L1 |
+| SCR-VERIFY-EMAIL-011 | verify-email | 表記ゆらぎ | N/A：この画面に入力欄が無い | — | — | — | PASS（該当なし：この画面に入力欄は無い。再送の宛先は登録時に正規化したメール。2026-09-16） | 理由つき N/A | T-U-02 | L1 |
+| SCR-VERIFY-EMAIL-012 | verify-email | G-11 外部リソースの実在 | N/A：外部リソースを触らない | migration/IaC 適用後 | 起動時の存在確認を読む | 無ければ起動時に落ちる（黙って 502 にならない） | PASS（該当なし：外部リソースは触らない。メールの送出（Resend）は鍵が無ければ URL をログに。staging は infra/STAGING.md。2026-09-16） | 環境ごと | T-U-02 | L1 |
+| SCR-VERIFY-EMAIL-013 | verify-email | G-12 切り替わりの瞬間 | Bridge が切れた直後 0 秒・鮮度窓の内側に操作する | 本番稼働中 | PC を閉じた直後に主アクションを押す | 「AI は止まっています」が出て、押した内容は失われない | PASS（該当なし：この画面は Bridge を使わない。2026-09-16） |  | T-U-02 | L1 |
+| SCR-VERIFY-EMAIL-014 | verify-email | G-13 機能の組み合わせ | 実行中 × 切替／中断 × 再開／別ロール同時 の直積のうち該当分 | — | 同時に起こす | 後勝ちでなく、規則どおり（承認は 1 人 1 回・切替は次の実行から） | PASS（同じ人の二重送信は冪等キー（API）・ロックは app.login_attempts で後勝ちにしない。別ロール同時は T-I-*。2026-09-16） | features.json combination_points | T-U-02 | L1 |
+| SCR-VERIFY-EMAIL-015 | verify-email | G-14 口座状態の波及 | 退会・停止・権限変更・パスワード変更の後に、この機能の既存セッション・接続・共有リンクが無効 | ログイン中の別端末と Bridge | 権限を変える | 別端末と Bridge は 0 秒で 401（sessions が revoked） | PASS（毎要求で session_alive（失効の正は public.sessions）。パスワード再設定で全端末失効（packages/auth のテスト・password-reset の文言）。2026-09-16） |  | T-U-02 | L1 |
+| SCR-VERIFY-EMAIL-016 | verify-email | G-15 信号なし終了 | N/A：外部を呼ばない | 外部を故意に切る | 実行する | 成功扱いにせず、502 と次の一手（人へのハンドオフ） | PASS（API の失敗は文言と一手に落とす（AuthExtError）。黙って成功にしない。2026-09-16） |  | T-U-02 | L1 |
+| SCR-VERIFY-EMAIL-017 | verify-email | G-16 有限資源 | 消費する資源：DB 接続（プール経由）・メモリ。1 要求あたり 1 接続以下・上限時は待機列 | 同時 50 要求 | 同時に叩く | ログインが落ちない・接続上限に張り付かない（関門 C2 のプール） | PASS（1 要求 1 接続以下（関門 C2 のプール）・ログインの試行は表で数える。実測は L4。2026-09-16） | L4 で負荷試験 | T-U-02 | L1 |

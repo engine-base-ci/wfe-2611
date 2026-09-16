@@ -8,12 +8,17 @@ import { createAuth } from "@kaname/auth";
 import { createSessionResolver } from "@kaname/auth/resolver";
 import { s3Client, s3Driver } from "@kaname/storage";
 import { createApp } from "./app.js";
+import { authExt } from "./auth/ext.js";
+import { MemoryVault, SecretsGateway, type Vault } from "@kaname/secrets";
+import { resendMail } from "@kaname/notify";
 import { assertApiStartup } from "./startup.js";
 
 export interface BootOptions {
   /** 起動時の存在確認の差し替え（テスト用。本番は S3 の HEAD） */
   bucketExists?: () => Promise<boolean>;
   version?: string;
+  /** 秘密の保管先（既定 MemoryVault＝開発。staging／本番は Infisical のドライバを差す） */
+  vault?: Vault;
 }
 export interface Booted {
   app: ReturnType<typeof createApp>;
@@ -25,12 +30,28 @@ export interface Booted {
 export async function bootApi(config: Config, o: BootOptions = {}): Promise<Booted> {
   const appPool = createPool({ databaseUrl: config.databaseUrl, max: 10 });
   const repo = await createRepository(appPool);
+  // メールの送出（関門 C6）：Resend の鍵があれば送る。無ければ URL をログに出す（開発）
+  const mail = config.resendApiKey ? resendMail(config.resendApiKey) : null;
   const { auth, pool: authPool } = createAuth({
     authDatabaseUrl: config.authDatabaseUrl,
     appPool,
     secret: config.authSecret,
     baseURL: config.baseUrl,
+    ...(config.webBaseUrl ? { webBaseURL: config.webBaseUrl } : {}),
+    ...(mail
+      ? {
+          mailer: async (m: { to: string; subject: string; text: string }) => {
+            await mail.send({ from: config.mailFrom, to: m.to, subject: m.subject, text: m.text });
+          },
+        }
+      : {}),
   });
+  // 秘密の保管（関門 C8）：staging／本番は Infisical、ローカルは MemoryVault（再起動で消える＝開発だけ）
+  const secrets = new SecretsGateway(
+    repo,
+    o.vault ?? new MemoryVault(),
+    Buffer.from(config.secretsMasterKey, "base64"),
+  );
   const bucketExists = o.bucketExists ?? s3Driver(s3Client(config.storage), config.storage.bucket).exists;
   const close = async () => {
     await authPool.end();
@@ -43,7 +64,14 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
     await close();
     throw e;
   }
-  const app = createApp({ version: o.version ?? "0.1.0", repo, auth, resolve: createSessionResolver(auth, appPool) });
+  const app = createApp({
+    version: o.version ?? "0.1.0",
+    repo,
+    auth,
+    resolve: createSessionResolver(auth, appPool),
+    authExt: authExt({ auth, appPool, repo, secrets }),
+    corsOrigin: config.webBaseUrl,
+  });
   return { app, report, close };
 }
 
