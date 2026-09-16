@@ -6,6 +6,7 @@ export default defineConfig({
   testDir: "./tests",
   timeout: 30_000,
   fullyParallel: false,
+  workers: 1, // next dev は 1 本。並列で叩くと初回コンパイルが詰まってタイムアウトする
   reporter: [["list"], ["html", { open: "never" }]],
   use: { baseURL: base ?? "http://127.0.0.1:3123", trace: "retain-on-failure" },
   // ローカルでダウンロードできないときは入っている Google Chrome を使う（PW_CHANNEL=chrome）。CI は playwright install chromium

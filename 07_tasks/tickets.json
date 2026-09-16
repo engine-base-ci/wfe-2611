@@ -17713,7 +17713,7 @@
     "06_mockup/_shell.py"
    ],
    "audit_md_path": "07_tasks/audit/T-US-01.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "USH-01-001",
@@ -17881,7 +17881,7 @@
     "06_mockup/_shell.py"
    ],
    "audit_md_path": "07_tasks/audit/T-US-02.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "USH-02-001",
@@ -18048,7 +18048,7 @@
     "06_mockup/_shell.py"
    ],
    "audit_md_path": "07_tasks/audit/T-US-03.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "USH-03-001",
@@ -18210,7 +18210,7 @@
     "06_mockup/_shell.py"
    ],
    "audit_md_path": "07_tasks/audit/T-US-04.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "USH-04-001",
@@ -18374,7 +18374,7 @@
     "06_mockup/_shell.py"
    ],
    "audit_md_path": "07_tasks/audit/T-US-05.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "USH-05-001",
@@ -18537,7 +18537,7 @@
     "06_mockup/_shell.py"
    ],
    "audit_md_path": "07_tasks/audit/T-US-06.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "USH-06-001",

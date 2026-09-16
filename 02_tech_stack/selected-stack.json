@@ -207,7 +207,7 @@
   "cms": null,
   "nocode_tools": [],
   "timeline": {
-   "library": "svar-gantt",
+   "library": "svar-gantt（@svar-ui/react-gantt v2・MIT・React 19。旧名 wx-react-gantt 1.x は React 18 まで）",
    "license": "MIT",
    "why": "依存の線・ドラッグで期限・折りたたみ・親子が最初から付いている（D-079）",
    "source": [

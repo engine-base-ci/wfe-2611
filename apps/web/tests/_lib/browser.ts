@@ -13,7 +13,8 @@ export async function measureOverflow(page: Page, path: string): Promise<{ width
   const out: { width: number; overflow: number }[] = [];
   for (const width of WIDTHS) {
     await page.setViewportSize({ width, height: 900 });
-    await page.goto(path);
+    const res = await page.goto(path);
+    if (res && res.status() >= 400) throw new Error(`${path} が ${res.status()}（幅 ${width}）`);
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
     );

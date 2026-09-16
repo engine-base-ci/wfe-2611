@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-16T12:18:09",
+ "generated_at": "2026-09-16T13:15:08",
  "inputs": {
   "tickets": "07_tasks/tickets.json",
   "roster": "07_tasks/roster.json",
@@ -7467,7 +7467,7 @@
    ],
    "assignee": "claude-06",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [],
@@ -7537,7 +7537,7 @@
    ],
    "assignee": "claude-07",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [],
@@ -7606,7 +7606,7 @@
    ],
    "assignee": "claude-08",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [],
@@ -7674,7 +7674,7 @@
    ],
    "assignee": "claude-09",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [],
@@ -7743,7 +7743,7 @@
    ],
    "assignee": "claude-08",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [],
@@ -7812,7 +7812,7 @@
    ],
    "assignee": "claude-09",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [],
@@ -38958,7 +38958,7 @@
    "sub": "impl",
    "title": "apps/web/components/shell/*.tsx (new)",
    "parent": "T-US-01",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/components/shell/*.tsx (new)"
@@ -39075,7 +39075,7 @@
    "sub": "impl",
    "title": "apps/web/components/ai/*.tsx (new)",
    "parent": "T-US-02",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/components/ai/*.tsx (new)"
@@ -39192,7 +39192,7 @@
    "sub": "impl",
    "title": "apps/web/lib/api/*.ts (new)",
    "parent": "T-US-03",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/lib/api/*.ts (new)"
@@ -39309,7 +39309,7 @@
    "sub": "impl",
    "title": "apps/web/app/(auth)/** (new)",
    "parent": "T-US-04",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/app/(auth)/** (new)"
@@ -39426,7 +39426,7 @@
    "sub": "impl",
    "title": "apps/web/styles/tokens.css (new)",
    "parent": "T-US-05",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/styles/tokens.css (new)"
@@ -39439,7 +39439,7 @@
    "sub": "impl",
    "title": "apps/web/components/ui/*.tsx (new)",
    "parent": "T-US-05",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/components/ui/*.tsx (new)"
@@ -39556,7 +39556,7 @@
    "sub": "impl",
    "title": "apps/web/components/views/*.tsx (new)",
    "parent": "T-US-06",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/components/views/*.tsx (new)"

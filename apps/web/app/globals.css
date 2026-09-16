@@ -1,19 +1,58 @@
 @import "tailwindcss";
-
-/* トークンは 04_design/DESIGN-kaname.md が正本。ここは土台の最小（色 5・書体）。部品と全トークンは T-US-05 が @theme に写す */
-@theme {
-  --color-primary: #22345c;
-  --color-on-primary: #ffffff;
-  --color-secondary: #186f69;
-  --color-surface: #f7f8fa;
-  --color-on-surface: #131b27;
-  --color-on-surface-variant: #4a5563;
-  --color-error: #b91c1c;
-  --font-sans: "M PLUS 2", "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
-}
+@import "../styles/tokens.css";
 
 html {
-  background: var(--color-surface);
-  color: var(--color-on-surface);
+  background: var(--surface);
+  color: var(--on-surface);
   font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+/* hidden は必ず効かせる（モックで .norole{display:grid} が hidden を上書きした事故） */
+[hidden] {
+  display: none !important;
+}
+/* 操作の状態（hover / focus / active / disabled）は全部品共通。個別に書かない（DESIGN・G14） */
+a[href],
+button,
+[role="tab"],
+[role="button"],
+input,
+textarea,
+select {
+  transition:
+    background-color var(--dur),
+    color var(--dur),
+    border-color var(--dur),
+    box-shadow var(--dur),
+    opacity var(--dur),
+    transform 0.08s;
+}
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: var(--r-sm);
+}
+button,
+[role="button"] {
+  min-height: 24px;
+  min-width: 24px;
+}
+[disabled],
+[aria-disabled="true"] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.num {
+  font-variant-numeric: tabular-nums;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
