@@ -835,9 +835,9 @@
   {
    "id": 15,
    "name": "E2E（Playwright）",
-   "script": "pnpm exec playwright test",
+   "script": "pnpm e2e:web",
    "blocking": true,
-   "condition": "UIを含むスライスのみ",
+   "condition": "UIを含むスライスのみ（apps/web/tests・BASE_URL が無ければローカルの next dev）",
    "owner_task": "T-US-00",
    "job": "e2e"
   },
@@ -973,6 +973,17 @@
     "choke_points未設定のタスク"
    ],
    "owner_task": "T-F-09",
+   "job": "static"
+  },
+  {
+   "id": 27,
+   "name": "画面の route の生成物が最新（flow.json → apps/web/lib/routes.ts）",
+   "script": "pnpm ci:routes",
+   "blocking": true,
+   "detects": [
+    "flow を変えたのに画面の URL 一覧が古い（G22）"
+   ],
+   "owner_task": "T-US-00",
    "job": "static"
   },
   {

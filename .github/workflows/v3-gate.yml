@@ -1,4 +1,4 @@
-# .github/workflows/v3-gate.yml — Kaname CI ゲート 36 本（05_flow/build_testplan.py が生成。手で直さない）
+# .github/workflows/v3-gate.yml — Kaname CI ゲート 37 本（05_flow/build_testplan.py が生成。手で直さない）
 # 方針: ゲートが緑を維持できないなら次のスライスに進まない。旧jobrainはCIが全ゲート赤のまま進み、それが死因の一つ。
 # 段: static（静的・関門）→ database（実 Postgres・RLS・契約）／ spec（仕様の層・Python）／ task-gate（そのタスクの L1 行）→ e2e（has-ui）→ auto-merge
 name: v3-gate
@@ -65,6 +65,8 @@ jobs:
         run: pnpm ci:choke-exceptions
       - name: "G26 タスクのchoke_points宣言"
         run: pnpm ci:task-choke-declared
+      - name: "G27 画面の route の生成物が最新（flow.json → apps/web/lib/routes.ts）"
+        run: pnpm ci:routes
       - name: "G35 有限資源の静的検査（G-16：関門外の生クライアント・タイムアウト無し・冪等キー無しの書込）"
         run: pnpm ci:resource-static
 
@@ -147,12 +149,12 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
       - run: pnpm install --frozen-lockfile
-      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm --filter @kaname/web exec playwright install --with-deps chromium
       - name: "G15 E2E（Playwright）"
-        run: pnpm exec playwright test
+        run: pnpm e2e:web
       - uses: actions/upload-artifact@v4
         if: failure()
-        with: { name: playwright-report, path: playwright-report/ }
+        with: { name: playwright-report, path: apps/web/playwright-report/ }
   auto-merge:
     runs-on: ubuntu-latest
     needs: [static, database, spec, task-gate]

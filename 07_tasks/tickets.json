@@ -17535,7 +17535,7 @@
     ".claude/rules/web/testing.md"
    ],
    "audit_md_path": "07_tasks/audit/T-US-00.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "USH-00-001",

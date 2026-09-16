@@ -50,7 +50,12 @@
     "ci:env-audit:selftest": "node scripts/ci/env_audit.test.mjs",
     "ci:errors-used:selftest": "node scripts/ci/errors_used.test.mjs",
     "ci:ears:gen": "node scripts/ci/gen_ears_tests.mjs",
-    "api:start": "tsx apps/api/src/server.ts"
+    "api:start": "tsx apps/api/src/server.ts",
+    "web:dev": "pnpm --filter @kaname/web dev",
+    "e2e:web": "pnpm --filter @kaname/web exec playwright test",
+    "e2e:journeys": "pnpm --filter @kaname/e2e exec playwright test",
+    "ci:routes:gen": "node scripts/ci/gen_routes.mjs",
+    "ci:routes": "node scripts/ci/gen_routes.mjs check"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",

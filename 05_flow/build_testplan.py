@@ -140,10 +140,10 @@ jobs:
     env:
       BASE_URL: ${{{{ secrets.STAGING_BASE_URL }}}}
     steps:
-{NODE}      - run: pnpm exec playwright install --with-deps chromium
+{NODE}      - run: pnpm --filter @kaname/web exec playwright install --with-deps chromium
 {''.join(step(g) for g in ALL_GATES if g['job'] == 'e2e')}      - uses: actions/upload-artifact@v4
         if: failure()
-        with: {{ name: playwright-report, path: playwright-report/ }}
+        with: {{ name: playwright-report, path: apps/web/playwright-report/ }}
   auto-merge:
     runs-on: ubuntu-latest
     needs: [static, database, spec, task-gate]

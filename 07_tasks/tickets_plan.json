@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-16T12:02:38",
+ "generated_at": "2026-09-16T12:18:09",
  "inputs": {
   "tickets": "07_tasks/tickets.json",
   "roster": "07_tasks/roster.json",
@@ -7395,7 +7395,7 @@
    ],
    "assignee": null,
    "assigned_by": null,
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [],
@@ -38737,7 +38737,7 @@
    "sub": "impl",
    "title": "apps/web/package.json (new)",
    "parent": "T-US-00",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/package.json (new)"
@@ -38750,7 +38750,7 @@
    "sub": "impl",
    "title": "apps/web/app/layout.tsx (new)",
    "parent": "T-US-00",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/app/layout.tsx (new)"
@@ -38763,7 +38763,7 @@
    "sub": "impl",
    "title": "apps/web/playwright.config.ts (new)",
    "parent": "T-US-00",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/playwright.config.ts (new)"
@@ -38776,7 +38776,7 @@
    "sub": "impl",
    "title": "apps/web/tests/reachability.spec.ts (new)",
    "parent": "T-US-00",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/tests/reachability.spec.ts (new)"
@@ -38789,7 +38789,7 @@
    "sub": "impl",
    "title": "apps/e2e/package.json (new)",
    "parent": "T-US-00",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/e2e/package.json (new)"
@@ -38802,7 +38802,7 @@
    "sub": "impl",
    "title": ".github/workflows/v3-gate.yml (modify)",
    "parent": "T-US-00",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      ".github/workflows/v3-gate.yml (modify)"

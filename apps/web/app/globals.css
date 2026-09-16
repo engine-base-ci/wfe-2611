@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+/* トークンは 04_design/DESIGN-kaname.md が正本。ここは土台の最小（色 5・書体）。部品と全トークンは T-US-05 が @theme に写す */
+@theme {
+  --color-primary: #22345c;
+  --color-on-primary: #ffffff;
+  --color-secondary: #186f69;
+  --color-surface: #f7f8fa;
+  --color-on-surface: #131b27;
+  --color-on-surface-variant: #4a5563;
+  --color-error: #b91c1c;
+  --font-sans: "M PLUS 2", "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
+}
+
+html {
+  background: var(--color-surface);
+  color: var(--color-on-surface);
+  font-family: var(--font-sans);
+}

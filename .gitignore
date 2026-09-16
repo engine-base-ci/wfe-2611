@@ -11,3 +11,7 @@ coverage/
 06_mockup/v1/_st375/
 06_mockup/v1/_m*/
 06_mockup/v1/_ly*/
+apps/web/.next/
+apps/web/next-env.d.ts
+**/playwright-report/
+**/test-results/
