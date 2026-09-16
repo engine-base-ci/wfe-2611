@@ -396,7 +396,7 @@
 - 行為 — / 画面 — / 表 — / 関門 —（API 契約を信頼源にし frontend/backend が離れないようにする）
 - 依存 —
 - 根拠（逐語）：D-043「ネイティブアプリはレスポンシブとは別物。プッシュ通知が本質(承認待ちの通知)。段階2でPWA」 ／ D-051「ネイティブアプリは今4つだけ決める(認証をトークンベースに等)。後からアプリを足すのが画面を作るだけになる」
-- 触るファイル：.github/workflows/ci.yml (new)、packages/db/migrations/0001_foundation.sql (new)、packages/gateways/README.md (new)、package.json (modify)
+- 触るファイル：.github/workflows/ci.yml (new)、packages/db/migrations/0001_foundation.sql (new)、packages/gateways/README.md (new)、apps/api/package.json (new)
 - AC（Tier 1）：
 - AC（Tier 2）：UBIQUITOUS: API 契約を信頼源にし frontend/backend が離れないようにする ／ UNWANTED: IF 基盤の検査が無い状態で後段の PR が来たら merge しない
 - L1 行 8（['FND-05-001', 'FND-05-002', 'FND-05-003'] …）／ L2 —

@@ -1,6 +1,6 @@
 # 盤（board）
 
-生成 2026-09-16T11:12:56
+生成 2026-09-16T11:15:19
 
 ## todo
 - **J-01 J-01**
@@ -78,7 +78,7 @@
   - T-U-58 画面 メンバーの1人（4 状態・R1/R2） ｜ ui ｜ 1.7h ｜ 2026-10-30→2026-10-30 ｜ claude-09 ｜ 孫 37
   - T-I-15 流れ J-07 P6 人が増えたら を最後まで通す（L2） ｜ integration ｜ 3.4h ｜ 2026-11-27→2026-11-30 ｜ claude-10 ｜ 孫 3
 - **E-ui ui の層**
-  - T-US-00 apps/web の土台（Next.js 15 App Router の雛形・Playwright と実ブラウザの検査・ナビ href ⇔ 実在ルートの照合・CI のブラウザ job・ローカル起動） ｜ ui ｜ 1.6h ｜ 2026-09-25→2026-09-25 ｜ (claude-06 仮) ｜ 孫 16
+  - T-US-00 apps/web の土台（Next.js 15 App Router の雛形・Playwright と実ブラウザの検査・ナビ href ⇔ 実在ルートの照合・CI のブラウザ job・ローカル起動） ｜ ui ｜ 1.6h ｜ 2026-09-25→2026-09-25 ｜ (claude-06 仮) ｜ 孫 17
   - T-US-01 シェル（サイドバー・レール・第2ナビ・三画面・下タブ・枠の導出 data-frame・役割の出し分け data-roles） ｜ ui ｜ 2.4h ｜ 2026-10-20→2026-10-20 ｜ claude-06 ｜ 孫 9
   - T-US-02 自分のAIのパネルと会話の部品（assistant-ui・AG-UI・選択肢・承認カード・受領・引用・取り消し） ｜ ui ｜ 3.2h ｜ 2026-10-20→2026-10-20 ｜ claude-07 ｜ 孫 9
   - T-US-03 API クライアントと型（OpenAPI → types.ts・TanStack Query・別 GET 再取得・401 で入り直し） ｜ ui ｜ 1.2h ｜ 2026-10-20→2026-10-20 ｜ claude-08 ｜ 孫 9
@@ -150,7 +150,7 @@
   - T-F-12 関門 C6 通知送出（生 API の直接呼び出し禁止・CI で迂回検出） ｜ foundation ｜ 0.8h ｜ 2026-09-25→2026-09-28 ｜ takamoto ｜ 孫 11
   - T-F-13 関門 C7 決済・課金（生 API の直接呼び出し禁止・CI で迂回検出） ｜ foundation ｜ 4.0h ｜ 2026-09-24→2026-09-24 ｜ claude-02 ｜ 孫 11
   - T-F-14 関門 C8 秘密の読み出し（生 API の直接呼び出し禁止・CI で迂回検出） ｜ foundation ｜ 4.0h ｜ 2026-09-28→2026-09-29 ｜ takamoto ｜ 孫 11
-  - T-F-15 OpenAPI → TS 型生成・契約テスト・endpoint 実在性チェック（API ↦ UI の依存方向を固定） ｜ foundation ｜ 0.8h ｜ 2026-09-24→2026-09-24 ｜ claude-01 ｜ 孫 12
+  - T-F-15 OpenAPI → TS 型生成・契約テスト・endpoint 実在性チェック（API ↦ UI の依存方向を固定） ｜ foundation ｜ 0.8h ｜ 2026-09-24→2026-09-24 ｜ claude-01 ｜ 孫 13
   - T-F-16 外部リソースのコード化（バケット・Resend・Infisical・DNS・staging）と起動時の存在確認 ｜ foundation ｜ 1.1h ｜ 2026-09-24→2026-09-24 ｜ claude-01 ｜ 孫 12
   - T-F-17 エラー一覧の実行時（error_events・文言と次の一手を errors.json から引く・出せないエラーの検出） ｜ foundation ｜ 1.0h ｜ 2026-09-24→2026-09-24 ｜ claude-01 ｜ 孫 11
   - T-D-01 データ層 1. テナント・組織・メンバー（6 表・migration・RLS・索引・seed） ｜ foundation ｜ 3.3h ｜ 2026-09-24→2026-09-25 ｜ claude-02 ｜ 孫 17

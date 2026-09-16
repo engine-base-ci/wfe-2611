@@ -3034,13 +3034,15 @@
     ".github/workflows/ci.yml (new)",
     "packages/db/migrations/0001_foundation.sql (new)",
     "packages/gateways/README.md (new)",
+    "apps/api/package.json (new)",
     "package.json (modify)"
    ],
    "files_changed_predicted": {
     "new": [
      ".github/workflows/ci.yml",
      "packages/db/migrations/0001_foundation.sql",
-     "packages/gateways/README.md"
+     "packages/gateways/README.md",
+     "apps/api/package.json"
     ],
     "modify": [
      "package.json"
@@ -17299,6 +17301,7 @@
     "apps/web/app/layout.tsx (new)",
     "apps/web/playwright.config.ts (new)",
     "apps/web/tests/reachability.spec.ts (new)",
+    "apps/e2e/package.json (new)",
     ".github/workflows/v3-gate.yml (modify)"
    ],
    "files_changed_predicted": {
@@ -17310,6 +17313,8 @@
      "apps/web/playwright.config.ts",
      "apps/web/tests/_lib/browser.ts",
      "apps/web/tests/reachability.spec.ts",
+     "apps/e2e/package.json",
+     "apps/e2e/playwright.config.ts",
      ".claude/launch.json"
     ],
     "modify": [

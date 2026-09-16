@@ -2,7 +2,7 @@
 """td_gate.py — task-decomposition の検査（TD1〜TD10）。JIT ポリシーの validate と同じ条件を機械で。
  TD1 全 v1 画面に UI タスク ／ TD2 全 v1 行為に A か U タスク ／ TD3 全タスクに source・acts（空なら why）・choke_points（空なら rationale）
  TD4 files_changed_predicted と acceptance_criteria_inline の 3 tier が空でない（Tier 1 は UI/API のみ）／ TD5 tier_2 に UNWANTED ／ TD6 test_scenarios_inline
- TD7 二軸工数 4 項目・短縮率 1〜30・critical は human_review_h > 0 ／ TD8 depends_on の循環なし・layer 順 ／ TD9 ui/backend/integration の qa_rows.l1 ≥ 1 ／ TD10 Foundation の Wave に他 Group が無い ／ TD11 後回し（決定ログの「段階 2：」の文・flow の deferred）に仕様づくりのタスク（Group V2）がある（後回しは日程から消えない）
+ TD7 二軸工数 4 項目・短縮率 1〜30・critical は human_review_h > 0 ／ TD8 depends_on の循環なし・layer 順 ／ TD9 ui/backend/integration の qa_rows.l1 ≥ 1 ／ TD10 Foundation の Wave に他 Group が無い ／ TD11 後回し（決定ログの「段階 2：」の文・flow の deferred）に仕様づくりのタスク（Group V2）がある（後回しは日程から消えない）／ TD12 files_changed が指す apps/<x> を作るタスク（apps/<x>/package.json）がある（土台の無い画面タスクを出さない）
 使い方: python3 td_gate.py --flow 05_flow/flow.json --tickets 07_tasks/tickets.json"""
 import argparse, json, sys
 def main():
@@ -46,9 +46,18 @@ def main():
     need += [c for v in F.get("deferred", {}).values() for c in _re.findall(r"D-\d{3}\.\d+", v)]
     have = {s for t in T if t["group"] == "V2" for s in t["source"]}; m = sorted({c for c in need if c not in have})
     if m: fails.append(("TD11", f"後回しの文に仕様づくりのタスクが無い {m[:6]}"))
+    # TD12 置き場：files_changed が指す apps/<x> を作るタスク（apps/<x>/package.json を new に持つ）がある（2026-09-16 L-016：画面のタスク 70 本が apps/web を前提にしていたのに、作るタスクが無かった）
+    refs = {}; makers = set()
+    for t in T:
+        for f in t.get("files_changed", []) + t.get("files_changed_predicted", {}).get("new", []):
+            mm = _re.search(r"apps/([A-Za-z0-9_-]+)/", f)
+            if mm: refs.setdefault(mm.group(1), set()).add(t["id"])
+            if mm and _re.search(r"apps/[A-Za-z0-9_-]+/package\.json", f): makers.add(mm.group(1))
+    m = sorted(f"apps/{k}（{len(v)} タスクが前提）" for k, v in refs.items() if k not in makers)
+    if m: fails.append(("TD12", f"置き場を作るタスクが無い {m[:4]}"))
     fw = max((t["wave"] for t in T if t["group"] == "F"), default=-1); m = [t["id"] for t in T if t["group"] != "F" and t["wave"] <= fw]   # Foundation の Wave（並列上限で複数）に他 Group を混ぜない
     if m: fails.append(("TD10", f"Foundation が Wave 0 でない／Wave 0 に他 Group {m[:8]}"))
     s = J["summary"]; print(f"タスク {len(T)} / Wave {len(J['waves'])} / L1 行 {s['qa_rows_total']} / Human {s['total_estimate_hours_human']} h / AI wall-clock {s['total_wall_clock_h_ai_parallel']} h")
     for k, msg in fails: print(f"  ★ [{k}] {msg}")
-    print("PASS — TD1〜TD10 すべて緑" if not fails else f"FAIL — {len(fails)} 件"); return 0 if not fails else 2
+    print("PASS — TD1〜TD12 すべて緑" if not fails else f"FAIL — {len(fails)} 件"); return 0 if not fails else 2
 if __name__ == "__main__": sys.exit(main())

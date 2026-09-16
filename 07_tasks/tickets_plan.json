@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-16T11:12:56",
+ "generated_at": "2026-09-16T11:15:19",
  "inputs": {
   "tickets": "07_tasks/tickets.json",
   "roster": "07_tasks/roster.json",
@@ -16,9 +16,9 @@
  "summary": {
   "epic": 15,
   "story": 170,
-  "subtask": 4015,
+  "subtask": 4017,
   "subtask_by": {
-   "impl": 426,
+   "impl": 428,
    "test": 3378,
    "mock": 211
   },
@@ -1353,6 +1353,7 @@
     "T-F-15.s2",
     "T-F-15.s3",
     "T-F-15.s4",
+    "T-F-15.s5",
     "T-F-15.t1",
     "T-F-15.t2",
     "T-F-15.t3",
@@ -7290,6 +7291,7 @@
     "T-US-00.s3",
     "T-US-00.s4",
     "T-US-00.s5",
+    "T-US-00.s6",
     "T-US-00.t1",
     "T-US-00.t2",
     "T-US-00.t3",
@@ -21859,6 +21861,19 @@
   },
   {
    "id": "T-F-15.s4",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "apps/api/package.json (new)",
+   "parent": "T-F-15",
+   "status": "done",
+   "links": {
+    "file": [
+     "apps/api/package.json (new)"
+    ]
+   }
+  },
+  {
+   "id": "T-F-15.s5",
    "kind": "subtask",
    "sub": "impl",
    "title": "package.json (modify)",
@@ -38544,6 +38559,19 @@
   },
   {
    "id": "T-US-00.s5",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "apps/e2e/package.json (new)",
+   "parent": "T-US-00",
+   "status": "todo",
+   "links": {
+    "file": [
+     "apps/e2e/package.json (new)"
+    ]
+   }
+  },
+  {
+   "id": "T-US-00.s6",
    "kind": "subtask",
    "sub": "impl",
    "title": ".github/workflows/v3-gate.yml (modify)",
