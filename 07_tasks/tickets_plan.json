@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-16T11:21:52",
+ "generated_at": "2026-09-16T12:02:38",
  "inputs": {
   "tickets": "07_tasks/tickets.json",
   "roster": "07_tasks/roster.json",
@@ -41,8 +41,8 @@
   "estimate_default": [],
   "delta": {
    "added": 0,
-   "updated": 24,
-   "unchanged": 147,
+   "updated": 0,
+   "unchanged": 171,
    "dropped": 0
   },
   "load": {
@@ -1578,7 +1578,7 @@
    ],
    "assignee": null,
    "assigned_by": null,
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [],
@@ -2984,7 +2984,7 @@
      "07_tasks/tickets.json#T-A-01"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -3188,7 +3188,7 @@
      "07_tasks/tickets.json#T-A-03"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -3416,7 +3416,7 @@
      "07_tasks/tickets.json#T-A-04"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -3607,7 +3607,7 @@
      "07_tasks/tickets.json#T-A-05"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -3839,7 +3839,7 @@
      "07_tasks/tickets.json#T-A-06"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -4089,7 +4089,7 @@
      "07_tasks/tickets.json#T-A-07"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -4238,7 +4238,7 @@
      "07_tasks/tickets.json#T-A-08"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -4415,7 +4415,7 @@
      "07_tasks/tickets.json#T-A-09"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -4665,7 +4665,7 @@
      "07_tasks/tickets.json#T-A-10"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -4806,7 +4806,7 @@
      "07_tasks/tickets.json#T-A-11"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -5088,7 +5088,7 @@
      "07_tasks/tickets.json#T-A-12"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -5257,7 +5257,7 @@
      "07_tasks/tickets.json#T-A-13"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -5427,7 +5427,7 @@
      "07_tasks/tickets.json#T-A-14"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -5651,7 +5651,7 @@
      "07_tasks/tickets.json#T-A-15"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -5837,7 +5837,7 @@
      "07_tasks/tickets.json#T-A-16"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -5978,7 +5978,7 @@
      "07_tasks/tickets.json#T-A-17"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -6136,7 +6136,7 @@
      "07_tasks/tickets.json#T-A-18"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -6323,7 +6323,7 @@
      "07_tasks/tickets.json#T-A-19"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -6528,7 +6528,7 @@
      "07_tasks/tickets.json#T-A-20"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -6702,7 +6702,7 @@
      "07_tasks/tickets.json#T-A-21"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -6844,7 +6844,7 @@
      "07_tasks/tickets.json#T-A-22"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -7077,7 +7077,7 @@
      "07_tasks/tickets.json#T-A-24"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -7205,7 +7205,7 @@
      "07_tasks/tickets.json#T-A-25"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -7347,7 +7347,7 @@
      "07_tasks/tickets.json#T-A-26"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -22364,7 +22364,7 @@
    "sub": "impl",
    "title": ".github/workflows/ci.yml (new)",
    "parent": "T-F-18",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      ".github/workflows/ci.yml (new)"
@@ -22377,7 +22377,7 @@
    "sub": "impl",
    "title": "packages/db/migrations/0001_foundation.sql (new)",
    "parent": "T-F-18",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/migrations/0001_foundation.sql (new)"
@@ -22390,7 +22390,7 @@
    "sub": "impl",
    "title": "packages/gateways/README.md (new)",
    "parent": "T-F-18",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/gateways/README.md (new)"
@@ -22403,7 +22403,7 @@
    "sub": "impl",
    "title": "package.json (modify)",
    "parent": "T-F-18",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "package.json (modify)"

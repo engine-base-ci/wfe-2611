@@ -8,18 +8,19 @@
     "type-check": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@kaname/db": "workspace:*",
-    "hono": "^4.10.0",
+    "@hono/node-server": "^2.1.1",
+    "@kaname/actions": "workspace:*",
     "@kaname/auth": "workspace:*",
-    "@kaname/errors": "workspace:*",
     "@kaname/config": "workspace:*",
-    "@kaname/storage": "workspace:*",
     "@kaname/contracts": "workspace:*",
-    "@kaname/actions": "workspace:*"
+    "@kaname/db": "workspace:*",
+    "@kaname/errors": "workspace:*",
+    "@kaname/storage": "workspace:*",
+    "hono": "^4.10.0"
   },
   "devDependencies": {
-    "typescript": "^5.9.3",
+    "@types/pg": "^8.15.5",
     "pg": "^8.16.3",
-    "@types/pg": "^8.15.5"
+    "typescript": "^5.9.3"
   }
 }

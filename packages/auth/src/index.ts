@@ -1,5 +1,5 @@
 // 認証（Better Auth 1.7）。境界 B2：better-auth を import してよいのはこのパッケージだけ（CI G7）。
-// 表は Postgres の schema "auth"（RLS の対象の public とは分ける）。失効の正は public.sessions（app.session_alive）。トークンの期限には頼らない。
+// 表は Postgres の schema "kaname_auth"（RLS の対象の public とは分ける。Supabase は schema auth を自社の認証に使うので同じ名前にしない：T-F-18）。失効の正は public.sessions（app.session_alive）。トークンの期限には頼らない。
 import { betterAuth, type BetterAuthOptions } from "better-auth";
 import { bearer, twoFactor } from "better-auth/plugins";
 import { PostgresDialect } from "kysely";
@@ -22,7 +22,7 @@ export type Auth = ReturnType<typeof betterAuth<BetterAuthOptions>>;
 export function createAuth(o: AuthOptions): { auth: Auth; pool: pg.Pool } {
   const pool = new pg.Pool({ connectionString: o.authDatabaseUrl, max: 5 });
   const auth = betterAuth({
-    database: { dialect: new PostgresDialect({ pool }), type: "postgres", casing: "snake", schemaName: "auth" },
+    database: { dialect: new PostgresDialect({ pool }), type: "postgres", casing: "snake", schemaName: "kaname_auth" },
     secret: o.secret,
     baseURL: o.baseURL,
     emailAndPassword: { enabled: true, minPasswordLength: 12 },

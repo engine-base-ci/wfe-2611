@@ -1,10 +1,8 @@
 # 盤（board）
 
-生成 2026-09-16T11:21:52
+生成 2026-09-16T12:02:38
 
 ## todo
-- **E-foundation foundation の層**
-  - T-F-18 配置と staging の実体（apps/api の起動口 server.ts・Dockerfile・Railway／V ｜ foundation ｜ 1.3h ｜ 2026-09-29→2026-09-29 ｜ (claude-01 仮) ｜ 孫 12
 - **J-01 J-01**
   - T-A-24 API このツールを入れて安全か、社内（情シス・コンプラ）に説明できるように（1 endpoint・段階 2） ｜ backend ｜ 33.8h ｜ 2026-10-29→2026-11-17 ｜ takamoto ｜ 孫 14
   - T-U-01 画面 アカウントを作る（2 状態・R1/R2） ｜ ui ｜ 1.2h ｜ 2026-10-21→2026-10-21 ｜ claude-06 ｜ 孫 28
@@ -155,6 +153,7 @@
   - T-F-15 OpenAPI → TS 型生成・契約テスト・endpoint 実在性チェック（API ↦ UI の依存方向を固定） ｜ foundation ｜ 0.8h ｜ 2026-09-24→2026-09-24 ｜ claude-01 ｜ 孫 13
   - T-F-16 外部リソースのコード化（バケット・Resend・Infisical・DNS・staging）と起動時の存在確認 ｜ foundation ｜ 1.1h ｜ 2026-09-24→2026-09-24 ｜ claude-01 ｜ 孫 12
   - T-F-17 エラー一覧の実行時（error_events・文言と次の一手を errors.json から引く・出せないエラーの検出） ｜ foundation ｜ 1.0h ｜ 2026-09-24→2026-09-24 ｜ claude-01 ｜ 孫 11
+  - T-F-18 配置と staging の実体（apps/api の起動口 server.ts・Dockerfile・Railway／V ｜ foundation ｜ 1.3h ｜ 2026-09-29→2026-09-29 ｜ (claude-01 仮) ｜ 孫 12
   - T-D-01 データ層 1. テナント・組織・メンバー（6 表・migration・RLS・索引・seed） ｜ foundation ｜ 3.3h ｜ 2026-09-24→2026-09-25 ｜ claude-02 ｜ 孫 17
   - T-D-02 データ層 2. 会社モデル ── 目標（10 表・migration・RLS・索引・seed） ｜ foundation ｜ 5.3h ｜ 2026-09-29→2026-10-01 ｜ takamoto ｜ 孫 19
   - T-D-03 データ層 3. 会社モデル ── 台帳（5 表・migration・RLS・索引・seed） ｜ foundation ｜ 2.8h ｜ 2026-09-24→2026-09-25 ｜ claude-01 ｜ 孫 14

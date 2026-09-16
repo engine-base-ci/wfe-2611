@@ -1,4 +1,4 @@
-// 認証の表（schema auth）を Better Auth の定義から作る。pnpm db:migrate が db の migration の後に呼ぶ。
+// 認証の表（schema kaname_auth）を Better Auth の定義から作る。pnpm db:migrate が db の migration の後に呼ぶ。
 import { getMigrations } from "better-auth/db/migration";
 import pg from "pg";
 import { createAuth } from "./index.js";

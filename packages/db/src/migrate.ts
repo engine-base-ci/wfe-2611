@@ -7,9 +7,35 @@ import { MIGRATIONS, checkMigrationOrder } from "./index.js";
 export interface MigrateResult {
   applied: string[];
   skipped: string[];
+  /** 環境変数からパスワードを入れ替えた役割（T-F-18：migration の直書きは開発の既定。staging／本番は KANAME_*_DB_PASSWORD） */
+  passwords: string[];
+}
+export const ROLE_PASSWORD_ENV: Record<string, string> = {
+  kaname_app: "KANAME_APP_DB_PASSWORD",
+  kaname_auth: "KANAME_AUTH_DB_PASSWORD",
+};
+/** 役割のパスワードを環境から入れる（無い名前は触らない・役割が無ければ触らない）。migration に平文のまま頼らないため */
+export async function applyRolePasswords(
+  client: pg.Client,
+  env: Record<string, string | undefined>,
+): Promise<string[]> {
+  const done: string[] = [];
+  for (const [role, key] of Object.entries(ROLE_PASSWORD_ENV)) {
+    const pw = env[key];
+    if (!pw) continue;
+    const r = await client.query("select 1 from pg_roles where rolname = $1", [role]);
+    if (!r.rowCount) continue;
+    await client.query(`alter role ${role} with password ${client.escapeLiteral(pw)}`);
+    done.push(role);
+  }
+  return done;
 }
 
-export async function migrate(databaseUrl: string, dir: string): Promise<MigrateResult> {
+export async function migrate(
+  databaseUrl: string,
+  dir: string,
+  env: Record<string, string | undefined> = {}, // 役割のパスワード（packages/config の rolePasswords() を渡す。ここでは環境を直接読まない）
+): Promise<MigrateResult> {
   const order = checkMigrationOrder(MIGRATIONS);
   if (!order.ok) throw new Error(`migration の並びが崩れている: ${order.reason}`);
   const files = readdirSync(join(dir, "migrations"))
@@ -21,6 +47,7 @@ export async function migrate(databaseUrl: string, dir: string): Promise<Migrate
   await client.connect();
   const applied: string[] = [];
   const skipped: string[] = [];
+  let passwords: string[] = [];
   try {
     await client.query("create schema if not exists app");
     await client.query(
@@ -47,8 +74,9 @@ export async function migrate(databaseUrl: string, dir: string): Promise<Migrate
         throw e;
       }
     }
+    passwords = await applyRolePasswords(client, env);
   } finally {
     await client.end();
   }
-  return { applied, skipped };
+  return { applied, skipped, passwords };
 }

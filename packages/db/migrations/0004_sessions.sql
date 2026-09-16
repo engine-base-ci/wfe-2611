@@ -1,15 +1,15 @@
 -- 0004 sessions（T-F-05）。D-051（トークンベース）・D-076.1・G-14。
--- 認証（Better Auth）の表は schema auth に置き、公開の表とは分ける（RLS の対象は public。auth は kaname_auth ロールだけが触る＝境界 B2）。
+-- 認証（Better Auth）の表は schema kaname_auth に置き（Supabase の auth と衝突させない・T-F-18）、公開の表とは分ける（RLS の対象は public。kaname_auth は kaname_auth ロールだけが触る＝境界 B2）。
 -- 失効は public.sessions を全行 revoked にする方式。API・Bridge はトークンの期限ではなくこの表を見る。
 
-create schema if not exists auth;
+create schema if not exists kaname_auth;
 do $$ begin if not exists (select 1 from pg_roles where rolname = 'kaname_auth') then create role kaname_auth login password 'kaname_auth' nobypassrls; end if; end $$;
-grant usage, create on schema auth to kaname_auth;
-alter role kaname_auth set search_path = auth, public;
+grant usage, create on schema kaname_auth to kaname_auth;
+alter role kaname_auth set search_path = kaname_auth, public;
 -- 認証の表は migration の実行者（管理者）が作る。作った表を kaname_auth（実行時）と kaname_app が使えるように既定の権限を置く
-alter default privileges in schema auth grant select, insert, update, delete on tables to kaname_auth, kaname_app;
-alter default privileges in schema auth grant usage, select on sequences to kaname_auth, kaname_app;
-grant usage on schema auth to kaname_app;
+alter default privileges in schema kaname_auth grant select, insert, update, delete on tables to kaname_auth, kaname_app;
+alter default privileges in schema kaname_auth grant usage, select on sequences to kaname_auth, kaname_app;
+grant usage on schema kaname_auth to kaname_app;
 
 insert into target_kinds (key, label) values ('sessions', '端末とセッション'), ('invitations', '招待'), ('audit_events', '証跡'), ('export_jobs', '持ち出し') on conflict do nothing;
 

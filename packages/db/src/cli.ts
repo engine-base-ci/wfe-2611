@@ -8,11 +8,11 @@ import { runMatrix } from "./matrix.js";
 import { seedAccessMatrix } from "./seeds.js";
 import { readFileSync } from "node:fs";
 import pg from "pg";
-import { requireEnv } from "@kaname/config";
+import { adminDatabaseUrl, requireEnv, rolePasswords } from "@kaname/config";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const pkg = join(here, "..");
-const url = requireEnv("DATABASE_URL");
+const url = adminDatabaseUrl() ?? requireEnv("DATABASE_URL"); // 管理者の接続（staging／本番は DATABASE_ADMIN_URL・ローカルは superuser の DATABASE_URL）
 const cmd = process.argv[2];
 
 async function main(): Promise<number> {
@@ -26,8 +26,10 @@ async function main(): Promise<number> {
     return 1;
   }
   if (cmd === "migrate") {
-    const r = await migrate(url, pkg);
-    console.log(`migration 適用 ${r.applied.length}（${r.applied.join(", ") || "なし"}）／ 済み ${r.skipped.length}`);
+    const r = await migrate(url, pkg, rolePasswords());
+    console.log(
+      `migration 適用 ${r.applied.length}（${r.applied.join(", ") || "なし"}）／ 済み ${r.skipped.length}／ 役割のパスワード ${r.passwords.join(", ") || "既定のまま"}`,
+    );
     return 0;
   }
   if (cmd === "rls-enabled") {

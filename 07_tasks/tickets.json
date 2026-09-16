@@ -3579,7 +3579,7 @@
     "03_architecture/ER図.md"
    ],
    "audit_md_path": "07_tasks/audit/T-F-18.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "FND-08-001",

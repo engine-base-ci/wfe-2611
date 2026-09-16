@@ -31,8 +31,34 @@ const REQUIRED = [
   "SECRETS_MASTER_KEY",
 ] as const;
 export { runStartupChecks, assertStartup, type StartupCheck, type StartupReport } from "./startup.js";
-export const ENV_KEYS = [...REQUIRED, "NODE_ENV", "RESEND_API_KEY", "PORT", "STORAGE_FORCE_PATH_STYLE"] as const;
+export const ENV_KEYS = [
+  ...REQUIRED,
+  "NODE_ENV",
+  "RESEND_API_KEY",
+  "PORT",
+  "STORAGE_FORCE_PATH_STYLE",
+  "DATABASE_ADMIN_URL",
+  "KANAME_APP_DB_PASSWORD",
+  "KANAME_AUTH_DB_PASSWORD",
+] as const;
 export type EnvKey = (typeof ENV_KEYS)[number];
+/** migration が役割に入れるパスワード（T-F-18）。process.env を読むのはここだけ（X-002） */
+export function rolePasswords(
+  env: Record<string, string | undefined> = process.env,
+): Record<string, string | undefined> {
+  return {
+    KANAME_APP_DB_PASSWORD: env["KANAME_APP_DB_PASSWORD"],
+    KANAME_AUTH_DB_PASSWORD: env["KANAME_AUTH_DB_PASSWORD"],
+  };
+}
+/** migration だけが使う管理者の接続（staging／本番）。無ければ null（ローカルは DATABASE_URL が superuser） */
+export function adminDatabaseUrl(env: Record<string, string | undefined> = process.env): string | null {
+  return env["DATABASE_ADMIN_URL"] || null;
+}
+/** 任意の名前を 1 つ読む（無ければ null）。migration の管理者 URL など */
+export function optionalEnv(name: EnvKey, env: Record<string, string | undefined> = process.env): string | null {
+  return env[name] || null;
+}
 /** 1 つだけ読む（migration の CLI 等、全部の設定が要らない入口用）。無ければ名前を挙げて落ちる */
 export function requireEnv(name: EnvKey, env: Record<string, string | undefined> = process.env): string {
   const v = env[name];

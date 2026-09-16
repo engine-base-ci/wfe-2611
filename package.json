@@ -49,7 +49,8 @@
     "ci:contract:selftest": "node scripts/ci/contract.test.mjs",
     "ci:env-audit:selftest": "node scripts/ci/env_audit.test.mjs",
     "ci:errors-used:selftest": "node scripts/ci/errors_used.test.mjs",
-    "ci:ears:gen": "node scripts/ci/gen_ears_tests.mjs"
+    "ci:ears:gen": "node scripts/ci/gen_ears_tests.mjs",
+    "api:start": "tsx apps/api/src/server.ts"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",
