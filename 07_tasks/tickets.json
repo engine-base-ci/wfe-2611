@@ -41334,7 +41334,7 @@
     "05_flow/flow.json"
    ],
    "audit_md_path": "07_tasks/audit/T-V2-01.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "SPC-01-001",
@@ -41475,7 +41475,7 @@
     "05_flow/flow.json"
    ],
    "audit_md_path": "07_tasks/audit/T-V2-02.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "SPC-02-001",
@@ -41624,7 +41624,7 @@
     "05_flow/flow.json"
    ],
    "audit_md_path": "07_tasks/audit/T-V2-03.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "SPC-03-001",
@@ -41778,7 +41778,7 @@
     "05_flow/flow.json"
    ],
    "audit_md_path": "07_tasks/audit/T-V2-04.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "SPC-04-001",
@@ -41922,7 +41922,7 @@
     "05_flow/flow.json"
    ],
    "audit_md_path": "07_tasks/audit/T-V2-05.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "SPC-05-001",
