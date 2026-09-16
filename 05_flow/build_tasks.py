@@ -262,8 +262,8 @@ for fp, rows in qa_files.items():
         for ln in open(fp, encoding="utf-8"):
             if ln.startswith("| ") and not ln.startswith("| ID "):
                 cells = [c.strip() for c in ln.strip().strip("|").split("|")]
-                if len(cells) >= 11 and cells[7]: prev_res[cells[0]] = cells[7]
-    rows = [(r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7] or prev_res.get(r[0], ""), r[8], r[9], r[10]) for r in rows]
+                if len(cells) >= 11 and cells[7]: prev_res[cells[0]] = (cells[7], cells[8])   # 結果と備考（BLOCKED の理由は備考にある・qa-ladder が見る）
+    rows = [(r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7] or prev_res.get(r[0], ("", ""))[0], r[8] or (prev_res.get(r[0], ("", ""))[1] if not r[7] else r[8]), r[9], r[10]) for r in rows]
     kept = sum(1 for r in rows if r[7])
     body = f"# {title} テスト仕様（L1・機械生成）\n\n> 05_flow/build_tasks.py がタスクと同時に生成。ID は変えない。途中変更は qa_delta.py で差分。結果列は staging で流した人が書く（再生成しても残る。結果あり {kept} 行）。\n\n" + HDR + "".join("| " + " | ".join(str(c).replace("|", "／") for c in r) + " |\n" for r in rows)
     open(fp, "w", encoding="utf-8").write(body)
