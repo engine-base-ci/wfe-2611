@@ -1,4 +1,4 @@
--- 0019_s15.sql：段階 2 で足す表（D-082〜D-085・T-D-14）。正本 07_functional/entities.json（ER図）から scripts/ci/gen_ddl.py が生成。手で直さない（直すなら ER図 → build_functional → 再生成）
+-- 0019_s15.sql：データ層 15. 段階 2 で足す表（7 表・migration・RLS・索引・（T-D-14）。正本 07_functional/entities.json（ER図）から scripts/ci/gen_ddl.py が生成。手で直さない（直すなら ER図 → build_functional → 再生成）
 
 -- E-087 billing_events（15. 段階 2 で足す表）
 create table if not exists billing_events (
