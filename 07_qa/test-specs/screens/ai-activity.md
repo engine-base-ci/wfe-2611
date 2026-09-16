@@ -64,17 +64,17 @@
 | API-07-022 | ai-activity | API 異常 | PATCH /api/v1/approvals/:id：無い・消えた・取り消された（期限切れ・削除済み・他社の行） | — | 条件を作って呼ぶ | 404 NOT_FOUND。副作用なし |  | UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を | T-A-07 | L1 |
 | API-07-023 | ai-activity | API 異常 | PATCH /api/v1/approvals/:id：必須・形式・値域・表記ゆらぎ（全角半角・空白・記号） | — | 条件を作って呼ぶ | 422 VALIDATION_ERROR。副作用なし |  | UNWANTED: IF 入力が受け付けられないなら、Kaname は 422  | T-A-07 | L1 |
 | API-07-024 | ai-activity | 状態 | PATCH /api/v1/approvals/:id：0 件／大量（1,000）／重複／初回／2 回目 | — | 各状態で呼ぶ | 0 件は空配列、大量はページング、重複は 409、2 回目は冪等 |  |  | T-A-07 | L1 |
-| API-07-025 | ai-activity | API 正常 | GET /api/v1/audit_events：取得（audit_events）— 想定外が起きた → 何をしたか追う／誰が何を | 権限のある会員 | 呼ぶ | 200 と { data: AuditEvents[], meta?: { cursor,  |  | A33 A38 A73 | T-A-07 | L1 |
-| API-07-026 | ai-activity | API 異常 | GET /api/v1/audit_events：セッションが無い・失効している（退会・停止・権限変更・パスワード変更で即失効） | — | 条件を作って呼ぶ | 401 UNAUTHENTICATED。副作用なし |  | UNWANTED: IF セッションが無いか失効しているなら、Kaname は  | T-A-07 | L1 |
-| API-07-027 | ai-activity | API 異常 | GET /api/v1/audit_events：権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした | — | 条件を作って呼ぶ | 403 FORBIDDEN。副作用なし |  | UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用 | T-A-07 | L1 |
-| API-07-028 | ai-activity | API 異常 | GET /api/v1/audit_events：120/min/user | — | 条件を作って呼ぶ | 429 RATE_LIMITED。副作用なし |  | UNWANTED: IF 120/min/user を超えたら、Kaname は | T-A-07 | L1 |
-| API-07-029 | ai-activity | 状態 | GET /api/v1/audit_events：0 件／大量（1,000）／重複／初回／2 回目 | — | 各状態で呼ぶ | 0 件は空配列、大量はページング、重複は 409、2 回目は冪等 |  |  | T-A-07 | L1 |
-| API-07-030 | ai-activity | API 正常 | DELETE /api/v1/audit_events/:id：削除（audit_events）— やってしまったことを取り消す／運営にサポート | 権限のある会員 | 呼ぶ | 200 と { data: AuditEvents, meta?: { cursor, li |  | A34 A66 | T-A-07 | L1 |
-| API-07-031 | ai-activity | API 異常 | DELETE /api/v1/audit_events/:id：セッションが無い・失効している（退会・停止・権限変更・パスワード変更で即失効） | — | 条件を作って呼ぶ | 401 UNAUTHENTICATED。副作用なし |  | UNWANTED: IF セッションが無いか失効しているなら、Kaname は  | T-A-07 | L1 |
-| API-07-032 | ai-activity | API 異常 | DELETE /api/v1/audit_events/:id：権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした | — | 条件を作って呼ぶ | 403 FORBIDDEN。副作用なし |  | UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用 | T-A-07 | L1 |
-| API-07-033 | ai-activity | API 異常 | DELETE /api/v1/audit_events/:id：無い・消えた・取り消された（期限切れ・削除済み・他社の行） | — | 条件を作って呼ぶ | 404 NOT_FOUND。副作用なし |  | UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を | T-A-07 | L1 |
-| API-07-034 | ai-activity | API 異常 | DELETE /api/v1/audit_events/:id：60/min/user | — | 条件を作って呼ぶ | 429 RATE_LIMITED。副作用なし |  | UNWANTED: IF 60/min/user を超えたら、Kaname は  | T-A-07 | L1 |
-| API-07-035 | ai-activity | 状態 | DELETE /api/v1/audit_events/:id：0 件／大量（1,000）／重複／初回／2 回目 | — | 各状態で呼ぶ | 0 件は空配列、大量はページング、重複は 409、2 回目は冪等 |  |  | T-A-07 | L1 |
+| API-07-025 | ai-activity | API 正常 | DELETE /api/v1/approvals/:id：削除（approvals）— やってしまったことを取り消す／運営にサポートアクセ | 権限のある会員 | 呼ぶ | 200 と { data: Approvals, meta?: { cursor, limi |  | A34 A66 | T-A-07 | L1 |
+| API-07-026 | ai-activity | API 異常 | DELETE /api/v1/approvals/:id：セッションが無い・失効している（退会・停止・権限変更・パスワード変更で即失効） | — | 条件を作って呼ぶ | 401 UNAUTHENTICATED。副作用なし |  | UNWANTED: IF セッションが無いか失効しているなら、Kaname は  | T-A-07 | L1 |
+| API-07-027 | ai-activity | API 異常 | DELETE /api/v1/approvals/:id：権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした | — | 条件を作って呼ぶ | 403 FORBIDDEN。副作用なし |  | UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用 | T-A-07 | L1 |
+| API-07-028 | ai-activity | API 異常 | DELETE /api/v1/approvals/:id：無い・消えた・取り消された（期限切れ・削除済み・他社の行） | — | 条件を作って呼ぶ | 404 NOT_FOUND。副作用なし |  | UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を | T-A-07 | L1 |
+| API-07-029 | ai-activity | API 異常 | DELETE /api/v1/approvals/:id：60/min/user | — | 条件を作って呼ぶ | 429 RATE_LIMITED。副作用なし |  | UNWANTED: IF 60/min/user を超えたら、Kaname は  | T-A-07 | L1 |
+| API-07-030 | ai-activity | 状態 | DELETE /api/v1/approvals/:id：0 件／大量（1,000）／重複／初回／2 回目 | — | 各状態で呼ぶ | 0 件は空配列、大量はページング、重複は 409、2 回目は冪等 |  |  | T-A-07 | L1 |
+| API-07-031 | ai-activity | API 正常 | GET /api/v1/audit_events：取得（audit_events）— 想定外が起きた → 何をしたか追う／誰が何を | 権限のある会員 | 呼ぶ | 200 と { data: AuditEvents[], meta?: { cursor,  |  | A33 A38 A73 | T-A-07 | L1 |
+| API-07-032 | ai-activity | API 異常 | GET /api/v1/audit_events：セッションが無い・失効している（退会・停止・権限変更・パスワード変更で即失効） | — | 条件を作って呼ぶ | 401 UNAUTHENTICATED。副作用なし |  | UNWANTED: IF セッションが無いか失効しているなら、Kaname は  | T-A-07 | L1 |
+| API-07-033 | ai-activity | API 異常 | GET /api/v1/audit_events：権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした | — | 条件を作って呼ぶ | 403 FORBIDDEN。副作用なし |  | UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用 | T-A-07 | L1 |
+| API-07-034 | ai-activity | API 異常 | GET /api/v1/audit_events：120/min/user | — | 条件を作って呼ぶ | 429 RATE_LIMITED。副作用なし |  | UNWANTED: IF 120/min/user を超えたら、Kaname は | T-A-07 | L1 |
+| API-07-035 | ai-activity | 状態 | GET /api/v1/audit_events：0 件／大量（1,000）／重複／初回／2 回目 | — | 各状態で呼ぶ | 0 件は空配列、大量はページング、重複は 409、2 回目は冪等 |  |  | T-A-07 | L1 |
 | API-07-036 | ai-activity | G-11 外部リソースの実在 | 触る外部リソースが staging と production に存在する | migration/IaC 適用後 | 起動時の存在確認を読む | 無ければ起動時に落ちる（黙って 502 にならない） |  | 環境ごと | T-A-07 | L1 |
 | API-07-037 | ai-activity | G-12 切り替わりの瞬間 | Bridge が切れた直後 0 秒・鮮度窓の内側に操作する | 本番稼働中 | PC を閉じた直後に主アクションを押す | 「AI は止まっています」が出て、押した内容は失われない |  |  | T-A-07 | L1 |
 | API-07-038 | ai-activity | G-13 機能の組み合わせ | 実行中 × 切替／中断 × 再開／別ロール同時 の直積のうち該当分 | — | 同時に起こす | 後勝ちでなく、規則どおり（承認は 1 人 1 回・切替は次の実行から） |  | features.json combination_points | T-A-07 | L1 |
@@ -87,12 +87,12 @@
 | API-21-004 | ai-activity | API 異常 | GET /api/v1/ai_employees：120/min/user | — | 条件を作って呼ぶ | 429 RATE_LIMITED。副作用なし |  | UNWANTED: IF 120/min/user を超えたら、Kaname は | T-A-21 | L1 |
 | API-21-005 | ai-activity | API 異常 | GET /api/v1/ai_employees：外部サービス・モデル・プロセスが失敗した／合図を出さずに終わった | — | 条件を作って呼ぶ | 502 EXTERNAL_FAILED。副作用なし |  | UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成 | T-A-21 | L1 |
 | API-21-006 | ai-activity | 状態 | GET /api/v1/ai_employees：0 件／大量（1,000）／重複／初回／2 回目 | — | 各状態で呼ぶ | 0 件は空配列、大量はページング、重複は 409、2 回目は冪等 |  |  | T-A-21 | L1 |
-| API-21-007 | ai-activity | API 正常 | PATCH /api/v1/service_registry/:id：更新（service_registry）— サービス台帳（外部サービスごとの自動 | 権限のある会員 | 呼ぶ | 200 と { data: ServiceRegistry, meta?: { cursor |  | A78 | T-A-21 | L1 |
-| API-21-008 | ai-activity | API 異常 | PATCH /api/v1/service_registry/:id：セッションが無い・失効している（退会・停止・権限変更・パスワード変更で即失効） | — | 条件を作って呼ぶ | 401 UNAUTHENTICATED。副作用なし |  | UNWANTED: IF セッションが無いか失効しているなら、Kaname は  | T-A-21 | L1 |
-| API-21-009 | ai-activity | API 異常 | PATCH /api/v1/service_registry/:id：権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした | — | 条件を作って呼ぶ | 403 FORBIDDEN。副作用なし |  | UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用 | T-A-21 | L1 |
-| API-21-010 | ai-activity | API 異常 | PATCH /api/v1/service_registry/:id：無い・消えた・取り消された（期限切れ・削除済み・他社の行） | — | 条件を作って呼ぶ | 404 NOT_FOUND。副作用なし |  | UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を | T-A-21 | L1 |
-| API-21-011 | ai-activity | API 異常 | PATCH /api/v1/service_registry/:id：必須・形式・値域・表記ゆらぎ（全角半角・空白・記号） | — | 条件を作って呼ぶ | 422 VALIDATION_ERROR。副作用なし |  | UNWANTED: IF 入力が受け付けられないなら、Kaname は 422  | T-A-21 | L1 |
-| API-21-012 | ai-activity | 状態 | PATCH /api/v1/service_registry/:id：0 件／大量（1,000）／重複／初回／2 回目 | — | 各状態で呼ぶ | 0 件は空配列、大量はページング、重複は 409、2 回目は冪等 |  |  | T-A-21 | L1 |
+| API-21-007 | ai-activity | API 正常 | PATCH /api/v1/service_registry_versions/:id：更新（service_registry_versions）— サービス台帳（外部 | 権限のある会員 | 呼ぶ | 200 と { data: ServiceRegistryVersions, meta?:  |  | A78 | T-A-21 | L1 |
+| API-21-008 | ai-activity | API 異常 | PATCH /api/v1/service_registry_versions/:id：セッションが無い・失効している（退会・停止・権限変更・パスワード変更で即失効） | — | 条件を作って呼ぶ | 401 UNAUTHENTICATED。副作用なし |  | UNWANTED: IF セッションが無いか失効しているなら、Kaname は  | T-A-21 | L1 |
+| API-21-009 | ai-activity | API 異常 | PATCH /api/v1/service_registry_versions/:id：権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした | — | 条件を作って呼ぶ | 403 FORBIDDEN。副作用なし |  | UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用 | T-A-21 | L1 |
+| API-21-010 | ai-activity | API 異常 | PATCH /api/v1/service_registry_versions/:id：無い・消えた・取り消された（期限切れ・削除済み・他社の行） | — | 条件を作って呼ぶ | 404 NOT_FOUND。副作用なし |  | UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を | T-A-21 | L1 |
+| API-21-011 | ai-activity | API 異常 | PATCH /api/v1/service_registry_versions/:id：必須・形式・値域・表記ゆらぎ（全角半角・空白・記号） | — | 条件を作って呼ぶ | 422 VALIDATION_ERROR。副作用なし |  | UNWANTED: IF 入力が受け付けられないなら、Kaname は 422  | T-A-21 | L1 |
+| API-21-012 | ai-activity | 状態 | PATCH /api/v1/service_registry_versions/:id：0 件／大量（1,000）／重複／初回／2 回目 | — | 各状態で呼ぶ | 0 件は空配列、大量はページング、重複は 409、2 回目は冪等 |  |  | T-A-21 | L1 |
 | API-21-013 | ai-activity | API 正常 | POST /api/v1/skills：作成・実行（skills）— スキルを構築・アップロード・テストして版を出し、プ | 権限のある会員 | 呼ぶ | 201 と { data: Skills, meta?: { cursor, limit,  |  | A80 | T-A-21 | L1 |
 | API-21-014 | ai-activity | API 異常 | POST /api/v1/skills：セッションが無い・失効している（退会・停止・権限変更・パスワード変更で即失効） | — | 条件を作って呼ぶ | 401 UNAUTHENTICATED。副作用なし |  | UNWANTED: IF セッションが無いか失効しているなら、Kaname は  | T-A-21 | L1 |
 | API-21-015 | ai-activity | API 異常 | POST /api/v1/skills：権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした | — | 条件を作って呼ぶ | 403 FORBIDDEN。副作用なし |  | UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用 | T-A-21 | L1 |

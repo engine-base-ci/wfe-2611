@@ -1,6 +1,6 @@
 {
  "version": "v3.1",
- "created_at": "2026-09-15",
+ "created_at": "2026-09-16",
  "summary": {
   "screens_count": 59,
   "features_count": 28,
@@ -24,7 +24,7 @@
     "E-072 plan_change_requests"
    ],
    "related_apis": [
-    "POST /api/plans",
+    "POST /api/subscriptions",
     "navigate /login"
    ],
    "access_roles": [
@@ -118,7 +118,7 @@
     "E-072 plan_change_requests"
    ],
    "related_apis": [
-    "POST /api/plans"
+    "POST /api/subscriptions"
    ],
    "access_roles": [
     "R1",
@@ -1934,10 +1934,10 @@
    ],
    "related_apis": [
     "GET /api/audit_events",
-    "DELETE /api/audit_events/:id",
+    "DELETE /api/approvals/:id",
     "GET /api/audit_events",
-    "POST /api/audit_events",
-    "DELETE /api/audit_events/:id",
+    "POST /api/approvals",
+    "DELETE /api/approvals/:id",
     "navigate /account",
     "navigate /settings/close",
     "navigate /ai-staff/activity",
@@ -2528,7 +2528,7 @@
    ],
    "related_apis": [
     "PATCH /api/inquiries/:id",
-    "POST /api/inquiries",
+    "PATCH /api/inquiries/:id",
     "navigate /account",
     "navigate /settings/close",
     "navigate /ai-staff/activity",
@@ -3035,7 +3035,7 @@
     "E-032 policies"
    ],
    "related_apis": [
-    "PATCH /api/service_registry/:id",
+    "PATCH /api/service_registry_versions/:id",
     "navigate /account",
     "navigate /settings/close",
     "navigate /ai-staff/activity",
@@ -3252,7 +3252,7 @@
     "E-067 notification_preferences"
    ],
    "related_apis": [
-    "PATCH /api/notices/:id",
+    "PATCH /api/notice_deliveries/:id",
     "navigate /account",
     "navigate /settings/close",
     "navigate /ai-staff/activity",
@@ -3331,7 +3331,7 @@
     "E-053 erasure_certificates"
    ],
    "related_apis": [
-    "PATCH /api/plans/:id",
+    "PATCH /api/subscriptions/:id",
     "navigate /account",
     "navigate /settings/close",
     "navigate /ai-staff/activity",
@@ -3718,7 +3718,7 @@
     "E-076 error_events"
    ],
    "related_apis": [
-    "PATCH /api/audit_events/:id",
+    "PATCH /api/ops_members/:id",
     "GET /api/audit_events",
     "navigate /account",
     "navigate /settings/close",
@@ -3853,7 +3853,7 @@
      "act": "A01",
      "role": "action",
      "method": "POST",
-     "path_draft": "/api/plans"
+     "path_draft": "/api/subscriptions"
     },
     {
      "role": "transition",
@@ -3925,7 +3925,7 @@
      "act": "A05",
      "role": "action",
      "method": "POST",
-     "path_draft": "/api/plans"
+     "path_draft": "/api/subscriptions"
     }
    ]
   },
@@ -10495,7 +10495,7 @@
      "act": "A34",
      "role": "action",
      "method": "DELETE",
-     "path_draft": "/api/audit_events/:id"
+     "path_draft": "/api/approvals/:id"
     },
     {
      "act": "A38",
@@ -10507,13 +10507,13 @@
      "act": "A40",
      "role": "action",
      "method": "POST",
-     "path_draft": "/api/audit_events"
+     "path_draft": "/api/approvals"
     },
     {
      "act": "A66",
      "role": "action",
      "method": "DELETE",
-     "path_draft": "/api/audit_events/:id"
+     "path_draft": "/api/approvals/:id"
     },
     {
      "role": "transition",
@@ -12798,8 +12798,8 @@
     {
      "act": "A70",
      "role": "action",
-     "method": "POST",
-     "path_draft": "/api/inquiries"
+     "method": "PATCH",
+     "path_draft": "/api/inquiries/:id"
     },
     {
      "role": "transition",
@@ -14779,7 +14779,7 @@
      "act": "A78",
      "role": "action",
      "method": "PATCH",
-     "path_draft": "/api/service_registry/:id"
+     "path_draft": "/api/service_registry_versions/:id"
     },
     {
      "role": "transition",
@@ -15625,7 +15625,7 @@
      "act": "A68",
      "role": "action",
      "method": "PATCH",
-     "path_draft": "/api/notices/:id"
+     "path_draft": "/api/notice_deliveries/:id"
     },
     {
      "role": "transition",
@@ -15907,7 +15907,7 @@
      "act": "A69",
      "role": "action",
      "method": "PATCH",
-     "path_draft": "/api/plans/:id"
+     "path_draft": "/api/subscriptions/:id"
     },
     {
      "role": "transition",
@@ -17317,7 +17317,7 @@
      "act": "A65",
      "role": "action",
      "method": "PATCH",
-     "path_draft": "/api/audit_events/:id"
+     "path_draft": "/api/ops_members/:id"
     },
     {
      "act": "A73",
@@ -19615,8 +19615,8 @@
     "GET /api/members",
     "GET /api/tenants",
     "POST /api/clones",
-    "POST /api/plans",
-    "POST /api/sessions"
+    "POST /api/sessions",
+    "POST /api/subscriptions"
    ]
   },
   {
@@ -19794,7 +19794,7 @@
     "E-085"
    ],
    "api_endpoints_draft": [
-    "DELETE /api/audit_events/:id",
+    "DELETE /api/approvals/:id",
     "GET /api/action_runs",
     "GET /api/ai_employees",
     "GET /api/approvals",
@@ -20086,11 +20086,11 @@
     "E-080"
    ],
    "api_endpoints_draft": [
-    "DELETE /api/audit_events/:id",
+    "DELETE /api/approvals/:id",
     "DELETE /api/members/:id",
     "GET /api/members",
     "GET /api/sessions",
-    "POST /api/audit_events",
+    "POST /api/approvals",
     "POST /api/export_jobs"
    ]
   },
@@ -20181,8 +20181,7 @@
    "api_endpoints_draft": [
     "DELETE /api/plans/:id",
     "GET /api/plans",
-    "PATCH /api/inquiries/:id",
-    "POST /api/inquiries"
+    "PATCH /api/inquiries/:id"
    ]
   },
   {
@@ -20223,8 +20222,8 @@
    ],
    "api_endpoints_draft": [
     "GET /api/inquiries",
-    "PATCH /api/notices/:id",
-    "PATCH /api/plans/:id"
+    "PATCH /api/notice_deliveries/:id",
+    "PATCH /api/subscriptions/:id"
    ]
   },
   {
@@ -20268,7 +20267,7 @@
    "api_endpoints_draft": [
     "GET /api/audit_events",
     "GET /api/invoices",
-    "POST /api/inquiries",
+    "PATCH /api/inquiries/:id",
     "POST /api/notices"
    ]
   },
@@ -20358,7 +20357,7 @@
    ],
    "api_endpoints_draft": [
     "GET /api/ai_employees",
-    "PATCH /api/service_registry/:id",
+    "PATCH /api/service_registry_versions/:id",
     "POST /api/skills"
    ]
   },
@@ -20417,7 +20416,7 @@
    ],
    "api_endpoints_draft": [
     "DELETE /api/plans/:id",
-    "PATCH /api/audit_events/:id",
+    "PATCH /api/ops_members/:id",
     "POST /api/distributions"
    ]
   },

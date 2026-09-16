@@ -298,5 +298,15 @@ export async function seedAccessMatrix(c: pg.PoolClient): Promise<Seeded> {
     { tenantA, tenantB, bossA, bossB, scopeRootA, scopeRootB, opsTenant, opsMember: opsId, opsScope },
     new Set(Object.keys(explicit)),
   );
-  return { tenantA, tenantB, bossA, staffA, scopeRootA, scopeDeptA, opsId, rows: { ...generic, ...explicit } };
+  return {
+    tenantA,
+    tenantB,
+    bossA,
+    staffA,
+    scopeRootA,
+    scopeDeptA,
+    opsId,
+    opsTenant,
+    rows: { ...generic, ...explicit },
+  };
 }

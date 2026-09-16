@@ -1,4 +1,4 @@
-# Kaname 機能分解（functional-breakdown）v3.1 — 2026-09-15
+# Kaname 機能分解（functional-breakdown）v3.1 — 2026-09-16
 
 > 信頼源は 07_functional/*.json（05_flow/build_functional.py が機械生成）。この文書は写し。
 
@@ -71,13 +71,13 @@
 | E-054 | `distributions` | 11. 運営 | ops_scoped | 1 | D-037 D-063 D-073.7 D-074.4 |
 | E-055 | `distribution_versions` | 11. 運営 | none | 2 | D-073.7 D-074.4 D-076.10 D-076.5 |
 | E-056 | `tenant_distributions` | 11. 運営 | account_scoped | 3 | D-073.7 D-074.4 D-076.10 D-076.5 |
-| E-057 | `service_registry_versions` | 11. 運営 | account_scoped | 3 | D-073.7 D-074.4 D-076 D-076.10 |
+| E-057 | `service_registry_versions` | 11. 運営 | ops_scoped | 1 | D-073.7 D-074.4 D-076 D-076.10 |
 | E-058 | `service_requests` | 11. 運営 | account_scoped | 4 | D-073.7 D-074.4 D-076 D-076.10 |
-| E-059 | `review_requests` | 11. 運営 | account_scoped | 3 | D-027 D-073.7 D-074 D-074.4 |
+| E-059 | `review_requests` | 11. 運営 | account_scoped | 4 | D-027 D-073.7 D-074 D-074.4 |
 | E-060 | `ops_members` | 11. 運営 | ops_scoped | 1 | D-073 D-073.7 D-074.4 D-076.10 |
 | E-061 | `ops_audit_events` | 11. 運営 | ops_scoped | 2 | D-073.7 D-074 D-074.4 D-076.10 |
 | E-062 | `security_events` | 11. 運営 | account_scoped | 3 | D-073.7 D-074.4 D-075 D-075.6 |
-| E-063 | `inquiries` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 4 | D-069 D-075 D-075.1 D-076 |
+| E-063 | `inquiries` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 5 | D-069 D-075 D-075.1 D-076 |
 | E-064 | `notices` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | ops_scoped | 1 | D-069 D-075 D-075.2 D-076 |
 | E-065 | `notice_deliveries` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 4 | D-069 D-075 D-076 |
 | E-066 | `status_incidents` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | ops_scoped | 1 | D-069 D-075 D-075.2 D-076 |
@@ -86,10 +86,10 @@
 | E-069 | `plans` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | ops_scoped | 1 | D-069 D-075 D-076 D-076.6 |
 | E-070 | `plan_versions` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | none | 2 | D-069 D-075 D-076 |
 | E-071 | `subscriptions` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 3 | D-069 D-075 D-075.4 D-076 |
-| E-072 | `plan_change_requests` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 4 | D-069 D-075 D-076 |
+| E-072 | `plan_change_requests` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 5 | D-069 D-075 D-076 |
 | E-073 | `usage_meters` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 3 | D-069 D-075 D-075.5 D-076 |
 | E-074 | `invoices` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 3 | D-002 D-069 D-075 D-075.4 |
-| E-075 | `payments` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 3 | D-069 D-075 D-076 D-077.1 |
+| E-075 | `payments` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 4 | D-069 D-075 D-076 D-077.1 |
 | E-076 | `error_events` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 4 | D-069 D-069.3 D-069.4 D-075 |
 | E-077 | `imports` | 13. 取り込み・正規連携・招待・持ち出し・添付 | scope_layered | 3 | D-025 D-026 D-042 D-076 |
 | E-078 | `integrations` | 13. 取り込み・正規連携・招待・持ち出し・添付 | scope_layered | 3 | D-026 D-041 D-042 D-076 |
@@ -98,7 +98,7 @@
 | E-081 | `attachments` | 13. 取り込み・正規連携・招待・持ち出し・添付 | scope_layered | 3 | D-026 D-042 D-076.3 D-076.4 |
 | E-082 | `skills` | 14. スキル | ops_scoped | 1 | D-078 D-078.1 |
 | E-083 | `skill_versions` | 14. スキル | none | 2 | D-078 D-078.2 |
-| E-084 | `skill_test_runs` | 14. スキル | account_scoped | 3 | D-078 |
+| E-084 | `skill_test_runs` | 14. スキル | ops_scoped | 1 | D-078 |
 | E-085 | `skill_attachments` | 14. スキル | account_scoped | 3 | D-078 D-078.3 D-078.4 D-078.7 |
 
 ## 機能

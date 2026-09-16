@@ -9,18 +9,18 @@
 | API-18-003 | billing | API 異常 | GET /api/v1/inquiries：権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした | — | 条件を作って呼ぶ | 403 FORBIDDEN。副作用なし |  | UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用 | T-A-18 | L1 |
 | API-18-004 | billing | API 異常 | GET /api/v1/inquiries：120/min/user | — | 条件を作って呼ぶ | 429 RATE_LIMITED。副作用なし |  | UNWANTED: IF 120/min/user を超えたら、Kaname は | T-A-18 | L1 |
 | API-18-005 | billing | 状態 | GET /api/v1/inquiries：0 件／大量（1,000）／重複／初回／2 回目 | — | 各状態で呼ぶ | 0 件は空配列、大量はページング、重複は 409、2 回目は冪等 |  |  | T-A-18 | L1 |
-| API-18-006 | billing | API 正常 | PATCH /api/v1/notices/:id：更新（notices）— お知らせと稼働状況を見て、通知の届け先を決める | 権限のある会員 | 呼ぶ | 200 と { data: Notices, meta?: { cursor, limit, |  | A68 | T-A-18 | L1 |
-| API-18-007 | billing | API 異常 | PATCH /api/v1/notices/:id：セッションが無い・失効している（退会・停止・権限変更・パスワード変更で即失効） | — | 条件を作って呼ぶ | 401 UNAUTHENTICATED。副作用なし |  | UNWANTED: IF セッションが無いか失効しているなら、Kaname は  | T-A-18 | L1 |
-| API-18-008 | billing | API 異常 | PATCH /api/v1/notices/:id：権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした | — | 条件を作って呼ぶ | 403 FORBIDDEN。副作用なし |  | UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用 | T-A-18 | L1 |
-| API-18-009 | billing | API 異常 | PATCH /api/v1/notices/:id：無い・消えた・取り消された（期限切れ・削除済み・他社の行） | — | 条件を作って呼ぶ | 404 NOT_FOUND。副作用なし |  | UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を | T-A-18 | L1 |
-| API-18-010 | billing | API 異常 | PATCH /api/v1/notices/:id：必須・形式・値域・表記ゆらぎ（全角半角・空白・記号） | — | 条件を作って呼ぶ | 422 VALIDATION_ERROR。副作用なし |  | UNWANTED: IF 入力が受け付けられないなら、Kaname は 422  | T-A-18 | L1 |
-| API-18-011 | billing | 状態 | PATCH /api/v1/notices/:id：0 件／大量（1,000）／重複／初回／2 回目 | — | 各状態で呼ぶ | 0 件は空配列、大量はページング、重複は 409、2 回目は冪等 |  |  | T-A-18 | L1 |
-| API-18-012 | billing | API 正常 | PATCH /api/v1/plans/:id：更新（plans）— プラン・利用量・請求書を見て、プランを変える | 権限のある会員 | 呼ぶ | 200 と { data: Plans, meta?: { cursor, limit, t |  | A69 | T-A-18 | L1 |
-| API-18-013 | billing | API 異常 | PATCH /api/v1/plans/:id：セッションが無い・失効している（退会・停止・権限変更・パスワード変更で即失効） | — | 条件を作って呼ぶ | 401 UNAUTHENTICATED。副作用なし |  | UNWANTED: IF セッションが無いか失効しているなら、Kaname は  | T-A-18 | L1 |
-| API-18-014 | billing | API 異常 | PATCH /api/v1/plans/:id：権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした | — | 条件を作って呼ぶ | 403 FORBIDDEN。副作用なし |  | UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用 | T-A-18 | L1 |
-| API-18-015 | billing | API 異常 | PATCH /api/v1/plans/:id：無い・消えた・取り消された（期限切れ・削除済み・他社の行） | — | 条件を作って呼ぶ | 404 NOT_FOUND。副作用なし |  | UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を | T-A-18 | L1 |
-| API-18-016 | billing | API 異常 | PATCH /api/v1/plans/:id：必須・形式・値域・表記ゆらぎ（全角半角・空白・記号） | — | 条件を作って呼ぶ | 422 VALIDATION_ERROR。副作用なし |  | UNWANTED: IF 入力が受け付けられないなら、Kaname は 422  | T-A-18 | L1 |
-| API-18-017 | billing | 状態 | PATCH /api/v1/plans/:id：0 件／大量（1,000）／重複／初回／2 回目 | — | 各状態で呼ぶ | 0 件は空配列、大量はページング、重複は 409、2 回目は冪等 |  |  | T-A-18 | L1 |
+| API-18-006 | billing | API 正常 | PATCH /api/v1/notice_deliveries/:id：更新（notice_deliveries）— お知らせと稼働状況を見て、通知の届 | 権限のある会員 | 呼ぶ | 200 と { data: NoticeDeliveries, meta?: { curso |  | A68 | T-A-18 | L1 |
+| API-18-007 | billing | API 異常 | PATCH /api/v1/notice_deliveries/:id：セッションが無い・失効している（退会・停止・権限変更・パスワード変更で即失効） | — | 条件を作って呼ぶ | 401 UNAUTHENTICATED。副作用なし |  | UNWANTED: IF セッションが無いか失効しているなら、Kaname は  | T-A-18 | L1 |
+| API-18-008 | billing | API 異常 | PATCH /api/v1/notice_deliveries/:id：権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした | — | 条件を作って呼ぶ | 403 FORBIDDEN。副作用なし |  | UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用 | T-A-18 | L1 |
+| API-18-009 | billing | API 異常 | PATCH /api/v1/notice_deliveries/:id：無い・消えた・取り消された（期限切れ・削除済み・他社の行） | — | 条件を作って呼ぶ | 404 NOT_FOUND。副作用なし |  | UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を | T-A-18 | L1 |
+| API-18-010 | billing | API 異常 | PATCH /api/v1/notice_deliveries/:id：必須・形式・値域・表記ゆらぎ（全角半角・空白・記号） | — | 条件を作って呼ぶ | 422 VALIDATION_ERROR。副作用なし |  | UNWANTED: IF 入力が受け付けられないなら、Kaname は 422  | T-A-18 | L1 |
+| API-18-011 | billing | 状態 | PATCH /api/v1/notice_deliveries/:id：0 件／大量（1,000）／重複／初回／2 回目 | — | 各状態で呼ぶ | 0 件は空配列、大量はページング、重複は 409、2 回目は冪等 |  |  | T-A-18 | L1 |
+| API-18-012 | billing | API 正常 | PATCH /api/v1/subscriptions/:id：更新（subscriptions）— プラン・利用量・請求書を見て、プランを変え | 権限のある会員 | 呼ぶ | 200 と { data: Subscriptions, meta?: { cursor,  |  | A69 | T-A-18 | L1 |
+| API-18-013 | billing | API 異常 | PATCH /api/v1/subscriptions/:id：セッションが無い・失効している（退会・停止・権限変更・パスワード変更で即失効） | — | 条件を作って呼ぶ | 401 UNAUTHENTICATED。副作用なし |  | UNWANTED: IF セッションが無いか失効しているなら、Kaname は  | T-A-18 | L1 |
+| API-18-014 | billing | API 異常 | PATCH /api/v1/subscriptions/:id：権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした | — | 条件を作って呼ぶ | 403 FORBIDDEN。副作用なし |  | UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用 | T-A-18 | L1 |
+| API-18-015 | billing | API 異常 | PATCH /api/v1/subscriptions/:id：無い・消えた・取り消された（期限切れ・削除済み・他社の行） | — | 条件を作って呼ぶ | 404 NOT_FOUND。副作用なし |  | UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を | T-A-18 | L1 |
+| API-18-016 | billing | API 異常 | PATCH /api/v1/subscriptions/:id：必須・形式・値域・表記ゆらぎ（全角半角・空白・記号） | — | 条件を作って呼ぶ | 422 VALIDATION_ERROR。副作用なし |  | UNWANTED: IF 入力が受け付けられないなら、Kaname は 422  | T-A-18 | L1 |
+| API-18-017 | billing | 状態 | PATCH /api/v1/subscriptions/:id：0 件／大量（1,000）／重複／初回／2 回目 | — | 各状態で呼ぶ | 0 件は空配列、大量はページング、重複は 409、2 回目は冪等 |  |  | T-A-18 | L1 |
 | API-18-018 | billing | G-11 外部リソースの実在 | 触る外部リソースが staging と production に存在する | migration/IaC 適用後 | 起動時の存在確認を読む | 無ければ起動時に落ちる（黙って 502 にならない） |  | 環境ごと | T-A-18 | L1 |
 | API-18-019 | billing | G-12 切り替わりの瞬間 | N/A：状態の切替を持たない | 本番稼働中 | PC を閉じた直後に主アクションを押す | 「AI は止まっています」が出て、押した内容は失われない |  |  | T-A-18 | L1 |
 | API-18-020 | billing | G-13 機能の組み合わせ | 実行中 × 切替／中断 × 再開／別ロール同時 の直積のうち該当分 | — | 同時に起こす | 後勝ちでなく、規則どおり（承認は 1 人 1 回・切替は次の実行から） |  | features.json combination_points | T-A-18 | L1 |
@@ -32,7 +32,7 @@
 | SCR-BILLING-003 | billing | 状態 | 状態「AI が止まっている」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-billing.html の状態 gs と一致 |  | G-06・G-07 | T-U-52 | L1 |
 | SCR-BILLING-004 | billing | 役割 | 役割 R1 で開くと、その役割の中身（data-roles）が出て、他の役割の中身は出ない | R1 でログイン | 画面を開く | 役割ごとの中身（G15） |  |  | T-U-52 | L1 |
 | SCR-BILLING-005 | billing | 役割 | 役割 R2 で開くと、その役割の中身（data-roles）が出て、他の役割の中身は出ない | R2 でログイン | 画面を開く | 役割ごとの中身（G15） |  |  | T-U-52 | L1 |
-| SCR-BILLING-006 | billing | 主アクション | 「プランを変える」を押すと対応する endpoint が呼ばれ、別 GET で再取得した画面に反映される | 権限のある会員 | 押す | DB と画面が変わる（G-01・G-03） |  | PATCH /api/plans/:id | T-U-52 | L1 |
+| SCR-BILLING-006 | billing | 主アクション | 「プランを変える」を押すと対応する endpoint が呼ばれ、別 GET で再取得した画面に反映される | 権限のある会員 | 押す | DB と画面が変わる（G-01・G-03） |  | PATCH /api/subscriptions/:id | T-U-52 | L1 |
 | SCR-BILLING-007 | billing | 到達性 | リンク先 account が実在ルートで 200 で開く | — | 押す | /account が開く（G-04） |  |  | T-U-52 | L1 |
 | SCR-BILLING-008 | billing | 到達性 | リンク先 account-close が実在ルートで 200 で開く | — | 押す | /account-close が開く（G-04） |  |  | T-U-52 | L1 |
 | SCR-BILLING-009 | billing | 到達性 | リンク先 ai-activity が実在ルートで 200 で開く | — | 押す | /ai-activity が開く（G-04） |  |  | T-U-52 | L1 |

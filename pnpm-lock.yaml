@@ -38,12 +38,18 @@ importers:
 
   apps/api:
     dependencies:
+      '@kaname/actions':
+        specifier: workspace:*
+        version: link:../../packages/actions
       '@kaname/auth':
         specifier: workspace:*
         version: link:../../packages/auth
       '@kaname/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@kaname/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
       '@kaname/db':
         specifier: workspace:*
         version: link:../../packages/db
@@ -137,6 +143,10 @@ importers:
         version: 5.9.3
 
   packages/contracts:
+    dependencies:
+      zod:
+        specifier: ^4.6.5
+        version: 4.6.5
     devDependencies:
       typescript:
         specifier: ^5.9.3

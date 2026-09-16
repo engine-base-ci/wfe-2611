@@ -1,7 +1,7 @@
 {
  "meta": {
   "version": "v3.1",
-  "created_at": "2026-09-15",
+  "created_at": "2026-09-16",
   "_doc": "05_flow/build_functional.py が flow.json・ER図・モック・errors.json から生成。手で直さない。",
   "source": [
    "D-053.1",
@@ -59,12 +59,12 @@
      "act": "A01",
      "role": "action",
      "method": "POST",
-     "path_draft": "/api/plans",
+     "path_draft": "/api/subscriptions",
      "auth": "session（会社・層・権限）",
      "related_entities": [
+      "E-071",
       "E-069",
       "E-070",
-      "E-071",
       "E-073"
      ],
      "choke_points": [
@@ -91,12 +91,12 @@
      "act": "A01",
      "role": "action",
      "method": "POST",
-     "path_draft": "/api/plans",
+     "path_draft": "/api/subscriptions",
      "auth": "session（会社・層・権限）",
      "related_entities": [
+      "E-071",
       "E-069",
       "E-070",
-      "E-071",
       "E-073"
      ],
      "choke_points": [
@@ -142,7 +142,7 @@
    "has_shell": false,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-001",
     "D-011",
@@ -303,7 +303,7 @@
    "has_shell": false,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-042",
     "D-053.10",
@@ -426,7 +426,7 @@
    "has_shell": false,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-026",
     "D-037",
@@ -568,7 +568,7 @@
    "has_shell": false,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-042",
     "D-051",
@@ -620,12 +620,12 @@
      "act": "A05",
      "role": "action",
      "method": "POST",
-     "path_draft": "/api/plans",
+     "path_draft": "/api/subscriptions",
      "auth": "session（会社・層・権限）",
      "related_entities": [
+      "E-071",
       "E-069",
       "E-070",
-      "E-071",
       "E-073"
      ],
      "choke_points": [
@@ -641,12 +641,12 @@
      "act": "A05",
      "role": "action",
      "method": "POST",
-     "path_draft": "/api/plans",
+     "path_draft": "/api/subscriptions",
      "auth": "session（会社・層・権限）",
      "related_entities": [
+      "E-071",
       "E-069",
       "E-070",
-      "E-071",
       "E-073"
      ],
      "choke_points": [
@@ -681,7 +681,7 @@
    "has_shell": false,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-002",
     "D-081.2"
@@ -858,7 +858,7 @@
    "has_shell": false,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-042",
     "D-051",
@@ -1007,7 +1007,7 @@
    "has_shell": false,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-042",
     "D-053.10",
@@ -1246,7 +1246,7 @@
    "has_shell": false,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-028",
     "D-030",
@@ -1554,7 +1554,7 @@
    "has_shell": false,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-010",
     "D-028",
@@ -2620,7 +2620,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-055",
     "D-015",
@@ -3688,7 +3688,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-017",
     "D-041",
@@ -3926,7 +3926,7 @@
    "has_shell": false,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-028",
     "D-040",
@@ -4174,7 +4174,7 @@
    "has_shell": false,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-028",
     "D-019",
@@ -5285,7 +5285,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-008",
     "D-024",
@@ -6328,7 +6328,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-012",
     "D-037",
@@ -7324,7 +7324,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-060",
     "D-037",
@@ -8632,7 +8632,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-008",
     "D-034",
@@ -9679,7 +9679,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-062",
     "D-066",
@@ -10707,7 +10707,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-062",
     "D-037",
@@ -11744,7 +11744,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-007",
     "D-029",
@@ -12803,7 +12803,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-038",
     "D-039",
@@ -13870,7 +13870,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-038",
     "D-039",
@@ -14939,7 +14939,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-058",
     "D-032",
@@ -15986,7 +15986,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-058",
     "D-032",
@@ -17044,7 +17044,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-032",
     "D-034",
@@ -18106,7 +18106,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-058",
     "D-026",
@@ -19114,7 +19114,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-035",
     "D-006",
@@ -20127,7 +20127,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-035",
     "D-063",
@@ -21156,7 +21156,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-030",
     "D-022",
@@ -22174,7 +22174,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-060",
     "D-024",
@@ -23184,7 +23184,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-038",
     "D-039",
@@ -24213,7 +24213,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-010",
     "D-024",
@@ -25222,7 +25222,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-018",
     "D-014",
@@ -25377,13 +25377,13 @@
      "act": "A34",
      "role": "action",
      "method": "DELETE",
-     "path_draft": "/api/audit_events/:id",
+     "path_draft": "/api/approvals/:id",
      "auth": "session（会社・層・権限）",
      "related_entities": [
+      "E-033",
       "E-041",
       "E-061",
-      "E-062",
-      "E-033"
+      "E-062"
      ],
      "choke_points": [
       "C1",
@@ -25419,13 +25419,13 @@
      "act": "A40",
      "role": "action",
      "method": "POST",
-     "path_draft": "/api/audit_events",
+     "path_draft": "/api/approvals",
      "auth": "session（会社・層・権限）",
      "related_entities": [
+      "E-033",
       "E-041",
       "E-061",
-      "E-062",
-      "E-033"
+      "E-062"
      ],
      "choke_points": [
       "C4",
@@ -25440,13 +25440,13 @@
      "act": "A66",
      "role": "action",
      "method": "DELETE",
-     "path_draft": "/api/audit_events/:id",
+     "path_draft": "/api/approvals/:id",
      "auth": "session（会社・層・権限）",
      "related_entities": [
+      "E-033",
       "E-041",
       "E-061",
-      "E-062",
-      "E-033"
+      "E-062"
      ],
      "choke_points": [
       "C2"
@@ -25890,13 +25890,13 @@
      "act": "A34",
      "role": "action",
      "method": "DELETE",
-     "path_draft": "/api/audit_events/:id",
+     "path_draft": "/api/approvals/:id",
      "auth": "session（会社・層・権限）",
      "related_entities": [
+      "E-033",
       "E-041",
       "E-061",
-      "E-062",
-      "E-033"
+      "E-062"
      ],
      "choke_points": [
       "C1",
@@ -25932,13 +25932,13 @@
      "act": "A40",
      "role": "action",
      "method": "POST",
-     "path_draft": "/api/audit_events",
+     "path_draft": "/api/approvals",
      "auth": "session（会社・層・権限）",
      "related_entities": [
+      "E-033",
       "E-041",
       "E-061",
-      "E-062",
-      "E-033"
+      "E-062"
      ],
      "choke_points": [
       "C4",
@@ -25953,13 +25953,13 @@
      "act": "A66",
      "role": "action",
      "method": "DELETE",
-     "path_draft": "/api/audit_events/:id",
+     "path_draft": "/api/approvals/:id",
      "auth": "session（会社・層・権限）",
      "related_entities": [
+      "E-033",
       "E-041",
       "E-061",
-      "E-062",
-      "E-033"
+      "E-062"
      ],
      "choke_points": [
       "C2"
@@ -26411,7 +26411,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-042",
     "D-012",
@@ -27414,7 +27414,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-040",
     "D-041",
@@ -28463,7 +28463,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-026",
     "D-002",
@@ -29493,7 +29493,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-037",
     "D-027",
@@ -30574,7 +30574,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-037",
     "D-026",
@@ -31573,7 +31573,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-042",
     "D-015",
@@ -32572,7 +32572,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-025",
     "D-050",
@@ -33584,7 +33584,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-042",
     "D-074.1",
@@ -33709,8 +33709,8 @@
     {
      "act": "A70",
      "role": "action",
-     "method": "POST",
-     "path_draft": "/api/inquiries",
+     "method": "PATCH",
+     "path_draft": "/api/inquiries/:id",
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-063",
@@ -34161,8 +34161,8 @@
     {
      "act": "A70",
      "role": "action",
-     "method": "POST",
-     "path_draft": "/api/inquiries",
+     "method": "PATCH",
+     "path_draft": "/api/inquiries/:id",
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-063",
@@ -34621,7 +34621,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-030",
     "D-042",
@@ -35623,7 +35623,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-037",
     "D-030",
@@ -36707,7 +36707,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-027",
     "D-037",
@@ -37712,7 +37712,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-076.1",
     "D-042"
@@ -38701,7 +38701,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-076.2",
     "D-042",
@@ -39702,7 +39702,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-076.3",
     "D-029",
@@ -40714,7 +40714,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-076.4",
     "D-041",
@@ -40821,11 +40821,11 @@
      "act": "A78",
      "role": "action",
      "method": "PATCH",
-     "path_draft": "/api/service_registry/:id",
+     "path_draft": "/api/service_registry_versions/:id",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-035",
       "E-057",
+      "E-035",
       "E-058",
       "E-032"
      ],
@@ -41250,11 +41250,11 @@
      "act": "A78",
      "role": "action",
      "method": "PATCH",
-     "path_draft": "/api/service_registry/:id",
+     "path_draft": "/api/service_registry_versions/:id",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-035",
       "E-057",
+      "E-035",
       "E-058",
       "E-032"
      ],
@@ -41701,7 +41701,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-076.5",
     "D-041",
@@ -42717,7 +42717,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-030.1",
     "D-030.2",
@@ -43725,7 +43725,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-075.1",
     "D-042"
@@ -43832,11 +43832,11 @@
      "act": "A68",
      "role": "action",
      "method": "PATCH",
-     "path_draft": "/api/notices/:id",
+     "path_draft": "/api/notice_deliveries/:id",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-064",
       "E-065",
+      "E-064",
       "E-066",
       "E-068"
      ],
@@ -44264,11 +44264,11 @@
      "act": "A68",
      "role": "action",
      "method": "PATCH",
-     "path_draft": "/api/notices/:id",
+     "path_draft": "/api/notice_deliveries/:id",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-064",
       "E-065",
+      "E-064",
       "E-066",
       "E-068"
      ],
@@ -44719,7 +44719,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-075.2",
     "D-075.3",
@@ -44830,12 +44830,12 @@
      "act": "A69",
      "role": "action",
      "method": "PATCH",
-     "path_draft": "/api/plans/:id",
+     "path_draft": "/api/subscriptions/:id",
      "auth": "session（会社・層・権限）",
      "related_entities": [
+      "E-071",
       "E-069",
       "E-070",
-      "E-071",
       "E-073"
      ],
      "choke_points": [
@@ -45261,12 +45261,12 @@
      "act": "A69",
      "role": "action",
      "method": "PATCH",
-     "path_draft": "/api/plans/:id",
+     "path_draft": "/api/subscriptions/:id",
      "auth": "session（会社・層・権限）",
      "related_entities": [
+      "E-071",
       "E-069",
       "E-070",
-      "E-071",
       "E-073"
      ],
      "choke_points": [
@@ -45731,7 +45731,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-075.4",
     "D-075.5",
@@ -46719,7 +46719,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-075.2",
     "D-077.4",
@@ -47717,7 +47717,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-075.4",
     "D-075.5",
@@ -48757,7 +48757,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-042",
     "D-037",
@@ -49758,7 +49758,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-027",
     "D-073.7",
@@ -49866,13 +49866,13 @@
      "act": "A65",
      "role": "action",
      "method": "PATCH",
-     "path_draft": "/api/audit_events/:id",
+     "path_draft": "/api/ops_members/:id",
      "auth": "session（会社・層・権限）",
      "related_entities": [
+      "E-060",
       "E-041",
       "E-061",
-      "E-062",
-      "E-004"
+      "E-062"
      ],
      "choke_points": [
       "C2"
@@ -50315,13 +50315,13 @@
      "act": "A65",
      "role": "action",
      "method": "PATCH",
-     "path_draft": "/api/audit_events/:id",
+     "path_draft": "/api/ops_members/:id",
      "auth": "session（会社・層・権限）",
      "related_entities": [
+      "E-060",
       "E-041",
       "E-061",
-      "E-062",
-      "E-004"
+      "E-062"
      ],
      "choke_points": [
       "C2"
@@ -50790,7 +50790,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-042",
     "D-073.7",
@@ -51856,7 +51856,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-15",
+   "decided_at": "2026-09-16",
    "source": [
     "D-026",
     "D-037",

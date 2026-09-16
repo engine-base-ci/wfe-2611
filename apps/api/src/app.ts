@@ -5,6 +5,9 @@ import { tenantContext, type SessionResolver, type Vars } from "./middleware/ten
 import type { Auth } from "@kaname/auth";
 import type { Resolved } from "@kaname/auth/resolver";
 import { KanameError, recordErrorEvent } from "@kaname/errors";
+import { registerAll } from "./routes/index.js";
+import { defaultDeps } from "./contract/memory.js";
+import type { ContractDeps } from "./contract/deps.js";
 
 // 独立 API 層（Hono）。画面は API を叩くだけ。endpoint は T-A-* が 08_api/openapi.yaml どおりに足す（routes/ 配下・c.get("repo") 経由）。
 export interface Health {
@@ -26,6 +29,8 @@ export interface AppOptions {
   auth?: Auth;
   /** 要求の headers → 文脈（packages/auth の createSessionResolver）。resolveSession より優先 */
   resolve?: (headers: Headers) => Promise<Resolved | null>;
+  /** 契約の route（08_api/openapi.yaml の 56 endpoint）。repo があれば既定で登録。hooks／上限／冪等の器を差し込める */
+  contract?: Partial<ContractDeps> | false;
 }
 
 export function createApp(o: AppOptions | string = {}): Hono<Vars> {
@@ -42,6 +47,7 @@ export function createApp(o: AppOptions | string = {}): Hono<Vars> {
     ? async (c) => (await opts.resolve!(c.req.raw.headers))?.ctx ?? null
     : opts.resolveSession;
   if (opts.repo) app.use("/api/*", tenantContext(opts.repo, resolver));
+  if (opts.repo && opts.contract !== false) registerAll(app, defaultDeps(opts.contract ?? {}));
   // エラーは正本（errors.json）の 1 件として返す（D-069）。出た記録は error_events に（文脈があるときだけ）。正本に無い例外は 500・文言を作らない
   app.onError(async (err, c) => {
     if (err instanceof KanameError) {

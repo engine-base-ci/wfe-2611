@@ -145,6 +145,18 @@ export class Repository {
     if (missing.length) throw new Error(`表が無い（migration 未適用）: ${missing.join(", ")}`);
   }
 
+  /** 表にその列があるか（init 後）。関門の外から列の有無で分岐するとき用 */
+  hasColumn(name: TableName, column: string): boolean {
+    return this.columns.get(name)?.has(column) ?? false;
+  }
+
+  /** 運営が会社の表を読んでよいか（顧客の許可・範囲・期限。RLS の関数と同じ判定を API 層でも先に返す＝403） */
+  async opsAllowed(ctx: TenantContext): Promise<boolean> {
+    if (ctx.role !== "ops" || !ctx.tenantId) return false;
+    const r = await this.pool.query<{ ok: boolean }>("select app.ops_grant_ok($1::uuid) as ok", [ctx.tenantId]);
+    return r.rows[0]?.ok === true;
+  }
+
   table(name: TableName): TableRepository {
     const cols = this.columns.get(name);
     if (!cols) throw new Error(`init() の前に table() を呼んだ: ${name}`);

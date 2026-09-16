@@ -12,7 +12,15 @@ if (!/tenantContext\(/.test(app) || !/app\.use\("\/api\/\*"/.test(app)) bad.push
 for (const f of walk(join(API, "routes")).filter((x) => x.endsWith(".ts") && !x.endsWith(".test.ts"))) {
   const s = readFileSync(f, "utf8");
   if (/from ["']pg["']|from ["']postgres["']|withTenant\(|new Pool\(|\.query\(/.test(s)) bad.push(`${f}: 関門の外で DB に触っている（pg／withTenant／.query）`);
-  if (!/c\.get\("repo"\)/.test(s) && /\/api\//.test(s)) bad.push(`${f}: /api の route が c.get("repo") を使っていない`);
+  // 契約から生成した route は op(deps, …) に委ねる。委ね先（contract/op.ts）が c.get("repo") で関門を通ることを見る
+  const delegates = /\bop\(deps,/.test(s);
+  if (!/c\.get\("repo"\)/.test(s) && /\/api\//.test(s) && !delegates) bad.push(`${f}: /api の route が c.get("repo") を使っていない`);
+}
+const opPath = join(API, "contract", "op.ts");
+if (existsSync(opPath)) {
+  const s = readFileSync(opPath, "utf8");
+  if (/from ["']pg["']|withTenant\(|new Pool\(|\.query\(/.test(s)) bad.push(`${opPath}: 関門の外で DB に触っている`);
+  if (!/c\.get\("repo"\)/.test(s)) bad.push(`${opPath}: c.get("repo") を使っていない`);
 }
 const routes = walk(join(API, "routes")).length;
 if (bad.length) {

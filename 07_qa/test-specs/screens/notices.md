@@ -11,7 +11,7 @@
 | SCR-NOTICES-005 | notices | 役割 | 役割 R2 で開くと、その役割の中身（data-roles）が出て、他の役割の中身は出ない | R2 でログイン | 画面を開く | 役割ごとの中身（G15） |  |  | T-U-51 | L1 |
 | SCR-NOTICES-006 | notices | 役割 | 役割 R3 で開くと、その役割の中身（data-roles）が出て、他の役割の中身は出ない | R3 でログイン | 画面を開く | 役割ごとの中身（G15） |  |  | T-U-51 | L1 |
 | SCR-NOTICES-007 | notices | 役割 | 役割 R4 で開くと、その役割の中身（data-roles）が出て、他の役割の中身は出ない | R4 でログイン | 画面を開く | 役割ごとの中身（G15） |  |  | T-U-51 | L1 |
-| SCR-NOTICES-008 | notices | 主アクション | 「通知の届け先を保存する」を押すと対応する endpoint が呼ばれ、別 GET で再取得した画面に反映される | 権限のある会員 | 押す | DB と画面が変わる（G-01・G-03） |  | PATCH /api/notices/:id | T-U-51 | L1 |
+| SCR-NOTICES-008 | notices | 主アクション | 「通知の届け先を保存する」を押すと対応する endpoint が呼ばれ、別 GET で再取得した画面に反映される | 権限のある会員 | 押す | DB と画面が変わる（G-01・G-03） |  | PATCH /api/notice_deliveries/:id | T-U-51 | L1 |
 | SCR-NOTICES-009 | notices | 到達性 | リンク先 account が実在ルートで 200 で開く | — | 押す | /account が開く（G-04） |  |  | T-U-51 | L1 |
 | SCR-NOTICES-010 | notices | 到達性 | リンク先 account-close が実在ルートで 200 で開く | — | 押す | /account-close が開く（G-04） |  |  | T-U-51 | L1 |
 | SCR-NOTICES-011 | notices | 到達性 | リンク先 ai-activity が実在ルートで 200 で開く | — | 押す | /ai-activity が開く（G-04） |  |  | T-U-51 | L1 |

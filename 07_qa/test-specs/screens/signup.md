@@ -8,7 +8,7 @@
 | SCR-SIGNUP-002 | signup | 状態 | 状態「既に登録済み」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-signup.html の状態 e と一致 |  | G-06・G-07 | T-U-01 | L1 |
 | SCR-SIGNUP-003 | signup | 役割 | 役割 R1 で開くと、その役割の中身（data-roles）が出て、他の役割の中身は出ない | R1 でログイン | 画面を開く | 役割ごとの中身（G15） |  |  | T-U-01 | L1 |
 | SCR-SIGNUP-004 | signup | 役割 | 役割 R2 で開くと、その役割の中身（data-roles）が出て、他の役割の中身は出ない | R2 でログイン | 画面を開く | 役割ごとの中身（G15） |  |  | T-U-01 | L1 |
-| SCR-SIGNUP-005 | signup | 主アクション | 「はじめる」を押すと対応する endpoint が呼ばれ、別 GET で再取得した画面に反映される | 権限のある会員 | 押す | DB と画面が変わる（G-01・G-03） |  | POST /api/plans | T-U-01 | L1 |
+| SCR-SIGNUP-005 | signup | 主アクション | 「はじめる」を押すと対応する endpoint が呼ばれ、別 GET で再取得した画面に反映される | 権限のある会員 | 押す | DB と画面が変わる（G-01・G-03） |  | POST /api/subscriptions | T-U-01 | L1 |
 | SCR-SIGNUP-006 | signup | 到達性 | リンク先 login が実在ルートで 200 で開く | — | 押す | /login が開く（G-04） |  |  | T-U-01 | L1 |
 | SCR-SIGNUP-007 | signup | 横溢れ | 375・768・1024・1440 で scrollWidth - clientWidth <= 1、1180+ で本文 720 以上 | — | 各幅で開く | 溢れ 0 |  | G-05 | T-U-01 | L1 |
 | SCR-SIGNUP-008 | signup | 空・止まっている | データ 0 件の状態と AI が止まっている状態が cover 宣言どおりに出る | PS2 / PS4 | 開く | 空状態と止まっている帯 |  | G18 | T-U-01 | L1 |

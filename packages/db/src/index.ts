@@ -22,6 +22,7 @@ export const MIGRATIONS = [
   "0015_s12.sql",
   "0016_s13.sql",
   "0017_s14.sql",
+  "0018_ops_write.sql",
 ] as const;
 
 /** migration 名の並びを検査する。重複・順序違い・4 桁でない名前があれば理由を返す。 */

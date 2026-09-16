@@ -4,18 +4,18 @@
 
 | ID | 画面 | テスト観点 | テスト項目 | 前提条件 | 操作手順 | 期待結果 | 結果 | 備考 | タスク | 実行条件 |
 |---|---|---|---|---|---|---|---|---|---|---|
-| API-15-001 | account-close | API 正常 | POST /api/v1/audit_events：作成・実行（audit_events）— 全操作の証跡を出す | 権限のある会員 | 呼ぶ | 201 と { data: AuditEvents, meta?: { cursor, li |  | A40 | T-A-15 | L1 |
-| API-15-002 | account-close | API 異常 | POST /api/v1/audit_events：セッションが無い・失効している（退会・停止・権限変更・パスワード変更で即失効） | — | 条件を作って呼ぶ | 401 UNAUTHENTICATED。副作用なし |  | UNWANTED: IF セッションが無いか失効しているなら、Kaname は  | T-A-15 | L1 |
-| API-15-003 | account-close | API 異常 | POST /api/v1/audit_events：権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした | — | 条件を作って呼ぶ | 403 FORBIDDEN。副作用なし |  | UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用 | T-A-15 | L1 |
-| API-15-004 | account-close | API 異常 | POST /api/v1/audit_events：二重送信・同時編集・既に登録済み（冪等キーで防ぐ） | — | 条件を作って呼ぶ | 409 CONFLICT。副作用なし |  | UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を | T-A-15 | L1 |
-| API-15-005 | account-close | API 異常 | POST /api/v1/audit_events：必須・形式・値域・表記ゆらぎ（全角半角・空白・記号） | — | 条件を作って呼ぶ | 422 VALIDATION_ERROR。副作用なし |  | UNWANTED: IF 入力が受け付けられないなら、Kaname は 422  | T-A-15 | L1 |
-| API-15-006 | account-close | 状態 | POST /api/v1/audit_events：0 件／大量（1,000）／重複／初回／2 回目 | — | 各状態で呼ぶ | 0 件は空配列、大量はページング、重複は 409、2 回目は冪等 |  |  | T-A-15 | L1 |
-| API-15-007 | account-close | API 正常 | DELETE /api/v1/audit_events/:id：削除（audit_events）— やってしまったことを取り消す／運営にサポート | 権限のある会員 | 呼ぶ | 200 と { data: AuditEvents, meta?: { cursor, li |  | A34 A66 | T-A-15 | L1 |
-| API-15-008 | account-close | API 異常 | DELETE /api/v1/audit_events/:id：セッションが無い・失効している（退会・停止・権限変更・パスワード変更で即失効） | — | 条件を作って呼ぶ | 401 UNAUTHENTICATED。副作用なし |  | UNWANTED: IF セッションが無いか失効しているなら、Kaname は  | T-A-15 | L1 |
-| API-15-009 | account-close | API 異常 | DELETE /api/v1/audit_events/:id：権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした | — | 条件を作って呼ぶ | 403 FORBIDDEN。副作用なし |  | UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用 | T-A-15 | L1 |
-| API-15-010 | account-close | API 異常 | DELETE /api/v1/audit_events/:id：無い・消えた・取り消された（期限切れ・削除済み・他社の行） | — | 条件を作って呼ぶ | 404 NOT_FOUND。副作用なし |  | UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を | T-A-15 | L1 |
-| API-15-011 | account-close | API 異常 | DELETE /api/v1/audit_events/:id：60/min/user | — | 条件を作って呼ぶ | 429 RATE_LIMITED。副作用なし |  | UNWANTED: IF 60/min/user を超えたら、Kaname は  | T-A-15 | L1 |
-| API-15-012 | account-close | 状態 | DELETE /api/v1/audit_events/:id：0 件／大量（1,000）／重複／初回／2 回目 | — | 各状態で呼ぶ | 0 件は空配列、大量はページング、重複は 409、2 回目は冪等 |  |  | T-A-15 | L1 |
+| API-15-001 | account-close | API 正常 | POST /api/v1/approvals：作成・実行（approvals）— 全操作の証跡を出す | 権限のある会員 | 呼ぶ | 201 と { data: Approvals, meta?: { cursor, limi |  | A40 | T-A-15 | L1 |
+| API-15-002 | account-close | API 異常 | POST /api/v1/approvals：セッションが無い・失効している（退会・停止・権限変更・パスワード変更で即失効） | — | 条件を作って呼ぶ | 401 UNAUTHENTICATED。副作用なし |  | UNWANTED: IF セッションが無いか失効しているなら、Kaname は  | T-A-15 | L1 |
+| API-15-003 | account-close | API 異常 | POST /api/v1/approvals：権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした | — | 条件を作って呼ぶ | 403 FORBIDDEN。副作用なし |  | UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用 | T-A-15 | L1 |
+| API-15-004 | account-close | API 異常 | POST /api/v1/approvals：二重送信・同時編集・既に登録済み（冪等キーで防ぐ） | — | 条件を作って呼ぶ | 409 CONFLICT。副作用なし |  | UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を | T-A-15 | L1 |
+| API-15-005 | account-close | API 異常 | POST /api/v1/approvals：必須・形式・値域・表記ゆらぎ（全角半角・空白・記号） | — | 条件を作って呼ぶ | 422 VALIDATION_ERROR。副作用なし |  | UNWANTED: IF 入力が受け付けられないなら、Kaname は 422  | T-A-15 | L1 |
+| API-15-006 | account-close | 状態 | POST /api/v1/approvals：0 件／大量（1,000）／重複／初回／2 回目 | — | 各状態で呼ぶ | 0 件は空配列、大量はページング、重複は 409、2 回目は冪等 |  |  | T-A-15 | L1 |
+| API-15-007 | account-close | API 正常 | DELETE /api/v1/approvals/:id：削除（approvals）— やってしまったことを取り消す／運営にサポートアクセ | 権限のある会員 | 呼ぶ | 200 と { data: Approvals, meta?: { cursor, limi |  | A34 A66 | T-A-15 | L1 |
+| API-15-008 | account-close | API 異常 | DELETE /api/v1/approvals/:id：セッションが無い・失効している（退会・停止・権限変更・パスワード変更で即失効） | — | 条件を作って呼ぶ | 401 UNAUTHENTICATED。副作用なし |  | UNWANTED: IF セッションが無いか失効しているなら、Kaname は  | T-A-15 | L1 |
+| API-15-009 | account-close | API 異常 | DELETE /api/v1/approvals/:id：権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした | — | 条件を作って呼ぶ | 403 FORBIDDEN。副作用なし |  | UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用 | T-A-15 | L1 |
+| API-15-010 | account-close | API 異常 | DELETE /api/v1/approvals/:id：無い・消えた・取り消された（期限切れ・削除済み・他社の行） | — | 条件を作って呼ぶ | 404 NOT_FOUND。副作用なし |  | UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を | T-A-15 | L1 |
+| API-15-011 | account-close | API 異常 | DELETE /api/v1/approvals/:id：60/min/user | — | 条件を作って呼ぶ | 429 RATE_LIMITED。副作用なし |  | UNWANTED: IF 60/min/user を超えたら、Kaname は  | T-A-15 | L1 |
+| API-15-012 | account-close | 状態 | DELETE /api/v1/approvals/:id：0 件／大量（1,000）／重複／初回／2 回目 | — | 各状態で呼ぶ | 0 件は空配列、大量はページング、重複は 409、2 回目は冪等 |  |  | T-A-15 | L1 |
 | API-15-013 | account-close | API 正常 | POST /api/v1/export_jobs：作成・実行（export_jobs）— データを全部持ち出す | 権限のある会員 | 呼ぶ | 201 と { data: ExportJobs, meta?: { cursor, lim |  | A41 | T-A-15 | L1 |
 | API-15-014 | account-close | API 異常 | POST /api/v1/export_jobs：セッションが無い・失効している（退会・停止・権限変更・パスワード変更で即失効） | — | 条件を作って呼ぶ | 401 UNAUTHENTICATED。副作用なし |  | UNWANTED: IF セッションが無いか失効しているなら、Kaname は  | T-A-15 | L1 |
 | API-15-015 | account-close | API 異常 | POST /api/v1/export_jobs：権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした | — | 条件を作って呼ぶ | 403 FORBIDDEN。副作用なし |  | UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用 | T-A-15 | L1 |

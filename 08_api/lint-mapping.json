@@ -54,6 +54,17 @@
    ]
   },
   {
+   "method": "POST",
+   "path": "/api/v1/approvals",
+   "implementation_path": "apps/api/src/routes/approvals.ts::postApprovals",
+   "screen_ids_referencing": [
+    "audit"
+   ],
+   "acts": [
+    "A40"
+   ]
+  },
+  {
    "method": "PATCH",
    "path": "/api/v1/approvals/:id",
    "implementation_path": "apps/api/src/routes/approvals.ts::patchApprovalsById",
@@ -62,6 +73,18 @@
    ],
    "acts": [
     "A15"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/api/v1/approvals/:id",
+   "implementation_path": "apps/api/src/routes/approvals.ts::deleteApprovalsById",
+   "screen_ids_referencing": [
+    "audit"
+   ],
+   "acts": [
+    "A34",
+    "A66"
    ]
   },
   {
@@ -87,40 +110,6 @@
     "A33",
     "A38",
     "A73"
-   ]
-  },
-  {
-   "method": "POST",
-   "path": "/api/v1/audit_events",
-   "implementation_path": "apps/api/src/routes/audit_events.ts::postAuditEvents",
-   "screen_ids_referencing": [
-    "audit"
-   ],
-   "acts": [
-    "A40"
-   ]
-  },
-  {
-   "method": "PATCH",
-   "path": "/api/v1/audit_events/:id",
-   "implementation_path": "apps/api/src/routes/audit_events.ts::patchAuditEventsById",
-   "screen_ids_referencing": [
-    "ops-audit"
-   ],
-   "acts": [
-    "A65"
-   ]
-  },
-  {
-   "method": "DELETE",
-   "path": "/api/v1/audit_events/:id",
-   "implementation_path": "apps/api/src/routes/audit_events.ts::deleteAuditEventsById",
-   "screen_ids_referencing": [
-    "audit"
-   ],
-   "acts": [
-    "A34",
-    "A66"
    ]
   },
   {
@@ -272,17 +261,6 @@
    ]
   },
   {
-   "method": "POST",
-   "path": "/api/v1/inquiries",
-   "implementation_path": "apps/api/src/routes/inquiries.ts::postInquiries",
-   "screen_ids_referencing": [
-    "ops-support"
-   ],
-   "acts": [
-    "A70"
-   ]
-  },
-  {
    "method": "PATCH",
    "path": "/api/v1/inquiries/:id",
    "implementation_path": "apps/api/src/routes/inquiries.ts::patchInquiriesById",
@@ -290,7 +268,8 @@
     "ops-support"
    ],
    "acts": [
-    "A43"
+    "A43",
+    "A70"
    ]
   },
   {
@@ -464,6 +443,17 @@
    ]
   },
   {
+   "method": "PATCH",
+   "path": "/api/v1/notice_deliveries/:id",
+   "implementation_path": "apps/api/src/routes/notice_deliveries.ts::patchNoticeDeliveriesById",
+   "screen_ids_referencing": [
+    "notices"
+   ],
+   "acts": [
+    "A68"
+   ]
+  },
+  {
    "method": "POST",
    "path": "/api/v1/notices",
    "implementation_path": "apps/api/src/routes/notices.ts::postNotices",
@@ -476,13 +466,13 @@
   },
   {
    "method": "PATCH",
-   "path": "/api/v1/notices/:id",
-   "implementation_path": "apps/api/src/routes/notices.ts::patchNoticesById",
+   "path": "/api/v1/ops_members/:id",
+   "implementation_path": "apps/api/src/routes/ops_members.ts::patchOpsMembersById",
    "screen_ids_referencing": [
-    "notices"
+    "ops-audit"
    ],
    "acts": [
-    "A68"
+    "A65"
    ]
   },
   {
@@ -494,30 +484,6 @@
    ],
    "acts": [
     "A60"
-   ]
-  },
-  {
-   "method": "POST",
-   "path": "/api/v1/plans",
-   "implementation_path": "apps/api/src/routes/plans.ts::postPlans",
-   "screen_ids_referencing": [
-    "billing-setup",
-    "signup"
-   ],
-   "acts": [
-    "A01",
-    "A05"
-   ]
-  },
-  {
-   "method": "PATCH",
-   "path": "/api/v1/plans/:id",
-   "implementation_path": "apps/api/src/routes/plans.ts::patchPlansById",
-   "screen_ids_referencing": [
-    "billing"
-   ],
-   "acts": [
-    "A69"
    ]
   },
   {
@@ -555,8 +521,8 @@
   },
   {
    "method": "PATCH",
-   "path": "/api/v1/service_registry/:id",
-   "implementation_path": "apps/api/src/routes/service_registry.ts::patchServiceRegistryById",
+   "path": "/api/v1/service_registry_versions/:id",
+   "implementation_path": "apps/api/src/routes/service_registry_versions.ts::patchServiceRegistryVersionsById",
    "screen_ids_referencing": [
     "ops-services"
    ],
@@ -595,6 +561,30 @@
    ],
    "acts": [
     "A80"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/subscriptions",
+   "implementation_path": "apps/api/src/routes/subscriptions.ts::postSubscriptions",
+   "screen_ids_referencing": [
+    "billing-setup",
+    "signup"
+   ],
+   "acts": [
+    "A01",
+    "A05"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/subscriptions/:id",
+   "implementation_path": "apps/api/src/routes/subscriptions.ts::patchSubscriptionsById",
+   "screen_ids_referencing": [
+    "billing"
+   ],
+   "acts": [
+    "A69"
    ]
   },
   {

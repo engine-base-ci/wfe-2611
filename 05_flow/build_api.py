@@ -88,17 +88,19 @@ for e in E:
         consumption.append({"entity": e["table_name"], "field": n, "consumed_by_screens": [] if internal else scr, "internal": internal, "reason": ("マスタ。label は各画面の札・選択肢として出る" if is_master else ("共通列・参照 ID・秘密の実体は画面に出さない" if internal else (None if scr else "★ どの画面にも出ない")))})
 unconsumed = [c for c in consumption if not c["internal"] and not c["consumed_by_screens"]]
 # ---------------------------------------------------------------- OpenAPI / types.ts
-def ptype(n, note):
-    if n.endswith("_id") or n == "id" or n.endswith("_ids"): return {"type": "array", "items": {"type": "string", "format": "uuid"}} if n.endswith("_ids") else {"type": "string", "format": "uuid"}
-    if n.endswith("_at") or n.endswith("_on") or n in ("started_at",): return {"type": "string", "format": "date-time" if n.endswith("_at") else "date"}
-    if n in ("amount", "price_monthly", "value", "limit_value", "confidence", "decimals", "run_count", "fail_count", "avg_ms", "estimate_minutes", "actual_minutes", "capacity_minutes", "tokens_in", "tokens_out", "cost", "size", "order_no", "retry_count", "target_value", "allocated_value", "measured_value", "current_version", "version_in_use", "swap_cost_days"): return {"type": "number"}
-    if n.startswith("is_") or n in ("enabled", "required", "must_not"): return {"type": "boolean"}
-    if "jsonb" in (note or "") or n.endswith("_spec") or n in ("data", "payload", "snapshot", "options", "filters", "sorts", "columns", "rules", "constraints", "proposal", "detail", "context", "result", "test_result", "override", "carry_over", "attachments", "scope", "dependencies"): return {"type": "object", "additionalProperties": True}
-    return {"type": "string"}
+import sys as _sys, os as _os
+_sys.path.insert(0, _os.path.join(_os.path.dirname(__file__), "..", "scripts", "ci"))
+from colrules import Rules, load_rules, openapi_of  # noqa: E402  DB（gen_ddl）と同じ規則で契約の型を決める
+_cr = load_rules(); _R = Rules(E, _cr.get("aliases", {}), _cr.get("vector_dim", 1536))
+def ptype(n, note, e=None):
+    if n == "id" or n == "tenant_id": return {"type": "string", "format": "uuid"}
+    if n in ("created_at", "updated_at"): return {"type": "string", "format": "date-time"}
+    if e is None: return {"type": "string"}
+    return openapi_of(_R.col_type(e, {"name": n, "note": note})[0])
 schemas = {}
 for e in E:
     name = "".join(w.capitalize() for w in e["table_name"].split("_"))
-    props = {f_["name"]: ptype(f_["name"], f_.get("note")) for f_ in e["fields"] if not f_["name"].startswith("<")}
+    props = {f_["name"]: ptype(f_["name"], f_.get("note"), e) for f_ in e["fields"] if not f_["name"].startswith("<")}
     for c in ("id", "tenant_id", "created_at", "updated_at"): props.setdefault(c, ptype(c, ""))
     schemas[name] = {"type": "object", "properties": props, "required": ["id"], "x-table": e["table_name"], "x-source": e["source"]}
     schemas[name + "Input"] = {"type": "object", "properties": {k: v for k, v in props.items() if k not in INTERNAL}}

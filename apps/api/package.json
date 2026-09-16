@@ -13,7 +13,9 @@
     "@kaname/auth": "workspace:*",
     "@kaname/errors": "workspace:*",
     "@kaname/config": "workspace:*",
-    "@kaname/storage": "workspace:*"
+    "@kaname/storage": "workspace:*",
+    "@kaname/contracts": "workspace:*",
+    "@kaname/actions": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.9.3",

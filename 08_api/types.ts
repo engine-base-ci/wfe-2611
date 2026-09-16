@@ -26,12 +26,12 @@ export type GoalAllocations = { goal_id?: string; assignee_member_id?: string; a
 export type GoalAllocationsInput = { goal_id?: string; assignee_member_id?: string; allocated_value?: number; agreement_status_id?: string };
 export type GoalContributions = { child_goal_id?: string; parent_goal_id?: string; hypothesis_id?: string; verdict_id?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type GoalContributionsInput = { child_goal_id?: string; parent_goal_id?: string; hypothesis_id?: string; verdict_id?: string };
-export type GoalVersions = { goal_id?: string; version?: string; snapshot?: Record<string, unknown>; changed_at?: string; changed_by?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
+export type GoalVersions = { goal_id?: string; version?: number; snapshot?: Record<string, unknown>; changed_at?: string; changed_by?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type GoalVersionsInput = { goal_id?: string; snapshot?: Record<string, unknown>; changed_at?: string; changed_by?: string };
 export type Hypotheses = { goal_id?: string; statement?: string; evidence?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type HypothesesInput = { goal_id?: string; statement?: string; evidence?: string };
-export type Measures = { hypothesis_id?: string; statement?: string; expected_effect?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
-export type MeasuresInput = { hypothesis_id?: string; statement?: string; expected_effect?: string };
+export type Measures = { hypothesis_id?: string; statement?: string; expected_effect?: number; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
+export type MeasuresInput = { hypothesis_id?: string; statement?: string; expected_effect?: number };
 export type Validations = { measure_id?: string; measured_value?: number; verdict_id?: string; measured_at?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type ValidationsInput = { measure_id?: string; measured_value?: number; verdict_id?: string; measured_at?: string };
 export type LedgerDefinitions = { kind_id?: string; name?: string; json_schema?: Record<string, unknown>; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
@@ -46,7 +46,7 @@ export type LedgerRecords = { definition_id?: string; stage_id?: string; amount?
 export type LedgerRecordsInput = { definition_id?: string; stage_id?: string; amount?: number; occurred_on?: string; assignee_id?: string; goal_id?: string; measure_id?: string; data?: Record<string, unknown> };
 export type Duties = { ai_employee_id?: string; name?: string; definition_md?: string; constraints?: Record<string, unknown>; visibility_id?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type DutiesInput = { ai_employee_id?: string; name?: string; definition_md?: string; constraints?: Record<string, unknown>; visibility_id?: string };
-export type DutyVersions = { duty_id?: string; version?: string; snapshot?: Record<string, unknown>; changed_by?: string; change_reason?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
+export type DutyVersions = { duty_id?: string; version?: number; snapshot?: Record<string, unknown>; changed_by?: string; change_reason?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type DutyVersionsInput = { duty_id?: string; snapshot?: Record<string, unknown>; changed_by?: string; change_reason?: string };
 export type LearnedProcedures = { duty_id?: string; target_service_id?: string; status_id?: string; run_count?: number; avg_ms?: number; fail_count?: number; last_verified_at?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type LearnedProceduresInput = { duty_id?: string; target_service_id?: string; status_id?: string; run_count?: number; avg_ms?: number; fail_count?: number; last_verified_at?: string };
@@ -54,7 +54,7 @@ export type ProcedureSteps = { procedure_id?: string; order_no?: number; intent_
 export type ProcedureStepsInput = { procedure_id?: string; order_no?: number; intent_ja?: string; is_variable?: boolean };
 export type MemoryKinds = { key?: string; label?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type MemoryKindsInput = { key?: string; label?: string };
-export type Memories = { kind_id?: string; owner_member_id?: string; title?: string; body?: string; confidence?: number; source_type_id?: string; source_ref_id?: string; embedding?: string; approved_by?: string; approved_at?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
+export type Memories = { kind_id?: string; owner_member_id?: string; title?: string; body?: string; confidence?: number; source_type_id?: string; source_ref_id?: string; embedding?: string[]; approved_by?: string; approved_at?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type MemoriesInput = { kind_id?: string; owner_member_id?: string; title?: string; body?: string; confidence?: number; source_type_id?: string; source_ref_id?: string; approved_by?: string; approved_at?: string };
 export type Tasks = { goal_id?: string; measure_id?: string; assignee_member_id?: string; status_id?: string; due_on?: string; title?: string; origin_id?: string; goal_changed_at?: string; next_action?: string; estimate_minutes?: number; actual_minutes?: number; planned_for?: string; blocked_reason_id?: string; blocked_since?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type TasksInput = { goal_id?: string; measure_id?: string; assignee_member_id?: string; status_id?: string; due_on?: string; title?: string; origin_id?: string; goal_changed_at?: string; next_action?: string; estimate_minutes?: number; actual_minutes?: number; planned_for?: string; blocked_reason_id?: string; blocked_since?: string };
@@ -62,8 +62,8 @@ export type TaskHandovers = { task_id?: string; from_member_id?: string; to_memb
 export type TaskHandoversInput = { task_id?: string; from_member_id?: string; to_member_id?: string; mode_id?: string; agreement_status_id?: string; reason?: string };
 export type DailyPlans = { member_id?: string; plan_date?: string; capacity_minutes?: number; committed_at?: string; closed_at?: string; carry_over?: Record<string, unknown>; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type DailyPlansInput = { member_id?: string; plan_date?: string; capacity_minutes?: number; committed_at?: string; closed_at?: string; carry_over?: Record<string, unknown> };
-export type Triggers = { kind_id?: string; cron_expr?: string; timezone?: string; on_missed_id?: string; ttl_minutes?: string; enabled?: boolean; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
-export type TriggersInput = { kind_id?: string; cron_expr?: string; timezone?: string; on_missed_id?: string; ttl_minutes?: string; enabled?: boolean };
+export type Triggers = { kind_id?: string; cron_expr?: string; timezone?: string; on_missed_id?: string; ttl_minutes?: number; enabled?: boolean; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
+export type TriggersInput = { kind_id?: string; cron_expr?: string; timezone?: string; on_missed_id?: string; ttl_minutes?: number; enabled?: boolean };
 export type Policies = { subject_kind_id?: string; action_kind_id?: string; mode_id?: string; params?: Record<string, unknown>; is_locked?: boolean; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type PoliciesInput = { subject_kind_id?: string; action_kind_id?: string; mode_id?: string; params?: Record<string, unknown>; is_locked?: boolean };
 export type Approvals = { action_run_id?: string; requested_by?: string; approver_member_id?: string; status_id?: string; resolved_at?: string; note?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
@@ -110,11 +110,11 @@ export type ErasureCertificates = { issued_at?: string; content_hash?: string; s
 export type ErasureCertificatesInput = { issued_at?: string; sent_to?: string };
 export type Distributions = { kind_id?: string; key?: string; name?: string; current_version?: number; plan_ids?: string[]; is_locked?: boolean; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type DistributionsInput = { kind_id?: string; key?: string; name?: string; current_version?: number; plan_ids?: string[]; is_locked?: boolean };
-export type DistributionVersions = { distribution_id?: string; version?: string; snapshot?: Record<string, unknown>; released_at?: string; released_by?: string; change_reason?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
+export type DistributionVersions = { distribution_id?: string; version?: number; snapshot?: Record<string, unknown>; released_at?: string; released_by?: string; change_reason?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type DistributionVersionsInput = { distribution_id?: string; snapshot?: Record<string, unknown>; released_at?: string; released_by?: string; change_reason?: string };
 export type TenantDistributions = { distribution_id?: string; version_in_use?: number; enabled?: boolean; override?: Record<string, unknown>; disabled_by?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type TenantDistributionsInput = { distribution_id?: string; version_in_use?: number; enabled?: boolean; override?: Record<string, unknown>; disabled_by?: string };
-export type ServiceRegistryVersions = { service_id?: string; version?: string; automation_verdict_id?: string; reason?: string; released_at?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
+export type ServiceRegistryVersions = { service_id?: string; version?: number; automation_verdict_id?: string; reason?: string; released_at?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type ServiceRegistryVersionsInput = { service_id?: string; automation_verdict_id?: string; reason?: string; released_at?: string };
 export type ServiceRequests = { service_name?: string; url?: string; requested_by?: string; verdict_id?: string; decided_at?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type ServiceRequestsInput = { service_name?: string; url?: string; requested_by?: string; verdict_id?: string; decided_at?: string };
@@ -140,7 +140,7 @@ export type Notifications = { member_id?: string; channel_id?: string; event_kin
 export type NotificationsInput = { member_id?: string; channel_id?: string; event_kind_id?: string; payload?: Record<string, unknown>; sent_at?: string; failed_at?: string; retry_count?: number };
 export type Plans = { key?: string; name?: string; price_monthly?: number; limits?: Record<string, unknown>; current_version?: number; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type PlansInput = { key?: string; name?: string; price_monthly?: number; limits?: Record<string, unknown>; current_version?: number };
-export type PlanVersions = { plan_id?: string; version?: string; snapshot?: Record<string, unknown>; released_at?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
+export type PlanVersions = { plan_id?: string; version?: number; snapshot?: Record<string, unknown>; released_at?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type PlanVersionsInput = { plan_id?: string; snapshot?: Record<string, unknown>; released_at?: string };
 export type Subscriptions = { plan_id?: string; status_id?: string; started_at?: string; suspended_at?: string; ended_at?: string; billing_contact?: Record<string, unknown>; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type SubscriptionsInput = { plan_id?: string; status_id?: string; started_at?: string; suspended_at?: string; ended_at?: string; billing_contact?: Record<string, unknown> };
@@ -156,8 +156,8 @@ export type ErrorEvents = { error_code?: string; member_id?: string; screen_id?:
 export type ErrorEventsInput = { error_code?: string; member_id?: string; screen_id?: string; context?: Record<string, unknown>; shown_at?: string; next_action_taken_at?: string };
 export type Imports = { file_ref?: string; detected_kind_id?: string; proposal?: Record<string, unknown>; status_id?: string; applied_at?: string; applied_by?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type ImportsInput = { file_ref?: string; detected_kind_id?: string; proposal?: Record<string, unknown>; status_id?: string; applied_at?: string; applied_by?: string };
-export type Integrations = { service_id?: string; kind_id?: string; credential_id?: string; scopes?: string; status_id?: string; connected_at?: string; revoked_at?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
-export type IntegrationsInput = { service_id?: string; kind_id?: string; credential_id?: string; scopes?: string; status_id?: string; connected_at?: string; revoked_at?: string };
+export type Integrations = { service_id?: string; kind_id?: string; credential_id?: string; scopes?: string[]; status_id?: string; connected_at?: string; revoked_at?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
+export type IntegrationsInput = { service_id?: string; kind_id?: string; credential_id?: string; scopes?: string[]; status_id?: string; connected_at?: string; revoked_at?: string };
 export type Invitations = { email?: string; scope_id?: string; role_id?: string; permission_preset?: Record<string, unknown>; token_hash?: string; expires_at?: string; accepted_member_id?: string; revoked_at?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type InvitationsInput = { email?: string; role_id?: string; permission_preset?: Record<string, unknown>; expires_at?: string; accepted_member_id?: string; revoked_at?: string };
 export type ExportJobs = { requested_by?: string; kind_id?: string; storage_ref?: string; status_id?: string; expires_at?: string; downloaded_at?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
@@ -166,7 +166,7 @@ export type Attachments = { owner_type?: string; owner_id?: string; storage_ref?
 export type AttachmentsInput = { owner_type?: string; owner_id?: string; mime?: string; size?: number; scanned_at?: string };
 export type Skills = { kind_id?: string; key?: string; name?: string; purpose?: string; current_version?: number; plan_ids?: string[]; visibility_id?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type SkillsInput = { kind_id?: string; key?: string; name?: string; purpose?: string; current_version?: number; plan_ids?: string[]; visibility_id?: string };
-export type SkillVersions = { skill_id?: string; version?: string; package_ref?: string; changelog?: string; tested_at?: string; test_result?: Record<string, unknown>; released_at?: string; released_by?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
+export type SkillVersions = { skill_id?: string; version?: number; package_ref?: string; changelog?: string; tested_at?: string; test_result?: Record<string, unknown>; released_at?: string; released_by?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type SkillVersionsInput = { skill_id?: string; changelog?: string; tested_at?: string; test_result?: Record<string, unknown>; released_at?: string; released_by?: string };
 export type SkillTestRuns = { skill_version_id?: string; ops_member_id?: string; mode?: string; started_at?: string; finished_at?: string; result?: Record<string, unknown>; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type SkillTestRunsInput = { skill_version_id?: string; ops_member_id?: string; mode?: string; started_at?: string; finished_at?: string; result?: Record<string, unknown> };
@@ -227,6 +227,17 @@ export const ENDPOINTS = [
  },
  {
   "id": "EP-005",
+  "method": "POST",
+  "path": "/api/v1/approvals",
+  "acts": [
+   "A40"
+  ],
+  "screens": [
+   "audit"
+  ]
+ },
+ {
+  "id": "EP-006",
   "method": "PATCH",
   "path": "/api/v1/approvals/:id",
   "acts": [
@@ -237,7 +248,19 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-006",
+  "id": "EP-007",
+  "method": "DELETE",
+  "path": "/api/v1/approvals/:id",
+  "acts": [
+   "A34",
+   "A66"
+  ],
+  "screens": [
+   "audit"
+  ]
+ },
+ {
+  "id": "EP-008",
   "method": "POST",
   "path": "/api/v1/attachments",
   "acts": [
@@ -248,7 +271,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-007",
+  "id": "EP-009",
   "method": "GET",
   "path": "/api/v1/audit_events",
   "acts": [
@@ -262,41 +285,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-008",
-  "method": "POST",
-  "path": "/api/v1/audit_events",
-  "acts": [
-   "A40"
-  ],
-  "screens": [
-   "audit"
-  ]
- },
- {
-  "id": "EP-009",
-  "method": "PATCH",
-  "path": "/api/v1/audit_events/:id",
-  "acts": [
-   "A65"
-  ],
-  "screens": [
-   "ops-audit"
-  ]
- },
- {
   "id": "EP-010",
-  "method": "DELETE",
-  "path": "/api/v1/audit_events/:id",
-  "acts": [
-   "A34",
-   "A66"
-  ],
-  "screens": [
-   "audit"
-  ]
- },
- {
-  "id": "EP-011",
   "method": "POST",
   "path": "/api/v1/clones",
   "acts": [
@@ -307,7 +296,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-012",
+  "id": "EP-011",
   "method": "GET",
   "path": "/api/v1/conversations",
   "acts": [
@@ -318,7 +307,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-013",
+  "id": "EP-012",
   "method": "POST",
   "path": "/api/v1/credentials",
   "acts": [
@@ -329,7 +318,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-014",
+  "id": "EP-013",
   "method": "POST",
   "path": "/api/v1/distributions",
   "acts": [
@@ -340,7 +329,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-015",
+  "id": "EP-014",
   "method": "PATCH",
   "path": "/api/v1/duties/:id",
   "acts": [
@@ -351,7 +340,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-016",
+  "id": "EP-015",
   "method": "POST",
   "path": "/api/v1/export_jobs",
   "acts": [
@@ -362,7 +351,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-017",
+  "id": "EP-016",
   "method": "GET",
   "path": "/api/v1/goal_allocations",
   "acts": [
@@ -373,7 +362,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-018",
+  "id": "EP-017",
   "method": "PATCH",
   "path": "/api/v1/goal_allocations/:id",
   "acts": [
@@ -386,7 +375,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-019",
+  "id": "EP-018",
   "method": "GET",
   "path": "/api/v1/goals",
   "acts": [
@@ -400,7 +389,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-020",
+  "id": "EP-019",
   "method": "PATCH",
   "path": "/api/v1/goals/:id",
   "acts": [
@@ -411,7 +400,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-021",
+  "id": "EP-020",
   "method": "GET",
   "path": "/api/v1/hypotheses",
   "acts": [
@@ -422,7 +411,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-022",
+  "id": "EP-021",
   "method": "PATCH",
   "path": "/api/v1/hypotheses/:id",
   "acts": [
@@ -433,7 +422,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-023",
+  "id": "EP-022",
   "method": "GET",
   "path": "/api/v1/inquiries",
   "acts": [
@@ -444,10 +433,11 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-024",
-  "method": "POST",
-  "path": "/api/v1/inquiries",
+  "id": "EP-023",
+  "method": "PATCH",
+  "path": "/api/v1/inquiries/:id",
   "acts": [
+   "A43",
    "A70"
   ],
   "screens": [
@@ -455,18 +445,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-025",
-  "method": "PATCH",
-  "path": "/api/v1/inquiries/:id",
-  "acts": [
-   "A43"
-  ],
-  "screens": [
-   "ops-support"
-  ]
- },
- {
-  "id": "EP-026",
+  "id": "EP-024",
   "method": "GET",
   "path": "/api/v1/invitations",
   "acts": [
@@ -477,7 +456,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-027",
+  "id": "EP-025",
   "method": "GET",
   "path": "/api/v1/invoices",
   "acts": [
@@ -488,7 +467,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-028",
+  "id": "EP-026",
   "method": "GET",
   "path": "/api/v1/learned_procedures",
   "acts": [
@@ -499,7 +478,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-029",
+  "id": "EP-027",
   "method": "GET",
   "path": "/api/v1/ledger_definitions",
   "acts": [
@@ -512,7 +491,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-030",
+  "id": "EP-028",
   "method": "PATCH",
   "path": "/api/v1/ledger_definitions/:id",
   "acts": [
@@ -525,7 +504,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-031",
+  "id": "EP-029",
   "method": "GET",
   "path": "/api/v1/ledger_records",
   "acts": [
@@ -536,7 +515,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-032",
+  "id": "EP-030",
   "method": "PATCH",
   "path": "/api/v1/ledger_records/:id",
   "acts": [
@@ -547,7 +526,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-033",
+  "id": "EP-031",
   "method": "GET",
   "path": "/api/v1/members",
   "acts": [
@@ -562,7 +541,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-034",
+  "id": "EP-032",
   "method": "PATCH",
   "path": "/api/v1/members/:id",
   "acts": [
@@ -579,7 +558,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-035",
+  "id": "EP-033",
   "method": "DELETE",
   "path": "/api/v1/members/:id",
   "acts": [
@@ -592,7 +571,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-036",
+  "id": "EP-034",
   "method": "POST",
   "path": "/api/v1/memories",
   "acts": [
@@ -603,7 +582,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-037",
+  "id": "EP-035",
   "method": "GET",
   "path": "/api/v1/messages",
   "acts": [
@@ -614,7 +593,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-038",
+  "id": "EP-036",
   "method": "PATCH",
   "path": "/api/v1/messages/:id",
   "acts": [
@@ -625,7 +604,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-039",
+  "id": "EP-037",
   "method": "DELETE",
   "path": "/api/v1/messages/:id",
   "acts": [
@@ -636,7 +615,18 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-040",
+  "id": "EP-038",
+  "method": "PATCH",
+  "path": "/api/v1/notice_deliveries/:id",
+  "acts": [
+   "A68"
+  ],
+  "screens": [
+   "notices"
+  ]
+ },
+ {
+  "id": "EP-039",
   "method": "POST",
   "path": "/api/v1/notices",
   "acts": [
@@ -647,18 +637,18 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-041",
+  "id": "EP-040",
   "method": "PATCH",
-  "path": "/api/v1/notices/:id",
+  "path": "/api/v1/ops_members/:id",
   "acts": [
-   "A68"
+   "A65"
   ],
   "screens": [
-   "notices"
+   "ops-audit"
   ]
  },
  {
-  "id": "EP-042",
+  "id": "EP-041",
   "method": "GET",
   "path": "/api/v1/plans",
   "acts": [
@@ -669,31 +659,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-043",
-  "method": "POST",
-  "path": "/api/v1/plans",
-  "acts": [
-   "A01",
-   "A05"
-  ],
-  "screens": [
-   "billing-setup",
-   "signup"
-  ]
- },
- {
-  "id": "EP-044",
-  "method": "PATCH",
-  "path": "/api/v1/plans/:id",
-  "acts": [
-   "A69"
-  ],
-  "screens": [
-   "billing"
-  ]
- },
- {
-  "id": "EP-045",
+  "id": "EP-042",
   "method": "DELETE",
   "path": "/api/v1/plans/:id",
   "acts": [
@@ -704,7 +670,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-046",
+  "id": "EP-043",
   "method": "PATCH",
   "path": "/api/v1/policies/:id",
   "acts": [
@@ -715,7 +681,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-047",
+  "id": "EP-044",
   "method": "POST",
   "path": "/api/v1/service_registry",
   "acts": [
@@ -726,9 +692,9 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-048",
+  "id": "EP-045",
   "method": "PATCH",
-  "path": "/api/v1/service_registry/:id",
+  "path": "/api/v1/service_registry_versions/:id",
   "acts": [
    "A78"
   ],
@@ -737,7 +703,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-049",
+  "id": "EP-046",
   "method": "GET",
   "path": "/api/v1/sessions",
   "acts": [
@@ -748,7 +714,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-050",
+  "id": "EP-047",
   "method": "POST",
   "path": "/api/v1/sessions",
   "acts": [
@@ -759,7 +725,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-051",
+  "id": "EP-048",
   "method": "POST",
   "path": "/api/v1/skills",
   "acts": [
@@ -770,7 +736,31 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-052",
+  "id": "EP-049",
+  "method": "POST",
+  "path": "/api/v1/subscriptions",
+  "acts": [
+   "A01",
+   "A05"
+  ],
+  "screens": [
+   "billing-setup",
+   "signup"
+  ]
+ },
+ {
+  "id": "EP-050",
+  "method": "PATCH",
+  "path": "/api/v1/subscriptions/:id",
+  "acts": [
+   "A69"
+  ],
+  "screens": [
+   "billing"
+  ]
+ },
+ {
+  "id": "EP-051",
   "method": "GET",
   "path": "/api/v1/tasks",
   "acts": [
@@ -782,7 +772,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-053",
+  "id": "EP-052",
   "method": "POST",
   "path": "/api/v1/tasks",
   "acts": [
@@ -794,7 +784,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-054",
+  "id": "EP-053",
   "method": "PATCH",
   "path": "/api/v1/tasks/:id",
   "acts": [
@@ -806,7 +796,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-055",
+  "id": "EP-054",
   "method": "GET",
   "path": "/api/v1/tenants",
   "acts": [
@@ -822,7 +812,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-056",
+  "id": "EP-055",
   "method": "PATCH",
   "path": "/api/v1/tenants/:id",
   "acts": [

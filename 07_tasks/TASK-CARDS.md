@@ -1,11 +1,11 @@
-# Kaname v3 タスク分解結果（api_first・2026-09-15）
+# Kaname v3 タスク分解結果（api_first・2026-09-16）
 
 ## サマリー
 
 - 総タスク数：159（A 23 / D 13 / F 17 / I 22 / S 15 / U-screen 58 / U-shared 6 / V2 5）
 - 画面の被覆：58/59
-- L1 テスト行：3147（正本 07_qa/test-specs）／ 流れ（L2）：9
-- 工数：Human 4854.0 h（607 日）／ AI 計算 848.8 h ＋ 人のレビュー 49.0 h → wall-clock 221.1 h（37 日・並列 10）
+- L1 テスト行：3141（正本 07_qa/test-specs）／ 流れ（L2）：9
+- 工数：Human 4848.0 h（606 日）／ AI 計算 847.3 h ＋ 人のレビュー 49.0 h → wall-clock 219.6 h（37 日・並列 10）
 - Wave 数：20
 
 ## Group 別タスク一覧
@@ -80,12 +80,12 @@
 | T-A-14 | API 会社のやり方が、人が辞めても消えないようにしたい — データ・API（3 endpoint） | backend | backend | 104 | 26.0 | 27.0 | 6 | 14 | 27 |
 | T-A-15 | API このツールを入れて安全か、社内（情シス・コンプラ）に説明できるように（6 endpoint） | backend | backend | 119 | 29.8 | 30.8 | 6 | 22 | 44 |
 | T-A-16 | API 自分のAIを、自分の考え方に近づけたい — データ・API・権限（4 endpoint） | backend | backend | 80 | 6.7 | 6.7 | 6 | 15 | 33 |
-| T-A-17 | API 導入した顧客が詰まったとき、データを見ずに直したい — データ・AP（4 endpoint） | backend | backend | 152 | 38.0 | 39.0 | 6 | 14 | 29 |
+| T-A-17 | API 導入した顧客が詰まったとき、データを見ずに直したい — データ・AP（3 endpoint） | backend | backend | 146 | 36.5 | 37.5 | 6 | 14 | 23 |
 | T-A-18 | API 困ったら運営に聞きたい。止まっているのが自分のせいか Kaname （3 endpoint） | backend | backend | 104 | 26.0 | 27.0 | 6 | 13 | 29 |
 | T-A-19 | API 運営として、問い合わせに答え、お知らせと稼働状況を出し、各社の請求・（4 endpoint） | backend | backend | 116 | 29.0 | 30.0 | 6 | 16 | 34 |
 | T-A-20 | API 自分のアカウント・会社の設定・既存データの取り込み・外部サービスの連（4 endpoint） | backend | backend | 134 | 33.5 | 34.5 | 6 | 23 | 33 |
 | T-A-21 | API 運営として、外部サービスの可否（サービス台帳）とプランの定義と目標ス（3 endpoint） | backend | backend | 98 | 8.2 | 8.2 | 7 | 16 | 27 |
-| T-A-22 | API 運営として、公開の申請を審査し、顧客が許可したときだけ支援で中を見て（3 endpoint） | backend | backend | 155 | 38.8 | 39.8 | 7 | 14 | 24 |
+| T-A-22 | API 運営として、公開の申請を審査し、顧客が許可したときだけ支援で中を見て（3 endpoint） | backend | backend | 155 | 38.8 | 39.8 | 7 | 13 | 24 |
 | T-A-23 | API 運営として、各社に配るもの（AI社員・担当業務・ルール・テンプレ）と（2 endpoint） | backend | backend | 74 | 6.2 | 6.2 | 7 | 8 | 17 |
 
 ### Group U-shared
@@ -577,7 +577,7 @@
 - 行為 A01 A02 A04 A05 A06 A07 A08 A09 A12 A13 A45 / 画面 bridge-setup company-model login mfa-setup onboard-draft onboard-golive onboard-interview signup verify-email / 表 tenants members clones goals ledger_definitions duties / 関門 C2 C3 C5 C7 C8
 - 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-02 T-D-03 T-D-04 T-D-05
 - 根拠（逐語）：D-001「2028-09までに200社→65社に修正。自社SaaS外販。初期顧客が自力で回せることが前提」 ／ D-002「65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集」
-- 触るファイル：apps/api/src/routes/clones.ts (new)、apps/api/src/routes/members.ts (new)、apps/api/src/routes/plans.ts (new)、apps/api/src/routes/sessions.ts (new)
+- 触るファイル：apps/api/src/routes/clones.ts (new)、apps/api/src/routes/members.ts (new)、apps/api/src/routes/sessions.ts (new)、apps/api/src/routes/subscriptions.ts (new)
 - AC（Tier 1）：UBIQUITOUS: POST /api/v1/clones は 08_api/openapi.yaml の operation postClones どおり ／ UBIQUITOUS: GET /api/v1/members は 08_api/openapi.yaml の operation getMembers どおり
 - AC（Tier 2）：EVENT-DRIVEN: WHEN POST /api/v1/clones が「自分のAIの質問に答える」として呼ばれたとき THEN Kaname は「会話 ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）
 - L1 行 36（['API-01-001', 'API-01-002', 'API-01-003'] …）／ L2 ['J-01', 'J-02']
@@ -745,9 +745,9 @@
 - 行為 A02 A04 A13 A34 A39 A40 A41 A42 A62 A66 / 画面 account-close audit export login member-detail mfa-setup security-brief verify-email / 表 tenants members ai_employees goals ledger_definitions approvals / 関門 C1 C2 C4 C6 C8
 - 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-02 T-D-03 T-D-05 T-D-06
 - 根拠（逐語）：D-010「製品の背骨。会社モデル(目標・台帳定義・担当業務・組織・ポリシー・記憶)を1つの定義に。画面もAI社員も自動実行もこの定」 ／ D-015「Bridgeは顧客PCで動く万能実行器。本人のIP・本人のログイン済みセッションで動くのでCAPTCHA/bot検知に到」
-- 触るファイル：apps/api/src/routes/audit_events.ts (new)、apps/api/src/routes/export_jobs.ts (new)、apps/api/src/routes/members.ts (new)、apps/api/src/routes/sessions.ts (new)
-- AC（Tier 1）：UBIQUITOUS: POST /api/v1/audit_events は 08_api/openapi.yaml の operation postAudi ／ UBIQUITOUS: DELETE /api/v1/audit_events/:id は 08_api/openapi.yaml の operation de
-- AC（Tier 2）：EVENT-DRIVEN: WHEN POST /api/v1/audit_events が「全操作の証跡を出す」として呼ばれたとき THEN Kaname は ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）
+- 触るファイル：apps/api/src/routes/approvals.ts (new)、apps/api/src/routes/export_jobs.ts (new)、apps/api/src/routes/members.ts (new)、apps/api/src/routes/sessions.ts (new)
+- AC（Tier 1）：UBIQUITOUS: POST /api/v1/approvals は 08_api/openapi.yaml の operation postApprova ／ UBIQUITOUS: DELETE /api/v1/approvals/:id は 08_api/openapi.yaml の operation delet
+- AC（Tier 2）：EVENT-DRIVEN: WHEN POST /api/v1/approvals が「全操作の証跡を出す」として呼ばれたとき THEN Kaname は「証跡 ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）
 - L1 行 44（['API-15-001', 'API-15-002', 'API-15-003'] …）／ L2 ['J-01', 'J-07', 'J-08']
 - audit: 07_tasks/audit/T-A-15.md
 
@@ -763,16 +763,16 @@
 - L1 行 33（['API-16-001', 'API-16-002', 'API-16-003'] …）／ L2 ['J-02', 'J-03', 'J-05']
 - audit: 07_tasks/audit/T-A-16.md
 
-### T-A-17 API 導入した顧客が詰まったとき、データを見ずに直したい — データ・AP（4 endpoint）
+### T-A-17 API 導入した顧客が詰まったとき、データを見ずに直したい — データ・AP（3 endpoint）
 
-- group A / layer backend / phase 3_api / wave 6 / Human 152 h・AI 38.0 h・wall-clock 39.0 h
+- group A / layer backend / phase 3_api / wave 6 / Human 146 h・AI 36.5 h・wall-clock 37.5 h
 - 行為 A43 A60 A64 A70 / 画面 ops-home ops-support ops-tenant / 表 tenants goals conversations inquiries plans plan_versions / 関門 C2 C6
 - 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-02 T-D-06 T-D-11 T-F-02
 - 根拠（逐語）：D-030「構築メタスキル群は運営の資産で顧客に見えない。会社モデル構築・担当業務の定義・台帳の設計・目標の分解・改善提案・自分のA」 ／ D-037「AI社員の出どころは運営配布/会社作成/個人作成の3経路。託されたAI社員は使えるが定義は編集できない。個人ルールだけは」
 - 触るファイル：apps/api/src/routes/inquiries.ts (new)、apps/api/src/routes/plans.ts (new)、apps/api/src/app.ts (modify)
-- AC（Tier 1）：UBIQUITOUS: POST /api/v1/inquiries は 08_api/openapi.yaml の operation postInquiri ／ UBIQUITOUS: PATCH /api/v1/inquiries/:id は 08_api/openapi.yaml の operation patchI
-- AC（Tier 2）：EVENT-DRIVEN: WHEN POST /api/v1/inquiries が「問い合わせに答える」として呼ばれたとき THEN Kaname は「受信 ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）
-- L1 行 29（['API-17-001', 'API-17-002', 'API-17-003'] …）／ L2 ['J-09']
+- AC（Tier 1）：UBIQUITOUS: PATCH /api/v1/inquiries/:id は 08_api/openapi.yaml の operation patchI ／ UBIQUITOUS: GET /api/v1/plans は 08_api/openapi.yaml の operation getPlans どおりの入出力
+- AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/inquiries/:id が「顧客のデータを見ずに直す」として呼ばれたとき THEN Kan ／ EVENT-DRIVEN: WHEN PATCH /api/v1/inquiries/:id が「問い合わせに答える」として呼ばれたとき THEN Kaname ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）
+- L1 行 23（['API-17-001', 'API-17-002', 'API-17-003'] …）／ L2 ['J-09']
 - audit: 07_tasks/audit/T-A-17.md
 
 ### T-A-18 API 困ったら運営に聞きたい。止まっているのが自分のせいか Kaname （3 endpoint）
@@ -781,8 +781,8 @@
 - 行為 A67 A68 A69 / 画面 billing inquiry notices / 表 conversations audit_events ops_audit_events inquiries notices notice_deliveries / 関門 C2 C6
 - 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-06 T-D-10 T-D-11 T-F-02 T-F-03
 - 根拠（逐語）：D-002「65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集」 ／ D-037「AI社員の出どころは運営配布/会社作成/個人作成の3経路。託されたAI社員は使えるが定義は編集できない。個人ルールだけは」
-- 触るファイル：apps/api/src/routes/inquiries.ts (new)、apps/api/src/routes/notices.ts (new)、apps/api/src/routes/plans.ts (new)、apps/api/src/app.ts (modify)
-- AC（Tier 1）：UBIQUITOUS: GET /api/v1/inquiries は 08_api/openapi.yaml の operation getInquiries ／ UBIQUITOUS: PATCH /api/v1/notices/:id は 08_api/openapi.yaml の operation patchNot
+- 触るファイル：apps/api/src/routes/inquiries.ts (new)、apps/api/src/routes/notice_deliveries.ts (new)、apps/api/src/routes/subscriptions.ts (new)、apps/api/src/app.ts (modify)
+- AC（Tier 1）：UBIQUITOUS: GET /api/v1/inquiries は 08_api/openapi.yaml の operation getInquiries ／ UBIQUITOUS: PATCH /api/v1/notice_deliveries/:id は 08_api/openapi.yaml の operatio
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/inquiries が「問い合わせを書く」として呼ばれたとき THEN Kaname は「問い合わ ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）
 - L1 行 29（['API-18-001', 'API-18-002', 'API-18-003'] …）／ L2 ['J-07']
 - audit: 07_tasks/audit/T-A-18.md
@@ -790,11 +790,11 @@
 ### T-A-19 API 運営として、問い合わせに答え、お知らせと稼働状況を出し、各社の請求・（4 endpoint）
 
 - group A / layer backend / phase 3_api / wave 6 / Human 116 h・AI 29.0 h・wall-clock 30.0 h
-- 行為 A33 A38 A70 A71 A72 A73 / 画面 audit ops-audit ops-billing ops-notices ops-support / 表 tenants members goals approvals conversations audit_events / 関門 C2 C6
+- 行為 A33 A38 A43 A70 A71 A72 A73 / 画面 audit ops-audit ops-billing ops-notices ops-support / 表 tenants members goals approvals conversations audit_events / 関門 C2 C6
 - 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-02 T-D-05 T-D-06 T-D-10
 - 根拠（逐語）：D-002「65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集」 ／ D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」
 - 触るファイル：apps/api/src/routes/audit_events.ts (new)、apps/api/src/routes/inquiries.ts (new)、apps/api/src/routes/invoices.ts (new)、apps/api/src/routes/notices.ts (new)
-- AC（Tier 1）：UBIQUITOUS: GET /api/v1/audit_events は 08_api/openapi.yaml の operation getAuditE ／ UBIQUITOUS: POST /api/v1/inquiries は 08_api/openapi.yaml の operation postInquiri
+- AC（Tier 1）：UBIQUITOUS: GET /api/v1/audit_events は 08_api/openapi.yaml の operation getAuditE ／ UBIQUITOUS: PATCH /api/v1/inquiries/:id は 08_api/openapi.yaml の operation patchI
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/audit_events が「いつ何をしたかを追う」として呼ばれたとき THEN Kaname は ／ EVENT-DRIVEN: WHEN GET /api/v1/audit_events が「誰が何をしたかを確認する」として呼ばれたとき THEN Kaname ／ EVENT-DRIVEN: WHEN GET /api/v1/audit_events が「セキュリティの出来事を見る」として呼ばれたとき THEN Kanam
 - L1 行 34（['API-19-001', 'API-19-002', 'API-19-003'] …）／ L2 ['J-09']
 - audit: 07_tasks/audit/T-A-19.md
@@ -817,8 +817,8 @@
 - 行為 A37 A46 A53 A59 A78 A79 A80 / 画面 ai-activity ai-staff ai-staff-detail ops-catalog ops-services ops-skills / 表 members clones ai_employees duties duty_versions policies / 関門 C2 C4 C6
 - 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-04 T-D-05 T-D-10 T-D-13
 - 根拠（逐語）：D-030「構築メタスキル群は運営の資産で顧客に見えない。会社モデル構築・担当業務の定義・台帳の設計・目標の分解・改善提案・自分のA」 ／ D-037「AI社員の出どころは運営配布/会社作成/個人作成の3経路。託されたAI社員は使えるが定義は編集できない。個人ルールだけは」
-- 触るファイル：apps/api/src/routes/ai_employees.ts (new)、apps/api/src/routes/service_registry.ts (new)、apps/api/src/routes/skills.ts (new)、apps/api/src/app.ts (modify)
-- AC（Tier 1）：UBIQUITOUS: GET /api/v1/ai_employees は 08_api/openapi.yaml の operation getAiEmpl ／ UBIQUITOUS: PATCH /api/v1/service_registry/:id は 08_api/openapi.yaml の operation
+- 触るファイル：apps/api/src/routes/ai_employees.ts (new)、apps/api/src/routes/service_registry_versions.ts (new)、apps/api/src/routes/skills.ts (new)、apps/api/src/app.ts (modify)
+- AC（Tier 1）：UBIQUITOUS: GET /api/v1/ai_employees は 08_api/openapi.yaml の operation getAiEmpl ／ UBIQUITOUS: PATCH /api/v1/service_registry_versions/:id は 08_api/openapi.yaml の 
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/ai_employees が「AI社員を増やす・人に託す」として呼ばれたとき THEN Kanam ／ EVENT-DRIVEN: WHEN GET /api/v1/ai_employees が「このAI社員の中身を見る」として呼ばれたとき THEN Kaname ／ EVENT-DRIVEN: WHEN GET /api/v1/ai_employees が「木を開いて、止まっているところを見る」として呼ばれたとき THEN 
 - L1 行 27（['API-21-001', 'API-21-002', 'API-21-003'] …）／ L2 ['J-09']
 - audit: 07_tasks/audit/T-A-21.md
@@ -826,12 +826,12 @@
 ### T-A-22 API 運営として、公開の申請を審査し、顧客が許可したときだけ支援で中を見て（3 endpoint）
 
 - group A / layer backend / phase 3_api / wave 7 / Human 155 h・AI 38.8 h・wall-clock 39.8 h
-- 行為 A63 A64 A65 / 画面 ops-audit ops-review ops-tenant / 表 members duties duty_versions artifacts audit_events distributions / 関門 C2
-- 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-04 T-D-06 T-D-10 T-D-11
+- 行為 A63 A64 A65 / 画面 ops-audit ops-review ops-tenant / 表 duties duty_versions artifacts audit_events distributions ops_members / 関門 C2
+- 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-04 T-D-06 T-D-10 T-D-11 T-F-02
 - 根拠（逐語）：D-010「製品の背骨。会社モデル(目標・台帳定義・担当業務・組織・ポリシー・記憶)を1つの定義に。画面もAI社員も自動実行もこの定」 ／ D-019「実装順序。Bridge(万能実行器)を最初に作る」
-- 触るファイル：apps/api/src/routes/audit_events.ts (new)、apps/api/src/routes/distributions.ts (new)、apps/api/src/routes/plans.ts (new)、apps/api/src/app.ts (modify)
-- AC（Tier 1）：UBIQUITOUS: PATCH /api/v1/audit_events/:id は 08_api/openapi.yaml の operation pat ／ UBIQUITOUS: POST /api/v1/distributions は 08_api/openapi.yaml の operation postDis
-- AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/audit_events/:id が「運営の証跡を見る」として呼ばれたとき THEN Kana ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）
+- 触るファイル：apps/api/src/routes/distributions.ts (new)、apps/api/src/routes/ops_members.ts (new)、apps/api/src/routes/plans.ts (new)、apps/api/src/app.ts (modify)
+- AC（Tier 1）：UBIQUITOUS: POST /api/v1/distributions は 08_api/openapi.yaml の operation postDis ／ UBIQUITOUS: PATCH /api/v1/ops_members/:id は 08_api/openapi.yaml の operation patc
+- AC（Tier 2）：EVENT-DRIVEN: WHEN POST /api/v1/distributions が「公開の申請を審査する」として呼ばれたとき THEN Kaname ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）
 - L1 行 24（['API-22-001', 'API-22-002', 'API-22-003'] …）／ L2 ['J-09']
 - audit: 07_tasks/audit/T-A-22.md
 
@@ -927,7 +927,7 @@
 - 根拠（逐語）：D-001「2028-09までに200社→65社に修正。自社SaaS外販。初期顧客が自力で回せることが前提」 ／ D-011「製品名はKaname(要)。jobrainから改名」
 - 触るファイル：apps/web/app/(public)/signup/page.tsx (new)、apps/web/tests/screens/signup.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 signup は URL /signup で開く（apps/web/app/(public)/signup/page.tsx。遷移 ／ STATE-DRIVEN: WHILE 画面 signup が描画中 THEN h1「アカウントを作る」・第2ナビ ・状態 2（通常、既に登録済み）がモック 0
-- AC（Tier 2）：EVENT-DRIVEN: WHEN POST /api/v1/plans が「会社名とメールを入れる」として呼ばれたとき THEN Kaname は「アカウン ／ EVENT-DRIVEN: WHEN POST /api/v1/plans が「支払い方法を入れる」として呼ばれたとき THEN Kaname は「決済事業者に ／ EVENT-DRIVEN: WHEN 「はじめる」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
+- AC（Tier 2）：EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「会社名とメールを入れる」として呼ばれたとき THEN Kanam ／ EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「支払い方法を入れる」として呼ばれたとき THEN Kaname  ／ EVENT-DRIVEN: WHEN 「はじめる」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 25（['SCR-SIGNUP-001', 'SCR-SIGNUP-002', 'SCR-SIGNUP-003'] …）／ L2 ['J-01']
 - audit: 07_tasks/audit/T-U-01.md
 
@@ -1311,7 +1311,7 @@
 - 根拠（逐語）：D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」 ／ D-012「AIは直接変えない。必ず提案として出し人が承認して反映。ただし動線が増えすぎるUX低下は避ける。プルリクエスト的な形は採」
 - 触るファイル：apps/web/app/(app)/audit/page.tsx (new)、apps/web/tests/screens/audit.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 audit は URL /audit で開く（apps/web/app/(app)/audit/page.tsx。遷移の href ／ STATE-DRIVEN: WHILE 画面 audit が描画中 THEN h1「証跡」・第2ナビ すべて / 承認 / AIの実行 / 取り消し / 運営の
-- AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/audit_events が「いつ何をしたかを追う」として呼ばれたとき THEN Kaname は ／ EVENT-DRIVEN: WHEN GET /api/v1/audit_events が「誰が何をしたかを確認する」として呼ばれたとき THEN Kaname ／ EVENT-DRIVEN: WHEN POST /api/v1/audit_events が「全操作の証跡を出す」として呼ばれたとき THEN Kaname は
+- AC（Tier 2）：EVENT-DRIVEN: WHEN POST /api/v1/approvals が「全操作の証跡を出す」として呼ばれたとき THEN Kaname は「証跡 ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN DELETE /api/v1/approvals/:id が「やってしまったことを取り消す」として呼ばれたとき THEN 
 - L1 行 36（['SCR-AUDIT-001', 'SCR-AUDIT-002', 'SCR-AUDIT-003'] …）／ L2 ['J-06', 'J-07', 'J-08']
 - audit: 07_tasks/audit/T-U-33.md
 
@@ -1407,7 +1407,7 @@
 - 根拠（逐語）：D-030「構築メタスキル群は運営の資産で顧客に見えない。会社モデル構築・担当業務の定義・台帳の設計・目標の分解・改善提案・自分のA」 ／ D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」
 - 触るファイル：apps/web/app/(app)/ops/support/page.tsx (new)、apps/web/tests/screens/ops-support.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 ops-support は URL /ops/support で開く（apps/web/app/(app)/ops/support ／ STATE-DRIVEN: WHILE 画面 ops-support が描画中 THEN h1「運営の支援」・第2ナビ 受信箱 / 失敗の型 / 返答と対処・状
-- AC（Tier 2）：EVENT-DRIVEN: WHEN POST /api/v1/inquiries が「問い合わせに答える」として呼ばれたとき THEN Kaname は「受信 ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN PATCH /api/v1/inquiries/:id が「顧客のデータを見ずに直す」として呼ばれたとき THEN Kan
+- AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/inquiries/:id が「顧客のデータを見ずに直す」として呼ばれたとき THEN Kan ／ EVENT-DRIVEN: WHEN PATCH /api/v1/inquiries/:id が「問い合わせに答える」として呼ばれたとき THEN Kaname ／ EVENT-DRIVEN: WHEN 「返答する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 25（['SCR-OPS-SUPPORT-001', 'SCR-OPS-SUPPORT-002', 'SCR-OPS-SUPPORT-003'] …）／ L2 ['J-09']
 - audit: 07_tasks/audit/T-U-41.md
 
@@ -1491,7 +1491,7 @@
 - 根拠（逐語）：D-076「全体見直し（01_hearing/全体見直し_20260915.md）の §2・§3・§6 を決定にする。顧客側に 自分」 ／ D-041「サービス台帳で外部サービスごとの自動操作可否を持つ(api/allowed/unspecified/forbidden/」
 - 触るファイル：apps/web/app/(app)/ops/services/page.tsx (new)、apps/web/tests/screens/ops-services.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 ops-services は URL /ops/services で開く（apps/web/app/(app)/ops/servi ／ STATE-DRIVEN: WHILE 画面 ops-services が描画中 THEN h1「運営：サービス台帳」・第2ナビ サービス台帳 / 版の履歴 /
-- AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/service_registry/:id が「サービス台帳を更新する」として呼ばれたとき TH ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「版を出す」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
+- AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/service_registry_versions/:id が「サービス台帳を更新する」として ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「版を出す」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 25（['SCR-OPS-SERVICES-001', 'SCR-OPS-SERVICES-002', 'SCR-OPS-SERVICES-003'] …）／ L2 ['J-09']
 - audit: 07_tasks/audit/T-U-48.md
 
@@ -1527,7 +1527,7 @@
 - 根拠（逐語）：D-075「運営と顧客の間で往復するものは 6 つ（問い合わせ／お知らせと稼働状況／通知の届け先／プランと利用量／請求と入金／セキュ」 ／ D-043「ネイティブアプリはレスポンシブとは別物。プッシュ通知が本質(承認待ちの通知)。段階2でPWA」
 - 触るファイル：apps/web/app/(app)/notices/page.tsx (new)、apps/web/tests/screens/notices.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 notices は URL /notices で開く（apps/web/app/(app)/notices/page.tsx。遷移 ／ STATE-DRIVEN: WHILE 画面 notices が描画中 THEN h1「お知らせと通知」・第2ナビ お知らせ / 稼働状況 / 通知の届け先・状
-- AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/notices/:id が「お知らせを読む・通知の届け先を選ぶ」として呼ばれたとき THEN  ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「通知の届け先を保存する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映
+- AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/notice_deliveries/:id が「お知らせを読む・通知の届け先を選ぶ」として呼ば ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「通知の届け先を保存する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映
 - L1 行 35（['SCR-NOTICES-001', 'SCR-NOTICES-002', 'SCR-NOTICES-003'] …）／ L2 ['J-07']
 - audit: 07_tasks/audit/T-U-51.md
 
@@ -1539,7 +1539,7 @@
 - 根拠（逐語）：D-075「運営と顧客の間で往復するものは 6 つ（問い合わせ／お知らせと稼働状況／通知の届け先／プランと利用量／請求と入金／セキュ」 ／ D-002「65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集」
 - 触るファイル：apps/web/app/(app)/billing/page.tsx (new)、apps/web/tests/screens/billing.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 billing は URL /billing で開く（apps/web/app/(app)/billing/page.tsx。遷移 ／ STATE-DRIVEN: WHILE 画面 billing が描画中 THEN h1「プランと請求」・第2ナビ プラン / 使った量 / 請求書 / 支払い方
-- AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/plans/:id が「プランと請求書を見る」として呼ばれたとき THEN Kaname は「 ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「プランを変える」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
+- AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/subscriptions/:id が「プランと請求書を見る」として呼ばれたとき THEN K ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「プランを変える」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 30（['SCR-BILLING-001', 'SCR-BILLING-002', 'SCR-BILLING-003'] …）／ L2 ['J-07']
 - audit: 07_tasks/audit/T-U-52.md
 
@@ -1599,7 +1599,7 @@
 - 根拠（逐語）：D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」 ／ D-073「自分のもの（個人の範囲・自主目標・自分のAIの記憶・自分が作ったAI社員）は権限なしで作る・直す・消す。それ以外は権限の」
 - 触るファイル：apps/web/app/(app)/ops/audit/page.tsx (new)、apps/web/tests/screens/ops-audit.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 ops-audit は URL /ops/audit で開く（apps/web/app/(app)/ops/audit/page. ／ STATE-DRIVEN: WHILE 画面 ops-audit が描画中 THEN h1「運営：運営の証跡」・第2ナビ 運営の証跡 / セキュリティの出来事 
-- AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/audit_events が「いつ何をしたかを追う」として呼ばれたとき THEN Kaname は ／ EVENT-DRIVEN: WHEN GET /api/v1/audit_events が「誰が何をしたかを確認する」として呼ばれたとき THEN Kaname ／ EVENT-DRIVEN: WHEN PATCH /api/v1/audit_events/:id が「運営の証跡を見る」として呼ばれたとき THEN Kana
+- AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/audit_events が「いつ何をしたかを追う」として呼ばれたとき THEN Kaname は ／ EVENT-DRIVEN: WHEN GET /api/v1/audit_events が「誰が何をしたかを確認する」として呼ばれたとき THEN Kaname ／ EVENT-DRIVEN: WHEN PATCH /api/v1/ops_members/:id が「運営の証跡を見る」として呼ばれたとき THEN Kanam
 - L1 行 28（['SCR-OPS-AUDIT-001', 'SCR-OPS-AUDIT-002', 'SCR-OPS-AUDIT-003'] …）／ L2 ['J-09']
 - audit: 07_tasks/audit/T-U-57.md
 

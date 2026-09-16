@@ -46,82 +46,14 @@ targets = [e for e in targets if e["table_name"] not in existing]
 if not targets: print("作る表が無い（全部 migration 済み）"); sys.exit(0)
 new_names = {e["table_name"] for e in targets}
 
-# ---- 名前の規則 -------------------------------------------------------------
-def singular(t: str) -> str:
-    if t.endswith("ies"): return t[:-3] + "y"
-    if t.endswith("ses"): return t[:-2] + "is"   # hypotheses → hypothesis
-    if t.endswith("s"): return t[:-1]
-    return t
-
-def is_master(e) -> bool:
-    names = [f["name"] for f in e["fields"]]
-    return e["tenant_isolation"]["type"] == "none" and "key" in names and not any(n.startswith("<") for n in names)
-
-def has_tenant(e) -> bool:
-    return e["tenant_isolation"]["type"] != "none" or any(f["name"] == "tenant_id" for f in e["fields"])
-
-MEMBER_COLS = re.compile(r"(^|_)(member_id|requested_by|changed_by|released_by|approved_by|decided_by|applied_by|published_by|disabled_by|recorded_by|assignee_id)$")
-POLY = {"origin", "subject", "target", "source_ref", "template", "options_master", "provisioning"}  # 多態・外の参照：uuid・FK なし
-ALIASES = dict(x.split("=", 1) for x in a.alias)
-ENUMISH = {"kind", "status", "mode", "verdict", "disposition", "visibility", "type", "format", "channel", "component", "state", "method", "role", "reason", "strategy", "value_type", "data_type"}
-
-def resolve_fk(e, col: str):
-    """*_id → (型, 参照先 or None)。参照先は (表, 列)"""
-    t = e["table_name"]; stem = col[:-3]
-    if col == "parent_id": return "uuid", (t, "id")
-    if MEMBER_COLS.search(col) or MEMBER_COLS.search(stem) or col.endswith("ops_member_id"): return "uuid", (a.members_table, "id")
-    for k, v in ALIASES.items():
-        if stem == k or stem.endswith("_" + k):
-            if v == "text": return "text", None
-            return ("text", (v, "key")) if is_master(by_table[v]) else ("uuid", (v, "id"))
-    last = stem.split("_")[-1]
-    if last in POLY or stem in POLY: return "uuid", None
-    if last in ENUMISH or stem in ENUMISH:
-        # 値の集合（マスタ）：<表の単数>_<stem>s があればそれ。無ければ text（値は API 層の zod と正本が持つ）
-        own = f"{singular(t)}_{stem}s"
-        if own in by_table: return "text", (own, "key")
-        if f"{stem}s" in by_table and is_master(by_table[f"{stem}s"]): return "text", (f"{stem}s", "key")  # rollup_kind_id → rollup_kinds
-        rel_m = [r["to"] for r in e.get("relations", []) if "to" in r and r["to"].endswith(f"_{stem}s") and is_master(by_table.get(r["to"], {"tenant_isolation": {"type": "x"}, "fields": []}))]
-        if len(rel_m) == 1 and not own in by_table: return "text", (rel_m[0], "key")
-        return "text", None
-    # 1) 関係（relations）の先で単数形が一致する表。同点なら 同じ接頭語の表 → relations にある表
-    rel_targets = [r["to"] for r in e.get("relations", []) if "to" in r]
-    cands = list(dict.fromkeys(rel_targets + list(by_table)))
-    def score(tb: str) -> int:
-        s = singular(tb)
-        if s == stem or tb == stem: return 4
-        if s.endswith("_" + stem): return 2            # definition_id → ledger_definitions
-        if stem.endswith("_" + s) or (stem.endswith(s) and s != stem): return 1  # parent_goal_id → goals
-        return 0
-    best = max(cands, key=lambda tb: (score(tb), tb.split("_")[0] == t.split("_")[0], tb in rel_targets), default=None)
-    if best and score(best) > 0:
-        te = by_table[best]
-        if is_master(te): return "text", (best, "key")
-        return "uuid", (best, "id")
-    return None
-
-def col_type(e, f) -> tuple[str, str | None]:
-    """→ (型, 参照先 'table(col)' or None)"""
-    n, note = f["name"], (f.get("note") or "")
-    m = re.match(r"(jsonb|uuid\[\]|text\[\]|date|numeric\(\d+,\d+|vector\(N|int|bigint|boolean|timestamptz)", note)
-    if m:
-        ty = m.group(1)
-        if ty.startswith("numeric("): ty += ")"
-        if ty == "vector(N": ty = f"vector({a.vector_dim})"
-        return ty, None
-    if n.endswith("_ids"): return "uuid[]", None
-    if n.endswith("_id") or MEMBER_COLS.search(n):
-        r = resolve_fk(e, n if n.endswith("_id") else n + "_id")
-        if r: return r[0], (f"{r[1][0]}({r[1][1]})" if r[1] else None)
-        if "／" in note or n[:-3].split("_")[-1] in ENUMISH: return "text", None
-        return "uuid", None
-    if n.endswith("_at") or n in ("blocked_since",): return "timestamptz", None
-    if n.endswith("_on") or n.endswith("_date") or n in ("period_start", "period_end", "planned_for", "retain_until"): return "date", None
-    if n.endswith(("_minutes", "_count", "order_no", "decimals", "version", "current_version", "version_in_use", "tokens_in", "tokens_out", "run_count", "fail_count", "avg_ms")): return "int", None
-    if n == "size": return "bigint", None
-    if n in ("amount", "value", "limit_value", "target_value", "allocated_value", "measured_value", "price_monthly", "cost", "confidence", "expected_effect"): return "numeric", None
-    if n.startswith("is_") or n in ("enabled", "required", "locked") or n.endswith("_enabled"): return "boolean", None
-    return "text", None
+# ---- 名前の規則：scripts/ci/colrules.py（build_api.py と共通） --------------------
+import sys as _sys
+_sys.path.insert(0, str(Path(__file__).parent))
+from colrules import Rules, load_rules, is_master, has_tenant  # noqa: E402
+_rules = load_rules()
+_aliases = dict(_rules.get("aliases", {})); _aliases.update(dict(x.split("=", 1) for x in a.alias))
+R = Rules(ents, _aliases, a.vector_dim if a.vector_dim != 1536 else _rules.get("vector_dim", 1536), a.members_table)
+def col_type(e, f): return R.col_type(e, f)
 
 # ---- DDL --------------------------------------------------------------------
 def ddl_for(e) -> tuple[str, list[str]]:

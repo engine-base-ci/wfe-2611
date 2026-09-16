@@ -61,6 +61,11 @@ for line in ER.split("\n"):
                {"name": f"{name}_ops_read_with_grant", "operation": "select", "role": "ops", "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = " + name + ".tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)", "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ", "source": ["D-074.5", "D-077.7"]}]
         # 権限そのもの・運営への許可・セッションは「本人のもの」でも自分で書けない（自分に権限を付与できてしまう。T-F-02 の RLS テストで発覚・2026-09-15）
         if owner and name not in ("permissions", "support_access_grants", "sessions", "ops_members", "invitations"): pol.insert(1, {"name": f"{name}_self_only_write", "operation": "insert,update,delete", "role": "member", "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND " + next(f["name"] for f in fields if f["name"] in ("owner_member_id", "member_id", "opened_by_member_id", "requested_by", "grantee_member_id")) + " = current_setting('app.user_id', true)::uuid", "rationale": "本人のもの（個人の範囲）は権限なしで自由", "source": ["D-073.1"]})
+    ops_cols = [f["name"] for f in fields if f["name"].endswith("ops_member_id")]
+    if iso in ("account_scoped", "scope_layered") and ops_cols and name not in ("support_access_grants",):  # 運営への許可は顧客だけが書く（D-042）
+        # 運営が対応して書き込む行（assignee／reviewer／decided_by／recorded_by の運営メンバー列を持つ表）。運営は会社の 1 社の中で対応する（D-075・D-077）
+        ops_ops = "insert,update" if any(c.startswith("recorded_by") for c in ops_cols) else "update"
+        pol.append({"name": f"{name}_ops_write", "operation": ops_ops, "role": "ops", "predicate": "current_setting('app.role', true) = 'ops' AND tenant_id = current_setting('app.tenant_id', true)::uuid", "rationale": "運営が対応して書く行（" + "・".join(ops_cols) + "）。会社の 1 社の中で・証跡に残す", "source": ["D-075", "D-077.1"]})
     if "追記専用" in note:   # 証跡は関門の関数（app.record_*・security definer）だけが書く。直接の INSERT/UPDATE/DELETE は無い（ER 注記 3）
         pol = [p if p["operation"] == "select" else {**p, "operation": "select"} for p in pol if p["operation"] in ("select", "all")] + [{"name": f"{name}_append_only", "operation": "insert,update,delete", "role": "system", "predicate": "false", "rationale": "追記専用。書き込みは関門の関数 app.record_*（security definer）だけ。UPDATE/DELETE は誰にも無い", "source": ["D-042.3", "D-074.4"]}]
     src = sorted(set(D(note)) | tbl_dec.get(name, set()) | set(sec_dec))
@@ -89,6 +94,19 @@ def method_of(text):
 def tables_of(objs): return [t for o in objs for t in obj_tbl.get(o, []) if t in ent_by_tbl]
 def api_for_act(aid, scr):
     a = acts[aid]; m = method_of(a["act"]); tb = tables_of(scr["objects"]) or ["tenants"]; t = tb[0]
+    if m != "GET" and scr["id"].startswith("ops-"):
+        # 運営が書く先は運営が書ける表（運営の資産 ops_all／マスタ ops_write／運営が対応する行 *_ops_write）。追記専用は除く。書けるのが update だけなら PATCH
+        pol_of = {e["table_name"]: e["access_control_policies"] for e in entities}
+        def ops_ops(x): return {op for p in pol_of.get(x, []) if p["role"] == "ops" and p["operation"] != "select" for op in p["operation"].split(",")}
+        writable = [x for x in tb if ops_ops(x)]
+        if writable: t = writable[0]; tb = [t] + [x for x in tb if x != t]
+        if m == "POST" and t in pol_of and ops_ops(t) and not (ops_ops(t) & {"insert", "all"}): m = "PATCH"
+    if m != "GET" and not scr["id"].startswith("ops-"):
+        # 書く先は呼ぶ人が書ける表（運営の資産・マスタは会社の人が書けない＝RLS で 403 になる）。無ければ先頭のまま
+        iso_of = {e["table_name"]: e["tenant_isolation"]["type"] for e in entities}
+        append_only = {e["table_name"] for e in entities if any(p["role"] == "system" for p in e["access_control_policies"])}
+        writable = [x for x in tb if iso_of.get(x) not in ("none", "ops_scoped") and x not in append_only]  # 追記専用（証跡）は API から直接書かない（関門の関数だけ）
+        if writable: t = writable[0]; tb = [t] + [x for x in tb if x != t]
     path = f"/api/{t}" + ("/:id" if m in ("PATCH", "DELETE") else "")
     return {"act": aid, "role": "data_fetch" if m == "GET" else "action", "method": m, "path_draft": path, "auth": "session（会社・層・権限）", "related_entities": [ent_by_tbl[x] for x in tb[:4]], "choke_points": BP.get(aid, {}).get("choke_points", []), "source": a["source"]}
 ROUTE_OF = {s["id"]: s.get("route") for s in F["screens"]}

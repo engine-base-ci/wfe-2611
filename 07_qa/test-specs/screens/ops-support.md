@@ -7,7 +7,7 @@
 | SCR-OPS-SUPPORT-001 | ops-support | 状態 | 状態「受信箱」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-ops-support.html の状態 n と一致 |  | G-06・G-07 | T-U-41 | L1 |
 | SCR-OPS-SUPPORT-002 | ops-support | 状態 | 状態「空」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-ops-support.html の状態 ge と一致 |  | G-06・G-07 | T-U-41 | L1 |
 | SCR-OPS-SUPPORT-003 | ops-support | 役割 | 役割 R6 で開くと、その役割の中身（data-roles）が出て、他の役割の中身は出ない | R6 でログイン | 画面を開く | 役割ごとの中身（G15） |  |  | T-U-41 | L1 |
-| SCR-OPS-SUPPORT-004 | ops-support | 主アクション | 「返答する」を押すと対応する endpoint が呼ばれ、別 GET で再取得した画面に反映される | 権限のある会員 | 押す | DB と画面が変わる（G-01・G-03） |  | PATCH /api/inquiries/:id POST /api/inquiries | T-U-41 | L1 |
+| SCR-OPS-SUPPORT-004 | ops-support | 主アクション | 「返答する」を押すと対応する endpoint が呼ばれ、別 GET で再取得した画面に反映される | 権限のある会員 | 押す | DB と画面が変わる（G-01・G-03） |  | PATCH /api/inquiries/:id PATCH /api/inquiries/:id | T-U-41 | L1 |
 | SCR-OPS-SUPPORT-005 | ops-support | 到達性 | リンク先 account が実在ルートで 200 で開く | — | 押す | /account が開く（G-04） |  |  | T-U-41 | L1 |
 | SCR-OPS-SUPPORT-006 | ops-support | 到達性 | リンク先 account-close が実在ルートで 200 で開く | — | 押す | /account-close が開く（G-04） |  |  | T-U-41 | L1 |
 | SCR-OPS-SUPPORT-007 | ops-support | 到達性 | リンク先 ai-activity が実在ルートで 200 で開く | — | 押す | /ai-activity が開く（G-04） |  |  | T-U-41 | L1 |

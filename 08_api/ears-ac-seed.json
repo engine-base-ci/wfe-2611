@@ -1,7 +1,7 @@
 {
  "version": "v3",
  "skill": "api-design",
- "endpoints_count": 56,
+ "endpoints_count": 55,
  "ac_seeds": [
   {
    "endpoint": "GET /api/v1/action_runs",
@@ -136,6 +136,29 @@
    ]
   },
   {
+   "endpoint": "POST /api/v1/approvals",
+   "feature_id": "F-012",
+   "screen_ids": [
+    "audit"
+   ],
+   "acts": [
+    "A40"
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN POST /api/v1/approvals が「全操作の証跡を出す」として呼ばれたとき THEN Kaname は「証跡をファイルに書き出す」を行い 2xx を返す",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+    "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
+    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UBIQUITOUS: POST /api/v1/approvals の副作用は関門 C2・C4 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+   ],
+   "source": [
+    "D-042",
+    "D-042.3"
+   ]
+  },
+  {
    "endpoint": "PATCH /api/v1/approvals/:id",
    "feature_id": "F-006",
    "screen_ids": [
@@ -166,6 +189,35 @@
     "D-042.9",
     "D-060.3",
     "D-066.3"
+   ]
+  },
+  {
+   "endpoint": "DELETE /api/v1/approvals/:id",
+   "feature_id": "F-006",
+   "screen_ids": [
+    "audit"
+   ],
+   "acts": [
+    "A34",
+    "A66"
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN DELETE /api/v1/approvals/:id が「やってしまったことを取り消す」として呼ばれたとき THEN Kaname は「打ち消しの操作を実行し証跡に残す」を行い 2xx を返す（自動側：自分のAIが取り消せる範囲を示す）",
+    "EVENT-DRIVEN: WHEN DELETE /api/v1/approvals/:id が「運営にサポートアクセスを許可する」として呼ばれたとき THEN Kaname は「範囲・期限つきの許可を保存。運営が見た記録を顧客の証跡に残す」を行い 2xx を返す",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+    "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
+    "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す",
+    "UBIQUITOUS: DELETE /api/v1/approvals/:id の副作用は関門 C1・C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+   ],
+   "source": [
+    "D-012",
+    "D-012.2",
+    "D-042",
+    "D-042.6",
+    "D-066.4",
+    "D-074.5"
    ]
   },
   {
@@ -223,83 +275,6 @@
     "D-042",
     "D-042.3",
     "D-075.6"
-   ]
-  },
-  {
-   "endpoint": "POST /api/v1/audit_events",
-   "feature_id": "F-012",
-   "screen_ids": [
-    "audit"
-   ],
-   "acts": [
-    "A40"
-   ],
-   "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/audit_events が「全操作の証跡を出す」として呼ばれたとき THEN Kaname は「証跡をファイルに書き出す」を行い 2xx を返す",
-    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
-    "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
-    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
-    "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
-    "UBIQUITOUS: POST /api/v1/audit_events の副作用は関門 C2・C4 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
-   ],
-   "source": [
-    "D-042",
-    "D-042.3"
-   ]
-  },
-  {
-   "endpoint": "PATCH /api/v1/audit_events/:id",
-   "feature_id": "F-019",
-   "screen_ids": [
-    "ops-audit"
-   ],
-   "acts": [
-    "A65"
-   ],
-   "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN PATCH /api/v1/audit_events/:id が「運営の証跡を見る」として呼ばれたとき THEN Kaname は「運営側の操作記録と運営メンバーの権限」を行い 2xx を返す",
-    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
-    "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
-    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
-    "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
-    "UBIQUITOUS: PATCH /api/v1/audit_events/:id の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
-   ],
-   "source": [
-    "D-042",
-    "D-074.4",
-    "D-077.4",
-    "D-077.7"
-   ]
-  },
-  {
-   "endpoint": "DELETE /api/v1/audit_events/:id",
-   "feature_id": "F-006",
-   "screen_ids": [
-    "audit"
-   ],
-   "acts": [
-    "A34",
-    "A66"
-   ],
-   "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN DELETE /api/v1/audit_events/:id が「やってしまったことを取り消す」として呼ばれたとき THEN Kaname は「打ち消しの操作を実行し証跡に残す」を行い 2xx を返す（自動側：自分のAIが取り消せる範囲を示す）",
-    "EVENT-DRIVEN: WHEN DELETE /api/v1/audit_events/:id が「運営にサポートアクセスを許可する」として呼ばれたとき THEN Kaname は「範囲・期限つきの許可を保存。運営が見た記録を顧客の証跡に残す」を行い 2xx を返す",
-    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
-    "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
-    "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
-    "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す",
-    "UBIQUITOUS: DELETE /api/v1/audit_events/:id の副作用は関門 C1・C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
-   ],
-   "source": [
-    "D-012",
-    "D-012.2",
-    "D-042",
-    "D-042.6",
-    "D-066.4",
-    "D-074.5"
    ]
   },
   {
@@ -678,53 +653,33 @@
    ]
   },
   {
-   "endpoint": "POST /api/v1/inquiries",
-   "feature_id": "F-014",
-   "screen_ids": [
-    "ops-support"
-   ],
-   "acts": [
-    "A70"
-   ],
-   "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/inquiries が「問い合わせに答える」として呼ばれたとき THEN Kaname は「受信箱（問い合わせ＋詰まり）。返答は顧客の問い合わせと証跡に残る」を行い 2xx を返す",
-    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
-    "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
-    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
-    "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
-    "UBIQUITOUS: POST /api/v1/inquiries の副作用は関門 C2・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
-   ],
-   "source": [
-    "D-042",
-    "D-075.1",
-    "D-077.3"
-   ]
-  },
-  {
    "endpoint": "PATCH /api/v1/inquiries/:id",
    "feature_id": "F-014",
    "screen_ids": [
     "ops-support"
    ],
    "acts": [
-    "A43"
+    "A43",
+    "A70"
    ],
    "ears_ac_seed": [
     "EVENT-DRIVEN: WHEN PATCH /api/v1/inquiries/:id が「顧客のデータを見ずに直す」として呼ばれたとき THEN Kaname は「構成と失敗の型だけを見る」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN PATCH /api/v1/inquiries/:id が「問い合わせに答える」として呼ばれたとき THEN Kaname は「受信箱（問い合わせ＋詰まり）。返答は顧客の問い合わせと証跡に残る」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
-    "UBIQUITOUS: PATCH /api/v1/inquiries/:id の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+    "UBIQUITOUS: PATCH /api/v1/inquiries/:id の副作用は関門 C2・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
    ],
    "source": [
     "D-030",
     "D-030.10",
     "D-030.9",
     "D-042",
-    "D-042.6"
+    "D-042.6",
+    "D-075.1",
+    "D-077.3"
    ]
   },
   {
@@ -1111,6 +1066,33 @@
    ]
   },
   {
+   "endpoint": "PATCH /api/v1/notice_deliveries/:id",
+   "feature_id": "F-015",
+   "screen_ids": [
+    "notices"
+   ],
+   "acts": [
+    "A68"
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN PATCH /api/v1/notice_deliveries/:id が「お知らせを読む・通知の届け先を選ぶ」として呼ばれたとき THEN Kaname は「お知らせと稼働状況を読む。通知の設定を保存」を行い 2xx を返す（自動側：自分のAIが自分に関係あるお知らせだけ要約する）",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+    "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
+    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UBIQUITOUS: PATCH /api/v1/notice_deliveries/:id の副作用は関門 C2・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+   ],
+   "source": [
+    "D-040.6",
+    "D-043",
+    "D-043.2",
+    "D-075.2",
+    "D-075.3",
+    "D-076.9"
+   ]
+  },
+  {
    "endpoint": "POST /api/v1/notices",
    "feature_id": "F-016",
    "screen_ids": [
@@ -1136,30 +1118,28 @@
    ]
   },
   {
-   "endpoint": "PATCH /api/v1/notices/:id",
-   "feature_id": "F-015",
+   "endpoint": "PATCH /api/v1/ops_members/:id",
+   "feature_id": "F-019",
    "screen_ids": [
-    "notices"
+    "ops-audit"
    ],
    "acts": [
-    "A68"
+    "A65"
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN PATCH /api/v1/notices/:id が「お知らせを読む・通知の届け先を選ぶ」として呼ばれたとき THEN Kaname は「お知らせと稼働状況を読む。通知の設定を保存」を行い 2xx を返す（自動側：自分のAIが自分に関係あるお知らせだけ要約する）",
+    "EVENT-DRIVEN: WHEN PATCH /api/v1/ops_members/:id が「運営の証跡を見る」として呼ばれたとき THEN Kaname は「運営側の操作記録と運営メンバーの権限」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
-    "UBIQUITOUS: PATCH /api/v1/notices/:id の副作用は関門 C2・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+    "UBIQUITOUS: PATCH /api/v1/ops_members/:id の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
    ],
    "source": [
-    "D-040.6",
-    "D-043",
-    "D-043.2",
-    "D-075.2",
-    "D-075.3",
-    "D-076.9"
+    "D-042",
+    "D-074.4",
+    "D-077.4",
+    "D-077.7"
    ]
   },
   {
@@ -1182,60 +1162,6 @@
     "D-030",
     "D-037",
     "D-073.7"
-   ]
-  },
-  {
-   "endpoint": "POST /api/v1/plans",
-   "feature_id": "F-001",
-   "screen_ids": [
-    "billing-setup",
-    "signup"
-   ],
-   "acts": [
-    "A01",
-    "A05"
-   ],
-   "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/plans が「会社名とメールを入れる」として呼ばれたとき THEN Kaname は「アカウントと会社を作る」を行い 2xx を返す",
-    "EVENT-DRIVEN: WHEN POST /api/v1/plans が「支払い方法を入れる」として呼ばれたとき THEN Kaname は「決済事業者に登録（カード番号は預からない）」を行い 2xx を返す",
-    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
-    "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
-    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
-    "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
-    "UBIQUITOUS: POST /api/v1/plans の副作用は関門 C2・C7 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
-   ],
-   "source": [
-    "D-001",
-    "D-001.5",
-    "D-002"
-   ]
-  },
-  {
-   "endpoint": "PATCH /api/v1/plans/:id",
-   "feature_id": "F-015",
-   "screen_ids": [
-    "billing"
-   ],
-   "acts": [
-    "A69"
-   ],
-   "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN PATCH /api/v1/plans/:id が「プランと請求書を見る」として呼ばれたとき THEN Kaname は「プラン・利用量・請求書を読む。プラン変更を申請」を行い 2xx を返す（自動側：自分のAIが上限に近いものを先に言う）",
-    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
-    "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
-    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
-    "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
-    "UBIQUITOUS: PATCH /api/v1/plans/:id の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
-   ],
-   "source": [
-    "D-002",
-    "D-002.2",
-    "D-037",
-    "D-075.4",
-    "D-075.5",
-    "D-076.13"
    ]
   },
   {
@@ -1329,7 +1255,7 @@
    ]
   },
   {
-   "endpoint": "PATCH /api/v1/service_registry/:id",
+   "endpoint": "PATCH /api/v1/service_registry_versions/:id",
    "feature_id": "F-018",
    "screen_ids": [
     "ops-services"
@@ -1338,13 +1264,13 @@
     "A78"
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN PATCH /api/v1/service_registry/:id が「サービス台帳を更新する」として呼ばれたとき THEN Kaname は「可否と理由を版で更新。全社に効く」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN PATCH /api/v1/service_registry_versions/:id が「サービス台帳を更新する」として呼ばれたとき THEN Kaname は「可否と理由を版で更新。全社に効く」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
-    "UBIQUITOUS: PATCH /api/v1/service_registry/:id の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+    "UBIQUITOUS: PATCH /api/v1/service_registry_versions/:id の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
    ],
    "source": [
     "D-041",
@@ -1440,6 +1366,60 @@
     "D-078.5",
     "D-080.4",
     "D-080.5"
+   ]
+  },
+  {
+   "endpoint": "POST /api/v1/subscriptions",
+   "feature_id": "F-001",
+   "screen_ids": [
+    "billing-setup",
+    "signup"
+   ],
+   "acts": [
+    "A01",
+    "A05"
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「会社名とメールを入れる」として呼ばれたとき THEN Kaname は「アカウントと会社を作る」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「支払い方法を入れる」として呼ばれたとき THEN Kaname は「決済事業者に登録（カード番号は預からない）」を行い 2xx を返す",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+    "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
+    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UBIQUITOUS: POST /api/v1/subscriptions の副作用は関門 C2・C7 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+   ],
+   "source": [
+    "D-001",
+    "D-001.5",
+    "D-002"
+   ]
+  },
+  {
+   "endpoint": "PATCH /api/v1/subscriptions/:id",
+   "feature_id": "F-015",
+   "screen_ids": [
+    "billing"
+   ],
+   "acts": [
+    "A69"
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN PATCH /api/v1/subscriptions/:id が「プランと請求書を見る」として呼ばれたとき THEN Kaname は「プラン・利用量・請求書を読む。プラン変更を申請」を行い 2xx を返す（自動側：自分のAIが上限に近いものを先に言う）",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+    "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
+    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UBIQUITOUS: PATCH /api/v1/subscriptions/:id の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+   ],
+   "source": [
+    "D-002",
+    "D-002.2",
+    "D-037",
+    "D-075.4",
+    "D-075.5",
+    "D-076.13"
    ]
   },
   {

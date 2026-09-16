@@ -265,7 +265,7 @@ erDiagram
 | **`distributions`** | `<common>`（tenant_id＝運営）/ `kind_id`（ai_employee / duty / rule / template / goal_skill）/ `key` / `name` / `current_version` / `plan_ids uuid[]` / `is_locked` | **★新設（D-037・D-076.10・D-077.4）。運営配布物のマスタ。**`ai_employees.provisioning_id` はここを指す。目標スキル（D-063）も配布物の一種。`is_locked`＝上書き不可の安全ルール |
 | **`distribution_versions`** | `distribution_id` / `version` / `snapshot jsonb` / `released_at` / `released_by` / `change_reason` | 版。会社側は版を上げるまで変わらない（D-076.10） |
 | **`tenant_distributions`** | `<common>` / `distribution_id` / `version_in_use` / `enabled` / `override jsonb`（会社が足した個人ルール等）/ `disabled_by` | **★新設（D-077.6）。**会社の詳細「配布したもの」＝この会社が使っている配布物・版・上書き。運営はマスタを直し、ここは 1 社への配布の状態 |
-| **`service_registry_versions`** | `<common>` / `service_id` / `version` / `automation_verdict_id` / `reason` / `released_at` | **★新設（D-076.5）。**サービス台帳の可否は版で持ち、全社に効く。禁止に変えたら使っている会社に自動でお知らせ |
+| **`service_registry_versions`** | `<common>`（tenant_id＝運営）/ `service_id` / `version` / `automation_verdict_id` / `reason` / `released_at` | **★新設（D-076.5）。**サービス台帳の可否は版で持ち、全社に効く。禁止に変えたら使っている会社に自動でお知らせ |
 | **`service_requests`** | `<common>` / `service_name` / `url` / `requested_by` / `verdict_id` / `decided_at` | **★新設（D-076.5）。**会社からの「このサービスは触れるか」の申請 |
 | **`review_requests`** | `<common>` / `subject_type`（template / duty）/ `subject_id` / `anonymization_check jsonb` / `status_id`（pending / approved / rejected / returned）/ `reviewer_ops_member_id` / `decided_at` / `reason` | **★新設（D-027・D-074.4・D-077.3）。**会社が明示的に公開したものの審査。承認・却下は会社の詳細の「審査」で行う。公開時の出どころは業種名だけ |
 | **`ops_members`** | `<common>`（tenant_id＝運営）/ `member_id` / `ops_role_id`（support / billing / catalog / admin）/ `revoked_at` | **★新設（D-073.7・D-074.4）。**運営メンバーと権限。運営の権限も 誰に×何に×できること |
@@ -336,7 +336,7 @@ erDiagram
 |---|---|---|
 | **`skills`** | `<common>`（tenant_id＝運営）/ `kind_id`（meta / goal / duty）/ `key` / `name` / `purpose` / `current_version` / `plan_ids uuid[]` / `visibility_id`（name_only） | **★新設（D-078.1）。**構築メタスキル 7 種・目標スキル・業務スキルのマスタ。顧客には名前・目的・版だけ見える。`distributions(kind=goal_skill)` はここへ移す |
 | **`skill_versions`** | `skill_id` / `version` / `package_ref`（C4）/ `changelog` / `tested_at` / `test_result jsonb` / `released_at` / `released_by` | **★新設（D-078.2）。**出す前に運営がテストで動かす。前の版に戻せる |
-| **`skill_test_runs`** | `<common>`（運営）/ `skill_version_id` / `ops_member_id` / `mode`（test）/ `started_at` / `finished_at` / `result jsonb` | テストは外に出ない（`action_runs.mode_id = test` と同じ規則） |
+| **`skill_test_runs`** | `<common>`（tenant_id＝運営）/ `skill_version_id` / `ops_member_id` / `mode`（test）/ `started_at` / `finished_at` / `result jsonb` | テストは外に出ない（`action_runs.mode_id = test` と同じ規則） |
 | **`skill_attachments`** | `<common>` / `skill_id` / `version_in_use` / `target_type`（clone / ai_employee）/ `target_id` / `enabled` / `disabled_by` / `attached_at` | **★新設（D-078.3・D-078.4）。**会社の詳細「配布したもの」と AI社員の 1 体「使えるスキル」はここを読む。会社の権限者が `enabled=false` にできる。AI社員を消す → 行が消える（D-078.7） |
 
 `skill_versions.package_ref` は 10_skills/<skill>/ の一式（SKILL.md＋references＋evals）を C4 に置いた参照（D-080.1）。`skill_test_runs.result` は evals/scenarios.json の期待との突き合わせ（D-080.5）。`action_runs.skill_version_id`（任意）を足し、「どのスキルが働いたか」を証跡と AI社員の動きに出す（D-078.5）。`goals.skill_version_id`（任意）で「どのスキルで組んだか」（D-076.10・D-078.5）。

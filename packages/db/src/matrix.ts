@@ -17,6 +17,7 @@ export interface Seeded {
   tenantB: string;
   bossA: string; // 権限あり・会社の層
   opsId: string; // 運営メンバー（app.user_id。運営の文脈でも user_id は入る）
+  opsTenant: string; // 運営テナント（app.ops_tenant_id()）
   staffA: string; // 権限なし・下の層
   scopeRootA: string;
   scopeDeptA: string;
@@ -206,7 +207,7 @@ export async function runMatrix(
       if (cs.case.includes("SET LOCAL を飛ばす")) ctx = null;
       if (cs.case.includes("運営の文脈")) ctx = ctxOps;
       let r: "ok" | "denied" | "zero";
-      if (seedRow.insert) {
+      if (seedRow.insert && (cs.operation.includes("insert") || cs.operation === "all")) {
         const ins = seedRow.insert(cs.case.includes("他の会社") ? S.tenantB : S.tenantA);
         const keys = Object.keys(ins);
         const sql = `insert into "${cs.table}" (${keys.map((k) => `"${k}"`).join(", ")}) values (${keys.map((_, i) => `$${i + 1}`).join(", ")}) returning ${pk}`;

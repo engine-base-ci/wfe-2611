@@ -34,7 +34,7 @@
     "ci:choke-exceptions": "node scripts/ci/choke.mjs --exceptions",
     "ci:task-choke-declared": "node scripts/ci/gate_pending.mjs G26 T-F-09",
     "ci:access-matrix": "tsx packages/db/src/cli.ts access-matrix",
-    "ci:ears-mapping": "node scripts/ci/gate_pending.mjs G34 T-F-15",
+    "ci:ears-mapping": "node scripts/ci/ears_mapping.mjs",
     "ci:resource-static": "node scripts/ci/sql_guard.mjs --resource-static",
     "ci:schemathesis": "node scripts/ci/gate_pending.mjs G36 T-F-15",
     "db:migrate": "tsx packages/db/src/cli.ts migrate && tsx packages/auth/src/cli.ts",
@@ -48,7 +48,8 @@
     "provision:bucket": "tsx infra/provision/bucket.ts",
     "ci:contract:selftest": "node scripts/ci/contract.test.mjs",
     "ci:env-audit:selftest": "node scripts/ci/env_audit.test.mjs",
-    "ci:errors-used:selftest": "node scripts/ci/errors_used.test.mjs"
+    "ci:errors-used:selftest": "node scripts/ci/errors_used.test.mjs",
+    "ci:ears:gen": "node scripts/ci/gen_ears_tests.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",

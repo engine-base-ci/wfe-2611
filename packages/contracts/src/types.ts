@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:524c29fc35499719
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:a36f3c22396aece9
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = {
   error: string;
@@ -167,7 +167,7 @@ export type GoalContributionsInput = {
 };
 export type GoalVersions = {
   goal_id?: string;
-  version?: string;
+  version?: number;
   snapshot?: Record<string, unknown>;
   changed_at?: string;
   changed_by?: string;
@@ -195,13 +195,13 @@ export type HypothesesInput = { goal_id?: string; statement?: string; evidence?:
 export type Measures = {
   hypothesis_id?: string;
   statement?: string;
-  expected_effect?: string;
+  expected_effect?: number;
   id: string;
   tenant_id?: string;
   created_at?: string;
   updated_at?: string;
 };
-export type MeasuresInput = { hypothesis_id?: string; statement?: string; expected_effect?: string };
+export type MeasuresInput = { hypothesis_id?: string; statement?: string; expected_effect?: number };
 export type Validations = {
   measure_id?: string;
   measured_value?: number;
@@ -334,7 +334,7 @@ export type DutiesInput = {
 };
 export type DutyVersions = {
   duty_id?: string;
-  version?: string;
+  version?: number;
   snapshot?: Record<string, unknown>;
   changed_by?: string;
   change_reason?: string;
@@ -405,7 +405,7 @@ export type Memories = {
   confidence?: number;
   source_type_id?: string;
   source_ref_id?: string;
-  embedding?: string;
+  embedding?: string[];
   approved_by?: string;
   approved_at?: string;
   id: string;
@@ -505,7 +505,7 @@ export type Triggers = {
   cron_expr?: string;
   timezone?: string;
   on_missed_id?: string;
-  ttl_minutes?: string;
+  ttl_minutes?: number;
   enabled?: boolean;
   id: string;
   tenant_id?: string;
@@ -517,7 +517,7 @@ export type TriggersInput = {
   cron_expr?: string;
   timezone?: string;
   on_missed_id?: string;
-  ttl_minutes?: string;
+  ttl_minutes?: number;
   enabled?: boolean;
 };
 export type Policies = {
@@ -906,7 +906,7 @@ export type DistributionsInput = {
 };
 export type DistributionVersions = {
   distribution_id?: string;
-  version?: string;
+  version?: number;
   snapshot?: Record<string, unknown>;
   released_at?: string;
   released_by?: string;
@@ -943,7 +943,7 @@ export type TenantDistributionsInput = {
 };
 export type ServiceRegistryVersions = {
   service_id?: string;
-  version?: string;
+  version?: number;
   automation_verdict_id?: string;
   reason?: string;
   released_at?: string;
@@ -1182,7 +1182,7 @@ export type PlansInput = {
 };
 export type PlanVersions = {
   plan_id?: string;
-  version?: string;
+  version?: number;
   snapshot?: Record<string, unknown>;
   released_at?: string;
   id: string;
@@ -1330,7 +1330,7 @@ export type Integrations = {
   service_id?: string;
   kind_id?: string;
   credential_id?: string;
-  scopes?: string;
+  scopes?: string[];
   status_id?: string;
   connected_at?: string;
   revoked_at?: string;
@@ -1343,7 +1343,7 @@ export type IntegrationsInput = {
   service_id?: string;
   kind_id?: string;
   credential_id?: string;
-  scopes?: string;
+  scopes?: string[];
   status_id?: string;
   connected_at?: string;
   revoked_at?: string;
@@ -1432,7 +1432,7 @@ export type SkillsInput = {
 };
 export type SkillVersions = {
   skill_id?: string;
-  version?: string;
+  version?: number;
   package_ref?: string;
   changelog?: string;
   tested_at?: string;
@@ -1526,363 +1526,356 @@ export const ENDPOINTS = [
   },
   {
     id: "EP-005",
+    method: "POST",
+    path: "/api/v1/approvals",
+    acts: ["A40"],
+    screens: ["audit"],
+  },
+  {
+    id: "EP-006",
     method: "PATCH",
     path: "/api/v1/approvals/:id",
     acts: ["A15"],
     screens: ["approvals"],
   },
   {
-    id: "EP-006",
+    id: "EP-007",
+    method: "DELETE",
+    path: "/api/v1/approvals/:id",
+    acts: ["A34", "A66"],
+    screens: ["audit"],
+  },
+  {
+    id: "EP-008",
     method: "POST",
     path: "/api/v1/attachments",
     acts: ["A76"],
     screens: ["import"],
   },
   {
-    id: "EP-007",
+    id: "EP-009",
     method: "GET",
     path: "/api/v1/audit_events",
     acts: ["A33", "A38", "A73"],
     screens: ["audit", "ops-audit"],
   },
   {
-    id: "EP-008",
-    method: "POST",
-    path: "/api/v1/audit_events",
-    acts: ["A40"],
-    screens: ["audit"],
-  },
-  {
-    id: "EP-009",
-    method: "PATCH",
-    path: "/api/v1/audit_events/:id",
-    acts: ["A65"],
-    screens: ["ops-audit"],
-  },
-  {
     id: "EP-010",
-    method: "DELETE",
-    path: "/api/v1/audit_events/:id",
-    acts: ["A34", "A66"],
-    screens: ["audit"],
-  },
-  {
-    id: "EP-011",
     method: "POST",
     path: "/api/v1/clones",
     acts: ["A06"],
     screens: ["onboard-interview"],
   },
   {
-    id: "EP-012",
+    id: "EP-011",
     method: "GET",
     path: "/api/v1/conversations",
     acts: ["A20"],
     screens: ["clone-chat"],
   },
   {
-    id: "EP-013",
+    id: "EP-012",
     method: "POST",
     path: "/api/v1/credentials",
     acts: ["A10"],
     screens: ["credentials"],
   },
   {
-    id: "EP-014",
+    id: "EP-013",
     method: "POST",
     path: "/api/v1/distributions",
     acts: ["A63"],
     screens: ["ops-review"],
   },
   {
-    id: "EP-015",
+    id: "EP-014",
     method: "PATCH",
     path: "/api/v1/duties/:id",
     acts: ["A28"],
     screens: ["duties"],
   },
   {
-    id: "EP-016",
+    id: "EP-015",
     method: "POST",
     path: "/api/v1/export_jobs",
     acts: ["A41"],
     screens: ["export"],
   },
   {
-    id: "EP-017",
+    id: "EP-016",
     method: "GET",
     path: "/api/v1/goal_allocations",
     acts: ["A25"],
     screens: ["my-progress"],
   },
   {
-    id: "EP-018",
+    id: "EP-017",
     method: "PATCH",
     path: "/api/v1/goal_allocations/:id",
     acts: ["A23", "A49"],
     screens: ["goal-allocation", "my-progress"],
   },
   {
-    id: "EP-019",
+    id: "EP-018",
     method: "GET",
     path: "/api/v1/goals",
     acts: ["A22", "A52", "A54"],
     screens: ["goal-edit", "goals"],
   },
   {
-    id: "EP-020",
+    id: "EP-019",
     method: "PATCH",
     path: "/api/v1/goals/:id",
     acts: ["A29"],
     screens: ["goal-edit"],
   },
   {
-    id: "EP-021",
+    id: "EP-020",
     method: "GET",
     path: "/api/v1/hypotheses",
     acts: ["A26"],
     screens: ["review"],
   },
   {
-    id: "EP-022",
+    id: "EP-021",
     method: "PATCH",
     path: "/api/v1/hypotheses/:id",
     acts: ["A27"],
     screens: ["hypotheses"],
   },
   {
-    id: "EP-023",
+    id: "EP-022",
     method: "GET",
     path: "/api/v1/inquiries",
     acts: ["A67"],
     screens: ["inquiry"],
   },
   {
-    id: "EP-024",
-    method: "POST",
-    path: "/api/v1/inquiries",
-    acts: ["A70"],
-    screens: ["ops-support"],
-  },
-  {
-    id: "EP-025",
+    id: "EP-023",
     method: "PATCH",
     path: "/api/v1/inquiries/:id",
-    acts: ["A43"],
+    acts: ["A43", "A70"],
     screens: ["ops-support"],
   },
   {
-    id: "EP-026",
+    id: "EP-024",
     method: "GET",
     path: "/api/v1/invitations",
     acts: ["A03"],
     screens: ["invite-accept"],
   },
   {
-    id: "EP-027",
+    id: "EP-025",
     method: "GET",
     path: "/api/v1/invoices",
     acts: ["A72"],
     screens: ["ops-billing"],
   },
   {
-    id: "EP-028",
+    id: "EP-026",
     method: "GET",
     path: "/api/v1/learned_procedures",
     acts: ["A32"],
     screens: ["automation-repair"],
   },
   {
-    id: "EP-029",
+    id: "EP-027",
     method: "GET",
     path: "/api/v1/ledger_definitions",
     acts: ["A21", "A47"],
     screens: ["records", "search"],
   },
   {
-    id: "EP-030",
+    id: "EP-028",
     method: "PATCH",
     path: "/api/v1/ledger_definitions/:id",
     acts: ["A24", "A44"],
     screens: ["ledger-def", "records"],
   },
   {
-    id: "EP-031",
+    id: "EP-029",
     method: "GET",
     path: "/api/v1/ledger_records",
     acts: ["A18"],
     screens: ["record-detail"],
   },
   {
-    id: "EP-032",
+    id: "EP-030",
     method: "PATCH",
     path: "/api/v1/ledger_records/:id",
     acts: ["A19"],
     screens: ["record-detail"],
   },
   {
-    id: "EP-033",
+    id: "EP-031",
     method: "GET",
     path: "/api/v1/members",
     acts: ["A02", "A04", "A13"],
     screens: ["login", "mfa-setup", "verify-email"],
   },
   {
-    id: "EP-034",
+    id: "EP-032",
     method: "PATCH",
     path: "/api/v1/members/:id",
     acts: ["A31", "A36", "A61", "A74"],
     screens: ["account", "member-detail", "members", "password-reset"],
   },
   {
-    id: "EP-035",
+    id: "EP-033",
     method: "DELETE",
     path: "/api/v1/members/:id",
     acts: ["A42", "A62"],
     screens: ["account-close", "member-detail"],
   },
   {
-    id: "EP-036",
+    id: "EP-034",
     method: "POST",
     path: "/api/v1/memories",
     acts: ["A30"],
     screens: ["clone-memory"],
   },
   {
-    id: "EP-037",
+    id: "EP-035",
     method: "GET",
     path: "/api/v1/messages",
     acts: ["A14"],
     screens: ["today"],
   },
   {
-    id: "EP-038",
+    id: "EP-036",
     method: "PATCH",
     path: "/api/v1/messages/:id",
     acts: ["A55"],
     screens: ["today"],
   },
   {
-    id: "EP-039",
+    id: "EP-037",
     method: "DELETE",
     path: "/api/v1/messages/:id",
     acts: ["A56"],
     screens: ["today"],
   },
   {
-    id: "EP-040",
+    id: "EP-038",
+    method: "PATCH",
+    path: "/api/v1/notice_deliveries/:id",
+    acts: ["A68"],
+    screens: ["notices"],
+  },
+  {
+    id: "EP-039",
     method: "POST",
     path: "/api/v1/notices",
     acts: ["A71"],
     screens: ["ops-notices"],
   },
   {
-    id: "EP-041",
+    id: "EP-040",
     method: "PATCH",
-    path: "/api/v1/notices/:id",
-    acts: ["A68"],
-    screens: ["notices"],
+    path: "/api/v1/ops_members/:id",
+    acts: ["A65"],
+    screens: ["ops-audit"],
   },
   {
-    id: "EP-042",
+    id: "EP-041",
     method: "GET",
     path: "/api/v1/plans",
     acts: ["A60"],
     screens: ["ops-home"],
   },
   {
-    id: "EP-043",
-    method: "POST",
-    path: "/api/v1/plans",
-    acts: ["A01", "A05"],
-    screens: ["billing-setup", "signup"],
-  },
-  {
-    id: "EP-044",
-    method: "PATCH",
-    path: "/api/v1/plans/:id",
-    acts: ["A69"],
-    screens: ["billing"],
-  },
-  {
-    id: "EP-045",
+    id: "EP-042",
     method: "DELETE",
     path: "/api/v1/plans/:id",
     acts: ["A64"],
     screens: ["ops-tenant"],
   },
   {
-    id: "EP-046",
+    id: "EP-043",
     method: "PATCH",
     path: "/api/v1/policies/:id",
     acts: ["A35"],
     screens: ["policies"],
   },
   {
-    id: "EP-047",
+    id: "EP-044",
     method: "POST",
     path: "/api/v1/service_registry",
     acts: ["A77"],
     screens: ["services"],
   },
   {
-    id: "EP-048",
+    id: "EP-045",
     method: "PATCH",
-    path: "/api/v1/service_registry/:id",
+    path: "/api/v1/service_registry_versions/:id",
     acts: ["A78"],
     screens: ["ops-services"],
   },
   {
-    id: "EP-049",
+    id: "EP-046",
     method: "GET",
     path: "/api/v1/sessions",
     acts: ["A39"],
     screens: ["security-brief"],
   },
   {
-    id: "EP-050",
+    id: "EP-047",
     method: "POST",
     path: "/api/v1/sessions",
     acts: ["A09"],
     screens: ["bridge-setup"],
   },
   {
-    id: "EP-051",
+    id: "EP-048",
     method: "POST",
     path: "/api/v1/skills",
     acts: ["A80"],
     screens: ["ops-skills"],
   },
   {
-    id: "EP-052",
+    id: "EP-049",
+    method: "POST",
+    path: "/api/v1/subscriptions",
+    acts: ["A01", "A05"],
+    screens: ["billing-setup", "signup"],
+  },
+  {
+    id: "EP-050",
+    method: "PATCH",
+    path: "/api/v1/subscriptions/:id",
+    acts: ["A69"],
+    screens: ["billing"],
+  },
+  {
+    id: "EP-051",
     method: "GET",
     path: "/api/v1/tasks",
     acts: ["A48", "A58"],
     screens: ["tasks"],
   },
   {
-    id: "EP-053",
+    id: "EP-052",
     method: "POST",
     path: "/api/v1/tasks",
     acts: ["A50", "A57"],
     screens: ["tasks"],
   },
   {
-    id: "EP-054",
+    id: "EP-053",
     method: "PATCH",
     path: "/api/v1/tasks/:id",
     acts: ["A17", "A51"],
     screens: ["tasks"],
   },
   {
-    id: "EP-055",
+    id: "EP-054",
     method: "GET",
     path: "/api/v1/tenants",
     acts: ["A07", "A08", "A12", "A45"],
     screens: ["company-model", "onboard-draft", "onboard-golive"],
   },
   {
-    id: "EP-056",
+    id: "EP-055",
     method: "PATCH",
     path: "/api/v1/tenants/:id",
     acts: ["A75"],

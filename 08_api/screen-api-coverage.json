@@ -1,10 +1,10 @@
 {
  "version": "v3.1",
  "skill": "api-design",
- "frozen_at": "2026-09-15",
+ "frozen_at": "2026-09-16",
  "summary": {
   "total_screens": 59,
-  "total_apis": 56,
+  "total_apis": 55,
   "coverage_rate": 1.0,
   "uncovered_screens": [],
   "acts_without_endpoint": []
@@ -17,7 +17,7 @@
    "required_apis": [
     {
      "role": "action",
-     "endpoint": "POST /api/v1/plans",
+     "endpoint": "POST /api/v1/subscriptions",
      "act": "A01"
     }
    ],
@@ -84,7 +84,7 @@
    "required_apis": [
     {
      "role": "action",
-     "endpoint": "POST /api/v1/plans",
+     "endpoint": "POST /api/v1/subscriptions",
      "act": "A05"
     }
    ],
@@ -1640,7 +1640,7 @@
     },
     {
      "role": "action",
-     "endpoint": "DELETE /api/v1/audit_events/:id",
+     "endpoint": "DELETE /api/v1/approvals/:id",
      "act": "A34"
     },
     {
@@ -1650,12 +1650,12 @@
     },
     {
      "role": "action",
-     "endpoint": "POST /api/v1/audit_events",
+     "endpoint": "POST /api/v1/approvals",
      "act": "A40"
     },
     {
      "role": "action",
-     "endpoint": "DELETE /api/v1/audit_events/:id",
+     "endpoint": "DELETE /api/v1/approvals/:id",
      "act": "A66"
     }
    ],
@@ -2156,7 +2156,7 @@
     },
     {
      "role": "action",
-     "endpoint": "POST /api/v1/inquiries",
+     "endpoint": "PATCH /api/v1/inquiries/:id",
      "act": "A70"
     }
    ],
@@ -2588,7 +2588,7 @@
    "required_apis": [
     {
      "role": "action",
-     "endpoint": "PATCH /api/v1/service_registry/:id",
+     "endpoint": "PATCH /api/v1/service_registry_versions/:id",
      "act": "A78"
     }
    ],
@@ -2771,7 +2771,7 @@
    "required_apis": [
     {
      "role": "action",
-     "endpoint": "PATCH /api/v1/notices/:id",
+     "endpoint": "PATCH /api/v1/notice_deliveries/:id",
      "act": "A68"
     }
    ],
@@ -2832,7 +2832,7 @@
    "required_apis": [
     {
      "role": "action",
-     "endpoint": "PATCH /api/v1/plans/:id",
+     "endpoint": "PATCH /api/v1/subscriptions/:id",
      "act": "A69"
     }
    ],
@@ -3137,7 +3137,7 @@
    "required_apis": [
     {
      "role": "action",
-     "endpoint": "PATCH /api/v1/audit_events/:id",
+     "endpoint": "PATCH /api/v1/ops_members/:id",
      "act": "A65"
     },
     {

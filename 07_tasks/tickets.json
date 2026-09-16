@@ -1,12 +1,12 @@
 {
  "version": "v3.2",
  "project": "Kaname",
- "created_at": "2026-09-15",
+ "created_at": "2026-09-16",
  "decomposition_mode": "api_first",
  "api_design_ref": {
   "openapi_path": "08_api/openapi.yaml",
   "screen_api_coverage_path": "08_api/screen-api-coverage.json",
-  "contract_frozen_at": "2026-09-15"
+  "contract_frozen_at": "2026-09-16"
  },
  "_doc": "05_flow/build_tasks.py が機械生成。手で直さない。途中変更は差分（qa_delta.py）",
  "source": [
@@ -62,16 +62,16 @@
     "billing-setup"
    ]
   },
-  "total_estimate_hours_human": 4854.0,
-  "total_estimate_hours_ai_compute": 848.8,
+  "total_estimate_hours_human": 4848.0,
+  "total_estimate_hours_ai_compute": 847.3,
   "human_review_total_h": 49.0,
-  "total_wall_clock_h_ai_parallel": 221.1,
+  "total_wall_clock_h_ai_parallel": 219.6,
   "parallel_capacity": 10,
   "calendar_days_ai": 37,
-  "calendar_days_human": 607,
-  "total_estimate_hours": 897.8,
+  "calendar_days_human": 606,
+  "total_estimate_hours": 896.3,
   "total_estimate_sessions": 301,
-  "qa_rows_total": 3147,
+  "qa_rows_total": 3141,
   "journeys": 9
  },
  "waves": [
@@ -196,9 +196,9 @@
     "T-A-20"
    ],
    "parallel": 10,
-   "wall_clock_h_ai": 39.5,
-   "estimate_hours_human": 1075,
-   "estimate_hours_ai_compute": 241.2
+   "wall_clock_h_ai": 38.0,
+   "estimate_hours_human": 1069,
+   "estimate_hours_ai_compute": 239.7
   },
   {
    "wave": 7,
@@ -5481,9 +5481,7 @@
     "tenant_distributions_tenant_read",
     "tenant_distributions_permission_write",
     "tenant_distributions_ops_read_with_grant",
-    "service_registry_versions_tenant_read",
-    "service_registry_versions_permission_write",
-    "service_registry_versions_ops_read_with_grant",
+    "service_registry_versions_ops_all",
     "service_requests_tenant_read",
     "service_requests_self_only_write",
     "service_requests_permission_write",
@@ -5491,6 +5489,7 @@
     "review_requests_tenant_read",
     "review_requests_permission_write",
     "review_requests_ops_read_with_grant",
+    "review_requests_ops_write",
     "ops_members_ops_all",
     "ops_audit_events_ops_all",
     "ops_audit_events_append_only",
@@ -5711,8 +5710,8 @@
      "UBIQUITOUS: inquiries_self_only_write",
      "UBIQUITOUS: inquiries_permission_write",
      "UBIQUITOUS: inquiries_ops_read_with_grant",
-     "UBIQUITOUS: notices_ops_all",
-     "UBIQUITOUS: notice_deliveries_tenant_read"
+     "UBIQUITOUS: inquiries_ops_write",
+     "UBIQUITOUS: notices_ops_all"
     ],
     "regression": [
      "pnpm test（該当パッケージ）PASS",
@@ -5729,6 +5728,7 @@
     "inquiries_self_only_write",
     "inquiries_permission_write",
     "inquiries_ops_read_with_grant",
+    "inquiries_ops_write",
     "notices_ops_all",
     "notice_deliveries_tenant_read",
     "notice_deliveries_self_only_write",
@@ -5753,6 +5753,7 @@
     "plan_change_requests_self_only_write",
     "plan_change_requests_permission_write",
     "plan_change_requests_ops_read_with_grant",
+    "plan_change_requests_ops_write",
     "usage_meters_tenant_read",
     "usage_meters_permission_write",
     "usage_meters_ops_read_with_grant",
@@ -5762,6 +5763,7 @@
     "payments_tenant_read",
     "payments_permission_write",
     "payments_ops_read_with_grant",
+    "payments_ops_write",
     "error_events_tenant_read",
     "error_events_self_only_write",
     "error_events_permission_write",
@@ -5878,12 +5880,12 @@
      },
      {
       "type": "UBIQUITOUS",
-      "text": "UBIQUITOUS: notices_ops_all",
+      "text": "UBIQUITOUS: inquiries_ops_write",
       "critical": false
      },
      {
       "type": "UBIQUITOUS",
-      "text": "UBIQUITOUS: notice_deliveries_tenant_read",
+      "text": "UBIQUITOUS: notices_ops_all",
       "critical": false
      }
     ],
@@ -6208,9 +6210,9 @@
      "UBIQUITOUS: skills_ops_all",
      "UBIQUITOUS: skill_versions_all_read",
      "UBIQUITOUS: skill_versions_ops_write",
-     "UBIQUITOUS: skill_test_runs_tenant_read",
-     "UBIQUITOUS: skill_test_runs_permission_write",
-     "UBIQUITOUS: skill_test_runs_ops_read_with_grant"
+     "UBIQUITOUS: skill_test_runs_ops_all",
+     "UBIQUITOUS: skill_attachments_tenant_read",
+     "UBIQUITOUS: skill_attachments_permission_write"
     ],
     "regression": [
      "pnpm test（該当パッケージ）PASS",
@@ -6226,9 +6228,7 @@
     "skills_ops_all",
     "skill_versions_all_read",
     "skill_versions_ops_write",
-    "skill_test_runs_tenant_read",
-    "skill_test_runs_permission_write",
-    "skill_test_runs_ops_read_with_grant",
+    "skill_test_runs_ops_all",
     "skill_attachments_tenant_read",
     "skill_attachments_permission_write",
     "skill_attachments_ops_read_with_grant"
@@ -6312,17 +6312,17 @@
      },
      {
       "type": "UBIQUITOUS",
-      "text": "UBIQUITOUS: skill_test_runs_tenant_read",
+      "text": "UBIQUITOUS: skill_test_runs_ops_all",
       "critical": false
      },
      {
       "type": "UBIQUITOUS",
-      "text": "UBIQUITOUS: skill_test_runs_permission_write",
+      "text": "UBIQUITOUS: skill_attachments_tenant_read",
       "critical": false
      },
      {
       "type": "UBIQUITOUS",
-      "text": "UBIQUITOUS: skill_test_runs_ops_read_with_grant",
+      "text": "UBIQUITOUS: skill_attachments_permission_write",
       "critical": false
      }
     ],
@@ -6449,8 +6449,8 @@
    "files_changed": [
     "apps/api/src/routes/clones.ts (new)",
     "apps/api/src/routes/members.ts (new)",
-    "apps/api/src/routes/plans.ts (new)",
     "apps/api/src/routes/sessions.ts (new)",
+    "apps/api/src/routes/subscriptions.ts (new)",
     "apps/api/src/routes/tenants.ts (new)",
     "apps/api/src/app.ts (modify)"
    ],
@@ -6458,8 +6458,8 @@
     "new": [
      "apps/api/src/routes/clones.ts",
      "apps/api/src/routes/members.ts",
-     "apps/api/src/routes/plans.ts",
      "apps/api/src/routes/sessions.ts",
+     "apps/api/src/routes/subscriptions.ts",
      "apps/api/src/routes/tenants.ts",
      "apps/api/src/services/00.ts",
      "apps/api/tests/00.spec.ts"
@@ -6481,8 +6481,8 @@
     "structural": [
      "UBIQUITOUS: POST /api/v1/clones は 08_api/openapi.yaml の operation postClones どおりの入出力（201 と 4xx 401/403/409/422/429/502）",
      "UBIQUITOUS: GET /api/v1/members は 08_api/openapi.yaml の operation getMembers どおりの入出力（200 と 4xx 429）",
-     "UBIQUITOUS: POST /api/v1/plans は 08_api/openapi.yaml の operation postPlans どおりの入出力（201 と 4xx 401/403/409/422/429）",
      "UBIQUITOUS: POST /api/v1/sessions は 08_api/openapi.yaml の operation postSessions どおりの入出力（201 と 4xx 401/403/409/422/429/502）",
+     "UBIQUITOUS: POST /api/v1/subscriptions は 08_api/openapi.yaml の operation postSubscriptions どおりの入出力（201 と 4xx 401/403/409/422/429）",
      "UBIQUITOUS: GET /api/v1/tenants は 08_api/openapi.yaml の operation getTenants どおりの入出力（200 と 4xx 401/403/429/502）"
     ],
     "functional": [
@@ -6492,12 +6492,12 @@
      "EVENT-DRIVEN: WHEN GET /api/v1/members が「届いたリンクを押す」として呼ばれたとき THEN Kaname は「本人確認を記録」を行い 2xx を返す",
      "EVENT-DRIVEN: WHEN GET /api/v1/members が「認証アプリを登録する」として呼ばれたとき THEN Kaname は「TOTPシークレットを暗号化保管」を行い 2xx を返す",
      "EVENT-DRIVEN: WHEN GET /api/v1/members が「メールとパスワードと6桁を入れる」として呼ばれたとき THEN Kaname は「トークンを発行」を行い 2xx を返す",
-     "EVENT-DRIVEN: WHEN POST /api/v1/plans が「会社名とメールを入れる」として呼ばれたとき THEN Kaname は「アカウントと会社を作る」を行い 2xx を返す",
-     "EVENT-DRIVEN: WHEN POST /api/v1/plans が「支払い方法を入れる」として呼ばれたとき THEN Kaname は「決済事業者に登録（カード番号は預からない）」を行い 2xx を返す",
-     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "EVENT-DRIVEN: WHEN POST /api/v1/sessions が「インストーラを入れて許可する」として呼ばれたとき THEN Kaname は「端末を登録、トークン発行。LLM経路＝Bridge を確定」を行い 2xx を返す（自動側：Bridgeが自己診断して結果を返す。つながるまで自分のAIは話せない）",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+     "EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「会社名とメールを入れる」として呼ばれたとき THEN Kaname は「アカウントと会社を作る」を行い 2xx を返す",
+     "EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「支払い方法を入れる」として呼ばれたとき THEN Kaname は「決済事業者に登録（カード番号は預からない）」を行い 2xx を返す",
+     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "EVENT-DRIVEN: WHEN GET /api/v1/tenants が「出てきたたたき台を見る」として呼ばれたとき THEN Kaname は「会社モデルの下書きを保存」を行い 2xx を返す（自動側：自分のAIが目標・台帳定義・担当業務・AI社員の初期案を作る）",
      "EVENT-DRIVEN: WHEN GET /api/v1/tenants が「違うところを言う」として呼ばれたとき THEN Kaname は「会社モデルの下書きを更新」を行い 2xx を返す（自動側：自分のAIが直して出し直す）",
      "EVENT-DRIVEN: WHEN GET /api/v1/tenants が「本番に切り替える」として呼ばれたとき THEN Kaname は「会社モデルを確定、自動実行を有効化」を行い 2xx を返す（自動側：自分のAIが未設定を洗い出して止める）",
@@ -6623,7 +6623,7 @@
      "expected": "200 / 403 / 404"
     },
     {
-     "name": "POST /api/v1/plans",
+     "name": "POST /api/v1/sessions",
      "steps": [
       "権限のある会員で呼ぶ",
       "権限の無い会員で呼ぶ",
@@ -6632,7 +6632,7 @@
      "expected": "201 / 403 / 404"
     },
     {
-     "name": "POST /api/v1/sessions",
+     "name": "POST /api/v1/subscriptions",
      "steps": [
       "権限のある会員で呼ぶ",
       "権限の無い会員で呼ぶ",
@@ -6706,8 +6706,8 @@
     "tier_1_structural": [
      "UBIQUITOUS: POST /api/v1/clones は 08_api/openapi.yaml の operation postClones どおりの入出力（201 と 4xx 401/403/409/422/429/502）",
      "UBIQUITOUS: GET /api/v1/members は 08_api/openapi.yaml の operation getMembers どおりの入出力（200 と 4xx 429）",
-     "UBIQUITOUS: POST /api/v1/plans は 08_api/openapi.yaml の operation postPlans どおりの入出力（201 と 4xx 401/403/409/422/429）",
      "UBIQUITOUS: POST /api/v1/sessions は 08_api/openapi.yaml の operation postSessions どおりの入出力（201 と 4xx 401/403/409/422/429/502）",
+     "UBIQUITOUS: POST /api/v1/subscriptions は 08_api/openapi.yaml の operation postSubscriptions どおりの入出力（201 と 4xx 401/403/409/422/429）",
      "UBIQUITOUS: GET /api/v1/tenants は 08_api/openapi.yaml の operation getTenants どおりの入出力（200 と 4xx 401/403/429/502）"
     ],
     "tier_2_functional": [
@@ -6743,21 +6743,6 @@
      },
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN POST /api/v1/plans が「会社名とメールを入れる」として呼ばれたとき THEN Kaname は「アカウントと会社を作る」を行い 2xx を返す",
-      "critical": false
-     },
-     {
-      "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN POST /api/v1/plans が「支払い方法を入れる」として呼ばれたとき THEN Kaname は「決済事業者に登録（カード番号は預からない）」を行い 2xx を返す",
-      "critical": false
-     },
-     {
-      "type": "UNWANTED",
-      "text": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-      "critical": true
-     },
-     {
-      "type": "EVENT-DRIVEN",
       "text": "EVENT-DRIVEN: WHEN POST /api/v1/sessions が「インストーラを入れて許可する」として呼ばれたとき THEN Kaname は「端末を登録、トークン発行。LLM経路＝Bridge を確定」を行い 2xx を返す（自動側：Bridgeが自己診断して結果を返す。つながるまで自分のAIは話せない）",
       "critical": false
      },
@@ -6769,6 +6754,21 @@
      {
       "type": "UNWANTED",
       "text": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+      "critical": true
+     },
+     {
+      "type": "EVENT-DRIVEN",
+      "text": "EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「会社名とメールを入れる」として呼ばれたとき THEN Kaname は「アカウントと会社を作る」を行い 2xx を返す",
+      "critical": false
+     },
+     {
+      "type": "EVENT-DRIVEN",
+      "text": "EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「支払い方法を入れる」として呼ばれたとき THEN Kaname は「決済事業者に登録（カード番号は預からない）」を行い 2xx を返す",
+      "critical": false
+     },
+     {
+      "type": "UNWANTED",
+      "text": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
       "critical": true
      },
      {
@@ -8500,7 +8500,6 @@
     "procedure_steps_ops_read_with_grant",
     "procedure_steps_tenant_read",
     "service_registry_permission_write",
-    "service_registry_versions_permission_write",
     "service_requests_permission_write",
     "service_requests_self_only_write",
     "sessions_ops_read_with_grant",
@@ -8938,8 +8937,8 @@
      "UBIQUITOUS: GET /api/v1/ai_employees は 08_api/openapi.yaml の operation getAiEmployees どおりの入出力（200 と 4xx 401/403/429/502）",
      "UBIQUITOUS: GET /api/v1/approvals は 08_api/openapi.yaml の operation getApprovals どおりの入出力（200 と 4xx 401/403/429/502）",
      "UBIQUITOUS: PATCH /api/v1/approvals/:id は 08_api/openapi.yaml の operation patchApprovalsById どおりの入出力（200 と 4xx 401/403/404/422/429/502）",
-     "UBIQUITOUS: GET /api/v1/audit_events は 08_api/openapi.yaml の operation getAuditEvents どおりの入出力（200 と 4xx 401/403/429）",
-     "UBIQUITOUS: DELETE /api/v1/audit_events/:id は 08_api/openapi.yaml の operation deleteAuditEventsById どおりの入出力（200 と 4xx 401/403/404/429/502）"
+     "UBIQUITOUS: DELETE /api/v1/approvals/:id は 08_api/openapi.yaml の operation deleteApprovalsById どおりの入出力（200 と 4xx 401/403/404/429/502）",
+     "UBIQUITOUS: GET /api/v1/audit_events は 08_api/openapi.yaml の operation getAuditEvents どおりの入出力（200 と 4xx 401/403/429）"
     ],
     "functional": [
      "EVENT-DRIVEN: WHEN GET /api/v1/action_runs が「試しに動かして結果を見る」として呼ばれたとき THEN Kaname は「テスト実行の証跡を残す」を行い 2xx を返す（自動側：AI社員が実データを読んで動く。外には一切出さない）",
@@ -8954,12 +8953,12 @@
      "EVENT-DRIVEN: WHEN PATCH /api/v1/approvals/:id が「中身を見て押す／止める」として呼ばれたとき THEN Kaname は「承認したら実行、止めたらAI社員へ戻る」を行い 2xx を返す（自動側：自分のAIが一次確認済みのものだけを上げている）",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+     "EVENT-DRIVEN: WHEN DELETE /api/v1/approvals/:id が「やってしまったことを取り消す」として呼ばれたとき THEN Kaname は「打ち消しの操作を実行し証跡に残す」を行い 2xx を返す（自動側：自分のAIが取り消せる範囲を示す）",
+     "EVENT-DRIVEN: WHEN DELETE /api/v1/approvals/:id が「運営にサポートアクセスを許可する」として呼ばれたとき THEN Kaname は「範囲・期限つきの許可を保存。運営が見た記録を顧客の証跡に残す」を行い 2xx を返す",
+     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "EVENT-DRIVEN: WHEN GET /api/v1/audit_events が「いつ何をしたかを追う」として呼ばれたとき THEN Kaname は「証跡を検索」を行い 2xx を返す",
      "EVENT-DRIVEN: WHEN GET /api/v1/audit_events が「誰が何をしたかを確認する」として呼ばれたとき THEN Kaname は「証跡を人・期間で集計」を行い 2xx を返す",
      "EVENT-DRIVEN: WHEN GET /api/v1/audit_events が「セキュリティの出来事を見る」として呼ばれたとき THEN Kaname は「失敗したログイン・鍵の失効・不審な接続の記録」を行い 2xx を返す",
-     "EVENT-DRIVEN: WHEN DELETE /api/v1/audit_events/:id が「やってしまったことを取り消す」として呼ばれたとき THEN Kaname は「打ち消しの操作を実行し証跡に残す」を行い 2xx を返す（自動側：自分のAIが取り消せる範囲を示す）",
-     "EVENT-DRIVEN: WHEN DELETE /api/v1/audit_events/:id が「運営にサポートアクセスを許可する」として呼ばれたとき THEN Kaname は「範囲・期限つきの許可を保存。運営が見た記録を顧客の証跡に残す」を行い 2xx を返す",
-     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
@@ -9114,7 +9113,7 @@
      "expected": "200 / 403 / 404"
     },
     {
-     "name": "GET /api/v1/audit_events",
+     "name": "DELETE /api/v1/approvals/:id",
      "steps": [
       "権限のある会員で呼ぶ",
       "権限の無い会員で呼ぶ",
@@ -9123,7 +9122,7 @@
      "expected": "200 / 403 / 404"
     },
     {
-     "name": "DELETE /api/v1/audit_events/:id",
+     "name": "GET /api/v1/audit_events",
      "steps": [
       "権限のある会員で呼ぶ",
       "権限の無い会員で呼ぶ",
@@ -9198,8 +9197,8 @@
      "UBIQUITOUS: GET /api/v1/ai_employees は 08_api/openapi.yaml の operation getAiEmployees どおりの入出力（200 と 4xx 401/403/429/502）",
      "UBIQUITOUS: GET /api/v1/approvals は 08_api/openapi.yaml の operation getApprovals どおりの入出力（200 と 4xx 401/403/429/502）",
      "UBIQUITOUS: PATCH /api/v1/approvals/:id は 08_api/openapi.yaml の operation patchApprovalsById どおりの入出力（200 と 4xx 401/403/404/422/429/502）",
-     "UBIQUITOUS: GET /api/v1/audit_events は 08_api/openapi.yaml の operation getAuditEvents どおりの入出力（200 と 4xx 401/403/429）",
-     "UBIQUITOUS: DELETE /api/v1/audit_events/:id は 08_api/openapi.yaml の operation deleteAuditEventsById どおりの入出力（200 と 4xx 401/403/404/429/502）"
+     "UBIQUITOUS: DELETE /api/v1/approvals/:id は 08_api/openapi.yaml の operation deleteApprovalsById どおりの入出力（200 と 4xx 401/403/404/429/502）",
+     "UBIQUITOUS: GET /api/v1/audit_events は 08_api/openapi.yaml の operation getAuditEvents どおりの入出力（200 と 4xx 401/403/429）"
     ],
     "tier_2_functional": [
      {
@@ -9264,6 +9263,21 @@
      },
      {
       "type": "EVENT-DRIVEN",
+      "text": "EVENT-DRIVEN: WHEN DELETE /api/v1/approvals/:id が「やってしまったことを取り消す」として呼ばれたとき THEN Kaname は「打ち消しの操作を実行し証跡に残す」を行い 2xx を返す（自動側：自分のAIが取り消せる範囲を示す）",
+      "critical": false
+     },
+     {
+      "type": "EVENT-DRIVEN",
+      "text": "EVENT-DRIVEN: WHEN DELETE /api/v1/approvals/:id が「運営にサポートアクセスを許可する」として呼ばれたとき THEN Kaname は「範囲・期限つきの許可を保存。運営が見た記録を顧客の証跡に残す」を行い 2xx を返す",
+      "critical": false
+     },
+     {
+      "type": "UNWANTED",
+      "text": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+      "critical": true
+     },
+     {
+      "type": "EVENT-DRIVEN",
       "text": "EVENT-DRIVEN: WHEN GET /api/v1/audit_events が「いつ何をしたかを追う」として呼ばれたとき THEN Kaname は「証跡を検索」を行い 2xx を返す",
       "critical": false
      },
@@ -9276,21 +9290,6 @@
       "type": "EVENT-DRIVEN",
       "text": "EVENT-DRIVEN: WHEN GET /api/v1/audit_events が「セキュリティの出来事を見る」として呼ばれたとき THEN Kaname は「失敗したログイン・鍵の失効・不審な接続の記録」を行い 2xx を返す",
       "critical": false
-     },
-     {
-      "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN DELETE /api/v1/audit_events/:id が「やってしまったことを取り消す」として呼ばれたとき THEN Kaname は「打ち消しの操作を実行し証跡に残す」を行い 2xx を返す（自動側：自分のAIが取り消せる範囲を示す）",
-      "critical": false
-     },
-     {
-      "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN DELETE /api/v1/audit_events/:id が「運営にサポートアクセスを許可する」として呼ばれたとき THEN Kaname は「範囲・期限つきの許可を保存。運営が見た記録を顧客の証跡に残す」を行い 2xx を返す",
-      "critical": false
-     },
-     {
-      "type": "UNWANTED",
-      "text": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-      "critical": true
      },
      {
       "type": "UNWANTED",
@@ -9477,7 +9476,6 @@
     "goals_permission_write",
     "policies_permission_write",
     "service_registry_permission_write",
-    "service_registry_versions_permission_write",
     "service_requests_permission_write",
     "service_requests_self_only_write",
     "task_handovers_permission_write",
@@ -12485,7 +12483,7 @@
     "anthropic / openai SDK（関門の外）"
    ],
    "files_changed": [
-    "apps/api/src/routes/audit_events.ts (new)",
+    "apps/api/src/routes/approvals.ts (new)",
     "apps/api/src/routes/export_jobs.ts (new)",
     "apps/api/src/routes/members.ts (new)",
     "apps/api/src/routes/sessions.ts (new)",
@@ -12493,7 +12491,7 @@
    ],
    "files_changed_predicted": {
     "new": [
-     "apps/api/src/routes/audit_events.ts",
+     "apps/api/src/routes/approvals.ts",
      "apps/api/src/routes/export_jobs.ts",
      "apps/api/src/routes/members.ts",
      "apps/api/src/routes/sessions.ts",
@@ -12515,19 +12513,19 @@
    },
    "acceptance_criteria": {
     "structural": [
-     "UBIQUITOUS: POST /api/v1/audit_events は 08_api/openapi.yaml の operation postAuditEvents どおりの入出力（201 と 4xx 401/403/409/422/429）",
-     "UBIQUITOUS: DELETE /api/v1/audit_events/:id は 08_api/openapi.yaml の operation deleteAuditEventsById どおりの入出力（200 と 4xx 401/403/404/429/502）",
+     "UBIQUITOUS: POST /api/v1/approvals は 08_api/openapi.yaml の operation postApprovals どおりの入出力（201 と 4xx 401/403/409/422/429）",
+     "UBIQUITOUS: DELETE /api/v1/approvals/:id は 08_api/openapi.yaml の operation deleteApprovalsById どおりの入出力（200 と 4xx 401/403/404/429/502）",
      "UBIQUITOUS: POST /api/v1/export_jobs は 08_api/openapi.yaml の operation postExportJobs どおりの入出力（201 と 4xx 401/403/409/422/429）",
      "UBIQUITOUS: GET /api/v1/members は 08_api/openapi.yaml の operation getMembers どおりの入出力（200 と 4xx 429）",
      "UBIQUITOUS: DELETE /api/v1/members/:id は 08_api/openapi.yaml の operation deleteMembersById どおりの入出力（200 と 4xx 401/403/404/429）",
      "UBIQUITOUS: GET /api/v1/sessions は 08_api/openapi.yaml の operation getSessions どおりの入出力（200 と 4xx 401/403/429）"
     ],
     "functional": [
-     "EVENT-DRIVEN: WHEN POST /api/v1/audit_events が「全操作の証跡を出す」として呼ばれたとき THEN Kaname は「証跡をファイルに書き出す」を行い 2xx を返す",
+     "EVENT-DRIVEN: WHEN POST /api/v1/approvals が「全操作の証跡を出す」として呼ばれたとき THEN Kaname は「証跡をファイルに書き出す」を行い 2xx を返す",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
-     "EVENT-DRIVEN: WHEN DELETE /api/v1/audit_events/:id が「やってしまったことを取り消す」として呼ばれたとき THEN Kaname は「打ち消しの操作を実行し証跡に残す」を行い 2xx を返す（自動側：自分のAIが取り消せる範囲を示す）",
-     "EVENT-DRIVEN: WHEN DELETE /api/v1/audit_events/:id が「運営にサポートアクセスを許可する」として呼ばれたとき THEN Kaname は「範囲・期限つきの許可を保存。運営が見た記録を顧客の証跡に残す」を行い 2xx を返す",
+     "EVENT-DRIVEN: WHEN DELETE /api/v1/approvals/:id が「やってしまったことを取り消す」として呼ばれたとき THEN Kaname は「打ち消しの操作を実行し証跡に残す」を行い 2xx を返す（自動側：自分のAIが取り消せる範囲を示す）",
+     "EVENT-DRIVEN: WHEN DELETE /api/v1/approvals/:id が「運営にサポートアクセスを許可する」として呼ばれたとき THEN Kaname は「範囲・期限つきの許可を保存。運営が見た記録を顧客の証跡に残す」を行い 2xx を返す",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "EVENT-DRIVEN: WHEN POST /api/v1/export_jobs が「データを全部持ち出す」として呼ばれたとき THEN Kaname は「会社モデルと台帳を一括で書き出す」を行い 2xx を返す",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
@@ -12652,7 +12650,7 @@
    },
    "test_scenarios_inline": [
     {
-     "name": "POST /api/v1/audit_events",
+     "name": "POST /api/v1/approvals",
      "steps": [
       "権限のある会員で呼ぶ",
       "権限の無い会員で呼ぶ",
@@ -12661,7 +12659,7 @@
      "expected": "201 / 403 / 404"
     },
     {
-     "name": "DELETE /api/v1/audit_events/:id",
+     "name": "DELETE /api/v1/approvals/:id",
      "steps": [
       "権限のある会員で呼ぶ",
       "権限の無い会員で呼ぶ",
@@ -12745,8 +12743,8 @@
    "why": "",
    "acceptance_criteria_inline": {
     "tier_1_structural": [
-     "UBIQUITOUS: POST /api/v1/audit_events は 08_api/openapi.yaml の operation postAuditEvents どおりの入出力（201 と 4xx 401/403/409/422/429）",
-     "UBIQUITOUS: DELETE /api/v1/audit_events/:id は 08_api/openapi.yaml の operation deleteAuditEventsById どおりの入出力（200 と 4xx 401/403/404/429/502）",
+     "UBIQUITOUS: POST /api/v1/approvals は 08_api/openapi.yaml の operation postApprovals どおりの入出力（201 と 4xx 401/403/409/422/429）",
+     "UBIQUITOUS: DELETE /api/v1/approvals/:id は 08_api/openapi.yaml の operation deleteApprovalsById どおりの入出力（200 と 4xx 401/403/404/429/502）",
      "UBIQUITOUS: POST /api/v1/export_jobs は 08_api/openapi.yaml の operation postExportJobs どおりの入出力（201 と 4xx 401/403/409/422/429）",
      "UBIQUITOUS: GET /api/v1/members は 08_api/openapi.yaml の operation getMembers どおりの入出力（200 と 4xx 429）",
      "UBIQUITOUS: DELETE /api/v1/members/:id は 08_api/openapi.yaml の operation deleteMembersById どおりの入出力（200 と 4xx 401/403/404/429）",
@@ -12755,7 +12753,7 @@
     "tier_2_functional": [
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN POST /api/v1/audit_events が「全操作の証跡を出す」として呼ばれたとき THEN Kaname は「証跡をファイルに書き出す」を行い 2xx を返す",
+      "text": "EVENT-DRIVEN: WHEN POST /api/v1/approvals が「全操作の証跡を出す」として呼ばれたとき THEN Kaname は「証跡をファイルに書き出す」を行い 2xx を返す",
       "critical": false
      },
      {
@@ -12770,12 +12768,12 @@
      },
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN DELETE /api/v1/audit_events/:id が「やってしまったことを取り消す」として呼ばれたとき THEN Kaname は「打ち消しの操作を実行し証跡に残す」を行い 2xx を返す（自動側：自分のAIが取り消せる範囲を示す）",
+      "text": "EVENT-DRIVEN: WHEN DELETE /api/v1/approvals/:id が「やってしまったことを取り消す」として呼ばれたとき THEN Kaname は「打ち消しの操作を実行し証跡に残す」を行い 2xx を返す（自動側：自分のAIが取り消せる範囲を示す）",
       "critical": false
      },
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN DELETE /api/v1/audit_events/:id が「運営にサポートアクセスを許可する」として呼ばれたとき THEN Kaname は「範囲・期限つきの許可を保存。運営が見た記録を顧客の証跡に残す」を行い 2xx を返す",
+      "text": "EVENT-DRIVEN: WHEN DELETE /api/v1/approvals/:id が「運営にサポートアクセスを許可する」として呼ばれたとき THEN Kaname は「範囲・期限つきの許可を保存。運営が見た記録を顧客の証跡に残す」を行い 2xx を返す",
       "critical": false
      },
      {
@@ -13333,7 +13331,7 @@
   },
   {
    "id": "T-A-17",
-   "title": "API 導入した顧客が詰まったとき、データを見ずに直したい — データ・AP（4 endpoint）",
+   "title": "API 導入した顧客が詰まったとき、データを見ずに直したい — データ・AP（3 endpoint）",
    "category": "backend",
    "label": "NEW",
    "feature_id": "F-V3-B-10",
@@ -13424,18 +13422,14 @@
    },
    "acceptance_criteria": {
     "structural": [
-     "UBIQUITOUS: POST /api/v1/inquiries は 08_api/openapi.yaml の operation postInquiries どおりの入出力（201 と 4xx 401/403/409/422/429）",
      "UBIQUITOUS: PATCH /api/v1/inquiries/:id は 08_api/openapi.yaml の operation patchInquiriesById どおりの入出力（200 と 4xx 401/403/404/422/429）",
      "UBIQUITOUS: GET /api/v1/plans は 08_api/openapi.yaml の operation getPlans どおりの入出力（200 と 4xx 401/403/429）",
      "UBIQUITOUS: DELETE /api/v1/plans/:id は 08_api/openapi.yaml の operation deletePlansById どおりの入出力（200 と 4xx 401/403/404/429）"
     ],
     "functional": [
-     "EVENT-DRIVEN: WHEN POST /api/v1/inquiries が「問い合わせに答える」として呼ばれたとき THEN Kaname は「受信箱（問い合わせ＋詰まり）。返答は顧客の問い合わせと証跡に残る」を行い 2xx を返す",
-     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
      "EVENT-DRIVEN: WHEN PATCH /api/v1/inquiries/:id が「顧客のデータを見ずに直す」として呼ばれたとき THEN Kaname は「構成と失敗の型だけを見る」を行い 2xx を返す",
+     "EVENT-DRIVEN: WHEN PATCH /api/v1/inquiries/:id が「問い合わせに答える」として呼ばれたとき THEN Kaname は「受信箱（問い合わせ＋詰まり）。返答は顧客の問い合わせと証跡に残る」を行い 2xx を返す",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
      "EVENT-DRIVEN: WHEN GET /api/v1/plans が「会社の一覧を見る」として呼ばれたとき THEN Kaname は「各社のプラン・体数・稼働・詰まりの型だけを集計（中身は読まない）」を行い 2xx を返す",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
@@ -13447,8 +13441,8 @@
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "UBIQUITOUS: 行レベル制御 conversations_permission_write が効く",
      "UBIQUITOUS: 行レベル制御 goals_permission_write が効く",
-     "UBIQUITOUS: 行レベル制御 inquiries_permission_write が効く",
-     "UBIQUITOUS: 行レベル制御 inquiries_self_only_write が効く"
+     "UBIQUITOUS: 行レベル制御 inquiries_ops_write が効く",
+     "UBIQUITOUS: 行レベル制御 inquiries_permission_write が効く"
     ],
     "regression": [
      "pnpm test（該当パッケージ）PASS",
@@ -13465,6 +13459,7 @@
    "access_policies_required": [
     "conversations_permission_write",
     "goals_permission_write",
+    "inquiries_ops_write",
     "inquiries_permission_write",
     "inquiries_self_only_write",
     "plan_versions_all_read",
@@ -13511,28 +13506,13 @@
      "API-17-020",
      "API-17-021",
      "API-17-022",
-     "API-17-023",
-     "API-17-024",
-     "API-17-025",
-     "API-17-026",
-     "API-17-027",
-     "API-17-028",
-     "API-17-029"
+     "API-17-023"
     ],
     "l2_flows": [
      "J-09"
     ]
    },
    "test_scenarios_inline": [
-    {
-     "name": "POST /api/v1/inquiries",
-     "steps": [
-      "権限のある会員で呼ぶ",
-      "権限の無い会員で呼ぶ",
-      "別テナントの id で呼ぶ"
-     ],
-     "expected": "201 / 403 / 404"
-    },
     {
      "name": "PATCH /api/v1/inquiries/:id",
      "steps": [
@@ -13601,7 +13581,6 @@
    "why": "",
    "acceptance_criteria_inline": {
     "tier_1_structural": [
-     "UBIQUITOUS: POST /api/v1/inquiries は 08_api/openapi.yaml の operation postInquiries どおりの入出力（201 と 4xx 401/403/409/422/429）",
      "UBIQUITOUS: PATCH /api/v1/inquiries/:id は 08_api/openapi.yaml の operation patchInquiriesById どおりの入出力（200 と 4xx 401/403/404/422/429）",
      "UBIQUITOUS: GET /api/v1/plans は 08_api/openapi.yaml の operation getPlans どおりの入出力（200 と 4xx 401/403/429）",
      "UBIQUITOUS: DELETE /api/v1/plans/:id は 08_api/openapi.yaml の operation deletePlansById どおりの入出力（200 と 4xx 401/403/404/429）"
@@ -13609,32 +13588,17 @@
     "tier_2_functional": [
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN POST /api/v1/inquiries が「問い合わせに答える」として呼ばれたとき THEN Kaname は「受信箱（問い合わせ＋詰まり）。返答は顧客の問い合わせと証跡に残る」を行い 2xx を返す",
-      "critical": false
-     },
-     {
-      "type": "UNWANTED",
-      "text": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-      "critical": true
-     },
-     {
-      "type": "UNWANTED",
-      "text": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
-      "critical": true
-     },
-     {
-      "type": "EVENT-DRIVEN",
       "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/inquiries/:id が「顧客のデータを見ずに直す」として呼ばれたとき THEN Kaname は「構成と失敗の型だけを見る」を行い 2xx を返す",
       "critical": false
      },
      {
-      "type": "UNWANTED",
-      "text": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-      "critical": true
+      "type": "EVENT-DRIVEN",
+      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/inquiries/:id が「問い合わせに答える」として呼ばれたとき THEN Kaname は「受信箱（問い合わせ＋詰まり）。返答は顧客の問い合わせと証跡に残る」を行い 2xx を返す",
+      "critical": false
      },
      {
       "type": "UNWANTED",
-      "text": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+      "text": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
       "critical": true
      },
      {
@@ -13694,12 +13658,12 @@
      },
      {
       "type": "UBIQUITOUS",
-      "text": "UBIQUITOUS: 行レベル制御 inquiries_permission_write が効く",
+      "text": "UBIQUITOUS: 行レベル制御 inquiries_ops_write が効く",
       "critical": false
      },
      {
       "type": "UBIQUITOUS",
-      "text": "UBIQUITOUS: 行レベル制御 inquiries_self_only_write が効く",
+      "text": "UBIQUITOUS: 行レベル制御 inquiries_permission_write が効く",
       "critical": false
      }
     ],
@@ -13715,15 +13679,15 @@
      "endpoint 実在性チェック PASS"
     ]
    },
-   "estimate_hours_human": 152,
-   "estimate_hours_ai": 38.0,
+   "estimate_hours_human": 146,
+   "estimate_hours_ai": 36.5,
    "human_review_h": 1.0,
-   "wall_clock_h_ai": 39.0,
+   "wall_clock_h_ai": 37.5,
    "ai_acceleration_factor": 4,
    "blocking_dependencies_h": 0,
    "estimate_method": "reference",
    "estimate_confidence": "medium",
-   "estimate_hours": 39.0,
+   "estimate_hours": 37.5,
    "estimate_sessions": 10
   },
   {
@@ -13796,15 +13760,15 @@
    ],
    "files_changed": [
     "apps/api/src/routes/inquiries.ts (new)",
-    "apps/api/src/routes/notices.ts (new)",
-    "apps/api/src/routes/plans.ts (new)",
+    "apps/api/src/routes/notice_deliveries.ts (new)",
+    "apps/api/src/routes/subscriptions.ts (new)",
     "apps/api/src/app.ts (modify)"
    ],
    "files_changed_predicted": {
     "new": [
      "apps/api/src/routes/inquiries.ts",
-     "apps/api/src/routes/notices.ts",
-     "apps/api/src/routes/plans.ts",
+     "apps/api/src/routes/notice_deliveries.ts",
+     "apps/api/src/routes/subscriptions.ts",
      "apps/api/src/services/14.ts",
      "apps/api/tests/14.spec.ts"
     ],
@@ -13824,17 +13788,17 @@
    "acceptance_criteria": {
     "structural": [
      "UBIQUITOUS: GET /api/v1/inquiries は 08_api/openapi.yaml の operation getInquiries どおりの入出力（200 と 4xx 401/403/429）",
-     "UBIQUITOUS: PATCH /api/v1/notices/:id は 08_api/openapi.yaml の operation patchNoticesById どおりの入出力（200 と 4xx 401/403/404/422/429）",
-     "UBIQUITOUS: PATCH /api/v1/plans/:id は 08_api/openapi.yaml の operation patchPlansById どおりの入出力（200 と 4xx 401/403/404/422/429）"
+     "UBIQUITOUS: PATCH /api/v1/notice_deliveries/:id は 08_api/openapi.yaml の operation patchNoticeDeliveriesById どおりの入出力（200 と 4xx 401/403/404/422/429）",
+     "UBIQUITOUS: PATCH /api/v1/subscriptions/:id は 08_api/openapi.yaml の operation patchSubscriptionsById どおりの入出力（200 と 4xx 401/403/404/422/429）"
     ],
     "functional": [
      "EVENT-DRIVEN: WHEN GET /api/v1/inquiries が「問い合わせを書く」として呼ばれたとき THEN Kaname は「問い合わせを保存。運営の受信箱へ。証跡に残す」を行い 2xx を返す（自動側：自分のAIがまず答える（記憶・お知らせ・稼働状況から）。解けなければ運営に送る）",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
-     "EVENT-DRIVEN: WHEN PATCH /api/v1/notices/:id が「お知らせを読む・通知の届け先を選ぶ」として呼ばれたとき THEN Kaname は「お知らせと稼働状況を読む。通知の設定を保存」を行い 2xx を返す（自動側：自分のAIが自分に関係あるお知らせだけ要約する）",
+     "EVENT-DRIVEN: WHEN PATCH /api/v1/notice_deliveries/:id が「お知らせを読む・通知の届け先を選ぶ」として呼ばれたとき THEN Kaname は「お知らせと稼働状況を読む。通知の設定を保存」を行い 2xx を返す（自動側：自分のAIが自分に関係あるお知らせだけ要約する）",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
-     "EVENT-DRIVEN: WHEN PATCH /api/v1/plans/:id が「プランと請求書を見る」として呼ばれたとき THEN Kaname は「プラン・利用量・請求書を読む。プラン変更を申請」を行い 2xx を返す（自動側：自分のAIが上限に近いものを先に言う）",
+     "EVENT-DRIVEN: WHEN PATCH /api/v1/subscriptions/:id が「プランと請求書を見る」として呼ばれたとき THEN Kaname は「プラン・利用量・請求書を読む。プラン変更を申請」を行い 2xx を返す（自動側：自分のAIが上限に近いものを先に言う）",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
@@ -13929,7 +13893,7 @@
      "expected": "200 / 403 / 404"
     },
     {
-     "name": "PATCH /api/v1/notices/:id",
+     "name": "PATCH /api/v1/notice_deliveries/:id",
      "steps": [
       "権限のある会員で呼ぶ",
       "権限の無い会員で呼ぶ",
@@ -13938,7 +13902,7 @@
      "expected": "200 / 403 / 404"
     },
     {
-     "name": "PATCH /api/v1/plans/:id",
+     "name": "PATCH /api/v1/subscriptions/:id",
      "steps": [
       "権限のある会員で呼ぶ",
       "権限の無い会員で呼ぶ",
@@ -13987,8 +13951,8 @@
    "acceptance_criteria_inline": {
     "tier_1_structural": [
      "UBIQUITOUS: GET /api/v1/inquiries は 08_api/openapi.yaml の operation getInquiries どおりの入出力（200 と 4xx 401/403/429）",
-     "UBIQUITOUS: PATCH /api/v1/notices/:id は 08_api/openapi.yaml の operation patchNoticesById どおりの入出力（200 と 4xx 401/403/404/422/429）",
-     "UBIQUITOUS: PATCH /api/v1/plans/:id は 08_api/openapi.yaml の operation patchPlansById どおりの入出力（200 と 4xx 401/403/404/422/429）"
+     "UBIQUITOUS: PATCH /api/v1/notice_deliveries/:id は 08_api/openapi.yaml の operation patchNoticeDeliveriesById どおりの入出力（200 と 4xx 401/403/404/422/429）",
+     "UBIQUITOUS: PATCH /api/v1/subscriptions/:id は 08_api/openapi.yaml の operation patchSubscriptionsById どおりの入出力（200 と 4xx 401/403/404/422/429）"
     ],
     "tier_2_functional": [
      {
@@ -14008,7 +13972,7 @@
      },
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/notices/:id が「お知らせを読む・通知の届け先を選ぶ」として呼ばれたとき THEN Kaname は「お知らせと稼働状況を読む。通知の設定を保存」を行い 2xx を返す（自動側：自分のAIが自分に関係あるお知らせだけ要約する）",
+      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/notice_deliveries/:id が「お知らせを読む・通知の届け先を選ぶ」として呼ばれたとき THEN Kaname は「お知らせと稼働状況を読む。通知の設定を保存」を行い 2xx を返す（自動側：自分のAIが自分に関係あるお知らせだけ要約する）",
       "critical": false
      },
      {
@@ -14023,7 +13987,7 @@
      },
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/plans/:id が「プランと請求書を見る」として呼ばれたとき THEN Kaname は「プラン・利用量・請求書を読む。プラン変更を申請」を行い 2xx を返す（自動側：自分のAIが上限に近いものを先に言う）",
+      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/subscriptions/:id が「プランと請求書を見る」として呼ばれたとき THEN Kaname は「プラン・利用量・請求書を読む。プラン変更を申請」を行い 2xx を返す（自動側：自分のAIが上限に近いものを先に言う）",
       "critical": false
      },
      {
@@ -14132,6 +14096,7 @@
    "acts": [
     "A33",
     "A38",
+    "A43",
     "A70",
     "A71",
     "A72",
@@ -14207,7 +14172,7 @@
    "acceptance_criteria": {
     "structural": [
      "UBIQUITOUS: GET /api/v1/audit_events は 08_api/openapi.yaml の operation getAuditEvents どおりの入出力（200 と 4xx 401/403/429）",
-     "UBIQUITOUS: POST /api/v1/inquiries は 08_api/openapi.yaml の operation postInquiries どおりの入出力（201 と 4xx 401/403/409/422/429）",
+     "UBIQUITOUS: PATCH /api/v1/inquiries/:id は 08_api/openapi.yaml の operation patchInquiriesById どおりの入出力（200 と 4xx 401/403/404/422/429）",
      "UBIQUITOUS: GET /api/v1/invoices は 08_api/openapi.yaml の operation getInvoices どおりの入出力（200 と 4xx 401/403/429）",
      "UBIQUITOUS: POST /api/v1/notices は 08_api/openapi.yaml の operation postNotices どおりの入出力（201 と 4xx 401/403/409/422/429）"
     ],
@@ -14215,9 +14180,9 @@
      "EVENT-DRIVEN: WHEN GET /api/v1/audit_events が「いつ何をしたかを追う」として呼ばれたとき THEN Kaname は「証跡を検索」を行い 2xx を返す",
      "EVENT-DRIVEN: WHEN GET /api/v1/audit_events が「誰が何をしたかを確認する」として呼ばれたとき THEN Kaname は「証跡を人・期間で集計」を行い 2xx を返す",
      "EVENT-DRIVEN: WHEN GET /api/v1/audit_events が「セキュリティの出来事を見る」として呼ばれたとき THEN Kaname は「失敗したログイン・鍵の失効・不審な接続の記録」を行い 2xx を返す",
-     "EVENT-DRIVEN: WHEN POST /api/v1/inquiries が「問い合わせに答える」として呼ばれたとき THEN Kaname は「受信箱（問い合わせ＋詰まり）。返答は顧客の問い合わせと証跡に残る」を行い 2xx を返す",
+     "EVENT-DRIVEN: WHEN PATCH /api/v1/inquiries/:id が「顧客のデータを見ずに直す」として呼ばれたとき THEN Kaname は「構成と失敗の型だけを見る」を行い 2xx を返す",
+     "EVENT-DRIVEN: WHEN PATCH /api/v1/inquiries/:id が「問い合わせに答える」として呼ばれたとき THEN Kaname は「受信箱（問い合わせ＋詰まり）。返答は顧客の問い合わせと証跡に残る」を行い 2xx を返す",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
      "EVENT-DRIVEN: WHEN GET /api/v1/invoices が「請求・入金・利用量を見る」として呼ばれたとき THEN Kaname は「各社の請求・入金・未収・利用量／上限を集計（中身は見ない）」を行い 2xx を返す",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
@@ -14251,6 +14216,7 @@
     "audit_events_tenant_read",
     "conversations_permission_write",
     "goals_permission_write",
+    "inquiries_ops_write",
     "inquiries_permission_write",
     "inquiries_self_only_write",
     "invoices_ops_read_with_grant",
@@ -14328,13 +14294,13 @@
      "expected": "200 / 403 / 404"
     },
     {
-     "name": "POST /api/v1/inquiries",
+     "name": "PATCH /api/v1/inquiries/:id",
      "steps": [
       "権限のある会員で呼ぶ",
       "権限の無い会員で呼ぶ",
       "別テナントの id で呼ぶ"
      ],
-     "expected": "201 / 403 / 404"
+     "expected": "200 / 403 / 404"
     },
     {
      "name": "GET /api/v1/invoices",
@@ -14392,7 +14358,7 @@
    "acceptance_criteria_inline": {
     "tier_1_structural": [
      "UBIQUITOUS: GET /api/v1/audit_events は 08_api/openapi.yaml の operation getAuditEvents どおりの入出力（200 と 4xx 401/403/429）",
-     "UBIQUITOUS: POST /api/v1/inquiries は 08_api/openapi.yaml の operation postInquiries どおりの入出力（201 と 4xx 401/403/409/422/429）",
+     "UBIQUITOUS: PATCH /api/v1/inquiries/:id は 08_api/openapi.yaml の operation patchInquiriesById どおりの入出力（200 と 4xx 401/403/404/422/429）",
      "UBIQUITOUS: GET /api/v1/invoices は 08_api/openapi.yaml の operation getInvoices どおりの入出力（200 と 4xx 401/403/429）",
      "UBIQUITOUS: POST /api/v1/notices は 08_api/openapi.yaml の operation postNotices どおりの入出力（201 と 4xx 401/403/409/422/429）"
     ],
@@ -14414,17 +14380,17 @@
      },
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN POST /api/v1/inquiries が「問い合わせに答える」として呼ばれたとき THEN Kaname は「受信箱（問い合わせ＋詰まり）。返答は顧客の問い合わせと証跡に残る」を行い 2xx を返す",
+      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/inquiries/:id が「顧客のデータを見ずに直す」として呼ばれたとき THEN Kaname は「構成と失敗の型だけを見る」を行い 2xx を返す",
+      "critical": false
+     },
+     {
+      "type": "EVENT-DRIVEN",
+      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/inquiries/:id が「問い合わせに答える」として呼ばれたとき THEN Kaname は「受信箱（問い合わせ＋詰まり）。返答は顧客の問い合わせと証跡に残る」を行い 2xx を返す",
       "critical": false
      },
      {
       "type": "UNWANTED",
       "text": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-      "critical": true
-     },
-     {
-      "type": "UNWANTED",
-      "text": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
       "critical": true
      },
      {
@@ -14696,7 +14662,6 @@
     "members_permission_write",
     "permissions_permission_write",
     "service_registry_permission_write",
-    "service_registry_versions_permission_write",
     "service_requests_permission_write",
     "service_requests_self_only_write",
     "tenants_permission_write"
@@ -15042,14 +15007,14 @@
    ],
    "files_changed": [
     "apps/api/src/routes/ai_employees.ts (new)",
-    "apps/api/src/routes/service_registry.ts (new)",
+    "apps/api/src/routes/service_registry_versions.ts (new)",
     "apps/api/src/routes/skills.ts (new)",
     "apps/api/src/app.ts (modify)"
    ],
    "files_changed_predicted": {
     "new": [
      "apps/api/src/routes/ai_employees.ts",
-     "apps/api/src/routes/service_registry.ts",
+     "apps/api/src/routes/service_registry_versions.ts",
      "apps/api/src/routes/skills.ts",
      "apps/api/src/services/17.ts",
      "apps/api/tests/17.spec.ts"
@@ -15070,14 +15035,14 @@
    "acceptance_criteria": {
     "structural": [
      "UBIQUITOUS: GET /api/v1/ai_employees は 08_api/openapi.yaml の operation getAiEmployees どおりの入出力（200 と 4xx 401/403/429/502）",
-     "UBIQUITOUS: PATCH /api/v1/service_registry/:id は 08_api/openapi.yaml の operation patchServiceRegistryById どおりの入出力（200 と 4xx 401/403/404/422/429）",
+     "UBIQUITOUS: PATCH /api/v1/service_registry_versions/:id は 08_api/openapi.yaml の operation patchServiceRegistryVersionsById どおりの入出力（200 と 4xx 401/403/404/422/429）",
      "UBIQUITOUS: POST /api/v1/skills は 08_api/openapi.yaml の operation postSkills どおりの入出力（201 と 4xx 401/403/409/422/429）"
     ],
     "functional": [
      "EVENT-DRIVEN: WHEN GET /api/v1/ai_employees が「AI社員を増やす・人に託す」として呼ばれたとき THEN Kaname は「AI社員を作成・付与。プラン上限を判定」を行い 2xx を返す（自動側：自分のAIが担当業務のたたき台を出す）",
      "EVENT-DRIVEN: WHEN GET /api/v1/ai_employees が「このAI社員の中身を見る」として呼ばれたとき THEN Kaname は「担当業務・託し先・ルール・証跡を読む」を行い 2xx を返す",
      "EVENT-DRIVEN: WHEN GET /api/v1/ai_employees が「木を開いて、止まっているところを見る」として呼ばれたとき THEN Kaname は「AI社員ごとのセッション履歴・関門通過を読む」を行い 2xx を返す（自動側：自分のAIが各AI社員のセッションから報告を集める）",
-     "EVENT-DRIVEN: WHEN PATCH /api/v1/service_registry/:id が「サービス台帳を更新する」として呼ばれたとき THEN Kaname は「可否と理由を版で更新。全社に効く」を行い 2xx を返す",
+     "EVENT-DRIVEN: WHEN PATCH /api/v1/service_registry_versions/:id が「サービス台帳を更新する」として呼ばれたとき THEN Kaname は「可否と理由を版で更新。全社に効く」を行い 2xx を返す",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
      "EVENT-DRIVEN: WHEN POST /api/v1/skills が「スキルを構築・アップロード・テストして配る」として呼ばれたとき THEN Kaname は「版を保存（C4）・配布先の会社に版の更新を通知・装着の状況を集計」を行い 2xx を返す（自動側：運営のテストで動かす（外に出ない））",
@@ -15116,11 +15081,9 @@
     "members_tenant_read",
     "policies_permission_write",
     "service_registry_permission_write",
-    "service_registry_versions_permission_write",
     "service_requests_permission_write",
     "service_requests_self_only_write",
     "skill_attachments_permission_write",
-    "skill_test_runs_permission_write",
     "skill_versions_ops_write"
    ],
    "spec_links": [
@@ -15178,7 +15141,7 @@
      "expected": "200 / 403 / 404"
     },
     {
-     "name": "PATCH /api/v1/service_registry/:id",
+     "name": "PATCH /api/v1/service_registry_versions/:id",
      "steps": [
       "権限のある会員で呼ぶ",
       "権限の無い会員で呼ぶ",
@@ -15243,7 +15206,7 @@
    "acceptance_criteria_inline": {
     "tier_1_structural": [
      "UBIQUITOUS: GET /api/v1/ai_employees は 08_api/openapi.yaml の operation getAiEmployees どおりの入出力（200 と 4xx 401/403/429/502）",
-     "UBIQUITOUS: PATCH /api/v1/service_registry/:id は 08_api/openapi.yaml の operation patchServiceRegistryById どおりの入出力（200 と 4xx 401/403/404/422/429）",
+     "UBIQUITOUS: PATCH /api/v1/service_registry_versions/:id は 08_api/openapi.yaml の operation patchServiceRegistryVersionsById どおりの入出力（200 と 4xx 401/403/404/422/429）",
      "UBIQUITOUS: POST /api/v1/skills は 08_api/openapi.yaml の operation postSkills どおりの入出力（201 と 4xx 401/403/409/422/429）"
     ],
     "tier_2_functional": [
@@ -15264,7 +15227,7 @@
      },
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/service_registry/:id が「サービス台帳を更新する」として呼ばれたとき THEN Kaname は「可否と理由を版で更新。全社に効く」を行い 2xx を返す",
+      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/service_registry_versions/:id が「サービス台帳を更新する」として呼ばれたとき THEN Kaname は「可否と理由を版で更新。全社に効く」を行い 2xx を返す",
       "critical": false
      },
      {
@@ -15366,12 +15329,12 @@
     "ops-tenant"
    ],
    "entity_ids": [
-    "E-004",
     "E-022",
     "E-023",
     "E-040",
     "E-041",
     "E-054",
+    "E-060",
     "E-061",
     "E-062",
     "E-069",
@@ -15395,7 +15358,6 @@
     "T-F-03",
     "T-F-04",
     "T-F-05",
-    "T-D-01",
     "T-D-04",
     "T-D-06",
     "T-D-10",
@@ -15420,15 +15382,15 @@
     "anthropic / openai SDK（関門の外）"
    ],
    "files_changed": [
-    "apps/api/src/routes/audit_events.ts (new)",
     "apps/api/src/routes/distributions.ts (new)",
+    "apps/api/src/routes/ops_members.ts (new)",
     "apps/api/src/routes/plans.ts (new)",
     "apps/api/src/app.ts (modify)"
    ],
    "files_changed_predicted": {
     "new": [
-     "apps/api/src/routes/audit_events.ts",
      "apps/api/src/routes/distributions.ts",
+     "apps/api/src/routes/ops_members.ts",
      "apps/api/src/routes/plans.ts",
      "apps/api/src/services/13.ts",
      "apps/api/tests/13.spec.ts"
@@ -15448,15 +15410,15 @@
    },
    "acceptance_criteria": {
     "structural": [
-     "UBIQUITOUS: PATCH /api/v1/audit_events/:id は 08_api/openapi.yaml の operation patchAuditEventsById どおりの入出力（200 と 4xx 401/403/404/422/429）",
      "UBIQUITOUS: POST /api/v1/distributions は 08_api/openapi.yaml の operation postDistributions どおりの入出力（201 と 4xx 401/403/409/422/429）",
+     "UBIQUITOUS: PATCH /api/v1/ops_members/:id は 08_api/openapi.yaml の operation patchOpsMembersById どおりの入出力（200 と 4xx 401/403/404/422/429）",
      "UBIQUITOUS: DELETE /api/v1/plans/:id は 08_api/openapi.yaml の operation deletePlansById どおりの入出力（200 と 4xx 401/403/404/429）"
     ],
     "functional": [
-     "EVENT-DRIVEN: WHEN PATCH /api/v1/audit_events/:id が「運営の証跡を見る」として呼ばれたとき THEN Kaname は「運営側の操作記録と運営メンバーの権限」を行い 2xx を返す",
+     "EVENT-DRIVEN: WHEN POST /api/v1/distributions が「公開の申請を審査する」として呼ばれたとき THEN Kaname は「匿名化の確認・承認／却下を版で記録」を行い 2xx を返す",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
-     "EVENT-DRIVEN: WHEN POST /api/v1/distributions が「公開の申請を審査する」として呼ばれたとき THEN Kaname は「匿名化の確認・承認／却下を版で記録」を行い 2xx を返す",
+     "EVENT-DRIVEN: WHEN PATCH /api/v1/ops_members/:id が「運営の証跡を見る」として呼ばれたとき THEN Kaname は「運営側の操作記録と運営メンバーの権限」を行い 2xx を返す",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
      "EVENT-DRIVEN: WHEN DELETE /api/v1/plans/:id が「会社の 1 社を扱う」として呼ばれたとき THEN Kaname は「会社の詳細の 8 面。入金の記録・返答・承認・対処・個別のお知らせはここから。中身は読まない」を行い 2xx を返す",
@@ -15468,7 +15430,7 @@
      "UBIQUITOUS: 行レベル制御 artifacts_permission_write が効く",
      "UBIQUITOUS: 行レベル制御 duties_permission_write が効く",
      "UBIQUITOUS: 行レベル制御 duty_versions_permission_write が効く",
-     "UBIQUITOUS: 行レベル制御 members_permission_write が効く"
+     "UBIQUITOUS: 行レベル制御 plan_versions_ops_write が効く"
     ],
     "regression": [
      "pnpm test（該当パッケージ）PASS",
@@ -15486,7 +15448,6 @@
     "artifacts_permission_write",
     "duties_permission_write",
     "duty_versions_permission_write",
-    "members_permission_write",
     "plan_versions_ops_write",
     "subscriptions_permission_write",
     "usage_meters_permission_write"
@@ -15534,15 +15495,6 @@
    },
    "test_scenarios_inline": [
     {
-     "name": "PATCH /api/v1/audit_events/:id",
-     "steps": [
-      "権限のある会員で呼ぶ",
-      "権限の無い会員で呼ぶ",
-      "別テナントの id で呼ぶ"
-     ],
-     "expected": "200 / 403 / 404"
-    },
-    {
      "name": "POST /api/v1/distributions",
      "steps": [
       "権限のある会員で呼ぶ",
@@ -15550,6 +15502,15 @@
       "別テナントの id で呼ぶ"
      ],
      "expected": "201 / 403 / 404"
+    },
+    {
+     "name": "PATCH /api/v1/ops_members/:id",
+     "steps": [
+      "権限のある会員で呼ぶ",
+      "権限の無い会員で呼ぶ",
+      "別テナントの id で呼ぶ"
+     ],
+     "expected": "200 / 403 / 404"
     },
     {
      "name": "DELETE /api/v1/plans/:id",
@@ -15601,14 +15562,14 @@
    "why": "",
    "acceptance_criteria_inline": {
     "tier_1_structural": [
-     "UBIQUITOUS: PATCH /api/v1/audit_events/:id は 08_api/openapi.yaml の operation patchAuditEventsById どおりの入出力（200 と 4xx 401/403/404/422/429）",
      "UBIQUITOUS: POST /api/v1/distributions は 08_api/openapi.yaml の operation postDistributions どおりの入出力（201 と 4xx 401/403/409/422/429）",
+     "UBIQUITOUS: PATCH /api/v1/ops_members/:id は 08_api/openapi.yaml の operation patchOpsMembersById どおりの入出力（200 と 4xx 401/403/404/422/429）",
      "UBIQUITOUS: DELETE /api/v1/plans/:id は 08_api/openapi.yaml の operation deletePlansById どおりの入出力（200 と 4xx 401/403/404/429）"
     ],
     "tier_2_functional": [
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/audit_events/:id が「運営の証跡を見る」として呼ばれたとき THEN Kaname は「運営側の操作記録と運営メンバーの権限」を行い 2xx を返す",
+      "text": "EVENT-DRIVEN: WHEN POST /api/v1/distributions が「公開の申請を審査する」として呼ばれたとき THEN Kaname は「匿名化の確認・承認／却下を版で記録」を行い 2xx を返す",
       "critical": false
      },
      {
@@ -15623,7 +15584,7 @@
      },
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN POST /api/v1/distributions が「公開の申請を審査する」として呼ばれたとき THEN Kaname は「匿名化の確認・承認／却下を版で記録」を行い 2xx を返す",
+      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/ops_members/:id が「運営の証跡を見る」として呼ばれたとき THEN Kaname は「運営側の操作記録と運営メンバーの権限」を行い 2xx を返す",
       "critical": false
      },
      {
@@ -15683,7 +15644,7 @@
      },
      {
       "type": "UBIQUITOUS",
-      "text": "UBIQUITOUS: 行レベル制御 members_permission_write が効く",
+      "text": "UBIQUITOUS: 行レベル制御 plan_versions_ops_write が効く",
       "critical": false
      }
     ],
@@ -17071,8 +17032,8 @@
      "STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い"
     ],
     "functional": [
-     "EVENT-DRIVEN: WHEN POST /api/v1/plans が「会社名とメールを入れる」として呼ばれたとき THEN Kaname は「アカウントと会社を作る」を行い 2xx を返す",
-     "EVENT-DRIVEN: WHEN POST /api/v1/plans が「支払い方法を入れる」として呼ばれたとき THEN Kaname は「決済事業者に登録（カード番号は預からない）」を行い 2xx を返す",
+     "EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「会社名とメールを入れる」として呼ばれたとき THEN Kaname は「アカウントと会社を作る」を行い 2xx を返す",
+     "EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「支払い方法を入れる」として呼ばれたとき THEN Kaname は「決済事業者に登録（カード番号は預からない）」を行い 2xx を返す",
      "EVENT-DRIVEN: WHEN 「はじめる」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する",
      "UNWANTED: IF 列の値が実データでも「—」固定なら未実装として落とす"
     ],
@@ -17196,12 +17157,12 @@
     "tier_2_functional": [
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN POST /api/v1/plans が「会社名とメールを入れる」として呼ばれたとき THEN Kaname は「アカウントと会社を作る」を行い 2xx を返す",
+      "text": "EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「会社名とメールを入れる」として呼ばれたとき THEN Kaname は「アカウントと会社を作る」を行い 2xx を返す",
       "critical": false
      },
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN POST /api/v1/plans が「支払い方法を入れる」として呼ばれたとき THEN Kaname は「決済事業者に登録（カード番号は預からない）」を行い 2xx を返す",
+      "text": "EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「支払い方法を入れる」として呼ばれたとき THEN Kaname は「決済事業者に登録（カード番号は預からない）」を行い 2xx を返す",
       "critical": false
      },
      {
@@ -25820,12 +25781,12 @@
      "STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い"
     ],
     "functional": [
+     "EVENT-DRIVEN: WHEN POST /api/v1/approvals が「全操作の証跡を出す」として呼ばれたとき THEN Kaname は「証跡をファイルに書き出す」を行い 2xx を返す",
+     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+     "EVENT-DRIVEN: WHEN DELETE /api/v1/approvals/:id が「やってしまったことを取り消す」として呼ばれたとき THEN Kaname は「打ち消しの操作を実行し証跡に残す」を行い 2xx を返す（自動側：自分のAIが取り消せる範囲を示す）",
+     "EVENT-DRIVEN: WHEN DELETE /api/v1/approvals/:id が「運営にサポートアクセスを許可する」として呼ばれたとき THEN Kaname は「範囲・期限つきの許可を保存。運営が見た記録を顧客の証跡に残す」を行い 2xx を返す",
      "EVENT-DRIVEN: WHEN GET /api/v1/audit_events が「いつ何をしたかを追う」として呼ばれたとき THEN Kaname は「証跡を検索」を行い 2xx を返す",
      "EVENT-DRIVEN: WHEN GET /api/v1/audit_events が「誰が何をしたかを確認する」として呼ばれたとき THEN Kaname は「証跡を人・期間で集計」を行い 2xx を返す",
-     "EVENT-DRIVEN: WHEN POST /api/v1/audit_events が「全操作の証跡を出す」として呼ばれたとき THEN Kaname は「証跡をファイルに書き出す」を行い 2xx を返す",
-     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-     "EVENT-DRIVEN: WHEN DELETE /api/v1/audit_events/:id が「やってしまったことを取り消す」として呼ばれたとき THEN Kaname は「打ち消しの操作を実行し証跡に残す」を行い 2xx を返す（自動側：自分のAIが取り消せる範囲を示す）",
-     "EVENT-DRIVEN: WHEN DELETE /api/v1/audit_events/:id が「運営にサポートアクセスを許可する」として呼ばれたとき THEN Kaname は「範囲・期限つきの許可を保存。運営が見た記録を顧客の証跡に残す」を行い 2xx を返す",
      "EVENT-DRIVEN: WHEN 「書き出す」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する",
      "UNWANTED: IF 列の値が実データでも「—」固定なら未実装として落とす"
     ],
@@ -25971,17 +25932,7 @@
     "tier_2_functional": [
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN GET /api/v1/audit_events が「いつ何をしたかを追う」として呼ばれたとき THEN Kaname は「証跡を検索」を行い 2xx を返す",
-      "critical": false
-     },
-     {
-      "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN GET /api/v1/audit_events が「誰が何をしたかを確認する」として呼ばれたとき THEN Kaname は「証跡を人・期間で集計」を行い 2xx を返す",
-      "critical": false
-     },
-     {
-      "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN POST /api/v1/audit_events が「全操作の証跡を出す」として呼ばれたとき THEN Kaname は「証跡をファイルに書き出す」を行い 2xx を返す",
+      "text": "EVENT-DRIVEN: WHEN POST /api/v1/approvals が「全操作の証跡を出す」として呼ばれたとき THEN Kaname は「証跡をファイルに書き出す」を行い 2xx を返す",
       "critical": false
      },
      {
@@ -25991,12 +25942,22 @@
      },
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN DELETE /api/v1/audit_events/:id が「やってしまったことを取り消す」として呼ばれたとき THEN Kaname は「打ち消しの操作を実行し証跡に残す」を行い 2xx を返す（自動側：自分のAIが取り消せる範囲を示す）",
+      "text": "EVENT-DRIVEN: WHEN DELETE /api/v1/approvals/:id が「やってしまったことを取り消す」として呼ばれたとき THEN Kaname は「打ち消しの操作を実行し証跡に残す」を行い 2xx を返す（自動側：自分のAIが取り消せる範囲を示す）",
       "critical": false
      },
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN DELETE /api/v1/audit_events/:id が「運営にサポートアクセスを許可する」として呼ばれたとき THEN Kaname は「範囲・期限つきの許可を保存。運営が見た記録を顧客の証跡に残す」を行い 2xx を返す",
+      "text": "EVENT-DRIVEN: WHEN DELETE /api/v1/approvals/:id が「運営にサポートアクセスを許可する」として呼ばれたとき THEN Kaname は「範囲・期限つきの許可を保存。運営が見た記録を顧客の証跡に残す」を行い 2xx を返す",
+      "critical": false
+     },
+     {
+      "type": "EVENT-DRIVEN",
+      "text": "EVENT-DRIVEN: WHEN GET /api/v1/audit_events が「いつ何をしたかを追う」として呼ばれたとき THEN Kaname は「証跡を検索」を行い 2xx を返す",
+      "critical": false
+     },
+     {
+      "type": "EVENT-DRIVEN",
+      "text": "EVENT-DRIVEN: WHEN GET /api/v1/audit_events が「誰が何をしたかを確認する」として呼ばれたとき THEN Kaname は「証跡を人・期間で集計」を行い 2xx を返す",
       "critical": false
      },
      {
@@ -28023,10 +27984,8 @@
      "STATE-DRIVEN: WHILE 役割 R6 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い"
     ],
     "functional": [
-     "EVENT-DRIVEN: WHEN POST /api/v1/inquiries が「問い合わせに答える」として呼ばれたとき THEN Kaname は「受信箱（問い合わせ＋詰まり）。返答は顧客の問い合わせと証跡に残る」を行い 2xx を返す",
-     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "EVENT-DRIVEN: WHEN PATCH /api/v1/inquiries/:id が「顧客のデータを見ずに直す」として呼ばれたとき THEN Kaname は「構成と失敗の型だけを見る」を行い 2xx を返す",
-     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+     "EVENT-DRIVEN: WHEN PATCH /api/v1/inquiries/:id が「問い合わせに答える」として呼ばれたとき THEN Kaname は「受信箱（問い合わせ＋詰まり）。返答は顧客の問い合わせと証跡に残る」を行い 2xx を返す",
      "EVENT-DRIVEN: WHEN 「返答する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する",
      "UNWANTED: IF 列の値が実データでも「—」固定なら未実装として落とす"
     ],
@@ -28147,22 +28106,12 @@
     "tier_2_functional": [
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN POST /api/v1/inquiries が「問い合わせに答える」として呼ばれたとき THEN Kaname は「受信箱（問い合わせ＋詰まり）。返答は顧客の問い合わせと証跡に残る」を行い 2xx を返す",
-      "critical": false
-     },
-     {
-      "type": "UNWANTED",
-      "text": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-      "critical": false
-     },
-     {
-      "type": "EVENT-DRIVEN",
       "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/inquiries/:id が「顧客のデータを見ずに直す」として呼ばれたとき THEN Kaname は「構成と失敗の型だけを見る」を行い 2xx を返す",
       "critical": false
      },
      {
-      "type": "UNWANTED",
-      "text": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+      "type": "EVENT-DRIVEN",
+      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/inquiries/:id が「問い合わせに答える」として呼ばれたとき THEN Kaname は「受信箱（問い合わせ＋詰まり）。返答は顧客の問い合わせと証跡に残る」を行い 2xx を返す",
       "critical": false
      },
      {
@@ -29838,7 +29787,7 @@
      "STATE-DRIVEN: WHILE 役割 R6 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い"
     ],
     "functional": [
-     "EVENT-DRIVEN: WHEN PATCH /api/v1/service_registry/:id が「サービス台帳を更新する」として呼ばれたとき THEN Kaname は「可否と理由を版で更新。全社に効く」を行い 2xx を返す",
+     "EVENT-DRIVEN: WHEN PATCH /api/v1/service_registry_versions/:id が「サービス台帳を更新する」として呼ばれたとき THEN Kaname は「可否と理由を版で更新。全社に効く」を行い 2xx を返す",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "EVENT-DRIVEN: WHEN 「版を出す」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する",
      "UNWANTED: IF 列の値が実データでも「—」固定なら未実装として落とす"
@@ -29951,7 +29900,7 @@
     "tier_2_functional": [
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/service_registry/:id が「サービス台帳を更新する」として呼ばれたとき THEN Kaname は「可否と理由を版で更新。全社に効く」を行い 2xx を返す",
+      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/service_registry_versions/:id が「サービス台帳を更新する」として呼ばれたとき THEN Kaname は「可否と理由を版で更新。全社に効く」を行い 2xx を返す",
       "critical": false
      },
      {
@@ -30605,7 +30554,7 @@
      "STATE-DRIVEN: WHILE 役割 R1/R2/R3/R4 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い"
     ],
     "functional": [
-     "EVENT-DRIVEN: WHEN PATCH /api/v1/notices/:id が「お知らせを読む・通知の届け先を選ぶ」として呼ばれたとき THEN Kaname は「お知らせと稼働状況を読む。通知の設定を保存」を行い 2xx を返す（自動側：自分のAIが自分に関係あるお知らせだけ要約する）",
+     "EVENT-DRIVEN: WHEN PATCH /api/v1/notice_deliveries/:id が「お知らせを読む・通知の届け先を選ぶ」として呼ばれたとき THEN Kaname は「お知らせと稼働状況を読む。通知の設定を保存」を行い 2xx を返す（自動側：自分のAIが自分に関係あるお知らせだけ要約する）",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "EVENT-DRIVEN: WHEN 「通知の届け先を保存する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する",
      "UNWANTED: IF 列の値が実データでも「—」固定なら未実装として落とす"
@@ -30746,7 +30695,7 @@
     "tier_2_functional": [
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/notices/:id が「お知らせを読む・通知の届け先を選ぶ」として呼ばれたとき THEN Kaname は「お知らせと稼働状況を読む。通知の設定を保存」を行い 2xx を返す（自動側：自分のAIが自分に関係あるお知らせだけ要約する）",
+      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/notice_deliveries/:id が「お知らせを読む・通知の届け先を選ぶ」として呼ばれたとき THEN Kaname は「お知らせと稼働状況を読む。通知の設定を保存」を行い 2xx を返す（自動側：自分のAIが自分に関係あるお知らせだけ要約する）",
       "critical": false
      },
      {
@@ -30874,7 +30823,7 @@
      "STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い"
     ],
     "functional": [
-     "EVENT-DRIVEN: WHEN PATCH /api/v1/plans/:id が「プランと請求書を見る」として呼ばれたとき THEN Kaname は「プラン・利用量・請求書を読む。プラン変更を申請」を行い 2xx を返す（自動側：自分のAIが上限に近いものを先に言う）",
+     "EVENT-DRIVEN: WHEN PATCH /api/v1/subscriptions/:id が「プランと請求書を見る」として呼ばれたとき THEN Kaname は「プラン・利用量・請求書を読む。プラン変更を申請」を行い 2xx を返す（自動側：自分のAIが上限に近いものを先に言う）",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "EVENT-DRIVEN: WHEN 「プランを変える」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する",
      "UNWANTED: IF 列の値が実データでも「—」固定なら未実装として落とす"
@@ -31012,7 +30961,7 @@
     "tier_2_functional": [
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/plans/:id が「プランと請求書を見る」として呼ばれたとき THEN Kaname は「プラン・利用量・請求書を読む。プラン変更を申請」を行い 2xx を返す（自動側：自分のAIが上限に近いものを先に言う）",
+      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/subscriptions/:id が「プランと請求書を見る」として呼ばれたとき THEN Kaname は「プラン・利用量・請求書を読む。プラン変更を申請」を行い 2xx を返す（自動側：自分のAIが上限に近いものを先に言う）",
       "critical": false
      },
      {
@@ -32147,7 +32096,7 @@
     "functional": [
      "EVENT-DRIVEN: WHEN GET /api/v1/audit_events が「いつ何をしたかを追う」として呼ばれたとき THEN Kaname は「証跡を検索」を行い 2xx を返す",
      "EVENT-DRIVEN: WHEN GET /api/v1/audit_events が「誰が何をしたかを確認する」として呼ばれたとき THEN Kaname は「証跡を人・期間で集計」を行い 2xx を返す",
-     "EVENT-DRIVEN: WHEN PATCH /api/v1/audit_events/:id が「運営の証跡を見る」として呼ばれたとき THEN Kaname は「運営側の操作記録と運営メンバーの権限」を行い 2xx を返す",
+     "EVENT-DRIVEN: WHEN PATCH /api/v1/ops_members/:id が「運営の証跡を見る」として呼ばれたとき THEN Kaname は「運営側の操作記録と運営メンバーの権限」を行い 2xx を返す",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "EVENT-DRIVEN: WHEN 「書き出す」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する",
      "UNWANTED: IF 列の値が実データでも「—」固定なら未実装として落とす"
@@ -32283,7 +32232,7 @@
      },
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/audit_events/:id が「運営の証跡を見る」として呼ばれたとき THEN Kaname は「運営側の操作記録と運営メンバーの権限」を行い 2xx を返す",
+      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/ops_members/:id が「運営の証跡を見る」として呼ばれたとき THEN Kaname は「運営側の操作記録と運営メンバーの権限」を行い 2xx を返す",
       "critical": false
      },
      {

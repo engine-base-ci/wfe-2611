@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Kaname API
   version: 1.0.0
-  description: Mock-Driven Contract Generation。2026-09-15 凍結。信頼源は 08_api/endpoints.json。x-acts / x-screens / x-choke-points / x-source で行為・画面・関門・決定に辿れる
+  description: Mock-Driven Contract Generation。2026-09-16 凍結。信頼源は 08_api/endpoints.json。x-acts / x-screens / x-choke-points / x-source で行為・画面・関門・決定に辿れる
 servers:
 - url: /api/v1
 components:
@@ -22,7 +22,6 @@ components:
           format: uuid
         status_id: &id003
           type: string
-          format: uuid
         id:
           type: string
           format: uuid
@@ -114,12 +113,10 @@ components:
       properties:
         kind_id: &id009
           type: string
-          format: uuid
         display_name: &id010
           type: string
         role_id: &id011
           type: string
-          format: uuid
         manager_member_id: &id012
           type: string
           format: uuid
@@ -258,9 +255,8 @@ components:
           type: string
         value_type_id: &id025
           type: string
-          format: uuid
         decimals: &id026
-          type: number
+          type: integer
         id:
           type: string
           format: uuid
@@ -326,17 +322,17 @@ components:
           format: uuid
         rollup_kind_id: &id031
           type: string
-          format: uuid
         rollup_spec: &id032
           type: object
           additionalProperties: true
         kind_id: &id033
           type: string
-          format: uuid
         period_start: &id034
           type: string
+          format: date
         period_end: &id035
           type: string
+          format: date
         target_value: &id036
           type: number
         unit_id: &id037
@@ -390,7 +386,6 @@ components:
           type: number
         agreement_status_id: &id042
           type: string
-          format: uuid
         id:
           type: string
           format: uuid
@@ -429,7 +424,6 @@ components:
           format: uuid
         verdict_id: &id046
           type: string
-          format: uuid
         id:
           type: string
           format: uuid
@@ -461,7 +455,7 @@ components:
           type: string
           format: uuid
         version:
-          type: string
+          type: integer
         snapshot: &id048
           type: object
           additionalProperties: true
@@ -470,6 +464,7 @@ components:
           format: date-time
         changed_by: &id050
           type: string
+          format: uuid
         id:
           type: string
           format: uuid
@@ -536,7 +531,7 @@ components:
         statement: &id055
           type: string
         expected_effect: &id056
-          type: string
+          type: number
         id:
           type: string
           format: uuid
@@ -570,7 +565,6 @@ components:
           type: number
         verdict_id: &id059
           type: string
-          format: uuid
         measured_at: &id060
           type: string
           format: date-time
@@ -603,7 +597,6 @@ components:
       properties:
         kind_id: &id061
           type: string
-          format: uuid
         name: &id062
           type: string
         json_schema: &id063
@@ -644,14 +637,13 @@ components:
           type: string
         data_type_id: &id067
           type: string
-          format: uuid
         required: &id068
           type: boolean
         options_master_id: &id069
           type: string
           format: uuid
         order_no: &id070
-          type: number
+          type: integer
         is_filterable: &id071
           type: boolean
         is_sortable: &id072
@@ -696,7 +688,7 @@ components:
         label: &id075
           type: string
         order_no: &id076
-          type: number
+          type: integer
         rules: &id077
           type: object
           additionalProperties: true
@@ -733,7 +725,6 @@ components:
           format: uuid
         kind_id: &id079
           type: string
-          format: uuid
         filters: &id080
           type: object
           additionalProperties: true
@@ -837,7 +828,6 @@ components:
           additionalProperties: true
         visibility_id: &id095
           type: string
-          format: uuid
         id:
           type: string
           format: uuid
@@ -870,12 +860,13 @@ components:
           type: string
           format: uuid
         version:
-          type: string
+          type: integer
         snapshot: &id097
           type: object
           additionalProperties: true
         changed_by: &id098
           type: string
+          format: uuid
         change_reason: &id099
           type: string
         id:
@@ -913,13 +904,12 @@ components:
           format: uuid
         status_id: &id102
           type: string
-          format: uuid
         run_count: &id103
-          type: number
+          type: integer
         avg_ms: &id104
-          type: number
+          type: integer
         fail_count: &id105
-          type: number
+          type: integer
         last_verified_at: &id106
           type: string
           format: date-time
@@ -957,7 +947,7 @@ components:
           type: string
           format: uuid
         order_no: &id108
-          type: number
+          type: integer
         intent_ja: &id109
           type: string
         locator:
@@ -1023,7 +1013,6 @@ components:
       properties:
         kind_id: &id113
           type: string
-          format: uuid
         owner_member_id: &id114
           type: string
           format: uuid
@@ -1035,14 +1024,16 @@ components:
           type: number
         source_type_id: &id118
           type: string
-          format: uuid
         source_ref_id: &id119
           type: string
           format: uuid
         embedding:
-          type: string
+          type: array
+          items:
+            type: number
         approved_by: &id120
           type: string
+          format: uuid
         approved_at: &id121
           type: string
           format: date-time
@@ -1089,7 +1080,6 @@ components:
           format: uuid
         status_id: &id125
           type: string
-          format: uuid
         due_on: &id126
           type: string
           format: date
@@ -1104,16 +1094,17 @@ components:
         next_action: &id130
           type: string
         estimate_minutes: &id131
-          type: number
+          type: integer
         actual_minutes: &id132
-          type: number
+          type: integer
         planned_for: &id133
           type: string
+          format: date
         blocked_reason_id: &id134
           type: string
-          format: uuid
         blocked_since: &id135
           type: string
+          format: date-time
         id:
           type: string
           format: uuid
@@ -1162,10 +1153,8 @@ components:
           format: uuid
         mode_id: &id139
           type: string
-          format: uuid
         agreement_status_id: &id140
           type: string
-          format: uuid
         reason: &id141
           type: string
         id:
@@ -1204,8 +1193,9 @@ components:
           format: uuid
         plan_date: &id143
           type: string
+          format: date
         capacity_minutes: &id144
-          type: number
+          type: integer
         committed_at: &id145
           type: string
           format: date-time
@@ -1246,16 +1236,14 @@ components:
       properties:
         kind_id: &id148
           type: string
-          format: uuid
         cron_expr: &id149
           type: string
         timezone: &id150
           type: string
         on_missed_id: &id151
           type: string
-          format: uuid
         ttl_minutes: &id152
-          type: string
+          type: integer
         enabled: &id153
           type: boolean
         id:
@@ -1289,13 +1277,10 @@ components:
       properties:
         subject_kind_id: &id154
           type: string
-          format: uuid
         action_kind_id: &id155
           type: string
-          format: uuid
         mode_id: &id156
           type: string
-          format: uuid
         params: &id157
           type: object
           additionalProperties: true
@@ -1334,12 +1319,12 @@ components:
           format: uuid
         requested_by: &id160
           type: string
+          format: uuid
         approver_member_id: &id161
           type: string
           format: uuid
         status_id: &id162
           type: string
-          format: uuid
         resolved_at: &id163
           type: string
           format: date-time
@@ -1379,10 +1364,8 @@ components:
           format: uuid
         action_kind_id: &id166
           type: string
-          format: uuid
         choke_point_id: &id167
           type: string
-          format: uuid
         service_id: &id168
           type: string
           format: uuid
@@ -1391,7 +1374,6 @@ components:
           format: uuid
         status_id: &id170
           type: string
-          format: uuid
         started_at: &id171
           type: string
           format: date-time
@@ -1399,9 +1381,9 @@ components:
           type: string
           format: date-time
         tokens_in: &id173
-          type: number
+          type: integer
         tokens_out: &id174
-          type: number
+          type: integer
         cost: &id175
           type: number
         error_summary: &id176
@@ -1447,7 +1429,6 @@ components:
           type: string
         automation_verdict_id: &id179
           type: string
-          format: uuid
         notes: &id180
           type: string
         id:
@@ -1512,7 +1493,6 @@ components:
           format: uuid
         kind_id: &id184
           type: string
-          format: uuid
         vault_ref:
           type: string
         owner_member_id: &id185
@@ -1664,7 +1644,6 @@ components:
           format: uuid
         format_id: &id205
           type: string
-          format: uuid
         storage_ref:
           type: string
         template_id: &id206
@@ -1672,6 +1651,7 @@ components:
           format: uuid
         approved_by: &id207
           type: string
+          format: uuid
         id:
           type: string
           format: uuid
@@ -1713,7 +1693,6 @@ components:
           format: uuid
         choke_point_id: &id213
           type: string
-          format: uuid
         payload: &id214
           type: object
           additionalProperties: true
@@ -1814,7 +1793,7 @@ components:
         label: &id221
           type: string
         order_no: &id222
-          type: number
+          type: integer
         id:
           type: string
           format: uuid
@@ -1905,13 +1884,11 @@ components:
           format: uuid
         target_kind_id: &id228
           type: string
-          format: uuid
         scope_id:
           type: string
           format: uuid
         ability_id: &id229
           type: string
-          format: uuid
         granted_by: &id230
           type: string
         revoked_at: &id231
@@ -1949,7 +1926,6 @@ components:
       properties:
         kind_id: &id232
           type: string
-          format: uuid
         subject_type: &id233
           type: string
         subject_id: &id234
@@ -1957,9 +1933,9 @@ components:
           format: uuid
         requested_by: &id235
           type: string
+          format: uuid
         status_id: &id236
           type: string
-          format: uuid
         resolved_at: &id237
           type: string
           format: date-time
@@ -2002,11 +1978,11 @@ components:
           type: string
         disposition_id: &id240
           type: string
-          format: uuid
         target_ref: &id241
           type: string
         decided_by: &id242
           type: string
+          format: uuid
         done_at: &id243
           type: string
           format: date-time
@@ -2045,10 +2021,8 @@ components:
           format: uuid
         kind_id: &id245
           type: string
-          format: uuid
         auth_session_id: &id246
           type: string
-          format: uuid
         device_label: &id247
           type: string
         ip_region: &id248
@@ -2064,7 +2038,6 @@ components:
           format: date-time
         revoke_reason_id: &id252
           type: string
-          format: uuid
         id:
           type: string
           format: uuid
@@ -2151,6 +2124,7 @@ components:
           type: string
         retain_until: &id260
           type: string
+          format: date
         legal_basis: &id261
           type: string
         id:
@@ -2220,13 +2194,12 @@ components:
       properties:
         kind_id: &id264
           type: string
-          format: uuid
         key: &id265
           type: string
         name: &id266
           type: string
         current_version: &id267
-          type: number
+          type: integer
         plan_ids: &id268
           type: array
           items:
@@ -2274,7 +2247,7 @@ components:
           type: string
           format: uuid
         version:
-          type: string
+          type: integer
         snapshot: &id271
           type: object
           additionalProperties: true
@@ -2283,6 +2256,7 @@ components:
           format: date-time
         released_by: &id273
           type: string
+          format: uuid
         change_reason: &id274
           type: string
         id:
@@ -2321,7 +2295,7 @@ components:
           type: string
           format: uuid
         version_in_use: &id276
-          type: number
+          type: integer
         enabled: &id277
           type: boolean
         override: &id278
@@ -2329,6 +2303,7 @@ components:
           additionalProperties: true
         disabled_by: &id279
           type: string
+          format: uuid
         id:
           type: string
           format: uuid
@@ -2366,10 +2341,9 @@ components:
           type: string
           format: uuid
         version:
-          type: string
+          type: integer
         automation_verdict_id: &id281
           type: string
-          format: uuid
         reason: &id282
           type: string
         released_at: &id283
@@ -2413,9 +2387,9 @@ components:
           type: string
         requested_by: &id286
           type: string
+          format: uuid
         verdict_id: &id287
           type: string
-          format: uuid
         decided_at: &id288
           type: string
           format: date-time
@@ -2462,7 +2436,6 @@ components:
           additionalProperties: true
         status_id: &id292
           type: string
-          format: uuid
         reviewer_ops_member_id: &id293
           type: string
           format: uuid
@@ -2513,7 +2486,6 @@ components:
           format: uuid
         ops_role_id: &id297
           type: string
-          format: uuid
         revoked_at: &id298
           type: string
           format: date-time
@@ -2609,7 +2581,6 @@ components:
       properties:
         kind_id: &id307
           type: string
-          format: uuid
         member_id: &id308
           type: string
           format: uuid
@@ -2660,10 +2631,8 @@ components:
           format: uuid
         kind_id: &id313
           type: string
-          format: uuid
         status_id: &id314
           type: string
-          format: uuid
         conversation_id: &id315
           type: string
           format: uuid
@@ -2708,7 +2677,6 @@ components:
       properties:
         kind_id: &id318
           type: string
-          format: uuid
         title: &id319
           type: string
         body: &id320
@@ -2726,6 +2694,7 @@ components:
           format: date-time
         published_by: &id324
           type: string
+          format: uuid
         id:
           type: string
           format: uuid
@@ -2803,13 +2772,11 @@ components:
       properties:
         component_id: &id329
           type: string
-          format: uuid
         service_id: &id330
           type: string
           format: uuid
         state_id: &id331
           type: string
-          format: uuid
         started_at: &id332
           type: string
           format: date-time
@@ -2856,10 +2823,8 @@ components:
           format: uuid
         event_kind_id: &id336
           type: string
-          format: uuid
         channel_id: &id337
           type: string
-          format: uuid
         enabled: &id338
           type: boolean
         id:
@@ -2898,10 +2863,8 @@ components:
           format: uuid
         channel_id: &id340
           type: string
-          format: uuid
         event_kind_id: &id341
           type: string
-          format: uuid
         payload: &id342
           type: object
           additionalProperties: true
@@ -2914,7 +2877,7 @@ components:
           type: string
           format: date-time
         retry_count: &id345
-          type: number
+          type: integer
         id:
           type: string
           format: uuid
@@ -2958,7 +2921,7 @@ components:
           type: object
           additionalProperties: true
         current_version: &id350
-          type: number
+          type: integer
         id:
           type: string
           format: uuid
@@ -2996,7 +2959,7 @@ components:
           type: string
           format: uuid
         version:
-          type: string
+          type: integer
         snapshot: &id352
           type: object
           additionalProperties: true
@@ -3036,7 +2999,6 @@ components:
           format: uuid
         status_id: &id355
           type: string
-          format: uuid
         started_at: &id356
           type: string
           format: date-time
@@ -3091,9 +3053,9 @@ components:
           format: uuid
         requested_by: &id362
           type: string
+          format: uuid
         status_id: &id363
           type: string
-          format: uuid
         dependencies_event_id: &id364
           type: string
           format: uuid
@@ -3139,6 +3101,7 @@ components:
           type: string
         period_start: &id368
           type: string
+          format: date
         value: &id369
           type: number
         limit_value: &id370
@@ -3178,8 +3141,10 @@ components:
           format: uuid
         period_start: &id372
           type: string
+          format: date
         period_end: &id373
           type: string
+          format: date
         amount: &id374
           type: number
         issued_at: &id375
@@ -3190,7 +3155,6 @@ components:
           format: date
         status_id: &id377
           type: string
-          format: uuid
         pdf_ref: &id378
           type: string
         id:
@@ -3238,7 +3202,6 @@ components:
           type: number
         method_id: &id382
           type: string
-          format: uuid
         recorded_by_ops_member_id: &id383
           type: string
           format: uuid
@@ -3327,18 +3290,17 @@ components:
           type: string
         detected_kind_id: &id391
           type: string
-          format: uuid
         proposal: &id392
           type: object
           additionalProperties: true
         status_id: &id393
           type: string
-          format: uuid
         applied_at: &id394
           type: string
           format: date-time
         applied_by: &id395
           type: string
+          format: uuid
         id:
           type: string
           format: uuid
@@ -3378,15 +3340,15 @@ components:
           format: uuid
         kind_id: &id397
           type: string
-          format: uuid
         credential_id: &id398
           type: string
           format: uuid
         scopes: &id399
-          type: string
+          type: array
+          items:
+            type: string
         status_id: &id400
           type: string
-          format: uuid
         connected_at: &id401
           type: string
           format: date-time
@@ -3435,7 +3397,6 @@ components:
           format: uuid
         role_id: &id404
           type: string
-          format: uuid
         permission_preset: &id405
           type: object
           additionalProperties: true
@@ -3485,14 +3446,13 @@ components:
       properties:
         requested_by: &id409
           type: string
+          format: uuid
         kind_id: &id410
           type: string
-          format: uuid
         storage_ref:
           type: string
         status_id: &id411
           type: string
-          format: uuid
         expires_at: &id412
           type: string
           format: date-time
@@ -3540,7 +3500,7 @@ components:
         mime: &id416
           type: string
         size: &id417
-          type: number
+          type: integer
         scanned_at: &id418
           type: string
           format: date-time
@@ -3577,7 +3537,6 @@ components:
       properties:
         kind_id: &id419
           type: string
-          format: uuid
         key: &id420
           type: string
         name: &id421
@@ -3585,7 +3544,7 @@ components:
         purpose: &id422
           type: string
         current_version: &id423
-          type: number
+          type: integer
         plan_ids: &id424
           type: array
           items:
@@ -3593,7 +3552,6 @@ components:
             format: uuid
         visibility_id: &id425
           type: string
-          format: uuid
         id:
           type: string
           format: uuid
@@ -3629,7 +3587,7 @@ components:
           type: string
           format: uuid
         version:
-          type: string
+          type: integer
         package_ref:
           type: string
         changelog: &id427
@@ -3645,6 +3603,7 @@ components:
           format: date-time
         released_by: &id431
           type: string
+          format: uuid
         id:
           type: string
           format: uuid
@@ -3725,7 +3684,7 @@ components:
           type: string
           format: uuid
         version_in_use: &id439
-          type: number
+          type: integer
         target_type: &id440
           type: string
         target_id: &id441
@@ -3735,6 +3694,7 @@ components:
           type: boolean
         disabled_by: &id443
           type: string
+          format: uuid
         attached_at: &id444
           type: string
           format: date-time
@@ -4111,6 +4071,71 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+    post:
+      operationId: postApprovals
+      summary: 作成・実行（approvals）— 全操作の証跡を出す
+      tags:
+      - approvals
+      x-acts:
+      - A40
+      x-screens:
+      - audit
+      x-choke-points:
+      - C2
+      - C4
+      x-source:
+      - D-042
+      - D-042.3
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApprovalsInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Approvals'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: CONFLICT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /api/v1/approvals/{id}:
     patch:
       operationId: patchApprovalsById
@@ -4184,6 +4209,77 @@ paths:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      operationId: deleteApprovalsById
+      summary: 削除（approvals）— やってしまったことを取り消す／運営にサポートアクセスを許可する・取り消す（範囲と期限つ
+      tags:
+      - approvals
+      x-acts:
+      - A34
+      - A66
+      x-screens:
+      - audit
+      x-choke-points:
+      - C1
+      - C2
+      x-source:
+      - D-012
+      - D-012.2
+      - D-042
+      - D-042.6
+      - D-066.4
+      - D-074.5
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Approvals'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
           content:
             application/json:
               schema:
@@ -4343,216 +4439,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-    post:
-      operationId: postAuditEvents
-      summary: 作成・実行（audit_events）— 全操作の証跡を出す
-      tags:
-      - audit_events
-      x-acts:
-      - A40
-      x-screens:
-      - audit
-      x-choke-points:
-      - C2
-      - C4
-      x-source:
-      - D-042
-      - D-042.3
-      security:
-      - session: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AuditEventsInput'
-      responses:
-        '201':
-          description: 成功
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/AuditEvents'
-                  meta:
-                    type: object
-        '401':
-          description: UNAUTHENTICATED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '403':
-          description: FORBIDDEN
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '409':
-          description: CONFLICT
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '422':
-          description: VALIDATION_ERROR
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /api/v1/audit_events/{id}:
-    patch:
-      operationId: patchAuditEventsById
-      summary: 更新（audit_events）— 運営の誰が・どの会社に・何をしたかを見る。運営メンバーの
-      tags:
-      - audit_events
-      x-acts:
-      - A65
-      x-screens:
-      - ops-audit
-      x-choke-points:
-      - C2
-      x-source:
-      - D-042
-      - D-074.4
-      - D-077.4
-      - D-077.7
-      security:
-      - session: []
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AuditEventsInput'
-      responses:
-        '200':
-          description: 成功
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/AuditEvents'
-                  meta:
-                    type: object
-        '401':
-          description: UNAUTHENTICATED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '403':
-          description: FORBIDDEN
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: NOT_FOUND
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '422':
-          description: VALIDATION_ERROR
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-    delete:
-      operationId: deleteAuditEventsById
-      summary: 削除（audit_events）— やってしまったことを取り消す／運営にサポートアクセスを許可する・取り消す（範囲と期限つ
-      tags:
-      - audit_events
-      x-acts:
-      - A34
-      - A66
-      x-screens:
-      - audit
-      x-choke-points:
-      - C1
-      - C2
-      x-source:
-      - D-012
-      - D-012.2
-      - D-042
-      - D-042.6
-      - D-066.4
-      - D-074.5
-      security:
-      - session: []
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-      responses:
-        '200':
-          description: 成功
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/AuditEvents'
-                  meta:
-                    type: object
-        '401':
-          description: UNAUTHENTICATED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '403':
-          description: FORBIDDEN
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: NOT_FOUND
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '502':
-          description: EXTERNAL_FAILED
           content:
             application/json:
               schema:
@@ -5560,12 +5446,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-    post:
-      operationId: postInquiries
-      summary: 作成・実行（inquiries）— 問い合わせに答える（受信箱。詰まりと同じ場所）
+  /api/v1/inquiries/{id}:
+    patch:
+      operationId: patchInquiriesById
+      summary: 更新（inquiries）— 顧客が詰まったのを、データを見ずに直す／問い合わせに答える（受信箱。詰まりと同じ場所）
       tags:
       - inquiries
       x-acts:
+      - A43
       - A70
       x-screens:
       - ops-support
@@ -5573,77 +5461,13 @@ paths:
       - C2
       - C6
       x-source:
-      - D-042
-      - D-075.1
-      - D-077.3
-      security:
-      - session: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/InquiriesInput'
-      responses:
-        '201':
-          description: 成功
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/Inquiries'
-                  meta:
-                    type: object
-        '401':
-          description: UNAUTHENTICATED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '403':
-          description: FORBIDDEN
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '409':
-          description: CONFLICT
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '422':
-          description: VALIDATION_ERROR
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /api/v1/inquiries/{id}:
-    patch:
-      operationId: patchInquiriesById
-      summary: 更新（inquiries）— 顧客が詰まったのを、データを見ずに直す
-      tags:
-      - inquiries
-      x-acts:
-      - A43
-      x-screens:
-      - ops-support
-      x-choke-points:
-      - C2
-      x-source:
       - D-030
       - D-030.10
       - D-030.9
       - D-042
       - D-042.6
+      - D-075.1
+      - D-077.3
       security:
       - session: []
       parameters:
@@ -6728,6 +6552,83 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /api/v1/notice_deliveries/{id}:
+    patch:
+      operationId: patchNoticeDeliveriesById
+      summary: 更新（notice_deliveries）— お知らせと稼働状況を見て、通知の届け先を決める
+      tags:
+      - notice_deliveries
+      x-acts:
+      - A68
+      x-screens:
+      - notices
+      x-choke-points:
+      - C2
+      - C6
+      x-source:
+      - D-040.6
+      - D-043
+      - D-043.2
+      - D-075.2
+      - D-075.3
+      - D-076.9
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoticeDeliveriesInput'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/NoticeDeliveries'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /api/v1/notices:
     post:
       operationId: postNotices
@@ -6795,26 +6696,23 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /api/v1/notices/{id}:
+  /api/v1/ops_members/{id}:
     patch:
-      operationId: patchNoticesById
-      summary: 更新（notices）— お知らせと稼働状況を見て、通知の届け先を決める
+      operationId: patchOpsMembersById
+      summary: 更新（ops_members）— 運営の誰が・どの会社に・何をしたかを見る。運営メンバーの
       tags:
-      - notices
+      - ops_members
       x-acts:
-      - A68
+      - A65
       x-screens:
-      - notices
+      - ops-audit
       x-choke-points:
       - C2
-      - C6
       x-source:
-      - D-040.6
-      - D-043
-      - D-043.2
-      - D-075.2
-      - D-075.3
-      - D-076.9
+      - D-042
+      - D-074.4
+      - D-077.4
+      - D-077.7
       security:
       - session: []
       parameters:
@@ -6829,7 +6727,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NoticesInput'
+              $ref: '#/components/schemas/OpsMembersInput'
       responses:
         '200':
           description: 成功
@@ -6839,7 +6737,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Notices'
+                    $ref: '#/components/schemas/OpsMembers'
                   meta:
                     type: object
         '401':
@@ -6938,150 +6836,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-    post:
-      operationId: postPlans
-      summary: 作成・実行（plans）— アカウントを作る／支払い方法を登録する
-      tags:
-      - plans
-      x-acts:
-      - A01
-      - A05
-      x-screens:
-      - billing-setup
-      - signup
-      x-choke-points:
-      - C2
-      - C7
-      x-source:
-      - D-001
-      - D-001.5
-      - D-002
-      security:
-      - session: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PlansInput'
-      responses:
-        '201':
-          description: 成功
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/Plans'
-                  meta:
-                    type: object
-        '401':
-          description: UNAUTHENTICATED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '403':
-          description: FORBIDDEN
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '409':
-          description: CONFLICT
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '422':
-          description: VALIDATION_ERROR
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
   /api/v1/plans/{id}:
-    patch:
-      operationId: patchPlansById
-      summary: 更新（plans）— プラン・利用量・請求書を見て、プランを変える
-      tags:
-      - plans
-      x-acts:
-      - A69
-      x-screens:
-      - billing
-      x-choke-points:
-      - C2
-      x-source:
-      - D-002
-      - D-002.2
-      - D-037
-      - D-075.4
-      - D-075.5
-      - D-076.13
-      security:
-      - session: []
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PlansInput'
-      responses:
-        '200':
-          description: 成功
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/Plans'
-                  meta:
-                    type: object
-        '401':
-          description: UNAUTHENTICATED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '403':
-          description: FORBIDDEN
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: NOT_FOUND
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '422':
-          description: VALIDATION_ERROR
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
     delete:
       operationId: deletePlansById
       summary: 削除（plans）— 1 社の詳細で、構成・請求と入金・問い合わせ・配布したも
@@ -7307,12 +7062,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /api/v1/service_registry/{id}:
+  /api/v1/service_registry_versions/{id}:
     patch:
-      operationId: patchServiceRegistryById
-      summary: 更新（service_registry）— サービス台帳（外部サービスごとの自動操作の可否）を更新す
+      operationId: patchServiceRegistryVersionsById
+      summary: 更新（service_registry_versions）— サービス台帳（外部サービスごとの自動操作の可否）を更新す
       tags:
-      - service_registry
+      - service_registry_versions
       x-acts:
       - A78
       x-screens:
@@ -7338,7 +7093,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ServiceRegistryInput'
+              $ref: '#/components/schemas/ServiceRegistryVersionsInput'
       responses:
         '200':
           description: 成功
@@ -7348,7 +7103,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/ServiceRegistry'
+                    $ref: '#/components/schemas/ServiceRegistryVersions'
                   meta:
                     type: object
         '401':
@@ -7588,6 +7343,151 @@ paths:
                 $ref: '#/components/schemas/Error'
         '409':
           description: CONFLICT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/subscriptions:
+    post:
+      operationId: postSubscriptions
+      summary: 作成・実行（subscriptions）— アカウントを作る／支払い方法を登録する
+      tags:
+      - subscriptions
+      x-acts:
+      - A01
+      - A05
+      x-screens:
+      - billing-setup
+      - signup
+      x-choke-points:
+      - C2
+      - C7
+      x-source:
+      - D-001
+      - D-001.5
+      - D-002
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionsInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Subscriptions'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: CONFLICT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/subscriptions/{id}:
+    patch:
+      operationId: patchSubscriptionsById
+      summary: 更新（subscriptions）— プラン・利用量・請求書を見て、プランを変える
+      tags:
+      - subscriptions
+      x-acts:
+      - A69
+      x-screens:
+      - billing
+      x-choke-points:
+      - C2
+      x-source:
+      - D-002
+      - D-002.2
+      - D-037
+      - D-075.4
+      - D-075.5
+      - D-076.13
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionsInput'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Subscriptions'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
           content:
             application/json:
               schema:
