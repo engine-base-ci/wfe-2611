@@ -217,10 +217,20 @@ export function authExt(d: AuthExtDeps): Hono {
       .trim();
     if (!login || !b.password) return bad(c, 422, "E-VAL-008", "ログイン名とパスワードを入れてください");
     const kind = b.kind_id ?? (b.totp_secret ? "password_totp" : "basic");
+    // 2 段階認証の秘密鍵は Base32（A〜Z・2〜7）。空白と小文字は直して通す。それ以外は E-VAL-003（G-08：出せるエラー）
+    const totpSecret = b.totp_secret ? b.totp_secret.normalize("NFKC").replace(/\s+/g, "").toUpperCase() : null;
+    if (totpSecret !== null && !/^[A-Z2-7]{16,}=*$/.test(totpSecret))
+      return bad(
+        c,
+        422,
+        "E-VAL-003",
+        "秘密鍵の形式が違います。認証アプリの登録時に出る文字列（英字と 2〜7 の数字・16 文字以上）を貼ってください",
+        { field: "totp_secret" },
+      );
     const stored = await d.secrets.store(
       s.ctx,
       kind,
-      JSON.stringify({ login, password: b.password, totp_secret: b.totp_secret?.replace(/\s+/g, "") || null }),
+      JSON.stringify({ login, password: b.password, totp_secret: totpSecret }),
     );
     if (stored.status !== "done")
       return bad(c, 502, "E-SEC-001", "預かり先に保管できませんでした。もう一度試してください", {

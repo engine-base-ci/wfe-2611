@@ -18,6 +18,12 @@ export const authClient = createAuthClient({
 });
 export type SessionData = (typeof authClient.$Infer)["Session"];
 
+/** 入り直した直後に、今のセッションを読み直させる。
+ *  これを呼ばないと useSession が「入っていない」を持ったままで、守られた画面が入り直しへ跳ね返る（入り直し → 入る → また入り直し の輪） */
+export function refreshSession(): void {
+  (authClient as unknown as { $store: { notify: (k: string) => void } }).$store.notify("$sessionSignal");
+}
+
 /** 端末（セッション）の見え方：自分のセッション一覧は API（GET /api/v1/sessions）。失効は revoked_at で見せる */
 export interface DeviceRow {
   id: string;

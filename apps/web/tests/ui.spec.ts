@@ -2,7 +2,7 @@
 import { expect, test } from "@playwright/test";
 import { WIDTHS } from "./_lib/browser";
 
-test("/dev/ui：4 幅で横溢れ 0", async ({ page }) => {
+test("USH-05-001 /dev/ui：4 幅で横溢れ 0", async ({ page }) => {
   for (const width of WIDTHS) {
     await page.setViewportSize({ width, height: 900 });
     const res = await page.goto("/dev/ui");
@@ -13,7 +13,7 @@ test("/dev/ui：4 幅で横溢れ 0", async ({ page }) => {
     ).toBeLessThanOrEqual(0);
   }
 });
-test("押せるものは 24px 以上・focus-visible の輪郭・hover で色が変わる", async ({ page }) => {
+test("USH-05-002 押せるものは 24px 以上・focus-visible の輪郭・hover で色が変わる", async ({ page }) => {
   await page.setViewportSize({ width: 1024, height: 900 });
   await page.goto("/dev/ui");
   const small = await page.$$eval("button, a[href]", (els) =>

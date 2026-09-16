@@ -7,7 +7,7 @@
 | 項目 | 数 |
 |---|---|
 | tickets | 171 |
-| l1_rows | 3386 |
+| l1_rows | 4655 |
 | ears_endpoints | 60 |
 | ears_tests | 432 |
 | entities | 92 |
@@ -84,7 +84,7 @@
 | L4 | 正本 full ＋ 本番スモーク（prod-smoke.md）＋ 負荷実測 | staging ＋ 本番（スモークのみ） | リリース前 | qa-coverage.py STATUS 完了 |
 | L5 | full ＋ 正本の鮮度監査 | staging | 年次・大改修 | 同上 |
 
-## CI ゲート 37 本（.github/workflows/v3-gate.yml）
+## CI ゲート 38 本（.github/workflows/v3-gate.yml）
 
 | # | 名前 | script | job | 致命 |
 |---|---|---|---|---|
@@ -115,6 +115,7 @@
 | G25 | 関門例外台帳の整合 | `pnpm ci:choke-exceptions` | static |  |
 | G26 | タスクのchoke_points宣言 | `pnpm ci:task-choke-declared` | static |  |
 | G27 | 画面の route の生成物が最新（flow.json → apps/web/lib/routes.ts） | `pnpm ci:routes` | static |  |
+| G28 | 実ブラウザで押した証拠（操作要素 1 つ＝1 行。行 ID を名前に持つ Playwright が通っている） | `pnpm ci:op-gate` | static |  |
 | G27 | 層の棚卸し（G21） | `python3 scripts/ci/layer_audit.py --run` | spec |  |
 | G28 | 正本 ↔ tickets の参照整合（qa-ladder validate） | `python3 scripts/ci/qa-ladder.py validate --spec 07_qa/test-specs --tickets 07_tasks/tickets.json` | spec |  |
 | G29 | エラー一覧 E1〜E9（引数を省かない） | `python3 scripts/ci/error_catalog.py gate --catalog 07_qa/test-specs/errors.json --mocks 06_mockup/v1 --spec 07_qa/test-specs --choke 03_architecture/choke-points.json` | spec |  |

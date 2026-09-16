@@ -1,0 +1,358 @@
+{
+ "screen": "goal-edit",
+ "mock": "06_mockup/v1/v1-goal-edit.html",
+ "state_labels": {
+  "n": "改訂",
+  "gs": "AI が止まっている"
+ },
+ "ops": [
+  {
+   "key": "button:高本AI",
+   "kind": "button",
+   "label": "高本AI",
+   "target": null,
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:AI は止まっています→automation-repair",
+   "kind": "link",
+   "label": "AI は止まっています",
+   "target": "automation-repair",
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:PC をつなぐと話せます→bridge-setup",
+   "kind": "link",
+   "label": "PC をつなぐと話せます",
+   "target": "bridge-setup",
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "button:改訂する",
+   "kind": "button",
+   "label": "改訂する",
+   "target": null,
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "input:目標",
+   "kind": "input",
+   "label": "目標",
+   "target": null,
+   "states": [
+    "改訂",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2",
+    "R1"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "input:単位",
+   "kind": "input",
+   "label": "単位",
+   "target": null,
+   "states": [
+    "改訂",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "input:理由",
+   "kind": "input",
+   "label": "理由",
+   "target": null,
+   "states": [
+    "改訂",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:改訂する（逆算の案を出す）",
+   "kind": "button",
+   "label": "改訂する（逆算の案を出す）",
+   "target": null,
+   "states": [
+    "改訂",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:やめる",
+   "kind": "button",
+   "label": "やめる",
+   "target": null,
+   "states": [
+    "改訂",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2",
+    "R1"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:この案で配る",
+   "kind": "button",
+   "label": "この案で配る",
+   "target": null,
+   "states": [
+    "改訂",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:自分で配り直す→goal-allocation",
+   "kind": "link",
+   "label": "自分で配り直す",
+   "target": "goal-allocation",
+   "states": [
+    "改訂",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:案を変えてもらう",
+   "kind": "button",
+   "label": "案を変えてもらう",
+   "target": null,
+   "states": [
+    "改訂",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:付け替え",
+   "kind": "button",
+   "label": "付け替え",
+   "target": null,
+   "states": [
+    "改訂",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:自主に",
+   "kind": "button",
+   "label": "自主に",
+   "target": null,
+   "states": [
+    "改訂",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:残す（効かなかった）",
+   "kind": "button",
+   "label": "残す（効かなかった）",
+   "target": null,
+   "states": [
+    "改訂",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:終了する",
+   "kind": "button",
+   "label": "終了する",
+   "target": null,
+   "states": [
+    "改訂",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:高本AIの振り分け案で一括",
+   "kind": "button",
+   "label": "高本AIの振り分け案で一括",
+   "target": null,
+   "states": [
+    "改訂",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "select:単位",
+   "kind": "select",
+   "label": "単位",
+   "target": null,
+   "states": [
+    "改訂",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "input:なぜ変えるか（版に残る）",
+   "kind": "input",
+   "label": "なぜ変えるか（版に残る）",
+   "target": null,
+   "states": [
+    "改訂",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:第 3 版として保存",
+   "kind": "button",
+   "label": "第 3 版として保存",
+   "target": null,
+   "states": [
+    "改訂",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:逆算の案を全部採る",
+   "kind": "button",
+   "label": "逆算の案を全部採る",
+   "target": null,
+   "states": [
+    "改訂",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:止まっているものを直す→automation-repair",
+   "kind": "link",
+   "label": "止まっているものを直す",
+   "target": "automation-repair",
+   "states": [
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS4"
+   ]
+  }
+ ]
+}

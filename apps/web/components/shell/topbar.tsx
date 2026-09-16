@@ -1,4 +1,5 @@
 "use client";
+import { navRoute } from "@/lib/pending-route";
 import { Bot, PauseCircle } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
@@ -32,7 +33,7 @@ export function TopBar({ primary, extra }: { primary?: ReactNode; extra?: ReactN
         <Link
           className="btn btn-g ai-stopped"
           data-requires="stopped app"
-          href="/settings/automation-repair"
+          href={navRoute("/settings/automation-repair")}
           title="AI は止まっています"
         >
           <PauseCircle />

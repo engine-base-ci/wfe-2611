@@ -131,7 +131,7 @@ function Bridge() {
                 </p>
               ) : null}
               <div className="mt-5 flex flex-wrap gap-2">
-                <Button onClick={recheck}>接続を確かめる</Button>
+                <Button onClick={recheck}>{state === "ng" ? "もう一度確かめる" : "接続を確かめる"}</Button>
                 <Link href="/onboard/draft">
                   <Button variant="ghost">あとでやる（自分のAIはまだ話せません）</Button>
                 </Link>

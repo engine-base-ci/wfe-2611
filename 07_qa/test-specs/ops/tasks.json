@@ -1,0 +1,1415 @@
+{
+ "screen": "tasks",
+ "mock": "06_mockup/v1/v1-tasks.html",
+ "state_labels": {
+  "n": "リスト（今日）",
+  "k": "カンバン",
+  "c": "カレンダー",
+  "g": "ガント",
+  "b": "詰まっている",
+  "a": "足す",
+  "h": "引き継いでもらう",
+  "d": "終わったとき",
+  "p": "引き継げる仕事",
+  "o": "行き先のないタスク",
+  "ge": "空",
+  "gs": "AI が止まっている"
+ },
+ "ops": [
+  {
+   "key": "button:高本AI",
+   "kind": "button",
+   "label": "高本AI",
+   "target": null,
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:AI は止まっています→automation-repair",
+   "kind": "link",
+   "label": "AI は止まっています",
+   "target": "automation-repair",
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:PC をつなぐと話せます→bridge-setup",
+   "kind": "link",
+   "label": "PC をつなぐと話せます",
+   "target": "bridge-setup",
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "button:終わりにする",
+   "kind": "button",
+   "label": "終わりにする",
+   "target": null,
+   "states": [
+    "共通",
+    "リスト（今日）",
+    "空",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS2",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:リスト",
+   "kind": "button",
+   "label": "リスト",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "カンバン",
+    "カレンダー",
+    "ガント",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:カンバン",
+   "kind": "button",
+   "label": "カンバン",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "カンバン",
+    "カレンダー",
+    "ガント",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:カレンダー",
+   "kind": "button",
+   "label": "カレンダー",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "カンバン",
+    "カレンダー",
+    "ガント",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:ガント",
+   "kind": "button",
+   "label": "ガント",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "カンバン",
+    "カレンダー",
+    "ガント",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:足す",
+   "kind": "button",
+   "label": "足す",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "カンバン",
+    "足す",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:0/3セイコー様へ提案の一次返信を取りに行く今日30分",
+   "kind": "button",
+   "label": "0/3セイコー様へ提案の一次返信を取りに行く今日30分",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:山田様に電話（11:00 の商談前）今日10分",
+   "kind": "button",
+   "label": "山田様に電話（11:00 の商談前）今日10分",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "checkbox:終わり",
+   "kind": "checkbox",
+   "label": "終わり",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:出なければ追いメールを承認する今日5分",
+   "kind": "button",
+   "label": "出なければ追いメールを承認する今日5分",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:返事を台帳の案件に書く今日5分",
+   "kind": "button",
+   "label": "返事を台帳の案件に書く今日5分",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:1/4京蟻 契約書案を送る明日45分",
+   "kind": "button",
+   "label": "1/4京蟻 契約書案を送る明日45分",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:ひな形に押印欄を足す明日20分",
+   "kind": "button",
+   "label": "ひな形に押印欄を足す明日20分",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:送付文を書く（AI事務社員が下書き）AI事務社員下書き中",
+   "kind": "button",
+   "label": "送付文を書く（AI事務社員が下書き）AI事務社員下書き中",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:送る明日5分",
+   "kind": "button",
+   "label": "送る明日5分",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:契約条件を台帳に転記終わった実 10分",
+   "kind": "button",
+   "label": "契約条件を台帳に転記終わった実 10分",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:ScoliVio 会津データ受領の段取り確認AI が下書き9/1220分",
+   "kind": "button",
+   "label": "ScoliVio 会津データ受領の段取り確認AI が下書き9/1220分",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:動きを見る →→ai-activity",
+   "kind": "link",
+   "label": "動きを見る →",
+   "target": "ai-activity",
+   "states": [
+    "リスト（今日）",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:発注ナビ 新着の確認（今日ぶん）AI営業社員実行中",
+   "kind": "button",
+   "label": "発注ナビ 新着の確認（今日ぶん）AI営業社員実行中",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:セイコー 着手金の請求書AI経理社員承認待ち",
+   "kind": "button",
+   "label": "セイコー 着手金の請求書AI経理社員承認待ち",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:週次の売上を台帳から締める終わった実 11分",
+   "kind": "button",
+   "label": "週次の売上を台帳から締める終わった実 11分",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:一覧へ",
+   "kind": "button",
+   "label": "一覧へ",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:高本AIに分けてもらう",
+   "kind": "button",
+   "label": "高本AIに分けてもらう",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:引き継いでもらう",
+   "kind": "button",
+   "label": "引き継いでもらう",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "引き継いでもらう",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:明日へ",
+   "kind": "button",
+   "label": "明日へ",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:高本AIに頼む",
+   "kind": "button",
+   "label": "高本AIに頼む",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:動きを見る→ai-activity",
+   "kind": "link",
+   "label": "動きを見る",
+   "target": "ai-activity",
+   "states": [
+    "リスト（今日）",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:止める",
+   "kind": "button",
+   "label": "止める",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:取り消す",
+   "kind": "button",
+   "label": "取り消す",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "終わったとき",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:承認カードを開く→approvals",
+   "kind": "link",
+   "label": "承認カードを開く",
+   "target": "approvals",
+   "states": [
+    "リスト（今日）",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:AI社員に戻す",
+   "kind": "button",
+   "label": "AI社員に戻す",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:SOICO 概算見積を出す9/121h30",
+   "kind": "button",
+   "label": "SOICO 概算見積を出す9/121h30",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:ScoliVio 定例の議事録を送るAI事務社員下書き中",
+   "kind": "button",
+   "label": "ScoliVio 定例の議事録を送るAI事務社員下書き中",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:◇◇様 前回提案の再打診行き先なしAI が下書き9/520分",
+   "kind": "button",
+   "label": "◇◇様 前回提案の再打診行き先なしAI が下書き9/520分",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:△△社 提案書の一次案を作る田中明日2h00",
+   "kind": "button",
+   "label": "△△社 提案書の一次案を作る田中明日2h00",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:X 週次の実績投稿AI営業社員承認待ち",
+   "kind": "button",
+   "label": "X 週次の実績投稿AI営業社員承認待ち",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:この目標にする",
+   "kind": "button",
+   "label": "この目標にする",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:消す",
+   "kind": "button",
+   "label": "消す",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:催促のメールを下書かせる",
+   "kind": "button",
+   "label": "催促のメールを下書かせる",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "詰まっている",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:来期に回す",
+   "kind": "button",
+   "label": "来期に回す",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "詰まっている",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:承認カードを開く",
+   "kind": "button",
+   "label": "承認カードを開く",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "詰まっている",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:覚え直させる→automation-repair",
+   "kind": "link",
+   "label": "覚え直させる",
+   "target": "automation-repair",
+   "states": [
+    "リスト（今日）",
+    "詰まっている",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:起きたら続き（そのまま）",
+   "kind": "button",
+   "label": "起きたら続き（そのまま）",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "詰まっている",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "checkbox:選ぶ",
+   "kind": "checkbox",
+   "label": "選ぶ",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "引き継げる仕事",
+    "行き先のないタスク",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:目標を選ぶ",
+   "kind": "link",
+   "label": "目標を選ぶ",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "行き先のないタスク",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:今日に動かす",
+   "kind": "button",
+   "label": "今日に動かす",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:やめる",
+   "kind": "button",
+   "label": "やめる",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "行き先のないタスク",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:AI社員にやらせる",
+   "kind": "button",
+   "label": "AI社員にやらせる",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "足す",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:◇◇様は来期に",
+   "kind": "button",
+   "label": "◇◇様は来期に",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:名刺は AI社員に",
+   "kind": "button",
+   "label": "名刺は AI社員に",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:両方やめる",
+   "kind": "button",
+   "label": "両方やめる",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:引き継ぐ",
+   "kind": "button",
+   "label": "引き継ぐ",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "引き継げる仕事",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:中を見る",
+   "kind": "button",
+   "label": "中を見る",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "引き継げる仕事",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:動きを見る",
+   "kind": "button",
+   "label": "動きを見る",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "引き継げる仕事",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:引き継いで一次案を作らせる",
+   "kind": "button",
+   "label": "引き継いで一次案を作らせる",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "引き継げる仕事",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:今日はここまで",
+   "kind": "button",
+   "label": "今日はここまで",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "終わったとき",
+    "引き継げる仕事",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:付け替える",
+   "kind": "button",
+   "label": "付け替える",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "行き先のないタスク",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:自主目標に",
+   "kind": "button",
+   "label": "自主目標に",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "行き先のないタスク",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:まとめて反映",
+   "kind": "button",
+   "label": "まとめて反映",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "行き先のないタスク",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:1件ずつ",
+   "kind": "button",
+   "label": "1件ずつ",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "行き先のないタスク",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:作っておいて",
+   "kind": "button",
+   "label": "作っておいて",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:自分でやる",
+   "kind": "button",
+   "label": "自分でやる",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:状態",
+   "kind": "button",
+   "label": "状態",
+   "target": null,
+   "states": [
+    "カンバン"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:担当",
+   "kind": "button",
+   "label": "担当",
+   "target": null,
+   "states": [
+    "カンバン"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "input:やること",
+   "kind": "input",
+   "label": "やること",
+   "target": null,
+   "states": [
+    "足す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "input:次の一手",
+   "kind": "input",
+   "label": "次の一手",
+   "target": null,
+   "states": [
+    "足す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "radio:あなたの受注 7件（営業 › 高本）高本AIの候補",
+   "kind": "radio",
+   "label": "あなたの受注 7件（営業 › 高本）高本AIの候補",
+   "target": null,
+   "states": [
+    "足す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "radio:今期の売上 12,000,000円（会社）",
+   "kind": "radio",
+   "label": "今期の売上 12,000,000円（会社）",
+   "target": null,
+   "states": [
+    "足す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "radio:自主目標にする（上と関係なく自分で決める）",
+   "kind": "radio",
+   "label": "自主目標にする（上と関係なく自分で決める）",
+   "target": null,
+   "states": [
+    "足す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "radio:まだ決めない（行き先のないタスクとして赤で残る）",
+   "kind": "radio",
+   "label": "まだ決めない（行き先のないタスクとして赤で残る）",
+   "target": null,
+   "states": [
+    "足す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "input:担当",
+   "kind": "input",
+   "label": "担当",
+   "target": null,
+   "states": [
+    "足す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "input:見込み時間",
+   "kind": "input",
+   "label": "見込み時間",
+   "target": null,
+   "states": [
+    "足す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "input:期限",
+   "kind": "input",
+   "label": "期限",
+   "target": null,
+   "states": [
+    "足す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "radio:h",
+   "kind": "radio",
+   "label": "h",
+   "target": null,
+   "states": [
+    "引き継いでもらう"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "input:ひとこと",
+   "kind": "input",
+   "label": "ひとこと",
+   "target": null,
+   "states": [
+    "引き継いでもらう"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:担当だけ変える（指示）",
+   "kind": "button",
+   "label": "担当だけ変える（指示）",
+   "target": null,
+   "states": [
+    "引き継いでもらう"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:引き継げる仕事を見る",
+   "kind": "button",
+   "label": "引き継げる仕事を見る",
+   "target": null,
+   "states": [
+    "終わったとき"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:止まっているものを直す→automation-repair",
+   "kind": "link",
+   "label": "止まっているものを直す",
+   "target": "automation-repair",
+   "states": [
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS4"
+   ]
+  }
+ ]
+}

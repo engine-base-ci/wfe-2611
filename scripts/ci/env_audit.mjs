@@ -13,7 +13,8 @@ export function audit(root = ROOT) {
   for (const k of example) if (!used.has(k)) bad.push(`packages/config が読まない: ${k}`);
   for (const d of ["apps", "packages"]) for (const p of walk(join(root, d))) {
     const rel = relative(root, p);
-    if (/node_modules|\/dist\/|\.test\.ts$|\/test\/|\/tests\/|\.spec\.ts$/.test(rel) || rel.startsWith("packages/config/") || rel === "packages/runtime/src/index.ts" || rel === "apps/web/lib/env.ts" || rel === "apps/api/src/dev.ts" || /playwright\.config\.ts$/.test(rel)) continue; // apps/web/lib/env.ts は画面側の起動設定（NEXT_PUBLIC_* は build 時に埋まる）・playwright.config はテストの設定 // runtime は PATH/HOME を子に渡すために読む（遮断の実装）
+    if (/node_modules|\/dist\/|\.test\.ts$|\/test\/|\/tests\/|\.spec\.ts$/.test(rel) || rel.startsWith("packages/config/") || rel === "packages/runtime/src/index.ts" || rel === "apps/web/lib/env.ts",
+  "apps/web/next.config.ts" || rel === "apps/api/src/dev.ts" || /playwright\.config\.ts$/.test(rel)) continue; // apps/web/lib/env.ts は画面側の起動設定（NEXT_PUBLIC_* は build 時に埋まる）・playwright.config はテストの設定 // runtime は PATH/HOME を子に渡すために読む（遮断の実装）
     const s = readFileSync(p, "utf8");
     s.split("\n").forEach((l, i) => { if (/process\.env\b/.test(l) && !l.trimStart().startsWith("//")) bad.push(`${rel}:${i + 1} process.env を関門の外で読んでいる（packages/config を通す）`); });
   }

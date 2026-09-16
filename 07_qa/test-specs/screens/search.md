@@ -12,14 +12,14 @@
 | SCR-SEARCH-006 | search | 役割 | 役割 R3 で開くと、その役割の中身（data-roles）が出て、他の役割の中身は出ない | R3 でログイン | 画面を開く | 役割ごとの中身（G15） |  |  | T-U-19 | L1 |
 | SCR-SEARCH-007 | search | 役割 | 役割 R4 で開くと、その役割の中身（data-roles）が出て、他の役割の中身は出ない | R4 でログイン | 画面を開く | 役割ごとの中身（G15） |  |  | T-U-19 | L1 |
 | SCR-SEARCH-008 | search | 主アクション | 「探す」を押すと対応する endpoint が呼ばれ、別 GET で再取得した画面に反映される | 権限のある会員 | 押す | DB と画面が変わる（G-01・G-03） |  | GET /api/ledger_definitions | T-U-19 | L1 |
-| SCR-SEARCH-009 | search | 到達性 | リンク先 account が実在ルートで 200 で開く | — | 押す | /account が開く（G-04） |  |  | T-U-19 | L1 |
-| SCR-SEARCH-010 | search | 到達性 | リンク先 account-close が実在ルートで 200 で開く | — | 押す | /account-close が開く（G-04） |  |  | T-U-19 | L1 |
-| SCR-SEARCH-011 | search | 到達性 | リンク先 ai-activity が実在ルートで 200 で開く | — | 押す | /ai-activity が開く（G-04） |  |  | T-U-19 | L1 |
-| SCR-SEARCH-012 | search | 到達性 | リンク先 ai-staff が実在ルートで 200 で開く | — | 押す | /ai-staff が開く（G-04） |  |  | T-U-19 | L1 |
-| SCR-SEARCH-013 | search | 到達性 | リンク先 approvals が実在ルートで 200 で開く | — | 押す | /approvals が開く（G-04） |  |  | T-U-19 | L1 |
-| SCR-SEARCH-014 | search | 到達性 | リンク先 audit が実在ルートで 200 で開く | — | 押す | /audit が開く（G-04） |  |  | T-U-19 | L1 |
-| SCR-SEARCH-015 | search | 到達性 | リンク先 automation-repair が実在ルートで 200 で開く | — | 押す | /automation-repair が開く（G-04） |  |  | T-U-19 | L1 |
-| SCR-SEARCH-016 | search | 到達性 | リンク先 billing が実在ルートで 200 で開く | — | 押す | /billing が開く（G-04） |  |  | T-U-19 | L1 |
+| SCR-SEARCH-009 | search | 到達性 | リンク先 account が実在ルートで 200 で開く | — | 押す | /account が開く（G-04） | BLOCKED（自動：行き先の画面 account は T-U-44 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） |  | T-U-19 | L1 |
+| SCR-SEARCH-010 | search | 到達性 | リンク先 account-close が実在ルートで 200 で開く | — | 押す | /account-close が開く（G-04） | BLOCKED（自動：行き先の画面 account-close は T-U-40 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） |  | T-U-19 | L1 |
+| SCR-SEARCH-011 | search | 到達性 | リンク先 ai-activity が実在ルートで 200 で開く | — | 押す | /ai-activity が開く（G-04） | BLOCKED（自動：行き先の画面 ai-activity は T-U-18 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） |  | T-U-19 | L1 |
+| SCR-SEARCH-012 | search | 到達性 | リンク先 ai-staff が実在ルートで 200 で開く | — | 押す | /ai-staff が開く（G-04） | BLOCKED（自動：行き先の画面 ai-staff は T-U-36 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） |  | T-U-19 | L1 |
+| SCR-SEARCH-013 | search | 到達性 | リンク先 approvals が実在ルートで 200 で開く | — | 押す | /approvals が開く（G-04） | BLOCKED（自動：行き先の画面 approvals は T-U-14 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） |  | T-U-19 | L1 |
+| SCR-SEARCH-014 | search | 到達性 | リンク先 audit が実在ルートで 200 で開く | — | 押す | /audit が開く（G-04） | BLOCKED（自動：行き先の画面 audit は T-U-33 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） |  | T-U-19 | L1 |
+| SCR-SEARCH-015 | search | 到達性 | リンク先 automation-repair が実在ルートで 200 で開く | — | 押す | /automation-repair が開く（G-04） | BLOCKED（自動：行き先の画面 automation-repair は T-U-32 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） |  | T-U-19 | L1 |
+| SCR-SEARCH-016 | search | 到達性 | リンク先 billing が実在ルートで 200 で開く | — | 押す | /billing が開く（G-04） | BLOCKED（自動：行き先の画面 billing は T-U-52 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） |  | T-U-19 | L1 |
 | SCR-SEARCH-017 | search | 横溢れ | 375・768・1024・1440 で scrollWidth - clientWidth <= 1、1180+ で本文 720 以上 | — | 各幅で開く | 溢れ 0 |  | G-05 | T-U-19 | L1 |
 | SCR-SEARCH-018 | search | 空・止まっている | データ 0 件の状態と AI が止まっている状態が cover 宣言どおりに出る | PS2 / PS4 | 開く | 空状態と止まっている帯 |  | G18 | T-U-19 | L1 |
 | SCR-SEARCH-019 | search | 表記ゆらぎ | 全角／半角：メール・数値・コードを全角で入れる | 入力欄がある状態 | 入力して保存 | 同一として扱われ、サーバー側で正規化されて保存される（クライアント側だけに頼らない） |  | human-grade-qa 第11軸 | T-U-19 | L1 |
@@ -33,3 +33,15 @@
 | SCR-SEARCH-027 | search | G-14 口座状態の波及 | 退会・停止・権限変更・パスワード変更の後に、この機能の既存セッション・接続・共有リンクが無効 | ログイン中の別端末と Bridge | 権限を変える | 別端末と Bridge は 0 秒で 401（sessions が revoked） |  |  | T-U-19 | L1 |
 | SCR-SEARCH-028 | search | G-15 信号なし終了 | N/A：外部を呼ばない | 外部を故意に切る | 実行する | 成功扱いにせず、502 と次の一手（人へのハンドオフ） |  |  | T-U-19 | L1 |
 | SCR-SEARCH-029 | search | G-16 有限資源 | 消費する資源：DB 接続（プール経由）・メモリ。1 要求あたり 1 接続以下・上限時は待機列 | 同時 50 要求 | 同時に叩く | ログインが落ちない・接続上限に張り付かない（関門 C2 のプール） |  | L4 で負荷試験 | T-U-19 | L1 |
+| SCR-SEARCH-030 | search | 操作 | ボタン「高本AI」（状態 共通） | 状態 共通 を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） |  | op=button:高本AI | T-U-19 | L1 |
+| SCR-SEARCH-031 | search | 操作 | リンク「AI は止まっています」（状態 共通） | 状態 共通 を作る（全役割） | 押す／入れる（実ブラウザ） | /automation-repair が実在ルートで 200 で開く（G-04） | BLOCKED（自動：行き先の画面 automation-repair は T-U-32 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） | op=link:AI は止まっています→automation-repair | T-U-19 | L1 |
+| SCR-SEARCH-032 | search | 操作 | リンク「PC をつなぐと話せます」（状態 共通） | 状態 共通 を作る（全役割） | 押す／入れる（実ブラウザ） | /bridge-setup が実在ルートで 200 で開く（G-04） |  | op=link:PC をつなぐと話せます→bridge-setup | T-U-19 | L1 |
+| SCR-SEARCH-033 | search | 操作 | ボタン「探す」（状態 共通・結果・最初・AI が止まっている） | 状態 共通 を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） |  | op=button:探す | T-U-19 | L1 |
+| SCR-SEARCH-034 | search | 操作 | 入力欄「text」（状態 結果・AI が止まっている） | 状態 結果 を作る（全役割） | 押す／入れる（実ブラウザ） | 入力が受け付けられ、送信に載って別 GET で読める（G-01・反映） |  | op=input:text | T-U-19 | L1 |
+| SCR-SEARCH-035 | search | 操作 | リンク「セイコー 食品パッケージ画像編集SaaS案件 · 提案済 · 3,300,000 · 着手金 990,000（30%）台」（状態 結果・AI が止まっている） | 状態 結果 を作る（全役割） | 押す／入れる（実ブラウザ） | /record-detail が実在ルートで 200 で開く（G-04） | BLOCKED（自動：行き先の画面 record-detail は T-U-21 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） | op=link:セイコー 食品パッケージ画像編集SaaS案件 · 提案済 · 3,300,000 · 着手金 990,000（30%）台→record-detail | T-U-19 | L1 |
+| SCR-SEARCH-036 | search | 操作 | リンク「請求書 下書き · セイコー 着手金 990,000請求 · 承認待ち · 経理社員が作成台帳」（状態 結果・AI が止まっている） | 状態 結果 を作る（全役割） | 押す／入れる（実ブラウザ） | /approvals が実在ルートで 200 で開く（G-04） | BLOCKED（自動：行き先の画面 approvals は T-U-14 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） | op=link:請求書 下書き · セイコー 着手金 990,000請求 · 承認待ち · 経理社員が作成台帳→approvals | T-U-19 | L1 |
+| SCR-SEARCH-037 | search | 操作 | リンク「着手金は契約時に3割、残金は納品時あなたの判断の癖 · 個人 · 2026-09-04記憶」（状態 結果・AI が止まっている） | 状態 結果 を作る（全役割） | 押す／入れる（実ブラウザ） | /clone-memory が実在ルートで 200 で開く（G-04） | BLOCKED（自動：行き先の画面 clone-memory は T-U-29 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） | op=link:着手金は契約時に3割、残金は納品時あなたの判断の癖 · 個人 · 2026-09-04記憶→clone-memory | T-U-19 | L1 |
+| SCR-SEARCH-038 | search | 操作 | リンク「高本AIが経理社員に「セイコー 着手金の請求書」を配った9/10 09:14 · 会話から証跡」（状態 結果・AI が止まっている） | 状態 結果 を作る（全役割） | 押す／入れる（実ブラウザ） | /audit が実在ルートで 200 で開く（G-04） | BLOCKED（自動：行き先の画面 audit は T-U-33 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） | op=link:高本AIが経理社員に「セイコー 着手金の請求書」を配った9/10 09:14 · 会話から証跡→audit | T-U-19 | L1 |
+| SCR-SEARCH-039 | search | 操作 | 入力欄「言葉で探す（例：先月の入金、京蟻の契約書、値引きの方針）」（状態 最初） | 状態 最初 を作る（全役割） | 押す／入れる（実ブラウザ） | 入力が受け付けられ、送信に載って別 GET で読める（G-01・反映） |  | op=input:言葉で探す（例：先月の入金、京蟻の契約書、値引きの方針） | T-U-19 | L1 |
+| SCR-SEARCH-040 | search | 操作 | リンク「止まっているものを直す」（状態 AI が止まっている） | 状態 AI が止まっている を作る（全役割） | 押す／入れる（実ブラウザ） | /automation-repair が実在ルートで 200 で開く（G-04） | BLOCKED（自動：行き先の画面 automation-repair は T-U-32 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） | op=link:止まっているものを直す→automation-repair | T-U-19 | L1 |
+| SCR-SEARCH-041 | search | 発注者確認 | 手順 07_tasks/handoff/T-U-19.md を発注者が実際に触って OK を出す（Rule 12） | staging か ローカル | 手順どおりに触る | 手順の末尾に「OK: 日付 名前」が書かれる。無い間は BLOCKED（発注者の確認待ち） | BLOCKED（発注者の確認待ち：手順 07_tasks/handoff/T-U-19.md を高本さんが触って OK: を書く。ローカル 3123 で触れる・staging は無い） | Rule 12 | T-U-19 | L1 |

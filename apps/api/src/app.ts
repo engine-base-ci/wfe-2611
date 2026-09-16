@@ -35,6 +35,7 @@ export interface AppOptions {
   /** 認証の拡張（/api/auth-ext/*：登録・ロック付きログイン・招待・Bridge の接続コード・資格情報を預ける） */
   authExt?: Hono;
   /** 画面の origin（別 origin から Bearer で呼ぶ。Cookie は使わない） */
+  /** 画面の出どころ（"," 区切りで複数可）。CORS の許可元 */
   corsOrigin?: string | null;
 }
 
@@ -45,7 +46,11 @@ export function createApp(o: AppOptions | string = {}): Hono<Vars> {
     app.use(
       "/api/*",
       cors({
-        origin: opts.corsOrigin,
+        // 画面の出どころは 1 つとは限らない（本番・staging・プレビュー）。WEB_BASE_URL は "," 区切りで複数書ける
+        origin: opts.corsOrigin
+          .split(",")
+          .map((x) => x.trim())
+          .filter(Boolean),
         allowHeaders: ["authorization", "content-type", "idempotency-key", "x-screen-id", "x-tenant-id"],
         exposeHeaders: ["set-auth-token"],
         credentials: true,

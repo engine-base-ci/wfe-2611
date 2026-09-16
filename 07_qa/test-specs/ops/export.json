@@ -1,0 +1,162 @@
+{
+ "screen": "export",
+ "mock": "06_mockup/v1/v1-export.html",
+ "state_labels": {
+  "n": "持ち出す",
+  "gs": "AI が止まっている"
+ },
+ "ops": [
+  {
+   "key": "button:高本AI",
+   "kind": "button",
+   "label": "高本AI",
+   "target": null,
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:AI は止まっています→automation-repair",
+   "kind": "link",
+   "label": "AI は止まっています",
+   "target": "automation-repair",
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:PC をつなぐと話せます→bridge-setup",
+   "kind": "link",
+   "label": "PC をつなぐと話せます",
+   "target": "bridge-setup",
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "button:書き出す",
+   "kind": "button",
+   "label": "書き出す",
+   "target": null,
+   "states": [
+    "共通",
+    "持ち出す",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "checkbox:会社モデル（目標・台帳の定義・担当業務・組織・ルール・記憶）",
+   "kind": "checkbox",
+   "label": "会社モデル（目標・台帳の定義・担当業務・組織・ルール・記憶）",
+   "target": null,
+   "states": [
+    "持ち出す",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "checkbox:台帳のデータ（案件 6 · 請求 5 · 問い合わせ 10）",
+   "kind": "checkbox",
+   "label": "台帳のデータ（案件 6 · 請求 5 · 問い合わせ 10）",
+   "target": null,
+   "states": [
+    "持ち出す",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "checkbox:添付ファイル（14 · 22 MB）",
+   "kind": "checkbox",
+   "label": "添付ファイル（14 · 22 MB）",
+   "target": null,
+   "states": [
+    "持ち出す",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "checkbox:証跡（31件）",
+   "kind": "checkbox",
+   "label": "証跡（31件）",
+   "target": null,
+   "states": [
+    "持ち出す",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "checkbox:高本AIとの会話",
+   "kind": "checkbox",
+   "label": "高本AIとの会話",
+   "target": null,
+   "states": [
+    "持ち出す",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "select:形式",
+   "kind": "select",
+   "label": "形式",
+   "target": null,
+   "states": [
+    "持ち出す",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:止まっているものを直す→automation-repair",
+   "kind": "link",
+   "label": "止まっているものを直す",
+   "target": "automation-repair",
+   "states": [
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS4"
+   ]
+  }
+ ]
+}

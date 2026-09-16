@@ -1,0 +1,141 @@
+{
+ "screen": "billing-setup",
+ "mock": "06_mockup/v2/v2-billing-setup.html",
+ "state_labels": {
+  "n": "登録",
+  "ok": "登録できた",
+  "x": "カードが拒否された",
+  "i": "請求書払い"
+ },
+ "ops": [
+  {
+   "key": "button:登録する",
+   "kind": "button",
+   "label": "登録する",
+   "target": null,
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "radio:エントリー · 30,000 円／月一人社長・個人事業。税込。上限は「プランと請求」で見られます",
+   "kind": "radio",
+   "label": "エントリー · 30,000 円／月一人社長・個人事業。税込。上限は「プランと請求」で見られます",
+   "target": null,
+   "states": [
+    "登録"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0"
+   ]
+  },
+  {
+   "key": "radio:スタンダード · 80,000 円／月中小・ベンチャー。税込。上限は「プランと請求」で見られます",
+   "kind": "radio",
+   "label": "スタンダード · 80,000 円／月中小・ベンチャー。税込。上限は「プランと請求」で見られます",
+   "target": null,
+   "states": [
+    "登録"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0"
+   ]
+  },
+  {
+   "key": "radio:プロ · 150,000 円／月中堅。税込。上限は「プランと請求」で見られます",
+   "kind": "radio",
+   "label": "プロ · 150,000 円／月中堅。税込。上限は「プランと請求」で見られます",
+   "target": null,
+   "states": [
+    "登録"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0"
+   ]
+  },
+  {
+   "key": "radio:カード（Stripe）Stripe の画面で登録。番号は Kaname を通らない",
+   "kind": "radio",
+   "label": "カード（Stripe）Stripe の画面で登録。番号は Kaname を通らない",
+   "target": null,
+   "states": [
+    "登録"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0"
+   ]
+  },
+  {
+   "key": "radio:請求書払い毎月の請求書を受け取り、振込で払う。運営が入金を記録",
+   "kind": "radio",
+   "label": "請求書払い毎月の請求書を受け取り、振込で払う。運営が入金を記録",
+   "target": null,
+   "states": [
+    "登録"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0"
+   ]
+  },
+  {
+   "key": "button:Stripe で登録する",
+   "kind": "button",
+   "label": "Stripe で登録する",
+   "target": null,
+   "states": [
+    "登録"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0"
+   ]
+  },
+  {
+   "key": "link:PC をつなぐへ進む→bridge-setup",
+   "kind": "link",
+   "label": "PC をつなぐへ進む",
+   "target": "bridge-setup",
+   "states": [
+    "登録できた",
+    "請求書払い"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0"
+   ]
+  },
+  {
+   "key": "button:別のカードで登録する",
+   "kind": "button",
+   "label": "別のカードで登録する",
+   "target": null,
+   "states": [
+    "カードが拒否された"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0"
+   ]
+  },
+  {
+   "key": "button:請求書払いにする",
+   "kind": "button",
+   "label": "請求書払いにする",
+   "target": null,
+   "states": [
+    "カードが拒否された"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,287 @@
+{
+ "screen": "llm-routes",
+ "mock": "06_mockup/v2/v2-llm-routes.html",
+ "state_labels": {
+  "n": "AI の経路",
+  "k": "キーを預ける",
+  "x": "キーが無効・上限に届いた",
+  "gs": "AI が止まっている"
+ },
+ "ops": [
+  {
+   "key": "button:高本AI",
+   "kind": "button",
+   "label": "高本AI",
+   "target": null,
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:AI は止まっています→automation-repair",
+   "kind": "link",
+   "label": "AI は止まっています",
+   "target": "automation-repair",
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:PC をつなぐと話せます→bridge-setup",
+   "kind": "link",
+   "label": "PC をつなぐと話せます",
+   "target": "bridge-setup",
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "button:保存する",
+   "kind": "button",
+   "label": "保存する",
+   "target": null,
+   "states": [
+    "共通",
+    "AI の経路",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "radio:Bridge（あなたの PC で、あなたのサブスク）既定。PC が開いている間に動く。費用は Kaname の請求に乗ら",
+   "kind": "radio",
+   "label": "Bridge（あなたの PC で、あなたのサブスク）既定。PC が開いている間に動く。費用は Kaname の請求に乗ら",
+   "target": null,
+   "states": [
+    "AI の経路",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "radio:自分の API キー（Anthropic・OpenAI・Google）PC が閉じていても動く。費用は提供者から直接あな",
+   "kind": "radio",
+   "label": "自分の API キー（Anthropic・OpenAI・Google）PC が閉じていても動く。費用は提供者から直接あな",
+   "target": null,
+   "states": [
+    "AI の経路",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "radio:運営マネージド運営のキーで動く。プランの上限まで含み、超えた分は同じ請求書に従量で。運営の許可が要る（今：許可あり）",
+   "kind": "radio",
+   "label": "運営マネージド運営のキーで動く。プランの上限まで含み、超えた分は同じ請求書に従量で。運営の許可が要る（今：許可あり）",
+   "target": null,
+   "states": [
+    "AI の経路",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "radio:待つ（起きたら順に片づける）段階 1 と同じ。外に出るものは止まったまま",
+   "kind": "radio",
+   "label": "待つ（起きたら順に片づける）段階 1 と同じ。外に出るものは止まったまま",
+   "target": null,
+   "states": [
+    "AI の経路",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "radio:自分の API キーで動かすサーバー経路。承認が要るものは承認待ちで止まる",
+   "kind": "radio",
+   "label": "自分の API キーで動かすサーバー経路。承認が要るものは承認待ちで止まる",
+   "target": null,
+   "states": [
+    "AI の経路",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "radio:運営マネージドで動かす上限に近づくと高本AIが先に言う",
+   "kind": "radio",
+   "label": "運営マネージドで動かす上限に近づくと高本AIが先に言う",
+   "target": null,
+   "states": [
+    "AI の経路",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:キーを預ける",
+   "kind": "button",
+   "label": "キーを預ける",
+   "target": null,
+   "states": [
+    "AI の経路",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:失効させる",
+   "kind": "button",
+   "label": "失効させる",
+   "target": null,
+   "states": [
+    "AI の経路",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:預ける",
+   "kind": "button",
+   "label": "預ける",
+   "target": null,
+   "states": [
+    "AI の経路",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "input:API キー",
+   "kind": "input",
+   "label": "API キー",
+   "target": null,
+   "states": [
+    "キーを預ける"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:確かめて預ける",
+   "kind": "button",
+   "label": "確かめて預ける",
+   "target": null,
+   "states": [
+    "キーを預ける"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:やめる",
+   "kind": "button",
+   "label": "やめる",
+   "target": null,
+   "states": [
+    "キーを預ける"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:新しいキーを預ける",
+   "kind": "button",
+   "label": "新しいキーを預ける",
+   "target": null,
+   "states": [
+    "キーが無効・上限に届いた"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:Bridge に戻す",
+   "kind": "button",
+   "label": "Bridge に戻す",
+   "target": null,
+   "states": [
+    "キーが無効・上限に届いた"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:従量で続ける",
+   "kind": "button",
+   "label": "従量で続ける",
+   "target": null,
+   "states": [
+    "キーが無効・上限に届いた"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:止まっているものを直す→automation-repair",
+   "kind": "link",
+   "label": "止まっているものを直す",
+   "target": "automation-repair",
+   "states": [
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS4"
+   ]
+  }
+ ]
+}

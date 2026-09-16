@@ -1,7 +1,7 @@
 "use client";
 // 共通シェルの見本（T-US-01・02）。?screen=today&role=R1&ps=PS3 で切り替える。治具（tests/shell.spec.ts）がここを 4 幅で測る
 import { useSearchParams } from "next/navigation";
-import { useMemo, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import { AppShell, ShellProvider, ThreePane, PsGate, RoleGate } from "@/components/shell";
 import { AssistantPanel, ApprovalCard, ChoiceChips, Confidence, Citation, ReceiptCard } from "@/components/ai";
 import { Button, Section, Table, Th, Td, Pill, Empty, StoppedBanner } from "@/components/ui";
@@ -14,7 +14,7 @@ const echo: ChatAdapter = {
     `（見本）「${text}」を受け取りました。いま見ている画面は ${context.screenId ?? "—"} です。`,
 };
 
-export default function DevShell() {
+function DevShellInner() {
   const sp = useSearchParams();
   const screenId = (sp.get("screen") ?? "today") as ScreenId;
   const role = (sp.get("role") ?? "R1") as RoleId;
@@ -138,5 +138,14 @@ export default function DevShell() {
         )}
       </AppShell>
     </ShellProvider>
+  );
+}
+
+// useSearchParams は Suspense の中でしか使えない（本番ビルドの prerender で落ちる。dev では出ない）
+export default function DevShell() {
+  return (
+    <Suspense fallback={<p className="p-8 text-[13.5px] text-[var(--on-sv)]">読み込み中</p>}>
+      <DevShellInner />
+    </Suspense>
   );
 }

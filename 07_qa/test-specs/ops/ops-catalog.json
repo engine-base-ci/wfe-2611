@@ -1,0 +1,148 @@
+{
+ "screen": "ops-catalog",
+ "mock": "06_mockup/v1/v1-ops-catalog.html",
+ "state_labels": {
+  "n": "AI社員",
+  "d": "担当業務",
+  "r": "ルール",
+  "t": "テンプレ",
+  "g": "目標スキル",
+  "p": "プランの定義",
+  "ge": "空"
+ },
+ "ops": [
+  {
+   "key": "button:高本AI",
+   "kind": "button",
+   "label": "高本AI",
+   "target": null,
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:AI は止まっています→automation-repair",
+   "kind": "link",
+   "label": "AI は止まっています",
+   "target": "automation-repair",
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:PC をつなぐと話せます→bridge-setup",
+   "kind": "link",
+   "label": "PC をつなぐと話せます",
+   "target": "bridge-setup",
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "button:版を出す",
+   "kind": "button",
+   "label": "版を出す",
+   "target": null,
+   "states": [
+    "共通",
+    "AI社員",
+    "担当業務",
+    "テンプレ",
+    "目標スキル",
+    "プランの定義",
+    "空"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:作る",
+   "kind": "button",
+   "label": "作る",
+   "target": null,
+   "states": [
+    "AI社員",
+    "担当業務",
+    "テンプレ",
+    "目標スキル"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "checkbox:エントリー",
+   "kind": "checkbox",
+   "label": "エントリー",
+   "target": null,
+   "states": [
+    "AI社員"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "checkbox:スタンダード",
+   "kind": "checkbox",
+   "label": "スタンダード",
+   "target": null,
+   "states": [
+    "AI社員"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "checkbox:プロ",
+   "kind": "checkbox",
+   "label": "プロ",
+   "target": null,
+   "states": [
+    "AI社員"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:中身",
+   "kind": "button",
+   "label": "中身",
+   "target": null,
+   "states": [
+    "AI社員"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:台帳",
+   "kind": "button",
+   "label": "台帳",
+   "target": null,
+   "states": [
+    "ルール"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  }
+ ]
+}

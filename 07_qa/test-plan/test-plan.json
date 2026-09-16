@@ -438,7 +438,7 @@
  ],
  "inputs": {
   "tickets": 171,
-  "l1_rows": 3386,
+  "l1_rows": 4655,
   "ears_endpoints": 60,
   "ears_tests": 432,
   "entities": 92,
@@ -982,6 +982,19 @@
    "blocking": true,
    "detects": [
     "flow を変えたのに画面の URL 一覧が古い（G22）"
+   ],
+   "owner_task": "T-US-00",
+   "job": "static"
+  },
+  {
+   "id": 28,
+   "name": "実ブラウザで押した証拠（操作要素 1 つ＝1 行。行 ID を名前に持つ Playwright が通っている）",
+   "script": "pnpm ci:op-gate",
+   "blocking": true,
+   "detects": [
+    "説明文だけの PASS（G-01・G-08）",
+    "押していない操作要素（分母はモックから機械で）",
+    "発注者確認（Rule 12）が無いまま done"
    ],
    "owner_task": "T-US-00",
    "job": "static"

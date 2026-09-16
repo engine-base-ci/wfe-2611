@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Button, Field, Input, Pill } from "@/components/ui";
 import { OutsideLayout } from "@/components/outside/outside-layout";
 import { AuthExtError, acceptInvitation, invitationPreview } from "@/lib/auth/ext";
+import { pendingRoute } from "@/lib/pending-route";
 
 type Preview = Awaited<ReturnType<typeof invitationPreview>>;
 export default function InviteAcceptPage() {
@@ -24,7 +25,7 @@ export default function InviteAcceptPage() {
     setBusy(true);
     try {
       await acceptInvitation(token, { name, password });
-      router.push("/today");
+      router.push(pendingRoute("/today", "T-U-13")); // 今日の画面は T-U-13 で実装（今は 404 に落ちる）
     } catch (err) {
       setMsg(err instanceof AuthExtError ? err.message : "うまくいきませんでした");
       if (err instanceof AuthExtError && err.status === 410)

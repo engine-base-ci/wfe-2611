@@ -1,0 +1,306 @@
+{
+ "screen": "records",
+ "mock": "06_mockup/v1/v1-records.html",
+ "state_labels": {
+  "k": "カンバン（工程）",
+  "n": "リスト",
+  "s": "止まっている",
+  "o": "別の台帳（請求）",
+  "ge": "空",
+  "gs": "AI が止まっている"
+ },
+ "ops": [
+  {
+   "key": "button:高本AI",
+   "kind": "button",
+   "label": "高本AI",
+   "target": null,
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:AI は止まっています→automation-repair",
+   "kind": "link",
+   "label": "AI は止まっています",
+   "target": "automation-repair",
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:PC をつなぐと話せます→bridge-setup",
+   "kind": "link",
+   "label": "PC をつなぐと話せます",
+   "target": "bridge-setup",
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "button:1件をひらく",
+   "kind": "button",
+   "label": "1件をひらく",
+   "target": null,
+   "states": [
+    "共通",
+    "空"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "button:カンバン",
+   "kind": "button",
+   "label": "カンバン",
+   "target": null,
+   "states": [
+    "カンバン（工程）",
+    "リスト",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:リスト",
+   "kind": "button",
+   "label": "リスト",
+   "target": null,
+   "states": [
+    "カンバン（工程）",
+    "リスト",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:△△ コーポレートサイト→record-detail",
+   "kind": "link",
+   "label": "△△ コーポレートサイト",
+   "target": "record-detail",
+   "states": [
+    "カンバン（工程）",
+    "リスト",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:◯◯商事 業務システム→record-detail",
+   "kind": "link",
+   "label": "◯◯商事 業務システム",
+   "target": "record-detail",
+   "states": [
+    "カンバン（工程）",
+    "リスト",
+    "止まっている",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:足す",
+   "kind": "button",
+   "label": "足す",
+   "target": null,
+   "states": [
+    "リスト"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:台帳の形を変える→ledger-def",
+   "kind": "link",
+   "label": "台帳の形を変える",
+   "target": "ledger-def",
+   "states": [
+    "リスト"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:セイコー 食品パッケージ画像編集SaaS→record-detail",
+   "kind": "link",
+   "label": "セイコー 食品パッケージ画像編集SaaS",
+   "target": "record-detail",
+   "states": [
+    "リスト",
+    "止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:京蟻 オンラインガチャ→record-detail",
+   "kind": "link",
+   "label": "京蟻 オンラインガチャ",
+   "target": "record-detail",
+   "states": [
+    "リスト"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:ScoliVio 3D解析→record-detail",
+   "kind": "link",
+   "label": "ScoliVio 3D解析",
+   "target": "record-detail",
+   "states": [
+    "リスト"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:SOICO QRテーブル注文→record-detail",
+   "kind": "link",
+   "label": "SOICO QRテーブル注文",
+   "target": "record-detail",
+   "states": [
+    "リスト"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:配る",
+   "kind": "button",
+   "label": "配る",
+   "target": null,
+   "states": [
+    "止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:私がやる",
+   "kind": "button",
+   "label": "私がやる",
+   "target": null,
+   "states": [
+    "止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:台帳を切り替える",
+   "kind": "button",
+   "label": "台帳を切り替える",
+   "target": null,
+   "states": [
+    "別の台帳（請求）"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:INV-0027→record-detail",
+   "kind": "link",
+   "label": "INV-0027",
+   "target": "record-detail",
+   "states": [
+    "別の台帳（請求）"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:INV-0026→record-detail",
+   "kind": "link",
+   "label": "INV-0026",
+   "target": "record-detail",
+   "states": [
+    "別の台帳（請求）"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:INV-0025→record-detail",
+   "kind": "link",
+   "label": "INV-0025",
+   "target": "record-detail",
+   "states": [
+    "別の台帳（請求）"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:止まっているものを直す→automation-repair",
+   "kind": "link",
+   "label": "止まっているものを直す",
+   "target": "automation-repair",
+   "states": [
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS4"
+   ]
+  }
+ ]
+}

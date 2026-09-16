@@ -1,0 +1,347 @@
+{
+ "screen": "onboard-draft",
+ "mock": "06_mockup/v1/v1-onboard-draft.html",
+ "state_labels": {
+  "n": "たたき台",
+  "f": "会話で直す",
+  "e": "直接編集"
+ },
+ "ops": [
+  {
+   "key": "button:これでいく",
+   "kind": "button",
+   "label": "これでいく",
+   "target": null,
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:1. PCをつなぐ→bridge-setup",
+   "kind": "link",
+   "label": "1. PCをつなぐ",
+   "target": "bridge-setup",
+   "states": [
+    "たたき台",
+    "会話で直す",
+    "直接編集"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "link:2. 話す→onboard-interview",
+   "kind": "link",
+   "label": "2. 話す",
+   "target": "onboard-interview",
+   "states": [
+    "たたき台",
+    "会話で直す",
+    "直接編集"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "link:3. たたき台→onboard-draft",
+   "kind": "link",
+   "label": "3. たたき台",
+   "target": "onboard-draft",
+   "states": [
+    "たたき台",
+    "会話で直す",
+    "直接編集"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "link:4. ログイン情報→credentials",
+   "kind": "link",
+   "label": "4. ログイン情報",
+   "target": "credentials",
+   "states": [
+    "たたき台",
+    "会話で直す",
+    "直接編集"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "link:5. テスト→onboard-testrun",
+   "kind": "link",
+   "label": "5. テスト",
+   "target": "onboard-testrun",
+   "states": [
+    "たたき台",
+    "会話で直す",
+    "直接編集"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "link:6. 本番へ→onboard-golive",
+   "kind": "link",
+   "label": "6. 本番へ",
+   "target": "onboard-golive",
+   "states": [
+    "たたき台",
+    "会話で直す",
+    "直接編集"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "button:会話で直す",
+   "kind": "button",
+   "label": "会話で直す",
+   "target": null,
+   "states": [
+    "たたき台",
+    "直接編集"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "button:違うところを言う",
+   "kind": "button",
+   "label": "違うところを言う",
+   "target": null,
+   "states": [
+    "たたき台"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "link:これでいく→bridge-setup",
+   "kind": "link",
+   "label": "これでいく",
+   "target": "bridge-setup",
+   "states": [
+    "たたき台"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "button:コピー",
+   "kind": "button",
+   "label": "コピー",
+   "target": null,
+   "states": [
+    "会話で直す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "button:もう一度",
+   "kind": "button",
+   "label": "もう一度",
+   "target": null,
+   "states": [
+    "会話で直す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "button:ここから分岐",
+   "kind": "button",
+   "label": "ここから分岐",
+   "target": null,
+   "states": [
+    "会話で直す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "button:記憶に入れる",
+   "kind": "button",
+   "label": "記憶に入れる",
+   "target": null,
+   "states": [
+    "会話で直す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "button:根拠を見る",
+   "kind": "button",
+   "label": "根拠を見る",
+   "target": null,
+   "states": [
+    "会話で直す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "button:編集して送り直す",
+   "kind": "button",
+   "label": "編集して送り直す",
+   "target": null,
+   "states": [
+    "会話で直す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "button:38件にする",
+   "kind": "button",
+   "label": "38件にする",
+   "target": null,
+   "states": [
+    "会話で直す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "button:30のままでいい",
+   "kind": "button",
+   "label": "30のままでいい",
+   "target": null,
+   "states": [
+    "会話で直す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "button:別の考え方がある",
+   "kind": "button",
+   "label": "別の考え方がある",
+   "target": null,
+   "states": [
+    "会話で直す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "button:その他（自由に書く）",
+   "kind": "button",
+   "label": "その他（自由に書く）",
+   "target": null,
+   "states": [
+    "会話で直す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "button:あとで",
+   "kind": "button",
+   "label": "あとで",
+   "target": null,
+   "states": [
+    "会話で直す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "button:無名（アイコンだけ。実装では aria-label を付ける）",
+   "kind": "button",
+   "label": "無名（アイコンだけ。実装では aria-label を付ける）",
+   "target": null,
+   "states": [
+    "会話で直す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "textarea:違うところを言う",
+   "kind": "textarea",
+   "label": "違うところを言う",
+   "target": null,
+   "states": [
+    "会話で直す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "button:送る",
+   "kind": "button",
+   "label": "送る",
+   "target": null,
+   "states": [
+    "会話で直す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "input:text",
+   "kind": "input",
+   "label": "text",
+   "target": null,
+   "states": [
+    "直接編集"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  }
+ ]
+}

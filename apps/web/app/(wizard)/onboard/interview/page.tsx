@@ -116,8 +116,8 @@ function Interview() {
               <input
                 name="t"
                 className="min-h-10 flex-1 rounded-[var(--r-md)] border border-transparent bg-[var(--sv)] px-3 text-[16px] md:text-[14px]"
-                placeholder="答える（ファイルは形式を選びません）"
-                aria-label="答える"
+                placeholder="ここに書く。声で話しても、資料を投げても構いません"
+                aria-label="ここに書く。声で話しても、資料を投げても構いません"
               />
               <Button type="submit">送る</Button>
             </form>

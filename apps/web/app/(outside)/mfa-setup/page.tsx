@@ -43,6 +43,16 @@ export default function MfaSetupPage() {
     setState("rc");
   };
   const copy = () => navigator.clipboard?.writeText(codes.join("\n"));
+  // ファイルで保存（モックの「ファイルで保存」）：ブラウザのダウンロードだけ。サーバには送らない
+  const saveFile = () => {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(
+      new Blob([`Kaname 回復コード（1 つ使うと消えます）\n\n${codes.join("\n")}\n`], { type: "text/plain" }),
+    );
+    a.download = "kaname-recovery-codes.txt";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  };
   return (
     <OutsideLayout
       pitch={
@@ -72,6 +82,9 @@ export default function MfaSetupPage() {
           <div className="mt-4 flex flex-wrap gap-2">
             <Button variant="outline" size="sm" onClick={copy}>
               コピー
+            </Button>
+            <Button variant="outline" size="sm" onClick={saveFile}>
+              ファイルで保存
             </Button>
           </div>
           <label className="mt-6 flex items-center gap-2 text-[13.5px]">

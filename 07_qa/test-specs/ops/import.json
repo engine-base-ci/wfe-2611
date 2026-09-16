@@ -1,0 +1,146 @@
+{
+ "screen": "import",
+ "mock": "06_mockup/v1/v1-import.html",
+ "state_labels": {
+  "n": "取り込み",
+  "ge": "空",
+  "gs": "AI が止まっている"
+ },
+ "ops": [
+  {
+   "key": "button:高本AI",
+   "kind": "button",
+   "label": "高本AI",
+   "target": null,
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:AI は止まっています→automation-repair",
+   "kind": "link",
+   "label": "AI は止まっています",
+   "target": "automation-repair",
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:PC をつなぐと話せます→bridge-setup",
+   "kind": "link",
+   "label": "PC をつなぐと話せます",
+   "target": "bridge-setup",
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "button:取り込む",
+   "kind": "button",
+   "label": "取り込む",
+   "target": null,
+   "states": [
+    "共通",
+    "空"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "button:ファイルを選ぶ",
+   "kind": "button",
+   "label": "ファイルを選ぶ",
+   "target": null,
+   "states": [
+    "取り込み",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:Google Drive から",
+   "kind": "button",
+   "label": "Google Drive から",
+   "target": null,
+   "states": [
+    "取り込み",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:見て入れる",
+   "kind": "button",
+   "label": "見て入れる",
+   "target": null,
+   "states": [
+    "取り込み",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:テンプレにする",
+   "kind": "button",
+   "label": "テンプレにする",
+   "target": null,
+   "states": [
+    "取り込み",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:覚えさせる",
+   "kind": "button",
+   "label": "覚えさせる",
+   "target": null,
+   "states": [
+    "取り込み",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:止まっているものを直す→automation-repair",
+   "kind": "link",
+   "label": "止まっているものを直す",
+   "target": "automation-repair",
+   "states": [
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS4"
+   ]
+  }
+ ]
+}

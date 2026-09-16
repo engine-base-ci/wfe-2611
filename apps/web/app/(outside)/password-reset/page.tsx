@@ -2,12 +2,12 @@
 // 入り直す（T-U-06・A28）。状態：入り直す／送信後／新しいパスワード。登録の有無は漏らさない。再設定で既存の端末と Bridge は全部切れる（G-14）
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { Button, Field, Input } from "@/components/ui";
 import { OutsideLayout } from "@/components/outside/outside-layout";
 import { authClient } from "@/lib/auth/client";
 
-export default function PasswordResetPage() {
+function PasswordResetInner() {
   const sp = useSearchParams();
   const router = useRouter();
   const token = sp.get("token");
@@ -130,5 +130,14 @@ export default function PasswordResetPage() {
         </div>
       )}
     </OutsideLayout>
+  );
+}
+
+// useSearchParams は Suspense の中でしか使えない（本番ビルドの prerender で落ちる。dev では出ない）
+export default function PasswordResetPage() {
+  return (
+    <Suspense fallback={<p className="p-8 text-[13.5px] text-[var(--on-sv)]">読み込み中</p>}>
+      <PasswordResetInner />
+    </Suspense>
   );
 }

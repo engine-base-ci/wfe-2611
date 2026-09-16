@@ -1,0 +1,183 @@
+{
+ "screen": "my-progress",
+ "mock": "06_mockup/v1/v1-my-progress.html",
+ "state_labels": {
+  "me": "自分",
+  "ge": "空",
+  "gs": "AI が止まっている"
+ },
+ "ops": [
+  {
+   "key": "button:高本AI",
+   "kind": "button",
+   "label": "高本AI",
+   "target": null,
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:AI は止まっています→automation-repair",
+   "kind": "link",
+   "label": "AI は止まっています",
+   "target": "automation-repair",
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:PC をつなぐと話せます→bridge-setup",
+   "kind": "link",
+   "label": "PC をつなぐと話せます",
+   "target": "bridge-setup",
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "button:自主目標を足す",
+   "kind": "button",
+   "label": "自主目標を足す",
+   "target": null,
+   "states": [
+    "共通",
+    "空"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "link:直す→goal-edit",
+   "kind": "link",
+   "label": "直す",
+   "target": "goal-edit",
+   "states": [
+    "自分",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:配る→goal-allocation",
+   "kind": "link",
+   "label": "配る",
+   "target": "goal-allocation",
+   "states": [
+    "自分",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:自分のAIに聞く→clone-chat",
+   "kind": "link",
+   "label": "自分のAIに聞く",
+   "target": "clone-chat",
+   "states": [
+    "自分",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:＋足す",
+   "kind": "button",
+   "label": "＋足す",
+   "target": null,
+   "states": [
+    "自分",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:直す",
+   "kind": "button",
+   "label": "直す",
+   "target": null,
+   "states": [
+    "自分",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:配り直す",
+   "kind": "button",
+   "label": "配り直す",
+   "target": null,
+   "states": [
+    "自分",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:止まっているものを直す→automation-repair",
+   "kind": "link",
+   "label": "止まっているものを直す",
+   "target": "automation-repair",
+   "states": [
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS4"
+   ]
+  }
+ ]
+}

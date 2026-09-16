@@ -1,0 +1,705 @@
+{
+ "screen": "members",
+ "mock": "06_mockup/v1/v1-members.html",
+ "state_labels": {
+  "n": "組織図",
+  "l": "一覧と招待",
+  "p": "層と権限",
+  "x": "層を消す",
+  "r": "範囲を変える",
+  "ge": "空",
+  "gs": "AI が止まっている"
+ },
+ "ops": [
+  {
+   "key": "button:高本AI",
+   "kind": "button",
+   "label": "高本AI",
+   "target": null,
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:AI は止まっています→automation-repair",
+   "kind": "link",
+   "label": "AI は止まっています",
+   "target": "automation-repair",
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:PC をつなぐと話せます→bridge-setup",
+   "kind": "link",
+   "label": "PC をつなぐと話せます",
+   "target": "bridge-setup",
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "button:招待する",
+   "kind": "button",
+   "label": "招待する",
+   "target": null,
+   "states": [
+    "共通",
+    "組織図",
+    "一覧と招待",
+    "空",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS2",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:層を足す",
+   "kind": "button",
+   "label": "層を足す",
+   "target": null,
+   "states": [
+    "組織図",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2",
+    "R1"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:高高本 雅人代表 · info@engine-base.com · すべて見える・すべて直せる代表→member-detail",
+   "kind": "link",
+   "label": "高高本 雅人代表 · info@engine-base.com · すべて見える・すべて直せる代表",
+   "target": "member-detail",
+   "states": [
+    "組織図",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:高高本 雅人代表 · 営業の長 · 兼務代表→member-detail",
+   "kind": "link",
+   "label": "高高本 雅人代表 · 営業の長 · 兼務代表",
+   "target": "member-detail",
+   "states": [
+    "組織図",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:田田中担当者 · 受注 3 件担当者→member-detail",
+   "kind": "link",
+   "label": "田田中担当者 · 受注 3 件担当者",
+   "target": "member-detail",
+   "states": [
+    "組織図",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:営業社員運営配布 · 止まっているAI社員→ai-staff-detail",
+   "kind": "link",
+   "label": "営業社員運営配布 · 止まっているAI社員",
+   "target": "ai-staff-detail",
+   "states": [
+    "組織図",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:佐佐藤 健担当者 · 制作の長 · 案件 2 件担当者→member-detail",
+   "kind": "link",
+   "label": "佐佐藤 健担当者 · 制作の長 · 案件 2 件担当者",
+   "target": "member-detail",
+   "states": [
+    "組織図",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:CS社員会社作成 · 稼働中AI社員→ai-staff-detail",
+   "kind": "link",
+   "label": "CS社員会社作成 · 稼働中AI社員",
+   "target": "ai-staff-detail",
+   "states": [
+    "組織図",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:経理社員運営配布 · 稼働中AI社員→ai-staff-detail",
+   "kind": "link",
+   "label": "経理社員運営配布 · 稼働中AI社員",
+   "target": "ai-staff-detail",
+   "states": [
+    "組織図",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:鈴鈴木 美咲閲覧のみ · 共有した案件 2 件閲覧→member-detail",
+   "kind": "link",
+   "label": "鈴鈴木 美咲閲覧のみ · 共有した案件 2 件閲覧",
+   "target": "member-detail",
+   "states": [
+    "組織図",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:取り消す",
+   "kind": "button",
+   "label": "取り消す",
+   "target": null,
+   "states": [
+    "組織図",
+    "一覧と招待",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:人を招く",
+   "kind": "button",
+   "label": "人を招く",
+   "target": null,
+   "states": [
+    "組織図",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:高高本 雅人代表 · info@engine-base.com代表→member-detail",
+   "kind": "link",
+   "label": "高高本 雅人代表 · info@engine-base.com代表",
+   "target": "member-detail",
+   "states": [
+    "組織図",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:営業社員運営配布AI社員→ai-staff-detail",
+   "kind": "link",
+   "label": "営業社員運営配布AI社員",
+   "target": "ai-staff-detail",
+   "states": [
+    "組織図",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:経理社員運営配布AI社員→ai-staff-detail",
+   "kind": "link",
+   "label": "経理社員運営配布AI社員",
+   "target": "ai-staff-detail",
+   "states": [
+    "組織図",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:CS社員自分で作ったAI社員→ai-staff-detail",
+   "kind": "link",
+   "label": "CS社員自分で作ったAI社員",
+   "target": "ai-staff-detail",
+   "states": [
+    "組織図",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:高本 雅人→member-detail",
+   "kind": "link",
+   "label": "高本 雅人",
+   "target": "member-detail",
+   "states": [
+    "一覧と招待"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:権限→member-detail",
+   "kind": "link",
+   "label": "権限",
+   "target": "member-detail",
+   "states": [
+    "一覧と招待"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:田中→member-detail",
+   "kind": "link",
+   "label": "田中",
+   "target": "member-detail",
+   "states": [
+    "一覧と招待"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:佐藤 健→member-detail",
+   "kind": "link",
+   "label": "佐藤 健",
+   "target": "member-detail",
+   "states": [
+    "一覧と招待"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:鈴木 美咲→member-detail",
+   "kind": "link",
+   "label": "鈴木 美咲",
+   "target": "member-detail",
+   "states": [
+    "一覧と招待"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "input:メールアドレス",
+   "kind": "input",
+   "label": "メールアドレス",
+   "target": null,
+   "states": [
+    "一覧と招待"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "select:層",
+   "kind": "select",
+   "label": "層",
+   "target": null,
+   "states": [
+    "一覧と招待",
+    "範囲を変える"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "select:役割（権限の既定）",
+   "kind": "select",
+   "label": "役割（権限の既定）",
+   "target": null,
+   "states": [
+    "一覧と招待"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "checkbox:長にする（その層の 直す・配る・承認 が付く）",
+   "kind": "checkbox",
+   "label": "長にする（その層の 直す・配る・承認 が付く）",
+   "target": null,
+   "states": [
+    "一覧と招待"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:招待を送る",
+   "kind": "button",
+   "label": "招待を送る",
+   "target": null,
+   "states": [
+    "一覧と招待"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:＋層を足す",
+   "kind": "button",
+   "label": "＋層を足す",
+   "target": null,
+   "states": [
+    "層と権限"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:足す",
+   "kind": "button",
+   "label": "足す",
+   "target": null,
+   "states": [
+    "層と権限"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "input:層の名前",
+   "kind": "input",
+   "label": "層の名前",
+   "target": null,
+   "states": [
+    "層と権限"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "select:どこの下に",
+   "kind": "select",
+   "label": "どこの下に",
+   "target": null,
+   "states": [
+    "層と権限"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "input:最初の単位と長",
+   "kind": "input",
+   "label": "最初の単位と長",
+   "target": null,
+   "states": [
+    "層と権限"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "checkbox:層の全員：この層の目標・担当業務・記憶・ルールを見る",
+   "kind": "checkbox",
+   "label": "層の全員：この層の目標・担当業務・記憶・ルールを見る",
+   "target": null,
+   "states": [
+    "層と権限"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "checkbox:長：直す・消す",
+   "kind": "checkbox",
+   "label": "長：直す・消す",
+   "target": null,
+   "states": [
+    "層と権限"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "checkbox:長：配る（目標・タスク）",
+   "kind": "checkbox",
+   "label": "長：配る（目標・タスク）",
+   "target": null,
+   "states": [
+    "層と権限"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "checkbox:長：承認する（外に出るもの）",
+   "kind": "checkbox",
+   "label": "長：承認する（外に出るもの）",
+   "target": null,
+   "states": [
+    "層と権限"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "checkbox:層の全員：横（同じ層の他の人）の目標とタスクを見る",
+   "kind": "checkbox",
+   "label": "層の全員：横（同じ層の他の人）の目標とタスクを見る",
+   "target": null,
+   "states": [
+    "層と権限"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:戻す",
+   "kind": "button",
+   "label": "戻す",
+   "target": null,
+   "states": [
+    "層を消す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:会社へ",
+   "kind": "button",
+   "label": "会社へ",
+   "target": null,
+   "states": [
+    "層を消す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:消す",
+   "kind": "button",
+   "label": "消す",
+   "target": null,
+   "states": [
+    "層を消す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:消す（4／5 決定）",
+   "kind": "button",
+   "label": "消す（4／5 決定）",
+   "target": null,
+   "states": [
+    "層を消す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:やめる",
+   "kind": "button",
+   "label": "やめる",
+   "target": null,
+   "states": [
+    "層を消す",
+    "範囲を変える"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "select:役割",
+   "kind": "select",
+   "label": "役割",
+   "target": null,
+   "states": [
+    "範囲を変える"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:変える",
+   "kind": "button",
+   "label": "変える",
+   "target": null,
+   "states": [
+    "範囲を変える"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:細かく決める→member-detail",
+   "kind": "link",
+   "label": "細かく決める",
+   "target": "member-detail",
+   "states": [
+    "範囲を変える"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:止まっているものを直す→automation-repair",
+   "kind": "link",
+   "label": "止まっているものを直す",
+   "target": "automation-repair",
+   "states": [
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS4"
+   ]
+  }
+ ]
+}

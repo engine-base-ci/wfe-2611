@@ -582,5 +582,11 @@ layer_checks:
   check: python3 scripts/ci/qa-ladder.py validate --spec 07_qa/test-specs --tickets 07_tasks/tickets.json
 - file: 07_qa/test-specs/journeys/plan.json
   check: python3 scripts/ci/qa-ladder.py validate --spec 07_qa/test-specs --tickets 07_tasks/tickets.json
+- file: 07_qa/test-specs/ops/*.json
+  check: python3 scripts/ci/derive_ops.py --screens 07_functional/screens.json --out 07_qa/test-specs/ops --flow 05_flow/flow.json --shell-from today
+- file: 07_qa/test-specs/screens/*.md#操作
+  check: python3 scripts/ci/op_gate.py --spec 07_qa/test-specs --tickets 07_tasks/tickets.json --report apps/web/pw-reports/screens.json --report apps/web/pw-reports/showcase.json --report apps/e2e/test-results/report.json --all
+- file: 07_tasks/handoff/*.md
+  check: python3 scripts/ci/gen_handoff.py --tickets 07_tasks/tickets.json --screens 07_functional/screens.json --ops 07_qa/test-specs/ops --out 07_tasks/handoff
 - file: 07_tasks/TASK-CARDS.md
   manual: tickets.json からの機械生成の写し（05_flow/build_tasks.py）。手で直さない

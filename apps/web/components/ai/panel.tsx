@@ -1,6 +1,8 @@
 "use client";
 // 自分のAIの右パネル（T-US-02・D-062.1・D-072.19）：会話全体が読めて続けて話せる。入力だけを置く形は禁止。
 // 描画は assistant-ui、配線は AG-UI（lib/agent-ui）。パネルは「いま見ている画面・選んでいる 1 件」を知る
+import type { Route } from "next";
+import { pendingRoute } from "@/lib/pending-route";
 import {
   AssistantRuntimeProvider,
   ComposerPrimitive,
@@ -51,12 +53,12 @@ export function AssistantPanel({
   adapter,
   selectedId,
   children,
-  chatHref = "/ai/chat",
+  chatHref = pendingRoute("/clone-chat", "T-U-17"),
 }: {
   adapter: ChatAdapter;
   selectedId?: string | null;
   children?: ReactNode;
-  chatHref?: string;
+  chatHref?: Route;
 }) {
   const { screenId, aiName, setPanelOpen, caps } = useShell();
   const model = useMemo(() => toModelAdapter(adapter, screenId, selectedId), [adapter, screenId, selectedId]);

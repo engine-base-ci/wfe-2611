@@ -63,9 +63,9 @@ function Draft() {
               <tbody>
                 {(goals.data?.data ?? []).map((g) => (
                   <tr key={g.id}>
-                    <Td>{(g as { name?: string }).name ?? "—"}</Td>
+                    <Td>{(g as { name?: string }).name ?? (g as { kind_id?: string }).kind_id ?? ""}</Td>
                     <Td>
-                      {g.period_start ?? ""}〜{g.period_end ?? ""}
+                      {String(g.period_start ?? "").slice(0, 10)}〜{String(g.period_end ?? "").slice(0, 10)}
                     </Td>
                     <Td numeric>{(g as { target_value?: number }).target_value ?? ""}</Td>
                   </tr>
@@ -89,9 +89,10 @@ function Draft() {
                   <tr key={l.id}>
                     <Td>{(l as { name?: string }).name ?? "—"}</Td>
                     <Td>
-                      {Array.isArray((l as unknown as { stages?: unknown }).stages)
-                        ? (l as unknown as { stages: string[] }).stages.join(" → ")
-                        : ""}
+                      {(() => {
+                        const js = (l as unknown as { json_schema?: { stages?: unknown } }).json_schema;
+                        return Array.isArray(js?.stages) ? (js!.stages as string[]).join(" → ") : "";
+                      })()}
                     </Td>
                   </tr>
                 ))}

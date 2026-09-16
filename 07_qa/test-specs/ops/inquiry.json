@@ -1,0 +1,180 @@
+{
+ "screen": "inquiry",
+ "mock": "06_mockup/v1/v1-inquiry.html",
+ "state_labels": {
+  "n": "問い合わせ",
+  "t": "1 件のやりとり",
+  "w": "新しく聞く",
+  "ge": "空",
+  "gs": "AI が止まっている"
+ },
+ "ops": [
+  {
+   "key": "button:高本AI",
+   "kind": "button",
+   "label": "高本AI",
+   "target": null,
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:AI は止まっています→automation-repair",
+   "kind": "link",
+   "label": "AI は止まっています",
+   "target": "automation-repair",
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:PC をつなぐと話せます→bridge-setup",
+   "kind": "link",
+   "label": "PC をつなぐと話せます",
+   "target": "bridge-setup",
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "button:問い合わせる",
+   "kind": "button",
+   "label": "問い合わせる",
+   "target": null,
+   "states": [
+    "共通",
+    "空"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "button:新しく聞く",
+   "kind": "button",
+   "label": "新しく聞く",
+   "target": null,
+   "states": [
+    "問い合わせ",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:覚え直させる→automation-repair",
+   "kind": "link",
+   "label": "覚え直させる",
+   "target": "automation-repair",
+   "states": [
+    "1 件のやりとり",
+    "新しく聞く"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:サポートアクセスを許可する→audit",
+   "kind": "link",
+   "label": "サポートアクセスを許可する",
+   "target": "audit",
+   "states": [
+    "1 件のやりとり"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:解決した",
+   "kind": "button",
+   "label": "解決した",
+   "target": null,
+   "states": [
+    "1 件のやりとり"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "select:種類",
+   "kind": "select",
+   "label": "種類",
+   "target": null,
+   "states": [
+    "新しく聞く"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "textarea:内容",
+   "kind": "textarea",
+   "label": "内容",
+   "target": null,
+   "states": [
+    "新しく聞く"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:高本AIに聞く（まず）",
+   "kind": "button",
+   "label": "高本AIに聞く（まず）",
+   "target": null,
+   "states": [
+    "新しく聞く"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:運営に送る",
+   "kind": "button",
+   "label": "運営に送る",
+   "target": null,
+   "states": [
+    "新しく聞く"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:止まっているものを直す→automation-repair",
+   "kind": "link",
+   "label": "止まっているものを直す",
+   "target": "automation-repair",
+   "states": [
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS4"
+   ]
+  }
+ ]
+}

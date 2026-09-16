@@ -126,8 +126,11 @@ function Credentials() {
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                if (service.trim()) setState("i");
-                else setMsg("サービス名を入れてください");
+                const v = service.normalize("NFKC").replace(/\s+/g, " ").trim(); // 境界で正規化（全角・空白）
+                if (v) {
+                  setService(v);
+                  setState("i");
+                } else setMsg("サービス名を入れてください");
               }}
               noValidate
             >

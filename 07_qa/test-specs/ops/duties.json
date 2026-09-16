@@ -1,0 +1,485 @@
+{
+ "screen": "duties",
+ "mock": "06_mockup/v1/v1-duties.html",
+ "state_labels": {
+  "n": "全部",
+  "k": "層ごと",
+  "t": "テストで動かす",
+  "r2": "代表+数人",
+  "ge": "空",
+  "gs": "AI が止まっている"
+ },
+ "ops": [
+  {
+   "key": "button:高本AI",
+   "kind": "button",
+   "label": "高本AI",
+   "target": null,
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:AI は止まっています→automation-repair",
+   "kind": "link",
+   "label": "AI は止まっています",
+   "target": "automation-repair",
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:PC をつなぐと話せます→bridge-setup",
+   "kind": "link",
+   "label": "PC をつなぐと話せます",
+   "target": "bridge-setup",
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "button:保存する",
+   "kind": "button",
+   "label": "保存する",
+   "target": null,
+   "states": [
+    "共通",
+    "全部",
+    "空",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS2",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:全部",
+   "kind": "button",
+   "label": "全部",
+   "target": null,
+   "states": [
+    "全部",
+    "層ごと",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:層ごと",
+   "kind": "button",
+   "label": "層ごと",
+   "target": null,
+   "states": [
+    "全部",
+    "層ごと",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:足す",
+   "kind": "button",
+   "label": "足す",
+   "target": null,
+   "states": [
+    "全部",
+    "層ごと",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2",
+    "R1"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:発注ナビの新着を台帳に入れる営業社員会社外に出ない覚えた操作 1毎朝 6:00",
+   "kind": "button",
+   "label": "発注ナビの新着を台帳に入れる営業社員会社外に出ない覚えた操作 1毎朝 6:00",
+   "target": null,
+   "states": [
+    "全部",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:アプローチ文を下書きする営業社員会社外に出る · 承認必須新着が入ったら",
+   "kind": "button",
+   "label": "アプローチ文を下書きする営業社員会社外に出る · 承認必須新着が入ったら",
+   "target": null,
+   "states": [
+    "全部",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:見積の下書きを作る営業社員部署 · 営業外に出る · 承認必須要件が揃ったら",
+   "kind": "button",
+   "label": "見積の下書きを作る営業社員部署 · 営業外に出る · 承認必須要件が揃ったら",
+   "target": null,
+   "states": [
+    "全部",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:納品済み案件の請求書を作る経理社員運営配布外に出る · 承認必須納品になったら",
+   "kind": "button",
+   "label": "納品済み案件の請求書を作る経理社員運営配布外に出る · 承認必須納品になったら",
+   "target": null,
+   "states": [
+    "全部",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:入金を照合して台帳に書く経理社員運営配布外に出ない毎朝 6:30",
+   "kind": "button",
+   "label": "入金を照合して台帳に書く経理社員運営配布外に出ない毎朝 6:30",
+   "target": null,
+   "states": [
+    "全部",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:問い合わせに一次返信するCS社員会社外に出ない承認済みテンプレの範囲",
+   "kind": "button",
+   "label": "問い合わせに一次返信するCS社員会社外に出ない承認済みテンプレの範囲",
+   "target": null,
+   "states": [
+    "全部",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:納品先に近況メールを出すCS社員会社外に出る · 承認必須納品 3 か月後",
+   "kind": "button",
+   "label": "納品先に近況メールを出すCS社員会社外に出る · 承認必須納品 3 か月後",
+   "target": null,
+   "states": [
+    "全部",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:一覧へ",
+   "kind": "button",
+   "label": "一覧へ",
+   "target": null,
+   "states": [
+    "全部",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "textarea:やること",
+   "kind": "textarea",
+   "label": "やること",
+   "target": null,
+   "states": [
+    "全部",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "input:いつ",
+   "kind": "input",
+   "label": "いつ",
+   "target": null,
+   "states": [
+    "全部",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "select:効く範囲",
+   "kind": "select",
+   "label": "効く範囲",
+   "target": null,
+   "states": [
+    "全部",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "select:外に出るか",
+   "kind": "select",
+   "label": "外に出るか",
+   "target": null,
+   "states": [
+    "全部",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:見る→automation-repair",
+   "kind": "link",
+   "label": "見る",
+   "target": "automation-repair",
+   "states": [
+    "全部",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:引き継ぎ先を変える",
+   "kind": "button",
+   "label": "引き継ぎ先を変える",
+   "target": null,
+   "states": [
+    "全部",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:止める",
+   "kind": "button",
+   "label": "止める",
+   "target": null,
+   "states": [
+    "全部",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:開く",
+   "kind": "button",
+   "label": "開く",
+   "target": null,
+   "states": [
+    "全部",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "input:何を",
+   "kind": "input",
+   "label": "何を",
+   "target": null,
+   "states": [
+    "テストで動かす"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "input:どう変えたか",
+   "kind": "input",
+   "label": "どう変えたか",
+   "target": null,
+   "states": [
+    "テストで動かす"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "button:テストで 1 回動かす",
+   "kind": "button",
+   "label": "テストで 1 回動かす",
+   "target": null,
+   "states": [
+    "テストで動かす"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "button:やめる",
+   "kind": "button",
+   "label": "やめる",
+   "target": null,
+   "states": [
+    "テストで動かす"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "button:本番で動かす",
+   "kind": "button",
+   "label": "本番で動かす",
+   "target": null,
+   "states": [
+    "テストで動かす"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "button:条件を直す",
+   "kind": "button",
+   "label": "条件を直す",
+   "target": null,
+   "states": [
+    "テストで動かす"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "link:止まっているものを直す→automation-repair",
+   "kind": "link",
+   "label": "止まっているものを直す",
+   "target": "automation-repair",
+   "states": [
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS4"
+   ]
+  }
+ ]
+}

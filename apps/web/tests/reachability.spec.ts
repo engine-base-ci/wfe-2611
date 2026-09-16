@@ -8,7 +8,7 @@ test("GET / が 200 で、土台（html・body・h1）が描かれる", async ({
   await expect(page.locator("h1")).toBeVisible();
 });
 
-test("/ の内部リンクは全部 実在ルート（page.tsx）を指す", async ({ page }) => {
+test("USH-00-002 / の内部リンクは全部 実在ルート（page.tsx）を指す", async ({ page }) => {
   await page.goto("/");
   const hrefs = await collectInternalHrefs(page);
   const existing = existingPageRoutes();

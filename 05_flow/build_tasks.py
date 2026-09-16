@@ -48,6 +48,27 @@ def g_rows(file, prefix, sid, task, chokes, tables, kind):
     ids.append(qrow(file, prefix, sid, "G-15 信号なし終了", "外部・モデル・プロセスが完了信号を出さずに終わる／空を返す" if chokes & {"C1", "C3", "C5"} else "N/A：外部を呼ばない", "外部を故意に切る", "実行する", "成功扱いにせず、502 と次の一手（人へのハンドオフ）", "", task))
     ids.append(qrow(file, prefix, sid, "G-16 有限資源", f"消費する資源：DB 接続（プール経由）・{'外部 API レート' if 'C1' in chokes else 'メモリ'}。1 要求あたり 1 接続以下・上限時は待機列", "同時 50 要求", "同時に叩く", "ログインが落ちない・接続上限に張り付かない（関門 C2 のプール）", "L4 で負荷試験", task))
     return ids
+OPS_DIR = f"{SPEC}/ops"   # scripts/ci/derive_ops.py がモックから出す操作要素（L1 の分母。人が列挙しない）
+def _ops(sid): return json.load(open(f"{OPS_DIR}/{sid}.json", encoding="utf-8"))["ops"] if os.path.exists(f"{OPS_DIR}/{sid}.json") else []
+OP_KIND_JA = {"button": "ボタン", "link": "リンク", "input": "入力欄", "checkbox": "チェック", "select": "選択", "textarea": "入力欄", "tab": "タブ", "toggle": "開閉", "error": "エラー文言", "radio": "選択肢"}
+def _op_expect(o):
+    k = o["kind"]
+    if k == "link": return (f"/{o['target']} が実在ルートで 200 で開く（G-04）" if o.get("target") else "リンク先が開く（外なら新しいタブ）")
+    if k == "button": return "押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01）"
+    if k in ("input", "textarea"): return "入力が受け付けられ、送信に載って別 GET で読める（G-01・反映）"
+    if k in ("checkbox", "radio", "select"): return "切り替わり、送信に載る"
+    if k == "tab": return "押すと中身が切り替わる（URL か表示で分かる）"
+    if k == "toggle": return "開閉する"
+    return "その条件を実際に作ると文言が出て、一手（直す導線）がある。作れないならデッドコード（G-08）"
+def ops_rows(file, prefix, sid, task, ops):
+    """操作要素 1 つ＝L1 の行 1 つ。結果は op_gate.py が「行 ID を名前に持つ実ブラウザのテストが通った」で検査する（説明文の PASS は赤）"""
+    ids = []
+    for o in ops:
+        st = "・".join(o["states"]); roles = " ".join(o["roles"]) or "全役割"
+        ids.append(qrow(file, prefix, sid, "操作", f"{OP_KIND_JA.get(o['kind'], o['kind'])}「{o['label']}」（状態 {st}）", f"状態 {o['states'][0]} を作る（{roles}）", "押す／入れる（実ブラウザ）" if o["kind"] != "error" else "その条件を作る", _op_expect(o), f"op={o['key']}", task))
+    return ids
+def handoff_row(file, prefix, sid, task):
+    return qrow(file, prefix, sid, "発注者確認", f"手順 07_tasks/handoff/{task}.md を発注者が実際に触って OK を出す（Rule 12）", "staging か ローカル", "手順どおりに触る", "手順の末尾に「OK: 日付 名前」が書かれる。無い間は BLOCKED（発注者の確認待ち）", "Rule 12", task)
 def error_rows(sid, aid):
     ids = []
     for e in (ERR_BY_SCREEN.get(sid, []) if sid else []) + (ERR_BY_ACT.get(aid, []) if aid else []):
@@ -141,6 +162,9 @@ newtask(_tid0, "apps/web の土台（Next.js 15 App Router の雛形・Playwrigh
 for i, (name, src, h, files) in enumerate(US, 1):
     tid = f"T-US-{i:02d}"; sp = f"{SPEC}/visual-fidelity-audit.md"; pre = f"USH-{i:02d}"
     rows = [qrow(sp, pre, "共通", "共通シェル", f"{name[:30]}：共通シェルを含む全画面で scrollWidth - clientWidth <= 1（375・768・1024・1440）", "全画面", "各幅で開く", "溢れ 0・本文 720 以上（1180+）", "G-05", tid), qrow(sp, pre, "共通", "役割の出し分け", "役割を切り替えると data-roles の塊が切り替わり、錠前だけの画面が無い", "4 役割", "切替", "役割ごとの中身が出る（G15）", "", tid)] + g_rows(sp, pre, "共通", tid, set(), [], "ui")
+    _shell = json.load(open(f"{OPS_DIR}/_shell.json", encoding="utf-8"))["regions"] if os.path.exists(f"{OPS_DIR}/_shell.json") else {}
+    for _reg in ({1: ["side", "tabbar"], 2: ["aipanel"]}.get(i, [])): rows += ops_rows(sp, pre, f"共通:{_reg}", tid, _shell.get(_reg, []))   # 共通シェルの操作要素（サイドバー・下タブ＝T-US-01、AI のパネル＝T-US-02）
+    if i in (1, 2): rows.append(handoff_row(sp, pre, "共通", tid))
     newtask(tid, name, "U-shared", "ui", "4_ui_foundation", "ui", [], category="frontend", hours=h, depends_on=["T-US-00", "T-F-01", "T-F-05"] + A_ids[:1], choke_points=[], choke_rationale="画面の部品。外界に出ない（API は関門の先）", fcp={"new": files, "modify": ["apps/web/app/layout.tsx"], "shared_read": ["04_design/DESIGN-kaname.md", "06_mockup/_shell.py", "08_api/types.ts"], "forbidden": ["packages/**"]}, files_changed=[x + " (new)" for x in files],
             ac={"structural": [f"STATE-DRIVEN: WHILE アプリの枠で描画中 THEN {name[:40]} が DESIGN-kaname.md のトークンとモックのシェル（_shell.py）と一致する"], "functional": ["UBIQUITOUS: 共通シェルを含む全画面で横溢れ 0・本文 720 以上（1180+）", "UNWANTED: IF セッションが 401 なら入り直しに落ち、入力途中の内容は失わない"], "regression": REG_UI}, spec_links=["04_design/DESIGN-kaname.md", "06_mockup/_shell.py"], qa_rows={"l1": rows, "l2_flows": []}, scenarios=[{"name": "4 幅で開く", "steps": ["375/768/1024/1440 で全画面"], "expected": "溢れ 0"}], source=src)
 US_ids = [t["id"] for t in tasks if t["group"] == "U-shared"]
@@ -160,6 +184,7 @@ for f in sorted([x for x in FD["items"] if x["group"] == "C"], key=lambda x: S[x
     rows.append(qrow(sp, pre, sid, "横溢れ", "375・768・1024・1440 で scrollWidth - clientWidth <= 1、1180+ で本文 720 以上", "—", "各幅で開く", "溢れ 0", "G-05", tid))
     rows.append(qrow(sp, pre, sid, "空・止まっている", "データ 0 件の状態と AI が止まっている状態が cover 宣言どおりに出る", "PS2 / PS4", "開く", "空状態と止まっている帯", "G18", tid))
     rows += variance_rows(sp, pre, sid, tid, html); rows += g_rows(sp, pre, sid, tid, set(), [E[x]["table_name"] for x in s["related_entities"]], "ui")
+    rows += ops_rows(sp, pre, sid, tid, _ops(sid)); rows.append(handoff_row(sp, pre, sid, tid))   # 操作要素 1 つ＝1 行（分母はモックから機械で）＋ 発注者確認（Rule 12）
     errs = error_rows(sid, None); eps = [EP[e] for e in f["api_endpoints"]]
     jobs = sorted({acts[a]["jobs"][0] for a in s["acts"] if a in acts and acts[a]["jobs"]}); deps = US_ids + [t["id"] for t in tasks if t["group"] == "A" and set(t["acts"]) & set(s["acts"])]
     _rel = s.get("release", "v1")
@@ -254,7 +279,12 @@ for j in FD["journeys"]:
         jrows.append({"id": rid, "journey": j["id"], "name": j["name"], "act": a, "role": "/".join(acts[a]["roles"]), "step": b.get("human") or acts[a]["act"], "expected": b.get("backstage", ""), "screen": (F["act_to_screen"].get(a) or [""])[0], "depends_on": [f"{j['id'].replace('-', '')}-{k-1:02d}"] if k > 1 else [], "runnable_after": sorted({t["id"] for t in tasks if t["group"] in ("A", "U-screen") and a in t["acts"]}), "result": "", "task": ""})
     for t in tasks:
         if t["group"] == "I" and any(jc["id"] == j["id"] for jc in FEAT.get(t["feature_id"], {}).get("journey_candidates", [])): t["qa_rows"]["l2_flows"] = sorted(set(t["qa_rows"]["l2_flows"]) | {j["id"]})
-json.dump({"version": "v3.2", "created_at": TODAY, "_doc": "背骨のフェーズ → 流れ（J-xx）。runnable_after は揃うべきタスク。05_flow/build_tasks.py が生成", "rows": jrows}, open(f"{SPEC}/journeys/plan.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+# 流れの行も ID を変えない・結果を消さない（test-ladder §9）。再生成しても status／result／note／task（apps/e2e が書いた実走の結果）は残す。2026-09-16 に消えて W3 の回帰が赤になった
+_prev_j = {r["id"]: r for r in (json.load(open(f"{SPEC}/journeys/plan.json", encoding="utf-8"))["rows"] if os.path.exists(f"{SPEC}/journeys/plan.json") else [])}
+for r in jrows:
+    for k in ("status", "result", "note", "task"):
+        if k in _prev_j.get(r["id"], {}) and k not in r: r[k] = _prev_j[r["id"]][k]
+json.dump({"version": "v3.2", "created_at": TODAY, "_doc": "背骨のフェーズ → 流れ（J-xx）。runnable_after は揃うべきタスク。05_flow/build_tasks.py が生成。status／result は apps/e2e の実走が書く（再生成で消えない）", "rows": jrows}, open(f"{SPEC}/journeys/plan.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 # ---------------------------------------------------------------- Wave（依存順・CAP）
 order = ["F", "D", "V2", "A", "U-shared", "U-screen", "I", "S"]; w = 0; waves = []
 for stage, g in [(st, g) for st in ("v1", "v2") for g in order]:   # 段階 1 の全 Wave の後に段階 2（A → U-screen）

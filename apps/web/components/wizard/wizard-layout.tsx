@@ -1,5 +1,6 @@
 "use client";
 // はじめの設定の枠（D-065.3）：手順バーだけ。サイドバー・第2ナビ・下タブは無い（app ∉ caps）
+import { navRoute } from "@/lib/pending-route";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
@@ -55,7 +56,7 @@ export function WizardLayout({
               return (
                 <li key={s.n} className="flex items-center gap-1.5">
                   {ok ? (
-                    <Link href={s.href} className="flex items-center gap-1.5">
+                    <Link href={navRoute(s.href)} className="flex items-center gap-1.5">
                       {inner}
                     </Link>
                   ) : (

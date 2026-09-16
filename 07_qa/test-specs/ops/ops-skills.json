@@ -1,0 +1,189 @@
+{
+ "screen": "ops-skills",
+ "mock": "06_mockup/v1/v1-ops-skills.html",
+ "state_labels": {
+  "n": "スキル",
+  "d": "1 つの中身",
+  "u": "アップロード",
+  "ge": "空"
+ },
+ "ops": [
+  {
+   "key": "button:高本AI",
+   "kind": "button",
+   "label": "高本AI",
+   "target": null,
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:AI は止まっています→automation-repair",
+   "kind": "link",
+   "label": "AI は止まっています",
+   "target": "automation-repair",
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:PC をつなぐと話せます→bridge-setup",
+   "kind": "link",
+   "label": "PC をつなぐと話せます",
+   "target": "bridge-setup",
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "button:版を出す",
+   "kind": "button",
+   "label": "版を出す",
+   "target": null,
+   "states": [
+    "共通",
+    "空"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:新しい版を上げる",
+   "kind": "button",
+   "label": "新しい版を上げる",
+   "target": null,
+   "states": [
+    "スキル"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:開く",
+   "kind": "button",
+   "label": "開く",
+   "target": null,
+   "states": [
+    "スキル"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:第 5 版を出す（テスト通過後）",
+   "kind": "button",
+   "label": "第 5 版を出す（テスト通過後）",
+   "target": null,
+   "states": [
+    "1 つの中身"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:旧版の会社に版の更新を知らせる→ops-notices",
+   "kind": "link",
+   "label": "旧版の会社に版の更新を知らせる",
+   "target": "ops-notices",
+   "states": [
+    "1 つの中身"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:テストで動かす",
+   "kind": "button",
+   "label": "テストで動かす",
+   "target": null,
+   "states": [
+    "1 つの中身"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:戻す先にする",
+   "kind": "button",
+   "label": "戻す先にする",
+   "target": null,
+   "states": [
+    "1 つの中身"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "select:スキル",
+   "kind": "select",
+   "label": "スキル",
+   "target": null,
+   "states": [
+    "アップロード"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "input:何を変えたか（版に残る）",
+   "kind": "input",
+   "label": "何を変えたか（版に残る）",
+   "target": null,
+   "states": [
+    "アップロード"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:上げてテストで動かす",
+   "kind": "button",
+   "label": "上げてテストで動かす",
+   "target": null,
+   "states": [
+    "アップロード"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:下書き",
+   "kind": "button",
+   "label": "下書き",
+   "target": null,
+   "states": [
+    "アップロード"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  }
+ ]
+}

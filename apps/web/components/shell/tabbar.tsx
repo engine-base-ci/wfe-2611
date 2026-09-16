@@ -1,4 +1,5 @@
 "use client";
+import { navRoute } from "@/lib/pending-route";
 import { Menu } from "lucide-react";
 import Link from "next/link";
 import { NAV } from "@/lib/nav";
@@ -16,7 +17,7 @@ export function TabBar({ menuHref = "/today" }: { menuHref?: string }) {
         return (
           <Link
             key={m}
-            href={s.route}
+            href={navRoute(s.route)}
             className={cn(m === screenId && "on")}
             aria-current={m === screenId ? "page" : undefined}
           >
@@ -29,7 +30,7 @@ export function TabBar({ menuHref = "/today" }: { menuHref?: string }) {
           </Link>
         );
       })}
-      <Link href={menuHref}>
+      <Link href={navRoute(menuHref)}>
         <Menu />
         <span>メニュー</span>
       </Link>

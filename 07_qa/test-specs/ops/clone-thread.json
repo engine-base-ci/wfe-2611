@@ -1,0 +1,329 @@
+{
+ "screen": "clone-thread",
+ "mock": "06_mockup/v1/v1-clone-thread.html",
+ "state_labels": {
+  "n": "1件のやりとり",
+  "l": "差し戻し中の一覧",
+  "a": "高本AIが判断できない",
+  "ge": "空",
+  "gs": "AI が止まっている"
+ },
+ "ops": [
+  {
+   "key": "button:AI社員に伝える",
+   "kind": "button",
+   "label": "AI社員に伝える",
+   "target": null,
+   "states": [
+    "共通",
+    "空"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "button:コピー",
+   "kind": "button",
+   "label": "コピー",
+   "target": null,
+   "states": [
+    "1件のやりとり",
+    "高本AIが判断できない",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:もう一度",
+   "kind": "button",
+   "label": "もう一度",
+   "target": null,
+   "states": [
+    "1件のやりとり",
+    "高本AIが判断できない",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:ここから分岐",
+   "kind": "button",
+   "label": "ここから分岐",
+   "target": null,
+   "states": [
+    "1件のやりとり",
+    "高本AIが判断できない",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:記憶に入れる",
+   "kind": "button",
+   "label": "記憶に入れる",
+   "target": null,
+   "states": [
+    "1件のやりとり",
+    "高本AIが判断できない",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:根拠を見る",
+   "kind": "button",
+   "label": "根拠を見る",
+   "target": null,
+   "states": [
+    "1件のやりとり",
+    "高本AIが判断できない",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:無名（アイコンだけ。実装では aria-label を付ける）",
+   "kind": "button",
+   "label": "無名（アイコンだけ。実装では aria-label を付ける）",
+   "target": null,
+   "states": [
+    "1件のやりとり",
+    "高本AIが判断できない",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "textarea:高本AIに伝える（例：京蟻は来月から税込を先に書いて）",
+   "kind": "textarea",
+   "label": "高本AIに伝える（例：京蟻は来月から税込を先に書いて）",
+   "target": null,
+   "states": [
+    "1件のやりとり",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:送る",
+   "kind": "button",
+   "label": "送る",
+   "target": null,
+   "states": [
+    "1件のやりとり",
+    "高本AIが判断できない",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:承認待ちを見る →→approvals",
+   "kind": "link",
+   "label": "承認待ちを見る →",
+   "target": "approvals",
+   "states": [
+    "1件のやりとり",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:編集して送り直す",
+   "kind": "button",
+   "label": "編集して送り直す",
+   "target": null,
+   "states": [
+    "1件のやりとり",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "textarea:ここに書く。声で話しても、資料を投げても構いません",
+   "kind": "textarea",
+   "label": "ここに書く。声で話しても、資料を投げても構いません",
+   "target": null,
+   "states": [
+    "1件のやりとり",
+    "高本AIが判断できない",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:見る",
+   "kind": "button",
+   "label": "見る",
+   "target": null,
+   "states": [
+    "差し戻し中の一覧"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:値引きしない",
+   "kind": "button",
+   "label": "値引きしない",
+   "target": null,
+   "states": [
+    "高本AIが判断できない"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:1割まで",
+   "kind": "button",
+   "label": "1割まで",
+   "target": null,
+   "states": [
+    "高本AIが判断できない"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:私が直接返す",
+   "kind": "button",
+   "label": "私が直接返す",
+   "target": null,
+   "states": [
+    "高本AIが判断できない"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:その他（自由に書く）",
+   "kind": "button",
+   "label": "その他（自由に書く）",
+   "target": null,
+   "states": [
+    "高本AIが判断できない"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:あとで",
+   "kind": "button",
+   "label": "あとで",
+   "target": null,
+   "states": [
+    "高本AIが判断できない"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:止まっているものを直す→automation-repair",
+   "kind": "link",
+   "label": "止まっているものを直す",
+   "target": "automation-repair",
+   "states": [
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS4"
+   ]
+  }
+ ]
+}

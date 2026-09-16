@@ -1,0 +1,251 @@
+{
+ "screen": "bridge-setup",
+ "mock": "06_mockup/v1/v1-bridge-setup.html",
+ "state_labels": {
+  "n": "接続中",
+  "ok": "つながった",
+  "ng": "つながらない",
+  "s": "運用中（設定として）"
+ },
+ "ops": [
+  {
+   "key": "button:高本AI",
+   "kind": "button",
+   "label": "高本AI",
+   "target": null,
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:AI は止まっています→automation-repair",
+   "kind": "link",
+   "label": "AI は止まっています",
+   "target": "automation-repair",
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:PC をつなぐと話せます→bridge-setup",
+   "kind": "link",
+   "label": "PC をつなぐと話せます",
+   "target": "bridge-setup",
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "button:接続を確かめる",
+   "kind": "button",
+   "label": "接続を確かめる",
+   "target": null,
+   "states": [
+    "共通",
+    "運用中（設定として）"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:1. PCをつなぐ→bridge-setup",
+   "kind": "link",
+   "label": "1. PCをつなぐ",
+   "target": "bridge-setup",
+   "states": [
+    "接続中",
+    "つながった",
+    "つながらない"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0",
+    "PS1"
+   ]
+  },
+  {
+   "key": "link:2. 話す→onboard-interview",
+   "kind": "link",
+   "label": "2. 話す",
+   "target": "onboard-interview",
+   "states": [
+    "接続中",
+    "つながった",
+    "つながらない"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0",
+    "PS1"
+   ]
+  },
+  {
+   "key": "link:3. たたき台→onboard-draft",
+   "kind": "link",
+   "label": "3. たたき台",
+   "target": "onboard-draft",
+   "states": [
+    "接続中",
+    "つながった",
+    "つながらない"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0",
+    "PS1"
+   ]
+  },
+  {
+   "key": "link:4. ログイン情報→credentials",
+   "kind": "link",
+   "label": "4. ログイン情報",
+   "target": "credentials",
+   "states": [
+    "接続中",
+    "つながった",
+    "つながらない"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0",
+    "PS1"
+   ]
+  },
+  {
+   "key": "link:5. テスト→onboard-testrun",
+   "kind": "link",
+   "label": "5. テスト",
+   "target": "onboard-testrun",
+   "states": [
+    "接続中",
+    "つながった",
+    "つながらない"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0",
+    "PS1"
+   ]
+  },
+  {
+   "key": "link:6. 本番へ→onboard-golive",
+   "kind": "link",
+   "label": "6. 本番へ",
+   "target": "onboard-golive",
+   "states": [
+    "接続中",
+    "つながった",
+    "つながらない"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0",
+    "PS1"
+   ]
+  },
+  {
+   "key": "link:macOSApple Silicon / Intel · 38 MB",
+   "kind": "link",
+   "label": "macOSApple Silicon / Intel · 38 MB",
+   "target": null,
+   "states": [
+    "接続中"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0"
+   ]
+  },
+  {
+   "key": "link:Windows10 以降 · 41 MB",
+   "kind": "link",
+   "label": "Windows10 以降 · 41 MB",
+   "target": null,
+   "states": [
+    "接続中"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0"
+   ]
+  },
+  {
+   "key": "link:できること・できないことの全一覧 →→security-brief",
+   "kind": "link",
+   "label": "できること・できないことの全一覧 →",
+   "target": "security-brief",
+   "states": [
+    "接続中",
+    "つながった",
+    "つながらない"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0",
+    "PS1"
+   ]
+  },
+  {
+   "key": "button:この端末を外す",
+   "kind": "button",
+   "label": "この端末を外す",
+   "target": null,
+   "states": [
+    "つながった",
+    "運用中（設定として）"
+   ],
+   "roles": [],
+   "ps": [
+    "PS1",
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:高本AIと話すへ→onboard-interview",
+   "kind": "link",
+   "label": "高本AIと話すへ",
+   "target": "onboard-interview",
+   "states": [
+    "つながった"
+   ],
+   "roles": [],
+   "ps": [
+    "PS1"
+   ]
+  },
+  {
+   "key": "button:もう一度確かめる",
+   "kind": "button",
+   "label": "もう一度確かめる",
+   "target": null,
+   "states": [
+    "つながらない"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0"
+   ]
+  },
+  {
+   "key": "button:あとでやる（高本AIはまだ話せません）",
+   "kind": "button",
+   "label": "あとでやる（高本AIはまだ話せません）",
+   "target": null,
+   "states": [
+    "つながらない"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0"
+   ]
+  }
+ ]
+}

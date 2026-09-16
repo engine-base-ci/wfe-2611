@@ -8,7 +8,11 @@ export default defineConfig({
   expect: { timeout: 15_000 }, // next dev は初回描画が遅い。実機の待ちを既定 5 秒から上げる
   fullyParallel: false,
   workers: 1, // next dev は 1 本。並列で叩くと初回コンパイルが詰まってタイムアウトする
-  reporter: [["list"], ["html", { open: "never" }]],
+  reporter: [
+    ["list"],
+    ["html", { open: "never" }],
+    ["json", { outputFile: process.env["PW_REPORT"] ?? "test-results/report.json" }],
+  ], // json は op_gate.py と write_results.mjs が読む
   use: { baseURL: base ?? "http://127.0.0.1:3123", trace: "retain-on-failure" },
   // ローカルでダウンロードできないときは入っている Google Chrome を使う（PW_CHANNEL=chrome）。CI は playwright install chromium
   projects: [

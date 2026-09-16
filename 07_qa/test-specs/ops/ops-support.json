@@ -1,0 +1,148 @@
+{
+ "screen": "ops-support",
+ "mock": "06_mockup/v1/v1-ops-support.html",
+ "state_labels": {
+  "n": "受信箱",
+  "ge": "空"
+ },
+ "ops": [
+  {
+   "key": "button:高本AI",
+   "kind": "button",
+   "label": "高本AI",
+   "target": null,
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:AI は止まっています→automation-repair",
+   "kind": "link",
+   "label": "AI は止まっています",
+   "target": "automation-repair",
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:PC をつなぐと話せます→bridge-setup",
+   "kind": "link",
+   "label": "PC をつなぐと話せます",
+   "target": "bridge-setup",
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "button:返答する",
+   "kind": "button",
+   "label": "返答する",
+   "target": null,
+   "states": [
+    "共通",
+    "空"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:会社の詳細で返答→ops-tenant",
+   "kind": "link",
+   "label": "会社の詳細で返答",
+   "target": "ops-tenant",
+   "states": [
+    "受信箱"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:会社の詳細で対処→ops-tenant",
+   "kind": "link",
+   "label": "会社の詳細で対処",
+   "target": "ops-tenant",
+   "states": [
+    "受信箱"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "select:型",
+   "kind": "select",
+   "label": "型",
+   "target": null,
+   "states": [
+    "受信箱"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "textarea:送る文面（型のテンプレ）",
+   "kind": "textarea",
+   "label": "送る文面（型のテンプレ）",
+   "target": null,
+   "states": [
+    "受信箱"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "input:送り先",
+   "kind": "input",
+   "label": "送り先",
+   "target": null,
+   "states": [
+    "受信箱"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:対処を送る",
+   "kind": "button",
+   "label": "対処を送る",
+   "target": null,
+   "states": [
+    "受信箱"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:運営ルールを見直す→ops-catalog",
+   "kind": "link",
+   "label": "運営ルールを見直す",
+   "target": "ops-catalog",
+   "states": [
+    "受信箱"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  }
+ ]
+}

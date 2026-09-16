@@ -12,7 +12,7 @@ const mainWidth = (page: Page) =>
   );
 
 for (const screen of ["today", "goals", "clone-memory"]) {
-  test(`/dev/shell?screen=${screen}：${WIDTHS.join("・")} で横溢れ 0`, async ({ page }) => {
+  test(`USH-01-001 USH-02-001 /dev/shell?screen=${screen}：${WIDTHS.join("・")} で横溢れ 0`, async ({ page }) => {
     for (const width of WIDTHS) {
       await page.setViewportSize({ width, height: 900 });
       const res = await page.goto(`/dev/shell?screen=${screen}`);
@@ -37,7 +37,7 @@ test("幅 1440（パネル開）と 1180 で本文が 720px 以上（三画面�
   expect(await mainWidth(page)).toBeGreaterThanOrEqual(640);
 });
 
-test("役割で主ナビの本数が変わる（R1＝6・R4＝4・R6＝運営 1）。無い役割の画面は錠前ではなく入口ごと無い", async ({
+test("USH-01-002 役割で主ナビの本数が変わる（R1＝6・R4＝4・R6＝運営 1）。無い役割の画面は錠前ではなく入口ごと無い", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
@@ -52,7 +52,9 @@ test("役割で主ナビの本数が変わる（R1＝6・R4＝4・R6＝運営 1�
   expect(await page.locator(".side-nav > .side-item, .side-nav > .side-group").count()).toBe(1);
 });
 
-test("役割ごとの中身（data-roles）：R1 には代表の段、R3 には担当者の段だけ", async ({ page }) => {
+test("USH-02-002 USH-03-002 USH-04-002 USH-05-002 USH-06-002 役割ごとの中身（data-roles）：R1 には代表の段、R3 には担当者の段だけ", async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/dev/shell?screen=goals&role=R1");
   await expect(page.locator('[data-roles="R1 R2"]')).toBeVisible();
@@ -76,7 +78,9 @@ test("枠の導出：PS0（PC 前）は はじめの設定の枠＝サイドバ�
   await expect(page.locator("[data-stopped]")).toBeVisible();
 });
 
-test("自分のAIのパネル：会話全体が読めて続けて話せる。閉じる／開く。PC 前は話せない理由が出る", async ({ page }) => {
+test("USH-02-010 USH-02-017 USH-02-018 自分のAIのパネル：会話全体が読めて続けて話せる。閉じる／開く。PC 前は話せない理由が出る", async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 1600, height: 900 });
   await page.goto("/dev/shell?screen=goals&ps=PS3");
   const panel = page.locator(".aipanel");

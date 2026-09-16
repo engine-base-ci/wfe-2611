@@ -235,7 +235,7 @@ describe("Bridge の接続コードと資格情報（T-U-09／10）", () => {
     const token = ((await su.json()) as { data: { token: string } }).data.token;
     const r = await post(
       "/api/auth-ext/vault/credentials",
-      { service_name: "発注ナビ", login: "me@example.com", password: "S3cret-Plain!", totp_secret: "JBSW Y3DP" },
+      { service_name: "発注ナビ", login: "me@example.com", password: "S3cret-Plain!", totp_secret: "JBSW Y3DP EHPK 3PXP" },
       { authorization: `Bearer ${token}` },
     );
     expect(r.status).toBe(201);

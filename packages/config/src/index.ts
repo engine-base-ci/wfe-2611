@@ -17,7 +17,10 @@ export interface Config {
   secretsMasterKey: string;
   resendApiKey: string | null;
   /** 画面の URL（メールのリンクの先・CORS）。無ければ null（API と同じ origin） */
+  /** 画面の正の出どころ（メールのリンクはここで組む）。WEB_BASE_URL の 1 つ目 */
   webBaseUrl: string | null;
+  /** CORS の許可元（WEB_BASE_URL は "," 区切りで複数書ける：本番・staging・プレビュー） */
+  webOrigins: string[];
   /** メールの差出人（Resend の送信ドメイン） */
   mailFrom: string;
   port: number;
@@ -95,7 +98,11 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
     },
     secretsMasterKey: mk,
     resendApiKey: env["RESEND_API_KEY"] ?? null,
-    webBaseUrl: env["WEB_BASE_URL"] || null,
+    webBaseUrl: (env["WEB_BASE_URL"] || "").split(",")[0]?.trim() || null,
+    webOrigins: (env["WEB_BASE_URL"] || "")
+      .split(",")
+      .map((x) => x.trim())
+      .filter(Boolean),
     mailFrom: env["MAIL_FROM"] || "Kaname <noreply@kaname.app>",
     port: Number(env["PORT"] ?? 3001),
   };

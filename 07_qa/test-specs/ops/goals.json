@@ -1,0 +1,636 @@
+{
+ "screen": "goals",
+ "mock": "06_mockup/v1/v1-goals.html",
+ "state_labels": {
+  "n": "階層で見る",
+  "tl": "タイムライン",
+  "u": "未配分がある",
+  "ge": "空",
+  "gs": "AI が止まっている"
+ },
+ "ops": [
+  {
+   "key": "button:高本AI",
+   "kind": "button",
+   "label": "高本AI",
+   "target": null,
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:AI は止まっています→automation-repair",
+   "kind": "link",
+   "label": "AI は止まっています",
+   "target": "automation-repair",
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:PC をつなぐと話せます→bridge-setup",
+   "kind": "link",
+   "label": "PC をつなぐと話せます",
+   "target": "bridge-setup",
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "button:配分を見直す",
+   "kind": "button",
+   "label": "配分を見直す",
+   "target": null,
+   "states": [
+    "共通",
+    "空"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "link:配分を見直す→goal-allocation",
+   "kind": "link",
+   "label": "配分を見直す",
+   "target": "goal-allocation",
+   "states": [
+    "階層で見る",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:＋層を足す→members",
+   "kind": "link",
+   "label": "＋層を足す",
+   "target": "members",
+   "states": [
+    "階層で見る",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:改訂する→goal-edit",
+   "kind": "link",
+   "label": "改訂する",
+   "target": "goal-edit",
+   "states": [
+    "階層で見る",
+    "タイムライン",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2",
+    "R1"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:全部",
+   "kind": "button",
+   "label": "全部",
+   "target": null,
+   "states": [
+    "階層で見る",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2",
+    "R1",
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:会社",
+   "kind": "button",
+   "label": "会社",
+   "target": null,
+   "states": [
+    "階層で見る",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2",
+    "R1"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:事業",
+   "kind": "button",
+   "label": "事業",
+   "target": null,
+   "states": [
+    "階層で見る",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:部署",
+   "kind": "button",
+   "label": "部署",
+   "target": null,
+   "states": [
+    "階層で見る",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2",
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:個人",
+   "kind": "button",
+   "label": "個人",
+   "target": null,
+   "states": [
+    "階層で見る",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2",
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:AI社員",
+   "kind": "button",
+   "label": "AI社員",
+   "target": null,
+   "states": [
+    "階層で見る",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2",
+    "R1"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:全員",
+   "kind": "button",
+   "label": "全員",
+   "target": null,
+   "states": [
+    "階層で見る",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:営業",
+   "kind": "button",
+   "label": "営業",
+   "target": null,
+   "states": [
+    "階層で見る",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:制作",
+   "kind": "button",
+   "label": "制作",
+   "target": null,
+   "states": [
+    "階層で見る",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:CS",
+   "kind": "button",
+   "label": "CS",
+   "target": null,
+   "states": [
+    "階層で見る",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:畳む・開く",
+   "kind": "button",
+   "label": "畳む・開く",
+   "target": null,
+   "states": [
+    "階層で見る",
+    "未配分がある",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2",
+    "R1"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:直す→goal-edit",
+   "kind": "link",
+   "label": "直す",
+   "target": "goal-edit",
+   "states": [
+    "階層で見る",
+    "未配分がある",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2",
+    "R1",
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:配る→goal-allocation",
+   "kind": "link",
+   "label": "配る",
+   "target": "goal-allocation",
+   "states": [
+    "階層で見る",
+    "未配分がある",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2",
+    "R1",
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:自分のAIに聞く→clone-chat",
+   "kind": "link",
+   "label": "自分のAIに聞く",
+   "target": "clone-chat",
+   "states": [
+    "階層で見る",
+    "未配分がある",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2",
+    "R1",
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:自分のAI社員に配る→goal-allocation",
+   "kind": "link",
+   "label": "自分のAI社員に配る",
+   "target": "goal-allocation",
+   "states": [
+    "階層で見る",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:自主目標を足す→my-progress",
+   "kind": "link",
+   "label": "自主目標を足す",
+   "target": "my-progress",
+   "states": [
+    "階層で見る",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:配分を見る→goal-allocation",
+   "kind": "link",
+   "label": "配分を見る",
+   "target": "goal-allocation",
+   "states": [
+    "階層で見る",
+    "タイムライン",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:タスクで整理→tasks",
+   "kind": "link",
+   "label": "タスクで整理",
+   "target": "tasks",
+   "states": [
+    "階層で見る",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:経費を紐づける",
+   "kind": "button",
+   "label": "経費を紐づける",
+   "target": null,
+   "states": [
+    "階層で見る",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:仮説を見る→hypotheses",
+   "kind": "link",
+   "label": "仮説を見る",
+   "target": "hypotheses",
+   "states": [
+    "階層で見る",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:田中さんに聞く",
+   "kind": "button",
+   "label": "田中さんに聞く",
+   "target": null,
+   "states": [
+    "階層で見る",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:木",
+   "kind": "button",
+   "label": "木",
+   "target": null,
+   "states": [
+    "タイムライン"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:タイムライン",
+   "kind": "button",
+   "label": "タイムライン",
+   "target": null,
+   "states": [
+    "タイムライン"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:← 一覧へ",
+   "kind": "button",
+   "label": "← 一覧へ",
+   "target": null,
+   "states": [
+    "タイムライン"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:自分の進み→my-progress",
+   "kind": "link",
+   "label": "自分の進み",
+   "target": "my-progress",
+   "states": [
+    "タイムライン"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:施策を直す→hypotheses",
+   "kind": "link",
+   "label": "施策を直す",
+   "target": "hypotheses",
+   "states": [
+    "タイムライン"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:検証の表へ→hypotheses",
+   "kind": "link",
+   "label": "検証の表へ",
+   "target": "hypotheses",
+   "states": [
+    "タイムライン"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:AI社員の動き→ai-activity",
+   "kind": "link",
+   "label": "AI社員の動き",
+   "target": "ai-activity",
+   "states": [
+    "タイムライン"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:配分する→goal-allocation",
+   "kind": "link",
+   "label": "配分する",
+   "target": "goal-allocation",
+   "states": [
+    "未配分がある"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:そうする",
+   "kind": "button",
+   "label": "そうする",
+   "target": null,
+   "states": [
+    "未配分がある"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:別の考え",
+   "kind": "button",
+   "label": "別の考え",
+   "target": null,
+   "states": [
+    "未配分がある"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:止まっているものを直す→automation-repair",
+   "kind": "link",
+   "label": "止まっているものを直す",
+   "target": "automation-repair",
+   "states": [
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS4"
+   ]
+  }
+ ]
+}

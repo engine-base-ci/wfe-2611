@@ -1,0 +1,311 @@
+{
+ "screen": "record-detail",
+ "mock": "06_mockup/v1/v1-record-detail.html",
+ "state_labels": {
+  "n": "中身",
+  "m": "次の段階へ",
+  "gs": "AI が止まっている"
+ },
+ "ops": [
+  {
+   "key": "button:高本AI",
+   "kind": "button",
+   "label": "高本AI",
+   "target": null,
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:AI は止まっています→automation-repair",
+   "kind": "link",
+   "label": "AI は止まっています",
+   "target": "automation-repair",
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:PC をつなぐと話せます→bridge-setup",
+   "kind": "link",
+   "label": "PC をつなぐと話せます",
+   "target": "bridge-setup",
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "button:次の段階へ",
+   "kind": "button",
+   "label": "次の段階へ",
+   "target": null,
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:台帳に戻る→records",
+   "kind": "link",
+   "label": "台帳に戻る",
+   "target": "records",
+   "states": [
+    "中身",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:次の段階へ（受注）",
+   "kind": "button",
+   "label": "次の段階へ（受注）",
+   "target": null,
+   "states": [
+    "中身",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:直接編集",
+   "kind": "button",
+   "label": "直接編集",
+   "target": null,
+   "states": [
+    "中身",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:高本AIに頼む→clone-chat",
+   "kind": "link",
+   "label": "高本AIに頼む",
+   "target": "clone-chat",
+   "states": [
+    "中身",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:一次返信を取りに行くタスク · 今日→tasks",
+   "kind": "link",
+   "label": "一次返信を取りに行くタスク · 今日",
+   "target": "tasks",
+   "states": [
+    "中身",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:追いメール（下書き）承認待ち · 高本AI確認済み→approvals",
+   "kind": "link",
+   "label": "追いメール（下書き）承認待ち · 高本AI確認済み",
+   "target": "approvals",
+   "states": [
+    "中身",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:提案書_セイコー_v2.pdf添付 · 9/3",
+   "kind": "link",
+   "label": "提案書_セイコー_v2.pdf添付 · 9/3",
+   "target": null,
+   "states": [
+    "中身",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:証跡 11件最終：9/10 06:40 営業社員が追いメールを下書き→audit",
+   "kind": "link",
+   "label": "証跡 11件最終：9/10 06:40 営業社員が追いメールを下書き",
+   "target": "audit",
+   "states": [
+    "中身",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "input:受注日",
+   "kind": "input",
+   "label": "受注日",
+   "target": null,
+   "states": [
+    "次の段階へ"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "input:契約金額（税込）",
+   "kind": "input",
+   "label": "契約金額（税込）",
+   "target": null,
+   "states": [
+    "次の段階へ"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:受注にする",
+   "kind": "button",
+   "label": "受注にする",
+   "target": null,
+   "states": [
+    "次の段階へ"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:やめる",
+   "kind": "button",
+   "label": "やめる",
+   "target": null,
+   "states": [
+    "次の段階へ"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "checkbox:経理社員 → 着手金 990,000 の請求書確認後、承認待ちへ",
+   "kind": "checkbox",
+   "label": "経理社員 → 着手金 990,000 の請求書確認後、承認待ちへ",
+   "target": null,
+   "states": [
+    "次の段階へ"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "checkbox:営業社員 → キックオフ日程の候補メール確認後、承認待ちへ",
+   "kind": "checkbox",
+   "label": "営業社員 → キックオフ日程の候補メール確認後、承認待ちへ",
+   "target": null,
+   "states": [
+    "次の段階へ"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "checkbox:目標「今期の成約」に +1実績として積む。承認は不要",
+   "kind": "checkbox",
+   "label": "目標「今期の成約」に +1実績として積む。承認は不要",
+   "target": null,
+   "states": [
+    "次の段階へ"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:止まっているものを直す→automation-repair",
+   "kind": "link",
+   "label": "止まっているものを直す",
+   "target": "automation-repair",
+   "states": [
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS4"
+   ]
+  }
+ ]
+}

@@ -2,15 +2,16 @@
 // ログインする（T-U-05・A13）。状態：通常／6 桁の入力（回復コードもここ）／失敗（残り回数）。5 回で 15 分ロック（E-AUTH-001／002）。Cookie は使わず Bearer だけ（D-051.2）
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { Button, Field, Input } from "@/components/ui";
 import { OutsideLayout } from "@/components/outside/outside-layout";
 import { AuthExtError, signIn, verifyTwoFactor } from "@/lib/auth/ext";
+import { pendingRoute } from "@/lib/pending-route";
 
-export default function LoginPage() {
+function LoginInner() {
   const router = useRouter();
   const sp = useSearchParams();
-  const next = sp.get("next") && sp.get("next")!.startsWith("/") ? sp.get("next")! : "/today";
+  const next = pendingRoute(sp.get("next")?.startsWith("/") ? sp.get("next")! : "/today", "T-U-13"); // 既定の行き先 今日 は T-U-13
   const [state, setState] = useState<"n" | "m" | "e">("n");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -164,5 +165,14 @@ export default function LoginPage() {
         </form>
       )}
     </OutsideLayout>
+  );
+}
+
+// useSearchParams は Suspense の中でしか使えない（本番ビルドの prerender で落ちる。dev では出ない）
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<p className="p-8 text-[13.5px] text-[var(--on-sv)]">読み込み中</p>}>
+      <LoginInner />
+    </Suspense>
   );
 }

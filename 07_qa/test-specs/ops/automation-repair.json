@@ -1,0 +1,110 @@
+{
+ "screen": "automation-repair",
+ "mock": "06_mockup/v1/v1-automation-repair.html",
+ "state_labels": {
+  "n": "止まっている",
+  "d": "覚え直した",
+  "0": "何もない"
+ },
+ "ops": [
+  {
+   "key": "button:高本AI",
+   "kind": "button",
+   "label": "高本AI",
+   "target": null,
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:AI は止まっています→automation-repair",
+   "kind": "link",
+   "label": "AI は止まっています",
+   "target": "automation-repair",
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:PC をつなぐと話せます→bridge-setup",
+   "kind": "link",
+   "label": "PC をつなぐと話せます",
+   "target": "bridge-setup",
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "button:覚え直させる",
+   "kind": "button",
+   "label": "覚え直させる",
+   "target": null,
+   "states": [
+    "共通",
+    "止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS4"
+   ]
+  },
+  {
+   "key": "radio:AIに覚え直させる画面を見て手順 3 を作り直す。できたらテストモードで1回動かして見せる",
+   "kind": "radio",
+   "label": "AIに覚え直させる画面を見て手順 3 を作り直す。できたらテストモードで1回動かして見せる",
+   "target": null,
+   "states": [
+    "止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS4"
+   ]
+  },
+  {
+   "key": "radio:自分でやって見せるあなたが1回操作し、それを意味で記録する",
+   "kind": "radio",
+   "label": "自分でやって見せるあなたが1回操作し、それを意味で記録する",
+   "target": null,
+   "states": [
+    "止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS4"
+   ]
+  },
+  {
+   "key": "radio:この手順はやめる担当業務から外す。台帳への取り込みは手作業になる",
+   "kind": "radio",
+   "label": "この手順はやめる担当業務から外す。台帳への取り込みは手作業になる",
+   "target": null,
+   "states": [
+    "止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:自動実行を再開する",
+   "kind": "button",
+   "label": "自動実行を再開する",
+   "target": null,
+   "states": [
+    "覚え直した"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  }
+ ]
+}

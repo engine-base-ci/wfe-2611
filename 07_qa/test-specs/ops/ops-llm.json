@@ -1,0 +1,85 @@
+{
+ "screen": "ops-llm",
+ "mock": "06_mockup/v2/v2-ops-llm.html",
+ "state_labels": {
+  "n": "経路と使用量",
+  "x": "従量に切り替わった会社",
+  "ge": "空"
+ },
+ "ops": [
+  {
+   "key": "button:高本AI",
+   "kind": "button",
+   "label": "高本AI",
+   "target": null,
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:AI は止まっています→automation-repair",
+   "kind": "link",
+   "label": "AI は止まっています",
+   "target": "automation-repair",
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:PC をつなぐと話せます→bridge-setup",
+   "kind": "link",
+   "label": "PC をつなぐと話せます",
+   "target": "bridge-setup",
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "button:許可する",
+   "kind": "button",
+   "label": "許可する",
+   "target": null,
+   "states": [
+    "共通",
+    "経路と使用量",
+    "空"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:止める",
+   "kind": "button",
+   "label": "止める",
+   "target": null,
+   "states": [
+    "経路と使用量"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:会社の詳細を開く",
+   "kind": "button",
+   "label": "会社の詳細を開く",
+   "target": null,
+   "states": [
+    "従量に切り替わった会社"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  }
+ ]
+}

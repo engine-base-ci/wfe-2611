@@ -26,6 +26,8 @@ const config: Config = {
   },
   secretsMasterKey: Buffer.alloc(32, 7).toString("base64"),
   resendApiKey: null,
+  webBaseUrl: null,
+  webOrigins: [],
   port: 0,
 } as Config;
 

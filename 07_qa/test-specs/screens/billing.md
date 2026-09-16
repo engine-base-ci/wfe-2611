@@ -33,13 +33,13 @@
 | SCR-BILLING-004 | billing | 役割 | 役割 R1 で開くと、その役割の中身（data-roles）が出て、他の役割の中身は出ない | R1 でログイン | 画面を開く | 役割ごとの中身（G15） |  |  | T-U-52 | L1 |
 | SCR-BILLING-005 | billing | 役割 | 役割 R2 で開くと、その役割の中身（data-roles）が出て、他の役割の中身は出ない | R2 でログイン | 画面を開く | 役割ごとの中身（G15） |  |  | T-U-52 | L1 |
 | SCR-BILLING-006 | billing | 主アクション | 「プランを変える」を押すと対応する endpoint が呼ばれ、別 GET で再取得した画面に反映される | 権限のある会員 | 押す | DB と画面が変わる（G-01・G-03） |  | PATCH /api/subscriptions/:id | T-U-52 | L1 |
-| SCR-BILLING-007 | billing | 到達性 | リンク先 account が実在ルートで 200 で開く | — | 押す | /account が開く（G-04） |  |  | T-U-52 | L1 |
-| SCR-BILLING-008 | billing | 到達性 | リンク先 account-close が実在ルートで 200 で開く | — | 押す | /account-close が開く（G-04） |  |  | T-U-52 | L1 |
-| SCR-BILLING-009 | billing | 到達性 | リンク先 ai-activity が実在ルートで 200 で開く | — | 押す | /ai-activity が開く（G-04） |  |  | T-U-52 | L1 |
-| SCR-BILLING-010 | billing | 到達性 | リンク先 ai-staff が実在ルートで 200 で開く | — | 押す | /ai-staff が開く（G-04） |  |  | T-U-52 | L1 |
-| SCR-BILLING-011 | billing | 到達性 | リンク先 approvals が実在ルートで 200 で開く | — | 押す | /approvals が開く（G-04） |  |  | T-U-52 | L1 |
-| SCR-BILLING-012 | billing | 到達性 | リンク先 audit が実在ルートで 200 で開く | — | 押す | /audit が開く（G-04） |  |  | T-U-52 | L1 |
-| SCR-BILLING-013 | billing | 到達性 | リンク先 automation-repair が実在ルートで 200 で開く | — | 押す | /automation-repair が開く（G-04） |  |  | T-U-52 | L1 |
+| SCR-BILLING-007 | billing | 到達性 | リンク先 account が実在ルートで 200 で開く | — | 押す | /account が開く（G-04） | BLOCKED（自動：行き先の画面 account は T-U-44 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） |  | T-U-52 | L1 |
+| SCR-BILLING-008 | billing | 到達性 | リンク先 account-close が実在ルートで 200 で開く | — | 押す | /account-close が開く（G-04） | BLOCKED（自動：行き先の画面 account-close は T-U-40 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） |  | T-U-52 | L1 |
+| SCR-BILLING-009 | billing | 到達性 | リンク先 ai-activity が実在ルートで 200 で開く | — | 押す | /ai-activity が開く（G-04） | BLOCKED（自動：行き先の画面 ai-activity は T-U-18 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） |  | T-U-52 | L1 |
+| SCR-BILLING-010 | billing | 到達性 | リンク先 ai-staff が実在ルートで 200 で開く | — | 押す | /ai-staff が開く（G-04） | BLOCKED（自動：行き先の画面 ai-staff は T-U-36 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） |  | T-U-52 | L1 |
+| SCR-BILLING-011 | billing | 到達性 | リンク先 approvals が実在ルートで 200 で開く | — | 押す | /approvals が開く（G-04） | BLOCKED（自動：行き先の画面 approvals は T-U-14 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） |  | T-U-52 | L1 |
+| SCR-BILLING-012 | billing | 到達性 | リンク先 audit が実在ルートで 200 で開く | — | 押す | /audit が開く（G-04） | BLOCKED（自動：行き先の画面 audit は T-U-33 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） |  | T-U-52 | L1 |
+| SCR-BILLING-013 | billing | 到達性 | リンク先 automation-repair が実在ルートで 200 で開く | — | 押す | /automation-repair が開く（G-04） | BLOCKED（自動：行き先の画面 automation-repair は T-U-32 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） |  | T-U-52 | L1 |
 | SCR-BILLING-014 | billing | 到達性 | リンク先 bridge-setup が実在ルートで 200 で開く | — | 押す | /bridge-setup が開く（G-04） |  |  | T-U-52 | L1 |
 | SCR-BILLING-015 | billing | 横溢れ | 375・768・1024・1440 で scrollWidth - clientWidth <= 1、1180+ で本文 720 以上 | — | 各幅で開く | 溢れ 0 |  | G-05 | T-U-52 | L1 |
 | SCR-BILLING-016 | billing | 空・止まっている | データ 0 件の状態と AI が止まっている状態が cover 宣言どおりに出る | PS2 / PS4 | 開く | 空状態と止まっている帯 |  | G18 | T-U-52 | L1 |
@@ -54,3 +54,17 @@
 | SCR-BILLING-025 | billing | G-14 口座状態の波及 | 退会・停止・権限変更・パスワード変更の後に、この機能の既存セッション・接続・共有リンクが無効 | ログイン中の別端末と Bridge | 権限を変える | 別端末と Bridge は 0 秒で 401（sessions が revoked） |  |  | T-U-52 | L1 |
 | SCR-BILLING-026 | billing | G-15 信号なし終了 | N/A：外部を呼ばない | 外部を故意に切る | 実行する | 成功扱いにせず、502 と次の一手（人へのハンドオフ） |  |  | T-U-52 | L1 |
 | SCR-BILLING-027 | billing | G-16 有限資源 | 消費する資源：DB 接続（プール経由）・メモリ。1 要求あたり 1 接続以下・上限時は待機列 | 同時 50 要求 | 同時に叩く | ログインが落ちない・接続上限に張り付かない（関門 C2 のプール） |  | L4 で負荷試験 | T-U-52 | L1 |
+| SCR-BILLING-028 | billing | 操作 | ボタン「高本AI」（状態 共通） | 状態 共通 を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） |  | op=button:高本AI | T-U-52 | L1 |
+| SCR-BILLING-029 | billing | 操作 | リンク「AI は止まっています」（状態 共通） | 状態 共通 を作る（全役割） | 押す／入れる（実ブラウザ） | /automation-repair が実在ルートで 200 で開く（G-04） | BLOCKED（自動：行き先の画面 automation-repair は T-U-32 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） | op=link:AI は止まっています→automation-repair | T-U-52 | L1 |
+| SCR-BILLING-030 | billing | 操作 | リンク「PC をつなぐと話せます」（状態 共通） | 状態 共通 を作る（全役割） | 押す／入れる（実ブラウザ） | /bridge-setup が実在ルートで 200 で開く（G-04） |  | op=link:PC をつなぐと話せます→bridge-setup | T-U-52 | L1 |
+| SCR-BILLING-031 | billing | 操作 | ボタン「プランを変える」（状態 共通・プランと請求・AI が止まっている） | 状態 共通 を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） |  | op=button:プランを変える | T-U-52 | L1 |
+| SCR-BILLING-032 | billing | 操作 | ボタン「PDF」（状態 プランと請求・AI が止まっている） | 状態 プランと請求 を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） |  | op=button:PDF | T-U-52 | L1 |
+| SCR-BILLING-033 | billing | 操作 | 入力欄「請求先」（状態 プランと請求・AI が止まっている） | 状態 プランと請求 を作る（全役割） | 押す／入れる（実ブラウザ） | 入力が受け付けられ、送信に載って別 GET で読める（G-01・反映） |  | op=input:請求先 | T-U-52 | L1 |
+| SCR-BILLING-034 | billing | 操作 | リンク「会社の設定で変える」（状態 プランと請求・AI が止まっている） | 状態 プランと請求 を作る（全役割） | 押す／入れる（実ブラウザ） | /company-settings が実在ルートで 200 で開く（G-04） | BLOCKED（自動：行き先の画面 company-settings は T-U-45 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） | op=link:会社の設定で変える→company-settings | T-U-52 | L1 |
+| SCR-BILLING-035 | billing | 操作 | 選択肢「エントリー 30,000AI社員 2 · 担当業務 6 · 1 人 · 会社の層なし」（状態 プランを変える） | 状態 プランを変える を作る（全役割） | 押す／入れる（実ブラウザ） | 切り替わり、送信に載る |  | op=radio:エントリー 30,000AI社員 2 · 担当業務 6 · 1 人 · 会社の層なし | T-U-52 | L1 |
+| SCR-BILLING-036 | billing | 操作 | 選択肢「スタンダード 80,000AI社員 5 · 担当業務 20 · 5 人 · 会社＋個人」（状態 プランを変える） | 状態 プランを変える を作る（全役割） | 押す／入れる（実ブラウザ） | 切り替わり、送信に載る |  | op=radio:スタンダード 80,000AI社員 5 · 担当業務 20 · 5 人 · 会社＋個人 | T-U-52 | L1 |
+| SCR-BILLING-037 | billing | 操作 | 選択肢「プロ 150,000AI社員 15 · 無制限 · 承認フロー · 会社が決めた層」（状態 プランを変える） | 状態 プランを変える を作る（全役割） | 押す／入れる（実ブラウザ） | 切り替わり、送信に載る |  | op=radio:プロ 150,000AI社員 15 · 無制限 · 承認フロー · 会社が決めた層 | T-U-52 | L1 |
+| SCR-BILLING-038 | billing | 操作 | ボタン「下げる（止めるものを選ぶ）」（状態 プランを変える） | 状態 プランを変える を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） |  | op=button:下げる（止めるものを選ぶ） | T-U-52 | L1 |
+| SCR-BILLING-039 | billing | 操作 | ボタン「やめる」（状態 プランを変える） | 状態 プランを変える を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） |  | op=button:やめる | T-U-52 | L1 |
+| SCR-BILLING-040 | billing | 操作 | リンク「止まっているものを直す」（状態 AI が止まっている） | 状態 AI が止まっている を作る（全役割） | 押す／入れる（実ブラウザ） | /automation-repair が実在ルートで 200 で開く（G-04） | BLOCKED（自動：行き先の画面 automation-repair は T-U-32 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） | op=link:止まっているものを直す→automation-repair | T-U-52 | L1 |
+| SCR-BILLING-041 | billing | 発注者確認 | 手順 07_tasks/handoff/T-U-52.md を発注者が実際に触って OK を出す（Rule 12） | staging か ローカル | 手順どおりに触る | 手順の末尾に「OK: 日付 名前」が書かれる。無い間は BLOCKED（発注者の確認待ち） | BLOCKED（発注者の確認待ち：手順 07_tasks/handoff/T-U-52.md を高本さんが触って OK: を書く。ローカル 3123 で触れる・staging は無い） | Rule 12 | T-U-52 | L1 |

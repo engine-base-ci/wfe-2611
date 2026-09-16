@@ -1,0 +1,74 @@
+{
+ "screen": "verify-email",
+ "mock": "06_mockup/v1/v1-verify-email.html",
+ "state_labels": {
+  "n": "送信済み",
+  "ok": "確認できた",
+  "x": "期限切れ"
+ },
+ "ops": [
+  {
+   "key": "button:はじめの設定をはじめる",
+   "kind": "button",
+   "label": "はじめの設定をはじめる",
+   "target": null,
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "button:もう一度送る",
+   "kind": "button",
+   "label": "もう一度送る",
+   "target": null,
+   "states": [
+    "送信済み"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0"
+   ]
+  },
+  {
+   "key": "link:入力し直す→signup",
+   "kind": "link",
+   "label": "入力し直す",
+   "target": "signup",
+   "states": [
+    "送信済み"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0"
+   ]
+  },
+  {
+   "key": "link:はじめの設定をはじめる（PCをつなぐ）→bridge-setup",
+   "kind": "link",
+   "label": "はじめの設定をはじめる（PCをつなぐ）",
+   "target": "bridge-setup",
+   "states": [
+    "確認できた"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0"
+   ]
+  },
+  {
+   "key": "button:新しいリンクを送る",
+   "kind": "button",
+   "label": "新しいリンクを送る",
+   "target": null,
+   "states": [
+    "期限切れ"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0"
+   ]
+  }
+ ]
+}

@@ -1,5 +1,6 @@
 // /api/auth-ext（Kaname としての認証の段取り）を画面から呼ぶ。エラーは正本の形（code・message・一手）
 import { apiBase, getToken, setToken } from "@/lib/api/client";
+import { refreshSession } from "./client";
 
 export interface ExtError {
   status: number;
@@ -55,18 +56,18 @@ export async function ext<T>(path: string, body?: unknown, method = "POST"): Pro
 }
 export const signUp = (b: { email: string; password: string; company_name: string }) =>
   ext<{ token: string | null; user_id: string; email: string }>("/sign-up", b).then(
-    (r) => (r.token && setToken(r.token), r),
+    (r) => (r.token && (setToken(r.token), refreshSession()), r),
   );
 export const signIn = (b: { email: string; password: string }) =>
   ext<{ token: string | null; two_factor: boolean; two_factor_cookie: string | null }>("/sign-in", b).then(
-    (r) => (r.token && setToken(r.token), r),
+    (r) => (r.token && (setToken(r.token), refreshSession()), r),
   );
 export const verifyTwoFactor = (b: {
   two_factor_cookie: string;
   code?: string;
   backup_code?: string;
   trust_device?: boolean;
-}) => ext<{ token: string }>("/two-factor/verify", b).then((r) => (setToken(r.token), r));
+}) => ext<{ token: string }>("/two-factor/verify", b).then((r) => (setToken(r.token), refreshSession(), r));
 export const invitationPreview = (token: string) =>
   ext<{
     tenant_name: string;
@@ -78,7 +79,7 @@ export const invitationPreview = (token: string) =>
   }>(`/invitations/${encodeURIComponent(token)}`, undefined, "GET");
 export const acceptInvitation = (token: string, b: { name: string; password: string }) =>
   ext<{ token: string | null; member_id: string }>(`/invitations/${encodeURIComponent(token)}/accept`, b).then(
-    (r) => (r.token && setToken(r.token), r),
+    (r) => (r.token && (setToken(r.token), refreshSession()), r),
   );
 export const bridgePair = () => ext<{ code: string; expires_in_sec: number }>("/bridge/pair", {});
 export const storeCredential = (b: { service_name: string; login: string; password: string; totp_secret?: string }) =>

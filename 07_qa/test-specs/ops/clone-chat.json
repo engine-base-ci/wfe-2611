@@ -1,0 +1,990 @@
+{
+ "screen": "clone-chat",
+ "mock": "06_mockup/v1/v1-clone-chat.html",
+ "state_labels": {
+  "n": "指示する（配布・承認）",
+  "c": "選択肢で答える",
+  "q": "数値をきく",
+  "t": "考え方を教える",
+  "f": "添付・音声",
+  "s": "生成中（止められる）",
+  "r": "送った後（受領・取り消し）",
+  "x": "PC が閉じている・送れなかった",
+  "k": "/コマンド・@AI社員",
+  "b": "分岐・やり直し",
+  "0": "最初（未読・できること）"
+ },
+ "ops": [
+  {
+   "key": "button:送る",
+   "kind": "button",
+   "label": "送る",
+   "target": null,
+   "states": [
+    "共通",
+    "指示する（配布・承認）",
+    "選択肢で答える",
+    "数値をきく",
+    "考え方を教える",
+    "添付・音声",
+    "生成中（止められる）",
+    "送った後（受領・取り消し）",
+    "PC が閉じている・送れなかった",
+    "/コマンド・@AI社員",
+    "分岐・やり直し",
+    "最初（未読・できること）"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:この会話の動き",
+   "kind": "button",
+   "label": "この会話の動き",
+   "target": null,
+   "states": [
+    "指示する（配布・承認）",
+    "選択肢で答える",
+    "数値をきく",
+    "考え方を教える",
+    "添付・音声",
+    "生成中（止められる）",
+    "送った後（受領・取り消し）",
+    "PC が閉じている・送れなかった",
+    "/コマンド・@AI社員",
+    "分岐・やり直し",
+    "最初（未読・できること）"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:編集して送り直す",
+   "kind": "button",
+   "label": "編集して送り直す",
+   "target": null,
+   "states": [
+    "指示する（配布・承認）",
+    "選択肢で答える",
+    "数値をきく",
+    "考え方を教える",
+    "添付・音声",
+    "生成中（止められる）",
+    "PC が閉じている・送れなかった",
+    "分岐・やり直し"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:コピー",
+   "kind": "button",
+   "label": "コピー",
+   "target": null,
+   "states": [
+    "指示する（配布・承認）",
+    "選択肢で答える",
+    "数値をきく",
+    "考え方を教える",
+    "添付・音声",
+    "生成中（止められる）",
+    "送った後（受領・取り消し）",
+    "PC が閉じている・送れなかった",
+    "分岐・やり直し"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:やりとりを見る →→clone-thread",
+   "kind": "link",
+   "label": "やりとりを見る →",
+   "target": "clone-thread",
+   "states": [
+    "指示する（配布・承認）"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:1 本文を全部見る",
+   "kind": "link",
+   "label": "1 本文を全部見る",
+   "target": null,
+   "states": [
+    "指示する（配布・承認）"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:2 案件 セイコー",
+   "kind": "link",
+   "label": "2 案件 セイコー",
+   "target": null,
+   "states": [
+    "指示する（配布・承認）"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:3 判断の癖",
+   "kind": "link",
+   "label": "3 判断の癖",
+   "target": null,
+   "states": [
+    "指示する（配布・承認）"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:承認して送る",
+   "kind": "button",
+   "label": "承認して送る",
+   "target": null,
+   "states": [
+    "指示する（配布・承認）"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:直してから",
+   "kind": "button",
+   "label": "直してから",
+   "target": null,
+   "states": [
+    "指示する（配布・承認）"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:止める（差し戻し）",
+   "kind": "button",
+   "label": "止める（差し戻し）",
+   "target": null,
+   "states": [
+    "指示する（配布・承認）"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:もう一度",
+   "kind": "button",
+   "label": "もう一度",
+   "target": null,
+   "states": [
+    "指示する（配布・承認）",
+    "選択肢で答える",
+    "数値をきく",
+    "考え方を教える",
+    "添付・音声",
+    "送った後（受領・取り消し）",
+    "分岐・やり直し"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:ここから分岐",
+   "kind": "button",
+   "label": "ここから分岐",
+   "target": null,
+   "states": [
+    "指示する（配布・承認）",
+    "選択肢で答える",
+    "数値をきく",
+    "考え方を教える",
+    "添付・音声",
+    "送った後（受領・取り消し）",
+    "分岐・やり直し"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:記憶に入れる",
+   "kind": "button",
+   "label": "記憶に入れる",
+   "target": null,
+   "states": [
+    "指示する（配布・承認）",
+    "選択肢で答える",
+    "数値をきく",
+    "考え方を教える",
+    "添付・音声",
+    "送った後（受領・取り消し）",
+    "分岐・やり直し"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:根拠を見る",
+   "kind": "button",
+   "label": "根拠を見る",
+   "target": null,
+   "states": [
+    "指示する（配布・承認）",
+    "選択肢で答える",
+    "数値をきく",
+    "考え方を教える",
+    "添付・音声",
+    "送った後（受領・取り消し）",
+    "分岐・やり直し"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:無名（アイコンだけ。実装では aria-label を付ける）",
+   "kind": "button",
+   "label": "無名（アイコンだけ。実装では aria-label を付ける）",
+   "target": null,
+   "states": [
+    "指示する（配布・承認）",
+    "選択肢で答える",
+    "数値をきく",
+    "考え方を教える",
+    "添付・音声",
+    "生成中（止められる）",
+    "送った後（受領・取り消し）",
+    "PC が閉じている・送れなかった",
+    "/コマンド・@AI社員",
+    "分岐・やり直し",
+    "最初（未読・できること）"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "textarea:聞く・頼む・相談する",
+   "kind": "textarea",
+   "label": "聞く・頼む・相談する",
+   "target": null,
+   "states": [
+    "指示する（配布・承認）",
+    "選択肢で答える",
+    "数値をきく",
+    "考え方を教える",
+    "添付・音声",
+    "生成中（止められる）",
+    "送った後（受領・取り消し）",
+    "/コマンド・@AI社員",
+    "分岐・やり直し",
+    "最初（未読・できること）"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:声で話す",
+   "kind": "button",
+   "label": "声で話す",
+   "target": null,
+   "states": [
+    "指示する（配布・承認）",
+    "選択肢で答える",
+    "数値をきく",
+    "考え方を教える",
+    "添付・音声",
+    "生成中（止められる）",
+    "送った後（受領・取り消し）",
+    "PC が閉じている・送れなかった",
+    "/コマンド・@AI社員",
+    "分岐・やり直し",
+    "最初（未読・できること）"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:動きを全部見る →→ai-activity",
+   "kind": "link",
+   "label": "動きを全部見る →",
+   "target": "ai-activity",
+   "states": [
+    "指示する（配布・承認）",
+    "選択肢で答える",
+    "数値をきく",
+    "考え方を教える",
+    "添付・音声",
+    "生成中（止められる）",
+    "送った後（受領・取り消し）",
+    "PC が閉じている・送れなかった",
+    "/コマンド・@AI社員",
+    "分岐・やり直し"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:追いメールを送る（下書きあり）",
+   "kind": "button",
+   "label": "追いメールを送る（下書きあり）",
+   "target": null,
+   "states": [
+    "選択肢で答える"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:電話する（明日 10:00 に予定を入れる）",
+   "kind": "button",
+   "label": "電話する（明日 10:00 に予定を入れる）",
+   "target": null,
+   "states": [
+    "選択肢で答える"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:来週まで待つ",
+   "kind": "button",
+   "label": "来週まで待つ",
+   "target": null,
+   "states": [
+    "選択肢で答える"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:その他（自由に書く）",
+   "kind": "button",
+   "label": "その他（自由に書く）",
+   "target": null,
+   "states": [
+    "選択肢で答える",
+    "数値をきく",
+    "添付・音声",
+    "最初（未読・できること）"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:あとで",
+   "kind": "button",
+   "label": "あとで",
+   "target": null,
+   "states": [
+    "選択肢で答える",
+    "数値をきく",
+    "添付・音声",
+    "最初（未読・できること）"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:4 サービス台帳",
+   "kind": "link",
+   "label": "4 サービス台帳",
+   "target": null,
+   "states": [
+    "選択肢で答える"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:文面を作って",
+   "kind": "button",
+   "label": "文面を作って",
+   "target": null,
+   "states": [
+    "選択肢で答える"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:やっぱりメールで",
+   "kind": "button",
+   "label": "やっぱりメールで",
+   "target": null,
+   "states": [
+    "選択肢で答える"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:1 台帳 案件 14件",
+   "kind": "link",
+   "label": "1 台帳 案件 14件",
+   "target": null,
+   "states": [
+    "数値をきく"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:2 案件 納品済み 4件",
+   "kind": "link",
+   "label": "2 案件 納品済み 4件",
+   "target": null,
+   "states": [
+    "数値をきく"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:仮説にする",
+   "kind": "button",
+   "label": "仮説にする",
+   "target": null,
+   "states": [
+    "数値をきく"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:もう少し他の案も",
+   "kind": "button",
+   "label": "もう少し他の案も",
+   "target": null,
+   "states": [
+    "数値をきく"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:高本AIの記憶 › 判断の癖→clone-memory",
+   "kind": "link",
+   "label": "高本AIの記憶 › 判断の癖",
+   "target": "clone-memory",
+   "states": [
+    "考え方を教える"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:そのとおり",
+   "kind": "button",
+   "label": "そのとおり",
+   "target": null,
+   "states": [
+    "考え方を教える"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:会社のルールにする",
+   "kind": "button",
+   "label": "会社のルールにする",
+   "target": null,
+   "states": [
+    "考え方を教える"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:違う",
+   "kind": "button",
+   "label": "違う",
+   "target": null,
+   "states": [
+    "考え方を教える"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:停止",
+   "kind": "button",
+   "label": "停止",
+   "target": null,
+   "states": [
+    "添付・音声",
+    "生成中（止められる）"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:1 エンジニア 1人日 60,000円",
+   "kind": "link",
+   "label": "1 エンジニア 1人日 60,000円",
+   "target": null,
+   "states": [
+    "添付・音声"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:2 文字起こし 07:12",
+   "kind": "link",
+   "label": "2 文字起こし 07:12",
+   "target": null,
+   "states": [
+    "添付・音声"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:3,930,000 で",
+   "kind": "button",
+   "label": "3,930,000 で",
+   "target": null,
+   "states": [
+    "添付・音声"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:3,450,000 で",
+   "kind": "button",
+   "label": "3,450,000 で",
+   "target": null,
+   "states": [
+    "添付・音声"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:両方出す",
+   "kind": "button",
+   "label": "両方出す",
+   "target": null,
+   "states": [
+    "添付・音声"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:止めて送る",
+   "kind": "button",
+   "label": "止めて送る",
+   "target": null,
+   "states": [
+    "添付・音声"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:外す",
+   "kind": "button",
+   "label": "外す",
+   "target": null,
+   "states": [
+    "添付・音声"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:1 請求 #2026-042",
+   "kind": "link",
+   "label": "1 請求 #2026-042",
+   "target": null,
+   "states": [
+    "送った後（受領・取り消し）"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:取り消す（先方に取消メールを送ります）",
+   "kind": "button",
+   "label": "取り消す（先方に取消メールを送ります）",
+   "target": null,
+   "states": [
+    "送った後（受領・取り消し）"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:証跡を見る→audit",
+   "kind": "link",
+   "label": "証跡を見る",
+   "target": "audit",
+   "states": [
+    "送った後（受領・取り消し）"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:条件つきで自動にする",
+   "kind": "button",
+   "label": "条件つきで自動にする",
+   "target": null,
+   "states": [
+    "送った後（受領・取り消し）"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:今のまま（毎回承認）",
+   "kind": "button",
+   "label": "今のまま（毎回承認）",
+   "target": null,
+   "states": [
+    "送った後（受領・取り消し）"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:PC の状態を見る→bridge-setup",
+   "kind": "link",
+   "label": "PC の状態を見る",
+   "target": "bridge-setup",
+   "states": [
+    "PC が閉じている・送れなかった"
+   ],
+   "roles": [],
+   "ps": [
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:もう一度送る",
+   "kind": "button",
+   "label": "もう一度送る",
+   "target": null,
+   "states": [
+    "PC が閉じている・送れなかった"
+   ],
+   "roles": [],
+   "ps": [
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:メールをやめて電話にする",
+   "kind": "button",
+   "label": "メールをやめて電話にする",
+   "target": null,
+   "states": [
+    "PC が閉じている・送れなかった"
+   ],
+   "roles": [],
+   "ps": [
+    "PS4"
+   ]
+  },
+  {
+   "key": "textarea:PC が閉じているので送れません。起きたら続きから",
+   "kind": "textarea",
+   "label": "PC が閉じているので送れません。起きたら続きから",
+   "target": null,
+   "states": [
+    "PC が閉じている・送れなかった"
+   ],
+   "roles": [],
+   "ps": [
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:‹",
+   "kind": "button",
+   "label": "‹",
+   "target": null,
+   "states": [
+    "分岐・やり直し"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:›",
+   "kind": "button",
+   "label": "›",
+   "target": null,
+   "states": [
+    "分岐・やり直し"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:2つの版を並べる",
+   "kind": "button",
+   "label": "2つの版を並べる",
+   "target": null,
+   "states": [
+    "分岐・やり直し"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:前の版に戻す",
+   "kind": "button",
+   "label": "前の版に戻す",
+   "target": null,
+   "states": [
+    "分岐・やり直し"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:承認待ちの3件を順に見せて",
+   "kind": "button",
+   "label": "承認待ちの3件を順に見せて",
+   "target": null,
+   "states": [
+    "最初（未読・できること）"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:今月の売上、どのくらい行きそう？",
+   "kind": "button",
+   "label": "今月の売上、どのくらい行きそう？",
+   "target": null,
+   "states": [
+    "最初（未読・できること）"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:セイコーの着手金の請求書を作って",
+   "kind": "button",
+   "label": "セイコーの着手金の請求書を作って",
+   "target": null,
+   "states": [
+    "最初（未読・できること）"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:最新へ",
+   "kind": "button",
+   "label": "最新へ",
+   "target": null,
+   "states": [
+    "最初（未読・できること）"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  }
+ ]
+}

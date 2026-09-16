@@ -2,7 +2,7 @@
 import { expect, test } from "@playwright/test";
 import { WIDTHS } from "./_lib/browser";
 
-test("/dev/views：4 幅で横溢れ 0", async ({ page }) => {
+test("USH-06-001 /dev/views：4 幅で横溢れ 0", async ({ page }) => {
   for (const width of WIDTHS) {
     await page.setViewportSize({ width, height: 900 });
     const res = await page.goto("/dev/views");
@@ -13,7 +13,7 @@ test("/dev/views：4 幅で横溢れ 0", async ({ page }) => {
     ).toBeLessThanOrEqual(0);
   }
 });
-test("タイムライン：3 段が描かれ、棒（行）を押すと右に詳細が出る。1023 以下は一覧と詳細を切り替える", async ({
+test("USH-06-002 タイムライン：3 段が描かれ、棒（行）を押すと右に詳細が出る。1023 以下は一覧と詳細を切り替える", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });

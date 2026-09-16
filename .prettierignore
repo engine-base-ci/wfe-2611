@@ -12,3 +12,6 @@ scripts/
 07_tasks/audit/
 proposals_objects.json
 spec-dependencies.yaml
+
+.next-prod/
+pw-reports/

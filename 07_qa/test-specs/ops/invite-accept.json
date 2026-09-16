@@ -1,0 +1,67 @@
+{
+ "screen": "invite-accept",
+ "mock": "06_mockup/v1/v1-invite-accept.html",
+ "state_labels": {
+  "n": "担当者として",
+  "r4": "閲覧のみとして",
+  "x": "取り消し済み"
+ },
+ "ops": [
+  {
+   "key": "button:参加する",
+   "kind": "button",
+   "label": "参加する",
+   "target": null,
+   "states": [
+    "共通",
+    "担当者として",
+    "閲覧のみとして"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "input:お名前",
+   "kind": "input",
+   "label": "お名前",
+   "target": null,
+   "states": [
+    "担当者として",
+    "閲覧のみとして"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "input:メールアドレス",
+   "kind": "input",
+   "label": "メールアドレス",
+   "target": null,
+   "states": [
+    "担当者として"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "input:パスワード",
+   "kind": "input",
+   "label": "パスワード",
+   "target": null,
+   "states": [
+    "担当者として",
+    "閲覧のみとして"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  }
+ ]
+}

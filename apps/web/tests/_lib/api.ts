@@ -97,3 +97,9 @@ export async function noOverflow(page: Page, path: string) {
     if (o > 0) throw new Error(`${path} 幅 ${width} で ${o}px 溢れ`);
   }
 }
+/** Bridge の行を前提として置く（claim の実体は T-I-02。画面は sessions の行で「つながった」を判定する） */
+export const bridgeRow = (u: { tenantId: string; memberId: string }) =>
+  admin(
+    "insert into sessions (tenant_id, member_id, kind_id, device_label, auth_session_id) values ($1, $2, 'bridge', 'MacBook Pro（QA）', $3)",
+    [u.tenantId, u.memberId, `qa-${Date.now()}`],
+  );

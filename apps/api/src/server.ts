@@ -70,7 +70,7 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
     auth,
     resolve: createSessionResolver(auth, appPool),
     authExt: authExt({ auth, appPool, repo, secrets }),
-    corsOrigin: config.webBaseUrl,
+    corsOrigin: config.webOrigins.join(","),
   });
   return { app, report, close };
 }

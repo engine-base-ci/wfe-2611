@@ -1,4 +1,5 @@
 "use client";
+import { navRoute } from "@/lib/pending-route";
 import { ChevronDown, FileText } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -38,7 +39,7 @@ export function Sidebar({ who }: { who?: { initials: string; name: string; org: 
             return (
               <Link
                 key={key}
-                href={NAV.screens[m as keyof typeof NAV.screens].route}
+                href={navRoute(NAV.screens[m as keyof typeof NAV.screens].route)}
                 className={cn("side-item", m === screenId && "on")}
                 aria-current={m === screenId ? "page" : undefined}
               >
@@ -76,7 +77,7 @@ export function Sidebar({ who }: { who?: { initials: string; name: string; org: 
                   return (
                     <Link
                       key={m}
-                      href={s.route}
+                      href={navRoute(s.route)}
                       className={cn(m === screenId && "on")}
                       aria-current={m === screenId ? "page" : undefined}
                     >

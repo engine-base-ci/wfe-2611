@@ -1,0 +1,342 @@
+{
+ "screen": "audit",
+ "mock": "06_mockup/v1/v1-audit.html",
+ "state_labels": {
+  "n": "すべて",
+  "u": "取り消す",
+  "x": "書き出す",
+  "o": "運営のアクセス",
+  "ge": "空",
+  "gs": "AI が止まっている"
+ },
+ "ops": [
+  {
+   "key": "button:高本AI",
+   "kind": "button",
+   "label": "高本AI",
+   "target": null,
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:AI は止まっています→automation-repair",
+   "kind": "link",
+   "label": "AI は止まっています",
+   "target": "automation-repair",
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:PC をつなぐと話せます→bridge-setup",
+   "kind": "link",
+   "label": "PC をつなぐと話せます",
+   "target": "bridge-setup",
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "button:書き出す",
+   "kind": "button",
+   "label": "書き出す",
+   "target": null,
+   "states": [
+    "共通",
+    "すべて",
+    "書き出す",
+    "空",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS2",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:期間",
+   "kind": "button",
+   "label": "期間",
+   "target": null,
+   "states": [
+    "すべて",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:訂正メールを下書きさせる",
+   "kind": "button",
+   "label": "訂正メールを下書きさせる",
+   "target": null,
+   "states": [
+    "取り消す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:台帳だけ戻す",
+   "kind": "button",
+   "label": "台帳だけ戻す",
+   "target": null,
+   "states": [
+    "取り消す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:やめる",
+   "kind": "button",
+   "label": "やめる",
+   "target": null,
+   "states": [
+    "取り消す",
+    "運営のアクセス"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "input:期間",
+   "kind": "input",
+   "label": "期間",
+   "target": null,
+   "states": [
+    "書き出す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "select:形式",
+   "kind": "select",
+   "label": "形式",
+   "target": null,
+   "states": [
+    "書き出す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "checkbox:人の操作",
+   "kind": "checkbox",
+   "label": "人の操作",
+   "target": null,
+   "states": [
+    "書き出す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "checkbox:高本AIの判断（差し戻し・確認）",
+   "kind": "checkbox",
+   "label": "高本AIの判断（差し戻し・確認）",
+   "target": null,
+   "states": [
+    "書き出す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "checkbox:AI社員の実行",
+   "kind": "checkbox",
+   "label": "AI社員の実行",
+   "target": null,
+   "states": [
+    "書き出す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "checkbox:外に出たもの",
+   "kind": "checkbox",
+   "label": "外に出たもの",
+   "target": null,
+   "states": [
+    "書き出す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "checkbox:資格情報の使用（誰が・いつ・どの預かり先の番号）",
+   "kind": "checkbox",
+   "label": "資格情報の使用（誰が・いつ・どの預かり先の番号）",
+   "target": null,
+   "states": [
+    "書き出す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "checkbox:構成（プラン・AI社員の体数・版・止まっている型）— いつでも見える",
+   "kind": "checkbox",
+   "label": "構成（プラン・AI社員の体数・版・止まっている型）— いつでも見える",
+   "target": null,
+   "states": [
+    "運営のアクセス"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "checkbox:覚えた操作の手順（画面の中身は含まない）",
+   "kind": "checkbox",
+   "label": "覚えた操作の手順（画面の中身は含まない）",
+   "target": null,
+   "states": [
+    "運営のアクセス"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "checkbox:証跡（誰が・いつ・何を）",
+   "kind": "checkbox",
+   "label": "証跡（誰が・いつ・何を）",
+   "target": null,
+   "states": [
+    "運営のアクセス"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "checkbox:台帳の中身",
+   "kind": "checkbox",
+   "label": "台帳の中身",
+   "target": null,
+   "states": [
+    "運営のアクセス"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "checkbox:会話・記憶",
+   "kind": "checkbox",
+   "label": "会話・記憶",
+   "target": null,
+   "states": [
+    "運営のアクセス"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "select:期限",
+   "kind": "select",
+   "label": "期限",
+   "target": null,
+   "states": [
+    "運営のアクセス"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "input:理由（運営に伝わる）",
+   "kind": "input",
+   "label": "理由（運営に伝わる）",
+   "target": null,
+   "states": [
+    "運営のアクセス"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:許可する",
+   "kind": "button",
+   "label": "許可する",
+   "target": null,
+   "states": [
+    "運営のアクセス"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:取り消す",
+   "kind": "button",
+   "label": "取り消す",
+   "target": null,
+   "states": [
+    "運営のアクセス"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:止まっているものを直す→automation-repair",
+   "kind": "link",
+   "label": "止まっているものを直す",
+   "target": "automation-repair",
+   "states": [
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS4"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,146 @@
+{
+ "screen": "app-setup",
+ "mock": "06_mockup/v2/v2-app-setup.html",
+ "state_labels": {
+  "n": "アプリと通知",
+  "p": "許可待ち",
+  "x": "許可が無い・つながっていない"
+ },
+ "ops": [
+  {
+   "key": "button:高本AI",
+   "kind": "button",
+   "label": "高本AI",
+   "target": null,
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:AI は止まっています→automation-repair",
+   "kind": "link",
+   "label": "AI は止まっています",
+   "target": "automation-repair",
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "link:PC をつなぐと話せます→bridge-setup",
+   "kind": "link",
+   "label": "PC をつなぐと話せます",
+   "target": "bridge-setup",
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "button:通知を許可する",
+   "kind": "button",
+   "label": "通知を許可する",
+   "target": null,
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  },
+  {
+   "key": "button:Bridge の窓で開く",
+   "kind": "button",
+   "label": "Bridge の窓で開く",
+   "target": null,
+   "states": [
+    "アプリと通知"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:App Store",
+   "kind": "button",
+   "label": "App Store",
+   "target": null,
+   "states": [
+    "アプリと通知"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:Google Play",
+   "kind": "button",
+   "label": "Google Play",
+   "target": null,
+   "states": [
+    "アプリと通知"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "checkbox:checkbox",
+   "kind": "checkbox",
+   "label": "checkbox",
+   "target": null,
+   "states": [
+    "アプリと通知"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:保存する",
+   "kind": "button",
+   "label": "保存する",
+   "target": null,
+   "states": [
+    "アプリと通知"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:もう一度たずねる",
+   "kind": "button",
+   "label": "もう一度たずねる",
+   "target": null,
+   "states": [
+    "許可待ち"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:設定の開き方を見る",
+   "kind": "button",
+   "label": "設定の開き方を見る",
+   "target": null,
+   "states": [
+    "許可が無い・つながっていない"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  }
+ ]
+}

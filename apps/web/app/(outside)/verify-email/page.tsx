@@ -2,13 +2,13 @@
 // メールを確認する（T-U-02・A02）。状態：送信済み／確認できた／期限切れ。詰まらせない：再送だけで回復できる
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Button } from "@/components/ui";
 import { OutsideLayout, SETUP_STEPS } from "@/components/outside/outside-layout";
 import { authClient } from "@/lib/auth/client";
 import { setToken } from "@/lib/api/client";
 
-export default function VerifyEmailPage() {
+function VerifyEmailInner() {
   const sp = useSearchParams();
   const token = sp.get("token");
   const email = sp.get("email") ?? "";
@@ -125,5 +125,14 @@ export default function VerifyEmailPage() {
         </div>
       )}
     </OutsideLayout>
+  );
+}
+
+// useSearchParams は Suspense の中でしか使えない（本番ビルドの prerender で落ちる。dev では出ない）
+export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={<p className="p-8 text-[13.5px] text-[var(--on-sv)]">読み込み中</p>}>
+      <VerifyEmailInner />
+    </Suspense>
   );
 }
