@@ -6558,7 +6558,7 @@
     "06_mockup/v1/v1-login.html"
    ],
    "audit_md_path": "07_tasks/audit/T-A-01.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "API-01-001",
@@ -6959,7 +6959,7 @@
     "06_mockup/v1/v1-invite-accept.html"
    ],
    "audit_md_path": "07_tasks/audit/T-A-02.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "API-02-001",
@@ -7211,7 +7211,7 @@
     "06_mockup/v1/v1-members.html"
    ],
    "audit_md_path": "07_tasks/audit/T-A-03.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "API-03-001",
@@ -7535,7 +7535,7 @@
     "06_mockup/v1/v1-login.html"
    ],
    "audit_md_path": "07_tasks/audit/T-A-04.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "API-04-001",
@@ -8028,7 +8028,7 @@
     "06_mockup/v1/v1-today.html"
    ],
    "audit_md_path": "07_tasks/audit/T-A-05.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "API-05-001",
@@ -8517,7 +8517,7 @@
     "06_mockup/v1/v1-ai-staff-detail.html"
    ],
    "audit_md_path": "07_tasks/audit/T-A-06.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "API-06-001",
@@ -9017,7 +9017,7 @@
     "06_mockup/v1/v1-ai-staff-detail.html"
    ],
    "audit_md_path": "07_tasks/audit/T-A-07.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "API-07-001",
@@ -9489,7 +9489,7 @@
     "06_mockup/v1/v1-tasks.html"
    ],
    "audit_md_path": "07_tasks/audit/T-A-08.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "API-08-001",
@@ -9873,7 +9873,7 @@
     "06_mockup/v1/v1-records.html"
    ],
    "audit_md_path": "07_tasks/audit/T-A-09.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "API-09-001",
@@ -10360,7 +10360,7 @@
     "06_mockup/v1/v1-goal-allocation.html"
    ],
    "audit_md_path": "07_tasks/audit/T-A-10.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "API-10-001",
@@ -10854,7 +10854,7 @@
     "06_mockup/v1/v1-hypotheses.html"
    ],
    "audit_md_path": "07_tasks/audit/T-A-11.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "API-11-001",
@@ -11275,7 +11275,7 @@
     "06_mockup/v1/v1-ai-activity.html"
    ],
    "audit_md_path": "07_tasks/audit/T-A-12.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "API-12-001",
@@ -11762,7 +11762,7 @@
     "06_mockup/v1/v1-tasks.html"
    ],
    "audit_md_path": "07_tasks/audit/T-A-13.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "API-13-001",
@@ -12172,7 +12172,7 @@
     "06_mockup/v1/v1-ledger-def.html"
    ],
    "audit_md_path": "07_tasks/audit/T-A-14.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "API-14-001",
@@ -12594,7 +12594,7 @@
     "06_mockup/v1/v1-export.html"
    ],
    "audit_md_path": "07_tasks/audit/T-A-15.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "API-15-001",
@@ -13077,7 +13077,7 @@
     "06_mockup/v1/v1-company-model.html"
    ],
    "audit_md_path": "07_tasks/audit/T-A-16.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "API-16-001",
@@ -13481,7 +13481,7 @@
     "06_mockup/v1/v1-ops-tenant.html"
    ],
    "audit_md_path": "07_tasks/audit/T-A-17.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "API-17-001",
@@ -13845,7 +13845,7 @@
     "06_mockup/v1/v1-notices.html"
    ],
    "audit_md_path": "07_tasks/audit/T-A-18.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "API-18-001",
@@ -14241,7 +14241,7 @@
     "06_mockup/v1/v1-ops-billing.html"
    ],
    "audit_md_path": "07_tasks/audit/T-A-19.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "API-19-001",
@@ -14675,7 +14675,7 @@
     "06_mockup/v1/v1-import.html"
    ],
    "audit_md_path": "07_tasks/audit/T-A-20.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "API-20-001",
@@ -15095,7 +15095,7 @@
     "06_mockup/v1/v1-ai-staff-detail.html"
    ],
    "audit_md_path": "07_tasks/audit/T-A-21.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "API-21-001",
@@ -15461,7 +15461,7 @@
     "06_mockup/v1/v1-ops-tenant.html"
    ],
    "audit_md_path": "07_tasks/audit/T-A-22.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "API-22-001",
@@ -15815,7 +15815,7 @@
     "06_mockup/v1/v1-ai-staff-detail.html"
    ],
    "audit_md_path": "07_tasks/audit/T-A-23.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "API-23-001",

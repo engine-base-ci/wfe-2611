@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-16T00:04:28",
+ "generated_at": "2026-09-16T09:21:19",
  "inputs": {
   "tickets": "07_tasks/tickets.json",
   "roster": "07_tasks/roster.json",
@@ -8,10 +8,10 @@
  "summary": {
   "epic": 15,
   "story": 159,
-  "subtask": 3745,
+  "subtask": 3739,
   "subtask_by": {
    "impl": 398,
-   "test": 3147,
+   "test": 3141,
    "mock": 200
   },
   "critical_path": [
@@ -34,12 +34,12 @@
   "estimate_default": [],
   "delta": {
    "added": 0,
-   "updated": 0,
-   "unchanged": 159,
+   "updated": 2,
+   "unchanged": 157,
    "dropped": 0
   },
   "load": {
-   "takamoto": 75.2,
+   "takamoto": 73.7,
    "claude-01": 109.2,
    "claude-02": 124.1,
    "claude-03": 125.2,
@@ -2688,7 +2688,7 @@
    ],
    "assignee": "claude-03",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -2857,7 +2857,7 @@
    ],
    "assignee": "claude-05",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -2958,7 +2958,7 @@
    ],
    "assignee": "claude-03",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -3106,7 +3106,7 @@
    ],
    "assignee": "claude-03",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -3317,7 +3317,7 @@
    ],
    "assignee": "claude-04",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -3532,7 +3532,7 @@
    ],
    "assignee": "claude-02",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -3769,7 +3769,7 @@
    ],
    "assignee": "claude-05",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -3978,7 +3978,7 @@
    ],
    "assignee": "claude-01",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -4149,7 +4149,7 @@
    ],
    "assignee": "claude-05",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -4343,7 +4343,7 @@
    ],
    "assignee": "claude-04",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -4560,7 +4560,7 @@
    ],
    "assignee": "claude-04",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -4743,7 +4743,7 @@
    ],
    "assignee": "claude-01",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -4980,7 +4980,7 @@
    ],
    "assignee": "claude-05",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -5160,7 +5160,7 @@
    ],
    "assignee": "claude-03",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -5358,7 +5358,7 @@
    ],
    "assignee": "claude-05",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -5558,7 +5558,7 @@
    ],
    "assignee": "claude-03",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -5660,7 +5660,7 @@
   {
    "id": "T-A-17",
    "kind": "story",
-   "title": "API 導入した顧客が詰まったとき、データを見ずに直したい — データ・AP（4 endpoint）",
+   "title": "API 導入した顧客が詰まったとき、データを見ずに直したい — データ・AP（3 endpoint）",
    "parent": "J-09",
    "children": [
     "T-A-17.s1",
@@ -5689,12 +5689,6 @@
     "T-A-17.t21",
     "T-A-17.t22",
     "T-A-17.t23",
-    "T-A-17.t24",
-    "T-A-17.t25",
-    "T-A-17.t26",
-    "T-A-17.t27",
-    "T-A-17.t28",
-    "T-A-17.t29",
     "T-A-17.m1",
     "T-A-17.m2",
     "T-A-17.m3"
@@ -5718,10 +5712,10 @@
    "blocked_by": [],
    "wave": "W2",
    "layer": "backend",
-   "estimate_hours": 39.0,
+   "estimate_hours": 37.5,
    "estimate_default": false,
    "start": "2026-10-09",
-   "finish": "2026-10-29",
+   "finish": "2026-10-28",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -5734,7 +5728,7 @@
    ],
    "assignee": "takamoto",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -5794,20 +5788,14 @@
      "API-17-020",
      "API-17-021",
      "API-17-022",
-     "API-17-023",
-     "API-17-024",
-     "API-17-025",
-     "API-17-026",
-     "API-17-027",
-     "API-17-028",
-     "API-17-029"
+     "API-17-023"
     ],
     "errors": [],
     "spec": [
      "07_tasks/tickets.json#T-A-17"
     ]
    },
-   "delta": "unchanged",
+   "delta": "updated",
    "dropped_reason": null
   },
   {
@@ -5887,7 +5875,7 @@
    ],
    "assignee": "claude-01",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -6056,7 +6044,7 @@
    ],
    "assignee": "claude-04",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -6090,6 +6078,7 @@
     "acts": [
      "A33",
      "A38",
+     "A43",
      "A70",
      "A71",
      "A72",
@@ -6242,7 +6231,7 @@
    ],
    "assignee": "claude-03",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -6424,7 +6413,7 @@
    ],
    "assignee": "claude-04",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -6561,7 +6550,6 @@
     "T-F-03",
     "T-F-04",
     "T-F-05",
-    "T-D-01",
     "T-D-04",
     "T-D-06",
     "T-D-10",
@@ -6590,7 +6578,7 @@
    ],
    "assignee": "claude-02",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -6657,7 +6645,7 @@
      "07_tasks/tickets.json#T-A-22"
     ]
    },
-   "delta": "unchanged",
+   "delta": "updated",
    "dropped_reason": null
   },
   {
@@ -6721,7 +6709,7 @@
    ],
    "assignee": "claude-05",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -13092,8 +13080,8 @@
    "layer": "ui",
    "estimate_hours": 1.1,
    "estimate_default": false,
-   "start": "2026-10-30",
-   "finish": "2026-10-30",
+   "start": "2026-10-29",
+   "finish": "2026-10-29",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -13214,8 +13202,8 @@
    "layer": "ui",
    "estimate_hours": 1.6,
    "estimate_default": false,
-   "start": "2026-10-30",
-   "finish": "2026-10-30",
+   "start": "2026-10-29",
+   "finish": "2026-10-29",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -13490,8 +13478,8 @@
    "layer": "ui",
    "estimate_hours": 1.5,
    "estimate_default": false,
-   "start": "2026-10-30",
-   "finish": "2026-10-30",
+   "start": "2026-10-29",
+   "finish": "2026-10-29",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -13622,8 +13610,8 @@
    "layer": "ui",
    "estimate_hours": 1.2,
    "estimate_default": false,
-   "start": "2026-10-30",
-   "finish": "2026-10-30",
+   "start": "2026-10-29",
+   "finish": "2026-10-29",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -13882,8 +13870,8 @@
    "layer": "ui",
    "estimate_hours": 1.4,
    "estimate_default": false,
-   "start": "2026-10-30",
-   "finish": "2026-10-30",
+   "start": "2026-10-29",
+   "finish": "2026-10-29",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -14131,8 +14119,8 @@
    "layer": "ui",
    "estimate_hours": 1.6,
    "estimate_default": false,
-   "start": "2026-10-30",
-   "finish": "2026-10-30",
+   "start": "2026-10-29",
+   "finish": "2026-10-29",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -14553,8 +14541,8 @@
    "layer": "ui",
    "estimate_hours": 1.4,
    "estimate_default": false,
-   "start": "2026-10-30",
-   "finish": "2026-10-30",
+   "start": "2026-10-29",
+   "finish": "2026-10-29",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -14683,8 +14671,8 @@
    "layer": "ui",
    "estimate_hours": 1.1,
    "estimate_default": false,
-   "start": "2026-10-30",
-   "finish": "2026-10-30",
+   "start": "2026-10-29",
+   "finish": "2026-10-29",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -14803,8 +14791,8 @@
    "layer": "ui",
    "estimate_hours": 1.1,
    "estimate_default": false,
-   "start": "2026-10-30",
-   "finish": "2026-10-30",
+   "start": "2026-10-29",
+   "finish": "2026-10-29",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -14920,8 +14908,8 @@
    "layer": "ui",
    "estimate_hours": 0.8,
    "estimate_default": false,
-   "start": "2026-10-30",
-   "finish": "2026-10-30",
+   "start": "2026-10-29",
+   "finish": "2026-10-29",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -15166,8 +15154,8 @@
    "layer": "ui",
    "estimate_hours": 1.1,
    "estimate_default": false,
-   "start": "2026-10-30",
-   "finish": "2026-10-30",
+   "start": "2026-10-29",
+   "finish": "2026-10-29",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -15302,8 +15290,8 @@
    "layer": "ui",
    "estimate_hours": 1.7,
    "estimate_default": false,
-   "start": "2026-10-30",
-   "finish": "2026-10-30",
+   "start": "2026-10-29",
+   "finish": "2026-10-29",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -16997,12 +16985,12 @@
     "T-A-21"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "W2",
    "layer": "content",
    "estimate_hours": 3.0,
    "estimate_default": false,
-   "start": "2026-11-02",
-   "finish": "2026-11-02",
+   "start": "2026-10-30",
+   "finish": "2026-10-30",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -23671,7 +23659,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/clones.ts (new)",
    "parent": "T-A-01",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/clones.ts (new)"
@@ -23684,7 +23672,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/members.ts (new)",
    "parent": "T-A-01",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/members.ts (new)"
@@ -23695,12 +23683,12 @@
    "id": "T-A-01.s3",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/api/src/routes/plans.ts (new)",
+   "title": "apps/api/src/routes/sessions.ts (new)",
    "parent": "T-A-01",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
-     "apps/api/src/routes/plans.ts (new)"
+     "apps/api/src/routes/sessions.ts (new)"
     ]
    }
   },
@@ -23708,12 +23696,12 @@
    "id": "T-A-01.s4",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/api/src/routes/sessions.ts (new)",
+   "title": "apps/api/src/routes/subscriptions.ts (new)",
    "parent": "T-A-01",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
-     "apps/api/src/routes/sessions.ts (new)"
+     "apps/api/src/routes/subscriptions.ts (new)"
     ]
    }
   },
@@ -23723,7 +23711,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/tenants.ts (new)",
    "parent": "T-A-01",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/tenants.ts (new)"
@@ -23736,7 +23724,7 @@
    "sub": "impl",
    "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-01",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/app.ts (modify)"
@@ -24361,7 +24349,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/invitations.ts (new)",
    "parent": "T-A-02",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/invitations.ts (new)"
@@ -24374,7 +24362,7 @@
    "sub": "impl",
    "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-02",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/app.ts (modify)"
@@ -24533,7 +24521,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/members.ts (new)",
    "parent": "T-A-03",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/members.ts (new)"
@@ -24546,7 +24534,7 @@
    "sub": "impl",
    "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-03",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/app.ts (modify)"
@@ -24818,7 +24806,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/conversations.ts (new)",
    "parent": "T-A-04",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/conversations.ts (new)"
@@ -24831,7 +24819,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/goal_allocations.ts (new)",
    "parent": "T-A-04",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/goal_allocations.ts (new)"
@@ -24844,7 +24832,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/members.ts (new)",
    "parent": "T-A-04",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/members.ts (new)"
@@ -24857,7 +24845,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/messages.ts (new)",
    "parent": "T-A-04",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/messages.ts (new)"
@@ -24870,7 +24858,7 @@
    "sub": "impl",
    "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-04",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/app.ts (modify)"
@@ -25489,7 +25477,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/messages.ts (new)",
    "parent": "T-A-05",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/messages.ts (new)"
@@ -25502,7 +25490,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/tasks.ts (new)",
    "parent": "T-A-05",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/tasks.ts (new)"
@@ -25515,7 +25503,7 @@
    "sub": "impl",
    "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-05",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/app.ts (modify)"
@@ -25950,7 +25938,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/ai_employees.ts (new)",
    "parent": "T-A-06",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/ai_employees.ts (new)"
@@ -25963,7 +25951,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/credentials.ts (new)",
    "parent": "T-A-06",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/credentials.ts (new)"
@@ -25976,7 +25964,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/learned_procedures.ts (new)",
    "parent": "T-A-06",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/learned_procedures.ts (new)"
@@ -25989,7 +25977,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/sessions.ts (new)",
    "parent": "T-A-06",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/sessions.ts (new)"
@@ -26002,7 +25990,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/tenants.ts (new)",
    "parent": "T-A-06",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/tenants.ts (new)"
@@ -26015,7 +26003,7 @@
    "sub": "impl",
    "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-06",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/app.ts (modify)"
@@ -26695,7 +26683,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/action_runs.ts (new)",
    "parent": "T-A-07",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/action_runs.ts (new)"
@@ -26708,7 +26696,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/ai_employees.ts (new)",
    "parent": "T-A-07",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/ai_employees.ts (new)"
@@ -26721,7 +26709,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/approvals.ts (new)",
    "parent": "T-A-07",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/approvals.ts (new)"
@@ -26734,7 +26722,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/audit_events.ts (new)",
    "parent": "T-A-07",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/audit_events.ts (new)"
@@ -26747,7 +26735,7 @@
    "sub": "impl",
    "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-07",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/app.ts (modify)"
@@ -27515,7 +27503,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/policies.ts (new)",
    "parent": "T-A-08",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/policies.ts (new)"
@@ -27528,7 +27516,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/tasks.ts (new)",
    "parent": "T-A-08",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/tasks.ts (new)"
@@ -27541,7 +27529,7 @@
    "sub": "impl",
    "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-08",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/app.ts (modify)"
@@ -27820,7 +27808,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/ledger_definitions.ts (new)",
    "parent": "T-A-09",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/ledger_definitions.ts (new)"
@@ -27833,7 +27821,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/ledger_records.ts (new)",
    "parent": "T-A-09",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/ledger_records.ts (new)"
@@ -27846,7 +27834,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/tasks.ts (new)",
    "parent": "T-A-09",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/tasks.ts (new)"
@@ -27859,7 +27847,7 @@
    "sub": "impl",
    "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-09",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/app.ts (modify)"
@@ -28407,7 +28395,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/conversations.ts (new)",
    "parent": "T-A-10",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/conversations.ts (new)"
@@ -28420,7 +28408,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/goal_allocations.ts (new)",
    "parent": "T-A-10",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/goal_allocations.ts (new)"
@@ -28433,7 +28421,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/goals.ts (new)",
    "parent": "T-A-10",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/goals.ts (new)"
@@ -28446,7 +28434,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/tasks.ts (new)",
    "parent": "T-A-10",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/tasks.ts (new)"
@@ -28459,7 +28447,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/tenants.ts (new)",
    "parent": "T-A-10",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/tenants.ts (new)"
@@ -28472,7 +28460,7 @@
    "sub": "impl",
    "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-10",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/app.ts (modify)"
@@ -29214,7 +29202,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/goals.ts (new)",
    "parent": "T-A-11",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/goals.ts (new)"
@@ -29227,7 +29215,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/hypotheses.ts (new)",
    "parent": "T-A-11",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/hypotheses.ts (new)"
@@ -29240,7 +29228,7 @@
    "sub": "impl",
    "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-11",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/app.ts (modify)"
@@ -29629,7 +29617,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/ai_employees.ts (new)",
    "parent": "T-A-12",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/ai_employees.ts (new)"
@@ -29642,7 +29630,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/approvals.ts (new)",
    "parent": "T-A-12",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/approvals.ts (new)"
@@ -29655,7 +29643,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/audit_events.ts (new)",
    "parent": "T-A-12",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/audit_events.ts (new)"
@@ -29668,7 +29656,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/members.ts (new)",
    "parent": "T-A-12",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/members.ts (new)"
@@ -29681,7 +29669,7 @@
    "sub": "impl",
    "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-12",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/app.ts (modify)"
@@ -30536,7 +30524,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/tasks.ts (new)",
    "parent": "T-A-13",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/tasks.ts (new)"
@@ -30549,7 +30537,7 @@
    "sub": "impl",
    "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-13",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/app.ts (modify)"
@@ -30890,7 +30878,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/duties.ts (new)",
    "parent": "T-A-14",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/duties.ts (new)"
@@ -30903,7 +30891,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/ledger_definitions.ts (new)",
    "parent": "T-A-14",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/ledger_definitions.ts (new)"
@@ -30916,7 +30904,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/tenants.ts (new)",
    "parent": "T-A-14",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/tenants.ts (new)"
@@ -30929,7 +30917,7 @@
    "sub": "impl",
    "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-14",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/app.ts (modify)"
@@ -31387,12 +31375,12 @@
    "id": "T-A-15.s1",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/api/src/routes/audit_events.ts (new)",
+   "title": "apps/api/src/routes/approvals.ts (new)",
    "parent": "T-A-15",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
-     "apps/api/src/routes/audit_events.ts (new)"
+     "apps/api/src/routes/approvals.ts (new)"
     ]
    }
   },
@@ -31402,7 +31390,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/export_jobs.ts (new)",
    "parent": "T-A-15",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/export_jobs.ts (new)"
@@ -31415,7 +31403,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/members.ts (new)",
    "parent": "T-A-15",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/members.ts (new)"
@@ -31428,7 +31416,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/sessions.ts (new)",
    "parent": "T-A-15",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/sessions.ts (new)"
@@ -31441,7 +31429,7 @@
    "sub": "impl",
    "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-15",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/app.ts (modify)"
@@ -32154,7 +32142,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/clones.ts (new)",
    "parent": "T-A-16",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/clones.ts (new)"
@@ -32167,7 +32155,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/conversations.ts (new)",
    "parent": "T-A-16",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/conversations.ts (new)"
@@ -32180,7 +32168,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/memories.ts (new)",
    "parent": "T-A-16",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/memories.ts (new)"
@@ -32193,7 +32181,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/tenants.ts (new)",
    "parent": "T-A-16",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/tenants.ts (new)"
@@ -32206,7 +32194,7 @@
    "sub": "impl",
    "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-16",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/app.ts (modify)"
@@ -32744,7 +32732,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/inquiries.ts (new)",
    "parent": "T-A-17",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/inquiries.ts (new)"
@@ -32757,7 +32745,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/plans.ts (new)",
    "parent": "T-A-17",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/plans.ts (new)"
@@ -32770,7 +32758,7 @@
    "sub": "impl",
    "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-17",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/app.ts (modify)"
@@ -33077,84 +33065,6 @@
    }
   },
   {
-   "id": "T-A-17.t24",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 API-17-024 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-A-17",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "API-17-024"
-    ]
-   }
-  },
-  {
-   "id": "T-A-17.t25",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 API-17-025 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-A-17",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "API-17-025"
-    ]
-   }
-  },
-  {
-   "id": "T-A-17.t26",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 API-17-026 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-A-17",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "API-17-026"
-    ]
-   }
-  },
-  {
-   "id": "T-A-17.t27",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 API-17-027 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-A-17",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "API-17-027"
-    ]
-   }
-  },
-  {
-   "id": "T-A-17.t28",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 API-17-028 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-A-17",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "API-17-028"
-    ]
-   }
-  },
-  {
-   "id": "T-A-17.t29",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 API-17-029 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-A-17",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "API-17-029"
-    ]
-   }
-  },
-  {
    "id": "T-A-17.m1",
    "kind": "subtask",
    "sub": "mock",
@@ -33208,7 +33118,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/inquiries.ts (new)",
    "parent": "T-A-18",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/inquiries.ts (new)"
@@ -33219,12 +33129,12 @@
    "id": "T-A-18.s2",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/api/src/routes/notices.ts (new)",
+   "title": "apps/api/src/routes/notice_deliveries.ts (new)",
    "parent": "T-A-18",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
-     "apps/api/src/routes/notices.ts (new)"
+     "apps/api/src/routes/notice_deliveries.ts (new)"
     ]
    }
   },
@@ -33232,12 +33142,12 @@
    "id": "T-A-18.s3",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/api/src/routes/plans.ts (new)",
+   "title": "apps/api/src/routes/subscriptions.ts (new)",
    "parent": "T-A-18",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
-     "apps/api/src/routes/plans.ts (new)"
+     "apps/api/src/routes/subscriptions.ts (new)"
     ]
    }
   },
@@ -33247,7 +33157,7 @@
    "sub": "impl",
    "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-18",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/app.ts (modify)"
@@ -33685,7 +33595,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/audit_events.ts (new)",
    "parent": "T-A-19",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/audit_events.ts (new)"
@@ -33698,7 +33608,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/inquiries.ts (new)",
    "parent": "T-A-19",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/inquiries.ts (new)"
@@ -33711,7 +33621,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/invoices.ts (new)",
    "parent": "T-A-19",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/invoices.ts (new)"
@@ -33724,7 +33634,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/notices.ts (new)",
    "parent": "T-A-19",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/notices.ts (new)"
@@ -33737,7 +33647,7 @@
    "sub": "impl",
    "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-19",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/app.ts (modify)"
@@ -34272,7 +34182,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/attachments.ts (new)",
    "parent": "T-A-20",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/attachments.ts (new)"
@@ -34285,7 +34195,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/members.ts (new)",
    "parent": "T-A-20",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/members.ts (new)"
@@ -34298,7 +34208,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/service_registry.ts (new)",
    "parent": "T-A-20",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/service_registry.ts (new)"
@@ -34311,7 +34221,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/tenants.ts (new)",
    "parent": "T-A-20",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/tenants.ts (new)"
@@ -34324,7 +34234,7 @@
    "sub": "impl",
    "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-20",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/app.ts (modify)"
@@ -34878,7 +34788,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/ai_employees.ts (new)",
    "parent": "T-A-21",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/ai_employees.ts (new)"
@@ -34889,12 +34799,12 @@
    "id": "T-A-21.s2",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/api/src/routes/service_registry.ts (new)",
+   "title": "apps/api/src/routes/service_registry_versions.ts (new)",
    "parent": "T-A-21",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
-     "apps/api/src/routes/service_registry.ts (new)"
+     "apps/api/src/routes/service_registry_versions.ts (new)"
     ]
    }
   },
@@ -34904,7 +34814,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/skills.ts (new)",
    "parent": "T-A-21",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/skills.ts (new)"
@@ -34917,7 +34827,7 @@
    "sub": "impl",
    "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-21",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/app.ts (modify)"
@@ -35375,12 +35285,12 @@
    "id": "T-A-22.s1",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/api/src/routes/audit_events.ts (new)",
+   "title": "apps/api/src/routes/distributions.ts (new)",
    "parent": "T-A-22",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
-     "apps/api/src/routes/audit_events.ts (new)"
+     "apps/api/src/routes/distributions.ts (new)"
     ]
    }
   },
@@ -35388,12 +35298,12 @@
    "id": "T-A-22.s2",
    "kind": "subtask",
    "sub": "impl",
-   "title": "apps/api/src/routes/distributions.ts (new)",
+   "title": "apps/api/src/routes/ops_members.ts (new)",
    "parent": "T-A-22",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
-     "apps/api/src/routes/distributions.ts (new)"
+     "apps/api/src/routes/ops_members.ts (new)"
     ]
    }
   },
@@ -35403,7 +35313,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/plans.ts (new)",
    "parent": "T-A-22",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/plans.ts (new)"
@@ -35416,7 +35326,7 @@
    "sub": "impl",
    "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-22",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/app.ts (modify)"
@@ -35789,7 +35699,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/ai_employees.ts (new)",
    "parent": "T-A-23",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/ai_employees.ts (new)"
@@ -35802,7 +35712,7 @@
    "sub": "impl",
    "title": "apps/api/src/routes/plans.ts (new)",
    "parent": "T-A-23",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/routes/plans.ts (new)"
@@ -35815,7 +35725,7 @@
    "sub": "impl",
    "title": "apps/api/src/app.ts (modify)",
    "parent": "T-A-23",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/app.ts (modify)"
