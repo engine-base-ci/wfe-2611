@@ -6544,7 +6544,7 @@
     "07_functional/entities.json"
    ],
    "audit_md_path": "07_tasks/audit/T-D-14.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "RLS-D14-001",

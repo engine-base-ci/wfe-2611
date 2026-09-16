@@ -2642,7 +2642,7 @@
    ],
    "assignee": "takamoto",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [],
@@ -24944,7 +24944,7 @@
    "sub": "impl",
    "title": "packages/db/migrations/0114_15.sql (new)",
    "parent": "T-D-14",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/migrations/0114_15.sql (new)"
@@ -24957,7 +24957,7 @@
    "sub": "impl",
    "title": "packages/db/policies/payment_methods.sql (new)",
    "parent": "T-D-14",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/policies/payment_methods.sql (new)"
@@ -24970,7 +24970,7 @@
    "sub": "impl",
    "title": "packages/db/schema.ts (modify)",
    "parent": "T-D-14",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/schema.ts (modify)"
@@ -24983,7 +24983,7 @@
    "sub": "test",
    "title": "L1 RLS-D14-001 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-D-14",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "RLS-D14-001"
@@ -24996,7 +24996,7 @@
    "sub": "test",
    "title": "L1 RLS-D14-002 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-D-14",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "RLS-D14-002"
@@ -25009,7 +25009,7 @@
    "sub": "test",
    "title": "L1 RLS-D14-003 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-D-14",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "RLS-D14-003"
@@ -25022,7 +25022,7 @@
    "sub": "test",
    "title": "L1 RLS-D14-004 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-D-14",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "RLS-D14-004"
@@ -25035,7 +25035,7 @@
    "sub": "test",
    "title": "L1 RLS-D14-005 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-D-14",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "RLS-D14-005"
@@ -25048,7 +25048,7 @@
    "sub": "test",
    "title": "L1 RLS-D14-006 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-D-14",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "RLS-D14-006"
@@ -25061,7 +25061,7 @@
    "sub": "test",
    "title": "L1 RLS-D14-007 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-D-14",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "RLS-D14-007"
@@ -25074,7 +25074,7 @@
    "sub": "test",
    "title": "L1 RLS-D14-008 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-D-14",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "RLS-D14-008"
@@ -25087,7 +25087,7 @@
    "sub": "test",
    "title": "L1 RLS-D14-009 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-D-14",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "RLS-D14-009"
@@ -25100,7 +25100,7 @@
    "sub": "test",
    "title": "L1 RLS-D14-010 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-D-14",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "RLS-D14-010"
@@ -25113,7 +25113,7 @@
    "sub": "test",
    "title": "L1 RLS-D14-011 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-D-14",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "RLS-D14-011"
@@ -25126,7 +25126,7 @@
    "sub": "test",
    "title": "L1 RLS-D14-012 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-D-14",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "RLS-D14-012"
@@ -25139,7 +25139,7 @@
    "sub": "test",
    "title": "L1 RLS-D14-013 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-D-14",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "RLS-D14-013"
@@ -25152,7 +25152,7 @@
    "sub": "test",
    "title": "L1 RLS-D14-014 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-D-14",
-   "status": "todo",
+   "status": "done",
    "links": {
     "qa_rows": [
      "RLS-D14-014"
