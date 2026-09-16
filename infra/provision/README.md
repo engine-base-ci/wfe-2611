@@ -13,8 +13,4 @@
 
 ## staging（selected-stack `environments.staging`：本番と同じ構成をもう 1 組）
 
-1. Supabase：staging 用プロジェクトを作る → `DATABASE_URL`（管理者）で `pnpm db:migrate`。実行時は `kaname_app`／`kaname_auth` の接続文字列を Infisical に入れる
-2. Railway：staging 環境を作り `apps/api` をデプロイ（Dockerfile は T-A-* の最初で）。環境変数は Infisical から
-3. Vercel：Preview を staging の API に向ける（`NEXT_PUBLIC_API_BASE`）
-4. バケット：Supabase Storage の S3 互換エンドポイントに `pnpm provision:bucket`
-5. 起動時の存在確認（`startupChecks`）が全部 OK になるまで L1 を流さない
+手順の正本は [`infra/STAGING.md`](../STAGING.md)（S0 GitHub → S1 Supabase → S2 Infisical → S3 Railway → S4 Resend → S5 Vercel → S6 確認・秘密の名前の表・誰がやるか）。先に直すコード側の前提（API の起動口と Dockerfile・認証の schema 名・役割のパスワード）は T-F-18。
