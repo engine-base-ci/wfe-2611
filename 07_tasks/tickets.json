@@ -14,70 +14,71 @@
   "D-036.4"
  ],
  "summary": {
-  "total_tasks": 159,
+  "total_tasks": 169,
   "by_group": {
-   "A": 23,
-   "D": 13,
+   "A": 26,
+   "D": 14,
    "F": 17,
    "I": 22,
    "S": 15,
-   "U-screen": 58,
+   "U-screen": 64,
    "U-shared": 6,
    "V2": 5
   },
   "by_category": {
-   "backend": 23,
-   "db": 19,
-   "frontend": 64,
+   "backend": 26,
+   "db": 20,
+   "frontend": 70,
    "infra": 11,
    "spec": 20,
    "test": 22
   },
   "by_label": {
-   "NEW": 159
+   "NEW": 169
   },
   "by_deliverable_layer": {
-   "backend": 23,
+   "backend": 26,
    "content": 15,
-   "foundation": 30,
+   "foundation": 31,
    "integration": 18,
    "polish": 4,
    "spec": 5,
-   "ui": 64
+   "ui": 70
   },
   "by_phase": {
    "1_foundation": 17,
-   "2_data": 13,
+   "2_data": 14,
    "3_api": 23,
    "4_ui_foundation": 6,
    "5_ui_parallel": 58,
    "6_integration": 22,
    "7_content": 15,
-   "8_spec_v2": 5
+   "8_spec_v2": 5,
+   "9_v2_api": 3,
+   "9_v2_ui": 6
   },
   "by_screen_coverage": {
-   "covered_screens": 58,
-   "total_screens": 59,
-   "uncovered_screens": [
-    "billing-setup"
-   ]
+   "covered_screens": 64,
+   "total_screens": 64,
+   "uncovered_screens": []
   },
-  "total_estimate_hours_human": 4848.0,
-  "total_estimate_hours_ai_compute": 847.3,
-  "human_review_total_h": 49.0,
-  "total_wall_clock_h_ai_parallel": 219.6,
+  "total_estimate_hours_human": 5504.5,
+  "total_estimate_hours_ai_compute": 989.7,
+  "human_review_total_h": 52.0,
+  "total_wall_clock_h_ai_parallel": 268.9,
   "parallel_capacity": 10,
-  "calendar_days_ai": 37,
-  "calendar_days_human": 606,
-  "total_estimate_hours": 896.3,
-  "total_estimate_sessions": 301,
-  "qa_rows_total": 3141,
+  "calendar_days_ai": 45,
+  "calendar_days_human": 689,
+  "total_estimate_hours": 1041.7,
+  "total_estimate_sessions": 344,
+  "qa_rows_total": 3367,
   "journeys": 9
  },
  "waves": [
   {
    "wave": 0,
    "group": "F",
+   "stage": "v1",
    "tasks": [
     "T-F-01",
     "T-F-02",
@@ -98,6 +99,7 @@
   {
    "wave": 1,
    "group": "F",
+   "stage": "v1",
    "tasks": [
     "T-F-11",
     "T-F-12",
@@ -115,6 +117,7 @@
   {
    "wave": 2,
    "group": "D",
+   "stage": "v1",
    "tasks": [
     "T-D-01",
     "T-D-02",
@@ -135,19 +138,22 @@
   {
    "wave": 3,
    "group": "D",
+   "stage": "v1",
    "tasks": [
     "T-D-11",
     "T-D-12",
-    "T-D-13"
+    "T-D-13",
+    "T-D-14"
    ],
-   "parallel": 3,
+   "parallel": 4,
    "wall_clock_h_ai": 23.5,
-   "estimate_hours_human": 150,
-   "estimate_hours_ai_compute": 27.1
+   "estimate_hours_human": 196,
+   "estimate_hours_ai_compute": 30.9
   },
   {
    "wave": 4,
    "group": "V2",
+   "stage": "v1",
    "tasks": [
     "T-V2-01",
     "T-V2-02",
@@ -163,6 +169,7 @@
   {
    "wave": 5,
    "group": "A",
+   "stage": "v1",
    "tasks": [
     "T-A-01",
     "T-A-02",
@@ -177,12 +184,13 @@
    ],
    "parallel": 10,
    "wall_clock_h_ai": 39.5,
-   "estimate_hours_human": 846,
-   "estimate_hours_ai_compute": 211.4
+   "estimate_hours_human": 855,
+   "estimate_hours_ai_compute": 213.6
   },
   {
    "wave": 6,
    "group": "A",
+   "stage": "v1",
    "tasks": [
     "T-A-11",
     "T-A-12",
@@ -196,13 +204,14 @@
     "T-A-20"
    ],
    "parallel": 10,
-   "wall_clock_h_ai": 38.0,
-   "estimate_hours_human": 1069,
-   "estimate_hours_ai_compute": 239.7
+   "wall_clock_h_ai": 42.5,
+   "estimate_hours_human": 1138,
+   "estimate_hours_ai_compute": 257.0
   },
   {
    "wave": 7,
    "group": "A",
+   "stage": "v1",
    "tasks": [
     "T-A-21",
     "T-A-22",
@@ -216,6 +225,7 @@
   {
    "wave": 8,
    "group": "U-shared",
+   "stage": "v1",
    "tasks": [
     "T-US-01",
     "T-US-02",
@@ -232,6 +242,7 @@
   {
    "wave": 9,
    "group": "U-screen",
+   "stage": "v1",
    "tasks": [
     "T-U-01",
     "T-U-02",
@@ -252,6 +263,7 @@
   {
    "wave": 10,
    "group": "U-screen",
+   "stage": "v1",
    "tasks": [
     "T-U-11",
     "T-U-12",
@@ -272,6 +284,7 @@
   {
    "wave": 11,
    "group": "U-screen",
+   "stage": "v1",
    "tasks": [
     "T-U-21",
     "T-U-22",
@@ -292,6 +305,7 @@
   {
    "wave": 12,
    "group": "U-screen",
+   "stage": "v1",
    "tasks": [
     "T-U-31",
     "T-U-32",
@@ -312,6 +326,7 @@
   {
    "wave": 13,
    "group": "U-screen",
+   "stage": "v1",
    "tasks": [
     "T-U-41",
     "T-U-42",
@@ -332,6 +347,7 @@
   {
    "wave": 14,
    "group": "U-screen",
+   "stage": "v1",
    "tasks": [
     "T-U-51",
     "T-U-52",
@@ -350,6 +366,7 @@
   {
    "wave": 15,
    "group": "I",
+   "stage": "v1",
    "tasks": [
     "T-I-01",
     "T-I-02",
@@ -370,6 +387,7 @@
   {
    "wave": 16,
    "group": "I",
+   "stage": "v1",
    "tasks": [
     "T-I-11",
     "T-I-12",
@@ -390,6 +408,7 @@
   {
    "wave": 17,
    "group": "I",
+   "stage": "v1",
    "tasks": [
     "T-I-21",
     "T-I-22"
@@ -402,6 +421,7 @@
   {
    "wave": 18,
    "group": "S",
+   "stage": "v1",
    "tasks": [
     "T-S-01",
     "T-S-02",
@@ -422,6 +442,7 @@
   {
    "wave": 19,
    "group": "S",
+   "stage": "v1",
    "tasks": [
     "T-S-11",
     "T-S-12",
@@ -433,6 +454,37 @@
    "wall_clock_h_ai": 4.0,
    "estimate_hours_human": 42,
    "estimate_hours_ai_compute": 10.5
+  },
+  {
+   "wave": 20,
+   "group": "A",
+   "stage": "v2",
+   "tasks": [
+    "T-A-24",
+    "T-A-25",
+    "T-A-26"
+   ],
+   "parallel": 3,
+   "wall_clock_h_ai": 42.5,
+   "estimate_hours_human": 438,
+   "estimate_hours_ai_compute": 109.6
+  },
+  {
+   "wave": 21,
+   "group": "U-screen",
+   "stage": "v2",
+   "tasks": [
+    "T-U-59",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
+   ],
+   "parallel": 6,
+   "wall_clock_h_ai": 2.3,
+   "estimate_hours_human": 94.5,
+   "estimate_hours_ai_compute": 9.5
   }
  ],
  "tasks": [
@@ -453,6 +505,7 @@
    "wave": 0,
    "group": "F",
    "deliverable_layer": "foundation",
+   "stage": "v1",
    "depends_on": [],
    "choke_points": [],
    "choke_points_rationale": "全 PR の merge gate。以後の全 Group の前提",
@@ -620,6 +673,7 @@
    "wave": 0,
    "group": "F",
    "deliverable_layer": "foundation",
+   "stage": "v1",
    "depends_on": [],
    "choke_points": [
     "C2"
@@ -807,6 +861,7 @@
    "wave": 0,
    "group": "F",
    "deliverable_layer": "foundation",
+   "stage": "v1",
    "depends_on": [],
    "choke_points": [
     "C2"
@@ -991,6 +1046,7 @@
    "wave": 0,
    "group": "F",
    "deliverable_layer": "foundation",
+   "stage": "v1",
    "depends_on": [],
    "choke_points": [
     "C2"
@@ -1176,6 +1232,7 @@
    "wave": 0,
    "group": "F",
    "deliverable_layer": "foundation",
+   "stage": "v1",
    "depends_on": [],
    "choke_points": [],
    "choke_points_rationale": "ログイン → sessions → SET LOCAL → RLS。退会・停止・権限変更・パスワード変更で全行 revoked",
@@ -1356,6 +1413,7 @@
    "wave": 0,
    "group": "F",
    "deliverable_layer": "foundation",
+   "stage": "v1",
    "depends_on": [],
    "choke_points": [],
    "choke_points_rationale": "ログイン → sessions → SET LOCAL → RLS。退会・停止・権限変更・パスワード変更で全行 revoked",
@@ -1532,6 +1590,7 @@
    "wave": 0,
    "group": "F",
    "deliverable_layer": "foundation",
+   "stage": "v1",
    "depends_on": [],
    "choke_points": [
     "C1"
@@ -1708,6 +1767,7 @@
    "wave": 0,
    "group": "F",
    "deliverable_layer": "foundation",
+   "stage": "v1",
    "depends_on": [],
    "choke_points": [
     "C2"
@@ -1883,6 +1943,7 @@
    "wave": 0,
    "group": "F",
    "deliverable_layer": "foundation",
+   "stage": "v1",
    "depends_on": [],
    "choke_points": [
     "C3"
@@ -2056,6 +2117,7 @@
    "wave": 0,
    "group": "F",
    "deliverable_layer": "foundation",
+   "stage": "v1",
    "depends_on": [],
    "choke_points": [
     "C4"
@@ -2230,6 +2292,7 @@
    "wave": 1,
    "group": "F",
    "deliverable_layer": "foundation",
+   "stage": "v1",
    "depends_on": [],
    "choke_points": [
     "C5"
@@ -2403,6 +2466,7 @@
    "wave": 1,
    "group": "F",
    "deliverable_layer": "foundation",
+   "stage": "v1",
    "depends_on": [],
    "choke_points": [
     "C6"
@@ -2578,6 +2642,7 @@
    "wave": 1,
    "group": "F",
    "deliverable_layer": "foundation",
+   "stage": "v1",
    "depends_on": [],
    "choke_points": [
     "C7"
@@ -2753,6 +2818,7 @@
    "wave": 1,
    "group": "F",
    "deliverable_layer": "foundation",
+   "stage": "v1",
    "depends_on": [],
    "choke_points": [
     "C8"
@@ -2927,6 +2993,7 @@
    "wave": 1,
    "group": "F",
    "deliverable_layer": "foundation",
+   "stage": "v1",
    "depends_on": [],
    "choke_points": [],
    "choke_points_rationale": "API 契約を信頼源にし frontend/backend が離れないようにする",
@@ -3090,6 +3157,7 @@
    "wave": 1,
    "group": "F",
    "deliverable_layer": "foundation",
+   "stage": "v1",
    "depends_on": [],
    "choke_points": [],
    "choke_points_rationale": "G-11。ダッシュボードで作る前提を無くす",
@@ -3251,6 +3319,7 @@
    "wave": 1,
    "group": "F",
    "deliverable_layer": "foundation",
+   "stage": "v1",
    "depends_on": [],
    "choke_points": [],
    "choke_points_rationale": "エラーは正本から。出せないエラーはデッドコード",
@@ -3414,6 +3483,7 @@
    "wave": 2,
    "group": "D",
    "deliverable_layer": "foundation",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-02",
@@ -3650,6 +3720,7 @@
    "wave": 2,
    "group": "D",
    "deliverable_layer": "foundation",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-02",
@@ -3893,6 +3964,7 @@
    "wave": 2,
    "group": "D",
    "deliverable_layer": "foundation",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-02",
@@ -4107,6 +4179,7 @@
    "wave": 2,
    "group": "D",
    "deliverable_layer": "foundation",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-02",
@@ -4330,6 +4403,7 @@
    "wave": 2,
    "group": "D",
    "deliverable_layer": "foundation",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-02",
@@ -4583,6 +4657,7 @@
    "wave": 2,
    "group": "D",
    "deliverable_layer": "foundation",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-02",
@@ -4794,6 +4869,7 @@
    "wave": 2,
    "group": "D",
    "deliverable_layer": "foundation",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-02",
@@ -4975,6 +5051,7 @@
    "wave": 2,
    "group": "D",
    "deliverable_layer": "foundation",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-02",
@@ -5181,6 +5258,7 @@
    "wave": 2,
    "group": "D",
    "deliverable_layer": "foundation",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-02",
@@ -5409,6 +5487,7 @@
    "wave": 2,
    "group": "D",
    "deliverable_layer": "foundation",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-02",
@@ -5658,6 +5737,7 @@
    "wave": 3,
    "group": "D",
    "deliverable_layer": "foundation",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-02",
@@ -5931,6 +6011,7 @@
    "wave": 3,
    "group": "D",
    "deliverable_layer": "foundation",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-02",
@@ -6055,7 +6136,8 @@
     "D-042",
     "D-076",
     "D-076.3",
-    "D-076.4"
+    "D-076.4",
+    "D-085"
    ],
    "decision_summaries": [
     {
@@ -6159,6 +6241,7 @@
    "wave": 3,
    "group": "D",
    "deliverable_layer": "foundation",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-02",
@@ -6348,6 +6431,244 @@
    "estimate_sessions": 1
   },
   {
+   "id": "T-D-14",
+   "title": "データ層 15. 段階 2 で足す表（7 表・migration・RLS・索引・seed）",
+   "category": "db",
+   "label": "NEW",
+   "feature_id": null,
+   "feature_ids": [],
+   "screen_ids": [],
+   "entity_ids": [
+    "E-086",
+    "E-087",
+    "E-088",
+    "E-089",
+    "E-090",
+    "E-091",
+    "E-092"
+   ],
+   "acts": [],
+   "legacy_task_id": null,
+   "phase": "2_data",
+   "wave": 3,
+   "group": "D",
+   "deliverable_layer": "foundation",
+   "stage": "v1",
+   "depends_on": [
+    "T-F-01",
+    "T-F-02",
+    "T-F-03"
+   ],
+   "choke_points": [
+    "C2"
+   ],
+   "choke_points_rationale": "表と行レベル制御の作成（関門 C2 の中）",
+   "forbidden_direct_apis_reminder": [
+    "fetch",
+    "axios",
+    "undici",
+    "pg / drizzle の生クライアント（関門の外）",
+    "child_process",
+    "fs（関門の外）",
+    "nodemailer / resend（関門の外）",
+    "anthropic / openai SDK（関門の外）"
+   ],
+   "files_changed": [
+    "packages/db/migrations/0114_15.sql (new)",
+    "packages/db/policies/payment_methods.sql (new)",
+    "packages/db/schema.ts (modify)"
+   ],
+   "files_changed_predicted": {
+    "new": [
+     "packages/db/migrations/0114_15.sql",
+     "packages/db/policies/payment_methods.sql",
+     "packages/db/seed/payment_methods.ts"
+    ],
+    "modify": [
+     "packages/db/schema.ts"
+    ],
+    "shared_read": [
+     "03_architecture/ER図.md",
+     "07_functional/entities.json"
+    ],
+    "forbidden": [
+     "apps/**",
+     "apps/api/**"
+    ]
+   },
+   "acceptance_criteria": {
+    "structural": [
+     "UBIQUITOUS: 表 payment_methods, billing_events, llm_routes, llm_capabilities, push_devices, disclosure_versions … が ER 図 §15. 段階 2 で足す の列・型・関係どおりに存在し、全表に RLS が定義されている（RLS 未定義の表は CI で作れない）"
+    ],
+    "functional": [
+     "UNWANTED: IF 他テナントの行を SELECT/UPDATE しようとしたら 0 行／403 で副作用が起きない（payment_methods_tenant_read）",
+     "UBIQUITOUS: payment_methods_tenant_read",
+     "UBIQUITOUS: payment_methods_permission_write",
+     "UBIQUITOUS: payment_methods_ops_read_with_grant",
+     "UBIQUITOUS: billing_events_tenant_read",
+     "UBIQUITOUS: billing_events_permission_write",
+     "UBIQUITOUS: billing_events_ops_read_with_grant"
+    ],
+    "regression": [
+     "pnpm test（該当パッケージ）PASS",
+     "pnpm typecheck 0 errors（触ったファイル）",
+     "coverage >= 80%（触ったファイル）",
+     "pnpm lint OK",
+     "python3 scripts/ci/layer_audit.py --run PASS",
+     "関門の迂回検出（choke-points ci_check）PASS",
+     "audit MD（07_tasks/audit/<id>.md）に impl line を記入"
+    ]
+   },
+   "access_policies_required": [
+    "payment_methods_tenant_read",
+    "payment_methods_permission_write",
+    "payment_methods_ops_read_with_grant",
+    "billing_events_tenant_read",
+    "billing_events_permission_write",
+    "billing_events_ops_read_with_grant",
+    "llm_routes_tenant_read",
+    "llm_routes_permission_write",
+    "llm_routes_ops_read_with_grant",
+    "llm_routes_ops_write",
+    "llm_capabilities_all_read",
+    "llm_capabilities_ops_write",
+    "push_devices_tenant_read",
+    "push_devices_self_only_write",
+    "push_devices_permission_write",
+    "push_devices_ops_read_with_grant",
+    "disclosure_versions_ops_all",
+    "subprocessors_ops_all"
+   ],
+   "spec_links": [
+    "03_architecture/ER図.md",
+    "07_functional/entities.json"
+   ],
+   "audit_md_path": "07_tasks/audit/T-D-14.md",
+   "status": "todo",
+   "qa_rows": {
+    "l1": [
+     "RLS-D14-001",
+     "RLS-D14-002",
+     "RLS-D14-003",
+     "RLS-D14-004",
+     "RLS-D14-005",
+     "RLS-D14-006",
+     "RLS-D14-007",
+     "RLS-D14-008",
+     "RLS-D14-009",
+     "RLS-D14-010",
+     "RLS-D14-011",
+     "RLS-D14-012",
+     "RLS-D14-013",
+     "RLS-D14-014"
+    ],
+    "l2_flows": []
+   },
+   "test_scenarios_inline": [
+    {
+     "name": "RLS 越境",
+     "steps": [
+      "テナント A でログイン",
+      "テナント B の id で GET"
+     ],
+     "expected": "0 行"
+    }
+   ],
+   "source": [
+    "D-004",
+    "D-042",
+    "D-082",
+    "D-082.1",
+    "D-082.2",
+    "D-082.3",
+    "D-082.4",
+    "D-083",
+    "D-083.1",
+    "D-083.2"
+   ],
+   "decision_summaries": [
+    {
+     "id": "D-004",
+     "summary": "LLMは顧客のサブスク内(Bridge)が既定。APIは顧客負担。運営マネージドは既定OFFの管理者トグル"
+    },
+    {
+     "id": "D-042",
+     "summary": "情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エクスポートできる・残留物ゼロ。データ所在は顧客が選ぶ。学習に使わせない"
+    },
+    {
+     "id": "D-082",
+     "summary": "カードの会社は Stripe Billing のサブスク（毎月自動請求）。カードの登録と変更は Stripe のホスト画面（Checkout／Customer Portal）で、カード番号は自社を通らない。subscriptions／invoices／payments は webhook で写す（billing_events で二重処理しない）。失敗は再試行 → 7 日猶予 → 休止。v1 の請求書払いは残り、会社ごとに支払い方法を選ぶ"
+    },
+    {
+     "id": "D-083",
+     "summary": "段階 2 で足す経路は BYOK（顧客の API キー）と運営マネージド（運営のキー・既定 OFF）。提供者は Anthropic・OpenAI・Google の 3 社で、使える機能は 3 社で徹底して同じにする（能力表を揃え、揃わない能力は出さない）。キーは C8 の vault 参照だけ。運営マネージドの費用はプランの上限に含め、超過は従量で同じ請求書に"
+    }
+   ],
+   "critical": false,
+   "why": "",
+   "acceptance_criteria_inline": {
+    "tier_1_structural": [
+     "UBIQUITOUS: 表 payment_methods, billing_events, llm_routes, llm_capabilities, push_devices, disclosure_versions … が ER 図 §15. 段階 2 で足す の列・型・関係どおりに存在し、全表に RLS が定義されている（RLS 未定義の表は CI で作れない）"
+    ],
+    "tier_2_functional": [
+     {
+      "type": "UNWANTED",
+      "text": "UNWANTED: IF 他テナントの行を SELECT/UPDATE しようとしたら 0 行／403 で副作用が起きない（payment_methods_tenant_read）",
+      "critical": false
+     },
+     {
+      "type": "UBIQUITOUS",
+      "text": "UBIQUITOUS: payment_methods_tenant_read",
+      "critical": false
+     },
+     {
+      "type": "UBIQUITOUS",
+      "text": "UBIQUITOUS: payment_methods_permission_write",
+      "critical": false
+     },
+     {
+      "type": "UBIQUITOUS",
+      "text": "UBIQUITOUS: payment_methods_ops_read_with_grant",
+      "critical": false
+     },
+     {
+      "type": "UBIQUITOUS",
+      "text": "UBIQUITOUS: billing_events_tenant_read",
+      "critical": false
+     },
+     {
+      "type": "UBIQUITOUS",
+      "text": "UBIQUITOUS: billing_events_permission_write",
+      "critical": false
+     },
+     {
+      "type": "UBIQUITOUS",
+      "text": "UBIQUITOUS: billing_events_ops_read_with_grant",
+      "critical": false
+     }
+    ],
+    "tier_3_regression": [
+     "pnpm test（該当パッケージ）PASS",
+     "pnpm typecheck 0 errors（触ったファイル）",
+     "coverage >= 80%（触ったファイル）",
+     "pnpm lint OK",
+     "python3 scripts/ci/layer_audit.py --run PASS",
+     "関門の迂回検出（choke-points ci_check）PASS",
+     "audit MD（07_tasks/audit/<id>.md）に impl line を記入"
+    ]
+   },
+   "estimate_hours_human": 46,
+   "estimate_hours_ai": 3.8,
+   "human_review_h": 0.0,
+   "wall_clock_h_ai": 3.8,
+   "ai_acceleration_factor": 12,
+   "blocking_dependencies_h": 0,
+   "estimate_method": "reference",
+   "estimate_confidence": "medium",
+   "estimate_hours": 3.8,
+   "estimate_sessions": 1
+  },
+  {
    "id": "T-A-01",
    "title": "API 契約してから、自力で動く状態まで持っていきたい — データ・API・（5 endpoint）",
    "category": "backend",
@@ -6404,6 +6725,7 @@
    "wave": 5,
    "group": "A",
    "deliverable_layer": "backend",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-02",
@@ -6496,7 +6818,7 @@
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
      "EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「会社名とメールを入れる」として呼ばれたとき THEN Kaname は「アカウントと会社を作る」を行い 2xx を返す",
-     "EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「支払い方法を入れる」として呼ばれたとき THEN Kaname は「決済事業者に登録（カード番号は預からない）」を行い 2xx を返す",
+     "EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「プランを選んで Stripe の登録画面へ進む」として呼ばれたとき THEN Kaname は「Stripe Checkout へ送る（C7）。戻りは webhook の写しで確定。カード番号は自社を通らない」を行い 2xx を返す",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "EVENT-DRIVEN: WHEN GET /api/v1/tenants が「出てきたたたき台を見る」として呼ばれたとき THEN Kaname は「会社モデルの下書きを保存」を行い 2xx を返す（自動側：自分のAIが目標・台帳定義・担当業務・AI社員の初期案を作る）",
      "EVENT-DRIVEN: WHEN GET /api/v1/tenants が「違うところを言う」として呼ばれたとき THEN Kaname は「会社モデルの下書きを更新」を行い 2xx を返す（自動側：自分のAIが直して出し直す）",
@@ -6680,7 +7002,9 @@
     "D-055",
     "D-055.1",
     "D-055.2",
-    "D-055.3"
+    "D-055.3",
+    "D-082.1",
+    "D-082.2"
    ],
    "decision_summaries": [
     {
@@ -6763,7 +7087,7 @@
      },
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「支払い方法を入れる」として呼ばれたとき THEN Kaname は「決済事業者に登録（カード番号は預からない）」を行い 2xx を返す",
+      "text": "EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「プランを選んで Stripe の登録画面へ進む」として呼ばれたとき THEN Kaname は「Stripe Checkout へ送る（C7）。戻りは webhook の写しで確定。カード番号は自社を通らない」を行い 2xx を返す",
       "critical": false
      },
      {
@@ -6834,16 +7158,16 @@
      "endpoint 実在性チェック PASS"
     ]
    },
-   "estimate_hours_human": 116,
-   "estimate_hours_ai": 29.0,
+   "estimate_hours_human": 125,
+   "estimate_hours_ai": 31.2,
    "human_review_h": 1.0,
-   "wall_clock_h_ai": 30.0,
+   "wall_clock_h_ai": 32.2,
    "ai_acceleration_factor": 4,
    "blocking_dependencies_h": 0,
    "estimate_method": "reference",
    "estimate_confidence": "medium",
-   "estimate_hours": 30.0,
-   "estimate_sessions": 8
+   "estimate_hours": 32.2,
+   "estimate_sessions": 9
   },
   {
    "id": "T-A-02",
@@ -6871,6 +7195,7 @@
    "wave": 5,
    "group": "A",
    "deliverable_layer": "backend",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-02",
@@ -7112,6 +7437,7 @@
    "wave": 5,
    "group": "A",
    "deliverable_layer": "backend",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-02",
@@ -7380,6 +7706,7 @@
    "wave": 5,
    "group": "A",
    "deliverable_layer": "backend",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-02",
@@ -7906,6 +8233,7 @@
    "wave": 5,
    "group": "A",
    "deliverable_layer": "backend",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-02",
@@ -8364,6 +8692,7 @@
    "wave": 5,
    "group": "A",
    "deliverable_layer": "backend",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-02",
@@ -8867,6 +9196,7 @@
    "wave": 5,
    "group": "A",
    "deliverable_layer": "backend",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-02",
@@ -9383,6 +9713,7 @@
    "wave": 5,
    "group": "A",
    "deliverable_layer": "backend",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-02",
@@ -9732,6 +10063,7 @@
    "wave": 5,
    "group": "A",
    "deliverable_layer": "backend",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-02",
@@ -10202,6 +10534,7 @@
    "wave": 5,
    "group": "A",
    "deliverable_layer": "backend",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-02",
@@ -10735,6 +11068,7 @@
    "wave": 6,
    "group": "A",
    "deliverable_layer": "backend",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-02",
@@ -11123,6 +11457,7 @@
    "wave": 6,
    "group": "A",
    "deliverable_layer": "backend",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-02",
@@ -11651,6 +11986,7 @@
    "wave": 6,
    "group": "A",
    "deliverable_layer": "backend",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-02",
@@ -12050,6 +12386,7 @@
    "wave": 6,
    "group": "A",
    "deliverable_layer": "backend",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-02",
@@ -12440,6 +12777,7 @@
    "wave": 6,
    "group": "A",
    "deliverable_layer": "backend",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-02",
@@ -12719,7 +13057,11 @@
     "D-050",
     "D-053.6",
     "D-074.5",
-    "D-076.13"
+    "D-076.13",
+    "D-085.1",
+    "D-085.2",
+    "D-085.3",
+    "D-085.4"
    ],
    "decision_summaries": [
     {
@@ -12889,16 +13231,16 @@
      "endpoint 実在性チェック PASS"
     ]
    },
-   "estimate_hours_human": 119,
-   "estimate_hours_ai": 29.8,
+   "estimate_hours_human": 131,
+   "estimate_hours_ai": 32.8,
    "human_review_h": 1.0,
-   "wall_clock_h_ai": 30.8,
+   "wall_clock_h_ai": 33.8,
    "ai_acceleration_factor": 4,
    "blocking_dependencies_h": 0,
    "estimate_method": "reference",
    "estimate_confidence": "medium",
-   "estimate_hours": 30.8,
-   "estimate_sessions": 8
+   "estimate_hours": 33.8,
+   "estimate_sessions": 9
   },
   {
    "id": "T-A-16",
@@ -12942,6 +13284,7 @@
    "wave": 6,
    "group": "A",
    "deliverable_layer": "backend",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-02",
@@ -13364,6 +13707,7 @@
    "wave": 6,
    "group": "A",
    "deliverable_layer": "backend",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-02",
@@ -13728,6 +14072,7 @@
    "wave": 6,
    "group": "A",
    "deliverable_layer": "backend",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-02",
@@ -14100,13 +14445,15 @@
     "A70",
     "A71",
     "A72",
-    "A73"
+    "A73",
+    "A87"
    ],
    "legacy_task_id": null,
    "phase": "3_api",
    "wave": 6,
    "group": "A",
    "deliverable_layer": "backend",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-02",
@@ -14129,7 +14476,7 @@
     "C2",
     "C6"
    ],
-   "choke_points_rationale": "通知送出",
+   "choke_points_rationale": "決済・課金・通知送出",
    "forbidden_direct_apis_reminder": [
     "fetch",
     "axios",
@@ -14184,8 +14531,8 @@
      "EVENT-DRIVEN: WHEN PATCH /api/v1/inquiries/:id が「問い合わせに答える」として呼ばれたとき THEN Kaname は「受信箱（問い合わせ＋詰まり）。返答は顧客の問い合わせと証跡に残る」を行い 2xx を返す",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "EVENT-DRIVEN: WHEN GET /api/v1/invoices が「請求・入金・利用量を見る」として呼ばれたとき THEN Kaname は「各社の請求・入金・未収・利用量／上限を集計（中身は見ない）」を行い 2xx を返す",
+     "EVENT-DRIVEN: WHEN GET /api/v1/invoices が「カードの会社の写しを見る」として呼ばれたとき THEN Kaname は「Stripe の写し（webhook）の状態と顧客リンク。請求書払いは従来の記録」を行い 2xx を返す",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
      "EVENT-DRIVEN: WHEN POST /api/v1/notices が「お知らせを出す」として呼ばれたとき THEN Kaname は「お知らせ・稼働状況を公開（対象プラン・公開日時）。全社に通知」を行い 2xx を返す",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
@@ -14333,7 +14680,14 @@
     "D-075.6",
     "D-077.3",
     "D-077.4",
-    "D-077.8"
+    "D-077.8",
+    "D-082.3",
+    "D-082.8",
+    "D-083.5",
+    "D-083.6",
+    "D-085.1",
+    "D-085.2",
+    "D-085.3"
    ],
    "decision_summaries": [
     {
@@ -14399,13 +14753,13 @@
       "critical": false
      },
      {
-      "type": "UNWANTED",
-      "text": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-      "critical": true
+      "type": "EVENT-DRIVEN",
+      "text": "EVENT-DRIVEN: WHEN GET /api/v1/invoices が「カードの会社の写しを見る」として呼ばれたとき THEN Kaname は「Stripe の写し（webhook）の状態と顧客リンク。請求書払いは従来の記録」を行い 2xx を返す",
+      "critical": false
      },
      {
       "type": "UNWANTED",
-      "text": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+      "text": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
       "critical": true
      },
      {
@@ -14471,16 +14825,16 @@
      "endpoint 実在性チェック PASS"
     ]
    },
-   "estimate_hours_human": 116,
-   "estimate_hours_ai": 29.0,
+   "estimate_hours_human": 143,
+   "estimate_hours_ai": 35.8,
    "human_review_h": 1.0,
-   "wall_clock_h_ai": 30.0,
+   "wall_clock_h_ai": 36.8,
    "ai_acceleration_factor": 4,
    "blocking_dependencies_h": 0,
    "estimate_method": "reference",
    "estimate_confidence": "medium",
-   "estimate_hours": 30.0,
-   "estimate_sessions": 8
+   "estimate_hours": 36.8,
+   "estimate_sessions": 10
   },
   {
    "id": "T-A-20",
@@ -14533,6 +14887,7 @@
    "wave": 6,
    "group": "A",
    "deliverable_layer": "backend",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-02",
@@ -14776,7 +15131,15 @@
     "D-076.1",
     "D-076.2",
     "D-076.3",
-    "D-076.4"
+    "D-076.4",
+    "D-083.1",
+    "D-083.3",
+    "D-083.4",
+    "D-083.5",
+    "D-084.1",
+    "D-084.2",
+    "D-084.3",
+    "D-084.4"
    ],
    "decision_summaries": [
     {
@@ -14914,16 +15277,16 @@
      "endpoint 実在性チェック PASS"
     ]
    },
-   "estimate_hours_human": 134,
-   "estimate_hours_ai": 33.5,
+   "estimate_hours_human": 164,
+   "estimate_hours_ai": 41.0,
    "human_review_h": 1.0,
-   "wall_clock_h_ai": 34.5,
+   "wall_clock_h_ai": 42.0,
    "ai_acceleration_factor": 4,
    "blocking_dependencies_h": 0,
    "estimate_method": "reference",
    "estimate_confidence": "medium",
-   "estimate_hours": 34.5,
-   "estimate_sessions": 9
+   "estimate_hours": 42.0,
+   "estimate_sessions": 11
   },
   {
    "id": "T-A-21",
@@ -14971,6 +15334,7 @@
    "wave": 7,
    "group": "A",
    "deliverable_layer": "backend",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-02",
@@ -15352,6 +15716,7 @@
    "wave": 7,
    "group": "A",
    "deliverable_layer": "backend",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-02",
@@ -15711,6 +16076,7 @@
    "wave": 7,
    "group": "A",
    "deliverable_layer": "backend",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-02",
@@ -15986,6 +16352,894 @@
    "estimate_sessions": 2
   },
   {
+   "id": "T-A-24",
+   "title": "API このツールを入れて安全か、社内（情シス・コンプラ）に説明できるように（1 endpoint・段階 2）",
+   "category": "backend",
+   "label": "NEW",
+   "feature_id": "F-V3-B-09",
+   "feature_ids": [
+    "F-V3-B-09"
+   ],
+   "screen_ids": [
+    "disclosure"
+   ],
+   "entity_ids": [
+    "E-041",
+    "E-061",
+    "E-091",
+    "E-092"
+   ],
+   "acts": [
+    "A84"
+   ],
+   "legacy_task_id": null,
+   "phase": "9_v2_api",
+   "wave": 20,
+   "group": "A",
+   "deliverable_layer": "backend",
+   "stage": "v2",
+   "depends_on": [
+    "T-F-01",
+    "T-F-02",
+    "T-F-03",
+    "T-F-04",
+    "T-F-05",
+    "T-D-06",
+    "T-D-10",
+    "T-D-14",
+    "T-F-10"
+   ],
+   "choke_points": [
+    "C4"
+   ],
+   "choke_points_rationale": "ファイル / オブジェクト",
+   "forbidden_direct_apis_reminder": [
+    "fetch",
+    "axios",
+    "undici",
+    "pg / drizzle の生クライアント（関門の外）",
+    "child_process",
+    "fs（関門の外）",
+    "nodemailer / resend（関門の外）",
+    "anthropic / openai SDK（関門の外）"
+   ],
+   "files_changed": [
+    "apps/api/src/routes/disclosure_versions.ts (new)",
+    "apps/api/src/app.ts (modify)"
+   ],
+   "files_changed_predicted": {
+    "new": [
+     "apps/api/src/routes/disclosure_versions.ts",
+     "apps/api/src/services/09.ts",
+     "apps/api/tests/09.spec.ts"
+    ],
+    "modify": [
+     "apps/api/src/app.ts"
+    ],
+    "shared_read": [
+     "08_api/openapi.yaml",
+     "08_api/endpoints.json",
+     "07_functional/entities.json"
+    ],
+    "forbidden": [
+     "apps/web/**",
+     "packages/gateways/**（呼ぶだけ・直さない）"
+    ]
+   },
+   "acceptance_criteria": {
+    "structural": [
+     "UBIQUITOUS: GET /api/v1/disclosure_versions は 08_api/openapi.yaml の operation getDisclosureVersions どおりの入出力（200 と 4xx 401/403/429）"
+    ],
+    "functional": [
+     "EVENT-DRIVEN: WHEN GET /api/v1/disclosure_versions が「開示資料を開いて PDF をもらう」として呼ばれたとき THEN Kaname は「成果物から生成した版を読む。PDF は署名 URL（C4）」を行い 2xx を返す",
+     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+     "UBIQUITOUS: 行レベル制御 audit_events_ops_read_with_grant が効く",
+     "UBIQUITOUS: 行レベル制御 audit_events_tenant_read が効く"
+    ],
+    "regression": [
+     "pnpm test（該当パッケージ）PASS",
+     "pnpm typecheck 0 errors（触ったファイル）",
+     "coverage >= 80%（触ったファイル）",
+     "pnpm lint OK",
+     "python3 scripts/ci/layer_audit.py --run PASS",
+     "関門の迂回検出（choke-points ci_check）PASS",
+     "audit MD（07_tasks/audit/<id>.md）に impl line を記入",
+     "契約テスト（OpenAPI）PASS",
+     "endpoint 実在性チェック PASS"
+    ]
+   },
+   "access_policies_required": [
+    "audit_events_ops_read_with_grant",
+    "audit_events_tenant_read"
+   ],
+   "spec_links": [
+    "08_api/openapi.yaml",
+    "08_api/API-SPEC.md",
+    "07_functional/features.json#F-V3-B-09",
+    "06_mockup/v2/v2-disclosure.html"
+   ],
+   "audit_md_path": "07_tasks/audit/T-A-24.md",
+   "status": "todo",
+   "qa_rows": {
+    "l1": [
+     "API-24-001",
+     "API-24-002",
+     "API-24-003",
+     "API-24-004",
+     "API-24-005",
+     "API-24-006",
+     "API-24-007",
+     "API-24-008",
+     "API-24-009",
+     "API-24-010",
+     "API-24-011"
+    ],
+    "l2_flows": [
+     "J-01",
+     "J-07",
+     "J-08"
+    ]
+   },
+   "test_scenarios_inline": [
+    {
+     "name": "GET /api/v1/disclosure_versions",
+     "steps": [
+      "権限のある会員で呼ぶ",
+      "権限の無い会員で呼ぶ",
+      "別テナントの id で呼ぶ"
+     ],
+     "expected": "200 / 403 / 404"
+    }
+   ],
+   "source": [
+    "D-010.7",
+    "D-015",
+    "D-015.2",
+    "D-015.3",
+    "D-025",
+    "D-025.6",
+    "D-042",
+    "D-042.1",
+    "D-042.3",
+    "D-042.6",
+    "D-042.7",
+    "D-050",
+    "D-053.6",
+    "D-074.5",
+    "D-076.13",
+    "D-085.1",
+    "D-085.2",
+    "D-085.3",
+    "D-085.4"
+   ],
+   "decision_summaries": [
+    {
+     "id": "D-010",
+     "summary": "製品の背骨。会社モデル(目標・台帳定義・担当業務・組織・ポリシー・記憶)を1つの定義に。画面もAI社員も自動実行もこの定義だけを読む。AIが会社の構造を理解して動く"
+    },
+    {
+     "id": "D-015",
+     "summary": "Bridgeは顧客PCで動く万能実行器。本人のIP・本人のログイン済みセッションで動くのでCAPTCHA/bot検知に到達しない。Kaname最大の武器"
+    },
+    {
+     "id": "D-025",
+     "summary": "編集の3経路。(1)画面で直接編集=人が変える時は即反映(承認を挟まない) (2)AIに頼む(会話)=AIが変える時だけ提案→承認 (3)ファイル一括。エクスポートはあえて許す"
+    },
+    {
+     "id": "D-042",
+     "summary": "情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エクスポートできる・残留物ゼロ。データ所在は顧客が選ぶ。学習に使わせない"
+    }
+   ],
+   "critical": true,
+   "why": "",
+   "acceptance_criteria_inline": {
+    "tier_1_structural": [
+     "UBIQUITOUS: GET /api/v1/disclosure_versions は 08_api/openapi.yaml の operation getDisclosureVersions どおりの入出力（200 と 4xx 401/403/429）"
+    ],
+    "tier_2_functional": [
+     {
+      "type": "EVENT-DRIVEN",
+      "text": "EVENT-DRIVEN: WHEN GET /api/v1/disclosure_versions が「開示資料を開いて PDF をもらう」として呼ばれたとき THEN Kaname は「成果物から生成した版を読む。PDF は署名 URL（C4）」を行い 2xx を返す",
+      "critical": false
+     },
+     {
+      "type": "UNWANTED",
+      "text": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+      "critical": true
+     },
+     {
+      "type": "UNWANTED",
+      "text": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+      "critical": true
+     },
+     {
+      "type": "UNWANTED",
+      "text": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+      "critical": true
+     },
+     {
+      "type": "UBIQUITOUS",
+      "text": "UBIQUITOUS: 行レベル制御 audit_events_ops_read_with_grant が効く",
+      "critical": false
+     },
+     {
+      "type": "UBIQUITOUS",
+      "text": "UBIQUITOUS: 行レベル制御 audit_events_tenant_read が効く",
+      "critical": false
+     }
+    ],
+    "tier_3_regression": [
+     "pnpm test（該当パッケージ）PASS",
+     "pnpm typecheck 0 errors（触ったファイル）",
+     "coverage >= 80%（触ったファイル）",
+     "pnpm lint OK",
+     "python3 scripts/ci/layer_audit.py --run PASS",
+     "関門の迂回検出（choke-points ci_check）PASS",
+     "audit MD（07_tasks/audit/<id>.md）に impl line を記入",
+     "契約テスト（OpenAPI）PASS",
+     "endpoint 実在性チェック PASS"
+    ]
+   },
+   "estimate_hours_human": 131,
+   "estimate_hours_ai": 32.8,
+   "human_review_h": 1.0,
+   "wall_clock_h_ai": 33.8,
+   "ai_acceleration_factor": 4,
+   "blocking_dependencies_h": 0,
+   "estimate_method": "reference",
+   "estimate_confidence": "medium",
+   "estimate_hours": 33.8,
+   "estimate_sessions": 9
+  },
+  {
+   "id": "T-A-25",
+   "title": "API 運営として、問い合わせに答え、お知らせと稼働状況を出し、各社の請求・（2 endpoint・段階 2）",
+   "category": "backend",
+   "label": "NEW",
+   "feature_id": "F-V3-B-15",
+   "feature_ids": [
+    "F-V3-B-15"
+   ],
+   "screen_ids": [
+    "ops-disclosure",
+    "ops-llm"
+   ],
+   "entity_ids": [
+    "E-064",
+    "E-065",
+    "E-074",
+    "E-075",
+    "E-088",
+    "E-091",
+    "E-092"
+   ],
+   "acts": [
+    "A85",
+    "A86"
+   ],
+   "legacy_task_id": null,
+   "phase": "9_v2_api",
+   "wave": 20,
+   "group": "A",
+   "deliverable_layer": "backend",
+   "stage": "v2",
+   "depends_on": [
+    "T-F-01",
+    "T-F-02",
+    "T-F-03",
+    "T-F-04",
+    "T-F-05",
+    "T-D-11",
+    "T-D-14",
+    "T-F-02",
+    "T-F-03",
+    "T-F-04",
+    "T-F-08",
+    "T-F-10",
+    "T-F-12"
+   ],
+   "choke_points": [
+    "C2",
+    "C4",
+    "C6"
+   ],
+   "choke_points_rationale": "ファイル / オブジェクト・通知送出",
+   "forbidden_direct_apis_reminder": [
+    "fetch",
+    "axios",
+    "undici",
+    "pg / drizzle の生クライアント（関門の外）",
+    "child_process",
+    "fs（関門の外）",
+    "nodemailer / resend（関門の外）",
+    "anthropic / openai SDK（関門の外）"
+   ],
+   "files_changed": [
+    "apps/api/src/routes/disclosure_versions.ts (new)",
+    "apps/api/src/routes/llm_routes.ts (new)",
+    "apps/api/src/app.ts (modify)"
+   ],
+   "files_changed_predicted": {
+    "new": [
+     "apps/api/src/routes/disclosure_versions.ts",
+     "apps/api/src/routes/llm_routes.ts",
+     "apps/api/src/services/15.ts",
+     "apps/api/tests/15.spec.ts"
+    ],
+    "modify": [
+     "apps/api/src/app.ts"
+    ],
+    "shared_read": [
+     "08_api/openapi.yaml",
+     "08_api/endpoints.json",
+     "07_functional/entities.json"
+    ],
+    "forbidden": [
+     "apps/web/**",
+     "packages/gateways/**（呼ぶだけ・直さない）"
+    ]
+   },
+   "acceptance_criteria": {
+    "structural": [
+     "UBIQUITOUS: PATCH /api/v1/disclosure_versions/:id は 08_api/openapi.yaml の operation patchDisclosureVersionsById どおりの入出力（200 と 4xx 401/403/404/422/429）",
+     "UBIQUITOUS: PATCH /api/v1/llm_routes/:id は 08_api/openapi.yaml の operation patchLlmRoutesById どおりの入出力（200 と 4xx 401/403/404/422/429）"
+    ],
+    "functional": [
+     "EVENT-DRIVEN: WHEN PATCH /api/v1/disclosure_versions/:id が「版を出す・DPA の雛形とサブプロセッサを整える」として呼ばれたとき THEN Kaname は「disclosure_versions を作る（C4）。変更はお知らせ（C6）」を行い 2xx を返す",
+     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+     "EVENT-DRIVEN: WHEN PATCH /api/v1/llm_routes/:id が「会社の詳細で運営マネージドを許可する」として呼ばれたとき THEN Kaname は「llm_routes の許可を更新。3 社の使用量を集計して費用へ」を行い 2xx を返す",
+     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+     "UBIQUITOUS: 行レベル制御 invoices_permission_write が効く",
+     "UBIQUITOUS: 行レベル制御 llm_routes_ops_write が効く",
+     "UBIQUITOUS: 行レベル制御 llm_routes_permission_write が効く",
+     "UBIQUITOUS: 行レベル制御 notice_deliveries_permission_write が効く"
+    ],
+    "regression": [
+     "pnpm test（該当パッケージ）PASS",
+     "pnpm typecheck 0 errors（触ったファイル）",
+     "coverage >= 80%（触ったファイル）",
+     "pnpm lint OK",
+     "python3 scripts/ci/layer_audit.py --run PASS",
+     "関門の迂回検出（choke-points ci_check）PASS",
+     "audit MD（07_tasks/audit/<id>.md）に impl line を記入",
+     "契約テスト（OpenAPI）PASS",
+     "endpoint 実在性チェック PASS"
+    ]
+   },
+   "access_policies_required": [
+    "invoices_permission_write",
+    "llm_routes_ops_write",
+    "llm_routes_permission_write",
+    "notice_deliveries_permission_write",
+    "notice_deliveries_self_only_write",
+    "payments_ops_write",
+    "payments_permission_write"
+   ],
+   "spec_links": [
+    "08_api/openapi.yaml",
+    "08_api/API-SPEC.md",
+    "07_functional/features.json#F-V3-B-15",
+    "06_mockup/v2/v2-ops-disclosure.html",
+    "06_mockup/v2/v2-ops-llm.html"
+   ],
+   "audit_md_path": "07_tasks/audit/T-A-25.md",
+   "status": "todo",
+   "qa_rows": {
+    "l1": [
+     "API-25-001",
+     "API-25-002",
+     "API-25-003",
+     "API-25-004",
+     "API-25-005",
+     "API-25-006",
+     "API-25-007",
+     "API-25-008",
+     "API-25-009",
+     "API-25-010",
+     "API-25-011",
+     "API-25-012",
+     "API-25-013",
+     "API-25-014",
+     "API-25-015",
+     "API-25-016",
+     "API-25-017",
+     "API-25-018"
+    ],
+    "l2_flows": [
+     "J-09"
+    ]
+   },
+   "test_scenarios_inline": [
+    {
+     "name": "PATCH /api/v1/disclosure_versions/:id",
+     "steps": [
+      "権限のある会員で呼ぶ",
+      "権限の無い会員で呼ぶ",
+      "別テナントの id で呼ぶ"
+     ],
+     "expected": "200 / 403 / 404"
+    },
+    {
+     "name": "PATCH /api/v1/llm_routes/:id",
+     "steps": [
+      "権限のある会員で呼ぶ",
+      "権限の無い会員で呼ぶ",
+      "別テナントの id で呼ぶ"
+     ],
+     "expected": "200 / 403 / 404"
+    }
+   ],
+   "source": [
+    "D-002",
+    "D-002.2",
+    "D-042",
+    "D-075",
+    "D-075.1",
+    "D-075.2",
+    "D-075.4",
+    "D-075.5",
+    "D-075.6",
+    "D-077.3",
+    "D-077.4",
+    "D-077.8",
+    "D-082.3",
+    "D-082.8",
+    "D-083.5",
+    "D-083.6",
+    "D-085.1",
+    "D-085.2",
+    "D-085.3"
+   ],
+   "decision_summaries": [
+    {
+     "id": "D-002",
+     "summary": "65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集客ファネル"
+    },
+    {
+     "id": "D-042",
+     "summary": "情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エクスポートできる・残留物ゼロ。データ所在は顧客が選ぶ。学習に使わせない"
+    },
+    {
+     "id": "D-075",
+     "summary": "運営と顧客の間で往復するものは 6 つ（問い合わせ／お知らせと稼働状況／通知の届け先／プランと利用量／請求と入金／セキュリティの出来事）。顧客側 3 画面（問い合わせ・お知らせと通知・プランと請求）と運営側 2 画面（お知らせ・請求と入金）を足し、運営の支援は受信箱（問い合わせ＋詰まり）、運営の証跡はセキュリティの出来事を持つ。支払い方法の登録は段階2（D-002）で、v1 は請求書払い"
+    },
+    {
+     "id": "D-077",
+     "summary": "請求・問い合わせ・配布したもの・証跡・公開審査・お知らせは会社ごとに違う。運営の対応は 会社の 1 社（詳細）の 8 面（構成と状態／請求と入金／問い合わせ／配布したもの／審査／証跡とサポートアクセス／お知らせ／退会と猶予）で行い、横断の一覧（受信箱・請求と入金・審査・運営の証跡）は入口として残す。会社をまたぐもの（全体のお知らせ・配るもの＝マスタ・プランの定義・サービス台帳・運営メンバーの権限）は横断の画面のまま。プランの定義は「配るもの」へ移す"
+    }
+   ],
+   "critical": true,
+   "why": "",
+   "acceptance_criteria_inline": {
+    "tier_1_structural": [
+     "UBIQUITOUS: PATCH /api/v1/disclosure_versions/:id は 08_api/openapi.yaml の operation patchDisclosureVersionsById どおりの入出力（200 と 4xx 401/403/404/422/429）",
+     "UBIQUITOUS: PATCH /api/v1/llm_routes/:id は 08_api/openapi.yaml の operation patchLlmRoutesById どおりの入出力（200 と 4xx 401/403/404/422/429）"
+    ],
+    "tier_2_functional": [
+     {
+      "type": "EVENT-DRIVEN",
+      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/disclosure_versions/:id が「版を出す・DPA の雛形とサブプロセッサを整える」として呼ばれたとき THEN Kaname は「disclosure_versions を作る（C4）。変更はお知らせ（C6）」を行い 2xx を返す",
+      "critical": false
+     },
+     {
+      "type": "UNWANTED",
+      "text": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+      "critical": true
+     },
+     {
+      "type": "UNWANTED",
+      "text": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+      "critical": true
+     },
+     {
+      "type": "EVENT-DRIVEN",
+      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/llm_routes/:id が「会社の詳細で運営マネージドを許可する」として呼ばれたとき THEN Kaname は「llm_routes の許可を更新。3 社の使用量を集計して費用へ」を行い 2xx を返す",
+      "critical": false
+     },
+     {
+      "type": "UNWANTED",
+      "text": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+      "critical": true
+     },
+     {
+      "type": "UNWANTED",
+      "text": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+      "critical": true
+     },
+     {
+      "type": "UNWANTED",
+      "text": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+      "critical": true
+     },
+     {
+      "type": "UNWANTED",
+      "text": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+      "critical": true
+     },
+     {
+      "type": "UBIQUITOUS",
+      "text": "UBIQUITOUS: 行レベル制御 invoices_permission_write が効く",
+      "critical": false
+     },
+     {
+      "type": "UBIQUITOUS",
+      "text": "UBIQUITOUS: 行レベル制御 llm_routes_ops_write が効く",
+      "critical": false
+     },
+     {
+      "type": "UBIQUITOUS",
+      "text": "UBIQUITOUS: 行レベル制御 llm_routes_permission_write が効く",
+      "critical": false
+     },
+     {
+      "type": "UBIQUITOUS",
+      "text": "UBIQUITOUS: 行レベル制御 notice_deliveries_permission_write が効く",
+      "critical": false
+     }
+    ],
+    "tier_3_regression": [
+     "pnpm test（該当パッケージ）PASS",
+     "pnpm typecheck 0 errors（触ったファイル）",
+     "coverage >= 80%（触ったファイル）",
+     "pnpm lint OK",
+     "python3 scripts/ci/layer_audit.py --run PASS",
+     "関門の迂回検出（choke-points ci_check）PASS",
+     "audit MD（07_tasks/audit/<id>.md）に impl line を記入",
+     "契約テスト（OpenAPI）PASS",
+     "endpoint 実在性チェック PASS"
+    ]
+   },
+   "estimate_hours_human": 143,
+   "estimate_hours_ai": 35.8,
+   "human_review_h": 1.0,
+   "wall_clock_h_ai": 36.8,
+   "ai_acceleration_factor": 4,
+   "blocking_dependencies_h": 0,
+   "estimate_method": "reference",
+   "estimate_confidence": "medium",
+   "estimate_hours": 36.8,
+   "estimate_sessions": 10
+  },
+  {
+   "id": "T-A-26",
+   "title": "API 自分のアカウント・会社の設定・既存データの取り込み・外部サービスの連（2 endpoint・段階 2）",
+   "category": "backend",
+   "label": "NEW",
+   "feature_id": "F-V3-B-16",
+   "feature_ids": [
+    "F-V3-B-16"
+   ],
+   "screen_ids": [
+    "app-setup",
+    "llm-routes"
+   ],
+   "entity_ids": [
+    "E-037",
+    "E-050",
+    "E-067",
+    "E-068",
+    "E-088",
+    "E-089",
+    "E-090"
+   ],
+   "acts": [
+    "A82",
+    "A83"
+   ],
+   "legacy_task_id": null,
+   "phase": "9_v2_api",
+   "wave": 20,
+   "group": "A",
+   "deliverable_layer": "backend",
+   "stage": "v2",
+   "depends_on": [
+    "T-F-01",
+    "T-F-02",
+    "T-F-03",
+    "T-F-04",
+    "T-F-05",
+    "T-D-05",
+    "T-D-09",
+    "T-D-11",
+    "T-D-14",
+    "T-F-02",
+    "T-F-03",
+    "T-F-04",
+    "T-F-08",
+    "T-F-09",
+    "T-F-12",
+    "T-F-14"
+   ],
+   "choke_points": [
+    "C2",
+    "C3",
+    "C6",
+    "C8"
+   ],
+   "choke_points_rationale": "モデル呼び出し・秘密の読み出し・通知送出",
+   "forbidden_direct_apis_reminder": [
+    "fetch",
+    "axios",
+    "undici",
+    "pg / drizzle の生クライアント（関門の外）",
+    "child_process",
+    "fs（関門の外）",
+    "nodemailer / resend（関門の外）",
+    "anthropic / openai SDK（関門の外）"
+   ],
+   "files_changed": [
+    "apps/api/src/routes/llm_routes.ts (new)",
+    "apps/api/src/routes/push_devices.ts (new)",
+    "apps/api/src/app.ts (modify)"
+   ],
+   "files_changed_predicted": {
+    "new": [
+     "apps/api/src/routes/llm_routes.ts",
+     "apps/api/src/routes/push_devices.ts",
+     "apps/api/src/services/16.ts",
+     "apps/api/tests/16.spec.ts"
+    ],
+    "modify": [
+     "apps/api/src/app.ts"
+    ],
+    "shared_read": [
+     "08_api/openapi.yaml",
+     "08_api/endpoints.json",
+     "07_functional/entities.json"
+    ],
+    "forbidden": [
+     "apps/web/**",
+     "packages/gateways/**（呼ぶだけ・直さない）"
+    ]
+   },
+   "acceptance_criteria": {
+    "structural": [
+     "UBIQUITOUS: POST /api/v1/llm_routes は 08_api/openapi.yaml の operation postLlmRoutes どおりの入出力（201 と 4xx 401/403/409/422/429/502）",
+     "UBIQUITOUS: PATCH /api/v1/push_devices/:id は 08_api/openapi.yaml の operation patchPushDevicesById どおりの入出力（200 と 4xx 401/403/404/422/429）"
+    ],
+    "functional": [
+     "EVENT-DRIVEN: WHEN POST /api/v1/llm_routes が「会社の設定で AI の経路を選び、必要ならキーを入れる」として呼ばれたとき THEN Kaname は「キーは C8 の vault へ参照だけ。llm_routes を保存。登録時に提供者へ 1 回だけ検査（成功／失敗を証跡に）」を行い 2xx を返す（自動側：自分のAIが経路ごとの違い（費用・PC が閉じているときの動き）を説明する）",
+     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+     "EVENT-DRIVEN: WHEN PATCH /api/v1/push_devices/:id が「アプリを入れて通知を許可する」として呼ばれたとき THEN Kaname は「push_devices に端末を登録し、通知の届け先の経路に「アプリ」を足す」を行い 2xx を返す",
+     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+     "UBIQUITOUS: 行レベル制御 credentials_permission_write が効く",
+     "UBIQUITOUS: 行レベル制御 credentials_self_only_write が効く",
+     "UBIQUITOUS: 行レベル制御 llm_capabilities_ops_write が効く",
+     "UBIQUITOUS: 行レベル制御 llm_routes_ops_write が効く"
+    ],
+    "regression": [
+     "pnpm test（該当パッケージ）PASS",
+     "pnpm typecheck 0 errors（触ったファイル）",
+     "coverage >= 80%（触ったファイル）",
+     "pnpm lint OK",
+     "python3 scripts/ci/layer_audit.py --run PASS",
+     "関門の迂回検出（choke-points ci_check）PASS",
+     "audit MD（07_tasks/audit/<id>.md）に impl line を記入",
+     "契約テスト（OpenAPI）PASS",
+     "endpoint 実在性チェック PASS"
+    ]
+   },
+   "access_policies_required": [
+    "credentials_permission_write",
+    "credentials_self_only_write",
+    "llm_capabilities_ops_write",
+    "llm_routes_ops_write",
+    "llm_routes_permission_write",
+    "notification_preferences_permission_write",
+    "notification_preferences_self_only_write",
+    "notifications_permission_write",
+    "notifications_self_only_write",
+    "push_devices_permission_write",
+    "push_devices_self_only_write",
+    "sessions_permission_write"
+   ],
+   "spec_links": [
+    "08_api/openapi.yaml",
+    "08_api/API-SPEC.md",
+    "07_functional/features.json#F-V3-B-16",
+    "06_mockup/v2/v2-app-setup.html",
+    "06_mockup/v2/v2-llm-routes.html"
+   ],
+   "audit_md_path": "07_tasks/audit/T-A-26.md",
+   "status": "todo",
+   "qa_rows": {
+    "l1": [
+     "API-26-001",
+     "API-26-002",
+     "API-26-003",
+     "API-26-004",
+     "API-26-005",
+     "API-26-006",
+     "API-26-007",
+     "API-26-008",
+     "API-26-009",
+     "API-26-010",
+     "API-26-011",
+     "API-26-012",
+     "API-26-013",
+     "API-26-014",
+     "API-26-015",
+     "API-26-016",
+     "API-26-017",
+     "API-26-018"
+    ],
+    "l2_flows": [
+     "J-07"
+    ]
+   },
+   "test_scenarios_inline": [
+    {
+     "name": "POST /api/v1/llm_routes",
+     "steps": [
+      "権限のある会員で呼ぶ",
+      "権限の無い会員で呼ぶ",
+      "別テナントの id で呼ぶ"
+     ],
+     "expected": "201 / 403 / 404"
+    },
+    {
+     "name": "PATCH /api/v1/push_devices/:id",
+     "steps": [
+      "権限のある会員で呼ぶ",
+      "権限の無い会員で呼ぶ",
+      "別テナントの id で呼ぶ"
+     ],
+     "expected": "200 / 403 / 404"
+    }
+   ],
+   "source": [
+    "D-006.5",
+    "D-013.1",
+    "D-014.2",
+    "D-019.2",
+    "D-025",
+    "D-025.5",
+    "D-029",
+    "D-029.1",
+    "D-038.4",
+    "D-040.3",
+    "D-041",
+    "D-041.1",
+    "D-042",
+    "D-042.5",
+    "D-042.8",
+    "D-045",
+    "D-045.3",
+    "D-076",
+    "D-076.1",
+    "D-076.2",
+    "D-076.3",
+    "D-076.4",
+    "D-083.1",
+    "D-083.3",
+    "D-083.4",
+    "D-083.5",
+    "D-084.1",
+    "D-084.2",
+    "D-084.3",
+    "D-084.4"
+   ],
+   "decision_summaries": [
+    {
+     "id": "D-006",
+     "summary": "スコープの採否は『抜いてもループが閉じるか』。CRM・請求・経理を切ると目標の数値が出せなくなるので切らない"
+    },
+    {
+     "id": "D-013",
+     "summary": "実行層は接続の器を1回作れば設定で増える形にする。連携を1本ずつ書かない"
+    },
+    {
+     "id": "D-014",
+     "summary": "ブラウザ操作が標準の万能手段。API/MCPは後からの最適化。API主・ブラウザは逃げ道という順序付けは誤りとして撤回"
+    },
+    {
+     "id": "D-019",
+     "summary": "実装順序。Bridge(万能実行器)を最初に作る"
+    }
+   ],
+   "critical": true,
+   "why": "",
+   "acceptance_criteria_inline": {
+    "tier_1_structural": [
+     "UBIQUITOUS: POST /api/v1/llm_routes は 08_api/openapi.yaml の operation postLlmRoutes どおりの入出力（201 と 4xx 401/403/409/422/429/502）",
+     "UBIQUITOUS: PATCH /api/v1/push_devices/:id は 08_api/openapi.yaml の operation patchPushDevicesById どおりの入出力（200 と 4xx 401/403/404/422/429）"
+    ],
+    "tier_2_functional": [
+     {
+      "type": "EVENT-DRIVEN",
+      "text": "EVENT-DRIVEN: WHEN POST /api/v1/llm_routes が「会社の設定で AI の経路を選び、必要ならキーを入れる」として呼ばれたとき THEN Kaname は「キーは C8 の vault へ参照だけ。llm_routes を保存。登録時に提供者へ 1 回だけ検査（成功／失敗を証跡に）」を行い 2xx を返す（自動側：自分のAIが経路ごとの違い（費用・PC が閉じているときの動き）を説明する）",
+      "critical": false
+     },
+     {
+      "type": "UNWANTED",
+      "text": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+      "critical": true
+     },
+     {
+      "type": "UNWANTED",
+      "text": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+      "critical": true
+     },
+     {
+      "type": "EVENT-DRIVEN",
+      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/push_devices/:id が「アプリを入れて通知を許可する」として呼ばれたとき THEN Kaname は「push_devices に端末を登録し、通知の届け先の経路に「アプリ」を足す」を行い 2xx を返す",
+      "critical": false
+     },
+     {
+      "type": "UNWANTED",
+      "text": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+      "critical": true
+     },
+     {
+      "type": "UNWANTED",
+      "text": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+      "critical": true
+     },
+     {
+      "type": "UNWANTED",
+      "text": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+      "critical": true
+     },
+     {
+      "type": "UNWANTED",
+      "text": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+      "critical": true
+     },
+     {
+      "type": "UBIQUITOUS",
+      "text": "UBIQUITOUS: 行レベル制御 credentials_permission_write が効く",
+      "critical": false
+     },
+     {
+      "type": "UBIQUITOUS",
+      "text": "UBIQUITOUS: 行レベル制御 credentials_self_only_write が効く",
+      "critical": false
+     },
+     {
+      "type": "UBIQUITOUS",
+      "text": "UBIQUITOUS: 行レベル制御 llm_capabilities_ops_write が効く",
+      "critical": false
+     },
+     {
+      "type": "UBIQUITOUS",
+      "text": "UBIQUITOUS: 行レベル制御 llm_routes_ops_write が効く",
+      "critical": false
+     }
+    ],
+    "tier_3_regression": [
+     "pnpm test（該当パッケージ）PASS",
+     "pnpm typecheck 0 errors（触ったファイル）",
+     "coverage >= 80%（触ったファイル）",
+     "pnpm lint OK",
+     "python3 scripts/ci/layer_audit.py --run PASS",
+     "関門の迂回検出（choke-points ci_check）PASS",
+     "audit MD（07_tasks/audit/<id>.md）に impl line を記入",
+     "契約テスト（OpenAPI）PASS",
+     "endpoint 実在性チェック PASS"
+    ]
+   },
+   "estimate_hours_human": 164,
+   "estimate_hours_ai": 41.0,
+   "human_review_h": 1.0,
+   "wall_clock_h_ai": 42.0,
+   "ai_acceleration_factor": 4,
+   "blocking_dependencies_h": 0,
+   "estimate_method": "reference",
+   "estimate_confidence": "medium",
+   "estimate_hours": 42.0,
+   "estimate_sessions": 11
+  },
+  {
    "id": "T-US-01",
    "title": "シェル（サイドバー・レール・第2ナビ・三画面・下タブ・枠の導出 data-frame・役割の出し分け data-roles）",
    "category": "frontend",
@@ -16000,6 +17254,7 @@
    "wave": 8,
    "group": "U-shared",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-05",
@@ -16166,6 +17421,7 @@
    "wave": 8,
    "group": "U-shared",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-05",
@@ -16331,6 +17587,7 @@
    "wave": 8,
    "group": "U-shared",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-05",
@@ -16491,6 +17748,7 @@
    "wave": 8,
    "group": "U-shared",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-05",
@@ -16651,6 +17909,7 @@
    "wave": 8,
    "group": "U-shared",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-05",
@@ -16814,6 +18073,7 @@
    "wave": 8,
    "group": "U-shared",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-05",
@@ -16983,6 +18243,7 @@
    "wave": 9,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -17033,7 +18294,7 @@
     ],
     "functional": [
      "EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「会社名とメールを入れる」として呼ばれたとき THEN Kaname は「アカウントと会社を作る」を行い 2xx を返す",
-     "EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「支払い方法を入れる」として呼ばれたとき THEN Kaname は「決済事業者に登録（カード番号は預からない）」を行い 2xx を返す",
+     "EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「プランを選んで Stripe の登録画面へ進む」として呼ばれたとき THEN Kaname は「Stripe Checkout へ送る（C7）。戻りは webhook の写しで確定。カード番号は自社を通らない」を行い 2xx を返す",
      "EVENT-DRIVEN: WHEN 「はじめる」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する",
      "UNWANTED: IF 列の値が実データでも「—」固定なら未実装として落とす"
     ],
@@ -17162,7 +18423,7 @@
      },
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「支払い方法を入れる」として呼ばれたとき THEN Kaname は「決済事業者に登録（カード番号は預からない）」を行い 2xx を返す",
+      "text": "EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「プランを選んで Stripe の登録画面へ進む」として呼ばれたとき THEN Kaname は「Stripe Checkout へ送る（C7）。戻りは webhook の写しで確定。カード番号は自社を通らない」を行い 2xx を返す",
       "critical": false
      },
      {
@@ -17224,6 +18485,7 @@
    "wave": 9,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -17462,6 +18724,7 @@
    "wave": 9,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -17707,6 +18970,7 @@
    "wave": 9,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -17945,6 +19209,7 @@
    "wave": 9,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -18206,6 +19471,7 @@
    "wave": 9,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -18449,6 +19715,7 @@
    "wave": 9,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -18724,6 +19991,7 @@
    "wave": 9,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -18977,6 +20245,7 @@
    "wave": 9,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -19253,6 +20522,7 @@
    "wave": 9,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -19531,6 +20801,7 @@
    "wave": 10,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -19786,6 +21057,7 @@
    "wave": 10,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -20028,6 +21300,7 @@
    "wave": 10,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -20350,6 +21623,7 @@
    "wave": 10,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -20634,6 +21908,7 @@
    "wave": 10,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -20915,6 +22190,7 @@
    "wave": 10,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -21250,6 +22526,7 @@
    "wave": 10,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -21562,6 +22839,7 @@
    "wave": 10,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -21843,6 +23121,7 @@
    "wave": 10,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -22088,6 +23367,7 @@
    "wave": 10,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -22385,6 +23665,7 @@
    "wave": 11,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -22669,6 +23950,7 @@
    "wave": 11,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -22974,6 +24256,7 @@
    "wave": 11,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -23262,6 +24545,7 @@
    "wave": 11,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -23533,6 +24817,7 @@
    "wave": 11,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -23806,6 +25091,7 @@
    "wave": 11,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -24078,6 +25364,7 @@
    "wave": 11,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -24354,6 +25641,7 @@
    "wave": 11,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -24631,6 +25919,7 @@
    "wave": 11,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -24910,6 +26199,7 @@
    "wave": 11,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -25185,6 +26475,7 @@
    "wave": 12,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -25461,6 +26752,7 @@
    "wave": 12,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -25729,6 +27021,7 @@
    "wave": 12,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -26022,6 +27315,7 @@
    "wave": 12,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -26299,6 +27593,7 @@
    "wave": 12,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -26582,6 +27877,7 @@
    "wave": 12,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -26865,6 +28161,7 @@
    "wave": 12,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -27153,6 +28450,7 @@
    "wave": 12,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -27303,7 +28601,8 @@
     "D-022.5",
     "D-042.1",
     "D-042.10",
-    "D-053.6"
+    "D-053.6",
+    "D-085.3"
    ],
    "decision_summaries": [
     {
@@ -27407,6 +28706,7 @@
    "wave": 12,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -27662,6 +28962,7 @@
    "wave": 12,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -27934,6 +29235,7 @@
    "wave": 13,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -28184,6 +29486,7 @@
    "wave": 13,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -28453,6 +29756,7 @@
    "wave": 13,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -28732,6 +30036,7 @@
    "wave": 13,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -28806,7 +30111,8 @@
     "07_functional/screens.json#account",
     "08_api/screen-api-coverage.json",
     "01_hearing/決定ログ_進行中.md#D-076.1",
-    "01_hearing/決定ログ_進行中.md#D-042"
+    "01_hearing/決定ログ_進行中.md#D-042",
+    "01_hearing/決定ログ_進行中.md#D-084.3"
    ],
    "audit_md_path": "07_tasks/audit/T-U-44.md",
    "status": "todo",
@@ -28879,7 +30185,8 @@
    ],
    "source": [
     "D-076.1",
-    "D-042"
+    "D-042",
+    "D-084.3"
    ],
    "decision_summaries": [
     {
@@ -28889,6 +30196,10 @@
     {
      "id": "D-042",
      "summary": "情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エクスポートできる・残留物ゼロ。データ所在は顧客が選ぶ。学習に使わせない"
+    },
+    {
+     "id": "D-084",
+     "summary": "PC は Bridge（Electron）の窓に Kaname の画面を出す。スマホは同じ Web を Capacitor の殻に入れて App Store／Play へ。通知は APNs／FCM（push_devices）。オフラインは読むだけ。D-081.4 の PWA は取り消し。D-043・D-051 の「方式は段階 5」は本節で決めた"
     }
    ],
    "critical": false,
@@ -28980,6 +30291,7 @@
    "wave": 13,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -29126,7 +30438,8 @@
     "D-012.8",
     "D-042.5",
     "D-045.2",
-    "D-055.1"
+    "D-055.1",
+    "D-083.4"
    ],
    "decision_summaries": [
     {
@@ -29228,6 +30541,7 @@
    "wave": 13,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -29480,6 +30794,7 @@
    "wave": 13,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -29738,6 +31053,7 @@
    "wave": 13,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -29979,6 +31295,7 @@
    "wave": 13,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -30249,6 +31566,7 @@
    "wave": 13,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -30505,6 +31823,7 @@
    "wave": 14,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -30774,6 +32093,7 @@
    "wave": 14,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -30882,7 +32202,16 @@
      "SCR-BILLING-027",
      "E-MOCK-008-A",
      "E-MOCK-008-B",
-     "E-MOCK-008-C"
+     "E-MOCK-008-C",
+     "E-PAY-003-A",
+     "E-PAY-003-B",
+     "E-PAY-003-C",
+     "E-PAY-004-A",
+     "E-PAY-004-B",
+     "E-PAY-004-C",
+     "E-PAY-006-A",
+     "E-PAY-006-B",
+     "E-PAY-006-C"
     ],
     "l2_flows": [
      "J-07"
@@ -31033,6 +32362,7 @@
    "wave": 14,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -31265,16 +32595,20 @@
     "E-022",
     "E-002",
     "E-032",
-    "E-027"
+    "E-027",
+    "E-087",
+    "E-086"
    ],
    "acts": [
-    "A72"
+    "A72",
+    "A87"
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
    "wave": 14,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -31325,7 +32659,7 @@
     ],
     "functional": [
      "EVENT-DRIVEN: WHEN GET /api/v1/invoices が「請求・入金・利用量を見る」として呼ばれたとき THEN Kaname は「各社の請求・入金・未収・利用量／上限を集計（中身は見ない）」を行い 2xx を返す",
-     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+     "EVENT-DRIVEN: WHEN GET /api/v1/invoices が「カードの会社の写しを見る」として呼ばれたとき THEN Kaname は「Stripe の写し（webhook）の状態と顧客リンク。請求書払いは従来の記録」を行い 2xx を返す",
      "EVENT-DRIVEN: WHEN 「未収に連絡する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する",
      "UNWANTED: IF 列の値が実データでも「—」固定なら未実装として落とす"
     ],
@@ -31378,7 +32712,10 @@
      "SCR-OPS-BILLING-022",
      "SCR-OPS-BILLING-023",
      "SCR-OPS-BILLING-024",
-     "SCR-OPS-BILLING-025"
+     "SCR-OPS-BILLING-025",
+     "E-PAY-005-A",
+     "E-PAY-005-B",
+     "E-PAY-005-C"
     ],
     "l2_flows": [
      "J-09"
@@ -31417,7 +32754,9 @@
     "D-076.6",
     "D-077.3",
     "D-077.5",
-    "D-002.2"
+    "D-002.2",
+    "D-082.8",
+    "D-082.3"
    ],
    "decision_summaries": [
     {
@@ -31452,8 +32791,8 @@
       "critical": false
      },
      {
-      "type": "UNWANTED",
-      "text": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+      "type": "EVENT-DRIVEN",
+      "text": "EVENT-DRIVEN: WHEN GET /api/v1/invoices が「カードの会社の写しを見る」として呼ばれたとき THEN Kaname は「Stripe の写し（webhook）の状態と顧客リンク。請求書払いは従来の記録」を行い 2xx を返す",
       "critical": false
      },
      {
@@ -31552,6 +32891,7 @@
    "wave": 14,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -31691,7 +33031,8 @@
     "D-077.7",
     "D-077.8",
     "D-042.6",
-    "D-078.3"
+    "D-078.3",
+    "D-083.6"
    ],
    "decision_summaries": [
     {
@@ -31794,6 +33135,7 @@
    "wave": 14,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -32042,6 +33384,7 @@
    "wave": 14,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -32305,6 +33648,7 @@
    "wave": 14,
    "group": "U-screen",
    "deliverable_layer": "ui",
+   "stage": "v1",
    "depends_on": [
     "T-US-01",
     "T-US-02",
@@ -32568,6 +33912,1466 @@
    "estimate_sessions": 1
   },
   {
+   "id": "T-U-59",
+   "title": "画面 支払い方法を登録する（4 状態・R1/R2・段階 2）",
+   "category": "frontend",
+   "label": "NEW",
+   "feature_id": "F-V3-C-billing-setup",
+   "feature_ids": [
+    "F-V3-C-billing-setup"
+   ],
+   "screen_ids": [
+    "billing-setup"
+   ],
+   "entity_ids": [
+    "E-069",
+    "E-070",
+    "E-071",
+    "E-073",
+    "E-072",
+    "E-086",
+    "E-074",
+    "E-075"
+   ],
+   "acts": [
+    "A05"
+   ],
+   "legacy_task_id": null,
+   "phase": "9_v2_ui",
+   "wave": 21,
+   "group": "U-screen",
+   "deliverable_layer": "ui",
+   "stage": "v2",
+   "depends_on": [
+    "T-US-01",
+    "T-US-02",
+    "T-US-03",
+    "T-US-04",
+    "T-US-05",
+    "T-US-06",
+    "T-A-01"
+   ],
+   "choke_points": [],
+   "choke_points_rationale": "画面。外界に出ない（API は関門の先）",
+   "forbidden_direct_apis_reminder": [
+    "fetch",
+    "axios",
+    "undici",
+    "pg / drizzle の生クライアント（関門の外）",
+    "child_process",
+    "fs（関門の外）",
+    "nodemailer / resend（関門の外）",
+    "anthropic / openai SDK（関門の外）"
+   ],
+   "files_changed": [
+    "apps/web/app/(public)/billing-setup/page.tsx (new)",
+    "apps/web/tests/screens/billing-setup.spec.ts (new)"
+   ],
+   "files_changed_predicted": {
+    "new": [
+     "apps/web/app/(public)/billing-setup/page.tsx",
+     "apps/web/components/screens/billing-setup/*.tsx",
+     "apps/web/tests/screens/billing-setup.spec.ts"
+    ],
+    "modify": [],
+    "shared_read": [
+     "06_mockup/v2/v2-billing-setup.html",
+     "08_api/types.ts",
+     "07_functional/screens.json#billing-setup"
+    ],
+    "forbidden": [
+     "apps/web/components/shell/**（共通シェルは T-US-01）",
+     "packages/**"
+    ]
+   },
+   "acceptance_criteria": {
+    "structural": [
+     "UBIQUITOUS: 画面 billing-setup は URL /billing-setup で開く（apps/web/app/(public)/billing-setup/page.tsx。遷移の href は flow の route と機械照合）",
+     "STATE-DRIVEN: WHILE 画面 billing-setup が描画中 THEN h1「支払い方法を登録する」・第2ナビ ・状態 4（登録、登録できた、カードが拒否された、請求書払い）がモック 06_mockup/v2/v2-billing-setup.html と一致する",
+     "STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い"
+    ],
+    "functional": [
+     "EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「会社名とメールを入れる」として呼ばれたとき THEN Kaname は「アカウントと会社を作る」を行い 2xx を返す",
+     "EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「プランを選んで Stripe の登録画面へ進む」として呼ばれたとき THEN Kaname は「Stripe Checkout へ送る（C7）。戻りは webhook の写しで確定。カード番号は自社を通らない」を行い 2xx を返す",
+     "EVENT-DRIVEN: WHEN 「登録する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する",
+     "UNWANTED: IF 列の値が実データでも「—」固定なら未実装として落とす"
+    ],
+    "regression": [
+     "pnpm test（該当パッケージ）PASS",
+     "pnpm typecheck 0 errors（触ったファイル）",
+     "coverage >= 80%（触ったファイル）",
+     "pnpm lint OK",
+     "python3 scripts/ci/layer_audit.py --run PASS",
+     "関門の迂回検出（choke-points ci_check）PASS",
+     "audit MD（07_tasks/audit/<id>.md）に impl line を記入",
+     "mock-impl-diff（h1・状態・第2ナビ・列の値）PASS",
+     "AC-R9 動作実証：実ブラウザで全操作要素を押し、遷移／別 GET 再取得／表示変化を確認。href は実在ルートを機械照合"
+    ]
+   },
+   "access_policies_required": [],
+   "spec_links": [
+    "06_mockup/v2/v2-billing-setup.html",
+    "07_functional/screens.json#billing-setup",
+    "08_api/screen-api-coverage.json",
+    "01_hearing/決定ログ_進行中.md#D-002",
+    "01_hearing/決定ログ_進行中.md#D-081.2",
+    "01_hearing/決定ログ_進行中.md#D-082.1"
+   ],
+   "audit_md_path": "07_tasks/audit/T-U-59.md",
+   "status": "todo",
+   "qa_rows": {
+    "l1": [
+     "SCR-BILLING-SETUP-001",
+     "SCR-BILLING-SETUP-002",
+     "SCR-BILLING-SETUP-003",
+     "SCR-BILLING-SETUP-004",
+     "SCR-BILLING-SETUP-005",
+     "SCR-BILLING-SETUP-006",
+     "SCR-BILLING-SETUP-007",
+     "SCR-BILLING-SETUP-008",
+     "SCR-BILLING-SETUP-009",
+     "SCR-BILLING-SETUP-010",
+     "SCR-BILLING-SETUP-011",
+     "SCR-BILLING-SETUP-012",
+     "SCR-BILLING-SETUP-013",
+     "SCR-BILLING-SETUP-014",
+     "SCR-BILLING-SETUP-015",
+     "SCR-BILLING-SETUP-016",
+     "SCR-BILLING-SETUP-017",
+     "SCR-BILLING-SETUP-018",
+     "SCR-BILLING-SETUP-019",
+     "SCR-BILLING-SETUP-020",
+     "E-PAY-001-A",
+     "E-PAY-001-B",
+     "E-PAY-001-C",
+     "E-PAY-002-A",
+     "E-PAY-002-B",
+     "E-PAY-002-C"
+    ],
+    "l2_flows": []
+   },
+   "test_scenarios_inline": [
+    {
+     "name": "状態 登録",
+     "steps": [
+      "状態を作る",
+      "開く"
+     ],
+     "expected": "モックと一致"
+    },
+    {
+     "name": "状態 登録できた",
+     "steps": [
+      "状態を作る",
+      "開く"
+     ],
+     "expected": "モックと一致"
+    },
+    {
+     "name": "状態 カードが拒否された",
+     "steps": [
+      "状態を作る",
+      "開く"
+     ],
+     "expected": "モックと一致"
+    },
+    {
+     "name": "状態 請求書払い",
+     "steps": [
+      "状態を作る",
+      "開く"
+     ],
+     "expected": "モックと一致"
+    },
+    {
+     "name": "主アクション",
+     "steps": [
+      "押す",
+      "別 GET"
+     ],
+     "expected": "反映"
+    }
+   ],
+   "source": [
+    "D-002",
+    "D-081.2",
+    "D-082.1",
+    "D-082.2",
+    "D-082.3"
+   ],
+   "decision_summaries": [
+    {
+     "id": "D-002",
+     "summary": "65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集客ファネル"
+    },
+    {
+     "id": "D-081",
+     "summary": "サマリーの段階表（段階 2＝課金・オンボーディング・構築メタスキル・運営コンソール）は D-073〜D-080 で v1 に引き上げた後も古いままだった。v1 は 58 画面（権限・層・配分・運営コンソール・スキル・プランの定義を含む）。段階 2 に残るのは Stripe 課金／LLM の経路の追加／PWA／情シス向け開示資料／MDM・SSO・ISMS の 5 つ。後回しは決定 ID で残す（G17）"
+    },
+    {
+     "id": "D-082",
+     "summary": "カードの会社は Stripe Billing のサブスク（毎月自動請求）。カードの登録と変更は Stripe のホスト画面（Checkout／Customer Portal）で、カード番号は自社を通らない。subscriptions／invoices／payments は webhook で写す（billing_events で二重処理しない）。失敗は再試行 → 7 日猶予 → 休止。v1 の請求書払いは残り、会社ごとに支払い方法を選ぶ"
+    }
+   ],
+   "critical": false,
+   "why": "",
+   "acceptance_criteria_inline": {
+    "tier_1_structural": [
+     "UBIQUITOUS: 画面 billing-setup は URL /billing-setup で開く（apps/web/app/(public)/billing-setup/page.tsx。遷移の href は flow の route と機械照合）",
+     "STATE-DRIVEN: WHILE 画面 billing-setup が描画中 THEN h1「支払い方法を登録する」・第2ナビ ・状態 4（登録、登録できた、カードが拒否された、請求書払い）がモック 06_mockup/v2/v2-billing-setup.html と一致する",
+     "STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い"
+    ],
+    "tier_2_functional": [
+     {
+      "type": "EVENT-DRIVEN",
+      "text": "EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「会社名とメールを入れる」として呼ばれたとき THEN Kaname は「アカウントと会社を作る」を行い 2xx を返す",
+      "critical": false
+     },
+     {
+      "type": "EVENT-DRIVEN",
+      "text": "EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「プランを選んで Stripe の登録画面へ進む」として呼ばれたとき THEN Kaname は「Stripe Checkout へ送る（C7）。戻りは webhook の写しで確定。カード番号は自社を通らない」を行い 2xx を返す",
+      "critical": false
+     },
+     {
+      "type": "EVENT-DRIVEN",
+      "text": "EVENT-DRIVEN: WHEN 「登録する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する",
+      "critical": false
+     },
+     {
+      "type": "UNWANTED",
+      "text": "UNWANTED: IF 列の値が実データでも「—」固定なら未実装として落とす",
+      "critical": false
+     }
+    ],
+    "tier_3_regression": [
+     "pnpm test（該当パッケージ）PASS",
+     "pnpm typecheck 0 errors（触ったファイル）",
+     "coverage >= 80%（触ったファイル）",
+     "pnpm lint OK",
+     "python3 scripts/ci/layer_audit.py --run PASS",
+     "関門の迂回検出（choke-points ci_check）PASS",
+     "audit MD（07_tasks/audit/<id>.md）に impl line を記入",
+     "mock-impl-diff（h1・状態・第2ナビ・列の値）PASS",
+     "AC-R9 動作実証：実ブラウザで全操作要素を押し、遷移／別 GET 再取得／表示変化を確認。href は実在ルートを機械照合"
+    ]
+   },
+   "estimate_hours_human": 17.0,
+   "estimate_hours_ai": 1.7,
+   "human_review_h": 0.0,
+   "wall_clock_h_ai": 1.7,
+   "ai_acceleration_factor": 10,
+   "blocking_dependencies_h": 0,
+   "estimate_method": "reference",
+   "estimate_confidence": "medium",
+   "estimate_hours": 1.7,
+   "estimate_sessions": 1
+  },
+  {
+   "id": "T-U-60",
+   "title": "画面 開示資料（4 状態・R1/R2・段階 2）",
+   "category": "frontend",
+   "label": "NEW",
+   "feature_id": "F-V3-C-disclosure",
+   "feature_ids": [
+    "F-V3-C-disclosure"
+   ],
+   "screen_ids": [
+    "disclosure"
+   ],
+   "entity_ids": [
+    "E-091",
+    "E-092",
+    "E-041",
+    "E-061",
+    "E-062"
+   ],
+   "acts": [
+    "A84"
+   ],
+   "legacy_task_id": null,
+   "phase": "9_v2_ui",
+   "wave": 21,
+   "group": "U-screen",
+   "deliverable_layer": "ui",
+   "stage": "v2",
+   "depends_on": [
+    "T-US-01",
+    "T-US-02",
+    "T-US-03",
+    "T-US-04",
+    "T-US-05",
+    "T-US-06",
+    "T-A-24"
+   ],
+   "choke_points": [],
+   "choke_points_rationale": "画面。外界に出ない（API は関門の先）",
+   "forbidden_direct_apis_reminder": [
+    "fetch",
+    "axios",
+    "undici",
+    "pg / drizzle の生クライアント（関門の外）",
+    "child_process",
+    "fs（関門の外）",
+    "nodemailer / resend（関門の外）",
+    "anthropic / openai SDK（関門の外）"
+   ],
+   "files_changed": [
+    "apps/web/app/(app)/security/disclosure/page.tsx (new)",
+    "apps/web/tests/screens/disclosure.spec.ts (new)"
+   ],
+   "files_changed_predicted": {
+    "new": [
+     "apps/web/app/(app)/security/disclosure/page.tsx",
+     "apps/web/components/screens/disclosure/*.tsx",
+     "apps/web/tests/screens/disclosure.spec.ts"
+    ],
+    "modify": [],
+    "shared_read": [
+     "06_mockup/v2/v2-disclosure.html",
+     "08_api/types.ts",
+     "07_functional/screens.json#disclosure"
+    ],
+    "forbidden": [
+     "apps/web/components/shell/**（共通シェルは T-US-01）",
+     "packages/**"
+    ]
+   },
+   "acceptance_criteria": {
+    "structural": [
+     "UBIQUITOUS: 画面 disclosure は URL /security/disclosure で開く（apps/web/app/(app)/security/disclosure/page.tsx。遷移の href は flow の route と機械照合）",
+     "STATE-DRIVEN: WHILE 画面 disclosure が描画中 THEN h1「開示資料」・第2ナビ できる操作 / 送るもの／送らないもの / サブプロセッサ / DPA / アンインストール・状態 4（資料、版の履歴、PDF が作れない、AI が止まっている）がモック 06_mockup/v2/v2-disclosure.html と一致する",
+     "STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い"
+    ],
+    "functional": [
+     "EVENT-DRIVEN: WHEN GET /api/v1/disclosure_versions が「開示資料を開いて PDF をもらう」として呼ばれたとき THEN Kaname は「成果物から生成した版を読む。PDF は署名 URL（C4）」を行い 2xx を返す",
+     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+     "EVENT-DRIVEN: WHEN 「PDF で出す」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する",
+     "UNWANTED: IF 列の値が実データでも「—」固定なら未実装として落とす"
+    ],
+    "regression": [
+     "pnpm test（該当パッケージ）PASS",
+     "pnpm typecheck 0 errors（触ったファイル）",
+     "coverage >= 80%（触ったファイル）",
+     "pnpm lint OK",
+     "python3 scripts/ci/layer_audit.py --run PASS",
+     "関門の迂回検出（choke-points ci_check）PASS",
+     "audit MD（07_tasks/audit/<id>.md）に impl line を記入",
+     "mock-impl-diff（h1・状態・第2ナビ・列の値）PASS",
+     "AC-R9 動作実証：実ブラウザで全操作要素を押し、遷移／別 GET 再取得／表示変化を確認。href は実在ルートを機械照合"
+    ]
+   },
+   "access_policies_required": [],
+   "spec_links": [
+    "06_mockup/v2/v2-disclosure.html",
+    "07_functional/screens.json#disclosure",
+    "08_api/screen-api-coverage.json",
+    "01_hearing/決定ログ_進行中.md#D-081.5",
+    "01_hearing/決定ログ_進行中.md#D-085.1",
+    "01_hearing/決定ログ_進行中.md#D-085.2"
+   ],
+   "audit_md_path": "07_tasks/audit/T-U-60.md",
+   "status": "todo",
+   "qa_rows": {
+    "l1": [
+     "SCR-DISCLOSURE-001",
+     "SCR-DISCLOSURE-002",
+     "SCR-DISCLOSURE-003",
+     "SCR-DISCLOSURE-004",
+     "SCR-DISCLOSURE-005",
+     "SCR-DISCLOSURE-006",
+     "SCR-DISCLOSURE-007",
+     "SCR-DISCLOSURE-008",
+     "SCR-DISCLOSURE-009",
+     "SCR-DISCLOSURE-010",
+     "SCR-DISCLOSURE-011",
+     "SCR-DISCLOSURE-012",
+     "SCR-DISCLOSURE-013",
+     "SCR-DISCLOSURE-014",
+     "SCR-DISCLOSURE-015",
+     "SCR-DISCLOSURE-016",
+     "SCR-DISCLOSURE-017",
+     "SCR-DISCLOSURE-018",
+     "SCR-DISCLOSURE-019",
+     "SCR-DISCLOSURE-020",
+     "E-DISC-001-A",
+     "E-DISC-001-B",
+     "E-DISC-001-C",
+     "E-MOCK-036-A",
+     "E-MOCK-036-B",
+     "E-MOCK-036-C"
+    ],
+    "l2_flows": []
+   },
+   "test_scenarios_inline": [
+    {
+     "name": "状態 資料",
+     "steps": [
+      "状態を作る",
+      "開く"
+     ],
+     "expected": "モックと一致"
+    },
+    {
+     "name": "状態 版の履歴",
+     "steps": [
+      "状態を作る",
+      "開く"
+     ],
+     "expected": "モックと一致"
+    },
+    {
+     "name": "状態 PDF が作れない",
+     "steps": [
+      "状態を作る",
+      "開く"
+     ],
+     "expected": "モックと一致"
+    },
+    {
+     "name": "状態 AI が止まっている",
+     "steps": [
+      "状態を作る",
+      "開く"
+     ],
+     "expected": "モックと一致"
+    },
+    {
+     "name": "主アクション",
+     "steps": [
+      "押す",
+      "別 GET"
+     ],
+     "expected": "反映"
+    }
+   ],
+   "source": [
+    "D-081.5",
+    "D-085.1",
+    "D-085.2",
+    "D-085.3",
+    "D-085.4",
+    "D-042"
+   ],
+   "decision_summaries": [
+    {
+     "id": "D-081",
+     "summary": "サマリーの段階表（段階 2＝課金・オンボーディング・構築メタスキル・運営コンソール）は D-073〜D-080 で v1 に引き上げた後も古いままだった。v1 は 58 画面（権限・層・配分・運営コンソール・スキル・プランの定義を含む）。段階 2 に残るのは Stripe 課金／LLM の経路の追加／PWA／情シス向け開示資料／MDM・SSO・ISMS の 5 つ。後回しは決定 ID で残す（G17）"
+    },
+    {
+     "id": "D-085",
+     "summary": "できる操作の完全な列挙・送るもの／送らないもの・サブプロセッサ一覧・アンインストールの検証結果 は成果物（行為×関門・依存の境界・技術選定・Bridge の検証）から機械生成し、版を持つ。DPA だけ雛形（法務確認）。security-brief を拡張して PDF で出し、運営は ops-disclosure で版を出す。変わったらお知らせ"
+    },
+    {
+     "id": "D-042",
+     "summary": "情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エクスポートできる・残留物ゼロ。データ所在は顧客が選ぶ。学習に使わせない"
+    }
+   ],
+   "critical": false,
+   "why": "",
+   "acceptance_criteria_inline": {
+    "tier_1_structural": [
+     "UBIQUITOUS: 画面 disclosure は URL /security/disclosure で開く（apps/web/app/(app)/security/disclosure/page.tsx。遷移の href は flow の route と機械照合）",
+     "STATE-DRIVEN: WHILE 画面 disclosure が描画中 THEN h1「開示資料」・第2ナビ できる操作 / 送るもの／送らないもの / サブプロセッサ / DPA / アンインストール・状態 4（資料、版の履歴、PDF が作れない、AI が止まっている）がモック 06_mockup/v2/v2-disclosure.html と一致する",
+     "STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い"
+    ],
+    "tier_2_functional": [
+     {
+      "type": "EVENT-DRIVEN",
+      "text": "EVENT-DRIVEN: WHEN GET /api/v1/disclosure_versions が「開示資料を開いて PDF をもらう」として呼ばれたとき THEN Kaname は「成果物から生成した版を読む。PDF は署名 URL（C4）」を行い 2xx を返す",
+      "critical": false
+     },
+     {
+      "type": "UNWANTED",
+      "text": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+      "critical": false
+     },
+     {
+      "type": "EVENT-DRIVEN",
+      "text": "EVENT-DRIVEN: WHEN 「PDF で出す」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する",
+      "critical": false
+     },
+     {
+      "type": "UNWANTED",
+      "text": "UNWANTED: IF 列の値が実データでも「—」固定なら未実装として落とす",
+      "critical": false
+     }
+    ],
+    "tier_3_regression": [
+     "pnpm test（該当パッケージ）PASS",
+     "pnpm typecheck 0 errors（触ったファイル）",
+     "coverage >= 80%（触ったファイル）",
+     "pnpm lint OK",
+     "python3 scripts/ci/layer_audit.py --run PASS",
+     "関門の迂回検出（choke-points ci_check）PASS",
+     "audit MD（07_tasks/audit/<id>.md）に impl line を記入",
+     "mock-impl-diff（h1・状態・第2ナビ・列の値）PASS",
+     "AC-R9 動作実証：実ブラウザで全操作要素を押し、遷移／別 GET 再取得／表示変化を確認。href は実在ルートを機械照合"
+    ]
+   },
+   "estimate_hours_human": 17.0,
+   "estimate_hours_ai": 1.7,
+   "human_review_h": 0.0,
+   "wall_clock_h_ai": 1.7,
+   "ai_acceleration_factor": 10,
+   "blocking_dependencies_h": 0,
+   "estimate_method": "reference",
+   "estimate_confidence": "medium",
+   "estimate_hours": 1.7,
+   "estimate_sessions": 1
+  },
+  {
+   "id": "T-U-61",
+   "title": "画面 AI の経路（4 状態・R1/R2・段階 2）",
+   "category": "frontend",
+   "label": "NEW",
+   "feature_id": "F-V3-C-llm-routes",
+   "feature_ids": [
+    "F-V3-C-llm-routes"
+   ],
+   "screen_ids": [
+    "llm-routes"
+   ],
+   "entity_ids": [
+    "E-088",
+    "E-037",
+    "E-089"
+   ],
+   "acts": [
+    "A82"
+   ],
+   "legacy_task_id": null,
+   "phase": "9_v2_ui",
+   "wave": 21,
+   "group": "U-screen",
+   "deliverable_layer": "ui",
+   "stage": "v2",
+   "depends_on": [
+    "T-US-01",
+    "T-US-02",
+    "T-US-03",
+    "T-US-04",
+    "T-US-05",
+    "T-US-06",
+    "T-A-26"
+   ],
+   "choke_points": [],
+   "choke_points_rationale": "画面。外界に出ない（API は関門の先）",
+   "forbidden_direct_apis_reminder": [
+    "fetch",
+    "axios",
+    "undici",
+    "pg / drizzle の生クライアント（関門の外）",
+    "child_process",
+    "fs（関門の外）",
+    "nodemailer / resend（関門の外）",
+    "anthropic / openai SDK（関門の外）"
+   ],
+   "files_changed": [
+    "apps/web/app/(app)/settings/llm/page.tsx (new)",
+    "apps/web/tests/screens/llm-routes.spec.ts (new)"
+   ],
+   "files_changed_predicted": {
+    "new": [
+     "apps/web/app/(app)/settings/llm/page.tsx",
+     "apps/web/components/screens/llm-routes/*.tsx",
+     "apps/web/tests/screens/llm-routes.spec.ts"
+    ],
+    "modify": [],
+    "shared_read": [
+     "06_mockup/v2/v2-llm-routes.html",
+     "08_api/types.ts",
+     "07_functional/screens.json#llm-routes"
+    ],
+    "forbidden": [
+     "apps/web/components/shell/**（共通シェルは T-US-01）",
+     "packages/**"
+    ]
+   },
+   "acceptance_criteria": {
+    "structural": [
+     "UBIQUITOUS: 画面 llm-routes は URL /settings/llm で開く（apps/web/app/(app)/settings/llm/page.tsx。遷移の href は flow の route と機械照合）",
+     "STATE-DRIVEN: WHILE 画面 llm-routes が描画中 THEN h1「AI の経路」・第2ナビ 既定の経路 / PC が閉じているとき / API キー / 使用量・状態 4（AI の経路、キーを預ける、キーが無効・上限に届いた、AI が止まっている）がモック 06_mockup/v2/v2-llm-routes.html と一致する",
+     "STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い"
+    ],
+    "functional": [
+     "EVENT-DRIVEN: WHEN POST /api/v1/llm_routes が「会社の設定で AI の経路を選び、必要ならキーを入れる」として呼ばれたとき THEN Kaname は「キーは C8 の vault へ参照だけ。llm_routes を保存。登録時に提供者へ 1 回だけ検査（成功／失敗を証跡に）」を行い 2xx を返す（自動側：自分のAIが経路ごとの違い（費用・PC が閉じているときの動き）を説明する）",
+     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+     "EVENT-DRIVEN: WHEN 「保存する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する",
+     "UNWANTED: IF 列の値が実データでも「—」固定なら未実装として落とす"
+    ],
+    "regression": [
+     "pnpm test（該当パッケージ）PASS",
+     "pnpm typecheck 0 errors（触ったファイル）",
+     "coverage >= 80%（触ったファイル）",
+     "pnpm lint OK",
+     "python3 scripts/ci/layer_audit.py --run PASS",
+     "関門の迂回検出（choke-points ci_check）PASS",
+     "audit MD（07_tasks/audit/<id>.md）に impl line を記入",
+     "mock-impl-diff（h1・状態・第2ナビ・列の値）PASS",
+     "AC-R9 動作実証：実ブラウザで全操作要素を押し、遷移／別 GET 再取得／表示変化を確認。href は実在ルートを機械照合"
+    ]
+   },
+   "access_policies_required": [],
+   "spec_links": [
+    "06_mockup/v2/v2-llm-routes.html",
+    "07_functional/screens.json#llm-routes",
+    "08_api/screen-api-coverage.json",
+    "01_hearing/決定ログ_進行中.md#D-081.3",
+    "01_hearing/決定ログ_進行中.md#D-083.1",
+    "01_hearing/決定ログ_進行中.md#D-083.3"
+   ],
+   "audit_md_path": "07_tasks/audit/T-U-61.md",
+   "status": "todo",
+   "qa_rows": {
+    "l1": [
+     "SCR-LLM-ROUTES-001",
+     "SCR-LLM-ROUTES-002",
+     "SCR-LLM-ROUTES-003",
+     "SCR-LLM-ROUTES-004",
+     "SCR-LLM-ROUTES-005",
+     "SCR-LLM-ROUTES-006",
+     "SCR-LLM-ROUTES-007",
+     "SCR-LLM-ROUTES-008",
+     "SCR-LLM-ROUTES-009",
+     "SCR-LLM-ROUTES-010",
+     "SCR-LLM-ROUTES-011",
+     "SCR-LLM-ROUTES-012",
+     "SCR-LLM-ROUTES-013",
+     "SCR-LLM-ROUTES-014",
+     "SCR-LLM-ROUTES-015",
+     "SCR-LLM-ROUTES-016",
+     "SCR-LLM-ROUTES-017",
+     "SCR-LLM-ROUTES-018",
+     "SCR-LLM-ROUTES-019",
+     "SCR-LLM-ROUTES-020",
+     "E-LLM-001-A",
+     "E-LLM-001-B",
+     "E-LLM-001-C",
+     "E-LLM-002-A",
+     "E-LLM-002-B",
+     "E-LLM-002-C",
+     "E-LLM-003-A",
+     "E-LLM-003-B",
+     "E-LLM-003-C",
+     "E-LLM-004-A",
+     "E-LLM-004-B",
+     "E-LLM-004-C",
+     "E-MOCK-035-A",
+     "E-MOCK-035-B",
+     "E-MOCK-035-C"
+    ],
+    "l2_flows": []
+   },
+   "test_scenarios_inline": [
+    {
+     "name": "状態 AI の経路",
+     "steps": [
+      "状態を作る",
+      "開く"
+     ],
+     "expected": "モックと一致"
+    },
+    {
+     "name": "状態 キーを預ける",
+     "steps": [
+      "状態を作る",
+      "開く"
+     ],
+     "expected": "モックと一致"
+    },
+    {
+     "name": "状態 キーが無効・上限に届いた",
+     "steps": [
+      "状態を作る",
+      "開く"
+     ],
+     "expected": "モックと一致"
+    },
+    {
+     "name": "状態 AI が止まっている",
+     "steps": [
+      "状態を作る",
+      "開く"
+     ],
+     "expected": "モックと一致"
+    },
+    {
+     "name": "主アクション",
+     "steps": [
+      "押す",
+      "別 GET"
+     ],
+     "expected": "反映"
+    }
+   ],
+   "source": [
+    "D-081.3",
+    "D-083.1",
+    "D-083.3",
+    "D-083.4",
+    "D-083.5",
+    "D-004"
+   ],
+   "decision_summaries": [
+    {
+     "id": "D-081",
+     "summary": "サマリーの段階表（段階 2＝課金・オンボーディング・構築メタスキル・運営コンソール）は D-073〜D-080 で v1 に引き上げた後も古いままだった。v1 は 58 画面（権限・層・配分・運営コンソール・スキル・プランの定義を含む）。段階 2 に残るのは Stripe 課金／LLM の経路の追加／PWA／情シス向け開示資料／MDM・SSO・ISMS の 5 つ。後回しは決定 ID で残す（G17）"
+    },
+    {
+     "id": "D-083",
+     "summary": "段階 2 で足す経路は BYOK（顧客の API キー）と運営マネージド（運営のキー・既定 OFF）。提供者は Anthropic・OpenAI・Google の 3 社で、使える機能は 3 社で徹底して同じにする（能力表を揃え、揃わない能力は出さない）。キーは C8 の vault 参照だけ。運営マネージドの費用はプランの上限に含め、超過は従量で同じ請求書に"
+    },
+    {
+     "id": "D-004",
+     "summary": "LLMは顧客のサブスク内(Bridge)が既定。APIは顧客負担。運営マネージドは既定OFFの管理者トグル"
+    }
+   ],
+   "critical": false,
+   "why": "",
+   "acceptance_criteria_inline": {
+    "tier_1_structural": [
+     "UBIQUITOUS: 画面 llm-routes は URL /settings/llm で開く（apps/web/app/(app)/settings/llm/page.tsx。遷移の href は flow の route と機械照合）",
+     "STATE-DRIVEN: WHILE 画面 llm-routes が描画中 THEN h1「AI の経路」・第2ナビ 既定の経路 / PC が閉じているとき / API キー / 使用量・状態 4（AI の経路、キーを預ける、キーが無効・上限に届いた、AI が止まっている）がモック 06_mockup/v2/v2-llm-routes.html と一致する",
+     "STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い"
+    ],
+    "tier_2_functional": [
+     {
+      "type": "EVENT-DRIVEN",
+      "text": "EVENT-DRIVEN: WHEN POST /api/v1/llm_routes が「会社の設定で AI の経路を選び、必要ならキーを入れる」として呼ばれたとき THEN Kaname は「キーは C8 の vault へ参照だけ。llm_routes を保存。登録時に提供者へ 1 回だけ検査（成功／失敗を証跡に）」を行い 2xx を返す（自動側：自分のAIが経路ごとの違い（費用・PC が閉じているときの動き）を説明する）",
+      "critical": false
+     },
+     {
+      "type": "UNWANTED",
+      "text": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+      "critical": false
+     },
+     {
+      "type": "EVENT-DRIVEN",
+      "text": "EVENT-DRIVEN: WHEN 「保存する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する",
+      "critical": false
+     },
+     {
+      "type": "UNWANTED",
+      "text": "UNWANTED: IF 列の値が実データでも「—」固定なら未実装として落とす",
+      "critical": false
+     }
+    ],
+    "tier_3_regression": [
+     "pnpm test（該当パッケージ）PASS",
+     "pnpm typecheck 0 errors（触ったファイル）",
+     "coverage >= 80%（触ったファイル）",
+     "pnpm lint OK",
+     "python3 scripts/ci/layer_audit.py --run PASS",
+     "関門の迂回検出（choke-points ci_check）PASS",
+     "audit MD（07_tasks/audit/<id>.md）に impl line を記入",
+     "mock-impl-diff（h1・状態・第2ナビ・列の値）PASS",
+     "AC-R9 動作実証：実ブラウザで全操作要素を押し、遷移／別 GET 再取得／表示変化を確認。href は実在ルートを機械照合"
+    ]
+   },
+   "estimate_hours_human": 17.0,
+   "estimate_hours_ai": 1.7,
+   "human_review_h": 0.0,
+   "wall_clock_h_ai": 1.7,
+   "ai_acceleration_factor": 10,
+   "blocking_dependencies_h": 0,
+   "estimate_method": "reference",
+   "estimate_confidence": "medium",
+   "estimate_hours": 1.7,
+   "estimate_sessions": 1
+  },
+  {
+   "id": "T-U-62",
+   "title": "画面 アプリと通知（3 状態・R1/R2/R3/R4・段階 2）",
+   "category": "frontend",
+   "label": "NEW",
+   "feature_id": "F-V3-C-app-setup",
+   "feature_ids": [
+    "F-V3-C-app-setup"
+   ],
+   "screen_ids": [
+    "app-setup"
+   ],
+   "entity_ids": [
+    "E-090",
+    "E-050",
+    "E-068",
+    "E-067",
+    "E-065"
+   ],
+   "acts": [
+    "A83"
+   ],
+   "legacy_task_id": null,
+   "phase": "9_v2_ui",
+   "wave": 21,
+   "group": "U-screen",
+   "deliverable_layer": "ui",
+   "stage": "v2",
+   "depends_on": [
+    "T-US-01",
+    "T-US-02",
+    "T-US-03",
+    "T-US-04",
+    "T-US-05",
+    "T-US-06",
+    "T-A-26"
+   ],
+   "choke_points": [],
+   "choke_points_rationale": "画面。外界に出ない（API は関門の先）",
+   "forbidden_direct_apis_reminder": [
+    "fetch",
+    "axios",
+    "undici",
+    "pg / drizzle の生クライアント（関門の外）",
+    "child_process",
+    "fs（関門の外）",
+    "nodemailer / resend（関門の外）",
+    "anthropic / openai SDK（関門の外）"
+   ],
+   "files_changed": [
+    "apps/web/app/(app)/settings/app/page.tsx (new)",
+    "apps/web/tests/screens/app-setup.spec.ts (new)"
+   ],
+   "files_changed_predicted": {
+    "new": [
+     "apps/web/app/(app)/settings/app/page.tsx",
+     "apps/web/components/screens/app-setup/*.tsx",
+     "apps/web/tests/screens/app-setup.spec.ts"
+    ],
+    "modify": [],
+    "shared_read": [
+     "06_mockup/v2/v2-app-setup.html",
+     "08_api/types.ts",
+     "07_functional/screens.json#app-setup"
+    ],
+    "forbidden": [
+     "apps/web/components/shell/**（共通シェルは T-US-01）",
+     "packages/**"
+    ]
+   },
+   "acceptance_criteria": {
+    "structural": [
+     "UBIQUITOUS: 画面 app-setup は URL /settings/app で開く（apps/web/app/(app)/settings/app/page.tsx。遷移の href は flow の route と機械照合）",
+     "STATE-DRIVEN: WHILE 画面 app-setup が描画中 THEN h1「アプリと通知」・第2ナビ PC / スマホ / 通知・状態 3（アプリと通知、許可待ち、許可が無い・つながっていない）がモック 06_mockup/v2/v2-app-setup.html と一致する",
+     "STATE-DRIVEN: WHILE 役割 R1/R2/R3/R4 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い"
+    ],
+    "functional": [
+     "EVENT-DRIVEN: WHEN PATCH /api/v1/push_devices/:id が「アプリを入れて通知を許可する」として呼ばれたとき THEN Kaname は「push_devices に端末を登録し、通知の届け先の経路に「アプリ」を足す」を行い 2xx を返す",
+     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+     "EVENT-DRIVEN: WHEN 「通知を許可する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する",
+     "UNWANTED: IF 列の値が実データでも「—」固定なら未実装として落とす"
+    ],
+    "regression": [
+     "pnpm test（該当パッケージ）PASS",
+     "pnpm typecheck 0 errors（触ったファイル）",
+     "coverage >= 80%（触ったファイル）",
+     "pnpm lint OK",
+     "python3 scripts/ci/layer_audit.py --run PASS",
+     "関門の迂回検出（choke-points ci_check）PASS",
+     "audit MD（07_tasks/audit/<id>.md）に impl line を記入",
+     "mock-impl-diff（h1・状態・第2ナビ・列の値）PASS",
+     "AC-R9 動作実証：実ブラウザで全操作要素を押し、遷移／別 GET 再取得／表示変化を確認。href は実在ルートを機械照合"
+    ]
+   },
+   "access_policies_required": [],
+   "spec_links": [
+    "06_mockup/v2/v2-app-setup.html",
+    "07_functional/screens.json#app-setup",
+    "08_api/screen-api-coverage.json",
+    "01_hearing/決定ログ_進行中.md#D-081.4",
+    "01_hearing/決定ログ_進行中.md#D-084.1",
+    "01_hearing/決定ログ_進行中.md#D-084.2"
+   ],
+   "audit_md_path": "07_tasks/audit/T-U-62.md",
+   "status": "todo",
+   "qa_rows": {
+    "l1": [
+     "SCR-APP-SETUP-001",
+     "SCR-APP-SETUP-002",
+     "SCR-APP-SETUP-003",
+     "SCR-APP-SETUP-004",
+     "SCR-APP-SETUP-005",
+     "SCR-APP-SETUP-006",
+     "SCR-APP-SETUP-007",
+     "SCR-APP-SETUP-008",
+     "SCR-APP-SETUP-009",
+     "SCR-APP-SETUP-010",
+     "SCR-APP-SETUP-011",
+     "SCR-APP-SETUP-012",
+     "SCR-APP-SETUP-013",
+     "SCR-APP-SETUP-014",
+     "SCR-APP-SETUP-015",
+     "SCR-APP-SETUP-016",
+     "SCR-APP-SETUP-017",
+     "SCR-APP-SETUP-018",
+     "SCR-APP-SETUP-019",
+     "SCR-APP-SETUP-020",
+     "SCR-APP-SETUP-021",
+     "E-APP-001-A",
+     "E-APP-001-B",
+     "E-APP-001-C",
+     "E-APP-002-A",
+     "E-APP-002-B",
+     "E-APP-002-C"
+    ],
+    "l2_flows": []
+   },
+   "test_scenarios_inline": [
+    {
+     "name": "状態 アプリと通知",
+     "steps": [
+      "状態を作る",
+      "開く"
+     ],
+     "expected": "モックと一致"
+    },
+    {
+     "name": "状態 許可待ち",
+     "steps": [
+      "状態を作る",
+      "開く"
+     ],
+     "expected": "モックと一致"
+    },
+    {
+     "name": "状態 許可が無い・つながっていない",
+     "steps": [
+      "状態を作る",
+      "開く"
+     ],
+     "expected": "モックと一致"
+    },
+    {
+     "name": "主アクション",
+     "steps": [
+      "押す",
+      "別 GET"
+     ],
+     "expected": "反映"
+    }
+   ],
+   "source": [
+    "D-081.4",
+    "D-084.1",
+    "D-084.2",
+    "D-084.3",
+    "D-084.4"
+   ],
+   "decision_summaries": [
+    {
+     "id": "D-081",
+     "summary": "サマリーの段階表（段階 2＝課金・オンボーディング・構築メタスキル・運営コンソール）は D-073〜D-080 で v1 に引き上げた後も古いままだった。v1 は 58 画面（権限・層・配分・運営コンソール・スキル・プランの定義を含む）。段階 2 に残るのは Stripe 課金／LLM の経路の追加／PWA／情シス向け開示資料／MDM・SSO・ISMS の 5 つ。後回しは決定 ID で残す（G17）"
+    },
+    {
+     "id": "D-084",
+     "summary": "PC は Bridge（Electron）の窓に Kaname の画面を出す。スマホは同じ Web を Capacitor の殻に入れて App Store／Play へ。通知は APNs／FCM（push_devices）。オフラインは読むだけ。D-081.4 の PWA は取り消し。D-043・D-051 の「方式は段階 5」は本節で決めた"
+    }
+   ],
+   "critical": false,
+   "why": "",
+   "acceptance_criteria_inline": {
+    "tier_1_structural": [
+     "UBIQUITOUS: 画面 app-setup は URL /settings/app で開く（apps/web/app/(app)/settings/app/page.tsx。遷移の href は flow の route と機械照合）",
+     "STATE-DRIVEN: WHILE 画面 app-setup が描画中 THEN h1「アプリと通知」・第2ナビ PC / スマホ / 通知・状態 3（アプリと通知、許可待ち、許可が無い・つながっていない）がモック 06_mockup/v2/v2-app-setup.html と一致する",
+     "STATE-DRIVEN: WHILE 役割 R1/R2/R3/R4 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い"
+    ],
+    "tier_2_functional": [
+     {
+      "type": "EVENT-DRIVEN",
+      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/push_devices/:id が「アプリを入れて通知を許可する」として呼ばれたとき THEN Kaname は「push_devices に端末を登録し、通知の届け先の経路に「アプリ」を足す」を行い 2xx を返す",
+      "critical": false
+     },
+     {
+      "type": "UNWANTED",
+      "text": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+      "critical": false
+     },
+     {
+      "type": "EVENT-DRIVEN",
+      "text": "EVENT-DRIVEN: WHEN 「通知を許可する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する",
+      "critical": false
+     },
+     {
+      "type": "UNWANTED",
+      "text": "UNWANTED: IF 列の値が実データでも「—」固定なら未実装として落とす",
+      "critical": false
+     }
+    ],
+    "tier_3_regression": [
+     "pnpm test（該当パッケージ）PASS",
+     "pnpm typecheck 0 errors（触ったファイル）",
+     "coverage >= 80%（触ったファイル）",
+     "pnpm lint OK",
+     "python3 scripts/ci/layer_audit.py --run PASS",
+     "関門の迂回検出（choke-points ci_check）PASS",
+     "audit MD（07_tasks/audit/<id>.md）に impl line を記入",
+     "mock-impl-diff（h1・状態・第2ナビ・列の値）PASS",
+     "AC-R9 動作実証：実ブラウザで全操作要素を押し、遷移／別 GET 再取得／表示変化を確認。href は実在ルートを機械照合"
+    ]
+   },
+   "estimate_hours_human": 17.5,
+   "estimate_hours_ai": 1.8,
+   "human_review_h": 0.0,
+   "wall_clock_h_ai": 1.8,
+   "ai_acceleration_factor": 10,
+   "blocking_dependencies_h": 0,
+   "estimate_method": "reference",
+   "estimate_confidence": "medium",
+   "estimate_hours": 1.8,
+   "estimate_sessions": 1
+  },
+  {
+   "id": "T-U-63",
+   "title": "画面 運営：AI の経路と使用量（3 状態・R6・段階 2）",
+   "category": "frontend",
+   "label": "NEW",
+   "feature_id": "F-V3-C-ops-llm",
+   "feature_ids": [
+    "F-V3-C-ops-llm"
+   ],
+   "screen_ids": [
+    "ops-llm"
+   ],
+   "entity_ids": [
+    "E-088",
+    "E-074",
+    "E-075"
+   ],
+   "acts": [
+    "A85"
+   ],
+   "legacy_task_id": null,
+   "phase": "9_v2_ui",
+   "wave": 21,
+   "group": "U-screen",
+   "deliverable_layer": "ui",
+   "stage": "v2",
+   "depends_on": [
+    "T-US-01",
+    "T-US-02",
+    "T-US-03",
+    "T-US-04",
+    "T-US-05",
+    "T-US-06",
+    "T-A-25"
+   ],
+   "choke_points": [],
+   "choke_points_rationale": "画面。外界に出ない（API は関門の先）",
+   "forbidden_direct_apis_reminder": [
+    "fetch",
+    "axios",
+    "undici",
+    "pg / drizzle の生クライアント（関門の外）",
+    "child_process",
+    "fs（関門の外）",
+    "nodemailer / resend（関門の外）",
+    "anthropic / openai SDK（関門の外）"
+   ],
+   "files_changed": [
+    "apps/web/app/(app)/ops/llm/page.tsx (new)",
+    "apps/web/tests/screens/ops-llm.spec.ts (new)"
+   ],
+   "files_changed_predicted": {
+    "new": [
+     "apps/web/app/(app)/ops/llm/page.tsx",
+     "apps/web/components/screens/ops-llm/*.tsx",
+     "apps/web/tests/screens/ops-llm.spec.ts"
+    ],
+    "modify": [],
+    "shared_read": [
+     "06_mockup/v2/v2-ops-llm.html",
+     "08_api/types.ts",
+     "07_functional/screens.json#ops-llm"
+    ],
+    "forbidden": [
+     "apps/web/components/shell/**（共通シェルは T-US-01）",
+     "packages/**"
+    ]
+   },
+   "acceptance_criteria": {
+    "structural": [
+     "UBIQUITOUS: 画面 ops-llm は URL /ops/llm で開く（apps/web/app/(app)/ops/llm/page.tsx。遷移の href は flow の route と機械照合）",
+     "STATE-DRIVEN: WHILE 画面 ops-llm が描画中 THEN h1「運営：AI の経路と使用量」・第2ナビ 許可 / 使用量 / 費用・状態 3（経路と使用量、従量に切り替わった会社、空）がモック 06_mockup/v2/v2-ops-llm.html と一致する",
+     "STATE-DRIVEN: WHILE 役割 R6 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い"
+    ],
+    "functional": [
+     "EVENT-DRIVEN: WHEN PATCH /api/v1/llm_routes/:id が「会社の詳細で運営マネージドを許可する」として呼ばれたとき THEN Kaname は「llm_routes の許可を更新。3 社の使用量を集計して費用へ」を行い 2xx を返す",
+     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+     "EVENT-DRIVEN: WHEN 「許可する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する",
+     "UNWANTED: IF 列の値が実データでも「—」固定なら未実装として落とす"
+    ],
+    "regression": [
+     "pnpm test（該当パッケージ）PASS",
+     "pnpm typecheck 0 errors（触ったファイル）",
+     "coverage >= 80%（触ったファイル）",
+     "pnpm lint OK",
+     "python3 scripts/ci/layer_audit.py --run PASS",
+     "関門の迂回検出（choke-points ci_check）PASS",
+     "audit MD（07_tasks/audit/<id>.md）に impl line を記入",
+     "mock-impl-diff（h1・状態・第2ナビ・列の値）PASS",
+     "AC-R9 動作実証：実ブラウザで全操作要素を押し、遷移／別 GET 再取得／表示変化を確認。href は実在ルートを機械照合"
+    ]
+   },
+   "access_policies_required": [],
+   "spec_links": [
+    "06_mockup/v2/v2-ops-llm.html",
+    "07_functional/screens.json#ops-llm",
+    "08_api/screen-api-coverage.json",
+    "01_hearing/決定ログ_進行中.md#D-083.5",
+    "01_hearing/決定ログ_進行中.md#D-083.6"
+   ],
+   "audit_md_path": "07_tasks/audit/T-U-63.md",
+   "status": "todo",
+   "qa_rows": {
+    "l1": [
+     "SCR-OPS-LLM-001",
+     "SCR-OPS-LLM-002",
+     "SCR-OPS-LLM-003",
+     "SCR-OPS-LLM-004",
+     "SCR-OPS-LLM-005",
+     "SCR-OPS-LLM-006",
+     "SCR-OPS-LLM-007",
+     "SCR-OPS-LLM-008",
+     "SCR-OPS-LLM-009",
+     "SCR-OPS-LLM-010",
+     "SCR-OPS-LLM-011",
+     "SCR-OPS-LLM-012",
+     "SCR-OPS-LLM-013",
+     "SCR-OPS-LLM-014",
+     "SCR-OPS-LLM-015",
+     "SCR-OPS-LLM-016",
+     "SCR-OPS-LLM-017",
+     "SCR-OPS-LLM-018"
+    ],
+    "l2_flows": []
+   },
+   "test_scenarios_inline": [
+    {
+     "name": "状態 経路と使用量",
+     "steps": [
+      "状態を作る",
+      "開く"
+     ],
+     "expected": "モックと一致"
+    },
+    {
+     "name": "状態 従量に切り替わった会社",
+     "steps": [
+      "状態を作る",
+      "開く"
+     ],
+     "expected": "モックと一致"
+    },
+    {
+     "name": "状態 空",
+     "steps": [
+      "状態を作る",
+      "開く"
+     ],
+     "expected": "モックと一致"
+    },
+    {
+     "name": "主アクション",
+     "steps": [
+      "押す",
+      "別 GET"
+     ],
+     "expected": "反映"
+    }
+   ],
+   "source": [
+    "D-083.5",
+    "D-083.6"
+   ],
+   "decision_summaries": [
+    {
+     "id": "D-083",
+     "summary": "段階 2 で足す経路は BYOK（顧客の API キー）と運営マネージド（運営のキー・既定 OFF）。提供者は Anthropic・OpenAI・Google の 3 社で、使える機能は 3 社で徹底して同じにする（能力表を揃え、揃わない能力は出さない）。キーは C8 の vault 参照だけ。運営マネージドの費用はプランの上限に含め、超過は従量で同じ請求書に"
+    }
+   ],
+   "critical": false,
+   "why": "",
+   "acceptance_criteria_inline": {
+    "tier_1_structural": [
+     "UBIQUITOUS: 画面 ops-llm は URL /ops/llm で開く（apps/web/app/(app)/ops/llm/page.tsx。遷移の href は flow の route と機械照合）",
+     "STATE-DRIVEN: WHILE 画面 ops-llm が描画中 THEN h1「運営：AI の経路と使用量」・第2ナビ 許可 / 使用量 / 費用・状態 3（経路と使用量、従量に切り替わった会社、空）がモック 06_mockup/v2/v2-ops-llm.html と一致する",
+     "STATE-DRIVEN: WHILE 役割 R6 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い"
+    ],
+    "tier_2_functional": [
+     {
+      "type": "EVENT-DRIVEN",
+      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/llm_routes/:id が「会社の詳細で運営マネージドを許可する」として呼ばれたとき THEN Kaname は「llm_routes の許可を更新。3 社の使用量を集計して費用へ」を行い 2xx を返す",
+      "critical": false
+     },
+     {
+      "type": "UNWANTED",
+      "text": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+      "critical": false
+     },
+     {
+      "type": "EVENT-DRIVEN",
+      "text": "EVENT-DRIVEN: WHEN 「許可する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する",
+      "critical": false
+     },
+     {
+      "type": "UNWANTED",
+      "text": "UNWANTED: IF 列の値が実データでも「—」固定なら未実装として落とす",
+      "critical": false
+     }
+    ],
+    "tier_3_regression": [
+     "pnpm test（該当パッケージ）PASS",
+     "pnpm typecheck 0 errors（触ったファイル）",
+     "coverage >= 80%（触ったファイル）",
+     "pnpm lint OK",
+     "python3 scripts/ci/layer_audit.py --run PASS",
+     "関門の迂回検出（choke-points ci_check）PASS",
+     "audit MD（07_tasks/audit/<id>.md）に impl line を記入",
+     "mock-impl-diff（h1・状態・第2ナビ・列の値）PASS",
+     "AC-R9 動作実証：実ブラウザで全操作要素を押し、遷移／別 GET 再取得／表示変化を確認。href は実在ルートを機械照合"
+    ]
+   },
+   "estimate_hours_human": 13.0,
+   "estimate_hours_ai": 1.3,
+   "human_review_h": 0.0,
+   "wall_clock_h_ai": 1.3,
+   "ai_acceleration_factor": 10,
+   "blocking_dependencies_h": 0,
+   "estimate_method": "reference",
+   "estimate_confidence": "medium",
+   "estimate_hours": 1.3,
+   "estimate_sessions": 1
+  },
+  {
+   "id": "T-U-64",
+   "title": "画面 運営：開示資料（3 状態・R6・段階 2）",
+   "category": "frontend",
+   "label": "NEW",
+   "feature_id": "F-V3-C-ops-disclosure",
+   "feature_ids": [
+    "F-V3-C-ops-disclosure"
+   ],
+   "screen_ids": [
+    "ops-disclosure"
+   ],
+   "entity_ids": [
+    "E-091",
+    "E-092",
+    "E-064",
+    "E-065",
+    "E-066"
+   ],
+   "acts": [
+    "A86"
+   ],
+   "legacy_task_id": null,
+   "phase": "9_v2_ui",
+   "wave": 21,
+   "group": "U-screen",
+   "deliverable_layer": "ui",
+   "stage": "v2",
+   "depends_on": [
+    "T-US-01",
+    "T-US-02",
+    "T-US-03",
+    "T-US-04",
+    "T-US-05",
+    "T-US-06",
+    "T-A-25"
+   ],
+   "choke_points": [],
+   "choke_points_rationale": "画面。外界に出ない（API は関門の先）",
+   "forbidden_direct_apis_reminder": [
+    "fetch",
+    "axios",
+    "undici",
+    "pg / drizzle の生クライアント（関門の外）",
+    "child_process",
+    "fs（関門の外）",
+    "nodemailer / resend（関門の外）",
+    "anthropic / openai SDK（関門の外）"
+   ],
+   "files_changed": [
+    "apps/web/app/(app)/ops/disclosure/page.tsx (new)",
+    "apps/web/tests/screens/ops-disclosure.spec.ts (new)"
+   ],
+   "files_changed_predicted": {
+    "new": [
+     "apps/web/app/(app)/ops/disclosure/page.tsx",
+     "apps/web/components/screens/ops-disclosure/*.tsx",
+     "apps/web/tests/screens/ops-disclosure.spec.ts"
+    ],
+    "modify": [],
+    "shared_read": [
+     "06_mockup/v2/v2-ops-disclosure.html",
+     "08_api/types.ts",
+     "07_functional/screens.json#ops-disclosure"
+    ],
+    "forbidden": [
+     "apps/web/components/shell/**（共通シェルは T-US-01）",
+     "packages/**"
+    ]
+   },
+   "acceptance_criteria": {
+    "structural": [
+     "UBIQUITOUS: 画面 ops-disclosure は URL /ops/disclosure で開く（apps/web/app/(app)/ops/disclosure/page.tsx。遷移の href は flow の route と機械照合）",
+     "STATE-DRIVEN: WHILE 画面 ops-disclosure が描画中 THEN h1「運営：開示資料」・第2ナビ 版 / DPA の雛形 / サブプロセッサ・状態 3（版、DPA とサブプロセッサ、空）がモック 06_mockup/v2/v2-ops-disclosure.html と一致する",
+     "STATE-DRIVEN: WHILE 役割 R6 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い"
+    ],
+    "functional": [
+     "EVENT-DRIVEN: WHEN PATCH /api/v1/disclosure_versions/:id が「版を出す・DPA の雛形とサブプロセッサを整える」として呼ばれたとき THEN Kaname は「disclosure_versions を作る（C4）。変更はお知らせ（C6）」を行い 2xx を返す",
+     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+     "EVENT-DRIVEN: WHEN 「版を出す」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する",
+     "UNWANTED: IF 列の値が実データでも「—」固定なら未実装として落とす"
+    ],
+    "regression": [
+     "pnpm test（該当パッケージ）PASS",
+     "pnpm typecheck 0 errors（触ったファイル）",
+     "coverage >= 80%（触ったファイル）",
+     "pnpm lint OK",
+     "python3 scripts/ci/layer_audit.py --run PASS",
+     "関門の迂回検出（choke-points ci_check）PASS",
+     "audit MD（07_tasks/audit/<id>.md）に impl line を記入",
+     "mock-impl-diff（h1・状態・第2ナビ・列の値）PASS",
+     "AC-R9 動作実証：実ブラウザで全操作要素を押し、遷移／別 GET 再取得／表示変化を確認。href は実在ルートを機械照合"
+    ]
+   },
+   "access_policies_required": [],
+   "spec_links": [
+    "06_mockup/v2/v2-ops-disclosure.html",
+    "07_functional/screens.json#ops-disclosure",
+    "08_api/screen-api-coverage.json",
+    "01_hearing/決定ログ_進行中.md#D-085.1",
+    "01_hearing/決定ログ_進行中.md#D-085.2",
+    "01_hearing/決定ログ_進行中.md#D-085.3"
+   ],
+   "audit_md_path": "07_tasks/audit/T-U-64.md",
+   "status": "todo",
+   "qa_rows": {
+    "l1": [
+     "SCR-OPS-DISCLOSURE-001",
+     "SCR-OPS-DISCLOSURE-002",
+     "SCR-OPS-DISCLOSURE-003",
+     "SCR-OPS-DISCLOSURE-004",
+     "SCR-OPS-DISCLOSURE-005",
+     "SCR-OPS-DISCLOSURE-006",
+     "SCR-OPS-DISCLOSURE-007",
+     "SCR-OPS-DISCLOSURE-008",
+     "SCR-OPS-DISCLOSURE-009",
+     "SCR-OPS-DISCLOSURE-010",
+     "SCR-OPS-DISCLOSURE-011",
+     "SCR-OPS-DISCLOSURE-012",
+     "SCR-OPS-DISCLOSURE-013",
+     "SCR-OPS-DISCLOSURE-014",
+     "SCR-OPS-DISCLOSURE-015",
+     "SCR-OPS-DISCLOSURE-016",
+     "SCR-OPS-DISCLOSURE-017",
+     "SCR-OPS-DISCLOSURE-018",
+     "E-DISC-002-A",
+     "E-DISC-002-B",
+     "E-DISC-002-C"
+    ],
+    "l2_flows": []
+   },
+   "test_scenarios_inline": [
+    {
+     "name": "状態 版",
+     "steps": [
+      "状態を作る",
+      "開く"
+     ],
+     "expected": "モックと一致"
+    },
+    {
+     "name": "状態 DPA とサブプロセッサ",
+     "steps": [
+      "状態を作る",
+      "開く"
+     ],
+     "expected": "モックと一致"
+    },
+    {
+     "name": "状態 空",
+     "steps": [
+      "状態を作る",
+      "開く"
+     ],
+     "expected": "モックと一致"
+    },
+    {
+     "name": "主アクション",
+     "steps": [
+      "押す",
+      "別 GET"
+     ],
+     "expected": "反映"
+    }
+   ],
+   "source": [
+    "D-085.1",
+    "D-085.2",
+    "D-085.3"
+   ],
+   "decision_summaries": [
+    {
+     "id": "D-085",
+     "summary": "できる操作の完全な列挙・送るもの／送らないもの・サブプロセッサ一覧・アンインストールの検証結果 は成果物（行為×関門・依存の境界・技術選定・Bridge の検証）から機械生成し、版を持つ。DPA だけ雛形（法務確認）。security-brief を拡張して PDF で出し、運営は ops-disclosure で版を出す。変わったらお知らせ"
+    }
+   ],
+   "critical": false,
+   "why": "",
+   "acceptance_criteria_inline": {
+    "tier_1_structural": [
+     "UBIQUITOUS: 画面 ops-disclosure は URL /ops/disclosure で開く（apps/web/app/(app)/ops/disclosure/page.tsx。遷移の href は flow の route と機械照合）",
+     "STATE-DRIVEN: WHILE 画面 ops-disclosure が描画中 THEN h1「運営：開示資料」・第2ナビ 版 / DPA の雛形 / サブプロセッサ・状態 3（版、DPA とサブプロセッサ、空）がモック 06_mockup/v2/v2-ops-disclosure.html と一致する",
+     "STATE-DRIVEN: WHILE 役割 R6 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い"
+    ],
+    "tier_2_functional": [
+     {
+      "type": "EVENT-DRIVEN",
+      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/disclosure_versions/:id が「版を出す・DPA の雛形とサブプロセッサを整える」として呼ばれたとき THEN Kaname は「disclosure_versions を作る（C4）。変更はお知らせ（C6）」を行い 2xx を返す",
+      "critical": false
+     },
+     {
+      "type": "UNWANTED",
+      "text": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+      "critical": false
+     },
+     {
+      "type": "EVENT-DRIVEN",
+      "text": "EVENT-DRIVEN: WHEN 「版を出す」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する",
+      "critical": false
+     },
+     {
+      "type": "UNWANTED",
+      "text": "UNWANTED: IF 列の値が実データでも「—」固定なら未実装として落とす",
+      "critical": false
+     }
+    ],
+    "tier_3_regression": [
+     "pnpm test（該当パッケージ）PASS",
+     "pnpm typecheck 0 errors（触ったファイル）",
+     "coverage >= 80%（触ったファイル）",
+     "pnpm lint OK",
+     "python3 scripts/ci/layer_audit.py --run PASS",
+     "関門の迂回検出（choke-points ci_check）PASS",
+     "audit MD（07_tasks/audit/<id>.md）に impl line を記入",
+     "mock-impl-diff（h1・状態・第2ナビ・列の値）PASS",
+     "AC-R9 動作実証：実ブラウザで全操作要素を押し、遷移／別 GET 再取得／表示変化を確認。href は実在ルートを機械照合"
+    ]
+   },
+   "estimate_hours_human": 13.0,
+   "estimate_hours_ai": 1.3,
+   "human_review_h": 0.0,
+   "wall_clock_h_ai": 1.3,
+   "ai_acceleration_factor": 10,
+   "blocking_dependencies_h": 0,
+   "estimate_method": "reference",
+   "estimate_confidence": "medium",
+   "estimate_hours": 1.3,
+   "estimate_sessions": 1
+  },
+  {
    "id": "T-I-01",
    "title": "実行ループの結線（自分のAI → 配る → AI社員 action_runs → 関門 → 一次確認 → 承認待ち → 画面）",
    "category": "test",
@@ -32584,6 +35388,7 @@
    "wave": 15,
    "group": "I",
    "deliverable_layer": "integration",
+   "stage": "v1",
    "depends_on": [
     "T-A-04",
     "T-A-05",
@@ -32755,6 +35560,7 @@
    "wave": 15,
    "group": "I",
    "deliverable_layer": "integration",
+   "stage": "v1",
    "depends_on": [
     "T-F-02",
     "T-F-03",
@@ -32911,6 +35717,7 @@
    "wave": 15,
    "group": "I",
    "deliverable_layer": "integration",
+   "stage": "v1",
    "depends_on": [
     "T-F-15",
     "T-U-01",
@@ -33076,11 +35883,13 @@
    "wave": 15,
    "group": "I",
    "deliverable_layer": "integration",
+   "stage": "v1",
    "depends_on": [
     "T-A-17",
     "T-A-18",
     "T-A-19",
     "T-A-22",
+    "T-A-25",
     "T-F-12",
     "T-U-41",
     "T-U-50",
@@ -33230,11 +36039,13 @@
    "wave": 15,
    "group": "I",
    "deliverable_layer": "integration",
+   "stage": "v1",
    "depends_on": [
     "T-A-12",
     "T-A-13",
     "T-A-15",
     "T-A-18",
+    "T-A-24",
     "T-F-04",
     "T-F-05",
     "T-F-06",
@@ -33390,6 +36201,7 @@
    "wave": 15,
    "group": "I",
    "deliverable_layer": "integration",
+   "stage": "v1",
    "depends_on": [
     "T-A-12",
     "T-A-13",
@@ -33540,11 +36352,13 @@
    "wave": 15,
    "group": "I",
    "deliverable_layer": "integration",
+   "stage": "v1",
    "depends_on": [
     "T-A-07",
     "T-A-08",
     "T-A-18",
     "T-A-19",
+    "T-A-25",
     "T-F-12",
     "T-U-13",
     "T-U-51"
@@ -33689,10 +36503,12 @@
    "wave": 15,
    "group": "I",
    "deliverable_layer": "integration",
+   "stage": "v1",
    "depends_on": [
     "T-A-18",
     "T-A-19",
     "T-A-21",
+    "T-A-25",
     "T-F-10",
     "T-F-13",
     "T-U-52",
@@ -33844,10 +36660,12 @@
    "wave": 15,
    "group": "I",
    "deliverable_layer": "integration",
+   "stage": "v1",
    "depends_on": [
     "T-A-01",
     "T-A-02",
     "T-A-15",
+    "T-A-24",
     "T-U-01",
     "T-U-02",
     "T-U-03",
@@ -34001,6 +36819,7 @@
    "wave": 15,
    "group": "I",
    "deliverable_layer": "integration",
+   "stage": "v1",
    "depends_on": [
     "T-A-01",
     "T-A-06",
@@ -34158,6 +36977,7 @@
    "wave": 16,
    "group": "I",
    "deliverable_layer": "integration",
+   "stage": "v1",
    "depends_on": [
     "T-A-04",
     "T-A-05",
@@ -34323,6 +37143,7 @@
    "wave": 16,
    "group": "I",
    "deliverable_layer": "integration",
+   "stage": "v1",
    "depends_on": [
     "T-A-04",
     "T-A-05",
@@ -34482,6 +37303,7 @@
    "wave": 16,
    "group": "I",
    "deliverable_layer": "integration",
+   "stage": "v1",
    "depends_on": [
     "T-A-09",
     "T-A-10",
@@ -34640,6 +37462,7 @@
    "wave": 16,
    "group": "I",
    "deliverable_layer": "integration",
+   "stage": "v1",
    "depends_on": [
     "T-A-03",
     "T-A-06",
@@ -34798,6 +37621,7 @@
    "wave": 16,
    "group": "I",
    "deliverable_layer": "integration",
+   "stage": "v1",
    "depends_on": [
     "T-A-06",
     "T-A-07",
@@ -34807,6 +37631,8 @@
     "T-A-15",
     "T-A-18",
     "T-A-20",
+    "T-A-24",
+    "T-A-26",
     "T-U-33",
     "T-U-35",
     "T-U-36",
@@ -34968,8 +37794,10 @@
    "wave": 16,
    "group": "I",
    "deliverable_layer": "integration",
+   "stage": "v1",
    "depends_on": [
     "T-A-15",
+    "T-A-24",
     "T-U-33",
     "T-U-38",
     "T-U-39",
@@ -35119,6 +37947,7 @@
    "wave": 16,
    "group": "I",
    "deliverable_layer": "integration",
+   "stage": "v1",
    "depends_on": [
     "T-A-12",
     "T-A-13",
@@ -35127,6 +37956,7 @@
     "T-A-21",
     "T-A-22",
     "T-A-23",
+    "T-A-25",
     "T-U-37",
     "T-U-41",
     "T-U-42",
@@ -35287,6 +38117,7 @@
    "wave": 16,
    "group": "I",
    "deliverable_layer": "integration",
+   "stage": "v1",
    "depends_on": [
     "T-F-01",
     "T-F-15",
@@ -35452,6 +38283,7 @@
    "wave": 16,
    "group": "I",
    "deliverable_layer": "polish",
+   "stage": "v1",
    "depends_on": [
     "T-I-01",
     "T-I-02",
@@ -35592,6 +38424,7 @@
    "wave": 16,
    "group": "I",
    "deliverable_layer": "polish",
+   "stage": "v1",
    "depends_on": [
     "T-F-02",
     "T-F-03",
@@ -35739,6 +38572,7 @@
    "wave": 17,
    "group": "I",
    "deliverable_layer": "polish",
+   "stage": "v1",
    "depends_on": [
     "T-F-01"
    ],
@@ -35882,6 +38716,7 @@
    "wave": 17,
    "group": "I",
    "deliverable_layer": "polish",
+   "stage": "v1",
    "depends_on": [
     "T-I-01",
     "T-I-02",
@@ -36039,6 +38874,7 @@
    "wave": 18,
    "group": "S",
    "deliverable_layer": "content",
+   "stage": "v1",
    "depends_on": [
     "T-U-49",
     "T-A-21"
@@ -36206,6 +39042,7 @@
    "wave": 18,
    "group": "S",
    "deliverable_layer": "content",
+   "stage": "v1",
    "depends_on": [
     "T-S-01"
    ],
@@ -36364,6 +39201,7 @@
    "wave": 18,
    "group": "S",
    "deliverable_layer": "content",
+   "stage": "v1",
    "depends_on": [
     "T-S-01"
    ],
@@ -36522,6 +39360,7 @@
    "wave": 18,
    "group": "S",
    "deliverable_layer": "content",
+   "stage": "v1",
    "depends_on": [
     "T-S-01"
    ],
@@ -36679,6 +39518,7 @@
    "wave": 18,
    "group": "S",
    "deliverable_layer": "content",
+   "stage": "v1",
    "depends_on": [
     "T-S-01"
    ],
@@ -36841,6 +39681,7 @@
    "wave": 18,
    "group": "S",
    "deliverable_layer": "content",
+   "stage": "v1",
    "depends_on": [
     "T-S-01"
    ],
@@ -37003,6 +39844,7 @@
    "wave": 18,
    "group": "S",
    "deliverable_layer": "content",
+   "stage": "v1",
    "depends_on": [
     "T-S-01"
    ],
@@ -37160,6 +40002,7 @@
    "wave": 18,
    "group": "S",
    "deliverable_layer": "content",
+   "stage": "v1",
    "depends_on": [
     "T-S-01"
    ],
@@ -37322,6 +40165,7 @@
    "wave": 18,
    "group": "S",
    "deliverable_layer": "content",
+   "stage": "v1",
    "depends_on": [
     "T-S-01"
    ],
@@ -37480,6 +40324,7 @@
    "wave": 18,
    "group": "S",
    "deliverable_layer": "content",
+   "stage": "v1",
    "depends_on": [
     "T-S-01"
    ],
@@ -37638,6 +40483,7 @@
    "wave": 19,
    "group": "S",
    "deliverable_layer": "content",
+   "stage": "v1",
    "depends_on": [
     "T-S-01"
    ],
@@ -37796,6 +40642,7 @@
    "wave": 19,
    "group": "S",
    "deliverable_layer": "content",
+   "stage": "v1",
    "depends_on": [
     "T-S-01"
    ],
@@ -37954,6 +40801,7 @@
    "wave": 19,
    "group": "S",
    "deliverable_layer": "content",
+   "stage": "v1",
    "depends_on": [
     "T-S-01"
    ],
@@ -38112,6 +40960,7 @@
    "wave": 19,
    "group": "S",
    "deliverable_layer": "content",
+   "stage": "v1",
    "depends_on": [
     "T-S-01"
    ],
@@ -38270,6 +41119,7 @@
    "wave": 19,
    "group": "S",
    "deliverable_layer": "content",
+   "stage": "v1",
    "depends_on": [
     "T-S-01"
    ],
@@ -38423,6 +41273,7 @@
    "wave": 4,
    "group": "V2",
    "deliverable_layer": "spec",
+   "stage": "v1",
    "depends_on": [
     "T-F-17"
    ],
@@ -38563,6 +41414,7 @@
    "wave": 4,
    "group": "V2",
    "deliverable_layer": "spec",
+   "stage": "v1",
    "depends_on": [
     "T-F-17"
    ],
@@ -38645,7 +41497,8 @@
    ],
    "source": [
     "D-081.2",
-    "D-002"
+    "D-002",
+    "D-082"
    ],
    "decision_summaries": [
     {
@@ -38655,6 +41508,10 @@
     {
      "id": "D-002",
      "summary": "65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集客ファネル"
+    },
+    {
+     "id": "D-082",
+     "summary": "カードの会社は Stripe Billing のサブスク（毎月自動請求）。カードの登録と変更は Stripe のホスト画面（Checkout／Customer Portal）で、カード番号は自社を通らない。subscriptions／invoices／payments は webhook で写す（billing_events で二重処理しない）。失敗は再試行 → 7 日猶予 → 休止。v1 の請求書払いは残り、会社ごとに支払い方法を選ぶ"
     }
    ],
    "critical": false,
@@ -38706,6 +41563,7 @@
    "wave": 4,
    "group": "V2",
    "deliverable_layer": "spec",
+   "stage": "v1",
    "depends_on": [
     "T-F-17"
    ],
@@ -38789,7 +41647,8 @@
    "source": [
     "D-081.3",
     "D-043",
-    "D-055"
+    "D-055",
+    "D-083"
    ],
    "decision_summaries": [
     {
@@ -38803,6 +41662,10 @@
     {
      "id": "D-055",
      "summary": "段階1で AI が動く経路は Bridge（顧客PCで本人のサブスクの公式CLI）だけ。BYOK・運営マネージドは段階2以降。だから立ち上げは「PCをつなぐ」が最初で、自分のAIとの会話はその後。Web は画面、Bridge はエンジン。Bridge 無しの Web だけでは段階1では AI は動かない"
+    },
+    {
+     "id": "D-083",
+     "summary": "段階 2 で足す経路は BYOK（顧客の API キー）と運営マネージド（運営のキー・既定 OFF）。提供者は Anthropic・OpenAI・Google の 3 社で、使える機能は 3 社で徹底して同じにする（能力表を揃え、揃わない能力は出さない）。キーは C8 の vault 参照だけ。運営マネージドの費用はプランの上限に含め、超過は従量で同じ請求書に"
     }
    ],
    "critical": false,
@@ -38841,7 +41704,7 @@
   },
   {
    "id": "T-V2-04",
-   "title": "段階 2 の仕様づくり：PWA",
+   "title": "段階 2 の仕様づくり：アプリ（PC・スマホ）",
    "category": "spec",
    "label": "NEW",
    "feature_id": null,
@@ -38854,6 +41717,7 @@
    "wave": 4,
    "group": "V2",
    "deliverable_layer": "spec",
+   "stage": "v1",
    "depends_on": [
     "T-F-17"
    ],
@@ -38897,10 +41761,10 @@
    },
    "acceptance_criteria": {
     "structural": [
-     "UBIQUITOUS: PWA の画面・行為が flow.json の release に入り、G17 の deferred から D-081.4 が消えている"
+     "UBIQUITOUS: アプリ（PC・スマホ） の画面・行為が flow.json の release に入り、G17 の deferred から D-081.4 が消えている"
     ],
     "functional": [
-     "EVENT-DRIVEN: WHEN 決定ログに PWA の節を足したら、システム（ゲート）は trace_gate T1〜T10・flow_gate G17・er_gate G20・layer_audit G21 を全部緑で通す",
+     "EVENT-DRIVEN: WHEN 決定ログに アプリ（PC・スマホ） の節を足したら、システム（ゲート）は trace_gate T1〜T10・flow_gate G17・er_gate G20・layer_audit G21 を全部緑で通す",
      "UNWANTED: IF 決定の無い後回しや、オブジェクトの無い『作る・配る・版』の文が残ったら、G17／T10 が赤のまま実装タスクを生成しない"
     ],
     "regression": [
@@ -38935,24 +41799,29 @@
     }
    ],
    "source": [
-    "D-081.4"
+    "D-081.4",
+    "D-084"
    ],
    "decision_summaries": [
     {
      "id": "D-081",
      "summary": "サマリーの段階表（段階 2＝課金・オンボーディング・構築メタスキル・運営コンソール）は D-073〜D-080 で v1 に引き上げた後も古いままだった。v1 は 58 画面（権限・層・配分・運営コンソール・スキル・プランの定義を含む）。段階 2 に残るのは Stripe 課金／LLM の経路の追加／PWA／情シス向け開示資料／MDM・SSO・ISMS の 5 つ。後回しは決定 ID で残す（G17）"
+    },
+    {
+     "id": "D-084",
+     "summary": "PC は Bridge（Electron）の窓に Kaname の画面を出す。スマホは同じ Web を Capacitor の殻に入れて App Store／Play へ。通知は APNs／FCM（push_devices）。オフラインは読むだけ。D-081.4 の PWA は取り消し。D-043・D-051 の「方式は段階 5」は本節で決めた"
     }
    ],
    "critical": false,
-   "why": "後回しにした文 D-081.4「PWA」の仕様を作る（D-081.7：後回しは日程に載せる）",
+   "why": "後回しにした文 D-081.4「アプリ（PC・スマホ）」の仕様を作る（D-081.7：後回しは日程に載せる）",
    "acceptance_criteria_inline": {
     "tier_1_structural": [
-     "UBIQUITOUS: PWA の画面・行為が flow.json の release に入り、G17 の deferred から D-081.4 が消えている"
+     "UBIQUITOUS: アプリ（PC・スマホ） の画面・行為が flow.json の release に入り、G17 の deferred から D-081.4 が消えている"
     ],
     "tier_2_functional": [
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN 決定ログに PWA の節を足したら、システム（ゲート）は trace_gate T1〜T10・flow_gate G17・er_gate G20・layer_audit G21 を全部緑で通す",
+      "text": "EVENT-DRIVEN: WHEN 決定ログに アプリ（PC・スマホ） の節を足したら、システム（ゲート）は trace_gate T1〜T10・flow_gate G17・er_gate G20・layer_audit G21 を全部緑で通す",
       "critical": false
      },
      {
@@ -38992,6 +41861,7 @@
    "wave": 4,
    "group": "V2",
    "deliverable_layer": "spec",
+   "stage": "v1",
    "depends_on": [
     "T-F-17"
    ],
@@ -39073,12 +41943,17 @@
     }
    ],
    "source": [
-    "D-081.5"
+    "D-081.5",
+    "D-085"
    ],
    "decision_summaries": [
     {
      "id": "D-081",
      "summary": "サマリーの段階表（段階 2＝課金・オンボーディング・構築メタスキル・運営コンソール）は D-073〜D-080 で v1 に引き上げた後も古いままだった。v1 は 58 画面（権限・層・配分・運営コンソール・スキル・プランの定義を含む）。段階 2 に残るのは Stripe 課金／LLM の経路の追加／PWA／情シス向け開示資料／MDM・SSO・ISMS の 5 つ。後回しは決定 ID で残す（G17）"
+    },
+    {
+     "id": "D-085",
+     "summary": "できる操作の完全な列挙・送るもの／送らないもの・サブプロセッサ一覧・アンインストールの検証結果 は成果物（行為×関門・依存の境界・技術選定・Bridge の検証）から機械生成し、版を持つ。DPA だけ雛形（法務確認）。security-brief を拡張して PDF で出し、運営は ops-disclosure で版を出す。変わったらお知らせ"
     }
    ],
    "critical": false,

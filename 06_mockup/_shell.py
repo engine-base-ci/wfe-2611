@@ -56,14 +56,14 @@ def _nav_for(role, active, ver):
     allowed = NAV[role]; out = []
     for key in SECT_BY_ROLE[role]:
         sec = next(x for x in SECT if x["key"] == key)
-        hit = [m for m in sec["screens"] if m in allowed]
+        hit = [m for m in sec["screens"] if m in allowed and SCR[m]["release"] <= ver]   # 先の段階の画面は今の段階のナビに出さない（時点の正直さ・L-007）
         if not hit: continue
         is_on = SEC_OF.get(active) == key
         req = "" if key in ("today", "ops", "admin") else ' data-requires="model"'
         if len(hit) == 1:
             m = hit[0]; b = BADGE.get((m, role), "")
             b = f'<span class="badge" data-requires="data">{b}</span>' if b else ""
-            out.append(f'<a class="side-item{" on" if m == active else ""}" href="{ver}-{m}.html"{req}>'
+            out.append(f'<a class="side-item{" on" if m == active else ""}" href="{_href(m, ver)}"{req}>'
                        f'{ic(SEC_ICON[key])}<span>{_lbl(sec["label"], role)}</span>{b}</a>')
             continue
         tot = sum(int(BADGE.get((m, role), 0)) for m in hit)
@@ -74,9 +74,15 @@ def _nav_for(role, active, ver):
         for m in hit:
             bb = BADGE.get((m, role), "")
             bb = f'<span class="badge" data-requires="data">{bb}</span>' if bb else ""
-            subs += f'<a class="{"on" if m == active else ""}" href="{ver}-{m}.html">{ic(ICON.get(m,"file"))}<span>{_lbl(SCR[m]["name"], role)}</span>{bb}</a>'
+            subs += f'<a class="{"on" if m == active else ""}" href="{_href(m, ver)}">{ic(ICON.get(m,"file"))}<span>{_lbl(SCR[m]["name"], role)}</span>{bb}</a>'
         out.append(f'<div class="side-sub" data-sec="{key}"{"" if is_on else " hidden"}{req}>{subs}</div>')
     return "\n".join(out)
+
+def _href(m, ver):
+    """段階をまたぐリンク：その画面の段階の置き場（v1/・v2/）を指す。v2 のページから v1 の画面は ../v1/ へ"""
+    rel = SCR[m]["release"]
+    return f'{rel}-{m}.html' if rel == ver else f'../{rel}/{rel}-{m}.html'
+def _index_href(ver): return 'v1-index.html' if ver == 'v1' else '../v1/v1-index.html'
 
 def _sidebar(role, active, ver):
     av, nm, co = USERS[role]
@@ -92,8 +98,8 @@ def _tabbar(role, active, ver):
     for m in items:
         b = BADGE.get((m, role), "")
         b = f'<span class="bdg" data-requires="data">{b}</span>' if b else ""
-        out.append(f'<a class="{"on" if m == active else ""}" href="{ver}-{m}.html">{ic(ICON.get(m,"file"))}{b}<span>{_lbl(SCR[m]["name"], role)}</span></a>')
-    out.append(f'<a href="{ver}-index.html">{ic("menu")}<span>メニュー</span></a>')
+        out.append(f'<a class="{"on" if m == active else ""}" href="{_href(m, ver)}">{ic(ICON.get(m,"file"))}{b}<span>{_lbl(SCR[m]["name"], role)}</span></a>')
+    out.append(f'<a href="{_index_href(ver)}">{ic("menu")}<span>メニュー</span></a>')
     return f'<nav class="tabbar" data-role="{role}" data-requires="app">{"".join(out)}</nav>'
 
 def _subnav(sid, ver, counts=None, sub=None):
@@ -312,7 +318,7 @@ def _cover_na(na):
     while w and w[0] in ("empty", "stopped"): keys.append(w.pop(0))
     return "".join(f'<!-- cover-na: {k} {" ".join(w)} -->' for k in keys)
 
-def page(ver, sid, states, extra_css="", actions_extra="", no_shell=False, counts=None, sub=None):
+def _page(ver, sid, states, extra_css="", actions_extra="", no_shell=False, counts=None, sub=None):
     """states = [(id, タブ名, 補足, html), ...] 先頭が既定"""
     s = dict(SCR[sid]); s['name'] = _lbl(s['name'], 'R1'); s['purpose'] = _lbl(s['purpose'], 'R1')
     vlabel, vcolor = VER_META[ver]
@@ -369,7 +375,7 @@ def page(ver, sid, states, extra_css="", actions_extra="", no_shell=False, count
 <div class="mockbar"><b>モックアップ</b><span class="tagv" style="background:{vcolor}">{ver.upper()}</span>
 <span class="ph">{crumb}</span>{rolebar}<span class="sp"></span>
 <span class="wsw"><b>幅</b><button data-w="375">スマホ</button><button data-w="768">タブレット</button><button data-w="1024">横</button><button data-w="1440">PC</button></span>
-<a href="{ver}-index.html">手順の一覧</a><span class="mut">実データ・API連携は含みません</span></div>
+<a href="{_index_href(ver)}">手順の一覧</a><span class="mut">実データ・API連携は含みません</span></div>
 {body}
 <script>
 (function(){{ const st=document.querySelector('.states'); const mb=document.querySelector('.mockbar'); if(st&&mb){{ const sp=mb.querySelector('.sp'); mb.insertBefore(st, sp); }}
@@ -453,3 +459,10 @@ document.querySelectorAll('.side-grp').forEach(b=>b.addEventListener('click',()=
 }})();
 </script></body></html>
 '''.replace('__CAPS__', CAPS_JSON)
+
+def page(ver, sid, states, extra_css="", actions_extra="", no_shell=False, counts=None, sub=None):
+    """段階の置き場（v1/・v2/）に合わせる：v2 のページでは、部品が持つ v1 固定のリンクを ../v1/ に向ける（死にリンクにしない・G-04）"""
+    import re as _re
+    h = _page(ver, sid, states, extra_css=extra_css, actions_extra=actions_extra, no_shell=no_shell, counts=counts, sub=sub)
+    if ver != "v1": h = _re.sub(r'href="v1-([a-z0-9-]+)\.html"', r'href="../v1/v1-\1.html"', h)
+    return h

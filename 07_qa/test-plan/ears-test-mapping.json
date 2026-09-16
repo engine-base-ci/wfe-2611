@@ -5,12 +5,12 @@
  "_doc": "08_api/ears-ac-seed.json の 1 文 = 1 test。05_flow/build_testplan.py が生成。tickets の tier_2 と同じ文なので、実装者は tasks の列で自分の分を引く",
  "generator": "packages/api/test/generate_from_ears.ts（EARS の文 → vitest/jest の骨組み。EVENT-DRIVEN=正常・UNWANTED=異常・UBIQUITOUS=契約の形）",
  "counts": {
-  "endpoints": 55,
-  "tests": 397,
+  "endpoints": 60,
+  "tests": 432,
   "by_form": {
-   "EVENT-DRIVEN": 81,
-   "UNWANTED": 261,
-   "UBIQUITOUS": 55
+   "EVENT-DRIVEN": 87,
+   "UNWANTED": 285,
+   "UBIQUITOUS": 60
   }
  },
  "mappings": [
@@ -183,6 +183,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -217,10 +227,14 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
@@ -277,7 +291,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -286,7 +299,12 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
@@ -665,6 +683,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -699,10 +727,14 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
@@ -766,7 +798,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -775,7 +806,12 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
@@ -1030,6 +1066,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -1064,10 +1110,14 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
@@ -1124,7 +1174,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -1133,7 +1182,12 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
@@ -1386,6 +1440,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -1420,10 +1484,14 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
@@ -1480,7 +1548,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -1489,7 +1556,12 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
@@ -1723,6 +1795,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -1757,10 +1839,14 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
@@ -1817,7 +1903,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -1826,7 +1911,12 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
@@ -2078,6 +2168,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -2112,10 +2212,14 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
@@ -2172,7 +2276,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -2181,7 +2284,12 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
@@ -2483,6 +2591,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -2517,10 +2635,14 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
@@ -2578,7 +2700,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -2587,7 +2708,12 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
@@ -2845,6 +2971,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -2879,10 +3015,14 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
@@ -2939,7 +3079,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -2948,7 +3087,12 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
@@ -3287,6 +3431,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -3321,10 +3475,14 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
@@ -3384,7 +3542,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -3393,7 +3550,12 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
@@ -3635,6 +3797,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -3669,10 +3841,14 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
@@ -3729,7 +3905,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -3738,7 +3913,12 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
@@ -4014,6 +4194,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -4048,10 +4238,14 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
@@ -4108,7 +4302,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -4117,7 +4310,12 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
@@ -4351,6 +4549,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -4385,10 +4593,14 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
@@ -4445,7 +4657,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -4454,7 +4665,12 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
@@ -4539,6 +4755,712 @@
   },
   {
    "test_id": "TC-090",
+   "endpoint": "GET /api/v1/disclosure_versions",
+   "feature_id": "F-012",
+   "acts": [
+    "A84"
+   ],
+   "screens": [
+    "disclosure"
+   ],
+   "ears_form": "EVENT-DRIVEN",
+   "http_code": "",
+   "ears_text": "EVENT-DRIVEN: WHEN GET /api/v1/disclosure_versions が「開示資料を開いて PDF をもらう」として呼ばれたとき THEN Kaname は「成果物から生成した版を読む。PDF は署名 URL（C4）」を行い 2xx を返す",
+   "test_file": "apps/api/test/generated/get_disclosure_versions.test.ts",
+   "test_function": "test_get_disclosure_versions_ok",
+   "test_level": "contract+integration",
+   "gate": "backend-coverage",
+   "ladder": "L1",
+   "tasks": [
+    "T-A-24",
+    "T-U-60"
+   ]
+  },
+  {
+   "test_id": "TC-091",
+   "endpoint": "GET /api/v1/disclosure_versions",
+   "feature_id": "F-012",
+   "acts": [
+    "A84"
+   ],
+   "screens": [
+    "disclosure"
+   ],
+   "ears_form": "UNWANTED",
+   "http_code": "401",
+   "ears_text": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+   "test_file": "apps/api/test/generated/get_disclosure_versions.test.ts",
+   "test_function": "test_get_disclosure_versions_rejected_401",
+   "test_level": "access",
+   "gate": "backend-access-matrix",
+   "ladder": "L1",
+   "tasks": [
+    "T-A-01",
+    "T-A-01",
+    "T-A-01",
+    "T-A-01",
+    "T-A-01",
+    "T-A-03",
+    "T-A-04",
+    "T-A-04",
+    "T-A-04",
+    "T-A-04",
+    "T-A-04",
+    "T-A-04",
+    "T-A-04",
+    "T-A-04",
+    "T-A-05",
+    "T-A-05",
+    "T-A-05",
+    "T-A-05",
+    "T-A-05",
+    "T-A-05",
+    "T-A-05",
+    "T-A-06",
+    "T-A-06",
+    "T-A-06",
+    "T-A-06",
+    "T-A-06",
+    "T-A-06",
+    "T-A-07",
+    "T-A-07",
+    "T-A-07",
+    "T-A-07",
+    "T-A-07",
+    "T-A-07",
+    "T-A-07",
+    "T-A-08",
+    "T-A-08",
+    "T-A-08",
+    "T-A-08",
+    "T-A-09",
+    "T-A-09",
+    "T-A-09",
+    "T-A-09",
+    "T-A-09",
+    "T-A-09",
+    "T-A-09",
+    "T-A-09",
+    "T-A-10",
+    "T-A-10",
+    "T-A-10",
+    "T-A-10",
+    "T-A-10",
+    "T-A-10",
+    "T-A-10",
+    "T-A-11",
+    "T-A-11",
+    "T-A-11",
+    "T-A-11",
+    "T-A-11",
+    "T-A-12",
+    "T-A-12",
+    "T-A-12",
+    "T-A-12",
+    "T-A-12",
+    "T-A-12",
+    "T-A-13",
+    "T-A-13",
+    "T-A-13",
+    "T-A-13",
+    "T-A-13",
+    "T-A-13",
+    "T-A-14",
+    "T-A-14",
+    "T-A-14",
+    "T-A-14",
+    "T-A-14",
+    "T-A-15",
+    "T-A-15",
+    "T-A-15",
+    "T-A-15",
+    "T-A-15",
+    "T-A-15",
+    "T-A-15",
+    "T-A-15",
+    "T-A-16",
+    "T-A-16",
+    "T-A-16",
+    "T-A-16",
+    "T-A-16",
+    "T-A-16",
+    "T-A-17",
+    "T-A-17",
+    "T-A-17",
+    "T-A-17",
+    "T-A-17",
+    "T-A-17",
+    "T-A-18",
+    "T-A-18",
+    "T-A-18",
+    "T-A-18",
+    "T-A-18",
+    "T-A-18",
+    "T-A-19",
+    "T-A-19",
+    "T-A-19",
+    "T-A-19",
+    "T-A-19",
+    "T-A-19",
+    "T-A-20",
+    "T-A-20",
+    "T-A-20",
+    "T-A-20",
+    "T-A-20",
+    "T-A-20",
+    "T-A-21",
+    "T-A-21",
+    "T-A-21",
+    "T-A-21",
+    "T-A-21",
+    "T-A-22",
+    "T-A-22",
+    "T-A-22",
+    "T-A-22",
+    "T-A-22",
+    "T-A-22",
+    "T-A-23",
+    "T-A-23",
+    "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-U-07",
+    "T-U-09",
+    "T-U-10",
+    "T-U-11",
+    "T-U-13",
+    "T-U-13",
+    "T-U-13",
+    "T-U-14",
+    "T-U-15",
+    "T-U-17",
+    "T-U-21",
+    "T-U-21",
+    "T-U-24",
+    "T-U-25",
+    "T-U-26",
+    "T-U-27",
+    "T-U-28",
+    "T-U-29",
+    "T-U-32",
+    "T-U-33",
+    "T-U-34",
+    "T-U-37",
+    "T-U-38",
+    "T-U-39",
+    "T-U-42",
+    "T-U-45",
+    "T-U-46",
+    "T-U-47",
+    "T-U-48",
+    "T-U-49",
+    "T-U-50",
+    "T-U-51",
+    "T-U-52",
+    "T-U-53",
+    "T-U-55",
+    "T-U-56",
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
+   ]
+  },
+  {
+   "test_id": "TC-092",
+   "endpoint": "GET /api/v1/disclosure_versions",
+   "feature_id": "F-012",
+   "acts": [
+    "A84"
+   ],
+   "screens": [
+    "disclosure"
+   ],
+   "ears_form": "UNWANTED",
+   "http_code": "403",
+   "ears_text": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+   "test_file": "apps/api/test/generated/get_disclosure_versions.test.ts",
+   "test_function": "test_get_disclosure_versions_rejected_403",
+   "test_level": "access",
+   "gate": "backend-access-matrix",
+   "ladder": "L1",
+   "tasks": [
+    "T-A-01",
+    "T-A-01",
+    "T-A-04",
+    "T-A-04",
+    "T-A-04",
+    "T-A-04",
+    "T-A-05",
+    "T-A-06",
+    "T-A-06",
+    "T-A-06",
+    "T-A-07",
+    "T-A-07",
+    "T-A-07",
+    "T-A-08",
+    "T-A-09",
+    "T-A-09",
+    "T-A-10",
+    "T-A-10",
+    "T-A-11",
+    "T-A-11",
+    "T-A-12",
+    "T-A-12",
+    "T-A-14",
+    "T-A-15",
+    "T-A-15",
+    "T-A-15",
+    "T-A-16",
+    "T-A-16",
+    "T-A-16",
+    "T-A-17",
+    "T-A-17",
+    "T-A-18",
+    "T-A-18",
+    "T-A-18",
+    "T-A-19",
+    "T-A-20",
+    "T-A-20",
+    "T-A-20",
+    "T-A-21",
+    "T-A-21",
+    "T-A-22",
+    "T-A-22",
+    "T-A-22",
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
+   ]
+  },
+  {
+   "test_id": "TC-093",
+   "endpoint": "GET /api/v1/disclosure_versions",
+   "feature_id": "F-012",
+   "acts": [
+    "A84"
+   ],
+   "screens": [
+    "disclosure"
+   ],
+   "ears_form": "UNWANTED",
+   "http_code": "429",
+   "ears_text": "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+   "test_file": "apps/api/test/generated/get_disclosure_versions.test.ts",
+   "test_function": "test_get_disclosure_versions_rate_limited",
+   "test_level": "unit",
+   "gate": "backend-coverage",
+   "ladder": "L1",
+   "tasks": []
+  },
+  {
+   "test_id": "TC-094",
+   "endpoint": "GET /api/v1/disclosure_versions",
+   "feature_id": "F-012",
+   "acts": [
+    "A84"
+   ],
+   "screens": [
+    "disclosure"
+   ],
+   "ears_form": "UBIQUITOUS",
+   "http_code": "",
+   "ears_text": "UBIQUITOUS: GET /api/v1/disclosure_versions の副作用は関門 C2・C4 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う",
+   "test_file": "apps/api/test/generated/get_disclosure_versions.test.ts",
+   "test_function": "test_get_disclosure_versions_shape",
+   "test_level": "contract",
+   "gate": "backend-coverage",
+   "ladder": "L1",
+   "tasks": []
+  },
+  {
+   "test_id": "TC-095",
+   "endpoint": "PATCH /api/v1/disclosure_versions/:id",
+   "feature_id": "F-016",
+   "acts": [
+    "A86"
+   ],
+   "screens": [
+    "ops-disclosure"
+   ],
+   "ears_form": "EVENT-DRIVEN",
+   "http_code": "",
+   "ears_text": "EVENT-DRIVEN: WHEN PATCH /api/v1/disclosure_versions/:id が「版を出す・DPA の雛形とサブプロセッサを整える」として呼ばれたとき THEN Kaname は「disclosure_versions を作る（C4）。変更はお知らせ（C6）」を行い 2xx を返す",
+   "test_file": "apps/api/test/generated/patch_disclosure_versions_id.test.ts",
+   "test_function": "test_patch_disclosure_versions_id_ok",
+   "test_level": "contract+integration",
+   "gate": "backend-coverage",
+   "ladder": "L1",
+   "tasks": [
+    "T-A-25",
+    "T-U-64"
+   ]
+  },
+  {
+   "test_id": "TC-096",
+   "endpoint": "PATCH /api/v1/disclosure_versions/:id",
+   "feature_id": "F-016",
+   "acts": [
+    "A86"
+   ],
+   "screens": [
+    "ops-disclosure"
+   ],
+   "ears_form": "UNWANTED",
+   "http_code": "401",
+   "ears_text": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+   "test_file": "apps/api/test/generated/patch_disclosure_versions_id.test.ts",
+   "test_function": "test_patch_disclosure_versions_id_rejected_401",
+   "test_level": "access",
+   "gate": "backend-access-matrix",
+   "ladder": "L1",
+   "tasks": [
+    "T-A-01",
+    "T-A-01",
+    "T-A-01",
+    "T-A-01",
+    "T-A-01",
+    "T-A-03",
+    "T-A-04",
+    "T-A-04",
+    "T-A-04",
+    "T-A-04",
+    "T-A-04",
+    "T-A-04",
+    "T-A-04",
+    "T-A-04",
+    "T-A-05",
+    "T-A-05",
+    "T-A-05",
+    "T-A-05",
+    "T-A-05",
+    "T-A-05",
+    "T-A-05",
+    "T-A-06",
+    "T-A-06",
+    "T-A-06",
+    "T-A-06",
+    "T-A-06",
+    "T-A-06",
+    "T-A-07",
+    "T-A-07",
+    "T-A-07",
+    "T-A-07",
+    "T-A-07",
+    "T-A-07",
+    "T-A-07",
+    "T-A-08",
+    "T-A-08",
+    "T-A-08",
+    "T-A-08",
+    "T-A-09",
+    "T-A-09",
+    "T-A-09",
+    "T-A-09",
+    "T-A-09",
+    "T-A-09",
+    "T-A-09",
+    "T-A-09",
+    "T-A-10",
+    "T-A-10",
+    "T-A-10",
+    "T-A-10",
+    "T-A-10",
+    "T-A-10",
+    "T-A-10",
+    "T-A-11",
+    "T-A-11",
+    "T-A-11",
+    "T-A-11",
+    "T-A-11",
+    "T-A-12",
+    "T-A-12",
+    "T-A-12",
+    "T-A-12",
+    "T-A-12",
+    "T-A-12",
+    "T-A-13",
+    "T-A-13",
+    "T-A-13",
+    "T-A-13",
+    "T-A-13",
+    "T-A-13",
+    "T-A-14",
+    "T-A-14",
+    "T-A-14",
+    "T-A-14",
+    "T-A-14",
+    "T-A-15",
+    "T-A-15",
+    "T-A-15",
+    "T-A-15",
+    "T-A-15",
+    "T-A-15",
+    "T-A-15",
+    "T-A-15",
+    "T-A-16",
+    "T-A-16",
+    "T-A-16",
+    "T-A-16",
+    "T-A-16",
+    "T-A-16",
+    "T-A-17",
+    "T-A-17",
+    "T-A-17",
+    "T-A-17",
+    "T-A-17",
+    "T-A-17",
+    "T-A-18",
+    "T-A-18",
+    "T-A-18",
+    "T-A-18",
+    "T-A-18",
+    "T-A-18",
+    "T-A-19",
+    "T-A-19",
+    "T-A-19",
+    "T-A-19",
+    "T-A-19",
+    "T-A-19",
+    "T-A-20",
+    "T-A-20",
+    "T-A-20",
+    "T-A-20",
+    "T-A-20",
+    "T-A-20",
+    "T-A-21",
+    "T-A-21",
+    "T-A-21",
+    "T-A-21",
+    "T-A-21",
+    "T-A-22",
+    "T-A-22",
+    "T-A-22",
+    "T-A-22",
+    "T-A-22",
+    "T-A-22",
+    "T-A-23",
+    "T-A-23",
+    "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-U-07",
+    "T-U-09",
+    "T-U-10",
+    "T-U-11",
+    "T-U-13",
+    "T-U-13",
+    "T-U-13",
+    "T-U-14",
+    "T-U-15",
+    "T-U-17",
+    "T-U-21",
+    "T-U-21",
+    "T-U-24",
+    "T-U-25",
+    "T-U-26",
+    "T-U-27",
+    "T-U-28",
+    "T-U-29",
+    "T-U-32",
+    "T-U-33",
+    "T-U-34",
+    "T-U-37",
+    "T-U-38",
+    "T-U-39",
+    "T-U-42",
+    "T-U-45",
+    "T-U-46",
+    "T-U-47",
+    "T-U-48",
+    "T-U-49",
+    "T-U-50",
+    "T-U-51",
+    "T-U-52",
+    "T-U-53",
+    "T-U-55",
+    "T-U-56",
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
+   ]
+  },
+  {
+   "test_id": "TC-097",
+   "endpoint": "PATCH /api/v1/disclosure_versions/:id",
+   "feature_id": "F-016",
+   "acts": [
+    "A86"
+   ],
+   "screens": [
+    "ops-disclosure"
+   ],
+   "ears_form": "UNWANTED",
+   "http_code": "403",
+   "ears_text": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+   "test_file": "apps/api/test/generated/patch_disclosure_versions_id.test.ts",
+   "test_function": "test_patch_disclosure_versions_id_rejected_403",
+   "test_level": "access",
+   "gate": "backend-access-matrix",
+   "ladder": "L1",
+   "tasks": [
+    "T-A-01",
+    "T-A-01",
+    "T-A-04",
+    "T-A-04",
+    "T-A-04",
+    "T-A-04",
+    "T-A-05",
+    "T-A-06",
+    "T-A-06",
+    "T-A-06",
+    "T-A-07",
+    "T-A-07",
+    "T-A-07",
+    "T-A-08",
+    "T-A-09",
+    "T-A-09",
+    "T-A-10",
+    "T-A-10",
+    "T-A-11",
+    "T-A-11",
+    "T-A-12",
+    "T-A-12",
+    "T-A-14",
+    "T-A-15",
+    "T-A-15",
+    "T-A-15",
+    "T-A-16",
+    "T-A-16",
+    "T-A-16",
+    "T-A-17",
+    "T-A-17",
+    "T-A-18",
+    "T-A-18",
+    "T-A-18",
+    "T-A-19",
+    "T-A-20",
+    "T-A-20",
+    "T-A-20",
+    "T-A-21",
+    "T-A-21",
+    "T-A-22",
+    "T-A-22",
+    "T-A-22",
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
+   ]
+  },
+  {
+   "test_id": "TC-098",
+   "endpoint": "PATCH /api/v1/disclosure_versions/:id",
+   "feature_id": "F-016",
+   "acts": [
+    "A86"
+   ],
+   "screens": [
+    "ops-disclosure"
+   ],
+   "ears_form": "UNWANTED",
+   "http_code": "404",
+   "ears_text": "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
+   "test_file": "apps/api/test/generated/patch_disclosure_versions_id.test.ts",
+   "test_function": "test_patch_disclosure_versions_id_not_found",
+   "test_level": "unit",
+   "gate": "backend-coverage",
+   "ladder": "L1",
+   "tasks": []
+  },
+  {
+   "test_id": "TC-099",
+   "endpoint": "PATCH /api/v1/disclosure_versions/:id",
+   "feature_id": "F-016",
+   "acts": [
+    "A86"
+   ],
+   "screens": [
+    "ops-disclosure"
+   ],
+   "ears_form": "UNWANTED",
+   "http_code": "422",
+   "ears_text": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+   "test_file": "apps/api/test/generated/patch_disclosure_versions_id.test.ts",
+   "test_function": "test_patch_disclosure_versions_id_rejected_422",
+   "test_level": "unit（検証・表記ゆらぎ）",
+   "gate": "backend-coverage",
+   "ladder": "L1",
+   "tasks": []
+  },
+  {
+   "test_id": "TC-100",
+   "endpoint": "PATCH /api/v1/disclosure_versions/:id",
+   "feature_id": "F-016",
+   "acts": [
+    "A86"
+   ],
+   "screens": [
+    "ops-disclosure"
+   ],
+   "ears_form": "UNWANTED",
+   "http_code": "429",
+   "ears_text": "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+   "test_file": "apps/api/test/generated/patch_disclosure_versions_id.test.ts",
+   "test_function": "test_patch_disclosure_versions_id_rate_limited",
+   "test_level": "unit",
+   "gate": "backend-coverage",
+   "ladder": "L1",
+   "tasks": []
+  },
+  {
+   "test_id": "TC-101",
+   "endpoint": "PATCH /api/v1/disclosure_versions/:id",
+   "feature_id": "F-016",
+   "acts": [
+    "A86"
+   ],
+   "screens": [
+    "ops-disclosure"
+   ],
+   "ears_form": "UBIQUITOUS",
+   "http_code": "",
+   "ears_text": "UBIQUITOUS: PATCH /api/v1/disclosure_versions/:id の副作用は関門 C2・C4・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う",
+   "test_file": "apps/api/test/generated/patch_disclosure_versions_id.test.ts",
+   "test_function": "test_patch_disclosure_versions_id_shape",
+   "test_level": "contract",
+   "gate": "backend-coverage",
+   "ladder": "L1",
+   "tasks": []
+  },
+  {
+   "test_id": "TC-102",
    "endpoint": "POST /api/v1/distributions",
    "feature_id": "F-019",
    "acts": [
@@ -4561,7 +5483,7 @@
    ]
   },
   {
-   "test_id": "TC-091",
+   "test_id": "TC-103",
    "endpoint": "POST /api/v1/distributions",
    "feature_id": "F-019",
    "acts": [
@@ -4706,6 +5628,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -4740,14 +5672,18 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-092",
+   "test_id": "TC-104",
    "endpoint": "POST /api/v1/distributions",
    "feature_id": "F-019",
    "acts": [
@@ -4800,7 +5736,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -4809,11 +5744,16 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-093",
+   "test_id": "TC-105",
    "endpoint": "POST /api/v1/distributions",
    "feature_id": "F-019",
    "acts": [
@@ -4833,7 +5773,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-094",
+   "test_id": "TC-106",
    "endpoint": "POST /api/v1/distributions",
    "feature_id": "F-019",
    "acts": [
@@ -4853,7 +5793,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-095",
+   "test_id": "TC-107",
    "endpoint": "POST /api/v1/distributions",
    "feature_id": "F-019",
    "acts": [
@@ -4873,7 +5813,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-096",
+   "test_id": "TC-108",
    "endpoint": "POST /api/v1/distributions",
    "feature_id": "F-019",
    "acts": [
@@ -4893,7 +5833,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-097",
+   "test_id": "TC-109",
    "endpoint": "PATCH /api/v1/duties/:id",
    "feature_id": "F-011",
    "acts": [
@@ -4916,7 +5856,7 @@
    ]
   },
   {
-   "test_id": "TC-098",
+   "test_id": "TC-110",
    "endpoint": "PATCH /api/v1/duties/:id",
    "feature_id": "F-011",
    "acts": [
@@ -5061,6 +6001,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -5095,14 +6045,18 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-099",
+   "test_id": "TC-111",
    "endpoint": "PATCH /api/v1/duties/:id",
    "feature_id": "F-011",
    "acts": [
@@ -5155,7 +6109,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -5164,11 +6117,16 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-100",
+   "test_id": "TC-112",
    "endpoint": "PATCH /api/v1/duties/:id",
    "feature_id": "F-011",
    "acts": [
@@ -5188,7 +6146,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-101",
+   "test_id": "TC-113",
    "endpoint": "PATCH /api/v1/duties/:id",
    "feature_id": "F-011",
    "acts": [
@@ -5208,7 +6166,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-102",
+   "test_id": "TC-114",
    "endpoint": "PATCH /api/v1/duties/:id",
    "feature_id": "F-011",
    "acts": [
@@ -5228,7 +6186,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-103",
+   "test_id": "TC-115",
    "endpoint": "PATCH /api/v1/duties/:id",
    "feature_id": "F-011",
    "acts": [
@@ -5250,7 +6208,7 @@
    ]
   },
   {
-   "test_id": "TC-104",
+   "test_id": "TC-116",
    "endpoint": "PATCH /api/v1/duties/:id",
    "feature_id": "F-011",
    "acts": [
@@ -5270,7 +6228,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-105",
+   "test_id": "TC-117",
    "endpoint": "POST /api/v1/export_jobs",
    "feature_id": "F-012",
    "acts": [
@@ -5293,7 +6251,7 @@
    ]
   },
   {
-   "test_id": "TC-106",
+   "test_id": "TC-118",
    "endpoint": "POST /api/v1/export_jobs",
    "feature_id": "F-012",
    "acts": [
@@ -5438,6 +6396,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -5472,14 +6440,18 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-107",
+   "test_id": "TC-119",
    "endpoint": "POST /api/v1/export_jobs",
    "feature_id": "F-012",
    "acts": [
@@ -5532,7 +6504,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -5541,11 +6512,16 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-108",
+   "test_id": "TC-120",
    "endpoint": "POST /api/v1/export_jobs",
    "feature_id": "F-012",
    "acts": [
@@ -5565,7 +6541,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-109",
+   "test_id": "TC-121",
    "endpoint": "POST /api/v1/export_jobs",
    "feature_id": "F-012",
    "acts": [
@@ -5585,7 +6561,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-110",
+   "test_id": "TC-122",
    "endpoint": "POST /api/v1/export_jobs",
    "feature_id": "F-012",
    "acts": [
@@ -5605,7 +6581,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-111",
+   "test_id": "TC-123",
    "endpoint": "POST /api/v1/export_jobs",
    "feature_id": "F-012",
    "acts": [
@@ -5625,7 +6601,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-112",
+   "test_id": "TC-124",
    "endpoint": "GET /api/v1/goal_allocations",
    "feature_id": "F-004",
    "acts": [
@@ -5648,7 +6624,7 @@
    ]
   },
   {
-   "test_id": "TC-113",
+   "test_id": "TC-125",
    "endpoint": "GET /api/v1/goal_allocations",
    "feature_id": "F-004",
    "acts": [
@@ -5793,6 +6769,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -5827,14 +6813,18 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-114",
+   "test_id": "TC-126",
    "endpoint": "GET /api/v1/goal_allocations",
    "feature_id": "F-004",
    "acts": [
@@ -5887,7 +6877,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -5896,11 +6885,16 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-115",
+   "test_id": "TC-127",
    "endpoint": "GET /api/v1/goal_allocations",
    "feature_id": "F-004",
    "acts": [
@@ -5920,7 +6914,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-116",
+   "test_id": "TC-128",
    "endpoint": "GET /api/v1/goal_allocations",
    "feature_id": "F-004",
    "acts": [
@@ -5940,7 +6934,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-117",
+   "test_id": "TC-129",
    "endpoint": "PATCH /api/v1/goal_allocations/:id",
    "feature_id": "F-004",
    "acts": [
@@ -5967,7 +6961,7 @@
    ]
   },
   {
-   "test_id": "TC-118",
+   "test_id": "TC-130",
    "endpoint": "PATCH /api/v1/goal_allocations/:id",
    "feature_id": "F-004",
    "acts": [
@@ -5994,7 +6988,7 @@
    ]
   },
   {
-   "test_id": "TC-119",
+   "test_id": "TC-131",
    "endpoint": "PATCH /api/v1/goal_allocations/:id",
    "feature_id": "F-004",
    "acts": [
@@ -6141,6 +7135,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -6175,14 +7179,18 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-120",
+   "test_id": "TC-132",
    "endpoint": "PATCH /api/v1/goal_allocations/:id",
    "feature_id": "F-004",
    "acts": [
@@ -6237,7 +7245,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -6246,11 +7253,16 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-121",
+   "test_id": "TC-133",
    "endpoint": "PATCH /api/v1/goal_allocations/:id",
    "feature_id": "F-004",
    "acts": [
@@ -6272,7 +7284,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-122",
+   "test_id": "TC-134",
    "endpoint": "PATCH /api/v1/goal_allocations/:id",
    "feature_id": "F-004",
    "acts": [
@@ -6294,7 +7306,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-123",
+   "test_id": "TC-135",
    "endpoint": "PATCH /api/v1/goal_allocations/:id",
    "feature_id": "F-004",
    "acts": [
@@ -6316,7 +7328,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-124",
+   "test_id": "TC-136",
    "endpoint": "PATCH /api/v1/goal_allocations/:id",
    "feature_id": "F-004",
    "acts": [
@@ -6340,7 +7352,7 @@
    ]
   },
   {
-   "test_id": "TC-125",
+   "test_id": "TC-137",
    "endpoint": "PATCH /api/v1/goal_allocations/:id",
    "feature_id": "F-004",
    "acts": [
@@ -6362,7 +7374,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-126",
+   "test_id": "TC-138",
    "endpoint": "GET /api/v1/goals",
    "feature_id": "F-008",
    "acts": [
@@ -6390,7 +7402,7 @@
    ]
   },
   {
-   "test_id": "TC-127",
+   "test_id": "TC-139",
    "endpoint": "GET /api/v1/goals",
    "feature_id": "F-008",
    "acts": [
@@ -6418,7 +7430,7 @@
    ]
   },
   {
-   "test_id": "TC-128",
+   "test_id": "TC-140",
    "endpoint": "GET /api/v1/goals",
    "feature_id": "F-008",
    "acts": [
@@ -6444,7 +7456,7 @@
    ]
   },
   {
-   "test_id": "TC-129",
+   "test_id": "TC-141",
    "endpoint": "GET /api/v1/goals",
    "feature_id": "F-008",
    "acts": [
@@ -6592,6 +7604,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -6626,14 +7648,18 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-130",
+   "test_id": "TC-142",
    "endpoint": "GET /api/v1/goals",
    "feature_id": "F-008",
    "acts": [
@@ -6689,7 +7715,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -6698,11 +7723,16 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-131",
+   "test_id": "TC-143",
    "endpoint": "GET /api/v1/goals",
    "feature_id": "F-008",
    "acts": [
@@ -6725,7 +7755,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-132",
+   "test_id": "TC-144",
    "endpoint": "GET /api/v1/goals",
    "feature_id": "F-008",
    "acts": [
@@ -6750,7 +7780,7 @@
    ]
   },
   {
-   "test_id": "TC-133",
+   "test_id": "TC-145",
    "endpoint": "GET /api/v1/goals",
    "feature_id": "F-008",
    "acts": [
@@ -6773,7 +7803,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-134",
+   "test_id": "TC-146",
    "endpoint": "PATCH /api/v1/goals/:id",
    "feature_id": "F-008",
    "acts": [
@@ -6796,7 +7826,7 @@
    ]
   },
   {
-   "test_id": "TC-135",
+   "test_id": "TC-147",
    "endpoint": "PATCH /api/v1/goals/:id",
    "feature_id": "F-008",
    "acts": [
@@ -6941,6 +7971,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -6975,14 +8015,18 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-136",
+   "test_id": "TC-148",
    "endpoint": "PATCH /api/v1/goals/:id",
    "feature_id": "F-008",
    "acts": [
@@ -7035,7 +8079,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -7044,11 +8087,16 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-137",
+   "test_id": "TC-149",
    "endpoint": "PATCH /api/v1/goals/:id",
    "feature_id": "F-008",
    "acts": [
@@ -7068,7 +8116,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-138",
+   "test_id": "TC-150",
    "endpoint": "PATCH /api/v1/goals/:id",
    "feature_id": "F-008",
    "acts": [
@@ -7088,7 +8136,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-139",
+   "test_id": "TC-151",
    "endpoint": "PATCH /api/v1/goals/:id",
    "feature_id": "F-008",
    "acts": [
@@ -7108,7 +8156,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-140",
+   "test_id": "TC-152",
    "endpoint": "PATCH /api/v1/goals/:id",
    "feature_id": "F-008",
    "acts": [
@@ -7130,7 +8178,7 @@
    ]
   },
   {
-   "test_id": "TC-141",
+   "test_id": "TC-153",
    "endpoint": "PATCH /api/v1/goals/:id",
    "feature_id": "F-008",
    "acts": [
@@ -7150,7 +8198,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-142",
+   "test_id": "TC-154",
    "endpoint": "GET /api/v1/hypotheses",
    "feature_id": "F-009",
    "acts": [
@@ -7173,7 +8221,7 @@
    ]
   },
   {
-   "test_id": "TC-143",
+   "test_id": "TC-155",
    "endpoint": "GET /api/v1/hypotheses",
    "feature_id": "F-009",
    "acts": [
@@ -7318,6 +8366,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -7352,14 +8410,18 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-144",
+   "test_id": "TC-156",
    "endpoint": "GET /api/v1/hypotheses",
    "feature_id": "F-009",
    "acts": [
@@ -7412,7 +8474,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -7421,11 +8482,16 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-145",
+   "test_id": "TC-157",
    "endpoint": "GET /api/v1/hypotheses",
    "feature_id": "F-009",
    "acts": [
@@ -7445,7 +8511,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-146",
+   "test_id": "TC-158",
    "endpoint": "GET /api/v1/hypotheses",
    "feature_id": "F-009",
    "acts": [
@@ -7467,7 +8533,7 @@
    ]
   },
   {
-   "test_id": "TC-147",
+   "test_id": "TC-159",
    "endpoint": "GET /api/v1/hypotheses",
    "feature_id": "F-009",
    "acts": [
@@ -7487,7 +8553,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-148",
+   "test_id": "TC-160",
    "endpoint": "PATCH /api/v1/hypotheses/:id",
    "feature_id": "F-009",
    "acts": [
@@ -7510,7 +8576,7 @@
    ]
   },
   {
-   "test_id": "TC-149",
+   "test_id": "TC-161",
    "endpoint": "PATCH /api/v1/hypotheses/:id",
    "feature_id": "F-009",
    "acts": [
@@ -7655,6 +8721,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -7689,14 +8765,18 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-150",
+   "test_id": "TC-162",
    "endpoint": "PATCH /api/v1/hypotheses/:id",
    "feature_id": "F-009",
    "acts": [
@@ -7749,7 +8829,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -7758,11 +8837,16 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-151",
+   "test_id": "TC-163",
    "endpoint": "PATCH /api/v1/hypotheses/:id",
    "feature_id": "F-009",
    "acts": [
@@ -7782,7 +8866,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-152",
+   "test_id": "TC-164",
    "endpoint": "PATCH /api/v1/hypotheses/:id",
    "feature_id": "F-009",
    "acts": [
@@ -7802,7 +8886,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-153",
+   "test_id": "TC-165",
    "endpoint": "PATCH /api/v1/hypotheses/:id",
    "feature_id": "F-009",
    "acts": [
@@ -7822,7 +8906,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-154",
+   "test_id": "TC-166",
    "endpoint": "PATCH /api/v1/hypotheses/:id",
    "feature_id": "F-009",
    "acts": [
@@ -7844,7 +8928,7 @@
    ]
   },
   {
-   "test_id": "TC-155",
+   "test_id": "TC-167",
    "endpoint": "PATCH /api/v1/hypotheses/:id",
    "feature_id": "F-009",
    "acts": [
@@ -7864,7 +8948,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-156",
+   "test_id": "TC-168",
    "endpoint": "GET /api/v1/inquiries",
    "feature_id": "F-015",
    "acts": [
@@ -7887,7 +8971,7 @@
    ]
   },
   {
-   "test_id": "TC-157",
+   "test_id": "TC-169",
    "endpoint": "GET /api/v1/inquiries",
    "feature_id": "F-015",
    "acts": [
@@ -8032,6 +9116,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -8066,14 +9160,18 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-158",
+   "test_id": "TC-170",
    "endpoint": "GET /api/v1/inquiries",
    "feature_id": "F-015",
    "acts": [
@@ -8126,7 +9224,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -8135,11 +9232,16 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-159",
+   "test_id": "TC-171",
    "endpoint": "GET /api/v1/inquiries",
    "feature_id": "F-015",
    "acts": [
@@ -8159,7 +9261,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-160",
+   "test_id": "TC-172",
    "endpoint": "GET /api/v1/inquiries",
    "feature_id": "F-015",
    "acts": [
@@ -8179,7 +9281,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-161",
+   "test_id": "TC-173",
    "endpoint": "PATCH /api/v1/inquiries/:id",
    "feature_id": "F-014",
    "acts": [
@@ -8204,7 +9306,7 @@
    ]
   },
   {
-   "test_id": "TC-162",
+   "test_id": "TC-174",
    "endpoint": "PATCH /api/v1/inquiries/:id",
    "feature_id": "F-014",
    "acts": [
@@ -8229,7 +9331,7 @@
    ]
   },
   {
-   "test_id": "TC-163",
+   "test_id": "TC-175",
    "endpoint": "PATCH /api/v1/inquiries/:id",
    "feature_id": "F-014",
    "acts": [
@@ -8375,6 +9477,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -8409,14 +9521,18 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-164",
+   "test_id": "TC-176",
    "endpoint": "PATCH /api/v1/inquiries/:id",
    "feature_id": "F-014",
    "acts": [
@@ -8470,7 +9586,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -8479,11 +9594,16 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-165",
+   "test_id": "TC-177",
    "endpoint": "PATCH /api/v1/inquiries/:id",
    "feature_id": "F-014",
    "acts": [
@@ -8504,7 +9624,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-166",
+   "test_id": "TC-178",
    "endpoint": "PATCH /api/v1/inquiries/:id",
    "feature_id": "F-014",
    "acts": [
@@ -8525,7 +9645,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-167",
+   "test_id": "TC-179",
    "endpoint": "PATCH /api/v1/inquiries/:id",
    "feature_id": "F-014",
    "acts": [
@@ -8546,7 +9666,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-168",
+   "test_id": "TC-180",
    "endpoint": "PATCH /api/v1/inquiries/:id",
    "feature_id": "F-014",
    "acts": [
@@ -8567,7 +9687,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-169",
+   "test_id": "TC-181",
    "endpoint": "GET /api/v1/invitations",
    "feature_id": "F-002",
    "acts": [
@@ -8590,7 +9710,7 @@
    ]
   },
   {
-   "test_id": "TC-170",
+   "test_id": "TC-182",
    "endpoint": "GET /api/v1/invitations",
    "feature_id": "F-002",
    "acts": [
@@ -8615,7 +9735,7 @@
    ]
   },
   {
-   "test_id": "TC-171",
+   "test_id": "TC-183",
    "endpoint": "GET /api/v1/invitations",
    "feature_id": "F-002",
    "acts": [
@@ -8637,7 +9757,7 @@
    ]
   },
   {
-   "test_id": "TC-172",
+   "test_id": "TC-184",
    "endpoint": "GET /api/v1/invitations",
    "feature_id": "F-002",
    "acts": [
@@ -8657,11 +9777,12 @@
    "tasks": []
   },
   {
-   "test_id": "TC-173",
+   "test_id": "TC-185",
    "endpoint": "GET /api/v1/invoices",
    "feature_id": "F-016",
    "acts": [
-    "A72"
+    "A72",
+    "A87"
    ],
    "screens": [
     "ops-billing"
@@ -8680,11 +9801,36 @@
    ]
   },
   {
-   "test_id": "TC-174",
+   "test_id": "TC-186",
    "endpoint": "GET /api/v1/invoices",
    "feature_id": "F-016",
    "acts": [
-    "A72"
+    "A72",
+    "A87"
+   ],
+   "screens": [
+    "ops-billing"
+   ],
+   "ears_form": "EVENT-DRIVEN",
+   "http_code": "",
+   "ears_text": "EVENT-DRIVEN: WHEN GET /api/v1/invoices が「カードの会社の写しを見る」として呼ばれたとき THEN Kaname は「Stripe の写し（webhook）の状態と顧客リンク。請求書払いは従来の記録」を行い 2xx を返す",
+   "test_file": "apps/api/test/generated/get_invoices.test.ts",
+   "test_function": "test_get_invoices_ok_2",
+   "test_level": "contract+integration",
+   "gate": "backend-coverage",
+   "ladder": "L1",
+   "tasks": [
+    "T-A-19",
+    "T-U-54"
+   ]
+  },
+  {
+   "test_id": "TC-187",
+   "endpoint": "GET /api/v1/invoices",
+   "feature_id": "F-016",
+   "acts": [
+    "A72",
+    "A87"
    ],
    "screens": [
     "ops-billing"
@@ -8825,6 +9971,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -8859,18 +10015,23 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-175",
+   "test_id": "TC-188",
    "endpoint": "GET /api/v1/invoices",
    "feature_id": "F-016",
    "acts": [
-    "A72"
+    "A72",
+    "A87"
    ],
    "screens": [
     "ops-billing"
@@ -8919,7 +10080,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -8928,15 +10088,21 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-176",
+   "test_id": "TC-189",
    "endpoint": "GET /api/v1/invoices",
    "feature_id": "F-016",
    "acts": [
-    "A72"
+    "A72",
+    "A87"
    ],
    "screens": [
     "ops-billing"
@@ -8952,18 +10118,19 @@
    "tasks": []
   },
   {
-   "test_id": "TC-177",
+   "test_id": "TC-190",
    "endpoint": "GET /api/v1/invoices",
    "feature_id": "F-016",
    "acts": [
-    "A72"
+    "A72",
+    "A87"
    ],
    "screens": [
     "ops-billing"
    ],
    "ears_form": "UBIQUITOUS",
    "http_code": "",
-   "ears_text": "UBIQUITOUS: GET /api/v1/invoices の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う",
+   "ears_text": "UBIQUITOUS: GET /api/v1/invoices の副作用は関門 C2・C7 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う",
    "test_file": "apps/api/test/generated/get_invoices.test.ts",
    "test_function": "test_get_invoices_shape",
    "test_level": "contract",
@@ -8972,7 +10139,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-178",
+   "test_id": "TC-191",
    "endpoint": "GET /api/v1/learned_procedures",
    "feature_id": "F-005",
    "acts": [
@@ -8995,7 +10162,7 @@
    ]
   },
   {
-   "test_id": "TC-179",
+   "test_id": "TC-192",
    "endpoint": "GET /api/v1/learned_procedures",
    "feature_id": "F-005",
    "acts": [
@@ -9140,6 +10307,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -9174,14 +10351,18 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-180",
+   "test_id": "TC-193",
    "endpoint": "GET /api/v1/learned_procedures",
    "feature_id": "F-005",
    "acts": [
@@ -9234,7 +10415,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -9243,11 +10423,16 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-181",
+   "test_id": "TC-194",
    "endpoint": "GET /api/v1/learned_procedures",
    "feature_id": "F-005",
    "acts": [
@@ -9267,7 +10452,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-182",
+   "test_id": "TC-195",
    "endpoint": "GET /api/v1/learned_procedures",
    "feature_id": "F-005",
    "acts": [
@@ -9289,7 +10474,7 @@
    ]
   },
   {
-   "test_id": "TC-183",
+   "test_id": "TC-196",
    "endpoint": "GET /api/v1/learned_procedures",
    "feature_id": "F-005",
    "acts": [
@@ -9309,7 +10494,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-184",
+   "test_id": "TC-197",
    "endpoint": "GET /api/v1/ledger_definitions",
    "feature_id": "F-007",
    "acts": [
@@ -9335,7 +10520,7 @@
    ]
   },
   {
-   "test_id": "TC-185",
+   "test_id": "TC-198",
    "endpoint": "GET /api/v1/ledger_definitions",
    "feature_id": "F-007",
    "acts": [
@@ -9361,7 +10546,7 @@
    ]
   },
   {
-   "test_id": "TC-186",
+   "test_id": "TC-199",
    "endpoint": "GET /api/v1/ledger_definitions",
    "feature_id": "F-007",
    "acts": [
@@ -9508,6 +10693,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -9542,14 +10737,18 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-187",
+   "test_id": "TC-200",
    "endpoint": "GET /api/v1/ledger_definitions",
    "feature_id": "F-007",
    "acts": [
@@ -9604,7 +10803,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -9613,11 +10811,16 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-188",
+   "test_id": "TC-201",
    "endpoint": "GET /api/v1/ledger_definitions",
    "feature_id": "F-007",
    "acts": [
@@ -9639,7 +10842,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-189",
+   "test_id": "TC-202",
    "endpoint": "GET /api/v1/ledger_definitions",
    "feature_id": "F-007",
    "acts": [
@@ -9663,7 +10866,7 @@
    ]
   },
   {
-   "test_id": "TC-190",
+   "test_id": "TC-203",
    "endpoint": "GET /api/v1/ledger_definitions",
    "feature_id": "F-007",
    "acts": [
@@ -9685,7 +10888,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-191",
+   "test_id": "TC-204",
    "endpoint": "PATCH /api/v1/ledger_definitions/:id",
    "feature_id": "F-007",
    "acts": [
@@ -9712,7 +10915,7 @@
    ]
   },
   {
-   "test_id": "TC-192",
+   "test_id": "TC-205",
    "endpoint": "PATCH /api/v1/ledger_definitions/:id",
    "feature_id": "F-007",
    "acts": [
@@ -9739,7 +10942,7 @@
    ]
   },
   {
-   "test_id": "TC-193",
+   "test_id": "TC-206",
    "endpoint": "PATCH /api/v1/ledger_definitions/:id",
    "feature_id": "F-007",
    "acts": [
@@ -9886,6 +11089,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -9920,14 +11133,18 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-194",
+   "test_id": "TC-207",
    "endpoint": "PATCH /api/v1/ledger_definitions/:id",
    "feature_id": "F-007",
    "acts": [
@@ -9982,7 +11199,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -9991,11 +11207,16 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-195",
+   "test_id": "TC-208",
    "endpoint": "PATCH /api/v1/ledger_definitions/:id",
    "feature_id": "F-007",
    "acts": [
@@ -10017,7 +11238,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-196",
+   "test_id": "TC-209",
    "endpoint": "PATCH /api/v1/ledger_definitions/:id",
    "feature_id": "F-007",
    "acts": [
@@ -10039,7 +11260,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-197",
+   "test_id": "TC-210",
    "endpoint": "PATCH /api/v1/ledger_definitions/:id",
    "feature_id": "F-007",
    "acts": [
@@ -10061,7 +11282,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-198",
+   "test_id": "TC-211",
    "endpoint": "PATCH /api/v1/ledger_definitions/:id",
    "feature_id": "F-007",
    "acts": [
@@ -10085,7 +11306,7 @@
    ]
   },
   {
-   "test_id": "TC-199",
+   "test_id": "TC-212",
    "endpoint": "PATCH /api/v1/ledger_definitions/:id",
    "feature_id": "F-007",
    "acts": [
@@ -10107,7 +11328,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-200",
+   "test_id": "TC-213",
    "endpoint": "GET /api/v1/ledger_records",
    "feature_id": "F-007",
    "acts": [
@@ -10130,7 +11351,7 @@
    ]
   },
   {
-   "test_id": "TC-201",
+   "test_id": "TC-214",
    "endpoint": "GET /api/v1/ledger_records",
    "feature_id": "F-007",
    "acts": [
@@ -10275,6 +11496,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -10309,14 +11540,18 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-202",
+   "test_id": "TC-215",
    "endpoint": "GET /api/v1/ledger_records",
    "feature_id": "F-007",
    "acts": [
@@ -10369,7 +11604,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -10378,11 +11612,16 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-203",
+   "test_id": "TC-216",
    "endpoint": "GET /api/v1/ledger_records",
    "feature_id": "F-007",
    "acts": [
@@ -10402,7 +11641,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-204",
+   "test_id": "TC-217",
    "endpoint": "GET /api/v1/ledger_records",
    "feature_id": "F-007",
    "acts": [
@@ -10422,7 +11661,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-205",
+   "test_id": "TC-218",
    "endpoint": "PATCH /api/v1/ledger_records/:id",
    "feature_id": "F-007",
    "acts": [
@@ -10445,7 +11684,7 @@
    ]
   },
   {
-   "test_id": "TC-206",
+   "test_id": "TC-219",
    "endpoint": "PATCH /api/v1/ledger_records/:id",
    "feature_id": "F-007",
    "acts": [
@@ -10590,6 +11829,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -10624,14 +11873,18 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-207",
+   "test_id": "TC-220",
    "endpoint": "PATCH /api/v1/ledger_records/:id",
    "feature_id": "F-007",
    "acts": [
@@ -10684,7 +11937,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -10693,11 +11945,16 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-208",
+   "test_id": "TC-221",
    "endpoint": "PATCH /api/v1/ledger_records/:id",
    "feature_id": "F-007",
    "acts": [
@@ -10717,7 +11974,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-209",
+   "test_id": "TC-222",
    "endpoint": "PATCH /api/v1/ledger_records/:id",
    "feature_id": "F-007",
    "acts": [
@@ -10737,7 +11994,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-210",
+   "test_id": "TC-223",
    "endpoint": "PATCH /api/v1/ledger_records/:id",
    "feature_id": "F-007",
    "acts": [
@@ -10757,7 +12014,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-211",
+   "test_id": "TC-224",
    "endpoint": "PATCH /api/v1/ledger_records/:id",
    "feature_id": "F-007",
    "acts": [
@@ -10779,7 +12036,7 @@
    ]
   },
   {
-   "test_id": "TC-212",
+   "test_id": "TC-225",
    "endpoint": "PATCH /api/v1/ledger_records/:id",
    "feature_id": "F-007",
    "acts": [
@@ -10799,7 +12056,775 @@
    "tasks": []
   },
   {
-   "test_id": "TC-213",
+   "test_id": "TC-226",
+   "endpoint": "POST /api/v1/llm_routes",
+   "feature_id": "F-017",
+   "acts": [
+    "A82"
+   ],
+   "screens": [
+    "llm-routes"
+   ],
+   "ears_form": "EVENT-DRIVEN",
+   "http_code": "",
+   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/llm_routes が「会社の設定で AI の経路を選び、必要ならキーを入れる」として呼ばれたとき THEN Kaname は「キーは C8 の vault へ参照だけ。llm_routes を保存。登録時に提供者へ 1 回だけ検査（成功／失敗を証跡に）」を行い 2xx を返す（自動側：自分のAIが経路ごとの違い（費用・PC が閉じているときの動き）を説明する）",
+   "test_file": "apps/api/test/generated/post_llm_routes.test.ts",
+   "test_function": "test_post_llm_routes_ok",
+   "test_level": "contract+integration",
+   "gate": "backend-coverage",
+   "ladder": "L1",
+   "tasks": [
+    "T-A-26",
+    "T-U-61"
+   ]
+  },
+  {
+   "test_id": "TC-227",
+   "endpoint": "POST /api/v1/llm_routes",
+   "feature_id": "F-017",
+   "acts": [
+    "A82"
+   ],
+   "screens": [
+    "llm-routes"
+   ],
+   "ears_form": "UNWANTED",
+   "http_code": "401",
+   "ears_text": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+   "test_file": "apps/api/test/generated/post_llm_routes.test.ts",
+   "test_function": "test_post_llm_routes_rejected_401",
+   "test_level": "access",
+   "gate": "backend-access-matrix",
+   "ladder": "L1",
+   "tasks": [
+    "T-A-01",
+    "T-A-01",
+    "T-A-01",
+    "T-A-01",
+    "T-A-01",
+    "T-A-03",
+    "T-A-04",
+    "T-A-04",
+    "T-A-04",
+    "T-A-04",
+    "T-A-04",
+    "T-A-04",
+    "T-A-04",
+    "T-A-04",
+    "T-A-05",
+    "T-A-05",
+    "T-A-05",
+    "T-A-05",
+    "T-A-05",
+    "T-A-05",
+    "T-A-05",
+    "T-A-06",
+    "T-A-06",
+    "T-A-06",
+    "T-A-06",
+    "T-A-06",
+    "T-A-06",
+    "T-A-07",
+    "T-A-07",
+    "T-A-07",
+    "T-A-07",
+    "T-A-07",
+    "T-A-07",
+    "T-A-07",
+    "T-A-08",
+    "T-A-08",
+    "T-A-08",
+    "T-A-08",
+    "T-A-09",
+    "T-A-09",
+    "T-A-09",
+    "T-A-09",
+    "T-A-09",
+    "T-A-09",
+    "T-A-09",
+    "T-A-09",
+    "T-A-10",
+    "T-A-10",
+    "T-A-10",
+    "T-A-10",
+    "T-A-10",
+    "T-A-10",
+    "T-A-10",
+    "T-A-11",
+    "T-A-11",
+    "T-A-11",
+    "T-A-11",
+    "T-A-11",
+    "T-A-12",
+    "T-A-12",
+    "T-A-12",
+    "T-A-12",
+    "T-A-12",
+    "T-A-12",
+    "T-A-13",
+    "T-A-13",
+    "T-A-13",
+    "T-A-13",
+    "T-A-13",
+    "T-A-13",
+    "T-A-14",
+    "T-A-14",
+    "T-A-14",
+    "T-A-14",
+    "T-A-14",
+    "T-A-15",
+    "T-A-15",
+    "T-A-15",
+    "T-A-15",
+    "T-A-15",
+    "T-A-15",
+    "T-A-15",
+    "T-A-15",
+    "T-A-16",
+    "T-A-16",
+    "T-A-16",
+    "T-A-16",
+    "T-A-16",
+    "T-A-16",
+    "T-A-17",
+    "T-A-17",
+    "T-A-17",
+    "T-A-17",
+    "T-A-17",
+    "T-A-17",
+    "T-A-18",
+    "T-A-18",
+    "T-A-18",
+    "T-A-18",
+    "T-A-18",
+    "T-A-18",
+    "T-A-19",
+    "T-A-19",
+    "T-A-19",
+    "T-A-19",
+    "T-A-19",
+    "T-A-19",
+    "T-A-20",
+    "T-A-20",
+    "T-A-20",
+    "T-A-20",
+    "T-A-20",
+    "T-A-20",
+    "T-A-21",
+    "T-A-21",
+    "T-A-21",
+    "T-A-21",
+    "T-A-21",
+    "T-A-22",
+    "T-A-22",
+    "T-A-22",
+    "T-A-22",
+    "T-A-22",
+    "T-A-22",
+    "T-A-23",
+    "T-A-23",
+    "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-U-07",
+    "T-U-09",
+    "T-U-10",
+    "T-U-11",
+    "T-U-13",
+    "T-U-13",
+    "T-U-13",
+    "T-U-14",
+    "T-U-15",
+    "T-U-17",
+    "T-U-21",
+    "T-U-21",
+    "T-U-24",
+    "T-U-25",
+    "T-U-26",
+    "T-U-27",
+    "T-U-28",
+    "T-U-29",
+    "T-U-32",
+    "T-U-33",
+    "T-U-34",
+    "T-U-37",
+    "T-U-38",
+    "T-U-39",
+    "T-U-42",
+    "T-U-45",
+    "T-U-46",
+    "T-U-47",
+    "T-U-48",
+    "T-U-49",
+    "T-U-50",
+    "T-U-51",
+    "T-U-52",
+    "T-U-53",
+    "T-U-55",
+    "T-U-56",
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
+   ]
+  },
+  {
+   "test_id": "TC-228",
+   "endpoint": "POST /api/v1/llm_routes",
+   "feature_id": "F-017",
+   "acts": [
+    "A82"
+   ],
+   "screens": [
+    "llm-routes"
+   ],
+   "ears_form": "UNWANTED",
+   "http_code": "403",
+   "ears_text": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+   "test_file": "apps/api/test/generated/post_llm_routes.test.ts",
+   "test_function": "test_post_llm_routes_rejected_403",
+   "test_level": "access",
+   "gate": "backend-access-matrix",
+   "ladder": "L1",
+   "tasks": [
+    "T-A-01",
+    "T-A-01",
+    "T-A-04",
+    "T-A-04",
+    "T-A-04",
+    "T-A-04",
+    "T-A-05",
+    "T-A-06",
+    "T-A-06",
+    "T-A-06",
+    "T-A-07",
+    "T-A-07",
+    "T-A-07",
+    "T-A-08",
+    "T-A-09",
+    "T-A-09",
+    "T-A-10",
+    "T-A-10",
+    "T-A-11",
+    "T-A-11",
+    "T-A-12",
+    "T-A-12",
+    "T-A-14",
+    "T-A-15",
+    "T-A-15",
+    "T-A-15",
+    "T-A-16",
+    "T-A-16",
+    "T-A-16",
+    "T-A-17",
+    "T-A-17",
+    "T-A-18",
+    "T-A-18",
+    "T-A-18",
+    "T-A-19",
+    "T-A-20",
+    "T-A-20",
+    "T-A-20",
+    "T-A-21",
+    "T-A-21",
+    "T-A-22",
+    "T-A-22",
+    "T-A-22",
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
+   ]
+  },
+  {
+   "test_id": "TC-229",
+   "endpoint": "POST /api/v1/llm_routes",
+   "feature_id": "F-017",
+   "acts": [
+    "A82"
+   ],
+   "screens": [
+    "llm-routes"
+   ],
+   "ears_form": "UNWANTED",
+   "http_code": "",
+   "ears_text": "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
+   "test_file": "apps/api/test/generated/post_llm_routes.test.ts",
+   "test_function": "test_post_llm_routes_rejected_422",
+   "test_level": "unit（検証・表記ゆらぎ）",
+   "gate": "backend-coverage",
+   "ladder": "L1",
+   "tasks": []
+  },
+  {
+   "test_id": "TC-230",
+   "endpoint": "POST /api/v1/llm_routes",
+   "feature_id": "F-017",
+   "acts": [
+    "A82"
+   ],
+   "screens": [
+    "llm-routes"
+   ],
+   "ears_form": "UNWANTED",
+   "http_code": "422",
+   "ears_text": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+   "test_file": "apps/api/test/generated/post_llm_routes.test.ts",
+   "test_function": "test_post_llm_routes_rejected_422_2",
+   "test_level": "unit（検証・表記ゆらぎ）",
+   "gate": "backend-coverage",
+   "ladder": "L1",
+   "tasks": []
+  },
+  {
+   "test_id": "TC-231",
+   "endpoint": "POST /api/v1/llm_routes",
+   "feature_id": "F-017",
+   "acts": [
+    "A82"
+   ],
+   "screens": [
+    "llm-routes"
+   ],
+   "ears_form": "UNWANTED",
+   "http_code": "429",
+   "ears_text": "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+   "test_file": "apps/api/test/generated/post_llm_routes.test.ts",
+   "test_function": "test_post_llm_routes_rate_limited",
+   "test_level": "unit",
+   "gate": "backend-coverage",
+   "ladder": "L1",
+   "tasks": []
+  },
+  {
+   "test_id": "TC-232",
+   "endpoint": "POST /api/v1/llm_routes",
+   "feature_id": "F-017",
+   "acts": [
+    "A82"
+   ],
+   "screens": [
+    "llm-routes"
+   ],
+   "ears_form": "UNWANTED",
+   "http_code": "502",
+   "ears_text": "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す",
+   "test_file": "apps/api/test/generated/post_llm_routes.test.ts",
+   "test_function": "test_post_llm_routes_upstream_failed",
+   "test_level": "integration（外部を切る・G-15）",
+   "gate": "backend-coverage",
+   "ladder": "L1",
+   "tasks": [
+    "T-A-02"
+   ]
+  },
+  {
+   "test_id": "TC-233",
+   "endpoint": "POST /api/v1/llm_routes",
+   "feature_id": "F-017",
+   "acts": [
+    "A82"
+   ],
+   "screens": [
+    "llm-routes"
+   ],
+   "ears_form": "UBIQUITOUS",
+   "http_code": "",
+   "ears_text": "UBIQUITOUS: POST /api/v1/llm_routes の副作用は関門 C2・C3・C8 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う",
+   "test_file": "apps/api/test/generated/post_llm_routes.test.ts",
+   "test_function": "test_post_llm_routes_shape",
+   "test_level": "contract",
+   "gate": "backend-coverage",
+   "ladder": "L1",
+   "tasks": []
+  },
+  {
+   "test_id": "TC-234",
+   "endpoint": "PATCH /api/v1/llm_routes/:id",
+   "feature_id": "F-016",
+   "acts": [
+    "A85"
+   ],
+   "screens": [
+    "ops-llm"
+   ],
+   "ears_form": "EVENT-DRIVEN",
+   "http_code": "",
+   "ears_text": "EVENT-DRIVEN: WHEN PATCH /api/v1/llm_routes/:id が「会社の詳細で運営マネージドを許可する」として呼ばれたとき THEN Kaname は「llm_routes の許可を更新。3 社の使用量を集計して費用へ」を行い 2xx を返す",
+   "test_file": "apps/api/test/generated/patch_llm_routes_id.test.ts",
+   "test_function": "test_patch_llm_routes_id_ok",
+   "test_level": "contract+integration",
+   "gate": "backend-coverage",
+   "ladder": "L1",
+   "tasks": [
+    "T-A-25",
+    "T-U-63"
+   ]
+  },
+  {
+   "test_id": "TC-235",
+   "endpoint": "PATCH /api/v1/llm_routes/:id",
+   "feature_id": "F-016",
+   "acts": [
+    "A85"
+   ],
+   "screens": [
+    "ops-llm"
+   ],
+   "ears_form": "UNWANTED",
+   "http_code": "401",
+   "ears_text": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+   "test_file": "apps/api/test/generated/patch_llm_routes_id.test.ts",
+   "test_function": "test_patch_llm_routes_id_rejected_401",
+   "test_level": "access",
+   "gate": "backend-access-matrix",
+   "ladder": "L1",
+   "tasks": [
+    "T-A-01",
+    "T-A-01",
+    "T-A-01",
+    "T-A-01",
+    "T-A-01",
+    "T-A-03",
+    "T-A-04",
+    "T-A-04",
+    "T-A-04",
+    "T-A-04",
+    "T-A-04",
+    "T-A-04",
+    "T-A-04",
+    "T-A-04",
+    "T-A-05",
+    "T-A-05",
+    "T-A-05",
+    "T-A-05",
+    "T-A-05",
+    "T-A-05",
+    "T-A-05",
+    "T-A-06",
+    "T-A-06",
+    "T-A-06",
+    "T-A-06",
+    "T-A-06",
+    "T-A-06",
+    "T-A-07",
+    "T-A-07",
+    "T-A-07",
+    "T-A-07",
+    "T-A-07",
+    "T-A-07",
+    "T-A-07",
+    "T-A-08",
+    "T-A-08",
+    "T-A-08",
+    "T-A-08",
+    "T-A-09",
+    "T-A-09",
+    "T-A-09",
+    "T-A-09",
+    "T-A-09",
+    "T-A-09",
+    "T-A-09",
+    "T-A-09",
+    "T-A-10",
+    "T-A-10",
+    "T-A-10",
+    "T-A-10",
+    "T-A-10",
+    "T-A-10",
+    "T-A-10",
+    "T-A-11",
+    "T-A-11",
+    "T-A-11",
+    "T-A-11",
+    "T-A-11",
+    "T-A-12",
+    "T-A-12",
+    "T-A-12",
+    "T-A-12",
+    "T-A-12",
+    "T-A-12",
+    "T-A-13",
+    "T-A-13",
+    "T-A-13",
+    "T-A-13",
+    "T-A-13",
+    "T-A-13",
+    "T-A-14",
+    "T-A-14",
+    "T-A-14",
+    "T-A-14",
+    "T-A-14",
+    "T-A-15",
+    "T-A-15",
+    "T-A-15",
+    "T-A-15",
+    "T-A-15",
+    "T-A-15",
+    "T-A-15",
+    "T-A-15",
+    "T-A-16",
+    "T-A-16",
+    "T-A-16",
+    "T-A-16",
+    "T-A-16",
+    "T-A-16",
+    "T-A-17",
+    "T-A-17",
+    "T-A-17",
+    "T-A-17",
+    "T-A-17",
+    "T-A-17",
+    "T-A-18",
+    "T-A-18",
+    "T-A-18",
+    "T-A-18",
+    "T-A-18",
+    "T-A-18",
+    "T-A-19",
+    "T-A-19",
+    "T-A-19",
+    "T-A-19",
+    "T-A-19",
+    "T-A-19",
+    "T-A-20",
+    "T-A-20",
+    "T-A-20",
+    "T-A-20",
+    "T-A-20",
+    "T-A-20",
+    "T-A-21",
+    "T-A-21",
+    "T-A-21",
+    "T-A-21",
+    "T-A-21",
+    "T-A-22",
+    "T-A-22",
+    "T-A-22",
+    "T-A-22",
+    "T-A-22",
+    "T-A-22",
+    "T-A-23",
+    "T-A-23",
+    "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-U-07",
+    "T-U-09",
+    "T-U-10",
+    "T-U-11",
+    "T-U-13",
+    "T-U-13",
+    "T-U-13",
+    "T-U-14",
+    "T-U-15",
+    "T-U-17",
+    "T-U-21",
+    "T-U-21",
+    "T-U-24",
+    "T-U-25",
+    "T-U-26",
+    "T-U-27",
+    "T-U-28",
+    "T-U-29",
+    "T-U-32",
+    "T-U-33",
+    "T-U-34",
+    "T-U-37",
+    "T-U-38",
+    "T-U-39",
+    "T-U-42",
+    "T-U-45",
+    "T-U-46",
+    "T-U-47",
+    "T-U-48",
+    "T-U-49",
+    "T-U-50",
+    "T-U-51",
+    "T-U-52",
+    "T-U-53",
+    "T-U-55",
+    "T-U-56",
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
+   ]
+  },
+  {
+   "test_id": "TC-236",
+   "endpoint": "PATCH /api/v1/llm_routes/:id",
+   "feature_id": "F-016",
+   "acts": [
+    "A85"
+   ],
+   "screens": [
+    "ops-llm"
+   ],
+   "ears_form": "UNWANTED",
+   "http_code": "403",
+   "ears_text": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+   "test_file": "apps/api/test/generated/patch_llm_routes_id.test.ts",
+   "test_function": "test_patch_llm_routes_id_rejected_403",
+   "test_level": "access",
+   "gate": "backend-access-matrix",
+   "ladder": "L1",
+   "tasks": [
+    "T-A-01",
+    "T-A-01",
+    "T-A-04",
+    "T-A-04",
+    "T-A-04",
+    "T-A-04",
+    "T-A-05",
+    "T-A-06",
+    "T-A-06",
+    "T-A-06",
+    "T-A-07",
+    "T-A-07",
+    "T-A-07",
+    "T-A-08",
+    "T-A-09",
+    "T-A-09",
+    "T-A-10",
+    "T-A-10",
+    "T-A-11",
+    "T-A-11",
+    "T-A-12",
+    "T-A-12",
+    "T-A-14",
+    "T-A-15",
+    "T-A-15",
+    "T-A-15",
+    "T-A-16",
+    "T-A-16",
+    "T-A-16",
+    "T-A-17",
+    "T-A-17",
+    "T-A-18",
+    "T-A-18",
+    "T-A-18",
+    "T-A-19",
+    "T-A-20",
+    "T-A-20",
+    "T-A-20",
+    "T-A-21",
+    "T-A-21",
+    "T-A-22",
+    "T-A-22",
+    "T-A-22",
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
+   ]
+  },
+  {
+   "test_id": "TC-237",
+   "endpoint": "PATCH /api/v1/llm_routes/:id",
+   "feature_id": "F-016",
+   "acts": [
+    "A85"
+   ],
+   "screens": [
+    "ops-llm"
+   ],
+   "ears_form": "UNWANTED",
+   "http_code": "404",
+   "ears_text": "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
+   "test_file": "apps/api/test/generated/patch_llm_routes_id.test.ts",
+   "test_function": "test_patch_llm_routes_id_not_found",
+   "test_level": "unit",
+   "gate": "backend-coverage",
+   "ladder": "L1",
+   "tasks": []
+  },
+  {
+   "test_id": "TC-238",
+   "endpoint": "PATCH /api/v1/llm_routes/:id",
+   "feature_id": "F-016",
+   "acts": [
+    "A85"
+   ],
+   "screens": [
+    "ops-llm"
+   ],
+   "ears_form": "UNWANTED",
+   "http_code": "422",
+   "ears_text": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+   "test_file": "apps/api/test/generated/patch_llm_routes_id.test.ts",
+   "test_function": "test_patch_llm_routes_id_rejected_422",
+   "test_level": "unit（検証・表記ゆらぎ）",
+   "gate": "backend-coverage",
+   "ladder": "L1",
+   "tasks": []
+  },
+  {
+   "test_id": "TC-239",
+   "endpoint": "PATCH /api/v1/llm_routes/:id",
+   "feature_id": "F-016",
+   "acts": [
+    "A85"
+   ],
+   "screens": [
+    "ops-llm"
+   ],
+   "ears_form": "UNWANTED",
+   "http_code": "429",
+   "ears_text": "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+   "test_file": "apps/api/test/generated/patch_llm_routes_id.test.ts",
+   "test_function": "test_patch_llm_routes_id_rate_limited",
+   "test_level": "unit",
+   "gate": "backend-coverage",
+   "ladder": "L1",
+   "tasks": []
+  },
+  {
+   "test_id": "TC-240",
+   "endpoint": "PATCH /api/v1/llm_routes/:id",
+   "feature_id": "F-016",
+   "acts": [
+    "A85"
+   ],
+   "screens": [
+    "ops-llm"
+   ],
+   "ears_form": "UBIQUITOUS",
+   "http_code": "",
+   "ears_text": "UBIQUITOUS: PATCH /api/v1/llm_routes/:id の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う",
+   "test_file": "apps/api/test/generated/patch_llm_routes_id.test.ts",
+   "test_function": "test_patch_llm_routes_id_shape",
+   "test_level": "contract",
+   "gate": "backend-coverage",
+   "ladder": "L1",
+   "tasks": []
+  },
+  {
+   "test_id": "TC-241",
    "endpoint": "GET /api/v1/members",
    "feature_id": "F-001",
    "acts": [
@@ -10830,7 +12855,7 @@
    ]
   },
   {
-   "test_id": "TC-214",
+   "test_id": "TC-242",
    "endpoint": "GET /api/v1/members",
    "feature_id": "F-001",
    "acts": [
@@ -10861,7 +12886,7 @@
    ]
   },
   {
-   "test_id": "TC-215",
+   "test_id": "TC-243",
    "endpoint": "GET /api/v1/members",
    "feature_id": "F-001",
    "acts": [
@@ -10889,7 +12914,7 @@
    ]
   },
   {
-   "test_id": "TC-216",
+   "test_id": "TC-244",
    "endpoint": "GET /api/v1/members",
    "feature_id": "F-001",
    "acts": [
@@ -10918,7 +12943,7 @@
    ]
   },
   {
-   "test_id": "TC-217",
+   "test_id": "TC-245",
    "endpoint": "GET /api/v1/members",
    "feature_id": "F-001",
    "acts": [
@@ -10942,7 +12967,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-218",
+   "test_id": "TC-246",
    "endpoint": "PATCH /api/v1/members/:id",
    "feature_id": "F-003",
    "acts": [
@@ -10976,7 +13001,7 @@
    ]
   },
   {
-   "test_id": "TC-219",
+   "test_id": "TC-247",
    "endpoint": "PATCH /api/v1/members/:id",
    "feature_id": "F-003",
    "acts": [
@@ -11010,7 +13035,7 @@
    ]
   },
   {
-   "test_id": "TC-220",
+   "test_id": "TC-248",
    "endpoint": "PATCH /api/v1/members/:id",
    "feature_id": "F-003",
    "acts": [
@@ -11040,7 +13065,7 @@
    ]
   },
   {
-   "test_id": "TC-221",
+   "test_id": "TC-249",
    "endpoint": "PATCH /api/v1/members/:id",
    "feature_id": "F-003",
    "acts": [
@@ -11066,7 +13091,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-222",
+   "test_id": "TC-250",
    "endpoint": "PATCH /api/v1/members/:id",
    "feature_id": "F-003",
    "acts": [
@@ -11217,6 +13242,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -11251,14 +13286,18 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-223",
+   "test_id": "TC-251",
    "endpoint": "PATCH /api/v1/members/:id",
    "feature_id": "F-003",
    "acts": [
@@ -11317,7 +13356,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -11326,11 +13364,16 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-224",
+   "test_id": "TC-252",
    "endpoint": "PATCH /api/v1/members/:id",
    "feature_id": "F-003",
    "acts": [
@@ -11356,7 +13399,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-225",
+   "test_id": "TC-253",
    "endpoint": "PATCH /api/v1/members/:id",
    "feature_id": "F-003",
    "acts": [
@@ -11382,7 +13425,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-226",
+   "test_id": "TC-254",
    "endpoint": "PATCH /api/v1/members/:id",
    "feature_id": "F-003",
    "acts": [
@@ -11408,7 +13451,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-227",
+   "test_id": "TC-255",
    "endpoint": "PATCH /api/v1/members/:id",
    "feature_id": "F-003",
    "acts": [
@@ -11434,7 +13477,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-228",
+   "test_id": "TC-256",
    "endpoint": "PATCH /api/v1/members/:id",
    "feature_id": "F-003",
    "acts": [
@@ -11460,7 +13503,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-229",
+   "test_id": "TC-257",
    "endpoint": "DELETE /api/v1/members/:id",
    "feature_id": "F-010",
    "acts": [
@@ -11487,7 +13530,7 @@
    ]
   },
   {
-   "test_id": "TC-230",
+   "test_id": "TC-258",
    "endpoint": "DELETE /api/v1/members/:id",
    "feature_id": "F-010",
    "acts": [
@@ -11514,7 +13557,7 @@
    ]
   },
   {
-   "test_id": "TC-231",
+   "test_id": "TC-259",
    "endpoint": "DELETE /api/v1/members/:id",
    "feature_id": "F-010",
    "acts": [
@@ -11661,6 +13704,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -11695,14 +13748,18 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-232",
+   "test_id": "TC-260",
    "endpoint": "DELETE /api/v1/members/:id",
    "feature_id": "F-010",
    "acts": [
@@ -11757,7 +13814,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -11766,11 +13822,16 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-233",
+   "test_id": "TC-261",
    "endpoint": "DELETE /api/v1/members/:id",
    "feature_id": "F-010",
    "acts": [
@@ -11792,7 +13853,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-234",
+   "test_id": "TC-262",
    "endpoint": "DELETE /api/v1/members/:id",
    "feature_id": "F-010",
    "acts": [
@@ -11814,7 +13875,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-235",
+   "test_id": "TC-263",
    "endpoint": "DELETE /api/v1/members/:id",
    "feature_id": "F-010",
    "acts": [
@@ -11836,7 +13897,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-236",
+   "test_id": "TC-264",
    "endpoint": "DELETE /api/v1/members/:id",
    "feature_id": "F-010",
    "acts": [
@@ -11858,7 +13919,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-237",
+   "test_id": "TC-265",
    "endpoint": "POST /api/v1/memories",
    "feature_id": "F-013",
    "acts": [
@@ -11881,7 +13942,7 @@
    ]
   },
   {
-   "test_id": "TC-238",
+   "test_id": "TC-266",
    "endpoint": "POST /api/v1/memories",
    "feature_id": "F-013",
    "acts": [
@@ -12026,6 +14087,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -12060,14 +14131,18 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-239",
+   "test_id": "TC-267",
    "endpoint": "POST /api/v1/memories",
    "feature_id": "F-013",
    "acts": [
@@ -12120,7 +14195,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -12129,11 +14203,16 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-240",
+   "test_id": "TC-268",
    "endpoint": "POST /api/v1/memories",
    "feature_id": "F-013",
    "acts": [
@@ -12153,7 +14232,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-241",
+   "test_id": "TC-269",
    "endpoint": "POST /api/v1/memories",
    "feature_id": "F-013",
    "acts": [
@@ -12173,7 +14252,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-242",
+   "test_id": "TC-270",
    "endpoint": "POST /api/v1/memories",
    "feature_id": "F-013",
    "acts": [
@@ -12193,7 +14272,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-243",
+   "test_id": "TC-271",
    "endpoint": "POST /api/v1/memories",
    "feature_id": "F-013",
    "acts": [
@@ -12215,7 +14294,7 @@
    ]
   },
   {
-   "test_id": "TC-244",
+   "test_id": "TC-272",
    "endpoint": "POST /api/v1/memories",
    "feature_id": "F-013",
    "acts": [
@@ -12235,7 +14314,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-245",
+   "test_id": "TC-273",
    "endpoint": "GET /api/v1/messages",
    "feature_id": "F-004",
    "acts": [
@@ -12258,7 +14337,7 @@
    ]
   },
   {
-   "test_id": "TC-246",
+   "test_id": "TC-274",
    "endpoint": "GET /api/v1/messages",
    "feature_id": "F-004",
    "acts": [
@@ -12403,6 +14482,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -12437,14 +14526,18 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-247",
+   "test_id": "TC-275",
    "endpoint": "GET /api/v1/messages",
    "feature_id": "F-004",
    "acts": [
@@ -12497,7 +14590,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -12506,11 +14598,16 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-248",
+   "test_id": "TC-276",
    "endpoint": "GET /api/v1/messages",
    "feature_id": "F-004",
    "acts": [
@@ -12530,7 +14627,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-249",
+   "test_id": "TC-277",
    "endpoint": "GET /api/v1/messages",
    "feature_id": "F-004",
    "acts": [
@@ -12552,7 +14649,7 @@
    ]
   },
   {
-   "test_id": "TC-250",
+   "test_id": "TC-278",
    "endpoint": "GET /api/v1/messages",
    "feature_id": "F-004",
    "acts": [
@@ -12572,7 +14669,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-251",
+   "test_id": "TC-279",
    "endpoint": "PATCH /api/v1/messages/:id",
    "feature_id": "F-004",
    "acts": [
@@ -12595,7 +14692,7 @@
    ]
   },
   {
-   "test_id": "TC-252",
+   "test_id": "TC-280",
    "endpoint": "PATCH /api/v1/messages/:id",
    "feature_id": "F-004",
    "acts": [
@@ -12740,6 +14837,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -12774,14 +14881,18 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-253",
+   "test_id": "TC-281",
    "endpoint": "PATCH /api/v1/messages/:id",
    "feature_id": "F-004",
    "acts": [
@@ -12834,7 +14945,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -12843,11 +14953,16 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-254",
+   "test_id": "TC-282",
    "endpoint": "PATCH /api/v1/messages/:id",
    "feature_id": "F-004",
    "acts": [
@@ -12867,7 +14982,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-255",
+   "test_id": "TC-283",
    "endpoint": "PATCH /api/v1/messages/:id",
    "feature_id": "F-004",
    "acts": [
@@ -12887,7 +15002,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-256",
+   "test_id": "TC-284",
    "endpoint": "PATCH /api/v1/messages/:id",
    "feature_id": "F-004",
    "acts": [
@@ -12907,7 +15022,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-257",
+   "test_id": "TC-285",
    "endpoint": "PATCH /api/v1/messages/:id",
    "feature_id": "F-004",
    "acts": [
@@ -12929,7 +15044,7 @@
    ]
   },
   {
-   "test_id": "TC-258",
+   "test_id": "TC-286",
    "endpoint": "PATCH /api/v1/messages/:id",
    "feature_id": "F-004",
    "acts": [
@@ -12949,7 +15064,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-259",
+   "test_id": "TC-287",
    "endpoint": "DELETE /api/v1/messages/:id",
    "feature_id": "F-004",
    "acts": [
@@ -12972,7 +15087,7 @@
    ]
   },
   {
-   "test_id": "TC-260",
+   "test_id": "TC-288",
    "endpoint": "DELETE /api/v1/messages/:id",
    "feature_id": "F-004",
    "acts": [
@@ -13117,6 +15232,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -13151,14 +15276,18 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-261",
+   "test_id": "TC-289",
    "endpoint": "DELETE /api/v1/messages/:id",
    "feature_id": "F-004",
    "acts": [
@@ -13211,7 +15340,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -13220,11 +15348,16 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-262",
+   "test_id": "TC-290",
    "endpoint": "DELETE /api/v1/messages/:id",
    "feature_id": "F-004",
    "acts": [
@@ -13244,7 +15377,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-263",
+   "test_id": "TC-291",
    "endpoint": "DELETE /api/v1/messages/:id",
    "feature_id": "F-004",
    "acts": [
@@ -13264,7 +15397,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-264",
+   "test_id": "TC-292",
    "endpoint": "DELETE /api/v1/messages/:id",
    "feature_id": "F-004",
    "acts": [
@@ -13286,7 +15419,7 @@
    ]
   },
   {
-   "test_id": "TC-265",
+   "test_id": "TC-293",
    "endpoint": "DELETE /api/v1/messages/:id",
    "feature_id": "F-004",
    "acts": [
@@ -13306,7 +15439,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-266",
+   "test_id": "TC-294",
    "endpoint": "PATCH /api/v1/notice_deliveries/:id",
    "feature_id": "F-015",
    "acts": [
@@ -13329,7 +15462,7 @@
    ]
   },
   {
-   "test_id": "TC-267",
+   "test_id": "TC-295",
    "endpoint": "PATCH /api/v1/notice_deliveries/:id",
    "feature_id": "F-015",
    "acts": [
@@ -13474,6 +15607,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -13508,14 +15651,18 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-268",
+   "test_id": "TC-296",
    "endpoint": "PATCH /api/v1/notice_deliveries/:id",
    "feature_id": "F-015",
    "acts": [
@@ -13568,7 +15715,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -13577,11 +15723,16 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-269",
+   "test_id": "TC-297",
    "endpoint": "PATCH /api/v1/notice_deliveries/:id",
    "feature_id": "F-015",
    "acts": [
@@ -13601,7 +15752,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-270",
+   "test_id": "TC-298",
    "endpoint": "PATCH /api/v1/notice_deliveries/:id",
    "feature_id": "F-015",
    "acts": [
@@ -13621,7 +15772,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-271",
+   "test_id": "TC-299",
    "endpoint": "PATCH /api/v1/notice_deliveries/:id",
    "feature_id": "F-015",
    "acts": [
@@ -13641,7 +15792,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-272",
+   "test_id": "TC-300",
    "endpoint": "PATCH /api/v1/notice_deliveries/:id",
    "feature_id": "F-015",
    "acts": [
@@ -13661,7 +15812,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-273",
+   "test_id": "TC-301",
    "endpoint": "POST /api/v1/notices",
    "feature_id": "F-016",
    "acts": [
@@ -13684,7 +15835,7 @@
    ]
   },
   {
-   "test_id": "TC-274",
+   "test_id": "TC-302",
    "endpoint": "POST /api/v1/notices",
    "feature_id": "F-016",
    "acts": [
@@ -13829,6 +15980,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -13863,14 +16024,18 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-275",
+   "test_id": "TC-303",
    "endpoint": "POST /api/v1/notices",
    "feature_id": "F-016",
    "acts": [
@@ -13923,7 +16088,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -13932,11 +16096,16 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-276",
+   "test_id": "TC-304",
    "endpoint": "POST /api/v1/notices",
    "feature_id": "F-016",
    "acts": [
@@ -13956,7 +16125,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-277",
+   "test_id": "TC-305",
    "endpoint": "POST /api/v1/notices",
    "feature_id": "F-016",
    "acts": [
@@ -13976,7 +16145,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-278",
+   "test_id": "TC-306",
    "endpoint": "POST /api/v1/notices",
    "feature_id": "F-016",
    "acts": [
@@ -13996,7 +16165,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-279",
+   "test_id": "TC-307",
    "endpoint": "POST /api/v1/notices",
    "feature_id": "F-016",
    "acts": [
@@ -14016,7 +16185,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-280",
+   "test_id": "TC-308",
    "endpoint": "POST /api/v1/notices",
    "feature_id": "F-016",
    "acts": [
@@ -14036,7 +16205,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-281",
+   "test_id": "TC-309",
    "endpoint": "PATCH /api/v1/ops_members/:id",
    "feature_id": "F-019",
    "acts": [
@@ -14059,7 +16228,7 @@
    ]
   },
   {
-   "test_id": "TC-282",
+   "test_id": "TC-310",
    "endpoint": "PATCH /api/v1/ops_members/:id",
    "feature_id": "F-019",
    "acts": [
@@ -14204,6 +16373,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -14238,14 +16417,18 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-283",
+   "test_id": "TC-311",
    "endpoint": "PATCH /api/v1/ops_members/:id",
    "feature_id": "F-019",
    "acts": [
@@ -14298,7 +16481,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -14307,11 +16489,16 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-284",
+   "test_id": "TC-312",
    "endpoint": "PATCH /api/v1/ops_members/:id",
    "feature_id": "F-019",
    "acts": [
@@ -14331,7 +16518,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-285",
+   "test_id": "TC-313",
    "endpoint": "PATCH /api/v1/ops_members/:id",
    "feature_id": "F-019",
    "acts": [
@@ -14351,7 +16538,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-286",
+   "test_id": "TC-314",
    "endpoint": "PATCH /api/v1/ops_members/:id",
    "feature_id": "F-019",
    "acts": [
@@ -14371,7 +16558,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-287",
+   "test_id": "TC-315",
    "endpoint": "PATCH /api/v1/ops_members/:id",
    "feature_id": "F-019",
    "acts": [
@@ -14391,7 +16578,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-288",
+   "test_id": "TC-316",
    "endpoint": "GET /api/v1/plans",
    "feature_id": "F-014",
    "acts": [
@@ -14415,7 +16602,7 @@
    ]
   },
   {
-   "test_id": "TC-289",
+   "test_id": "TC-317",
    "endpoint": "GET /api/v1/plans",
    "feature_id": "F-014",
    "acts": [
@@ -14560,6 +16747,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -14594,14 +16791,18 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-290",
+   "test_id": "TC-318",
    "endpoint": "GET /api/v1/plans",
    "feature_id": "F-014",
    "acts": [
@@ -14654,7 +16855,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -14663,11 +16863,16 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-291",
+   "test_id": "TC-319",
    "endpoint": "GET /api/v1/plans",
    "feature_id": "F-014",
    "acts": [
@@ -14687,7 +16892,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-292",
+   "test_id": "TC-320",
    "endpoint": "GET /api/v1/plans",
    "feature_id": "F-014",
    "acts": [
@@ -14707,7 +16912,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-293",
+   "test_id": "TC-321",
    "endpoint": "DELETE /api/v1/plans/:id",
    "feature_id": "F-014",
    "acts": [
@@ -14731,7 +16936,7 @@
    ]
   },
   {
-   "test_id": "TC-294",
+   "test_id": "TC-322",
    "endpoint": "DELETE /api/v1/plans/:id",
    "feature_id": "F-014",
    "acts": [
@@ -14876,6 +17081,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -14910,14 +17125,18 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-295",
+   "test_id": "TC-323",
    "endpoint": "DELETE /api/v1/plans/:id",
    "feature_id": "F-014",
    "acts": [
@@ -14970,7 +17189,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -14979,11 +17197,16 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-296",
+   "test_id": "TC-324",
    "endpoint": "DELETE /api/v1/plans/:id",
    "feature_id": "F-014",
    "acts": [
@@ -15003,7 +17226,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-297",
+   "test_id": "TC-325",
    "endpoint": "DELETE /api/v1/plans/:id",
    "feature_id": "F-014",
    "acts": [
@@ -15023,7 +17246,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-298",
+   "test_id": "TC-326",
    "endpoint": "DELETE /api/v1/plans/:id",
    "feature_id": "F-014",
    "acts": [
@@ -15043,7 +17266,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-299",
+   "test_id": "TC-327",
    "endpoint": "PATCH /api/v1/policies/:id",
    "feature_id": "F-006",
    "acts": [
@@ -15066,7 +17289,7 @@
    ]
   },
   {
-   "test_id": "TC-300",
+   "test_id": "TC-328",
    "endpoint": "PATCH /api/v1/policies/:id",
    "feature_id": "F-006",
    "acts": [
@@ -15211,6 +17434,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -15245,14 +17478,18 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-301",
+   "test_id": "TC-329",
    "endpoint": "PATCH /api/v1/policies/:id",
    "feature_id": "F-006",
    "acts": [
@@ -15305,7 +17542,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -15314,11 +17550,16 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-302",
+   "test_id": "TC-330",
    "endpoint": "PATCH /api/v1/policies/:id",
    "feature_id": "F-006",
    "acts": [
@@ -15338,7 +17579,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-303",
+   "test_id": "TC-331",
    "endpoint": "PATCH /api/v1/policies/:id",
    "feature_id": "F-006",
    "acts": [
@@ -15358,7 +17599,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-304",
+   "test_id": "TC-332",
    "endpoint": "PATCH /api/v1/policies/:id",
    "feature_id": "F-006",
    "acts": [
@@ -15378,7 +17619,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-305",
+   "test_id": "TC-333",
    "endpoint": "PATCH /api/v1/policies/:id",
    "feature_id": "F-006",
    "acts": [
@@ -15398,7 +17639,380 @@
    "tasks": []
   },
   {
-   "test_id": "TC-306",
+   "test_id": "TC-334",
+   "endpoint": "PATCH /api/v1/push_devices/:id",
+   "feature_id": "F-017",
+   "acts": [
+    "A83"
+   ],
+   "screens": [
+    "app-setup"
+   ],
+   "ears_form": "EVENT-DRIVEN",
+   "http_code": "",
+   "ears_text": "EVENT-DRIVEN: WHEN PATCH /api/v1/push_devices/:id が「アプリを入れて通知を許可する」として呼ばれたとき THEN Kaname は「push_devices に端末を登録し、通知の届け先の経路に「アプリ」を足す」を行い 2xx を返す",
+   "test_file": "apps/api/test/generated/patch_push_devices_id.test.ts",
+   "test_function": "test_patch_push_devices_id_ok",
+   "test_level": "contract+integration",
+   "gate": "backend-coverage",
+   "ladder": "L1",
+   "tasks": [
+    "T-A-26",
+    "T-U-62"
+   ]
+  },
+  {
+   "test_id": "TC-335",
+   "endpoint": "PATCH /api/v1/push_devices/:id",
+   "feature_id": "F-017",
+   "acts": [
+    "A83"
+   ],
+   "screens": [
+    "app-setup"
+   ],
+   "ears_form": "UNWANTED",
+   "http_code": "401",
+   "ears_text": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+   "test_file": "apps/api/test/generated/patch_push_devices_id.test.ts",
+   "test_function": "test_patch_push_devices_id_rejected_401",
+   "test_level": "access",
+   "gate": "backend-access-matrix",
+   "ladder": "L1",
+   "tasks": [
+    "T-A-01",
+    "T-A-01",
+    "T-A-01",
+    "T-A-01",
+    "T-A-01",
+    "T-A-03",
+    "T-A-04",
+    "T-A-04",
+    "T-A-04",
+    "T-A-04",
+    "T-A-04",
+    "T-A-04",
+    "T-A-04",
+    "T-A-04",
+    "T-A-05",
+    "T-A-05",
+    "T-A-05",
+    "T-A-05",
+    "T-A-05",
+    "T-A-05",
+    "T-A-05",
+    "T-A-06",
+    "T-A-06",
+    "T-A-06",
+    "T-A-06",
+    "T-A-06",
+    "T-A-06",
+    "T-A-07",
+    "T-A-07",
+    "T-A-07",
+    "T-A-07",
+    "T-A-07",
+    "T-A-07",
+    "T-A-07",
+    "T-A-08",
+    "T-A-08",
+    "T-A-08",
+    "T-A-08",
+    "T-A-09",
+    "T-A-09",
+    "T-A-09",
+    "T-A-09",
+    "T-A-09",
+    "T-A-09",
+    "T-A-09",
+    "T-A-09",
+    "T-A-10",
+    "T-A-10",
+    "T-A-10",
+    "T-A-10",
+    "T-A-10",
+    "T-A-10",
+    "T-A-10",
+    "T-A-11",
+    "T-A-11",
+    "T-A-11",
+    "T-A-11",
+    "T-A-11",
+    "T-A-12",
+    "T-A-12",
+    "T-A-12",
+    "T-A-12",
+    "T-A-12",
+    "T-A-12",
+    "T-A-13",
+    "T-A-13",
+    "T-A-13",
+    "T-A-13",
+    "T-A-13",
+    "T-A-13",
+    "T-A-14",
+    "T-A-14",
+    "T-A-14",
+    "T-A-14",
+    "T-A-14",
+    "T-A-15",
+    "T-A-15",
+    "T-A-15",
+    "T-A-15",
+    "T-A-15",
+    "T-A-15",
+    "T-A-15",
+    "T-A-15",
+    "T-A-16",
+    "T-A-16",
+    "T-A-16",
+    "T-A-16",
+    "T-A-16",
+    "T-A-16",
+    "T-A-17",
+    "T-A-17",
+    "T-A-17",
+    "T-A-17",
+    "T-A-17",
+    "T-A-17",
+    "T-A-18",
+    "T-A-18",
+    "T-A-18",
+    "T-A-18",
+    "T-A-18",
+    "T-A-18",
+    "T-A-19",
+    "T-A-19",
+    "T-A-19",
+    "T-A-19",
+    "T-A-19",
+    "T-A-19",
+    "T-A-20",
+    "T-A-20",
+    "T-A-20",
+    "T-A-20",
+    "T-A-20",
+    "T-A-20",
+    "T-A-21",
+    "T-A-21",
+    "T-A-21",
+    "T-A-21",
+    "T-A-21",
+    "T-A-22",
+    "T-A-22",
+    "T-A-22",
+    "T-A-22",
+    "T-A-22",
+    "T-A-22",
+    "T-A-23",
+    "T-A-23",
+    "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-U-07",
+    "T-U-09",
+    "T-U-10",
+    "T-U-11",
+    "T-U-13",
+    "T-U-13",
+    "T-U-13",
+    "T-U-14",
+    "T-U-15",
+    "T-U-17",
+    "T-U-21",
+    "T-U-21",
+    "T-U-24",
+    "T-U-25",
+    "T-U-26",
+    "T-U-27",
+    "T-U-28",
+    "T-U-29",
+    "T-U-32",
+    "T-U-33",
+    "T-U-34",
+    "T-U-37",
+    "T-U-38",
+    "T-U-39",
+    "T-U-42",
+    "T-U-45",
+    "T-U-46",
+    "T-U-47",
+    "T-U-48",
+    "T-U-49",
+    "T-U-50",
+    "T-U-51",
+    "T-U-52",
+    "T-U-53",
+    "T-U-55",
+    "T-U-56",
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
+   ]
+  },
+  {
+   "test_id": "TC-336",
+   "endpoint": "PATCH /api/v1/push_devices/:id",
+   "feature_id": "F-017",
+   "acts": [
+    "A83"
+   ],
+   "screens": [
+    "app-setup"
+   ],
+   "ears_form": "UNWANTED",
+   "http_code": "403",
+   "ears_text": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+   "test_file": "apps/api/test/generated/patch_push_devices_id.test.ts",
+   "test_function": "test_patch_push_devices_id_rejected_403",
+   "test_level": "access",
+   "gate": "backend-access-matrix",
+   "ladder": "L1",
+   "tasks": [
+    "T-A-01",
+    "T-A-01",
+    "T-A-04",
+    "T-A-04",
+    "T-A-04",
+    "T-A-04",
+    "T-A-05",
+    "T-A-06",
+    "T-A-06",
+    "T-A-06",
+    "T-A-07",
+    "T-A-07",
+    "T-A-07",
+    "T-A-08",
+    "T-A-09",
+    "T-A-09",
+    "T-A-10",
+    "T-A-10",
+    "T-A-11",
+    "T-A-11",
+    "T-A-12",
+    "T-A-12",
+    "T-A-14",
+    "T-A-15",
+    "T-A-15",
+    "T-A-15",
+    "T-A-16",
+    "T-A-16",
+    "T-A-16",
+    "T-A-17",
+    "T-A-17",
+    "T-A-18",
+    "T-A-18",
+    "T-A-18",
+    "T-A-19",
+    "T-A-20",
+    "T-A-20",
+    "T-A-20",
+    "T-A-21",
+    "T-A-21",
+    "T-A-22",
+    "T-A-22",
+    "T-A-22",
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
+   ]
+  },
+  {
+   "test_id": "TC-337",
+   "endpoint": "PATCH /api/v1/push_devices/:id",
+   "feature_id": "F-017",
+   "acts": [
+    "A83"
+   ],
+   "screens": [
+    "app-setup"
+   ],
+   "ears_form": "UNWANTED",
+   "http_code": "404",
+   "ears_text": "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
+   "test_file": "apps/api/test/generated/patch_push_devices_id.test.ts",
+   "test_function": "test_patch_push_devices_id_not_found",
+   "test_level": "unit",
+   "gate": "backend-coverage",
+   "ladder": "L1",
+   "tasks": []
+  },
+  {
+   "test_id": "TC-338",
+   "endpoint": "PATCH /api/v1/push_devices/:id",
+   "feature_id": "F-017",
+   "acts": [
+    "A83"
+   ],
+   "screens": [
+    "app-setup"
+   ],
+   "ears_form": "UNWANTED",
+   "http_code": "422",
+   "ears_text": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+   "test_file": "apps/api/test/generated/patch_push_devices_id.test.ts",
+   "test_function": "test_patch_push_devices_id_rejected_422",
+   "test_level": "unit（検証・表記ゆらぎ）",
+   "gate": "backend-coverage",
+   "ladder": "L1",
+   "tasks": []
+  },
+  {
+   "test_id": "TC-339",
+   "endpoint": "PATCH /api/v1/push_devices/:id",
+   "feature_id": "F-017",
+   "acts": [
+    "A83"
+   ],
+   "screens": [
+    "app-setup"
+   ],
+   "ears_form": "UNWANTED",
+   "http_code": "429",
+   "ears_text": "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+   "test_file": "apps/api/test/generated/patch_push_devices_id.test.ts",
+   "test_function": "test_patch_push_devices_id_rate_limited",
+   "test_level": "unit",
+   "gate": "backend-coverage",
+   "ladder": "L1",
+   "tasks": []
+  },
+  {
+   "test_id": "TC-340",
+   "endpoint": "PATCH /api/v1/push_devices/:id",
+   "feature_id": "F-017",
+   "acts": [
+    "A83"
+   ],
+   "screens": [
+    "app-setup"
+   ],
+   "ears_form": "UBIQUITOUS",
+   "http_code": "",
+   "ears_text": "UBIQUITOUS: PATCH /api/v1/push_devices/:id の副作用は関門 C2・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う",
+   "test_file": "apps/api/test/generated/patch_push_devices_id.test.ts",
+   "test_function": "test_patch_push_devices_id_shape",
+   "test_level": "contract",
+   "gate": "backend-coverage",
+   "ladder": "L1",
+   "tasks": []
+  },
+  {
+   "test_id": "TC-341",
    "endpoint": "POST /api/v1/service_registry",
    "feature_id": "F-017",
    "acts": [
@@ -15421,7 +18035,7 @@
    ]
   },
   {
-   "test_id": "TC-307",
+   "test_id": "TC-342",
    "endpoint": "POST /api/v1/service_registry",
    "feature_id": "F-017",
    "acts": [
@@ -15566,6 +18180,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -15600,14 +18224,18 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-308",
+   "test_id": "TC-343",
    "endpoint": "POST /api/v1/service_registry",
    "feature_id": "F-017",
    "acts": [
@@ -15660,7 +18288,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -15669,11 +18296,16 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-309",
+   "test_id": "TC-344",
    "endpoint": "POST /api/v1/service_registry",
    "feature_id": "F-017",
    "acts": [
@@ -15693,7 +18325,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-310",
+   "test_id": "TC-345",
    "endpoint": "POST /api/v1/service_registry",
    "feature_id": "F-017",
    "acts": [
@@ -15713,7 +18345,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-311",
+   "test_id": "TC-346",
    "endpoint": "POST /api/v1/service_registry",
    "feature_id": "F-017",
    "acts": [
@@ -15733,7 +18365,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-312",
+   "test_id": "TC-347",
    "endpoint": "POST /api/v1/service_registry",
    "feature_id": "F-017",
    "acts": [
@@ -15755,7 +18387,7 @@
    ]
   },
   {
-   "test_id": "TC-313",
+   "test_id": "TC-348",
    "endpoint": "POST /api/v1/service_registry",
    "feature_id": "F-017",
    "acts": [
@@ -15775,7 +18407,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-314",
+   "test_id": "TC-349",
    "endpoint": "PATCH /api/v1/service_registry_versions/:id",
    "feature_id": "F-018",
    "acts": [
@@ -15798,7 +18430,7 @@
    ]
   },
   {
-   "test_id": "TC-315",
+   "test_id": "TC-350",
    "endpoint": "PATCH /api/v1/service_registry_versions/:id",
    "feature_id": "F-018",
    "acts": [
@@ -15943,6 +18575,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -15977,14 +18619,18 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-316",
+   "test_id": "TC-351",
    "endpoint": "PATCH /api/v1/service_registry_versions/:id",
    "feature_id": "F-018",
    "acts": [
@@ -16037,7 +18683,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -16046,11 +18691,16 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-317",
+   "test_id": "TC-352",
    "endpoint": "PATCH /api/v1/service_registry_versions/:id",
    "feature_id": "F-018",
    "acts": [
@@ -16070,7 +18720,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-318",
+   "test_id": "TC-353",
    "endpoint": "PATCH /api/v1/service_registry_versions/:id",
    "feature_id": "F-018",
    "acts": [
@@ -16090,7 +18740,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-319",
+   "test_id": "TC-354",
    "endpoint": "PATCH /api/v1/service_registry_versions/:id",
    "feature_id": "F-018",
    "acts": [
@@ -16110,7 +18760,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-320",
+   "test_id": "TC-355",
    "endpoint": "PATCH /api/v1/service_registry_versions/:id",
    "feature_id": "F-018",
    "acts": [
@@ -16130,7 +18780,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-321",
+   "test_id": "TC-356",
    "endpoint": "GET /api/v1/sessions",
    "feature_id": "F-012",
    "acts": [
@@ -16153,7 +18803,7 @@
    ]
   },
   {
-   "test_id": "TC-322",
+   "test_id": "TC-357",
    "endpoint": "GET /api/v1/sessions",
    "feature_id": "F-012",
    "acts": [
@@ -16298,6 +18948,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -16332,14 +18992,18 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-323",
+   "test_id": "TC-358",
    "endpoint": "GET /api/v1/sessions",
    "feature_id": "F-012",
    "acts": [
@@ -16392,7 +19056,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -16401,11 +19064,16 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-324",
+   "test_id": "TC-359",
    "endpoint": "GET /api/v1/sessions",
    "feature_id": "F-012",
    "acts": [
@@ -16425,7 +19093,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-325",
+   "test_id": "TC-360",
    "endpoint": "GET /api/v1/sessions",
    "feature_id": "F-012",
    "acts": [
@@ -16445,7 +19113,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-326",
+   "test_id": "TC-361",
    "endpoint": "POST /api/v1/sessions",
    "feature_id": "F-001",
    "acts": [
@@ -16469,7 +19137,7 @@
    ]
   },
   {
-   "test_id": "TC-327",
+   "test_id": "TC-362",
    "endpoint": "POST /api/v1/sessions",
    "feature_id": "F-001",
    "acts": [
@@ -16614,6 +19282,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -16648,14 +19326,18 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-328",
+   "test_id": "TC-363",
    "endpoint": "POST /api/v1/sessions",
    "feature_id": "F-001",
    "acts": [
@@ -16708,7 +19390,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -16717,11 +19398,16 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-329",
+   "test_id": "TC-364",
    "endpoint": "POST /api/v1/sessions",
    "feature_id": "F-001",
    "acts": [
@@ -16741,7 +19427,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-330",
+   "test_id": "TC-365",
    "endpoint": "POST /api/v1/sessions",
    "feature_id": "F-001",
    "acts": [
@@ -16761,7 +19447,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-331",
+   "test_id": "TC-366",
    "endpoint": "POST /api/v1/sessions",
    "feature_id": "F-001",
    "acts": [
@@ -16781,7 +19467,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-332",
+   "test_id": "TC-367",
    "endpoint": "POST /api/v1/sessions",
    "feature_id": "F-001",
    "acts": [
@@ -16803,7 +19489,7 @@
    ]
   },
   {
-   "test_id": "TC-333",
+   "test_id": "TC-368",
    "endpoint": "POST /api/v1/sessions",
    "feature_id": "F-001",
    "acts": [
@@ -16823,7 +19509,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-334",
+   "test_id": "TC-369",
    "endpoint": "POST /api/v1/skills",
    "feature_id": "F-018",
    "acts": [
@@ -16846,7 +19532,7 @@
    ]
   },
   {
-   "test_id": "TC-335",
+   "test_id": "TC-370",
    "endpoint": "POST /api/v1/skills",
    "feature_id": "F-018",
    "acts": [
@@ -16991,6 +19677,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -17025,14 +19721,18 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-336",
+   "test_id": "TC-371",
    "endpoint": "POST /api/v1/skills",
    "feature_id": "F-018",
    "acts": [
@@ -17085,7 +19785,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -17094,11 +19793,16 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-337",
+   "test_id": "TC-372",
    "endpoint": "POST /api/v1/skills",
    "feature_id": "F-018",
    "acts": [
@@ -17118,7 +19822,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-338",
+   "test_id": "TC-373",
    "endpoint": "POST /api/v1/skills",
    "feature_id": "F-018",
    "acts": [
@@ -17138,7 +19842,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-339",
+   "test_id": "TC-374",
    "endpoint": "POST /api/v1/skills",
    "feature_id": "F-018",
    "acts": [
@@ -17158,7 +19862,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-340",
+   "test_id": "TC-375",
    "endpoint": "POST /api/v1/skills",
    "feature_id": "F-018",
    "acts": [
@@ -17178,7 +19882,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-341",
+   "test_id": "TC-376",
    "endpoint": "POST /api/v1/skills",
    "feature_id": "F-018",
    "acts": [
@@ -17198,7 +19902,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-342",
+   "test_id": "TC-377",
    "endpoint": "POST /api/v1/subscriptions",
    "feature_id": "F-001",
    "acts": [
@@ -17219,11 +19923,12 @@
    "ladder": "L1",
    "tasks": [
     "T-A-01",
-    "T-U-01"
+    "T-U-01",
+    "T-U-59"
    ]
   },
   {
-   "test_id": "TC-343",
+   "test_id": "TC-378",
    "endpoint": "POST /api/v1/subscriptions",
    "feature_id": "F-001",
    "acts": [
@@ -17236,7 +19941,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「支払い方法を入れる」として呼ばれたとき THEN Kaname は「決済事業者に登録（カード番号は預からない）」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「プランを選んで Stripe の登録画面へ進む」として呼ばれたとき THEN Kaname は「Stripe Checkout へ送る（C7）。戻りは webhook の写しで確定。カード番号は自社を通らない」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/post_subscriptions.test.ts",
    "test_function": "test_post_subscriptions_ok_2",
    "test_level": "contract+integration",
@@ -17244,11 +19949,12 @@
    "ladder": "L1",
    "tasks": [
     "T-A-01",
-    "T-U-01"
+    "T-U-01",
+    "T-U-59"
    ]
   },
   {
-   "test_id": "TC-344",
+   "test_id": "TC-379",
    "endpoint": "POST /api/v1/subscriptions",
    "feature_id": "F-001",
    "acts": [
@@ -17395,6 +20101,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -17429,14 +20145,18 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-345",
+   "test_id": "TC-380",
    "endpoint": "POST /api/v1/subscriptions",
    "feature_id": "F-001",
    "acts": [
@@ -17491,7 +20211,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -17500,11 +20219,16 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-346",
+   "test_id": "TC-381",
    "endpoint": "POST /api/v1/subscriptions",
    "feature_id": "F-001",
    "acts": [
@@ -17526,7 +20250,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-347",
+   "test_id": "TC-382",
    "endpoint": "POST /api/v1/subscriptions",
    "feature_id": "F-001",
    "acts": [
@@ -17548,7 +20272,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-348",
+   "test_id": "TC-383",
    "endpoint": "POST /api/v1/subscriptions",
    "feature_id": "F-001",
    "acts": [
@@ -17570,7 +20294,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-349",
+   "test_id": "TC-384",
    "endpoint": "POST /api/v1/subscriptions",
    "feature_id": "F-001",
    "acts": [
@@ -17592,7 +20316,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-350",
+   "test_id": "TC-385",
    "endpoint": "PATCH /api/v1/subscriptions/:id",
    "feature_id": "F-015",
    "acts": [
@@ -17615,7 +20339,7 @@
    ]
   },
   {
-   "test_id": "TC-351",
+   "test_id": "TC-386",
    "endpoint": "PATCH /api/v1/subscriptions/:id",
    "feature_id": "F-015",
    "acts": [
@@ -17760,6 +20484,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -17794,14 +20528,18 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-352",
+   "test_id": "TC-387",
    "endpoint": "PATCH /api/v1/subscriptions/:id",
    "feature_id": "F-015",
    "acts": [
@@ -17854,7 +20592,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -17863,11 +20600,16 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-353",
+   "test_id": "TC-388",
    "endpoint": "PATCH /api/v1/subscriptions/:id",
    "feature_id": "F-015",
    "acts": [
@@ -17887,7 +20629,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-354",
+   "test_id": "TC-389",
    "endpoint": "PATCH /api/v1/subscriptions/:id",
    "feature_id": "F-015",
    "acts": [
@@ -17907,7 +20649,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-355",
+   "test_id": "TC-390",
    "endpoint": "PATCH /api/v1/subscriptions/:id",
    "feature_id": "F-015",
    "acts": [
@@ -17927,7 +20669,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-356",
+   "test_id": "TC-391",
    "endpoint": "PATCH /api/v1/subscriptions/:id",
    "feature_id": "F-015",
    "acts": [
@@ -17947,7 +20689,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-357",
+   "test_id": "TC-392",
    "endpoint": "GET /api/v1/tasks",
    "feature_id": "F-004",
    "acts": [
@@ -17974,7 +20716,7 @@
    ]
   },
   {
-   "test_id": "TC-358",
+   "test_id": "TC-393",
    "endpoint": "GET /api/v1/tasks",
    "feature_id": "F-004",
    "acts": [
@@ -18001,7 +20743,7 @@
    ]
   },
   {
-   "test_id": "TC-359",
+   "test_id": "TC-394",
    "endpoint": "GET /api/v1/tasks",
    "feature_id": "F-004",
    "acts": [
@@ -18147,6 +20889,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -18181,14 +20933,18 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-360",
+   "test_id": "TC-395",
    "endpoint": "GET /api/v1/tasks",
    "feature_id": "F-004",
    "acts": [
@@ -18242,7 +20998,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -18251,11 +21006,16 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-361",
+   "test_id": "TC-396",
    "endpoint": "GET /api/v1/tasks",
    "feature_id": "F-004",
    "acts": [
@@ -18276,7 +21036,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-362",
+   "test_id": "TC-397",
    "endpoint": "GET /api/v1/tasks",
    "feature_id": "F-004",
    "acts": [
@@ -18299,7 +21059,7 @@
    ]
   },
   {
-   "test_id": "TC-363",
+   "test_id": "TC-398",
    "endpoint": "GET /api/v1/tasks",
    "feature_id": "F-004",
    "acts": [
@@ -18320,7 +21080,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-364",
+   "test_id": "TC-399",
    "endpoint": "POST /api/v1/tasks",
    "feature_id": "F-004",
    "acts": [
@@ -18346,7 +21106,7 @@
    ]
   },
   {
-   "test_id": "TC-365",
+   "test_id": "TC-400",
    "endpoint": "POST /api/v1/tasks",
    "feature_id": "F-004",
    "acts": [
@@ -18372,7 +21132,7 @@
    ]
   },
   {
-   "test_id": "TC-366",
+   "test_id": "TC-401",
    "endpoint": "POST /api/v1/tasks",
    "feature_id": "F-004",
    "acts": [
@@ -18518,6 +21278,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -18552,14 +21322,18 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-367",
+   "test_id": "TC-402",
    "endpoint": "POST /api/v1/tasks",
    "feature_id": "F-004",
    "acts": [
@@ -18613,7 +21387,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -18622,11 +21395,16 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-368",
+   "test_id": "TC-403",
    "endpoint": "POST /api/v1/tasks",
    "feature_id": "F-004",
    "acts": [
@@ -18647,7 +21425,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-369",
+   "test_id": "TC-404",
    "endpoint": "POST /api/v1/tasks",
    "feature_id": "F-004",
    "acts": [
@@ -18668,7 +21446,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-370",
+   "test_id": "TC-405",
    "endpoint": "POST /api/v1/tasks",
    "feature_id": "F-004",
    "acts": [
@@ -18689,7 +21467,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-371",
+   "test_id": "TC-406",
    "endpoint": "POST /api/v1/tasks",
    "feature_id": "F-004",
    "acts": [
@@ -18712,7 +21490,7 @@
    ]
   },
   {
-   "test_id": "TC-372",
+   "test_id": "TC-407",
    "endpoint": "POST /api/v1/tasks",
    "feature_id": "F-004",
    "acts": [
@@ -18733,7 +21511,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-373",
+   "test_id": "TC-408",
    "endpoint": "PATCH /api/v1/tasks/:id",
    "feature_id": "F-004",
    "acts": [
@@ -18758,7 +21536,7 @@
    ]
   },
   {
-   "test_id": "TC-374",
+   "test_id": "TC-409",
    "endpoint": "PATCH /api/v1/tasks/:id",
    "feature_id": "F-004",
    "acts": [
@@ -18783,7 +21561,7 @@
    ]
   },
   {
-   "test_id": "TC-375",
+   "test_id": "TC-410",
    "endpoint": "PATCH /api/v1/tasks/:id",
    "feature_id": "F-004",
    "acts": [
@@ -18929,6 +21707,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -18963,14 +21751,18 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-376",
+   "test_id": "TC-411",
    "endpoint": "PATCH /api/v1/tasks/:id",
    "feature_id": "F-004",
    "acts": [
@@ -19024,7 +21816,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -19033,11 +21824,16 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-377",
+   "test_id": "TC-412",
    "endpoint": "PATCH /api/v1/tasks/:id",
    "feature_id": "F-004",
    "acts": [
@@ -19058,7 +21854,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-378",
+   "test_id": "TC-413",
    "endpoint": "PATCH /api/v1/tasks/:id",
    "feature_id": "F-004",
    "acts": [
@@ -19079,7 +21875,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-379",
+   "test_id": "TC-414",
    "endpoint": "PATCH /api/v1/tasks/:id",
    "feature_id": "F-004",
    "acts": [
@@ -19100,7 +21896,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-380",
+   "test_id": "TC-415",
    "endpoint": "PATCH /api/v1/tasks/:id",
    "feature_id": "F-004",
    "acts": [
@@ -19121,7 +21917,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-381",
+   "test_id": "TC-416",
    "endpoint": "GET /api/v1/tenants",
    "feature_id": "F-001",
    "acts": [
@@ -19155,7 +21951,7 @@
    ]
   },
   {
-   "test_id": "TC-382",
+   "test_id": "TC-417",
    "endpoint": "GET /api/v1/tenants",
    "feature_id": "F-001",
    "acts": [
@@ -19189,7 +21985,7 @@
    ]
   },
   {
-   "test_id": "TC-383",
+   "test_id": "TC-418",
    "endpoint": "GET /api/v1/tenants",
    "feature_id": "F-001",
    "acts": [
@@ -19220,7 +22016,7 @@
    ]
   },
   {
-   "test_id": "TC-384",
+   "test_id": "TC-419",
    "endpoint": "GET /api/v1/tenants",
    "feature_id": "F-001",
    "acts": [
@@ -19245,7 +22041,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-385",
+   "test_id": "TC-420",
    "endpoint": "GET /api/v1/tenants",
    "feature_id": "F-001",
    "acts": [
@@ -19395,6 +22191,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -19429,14 +22235,18 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-386",
+   "test_id": "TC-421",
    "endpoint": "GET /api/v1/tenants",
    "feature_id": "F-001",
    "acts": [
@@ -19494,7 +22304,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -19503,11 +22312,16 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-387",
+   "test_id": "TC-422",
    "endpoint": "GET /api/v1/tenants",
    "feature_id": "F-001",
    "acts": [
@@ -19532,7 +22346,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-388",
+   "test_id": "TC-423",
    "endpoint": "GET /api/v1/tenants",
    "feature_id": "F-001",
    "acts": [
@@ -19559,7 +22373,7 @@
    ]
   },
   {
-   "test_id": "TC-389",
+   "test_id": "TC-424",
    "endpoint": "GET /api/v1/tenants",
    "feature_id": "F-001",
    "acts": [
@@ -19584,7 +22398,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-390",
+   "test_id": "TC-425",
    "endpoint": "GET /api/v1/tenants",
    "feature_id": "F-001",
    "acts": [
@@ -19609,7 +22423,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-391",
+   "test_id": "TC-426",
    "endpoint": "PATCH /api/v1/tenants/:id",
    "feature_id": "F-017",
    "acts": [
@@ -19632,7 +22446,7 @@
    ]
   },
   {
-   "test_id": "TC-392",
+   "test_id": "TC-427",
    "endpoint": "PATCH /api/v1/tenants/:id",
    "feature_id": "F-017",
    "acts": [
@@ -19777,6 +22591,16 @@
     "T-A-23",
     "T-A-23",
     "T-A-23",
+    "T-A-24",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
+    "T-A-26",
     "T-U-07",
     "T-U-09",
     "T-U-10",
@@ -19811,14 +22635,18 @@
     "T-U-51",
     "T-U-52",
     "T-U-53",
-    "T-U-54",
     "T-U-55",
     "T-U-56",
-    "T-U-57"
+    "T-U-57",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ]
   },
   {
-   "test_id": "TC-393",
+   "test_id": "TC-428",
    "endpoint": "PATCH /api/v1/tenants/:id",
    "feature_id": "F-017",
    "acts": [
@@ -19871,7 +22699,6 @@
     "T-A-18",
     "T-A-18",
     "T-A-19",
-    "T-A-19",
     "T-A-20",
     "T-A-20",
     "T-A-20",
@@ -19880,11 +22707,16 @@
     "T-A-22",
     "T-A-22",
     "T-A-22",
-    "T-A-23"
+    "T-A-23",
+    "T-A-24",
+    "T-A-25",
+    "T-A-25",
+    "T-A-26",
+    "T-A-26"
    ]
   },
   {
-   "test_id": "TC-394",
+   "test_id": "TC-429",
    "endpoint": "PATCH /api/v1/tenants/:id",
    "feature_id": "F-017",
    "acts": [
@@ -19904,7 +22736,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-395",
+   "test_id": "TC-430",
    "endpoint": "PATCH /api/v1/tenants/:id",
    "feature_id": "F-017",
    "acts": [
@@ -19924,7 +22756,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-396",
+   "test_id": "TC-431",
    "endpoint": "PATCH /api/v1/tenants/:id",
    "feature_id": "F-017",
    "acts": [
@@ -19944,7 +22776,7 @@
    "tasks": []
   },
   {
-   "test_id": "TC-397",
+   "test_id": "TC-432",
    "endpoint": "PATCH /api/v1/tenants/:id",
    "feature_id": "F-017",
    "acts": [

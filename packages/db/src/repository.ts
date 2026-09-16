@@ -91,6 +91,13 @@ export const TABLES = [
   "skill_versions",
   "skill_test_runs",
   "skill_attachments",
+  "payment_methods",
+  "billing_events",
+  "llm_routes",
+  "llm_capabilities",
+  "push_devices",
+  "disclosure_versions",
+  "subprocessors",
 ] as const;
 /** 追記専用（関門の関数 app.record_* だけが書く。repository の create/update/softDelete は拒否） */
 export const APPEND_ONLY: ReadonlySet<string> = new Set(["audit_events", "ops_audit_events", "security_events"]);
@@ -106,6 +113,7 @@ const MASTERS: ReadonlySet<string> = new Set([
   "rollup_kinds",
   "memory_kinds",
   "credential_kinds",
+  "llm_capabilities",
 ]);
 
 export type Row = Record<string, unknown>;

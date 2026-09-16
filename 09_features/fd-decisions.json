@@ -3,8 +3,8 @@
   "project": "Kaname",
   "created_at": "2026-09-16",
   "skill_version": "v3",
-  "total_features": 116,
-  "parallel_groups": 13
+  "total_features": 121,
+  "parallel_groups": 14
  },
  "context": {
   "project_type": "SaaS（マルチテナント・AI社員・運営コンソール）",

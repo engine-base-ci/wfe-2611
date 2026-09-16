@@ -3,8 +3,8 @@
  "skill": "api-design",
  "frozen_at": "2026-09-16",
  "summary": {
-  "total_screens": 59,
-  "total_apis": 55,
+  "total_screens": 64,
+  "total_apis": 60,
   "coverage_rate": 1.0,
   "uncovered_screens": [],
   "acts_without_endpoint": []
@@ -80,7 +80,7 @@
   {
    "screen_id": "billing-setup",
    "screen_name": "支払い方法を登録する",
-   "mock_path": null,
+   "mock_path": "06_mockup/v2/v2-billing-setup.html",
    "required_apis": [
     {
      "role": "action",
@@ -2023,6 +2023,21 @@
    "missing": []
   },
   {
+   "screen_id": "disclosure",
+   "screen_name": "開示資料",
+   "mock_path": "06_mockup/v2/v2-disclosure.html",
+   "required_apis": [
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/disclosure_versions",
+     "act": "A84"
+    }
+   ],
+   "transitions": [],
+   "coverage_status": "OK",
+   "missing": []
+  },
+  {
    "screen_id": "export",
    "screen_name": "持ち出す",
    "mock_path": "06_mockup/v1/v1-export.html",
@@ -2456,6 +2471,36 @@
     "tasks",
     "today"
    ],
+   "coverage_status": "OK",
+   "missing": []
+  },
+  {
+   "screen_id": "llm-routes",
+   "screen_name": "AI の経路",
+   "mock_path": "06_mockup/v2/v2-llm-routes.html",
+   "required_apis": [
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/llm_routes",
+     "act": "A82"
+    }
+   ],
+   "transitions": [],
+   "coverage_status": "OK",
+   "missing": []
+  },
+  {
+   "screen_id": "app-setup",
+   "screen_name": "アプリと通知",
+   "mock_path": "06_mockup/v2/v2-app-setup.html",
+   "required_apis": [
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/push_devices/:id",
+     "act": "A83"
+    }
+   ],
+   "transitions": [],
    "coverage_status": "OK",
    "missing": []
   },
@@ -2956,6 +3001,11 @@
      "role": "data_fetch",
      "endpoint": "GET /api/v1/invoices",
      "act": "A72"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/invoices",
+     "act": "A87"
     }
    ],
    "transitions": [
@@ -3005,6 +3055,36 @@
     "tasks",
     "today"
    ],
+   "coverage_status": "OK",
+   "missing": []
+  },
+  {
+   "screen_id": "ops-llm",
+   "screen_name": "運営：AI の経路と使用量",
+   "mock_path": "06_mockup/v2/v2-ops-llm.html",
+   "required_apis": [
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/llm_routes/:id",
+     "act": "A85"
+    }
+   ],
+   "transitions": [],
+   "coverage_status": "OK",
+   "missing": []
+  },
+  {
+   "screen_id": "ops-disclosure",
+   "screen_name": "運営：開示資料",
+   "mock_path": "06_mockup/v2/v2-ops-disclosure.html",
+   "required_apis": [
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/disclosure_versions/:id",
+     "act": "A86"
+    }
+   ],
+   "transitions": [],
    "coverage_status": "OK",
    "missing": []
   },

@@ -490,7 +490,9 @@
      "frequency": "1回",
      "release": "v2",
      "source": [
-      "D-002"
+      "D-002",
+      "D-082.1",
+      "D-082.2"
      ]
     }
    ]
@@ -1671,6 +1673,46 @@
      ]
     },
     {
+     "id": "A82",
+     "act": "AI の経路（Bridge／自分の API キー／運営マネージド）を選ぶ・キーを預ける",
+     "roles": [
+      "R1",
+      "R2"
+     ],
+     "jobs": [
+      "J16"
+     ],
+     "frequency": "はじめと随時",
+     "release": "v2",
+     "source": [
+      "D-083.1",
+      "D-083.3",
+      "D-083.4",
+      "D-083.5"
+     ]
+    },
+    {
+     "id": "A83",
+     "act": "スマホ／PC のアプリを入れて、通知を受け取る端末を整える",
+     "roles": [
+      "R1",
+      "R2",
+      "R3",
+      "R4"
+     ],
+     "jobs": [
+      "J16"
+     ],
+     "frequency": "1回",
+     "release": "v2",
+     "source": [
+      "D-084.1",
+      "D-084.2",
+      "D-084.3",
+      "D-084.4"
+     ]
+    },
+    {
      "id": "A66",
      "act": "運営にサポートアクセスを許可する・取り消す（範囲と期限つき・証跡に残る）",
      "roles": [
@@ -1795,6 +1837,25 @@
       "D-015.3",
       "D-042.1",
       "D-053.6"
+     ]
+    },
+    {
+     "id": "A84",
+     "act": "開示資料（できる操作・外に出るデータ・サブプロセッサ・DPA・アンインストールの検証結果）を版つきで見て、PDF をもらう",
+     "roles": [
+      "R1",
+      "R2"
+     ],
+     "jobs": [
+      "J9"
+     ],
+     "frequency": "導入時・監査時",
+     "release": "v2",
+     "source": [
+      "D-085.1",
+      "D-085.2",
+      "D-085.3",
+      "D-085.4"
      ]
     },
     {
@@ -2070,6 +2131,55 @@
       "D-078.3",
       "D-078.4",
       "D-037"
+     ]
+    },
+    {
+     "id": "A85",
+     "act": "会社ごとに運営マネージドの経路を許可し、3 社の使用量と費用を横断で見る",
+     "roles": [
+      "R6"
+     ],
+     "jobs": [
+      "J15"
+     ],
+     "frequency": "随時",
+     "release": "v2",
+     "source": [
+      "D-083.5",
+      "D-083.6"
+     ]
+    },
+    {
+     "id": "A86",
+     "act": "開示資料の版を出す・DPA の雛形とサブプロセッサ一覧を整える（変えたらお知らせ）",
+     "roles": [
+      "R6"
+     ],
+     "jobs": [
+      "J15"
+     ],
+     "frequency": "随時",
+     "release": "v2",
+     "source": [
+      "D-085.1",
+      "D-085.2",
+      "D-085.3"
+     ]
+    },
+    {
+     "id": "A87",
+     "act": "カードの会社の写し（Stripe）の状態を見て、請求書払いとカードの別を扱う",
+     "roles": [
+      "R6"
+     ],
+     "jobs": [
+      "J15"
+     ],
+     "frequency": "毎日",
+     "release": "v2",
+     "source": [
+      "D-082.3",
+      "D-082.8"
      ]
     },
     {
@@ -3302,6 +3412,93 @@
     "D-063.7",
     "D-068.3"
    ]
+  },
+  {
+   "name": "支払い方法",
+   "desc": "会社が選んだ支払い方法（請求書払い／カード）。カードは Stripe の顧客への参照だけで、番号は持たない",
+   "relates_to": [
+    "プラン",
+    "請求"
+   ],
+   "source": [
+    "D-082.1",
+    "D-082.2",
+    "D-082.8"
+   ]
+  },
+  {
+   "name": "決済の出来事",
+   "desc": "Stripe から受けた webhook の記録。署名を検証し、同じ出来事を二度処理しない",
+   "relates_to": [
+    "請求",
+    "支払い方法"
+   ],
+   "source": [
+    "D-082.3",
+    "D-082.4"
+   ]
+  },
+  {
+   "name": "LLM の経路",
+   "desc": "会社ごとの AI の経路（Bridge／自分の API キー／運営マネージド）と、PC が閉じているときの経路。運営の許可を含む",
+   "relates_to": [
+    "資格情報",
+    "能力表",
+    "利用量"
+   ],
+   "source": [
+    "D-083.1",
+    "D-083.4",
+    "D-083.6"
+   ]
+  },
+  {
+   "name": "能力表",
+   "desc": "3 社の提供者で揃えた能力の表。揃わない能力はどの経路でも出さない",
+   "relates_to": [
+    "LLM の経路"
+   ],
+   "source": [
+    "D-083.2",
+    "D-004"
+   ]
+  },
+  {
+   "name": "通知の端末",
+   "desc": "アプリのプッシュ通知の届け先（端末・platform・token・最終確認）",
+   "relates_to": [
+    "端末",
+    "通知"
+   ],
+   "source": [
+    "D-084.3",
+    "D-084.2"
+   ]
+  },
+  {
+   "name": "開示資料",
+   "desc": "成果物から生成した情シス向け資料の版（内容の hash・PDF の参照）",
+   "relates_to": [
+    "サブプロセッサ",
+    "証跡",
+    "お知らせ"
+   ],
+   "source": [
+    "D-085.1",
+    "D-085.2",
+    "D-085.3"
+   ]
+  },
+  {
+   "name": "サブプロセッサ",
+   "desc": "顧客のデータを触る外部の会社の一覧。変更は事前に通知",
+   "relates_to": [
+    "開示資料"
+   ],
+   "source": [
+    "D-085.2",
+    "D-042"
+   ]
   }
  ],
  "blueprint": {
@@ -3368,16 +3565,19 @@
   },
   "A05": {
    "id": "A05",
-   "human": "支払い方法を入れる",
+   "human": "プランを選んで Stripe の登録画面へ進む",
    "screen": "billing-setup",
    "auto": "—",
-   "backstage": "決済事業者に登録（カード番号は預からない）",
+   "backstage": "Stripe Checkout へ送る（C7）。戻りは webhook の写しで確定。カード番号は自社を通らない",
    "choke_points": [
-    "C7"
+    "C7",
+    "C2"
    ],
    "source": [
     "D-002",
-    "D-081.2"
+    "D-082.1",
+    "D-082.2",
+    "D-082.3"
    ]
   },
   "A06": {
@@ -4253,6 +4453,98 @@
     "D-042.5"
    ]
   },
+  "A82": {
+   "id": "A82",
+   "human": "会社の設定で AI の経路を選び、必要ならキーを入れる",
+   "screen": "llm-routes",
+   "auto": "自分のAIが経路ごとの違い（費用・PC が閉じているときの動き）を説明する",
+   "backstage": "キーは C8 の vault へ参照だけ。llm_routes を保存。登録時に提供者へ 1 回だけ検査（成功／失敗を証跡に）",
+   "choke_points": [
+    "C8",
+    "C2",
+    "C3"
+   ],
+   "source": [
+    "D-083.1",
+    "D-083.3",
+    "D-083.4"
+   ]
+  },
+  "A83": {
+   "id": "A83",
+   "human": "アプリを入れて通知を許可する",
+   "screen": "app-setup",
+   "auto": "—",
+   "backstage": "push_devices に端末を登録し、通知の届け先の経路に「アプリ」を足す",
+   "choke_points": [
+    "C2",
+    "C6"
+   ],
+   "source": [
+    "D-084.2",
+    "D-084.3"
+   ]
+  },
+  "A84": {
+   "id": "A84",
+   "human": "開示資料を開いて PDF をもらう",
+   "screen": "disclosure",
+   "auto": "—",
+   "backstage": "成果物から生成した版を読む。PDF は署名 URL（C4）",
+   "choke_points": [
+    "C2",
+    "C4"
+   ],
+   "source": [
+    "D-085.1",
+    "D-085.3"
+   ]
+  },
+  "A85": {
+   "id": "A85",
+   "human": "会社の詳細で運営マネージドを許可する",
+   "screen": "ops-llm",
+   "auto": "—",
+   "backstage": "llm_routes の許可を更新。3 社の使用量を集計して費用へ",
+   "choke_points": [
+    "C2"
+   ],
+   "source": [
+    "D-083.5",
+    "D-083.6"
+   ]
+  },
+  "A86": {
+   "id": "A86",
+   "human": "版を出す・DPA の雛形とサブプロセッサを整える",
+   "screen": "ops-disclosure",
+   "auto": "—",
+   "backstage": "disclosure_versions を作る（C4）。変更はお知らせ（C6）",
+   "choke_points": [
+    "C2",
+    "C4",
+    "C6"
+   ],
+   "source": [
+    "D-085.2",
+    "D-085.3"
+   ]
+  },
+  "A87": {
+   "id": "A87",
+   "human": "カードの会社の写しを見る",
+   "screen": "ops-billing",
+   "auto": "—",
+   "backstage": "Stripe の写し（webhook）の状態と顧客リンク。請求書払いは従来の記録",
+   "choke_points": [
+    "C2",
+    "C7"
+   ],
+   "source": [
+    "D-082.3",
+    "D-082.8"
+   ]
+  },
   "A76": {
    "id": "A76",
    "human": "取り込む",
@@ -4876,6 +5168,24 @@
   "A75": [
    "company-settings"
   ],
+  "A82": [
+   "llm-routes"
+  ],
+  "A83": [
+   "app-setup"
+  ],
+  "A84": [
+   "disclosure"
+  ],
+  "A85": [
+   "ops-llm"
+  ],
+  "A86": [
+   "ops-disclosure"
+  ],
+  "A87": [
+   "ops-billing"
+  ],
   "A76": [
    "import"
   ],
@@ -4956,8 +5266,19 @@
   ]
  },
  "deferred": {
-  "billing-setup": "D-002／D-081.2 決済事業者への登録は段階 2（§81 の段階表）。v1 は請求書払いで運営が入金を記録する",
-  "A05": "D-002／D-081.2 同上"
+  "billing-setup": "D-081.2／D-082 段階 2：Stripe 課金（仕様は §82・2026-09-16 user 決定）。v1 は請求書払いで運営が入金を記録する",
+  "A05": "D-081.2／D-082 同上",
+  "llm-routes": "D-081.3／D-083 段階 2：LLM の経路の追加（仕様は §83・2026-09-16 user 決定）",
+  "A82": "D-083 同上",
+  "A85": "D-083 同上",
+  "ops-llm": "D-083 同上",
+  "app-setup": "D-081.4／D-084 段階 2：アプリ（仕様は §84・2026-09-16 user 決定）",
+  "A83": "D-084 同上",
+  "disclosure": "D-081.5／D-085 段階 2：情シス向けの開示資料（仕様は §85・2026-09-16 user 決定）",
+  "A84": "D-085 同上",
+  "A86": "D-085 同上",
+  "ops-disclosure": "D-085 同上",
+  "A87": "D-082 同上"
  },
  "account_events": [
   {
@@ -5158,10 +5479,12 @@
    "acts": [
     "A05"
    ],
-   "purpose": "プランを選び、支払い方法を決済事業者に登録する",
+   "purpose": "プランを選び、Stripe の登録画面でカードを登録する。カード番号はここを通らない。請求書払いなら何もしなくてよい",
    "primary_action": "登録する",
    "objects": [
-    "プラン"
+    "プラン",
+    "支払い方法",
+    "請求"
    ],
    "roles": [
     "R1",
@@ -5173,7 +5496,10 @@
    "has_shell": false,
    "source": [
     "D-002",
-    "D-081.2"
+    "D-081.2",
+    "D-082.1",
+    "D-082.2",
+    "D-082.3"
    ]
   },
   {
@@ -6548,7 +6874,38 @@
     "D-022.5",
     "D-042.1",
     "D-042.10",
-    "D-053.6"
+    "D-053.6",
+    "D-085.3"
+   ]
+  },
+  {
+   "id": "disclosure",
+   "name": "開示資料",
+   "acts": [
+    "A84"
+   ],
+   "purpose": "情シス・コンプラに渡す資料（できる操作の列挙・送るもの／送らないもの・サブプロセッサ・DPA・アンインストールの検証結果）を版つきで見て PDF で出す",
+   "primary_action": "PDF で出す",
+   "objects": [
+    "開示資料",
+    "サブプロセッサ",
+    "証跡"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "route": "/security/disclosure",
+   "release": "v2",
+   "needs_login": true,
+   "has_shell": true,
+   "source": [
+    "D-081.5",
+    "D-085.1",
+    "D-085.2",
+    "D-085.3",
+    "D-085.4",
+    "D-042"
    ]
   },
   {
@@ -6737,7 +7094,8 @@
    "has_shell": true,
    "source": [
     "D-076.1",
-    "D-042"
+    "D-042",
+    "D-084.3"
    ]
   },
   {
@@ -6768,7 +7126,70 @@
     "D-012.8",
     "D-042.5",
     "D-045.2",
-    "D-055.1"
+    "D-055.1",
+    "D-083.4"
+   ]
+  },
+  {
+   "id": "llm-routes",
+   "name": "AI の経路",
+   "acts": [
+    "A82"
+   ],
+   "purpose": "Bridge／自分の API キー／運営マネージド を、会社の既定と PC が閉じているときの経路として選ぶ。キーは預けるだけで見えない。使用量と上限もここ",
+   "primary_action": "保存する",
+   "objects": [
+    "LLM の経路",
+    "資格情報",
+    "能力表",
+    "利用量"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "route": "/settings/llm",
+   "release": "v2",
+   "needs_login": true,
+   "has_shell": true,
+   "source": [
+    "D-081.3",
+    "D-083.1",
+    "D-083.3",
+    "D-083.4",
+    "D-083.5",
+    "D-004"
+   ]
+  },
+  {
+   "id": "app-setup",
+   "name": "アプリと通知",
+   "acts": [
+    "A83"
+   ],
+   "purpose": "PC の Bridge の窓とスマホのアプリを入れ、承認待ち・AI 停止・お知らせの通知を受け取る端末を整える",
+   "primary_action": "通知を許可する",
+   "objects": [
+    "通知の端末",
+    "端末",
+    "通知"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "route": "/settings/app",
+   "release": "v2",
+   "needs_login": true,
+   "has_shell": true,
+   "source": [
+    "D-081.4",
+    "D-084.1",
+    "D-084.2",
+    "D-084.3",
+    "D-084.4"
    ]
   },
   {
@@ -7025,14 +7446,17 @@
    "id": "ops-billing",
    "name": "運営：請求と入金",
    "acts": [
-    "A72"
+    "A72",
+    "A87"
    ],
    "purpose": "各社の請求・入金・未収・利用量と上限を横断で見る入口。入金の記録・未収の連絡・プラン変更の承認は会社の詳細で行う",
    "primary_action": "未収に連絡する",
    "objects": [
     "請求",
     "プラン",
-    "会社モデル"
+    "会社モデル",
+    "決済の出来事",
+    "支払い方法"
    ],
    "roles": [
     "R6"
@@ -7048,7 +7472,60 @@
     "D-076.6",
     "D-077.3",
     "D-077.5",
-    "D-002.2"
+    "D-002.2",
+    "D-082.8",
+    "D-082.3"
+   ]
+  },
+  {
+   "id": "ops-llm",
+   "name": "運営：AI の経路と使用量",
+   "acts": [
+    "A85"
+   ],
+   "purpose": "会社ごとに運営マネージドの経路を許可し、3 社の使用量と費用を横断で見る。キーの中身は見ない",
+   "primary_action": "許可する",
+   "objects": [
+    "LLM の経路",
+    "利用量",
+    "請求"
+   ],
+   "roles": [
+    "R6"
+   ],
+   "route": "/ops/llm",
+   "release": "v2",
+   "needs_login": true,
+   "has_shell": true,
+   "source": [
+    "D-083.5",
+    "D-083.6"
+   ]
+  },
+  {
+   "id": "ops-disclosure",
+   "name": "運営：開示資料",
+   "acts": [
+    "A86"
+   ],
+   "purpose": "成果物から生成した開示資料の版を出し、DPA の雛形とサブプロセッサ一覧を整える。変えたら全社にお知らせ",
+   "primary_action": "版を出す",
+   "objects": [
+    "開示資料",
+    "サブプロセッサ",
+    "お知らせ"
+   ],
+   "roles": [
+    "R6"
+   ],
+   "route": "/ops/disclosure",
+   "release": "v2",
+   "needs_login": true,
+   "has_shell": true,
+   "source": [
+    "D-085.1",
+    "D-085.2",
+    "D-085.3"
    ]
   },
   {
@@ -7094,7 +7571,8 @@
     "D-077.7",
     "D-077.8",
     "D-042.6",
-    "D-078.3"
+    "D-078.3",
+    "D-083.6"
    ]
   },
   {
@@ -7307,6 +7785,9 @@
      "automation-repair",
      "audit",
      "security-brief",
+     "disclosure",
+     "llm-routes",
+     "app-setup",
      "export",
      "account-close"
     ],
@@ -7332,7 +7813,9 @@
      "ops-skills",
      "ops-services",
      "ops-review",
-     "ops-audit"
+     "ops-audit",
+     "ops-llm",
+     "ops-disclosure"
     ],
     "source": [
      "D-030",
@@ -7452,6 +7935,9 @@
     "automation-repair",
     "audit",
     "security-brief",
+    "disclosure",
+    "llm-routes",
+    "app-setup",
     "export",
     "account-close"
    ],
@@ -7489,6 +7975,9 @@
     "automation-repair",
     "audit",
     "security-brief",
+    "disclosure",
+    "llm-routes",
+    "app-setup",
     "export",
     "account-close"
    ],
@@ -7506,7 +7995,8 @@
     "policies",
     "account",
     "notices",
-    "inquiry"
+    "inquiry",
+    "app-setup"
    ],
    "R4": [
     "clone-chat",
@@ -7517,7 +8007,8 @@
     "policies",
     "account",
     "notices",
-    "inquiry"
+    "inquiry",
+    "app-setup"
    ],
    "R6": [
     "ops-home",
@@ -7529,7 +8020,9 @@
     "ops-skills",
     "ops-services",
     "ops-review",
-    "ops-audit"
+    "ops-audit",
+    "ops-llm",
+    "ops-disclosure"
    ]
   },
   "sub_by_screen": {
@@ -8028,7 +8521,7 @@
     },
     {
      "label": "AI の経路",
-     "desc": "Bridge が既定。運営マネージドは段階2"
+     "desc": "Bridge が既定。自分の API キー・運営マネージドは「AI の経路」の画面で"
     }
    ],
    "import": [
@@ -8134,7 +8627,7 @@
     },
     {
      "label": "支払い方法",
-     "desc": "段階2。今は請求書払い"
+     "desc": "請求書払い／カード（Stripe のホスト画面で登録）"
     }
    ],
    "ops-notices": [
@@ -8303,6 +8796,92 @@
     {
      "label": "証跡",
      "desc": "全操作の記録の出し方"
+    }
+   ],
+   "llm-routes": [
+    {
+     "label": "既定の経路",
+     "desc": "Bridge／自分の API キー／運営マネージド"
+    },
+    {
+     "label": "PC が閉じているとき",
+     "desc": "サーバー経路をどれで動かすか"
+    },
+    {
+     "label": "API キー",
+     "desc": "預ける・失効。中身は見えない"
+    },
+    {
+     "label": "使用量",
+     "desc": "提供者ごと。上限と超過"
+    }
+   ],
+   "app-setup": [
+    {
+     "label": "PC",
+     "desc": "Bridge の窓で開く"
+    },
+    {
+     "label": "スマホ",
+     "desc": "App Store／Google Play"
+    },
+    {
+     "label": "通知",
+     "desc": "どの端末に何を届けるか"
+    }
+   ],
+   "disclosure": [
+    {
+     "label": "できる操作",
+     "desc": "操作の完全な列挙。出口ごと"
+    },
+    {
+     "label": "送るもの／送らないもの",
+     "desc": "何が外に出るかの決まりから"
+    },
+    {
+     "label": "サブプロセッサ",
+     "desc": "一覧と変更の通知"
+    },
+    {
+     "label": "DPA",
+     "desc": "雛形と締結"
+    },
+    {
+     "label": "アンインストール",
+     "desc": "残留物ゼロの検証結果"
+    },
+    {
+     "label": "版",
+     "desc": "いつ何が変わったか"
+    }
+   ],
+   "ops-llm": [
+    {
+     "label": "許可",
+     "desc": "会社ごとの運営マネージド"
+    },
+    {
+     "label": "使用量",
+     "desc": "3 社・会社別"
+    },
+    {
+     "label": "費用",
+     "desc": "上限と超過の請求"
+    }
+   ],
+   "ops-disclosure": [
+    {
+     "label": "版",
+     "desc": "出す・戻す"
+    },
+    {
+     "label": "DPA の雛形",
+     "desc": "法務確認"
+    },
+    {
+     "label": "サブプロセッサ",
+     "desc": "一覧と事前通知"
     }
    ],
    "export": [

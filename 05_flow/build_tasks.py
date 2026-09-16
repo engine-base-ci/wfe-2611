@@ -58,7 +58,7 @@ tasks = []; tid_of_feature = {}
 def newtask(tid, title, group, layer, phase, kind, feature_ids, **kw):
     crit = kw.pop("critical", False); h = kw.pop("hours"); ta = two_axis(h, kind, crit)
     src = kw.pop("source", []); t = {"id": tid, "title": title, "category": kw.pop("category", "backend"), "label": "NEW", "feature_id": feature_ids[0] if feature_ids else None, "feature_ids": feature_ids,
-         "screen_ids": kw.pop("screen_ids", []), "entity_ids": kw.pop("entity_ids", []), "acts": kw.pop("acts", []), "legacy_task_id": None, "phase": phase, "wave": None, "group": group, "deliverable_layer": layer,
+         "screen_ids": kw.pop("screen_ids", []), "entity_ids": kw.pop("entity_ids", []), "acts": kw.pop("acts", []), "legacy_task_id": None, "phase": phase, "wave": None, "group": group, "deliverable_layer": layer, "stage": kw.pop("stage", "v1"),
          "depends_on": kw.pop("depends_on", []), "choke_points": kw.pop("choke_points", []), "choke_points_rationale": kw.pop("choke_rationale", ""), "forbidden_direct_apis_reminder": ["fetch", "axios", "undici", "pg / drizzle の生クライアント（関門の外）", "child_process", "fs（関門の外）", "nodemailer / resend（関門の外）", "anthropic / openai SDK（関門の外）"],
          "files_changed": kw.pop("files_changed", []), "files_changed_predicted": kw.pop("fcp", {"new": [], "modify": [], "shared_read": [], "forbidden": ["packages/gateways/**（関門の実装は Group F だけ）"]}),
          "acceptance_criteria": kw.pop("ac", {"structural": [], "functional": [], "regression": REG_BASE}), "access_policies_required": kw.pop("policies", []), "spec_links": kw.pop("spec_links", []),
@@ -98,12 +98,15 @@ for i, (sec, ents) in enumerate(sections.items(), 1):
             ac={"structural": [f"UBIQUITOUS: 表 {', '.join(tb[:6])}{' …' if len(tb) > 6 else ''} が ER 図 §{sec[:12]} の列・型・関係どおりに存在し、全表に RLS が定義されている（RLS 未定義の表は CI で作れない）"], "functional": [f"UNWANTED: IF 他テナントの行を SELECT/UPDATE しようとしたら 0 行／403 で副作用が起きない（{tb[0]}_tenant_read）"] + [f"UBIQUITOUS: {p}" for p in pol[:6]], "regression": REG_BASE}, policies=pol, spec_links=["03_architecture/ER図.md", "07_functional/entities.json"], qa_rows={"l1": rows, "l2_flows": []}, scenarios=[{"name": "RLS 越境", "steps": ["テナント A でログイン", "テナント B の id で GET"], "expected": "0 行"}], source=src)
 D_ids = [t["id"] for t in tasks if t["group"] == "D"]
 # ---------------------------------------------------------------- Group A（API）← features Group B（用事ごと・endpoint を最大 6 本ずつ）
-for f in [x for x in FD["items"] if x["group"] == "B"]:
-    eps = [EP[e] for e in f["api_endpoints"]]; chunks = [eps[i:i+6] for i in range(0, len(eps), 6)] or [[]]
+def _stage_of(e): return "v2" if e["screens"] and all(S[s].get("release") == "v2" for s in e["screens"]) else "v1"   # 段階 2 の画面だけが呼ぶ endpoint は段階 2 のタスク
+for stage, f in [(st, x) for st in ("v1", "v2") for x in FD["items"] if x["group"] == "B"]:   # 番号は段階 1 を先に全部（段階 2 を足しても既存の ID が動かない）
+    eps = [EP[e] for e in f["api_endpoints"] if _stage_of(EP[e]) == stage]
+    if stage == "v2" and not eps: continue
+    chunks = [eps[i:i+6] for i in range(0, len(eps), 6)] or [[]]
     for ci, ch in enumerate(chunks, 1):
         tid = f"T-A-{len([t for t in tasks if t['group']=='A'])+1:02d}"; part = f"（{ci}/{len(chunks)}）" if len(chunks) > 1 else ""
         a_ids = sorted({a for e in ch for a in e["acts"]}) or f["acts"]; chokes = sorted({c for e in ch for c in e["choke_points"]}); ents = sorted({x for e in ch for x in e["related_entities"]}) or f["entity_ids"]
-        scr = sorted({s for e in ch for s in e["screens"] if S[s].get("release") == "v1"}); pol = sorted({p for e in ch for p in e["access_control_policies"]})
+        scr = sorted({s for e in ch for s in e["screens"] if S[s].get("release") == stage}); pol = sorted({p for e in ch for p in e["access_control_policies"]})
         sp = f"{SPEC}/screens/{scr[0]}.md" if scr else f"{SPEC}/rls-matrix.md"; pre = "API-" + tid.split("-")[-1]; rows = []
         for e in ch:
             rows.append(qrow(sp, pre, scr[0] if scr else "API", "API 正常", f"{e['method']} {e['path']}：{e['description'][:40]}", "権限のある会員", "呼ぶ", f"{e['outputs_2xx']['status']} と {e['outputs_2xx']['body'][:40]}", " ".join(e["acts"]), tid))
@@ -111,11 +114,11 @@ for f in [x for x in FD["items"] if x["group"] == "B"]:
             rows.append(qrow(sp, pre, scr[0] if scr else "API", "状態", f"{e['method']} {e['path']}：0 件／大量（1,000）／重複／初回／2 回目", "—", "各状態で呼ぶ", "0 件は空配列、大量はページング、重複は 409、2 回目は冪等", "", tid))
         rows += g_rows(sp, pre, scr[0] if scr else "API", tid, set(chokes) | {"C2"}, [E[x]["table_name"] for x in ents], "api")
         errs = sorted({r for a in a_ids for r in error_rows(None, a)})
-        newtask(tid, f"API {f['name'][:34]}{part}（{len(ch)} endpoint）", "A", "backend", "3_api", "api", [f["id"]], category="backend", hours=round(f["estimate_hours_human"] / len(chunks)), critical=f["human_review_h"] > 0, screen_ids=scr, entity_ids=ents, acts=a_ids, depends_on=F_ids[:5] + [t for t in D_ids if set(E[x]["id"] for x in ents) & set(tasks[[t_["id"] for t_ in tasks].index(t)]["entity_ids"])] + [f"T-F-{i:02d}" for i in range(1, len(F_ids)+1) if tasks[i-1]["choke_points"] and tasks[i-1]["choke_points"][0] in chokes],
+        newtask(tid, f"API {f['name'][:34]}{part}（{len(ch)} endpoint{'・段階 2' if stage == 'v2' else ''}）", "A", "backend", "3_api" if stage == "v1" else "9_v2_api", "api", [f["id"]], category="backend", stage=stage, hours=round(f["estimate_hours_human"] / len(chunks)), critical=f["human_review_h"] > 0, screen_ids=scr, entity_ids=ents, acts=a_ids, depends_on=F_ids[:5] + [t for t in D_ids if set(E[x]["id"] for x in ents) & set(tasks[[t_["id"] for t_ in tasks].index(t)]["entity_ids"])] + [f"T-F-{i:02d}" for i in range(1, len(F_ids)+1) if tasks[i-1]["choke_points"] and tasks[i-1]["choke_points"][0] in chokes],
                 choke_points=chokes, choke_rationale="・".join(sorted({x for e in ch for x in e["outward_side_effects"]})) or "永続化のみ（C2）", fcp={"new": sorted({e["implementation_path"].split("::")[0] for e in ch}) + [f"apps/api/src/services/{f['id'][-2:]}.ts", f"apps/api/tests/{f['id'][-2:]}.spec.ts"], "modify": ["apps/api/src/app.ts"], "shared_read": ["08_api/openapi.yaml", "08_api/endpoints.json", "07_functional/entities.json"], "forbidden": ["apps/web/**", "packages/gateways/**（呼ぶだけ・直さない）"]},
                 files_changed=[x + " (new)" for x in sorted({e["implementation_path"].split("::")[0] for e in ch})] + ["apps/api/src/app.ts (modify)"],
                 ac={"structural": [f"UBIQUITOUS: {e['method']} {e['path']} は 08_api/openapi.yaml の operation {e['implementation_path'].split('::')[1]} どおりの入出力（{e['outputs_2xx']['status']} と 4xx {'/'.join(str(x['status']) for x in e['outputs_4xx'])}）" for e in ch], "functional": [x for e in ch for x in e["ears_ac_seed"][:3]] + [next((x for x in e["ears_ac_seed"] if x.startswith("UNWANTED")), "UNWANTED: IF 権限が無いなら 403 で副作用を起こさない") for e in ch][:3] + [f"UBIQUITOUS: 行レベル制御 {p} が効く" for p in pol[:4]], "regression": REG_BASE + ["契約テスト（OpenAPI）PASS", "endpoint 実在性チェック PASS"]},
-                policies=pol, spec_links=["08_api/openapi.yaml", "08_api/API-SPEC.md", "07_functional/features.json#" + f["id"]] + [f"06_mockup/v1/v1-{s}.html" for s in scr[:3]], qa_rows={"l1": rows + errs, "l2_flows": [j["id"] for j in f["journey_candidates"]]}, scenarios=[{"name": f"{e['method']} {e['path']}", "steps": ["権限のある会員で呼ぶ", "権限の無い会員で呼ぶ", "別テナントの id で呼ぶ"], "expected": f"{e['outputs_2xx']['status']} / 403 / 404"} for e in ch], source=f["source"])
+                policies=pol, spec_links=["08_api/openapi.yaml", "08_api/API-SPEC.md", "07_functional/features.json#" + f["id"]] + [f"06_mockup/{stage}/{stage}-{s}.html" for s in scr[:3]], qa_rows={"l1": rows + errs, "l2_flows": [j["id"] for j in f["journey_candidates"]]}, scenarios=[{"name": f"{e['method']} {e['path']}", "steps": ["権限のある会員で呼ぶ", "権限の無い会員で呼ぶ", "別テナントの id で呼ぶ"], "expected": f"{e['outputs_2xx']['status']} / 403 / 404"} for e in ch], source=f["source"])
 A_ids = [t["id"] for t in tasks if t["group"] == "A"]
 # ---------------------------------------------------------------- Group U-shared
 US = [("シェル（サイドバー・レール・第2ナビ・三画面・下タブ・枠の導出 data-frame・役割の出し分け data-roles）", ["D-065.1", "D-070.1", "D-072.2", "D-072.16", "D-073.8"], 24, ["apps/web/components/shell/*.tsx"]), ("自分のAIのパネルと会話の部品（assistant-ui・AG-UI・選択肢・承認カード・受領・引用・取り消し）", ["D-057.1", "D-062.1", "D-066.1", "D-072.19"], 32, ["apps/web/components/ai/*.tsx"]),
@@ -133,7 +136,7 @@ def page_dir(s):
     """flow の route → Next.js App Router のフォルダ（:id → [id]。外の画面は (public)、それ以外は (app)）"""
     r = _re2.sub(r":(\w+)", r"[\1]", (s.get("route") or "/" + s["id"]).strip("/")); return ("(public)/" if NEEDS_LOGIN.get(s["id"], True) is False else "(app)/") + r
 NEEDS_LOGIN = {x["id"]: x.get("needs_login", True) for x in F["screens"]}
-for f in [x for x in FD["items"] if x["group"] == "C" and S[x["screen_ids"][0]].get("release") == "v1"]:   # 段階 2 の画面（G17 deferred）はタスクにしない
+for f in sorted([x for x in FD["items"] if x["group"] == "C"], key=lambda x: S[x["screen_ids"][0]].get("release", "v1")):   # 段階 2 の画面は仕様が揃った時点で（D-082〜D-085）タスクにし、Wave は段階 1 の後
     sid = f["screen_ids"][0]; s = S[sid]; tid = f"T-U-{len([t for t in tasks if t['group']=='U-screen'])+1:02d}"; html = open(s["mock_path"], encoding="utf-8").read() if s.get("mock_path") else ""
     sp = f"{SPEC}/screens/{sid}.md"; pre = "SCR-" + sid.upper(); rows = []
     for st in s["states"]: rows.append(qrow(sp, pre, sid, "状態", f"状態「{st['label']}」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない）", "その状態を作る", "画面を開く", f"モック {s['mock_path']} の状態 {st['id']} と一致", "G-06・G-07", tid))
@@ -145,7 +148,8 @@ for f in [x for x in FD["items"] if x["group"] == "C" and S[x["screen_ids"][0]].
     rows += variance_rows(sp, pre, sid, tid, html); rows += g_rows(sp, pre, sid, tid, set(), [E[x]["table_name"] for x in s["related_entities"]], "ui")
     errs = error_rows(sid, None); eps = [EP[e] for e in f["api_endpoints"]]
     jobs = sorted({acts[a]["jobs"][0] for a in s["acts"] if a in acts and acts[a]["jobs"]}); deps = US_ids + [t["id"] for t in tasks if t["group"] == "A" and set(t["acts"]) & set(s["acts"])]
-    newtask(tid, f"画面 {s['name']}（{len(s['states'])} 状態・{'/'.join(s['access_roles'])}）", "U-screen", "ui", "5_ui_parallel", "ui", [f["id"]], category="frontend", hours=f["estimate_hours_human"], screen_ids=[sid], entity_ids=s["related_entities"], acts=s["acts"], depends_on=deps, choke_points=[], choke_rationale="画面。外界に出ない（API は関門の先）",
+    _rel = s.get("release", "v1")
+    newtask(tid, f"画面 {s['name']}（{len(s['states'])} 状態・{'/'.join(s['access_roles'])}{'・段階 2' if _rel == 'v2' else ''}）", "U-screen", "ui", "5_ui_parallel" if _rel == "v1" else "9_v2_ui", "ui", [f["id"]], category="frontend", stage=_rel, hours=f["estimate_hours_human"], screen_ids=[sid], entity_ids=s["related_entities"], acts=s["acts"], depends_on=deps, choke_points=[], choke_rationale="画面。外界に出ない（API は関門の先）",
             fcp={"new": [f"apps/web/app/{page_dir(s)}/page.tsx", f"apps/web/components/screens/{sid}/*.tsx", f"apps/web/tests/screens/{sid}.spec.ts"], "modify": [], "shared_read": [s["mock_path"] or "", "08_api/types.ts", f"07_functional/screens.json#{sid}"], "forbidden": ["apps/web/components/shell/**（共通シェルは T-US-01）", "packages/**"]}, files_changed=[f"apps/web/app/{page_dir(s)}/page.tsx (new)", f"apps/web/tests/screens/{sid}.spec.ts (new)"],
             ac={"structural": [f"UBIQUITOUS: 画面 {sid} は URL {s.get('route')} で開く（apps/web/app/{page_dir(s)}/page.tsx。遷移の href は flow の route と機械照合）", f"STATE-DRIVEN: WHILE 画面 {sid} が描画中 THEN h1「{s['h1_text'][:30]}」・第2ナビ {' / '.join(s['section_h2_texts'][:5])}・状態 {len(s['states'])}（{'、'.join(x['label'] for x in s['states'][:5])}）がモック {s['mock_path']} と一致する", f"STATE-DRIVEN: WHILE 役割 {'/'.join(s['access_roles'])} で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い"], "functional": [x for e in eps for x in e["ears_ac_seed"][:2]][:6] + [f"EVENT-DRIVEN: WHEN 「{s.get('primary_action') or '主アクション'}」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する", "UNWANTED: IF 列の値が実データでも「—」固定なら未実装として落とす"], "regression": REG_UI},
             policies=[], spec_links=[s["mock_path"] or "", f"07_functional/screens.json#{sid}", "08_api/screen-api-coverage.json"] + [f"01_hearing/決定ログ_進行中.md#{x}" for x in s["source"][:3]], qa_rows={"l1": rows + errs, "l2_flows": [j["id"] for j in f["journey_candidates"]]}, scenarios=[{"name": f"状態 {st['label']}", "steps": ["状態を作る", "開く"], "expected": "モックと一致"} for st in s["states"][:4]] + [{"name": "主アクション", "steps": ["押す", "別 GET"], "expected": "反映"}], source=f["source"])
@@ -239,11 +243,11 @@ for j in FD["journeys"]:
 json.dump({"version": "v3.2", "created_at": TODAY, "_doc": "背骨のフェーズ → 流れ（J-xx）。runnable_after は揃うべきタスク。05_flow/build_tasks.py が生成", "rows": jrows}, open(f"{SPEC}/journeys/plan.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 # ---------------------------------------------------------------- Wave（依存順・CAP）
 order = ["F", "D", "V2", "A", "U-shared", "U-screen", "I", "S"]; w = 0; waves = []
-for g in order:
-    fs = [t for t in tasks if t["group"] == g]
+for stage, g in [(st, g) for st in ("v1", "v2") for g in order]:   # 段階 1 の全 Wave の後に段階 2（A → U-screen）
+    fs = [t for t in tasks if t["group"] == g and t.get("stage", "v1") == stage]
     for i in range(0, len(fs), CAP):
         ch = fs[i:i+CAP]
-        waves.append({"wave": w, "group": g, "tasks": [t["id"] for t in ch], "parallel": len(ch), "wall_clock_h_ai": round(max(t["wall_clock_h_ai"] for t in ch) + 0.5, 1), "estimate_hours_human": sum(t["estimate_hours_human"] for t in ch), "estimate_hours_ai_compute": round(sum(t["estimate_hours_ai"] for t in ch), 1)})
+        waves.append({"wave": w, "group": g, "stage": stage, "tasks": [t["id"] for t in ch], "parallel": len(ch), "wall_clock_h_ai": round(max(t["wall_clock_h_ai"] for t in ch) + 0.5, 1), "estimate_hours_human": sum(t["estimate_hours_human"] for t in ch), "estimate_hours_ai_compute": round(sum(t["estimate_hours_ai"] for t in ch), 1)})
         for t in ch: t["wave"] = w
         w += 1
 # ---------------------------------------------------------------- 正本（11 列）を書く

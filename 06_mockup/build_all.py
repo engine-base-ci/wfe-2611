@@ -10,7 +10,7 @@ from _shell import ICON
 JOBS = []
 for f in sorted(glob.glob('s_*.py')):
     m = importlib.import_module(f[:-3]); JOBS += m.SCREENS
-os.makedirs('v1', exist_ok=True)
+for rel in {s['release'] for s in SCR.values()}: os.makedirs(rel, exist_ok=True)
 built = set()
 for job in JOBS:
     sid, states, css, ns = job[:4]; counts = job[4] if len(job) > 4 else None; sub = job[5] if len(job) > 5 else None
@@ -21,11 +21,12 @@ for job in JOBS:
     miss_ps = [st[0] for st in states if st[0] not in PS.get(sid, {})]
     if miss_ps: raise SystemExit(f'★ 時点（data-ps）が未宣言: {sid} {miss_ps} → _ps.py に足す（L-007）')
     states = [(st[0], st[1], st[2], st[3], PS[sid][st[0]]) for st in states]
-    open(f'v1/v1-{sid}.html', 'w', encoding='utf-8').write(page('v1', sid, states, extra_css=css, no_shell=ns, counts=counts, sub=sub))
+    rel = SCR[sid]['release']  # 段階ごとの置き場（v1/・v2/）。G9 は置き場ごとにその段階の画面と突き合わせる
+    open(f'{rel}/{rel}-{sid}.html', 'w', encoding='utf-8').write(page(rel, sid, states, extra_css=css, no_shell=ns, counts=counts, sub=sub))
     built.add(sid)
-want = {s['id'] for s in SCR.values() if s['release'] == 'v1'}
+want = set(SCR)
 miss, extra = want - built, built - want
-print(f'生成 {len(built)} 画面 / flow.json の v1 {len(want)} 画面')
+print(f'生成 {len(built)} 画面 / flow.json の全段階 {len(want)} 画面')
 if miss:  print('★ flow.json にあって作っていない:', sorted(miss))
 if extra: print('★ 作ったが flow.json に無い:', sorted(extra))
 import build_index  # noqa

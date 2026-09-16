@@ -46,7 +46,7 @@ counters:
     type: json_array_length
     file: 05_flow/flow.json
     json_path: $.objects
-  expected_value: 58
+  expected_value: 65
   mirrors:
   - file: 01_hearing/決定ログ_進行中.md
     regex: \| オブジェクト \| (\d+) \|
@@ -58,7 +58,7 @@ counters:
     type: json_array_length
     file: 05_flow/flow.json
     json_path: $.screens
-  expected_value: 59
+  expected_value: 64
   mirrors:
   - file: 01_hearing/決定ログ_進行中.md
     regex: \| 画面（導出） \| (\d+)（段階1
@@ -502,6 +502,8 @@ layer_checks:
   manual: 増えるものの見通し文書。決定でオブジェクトが増えたら source を足す（防御は関門と G20）
 - file: 06_mockup/v1/v1-*.html
   check: python3 scripts/ci/mock_state_gate.py --flow 05_flow/flow.json --mocks 06_mockup/v1 && python3 scripts/ci/role_gate.py --flow 05_flow/flow.json --mocks 06_mockup/v1 && python3 scripts/ci/ui_lint.py 06_mockup/v1 --config 06_mockup/ui-lint.json && python3 scripts/ci/coverage_review.py --flow 05_flow/flow.json --mocks 06_mockup/v1 --surfaces scripts/ci/references/saas-surfaces.yaml --er 03_architecture/ER図.md --gate
+- file: 06_mockup/v2/v2-*.html
+  check: python3 scripts/ci/mock_state_gate.py --flow 05_flow/flow.json --mocks 06_mockup/v2 && python3 scripts/ci/role_gate.py --flow 05_flow/flow.json --mocks 06_mockup/v2 --prefix v2- --release v2 && python3 scripts/ci/ui_lint.py 06_mockup/v2 --config 06_mockup/ui-lint.json
 - file: 04_design/DESIGN-kaname.md
   manual: 色・書体・部品のトークン。D-067（部品の土台）・D-072（三画面）が最新で、D-073 以降はトークンを増やしていない。トークンが増える決定が出たら手で更新
 - file: 02_tech_stack/selected-stack.json

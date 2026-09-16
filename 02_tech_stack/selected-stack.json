@@ -1,482 +1,518 @@
 {
-  "project_name": "Kaname",
-  "selected_at": "2026-09-08",
-  "decision_reason": "中核はTypeScript単一で型を端から端まで通す。Pythonは『取り込みサービス』1つに隔離し型がまたがらないようにする。基盤はSupabase/Vercel/Railwayで立ち上げ、ベンダー固有機能をCIで禁止することで、必要になった時にAWSへ5〜8日で移せる状態を維持する。",
-  "language": {
-    "core": "TypeScript",
-    "isolated_service_only": "Python",
-    "rationale": "Bridge(Electron)とフロント(Next.js)がTS固定のため『Python単一』は選択肢にならない。中核をTSに寄せることでDBスキーマ→API→フロント→Bridgeまで型が通る。Pythonが必要なのは文書理解と音声のみで、どちらも入力=ファイル/出力=JSONの独立サービスに切れる。"
-  },
-  "stack": {
-    "frontend": {
-      "framework": "Next.js 15 (App Router)",
-      "language": "TypeScript",
-      "styling": "Tailwind CSS v4（CSS-first・DESIGN.md のトークンを @theme に写す）+ shadcn/ui（Base UI 版）",
-      "icons": "lucide-react",
-      "state_management": "TanStack Query (server state) + URL state",
-      "forms": "React Hook Form + Zod（主）。react-jsonschema-form は動的台帳の入力欄だけに限定して併用",
-      "dynamic_ui": [
-        "react-jsonschema-form（動的台帳の入力欄のみ）",
-        "TanStack Table"
-      ],
-      "chat_ui": "assistant-ui（@assistant-ui/react + @assistant-ui/react-ag-ui）",
-      "charts": "Recharts（shadcn charts の土台・SVG・SSR 可）。証跡の長期グラフが要るときだけ ECharts を部分導入",
-      "constraint": "業務ロジックをServer Actionsに置かない。画面はAPIを叩くだけにする（ネイティブアプリ対応のため）",
-      "agent_ui_protocol": {
-        "name": "AG-UI（@ag-ui/client）",
-        "why": "自分のAI⇄画面のイベント規格。Bridge の Claude Code 出力を AG-UI に変換する層を lib/agent-ui/ に置く",
-        "source": [
-          "D-057"
-        ]
-      },
-      "ui_primitives": {
-        "name": "shadcn/ui on Base UI",
-        "why": "2026-07 から shadcn の既定が Base UI。assistant-ui の CLI も既定が Base UI 版で、土台が 1 つに揃う（部品の見た目・フォーカス・キーボード操作が一致）。コードを自分で持つので DESIGN.md のトークンをそのまま当てられる",
-        "alternatives_rejected": [
-          "shadcn（Radix 版）：買収後に更新が遅い部品あり",
-          "React Aria Components：部品を全部自分で組む工数",
-          "Mantine：見た目が Mantine になり DESIGN.md と二重管理"
-        ],
-        "source": [
-          "D-067"
-        ]
-      },
-      "drag_and_drop": {
-        "name": "pragmatic-drag-and-drop（Atlassian）",
-        "use": "タスクを引き継いでもらう・引き継ぐ（列間ドラッグ）、カンバンの列移動",
-        "source": [
-          "D-067"
-        ]
-      },
-      "extras": {
-        "toast": "sonner（受領カードの取り消しを載せる）",
-        "command_palette": "cmdk（画面全体の検索。入力欄の / と @ は assistant-ui の composer）",
-        "date": "react-day-picker（日本語ロケール）",
-        "virtual_list": "TanStack Virtual（会話の履歴・証跡・台帳）",
-        "goal_tree": "自前（details + roving tabindex。層が可変で可視範囲・配分・かけたものを行に持つ）",
-        "source": [
-          "D-067"
-        ]
-      },
-      "ui_rules": {
-        "focus": ":focus-visible を全操作要素に。:focus ではなく :focus-visible",
-        "target_size": "24px 以上（WCAG 2.2 2.5.8。文中リンク・間隔の例外あり）。スマホは 44px を目標",
-        "contrast": "4.5:1（大きい文字 3:1）。11px 未満は使わない",
-        "mobile_inputs": "16px（iOS の自動ズームを防ぐ）",
-        "ime": "日本語変換中の Enter は送らない（isComposing と keyCode 229 の両方）",
-        "skeleton": "200ms 遅らせて出し、最低 400ms 見せる",
-        "reduced_motion": "prefers-reduced-motion を尊重",
-        "source": [
-          "D-066",
-          "D-067"
-        ]
-      },
-      "task_views": {
-        "list": "TanStack Table",
-        "kanban": "pragmatic-drag-and-drop（列＝状態 4 つ／担当／台帳の工程。列は増やさせない）",
-        "calendar": "未定（候補: FullCalendar MIT 版 / schedule-x / react-big-calendar）",
-        "timeline": "未定（候補: svar-gantt / frappe-gantt / vis-timeline）",
-        "state": "見え方とフィルタは URL に持つ（?view=）。データは 1 つ",
-        "source": [
-          "D-068"
-        ]
-      }
-    },
-    "api": {
-      "type": "独立API層",
-      "framework": "Hono",
-      "language": "TypeScript",
-      "contract": "OpenAPI",
-      "clients": [
-        "Web",
-        "Bridge",
-        "将来のネイティブアプリ"
-      ],
-      "rationale": "3クライアントが同じ契約を叩く。Next.jsに寄せると後からアプリを足すときにAPIを作り直すことになる"
-    },
-    "backend": {
-      "type": "Hybrid",
-      "core_service": "Hono (TypeScript)",
-      "ingestion_service": {
-        "language": "Python",
-        "purpose": "文書理解・音声の文字起こし。独立サービスとして型がまたがらない形に隔離",
-        "libraries": [
-          "docling",
-          "faster-whisper"
-        ]
-      }
-    },
-    "database": {
-      "primary": "PostgreSQL (Supabase)",
-      "orm": "Drizzle",
-      "vector": "pgvector",
-      "cache": "未定（段階5で判断）",
-      "constraints": [
-        "RLSは current_setting('app.tenant_id') ベースで書く。auth.uid() を使わない",
-        "Supabase固有拡張（pgsodium / supabase_vault / pg_graphql）を使わない",
-        "Prismaは使わない（SupabaseでRLSが効かなくなるため）"
-      ]
-    },
-    "auth": {
-      "service": "Better Auth",
-      "location": "自前Postgres上",
-      "sso": "OIDC経由（Entra ID / Okta 等）",
-      "rationale": "Supabase Authに寄せるとRLSがauth.uid()に固定され、DB層までロックインされる。Better Authなら認証データがDBごと移る"
-    },
-    "storage": {
-      "service": "Supabase Storage",
-      "access_method": "S3互換API経由のみ",
-      "rationale": "S3互換なので移行はエンドポイント変更のみ。supabase-jsのstorageクライアントは使わない"
-    },
-    "secrets_vault": {
-      "service": "Infisical (セルフホスト・ee/ 不使用)",
-      "purpose": "顧客の資格情報・TOTPシークレット。テナントごとに鍵を分離"
-    },
-    "workflow": {
-      "engine": "Hatchet",
-      "purpose": "長時間実行・cron・中断再開・リトライ",
-      "rationale": "Postgres一本で完結。Temporalは別クラスタが要り過剰。Inngestは SSPL で使用不可"
-    },
-    "sandbox": {
-      "service": "Microsandbox (libkrun microVM)",
-      "purpose": "サーバー経路でのコード実行",
-      "note": "Bridge経路ではClaude Codeの実行機構をそのまま使うため不要"
-    },
-    "agent_harness": {
-      "bridge": "Claude Code CLI / Codex / Gemini CLI（顧客のサブスクで動く）",
-      "server_claude": "Claude Agent SDK (TypeScript)",
-      "server_openai": "OpenAI Agents SDK (TypeScript)",
-      "server_gemini": "LangGraph.js（TS版Agent SDKが存在しないため自前ハーネス）",
-      "server_local": "LangGraph.js"
-    },
-    "browser_automation": {
-      "primary": "Stagehand",
-      "engine": "Playwright",
-      "rationale": "observe→actのキャッシュが『1回覚えて再生』の中核。TS本体なのでBridgeに同梱できる。browser-useはPythonのためBridgeに入れられない"
-    },
-    "memory": {
-      "approach": "自前 pgvector + 3層テーブル",
-      "layers": [
-        "明示ルール",
-        "学習した好み",
-        "承認済み事例"
-      ],
-      "rationale": "記憶3層は独自設計。mem0/Graphitiは形が合わず、Pythonサービスが増える"
-    },
-    "hosting": {
-      "frontend": "Vercel",
-      "api": "Railway",
-      "worker": "Railway",
-      "ingestion": "Railway",
-      "database": "Supabase",
-      "migration_target": "AWS（ECS Fargate + Aurora Serverless v2 + S3 + KMS）"
-    },
-    "desktop": {
-      "framework": "Electron",
-      "language": "TypeScript",
-      "name": "Bridge",
-      "purpose": "顧客PC常駐。本人のブラウザ・ローカルファイル・社内システムに届き、本人のサブスクでLLMが動く"
-    },
-    "payment": "Stripe",
-    "notifications": {
-      "email_outbound_customer": "Gmail API / Microsoft Graph API（顧客自身のアカウントから）",
-      "email_system": "Resend",
-      "future": [
-        "Slack",
-        "LINE",
-        "Push（段階5）"
-      ]
-    },
-    "observability": {
-      "llm_trace": "langfuse (ee/ 不使用)",
-      "rationale": "AI社員の実行証跡とコスト可視化"
-    },
-    "mcp": "公式 TypeScript SDK",
-    "document_generation": [
-      "marp",
-      "SheetJS",
-      "pdfkit",
-      "pptx生成ライブラリ"
+ "project_name": "Kaname",
+ "selected_at": "2026-09-08",
+ "decision_reason": "中核はTypeScript単一で型を端から端まで通す。Pythonは『取り込みサービス』1つに隔離し型がまたがらないようにする。基盤はSupabase/Vercel/Railwayで立ち上げ、ベンダー固有機能をCIで禁止することで、必要になった時にAWSへ5〜8日で移せる状態を維持する。",
+ "language": {
+  "core": "TypeScript",
+  "isolated_service_only": "Python",
+  "rationale": "Bridge(Electron)とフロント(Next.js)がTS固定のため『Python単一』は選択肢にならない。中核をTSに寄せることでDBスキーマ→API→フロント→Bridgeまで型が通る。Pythonが必要なのは文書理解と音声のみで、どちらも入力=ファイル/出力=JSONの独立サービスに切れる。"
+ },
+ "stack": {
+  "frontend": {
+   "framework": "Next.js 15 (App Router)",
+   "language": "TypeScript",
+   "styling": "Tailwind CSS v4（CSS-first・DESIGN.md のトークンを @theme に写す）+ shadcn/ui（Base UI 版）",
+   "icons": "lucide-react",
+   "state_management": "TanStack Query (server state) + URL state",
+   "forms": "React Hook Form + Zod（主）。react-jsonschema-form は動的台帳の入力欄だけに限定して併用",
+   "dynamic_ui": [
+    "react-jsonschema-form（動的台帳の入力欄のみ）",
+    "TanStack Table"
+   ],
+   "chat_ui": "assistant-ui（@assistant-ui/react + @assistant-ui/react-ag-ui）",
+   "charts": "Recharts（shadcn charts の土台・SVG・SSR 可）。証跡の長期グラフが要るときだけ ECharts を部分導入",
+   "constraint": "業務ロジックをServer Actionsに置かない。画面はAPIを叩くだけにする（ネイティブアプリ対応のため）",
+   "agent_ui_protocol": {
+    "name": "AG-UI（@ag-ui/client）",
+    "why": "自分のAI⇄画面のイベント規格。Bridge の Claude Code 出力を AG-UI に変換する層を lib/agent-ui/ に置く",
+    "source": [
+     "D-057"
+    ]
+   },
+   "ui_primitives": {
+    "name": "shadcn/ui on Base UI",
+    "why": "2026-07 から shadcn の既定が Base UI。assistant-ui の CLI も既定が Base UI 版で、土台が 1 つに揃う（部品の見た目・フォーカス・キーボード操作が一致）。コードを自分で持つので DESIGN.md のトークンをそのまま当てられる",
+    "alternatives_rejected": [
+     "shadcn（Radix 版）：買収後に更新が遅い部品あり",
+     "React Aria Components：部品を全部自分で組む工数",
+     "Mantine：見た目が Mantine になり DESIGN.md と二重管理"
     ],
-    "e2e": "Playwright",
-    "cms": null,
-    "nocode_tools": [],
-    "timeline": {
-      "library": "svar-gantt",
-      "license": "MIT",
-      "why": "依存の線・ドラッグで期限・折りたたみ・親子が最初から付いている（D-079）",
-      "source": [
-        "D-079.1"
-      ]
-    },
-    "testing": {
-      "unit_contract": "Vitest",
-      "e2e": "Playwright",
-      "contract_fuzz": "Schemathesis（openapi.yaml）",
-      "consumer_contract": "なし（段階 1。OpenAPI 生成型＋openapi-diff で代替）",
-      "load": "k6（L4 リリース前のみ）",
-      "rationale": "Hono＋Next.js の TypeScript で標準的・速い・設定が少ない。user 選択 2026-09-15（候補 Vitest／Jest を提示）",
-      "source": [
-        "D-053.1"
-      ]
-    },
-    "environments": {
-      "staging": {
-        "shape": "本番と同じ構成をもう 1 組",
-        "database": "Supabase 別プロジェクト（本番と同じ migration を Drizzle で適用・seed はテスト会社）",
-        "api_worker_ingestion": "Railway の別環境（本番と同じ Dockerfile／deploy）",
-        "frontend": "Vercel Preview（環境変数だけ staging 向け）",
-        "secrets": "Infisical の staging 環境（本番と分ける）",
-        "rule": "本番と同じ migration／deploy／プロビジョニングコードで作れること。L1〜L3 はここで流す。本番は L4 のスモークだけ",
-        "owner_task": "T-F-16（外部リソースのコード化）で最初に作る",
-        "decided": "2026-09-15 user 選択（候補：同構成もう 1 組／Supabase Branching／あとで）",
-        "source": [
-          "D-053.1"
-        ]
-      },
-      "production": {
-        "frontend": "Vercel",
-        "api": "Railway",
-        "database": "Supabase",
-        "secrets": "Infisical"
-      }
-    }
+    "source": [
+     "D-067"
+    ]
+   },
+   "drag_and_drop": {
+    "name": "pragmatic-drag-and-drop（Atlassian）",
+    "use": "タスクを引き継いでもらう・引き継ぐ（列間ドラッグ）、カンバンの列移動",
+    "source": [
+     "D-067"
+    ]
+   },
+   "extras": {
+    "toast": "sonner（受領カードの取り消しを載せる）",
+    "command_palette": "cmdk（画面全体の検索。入力欄の / と @ は assistant-ui の composer）",
+    "date": "react-day-picker（日本語ロケール）",
+    "virtual_list": "TanStack Virtual（会話の履歴・証跡・台帳）",
+    "goal_tree": "自前（details + roving tabindex。層が可変で可視範囲・配分・かけたものを行に持つ）",
+    "source": [
+     "D-067"
+    ]
+   },
+   "ui_rules": {
+    "focus": ":focus-visible を全操作要素に。:focus ではなく :focus-visible",
+    "target_size": "24px 以上（WCAG 2.2 2.5.8。文中リンク・間隔の例外あり）。スマホは 44px を目標",
+    "contrast": "4.5:1（大きい文字 3:1）。11px 未満は使わない",
+    "mobile_inputs": "16px（iOS の自動ズームを防ぐ）",
+    "ime": "日本語変換中の Enter は送らない（isComposing と keyCode 229 の両方）",
+    "skeleton": "200ms 遅らせて出し、最低 400ms 見せる",
+    "reduced_motion": "prefers-reduced-motion を尊重",
+    "source": [
+     "D-066",
+     "D-067"
+    ]
+   },
+   "task_views": {
+    "list": "TanStack Table",
+    "kanban": "pragmatic-drag-and-drop（列＝状態 4 つ／担当／台帳の工程。列は増やさせない）",
+    "calendar": "未定（候補: FullCalendar MIT 版 / schedule-x / react-big-calendar）",
+    "timeline": "未定（候補: svar-gantt / frappe-gantt / vis-timeline）",
+    "state": "見え方とフィルタは URL に持つ（?view=）。データは 1 つ",
+    "source": [
+     "D-068"
+    ]
+   }
   },
-  "excluded": [
-    {
-      "item": "Inngest",
-      "license": "SSPL",
-      "reason": "SaaS提供時に運用スタック全体の公開義務。Atelierが使用中のため要注意"
-    },
-    {
-      "item": "Nango",
-      "license": "Elastic License 2.0",
-      "reason": "機能を第三者にホスト提供不可に抵触の恐れ。OAuthは自前実装"
-    },
-    {
-      "item": "Skyvern",
-      "license": "AGPL-3.0",
-      "reason": "組み込み不可。『show once, run forever』の設計は参考にする"
-    },
-    {
-      "item": "minio / ToolJet / apitable / zitadel / CloudCLI",
-      "license": "AGPL-3.0",
-      "reason": "組み込み不可"
-    },
-    {
-      "item": "Directus",
-      "license": "MSCL-1.0-GPL (2026変更)",
-      "reason": "動的スキーマの参考にはなるが採用不可"
-    },
-    {
-      "item": "Arize Phoenix",
-      "license": "Elastic License 2.0",
-      "reason": "不可"
-    },
-    {
-      "item": "Daytona",
-      "license": "2026-06にクローズドソース化",
-      "reason": "不可"
-    },
-    {
-      "item": "E2B",
-      "license": "Apache-2.0 (SDKのみ)",
-      "reason": "ランタイムがマネージド。自前ホスト不可"
-    },
-    {
-      "item": "Prisma",
-      "license": "Apache-2.0",
-      "reason": "SupabaseでRLSが効かなくなるケースがある"
-    },
-    {
-      "item": "Firebase / Convex / PocketBase / Cloudflare D1 / MongoDB / PlanetScale",
-      "license": "-",
-      "reason": "RLS+JSONB+pgvectorの同時要件に合わない"
-    },
-    {
-      "item": "Nuxt / Astro / Remix",
-      "license": "-",
-      "reason": "習熟度が低く、払う理由がない"
-    },
-    {
-      "item": "browser-use",
-      "license": "MIT",
-      "reason": "Pythonのため顧客PCのBridgeに同梱できない。サーバー経路では検討可"
-    },
-    {
-      "item": "mem0 / Graphiti",
-      "license": "Apache-2.0",
-      "reason": "記憶3層の独自設計と形が合わない。参考にする"
-    }
+  "api": {
+   "type": "独立API層",
+   "framework": "Hono",
+   "language": "TypeScript",
+   "contract": "OpenAPI",
+   "clients": [
+    "Web",
+    "Bridge",
+    "将来のネイティブアプリ"
+   ],
+   "rationale": "3クライアントが同じ契約を叩く。Next.jsに寄せると後からアプリを足すときにAPIを作り直すことになる"
+  },
+  "backend": {
+   "type": "Hybrid",
+   "core_service": "Hono (TypeScript)",
+   "ingestion_service": {
+    "language": "Python",
+    "purpose": "文書理解・音声の文字起こし。独立サービスとして型がまたがらない形に隔離",
+    "libraries": [
+     "docling",
+     "faster-whisper"
+    ]
+   }
+  },
+  "database": {
+   "primary": "PostgreSQL (Supabase)",
+   "orm": "Drizzle",
+   "vector": "pgvector",
+   "cache": "未定（段階5で判断）",
+   "constraints": [
+    "RLSは current_setting('app.tenant_id') ベースで書く。auth.uid() を使わない",
+    "Supabase固有拡張（pgsodium / supabase_vault / pg_graphql）を使わない",
+    "Prismaは使わない（SupabaseでRLSが効かなくなるため）"
+   ]
+  },
+  "auth": {
+   "service": "Better Auth",
+   "location": "自前Postgres上",
+   "sso": "OIDC経由（Entra ID / Okta 等）",
+   "rationale": "Supabase Authに寄せるとRLSがauth.uid()に固定され、DB層までロックインされる。Better Authなら認証データがDBごと移る"
+  },
+  "storage": {
+   "service": "Supabase Storage",
+   "access_method": "S3互換API経由のみ",
+   "rationale": "S3互換なので移行はエンドポイント変更のみ。supabase-jsのstorageクライアントは使わない"
+  },
+  "secrets_vault": {
+   "service": "Infisical (セルフホスト・ee/ 不使用)",
+   "purpose": "顧客の資格情報・TOTPシークレット。テナントごとに鍵を分離"
+  },
+  "workflow": {
+   "engine": "Hatchet",
+   "purpose": "長時間実行・cron・中断再開・リトライ",
+   "rationale": "Postgres一本で完結。Temporalは別クラスタが要り過剰。Inngestは SSPL で使用不可"
+  },
+  "sandbox": {
+   "service": "Microsandbox (libkrun microVM)",
+   "purpose": "サーバー経路でのコード実行",
+   "note": "Bridge経路ではClaude Codeの実行機構をそのまま使うため不要"
+  },
+  "agent_harness": {
+   "bridge": "Claude Code CLI / Codex / Gemini CLI（顧客のサブスクで動く）",
+   "server_claude": "Claude Agent SDK (TypeScript)",
+   "server_openai": "OpenAI Agents SDK (TypeScript)",
+   "server_gemini": "LangGraph.js（TS版Agent SDKが存在しないため自前ハーネス）",
+   "server_local": "LangGraph.js"
+  },
+  "browser_automation": {
+   "primary": "Stagehand",
+   "engine": "Playwright",
+   "rationale": "observe→actのキャッシュが『1回覚えて再生』の中核。TS本体なのでBridgeに同梱できる。browser-useはPythonのためBridgeに入れられない"
+  },
+  "memory": {
+   "approach": "自前 pgvector + 3層テーブル",
+   "layers": [
+    "明示ルール",
+    "学習した好み",
+    "承認済み事例"
+   ],
+   "rationale": "記憶3層は独自設計。mem0/Graphitiは形が合わず、Pythonサービスが増える"
+  },
+  "hosting": {
+   "frontend": "Vercel",
+   "api": "Railway",
+   "worker": "Railway",
+   "ingestion": "Railway",
+   "database": "Supabase",
+   "migration_target": "AWS（ECS Fargate + Aurora Serverless v2 + S3 + KMS）"
+  },
+  "desktop": {
+   "framework": "Electron",
+   "language": "TypeScript",
+   "name": "Bridge",
+   "purpose": "顧客PC常駐。本人のブラウザ・ローカルファイル・社内システムに届き、本人のサブスクでLLMが動く",
+   "note": "段階 2 から Bridge の窓に Kaname の画面（Web）を出す（D-084.1）",
+   "source": [
+    "D-015",
+    "D-084.1"
+   ]
+  },
+  "payment": "Stripe",
+  "notifications": {
+   "email_outbound_customer": "Gmail API / Microsoft Graph API（顧客自身のアカウントから）",
+   "email_system": "Resend",
+   "future": [
+    "Slack",
+    "LINE",
+    "Push（段階5）"
+   ]
+  },
+  "observability": {
+   "llm_trace": "langfuse (ee/ 不使用)",
+   "rationale": "AI社員の実行証跡とコスト可視化"
+  },
+  "mcp": "公式 TypeScript SDK",
+  "document_generation": [
+   "marp",
+   "SheetJS",
+   "pdfkit",
+   "pptx生成ライブラリ"
   ],
-  "open_core_note": {
-    "policy": "本体がMIT/Apacheで ee/ 等が商用ライセンスのものは、ee/ を import しないことをCIで機械検査する",
-    "applies_to": [
-      "Infisical",
-      "langfuse",
-      "litellm",
-      "novu",
-      "Stirling-PDF"
+  "e2e": "Playwright",
+  "cms": null,
+  "nocode_tools": [],
+  "timeline": {
+   "library": "svar-gantt",
+   "license": "MIT",
+   "why": "依存の線・ドラッグで期限・折りたたみ・親子が最初から付いている（D-079）",
+   "source": [
+    "D-079.1"
+   ]
+  },
+  "testing": {
+   "unit_contract": "Vitest",
+   "e2e": "Playwright",
+   "contract_fuzz": "Schemathesis（openapi.yaml）",
+   "consumer_contract": "なし（段階 1。OpenAPI 生成型＋openapi-diff で代替）",
+   "load": "k6（L4 リリース前のみ）",
+   "rationale": "Hono＋Next.js の TypeScript で標準的・速い・設定が少ない。user 選択 2026-09-15（候補 Vitest／Jest を提示）",
+   "source": [
+    "D-053.1"
+   ]
+  },
+  "environments": {
+   "staging": {
+    "shape": "本番と同じ構成をもう 1 組",
+    "database": "Supabase 別プロジェクト（本番と同じ migration を Drizzle で適用・seed はテスト会社）",
+    "api_worker_ingestion": "Railway の別環境（本番と同じ Dockerfile／deploy）",
+    "frontend": "Vercel Preview（環境変数だけ staging 向け）",
+    "secrets": "Infisical の staging 環境（本番と分ける）",
+    "rule": "本番と同じ migration／deploy／プロビジョニングコードで作れること。L1〜L3 はここで流す。本番は L4 のスモークだけ",
+    "owner_task": "T-F-16（外部リソースのコード化）で最初に作る",
+    "decided": "2026-09-15 user 選択（候補：同構成もう 1 組／Supabase Branching／あとで）",
+    "source": [
+     "D-053.1"
     ]
+   },
+   "production": {
+    "frontend": "Vercel",
+    "api": "Railway",
+    "database": "Supabase",
+    "secrets": "Infisical"
+   }
   },
-  "portability": {
-    "strategy": "追跡ではなく物理的な閉じ込め",
-    "boundaries": [
-      {
-        "concern": "DB",
-        "allowed_paths": [
-          "lib/db/"
-        ],
-        "vendor": "Supabase/Postgres"
-      },
-      {
-        "concern": "認証",
-        "allowed_paths": [
-          "lib/auth/"
-        ],
-        "vendor": "Better Auth"
-      },
-      {
-        "concern": "ストレージ",
-        "allowed_paths": [
-          "lib/storage/"
-        ],
-        "vendor": "S3互換"
-      },
-      {
-        "concern": "キュー",
-        "allowed_paths": [
-          "lib/queue/"
-        ],
-        "vendor": "Hatchet"
-      },
-      {
-        "concern": "LLMプロバイダ",
-        "allowed_paths": [
-          "lib/llm/"
-        ],
-        "vendor": "複数"
-      },
-      {
-        "concern": "秘密管理",
-        "allowed_paths": [
-          "lib/secrets/"
-        ],
-        "vendor": "Infisical"
-      }
-    ],
-    "ci_gates": [
-      "境界ディレクトリ以外からのベンダーSDK import で fail",
-      "SQL に auth.uid() が出たら fail",
-      "Open Core の ee/ を import したら fail",
-      "ポータビリティ台帳に無い越境で fail"
-    ],
-    "migration_estimate_days": {
-      "database": "4〜6",
-      "frontend": "1〜2",
-      "total": "5〜8"
-    },
-    "migration_triggers": [
-      "ISMAPを要求する商談（官公庁・大企業）",
-      "顧客のセキュリティ監査でサブプロセッサが問題になる",
-      "コストが逆転する規模になる"
-    ]
+  "mobile": {
+   "framework": "Capacitor",
+   "language": "TypeScript",
+   "note": "同じ Web を native の殻に入れて App Store／Google Play へ。通知は APNs／FCM。PWA は選ばない（iOS の通知条件・MDM 不可）",
+   "source": [
+    "D-084.2",
+    "D-084.3",
+    "D-084.6"
+   ]
   },
-  "infrastructure_monthly_cost": {
-    "at_zero_customers": {
-      "min": 5000,
-      "max": 10000
-    },
-    "at_65_customers": {
-      "min": 30000,
-      "max": 90000
-    },
-    "currency": "JPY",
-    "note": "LLM費用は顧客負担のため含まない。運営マネージドを許可した顧客の分のみ運営負担。コストドライバーは常時起動ワーカーとサンドボックス"
+  "payments": {
+   "provider": "Stripe（Billing のサブスク・Checkout・Customer Portal・webhook）",
+   "note": "関門 C7 packages/billing の中だけ。カード番号は自社を通らない",
+   "source": [
+    "D-082.1",
+    "D-082.2",
+    "D-082.7"
+   ]
   },
-  "decomposition": {
-    "method": "縦切り（垂直スライス）",
-    "judgement": "実装者1人（+Claude）で5未満、かつ仕様を触りながら詰めるため",
-    "slice_size": {
-      "days": "2〜4",
-      "owner_verification_minutes": "15〜30",
-      "pr": "1スライス=1PR"
-    },
-    "phase1_slices": 11
+  "llm_providers": {
+   "providers": [
+    "Anthropic",
+    "OpenAI",
+    "Google"
+   ],
+   "note": "3 社で能力表を揃える。BYOK と運営マネージド。段階 1 は Bridge だけ",
+   "source": [
+    "D-083.2",
+    "D-055"
+   ]
+  }
+ },
+ "excluded": [
+  {
+   "item": "Inngest",
+   "license": "SSPL",
+   "reason": "SaaS提供時に運用スタック全体の公開義務。Atelierが使用中のため要注意"
   },
-  "notes": "詳細は 00_research/{OSS候補一覧,プロバイダ能力表,自前実装リスト,影響マップ,拡張設計と開発単位}.md と 01_hearing/決定ログ_進行中.md を参照。次フェーズは architecture-design。",
-  "_decisions": {
-    "_doc": "根拠となる決定（01_hearing/決定ログ_進行中.md）。trace_gate が読む",
-    "cloud": [
-      "D-046"
-    ],
-    "criteria": [
-      "D-048"
-    ],
-    "native": [
-      "D-051"
-    ],
-    "execution": [
-      "D-004",
-      "D-015",
-      "D-045",
-      "D-047"
-    ],
-    "chat": [
-      "D-057"
-    ],
-    "stage1_llm_route": [
-      "D-055"
-    ],
-    "D-067": "画面部品の土台 shadcn/ui（Base UI 版）・RHF＋Zod・Recharts・pragmatic-drag-and-drop",
-    "D-068": "タスクの作法と見え方（一日の型・状態4つ・見え方は URL）",
-    "permissions_layers": [
-      "D-073"
-    ],
-    "account_lifecycle_and_revocation": [
-      "D-074"
-    ],
-    "billing_invoice_phase1_stripe_phase2": [
-      "D-075",
-      "D-002"
-    ],
-    "system_email_resend_for_notices_and_inquiries": [
-      "D-075"
-    ],
-    "integrations_oauth_google_freee": [
-      "D-076"
-    ],
-    "ops_console_tenant_detail": [
-      "D-077"
-    ],
-    "clauses": [
-      "D-041.7",
-      "D-043.3",
-      "D-044.5",
-      "D-045.4",
-      "D-046.1",
-      "D-046.2",
-      "D-046.3",
-      "D-047.4",
-      "D-048.2",
-      "D-048.3",
-      "D-049.2",
-      "D-049.3",
-      "D-050.2",
-      "D-050.4",
-      "D-051.1",
-      "D-055.1",
-      "D-056.3",
-      "D-057.1",
-      "D-057.2",
-      "D-057.3",
-      "D-057.5"
-    ],
-    "timeline_gantt": [
-      "D-079"
-    ],
-    "testing": "2026-09-15 user：Vitest（推奨案を選択）。CI の script は pnpm test のまま",
-    "staging": "2026-09-15 user：本番と同じ構成をもう 1 組（GAP-246 解消）"
+  {
+   "item": "Nango",
+   "license": "Elastic License 2.0",
+   "reason": "機能を第三者にホスト提供不可に抵触の恐れ。OAuthは自前実装"
   },
-  "notes_20260915": "2026-09-15 凍結時の確認：D-073〜D-077 で新しい基盤は選んでいない。権限・出来事・運営コンソールは Postgres（RLS）＋Better Auth の sessions 表、請求は段階 1 が請求書払い（Stripe は段階 2）、お知らせ・問い合わせの返答メールは Resend、正規連携は各サービスの OAuth（Gmail API / freee API）。ガント（タイムライン）の部品は未定のまま → user に確認"
+  {
+   "item": "Skyvern",
+   "license": "AGPL-3.0",
+   "reason": "組み込み不可。『show once, run forever』の設計は参考にする"
+  },
+  {
+   "item": "minio / ToolJet / apitable / zitadel / CloudCLI",
+   "license": "AGPL-3.0",
+   "reason": "組み込み不可"
+  },
+  {
+   "item": "Directus",
+   "license": "MSCL-1.0-GPL (2026変更)",
+   "reason": "動的スキーマの参考にはなるが採用不可"
+  },
+  {
+   "item": "Arize Phoenix",
+   "license": "Elastic License 2.0",
+   "reason": "不可"
+  },
+  {
+   "item": "Daytona",
+   "license": "2026-06にクローズドソース化",
+   "reason": "不可"
+  },
+  {
+   "item": "E2B",
+   "license": "Apache-2.0 (SDKのみ)",
+   "reason": "ランタイムがマネージド。自前ホスト不可"
+  },
+  {
+   "item": "Prisma",
+   "license": "Apache-2.0",
+   "reason": "SupabaseでRLSが効かなくなるケースがある"
+  },
+  {
+   "item": "Firebase / Convex / PocketBase / Cloudflare D1 / MongoDB / PlanetScale",
+   "license": "-",
+   "reason": "RLS+JSONB+pgvectorの同時要件に合わない"
+  },
+  {
+   "item": "Nuxt / Astro / Remix",
+   "license": "-",
+   "reason": "習熟度が低く、払う理由がない"
+  },
+  {
+   "item": "browser-use",
+   "license": "MIT",
+   "reason": "Pythonのため顧客PCのBridgeに同梱できない。サーバー経路では検討可"
+  },
+  {
+   "item": "mem0 / Graphiti",
+   "license": "Apache-2.0",
+   "reason": "記憶3層の独自設計と形が合わない。参考にする"
+  }
+ ],
+ "open_core_note": {
+  "policy": "本体がMIT/Apacheで ee/ 等が商用ライセンスのものは、ee/ を import しないことをCIで機械検査する",
+  "applies_to": [
+   "Infisical",
+   "langfuse",
+   "litellm",
+   "novu",
+   "Stirling-PDF"
+  ]
+ },
+ "portability": {
+  "strategy": "追跡ではなく物理的な閉じ込め",
+  "boundaries": [
+   {
+    "concern": "DB",
+    "allowed_paths": [
+     "lib/db/"
+    ],
+    "vendor": "Supabase/Postgres"
+   },
+   {
+    "concern": "認証",
+    "allowed_paths": [
+     "lib/auth/"
+    ],
+    "vendor": "Better Auth"
+   },
+   {
+    "concern": "ストレージ",
+    "allowed_paths": [
+     "lib/storage/"
+    ],
+    "vendor": "S3互換"
+   },
+   {
+    "concern": "キュー",
+    "allowed_paths": [
+     "lib/queue/"
+    ],
+    "vendor": "Hatchet"
+   },
+   {
+    "concern": "LLMプロバイダ",
+    "allowed_paths": [
+     "lib/llm/"
+    ],
+    "vendor": "複数"
+   },
+   {
+    "concern": "秘密管理",
+    "allowed_paths": [
+     "lib/secrets/"
+    ],
+    "vendor": "Infisical"
+   }
+  ],
+  "ci_gates": [
+   "境界ディレクトリ以外からのベンダーSDK import で fail",
+   "SQL に auth.uid() が出たら fail",
+   "Open Core の ee/ を import したら fail",
+   "ポータビリティ台帳に無い越境で fail"
+  ],
+  "migration_estimate_days": {
+   "database": "4〜6",
+   "frontend": "1〜2",
+   "total": "5〜8"
+  },
+  "migration_triggers": [
+   "ISMAPを要求する商談（官公庁・大企業）",
+   "顧客のセキュリティ監査でサブプロセッサが問題になる",
+   "コストが逆転する規模になる"
+  ]
+ },
+ "infrastructure_monthly_cost": {
+  "at_zero_customers": {
+   "min": 5000,
+   "max": 10000
+  },
+  "at_65_customers": {
+   "min": 30000,
+   "max": 90000
+  },
+  "currency": "JPY",
+  "note": "LLM費用は顧客負担のため含まない。運営マネージドを許可した顧客の分のみ運営負担。コストドライバーは常時起動ワーカーとサンドボックス"
+ },
+ "decomposition": {
+  "method": "縦切り（垂直スライス）",
+  "judgement": "実装者1人（+Claude）で5未満、かつ仕様を触りながら詰めるため",
+  "slice_size": {
+   "days": "2〜4",
+   "owner_verification_minutes": "15〜30",
+   "pr": "1スライス=1PR"
+  },
+  "phase1_slices": 11
+ },
+ "notes": "詳細は 00_research/{OSS候補一覧,プロバイダ能力表,自前実装リスト,影響マップ,拡張設計と開発単位}.md と 01_hearing/決定ログ_進行中.md を参照。次フェーズは architecture-design。",
+ "_decisions": {
+  "_doc": "根拠となる決定（01_hearing/決定ログ_進行中.md）。trace_gate が読む",
+  "cloud": [
+   "D-046"
+  ],
+  "criteria": [
+   "D-048"
+  ],
+  "native": [
+   "D-051"
+  ],
+  "execution": [
+   "D-004",
+   "D-015",
+   "D-045",
+   "D-047"
+  ],
+  "chat": [
+   "D-057"
+  ],
+  "stage1_llm_route": [
+   "D-055"
+  ],
+  "D-067": "画面部品の土台 shadcn/ui（Base UI 版）・RHF＋Zod・Recharts・pragmatic-drag-and-drop",
+  "D-068": "タスクの作法と見え方（一日の型・状態4つ・見え方は URL）",
+  "permissions_layers": [
+   "D-073"
+  ],
+  "account_lifecycle_and_revocation": [
+   "D-074"
+  ],
+  "billing_invoice_phase1_stripe_phase2": [
+   "D-075",
+   "D-002"
+  ],
+  "system_email_resend_for_notices_and_inquiries": [
+   "D-075"
+  ],
+  "integrations_oauth_google_freee": [
+   "D-076"
+  ],
+  "ops_console_tenant_detail": [
+   "D-077"
+  ],
+  "clauses": [
+   "D-041.7",
+   "D-043.3",
+   "D-044.5",
+   "D-045.4",
+   "D-046.1",
+   "D-046.2",
+   "D-046.3",
+   "D-047.4",
+   "D-048.2",
+   "D-048.3",
+   "D-049.2",
+   "D-049.3",
+   "D-050.2",
+   "D-050.4",
+   "D-051.1",
+   "D-055.1",
+   "D-056.3",
+   "D-057.1",
+   "D-057.2",
+   "D-057.3",
+   "D-057.5"
+  ],
+  "timeline_gantt": [
+   "D-079"
+  ],
+  "testing": "2026-09-15 user：Vitest（推奨案を選択）。CI の script は pnpm test のまま",
+  "staging": "2026-09-15 user：本番と同じ構成をもう 1 組（GAP-246 解消）"
+ },
+ "notes_20260915": "2026-09-15 凍結時の確認：D-073〜D-077 で新しい基盤は選んでいない。権限・出来事・運営コンソールは Postgres（RLS）＋Better Auth の sessions 表、請求は段階 1 が請求書払い（Stripe は段階 2）、お知らせ・問い合わせの返答メールは Resend、正規連携は各サービスの OAuth（Gmail API / freee API）。ガント（タイムライン）の部品は未定のまま → user に確認"
 }

@@ -22,7 +22,7 @@ describe("POST /api/v1/subscriptions", () => {
     if (e.kind === "create") expect((b.data as { id: string }).id).toBeTruthy();
   });
   it("test_post_subscriptions_ok_2", async () => {
-    // EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「支払い方法を入れる」として呼ばれたとき THEN Kaname は「決済事業者に登録（カード番号は預からない）」を行い 2xx を返す
+    // EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「プランを選んで Stripe の登録画面へ進む」として呼ばれたとき THEN Kaname は「Stripe Checkout へ送る（C7）。戻りは webhook の写しで確定。カード番号は自社を通らない」を行い 2xx を返す
     const who = e.auth === "ops" ? "ops" : "boss";
     const r = await h.call(e, who, await args(h, e, who));
     expect([200, 201]).toContain(r.status);

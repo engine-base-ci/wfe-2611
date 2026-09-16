@@ -7,7 +7,7 @@
 | SCR-OPS-BILLING-001 | ops-billing | 状態 | 状態「請求と入金」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-ops-billing.html の状態 n と一致 |  | G-06・G-07 | T-U-54 | L1 |
 | SCR-OPS-BILLING-002 | ops-billing | 状態 | 状態「空」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-ops-billing.html の状態 ge と一致 |  | G-06・G-07 | T-U-54 | L1 |
 | SCR-OPS-BILLING-003 | ops-billing | 役割 | 役割 R6 で開くと、その役割の中身（data-roles）が出て、他の役割の中身は出ない | R6 でログイン | 画面を開く | 役割ごとの中身（G15） |  |  | T-U-54 | L1 |
-| SCR-OPS-BILLING-004 | ops-billing | 主アクション | 「未収に連絡する」を押すと対応する endpoint が呼ばれ、別 GET で再取得した画面に反映される | 権限のある会員 | 押す | DB と画面が変わる（G-01・G-03） |  | GET /api/invoices | T-U-54 | L1 |
+| SCR-OPS-BILLING-004 | ops-billing | 主アクション | 「未収に連絡する」を押すと対応する endpoint が呼ばれ、別 GET で再取得した画面に反映される | 権限のある会員 | 押す | DB と画面が変わる（G-01・G-03） |  | GET /api/invoices GET /api/invoices | T-U-54 | L1 |
 | SCR-OPS-BILLING-005 | ops-billing | 到達性 | リンク先 account が実在ルートで 200 で開く | — | 押す | /account が開く（G-04） |  |  | T-U-54 | L1 |
 | SCR-OPS-BILLING-006 | ops-billing | 到達性 | リンク先 account-close が実在ルートで 200 で開く | — | 押す | /account-close が開く（G-04） |  |  | T-U-54 | L1 |
 | SCR-OPS-BILLING-007 | ops-billing | 到達性 | リンク先 ai-activity が実在ルートで 200 で開く | — | 押す | /ai-activity が開く（G-04） |  |  | T-U-54 | L1 |

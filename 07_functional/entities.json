@@ -81,6 +81,14 @@
     {
      "to": "usage_meters",
      "label": "利用量"
+    },
+    {
+     "from": "billing_events",
+     "label": "写しの出来事"
+    },
+    {
+     "from": "llm_routes",
+     "label": "会社の経路"
     }
    ],
    "soft_delete": true,
@@ -375,6 +383,10 @@
     {
      "from": "skill_attachments",
      "label": "自分のAI か AI社員"
+    },
+    {
+     "from": "push_devices",
+     "label": "通知の端末"
     }
    ],
    "soft_delete": true,
@@ -3525,7 +3537,11 @@
     },
     {
      "name": "kind_id",
-     "note": null
+     "note": "＋ llm_api_key・D-083.3"
+    },
+    {
+     "name": "provider_id",
+     "note": "anthropic ／ openai ／ google"
     },
     {
      "name": "vault_ref",
@@ -3544,6 +3560,10 @@
     {
      "to": "credential_kinds",
      "label": "is"
+    },
+    {
+     "from": "llm_routes",
+     "label": "自分の API キー"
     }
    ],
    "soft_delete": true,
@@ -6630,6 +6650,18 @@
     {
      "name": "billing_contact",
      "note": "jsonb"
+    },
+    {
+     "name": "payment_method_id",
+     "note": "段階 2・D-082.1"
+    },
+    {
+     "name": "stripe_customer_ref",
+     "note": null
+    },
+    {
+     "name": "stripe_subscription_ref",
+     "note": "Stripe の写し・D-082.3"
     }
    ],
    "relations": [
@@ -6640,6 +6672,10 @@
     {
      "to": "invoices",
      "label": "月ごと"
+    },
+    {
+     "to": "payment_methods",
+     "label": "支払い方法"
     }
    ],
    "soft_delete": true,
@@ -6908,7 +6944,8 @@
     "D-069",
     "D-075",
     "D-075.5",
-    "D-076"
+    "D-076",
+    "D-082"
    ]
   },
   {
@@ -6952,6 +6989,14 @@
     {
      "name": "pdf_ref",
      "note": null
+    },
+    {
+     "name": "stripe_invoice_ref",
+     "note": null
+    },
+    {
+     "name": "hosted_url",
+     "note": "Stripe の請求書・領収書 PDF・D-082.6"
     }
    ],
    "relations": [
@@ -7047,11 +7092,15 @@
     },
     {
      "name": "method_id",
-     "note": "bank_transfer"
+     "note": "bank_transfer ／ card"
     },
     {
      "name": "recorded_by_ops_member_id",
      "note": null
+    },
+    {
+     "name": "stripe_payment_ref",
+     "note": "カードは写しで自動・D-082.3"
     }
    ],
    "relations": [
@@ -7634,7 +7683,8 @@
     "D-026",
     "D-042",
     "D-076.3",
-    "D-076.4"
+    "D-076.4",
+    "D-085"
    ]
   },
   {
@@ -8085,6 +8135,660 @@
     "D-078.4",
     "D-078.7",
     "D-080"
+   ]
+  },
+  {
+   "id": "E-086",
+   "name": "payment_methods",
+   "table_name": "payment_methods",
+   "section": "15. 段階 2 で足す表",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "kind_id",
+     "note": "invoice ／ card"
+    },
+    {
+     "name": "stripe_customer_ref",
+     "note": null
+    },
+    {
+     "name": "brand",
+     "note": null
+    },
+    {
+     "name": "last4",
+     "note": null
+    },
+    {
+     "name": "expires_on",
+     "note": null
+    },
+    {
+     "name": "registered_at",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "subscriptions",
+     "label": "支払い方法"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "payment_methods_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "payment_methods_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'payment_methods', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "payment_methods_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = payment_methods.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★段階 2（D-082.1・D-082.2）。**会社が選んだ支払い方法。カードの実体は Stripe。番号は持たない",
+   "status": "decided",
+   "decided_at": "2026-09-16",
+   "source": [
+    "D-082",
+    "D-082.1",
+    "D-082.2",
+    "D-085"
+   ]
+  },
+  {
+   "id": "E-087",
+   "name": "billing_events",
+   "table_name": "billing_events",
+   "section": "15. 段階 2 で足す表",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "stripe_event_ref",
+     "note": null
+    },
+    {
+     "name": "kind",
+     "note": null
+    },
+    {
+     "name": "payload",
+     "note": "jsonb"
+    },
+    {
+     "name": "received_at",
+     "note": null
+    },
+    {
+     "name": "processed_at",
+     "note": null
+    },
+    {
+     "name": "signature_ok",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "to": "tenants",
+     "label": "写しの出来事"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "billing_events_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "billing_events_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'billing_events', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "billing_events_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = billing_events.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★段階 2（D-082.3・D-082.4）。**Stripe の webhook の写し。同じ出来事は二度処理しない（stripe_event_ref に unique）。失敗 → 猶予 → 休止の判定の元",
+   "status": "decided",
+   "decided_at": "2026-09-16",
+   "source": [
+    "D-082",
+    "D-082.3",
+    "D-082.4",
+    "D-085"
+   ]
+  },
+  {
+   "id": "E-088",
+   "name": "llm_routes",
+   "table_name": "llm_routes",
+   "section": "15. 段階 2 で足す表",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "default_kind_id",
+     "note": "bridge ／ byok ／ managed"
+    },
+    {
+     "name": "offline_kind_id",
+     "note": null
+    },
+    {
+     "name": "provider_id",
+     "note": "anthropic ／ openai ／ google"
+    },
+    {
+     "name": "credential_id",
+     "note": "vault 参照・任意"
+    },
+    {
+     "name": "managed_allowed_by_ops_member_id",
+     "note": null
+    },
+    {
+     "name": "managed_allowed_at",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "to": "tenants",
+     "label": "会社の経路"
+    },
+    {
+     "to": "credentials",
+     "label": "自分の API キー"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "llm_routes_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "llm_routes_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'llm_routes', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "llm_routes_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = llm_routes.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    },
+    {
+     "name": "llm_routes_ops_write",
+     "operation": "update",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "運営が対応して書く行（managed_allowed_by_ops_member_id）。会社の 1 社の中で・証跡に残す",
+     "source": [
+      "D-075",
+      "D-077.1"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★段階 2（D-083.1・D-083.4・D-083.6）。**会社ごとの AI の経路。運営マネージドの許可は運営が書く",
+   "status": "decided",
+   "decided_at": "2026-09-16",
+   "source": [
+    "D-082",
+    "D-083",
+    "D-083.1",
+    "D-083.4",
+    "D-083.6",
+    "D-085"
+   ]
+  },
+  {
+   "id": "E-089",
+   "name": "llm_capabilities",
+   "table_name": "llm_capabilities",
+   "section": "15. 段階 2 で足す表",
+   "fields": [
+    {
+     "name": "key",
+     "note": "provider:capability"
+    },
+    {
+     "name": "label",
+     "note": null
+    },
+    {
+     "name": "provider_id",
+     "note": null
+    },
+    {
+     "name": "capability_id",
+     "note": null
+    },
+    {
+     "name": "supported",
+     "note": null
+    }
+   ],
+   "relations": [],
+   "soft_delete": false,
+   "timestamps": true,
+   "tenant_field": null,
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "none",
+    "column": null,
+    "fk_table": null
+   },
+   "access_control_policies": [
+    {
+     "name": "llm_capabilities_all_read",
+     "operation": "select",
+     "role": "authenticated",
+     "predicate": "true",
+     "rationale": "マスタ。全員が読む",
+     "source": [
+      "D-026"
+     ]
+    },
+    {
+     "name": "llm_capabilities_ops_write",
+     "operation": "insert,update,delete",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops'",
+     "rationale": "マスタは運営だけが変える",
+     "source": [
+      "D-037",
+      "D-077.4"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★段階 2（D-083.2・D-004）。マスタ。**3 社で揃えた能力表。揃わない能力はどの経路でも出さない",
+   "status": "decided",
+   "decided_at": "2026-09-16",
+   "source": [
+    "D-004",
+    "D-082",
+    "D-083",
+    "D-083.2",
+    "D-085"
+   ]
+  },
+  {
+   "id": "E-090",
+   "name": "push_devices",
+   "table_name": "push_devices",
+   "section": "15. 段階 2 で足す表",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "member_id",
+     "note": null
+    },
+    {
+     "name": "platform_id",
+     "note": "ios ／ android ／ desktop"
+    },
+    {
+     "name": "token_ref",
+     "note": null
+    },
+    {
+     "name": "app_version",
+     "note": null
+    },
+    {
+     "name": "last_seen_at",
+     "note": null
+    },
+    {
+     "name": "revoked_at",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "to": "members",
+     "label": "通知の端末"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "push_devices_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "push_devices_self_only_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND member_id = current_setting('app.user_id', true)::uuid",
+     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "source": [
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "push_devices_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'push_devices', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "push_devices_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = push_devices.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★段階 2（D-084.3）。**アプリのプッシュ通知の届け先。失効は即時（G-14）",
+   "status": "decided",
+   "decided_at": "2026-09-16",
+   "source": [
+    "D-082",
+    "D-084",
+    "D-084.3",
+    "D-085"
+   ]
+  },
+  {
+   "id": "E-091",
+   "name": "disclosure_versions",
+   "table_name": "disclosure_versions",
+   "section": "15. 段階 2 で足す表",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": "tenant_id＝運営"
+    },
+    {
+     "name": "version",
+     "note": null
+    },
+    {
+     "name": "generated_at",
+     "note": null
+    },
+    {
+     "name": "content_hash",
+     "note": null
+    },
+    {
+     "name": "pdf_ref",
+     "note": "C4"
+    },
+    {
+     "name": "dpa_ref",
+     "note": null
+    },
+    {
+     "name": "released_by",
+     "note": null
+    },
+    {
+     "name": "notice_id",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "to": "subprocessors",
+     "label": "一覧を含む"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "ops_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "disclosure_versions_ops_all",
+     "operation": "all",
+     "role": "ops",
+     "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
+     "rationale": "運営テナントの行。顧客は読めない",
+     "source": [
+      "D-073.7",
+      "D-077.4"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★段階 2（D-085.1・D-085.2）。**成果物から生成した開示資料の版。変わったらお知らせ",
+   "status": "decided",
+   "decided_at": "2026-09-16",
+   "source": [
+    "D-082",
+    "D-085",
+    "D-085.1",
+    "D-085.2"
+   ]
+  },
+  {
+   "id": "E-092",
+   "name": "subprocessors",
+   "table_name": "subprocessors",
+   "section": "15. 段階 2 で足す表",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": "tenant_id＝運営"
+    },
+    {
+     "name": "name",
+     "note": null
+    },
+    {
+     "name": "purpose",
+     "note": null
+    },
+    {
+     "name": "region",
+     "note": null
+    },
+    {
+     "name": "data_kinds",
+     "note": "text[]"
+    },
+    {
+     "name": "effective_from",
+     "note": null
+    },
+    {
+     "name": "announced_at",
+     "note": null
+    },
+    {
+     "name": "retired_at",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "disclosure_versions",
+     "label": "一覧を含む"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "ops_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "subprocessors_ops_all",
+     "operation": "all",
+     "role": "ops",
+     "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
+     "rationale": "運営テナントの行。顧客は読めない",
+     "source": [
+      "D-073.7",
+      "D-077.4"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★段階 2（D-085.2・D-042）。**顧客のデータを触る外部の会社。変更は事前通知",
+   "status": "decided",
+   "decided_at": "2026-09-16",
+   "source": [
+    "D-042",
+    "D-082",
+    "D-085",
+    "D-085.2"
    ]
   }
  ]

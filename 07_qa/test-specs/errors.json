@@ -1422,16 +1422,6 @@
    ]
   },
   {
-   "class": "payment",
-   "na": true,
-   "reason": "段階 1 は課金が無い（D-002 の課金は段階 2）。段階 2 で E-PAY-* を足す",
-   "source": [
-    "D-002"
-   ],
-   "choke_point": "C7",
-   "id": "E-PAY-NA"
-  },
-  {
    "id": "E-LIM-004",
    "class": "limit",
    "where": {
@@ -2883,12 +2873,571 @@
     "D-078.2",
     "D-078.6"
    ]
+  },
+  {
+   "id": "E-PAY-001",
+   "class": "payment",
+   "where": {
+    "screen": "billing-setup",
+    "state": "x",
+    "choke_point": "C7"
+   },
+   "when": "カード会社が承認しなかった（残高・利用停止・不正の疑い）",
+   "false_when": "カード会社が承認した",
+   "message": "カードが拒否されました。別のカードを使うか、カード会社に確認してください。請求書払いに切り替えることもできます",
+   "action": "別のカードで登録する／請求書払いにする",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "Stripe のテストカード（拒否）",
+    "steps": [
+     "Stripe の画面で拒否されるカードを入れる",
+     "Kaname に戻る"
+    ],
+    "needs": "Stripe のテストモード"
+   },
+   "severity": "medium",
+   "source": [
+    "D-082.2",
+    "D-082.7"
+   ],
+   "support_code": "PAY-001",
+   "covers": [
+    "C7"
+   ]
+  },
+  {
+   "id": "E-PAY-002",
+   "class": "payment",
+   "where": {
+    "screen": "billing-setup",
+    "state": "x",
+    "choke_point": "C7"
+   },
+   "when": "カードの本人確認（3D セキュア）が終わらずに戻ってきた",
+   "false_when": "本人確認まで終えて戻った",
+   "message": "カードの本人確認が終わっていません。Stripe の画面でもう一度、カード会社の確認を済ませてください",
+   "action": "Stripe の画面に戻る",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "3D セキュアが要るテストカード",
+    "steps": [
+     "本人確認の途中で閉じる"
+    ],
+    "needs": "Stripe のテストモード"
+   },
+   "severity": "medium",
+   "source": [
+    "D-082.2",
+    "D-082.7"
+   ],
+   "support_code": "PAY-002",
+   "covers": [
+    "C7"
+   ]
+  },
+  {
+   "id": "E-PAY-003",
+   "class": "payment",
+   "where": {
+    "screen": "billing",
+    "state": "n",
+    "choke_point": "C7"
+   },
+   "when": "引き落としに失敗し、猶予（7 日）の中にいる",
+   "false_when": "引き落としに成功した",
+   "message": "今月の引き落としができませんでした。9/23 までに支払い方法を直してください。過ぎると休止になり、AI社員が止まります",
+   "action": "支払い方法を直す（Stripe の画面）",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "Stripe のテストで引き落とし失敗",
+    "steps": [
+     "webhook invoice.payment_failed を受ける"
+    ],
+    "needs": "Stripe のテストモード"
+   },
+   "severity": "high",
+   "source": [
+    "D-082.4",
+    "D-082.7"
+   ],
+   "support_code": "PAY-003",
+   "covers": [
+    "C7",
+    "C6"
+   ]
+  },
+  {
+   "id": "E-PAY-004",
+   "class": "payment",
+   "where": {
+    "screen": "billing",
+    "state": "c",
+    "choke_point": "C7"
+   },
+   "when": "支払い方法が無い会社がカード払いのプランに上げようとした",
+   "false_when": "支払い方法がある・請求書払いのまま",
+   "message": "カードが登録されていません。先に支払い方法を登録するか、請求書払いのままにしてください",
+   "action": "支払い方法を登録する",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "支払い方法未登録の会社",
+    "steps": [
+     "プランを上げる"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-082.5",
+    "D-082.1"
+   ],
+   "support_code": "PAY-004",
+   "covers": [
+    "C7"
+   ]
+  },
+  {
+   "id": "E-PAY-005",
+   "class": "payment",
+   "where": {
+    "screen": "ops-billing",
+    "state": "n",
+    "choke_point": "C7"
+   },
+   "when": "Stripe からの webhook の署名が合わない（偽物・古い鍵）",
+   "false_when": "署名が合う",
+   "message": "決済事業者からの通知の署名が合いませんでした。通知は処理していません。運営が鍵を確かめます",
+   "action": "運営に連絡（自動で記録済み）",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "署名の無い webhook を送る",
+    "steps": [
+     "POST /webhooks/stripe に偽の本文"
+    ],
+    "needs": "curl"
+   },
+   "severity": "high",
+   "source": [
+    "D-082.3",
+    "D-082.7"
+   ],
+   "support_code": "PAY-005",
+   "covers": [
+    "C7"
+   ]
+  },
+  {
+   "id": "E-PAY-006",
+   "class": "payment",
+   "where": {
+    "screen": "billing",
+    "state": "n",
+    "choke_point": "C7"
+   },
+   "when": "Stripe のポータル（カード変更・領収書）が開けない",
+   "false_when": "ポータルが開く",
+   "message": "カードの変更画面（Stripe）が今開けません。しばらくしてからもう一度お試しください。請求は止まりません",
+   "action": "もう一度開く",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "Stripe の API を切る",
+    "steps": [
+     "支払い方法 › 変更 を押す"
+    ],
+    "needs": "Stripe のテストモード"
+   },
+   "severity": "low",
+   "source": [
+    "D-082.2",
+    "D-082.6"
+   ],
+   "support_code": "PAY-006",
+   "covers": [
+    "C7"
+   ]
+  },
+  {
+   "id": "E-LLM-001",
+   "class": "external",
+   "where": {
+    "screen": "llm-routes",
+    "state": "x",
+    "choke_point": "C8"
+   },
+   "when": "預けた API キーを提供者が拒否した（無効・失効・権限なし）",
+   "false_when": "キーが有効",
+   "message": "Anthropic のキーが無効です（提供者が拒否）。新しいキーを預けるか、経路を Bridge か運営マネージドに戻してください。動いていた仕事は止めてあります",
+   "action": "新しいキーを預ける／Bridge に戻す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "無効なキーを預ける",
+    "steps": [
+     "API キーを預ける → 提供者が 401"
+    ],
+    "needs": "無効なキー"
+   },
+   "severity": "high",
+   "source": [
+    "D-083.3",
+    "D-083.7"
+   ],
+   "support_code": "LLM-001",
+   "covers": [
+    "C8",
+    "C3"
+   ]
+  },
+  {
+   "id": "E-LLM-002",
+   "class": "external",
+   "where": {
+    "screen": "llm-routes",
+    "state": "x",
+    "choke_point": "C3"
+   },
+   "when": "提供者のサービスが落ちている・応答しない",
+   "false_when": "提供者が応答する",
+   "message": "OpenAI が応答しません。この経路の仕事は止めてあります。Bridge に戻すか、しばらくしてから再開してください",
+   "action": "Bridge に戻す／あとで再開",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "提供者の API を切る",
+    "steps": [
+     "自分のAIに話す"
+    ],
+    "needs": "経路を BYOK に"
+   },
+   "severity": "medium",
+   "source": [
+    "D-083.7",
+    "D-045"
+   ],
+   "support_code": "LLM-002",
+   "covers": [
+    "C3"
+   ]
+  },
+  {
+   "id": "E-LLM-003",
+   "class": "limit",
+   "where": {
+    "screen": "llm-routes",
+    "state": "x",
+    "choke_point": "C3"
+   },
+   "when": "運営マネージドの月の上限に届いた",
+   "false_when": "上限の内側",
+   "message": "運営マネージドが今月の上限（100 万）に届きました。超えた分は従量で同じ請求書に乗ります。止めるなら経路を Bridge に戻してください",
+   "action": "従量で続ける／Bridge に戻す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "usage_meters を上限に",
+    "steps": [
+     "運営マネージドで実行"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-083.5",
+    "D-083.7"
+   ],
+   "support_code": "LLM-003",
+   "covers": [
+    "C3",
+    "C2"
+   ]
+  },
+  {
+   "id": "E-LLM-004",
+   "class": "gate",
+   "where": {
+    "screen": "llm-routes",
+    "state": "n",
+    "choke_point": "C3"
+   },
+   "when": "3 社で揃わない能力（画像の読み取り 等）を使おうとした",
+   "false_when": "揃っている能力",
+   "message": "この機能はまだ使えません（提供者の間で揃っていないため、どの経路でも出していません）",
+   "action": "別のやり方（文字で伝える）",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "画像を添付して読ませる",
+    "steps": [
+     "会話で画像の読み取りを頼む"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-083.2",
+    "D-083.7",
+    "D-004"
+   ],
+   "support_code": "LLM-004",
+   "covers": [
+    "C3"
+   ]
+  },
+  {
+   "id": "E-APP-001",
+   "class": "gate",
+   "where": {
+    "screen": "app-setup",
+    "state": "x",
+    "choke_point": "C6"
+   },
+   "when": "スマホの通知が許可されていない",
+   "false_when": "許可されている",
+   "message": "iPhone の通知が許可されていません。承認待ちはメールと PC にだけ届きます。iPhone の設定 › 通知 › Kaname で許可すると、ここに戻ります",
+   "action": "設定の開き方を見る",
+   "undo": false,
+   "layers": [
+    "UI"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "通知を拒否した端末",
+    "steps": [
+     "アプリを入れて通知を拒否"
+    ],
+    "needs": "iPhone"
+   },
+   "severity": "medium",
+   "source": [
+    "D-084.3"
+   ],
+   "support_code": "APP-001",
+   "covers": [
+    "C6"
+   ]
+  },
+  {
+   "id": "E-APP-002",
+   "class": "connectivity",
+   "where": {
+    "screen": "app-setup",
+    "state": "x",
+    "choke_point": null
+   },
+   "when": "アプリがインターネットにつながっていない",
+   "false_when": "つながっている",
+   "message": "インターネットにつながっていません。最後に見た「今日」「タスク」「承認待ち」は読めます。書くのはつながってから",
+   "action": "つながったら自動で続く",
+   "undo": false,
+   "layers": [
+    "UI"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "機内モード",
+    "steps": [
+     "アプリを開く"
+    ],
+    "needs": "スマホ"
+   },
+   "severity": "low",
+   "source": [
+    "D-084.4"
+   ],
+   "support_code": "APP-002",
+   "covers": []
+  },
+  {
+   "id": "E-DISC-001",
+   "class": "external",
+   "where": {
+    "screen": "disclosure",
+    "state": "x",
+    "choke_point": "C4"
+   },
+   "when": "開示資料の PDF が作れない（保存先が応答しない）",
+   "false_when": "PDF が作れる",
+   "message": "PDF を作れませんでした（保存先が応答しません）。もう一度押すか、しばらくしてから試してください。画面の内容は最新の版です",
+   "action": "もう一度 PDF を出す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "バケットを止める",
+    "steps": [
+     "PDF で出す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-085.3",
+    "D-085.5"
+   ],
+   "support_code": "DISC-001",
+   "covers": [
+    "C4"
+   ]
+  },
+  {
+   "id": "E-DISC-002",
+   "class": "data",
+   "where": {
+    "screen": "ops-disclosure",
+    "state": "n",
+    "choke_point": "C2"
+   },
+   "when": "成果物と公開中の版に差分があるのに版を出していない",
+   "false_when": "公開中の版が最新",
+   "message": "公開中の開示資料（第 7 版）は設計より古くなっています。新しい版を出して全社にお知らせしてください",
+   "action": "新しい版を出す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "成果物を変える",
+    "steps": [
+     "運営の開示資料を開く"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-085.2",
+    "D-085.5"
+   ],
+   "support_code": "DISC-002",
+   "covers": [
+    "C2"
+   ]
+  },
+  {
+   "id": "E-MOCK-035",
+   "class": "connectivity",
+   "where": {
+    "screen": "llm-routes",
+    "state": "gs"
+   },
+   "when": "PC が閉じている・Bridge が切れている・覚え直し待ちで、この画面の AI の部分（拾う・配る・一次確認する・提案する）が動いていない",
+   "false_when": "Bridge がつながっていて、AI社員の直近の実行が失敗していない。PC が閉じている間にサーバー経路へ切り替わったとき（段階2）も出さない",
+   "message": "AI は止まっています。人が見る・押すものはそのまま。AI が拾う・配る・一次確認する部分だけ止まっています。止まった理由と直し方は「止まっているものを直す」にあります",
+   "action": "止まっているものを直す（覚え直させる・PC をつなぐ）を開く",
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "本番稼働中に Bridge を切る（PC を閉じる）",
+    "steps": [
+     "この画面を開く",
+     "上の帯と右上の「AI は止まっています」を確認",
+     "人の操作（見る・押す・保存）ができることを確認",
+     "Bridge をつなぎ直して帯が消えることを確認"
+    ],
+    "needs": "Bridge"
+   },
+   "severity": "medium",
+   "source": [
+    "D-045",
+    "D-055",
+    "D-076.9",
+    "D-083.4"
+   ]
+  },
+  {
+   "id": "E-MOCK-036",
+   "class": "connectivity",
+   "where": {
+    "screen": "disclosure",
+    "state": "gs"
+   },
+   "when": "PC が閉じている・Bridge が切れている・覚え直し待ちで、この画面の AI の部分（拾う・配る・一次確認する・提案する）が動いていない",
+   "false_when": "Bridge がつながっていて、AI社員の直近の実行が失敗していない。PC が閉じている間にサーバー経路へ切り替わったとき（段階2）も出さない",
+   "message": "AI は止まっています。人が見る・押すものはそのまま。AI が拾う・配る・一次確認する部分だけ止まっています。止まった理由と直し方は「止まっているものを直す」にあります",
+   "action": "止まっているものを直す（覚え直させる・PC をつなぐ）を開く",
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "本番稼働中に Bridge を切る（PC を閉じる）",
+    "steps": [
+     "この画面を開く",
+     "上の帯と右上の「AI は止まっています」を確認",
+     "人の操作（見る・押す・保存）ができることを確認",
+     "Bridge をつなぎ直して帯が消えることを確認"
+    ],
+    "needs": "Bridge"
+   },
+   "severity": "medium",
+   "source": [
+    "D-045",
+    "D-055",
+    "D-076.9",
+    "D-085.3"
+   ]
   }
  ],
  "meta": {
   "id": "errors-catalog",
   "source": [
-   "D-069",
    "D-013.5",
    "D-013.9",
    "D-017.1",
@@ -2898,10 +3447,15 @@
    "D-037.6",
    "D-040.6",
    "D-055.4",
-   "D-058.5"
+   "D-058.5",
+   "D-069",
+   "D-082.7",
+   "D-083.7",
+   "D-084.3",
+   "D-085.5"
   ],
   "why": "エラーは一覧から導き、1 件＝出る／出ない／文言と一手で検証する（§69）",
-  "updated_at": "2026-09-15",
-  "note": "D-073〜D-077 の画面・状態（AI が止まっている の汎用状態 33・運営の詰まり・行為 6 つ）を追加。derive --existing で機械導出"
+  "updated_at": "2026-09-16",
+  "note": "D-073〜D-077 の画面・状態（AI が止まっている の汎用状態 33・運営の詰まり・行為 6 つ）を追加。derive --existing で機械導出。段階 2（D-082〜D-085）：E-PAY-001〜006・E-LLM-001〜004・E-APP-001〜002・E-DISC-001〜002 を追加し E-PAY-NA を解いた"
  }
 }

@@ -3,7 +3,7 @@
   "project": "Kaname",
   "created_at": "2026-09-16",
   "skill_version": "v3.1",
-  "total_endpoints": 55
+  "total_endpoints": 60
  },
  "context": {
   "api_style": "REST（独立 API 層・Hono・OpenAPI が契約）",

@@ -99,9 +99,8 @@ def main():
         # それ以外（完全版フォルダ等）は全画面を分母にする。
         base = os.path.basename(a.mocks.rstrip("/"))
         rels = {s.get("release", "v1") for s in screens}
-        want = ({s["id"] for s in screens if s.get("release", "v1") == base}
-                if base in rels and base != max(rels) else
-                {s["id"] for s in screens})
+        # フォルダ名が release と一致すればその release だけを分母にする（段階ごとに置き場を分ける・2026-09-16）。
+        want = ({s["id"] for s in screens if s.get("release", "v1") == base} if base in rels else {s["id"] for s in screens})
         ng("G9", f"モックにあるが flow.json に無い画面（{a.mocks}）", sorted(found - want))
         ng("G9", f"flow.json にあるがモックが無い画面（{a.mocks}）", sorted(want - found))
 

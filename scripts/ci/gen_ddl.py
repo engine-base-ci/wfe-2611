@@ -84,7 +84,7 @@ def ddl_for(e) -> tuple[str, list[str]]:
         ty, ref = col_type(e, f)
         notnull = ""
         if n == "key": notnull = " not null"; uniq.append("(tenant_id, key)" if tenant and "definition_id" not in names else ("(definition_id, key)" if "definition_id" in names else ""))
-        if n == "label" or n == "version": notnull = " not null"
+        if n == "label" or (n == "version" and not tenant): notnull = " not null"   # 会社の表の版番号は hook が採番する（契約の作成では省ける）
         if ref:
             rt, rc = ref.split("(")[0], ref.split("(")[1].rstrip(")")
             if rt in existing or rt in new_names or rt == t:

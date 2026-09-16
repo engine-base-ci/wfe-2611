@@ -1469,6 +1469,218 @@
    "feature_id": "F-005"
   },
   {
+   "method": "GET",
+   "path": "/api/v1/disclosure_versions",
+   "acts": [
+    "A84"
+   ],
+   "screens": [
+    "disclosure"
+   ],
+   "related_entities": [
+    "E-041",
+    "E-061",
+    "E-091",
+    "E-092"
+   ],
+   "choke_points": [
+    "C4"
+   ],
+   "source": [
+    "D-085.1",
+    "D-085.2",
+    "D-085.3",
+    "D-085.4"
+   ],
+   "features": [
+    "F-012"
+   ],
+   "auth": {
+    "role": "member",
+    "scheme": "session（Better Auth・sessions 表を見る。app.tenant_id / app.user_id / app.role を SET LOCAL）"
+   },
+   "rate_limit": "120/min/user",
+   "access_control_policies": [
+    "audit_events_tenant_read",
+    "audit_events_ops_read_with_grant"
+   ],
+   "outputs_4xx": [
+    {
+     "status": 401,
+     "code": "UNAUTHENTICATED",
+     "body": {
+      "error": "unauthenticated"
+     },
+     "trigger": "セッションが無い・失効している（退会・停止・権限変更・パスワード変更で即失効）",
+     "ears_form": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）"
+    },
+    {
+     "status": 403,
+     "code": "FORBIDDEN",
+     "body": {
+      "error": "forbidden"
+     },
+     "trigger": "権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした",
+     "ears_form": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）"
+    },
+    {
+     "status": 429,
+     "code": "RATE_LIMITED",
+     "body": {
+      "error": "rate_limited",
+      "retry_after_sec": 60
+     },
+     "trigger": "120/min/user",
+     "ears_form": "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す"
+    }
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN GET /api/v1/disclosure_versions が「開示資料を開いて PDF をもらう」として呼ばれたとき THEN Kaname は「成果物から生成した版を読む。PDF は署名 URL（C4）」を行い 2xx を返す",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+    "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UBIQUITOUS: GET /api/v1/disclosure_versions の副作用は関門 C2・C4 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+   ],
+   "outward_side_effects": [
+    "ファイル / オブジェクト"
+   ],
+   "side_effect_ordering": null,
+   "description": "取得（disclosure_versions）— 開示資料（できる操作・外に出るデータ・サブプロセッサ・D",
+   "implementation_path": "apps/api/src/routes/disclosure_versions.ts::getDisclosureVersions",
+   "inputs": {
+    "path": [],
+    "body": null,
+    "query": [
+     "scope_id",
+     "cursor",
+     "limit",
+     "sort"
+    ]
+   },
+   "outputs_2xx": {
+    "status": 200,
+    "body": "{ data: DisclosureVersions[], meta?: { cursor, limit, total } }"
+   },
+   "id": "EP-013",
+   "feature_id": "F-012"
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/disclosure_versions/:id",
+   "acts": [
+    "A86"
+   ],
+   "screens": [
+    "ops-disclosure"
+   ],
+   "related_entities": [
+    "E-064",
+    "E-065",
+    "E-091",
+    "E-092"
+   ],
+   "choke_points": [
+    "C2",
+    "C4",
+    "C6"
+   ],
+   "source": [
+    "D-085.1",
+    "D-085.2",
+    "D-085.3"
+   ],
+   "features": [
+    "F-016"
+   ],
+   "auth": {
+    "role": "ops",
+    "scheme": "session（Better Auth・sessions 表を見る。app.tenant_id / app.user_id / app.role を SET LOCAL）"
+   },
+   "rate_limit": "60/min/user",
+   "access_control_policies": [
+    "notice_deliveries_self_only_write",
+    "notice_deliveries_permission_write"
+   ],
+   "outputs_4xx": [
+    {
+     "status": 401,
+     "code": "UNAUTHENTICATED",
+     "body": {
+      "error": "unauthenticated"
+     },
+     "trigger": "セッションが無い・失効している（退会・停止・権限変更・パスワード変更で即失効）",
+     "ears_form": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）"
+    },
+    {
+     "status": 403,
+     "code": "FORBIDDEN",
+     "body": {
+      "error": "forbidden"
+     },
+     "trigger": "権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした",
+     "ears_form": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）"
+    },
+    {
+     "status": 404,
+     "code": "NOT_FOUND",
+     "body": {
+      "error": "not_found"
+     },
+     "trigger": "無い・消えた・取り消された（期限切れ・削除済み・他社の行）",
+     "ears_form": "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）"
+    },
+    {
+     "status": 422,
+     "code": "VALIDATION_ERROR",
+     "body": {
+      "error": "validation_failed",
+      "details": []
+     },
+     "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）",
+     "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+    },
+    {
+     "status": 429,
+     "code": "RATE_LIMITED",
+     "body": {
+      "error": "rate_limited",
+      "retry_after_sec": 60
+     },
+     "trigger": "60/min/user",
+     "ears_form": "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す"
+    }
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN PATCH /api/v1/disclosure_versions/:id が「版を出す・DPA の雛形とサブプロセッサを整える」として呼ばれたとき THEN Kaname は「disclosure_versions を作る（C4）。変更はお知らせ（C6）」を行い 2xx を返す",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+    "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
+    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UBIQUITOUS: PATCH /api/v1/disclosure_versions/:id の副作用は関門 C2・C4・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+   ],
+   "outward_side_effects": [
+    "ファイル / オブジェクト",
+    "通知送出"
+   ],
+   "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
+   "description": "更新（disclosure_versions）— 開示資料の版を出す・DPA の雛形とサブプロセッサ一覧を",
+   "implementation_path": "apps/api/src/routes/disclosure_versions.ts::patchDisclosureVersionsById",
+   "inputs": {
+    "path": [
+     "id"
+    ],
+    "body": "disclosure_versions の入力（types.ts の DisclosureVersionsInput）",
+    "query": []
+   },
+   "outputs_2xx": {
+    "status": 200,
+    "body": "{ data: DisclosureVersions, meta?: { cursor, limit, total } }"
+   },
+   "id": "EP-014",
+   "feature_id": "F-016"
+  },
+  {
    "method": "POST",
    "path": "/api/v1/distributions",
    "acts": [
@@ -1579,7 +1791,7 @@
     "status": 201,
     "body": "{ data: Distributions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-013",
+   "id": "EP-015",
    "feature_id": "F-019"
   },
   {
@@ -1711,7 +1923,7 @@
     "status": 200,
     "body": "{ data: Duties, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-014",
+   "id": "EP-016",
    "feature_id": "F-011"
   },
   {
@@ -1828,7 +2040,7 @@
     "status": 201,
     "body": "{ data: ExportJobs, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-015",
+   "id": "EP-017",
    "feature_id": "F-012"
   },
   {
@@ -1927,7 +2139,7 @@
     "status": 200,
     "body": "{ data: GoalAllocations[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-016",
+   "id": "EP-018",
    "feature_id": "F-004"
   },
   {
@@ -2074,7 +2286,7 @@
     "status": 200,
     "body": "{ data: GoalAllocations, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-017",
+   "id": "EP-019",
    "feature_id": "F-004"
   },
   {
@@ -2201,7 +2413,7 @@
     "status": 200,
     "body": "{ data: Goals[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-018",
+   "id": "EP-020",
    "feature_id": "F-008"
   },
   {
@@ -2330,7 +2542,7 @@
     "status": 200,
     "body": "{ data: Goals, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-019",
+   "id": "EP-021",
    "feature_id": "F-008"
   },
   {
@@ -2442,7 +2654,7 @@
     "status": 200,
     "body": "{ data: Hypotheses[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-020",
+   "id": "EP-022",
    "feature_id": "F-009"
   },
   {
@@ -2570,7 +2782,7 @@
     "status": 200,
     "body": "{ data: Hypotheses, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-021",
+   "id": "EP-023",
    "feature_id": "F-009"
   },
   {
@@ -2666,7 +2878,7 @@
     "status": 200,
     "body": "{ data: Inquiries[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-022",
+   "id": "EP-024",
    "feature_id": "F-015"
   },
   {
@@ -2790,7 +3002,7 @@
     "status": 200,
     "body": "{ data: Inquiries, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-023",
+   "id": "EP-025",
    "feature_id": "F-014"
   },
   {
@@ -2878,14 +3090,15 @@
     "status": 200,
     "body": "{ data: Invitations[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-024",
+   "id": "EP-026",
    "feature_id": "F-002"
   },
   {
    "method": "GET",
    "path": "/api/v1/invoices",
    "acts": [
-    "A72"
+    "A72",
+    "A87"
    ],
    "screens": [
     "ops-billing"
@@ -2902,7 +3115,9 @@
     "D-002.2",
     "D-075.4",
     "D-075.5",
-    "D-077.3"
+    "D-077.3",
+    "D-082.3",
+    "D-082.8"
    ],
    "features": [
     "F-016"
@@ -2951,14 +3166,17 @@
    ],
    "ears_ac_seed": [
     "EVENT-DRIVEN: WHEN GET /api/v1/invoices が「請求・入金・利用量を見る」として呼ばれたとき THEN Kaname は「各社の請求・入金・未収・利用量／上限を集計（中身は見ない）」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN GET /api/v1/invoices が「カードの会社の写しを見る」として呼ばれたとき THEN Kaname は「Stripe の写し（webhook）の状態と顧客リンク。請求書払いは従来の記録」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
-    "UBIQUITOUS: GET /api/v1/invoices の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+    "UBIQUITOUS: GET /api/v1/invoices の副作用は関門 C2・C7 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
    ],
-   "outward_side_effects": [],
+   "outward_side_effects": [
+    "決済・課金"
+   ],
    "side_effect_ordering": null,
-   "description": "取得（invoices）— 各社の請求・入金・利用量と上限を見て、未収とプラン変更を",
+   "description": "取得（invoices）— 各社の請求・入金・利用量と上限を見て、未収とプラン変更を／カードの会社の写し（Stripe）の状態を見て、請求書払",
    "implementation_path": "apps/api/src/routes/invoices.ts::getInvoices",
    "inputs": {
     "path": [],
@@ -2974,7 +3192,7 @@
     "status": 200,
     "body": "{ data: Invoices[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-025",
+   "id": "EP-027",
    "feature_id": "F-016"
   },
   {
@@ -3088,7 +3306,7 @@
     "status": 200,
     "body": "{ data: LearnedProcedures[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-026",
+   "id": "EP-028",
    "feature_id": "F-005"
   },
   {
@@ -3208,7 +3426,7 @@
     "status": 200,
     "body": "{ data: LedgerDefinitions[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-027",
+   "id": "EP-029",
    "feature_id": "F-007"
   },
   {
@@ -3343,7 +3561,7 @@
     "status": 200,
     "body": "{ data: LedgerDefinitions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-028",
+   "id": "EP-030",
    "feature_id": "F-007"
   },
   {
@@ -3439,7 +3657,7 @@
     "status": 200,
     "body": "{ data: LedgerRecords[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-029",
+   "id": "EP-031",
    "feature_id": "F-007"
   },
   {
@@ -3564,8 +3782,247 @@
     "status": 200,
     "body": "{ data: LedgerRecords, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-030",
+   "id": "EP-032",
    "feature_id": "F-007"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/llm_routes",
+   "acts": [
+    "A82"
+   ],
+   "screens": [
+    "llm-routes"
+   ],
+   "related_entities": [
+    "E-037",
+    "E-088",
+    "E-089"
+   ],
+   "choke_points": [
+    "C2",
+    "C3",
+    "C8"
+   ],
+   "source": [
+    "D-083.1",
+    "D-083.3",
+    "D-083.4",
+    "D-083.5"
+   ],
+   "features": [
+    "F-017"
+   ],
+   "auth": {
+    "role": "member",
+    "scheme": "session（Better Auth・sessions 表を見る。app.tenant_id / app.user_id / app.role を SET LOCAL）"
+   },
+   "rate_limit": "60/min/user",
+   "access_control_policies": [
+    "credentials_self_only_write",
+    "credentials_permission_write",
+    "llm_routes_permission_write",
+    "llm_routes_ops_write",
+    "llm_capabilities_ops_write"
+   ],
+   "outputs_4xx": [
+    {
+     "status": 401,
+     "code": "UNAUTHENTICATED",
+     "body": {
+      "error": "unauthenticated"
+     },
+     "trigger": "セッションが無い・失効している（退会・停止・権限変更・パスワード変更で即失効）",
+     "ears_form": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）"
+    },
+    {
+     "status": 403,
+     "code": "FORBIDDEN",
+     "body": {
+      "error": "forbidden"
+     },
+     "trigger": "権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした",
+     "ears_form": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）"
+    },
+    {
+     "status": 409,
+     "code": "CONFLICT",
+     "body": {
+      "error": "conflict"
+     },
+     "trigger": "二重送信・同時編集・既に登録済み（冪等キーで防ぐ）",
+     "ears_form": "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない"
+    },
+    {
+     "status": 422,
+     "code": "VALIDATION_ERROR",
+     "body": {
+      "error": "validation_failed",
+      "details": []
+     },
+     "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）",
+     "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+    },
+    {
+     "status": 429,
+     "code": "RATE_LIMITED",
+     "body": {
+      "error": "rate_limited",
+      "retry_after_sec": 60
+     },
+     "trigger": "60/min/user",
+     "ears_form": "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す"
+    },
+    {
+     "status": 502,
+     "code": "EXTERNAL_FAILED",
+     "body": {
+      "error": "external_failed"
+     },
+     "trigger": "外部サービス・モデル・プロセスが失敗した／合図を出さずに終わった",
+     "ears_form": "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す"
+    }
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN POST /api/v1/llm_routes が「会社の設定で AI の経路を選び、必要ならキーを入れる」として呼ばれたとき THEN Kaname は「キーは C8 の vault へ参照だけ。llm_routes を保存。登録時に提供者へ 1 回だけ検査（成功／失敗を証跡に）」を行い 2xx を返す（自動側：自分のAIが経路ごとの違い（費用・PC が閉じているときの動き）を説明する）",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+    "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
+    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す",
+    "UBIQUITOUS: POST /api/v1/llm_routes の副作用は関門 C2・C3・C8 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+   ],
+   "outward_side_effects": [
+    "モデル呼び出し",
+    "秘密の読み出し"
+   ],
+   "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
+   "description": "作成・実行（llm_routes）— AI の経路（Bridge／自分の API キー／運営マ",
+   "implementation_path": "apps/api/src/routes/llm_routes.ts::postLlmRoutes",
+   "inputs": {
+    "path": [],
+    "body": "llm_routes の入力（types.ts の LlmRoutesInput）",
+    "query": []
+   },
+   "outputs_2xx": {
+    "status": 201,
+    "body": "{ data: LlmRoutes, meta?: { cursor, limit, total } }"
+   },
+   "id": "EP-033",
+   "feature_id": "F-017"
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/llm_routes/:id",
+   "acts": [
+    "A85"
+   ],
+   "screens": [
+    "ops-llm"
+   ],
+   "related_entities": [
+    "E-074",
+    "E-075",
+    "E-088"
+   ],
+   "choke_points": [
+    "C2"
+   ],
+   "source": [
+    "D-083.5",
+    "D-083.6"
+   ],
+   "features": [
+    "F-016"
+   ],
+   "auth": {
+    "role": "ops",
+    "scheme": "session（Better Auth・sessions 表を見る。app.tenant_id / app.user_id / app.role を SET LOCAL）"
+   },
+   "rate_limit": "60/min/user",
+   "access_control_policies": [
+    "invoices_permission_write",
+    "payments_permission_write",
+    "payments_ops_write",
+    "llm_routes_permission_write",
+    "llm_routes_ops_write"
+   ],
+   "outputs_4xx": [
+    {
+     "status": 401,
+     "code": "UNAUTHENTICATED",
+     "body": {
+      "error": "unauthenticated"
+     },
+     "trigger": "セッションが無い・失効している（退会・停止・権限変更・パスワード変更で即失効）",
+     "ears_form": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）"
+    },
+    {
+     "status": 403,
+     "code": "FORBIDDEN",
+     "body": {
+      "error": "forbidden"
+     },
+     "trigger": "権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした",
+     "ears_form": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）"
+    },
+    {
+     "status": 404,
+     "code": "NOT_FOUND",
+     "body": {
+      "error": "not_found"
+     },
+     "trigger": "無い・消えた・取り消された（期限切れ・削除済み・他社の行）",
+     "ears_form": "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）"
+    },
+    {
+     "status": 422,
+     "code": "VALIDATION_ERROR",
+     "body": {
+      "error": "validation_failed",
+      "details": []
+     },
+     "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）",
+     "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+    },
+    {
+     "status": 429,
+     "code": "RATE_LIMITED",
+     "body": {
+      "error": "rate_limited",
+      "retry_after_sec": 60
+     },
+     "trigger": "60/min/user",
+     "ears_form": "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す"
+    }
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN PATCH /api/v1/llm_routes/:id が「会社の詳細で運営マネージドを許可する」として呼ばれたとき THEN Kaname は「llm_routes の許可を更新。3 社の使用量を集計して費用へ」を行い 2xx を返す",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+    "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
+    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UBIQUITOUS: PATCH /api/v1/llm_routes/:id の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+   ],
+   "outward_side_effects": [],
+   "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
+   "description": "更新（llm_routes）— 会社ごとに運営マネージドの経路を許可し、3 社の使用量と",
+   "implementation_path": "apps/api/src/routes/llm_routes.ts::patchLlmRoutesById",
+   "inputs": {
+    "path": [
+     "id"
+    ],
+    "body": "llm_routes の入力（types.ts の LlmRoutesInput）",
+    "query": []
+   },
+   "outputs_2xx": {
+    "status": 200,
+    "body": "{ data: LlmRoutes, meta?: { cursor, limit, total } }"
+   },
+   "id": "EP-034",
+   "feature_id": "F-016"
   },
   {
    "method": "GET",
@@ -3653,7 +4110,7 @@
     "status": 200,
     "body": "{ data: Members[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-031",
+   "id": "EP-035",
    "feature_id": "F-001"
   },
   {
@@ -3797,7 +4254,7 @@
     "status": 200,
     "body": "{ data: Members, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-032",
+   "id": "EP-036",
    "feature_id": "F-003"
   },
   {
@@ -3919,7 +4376,7 @@
     "status": 200,
     "body": "{ data: Members, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-033",
+   "id": "EP-037",
    "feature_id": "F-010"
   },
   {
@@ -4047,7 +4504,7 @@
     "status": 201,
     "body": "{ data: Memories, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-034",
+   "id": "EP-038",
    "feature_id": "F-013"
   },
   {
@@ -4154,7 +4611,7 @@
     "status": 200,
     "body": "{ data: Messages[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-035",
+   "id": "EP-039",
    "feature_id": "F-004"
   },
   {
@@ -4281,7 +4738,7 @@
     "status": 200,
     "body": "{ data: Messages, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-036",
+   "id": "EP-040",
    "feature_id": "F-004"
   },
   {
@@ -4398,7 +4855,7 @@
     "status": 200,
     "body": "{ data: Messages, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-037",
+   "id": "EP-041",
    "feature_id": "F-004"
   },
   {
@@ -4517,7 +4974,7 @@
     "status": 200,
     "body": "{ data: NoticeDeliveries, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-038",
+   "id": "EP-042",
    "feature_id": "F-015"
   },
   {
@@ -4630,7 +5087,7 @@
     "status": 201,
     "body": "{ data: Notices, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-039",
+   "id": "EP-043",
    "feature_id": "F-016"
   },
   {
@@ -4739,7 +5196,7 @@
     "status": 200,
     "body": "{ data: OpsMembers, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-040",
+   "id": "EP-044",
    "feature_id": "F-019"
   },
   {
@@ -4833,7 +5290,7 @@
     "status": 200,
     "body": "{ data: Plans[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-041",
+   "id": "EP-045",
    "feature_id": "F-014"
   },
   {
@@ -4939,7 +5396,7 @@
     "status": 200,
     "body": "{ data: Plans, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-042",
+   "id": "EP-046",
    "feature_id": "F-014"
   },
   {
@@ -5057,8 +5514,128 @@
     "status": 200,
     "body": "{ data: Policies, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-043",
+   "id": "EP-047",
    "feature_id": "F-006"
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/push_devices/:id",
+   "acts": [
+    "A83"
+   ],
+   "screens": [
+    "app-setup"
+   ],
+   "related_entities": [
+    "E-050",
+    "E-067",
+    "E-068",
+    "E-090"
+   ],
+   "choke_points": [
+    "C2",
+    "C6"
+   ],
+   "source": [
+    "D-084.1",
+    "D-084.2",
+    "D-084.3",
+    "D-084.4"
+   ],
+   "features": [
+    "F-017"
+   ],
+   "auth": {
+    "role": "member",
+    "scheme": "session（Better Auth・sessions 表を見る。app.tenant_id / app.user_id / app.role を SET LOCAL）"
+   },
+   "rate_limit": "60/min/user",
+   "access_control_policies": [
+    "sessions_permission_write",
+    "notification_preferences_self_only_write",
+    "notification_preferences_permission_write",
+    "notifications_self_only_write",
+    "notifications_permission_write",
+    "push_devices_self_only_write",
+    "push_devices_permission_write"
+   ],
+   "outputs_4xx": [
+    {
+     "status": 401,
+     "code": "UNAUTHENTICATED",
+     "body": {
+      "error": "unauthenticated"
+     },
+     "trigger": "セッションが無い・失効している（退会・停止・権限変更・パスワード変更で即失効）",
+     "ears_form": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）"
+    },
+    {
+     "status": 403,
+     "code": "FORBIDDEN",
+     "body": {
+      "error": "forbidden"
+     },
+     "trigger": "権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした",
+     "ears_form": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）"
+    },
+    {
+     "status": 404,
+     "code": "NOT_FOUND",
+     "body": {
+      "error": "not_found"
+     },
+     "trigger": "無い・消えた・取り消された（期限切れ・削除済み・他社の行）",
+     "ears_form": "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）"
+    },
+    {
+     "status": 422,
+     "code": "VALIDATION_ERROR",
+     "body": {
+      "error": "validation_failed",
+      "details": []
+     },
+     "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）",
+     "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+    },
+    {
+     "status": 429,
+     "code": "RATE_LIMITED",
+     "body": {
+      "error": "rate_limited",
+      "retry_after_sec": 60
+     },
+     "trigger": "60/min/user",
+     "ears_form": "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す"
+    }
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN PATCH /api/v1/push_devices/:id が「アプリを入れて通知を許可する」として呼ばれたとき THEN Kaname は「push_devices に端末を登録し、通知の届け先の経路に「アプリ」を足す」を行い 2xx を返す",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+    "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
+    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UBIQUITOUS: PATCH /api/v1/push_devices/:id の副作用は関門 C2・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+   ],
+   "outward_side_effects": [
+    "通知送出"
+   ],
+   "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
+   "description": "更新（push_devices）— スマホ／PC のアプリを入れて、通知を受け取る端末を整え",
+   "implementation_path": "apps/api/src/routes/push_devices.ts::patchPushDevicesById",
+   "inputs": {
+    "path": [
+     "id"
+    ],
+    "body": "push_devices の入力（types.ts の PushDevicesInput）",
+    "query": []
+   },
+   "outputs_2xx": {
+    "status": 200,
+    "body": "{ data: PushDevices, meta?: { cursor, limit, total } }"
+   },
+   "id": "EP-048",
+   "feature_id": "F-017"
   },
   {
    "method": "POST",
@@ -5192,7 +5769,7 @@
     "status": 201,
     "body": "{ data: ServiceRegistry, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-044",
+   "id": "EP-049",
    "feature_id": "F-017"
   },
   {
@@ -5306,7 +5883,7 @@
     "status": 200,
     "body": "{ data: ServiceRegistryVersions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-045",
+   "id": "EP-050",
    "feature_id": "F-018"
   },
   {
@@ -5404,7 +5981,7 @@
     "status": 200,
     "body": "{ data: Sessions[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-046",
+   "id": "EP-051",
    "feature_id": "F-012"
   },
   {
@@ -5532,7 +6109,7 @@
     "status": 201,
     "body": "{ data: Sessions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-047",
+   "id": "EP-052",
    "feature_id": "F-001"
   },
   {
@@ -5653,7 +6230,7 @@
     "status": 201,
     "body": "{ data: Skills, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-048",
+   "id": "EP-053",
    "feature_id": "F-018"
   },
   {
@@ -5680,7 +6257,9 @@
    "source": [
     "D-001",
     "D-001.5",
-    "D-002"
+    "D-002",
+    "D-082.1",
+    "D-082.2"
    ],
    "features": [
     "F-001"
@@ -5746,7 +6325,7 @@
    ],
    "ears_ac_seed": [
     "EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「会社名とメールを入れる」として呼ばれたとき THEN Kaname は「アカウントと会社を作る」を行い 2xx を返す",
-    "EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「支払い方法を入れる」として呼ばれたとき THEN Kaname は「決済事業者に登録（カード番号は預からない）」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「プランを選んで Stripe の登録画面へ進む」として呼ばれたとき THEN Kaname は「Stripe Checkout へ送る（C7）。戻りは webhook の写しで確定。カード番号は自社を通らない」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
@@ -5769,7 +6348,7 @@
     "status": 201,
     "body": "{ data: Subscriptions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-049",
+   "id": "EP-054",
    "feature_id": "F-001"
   },
   {
@@ -5884,7 +6463,7 @@
     "status": 200,
     "body": "{ data: Subscriptions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-050",
+   "id": "EP-055",
    "feature_id": "F-015"
   },
   {
@@ -6004,7 +6583,7 @@
     "status": 200,
     "body": "{ data: Tasks[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-051",
+   "id": "EP-056",
    "feature_id": "F-004"
   },
   {
@@ -6142,7 +6721,7 @@
     "status": 201,
     "body": "{ data: Tasks, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-052",
+   "id": "EP-057",
    "feature_id": "F-004"
   },
   {
@@ -6270,7 +6849,7 @@
     "status": 200,
     "body": "{ data: Tasks, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-053",
+   "id": "EP-058",
    "feature_id": "F-004"
   },
   {
@@ -6406,7 +6985,7 @@
     "status": 200,
     "body": "{ data: Tenants[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-054",
+   "id": "EP-059",
    "feature_id": "F-001"
   },
   {
@@ -6519,7 +7098,7 @@
     "status": 200,
     "body": "{ data: Tenants, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-055",
+   "id": "EP-060",
    "feature_id": "F-017"
   }
  ],

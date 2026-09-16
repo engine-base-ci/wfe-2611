@@ -3001,6 +3001,7 @@
    "consumed_by_screens": [
     "credentials",
     "security-brief",
+    "llm-routes",
     "services"
    ],
    "internal": false,
@@ -3012,6 +3013,19 @@
    "consumed_by_screens": [
     "credentials",
     "security-brief",
+    "llm-routes",
+    "services"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "credentials",
+   "field": "provider_id",
+   "consumed_by_screens": [
+    "credentials",
+    "security-brief",
+    "llm-routes",
     "services"
    ],
    "internal": false,
@@ -3030,6 +3044,7 @@
    "consumed_by_screens": [
     "credentials",
     "security-brief",
+    "llm-routes",
     "services"
    ],
    "internal": false,
@@ -3041,6 +3056,7 @@
    "consumed_by_screens": [
     "credentials",
     "security-brief",
+    "llm-routes",
     "services"
    ],
    "internal": false,
@@ -3382,6 +3398,7 @@
     "audit",
     "ai-staff-detail",
     "security-brief",
+    "disclosure",
     "account-close",
     "ops-support",
     "account",
@@ -3409,6 +3426,7 @@
     "audit",
     "ai-staff-detail",
     "security-brief",
+    "disclosure",
     "account-close",
     "ops-support",
     "account",
@@ -3436,6 +3454,7 @@
     "audit",
     "ai-staff-detail",
     "security-brief",
+    "disclosure",
     "account-close",
     "ops-support",
     "account",
@@ -3463,6 +3482,7 @@
     "audit",
     "ai-staff-detail",
     "security-brief",
+    "disclosure",
     "account-close",
     "ops-support",
     "account",
@@ -3490,6 +3510,7 @@
     "audit",
     "ai-staff-detail",
     "security-brief",
+    "disclosure",
     "account-close",
     "ops-support",
     "account",
@@ -3517,6 +3538,7 @@
     "audit",
     "ai-staff-detail",
     "security-brief",
+    "disclosure",
     "account-close",
     "ops-support",
     "account",
@@ -3544,6 +3566,7 @@
     "audit",
     "ai-staff-detail",
     "security-brief",
+    "disclosure",
     "account-close",
     "ops-support",
     "account",
@@ -3571,6 +3594,7 @@
     "audit",
     "ai-staff-detail",
     "security-brief",
+    "disclosure",
     "account-close",
     "ops-support",
     "account",
@@ -4051,6 +4075,7 @@
     "audit",
     "security-brief",
     "account",
+    "app-setup",
     "services"
    ],
    "internal": false,
@@ -4066,6 +4091,7 @@
     "audit",
     "security-brief",
     "account",
+    "app-setup",
     "services"
    ],
    "internal": false,
@@ -4081,6 +4107,7 @@
     "audit",
     "security-brief",
     "account",
+    "app-setup",
     "services"
    ],
    "internal": false,
@@ -4096,6 +4123,7 @@
     "audit",
     "security-brief",
     "account",
+    "app-setup",
     "services"
    ],
    "internal": false,
@@ -4111,6 +4139,7 @@
     "audit",
     "security-brief",
     "account",
+    "app-setup",
     "services"
    ],
    "internal": false,
@@ -4126,6 +4155,7 @@
     "audit",
     "security-brief",
     "account",
+    "app-setup",
     "services"
    ],
    "internal": false,
@@ -4141,6 +4171,7 @@
     "audit",
     "security-brief",
     "account",
+    "app-setup",
     "services"
    ],
    "internal": false,
@@ -4156,6 +4187,7 @@
     "audit",
     "security-brief",
     "account",
+    "app-setup",
     "services"
    ],
    "internal": false,
@@ -4171,6 +4203,7 @@
     "audit",
     "security-brief",
     "account",
+    "app-setup",
     "services"
    ],
    "internal": false,
@@ -4801,6 +4834,7 @@
     "audit",
     "ai-staff-detail",
     "security-brief",
+    "disclosure",
     "account-close",
     "ops-support",
     "account",
@@ -4825,6 +4859,7 @@
     "audit",
     "ai-staff-detail",
     "security-brief",
+    "disclosure",
     "account-close",
     "ops-support",
     "account",
@@ -4849,6 +4884,7 @@
     "audit",
     "ai-staff-detail",
     "security-brief",
+    "disclosure",
     "account-close",
     "ops-support",
     "account",
@@ -4873,6 +4909,7 @@
     "audit",
     "ai-staff-detail",
     "security-brief",
+    "disclosure",
     "account-close",
     "ops-support",
     "account",
@@ -4897,6 +4934,7 @@
     "audit",
     "ai-staff-detail",
     "security-brief",
+    "disclosure",
     "account-close",
     "ops-support",
     "account",
@@ -4921,6 +4959,7 @@
     "audit",
     "ai-staff-detail",
     "security-brief",
+    "disclosure",
     "account-close",
     "ops-support",
     "account",
@@ -4945,6 +4984,7 @@
     "audit",
     "ai-staff-detail",
     "security-brief",
+    "disclosure",
     "account-close",
     "ops-support",
     "account",
@@ -4969,6 +5009,7 @@
     "audit",
     "ai-staff-detail",
     "security-brief",
+    "disclosure",
     "account-close",
     "ops-support",
     "account",
@@ -5000,6 +5041,7 @@
     "audit",
     "ai-staff-detail",
     "security-brief",
+    "disclosure",
     "account-close",
     "ops-support",
     "account",
@@ -5024,6 +5066,7 @@
     "audit",
     "ai-staff-detail",
     "security-brief",
+    "disclosure",
     "account-close",
     "ops-support",
     "account",
@@ -5048,6 +5091,7 @@
     "audit",
     "ai-staff-detail",
     "security-brief",
+    "disclosure",
     "account-close",
     "ops-support",
     "account",
@@ -5072,6 +5116,7 @@
     "audit",
     "ai-staff-detail",
     "security-brief",
+    "disclosure",
     "account-close",
     "ops-support",
     "account",
@@ -5096,6 +5141,7 @@
     "audit",
     "ai-staff-detail",
     "security-brief",
+    "disclosure",
     "account-close",
     "ops-support",
     "account",
@@ -5193,6 +5239,7 @@
    "consumed_by_screens": [
     "notices",
     "ops-notices",
+    "ops-disclosure",
     "ops-tenant"
    ],
    "internal": false,
@@ -5204,6 +5251,7 @@
    "consumed_by_screens": [
     "notices",
     "ops-notices",
+    "ops-disclosure",
     "ops-tenant"
    ],
    "internal": false,
@@ -5215,6 +5263,7 @@
    "consumed_by_screens": [
     "notices",
     "ops-notices",
+    "ops-disclosure",
     "ops-tenant"
    ],
    "internal": false,
@@ -5226,6 +5275,7 @@
    "consumed_by_screens": [
     "notices",
     "ops-notices",
+    "ops-disclosure",
     "ops-tenant"
    ],
    "internal": false,
@@ -5237,6 +5287,7 @@
    "consumed_by_screens": [
     "notices",
     "ops-notices",
+    "ops-disclosure",
     "ops-tenant"
    ],
    "internal": false,
@@ -5248,6 +5299,7 @@
    "consumed_by_screens": [
     "notices",
     "ops-notices",
+    "ops-disclosure",
     "ops-tenant"
    ],
    "internal": false,
@@ -5259,6 +5311,7 @@
    "consumed_by_screens": [
     "notices",
     "ops-notices",
+    "ops-disclosure",
     "ops-tenant"
    ],
    "internal": false,
@@ -5276,8 +5329,10 @@
    "field": "notice_id",
    "consumed_by_screens": [
     "approvals",
+    "app-setup",
     "notices",
     "ops-notices",
+    "ops-disclosure",
     "ops-tenant"
    ],
    "internal": false,
@@ -5288,8 +5343,10 @@
    "field": "member_id",
    "consumed_by_screens": [
     "approvals",
+    "app-setup",
     "notices",
     "ops-notices",
+    "ops-disclosure",
     "ops-tenant"
    ],
    "internal": false,
@@ -5300,8 +5357,10 @@
    "field": "delivered_at",
    "consumed_by_screens": [
     "approvals",
+    "app-setup",
     "notices",
     "ops-notices",
+    "ops-disclosure",
     "ops-tenant"
    ],
    "internal": false,
@@ -5312,8 +5371,10 @@
    "field": "read_at",
    "consumed_by_screens": [
     "approvals",
+    "app-setup",
     "notices",
     "ops-notices",
+    "ops-disclosure",
     "ops-tenant"
    ],
    "internal": false,
@@ -5332,6 +5393,7 @@
    "consumed_by_screens": [
     "notices",
     "ops-notices",
+    "ops-disclosure",
     "ops-tenant"
    ],
    "internal": false,
@@ -5343,6 +5405,7 @@
    "consumed_by_screens": [
     "notices",
     "ops-notices",
+    "ops-disclosure",
     "ops-tenant"
    ],
    "internal": false,
@@ -5354,6 +5417,7 @@
    "consumed_by_screens": [
     "notices",
     "ops-notices",
+    "ops-disclosure",
     "ops-tenant"
    ],
    "internal": false,
@@ -5365,6 +5429,7 @@
    "consumed_by_screens": [
     "notices",
     "ops-notices",
+    "ops-disclosure",
     "ops-tenant"
    ],
    "internal": false,
@@ -5376,6 +5441,7 @@
    "consumed_by_screens": [
     "notices",
     "ops-notices",
+    "ops-disclosure",
     "ops-tenant"
    ],
    "internal": false,
@@ -5387,6 +5453,7 @@
    "consumed_by_screens": [
     "notices",
     "ops-notices",
+    "ops-disclosure",
     "ops-tenant"
    ],
    "internal": false,
@@ -5404,6 +5471,7 @@
    "field": "member_id",
    "consumed_by_screens": [
     "approvals",
+    "app-setup",
     "notices"
    ],
    "internal": false,
@@ -5414,6 +5482,7 @@
    "field": "event_kind_id",
    "consumed_by_screens": [
     "approvals",
+    "app-setup",
     "notices"
    ],
    "internal": false,
@@ -5424,6 +5493,7 @@
    "field": "channel_id",
    "consumed_by_screens": [
     "approvals",
+    "app-setup",
     "notices"
    ],
    "internal": false,
@@ -5434,6 +5504,7 @@
    "field": "enabled",
    "consumed_by_screens": [
     "approvals",
+    "app-setup",
     "notices"
    ],
    "internal": false,
@@ -5451,6 +5522,7 @@
    "field": "member_id",
    "consumed_by_screens": [
     "approvals",
+    "app-setup",
     "notices"
    ],
    "internal": false,
@@ -5461,6 +5533,7 @@
    "field": "channel_id",
    "consumed_by_screens": [
     "approvals",
+    "app-setup",
     "notices"
    ],
    "internal": false,
@@ -5471,6 +5544,7 @@
    "field": "event_kind_id",
    "consumed_by_screens": [
     "approvals",
+    "app-setup",
     "notices"
    ],
    "internal": false,
@@ -5481,6 +5555,7 @@
    "field": "payload",
    "consumed_by_screens": [
     "approvals",
+    "app-setup",
     "notices"
    ],
    "internal": false,
@@ -5498,6 +5573,7 @@
    "field": "sent_at",
    "consumed_by_screens": [
     "approvals",
+    "app-setup",
     "notices"
    ],
    "internal": false,
@@ -5508,6 +5584,7 @@
    "field": "failed_at",
    "consumed_by_screens": [
     "approvals",
+    "app-setup",
     "notices"
    ],
    "internal": false,
@@ -5518,6 +5595,7 @@
    "field": "retry_count",
    "consumed_by_screens": [
     "approvals",
+    "app-setup",
     "notices"
    ],
    "internal": false,
@@ -5764,6 +5842,60 @@
    "reason": null
   },
   {
+   "entity": "subscriptions",
+   "field": "payment_method_id",
+   "consumed_by_screens": [
+    "signup",
+    "billing-setup",
+    "ai-staff",
+    "ops-home",
+    "ops-catalog",
+    "company-settings",
+    "billing",
+    "ops-notices",
+    "ops-billing",
+    "ops-tenant"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "subscriptions",
+   "field": "stripe_customer_ref",
+   "consumed_by_screens": [
+    "signup",
+    "billing-setup",
+    "ai-staff",
+    "ops-home",
+    "ops-catalog",
+    "company-settings",
+    "billing",
+    "ops-notices",
+    "ops-billing",
+    "ops-tenant"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "subscriptions",
+   "field": "stripe_subscription_ref",
+   "consumed_by_screens": [
+    "signup",
+    "billing-setup",
+    "ai-staff",
+    "ops-home",
+    "ops-catalog",
+    "company-settings",
+    "billing",
+    "ops-notices",
+    "ops-billing",
+    "ops-tenant"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
    "entity": "plan_change_requests",
    "field": "<common>",
    "consumed_by_screens": [],
@@ -5986,9 +6118,11 @@
    "entity": "invoices",
    "field": "subscription_id",
    "consumed_by_screens": [
+    "billing-setup",
     "company-settings",
     "billing",
     "ops-billing",
+    "ops-llm",
     "ops-tenant"
    ],
    "internal": false,
@@ -5998,9 +6132,11 @@
    "entity": "invoices",
    "field": "period_start",
    "consumed_by_screens": [
+    "billing-setup",
     "company-settings",
     "billing",
     "ops-billing",
+    "ops-llm",
     "ops-tenant"
    ],
    "internal": false,
@@ -6010,9 +6146,11 @@
    "entity": "invoices",
    "field": "period_end",
    "consumed_by_screens": [
+    "billing-setup",
     "company-settings",
     "billing",
     "ops-billing",
+    "ops-llm",
     "ops-tenant"
    ],
    "internal": false,
@@ -6022,9 +6160,11 @@
    "entity": "invoices",
    "field": "amount",
    "consumed_by_screens": [
+    "billing-setup",
     "company-settings",
     "billing",
     "ops-billing",
+    "ops-llm",
     "ops-tenant"
    ],
    "internal": false,
@@ -6034,9 +6174,11 @@
    "entity": "invoices",
    "field": "issued_at",
    "consumed_by_screens": [
+    "billing-setup",
     "company-settings",
     "billing",
     "ops-billing",
+    "ops-llm",
     "ops-tenant"
    ],
    "internal": false,
@@ -6046,9 +6188,11 @@
    "entity": "invoices",
    "field": "due_on",
    "consumed_by_screens": [
+    "billing-setup",
     "company-settings",
     "billing",
     "ops-billing",
+    "ops-llm",
     "ops-tenant"
    ],
    "internal": false,
@@ -6058,9 +6202,11 @@
    "entity": "invoices",
    "field": "status_id",
    "consumed_by_screens": [
+    "billing-setup",
     "company-settings",
     "billing",
     "ops-billing",
+    "ops-llm",
     "ops-tenant"
    ],
    "internal": false,
@@ -6070,9 +6216,39 @@
    "entity": "invoices",
    "field": "pdf_ref",
    "consumed_by_screens": [
+    "billing-setup",
     "company-settings",
     "billing",
     "ops-billing",
+    "ops-llm",
+    "ops-tenant"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "invoices",
+   "field": "stripe_invoice_ref",
+   "consumed_by_screens": [
+    "billing-setup",
+    "company-settings",
+    "billing",
+    "ops-billing",
+    "ops-llm",
+    "ops-tenant"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "invoices",
+   "field": "hosted_url",
+   "consumed_by_screens": [
+    "billing-setup",
+    "company-settings",
+    "billing",
+    "ops-billing",
+    "ops-llm",
     "ops-tenant"
    ],
    "internal": false,
@@ -6089,9 +6265,11 @@
    "entity": "payments",
    "field": "invoice_id",
    "consumed_by_screens": [
+    "billing-setup",
     "company-settings",
     "billing",
     "ops-billing",
+    "ops-llm",
     "ops-tenant"
    ],
    "internal": false,
@@ -6101,9 +6279,11 @@
    "entity": "payments",
    "field": "paid_on",
    "consumed_by_screens": [
+    "billing-setup",
     "company-settings",
     "billing",
     "ops-billing",
+    "ops-llm",
     "ops-tenant"
    ],
    "internal": false,
@@ -6113,9 +6293,11 @@
    "entity": "payments",
    "field": "amount",
    "consumed_by_screens": [
+    "billing-setup",
     "company-settings",
     "billing",
     "ops-billing",
+    "ops-llm",
     "ops-tenant"
    ],
    "internal": false,
@@ -6125,9 +6307,11 @@
    "entity": "payments",
    "field": "method_id",
    "consumed_by_screens": [
+    "billing-setup",
     "company-settings",
     "billing",
     "ops-billing",
+    "ops-llm",
     "ops-tenant"
    ],
    "internal": false,
@@ -6137,9 +6321,25 @@
    "entity": "payments",
    "field": "recorded_by_ops_member_id",
    "consumed_by_screens": [
+    "billing-setup",
     "company-settings",
     "billing",
     "ops-billing",
+    "ops-llm",
+    "ops-tenant"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "payments",
+   "field": "stripe_payment_ref",
+   "consumed_by_screens": [
+    "billing-setup",
+    "company-settings",
+    "billing",
+    "ops-billing",
+    "ops-llm",
     "ops-tenant"
    ],
    "internal": false,
@@ -6891,6 +7091,445 @@
     "ai-staff-detail",
     "ops-skills",
     "ops-tenant"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "payment_methods",
+   "field": "<common>",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "payment_methods",
+   "field": "kind_id",
+   "consumed_by_screens": [
+    "billing-setup",
+    "ops-billing"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "payment_methods",
+   "field": "stripe_customer_ref",
+   "consumed_by_screens": [
+    "billing-setup",
+    "ops-billing"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "payment_methods",
+   "field": "brand",
+   "consumed_by_screens": [
+    "billing-setup",
+    "ops-billing"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "payment_methods",
+   "field": "last4",
+   "consumed_by_screens": [
+    "billing-setup",
+    "ops-billing"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "payment_methods",
+   "field": "expires_on",
+   "consumed_by_screens": [
+    "billing-setup",
+    "ops-billing"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "payment_methods",
+   "field": "registered_at",
+   "consumed_by_screens": [
+    "billing-setup",
+    "ops-billing"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "billing_events",
+   "field": "<common>",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "billing_events",
+   "field": "stripe_event_ref",
+   "consumed_by_screens": [
+    "ops-billing"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "billing_events",
+   "field": "kind",
+   "consumed_by_screens": [
+    "ops-billing"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "billing_events",
+   "field": "payload",
+   "consumed_by_screens": [
+    "ops-billing"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "billing_events",
+   "field": "received_at",
+   "consumed_by_screens": [
+    "ops-billing"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "billing_events",
+   "field": "processed_at",
+   "consumed_by_screens": [
+    "ops-billing"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "billing_events",
+   "field": "signature_ok",
+   "consumed_by_screens": [
+    "ops-billing"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "llm_routes",
+   "field": "<common>",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "llm_routes",
+   "field": "default_kind_id",
+   "consumed_by_screens": [
+    "llm-routes",
+    "ops-llm"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "llm_routes",
+   "field": "offline_kind_id",
+   "consumed_by_screens": [
+    "llm-routes",
+    "ops-llm"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "llm_routes",
+   "field": "provider_id",
+   "consumed_by_screens": [
+    "llm-routes",
+    "ops-llm"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "llm_routes",
+   "field": "credential_id",
+   "consumed_by_screens": [
+    "llm-routes",
+    "ops-llm"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "llm_routes",
+   "field": "managed_allowed_by_ops_member_id",
+   "consumed_by_screens": [
+    "llm-routes",
+    "ops-llm"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "llm_routes",
+   "field": "managed_allowed_at",
+   "consumed_by_screens": [
+    "llm-routes",
+    "ops-llm"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "llm_capabilities",
+   "field": "key",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "マスタ。label は各画面の札・選択肢として出る"
+  },
+  {
+   "entity": "llm_capabilities",
+   "field": "label",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "マスタ。label は各画面の札・選択肢として出る"
+  },
+  {
+   "entity": "llm_capabilities",
+   "field": "provider_id",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "マスタ。label は各画面の札・選択肢として出る"
+  },
+  {
+   "entity": "llm_capabilities",
+   "field": "capability_id",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "マスタ。label は各画面の札・選択肢として出る"
+  },
+  {
+   "entity": "llm_capabilities",
+   "field": "supported",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "マスタ。label は各画面の札・選択肢として出る"
+  },
+  {
+   "entity": "push_devices",
+   "field": "<common>",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "push_devices",
+   "field": "member_id",
+   "consumed_by_screens": [
+    "app-setup"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "push_devices",
+   "field": "platform_id",
+   "consumed_by_screens": [
+    "app-setup"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "push_devices",
+   "field": "token_ref",
+   "consumed_by_screens": [
+    "app-setup"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "push_devices",
+   "field": "app_version",
+   "consumed_by_screens": [
+    "app-setup"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "push_devices",
+   "field": "last_seen_at",
+   "consumed_by_screens": [
+    "app-setup"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "push_devices",
+   "field": "revoked_at",
+   "consumed_by_screens": [
+    "app-setup"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "disclosure_versions",
+   "field": "<common>",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "disclosure_versions",
+   "field": "version",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "disclosure_versions",
+   "field": "generated_at",
+   "consumed_by_screens": [
+    "disclosure",
+    "ops-disclosure"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "disclosure_versions",
+   "field": "content_hash",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "disclosure_versions",
+   "field": "pdf_ref",
+   "consumed_by_screens": [
+    "disclosure",
+    "ops-disclosure"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "disclosure_versions",
+   "field": "dpa_ref",
+   "consumed_by_screens": [
+    "disclosure",
+    "ops-disclosure"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "disclosure_versions",
+   "field": "released_by",
+   "consumed_by_screens": [
+    "disclosure",
+    "ops-disclosure"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "disclosure_versions",
+   "field": "notice_id",
+   "consumed_by_screens": [
+    "disclosure",
+    "ops-disclosure"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "subprocessors",
+   "field": "<common>",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "subprocessors",
+   "field": "name",
+   "consumed_by_screens": [
+    "disclosure",
+    "ops-disclosure"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "subprocessors",
+   "field": "purpose",
+   "consumed_by_screens": [
+    "disclosure",
+    "ops-disclosure"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "subprocessors",
+   "field": "region",
+   "consumed_by_screens": [
+    "disclosure",
+    "ops-disclosure"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "subprocessors",
+   "field": "data_kinds",
+   "consumed_by_screens": [
+    "disclosure",
+    "ops-disclosure"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "subprocessors",
+   "field": "effective_from",
+   "consumed_by_screens": [
+    "disclosure",
+    "ops-disclosure"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "subprocessors",
+   "field": "announced_at",
+   "consumed_by_screens": [
+    "disclosure",
+    "ops-disclosure"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "subprocessors",
+   "field": "retired_at",
+   "consumed_by_screens": [
+    "disclosure",
+    "ops-disclosure"
    ],
    "internal": false,
    "reason": null

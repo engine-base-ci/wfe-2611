@@ -16,11 +16,12 @@ for r in JR: flows.setdefault(r["journey"], {"name": r["name"], "after": set()})
 done = set(); claimed = set(); waves = []; cnt = collections.Counter(); ms_sorted = sorted(MS["milestones"], key=lambda m: m["due"])
 for w in T["waves"]:
     g = w["group"]; cnt[g] += 1; done |= set(w["tasks"]); ph, ph_name = PHASE[g]
+    if w.get("stage", "v1") == "v2": ph, ph_name = f"9_v2_{ph.split('_', 1)[1]}", f"段階 2 {ph_name}"   # 段階 2 の実装（D-082〜D-085）は段階 1 の後
     l2 = [j for j, f in flows.items() if j not in claimed and f["after"] and f["after"] <= done]; claimed |= set(l2)
     starts = [PLAN[t]["start"] for t in w["tasks"] if t in PLAN and PLAN[t].get("start")]; fins = [PLAN[t]["finish"] for t in w["tasks"] if t in PLAN and PLAN[t].get("finish")]
     start, fin = (min(starts) if starts else None), (max(fins) if fins else None); ms = next((m for m in ms_sorted if fin and m["due"] >= fin), ms_sorted[-1])
     ass = collections.Counter(PLAN[t]["assignee"] for t in w["tasks"] if t in PLAN and PLAN[t].get("assignee"))
-    waves.append({"id": f"W{w['wave']}", "sprint": f"{SP[g]}{cnt[g]}" if g != "U-shared" else "U0", "phase": ph, "phase_name": ph_name, "group": g, "tasks": w["tasks"], "parallel": w["parallel"],
+    waves.append({"id": f"W{w['wave']}", "sprint": f"{SP[g]}{cnt[g]}" if g != "U-shared" else "U0", "phase": ph, "phase_name": ph_name, "group": g, "stage": w.get("stage", "v1"), "tasks": w["tasks"], "parallel": w["parallel"],
                   "estimate_hours_human": w["estimate_hours_human"], "estimate_hours_ai_compute": w["estimate_hours_ai_compute"], "human_review_h": round(sum(TASKS[t]["human_review_h"] for t in w["tasks"]), 1), "wall_clock_h_ai": w["wall_clock_h_ai"], "parallel_capacity": T["summary"]["parallel_capacity"],
                   "start": start, "finish": fin, "milestone": ms["id"], "milestone_due": ms["due"], "assignees": dict(ass), "critical_tasks": [t for t in w["tasks"] if TASKS[t]["critical"]],
                   "goal": f"{ph_name}：{', '.join(TASKS[t]['title'][:18] for t in w['tasks'][:3])}{' …' if len(w['tasks']) > 3 else ''}",

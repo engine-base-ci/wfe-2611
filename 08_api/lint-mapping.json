@@ -146,6 +146,28 @@
    ]
   },
   {
+   "method": "GET",
+   "path": "/api/v1/disclosure_versions",
+   "implementation_path": "apps/api/src/routes/disclosure_versions.ts::getDisclosureVersions",
+   "screen_ids_referencing": [
+    "disclosure"
+   ],
+   "acts": [
+    "A84"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/disclosure_versions/:id",
+   "implementation_path": "apps/api/src/routes/disclosure_versions.ts::patchDisclosureVersionsById",
+   "screen_ids_referencing": [
+    "ops-disclosure"
+   ],
+   "acts": [
+    "A86"
+   ]
+  },
+  {
    "method": "POST",
    "path": "/api/v1/distributions",
    "implementation_path": "apps/api/src/routes/distributions.ts::postDistributions",
@@ -291,7 +313,8 @@
     "ops-billing"
    ],
    "acts": [
-    "A72"
+    "A72",
+    "A87"
    ]
   },
   {
@@ -351,6 +374,28 @@
    ],
    "acts": [
     "A19"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/llm_routes",
+   "implementation_path": "apps/api/src/routes/llm_routes.ts::postLlmRoutes",
+   "screen_ids_referencing": [
+    "llm-routes"
+   ],
+   "acts": [
+    "A82"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/llm_routes/:id",
+   "implementation_path": "apps/api/src/routes/llm_routes.ts::patchLlmRoutesById",
+   "screen_ids_referencing": [
+    "ops-llm"
+   ],
+   "acts": [
+    "A85"
    ]
   },
   {
@@ -506,6 +551,17 @@
    ],
    "acts": [
     "A35"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/push_devices/:id",
+   "implementation_path": "apps/api/src/routes/push_devices.ts::patchPushDevicesById",
+   "screen_ids_referencing": [
+    "app-setup"
+   ],
+   "acts": [
+    "A83"
    ]
   },
   {

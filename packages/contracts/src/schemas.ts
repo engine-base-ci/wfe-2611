@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:a36f3c22396aece9
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:9b7e329a125e8264
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -660,6 +660,7 @@ export const CredentialKindsInput = z.strictObject({
 export const Credentials = z.strictObject({
   service_id: z.uuid().optional(),
   kind_id: z.string().max(10000).optional(),
+  provider_id: z.string().max(10000).optional(),
   vault_ref: z.string().max(10000).optional(),
   owner_member_id: z.uuid().optional(),
   revoked_at: z.iso.datetime({ offset: true }).optional(),
@@ -671,6 +672,7 @@ export const Credentials = z.strictObject({
 export const CredentialsInput = z.strictObject({
   service_id: z.uuid().optional(),
   kind_id: z.string().max(10000).optional(),
+  provider_id: z.string().max(10000).optional(),
   owner_member_id: z.uuid().optional(),
   revoked_at: z.iso.datetime({ offset: true }).optional(),
 });
@@ -1287,6 +1289,9 @@ export const Subscriptions = z.strictObject({
   suspended_at: z.iso.datetime({ offset: true }).optional(),
   ended_at: z.iso.datetime({ offset: true }).optional(),
   billing_contact: z.record(z.string(), z.unknown()).optional(),
+  payment_method_id: z.string().max(10000).optional(),
+  stripe_customer_ref: z.string().max(10000).optional(),
+  stripe_subscription_ref: z.string().max(10000).optional(),
   id: z.uuid(),
   tenant_id: z.uuid().optional(),
   created_at: z.iso.datetime({ offset: true }).optional(),
@@ -1299,6 +1304,9 @@ export const SubscriptionsInput = z.strictObject({
   suspended_at: z.iso.datetime({ offset: true }).optional(),
   ended_at: z.iso.datetime({ offset: true }).optional(),
   billing_contact: z.record(z.string(), z.unknown()).optional(),
+  payment_method_id: z.string().max(10000).optional(),
+  stripe_customer_ref: z.string().max(10000).optional(),
+  stripe_subscription_ref: z.string().max(10000).optional(),
 });
 export const PlanChangeRequests = z.strictObject({
   from_plan_id: z.uuid().optional(),
@@ -1347,6 +1355,8 @@ export const Invoices = z.strictObject({
   due_on: z.iso.date().optional(),
   status_id: z.string().max(10000).optional(),
   pdf_ref: z.string().max(10000).optional(),
+  stripe_invoice_ref: z.string().max(10000).optional(),
+  hosted_url: z.string().max(10000).optional(),
   id: z.uuid(),
   tenant_id: z.uuid().optional(),
   created_at: z.iso.datetime({ offset: true }).optional(),
@@ -1361,6 +1371,8 @@ export const InvoicesInput = z.strictObject({
   due_on: z.iso.date().optional(),
   status_id: z.string().max(10000).optional(),
   pdf_ref: z.string().max(10000).optional(),
+  stripe_invoice_ref: z.string().max(10000).optional(),
+  hosted_url: z.string().max(10000).optional(),
 });
 export const Payments = z.strictObject({
   invoice_id: z.uuid().optional(),
@@ -1368,6 +1380,7 @@ export const Payments = z.strictObject({
   amount: z.number().optional(),
   method_id: z.string().max(10000).optional(),
   recorded_by_ops_member_id: z.uuid().optional(),
+  stripe_payment_ref: z.string().max(10000).optional(),
   id: z.uuid(),
   tenant_id: z.uuid().optional(),
   created_at: z.iso.datetime({ offset: true }).optional(),
@@ -1379,6 +1392,7 @@ export const PaymentsInput = z.strictObject({
   amount: z.number().optional(),
   method_id: z.string().max(10000).optional(),
   recorded_by_ops_member_id: z.uuid().optional(),
+  stripe_payment_ref: z.string().max(10000).optional(),
 });
 export const ErrorEvents = z.strictObject({
   error_code: z.string().max(10000).optional(),
@@ -1588,6 +1602,146 @@ export const SkillAttachmentsInput = z.strictObject({
   disabled_by: z.uuid().optional(),
   attached_at: z.iso.datetime({ offset: true }).optional(),
 });
+export const PaymentMethods = z.strictObject({
+  kind_id: z.string().max(10000).optional(),
+  stripe_customer_ref: z.string().max(10000).optional(),
+  brand: z.string().max(10000).optional(),
+  last4: z.string().max(10000).optional(),
+  expires_on: z.iso.date().optional(),
+  registered_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const PaymentMethodsInput = z.strictObject({
+  kind_id: z.string().max(10000).optional(),
+  stripe_customer_ref: z.string().max(10000).optional(),
+  brand: z.string().max(10000).optional(),
+  last4: z.string().max(10000).optional(),
+  expires_on: z.iso.date().optional(),
+  registered_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const BillingEvents = z.strictObject({
+  stripe_event_ref: z.string().max(10000).optional(),
+  kind: z.string().max(10000).optional(),
+  payload: z.record(z.string(), z.unknown()).optional(),
+  received_at: z.iso.datetime({ offset: true }).optional(),
+  processed_at: z.iso.datetime({ offset: true }).optional(),
+  signature_ok: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const BillingEventsInput = z.strictObject({
+  stripe_event_ref: z.string().max(10000).optional(),
+  kind: z.string().max(10000).optional(),
+  payload: z.record(z.string(), z.unknown()).optional(),
+  received_at: z.iso.datetime({ offset: true }).optional(),
+  processed_at: z.iso.datetime({ offset: true }).optional(),
+  signature_ok: z.string().max(10000).optional(),
+});
+export const LlmRoutes = z.strictObject({
+  default_kind_id: z.string().max(10000).optional(),
+  offline_kind_id: z.string().max(10000).optional(),
+  provider_id: z.string().max(10000).optional(),
+  credential_id: z.uuid().optional(),
+  managed_allowed_by_ops_member_id: z.uuid().optional(),
+  managed_allowed_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const LlmRoutesInput = z.strictObject({
+  default_kind_id: z.string().max(10000).optional(),
+  offline_kind_id: z.string().max(10000).optional(),
+  provider_id: z.string().max(10000).optional(),
+  credential_id: z.uuid().optional(),
+  managed_allowed_by_ops_member_id: z.uuid().optional(),
+  managed_allowed_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const LlmCapabilities = z.strictObject({
+  key: z.string().max(10000).optional(),
+  label: z.string().max(10000).optional(),
+  provider_id: z.uuid().optional(),
+  capability_id: z.string().max(10000).optional(),
+  supported: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const LlmCapabilitiesInput = z.strictObject({
+  key: z.string().max(10000).optional(),
+  label: z.string().max(10000).optional(),
+  provider_id: z.uuid().optional(),
+  capability_id: z.string().max(10000).optional(),
+  supported: z.string().max(10000).optional(),
+});
+export const PushDevices = z.strictObject({
+  member_id: z.uuid().optional(),
+  platform_id: z.string().max(10000).optional(),
+  token_ref: z.string().max(10000).optional(),
+  app_version: z.number().int().optional(),
+  last_seen_at: z.iso.datetime({ offset: true }).optional(),
+  revoked_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const PushDevicesInput = z.strictObject({
+  member_id: z.uuid().optional(),
+  platform_id: z.string().max(10000).optional(),
+  token_ref: z.string().max(10000).optional(),
+  app_version: z.number().int().optional(),
+  last_seen_at: z.iso.datetime({ offset: true }).optional(),
+  revoked_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const DisclosureVersions = z.strictObject({
+  version: z.number().int().optional(),
+  generated_at: z.iso.datetime({ offset: true }).optional(),
+  content_hash: z.string().max(10000).optional(),
+  pdf_ref: z.string().max(10000).optional(),
+  dpa_ref: z.string().max(10000).optional(),
+  released_by: z.uuid().optional(),
+  notice_id: z.uuid().optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const DisclosureVersionsInput = z.strictObject({
+  generated_at: z.iso.datetime({ offset: true }).optional(),
+  pdf_ref: z.string().max(10000).optional(),
+  dpa_ref: z.string().max(10000).optional(),
+  released_by: z.uuid().optional(),
+  notice_id: z.uuid().optional(),
+});
+export const Subprocessors = z.strictObject({
+  name: z.string().max(10000).optional(),
+  purpose: z.string().max(10000).optional(),
+  region: z.string().max(10000).optional(),
+  data_kinds: z.array(z.string()).optional(),
+  effective_from: z.string().max(10000).optional(),
+  announced_at: z.iso.datetime({ offset: true }).optional(),
+  retired_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const SubprocessorsInput = z.strictObject({
+  name: z.string().max(10000).optional(),
+  purpose: z.string().max(10000).optional(),
+  region: z.string().max(10000).optional(),
+  data_kinds: z.array(z.string()).optional(),
+  effective_from: z.string().max(10000).optional(),
+  announced_at: z.iso.datetime({ offset: true }).optional(),
+  retired_at: z.iso.datetime({ offset: true }).optional(),
+});
 
 export const SCHEMAS: Record<string, z.ZodType> = {
   Tenants,
@@ -1760,4 +1914,18 @@ export const SCHEMAS: Record<string, z.ZodType> = {
   SkillTestRunsInput,
   SkillAttachments,
   SkillAttachmentsInput,
+  PaymentMethods,
+  PaymentMethodsInput,
+  BillingEvents,
+  BillingEventsInput,
+  LlmRoutes,
+  LlmRoutesInput,
+  LlmCapabilities,
+  LlmCapabilitiesInput,
+  PushDevices,
+  PushDevicesInput,
+  DisclosureVersions,
+  DisclosureVersionsInput,
+  Subprocessors,
+  SubprocessorsInput,
 };

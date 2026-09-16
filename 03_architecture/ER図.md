@@ -154,7 +154,7 @@ erDiagram
 | `action_runs` | `<scoped>` / `task_id` / `action_kind_id` / **`choke_point_id`** / `service_id` / `procedure_id` / `status_id` / `started_at` / `finished_at` / `tokens_in` / `tokens_out` / `cost` / `error_summary` | **`choke_point_id` を記録**（どの関門を通ったか） |
 | `service_registry` | `<common>` / `name` / `domain` / `automation_verdict_id` / `notes` | `verdict` = api / allowed / unspecified / **forbidden** / **bank** |
 | `credential_kinds` | `key` / `label` | **マスタ**（password_totp / oauth2 / api_key / basic / email_otp / saml）← **E15** |
-| `credentials` | `<scoped>` / `service_id` / `kind_id` / **`vault_ref`** / `owner_member_id` / `revoked_at` | **実体は持たない。vault の参照 ID のみ** |
+| `credentials` | `<scoped>` / `service_id` / `kind_id`（＋ llm_api_key・D-083.3）/ `provider_id`（anthropic ／ openai ／ google）/ **`vault_ref`** / `owner_member_id` / `revoked_at` | **実体は持たない。vault の参照 ID のみ** |
 
 ---
 
@@ -300,11 +300,11 @@ erDiagram
 | **`notifications`** | `<common>` / `member_id` / `channel_id` / `event_kind_id` / `payload jsonb` / `dedupe_key` / `sent_at` / `failed_at` / `retry_count` | **★新設（D-043・C6）。**送出の outbox。重複抑止・再送・証跡は関門 C6 の責務 |
 | **`plans`** | `<common>`（tenant_id＝運営）/ `key`（entry / standard / pro）/ `name` / `price_monthly` / `limits jsonb`（AI社員・担当業務・自律実行／日・人・層）/ `current_version` | **★新設（D-076.6・D-077.5）。マスタ。**「配るもの」の画面で版管理。段階 2 の注記（注 7）から段階 1 に繰り上げ |
 | **`plan_versions`** | `plan_id` / `version` / `snapshot jsonb` / `released_at` | 価格・上限の版 |
-| **`subscriptions`** | `<common>` / `plan_id` / `status_id`（active / suspended / closing / closed）/ `started_at` / `suspended_at` / `ended_at` / `billing_contact jsonb` | **★新設（D-075.4）。**会社の契約。休止（D-076.13）は `status=suspended`。請求先は会社の設定（D-076.2） |
+| **`subscriptions`** | `<common>` / `plan_id` / `status_id`（active / suspended / closing / closed）/ `started_at` / `suspended_at` / `ended_at` / `billing_contact jsonb` / `payment_method_id`（段階 2・D-082.1）/ `stripe_customer_ref` / `stripe_subscription_ref`（Stripe の写し・D-082.3）| **★新設（D-075.4）。**会社の契約。休止（D-076.13）は `status=suspended`。請求先は会社の設定（D-076.2） |
 | **`plan_change_requests`** | `<common>` / `from_plan_id` / `to_plan_id` / `requested_by` / `status_id` / `dependencies_event_id` / `decided_by_ops_member_id` / `decided_at` | 下げるときは `account_events(kind=plan_change)` を作って依存を片づけてから |
 | **`usage_meters`** | `<common>` / `meter_key`（ai_employees / duties / autonomous_runs_day / members / layers）/ `period_start` / `value` / `limit_value` | **★新設（D-075.5）。**上限に近いものを自分のAIが先に言う。上限超過は止まるだけで消えない |
-| **`invoices`** | `<common>` / `subscription_id` / `period_start` / `period_end` / `amount` / `issued_at` / `due_on` / `status_id`（issued / paid / overdue / void）/ `pdf_ref` | **★新設（D-075.4）。段階 1 は請求書払い。**カードは段階 2（D-002）で `payments.method` が増えるだけ |
-| **`payments`** | `<common>` / `invoice_id` / `paid_on` / `amount` / `method_id`（bank_transfer）/ `recorded_by_ops_member_id` | 入金の記録は運営が会社の詳細で行う（D-077.1）。未収 30 日超で休止の案内 |
+| **`invoices`** | `<common>` / `subscription_id` / `period_start` / `period_end` / `amount` / `issued_at` / `due_on` / `status_id`（issued / paid / overdue / void）/ `pdf_ref` / `stripe_invoice_ref` / `hosted_url`（Stripe の請求書・領収書 PDF・D-082.6）| **★新設（D-075.4）。段階 1 は請求書払い。**カードは段階 2（D-002）で `payments.method` が増えるだけ |
+| **`payments`** | `<common>` / `invoice_id` / `paid_on` / `amount` / `method_id`（bank_transfer ／ card）/ `recorded_by_ops_member_id` / `stripe_payment_ref`（カードは写しで自動・D-082.3）| 入金の記録は運営が会社の詳細で行う（D-077.1）。未収 30 日超で休止の案内 |
 | **`error_events`** | `<common>` / `error_code`（`07_qa/test-specs/errors.json` の ID）/ `member_id` / `screen_id` / `context jsonb` / `shown_at` / `next_action_taken_at` | **★新設（D-069.3・D-069.4）。**エラー一覧の 1 件が「出た」記録。文言と次の一手は errors.json が正本 |
 
 ---
@@ -340,6 +340,32 @@ erDiagram
 | **`skill_attachments`** | `<common>` / `skill_id` / `version_in_use` / `target_type`（clone / ai_employee）/ `target_id` / `enabled` / `disabled_by` / `attached_at` | **★新設（D-078.3・D-078.4）。**会社の詳細「配布したもの」と AI社員の 1 体「使えるスキル」はここを読む。会社の権限者が `enabled=false` にできる。AI社員を消す → 行が消える（D-078.7） |
 
 `skill_versions.package_ref` は 10_skills/<skill>/ の一式（SKILL.md＋references＋evals）を C4 に置いた参照（D-080.1）。`skill_test_runs.result` は evals/scenarios.json の期待との突き合わせ（D-080.5）。`action_runs.skill_version_id`（任意）を足し、「どのスキルが働いたか」を証跡と AI社員の動きに出す（D-078.5）。`goals.skill_version_id`（任意）で「どのスキルで組んだか」（D-076.10・D-078.5）。
+
+---
+
+## 15. 段階 2 で足す表（D-082〜D-085）（7）
+
+```mermaid
+erDiagram
+  subscriptions }o--|| payment_methods : "支払い方法"
+  billing_events }o--|| tenants : "写しの出来事"
+  llm_routes }o--|| tenants : "会社の経路"
+  llm_routes }o--o| credentials : "自分の API キー"
+  push_devices }o--|| members : "通知の端末"
+  disclosure_versions ||--o{ subprocessors : "一覧を含む"
+```
+
+| テーブル | 主な列 | 備考 |
+|---|---|---|
+| **`payment_methods`** | `<common>` / `kind_id`（invoice ／ card）/ `stripe_customer_ref` / `brand` / `last4` / `expires_on` / `registered_at` | **★段階 2（D-082.1・D-082.2）。**会社が選んだ支払い方法。カードの実体は Stripe。番号は持たない |
+| **`billing_events`** | `<common>` / `stripe_event_ref` / `kind` / `payload jsonb` / `received_at` / `processed_at` / `signature_ok` | **★段階 2（D-082.3・D-082.4）。**Stripe の webhook の写し。同じ出来事は二度処理しない（stripe_event_ref に unique）。失敗 → 猶予 → 休止の判定の元 |
+| **`llm_routes`** | `<common>` / `default_kind_id`（bridge ／ byok ／ managed）/ `offline_kind_id` / `provider_id`（anthropic ／ openai ／ google）/ `credential_id`（vault 参照・任意）/ `managed_allowed_by_ops_member_id` / `managed_allowed_at` | **★段階 2（D-083.1・D-083.4・D-083.6）。**会社ごとの AI の経路。運営マネージドの許可は運営が書く |
+| **`llm_capabilities`** | `key`（provider:capability）/ `label` / `provider_id` / `capability_id` / `supported` | **★段階 2（D-083.2・D-004）。マスタ。**3 社で揃えた能力表。揃わない能力はどの経路でも出さない |
+| **`push_devices`** | `<common>` / `member_id` / `platform_id`（ios ／ android ／ desktop）/ `token_ref` / `app_version` / `last_seen_at` / `revoked_at` | **★段階 2（D-084.3）。**アプリのプッシュ通知の届け先。失効は即時（G-14） |
+| **`disclosure_versions`** | `<common>`（tenant_id＝運営）/ `version` / `generated_at` / `content_hash` / `pdf_ref`（C4）/ `dpa_ref` / `released_by` / `notice_id` | **★段階 2（D-085.1・D-085.2）。**成果物から生成した開示資料の版。変わったらお知らせ |
+| **`subprocessors`** | `<common>`（tenant_id＝運営）/ `name` / `purpose` / `region` / `data_kinds text[]` / `effective_from` / `announced_at` / `retired_at` | **★段階 2（D-085.2・D-042）。**顧客のデータを触る外部の会社。変更は事前通知 |
+
+`llm_capabilities` は運営のマスタ（3 社 × 能力）。`llm_routes.provider_id` が byok のときは `credential_id`（kind=llm_api_key）が要る。`push_devices.token_ref` は関門 C8 の参照（token の実体は vault）。
 
 ---
 
@@ -406,6 +432,13 @@ erDiagram
 | 成果物 | `artifacts` |  |
 | セキュリティ開示資料 | — | 段階 2〜4 の運営の文書。`distributions(kind=document)` で持てる。段階 1 では作らない |
 | 端末 | `sessions` | web / bridge / push の宛先 |
+| 支払い方法 | `payment_methods` | 段階 2（D-082）。カードは Stripe の参照だけ |
+| 決済の出来事 | `billing_events` | 段階 2（D-082.3）。webhook の写し |
+| LLM の経路 | `llm_routes` | 段階 2（D-083）。運営の許可を含む |
+| 能力表 | `llm_capabilities` | 段階 2（D-083.2）。3 社で揃える |
+| 通知の端末 | `push_devices` | 段階 2（D-084.3） |
+| 開示資料 | `disclosure_versions` | 段階 2（D-085）。運営の版 |
+| サブプロセッサ | `subprocessors` | 段階 2（D-085.2）。事前通知 |
 | 層 | `layers` `scopes` |  |
 | かけたもの | `measures` `tasks` `ledger_records` | `measures.budget_amount`・`tasks.actual_minutes`・`ledger_records.goal_id / measure_id`（D-063） |
 
@@ -526,3 +559,7 @@ erDiagram
 | D-058.8 | 引き取りの成立 | （決めたことの文） |
 | D-078 | スキルは運営の資産。構築・アップロード・テスト・版・配布・装着 | `skills`（D-078.1）・`skill_versions` / `skill_test_runs`（D-078.2）・`skill_attachments`（D-078.3・D-078.4・D-078.7）・`action_runs.skill_version_id` / `goals.skill_version_id`（D-078.5） |
 | D-080 | スキルの中身の作り方（形式・元ネタ・作り方・テスト・版・段階 1 の 14 本） | `skill_versions.package_ref` / `skill_test_runs.result`（D-080.1・D-080.5）・`skill_attachments`（D-080.6） |
+| D-082 | Stripe 課金：Billing のサブスク・ホスト画面・写し・失敗と猶予・従量・税と書類・C7 | `payment_methods`・`billing_events`（D-082.1〜D-082.4）・`subscriptions.payment_method_id / stripe_*`（D-082.1・D-082.3）・`invoices.hosted_url`（D-082.6）・`payments.method_id=card`（D-082.3）・従量は `usage_meters` と Stripe の従量価格（D-082.5・D-083.5）。SDK は packages/billing（D-082.7） |
+| D-083 | LLM の経路：BYOK と運営マネージド・3 社で能力を揃える・キーは C8・費用は上限＋従量 | `llm_routes`（D-083.1・D-083.4・D-083.6）・`llm_capabilities`（D-083.2）・`credentials.kind=llm_api_key / provider_id`（D-083.3）・`usage_meters.meter_key=llm_tokens:<provider>`（D-083.5） |
+| D-084 | アプリ：PC は Bridge の窓・スマホは Capacitor・通知は native・オフラインは読むだけ | `push_devices`（D-084.3）。画面と証跡は既存の表（D-084.1・D-084.2・D-084.4）。ストアと証明書は外部リソース（D-084.5） |
+| D-085 | 開示資料：成果物から生成・版・画面と PDF・監査ログの保持 | `disclosure_versions`（D-085.1・D-085.2・D-085.3）・`subprocessors`（D-085.2）・`export_jobs`（D-085.4） |

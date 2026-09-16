@@ -2,9 +2,9 @@
  "version": "v3.1",
  "created_at": "2026-09-16",
  "summary": {
-  "screens_count": 59,
+  "screens_count": 64,
   "features_count": 28,
-  "entities_count": 85,
+  "entities_count": 92,
   "uncovered_screens": [],
   "uncovered_features": []
  },
@@ -108,6 +108,7 @@
    "screen_name": "支払い方法を登録する",
    "features": [
     "F-001",
+    "F-022",
     "F-027"
    ],
    "entities": [
@@ -115,7 +116,10 @@
     "E-070 plan_versions",
     "E-071 subscriptions",
     "E-073 usage_meters",
-    "E-072 plan_change_requests"
+    "E-072 plan_change_requests",
+    "E-086 payment_methods",
+    "E-074 invoices",
+    "E-075 payments"
    ],
    "related_apis": [
     "POST /api/subscriptions"
@@ -2356,6 +2360,29 @@
    ]
   },
   {
+   "screen_id": "disclosure",
+   "screen_name": "開示資料",
+   "features": [
+    "F-012",
+    "F-022",
+    "F-024"
+   ],
+   "entities": [
+    "E-091 disclosure_versions",
+    "E-092 subprocessors",
+    "E-041 audit_events",
+    "E-061 ops_audit_events",
+    "E-062 security_events"
+   ],
+   "related_apis": [
+    "GET /api/disclosure_versions"
+   ],
+   "access_roles": [
+    "R1",
+    "R2"
+   ]
+  },
+  {
    "screen_id": "export",
    "screen_name": "持ち出す",
    "features": [
@@ -2877,6 +2904,53 @@
    "access_roles": [
     "R1",
     "R2"
+   ]
+  },
+  {
+   "screen_id": "llm-routes",
+   "screen_name": "AI の経路",
+   "features": [
+    "F-017",
+    "F-022",
+    "F-023",
+    "F-028"
+   ],
+   "entities": [
+    "E-088 llm_routes",
+    "E-037 credentials",
+    "E-089 llm_capabilities"
+   ],
+   "related_apis": [
+    "POST /api/llm_routes"
+   ],
+   "access_roles": [
+    "R1",
+    "R2"
+   ]
+  },
+  {
+   "screen_id": "app-setup",
+   "screen_name": "アプリと通知",
+   "features": [
+    "F-017",
+    "F-022",
+    "F-026"
+   ],
+   "entities": [
+    "E-090 push_devices",
+    "E-050 sessions",
+    "E-068 notifications",
+    "E-067 notification_preferences",
+    "E-065 notice_deliveries"
+   ],
+   "related_apis": [
+    "PATCH /api/push_devices/:id"
+   ],
+   "access_roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
    ]
   },
   {
@@ -3458,7 +3532,8 @@
    "screen_name": "運営：請求と入金",
    "features": [
     "F-016",
-    "F-022"
+    "F-022",
+    "F-027"
    ],
    "entities": [
     "E-074 invoices",
@@ -3474,9 +3549,12 @@
     "E-022 duties",
     "E-002 scopes",
     "E-032 policies",
-    "E-027 memories"
+    "E-027 memories",
+    "E-087 billing_events",
+    "E-086 payment_methods"
    ],
    "related_apis": [
+    "GET /api/invoices",
     "GET /api/invoices",
     "navigate /account",
     "navigate /settings/close",
@@ -3523,6 +3601,48 @@
     "navigate /services",
     "navigate /tasks",
     "navigate /today"
+   ],
+   "access_roles": [
+    "R6"
+   ]
+  },
+  {
+   "screen_id": "ops-llm",
+   "screen_name": "運営：AI の経路と使用量",
+   "features": [
+    "F-016",
+    "F-022"
+   ],
+   "entities": [
+    "E-088 llm_routes",
+    "E-074 invoices",
+    "E-075 payments"
+   ],
+   "related_apis": [
+    "PATCH /api/llm_routes/:id"
+   ],
+   "access_roles": [
+    "R6"
+   ]
+  },
+  {
+   "screen_id": "ops-disclosure",
+   "screen_name": "運営：開示資料",
+   "features": [
+    "F-016",
+    "F-022",
+    "F-024",
+    "F-026"
+   ],
+   "entities": [
+    "E-091 disclosure_versions",
+    "E-092 subprocessors",
+    "E-064 notices",
+    "E-065 notice_deliveries",
+    "E-066 status_incidents"
+   ],
+   "related_apis": [
+    "PATCH /api/disclosure_versions/:id"
    ],
    "access_roles": [
     "R6"
@@ -12222,6 +12342,18 @@
    ]
   },
   {
+   "screen_id": "disclosure",
+   "screen_name": "開示資料",
+   "required_apis": [
+    {
+     "act": "A84",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/disclosure_versions"
+    }
+   ]
+  },
+  {
    "screen_id": "export",
    "screen_name": "持ち出す",
    "required_apis": [
@@ -14204,6 +14336,30 @@
      "method": "navigate",
      "path_draft": "/today",
      "to_screen": "today"
+    }
+   ]
+  },
+  {
+   "screen_id": "llm-routes",
+   "screen_name": "AI の経路",
+   "required_apis": [
+    {
+     "act": "A82",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/llm_routes"
+    }
+   ]
+  },
+  {
+   "screen_id": "app-setup",
+   "screen_name": "アプリと通知",
+   "required_apis": [
+    {
+     "act": "A83",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/push_devices/:id"
     }
    ]
   },
@@ -16474,6 +16630,12 @@
      "path_draft": "/api/invoices"
     },
     {
+     "act": "A87",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/invoices"
+    },
+    {
      "role": "transition",
      "method": "navigate",
      "path_draft": "/account",
@@ -16742,6 +16904,30 @@
      "method": "navigate",
      "path_draft": "/today",
      "to_screen": "today"
+    }
+   ]
+  },
+  {
+   "screen_id": "ops-llm",
+   "screen_name": "運営：AI の経路と使用量",
+   "required_apis": [
+    {
+     "act": "A85",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/llm_routes/:id"
+    }
+   ]
+  },
+  {
+   "screen_id": "ops-disclosure",
+   "screen_name": "運営：開示資料",
+   "required_apis": [
+    {
+     "act": "A86",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/disclosure_versions/:id"
     }
    ]
   },
@@ -18639,6 +18825,7 @@
    "used_by_screens": [
     "credentials",
     "security-brief",
+    "llm-routes",
     "services"
    ],
    "used_by_features": [
@@ -18730,6 +18917,7 @@
     "audit",
     "ai-staff-detail",
     "security-brief",
+    "disclosure",
     "account-close",
     "ops-support",
     "account",
@@ -18908,6 +19096,7 @@
     "audit",
     "security-brief",
     "account",
+    "app-setup",
     "services"
    ],
    "used_by_features": [
@@ -19098,6 +19287,7 @@
     "audit",
     "ai-staff-detail",
     "security-brief",
+    "disclosure",
     "account-close",
     "ops-support",
     "account",
@@ -19132,6 +19322,7 @@
     "audit",
     "ai-staff-detail",
     "security-brief",
+    "disclosure",
     "account-close",
     "ops-support",
     "account",
@@ -19174,6 +19365,7 @@
    "used_by_screens": [
     "notices",
     "ops-notices",
+    "ops-disclosure",
     "ops-tenant"
    ],
    "used_by_features": [
@@ -19188,8 +19380,10 @@
    "entity_name": "notice_deliveries",
    "used_by_screens": [
     "approvals",
+    "app-setup",
     "notices",
     "ops-notices",
+    "ops-disclosure",
     "ops-tenant"
    ],
    "used_by_features": [
@@ -19197,6 +19391,7 @@
     "F-014",
     "F-015",
     "F-016",
+    "F-017",
     "F-019"
    ]
   },
@@ -19206,6 +19401,7 @@
    "used_by_screens": [
     "notices",
     "ops-notices",
+    "ops-disclosure",
     "ops-tenant"
    ],
    "used_by_features": [
@@ -19220,11 +19416,13 @@
    "entity_name": "notification_preferences",
    "used_by_screens": [
     "approvals",
+    "app-setup",
     "notices"
    ],
    "used_by_features": [
     "F-006",
-    "F-015"
+    "F-015",
+    "F-017"
    ]
   },
   {
@@ -19232,11 +19430,13 @@
    "entity_name": "notifications",
    "used_by_screens": [
     "approvals",
+    "app-setup",
     "notices"
    ],
    "used_by_features": [
     "F-006",
-    "F-015"
+    "F-015",
+    "F-017"
    ]
   },
   {
@@ -19389,12 +19589,15 @@
    "entity_id": "E-074",
    "entity_name": "invoices",
    "used_by_screens": [
+    "billing-setup",
     "company-settings",
     "billing",
     "ops-billing",
+    "ops-llm",
     "ops-tenant"
    ],
    "used_by_features": [
+    "F-001",
     "F-014",
     "F-015",
     "F-016",
@@ -19406,12 +19609,15 @@
    "entity_id": "E-075",
    "entity_name": "payments",
    "used_by_screens": [
+    "billing-setup",
     "company-settings",
     "billing",
     "ops-billing",
+    "ops-llm",
     "ops-tenant"
    ],
    "used_by_features": [
+    "F-001",
     "F-014",
     "F-015",
     "F-016",
@@ -19570,6 +19776,84 @@
     "F-018",
     "F-019"
    ]
+  },
+  {
+   "entity_id": "E-086",
+   "entity_name": "payment_methods",
+   "used_by_screens": [
+    "billing-setup",
+    "ops-billing"
+   ],
+   "used_by_features": [
+    "F-001",
+    "F-016"
+   ]
+  },
+  {
+   "entity_id": "E-087",
+   "entity_name": "billing_events",
+   "used_by_screens": [
+    "ops-billing"
+   ],
+   "used_by_features": [
+    "F-016"
+   ]
+  },
+  {
+   "entity_id": "E-088",
+   "entity_name": "llm_routes",
+   "used_by_screens": [
+    "llm-routes",
+    "ops-llm"
+   ],
+   "used_by_features": [
+    "F-016",
+    "F-017"
+   ]
+  },
+  {
+   "entity_id": "E-089",
+   "entity_name": "llm_capabilities",
+   "used_by_screens": [
+    "llm-routes"
+   ],
+   "used_by_features": [
+    "F-017"
+   ]
+  },
+  {
+   "entity_id": "E-090",
+   "entity_name": "push_devices",
+   "used_by_screens": [
+    "app-setup"
+   ],
+   "used_by_features": [
+    "F-017"
+   ]
+  },
+  {
+   "entity_id": "E-091",
+   "entity_name": "disclosure_versions",
+   "used_by_screens": [
+    "disclosure",
+    "ops-disclosure"
+   ],
+   "used_by_features": [
+    "F-012",
+    "F-016"
+   ]
+  },
+  {
+   "entity_id": "E-092",
+   "entity_name": "subprocessors",
+   "used_by_screens": [
+    "disclosure",
+    "ops-disclosure"
+   ],
+   "used_by_features": [
+    "F-012",
+    "F-016"
+   ]
   }
  ],
  "feature_to_dependencies": [
@@ -19609,7 +19893,10 @@
     "E-070",
     "E-071",
     "E-072",
-    "E-073"
+    "E-073",
+    "E-074",
+    "E-075",
+    "E-086"
    ],
    "api_endpoints_draft": [
     "GET /api/members",
@@ -20054,6 +20341,7 @@
    "screens": [
     "account-close",
     "audit",
+    "disclosure",
     "export",
     "mfa-setup",
     "security-brief"
@@ -20083,11 +20371,14 @@
     "E-061",
     "E-062",
     "E-076",
-    "E-080"
+    "E-080",
+    "E-091",
+    "E-092"
    ],
    "api_endpoints_draft": [
     "DELETE /api/approvals/:id",
     "DELETE /api/members/:id",
+    "GET /api/disclosure_versions",
     "GET /api/members",
     "GET /api/sessions",
     "POST /api/approvals",
@@ -20232,6 +20523,8 @@
    "screens": [
     "ops-audit",
     "ops-billing",
+    "ops-disclosure",
+    "ops-llm",
     "ops-notices",
     "ops-support"
    ],
@@ -20262,12 +20555,19 @@
     "E-073",
     "E-074",
     "E-075",
-    "E-076"
+    "E-076",
+    "E-086",
+    "E-087",
+    "E-088",
+    "E-091",
+    "E-092"
    ],
    "api_endpoints_draft": [
     "GET /api/audit_events",
     "GET /api/invoices",
+    "PATCH /api/disclosure_versions/:id",
     "PATCH /api/inquiries/:id",
+    "PATCH /api/llm_routes/:id",
     "POST /api/notices"
    ]
   },
@@ -20276,8 +20576,10 @@
    "feature_name": "自分のアカウント・会社の設定・既存データの取り込み・外部サービスの連携を、運営に頼らず自分で整えたい",
    "screens": [
     "account",
+    "app-setup",
     "company-settings",
     "import",
+    "llm-routes",
     "services"
    ],
    "entities": [
@@ -20303,6 +20605,9 @@
     "E-058",
     "E-061",
     "E-062",
+    "E-065",
+    "E-067",
+    "E-068",
     "E-069",
     "E-070",
     "E-071",
@@ -20312,12 +20617,17 @@
     "E-075",
     "E-077",
     "E-078",
-    "E-081"
+    "E-081",
+    "E-088",
+    "E-089",
+    "E-090"
    ],
    "api_endpoints_draft": [
     "PATCH /api/members/:id",
+    "PATCH /api/push_devices/:id",
     "PATCH /api/tenants/:id",
     "POST /api/attachments",
+    "POST /api/llm_routes",
     "POST /api/service_registry"
    ]
   },
@@ -20472,16 +20782,19 @@
     "ai-activity",
     "ai-staff",
     "ai-staff-detail",
+    "app-setup",
     "approvals",
     "audit",
     "automation-repair",
     "billing",
+    "billing-setup",
     "bridge-setup",
     "clone-chat",
     "clone-memory",
     "company-model",
     "company-settings",
     "credentials",
+    "disclosure",
     "duties",
     "export",
     "goal-allocation",
@@ -20492,6 +20805,7 @@
     "inquiry",
     "invite-accept",
     "ledger-def",
+    "llm-routes",
     "login",
     "member-detail",
     "members",
@@ -20504,7 +20818,9 @@
     "ops-audit",
     "ops-billing",
     "ops-catalog",
+    "ops-disclosure",
     "ops-home",
+    "ops-llm",
     "ops-notices",
     "ops-review",
     "ops-services",
@@ -20543,6 +20859,7 @@
     "import",
     "invite-accept",
     "ledger-def",
+    "llm-routes",
     "my-progress",
     "onboard-draft",
     "onboard-interview",
@@ -20561,8 +20878,10 @@
    "feature_name": "関門 C4 ファイル / オブジェクト",
    "screens": [
     "audit",
+    "disclosure",
     "export",
     "import",
+    "ops-disclosure",
     "ops-skills"
    ],
    "entities": [],
@@ -20584,11 +20903,13 @@
    "feature_name": "関門 C6 通知送出",
    "screens": [
     "account",
+    "app-setup",
     "approvals",
     "inquiry",
     "member-detail",
     "members",
     "notices",
+    "ops-disclosure",
     "ops-notices",
     "ops-skills",
     "ops-support",
@@ -20604,7 +20925,8 @@
    "feature_id": "F-027",
    "feature_name": "関門 C7 決済・課金",
    "screens": [
-    "billing-setup"
+    "billing-setup",
+    "ops-billing"
    ],
    "entities": [],
    "api_endpoints_draft": []
@@ -20616,6 +20938,7 @@
     "account",
     "account-close",
     "credentials",
+    "llm-routes",
     "member-detail",
     "mfa-setup",
     "services"

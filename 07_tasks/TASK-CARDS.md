@@ -2,11 +2,11 @@
 
 ## サマリー
 
-- 総タスク数：159（A 23 / D 13 / F 17 / I 22 / S 15 / U-screen 58 / U-shared 6 / V2 5）
-- 画面の被覆：58/59
-- L1 テスト行：3141（正本 07_qa/test-specs）／ 流れ（L2）：9
-- 工数：Human 4848.0 h（606 日）／ AI 計算 847.3 h ＋ 人のレビュー 49.0 h → wall-clock 219.6 h（37 日・並列 10）
-- Wave 数：20
+- 総タスク数：169（A 26 / D 14 / F 17 / I 22 / S 15 / U-screen 64 / U-shared 6 / V2 5）
+- 画面の被覆：64/64
+- L1 テスト行：3367（正本 07_qa/test-specs）／ 流れ（L2）：9
+- 工数：Human 5504.5 h（689 日）／ AI 計算 989.7 h ＋ 人のレビュー 52.0 h → wall-clock 268.9 h（45 日・並列 10）
+- Wave 数：22
 
 ## Group 別タスク一覧
 
@@ -49,6 +49,7 @@
 | T-D-11 | データ層 12. 運営と顧客の間で往復するもの・自分で整えるもの（14 表・migration・RL | db | foundation | 88 | 22.0 | 23.0 | 3 | 3 | 26 |
 | T-D-12 | データ層 13. 取り込み・正規連携・招待・持ち出し・添付（5 表・migration・RLS・索引 | db | foundation | 34 | 2.8 | 2.8 | 3 | 3 | 12 |
 | T-D-13 | データ層 14. スキル（4 表・migration・RLS・索引・seed） | db | foundation | 28 | 2.3 | 2.3 | 3 | 3 | 10 |
+| T-D-14 | データ層 15. 段階 2 で足す表（7 表・migration・RLS・索引・seed） | db | foundation | 46 | 3.8 | 3.8 | 3 | 3 | 14 |
 
 ### Group V2
 
@@ -57,14 +58,14 @@
 | T-V2-01 | 段階 2 の仕様づくり：payment（課金）の E-PAY-*。C7 は N/A（理由つき） | spec | spec | 16 | 2.7 | 2.7 | 4 | 1 | 5 |
 | T-V2-02 | 段階 2 の仕様づくり：Stripe 課金 | spec | spec | 16 | 2.7 | 2.7 | 4 | 1 | 5 |
 | T-V2-03 | 段階 2 の仕様づくり：LLM の経路の追加 | spec | spec | 16 | 2.7 | 2.7 | 4 | 1 | 5 |
-| T-V2-04 | 段階 2 の仕様づくり：PWA | spec | spec | 16 | 2.7 | 2.7 | 4 | 1 | 5 |
+| T-V2-04 | 段階 2 の仕様づくり：アプリ（PC・スマホ） | spec | spec | 16 | 2.7 | 2.7 | 4 | 1 | 5 |
 | T-V2-05 | 段階 2 の仕様づくり：情シス向けの開示資料 | spec | spec | 16 | 2.7 | 2.7 | 4 | 1 | 5 |
 
 ### Group A
 
 | ID | タイトル | category | layer | Human h | AI h | wall-clock | wave | depends_on | L1 行 |
 |---|---|---|---|---|---|---|---|---|---|
-| T-A-01 | API 契約してから、自力で動く状態まで持っていきたい — データ・API・（5 endpoint） | backend | backend | 116 | 29.0 | 30.0 | 5 | 22 | 36 |
+| T-A-01 | API 契約してから、自力で動く状態まで持っていきたい — データ・API・（5 endpoint） | backend | backend | 125 | 31.2 | 32.2 | 5 | 22 | 36 |
 | T-A-02 | API 招かれたので、自分がやることだけ分かる状態にしたい — データ・AP（1 endpoint） | backend | backend | 26 | 6.5 | 7.5 | 5 | 8 | 10 |
 | T-A-03 | API 入れなくなったときに、自分で入り直したい — データ・API・権限（1 endpoint） | backend | backend | 38 | 9.5 | 10.5 | 5 | 15 | 15 |
 | T-A-04 | API 今日なにをすればいいか、迷わず決めたい — データ・API・権限（1/2）（6 endpoi | backend | backend | 62 | 15.5 | 16.5 | 5 | 16 | 38 |
@@ -78,15 +79,18 @@
 | T-A-12 | API 人に任せたい。任せても品質が落ちないようにしたい — データ・API（1/2）（6 endp | backend | backend | 90 | 22.5 | 23.5 | 6 | 18 | 50 |
 | T-A-13 | API 人に任せたい。任せても品質が落ちないようにしたい — データ・API（2/2）（3 endp | backend | backend | 90 | 22.5 | 23.5 | 6 | 13 | 24 |
 | T-A-14 | API 会社のやり方が、人が辞めても消えないようにしたい — データ・API（3 endpoint） | backend | backend | 104 | 26.0 | 27.0 | 6 | 14 | 27 |
-| T-A-15 | API このツールを入れて安全か、社内（情シス・コンプラ）に説明できるように（6 endpoint） | backend | backend | 119 | 29.8 | 30.8 | 6 | 22 | 44 |
+| T-A-15 | API このツールを入れて安全か、社内（情シス・コンプラ）に説明できるように（6 endpoint） | backend | backend | 131 | 32.8 | 33.8 | 6 | 22 | 44 |
 | T-A-16 | API 自分のAIを、自分の考え方に近づけたい — データ・API・権限（4 endpoint） | backend | backend | 80 | 6.7 | 6.7 | 6 | 15 | 33 |
 | T-A-17 | API 導入した顧客が詰まったとき、データを見ずに直したい — データ・AP（3 endpoint） | backend | backend | 146 | 36.5 | 37.5 | 6 | 14 | 23 |
 | T-A-18 | API 困ったら運営に聞きたい。止まっているのが自分のせいか Kaname （3 endpoint） | backend | backend | 104 | 26.0 | 27.0 | 6 | 13 | 29 |
-| T-A-19 | API 運営として、問い合わせに答え、お知らせと稼働状況を出し、各社の請求・（4 endpoint） | backend | backend | 116 | 29.0 | 30.0 | 6 | 16 | 34 |
-| T-A-20 | API 自分のアカウント・会社の設定・既存データの取り込み・外部サービスの連（4 endpoint） | backend | backend | 134 | 33.5 | 34.5 | 6 | 23 | 33 |
+| T-A-19 | API 運営として、問い合わせに答え、お知らせと稼働状況を出し、各社の請求・（4 endpoint） | backend | backend | 143 | 35.8 | 36.8 | 6 | 16 | 34 |
+| T-A-20 | API 自分のアカウント・会社の設定・既存データの取り込み・外部サービスの連（4 endpoint） | backend | backend | 164 | 41.0 | 42.0 | 6 | 23 | 33 |
 | T-A-21 | API 運営として、外部サービスの可否（サービス台帳）とプランの定義と目標ス（3 endpoint） | backend | backend | 98 | 8.2 | 8.2 | 7 | 16 | 27 |
 | T-A-22 | API 運営として、公開の申請を審査し、顧客が許可したときだけ支援で中を見て（3 endpoint） | backend | backend | 155 | 38.8 | 39.8 | 7 | 13 | 24 |
 | T-A-23 | API 運営として、各社に配るもの（AI社員・担当業務・ルール・テンプレ）と（2 endpoint） | backend | backend | 74 | 6.2 | 6.2 | 7 | 8 | 17 |
+| T-A-24 | API このツールを入れて安全か、社内（情シス・コンプラ）に説明できるように（1 endpoint・ | backend | backend | 131 | 32.8 | 33.8 | 20 | 9 | 11 |
+| T-A-25 | API 運営として、問い合わせに答え、お知らせと稼働状況を出し、各社の請求・（2 endpoint・ | backend | backend | 143 | 35.8 | 36.8 | 20 | 13 | 18 |
+| T-A-26 | API 自分のアカウント・会社の設定・既存データの取り込み・外部サービスの連（2 endpoint・ | backend | backend | 164 | 41.0 | 42.0 | 20 | 16 | 18 |
 
 ### Group U-shared
 
@@ -154,13 +158,19 @@
 | T-U-49 | 画面 運営：スキル（4 状態・R6） | frontend | ui | 15.5 | 1.6 | 1.6 | 13 | 7 | 30 |
 | T-U-50 | 画面 問い合わせ（5 状態・R1/R2/R3/R4） | frontend | ui | 22.5 | 2.2 | 2.2 | 13 | 7 | 37 |
 | T-U-51 | 画面 お知らせと通知（3 状態・R1/R2/R3/R4） | frontend | ui | 17.5 | 1.8 | 1.8 | 14 | 7 | 35 |
-| T-U-52 | 画面 プランと請求（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 14 | 7 | 30 |
+| T-U-52 | 画面 プランと請求（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 14 | 7 | 39 |
 | T-U-53 | 画面 運営：お知らせ（2 状態・R6） | frontend | ui | 10.5 | 1.1 | 1.1 | 14 | 7 | 28 |
-| T-U-54 | 画面 運営：請求と入金（2 状態・R6） | frontend | ui | 10.5 | 1.1 | 1.1 | 14 | 7 | 25 |
+| T-U-54 | 画面 運営：請求と入金（2 状態・R6） | frontend | ui | 10.5 | 1.1 | 1.1 | 14 | 7 | 28 |
 | T-U-55 | 画面 運営：会社の 1 社（1 状態・R6） | frontend | ui | 8.0 | 0.8 | 0.8 | 14 | 8 | 24 |
 | T-U-56 | 画面 運営：公開の審査（2 状態・R6） | frontend | ui | 10.5 | 1.1 | 1.1 | 14 | 7 | 25 |
 | T-U-57 | 画面 運営：運営の証跡（2 状態・R6） | frontend | ui | 10.5 | 1.1 | 1.1 | 14 | 10 | 28 |
 | T-U-58 | 画面 メンバーの1人（4 状態・R1/R2） | frontend | ui | 17.0 | 1.7 | 1.7 | 14 | 10 | 34 |
+| T-U-59 | 画面 支払い方法を登録する（4 状態・R1/R2・段階 2） | frontend | ui | 17.0 | 1.7 | 1.7 | 21 | 7 | 26 |
+| T-U-60 | 画面 開示資料（4 状態・R1/R2・段階 2） | frontend | ui | 17.0 | 1.7 | 1.7 | 21 | 7 | 26 |
+| T-U-61 | 画面 AI の経路（4 状態・R1/R2・段階 2） | frontend | ui | 17.0 | 1.7 | 1.7 | 21 | 7 | 35 |
+| T-U-62 | 画面 アプリと通知（3 状態・R1/R2/R3/R4・段階 2） | frontend | ui | 17.5 | 1.8 | 1.8 | 21 | 7 | 27 |
+| T-U-63 | 画面 運営：AI の経路と使用量（3 状態・R6・段階 2） | frontend | ui | 13.0 | 1.3 | 1.3 | 21 | 7 | 18 |
+| T-U-64 | 画面 運営：開示資料（3 状態・R6・段階 2） | frontend | ui | 13.0 | 1.3 | 1.3 | 21 | 7 | 21 |
 
 ### Group I
 
@@ -169,20 +179,20 @@
 | T-I-01 | 実行ループの結線（自分のAI → 配る → AI社員 action_runs → 関門 → 一次確認 | test | integration | 32 | 8.0 | 9.0 | 15 | 19 | 7 |
 | T-I-02 | 認証 → 会社 → 権限 → 画面の解禁（login → sessions → SET LOCAL  | test | integration | 20 | 5.0 | 6.0 | 15 | 9 | 7 |
 | T-I-03 | 画面 → API → DB の通し配線（契約テスト・型生成同期・endpoint 実在性・別 GET | test | integration | 24 | 2.4 | 2.4 | 15 | 24 | 7 |
-| T-I-04 | 運営 ↔ 顧客の往復（問い合わせ → 受信箱 → 会社の詳細で返答 → 顧客の問い合わせに届く／お知 | test | integration | 20 | 2.0 | 2.0 | 15 | 10 | 7 |
-| T-I-05 | 出来事の依存処理 → 全失効（人が抜ける・退会・休止・権限変更・プラン変更・層を消す・AI社員を消す | test | integration | 28 | 7.0 | 8.0 | 15 | 12 | 7 |
+| T-I-04 | 運営 ↔ 顧客の往復（問い合わせ → 受信箱 → 会社の詳細で返答 → 顧客の問い合わせに届く／お知 | test | integration | 20 | 2.0 | 2.0 | 15 | 11 | 7 |
+| T-I-05 | 出来事の依存処理 → 全失効（人が抜ける・退会・休止・権限変更・プラン変更・層を消す・AI社員を消す | test | integration | 28 | 7.0 | 8.0 | 15 | 13 | 7 |
 | T-I-06 | スキルの配布 → 装着 → Bridge が読む → どのスキルが働いたかが証跡に出る | test | integration | 20 | 2.0 | 2.0 | 15 | 10 | 7 |
-| T-I-07 | 通知の結線（出来事 → 届け先 → outbox → 配達 → 既読・失敗時の再送） | test | integration | 12 | 1.2 | 1.2 | 15 | 7 | 7 |
-| T-I-08 | 課金の結線（プラン → 契約 → 月次の請求書 → 入金の記録 → 未収 → 休止の案内） | test | integration | 16 | 4.0 | 5.0 | 15 | 8 | 7 |
-| T-I-09 | 流れ J-01 P0 契約・登録（1回だけ） を最後まで通す（L2） | test | integration | 14 | 1.4 | 1.4 | 15 | 7 | 2 |
+| T-I-07 | 通知の結線（出来事 → 届け先 → outbox → 配達 → 既読・失敗時の再送） | test | integration | 12 | 1.2 | 1.2 | 15 | 8 | 7 |
+| T-I-08 | 課金の結線（プラン → 契約 → 月次の請求書 → 入金の記録 → 未収 → 休止の案内） | test | integration | 16 | 4.0 | 5.0 | 15 | 9 | 7 |
+| T-I-09 | 流れ J-01 P0 契約・登録（1回だけ） を最後まで通す（L2） | test | integration | 14 | 1.4 | 1.4 | 15 | 8 | 2 |
 | T-I-10 | 流れ J-02 P1 はじめの設定 ── PCをつないで、自分のAIと作る（初日〜3日） を最後まで | test | integration | 20 | 2.0 | 2.0 | 15 | 11 | 2 |
 | T-I-11 | 流れ J-03 P2 毎日 ── 自分のAIと回す を最後まで通す（L2） | test | integration | 42 | 4.2 | 4.2 | 16 | 19 | 2 |
 | T-I-12 | 流れ J-04 P3 毎週 を最後まで通す（L2） | test | integration | 18 | 1.8 | 1.8 | 16 | 9 | 2 |
 | T-I-13 | 流れ J-05 P4 毎月・四半期 を最後まで通す（L2） | test | integration | 22 | 2.2 | 2.2 | 16 | 12 | 2 |
 | T-I-14 | 流れ J-06 P5 例外・困ったとき を最後まで通す（L2） | test | integration | 16 | 1.6 | 1.6 | 16 | 8 | 2 |
-| T-I-15 | 流れ J-07 P6 人が増えたら を最後まで通す（L2） | test | integration | 34 | 3.4 | 3.4 | 16 | 20 | 2 |
-| T-I-16 | 流れ J-08 P7 外に説明する・出る を最後まで通す（L2） | test | integration | 14 | 1.4 | 1.4 | 16 | 5 | 2 |
-| T-I-17 | 流れ J-09 P8 運営（段階2） を最後まで通す（L2） | test | integration | 34 | 3.4 | 3.4 | 16 | 18 | 2 |
+| T-I-15 | 流れ J-07 P6 人が増えたら を最後まで通す（L2） | test | integration | 34 | 3.4 | 3.4 | 16 | 22 | 2 |
+| T-I-16 | 流れ J-08 P7 外に説明する・出る を最後まで通す（L2） | test | integration | 14 | 1.4 | 1.4 | 16 | 6 | 2 |
+| T-I-17 | 流れ J-09 P8 運営（段階2） を最後まで通す（L2） | test | integration | 34 | 3.4 | 3.4 | 16 | 19 | 2 |
 | T-I-18 | drift 検出（モック ↔ 実装：h1・状態・第2ナビ・列の値／仕様 ↔ 実装：states・tr | test | integration | 12 | 1.2 | 1.2 | 16 | 24 | 7 |
 | T-I-19 | 負荷試験（同時接続・集中時の rps・失敗率・接続プール）と有限資源の枯渇 | test | polish | 16 | 1.6 | 1.6 | 16 | 3 | 7 |
 | T-I-20 | セキュリティ監査（RLS を故意に壊す・関門の迂回・運営の越境・資格情報の露出） | test | polish | 16 | 4.0 | 5.0 | 16 | 5 | 7 |
@@ -571,9 +581,21 @@
 - L1 行 10（['RLS-D13-001', 'RLS-D13-002', 'RLS-D13-003'] …）／ L2 —
 - audit: 07_tasks/audit/T-D-13.md
 
+### T-D-14 データ層 15. 段階 2 で足す表（7 表・migration・RLS・索引・seed）
+
+- group D / layer foundation / phase 2_data / wave 3 / Human 46 h・AI 3.8 h・wall-clock 3.8 h
+- 行為 — / 画面 — / 表 payment_methods billing_events llm_routes llm_capabilities push_devices disclosure_versions / 関門 C2
+- 依存 T-F-01 T-F-02 T-F-03
+- 根拠（逐語）：D-004「LLMは顧客のサブスク内(Bridge)が既定。APIは顧客負担。運営マネージドは既定OFFの管理者トグル」 ／ D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」
+- 触るファイル：packages/db/migrations/0114_15.sql (new)、packages/db/policies/payment_methods.sql (new)、packages/db/schema.ts (modify)
+- AC（Tier 1）：UBIQUITOUS: 表 payment_methods, billing_events, llm_routes, llm_capabilities, pus
+- AC（Tier 2）：UNWANTED: IF 他テナントの行を SELECT/UPDATE しようとしたら 0 行／403 で副作用が起きない（payment_methods_te ／ UBIQUITOUS: payment_methods_tenant_read ／ UBIQUITOUS: payment_methods_permission_write
+- L1 行 14（['RLS-D14-001', 'RLS-D14-002', 'RLS-D14-003'] …）／ L2 —
+- audit: 07_tasks/audit/T-D-14.md
+
 ### T-A-01 API 契約してから、自力で動く状態まで持っていきたい — データ・API・（5 endpoint）
 
-- group A / layer backend / phase 3_api / wave 5 / Human 116 h・AI 29.0 h・wall-clock 30.0 h
+- group A / layer backend / phase 3_api / wave 5 / Human 125 h・AI 31.2 h・wall-clock 32.2 h
 - 行為 A01 A02 A04 A05 A06 A07 A08 A09 A12 A13 A45 / 画面 bridge-setup company-model login mfa-setup onboard-draft onboard-golive onboard-interview signup verify-email / 表 tenants members clones goals ledger_definitions duties / 関門 C2 C3 C5 C7 C8
 - 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-02 T-D-03 T-D-04 T-D-05
 - 根拠（逐語）：D-001「2028-09までに200社→65社に修正。自社SaaS外販。初期顧客が自力で回せることが前提」 ／ D-002「65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集」
@@ -741,7 +763,7 @@
 
 ### T-A-15 API このツールを入れて安全か、社内（情シス・コンプラ）に説明できるように（6 endpoint）
 
-- group A / layer backend / phase 3_api / wave 6 / Human 119 h・AI 29.8 h・wall-clock 30.8 h
+- group A / layer backend / phase 3_api / wave 6 / Human 131 h・AI 32.8 h・wall-clock 33.8 h
 - 行為 A02 A04 A13 A34 A39 A40 A41 A42 A62 A66 / 画面 account-close audit export login member-detail mfa-setup security-brief verify-email / 表 tenants members ai_employees goals ledger_definitions approvals / 関門 C1 C2 C4 C6 C8
 - 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-02 T-D-03 T-D-05 T-D-06
 - 根拠（逐語）：D-010「製品の背骨。会社モデル(目標・台帳定義・担当業務・組織・ポリシー・記憶)を1つの定義に。画面もAI社員も自動実行もこの定」 ／ D-015「Bridgeは顧客PCで動く万能実行器。本人のIP・本人のログイン済みセッションで動くのでCAPTCHA/bot検知に到」
@@ -789,8 +811,8 @@
 
 ### T-A-19 API 運営として、問い合わせに答え、お知らせと稼働状況を出し、各社の請求・（4 endpoint）
 
-- group A / layer backend / phase 3_api / wave 6 / Human 116 h・AI 29.0 h・wall-clock 30.0 h
-- 行為 A33 A38 A43 A70 A71 A72 A73 / 画面 audit ops-audit ops-billing ops-notices ops-support / 表 tenants members goals approvals conversations audit_events / 関門 C2 C6
+- group A / layer backend / phase 3_api / wave 6 / Human 143 h・AI 35.8 h・wall-clock 36.8 h
+- 行為 A33 A38 A43 A70 A71 A72 A73 A87 / 画面 audit ops-audit ops-billing ops-notices ops-support / 表 tenants members goals approvals conversations audit_events / 関門 C2 C6
 - 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-02 T-D-05 T-D-06 T-D-10
 - 根拠（逐語）：D-002「65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集」 ／ D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」
 - 触るファイル：apps/api/src/routes/audit_events.ts (new)、apps/api/src/routes/inquiries.ts (new)、apps/api/src/routes/invoices.ts (new)、apps/api/src/routes/notices.ts (new)
@@ -801,7 +823,7 @@
 
 ### T-A-20 API 自分のアカウント・会社の設定・既存データの取り込み・外部サービスの連（4 endpoint）
 
-- group A / layer backend / phase 3_api / wave 6 / Human 134 h・AI 33.5 h・wall-clock 34.5 h
+- group A / layer backend / phase 3_api / wave 6 / Human 164 h・AI 41.0 h・wall-clock 42.0 h
 - 行為 A31 A36 A61 A74 A75 A76 A77 / 画面 account company-settings import member-detail members password-reset services / 表 tenants members ai_employees goals ledger_definitions ledger_views / 関門 C1 C2 C3 C4 C6 C8
 - 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-02 T-D-03 T-D-04 T-D-05
 - 根拠（逐語）：D-006「スコープの採否は『抜いてもループが閉じるか』。CRM・請求・経理を切ると目標の数値が出せなくなるので切らない」 ／ D-013「実行層は接続の器を1回作れば設定で増える形にする。連携を1本ずつ書かない」
@@ -846,6 +868,42 @@
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/ai_employees が「AI社員を増やす・人に託す」として呼ばれたとき THEN Kanam ／ EVENT-DRIVEN: WHEN GET /api/v1/ai_employees が「このAI社員の中身を見る」として呼ばれたとき THEN Kaname ／ EVENT-DRIVEN: WHEN GET /api/v1/ai_employees が「木を開いて、止まっているところを見る」として呼ばれたとき THEN 
 - L1 行 17（['API-23-001', 'API-23-002', 'API-23-003'] …）／ L2 ['J-09']
 - audit: 07_tasks/audit/T-A-23.md
+
+### T-A-24 API このツールを入れて安全か、社内（情シス・コンプラ）に説明できるように（1 endpoint・段階 2）
+
+- group A / layer backend / phase 9_v2_api / wave 20 / Human 131 h・AI 32.8 h・wall-clock 33.8 h
+- 行為 A84 / 画面 disclosure / 表 audit_events ops_audit_events disclosure_versions subprocessors / 関門 C4
+- 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-06 T-D-10 T-D-14 T-F-10
+- 根拠（逐語）：D-010「製品の背骨。会社モデル(目標・台帳定義・担当業務・組織・ポリシー・記憶)を1つの定義に。画面もAI社員も自動実行もこの定」 ／ D-015「Bridgeは顧客PCで動く万能実行器。本人のIP・本人のログイン済みセッションで動くのでCAPTCHA/bot検知に到」
+- 触るファイル：apps/api/src/routes/disclosure_versions.ts (new)、apps/api/src/app.ts (modify)
+- AC（Tier 1）：UBIQUITOUS: GET /api/v1/disclosure_versions は 08_api/openapi.yaml の operation ge
+- AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/disclosure_versions が「開示資料を開いて PDF をもらう」として呼ばれたとき ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）
+- L1 行 11（['API-24-001', 'API-24-002', 'API-24-003'] …）／ L2 ['J-01', 'J-07', 'J-08']
+- audit: 07_tasks/audit/T-A-24.md
+
+### T-A-25 API 運営として、問い合わせに答え、お知らせと稼働状況を出し、各社の請求・（2 endpoint・段階 2）
+
+- group A / layer backend / phase 9_v2_api / wave 20 / Human 143 h・AI 35.8 h・wall-clock 36.8 h
+- 行為 A85 A86 / 画面 ops-disclosure ops-llm / 表 notices notice_deliveries invoices payments llm_routes disclosure_versions / 関門 C2 C4 C6
+- 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-11 T-D-14 T-F-02 T-F-03 T-F-04
+- 根拠（逐語）：D-002「65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集」 ／ D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」
+- 触るファイル：apps/api/src/routes/disclosure_versions.ts (new)、apps/api/src/routes/llm_routes.ts (new)、apps/api/src/app.ts (modify)
+- AC（Tier 1）：UBIQUITOUS: PATCH /api/v1/disclosure_versions/:id は 08_api/openapi.yaml の operat ／ UBIQUITOUS: PATCH /api/v1/llm_routes/:id は 08_api/openapi.yaml の operation patch
+- AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/disclosure_versions/:id が「版を出す・DPA の雛形とサブプロセッサを ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）
+- L1 行 18（['API-25-001', 'API-25-002', 'API-25-003'] …）／ L2 ['J-09']
+- audit: 07_tasks/audit/T-A-25.md
+
+### T-A-26 API 自分のアカウント・会社の設定・既存データの取り込み・外部サービスの連（2 endpoint・段階 2）
+
+- group A / layer backend / phase 9_v2_api / wave 20 / Human 164 h・AI 41.0 h・wall-clock 42.0 h
+- 行為 A82 A83 / 画面 app-setup llm-routes / 表 credentials sessions notification_preferences notifications llm_routes llm_capabilities / 関門 C2 C3 C6 C8
+- 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-05 T-D-09 T-D-11 T-D-14 T-F-02
+- 根拠（逐語）：D-006「スコープの採否は『抜いてもループが閉じるか』。CRM・請求・経理を切ると目標の数値が出せなくなるので切らない」 ／ D-013「実行層は接続の器を1回作れば設定で増える形にする。連携を1本ずつ書かない」
+- 触るファイル：apps/api/src/routes/llm_routes.ts (new)、apps/api/src/routes/push_devices.ts (new)、apps/api/src/app.ts (modify)
+- AC（Tier 1）：UBIQUITOUS: POST /api/v1/llm_routes は 08_api/openapi.yaml の operation postLlmRou ／ UBIQUITOUS: PATCH /api/v1/push_devices/:id は 08_api/openapi.yaml の operation pat
+- AC（Tier 2）：EVENT-DRIVEN: WHEN POST /api/v1/llm_routes が「会社の設定で AI の経路を選び、必要ならキーを入れる」として呼ばれた ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）
+- L1 行 18（['API-26-001', 'API-26-002', 'API-26-003'] …）／ L2 ['J-07']
+- audit: 07_tasks/audit/T-A-26.md
 
 ### T-US-01 シェル（サイドバー・レール・第2ナビ・三画面・下タブ・枠の導出 data-frame・役割の出し分け data-roles）
 
@@ -927,7 +985,7 @@
 - 根拠（逐語）：D-001「2028-09までに200社→65社に修正。自社SaaS外販。初期顧客が自力で回せることが前提」 ／ D-011「製品名はKaname(要)。jobrainから改名」
 - 触るファイル：apps/web/app/(public)/signup/page.tsx (new)、apps/web/tests/screens/signup.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 signup は URL /signup で開く（apps/web/app/(public)/signup/page.tsx。遷移 ／ STATE-DRIVEN: WHILE 画面 signup が描画中 THEN h1「アカウントを作る」・第2ナビ ・状態 2（通常、既に登録済み）がモック 0
-- AC（Tier 2）：EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「会社名とメールを入れる」として呼ばれたとき THEN Kanam ／ EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「支払い方法を入れる」として呼ばれたとき THEN Kaname  ／ EVENT-DRIVEN: WHEN 「はじめる」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
+- AC（Tier 2）：EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「会社名とメールを入れる」として呼ばれたとき THEN Kanam ／ EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「プランを選んで Stripe の登録画面へ進む」として呼ばれたと ／ EVENT-DRIVEN: WHEN 「はじめる」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 25（['SCR-SIGNUP-001', 'SCR-SIGNUP-002', 'SCR-SIGNUP-003'] …）／ L2 ['J-01']
 - audit: 07_tasks/audit/T-U-01.md
 
@@ -1540,7 +1598,7 @@
 - 触るファイル：apps/web/app/(app)/billing/page.tsx (new)、apps/web/tests/screens/billing.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 billing は URL /billing で開く（apps/web/app/(app)/billing/page.tsx。遷移 ／ STATE-DRIVEN: WHILE 画面 billing が描画中 THEN h1「プランと請求」・第2ナビ プラン / 使った量 / 請求書 / 支払い方
 - AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/subscriptions/:id が「プランと請求書を見る」として呼ばれたとき THEN K ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「プランを変える」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
-- L1 行 30（['SCR-BILLING-001', 'SCR-BILLING-002', 'SCR-BILLING-003'] …）／ L2 ['J-07']
+- L1 行 39（['SCR-BILLING-001', 'SCR-BILLING-002', 'SCR-BILLING-003'] …）／ L2 ['J-07']
 - audit: 07_tasks/audit/T-U-52.md
 
 ### T-U-53 画面 運営：お知らせ（2 状態・R6）
@@ -1558,13 +1616,13 @@
 ### T-U-54 画面 運営：請求と入金（2 状態・R6）
 
 - group U-screen / layer ui / phase 5_ui_parallel / wave 14 / Human 10.5 h・AI 1.1 h・wall-clock 1.1 h
-- 行為 A72 / 画面 ops-billing / 表 invoices payments plans plan_versions subscriptions usage_meters / 関門 —（画面。外界に出ない（API は関門の先））
+- 行為 A72 A87 / 画面 ops-billing / 表 invoices payments plans plan_versions subscriptions usage_meters / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-19
 - 根拠（逐語）：D-075「運営と顧客の間で往復するものは 6 つ（問い合わせ／お知らせと稼働状況／通知の届け先／プランと利用量／請求と入金／セキュ」 ／ D-002「65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集」
 - 触るファイル：apps/web/app/(app)/ops/billing/page.tsx (new)、apps/web/tests/screens/ops-billing.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 ops-billing は URL /ops/billing で開く（apps/web/app/(app)/ops/billing ／ STATE-DRIVEN: WHILE 画面 ops-billing が描画中 THEN h1「運営：請求と入金」・第2ナビ 請求と入金 / 未収 / 利用量と
-- AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/invoices が「請求・入金・利用量を見る」として呼ばれたとき THEN Kaname は「各 ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「未収に連絡する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
-- L1 行 25（['SCR-OPS-BILLING-001', 'SCR-OPS-BILLING-002', 'SCR-OPS-BILLING-003'] …）／ L2 ['J-09']
+- AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/invoices が「請求・入金・利用量を見る」として呼ばれたとき THEN Kaname は「各 ／ EVENT-DRIVEN: WHEN GET /api/v1/invoices が「カードの会社の写しを見る」として呼ばれたとき THEN Kaname は「S ／ EVENT-DRIVEN: WHEN 「未収に連絡する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
+- L1 行 28（['SCR-OPS-BILLING-001', 'SCR-OPS-BILLING-002', 'SCR-OPS-BILLING-003'] …）／ L2 ['J-09']
 - audit: 07_tasks/audit/T-U-54.md
 
 ### T-U-55 画面 運営：会社の 1 社（1 状態・R6）
@@ -1615,6 +1673,78 @@
 - L1 行 34（['SCR-MEMBER-DETAIL-001', 'SCR-MEMBER-DETAIL-002', 'SCR-MEMBER-DETAIL-003'] …）／ L2 ['J-07']
 - audit: 07_tasks/audit/T-U-58.md
 
+### T-U-59 画面 支払い方法を登録する（4 状態・R1/R2・段階 2）
+
+- group U-screen / layer ui / phase 9_v2_ui / wave 21 / Human 17.0 h・AI 1.7 h・wall-clock 1.7 h
+- 行為 A05 / 画面 billing-setup / 表 plans plan_versions subscriptions usage_meters plan_change_requests payment_methods / 関門 —（画面。外界に出ない（API は関門の先））
+- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-01
+- 根拠（逐語）：D-002「65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集」 ／ D-081「サマリーの段階表（段階 2＝課金・オンボーディング・構築メタスキル・運営コンソール）は D-073〜D-080 で v1」
+- 触るファイル：apps/web/app/(public)/billing-setup/page.tsx (new)、apps/web/tests/screens/billing-setup.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 billing-setup は URL /billing-setup で開く（apps/web/app/(public)/bill ／ STATE-DRIVEN: WHILE 画面 billing-setup が描画中 THEN h1「支払い方法を登録する」・第2ナビ ・状態 4（登録、登録でき
+- AC（Tier 2）：EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「会社名とメールを入れる」として呼ばれたとき THEN Kanam ／ EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「プランを選んで Stripe の登録画面へ進む」として呼ばれたと ／ EVENT-DRIVEN: WHEN 「登録する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
+- L1 行 26（['SCR-BILLING-SETUP-001', 'SCR-BILLING-SETUP-002', 'SCR-BILLING-SETUP-003'] …）／ L2 —
+- audit: 07_tasks/audit/T-U-59.md
+
+### T-U-60 画面 開示資料（4 状態・R1/R2・段階 2）
+
+- group U-screen / layer ui / phase 9_v2_ui / wave 21 / Human 17.0 h・AI 1.7 h・wall-clock 1.7 h
+- 行為 A84 / 画面 disclosure / 表 disclosure_versions subprocessors audit_events ops_audit_events security_events / 関門 —（画面。外界に出ない（API は関門の先））
+- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-24
+- 根拠（逐語）：D-081「サマリーの段階表（段階 2＝課金・オンボーディング・構築メタスキル・運営コンソール）は D-073〜D-080 で v1」 ／ D-085「できる操作の完全な列挙・送るもの／送らないもの・サブプロセッサ一覧・アンインストールの検証結果 は成果物（行為×関門・依」
+- 触るファイル：apps/web/app/(app)/security/disclosure/page.tsx (new)、apps/web/tests/screens/disclosure.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 disclosure は URL /security/disclosure で開く（apps/web/app/(app)/secu ／ STATE-DRIVEN: WHILE 画面 disclosure が描画中 THEN h1「開示資料」・第2ナビ できる操作 / 送るもの／送らないもの / 
+- AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/disclosure_versions が「開示資料を開いて PDF をもらう」として呼ばれたとき ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「PDF で出す」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
+- L1 行 26（['SCR-DISCLOSURE-001', 'SCR-DISCLOSURE-002', 'SCR-DISCLOSURE-003'] …）／ L2 —
+- audit: 07_tasks/audit/T-U-60.md
+
+### T-U-61 画面 AI の経路（4 状態・R1/R2・段階 2）
+
+- group U-screen / layer ui / phase 9_v2_ui / wave 21 / Human 17.0 h・AI 1.7 h・wall-clock 1.7 h
+- 行為 A82 / 画面 llm-routes / 表 llm_routes credentials llm_capabilities / 関門 —（画面。外界に出ない（API は関門の先））
+- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-26
+- 根拠（逐語）：D-081「サマリーの段階表（段階 2＝課金・オンボーディング・構築メタスキル・運営コンソール）は D-073〜D-080 で v1」 ／ D-083「段階 2 で足す経路は BYOK（顧客の API キー）と運営マネージド（運営のキー・既定 OFF）。提供者は Anth」
+- 触るファイル：apps/web/app/(app)/settings/llm/page.tsx (new)、apps/web/tests/screens/llm-routes.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 llm-routes は URL /settings/llm で開く（apps/web/app/(app)/settings/ll ／ STATE-DRIVEN: WHILE 画面 llm-routes が描画中 THEN h1「AI の経路」・第2ナビ 既定の経路 / PC が閉じているとき 
+- AC（Tier 2）：EVENT-DRIVEN: WHEN POST /api/v1/llm_routes が「会社の設定で AI の経路を選び、必要ならキーを入れる」として呼ばれた ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「保存する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
+- L1 行 35（['SCR-LLM-ROUTES-001', 'SCR-LLM-ROUTES-002', 'SCR-LLM-ROUTES-003'] …）／ L2 —
+- audit: 07_tasks/audit/T-U-61.md
+
+### T-U-62 画面 アプリと通知（3 状態・R1/R2/R3/R4・段階 2）
+
+- group U-screen / layer ui / phase 9_v2_ui / wave 21 / Human 17.5 h・AI 1.8 h・wall-clock 1.8 h
+- 行為 A83 / 画面 app-setup / 表 push_devices sessions notifications notification_preferences notice_deliveries / 関門 —（画面。外界に出ない（API は関門の先））
+- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-26
+- 根拠（逐語）：D-081「サマリーの段階表（段階 2＝課金・オンボーディング・構築メタスキル・運営コンソール）は D-073〜D-080 で v1」 ／ D-084「PC は Bridge（Electron）の窓に Kaname の画面を出す。スマホは同じ Web を Capacito」
+- 触るファイル：apps/web/app/(app)/settings/app/page.tsx (new)、apps/web/tests/screens/app-setup.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 app-setup は URL /settings/app で開く（apps/web/app/(app)/settings/app ／ STATE-DRIVEN: WHILE 画面 app-setup が描画中 THEN h1「アプリと通知」・第2ナビ PC / スマホ / 通知・状態 3（アプ
+- AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/push_devices/:id が「アプリを入れて通知を許可する」として呼ばれたとき THE ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「通知を許可する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
+- L1 行 27（['SCR-APP-SETUP-001', 'SCR-APP-SETUP-002', 'SCR-APP-SETUP-003'] …）／ L2 —
+- audit: 07_tasks/audit/T-U-62.md
+
+### T-U-63 画面 運営：AI の経路と使用量（3 状態・R6・段階 2）
+
+- group U-screen / layer ui / phase 9_v2_ui / wave 21 / Human 13.0 h・AI 1.3 h・wall-clock 1.3 h
+- 行為 A85 / 画面 ops-llm / 表 llm_routes invoices payments / 関門 —（画面。外界に出ない（API は関門の先））
+- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-25
+- 根拠（逐語）：D-083「段階 2 で足す経路は BYOK（顧客の API キー）と運営マネージド（運営のキー・既定 OFF）。提供者は Anth」
+- 触るファイル：apps/web/app/(app)/ops/llm/page.tsx (new)、apps/web/tests/screens/ops-llm.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 ops-llm は URL /ops/llm で開く（apps/web/app/(app)/ops/llm/page.tsx。遷移 ／ STATE-DRIVEN: WHILE 画面 ops-llm が描画中 THEN h1「運営：AI の経路と使用量」・第2ナビ 許可 / 使用量 / 費用・状態
+- AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/llm_routes/:id が「会社の詳細で運営マネージドを許可する」として呼ばれたとき T ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「許可する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
+- L1 行 18（['SCR-OPS-LLM-001', 'SCR-OPS-LLM-002', 'SCR-OPS-LLM-003'] …）／ L2 —
+- audit: 07_tasks/audit/T-U-63.md
+
+### T-U-64 画面 運営：開示資料（3 状態・R6・段階 2）
+
+- group U-screen / layer ui / phase 9_v2_ui / wave 21 / Human 13.0 h・AI 1.3 h・wall-clock 1.3 h
+- 行為 A86 / 画面 ops-disclosure / 表 disclosure_versions subprocessors notices notice_deliveries status_incidents / 関門 —（画面。外界に出ない（API は関門の先））
+- 依存 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-25
+- 根拠（逐語）：D-085「できる操作の完全な列挙・送るもの／送らないもの・サブプロセッサ一覧・アンインストールの検証結果 は成果物（行為×関門・依」
+- 触るファイル：apps/web/app/(app)/ops/disclosure/page.tsx (new)、apps/web/tests/screens/ops-disclosure.spec.ts (new)
+- AC（Tier 1）：UBIQUITOUS: 画面 ops-disclosure は URL /ops/disclosure で開く（apps/web/app/(app)/ops/d ／ STATE-DRIVEN: WHILE 画面 ops-disclosure が描画中 THEN h1「運営：開示資料」・第2ナビ 版 / DPA の雛形 / サ
+- AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/disclosure_versions/:id が「版を出す・DPA の雛形とサブプロセッサを ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「版を出す」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
+- L1 行 21（['SCR-OPS-DISCLOSURE-001', 'SCR-OPS-DISCLOSURE-002', 'SCR-OPS-DISCLOSURE-003'] …）／ L2 —
+- audit: 07_tasks/audit/T-U-64.md
+
 ### T-I-01 実行ループの結線（自分のAI → 配る → AI社員 action_runs → 関門 → 一次確認 → 承認待ち → 画面）
 
 - group I / layer integration / phase 6_integration / wave 15 / Human 32 h・AI 8.0 h・wall-clock 9.0 h
@@ -1655,7 +1785,7 @@
 
 - group I / layer integration / phase 6_integration / wave 15 / Human 20 h・AI 2.0 h・wall-clock 2.0 h
 - 行為 — / 画面 — / 表 — / 関門 —（結線・横断試験（部品の関門をそのまま使う））
-- 依存 T-A-17 T-A-18 T-A-19 T-A-22 T-F-12 T-U-41 T-U-50 T-U-51 T-U-53 T-U-55
+- 依存 T-A-17 T-A-18 T-A-19 T-A-22 T-A-25 T-F-12 T-U-41 T-U-50 T-U-51 T-U-53
 - 根拠（逐語）：D-075「運営と顧客の間で往復するものは 6 つ（問い合わせ／お知らせと稼働状況／通知の届け先／プランと利用量／請求と入金／セキュ」 ／ D-077「請求・問い合わせ・配布したもの・証跡・公開審査・お知らせは会社ごとに違う。運営の対応は 会社の 1 社（詳細）の 8 面」
 - 触るファイル：apps/e2e/f-v3-d-04.spec.ts (new)
 - AC（Tier 1）：
@@ -1667,7 +1797,7 @@
 
 - group I / layer integration / phase 6_integration / wave 15 / Human 28 h・AI 7.0 h・wall-clock 8.0 h
 - 行為 — / 画面 — / 表 — / 関門 —（結線・横断試験（部品の関門をそのまま使う））
-- 依存 T-A-12 T-A-13 T-A-15 T-A-18 T-F-04 T-F-05 T-F-06 T-U-35 T-U-37 T-U-40
+- 依存 T-A-12 T-A-13 T-A-15 T-A-18 T-A-24 T-F-04 T-F-05 T-F-06 T-U-35 T-U-37
 - 根拠（逐語）：D-074「人が抜ける（無効化・退会）と会社が退会するときに、flow.json の全オブジェクトで何が起きるかを 1 つの表で決め」 ／ D-076「全体見直し（01_hearing/全体見直し_20260915.md）の §2・§3・§6 を決定にする。顧客側に 自分」
 - 触るファイル：apps/e2e/f-v3-d-05.spec.ts (new)
 - AC（Tier 1）：
@@ -1691,7 +1821,7 @@
 
 - group I / layer integration / phase 6_integration / wave 15 / Human 12 h・AI 1.2 h・wall-clock 1.2 h
 - 行為 — / 画面 — / 表 — / 関門 —（結線・横断試験（部品の関門をそのまま使う））
-- 依存 T-A-07 T-A-08 T-A-18 T-A-19 T-F-12 T-U-13 T-U-51
+- 依存 T-A-07 T-A-08 T-A-18 T-A-19 T-A-25 T-F-12 T-U-13 T-U-51
 - 根拠（逐語）：D-043「ネイティブアプリはレスポンシブとは別物。プッシュ通知が本質(承認待ちの通知)。段階2でPWA」 ／ D-075「運営と顧客の間で往復するものは 6 つ（問い合わせ／お知らせと稼働状況／通知の届け先／プランと利用量／請求と入金／セキュ」
 - 触るファイル：apps/e2e/f-v3-d-07.spec.ts (new)
 - AC（Tier 1）：
@@ -1703,7 +1833,7 @@
 
 - group I / layer integration / phase 6_integration / wave 15 / Human 16 h・AI 4.0 h・wall-clock 5.0 h
 - 行為 — / 画面 — / 表 — / 関門 —（結線・横断試験（部品の関門をそのまま使う））
-- 依存 T-A-18 T-A-19 T-A-21 T-F-10 T-F-13 T-U-52 T-U-54 T-U-55
+- 依存 T-A-18 T-A-19 T-A-21 T-A-25 T-F-10 T-F-13 T-U-52 T-U-54 T-U-55
 - 根拠（逐語）：D-075「運営と顧客の間で往復するものは 6 つ（問い合わせ／お知らせと稼働状況／通知の届け先／プランと利用量／請求と入金／セキュ」 ／ D-077「請求・問い合わせ・配布したもの・証跡・公開審査・お知らせは会社ごとに違う。運営の対応は 会社の 1 社（詳細）の 8 面」
 - 触るファイル：apps/e2e/f-v3-d-08.spec.ts (new)
 - AC（Tier 1）：
@@ -1715,7 +1845,7 @@
 
 - group I / layer integration / phase 6_integration / wave 15 / Human 14 h・AI 1.4 h・wall-clock 1.4 h
 - 行為 — / 画面 — / 表 — / 関門 —（結線・横断試験（部品の関門をそのまま使う））
-- 依存 T-A-01 T-A-02 T-A-15 T-U-01 T-U-02 T-U-03 T-U-04
+- 依存 T-A-01 T-A-02 T-A-15 T-A-24 T-U-01 T-U-02 T-U-03 T-U-04
 - 根拠（逐語）：D-001「2028-09までに200社→65社に修正。自社SaaS外販。初期顧客が自力で回せることが前提」 ／ D-002「65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集」
 - 触るファイル：apps/e2e/f-v3-d-e2e-01.spec.ts (new)
 - AC（Tier 1）：
@@ -1787,7 +1917,7 @@
 
 - group I / layer integration / phase 6_integration / wave 16 / Human 34 h・AI 3.4 h・wall-clock 3.4 h
 - 行為 — / 画面 — / 表 — / 関門 —（結線・横断試験（部品の関門をそのまま使う））
-- 依存 T-A-06 T-A-07 T-A-08 T-A-12 T-A-13 T-A-15 T-A-18 T-A-20 T-U-33 T-U-35
+- 依存 T-A-06 T-A-07 T-A-08 T-A-12 T-A-13 T-A-15 T-A-18 T-A-20 T-A-24 T-A-26
 - 根拠（逐語）：D-002「65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集」 ／ D-004「LLMは顧客のサブスク内(Bridge)が既定。APIは顧客負担。運営マネージドは既定OFFの管理者トグル」
 - 触るファイル：apps/e2e/f-v3-d-e2e-07.spec.ts (new)
 - AC（Tier 1）：
@@ -1799,7 +1929,7 @@
 
 - group I / layer integration / phase 6_integration / wave 16 / Human 14 h・AI 1.4 h・wall-clock 1.4 h
 - 行為 — / 画面 — / 表 — / 関門 —（結線・横断試験（部品の関門をそのまま使う））
-- 依存 T-A-15 T-U-33 T-U-38 T-U-39 T-U-40
+- 依存 T-A-15 T-A-24 T-U-33 T-U-38 T-U-39 T-U-40
 - 根拠（逐語）：D-010「製品の背骨。会社モデル(目標・台帳定義・担当業務・組織・ポリシー・記憶)を1つの定義に。画面もAI社員も自動実行もこの定」 ／ D-015「Bridgeは顧客PCで動く万能実行器。本人のIP・本人のログイン済みセッションで動くのでCAPTCHA/bot検知に到」
 - 触るファイル：apps/e2e/f-v3-d-e2e-08.spec.ts (new)
 - AC（Tier 1）：
@@ -1811,7 +1941,7 @@
 
 - group I / layer integration / phase 6_integration / wave 16 / Human 34 h・AI 3.4 h・wall-clock 3.4 h
 - 行為 — / 画面 — / 表 — / 関門 —（結線・横断試験（部品の関門をそのまま使う））
-- 依存 T-A-12 T-A-13 T-A-17 T-A-19 T-A-21 T-A-22 T-A-23 T-U-37 T-U-41 T-U-42
+- 依存 T-A-12 T-A-13 T-A-17 T-A-19 T-A-21 T-A-22 T-A-23 T-A-25 T-U-37 T-U-41
 - 根拠（逐語）：D-002「65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集」 ／ D-010「製品の背骨。会社モデル(目標・台帳定義・担当業務・組織・ポリシー・記憶)を1つの定義に。画面もAI社員も自動実行もこの定」
 - 触るファイル：apps/e2e/f-v3-d-e2e-09.spec.ts (new)
 - AC（Tier 1）：
@@ -2095,15 +2225,15 @@
 - L1 行 5（['SPC-03-001', 'SPC-03-002', 'SPC-03-003'] …）／ L2 —
 - audit: 07_tasks/audit/T-V2-03.md
 
-### T-V2-04 段階 2 の仕様づくり：PWA
+### T-V2-04 段階 2 の仕様づくり：アプリ（PC・スマホ）
 
 - group V2 / layer spec / phase 8_spec_v2 / wave 4 / Human 16 h・AI 2.7 h・wall-clock 2.7 h
 - 行為 — / 画面 — / 表 — / 関門 —（仕様の作業。外界には触れない）
 - 依存 T-F-17
-- 根拠（逐語）：D-081「サマリーの段階表（段階 2＝課金・オンボーディング・構築メタスキル・運営コンソール）は D-073〜D-080 で v1」
+- 根拠（逐語）：D-081「サマリーの段階表（段階 2＝課金・オンボーディング・構築メタスキル・運営コンソール）は D-073〜D-080 で v1」 ／ D-084「PC は Bridge（Electron）の窓に Kaname の画面を出す。スマホは同じ Web を Capacito」
 - 触るファイル：01_hearing/決定ログ_進行中.md (modify)、05_flow/data.py (modify)、06_mockup/s_p11.py (new)、03_architecture/ER図.md (modify)
-- AC（Tier 1）：UBIQUITOUS: PWA の画面・行為が flow.json の release に入り、G17 の deferred から D-081.4 が消えている
-- AC（Tier 2）：EVENT-DRIVEN: WHEN 決定ログに PWA の節を足したら、システム（ゲート）は trace_gate T1〜T10・flow_gate G17・ ／ UNWANTED: IF 決定の無い後回しや、オブジェクトの無い『作る・配る・版』の文が残ったら、G17／T10 が赤のまま実装タスクを生成しない
+- AC（Tier 1）：UBIQUITOUS: アプリ（PC・スマホ） の画面・行為が flow.json の release に入り、G17 の deferred から D-081.
+- AC（Tier 2）：EVENT-DRIVEN: WHEN 決定ログに アプリ（PC・スマホ） の節を足したら、システム（ゲート）は trace_gate T1〜T10・flow_g ／ UNWANTED: IF 決定の無い後回しや、オブジェクトの無い『作る・配る・版』の文が残ったら、G17／T10 が赤のまま実装タスクを生成しない
 - L1 行 5（['SPC-04-001', 'SPC-04-002', 'SPC-04-003'] …）／ L2 —
 - audit: 07_tasks/audit/T-V2-04.md
 
@@ -2112,7 +2242,7 @@
 - group V2 / layer spec / phase 8_spec_v2 / wave 4 / Human 16 h・AI 2.7 h・wall-clock 2.7 h
 - 行為 — / 画面 — / 表 — / 関門 —（仕様の作業。外界には触れない）
 - 依存 T-F-17
-- 根拠（逐語）：D-081「サマリーの段階表（段階 2＝課金・オンボーディング・構築メタスキル・運営コンソール）は D-073〜D-080 で v1」
+- 根拠（逐語）：D-081「サマリーの段階表（段階 2＝課金・オンボーディング・構築メタスキル・運営コンソール）は D-073〜D-080 で v1」 ／ D-085「できる操作の完全な列挙・送るもの／送らないもの・サブプロセッサ一覧・アンインストールの検証結果 は成果物（行為×関門・依」
 - 触るファイル：01_hearing/決定ログ_進行中.md (modify)、05_flow/data.py (modify)、06_mockup/s_p11.py (new)、03_architecture/ER図.md (modify)
 - AC（Tier 1）：UBIQUITOUS: 情シス向けの開示資料 の画面・行為が flow.json の release に入り、G17 の deferred から D-081.5
 - AC（Tier 2）：EVENT-DRIVEN: WHEN 決定ログに 情シス向けの開示資料 の節を足したら、システム（ゲート）は trace_gate T1〜T10・flow_ga ／ UNWANTED: IF 決定の無い後回しや、オブジェクトの無い『作る・配る・版』の文が残ったら、G17／T10 が赤のまま実装タスクを生成しない

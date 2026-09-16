@@ -1,7 +1,7 @@
 {
  "version": "v3",
  "skill": "api-design",
- "endpoints_count": 55,
+ "endpoints_count": 60,
  "ac_seeds": [
   {
    "endpoint": "GET /api/v1/action_runs",
@@ -363,6 +363,53 @@
    ]
   },
   {
+   "endpoint": "GET /api/v1/disclosure_versions",
+   "feature_id": "F-012",
+   "screen_ids": [
+    "disclosure"
+   ],
+   "acts": [
+    "A84"
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN GET /api/v1/disclosure_versions が「開示資料を開いて PDF をもらう」として呼ばれたとき THEN Kaname は「成果物から生成した版を読む。PDF は署名 URL（C4）」を行い 2xx を返す",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+    "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UBIQUITOUS: GET /api/v1/disclosure_versions の副作用は関門 C2・C4 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+   ],
+   "source": [
+    "D-085.1",
+    "D-085.2",
+    "D-085.3",
+    "D-085.4"
+   ]
+  },
+  {
+   "endpoint": "PATCH /api/v1/disclosure_versions/:id",
+   "feature_id": "F-016",
+   "screen_ids": [
+    "ops-disclosure"
+   ],
+   "acts": [
+    "A86"
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN PATCH /api/v1/disclosure_versions/:id が「版を出す・DPA の雛形とサブプロセッサを整える」として呼ばれたとき THEN Kaname は「disclosure_versions を作る（C4）。変更はお知らせ（C6）」を行い 2xx を返す",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+    "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
+    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UBIQUITOUS: PATCH /api/v1/disclosure_versions/:id の副作用は関門 C2・C4・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+   ],
+   "source": [
+    "D-085.1",
+    "D-085.2",
+    "D-085.3"
+   ]
+  },
+  {
    "endpoint": "POST /api/v1/distributions",
    "feature_id": "F-019",
    "screen_ids": [
@@ -709,21 +756,25 @@
     "ops-billing"
    ],
    "acts": [
-    "A72"
+    "A72",
+    "A87"
    ],
    "ears_ac_seed": [
     "EVENT-DRIVEN: WHEN GET /api/v1/invoices が「請求・入金・利用量を見る」として呼ばれたとき THEN Kaname は「各社の請求・入金・未収・利用量／上限を集計（中身は見ない）」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN GET /api/v1/invoices が「カードの会社の写しを見る」として呼ばれたとき THEN Kaname は「Stripe の写し（webhook）の状態と顧客リンク。請求書払いは従来の記録」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
-    "UBIQUITOUS: GET /api/v1/invoices の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+    "UBIQUITOUS: GET /api/v1/invoices の副作用は関門 C2・C7 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
    ],
    "source": [
     "D-002",
     "D-002.2",
     "D-075.4",
     "D-075.5",
-    "D-077.3"
+    "D-077.3",
+    "D-082.3",
+    "D-082.8"
    ]
   },
   {
@@ -856,6 +907,55 @@
    "source": [
     "D-038",
     "D-039"
+   ]
+  },
+  {
+   "endpoint": "POST /api/v1/llm_routes",
+   "feature_id": "F-017",
+   "screen_ids": [
+    "llm-routes"
+   ],
+   "acts": [
+    "A82"
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN POST /api/v1/llm_routes が「会社の設定で AI の経路を選び、必要ならキーを入れる」として呼ばれたとき THEN Kaname は「キーは C8 の vault へ参照だけ。llm_routes を保存。登録時に提供者へ 1 回だけ検査（成功／失敗を証跡に）」を行い 2xx を返す（自動側：自分のAIが経路ごとの違い（費用・PC が閉じているときの動き）を説明する）",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+    "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
+    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す",
+    "UBIQUITOUS: POST /api/v1/llm_routes の副作用は関門 C2・C3・C8 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+   ],
+   "source": [
+    "D-083.1",
+    "D-083.3",
+    "D-083.4",
+    "D-083.5"
+   ]
+  },
+  {
+   "endpoint": "PATCH /api/v1/llm_routes/:id",
+   "feature_id": "F-016",
+   "screen_ids": [
+    "ops-llm"
+   ],
+   "acts": [
+    "A85"
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN PATCH /api/v1/llm_routes/:id が「会社の詳細で運営マネージドを許可する」として呼ばれたとき THEN Kaname は「llm_routes の許可を更新。3 社の使用量を集計して費用へ」を行い 2xx を返す",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+    "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
+    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UBIQUITOUS: PATCH /api/v1/llm_routes/:id の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+   ],
+   "source": [
+    "D-083.5",
+    "D-083.6"
    ]
   },
   {
@@ -1222,6 +1322,31 @@
    ]
   },
   {
+   "endpoint": "PATCH /api/v1/push_devices/:id",
+   "feature_id": "F-017",
+   "screen_ids": [
+    "app-setup"
+   ],
+   "acts": [
+    "A83"
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN PATCH /api/v1/push_devices/:id が「アプリを入れて通知を許可する」として呼ばれたとき THEN Kaname は「push_devices に端末を登録し、通知の届け先の経路に「アプリ」を足す」を行い 2xx を返す",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+    "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
+    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UBIQUITOUS: PATCH /api/v1/push_devices/:id の副作用は関門 C2・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+   ],
+   "source": [
+    "D-084.1",
+    "D-084.2",
+    "D-084.3",
+    "D-084.4"
+   ]
+  },
+  {
    "endpoint": "POST /api/v1/service_registry",
    "feature_id": "F-017",
    "screen_ids": [
@@ -1381,7 +1506,7 @@
    ],
    "ears_ac_seed": [
     "EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「会社名とメールを入れる」として呼ばれたとき THEN Kaname は「アカウントと会社を作る」を行い 2xx を返す",
-    "EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「支払い方法を入れる」として呼ばれたとき THEN Kaname は「決済事業者に登録（カード番号は預からない）」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「プランを選んで Stripe の登録画面へ進む」として呼ばれたとき THEN Kaname は「Stripe Checkout へ送る（C7）。戻りは webhook の写しで確定。カード番号は自社を通らない」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
@@ -1392,7 +1517,9 @@
    "source": [
     "D-001",
     "D-001.5",
-    "D-002"
+    "D-002",
+    "D-082.1",
+    "D-082.2"
    ]
   },
   {

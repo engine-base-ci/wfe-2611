@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:a36f3c22396aece9
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:9b7e329a125e8264
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -233,6 +233,42 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     screens: ["credentials"],
   },
   {
+    method: "GET",
+    path: "/api/v1/disclosure_versions",
+    operationId: "getDisclosureVersions",
+    table: "disclosure_versions",
+    kind: "list",
+    input: null,
+    success: 200,
+    auth: "member",
+    rateLimit: {
+      perMinute: 120,
+      key: "user",
+    },
+    chokePoints: ["C4"],
+    errors: [401, 403, 429],
+    acts: ["A84"],
+    screens: ["disclosure"],
+  },
+  {
+    method: "PATCH",
+    path: "/api/v1/disclosure_versions/:id",
+    operationId: "patchDisclosureVersionsById",
+    table: "disclosure_versions",
+    kind: "update",
+    input: "DisclosureVersionsInput",
+    success: 200,
+    auth: "ops",
+    rateLimit: {
+      perMinute: 60,
+      key: "user",
+    },
+    chokePoints: ["C2", "C4", "C6"],
+    errors: [401, 403, 404, 422, 429],
+    acts: ["A86"],
+    screens: ["ops-disclosure"],
+  },
+  {
     method: "POST",
     path: "/api/v1/distributions",
     operationId: "postDistributions",
@@ -463,7 +499,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     },
     chokePoints: [],
     errors: [401, 403, 429],
-    acts: ["A72"],
+    acts: ["A72", "A87"],
     screens: ["ops-billing"],
   },
   {
@@ -555,6 +591,42 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     errors: [401, 403, 404, 422, 429, 502],
     acts: ["A19"],
     screens: ["record-detail"],
+  },
+  {
+    method: "POST",
+    path: "/api/v1/llm_routes",
+    operationId: "postLlmRoutes",
+    table: "llm_routes",
+    kind: "create",
+    input: "LlmRoutesInput",
+    success: 201,
+    auth: "member",
+    rateLimit: {
+      perMinute: 60,
+      key: "user",
+    },
+    chokePoints: ["C2", "C3", "C8"],
+    errors: [401, 403, 409, 422, 429, 502],
+    acts: ["A82"],
+    screens: ["llm-routes"],
+  },
+  {
+    method: "PATCH",
+    path: "/api/v1/llm_routes/:id",
+    operationId: "patchLlmRoutesById",
+    table: "llm_routes",
+    kind: "update",
+    input: "LlmRoutesInput",
+    success: 200,
+    auth: "ops",
+    rateLimit: {
+      perMinute: 60,
+      key: "user",
+    },
+    chokePoints: ["C2"],
+    errors: [401, 403, 404, 422, 429],
+    acts: ["A85"],
+    screens: ["ops-llm"],
   },
   {
     method: "GET",
@@ -791,6 +863,24 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     screens: ["policies"],
   },
   {
+    method: "PATCH",
+    path: "/api/v1/push_devices/:id",
+    operationId: "patchPushDevicesById",
+    table: "push_devices",
+    kind: "update",
+    input: "PushDevicesInput",
+    success: 200,
+    auth: "member",
+    rateLimit: {
+      perMinute: 60,
+      key: "user",
+    },
+    chokePoints: ["C2", "C6"],
+    errors: [401, 403, 404, 422, 429],
+    acts: ["A83"],
+    screens: ["app-setup"],
+  },
+  {
     method: "POST",
     path: "/api/v1/service_registry",
     operationId: "postServiceRegistry",
@@ -1007,4 +1097,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     screens: ["company-settings"],
   },
 ];
-export const OPENAPI_HASH = "a36f3c22396aece9";
+export const OPENAPI_HASH = "9b7e329a125e8264";

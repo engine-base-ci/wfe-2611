@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-16T09:21:19",
+ "generated_at": "2026-09-16T10:20:32",
  "inputs": {
   "tickets": "07_tasks/tickets.json",
   "roster": "07_tasks/roster.json",
@@ -7,48 +7,47 @@
  },
  "summary": {
   "epic": 15,
-  "story": 159,
-  "subtask": 3739,
+  "story": 169,
+  "subtask": 3999,
   "subtask_by": {
-   "impl": 398,
-   "test": 3141,
-   "mock": 200
+   "impl": 421,
+   "test": 3367,
+   "mock": 211
   },
   "critical_path": [
    "T-F-03",
-   "T-D-11",
-   "T-A-01",
-   "T-US-02",
+   "T-D-05",
+   "T-A-20",
    "T-U-35",
    "T-I-05",
    "T-I-20"
   ],
-  "critical_path_days": 34,
+  "critical_path_days": 48,
   "cycle": [],
   "ghost_dependencies": [],
   "unassignable": [],
   "tentative": 0,
-  "assigned": 159,
+  "assigned": 169,
   "broken_links": [],
   "milestone_overrun": [],
   "estimate_default": [],
   "delta": {
    "added": 0,
-   "updated": 2,
-   "unchanged": 157,
+   "updated": 1,
+   "unchanged": 168,
    "dropped": 0
   },
   "load": {
-   "takamoto": 73.7,
-   "claude-01": 109.2,
+   "takamoto": 111.3,
+   "claude-01": 151.2,
    "claude-02": 124.1,
-   "claude-03": 125.2,
-   "claude-04": 100.9,
-   "claude-05": 118.0,
-   "claude-06": 27.8,
-   "claude-07": 27.4,
-   "claude-08": 27.9,
-   "claude-09": 76.2,
+   "claude-03": 134.9,
+   "claude-04": 144.5,
+   "claude-05": 121.0,
+   "claude-06": 30.8,
+   "claude-07": 30.4,
+   "claude-08": 29.6,
+   "claude-09": 78.0,
    "claude-10": 85.9
   }
  },
@@ -88,7 +87,8 @@
     "T-D-10",
     "T-D-11",
     "T-D-12",
-    "T-D-13"
+    "T-D-13",
+    "T-D-14"
    ],
    "depends_on": [],
    "status": "todo",
@@ -104,6 +104,7 @@
     "T-A-01",
     "T-A-02",
     "T-A-15",
+    "T-A-24",
     "T-U-01",
     "T-U-02",
     "T-U-03",
@@ -234,6 +235,7 @@
     "T-A-21",
     "T-A-22",
     "T-A-23",
+    "T-A-25",
     "T-U-41",
     "T-U-42",
     "T-U-43",
@@ -259,6 +261,7 @@
    "children": [
     "T-A-18",
     "T-A-20",
+    "T-A-26",
     "T-U-35",
     "T-U-36",
     "T-U-37",
@@ -288,7 +291,13 @@
     "T-US-03",
     "T-US-04",
     "T-US-05",
-    "T-US-06"
+    "T-US-06",
+    "T-U-59",
+    "T-U-60",
+    "T-U-61",
+    "T-U-62",
+    "T-U-63",
+    "T-U-64"
    ],
    "depends_on": [],
    "status": "todo",
@@ -1879,7 +1888,7 @@
    "estimate_default": false,
    "start": "2026-09-25",
    "finish": "2026-09-29",
-   "critical": false,
+   "critical": true,
    "tentative": false,
    "assignable": [
     "takamoto",
@@ -2367,7 +2376,7 @@
    "estimate_default": false,
    "start": "2026-09-29",
    "finish": "2026-10-01",
-   "critical": true,
+   "critical": false,
    "tentative": false,
    "assignable": [
     "takamoto",
@@ -2486,7 +2495,8 @@
      "D-042",
      "D-076",
      "D-076.3",
-     "D-076.4"
+     "D-076.4",
+     "D-085"
     ],
     "acts": [],
     "qa_rows": [
@@ -2588,6 +2598,93 @@
    "dropped_reason": null
   },
   {
+   "id": "T-D-14",
+   "kind": "story",
+   "title": "データ層 15. 段階 2 で足す表（7 表・migration・RLS・索引・seed）",
+   "parent": "E-foundation",
+   "children": [
+    "T-D-14.s1",
+    "T-D-14.s2",
+    "T-D-14.s3",
+    "T-D-14.t1",
+    "T-D-14.t2",
+    "T-D-14.t3",
+    "T-D-14.t4",
+    "T-D-14.t5",
+    "T-D-14.t6",
+    "T-D-14.t7",
+    "T-D-14.t8",
+    "T-D-14.t9",
+    "T-D-14.t10",
+    "T-D-14.t11",
+    "T-D-14.t12",
+    "T-D-14.t13",
+    "T-D-14.t14"
+   ],
+   "depends_on": [
+    "T-F-01",
+    "T-F-02",
+    "T-F-03"
+   ],
+   "blocked_by": [],
+   "wave": "W1",
+   "layer": "foundation",
+   "estimate_hours": 3.8,
+   "estimate_default": false,
+   "start": "2026-10-09",
+   "finish": "2026-10-13",
+   "critical": false,
+   "tentative": false,
+   "assignable": [
+    "takamoto",
+    "claude-01",
+    "claude-02"
+   ],
+   "assignee": "takamoto",
+   "assigned_by": "auto",
+   "status": "todo",
+   "external": {},
+   "links": {
+    "mock": [],
+    "screens": [],
+    "decisions": [
+     "D-004",
+     "D-042",
+     "D-082",
+     "D-082.1",
+     "D-082.2",
+     "D-082.3",
+     "D-082.4",
+     "D-083",
+     "D-083.1",
+     "D-083.2"
+    ],
+    "acts": [],
+    "qa_rows": [
+     "RLS-D14-001",
+     "RLS-D14-002",
+     "RLS-D14-003",
+     "RLS-D14-004",
+     "RLS-D14-005",
+     "RLS-D14-006",
+     "RLS-D14-007",
+     "RLS-D14-008",
+     "RLS-D14-009",
+     "RLS-D14-010",
+     "RLS-D14-011",
+     "RLS-D14-012",
+     "RLS-D14-013",
+     "RLS-D14-014"
+    ],
+    "errors": [],
+    "spec": [
+     "07_tasks/tickets.json#T-D-14"
+    ]
+   },
+   "delta": "unchanged",
+   "dropped_reason": null
+  },
+  {
    "id": "T-A-01",
    "kind": "story",
    "title": "API 契約してから、自力で動く状態まで持っていきたい — データ・API・（5 endpoint）",
@@ -2672,11 +2769,11 @@
    "blocked_by": [],
    "wave": "W2",
    "layer": "backend",
-   "estimate_hours": 30.0,
+   "estimate_hours": 32.2,
    "estimate_default": false,
    "start": "2026-10-13",
    "finish": "2026-10-19",
-   "critical": true,
+   "critical": false,
    "tentative": false,
    "assignable": [
     "takamoto",
@@ -2743,7 +2840,9 @@
      "D-055",
      "D-055.1",
      "D-055.2",
-     "D-055.3"
+     "D-055.3",
+     "D-082.1",
+     "D-082.2"
     ],
     "acts": [
      "A01",
@@ -5342,10 +5441,10 @@
    "blocked_by": [],
    "wave": "W2",
    "layer": "backend",
-   "estimate_hours": 30.8,
+   "estimate_hours": 33.8,
    "estimate_default": false,
    "start": "2026-10-19",
-   "finish": "2026-10-23",
+   "finish": "2026-10-26",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -5396,7 +5495,11 @@
      "D-050",
      "D-053.6",
      "D-074.5",
-     "D-076.13"
+     "D-076.13",
+     "D-085.1",
+     "D-085.2",
+     "D-085.3",
+     "D-085.4"
     ],
     "acts": [
      "A02",
@@ -5714,8 +5817,8 @@
    "layer": "backend",
    "estimate_hours": 37.5,
    "estimate_default": false,
-   "start": "2026-10-09",
-   "finish": "2026-10-28",
+   "start": "2026-10-13",
+   "finish": "2026-10-29",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -5795,7 +5898,7 @@
      "07_tasks/tickets.json#T-A-17"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -6028,10 +6131,10 @@
    "blocked_by": [],
    "wave": "W2",
    "layer": "backend",
-   "estimate_hours": 30.0,
+   "estimate_hours": 36.8,
    "estimate_default": false,
    "start": "2026-10-14",
-   "finish": "2026-10-20",
+   "finish": "2026-10-21",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -6073,7 +6176,14 @@
      "D-075.6",
      "D-077.3",
      "D-077.4",
-     "D-077.8"
+     "D-077.8",
+     "D-082.3",
+     "D-082.8",
+     "D-083.5",
+     "D-083.6",
+     "D-085.1",
+     "D-085.2",
+     "D-085.3"
     ],
     "acts": [
      "A33",
@@ -6082,7 +6192,8 @@
      "A70",
      "A71",
      "A72",
-     "A73"
+     "A73",
+     "A87"
     ],
     "qa_rows": [
      "API-19-001",
@@ -6215,11 +6326,11 @@
    "blocked_by": [],
    "wave": "W2",
    "layer": "backend",
-   "estimate_hours": 34.5,
+   "estimate_hours": 42.0,
    "estimate_default": false,
    "start": "2026-10-20",
-   "finish": "2026-10-26",
-   "critical": false,
+   "finish": "2026-10-27",
+   "critical": true,
    "tentative": false,
    "assignable": [
     "takamoto",
@@ -6274,7 +6385,15 @@
      "D-076.1",
      "D-076.2",
      "D-076.3",
-     "D-076.4"
+     "D-076.4",
+     "D-083.1",
+     "D-083.3",
+     "D-083.4",
+     "D-083.5",
+     "D-084.1",
+     "D-084.2",
+     "D-084.3",
+     "D-084.4"
     ],
     "acts": [
      "A31",
@@ -6399,8 +6518,8 @@
    "layer": "backend",
    "estimate_hours": 8.2,
    "estimate_default": false,
-   "start": "2026-10-20",
-   "finish": "2026-10-21",
+   "start": "2026-10-21",
+   "finish": "2026-10-22",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -6645,7 +6764,7 @@
      "07_tasks/tickets.json#T-A-22"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null
   },
   {
@@ -6777,6 +6896,381 @@
    "dropped_reason": null
   },
   {
+   "id": "T-A-24",
+   "kind": "story",
+   "title": "API このツールを入れて安全か、社内（情シス・コンプラ）に説明できるように（1 endpoint・段階 2）",
+   "parent": "J-01",
+   "children": [
+    "T-A-24.s1",
+    "T-A-24.s2",
+    "T-A-24.t1",
+    "T-A-24.t2",
+    "T-A-24.t3",
+    "T-A-24.t4",
+    "T-A-24.t5",
+    "T-A-24.t6",
+    "T-A-24.t7",
+    "T-A-24.t8",
+    "T-A-24.t9",
+    "T-A-24.t10",
+    "T-A-24.t11",
+    "T-A-24.m1"
+   ],
+   "depends_on": [
+    "T-F-01",
+    "T-F-02",
+    "T-F-03",
+    "T-F-04",
+    "T-F-05",
+    "T-D-06",
+    "T-D-10",
+    "T-D-14",
+    "T-F-10"
+   ],
+   "blocked_by": [],
+   "wave": "W3",
+   "layer": "backend",
+   "estimate_hours": 33.8,
+   "estimate_default": false,
+   "start": "2026-10-29",
+   "finish": "2026-11-17",
+   "critical": false,
+   "tentative": false,
+   "assignable": [
+    "takamoto",
+    "claude-01",
+    "claude-02",
+    "claude-03",
+    "claude-04",
+    "claude-05"
+   ],
+   "assignee": "takamoto",
+   "assigned_by": "auto",
+   "status": "todo",
+   "external": {},
+   "links": {
+    "mock": [
+     "06_mockup/v2/v2-disclosure.html"
+    ],
+    "screens": [
+     "disclosure"
+    ],
+    "decisions": [
+     "D-010.7",
+     "D-015",
+     "D-015.2",
+     "D-015.3",
+     "D-025",
+     "D-025.6",
+     "D-042",
+     "D-042.1",
+     "D-042.3",
+     "D-042.6",
+     "D-042.7",
+     "D-050",
+     "D-053.6",
+     "D-074.5",
+     "D-076.13",
+     "D-085.1",
+     "D-085.2",
+     "D-085.3",
+     "D-085.4"
+    ],
+    "acts": [
+     "A84"
+    ],
+    "qa_rows": [
+     "API-24-001",
+     "API-24-002",
+     "API-24-003",
+     "API-24-004",
+     "API-24-005",
+     "API-24-006",
+     "API-24-007",
+     "API-24-008",
+     "API-24-009",
+     "API-24-010",
+     "API-24-011"
+    ],
+    "errors": [],
+    "spec": [
+     "07_tasks/tickets.json#T-A-24"
+    ]
+   },
+   "delta": "updated",
+   "dropped_reason": null
+  },
+  {
+   "id": "T-A-25",
+   "kind": "story",
+   "title": "API 運営として、問い合わせに答え、お知らせと稼働状況を出し、各社の請求・（2 endpoint・段階 2）",
+   "parent": "J-09",
+   "children": [
+    "T-A-25.s1",
+    "T-A-25.s2",
+    "T-A-25.s3",
+    "T-A-25.t1",
+    "T-A-25.t2",
+    "T-A-25.t3",
+    "T-A-25.t4",
+    "T-A-25.t5",
+    "T-A-25.t6",
+    "T-A-25.t7",
+    "T-A-25.t8",
+    "T-A-25.t9",
+    "T-A-25.t10",
+    "T-A-25.t11",
+    "T-A-25.t12",
+    "T-A-25.t13",
+    "T-A-25.t14",
+    "T-A-25.t15",
+    "T-A-25.t16",
+    "T-A-25.t17",
+    "T-A-25.t18",
+    "T-A-25.m1",
+    "T-A-25.m2"
+   ],
+   "depends_on": [
+    "T-F-01",
+    "T-F-02",
+    "T-F-03",
+    "T-F-04",
+    "T-F-05",
+    "T-D-11",
+    "T-D-14",
+    "T-F-02",
+    "T-F-03",
+    "T-F-04",
+    "T-F-08",
+    "T-F-10",
+    "T-F-12"
+   ],
+   "blocked_by": [],
+   "wave": "W2",
+   "layer": "backend",
+   "estimate_hours": 36.8,
+   "estimate_default": false,
+   "start": "2026-10-22",
+   "finish": "2026-10-29",
+   "critical": false,
+   "tentative": false,
+   "assignable": [
+    "takamoto",
+    "claude-01",
+    "claude-02",
+    "claude-03",
+    "claude-04",
+    "claude-05"
+   ],
+   "assignee": "claude-04",
+   "assigned_by": "auto",
+   "status": "todo",
+   "external": {},
+   "links": {
+    "mock": [
+     "06_mockup/v2/v2-ops-disclosure.html",
+     "06_mockup/v2/v2-ops-llm.html"
+    ],
+    "screens": [
+     "ops-disclosure",
+     "ops-llm"
+    ],
+    "decisions": [
+     "D-002",
+     "D-002.2",
+     "D-042",
+     "D-075",
+     "D-075.1",
+     "D-075.2",
+     "D-075.4",
+     "D-075.5",
+     "D-075.6",
+     "D-077.3",
+     "D-077.4",
+     "D-077.8",
+     "D-082.3",
+     "D-082.8",
+     "D-083.5",
+     "D-083.6",
+     "D-085.1",
+     "D-085.2",
+     "D-085.3"
+    ],
+    "acts": [
+     "A85",
+     "A86"
+    ],
+    "qa_rows": [
+     "API-25-001",
+     "API-25-002",
+     "API-25-003",
+     "API-25-004",
+     "API-25-005",
+     "API-25-006",
+     "API-25-007",
+     "API-25-008",
+     "API-25-009",
+     "API-25-010",
+     "API-25-011",
+     "API-25-012",
+     "API-25-013",
+     "API-25-014",
+     "API-25-015",
+     "API-25-016",
+     "API-25-017",
+     "API-25-018"
+    ],
+    "errors": [],
+    "spec": [
+     "07_tasks/tickets.json#T-A-25"
+    ]
+   },
+   "delta": "unchanged",
+   "dropped_reason": null
+  },
+  {
+   "id": "T-A-26",
+   "kind": "story",
+   "title": "API 自分のアカウント・会社の設定・既存データの取り込み・外部サービスの連（2 endpoint・段階 2）",
+   "parent": "J-07",
+   "children": [
+    "T-A-26.s1",
+    "T-A-26.s2",
+    "T-A-26.s3",
+    "T-A-26.t1",
+    "T-A-26.t2",
+    "T-A-26.t3",
+    "T-A-26.t4",
+    "T-A-26.t5",
+    "T-A-26.t6",
+    "T-A-26.t7",
+    "T-A-26.t8",
+    "T-A-26.t9",
+    "T-A-26.t10",
+    "T-A-26.t11",
+    "T-A-26.t12",
+    "T-A-26.t13",
+    "T-A-26.t14",
+    "T-A-26.t15",
+    "T-A-26.t16",
+    "T-A-26.t17",
+    "T-A-26.t18",
+    "T-A-26.m1",
+    "T-A-26.m2"
+   ],
+   "depends_on": [
+    "T-F-01",
+    "T-F-02",
+    "T-F-03",
+    "T-F-04",
+    "T-F-05",
+    "T-D-05",
+    "T-D-09",
+    "T-D-11",
+    "T-D-14",
+    "T-F-02",
+    "T-F-03",
+    "T-F-04",
+    "T-F-08",
+    "T-F-09",
+    "T-F-12",
+    "T-F-14"
+   ],
+   "blocked_by": [],
+   "wave": "W2",
+   "layer": "backend",
+   "estimate_hours": 42.0,
+   "estimate_default": false,
+   "start": "2026-10-23",
+   "finish": "2026-10-30",
+   "critical": false,
+   "tentative": false,
+   "assignable": [
+    "takamoto",
+    "claude-01",
+    "claude-02",
+    "claude-03",
+    "claude-04",
+    "claude-05"
+   ],
+   "assignee": "claude-01",
+   "assigned_by": "auto",
+   "status": "todo",
+   "external": {},
+   "links": {
+    "mock": [
+     "06_mockup/v2/v2-app-setup.html",
+     "06_mockup/v2/v2-llm-routes.html"
+    ],
+    "screens": [
+     "app-setup",
+     "llm-routes"
+    ],
+    "decisions": [
+     "D-006.5",
+     "D-013.1",
+     "D-014.2",
+     "D-019.2",
+     "D-025",
+     "D-025.5",
+     "D-029",
+     "D-029.1",
+     "D-038.4",
+     "D-040.3",
+     "D-041",
+     "D-041.1",
+     "D-042",
+     "D-042.5",
+     "D-042.8",
+     "D-045",
+     "D-045.3",
+     "D-076",
+     "D-076.1",
+     "D-076.2",
+     "D-076.3",
+     "D-076.4",
+     "D-083.1",
+     "D-083.3",
+     "D-083.4",
+     "D-083.5",
+     "D-084.1",
+     "D-084.2",
+     "D-084.3",
+     "D-084.4"
+    ],
+    "acts": [
+     "A82",
+     "A83"
+    ],
+    "qa_rows": [
+     "API-26-001",
+     "API-26-002",
+     "API-26-003",
+     "API-26-004",
+     "API-26-005",
+     "API-26-006",
+     "API-26-007",
+     "API-26-008",
+     "API-26-009",
+     "API-26-010",
+     "API-26-011",
+     "API-26-012",
+     "API-26-013",
+     "API-26-014",
+     "API-26-015",
+     "API-26-016",
+     "API-26-017",
+     "API-26-018"
+    ],
+    "errors": [],
+    "spec": [
+     "07_tasks/tickets.json#T-A-26"
+    ]
+   },
+   "delta": "unchanged",
+   "dropped_reason": null
+  },
+  {
    "id": "T-US-01",
    "kind": "story",
    "title": "シェル（サイドバー・レール・第2ナビ・三画面・下タブ・枠の導出 data-frame・役割の出し分け data-roles）",
@@ -6873,7 +7367,7 @@
    "estimate_default": false,
    "start": "2026-10-20",
    "finish": "2026-10-20",
-   "critical": true,
+   "critical": false,
    "tentative": false,
    "assignable": [
     "claude-06",
@@ -7355,8 +7849,8 @@
    "layer": "ui",
    "estimate_hours": 1.4,
    "estimate_default": false,
-   "start": "2026-10-26",
-   "finish": "2026-10-26",
+   "start": "2026-10-27",
+   "finish": "2026-10-27",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -7579,8 +8073,8 @@
    "layer": "ui",
    "estimate_hours": 1.4,
    "estimate_default": false,
-   "start": "2026-10-26",
-   "finish": "2026-10-26",
+   "start": "2026-10-27",
+   "finish": "2026-10-27",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -7706,8 +8200,8 @@
    "layer": "ui",
    "estimate_hours": 1.8,
    "estimate_default": false,
-   "start": "2026-10-26",
-   "finish": "2026-10-26",
+   "start": "2026-10-27",
+   "finish": "2026-10-27",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -7842,8 +8336,8 @@
    "layer": "ui",
    "estimate_hours": 1.6,
    "estimate_default": false,
-   "start": "2026-10-27",
-   "finish": "2026-10-27",
+   "start": "2026-10-28",
+   "finish": "2026-10-28",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -8085,8 +8579,8 @@
    "layer": "ui",
    "estimate_hours": 1.4,
    "estimate_default": false,
-   "start": "2026-10-26",
-   "finish": "2026-10-26",
+   "start": "2026-10-27",
+   "finish": "2026-10-27",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -8215,8 +8709,8 @@
    "layer": "ui",
    "estimate_hours": 1.7,
    "estimate_default": false,
-   "start": "2026-10-26",
-   "finish": "2026-10-26",
+   "start": "2026-10-27",
+   "finish": "2026-10-27",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -8369,8 +8863,8 @@
    "layer": "ui",
    "estimate_hours": 1.9,
    "estimate_default": false,
-   "start": "2026-10-27",
-   "finish": "2026-10-27",
+   "start": "2026-10-28",
+   "finish": "2026-10-28",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -8642,8 +9136,8 @@
    "layer": "ui",
    "estimate_hours": 1.2,
    "estimate_default": false,
-   "start": "2026-10-26",
-   "finish": "2026-10-26",
+   "start": "2026-10-27",
+   "finish": "2026-10-27",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -8771,8 +9265,8 @@
    "layer": "ui",
    "estimate_hours": 2.1,
    "estimate_default": false,
-   "start": "2026-10-26",
-   "finish": "2026-10-26",
+   "start": "2026-10-27",
+   "finish": "2026-10-27",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -8948,8 +9442,8 @@
    "layer": "ui",
    "estimate_hours": 1.9,
    "estimate_default": false,
-   "start": "2026-10-26",
-   "finish": "2026-10-26",
+   "start": "2026-10-27",
+   "finish": "2026-10-27",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -9277,8 +9771,8 @@
    "layer": "ui",
    "estimate_hours": 4.0,
    "estimate_default": false,
-   "start": "2026-10-27",
-   "finish": "2026-10-27",
+   "start": "2026-10-28",
+   "finish": "2026-10-28",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -9487,8 +9981,8 @@
    "layer": "ui",
    "estimate_hours": 3.8,
    "estimate_default": false,
-   "start": "2026-10-26",
-   "finish": "2026-10-27",
+   "start": "2026-10-27",
+   "finish": "2026-10-28",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -9682,8 +10176,8 @@
    "layer": "ui",
    "estimate_hours": 1.9,
    "estimate_default": false,
-   "start": "2026-10-26",
-   "finish": "2026-10-26",
+   "start": "2026-10-27",
+   "finish": "2026-10-27",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -9970,8 +10464,8 @@
    "layer": "ui",
    "estimate_hours": 2.5,
    "estimate_default": false,
-   "start": "2026-10-26",
-   "finish": "2026-10-27",
+   "start": "2026-10-27",
+   "finish": "2026-10-28",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -10283,8 +10777,8 @@
    "layer": "ui",
    "estimate_hours": 2.1,
    "estimate_default": false,
-   "start": "2026-10-27",
-   "finish": "2026-10-28",
+   "start": "2026-10-28",
+   "finish": "2026-10-29",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -10465,8 +10959,8 @@
    "layer": "ui",
    "estimate_hours": 2.2,
    "estimate_default": false,
-   "start": "2026-10-27",
-   "finish": "2026-10-27",
+   "start": "2026-10-28",
+   "finish": "2026-10-28",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -10773,8 +11267,8 @@
    "layer": "ui",
    "estimate_hours": 1.8,
    "estimate_default": false,
-   "start": "2026-10-28",
-   "finish": "2026-10-28",
+   "start": "2026-10-29",
+   "finish": "2026-10-29",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -10913,8 +11407,8 @@
    "layer": "ui",
    "estimate_hours": 1.9,
    "estimate_default": false,
-   "start": "2026-10-27",
-   "finish": "2026-10-27",
+   "start": "2026-10-28",
+   "finish": "2026-10-28",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -11199,8 +11693,8 @@
    "layer": "ui",
    "estimate_hours": 2.2,
    "estimate_default": false,
-   "start": "2026-10-27",
-   "finish": "2026-10-27",
+   "start": "2026-10-28",
+   "finish": "2026-10-28",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -11349,8 +11843,8 @@
    "layer": "ui",
    "estimate_hours": 2.0,
    "estimate_default": false,
-   "start": "2026-10-28",
-   "finish": "2026-10-28",
+   "start": "2026-10-29",
+   "finish": "2026-10-29",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -11498,8 +11992,8 @@
    "layer": "ui",
    "estimate_hours": 1.4,
    "estimate_default": false,
-   "start": "2026-10-27",
-   "finish": "2026-10-27",
+   "start": "2026-10-28",
+   "finish": "2026-10-28",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -11779,8 +12273,8 @@
    "layer": "ui",
    "estimate_hours": 1.4,
    "estimate_default": false,
-   "start": "2026-10-27",
-   "finish": "2026-10-27",
+   "start": "2026-10-28",
+   "finish": "2026-10-28",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -11923,8 +12417,8 @@
    "layer": "ui",
    "estimate_hours": 2.2,
    "estimate_default": false,
-   "start": "2026-10-27",
-   "finish": "2026-10-28",
+   "start": "2026-10-28",
+   "finish": "2026-10-29",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -12070,8 +12564,8 @@
    "layer": "ui",
    "estimate_hours": 1.8,
    "estimate_default": false,
-   "start": "2026-10-28",
-   "finish": "2026-10-28",
+   "start": "2026-10-29",
+   "finish": "2026-10-29",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -12231,8 +12725,8 @@
    "layer": "ui",
    "estimate_hours": 2.5,
    "estimate_default": false,
-   "start": "2026-10-27",
-   "finish": "2026-10-27",
+   "start": "2026-10-28",
+   "finish": "2026-10-28",
    "critical": true,
    "tentative": false,
    "assignable": [
@@ -12387,8 +12881,8 @@
    "layer": "ui",
    "estimate_hours": 1.7,
    "estimate_default": false,
-   "start": "2026-10-27",
-   "finish": "2026-10-28",
+   "start": "2026-10-28",
+   "finish": "2026-10-29",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -12531,8 +13025,8 @@
    "layer": "ui",
    "estimate_hours": 1.9,
    "estimate_default": false,
-   "start": "2026-10-28",
-   "finish": "2026-10-29",
+   "start": "2026-10-29",
+   "finish": "2026-10-30",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -12669,8 +13163,8 @@
    "layer": "ui",
    "estimate_hours": 1.2,
    "estimate_default": false,
-   "start": "2026-10-28",
-   "finish": "2026-10-28",
+   "start": "2026-10-29",
+   "finish": "2026-10-29",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -12701,7 +13195,8 @@
      "D-022.5",
      "D-042.1",
      "D-042.10",
-     "D-053.6"
+     "D-053.6",
+     "D-085.3"
     ],
     "acts": [
      "A39"
@@ -12805,8 +13300,8 @@
    "layer": "ui",
    "estimate_hours": 1.2,
    "estimate_default": false,
-   "start": "2026-10-28",
-   "finish": "2026-10-28",
+   "start": "2026-10-29",
+   "finish": "2026-10-29",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -12946,8 +13441,8 @@
    "layer": "ui",
    "estimate_hours": 2.2,
    "estimate_default": false,
-   "start": "2026-10-28",
-   "finish": "2026-10-28",
+   "start": "2026-10-29",
+   "finish": "2026-10-29",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -13080,8 +13575,8 @@
    "layer": "ui",
    "estimate_hours": 1.1,
    "estimate_default": false,
-   "start": "2026-10-29",
-   "finish": "2026-10-29",
+   "start": "2026-10-30",
+   "finish": "2026-10-30",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -13202,8 +13697,8 @@
    "layer": "ui",
    "estimate_hours": 1.6,
    "estimate_default": false,
-   "start": "2026-10-29",
-   "finish": "2026-10-29",
+   "start": "2026-10-30",
+   "finish": "2026-10-30",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -13334,8 +13829,8 @@
    "layer": "ui",
    "estimate_hours": 2.3,
    "estimate_default": false,
-   "start": "2026-10-28",
-   "finish": "2026-10-28",
+   "start": "2026-10-29",
+   "finish": "2026-10-29",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -13478,8 +13973,8 @@
    "layer": "ui",
    "estimate_hours": 1.5,
    "estimate_default": false,
-   "start": "2026-10-29",
-   "finish": "2026-10-29",
+   "start": "2026-10-30",
+   "finish": "2026-10-30",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -13501,7 +13996,8 @@
     ],
     "decisions": [
      "D-076.1",
-     "D-042"
+     "D-042",
+     "D-084.3"
     ],
     "acts": [
      "A74"
@@ -13610,8 +14106,8 @@
    "layer": "ui",
    "estimate_hours": 1.2,
    "estimate_default": false,
-   "start": "2026-10-29",
-   "finish": "2026-10-29",
+   "start": "2026-10-30",
+   "finish": "2026-10-30",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -13638,7 +14134,8 @@
      "D-012.8",
      "D-042.5",
      "D-045.2",
-     "D-055.1"
+     "D-055.1",
+     "D-083.4"
     ],
     "acts": [
      "A75"
@@ -13740,8 +14237,8 @@
    "layer": "ui",
    "estimate_hours": 1.4,
    "estimate_default": false,
-   "start": "2026-10-28",
-   "finish": "2026-10-28",
+   "start": "2026-10-29",
+   "finish": "2026-10-29",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -13870,8 +14367,8 @@
    "layer": "ui",
    "estimate_hours": 1.4,
    "estimate_default": false,
-   "start": "2026-10-29",
-   "finish": "2026-10-29",
+   "start": "2026-10-30",
+   "finish": "2026-10-30",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -14000,8 +14497,8 @@
    "layer": "ui",
    "estimate_hours": 1.1,
    "estimate_default": false,
-   "start": "2026-10-28",
-   "finish": "2026-10-28",
+   "start": "2026-10-29",
+   "finish": "2026-10-29",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -14119,8 +14616,8 @@
    "layer": "ui",
    "estimate_hours": 1.6,
    "estimate_default": false,
-   "start": "2026-10-29",
-   "finish": "2026-10-29",
+   "start": "2026-10-30",
+   "finish": "2026-10-30",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -14262,8 +14759,8 @@
    "layer": "ui",
    "estimate_hours": 2.2,
    "estimate_default": false,
-   "start": "2026-10-28",
-   "finish": "2026-10-28",
+   "start": "2026-10-29",
+   "finish": "2026-10-29",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -14403,8 +14900,8 @@
    "layer": "ui",
    "estimate_hours": 1.8,
    "estimate_default": false,
-   "start": "2026-10-28",
-   "finish": "2026-10-28",
+   "start": "2026-10-29",
+   "finish": "2026-10-29",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -14525,6 +15022,15 @@
     "T-U-52.t28",
     "T-U-52.t29",
     "T-U-52.t30",
+    "T-U-52.t31",
+    "T-U-52.t32",
+    "T-U-52.t33",
+    "T-U-52.t34",
+    "T-U-52.t35",
+    "T-U-52.t36",
+    "T-U-52.t37",
+    "T-U-52.t38",
+    "T-U-52.t39",
     "T-U-52.m1"
    ],
    "depends_on": [
@@ -14541,8 +15047,8 @@
    "layer": "ui",
    "estimate_hours": 1.4,
    "estimate_default": false,
-   "start": "2026-10-29",
-   "finish": "2026-10-29",
+   "start": "2026-10-30",
+   "finish": "2026-10-30",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -14605,12 +15111,30 @@
      "SCR-BILLING-027",
      "E-MOCK-008-A",
      "E-MOCK-008-B",
-     "E-MOCK-008-C"
+     "E-MOCK-008-C",
+     "E-PAY-003-A",
+     "E-PAY-003-B",
+     "E-PAY-003-C",
+     "E-PAY-004-A",
+     "E-PAY-004-B",
+     "E-PAY-004-C",
+     "E-PAY-006-A",
+     "E-PAY-006-B",
+     "E-PAY-006-C"
     ],
     "errors": [
      "E-MOCK-008-A",
      "E-MOCK-008-B",
-     "E-MOCK-008-C"
+     "E-MOCK-008-C",
+     "E-PAY-003-A",
+     "E-PAY-003-B",
+     "E-PAY-003-C",
+     "E-PAY-004-A",
+     "E-PAY-004-B",
+     "E-PAY-004-C",
+     "E-PAY-006-A",
+     "E-PAY-006-B",
+     "E-PAY-006-C"
     ],
     "spec": [
      "07_tasks/tickets.json#T-U-52"
@@ -14671,8 +15195,8 @@
    "layer": "ui",
    "estimate_hours": 1.1,
    "estimate_default": false,
-   "start": "2026-10-29",
-   "finish": "2026-10-29",
+   "start": "2026-10-30",
+   "finish": "2026-10-30",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -14775,6 +15299,9 @@
     "T-U-54.t23",
     "T-U-54.t24",
     "T-U-54.t25",
+    "T-U-54.t26",
+    "T-U-54.t27",
+    "T-U-54.t28",
     "T-U-54.m1"
    ],
    "depends_on": [
@@ -14791,8 +15318,8 @@
    "layer": "ui",
    "estimate_hours": 1.1,
    "estimate_default": false,
-   "start": "2026-10-29",
-   "finish": "2026-10-29",
+   "start": "2026-10-30",
+   "finish": "2026-10-30",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -14819,10 +15346,13 @@
      "D-076.6",
      "D-077.3",
      "D-077.5",
-     "D-002.2"
+     "D-002.2",
+     "D-082.8",
+     "D-082.3"
     ],
     "acts": [
-     "A72"
+     "A72",
+     "A87"
     ],
     "qa_rows": [
      "SCR-OPS-BILLING-001",
@@ -14849,9 +15379,16 @@
      "SCR-OPS-BILLING-022",
      "SCR-OPS-BILLING-023",
      "SCR-OPS-BILLING-024",
-     "SCR-OPS-BILLING-025"
+     "SCR-OPS-BILLING-025",
+     "E-PAY-005-A",
+     "E-PAY-005-B",
+     "E-PAY-005-C"
     ],
-    "errors": [],
+    "errors": [
+     "E-PAY-005-A",
+     "E-PAY-005-B",
+     "E-PAY-005-C"
+    ],
     "spec": [
      "07_tasks/tickets.json#T-U-54"
     ]
@@ -14908,8 +15445,8 @@
    "layer": "ui",
    "estimate_hours": 0.8,
    "estimate_default": false,
-   "start": "2026-10-29",
-   "finish": "2026-10-29",
+   "start": "2026-10-30",
+   "finish": "2026-10-30",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -14941,7 +15478,8 @@
      "D-077.7",
      "D-077.8",
      "D-042.6",
-     "D-078.3"
+     "D-078.3",
+     "D-083.6"
     ],
     "acts": [
      "A64"
@@ -15029,8 +15567,8 @@
    "layer": "ui",
    "estimate_hours": 1.1,
    "estimate_default": false,
-   "start": "2026-10-28",
-   "finish": "2026-10-29",
+   "start": "2026-10-29",
+   "finish": "2026-10-30",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -15154,8 +15692,8 @@
    "layer": "ui",
    "estimate_hours": 1.1,
    "estimate_default": false,
-   "start": "2026-10-29",
-   "finish": "2026-10-29",
+   "start": "2026-10-30",
+   "finish": "2026-10-30",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -15290,8 +15828,8 @@
    "layer": "ui",
    "estimate_hours": 1.7,
    "estimate_default": false,
-   "start": "2026-10-29",
-   "finish": "2026-10-29",
+   "start": "2026-10-30",
+   "finish": "2026-10-30",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -15383,6 +15921,740 @@
    "dropped_reason": null
   },
   {
+   "id": "T-U-59",
+   "kind": "story",
+   "title": "画面 支払い方法を登録する（4 状態・R1/R2・段階 2）",
+   "parent": "E-ui",
+   "children": [
+    "T-U-59.s1",
+    "T-U-59.s2",
+    "T-U-59.t1",
+    "T-U-59.t2",
+    "T-U-59.t3",
+    "T-U-59.t4",
+    "T-U-59.t5",
+    "T-U-59.t6",
+    "T-U-59.t7",
+    "T-U-59.t8",
+    "T-U-59.t9",
+    "T-U-59.t10",
+    "T-U-59.t11",
+    "T-U-59.t12",
+    "T-U-59.t13",
+    "T-U-59.t14",
+    "T-U-59.t15",
+    "T-U-59.t16",
+    "T-U-59.t17",
+    "T-U-59.t18",
+    "T-U-59.t19",
+    "T-U-59.t20",
+    "T-U-59.t21",
+    "T-U-59.t22",
+    "T-U-59.t23",
+    "T-U-59.t24",
+    "T-U-59.t25",
+    "T-U-59.t26",
+    "T-U-59.m1"
+   ],
+   "depends_on": [
+    "T-US-01",
+    "T-US-02",
+    "T-US-03",
+    "T-US-04",
+    "T-US-05",
+    "T-US-06",
+    "T-A-01"
+   ],
+   "blocked_by": [],
+   "wave": "W3",
+   "layer": "ui",
+   "estimate_hours": 1.7,
+   "estimate_default": false,
+   "start": "2026-10-30",
+   "finish": "2026-11-02",
+   "critical": false,
+   "tentative": false,
+   "assignable": [
+    "claude-06",
+    "claude-07",
+    "claude-08",
+    "claude-09"
+   ],
+   "assignee": "claude-07",
+   "assigned_by": "auto",
+   "status": "todo",
+   "external": {},
+   "links": {
+    "mock": [
+     "06_mockup/v2/v2-billing-setup.html"
+    ],
+    "screens": [
+     "billing-setup"
+    ],
+    "decisions": [
+     "D-002",
+     "D-081.2",
+     "D-082.1",
+     "D-082.2",
+     "D-082.3"
+    ],
+    "acts": [
+     "A05"
+    ],
+    "qa_rows": [
+     "SCR-BILLING-SETUP-001",
+     "SCR-BILLING-SETUP-002",
+     "SCR-BILLING-SETUP-003",
+     "SCR-BILLING-SETUP-004",
+     "SCR-BILLING-SETUP-005",
+     "SCR-BILLING-SETUP-006",
+     "SCR-BILLING-SETUP-007",
+     "SCR-BILLING-SETUP-008",
+     "SCR-BILLING-SETUP-009",
+     "SCR-BILLING-SETUP-010",
+     "SCR-BILLING-SETUP-011",
+     "SCR-BILLING-SETUP-012",
+     "SCR-BILLING-SETUP-013",
+     "SCR-BILLING-SETUP-014",
+     "SCR-BILLING-SETUP-015",
+     "SCR-BILLING-SETUP-016",
+     "SCR-BILLING-SETUP-017",
+     "SCR-BILLING-SETUP-018",
+     "SCR-BILLING-SETUP-019",
+     "SCR-BILLING-SETUP-020",
+     "E-PAY-001-A",
+     "E-PAY-001-B",
+     "E-PAY-001-C",
+     "E-PAY-002-A",
+     "E-PAY-002-B",
+     "E-PAY-002-C"
+    ],
+    "errors": [
+     "E-PAY-001-A",
+     "E-PAY-001-B",
+     "E-PAY-001-C",
+     "E-PAY-002-A",
+     "E-PAY-002-B",
+     "E-PAY-002-C"
+    ],
+    "spec": [
+     "07_tasks/tickets.json#T-U-59"
+    ]
+   },
+   "delta": "unchanged",
+   "dropped_reason": null
+  },
+  {
+   "id": "T-U-60",
+   "kind": "story",
+   "title": "画面 開示資料（4 状態・R1/R2・段階 2）",
+   "parent": "E-ui",
+   "children": [
+    "T-U-60.s1",
+    "T-U-60.s2",
+    "T-U-60.t1",
+    "T-U-60.t2",
+    "T-U-60.t3",
+    "T-U-60.t4",
+    "T-U-60.t5",
+    "T-U-60.t6",
+    "T-U-60.t7",
+    "T-U-60.t8",
+    "T-U-60.t9",
+    "T-U-60.t10",
+    "T-U-60.t11",
+    "T-U-60.t12",
+    "T-U-60.t13",
+    "T-U-60.t14",
+    "T-U-60.t15",
+    "T-U-60.t16",
+    "T-U-60.t17",
+    "T-U-60.t18",
+    "T-U-60.t19",
+    "T-U-60.t20",
+    "T-U-60.t21",
+    "T-U-60.t22",
+    "T-U-60.t23",
+    "T-U-60.t24",
+    "T-U-60.t25",
+    "T-U-60.t26",
+    "T-U-60.m1"
+   ],
+   "depends_on": [
+    "T-US-01",
+    "T-US-02",
+    "T-US-03",
+    "T-US-04",
+    "T-US-05",
+    "T-US-06",
+    "T-A-24"
+   ],
+   "blocked_by": [],
+   "wave": "W3",
+   "layer": "ui",
+   "estimate_hours": 1.7,
+   "estimate_default": false,
+   "start": "2026-11-18",
+   "finish": "2026-11-18",
+   "critical": false,
+   "tentative": false,
+   "assignable": [
+    "claude-06",
+    "claude-07",
+    "claude-08",
+    "claude-09"
+   ],
+   "assignee": "claude-06",
+   "assigned_by": "auto",
+   "status": "todo",
+   "external": {},
+   "links": {
+    "mock": [
+     "06_mockup/v2/v2-disclosure.html"
+    ],
+    "screens": [
+     "disclosure"
+    ],
+    "decisions": [
+     "D-081.5",
+     "D-085.1",
+     "D-085.2",
+     "D-085.3",
+     "D-085.4",
+     "D-042"
+    ],
+    "acts": [
+     "A84"
+    ],
+    "qa_rows": [
+     "SCR-DISCLOSURE-001",
+     "SCR-DISCLOSURE-002",
+     "SCR-DISCLOSURE-003",
+     "SCR-DISCLOSURE-004",
+     "SCR-DISCLOSURE-005",
+     "SCR-DISCLOSURE-006",
+     "SCR-DISCLOSURE-007",
+     "SCR-DISCLOSURE-008",
+     "SCR-DISCLOSURE-009",
+     "SCR-DISCLOSURE-010",
+     "SCR-DISCLOSURE-011",
+     "SCR-DISCLOSURE-012",
+     "SCR-DISCLOSURE-013",
+     "SCR-DISCLOSURE-014",
+     "SCR-DISCLOSURE-015",
+     "SCR-DISCLOSURE-016",
+     "SCR-DISCLOSURE-017",
+     "SCR-DISCLOSURE-018",
+     "SCR-DISCLOSURE-019",
+     "SCR-DISCLOSURE-020",
+     "E-DISC-001-A",
+     "E-DISC-001-B",
+     "E-DISC-001-C",
+     "E-MOCK-036-A",
+     "E-MOCK-036-B",
+     "E-MOCK-036-C"
+    ],
+    "errors": [
+     "E-DISC-001-A",
+     "E-DISC-001-B",
+     "E-DISC-001-C",
+     "E-MOCK-036-A",
+     "E-MOCK-036-B",
+     "E-MOCK-036-C"
+    ],
+    "spec": [
+     "07_tasks/tickets.json#T-U-60"
+    ]
+   },
+   "delta": "unchanged",
+   "dropped_reason": null
+  },
+  {
+   "id": "T-U-61",
+   "kind": "story",
+   "title": "画面 AI の経路（4 状態・R1/R2・段階 2）",
+   "parent": "E-ui",
+   "children": [
+    "T-U-61.s1",
+    "T-U-61.s2",
+    "T-U-61.t1",
+    "T-U-61.t2",
+    "T-U-61.t3",
+    "T-U-61.t4",
+    "T-U-61.t5",
+    "T-U-61.t6",
+    "T-U-61.t7",
+    "T-U-61.t8",
+    "T-U-61.t9",
+    "T-U-61.t10",
+    "T-U-61.t11",
+    "T-U-61.t12",
+    "T-U-61.t13",
+    "T-U-61.t14",
+    "T-U-61.t15",
+    "T-U-61.t16",
+    "T-U-61.t17",
+    "T-U-61.t18",
+    "T-U-61.t19",
+    "T-U-61.t20",
+    "T-U-61.t21",
+    "T-U-61.t22",
+    "T-U-61.t23",
+    "T-U-61.t24",
+    "T-U-61.t25",
+    "T-U-61.t26",
+    "T-U-61.t27",
+    "T-U-61.t28",
+    "T-U-61.t29",
+    "T-U-61.t30",
+    "T-U-61.t31",
+    "T-U-61.t32",
+    "T-U-61.t33",
+    "T-U-61.t34",
+    "T-U-61.t35",
+    "T-U-61.m1"
+   ],
+   "depends_on": [
+    "T-US-01",
+    "T-US-02",
+    "T-US-03",
+    "T-US-04",
+    "T-US-05",
+    "T-US-06",
+    "T-A-26"
+   ],
+   "blocked_by": [],
+   "wave": "W3",
+   "layer": "ui",
+   "estimate_hours": 1.7,
+   "estimate_default": false,
+   "start": "2026-11-02",
+   "finish": "2026-11-02",
+   "critical": false,
+   "tentative": false,
+   "assignable": [
+    "claude-06",
+    "claude-07",
+    "claude-08",
+    "claude-09"
+   ],
+   "assignee": "claude-08",
+   "assigned_by": "auto",
+   "status": "todo",
+   "external": {},
+   "links": {
+    "mock": [
+     "06_mockup/v2/v2-llm-routes.html"
+    ],
+    "screens": [
+     "llm-routes"
+    ],
+    "decisions": [
+     "D-081.3",
+     "D-083.1",
+     "D-083.3",
+     "D-083.4",
+     "D-083.5",
+     "D-004"
+    ],
+    "acts": [
+     "A82"
+    ],
+    "qa_rows": [
+     "SCR-LLM-ROUTES-001",
+     "SCR-LLM-ROUTES-002",
+     "SCR-LLM-ROUTES-003",
+     "SCR-LLM-ROUTES-004",
+     "SCR-LLM-ROUTES-005",
+     "SCR-LLM-ROUTES-006",
+     "SCR-LLM-ROUTES-007",
+     "SCR-LLM-ROUTES-008",
+     "SCR-LLM-ROUTES-009",
+     "SCR-LLM-ROUTES-010",
+     "SCR-LLM-ROUTES-011",
+     "SCR-LLM-ROUTES-012",
+     "SCR-LLM-ROUTES-013",
+     "SCR-LLM-ROUTES-014",
+     "SCR-LLM-ROUTES-015",
+     "SCR-LLM-ROUTES-016",
+     "SCR-LLM-ROUTES-017",
+     "SCR-LLM-ROUTES-018",
+     "SCR-LLM-ROUTES-019",
+     "SCR-LLM-ROUTES-020",
+     "E-LLM-001-A",
+     "E-LLM-001-B",
+     "E-LLM-001-C",
+     "E-LLM-002-A",
+     "E-LLM-002-B",
+     "E-LLM-002-C",
+     "E-LLM-003-A",
+     "E-LLM-003-B",
+     "E-LLM-003-C",
+     "E-LLM-004-A",
+     "E-LLM-004-B",
+     "E-LLM-004-C",
+     "E-MOCK-035-A",
+     "E-MOCK-035-B",
+     "E-MOCK-035-C"
+    ],
+    "errors": [
+     "E-LLM-001-A",
+     "E-LLM-001-B",
+     "E-LLM-001-C",
+     "E-LLM-002-A",
+     "E-LLM-002-B",
+     "E-LLM-002-C",
+     "E-LLM-003-A",
+     "E-LLM-003-B",
+     "E-LLM-003-C",
+     "E-LLM-004-A",
+     "E-LLM-004-B",
+     "E-LLM-004-C",
+     "E-MOCK-035-A",
+     "E-MOCK-035-B",
+     "E-MOCK-035-C"
+    ],
+    "spec": [
+     "07_tasks/tickets.json#T-U-61"
+    ]
+   },
+   "delta": "unchanged",
+   "dropped_reason": null
+  },
+  {
+   "id": "T-U-62",
+   "kind": "story",
+   "title": "画面 アプリと通知（3 状態・R1/R2/R3/R4・段階 2）",
+   "parent": "E-ui",
+   "children": [
+    "T-U-62.s1",
+    "T-U-62.s2",
+    "T-U-62.t1",
+    "T-U-62.t2",
+    "T-U-62.t3",
+    "T-U-62.t4",
+    "T-U-62.t5",
+    "T-U-62.t6",
+    "T-U-62.t7",
+    "T-U-62.t8",
+    "T-U-62.t9",
+    "T-U-62.t10",
+    "T-U-62.t11",
+    "T-U-62.t12",
+    "T-U-62.t13",
+    "T-U-62.t14",
+    "T-U-62.t15",
+    "T-U-62.t16",
+    "T-U-62.t17",
+    "T-U-62.t18",
+    "T-U-62.t19",
+    "T-U-62.t20",
+    "T-U-62.t21",
+    "T-U-62.t22",
+    "T-U-62.t23",
+    "T-U-62.t24",
+    "T-U-62.t25",
+    "T-U-62.t26",
+    "T-U-62.t27",
+    "T-U-62.m1"
+   ],
+   "depends_on": [
+    "T-US-01",
+    "T-US-02",
+    "T-US-03",
+    "T-US-04",
+    "T-US-05",
+    "T-US-06",
+    "T-A-26"
+   ],
+   "blocked_by": [],
+   "wave": "W3",
+   "layer": "ui",
+   "estimate_hours": 1.8,
+   "estimate_default": false,
+   "start": "2026-11-02",
+   "finish": "2026-11-02",
+   "critical": false,
+   "tentative": false,
+   "assignable": [
+    "claude-06",
+    "claude-07",
+    "claude-08",
+    "claude-09"
+   ],
+   "assignee": "claude-09",
+   "assigned_by": "auto",
+   "status": "todo",
+   "external": {},
+   "links": {
+    "mock": [
+     "06_mockup/v2/v2-app-setup.html"
+    ],
+    "screens": [
+     "app-setup"
+    ],
+    "decisions": [
+     "D-081.4",
+     "D-084.1",
+     "D-084.2",
+     "D-084.3",
+     "D-084.4"
+    ],
+    "acts": [
+     "A83"
+    ],
+    "qa_rows": [
+     "SCR-APP-SETUP-001",
+     "SCR-APP-SETUP-002",
+     "SCR-APP-SETUP-003",
+     "SCR-APP-SETUP-004",
+     "SCR-APP-SETUP-005",
+     "SCR-APP-SETUP-006",
+     "SCR-APP-SETUP-007",
+     "SCR-APP-SETUP-008",
+     "SCR-APP-SETUP-009",
+     "SCR-APP-SETUP-010",
+     "SCR-APP-SETUP-011",
+     "SCR-APP-SETUP-012",
+     "SCR-APP-SETUP-013",
+     "SCR-APP-SETUP-014",
+     "SCR-APP-SETUP-015",
+     "SCR-APP-SETUP-016",
+     "SCR-APP-SETUP-017",
+     "SCR-APP-SETUP-018",
+     "SCR-APP-SETUP-019",
+     "SCR-APP-SETUP-020",
+     "SCR-APP-SETUP-021",
+     "E-APP-001-A",
+     "E-APP-001-B",
+     "E-APP-001-C",
+     "E-APP-002-A",
+     "E-APP-002-B",
+     "E-APP-002-C"
+    ],
+    "errors": [
+     "E-APP-001-A",
+     "E-APP-001-B",
+     "E-APP-001-C",
+     "E-APP-002-A",
+     "E-APP-002-B",
+     "E-APP-002-C"
+    ],
+    "spec": [
+     "07_tasks/tickets.json#T-U-62"
+    ]
+   },
+   "delta": "unchanged",
+   "dropped_reason": null
+  },
+  {
+   "id": "T-U-63",
+   "kind": "story",
+   "title": "画面 運営：AI の経路と使用量（3 状態・R6・段階 2）",
+   "parent": "E-ui",
+   "children": [
+    "T-U-63.s1",
+    "T-U-63.s2",
+    "T-U-63.t1",
+    "T-U-63.t2",
+    "T-U-63.t3",
+    "T-U-63.t4",
+    "T-U-63.t5",
+    "T-U-63.t6",
+    "T-U-63.t7",
+    "T-U-63.t8",
+    "T-U-63.t9",
+    "T-U-63.t10",
+    "T-U-63.t11",
+    "T-U-63.t12",
+    "T-U-63.t13",
+    "T-U-63.t14",
+    "T-U-63.t15",
+    "T-U-63.t16",
+    "T-U-63.t17",
+    "T-U-63.t18",
+    "T-U-63.m1"
+   ],
+   "depends_on": [
+    "T-US-01",
+    "T-US-02",
+    "T-US-03",
+    "T-US-04",
+    "T-US-05",
+    "T-US-06",
+    "T-A-25"
+   ],
+   "blocked_by": [],
+   "wave": "W3",
+   "layer": "ui",
+   "estimate_hours": 1.3,
+   "estimate_default": false,
+   "start": "2026-11-02",
+   "finish": "2026-11-02",
+   "critical": false,
+   "tentative": false,
+   "assignable": [
+    "claude-06",
+    "claude-07",
+    "claude-08",
+    "claude-09"
+   ],
+   "assignee": "claude-07",
+   "assigned_by": "auto",
+   "status": "todo",
+   "external": {},
+   "links": {
+    "mock": [
+     "06_mockup/v2/v2-ops-llm.html"
+    ],
+    "screens": [
+     "ops-llm"
+    ],
+    "decisions": [
+     "D-083.5",
+     "D-083.6"
+    ],
+    "acts": [
+     "A85"
+    ],
+    "qa_rows": [
+     "SCR-OPS-LLM-001",
+     "SCR-OPS-LLM-002",
+     "SCR-OPS-LLM-003",
+     "SCR-OPS-LLM-004",
+     "SCR-OPS-LLM-005",
+     "SCR-OPS-LLM-006",
+     "SCR-OPS-LLM-007",
+     "SCR-OPS-LLM-008",
+     "SCR-OPS-LLM-009",
+     "SCR-OPS-LLM-010",
+     "SCR-OPS-LLM-011",
+     "SCR-OPS-LLM-012",
+     "SCR-OPS-LLM-013",
+     "SCR-OPS-LLM-014",
+     "SCR-OPS-LLM-015",
+     "SCR-OPS-LLM-016",
+     "SCR-OPS-LLM-017",
+     "SCR-OPS-LLM-018"
+    ],
+    "errors": [],
+    "spec": [
+     "07_tasks/tickets.json#T-U-63"
+    ]
+   },
+   "delta": "unchanged",
+   "dropped_reason": null
+  },
+  {
+   "id": "T-U-64",
+   "kind": "story",
+   "title": "画面 運営：開示資料（3 状態・R6・段階 2）",
+   "parent": "E-ui",
+   "children": [
+    "T-U-64.s1",
+    "T-U-64.s2",
+    "T-U-64.t1",
+    "T-U-64.t2",
+    "T-U-64.t3",
+    "T-U-64.t4",
+    "T-U-64.t5",
+    "T-U-64.t6",
+    "T-U-64.t7",
+    "T-U-64.t8",
+    "T-U-64.t9",
+    "T-U-64.t10",
+    "T-U-64.t11",
+    "T-U-64.t12",
+    "T-U-64.t13",
+    "T-U-64.t14",
+    "T-U-64.t15",
+    "T-U-64.t16",
+    "T-U-64.t17",
+    "T-U-64.t18",
+    "T-U-64.t19",
+    "T-U-64.t20",
+    "T-U-64.t21",
+    "T-U-64.m1"
+   ],
+   "depends_on": [
+    "T-US-01",
+    "T-US-02",
+    "T-US-03",
+    "T-US-04",
+    "T-US-05",
+    "T-US-06",
+    "T-A-25"
+   ],
+   "blocked_by": [],
+   "wave": "W3",
+   "layer": "ui",
+   "estimate_hours": 1.3,
+   "estimate_default": false,
+   "start": "2026-11-18",
+   "finish": "2026-11-18",
+   "critical": false,
+   "tentative": false,
+   "assignable": [
+    "claude-06",
+    "claude-07",
+    "claude-08",
+    "claude-09"
+   ],
+   "assignee": "claude-06",
+   "assigned_by": "auto",
+   "status": "todo",
+   "external": {},
+   "links": {
+    "mock": [
+     "06_mockup/v2/v2-ops-disclosure.html"
+    ],
+    "screens": [
+     "ops-disclosure"
+    ],
+    "decisions": [
+     "D-085.1",
+     "D-085.2",
+     "D-085.3"
+    ],
+    "acts": [
+     "A86"
+    ],
+    "qa_rows": [
+     "SCR-OPS-DISCLOSURE-001",
+     "SCR-OPS-DISCLOSURE-002",
+     "SCR-OPS-DISCLOSURE-003",
+     "SCR-OPS-DISCLOSURE-004",
+     "SCR-OPS-DISCLOSURE-005",
+     "SCR-OPS-DISCLOSURE-006",
+     "SCR-OPS-DISCLOSURE-007",
+     "SCR-OPS-DISCLOSURE-008",
+     "SCR-OPS-DISCLOSURE-009",
+     "SCR-OPS-DISCLOSURE-010",
+     "SCR-OPS-DISCLOSURE-011",
+     "SCR-OPS-DISCLOSURE-012",
+     "SCR-OPS-DISCLOSURE-013",
+     "SCR-OPS-DISCLOSURE-014",
+     "SCR-OPS-DISCLOSURE-015",
+     "SCR-OPS-DISCLOSURE-016",
+     "SCR-OPS-DISCLOSURE-017",
+     "SCR-OPS-DISCLOSURE-018",
+     "E-DISC-002-A",
+     "E-DISC-002-B",
+     "E-DISC-002-C"
+    ],
+    "errors": [
+     "E-DISC-002-A",
+     "E-DISC-002-B",
+     "E-DISC-002-C"
+    ],
+    "spec": [
+     "07_tasks/tickets.json#T-U-64"
+    ]
+   },
+   "delta": "unchanged",
+   "dropped_reason": null
+  },
+  {
    "id": "T-I-01",
    "kind": "story",
    "title": "実行ループの結線（自分のAI → 配る → AI社員 action_runs → 関門 → 一次確認 → 承認待ち → 画面）",
@@ -15419,12 +16691,12 @@
     "T-U-18"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "integration",
    "estimate_hours": 9.0,
    "estimate_default": false,
-   "start": "2026-10-29",
-   "finish": "2026-10-30",
+   "start": "2026-11-19",
+   "finish": "2026-11-20",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -15493,12 +16765,12 @@
     "T-U-13"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "integration",
    "estimate_hours": 6.0,
    "estimate_default": false,
-   "start": "2026-10-28",
-   "finish": "2026-10-28",
+   "start": "2026-11-18",
+   "finish": "2026-11-19",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -15581,12 +16853,12 @@
     "T-U-23"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "integration",
    "estimate_hours": 2.4,
    "estimate_default": false,
-   "start": "2026-10-30",
-   "finish": "2026-11-02",
+   "start": "2026-11-20",
+   "finish": "2026-11-24",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -15645,6 +16917,7 @@
     "T-A-18",
     "T-A-19",
     "T-A-22",
+    "T-A-25",
     "T-F-12",
     "T-U-41",
     "T-U-50",
@@ -15653,12 +16926,12 @@
     "T-U-55"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "integration",
    "estimate_hours": 2.0,
    "estimate_default": false,
-   "start": "2026-11-04",
-   "finish": "2026-11-04",
+   "start": "2026-11-25",
+   "finish": "2026-11-25",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -15720,6 +16993,7 @@
     "T-A-13",
     "T-A-15",
     "T-A-18",
+    "T-A-24",
     "T-F-04",
     "T-F-05",
     "T-F-06",
@@ -15730,12 +17004,12 @@
     "T-U-58"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "integration",
    "estimate_hours": 8.0,
    "estimate_default": false,
-   "start": "2026-11-05",
-   "finish": "2026-11-06",
+   "start": "2026-11-26",
+   "finish": "2026-11-27",
    "critical": true,
    "tentative": false,
    "assignable": [
@@ -15805,12 +17079,12 @@
     "T-U-49"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "integration",
    "estimate_hours": 2.0,
    "estimate_default": false,
-   "start": "2026-11-02",
-   "finish": "2026-11-04",
+   "start": "2026-11-25",
+   "finish": "2026-11-25",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -15872,17 +17146,18 @@
     "T-A-08",
     "T-A-18",
     "T-A-19",
+    "T-A-25",
     "T-F-12",
     "T-U-13",
     "T-U-51"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "integration",
    "estimate_hours": 1.2,
    "estimate_default": false,
-   "start": "2026-11-04",
-   "finish": "2026-11-04",
+   "start": "2026-11-25",
+   "finish": "2026-11-25",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -15941,6 +17216,7 @@
     "T-A-18",
     "T-A-19",
     "T-A-21",
+    "T-A-25",
     "T-F-10",
     "T-F-13",
     "T-U-52",
@@ -15948,12 +17224,12 @@
     "T-U-55"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "integration",
    "estimate_hours": 5.0,
    "estimate_default": false,
-   "start": "2026-11-04",
-   "finish": "2026-11-05",
+   "start": "2026-11-25",
+   "finish": "2026-11-26",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -16008,18 +17284,19 @@
     "T-A-01",
     "T-A-02",
     "T-A-15",
+    "T-A-24",
     "T-U-01",
     "T-U-02",
     "T-U-03",
     "T-U-04"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "integration",
    "estimate_hours": 1.4,
    "estimate_default": false,
-   "start": "2026-10-27",
-   "finish": "2026-10-27",
+   "start": "2026-11-18",
+   "finish": "2026-11-18",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -16081,12 +17358,12 @@
     "T-U-12"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "integration",
    "estimate_hours": 2.0,
    "estimate_default": false,
-   "start": "2026-10-28",
-   "finish": "2026-10-28",
+   "start": "2026-11-18",
+   "finish": "2026-11-18",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -16156,12 +17433,12 @@
     "T-U-21"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "integration",
    "estimate_hours": 4.2,
    "estimate_default": false,
-   "start": "2026-10-30",
-   "finish": "2026-10-30",
+   "start": "2026-11-20",
+   "finish": "2026-11-20",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -16221,12 +17498,12 @@
     "T-U-25"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "integration",
    "estimate_hours": 1.8,
    "estimate_default": false,
-   "start": "2026-11-02",
-   "finish": "2026-11-02",
+   "start": "2026-11-24",
+   "finish": "2026-11-24",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -16289,12 +17566,12 @@
     "T-U-31"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "integration",
    "estimate_hours": 2.2,
    "estimate_default": false,
-   "start": "2026-11-02",
-   "finish": "2026-11-02",
+   "start": "2026-11-24",
+   "finish": "2026-11-24",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -16353,12 +17630,12 @@
     "T-U-34"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "integration",
    "estimate_hours": 1.6,
    "estimate_default": false,
-   "start": "2026-11-02",
-   "finish": "2026-11-02",
+   "start": "2026-11-24",
+   "finish": "2026-11-24",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -16415,6 +17692,8 @@
     "T-A-15",
     "T-A-18",
     "T-A-20",
+    "T-A-24",
+    "T-A-26",
     "T-U-33",
     "T-U-35",
     "T-U-36",
@@ -16429,12 +17708,12 @@
     "T-U-58"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "integration",
    "estimate_hours": 3.4,
    "estimate_default": false,
-   "start": "2026-11-06",
-   "finish": "2026-11-09",
+   "start": "2026-11-27",
+   "finish": "2026-11-30",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -16484,18 +17763,19 @@
    ],
    "depends_on": [
     "T-A-15",
+    "T-A-24",
     "T-U-33",
     "T-U-38",
     "T-U-39",
     "T-U-40"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "integration",
    "estimate_hours": 1.4,
    "estimate_default": false,
-   "start": "2026-11-02",
-   "finish": "2026-11-02",
+   "start": "2026-11-24",
+   "finish": "2026-11-25",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -16551,6 +17831,7 @@
     "T-A-21",
     "T-A-22",
     "T-A-23",
+    "T-A-25",
     "T-U-37",
     "T-U-41",
     "T-U-42",
@@ -16564,12 +17845,12 @@
     "T-U-57"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "integration",
    "estimate_hours": 3.4,
    "estimate_default": false,
-   "start": "2026-11-05",
-   "finish": "2026-11-05",
+   "start": "2026-11-26",
+   "finish": "2026-11-26",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -16649,12 +17930,12 @@
     "T-U-22"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "integration",
    "estimate_hours": 1.2,
    "estimate_default": false,
-   "start": "2026-10-30",
-   "finish": "2026-10-30",
+   "start": "2026-11-20",
+   "finish": "2026-11-20",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -16714,12 +17995,12 @@
     "T-I-03"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "polish",
    "estimate_hours": 1.6,
    "estimate_default": false,
-   "start": "2026-11-04",
-   "finish": "2026-11-04",
+   "start": "2026-11-25",
+   "finish": "2026-11-25",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -16779,12 +18060,12 @@
     "T-I-05"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "polish",
    "estimate_hours": 5.0,
    "estimate_default": false,
-   "start": "2026-11-10",
-   "finish": "2026-11-11",
+   "start": "2026-12-01",
+   "finish": "2026-12-02",
    "critical": true,
    "tentative": false,
    "assignable": [
@@ -16920,12 +18201,12 @@
     "T-I-18"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "polish",
    "estimate_hours": 1.2,
    "estimate_default": false,
-   "start": "2026-11-10",
-   "finish": "2026-11-10",
+   "start": "2026-12-01",
+   "finish": "2026-12-02",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -16985,12 +18266,12 @@
     "T-A-21"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "content",
    "estimate_hours": 3.0,
    "estimate_default": false,
-   "start": "2026-10-30",
-   "finish": "2026-10-30",
+   "start": "2026-11-02",
+   "finish": "2026-11-02",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -17055,12 +18336,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "content",
    "estimate_hours": 4.0,
    "estimate_default": false,
-   "start": "2026-11-04",
-   "finish": "2026-11-04",
+   "start": "2026-11-25",
+   "finish": "2026-11-25",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -17129,12 +18410,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "content",
    "estimate_hours": 4.0,
    "estimate_default": false,
-   "start": "2026-11-04",
-   "finish": "2026-11-05",
+   "start": "2026-11-25",
+   "finish": "2026-11-26",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -17203,12 +18484,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "content",
    "estimate_hours": 4.0,
    "estimate_default": false,
-   "start": "2026-11-05",
-   "finish": "2026-11-05",
+   "start": "2026-11-26",
+   "finish": "2026-11-26",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -17276,12 +18557,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "content",
    "estimate_hours": 4.0,
    "estimate_default": false,
-   "start": "2026-11-05",
-   "finish": "2026-11-06",
+   "start": "2026-11-26",
+   "finish": "2026-11-27",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -17350,12 +18631,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "content",
    "estimate_hours": 4.0,
    "estimate_default": false,
-   "start": "2026-11-06",
-   "finish": "2026-11-06",
+   "start": "2026-11-27",
+   "finish": "2026-11-27",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -17424,12 +18705,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "content",
    "estimate_hours": 4.0,
    "estimate_default": false,
-   "start": "2026-11-06",
-   "finish": "2026-11-09",
+   "start": "2026-11-27",
+   "finish": "2026-11-30",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -17497,12 +18778,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "content",
    "estimate_hours": 4.0,
    "estimate_default": false,
-   "start": "2026-11-09",
-   "finish": "2026-11-09",
+   "start": "2026-11-30",
+   "finish": "2026-11-30",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -17571,12 +18852,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "content",
    "estimate_hours": 3.5,
    "estimate_default": false,
-   "start": "2026-11-09",
-   "finish": "2026-11-09",
+   "start": "2026-11-30",
+   "finish": "2026-11-30",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -17645,12 +18926,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "content",
    "estimate_hours": 3.5,
    "estimate_default": false,
-   "start": "2026-11-09",
-   "finish": "2026-11-10",
+   "start": "2026-11-30",
+   "finish": "2026-12-01",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -17719,12 +19000,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "content",
    "estimate_hours": 3.5,
    "estimate_default": false,
-   "start": "2026-11-09",
-   "finish": "2026-11-09",
+   "start": "2026-11-30",
+   "finish": "2026-12-01",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -17793,12 +19074,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "content",
    "estimate_hours": 3.0,
    "estimate_default": false,
-   "start": "2026-11-10",
-   "finish": "2026-11-10",
+   "start": "2026-12-01",
+   "finish": "2026-12-01",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -17867,12 +19148,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "content",
    "estimate_hours": 3.0,
    "estimate_default": false,
-   "start": "2026-11-09",
-   "finish": "2026-11-10",
+   "start": "2026-12-01",
+   "finish": "2026-12-01",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -17941,12 +19222,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "content",
    "estimate_hours": 3.0,
    "estimate_default": false,
-   "start": "2026-11-10",
-   "finish": "2026-11-10",
+   "start": "2026-12-01",
+   "finish": "2026-12-01",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -18015,12 +19296,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "content",
    "estimate_hours": 3.0,
    "estimate_default": false,
-   "start": "2026-11-10",
-   "finish": "2026-11-10",
+   "start": "2026-12-01",
+   "finish": "2026-12-01",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -18166,7 +19447,8 @@
     "screens": [],
     "decisions": [
      "D-081.2",
-     "D-002"
+     "D-002",
+     "D-082"
     ],
     "acts": [
      "A05"
@@ -18228,7 +19510,8 @@
     "decisions": [
      "D-081.3",
      "D-043",
-     "D-055"
+     "D-055",
+     "D-083"
     ],
     "acts": [],
     "qa_rows": [
@@ -18249,7 +19532,7 @@
   {
    "id": "T-V2-04",
    "kind": "story",
-   "title": "段階 2 の仕様づくり：PWA",
+   "title": "段階 2 の仕様づくり：アプリ（PC・スマホ）",
    "parent": "E-spec",
    "children": [
     "T-V2-04.s1",
@@ -18286,7 +19569,8 @@
     "mock": [],
     "screens": [],
     "decisions": [
-     "D-081.4"
+     "D-081.4",
+     "D-084"
     ],
     "acts": [],
     "qa_rows": [
@@ -18344,7 +19628,8 @@
     "mock": [],
     "screens": [],
     "decisions": [
-     "D-081.5"
+     "D-081.5",
+     "D-085"
     ],
     "acts": [],
     "qa_rows": [
@@ -23650,6 +24935,227 @@
    "links": {
     "qa_rows": [
      "RLS-D13-010"
+    ]
+   }
+  },
+  {
+   "id": "T-D-14.s1",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "packages/db/migrations/0114_15.sql (new)",
+   "parent": "T-D-14",
+   "status": "todo",
+   "links": {
+    "file": [
+     "packages/db/migrations/0114_15.sql (new)"
+    ]
+   }
+  },
+  {
+   "id": "T-D-14.s2",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "packages/db/policies/payment_methods.sql (new)",
+   "parent": "T-D-14",
+   "status": "todo",
+   "links": {
+    "file": [
+     "packages/db/policies/payment_methods.sql (new)"
+    ]
+   }
+  },
+  {
+   "id": "T-D-14.s3",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "packages/db/schema.ts (modify)",
+   "parent": "T-D-14",
+   "status": "todo",
+   "links": {
+    "file": [
+     "packages/db/schema.ts (modify)"
+    ]
+   }
+  },
+  {
+   "id": "T-D-14.t1",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 RLS-D14-001 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-D-14",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "RLS-D14-001"
+    ]
+   }
+  },
+  {
+   "id": "T-D-14.t2",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 RLS-D14-002 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-D-14",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "RLS-D14-002"
+    ]
+   }
+  },
+  {
+   "id": "T-D-14.t3",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 RLS-D14-003 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-D-14",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "RLS-D14-003"
+    ]
+   }
+  },
+  {
+   "id": "T-D-14.t4",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 RLS-D14-004 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-D-14",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "RLS-D14-004"
+    ]
+   }
+  },
+  {
+   "id": "T-D-14.t5",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 RLS-D14-005 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-D-14",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "RLS-D14-005"
+    ]
+   }
+  },
+  {
+   "id": "T-D-14.t6",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 RLS-D14-006 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-D-14",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "RLS-D14-006"
+    ]
+   }
+  },
+  {
+   "id": "T-D-14.t7",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 RLS-D14-007 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-D-14",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "RLS-D14-007"
+    ]
+   }
+  },
+  {
+   "id": "T-D-14.t8",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 RLS-D14-008 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-D-14",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "RLS-D14-008"
+    ]
+   }
+  },
+  {
+   "id": "T-D-14.t9",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 RLS-D14-009 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-D-14",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "RLS-D14-009"
+    ]
+   }
+  },
+  {
+   "id": "T-D-14.t10",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 RLS-D14-010 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-D-14",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "RLS-D14-010"
+    ]
+   }
+  },
+  {
+   "id": "T-D-14.t11",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 RLS-D14-011 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-D-14",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "RLS-D14-011"
+    ]
+   }
+  },
+  {
+   "id": "T-D-14.t12",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 RLS-D14-012 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-D-14",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "RLS-D14-012"
+    ]
+   }
+  },
+  {
+   "id": "T-D-14.t13",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 RLS-D14-013 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-D-14",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "RLS-D14-013"
+    ]
+   }
+  },
+  {
+   "id": "T-D-14.t14",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 RLS-D14-014 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-D-14",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "RLS-D14-014"
     ]
    }
   },
@@ -36030,6 +37536,801 @@
     ],
     "screens": [
      "ops-home"
+    ]
+   }
+  },
+  {
+   "id": "T-A-24.s1",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "apps/api/src/routes/disclosure_versions.ts (new)",
+   "parent": "T-A-24",
+   "status": "todo",
+   "links": {
+    "file": [
+     "apps/api/src/routes/disclosure_versions.ts (new)"
+    ]
+   }
+  },
+  {
+   "id": "T-A-24.s2",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "apps/api/src/app.ts (modify)",
+   "parent": "T-A-24",
+   "status": "todo",
+   "links": {
+    "file": [
+     "apps/api/src/app.ts (modify)"
+    ]
+   }
+  },
+  {
+   "id": "T-A-24.t1",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-24-001 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-24",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-24-001"
+    ]
+   }
+  },
+  {
+   "id": "T-A-24.t2",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-24-002 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-24",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-24-002"
+    ]
+   }
+  },
+  {
+   "id": "T-A-24.t3",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-24-003 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-24",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-24-003"
+    ]
+   }
+  },
+  {
+   "id": "T-A-24.t4",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-24-004 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-24",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-24-004"
+    ]
+   }
+  },
+  {
+   "id": "T-A-24.t5",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-24-005 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-24",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-24-005"
+    ]
+   }
+  },
+  {
+   "id": "T-A-24.t6",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-24-006 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-24",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-24-006"
+    ]
+   }
+  },
+  {
+   "id": "T-A-24.t7",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-24-007 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-24",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-24-007"
+    ]
+   }
+  },
+  {
+   "id": "T-A-24.t8",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-24-008 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-24",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-24-008"
+    ]
+   }
+  },
+  {
+   "id": "T-A-24.t9",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-24-009 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-24",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-24-009"
+    ]
+   }
+  },
+  {
+   "id": "T-A-24.t10",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-24-010 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-24",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-24-010"
+    ]
+   }
+  },
+  {
+   "id": "T-A-24.t11",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-24-011 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-24",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-24-011"
+    ]
+   }
+  },
+  {
+   "id": "T-A-24.m1",
+   "kind": "subtask",
+   "sub": "mock",
+   "title": "モック disclosure と突き合わせる（全要素・全ボタン・値が固定でない）",
+   "parent": "T-A-24",
+   "status": "todo",
+   "links": {
+    "mock": [
+     "06_mockup/v2/v2-disclosure.html"
+    ],
+    "screens": [
+     "disclosure"
+    ]
+   }
+  },
+  {
+   "id": "T-A-25.s1",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "apps/api/src/routes/disclosure_versions.ts (new)",
+   "parent": "T-A-25",
+   "status": "todo",
+   "links": {
+    "file": [
+     "apps/api/src/routes/disclosure_versions.ts (new)"
+    ]
+   }
+  },
+  {
+   "id": "T-A-25.s2",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "apps/api/src/routes/llm_routes.ts (new)",
+   "parent": "T-A-25",
+   "status": "todo",
+   "links": {
+    "file": [
+     "apps/api/src/routes/llm_routes.ts (new)"
+    ]
+   }
+  },
+  {
+   "id": "T-A-25.s3",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "apps/api/src/app.ts (modify)",
+   "parent": "T-A-25",
+   "status": "todo",
+   "links": {
+    "file": [
+     "apps/api/src/app.ts (modify)"
+    ]
+   }
+  },
+  {
+   "id": "T-A-25.t1",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-25-001 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-25",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-25-001"
+    ]
+   }
+  },
+  {
+   "id": "T-A-25.t2",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-25-002 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-25",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-25-002"
+    ]
+   }
+  },
+  {
+   "id": "T-A-25.t3",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-25-003 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-25",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-25-003"
+    ]
+   }
+  },
+  {
+   "id": "T-A-25.t4",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-25-004 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-25",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-25-004"
+    ]
+   }
+  },
+  {
+   "id": "T-A-25.t5",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-25-005 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-25",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-25-005"
+    ]
+   }
+  },
+  {
+   "id": "T-A-25.t6",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-25-006 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-25",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-25-006"
+    ]
+   }
+  },
+  {
+   "id": "T-A-25.t7",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-25-007 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-25",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-25-007"
+    ]
+   }
+  },
+  {
+   "id": "T-A-25.t8",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-25-008 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-25",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-25-008"
+    ]
+   }
+  },
+  {
+   "id": "T-A-25.t9",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-25-009 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-25",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-25-009"
+    ]
+   }
+  },
+  {
+   "id": "T-A-25.t10",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-25-010 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-25",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-25-010"
+    ]
+   }
+  },
+  {
+   "id": "T-A-25.t11",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-25-011 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-25",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-25-011"
+    ]
+   }
+  },
+  {
+   "id": "T-A-25.t12",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-25-012 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-25",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-25-012"
+    ]
+   }
+  },
+  {
+   "id": "T-A-25.t13",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-25-013 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-25",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-25-013"
+    ]
+   }
+  },
+  {
+   "id": "T-A-25.t14",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-25-014 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-25",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-25-014"
+    ]
+   }
+  },
+  {
+   "id": "T-A-25.t15",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-25-015 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-25",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-25-015"
+    ]
+   }
+  },
+  {
+   "id": "T-A-25.t16",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-25-016 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-25",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-25-016"
+    ]
+   }
+  },
+  {
+   "id": "T-A-25.t17",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-25-017 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-25",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-25-017"
+    ]
+   }
+  },
+  {
+   "id": "T-A-25.t18",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-25-018 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-25",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-25-018"
+    ]
+   }
+  },
+  {
+   "id": "T-A-25.m1",
+   "kind": "subtask",
+   "sub": "mock",
+   "title": "モック ops-disclosure と突き合わせる（全要素・全ボタン・値が固定でない）",
+   "parent": "T-A-25",
+   "status": "todo",
+   "links": {
+    "mock": [
+     "06_mockup/v2/v2-ops-disclosure.html"
+    ],
+    "screens": [
+     "ops-disclosure"
+    ]
+   }
+  },
+  {
+   "id": "T-A-25.m2",
+   "kind": "subtask",
+   "sub": "mock",
+   "title": "モック ops-llm と突き合わせる（全要素・全ボタン・値が固定でない）",
+   "parent": "T-A-25",
+   "status": "todo",
+   "links": {
+    "mock": [
+     "06_mockup/v2/v2-ops-llm.html"
+    ],
+    "screens": [
+     "ops-llm"
+    ]
+   }
+  },
+  {
+   "id": "T-A-26.s1",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "apps/api/src/routes/llm_routes.ts (new)",
+   "parent": "T-A-26",
+   "status": "todo",
+   "links": {
+    "file": [
+     "apps/api/src/routes/llm_routes.ts (new)"
+    ]
+   }
+  },
+  {
+   "id": "T-A-26.s2",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "apps/api/src/routes/push_devices.ts (new)",
+   "parent": "T-A-26",
+   "status": "todo",
+   "links": {
+    "file": [
+     "apps/api/src/routes/push_devices.ts (new)"
+    ]
+   }
+  },
+  {
+   "id": "T-A-26.s3",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "apps/api/src/app.ts (modify)",
+   "parent": "T-A-26",
+   "status": "todo",
+   "links": {
+    "file": [
+     "apps/api/src/app.ts (modify)"
+    ]
+   }
+  },
+  {
+   "id": "T-A-26.t1",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-26-001 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-26",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-26-001"
+    ]
+   }
+  },
+  {
+   "id": "T-A-26.t2",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-26-002 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-26",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-26-002"
+    ]
+   }
+  },
+  {
+   "id": "T-A-26.t3",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-26-003 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-26",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-26-003"
+    ]
+   }
+  },
+  {
+   "id": "T-A-26.t4",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-26-004 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-26",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-26-004"
+    ]
+   }
+  },
+  {
+   "id": "T-A-26.t5",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-26-005 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-26",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-26-005"
+    ]
+   }
+  },
+  {
+   "id": "T-A-26.t6",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-26-006 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-26",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-26-006"
+    ]
+   }
+  },
+  {
+   "id": "T-A-26.t7",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-26-007 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-26",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-26-007"
+    ]
+   }
+  },
+  {
+   "id": "T-A-26.t8",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-26-008 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-26",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-26-008"
+    ]
+   }
+  },
+  {
+   "id": "T-A-26.t9",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-26-009 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-26",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-26-009"
+    ]
+   }
+  },
+  {
+   "id": "T-A-26.t10",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-26-010 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-26",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-26-010"
+    ]
+   }
+  },
+  {
+   "id": "T-A-26.t11",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-26-011 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-26",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-26-011"
+    ]
+   }
+  },
+  {
+   "id": "T-A-26.t12",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-26-012 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-26",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-26-012"
+    ]
+   }
+  },
+  {
+   "id": "T-A-26.t13",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-26-013 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-26",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-26-013"
+    ]
+   }
+  },
+  {
+   "id": "T-A-26.t14",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-26-014 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-26",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-26-014"
+    ]
+   }
+  },
+  {
+   "id": "T-A-26.t15",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-26-015 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-26",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-26-015"
+    ]
+   }
+  },
+  {
+   "id": "T-A-26.t16",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-26-016 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-26",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-26-016"
+    ]
+   }
+  },
+  {
+   "id": "T-A-26.t17",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-26-017 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-26",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-26-017"
+    ]
+   }
+  },
+  {
+   "id": "T-A-26.t18",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 API-26-018 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-A-26",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "API-26-018"
+    ]
+   }
+  },
+  {
+   "id": "T-A-26.m1",
+   "kind": "subtask",
+   "sub": "mock",
+   "title": "モック app-setup と突き合わせる（全要素・全ボタン・値が固定でない）",
+   "parent": "T-A-26",
+   "status": "todo",
+   "links": {
+    "mock": [
+     "06_mockup/v2/v2-app-setup.html"
+    ],
+    "screens": [
+     "app-setup"
+    ]
+   }
+  },
+  {
+   "id": "T-A-26.m2",
+   "kind": "subtask",
+   "sub": "mock",
+   "title": "モック llm-routes と突き合わせる（全要素・全ボタン・値が固定でない）",
+   "parent": "T-A-26",
+   "status": "todo",
+   "links": {
+    "mock": [
+     "06_mockup/v2/v2-llm-routes.html"
+    ],
+    "screens": [
+     "llm-routes"
     ]
    }
   },
@@ -60692,6 +62993,123 @@
    }
   },
   {
+   "id": "T-U-52.t31",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-PAY-003-A を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-52",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-PAY-003-A"
+    ]
+   }
+  },
+  {
+   "id": "T-U-52.t32",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-PAY-003-B を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-52",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-PAY-003-B"
+    ]
+   }
+  },
+  {
+   "id": "T-U-52.t33",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-PAY-003-C を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-52",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-PAY-003-C"
+    ]
+   }
+  },
+  {
+   "id": "T-U-52.t34",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-PAY-004-A を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-52",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-PAY-004-A"
+    ]
+   }
+  },
+  {
+   "id": "T-U-52.t35",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-PAY-004-B を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-52",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-PAY-004-B"
+    ]
+   }
+  },
+  {
+   "id": "T-U-52.t36",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-PAY-004-C を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-52",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-PAY-004-C"
+    ]
+   }
+  },
+  {
+   "id": "T-U-52.t37",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-PAY-006-A を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-52",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-PAY-006-A"
+    ]
+   }
+  },
+  {
+   "id": "T-U-52.t38",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-PAY-006-B を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-52",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-PAY-006-B"
+    ]
+   }
+  },
+  {
+   "id": "T-U-52.t39",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-PAY-006-C を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-52",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-PAY-006-C"
+    ]
+   }
+  },
+  {
    "id": "T-U-52.m1",
    "kind": "subtask",
    "sub": "mock",
@@ -61461,6 +63879,45 @@
    "links": {
     "qa_rows": [
      "SCR-OPS-BILLING-025"
+    ]
+   }
+  },
+  {
+   "id": "T-U-54.t26",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-PAY-005-A を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-54",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-PAY-005-A"
+    ]
+   }
+  },
+  {
+   "id": "T-U-54.t27",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-PAY-005-B を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-54",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-PAY-005-B"
+    ]
+   }
+  },
+  {
+   "id": "T-U-54.t28",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-PAY-005-C を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-54",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-PAY-005-C"
     ]
    }
   },
@@ -63088,6 +65545,2247 @@
     ],
     "screens": [
      "member-detail"
+    ]
+   }
+  },
+  {
+   "id": "T-U-59.s1",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "apps/web/app/(public)/billing-setup/page.tsx (new)",
+   "parent": "T-U-59",
+   "status": "todo",
+   "links": {
+    "file": [
+     "apps/web/app/(public)/billing-setup/page.tsx (new)"
+    ]
+   }
+  },
+  {
+   "id": "T-U-59.s2",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "apps/web/tests/screens/billing-setup.spec.ts (new)",
+   "parent": "T-U-59",
+   "status": "todo",
+   "links": {
+    "file": [
+     "apps/web/tests/screens/billing-setup.spec.ts (new)"
+    ]
+   }
+  },
+  {
+   "id": "T-U-59.t1",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-BILLING-SETUP-001 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-59",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-BILLING-SETUP-001"
+    ]
+   }
+  },
+  {
+   "id": "T-U-59.t2",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-BILLING-SETUP-002 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-59",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-BILLING-SETUP-002"
+    ]
+   }
+  },
+  {
+   "id": "T-U-59.t3",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-BILLING-SETUP-003 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-59",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-BILLING-SETUP-003"
+    ]
+   }
+  },
+  {
+   "id": "T-U-59.t4",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-BILLING-SETUP-004 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-59",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-BILLING-SETUP-004"
+    ]
+   }
+  },
+  {
+   "id": "T-U-59.t5",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-BILLING-SETUP-005 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-59",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-BILLING-SETUP-005"
+    ]
+   }
+  },
+  {
+   "id": "T-U-59.t6",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-BILLING-SETUP-006 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-59",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-BILLING-SETUP-006"
+    ]
+   }
+  },
+  {
+   "id": "T-U-59.t7",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-BILLING-SETUP-007 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-59",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-BILLING-SETUP-007"
+    ]
+   }
+  },
+  {
+   "id": "T-U-59.t8",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-BILLING-SETUP-008 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-59",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-BILLING-SETUP-008"
+    ]
+   }
+  },
+  {
+   "id": "T-U-59.t9",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-BILLING-SETUP-009 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-59",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-BILLING-SETUP-009"
+    ]
+   }
+  },
+  {
+   "id": "T-U-59.t10",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-BILLING-SETUP-010 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-59",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-BILLING-SETUP-010"
+    ]
+   }
+  },
+  {
+   "id": "T-U-59.t11",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-BILLING-SETUP-011 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-59",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-BILLING-SETUP-011"
+    ]
+   }
+  },
+  {
+   "id": "T-U-59.t12",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-BILLING-SETUP-012 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-59",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-BILLING-SETUP-012"
+    ]
+   }
+  },
+  {
+   "id": "T-U-59.t13",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-BILLING-SETUP-013 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-59",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-BILLING-SETUP-013"
+    ]
+   }
+  },
+  {
+   "id": "T-U-59.t14",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-BILLING-SETUP-014 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-59",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-BILLING-SETUP-014"
+    ]
+   }
+  },
+  {
+   "id": "T-U-59.t15",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-BILLING-SETUP-015 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-59",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-BILLING-SETUP-015"
+    ]
+   }
+  },
+  {
+   "id": "T-U-59.t16",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-BILLING-SETUP-016 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-59",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-BILLING-SETUP-016"
+    ]
+   }
+  },
+  {
+   "id": "T-U-59.t17",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-BILLING-SETUP-017 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-59",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-BILLING-SETUP-017"
+    ]
+   }
+  },
+  {
+   "id": "T-U-59.t18",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-BILLING-SETUP-018 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-59",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-BILLING-SETUP-018"
+    ]
+   }
+  },
+  {
+   "id": "T-U-59.t19",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-BILLING-SETUP-019 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-59",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-BILLING-SETUP-019"
+    ]
+   }
+  },
+  {
+   "id": "T-U-59.t20",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-BILLING-SETUP-020 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-59",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-BILLING-SETUP-020"
+    ]
+   }
+  },
+  {
+   "id": "T-U-59.t21",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-PAY-001-A を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-59",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-PAY-001-A"
+    ]
+   }
+  },
+  {
+   "id": "T-U-59.t22",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-PAY-001-B を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-59",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-PAY-001-B"
+    ]
+   }
+  },
+  {
+   "id": "T-U-59.t23",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-PAY-001-C を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-59",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-PAY-001-C"
+    ]
+   }
+  },
+  {
+   "id": "T-U-59.t24",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-PAY-002-A を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-59",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-PAY-002-A"
+    ]
+   }
+  },
+  {
+   "id": "T-U-59.t25",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-PAY-002-B を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-59",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-PAY-002-B"
+    ]
+   }
+  },
+  {
+   "id": "T-U-59.t26",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-PAY-002-C を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-59",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-PAY-002-C"
+    ]
+   }
+  },
+  {
+   "id": "T-U-59.m1",
+   "kind": "subtask",
+   "sub": "mock",
+   "title": "モック billing-setup と突き合わせる（全要素・全ボタン・値が固定でない）",
+   "parent": "T-U-59",
+   "status": "todo",
+   "links": {
+    "mock": [
+     "06_mockup/v2/v2-billing-setup.html"
+    ],
+    "screens": [
+     "billing-setup"
+    ]
+   }
+  },
+  {
+   "id": "T-U-60.s1",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "apps/web/app/(app)/security/disclosure/page.tsx (new)",
+   "parent": "T-U-60",
+   "status": "todo",
+   "links": {
+    "file": [
+     "apps/web/app/(app)/security/disclosure/page.tsx (new)"
+    ]
+   }
+  },
+  {
+   "id": "T-U-60.s2",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "apps/web/tests/screens/disclosure.spec.ts (new)",
+   "parent": "T-U-60",
+   "status": "todo",
+   "links": {
+    "file": [
+     "apps/web/tests/screens/disclosure.spec.ts (new)"
+    ]
+   }
+  },
+  {
+   "id": "T-U-60.t1",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-DISCLOSURE-001 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-60",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-DISCLOSURE-001"
+    ]
+   }
+  },
+  {
+   "id": "T-U-60.t2",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-DISCLOSURE-002 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-60",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-DISCLOSURE-002"
+    ]
+   }
+  },
+  {
+   "id": "T-U-60.t3",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-DISCLOSURE-003 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-60",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-DISCLOSURE-003"
+    ]
+   }
+  },
+  {
+   "id": "T-U-60.t4",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-DISCLOSURE-004 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-60",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-DISCLOSURE-004"
+    ]
+   }
+  },
+  {
+   "id": "T-U-60.t5",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-DISCLOSURE-005 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-60",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-DISCLOSURE-005"
+    ]
+   }
+  },
+  {
+   "id": "T-U-60.t6",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-DISCLOSURE-006 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-60",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-DISCLOSURE-006"
+    ]
+   }
+  },
+  {
+   "id": "T-U-60.t7",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-DISCLOSURE-007 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-60",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-DISCLOSURE-007"
+    ]
+   }
+  },
+  {
+   "id": "T-U-60.t8",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-DISCLOSURE-008 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-60",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-DISCLOSURE-008"
+    ]
+   }
+  },
+  {
+   "id": "T-U-60.t9",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-DISCLOSURE-009 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-60",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-DISCLOSURE-009"
+    ]
+   }
+  },
+  {
+   "id": "T-U-60.t10",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-DISCLOSURE-010 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-60",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-DISCLOSURE-010"
+    ]
+   }
+  },
+  {
+   "id": "T-U-60.t11",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-DISCLOSURE-011 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-60",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-DISCLOSURE-011"
+    ]
+   }
+  },
+  {
+   "id": "T-U-60.t12",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-DISCLOSURE-012 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-60",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-DISCLOSURE-012"
+    ]
+   }
+  },
+  {
+   "id": "T-U-60.t13",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-DISCLOSURE-013 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-60",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-DISCLOSURE-013"
+    ]
+   }
+  },
+  {
+   "id": "T-U-60.t14",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-DISCLOSURE-014 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-60",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-DISCLOSURE-014"
+    ]
+   }
+  },
+  {
+   "id": "T-U-60.t15",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-DISCLOSURE-015 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-60",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-DISCLOSURE-015"
+    ]
+   }
+  },
+  {
+   "id": "T-U-60.t16",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-DISCLOSURE-016 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-60",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-DISCLOSURE-016"
+    ]
+   }
+  },
+  {
+   "id": "T-U-60.t17",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-DISCLOSURE-017 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-60",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-DISCLOSURE-017"
+    ]
+   }
+  },
+  {
+   "id": "T-U-60.t18",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-DISCLOSURE-018 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-60",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-DISCLOSURE-018"
+    ]
+   }
+  },
+  {
+   "id": "T-U-60.t19",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-DISCLOSURE-019 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-60",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-DISCLOSURE-019"
+    ]
+   }
+  },
+  {
+   "id": "T-U-60.t20",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-DISCLOSURE-020 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-60",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-DISCLOSURE-020"
+    ]
+   }
+  },
+  {
+   "id": "T-U-60.t21",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-DISC-001-A を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-60",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-DISC-001-A"
+    ]
+   }
+  },
+  {
+   "id": "T-U-60.t22",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-DISC-001-B を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-60",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-DISC-001-B"
+    ]
+   }
+  },
+  {
+   "id": "T-U-60.t23",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-DISC-001-C を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-60",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-DISC-001-C"
+    ]
+   }
+  },
+  {
+   "id": "T-U-60.t24",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-MOCK-036-A を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-60",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-MOCK-036-A"
+    ]
+   }
+  },
+  {
+   "id": "T-U-60.t25",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-MOCK-036-B を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-60",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-MOCK-036-B"
+    ]
+   }
+  },
+  {
+   "id": "T-U-60.t26",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-MOCK-036-C を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-60",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-MOCK-036-C"
+    ]
+   }
+  },
+  {
+   "id": "T-U-60.m1",
+   "kind": "subtask",
+   "sub": "mock",
+   "title": "モック disclosure と突き合わせる（全要素・全ボタン・値が固定でない）",
+   "parent": "T-U-60",
+   "status": "todo",
+   "links": {
+    "mock": [
+     "06_mockup/v2/v2-disclosure.html"
+    ],
+    "screens": [
+     "disclosure"
+    ]
+   }
+  },
+  {
+   "id": "T-U-61.s1",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "apps/web/app/(app)/settings/llm/page.tsx (new)",
+   "parent": "T-U-61",
+   "status": "todo",
+   "links": {
+    "file": [
+     "apps/web/app/(app)/settings/llm/page.tsx (new)"
+    ]
+   }
+  },
+  {
+   "id": "T-U-61.s2",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "apps/web/tests/screens/llm-routes.spec.ts (new)",
+   "parent": "T-U-61",
+   "status": "todo",
+   "links": {
+    "file": [
+     "apps/web/tests/screens/llm-routes.spec.ts (new)"
+    ]
+   }
+  },
+  {
+   "id": "T-U-61.t1",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-LLM-ROUTES-001 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-61",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-LLM-ROUTES-001"
+    ]
+   }
+  },
+  {
+   "id": "T-U-61.t2",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-LLM-ROUTES-002 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-61",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-LLM-ROUTES-002"
+    ]
+   }
+  },
+  {
+   "id": "T-U-61.t3",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-LLM-ROUTES-003 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-61",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-LLM-ROUTES-003"
+    ]
+   }
+  },
+  {
+   "id": "T-U-61.t4",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-LLM-ROUTES-004 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-61",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-LLM-ROUTES-004"
+    ]
+   }
+  },
+  {
+   "id": "T-U-61.t5",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-LLM-ROUTES-005 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-61",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-LLM-ROUTES-005"
+    ]
+   }
+  },
+  {
+   "id": "T-U-61.t6",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-LLM-ROUTES-006 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-61",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-LLM-ROUTES-006"
+    ]
+   }
+  },
+  {
+   "id": "T-U-61.t7",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-LLM-ROUTES-007 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-61",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-LLM-ROUTES-007"
+    ]
+   }
+  },
+  {
+   "id": "T-U-61.t8",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-LLM-ROUTES-008 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-61",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-LLM-ROUTES-008"
+    ]
+   }
+  },
+  {
+   "id": "T-U-61.t9",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-LLM-ROUTES-009 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-61",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-LLM-ROUTES-009"
+    ]
+   }
+  },
+  {
+   "id": "T-U-61.t10",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-LLM-ROUTES-010 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-61",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-LLM-ROUTES-010"
+    ]
+   }
+  },
+  {
+   "id": "T-U-61.t11",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-LLM-ROUTES-011 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-61",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-LLM-ROUTES-011"
+    ]
+   }
+  },
+  {
+   "id": "T-U-61.t12",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-LLM-ROUTES-012 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-61",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-LLM-ROUTES-012"
+    ]
+   }
+  },
+  {
+   "id": "T-U-61.t13",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-LLM-ROUTES-013 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-61",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-LLM-ROUTES-013"
+    ]
+   }
+  },
+  {
+   "id": "T-U-61.t14",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-LLM-ROUTES-014 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-61",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-LLM-ROUTES-014"
+    ]
+   }
+  },
+  {
+   "id": "T-U-61.t15",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-LLM-ROUTES-015 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-61",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-LLM-ROUTES-015"
+    ]
+   }
+  },
+  {
+   "id": "T-U-61.t16",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-LLM-ROUTES-016 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-61",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-LLM-ROUTES-016"
+    ]
+   }
+  },
+  {
+   "id": "T-U-61.t17",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-LLM-ROUTES-017 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-61",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-LLM-ROUTES-017"
+    ]
+   }
+  },
+  {
+   "id": "T-U-61.t18",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-LLM-ROUTES-018 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-61",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-LLM-ROUTES-018"
+    ]
+   }
+  },
+  {
+   "id": "T-U-61.t19",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-LLM-ROUTES-019 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-61",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-LLM-ROUTES-019"
+    ]
+   }
+  },
+  {
+   "id": "T-U-61.t20",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-LLM-ROUTES-020 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-61",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-LLM-ROUTES-020"
+    ]
+   }
+  },
+  {
+   "id": "T-U-61.t21",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-LLM-001-A を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-61",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-LLM-001-A"
+    ]
+   }
+  },
+  {
+   "id": "T-U-61.t22",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-LLM-001-B を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-61",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-LLM-001-B"
+    ]
+   }
+  },
+  {
+   "id": "T-U-61.t23",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-LLM-001-C を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-61",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-LLM-001-C"
+    ]
+   }
+  },
+  {
+   "id": "T-U-61.t24",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-LLM-002-A を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-61",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-LLM-002-A"
+    ]
+   }
+  },
+  {
+   "id": "T-U-61.t25",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-LLM-002-B を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-61",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-LLM-002-B"
+    ]
+   }
+  },
+  {
+   "id": "T-U-61.t26",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-LLM-002-C を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-61",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-LLM-002-C"
+    ]
+   }
+  },
+  {
+   "id": "T-U-61.t27",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-LLM-003-A を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-61",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-LLM-003-A"
+    ]
+   }
+  },
+  {
+   "id": "T-U-61.t28",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-LLM-003-B を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-61",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-LLM-003-B"
+    ]
+   }
+  },
+  {
+   "id": "T-U-61.t29",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-LLM-003-C を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-61",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-LLM-003-C"
+    ]
+   }
+  },
+  {
+   "id": "T-U-61.t30",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-LLM-004-A を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-61",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-LLM-004-A"
+    ]
+   }
+  },
+  {
+   "id": "T-U-61.t31",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-LLM-004-B を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-61",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-LLM-004-B"
+    ]
+   }
+  },
+  {
+   "id": "T-U-61.t32",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-LLM-004-C を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-61",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-LLM-004-C"
+    ]
+   }
+  },
+  {
+   "id": "T-U-61.t33",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-MOCK-035-A を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-61",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-MOCK-035-A"
+    ]
+   }
+  },
+  {
+   "id": "T-U-61.t34",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-MOCK-035-B を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-61",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-MOCK-035-B"
+    ]
+   }
+  },
+  {
+   "id": "T-U-61.t35",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-MOCK-035-C を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-61",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-MOCK-035-C"
+    ]
+   }
+  },
+  {
+   "id": "T-U-61.m1",
+   "kind": "subtask",
+   "sub": "mock",
+   "title": "モック llm-routes と突き合わせる（全要素・全ボタン・値が固定でない）",
+   "parent": "T-U-61",
+   "status": "todo",
+   "links": {
+    "mock": [
+     "06_mockup/v2/v2-llm-routes.html"
+    ],
+    "screens": [
+     "llm-routes"
+    ]
+   }
+  },
+  {
+   "id": "T-U-62.s1",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "apps/web/app/(app)/settings/app/page.tsx (new)",
+   "parent": "T-U-62",
+   "status": "todo",
+   "links": {
+    "file": [
+     "apps/web/app/(app)/settings/app/page.tsx (new)"
+    ]
+   }
+  },
+  {
+   "id": "T-U-62.s2",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "apps/web/tests/screens/app-setup.spec.ts (new)",
+   "parent": "T-U-62",
+   "status": "todo",
+   "links": {
+    "file": [
+     "apps/web/tests/screens/app-setup.spec.ts (new)"
+    ]
+   }
+  },
+  {
+   "id": "T-U-62.t1",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-APP-SETUP-001 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-62",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-APP-SETUP-001"
+    ]
+   }
+  },
+  {
+   "id": "T-U-62.t2",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-APP-SETUP-002 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-62",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-APP-SETUP-002"
+    ]
+   }
+  },
+  {
+   "id": "T-U-62.t3",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-APP-SETUP-003 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-62",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-APP-SETUP-003"
+    ]
+   }
+  },
+  {
+   "id": "T-U-62.t4",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-APP-SETUP-004 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-62",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-APP-SETUP-004"
+    ]
+   }
+  },
+  {
+   "id": "T-U-62.t5",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-APP-SETUP-005 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-62",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-APP-SETUP-005"
+    ]
+   }
+  },
+  {
+   "id": "T-U-62.t6",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-APP-SETUP-006 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-62",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-APP-SETUP-006"
+    ]
+   }
+  },
+  {
+   "id": "T-U-62.t7",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-APP-SETUP-007 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-62",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-APP-SETUP-007"
+    ]
+   }
+  },
+  {
+   "id": "T-U-62.t8",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-APP-SETUP-008 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-62",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-APP-SETUP-008"
+    ]
+   }
+  },
+  {
+   "id": "T-U-62.t9",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-APP-SETUP-009 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-62",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-APP-SETUP-009"
+    ]
+   }
+  },
+  {
+   "id": "T-U-62.t10",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-APP-SETUP-010 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-62",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-APP-SETUP-010"
+    ]
+   }
+  },
+  {
+   "id": "T-U-62.t11",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-APP-SETUP-011 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-62",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-APP-SETUP-011"
+    ]
+   }
+  },
+  {
+   "id": "T-U-62.t12",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-APP-SETUP-012 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-62",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-APP-SETUP-012"
+    ]
+   }
+  },
+  {
+   "id": "T-U-62.t13",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-APP-SETUP-013 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-62",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-APP-SETUP-013"
+    ]
+   }
+  },
+  {
+   "id": "T-U-62.t14",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-APP-SETUP-014 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-62",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-APP-SETUP-014"
+    ]
+   }
+  },
+  {
+   "id": "T-U-62.t15",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-APP-SETUP-015 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-62",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-APP-SETUP-015"
+    ]
+   }
+  },
+  {
+   "id": "T-U-62.t16",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-APP-SETUP-016 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-62",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-APP-SETUP-016"
+    ]
+   }
+  },
+  {
+   "id": "T-U-62.t17",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-APP-SETUP-017 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-62",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-APP-SETUP-017"
+    ]
+   }
+  },
+  {
+   "id": "T-U-62.t18",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-APP-SETUP-018 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-62",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-APP-SETUP-018"
+    ]
+   }
+  },
+  {
+   "id": "T-U-62.t19",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-APP-SETUP-019 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-62",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-APP-SETUP-019"
+    ]
+   }
+  },
+  {
+   "id": "T-U-62.t20",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-APP-SETUP-020 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-62",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-APP-SETUP-020"
+    ]
+   }
+  },
+  {
+   "id": "T-U-62.t21",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-APP-SETUP-021 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-62",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-APP-SETUP-021"
+    ]
+   }
+  },
+  {
+   "id": "T-U-62.t22",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-APP-001-A を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-62",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-APP-001-A"
+    ]
+   }
+  },
+  {
+   "id": "T-U-62.t23",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-APP-001-B を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-62",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-APP-001-B"
+    ]
+   }
+  },
+  {
+   "id": "T-U-62.t24",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-APP-001-C を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-62",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-APP-001-C"
+    ]
+   }
+  },
+  {
+   "id": "T-U-62.t25",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-APP-002-A を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-62",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-APP-002-A"
+    ]
+   }
+  },
+  {
+   "id": "T-U-62.t26",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-APP-002-B を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-62",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-APP-002-B"
+    ]
+   }
+  },
+  {
+   "id": "T-U-62.t27",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-APP-002-C を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-62",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-APP-002-C"
+    ]
+   }
+  },
+  {
+   "id": "T-U-62.m1",
+   "kind": "subtask",
+   "sub": "mock",
+   "title": "モック app-setup と突き合わせる（全要素・全ボタン・値が固定でない）",
+   "parent": "T-U-62",
+   "status": "todo",
+   "links": {
+    "mock": [
+     "06_mockup/v2/v2-app-setup.html"
+    ],
+    "screens": [
+     "app-setup"
+    ]
+   }
+  },
+  {
+   "id": "T-U-63.s1",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "apps/web/app/(app)/ops/llm/page.tsx (new)",
+   "parent": "T-U-63",
+   "status": "todo",
+   "links": {
+    "file": [
+     "apps/web/app/(app)/ops/llm/page.tsx (new)"
+    ]
+   }
+  },
+  {
+   "id": "T-U-63.s2",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "apps/web/tests/screens/ops-llm.spec.ts (new)",
+   "parent": "T-U-63",
+   "status": "todo",
+   "links": {
+    "file": [
+     "apps/web/tests/screens/ops-llm.spec.ts (new)"
+    ]
+   }
+  },
+  {
+   "id": "T-U-63.t1",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-OPS-LLM-001 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-63",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-OPS-LLM-001"
+    ]
+   }
+  },
+  {
+   "id": "T-U-63.t2",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-OPS-LLM-002 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-63",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-OPS-LLM-002"
+    ]
+   }
+  },
+  {
+   "id": "T-U-63.t3",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-OPS-LLM-003 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-63",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-OPS-LLM-003"
+    ]
+   }
+  },
+  {
+   "id": "T-U-63.t4",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-OPS-LLM-004 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-63",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-OPS-LLM-004"
+    ]
+   }
+  },
+  {
+   "id": "T-U-63.t5",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-OPS-LLM-005 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-63",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-OPS-LLM-005"
+    ]
+   }
+  },
+  {
+   "id": "T-U-63.t6",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-OPS-LLM-006 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-63",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-OPS-LLM-006"
+    ]
+   }
+  },
+  {
+   "id": "T-U-63.t7",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-OPS-LLM-007 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-63",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-OPS-LLM-007"
+    ]
+   }
+  },
+  {
+   "id": "T-U-63.t8",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-OPS-LLM-008 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-63",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-OPS-LLM-008"
+    ]
+   }
+  },
+  {
+   "id": "T-U-63.t9",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-OPS-LLM-009 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-63",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-OPS-LLM-009"
+    ]
+   }
+  },
+  {
+   "id": "T-U-63.t10",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-OPS-LLM-010 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-63",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-OPS-LLM-010"
+    ]
+   }
+  },
+  {
+   "id": "T-U-63.t11",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-OPS-LLM-011 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-63",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-OPS-LLM-011"
+    ]
+   }
+  },
+  {
+   "id": "T-U-63.t12",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-OPS-LLM-012 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-63",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-OPS-LLM-012"
+    ]
+   }
+  },
+  {
+   "id": "T-U-63.t13",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-OPS-LLM-013 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-63",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-OPS-LLM-013"
+    ]
+   }
+  },
+  {
+   "id": "T-U-63.t14",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-OPS-LLM-014 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-63",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-OPS-LLM-014"
+    ]
+   }
+  },
+  {
+   "id": "T-U-63.t15",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-OPS-LLM-015 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-63",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-OPS-LLM-015"
+    ]
+   }
+  },
+  {
+   "id": "T-U-63.t16",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-OPS-LLM-016 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-63",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-OPS-LLM-016"
+    ]
+   }
+  },
+  {
+   "id": "T-U-63.t17",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-OPS-LLM-017 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-63",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-OPS-LLM-017"
+    ]
+   }
+  },
+  {
+   "id": "T-U-63.t18",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-OPS-LLM-018 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-63",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-OPS-LLM-018"
+    ]
+   }
+  },
+  {
+   "id": "T-U-63.m1",
+   "kind": "subtask",
+   "sub": "mock",
+   "title": "モック ops-llm と突き合わせる（全要素・全ボタン・値が固定でない）",
+   "parent": "T-U-63",
+   "status": "todo",
+   "links": {
+    "mock": [
+     "06_mockup/v2/v2-ops-llm.html"
+    ],
+    "screens": [
+     "ops-llm"
+    ]
+   }
+  },
+  {
+   "id": "T-U-64.s1",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "apps/web/app/(app)/ops/disclosure/page.tsx (new)",
+   "parent": "T-U-64",
+   "status": "todo",
+   "links": {
+    "file": [
+     "apps/web/app/(app)/ops/disclosure/page.tsx (new)"
+    ]
+   }
+  },
+  {
+   "id": "T-U-64.s2",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "apps/web/tests/screens/ops-disclosure.spec.ts (new)",
+   "parent": "T-U-64",
+   "status": "todo",
+   "links": {
+    "file": [
+     "apps/web/tests/screens/ops-disclosure.spec.ts (new)"
+    ]
+   }
+  },
+  {
+   "id": "T-U-64.t1",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-OPS-DISCLOSURE-001 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-64",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-OPS-DISCLOSURE-001"
+    ]
+   }
+  },
+  {
+   "id": "T-U-64.t2",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-OPS-DISCLOSURE-002 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-64",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-OPS-DISCLOSURE-002"
+    ]
+   }
+  },
+  {
+   "id": "T-U-64.t3",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-OPS-DISCLOSURE-003 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-64",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-OPS-DISCLOSURE-003"
+    ]
+   }
+  },
+  {
+   "id": "T-U-64.t4",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-OPS-DISCLOSURE-004 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-64",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-OPS-DISCLOSURE-004"
+    ]
+   }
+  },
+  {
+   "id": "T-U-64.t5",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-OPS-DISCLOSURE-005 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-64",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-OPS-DISCLOSURE-005"
+    ]
+   }
+  },
+  {
+   "id": "T-U-64.t6",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-OPS-DISCLOSURE-006 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-64",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-OPS-DISCLOSURE-006"
+    ]
+   }
+  },
+  {
+   "id": "T-U-64.t7",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-OPS-DISCLOSURE-007 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-64",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-OPS-DISCLOSURE-007"
+    ]
+   }
+  },
+  {
+   "id": "T-U-64.t8",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-OPS-DISCLOSURE-008 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-64",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-OPS-DISCLOSURE-008"
+    ]
+   }
+  },
+  {
+   "id": "T-U-64.t9",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-OPS-DISCLOSURE-009 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-64",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-OPS-DISCLOSURE-009"
+    ]
+   }
+  },
+  {
+   "id": "T-U-64.t10",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-OPS-DISCLOSURE-010 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-64",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-OPS-DISCLOSURE-010"
+    ]
+   }
+  },
+  {
+   "id": "T-U-64.t11",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-OPS-DISCLOSURE-011 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-64",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-OPS-DISCLOSURE-011"
+    ]
+   }
+  },
+  {
+   "id": "T-U-64.t12",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-OPS-DISCLOSURE-012 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-64",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-OPS-DISCLOSURE-012"
+    ]
+   }
+  },
+  {
+   "id": "T-U-64.t13",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-OPS-DISCLOSURE-013 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-64",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-OPS-DISCLOSURE-013"
+    ]
+   }
+  },
+  {
+   "id": "T-U-64.t14",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-OPS-DISCLOSURE-014 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-64",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-OPS-DISCLOSURE-014"
+    ]
+   }
+  },
+  {
+   "id": "T-U-64.t15",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-OPS-DISCLOSURE-015 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-64",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-OPS-DISCLOSURE-015"
+    ]
+   }
+  },
+  {
+   "id": "T-U-64.t16",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-OPS-DISCLOSURE-016 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-64",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-OPS-DISCLOSURE-016"
+    ]
+   }
+  },
+  {
+   "id": "T-U-64.t17",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-OPS-DISCLOSURE-017 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-64",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-OPS-DISCLOSURE-017"
+    ]
+   }
+  },
+  {
+   "id": "T-U-64.t18",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-OPS-DISCLOSURE-018 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-64",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-OPS-DISCLOSURE-018"
+    ]
+   }
+  },
+  {
+   "id": "T-U-64.t19",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-DISC-002-A を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-64",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-DISC-002-A"
+    ]
+   }
+  },
+  {
+   "id": "T-U-64.t20",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-DISC-002-B を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-64",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-DISC-002-B"
+    ]
+   }
+  },
+  {
+   "id": "T-U-64.t21",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 E-DISC-002-C を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-64",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "E-DISC-002-C"
+    ]
+   }
+  },
+  {
+   "id": "T-U-64.m1",
+   "kind": "subtask",
+   "sub": "mock",
+   "title": "モック ops-disclosure と突き合わせる（全要素・全ボタン・値が固定でない）",
+   "parent": "T-U-64",
+   "status": "todo",
+   "links": {
+    "mock": [
+     "06_mockup/v2/v2-ops-disclosure.html"
+    ],
+    "screens": [
+     "ops-disclosure"
     ]
    }
   },

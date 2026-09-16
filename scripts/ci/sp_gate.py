@@ -25,11 +25,12 @@ m += [f"未割り当て:{j}" for j in after if j not in seen and after[j]]
 if m: fails.append(("SP3", f"流れの割り当て {m[:6]}"))
 m = [w["id"] for i, w in enumerate(W) if w["qa_scope"]["regression_from"] != [x["id"] for x in W[:i]]]
 if m: fails.append(("SP4", f"regression_from が前の全 Wave でない {m[:5]}"))
-order = {"F": 0, "D": 1, "A": 2, "U-shared": 3, "U-screen": 4, "I": 5}; last = -1; m = []
+order = {"F": 0, "D": 1, "A": 2, "U-shared": 3, "U-screen": 4, "I": 5}; last = {}; m = []   # 段階（stage）ごとに順序を見る（段階 2 は段階 1 の後に A → U-screen で再開する）
 for w in W:
     if w["group"] in ("S", "V2"): continue
-    if order[w["group"]] < last: m.append(w["id"])
-    last = max(last, order[w["group"]])
+    st = w.get("stage", "v1")
+    if order[w["group"]] < last.get(st, -1): m.append(w["id"])
+    last[st] = max(last.get(st, -1), order[w["group"]])
 fw = max((i for i, w in enumerate(W) if w["group"] == "F"), default=-1); m += [w["id"] for i, w in enumerate(W) if w["group"] in ("S", "V2") and i <= fw]
 if m: fails.append(("SP5", f"Phase 順序違反 {m[:5]}"))
 R = max(x["due"] for x in S["milestones"]); m = [w["id"] for w in W if not w["start"] or not w["finish"] or w["start"] > w["finish"] or w["finish"] > R or w["start"] < S["start"]]

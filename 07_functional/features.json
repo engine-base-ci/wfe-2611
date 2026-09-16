@@ -27,7 +27,7 @@
    "happy_path": [
     "A01 会社名とメールを入れる",
     "A02 届いたリンクを押す",
-    "A05 支払い方法を入れる",
+    "A05 プランを選んで Stripe の登録画面へ進む",
     "A09 インストーラを入れて許可する",
     "A06 自分のAIの質問に答える",
     "A07 出てきたたたき台を見る",
@@ -38,7 +38,9 @@
     "E-VAL-004",
     "E-CONF-001",
     "E-CONN-001",
-    "E-TO-003"
+    "E-TO-003",
+    "E-PAY-001",
+    "E-PAY-002"
    ],
    "policies": [
     "C2",
@@ -91,7 +93,10 @@
     "E-070",
     "E-071",
     "E-072",
-    "E-073"
+    "E-073",
+    "E-074",
+    "E-075",
+    "E-086"
    ],
    "api_endpoints": [
     {
@@ -155,10 +160,13 @@
       "E-073"
      ],
      "choke_points": [
-      "C7"
+      "C7",
+      "C2"
      ],
      "source": [
-      "D-002"
+      "D-002",
+      "D-082.1",
+      "D-082.2"
      ],
      "inputs": "画面の入力（モック参照）",
      "outputs_2xx": "更新後の対象",
@@ -296,7 +304,7 @@
     "EVENT-DRIVEN: WHEN R1／R2 が「会社名とメールを入れる」したとき THEN Kaname は「アカウントと会社を作る」を行う",
     "UNWANTED: IF 同じメールアドレスで登録済み THEN Kaname は「このメールアドレスは既に登録されています。ログインするか、パスワードを再設定してください」を出し、ログイン／パスワードを再設定（E-CONF-001）",
     "EVENT-DRIVEN: WHEN R1／R2 が「届いたリンクを押す」したとき THEN Kaname は「本人確認を記録」を行う",
-    "EVENT-DRIVEN: WHEN R1／R2 が「支払い方法を入れる」したとき THEN Kaname は「決済事業者に登録（カード番号は預からない）」を行う",
+    "EVENT-DRIVEN: WHEN R1／R2 が「プランを選んで Stripe の登録画面へ進む」したとき THEN Kaname は「Stripe Checkout へ送る（C7）。戻りは webhook の写しで確定。カード番号は自社を通らない」を行う",
     "EVENT-DRIVEN: WHEN R1／R2 が「インストーラを入れて許可する」したとき THEN Kaname は「端末を登録、トークン発行。LLM経路＝Bridge を確定」を行う（自動側：Bridgeが自己診断して結果を返す。つながるまで自分のAIは話せない）",
     "UNWANTED: IF 常駐アプリ（Bridge）がつながらない（未起動・古い版・トークン失効） THEN Kaname は「PC につながっていません。段階 1 は PC がつながるまで高本AIは話せません」を出し、もう一度つなぐ／あとでやる（E-CONN-001）",
     "UNWANTED: IF 常駐アプリを終了した直後（0〜90 秒）に指示を送る（切り替わりの瞬間） THEN Kaname は「PC との接続が切れました。指示は溜めておき、つながったら続けます」を出し、起きたら続き（E-TO-003）",
@@ -338,7 +346,9 @@
     "D-055",
     "D-055.1",
     "D-055.2",
-    "D-055.3"
+    "D-055.3",
+    "D-082.1",
+    "D-082.2"
    ]
   },
   {
@@ -3421,6 +3431,7 @@
     "A04",
     "A66",
     "A39",
+    "A84",
     "A40",
     "A41",
     "A42"
@@ -3429,6 +3440,7 @@
     "A04 認証アプリを登録する",
     "A66 運営にサポートアクセスを許可する",
     "A39 何ができるアプリかを見せる",
+    "A84 開示資料を開いて PDF をもらう",
     "A40 全操作の証跡を出す",
     "A41 データを全部持ち出す",
     "A42 退会する"
@@ -3441,7 +3453,9 @@
     "E-MOCK-001",
     "E-MOCK-007",
     "E-MOCK-014",
-    "E-MOCK-032"
+    "E-MOCK-032",
+    "E-DISC-001",
+    "E-MOCK-036"
    ],
    "policies": [
     "C2",
@@ -3460,6 +3474,7 @@
    "related_screens": [
     "account-close",
     "audit",
+    "disclosure",
     "export",
     "mfa-setup",
     "security-brief"
@@ -3489,7 +3504,9 @@
     "E-061",
     "E-062",
     "E-076",
-    "E-080"
+    "E-080",
+    "E-091",
+    "E-092"
    ],
    "api_endpoints": [
     {
@@ -3563,6 +3580,33 @@
       "D-015.3",
       "D-042.1",
       "D-053.6"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A84",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/disclosure_versions",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-091",
+      "E-092",
+      "E-041",
+      "E-061"
+     ],
+     "choke_points": [
+      "C2",
+      "C4"
+     ],
+     "source": [
+      "D-085.1",
+      "D-085.2",
+      "D-085.3",
+      "D-085.4"
      ],
      "inputs": "画面の入力（モック参照）",
      "outputs_2xx": "更新後の対象",
@@ -3654,6 +3698,7 @@
     "UNWANTED: IF 2 段階認証のコードが違う（時刻のずれ・古いコード） THEN Kaname は「コードが違います。認証アプリの時刻が合っているか確かめてください」を出し、もう一度入力する／時刻を合わせる（E-AUTH-004）",
     "EVENT-DRIVEN: WHEN R1／R2 が「運営にサポートアクセスを許可する」したとき THEN Kaname は「範囲・期限つきの許可を保存。運営が見た記録を顧客の証跡に残す」を行う",
     "EVENT-DRIVEN: WHEN R1／R2 が「何ができるアプリかを見せる」したとき THEN Kaname は「Bridgeの権限・送るもの/送らないものを列挙」を行う",
+    "EVENT-DRIVEN: WHEN R1／R2 が「開示資料を開いて PDF をもらう」したとき THEN Kaname は「成果物から生成した版を読む。PDF は署名 URL（C4）」を行う",
     "EVENT-DRIVEN: WHEN R1／R2 が「全操作の証跡を出す」したとき THEN Kaname は「証跡をファイルに書き出す」を行う",
     "EVENT-DRIVEN: WHEN R1／R2 が「データを全部持ち出す」したとき THEN Kaname は「会社モデルと台帳を一括で書き出す」を行う",
     "EVENT-DRIVEN: WHEN R1／R2 が「退会する」したとき THEN Kaname は「トークン・Bridge接続・共有を全部無効化」を行う（自動側：自分のAIが消えるものを列挙する）",
@@ -3678,7 +3723,11 @@
     "D-050",
     "D-053.6",
     "D-074.5",
-    "D-076.13"
+    "D-076.13",
+    "D-085.1",
+    "D-085.2",
+    "D-085.3",
+    "D-085.4"
    ]
   },
   {
@@ -4142,7 +4191,10 @@
     "E-MOCK-020",
     "E-MOCK-025",
     "E-ACT-036",
-    "E-ACT-037"
+    "E-ACT-037",
+    "E-PAY-003",
+    "E-PAY-004",
+    "E-PAY-006"
    ],
    "policies": [
     "C2",
@@ -4287,7 +4339,9 @@
     "UNWANTED: IF 自分のAIが答えを出せない（記憶・お知らせ・稼働状況に該当が無い）か、運営への送信に失敗した（ネットワーク・添付の上限） THEN Kaname は「運営に送れませんでした。内容は下書きに残っています。もう一度送るか、しばらくしてからお試しください」を出し、もう一度送る／下書きを確認する（E-ACT-036）",
     "EVENT-DRIVEN: WHEN R1／R2／R3／R4 が「お知らせを読む・通知の届け先を選ぶ」したとき THEN Kaname は「お知らせと稼働状況を読む。通知の設定を保存」を行う（自動側：自分のAIが自分に関係あるお知らせだけ要約する）",
     "UNWANTED: IF お知らせ・稼働状況の読み込みに失敗した、または通知の届け先の保存に失敗した THEN Kaname は「お知らせを読み込めませんでした。前回の内容を表示しています」を出し、再読み込みする（E-ACT-037）",
-    "EVENT-DRIVEN: WHEN R1／R2 が「プランと請求書を見る」したとき THEN Kaname は「プラン・利用量・請求書を読む。プラン変更を申請」を行う（自動側：自分のAIが上限に近いものを先に言う）"
+    "EVENT-DRIVEN: WHEN R1／R2 が「プランと請求書を見る」したとき THEN Kaname は「プラン・利用量・請求書を読む。プラン変更を申請」を行う（自動側：自分のAIが上限に近いものを先に言う）",
+    "UNWANTED: IF 引き落としに失敗し、猶予（7 日）の中にいる THEN Kaname は「今月の引き落としができませんでした。9/23 までに支払い方法を直してください。過ぎると休止になり、AI社員が止まります」を出し、支払い方法を直す（Stripe の画面）（E-PAY-003）",
+    "UNWANTED: IF 支払い方法が無い会社がカード払いのプランに上げようとした THEN Kaname は「カードが登録されていません。先に支払い方法を登録するか、請求書払いのままにしてください」を出し、支払い方法を登録する（E-PAY-004）"
    ],
    "checklist": [],
    "legacy_drift_notes": null,
@@ -4320,21 +4374,31 @@
     "A70",
     "A71",
     "A72",
-    "A73"
+    "A73",
+    "A85",
+    "A86",
+    "A87"
    ],
    "happy_path": [
     "A70 問い合わせに答える",
     "A71 お知らせを出す",
     "A72 請求・入金・利用量を見る",
-    "A73 セキュリティの出来事を見る"
+    "A73 セキュリティの出来事を見る",
+    "A85 会社の詳細で運営マネージドを許可する",
+    "A86 版を出す・DPA の雛形とサブプロセッサを整える",
+    "A87 カードの会社の写しを見る"
    ],
    "error_paths": [
     "E-ACT-038",
-    "E-ACT-039"
+    "E-ACT-039",
+    "E-PAY-005",
+    "E-DISC-002"
    ],
    "policies": [
     "C2",
-    "C6"
+    "C4",
+    "C6",
+    "C7"
    ],
    "notifications": [
     "C6 通知送出（届け先は notification_preferences）"
@@ -4349,6 +4413,8 @@
    "related_screens": [
     "ops-audit",
     "ops-billing",
+    "ops-disclosure",
+    "ops-llm",
     "ops-notices",
     "ops-support"
    ],
@@ -4379,7 +4445,12 @@
     "E-073",
     "E-074",
     "E-075",
-    "E-076"
+    "E-076",
+    "E-086",
+    "E-087",
+    "E-088",
+    "E-091",
+    "E-092"
    ],
    "api_endpoints": [
     {
@@ -4488,6 +4559,81 @@
       "E-ACT-039"
      ],
      "rate_limit": null
+    },
+    {
+     "act": "A85",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/llm_routes/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-088",
+      "E-074",
+      "E-075"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-083.5",
+      "D-083.6"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A86",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/disclosure_versions/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-091",
+      "E-092",
+      "E-064",
+      "E-065"
+     ],
+     "choke_points": [
+      "C2",
+      "C4",
+      "C6"
+     ],
+     "source": [
+      "D-085.1",
+      "D-085.2",
+      "D-085.3"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A87",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/invoices",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-074",
+      "E-075",
+      "E-069",
+      "E-070"
+     ],
+     "choke_points": [
+      "C2",
+      "C7"
+     ],
+     "source": [
+      "D-082.3",
+      "D-082.8"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
     }
    ],
    "ears_ac_seed": [
@@ -4495,8 +4641,14 @@
     "EVENT-DRIVEN: WHEN R6 が「お知らせを出す」したとき THEN Kaname は「お知らせ・稼働状況を公開（対象プラン・公開日時）。全社に通知」を行う",
     "UNWANTED: IF お知らせの公開で対象の会社が 0 件（プラン未選択・該当なし）、公開日時が過去、または全社通知の送出が一部失敗した THEN Kaname は「対象の会社がありません。プランか会社を選んでください」を出し、対象を選び直す／失敗した分を再送する（E-ACT-038）",
     "EVENT-DRIVEN: WHEN R6 が「請求・入金・利用量を見る」したとき THEN Kaname は「各社の請求・入金・未収・利用量／上限を集計（中身は見ない）」を行う",
+    "UNWANTED: IF Stripe からの webhook の署名が合わない（偽物・古い鍵） THEN Kaname は「決済事業者からの通知の署名が合いませんでした。通知は処理していません。運営が鍵を確かめます」を出し、運営に連絡（自動で記録済み）（E-PAY-005）",
     "EVENT-DRIVEN: WHEN R6 が「セキュリティの出来事を見る」したとき THEN Kaname は「失敗したログイン・鍵の失効・不審な接続の記録」を行う",
-    "UNWANTED: IF セキュリティの出来事（失敗したログイン・鍵の失効・不審な接続）の記録が読めない、または追記に失敗した THEN Kaname は「セキュリティの記録を読み込めませんでした。運営に連絡してください」を出し、再読み込み／運営に連絡する（E-ACT-039）"
+    "UNWANTED: IF セキュリティの出来事（失敗したログイン・鍵の失効・不審な接続）の記録が読めない、または追記に失敗した THEN Kaname は「セキュリティの記録を読み込めませんでした。運営に連絡してください」を出し、再読み込み／運営に連絡する（E-ACT-039）",
+    "EVENT-DRIVEN: WHEN R6 が「会社の詳細で運営マネージドを許可する」したとき THEN Kaname は「llm_routes の許可を更新。3 社の使用量を集計して費用へ」を行う",
+    "EVENT-DRIVEN: WHEN R6 が「版を出す・DPA の雛形とサブプロセッサを整える」したとき THEN Kaname は「disclosure_versions を作る（C4）。変更はお知らせ（C6）」を行う",
+    "UNWANTED: IF 成果物と公開中の版に差分があるのに版を出していない THEN Kaname は「公開中の開示資料（第 7 版）は設計より古くなっています。新しい版を出して全社にお知らせしてください」を出し、新しい版を出す（E-DISC-002）",
+    "EVENT-DRIVEN: WHEN R6 が「カードの会社の写しを見る」したとき THEN Kaname は「Stripe の写し（webhook）の状態と顧客リンク。請求書払いは従来の記録」を行う",
+    "UNWANTED: IF Stripe からの webhook の署名が合わない（偽物・古い鍵） THEN Kaname は「決済事業者からの通知の署名が合いませんでした。通知は処理していません。運営が鍵を確かめます」を出し、運営に連絡（自動で記録済み）（E-PAY-005）"
    ],
    "checklist": [],
    "legacy_drift_notes": null,
@@ -4514,7 +4666,14 @@
     "D-075.6",
     "D-077.3",
     "D-077.4",
-    "D-077.8"
+    "D-077.8",
+    "D-082.3",
+    "D-082.8",
+    "D-083.5",
+    "D-083.6",
+    "D-085.1",
+    "D-085.2",
+    "D-085.3"
    ]
   },
   {
@@ -4526,20 +4685,31 @@
     "A74",
     "A75",
     "A76",
-    "A77"
+    "A77",
+    "A82",
+    "A83"
    ],
    "happy_path": [
     "A74 自分のアカウントを整える",
     "A75 会社の設定を決める",
     "A76 取り込む",
-    "A77 外部サービスの連携と可否を見る"
+    "A77 外部サービスの連携と可否を見る",
+    "A82 会社の設定で AI の経路を選び、必要ならキーを入れる",
+    "A83 アプリを入れて通知を許可する"
    ],
    "error_paths": [
     "E-MOCK-002",
     "E-MOCK-012",
     "E-MOCK-019",
     "E-MOCK-033",
-    "E-ACT-040"
+    "E-ACT-040",
+    "E-LLM-001",
+    "E-LLM-002",
+    "E-LLM-003",
+    "E-LLM-004",
+    "E-APP-001",
+    "E-APP-002",
+    "E-MOCK-035"
    ],
    "policies": [
     "C1",
@@ -4566,8 +4736,10 @@
    ],
    "related_screens": [
     "account",
+    "app-setup",
     "company-settings",
     "import",
+    "llm-routes",
     "services"
    ],
    "related_entities": [
@@ -4593,6 +4765,9 @@
     "E-058",
     "E-061",
     "E-062",
+    "E-065",
+    "E-067",
+    "E-068",
     "E-069",
     "E-070",
     "E-071",
@@ -4602,7 +4777,10 @@
     "E-075",
     "E-077",
     "E-078",
-    "E-081"
+    "E-081",
+    "E-088",
+    "E-089",
+    "E-090"
    ],
    "api_endpoints": [
     {
@@ -4722,6 +4900,60 @@
      "outputs_2xx": "更新後の対象",
      "outputs_4xx": [],
      "rate_limit": "C1 の規則"
+    },
+    {
+     "act": "A82",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/llm_routes",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-088",
+      "E-037",
+      "E-089"
+     ],
+     "choke_points": [
+      "C8",
+      "C2",
+      "C3"
+     ],
+     "source": [
+      "D-083.1",
+      "D-083.3",
+      "D-083.4",
+      "D-083.5"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A83",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/push_devices/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-090",
+      "E-050",
+      "E-068",
+      "E-067"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-084.1",
+      "D-084.2",
+      "D-084.3",
+      "D-084.4"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
     }
    ],
    "ears_ac_seed": [
@@ -4729,7 +4961,12 @@
     "UNWANTED: IF 名前・メール・パスワード・2 段階認証の保存に失敗した、または変更後に他の端末と Bridge の失効が実行されなかった THEN Kaname は「保存できませんでした。もう一度お試しください。パスワードを変えた場合は他の端末で入り直しが必要です」を出し、もう一度保存する／端末の一覧で失効を確認する（E-ACT-040）",
     "EVENT-DRIVEN: WHEN R1／R2 が「会社の設定を決める」したとき THEN Kaname は「会社名・請求先・データの所在・タイムゾーンを保存」を行う（自動側：自分のAIが所在の選択の意味を説明する）",
     "EVENT-DRIVEN: WHEN R1／R2 が「取り込む」したとき THEN Kaname は「添付を保存し、台帳の下書きレコードを作る（本番には人が押してから）」を行う（自動側：自分のAIが読んで「台帳の項目・書式・手順」の候補を出す）",
-    "EVENT-DRIVEN: WHEN R1／R2 が「外部サービスの連携と可否を見る」したとき THEN Kaname は「サービス台帳を読む。正規連携（OAuth）を関門経由で結ぶ」を行う（自動側：自分のAIが「なぜ触れないか」を説明する）"
+    "EVENT-DRIVEN: WHEN R1／R2 が「外部サービスの連携と可否を見る」したとき THEN Kaname は「サービス台帳を読む。正規連携（OAuth）を関門経由で結ぶ」を行う（自動側：自分のAIが「なぜ触れないか」を説明する）",
+    "EVENT-DRIVEN: WHEN R1／R2 が「会社の設定で AI の経路を選び、必要ならキーを入れる」したとき THEN Kaname は「キーは C8 の vault へ参照だけ。llm_routes を保存。登録時に提供者へ 1 回だけ検査（成功／失敗を証跡に）」を行う（自動側：自分のAIが経路ごとの違い（費用・PC が閉じているときの動き）を説明する）",
+    "UNWANTED: IF 預けた API キーを提供者が拒否した（無効・失効・権限なし） THEN Kaname は「Anthropic のキーが無効です（提供者が拒否）。新しいキーを預けるか、経路を Bridge か運営マネージドに戻してください。動いていた仕事は止めてあります」を出し、新しいキーを預ける／Bridge に戻す（E-LLM-001）",
+    "UNWANTED: IF 運営マネージドの月の上限に届いた THEN Kaname は「運営マネージドが今月の上限（100 万）に届きました。超えた分は従量で同じ請求書に乗ります。止めるなら経路を Bridge に戻してください」を出し、従量で続ける／Bridge に戻す（E-LLM-003）",
+    "UNWANTED: IF 3 社で揃わない能力（画像の読み取り 等）を使おうとした THEN Kaname は「この機能はまだ使えません（提供者の間で揃っていないため、どの経路でも出していません）」を出し、別のやり方（文字で伝える）（E-LLM-004）",
+    "EVENT-DRIVEN: WHEN R1／R2／R3／R4 が「アプリを入れて通知を許可する」したとき THEN Kaname は「push_devices に端末を登録し、通知の届け先の経路に「アプリ」を足す」を行う"
    ],
    "checklist": [],
    "legacy_drift_notes": null,
@@ -4757,7 +4994,15 @@
     "D-076.1",
     "D-076.2",
     "D-076.3",
-    "D-076.4"
+    "D-076.4",
+    "D-083.1",
+    "D-083.3",
+    "D-083.4",
+    "D-083.5",
+    "D-084.1",
+    "D-084.2",
+    "D-084.3",
+    "D-084.4"
    ]
   },
   {
@@ -5364,6 +5609,7 @@
     "A02",
     "A03",
     "A04",
+    "A05",
     "A06",
     "A07",
     "A08",
@@ -5437,7 +5683,13 @@
     "A78",
     "A79",
     "A80",
-    "A81"
+    "A81",
+    "A82",
+    "A83",
+    "A84",
+    "A85",
+    "A86",
+    "A87"
    ],
    "happy_path": [
     "外界に出る前に 永続化（書き込み） の関門を通る"
@@ -5446,7 +5698,9 @@
     "E-AUTH-005",
     "E-CONF-002",
     "E-CONF-003",
-    "E-LIM-003"
+    "E-LIM-003",
+    "E-LLM-003",
+    "E-DISC-002"
    ],
    "policies": [
     "テナント文脈の設定（SET LOCAL app.tenant_id / app.user_id / app.role）",
@@ -5474,16 +5728,19 @@
     "ai-activity",
     "ai-staff",
     "ai-staff-detail",
+    "app-setup",
     "approvals",
     "audit",
     "automation-repair",
     "billing",
+    "billing-setup",
     "bridge-setup",
     "clone-chat",
     "clone-memory",
     "company-model",
     "company-settings",
     "credentials",
+    "disclosure",
     "duties",
     "export",
     "goal-allocation",
@@ -5494,6 +5751,7 @@
     "inquiry",
     "invite-accept",
     "ledger-def",
+    "llm-routes",
     "login",
     "member-detail",
     "members",
@@ -5506,7 +5764,9 @@
     "ops-audit",
     "ops-billing",
     "ops-catalog",
+    "ops-disclosure",
     "ops-home",
+    "ops-llm",
     "ops-notices",
     "ops-review",
     "ops-services",
@@ -5578,13 +5838,18 @@
     "A55",
     "A56",
     "A57",
-    "A76"
+    "A76",
+    "A82"
    ],
    "happy_path": [
     "外界に出る前に モデル呼び出し の関門を通る"
    ],
    "error_paths": [
-    "E-LIM-004"
+    "E-LIM-004",
+    "E-LLM-001",
+    "E-LLM-002",
+    "E-LLM-003",
+    "E-LLM-004"
    ],
    "policies": [
     "経路解決（Bridge / BYOK / 運営マネージド / ローカル）",
@@ -5620,6 +5885,7 @@
     "import",
     "invite-accept",
     "ledger-def",
+    "llm-routes",
     "my-progress",
     "onboard-draft",
     "onboard-interview",
@@ -5657,13 +5923,16 @@
     "A40",
     "A41",
     "A76",
-    "A80"
+    "A80",
+    "A84",
+    "A86"
    ],
    "happy_path": [
     "外界に出る前に ファイル / オブジェクト の関門を通る"
    ],
    "error_paths": [
-    "E-LIM-002"
+    "E-LIM-002",
+    "E-DISC-001"
    ],
    "policies": [
     "権限（テナント・スコープ）",
@@ -5686,8 +5955,10 @@
    "external_services": [],
    "related_screens": [
     "audit",
+    "disclosure",
     "export",
     "import",
+    "ops-disclosure",
     "ops-skills"
    ],
    "related_entities": [],
@@ -5790,14 +6061,18 @@
     "A70",
     "A71",
     "A74",
-    "A80"
+    "A80",
+    "A83",
+    "A86"
    ],
    "happy_path": [
     "外界に出る前に 通知送出 の関門を通る"
    ],
    "error_paths": [
     "E-EXT-003",
-    "E-GATE-005"
+    "E-GATE-005",
+    "E-PAY-003",
+    "E-APP-001"
    ],
    "policies": [
     "宛先解決（人間 / AI社員 / 自分のAI で解決規則が違う）",
@@ -5820,11 +6095,13 @@
    "external_services": [],
    "related_screens": [
     "account",
+    "app-setup",
     "approvals",
     "inquiry",
     "member-detail",
     "members",
     "notices",
+    "ops-disclosure",
     "ops-notices",
     "ops-skills",
     "ops-support",
@@ -5859,12 +6136,20 @@
    "category": "cross-cutting",
    "choke_point": "C7",
    "acts": [
-    "A05"
+    "A05",
+    "A87"
    ],
    "happy_path": [
     "外界に出る前に 決済・課金 の関門を通る"
    ],
-   "error_paths": [],
+   "error_paths": [
+    "E-PAY-001",
+    "E-PAY-002",
+    "E-PAY-003",
+    "E-PAY-004",
+    "E-PAY-005",
+    "E-PAY-006"
+   ],
    "policies": [
     "冪等性キーの付与（二重課金の防止）",
     "Webhook の署名検証",
@@ -5885,7 +6170,8 @@
    ],
    "external_services": [],
    "related_screens": [
-    "billing-setup"
+    "billing-setup",
+    "ops-billing"
    ],
    "related_entities": [],
    "api_endpoints": [],
@@ -5918,14 +6204,16 @@
     "A42",
     "A62",
     "A74",
-    "A77"
+    "A77",
+    "A82"
    ],
    "happy_path": [
     "外界に出る前に 秘密の読み出し の関門を通る"
    ],
    "error_paths": [
     "E-AUTH-005",
-    "E-DATA-001"
+    "E-DATA-001",
+    "E-LLM-001"
    ],
    "policies": [
     "テナントごとの鍵分離と復号",
@@ -5950,6 +6238,7 @@
     "account",
     "account-close",
     "credentials",
+    "llm-routes",
     "member-detail",
     "mfa-setup",
     "services"

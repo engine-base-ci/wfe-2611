@@ -21,6 +21,15 @@ describe("GET /api/v1/invoices", () => {
     expect(b.data).toBeDefined();
     if (e.kind === "create") expect((b.data as { id: string }).id).toBeTruthy();
   });
+  it("test_get_invoices_ok_2", async () => {
+    // EVENT-DRIVEN: WHEN GET /api/v1/invoices が「カードの会社の写しを見る」として呼ばれたとき THEN Kaname は「Stripe の写し（webhook）の状態と顧客リンク。請求書払いは従来の記録」を行い 2xx を返す
+    const who = e.auth === "ops" ? "ops" : "boss";
+    const r = await h.call(e, who, await args(h, e, who));
+    expect([200, 201]).toContain(r.status);
+    const b = (await r.json()) as { data: unknown };
+    expect(b.data).toBeDefined();
+    if (e.kind === "create") expect((b.data as { id: string }).id).toBeTruthy();
+  });
   it("test_get_invoices_rejected_401", async () => {
     // UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）
     const a = await args(h, e, "boss");
@@ -58,7 +67,7 @@ describe("GET /api/v1/invoices", () => {
     delete h.limits["getInvoices"];
   });
   it("test_get_invoices_shape", async () => {
-    // UBIQUITOUS: GET /api/v1/invoices の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
+    // UBIQUITOUS: GET /api/v1/invoices の副作用は関門 C2・C7 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
     const who = e.auth === "ops" ? "ops" : "boss";
     const r = await h.call(e, who, await args(h, e, who));
     const b = (await r.json()) as Record<string, unknown>;

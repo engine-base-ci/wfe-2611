@@ -112,7 +112,7 @@ def api_for_act(aid, scr):
 ROUTE_OF = {s["id"]: s.get("route") for s in F["screens"]}
 screens = []
 for s in F["screens"]:
-    sid = s["id"]; mp_ = f"06_mockup/v1/v1-{sid}.html"; html = open(mp_, encoding="utf-8").read() if os.path.exists(mp_) else ""
+    sid = s["id"]; mp_ = f"06_mockup/{s.get('release', 'v1')}/{s.get('release', 'v1')}-{sid}.html"; html = open(mp_, encoding="utf-8").read() if os.path.exists(mp_) else ""
     states = [{"id": a_, "label": re.sub(r"<[^>]+>", "", b_).strip()} for a_, b_ in re.findall(r'data-t="([^"]+)"><span class="mk"></span>([^<]*)', html)] or [{"id": "n", "label": "通常"}]
     trans = sorted({t for t in re.findall(r'href="v1-([a-z0-9-]+)\.html"', html) if t != sid and t != "index"})
     h1 = re.search(r"<h1[^>]*>([^<]*)</h1>", html); h1 = h1.group(1).strip() if h1 else s["name"]

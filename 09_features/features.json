@@ -10,22 +10,22 @@
   ]
  },
  "summary": {
-  "total_features": 116,
+  "total_features": 121,
   "by_group": {
    "A": 15,
    "B": 20,
-   "C": 59,
+   "C": 64,
    "D": 18,
    "E": 4
   },
-  "waves": 13,
+  "waves": 14,
   "parallel_capacity": 10,
-  "total_estimate_hours_human": 3949.5,
-  "total_estimate_hours_ai_compute": 702.4,
+  "total_estimate_hours_human": 4112.5,
+  "total_estimate_hours_ai_compute": 730.5,
   "human_review_total_h": 25.0,
-  "total_wall_clock_h_ai_parallel": 142.0,
-  "calendar_days_ai": 24,
-  "calendar_days_human": 494,
+  "total_wall_clock_h_ai_parallel": 146.4,
+  "calendar_days_ai": 25,
+  "calendar_days_human": 515,
   "orphan_components": [],
   "cycles": []
  },
@@ -334,10 +334,10 @@
     "E-079"
    ],
    "api_endpoints": [
-    "EP-024",
-    "EP-031",
-    "EP-046",
-    "EP-047"
+    "EP-026",
+    "EP-035",
+    "EP-051",
+    "EP-052"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [],
@@ -1470,7 +1470,7 @@
    "group": "B",
    "phase": "Backend",
    "kind": "api",
-   "role": "用事 J0 の裏側（5 endpoint・26 表）",
+   "role": "用事 J0 の裏側（5 endpoint・29 表）",
    "category": "job",
    "acts": [
     "A01",
@@ -1508,14 +1508,17 @@
     "E-070",
     "E-071",
     "E-072",
-    "E-073"
+    "E-073",
+    "E-074",
+    "E-075",
+    "E-086"
    ],
    "api_endpoints": [
     "EP-010",
-    "EP-031",
-    "EP-047",
-    "EP-049",
-    "EP-054"
+    "EP-035",
+    "EP-052",
+    "EP-054",
+    "EP-059"
    ],
    "access_control_policies": [
     "action_runs_permission_write",
@@ -1549,7 +1552,7 @@
     "EVENT-DRIVEN: WHEN R1／R2 が「会社名とメールを入れる」したとき THEN Kaname は「アカウントと会社を作る」を行う",
     "UNWANTED: IF 同じメールアドレスで登録済み THEN Kaname は「このメールアドレスは既に登録されています。ログインするか、パスワードを再設定してください」を出し、ログイン／パスワードを再設定（E-CONF-001）",
     "EVENT-DRIVEN: WHEN R1／R2 が「届いたリンクを押す」したとき THEN Kaname は「本人確認を記録」を行う",
-    "EVENT-DRIVEN: WHEN R1／R2 が「支払い方法を入れる」したとき THEN Kaname は「決済事業者に登録（カード番号は預からない）」を行う",
+    "EVENT-DRIVEN: WHEN R1／R2 が「プランを選んで Stripe の登録画面へ進む」したとき THEN Kaname は「Stripe Checkout へ送る（C7）。戻りは webhook の写しで確定。カード番号は自社を通らない」を行う",
     "EVENT-DRIVEN: WHEN R1／R2 が「インストーラを入れて許可する」したとき THEN Kaname は「端末を登録、トークン発行。LLM経路＝Bridge を確定」を行う（自動側：Bridgeが自己診断して結果を返す。つながるまで自分のAIは話せない）",
     "UNWANTED: IF 常駐アプリ（Bridge）がつながらない（未起動・古い版・トークン失効） THEN Kaname は「PC につながっていません。段階 1 は PC がつながるまで高本AIは話せません」を出し、もう一度つなぐ／あとでやる（E-CONN-001）",
     "UNWANTED: IF 常駐アプリを終了した直後（0〜90 秒）に指示を送る（切り替わりの瞬間） THEN Kaname は「PC との接続が切れました。指示は溜めておき、つながったら続けます」を出し、起きたら続き（E-TO-003）",
@@ -1563,7 +1566,7 @@
     "EVENT-DRIVEN: WHEN POST /api/v1/sessions が「インストーラを入れて許可する」として呼ばれたとき THEN Kaname は「端末を登録、トークン発行。LLM経路＝Bridge を確定」を行い 2xx を返す（自動側：Bridgeが自己診断して結果を返す。つながるまで自分のAIは話せない）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「会社名とメールを入れる」として呼ばれたとき THEN Kaname は「アカウントと会社を作る」を行い 2xx を返す",
-    "EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「支払い方法を入れる」として呼ばれたとき THEN Kaname は「決済事業者に登録（カード番号は預からない）」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「プランを選んで Stripe の登録画面へ進む」として呼ばれたとき THEN Kaname は「Stripe Checkout へ送る（C7）。戻りは webhook の写しで確定。カード番号は自社を通らない」を行い 2xx を返す",
     "EVENT-DRIVEN: WHEN GET /api/v1/tenants が「出てきたたたき台を見る」として呼ばれたとき THEN Kaname は「会社モデルの下書きを保存」を行い 2xx を返す（自動側：自分のAIが目標・台帳定義・担当業務・AI社員の初期案を作る）",
     "EVENT-DRIVEN: WHEN GET /api/v1/tenants が「違うところを言う」として呼ばれたとき THEN Kaname は「会社モデルの下書きを更新」を行い 2xx を返す（自動側：自分のAIが直して出し直す）"
    ],
@@ -1718,14 +1721,17 @@
      "E-070",
      "E-071",
      "E-072",
-     "E-073"
+     "E-073",
+     "E-074",
+     "E-075",
+     "E-086"
     ],
     "api_endpoints": [
      "EP-010",
-     "EP-031",
-     "EP-047",
-     "EP-049",
-     "EP-054"
+     "EP-035",
+     "EP-052",
+     "EP-054",
+     "EP-059"
     ],
     "access_control_policies": [
      "action_runs_permission_write",
@@ -1812,12 +1818,14 @@
     "D-055",
     "D-055.1",
     "D-055.2",
-    "D-055.3"
+    "D-055.3",
+    "D-082.1",
+    "D-082.2"
    ],
-   "estimate_hours_human": 116,
-   "estimate_hours_ai": 29.0,
+   "estimate_hours_human": 125,
+   "estimate_hours_ai": 31.2,
    "human_review_h": 1.0,
-   "wall_clock_h_ai": 30.0,
+   "wall_clock_h_ai": 32.2,
    "ai_acceleration_factor": 4,
    "blocking_dependencies_h": 0,
    "estimate_method": "reference",
@@ -1845,7 +1853,7 @@
     "E-079"
    ],
    "api_endpoints": [
-    "EP-024"
+    "EP-026"
    ],
    "access_control_policies": [
     "invitations_ops_read_with_grant",
@@ -1945,7 +1953,7 @@
      "E-079"
     ],
     "api_endpoints": [
-     "EP-024"
+     "EP-026"
     ],
     "access_control_policies": [
      "invitations_ops_read_with_grant",
@@ -2024,7 +2032,7 @@
     "E-079"
    ],
    "api_endpoints": [
-    "EP-032"
+    "EP-036"
    ],
    "access_control_policies": [
     "ai_employees_permission_write",
@@ -2145,7 +2153,7 @@
      "E-079"
     ],
     "api_endpoints": [
-     "EP-032"
+     "EP-036"
     ],
     "access_control_policies": [
      "ai_employees_permission_write",
@@ -2245,15 +2253,15 @@
    ],
    "api_endpoints": [
     "EP-011",
-    "EP-016",
-    "EP-017",
-    "EP-031",
+    "EP-018",
+    "EP-019",
     "EP-035",
-    "EP-036",
-    "EP-037",
-    "EP-051",
-    "EP-052",
-    "EP-053"
+    "EP-039",
+    "EP-040",
+    "EP-041",
+    "EP-056",
+    "EP-057",
+    "EP-058"
    ],
    "access_control_policies": [
     "audit_events_ops_read_with_grant",
@@ -2488,15 +2496,15 @@
     ],
     "api_endpoints": [
      "EP-011",
-     "EP-016",
-     "EP-017",
-     "EP-031",
+     "EP-018",
+     "EP-019",
      "EP-035",
-     "EP-036",
-     "EP-037",
-     "EP-051",
-     "EP-052",
-     "EP-053"
+     "EP-039",
+     "EP-040",
+     "EP-041",
+     "EP-056",
+     "EP-057",
+     "EP-058"
     ],
     "access_control_policies": [
      "audit_events_ops_read_with_grant",
@@ -2676,9 +2684,9 @@
    "api_endpoints": [
     "EP-002",
     "EP-012",
-    "EP-026",
-    "EP-047",
-    "EP-054"
+    "EP-028",
+    "EP-052",
+    "EP-059"
    ],
    "access_control_policies": [
     "action_runs_ops_read_with_grant",
@@ -2904,9 +2912,9 @@
     "api_endpoints": [
      "EP-002",
      "EP-012",
-     "EP-026",
-     "EP-047",
-     "EP-054"
+     "EP-028",
+     "EP-052",
+     "EP-059"
     ],
     "access_control_policies": [
      "action_runs_ops_read_with_grant",
@@ -3084,8 +3092,8 @@
     "EP-006",
     "EP-007",
     "EP-009",
-    "EP-043",
-    "EP-052"
+    "EP-047",
+    "EP-057"
    ],
    "access_control_policies": [
     "action_runs_ops_read_with_grant",
@@ -3391,8 +3399,8 @@
      "EP-006",
      "EP-007",
      "EP-009",
-     "EP-043",
-     "EP-052"
+     "EP-047",
+     "EP-057"
     ],
     "access_control_policies": [
      "action_runs_ops_read_with_grant",
@@ -3554,11 +3562,11 @@
     "E-081"
    ],
    "api_endpoints": [
-    "EP-027",
-    "EP-028",
     "EP-029",
     "EP-030",
-    "EP-051"
+    "EP-031",
+    "EP-032",
+    "EP-056"
    ],
    "access_control_policies": [
     "audit_events_ops_read_with_grant",
@@ -3781,11 +3789,11 @@
      "E-081"
     ],
     "api_endpoints": [
-     "EP-027",
-     "EP-028",
      "EP-029",
      "EP-030",
-     "EP-051"
+     "EP-031",
+     "EP-032",
+     "EP-056"
     ],
     "access_control_policies": [
      "audit_events_ops_read_with_grant",
@@ -3933,11 +3941,11 @@
    ],
    "api_endpoints": [
     "EP-011",
-    "EP-017",
-    "EP-018",
     "EP-019",
-    "EP-051",
-    "EP-054"
+    "EP-020",
+    "EP-021",
+    "EP-056",
+    "EP-059"
    ],
    "access_control_policies": [
     "clones_ops_read_with_grant",
@@ -4187,11 +4195,11 @@
     ],
     "api_endpoints": [
      "EP-011",
-     "EP-017",
-     "EP-018",
      "EP-019",
-     "EP-051",
-     "EP-054"
+     "EP-020",
+     "EP-021",
+     "EP-056",
+     "EP-059"
     ],
     "access_control_policies": [
      "clones_ops_read_with_grant",
@@ -4353,9 +4361,9 @@
     "E-085"
    ],
    "api_endpoints": [
-    "EP-018",
     "EP-020",
-    "EP-021"
+    "EP-022",
+    "EP-023"
    ],
    "access_control_policies": [
     "goal_allocations_ops_read_with_grant",
@@ -4530,9 +4538,9 @@
      "E-085"
     ],
     "api_endpoints": [
-     "EP-018",
      "EP-020",
-     "EP-021"
+     "EP-022",
+     "EP-023"
     ],
     "access_control_policies": [
      "goal_allocations_ops_read_with_grant",
@@ -4676,11 +4684,11 @@
     "EP-003",
     "EP-004",
     "EP-009",
-    "EP-032",
-    "EP-033",
-    "EP-051",
-    "EP-052",
-    "EP-053"
+    "EP-036",
+    "EP-037",
+    "EP-056",
+    "EP-057",
+    "EP-058"
    ],
    "access_control_policies": [
     "ai_employees_ops_read_with_grant",
@@ -4972,11 +4980,11 @@
      "EP-003",
      "EP-004",
      "EP-009",
-     "EP-032",
-     "EP-033",
-     "EP-051",
-     "EP-052",
-     "EP-053"
+     "EP-036",
+     "EP-037",
+     "EP-056",
+     "EP-057",
+     "EP-058"
     ],
     "access_control_policies": [
      "ai_employees_ops_read_with_grant",
@@ -5152,9 +5160,9 @@
     "E-070"
    ],
    "api_endpoints": [
-    "EP-014",
-    "EP-028",
-    "EP-054"
+    "EP-016",
+    "EP-030",
+    "EP-059"
    ],
    "access_control_policies": [
     "duties_ops_read_with_grant",
@@ -5308,9 +5316,9 @@
      "E-070"
     ],
     "api_endpoints": [
-     "EP-014",
-     "EP-028",
-     "EP-054"
+     "EP-016",
+     "EP-030",
+     "EP-059"
     ],
     "access_control_policies": [
      "duties_ops_read_with_grant",
@@ -5398,12 +5406,13 @@
    "group": "B",
    "phase": "Backend",
    "kind": "api",
-   "role": "用事 J9 の裏側（6 endpoint・25 表）",
+   "role": "用事 J9 の裏側（7 endpoint・27 表）",
    "category": "job",
    "acts": [
     "A04",
     "A66",
     "A39",
+    "A84",
     "A40",
     "A41",
     "A42"
@@ -5434,15 +5443,18 @@
     "E-061",
     "E-062",
     "E-076",
-    "E-080"
+    "E-080",
+    "E-091",
+    "E-092"
    ],
    "api_endpoints": [
     "EP-005",
     "EP-007",
-    "EP-015",
-    "EP-031",
-    "EP-033",
-    "EP-046"
+    "EP-013",
+    "EP-017",
+    "EP-035",
+    "EP-037",
+    "EP-051"
    ],
    "access_control_policies": [
     "ai_employees_permission_write",
@@ -5475,6 +5487,7 @@
     "UNWANTED: IF 2 段階認証のコードが違う（時刻のずれ・古いコード） THEN Kaname は「コードが違います。認証アプリの時刻が合っているか確かめてください」を出し、もう一度入力する／時刻を合わせる（E-AUTH-004）",
     "EVENT-DRIVEN: WHEN R1／R2 が「運営にサポートアクセスを許可する」したとき THEN Kaname は「範囲・期限つきの許可を保存。運営が見た記録を顧客の証跡に残す」を行う",
     "EVENT-DRIVEN: WHEN R1／R2 が「何ができるアプリかを見せる」したとき THEN Kaname は「Bridgeの権限・送るもの/送らないものを列挙」を行う",
+    "EVENT-DRIVEN: WHEN R1／R2 が「開示資料を開いて PDF をもらう」したとき THEN Kaname は「成果物から生成した版を読む。PDF は署名 URL（C4）」を行う",
     "EVENT-DRIVEN: WHEN R1／R2 が「全操作の証跡を出す」したとき THEN Kaname は「証跡をファイルに書き出す」を行う",
     "EVENT-DRIVEN: WHEN R1／R2 が「データを全部持ち出す」したとき THEN Kaname は「会社モデルと台帳を一括で書き出す」を行う",
     "EVENT-DRIVEN: WHEN R1／R2 が「退会する」したとき THEN Kaname は「トークン・Bridge接続・共有を全部無効化」を行う（自動側：自分のAIが消えるものを列挙する）",
@@ -5483,6 +5496,8 @@
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "EVENT-DRIVEN: WHEN DELETE /api/v1/approvals/:id が「やってしまったことを取り消す」として呼ばれたとき THEN Kaname は「打ち消しの操作を実行し証跡に残す」を行い 2xx を返す（自動側：自分のAIが取り消せる範囲を示す）",
     "EVENT-DRIVEN: WHEN DELETE /api/v1/approvals/:id が「運営にサポートアクセスを許可する」として呼ばれたとき THEN Kaname は「範囲・期限つきの許可を保存。運営が見た記録を顧客の証跡に残す」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN GET /api/v1/disclosure_versions が「開示資料を開いて PDF をもらう」として呼ばれたとき THEN Kaname は「成果物から生成した版を読む。PDF は署名 URL（C4）」を行い 2xx を返す",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "EVENT-DRIVEN: WHEN POST /api/v1/export_jobs が「データを全部持ち出す」として呼ばれたとき THEN Kaname は「会社モデルと台帳を一括で書き出す」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "EVENT-DRIVEN: WHEN GET /api/v1/members が「届いたリンクを押す」として呼ばれたとき THEN Kaname は「本人確認を記録」を行い 2xx を返す",
@@ -5679,15 +5694,18 @@
      "E-061",
      "E-062",
      "E-076",
-     "E-080"
+     "E-080",
+     "E-091",
+     "E-092"
     ],
     "api_endpoints": [
      "EP-005",
      "EP-007",
-     "EP-015",
-     "EP-031",
-     "EP-033",
-     "EP-046"
+     "EP-013",
+     "EP-017",
+     "EP-035",
+     "EP-037",
+     "EP-051"
     ],
     "access_control_policies": [
      "ai_employees_permission_write",
@@ -5757,12 +5775,16 @@
     "D-050",
     "D-053.6",
     "D-074.5",
-    "D-076.13"
+    "D-076.13",
+    "D-085.1",
+    "D-085.2",
+    "D-085.3",
+    "D-085.4"
    ],
-   "estimate_hours_human": 119,
-   "estimate_hours_ai": 29.8,
+   "estimate_hours_human": 131,
+   "estimate_hours_ai": 32.8,
    "human_review_h": 1.0,
-   "wall_clock_h_ai": 30.8,
+   "wall_clock_h_ai": 33.8,
    "ai_acceleration_factor": 4,
    "blocking_dependencies_h": 0,
    "estimate_method": "reference",
@@ -5807,8 +5829,8 @@
    "api_endpoints": [
     "EP-010",
     "EP-011",
-    "EP-034",
-    "EP-054"
+    "EP-038",
+    "EP-059"
    ],
    "access_control_policies": [
     "clones_ops_read_with_grant",
@@ -6007,8 +6029,8 @@
     "api_endpoints": [
      "EP-010",
      "EP-011",
-     "EP-034",
-     "EP-054"
+     "EP-038",
+     "EP-059"
     ],
     "access_control_policies": [
      "clones_ops_read_with_grant",
@@ -6156,9 +6178,9 @@
     "E-085"
    ],
    "api_endpoints": [
-    "EP-023",
-    "EP-041",
-    "EP-042"
+    "EP-025",
+    "EP-045",
+    "EP-046"
    ],
    "access_control_policies": [
     "conversations_permission_write",
@@ -6327,9 +6349,9 @@
      "E-085"
     ],
     "api_endpoints": [
-     "EP-023",
-     "EP-041",
-     "EP-042"
+     "EP-025",
+     "EP-045",
+     "EP-046"
     ],
     "access_control_policies": [
      "conversations_permission_write",
@@ -6447,9 +6469,9 @@
     "E-075"
    ],
    "api_endpoints": [
-    "EP-022",
-    "EP-038",
-    "EP-050"
+    "EP-024",
+    "EP-042",
+    "EP-055"
    ],
    "access_control_policies": [
     "audit_events_ops_read_with_grant",
@@ -6472,6 +6494,8 @@
     "EVENT-DRIVEN: WHEN R1／R2／R3／R4 が「お知らせを読む・通知の届け先を選ぶ」したとき THEN Kaname は「お知らせと稼働状況を読む。通知の設定を保存」を行う（自動側：自分のAIが自分に関係あるお知らせだけ要約する）",
     "UNWANTED: IF お知らせ・稼働状況の読み込みに失敗した、または通知の届け先の保存に失敗した THEN Kaname は「お知らせを読み込めませんでした。前回の内容を表示しています」を出し、再読み込みする（E-ACT-037）",
     "EVENT-DRIVEN: WHEN R1／R2 が「プランと請求書を見る」したとき THEN Kaname は「プラン・利用量・請求書を読む。プラン変更を申請」を行う（自動側：自分のAIが上限に近いものを先に言う）",
+    "UNWANTED: IF 引き落としに失敗し、猶予（7 日）の中にいる THEN Kaname は「今月の引き落としができませんでした。9/23 までに支払い方法を直してください。過ぎると休止になり、AI社員が止まります」を出し、支払い方法を直す（Stripe の画面）（E-PAY-003）",
+    "UNWANTED: IF 支払い方法が無い会社がカード払いのプランに上げようとした THEN Kaname は「カードが登録されていません。先に支払い方法を登録するか、請求書払いのままにしてください」を出し、支払い方法を登録する（E-PAY-004）",
     "EVENT-DRIVEN: WHEN GET /api/v1/inquiries が「問い合わせを書く」として呼ばれたとき THEN Kaname は「問い合わせを保存。運営の受信箱へ。証跡に残す」を行い 2xx を返す（自動側：自分のAIがまず答える（記憶・お知らせ・稼働状況から）。解けなければ運営に送る）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "EVENT-DRIVEN: WHEN PATCH /api/v1/notice_deliveries/:id が「お知らせを読む・通知の届け先を選ぶ」として呼ばれたとき THEN Kaname は「お知らせと稼働状況を読む。通知の設定を保存」を行い 2xx を返す（自動側：自分のAIが自分に関係あるお知らせだけ要約する）",
@@ -6600,9 +6624,9 @@
      "E-075"
     ],
     "api_endpoints": [
-     "EP-022",
-     "EP-038",
-     "EP-050"
+     "EP-024",
+     "EP-042",
+     "EP-055"
     ],
     "access_control_policies": [
      "audit_events_ops_read_with_grant",
@@ -6681,13 +6705,16 @@
    "group": "B",
    "phase": "Backend",
    "kind": "api",
-   "role": "用事 J15 の裏側（4 endpoint・28 表）",
+   "role": "用事 J15 の裏側（6 endpoint・33 表）",
    "category": "job",
    "acts": [
     "A70",
     "A71",
     "A72",
-    "A73"
+    "A73",
+    "A85",
+    "A86",
+    "A87"
    ],
    "screen_ids": [],
    "entity_ids": [
@@ -6718,13 +6745,20 @@
     "E-073",
     "E-074",
     "E-075",
-    "E-076"
+    "E-076",
+    "E-086",
+    "E-087",
+    "E-088",
+    "E-091",
+    "E-092"
    ],
    "api_endpoints": [
     "EP-009",
-    "EP-023",
+    "EP-014",
     "EP-025",
-    "EP-039"
+    "EP-027",
+    "EP-034",
+    "EP-043"
    ],
    "access_control_policies": [
     "approvals_ops_read_with_grant",
@@ -6737,12 +6771,17 @@
     "inquiries_permission_write",
     "inquiries_self_only_write",
     "invoices_ops_read_with_grant",
+    "invoices_permission_write",
     "invoices_tenant_read",
+    "llm_routes_ops_write",
+    "llm_routes_permission_write",
     "members_ops_read_with_grant",
     "members_tenant_read",
     "notice_deliveries_permission_write",
     "notice_deliveries_self_only_write",
     "payments_ops_read_with_grant",
+    "payments_ops_write",
+    "payments_permission_write",
     "payments_tenant_read",
     "plan_versions_all_read",
     "security_events_ops_read_with_grant",
@@ -6754,13 +6793,23 @@
     "EVENT-DRIVEN: WHEN R6 が「お知らせを出す」したとき THEN Kaname は「お知らせ・稼働状況を公開（対象プラン・公開日時）。全社に通知」を行う",
     "UNWANTED: IF お知らせの公開で対象の会社が 0 件（プラン未選択・該当なし）、公開日時が過去、または全社通知の送出が一部失敗した THEN Kaname は「対象の会社がありません。プランか会社を選んでください」を出し、対象を選び直す／失敗した分を再送する（E-ACT-038）",
     "EVENT-DRIVEN: WHEN R6 が「請求・入金・利用量を見る」したとき THEN Kaname は「各社の請求・入金・未収・利用量／上限を集計（中身は見ない）」を行う",
+    "UNWANTED: IF Stripe からの webhook の署名が合わない（偽物・古い鍵） THEN Kaname は「決済事業者からの通知の署名が合いませんでした。通知は処理していません。運営が鍵を確かめます」を出し、運営に連絡（自動で記録済み）（E-PAY-005）",
     "EVENT-DRIVEN: WHEN R6 が「セキュリティの出来事を見る」したとき THEN Kaname は「失敗したログイン・鍵の失効・不審な接続の記録」を行う",
     "UNWANTED: IF セキュリティの出来事（失敗したログイン・鍵の失効・不審な接続）の記録が読めない、または追記に失敗した THEN Kaname は「セキュリティの記録を読み込めませんでした。運営に連絡してください」を出し、再読み込み／運営に連絡する（E-ACT-039）",
+    "EVENT-DRIVEN: WHEN R6 が「会社の詳細で運営マネージドを許可する」したとき THEN Kaname は「llm_routes の許可を更新。3 社の使用量を集計して費用へ」を行う",
+    "EVENT-DRIVEN: WHEN R6 が「版を出す・DPA の雛形とサブプロセッサを整える」したとき THEN Kaname は「disclosure_versions を作る（C4）。変更はお知らせ（C6）」を行う",
+    "UNWANTED: IF 成果物と公開中の版に差分があるのに版を出していない THEN Kaname は「公開中の開示資料（第 7 版）は設計より古くなっています。新しい版を出して全社にお知らせしてください」を出し、新しい版を出す（E-DISC-002）",
+    "EVENT-DRIVEN: WHEN R6 が「カードの会社の写しを見る」したとき THEN Kaname は「Stripe の写し（webhook）の状態と顧客リンク。請求書払いは従来の記録」を行う",
+    "UNWANTED: IF Stripe からの webhook の署名が合わない（偽物・古い鍵） THEN Kaname は「決済事業者からの通知の署名が合いませんでした。通知は処理していません。運営が鍵を確かめます」を出し、運営に連絡（自動で記録済み）（E-PAY-005）",
     "EVENT-DRIVEN: WHEN GET /api/v1/audit_events が「いつ何をしたかを追う」として呼ばれたとき THEN Kaname は「証跡を検索」を行い 2xx を返す",
     "EVENT-DRIVEN: WHEN GET /api/v1/audit_events が「誰が何をしたかを確認する」として呼ばれたとき THEN Kaname は「証跡を人・期間で集計」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN PATCH /api/v1/disclosure_versions/:id が「版を出す・DPA の雛形とサブプロセッサを整える」として呼ばれたとき THEN Kaname は「disclosure_versions を作る（C4）。変更はお知らせ（C6）」を行い 2xx を返す",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "EVENT-DRIVEN: WHEN PATCH /api/v1/inquiries/:id が「顧客のデータを見ずに直す」として呼ばれたとき THEN Kaname は「構成と失敗の型だけを見る」を行い 2xx を返す",
     "EVENT-DRIVEN: WHEN PATCH /api/v1/inquiries/:id が「問い合わせに答える」として呼ばれたとき THEN Kaname は「受信箱（問い合わせ＋詰まり）。返答は顧客の問い合わせと証跡に残る」を行い 2xx を返す",
     "EVENT-DRIVEN: WHEN GET /api/v1/invoices が「請求・入金・利用量を見る」として呼ばれたとき THEN Kaname は「各社の請求・入金・未収・利用量／上限を集計（中身は見ない）」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN GET /api/v1/invoices が「カードの会社の写しを見る」として呼ばれたとき THEN Kaname は「Stripe の写し（webhook）の状態と顧客リンク。請求書払いは従来の記録」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN PATCH /api/v1/llm_routes/:id が「会社の詳細で運営マネージドを許可する」として呼ばれたとき THEN Kaname は「llm_routes の許可を更新。3 社の使用量を集計して費用へ」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "EVENT-DRIVEN: WHEN POST /api/v1/notices が「お知らせを出す」として呼ばれたとき THEN Kaname は「お知らせ・稼働状況を公開（対象プラン・公開日時）。全社に通知」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）"
@@ -6773,6 +6822,7 @@
     "F-V3-A-05",
     "F-V3-A-07",
     "F-V3-A-C2",
+    "F-V3-A-C4",
     "F-V3-A-C6"
    ],
    "wired_by": [
@@ -6831,6 +6881,14 @@
    ],
    "external_resources": [
     {
+     "resource": "ストレージのバケット（添付・成果物・持ち出し・スキル）",
+     "provision": "migration/IaC で作成。起動時に存在確認（G-11）",
+     "env": [
+      "staging",
+      "production"
+     ]
+    },
+    {
      "resource": "メール送出（Resend）の API キーと送信ドメイン",
      "provision": "Infisical に置く。DNS（SPF/DKIM）は IaC",
      "env": [
@@ -6881,13 +6939,20 @@
      "E-073",
      "E-074",
      "E-075",
-     "E-076"
+     "E-076",
+     "E-086",
+     "E-087",
+     "E-088",
+     "E-091",
+     "E-092"
     ],
     "api_endpoints": [
      "EP-009",
-     "EP-023",
+     "EP-014",
      "EP-025",
-     "EP-039"
+     "EP-027",
+     "EP-034",
+     "EP-043"
     ],
     "access_control_policies": [
      "approvals_ops_read_with_grant",
@@ -6900,12 +6965,17 @@
      "inquiries_permission_write",
      "inquiries_self_only_write",
      "invoices_ops_read_with_grant",
+     "invoices_permission_write",
      "invoices_tenant_read",
+     "llm_routes_ops_write",
+     "llm_routes_permission_write",
      "members_ops_read_with_grant",
      "members_tenant_read",
      "notice_deliveries_permission_write",
      "notice_deliveries_self_only_write",
      "payments_ops_read_with_grant",
+     "payments_ops_write",
+     "payments_permission_write",
      "payments_tenant_read",
      "plan_versions_all_read",
      "security_events_ops_read_with_grant",
@@ -6951,12 +7021,19 @@
     "D-075.6",
     "D-077.3",
     "D-077.4",
-    "D-077.8"
+    "D-077.8",
+    "D-082.3",
+    "D-082.8",
+    "D-083.5",
+    "D-083.6",
+    "D-085.1",
+    "D-085.2",
+    "D-085.3"
    ],
-   "estimate_hours_human": 116,
-   "estimate_hours_ai": 29.0,
+   "estimate_hours_human": 143,
+   "estimate_hours_ai": 35.8,
    "human_review_h": 1.0,
-   "wall_clock_h_ai": 30.0,
+   "wall_clock_h_ai": 36.8,
    "ai_acceleration_factor": 4,
    "blocking_dependencies_h": 0,
    "estimate_method": "reference",
@@ -6971,13 +7048,15 @@
    "group": "B",
    "phase": "Backend",
    "kind": "api",
-   "role": "用事 J16 の裏側（4 endpoint・34 表）",
+   "role": "用事 J16 の裏側（6 endpoint・40 表）",
    "category": "job",
    "acts": [
     "A74",
     "A75",
     "A76",
-    "A77"
+    "A77",
+    "A82",
+    "A83"
    ],
    "screen_ids": [],
    "entity_ids": [
@@ -7004,6 +7083,9 @@
     "E-058",
     "E-061",
     "E-062",
+    "E-065",
+    "E-067",
+    "E-068",
     "E-069",
     "E-070",
     "E-071",
@@ -7014,13 +7096,18 @@
     "E-077",
     "E-078",
     "E-079",
-    "E-081"
+    "E-081",
+    "E-088",
+    "E-089",
+    "E-090"
    ],
    "api_endpoints": [
     "EP-008",
-    "EP-032",
-    "EP-044",
-    "EP-055"
+    "EP-033",
+    "EP-036",
+    "EP-048",
+    "EP-049",
+    "EP-060"
    ],
    "access_control_policies": [
     "ai_employees_permission_write",
@@ -7035,11 +7122,21 @@
     "ledger_definitions_permission_write",
     "ledger_records_permission_write",
     "ledger_views_permission_write",
+    "llm_capabilities_ops_write",
+    "llm_routes_ops_write",
+    "llm_routes_permission_write",
     "members_permission_write",
+    "notification_preferences_permission_write",
+    "notification_preferences_self_only_write",
+    "notifications_permission_write",
+    "notifications_self_only_write",
     "permissions_permission_write",
+    "push_devices_permission_write",
+    "push_devices_self_only_write",
     "service_registry_permission_write",
     "service_requests_permission_write",
     "service_requests_self_only_write",
+    "sessions_permission_write",
     "tenants_permission_write"
    ],
    "ears_ac_seed": [
@@ -7048,10 +7145,19 @@
     "EVENT-DRIVEN: WHEN R1／R2 が「会社の設定を決める」したとき THEN Kaname は「会社名・請求先・データの所在・タイムゾーンを保存」を行う（自動側：自分のAIが所在の選択の意味を説明する）",
     "EVENT-DRIVEN: WHEN R1／R2 が「取り込む」したとき THEN Kaname は「添付を保存し、台帳の下書きレコードを作る（本番には人が押してから）」を行う（自動側：自分のAIが読んで「台帳の項目・書式・手順」の候補を出す）",
     "EVENT-DRIVEN: WHEN R1／R2 が「外部サービスの連携と可否を見る」したとき THEN Kaname は「サービス台帳を読む。正規連携（OAuth）を関門経由で結ぶ」を行う（自動側：自分のAIが「なぜ触れないか」を説明する）",
+    "EVENT-DRIVEN: WHEN R1／R2 が「会社の設定で AI の経路を選び、必要ならキーを入れる」したとき THEN Kaname は「キーは C8 の vault へ参照だけ。llm_routes を保存。登録時に提供者へ 1 回だけ検査（成功／失敗を証跡に）」を行う（自動側：自分のAIが経路ごとの違い（費用・PC が閉じているときの動き）を説明する）",
+    "UNWANTED: IF 預けた API キーを提供者が拒否した（無効・失効・権限なし） THEN Kaname は「Anthropic のキーが無効です（提供者が拒否）。新しいキーを預けるか、経路を Bridge か運営マネージドに戻してください。動いていた仕事は止めてあります」を出し、新しいキーを預ける／Bridge に戻す（E-LLM-001）",
+    "UNWANTED: IF 運営マネージドの月の上限に届いた THEN Kaname は「運営マネージドが今月の上限（100 万）に届きました。超えた分は従量で同じ請求書に乗ります。止めるなら経路を Bridge に戻してください」を出し、従量で続ける／Bridge に戻す（E-LLM-003）",
+    "UNWANTED: IF 3 社で揃わない能力（画像の読み取り 等）を使おうとした THEN Kaname は「この機能はまだ使えません（提供者の間で揃っていないため、どの経路でも出していません）」を出し、別のやり方（文字で伝える）（E-LLM-004）",
+    "EVENT-DRIVEN: WHEN R1／R2／R3／R4 が「アプリを入れて通知を許可する」したとき THEN Kaname は「push_devices に端末を登録し、通知の届け先の経路に「アプリ」を足す」を行う",
     "EVENT-DRIVEN: WHEN POST /api/v1/attachments が「取り込む」として呼ばれたとき THEN Kaname は「添付を保存し、台帳の下書きレコードを作る（本番には人が押してから）」を行い 2xx を返す（自動側：自分のAIが読んで「台帳の項目・書式・手順」の候補を出す）",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+    "EVENT-DRIVEN: WHEN POST /api/v1/llm_routes が「会社の設定で AI の経路を選び、必要ならキーを入れる」として呼ばれたとき THEN Kaname は「キーは C8 の vault へ参照だけ。llm_routes を保存。登録時に提供者へ 1 回だけ検査（成功／失敗を証跡に）」を行い 2xx を返す（自動側：自分のAIが経路ごとの違い（費用・PC が閉じているときの動き）を説明する）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「メールで入り直す／回復コードを使う」として呼ばれたとき THEN Kaname は「トークンを失効させて再発行」を行い 2xx を返す",
     "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「人を招いて見える範囲を決める」として呼ばれたとき THEN Kaname は「招待を発行、スコープを結ぶ」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN PATCH /api/v1/push_devices/:id が「アプリを入れて通知を許可する」として呼ばれたとき THEN Kaname は「push_devices に端末を登録し、通知の届け先の経路に「アプリ」を足す」を行い 2xx を返す",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "EVENT-DRIVEN: WHEN POST /api/v1/service_registry が「外部サービスの連携と可否を見る」として呼ばれたとき THEN Kaname は「サービス台帳を読む。正規連携（OAuth）を関門経由で結ぶ」を行い 2xx を返す（自動側：自分のAIが「なぜ触れないか」を説明する）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "EVENT-DRIVEN: WHEN PATCH /api/v1/tenants/:id が「会社の設定を決める」として呼ばれたとき THEN Kaname は「会社名・請求先・データの所在・タイムゾーンを保存」を行い 2xx を返す（自動側：自分のAIが所在の選択の意味を説明する）",
@@ -7177,6 +7283,7 @@
     "touches": [
      "credentials",
      "sessions",
+     "notifications",
      "integrations",
      "invitations"
     ]
@@ -7206,6 +7313,9 @@
      "E-058",
      "E-061",
      "E-062",
+     "E-065",
+     "E-067",
+     "E-068",
      "E-069",
      "E-070",
      "E-071",
@@ -7216,13 +7326,18 @@
      "E-077",
      "E-078",
      "E-079",
-     "E-081"
+     "E-081",
+     "E-088",
+     "E-089",
+     "E-090"
     ],
     "api_endpoints": [
      "EP-008",
-     "EP-032",
-     "EP-044",
-     "EP-055"
+     "EP-033",
+     "EP-036",
+     "EP-048",
+     "EP-049",
+     "EP-060"
     ],
     "access_control_policies": [
      "ai_employees_permission_write",
@@ -7237,11 +7352,21 @@
      "ledger_definitions_permission_write",
      "ledger_records_permission_write",
      "ledger_views_permission_write",
+     "llm_capabilities_ops_write",
+     "llm_routes_ops_write",
+     "llm_routes_permission_write",
      "members_permission_write",
+     "notification_preferences_permission_write",
+     "notification_preferences_self_only_write",
+     "notifications_permission_write",
+     "notifications_self_only_write",
      "permissions_permission_write",
+     "push_devices_permission_write",
+     "push_devices_self_only_write",
      "service_registry_permission_write",
      "service_requests_permission_write",
      "service_requests_self_only_write",
+     "sessions_permission_write",
      "tenants_permission_write"
     ],
     "tests": [
@@ -7293,12 +7418,20 @@
     "D-076.1",
     "D-076.2",
     "D-076.3",
-    "D-076.4"
+    "D-076.4",
+    "D-083.1",
+    "D-083.3",
+    "D-083.4",
+    "D-083.5",
+    "D-084.1",
+    "D-084.2",
+    "D-084.3",
+    "D-084.4"
    ],
-   "estimate_hours_human": 134,
-   "estimate_hours_ai": 33.5,
+   "estimate_hours_human": 164,
+   "estimate_hours_ai": 41.0,
    "human_review_h": 1.0,
-   "wall_clock_h_ai": 34.5,
+   "wall_clock_h_ai": 42.0,
    "ai_acceleration_factor": 4,
    "blocking_dependencies_h": 0,
    "estimate_method": "reference",
@@ -7349,8 +7482,8 @@
    ],
    "api_endpoints": [
     "EP-002",
-    "EP-045",
-    "EP-048"
+    "EP-050",
+    "EP-053"
    ],
    "access_control_policies": [
     "ai_employees_ops_read_with_grant",
@@ -7506,8 +7639,8 @@
     ],
     "api_endpoints": [
      "EP-002",
-     "EP-045",
-     "EP-048"
+     "EP-050",
+     "EP-053"
     ],
     "access_control_policies": [
      "ai_employees_ops_read_with_grant",
@@ -7650,9 +7783,9 @@
     "E-085"
    ],
    "api_endpoints": [
-    "EP-013",
-    "EP-040",
-    "EP-042"
+    "EP-015",
+    "EP-044",
+    "EP-046"
    ],
    "access_control_policies": [
     "artifacts_permission_write",
@@ -7807,9 +7940,9 @@
      "E-085"
     ],
     "api_endpoints": [
-     "EP-013",
-     "EP-040",
-     "EP-042"
+     "EP-015",
+     "EP-044",
+     "EP-046"
     ],
     "access_control_policies": [
      "artifacts_permission_write",
@@ -7911,7 +8044,7 @@
    ],
    "api_endpoints": [
     "EP-002",
-    "EP-041"
+    "EP-045"
    ],
    "access_control_policies": [
     "ai_employees_ops_read_with_grant",
@@ -8044,7 +8177,7 @@
     ],
     "api_endpoints": [
      "EP-002",
-     "EP-041"
+     "EP-045"
     ],
     "access_control_policies": [
      "ai_employees_ops_read_with_grant",
@@ -8139,7 +8272,7 @@
     "E-072"
    ],
    "api_endpoints": [
-    "EP-049"
+    "EP-054"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -8219,7 +8352,7 @@
      "E-072"
     ],
     "api_endpoints": [
-     "EP-049"
+     "EP-054"
     ],
     "access_control_policies": [],
     "tests": [
@@ -8290,7 +8423,7 @@
     "E-044"
    ],
    "api_endpoints": [
-    "EP-031"
+    "EP-035"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -8367,7 +8500,7 @@
      "E-044"
     ],
     "api_endpoints": [
-     "EP-031"
+     "EP-035"
     ],
     "access_control_policies": [],
     "tests": [
@@ -8434,7 +8567,7 @@
     "E-044"
    ],
    "api_endpoints": [
-    "EP-024"
+    "EP-026"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -8513,7 +8646,7 @@
      "E-044"
     ],
     "api_endpoints": [
-     "EP-024"
+     "EP-026"
     ],
     "access_control_policies": [],
     "tests": [
@@ -8583,7 +8716,7 @@
     "E-062"
    ],
    "api_endpoints": [
-    "EP-031"
+    "EP-035"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -8664,7 +8797,7 @@
      "E-062"
     ],
     "api_endpoints": [
-     "EP-031"
+     "EP-035"
     ],
     "access_control_policies": [],
     "tests": [
@@ -8714,11 +8847,11 @@
   },
   {
    "id": "F-V3-C-billing-setup",
-   "name": "画面 支払い方法を登録する（1 状態・2 役割）",
+   "name": "画面 支払い方法を登録する（4 状態・2 役割）",
    "group": "C",
    "phase": "UI",
    "kind": "ui",
-   "role": "プランを選び、支払い方法を決済事業者に登録する",
+   "role": "プランを選び、Stripe の登録画面でカードを登録する。カード番号はここを通らない。請求書払いなら何もしなくてよい",
    "category": "ui",
    "acts": [
     "A05"
@@ -8731,14 +8864,17 @@
     "E-070",
     "E-071",
     "E-073",
-    "E-072"
+    "E-072",
+    "E-086",
+    "E-074",
+    "E-075"
    ],
    "api_endpoints": [
-    "EP-049"
+    "EP-054"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
-    "UBIQUITOUS: 画面 billing-setup はモック None の状態 1（通常）と役割 R1/R2 を実装し、h1 は「支払い方法を登録する」",
+    "UBIQUITOUS: 画面 billing-setup はモック 06_mockup/v2/v2-billing-setup.html の状態 4（登録、登録できた、カードが拒否された、請求書払い）と役割 R1/R2 を実装し、h1 は「支払い方法を登録する」",
     "EVENT-DRIVEN: WHEN 主アクション「登録する」を押したとき THEN 対応する endpoint を呼び、結果を別 GET で再取得して画面に反映する"
    ],
    "depends_on": [
@@ -8785,10 +8921,13 @@
      "E-070",
      "E-071",
      "E-073",
-     "E-072"
+     "E-072",
+     "E-086",
+     "E-074",
+     "E-075"
     ],
     "api_endpoints": [
-     "EP-049"
+     "EP-054"
     ],
     "access_control_policies": [],
     "tests": [
@@ -8819,12 +8958,15 @@
    "decided_at": "2026-09-16",
    "source": [
     "D-002",
-    "D-081.2"
+    "D-081.2",
+    "D-082.1",
+    "D-082.2",
+    "D-082.3"
    ],
-   "estimate_hours_human": 9.5,
-   "estimate_hours_ai": 0.9,
+   "estimate_hours_human": 17.0,
+   "estimate_hours_ai": 1.7,
    "human_review_h": 0.0,
-   "wall_clock_h_ai": 0.9,
+   "wall_clock_h_ai": 1.7,
    "ai_acceleration_factor": 10,
    "blocking_dependencies_h": 0,
    "estimate_method": "reference",
@@ -8853,7 +8995,7 @@
     "E-044"
    ],
    "api_endpoints": [
-    "EP-031"
+    "EP-035"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -8933,7 +9075,7 @@
      "E-044"
     ],
     "api_endpoints": [
-     "EP-031"
+     "EP-035"
     ],
     "access_control_policies": [],
     "tests": [
@@ -9006,7 +9148,7 @@
     "E-062"
    ],
    "api_endpoints": [
-    "EP-032"
+    "EP-036"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -9086,7 +9228,7 @@
      "E-062"
     ],
     "api_endpoints": [
-     "EP-032"
+     "EP-036"
     ],
     "access_control_policies": [],
     "tests": [
@@ -9321,7 +9463,7 @@
     "E-005"
    ],
    "api_endpoints": [
-    "EP-054"
+    "EP-059"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -9410,7 +9552,7 @@
      "E-005"
     ],
     "api_endpoints": [
-     "EP-054"
+     "EP-059"
     ],
     "access_control_policies": [],
     "tests": [
@@ -9482,7 +9624,7 @@
     "E-034"
    ],
    "api_endpoints": [
-    "EP-047"
+    "EP-052"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -9558,7 +9700,7 @@
      "E-034"
     ],
     "api_endpoints": [
-     "EP-047"
+     "EP-052"
     ],
     "access_control_policies": [],
     "tests": [
@@ -9952,7 +10094,7 @@
     "E-050"
    ],
    "api_endpoints": [
-    "EP-054"
+    "EP-059"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -10036,7 +10178,7 @@
      "E-050"
     ],
     "api_endpoints": [
-     "EP-054"
+     "EP-059"
     ],
     "access_control_policies": [],
     "tests": [
@@ -10110,9 +10252,9 @@
     "E-004"
    ],
    "api_endpoints": [
-    "EP-035",
-    "EP-036",
-    "EP-037"
+    "EP-039",
+    "EP-040",
+    "EP-041"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -10198,9 +10340,9 @@
      "E-004"
     ],
     "api_endpoints": [
-     "EP-035",
-     "EP-036",
-     "EP-037"
+     "EP-039",
+     "EP-040",
+     "EP-041"
     ],
     "access_control_policies": [],
     "tests": [
@@ -10633,9 +10775,9 @@
     "E-040"
    ],
    "api_endpoints": [
-    "EP-051",
-    "EP-052",
-    "EP-053"
+    "EP-056",
+    "EP-057",
+    "EP-058"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -10726,9 +10868,9 @@
      "E-040"
     ],
     "api_endpoints": [
-     "EP-051",
-     "EP-052",
-     "EP-053"
+     "EP-056",
+     "EP-057",
+     "EP-058"
     ],
     "access_control_policies": [],
     "tests": [
@@ -11174,7 +11316,7 @@
     "E-039"
    ],
    "api_endpoints": [
-    "EP-027"
+    "EP-029"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -11258,7 +11400,7 @@
      "E-039"
     ],
     "api_endpoints": [
-     "EP-027"
+     "EP-029"
     ],
     "access_control_policies": [],
     "tests": [
@@ -11326,8 +11468,8 @@
     "E-019"
    ],
    "api_endpoints": [
-    "EP-027",
-    "EP-028"
+    "EP-029",
+    "EP-030"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -11432,8 +11574,8 @@
      "E-019"
     ],
     "api_endpoints": [
-     "EP-027",
-     "EP-028"
+     "EP-029",
+     "EP-030"
     ],
     "access_control_policies": [],
     "tests": [
@@ -11517,8 +11659,8 @@
     "E-040"
    ],
    "api_endpoints": [
-    "EP-029",
-    "EP-030"
+    "EP-031",
+    "EP-032"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -11603,8 +11745,8 @@
      "E-040"
     ],
     "api_endpoints": [
-     "EP-029",
-     "EP-030"
+     "EP-031",
+     "EP-032"
     ],
     "access_control_policies": [],
     "tests": [
@@ -11685,7 +11827,7 @@
     "E-041"
    ],
    "api_endpoints": [
-    "EP-018"
+    "EP-020"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -11776,7 +11918,7 @@
      "E-041"
     ],
     "api_endpoints": [
-     "EP-018"
+     "EP-020"
     ],
     "access_control_policies": [],
     "tests": [
@@ -11880,7 +12022,7 @@
     "E-006"
    ],
    "api_endpoints": [
-    "EP-017"
+    "EP-019"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -11964,7 +12106,7 @@
      "E-006"
     ],
     "api_endpoints": [
-     "EP-017"
+     "EP-019"
     ],
     "access_control_policies": [],
     "tests": [
@@ -12054,8 +12196,8 @@
     "E-014"
    ],
    "api_endpoints": [
-    "EP-018",
-    "EP-019"
+    "EP-020",
+    "EP-021"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -12139,8 +12281,8 @@
      "E-014"
     ],
     "api_endpoints": [
-     "EP-018",
-     "EP-019"
+     "EP-020",
+     "EP-021"
     ],
     "access_control_policies": [],
     "tests": [
@@ -12218,8 +12360,8 @@
     "E-004"
    ],
    "api_endpoints": [
-    "EP-016",
-    "EP-017"
+    "EP-018",
+    "EP-019"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -12303,8 +12445,8 @@
      "E-004"
     ],
     "api_endpoints": [
-     "EP-016",
-     "EP-017"
+     "EP-018",
+     "EP-019"
     ],
     "access_control_policies": [],
     "tests": [
@@ -12379,7 +12521,7 @@
     "E-016"
    ],
    "api_endpoints": [
-    "EP-020"
+    "EP-022"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -12459,7 +12601,7 @@
      "E-016"
     ],
     "api_endpoints": [
-     "EP-020"
+     "EP-022"
     ],
     "access_control_policies": [],
     "tests": [
@@ -12538,7 +12680,7 @@
     "E-021"
    ],
    "api_endpoints": [
-    "EP-021"
+    "EP-023"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -12620,7 +12762,7 @@
      "E-021"
     ],
     "api_endpoints": [
-     "EP-021"
+     "EP-023"
     ],
     "access_control_policies": [],
     "tests": [
@@ -12703,7 +12845,7 @@
     "E-031"
    ],
    "api_endpoints": [
-    "EP-014"
+    "EP-016"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -12786,7 +12928,7 @@
      "E-031"
     ],
     "api_endpoints": [
-     "EP-014"
+     "EP-016"
     ],
     "access_control_policies": [],
     "tests": [
@@ -12869,7 +13011,7 @@
     "E-004"
    ],
    "api_endpoints": [
-    "EP-034"
+    "EP-038"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -12948,7 +13090,7 @@
      "E-004"
     ],
     "api_endpoints": [
-     "EP-034"
+     "EP-038"
     ],
     "access_control_policies": [],
     "tests": [
@@ -13033,7 +13175,7 @@
     "E-020"
    ],
    "api_endpoints": [
-    "EP-028"
+    "EP-030"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -13113,7 +13255,7 @@
      "E-020"
     ],
     "api_endpoints": [
-     "EP-028"
+     "EP-030"
     ],
     "access_control_policies": [],
     "tests": [
@@ -13204,7 +13346,7 @@
     "E-041"
    ],
    "api_endpoints": [
-    "EP-054"
+    "EP-059"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -13300,7 +13442,7 @@
      "E-041"
     ],
     "api_endpoints": [
-     "EP-054"
+     "EP-059"
     ],
     "access_control_policies": [],
     "tests": [
@@ -13379,7 +13521,7 @@
     "E-076"
    ],
    "api_endpoints": [
-    "EP-026"
+    "EP-028"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -13458,7 +13600,7 @@
      "E-076"
     ],
     "api_endpoints": [
-     "EP-026"
+     "EP-028"
     ],
     "access_control_policies": [],
     "tests": [
@@ -13750,7 +13892,7 @@
     "E-004"
    ],
    "api_endpoints": [
-    "EP-043"
+    "EP-047"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -13830,7 +13972,7 @@
      "E-004"
     ],
     "api_endpoints": [
-     "EP-043"
+     "EP-047"
     ],
     "access_control_policies": [],
     "tests": [
@@ -13919,7 +14061,7 @@
     "E-002"
    ],
    "api_endpoints": [
-    "EP-032"
+    "EP-036"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -14005,7 +14147,7 @@
      "E-002"
     ],
     "api_endpoints": [
-     "EP-032"
+     "EP-036"
     ],
     "access_control_policies": [],
     "tests": [
@@ -14456,7 +14598,7 @@
     "E-032"
    ],
    "api_endpoints": [
-    "EP-046"
+    "EP-051"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -14532,7 +14674,7 @@
      "E-032"
     ],
     "api_endpoints": [
-     "EP-046"
+     "EP-051"
     ],
     "access_control_policies": [],
     "tests": [
@@ -14572,7 +14714,8 @@
     "D-022.5",
     "D-042.1",
     "D-042.10",
-    "D-053.6"
+    "D-053.6",
+    "D-085.3"
    ],
    "estimate_hours_human": 12.0,
    "estimate_hours_ai": 1.2,
@@ -14585,6 +14728,131 @@
    "why": "",
    "drift_origin": null,
    "wave": 9
+  },
+  {
+   "id": "F-V3-C-disclosure",
+   "name": "画面 開示資料（4 状態・2 役割）",
+   "group": "C",
+   "phase": "UI",
+   "kind": "ui",
+   "role": "情シス・コンプラに渡す資料（できる操作の列挙・送るもの／送らないもの・サブプロセッサ・DPA・アンインストールの検証結果",
+   "category": "ui",
+   "acts": [
+    "A84"
+   ],
+   "screen_ids": [
+    "disclosure"
+   ],
+   "entity_ids": [
+    "E-091",
+    "E-092",
+    "E-041",
+    "E-061",
+    "E-062"
+   ],
+   "api_endpoints": [
+    "EP-013"
+   ],
+   "access_control_policies": [],
+   "ears_ac_seed": [
+    "UBIQUITOUS: 画面 disclosure はモック 06_mockup/v2/v2-disclosure.html の状態 4（資料、版の履歴、PDF が作れない、AI が止まっている）と役割 R1/R2 を実装し、h1 は「開示資料」",
+    "EVENT-DRIVEN: WHEN 主アクション「PDF で出す」を押したとき THEN 対応する endpoint を呼び、結果を別 GET で再取得して画面に反映する"
+   ],
+   "depends_on": [
+    "F-V3-B-09",
+    "F-V3-A-01",
+    "F-V3-A-05"
+   ],
+   "wired_by": [
+    "F-V3-D-03",
+    "F-V3-D-09"
+   ],
+   "journey_candidates": [],
+   "combination_points": [
+    {
+     "point": "実行中 × 切替（モード・経路・設定を途中で変える）",
+     "verdict": "N/A：実行を持たない（サーバーの状態を読むだけ）"
+    },
+    {
+     "point": "中断 × 再開（PC が閉じる・Bridge が切れる・タブを閉じる）",
+     "verdict": "該当"
+    },
+    {
+     "point": "別ロールの同時操作（承認者 2 人・運営と顧客）",
+     "verdict": "N/A：読み取りだけ"
+    },
+    {
+     "point": "期限切れの瞬間（セッション・招待・サポートアクセス・猶予）",
+     "verdict": "N/A：期限を持つ行を触らない"
+    },
+    {
+     "point": "退会・停止中の実行（出来事の途中に要求が来る）",
+     "verdict": "N/A：口座状態を変えない読み取り"
+    }
+   ],
+   "external_resources": [],
+   "account_state_impacts": {
+    "applies": false,
+    "detail": "画面は sessions の 401 で入り直しに落ちる",
+    "touches": []
+   },
+   "vertical_slice_components": {
+    "entities": [
+     "E-091",
+     "E-092",
+     "E-041",
+     "E-061",
+     "E-062"
+    ],
+    "api_endpoints": [
+     "EP-013"
+    ],
+    "access_control_policies": [],
+    "tests": [
+     "mock-impl-diff（h1・状態・第2ナビ）",
+     "役割ごとの中身（G15）",
+     "横溢れ 4 幅・本文幅",
+     "実機で全操作要素を押す（G-01）",
+     "L1 行"
+    ],
+    "middleware": [],
+    "screens": [
+     "disclosure"
+    ]
+   },
+   "ci_gates": {
+    "lint": true,
+    "type_check": true,
+    "test_coverage": true,
+    "access_control_coverage": false,
+    "mock_impl_diff": true,
+    "ears_validator": true,
+    "layer_audit": true
+   },
+   "independence": "medium",
+   "difficulty": "medium",
+   "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
+   "status": "decided",
+   "decided_at": "2026-09-16",
+   "source": [
+    "D-081.5",
+    "D-085.1",
+    "D-085.2",
+    "D-085.3",
+    "D-085.4",
+    "D-042"
+   ],
+   "estimate_hours_human": 17.0,
+   "estimate_hours_ai": 1.7,
+   "human_review_h": 0.0,
+   "wall_clock_h_ai": 1.7,
+   "ai_acceleration_factor": 10,
+   "blocking_dependencies_h": 0,
+   "estimate_method": "reference",
+   "estimate_confidence": "medium",
+   "why": "",
+   "drift_origin": null,
+   "wave": 10
   },
   {
    "id": "F-V3-C-export",
@@ -14612,7 +14880,7 @@
     "E-020"
    ],
    "api_endpoints": [
-    "EP-015"
+    "EP-017"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -14691,7 +14959,7 @@
      "E-020"
     ],
     "api_endpoints": [
-     "EP-015"
+     "EP-017"
     ],
     "access_control_policies": [],
     "tests": [
@@ -14769,7 +15037,7 @@
     "E-053"
    ],
    "api_endpoints": [
-    "EP-033"
+    "EP-037"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -14853,7 +15121,7 @@
      "E-053"
     ],
     "api_endpoints": [
-     "EP-033"
+     "EP-037"
     ],
     "access_control_policies": [],
     "tests": [
@@ -14931,7 +15199,7 @@
     "E-062"
    ],
    "api_endpoints": [
-    "EP-023"
+    "EP-025"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -15020,7 +15288,7 @@
      "E-062"
     ],
     "api_endpoints": [
-     "EP-023"
+     "EP-025"
     ],
     "access_control_policies": [],
     "tests": [
@@ -15099,7 +15367,7 @@
     "E-027"
    ],
    "api_endpoints": [
-    "EP-041"
+    "EP-045"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -15188,7 +15456,7 @@
      "E-027"
     ],
     "api_endpoints": [
-     "EP-041"
+     "EP-045"
     ],
     "access_control_policies": [],
     "tests": [
@@ -15437,7 +15705,7 @@
     "E-050"
    ],
    "api_endpoints": [
-    "EP-032"
+    "EP-036"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -15520,7 +15788,7 @@
      "E-050"
     ],
     "api_endpoints": [
-     "EP-032"
+     "EP-036"
     ],
     "access_control_policies": [],
     "tests": [
@@ -15551,7 +15819,8 @@
    "decided_at": "2026-09-16",
    "source": [
     "D-076.1",
-    "D-042"
+    "D-042",
+    "D-084.3"
    ],
    "estimate_hours_human": 15.0,
    "estimate_hours_ai": 1.5,
@@ -15596,7 +15865,7 @@
     "E-072"
    ],
    "api_endpoints": [
-    "EP-055"
+    "EP-060"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -15686,7 +15955,7 @@
      "E-072"
     ],
     "api_endpoints": [
-     "EP-055"
+     "EP-060"
     ],
     "access_control_policies": [],
     "tests": [
@@ -15722,7 +15991,8 @@
     "D-012.8",
     "D-042.5",
     "D-045.2",
-    "D-055.1"
+    "D-055.1",
+    "D-083.4"
    ],
    "estimate_hours_human": 12.0,
    "estimate_hours_ai": 1.2,
@@ -15735,6 +16005,251 @@
    "why": "",
    "drift_origin": null,
    "wave": 7
+  },
+  {
+   "id": "F-V3-C-llm-routes",
+   "name": "画面 AI の経路（4 状態・2 役割）",
+   "group": "C",
+   "phase": "UI",
+   "kind": "ui",
+   "role": "Bridge／自分の API キー／運営マネージド を、会社の既定と PC が閉じているときの経路として選ぶ。キーは預け",
+   "category": "ui",
+   "acts": [
+    "A82"
+   ],
+   "screen_ids": [
+    "llm-routes"
+   ],
+   "entity_ids": [
+    "E-088",
+    "E-037",
+    "E-089"
+   ],
+   "api_endpoints": [
+    "EP-033"
+   ],
+   "access_control_policies": [],
+   "ears_ac_seed": [
+    "UBIQUITOUS: 画面 llm-routes はモック 06_mockup/v2/v2-llm-routes.html の状態 4（AI の経路、キーを預ける、キーが無効・上限に届いた、AI が止まっている）と役割 R1/R2 を実装し、h1 は「AI の経路」",
+    "EVENT-DRIVEN: WHEN 主アクション「保存する」を押したとき THEN 対応する endpoint を呼び、結果を別 GET で再取得して画面に反映する"
+   ],
+   "depends_on": [
+    "F-V3-B-16",
+    "F-V3-A-01",
+    "F-V3-A-05"
+   ],
+   "wired_by": [
+    "F-V3-D-03",
+    "F-V3-D-09"
+   ],
+   "journey_candidates": [],
+   "combination_points": [
+    {
+     "point": "実行中 × 切替（モード・経路・設定を途中で変える）",
+     "verdict": "N/A：実行を持たない（サーバーの状態を読むだけ）"
+    },
+    {
+     "point": "中断 × 再開（PC が閉じる・Bridge が切れる・タブを閉じる）",
+     "verdict": "該当"
+    },
+    {
+     "point": "別ロールの同時操作（承認者 2 人・運営と顧客）",
+     "verdict": "N/A：読み取りだけ"
+    },
+    {
+     "point": "期限切れの瞬間（セッション・招待・サポートアクセス・猶予）",
+     "verdict": "N/A：期限を持つ行を触らない"
+    },
+    {
+     "point": "退会・停止中の実行（出来事の途中に要求が来る）",
+     "verdict": "N/A：口座状態を変えない読み取り"
+    }
+   ],
+   "external_resources": [],
+   "account_state_impacts": {
+    "applies": false,
+    "detail": "画面は sessions の 401 で入り直しに落ちる",
+    "touches": []
+   },
+   "vertical_slice_components": {
+    "entities": [
+     "E-088",
+     "E-037",
+     "E-089"
+    ],
+    "api_endpoints": [
+     "EP-033"
+    ],
+    "access_control_policies": [],
+    "tests": [
+     "mock-impl-diff（h1・状態・第2ナビ）",
+     "役割ごとの中身（G15）",
+     "横溢れ 4 幅・本文幅",
+     "実機で全操作要素を押す（G-01）",
+     "L1 行"
+    ],
+    "middleware": [],
+    "screens": [
+     "llm-routes"
+    ]
+   },
+   "ci_gates": {
+    "lint": true,
+    "type_check": true,
+    "test_coverage": true,
+    "access_control_coverage": false,
+    "mock_impl_diff": true,
+    "ears_validator": true,
+    "layer_audit": true
+   },
+   "independence": "medium",
+   "difficulty": "medium",
+   "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
+   "status": "decided",
+   "decided_at": "2026-09-16",
+   "source": [
+    "D-081.3",
+    "D-083.1",
+    "D-083.3",
+    "D-083.4",
+    "D-083.5",
+    "D-004"
+   ],
+   "estimate_hours_human": 17.0,
+   "estimate_hours_ai": 1.7,
+   "human_review_h": 0.0,
+   "wall_clock_h_ai": 1.7,
+   "ai_acceleration_factor": 10,
+   "blocking_dependencies_h": 0,
+   "estimate_method": "reference",
+   "estimate_confidence": "medium",
+   "why": "",
+   "drift_origin": null,
+   "wave": 10
+  },
+  {
+   "id": "F-V3-C-app-setup",
+   "name": "画面 アプリと通知（3 状態・4 役割）",
+   "group": "C",
+   "phase": "UI",
+   "kind": "ui",
+   "role": "PC の Bridge の窓とスマホのアプリを入れ、承認待ち・AI 停止・お知らせの通知を受け取る端末を整える",
+   "category": "ui",
+   "acts": [
+    "A83"
+   ],
+   "screen_ids": [
+    "app-setup"
+   ],
+   "entity_ids": [
+    "E-090",
+    "E-050",
+    "E-068",
+    "E-067",
+    "E-065"
+   ],
+   "api_endpoints": [
+    "EP-048"
+   ],
+   "access_control_policies": [],
+   "ears_ac_seed": [
+    "UBIQUITOUS: 画面 app-setup はモック 06_mockup/v2/v2-app-setup.html の状態 3（アプリと通知、許可待ち、許可が無い・つながっていない）と役割 R1/R2/R3/R4 を実装し、h1 は「アプリと通知」",
+    "EVENT-DRIVEN: WHEN 主アクション「通知を許可する」を押したとき THEN 対応する endpoint を呼び、結果を別 GET で再取得して画面に反映する"
+   ],
+   "depends_on": [
+    "F-V3-B-16",
+    "F-V3-A-01",
+    "F-V3-A-05"
+   ],
+   "wired_by": [
+    "F-V3-D-03",
+    "F-V3-D-09"
+   ],
+   "journey_candidates": [],
+   "combination_points": [
+    {
+     "point": "実行中 × 切替（モード・経路・設定を途中で変える）",
+     "verdict": "N/A：実行を持たない（サーバーの状態を読むだけ）"
+    },
+    {
+     "point": "中断 × 再開（PC が閉じる・Bridge が切れる・タブを閉じる）",
+     "verdict": "該当"
+    },
+    {
+     "point": "別ロールの同時操作（承認者 2 人・運営と顧客）",
+     "verdict": "N/A：読み取りだけ"
+    },
+    {
+     "point": "期限切れの瞬間（セッション・招待・サポートアクセス・猶予）",
+     "verdict": "N/A：期限を持つ行を触らない"
+    },
+    {
+     "point": "退会・停止中の実行（出来事の途中に要求が来る）",
+     "verdict": "N/A：口座状態を変えない読み取り"
+    }
+   ],
+   "external_resources": [],
+   "account_state_impacts": {
+    "applies": false,
+    "detail": "画面は sessions の 401 で入り直しに落ちる",
+    "touches": []
+   },
+   "vertical_slice_components": {
+    "entities": [
+     "E-090",
+     "E-050",
+     "E-068",
+     "E-067",
+     "E-065"
+    ],
+    "api_endpoints": [
+     "EP-048"
+    ],
+    "access_control_policies": [],
+    "tests": [
+     "mock-impl-diff（h1・状態・第2ナビ）",
+     "役割ごとの中身（G15）",
+     "横溢れ 4 幅・本文幅",
+     "実機で全操作要素を押す（G-01）",
+     "L1 行"
+    ],
+    "middleware": [],
+    "screens": [
+     "app-setup"
+    ]
+   },
+   "ci_gates": {
+    "lint": true,
+    "type_check": true,
+    "test_coverage": true,
+    "access_control_coverage": false,
+    "mock_impl_diff": true,
+    "ears_validator": true,
+    "layer_audit": true
+   },
+   "independence": "medium",
+   "difficulty": "medium",
+   "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
+   "status": "decided",
+   "decided_at": "2026-09-16",
+   "source": [
+    "D-081.4",
+    "D-084.1",
+    "D-084.2",
+    "D-084.3",
+    "D-084.4"
+   ],
+   "estimate_hours_human": 17.5,
+   "estimate_hours_ai": 1.8,
+   "human_review_h": 0.0,
+   "wall_clock_h_ai": 1.8,
+   "ai_acceleration_factor": 10,
+   "blocking_dependencies_h": 0,
+   "estimate_method": "reference",
+   "estimate_confidence": "medium",
+   "why": "",
+   "drift_origin": null,
+   "wave": 9
   },
   {
    "id": "F-V3-C-import",
@@ -15916,7 +16431,7 @@
     "E-078"
    ],
    "api_endpoints": [
-    "EP-044"
+    "EP-049"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -15999,7 +16514,7 @@
      "E-078"
     ],
     "api_endpoints": [
-     "EP-044"
+     "EP-049"
     ],
     "access_control_policies": [],
     "tests": [
@@ -16074,7 +16589,7 @@
     "E-032"
    ],
    "api_endpoints": [
-    "EP-045"
+    "EP-050"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -16153,7 +16668,7 @@
      "E-032"
     ],
     "api_endpoints": [
-     "EP-045"
+     "EP-050"
     ],
     "access_control_policies": [],
     "tests": [
@@ -16232,7 +16747,7 @@
     "E-041"
    ],
    "api_endpoints": [
-    "EP-048"
+    "EP-053"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -16323,7 +16838,7 @@
      "E-041"
     ],
     "api_endpoints": [
-     "EP-048"
+     "EP-053"
     ],
     "access_control_policies": [],
     "tests": [
@@ -16402,7 +16917,7 @@
     "E-004"
    ],
    "api_endpoints": [
-    "EP-022"
+    "EP-024"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -16486,7 +17001,7 @@
      "E-004"
     ],
     "api_endpoints": [
-     "EP-022"
+     "EP-024"
     ],
     "access_control_policies": [],
     "tests": [
@@ -16553,7 +17068,7 @@
     "E-067"
    ],
    "api_endpoints": [
-    "EP-038"
+    "EP-042"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -16636,7 +17151,7 @@
      "E-067"
     ],
     "api_endpoints": [
-     "EP-038"
+     "EP-042"
     ],
     "access_control_policies": [],
     "tests": [
@@ -16717,7 +17232,7 @@
     "E-053"
    ],
    "api_endpoints": [
-    "EP-050"
+    "EP-055"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -16810,7 +17325,7 @@
      "E-053"
     ],
     "api_endpoints": [
-     "EP-050"
+     "EP-055"
     ],
     "access_control_policies": [],
     "tests": [
@@ -16886,7 +17401,7 @@
     "E-072"
    ],
    "api_endpoints": [
-    "EP-039"
+    "EP-043"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -16970,7 +17485,7 @@
      "E-072"
     ],
     "api_endpoints": [
-     "EP-039"
+     "EP-043"
     ],
     "access_control_policies": [],
     "tests": [
@@ -17025,7 +17540,8 @@
    "role": "各社の請求・入金・未収・利用量と上限を横断で見る入口。入金の記録・未収の連絡・プラン変更の承認は会社の詳細で行う",
    "category": "ui",
    "acts": [
-    "A72"
+    "A72",
+    "A87"
    ],
    "screen_ids": [
     "ops-billing"
@@ -17044,10 +17560,12 @@
     "E-022",
     "E-002",
     "E-032",
-    "E-027"
+    "E-027",
+    "E-087",
+    "E-086"
    ],
    "api_endpoints": [
-    "EP-025"
+    "EP-027"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -17134,10 +17652,12 @@
      "E-022",
      "E-002",
      "E-032",
-     "E-027"
+     "E-027",
+     "E-087",
+     "E-086"
     ],
     "api_endpoints": [
-     "EP-025"
+     "EP-027"
     ],
     "access_control_policies": [],
     "tests": [
@@ -17173,7 +17693,9 @@
     "D-076.6",
     "D-077.3",
     "D-077.5",
-    "D-002.2"
+    "D-002.2",
+    "D-082.8",
+    "D-082.3"
    ],
    "estimate_hours_human": 10.5,
    "estimate_hours_ai": 1.1,
@@ -17186,6 +17708,245 @@
    "why": "",
    "drift_origin": null,
    "wave": 5
+  },
+  {
+   "id": "F-V3-C-ops-llm",
+   "name": "画面 運営：AI の経路と使用量（3 状態・1 役割）",
+   "group": "C",
+   "phase": "UI",
+   "kind": "ui",
+   "role": "会社ごとに運営マネージドの経路を許可し、3 社の使用量と費用を横断で見る。キーの中身は見ない",
+   "category": "ui",
+   "acts": [
+    "A85"
+   ],
+   "screen_ids": [
+    "ops-llm"
+   ],
+   "entity_ids": [
+    "E-088",
+    "E-074",
+    "E-075"
+   ],
+   "api_endpoints": [
+    "EP-034"
+   ],
+   "access_control_policies": [],
+   "ears_ac_seed": [
+    "UBIQUITOUS: 画面 ops-llm はモック 06_mockup/v2/v2-ops-llm.html の状態 3（経路と使用量、従量に切り替わった会社、空）と役割 R6 を実装し、h1 は「運営：AI の経路と使用量」",
+    "EVENT-DRIVEN: WHEN 主アクション「許可する」を押したとき THEN 対応する endpoint を呼び、結果を別 GET で再取得して画面に反映する"
+   ],
+   "depends_on": [
+    "F-V3-B-15",
+    "F-V3-A-01",
+    "F-V3-A-05"
+   ],
+   "wired_by": [
+    "F-V3-D-03",
+    "F-V3-D-09"
+   ],
+   "journey_candidates": [],
+   "combination_points": [
+    {
+     "point": "実行中 × 切替（モード・経路・設定を途中で変える）",
+     "verdict": "N/A：実行を持たない（サーバーの状態を読むだけ）"
+    },
+    {
+     "point": "中断 × 再開（PC が閉じる・Bridge が切れる・タブを閉じる）",
+     "verdict": "該当"
+    },
+    {
+     "point": "別ロールの同時操作（承認者 2 人・運営と顧客）",
+     "verdict": "N/A：読み取りだけ"
+    },
+    {
+     "point": "期限切れの瞬間（セッション・招待・サポートアクセス・猶予）",
+     "verdict": "N/A：期限を持つ行を触らない"
+    },
+    {
+     "point": "退会・停止中の実行（出来事の途中に要求が来る）",
+     "verdict": "N/A：口座状態を変えない読み取り"
+    }
+   ],
+   "external_resources": [],
+   "account_state_impacts": {
+    "applies": false,
+    "detail": "画面は sessions の 401 で入り直しに落ちる",
+    "touches": []
+   },
+   "vertical_slice_components": {
+    "entities": [
+     "E-088",
+     "E-074",
+     "E-075"
+    ],
+    "api_endpoints": [
+     "EP-034"
+    ],
+    "access_control_policies": [],
+    "tests": [
+     "mock-impl-diff（h1・状態・第2ナビ）",
+     "役割ごとの中身（G15）",
+     "横溢れ 4 幅・本文幅",
+     "実機で全操作要素を押す（G-01）",
+     "L1 行"
+    ],
+    "middleware": [],
+    "screens": [
+     "ops-llm"
+    ]
+   },
+   "ci_gates": {
+    "lint": true,
+    "type_check": true,
+    "test_coverage": true,
+    "access_control_coverage": false,
+    "mock_impl_diff": true,
+    "ears_validator": true,
+    "layer_audit": true
+   },
+   "independence": "medium",
+   "difficulty": "medium",
+   "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
+   "status": "decided",
+   "decided_at": "2026-09-16",
+   "source": [
+    "D-083.5",
+    "D-083.6"
+   ],
+   "estimate_hours_human": 13.0,
+   "estimate_hours_ai": 1.3,
+   "human_review_h": 0.0,
+   "wall_clock_h_ai": 1.3,
+   "ai_acceleration_factor": 10,
+   "blocking_dependencies_h": 0,
+   "estimate_method": "reference",
+   "estimate_confidence": "medium",
+   "why": "",
+   "drift_origin": null,
+   "wave": 10
+  },
+  {
+   "id": "F-V3-C-ops-disclosure",
+   "name": "画面 運営：開示資料（3 状態・1 役割）",
+   "group": "C",
+   "phase": "UI",
+   "kind": "ui",
+   "role": "成果物から生成した開示資料の版を出し、DPA の雛形とサブプロセッサ一覧を整える。変えたら全社にお知らせ",
+   "category": "ui",
+   "acts": [
+    "A86"
+   ],
+   "screen_ids": [
+    "ops-disclosure"
+   ],
+   "entity_ids": [
+    "E-091",
+    "E-092",
+    "E-064",
+    "E-065",
+    "E-066"
+   ],
+   "api_endpoints": [
+    "EP-014"
+   ],
+   "access_control_policies": [],
+   "ears_ac_seed": [
+    "UBIQUITOUS: 画面 ops-disclosure はモック 06_mockup/v2/v2-ops-disclosure.html の状態 3（版、DPA とサブプロセッサ、空）と役割 R6 を実装し、h1 は「運営：開示資料」",
+    "EVENT-DRIVEN: WHEN 主アクション「版を出す」を押したとき THEN 対応する endpoint を呼び、結果を別 GET で再取得して画面に反映する"
+   ],
+   "depends_on": [
+    "F-V3-B-15",
+    "F-V3-A-01",
+    "F-V3-A-05"
+   ],
+   "wired_by": [
+    "F-V3-D-03",
+    "F-V3-D-09"
+   ],
+   "journey_candidates": [],
+   "combination_points": [
+    {
+     "point": "実行中 × 切替（モード・経路・設定を途中で変える）",
+     "verdict": "N/A：実行を持たない（サーバーの状態を読むだけ）"
+    },
+    {
+     "point": "中断 × 再開（PC が閉じる・Bridge が切れる・タブを閉じる）",
+     "verdict": "該当"
+    },
+    {
+     "point": "別ロールの同時操作（承認者 2 人・運営と顧客）",
+     "verdict": "N/A：読み取りだけ"
+    },
+    {
+     "point": "期限切れの瞬間（セッション・招待・サポートアクセス・猶予）",
+     "verdict": "N/A：期限を持つ行を触らない"
+    },
+    {
+     "point": "退会・停止中の実行（出来事の途中に要求が来る）",
+     "verdict": "N/A：口座状態を変えない読み取り"
+    }
+   ],
+   "external_resources": [],
+   "account_state_impacts": {
+    "applies": false,
+    "detail": "画面は sessions の 401 で入り直しに落ちる",
+    "touches": []
+   },
+   "vertical_slice_components": {
+    "entities": [
+     "E-091",
+     "E-092",
+     "E-064",
+     "E-065",
+     "E-066"
+    ],
+    "api_endpoints": [
+     "EP-014"
+    ],
+    "access_control_policies": [],
+    "tests": [
+     "mock-impl-diff（h1・状態・第2ナビ）",
+     "役割ごとの中身（G15）",
+     "横溢れ 4 幅・本文幅",
+     "実機で全操作要素を押す（G-01）",
+     "L1 行"
+    ],
+    "middleware": [],
+    "screens": [
+     "ops-disclosure"
+    ]
+   },
+   "ci_gates": {
+    "lint": true,
+    "type_check": true,
+    "test_coverage": true,
+    "access_control_coverage": false,
+    "mock_impl_diff": true,
+    "ears_validator": true,
+    "layer_audit": true
+   },
+   "independence": "medium",
+   "difficulty": "medium",
+   "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
+   "status": "decided",
+   "decided_at": "2026-09-16",
+   "source": [
+    "D-085.1",
+    "D-085.2",
+    "D-085.3"
+   ],
+   "estimate_hours_human": 13.0,
+   "estimate_hours_ai": 1.3,
+   "human_review_h": 0.0,
+   "wall_clock_h_ai": 1.3,
+   "ai_acceleration_factor": 10,
+   "blocking_dependencies_h": 0,
+   "estimate_method": "reference",
+   "estimate_confidence": "medium",
+   "why": "",
+   "drift_origin": null,
+   "wave": 10
   },
   {
    "id": "F-V3-C-ops-tenant",
@@ -17244,7 +18005,7 @@
     "E-085"
    ],
    "api_endpoints": [
-    "EP-042"
+    "EP-046"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -17361,7 +18122,7 @@
      "E-085"
     ],
     "api_endpoints": [
-     "EP-042"
+     "EP-046"
     ],
     "access_control_policies": [],
     "tests": [
@@ -17402,7 +18163,8 @@
     "D-077.7",
     "D-077.8",
     "D-042.6",
-    "D-078.3"
+    "D-078.3",
+    "D-083.6"
    ],
    "estimate_hours_human": 8.0,
    "estimate_hours_ai": 0.8,
@@ -17441,7 +18203,7 @@
     "E-059"
    ],
    "api_endpoints": [
-    "EP-013"
+    "EP-015"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -17524,7 +18286,7 @@
      "E-059"
     ],
     "api_endpoints": [
-     "EP-013"
+     "EP-015"
     ],
     "access_control_policies": [],
     "tests": [
@@ -17603,7 +18365,7 @@
    ],
    "api_endpoints": [
     "EP-009",
-    "EP-040"
+    "EP-044"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -17688,7 +18450,7 @@
     ],
     "api_endpoints": [
      "EP-009",
-     "EP-040"
+     "EP-044"
     ],
     "access_control_policies": [],
     "tests": [
@@ -17763,8 +18525,8 @@
     "E-053"
    ],
    "api_endpoints": [
-    "EP-032",
-    "EP-033"
+    "EP-036",
+    "EP-037"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
@@ -17849,8 +18611,8 @@
      "E-053"
     ],
     "api_endpoints": [
-     "EP-032",
-     "EP-033"
+     "EP-036",
+     "EP-037"
     ],
     "access_control_policies": [],
     "tests": [
@@ -18027,7 +18789,7 @@
    "estimate_confidence": "medium",
    "why": "",
    "drift_origin": null,
-   "wave": 10
+   "wave": 11
   },
   {
    "id": "F-V3-D-02",
@@ -18127,7 +18889,7 @@
    "estimate_confidence": "medium",
    "why": "",
    "drift_origin": null,
-   "wave": 10
+   "wave": 11
   },
   {
    "id": "F-V3-D-03",
@@ -18187,6 +18949,7 @@
     "F-V3-C-ai-staff",
     "F-V3-C-ai-staff-detail",
     "F-V3-C-security-brief",
+    "F-V3-C-disclosure",
     "F-V3-C-export",
     "F-V3-C-account-close",
     "F-V3-C-ops-support",
@@ -18194,6 +18957,8 @@
     "F-V3-C-ops-catalog",
     "F-V3-C-account",
     "F-V3-C-company-settings",
+    "F-V3-C-llm-routes",
+    "F-V3-C-app-setup",
     "F-V3-C-import",
     "F-V3-C-services",
     "F-V3-C-ops-services",
@@ -18203,6 +18968,8 @@
     "F-V3-C-billing",
     "F-V3-C-ops-notices",
     "F-V3-C-ops-billing",
+    "F-V3-C-ops-llm",
+    "F-V3-C-ops-disclosure",
     "F-V3-C-ops-tenant",
     "F-V3-C-ops-review",
     "F-V3-C-ops-audit",
@@ -18276,7 +19043,7 @@
    "estimate_confidence": "medium",
    "why": "",
    "drift_origin": null,
-   "wave": 10
+   "wave": 11
   },
   {
    "id": "F-V3-D-04",
@@ -18388,7 +19155,7 @@
    "estimate_confidence": "medium",
    "why": "",
    "drift_origin": null,
-   "wave": 10
+   "wave": 11
   },
   {
    "id": "F-V3-D-05",
@@ -18510,7 +19277,7 @@
    "estimate_confidence": "medium",
    "why": "",
    "drift_origin": null,
-   "wave": 10
+   "wave": 11
   },
   {
    "id": "F-V3-D-06",
@@ -18626,7 +19393,7 @@
    "estimate_confidence": "medium",
    "why": "",
    "drift_origin": null,
-   "wave": 10
+   "wave": 11
   },
   {
    "id": "F-V3-D-07",
@@ -18732,7 +19499,7 @@
    "estimate_confidence": "medium",
    "why": "",
    "drift_origin": null,
-   "wave": 10
+   "wave": 11
   },
   {
    "id": "F-V3-D-08",
@@ -18852,7 +19619,7 @@
    "estimate_confidence": "medium",
    "why": "",
    "drift_origin": null,
-   "wave": 10
+   "wave": 11
   },
   {
    "id": "F-V3-D-E2E-01",
@@ -18978,7 +19745,7 @@
    "estimate_confidence": "medium",
    "why": "",
    "drift_origin": null,
-   "wave": 10
+   "wave": 11
   },
   {
    "id": "F-V3-D-E2E-02",
@@ -19111,7 +19878,7 @@
    "estimate_confidence": "medium",
    "why": "",
    "drift_origin": null,
-   "wave": 11
+   "wave": 12
   },
   {
    "id": "F-V3-D-E2E-03",
@@ -19259,7 +20026,7 @@
    "estimate_confidence": "medium",
    "why": "",
    "drift_origin": null,
-   "wave": 11
+   "wave": 12
   },
   {
    "id": "F-V3-D-E2E-04",
@@ -19389,7 +20156,7 @@
    "estimate_confidence": "medium",
    "why": "",
    "drift_origin": null,
-   "wave": 11
+   "wave": 12
   },
   {
    "id": "F-V3-D-E2E-05",
@@ -19529,7 +20296,7 @@
    "estimate_confidence": "medium",
    "why": "",
    "drift_origin": null,
-   "wave": 11
+   "wave": 12
   },
   {
    "id": "F-V3-D-E2E-06",
@@ -19656,7 +20423,7 @@
    "estimate_confidence": "medium",
    "why": "",
    "drift_origin": null,
-   "wave": 11
+   "wave": 12
   },
   {
    "id": "F-V3-D-E2E-07",
@@ -19808,7 +20575,7 @@
    "estimate_confidence": "medium",
    "why": "",
    "drift_origin": null,
-   "wave": 11
+   "wave": 12
   },
   {
    "id": "F-V3-D-E2E-08",
@@ -19928,7 +20695,7 @@
    "estimate_confidence": "medium",
    "why": "",
    "drift_origin": null,
-   "wave": 11
+   "wave": 12
   },
   {
    "id": "F-V3-D-E2E-09",
@@ -20077,7 +20844,7 @@
    "estimate_confidence": "medium",
    "why": "",
    "drift_origin": null,
-   "wave": 11
+   "wave": 12
   },
   {
    "id": "F-V3-D-09",
@@ -20137,6 +20904,7 @@
     "F-V3-C-ai-staff",
     "F-V3-C-ai-staff-detail",
     "F-V3-C-security-brief",
+    "F-V3-C-disclosure",
     "F-V3-C-export",
     "F-V3-C-account-close",
     "F-V3-C-ops-support",
@@ -20144,6 +20912,8 @@
     "F-V3-C-ops-catalog",
     "F-V3-C-account",
     "F-V3-C-company-settings",
+    "F-V3-C-llm-routes",
+    "F-V3-C-app-setup",
     "F-V3-C-import",
     "F-V3-C-services",
     "F-V3-C-ops-services",
@@ -20153,6 +20923,8 @@
     "F-V3-C-billing",
     "F-V3-C-ops-notices",
     "F-V3-C-ops-billing",
+    "F-V3-C-ops-llm",
+    "F-V3-C-ops-disclosure",
     "F-V3-C-ops-tenant",
     "F-V3-C-ops-review",
     "F-V3-C-ops-audit",
@@ -20226,7 +20998,7 @@
    "estimate_confidence": "medium",
    "why": "",
    "drift_origin": null,
-   "wave": 10
+   "wave": 11
   },
   {
    "id": "F-V3-E-01",
@@ -20315,7 +21087,7 @@
    "estimate_confidence": "medium",
    "why": "",
    "drift_origin": null,
-   "wave": 12
+   "wave": 13
   },
   {
    "id": "F-V3-E-02",
@@ -20414,7 +21186,7 @@
    "estimate_confidence": "medium",
    "why": "",
    "drift_origin": null,
-   "wave": 12
+   "wave": 13
   },
   {
    "id": "F-V3-E-03",
@@ -20493,7 +21265,7 @@
    "estimate_confidence": "medium",
    "why": "",
    "drift_origin": null,
-   "wave": 12
+   "wave": 13
   },
   {
    "id": "F-V3-E-04",
@@ -20588,7 +21360,7 @@
    "estimate_confidence": "medium",
    "why": "",
    "drift_origin": null,
-   "wave": 12
+   "wave": 13
   }
  ],
  "waves": [
@@ -20636,30 +21408,30 @@
    "features": [
     "F-V3-B-07",
     "F-V3-B-03",
-    "F-V3-B-05",
     "F-V3-B-09",
+    "F-V3-B-15",
+    "F-V3-B-05",
     "F-V3-B-11",
     "F-V3-B-14",
-    "F-V3-B-15",
     "F-V3-B-01",
     "F-V3-B-02",
     "F-V3-B-04"
    ],
    "parallel": 10,
    "wall_clock_h_ai": 46.3,
-   "estimate_hours_human": 1265,
-   "estimate_hours_ai_compute": 312.0
+   "estimate_hours_human": 1304,
+   "estimate_hours_ai_compute": 321.8
   },
   {
    "wave": 3,
    "group": "B",
    "phase": "Backend",
    "features": [
+    "F-V3-B-16",
     "F-V3-B-00",
     "F-V3-B-17",
     "F-V3-B-06",
     "F-V3-B-13",
-    "F-V3-B-16",
     "F-V3-B-08",
     "F-V3-B-12",
     "F-V3-B-10",
@@ -20667,9 +21439,9 @@
     "F-V3-B-0c"
    ],
    "parallel": 10,
-   "wall_clock_h_ai": 40.3,
-   "estimate_hours_human": 977,
-   "estimate_hours_ai_compute": 208.4
+   "wall_clock_h_ai": 42.5,
+   "estimate_hours_human": 1016,
+   "estimate_hours_ai_compute": 218.1
   },
   {
    "wave": 4,
@@ -20789,15 +21561,31 @@
     "F-V3-C-security-brief",
     "F-V3-C-services",
     "F-V3-C-verify-email",
+    "F-V3-C-app-setup",
     "F-V3-C-billing-setup"
    ],
-   "parallel": 9,
+   "parallel": 10,
    "wall_clock_h_ai": 2.4,
-   "estimate_hours_human": 138.5,
-   "estimate_hours_ai_compute": 13.8
+   "estimate_hours_human": 163.5,
+   "estimate_hours_ai_compute": 16.4
   },
   {
    "wave": 10,
+   "group": "C",
+   "phase": "UI",
+   "features": [
+    "F-V3-C-disclosure",
+    "F-V3-C-llm-routes",
+    "F-V3-C-ops-disclosure",
+    "F-V3-C-ops-llm"
+   ],
+   "parallel": 4,
+   "wall_clock_h_ai": 2.2,
+   "estimate_hours_human": 60.0,
+   "estimate_hours_ai_compute": 6.0
+  },
+  {
+   "wave": 11,
    "group": "D",
    "phase": "Integration",
    "features": [
@@ -20818,7 +21606,7 @@
    "estimate_hours_ai_compute": 38.2
   },
   {
-   "wave": 11,
+   "wave": 12,
    "group": "D",
    "phase": "Integration",
    "features": [
@@ -20837,7 +21625,7 @@
    "estimate_hours_ai_compute": 20.0
   },
   {
-   "wave": 12,
+   "wave": 13,
    "group": "E",
    "phase": "Polish",
    "features": [

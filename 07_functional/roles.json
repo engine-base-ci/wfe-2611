@@ -54,10 +54,13 @@
     "ai-staff",
     "ai-staff-detail",
     "security-brief",
+    "disclosure",
     "export",
     "account-close",
     "account",
     "company-settings",
+    "llm-routes",
+    "app-setup",
     "import",
     "services",
     "inquiry",
@@ -99,6 +102,9 @@
     "automation-repair",
     "audit",
     "security-brief",
+    "disclosure",
+    "llm-routes",
+    "app-setup",
     "export",
     "account-close"
    ],
@@ -186,10 +192,13 @@
     "ai-staff",
     "ai-staff-detail",
     "security-brief",
+    "disclosure",
     "export",
     "account-close",
     "account",
     "company-settings",
+    "llm-routes",
+    "app-setup",
     "import",
     "services",
     "inquiry",
@@ -231,6 +240,9 @@
     "automation-repair",
     "audit",
     "security-brief",
+    "disclosure",
+    "llm-routes",
+    "app-setup",
     "export",
     "account-close"
    ],
@@ -294,6 +306,7 @@
     "clone-memory",
     "policies",
     "account",
+    "app-setup",
     "inquiry",
     "notices"
    ],
@@ -311,7 +324,8 @@
     "policies",
     "account",
     "notices",
-    "inquiry"
+    "inquiry",
+    "app-setup"
    ],
    "object_constraints": [
     {
@@ -366,6 +380,7 @@
     "clone-memory",
     "policies",
     "account",
+    "app-setup",
     "inquiry",
     "notices"
    ],
@@ -378,7 +393,8 @@
     "policies",
     "account",
     "notices",
-    "inquiry"
+    "inquiry",
+    "app-setup"
    ],
    "object_constraints": [
     {
@@ -411,6 +427,8 @@
     "ops-skills",
     "ops-notices",
     "ops-billing",
+    "ops-llm",
+    "ops-disclosure",
     "ops-tenant",
     "ops-review",
     "ops-audit"
@@ -425,7 +443,9 @@
     "ops-skills",
     "ops-services",
     "ops-review",
-    "ops-audit"
+    "ops-audit",
+    "ops-llm",
+    "ops-disclosure"
    ],
    "object_constraints": [
     {
@@ -735,6 +755,13 @@
    "R4": "-",
    "R6": "-"
   },
+  "disclosure": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "-",
+   "R4": "-",
+   "R6": "-"
+  },
   "export": {
    "R1": "edit",
    "R2": "edit",
@@ -782,6 +809,20 @@
    "R2": "edit",
    "R3": "-",
    "R4": "-",
+   "R6": "-"
+  },
+  "llm-routes": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "-",
+   "R4": "-",
+   "R6": "-"
+  },
+  "app-setup": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "edit",
+   "R4": "view",
    "R6": "-"
   },
   "import": {
@@ -841,6 +882,20 @@
    "R6": "edit"
   },
   "ops-billing": {
+   "R1": "-",
+   "R2": "-",
+   "R3": "-",
+   "R4": "-",
+   "R6": "edit"
+  },
+  "ops-llm": {
+   "R1": "-",
+   "R2": "-",
+   "R3": "-",
+   "R4": "-",
+   "R6": "edit"
+  },
+  "ops-disclosure": {
    "R1": "-",
    "R2": "-",
    "R3": "-",

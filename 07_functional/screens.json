@@ -580,12 +580,14 @@
   {
    "id": "billing-setup",
    "name": "支払い方法を登録する",
-   "purpose": "プランを選び、支払い方法を決済事業者に登録する",
+   "purpose": "プランを選び、Stripe の登録画面でカードを登録する。カード番号はここを通らない。請求書払いなら何もしなくてよい",
    "acts": [
     "A05"
    ],
    "objects": [
-    "プラン"
+    "プラン",
+    "支払い方法",
+    "請求"
    ],
    "primary_action": "登録する",
    "fields": [],
@@ -596,7 +598,19 @@
    "states": [
     {
      "id": "n",
-     "label": "通常"
+     "label": "登録"
+    },
+    {
+     "id": "ok",
+     "label": "登録できた"
+    },
+    {
+     "id": "x",
+     "label": "カードが拒否された"
+    },
+    {
+     "id": "i",
+     "label": "請求書払い"
     }
    ],
    "transitions": [],
@@ -629,10 +643,13 @@
       "E-073"
      ],
      "choke_points": [
-      "C7"
+      "C7",
+      "C2"
      ],
      "source": [
-      "D-002"
+      "D-002",
+      "D-082.1",
+      "D-082.2"
      ]
     }
    ],
@@ -650,10 +667,13 @@
       "E-073"
      ],
      "choke_points": [
-      "C7"
+      "C7",
+      "C2"
      ],
      "source": [
-      "D-002"
+      "D-002",
+      "D-082.1",
+      "D-082.2"
      ]
     }
    ],
@@ -662,9 +682,12 @@
     "E-070",
     "E-071",
     "E-073",
-    "E-072"
+    "E-072",
+    "E-086",
+    "E-074",
+    "E-075"
    ],
-   "mock_path": null,
+   "mock_path": "06_mockup/v2/v2-billing-setup.html",
    "route": "/billing-setup",
    "meta_tags": {
     "screen_id": "billing-setup",
@@ -684,7 +707,10 @@
    "decided_at": "2026-09-16",
    "source": [
     "D-002",
-    "D-081.2"
+    "D-081.2",
+    "D-082.1",
+    "D-082.2",
+    "D-082.3"
    ]
   },
   {
@@ -31585,7 +31611,151 @@
     "D-022.5",
     "D-042.1",
     "D-042.10",
-    "D-053.6"
+    "D-053.6",
+    "D-085.3"
+   ]
+  },
+  {
+   "id": "disclosure",
+   "name": "開示資料",
+   "purpose": "情シス・コンプラに渡す資料（できる操作の列挙・送るもの／送らないもの・サブプロセッサ・DPA・アンインストールの検証結果）を版つきで見て PDF で出す",
+   "acts": [
+    "A84"
+   ],
+   "objects": [
+    "開示資料",
+    "サブプロセッサ",
+    "証跡"
+   ],
+   "primary_action": "PDF で出す",
+   "fields": [],
+   "layout": "single",
+   "actions": [
+    "PDF で出す"
+   ],
+   "states": [
+    {
+     "id": "n",
+     "label": "資料"
+    },
+    {
+     "id": "v",
+     "label": "版の履歴"
+    },
+    {
+     "id": "x",
+     "label": "PDF が作れない"
+    },
+    {
+     "id": "gs",
+     "label": "AI が止まっている"
+    }
+   ],
+   "transitions": [],
+   "responsive": "375/768/1024/1440（横溢れ 0・本文 720 以上）",
+   "responsive_breakpoints": [
+    "375",
+    "768",
+    "1024",
+    "1440"
+   ],
+   "access_roles": [
+    "R1",
+    "R2"
+   ],
+   "edit_roles": [
+    "R1",
+    "R2"
+   ],
+   "related_apis": [
+    {
+     "act": "A84",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/disclosure_versions",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-091",
+      "E-092",
+      "E-041",
+      "E-061"
+     ],
+     "choke_points": [
+      "C2",
+      "C4"
+     ],
+     "source": [
+      "D-085.1",
+      "D-085.2",
+      "D-085.3",
+      "D-085.4"
+     ]
+    }
+   ],
+   "required_apis": [
+    {
+     "act": "A84",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/disclosure_versions",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-091",
+      "E-092",
+      "E-041",
+      "E-061"
+     ],
+     "choke_points": [
+      "C2",
+      "C4"
+     ],
+     "source": [
+      "D-085.1",
+      "D-085.2",
+      "D-085.3",
+      "D-085.4"
+     ]
+    }
+   ],
+   "related_entities": [
+    "E-091",
+    "E-092",
+    "E-041",
+    "E-061",
+    "E-062"
+   ],
+   "mock_path": "06_mockup/v2/v2-disclosure.html",
+   "route": "/security/disclosure",
+   "meta_tags": {
+    "screen_id": "disclosure",
+    "screen_name": "開示資料",
+    "category": "ops",
+    "status": "decided",
+    "version": "v2"
+   },
+   "h1_text": "開示資料",
+   "kpi_labels": [],
+   "section_h2_texts": [
+    "できる操作",
+    "送るもの／送らないもの",
+    "サブプロセッサ",
+    "DPA",
+    "アンインストール",
+    "版"
+   ],
+   "checklist": [],
+   "release": "v2",
+   "has_shell": true,
+   "legacy_drift_notes": null,
+   "status": "decided",
+   "decided_at": "2026-09-16",
+   "source": [
+    "D-081.5",
+    "D-085.1",
+    "D-085.2",
+    "D-085.3",
+    "D-085.4",
+    "D-042"
    ]
   },
   {
@@ -37715,7 +37885,8 @@
    "decided_at": "2026-09-16",
    "source": [
     "D-076.1",
-    "D-042"
+    "D-042",
+    "D-084.3"
    ]
   },
   {
@@ -38709,7 +38880,286 @@
     "D-012.8",
     "D-042.5",
     "D-045.2",
-    "D-055.1"
+    "D-055.1",
+    "D-083.4"
+   ]
+  },
+  {
+   "id": "llm-routes",
+   "name": "AI の経路",
+   "purpose": "Bridge／自分の API キー／運営マネージド を、会社の既定と PC が閉じているときの経路として選ぶ。キーは預けるだけで見えない。使用量と上限もここ",
+   "acts": [
+    "A82"
+   ],
+   "objects": [
+    "LLM の経路",
+    "資格情報",
+    "能力表",
+    "利用量"
+   ],
+   "primary_action": "保存する",
+   "fields": [],
+   "layout": "single",
+   "actions": [
+    "保存する"
+   ],
+   "states": [
+    {
+     "id": "n",
+     "label": "AI の経路"
+    },
+    {
+     "id": "k",
+     "label": "キーを預ける"
+    },
+    {
+     "id": "x",
+     "label": "キーが無効・上限に届いた"
+    },
+    {
+     "id": "gs",
+     "label": "AI が止まっている"
+    }
+   ],
+   "transitions": [],
+   "responsive": "375/768/1024/1440（横溢れ 0・本文 720 以上）",
+   "responsive_breakpoints": [
+    "375",
+    "768",
+    "1024",
+    "1440"
+   ],
+   "access_roles": [
+    "R1",
+    "R2"
+   ],
+   "edit_roles": [
+    "R1",
+    "R2"
+   ],
+   "related_apis": [
+    {
+     "act": "A82",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/llm_routes",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-088",
+      "E-037",
+      "E-089"
+     ],
+     "choke_points": [
+      "C8",
+      "C2",
+      "C3"
+     ],
+     "source": [
+      "D-083.1",
+      "D-083.3",
+      "D-083.4",
+      "D-083.5"
+     ]
+    }
+   ],
+   "required_apis": [
+    {
+     "act": "A82",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/llm_routes",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-088",
+      "E-037",
+      "E-089"
+     ],
+     "choke_points": [
+      "C8",
+      "C2",
+      "C3"
+     ],
+     "source": [
+      "D-083.1",
+      "D-083.3",
+      "D-083.4",
+      "D-083.5"
+     ]
+    }
+   ],
+   "related_entities": [
+    "E-088",
+    "E-037",
+    "E-089"
+   ],
+   "mock_path": "06_mockup/v2/v2-llm-routes.html",
+   "route": "/settings/llm",
+   "meta_tags": {
+    "screen_id": "llm-routes",
+    "screen_name": "AI の経路",
+    "category": "ops",
+    "status": "decided",
+    "version": "v2"
+   },
+   "h1_text": "AI の経路",
+   "kpi_labels": [],
+   "section_h2_texts": [
+    "既定の経路",
+    "PC が閉じているとき",
+    "API キー",
+    "使用量"
+   ],
+   "checklist": [],
+   "release": "v2",
+   "has_shell": true,
+   "legacy_drift_notes": null,
+   "status": "decided",
+   "decided_at": "2026-09-16",
+   "source": [
+    "D-081.3",
+    "D-083.1",
+    "D-083.3",
+    "D-083.4",
+    "D-083.5",
+    "D-004"
+   ]
+  },
+  {
+   "id": "app-setup",
+   "name": "アプリと通知",
+   "purpose": "PC の Bridge の窓とスマホのアプリを入れ、承認待ち・AI 停止・お知らせの通知を受け取る端末を整える",
+   "acts": [
+    "A83"
+   ],
+   "objects": [
+    "通知の端末",
+    "端末",
+    "通知"
+   ],
+   "primary_action": "通知を許可する",
+   "fields": [],
+   "layout": "single",
+   "actions": [
+    "通知を許可する"
+   ],
+   "states": [
+    {
+     "id": "n",
+     "label": "アプリと通知"
+    },
+    {
+     "id": "p",
+     "label": "許可待ち"
+    },
+    {
+     "id": "x",
+     "label": "許可が無い・つながっていない"
+    }
+   ],
+   "transitions": [],
+   "responsive": "375/768/1024/1440（横溢れ 0・本文 720 以上）",
+   "responsive_breakpoints": [
+    "375",
+    "768",
+    "1024",
+    "1440"
+   ],
+   "access_roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "edit_roles": [
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "related_apis": [
+    {
+     "act": "A83",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/push_devices/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-090",
+      "E-050",
+      "E-068",
+      "E-067"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-084.1",
+      "D-084.2",
+      "D-084.3",
+      "D-084.4"
+     ]
+    }
+   ],
+   "required_apis": [
+    {
+     "act": "A83",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/push_devices/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-090",
+      "E-050",
+      "E-068",
+      "E-067"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-084.1",
+      "D-084.2",
+      "D-084.3",
+      "D-084.4"
+     ]
+    }
+   ],
+   "related_entities": [
+    "E-090",
+    "E-050",
+    "E-068",
+    "E-067",
+    "E-065"
+   ],
+   "mock_path": "06_mockup/v2/v2-app-setup.html",
+   "route": "/settings/app",
+   "meta_tags": {
+    "screen_id": "app-setup",
+    "screen_name": "アプリと通知",
+    "category": "ops",
+    "status": "decided",
+    "version": "v2"
+   },
+   "h1_text": "アプリと通知",
+   "kpi_labels": [],
+   "section_h2_texts": [
+    "PC",
+    "スマホ",
+    "通知"
+   ],
+   "checklist": [],
+   "release": "v2",
+   "has_shell": true,
+   "legacy_drift_notes": null,
+   "status": "decided",
+   "decided_at": "2026-09-16",
+   "source": [
+    "D-081.4",
+    "D-084.1",
+    "D-084.2",
+    "D-084.3",
+    "D-084.4"
    ]
   },
   {
@@ -46731,12 +47181,15 @@
    "name": "運営：請求と入金",
    "purpose": "各社の請求・入金・未収・利用量と上限を横断で見る入口。入金の記録・未収の連絡・プラン変更の承認は会社の詳細で行う",
    "acts": [
-    "A72"
+    "A72",
+    "A87"
    ],
    "objects": [
     "請求",
     "プラン",
-    "会社モデル"
+    "会社モデル",
+    "決済の出来事",
+    "支払い方法"
    ],
    "primary_action": "未収に連絡する",
    "fields": [],
@@ -46836,6 +47289,27 @@
       "D-002",
       "D-077.3",
       "D-002.2"
+     ]
+    },
+    {
+     "act": "A87",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/invoices",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-074",
+      "E-075",
+      "E-069",
+      "E-070"
+     ],
+     "choke_points": [
+      "C2",
+      "C7"
+     ],
+     "source": [
+      "D-082.3",
+      "D-082.8"
      ]
     },
     {
@@ -47269,6 +47743,27 @@
      ]
     },
     {
+     "act": "A87",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/invoices",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-074",
+      "E-075",
+      "E-069",
+      "E-070"
+     ],
+     "choke_points": [
+      "C2",
+      "C7"
+     ],
+     "source": [
+      "D-082.3",
+      "D-082.8"
+     ]
+    },
+    {
      "role": "transition",
      "method": "navigate",
      "path_draft": "/account",
@@ -47688,7 +48183,9 @@
     "E-022",
     "E-002",
     "E-032",
-    "E-027"
+    "E-027",
+    "E-087",
+    "E-086"
    ],
    "mock_path": "06_mockup/v1/v1-ops-billing.html",
    "route": "/ops/billing",
@@ -47725,7 +48222,260 @@
     "D-076.6",
     "D-077.3",
     "D-077.5",
-    "D-002.2"
+    "D-002.2",
+    "D-082.8",
+    "D-082.3"
+   ]
+  },
+  {
+   "id": "ops-llm",
+   "name": "運営：AI の経路と使用量",
+   "purpose": "会社ごとに運営マネージドの経路を許可し、3 社の使用量と費用を横断で見る。キーの中身は見ない",
+   "acts": [
+    "A85"
+   ],
+   "objects": [
+    "LLM の経路",
+    "利用量",
+    "請求"
+   ],
+   "primary_action": "許可する",
+   "fields": [],
+   "layout": "single",
+   "actions": [
+    "許可する"
+   ],
+   "states": [
+    {
+     "id": "n",
+     "label": "経路と使用量"
+    },
+    {
+     "id": "x",
+     "label": "従量に切り替わった会社"
+    },
+    {
+     "id": "ge",
+     "label": "空"
+    }
+   ],
+   "transitions": [],
+   "responsive": "375/768/1024/1440（横溢れ 0・本文 720 以上）",
+   "responsive_breakpoints": [
+    "375",
+    "768",
+    "1024",
+    "1440"
+   ],
+   "access_roles": [
+    "R6"
+   ],
+   "edit_roles": [
+    "R6"
+   ],
+   "related_apis": [
+    {
+     "act": "A85",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/llm_routes/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-088",
+      "E-074",
+      "E-075"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-083.5",
+      "D-083.6"
+     ]
+    }
+   ],
+   "required_apis": [
+    {
+     "act": "A85",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/llm_routes/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-088",
+      "E-074",
+      "E-075"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-083.5",
+      "D-083.6"
+     ]
+    }
+   ],
+   "related_entities": [
+    "E-088",
+    "E-074",
+    "E-075"
+   ],
+   "mock_path": "06_mockup/v2/v2-ops-llm.html",
+   "route": "/ops/llm",
+   "meta_tags": {
+    "screen_id": "ops-llm",
+    "screen_name": "運営：AI の経路と使用量",
+    "category": "admin",
+    "status": "decided",
+    "version": "v2"
+   },
+   "h1_text": "運営：AI の経路と使用量",
+   "kpi_labels": [],
+   "section_h2_texts": [
+    "許可",
+    "使用量",
+    "費用"
+   ],
+   "checklist": [],
+   "release": "v2",
+   "has_shell": true,
+   "legacy_drift_notes": null,
+   "status": "decided",
+   "decided_at": "2026-09-16",
+   "source": [
+    "D-083.5",
+    "D-083.6"
+   ]
+  },
+  {
+   "id": "ops-disclosure",
+   "name": "運営：開示資料",
+   "purpose": "成果物から生成した開示資料の版を出し、DPA の雛形とサブプロセッサ一覧を整える。変えたら全社にお知らせ",
+   "acts": [
+    "A86"
+   ],
+   "objects": [
+    "開示資料",
+    "サブプロセッサ",
+    "お知らせ"
+   ],
+   "primary_action": "版を出す",
+   "fields": [],
+   "layout": "single",
+   "actions": [
+    "版を出す"
+   ],
+   "states": [
+    {
+     "id": "n",
+     "label": "版"
+    },
+    {
+     "id": "d",
+     "label": "DPA とサブプロセッサ"
+    },
+    {
+     "id": "ge",
+     "label": "空"
+    }
+   ],
+   "transitions": [],
+   "responsive": "375/768/1024/1440（横溢れ 0・本文 720 以上）",
+   "responsive_breakpoints": [
+    "375",
+    "768",
+    "1024",
+    "1440"
+   ],
+   "access_roles": [
+    "R6"
+   ],
+   "edit_roles": [
+    "R6"
+   ],
+   "related_apis": [
+    {
+     "act": "A86",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/disclosure_versions/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-091",
+      "E-092",
+      "E-064",
+      "E-065"
+     ],
+     "choke_points": [
+      "C2",
+      "C4",
+      "C6"
+     ],
+     "source": [
+      "D-085.1",
+      "D-085.2",
+      "D-085.3"
+     ]
+    }
+   ],
+   "required_apis": [
+    {
+     "act": "A86",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/disclosure_versions/:id",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-091",
+      "E-092",
+      "E-064",
+      "E-065"
+     ],
+     "choke_points": [
+      "C2",
+      "C4",
+      "C6"
+     ],
+     "source": [
+      "D-085.1",
+      "D-085.2",
+      "D-085.3"
+     ]
+    }
+   ],
+   "related_entities": [
+    "E-091",
+    "E-092",
+    "E-064",
+    "E-065",
+    "E-066"
+   ],
+   "mock_path": "06_mockup/v2/v2-ops-disclosure.html",
+   "route": "/ops/disclosure",
+   "meta_tags": {
+    "screen_id": "ops-disclosure",
+    "screen_name": "運営：開示資料",
+    "category": "admin",
+    "status": "decided",
+    "version": "v2"
+   },
+   "h1_text": "運営：開示資料",
+   "kpi_labels": [],
+   "section_h2_texts": [
+    "版",
+    "DPA の雛形",
+    "サブプロセッサ"
+   ],
+   "checklist": [],
+   "release": "v2",
+   "has_shell": true,
+   "legacy_drift_notes": null,
+   "status": "decided",
+   "decided_at": "2026-09-16",
+   "source": [
+    "D-085.1",
+    "D-085.2",
+    "D-085.3"
    ]
   },
   {
@@ -48770,7 +49520,8 @@
     "D-077.7",
     "D-077.8",
     "D-042.6",
-    "D-078.3"
+    "D-078.3",
+    "D-083.6"
    ]
   },
   {
