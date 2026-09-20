@@ -586,7 +586,7 @@ layer_checks:
 - file: 07_qa/test-specs/ops/*.json
   check: python3 scripts/ci/derive_ops.py --screens 07_functional/screens.json --out 07_qa/test-specs/ops --flow 05_flow/flow.json --shell-from today
 - file: 07_qa/test-specs/screens/*.md#操作
-  check: python3 scripts/ci/op_gate.py --spec 07_qa/test-specs --tickets 07_tasks/tickets.json --report apps/web/pw-reports/screens.json --report apps/web/pw-reports/showcase.json --report apps/e2e/test-results/report.json --all
+  check: python3 scripts/ci/op_gate.py --spec 07_qa/test-specs --tickets 07_tasks/tickets.json --all
 - file: 07_tasks/handoff/*.md
   check: python3 scripts/ci/gen_handoff.py --tickets 07_tasks/tickets.json --screens 07_functional/screens.json --ops 07_qa/test-specs/ops --spec 07_qa/test-specs --out 07_tasks/handoff --base http://127.0.0.1:3124
 - file: 07_tasks/TASK-CARDS.md

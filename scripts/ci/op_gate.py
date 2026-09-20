@@ -102,11 +102,13 @@ def main() -> int:
     if not targets:
         print("対象のタスクが無い（--task / --wave / --all）"); return 2
     rows = load_rows(a.spec)
-    by_id, newest = load_report(a.report)
+    # 報告の一覧は op-gate.json に 1 つだけ持つ。--report を書かなければそれを使う（呼ぶ側に書き写すと足し忘れる）
+    reports = a.report or cfg.get("reports", [])
+    by_id, newest = load_report(reports)
     fails: list[str] = []
     stats = {"checked": 0, "evidenced": 0, "blocked": 0, "na": 0}
-    if a.report and not by_id:
-        fails.append(f"O4 報告が無いか空（{', '.join(a.report)}）。Playwright を json reporter で流してから")
+    if reports and not by_id:
+        fails.append(f"O4 報告が無いか空（{', '.join(reports)}）。Playwright を json reporter で流してから")
     elif newest and (time.time() - newest) > cfg.get("report_max_age_h", 48) * 3600:
         fails.append(f"O4 報告が {int((time.time() - newest) / 3600)} 時間前で古い（上限 {cfg.get('report_max_age_h', 48)} h）。流し直す")
     for tid in targets:

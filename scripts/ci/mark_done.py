@@ -10,7 +10,7 @@ for tid in a.ids:
         r = subprocess.run([sys.executable, "scripts/ci/qa-ladder.py", "gate", "--spec", a.spec, "--tickets", a.tickets, "--task", tid], capture_output=True, text=True)
         if r.returncode != 0: bad.append(tid); continue
         # 実ブラウザの証拠（op_gate）：説明文の PASS を done にしない（2026-09-16・user「チケット単位で実際に押せ」）
-        r = subprocess.run([sys.executable, "scripts/ci/op_gate.py", "--spec", a.spec, "--tickets", a.tickets, "--report", "apps/web/pw-reports/screens.json", "--report", "apps/web/pw-reports/showcase.json", "--report", "apps/e2e/test-results/report.json", "--task", tid], capture_output=True, text=True)
+        r = subprocess.run([sys.executable, "scripts/ci/op_gate.py", "--spec", a.spec, "--tickets", a.tickets, "--task", tid], capture_output=True, text=True)
         if r.returncode != 0: print(r.stdout.strip().split("\n")[-1]); bad.append(tid); continue
     import datetime as _dt
     at = a.at or _dt.date.today().isoformat()

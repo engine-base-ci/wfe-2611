@@ -111,6 +111,7 @@ def main() -> int:
             if any(r and r["view"] == "メール" for r in (rows.get(x) for x in l1)):
                 steps.append("**自分の受信箱**を開く → **届いている**（迷惑メールも見る）。件名・差出人・本文が読め、リンクを押すと目的の画面が開く")
                 steps.append("本文を読む → **内部の言葉（ID・テーブル名）が無く、誰宛てで何をすればよいかが分かる**")
+                steps.append("`.dev-logs/api.log` の `[mail]` の行を見る → **「送った → 自分のアドレス」が出ている**。「送れなかった」が出ていたら、その理由が NG の中身")
                 break
         if t["id"].startswith("T-US-"):
             steps.append(f"**{a.base}/dev/shell** を開き、役割（R1〜R6）と時点（PS0〜PS4）を切り替えて、サイドバー・下タブ・自分のAIのパネルの項目を押す（見本の画面。dev でだけ出る）")

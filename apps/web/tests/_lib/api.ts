@@ -7,7 +7,12 @@ import type { Page } from "@playwright/test";
 export const API = process.env["API_BASE"] ?? "http://127.0.0.1:3011";
 const ADMIN = process.env["DATABASE_URL_ADMIN"] ?? "postgres://postgres:postgres@127.0.0.1:55433/kaname_test";
 export const PW = "correct-horse-battery-1";
-export const uniqEmail = () => `qa-${Date.now().toString(36)}-${Math.floor(Math.random() * 1e5)}@example.com`;
+// 宛先は「送出先が本当に受け取れるもの」にする。example.com は送出先に拒否され、
+// 「本当に送られたか」の行が検証できない（拒否を握り潰していた間だけ緑に見えていた）。
+// QA_MAIL_TO で環境ごとに変えられる（<uniq> がその回の一意な文字に置き換わる）。
+const MAIL_TO = process.env["QA_MAIL_TO"] ?? "delivered+<uniq>@resend.dev";
+export const uniqEmail = () =>
+  MAIL_TO.replace("<uniq>", `qa-${Date.now().toString(36)}-${Math.floor(Math.random() * 1e5)}`);
 
 export async function api<T>(
   path: string,

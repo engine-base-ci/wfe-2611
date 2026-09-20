@@ -26,9 +26,9 @@ test("SCR-LOGIN-008 SCR-LOGIN-025 SCR-LOGIN-026 SCR-LOGIN-027 SCR-LOGIN-014 SCR-
 }) => {
   const u = await signupViaApi();
   await page.goto("/login");
-  const local = u.email.split("@")[0]!;
+  const [local, domain] = [u.email.split("@")[0]!, u.email.split("@")[1]!];
   // eslint-disable-next-line no-irregular-whitespace -- 全角の空白と全角の＠を意図して入れる
-  await page.getByLabel("メールアドレス").fill(`　${local.toUpperCase()}＠EXAMPLE.com `);
+  await page.getByLabel("メールアドレス").fill(`　${local.toUpperCase()}＠${domain.toUpperCase()} `);
   await page.getByLabel("パスワード").fill(PW);
   await page.getByRole("button", { name: "ログイン" }).click();
   await page.waitForURL(/\/today/, { timeout: 15_000 }).catch(() => undefined);

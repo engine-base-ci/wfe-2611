@@ -71,7 +71,7 @@
   "calendar_days_human": 692,
   "total_estimate_hours": 1043.1,
   "total_estimate_sessions": 346,
-  "qa_rows_total": 4714,
+  "qa_rows_total": 4729,
   "journeys": 9
  },
  "waves": [
@@ -19121,6 +19121,7 @@
      "SCR-VERIFY-EMAIL-025",
      "SCR-VERIFY-EMAIL-026",
      "SCR-VERIFY-EMAIL-027",
+     "SCR-VERIFY-EMAIL-028",
      "E-AUTH-003-A",
      "E-AUTH-003-B",
      "E-AUTH-003-C"
@@ -20158,6 +20159,7 @@
      "SCR-PASSWORD-RESET-032",
      "SCR-PASSWORD-RESET-033",
      "SCR-PASSWORD-RESET-034",
+     "SCR-PASSWORD-RESET-035",
      "E-AUTH-006-A",
      "E-AUTH-006-B",
      "E-AUTH-006-C"
@@ -22195,6 +22197,7 @@
      "SCR-TODAY-097",
      "SCR-TODAY-098",
      "SCR-TODAY-099",
+     "SCR-TODAY-100",
      "E-CONN-003-A",
      "E-CONN-003-B",
      "E-CONN-003-C",
@@ -22539,6 +22542,7 @@
      "SCR-APPROVALS-053",
      "SCR-APPROVALS-054",
      "SCR-APPROVALS-055",
+     "SCR-APPROVALS-056",
      "E-CONF-003-A",
      "E-CONF-003-B",
      "E-CONF-003-C",
@@ -23231,6 +23235,7 @@
      "SCR-TASKS-122",
      "SCR-TASKS-123",
      "SCR-TASKS-124",
+     "SCR-TASKS-125",
      "E-DEP-001-A",
      "E-DEP-001-B",
      "E-DEP-001-C",
@@ -29111,6 +29116,7 @@
      "SCR-MEMBERS-082",
      "SCR-MEMBERS-083",
      "SCR-MEMBERS-084",
+     "SCR-MEMBERS-085",
      "E-GATE-005-A",
      "E-GATE-005-B",
      "E-GATE-005-C",
@@ -30841,7 +30847,8 @@
      "SCR-OPS-SUPPORT-038",
      "SCR-OPS-SUPPORT-039",
      "SCR-OPS-SUPPORT-040",
-     "SCR-OPS-SUPPORT-041"
+     "SCR-OPS-SUPPORT-041",
+     "SCR-OPS-SUPPORT-042"
     ],
     "l2_flows": [
      "J-09"
@@ -31689,6 +31696,7 @@
      "SCR-ACCOUNT-046",
      "SCR-ACCOUNT-047",
      "SCR-ACCOUNT-048",
+     "SCR-ACCOUNT-049",
      "E-ACT-040-A",
      "E-ACT-040-B",
      "E-ACT-040-C",
@@ -33007,6 +33015,7 @@
      "SCR-OPS-SKILLS-044",
      "SCR-OPS-SKILLS-045",
      "SCR-OPS-SKILLS-046",
+     "SCR-OPS-SKILLS-047",
      "E-ACT-041-A",
      "E-ACT-041-B",
      "E-ACT-041-C"
@@ -33300,6 +33309,7 @@
      "SCR-INQUIRY-047",
      "SCR-INQUIRY-048",
      "SCR-INQUIRY-049",
+     "SCR-INQUIRY-050",
      "E-ACT-036-A",
      "E-ACT-036-B",
      "E-ACT-036-C",
@@ -33569,6 +33579,7 @@
      "SCR-NOTICES-039",
      "SCR-NOTICES-040",
      "SCR-NOTICES-041",
+     "SCR-NOTICES-042",
      "E-ACT-037-A",
      "E-ACT-037-B",
      "E-ACT-037-C",
@@ -34138,6 +34149,7 @@
      "SCR-OPS-NOTICES-041",
      "SCR-OPS-NOTICES-042",
      "SCR-OPS-NOTICES-043",
+     "SCR-OPS-NOTICES-044",
      "E-ACT-038-A",
      "E-ACT-038-B",
      "E-ACT-038-C"
@@ -35532,6 +35544,7 @@
      "SCR-MEMBER-DETAIL-065",
      "SCR-MEMBER-DETAIL-066",
      "SCR-MEMBER-DETAIL-067",
+     "SCR-MEMBER-DETAIL-068",
      "E-ACT-035-A",
      "E-ACT-035-B",
      "E-ACT-035-C",
@@ -36644,6 +36657,7 @@
      "SCR-APP-SETUP-035",
      "SCR-APP-SETUP-036",
      "SCR-APP-SETUP-037",
+     "SCR-APP-SETUP-038",
      "E-APP-001-A",
      "E-APP-001-B",
      "E-APP-001-C",
@@ -37127,6 +37141,7 @@
      "SCR-OPS-DISCLOSURE-030",
      "SCR-OPS-DISCLOSURE-031",
      "SCR-OPS-DISCLOSURE-032",
+     "SCR-OPS-DISCLOSURE-033",
      "E-DISC-002-A",
      "E-DISC-002-B",
      "E-DISC-002-C"

@@ -22,7 +22,7 @@ for j in w["qa_scope"]["l2_flows"]:
 reg = [t for wid in w["qa_scope"]["regression_from"] for t in W[wid]["qa_scope"]["l1_tasks"] if not gate(t)]
 if reg: fails.append(("W3", f"前 Wave の回帰で赤 {reg[:6]}"))
 nd = [t for t in w["qa_scope"]["l1_tasks"] if T.get(t, {}).get("status") != "done"]
-r = subprocess.run([sys.executable, "scripts/ci/op_gate.py", "--spec", a.spec, "--tickets", a.tickets, "--report", "apps/web/pw-reports/screens.json", "--report", "apps/web/pw-reports/showcase.json", "--report", "apps/e2e/test-results/report.json"] + [x for t in w["qa_scope"]["l1_tasks"] for x in ("--task", t)], capture_output=True, text=True)
+r = subprocess.run([sys.executable, "scripts/ci/op_gate.py", "--spec", a.spec, "--tickets", a.tickets] + [x for t in w["qa_scope"]["l1_tasks"] for x in ("--task", t)], capture_output=True, text=True)
 if r.returncode != 0: fails.append(("W4", "実ブラウザの証拠が無い行がある（op_gate）: " + r.stdout.strip().split("\n")[-2][:160]))
 if nd: fails.append(("W4", f"status が done でない {nd}"))
 print(f"Wave {a.wave}（{w['group']}・{w['phase_name']}）：L1 タスク {len(w['qa_scope']['l1_tasks'])}／L2 {len(w['qa_scope']['l2_flows'])}／回帰 {len(w['qa_scope']['regression_from'])} Wave")

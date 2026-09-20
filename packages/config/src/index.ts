@@ -23,6 +23,8 @@ export interface Config {
   webOrigins: string[];
   /** メールの差出人（Resend の送信ドメイン） */
   mailFrom: string;
+  /** 運営（ENGINE BASE）の連絡先。問い合わせの届け先・運営アカウントのログイン名 */
+  opsEmail: string;
   port: number;
 }
 const REQUIRED = [
@@ -104,6 +106,7 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
       .map((x) => x.trim())
       .filter(Boolean),
     mailFrom: env["MAIL_FROM"] || "Kaname <noreply@kaname.app>",
+    opsEmail: env["OPS_EMAIL"] || "info@engine-base.com",
     port: Number(env["PORT"] ?? 3001),
   };
 }

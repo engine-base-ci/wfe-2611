@@ -11,9 +11,10 @@ test("SCR-SIGNUP-005 SCR-SIGNUP-020 SCR-SIGNUP-021 SCR-SIGNUP-022 SCR-SIGNUP-023
   page,
 }) => {
   await page.goto("/signup");
-  const local = uniqEmail().split("@")[0]!.toUpperCase();
+  const gen = uniqEmail();
+  const [local, domain] = [gen.split("@")[0]!.toUpperCase(), gen.split("@")[1]!];
   // eslint-disable-next-line no-irregular-whitespace -- 全角の空白を意図して入れる（表記ゆらぎ）
-  await page.getByLabel("メールアドレス").fill(`　${local}＠Example.COM `);
+  await page.getByLabel("メールアドレス").fill(`　${local}＠${domain.toUpperCase()} `);
   await page.getByLabel("パスワード").fill(PW);
   await page.getByLabel("会社名（または屋号）").fill("　株式会社テスト ");
   const agree = page.getByLabel("利用規約とプライバシーポリシーに同意します");
@@ -21,7 +22,7 @@ test("SCR-SIGNUP-005 SCR-SIGNUP-020 SCR-SIGNUP-021 SCR-SIGNUP-022 SCR-SIGNUP-023
   await expect(agree).toBeChecked();
   await page.getByRole("button", { name: "はじめる" }).click();
   await expect(page).toHaveURL(/\/verify-email\?sent=1/);
-  const email = `${local.toLowerCase()}@example.com`;
+  const email = `${local.toLowerCase()}@${domain.toLowerCase()}`;
   await expect(page.locator("[data-state='n']")).toContainText(email);
   const t = await admin<{ name: string }>(
     'select t.name from members m join tenants t on t.id = m.tenant_id join kaname_auth."user" u on u.id = m.auth_user_id where u.email = $1',

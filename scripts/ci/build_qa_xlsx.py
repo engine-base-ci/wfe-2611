@@ -14,6 +14,7 @@ import argparse, datetime as dt, json, os, re, sys
 from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Alignment, Font, PatternFill
 from openpyxl.utils import get_column_letter
+from openpyxl.formatting.rule import CellIsRule
 from openpyxl.worksheet.datavalidation import DataValidation
 
 HEAD = PatternFill("solid", fgColor="22345C")
@@ -70,7 +71,9 @@ def write(a, order: list[tuple[str, dict]]) -> int:
         ("立ち上げ", "ターミナルで `bash scripts/dev/up.sh` を実行する（DB → API → 画面が立つ。初回は 2 分ほど）"),
         ("画面", a.base),
         ("止める", "`bash scripts/dev/up.sh --stop`　／　今どうなっているか `bash scripts/dev/up.sh --status`"),
-        ("メール", "送りません。確認・再設定のリンクは `.dev-logs/api.log` の「verify →」「reset →」の行をブラウザに貼ってください"),
+        ("メール", "実際に送ります（Resend）。送信ドメイン（engine-base.com）がまだ未検証なので、届くのは info@engine-base.com だけです。ほかの宛先は `.dev-logs/api.log` に「[mail] 送れなかった → …」と出ます"),
+        ("運営の宛先", "運営（ENGINE BASE）は info@engine-base.com。問い合わせの届け先と運営アカウントのログイン名はこれです"),
+        ("メールの中身", "リンクは `.dev-logs/api.log` の「verify →」「reset →」の行にも出ます。受信箱を開けないときはその URL をブラウザに貼ってください"),
         ("招待の URL", "`bash scripts/dev/invite.sh` で作れます（メンバーの画面ができるまでの代わり）"),
         ("まだ無いもの", "自分のPC（Bridge）と自分のAIの返答は未実装です。各タブの「今はまだ押せないもの」に理由つきで書いてあります"),
         ("結果の書き方", "各タブの「結果」列から OK／NG を選ぶ。NG なら「気づいたこと」に 1 行書く"),
@@ -79,11 +82,11 @@ def write(a, order: list[tuple[str, dict]]) -> int:
     for i, (k, v) in enumerate(rows, 4):
         ws.cell(row=i, column=1, value=k).font = Font(bold=True)
         ws.cell(row=i, column=2, value=v).alignment = WRAP
-    ws.column_dimensions["A"].width = 16
-    ws.column_dimensions["B"].width = 108
+    ws.column_dimensions["A"].width = 14
+    ws.column_dimensions["B"].width = 96
     r = 4 + len(rows) + 2
     ws.cell(row=r, column=1, value="触るもの（この順で）").font = TITLE
-    head(ws, [("タブ", 30), ("画面", 22), ("URL", 44), ("手順の数", 9), ("状態", 14)], r + 1)
+    head(ws, [("タブ", 28), ("画面", 20), ("URL", 40), ("手順", 6), ("状態", 10)], r + 1)
     ws.freeze_panes = "A2"
     for i, (tid, d) in enumerate(order, r + 2):
         ws.cell(row=i, column=1, value=tab_name(tid, d["short"])).alignment = TOP
@@ -109,9 +112,9 @@ def write(a, order: list[tuple[str, dict]]) -> int:
             s.cell(row=row, column=1, value="その前に").font = Font(bold=True)
             for b in p["before"]:
                 row += 1
-                s.cell(row=row, column=1, value="・" + b).alignment = WRAP
+                c = s.cell(row=row, column=1, value="・" + b); c.alignment = WRAP; s.merge_cells(start_row=row, start_column=1, end_row=row, end_column=5)
             row += 2
-        head(s, [("#", 5), ("何をする", 62), ("こうなれば OK", 52), ("結果", 12), ("気づいたこと", 44)], row)
+        head(s, [("#", 4), ("何をする", 56), ("こうなれば OK", 46), ("結果", 10), ("気づいたこと", 38)], row)
         dv = DataValidation(type="list", formula1='"未確認,OK,NG"', allow_blank=True)
         s.add_data_validation(dv)
         first = row + 1
@@ -124,13 +127,18 @@ def write(a, order: list[tuple[str, dict]]) -> int:
             c.alignment = TOP
             dv.add(c)
             s.cell(row=rr, column=5, value="").alignment = WRAP
-            s.row_dimensions[rr].height = 30
         s.freeze_panes = s.cell(row=first, column=1)
+        last = first + len(p["steps"]) - 1
+        if p["steps"]:
+            rng = f"D{first}:D{last}"
+            s.conditional_formatting.add(rng, CellIsRule(operator="equal", formula=['"OK"'], fill=OKF))
+            s.conditional_formatting.add(rng, CellIsRule(operator="equal", formula=['"NG"'], fill=NGF))
+        s.auto_filter.ref = f"A{row}:E{last if p["steps"] else row}"
         if p["later"]:
             rr = first + len(p["steps"]) + 2
             s.cell(row=rr, column=1, value="今はまだ押せないもの（触らなくてよい）").font = Font(bold=True)
             for j, x in enumerate(p["later"], 1):
-                s.cell(row=rr + j, column=1, value="・" + x).alignment = WRAP
+                c = s.cell(row=rr + j, column=1, value="・" + x); c.alignment = WRAP; s.merge_cells(start_row=rr + j, start_column=1, end_row=rr + j, end_column=5)
     os.makedirs(os.path.dirname(a.out) or ".", exist_ok=True)
     wb.save(a.out)
     print(f"Excel → {a.out}（タブ {len(order) + 1}・チケット {len(order)}）")

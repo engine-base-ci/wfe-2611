@@ -1,0 +1,11 @@
+{
+  "_doc": "実ブラウザの証拠のゲート（op_gate.py）の設定。報告の一覧はここだけに置く（呼ぶ側に書き写さない＝新しい報告の足し忘れを防ぐ）",
+  "reports": [
+    "apps/web/pw-reports/entry.json",
+    "apps/web/pw-reports/screens.json",
+    "apps/web/pw-reports/mail.json",
+    "apps/web/pw-reports/showcase.json",
+    "apps/e2e/test-results/report.json"
+  ],
+  "report_max_age_h": 48
+}
