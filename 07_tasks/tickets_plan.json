@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-16T19:50:27",
+ "generated_at": "2026-09-20T13:56:48",
  "inputs": {
   "tickets": "07_tasks/tickets.json",
   "roster": "07_tasks/roster.json",
@@ -14,6 +14,14 @@
   "errors": "07_qa/test-specs/errors.json"
  },
  "summary": {
+  "as_of": "2026-09-20",
+  "by_status": {
+   "done": 78,
+   "todo": 93
+  },
+  "hours_done": 718.9,
+  "hours_total": 1044.6,
+  "progress_pct": 69,
   "epic": 15,
   "story": 171,
   "subtask": 5298,
@@ -30,11 +38,11 @@
    "T-I-05",
    "T-I-20"
   ],
-  "critical_path_days": 48,
+  "critical_path_days": 21,
   "cycle": [],
   "ghost_dependencies": [],
   "unassignable": [],
-  "tentative": 2,
+  "tentative": 0,
   "assigned": 169,
   "broken_links": [],
   "milestone_overrun": [],
@@ -46,17 +54,17 @@
    "dropped": 0
   },
   "load": {
-   "takamoto": 111.3,
-   "claude-01": 152.5,
-   "claude-02": 124.1,
-   "claude-03": 134.9,
-   "claude-04": 144.5,
-   "claude-05": 121.0,
-   "claude-06": 32.4,
-   "claude-07": 30.4,
-   "claude-08": 29.6,
-   "claude-09": 78.0,
-   "claude-10": 85.9
+   "takamoto": 33.8,
+   "claude-01": 42.0,
+   "claude-02": 0.0,
+   "claude-03": 0.0,
+   "claude-04": 36.8,
+   "claude-05": 0.0,
+   "claude-06": 24.4,
+   "claude-07": 24.1,
+   "claude-08": 21.9,
+   "claude-09": 71.7,
+   "claude-10": 71.0
   }
  },
  "tickets": [
@@ -436,8 +444,8 @@
    "layer": "foundation",
    "estimate_hours": 1.6,
    "estimate_default": false,
-   "start": "2026-09-22",
-   "finish": "2026-09-22",
+   "start": "2026-09-15",
+   "finish": "2026-09-15",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -474,7 +482,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-15",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-F-02",
@@ -500,8 +511,8 @@
    "layer": "foundation",
    "estimate_hours": 6.0,
    "estimate_default": false,
-   "start": "2026-09-22",
-   "finish": "2026-09-22",
+   "start": "2026-09-15",
+   "finish": "2026-09-15",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -541,7 +552,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-15",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-F-03",
@@ -567,8 +581,8 @@
    "layer": "foundation",
    "estimate_hours": 6.0,
    "estimate_default": false,
-   "start": "2026-09-22",
-   "finish": "2026-09-22",
+   "start": "2026-09-15",
+   "finish": "2026-09-15",
    "critical": true,
    "tentative": false,
    "assignable": [
@@ -608,7 +622,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-15",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-F-04",
@@ -634,8 +651,8 @@
    "layer": "foundation",
    "estimate_hours": 1.3,
    "estimate_default": false,
-   "start": "2026-09-22",
-   "finish": "2026-09-22",
+   "start": "2026-09-15",
+   "finish": "2026-09-15",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -673,7 +690,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-15",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-F-05",
@@ -699,8 +719,8 @@
    "layer": "foundation",
    "estimate_hours": 5.0,
    "estimate_default": false,
-   "start": "2026-09-22",
-   "finish": "2026-09-25",
+   "start": "2026-09-15",
+   "finish": "2026-09-15",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -738,7 +758,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-15",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-F-06",
@@ -764,8 +787,8 @@
    "layer": "foundation",
    "estimate_hours": 5.0,
    "estimate_default": false,
-   "start": "2026-09-22",
-   "finish": "2026-09-24",
+   "start": "2026-09-15",
+   "finish": "2026-09-15",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -803,7 +826,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-15",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-F-07",
@@ -829,8 +855,8 @@
    "layer": "foundation",
    "estimate_hours": 0.8,
    "estimate_default": false,
-   "start": "2026-09-22",
-   "finish": "2026-09-22",
+   "start": "2026-09-15",
+   "finish": "2026-09-15",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -872,7 +898,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-15",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-F-08",
@@ -898,8 +927,8 @@
    "layer": "foundation",
    "estimate_hours": 0.8,
    "estimate_default": false,
-   "start": "2026-09-22",
-   "finish": "2026-09-22",
+   "start": "2026-09-15",
+   "finish": "2026-09-15",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -940,7 +969,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-15",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-F-09",
@@ -966,8 +998,8 @@
    "layer": "foundation",
    "estimate_hours": 0.8,
    "estimate_default": false,
-   "start": "2026-09-22",
-   "finish": "2026-09-24",
+   "start": "2026-09-15",
+   "finish": "2026-09-15",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -1006,7 +1038,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-15",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-F-10",
@@ -1032,8 +1067,8 @@
    "layer": "foundation",
    "estimate_hours": 0.8,
    "estimate_default": false,
-   "start": "2026-09-25",
-   "finish": "2026-09-25",
+   "start": "2026-09-15",
+   "finish": "2026-09-15",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -1073,7 +1108,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-15",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-F-11",
@@ -1099,8 +1137,8 @@
    "layer": "foundation",
    "estimate_hours": 0.8,
    "estimate_default": false,
-   "start": "2026-09-24",
-   "finish": "2026-09-24",
+   "start": "2026-09-15",
+   "finish": "2026-09-15",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -1139,7 +1177,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-15",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-F-12",
@@ -1165,8 +1206,8 @@
    "layer": "foundation",
    "estimate_hours": 0.8,
    "estimate_default": false,
-   "start": "2026-09-25",
-   "finish": "2026-09-28",
+   "start": "2026-09-15",
+   "finish": "2026-09-15",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -1207,7 +1248,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-15",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-F-13",
@@ -1233,8 +1277,8 @@
    "layer": "foundation",
    "estimate_hours": 4.0,
    "estimate_default": false,
-   "start": "2026-09-24",
-   "finish": "2026-09-24",
+   "start": "2026-09-15",
+   "finish": "2026-09-15",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -1275,7 +1319,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-15",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-F-14",
@@ -1301,8 +1348,8 @@
    "layer": "foundation",
    "estimate_hours": 4.0,
    "estimate_default": false,
-   "start": "2026-09-28",
-   "finish": "2026-09-29",
+   "start": "2026-09-15",
+   "finish": "2026-09-15",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -1342,7 +1389,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-15",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-F-15",
@@ -1370,8 +1420,8 @@
    "layer": "foundation",
    "estimate_hours": 0.8,
    "estimate_default": false,
-   "start": "2026-09-24",
-   "finish": "2026-09-24",
+   "start": "2026-09-15",
+   "finish": "2026-09-15",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -1408,7 +1458,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-15",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-F-16",
@@ -1435,8 +1488,8 @@
    "layer": "foundation",
    "estimate_hours": 1.1,
    "estimate_default": false,
-   "start": "2026-09-24",
-   "finish": "2026-09-24",
+   "start": "2026-09-15",
+   "finish": "2026-09-15",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -1473,7 +1526,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-15",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-F-17",
@@ -1499,8 +1555,8 @@
    "layer": "foundation",
    "estimate_hours": 1.0,
    "estimate_default": false,
-   "start": "2026-09-24",
-   "finish": "2026-09-24",
+   "start": "2026-09-15",
+   "finish": "2026-09-15",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -1537,7 +1593,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-15",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-F-18",
@@ -1567,10 +1626,10 @@
    "layer": "foundation",
    "estimate_hours": 1.3,
    "estimate_default": false,
-   "start": "2026-09-29",
-   "finish": "2026-09-29",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
-   "tentative": true,
+   "tentative": false,
    "assignable": [
     "takamoto",
     "claude-01",
@@ -1606,7 +1665,9 @@
    },
    "delta": "unchanged",
    "dropped_reason": null,
-   "tentative_assignee": "claude-01"
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-D-01",
@@ -1642,8 +1703,8 @@
    "layer": "foundation",
    "estimate_hours": 3.3,
    "estimate_default": false,
-   "start": "2026-09-24",
-   "finish": "2026-09-25",
+   "start": "2026-09-15",
+   "finish": "2026-09-15",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -1688,7 +1749,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-15",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-D-02",
@@ -1726,8 +1790,8 @@
    "layer": "foundation",
    "estimate_hours": 5.3,
    "estimate_default": false,
-   "start": "2026-09-29",
-   "finish": "2026-10-01",
+   "start": "2026-09-15",
+   "finish": "2026-09-15",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -1775,7 +1839,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-15",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-D-03",
@@ -1808,8 +1875,8 @@
    "layer": "foundation",
    "estimate_hours": 2.8,
    "estimate_default": false,
-   "start": "2026-09-24",
-   "finish": "2026-09-25",
+   "start": "2026-09-15",
+   "finish": "2026-09-15",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -1848,7 +1915,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-15",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-D-04",
@@ -1883,8 +1953,8 @@
    "layer": "foundation",
    "estimate_hours": 3.3,
    "estimate_default": false,
-   "start": "2026-09-25",
-   "finish": "2026-09-25",
+   "start": "2026-09-15",
+   "finish": "2026-09-15",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -1925,7 +1995,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-15",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-D-05",
@@ -1966,8 +2039,8 @@
    "layer": "foundation",
    "estimate_hours": 17.0,
    "estimate_default": false,
-   "start": "2026-09-25",
-   "finish": "2026-09-29",
+   "start": "2026-09-15",
+   "finish": "2026-09-15",
    "critical": true,
    "tentative": false,
    "assignable": [
@@ -2022,7 +2095,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-15",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-D-06",
@@ -2054,8 +2130,8 @@
    "layer": "foundation",
    "estimate_hours": 2.3,
    "estimate_default": false,
-   "start": "2026-10-01",
-   "finish": "2026-10-02",
+   "start": "2026-09-15",
+   "finish": "2026-09-15",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -2094,7 +2170,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-15",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-D-07",
@@ -2124,8 +2203,8 @@
    "layer": "foundation",
    "estimate_hours": 1.3,
    "estimate_default": false,
-   "start": "2026-09-25",
-   "finish": "2026-09-25",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -2160,7 +2239,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-D-08",
@@ -2188,12 +2270,12 @@
     "T-F-03"
    ],
    "blocked_by": [],
-   "wave": "W1",
+   "wave": "W0",
    "layer": "foundation",
    "estimate_hours": 8.0,
    "estimate_default": false,
-   "start": "2026-10-02",
-   "finish": "2026-10-06",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -2233,7 +2315,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-D-09",
@@ -2268,8 +2353,8 @@
    "layer": "foundation",
    "estimate_hours": 11.0,
    "estimate_default": false,
-   "start": "2026-09-25",
-   "finish": "2026-09-29",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -2315,7 +2400,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-D-10",
@@ -2349,12 +2437,12 @@
     "T-F-03"
    ],
    "blocked_by": [],
-   "wave": "W1",
+   "wave": "W0",
    "layer": "foundation",
    "estimate_hours": 4.8,
    "estimate_default": false,
-   "start": "2026-10-06",
-   "finish": "2026-10-08",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -2406,7 +2494,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-D-11",
@@ -2454,8 +2545,8 @@
    "layer": "foundation",
    "estimate_hours": 23.0,
    "estimate_default": false,
-   "start": "2026-09-29",
-   "finish": "2026-10-01",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -2517,7 +2608,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-D-12",
@@ -2551,8 +2645,8 @@
    "layer": "foundation",
    "estimate_hours": 2.8,
    "estimate_default": false,
-   "start": "2026-09-29",
-   "finish": "2026-09-29",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -2599,7 +2693,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-D-13",
@@ -2627,12 +2724,12 @@
     "T-F-03"
    ],
    "blocked_by": [],
-   "wave": "W1",
+   "wave": "W0",
    "layer": "foundation",
    "estimate_hours": 2.3,
    "estimate_default": false,
-   "start": "2026-10-08",
-   "finish": "2026-10-09",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -2675,7 +2772,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-D-14",
@@ -2707,12 +2807,12 @@
     "T-F-03"
    ],
    "blocked_by": [],
-   "wave": "W1",
+   "wave": "W0",
    "layer": "foundation",
    "estimate_hours": 3.8,
    "estimate_default": false,
-   "start": "2026-10-09",
-   "finish": "2026-10-13",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -2762,7 +2862,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-A-01",
@@ -2847,12 +2950,12 @@
     "T-F-14"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "backend",
    "estimate_hours": 32.2,
    "estimate_default": false,
-   "start": "2026-10-13",
-   "finish": "2026-10-19",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -2985,7 +3088,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-A-02",
@@ -3018,12 +3124,12 @@
     "T-D-12"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "backend",
    "estimate_hours": 7.5,
    "estimate_default": false,
-   "start": "2026-10-16",
-   "finish": "2026-10-19",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -3071,7 +3177,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-A-03",
@@ -3119,12 +3228,12 @@
     "T-F-14"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "backend",
    "estimate_hours": 10.5,
    "estimate_default": false,
-   "start": "2026-10-19",
-   "finish": "2026-10-20",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -3189,7 +3298,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-A-04",
@@ -3267,12 +3379,12 @@
     "T-F-14"
    ],
    "blocked_by": [],
-   "wave": "W1",
+   "wave": "W0",
    "layer": "backend",
    "estimate_hours": 16.5,
    "estimate_default": false,
-   "start": "2026-10-08",
-   "finish": "2026-10-13",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -3417,7 +3529,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-A-05",
@@ -3478,12 +3593,12 @@
     "T-F-12"
    ],
    "blocked_by": [],
-   "wave": "W1",
+   "wave": "W0",
    "layer": "backend",
    "estimate_hours": 16.5,
    "estimate_default": false,
-   "start": "2026-10-05",
-   "finish": "2026-10-07",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -3608,7 +3723,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-A-06",
@@ -3693,12 +3811,12 @@
     "T-F-14"
    ],
    "blocked_by": [],
-   "wave": "W1",
+   "wave": "W0",
    "layer": "backend",
    "estimate_hours": 29.2,
    "estimate_default": false,
-   "start": "2026-10-09",
-   "finish": "2026-10-15",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -3840,7 +3958,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-A-07",
@@ -3930,12 +4051,12 @@
     "T-F-12"
    ],
    "blocked_by": [],
-   "wave": "W1",
+   "wave": "W0",
    "layer": "backend",
    "estimate_hours": 22.2,
    "estimate_default": false,
-   "start": "2026-10-13",
-   "finish": "2026-10-16",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -4090,7 +4211,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-A-08",
@@ -4139,12 +4263,12 @@
     "T-F-12"
    ],
    "blocked_by": [],
-   "wave": "W1",
+   "wave": "W0",
    "layer": "backend",
    "estimate_hours": 22.2,
    "estimate_default": false,
-   "start": "2026-10-09",
-   "finish": "2026-10-14",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -4239,7 +4363,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-A-09",
@@ -4310,12 +4437,12 @@
     "T-F-09"
    ],
    "blocked_by": [],
-   "wave": "W1",
+   "wave": "W0",
    "layer": "backend",
    "estimate_hours": 27.8,
    "estimate_default": false,
-   "start": "2026-10-06",
-   "finish": "2026-10-13",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -4416,7 +4543,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-A-10",
@@ -4504,12 +4634,12 @@
     "T-F-09"
    ],
    "blocked_by": [],
-   "wave": "W1",
+   "wave": "W0",
    "layer": "backend",
    "estimate_hours": 39.0,
    "estimate_default": false,
-   "start": "2026-10-07",
-   "finish": "2026-10-14",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -4666,7 +4796,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-A-11",
@@ -4725,8 +4858,8 @@
    "layer": "backend",
    "estimate_hours": 7.2,
    "estimate_default": false,
-   "start": "2026-10-02",
-   "finish": "2026-10-02",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -4807,7 +4940,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-A-12",
@@ -4904,12 +5040,12 @@
     "T-F-14"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "backend",
    "estimate_hours": 23.5,
    "estimate_default": false,
-   "start": "2026-10-20",
-   "finish": "2026-10-23",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -5089,7 +5225,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-A-13",
@@ -5141,12 +5280,12 @@
     "T-F-12"
    ],
    "blocked_by": [],
-   "wave": "W1",
+   "wave": "W0",
    "layer": "backend",
    "estimate_hours": 23.5,
    "estimate_default": false,
-   "start": "2026-10-02",
-   "finish": "2026-10-06",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -5258,7 +5397,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-A-14",
@@ -5321,12 +5463,12 @@
     "T-F-09"
    ],
    "blocked_by": [],
-   "wave": "W1",
+   "wave": "W0",
    "layer": "backend",
    "estimate_hours": 27.0,
    "estimate_default": false,
-   "start": "2026-10-02",
-   "finish": "2026-10-07",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -5428,7 +5570,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-A-15",
@@ -5519,12 +5664,12 @@
     "T-F-14"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "backend",
    "estimate_hours": 33.8,
    "estimate_default": false,
-   "start": "2026-10-19",
-   "finish": "2026-10-26",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -5652,7 +5797,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-A-16",
@@ -5723,12 +5871,12 @@
     "T-F-09"
    ],
    "blocked_by": [],
-   "wave": "W1",
+   "wave": "W0",
    "layer": "backend",
    "estimate_hours": 6.7,
    "estimate_default": false,
-   "start": "2026-10-07",
-   "finish": "2026-10-08",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -5838,7 +5986,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-A-17",
@@ -5893,12 +6044,12 @@
     "T-F-12"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "backend",
    "estimate_hours": 37.5,
    "estimate_default": false,
-   "start": "2026-10-13",
-   "finish": "2026-10-29",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -5979,7 +6130,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-A-18",
@@ -6040,12 +6194,12 @@
     "T-F-12"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "backend",
    "estimate_hours": 27.0,
    "estimate_default": false,
-   "start": "2026-10-14",
-   "finish": "2026-10-20",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -6137,7 +6291,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-A-19",
@@ -6209,12 +6366,12 @@
     "T-F-12"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "backend",
    "estimate_hours": 36.8,
    "estimate_default": false,
-   "start": "2026-10-14",
-   "finish": "2026-10-21",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -6324,7 +6481,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-A-20",
@@ -6404,12 +6564,12 @@
     "T-F-14"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "backend",
    "estimate_hours": 42.0,
    "estimate_default": false,
-   "start": "2026-10-20",
-   "finish": "2026-10-27",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": true,
    "tentative": false,
    "assignable": [
@@ -6529,7 +6689,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-A-21",
@@ -6594,12 +6757,12 @@
     "T-F-12"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "backend",
    "estimate_hours": 8.2,
    "estimate_default": false,
-   "start": "2026-10-21",
-   "finish": "2026-10-22",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -6703,7 +6866,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-A-22",
@@ -6759,12 +6925,12 @@
     "T-F-08"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "backend",
    "estimate_hours": 39.8,
    "estimate_default": false,
-   "start": "2026-10-15",
-   "finish": "2026-10-22",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -6845,7 +7011,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-A-23",
@@ -6890,12 +7059,12 @@
     "T-D-11"
    ],
    "blocked_by": [],
-   "wave": "W1",
+   "wave": "W0",
    "layer": "backend",
    "estimate_hours": 6.2,
    "estimate_default": false,
-   "start": "2026-10-16",
-   "finish": "2026-10-16",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -6973,7 +7142,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-A-24",
@@ -7008,12 +7180,12 @@
     "T-F-10"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "W1",
    "layer": "backend",
    "estimate_hours": 33.8,
    "estimate_default": false,
-   "start": "2026-10-29",
-   "finish": "2026-11-17",
+   "start": "2026-09-22",
+   "finish": "2026-10-08",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -7078,7 +7250,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-A-25",
@@ -7126,12 +7300,12 @@
     "T-F-12"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "backend",
    "estimate_hours": 36.8,
    "estimate_default": false,
-   "start": "2026-10-22",
-   "finish": "2026-10-29",
+   "start": "2026-09-22",
+   "finish": "2026-09-29",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -7206,7 +7380,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-A-26",
@@ -7257,12 +7433,12 @@
     "T-F-14"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "backend",
    "estimate_hours": 42.0,
    "estimate_default": false,
-   "start": "2026-10-23",
-   "finish": "2026-10-30",
+   "start": "2026-09-22",
+   "finish": "2026-09-30",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -7348,7 +7524,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-US-00",
@@ -7383,10 +7561,10 @@
    "layer": "ui",
    "estimate_hours": 1.6,
    "estimate_default": false,
-   "start": "2026-09-25",
-   "finish": "2026-09-25",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
-   "tentative": true,
+   "tentative": false,
    "assignable": [
     "claude-06",
     "claude-07",
@@ -7426,7 +7604,9 @@
    },
    "delta": "unchanged",
    "dropped_reason": null,
-   "tentative_assignee": "claude-06"
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-US-01",
@@ -7497,12 +7677,12 @@
     "T-A-01"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 2.4,
    "estimate_default": false,
-   "start": "2026-10-20",
-   "finish": "2026-10-20",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -7588,7 +7768,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-US-02",
@@ -7624,12 +7807,12 @@
     "T-A-01"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 3.2,
    "estimate_default": false,
-   "start": "2026-10-20",
-   "finish": "2026-10-20",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -7679,7 +7862,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-US-03",
@@ -7704,12 +7890,12 @@
     "T-A-01"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.2,
    "estimate_default": false,
-   "start": "2026-10-20",
-   "finish": "2026-10-20",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -7747,7 +7933,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-US-04",
@@ -7772,12 +7961,12 @@
     "T-A-01"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.2,
    "estimate_default": false,
-   "start": "2026-10-20",
-   "finish": "2026-10-20",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -7815,7 +8004,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-US-05",
@@ -7841,12 +8033,12 @@
     "T-A-01"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.6,
    "estimate_default": false,
-   "start": "2026-10-20",
-   "finish": "2026-10-20",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -7885,7 +8077,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-US-06",
@@ -7910,12 +8105,12 @@
     "T-A-01"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.6,
    "estimate_default": false,
-   "start": "2026-10-20",
-   "finish": "2026-10-20",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -7954,7 +8149,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-U-01",
@@ -8011,12 +8209,12 @@
     "T-A-01"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.2,
    "estimate_default": false,
-   "start": "2026-10-21",
-   "finish": "2026-10-21",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -8098,7 +8296,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-U-02",
@@ -8149,12 +8350,12 @@
     "T-A-15"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.4,
    "estimate_default": false,
-   "start": "2026-10-27",
-   "finish": "2026-10-27",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -8220,7 +8421,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-U-03",
@@ -8270,12 +8474,12 @@
     "T-A-02"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.4,
    "estimate_default": false,
-   "start": "2026-10-21",
-   "finish": "2026-10-21",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -8343,7 +8547,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-U-04",
@@ -8398,12 +8605,12 @@
     "T-A-15"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.4,
    "estimate_default": false,
-   "start": "2026-10-27",
-   "finish": "2026-10-27",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -8475,7 +8682,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-U-05",
@@ -8544,12 +8754,12 @@
     "T-A-15"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.8,
    "estimate_default": false,
-   "start": "2026-10-27",
-   "finish": "2026-10-27",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -8643,7 +8853,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-U-06",
@@ -8701,12 +8914,12 @@
     "T-A-20"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.6,
    "estimate_default": false,
-   "start": "2026-10-28",
-   "finish": "2026-10-28",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -8779,7 +8992,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-U-07",
@@ -8856,12 +9072,12 @@
     "T-A-16"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.7,
    "estimate_default": false,
-   "start": "2026-10-21",
-   "finish": "2026-10-21",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -8960,7 +9176,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-U-08",
@@ -9037,12 +9256,12 @@
     "T-A-16"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.4,
    "estimate_default": false,
-   "start": "2026-10-27",
-   "finish": "2026-10-27",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -9136,7 +9355,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-U-09",
@@ -9212,12 +9434,12 @@
     "T-A-06"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.7,
    "estimate_default": false,
-   "start": "2026-10-27",
-   "finish": "2026-10-27",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -9324,7 +9546,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-U-10",
@@ -9403,12 +9628,12 @@
     "T-A-06"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.9,
    "estimate_default": false,
-   "start": "2026-10-28",
-   "finish": "2026-10-28",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -9520,7 +9745,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-U-11",
@@ -9584,12 +9812,12 @@
     "T-A-07"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.4,
    "estimate_default": false,
-   "start": "2026-10-21",
-   "finish": "2026-10-21",
+   "start": "2026-09-22",
+   "finish": "2026-09-22",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -9676,7 +9904,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-12",
@@ -9737,12 +9967,12 @@
     "T-A-16"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.2,
    "estimate_default": false,
-   "start": "2026-10-27",
-   "finish": "2026-10-27",
+   "start": "2026-09-22",
+   "finish": "2026-09-22",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -9818,7 +10048,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-13",
@@ -9943,12 +10175,12 @@
     "T-A-05"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 2.1,
    "estimate_default": false,
-   "start": "2026-10-27",
-   "finish": "2026-10-27",
+   "start": "2026-09-22",
+   "finish": "2026-09-22",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -10125,7 +10357,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-14",
@@ -10208,12 +10442,12 @@
     "T-A-07"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.9,
    "estimate_default": false,
-   "start": "2026-10-27",
-   "finish": "2026-10-27",
+   "start": "2026-09-22",
+   "finish": "2026-09-22",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -10336,7 +10570,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-15",
@@ -10416,12 +10652,12 @@
     "T-A-12"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 2.1,
    "estimate_default": false,
-   "start": "2026-10-26",
-   "finish": "2026-10-26",
+   "start": "2026-09-22",
+   "finish": "2026-09-22",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -10524,7 +10760,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-16",
@@ -10683,12 +10921,12 @@
     "T-A-13"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 4.0,
    "estimate_default": false,
-   "start": "2026-10-28",
-   "finish": "2026-10-28",
+   "start": "2026-09-22",
+   "finish": "2026-09-22",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -10899,7 +11137,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-17",
@@ -11037,12 +11277,12 @@
     "T-A-16"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 3.8,
    "estimate_default": false,
-   "start": "2026-10-27",
-   "finish": "2026-10-28",
+   "start": "2026-09-22",
+   "finish": "2026-09-22",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -11229,7 +11469,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-18",
@@ -11307,12 +11549,12 @@
     "T-A-23"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.9,
    "estimate_default": false,
-   "start": "2026-10-27",
-   "finish": "2026-10-27",
+   "start": "2026-09-22",
+   "finish": "2026-09-22",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -11416,7 +11658,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-19",
@@ -11483,12 +11727,12 @@
     "T-A-09"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.8,
    "estimate_default": false,
-   "start": "2026-10-26",
-   "finish": "2026-10-26",
+   "start": "2026-09-22",
+   "finish": "2026-09-22",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -11572,7 +11816,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-20",
@@ -11656,12 +11902,12 @@
     "T-A-14"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 2.5,
    "estimate_default": false,
-   "start": "2026-10-27",
-   "finish": "2026-10-28",
+   "start": "2026-09-22",
+   "finish": "2026-09-22",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -11776,7 +12022,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-21",
@@ -11858,12 +12106,12 @@
     "T-A-09"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.8,
    "estimate_default": false,
-   "start": "2026-10-26",
-   "finish": "2026-10-26",
+   "start": "2026-09-22",
+   "finish": "2026-09-22",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -11972,7 +12220,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-22",
@@ -12075,12 +12325,12 @@
     "T-A-11"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 2.1,
    "estimate_default": false,
-   "start": "2026-10-28",
-   "finish": "2026-10-29",
+   "start": "2026-09-22",
+   "finish": "2026-09-22",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -12238,7 +12488,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-23",
@@ -12318,12 +12570,12 @@
     "T-A-10"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 2.2,
    "estimate_default": false,
-   "start": "2026-10-28",
-   "finish": "2026-10-28",
+   "start": "2026-09-22",
+   "finish": "2026-09-24",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -12440,7 +12692,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-24",
@@ -12522,12 +12776,12 @@
     "T-A-11"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.2,
    "estimate_default": false,
-   "start": "2026-10-26",
-   "finish": "2026-10-26",
+   "start": "2026-09-22",
+   "finish": "2026-09-24",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -12638,7 +12892,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-25",
@@ -12706,12 +12962,12 @@
     "T-A-10"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.8,
    "estimate_default": false,
-   "start": "2026-10-29",
-   "finish": "2026-10-29",
+   "start": "2026-09-22",
+   "finish": "2026-09-22",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -12804,7 +13060,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-26",
@@ -12868,12 +13126,12 @@
     "T-A-11"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.9,
    "estimate_default": false,
-   "start": "2026-10-28",
-   "finish": "2026-10-28",
+   "start": "2026-09-22",
+   "finish": "2026-09-24",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -12964,7 +13222,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-27",
@@ -13040,12 +13300,12 @@
     "T-A-11"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.9,
    "estimate_default": false,
-   "start": "2026-10-26",
-   "finish": "2026-10-27",
+   "start": "2026-09-24",
+   "finish": "2026-09-24",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -13151,7 +13411,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-28",
@@ -13238,12 +13500,12 @@
     "T-A-14"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 2.2,
    "estimate_default": false,
-   "start": "2026-10-28",
-   "finish": "2026-10-28",
+   "start": "2026-09-24",
+   "finish": "2026-09-24",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -13364,7 +13626,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-29",
@@ -13485,12 +13749,12 @@
     "T-A-16"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 2.0,
    "estimate_default": false,
-   "start": "2026-10-29",
-   "finish": "2026-10-29",
+   "start": "2026-09-22",
+   "finish": "2026-09-24",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -13646,7 +13910,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-30",
@@ -13708,12 +13974,12 @@
     "T-A-14"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.4,
    "estimate_default": false,
-   "start": "2026-10-28",
-   "finish": "2026-10-28",
+   "start": "2026-09-24",
+   "finish": "2026-09-24",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -13799,7 +14065,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-31",
@@ -13874,12 +14142,12 @@
     "T-A-16"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.9,
    "estimate_default": false,
-   "start": "2026-10-27",
-   "finish": "2026-10-27",
+   "start": "2026-09-24",
+   "finish": "2026-09-24",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -13978,7 +14246,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-32",
@@ -14040,12 +14310,12 @@
     "T-A-06"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.4,
    "estimate_default": false,
-   "start": "2026-10-28",
-   "finish": "2026-10-28",
+   "start": "2026-09-24",
+   "finish": "2026-09-24",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -14132,7 +14402,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-33",
@@ -14220,12 +14492,12 @@
     "T-A-19"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 2.2,
    "estimate_default": false,
-   "start": "2026-10-28",
-   "finish": "2026-10-29",
+   "start": "2026-09-24",
+   "finish": "2026-09-24",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -14336,7 +14608,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-34",
@@ -14404,12 +14678,12 @@
     "T-A-08"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.8,
    "estimate_default": false,
-   "start": "2026-10-29",
-   "finish": "2026-10-29",
+   "start": "2026-09-24",
+   "finish": "2026-09-24",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -14514,7 +14788,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-35",
@@ -14625,12 +14901,12 @@
     "T-A-20"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 2.5,
    "estimate_default": false,
-   "start": "2026-10-28",
-   "finish": "2026-10-28",
+   "start": "2026-09-24",
+   "finish": "2026-09-24",
    "critical": true,
    "tentative": false,
    "assignable": [
@@ -14770,7 +15046,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-36",
@@ -14848,12 +15126,12 @@
     "T-A-23"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.7,
    "estimate_default": false,
-   "start": "2026-10-28",
-   "finish": "2026-10-29",
+   "start": "2026-09-24",
+   "finish": "2026-09-24",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -14951,7 +15229,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-37",
@@ -15031,12 +15311,12 @@
     "T-A-23"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.9,
    "estimate_default": false,
-   "start": "2026-10-29",
-   "finish": "2026-10-30",
+   "start": "2026-09-24",
+   "finish": "2026-09-24",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -15139,7 +15419,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-38",
@@ -15198,12 +15480,12 @@
     "T-A-15"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.2,
    "estimate_default": false,
-   "start": "2026-10-29",
-   "finish": "2026-10-29",
+   "start": "2026-09-24",
+   "finish": "2026-09-24",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -15288,7 +15570,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-39",
@@ -15355,12 +15639,12 @@
     "T-A-15"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.2,
    "estimate_default": false,
-   "start": "2026-10-29",
-   "finish": "2026-10-29",
+   "start": "2026-09-24",
+   "finish": "2026-09-24",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -15449,7 +15733,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-40",
@@ -15526,12 +15812,12 @@
     "T-A-15"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 2.2,
    "estimate_default": false,
-   "start": "2026-10-29",
-   "finish": "2026-10-29",
+   "start": "2026-09-24",
+   "finish": "2026-09-25",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -15629,7 +15915,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-41",
@@ -15690,12 +15978,12 @@
     "T-A-19"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.1,
    "estimate_default": false,
-   "start": "2026-10-30",
-   "finish": "2026-10-30",
+   "start": "2026-09-24",
+   "finish": "2026-09-24",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -15771,7 +16059,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-42",
@@ -15834,12 +16124,12 @@
     "T-A-23"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.6,
    "estimate_default": false,
-   "start": "2026-10-30",
-   "finish": "2026-10-30",
+   "start": "2026-09-24",
+   "finish": "2026-09-24",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -15919,7 +16209,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-43",
@@ -15987,12 +16279,12 @@
     "T-A-23"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 2.3,
    "estimate_default": false,
-   "start": "2026-10-29",
-   "finish": "2026-10-29",
+   "start": "2026-09-24",
+   "finish": "2026-09-25",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -16084,7 +16376,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-44",
@@ -16159,12 +16453,12 @@
     "T-A-20"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.5,
    "estimate_default": false,
-   "start": "2026-10-30",
-   "finish": "2026-10-30",
+   "start": "2026-09-24",
+   "finish": "2026-09-25",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -16257,7 +16551,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-45",
@@ -16321,12 +16617,12 @@
     "T-A-20"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.2,
    "estimate_default": false,
-   "start": "2026-10-30",
-   "finish": "2026-10-30",
+   "start": "2026-09-24",
+   "finish": "2026-09-25",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -16412,7 +16708,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-46",
@@ -16476,12 +16774,12 @@
     "T-A-20"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.4,
    "estimate_default": false,
-   "start": "2026-10-29",
-   "finish": "2026-10-29",
+   "start": "2026-09-25",
+   "finish": "2026-09-25",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -16565,7 +16863,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-47",
@@ -16625,12 +16925,12 @@
     "T-A-20"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.4,
    "estimate_default": false,
-   "start": "2026-10-30",
-   "finish": "2026-10-30",
+   "start": "2026-09-25",
+   "finish": "2026-09-25",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -16715,7 +17015,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-48",
@@ -16771,12 +17073,12 @@
     "T-A-21"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.1,
    "estimate_default": false,
-   "start": "2026-10-29",
-   "finish": "2026-10-29",
+   "start": "2026-09-25",
+   "finish": "2026-09-25",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -16846,7 +17148,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-49",
@@ -16914,12 +17218,12 @@
     "T-A-21"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.6,
    "estimate_default": false,
-   "start": "2026-10-30",
-   "finish": "2026-10-30",
+   "start": "2026-09-25",
+   "finish": "2026-09-25",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -17013,7 +17317,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-50",
@@ -17087,12 +17393,12 @@
     "T-A-18"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 2.2,
    "estimate_default": false,
-   "start": "2026-10-29",
-   "finish": "2026-10-29",
+   "start": "2026-09-25",
+   "finish": "2026-09-25",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -17185,7 +17491,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-51",
@@ -17251,12 +17559,12 @@
     "T-A-18"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.8,
    "estimate_default": false,
-   "start": "2026-10-29",
-   "finish": "2026-10-29",
+   "start": "2026-09-25",
+   "finish": "2026-09-25",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -17345,7 +17653,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-52",
@@ -17421,12 +17731,12 @@
     "T-A-18"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.4,
    "estimate_default": false,
-   "start": "2026-10-30",
-   "finish": "2026-10-30",
+   "start": "2026-09-25",
+   "finish": "2026-09-25",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -17533,7 +17843,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-53",
@@ -17598,12 +17910,12 @@
     "T-A-19"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.1,
    "estimate_default": false,
-   "start": "2026-10-30",
-   "finish": "2026-10-30",
+   "start": "2026-09-25",
+   "finish": "2026-09-25",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -17685,7 +17997,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-54",
@@ -17746,12 +18060,12 @@
     "T-A-19"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.1,
    "estimate_default": false,
-   "start": "2026-10-30",
-   "finish": "2026-10-30",
+   "start": "2026-09-25",
+   "finish": "2026-09-25",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -17836,7 +18150,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-55",
@@ -17909,12 +18225,12 @@
     "T-A-22"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 0.8,
    "estimate_default": false,
-   "start": "2026-10-30",
-   "finish": "2026-10-30",
+   "start": "2026-09-25",
+   "finish": "2026-09-25",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -18009,7 +18325,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-56",
@@ -18071,12 +18389,12 @@
     "T-A-22"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.1,
    "estimate_default": false,
-   "start": "2026-10-29",
-   "finish": "2026-10-30",
+   "start": "2026-09-25",
+   "finish": "2026-09-25",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -18157,7 +18475,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-57",
@@ -18219,12 +18539,12 @@
     "T-A-22"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.1,
    "estimate_default": false,
-   "start": "2026-10-30",
-   "finish": "2026-10-30",
+   "start": "2026-09-25",
+   "finish": "2026-09-25",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -18304,7 +18624,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-58",
@@ -18399,12 +18721,12 @@
     "T-A-20"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.7,
    "estimate_default": false,
-   "start": "2026-10-30",
-   "finish": "2026-10-30",
+   "start": "2026-09-25",
+   "finish": "2026-09-25",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -18528,7 +18850,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-59",
@@ -18588,12 +18912,12 @@
     "T-A-01"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.7,
    "estimate_default": false,
-   "start": "2026-10-30",
-   "finish": "2026-11-02",
+   "start": "2026-09-25",
+   "finish": "2026-09-25",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -18675,7 +18999,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-60",
@@ -18738,12 +19064,12 @@
     "T-A-24"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "W1",
    "layer": "ui",
    "estimate_hours": 1.7,
    "estimate_default": false,
-   "start": "2026-11-18",
-   "finish": "2026-11-18",
+   "start": "2026-10-09",
+   "finish": "2026-10-09",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -18829,7 +19155,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-61",
@@ -18908,12 +19236,12 @@
     "T-A-26"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.7,
    "estimate_default": false,
-   "start": "2026-11-02",
-   "finish": "2026-11-02",
+   "start": "2026-10-01",
+   "finish": "2026-10-01",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -19024,7 +19352,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-62",
@@ -19086,12 +19416,12 @@
     "T-A-26"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.8,
    "estimate_default": false,
-   "start": "2026-11-02",
-   "finish": "2026-11-02",
+   "start": "2026-10-01",
+   "finish": "2026-10-01",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -19175,7 +19505,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-63",
@@ -19223,12 +19555,12 @@
     "T-A-25"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "W0",
    "layer": "ui",
    "estimate_hours": 1.3,
    "estimate_default": false,
-   "start": "2026-11-02",
-   "finish": "2026-11-02",
+   "start": "2026-09-30",
+   "finish": "2026-09-30",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -19288,7 +19620,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-U-64",
@@ -19342,12 +19676,12 @@
     "T-A-25"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "W1",
    "layer": "ui",
    "estimate_hours": 1.3,
    "estimate_default": false,
-   "start": "2026-11-18",
-   "finish": "2026-11-18",
+   "start": "2026-10-09",
+   "finish": "2026-10-09",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -19418,7 +19752,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-I-01",
@@ -19457,12 +19793,12 @@
     "T-U-18"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "W0",
    "layer": "integration",
    "estimate_hours": 9.0,
    "estimate_default": false,
-   "start": "2026-11-19",
-   "finish": "2026-11-20",
+   "start": "2026-09-25",
+   "finish": "2026-09-28",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -19502,7 +19838,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-I-02",
@@ -19531,12 +19869,12 @@
     "T-U-13"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "W0",
    "layer": "integration",
    "estimate_hours": 6.0,
    "estimate_default": false,
-   "start": "2026-11-18",
-   "finish": "2026-11-19",
+   "start": "2026-09-24",
+   "finish": "2026-09-24",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -19575,7 +19913,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-I-03",
@@ -19619,12 +19959,12 @@
     "T-U-23"
    ],
    "blocked_by": [],
-   "wave": "R1",
+   "wave": "W0",
    "layer": "integration",
    "estimate_hours": 2.4,
    "estimate_default": false,
-   "start": "2026-11-20",
-   "finish": "2026-11-24",
+   "start": "2026-09-28",
+   "finish": "2026-09-29",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -19661,7 +20001,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-I-04",
@@ -19692,12 +20034,12 @@
     "T-U-55"
    ],
    "blocked_by": [],
-   "wave": "R1",
+   "wave": "W1",
    "layer": "integration",
    "estimate_hours": 2.0,
    "estimate_default": false,
-   "start": "2026-11-25",
-   "finish": "2026-11-25",
+   "start": "2026-10-09",
+   "finish": "2026-10-09",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -19737,7 +20079,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-I-05",
@@ -19770,12 +20114,12 @@
     "T-U-58"
    ],
    "blocked_by": [],
-   "wave": "R1",
+   "wave": "W1",
    "layer": "integration",
    "estimate_hours": 8.0,
    "estimate_default": false,
-   "start": "2026-11-26",
-   "finish": "2026-11-27",
+   "start": "2026-10-13",
+   "finish": "2026-10-14",
    "critical": true,
    "tentative": false,
    "assignable": [
@@ -19815,7 +20159,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-I-06",
@@ -19845,12 +20191,12 @@
     "T-U-49"
    ],
    "blocked_by": [],
-   "wave": "R1",
+   "wave": "W1",
    "layer": "integration",
    "estimate_hours": 2.0,
    "estimate_default": false,
-   "start": "2026-11-25",
-   "finish": "2026-11-25",
+   "start": "2026-10-09",
+   "finish": "2026-10-09",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -19890,7 +20236,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-I-07",
@@ -19918,12 +20266,12 @@
     "T-U-51"
    ],
    "blocked_by": [],
-   "wave": "R1",
+   "wave": "W1",
    "layer": "integration",
    "estimate_hours": 1.2,
    "estimate_default": false,
-   "start": "2026-11-25",
-   "finish": "2026-11-25",
+   "start": "2026-10-09",
+   "finish": "2026-10-09",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -19961,7 +20309,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-I-08",
@@ -19990,12 +20340,12 @@
     "T-U-55"
    ],
    "blocked_by": [],
-   "wave": "R1",
+   "wave": "W1",
    "layer": "integration",
    "estimate_hours": 5.0,
    "estimate_default": false,
-   "start": "2026-11-25",
-   "finish": "2026-11-26",
+   "start": "2026-10-09",
+   "finish": "2026-10-13",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -20034,7 +20384,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-I-09",
@@ -20057,12 +20409,12 @@
     "T-U-04"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "W0",
    "layer": "integration",
    "estimate_hours": 1.4,
    "estimate_default": false,
-   "start": "2026-11-18",
-   "finish": "2026-11-18",
+   "start": "2026-09-20",
+   "finish": "2026-09-20",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -20074,7 +20426,7 @@
    ],
    "assignee": "claude-10",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [],
@@ -20098,7 +20450,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-20",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-I-10",
@@ -20124,12 +20479,12 @@
     "T-U-12"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "W0",
    "layer": "integration",
    "estimate_hours": 2.0,
    "estimate_default": false,
-   "start": "2026-11-18",
-   "finish": "2026-11-18",
+   "start": "2026-09-24",
+   "finish": "2026-09-24",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -20165,7 +20520,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-I-11",
@@ -20199,12 +20556,12 @@
     "T-U-21"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "W0",
    "layer": "integration",
    "estimate_hours": 4.2,
    "estimate_default": false,
-   "start": "2026-11-20",
-   "finish": "2026-11-20",
+   "start": "2026-09-28",
+   "finish": "2026-09-28",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -20240,7 +20597,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-I-12",
@@ -20264,12 +20623,12 @@
     "T-U-25"
    ],
    "blocked_by": [],
-   "wave": "R1",
+   "wave": "W0",
    "layer": "integration",
    "estimate_hours": 1.8,
    "estimate_default": false,
-   "start": "2026-11-24",
-   "finish": "2026-11-24",
+   "start": "2026-09-29",
+   "finish": "2026-09-29",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -20305,7 +20664,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-I-13",
@@ -20332,12 +20693,12 @@
     "T-U-31"
    ],
    "blocked_by": [],
-   "wave": "R1",
+   "wave": "W0",
    "layer": "integration",
    "estimate_hours": 2.2,
    "estimate_default": false,
-   "start": "2026-11-24",
-   "finish": "2026-11-24",
+   "start": "2026-09-29",
+   "finish": "2026-09-29",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -20373,7 +20734,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-I-14",
@@ -20396,12 +20759,12 @@
     "T-U-34"
    ],
    "blocked_by": [],
-   "wave": "R1",
+   "wave": "W0",
    "layer": "integration",
    "estimate_hours": 1.6,
    "estimate_default": false,
-   "start": "2026-11-24",
-   "finish": "2026-11-24",
+   "start": "2026-09-29",
+   "finish": "2026-09-29",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -20437,7 +20800,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-I-15",
@@ -20474,12 +20839,12 @@
     "T-U-58"
    ],
    "blocked_by": [],
-   "wave": "R1",
+   "wave": "W1",
    "layer": "integration",
    "estimate_hours": 3.4,
    "estimate_default": false,
-   "start": "2026-11-27",
-   "finish": "2026-11-30",
+   "start": "2026-10-14",
+   "finish": "2026-10-15",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -20515,7 +20880,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-I-16",
@@ -20536,12 +20903,12 @@
     "T-U-40"
    ],
    "blocked_by": [],
-   "wave": "R1",
+   "wave": "W1",
    "layer": "integration",
    "estimate_hours": 1.4,
    "estimate_default": false,
-   "start": "2026-11-24",
-   "finish": "2026-11-25",
+   "start": "2026-10-09",
+   "finish": "2026-10-09",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -20577,7 +20944,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-I-17",
@@ -20611,12 +20980,12 @@
     "T-U-57"
    ],
    "blocked_by": [],
-   "wave": "R1",
+   "wave": "W1",
    "layer": "integration",
    "estimate_hours": 3.4,
    "estimate_default": false,
-   "start": "2026-11-26",
-   "finish": "2026-11-26",
+   "start": "2026-10-13",
+   "finish": "2026-10-13",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -20652,7 +21021,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-I-18",
@@ -20696,12 +21067,12 @@
     "T-U-22"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "W0",
    "layer": "integration",
    "estimate_hours": 1.2,
    "estimate_default": false,
-   "start": "2026-11-20",
-   "finish": "2026-11-20",
+   "start": "2026-09-28",
+   "finish": "2026-09-28",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -20738,7 +21109,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-I-19",
@@ -20761,12 +21134,12 @@
     "T-I-03"
    ],
    "blocked_by": [],
-   "wave": "R1",
+   "wave": "W0",
    "layer": "polish",
    "estimate_hours": 1.6,
    "estimate_default": false,
-   "start": "2026-11-25",
-   "finish": "2026-11-25",
+   "start": "2026-10-01",
+   "finish": "2026-10-01",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -20801,7 +21174,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-I-20",
@@ -20826,12 +21201,12 @@
     "T-I-05"
    ],
    "blocked_by": [],
-   "wave": "R1",
+   "wave": "W1",
    "layer": "polish",
    "estimate_hours": 5.0,
    "estimate_default": false,
-   "start": "2026-12-01",
-   "finish": "2026-12-02",
+   "start": "2026-10-15",
+   "finish": "2026-10-15",
    "critical": true,
    "tentative": false,
    "assignable": [
@@ -20867,7 +21242,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-I-21",
@@ -20892,8 +21269,8 @@
    "layer": "polish",
    "estimate_hours": 0.8,
    "estimate_default": false,
-   "start": "2026-09-24",
-   "finish": "2026-09-24",
+   "start": "2026-09-22",
+   "finish": "2026-09-22",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -20929,7 +21306,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-I-22",
@@ -20967,12 +21346,12 @@
     "T-I-18"
    ],
    "blocked_by": [],
-   "wave": "R1",
+   "wave": "W2",
    "layer": "polish",
    "estimate_hours": 1.2,
    "estimate_default": false,
-   "start": "2026-12-01",
-   "finish": "2026-12-02",
+   "start": "2026-10-16",
+   "finish": "2026-10-19",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -21007,7 +21386,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-S-01",
@@ -21032,12 +21413,12 @@
     "T-A-21"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "W0",
    "layer": "content",
    "estimate_hours": 3.0,
    "estimate_default": false,
-   "start": "2026-11-02",
-   "finish": "2026-11-02",
+   "start": "2026-10-01",
+   "finish": "2026-10-01",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -21078,7 +21459,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-S-02",
@@ -21102,12 +21485,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "R1",
+   "wave": "W0",
    "layer": "content",
    "estimate_hours": 4.0,
    "estimate_default": false,
-   "start": "2026-11-25",
-   "finish": "2026-11-25",
+   "start": "2026-10-02",
+   "finish": "2026-10-02",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -21152,7 +21535,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-S-03",
@@ -21176,12 +21561,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "R1",
+   "wave": "W0",
    "layer": "content",
    "estimate_hours": 4.0,
    "estimate_default": false,
-   "start": "2026-11-25",
-   "finish": "2026-11-26",
+   "start": "2026-10-02",
+   "finish": "2026-10-02",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -21226,7 +21611,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-S-04",
@@ -21250,12 +21637,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "R1",
+   "wave": "W1",
    "layer": "content",
    "estimate_hours": 4.0,
    "estimate_default": false,
-   "start": "2026-11-26",
-   "finish": "2026-11-26",
+   "start": "2026-10-05",
+   "finish": "2026-10-05",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -21299,7 +21686,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-S-05",
@@ -21323,12 +21712,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "R1",
+   "wave": "W1",
    "layer": "content",
    "estimate_hours": 4.0,
    "estimate_default": false,
-   "start": "2026-11-26",
-   "finish": "2026-11-27",
+   "start": "2026-10-05",
+   "finish": "2026-10-05",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -21373,7 +21762,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-S-06",
@@ -21397,12 +21788,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "R1",
+   "wave": "W1",
    "layer": "content",
    "estimate_hours": 4.0,
    "estimate_default": false,
-   "start": "2026-11-27",
-   "finish": "2026-11-27",
+   "start": "2026-10-06",
+   "finish": "2026-10-06",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -21447,7 +21838,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-S-07",
@@ -21471,12 +21864,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "R1",
+   "wave": "W1",
    "layer": "content",
    "estimate_hours": 4.0,
    "estimate_default": false,
-   "start": "2026-11-27",
-   "finish": "2026-11-30",
+   "start": "2026-10-06",
+   "finish": "2026-10-06",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -21520,7 +21913,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-S-08",
@@ -21544,12 +21939,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "R1",
+   "wave": "W1",
    "layer": "content",
    "estimate_hours": 4.0,
    "estimate_default": false,
-   "start": "2026-11-30",
-   "finish": "2026-11-30",
+   "start": "2026-10-07",
+   "finish": "2026-10-07",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -21594,7 +21989,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-S-09",
@@ -21618,12 +22015,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "R1",
+   "wave": "W1",
    "layer": "content",
    "estimate_hours": 3.5,
    "estimate_default": false,
-   "start": "2026-11-30",
-   "finish": "2026-11-30",
+   "start": "2026-10-15",
+   "finish": "2026-10-15",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -21668,7 +22065,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-S-10",
@@ -21692,12 +22091,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "R1",
+   "wave": "W1",
    "layer": "content",
    "estimate_hours": 3.5,
    "estimate_default": false,
-   "start": "2026-11-30",
-   "finish": "2026-12-01",
+   "start": "2026-10-07",
+   "finish": "2026-10-07",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -21742,7 +22141,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-S-11",
@@ -21766,12 +22167,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "R1",
+   "wave": "W1",
    "layer": "content",
    "estimate_hours": 3.5,
    "estimate_default": false,
-   "start": "2026-11-30",
-   "finish": "2026-12-01",
+   "start": "2026-10-15",
+   "finish": "2026-10-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -21816,7 +22217,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-S-12",
@@ -21840,12 +22243,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "R1",
+   "wave": "W1",
    "layer": "content",
    "estimate_hours": 3.0,
    "estimate_default": false,
-   "start": "2026-12-01",
-   "finish": "2026-12-01",
+   "start": "2026-10-07",
+   "finish": "2026-10-08",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -21890,7 +22293,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-S-13",
@@ -21914,12 +22319,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "R1",
+   "wave": "W1",
    "layer": "content",
    "estimate_hours": 3.0,
    "estimate_default": false,
-   "start": "2026-12-01",
-   "finish": "2026-12-01",
+   "start": "2026-10-16",
+   "finish": "2026-10-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -21964,7 +22369,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-S-14",
@@ -21988,12 +22395,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "R1",
+   "wave": "W1",
    "layer": "content",
    "estimate_hours": 3.0,
    "estimate_default": false,
-   "start": "2026-12-01",
-   "finish": "2026-12-01",
+   "start": "2026-10-08",
+   "finish": "2026-10-08",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -22038,7 +22445,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-S-15",
@@ -22062,12 +22471,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "R1",
+   "wave": "W1",
    "layer": "content",
    "estimate_hours": 3.0,
    "estimate_default": false,
-   "start": "2026-12-01",
-   "finish": "2026-12-01",
+   "start": "2026-10-16",
+   "finish": "2026-10-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -22112,7 +22521,9 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": null,
+   "started_at": null
   },
   {
    "id": "T-V2-01",
@@ -22138,8 +22549,8 @@
    "layer": "spec",
    "estimate_hours": 2.7,
    "estimate_default": false,
-   "start": "2026-09-30",
-   "finish": "2026-09-30",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -22170,7 +22581,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-V2-02",
@@ -22196,8 +22610,8 @@
    "layer": "spec",
    "estimate_hours": 2.7,
    "estimate_default": false,
-   "start": "2026-09-30",
-   "finish": "2026-09-30",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -22232,7 +22646,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-V2-03",
@@ -22258,8 +22675,8 @@
    "layer": "spec",
    "estimate_hours": 2.7,
    "estimate_default": false,
-   "start": "2026-09-30",
-   "finish": "2026-10-01",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -22293,7 +22710,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-V2-04",
@@ -22319,8 +22739,8 @@
    "layer": "spec",
    "estimate_hours": 2.7,
    "estimate_default": false,
-   "start": "2026-10-01",
-   "finish": "2026-10-01",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -22352,7 +22772,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-V2-05",
@@ -22378,8 +22801,8 @@
    "layer": "spec",
    "estimate_hours": 2.7,
    "estimate_default": false,
-   "start": "2026-10-01",
-   "finish": "2026-10-01",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -22411,7 +22834,10 @@
     ]
    },
    "delta": "unchanged",
-   "dropped_reason": null
+   "dropped_reason": null,
+   "done_at": "2026-09-16",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-F-01.s1",
@@ -88280,7 +88706,7 @@
    "sub": "impl",
    "title": "apps/e2e/f-v3-d-e2e-01.spec.ts (new)",
    "parent": "T-I-09",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/e2e/f-v3-d-e2e-01.spec.ts (new)"

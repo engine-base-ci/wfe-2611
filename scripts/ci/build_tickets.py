@@ -64,6 +64,7 @@ def main() -> int:
     ap.add_argument("--decisions", help="決定ログ（.md）。decision: D-xxx を全部リンク先として認める。無ければ flow の source から");
     ap.add_argument("--features"); ap.add_argument("--flow"); ap.add_argument("--mocks"); ap.add_argument("--prefix", default="v1-"); ap.add_argument("--spec"); ap.add_argument("--journeys"); ap.add_argument("--errors")
     ap.add_argument("--prev"); ap.add_argument("--auto-assign", action="store_true"); ap.add_argument("-o", "--out", default="07_tasks/tickets_plan.json")
+    ap.add_argument("--today", default="", help="日程の基準日（既定は今日）。終わったものは実績の日、残りはこの日から引き直す")
     ap.add_argument("--from-plan", help="前回の plan の inputs で作り直す（状態を変えた後の再生成。mark_done が呼ぶ）。--prev はその plan、-o の既定もその plan")
     a = ap.parse_args()
     if a.from_plan:
@@ -124,7 +125,8 @@ def main() -> int:
         st = {"id": tid, "kind": "story", "title": t.get("title") or t.get("name") or tid, "parent": parent, "children": [], "depends_on": list(t.get("depends_on") or []),
               "blocked_by": [], "wave": None, "layer": layer, "estimate_hours": float(est), "estimate_default": not bool(t.get("estimate_hours") or t.get("estimate")),
               "start": None, "finish": None, "critical": False, "tentative": False, "assignable": assignable, "assignee": t.get("assignee") or pv.get("assignee"), "assigned_by": pv.get("assigned_by") or ("pm" if t.get("assignee") else None),
-              "status": pv.get("status") or t.get("status") or "todo", "external": pv.get("external") or {}, "links": links, "delta": "unchanged" if pv else "added", "dropped_reason": None}
+              "status": pv.get("status") or t.get("status") or "todo", "external": pv.get("external") or {}, "links": links, "delta": "unchanged" if pv else "added", "dropped_reason": None,
+              "done_at": t.get("done_at") or pv.get("done_at"), "started_at": t.get("started_at") or pv.get("started_at")}   # 実績の日（mark_done が書く）。日程は実績を優先し、残りは今日から引き直す
         if pv and (pv.get("estimate_hours") != st["estimate_hours"] or pv.get("depends_on") != st["depends_on"] or pv.get("title") != st["title"]): st["delta"] = "updated"
         stories[tid] = st
         # subtask
@@ -157,8 +159,16 @@ def main() -> int:
     cycle = [k for k in stories if k not in order]
     # ---- スケジュール（依存 → 担当の空き）
     mem = {m.id: m for m in members}; finish = {}
+    as_of = D(a.today) if a.today else dt.date.today()   # 日程の基準日。終わったものは実績、残りは基準日から引き直す（過去に予定を置かない）
+    for m in members: m.cursor, m.left = cal.next_work(max(cal.start, as_of)), m.hpd
     for k in order:
-        st = stories[k]; earliest = cal.start
+        st = stories[k]
+        if st["status"] == "done":
+            # 実績：done_at（無ければ基準日）。担当の空きは使わない
+            f = D(st["done_at"]) if st.get("done_at") else as_of
+            s0 = D(st["started_at"]) if st.get("started_at") else f
+            st["start"], st["finish"] = s0.isoformat(), f.isoformat(); st["actual"] = True; finish[k] = f; continue
+        earliest = max(cal.start, as_of)
         for d in st["depends_on"]:
             if d in finish and finish[d]: earliest = max(earliest, finish[d] + dt.timedelta(days=1))
         who = st["assignee"] if st["assignee"] in mem else None
@@ -166,7 +176,9 @@ def main() -> int:
             who = min(st["assignable"], key=lambda i: mem[i].load); st["tentative"] = not a.auto_assign
             if a.auto_assign: st["assignee"], st["assigned_by"] = who, "auto"
         if who:
-            s, f = mem[who].book(earliest, st["estimate_hours"]); st["start"], st["finish"] = s.isoformat(), f.isoformat(); finish[k] = f
+            s, f = mem[who].book(earliest, st["estimate_hours"])
+            if st["status"] == "in_progress" and st.get("started_at"): s = min(s, D(st["started_at"]))   # 着手済みは着手日から
+            st["start"], st["finish"] = s.isoformat(), f.isoformat(); finish[k] = f
             if st["tentative"]: st["tentative_assignee"] = who
         else:
             st["start"] = st["finish"] = None; finish[k] = None
@@ -193,7 +205,13 @@ def main() -> int:
     all_t = list(epics.values()) + list(stories.values()) + tickets
     cp_days = cal.workdays_between(D(stories[path[0]]["start"]), D(stories[path[-1]]["finish"]) + dt.timedelta(days=1)) if path and stories[path[0]]["start"] and stories[path[-1]]["finish"] else 0
     unassignable = [k for k, s in stories.items() if s["kind"] == "story" and not s["assignable"] and s["delta"] != "dropped"]
-    summary = {"epic": len(epics), "story": sum(1 for s in stories.values() if s["delta"] != "dropped"), "subtask": len(tickets),
+    live = [s for s in stories.values() if s["delta"] != "dropped"]
+    by_status = {}
+    for s_ in live: by_status[s_["status"]] = by_status.get(s_["status"], 0) + 1
+    hours_total = sum(s_["estimate_hours"] for s_ in live); hours_done = sum(s_["estimate_hours"] for s_ in live if s_["status"] == "done")
+    late = [s_["id"] for s_ in live if s_["status"] != "done" and s_.get("finish") and any(D(m["due"]) < D(s_["finish"]) for m in (M.get("milestones") or []) if m["id"] == s_.get("wave"))]
+    summary = {"as_of": as_of.isoformat(), "by_status": by_status, "hours_done": round(hours_done, 1), "hours_total": round(hours_total, 1), "progress_pct": round(100 * hours_done / hours_total) if hours_total else 0,
+               "epic": len(epics), "story": sum(1 for s in stories.values() if s["delta"] != "dropped"), "subtask": len(tickets),
                "subtask_by": {"impl": sum(1 for t in tickets if t["sub"] == "impl"), "test": sum(1 for t in tickets if t["sub"] == "test"), "mock": sum(1 for t in tickets if t["sub"] == "mock")},
                "critical_path": path, "critical_path_days": cp_days, "cycle": cycle, "ghost_dependencies": ghost_dep, "unassignable": unassignable,
                "tentative": sum(1 for s in stories.values() if s.get("tentative")), "assigned": sum(1 for s in stories.values() if s.get("assignee")),
@@ -218,7 +236,7 @@ def write_html(d, out, epics, stories, subs, members, ms, tasks_by_id, mocks_dir
     dates = [D(s["start"]) for s in stories.values() if s.get("start")] + [D(s["finish"]) for s in stories.values() if s.get("finish")] + [D(m["due"]) for m in ms]
     if not dates: return
     d0 = min(dates) - dt.timedelta(days=min(dates).weekday()); d1 = max(dates) + dt.timedelta(days=3)
-    data = {"start": d0.isoformat(), "end": d1.isoformat(), "generated": out["generated_at"], "milestones": ms, "summary": {k: out["summary"][k] for k in ("epic", "story", "subtask", "critical_path_days", "critical_path")},
+    data = {"start": d0.isoformat(), "end": d1.isoformat(), "generated": out["generated_at"], "milestones": ms, "summary": {k: out["summary"][k] for k in ("epic", "story", "subtask", "critical_path_days", "critical_path", "as_of", "by_status", "hours_done", "hours_total", "progress_pct")},
             "members": [{"id": m.id, "name": m.name, "hpd": m.hpd} for m in members],
             "epics": [{"id": e["id"], "title": e["title"], "children": e["children"]} for e in epics.values()],
             "stories": {k: {**{kk: vv for kk, vv in s.items() if kk != "children"}, "human_h": (tasks_by_id.get(k) or {}).get("estimate_hours_human"), "ai_h": (tasks_by_id.get(k) or {}).get("wall_clock_h_ai"), "acts": (tasks_by_id.get(k) or {}).get("acts", []),
@@ -244,6 +262,11 @@ td.t{position:relative;padding:0}.day{display:inline-block;width:18px;height:26p
 .bar{position:absolute;top:6px;height:14px;border-radius:4px;background:var(--acc);opacity:.9;cursor:pointer}
 .bar.crit{background:var(--crit)}.bar.foundation{background:#4a4a4a}.bar.ui{background:#3a8f6f}.bar.integration{background:#7d5aa6}.bar.polish{background:#a67c3a}.bar.content{background:#b07c9e}.bar.spec{background:#d08a3a}
 .bar.h{top:20px;height:4px;opacity:.45;background:#999}
+.bar.st-done{background:#2f7d4f!important;background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.35) 0 3px,transparent 3px 7px)!important;opacity:1}
+.bar.st-in_progress{background:#d9822b!important;opacity:1}.bar.st-blocked{background:#a23b3b!important;opacity:1}.bar.st-review{background:#4f6fb3!important}
+tr.done td.n{color:#5a7a66}tr.done td.n::before{content:"✓ ";color:#2f7d4f;font-weight:700}
+.day.today{background:#fff4dc;box-shadow:inset 2px 0 0 #d9822b}
+.prog{display:inline-block;width:140px;height:8px;border:1px solid var(--line);border-radius:4px;vertical-align:middle;margin:0 6px;overflow:hidden}.prog i{display:block;height:100%;background:#2f7d4f}
 .pane h2{font-size:15px;margin:0 0 6px}.pane .meta{color:var(--sub);font-size:12px;margin-bottom:10px}.pane h3{font-size:12px;color:var(--sub);margin:14px 0 4px;text-transform:none}
 .pane ul{margin:0;padding-left:18px}.pane li{margin:2px 0}.chip{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:0 8px;font-size:11px;margin:0 4px 4px 0;background:#fff}
 .pane a{color:var(--acc)}.legend span{display:inline-block;width:10px;height:10px;border-radius:2px;margin:0 4px 0 8px;vertical-align:middle}
@@ -254,9 +277,11 @@ td.t{position:relative;padding:0}.day{display:inline-block;width:18px;height:26p
 <label>担当<select id="fA"><option value="">全部</option></select></label>
 <label>層<select id="fL"><option value="">全部</option></select></label>
 <label>epic<select id="fE"><option value="">全部</option></select></label>
+<label>状態<select id="fS"><option value="">全部</option><option value="todo">まだ</option><option value="in_progress">やっている</option><option value="done">終わった</option><option value="blocked">止まっている</option></select></label>
 <label>探す<input id="fQ" placeholder="ID・題名" size="18"></label>
 <label><input type="checkbox" id="fH"> Human 基準の棒も出す</label>
-<span class="legend hint"><span style="background:#4a4a4a"></span>基盤<span style="background:#2f6f8f"></span>API<span style="background:#3a8f6f"></span>画面<span style="background:#7d5aa6"></span>結線<span style="background:#b07c9e"></span>スキル<span style="background:#d08a3a"></span>仕様<span style="background:#a23b3b"></span>クリティカル</span>
+<span class="legend hint"><span style="background:#4a4a4a"></span>基盤<span style="background:#2f6f8f"></span>API<span style="background:#3a8f6f"></span>画面<span style="background:#7d5aa6"></span>結線<span style="background:#b07c9e"></span>スキル<span style="background:#d08a3a"></span>仕様<span style="background:#a23b3b"></span>クリティカル<span style="background:#2f7d4f;background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.35) 0 3px,transparent 3px 7px)"></span>終わった（実績の日）<span style="background:#d9822b"></span>やっている</span>
+<span class="hint" id="prog"></span>
 <span class="hint" id="sum"></span></header>
 <div class="wrap"><div class="gantt"><table class="g"><thead><tr id="hd"></tr></thead><tbody id="tb"></tbody></table></div>
 <aside class="pane" id="pane"><p class="hint">行か棒を押すと、そのチケットの中身がここに出ます。</p></aside></div>
@@ -267,17 +292,20 @@ const days=[...Array(N)].map((_,i)=>new Date(d0.getTime()+i*day));const msSet=ne
 const iso=d=>d.toISOString().slice(0,10);const idx=s=>Math.round((D(s)-d0)/day);
 const $=q=>document.querySelector(q);const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 function header(){const tr=$("#hd");tr.innerHTML='<th style="text-align:left;padding:0 8px;position:sticky;left:0;z-index:4;background:#fff;border-right:1px solid var(--line)">チケット</th><th style="text-align:left"><div style="display:flex">'+days.map(d=>`<span class="day${[0,6].includes(d.getDay())?" we":""}${msSet.has(iso(d))?" ms":""}${iso(d)===today?" today":""}" title="${iso(d)}" style="font-size:10px;padding-left:2px">${d.getDate()===1||d.getDay()===1?(d.getMonth()+1)+"/"+d.getDate():""}</span>`).join("")+'</div></th>';}
-function rows(){const fa=$("#fA").value,fl=$("#fL").value,fe=$("#fE").value,q=$("#fQ").value.trim().toLowerCase(),hh=$("#fH").checked;const tb=$("#tb");let out="";let shown=0;
- for(const e of DATA.epics){if(fe&&e.id!==fe)continue;const kids=e.children.map(k=>DATA.stories[k]).filter(s=>s&&s.delta!=="dropped"&&(!fa||s.assignee===fa)&&(!fl||s.layer===fl)&&(!q||(s.id+" "+s.title).toLowerCase().includes(q)));if(!kids.length)continue;
-  out+=`<tr class="e"><td class="n" data-e="${e.id}">${esc(e.id)} ${esc(e.title)}<span class="hint"> ${kids.length}</span></td><td class="t"><div style="display:flex">${days.map(d=>`<span class="day${[0,6].includes(d.getDay())?" we":""}${msSet.has(iso(d))?" ms":""}"></span>`).join("")}</div></td></tr>`;
+function rows(){const fa=$("#fA").value,fl=$("#fL").value,fe=$("#fE").value,fs=$("#fS").value,q=$("#fQ").value.trim().toLowerCase(),hh=$("#fH").checked;const tb=$("#tb");let out="";let shown=0;
+ for(const e of DATA.epics){if(fe&&e.id!==fe)continue;const kids=e.children.map(k=>DATA.stories[k]).filter(s=>s&&s.delta!=="dropped"&&(!fa||s.assignee===fa)&&(!fl||s.layer===fl)&&(!fs||s.status===fs)&&(!q||(s.id+" "+s.title).toLowerCase().includes(q)));if(!kids.length)continue;
+  const ed=kids.filter(s=>s.status==="done").length;
+  out+=`<tr class="e"><td class="n" data-e="${e.id}">${esc(e.id)} ${esc(e.title)}<span class="hint"> ${ed}/${kids.length} 終わった</span></td><td class="t"><div style="display:flex">${days.map(d=>`<span class="day${[0,6].includes(d.getDay())?" we":""}${msSet.has(iso(d))?" ms":""}"></span>`).join("")}</div></td></tr>`;
   for(const s of kids){shown++;const a=s.start?idx(s.start):null,b=s.finish?idx(s.finish):null;const hb=(hh&&s.human_h)?`<div class="bar h" style="left:${a*18}px;width:${Math.max(6,Math.ceil(s.human_h/8)*18)}px" title="Human ${s.human_h}h ≈ ${Math.ceil(s.human_h/8)} 日"></div>`:"";
-   out+=`<tr data-s="${s.id}"><td class="n" title="${esc(s.title)}">${s.critical?"★ ":""}${esc(s.id)} <span class="hint">${esc(s.title)}</span></td><td class="t"><div style="display:flex">${days.map(d=>`<span class="day${[0,6].includes(d.getDay())?" we":""}${msSet.has(iso(d))?" ms":""}${iso(d)===today?" today":""}"></span>`).join("")}</div>${a!==null?`<div class="bar ${s.layer}${s.critical?" crit":""}" data-s="${s.id}" style="left:${a*18}px;width:${Math.max(10,(b-a+1)*18-4)}px" title="${esc(s.id)} ${s.start}〜${s.finish} ${s.assignee||""}"></div>`:""}${hb}</td></tr>`;}}
- tb.innerHTML=out;$("#sum").textContent=`表示 ${shown} / story ${DATA.summary.story}・epic ${DATA.summary.epic}・subtask ${DATA.summary.subtask}・クリティカルパス ${DATA.summary.critical_path_days} 営業日・生成 ${DATA.generated.slice(0,16)}`;}
+   out+=`<tr data-s="${s.id}" class="${s.status==="done"?"done":""}"><td class="n" title="${esc(s.title)}">${s.critical?"★ ":""}${esc(s.id)} <span class="hint">${esc(s.title)}</span></td><td class="t"><div style="display:flex">${days.map(d=>`<span class="day${[0,6].includes(d.getDay())?" we":""}${msSet.has(iso(d))?" ms":""}${iso(d)===today?" today":""}"></span>`).join("")}</div>${a!==null?`<div class="bar ${s.layer}${s.critical?" crit":""} st-${s.status}" data-s="${s.id}" style="left:${a*18}px;width:${Math.max(10,(b-a+1)*18-4)}px" title="${esc(s.id)} ${s.status==="done"?"終わった "+s.finish:s.start+"〜"+s.finish} ${s.assignee||""}"></div>`:""}${hb}</td></tr>`;}}
+ tb.innerHTML=out;const bs=DATA.summary.by_status||{};$("#sum").textContent=`表示 ${shown} / story ${DATA.summary.story}・epic ${DATA.summary.epic}・subtask ${DATA.summary.subtask}・クリティカルパス ${DATA.summary.critical_path_days} 営業日・生成 ${DATA.generated.slice(0,16)}`;
+ $("#prog").innerHTML=`基準日 ${DATA.summary.as_of}：終わった <b>${bs.done||0}</b>・やっている <b>${bs.in_progress||0}</b>・まだ <b>${bs.todo||0}</b>${bs.blocked?"・止まっている <b>"+bs.blocked+"</b>":""} ／ 時間 ${DATA.summary.hours_done}h / ${DATA.summary.hours_total}h <span class="prog"><i style="width:${DATA.summary.progress_pct}%"></i></span>${DATA.summary.progress_pct}%`;}
 function show(id){const s=DATA.stories[id];if(!s)return;document.querySelectorAll("tr.sel").forEach(x=>x.classList.remove("sel"));const tr=document.querySelector(`tr[data-s="${id}"]`);if(tr)tr.classList.add("sel");
  const L=s.links||{};const li=(xs,f)=>xs&&xs.length?"<ul>"+xs.map(f||(x=>`<li>${esc(x)}</li>`)).join("")+"</ul>":'<p class="hint">なし</p>';const chips=xs=>xs&&xs.length?xs.map(x=>`<span class="chip">${esc(x)}</span>`).join(""):'<span class="hint">なし</span>';
  const ac=s.ac||{};const t2=(ac.tier_2_functional||[]).map(x=>x.text||x);
- $("#pane").innerHTML=`<h2>${s.critical?"★ ":""}${esc(s.id)} ${esc(s.title)}</h2><div class="meta">${esc(s.parent)} ／ 層 ${esc(s.layer)} ／ 節目 ${esc(s.wave||"—")} ／ 状態 ${esc(s.status)}</div>
- <div class="meta num">日程 ${s.start||"—"} 〜 ${s.finish||"—"} ／ 担当 ${esc(s.assignee||(s.tentative_assignee?s.tentative_assignee+"（仮）":"未割り当て"))}（${esc(s.assigned_by||"")}）</div>
+ const stJa={todo:"まだ",in_progress:"やっている",done:"終わった",blocked:"止まっている",review:"見てもらっている"};
+ $("#pane").innerHTML=`<h2>${s.critical?"★ ":""}${esc(s.id)} ${esc(s.title)}</h2><div class="meta">${esc(s.parent)} ／ 層 ${esc(s.layer)} ／ 節目 ${esc(s.wave||"—")} ／ 状態 <b>${esc(stJa[s.status]||s.status)}</b>${s.status==="done"?"（実績 "+esc(s.finish)+"）":""}</div>
+ <div class="meta num">${s.status==="done"?"終わった日 "+s.finish:"予定 "+(s.start||"—")+" 〜 "+(s.finish||"—")} ／ 担当 ${esc(s.assignee||(s.tentative_assignee?s.tentative_assignee+"（仮）":"未割り当て"))}（${esc(s.assigned_by||"")}）</div>
  <div class="meta num">AI wall-clock ${s.ai_h??s.estimate_hours} h ／ Human ${s.human_h??"—"} h</div>
  ${s.why?`<p>${esc(s.why)}</p>`:""}
  <h3>根拠の決定（逐語）</h3>${li(s.summaries||[],x=>`<li><b>${esc(x.id)}</b> ${esc(x.summary)}</li>`)}
@@ -291,7 +319,7 @@ function show(id){const s=DATA.stories[id];if(!s)return;document.querySelectorAl
  <h3>仕様</h3>${li(L.spec||[])}`;
  $("#pane").querySelectorAll("a[data-go]").forEach(a=>a.onclick=ev=>{ev.preventDefault();show(a.dataset.go);const r=document.querySelector(`tr[data-s="${a.dataset.go}"]`);if(r)r.scrollIntoView({block:"center"});});}
 function init(){const A=$("#fA");DATA.members.forEach(m=>A.insertAdjacentHTML("beforeend",`<option value="${m.id}">${esc(m.name)}</option>`));const layers=[...new Set(Object.values(DATA.stories).map(s=>s.layer))].sort();const Lc=$("#fL");layers.forEach(l=>Lc.insertAdjacentHTML("beforeend",`<option>${l}</option>`));const E=$("#fE");DATA.epics.forEach(e=>E.insertAdjacentHTML("beforeend",`<option value="${e.id}">${esc(e.id)} ${esc(e.title)}</option>`));
- header();rows();["fA","fL","fE","fH"].forEach(i=>$("#"+i).onchange=rows);$("#fQ").oninput=rows;
+ header();rows();["fA","fL","fE","fS","fH"].forEach(i=>$("#"+i).onchange=rows);$("#fQ").oninput=rows;
  $("#tb").addEventListener("click",ev=>{const b=ev.target.closest("[data-s]");if(b)show(b.dataset.s);});
  const t=document.querySelector(".day.today");if(t)t.scrollIntoView({inline:"center",block:"nearest"});}
 init();
@@ -300,7 +328,8 @@ init();
 
 def write_md(d, out, epics, stories, subs, members, cal, ms):
     cols = ["todo", "in_progress", "review", "blocked", "done"]
-    L = ["# 盤（board）", "", f"生成 {out['generated_at']}", ""]
+    sm = out["summary"]; bs = sm.get("by_status", {})
+    L = ["# 盤（board）", "", f"生成 {out['generated_at']}・基準日 {sm.get('as_of')}", "", f"- 終わった {bs.get('done', 0)}・やっている {bs.get('in_progress', 0)}・まだ {bs.get('todo', 0)}・止まっている {bs.get('blocked', 0)} ／ 時間 {sm.get('hours_done')}h / {sm.get('hours_total')}h（{sm.get('progress_pct')}%）", ""]
     for c in cols:
         L.append(f"## {c}")
         for e in epics.values():
@@ -309,12 +338,13 @@ def write_md(d, out, epics, stories, subs, members, cal, ms):
             L.append(f"- **{e['id']} {e['title']}**")
             for s in kids:
                 who = s.get("assignee") or (("(" + s.get("tentative_assignee", "") + " 仮)") if s.get("tentative_assignee") else "★未割り当て")
-                L.append(f"  - {'★' if s['critical'] else ''}{s['id']} {s['title']} ｜ {s['layer']} ｜ {s['estimate_hours']}h ｜ {s['start'] or '—'}→{s['finish'] or '—'} ｜ {who} ｜ 孫 {len(s['children'])}")
+                when = f"終わった {s['finish']}" if s["status"] == "done" else f"{s['start'] or '—'}→{s['finish'] or '—'}"
+                L.append(f"  - {'★' if s['critical'] else ''}{s['id']} {s['title']} ｜ {s['layer']} ｜ {s['estimate_hours']}h ｜ {when} ｜ {who} ｜ 孫 {len(s['children'])}")
         L.append("")
     (d / "board.md").write_text("\n".join(L), encoding="utf-8")
     # schedule
     dates = [D(s["start"]) for s in stories.values() if s.get("start")] + [D(s["finish"]) for s in stories.values() if s.get("finish")]
-    S = ["# スケジュール（週ごと）", "", "■＝期間 ★＝クリティカルパス ▲＝節目", ""]
+    S = ["# スケジュール（週ごと）", "", f"基準日 {out['summary'].get('as_of')}。✓＝終わった（実績の週） ■＝予定 ★＝クリティカルパス ▲＝節目", ""]
     if dates:
         d0, d1 = min(dates), max(dates); d0 -= dt.timedelta(days=d0.weekday()); weeks = []
         w = d0
@@ -327,7 +357,7 @@ def write_md(d, out, epics, stories, subs, members, cal, ms):
                 if not s.get("start"): S.append(f"| {s['id']} {s['title'][:28]} | ★未割り当て | " + " | ".join("" for _ in weeks) + " |"); continue
                 a_, b_ = D(s["start"]), D(s["finish"]); cells = []
                 for w in weeks:
-                    we = w + dt.timedelta(days=6); cells.append(("★" if s["critical"] else "■") if (a_ <= we and b_ >= w) else "")
+                    we = w + dt.timedelta(days=6); cells.append(("✓" if s["status"] == "done" else "★" if s["critical"] else "■") if (a_ <= we and b_ >= w) else "")
                 S.append(f"| {s['id']} {s['title'][:28]} | {s.get('assignee') or (s.get('tentative_assignee','') + ' 仮')} | " + " | ".join(cells) + " |")
         S += ["", "## 節目"] + [f"- ▲ {m['id']} {m['name']} {m['due']}" for m in ms]
         if out["summary"]["milestone_overrun"]: S += ["", "## 節目を超えるもの（赤）"] + [f"- ★ {x}" for x in out["summary"]["milestone_overrun"]]

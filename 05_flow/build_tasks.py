@@ -74,7 +74,9 @@ def error_rows(sid, aid):
     for e in (ERR_BY_SCREEN.get(sid, []) if sid else []) + (ERR_BY_ACT.get(aid, []) if aid else []):
         ids += [f'{e["id"]}-A', f'{e["id"]}-B', f'{e["id"]}-C']
     return sorted(set(ids))
-PREV_STATUS = {x["id"]: x.get("status", "todo") for x in (json.load(open("07_tasks/tickets.json", encoding="utf-8"))["tasks"] if os.path.exists("07_tasks/tickets.json") else [])}   # 再生成で done を todo に戻さない（状態は実装の結果）
+_PREV_TASKS = json.load(open("07_tasks/tickets.json", encoding="utf-8"))["tasks"] if os.path.exists("07_tasks/tickets.json") else []
+PREV_STATUS = {x["id"]: x.get("status", "todo") for x in _PREV_TASKS}   # 再生成で done を todo に戻さない（状態は実装の結果）
+PREV_STAMP = {x["id"]: {k: x[k] for k in ("done_at", "started_at") if x.get(k)} for x in _PREV_TASKS}   # 実績の日も消さない
 tasks = []; tid_of_feature = {}
 def newtask(tid, title, group, layer, phase, kind, feature_ids, **kw):
     crit = kw.pop("critical", False); h = kw.pop("hours"); ta = two_axis(h, kind, crit)
@@ -83,7 +85,7 @@ def newtask(tid, title, group, layer, phase, kind, feature_ids, **kw):
          "depends_on": kw.pop("depends_on", []), "choke_points": kw.pop("choke_points", []), "choke_points_rationale": kw.pop("choke_rationale", ""), "forbidden_direct_apis_reminder": ["fetch", "axios", "undici", "pg / drizzle の生クライアント（関門の外）", "child_process", "fs（関門の外）", "nodemailer / resend（関門の外）", "anthropic / openai SDK（関門の外）"],
          "files_changed": kw.pop("files_changed", []), "files_changed_predicted": kw.pop("fcp", {"new": [], "modify": [], "shared_read": [], "forbidden": ["packages/gateways/**（関門の実装は Group F だけ）"]}),
          "acceptance_criteria": kw.pop("ac", {"structural": [], "functional": [], "regression": REG_BASE}), "access_policies_required": kw.pop("policies", []), "spec_links": kw.pop("spec_links", []),
-         "audit_md_path": f"07_tasks/audit/{tid}.md", "status": PREV_STATUS.get(tid, "todo"), "qa_rows": kw.pop("qa_rows", {"l1": [], "l2_flows": []}), "test_scenarios_inline": kw.pop("scenarios", []), "source": src, "decision_summaries": dsum(src), "critical": crit, "why": kw.pop("why", "")}
+         "audit_md_path": f"07_tasks/audit/{tid}.md", "status": PREV_STATUS.get(tid, "todo"), **PREV_STAMP.get(tid, {}), "qa_rows": kw.pop("qa_rows", {"l1": [], "l2_flows": []}), "test_scenarios_inline": kw.pop("scenarios", []), "source": src, "decision_summaries": dsum(src), "critical": crit, "why": kw.pop("why", "")}
     t["acceptance_criteria_inline"] = {"tier_1_structural": t["acceptance_criteria"]["structural"], "tier_2_functional": [{"type": x.split(":")[0], "text": x, "critical": x.startswith("UNWANTED") and crit} for x in t["acceptance_criteria"]["functional"]], "tier_3_regression": t["acceptance_criteria"]["regression"]}
     t.update(ta); tasks.append(t)
     for f in feature_ids: tid_of_feature.setdefault(f, []).append(tid)

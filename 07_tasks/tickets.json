@@ -681,7 +681,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 1.6,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-15"
   },
   {
    "id": "T-F-02",
@@ -869,7 +870,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 6.0,
-   "estimate_sessions": 2
+   "estimate_sessions": 2,
+   "done_at": "2026-09-15"
   },
   {
    "id": "T-F-03",
@@ -1057,7 +1059,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 6.0,
-   "estimate_sessions": 2
+   "estimate_sessions": 2,
+   "done_at": "2026-09-15"
   },
   {
    "id": "T-F-04",
@@ -1244,7 +1247,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 1.3,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-15"
   },
   {
    "id": "T-F-05",
@@ -1425,7 +1429,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 5.0,
-   "estimate_sessions": 2
+   "estimate_sessions": 2,
+   "done_at": "2026-09-15"
   },
   {
    "id": "T-F-06",
@@ -1606,7 +1611,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 5.0,
-   "estimate_sessions": 2
+   "estimate_sessions": 2,
+   "done_at": "2026-09-15"
   },
   {
    "id": "T-F-07",
@@ -1783,7 +1789,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 0.8,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-15"
   },
   {
    "id": "T-F-08",
@@ -1959,7 +1966,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 0.8,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-15"
   },
   {
    "id": "T-F-09",
@@ -2133,7 +2141,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 0.8,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-15"
   },
   {
    "id": "T-F-10",
@@ -2308,7 +2317,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 0.8,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-15"
   },
   {
    "id": "T-F-11",
@@ -2482,7 +2492,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 0.8,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-15"
   },
   {
    "id": "T-F-12",
@@ -2658,7 +2669,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 0.8,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-15"
   },
   {
    "id": "T-F-13",
@@ -2834,7 +2846,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 4.0,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-15"
   },
   {
    "id": "T-F-14",
@@ -3009,7 +3022,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 4.0,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-15"
   },
   {
    "id": "T-F-15",
@@ -3175,7 +3189,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 0.8,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-15"
   },
   {
    "id": "T-F-16",
@@ -3335,7 +3350,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 1.1,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-15"
   },
   {
    "id": "T-F-17",
@@ -3496,7 +3512,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 1.0,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-15"
   },
   {
    "id": "T-F-18",
@@ -3659,7 +3676,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 1.3,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-D-01",
@@ -3892,7 +3910,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 3.3,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-15"
   },
   {
    "id": "T-D-02",
@@ -4141,7 +4160,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 5.3,
-   "estimate_sessions": 2
+   "estimate_sessions": 2,
+   "done_at": "2026-09-15"
   },
   {
    "id": "T-D-03",
@@ -4355,7 +4375,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 2.8,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-15"
   },
   {
    "id": "T-D-04",
@@ -4575,7 +4596,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 3.3,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-15"
   },
   {
    "id": "T-D-05",
@@ -4835,7 +4857,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 17.0,
-   "estimate_sessions": 5
+   "estimate_sessions": 5,
+   "done_at": "2026-09-15"
   },
   {
    "id": "T-D-06",
@@ -5049,7 +5072,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 2.3,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-15"
   },
   {
    "id": "T-D-07",
@@ -5229,7 +5253,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 1.3,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-D-08",
@@ -5434,7 +5459,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 8.0,
-   "estimate_sessions": 2
+   "estimate_sessions": 2,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-D-09",
@@ -5660,7 +5686,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 11.0,
-   "estimate_sessions": 3
+   "estimate_sessions": 3,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-D-10",
@@ -5905,7 +5932,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 4.8,
-   "estimate_sessions": 2
+   "estimate_sessions": 2,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-D-11",
@@ -6188,7 +6216,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 23.0,
-   "estimate_sessions": 6
+   "estimate_sessions": 6,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-D-12",
@@ -6419,7 +6448,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 2.8,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-D-13",
@@ -6628,7 +6658,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 2.3,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-D-14",
@@ -6866,7 +6897,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 3.8,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-A-01",
@@ -7367,7 +7399,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 32.2,
-   "estimate_sessions": 9
+   "estimate_sessions": 9,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-A-02",
@@ -7601,7 +7634,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 7.5,
-   "estimate_sessions": 2
+   "estimate_sessions": 2,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-A-03",
@@ -7854,7 +7888,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 10.5,
-   "estimate_sessions": 3
+   "estimate_sessions": 3,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-A-04",
@@ -8396,7 +8431,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 16.5,
-   "estimate_sessions": 5
+   "estimate_sessions": 5,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-A-05",
@@ -8832,7 +8868,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 16.5,
-   "estimate_sessions": 5
+   "estimate_sessions": 5,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-A-06",
@@ -9340,7 +9377,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 29.2,
-   "estimate_sessions": 8
+   "estimate_sessions": 8,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-A-07",
@@ -9878,7 +9916,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 22.2,
-   "estimate_sessions": 6
+   "estimate_sessions": 6,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-A-08",
@@ -10217,7 +10256,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 22.2,
-   "estimate_sessions": 6
+   "estimate_sessions": 6,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-A-09",
@@ -10676,7 +10716,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 27.8,
-   "estimate_sessions": 7
+   "estimate_sessions": 7,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-A-10",
@@ -11228,7 +11269,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 39.0,
-   "estimate_sessions": 10
+   "estimate_sessions": 10,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-A-11",
@@ -11593,7 +11635,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 7.2,
-   "estimate_sessions": 2
+   "estimate_sessions": 2,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-A-12",
@@ -12153,7 +12196,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 23.5,
-   "estimate_sessions": 6
+   "estimate_sessions": 6,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-A-13",
@@ -12540,7 +12584,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 23.5,
-   "estimate_sessions": 6
+   "estimate_sessions": 6,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-A-14",
@@ -12924,7 +12969,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 27.0,
-   "estimate_sessions": 7
+   "estimate_sessions": 7,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-A-15",
@@ -13440,7 +13486,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 33.8,
-   "estimate_sessions": 9
+   "estimate_sessions": 9,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-A-16",
@@ -13870,7 +13917,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 6.7,
-   "estimate_sessions": 2
+   "estimate_sessions": 2,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-A-17",
@@ -14232,7 +14280,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 37.5,
-   "estimate_sessions": 10
+   "estimate_sessions": 10,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-A-18",
@@ -14602,7 +14651,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 27.0,
-   "estimate_sessions": 7
+   "estimate_sessions": 7,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-A-19",
@@ -15034,7 +15084,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 36.8,
-   "estimate_sessions": 10
+   "estimate_sessions": 10,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-A-20",
@@ -15486,7 +15537,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 42.0,
-   "estimate_sessions": 11
+   "estimate_sessions": 11,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-A-21",
@@ -15876,7 +15928,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 8.2,
-   "estimate_sessions": 3
+   "estimate_sessions": 3,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-A-22",
@@ -16234,7 +16287,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 39.8,
-   "estimate_sessions": 10
+   "estimate_sessions": 10,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-A-23",
@@ -16549,7 +16603,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 6.2,
-   "estimate_sessions": 2
+   "estimate_sessions": 2,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-A-24",
@@ -17632,7 +17687,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 1.6,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-US-01",
@@ -17846,7 +17902,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 2.4,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-US-02",
@@ -18024,7 +18081,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 3.2,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-US-03",
@@ -18186,7 +18244,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 1.2,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-US-04",
@@ -18348,7 +18407,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 1.2,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-US-05",
@@ -18513,7 +18573,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 1.6,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-US-06",
@@ -18672,7 +18733,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 1.6,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-U-01",
@@ -18926,7 +18988,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 1.2,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-U-02",
@@ -19171,7 +19234,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 1.4,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-U-03",
@@ -19421,7 +19485,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 1.4,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-U-04",
@@ -19671,7 +19736,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 1.4,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-U-05",
@@ -19942,7 +20008,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 1.8,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-U-06",
@@ -20197,7 +20264,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 1.6,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-U-07",
@@ -20492,7 +20560,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 1.7,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-U-08",
@@ -20786,7 +20855,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 1.4,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-U-09",
@@ -21079,7 +21149,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 1.7,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-U-10",
@@ -21376,7 +21447,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 1.9,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-U-11",
@@ -38453,7 +38525,7 @@
     "09_features/DAG.md"
    ],
    "audit_md_path": "07_tasks/audit/T-I-09.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "INT-09-001",
@@ -38534,7 +38606,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 1.4,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-20"
   },
   {
    "id": "T-I-10",
@@ -43129,7 +43202,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 2.7,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-V2-02",
@@ -43280,7 +43354,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 2.7,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-V2-03",
@@ -43434,7 +43509,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 2.7,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-V2-04",
@@ -43578,7 +43654,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 2.7,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-16"
   },
   {
    "id": "T-V2-05",
@@ -43722,7 +43799,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 2.7,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-09-16"
   }
  ]
 }

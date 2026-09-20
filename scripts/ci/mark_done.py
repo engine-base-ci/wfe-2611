@@ -3,7 +3,7 @@
 使い方: python3 scripts/ci/mark_done.py T-F-01 T-F-02 … [--status done|in_progress|review|blocked|todo]
 done にする条件：qa-ladder gate --task が PASS していること（ここで確かめる。通っていなければ書かない）"""
 import argparse, json, subprocess, sys
-ap = argparse.ArgumentParser(); ap.add_argument("ids", nargs="+"); ap.add_argument("--status", default="done"); ap.add_argument("--tickets", default="07_tasks/tickets.json"); ap.add_argument("--plan", default="07_tasks/tickets_plan.json"); ap.add_argument("--spec", default="07_qa/test-specs"); a = ap.parse_args()
+ap = argparse.ArgumentParser(); ap.add_argument("ids", nargs="+"); ap.add_argument("--status", default="done"); ap.add_argument("--at", default="", help="実績の日（YYYY-MM-DD・既定は今日）"); ap.add_argument("--tickets", default="07_tasks/tickets.json"); ap.add_argument("--plan", default="07_tasks/tickets_plan.json"); ap.add_argument("--spec", default="07_qa/test-specs"); a = ap.parse_args()
 T = json.load(open(a.tickets, encoding="utf-8")); P = json.load(open(a.plan, encoding="utf-8")); n = 0; bad = []
 for tid in a.ids:
     if a.status == "done":
@@ -12,10 +12,17 @@ for tid in a.ids:
         # 実ブラウザの証拠（op_gate）：説明文の PASS を done にしない（2026-09-16・user「チケット単位で実際に押せ」）
         r = subprocess.run([sys.executable, "scripts/ci/op_gate.py", "--spec", a.spec, "--tickets", a.tickets, "--report", "apps/web/pw-reports/screens.json", "--report", "apps/web/pw-reports/showcase.json", "--report", "apps/e2e/test-results/report.json", "--task", tid], capture_output=True, text=True)
         if r.returncode != 0: print(r.stdout.strip().split("\n")[-1]); bad.append(tid); continue
+    import datetime as _dt
+    at = a.at or _dt.date.today().isoformat()
+    stamp = {"done": ("done_at", at), "in_progress": ("started_at", at)}.get(a.status)   # 実績の日を書く（日程は実績を優先し、残りを今日から引き直す）
     for x in T["tasks"]:
-        if x["id"] == tid: x["status"] = a.status; n += 1
+        if x["id"] == tid:
+            x["status"] = a.status; n += 1
+            if stamp and not x.get(stamp[0]): x[stamp[0]] = stamp[1]
     for x in P["tickets"]:
-        if x["id"] == tid: x["status"] = a.status
+        if x["id"] == tid:
+            x["status"] = a.status
+            if stamp and not x.get(stamp[0]): x[stamp[0]] = stamp[1]
         elif x.get("parent") == tid and x["kind"] == "subtask" and a.status == "done": x["status"] = "done"
 json.dump(T, open(a.tickets, "w", encoding="utf-8"), ensure_ascii=False, indent=1); json.dump(P, open(a.plan, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 print(f"{a.status}: {n} 件" + (f" ／ gate が通っていないので書かなかった: {bad}" if bad else ""))

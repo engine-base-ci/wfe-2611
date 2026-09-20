@@ -28,6 +28,13 @@ def main():
         h = hp.read_text(encoding="utf-8"); miss = [t["id"] for t in P["tickets"] if t["kind"] == "story" and t.get("delta") != "dropped" and f'"{t["id"]}"' not in h]
         if os.path.getmtime(hp) + 1 < os.path.getmtime(a.plan): fails.append(("K9", "schedule.html が plan より古い（再生成する）"))
         if miss: fails.append(("K9", f"schedule.html に無い story {miss[:6]}"))
+        # 状態が日程に写っているか：plan の summary.by_status と tickets.json の状態の数が一致する（done を書いたのにガントが古い、を捕まえる）
+        try:
+            import collections
+            src = collections.Counter(t.get("status", "todo") for t in json.load(open(P.get("inputs", {}).get("tickets", "07_tasks/tickets.json"), encoding="utf-8"))["tasks"])
+            got = P.get("summary", {}).get("by_status") or {}
+            if any(src.get(k, 0) != got.get(k, 0) for k in set(src) | set(got)): fails.append(("K9", f"状態の数が日程に写っていない：tickets.json {dict(src)} ／ plan {got}（build_tickets --from-plan で作り直す）"))
+        except Exception as e: fails.append(("K9", f"状態の照合ができない：{e}"))
     if s.get("estimate_default"): warns.append(f'K7 見積が既定値のまま {len(s["estimate_default"])}: {s["estimate_default"][:8]}')
     if s.get("milestone_overrun"): warns.append(f'K8 節目超過 {len(s["milestone_overrun"])}: {s["milestone_overrun"][:4]}')
     print(f'epic {s["epic"]} / story {s["story"]} / subtask {s["subtask"]} / クリティカルパス {s["critical_path_days"]} 営業日')
