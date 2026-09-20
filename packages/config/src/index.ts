@@ -105,7 +105,7 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
       .split(",")
       .map((x) => x.trim())
       .filter(Boolean),
-    mailFrom: env["MAIL_FROM"] || "Kaname <noreply@kaname.app>",
+    mailFrom: env["MAIL_FROM"] || "Kaname <noreply@engine-base.com>",
     opsEmail: env["OPS_EMAIL"] || "info@engine-base.com",
     port: Number(env["PORT"] ?? 3001),
   };

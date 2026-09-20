@@ -11,7 +11,7 @@ bash scripts/dev/up.sh
 
 - 画面 http://127.0.0.1:3124　API http://127.0.0.1:3011
 - 止める `bash scripts/dev/up.sh --stop`／今どうなっているか `bash scripts/dev/up.sh --status`
-- **メールは実際に送ります（Resend）。** ただし送信ドメイン（engine-base.com）が未検証のうちは、**info@engine-base.com** にしか届きません。ほかの宛先は `.dev-logs/api.log` に「[mail] 送れなかった → …」と出ます
+- **メールは実際に送ります（Resend・差出人は noreply@engine-base.com）。** 送信ドメインは検証済みなので、どの宛先にも届きます。送れなかったときは `.dev-logs/api.log` に「[mail] 送れなかった → …」と理由が出ます
 - 運営（ENGINE BASE）の宛先は **info@engine-base.com**（問い合わせの届け先・運営アカウントのログイン名）
 - 受信箱を開けないときは、確認リンクを `.dev-logs/api.log` の「verify →」「reset →」の行からブラウザに貼ってください
 - Bridge（自分のPC）と自分のAIの返答はまだ実装していません。各手順の「今はまだ押せないもの」に理由つきで書いてあります

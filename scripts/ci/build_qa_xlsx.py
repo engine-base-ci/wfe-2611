@@ -71,7 +71,7 @@ def write(a, order: list[tuple[str, dict]]) -> int:
         ("立ち上げ", "ターミナルで `bash scripts/dev/up.sh` を実行する（DB → API → 画面が立つ。初回は 2 分ほど）"),
         ("画面", a.base),
         ("止める", "`bash scripts/dev/up.sh --stop`　／　今どうなっているか `bash scripts/dev/up.sh --status`"),
-        ("メール", "実際に送ります（Resend）。送信ドメイン（engine-base.com）がまだ未検証なので、届くのは info@engine-base.com だけです。ほかの宛先は `.dev-logs/api.log` に「[mail] 送れなかった → …」と出ます"),
+        ("メール", "実際に送ります（Resend・差出人は noreply@engine-base.com）。送信ドメインは検証済みなので、どの宛先にも届きます。送れなかったときは `.dev-logs/api.log` に「[mail] 送れなかった → …」と理由が出ます"),
         ("運営の宛先", "運営（ENGINE BASE）は info@engine-base.com。問い合わせの届け先と運営アカウントのログイン名はこれです"),
         ("メールの中身", "リンクは `.dev-logs/api.log` の「verify →」「reset →」の行にも出ます。受信箱を開けないときはその URL をブラウザに貼ってください"),
         ("招待の URL", "`bash scripts/dev/invite.sh` で作れます（メンバーの画面ができるまでの代わり）"),
