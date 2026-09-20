@@ -33,8 +33,15 @@ export type Auth = ReturnType<typeof betterAuth<BetterAuthOptions>>;
 
 export function createAuth(o: AuthOptions): { auth: Auth; pool: pg.Pool } {
   const pool = new pg.Pool({ connectionString: o.authDatabaseUrl, max: 5 });
-  const mail: Mailer =
-    o.mailer ?? (async (m) => console.warn(`[auth] メールの送出先が無い（${m.kind} → ${m.to}）: ${m.url}`));
+  // 送出先が無ければリンクをログに出す（開発）。送出先があっても、本番以外はリンクを残す
+  // （実際に送っていても、確かめる人が受信箱を開かずに先へ進めるように）
+  const dev = process.env["NODE_ENV"] !== "production";
+  const mail: Mailer = o.mailer
+    ? async (m) => {
+        if (dev) console.warn(`[auth] リンク（${m.kind} → ${m.to}）: ${m.url}`);
+        await o.mailer!(m);
+      }
+    : async (m) => console.warn(`[auth] メールの送出先が無い（${m.kind} → ${m.to}）: ${m.url}`);
   const auth = betterAuth({
     database: { dialect: new PostgresDialect({ pool }), type: "postgres", casing: "snake", schemaName: "kaname_auth" },
     secret: o.secret,

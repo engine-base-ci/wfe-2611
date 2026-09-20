@@ -41,7 +41,14 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
     ...(mail
       ? {
           mailer: async (m: { to: string; subject: string; text: string }) => {
-            await mail.send({ from: config.mailFrom, to: m.to, subject: m.subject, text: m.text });
+            // 送れたか／送れなかったかを必ず残す（黙って落ちると「メールが来ない」を誰も再現できない・G-15）
+            try {
+              await mail.send({ from: config.mailFrom, to: m.to, subject: m.subject, text: m.text });
+              console.log(`[mail] 送った → ${m.to}（${m.subject}）`);
+            } catch (e) {
+              console.error(`[mail] 送れなかった → ${m.to}（${m.subject}）: ${(e as Error).message}`);
+              throw e;
+            }
           },
         }
       : {}),

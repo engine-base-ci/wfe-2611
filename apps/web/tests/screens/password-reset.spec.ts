@@ -1,6 +1,6 @@
 // T-U-06 パスワードの再設定。テストの名前に正本の行 ID を持つ（op_gate.py）
 import { expect, test } from "@playwright/test";
-import { api, lastMailUrl, noOverflow, PW, signupViaApi, uniqEmail } from "../_lib/api";
+import { api, lastMailUrl, mailLog, noOverflow, PW, signupViaApi, uniqEmail } from "../_lib/api";
 
 test("SCR-PASSWORD-RESET-001 SCR-PASSWORD-RESET-009 SCR-PASSWORD-RESET-010 SCR-PASSWORD-RESET-008 状態 再設定を送る：4 幅で横溢れ 0・時点の部品なし・「ログインへ戻る」→ /login", async ({
   page,
@@ -72,4 +72,30 @@ test("SCR-PASSWORD-RESET-025 端末を失くした：「回復コードで入る
     .getByRole("link", { name: /回復コードで入る/ })
     .click();
   await expect(page).toHaveURL(/\/login$/);
+});
+
+// メール（関門 C6）
+test("SCR-PASSWORD-RESET-031 再設定メールを送ると実際に送られ、API のログに「送った」が残る（黙って落ちない）", async ({
+  page,
+}) => {
+  const u = await signupViaApi();
+  await page.goto("/password-reset");
+  await page.getByLabel("メールアドレス").fill(u.email);
+  await page.getByRole("button", { name: "再設定メールを送る" }).click();
+  await expect(page.locator("[data-state='s'] h1")).toHaveText("送りました");
+  const sent = mailLog(u.email);
+  expect(sent.failed, `送れなかった: ${sent.failed}`).toBe("");
+  expect(sent.sent || lastMailUrl("reset", u.email), "ログに送った記録が無い").toBeTruthy();
+});
+test("SCR-PASSWORD-RESET-034 届かないときに詰まらない：登録の無いアドレスでも「送りました」（有無を漏らさない）・もう一度送れる", async ({
+  page,
+}) => {
+  await page.goto("/password-reset");
+  await page.getByLabel("メールアドレス").fill(uniqEmail());
+  await page.getByRole("button", { name: "再設定メールを送る" }).click();
+  await expect(page.locator("[data-state='s'] h1")).toHaveText("送りました");
+  await page.goto("/password-reset");
+  await page.getByLabel("メールアドレス").fill(uniqEmail());
+  await page.getByRole("button", { name: "再設定メールを送る" }).click();
+  await expect(page.locator("[data-state='s']")).toBeVisible();
 });

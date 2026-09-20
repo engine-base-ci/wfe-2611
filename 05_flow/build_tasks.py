@@ -67,6 +67,14 @@ def ops_rows(file, prefix, sid, task, ops):
         st = "・".join(o["states"]); roles = " ".join(o["roles"]) or "全役割"
         ids.append(qrow(file, prefix, sid, "操作", f"{OP_KIND_JA.get(o['kind'], o['kind'])}「{o['label']}」（状態 {st}）", f"状態 {o['states'][0]} を作る（{roles}）", "押す／入れる（実ブラウザ）" if o["kind"] != "error" else "その条件を作る", _op_expect(o), f"op={o['key']}", task))
     return ids
+MAIL_SCREENS = {sid for sid, sc in S.items() if any("C6" in (BP.get(a, {}).get("choke_points") or []) for a in sc.get("acts", []))}
+def mail_rows(file, prefix, sid, task):
+    """メール（関門 C6）に触る画面の行：出す・届く・文面・届かないとき。dev は Resend の鍵、staging は送信ドメインの検証が前提（G-11）"""
+    if sid not in MAIL_SCREENS: return []
+    return [qrow(file, prefix, sid, "メール", "送る操作をすると実際に送られる（API のログに「送った」が出る・黙って落ちない）", "Resend の鍵が入っている", "送る操作をする", "ログに「[mail] 送った → 宛先」。落ちたら「送れなかった」と理由", "G-15・関門 C6", task),
+            qrow(file, prefix, sid, "メール", "自分の受信箱に届く（迷惑メールに入らない）", "実在するアドレス", "届いたメールを開く", "件名・差出人・本文が読める。リンクを押すと目的の画面が開く", "関門 C6", task),
+            qrow(file, prefix, sid, "メール", "文面に内部の言葉（ID・関門・テーブル名）が出ていない。誰宛てか・何をすればよいかが 1 行で分かる", "届いたメール", "本文を読む", "宛先の名前・用件・次の一手・差出人。内部語なし", "ui_lint の対象外なので人が見る", task),
+            qrow(file, prefix, sid, "メール", "届かないときに詰まらない（再送の導線がある・登録の有無は漏らさない）", "存在しないアドレス／受信箱が拒否", "送る → 届かない", "画面は「送りました」のまま（有無を漏らさない）。再送で回復できる", "G-15", task)]
 def handoff_row(file, prefix, sid, task):
     return qrow(file, prefix, sid, "発注者確認", f"手順 07_tasks/handoff/{task}.md を発注者が実際に触って OK を出す（Rule 12）", "staging か ローカル", "手順どおりに触る", "手順の末尾に「OK: 日付 名前」が書かれる。無い間は BLOCKED（発注者の確認待ち）", "Rule 12", task)
 def error_rows(sid, aid):
@@ -193,7 +201,7 @@ for f in sorted([x for x in FD["items"] if x["group"] == "C"], key=lambda x: S[x
     rows.append(qrow(sp, pre, sid, "横溢れ", "375・768・1024・1440 で scrollWidth - clientWidth <= 1、1180+ で本文 720 以上", "—", "各幅で開く", "溢れ 0", "G-05", tid))
     rows.append(qrow(sp, pre, sid, "空・止まっている", "データ 0 件の状態と AI が止まっている状態が cover 宣言どおりに出る", "PS2 / PS4", "開く", "空状態と止まっている帯", "G18", tid))
     rows += variance_rows(sp, pre, sid, tid, html); rows += g_rows(sp, pre, sid, tid, set(), [E[x]["table_name"] for x in s["related_entities"]], "ui")
-    rows += ops_rows(sp, pre, sid, tid, _ops(sid)); rows.append(handoff_row(sp, pre, sid, tid))   # 操作要素 1 つ＝1 行（分母はモックから機械で）＋ 発注者確認（Rule 12）
+    rows += ops_rows(sp, pre, sid, tid, _ops(sid)); rows.append(handoff_row(sp, pre, sid, tid)); rows += mail_rows(sp, pre, sid, tid)   # 操作要素 1 つ＝1 行（分母はモックから機械で）＋ 発注者確認（Rule 12）
     errs = error_rows(sid, None); eps = [EP[e] for e in f["api_endpoints"]]
     jobs = sorted({acts[a]["jobs"][0] for a in s["acts"] if a in acts and acts[a]["jobs"]}); deps = US_ids + [t["id"] for t in tasks if t["group"] == "A" and set(t["acts"]) & set(s["acts"])]
     _rel = s.get("release", "v1")

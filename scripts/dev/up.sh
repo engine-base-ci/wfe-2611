@@ -63,6 +63,16 @@ while IFS= read -r line; do
   case "$key" in *[!A-Za-z0-9_]*) continue ;; esac
   printf -v "$key" '%s' "$val"; export "${key?}"
 done < "$ROOT/.env.example"
+# ローカルだけの上書き（.env は git に入らない）。Resend の鍵などはここから
+if [ -f "$ROOT/.env" ]; then
+  while IFS= read -r line; do
+    case "$line" in ''|'#'*) continue ;; esac
+    key=${line%%=*}; val=${line#*=}
+    case "$key" in *[!A-Za-z0-9_]*) continue ;; esac
+    printf -v "$key" '%s' "$val"; export "${key?}"
+  done < "$ROOT/.env"
+  ok "ローカルの上書きを読んだ（.env）"
+fi
 PORT=$API_PORT
 BASE_URL="http://127.0.0.1:$API_PORT"
 # 画面の出どころ（CORS）。本番ビルド 3124 と next dev 3123 の両方を許す

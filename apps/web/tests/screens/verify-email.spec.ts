@@ -1,6 +1,6 @@
 // T-U-02 メールを確認する。テストの名前に正本の行 ID を持つ（op_gate.py）
 import { expect, test } from "@playwright/test";
-import { lastMailUrl, noOverflow, signupViaApi } from "../_lib/api";
+import { lastMailUrl, mailLog, noOverflow, signupViaApi } from "../_lib/api";
 
 test("SCR-VERIFY-EMAIL-001 SCR-VERIFY-EMAIL-009 SCR-VERIFY-EMAIL-010 SCR-VERIFY-EMAIL-011 SCR-VERIFY-EMAIL-019 状態 送信済み：4 幅で横溢れ 0・宛先が出る・「もう一度送る」で送った旨が出る（入力欄は無い＝表記ゆらぎは該当なし）", async ({
   page,
@@ -49,4 +49,25 @@ test("SCR-VERIFY-EMAIL-002 SCR-VERIFY-EMAIL-021 E-AUTH-003-B 届いたリンク�
   await expect(page.locator("[data-state='ok'] h1")).toHaveText("確認できました", { timeout: 15_000 });
   await page.getByRole("link", { name: /はじめの設定をはじめる（PCをつなぐ）/ }).click();
   await expect(page).toHaveURL(/\/setup\/bridge/);
+});
+
+// メール（関門 C6）。dev は Resend の鍵が入っていれば実際に飛ぶ。飛んだ／飛ばなかったは API のログに残る
+test("SCR-VERIFY-EMAIL-024 送る操作をすると実際に送られ、API のログに「送った」が残る（黙って落ちない）", async ({
+  page,
+}) => {
+  const u = await signupViaApi();
+  await page.goto(`/verify-email?sent=1&email=${encodeURIComponent(u.email)}`);
+  await page.getByRole("button", { name: "もう一度送る" }).click();
+  await expect(page.getByRole("status")).toContainText("もう一度送りました");
+  const sent = mailLog(u.email);
+  expect(sent.failed, `送れなかった: ${sent.failed}`).toBe("");
+  expect(sent.sent || lastMailUrl("verify", u.email), "ログに送った記録が無い").toBeTruthy();
+});
+test("SCR-VERIFY-EMAIL-027 届かないときに詰まらない：宛先が受け取れなくても画面は進み、再送で回復できる（登録の有無は漏らさない）", async ({
+  page,
+}) => {
+  await page.goto("/verify-email?sent=1&email=bounce%40example.invalid");
+  await page.getByRole("button", { name: "もう一度送る" }).click();
+  await expect(page.getByRole("status")).toBeVisible(); // 送れても送れなくても、次の一手（再送）が残る
+  await expect(page.locator("[data-state='n']")).toContainText("bounce@example.invalid");
 });

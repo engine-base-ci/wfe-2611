@@ -4,7 +4,7 @@
 
 - 総タスク数：171（A 26 / D 14 / F 18 / I 22 / S 15 / U-screen 64 / U-shared 7 / V2 5）
 - 画面の被覆：64/64
-- L1 テスト行：4654（正本 07_qa/test-specs）／ 流れ（L2）：9
+- L1 テスト行：4714（正本 07_qa/test-specs）／ 流れ（L2）：9
 - 工数：Human 5534.5 h（692 日）／ AI 計算 991.1 h ＋ 人のレビュー 52.0 h → wall-clock 278.8 h（47 日・並列 10）
 - Wave 数：25
 
@@ -110,21 +110,21 @@
 | ID | タイトル | category | layer | Human h | AI h | wall-clock | wave | depends_on | L1 行 |
 |---|---|---|---|---|---|---|---|---|---|
 | T-U-01 | 画面 アカウントを作る（2 状態・R1/R2） | frontend | ui | 12.0 | 1.2 | 1.2 | 11 | 8 | 34 |
-| T-U-02 | 画面 メールを確認する（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 11 | 11 | 26 |
+| T-U-02 | 画面 メールを確認する（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 11 | 11 | 30 |
 | T-U-03 | 画面 招待を受けて参加する（3 状態・R3/R4） | frontend | ui | 14.5 | 1.4 | 1.4 | 11 | 8 | 27 |
 | T-U-04 | 画面 2段階認証を設定する（2 状態・R1/R2/R3） | frontend | ui | 13.5 | 1.4 | 1.4 | 11 | 11 | 30 |
 | T-U-05 | 画面 ログインする（3 状態・R1/R2/R3/R4） | frontend | ui | 17.5 | 1.8 | 1.8 | 11 | 11 | 44 |
-| T-U-06 | 画面 パスワードの再設定（3 状態・R1/R2/R3） | frontend | ui | 16.0 | 1.6 | 1.6 | 11 | 11 | 33 |
+| T-U-06 | 画面 パスワードの再設定（3 状態・R1/R2/R3） | frontend | ui | 16.0 | 1.6 | 1.6 | 11 | 11 | 37 |
 | T-U-07 | 画面 自分のAIと話す（4 状態・R1/R2） | frontend | ui | 17.0 | 1.7 | 1.7 | 11 | 9 | 53 |
 | T-U-08 | 画面 たたき台を確かめる（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 11 | 12 | 50 |
 | T-U-09 | 画面 自分のPCをつなぐ（4 状態・R1/R2） | frontend | ui | 17.0 | 1.7 | 1.7 | 11 | 9 | 52 |
 | T-U-10 | 画面 ログイン情報を預ける（5 状態・R1/R2） | frontend | ui | 19.5 | 1.9 | 1.9 | 11 | 8 | 56 |
 | T-U-11 | 画面 テストで動かす（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 12 | 8 | 41 |
 | T-U-12 | 画面 本番に切り替える（2 状態・R1/R2） | frontend | ui | 12.0 | 1.2 | 1.2 | 12 | 12 | 34 |
-| T-U-13 | 画面 今日（5 状態・R1/R2/R3） | frontend | ui | 21.0 | 2.1 | 2.1 | 12 | 9 | 101 |
-| T-U-14 | 画面 承認待ち（4 状態・R1/R2/R3） | frontend | ui | 18.5 | 1.9 | 1.9 | 12 | 8 | 60 |
+| T-U-13 | 画面 今日（5 状態・R1/R2/R3） | frontend | ui | 21.0 | 2.1 | 2.1 | 12 | 9 | 105 |
+| T-U-14 | 画面 承認待ち（4 状態・R1/R2/R3） | frontend | ui | 18.5 | 1.9 | 1.9 | 12 | 8 | 64 |
 | T-U-15 | 画面 自分のAIとAI社員のやりとり（5 状態・R1/R2/R3） | frontend | ui | 21.0 | 2.1 | 2.1 | 12 | 9 | 56 |
-| T-U-16 | 画面 タスク（12 状態・R1/R2/R3/R4） | frontend | ui | 40.0 | 4.0 | 4.0 | 12 | 12 | 132 |
+| T-U-16 | 画面 タスク（12 状態・R1/R2/R3/R4） | frontend | ui | 40.0 | 4.0 | 4.0 | 12 | 12 | 136 |
 | T-U-17 | 画面 自分のAIと話す（11 状態・R1/R2/R3/R4） | frontend | ui | 37.5 | 3.8 | 3.8 | 12 | 10 | 113 |
 | T-U-18 | 画面 AI社員の動き（4 状態・R1/R2/R3） | frontend | ui | 18.5 | 1.9 | 1.9 | 12 | 12 | 51 |
 | T-U-19 | 画面 探す（3 状態・R1/R2/R3/R4） | frontend | ui | 17.5 | 1.8 | 1.8 | 12 | 8 | 44 |
@@ -143,36 +143,36 @@
 | T-U-32 | 画面 覚え直させる（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 14 | 8 | 39 |
 | T-U-33 | 画面 証跡（6 状態・R1/R2） | frontend | ui | 22.0 | 2.2 | 2.2 | 14 | 11 | 62 |
 | T-U-34 | 画面 ルール（3 状態・R1/R2/R3/R4） | frontend | ui | 17.5 | 1.8 | 1.8 | 14 | 8 | 45 |
-| T-U-35 | 画面 メンバー（7 状態・R1/R2） | frontend | ui | 24.5 | 2.5 | 2.5 | 14 | 9 | 86 |
+| T-U-35 | 画面 メンバー（7 状態・R1/R2） | frontend | ui | 24.5 | 2.5 | 2.5 | 14 | 9 | 90 |
 | T-U-36 | 画面 AI社員（4 状態・R1/R2） | frontend | ui | 17.0 | 1.7 | 1.7 | 14 | 12 | 51 |
 | T-U-37 | 画面 AI社員の1体（5 状態・R1/R2） | frontend | ui | 19.5 | 1.9 | 1.9 | 14 | 12 | 53 |
 | T-U-38 | 画面 この製品でできること・できないこと（2 状態・R1/R2） | frontend | ui | 12.0 | 1.2 | 1.2 | 14 | 8 | 36 |
 | T-U-39 | 画面 持ち出す（2 状態・R1/R2） | frontend | ui | 12.0 | 1.2 | 1.2 | 14 | 8 | 44 |
 | T-U-40 | 画面 退会する（6 状態・R1/R2） | frontend | ui | 22.0 | 2.2 | 2.2 | 14 | 9 | 53 |
-| T-U-41 | 画面 運営の支援（2 状態・R6） | frontend | ui | 10.5 | 1.1 | 1.1 | 15 | 9 | 37 |
+| T-U-41 | 画面 運営の支援（2 状態・R6） | frontend | ui | 10.5 | 1.1 | 1.1 | 15 | 9 | 41 |
 | T-U-42 | 画面 運営：会社の一覧（4 状態・R6） | frontend | ui | 15.5 | 1.6 | 1.6 | 15 | 9 | 39 |
 | T-U-43 | 画面 運営：配るもの（7 状態・R6） | frontend | ui | 23.0 | 2.3 | 2.3 | 15 | 12 | 41 |
-| T-U-44 | 画面 自分のアカウント（2 状態・R1/R2/R3/R4） | frontend | ui | 15.0 | 1.5 | 1.5 | 15 | 9 | 50 |
+| T-U-44 | 画面 自分のアカウント（2 状態・R1/R2/R3/R4） | frontend | ui | 15.0 | 1.5 | 1.5 | 15 | 9 | 54 |
 | T-U-45 | 画面 会社の設定（2 状態・R1/R2） | frontend | ui | 12.0 | 1.2 | 1.2 | 15 | 8 | 41 |
 | T-U-46 | 画面 取り込み（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 15 | 8 | 41 |
 | T-U-47 | 画面 外部サービスの連携（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 15 | 8 | 37 |
 | T-U-48 | 画面 運営：サービス台帳（2 状態・R6） | frontend | ui | 10.5 | 1.1 | 1.1 | 15 | 8 | 33 |
-| T-U-49 | 画面 運営：スキル（4 状態・R6） | frontend | ui | 15.5 | 1.6 | 1.6 | 15 | 8 | 45 |
-| T-U-50 | 画面 問い合わせ（5 状態・R1/R2/R3/R4） | frontend | ui | 22.5 | 2.2 | 2.2 | 15 | 8 | 51 |
-| T-U-51 | 画面 お知らせと通知（3 状態・R1/R2/R3/R4） | frontend | ui | 17.5 | 1.8 | 1.8 | 16 | 8 | 43 |
+| T-U-49 | 画面 運営：スキル（4 状態・R6） | frontend | ui | 15.5 | 1.6 | 1.6 | 15 | 8 | 49 |
+| T-U-50 | 画面 問い合わせ（5 状態・R1/R2/R3/R4） | frontend | ui | 22.5 | 2.2 | 2.2 | 15 | 8 | 55 |
+| T-U-51 | 画面 お知らせと通知（3 状態・R1/R2/R3/R4） | frontend | ui | 17.5 | 1.8 | 1.8 | 16 | 8 | 47 |
 | T-U-52 | 画面 プランと請求（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 16 | 8 | 53 |
-| T-U-53 | 画面 運営：お知らせ（2 状態・R6） | frontend | ui | 10.5 | 1.1 | 1.1 | 16 | 8 | 42 |
+| T-U-53 | 画面 運営：お知らせ（2 状態・R6） | frontend | ui | 10.5 | 1.1 | 1.1 | 16 | 8 | 46 |
 | T-U-54 | 画面 運営：請求と入金（2 状態・R6） | frontend | ui | 10.5 | 1.1 | 1.1 | 16 | 8 | 38 |
 | T-U-55 | 画面 運営：会社の 1 社（1 状態・R6） | frontend | ui | 8.0 | 0.8 | 0.8 | 16 | 9 | 49 |
 | T-U-56 | 画面 運営：公開の審査（2 状態・R6） | frontend | ui | 10.5 | 1.1 | 1.1 | 16 | 8 | 39 |
 | T-U-57 | 画面 運営：運営の証跡（2 状態・R6） | frontend | ui | 10.5 | 1.1 | 1.1 | 16 | 11 | 36 |
-| T-U-58 | 画面 メンバーの1人（4 状態・R1/R2） | frontend | ui | 17.0 | 1.7 | 1.7 | 16 | 10 | 69 |
+| T-U-58 | 画面 メンバーの1人（4 状態・R1/R2） | frontend | ui | 17.0 | 1.7 | 1.7 | 16 | 10 | 73 |
 | T-U-59 | 画面 支払い方法を登録する（4 状態・R1/R2・段階 2） | frontend | ui | 17.0 | 1.7 | 1.7 | 24 | 8 | 37 |
 | T-U-60 | 画面 開示資料（4 状態・R1/R2・段階 2） | frontend | ui | 17.0 | 1.7 | 1.7 | 24 | 8 | 40 |
 | T-U-61 | 画面 AI の経路（4 状態・R1/R2・段階 2） | frontend | ui | 17.0 | 1.7 | 1.7 | 24 | 8 | 56 |
-| T-U-62 | 画面 アプリと通知（3 状態・R1/R2/R3/R4・段階 2） | frontend | ui | 17.5 | 1.8 | 1.8 | 24 | 8 | 39 |
+| T-U-62 | 画面 アプリと通知（3 状態・R1/R2/R3/R4・段階 2） | frontend | ui | 17.5 | 1.8 | 1.8 | 24 | 8 | 43 |
 | T-U-63 | 画面 運営：AI の経路と使用量（3 状態・R6・段階 2） | frontend | ui | 13.0 | 1.3 | 1.3 | 24 | 8 | 25 |
-| T-U-64 | 画面 運営：開示資料（3 状態・R6・段階 2） | frontend | ui | 13.0 | 1.3 | 1.3 | 24 | 8 | 31 |
+| T-U-64 | 画面 運営：開示資料（3 状態・R6・段階 2） | frontend | ui | 13.0 | 1.3 | 1.3 | 24 | 8 | 35 |
 
 ### Group I
 
@@ -1024,7 +1024,7 @@
 - 触るファイル：apps/web/app/(public)/verify-email/page.tsx (new)、apps/web/tests/screens/verify-email.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 verify-email は URL /verify-email で開く（apps/web/app/(public)/verify ／ STATE-DRIVEN: WHILE 画面 verify-email が描画中 THEN h1「メールを確認する」・第2ナビ ・状態 3（送信済み、確認できた
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/members が「届いたリンクを押す」として呼ばれたとき THEN Kaname は「本人確認を ／ EVENT-DRIVEN: WHEN GET /api/v1/members が「認証アプリを登録する」として呼ばれたとき THEN Kaname は「TOTP ／ EVENT-DRIVEN: WHEN 「はじめの設定をはじめる」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映
-- L1 行 26（['SCR-VERIFY-EMAIL-001', 'SCR-VERIFY-EMAIL-002', 'SCR-VERIFY-EMAIL-003'] …）／ L2 ['J-01']
+- L1 行 30（['SCR-VERIFY-EMAIL-001', 'SCR-VERIFY-EMAIL-002', 'SCR-VERIFY-EMAIL-003'] …）／ L2 ['J-01']
 - audit: 07_tasks/audit/T-U-02.md
 
 ### T-U-03 画面 招待を受けて参加する（3 状態・R3/R4）
@@ -1072,7 +1072,7 @@
 - 触るファイル：apps/web/app/(public)/password-reset/page.tsx (new)、apps/web/tests/screens/password-reset.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 password-reset は URL /password-reset で開く（apps/web/app/(public)/pa ／ STATE-DRIVEN: WHILE 画面 password-reset が描画中 THEN h1「パスワードの再設定」・第2ナビ ・状態 3（再設定を送る、
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/members が「届いたリンクを押す」として呼ばれたとき THEN Kaname は「本人確認を ／ EVENT-DRIVEN: WHEN GET /api/v1/members が「認証アプリを登録する」として呼ばれたとき THEN Kaname は「TOTP ／ EVENT-DRIVEN: WHEN 「再設定メールを送る」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
-- L1 行 33（['SCR-PASSWORD-RESET-001', 'SCR-PASSWORD-RESET-002', 'SCR-PASSWORD-RESET-003'] …）／ L2 ['J-06']
+- L1 行 37（['SCR-PASSWORD-RESET-001', 'SCR-PASSWORD-RESET-002', 'SCR-PASSWORD-RESET-003'] …）／ L2 ['J-06']
 - audit: 07_tasks/audit/T-U-06.md
 
 ### T-U-07 画面 自分のAIと話す（4 状態・R1/R2）
@@ -1156,7 +1156,7 @@
 - 触るファイル：apps/web/app/(app)/today/page.tsx (new)、apps/web/tests/screens/today.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 today は URL /today で開く（apps/web/app/(app)/today/page.tsx。遷移の href ／ STATE-DRIVEN: WHILE 画面 today が描画中 THEN h1「今日」・第2ナビ 申し送り / 朝の計画 / 承認待ち / 今日のタスク /
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/messages が「申し送りを読む」として呼ばれたとき THEN Kaname は「タスクと承認 ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN PATCH /api/v1/messages/:id が「候補にチェックを入れて「今日を確定」を押す」として呼ばれたとき 
-- L1 行 101（['SCR-TODAY-001', 'SCR-TODAY-002', 'SCR-TODAY-003'] …）／ L2 ['J-03']
+- L1 行 105（['SCR-TODAY-001', 'SCR-TODAY-002', 'SCR-TODAY-003'] …）／ L2 ['J-03']
 - audit: 07_tasks/audit/T-U-13.md
 
 ### T-U-14 画面 承認待ち（4 状態・R1/R2/R3）
@@ -1168,7 +1168,7 @@
 - 触るファイル：apps/web/app/(app)/approvals/page.tsx (new)、apps/web/tests/screens/approvals.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 approvals は URL /approvals で開く（apps/web/app/(app)/approvals/page. ／ STATE-DRIVEN: WHILE 画面 approvals が描画中 THEN h1「承認待ち」・第2ナビ 未処理 / 止めたもの / 履歴・状態 4（通
 - AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/approvals/:id が「中身を見て押す／止める」として呼ばれたとき THEN Kana ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「承認する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
-- L1 行 60（['SCR-APPROVALS-001', 'SCR-APPROVALS-002', 'SCR-APPROVALS-003'] …）／ L2 ['J-03']
+- L1 行 64（['SCR-APPROVALS-001', 'SCR-APPROVALS-002', 'SCR-APPROVALS-003'] …）／ L2 ['J-03']
 - audit: 07_tasks/audit/T-U-14.md
 
 ### T-U-15 画面 自分のAIとAI社員のやりとり（5 状態・R1/R2/R3）
@@ -1192,7 +1192,7 @@
 - 触るファイル：apps/web/app/(app)/tasks/page.tsx (new)、apps/web/tests/screens/tasks.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 tasks は URL /tasks で開く（apps/web/app/(app)/tasks/page.tsx。遷移の href ／ STATE-DRIVEN: WHILE 画面 tasks が描画中 THEN h1「タスク」・第2ナビ 今日 / 今週 / 詰まっている / 期限切れ / 引き
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/tasks が「残っている仕事から引き継ぐ」として呼ばれたとき THEN Kaname は「タスク ／ EVENT-DRIVEN: WHEN GET /api/v1/tasks が「見え方を切り替える（URL に残る）」として呼ばれたとき THEN Kaname  ／ EVENT-DRIVEN: WHEN POST /api/v1/tasks が「やることを書いて、どの目標かを選ぶ」として呼ばれたとき THEN Kaname 
-- L1 行 132（['SCR-TASKS-001', 'SCR-TASKS-002', 'SCR-TASKS-003'] …）／ L2 ['J-03']
+- L1 行 136（['SCR-TASKS-001', 'SCR-TASKS-002', 'SCR-TASKS-003'] …）／ L2 ['J-03']
 - audit: 07_tasks/audit/T-U-16.md
 
 ### T-U-17 画面 自分のAIと話す（11 状態・R1/R2/R3/R4）
@@ -1420,7 +1420,7 @@
 - 触るファイル：apps/web/app/(app)/members/page.tsx (new)、apps/web/tests/screens/members.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 members は URL /members で開く（apps/web/app/(app)/members/page.tsx。遷移 ／ STATE-DRIVEN: WHILE 画面 members が描画中 THEN h1「メンバー」・第2ナビ 組織図 / 一覧と招待 / 層と権限・状態 7（組
 - AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「人を招いて見える範囲を決める」として呼ばれたとき THEN Kan ／ EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「1人の権限を決める」として呼ばれたとき THEN Kaname は ／ EVENT-DRIVEN: WHEN 「招待する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
-- L1 行 86（['SCR-MEMBERS-001', 'SCR-MEMBERS-002', 'SCR-MEMBERS-003'] …）／ L2 ['J-07']
+- L1 行 90（['SCR-MEMBERS-001', 'SCR-MEMBERS-002', 'SCR-MEMBERS-003'] …）／ L2 ['J-07']
 - audit: 07_tasks/audit/T-U-35.md
 
 ### T-U-36 画面 AI社員（4 状態・R1/R2）
@@ -1492,7 +1492,7 @@
 - 触るファイル：apps/web/app/(app)/ops/support/page.tsx (new)、apps/web/tests/screens/ops-support.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 ops-support は URL /ops/support で開く（apps/web/app/(app)/ops/support ／ STATE-DRIVEN: WHILE 画面 ops-support が描画中 THEN h1「運営の支援」・第2ナビ 受信箱 / 失敗の型 / 返答と対処・状
 - AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/inquiries/:id が「顧客のデータを見ずに直す」として呼ばれたとき THEN Kan ／ EVENT-DRIVEN: WHEN PATCH /api/v1/inquiries/:id が「問い合わせに答える」として呼ばれたとき THEN Kaname ／ EVENT-DRIVEN: WHEN 「返答する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
-- L1 行 37（['SCR-OPS-SUPPORT-001', 'SCR-OPS-SUPPORT-002', 'SCR-OPS-SUPPORT-003'] …）／ L2 ['J-09']
+- L1 行 41（['SCR-OPS-SUPPORT-001', 'SCR-OPS-SUPPORT-002', 'SCR-OPS-SUPPORT-003'] …）／ L2 ['J-09']
 - audit: 07_tasks/audit/T-U-41.md
 
 ### T-U-42 画面 運営：会社の一覧（4 状態・R6）
@@ -1528,7 +1528,7 @@
 - 触るファイル：apps/web/app/(app)/account/page.tsx (new)、apps/web/tests/screens/account.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 account は URL /account で開く（apps/web/app/(app)/account/page.tsx。遷移 ／ STATE-DRIVEN: WHILE 画面 account が描画中 THEN h1「自分のアカウント」・第2ナビ 基本 / パスワードと 2 段階認証 / 
 - AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「人を招いて見える範囲を決める」として呼ばれたとき THEN Kan ／ EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「1人の権限を決める」として呼ばれたとき THEN Kaname は ／ EVENT-DRIVEN: WHEN 「保存する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
-- L1 行 50（['SCR-ACCOUNT-001', 'SCR-ACCOUNT-002', 'SCR-ACCOUNT-003'] …）／ L2 ['J-07']
+- L1 行 54（['SCR-ACCOUNT-001', 'SCR-ACCOUNT-002', 'SCR-ACCOUNT-003'] …）／ L2 ['J-07']
 - audit: 07_tasks/audit/T-U-44.md
 
 ### T-U-45 画面 会社の設定（2 状態・R1/R2）
@@ -1588,7 +1588,7 @@
 - 触るファイル：apps/web/app/(app)/ops/skills/page.tsx (new)、apps/web/tests/screens/ops-skills.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 ops-skills は URL /ops/skills で開く（apps/web/app/(app)/ops/skills/pa ／ STATE-DRIVEN: WHILE 画面 ops-skills が描画中 THEN h1「運営：スキル」・第2ナビ スキル / 1 つの中身 / アップロー
 - AC（Tier 2）：EVENT-DRIVEN: WHEN POST /api/v1/skills が「スキルを構築・アップロード・テストして配る」として呼ばれたとき THEN Ka ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「版を出す」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
-- L1 行 45（['SCR-OPS-SKILLS-001', 'SCR-OPS-SKILLS-002', 'SCR-OPS-SKILLS-003'] …）／ L2 ['J-09']
+- L1 行 49（['SCR-OPS-SKILLS-001', 'SCR-OPS-SKILLS-002', 'SCR-OPS-SKILLS-003'] …）／ L2 ['J-09']
 - audit: 07_tasks/audit/T-U-49.md
 
 ### T-U-50 画面 問い合わせ（5 状態・R1/R2/R3/R4）
@@ -1600,7 +1600,7 @@
 - 触るファイル：apps/web/app/(app)/inquiry/page.tsx (new)、apps/web/tests/screens/inquiry.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 inquiry は URL /inquiry で開く（apps/web/app/(app)/inquiry/page.tsx。遷移 ／ STATE-DRIVEN: WHILE 画面 inquiry が描画中 THEN h1「問い合わせ」・第2ナビ 問い合わせる / 返答待ち / 返答あり / 解
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/inquiries が「問い合わせを書く」として呼ばれたとき THEN Kaname は「問い合わ ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「問い合わせる」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
-- L1 行 51（['SCR-INQUIRY-001', 'SCR-INQUIRY-002', 'SCR-INQUIRY-003'] …）／ L2 ['J-07']
+- L1 行 55（['SCR-INQUIRY-001', 'SCR-INQUIRY-002', 'SCR-INQUIRY-003'] …）／ L2 ['J-07']
 - audit: 07_tasks/audit/T-U-50.md
 
 ### T-U-51 画面 お知らせと通知（3 状態・R1/R2/R3/R4）
@@ -1612,7 +1612,7 @@
 - 触るファイル：apps/web/app/(app)/notices/page.tsx (new)、apps/web/tests/screens/notices.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 notices は URL /notices で開く（apps/web/app/(app)/notices/page.tsx。遷移 ／ STATE-DRIVEN: WHILE 画面 notices が描画中 THEN h1「お知らせと通知」・第2ナビ お知らせ / 稼働状況 / 通知の届け先・状
 - AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/notice_deliveries/:id が「お知らせを読む・通知の届け先を選ぶ」として呼ば ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「通知の届け先を保存する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映
-- L1 行 43（['SCR-NOTICES-001', 'SCR-NOTICES-002', 'SCR-NOTICES-003'] …）／ L2 ['J-07']
+- L1 行 47（['SCR-NOTICES-001', 'SCR-NOTICES-002', 'SCR-NOTICES-003'] …）／ L2 ['J-07']
 - audit: 07_tasks/audit/T-U-51.md
 
 ### T-U-52 画面 プランと請求（3 状態・R1/R2）
@@ -1636,7 +1636,7 @@
 - 触るファイル：apps/web/app/(app)/ops/notices/page.tsx (new)、apps/web/tests/screens/ops-notices.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 ops-notices は URL /ops/notices で開く（apps/web/app/(app)/ops/notices ／ STATE-DRIVEN: WHILE 画面 ops-notices が描画中 THEN h1「運営：お知らせ」・第2ナビ 出す / 出したもの / 稼働状況・
 - AC（Tier 2）：EVENT-DRIVEN: WHEN POST /api/v1/notices が「お知らせを出す」として呼ばれたとき THEN Kaname は「お知らせ・稼 ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「出す」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
-- L1 行 42（['SCR-OPS-NOTICES-001', 'SCR-OPS-NOTICES-002', 'SCR-OPS-NOTICES-003'] …）／ L2 ['J-09']
+- L1 行 46（['SCR-OPS-NOTICES-001', 'SCR-OPS-NOTICES-002', 'SCR-OPS-NOTICES-003'] …）／ L2 ['J-09']
 - audit: 07_tasks/audit/T-U-53.md
 
 ### T-U-54 画面 運営：請求と入金（2 状態・R6）
@@ -1696,7 +1696,7 @@
 - 触るファイル：apps/web/app/(app)/members/[id]/page.tsx (new)、apps/web/tests/screens/member-detail.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 member-detail は URL /members/:id で開く（apps/web/app/(app)/members/[ ／ STATE-DRIVEN: WHILE 画面 member-detail が描画中 THEN h1「メンバーの1人」・第2ナビ 基本 / 権限 / 託されたAI
 - AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「人を招いて見える範囲を決める」として呼ばれたとき THEN Kan ／ EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「1人の権限を決める」として呼ばれたとき THEN Kaname は ／ EVENT-DRIVEN: WHEN DELETE /api/v1/members/:id が「退会する」として呼ばれたとき THEN Kaname は「トーク
-- L1 行 69（['SCR-MEMBER-DETAIL-001', 'SCR-MEMBER-DETAIL-002', 'SCR-MEMBER-DETAIL-003'] …）／ L2 ['J-07']
+- L1 行 73（['SCR-MEMBER-DETAIL-001', 'SCR-MEMBER-DETAIL-002', 'SCR-MEMBER-DETAIL-003'] …）／ L2 ['J-07']
 - audit: 07_tasks/audit/T-U-58.md
 
 ### T-U-59 画面 支払い方法を登録する（4 状態・R1/R2・段階 2）
@@ -1744,7 +1744,7 @@
 - 触るファイル：apps/web/app/(app)/settings/app/page.tsx (new)、apps/web/tests/screens/app-setup.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 app-setup は URL /settings/app で開く（apps/web/app/(app)/settings/app ／ STATE-DRIVEN: WHILE 画面 app-setup が描画中 THEN h1「アプリと通知」・第2ナビ PC / スマホ / 通知・状態 3（アプ
 - AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/push_devices/:id が「アプリを入れて通知を許可する」として呼ばれたとき THE ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「通知を許可する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
-- L1 行 39（['SCR-APP-SETUP-001', 'SCR-APP-SETUP-002', 'SCR-APP-SETUP-003'] …）／ L2 —
+- L1 行 43（['SCR-APP-SETUP-001', 'SCR-APP-SETUP-002', 'SCR-APP-SETUP-003'] …）／ L2 —
 - audit: 07_tasks/audit/T-U-62.md
 
 ### T-U-63 画面 運営：AI の経路と使用量（3 状態・R6・段階 2）
@@ -1768,7 +1768,7 @@
 - 触るファイル：apps/web/app/(app)/ops/disclosure/page.tsx (new)、apps/web/tests/screens/ops-disclosure.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 ops-disclosure は URL /ops/disclosure で開く（apps/web/app/(app)/ops/d ／ STATE-DRIVEN: WHILE 画面 ops-disclosure が描画中 THEN h1「運営：開示資料」・第2ナビ 版 / DPA の雛形 / サ
 - AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/disclosure_versions/:id が「版を出す・DPA の雛形とサブプロセッサを ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「版を出す」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
-- L1 行 31（['SCR-OPS-DISCLOSURE-001', 'SCR-OPS-DISCLOSURE-002', 'SCR-OPS-DISCLOSURE-003'] …）／ L2 —
+- L1 行 35（['SCR-OPS-DISCLOSURE-001', 'SCR-OPS-DISCLOSURE-002', 'SCR-OPS-DISCLOSURE-003'] …）／ L2 —
 - audit: 07_tasks/audit/T-U-64.md
 
 ### T-I-01 実行ループの結線（自分のAI → 配る → AI社員 action_runs → 関門 → 一次確認 → 承認待ち → 画面）

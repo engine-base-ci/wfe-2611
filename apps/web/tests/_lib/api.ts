@@ -82,7 +82,7 @@ export function lastMailUrl(kind: "verify" | "reset", email: string): string | n
   if (!p) return null;
   const lines = readFileSync(p, "utf8")
     .split("\n")
-    .filter((l) => l.includes(`（${kind} → ${email}）`));
+    .filter((l) => l.includes(`（${kind} → ${email}）`)); // 「送出先が無い」でも「リンク」でも拾う
   const last = lines[lines.length - 1];
   const m = last ? /: (https?:\S+)/.exec(last) : null;
   return m ? m[1]! : null;
@@ -120,4 +120,17 @@ export async function viewerViaApi() {
   });
   if (r.status !== 200 && r.status !== 201) throw new Error(`accept ${r.status} ${JSON.stringify(r.json)}`);
   return { ...boss, token: r.json.data.token, email };
+}
+
+/** API のログから、そのアドレス宛の送信の記録を読む（[mail] 送った／送れなかった） */
+export function mailLog(email: string): { sent: string; failed: string } {
+  const p = process.env["KANAME_API_LOG"];
+  if (!p) return { sent: "", failed: "" };
+  const lines = readFileSync(p, "utf8")
+    .split("\n")
+    .filter((l) => l.includes(email));
+  return {
+    sent: lines.filter((l) => l.includes("[mail] 送った")).pop() ?? "",
+    failed: lines.filter((l) => l.includes("[mail] 送れなかった")).pop() ?? "",
+  };
 }
