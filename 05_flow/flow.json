@@ -8982,6 +8982,60 @@
     "D-072",
     "D-070"
    ]
+  },
+  "fallbacks": {
+   "_doc": "指定が無い・無い・見えない のときの行き先（D-086）。画面ではなく規則なので G1〜G10 では守れない。正本の行 USH-00-* と実ブラウザで見る",
+   "source": [
+    "D-086",
+    "D-086.1",
+    "D-086.2",
+    "D-086.3",
+    "D-086.4",
+    "D-086.5"
+   ],
+   "entry": {
+    "route": "/",
+    "anonymous": "login",
+    "signed_in": [
+     {
+      "when": "no_bridge",
+      "screen": "bridge-setup"
+     },
+     {
+      "when": "default",
+      "screen": "today"
+     }
+    ],
+    "source": [
+     "D-086.1"
+    ]
+   },
+   "not_found": {
+    "title": "この画面はありません",
+    "back": {
+     "anonymous": "login",
+     "signed_in": "today"
+    },
+    "source": [
+     "D-086.2"
+    ]
+   },
+   "forbidden": {
+    "title": "この権限では見えない",
+    "back": {
+     "signed_in": "today"
+    },
+    "source": [
+     "D-086.3"
+    ]
+   },
+   "after_login": {
+    "param": "next",
+    "rule": "入る前に来た画面へ戻す",
+    "source": [
+     "D-086.4"
+    ]
+   }
   }
  }
 }

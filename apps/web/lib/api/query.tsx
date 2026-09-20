@@ -30,8 +30,17 @@ export const keys = {
   list: (table: string, query?: RequestOptions["query"]) => ["list", table, query ?? {}] as const,
   one: (table: string, id: string) => ["one", table, id] as const,
 };
-export function useList<T>(table: string, query?: RequestOptions["query"], screenId?: string) {
-  return useQuery({ queryKey: keys.list(table, query), queryFn: () => api.list<T>(table, query, screenId) });
+export function useList<T>(
+  table: string,
+  query?: RequestOptions["query"],
+  screenId?: string,
+  opts?: { enabled?: boolean },
+) {
+  return useQuery({
+    queryKey: keys.list(table, query),
+    queryFn: () => api.list<T>(table, query, screenId),
+    ...(opts?.enabled === undefined ? {} : { enabled: opts.enabled }),
+  });
 }
 export function useOne<T>(table: string, id: string | null, screenId?: string) {
   return useQuery({

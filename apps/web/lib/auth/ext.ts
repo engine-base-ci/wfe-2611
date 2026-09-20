@@ -84,3 +84,11 @@ export const acceptInvitation = (token: string, b: { name: string; password: str
 export const bridgePair = () => ext<{ code: string; expires_in_sec: number }>("/bridge/pair", {});
 export const storeCredential = (b: { service_name: string; login: string; password: string; totp_secret?: string }) =>
   ext<{ id: string; vault_ref: string; service_name: string | null }>("/vault/credentials", b);
+
+/** 自分のこと（役割）。一覧では自分の行が返らないことがあるので専用の口から（D-086） */
+export const me = () =>
+  ext<{ member_id: string; tenant_id: string; display_name: string | null; role_id: string | null }>(
+    "/me",
+    undefined,
+    "GET",
+  );

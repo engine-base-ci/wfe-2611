@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/gen_routes.mjs ← 05_flow/flow.json navigation／screens／product_states）。手で直さない。flow:39871207269a386f
+// 生成物（scripts/ci/gen_routes.mjs ← 05_flow/flow.json navigation／screens／product_states）。手で直さない。flow:eac06cc640fc6c0c
 export interface NavSection {
   key: string;
   label: string;
@@ -2014,3 +2014,19 @@ export const NAV: NavData = {
     },
   ],
 };
+
+/** 指定が無い・無い・見えない のときの行き先（D-086・flow.json navigation.fallbacks） */
+export const FALLBACKS = {
+  entry: {
+    anonymous: "/login",
+    noBridge: "/setup/bridge",
+    signedIn: "/today",
+  },
+  notFound: {
+    title: "この画面はありません",
+  },
+  forbidden: {
+    title: "この権限では見えない",
+    back: "/today",
+  },
+} as const;

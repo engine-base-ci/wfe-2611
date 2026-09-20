@@ -5,6 +5,7 @@ import { Button, Empty, Field, Input, Section, Table, Td, Th, Pill } from "@/com
 import { WizardLayout } from "@/components/wizard/wizard-layout";
 import { WIZARD_EXISTING } from "@/components/wizard/existing";
 import { RequireSession } from "@/lib/auth/session";
+import { RequireRole } from "@/lib/auth/role";
 import { AuthExtError, storeCredential } from "@/lib/auth/ext";
 import { KeyRound } from "lucide-react";
 
@@ -22,7 +23,9 @@ export default function CredentialsPage() {
         </WizardLayout>
       }
     >
-      <Credentials />
+      <RequireRole screen="credentials">
+        <Credentials />
+      </RequireRole>
     </RequireSession>
   );
 }

@@ -38,7 +38,19 @@ const navData = {
   screens: Object.fromEntries(flow.screens.map((s) => [s.id, { id: s.id, name: s.name, route: s.route, needsLogin: s.needs_login !== false, hasShell: s.has_shell !== false, roles: s.roles ?? [], purpose: s.purpose ?? "", primaryAction: s.primary_action ?? "", release: s.release ?? "v1" }])),
   roles: flow.roles.map((r) => ({ id: r.id, name: r.name })),
 };
-const navHash = createHash("sha256").update(JSON.stringify(navData)).digest("hex").slice(0, 16);
+// 指定が無い・無い・見えない のときの行き先（D-086）。画面ではなく規則なので screens には入らない
+const fb = nav.fallbacks;
+const routeOf = (id) => flow.screens.find((s) => s.id === id)?.route ?? "/" + id;
+const fallbacks = {
+  entry: {
+    anonymous: routeOf(fb.entry.anonymous),
+    noBridge: routeOf(fb.entry.signed_in.find((x) => x.when === "no_bridge").screen),
+    signedIn: routeOf(fb.entry.signed_in.find((x) => x.when === "default").screen),
+  },
+  notFound: { title: fb.not_found.title },
+  forbidden: { title: fb.forbidden.title, back: routeOf(fb.forbidden.back.signed_in) },
+};
+const navHash = createHash("sha256").update(JSON.stringify({ navData, fallbacks })).digest("hex").slice(0, 16);
 const navBody = `// 生成物（scripts/ci/gen_routes.mjs ← ${FLOW} navigation／screens／product_states）。手で直さない。flow:${navHash}
 export interface NavSection { key: string; label: string; icon: string; screens: string[] }
 export interface SubItem { label: string; desc: string; group?: string; state?: string }
@@ -52,6 +64,9 @@ export interface NavData {
 export type RoleId = ${navData.roles.map((r) => JSON.stringify(r.id)).join(" | ")};
 export type ScreenId = ${Object.keys(navData.screens).map((k) => JSON.stringify(k)).join(" | ")};
 export const NAV: NavData = ${JSON.stringify(navData, null, 2)};
+
+/** 指定が無い・無い・見えない のときの行き先（D-086・flow.json navigation.fallbacks） */
+export const FALLBACKS = ${JSON.stringify(fallbacks, null, 2)} as const;
 `;
 if (process.argv[2] === "check") {
   const cur = existsSync(OUT) ? readFileSync(OUT, "utf8") : "";

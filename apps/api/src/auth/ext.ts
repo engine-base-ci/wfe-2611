@@ -186,6 +186,9 @@ export function authExt(d: AuthExtDeps): Hono {
       );
     const u = await signUp(d.auth, { email: inv.email, password: b.password, name });
     const memberId = await acceptInvitation(d.appPool, token, u.userId, name);
+    // メンバーができた後にセッションを写す。先に認証の利用者を作るので、セッションの hook の時点ではまだメンバーが無い
+    // （写さないと、参加した直後は何を押しても「ログインしてください」になる）
+    await d.appPool.query("select app.open_sessions_for_user($1)", [u.userId]);
     return c.json({ data: { token: u.token, member_id: memberId } }, 201);
   });
 
@@ -198,6 +201,23 @@ export function authExt(d: AuthExtDeps): Hono {
       s.ctx.userId,
     ]);
     return c.json({ data: { code: r.rows[0]!.code, expires_in_sec: 600 } }, 201);
+  });
+
+  // 自分のこと（D-086）：画面が「この権限で見えるか」を判定するのに要る。
+  // 一覧（GET /members）は行レベルの制御で自分の行すら返らないことがある。自分の役割はここから引く
+  app.get("/me", async (c) => {
+    const s = await resolve(c.req.raw.headers);
+    if (!s?.ctx.tenantId || !s.ctx.userId) return bad(c, 401, "UNAUTHENTICATED", "ログインしてください");
+    const m = await d.repo.table("members").get(s.ctx, s.ctx.userId);
+    return c.json({
+      data: {
+        member_id: s.ctx.userId,
+        tenant_id: s.ctx.tenantId,
+        display_name: m?.["display_name"] ?? null,
+        role_id: (m?.["role_id"] as string | null) ?? null,
+        scope_id: m?.["scope_id"] ?? null,
+      },
+    });
   });
 
   // 資格情報を預ける（T-U-10・関門 C8）：平文はここで暗号化して vault へ。表（credentials）には参照 ID だけ。AI には渡らない

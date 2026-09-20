@@ -1,10 +1,10 @@
-# Kaname v3 タスク分解結果（api_first・2026-09-16）
+# Kaname v3 タスク分解結果（api_first・2026-09-20）
 
 ## サマリー
 
 - 総タスク数：171（A 26 / D 14 / F 18 / I 22 / S 15 / U-screen 64 / U-shared 7 / V2 5）
 - 画面の被覆：64/64
-- L1 テスト行：4655（正本 07_qa/test-specs）／ 流れ（L2）：9
+- L1 テスト行：4660（正本 07_qa/test-specs）／ 流れ（L2）：9
 - 工数：Human 5540.5 h（693 日）／ AI 計算 992.6 h ＋ 人のレビュー 52.0 h → wall-clock 278.8 h（47 日・並列 10）
 - Wave 数：25
 
@@ -97,7 +97,7 @@
 
 | ID | タイトル | category | layer | Human h | AI h | wall-clock | wave | depends_on | L1 行 |
 |---|---|---|---|---|---|---|---|---|---|
-| T-US-00 | apps/web の土台（Next.js 15 App Router の雛形・Playwright  | frontend | ui | 16 | 1.6 | 1.6 | 9 | 2 | 11 |
+| T-US-00 | apps/web の土台（Next.js 15 App Router の雛形・Playwright  | frontend | ui | 16 | 1.6 | 1.6 | 9 | 2 | 16 |
 | T-US-01 | シェル（サイドバー・レール・第2ナビ・三画面・下タブ・枠の導出 data-frame・役割の出し分け | frontend | ui | 24 | 2.4 | 2.4 | 10 | 4 | 54 |
 | T-US-02 | 自分のAIのパネルと会話の部品（assistant-ui・AG-UI・選択肢・承認カード・受領・引用 | frontend | ui | 32 | 3.2 | 3.2 | 10 | 4 | 19 |
 | T-US-03 | API クライアントと型（OpenAPI → types.ts・TanStack Query・別 G | frontend | ui | 12 | 1.2 | 1.2 | 10 | 4 | 8 |
@@ -928,7 +928,7 @@
 - 触るファイル：apps/web/package.json (new)、apps/web/app/layout.tsx (new)、apps/web/playwright.config.ts (new)、apps/web/tests/reachability.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: apps/web は 02_tech_stack/selected-stack.json の frontend（Next.js 15 A ／ UBIQUITOUS: Playwright の設定と CI のブラウザ job（03_architecture/foundation_gates.json #
 - AC（Tier 2）：EVENT-DRIVEN: WHEN pnpm exec playwright test を流したら THEN 実ブラウザ（Chromium）で 到達性（ナビ・ ／ UNWANTED: IF 実在しないルートを指す href があれば 到達性の検査が赤になり merge できない ／ UNWANTED: IF staging が無いなら、画面の L1 行はローカルの実ブラウザで流し、staging の行は BLOCKED（理由つき）として残す
-- L1 行 11（['USH-00-001', 'USH-00-002', 'USH-00-003'] …）／ L2 —
+- L1 行 16（['USH-00-001', 'USH-00-002', 'USH-00-003'] …）／ L2 —
 - audit: 07_tasks/audit/T-US-00.md
 
 ### T-US-01 シェル（サイドバー・レール・第2ナビ・三画面・下タブ・枠の導出 data-frame・役割の出し分け data-roles）

@@ -103,3 +103,21 @@ export const bridgeRow = (u: { tenantId: string; memberId: string }) =>
     "insert into sessions (tenant_id, member_id, kind_id, device_label, auth_session_id) values ($1, $2, 'bridge', 'MacBook Pro（QA）', $3)",
     [u.tenantId, u.memberId, `qa-${Date.now()}`],
   );
+
+/** 閲覧のみ（R4）で参加した人。招待を作って受ける（権限で見えない画面の検査に使う） */
+export async function viewerViaApi() {
+  const { randomBytes } = await import("node:crypto");
+  const boss = await signupViaApi("招く会社");
+  const token = randomBytes(24).toString("base64url");
+  const email = uniqEmail();
+  await admin(
+    "insert into invitations (tenant_id, email, role_id, token_hash, expires_at, created_by) values ($1, $2, 'viewer', $3, now() + interval '7 days', $4)",
+    [boss.tenantId, email, sha256(token), boss.memberId],
+  );
+  const r = await api<{ data: { token: string } }>(`/api/auth-ext/invitations/${token}/accept`, {
+    name: "閲覧のみ QA",
+    password: PW,
+  });
+  if (r.status !== 200 && r.status !== 201) throw new Error(`accept ${r.status} ${JSON.stringify(r.json)}`);
+  return { ...boss, token: r.json.data.token, email };
+}
