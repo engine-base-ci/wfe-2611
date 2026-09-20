@@ -5,7 +5,7 @@
    出力: 07_tasks/tickets.json（信頼源・JIT 用インライン込み）・TASK-CARDS.md/.html・DEPENDENCIES.md・td-decisions.json
          07_qa/test-specs/screens/<sid>.md ほか（L1 行の正本・11 列）・journeys/plan.json（L2）
    規約: test-ladder（L1 はタスクと同時）・decision-traceability（source・決定の summary 逐語）・choke-points・JIT"""
-import json, re, os, math, datetime
+import glob, json, re, os, math, datetime
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__))); os.chdir(ROOT)
 F = json.load(open("05_flow/flow.json", encoding="utf-8")); BP = F["blueprint"]
 FD = json.load(open("09_features/features.json", encoding="utf-8")); FEAT = {f["id"]: f for f in FD["items"]}
@@ -310,13 +310,20 @@ for stage, g in [(st, g) for st in ("v1", "v2") for g in order]:   # 段階 1 �
         for t in ch: t["wave"] = w
         w += 1
 # ---------------------------------------------------------------- 正本（11 列）を書く
+# 正本の全ファイルの結果（行 ID → 結果・備考）。行が別のファイルに移っても消さない（test-ladder §9「ID は変えない」）
+PREV_RESULTS = {}
+for _fp in glob.glob(f"{SPEC}/**/*.md", recursive=True):
+    for _ln in open(_fp, encoding="utf-8"):
+        if _ln.startswith("| ") and not _ln.startswith("| ID "):
+            _c = [x.strip() for x in _ln.strip().strip("|").split("|")]
+            if len(_c) >= 11 and _c[7]: PREV_RESULTS[_c[0]] = (_c[7], _c[8])
 HDR = "| ID | 画面 | テスト観点 | テスト項目 | 前提条件 | 操作手順 | 期待結果 | 結果 | 備考 | タスク | 実行条件 |\n|---|---|---|---|---|---|---|---|---|---|---|\n"
 for fp, rows in qa_files.items():
     if fp.endswith("plan.json"): continue
     os.makedirs(os.path.dirname(fp), exist_ok=True)
     title = os.path.basename(fp).replace(".md", "")
     # 正本の行は ID を変えない・作り直さない（test-ladder §9）。再生成しても「結果」列（実装者が staging で書いた PASS／BLOCKED）は残す
-    prev_res = {}
+    prev_res = dict(PREV_RESULTS)   # 行が別のファイルへ移っても結果を引き継ぐ（画面の割り当てが変わると消えていた）
     if os.path.exists(fp):
         for ln in open(fp, encoding="utf-8"):
             if ln.startswith("| ") and not ln.startswith("| ID "):

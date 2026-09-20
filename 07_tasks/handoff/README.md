@@ -23,7 +23,7 @@ bash scripts/dev/up.sh
 | 3 | T-U-03 | 招待を受けて参加する | http://127.0.0.1:3124/invite/:token | [T-U-03.md](T-U-03.md) | 未確認 |
 | 4 | T-U-04 | 2段階認証を設定する | http://127.0.0.1:3124/mfa-setup | [T-U-04.md](T-U-04.md) | 未確認 |
 | 5 | T-U-05 | ログインする | http://127.0.0.1:3124/login | [T-U-05.md](T-U-05.md) | 未確認 |
-| 6 | T-U-06 | 入り直す | http://127.0.0.1:3124/password-reset | [T-U-06.md](T-U-06.md) | 未確認 |
+| 6 | T-U-06 | パスワードの再設定 | http://127.0.0.1:3124/password-reset | [T-U-06.md](T-U-06.md) | 未確認 |
 | 7 | T-U-07 | 自分のAIと話す | http://127.0.0.1:3124/onboard/interview | [T-U-07.md](T-U-07.md) | 未確認 |
 | 8 | T-U-08 | たたき台を確かめる | http://127.0.0.1:3124/onboard/draft | [T-U-08.md](T-U-08.md) | 未確認 |
 | 9 | T-U-09 | 自分のPCをつなぐ | http://127.0.0.1:3124/setup/bridge | [T-U-09.md](T-U-09.md) | 未確認 |

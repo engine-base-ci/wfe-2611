@@ -84,6 +84,7 @@ function LoginInner() {
                   inputMode={useBackup ? "text" : "numeric"}
                   autoComplete="one-time-code"
                   maxLength={useBackup ? 16 : 8}
+                  placeholder={useBackup ? "k8f2-9x1m" : "000000"}
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
                   invalid={!!msg}
@@ -131,6 +132,7 @@ function LoginInner() {
                   type="email"
                   autoComplete="email"
                   inputMode="email"
+                  placeholder="yamada@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   invalid={state === "e"}
@@ -143,6 +145,7 @@ function LoginInner() {
                   id={id}
                   type="password"
                   autoComplete="current-password"
+                  placeholder="英字と数字で 12 文字以上"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   invalid={state === "e"}
@@ -155,7 +158,7 @@ function LoginInner() {
           </div>
           <p className="mt-5 text-[13px] text-[var(--on-sv)]">
             <Link className="font-semibold text-[var(--primary)] underline" href="/password-reset">
-              入れなくなった
+              パスワードをお忘れの方
             </Link>{" "}
             ·{" "}
             <Link className="font-semibold text-[var(--primary)] underline" href="/signup">

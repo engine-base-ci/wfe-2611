@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-20T15:46:55",
+ "generated_at": "2026-09-20T16:22:11",
  "inputs": {
   "tickets": "07_tasks/tickets.json",
   "roster": "07_tasks/roster.json",
@@ -19,16 +19,16 @@
    "done": 78,
    "todo": 93
   },
-  "hours_done": 718.9,
-  "hours_total": 1044.6,
+  "hours_done": 717.4,
+  "hours_total": 1043.1,
   "progress_pct": 69,
   "epic": 15,
   "story": 171,
-  "subtask": 5303,
+  "subtask": 5298,
   "subtask_by": {
    "impl": 432,
-   "test": 4660,
-   "mock": 211
+   "test": 4654,
+   "mock": 212
   },
   "critical_path": [
    "T-F-03",
@@ -2923,7 +2923,8 @@
     "T-A-01.m6",
     "T-A-01.m7",
     "T-A-01.m8",
-    "T-A-01.m9"
+    "T-A-01.m9",
+    "T-A-01.m10"
    ],
    "depends_on": [
     "T-F-01",
@@ -2979,6 +2980,7 @@
      "06_mockup/v1/v1-onboard-draft.html",
      "06_mockup/v1/v1-onboard-golive.html",
      "06_mockup/v1/v1-onboard-interview.html",
+     "06_mockup/v1/v1-password-reset.html",
      "06_mockup/v1/v1-signup.html",
      "06_mockup/v1/v1-verify-email.html"
     ],
@@ -2990,6 +2992,7 @@
      "onboard-draft",
      "onboard-golive",
      "onboard-interview",
+     "password-reset",
      "signup",
      "verify-email"
     ],
@@ -3038,6 +3041,7 @@
      "A09",
      "A12",
      "A13",
+     "A31",
      "A45"
     ],
     "qa_rows": [
@@ -3185,7 +3189,7 @@
   {
    "id": "T-A-03",
    "kind": "story",
-   "title": "API 入れなくなったときに、自分で入り直したい — データ・API・権限（1 endpoint）",
+   "title": "API 入れなくなったときに、自分でパスワードを再設定したい — データ・A（1 endpoint）",
    "parent": "J-06",
    "children": [
     "T-A-03.s1",
@@ -3199,12 +3203,6 @@
     "T-A-03.t7",
     "T-A-03.t8",
     "T-A-03.t9",
-    "T-A-03.t10",
-    "T-A-03.t11",
-    "T-A-03.t12",
-    "T-A-03.t13",
-    "T-A-03.t14",
-    "T-A-03.t15",
     "T-A-03.m1",
     "T-A-03.m2",
     "T-A-03.m3",
@@ -3219,18 +3217,12 @@
     "T-D-01",
     "T-D-06",
     "T-D-08",
-    "T-D-12",
-    "T-F-02",
-    "T-F-03",
-    "T-F-04",
-    "T-F-08",
-    "T-F-12",
     "T-F-14"
    ],
    "blocked_by": [],
    "wave": "W0",
    "layer": "backend",
-   "estimate_hours": 10.5,
+   "estimate_hours": 9.0,
    "estimate_default": false,
    "start": "2026-09-16",
    "finish": "2026-09-16",
@@ -3250,26 +3242,26 @@
    "external": {},
    "links": {
     "mock": [
-     "06_mockup/v1/v1-account.html",
-     "06_mockup/v1/v1-member-detail.html",
-     "06_mockup/v1/v1-members.html",
-     "06_mockup/v1/v1-password-reset.html"
+     "06_mockup/v1/v1-login.html",
+     "06_mockup/v1/v1-mfa-setup.html",
+     "06_mockup/v1/v1-password-reset.html",
+     "06_mockup/v1/v1-verify-email.html"
     ],
     "screens": [
-     "account",
-     "member-detail",
-     "members",
-     "password-reset"
+     "login",
+     "mfa-setup",
+     "password-reset",
+     "verify-email"
     ],
     "decisions": [
      "D-042",
      "D-053.3"
     ],
     "acts": [
-     "A31",
-     "A36",
-     "A61",
-     "A74"
+     "A02",
+     "A04",
+     "A13",
+     "A31"
     ],
     "qa_rows": [
      "API-03-001",
@@ -3280,19 +3272,9 @@
      "API-03-006",
      "API-03-007",
      "API-03-008",
-     "API-03-009",
-     "API-03-010",
-     "API-03-011",
-     "API-03-012",
-     "E-ACT-040-A",
-     "E-ACT-040-B",
-     "E-ACT-040-C"
+     "API-03-009"
     ],
-    "errors": [
-     "E-ACT-040-A",
-     "E-ACT-040-B",
-     "E-ACT-040-C"
-    ],
+    "errors": [],
     "spec": [
      "07_tasks/tickets.json#T-A-03"
     ]
@@ -3358,7 +3340,8 @@
     "T-A-04.m4",
     "T-A-04.m5",
     "T-A-04.m6",
-    "T-A-04.m7"
+    "T-A-04.m7",
+    "T-A-04.m8"
    ],
    "depends_on": [
     "T-F-01",
@@ -3406,6 +3389,7 @@
      "06_mockup/v1/v1-login.html",
      "06_mockup/v1/v1-mfa-setup.html",
      "06_mockup/v1/v1-my-progress.html",
+     "06_mockup/v1/v1-password-reset.html",
      "06_mockup/v1/v1-today.html",
      "06_mockup/v1/v1-verify-email.html"
     ],
@@ -3415,6 +3399,7 @@
      "login",
      "mfa-setup",
      "my-progress",
+     "password-reset",
      "today",
      "verify-email"
     ],
@@ -3480,6 +3465,7 @@
      "A20",
      "A23",
      "A25",
+     "A31",
      "A49",
      "A55"
     ],
@@ -5016,8 +5002,7 @@
     "T-A-12.m8",
     "T-A-12.m9",
     "T-A-12.m10",
-    "T-A-12.m11",
-    "T-A-12.m12"
+    "T-A-12.m11"
    ],
    "depends_on": [
     "T-F-01",
@@ -5072,8 +5057,7 @@
      "06_mockup/v1/v1-member-detail.html",
      "06_mockup/v1/v1-members.html",
      "06_mockup/v1/v1-ops-audit.html",
-     "06_mockup/v1/v1-ops-catalog.html",
-     "06_mockup/v1/v1-password-reset.html"
+     "06_mockup/v1/v1-ops-catalog.html"
     ],
     "screens": [
      "account",
@@ -5086,8 +5070,7 @@
      "member-detail",
      "members",
      "ops-audit",
-     "ops-catalog",
-     "password-reset"
+     "ops-catalog"
     ],
     "decisions": [
      "D-003.1",
@@ -5141,7 +5124,6 @@
     ],
     "acts": [
      "A16",
-     "A31",
      "A33",
      "A36",
      "A37",
@@ -5637,7 +5619,8 @@
     "T-A-15.m5",
     "T-A-15.m6",
     "T-A-15.m7",
-    "T-A-15.m8"
+    "T-A-15.m8",
+    "T-A-15.m9"
    ],
    "depends_on": [
     "T-F-01",
@@ -5692,6 +5675,7 @@
      "06_mockup/v1/v1-login.html",
      "06_mockup/v1/v1-member-detail.html",
      "06_mockup/v1/v1-mfa-setup.html",
+     "06_mockup/v1/v1-password-reset.html",
      "06_mockup/v1/v1-security-brief.html",
      "06_mockup/v1/v1-verify-email.html"
     ],
@@ -5702,6 +5686,7 @@
      "login",
      "member-detail",
      "mfa-setup",
+     "password-reset",
      "security-brief",
      "verify-email"
     ],
@@ -5730,6 +5715,7 @@
      "A02",
      "A04",
      "A13",
+     "A31",
      "A34",
      "A39",
      "A40",
@@ -6535,8 +6521,7 @@
     "T-A-20.m3",
     "T-A-20.m4",
     "T-A-20.m5",
-    "T-A-20.m6",
-    "T-A-20.m7"
+    "T-A-20.m6"
    ],
    "depends_on": [
     "T-F-01",
@@ -6591,7 +6576,6 @@
      "06_mockup/v1/v1-import.html",
      "06_mockup/v1/v1-member-detail.html",
      "06_mockup/v1/v1-members.html",
-     "06_mockup/v1/v1-password-reset.html",
      "06_mockup/v1/v1-services.html"
     ],
     "screens": [
@@ -6600,7 +6584,6 @@
      "import",
      "member-detail",
      "members",
-     "password-reset",
      "services"
     ],
     "decisions": [
@@ -6636,7 +6619,6 @@
      "D-084.4"
     ],
     "acts": [
-     "A31",
      "A36",
      "A61",
      "A74",
@@ -8356,6 +8338,7 @@
     "T-US-05",
     "T-US-06",
     "T-A-01",
+    "T-A-03",
     "T-A-04",
     "T-A-15"
    ],
@@ -8611,6 +8594,7 @@
     "T-US-05",
     "T-US-06",
     "T-A-01",
+    "T-A-03",
     "T-A-04",
     "T-A-15"
    ],
@@ -8760,6 +8744,7 @@
     "T-US-05",
     "T-US-06",
     "T-A-01",
+    "T-A-03",
     "T-A-04",
     "T-A-15"
    ],
@@ -8871,7 +8856,7 @@
   {
    "id": "T-U-06",
    "kind": "story",
-   "title": "画面 入り直す（3 状態・R1/R2/R3）",
+   "title": "画面 パスワードの再設定（3 状態・R1/R2/R3）",
    "parent": "J-06",
    "children": [
     "T-U-06.s1",
@@ -8919,9 +8904,10 @@
     "T-US-04",
     "T-US-05",
     "T-US-06",
+    "T-A-01",
     "T-A-03",
-    "T-A-12",
-    "T-A-20"
+    "T-A-04",
+    "T-A-15"
    ],
    "blocked_by": [],
    "wave": "W0",
@@ -14906,7 +14892,6 @@
     "T-US-04",
     "T-US-05",
     "T-US-06",
-    "T-A-03",
     "T-A-12",
     "T-A-20"
    ],
@@ -16458,7 +16443,6 @@
     "T-US-04",
     "T-US-05",
     "T-US-06",
-    "T-A-03",
     "T-A-12",
     "T-A-20"
    ],
@@ -18725,7 +18709,6 @@
     "T-US-04",
     "T-US-05",
     "T-US-06",
-    "T-A-03",
     "T-A-12",
     "T-A-15",
     "T-A-20"
@@ -29192,6 +29175,22 @@
    "id": "T-A-01.m8",
    "kind": "subtask",
    "sub": "mock",
+   "title": "モック password-reset と突き合わせる（全要素・全ボタン・値が固定でない）",
+   "parent": "T-A-01",
+   "status": "todo",
+   "links": {
+    "mock": [
+     "06_mockup/v1/v1-password-reset.html"
+    ],
+    "screens": [
+     "password-reset"
+    ]
+   }
+  },
+  {
+   "id": "T-A-01.m9",
+   "kind": "subtask",
+   "sub": "mock",
    "title": "モック signup と突き合わせる（全要素・全ボタン・値が固定でない）",
    "parent": "T-A-01",
    "status": "todo",
@@ -29205,7 +29204,7 @@
    }
   },
   {
-   "id": "T-A-01.m9",
+   "id": "T-A-01.m10",
    "kind": "subtask",
    "sub": "mock",
    "title": "モック verify-email と突き合わせる（全要素・全ボタン・値が固定でない）",
@@ -29536,96 +29535,18 @@
    }
   },
   {
-   "id": "T-A-03.t10",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 API-03-010 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-A-03",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "API-03-010"
-    ]
-   }
-  },
-  {
-   "id": "T-A-03.t11",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 API-03-011 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-A-03",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "API-03-011"
-    ]
-   }
-  },
-  {
-   "id": "T-A-03.t12",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 API-03-012 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-A-03",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "API-03-012"
-    ]
-   }
-  },
-  {
-   "id": "T-A-03.t13",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 E-ACT-040-A を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-A-03",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "E-ACT-040-A"
-    ]
-   }
-  },
-  {
-   "id": "T-A-03.t14",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 E-ACT-040-B を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-A-03",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "E-ACT-040-B"
-    ]
-   }
-  },
-  {
-   "id": "T-A-03.t15",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 E-ACT-040-C を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-A-03",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "E-ACT-040-C"
-    ]
-   }
-  },
-  {
    "id": "T-A-03.m1",
    "kind": "subtask",
    "sub": "mock",
-   "title": "モック account と突き合わせる（全要素・全ボタン・値が固定でない）",
+   "title": "モック login と突き合わせる（全要素・全ボタン・値が固定でない）",
    "parent": "T-A-03",
    "status": "todo",
    "links": {
     "mock": [
-     "06_mockup/v1/v1-account.html"
+     "06_mockup/v1/v1-login.html"
     ],
     "screens": [
-     "account"
+     "login"
     ]
    }
   },
@@ -29633,36 +29554,20 @@
    "id": "T-A-03.m2",
    "kind": "subtask",
    "sub": "mock",
-   "title": "モック member-detail と突き合わせる（全要素・全ボタン・値が固定でない）",
+   "title": "モック mfa-setup と突き合わせる（全要素・全ボタン・値が固定でない）",
    "parent": "T-A-03",
    "status": "todo",
    "links": {
     "mock": [
-     "06_mockup/v1/v1-member-detail.html"
+     "06_mockup/v1/v1-mfa-setup.html"
     ],
     "screens": [
-     "member-detail"
+     "mfa-setup"
     ]
    }
   },
   {
    "id": "T-A-03.m3",
-   "kind": "subtask",
-   "sub": "mock",
-   "title": "モック members と突き合わせる（全要素・全ボタン・値が固定でない）",
-   "parent": "T-A-03",
-   "status": "todo",
-   "links": {
-    "mock": [
-     "06_mockup/v1/v1-members.html"
-    ],
-    "screens": [
-     "members"
-    ]
-   }
-  },
-  {
-   "id": "T-A-03.m4",
    "kind": "subtask",
    "sub": "mock",
    "title": "モック password-reset と突き合わせる（全要素・全ボタン・値が固定でない）",
@@ -29674,6 +29579,22 @@
     ],
     "screens": [
      "password-reset"
+    ]
+   }
+  },
+  {
+   "id": "T-A-03.m4",
+   "kind": "subtask",
+   "sub": "mock",
+   "title": "モック verify-email と突き合わせる（全要素・全ボタン・値が固定でない）",
+   "parent": "T-A-03",
+   "status": "todo",
+   "links": {
+    "mock": [
+     "06_mockup/v1/v1-verify-email.html"
+    ],
+    "screens": [
+     "verify-email"
     ]
    }
   },
@@ -30320,6 +30241,22 @@
    "id": "T-A-04.m6",
    "kind": "subtask",
    "sub": "mock",
+   "title": "モック password-reset と突き合わせる（全要素・全ボタン・値が固定でない）",
+   "parent": "T-A-04",
+   "status": "todo",
+   "links": {
+    "mock": [
+     "06_mockup/v1/v1-password-reset.html"
+    ],
+    "screens": [
+     "password-reset"
+    ]
+   }
+  },
+  {
+   "id": "T-A-04.m7",
+   "kind": "subtask",
+   "sub": "mock",
    "title": "モック today と突き合わせる（全要素・全ボタン・値が固定でない）",
    "parent": "T-A-04",
    "status": "todo",
@@ -30333,7 +30270,7 @@
    }
   },
   {
-   "id": "T-A-04.m7",
+   "id": "T-A-04.m8",
    "kind": "subtask",
    "sub": "mock",
    "title": "モック verify-email と突き合わせる（全要素・全ボタン・値が固定でない）",
@@ -35380,22 +35317,6 @@
    }
   },
   {
-   "id": "T-A-12.m12",
-   "kind": "subtask",
-   "sub": "mock",
-   "title": "モック password-reset と突き合わせる（全要素・全ボタン・値が固定でない）",
-   "parent": "T-A-12",
-   "status": "todo",
-   "links": {
-    "mock": [
-     "06_mockup/v1/v1-password-reset.html"
-    ],
-    "screens": [
-     "password-reset"
-    ]
-   }
-  },
-  {
    "id": "T-A-13.s1",
    "kind": "subtask",
    "sub": "impl",
@@ -36985,6 +36906,22 @@
    "id": "T-A-15.m7",
    "kind": "subtask",
    "sub": "mock",
+   "title": "モック password-reset と突き合わせる（全要素・全ボタン・値が固定でない）",
+   "parent": "T-A-15",
+   "status": "todo",
+   "links": {
+    "mock": [
+     "06_mockup/v1/v1-password-reset.html"
+    ],
+    "screens": [
+     "password-reset"
+    ]
+   }
+  },
+  {
+   "id": "T-A-15.m8",
+   "kind": "subtask",
+   "sub": "mock",
    "title": "モック security-brief と突き合わせる（全要素・全ボタン・値が固定でない）",
    "parent": "T-A-15",
    "status": "todo",
@@ -36998,7 +36935,7 @@
    }
   },
   {
-   "id": "T-A-15.m8",
+   "id": "T-A-15.m9",
    "kind": "subtask",
    "sub": "mock",
    "title": "モック verify-email と突き合わせる（全要素・全ボタン・値が固定でない）",
@@ -39629,22 +39566,6 @@
   },
   {
    "id": "T-A-20.m6",
-   "kind": "subtask",
-   "sub": "mock",
-   "title": "モック password-reset と突き合わせる（全要素・全ボタン・値が固定でない）",
-   "parent": "T-A-20",
-   "status": "todo",
-   "links": {
-    "mock": [
-     "06_mockup/v1/v1-password-reset.html"
-    ],
-    "screens": [
-     "password-reset"
-    ]
-   }
-  },
-  {
-   "id": "T-A-20.m7",
    "kind": "subtask",
    "sub": "mock",
    "title": "モック services と突き合わせる（全要素・全ボタン・値が固定でない）",

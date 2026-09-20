@@ -1,7 +1,7 @@
 {
  "version": "v3.1",
  "skill": "api-design",
- "frozen_at": "2026-09-16",
+ "frozen_at": "2026-09-20",
  "summary": {
   "total_screens": 64,
   "total_apis": 60,
@@ -113,12 +113,12 @@
   },
   {
    "screen_id": "password-reset",
-   "screen_name": "入り直す",
+   "screen_name": "パスワードの再設定",
    "mock_path": "06_mockup/v1/v1-password-reset.html",
    "required_apis": [
     {
-     "role": "action",
-     "endpoint": "PATCH /api/v1/members/:id",
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/members",
      "act": "A31"
     }
    ],

@@ -1,12 +1,12 @@
-// T-U-06 入り直す。テストの名前に正本の行 ID を持つ（op_gate.py）
+// T-U-06 パスワードの再設定。テストの名前に正本の行 ID を持つ（op_gate.py）
 import { expect, test } from "@playwright/test";
 import { api, lastMailUrl, noOverflow, PW, signupViaApi, uniqEmail } from "../_lib/api";
 
-test("SCR-PASSWORD-RESET-001 SCR-PASSWORD-RESET-009 SCR-PASSWORD-RESET-010 SCR-PASSWORD-RESET-008 状態 入り直す：4 幅で横溢れ 0・時点の部品なし・「ログインへ戻る」→ /login", async ({
+test("SCR-PASSWORD-RESET-001 SCR-PASSWORD-RESET-009 SCR-PASSWORD-RESET-010 SCR-PASSWORD-RESET-008 状態 再設定を送る：4 幅で横溢れ 0・時点の部品なし・「ログインへ戻る」→ /login", async ({
   page,
 }) => {
   await noOverflow(page, "/password-reset");
-  await expect(page.locator("[data-state='n'] h1")).toHaveText("入り直す");
+  await expect(page.locator("[data-state='n'] h1")).toHaveText("パスワードの再設定");
   await expect(page.locator("[data-requires]")).toHaveCount(0);
   await page.locator("[data-state='n']").getByRole("link", { name: "ログインへ戻る" }).click();
   await expect(page).toHaveURL(/\/login$/);

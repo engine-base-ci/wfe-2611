@@ -1,7 +1,7 @@
 {
  "meta": {
   "version": "v3.1",
-  "created_at": "2026-09-16",
+  "created_at": "2026-09-20",
   "_doc": "05_flow/build_functional.py が flow.json・ER図・モック・errors.json から生成。手で直さない。",
   "source": [
    "D-053.1",
@@ -142,7 +142,7 @@
    "has_shell": false,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-001",
     "D-011",
@@ -303,7 +303,7 @@
    "has_shell": false,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-042",
     "D-053.10",
@@ -426,7 +426,7 @@
    "has_shell": false,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-026",
     "D-037",
@@ -568,7 +568,7 @@
    "has_shell": false,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-042",
     "D-051",
@@ -704,7 +704,7 @@
    "has_shell": false,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-002",
     "D-081.2",
@@ -884,7 +884,7 @@
    "has_shell": false,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-042",
     "D-051",
@@ -897,8 +897,8 @@
   },
   {
    "id": "password-reset",
-   "name": "入り直す",
-   "purpose": "パスワードを忘れた・端末を失くしたときに、自分で入り直す",
+   "name": "パスワードの再設定",
+   "purpose": "パスワードを忘れた・端末を失くしたときに、自分でパスワードを再設定して入り直す",
    "acts": [
     "A31"
    ],
@@ -915,7 +915,7 @@
    "states": [
     {
      "id": "n",
-     "label": "入り直す"
+     "label": "再設定を送る"
     },
     {
      "id": "s",
@@ -949,9 +949,9 @@
    "related_apis": [
     {
      "act": "A31",
-     "role": "action",
-     "method": "PATCH",
-     "path_draft": "/api/members/:id",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/members",
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-004",
@@ -980,9 +980,9 @@
    "required_apis": [
     {
      "act": "A31",
-     "role": "action",
-     "method": "PATCH",
-     "path_draft": "/api/members/:id",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/members",
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-004",
@@ -1020,12 +1020,12 @@
    "route": "/password-reset",
    "meta_tags": {
     "screen_id": "password-reset",
-    "screen_name": "入り直す",
+    "screen_name": "パスワードの再設定",
     "category": "outside",
     "status": "decided",
     "version": "v1"
    },
-   "h1_text": "入り直す",
+   "h1_text": "パスワードの再設定",
    "kpi_labels": [],
    "section_h2_texts": [],
    "checklist": [],
@@ -1033,7 +1033,7 @@
    "has_shell": false,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-042",
     "D-053.10",
@@ -1272,7 +1272,7 @@
    "has_shell": false,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-028",
     "D-030",
@@ -1580,7 +1580,7 @@
    "has_shell": false,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-010",
     "D-028",
@@ -2646,7 +2646,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-055",
     "D-015",
@@ -3714,7 +3714,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-017",
     "D-041",
@@ -3952,7 +3952,7 @@
    "has_shell": false,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-028",
     "D-040",
@@ -4200,7 +4200,7 @@
    "has_shell": false,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-028",
     "D-019",
@@ -5311,7 +5311,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-008",
     "D-024",
@@ -6354,7 +6354,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-012",
     "D-037",
@@ -7350,7 +7350,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-060",
     "D-037",
@@ -8658,7 +8658,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-008",
     "D-034",
@@ -9705,7 +9705,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-062",
     "D-066",
@@ -10733,7 +10733,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-062",
     "D-037",
@@ -11770,7 +11770,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-007",
     "D-029",
@@ -12829,7 +12829,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-038",
     "D-039",
@@ -13896,7 +13896,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-038",
     "D-039",
@@ -14965,7 +14965,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-058",
     "D-032",
@@ -16012,7 +16012,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-058",
     "D-032",
@@ -17070,7 +17070,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-032",
     "D-034",
@@ -18132,7 +18132,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-058",
     "D-026",
@@ -19140,7 +19140,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-035",
     "D-006",
@@ -20153,7 +20153,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-035",
     "D-063",
@@ -21182,7 +21182,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-030",
     "D-022",
@@ -22200,7 +22200,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-060",
     "D-024",
@@ -23210,7 +23210,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-038",
     "D-039",
@@ -24239,7 +24239,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-010",
     "D-024",
@@ -25248,7 +25248,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-018",
     "D-014",
@@ -26437,7 +26437,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-042",
     "D-012",
@@ -27440,7 +27440,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-040",
     "D-041",
@@ -28489,7 +28489,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-026",
     "D-002",
@@ -29519,7 +29519,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-037",
     "D-027",
@@ -30600,7 +30600,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-037",
     "D-026",
@@ -31599,7 +31599,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-042",
     "D-015",
@@ -31748,7 +31748,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-081.5",
     "D-085.1",
@@ -32742,7 +32742,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-025",
     "D-050",
@@ -33754,7 +33754,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-042",
     "D-074.1",
@@ -34791,7 +34791,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-030",
     "D-042",
@@ -35793,7 +35793,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-037",
     "D-030",
@@ -36877,7 +36877,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-027",
     "D-037",
@@ -37882,7 +37882,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-076.1",
     "D-042",
@@ -38872,7 +38872,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-076.2",
     "D-042",
@@ -39014,7 +39014,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-081.3",
     "D-083.1",
@@ -39153,7 +39153,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-081.4",
     "D-084.1",
@@ -40152,7 +40152,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-076.3",
     "D-029",
@@ -41164,7 +41164,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-076.4",
     "D-041",
@@ -42151,7 +42151,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-076.5",
     "D-041",
@@ -43167,7 +43167,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-030.1",
     "D-030.2",
@@ -44175,7 +44175,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-075.1",
     "D-042"
@@ -45169,7 +45169,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-075.2",
     "D-075.3",
@@ -46181,7 +46181,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-075.4",
     "D-075.5",
@@ -47169,7 +47169,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-075.2",
     "D-077.4",
@@ -48214,7 +48214,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-075.4",
     "D-075.5",
@@ -48341,7 +48341,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-083.5",
     "D-083.6"
@@ -48471,7 +48471,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-085.1",
     "D-085.2",
@@ -49507,7 +49507,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-042",
     "D-037",
@@ -50509,7 +50509,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-027",
     "D-073.7",
@@ -51541,7 +51541,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-042",
     "D-073.7",
@@ -52607,7 +52607,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-16",
+   "decided_at": "2026-09-20",
    "source": [
     "D-026",
     "D-037",

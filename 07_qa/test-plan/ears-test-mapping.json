@@ -1,7 +1,7 @@
 {
  "version": "v3",
  "skill": "test-verification",
- "created_at": "2026-09-16",
+ "created_at": "2026-09-20",
  "_doc": "08_api/ears-ac-seed.json の 1 文 = 1 test。05_flow/build_testplan.py が生成。tickets の tier_2 と同じ文なので、実装者は tasks の列で自分の分を引く",
  "generator": "packages/api/test/generate_from_ears.ts（EARS の文 → vitest/jest の骨組み。EVENT-DRIVEN=正常・UNWANTED=異常・UBIQUITOUS=契約の形）",
  "counts": {
@@ -61,7 +61,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -561,7 +560,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -944,7 +942,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -1318,7 +1315,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -1673,7 +1669,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -2046,7 +2041,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -2469,7 +2463,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -2849,7 +2842,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -3309,7 +3301,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -3675,7 +3666,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -4072,7 +4062,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -4427,7 +4416,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -4800,7 +4788,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -5133,7 +5120,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -5506,7 +5492,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -5879,7 +5864,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -6274,7 +6258,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -6647,7 +6630,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -7013,7 +6995,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -7482,7 +7463,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -7849,7 +7829,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -8244,7 +8223,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -8599,7 +8577,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -8994,7 +8971,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -9355,7 +9331,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -9731,6 +9706,7 @@
     "T-A-01",
     "T-A-02",
     "T-A-02",
+    "T-A-03",
     "T-U-03"
    ]
   },
@@ -9849,7 +9825,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -10185,7 +10160,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -10571,7 +10545,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -10967,7 +10940,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -11374,7 +11346,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -11707,7 +11678,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -12102,7 +12072,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -12497,7 +12466,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -12830,11 +12798,13 @@
    "acts": [
     "A02",
     "A04",
-    "A13"
+    "A13",
+    "A31"
    ],
    "screens": [
     "login",
     "mfa-setup",
+    "password-reset",
     "verify-email"
    ],
    "ears_form": "EVENT-DRIVEN",
@@ -12847,11 +12817,13 @@
    "ladder": "L1",
    "tasks": [
     "T-A-01",
+    "T-A-03",
     "T-A-04",
     "T-A-15",
     "T-U-02",
     "T-U-04",
-    "T-U-05"
+    "T-U-05",
+    "T-U-06"
    ]
   },
   {
@@ -12861,11 +12833,13 @@
    "acts": [
     "A02",
     "A04",
-    "A13"
+    "A13",
+    "A31"
    ],
    "screens": [
     "login",
     "mfa-setup",
+    "password-reset",
     "verify-email"
    ],
    "ears_form": "EVENT-DRIVEN",
@@ -12878,11 +12852,13 @@
    "ladder": "L1",
    "tasks": [
     "T-A-01",
+    "T-A-03",
     "T-A-04",
     "T-A-15",
     "T-U-02",
     "T-U-04",
-    "T-U-05"
+    "T-U-05",
+    "T-U-06"
    ]
   },
   {
@@ -12892,11 +12868,13 @@
    "acts": [
     "A02",
     "A04",
-    "A13"
+    "A13",
+    "A31"
    ],
    "screens": [
     "login",
     "mfa-setup",
+    "password-reset",
     "verify-email"
    ],
    "ears_form": "EVENT-DRIVEN",
@@ -12909,6 +12887,7 @@
    "ladder": "L1",
    "tasks": [
     "T-A-01",
+    "T-A-03",
     "T-A-04",
     "T-A-15"
    ]
@@ -12920,11 +12899,39 @@
    "acts": [
     "A02",
     "A04",
-    "A13"
+    "A13",
+    "A31"
    ],
    "screens": [
     "login",
     "mfa-setup",
+    "password-reset",
+    "verify-email"
+   ],
+   "ears_form": "EVENT-DRIVEN",
+   "http_code": "",
+   "ears_text": "EVENT-DRIVEN: WHEN GET /api/v1/members が「メールでパスワードを再設定する／回復コードを使う」として呼ばれたとき THEN Kaname は「トークンを失効させて再発行」を行い 2xx を返す",
+   "test_file": "apps/api/test/generated/get_members.test.ts",
+   "test_function": "test_get_members_ok_4",
+   "test_level": "contract+integration",
+   "gate": "backend-coverage",
+   "ladder": "L1",
+   "tasks": []
+  },
+  {
+   "test_id": "TC-245",
+   "endpoint": "GET /api/v1/members",
+   "feature_id": "F-001",
+   "acts": [
+    "A02",
+    "A04",
+    "A13",
+    "A31"
+   ],
+   "screens": [
+    "login",
+    "mfa-setup",
+    "password-reset",
     "verify-email"
    ],
    "ears_form": "UNWANTED",
@@ -12939,21 +12946,24 @@
     "T-A-01",
     "T-A-02",
     "T-A-02",
+    "T-A-03",
     "T-U-03"
    ]
   },
   {
-   "test_id": "TC-245",
+   "test_id": "TC-246",
    "endpoint": "GET /api/v1/members",
    "feature_id": "F-001",
    "acts": [
     "A02",
     "A04",
-    "A13"
+    "A13",
+    "A31"
    ],
    "screens": [
     "login",
     "mfa-setup",
+    "password-reset",
     "verify-email"
    ],
    "ears_form": "UBIQUITOUS",
@@ -12967,11 +12977,10 @@
    "tasks": []
   },
   {
-   "test_id": "TC-246",
+   "test_id": "TC-247",
    "endpoint": "PATCH /api/v1/members/:id",
-   "feature_id": "F-003",
+   "feature_id": "F-010",
    "acts": [
-    "A31",
     "A36",
     "A61",
     "A74"
@@ -12979,56 +12988,19 @@
    "screens": [
     "account",
     "member-detail",
-    "members",
-    "password-reset"
+    "members"
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「メールで入り直す／回復コードを使う」として呼ばれたとき THEN Kaname は「トークンを失効させて再発行」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「人を招いて見える範囲を決める」として呼ばれたとき THEN Kaname は「招待を発行、スコープを結ぶ」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/patch_members_id.test.ts",
    "test_function": "test_patch_members_id_ok",
    "test_level": "contract+integration",
    "gate": "backend-coverage",
    "ladder": "L1",
    "tasks": [
-    "T-A-03",
     "T-A-12",
     "T-A-20",
-    "T-U-06",
-    "T-U-35",
-    "T-U-44",
-    "T-U-58"
-   ]
-  },
-  {
-   "test_id": "TC-247",
-   "endpoint": "PATCH /api/v1/members/:id",
-   "feature_id": "F-003",
-   "acts": [
-    "A31",
-    "A36",
-    "A61",
-    "A74"
-   ],
-   "screens": [
-    "account",
-    "member-detail",
-    "members",
-    "password-reset"
-   ],
-   "ears_form": "EVENT-DRIVEN",
-   "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「人を招いて見える範囲を決める」として呼ばれたとき THEN Kaname は「招待を発行、スコープを結ぶ」を行い 2xx を返す",
-   "test_file": "apps/api/test/generated/patch_members_id.test.ts",
-   "test_function": "test_patch_members_id_ok_2",
-   "test_level": "contract+integration",
-   "gate": "backend-coverage",
-   "ladder": "L1",
-   "tasks": [
-    "T-A-03",
-    "T-A-12",
-    "T-A-20",
-    "T-U-06",
     "T-U-35",
     "T-U-44",
     "T-U-58"
@@ -13037,9 +13009,8 @@
   {
    "test_id": "TC-248",
    "endpoint": "PATCH /api/v1/members/:id",
-   "feature_id": "F-003",
+   "feature_id": "F-010",
    "acts": [
-    "A31",
     "A36",
     "A61",
     "A74"
@@ -13047,55 +13018,56 @@
    "screens": [
     "account",
     "member-detail",
-    "members",
-    "password-reset"
+    "members"
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
    "ears_text": "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「1人の権限を決める」として呼ばれたとき THEN Kaname は「層への所属・役割・権限の表を保存。既存セッションを無効化」を行い 2xx を返す（自動側：自分のAIが「この人に見えるようになるもの」を列挙する）",
+   "test_file": "apps/api/test/generated/patch_members_id.test.ts",
+   "test_function": "test_patch_members_id_ok_2",
+   "test_level": "contract+integration",
+   "gate": "backend-coverage",
+   "ladder": "L1",
+   "tasks": [
+    "T-A-12",
+    "T-A-20",
+    "T-U-35",
+    "T-U-44",
+    "T-U-58"
+   ]
+  },
+  {
+   "test_id": "TC-249",
+   "endpoint": "PATCH /api/v1/members/:id",
+   "feature_id": "F-010",
+   "acts": [
+    "A36",
+    "A61",
+    "A74"
+   ],
+   "screens": [
+    "account",
+    "member-detail",
+    "members"
+   ],
+   "ears_form": "EVENT-DRIVEN",
+   "http_code": "",
+   "ears_text": "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「自分のアカウントを整える」として呼ばれたとき THEN Kaname は「名前・メール・パスワード・2 段階認証・端末を保存。変更は即失効の対象（G-14）」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/patch_members_id.test.ts",
    "test_function": "test_patch_members_id_ok_3",
    "test_level": "contract+integration",
    "gate": "backend-coverage",
    "ladder": "L1",
    "tasks": [
-    "T-A-03",
     "T-A-12",
     "T-A-20"
    ]
   },
   {
-   "test_id": "TC-249",
-   "endpoint": "PATCH /api/v1/members/:id",
-   "feature_id": "F-003",
-   "acts": [
-    "A31",
-    "A36",
-    "A61",
-    "A74"
-   ],
-   "screens": [
-    "account",
-    "member-detail",
-    "members",
-    "password-reset"
-   ],
-   "ears_form": "EVENT-DRIVEN",
-   "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「自分のアカウントを整える」として呼ばれたとき THEN Kaname は「名前・メール・パスワード・2 段階認証・端末を保存。変更は即失効の対象（G-14）」を行い 2xx を返す",
-   "test_file": "apps/api/test/generated/patch_members_id.test.ts",
-   "test_function": "test_patch_members_id_ok_4",
-   "test_level": "contract+integration",
-   "gate": "backend-coverage",
-   "ladder": "L1",
-   "tasks": []
-  },
-  {
    "test_id": "TC-250",
    "endpoint": "PATCH /api/v1/members/:id",
-   "feature_id": "F-003",
+   "feature_id": "F-010",
    "acts": [
-    "A31",
     "A36",
     "A61",
     "A74"
@@ -13103,8 +13075,7 @@
    "screens": [
     "account",
     "member-detail",
-    "members",
-    "password-reset"
+    "members"
    ],
    "ears_form": "UNWANTED",
    "http_code": "401",
@@ -13120,7 +13091,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -13299,9 +13269,8 @@
   {
    "test_id": "TC-251",
    "endpoint": "PATCH /api/v1/members/:id",
-   "feature_id": "F-003",
+   "feature_id": "F-010",
    "acts": [
-    "A31",
     "A36",
     "A61",
     "A74"
@@ -13309,8 +13278,7 @@
    "screens": [
     "account",
     "member-detail",
-    "members",
-    "password-reset"
+    "members"
    ],
    "ears_form": "UNWANTED",
    "http_code": "403",
@@ -13375,9 +13343,8 @@
   {
    "test_id": "TC-252",
    "endpoint": "PATCH /api/v1/members/:id",
-   "feature_id": "F-003",
+   "feature_id": "F-010",
    "acts": [
-    "A31",
     "A36",
     "A61",
     "A74"
@@ -13385,8 +13352,7 @@
    "screens": [
     "account",
     "member-detail",
-    "members",
-    "password-reset"
+    "members"
    ],
    "ears_form": "UNWANTED",
    "http_code": "404",
@@ -13401,9 +13367,8 @@
   {
    "test_id": "TC-253",
    "endpoint": "PATCH /api/v1/members/:id",
-   "feature_id": "F-003",
+   "feature_id": "F-010",
    "acts": [
-    "A31",
     "A36",
     "A61",
     "A74"
@@ -13411,8 +13376,7 @@
    "screens": [
     "account",
     "member-detail",
-    "members",
-    "password-reset"
+    "members"
    ],
    "ears_form": "UNWANTED",
    "http_code": "422",
@@ -13427,9 +13391,8 @@
   {
    "test_id": "TC-254",
    "endpoint": "PATCH /api/v1/members/:id",
-   "feature_id": "F-003",
+   "feature_id": "F-010",
    "acts": [
-    "A31",
     "A36",
     "A61",
     "A74"
@@ -13437,8 +13400,7 @@
    "screens": [
     "account",
     "member-detail",
-    "members",
-    "password-reset"
+    "members"
    ],
    "ears_form": "UNWANTED",
    "http_code": "429",
@@ -13453,9 +13415,8 @@
   {
    "test_id": "TC-255",
    "endpoint": "PATCH /api/v1/members/:id",
-   "feature_id": "F-003",
+   "feature_id": "F-010",
    "acts": [
-    "A31",
     "A36",
     "A61",
     "A74"
@@ -13463,8 +13424,7 @@
    "screens": [
     "account",
     "member-detail",
-    "members",
-    "password-reset"
+    "members"
    ],
    "ears_form": "UNWANTED",
    "http_code": "",
@@ -13479,9 +13439,8 @@
   {
    "test_id": "TC-256",
    "endpoint": "PATCH /api/v1/members/:id",
-   "feature_id": "F-003",
+   "feature_id": "F-010",
    "acts": [
-    "A31",
     "A36",
     "A61",
     "A74"
@@ -13489,8 +13448,7 @@
    "screens": [
     "account",
     "member-detail",
-    "members",
-    "password-reset"
+    "members"
    ],
    "ears_form": "UBIQUITOUS",
    "http_code": "",
@@ -13582,7 +13540,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -13965,7 +13922,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -14360,7 +14316,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -14715,7 +14670,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -15110,7 +15064,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -15485,7 +15438,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -15858,7 +15810,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -16251,7 +16202,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -16625,7 +16575,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -16959,7 +16908,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -17312,7 +17260,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -17685,7 +17632,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -18058,7 +18004,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -18453,7 +18398,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -18826,7 +18770,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -19160,7 +19103,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -19555,7 +19497,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -19979,7 +19920,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -20362,7 +20302,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -20767,7 +20706,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -21156,7 +21094,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -21585,7 +21522,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -22069,7 +22005,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",
@@ -22469,7 +22404,6 @@
     "T-A-01",
     "T-A-01",
     "T-A-01",
-    "T-A-03",
     "T-A-04",
     "T-A-04",
     "T-A-04",

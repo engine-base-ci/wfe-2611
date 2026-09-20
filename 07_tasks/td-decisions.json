@@ -121,7 +121,7 @@
   {
    "task_id": "T-A-03",
    "risk_type": "致命級（人のレビュー）",
-   "description": "API 入れなくなったときに、自分で入り直したい — データ・API・権限（1 endpoint）",
+   "description": "API 入れなくなったときに、自分でパスワードを再設定したい — データ・A（1 endpoint）",
    "mitigation": "human_review_h を持つ。上流を故意に壊す検証"
   },
   {

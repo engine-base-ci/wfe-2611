@@ -405,12 +405,14 @@
    "screen_ids_referencing": [
     "login",
     "mfa-setup",
+    "password-reset",
     "verify-email"
    ],
    "acts": [
     "A02",
     "A04",
-    "A13"
+    "A13",
+    "A31"
    ]
   },
   {
@@ -420,11 +422,9 @@
    "screen_ids_referencing": [
     "account",
     "member-detail",
-    "members",
-    "password-reset"
+    "members"
    ],
    "acts": [
-    "A31",
     "A36",
     "A61",
     "A74"

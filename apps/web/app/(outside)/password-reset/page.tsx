@@ -1,5 +1,5 @@
 "use client";
-// 入り直す（T-U-06・A28）。状態：入り直す／送信後／新しいパスワード。登録の有無は漏らさない。再設定で既存の端末と Bridge は全部切れる（G-14）
+// パスワードの再設定（T-U-06・A28）。状態：再設定を送る／送信後／新しいパスワード。登録の有無は漏らさない。再設定で既存の端末と Bridge は全部切れる（G-14）
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
@@ -54,6 +54,7 @@ function PasswordResetInner() {
                   id={id}
                   type="password"
                   autoComplete="new-password"
+                  placeholder="英字と数字で 12 文字以上"
                   value={pw}
                   onChange={(e) => setPw(e.target.value)}
                 />
@@ -65,6 +66,7 @@ function PasswordResetInner() {
                   id={id}
                   type="password"
                   autoComplete="new-password"
+                  placeholder="もう一度入れてください"
                   value={pw2}
                   onChange={(e) => setPw2(e.target.value)}
                   invalid={!!msg}
@@ -93,7 +95,7 @@ function PasswordResetInner() {
       ) : (
         <div data-state="n">
           <form onSubmit={send} noValidate>
-            <h1 className="text-h1 font-bold tracking-[-0.015em]">入り直す</h1>
+            <h1 className="text-h1 font-bold tracking-[-0.015em]">パスワードの再設定</h1>
             <p className="mt-1 text-[13.5px] text-[var(--on-sv)]">登録したメールアドレスに再設定のリンクを送ります。</p>
             <div className="mt-6">
               <Field label="メールアドレス">
@@ -103,6 +105,7 @@ function PasswordResetInner() {
                     type="email"
                     inputMode="email"
                     autoComplete="email"
+                    placeholder="yamada@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />

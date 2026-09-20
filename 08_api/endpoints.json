@@ -1,8 +1,8 @@
 {
  "meta": {
   "version": "v3.1",
-  "created_at": "2026-09-16",
-  "frozen_at": "2026-09-16",
+  "created_at": "2026-09-20",
+  "frozen_at": "2026-09-20",
   "base_url": "/api/v1",
   "_doc": "05_flow/build_api.py が機械生成。手で直さない。凍結後の変更は決定（ADR）＋影響解析",
   "source": [
@@ -4030,11 +4030,13 @@
    "acts": [
     "A02",
     "A04",
-    "A13"
+    "A13",
+    "A31"
    ],
    "screens": [
     "login",
     "mfa-setup",
+    "password-reset",
     "verify-email"
    ],
    "related_entities": [
@@ -4052,6 +4054,7 @@
    ],
    "features": [
     "F-001",
+    "F-003",
     "F-004",
     "F-012"
    ],
@@ -4086,6 +4089,7 @@
     "EVENT-DRIVEN: WHEN GET /api/v1/members が「届いたリンクを押す」として呼ばれたとき THEN Kaname は「本人確認を記録」を行い 2xx を返す",
     "EVENT-DRIVEN: WHEN GET /api/v1/members が「認証アプリを登録する」として呼ばれたとき THEN Kaname は「TOTPシークレットを暗号化保管」を行い 2xx を返す",
     "EVENT-DRIVEN: WHEN GET /api/v1/members が「メールとパスワードと6桁を入れる」として呼ばれたとき THEN Kaname は「トークンを発行」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN GET /api/v1/members が「メールでパスワードを再設定する／回復コードを使う」として呼ばれたとき THEN Kaname は「トークンを失効させて再発行」を行い 2xx を返す",
     "UNWANTED: IF 10/min/ip を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UBIQUITOUS: GET /api/v1/members の副作用は関門 C2・C6・C8 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
    ],
@@ -4117,7 +4121,6 @@
    "method": "PATCH",
    "path": "/api/v1/members/:id",
    "acts": [
-    "A31",
     "A36",
     "A61",
     "A74"
@@ -4125,8 +4128,7 @@
    "screens": [
     "account",
     "member-detail",
-    "members",
-    "password-reset"
+    "members"
    ],
    "related_entities": [
     "E-004",
@@ -4157,7 +4159,6 @@
     "D-076.13"
    ],
    "features": [
-    "F-003",
     "F-010",
     "F-017"
    ],
@@ -4224,7 +4225,6 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「メールで入り直す／回復コードを使う」として呼ばれたとき THEN Kaname は「トークンを失効させて再発行」を行い 2xx を返す",
     "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「人を招いて見える範囲を決める」として呼ばれたとき THEN Kaname は「招待を発行、スコープを結ぶ」を行い 2xx を返す",
     "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「1人の権限を決める」として呼ばれたとき THEN Kaname は「層への所属・役割・権限の表を保存。既存セッションを無効化」を行い 2xx を返す（自動側：自分のAIが「この人に見えるようになるもの」を列挙する）",
     "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「自分のアカウントを整える」として呼ばれたとき THEN Kaname は「名前・メール・パスワード・2 段階認証・端末を保存。変更は即失効の対象（G-14）」を行い 2xx を返す",
@@ -4241,7 +4241,7 @@
     "秘密の読み出し"
    ],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "更新（members）— 入れなくなった → 入り直す／人を招いて見える範囲を決める",
+   "description": "更新（members）— 人を招いて見える範囲を決める／メンバー1人の所属する層・役割・権限（何を・どの層で・見",
    "implementation_path": "apps/api/src/routes/members.ts::patchMembersById",
    "inputs": {
     "path": [
@@ -4255,7 +4255,7 @@
     "body": "{ data: Members, meta?: { cursor, limit, total } }"
    },
    "id": "EP-036",
-   "feature_id": "F-003"
+   "feature_id": "F-010"
   },
   {
    "method": "DELETE",

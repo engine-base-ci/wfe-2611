@@ -4,8 +4,8 @@
 
 - 総タスク数：171（A 26 / D 14 / F 18 / I 22 / S 15 / U-screen 64 / U-shared 7 / V2 5）
 - 画面の被覆：64/64
-- L1 テスト行：4660（正本 07_qa/test-specs）／ 流れ（L2）：9
-- 工数：Human 5540.5 h（693 日）／ AI 計算 992.6 h ＋ 人のレビュー 52.0 h → wall-clock 278.8 h（47 日・並列 10）
+- L1 テスト行：4654（正本 07_qa/test-specs）／ 流れ（L2）：9
+- 工数：Human 5534.5 h（692 日）／ AI 計算 991.1 h ＋ 人のレビュー 52.0 h → wall-clock 278.8 h（47 日・並列 10）
 - Wave 数：25
 
 ## Group 別タスク一覧
@@ -68,7 +68,7 @@
 |---|---|---|---|---|---|---|---|---|---|
 | T-A-01 | API 契約してから、自力で動く状態まで持っていきたい — データ・API・（5 endpoint） | backend | backend | 125 | 31.2 | 32.2 | 6 | 22 | 36 |
 | T-A-02 | API 招かれたので、自分がやることだけ分かる状態にしたい — データ・AP（1 endpoint） | backend | backend | 26 | 6.5 | 7.5 | 6 | 8 | 10 |
-| T-A-03 | API 入れなくなったときに、自分で入り直したい — データ・API・権限（1 endpoint） | backend | backend | 38 | 9.5 | 10.5 | 6 | 15 | 15 |
+| T-A-03 | API 入れなくなったときに、自分でパスワードを再設定したい — データ・A（1 endpoint） | backend | backend | 32 | 8.0 | 9.0 | 6 | 9 | 9 |
 | T-A-04 | API 今日なにをすればいいか、迷わず決めたい — データ・API・権限（1/2）（6 endpoi | backend | backend | 62 | 15.5 | 16.5 | 6 | 16 | 38 |
 | T-A-05 | API 今日なにをすればいいか、迷わず決めたい — データ・API・権限（2/2）（4 endpoi | backend | backend | 62 | 15.5 | 16.5 | 6 | 14 | 30 |
 | T-A-06 | API 手でやっている繰り返しを、自分の代わりにやらせたい — データ・AP（5 endpoint） | backend | backend | 113 | 28.2 | 29.2 | 6 | 18 | 39 |
@@ -110,11 +110,11 @@
 | ID | タイトル | category | layer | Human h | AI h | wall-clock | wave | depends_on | L1 行 |
 |---|---|---|---|---|---|---|---|---|---|
 | T-U-01 | 画面 アカウントを作る（2 状態・R1/R2） | frontend | ui | 12.0 | 1.2 | 1.2 | 11 | 8 | 34 |
-| T-U-02 | 画面 メールを確認する（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 11 | 10 | 26 |
+| T-U-02 | 画面 メールを確認する（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 11 | 11 | 26 |
 | T-U-03 | 画面 招待を受けて参加する（3 状態・R3/R4） | frontend | ui | 14.5 | 1.4 | 1.4 | 11 | 8 | 27 |
-| T-U-04 | 画面 2段階認証を設定する（2 状態・R1/R2/R3） | frontend | ui | 13.5 | 1.4 | 1.4 | 11 | 10 | 30 |
-| T-U-05 | 画面 ログインする（3 状態・R1/R2/R3/R4） | frontend | ui | 17.5 | 1.8 | 1.8 | 11 | 10 | 44 |
-| T-U-06 | 画面 入り直す（3 状態・R1/R2/R3） | frontend | ui | 16.0 | 1.6 | 1.6 | 11 | 10 | 33 |
+| T-U-04 | 画面 2段階認証を設定する（2 状態・R1/R2/R3） | frontend | ui | 13.5 | 1.4 | 1.4 | 11 | 11 | 30 |
+| T-U-05 | 画面 ログインする（3 状態・R1/R2/R3/R4） | frontend | ui | 17.5 | 1.8 | 1.8 | 11 | 11 | 44 |
+| T-U-06 | 画面 パスワードの再設定（3 状態・R1/R2/R3） | frontend | ui | 16.0 | 1.6 | 1.6 | 11 | 11 | 33 |
 | T-U-07 | 画面 自分のAIと話す（4 状態・R1/R2） | frontend | ui | 17.0 | 1.7 | 1.7 | 11 | 9 | 53 |
 | T-U-08 | 画面 たたき台を確かめる（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 11 | 12 | 50 |
 | T-U-09 | 画面 自分のPCをつなぐ（4 状態・R1/R2） | frontend | ui | 17.0 | 1.7 | 1.7 | 11 | 9 | 52 |
@@ -143,7 +143,7 @@
 | T-U-32 | 画面 覚え直させる（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 14 | 8 | 39 |
 | T-U-33 | 画面 証跡（6 状態・R1/R2） | frontend | ui | 22.0 | 2.2 | 2.2 | 14 | 11 | 62 |
 | T-U-34 | 画面 ルール（3 状態・R1/R2/R3/R4） | frontend | ui | 17.5 | 1.8 | 1.8 | 14 | 8 | 45 |
-| T-U-35 | 画面 メンバー（7 状態・R1/R2） | frontend | ui | 24.5 | 2.5 | 2.5 | 14 | 10 | 86 |
+| T-U-35 | 画面 メンバー（7 状態・R1/R2） | frontend | ui | 24.5 | 2.5 | 2.5 | 14 | 9 | 86 |
 | T-U-36 | 画面 AI社員（4 状態・R1/R2） | frontend | ui | 17.0 | 1.7 | 1.7 | 14 | 12 | 51 |
 | T-U-37 | 画面 AI社員の1体（5 状態・R1/R2） | frontend | ui | 19.5 | 1.9 | 1.9 | 14 | 12 | 53 |
 | T-U-38 | 画面 この製品でできること・できないこと（2 状態・R1/R2） | frontend | ui | 12.0 | 1.2 | 1.2 | 14 | 8 | 36 |
@@ -152,7 +152,7 @@
 | T-U-41 | 画面 運営の支援（2 状態・R6） | frontend | ui | 10.5 | 1.1 | 1.1 | 15 | 9 | 37 |
 | T-U-42 | 画面 運営：会社の一覧（4 状態・R6） | frontend | ui | 15.5 | 1.6 | 1.6 | 15 | 9 | 39 |
 | T-U-43 | 画面 運営：配るもの（7 状態・R6） | frontend | ui | 23.0 | 2.3 | 2.3 | 15 | 12 | 41 |
-| T-U-44 | 画面 自分のアカウント（2 状態・R1/R2/R3/R4） | frontend | ui | 15.0 | 1.5 | 1.5 | 15 | 10 | 50 |
+| T-U-44 | 画面 自分のアカウント（2 状態・R1/R2/R3/R4） | frontend | ui | 15.0 | 1.5 | 1.5 | 15 | 9 | 50 |
 | T-U-45 | 画面 会社の設定（2 状態・R1/R2） | frontend | ui | 12.0 | 1.2 | 1.2 | 15 | 8 | 41 |
 | T-U-46 | 画面 取り込み（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 15 | 8 | 41 |
 | T-U-47 | 画面 外部サービスの連携（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 15 | 8 | 37 |
@@ -166,7 +166,7 @@
 | T-U-55 | 画面 運営：会社の 1 社（1 状態・R6） | frontend | ui | 8.0 | 0.8 | 0.8 | 16 | 9 | 49 |
 | T-U-56 | 画面 運営：公開の審査（2 状態・R6） | frontend | ui | 10.5 | 1.1 | 1.1 | 16 | 8 | 39 |
 | T-U-57 | 画面 運営：運営の証跡（2 状態・R6） | frontend | ui | 10.5 | 1.1 | 1.1 | 16 | 11 | 36 |
-| T-U-58 | 画面 メンバーの1人（4 状態・R1/R2） | frontend | ui | 17.0 | 1.7 | 1.7 | 16 | 11 | 69 |
+| T-U-58 | 画面 メンバーの1人（4 状態・R1/R2） | frontend | ui | 17.0 | 1.7 | 1.7 | 16 | 10 | 69 |
 | T-U-59 | 画面 支払い方法を登録する（4 状態・R1/R2・段階 2） | frontend | ui | 17.0 | 1.7 | 1.7 | 24 | 8 | 37 |
 | T-U-60 | 画面 開示資料（4 状態・R1/R2・段階 2） | frontend | ui | 17.0 | 1.7 | 1.7 | 24 | 8 | 40 |
 | T-U-61 | 画面 AI の経路（4 状態・R1/R2・段階 2） | frontend | ui | 17.0 | 1.7 | 1.7 | 24 | 8 | 56 |
@@ -610,7 +610,7 @@
 ### T-A-01 API 契約してから、自力で動く状態まで持っていきたい — データ・API・（5 endpoint）
 
 - group A / layer backend / phase 3_api / wave 6 / Human 125 h・AI 31.2 h・wall-clock 32.2 h
-- 行為 A01 A02 A04 A05 A06 A07 A08 A09 A12 A13 A45 / 画面 bridge-setup company-model login mfa-setup onboard-draft onboard-golive onboard-interview signup verify-email / 表 tenants members clones goals ledger_definitions duties / 関門 C2 C3 C5 C7 C8
+- 行為 A01 A02 A04 A05 A06 A07 A08 A09 A12 A13 A31 A45 / 画面 bridge-setup company-model login mfa-setup onboard-draft onboard-golive onboard-interview password-reset signup verify-email / 表 tenants members clones goals ledger_definitions duties / 関門 C2 C3 C5 C7 C8
 - 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-02 T-D-03 T-D-04 T-D-05
 - 根拠（逐語）：D-001「2028-09までに200社→65社に修正。自社SaaS外販。初期顧客が自力で回せることが前提」 ／ D-002「65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集」
 - 触るファイル：apps/api/src/routes/clones.ts (new)、apps/api/src/routes/members.ts (new)、apps/api/src/routes/sessions.ts (new)、apps/api/src/routes/subscriptions.ts (new)
@@ -631,22 +631,22 @@
 - L1 行 10（['API-02-001', 'API-02-002', 'API-02-003'] …）／ L2 ['J-01']
 - audit: 07_tasks/audit/T-A-02.md
 
-### T-A-03 API 入れなくなったときに、自分で入り直したい — データ・API・権限（1 endpoint）
+### T-A-03 API 入れなくなったときに、自分でパスワードを再設定したい — データ・A（1 endpoint）
 
-- group A / layer backend / phase 3_api / wave 6 / Human 38 h・AI 9.5 h・wall-clock 10.5 h
-- 行為 A31 A36 A61 A74 / 画面 account member-detail members password-reset / 表 members ai_employees audit_events layers permissions invitations / 関門 C2 C6 C8
-- 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-06 T-D-08 T-D-12 T-F-02
+- group A / layer backend / phase 3_api / wave 6 / Human 32 h・AI 8.0 h・wall-clock 9.0 h
+- 行為 A02 A04 A13 A31 / 画面 login mfa-setup password-reset verify-email / 表 members audit_events layers permissions / 関門 C8
+- 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-06 T-D-08 T-F-14
 - 根拠（逐語）：D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」 ／ D-053「画面は行為から導出する。画面から始めると『この画面で何をしたいか分からない』が必ず起きる。役割×用事→行為の背骨→オブジ」
 - 触るファイル：apps/api/src/routes/members.ts (new)、apps/api/src/app.ts (modify)
-- AC（Tier 1）：UBIQUITOUS: PATCH /api/v1/members/:id は 08_api/openapi.yaml の operation patchMem
-- AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「メールで入り直す／回復コードを使う」として呼ばれたとき THEN  ／ EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「人を招いて見える範囲を決める」として呼ばれたとき THEN Kan ／ EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「1人の権限を決める」として呼ばれたとき THEN Kaname は
-- L1 行 15（['API-03-001', 'API-03-002', 'API-03-003'] …）／ L2 ['J-06']
+- AC（Tier 1）：UBIQUITOUS: GET /api/v1/members は 08_api/openapi.yaml の operation getMembers どおり
+- AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/members が「届いたリンクを押す」として呼ばれたとき THEN Kaname は「本人確認を ／ EVENT-DRIVEN: WHEN GET /api/v1/members が「認証アプリを登録する」として呼ばれたとき THEN Kaname は「TOTP ／ EVENT-DRIVEN: WHEN GET /api/v1/members が「メールとパスワードと6桁を入れる」として呼ばれたとき THEN Kaname 
+- L1 行 9（['API-03-001', 'API-03-002', 'API-03-003'] …）／ L2 ['J-06']
 - audit: 07_tasks/audit/T-A-03.md
 
 ### T-A-04 API 今日なにをすればいいか、迷わず決めたい — データ・API・権限（1/2）（6 endpoint）
 
 - group A / layer backend / phase 3_api / wave 6 / Human 62 h・AI 15.5 h・wall-clock 16.5 h
-- 行為 A02 A04 A13 A14 A20 A23 A25 A49 A55 / 画面 clone-chat goal-allocation login mfa-setup my-progress today verify-email / 表 members clones goals goal_allocations goal_contributions goal_versions / 関門 C2 C3 C8
+- 行為 A02 A04 A13 A14 A20 A23 A25 A31 A49 A55 / 画面 clone-chat goal-allocation login mfa-setup my-progress password-reset today verify-email / 表 members clones goals goal_allocations goal_contributions goal_versions / 関門 C2 C3 C8
 - 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-02 T-D-05 T-D-06 T-D-08
 - 根拠（逐語）：D-002「65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集」 ／ D-003「スキルは堀ではない。堀は『閉じたループ』(目標→逆算→配布→実行→測定→再計画)と会社モデル」
 - 触るファイル：apps/api/src/routes/conversations.ts (new)、apps/api/src/routes/goal_allocations.ts (new)、apps/api/src/routes/members.ts (new)、apps/api/src/routes/messages.ts (new)
@@ -742,7 +742,7 @@
 ### T-A-12 API 人に任せたい。任せても品質が落ちないようにしたい — データ・API（1/2）（6 endpoint）
 
 - group A / layer backend / phase 3_api / wave 7 / Human 90 h・AI 22.5 h・wall-clock 23.5 h
-- 行為 A16 A31 A33 A36 A37 A38 A42 A46 A53 A59 A61 A62 A73 A74 A79 A81 / 画面 account account-close ai-activity ai-staff ai-staff-detail audit clone-thread member-detail members ops-audit ops-catalog password-reset / 表 members clones ai_employees duties duty_versions approvals / 関門 C2 C6 C8
+- 行為 A16 A33 A36 A37 A38 A42 A46 A53 A59 A61 A62 A73 A74 A79 A81 / 画面 account account-close ai-activity ai-staff ai-staff-detail audit clone-thread member-detail members ops-audit ops-catalog / 表 members clones ai_employees duties duty_versions approvals / 関門 C2 C6 C8
 - 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-04 T-D-05 T-D-06 T-D-08
 - 根拠（逐語）：D-003「スキルは堀ではない。堀は『閉じたループ』(目標→逆算→配布→実行→測定→再計画)と会社モデル」 ／ D-004「LLMは顧客のサブスク内(Bridge)が既定。APIは顧客負担。運営マネージドは既定OFFの管理者トグル」
 - 触るファイル：apps/api/src/routes/ai_employees.ts (new)、apps/api/src/routes/approvals.ts (new)、apps/api/src/routes/audit_events.ts (new)、apps/api/src/routes/members.ts (new)
@@ -778,7 +778,7 @@
 ### T-A-15 API このツールを入れて安全か、社内（情シス・コンプラ）に説明できるように（6 endpoint）
 
 - group A / layer backend / phase 3_api / wave 7 / Human 131 h・AI 32.8 h・wall-clock 33.8 h
-- 行為 A02 A04 A13 A34 A39 A40 A41 A42 A62 A66 / 画面 account-close audit export login member-detail mfa-setup security-brief verify-email / 表 tenants members ai_employees goals ledger_definitions approvals / 関門 C1 C2 C4 C6 C8
+- 行為 A02 A04 A13 A31 A34 A39 A40 A41 A42 A62 A66 / 画面 account-close audit export login member-detail mfa-setup password-reset security-brief verify-email / 表 tenants members ai_employees goals ledger_definitions approvals / 関門 C1 C2 C4 C6 C8
 - 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-02 T-D-03 T-D-05 T-D-06
 - 根拠（逐語）：D-010「製品の背骨。会社モデル(目標・台帳定義・担当業務・組織・ポリシー・記憶)を1つの定義に。画面もAI社員も自動実行もこの定」 ／ D-015「Bridgeは顧客PCで動く万能実行器。本人のIP・本人のログイン済みセッションで動くのでCAPTCHA/bot検知に到」
 - 触るファイル：apps/api/src/routes/approvals.ts (new)、apps/api/src/routes/export_jobs.ts (new)、apps/api/src/routes/members.ts (new)、apps/api/src/routes/sessions.ts (new)
@@ -838,7 +838,7 @@
 ### T-A-20 API 自分のアカウント・会社の設定・既存データの取り込み・外部サービスの連（4 endpoint）
 
 - group A / layer backend / phase 3_api / wave 7 / Human 164 h・AI 41.0 h・wall-clock 42.0 h
-- 行為 A31 A36 A61 A74 A75 A76 A77 / 画面 account company-settings import member-detail members password-reset services / 表 tenants members ai_employees goals ledger_definitions ledger_views / 関門 C1 C2 C3 C4 C6 C8
+- 行為 A36 A61 A74 A75 A76 A77 / 画面 account company-settings import member-detail members services / 表 tenants members ai_employees goals ledger_definitions ledger_views / 関門 C1 C2 C3 C4 C6 C8
 - 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-02 T-D-03 T-D-04 T-D-05
 - 根拠（逐語）：D-006「スコープの採否は『抜いてもループが閉じるか』。CRM・請求・経理を切ると目標の数値が出せなくなるので切らない」 ／ D-013「実行層は接続の器を1回作れば設定で増える形にする。連携を1本ずつ書かない」
 - 触るファイル：apps/api/src/routes/attachments.ts (new)、apps/api/src/routes/members.ts (new)、apps/api/src/routes/service_registry.ts (new)、apps/api/src/routes/tenants.ts (new)
@@ -1019,7 +1019,7 @@
 
 - group U-screen / layer ui / phase 5_ui_parallel / wave 11 / Human 14.5 h・AI 1.4 h・wall-clock 1.4 h
 - 行為 A02 / 画面 verify-email / 表 members permissions layers / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-01 T-A-04 T-A-15
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-01 T-A-03 T-A-04
 - 根拠（逐語）：D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」 ／ D-053「画面は行為から導出する。画面から始めると『この画面で何をしたいか分からない』が必ず起きる。役割×用事→行為の背骨→オブジ」
 - 触るファイル：apps/web/app/(public)/verify-email/page.tsx (new)、apps/web/tests/screens/verify-email.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 verify-email は URL /verify-email で開く（apps/web/app/(public)/verify ／ STATE-DRIVEN: WHILE 画面 verify-email が描画中 THEN h1「メールを確認する」・第2ナビ ・状態 3（送信済み、確認できた
@@ -1043,7 +1043,7 @@
 
 - group U-screen / layer ui / phase 5_ui_parallel / wave 11 / Human 13.5 h・AI 1.4 h・wall-clock 1.4 h
 - 行為 A04 / 画面 mfa-setup / 表 members permissions layers audit_events ops_audit_events security_events / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-01 T-A-04 T-A-15
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-01 T-A-03 T-A-04
 - 根拠（逐語）：D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」 ／ D-051「ネイティブアプリは今4つだけ決める(認証をトークンベースに等)。後からアプリを足すのが画面を作るだけになる」
 - 触るファイル：apps/web/app/(public)/mfa-setup/page.tsx (new)、apps/web/tests/screens/mfa-setup.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 mfa-setup は URL /mfa-setup で開く（apps/web/app/(public)/mfa-setup/pa ／ STATE-DRIVEN: WHILE 画面 mfa-setup が描画中 THEN h1「2段階認証を設定する」・第2ナビ ・状態 2（登録、回復コード）がモ
@@ -1055,7 +1055,7 @@
 
 - group U-screen / layer ui / phase 5_ui_parallel / wave 11 / Human 17.5 h・AI 1.8 h・wall-clock 1.8 h
 - 行為 A13 / 画面 login / 表 members permissions layers / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-01 T-A-04 T-A-15
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-01 T-A-03 T-A-04
 - 根拠（逐語）：D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」 ／ D-051「ネイティブアプリは今4つだけ決める(認証をトークンベースに等)。後からアプリを足すのが画面を作るだけになる」
 - 触るファイル：apps/web/app/(public)/login/page.tsx (new)、apps/web/tests/screens/login.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 login は URL /login で開く（apps/web/app/(public)/login/page.tsx。遷移の h ／ STATE-DRIVEN: WHILE 画面 login が描画中 THEN h1「ログインする」・第2ナビ ・状態 3（通常、6桁の入力、失敗）がモック 06
@@ -1063,15 +1063,15 @@
 - L1 行 44（['SCR-LOGIN-001', 'SCR-LOGIN-002', 'SCR-LOGIN-003'] …）／ L2 ['J-03']
 - audit: 07_tasks/audit/T-U-05.md
 
-### T-U-06 画面 入り直す（3 状態・R1/R2/R3）
+### T-U-06 画面 パスワードの再設定（3 状態・R1/R2/R3）
 
 - group U-screen / layer ui / phase 5_ui_parallel / wave 11 / Human 16.0 h・AI 1.6 h・wall-clock 1.6 h
 - 行為 A31 / 画面 password-reset / 表 members permissions layers audit_events ops_audit_events security_events / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-03 T-A-12 T-A-20
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-01 T-A-03 T-A-04
 - 根拠（逐語）：D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」 ／ D-053「画面は行為から導出する。画面から始めると『この画面で何をしたいか分からない』が必ず起きる。役割×用事→行為の背骨→オブジ」
 - 触るファイル：apps/web/app/(public)/password-reset/page.tsx (new)、apps/web/tests/screens/password-reset.spec.ts (new)
-- AC（Tier 1）：UBIQUITOUS: 画面 password-reset は URL /password-reset で開く（apps/web/app/(public)/pa ／ STATE-DRIVEN: WHILE 画面 password-reset が描画中 THEN h1「入り直す」・第2ナビ ・状態 3（入り直す、送信後、新しい
-- AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「メールで入り直す／回復コードを使う」として呼ばれたとき THEN  ／ EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「人を招いて見える範囲を決める」として呼ばれたとき THEN Kan ／ EVENT-DRIVEN: WHEN 「再設定メールを送る」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
+- AC（Tier 1）：UBIQUITOUS: 画面 password-reset は URL /password-reset で開く（apps/web/app/(public)/pa ／ STATE-DRIVEN: WHILE 画面 password-reset が描画中 THEN h1「パスワードの再設定」・第2ナビ ・状態 3（再設定を送る、
+- AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/members が「届いたリンクを押す」として呼ばれたとき THEN Kaname は「本人確認を ／ EVENT-DRIVEN: WHEN GET /api/v1/members が「認証アプリを登録する」として呼ばれたとき THEN Kaname は「TOTP ／ EVENT-DRIVEN: WHEN 「再設定メールを送る」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 33（['SCR-PASSWORD-RESET-001', 'SCR-PASSWORD-RESET-002', 'SCR-PASSWORD-RESET-003'] …）／ L2 ['J-06']
 - audit: 07_tasks/audit/T-U-06.md
 
@@ -1415,11 +1415,11 @@
 
 - group U-screen / layer ui / phase 5_ui_parallel / wave 14 / Human 24.5 h・AI 2.5 h・wall-clock 2.5 h
 - 行為 A36 / 画面 members / 表 members permissions layers invitations account_events account_event_items / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-03 T-A-12 T-A-20
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-12 T-A-20
 - 根拠（逐語）：D-026「スコープ4層(運営/会社/部署/個人)を担当業務・ルール・テンプレ・覚えた操作・記憶すべてに同じ形で使う」 ／ D-002「65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集」
 - 触るファイル：apps/web/app/(app)/members/page.tsx (new)、apps/web/tests/screens/members.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 members は URL /members で開く（apps/web/app/(app)/members/page.tsx。遷移 ／ STATE-DRIVEN: WHILE 画面 members が描画中 THEN h1「メンバー」・第2ナビ 組織図 / 一覧と招待 / 層と権限・状態 7（組
-- AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「メールで入り直す／回復コードを使う」として呼ばれたとき THEN  ／ EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「人を招いて見える範囲を決める」として呼ばれたとき THEN Kan ／ EVENT-DRIVEN: WHEN 「招待する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
+- AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「人を招いて見える範囲を決める」として呼ばれたとき THEN Kan ／ EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「1人の権限を決める」として呼ばれたとき THEN Kaname は ／ EVENT-DRIVEN: WHEN 「招待する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 86（['SCR-MEMBERS-001', 'SCR-MEMBERS-002', 'SCR-MEMBERS-003'] …）／ L2 ['J-07']
 - audit: 07_tasks/audit/T-U-35.md
 
@@ -1523,11 +1523,11 @@
 
 - group U-screen / layer ui / phase 5_ui_parallel / wave 15 / Human 15.0 h・AI 1.5 h・wall-clock 1.5 h
 - 行為 A74 / 画面 account / 表 members permissions layers audit_events ops_audit_events security_events / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-03 T-A-12 T-A-20
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-12 T-A-20
 - 根拠（逐語）：D-076「全体見直し（01_hearing/全体見直し_20260915.md）の §2・§3・§6 を決定にする。顧客側に 自分」 ／ D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」
 - 触るファイル：apps/web/app/(app)/account/page.tsx (new)、apps/web/tests/screens/account.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 account は URL /account で開く（apps/web/app/(app)/account/page.tsx。遷移 ／ STATE-DRIVEN: WHILE 画面 account が描画中 THEN h1「自分のアカウント」・第2ナビ 基本 / パスワードと 2 段階認証 / 
-- AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「メールで入り直す／回復コードを使う」として呼ばれたとき THEN  ／ EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「人を招いて見える範囲を決める」として呼ばれたとき THEN Kan ／ EVENT-DRIVEN: WHEN 「保存する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
+- AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「人を招いて見える範囲を決める」として呼ばれたとき THEN Kan ／ EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「1人の権限を決める」として呼ばれたとき THEN Kaname は ／ EVENT-DRIVEN: WHEN 「保存する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
 - L1 行 50（['SCR-ACCOUNT-001', 'SCR-ACCOUNT-002', 'SCR-ACCOUNT-003'] …）／ L2 ['J-07']
 - audit: 07_tasks/audit/T-U-44.md
 
@@ -1691,11 +1691,11 @@
 
 - group U-screen / layer ui / phase 5_ui_parallel / wave 16 / Human 17.0 h・AI 1.7 h・wall-clock 1.7 h
 - 行為 A61 A62 / 画面 member-detail / 表 members permissions layers ai_employees account_events account_event_items / 関門 —（画面。外界に出ない（API は関門の先））
-- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-03 T-A-12 T-A-15
+- 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-12 T-A-15 T-A-20
 - 根拠（逐語）：D-026「スコープ4層(運営/会社/部署/個人)を担当業務・ルール・テンプレ・覚えた操作・記憶すべてに同じ形で使う」 ／ D-037「AI社員の出どころは運営配布/会社作成/個人作成の3経路。託されたAI社員は使えるが定義は編集できない。個人ルールだけは」
 - 触るファイル：apps/web/app/(app)/members/[id]/page.tsx (new)、apps/web/tests/screens/member-detail.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 member-detail は URL /members/:id で開く（apps/web/app/(app)/members/[ ／ STATE-DRIVEN: WHILE 画面 member-detail が描画中 THEN h1「メンバーの1人」・第2ナビ 基本 / 権限 / 託されたAI
-- AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「メールで入り直す／回復コードを使う」として呼ばれたとき THEN  ／ EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「人を招いて見える範囲を決める」として呼ばれたとき THEN Kan ／ EVENT-DRIVEN: WHEN DELETE /api/v1/members/:id が「退会する」として呼ばれたとき THEN Kaname は「トーク
+- AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「人を招いて見える範囲を決める」として呼ばれたとき THEN Kan ／ EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「1人の権限を決める」として呼ばれたとき THEN Kaname は ／ EVENT-DRIVEN: WHEN DELETE /api/v1/members/:id が「退会する」として呼ばれたとき THEN Kaname は「トーク
 - L1 行 69（['SCR-MEMBER-DETAIL-001', 'SCR-MEMBER-DETAIL-002', 'SCR-MEMBER-DETAIL-003'] …）／ L2 ['J-07']
 - audit: 07_tasks/audit/T-U-58.md
 

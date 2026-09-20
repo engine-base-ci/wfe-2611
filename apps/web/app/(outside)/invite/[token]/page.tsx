@@ -68,7 +68,15 @@ export default function InviteAcceptPage() {
           </p>
           <div className="mt-6">
             <Field label="お名前">
-              {(id) => <Input id={id} autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} />}
+              {(id) => (
+                <Input
+                  id={id}
+                  autoComplete="name"
+                  placeholder="山田 太郎"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              )}
             </Field>
             <Field label="メールアドレス" help="招待されたアドレス。変えられません">
               {(id) => <Input id={id} type="email" value={pv!.email} readOnly />}
@@ -79,6 +87,7 @@ export default function InviteAcceptPage() {
                   id={id}
                   type="password"
                   autoComplete="new-password"
+                  placeholder="英字と数字で 12 文字以上"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   invalid={!!msg}

@@ -47,7 +47,7 @@ test("SCR-SIGNUP-011 SCR-SIGNUP-012 記号の種別と NFD：会社名の長音�
   );
   expect(t[0]?.name).toBe("テスト‐ガー-商店".normalize("NFC")); // NFKC：全角ハイフンは半角に・濁点は結合・U+2010 はそのまま（記号の種別は失わない）
 });
-test("SCR-SIGNUP-002 SCR-SIGNUP-026 SCR-SIGNUP-025 SCR-SIGNUP-027 E-CONF-001-A E-CONF-001-C 既に登録済み：状態 e に文言と一手（ログイン／入り直す）が出て、押すと開く", async ({
+test("SCR-SIGNUP-002 SCR-SIGNUP-026 SCR-SIGNUP-025 SCR-SIGNUP-027 E-CONF-001-A E-CONF-001-C 既に登録済み：状態 e に文言と一手（ログイン／パスワードの再設定）が出て、押すと開く", async ({
   page,
 }) => {
   const email = uniqEmail();
@@ -60,9 +60,9 @@ test("SCR-SIGNUP-002 SCR-SIGNUP-026 SCR-SIGNUP-025 SCR-SIGNUP-027 E-CONF-001-A E
   await page.getByRole("button", { name: "はじめる" }).click();
   await expect(page.locator("form[data-state='e']")).toBeVisible();
   await expect(page.getByText("このメールアドレスは既に登録されています")).toBeVisible();
-  await page.getByRole("link", { name: "入り直す" }).click();
+  await page.getByRole("link", { name: "パスワードの再設定" }).click();
   await expect(page).toHaveURL(/\/password-reset$/);
-  await expect(page.locator("h1")).toHaveText("入り直す");
+  await expect(page.locator("h1")).toHaveText("パスワードの再設定");
   await page.goBack();
   await page.getByRole("link", { name: "ログイン", exact: true }).first().click();
   await expect(page).toHaveURL(/\/login$/);

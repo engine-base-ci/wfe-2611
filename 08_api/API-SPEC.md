@@ -1,4 +1,4 @@
-# Kaname API 設計書 v1.0（2026-09-16 凍結）
+# Kaname API 設計書 v1.0（2026-09-20 凍結）
 
 > 信頼源は `08_api/endpoints.json` と `openapi.yaml`（05_flow/build_api.py が機械生成）。
 
@@ -47,8 +47,8 @@
 | EP-032 | PATCH | `/api/v1/ledger_records/:id` | 更新（ledger_records）— 案件を次の段階へ動かす | A19 | 1 | member | C2 C3 | 401 403 404 422 429 502 |
 | EP-033 | POST | `/api/v1/llm_routes` | 作成・実行（llm_routes）— AI の経路（Bridge／自分の | A82 | 1 | member | C2 C3 C8 | 401 403 409 422 429 502 |
 | EP-034 | PATCH | `/api/v1/llm_routes/:id` | 更新（llm_routes）— 会社ごとに運営マネージドの経路を許可し、 | A85 | 1 | ops | C2 | 401 403 404 422 429 |
-| EP-035 | GET | `/api/v1/members` | 取得（members）— メールを確認して本人だと示す／2段階認証を設定 | A02 A04 A13 | 3 | public | C8 | 429 |
-| EP-036 | PATCH | `/api/v1/members/:id` | 更新（members）— 入れなくなった → 入り直す／人を招いて見える | A31 A36 A61 A74 | 4 | member | C2 C6 C8 | 401 403 404 422 429 |
+| EP-035 | GET | `/api/v1/members` | 取得（members）— メールを確認して本人だと示す／2段階認証を設定 | A02 A04 A13 A31 | 4 | public | C8 | 429 |
+| EP-036 | PATCH | `/api/v1/members/:id` | 更新（members）— 人を招いて見える範囲を決める／メンバー1人の所 | A36 A61 A74 | 3 | member | C2 C6 C8 | 401 403 404 422 429 |
 | EP-037 | DELETE | `/api/v1/members/:id` | 削除（members）— 退会する／抜ける人の依存を片づける（タスク・承 | A42 A62 | 2 | member | C2 C6 C8 | 401 403 404 429 |
 | EP-038 | POST | `/api/v1/memories` | 作成・実行（memories）— 自分のAIに自分の考え方を教える（育成 | A30 | 1 | member | C2 C3 | 401 403 409 422 429 502 |
 | EP-039 | GET | `/api/v1/messages` | 取得（messages）— 今日ひらいて、自分のAIの申し送りを読む | A14 | 1 | member |  | 401 403 429 502 |
@@ -91,4 +91,4 @@
 
 ## 6. 変更履歴
 
-- v1.0 2026-09-16 凍結（endpoints 60）
+- v1.0 2026-09-20 凍結（endpoints 60）

@@ -36,6 +36,7 @@
    ],
    "runnable_after": [
     "T-A-01",
+    "T-A-03",
     "T-A-04",
     "T-A-15",
     "T-U-02"
@@ -80,6 +81,7 @@
    ],
    "runnable_after": [
     "T-A-01",
+    "T-A-03",
     "T-A-04",
     "T-A-15",
     "T-U-04"
@@ -246,6 +248,7 @@
    "depends_on": [],
    "runnable_after": [
     "T-A-01",
+    "T-A-03",
     "T-A-04",
     "T-A-15",
     "T-U-05"
@@ -874,14 +877,15 @@
    "name": "P5 例外・困ったとき",
    "act": "A31",
    "role": "R1/R2/R3",
-   "step": "メールで入り直す／回復コードを使う",
+   "step": "メールでパスワードを再設定する／回復コードを使う",
    "expected": "トークンを失効させて再発行",
    "screen": "password-reset",
    "depends_on": [],
    "runnable_after": [
+    "T-A-01",
     "T-A-03",
-    "T-A-12",
-    "T-A-20",
+    "T-A-04",
+    "T-A-15",
     "T-U-06"
    ],
    "result": "",
@@ -977,7 +981,6 @@
    "screen": "members",
    "depends_on": [],
    "runnable_after": [
-    "T-A-03",
     "T-A-12",
     "T-A-20",
     "T-U-35"
@@ -1075,7 +1078,6 @@
     "J07-05"
    ],
    "runnable_after": [
-    "T-A-03",
     "T-A-12",
     "T-A-20",
     "T-U-44"
@@ -1173,7 +1175,6 @@
     "J07-10"
    ],
    "runnable_after": [
-    "T-A-03",
     "T-A-12",
     "T-A-20",
     "T-U-58"

@@ -62,16 +62,16 @@
    "total_screens": 64,
    "uncovered_screens": []
   },
-  "total_estimate_hours_human": 5540.5,
-  "total_estimate_hours_ai_compute": 992.6,
+  "total_estimate_hours_human": 5534.5,
+  "total_estimate_hours_ai_compute": 991.1,
   "human_review_total_h": 52.0,
   "total_wall_clock_h_ai_parallel": 278.8,
   "parallel_capacity": 10,
   "calendar_days_ai": 47,
-  "calendar_days_human": 693,
-  "total_estimate_hours": 1044.6,
+  "calendar_days_human": 692,
+  "total_estimate_hours": 1043.1,
   "total_estimate_sessions": 346,
-  "qa_rows_total": 4660,
+  "qa_rows_total": 4654,
   "journeys": 9
  },
  "waves": [
@@ -196,8 +196,8 @@
    ],
    "parallel": 10,
    "wall_clock_h_ai": 39.5,
-   "estimate_hours_human": 855,
-   "estimate_hours_ai_compute": 213.6
+   "estimate_hours_human": 849,
+   "estimate_hours_ai_compute": 212.1
   },
   {
    "wave": 7,
@@ -6917,6 +6917,7 @@
     "onboard-draft",
     "onboard-golive",
     "onboard-interview",
+    "password-reset",
     "signup",
     "verify-email"
    ],
@@ -6950,6 +6951,7 @@
     "A09",
     "A12",
     "A13",
+    "A31",
     "A45"
    ],
    "legacy_task_id": null,
@@ -7639,7 +7641,7 @@
   },
   {
    "id": "T-A-03",
-   "title": "API 入れなくなったときに、自分で入り直したい — データ・API・権限（1 endpoint）",
+   "title": "API 入れなくなったときに、自分でパスワードを再設定したい — データ・A（1 endpoint）",
    "category": "backend",
    "label": "NEW",
    "feature_id": "F-V3-B-0c",
@@ -7647,24 +7649,22 @@
     "F-V3-B-0c"
    ],
    "screen_ids": [
-    "account",
-    "member-detail",
-    "members",
-    "password-reset"
+    "login",
+    "mfa-setup",
+    "password-reset",
+    "verify-email"
    ],
    "entity_ids": [
     "E-004",
-    "E-006",
     "E-041",
     "E-044",
-    "E-047",
-    "E-079"
+    "E-047"
    ],
    "acts": [
-    "A31",
-    "A36",
-    "A61",
-    "A74"
+    "A02",
+    "A04",
+    "A13",
+    "A31"
    ],
    "legacy_task_id": null,
    "phase": "3_api",
@@ -7681,17 +7681,9 @@
     "T-D-01",
     "T-D-06",
     "T-D-08",
-    "T-D-12",
-    "T-F-02",
-    "T-F-03",
-    "T-F-04",
-    "T-F-08",
-    "T-F-12",
     "T-F-14"
    ],
    "choke_points": [
-    "C2",
-    "C6",
     "C8"
    ],
    "choke_points_rationale": "秘密の読み出し・通知送出",
@@ -7730,17 +7722,17 @@
    },
    "acceptance_criteria": {
     "structural": [
-     "UBIQUITOUS: PATCH /api/v1/members/:id は 08_api/openapi.yaml の operation patchMembersById どおりの入出力（200 と 4xx 401/403/404/422/429）"
+     "UBIQUITOUS: GET /api/v1/members は 08_api/openapi.yaml の operation getMembers どおりの入出力（200 と 4xx 429）"
     ],
     "functional": [
-     "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「メールで入り直す／回復コードを使う」として呼ばれたとき THEN Kaname は「トークンを失効させて再発行」を行い 2xx を返す",
-     "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「人を招いて見える範囲を決める」として呼ばれたとき THEN Kaname は「招待を発行、スコープを結ぶ」を行い 2xx を返す",
-     "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「1人の権限を決める」として呼ばれたとき THEN Kaname は「層への所属・役割・権限の表を保存。既存セッションを無効化」を行い 2xx を返す（自動側：自分のAIが「この人に見えるようになるもの」を列挙する）",
-     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-     "UBIQUITOUS: 行レベル制御 ai_employees_permission_write が効く",
-     "UBIQUITOUS: 行レベル制御 ai_employees_self_only_write が効く",
-     "UBIQUITOUS: 行レベル制御 invitations_permission_write が効く",
-     "UBIQUITOUS: 行レベル制御 layers_permission_write が効く"
+     "EVENT-DRIVEN: WHEN GET /api/v1/members が「届いたリンクを押す」として呼ばれたとき THEN Kaname は「本人確認を記録」を行い 2xx を返す",
+     "EVENT-DRIVEN: WHEN GET /api/v1/members が「認証アプリを登録する」として呼ばれたとき THEN Kaname は「TOTPシークレットを暗号化保管」を行い 2xx を返す",
+     "EVENT-DRIVEN: WHEN GET /api/v1/members が「メールとパスワードと6桁を入れる」として呼ばれたとき THEN Kaname は「トークンを発行」を行い 2xx を返す",
+     "UNWANTED: IF 10/min/ip を超えたら、Kaname は 429 と retry_after_sec を返す",
+     "UBIQUITOUS: 行レベル制御 audit_events_ops_read_with_grant が効く",
+     "UBIQUITOUS: 行レベル制御 audit_events_tenant_read が効く",
+     "UBIQUITOUS: 行レベル制御 layers_ops_read_with_grant が効く",
+     "UBIQUITOUS: 行レベル制御 layers_tenant_read が効く"
     ],
     "regression": [
      "pnpm test（該当パッケージ）PASS",
@@ -7755,20 +7747,22 @@
     ]
    },
    "access_policies_required": [
-    "ai_employees_permission_write",
-    "ai_employees_self_only_write",
-    "invitations_permission_write",
-    "layers_permission_write",
-    "members_permission_write",
-    "permissions_permission_write"
+    "audit_events_ops_read_with_grant",
+    "audit_events_tenant_read",
+    "layers_ops_read_with_grant",
+    "layers_tenant_read",
+    "members_ops_read_with_grant",
+    "members_tenant_read",
+    "permissions_ops_read_with_grant",
+    "permissions_tenant_read"
    ],
    "spec_links": [
     "08_api/openapi.yaml",
     "08_api/API-SPEC.md",
     "07_functional/features.json#F-V3-B-0c",
-    "06_mockup/v1/v1-account.html",
-    "06_mockup/v1/v1-member-detail.html",
-    "06_mockup/v1/v1-members.html"
+    "06_mockup/v1/v1-login.html",
+    "06_mockup/v1/v1-mfa-setup.html",
+    "06_mockup/v1/v1-password-reset.html"
    ],
    "audit_md_path": "07_tasks/audit/T-A-03.md",
    "status": "done",
@@ -7783,13 +7777,7 @@
      "API-03-006",
      "API-03-007",
      "API-03-008",
-     "API-03-009",
-     "API-03-010",
-     "API-03-011",
-     "API-03-012",
-     "E-ACT-040-A",
-     "E-ACT-040-B",
-     "E-ACT-040-C"
+     "API-03-009"
     ],
     "l2_flows": [
      "J-06"
@@ -7797,7 +7785,7 @@
    },
    "test_scenarios_inline": [
     {
-     "name": "PATCH /api/v1/members/:id",
+     "name": "GET /api/v1/members",
      "steps": [
       "権限のある会員で呼ぶ",
       "権限の無い会員で呼ぶ",
@@ -7824,47 +7812,47 @@
    "why": "",
    "acceptance_criteria_inline": {
     "tier_1_structural": [
-     "UBIQUITOUS: PATCH /api/v1/members/:id は 08_api/openapi.yaml の operation patchMembersById どおりの入出力（200 と 4xx 401/403/404/422/429）"
+     "UBIQUITOUS: GET /api/v1/members は 08_api/openapi.yaml の operation getMembers どおりの入出力（200 と 4xx 429）"
     ],
     "tier_2_functional": [
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「メールで入り直す／回復コードを使う」として呼ばれたとき THEN Kaname は「トークンを失効させて再発行」を行い 2xx を返す",
+      "text": "EVENT-DRIVEN: WHEN GET /api/v1/members が「届いたリンクを押す」として呼ばれたとき THEN Kaname は「本人確認を記録」を行い 2xx を返す",
       "critical": false
      },
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「人を招いて見える範囲を決める」として呼ばれたとき THEN Kaname は「招待を発行、スコープを結ぶ」を行い 2xx を返す",
+      "text": "EVENT-DRIVEN: WHEN GET /api/v1/members が「認証アプリを登録する」として呼ばれたとき THEN Kaname は「TOTPシークレットを暗号化保管」を行い 2xx を返す",
       "critical": false
      },
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「1人の権限を決める」として呼ばれたとき THEN Kaname は「層への所属・役割・権限の表を保存。既存セッションを無効化」を行い 2xx を返す（自動側：自分のAIが「この人に見えるようになるもの」を列挙する）",
+      "text": "EVENT-DRIVEN: WHEN GET /api/v1/members が「メールとパスワードと6桁を入れる」として呼ばれたとき THEN Kaname は「トークンを発行」を行い 2xx を返す",
       "critical": false
      },
      {
       "type": "UNWANTED",
-      "text": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+      "text": "UNWANTED: IF 10/min/ip を超えたら、Kaname は 429 と retry_after_sec を返す",
       "critical": true
      },
      {
       "type": "UBIQUITOUS",
-      "text": "UBIQUITOUS: 行レベル制御 ai_employees_permission_write が効く",
+      "text": "UBIQUITOUS: 行レベル制御 audit_events_ops_read_with_grant が効く",
       "critical": false
      },
      {
       "type": "UBIQUITOUS",
-      "text": "UBIQUITOUS: 行レベル制御 ai_employees_self_only_write が効く",
+      "text": "UBIQUITOUS: 行レベル制御 audit_events_tenant_read が効く",
       "critical": false
      },
      {
       "type": "UBIQUITOUS",
-      "text": "UBIQUITOUS: 行レベル制御 invitations_permission_write が効く",
+      "text": "UBIQUITOUS: 行レベル制御 layers_ops_read_with_grant が効く",
       "critical": false
      },
      {
       "type": "UBIQUITOUS",
-      "text": "UBIQUITOUS: 行レベル制御 layers_permission_write が効く",
+      "text": "UBIQUITOUS: 行レベル制御 layers_tenant_read が効く",
       "critical": false
      }
     ],
@@ -7880,15 +7868,15 @@
      "endpoint 実在性チェック PASS"
     ]
    },
-   "estimate_hours_human": 38,
-   "estimate_hours_ai": 9.5,
+   "estimate_hours_human": 32,
+   "estimate_hours_ai": 8.0,
    "human_review_h": 1.0,
-   "wall_clock_h_ai": 10.5,
+   "wall_clock_h_ai": 9.0,
    "ai_acceleration_factor": 4,
    "blocking_dependencies_h": 0,
    "estimate_method": "reference",
    "estimate_confidence": "medium",
-   "estimate_hours": 10.5,
+   "estimate_hours": 9.0,
    "estimate_sessions": 3
   },
   {
@@ -7906,6 +7894,7 @@
     "login",
     "mfa-setup",
     "my-progress",
+    "password-reset",
     "today",
     "verify-email"
    ],
@@ -7933,6 +7922,7 @@
     "A20",
     "A23",
     "A25",
+    "A31",
     "A49",
     "A55"
    ],
@@ -11658,8 +11648,7 @@
     "member-detail",
     "members",
     "ops-audit",
-    "ops-catalog",
-    "password-reset"
+    "ops-catalog"
    ],
    "entity_ids": [
     "E-004",
@@ -11679,7 +11668,6 @@
    ],
    "acts": [
     "A16",
-    "A31",
     "A33",
     "A36",
     "A37",
@@ -11788,9 +11776,9 @@
      "EVENT-DRIVEN: WHEN GET /api/v1/audit_events が「いつ何をしたかを追う」として呼ばれたとき THEN Kaname は「証跡を検索」を行い 2xx を返す",
      "EVENT-DRIVEN: WHEN GET /api/v1/audit_events が「誰が何をしたかを確認する」として呼ばれたとき THEN Kaname は「証跡を人・期間で集計」を行い 2xx を返す",
      "EVENT-DRIVEN: WHEN GET /api/v1/audit_events が「セキュリティの出来事を見る」として呼ばれたとき THEN Kaname は「失敗したログイン・鍵の失効・不審な接続の記録」を行い 2xx を返す",
-     "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「メールで入り直す／回復コードを使う」として呼ばれたとき THEN Kaname は「トークンを失効させて再発行」を行い 2xx を返す",
      "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「人を招いて見える範囲を決める」として呼ばれたとき THEN Kaname は「招待を発行、スコープを結ぶ」を行い 2xx を返す",
      "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「1人の権限を決める」として呼ばれたとき THEN Kaname は「層への所属・役割・権限の表を保存。既存セッションを無効化」を行い 2xx を返す（自動側：自分のAIが「この人に見えるようになるもの」を列挙する）",
+     "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「自分のアカウントを整える」として呼ばれたとき THEN Kaname は「名前・メール・パスワード・2 段階認証・端末を保存。変更は即失効の対象（G-14）」を行い 2xx を返す",
      "EVENT-DRIVEN: WHEN DELETE /api/v1/members/:id が「退会する」として呼ばれたとき THEN Kaname は「トークン・Bridge接続・共有を全部無効化」を行い 2xx を返す（自動側：自分のAIが消えるものを列挙する）",
      "EVENT-DRIVEN: WHEN DELETE /api/v1/members/:id が「抜ける人の依存を片づける」として呼ばれたとき THEN Kaname は「依存の表どおりに移す／失効させる。証跡に残す」を行い 2xx を返す（自動側：自分のAIが引き継ぎ先の案を出す（タスク・承認・AI社員・長））",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
@@ -12112,17 +12100,17 @@
      },
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「メールで入り直す／回復コードを使う」として呼ばれたとき THEN Kaname は「トークンを失効させて再発行」を行い 2xx を返す",
-      "critical": false
-     },
-     {
-      "type": "EVENT-DRIVEN",
       "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「人を招いて見える範囲を決める」として呼ばれたとき THEN Kaname は「招待を発行、スコープを結ぶ」を行い 2xx を返す",
       "critical": false
      },
      {
       "type": "EVENT-DRIVEN",
       "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「1人の権限を決める」として呼ばれたとき THEN Kaname は「層への所属・役割・権限の表を保存。既存セッションを無効化」を行い 2xx を返す（自動側：自分のAIが「この人に見えるようになるもの」を列挙する）",
+      "critical": false
+     },
+     {
+      "type": "EVENT-DRIVEN",
+      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「自分のアカウントを整える」として呼ばれたとき THEN Kaname は「名前・メール・パスワード・2 段階認証・端末を保存。変更は即失効の対象（G-14）」を行い 2xx を返す",
       "critical": false
      },
      {
@@ -12988,6 +12976,7 @@
     "login",
     "member-detail",
     "mfa-setup",
+    "password-reset",
     "security-brief",
     "verify-email"
    ],
@@ -13010,6 +12999,7 @@
     "A02",
     "A04",
     "A13",
+    "A31",
     "A34",
     "A39",
     "A40",
@@ -15102,7 +15092,6 @@
     "import",
     "member-detail",
     "members",
-    "password-reset",
     "services"
    ],
    "entity_ids": [
@@ -15125,7 +15114,6 @@
     "E-081"
    ],
    "acts": [
-    "A31",
     "A36",
     "A61",
     "A74",
@@ -15223,9 +15211,9 @@
      "EVENT-DRIVEN: WHEN POST /api/v1/attachments が「取り込む」として呼ばれたとき THEN Kaname は「添付を保存し、台帳の下書きレコードを作る（本番には人が押してから）」を行い 2xx を返す（自動側：自分のAIが読んで「台帳の項目・書式・手順」の候補を出す）",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
-     "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「メールで入り直す／回復コードを使う」として呼ばれたとき THEN Kaname は「トークンを失効させて再発行」を行い 2xx を返す",
      "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「人を招いて見える範囲を決める」として呼ばれたとき THEN Kaname は「招待を発行、スコープを結ぶ」を行い 2xx を返す",
      "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「1人の権限を決める」として呼ばれたとき THEN Kaname は「層への所属・役割・権限の表を保存。既存セッションを無効化」を行い 2xx を返す（自動側：自分のAIが「この人に見えるようになるもの」を列挙する）",
+     "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「自分のアカウントを整える」として呼ばれたとき THEN Kaname は「名前・メール・パスワード・2 段階認証・端末を保存。変更は即失効の対象（G-14）」を行い 2xx を返す",
      "EVENT-DRIVEN: WHEN POST /api/v1/service_registry が「外部サービスの連携と可否を見る」として呼ばれたとき THEN Kaname は「サービス台帳を読む。正規連携（OAuth）を関門経由で結ぶ」を行い 2xx を返す（自動側：自分のAIが「なぜ触れないか」を説明する）",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
@@ -15438,17 +15426,17 @@
      },
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「メールで入り直す／回復コードを使う」として呼ばれたとき THEN Kaname は「トークンを失効させて再発行」を行い 2xx を返す",
-      "critical": false
-     },
-     {
-      "type": "EVENT-DRIVEN",
       "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「人を招いて見える範囲を決める」として呼ばれたとき THEN Kaname は「招待を発行、スコープを結ぶ」を行い 2xx を返す",
       "critical": false
      },
      {
       "type": "EVENT-DRIVEN",
       "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「1人の権限を決める」として呼ばれたとき THEN Kaname は「層への所属・役割・権限の表を保存。既存セッションを無効化」を行い 2xx を返す（自動側：自分のAIが「この人に見えるようになるもの」を列挙する）",
+      "critical": false
+     },
+     {
+      "type": "EVENT-DRIVEN",
+      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「自分のアカウントを整える」として呼ばれたとき THEN Kaname は「名前・メール・パスワード・2 段階認証・端末を保存。変更は即失効の対象（G-14）」を行い 2xx を返す",
       "critical": false
      },
      {
@@ -19031,6 +19019,7 @@
     "T-US-05",
     "T-US-06",
     "T-A-01",
+    "T-A-03",
     "T-A-04",
     "T-A-15"
    ],
@@ -19531,6 +19520,7 @@
     "T-US-05",
     "T-US-06",
     "T-A-01",
+    "T-A-03",
     "T-A-04",
     "T-A-15"
    ],
@@ -19779,6 +19769,7 @@
     "T-US-05",
     "T-US-06",
     "T-A-01",
+    "T-A-03",
     "T-A-04",
     "T-A-15"
    ],
@@ -20018,7 +20009,7 @@
   },
   {
    "id": "T-U-06",
-   "title": "画面 入り直す（3 状態・R1/R2/R3）",
+   "title": "画面 パスワードの再設定（3 状態・R1/R2/R3）",
    "category": "frontend",
    "label": "NEW",
    "feature_id": "F-V3-C-password-reset",
@@ -20053,9 +20044,10 @@
     "T-US-04",
     "T-US-05",
     "T-US-06",
+    "T-A-01",
     "T-A-03",
-    "T-A-12",
-    "T-A-20"
+    "T-A-04",
+    "T-A-15"
    ],
    "choke_points": [],
    "choke_points_rationale": "画面。外界に出ない（API は関門の先）",
@@ -20093,12 +20085,12 @@
    "acceptance_criteria": {
     "structural": [
      "UBIQUITOUS: 画面 password-reset は URL /password-reset で開く（apps/web/app/(public)/password-reset/page.tsx。遷移の href は flow の route と機械照合）",
-     "STATE-DRIVEN: WHILE 画面 password-reset が描画中 THEN h1「入り直す」・第2ナビ ・状態 3（入り直す、送信後、新しいパスワード）がモック 06_mockup/v1/v1-password-reset.html と一致する",
+     "STATE-DRIVEN: WHILE 画面 password-reset が描画中 THEN h1「パスワードの再設定」・第2ナビ ・状態 3（再設定を送る、送信後、新しいパスワード）がモック 06_mockup/v1/v1-password-reset.html と一致する",
      "STATE-DRIVEN: WHILE 役割 R1/R2/R3 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い"
     ],
     "functional": [
-     "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「メールで入り直す／回復コードを使う」として呼ばれたとき THEN Kaname は「トークンを失効させて再発行」を行い 2xx を返す",
-     "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「人を招いて見える範囲を決める」として呼ばれたとき THEN Kaname は「招待を発行、スコープを結ぶ」を行い 2xx を返す",
+     "EVENT-DRIVEN: WHEN GET /api/v1/members が「届いたリンクを押す」として呼ばれたとき THEN Kaname は「本人確認を記録」を行い 2xx を返す",
+     "EVENT-DRIVEN: WHEN GET /api/v1/members が「認証アプリを登録する」として呼ばれたとき THEN Kaname は「TOTPシークレットを暗号化保管」を行い 2xx を返す",
      "EVENT-DRIVEN: WHEN 「再設定メールを送る」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する",
      "UNWANTED: IF 列の値が実データでも「—」固定なら未実装として落とす"
     ],
@@ -20168,7 +20160,7 @@
    },
    "test_scenarios_inline": [
     {
-     "name": "状態 入り直す",
+     "name": "状態 再設定を送る",
      "steps": [
       "状態を作る",
       "開く"
@@ -20224,18 +20216,18 @@
    "acceptance_criteria_inline": {
     "tier_1_structural": [
      "UBIQUITOUS: 画面 password-reset は URL /password-reset で開く（apps/web/app/(public)/password-reset/page.tsx。遷移の href は flow の route と機械照合）",
-     "STATE-DRIVEN: WHILE 画面 password-reset が描画中 THEN h1「入り直す」・第2ナビ ・状態 3（入り直す、送信後、新しいパスワード）がモック 06_mockup/v1/v1-password-reset.html と一致する",
+     "STATE-DRIVEN: WHILE 画面 password-reset が描画中 THEN h1「パスワードの再設定」・第2ナビ ・状態 3（再設定を送る、送信後、新しいパスワード）がモック 06_mockup/v1/v1-password-reset.html と一致する",
      "STATE-DRIVEN: WHILE 役割 R1/R2/R3 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い"
     ],
     "tier_2_functional": [
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「メールで入り直す／回復コードを使う」として呼ばれたとき THEN Kaname は「トークンを失効させて再発行」を行い 2xx を返す",
+      "text": "EVENT-DRIVEN: WHEN GET /api/v1/members が「届いたリンクを押す」として呼ばれたとき THEN Kaname は「本人確認を記録」を行い 2xx を返す",
       "critical": false
      },
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「人を招いて見える範囲を決める」として呼ばれたとき THEN Kaname は「招待を発行、スコープを結ぶ」を行い 2xx を返す",
+      "text": "EVENT-DRIVEN: WHEN GET /api/v1/members が「認証アプリを登録する」として呼ばれたとき THEN Kaname は「TOTPシークレットを暗号化保管」を行い 2xx を返す",
       "critical": false
      },
      {
@@ -28942,7 +28934,6 @@
     "T-US-04",
     "T-US-05",
     "T-US-06",
-    "T-A-03",
     "T-A-12",
     "T-A-20"
    ],
@@ -28986,8 +28977,8 @@
      "STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い"
     ],
     "functional": [
-     "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「メールで入り直す／回復コードを使う」として呼ばれたとき THEN Kaname は「トークンを失効させて再発行」を行い 2xx を返す",
      "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「人を招いて見える範囲を決める」として呼ばれたとき THEN Kaname は「招待を発行、スコープを結ぶ」を行い 2xx を返す",
+     "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「1人の権限を決める」として呼ばれたとき THEN Kaname は「層への所属・役割・権限の表を保存。既存セッションを無効化」を行い 2xx を返す（自動側：自分のAIが「この人に見えるようになるもの」を列挙する）",
      "EVENT-DRIVEN: WHEN 「招待する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する",
      "UNWANTED: IF 列の値が実データでも「—」固定なら未実装として落とす"
     ],
@@ -29194,12 +29185,12 @@
     "tier_2_functional": [
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「メールで入り直す／回復コードを使う」として呼ばれたとき THEN Kaname は「トークンを失効させて再発行」を行い 2xx を返す",
+      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「人を招いて見える範囲を決める」として呼ばれたとき THEN Kaname は「招待を発行、スコープを結ぶ」を行い 2xx を返す",
       "critical": false
      },
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「人を招いて見える範囲を決める」として呼ばれたとき THEN Kaname は「招待を発行、スコープを結ぶ」を行い 2xx を返す",
+      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「1人の権限を決める」として呼ばれたとき THEN Kaname は「層への所属・役割・権限の表を保存。既存セッションを無効化」を行い 2xx を返す（自動側：自分のAIが「この人に見えるようになるもの」を列挙する）",
       "critical": false
      },
      {
@@ -31549,7 +31540,6 @@
     "T-US-04",
     "T-US-05",
     "T-US-06",
-    "T-A-03",
     "T-A-12",
     "T-A-20"
    ],
@@ -31593,8 +31583,8 @@
      "STATE-DRIVEN: WHILE 役割 R1/R2/R3/R4 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い"
     ],
     "functional": [
-     "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「メールで入り直す／回復コードを使う」として呼ばれたとき THEN Kaname は「トークンを失効させて再発行」を行い 2xx を返す",
      "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「人を招いて見える範囲を決める」として呼ばれたとき THEN Kaname は「招待を発行、スコープを結ぶ」を行い 2xx を返す",
+     "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「1人の権限を決める」として呼ばれたとき THEN Kaname は「層への所属・役割・権限の表を保存。既存セッションを無効化」を行い 2xx を返す（自動側：自分のAIが「この人に見えるようになるもの」を列挙する）",
      "EVENT-DRIVEN: WHEN 「保存する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する",
      "UNWANTED: IF 列の値が実データでも「—」固定なら未実装として落とす"
     ],
@@ -31734,12 +31724,12 @@
     "tier_2_functional": [
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「メールで入り直す／回復コードを使う」として呼ばれたとき THEN Kaname は「トークンを失効させて再発行」を行い 2xx を返す",
+      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「人を招いて見える範囲を決める」として呼ばれたとき THEN Kaname は「招待を発行、スコープを結ぶ」を行い 2xx を返す",
       "critical": false
      },
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「人を招いて見える範囲を決める」として呼ばれたとき THEN Kaname は「招待を発行、スコープを結ぶ」を行い 2xx を返す",
+      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「1人の権限を決める」として呼ばれたとき THEN Kaname は「層への所属・役割・権限の表を保存。既存セッションを無効化」を行い 2xx を返す（自動側：自分のAIが「この人に見えるようになるもの」を列挙する）",
       "critical": false
      },
      {
@@ -35351,7 +35341,6 @@
     "T-US-04",
     "T-US-05",
     "T-US-06",
-    "T-A-03",
     "T-A-12",
     "T-A-15",
     "T-A-20"
@@ -35396,8 +35385,8 @@
      "STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い"
     ],
     "functional": [
-     "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「メールで入り直す／回復コードを使う」として呼ばれたとき THEN Kaname は「トークンを失効させて再発行」を行い 2xx を返す",
      "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「人を招いて見える範囲を決める」として呼ばれたとき THEN Kaname は「招待を発行、スコープを結ぶ」を行い 2xx を返す",
+     "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「1人の権限を決める」として呼ばれたとき THEN Kaname は「層への所属・役割・権限の表を保存。既存セッションを無効化」を行い 2xx を返す（自動側：自分のAIが「この人に見えるようになるもの」を列挙する）",
      "EVENT-DRIVEN: WHEN DELETE /api/v1/members/:id が「退会する」として呼ばれたとき THEN Kaname は「トークン・Bridge接続・共有を全部無効化」を行い 2xx を返す（自動側：自分のAIが消えるものを列挙する）",
      "EVENT-DRIVEN: WHEN DELETE /api/v1/members/:id が「抜ける人の依存を片づける」として呼ばれたとき THEN Kaname は「依存の表どおりに移す／失効させる。証跡に残す」を行い 2xx を返す（自動側：自分のAIが引き継ぎ先の案を出す（タスク・承認・AI社員・長））",
      "EVENT-DRIVEN: WHEN 「保存する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する",
@@ -35589,12 +35578,12 @@
     "tier_2_functional": [
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「メールで入り直す／回復コードを使う」として呼ばれたとき THEN Kaname は「トークンを失効させて再発行」を行い 2xx を返す",
+      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「人を招いて見える範囲を決める」として呼ばれたとき THEN Kaname は「招待を発行、スコープを結ぶ」を行い 2xx を返す",
       "critical": false
      },
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「人を招いて見える範囲を決める」として呼ばれたとき THEN Kaname は「招待を発行、スコープを結ぶ」を行い 2xx を返す",
+      "text": "EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「1人の権限を決める」として呼ばれたとき THEN Kaname は「層への所属・役割・権限の表を保存。既存セッションを無効化」を行い 2xx を返す（自動側：自分のAIが「この人に見えるようになるもの」を列挙する）",
       "critical": false
      },
      {

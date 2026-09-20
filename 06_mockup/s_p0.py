@@ -28,9 +28,9 @@ CB = '<input type="checkbox" style="margin-top:3px;width:18px;height:18px;accent
 _su = _wrap(_left(*LEAD, steps=STEPS), _box(f"""
  <h1>アカウントを作る</h1>
  <div class="sub">会社名とメールだけ。ここではまだ何も設定しません。設定はこのあと高本AIと話しながら作ります。</div>
- {field("メールアドレス", inp("", "name@example.com", "email"))}
- {field("パスワード", inp("", "8文字以上", "password"), "英字と数字を含む8文字以上。よく使われるパスワードは弾きます")}
- {field("会社名（または屋号）", inp("", "株式会社ENGINE BASE"), "あとから変えられます。個人事業なら屋号かお名前で構いません")}
+ {field("メールアドレス", inp("", "yamada@example.com", "email"))}
+ {field("パスワード", inp("", "英字と数字で 12 文字以上", "password"), "英字と数字を含む 12 文字以上。よく使われるパスワードは弾きます")}
+ {field("会社名（または屋号）", inp("", "山田工務店"), "あとから変えられます。個人事業なら屋号かお名前で構いません")}
  <label style="display:flex;gap:9px;align-items:flex-start;font-size:12.5px;color:var(--on-sv);margin-bottom:18px">{CB}
    <span>利用規約とプライバシーポリシーに同意します</span></label>
  <button class="btn btn-p" style="width:100%">{ic("login")}はじめる</button>
@@ -39,10 +39,10 @@ _su = _wrap(_left(*LEAD, steps=STEPS), _box(f"""
 _su_err = _wrap(_left(*LEAD, steps=STEPS), _box(f"""
  <h1>アカウントを作る</h1>
  <div class="sub">会社名とメールだけ。ここではまだ何も設定しません。</div>
- {field("メールアドレス", inp("info@engine-base.com", "", "email", "err"),
-        "このメールアドレスは既に登録されています。<a href='v1-login.html' style='color:var(--error);font-weight:600'>ログイン</a>するか、<a href='v1-password-reset.html' style='color:var(--error);font-weight:600'>入り直す</a>へ。", err=True)}
- {field("パスワード", inp("", "8文字以上", "password"))}
- {field("会社名（または屋号）", inp("株式会社ENGINE BASE"))}
+ {field("メールアドレス", inp("", "yamada@example.com", "email", "err"),
+        "このメールアドレスは既に登録されています。<a href='v1-login.html' style='color:var(--error);font-weight:600'>ログイン</a>するか、<a href='v1-password-reset.html' style='color:var(--error);font-weight:600'>パスワードの再設定</a>へ。", err=True)}
+ {field("パスワード", inp("", "英字と数字で 12 文字以上", "password"))}
+ {field("会社名（または屋号）", inp("", "山田工務店"))}
  <button class="btn btn-p" style="width:100%">{ic("login")}はじめる</button>"""))
 SIGNUP = ("signup", [("n","通常","",_su),
   ("e","既に登録済み","エラーで終わらせない。ログインと入り直しへの導線を必ず出す。",_su_err)], AUTH_CSS, True)
@@ -78,7 +78,7 @@ _ia = _wrap(_inv_left, _box(f"""
  <div class="sub">名前とパスワードだけで入れます。</div>
  {field("お名前", inp("", "佐藤 健"))}
  {field("メールアドレス", inp("sato@example.com", "", "email") , "招待されたアドレス。変えられません")}
- {field("パスワード", inp("", "8文字以上", "password"))}
+ {field("パスワード", inp("", "英字と数字で 12 文字以上", "password"))}
  {card('<div style="font-size:12px;font-weight:600;color:var(--on-sv);margin-bottom:8px">あなたに見えるもの</div>'
        + '<div style="display:flex;flex-direction:column;gap:6px;font-size:13px">'
        + "".join(f'<div style="display:flex;gap:8px;align-items:center">{ic("check")}{t}</div>' for t in
@@ -91,7 +91,7 @@ _ia_r4 = _wrap(_inv_left, _box(f"""
  <h1>参加する</h1>
  <div class="sub">進捗を見るだけの参加です。書き込みはできません。</div>
  {field("お名前", inp("", "鈴木 美咲"))}
- {field("パスワード", inp("", "8文字以上", "password"))}
+ {field("パスワード", inp("", "英字と数字で 12 文字以上", "password"))}
  {card('<div style="font-size:12px;font-weight:600;color:var(--on-sv);margin-bottom:8px">あなたに見えるもの</div>'
        + '<div style="display:flex;flex-direction:column;gap:6px;font-size:13px">'
        + "".join(f'<div style="display:flex;gap:8px;align-items:center">{ic("check")}{t}</div>' for t in
@@ -132,11 +132,11 @@ _lg_left = _left("今日も、<br>高本AIが先に動いている。",
 _lg = _wrap(_lg_left, _box(f"""
  <h1>ログイン</h1>
  <div class="sub">毎日ここから。</div>
- {field("メールアドレス", inp("info@engine-base.com", "", "email"))}
- {field("パスワード", inp("••••••••••", "", "password"))}
+ {field("メールアドレス", inp("", "yamada@example.com", "email"))}
+ {field("パスワード", inp("", "英字と数字で 12 文字以上", "password"))}
  <button class="btn btn-p" style="width:100%">{ic("login")}ログイン</button>
  <p class="muted" style="font-size:12.5px;text-align:center;margin-top:18px">
-   <a href="v1-password-reset.html" style="color:var(--primary);font-weight:600">入れなくなった</a>　·　<a href="v1-signup.html" style="color:var(--primary);font-weight:600">アカウントを作る</a></p>"""))
+   <a href="v1-password-reset.html" style="color:var(--primary);font-weight:600">パスワードをお忘れの方</a>　·　<a href="v1-signup.html" style="color:var(--primary);font-weight:600">アカウントを作る</a></p>"""))
 _lg_mfa = _wrap(_lg_left, _box(f"""
  <h1>6桁を入れてください</h1>
  <div class="sub">認証アプリに出ている数字です。30秒ごとに変わります。</div>
@@ -147,19 +147,19 @@ _lg_mfa = _wrap(_lg_left, _box(f"""
 _lg_err = _wrap(_lg_left, _box(f"""
  <h1>ログイン</h1>
  <div class="sub">毎日ここから。</div>
- {field("メールアドレス", inp("info@engine-base.com", "", "email"))}
- {field("パスワード", inp("••••••", "", "password", "err"), "メールアドレスかパスワードが違います。あと4回で15分間ロックします。", err=True)}
+ {field("メールアドレス", inp("", "yamada@example.com", "email"))}
+ {field("パスワード", inp("", "英字と数字で 12 文字以上", "password", "err"), "メールアドレスかパスワードが違います。あと4回で15分間ロックします。", err=True)}
  <button class="btn btn-p" style="width:100%">{ic("login")}ログイン</button>
- <p class="muted" style="font-size:12.5px;text-align:center;margin-top:18px"><a href="v1-password-reset.html" style="color:var(--primary);font-weight:600">入れなくなった</a></p>"""))
+ <p class="muted" style="font-size:12.5px;text-align:center;margin-top:18px"><a href="v1-password-reset.html" style="color:var(--primary);font-weight:600">パスワードをお忘れの方</a></p>"""))
 LOGIN = ("login", [("n","通常","",_lg),("m","6桁の入力","2段階目。「この端末ではきかない」で毎日の負担を下げる。",_lg_mfa),
   ("e","失敗","回数制限を出す（無制限試行を構造で潰す）。",_lg_err)], AUTH_CSS, True)
 
 # ============================================================ password-reset
 _pr_left = _left("詰まらせない。", "パスワードを忘れても、端末を失くしても、自分で入り直せます。運営に連絡しなくて済むように作ってあります。")
 _pr = _wrap(_pr_left, _box(f"""
- <h1>入り直す</h1>
+ <h1>パスワードの再設定</h1>
  <div class="sub">登録したメールアドレスに再設定のリンクを送ります。</div>
- {field("メールアドレス", inp("", "name@example.com", "email"))}
+ {field("メールアドレス", inp("", "yamada@example.com", "email"))}
  <button class="btn btn-p" style="width:100%">{ic("mail")}再設定メールを送る</button>
  <div style="height:1px;background:var(--line);margin:22px 0"></div>
  <div style="font-size:13px;font-weight:600;margin-bottom:6px">端末を失くした（認証アプリが使えない）</div>
@@ -175,10 +175,10 @@ _pr_sent = _wrap(_pr_left, _box(f"""
 _pr_new = _wrap(_pr_left, _box(f"""
  <h1>新しいパスワード</h1>
  <div class="sub">前と同じものは使えません。</div>
- {field("新しいパスワード", inp("", "8文字以上", "password"))}
- {field("もう一度", inp("", "", "password"))}
+ {field("新しいパスワード", inp("", "英字と数字で 12 文字以上", "password"))}
+ {field("もう一度", inp("", "もう一度入れてください", "password"))}
  <button class="btn btn-p" style="width:100%">{ic("check")}変更してログイン</button>"""))
-RESET = ("password-reset", [("n","入り直す","",_pr),("s","送信後","登録の有無を漏らさない。既存セッションの失効を先に伝える（G-14）。",_pr_sent),
+RESET = ("password-reset", [("n","再設定を送る","",_pr),("s","送信後","登録の有無を漏らさない。既存セッションの失効を先に伝える（G-14）。",_pr_sent),
   ("p","新しいパスワード","",_pr_new)], AUTH_CSS, True)
 
 SCREENS = [SIGNUP, VERIFY, INVITE, MFA, LOGIN, RESET]

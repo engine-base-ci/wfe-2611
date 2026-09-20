@@ -77,6 +77,7 @@ export default function SignupPage() {
               type="email"
               autoComplete="email"
               inputMode="email"
+              placeholder="yamada@example.com"
               {...f.register("email")}
               invalid={!!f.formState.errors.email || state === "e"}
             />
@@ -89,7 +90,7 @@ export default function SignupPage() {
             </Link>{" "}
             するか、
             <Link className="font-semibold text-[var(--primary)] underline" href="/password-reset">
-              入り直す
+              パスワードの再設定
             </Link>{" "}
             へ。
           </p>
@@ -104,6 +105,7 @@ export default function SignupPage() {
               id={id}
               type="password"
               autoComplete="new-password"
+              placeholder="英字と数字で 12 文字以上"
               {...f.register("password")}
               invalid={!!f.formState.errors.password}
             />
@@ -119,6 +121,7 @@ export default function SignupPage() {
               id={id}
               type="text"
               autoComplete="organization"
+              placeholder="山田工務店"
               {...f.register("company_name")}
               invalid={!!f.formState.errors.company_name}
             />

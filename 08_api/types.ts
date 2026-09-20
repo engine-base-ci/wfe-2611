@@ -591,11 +591,13 @@ export const ENDPOINTS = [
   "acts": [
    "A02",
    "A04",
-   "A13"
+   "A13",
+   "A31"
   ],
   "screens": [
    "login",
    "mfa-setup",
+   "password-reset",
    "verify-email"
   ]
  },
@@ -604,7 +606,6 @@ export const ENDPOINTS = [
   "method": "PATCH",
   "path": "/api/v1/members/:id",
   "acts": [
-   "A31",
    "A36",
    "A61",
    "A74"
@@ -612,8 +613,7 @@ export const ENDPOINTS = [
   "screens": [
    "account",
    "member-detail",
-   "members",
-   "password-reset"
+   "members"
   ]
  },
  {

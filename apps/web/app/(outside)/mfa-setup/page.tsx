@@ -113,6 +113,7 @@ export default function MfaSetupPage() {
                     id={id}
                     type="password"
                     autoComplete="current-password"
+                    placeholder="いまのパスワード"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     invalid={!!msg}
@@ -156,6 +157,7 @@ export default function MfaSetupPage() {
                       inputMode="numeric"
                       autoComplete="one-time-code"
                       maxLength={8}
+                      placeholder="000000"
                       value={code}
                       onChange={(e) => setCode(e.target.value)}
                       invalid={!!msg}

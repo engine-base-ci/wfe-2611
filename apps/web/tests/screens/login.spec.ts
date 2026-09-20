@@ -9,13 +9,13 @@ test("SCR-LOGIN-001 SCR-LOGIN-012 SCR-LOGIN-013 状態 通常：h1・4 幅で横
   await expect(page.locator("form[data-state='n'] h1")).toHaveText("ログイン");
   await expect(page.locator("[data-requires]")).toHaveCount(0);
 });
-test("SCR-LOGIN-009 SCR-LOGIN-010 SCR-LOGIN-028 SCR-LOGIN-029 リンク「入れなくなった」→ /password-reset、「アカウントを作る」→ /signup が開く", async ({
+test("SCR-LOGIN-009 SCR-LOGIN-010 SCR-LOGIN-028 SCR-LOGIN-029 リンク「パスワードをお忘れの方」→ /password-reset、「アカウントを作る」→ /signup が開く", async ({
   page,
 }) => {
   await page.goto("/login");
-  await page.getByRole("link", { name: "入れなくなった" }).click();
+  await page.getByRole("link", { name: "パスワードをお忘れの方" }).click();
   await expect(page).toHaveURL(/\/password-reset$/);
-  await expect(page.locator("h1")).toHaveText("入り直す");
+  await expect(page.locator("h1")).toHaveText("パスワードの再設定");
   await page.goto("/login");
   await page.getByRole("link", { name: "アカウントを作る" }).click();
   await expect(page).toHaveURL(/\/signup$/);
@@ -46,7 +46,7 @@ test("SCR-LOGIN-016 SCR-LOGIN-017 記号の種別・NFD：メールは ASCII な
   await page.waitForURL(/\/today/, { timeout: 15_000 }).catch(() => undefined);
   expect(page.url()).toMatch(/\/today/);
 });
-test("SCR-LOGIN-003 SCR-LOGIN-034 E-AUTH-001-A E-AUTH-001-C E-AUTH-002-A E-AUTH-002-C 失敗：残り回数の文言 → 5 回で 15 分ロック（正しくても入れない・サーバが最後の砦）→ 入り直すの一手", async ({
+test("SCR-LOGIN-003 SCR-LOGIN-034 E-AUTH-001-A E-AUTH-001-C E-AUTH-002-A E-AUTH-002-C 失敗：残り回数の文言 → 5 回で 15 分ロック（正しくても入れない・サーバが最後の砦）→ パスワードの再設定への一手", async ({
   page,
 }) => {
   const u = await signupViaApi();
@@ -62,7 +62,7 @@ test("SCR-LOGIN-003 SCR-LOGIN-034 E-AUTH-001-A E-AUTH-001-C E-AUTH-002-A E-AUTH-
   await expect(page.locator("form[data-state='e']")).toContainText("15 分間ロックしました");
   const r = await api("/api/auth-ext/sign-in", { email: u.email, password: PW });
   expect(r.status).toBe(429);
-  await page.locator("form[data-state='e']").getByRole("link", { name: "入れなくなった" }).click();
+  await page.locator("form[data-state='e']").getByRole("link", { name: "パスワードをお忘れの方" }).click();
   await expect(page).toHaveURL(/\/password-reset$/);
 });
 test("SCR-LOGIN-002 SCR-LOGIN-030 SCR-LOGIN-031 SCR-LOGIN-032 SCR-LOGIN-033 SCR-LOGIN-011 6桁の入力：2 段階を設定した人はパスワードの後に 6 桁。チェックを外して入れる → /today。「端末を失くした」で回復コードの欄に切り替わる", async ({
