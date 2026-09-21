@@ -81,7 +81,7 @@ KANAME_DEV_FAKE_BUCKET=1   # MinIO を立てずに触るため（添付の保存
 KANAME_API_LOG="$LOG/api.log"
 set +a
 ok "ローカルの既定を読んだ（.env.example）"
-echo "  メールは送らない。確認リンクは $LOG/api.log に出る"
+echo "  メールが届かなくても http://127.0.0.1:$WEB_PORT/dev/mail からリンクを押せる"
 
 # ---- 3. API
 say "3／4 API"
@@ -106,7 +106,7 @@ else
   # next build は NODE_ENV=production で走らせる（development のままだと /404 の生成で落ちる）
   (cd apps/web && NODE_ENV=production KANAME_DEV_PAGES=1 NEXT_PUBLIC_API_BASE="http://127.0.0.1:$API_PORT" pnpm -s build:test) >"$LOG/build.log" 2>&1 \
     || { ng "ビルドできない → $LOG/build.log"; tail -5 "$LOG/build.log"; exit 1; }
-  (cd apps/web && NODE_ENV=production KANAME_DEV_PAGES=1 NEXT_PUBLIC_API_BASE="http://127.0.0.1:$API_PORT" nohup pnpm -s start:test >"$LOG/web.log" 2>&1 &)
+  (cd apps/web && NODE_ENV=production KANAME_DEV_PAGES=1 KANAME_API_LOG="$LOG/api.log" NEXT_PUBLIC_API_BASE="http://127.0.0.1:$API_PORT" nohup pnpm -s start:test >"$LOG/web.log" 2>&1 &)
   for _ in $(seq 1 40); do [ "$(alive http://127.0.0.1:$WEB_PORT/login)" = 200 ] && break; sleep 1; done
   [ "$(alive http://127.0.0.1:$WEB_PORT/login)" = 200 ] && ok "起動した" || { ng "起動しない → $LOG/web.log"; tail -5 "$LOG/web.log"; exit 1; }
 fi
@@ -116,6 +116,6 @@ cat <<EOM
   ここから始める   http://127.0.0.1:$WEB_PORT/signup
   見本（土台）     http://127.0.0.1:$WEB_PORT/dev/shell
   手順（何を見るか） 07_tasks/handoff/README.md
-  メールの確認リンク $LOG/api.log の「verify →」の行
+  メールの受信箱   http://127.0.0.1:$WEB_PORT/dev/mail（送れなくてもここからリンクを押せる）
   止める           bash scripts/dev/up.sh --stop
 EOM
