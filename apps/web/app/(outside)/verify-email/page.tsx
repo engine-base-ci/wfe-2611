@@ -145,7 +145,8 @@ function VerifyEmailInner() {
     <div data-state="gone">
       <h1 className="text-h1 font-bold tracking-[-0.015em]">この申し込みは残っていません</h1>
       <p className="mt-2 text-[14px] leading-[1.8]">
-        30 分を過ぎたか、もう登録が終わっています。<b>登録はまだ済んでいません。</b>
+        申し込みから 30 分を過ぎたか、このメールアドレスでまだ申し込んでいません。
+        <b>登録は済んでいません。</b>
         はじめから登録し直すと、新しいリンクを送ります。
       </p>
       <div className="mt-6 flex flex-wrap items-center gap-3">

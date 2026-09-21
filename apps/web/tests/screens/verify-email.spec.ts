@@ -207,7 +207,7 @@ test("SCR-VERIFY-EMAIL-035 SCR-VERIFY-EMAIL-036 SCR-VERIFY-EMAIL-038 待つ画�
   await page.goto(`/verify-email?sent=1&email=${encodeURIComponent(email)}`);
   const g = page.locator("[data-state='gone']");
   await expect(g.locator("h1")).toHaveText("この申し込みは残っていません", { timeout: 15_000 });
-  await expect(g).toContainText("登録はまだ済んでいません");
+  await expect(g).toContainText("登録は済んでいません");
   await g.getByRole("link", { name: "もう登録した人はログイン" }).click();
   await expect(page).toHaveURL(/\/login$/);
   await page.goBack();
