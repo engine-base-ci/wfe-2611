@@ -2,7 +2,7 @@
 """画面の各状態 → 製品の時点（flow.json の product_states）。無い状態はビルドを止める（L-007）。"""
 PS = {
  "signup": {"n":"PS0","e":"PS0"}, "verify-email": {"n":"PS0","ok":"PS0","x":"PS0"},
- "invite-accept": {"n":"PS3","r4":"PS3","x":"PS3"}, "mfa-setup": {"n":"PS0","rc":"PS0"},
+ "invite-accept": {"n":"PS3","r4":"PS3","x":"PS3"}, "mfa-setup": {"pw":"PS0","n":"PS0","rc":"PS0"},
  "login": {"n":"PS3","m":"PS3","e":"PS3"}, "password-reset": {"n":"PS3","s":"PS3","p":"PS3"},
  "onboard-interview": {"nb":"PS0","n":"PS1","0":"PS1","f":"PS1"}, "onboard-draft": {"n":"PS2","f":"PS2","e":"PS2"},
  "bridge-setup": {"n":"PS0","ok":"PS1","ng":"PS0","s":"PS3"}, "credentials": {"n":"PS2","a":"PS2","i":"PS2","s":"PS3"},

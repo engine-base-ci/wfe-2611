@@ -1,6 +1,6 @@
 // T-U-02 メールを確認する。テストの名前に正本の行 ID を持つ（op_gate.py）
 import { expect, test } from "@playwright/test";
-import { lastMailUrl, mailLog, noOverflow, signupViaApi } from "../_lib/api";
+import { lastMailUrl, mailLog, noOverflow, realMailEmail, signupViaApi } from "../_lib/api";
 
 test("SCR-VERIFY-EMAIL-001 SCR-VERIFY-EMAIL-009 SCR-VERIFY-EMAIL-010 SCR-VERIFY-EMAIL-011 SCR-VERIFY-EMAIL-019 状態 送信済み：4 幅で横溢れ 0・宛先が出る・「もう一度送る」で送った旨が出る（入力欄は無い＝表記ゆらぎは該当なし）", async ({
   page,
@@ -55,7 +55,8 @@ test("SCR-VERIFY-EMAIL-002 SCR-VERIFY-EMAIL-021 E-AUTH-003-B 届いたリンク�
 test("SCR-VERIFY-EMAIL-024 送る操作をすると実際に送られ、API のログに「送った」が残る（黙って落ちない）", async ({
   page,
 }) => {
-  const u = await signupViaApi();
+  // この行だけ抑止しない宛先を使う
+  const u = await signupViaApi("QA 社", realMailEmail());
   await page.goto(`/verify-email?sent=1&email=${encodeURIComponent(u.email)}`);
   await page.getByRole("button", { name: "もう一度送る" }).click();
   await expect(page.getByRole("status")).toContainText("もう一度送りました");

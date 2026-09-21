@@ -10,9 +10,13 @@ export const PW = "correct-horse-battery-1";
 // 宛先は「送出先が本当に受け取れるもの」にする。example.com は送出先に拒否され、
 // 「本当に送られたか」の行が検証できない（拒否を握り潰していた間だけ緑に見えていた）。
 // QA_MAIL_TO で環境ごとに変えられる（<uniq> がその回の一意な文字に置き換わる）。
-const MAIL_TO = process.env["QA_MAIL_TO"] ?? "delivered+<uniq>@resend.dev";
-export const uniqEmail = () =>
-  MAIL_TO.replace("<uniq>", `qa-${Date.now().toString(36)}-${Math.floor(Math.random() * 1e5)}`);
+const MAIL_TO = process.env["QA_MAIL_TO"] ?? "<uniq>@resend.dev";
+const uniq = () => `${Date.now().toString(36)}-${Math.floor(Math.random() * 1e5)}`;
+/** ふつうのテストの宛先。`qa-` で始まるので API は実際には送らない（MAIL_SUPPRESS_PREFIX）。
+ *  リンクは API のログに出るので手順はそのまま通る */
+export const uniqEmail = () => MAIL_TO.replace("<uniq>", `qa-${uniq()}`);
+/** 「本当に送られるか」を見る行だけが使う宛先。抑止の接頭辞を付けないので実際に送出先へ出る */
+export const realMailEmail = () => MAIL_TO.replace("<uniq>", `delivered+${uniq()}`);
 
 export async function api<T>(
   path: string,
@@ -28,8 +32,7 @@ export async function api<T>(
   return { status: res.status, json: (await res.json().catch(() => ({}))) as T };
 }
 /** 会社ごと登録して token を返す（画面の前提） */
-export async function signupViaApi(company = "QA 社") {
-  const email = uniqEmail();
+export async function signupViaApi(company = "QA 社", email = uniqEmail()) {
   const r = await api<{ data: { token: string; user_id: string } }>("/api/auth-ext/sign-up", {
     email,
     password: PW,

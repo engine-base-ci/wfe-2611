@@ -2,6 +2,7 @@
  "screen": "mfa-setup",
  "mock": "06_mockup/v1/v1-mfa-setup.html",
  "state_labels": {
+  "pw": "パスワードの確認",
   "n": "登録",
   "rc": "回復コード"
  },
@@ -14,6 +15,45 @@
    "states": [
     "共通",
     "登録"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0"
+   ]
+  },
+  {
+   "key": "input:パスワード",
+   "kind": "input",
+   "label": "パスワード",
+   "target": null,
+   "states": [
+    "パスワードの確認"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0"
+   ]
+  },
+  {
+   "key": "button:パスワードを表示",
+   "kind": "button",
+   "label": "パスワードを表示",
+   "target": null,
+   "states": [
+    "パスワードの確認"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0"
+   ]
+  },
+  {
+   "key": "button:認証アプリを登録する",
+   "kind": "button",
+   "label": "認証アプリを登録する",
+   "target": null,
+   "states": [
+    "パスワードの確認"
    ],
    "roles": [],
    "ps": [

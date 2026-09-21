@@ -25,6 +25,8 @@ export interface Config {
   mailFrom: string;
   /** 運営（ENGINE BASE）の連絡先。問い合わせの届け先・運営アカウントのログイン名 */
   opsEmail: string;
+  /** この接頭辞で始まる宛先には送らない（dev で自動テストが送出先の上限を食い潰さないため）。空なら必ず送る */
+  mailSuppressPrefix: string;
   port: number;
 }
 const REQUIRED = [
@@ -107,6 +109,7 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
       .filter(Boolean),
     mailFrom: env["MAIL_FROM"] || "Kaname <noreply@engine-base.com>",
     opsEmail: env["OPS_EMAIL"] || "info@engine-base.com",
+    mailSuppressPrefix: env["MAIL_SUPPRESS_PREFIX"] || "",
     port: Number(env["PORT"] ?? 3001),
   };
 }

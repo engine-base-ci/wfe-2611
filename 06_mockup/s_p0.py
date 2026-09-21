@@ -114,6 +114,13 @@ _mfa = _wrap(_left("入るときは、<br>もう1つの鍵を。",
   <div class="muted" style="font-size:12px;margin-top:10px">読み取れない場合は <span style="font-family:var(--font-code)">JBSW Y3DP EHPK 3PXP</span></div></div>
  {field("アプリに出た6桁", inp("", "000000", "text", "", "font-family:var(--font-code);font-size:20px;letter-spacing:.3em;text-align:center"))}
  <button class="btn btn-p" style="width:100%">{ic("lock")}登録する</button>"""))
+# 登録の前に「いまのパスワード」を確かめる段がある（実装と揃える・D-087.1）
+_mfa_pw = _wrap(_left("入るときは、<br>もう1つの鍵を。",
+  "パスワードだけでは入れません。認証アプリの6桁が要ります。端末を失くしたときのために回復コードを保管してください。"), _box(f"""
+ <h1>2段階認証を設定する</h1>
+ <div class="sub">確認のため、いまのパスワードを入れてください。認証アプリ（Google Authenticator 等）が要ります。</div>
+ {field("パスワード", inp("", "いまのパスワード", "password"))}
+ <button class="btn btn-p" style="width:100%">{ic("lock")}認証アプリを登録する</button>"""))
 _mfa_rc = _wrap(_left("入るときは、<br>もう1つの鍵を。",
   "パスワードだけでは入れません。認証アプリの6桁が要ります。"), _box(f"""
  <div style="width:52px;height:52px;border-radius:var(--r-full);background:#DCFCE7;display:grid;place-items:center;margin-bottom:18px;color:var(--st-success)">{ic("check")}</div>
@@ -124,7 +131,7 @@ t7n3-s5qw   e4r8-y2uo   i6p1-l9as   d3f7-g5hj   x8z2-c4vb</div>
  <div style="display:flex;gap:9px;margin:16px 0">{btn("コピー","o","file")}{btn("ファイルで保存","o","download")}</div>
  <label style="display:flex;gap:9px;align-items:flex-start;font-size:12.5px;color:var(--on-sv);margin-bottom:14px">{CB}<span>安全な場所に保管しました</span></label>
  <a class="btn btn-p" style="width:100%" href="v1-bridge-setup.html">{ic("arrow")}次へ（PCをつなぐ）</a>"""))
-MFA = ("mfa-setup", [("n","登録","",_mfa),("rc","回復コード","2FA紛失で復旧不能（L-003）を構造で潰す。",_mfa_rc)], AUTH_CSS, True)
+MFA = ("mfa-setup", [("pw","パスワードの確認","登録の前に本人だと確かめる。",_mfa_pw),("n","登録","",_mfa),("rc","回復コード","2FA紛失で復旧不能（L-003）を構造で潰す。",_mfa_rc)], AUTH_CSS, True)
 
 # ============================================================ login
 _lg_left = _left("今日も、<br>高本AIが先に動いている。",

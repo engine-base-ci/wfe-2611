@@ -1,17 +1,17 @@
 // T-U-04 2 段階認証を設定する。テストの名前に正本の行 ID を持つ（op_gate.py）
 import { expect, test } from "@playwright/test";
-import { loginAs, noOverflow, PW, signupViaApi, totp } from "../_lib/api";
+import { loginAs, noOverflow, pwToggle, PW, signupViaApi, totp } from "../_lib/api";
 
-test("SCR-MFA-SETUP-001 SCR-MFA-SETUP-008 SCR-MFA-SETUP-009 状態 登録：4 幅で横溢れ 0・h1・時点の部品なし", async ({
+test("SCR-MFA-SETUP-001 SCR-MFA-SETUP-008 SCR-MFA-SETUP-009 SCR-MFA-SETUP-028 状態 パスワードの確認・登録：4 幅で横溢れ 0・h1・時点の部品なし", async ({
   page,
 }) => {
   const u = await signupViaApi();
   await loginAs(page, u.token);
   await noOverflow(page, "/mfa-setup");
-  await expect(page.locator("[data-state='n'] h1")).toHaveText("2段階認証を設定する");
+  await expect(page.locator("[data-state='pw'] h1")).toHaveText("2段階認証を設定する");
   await expect(page.locator("[data-requires]")).toHaveCount(0);
 });
-test("SCR-MFA-SETUP-002 SCR-MFA-SETUP-006 SCR-MFA-SETUP-007 SCR-MFA-SETUP-021 SCR-MFA-SETUP-022 SCR-MFA-SETUP-023 SCR-MFA-SETUP-024 SCR-MFA-SETUP-025 SCR-MFA-SETUP-026 SCR-MFA-SETUP-010 SCR-MFA-SETUP-011 E-AUTH-004-B 登録する：パスワード → QR と鍵 → 6 桁（全角・空白入りでも通る）→ 回復コード 10 個 → コピー・ファイルで保存 → 保管したら次へ（/setup/bridge）", async ({
+test("SCR-MFA-SETUP-002 SCR-MFA-SETUP-006 SCR-MFA-SETUP-007 SCR-MFA-SETUP-029 SCR-MFA-SETUP-031 SCR-MFA-SETUP-021 SCR-MFA-SETUP-022 SCR-MFA-SETUP-023 SCR-MFA-SETUP-024 SCR-MFA-SETUP-025 SCR-MFA-SETUP-026 SCR-MFA-SETUP-010 SCR-MFA-SETUP-011 E-AUTH-004-B 登録する：パスワード → QR と鍵 → 6 桁（全角・空白入りでも通る）→ 回復コード 10 個 → コピー・ファイルで保存 → 保管したら次へ（/setup/bridge）", async ({
   page,
   context,
 }) => {
@@ -76,4 +76,14 @@ test("ログインしていないと登録できない（401 の文言）", asyn
   await page.getByLabel("パスワード", { exact: true }).fill(PW);
   await page.getByRole("button", { name: "認証アプリを登録する" }).click();
   await expect(page.locator("p[role=alert]")).toContainText("ログインしてから設定してください");
+});
+
+test("SCR-MFA-SETUP-030 パスワードは見る・隠すを切り替えられる（既定は隠す・押すと見える・的は 24px 以上）", async ({
+  page,
+}) => {
+  const u = await signupViaApi();
+  await loginAs(page, u.token);
+  await page.goto("/mfa-setup");
+  await page.getByLabel("パスワード", { exact: true }).fill(PW);
+  await pwToggle(page, "パスワード");
 });

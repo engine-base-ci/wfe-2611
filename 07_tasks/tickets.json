@@ -71,7 +71,7 @@
   "calendar_days_human": 692,
   "total_estimate_hours": 1043.1,
   "total_estimate_sessions": 346,
-  "qa_rows_total": 4736,
+  "qa_rows_total": 4740,
   "journeys": 9
  },
  "waves": [
@@ -19491,7 +19491,7 @@
   },
   {
    "id": "T-U-04",
-   "title": "画面 2段階認証を設定する（2 状態・R1/R2/R3）",
+   "title": "画面 2段階認証を設定する（3 状態・R1/R2/R3）",
    "category": "frontend",
    "label": "NEW",
    "feature_id": "F-V3-C-mfa-setup",
@@ -19567,7 +19567,7 @@
    "acceptance_criteria": {
     "structural": [
      "UBIQUITOUS: 画面 mfa-setup は URL /mfa-setup で開く（apps/web/app/(public)/mfa-setup/page.tsx。遷移の href は flow の route と機械照合）",
-     "STATE-DRIVEN: WHILE 画面 mfa-setup が描画中 THEN h1「2段階認証を設定する」・第2ナビ ・状態 2（登録、回復コード）がモック 06_mockup/v1/v1-mfa-setup.html と一致する",
+     "STATE-DRIVEN: WHILE 画面 mfa-setup が描画中 THEN h1「2段階認証を設定する」・第2ナビ ・状態 3（パスワードの確認、登録、回復コード）がモック 06_mockup/v1/v1-mfa-setup.html と一致する",
      "STATE-DRIVEN: WHILE 役割 R1/R2/R3 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い"
     ],
     "functional": [
@@ -19602,6 +19602,7 @@
    "done_at": "2026-09-16",
    "qa_rows": {
     "l1": [
+     "SCR-MFA-SETUP-028",
      "SCR-MFA-SETUP-001",
      "SCR-MFA-SETUP-002",
      "SCR-MFA-SETUP-003",
@@ -19623,6 +19624,9 @@
      "SCR-MFA-SETUP-019",
      "SCR-MFA-SETUP-020",
      "SCR-MFA-SETUP-021",
+     "SCR-MFA-SETUP-029",
+     "SCR-MFA-SETUP-030",
+     "SCR-MFA-SETUP-031",
      "SCR-MFA-SETUP-022",
      "SCR-MFA-SETUP-023",
      "SCR-MFA-SETUP-024",
@@ -19638,6 +19642,14 @@
     ]
    },
    "test_scenarios_inline": [
+    {
+     "name": "状態 パスワードの確認",
+     "steps": [
+      "状態を作る",
+      "開く"
+     ],
+     "expected": "モックと一致"
+    },
     {
      "name": "状態 登録",
      "steps": [
@@ -19693,7 +19705,7 @@
    "acceptance_criteria_inline": {
     "tier_1_structural": [
      "UBIQUITOUS: 画面 mfa-setup は URL /mfa-setup で開く（apps/web/app/(public)/mfa-setup/page.tsx。遷移の href は flow の route と機械照合）",
-     "STATE-DRIVEN: WHILE 画面 mfa-setup が描画中 THEN h1「2段階認証を設定する」・第2ナビ ・状態 2（登録、回復コード）がモック 06_mockup/v1/v1-mfa-setup.html と一致する",
+     "STATE-DRIVEN: WHILE 画面 mfa-setup が描画中 THEN h1「2段階認証を設定する」・第2ナビ ・状態 3（パスワードの確認、登録、回復コード）がモック 06_mockup/v1/v1-mfa-setup.html と一致する",
      "STATE-DRIVEN: WHILE 役割 R1/R2/R3 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い"
     ],
     "tier_2_functional": [

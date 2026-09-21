@@ -100,7 +100,7 @@ export default function MfaSetupPage() {
           </Link>
         </div>
       ) : (
-        <div data-state="n">
+        <div data-state={uri ? "n" : "pw"}>
           <h1 className="text-h1 font-bold tracking-[-0.015em]">2段階認証を設定する</h1>
           {!uri ? (
             <form onSubmit={start} noValidate className="mt-6">

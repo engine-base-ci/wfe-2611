@@ -1,6 +1,16 @@
 // T-U-06 パスワードの再設定。テストの名前に正本の行 ID を持つ（op_gate.py）
 import { expect, test } from "@playwright/test";
-import { api, lastMailUrl, mailLog, noOverflow, pwToggle, PW, signupViaApi, uniqEmail } from "../_lib/api";
+import {
+  api,
+  lastMailUrl,
+  mailLog,
+  noOverflow,
+  pwToggle,
+  PW,
+  realMailEmail,
+  signupViaApi,
+  uniqEmail,
+} from "../_lib/api";
 
 test("SCR-PASSWORD-RESET-001 SCR-PASSWORD-RESET-009 SCR-PASSWORD-RESET-010 SCR-PASSWORD-RESET-008 状態 再設定を送る：4 幅で横溢れ 0・時点の部品なし・「ログインへ戻る」→ /login", async ({
   page,
@@ -78,7 +88,8 @@ test("SCR-PASSWORD-RESET-025 端末を失くした：「回復コードで入る
 test("SCR-PASSWORD-RESET-031 再設定メールを送ると実際に送られ、API のログに「送った」が残る（黙って落ちない）", async ({
   page,
 }) => {
-  const u = await signupViaApi();
+  // この行だけ抑止しない宛先を使う（ほかの登録は送出先の 1 日の上限を食わないように送らない）
+  const u = await signupViaApi("QA 社", realMailEmail());
   await page.goto("/password-reset");
   await page.getByLabel("メールアドレス").fill(u.email);
   await page.getByRole("button", { name: "再設定メールを送る" }).click();

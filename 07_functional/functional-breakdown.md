@@ -1,4 +1,4 @@
-# Kaname 機能分解（functional-breakdown）v3.1 — 2026-09-20
+# Kaname 機能分解（functional-breakdown）v3.1 — 2026-09-21
 
 > 信頼源は 07_functional/*.json（05_flow/build_functional.py が機械生成）。この文書は写し。
 
@@ -158,7 +158,7 @@
 | signup | アカウントを作る | A01 | 2 | 1 | 2 | 5 | R1 R2 |
 | verify-email | メールを確認する | A02 | 3 | 2 | 3 | 3 | R1 R2 |
 | invite-accept | 招待を受けて参加する | A03 | 3 | 0 | 1 | 4 | R3 R4 |
-| mfa-setup | 2段階認証を設定する | A04 | 2 | 1 | 2 | 6 | R1 R2 R3 |
+| mfa-setup | 2段階認証を設定する | A04 | 3 | 1 | 2 | 6 | R1 R2 R3 |
 | billing-setup | 支払い方法を登録する | A05 | 4 | 0 | 1 | 8 | R1 R2 |
 | login | ログインする | A13 | 3 | 3 | 4 | 3 | R1 R2 R3 R4 |
 | password-reset | パスワードの再設定 | A31 | 3 | 1 | 2 | 6 | R1 R2 R3 |
