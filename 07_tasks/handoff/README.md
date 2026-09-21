@@ -57,3 +57,14 @@ OK: 2026-09-20 高本
 ```
 
 違うところがあれば `NG: 何が違うか` を 1 行で。次の回でそこだけ直します。
+
+## 確認表（同じ URL のまま更新される）
+
+https://claude.ai/artifact/CKtmY8sDc61YtxX6vMu6AM
+
+結果（未確認／OK／NG）と気づいたことはこのページに保存されます。
+手順が増えても URL は変わらず、書いた内容も消えません。作り直すときは次の 1 本。
+
+```bash
+python3 scripts/ci/build_qa_artifact.py
+```

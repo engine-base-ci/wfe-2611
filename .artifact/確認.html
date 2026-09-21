@@ -1,0 +1,196 @@
+<title>Kaname 確認表</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+:root{
+  --paper:#FBFAF8; --card:#FFFFFF; --ink:#191C22; --sub:#606A7B; --line:#E4E2DC;
+  --accent:#2F5FA8; --accent-soft:#EAF0FA; --ok:#2C6E52; --ok-soft:#E4F1EA;
+  --ng:#A94438; --ng-soft:#F8E9E6; --idle:#8A8F99;
+  --sans:"Zen Kaku Gothic New",system-ui,-apple-system,"Hiragino Kaku Gothic ProN",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#15171C; --card:#1C1F26; --ink:#E9EAEE; --sub:#9AA3B2; --line:#2B2F38;
+  --accent:#7BA6E8; --accent-soft:#1E2733; --ok:#6FC79B; --ok-soft:#18271F;
+  --ng:#E08A7E; --ng-soft:#2A1C1A; --idle:#727988;
+}}
+:root[data-theme="dark"]{
+  --paper:#15171C; --card:#1C1F26; --ink:#E9EAEE; --sub:#9AA3B2; --line:#2B2F38;
+  --accent:#7BA6E8; --accent-soft:#1E2733; --ok:#6FC79B; --ok-soft:#18271F;
+  --ng:#E08A7E; --ng-soft:#2A1C1A; --idle:#727988;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.75;
+  font-feature-settings:"palt";-webkit-font-smoothing:antialiased}
+.wrap{max-width:1000px;margin:0 auto;padding-block:26px;padding-left:18px;padding-right:18px}
+h1{font-size:21px;font-weight:700;letter-spacing:-.01em;margin:0 0 4px}
+.lead{color:var(--sub);font-size:13px;margin:0 0 20px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:20px}
+.panel h2{font-size:13px;font-weight:700;margin:0 0 10px;letter-spacing:.04em}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:13px}
+.kv dt{color:var(--sub);white-space:nowrap}
+.kv dd{margin:0;overflow-wrap:anywhere}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;
+  background:var(--accent-soft);color:var(--accent);padding:1px 6px;border-radius:5px}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:10px;margin-bottom:4px;scrollbar-width:thin}
+.tab{flex:0 0 auto;border:1px solid var(--line);background:var(--card);color:var(--sub);
+  border-radius:999px;padding:7px 14px;font:inherit;font-size:12.5px;cursor:pointer;white-space:nowrap}
+.tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:500}
+.tab .n{font-variant-numeric:tabular-nums;opacity:.7;margin-left:7px}
+.meter{height:4px;background:var(--line);border-radius:999px;overflow:hidden;margin:14px 0 20px}
+.meter i{display:block;height:100%;background:var(--ok);width:0;transition:width .3s}
+.head{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px;margin-bottom:6px}
+.head h2{font-size:17px;font-weight:700;margin:0}
+.head a{color:var(--accent);font-size:12.5px;overflow-wrap:anywhere}
+.note-before{background:var(--accent-soft);border-radius:10px;padding:12px 14px;margin:12px 0 18px;font-size:13px}
+.note-before ol{margin:0;padding-left:20px}
+.step{border-top:1px solid var(--line);padding:16px 0;display:grid;grid-template-columns:28px 1fr;gap:0 12px}
+.step:last-of-type{border-bottom:1px solid var(--line)}
+.num{font-variant-numeric:tabular-nums;color:var(--idle);font-size:12.5px;padding-top:2px}
+.act{font-weight:500}
+.exp{color:var(--sub);font-size:13px;margin-top:3px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:transparent;color:var(--sub);font:inherit;font-size:12.5px;
+  padding:5px 13px;cursor:pointer;min-height:32px}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{font-weight:700}
+.seg button[data-v="OK"][aria-pressed="true"]{background:var(--ok-soft);color:var(--ok)}
+.seg button[data-v="NG"][aria-pressed="true"]{background:var(--ng-soft);color:var(--ng)}
+.seg button[data-v="-"][aria-pressed="true"]{background:var(--line);color:var(--ink)}
+.memo{flex:1 1 240px;min-width:0;border:1px solid var(--line);background:var(--paper);color:var(--ink);
+  border-radius:8px;padding:6px 10px;font:inherit;font-size:13px;min-height:32px}
+.memo:focus-visible,.seg button:focus-visible,.tab:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.later{margin-top:22px;border-left:3px solid var(--line);padding:2px 0 2px 14px;color:var(--sub);font-size:12.5px}
+.later h3{font-size:12.5px;margin:0 0 6px;color:var(--ink)}
+.later ul{margin:0;padding-left:18px}
+.save{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));
+  background:var(--ink);color:var(--paper);border-radius:999px;padding:7px 16px;font-size:12.5px;opacity:0;
+  transition:opacity .25s;pointer-events:none}
+.save.on{opacity:.92}
+.foot{color:var(--sub);font-size:12px;margin-top:26px}
+@media (max-width:520px){.step{grid-template-columns:1fr}.num{padding-top:0}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <h1>Kaname 確認表</h1>
+  <p class="lead">2026-09-21 時点。1 タブ＝1 チケット。上から触って結果を選んでください。入力はこのページに保存され、作り直しても消えません。</p>
+
+  <section class="panel">
+    <h2>はじめに</h2>
+    <dl class="kv">
+      <dt>立ち上げ</dt><dd><code>bash scripts/dev/up.sh</code>（DB → API → 画面。初回は 2 分ほど）</dd>
+      <dt>入口</dt><dd><code>http://127.0.0.1:3124/signup</code></dd>
+      <dt>メールが届かないとき</dt><dd><code>http://127.0.0.1:3124/dev/mail</code> に送ったリンクが並びます。そこから押せば先へ進めます</dd>
+      <dt>後片付け</dt><dd><code>bash scripts/dev/clean-qa.sh</code>（自動テストが作った口座だけ消す）</dd>
+      <dt>止める</dt><dd><code>bash scripts/dev/up.sh --stop</code>／状態は <code>--status</code></dd>
+      <dt>まだ無いもの</dt><dd>自分のPC（Bridge）と自分のAIの返答は未実装です。各タブの下に理由つきで出します</dd>
+    </dl>
+  </section>
+
+  <div class="tabs" id="tabs" role="tablist"></div>
+  <div class="meter"><i id="meter"></i></div>
+  <div id="panel"></div>
+  <p class="foot" id="foot"></p>
+</div>
+<div class="save" id="save">保存しました</div>
+
+<script id="spec" type="application/json">[{"id": "T-U-01", "name": "アカウントを作る", "url": "http://127.0.0.1:3124/signup", "before": ["`bash scripts/dev/up.sh` を実行する（DB → API → 画面が立つ）", "http://127.0.0.1:3124/signup で会社を作る（メールの確認リンクは `.dev-logs/api.log` の「verify →」の行をブラウザに貼る）", "そのまま入った状態で下へ"], "steps": [{"act": "http://127.0.0.1:3124/signup を開く。見出しが「アカウントを作る」で、横にスクロールしない", "expect": ""}, {"act": "「はじめる」を押す", "expect": "画面が変わる・保存される・文言が出る（押しても何も起きないなら NG）"}, {"act": "「パスワードの再設定」を押す（状態：既に登録済み）", "expect": "/password-reset が開く（パスワードの再設定）。戻る"}, {"act": "わざと「このメールアドレスは既に登録されています。ログインするか、パスワードの再設定へ。…」になる操作をする（状態：既に登録済み）", "expect": "その文言と、直す導線が出る"}, {"act": "「メールアドレス」を入れる（状態：通常）", "expect": "入れた値がそのまま入る（送信に載る）"}, {"act": "「パスワード」を入れる（状態：通常）", "expect": "入れた値がそのまま入る（送信に載る）"}, {"act": "「会社名（または屋号）」を入れる（状態：通常）", "expect": "入れた値がそのまま入る（送信に載る）"}, {"act": "「利用規約とプライバシーポリシーに同意します」を切り替える（状態：通常）", "expect": "切り替わる"}, {"act": "「パスワードを表示」を押す（状態：通常）", "expect": "伏せ字（●●●）が読める文字に変わる。アイコンが目に斜線になり、もう一度押すと伏せ字に戻る"}, {"act": "「ログイン」を押す（状態：通常）", "expect": "/login が開く（ログインする）。戻る"}], "later": []}, {"id": "T-U-02", "name": "メールを確認する", "url": "http://127.0.0.1:3124/verify-email", "before": ["`bash scripts/dev/up.sh` を実行する（DB → API → 画面が立つ）", "http://127.0.0.1:3124/signup で会社を作る（メールの確認リンクは `.dev-logs/api.log` の「verify →」の行をブラウザに貼る）", "そのまま入った状態で下へ"], "steps": [{"act": "http://127.0.0.1:3124/verify-email を開く。見出しが「メールを確認する」で、横にスクロールしない", "expect": ""}, {"act": "「はじめの設定をはじめる」を押す", "expect": "画面が変わる・保存される・文言が出る（押しても何も起きないなら NG）"}, {"act": "「はじめから登録し直す」を押す（状態：申し込みが残っていない）", "expect": "/signup が開く（アカウントを作る）。戻る"}, {"act": "「ログイン」を押す（状態：申し込みが残っていない）", "expect": "/login が開く（ログインする）。戻る"}, {"act": "「はじめの設定をはじめる（PCをつなぐ）」を押す（状態：登録できた）", "expect": "/setup/bridge が開く（自分のPCをつなぐ）。戻る"}, {"act": "「もう一度送る」を押す（状態：送信済み）", "expect": "画面が変わる・保存される・文言が出る（押しても何も起きないなら NG）"}, {"act": "「入力し直す」を押す（状態：送信済み）", "expect": "/signup が開く（アカウントを作る）。戻る"}, {"act": "自分の受信箱を開く", "expect": "届いている（迷惑メールも見る）。件名・差出人・本文が読め、リンクを押すと目的の画面が開く"}, {"act": "本文を読む", "expect": "内部の言葉（ID・テーブル名）が無く、誰宛てで何をすればよいかが分かる"}, {"act": "`.dev-logs/api.log` の `[mail]` の行を見る", "expect": "「送った → 自分のアドレス」が出ている。「送れなかった」が出ていたら、その理由が NG の中身"}], "later": []}, {"id": "T-U-03", "name": "招待を受けて参加する", "url": "http://127.0.0.1:3124/invite/:token", "before": ["`bash scripts/dev/up.sh` を実行する（DB → API → 画面が立つ）", "http://127.0.0.1:3124/signup で会社を作る（メールの確認リンクは `.dev-logs/api.log` の「verify →」の行をブラウザに貼る）", "そのまま入った状態で下へ"], "steps": [{"act": "http://127.0.0.1:3124/invite/:token を開く。見出しが「招待を受けて参加する」で、横にスクロールしない", "expect": ""}, {"act": "「参加する」を押す", "expect": "画面が変わる・保存される・文言が出る（押しても何も起きないなら NG）"}, {"act": "「お名前」を入れる（状態：担当者として）", "expect": "入れた値がそのまま入る（送信に載る）"}, {"act": "「メールアドレス」を入れる（状態：担当者として）", "expect": "入れた値がそのまま入る（送信に載る）"}, {"act": "「パスワード」を入れる（状態：担当者として）", "expect": "入れた値がそのまま入る（送信に載る）"}, {"act": "「パスワードを表示」を押す（状態：担当者として）", "expect": "伏せ字（●●●）が読める文字に変わる。アイコンが目に斜線になり、もう一度押すと伏せ字に戻る"}], "later": []}, {"id": "T-U-04", "name": "2段階認証を設定する", "url": "http://127.0.0.1:3124/mfa-setup", "before": ["`bash scripts/dev/up.sh` を実行する（DB → API → 画面が立つ）", "http://127.0.0.1:3124/signup で会社を作る（メールの確認リンクは `.dev-logs/api.log` の「verify →」の行をブラウザに貼る）", "そのまま入った状態で下へ"], "steps": [{"act": "http://127.0.0.1:3124/mfa-setup を開く。見出しが「2段階認証を設定する」で、横にスクロールしない", "expect": ""}, {"act": "「登録する」を押す", "expect": "画面が変わる・保存される・文言が出る（押しても何も起きないなら NG）"}, {"act": "「パスワード」を入れる（状態：パスワードの確認）", "expect": "入れた値がそのまま入る（送信に載る）"}, {"act": "「パスワードを表示」を押す（状態：パスワードの確認）", "expect": "伏せ字（●●●）が読める文字に変わる。アイコンが目に斜線になり、もう一度押すと伏せ字に戻る"}, {"act": "「認証アプリを登録する」を押す（状態：パスワードの確認）", "expect": "画面が変わる・保存される・文言が出る（押しても何も起きないなら NG）"}, {"act": "「安全な場所に保管しました」を切り替える（状態：回復コード）", "expect": "切り替わる"}, {"act": "「コピー」を押す（状態：回復コード）", "expect": "画面が変わる・保存される・文言が出る（押しても何も起きないなら NG）"}, {"act": "「ファイルで保存」を押す（状態：回復コード）", "expect": "画面が変わる・保存される・文言が出る（押しても何も起きないなら NG）"}, {"act": "「次へ（PCをつなぐ）」を押す（状態：回復コード）", "expect": "/setup/bridge が開く（自分のPCをつなぐ）。戻る"}, {"act": "「アプリに出た6桁」を入れる（状態：登録）", "expect": "入れた値がそのまま入る（送信に載る）"}], "later": []}, {"id": "T-U-05", "name": "ログインする", "url": "http://127.0.0.1:3124/login", "before": ["`bash scripts/dev/up.sh` を実行する（DB → API → 画面が立つ）", "http://127.0.0.1:3124/signup で会社を作る（メールの確認リンクは `.dev-logs/api.log` の「verify →」の行をブラウザに貼る）", "そのまま入った状態で下へ"], "steps": [{"act": "http://127.0.0.1:3124/login を開く。見出しが「ログインする」で、横にスクロールしない", "expect": ""}, {"act": "「ログイン」を押す", "expect": "画面が変わる・保存される・文言が出る（押しても何も起きないなら NG）"}, {"act": "「6桁」を入れる（状態：6桁の入力）", "expect": "入れた値がそのまま入る（送信に載る）"}, {"act": "「この端末では30日間きかない」を切り替える（状態：6桁の入力）", "expect": "切り替わる"}, {"act": "「今日の画面へ」を押す（状態：6桁の入力）", "expect": "/today が開く（今日）。戻る"}, {"act": "「端末を失くした（回復コードで入る）」を押す（状態：6桁の入力）", "expect": "/password-reset が開く（パスワードの再設定）。戻る"}, {"act": "わざと「メールアドレスかパスワードが違います。あと4回で15分間ロックします。…」になる操作をする（状態：失敗）", "expect": "その文言と、直す導線が出る"}, {"act": "「メールアドレス」を入れる（状態：通常）", "expect": "入れた値がそのまま入る（送信に載る）"}, {"act": "「パスワード」を入れる（状態：通常）", "expect": "入れた値がそのまま入る（送信に載る）"}, {"act": "「パスワードを表示」を押す（状態：通常）", "expect": "伏せ字（●●●）が読める文字に変わる。アイコンが目に斜線になり、もう一度押すと伏せ字に戻る"}, {"act": "「パスワードをお忘れの方」を押す（状態：通常）", "expect": "/password-reset が開く（パスワードの再設定）。戻る"}, {"act": "「アカウントを作る」を押す（状態：通常）", "expect": "/signup が開く（アカウントを作る）。戻る"}], "later": []}, {"id": "T-U-06", "name": "パスワードの再設定", "url": "http://127.0.0.1:3124/password-reset", "before": ["`bash scripts/dev/up.sh` を実行する（DB → API → 画面が立つ）", "http://127.0.0.1:3124/signup で会社を作る（メールの確認リンクは `.dev-logs/api.log` の「verify →」の行をブラウザに貼る）", "そのまま入った状態で下へ"], "steps": [{"act": "http://127.0.0.1:3124/password-reset を開く。見出しが「パスワードの再設定」で、横にスクロールしない", "expect": ""}, {"act": "「再設定メールを送る」を押す", "expect": "画面が変わる・保存される・文言が出る（押しても何も起きないなら NG）"}, {"act": "「メールアドレス」を入れる（状態：再設定を送る）", "expect": "入れた値がそのまま入る（送信に載る）"}, {"act": "「回復コードで入る」を押す（状態：再設定を送る）", "expect": "画面が変わる・保存される・文言が出る（押しても何も起きないなら NG）"}, {"act": "「新しいパスワード」を入れる（状態：新しいパスワード）", "expect": "入れた値がそのまま入る（送信に載る）"}, {"act": "「もう一度」を入れる（状態：新しいパスワード）", "expect": "入れた値がそのまま入る（送信に載る）"}, {"act": "「パスワードを表示」を押す（状態：新しいパスワード）", "expect": "伏せ字（●●●）が読める文字に変わる。アイコンが目に斜線になり、もう一度押すと伏せ字に戻る"}, {"act": "「変更してログイン」を押す（状態：新しいパスワード）", "expect": "画面が変わる・保存される・文言が出る（押しても何も起きないなら NG）"}, {"act": "「ログインへ戻る」を押す（状態：送信後）", "expect": "/login が開く（ログインする）。戻る"}, {"act": "自分の受信箱を開く", "expect": "届いている（迷惑メールも見る）。件名・差出人・本文が読め、リンクを押すと目的の画面が開く"}, {"act": "本文を読む", "expect": "内部の言葉（ID・テーブル名）が無く、誰宛てで何をすればよいかが分かる"}, {"act": "`.dev-logs/api.log` の `[mail]` の行を見る", "expect": "「送った → 自分のアドレス」が出ている。「送れなかった」が出ていたら、その理由が NG の中身"}], "later": ["「回復コード」… 自動：モックの「回復コード」欄はパスワード無しで入る流れ。Better Auth の回復コードはパスワードの後にしか使えない（実装はログイン"]}, {"id": "T-U-07", "name": "自分のAIと話す", "url": "http://127.0.0.1:3124/onboard/interview", "before": ["`bash scripts/dev/up.sh` を実行する（DB → API → 画面が立つ）", "http://127.0.0.1:3124/signup で会社を作る（メールの確認リンクは `.dev-logs/api.log` の「verify →」の行をブラウザに貼る）", "そのまま入った状態で下へ"], "steps": [{"act": "http://127.0.0.1:3124/onboard/interview を開く。見出しが「高本AIと話す」で、横にスクロールしない", "expect": ""}, {"act": "「1. PCをつなぐ」を押す（状態：Bridge 未接続）", "expect": "/setup/bridge が開く（自分のPCをつなぐ）。戻る"}, {"act": "「2. 話す」を押す（状態：Bridge 未接続）", "expect": "/onboard/interview が開く（自分のAIと話す）。戻る"}, {"act": "「3. たたき台」を押す（状態：Bridge 未接続）", "expect": "/onboard/draft が開く（たたき台を確かめる）。戻る"}, {"act": "「4. ログイン情報」を押す（状態：Bridge 未接続）", "expect": "/settings/credentials が開く（ログイン情報を預ける）。戻る"}, {"act": "「PCをつなぐ」を押す（状態：Bridge 未接続）", "expect": "/setup/bridge が開く（自分のPCをつなぐ）。戻る"}, {"act": "「受託・制作」を押す（状態：最初）", "expect": "画面が変わる・保存される・文言が出る（押しても何も起きないなら NG）"}, {"act": "「店舗・サービス業」を押す（状態：最初）", "expect": "画面が変わる・保存される・文言が出る（押しても何も起きないなら NG）"}, {"act": "「EC・物販」を押す（状態：最初）", "expect": "画面が変わる・保存される・文言が出る（押しても何も起きないなら NG）"}, {"act": "「その他」を押す（状態：最初）", "expect": "画面が変わる・保存される・文言が出る（押しても何も起きないなら NG）"}, {"act": "「ここに書く。声で話しても、資料を投げても構いません」を入れる（状態：途中）", "expect": "入れた値がそのまま入る（送信に載る）"}, {"act": "「その他（自由に書く）」を押す（状態：途中）", "expect": "画面が変わる・保存される・文言が出る（押しても何も起きないなら NG）"}, {"act": "「あとで」を押す（状態：途中）", "expect": "画面が変わる・保存される・文言が出る（押しても何も起きないなら NG）"}, {"act": "「送る」を押す（状態：途中）", "expect": "画面が変わる・保存される・文言が出る（押しても何も起きないなら NG）"}], "later": ["「5. テスト」… 自動：行き先の画面 onboard-testrun は T-U-11 で実装（未着手）。href は flow の route と機械照合済", "「6. 本番へ」… 自動：行き先の画面 onboard-golive は T-U-12 で実装（未着手）。href は flow の route と機械照合済み", "「ここから分岐」… 自動：AI の返答に付く部品（ここから分岐）。T-I-01", "「もう一度」… 自動：AI の返答に付く部品（もう一度）。T-I-01", "「コピー」… 自動：AI の返答に付く部品（コピー）は実データの会話が要る。T-I-01", "「営業のアプローチ」… 自動：2 問目の選択肢（営業のアプローチ）は自分のAIが出す。T-I-01", "「根拠を見る」… 自動：AI の返答に付く部品（根拠を見る）。T-I-01", "「次の質問へ」… 自動：「次の質問へ」は自分のAI（Bridge 経由）が次の質問を出す。会話の実体は T-I-01", "「無名（アイコンだけ。実装では aria-label を付ける）」… 自動：資料を投げる（添付）は Bridge 経由で読ませる。T-I-01", "「編集して送り直す」… 自動：AI の返答に付く部品（編集して送り直す）。T-I-01", "「見積・提案書」… 自動：2 問目の選択肢（見積・提案書）は自分のAIが出す。T-I-01", "「記憶に入れる」… 自動：AI の返答に付く部品（記憶に入れる）。T-I-01", "「請求と入金確認」… 自動：2 問目の選択肢（請求と入金確認）は自分のAIが出す。T-I-01", "「進行の管理」… 自動：2 問目の選択肢（進行の管理）は自分のAIが出す。T-I-01"]}, {"id": "T-U-08", "name": "たたき台を確かめる", "url": "http://127.0.0.1:3124/onboard/draft", "before": ["`bash scripts/dev/up.sh` を実行する（DB → API → 画面が立つ）", "http://127.0.0.1:3124/signup で会社を作る（メールの確認リンクは `.dev-logs/api.log` の「verify →」の行をブラウザに貼る）", "そのまま入った状態で下へ"], "steps": [{"act": "http://127.0.0.1:3124/onboard/draft を開く。見出しが「たたき台を確かめる」で、横にスクロールしない", "expect": ""}, {"act": "「これでいく」を押す", "expect": "画面が変わる・保存される・文言が出る（押しても何も起きないなら NG）"}, {"act": "「会話で直す」を押す（状態：たたき台）", "expect": "画面が変わる・保存される・文言が出る（押しても何も起きないなら NG）"}, {"act": "「1. PCをつなぐ」を押す（状態：たたき台）", "expect": "/setup/bridge が開く（自分のPCをつなぐ）。戻る"}, {"act": "「2. 話す」を押す（状態：たたき台）", "expect": "/onboard/interview が開く（自分のAIと話す）。戻る"}, {"act": "「3. たたき台」を押す（状態：たたき台）", "expect": "/onboard/draft が開く（たたき台を確かめる）。戻る"}, {"act": "「4. ログイン情報」を押す（状態：たたき台）", "expect": "/settings/credentials が開く（ログイン情報を預ける）。戻る"}, {"act": "「これでいく」を押す（状態：たたき台）", "expect": "/setup/bridge が開く（自分のPCをつなぐ）。戻る"}], "later": ["「30のままでいい」… 自動：自分のAIの提案の選択肢（30のままでいい）。T-I-01", "「38件にする」… 自動：自分のAIの提案の選択肢（38件にする）。T-I-01", "「5. テスト」… 自動：行き先の画面 onboard-testrun は T-U-11 で実装（未着手）。href は flow の route と機械照合済", "「6. 本番へ」… 自動：行き先の画面 onboard-golive は T-U-12 で実装（未着手）。href は flow の route と機械照合済み", "「text」… 自動：直接編集の入力欄は T-U-24（目標を改訂する）・T-U-30（台帳の形）で", "「あとで」… 自動：自分のAIの提案の選択肢（あとで）。T-I-01", "「ここから分岐」… 自動：AI の返答に付く部品（ここから分岐）。T-I-01", "「その他（自由に書く）」… 自動：自分のAIの提案の選択肢（その他）。T-I-01", "「もう一度」… 自動：AI の返答に付く部品（もう一度）。T-I-01", "「コピー」… 自動：AI の返答に付く部品（コピー）。T-I-01", "「別の考え方がある」… 自動：自分のAIの提案の選択肢（別の考え方がある）。T-I-01", "「根拠を見る」… 自動：AI の返答に付く部品（根拠を見る）。T-I-01", "「無名（アイコンだけ。実装では aria-label を付ける）」… 自動：資料を投げる（添付）。T-I-01", "「編集して送り直す」… 自動：AI の返答に付く部品（編集して送り直す）。T-I-01", "「記憶に入れる」… 自動：AI の返答に付く部品（記憶に入れる）。T-I-01", "「送る」… 自動：会話の送るは会話で直す状態の中。T-I-01", "「違うところを言う」… 自動：「違うところを言う」は自分のAIとの会話を開く。T-I-01", "「違うところを言う」… 自動：会話の入力欄は会話で直す状態の中。T-I-01"]}, {"id": "T-U-09", "name": "自分のPCをつなぐ", "url": "http://127.0.0.1:3124/setup/bridge", "before": ["`bash scripts/dev/up.sh` を実行する（DB → API → 画面が立つ）", "http://127.0.0.1:3124/signup で会社を作る（メールの確認リンクは `.dev-logs/api.log` の「verify →」の行をブラウザに貼る）", "そのまま入った状態で下へ"], "steps": [{"act": "http://127.0.0.1:3124/setup/bridge を開く。見出しが「自分のPCをつなぐ」で、横にスクロールしない", "expect": ""}, {"act": "「接続を確かめる」を押す", "expect": "画面が変わる・保存される・文言が出る（押しても何も起きないなら NG）"}, {"act": "「高本AIと話すへ」を押す（状態：つながった）", "expect": "/onboard/interview が開く（自分のAIと話す）。戻る"}, {"act": "「もう一度確かめる」を押す（状態：つながらない）", "expect": "画面が変わる・保存される・文言が出る（押しても何も起きないなら NG）"}, {"act": "「あとでやる（高本AIはまだ話せません）」を押す（状態：つながらない）", "expect": "画面が変わる・保存される・文言が出る（押しても何も起きないなら NG）"}, {"act": "「1. PCをつなぐ」を押す（状態：接続中）", "expect": "/setup/bridge が開く（自分のPCをつなぐ）。戻る"}, {"act": "「2. 話す」を押す（状態：接続中）", "expect": "/onboard/interview が開く（自分のAIと話す）。戻る"}, {"act": "「3. たたき台」を押す（状態：接続中）", "expect": "/onboard/draft が開く（たたき台を確かめる）。戻る"}, {"act": "「4. ログイン情報」を押す（状態：接続中）", "expect": "/settings/credentials が開く（ログイン情報を預ける）。戻る"}], "later": ["「5. テスト」… 自動：行き先の画面 onboard-testrun は T-U-11 で実装（未着手）。href は flow の route と機械照合済", "「6. 本番へ」… 自動：行き先の画面 onboard-golive は T-U-12 で実装（未着手）。href は flow の route と機械照合済み", "「AI は止まっています」… 自動：行き先の画面 automation-repair は T-U-32 で実装（未着手）。href は flow の route と機械照", "「PC をつなぐと話せます」… 自動：「PC をつなぐと話せます」はアプリの枠の帯（T-I-02 の後）", "「Windows10 以降 · 41 MB」… 自動：インストーラ（Windows）の配布は Bridge の版が出てから。T-I-02", "「macOSApple Silicon / Intel · 38 MB」… 自動：インストーラ（macOS）の配布は Bridge の版が出てから。T-I-02", "「この端末を外す」… 自動：「この端末を外す」は契約に sessions の PATCH／DELETE が無い（仕様の穴）。契約に足すのは T-I-02 で", "「できること・できないことの全一覧 →」… 自動：行き先の画面 security-brief は T-U-38 で実装（未着手）。href は flow の route と機械照合済み", "「高本AI」… 自動：アプリの枠の自分のAIのボタンは運用中の状態（T-I-02 の後）"]}, {"id": "T-U-10", "name": "ログイン情報を預ける", "url": "http://127.0.0.1:3124/settings/credentials", "before": ["`bash scripts/dev/up.sh` を実行する（DB → API → 画面が立つ）", "http://127.0.0.1:3124/signup で会社を作る（メールの確認リンクは `.dev-logs/api.log` の「verify →」の行をブラウザに貼る）", "そのまま入った状態で下へ"], "steps": [{"act": "http://127.0.0.1:3124/settings/credentials を開く。見出しが「ログイン情報を預ける」で、横にスクロールしない", "expect": ""}, {"act": "「保存する」を押す", "expect": "画面が変わる・保存される・文言が出る（押しても何も起きないなら NG）"}, {"act": "「メールアドレス（ログイン名）」を入れる（状態：入力）", "expect": "入れた値がそのまま入る（送信に載る）"}, {"act": "「パスワード」を入れる（状態：入力）", "expect": "入れた値がそのまま入る（送信に載る）"}, {"act": "「2段階認証のシークレット（あれば）」を入れる（状態：入力）", "expect": "入れた値がそのまま入る（送信に載る）"}, {"act": "「パスワードを表示」を押す（状態：入力）", "expect": "伏せ字（●●●）が読める文字に変わる。アイコンが目に斜線になり、もう一度押すと伏せ字に戻る"}, {"act": "「やめる」を押す（状態：入力）", "expect": "画面が変わる・保存される・文言が出る（押しても何も起きないなら NG）"}, {"act": "「サービス」を入れる（状態：預けたもの）", "expect": "入れた値がそのまま入る（送信に載る）"}, {"act": "「追加する」を押す（状態：預けたもの）", "expect": "画面が変わる・保存される・文言が出る（押しても何も起きないなら NG）"}, {"act": "「1. PCをつなぐ」を押す（状態：預けたもの）", "expect": "/setup/bridge が開く（自分のPCをつなぐ）。戻る"}, {"act": "「2. 話す」を押す（状態：預けたもの）", "expect": "/onboard/interview が開く（自分のAIと話す）。戻る"}, {"act": "「3. たたき台」を押す（状態：預けたもの）", "expect": "/onboard/draft が開く（たたき台を確かめる）。戻る"}, {"act": "「4. ログイン情報」を押す（状態：預けたもの）", "expect": "/settings/credentials が開く（ログイン情報を預ける）。戻る"}], "later": ["「5. テスト」… 自動：行き先の画面 onboard-testrun は T-U-11 で実装（未着手）。href は flow の route と機械照合済", "「6. 本番へ」… 自動：行き先の画面 onboard-golive は T-U-12 で実装（未着手）。href は flow の route と機械照合済み", "「AI は止まっています」… 自動：行き先の画面 automation-repair は T-U-32 で実装（未着手）。href は flow の route と機械照", "「PC をつなぐと話せます」… 自動：「PC をつなぐと話せます」はアプリの枠の帯（T-I-02 の後）", "「マネーフォワードで連携を許可する」… 自動：「マネーフォワードで連携を許可する」は正規連携（OAuth）。外部サービスの連携 T-U-41 と関門 C1 の結線 T-I-03", "「高本AI」… 自動：アプリの枠の自分のAIのボタンは運用中の状態（T-I-02 の後）"]}, {"id": "T-US-00", "name": "apps/web の土台（Next.js 15 App Router の雛形・Playwright と実ブラウザの検査・ナビ href ⇔ 実在ルートの照合・CI のブラウザ job・ローカル起動）", "url": "http://127.0.0.1:3124", "before": ["`bash scripts/dev/up.sh` を実行する（DB → API → 画面が立つ）"], "steps": [{"act": "http://127.0.0.1:3124/dev/shell を開き、役割（R1〜R6）と時点（PS0〜PS4）を切り替えて、サイドバー・下タブ・自分のAIのパネルの項目を押す（見本の画面。dev でだけ出る）", "expect": ""}], "later": []}, {"id": "T-US-01", "name": "シェル（サイドバー・レール・第2ナビ・三画面・下タブ・枠の導出 data-frame・役割の出し分け data-roles）", "url": "http://127.0.0.1:3124", "before": ["`bash scripts/dev/up.sh` を実行する（DB → API → 画面が立つ）"], "steps": [{"act": "http://127.0.0.1:3124/dev/shell を開き、役割（R1〜R6）と時点（PS0〜PS4）を切り替えて、サイドバー・下タブ・自分のAIのパネルの項目を押す（見本の画面。dev でだけ出る）", "expect": ""}], "later": []}, {"id": "T-US-02", "name": "自分のAIのパネルと会話の部品（assistant-ui・AG-UI・選択肢・承認カード・受領・引用・取り消し）", "url": "http://127.0.0.1:3124", "before": ["`bash scripts/dev/up.sh` を実行する（DB → API → 画面が立つ）"], "steps": [{"act": "http://127.0.0.1:3124/dev/shell を開き、役割（R1〜R6）と時点（PS0〜PS4）を切り替えて、サイドバー・下タブ・自分のAIのパネルの項目を押す（見本の画面。dev でだけ出る）", "expect": ""}], "later": []}, {"id": "T-US-03", "name": "API クライアントと型（OpenAPI → types.ts・TanStack Query・別 GET 再取得・401 で入り直し）", "url": "http://127.0.0.1:3124", "before": ["`bash scripts/dev/up.sh` を実行する（DB → API → 画面が立つ）"], "steps": [{"act": "http://127.0.0.1:3124/dev/shell を開き、役割（R1〜R6）と時点（PS0〜PS4）を切り替えて、サイドバー・下タブ・自分のAIのパネルの項目を押す（見本の画面。dev でだけ出る）", "expect": ""}], "later": []}, {"id": "T-US-04", "name": "認証の配管（ログイン・2 段階認証・招待・入り直し・端末の失効表示）", "url": "http://127.0.0.1:3124", "before": ["`bash scripts/dev/up.sh` を実行する（DB → API → 画面が立つ）"], "steps": [{"act": "http://127.0.0.1:3124/dev/shell を開き、役割（R1〜R6）と時点（PS0〜PS4）を切り替えて、サイドバー・下タブ・自分のAIのパネルの項目を押す（見本の画面。dev でだけ出る）", "expect": ""}], "later": []}, {"id": "T-US-05", "name": "デザイントークンと部品（Tailwind @theme・shadcn/ui Base UI・Lucide・表・カード・札・空状態・止まっている帯）", "url": "http://127.0.0.1:3124", "before": ["`bash scripts/dev/up.sh` を実行する（DB → API → 画面が立つ）"], "steps": [{"act": "http://127.0.0.1:3124/dev/shell を開き、役割（R1〜R6）と時点（PS0〜PS4）を切り替えて、サイドバー・下タブ・自分のAIのパネルの項目を押す（見本の画面。dev でだけ出る）", "expect": ""}], "later": []}, {"id": "T-US-06", "name": "タイムライン（svar-gantt・棒を押すと詳細・1023 以下は切替）と見え方の切替（リスト／カンバン／カレンダー）", "url": "http://127.0.0.1:3124", "before": ["`bash scripts/dev/up.sh` を実行する（DB → API → 画面が立つ）"], "steps": [{"act": "http://127.0.0.1:3124/dev/shell を開き、役割（R1〜R6）と時点（PS0〜PS4）を切り替えて、サイドバー・下タブ・自分のAIのパネルの項目を押す（見本の画面。dev でだけ出る）", "expect": ""}], "later": []}, {"id": "T-I-09", "name": "流れ J-01 P0 契約・登録（1回だけ） を最後まで通す（L2）", "url": "http://127.0.0.1:3124", "before": ["`bash scripts/dev/up.sh` を実行する（DB → API → 画面が立つ）"], "steps": [{"act": "会社名とメールを入れる（http://127.0.0.1:3124/signup）", "expect": "アカウントと会社を作る"}, {"act": "届いたリンクを押す（http://127.0.0.1:3124/verify-email）", "expect": "本人確認を記録"}, {"act": "招待リンクを押して名前を入れる（http://127.0.0.1:3124/invite/:token）", "expect": "メンバーを作り、スコープを結ぶ"}, {"act": "認証アプリを登録する（http://127.0.0.1:3124/mfa-setup）", "expect": "TOTPシークレットを暗号化保管"}], "later": []}]</script>
+<script>
+(() => {
+  const SPEC = JSON.parse(document.getElementById("spec").textContent);
+  const tabs = document.getElementById("tabs"), panel = document.getElementById("panel");
+  const meter = document.getElementById("meter"), foot = document.getElementById("foot"), save = document.getElementById("save");
+  let db = null, answers = {}, cur = 0, saveTimer = null;
+  const key = (t, i) => t + "__" + String(i).padStart(3, "0");
+  const toast = () => { save.classList.add("on"); clearTimeout(saveTimer); saveTimer = setTimeout(() => save.classList.remove("on"), 1400); };
+
+  function counts(t) {
+    let done = 0;
+    t.steps.forEach((_, i) => { const a = answers[key(t.id, i)]; if (a && a.result && a.result !== "-") done++; });
+    return done;
+  }
+  function renderTabs() {
+    tabs.innerHTML = "";
+    SPEC.forEach((t, idx) => {
+      const b = document.createElement("button");
+      b.className = "tab"; b.type = "button"; b.setAttribute("role", "tab");
+      b.setAttribute("aria-selected", String(idx === cur));
+      b.innerHTML = "";
+      b.append(t.id + " " + t.name);
+      const n = document.createElement("span");
+      n.className = "n"; n.textContent = counts(t) + "/" + t.steps.length;
+      b.append(n);
+      b.addEventListener("click", () => { cur = idx; render(); });
+      tabs.append(b);
+    });
+    const all = SPEC.reduce((s, t) => s + t.steps.length, 0);
+    const got = SPEC.reduce((s, t) => s + counts(t), 0);
+    meter.style.width = all ? Math.round((got / all) * 100) + "%" : "0";
+    foot.textContent = "全体 " + got + " / " + all + " 手順" + (db ? "" : "（このページを開いた人としての保存はまだ使えません）");
+  }
+  function render() {
+    const t = SPEC[cur];
+    renderTabs();
+    panel.innerHTML = "";
+    const head = document.createElement("div");
+    head.className = "head";
+    const h = document.createElement("h2"); h.textContent = t.name;
+    const a = document.createElement("a"); a.href = t.url; a.textContent = t.url;
+    head.append(h, a); panel.append(head);
+    if (t.before.length) {
+      const d = document.createElement("div"); d.className = "note-before";
+      const ol = document.createElement("ol");
+      t.before.forEach(x => { const li = document.createElement("li"); li.textContent = x; ol.append(li); });
+      d.append(ol); panel.append(d);
+    }
+    t.steps.forEach((s, i) => {
+      const k = key(t.id, i), cur_ = answers[k] || { result: "-", note: "" };
+      const row = document.createElement("div"); row.className = "step";
+      const n = document.createElement("div"); n.className = "num"; n.textContent = i + 1;
+      const body = document.createElement("div");
+      const act = document.createElement("div"); act.className = "act"; act.textContent = s.act;
+      const exp = document.createElement("div"); exp.className = "exp"; exp.textContent = "こうなれば OK: " + s.expect;
+      const ctl = document.createElement("div"); ctl.className = "row";
+      const seg = document.createElement("div"); seg.className = "seg";
+      [["-", "未確認"], ["OK", "OK"], ["NG", "NG"]].forEach(([v, label]) => {
+        const b = document.createElement("button");
+        b.type = "button"; b.dataset.v = v; b.textContent = label;
+        b.setAttribute("aria-pressed", String(cur_.result === v));
+        b.addEventListener("click", () => { write(k, { result: v }); });
+        seg.append(b);
+      });
+      const memo = document.createElement("input");
+      memo.className = "memo"; memo.id = "memo-" + k; memo.placeholder = "気づいたこと";
+      memo.value = cur_.note || "";
+      let tm = null;
+      memo.addEventListener("input", () => { clearTimeout(tm); tm = setTimeout(() => write(k, { note: memo.value }), 600); });
+      ctl.append(seg, memo);
+      body.append(act, exp, ctl);
+      row.append(n, body); panel.append(row);
+    });
+    if (t.later.length) {
+      const d = document.createElement("div"); d.className = "later";
+      const h3 = document.createElement("h3"); h3.textContent = "今はまだ押せないもの（触らなくてよい）";
+      const ul = document.createElement("ul");
+      t.later.forEach(x => { const li = document.createElement("li"); li.textContent = x; ul.append(li); });
+      d.append(h3, ul); panel.append(d);
+    }
+  }
+  async function write(k, patch) {
+    answers[k] = Object.assign({ result: "-", note: "" }, answers[k], patch, { at: new Date().toISOString() });
+    render();
+    if (!db) return;
+    try { await db.doc("answers/" + k).set(answers[k]); toast(); } catch (e) { /* 読み取りだけの人 */ }
+  }
+  render();
+  (async () => {
+    db = await (window.claude?.use?.("db") ?? Promise.resolve(null));
+    if (!db) { render(); return; }
+    try {
+      const rows = await db.collection("answers").get();
+      (rows.docs || rows || []).forEach(d => { answers[d.id] = d.data ? d.data() : d; });
+    } catch (e) { /* まだ 1 件も無い */ }
+    render();
+  })();
+})();
+</script>
