@@ -1,6 +1,6 @@
 // T-U-08 たたき台を確かめる。テストの名前に正本の行 ID を持つ（op_gate.py）。会話で直す・直接編集は T-I-01／T-U-24／T-U-30
 import { expect, test } from "@playwright/test";
-import { admin, loginAs, noOverflow, signupViaApi } from "../_lib/api";
+import { ensureGoalKind, admin, loginAs, noOverflow, signupViaApi } from "../_lib/api";
 
 test("SCR-ONBOARD-DRAFT-013 SCR-ONBOARD-DRAFT-012 SCR-ONBOARD-DRAFT-014 SCR-ONBOARD-DRAFT-015 SCR-ONBOARD-DRAFT-016 SCR-ONBOARD-DRAFT-017 SCR-ONBOARD-DRAFT-018 空：データが無ければ空の状態（入力欄は無い＝表記ゆらぎは該当なし）・4 幅で横溢れ 0・「自分のAIと話す」→ /onboard/interview", async ({
   page,
@@ -19,6 +19,7 @@ test("SCR-ONBOARD-DRAFT-001 SCR-ONBOARD-DRAFT-006 SCR-ONBOARD-DRAFT-025 SCR-ONBO
   const u = await signupViaApi();
   await loginAs(page, u.token);
   // 契約に POST /goals・POST /ledger_definitions は無い（作るのは自分のAI＝T-I-01）。前提は DB に直接置く
+  await ensureGoalKind();
   await admin(
     "insert into goals (tenant_id, scope_id, kind_id, period_start, period_end, target_value, created_by) values ($1, $2, 'seed', '2026-10-01', '2026-12-31', 12000000, $3)",
     [u.tenantId, u.scopeId, u.memberId],

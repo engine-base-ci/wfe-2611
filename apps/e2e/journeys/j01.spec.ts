@@ -10,7 +10,9 @@ test.describe.serial("J-01 契約・登録", () => {
   let memberId = "";
   let inviteToken = "";
 
-  test("J01-01 会社名とメールを入れる → アカウントと会社を作る（signup）", async ({ page }) => {
+  test("J01-01 会社名とメールを入れる → 申し込みを預け、確認のメールを送る（signup・D-088：ここではまだ作らない）", async ({
+    page,
+  }) => {
     await page.goto("/signup");
     await page.getByLabel("メールアドレス").fill(email);
     await page.getByLabel("パスワード", { exact: true }).fill(PW);
@@ -18,6 +20,24 @@ test.describe.serial("J-01 契約・登録", () => {
     await page.getByLabel("利用規約とプライバシーポリシーに同意します").check();
     await page.getByRole("button", { name: "はじめる" }).click();
     await expect(page).toHaveURL(/\/verify-email\?sent=1/);
+    // ここではまだ利用者も会社も作られない（作られるのは確認した時点）
+    const made = await admin<{ n: string }>('select count(*)::text as n from kaname_auth."user" where email = $1', [
+      email,
+    ]);
+    expect(made[0]!.n).toBe("0");
+    const pend = await admin<{ n: string }>(
+      "select count(*)::text as n from kaname_auth.pending_signup where email = $1",
+      [email],
+    );
+    expect(pend[0]!.n).toBe("1");
+  });
+
+  test("J01-02 届いたリンクを押す → ここで登録が終わり、会社ができる（verify-email）", async ({ page }) => {
+    const url = lastMailUrl("verify", email);
+    test.skip(!url, "メールの URL は開発では API のログから読む（KANAME_API_LOG）");
+    const u = new URL(url!);
+    await page.goto(u.pathname + u.search);
+    await expect(page.locator("[data-state='ok'] h1")).toHaveText("登録できました", { timeout: 15_000 });
     const rows = await admin<{ id: string; tenant_id: string }>(
       'select m.id, m.tenant_id from members m join kaname_auth."user" u on u.id = m.auth_user_id where u.email = $1',
       [email],
@@ -25,14 +45,6 @@ test.describe.serial("J-01 契約・登録", () => {
     expect(rows).toHaveLength(1);
     tenantId = rows[0]!.tenant_id;
     memberId = rows[0]!.id;
-  });
-
-  test("J01-02 届いたリンクを押す → 本人確認を記録（verify-email）", async ({ page }) => {
-    const url = lastMailUrl("verify", email);
-    test.skip(!url, "メールの URL は開発では API のログから読む（KANAME_API_LOG）");
-    const u = new URL(url!);
-    await page.goto(u.pathname + u.search);
-    await expect(page.locator("[data-state='ok'] h1")).toHaveText("確認できました");
     const v = await admin<{ email_verified: boolean }>(
       'select "emailVerified" as email_verified from kaname_auth."user" where email = $1',
       [email],

@@ -7584,6 +7584,95 @@
   },
   {
    "id": "E-080",
+   "name": "pending_signup",
+   "table_name": "pending_signup",
+   "section": "13. 取り込み・正規連携・招待・持ち出し・添付",
+   "fields": [
+    {
+     "name": "email",
+     "note": "主キー"
+    },
+    {
+     "name": "name",
+     "note": null
+    },
+    {
+     "name": "company_name",
+     "note": null
+    },
+    {
+     "name": "pw_iv",
+     "note": "pw_tag pw_data（鍵で包んだパスワード"
+    },
+    {
+     "name": "token_hash",
+     "note": null
+    },
+    {
+     "name": "expires_at",
+     "note": null
+    },
+    {
+     "name": "sent_at",
+     "note": null
+    },
+    {
+     "name": "send_error",
+     "note": null
+    },
+    {
+     "name": "consumed_at",
+     "note": null
+    }
+   ],
+   "relations": [],
+   "soft_delete": false,
+   "timestamps": true,
+   "tenant_field": null,
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "none",
+    "column": null,
+    "fk_table": null
+   },
+   "access_control_policies": [
+    {
+     "name": "pending_signup_all_read",
+     "operation": "select",
+     "role": "authenticated",
+     "predicate": "true",
+     "rationale": "マスタ。全員が読む",
+     "source": [
+      "D-026"
+     ]
+    },
+    {
+     "name": "pending_signup_ops_write",
+     "operation": "insert,update,delete",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops'",
+     "rationale": "マスタは運営だけが変える",
+     "source": [
+      "D-037",
+      "D-077.4"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-088.2）。**保留の申し込み。「はじめる」ではここに 1 行置くだけで、会社も利用者も作らない。リンクを押した時点で作る。会社のデータではない（まだ会社が無い）ので `public` ではなく スキーマ `kaname_auth` に置き、触れるのは認証の接続だけ。平文のパスワードは持たず 30 分で失効し、確認が済んだら `consumed_at` を立てる（消すと「もう済んだ」と「期限切れ」が同じ見た目になる）",
+   "status": "decided",
+   "decided_at": "2026-09-21",
+   "source": [
+    "D-026",
+    "D-042",
+    "D-076.3",
+    "D-076.4",
+    "D-088.2"
+   ]
+  },
+  {
+   "id": "E-081",
    "name": "export_jobs",
    "table_name": "export_jobs",
    "section": "13. 取り込み・正規連携・招待・持ち出し・添付",
@@ -7688,7 +7777,7 @@
    ]
   },
   {
-   "id": "E-081",
+   "id": "E-082",
    "name": "attachments",
    "table_name": "attachments",
    "section": "13. 取り込み・正規連携・招待・持ち出し・添付",
@@ -7782,7 +7871,7 @@
    ]
   },
   {
-   "id": "E-082",
+   "id": "E-083",
    "name": "skills",
    "table_name": "skills",
    "section": "14. スキル",
@@ -7863,7 +7952,7 @@
    ]
   },
   {
-   "id": "E-083",
+   "id": "E-084",
    "name": "skill_versions",
    "table_name": "skill_versions",
    "section": "14. スキル",
@@ -7958,7 +8047,7 @@
    ]
   },
   {
-   "id": "E-084",
+   "id": "E-085",
    "name": "skill_test_runs",
    "table_name": "skill_test_runs",
    "section": "14. スキル",
@@ -8030,7 +8119,7 @@
    ]
   },
   {
-   "id": "E-085",
+   "id": "E-086",
    "name": "skill_attachments",
    "table_name": "skill_attachments",
    "section": "14. スキル",
@@ -8138,7 +8227,7 @@
    ]
   },
   {
-   "id": "E-086",
+   "id": "E-087",
    "name": "payment_methods",
    "table_name": "payment_methods",
    "section": "15. 段階 2 で足す表",
@@ -8237,7 +8326,7 @@
    ]
   },
   {
-   "id": "E-087",
+   "id": "E-088",
    "name": "billing_events",
    "table_name": "billing_events",
    "section": "15. 段階 2 で足す表",
@@ -8336,7 +8425,7 @@
    ]
   },
   {
-   "id": "E-088",
+   "id": "E-089",
    "name": "llm_routes",
    "table_name": "llm_routes",
    "section": "15. 段階 2 で足す表",
@@ -8452,7 +8541,7 @@
    ]
   },
   {
-   "id": "E-089",
+   "id": "E-090",
    "name": "llm_capabilities",
    "table_name": "llm_capabilities",
    "section": "15. 段階 2 で足す表",
@@ -8525,7 +8614,7 @@
    ]
   },
   {
-   "id": "E-090",
+   "id": "E-091",
    "name": "push_devices",
    "table_name": "push_devices",
    "section": "15. 段階 2 で足す表",
@@ -8634,7 +8723,7 @@
    ]
   },
   {
-   "id": "E-091",
+   "id": "E-092",
    "name": "disclosure_versions",
    "table_name": "disclosure_versions",
    "section": "15. 段階 2 で足す表",
@@ -8713,7 +8802,7 @@
    ]
   },
   {
-   "id": "E-092",
+   "id": "E-093",
    "name": "subprocessors",
    "table_name": "subprocessors",
    "section": "15. 段階 2 で足す表",

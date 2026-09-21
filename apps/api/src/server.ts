@@ -32,34 +32,34 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
   const repo = await createRepository(appPool);
   // メールの送出（関門 C6）：Resend の鍵があれば送る。無ければ URL をログに出す（開発）
   const mail = config.resendApiKey ? resendMail(config.resendApiKey) : null;
+  // 送出は 1 か所。認証（再設定）と保留の申し込み（確認）の両方がこれを通る
+  const mailer = mail
+    ? async (m: { to: string; subject: string; text: string }) => {
+        // 送れたか／送れなかったかを必ず残す（黙って落ちると「メールが来ない」を誰も再現できない・G-15）
+        try {
+          // dev の自動テスト宛ては送らない（送出先の 1 日の上限を食い潰すため）。
+          // 「送った」とは書かない。リンクは [auth] の行に出るので手順はそのまま通る
+          if (config.mailSuppressPrefix && m.to.startsWith(config.mailSuppressPrefix)) {
+            console.log(`[mail] 送らなかった（dev の抑止 ${config.mailSuppressPrefix}）→ ${m.to}（${m.subject}）`);
+            return;
+          }
+          // send は投げずに { error } を返す。見ないと拒否されても「送った」になる（G-15）
+          const r = await mail.send({ from: config.mailFrom, to: m.to, subject: m.subject, text: m.text });
+          if (r.error) throw new Error(r.error.message);
+          console.log(`[mail] 送った → ${m.to}（${m.subject}）`);
+        } catch (e) {
+          console.error(`[mail] 送れなかった → ${m.to}（${m.subject}）: ${(e as Error).message}`);
+          throw e;
+        }
+      }
+    : undefined;
   const { auth, pool: authPool } = createAuth({
     authDatabaseUrl: config.authDatabaseUrl,
     appPool,
     secret: config.authSecret,
     baseURL: config.baseUrl,
     ...(config.webBaseUrl ? { webBaseURL: config.webBaseUrl } : {}),
-    ...(mail
-      ? {
-          mailer: async (m: { to: string; subject: string; text: string }) => {
-            // 送れたか／送れなかったかを必ず残す（黙って落ちると「メールが来ない」を誰も再現できない・G-15）
-            try {
-              // dev の自動テスト宛ては送らない（送出先の 1 日の上限を食い潰すため）。
-              // 「送った」とは書かない。リンクは [auth] の行に出るので手順はそのまま通る
-              if (config.mailSuppressPrefix && m.to.startsWith(config.mailSuppressPrefix)) {
-                console.log(`[mail] 送らなかった（dev の抑止 ${config.mailSuppressPrefix}）→ ${m.to}（${m.subject}）`);
-                return;
-              }
-              // send は投げずに { error } を返す。見ないと拒否されても「送った」になる（G-15）
-              const r = await mail.send({ from: config.mailFrom, to: m.to, subject: m.subject, text: m.text });
-              if (r.error) throw new Error(r.error.message);
-              console.log(`[mail] 送った → ${m.to}（${m.subject}）`);
-            } catch (e) {
-              console.error(`[mail] 送れなかった → ${m.to}（${m.subject}）: ${(e as Error).message}`);
-              throw e;
-            }
-          },
-        }
-      : {}),
+    ...(mailer ? { mailer } : {}),
   });
   // 秘密の保管（関門 C8）：staging／本番は Infisical、ローカルは MemoryVault（再起動で消える＝開発だけ）
   const secrets = new SecretsGateway(
@@ -84,7 +84,7 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
     repo,
     auth,
     resolve: createSessionResolver(auth, appPool),
-    authExt: authExt({ auth, appPool, repo, secrets }),
+    authExt: authExt({ auth, appPool, authPool, repo, secrets, config, ...(mailer ? { mailer } : {}) }),
     corsOrigin: config.webOrigins.join(","),
   });
   return { app, report, close };

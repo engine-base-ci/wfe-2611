@@ -1,12 +1,13 @@
 # verify-email テスト仕様（L1・機械生成）
 
-> 05_flow/build_tasks.py がタスクと同時に生成。ID は変えない。途中変更は qa_delta.py で差分。結果列は staging で流した人が書く（再生成しても残る。結果あり 27 行）。
+> 05_flow/build_tasks.py がタスクと同時に生成。ID は変えない。途中変更は qa_delta.py で差分。結果列は staging で流した人が書く（再生成しても残る。結果あり 28 行）。
 
 | ID | 画面 | テスト観点 | テスト項目 | 前提条件 | 操作手順 | 期待結果 | 結果 | 備考 | タスク | 実行条件 |
 |---|---|---|---|---|---|---|---|---|---|---|
 | SCR-VERIFY-EMAIL-001 | verify-email | 状態 | 状態「送信済み」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-verify-email.html の状態 n と一致 | PASS（screens/verify-email.spec.ts・実 Chrome・2026-09-21） | G-06・G-07 | T-U-02 | L1 |
-| SCR-VERIFY-EMAIL-002 | verify-email | 状態 | 状態「確認できた」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-verify-email.html の状態 ok と一致 | PASS（screens/verify-email.spec.ts・実 Chrome・2026-09-21） | G-06・G-07 | T-U-02 | L1 |
-| SCR-VERIFY-EMAIL-003 | verify-email | 状態 | 状態「期限切れ」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-verify-email.html の状態 x と一致 | PASS（screens/verify-email.spec.ts・実 Chrome・2026-09-21） | G-06・G-07 | T-U-02 | L1 |
+| SCR-VERIFY-EMAIL-029 | verify-email | 状態 | 状態「出せなかった」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-verify-email.html の状態 f と一致 | PASS（screens/verify-email.spec.ts・実 Chrome・2026-09-21） | G-06・G-07 | T-U-02 | L1 |
+| SCR-VERIFY-EMAIL-030 | verify-email | 状態 | 状態「登録できた」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-verify-email.html の状態 ok と一致 | PASS（screens/verify-email.spec.ts・実 Chrome・2026-09-21） | G-06・G-07 | T-U-02 | L1 |
+| SCR-VERIFY-EMAIL-031 | verify-email | 状態 | 状態「リンクが使えない」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-verify-email.html の状態 x と一致 | PASS（screens/verify-email.spec.ts・実 Chrome・2026-09-21） | G-06・G-07 | T-U-02 | L1 |
 | SCR-VERIFY-EMAIL-004 | verify-email | 役割 | 役割 R1 で開くと、その役割の中身（data-roles）が出て、他の役割の中身は出ない | R1 でログイン | 画面を開く | 役割ごとの中身（G15） | PASS（role-same：R1 R2 同じ。役割で変わる中身は無い。2026-09-16） |  | T-U-02 | L1 |
 | SCR-VERIFY-EMAIL-005 | verify-email | 役割 | 役割 R2 で開くと、その役割の中身（data-roles）が出て、他の役割の中身は出ない | R2 でログイン | 画面を開く | 役割ごとの中身（G15） | PASS（role-same：R1 R2 同じ。役割で変わる中身は無い。2026-09-16） |  | T-U-02 | L1 |
 | SCR-VERIFY-EMAIL-006 | verify-email | 主アクション | 「はじめの設定をはじめる」を押すと対応する endpoint が呼ばれ、別 GET で再取得した画面に反映される | 権限のある会員 | 押す | DB と画面が変わる（G-01・G-03） | PASS（screens/verify-email.spec.ts・実 Chrome・2026-09-21） | GET /api/members | T-U-02 | L1 |
@@ -22,10 +23,10 @@
 | SCR-VERIFY-EMAIL-016 | verify-email | G-15 信号なし終了 | N/A：外部を呼ばない | 外部を故意に切る | 実行する | 成功扱いにせず、502 と次の一手（人へのハンドオフ） | PASS（API の失敗は文言と一手に落とす（AuthExtError）。黙って成功にしない。2026-09-16） |  | T-U-02 | L1 |
 | SCR-VERIFY-EMAIL-017 | verify-email | G-16 有限資源 | 消費する資源：DB 接続（プール経由）・メモリ。1 要求あたり 1 接続以下・上限時は待機列 | 同時 50 要求 | 同時に叩く | ログインが落ちない・接続上限に張り付かない（関門 C2 のプール） | PASS（1 要求 1 接続以下（関門 C2 のプール）・ログインの試行は表で数える。実測は L4。2026-09-16） | L4 で負荷試験 | T-U-02 | L1 |
 | SCR-VERIFY-EMAIL-018 | verify-email | 操作 | ボタン「はじめの設定をはじめる」（状態 共通） | 状態 共通 を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） | PASS（screens/verify-email.spec.ts・実 Chrome・2026-09-21） | op=button:はじめの設定をはじめる | T-U-02 | L1 |
-| SCR-VERIFY-EMAIL-019 | verify-email | 操作 | ボタン「もう一度送る」（状態 送信済み） | 状態 送信済み を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） | PASS（screens/verify-email.spec.ts・実 Chrome・2026-09-21） | op=button:もう一度送る | T-U-02 | L1 |
+| SCR-VERIFY-EMAIL-032 | verify-email | 操作 | ボタン「もう一度送る」（状態 送信済み・出せなかった） | 状態 送信済み を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） | PASS（screens/verify-email.spec.ts・実 Chrome・2026-09-21） | op=button:もう一度送る | T-U-02 | L1 |
 | SCR-VERIFY-EMAIL-020 | verify-email | 操作 | リンク「入力し直す」（状態 送信済み） | 状態 送信済み を作る（全役割） | 押す／入れる（実ブラウザ） | /signup が実在ルートで 200 で開く（G-04） | PASS（screens/verify-email.spec.ts・実 Chrome・2026-09-21） | op=link:入力し直す→signup | T-U-02 | L1 |
-| SCR-VERIFY-EMAIL-021 | verify-email | 操作 | リンク「はじめの設定をはじめる（PCをつなぐ）」（状態 確認できた） | 状態 確認できた を作る（全役割） | 押す／入れる（実ブラウザ） | /bridge-setup が実在ルートで 200 で開く（G-04） | PASS（screens/verify-email.spec.ts・実 Chrome・2026-09-21） | op=link:はじめの設定をはじめる（PCをつなぐ）→bridge-setup | T-U-02 | L1 |
-| SCR-VERIFY-EMAIL-022 | verify-email | 操作 | ボタン「新しいリンクを送る」（状態 期限切れ） | 状態 期限切れ を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） | PASS（screens/verify-email.spec.ts・実 Chrome・2026-09-21） | op=button:新しいリンクを送る | T-U-02 | L1 |
+| SCR-VERIFY-EMAIL-033 | verify-email | 操作 | リンク「はじめから登録し直す」（状態 出せなかった・リンクが使えない） | 状態 出せなかった を作る（全役割） | 押す／入れる（実ブラウザ） | /signup が実在ルートで 200 で開く（G-04） | PASS（screens/verify-email.spec.ts・実 Chrome・2026-09-21） | op=link:はじめから登録し直す→signup | T-U-02 | L1 |
+| SCR-VERIFY-EMAIL-034 | verify-email | 操作 | リンク「はじめの設定をはじめる（PCをつなぐ）」（状態 登録できた） | 状態 登録できた を作る（全役割） | 押す／入れる（実ブラウザ） | /bridge-setup が実在ルートで 200 で開く（G-04） | PASS（screens/verify-email.spec.ts・実 Chrome・2026-09-21） | op=link:はじめの設定をはじめる（PCをつなぐ）→bridge-setup | T-U-02 | L1 |
 | SCR-VERIFY-EMAIL-023 | verify-email | 発注者確認 | 手順 07_tasks/handoff/T-U-02.md を発注者が実際に触って OK を出す（Rule 12） | staging か ローカル | 手順どおりに触る | 手順の末尾に「OK: 日付 名前」が書かれる。無い間は BLOCKED（発注者の確認待ち） | BLOCKED（発注者の確認待ち：手順 07_tasks/handoff/T-U-02.md を高本さんが触って OK: を書く。ローカル 3123 で触れる・staging は無い） | Rule 12 | T-U-02 | L1 |
 | SCR-VERIFY-EMAIL-024 | verify-email | メール | 送る操作をすると実際に送られる（API のログに「送った」が出る・黙って落ちない） | Resend の鍵が入っている | 送る操作をする | ログに「[mail] 送った → 宛先」。落ちたら「送れなかった」と理由 | 未通過（2026-09-21・screens/verify-email.spec.ts・報告を見る） | G-15・関門 C6 | T-U-02 | L1 |
 | SCR-VERIFY-EMAIL-025 | verify-email | メール | 自分の受信箱に届く（迷惑メールに入らない） | 実在するアドレス | 届いたメールを開く | 件名・差出人・本文が読める。リンクを押すと目的の画面が開く | BLOCKED（人が受信箱を見る：発注者確認の手順に入れた。dev は Resend の鍵で実送。staging は送信ドメインの検証が前提・FND-08-001） | 関門 C6 | T-U-02 | L1 |

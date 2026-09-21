@@ -4,7 +4,7 @@
  "summary": {
   "screens_count": 64,
   "features_count": 28,
-  "entities_count": 92,
+  "entities_count": 93,
   "uncovered_screens": [],
   "uncovered_features": []
  },
@@ -117,7 +117,7 @@
     "E-071 subscriptions",
     "E-073 usage_meters",
     "E-072 plan_change_requests",
-    "E-086 payment_methods",
+    "E-087 payment_methods",
     "E-074 invoices",
     "E-075 payments"
    ],
@@ -840,10 +840,10 @@
     "E-061 ops_audit_events",
     "E-062 security_events",
     "E-033 approvals",
-    "E-082 skills",
-    "E-083 skill_versions",
-    "E-084 skill_test_runs",
-    "E-085 skill_attachments",
+    "E-083 skills",
+    "E-084 skill_versions",
+    "E-085 skill_test_runs",
+    "E-086 skill_attachments",
     "E-040 artifacts"
    ],
    "related_apis": [
@@ -1058,7 +1058,7 @@
     "E-019 ledger_stages",
     "E-028 tasks",
     "E-029 task_handovers",
-    "E-081 attachments",
+    "E-082 attachments",
     "E-041 audit_events",
     "E-061 ops_audit_events",
     "E-062 security_events",
@@ -1136,10 +1136,10 @@
     "E-011 goal_allocations",
     "E-012 goal_contributions",
     "E-008 units",
-    "E-082 skills",
-    "E-083 skill_versions",
-    "E-084 skill_test_runs",
-    "E-085 skill_attachments",
+    "E-083 skills",
+    "E-084 skill_versions",
+    "E-085 skill_test_runs",
+    "E-086 skill_attachments",
     "E-023 duty_versions",
     "E-070 plan_versions",
     "E-055 distribution_versions",
@@ -2231,10 +2231,10 @@
     "E-049 account_event_items",
     "E-052 retention_holds",
     "E-053 erasure_certificates",
-    "E-082 skills",
-    "E-083 skill_versions",
-    "E-084 skill_test_runs",
-    "E-085 skill_attachments"
+    "E-083 skills",
+    "E-084 skill_versions",
+    "E-085 skill_test_runs",
+    "E-086 skill_attachments"
    ],
    "related_apis": [
     "GET /api/ai_employees",
@@ -2368,8 +2368,8 @@
     "F-024"
    ],
    "entities": [
-    "E-091 disclosure_versions",
-    "E-092 subprocessors",
+    "E-092 disclosure_versions",
+    "E-093 subprocessors",
     "E-041 audit_events",
     "E-061 ops_audit_events",
     "E-062 security_events"
@@ -2391,7 +2391,7 @@
     "F-024"
    ],
    "entities": [
-    "E-080 export_jobs",
+    "E-081 export_jobs",
     "E-001 tenants",
     "E-010 goals",
     "E-017 ledger_definitions",
@@ -2466,7 +2466,7 @@
     "E-004 members",
     "E-047 permissions",
     "E-044 layers",
-    "E-080 export_jobs",
+    "E-081 export_jobs",
     "E-041 audit_events",
     "E-061 ops_audit_events",
     "E-062 security_events",
@@ -2916,9 +2916,9 @@
     "F-028"
    ],
    "entities": [
-    "E-088 llm_routes",
+    "E-089 llm_routes",
     "E-037 credentials",
-    "E-089 llm_capabilities"
+    "E-090 llm_capabilities"
    ],
    "related_apis": [
     "POST /api/llm_routes"
@@ -2937,7 +2937,7 @@
     "F-026"
    ],
    "entities": [
-    "E-090 push_devices",
+    "E-091 push_devices",
     "E-050 sessions",
     "E-068 notifications",
     "E-067 notification_preferences",
@@ -2963,7 +2963,7 @@
     "F-024"
    ],
    "entities": [
-    "E-081 attachments",
+    "E-082 attachments",
     "E-017 ledger_definitions",
     "E-020 ledger_views",
     "E-021 ledger_records",
@@ -3170,10 +3170,10 @@
     "F-026"
    ],
    "entities": [
-    "E-082 skills",
-    "E-083 skill_versions",
-    "E-084 skill_test_runs",
-    "E-085 skill_attachments",
+    "E-083 skills",
+    "E-084 skill_versions",
+    "E-085 skill_test_runs",
+    "E-086 skill_attachments",
     "E-054 distributions",
     "E-055 distribution_versions",
     "E-056 tenant_distributions",
@@ -3550,8 +3550,8 @@
     "E-002 scopes",
     "E-032 policies",
     "E-027 memories",
-    "E-087 billing_events",
-    "E-086 payment_methods"
+    "E-088 billing_events",
+    "E-087 payment_methods"
    ],
    "related_apis": [
     "GET /api/invoices",
@@ -3614,7 +3614,7 @@
     "F-022"
    ],
    "entities": [
-    "E-088 llm_routes",
+    "E-089 llm_routes",
     "E-074 invoices",
     "E-075 payments"
    ],
@@ -3635,8 +3635,8 @@
     "F-026"
    ],
    "entities": [
-    "E-091 disclosure_versions",
-    "E-092 subprocessors",
+    "E-092 disclosure_versions",
+    "E-093 subprocessors",
     "E-064 notices",
     "E-065 notice_deliveries",
     "E-066 status_incidents"
@@ -3693,10 +3693,10 @@
     "E-059 review_requests",
     "E-055 distribution_versions",
     "E-056 tenant_distributions",
-    "E-082 skills",
-    "E-083 skill_versions",
-    "E-084 skill_test_runs",
-    "E-085 skill_attachments"
+    "E-083 skills",
+    "E-084 skill_versions",
+    "E-085 skill_test_runs",
+    "E-086 skill_attachments"
    ],
    "related_apis": [
     "DELETE /api/plans/:id",
@@ -19676,6 +19676,12 @@
   },
   {
    "entity_id": "E-080",
+   "entity_name": "pending_signup",
+   "used_by_screens": [],
+   "used_by_features": []
+  },
+  {
+   "entity_id": "E-081",
    "entity_name": "export_jobs",
    "used_by_screens": [
     "export",
@@ -19686,7 +19692,7 @@
    ]
   },
   {
-   "entity_id": "E-081",
+   "entity_id": "E-082",
    "entity_name": "attachments",
    "used_by_screens": [
     "record-detail",
@@ -19698,7 +19704,7 @@
    ]
   },
   {
-   "entity_id": "E-082",
+   "entity_id": "E-083",
    "entity_name": "skills",
    "used_by_screens": [
     "ai-activity",
@@ -19718,7 +19724,7 @@
    ]
   },
   {
-   "entity_id": "E-083",
+   "entity_id": "E-084",
    "entity_name": "skill_versions",
    "used_by_screens": [
     "ai-activity",
@@ -19738,7 +19744,7 @@
    ]
   },
   {
-   "entity_id": "E-084",
+   "entity_id": "E-085",
    "entity_name": "skill_test_runs",
    "used_by_screens": [
     "ai-activity",
@@ -19758,7 +19764,7 @@
    ]
   },
   {
-   "entity_id": "E-085",
+   "entity_id": "E-086",
    "entity_name": "skill_attachments",
    "used_by_screens": [
     "ai-activity",
@@ -19778,7 +19784,7 @@
    ]
   },
   {
-   "entity_id": "E-086",
+   "entity_id": "E-087",
    "entity_name": "payment_methods",
    "used_by_screens": [
     "billing-setup",
@@ -19790,7 +19796,7 @@
    ]
   },
   {
-   "entity_id": "E-087",
+   "entity_id": "E-088",
    "entity_name": "billing_events",
    "used_by_screens": [
     "ops-billing"
@@ -19800,7 +19806,7 @@
    ]
   },
   {
-   "entity_id": "E-088",
+   "entity_id": "E-089",
    "entity_name": "llm_routes",
    "used_by_screens": [
     "llm-routes",
@@ -19812,7 +19818,7 @@
    ]
   },
   {
-   "entity_id": "E-089",
+   "entity_id": "E-090",
    "entity_name": "llm_capabilities",
    "used_by_screens": [
     "llm-routes"
@@ -19822,7 +19828,7 @@
    ]
   },
   {
-   "entity_id": "E-090",
+   "entity_id": "E-091",
    "entity_name": "push_devices",
    "used_by_screens": [
     "app-setup"
@@ -19832,7 +19838,7 @@
    ]
   },
   {
-   "entity_id": "E-091",
+   "entity_id": "E-092",
    "entity_name": "disclosure_versions",
    "used_by_screens": [
     "disclosure",
@@ -19844,7 +19850,7 @@
    ]
   },
   {
-   "entity_id": "E-092",
+   "entity_id": "E-093",
    "entity_name": "subprocessors",
    "used_by_screens": [
     "disclosure",
@@ -19896,7 +19902,7 @@
     "E-073",
     "E-074",
     "E-075",
-    "E-086"
+    "E-087"
    ],
    "api_endpoints_draft": [
     "GET /api/members",
@@ -20075,10 +20081,10 @@
     "E-067",
     "E-068",
     "E-076",
-    "E-082",
     "E-083",
     "E-084",
-    "E-085"
+    "E-085",
+    "E-086"
    ],
    "api_endpoints_draft": [
     "DELETE /api/approvals/:id",
@@ -20124,7 +20130,7 @@
     "E-047",
     "E-061",
     "E-062",
-    "E-081"
+    "E-082"
    ],
    "api_endpoints_draft": [
     "GET /api/ledger_definitions",
@@ -20179,10 +20185,10 @@
     "E-055",
     "E-057",
     "E-070",
-    "E-082",
     "E-083",
     "E-084",
-    "E-085"
+    "E-085",
+    "E-086"
    ],
    "api_endpoints_draft": [
     "GET /api/conversations",
@@ -20218,10 +20224,10 @@
     "E-055",
     "E-057",
     "E-070",
-    "E-082",
     "E-083",
     "E-084",
-    "E-085"
+    "E-085",
+    "E-086"
    ],
    "api_endpoints_draft": [
     "GET /api/goals",
@@ -20277,10 +20283,10 @@
     "E-073",
     "E-076",
     "E-079",
-    "E-082",
     "E-083",
     "E-084",
-    "E-085"
+    "E-085",
+    "E-086"
    ],
    "api_endpoints_draft": [
     "DELETE /api/members/:id",
@@ -20371,9 +20377,9 @@
     "E-061",
     "E-062",
     "E-076",
-    "E-080",
-    "E-091",
-    "E-092"
+    "E-081",
+    "E-092",
+    "E-093"
    ],
    "api_endpoints_draft": [
     "DELETE /api/approvals/:id",
@@ -20464,10 +20470,10 @@
     "E-073",
     "E-074",
     "E-075",
-    "E-082",
     "E-083",
     "E-084",
-    "E-085"
+    "E-085",
+    "E-086"
    ],
    "api_endpoints_draft": [
     "DELETE /api/plans/:id",
@@ -20556,11 +20562,11 @@
     "E-074",
     "E-075",
     "E-076",
-    "E-086",
     "E-087",
     "E-088",
-    "E-091",
-    "E-092"
+    "E-089",
+    "E-092",
+    "E-093"
    ],
    "api_endpoints_draft": [
     "GET /api/audit_events",
@@ -20617,10 +20623,10 @@
     "E-075",
     "E-077",
     "E-078",
-    "E-081",
-    "E-088",
+    "E-082",
     "E-089",
-    "E-090"
+    "E-090",
+    "E-091"
    ],
    "api_endpoints_draft": [
     "PATCH /api/members/:id",
@@ -20660,10 +20666,10 @@
     "E-071",
     "E-072",
     "E-073",
-    "E-082",
     "E-083",
     "E-084",
-    "E-085"
+    "E-085",
+    "E-086"
    ],
    "api_endpoints_draft": [
     "GET /api/ai_employees",
@@ -20719,10 +20725,10 @@
     "E-074",
     "E-075",
     "E-076",
-    "E-082",
     "E-083",
     "E-084",
-    "E-085"
+    "E-085",
+    "E-086"
    ],
    "api_endpoints_draft": [
     "DELETE /api/plans/:id",

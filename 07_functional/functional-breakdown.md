@@ -6,7 +6,7 @@
 
 | 種別 | 件数 | 根拠（source）| 備考 |
 |---|---|---|---|
-| エンティティ | 92 | 全件 | ER図 §1〜§14 の表から。table_name・tenant_isolation・access_control_policies |
+| エンティティ | 93 | 全件 | ER図 §1〜§14 の表から。table_name・tenant_isolation・access_control_policies |
 | 機能 | 28 | 全件 | 用事 20 ＋ 関門 8。api_endpoints（下書き）・ears_ac_seed |
 | ロール | 5 | 全件 | 権限の型（誰に×何に×どの層で×できること）を access_predicate_expr で |
 | 画面 | 64 | 全件 | flow.json と 1 対 1。states はモックの状態タブ、transitions はモックのリンクから |
@@ -94,19 +94,20 @@
 | E-077 | `imports` | 13. 取り込み・正規連携・招待・持ち出し・添付 | scope_layered | 3 | D-025 D-026 D-042 D-076 |
 | E-078 | `integrations` | 13. 取り込み・正規連携・招待・持ち出し・添付 | scope_layered | 3 | D-026 D-041 D-042 D-076 |
 | E-079 | `invitations` | 13. 取り込み・正規連携・招待・持ち出し・添付 | account_scoped | 3 | D-026 D-037 D-042 D-076.3 |
-| E-080 | `export_jobs` | 13. 取り込み・正規連携・招待・持ち出し・添付 | account_scoped | 4 | D-026 D-042 D-076.3 D-076.4 |
-| E-081 | `attachments` | 13. 取り込み・正規連携・招待・持ち出し・添付 | scope_layered | 3 | D-026 D-042 D-076.3 D-076.4 |
-| E-082 | `skills` | 14. スキル | ops_scoped | 1 | D-078 D-078.1 |
-| E-083 | `skill_versions` | 14. スキル | none | 2 | D-078 D-078.2 |
-| E-084 | `skill_test_runs` | 14. スキル | ops_scoped | 1 | D-078 |
-| E-085 | `skill_attachments` | 14. スキル | account_scoped | 3 | D-078 D-078.3 D-078.4 D-078.7 |
-| E-086 | `payment_methods` | 15. 段階 2 で足す表 | account_scoped | 3 | D-082 D-082.1 D-082.2 D-085 |
-| E-087 | `billing_events` | 15. 段階 2 で足す表 | account_scoped | 3 | D-082 D-082.3 D-082.4 D-085 |
-| E-088 | `llm_routes` | 15. 段階 2 で足す表 | account_scoped | 4 | D-082 D-083 D-083.1 D-083.4 |
-| E-089 | `llm_capabilities` | 15. 段階 2 で足す表 | none | 2 | D-004 D-082 D-083 D-083.2 |
-| E-090 | `push_devices` | 15. 段階 2 で足す表 | account_scoped | 4 | D-082 D-084 D-084.3 D-085 |
-| E-091 | `disclosure_versions` | 15. 段階 2 で足す表 | ops_scoped | 1 | D-082 D-085 D-085.1 D-085.2 |
-| E-092 | `subprocessors` | 15. 段階 2 で足す表 | ops_scoped | 1 | D-042 D-082 D-085 D-085.2 |
+| E-080 | `pending_signup` | 13. 取り込み・正規連携・招待・持ち出し・添付 | none | 2 | D-026 D-042 D-076.3 D-076.4 |
+| E-081 | `export_jobs` | 13. 取り込み・正規連携・招待・持ち出し・添付 | account_scoped | 4 | D-026 D-042 D-076.3 D-076.4 |
+| E-082 | `attachments` | 13. 取り込み・正規連携・招待・持ち出し・添付 | scope_layered | 3 | D-026 D-042 D-076.3 D-076.4 |
+| E-083 | `skills` | 14. スキル | ops_scoped | 1 | D-078 D-078.1 |
+| E-084 | `skill_versions` | 14. スキル | none | 2 | D-078 D-078.2 |
+| E-085 | `skill_test_runs` | 14. スキル | ops_scoped | 1 | D-078 |
+| E-086 | `skill_attachments` | 14. スキル | account_scoped | 3 | D-078 D-078.3 D-078.4 D-078.7 |
+| E-087 | `payment_methods` | 15. 段階 2 で足す表 | account_scoped | 3 | D-082 D-082.1 D-082.2 D-085 |
+| E-088 | `billing_events` | 15. 段階 2 で足す表 | account_scoped | 3 | D-082 D-082.3 D-082.4 D-085 |
+| E-089 | `llm_routes` | 15. 段階 2 で足す表 | account_scoped | 4 | D-082 D-083 D-083.1 D-083.4 |
+| E-090 | `llm_capabilities` | 15. 段階 2 で足す表 | none | 2 | D-004 D-082 D-083 D-083.2 |
+| E-091 | `push_devices` | 15. 段階 2 で足す表 | account_scoped | 4 | D-082 D-084 D-084.3 D-085 |
+| E-092 | `disclosure_versions` | 15. 段階 2 で足す表 | ops_scoped | 1 | D-082 D-085 D-085.1 D-085.2 |
+| E-093 | `subprocessors` | 15. 段階 2 で足す表 | ops_scoped | 1 | D-042 D-082 D-085 D-085.2 |
 
 ## 機能
 
@@ -156,7 +157,7 @@
 | ID | 画面 | 行為 | 状態 | 遷移 | 必要 API | エンティティ | 役割 |
 |---|---|---|---|---|---|---|---|
 | signup | アカウントを作る | A01 | 2 | 1 | 2 | 5 | R1 R2 |
-| verify-email | メールを確認する | A02 | 3 | 2 | 3 | 3 | R1 R2 |
+| verify-email | メールを確認する | A02 | 4 | 2 | 3 | 3 | R1 R2 |
 | invite-accept | 招待を受けて参加する | A03 | 3 | 0 | 1 | 4 | R3 R4 |
 | mfa-setup | 2段階認証を設定する | A04 | 3 | 1 | 2 | 6 | R1 R2 R3 |
 | billing-setup | 支払い方法を登録する | A05 | 4 | 0 | 1 | 8 | R1 R2 |

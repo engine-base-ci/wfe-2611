@@ -51,22 +51,32 @@ SIGNUP = ("signup", [("n","通常","",_su),
 _ve = _wrap(_left(*LEAD, steps=[("アカウントを作る",True)]+STEPS[1:]), _box(f"""
  <div style="width:52px;height:52px;border-radius:var(--r-full);background:var(--secondary-c);display:grid;place-items:center;margin-bottom:18px;color:var(--on-secondary-c)">{ic("mail")}</div>
  <h1>メールを確認してください</h1>
- <div class="sub"><b>info@engine-base.com</b> にリンクを送りました。押すと本人であることが記録され、高本AIとのはじめの設定に進みます。</div>
+ <div class="sub"><b>info@engine-base.com</b> にリンクを送りました。<b>押した時点で登録が終わります。</b>押すまで会社は作られません。</div>
  <div class="pz">{ic("info")}<span>リンクは <b>30分</b> で失効します。届かない場合は迷惑メールも確認してください。</span></div>
  <button class="btn btn-o" style="width:100%">{ic("repeat")}もう一度送る</button>
  <p class="muted" style="font-size:12.5px;text-align:center;margin-top:18px">メールアドレスを間違えた？ <a href="v1-signup.html" style="color:var(--primary);font-weight:600">入力し直す</a></p>"""))
 _ve_ok = _wrap(_left(*LEAD, steps=[("アカウントを作る",True)]+STEPS[1:]), _box(f"""
  <div style="width:52px;height:52px;border-radius:var(--r-full);background:#DCFCE7;display:grid;place-items:center;margin-bottom:18px;color:var(--st-success)">{ic("check")}</div>
- <h1>確認できました</h1>
+ <h1>登録できました</h1>
  <div class="sub">次は自分のPCをつなぎます。<b>高本AIはあなたのPCで、あなたのサブスクで動く</b>ので、つながるまで話せません。そのあと訊かれたことに答えるだけで、会社のたたき台ができます。</div>
  <a class="btn btn-p" style="width:100%" href="v1-bridge-setup.html">{ic("bridge")}はじめの設定をはじめる（PCをつなぐ）</a>"""))
 _ve_exp = _wrap(_left(*LEAD, steps=[("アカウントを作る",True)]+STEPS[1:]), _box(f"""
  <div style="width:52px;height:52px;border-radius:var(--r-full);background:#FDF2F2;display:grid;place-items:center;margin-bottom:18px;color:var(--error)">{ic("warn")}</div>
- <h1>リンクの期限が切れています</h1>
- <div class="sub">30分を過ぎました。新しいリンクを送ります。古いリンクはもう使えません。</div>
- <button class="btn btn-p" style="width:100%">{ic("mail")}新しいリンクを送る</button>"""))
-VERIFY = ("verify-email", [("n","送信済み","",_ve),("ok","確認できた","リンクを押した直後。ここからはじめの設定へ。",_ve_ok),
-  ("x","期限切れ","詰まらせない。再送だけで回復できる。",_ve_exp)], AUTH_CSS, True)
+ <h1>このリンクは使えません</h1>
+ <div class="sub">30分を過ぎたか、もう使われたリンクです。登録はまだ終わっていません。はじめから登録し直すと、新しいリンクを送ります。</div>
+ <a class="btn btn-p" style="width:100%" href="v1-signup.html">{ic("mail")}はじめから登録し直す</a>"""))
+# こちら側の都合で出せなかったとき（送出先が落ちている・上限・宛先が受け取らない）。
+# 「送りました」と嘘をつかず、相手のせいにもせず、次の一手を 3 つ出す（D-088.5）
+_ve_fail = _wrap(_left(*LEAD, steps=[("アカウントを作る",True)]+STEPS[1:]), _box(f"""
+ <div style="width:52px;height:52px;border-radius:var(--r-full);background:#FDF2F2;display:grid;place-items:center;margin-bottom:18px;color:var(--error)">{ic("warn")}</div>
+ <h1>確認のメールを出せませんでした</h1>
+ <div class="sub">こちら側の都合で出せませんでした。<b>あなたのメールアドレスに問題はありません。</b>申し込みは 30 分預かっているので、送り直せば続けられます。</div>
+ <div class="pz">{ic("info")}<span>少し時間をおいて「もう一度送る」を押してください。急ぐときは別のメールアドレスで <a href="v1-signup.html" style="color:var(--primary);font-weight:600">はじめから登録し直す</a> こともできます。</span></div>
+ <button class="btn btn-p" style="width:100%">{ic("repeat")}もう一度送る</button>
+ <p class="muted" style="font-size:12.5px;text-align:center;margin-top:18px">それでも出せないときは <b>info@engine-base.com</b> までご連絡ください</p>"""))
+VERIFY = ("verify-email", [("n","送信済み","",_ve),("f","出せなかった","こちらの都合で送れないとき。相手のせいにせず、次の一手を出す。",_ve_fail),
+  ("ok","登録できた","リンクを押した時点で登録が終わる。ここからはじめの設定へ。",_ve_ok),
+  ("x","リンクが使えない","期限切れか使用済み。はじめから登録し直す。",_ve_exp)], AUTH_CSS, True)
 
 # ============================================================ invite-accept
 _inv_left = _left("招かれた人は、<br>自分の分だけ見える。",

@@ -35,3 +35,25 @@ export function resendTransport(
     },
   };
 }
+
+/** 送れなかった理由を 2 つに分ける（D-088.5）。
+ *  recipient＝宛先の側（受信箱が満杯・存在しない・拒否された。相手に直してもらう）
+ *  provider ＝こちらの側（送出先が落ちている・1 日の上限・鍵が無効。相手のせいにしない）
+ *  文面の判定なので、当たらなければ provider 側に倒す（相手を責めない方へ倒す） */
+export function classifyMailError(message: string): "recipient" | "provider" {
+  const m = (message || "").toLowerCase();
+  const recipient = [
+    "invalid `to`",
+    "invalid to",
+    "recipient",
+    "mailbox",
+    "quota exceeded (mailbox",
+    "5.1.1",
+    "5.2.2",
+    "does not exist",
+    "rejected",
+  ];
+  const provider = ["daily", "quota", "rate limit", "api key", "unauthorized", "forbidden", "timeout"];
+  if (provider.some((k) => m.includes(k)) && !m.includes("mailbox")) return "provider";
+  return recipient.some((k) => m.includes(k)) ? "recipient" : "provider";
+}

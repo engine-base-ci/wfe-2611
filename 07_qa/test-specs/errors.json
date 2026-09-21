@@ -3433,6 +3433,92 @@
     "D-076.9",
     "D-085.3"
    ]
+  },
+  {
+   "id": "E-MAIL-001",
+   "class": "external",
+   "where": {
+    "screen": "verify-email",
+    "state": "f"
+   },
+   "when": "確認のメールを出せない（送出先が落ちている・1 日の上限・鍵が無効）。こちら側の都合で、相手のアドレスは正しい",
+   "false_when": "送出先が受け付けた（送った記録が残る）とき",
+   "message": "確認のメールを出せませんでした。こちら側の都合です。あなたのメールアドレスに問題はありません",
+   "action": "少し時間をおいて送り直す／別のメールアドレスで登録し直す／運営に連絡する",
+   "undo": false,
+   "layers": [
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "保留の申し込みがある状態",
+    "steps": [
+     "送出先の鍵を無効な値にする",
+     "「もう一度送る」を押す"
+    ],
+    "needs": "送出先の設定を変える"
+   },
+   "severity": "high",
+   "source": [
+    "D-088.5"
+   ]
+  },
+  {
+   "id": "E-MAIL-002",
+   "class": "external",
+   "where": {
+    "screen": "verify-email",
+    "state": "f"
+   },
+   "when": "宛先が受け取らない（受信箱が満杯・存在しない・拒否された）",
+   "false_when": "宛先が受け取った（delivered）とき",
+   "message": "このメールアドレスは受け取れませんでした。受信箱がいっぱいか、アドレスが違うかもしれません",
+   "action": "受信箱を空ける／入力し直して別のアドレスで登録する",
+   "undo": false,
+   "layers": [
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "保留の申し込みがある状態",
+    "steps": [
+     "受け取らない宛先に送る",
+     "結果を見る"
+    ],
+    "needs": "受け取らない宛先"
+   },
+   "severity": "medium",
+   "source": [
+    "D-088.5"
+   ]
+  },
+  {
+   "id": "E-MAIL-003",
+   "class": "not_found",
+   "where": {
+    "screen": "verify-email",
+    "state": "n"
+   },
+   "when": "保留の申し込みが残っていないのに「もう一度送る」を押した（30 分を過ぎた・もう確認した）",
+   "false_when": "保留が 30 分以内に残っているとき",
+   "message": "この申し込みは残っていません。もう一度はじめからやり直してください",
+   "action": "はじめから登録し直す",
+   "undo": false,
+   "layers": [
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "保留を消したあと",
+    "steps": [
+     "確認の画面で「もう一度送る」を押す"
+    ],
+    "needs": "保留の削除"
+   },
+   "severity": "low",
+   "source": [
+    "D-088.3"
+   ]
   }
  ],
  "meta": {

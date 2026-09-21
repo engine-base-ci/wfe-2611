@@ -46,7 +46,7 @@ counters:
     type: json_array_length
     file: 05_flow/flow.json
     json_path: $.objects
-  expected_value: 65
+  expected_value: 66
   mirrors:
   - file: 01_hearing/決定ログ_進行中.md
     regex: \| オブジェクト \| (\d+) \|

@@ -64,7 +64,7 @@ export function createAuth(o: AuthOptions): { auth: Auth; pool: pg.Pool } {
       resetPasswordTokenExpiresIn: 60 * 30,
     },
     emailVerification: {
-      sendOnSignUp: true,
+      sendOnSignUp: false, // 保留の申し込みから自分で送る（D-088.1）。登録の時点では利用者がまだ無い
       autoSignInAfterVerification: true,
       expiresIn: 60 * 30,
       sendVerificationEmail: async ({ user, token }) => {
@@ -116,4 +116,27 @@ export function createAuth(o: AuthOptions): { auth: Auth; pool: pg.Pool } {
     },
   });
   return { auth: auth as unknown as Auth, pool };
+}
+
+/** 保留の申し込みに確認のリンクを送る（D-088）。文面はここだけに持つ。
+ *  送れたかどうかを返す。呼ぶ側はそれを画面と保留の行に反映する（「送りました」と嘘をつかない・G-15） */
+export async function sendPendingVerification(
+  o: { mailer?: Mailer; baseURL: string; webBaseURL?: string },
+  p: { email: string; token: string },
+): Promise<{ sent: boolean; error: string | null; url: string }> {
+  const url = `${o.webBaseURL ?? o.baseURL}/verify-email?token=${encodeURIComponent(p.token)}`;
+  if (process.env["NODE_ENV"] !== "production") console.warn(`[auth] リンク（verify → ${p.email}）: ${url}`);
+  if (!o.mailer) return { sent: false, error: "メールの送出先が設定されていない", url };
+  try {
+    await o.mailer({
+      to: p.email,
+      subject: "Kaname のメールアドレスを確認する",
+      text: `次のリンクを押すと登録が終わります（30 分で失効）。\n${url}`,
+      url,
+      kind: "verify",
+    });
+    return { sent: true, error: null, url };
+  } catch (e) {
+    return { sent: false, error: (e as Error).message || "送れませんでした", url };
+  }
 }

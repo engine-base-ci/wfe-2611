@@ -300,6 +300,18 @@ def rows(a: argparse.Namespace) -> int:
     errs = [e for e in cat.get("errors", []) if not e.get("na")]
     os.makedirs(a.spec, exist_ok=True)
     p = os.path.join(a.spec, "errors.md")
+    # 作り直しても「結果」「備考」は残す。実機で流した人やゲートが書いた行（PASS・BLOCKED の理由）を
+    # 生成器が消すと、通っていたものが未実施に戻り、BLOCKED の理由も失われる（正本の行は ID を変えない・test-ladder §9）
+    prev: dict[str, tuple[str, str]] = {}
+    if os.path.exists(p):
+        for ln in open(p, encoding="utf-8"):
+            if ln.startswith("| ") and not ln.startswith("| ID "):
+                c = [x.strip() for x in ln.strip().strip("|").split("|")]
+                if len(c) >= 11 and (c[7] or c[8]):
+                    prev[c[0]] = (c[7], c[8])
+    def keep(eid: str, note: str) -> tuple[str, str]:
+        r, n = prev.get(eid, ("", ""))
+        return (f" {r} " if r else " ", f" {n or note} " if (n or note) else " ")
     L = ["# ERR エラー一覧 画面別テスト仕様（機械生成）", "",
          "> `error_catalog.py rows` が errors.json から生成。手で直さない。1 エラー＝3 行（出る／出ない／文言と一手）。",
          "> 出す方法は「上流を故意に壊す」（止める・切る・遅らせる・権限を落とす・上限を超える）。出せないエラーはデッドコード（G-08）。", "",
@@ -314,12 +326,12 @@ def rows(a: argparse.Namespace) -> int:
         layers = "／".join(e.get("layers", []))
         eid = e["id"]
         L.append(f"| {eid}-A | {scr} | エラーが出る（{e.get('class')}） | {e.get('when')} | {setup} | {steps} | "
-                 f"文言「{e.get('message')}」が出て、一手「{e.get('action')}」が押せる。守っている層：{layers} | | 必要なもの：{rp.get('needs','')} | | L1 |")
+                 f"文言「{e.get('message')}」が出て、一手「{e.get('action')}」が押せる。守っている層：{layers} |" + "|".join(keep(f"{eid}-A", f"必要なもの：{rp.get('needs','')}")) + "| | L1 |")
         L.append(f"| {eid}-B | {scr} | エラーが出ない | {e.get('false_when')} | {setup} | 正しい入力・条件で同じ操作 | "
-                 f"エラーは出ず、通常どおり進む（誤検知なし） | | | | L1 |")
+                 f"エラーは出ず、通常どおり進む（誤検知なし） |" + "|".join(keep(f"{eid}-B", "")) + "| | L1 |")
         undo = "取り消せる（受領の後に取り消しが出る）" if e.get("undo") else "取り消し不要／不可を正直に言う"
         L.append(f"| {eid}-C | {scr} | 文言と一手が正しい | 何が起きた・次の一手・{undo} | エラーが出た状態 | 文言を読み、一手を押す | "
-                 f"内部語が無い。一手を押すと回復する（{e.get('action')}）。{'2 層以上で守っている（上流を壊しても下流が止める）' if e.get('must_not') else ''} | | 重さ：{e.get('severity')} | | L1 |")
+                 f"内部語が無い。一手を押すと回復する（{e.get('action')}）。{'2 層以上で守っている（上流を壊しても下流が止める）' if e.get('must_not') else ''} |" + "|".join(keep(f"{eid}-C", f"重さ：{e.get('severity')}")) + "| | L1 |")
     with open(p, "w", encoding="utf-8") as f:
         f.write("\n".join(L) + "\n")
     print(f"{p}: {len(errs)} エラー × 3 行 = {len(errs)*3} 行")

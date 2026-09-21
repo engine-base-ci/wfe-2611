@@ -1,12 +1,13 @@
 // UI 共通基盤（T-US-03 API クライアントと型／T-US-04 認証の配管）の実ブラウザの証拠。行 ID を名前に持つ（op_gate.py）
 import { expect, test } from "@playwright/test";
-import { admin, bridgeRow, loginAs, noOverflow, PW, signupViaApi, WIDTHS } from "./_lib/api";
+import { admin, bridgeRow, ensureGoalKind, loginAs, noOverflow, PW, signupViaApi, WIDTHS } from "./_lib/api";
 
 test("USH-03-001 API クライアント：契約の path で GET し、返った値が画面に出る（プレースホルダ固定でない）。書き込みの後は別 GET で読み直す。4 幅で溢れ 0", async ({
   page,
 }) => {
   const u = await signupViaApi();
   await loginAs(page, u.token);
+  await ensureGoalKind();
   await admin(
     "insert into goals (tenant_id, scope_id, kind_id, period_start, period_end, target_value, created_by) values ($1, $2, 'seed', '2026-10-01', '2026-12-31', 7654321, $3)",
     [u.tenantId, u.scopeId, u.memberId],
@@ -14,6 +15,7 @@ test("USH-03-001 API クライアント：契約の path で GET し、返った
   await noOverflow(page, "/onboard/draft");
   await expect(page.locator("[data-state='n']")).toContainText("7654321", { timeout: 15_000 }); // API から来た実値
   // 別 GET で再取得：もう 1 件足して開き直すと増えている
+  await ensureGoalKind();
   await admin(
     "insert into goals (tenant_id, scope_id, kind_id, period_start, period_end, target_value, created_by) values ($1, $2, 'seed', '2027-01-01', '2027-03-31', 1234567, $3)",
     [u.tenantId, u.scopeId, u.memberId],

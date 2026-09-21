@@ -66,10 +66,23 @@ async function main(): Promise<number> {
     }
   }
   if (cmd === "access-matrix") {
+    // この検査は種を入れ替えるために会社・層・メンバー・権限を truncate する。
+    // 触っている DB でそれをやると、人が手で作った会社だけが消えて利用者は残り、
+    // 「登録済みなのに会社が無い」使えない口座になる。だから毎回 捨てる DB を作ってそこで回す。
     const file = process.argv[3] ?? join(pkg, "..", "..", "07_qa", "test-plan", "access-matrix.json");
     const cases = JSON.parse(readFileSync(file, "utf8")).cases;
-    const admin = new pg.Pool({ connectionString: url, max: 2 });
-    const app = new pg.Pool({ connectionString: url.replace(/\/\/[^@]*@/, "//kaname_app:kaname_app@"), max: 2 });
+    const name = `kaname_matrix_${Date.now().toString(36)}`;
+    const adminUrl = new URL(url);
+    adminUrl.pathname = "/postgres";
+    const root = new pg.Client({ connectionString: adminUrl.toString() });
+    await root.connect();
+    await root.query(`create database "${name}"`);
+    const scratch = new URL(url);
+    scratch.pathname = `/${name}`;
+    const scratchUrl = scratch.toString();
+    await migrate(scratchUrl, pkg);
+    const admin = new pg.Pool({ connectionString: scratchUrl, max: 2 });
+    const app = new pg.Pool({ connectionString: scratchUrl.replace(/\/\/[^@]*@/, "//kaname_app:kaname_app@"), max: 2 });
     try {
       const r = await runMatrix(app, admin, cases, seedAccessMatrix);
       const tables = new Set(r.skipped.map((x) => x.table)).size;
@@ -82,6 +95,8 @@ async function main(): Promise<number> {
     } finally {
       await app.end();
       await admin.end();
+      await root.query(`drop database "${name}"`).catch(() => undefined);
+      await root.end();
     }
   }
   console.error("usage: cli.ts migrate | rls-enabled | no-vendor-sql | access-matrix [file]");

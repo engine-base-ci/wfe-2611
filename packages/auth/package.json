@@ -11,7 +11,8 @@
     "./invitations": "./src/invitations.ts",
     "./devices": "./src/devices.ts",
     "./migrate": "./src/migrate.ts",
-    "./signup": "./src/signup.ts"
+    "./signup": "./src/signup.ts",
+    "./pending": "./src/pending.ts"
   },
   "scripts": {
     "type-check": "tsc -p tsconfig.json --noEmit"

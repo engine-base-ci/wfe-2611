@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { navRoute } from "@/lib/pending-route";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -40,7 +41,14 @@ export default function SignupPage() {
     setServerError(null);
     try {
       const r = await signUp({ email: v.email, password: v.password, company_name: v.company_name });
-      router.push(`/verify-email?sent=1&email=${encodeURIComponent(r.email)}`);
+      // 送れたかどうかをそのまま渡す。送れていないのに確認の画面が「送りました」と言わない（D-088.5）
+      router.push(
+        navRoute(
+          `/verify-email?sent=${r.sent ? "1" : "0"}&email=${encodeURIComponent(r.email)}` +
+            (r.mail_error ? `&why=${encodeURIComponent(r.mail_error)}` : "") +
+            (r.mail_error_kind ? `&kind=${r.mail_error_kind}` : ""),
+        ),
+      );
     } catch (e) {
       if (e instanceof AuthExtError && e.code === "E-CONF-001") return setState("e");
       if (e instanceof AuthExtError && e.field) return f.setError(e.field as keyof Form, { message: e.message });

@@ -316,6 +316,7 @@ erDiagram
 | **`imports`** | `<scoped>` / `file_ref` / `detected_kind_id`（ledger_rows / template / procedure / memory）/ `proposal jsonb` / `status_id`（read / confirmed / applied / discarded）/ `applied_at` / `applied_by` | **★新設（D-076.3・D-025）。**形式を問わず受け取り自分のAIが読む。本番の台帳には人が押してから入る（3 経路の (3)） |
 | **`integrations`** | `<scoped>` / `service_id` / `kind_id`（oauth2 / api_key）/ `credential_id`（vault 参照）/ `scopes text[]` / `status_id` / `connected_at` / `revoked_at` | **★新設（D-076.4・D-041）。**正規連携（freee / Google …）。資格情報は `credentials` 経由で vault 参照だけ |
 | **`invitations`** | `<common>` / `email` / `scope_id` / `role_id` / `permission_preset jsonb` / `token_hash` / `expires_at` / `accepted_member_id` / `revoked_at` | **★新設（D-026・D-037）。**招待。取り消しで `token_hash` は即無効（G-14） |
+| **`pending_signup`** | `email`（主キー）/ `name` / `company_name` / `pw_iv` `pw_tag` `pw_data`（鍵で包んだパスワード）/ `token_hash` / `expires_at` / `sent_at` / `send_error` / `consumed_at` | **★新設（D-088.2）。**保留の申し込み。「はじめる」ではここに 1 行置くだけで、会社も利用者も作らない。リンクを押した時点で作る。会社のデータではない（まだ会社が無い）ので `public` ではなく スキーマ `kaname_auth` に置き、触れるのは認証の接続だけ。平文のパスワードは持たず 30 分で失効し、確認が済んだら `consumed_at` を立てる（消すと「もう済んだ」と「期限切れ」が同じ見た目になる） |
 | **`export_jobs`** | `<common>` / `requested_by` / `kind_id`（all / audit / ledger / conversations）/ `storage_ref` / `status_id` / `expires_at` / `downloaded_at` | **★新設（D-042）。**持ち出し。関門 C4 を通る。ダウンロード URL は期限つき署名 |
 | **`attachments`** | `<scoped>` / `owner_type`（message / task / record / inquiry）/ `owner_id` / `storage_ref` / `mime` / `size` / `scanned_at` | **★新設。**添付の実体を 1 表に。`messages.attachments jsonb` は参照だけ持つ |
 
@@ -406,6 +407,7 @@ erDiagram
 | 証跡 | `audit_events` `ops_audit_events` `security_events` | 会社側・運営側・セキュリティの出来事 |
 | メンバー | `members` `permissions` `layers` | 権限＝誰に×何に×どの層で×できること |
 | 招待 | `invitations` | |
+| 保留の申し込み | `pending_signup` | 確認するまで会社も利用者も作らない（D-088.2） |
 | 効く範囲 | `scopes` `layers` | 層は会社ごと |
 | テンプレ | `distributions` `artifacts` | 運営配布のテンプレは配布物、会社のテンプレは `artifacts.template_id` の先（`templates` は `distributions(kind=template)` と会社作成の `duties.constraints` で表す） |
 | テストモード実行 | `action_runs` | `mode_id = test`（外に出ない・台帳は仮想） |

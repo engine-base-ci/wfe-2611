@@ -31,14 +31,32 @@ export async function api<T>(
   });
   return { status: res.status, json: (await res.json().catch(() => ({}))) as T };
 }
-/** 会社ごと登録して token を返す（画面の前提） */
-export async function signupViaApi(company = "QA 社", email = uniqEmail()) {
-  const r = await api<{ data: { token: string; user_id: string } }>("/api/auth-ext/sign-up", {
+/** 申し込む → 確認のリンクを踏む → 会社ができて token が返る（D-088：登録が終わるのは確認の時点）。
+ *  リンクは API のログから拾う（KANAME_API_LOG）。本物の流れをそのまま通すので、画面の前提もこれで揃う */
+export async function signupPending(company = "QA 社", email = uniqEmail()) {
+  const r = await api<{ data: { email: string; sent: boolean; mail_error: string | null } }>("/api/auth-ext/sign-up", {
     email,
     password: PW,
     company_name: company,
   });
   if (r.status !== 201) throw new Error(`sign-up ${r.status} ${JSON.stringify(r.json)}`);
+  return { email, sent: r.json.data.sent, mailError: r.json.data.mail_error };
+}
+/** 確認のリンクの手がかりを API のログから取る */
+export function pendingToken(email: string): string {
+  const url = lastMailUrl("verify", email);
+  if (!url) throw new Error(`確認のリンクがログに無い（KANAME_API_LOG を渡す）: ${email}`);
+  const t = new URL(url).searchParams.get("token");
+  if (!t) throw new Error(`リンクに token が無い: ${url}`);
+  return t;
+}
+/** 会社ごと登録して token を返す（画面の前提）。申し込み → 確認 まで通す */
+export async function signupViaApi(company = "QA 社", email = uniqEmail()) {
+  await signupPending(company, email);
+  const r = await api<{ data: { token: string; user_id: string } }>("/api/auth-ext/verify-signup", {
+    token: pendingToken(email),
+  });
+  if (r.status !== 201) throw new Error(`verify-signup ${r.status} ${JSON.stringify(r.json)}`);
   const c = new pg.Client({ connectionString: ADMIN });
   await c.connect();
   const m = await c.query<{ id: string; tenant_id: string; scope_id: string }>(
@@ -160,4 +178,11 @@ export async function pwToggle(page: Page, labelOfField: string) {
   await expect(hide).toHaveAttribute("aria-pressed", "true");
   await hide.click();
   await expect(input).toHaveAttribute("type", "password"); // また隠れる
+}
+
+/** テストが要るマスタ行は自分で用意する（他の検査の副作用に頼らない・L-014）。
+ *  権限の総当たり検査は捨てる DB で回すようになったので、この DB には種が入らない */
+export async function ensureGoalKind(key = "seed", label = "テストの目標の種類"): Promise<string> {
+  await admin("insert into goal_kinds (key, label) values ($1, $2) on conflict (key) do nothing", [key, label]);
+  return key;
 }

@@ -3,8 +3,9 @@
  "mock": "06_mockup/v1/v1-verify-email.html",
  "state_labels": {
   "n": "送信済み",
-  "ok": "確認できた",
-  "x": "期限切れ"
+  "f": "出せなかった",
+  "ok": "登録できた",
+  "x": "リンクが使えない"
  },
  "ops": [
   {
@@ -24,7 +25,8 @@
    "label": "もう一度送る",
    "target": null,
    "states": [
-    "送信済み"
+    "送信済み",
+    "出せなかった"
    ],
    "roles": [],
    "ps": [
@@ -45,12 +47,13 @@
    ]
   },
   {
-   "key": "link:はじめの設定をはじめる（PCをつなぐ）→bridge-setup",
+   "key": "link:はじめから登録し直す→signup",
    "kind": "link",
-   "label": "はじめの設定をはじめる（PCをつなぐ）",
-   "target": "bridge-setup",
+   "label": "はじめから登録し直す",
+   "target": "signup",
    "states": [
-    "確認できた"
+    "出せなかった",
+    "リンクが使えない"
    ],
    "roles": [],
    "ps": [
@@ -58,12 +61,12 @@
    ]
   },
   {
-   "key": "button:新しいリンクを送る",
-   "kind": "button",
-   "label": "新しいリンクを送る",
-   "target": null,
+   "key": "link:はじめの設定をはじめる（PCをつなぐ）→bridge-setup",
+   "kind": "link",
+   "label": "はじめの設定をはじめる（PCをつなぐ）",
+   "target": "bridge-setup",
    "states": [
-    "期限切れ"
+    "登録できた"
    ],
    "roles": [],
    "ps": [

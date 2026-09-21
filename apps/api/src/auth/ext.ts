@@ -7,14 +7,26 @@ import type { Auth } from "@kaname/auth";
 import { acceptInvitation, hashToken } from "@kaname/auth/invitations";
 import { createSessionResolver } from "@kaname/auth/resolver";
 import { EMAIL_RE, normalizeEmail, signInWithLock, signUp } from "@kaname/auth/signup";
+import { sendPendingVerification } from "@kaname/auth";
+import { classifyMailError } from "@kaname/notify/resend";
+import {
+  consumePending,
+  getPendingByEmail,
+  markPendingSent,
+  putPending,
+  takePendingByToken,
+} from "@kaname/auth/pending";
 import type { Repository } from "@kaname/db/repository";
 import type { SecretsGateway } from "@kaname/secrets";
 
 export interface AuthExtDeps {
   auth: Auth;
   appPool: pg.Pool;
+  authPool: pg.Pool;
   repo: Repository;
   secrets: SecretsGateway;
+  config: { secretsMasterKey: string; baseUrl: string; webBaseUrl: string | null; opsEmail: string };
+  mailer?: (m: { to: string; subject: string; text: string; url: string; kind: "verify" | "reset" }) => Promise<void>;
 }
 const bad = (
   c: { json: (b: unknown, s: number) => Response },
@@ -28,7 +40,23 @@ export function authExt(d: AuthExtDeps): Hono {
   const app = new Hono();
   const resolve = createSessionResolver(d.auth, d.appPool);
 
-  // 登録（T-U-01）：会社名とメール。既存メールは 409（E-CONF-001）。メールは NFKC・空白除去・小文字（表記ゆらぎ）
+  // 登録（T-U-01・D-088）：**ここでは何も作らない**。保留の申し込みを 1 行置いて、確認のリンクを送るだけ。
+  // 利用者・会社・層・代表・自分のAI は、リンクを押した時点（/verify-signup）で作る。
+  // 送れたかどうかを返す。送れていないのに画面が「送りました」と言わないため（D-088.5・G-15）
+  const already = async (email: string) =>
+    (await d.authPool.query('select 1 from kaname_auth."user" where email = $1', [email])).rowCount ?? 0;
+  const sendPending = async (email: string, token: string) => {
+    const r = await sendPendingVerification(
+      {
+        ...(d.mailer ? { mailer: d.mailer } : {}),
+        baseURL: d.config.baseUrl,
+        ...(d.config.webBaseUrl ? { webBaseURL: d.config.webBaseUrl } : {}),
+      },
+      { email, token },
+    );
+    await markPendingSent(d.authPool, email, r.error);
+    return { ...r, kind: r.error ? classifyMailError(r.error) : null };
+  };
   app.post("/sign-up", async (c) => {
     const b = (await c.req.json().catch(() => ({}))) as {
       email?: string;
@@ -44,25 +72,79 @@ export function authExt(d: AuthExtDeps): Hono {
       .normalize("NFKC")
       .trim();
     if (!company) return bad(c, 422, "E-VAL-006", "会社名（または屋号）を入れてください", { field: "company_name" });
-    try {
-      const r = await signUp(d.auth, {
-        email,
-        password: b.password,
-        name: String(b.name ?? company),
-        companyName: company,
+    // 既に登録が済んでいる人だけ 409。確認していない人は何度来てもやり直せる（D-088.3）
+    if (await already(email))
+      return bad(
+        c,
+        409,
+        "E-CONF-001",
+        "このメールアドレスは既に登録されています。ログインするか、パスワードを再設定してください",
+      );
+    const { token } = await putPending(d.authPool, d.config.secretsMasterKey, {
+      email,
+      name: String(b.name ?? company),
+      companyName: company,
+      password: b.password,
+    });
+    const r = await sendPending(email, token);
+    return c.json({ data: { email, sent: r.sent, mail_error: r.error, mail_error_kind: r.kind } }, 201);
+  });
+
+  // 確認のリンクを送り直す（T-U-02）。保留が無ければ「送った」と嘘をつかず、登録の有無も漏らさない
+  app.post("/resend-signup", async (c) => {
+    const b = (await c.req.json().catch(() => ({}))) as { email?: string };
+    const email = normalizeEmail(String(b.email ?? ""));
+    if (!EMAIL_RE.test(email)) return bad(c, 422, "E-VAL-004", "メールアドレスの形式が違います", { field: "email" });
+    const p = await getPendingByEmail(d.authPool, email, d.config.secretsMasterKey);
+    if (!p) return c.json({ data: { email, sent: false, mail_error: null, pending: false } }, 200);
+    const { token } = await putPending(d.authPool, d.config.secretsMasterKey, {
+      email,
+      name: p.name,
+      companyName: p.companyName,
+      password: p.password,
+    });
+    const r = await sendPending(email, token);
+    return c.json({ data: { email, sent: r.sent, mail_error: r.error, mail_error_kind: r.kind, pending: true } }, 200);
+  });
+
+  // 確認（T-U-02・D-088.2）：ここで初めて 利用者・会社・層・代表・自分のAI ができ、そのままログインする
+  app.post("/verify-signup", async (c) => {
+    const b = (await c.req.json().catch(() => ({}))) as { token?: string };
+    const token = String(b.token ?? "");
+    if (!token) return bad(c, 422, "E-VAL-004", "リンクが正しくありません");
+    const found = await takePendingByToken(d.authPool, d.config.secretsMasterKey, token);
+    // もう確認した人（二度押し・リロード）は詰まらせず、入る画面へ送る
+    if (found.kind === "done")
+      return bad(
+        c,
+        409,
+        "E-CONF-001",
+        "このメールアドレスは既に登録されています。ログインするか、パスワードを再設定してください",
+      );
+    if (found.kind === "gone")
+      return bad(c, 410, "E-AUTH-003", "このリンクは期限が切れています。新しい確認メールを送ります", {
+        expired: true,
       });
-      return c.json({ data: { token: r.token, user_id: r.userId, email } }, 201);
-    } catch (e) {
-      const msg = (e as Error).message ?? "";
-      if (/already|exists|登録/i.test(msg))
-        return bad(
-          c,
-          409,
-          "E-CONF-001",
-          "このメールアドレスは既に登録されています。ログインするか、パスワードを再設定してください",
-        );
-      throw e;
+    const p = found.pending;
+    if (await already(p.email)) {
+      await consumePending(d.authPool, p.email);
+      return bad(
+        c,
+        409,
+        "E-CONF-001",
+        "このメールアドレスは既に登録されています。ログインするか、パスワードを再設定してください",
+      );
     }
+    const r = await signUp(d.auth, {
+      email: p.email,
+      password: p.password,
+      name: p.name,
+      companyName: p.companyName,
+    });
+    // 確認を経て作ったので、この時点で確認済み
+    await d.authPool.query('update kaname_auth."user" set "emailVerified" = true where id = $1', [r.userId]);
+    await consumePending(d.authPool, p.email);
+    return c.json({ data: { token: r.token, user_id: r.userId, email: p.email } }, 201);
   });
 
   // ログイン（T-U-05）：5 回で 15 分ロック（E-AUTH-001／002）。2 段階なら token 無しで twoFactor=true

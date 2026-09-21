@@ -152,7 +152,9 @@
     "D-011.1",
     "D-053.10",
     "D-065.2",
-    "D-087.1"
+    "D-087.1",
+    "D-088.1",
+    "D-088.5"
    ]
   },
   {
@@ -177,12 +179,16 @@
      "label": "送信済み"
     },
     {
+     "id": "f",
+     "label": "出せなかった"
+    },
+    {
      "id": "ok",
-     "label": "確認できた"
+     "label": "登録できた"
     },
     {
      "id": "x",
-     "label": "期限切れ"
+     "label": "リンクが使えない"
     }
    ],
    "transitions": [
@@ -308,7 +314,9 @@
    "source": [
     "D-042",
     "D-053.10",
-    "D-065.2"
+    "D-065.2",
+    "D-088.1",
+    "D-088.5"
    ]
   },
   {
@@ -690,7 +698,7 @@
     "E-071",
     "E-073",
     "E-072",
-    "E-086",
+    "E-087",
     "E-074",
     "E-075"
    ],
@@ -10715,10 +10723,10 @@
     "E-061",
     "E-062",
     "E-033",
-    "E-082",
     "E-083",
     "E-084",
     "E-085",
+    "E-086",
     "E-040"
    ],
    "mock_path": "06_mockup/v1/v1-ai-activity.html",
@@ -13878,7 +13886,7 @@
     "E-019",
     "E-028",
     "E-029",
-    "E-081",
+    "E-082",
     "E-041",
     "E-061",
     "E-062",
@@ -14942,10 +14950,10 @@
     "E-011",
     "E-012",
     "E-008",
-    "E-082",
     "E-083",
     "E-084",
     "E-085",
+    "E-086",
     "E-023",
     "E-070",
     "E-055",
@@ -30582,10 +30590,10 @@
     "E-049",
     "E-052",
     "E-053",
-    "E-082",
     "E-083",
     "E-084",
-    "E-085"
+    "E-085",
+    "E-086"
    ],
    "mock_path": "06_mockup/v1/v1-ai-staff-detail.html",
    "route": "/ai-staff/:id",
@@ -31685,8 +31693,8 @@
      "path_draft": "/api/disclosure_versions",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-091",
       "E-092",
+      "E-093",
       "E-041",
       "E-061"
      ],
@@ -31710,8 +31718,8 @@
      "path_draft": "/api/disclosure_versions",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-091",
       "E-092",
+      "E-093",
       "E-041",
       "E-061"
      ],
@@ -31728,8 +31736,8 @@
     }
    ],
    "related_entities": [
-    "E-091",
     "E-092",
+    "E-093",
     "E-041",
     "E-061",
     "E-062"
@@ -31866,7 +31874,7 @@
      "path_draft": "/api/export_jobs",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-080",
+      "E-081",
       "E-001",
       "E-010",
       "E-017"
@@ -32297,7 +32305,7 @@
      "path_draft": "/api/export_jobs",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-080",
+      "E-081",
       "E-001",
       "E-010",
       "E-017"
@@ -32721,7 +32729,7 @@
     }
    ],
    "related_entities": [
-    "E-080",
+    "E-081",
     "E-001",
     "E-010",
     "E-017",
@@ -32881,7 +32889,7 @@
       "E-004",
       "E-047",
       "E-044",
-      "E-080"
+      "E-081"
      ],
      "choke_points": [
       "C2",
@@ -33310,7 +33318,7 @@
       "E-004",
       "E-047",
       "E-044",
-      "E-080"
+      "E-081"
      ],
      "choke_points": [
       "C2",
@@ -33732,7 +33740,7 @@
     "E-004",
     "E-047",
     "E-044",
-    "E-080",
+    "E-081",
     "E-041",
     "E-061",
     "E-062",
@@ -38956,9 +38964,9 @@
      "path_draft": "/api/llm_routes",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-088",
+      "E-089",
       "E-037",
-      "E-089"
+      "E-090"
      ],
      "choke_points": [
       "C8",
@@ -38981,9 +38989,9 @@
      "path_draft": "/api/llm_routes",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-088",
+      "E-089",
       "E-037",
-      "E-089"
+      "E-090"
      ],
      "choke_points": [
       "C8",
@@ -38999,9 +39007,9 @@
     }
    ],
    "related_entities": [
-    "E-088",
+    "E-089",
     "E-037",
-    "E-089"
+    "E-090"
    ],
    "mock_path": "06_mockup/v2/v2-llm-routes.html",
    "route": "/settings/llm",
@@ -39094,7 +39102,7 @@
      "path_draft": "/api/push_devices/:id",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-090",
+      "E-091",
       "E-050",
       "E-068",
       "E-067"
@@ -39119,7 +39127,7 @@
      "path_draft": "/api/push_devices/:id",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-090",
+      "E-091",
       "E-050",
       "E-068",
       "E-067"
@@ -39137,7 +39145,7 @@
     }
    ],
    "related_entities": [
-    "E-090",
+    "E-091",
     "E-050",
     "E-068",
     "E-067",
@@ -39277,7 +39285,7 @@
      "path_draft": "/api/attachments",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-081",
+      "E-082",
       "E-017",
       "E-020",
       "E-021"
@@ -39709,7 +39717,7 @@
      "path_draft": "/api/attachments",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-081",
+      "E-082",
       "E-017",
       "E-020",
       "E-021"
@@ -40134,7 +40142,7 @@
     }
    ],
    "related_entities": [
-    "E-081",
+    "E-082",
     "E-017",
     "E-020",
     "E-021",
@@ -42276,10 +42284,10 @@
      "path_draft": "/api/skills",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-082",
       "E-083",
       "E-084",
-      "E-085"
+      "E-085",
+      "E-086"
      ],
      "choke_points": [
       "C2",
@@ -42712,10 +42720,10 @@
      "path_draft": "/api/skills",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-082",
       "E-083",
       "E-084",
-      "E-085"
+      "E-085",
+      "E-086"
      ],
      "choke_points": [
       "C2",
@@ -43141,10 +43149,10 @@
     }
    ],
    "related_entities": [
-    "E-082",
     "E-083",
     "E-084",
     "E-085",
+    "E-086",
     "E-054",
     "E-055",
     "E-056",
@@ -48195,8 +48203,8 @@
     "E-002",
     "E-032",
     "E-027",
-    "E-087",
-    "E-086"
+    "E-088",
+    "E-087"
    ],
    "mock_path": "06_mockup/v1/v1-ops-billing.html",
    "route": "/ops/billing",
@@ -48292,7 +48300,7 @@
      "path_draft": "/api/llm_routes/:id",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-088",
+      "E-089",
       "E-074",
       "E-075"
      ],
@@ -48313,7 +48321,7 @@
      "path_draft": "/api/llm_routes/:id",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-088",
+      "E-089",
       "E-074",
       "E-075"
      ],
@@ -48327,7 +48335,7 @@
     }
    ],
    "related_entities": [
-    "E-088",
+    "E-089",
     "E-074",
     "E-075"
    ],
@@ -48412,8 +48420,8 @@
      "path_draft": "/api/disclosure_versions/:id",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-091",
       "E-092",
+      "E-093",
       "E-064",
       "E-065"
      ],
@@ -48437,8 +48445,8 @@
      "path_draft": "/api/disclosure_versions/:id",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-091",
       "E-092",
+      "E-093",
       "E-064",
       "E-065"
      ],
@@ -48455,8 +48463,8 @@
     }
    ],
    "related_entities": [
-    "E-091",
     "E-092",
+    "E-093",
     "E-064",
     "E-065",
     "E-066"
@@ -49487,10 +49495,10 @@
     "E-059",
     "E-055",
     "E-056",
-    "E-082",
     "E-083",
     "E-084",
-    "E-085"
+    "E-085",
+    "E-086"
    ],
    "mock_path": "06_mockup/v1/v1-ops-tenant.html",
    "route": "/ops/tenants/:id",

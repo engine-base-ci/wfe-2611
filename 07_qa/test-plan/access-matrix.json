@@ -1,11 +1,11 @@
 {
  "version": "v3",
- "created_at": "2026-09-20",
+ "created_at": "2026-09-21",
  "_doc": "entities.json の access_control_policies × 場合（見える範囲／見えない層／他の会社／SET LOCAL 無し／権限なし）。1 行 1 test。pnpm ci:access-matrix が全行を実 Postgres で流す",
  "counts": {
-  "entities": 92,
-  "policies": 263,
-  "cases": 994
+  "entities": 93,
+  "policies": 265,
+  "cases": 999
  },
  "cases": [
   {
@@ -13567,6 +13567,79 @@
   },
   {
    "entity": "E-080",
+   "table": "pending_signup",
+   "policy": "pending_signup_all_read",
+   "role": "authenticated",
+   "role_ja": "ログイン済み（本人のもの）",
+   "operation": "select",
+   "case": "ログイン済み（会社の人）",
+   "expected": "OK",
+   "predicate": "true",
+   "source": [
+    "D-026"
+   ]
+  },
+  {
+   "entity": "E-080",
+   "table": "pending_signup",
+   "policy": "pending_signup_all_read",
+   "role": "authenticated",
+   "role_ja": "ログイン済み（本人のもの）",
+   "operation": "select",
+   "case": "SET LOCAL を飛ばす",
+   "expected": "NG（0 行）",
+   "predicate": "true",
+   "source": [
+    "D-026"
+   ]
+  },
+  {
+   "entity": "E-080",
+   "table": "pending_signup",
+   "policy": "pending_signup_ops_write",
+   "role": "ops",
+   "role_ja": "運営（R6）",
+   "operation": "insert,update,delete",
+   "case": "運営の文脈",
+   "expected": "OK",
+   "predicate": "current_setting('app.role', true) = 'ops'",
+   "source": [
+    "D-037",
+    "D-077.4"
+   ]
+  },
+  {
+   "entity": "E-080",
+   "table": "pending_signup",
+   "policy": "pending_signup_ops_write",
+   "role": "ops",
+   "role_ja": "運営（R6）",
+   "operation": "insert,update,delete",
+   "case": "会社の人（運営でない）",
+   "expected": "NG（弾く・副作用なし）",
+   "predicate": "current_setting('app.role', true) = 'ops'",
+   "source": [
+    "D-037",
+    "D-077.4"
+   ]
+  },
+  {
+   "entity": "E-080",
+   "table": "pending_signup",
+   "policy": "pending_signup_ops_write",
+   "role": "ops",
+   "role_ja": "運営（R6）",
+   "operation": "insert,update,delete",
+   "case": "SET LOCAL を飛ばす",
+   "expected": "NG（弾く）",
+   "predicate": "current_setting('app.role', true) = 'ops'",
+   "source": [
+    "D-037",
+    "D-077.4"
+   ]
+  },
+  {
+   "entity": "E-081",
    "table": "export_jobs",
    "policy": "export_jobs_tenant_read",
    "role": "member",
@@ -13582,7 +13655,7 @@
    ]
   },
   {
-   "entity": "E-080",
+   "entity": "E-081",
    "table": "export_jobs",
    "policy": "export_jobs_tenant_read",
    "role": "member",
@@ -13598,7 +13671,7 @@
    ]
   },
   {
-   "entity": "E-080",
+   "entity": "E-081",
    "table": "export_jobs",
    "policy": "export_jobs_tenant_read",
    "role": "member",
@@ -13614,7 +13687,7 @@
    ]
   },
   {
-   "entity": "E-080",
+   "entity": "E-081",
    "table": "export_jobs",
    "policy": "export_jobs_tenant_read",
    "role": "member",
@@ -13630,7 +13703,7 @@
    ]
   },
   {
-   "entity": "E-080",
+   "entity": "E-081",
    "table": "export_jobs",
    "policy": "export_jobs_self_only_write",
    "role": "member",
@@ -13644,7 +13717,7 @@
    ]
   },
   {
-   "entity": "E-080",
+   "entity": "E-081",
    "table": "export_jobs",
    "policy": "export_jobs_self_only_write",
    "role": "member",
@@ -13658,7 +13731,7 @@
    ]
   },
   {
-   "entity": "E-080",
+   "entity": "E-081",
    "table": "export_jobs",
    "policy": "export_jobs_self_only_write",
    "role": "member",
@@ -13672,7 +13745,7 @@
    ]
   },
   {
-   "entity": "E-080",
+   "entity": "E-081",
    "table": "export_jobs",
    "policy": "export_jobs_self_only_write",
    "role": "member",
@@ -13686,7 +13759,7 @@
    ]
   },
   {
-   "entity": "E-080",
+   "entity": "E-081",
    "table": "export_jobs",
    "policy": "export_jobs_permission_write",
    "role": "member",
@@ -13702,7 +13775,7 @@
    ]
   },
   {
-   "entity": "E-080",
+   "entity": "E-081",
    "table": "export_jobs",
    "policy": "export_jobs_permission_write",
    "role": "member",
@@ -13718,7 +13791,7 @@
    ]
   },
   {
-   "entity": "E-080",
+   "entity": "E-081",
    "table": "export_jobs",
    "policy": "export_jobs_permission_write",
    "role": "member",
@@ -13734,7 +13807,7 @@
    ]
   },
   {
-   "entity": "E-080",
+   "entity": "E-081",
    "table": "export_jobs",
    "policy": "export_jobs_permission_write",
    "role": "member",
@@ -13750,7 +13823,7 @@
    ]
   },
   {
-   "entity": "E-080",
+   "entity": "E-081",
    "table": "export_jobs",
    "policy": "export_jobs_ops_read_with_grant",
    "role": "ops",
@@ -13765,7 +13838,7 @@
    ]
   },
   {
-   "entity": "E-080",
+   "entity": "E-081",
    "table": "export_jobs",
    "policy": "export_jobs_ops_read_with_grant",
    "role": "ops",
@@ -13780,7 +13853,7 @@
    ]
   },
   {
-   "entity": "E-080",
+   "entity": "E-081",
    "table": "export_jobs",
    "policy": "export_jobs_ops_read_with_grant",
    "role": "ops",
@@ -13795,7 +13868,7 @@
    ]
   },
   {
-   "entity": "E-080",
+   "entity": "E-081",
    "table": "export_jobs",
    "policy": "export_jobs_ops_read_with_grant",
    "role": "ops",
@@ -13810,7 +13883,7 @@
    ]
   },
   {
-   "entity": "E-081",
+   "entity": "E-082",
    "table": "attachments",
    "policy": "attachments_tenant_read",
    "role": "member",
@@ -13826,7 +13899,7 @@
    ]
   },
   {
-   "entity": "E-081",
+   "entity": "E-082",
    "table": "attachments",
    "policy": "attachments_tenant_read",
    "role": "member",
@@ -13842,7 +13915,7 @@
    ]
   },
   {
-   "entity": "E-081",
+   "entity": "E-082",
    "table": "attachments",
    "policy": "attachments_tenant_read",
    "role": "member",
@@ -13858,7 +13931,7 @@
    ]
   },
   {
-   "entity": "E-081",
+   "entity": "E-082",
    "table": "attachments",
    "policy": "attachments_tenant_read",
    "role": "member",
@@ -13874,7 +13947,7 @@
    ]
   },
   {
-   "entity": "E-081",
+   "entity": "E-082",
    "table": "attachments",
    "policy": "attachments_permission_write",
    "role": "member",
@@ -13890,7 +13963,7 @@
    ]
   },
   {
-   "entity": "E-081",
+   "entity": "E-082",
    "table": "attachments",
    "policy": "attachments_permission_write",
    "role": "member",
@@ -13906,7 +13979,7 @@
    ]
   },
   {
-   "entity": "E-081",
+   "entity": "E-082",
    "table": "attachments",
    "policy": "attachments_permission_write",
    "role": "member",
@@ -13922,7 +13995,7 @@
    ]
   },
   {
-   "entity": "E-081",
+   "entity": "E-082",
    "table": "attachments",
    "policy": "attachments_permission_write",
    "role": "member",
@@ -13938,7 +14011,7 @@
    ]
   },
   {
-   "entity": "E-081",
+   "entity": "E-082",
    "table": "attachments",
    "policy": "attachments_ops_read_with_grant",
    "role": "ops",
@@ -13946,51 +14019,6 @@
    "operation": "select",
    "case": "同じ会社・見える範囲",
    "expected": "OK",
-   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = attachments.tenant_id AND g.expires_at > now() A",
-   "source": [
-    "D-074.5",
-    "D-077.7"
-   ]
-  },
-  {
-   "entity": "E-081",
-   "table": "attachments",
-   "policy": "attachments_ops_read_with_grant",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "select",
-   "case": "同じ会社・見えない層",
-   "expected": "NG（0 行）",
-   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = attachments.tenant_id AND g.expires_at > now() A",
-   "source": [
-    "D-074.5",
-    "D-077.7"
-   ]
-  },
-  {
-   "entity": "E-081",
-   "table": "attachments",
-   "policy": "attachments_ops_read_with_grant",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "select",
-   "case": "他の会社（SET LOCAL を別テナントに）",
-   "expected": "NG（顧客が許可した範囲・期限の中だけ OK）",
-   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = attachments.tenant_id AND g.expires_at > now() A",
-   "source": [
-    "D-074.5",
-    "D-077.7"
-   ]
-  },
-  {
-   "entity": "E-081",
-   "table": "attachments",
-   "policy": "attachments_ops_read_with_grant",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "select",
-   "case": "SET LOCAL を飛ばす",
-   "expected": "NG（0 行・エラー）",
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = attachments.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
@@ -13999,6 +14027,51 @@
   },
   {
    "entity": "E-082",
+   "table": "attachments",
+   "policy": "attachments_ops_read_with_grant",
+   "role": "ops",
+   "role_ja": "運営（R6）",
+   "operation": "select",
+   "case": "同じ会社・見えない層",
+   "expected": "NG（0 行）",
+   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = attachments.tenant_id AND g.expires_at > now() A",
+   "source": [
+    "D-074.5",
+    "D-077.7"
+   ]
+  },
+  {
+   "entity": "E-082",
+   "table": "attachments",
+   "policy": "attachments_ops_read_with_grant",
+   "role": "ops",
+   "role_ja": "運営（R6）",
+   "operation": "select",
+   "case": "他の会社（SET LOCAL を別テナントに）",
+   "expected": "NG（顧客が許可した範囲・期限の中だけ OK）",
+   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = attachments.tenant_id AND g.expires_at > now() A",
+   "source": [
+    "D-074.5",
+    "D-077.7"
+   ]
+  },
+  {
+   "entity": "E-082",
+   "table": "attachments",
+   "policy": "attachments_ops_read_with_grant",
+   "role": "ops",
+   "role_ja": "運営（R6）",
+   "operation": "select",
+   "case": "SET LOCAL を飛ばす",
+   "expected": "NG（0 行・エラー）",
+   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = attachments.tenant_id AND g.expires_at > now() A",
+   "source": [
+    "D-074.5",
+    "D-077.7"
+   ]
+  },
+  {
+   "entity": "E-083",
    "table": "skills",
    "policy": "skills_ops_all",
    "role": "ops",
@@ -14013,7 +14086,7 @@
    ]
   },
   {
-   "entity": "E-082",
+   "entity": "E-083",
    "table": "skills",
    "policy": "skills_ops_all",
    "role": "ops",
@@ -14028,7 +14101,7 @@
    ]
   },
   {
-   "entity": "E-082",
+   "entity": "E-083",
    "table": "skills",
    "policy": "skills_ops_all",
    "role": "ops",
@@ -14043,7 +14116,7 @@
    ]
   },
   {
-   "entity": "E-083",
+   "entity": "E-084",
    "table": "skill_versions",
    "policy": "skill_versions_all_read",
    "role": "authenticated",
@@ -14057,7 +14130,7 @@
    ]
   },
   {
-   "entity": "E-083",
+   "entity": "E-084",
    "table": "skill_versions",
    "policy": "skill_versions_all_read",
    "role": "authenticated",
@@ -14071,7 +14144,7 @@
    ]
   },
   {
-   "entity": "E-083",
+   "entity": "E-084",
    "table": "skill_versions",
    "policy": "skill_versions_ops_write",
    "role": "ops",
@@ -14086,7 +14159,7 @@
    ]
   },
   {
-   "entity": "E-083",
+   "entity": "E-084",
    "table": "skill_versions",
    "policy": "skill_versions_ops_write",
    "role": "ops",
@@ -14101,7 +14174,7 @@
    ]
   },
   {
-   "entity": "E-083",
+   "entity": "E-084",
    "table": "skill_versions",
    "policy": "skill_versions_ops_write",
    "role": "ops",
@@ -14116,7 +14189,7 @@
    ]
   },
   {
-   "entity": "E-084",
+   "entity": "E-085",
    "table": "skill_test_runs",
    "policy": "skill_test_runs_ops_all",
    "role": "ops",
@@ -14131,7 +14204,7 @@
    ]
   },
   {
-   "entity": "E-084",
+   "entity": "E-085",
    "table": "skill_test_runs",
    "policy": "skill_test_runs_ops_all",
    "role": "ops",
@@ -14146,7 +14219,7 @@
    ]
   },
   {
-   "entity": "E-084",
+   "entity": "E-085",
    "table": "skill_test_runs",
    "policy": "skill_test_runs_ops_all",
    "role": "ops",
@@ -14161,7 +14234,7 @@
    ]
   },
   {
-   "entity": "E-085",
+   "entity": "E-086",
    "table": "skill_attachments",
    "policy": "skill_attachments_tenant_read",
    "role": "member",
@@ -14177,7 +14250,7 @@
    ]
   },
   {
-   "entity": "E-085",
+   "entity": "E-086",
    "table": "skill_attachments",
    "policy": "skill_attachments_tenant_read",
    "role": "member",
@@ -14193,7 +14266,7 @@
    ]
   },
   {
-   "entity": "E-085",
+   "entity": "E-086",
    "table": "skill_attachments",
    "policy": "skill_attachments_tenant_read",
    "role": "member",
@@ -14209,7 +14282,7 @@
    ]
   },
   {
-   "entity": "E-085",
+   "entity": "E-086",
    "table": "skill_attachments",
    "policy": "skill_attachments_tenant_read",
    "role": "member",
@@ -14225,7 +14298,7 @@
    ]
   },
   {
-   "entity": "E-085",
+   "entity": "E-086",
    "table": "skill_attachments",
    "policy": "skill_attachments_permission_write",
    "role": "member",
@@ -14241,7 +14314,7 @@
    ]
   },
   {
-   "entity": "E-085",
+   "entity": "E-086",
    "table": "skill_attachments",
    "policy": "skill_attachments_permission_write",
    "role": "member",
@@ -14257,7 +14330,7 @@
    ]
   },
   {
-   "entity": "E-085",
+   "entity": "E-086",
    "table": "skill_attachments",
    "policy": "skill_attachments_permission_write",
    "role": "member",
@@ -14273,7 +14346,7 @@
    ]
   },
   {
-   "entity": "E-085",
+   "entity": "E-086",
    "table": "skill_attachments",
    "policy": "skill_attachments_permission_write",
    "role": "member",
@@ -14289,7 +14362,7 @@
    ]
   },
   {
-   "entity": "E-085",
+   "entity": "E-086",
    "table": "skill_attachments",
    "policy": "skill_attachments_ops_read_with_grant",
    "role": "ops",
@@ -14304,7 +14377,7 @@
    ]
   },
   {
-   "entity": "E-085",
+   "entity": "E-086",
    "table": "skill_attachments",
    "policy": "skill_attachments_ops_read_with_grant",
    "role": "ops",
@@ -14319,7 +14392,7 @@
    ]
   },
   {
-   "entity": "E-085",
+   "entity": "E-086",
    "table": "skill_attachments",
    "policy": "skill_attachments_ops_read_with_grant",
    "role": "ops",
@@ -14334,7 +14407,7 @@
    ]
   },
   {
-   "entity": "E-085",
+   "entity": "E-086",
    "table": "skill_attachments",
    "policy": "skill_attachments_ops_read_with_grant",
    "role": "ops",
@@ -14349,7 +14422,7 @@
    ]
   },
   {
-   "entity": "E-086",
+   "entity": "E-087",
    "table": "payment_methods",
    "policy": "payment_methods_tenant_read",
    "role": "member",
@@ -14365,7 +14438,7 @@
    ]
   },
   {
-   "entity": "E-086",
+   "entity": "E-087",
    "table": "payment_methods",
    "policy": "payment_methods_tenant_read",
    "role": "member",
@@ -14381,7 +14454,7 @@
    ]
   },
   {
-   "entity": "E-086",
+   "entity": "E-087",
    "table": "payment_methods",
    "policy": "payment_methods_tenant_read",
    "role": "member",
@@ -14397,7 +14470,7 @@
    ]
   },
   {
-   "entity": "E-086",
+   "entity": "E-087",
    "table": "payment_methods",
    "policy": "payment_methods_tenant_read",
    "role": "member",
@@ -14413,7 +14486,7 @@
    ]
   },
   {
-   "entity": "E-086",
+   "entity": "E-087",
    "table": "payment_methods",
    "policy": "payment_methods_permission_write",
    "role": "member",
@@ -14429,7 +14502,7 @@
    ]
   },
   {
-   "entity": "E-086",
+   "entity": "E-087",
    "table": "payment_methods",
    "policy": "payment_methods_permission_write",
    "role": "member",
@@ -14445,7 +14518,7 @@
    ]
   },
   {
-   "entity": "E-086",
+   "entity": "E-087",
    "table": "payment_methods",
    "policy": "payment_methods_permission_write",
    "role": "member",
@@ -14461,7 +14534,7 @@
    ]
   },
   {
-   "entity": "E-086",
+   "entity": "E-087",
    "table": "payment_methods",
    "policy": "payment_methods_permission_write",
    "role": "member",
@@ -14477,7 +14550,7 @@
    ]
   },
   {
-   "entity": "E-086",
+   "entity": "E-087",
    "table": "payment_methods",
    "policy": "payment_methods_ops_read_with_grant",
    "role": "ops",
@@ -14492,7 +14565,7 @@
    ]
   },
   {
-   "entity": "E-086",
+   "entity": "E-087",
    "table": "payment_methods",
    "policy": "payment_methods_ops_read_with_grant",
    "role": "ops",
@@ -14507,7 +14580,7 @@
    ]
   },
   {
-   "entity": "E-086",
+   "entity": "E-087",
    "table": "payment_methods",
    "policy": "payment_methods_ops_read_with_grant",
    "role": "ops",
@@ -14522,7 +14595,7 @@
    ]
   },
   {
-   "entity": "E-086",
+   "entity": "E-087",
    "table": "payment_methods",
    "policy": "payment_methods_ops_read_with_grant",
    "role": "ops",
@@ -14537,7 +14610,7 @@
    ]
   },
   {
-   "entity": "E-087",
+   "entity": "E-088",
    "table": "billing_events",
    "policy": "billing_events_tenant_read",
    "role": "member",
@@ -14553,7 +14626,7 @@
    ]
   },
   {
-   "entity": "E-087",
+   "entity": "E-088",
    "table": "billing_events",
    "policy": "billing_events_tenant_read",
    "role": "member",
@@ -14569,7 +14642,7 @@
    ]
   },
   {
-   "entity": "E-087",
+   "entity": "E-088",
    "table": "billing_events",
    "policy": "billing_events_tenant_read",
    "role": "member",
@@ -14585,7 +14658,7 @@
    ]
   },
   {
-   "entity": "E-087",
+   "entity": "E-088",
    "table": "billing_events",
    "policy": "billing_events_tenant_read",
    "role": "member",
@@ -14601,7 +14674,7 @@
    ]
   },
   {
-   "entity": "E-087",
+   "entity": "E-088",
    "table": "billing_events",
    "policy": "billing_events_permission_write",
    "role": "member",
@@ -14617,7 +14690,7 @@
    ]
   },
   {
-   "entity": "E-087",
+   "entity": "E-088",
    "table": "billing_events",
    "policy": "billing_events_permission_write",
    "role": "member",
@@ -14633,7 +14706,7 @@
    ]
   },
   {
-   "entity": "E-087",
+   "entity": "E-088",
    "table": "billing_events",
    "policy": "billing_events_permission_write",
    "role": "member",
@@ -14649,7 +14722,7 @@
    ]
   },
   {
-   "entity": "E-087",
+   "entity": "E-088",
    "table": "billing_events",
    "policy": "billing_events_permission_write",
    "role": "member",
@@ -14665,7 +14738,7 @@
    ]
   },
   {
-   "entity": "E-087",
+   "entity": "E-088",
    "table": "billing_events",
    "policy": "billing_events_ops_read_with_grant",
    "role": "ops",
@@ -14680,7 +14753,7 @@
    ]
   },
   {
-   "entity": "E-087",
+   "entity": "E-088",
    "table": "billing_events",
    "policy": "billing_events_ops_read_with_grant",
    "role": "ops",
@@ -14695,7 +14768,7 @@
    ]
   },
   {
-   "entity": "E-087",
+   "entity": "E-088",
    "table": "billing_events",
    "policy": "billing_events_ops_read_with_grant",
    "role": "ops",
@@ -14710,7 +14783,7 @@
    ]
   },
   {
-   "entity": "E-087",
+   "entity": "E-088",
    "table": "billing_events",
    "policy": "billing_events_ops_read_with_grant",
    "role": "ops",
@@ -14725,7 +14798,7 @@
    ]
   },
   {
-   "entity": "E-088",
+   "entity": "E-089",
    "table": "llm_routes",
    "policy": "llm_routes_tenant_read",
    "role": "member",
@@ -14741,7 +14814,7 @@
    ]
   },
   {
-   "entity": "E-088",
+   "entity": "E-089",
    "table": "llm_routes",
    "policy": "llm_routes_tenant_read",
    "role": "member",
@@ -14757,7 +14830,7 @@
    ]
   },
   {
-   "entity": "E-088",
+   "entity": "E-089",
    "table": "llm_routes",
    "policy": "llm_routes_tenant_read",
    "role": "member",
@@ -14773,7 +14846,7 @@
    ]
   },
   {
-   "entity": "E-088",
+   "entity": "E-089",
    "table": "llm_routes",
    "policy": "llm_routes_tenant_read",
    "role": "member",
@@ -14789,7 +14862,7 @@
    ]
   },
   {
-   "entity": "E-088",
+   "entity": "E-089",
    "table": "llm_routes",
    "policy": "llm_routes_permission_write",
    "role": "member",
@@ -14805,7 +14878,7 @@
    ]
   },
   {
-   "entity": "E-088",
+   "entity": "E-089",
    "table": "llm_routes",
    "policy": "llm_routes_permission_write",
    "role": "member",
@@ -14821,7 +14894,7 @@
    ]
   },
   {
-   "entity": "E-088",
+   "entity": "E-089",
    "table": "llm_routes",
    "policy": "llm_routes_permission_write",
    "role": "member",
@@ -14837,7 +14910,7 @@
    ]
   },
   {
-   "entity": "E-088",
+   "entity": "E-089",
    "table": "llm_routes",
    "policy": "llm_routes_permission_write",
    "role": "member",
@@ -14853,7 +14926,7 @@
    ]
   },
   {
-   "entity": "E-088",
+   "entity": "E-089",
    "table": "llm_routes",
    "policy": "llm_routes_ops_read_with_grant",
    "role": "ops",
@@ -14868,7 +14941,7 @@
    ]
   },
   {
-   "entity": "E-088",
+   "entity": "E-089",
    "table": "llm_routes",
    "policy": "llm_routes_ops_read_with_grant",
    "role": "ops",
@@ -14883,7 +14956,7 @@
    ]
   },
   {
-   "entity": "E-088",
+   "entity": "E-089",
    "table": "llm_routes",
    "policy": "llm_routes_ops_read_with_grant",
    "role": "ops",
@@ -14898,7 +14971,7 @@
    ]
   },
   {
-   "entity": "E-088",
+   "entity": "E-089",
    "table": "llm_routes",
    "policy": "llm_routes_ops_read_with_grant",
    "role": "ops",
@@ -14913,7 +14986,7 @@
    ]
   },
   {
-   "entity": "E-088",
+   "entity": "E-089",
    "table": "llm_routes",
    "policy": "llm_routes_ops_write",
    "role": "ops",
@@ -14928,7 +15001,7 @@
    ]
   },
   {
-   "entity": "E-088",
+   "entity": "E-089",
    "table": "llm_routes",
    "policy": "llm_routes_ops_write",
    "role": "ops",
@@ -14943,7 +15016,7 @@
    ]
   },
   {
-   "entity": "E-088",
+   "entity": "E-089",
    "table": "llm_routes",
    "policy": "llm_routes_ops_write",
    "role": "ops",
@@ -14958,7 +15031,7 @@
    ]
   },
   {
-   "entity": "E-089",
+   "entity": "E-090",
    "table": "llm_capabilities",
    "policy": "llm_capabilities_all_read",
    "role": "authenticated",
@@ -14972,7 +15045,7 @@
    ]
   },
   {
-   "entity": "E-089",
+   "entity": "E-090",
    "table": "llm_capabilities",
    "policy": "llm_capabilities_all_read",
    "role": "authenticated",
@@ -14986,7 +15059,7 @@
    ]
   },
   {
-   "entity": "E-089",
+   "entity": "E-090",
    "table": "llm_capabilities",
    "policy": "llm_capabilities_ops_write",
    "role": "ops",
@@ -15001,7 +15074,7 @@
    ]
   },
   {
-   "entity": "E-089",
+   "entity": "E-090",
    "table": "llm_capabilities",
    "policy": "llm_capabilities_ops_write",
    "role": "ops",
@@ -15016,7 +15089,7 @@
    ]
   },
   {
-   "entity": "E-089",
+   "entity": "E-090",
    "table": "llm_capabilities",
    "policy": "llm_capabilities_ops_write",
    "role": "ops",
@@ -15031,7 +15104,7 @@
    ]
   },
   {
-   "entity": "E-090",
+   "entity": "E-091",
    "table": "push_devices",
    "policy": "push_devices_tenant_read",
    "role": "member",
@@ -15047,7 +15120,7 @@
    ]
   },
   {
-   "entity": "E-090",
+   "entity": "E-091",
    "table": "push_devices",
    "policy": "push_devices_tenant_read",
    "role": "member",
@@ -15063,7 +15136,7 @@
    ]
   },
   {
-   "entity": "E-090",
+   "entity": "E-091",
    "table": "push_devices",
    "policy": "push_devices_tenant_read",
    "role": "member",
@@ -15079,7 +15152,7 @@
    ]
   },
   {
-   "entity": "E-090",
+   "entity": "E-091",
    "table": "push_devices",
    "policy": "push_devices_tenant_read",
    "role": "member",
@@ -15095,7 +15168,7 @@
    ]
   },
   {
-   "entity": "E-090",
+   "entity": "E-091",
    "table": "push_devices",
    "policy": "push_devices_self_only_write",
    "role": "member",
@@ -15109,7 +15182,7 @@
    ]
   },
   {
-   "entity": "E-090",
+   "entity": "E-091",
    "table": "push_devices",
    "policy": "push_devices_self_only_write",
    "role": "member",
@@ -15123,7 +15196,7 @@
    ]
   },
   {
-   "entity": "E-090",
+   "entity": "E-091",
    "table": "push_devices",
    "policy": "push_devices_self_only_write",
    "role": "member",
@@ -15137,7 +15210,7 @@
    ]
   },
   {
-   "entity": "E-090",
+   "entity": "E-091",
    "table": "push_devices",
    "policy": "push_devices_self_only_write",
    "role": "member",
@@ -15151,7 +15224,7 @@
    ]
   },
   {
-   "entity": "E-090",
+   "entity": "E-091",
    "table": "push_devices",
    "policy": "push_devices_permission_write",
    "role": "member",
@@ -15167,7 +15240,7 @@
    ]
   },
   {
-   "entity": "E-090",
+   "entity": "E-091",
    "table": "push_devices",
    "policy": "push_devices_permission_write",
    "role": "member",
@@ -15183,7 +15256,7 @@
    ]
   },
   {
-   "entity": "E-090",
+   "entity": "E-091",
    "table": "push_devices",
    "policy": "push_devices_permission_write",
    "role": "member",
@@ -15199,7 +15272,7 @@
    ]
   },
   {
-   "entity": "E-090",
+   "entity": "E-091",
    "table": "push_devices",
    "policy": "push_devices_permission_write",
    "role": "member",
@@ -15215,7 +15288,7 @@
    ]
   },
   {
-   "entity": "E-090",
+   "entity": "E-091",
    "table": "push_devices",
    "policy": "push_devices_ops_read_with_grant",
    "role": "ops",
@@ -15230,7 +15303,7 @@
    ]
   },
   {
-   "entity": "E-090",
+   "entity": "E-091",
    "table": "push_devices",
    "policy": "push_devices_ops_read_with_grant",
    "role": "ops",
@@ -15245,7 +15318,7 @@
    ]
   },
   {
-   "entity": "E-090",
+   "entity": "E-091",
    "table": "push_devices",
    "policy": "push_devices_ops_read_with_grant",
    "role": "ops",
@@ -15260,7 +15333,7 @@
    ]
   },
   {
-   "entity": "E-090",
+   "entity": "E-091",
    "table": "push_devices",
    "policy": "push_devices_ops_read_with_grant",
    "role": "ops",
@@ -15275,7 +15348,7 @@
    ]
   },
   {
-   "entity": "E-091",
+   "entity": "E-092",
    "table": "disclosure_versions",
    "policy": "disclosure_versions_ops_all",
    "role": "ops",
@@ -15290,28 +15363,13 @@
    ]
   },
   {
-   "entity": "E-091",
+   "entity": "E-092",
    "table": "disclosure_versions",
    "policy": "disclosure_versions_ops_all",
    "role": "ops",
    "role_ja": "運営（R6）",
    "operation": "all",
    "case": "会社の人（自社の文脈）",
-   "expected": "NG（0 行）",
-   "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
-   "source": [
-    "D-073.7",
-    "D-077.4"
-   ]
-  },
-  {
-   "entity": "E-091",
-   "table": "disclosure_versions",
-   "policy": "disclosure_versions_ops_all",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "all",
-   "case": "SET LOCAL を飛ばす",
    "expected": "NG（0 行）",
    "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
    "source": [
@@ -15321,6 +15379,21 @@
   },
   {
    "entity": "E-092",
+   "table": "disclosure_versions",
+   "policy": "disclosure_versions_ops_all",
+   "role": "ops",
+   "role_ja": "運営（R6）",
+   "operation": "all",
+   "case": "SET LOCAL を飛ばす",
+   "expected": "NG（0 行）",
+   "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
+   "source": [
+    "D-073.7",
+    "D-077.4"
+   ]
+  },
+  {
+   "entity": "E-093",
    "table": "subprocessors",
    "policy": "subprocessors_ops_all",
    "role": "ops",
@@ -15335,7 +15408,7 @@
    ]
   },
   {
-   "entity": "E-092",
+   "entity": "E-093",
    "table": "subprocessors",
    "policy": "subprocessors_ops_all",
    "role": "ops",
@@ -15350,7 +15423,7 @@
    ]
   },
   {
-   "entity": "E-092",
+   "entity": "E-093",
    "table": "subprocessors",
    "policy": "subprocessors_ops_all",
    "role": "ops",

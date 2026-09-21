@@ -5,7 +5,8 @@
   "type": "module",
   "main": "./src/index.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./resend": "./src/resend.ts"
   },
   "scripts": {
     "type-check": "tsc -p tsconfig.json --noEmit"

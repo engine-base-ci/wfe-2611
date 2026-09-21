@@ -4,8 +4,8 @@
 
 - 総タスク数：171（A 26 / D 14 / F 18 / I 22 / S 15 / U-screen 64 / U-shared 7 / V2 5）
 - 画面の被覆：64/64
-- L1 テスト行：4740（正本 07_qa/test-specs）／ 流れ（L2）：9
-- 工数：Human 5534.5 h（692 日）／ AI 計算 991.1 h ＋ 人のレビュー 52.0 h → wall-clock 278.8 h（47 日・並列 10）
+- L1 テスト行：4751（正本 07_qa/test-specs）／ 流れ（L2）：9
+- 工数：Human 5540.5 h（693 日）／ AI 計算 991.6 h ＋ 人のレビュー 52.0 h → wall-clock 278.8 h（47 日・並列 10）
 - Wave 数：25
 
 ## Group 別タスク一覧
@@ -48,7 +48,7 @@
 | T-D-09 | データ層 10. 口座状態の出来事・失効・サポートアクセス（6 表・migration・RLS・索引 | db | foundation | 40 | 10.0 | 11.0 | 3 | 3 | 13 |
 | T-D-10 | データ層 11. 運営（9 表・migration・RLS・索引・seed） | db | foundation | 58 | 4.8 | 4.8 | 3 | 3 | 16 |
 | T-D-11 | データ層 12. 運営と顧客の間で往復するもの・自分で整えるもの（14 表・migration・RL | db | foundation | 88 | 22.0 | 23.0 | 4 | 3 | 26 |
-| T-D-12 | データ層 13. 取り込み・正規連携・招待・持ち出し・添付（5 表・migration・RLS・索引 | db | foundation | 34 | 2.8 | 2.8 | 4 | 3 | 12 |
+| T-D-12 | データ層 13. 取り込み・正規連携・招待・持ち出し・添付（6 表・migration・RLS・索引 | db | foundation | 40 | 3.3 | 3.3 | 4 | 3 | 13 |
 | T-D-13 | データ層 14. スキル（4 表・migration・RLS・索引・seed） | db | foundation | 28 | 2.3 | 2.3 | 4 | 3 | 10 |
 | T-D-14 | データ層 15. 段階 2 で足す表（7 表・migration・RLS・索引・seed） | db | foundation | 46 | 3.8 | 3.8 | 4 | 3 | 14 |
 
@@ -86,7 +86,7 @@
 | T-A-18 | API 困ったら運営に聞きたい。止まっているのが自分のせいか Kaname （3 endpoint） | backend | backend | 104 | 26.0 | 27.0 | 7 | 13 | 29 |
 | T-A-19 | API 運営として、問い合わせに答え、お知らせと稼働状況を出し、各社の請求・（4 endpoint） | backend | backend | 143 | 35.8 | 36.8 | 7 | 16 | 34 |
 | T-A-20 | API 自分のアカウント・会社の設定・既存データの取り込み・外部サービスの連（4 endpoint） | backend | backend | 164 | 41.0 | 42.0 | 7 | 23 | 33 |
-| T-A-21 | API 運営として、外部サービスの可否（サービス台帳）とプランの定義と目標ス（3 endpoint） | backend | backend | 98 | 8.2 | 8.2 | 8 | 16 | 27 |
+| T-A-21 | API 運営として、外部サービスの可否（サービス台帳）とプランの定義と目標ス（3 endpoint） | backend | backend | 98 | 8.2 | 8.2 | 8 | 17 | 27 |
 | T-A-22 | API 運営として、公開の申請を審査し、顧客が許可したときだけ支援で中を見て（3 endpoint） | backend | backend | 155 | 38.8 | 39.8 | 8 | 13 | 24 |
 | T-A-23 | API 運営として、各社に配るもの（AI社員・担当業務・ルール・テンプレ）と（2 endpoint） | backend | backend | 74 | 6.2 | 6.2 | 8 | 8 | 17 |
 | T-A-24 | API このツールを入れて安全か、社内（情シス・コンプラ）に説明できるように（1 endpoint・ | backend | backend | 131 | 32.8 | 33.8 | 23 | 9 | 11 |
@@ -110,7 +110,7 @@
 | ID | タイトル | category | layer | Human h | AI h | wall-clock | wave | depends_on | L1 行 |
 |---|---|---|---|---|---|---|---|---|---|
 | T-U-01 | 画面 アカウントを作る（2 状態・R1/R2） | frontend | ui | 12.0 | 1.2 | 1.2 | 11 | 8 | 35 |
-| T-U-02 | 画面 メールを確認する（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 11 | 11 | 31 |
+| T-U-02 | 画面 メールを確認する（4 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 11 | 11 | 41 |
 | T-U-03 | 画面 招待を受けて参加する（3 状態・R3/R4） | frontend | ui | 14.5 | 1.4 | 1.4 | 11 | 8 | 28 |
 | T-U-04 | 画面 2段階認証を設定する（3 状態・R1/R2/R3） | frontend | ui | 13.5 | 1.4 | 1.4 | 11 | 11 | 34 |
 | T-U-05 | 画面 ログインする（3 状態・R1/R2/R3/R4） | frontend | ui | 17.5 | 1.8 | 1.8 | 11 | 11 | 45 |
@@ -262,7 +262,7 @@
 ### T-F-04 証跡の土台（audit_events / ops_audit_events / security_events 追記専用
 
 - group F / layer foundation / phase 1_foundation / wave 0 / Human 16 h・AI 1.3 h・wall-clock 1.3 h
-- 行為 — / 画面 — / 表 audit_events ops_audit_events security_events export_jobs / 関門 C2
+- 行為 — / 画面 — / 表 audit_events ops_audit_events security_events pending_signup / 関門 C2
 - 依存 —
 - 根拠（逐語）：D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」 ／ D-074「人が抜ける（無効化・退会）と会社が退会するときに、flow.json の全オブジェクトで何が起きるかを 1 つの表で決め」
 - 触るファイル：packages/db/migrations/002_03.sql (new)、packages/db/policies/03.sql (new)、package.json (modify)
@@ -571,16 +571,16 @@
 - L1 行 26（['RLS-D11-001', 'RLS-D11-002', 'RLS-D11-003'] …）／ L2 —
 - audit: 07_tasks/audit/T-D-11.md
 
-### T-D-12 データ層 13. 取り込み・正規連携・招待・持ち出し・添付（5 表・migration・RLS・索引・seed）
+### T-D-12 データ層 13. 取り込み・正規連携・招待・持ち出し・添付（6 表・migration・RLS・索引・seed）
 
-- group D / layer foundation / phase 2_data / wave 4 / Human 34 h・AI 2.8 h・wall-clock 2.8 h
-- 行為 — / 画面 — / 表 imports integrations invitations export_jobs attachments / 関門 C2
+- group D / layer foundation / phase 2_data / wave 4 / Human 40 h・AI 3.3 h・wall-clock 3.3 h
+- 行為 — / 画面 — / 表 imports integrations invitations pending_signup export_jobs attachments / 関門 C2
 - 依存 T-F-01 T-F-02 T-F-03
 - 根拠（逐語）：D-025「編集の3経路。(1)画面で直接編集=人が変える時は即反映(承認を挟まない) (2)AIに頼む(会話)=AIが変える時だけ」 ／ D-026「スコープ4層(運営/会社/部署/個人)を担当業務・ルール・テンプレ・覚えた操作・記憶すべてに同じ形で使う」
 - 触るファイル：packages/db/migrations/0112_13.sql (new)、packages/db/policies/imports.sql (new)、packages/db/schema.ts (modify)
-- AC（Tier 1）：UBIQUITOUS: 表 imports, integrations, invitations, export_jobs, attachments が ER 
+- AC（Tier 1）：UBIQUITOUS: 表 imports, integrations, invitations, pending_signup, export_jobs, a
 - AC（Tier 2）：UNWANTED: IF 他テナントの行を SELECT/UPDATE しようとしたら 0 行／403 で副作用が起きない（imports_tenant_rea ／ UBIQUITOUS: imports_tenant_read ／ UBIQUITOUS: imports_permission_write
-- L1 行 12（['RLS-D12-001', 'RLS-D12-002', 'RLS-D12-003'] …）／ L2 —
+- L1 行 13（['RLS-D12-001', 'RLS-D12-002', 'RLS-D12-003'] …）／ L2 —
 - audit: 07_tasks/audit/T-D-12.md
 
 ### T-D-13 データ層 14. スキル（4 表・migration・RLS・索引・seed）
@@ -851,7 +851,7 @@
 
 - group A / layer backend / phase 3_api / wave 8 / Human 98 h・AI 8.2 h・wall-clock 8.2 h
 - 行為 A37 A46 A53 A59 A78 A79 A80 / 画面 ai-activity ai-staff ai-staff-detail ops-catalog ops-services ops-skills / 表 members clones ai_employees duties duty_versions policies / 関門 C2 C4 C6
-- 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-04 T-D-05 T-D-10 T-D-13
+- 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-04 T-D-05 T-D-10 T-D-12
 - 根拠（逐語）：D-030「構築メタスキル群は運営の資産で顧客に見えない。会社モデル構築・担当業務の定義・台帳の設計・目標の分解・改善提案・自分のA」 ／ D-037「AI社員の出どころは運営配布/会社作成/個人作成の3経路。託されたAI社員は使えるが定義は編集できない。個人ルールだけは」
 - 触るファイル：apps/api/src/routes/ai_employees.ts (new)、apps/api/src/routes/service_registry_versions.ts (new)、apps/api/src/routes/skills.ts (new)、apps/api/src/app.ts (modify)
 - AC（Tier 1）：UBIQUITOUS: GET /api/v1/ai_employees は 08_api/openapi.yaml の operation getAiEmpl ／ UBIQUITOUS: PATCH /api/v1/service_registry_versions/:id は 08_api/openapi.yaml の 
@@ -886,7 +886,7 @@
 ### T-A-24 API このツールを入れて安全か、社内（情シス・コンプラ）に説明できるように（1 endpoint・段階 2）
 
 - group A / layer backend / phase 9_v2_api / wave 23 / Human 131 h・AI 32.8 h・wall-clock 33.8 h
-- 行為 A84 / 画面 disclosure / 表 audit_events ops_audit_events disclosure_versions subprocessors / 関門 C4
+- 行為 A84 / 画面 disclosure / 表 audit_events ops_audit_events push_devices disclosure_versions / 関門 C4
 - 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-06 T-D-10 T-D-14 T-F-10
 - 根拠（逐語）：D-010「製品の背骨。会社モデル(目標・台帳定義・担当業務・組織・ポリシー・記憶)を1つの定義に。画面もAI社員も自動実行もこの定」 ／ D-015「Bridgeは顧客PCで動く万能実行器。本人のIP・本人のログイン済みセッションで動くのでCAPTCHA/bot検知に到」
 - 触るファイル：apps/api/src/routes/disclosure_versions.ts (new)、apps/api/src/app.ts (modify)
@@ -898,7 +898,7 @@
 ### T-A-25 API 運営として、問い合わせに答え、お知らせと稼働状況を出し、各社の請求・（2 endpoint・段階 2）
 
 - group A / layer backend / phase 9_v2_api / wave 23 / Human 143 h・AI 35.8 h・wall-clock 36.8 h
-- 行為 A85 A86 / 画面 ops-disclosure ops-llm / 表 notices notice_deliveries invoices payments llm_routes disclosure_versions / 関門 C2 C4 C6
+- 行為 A85 A86 / 画面 ops-disclosure ops-llm / 表 notices notice_deliveries invoices payments billing_events push_devices / 関門 C2 C4 C6
 - 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-11 T-D-14 T-F-02 T-F-03 T-F-04
 - 根拠（逐語）：D-002「65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集」 ／ D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」
 - 触るファイル：apps/api/src/routes/disclosure_versions.ts (new)、apps/api/src/routes/llm_routes.ts (new)、apps/api/src/app.ts (modify)
@@ -910,7 +910,7 @@
 ### T-A-26 API 自分のアカウント・会社の設定・既存データの取り込み・外部サービスの連（2 endpoint・段階 2）
 
 - group A / layer backend / phase 9_v2_api / wave 23 / Human 164 h・AI 41.0 h・wall-clock 42.0 h
-- 行為 A82 A83 / 画面 app-setup llm-routes / 表 credentials sessions notification_preferences notifications llm_routes llm_capabilities / 関門 C2 C3 C6 C8
+- 行為 A82 A83 / 画面 app-setup llm-routes / 表 credentials sessions notification_preferences notifications billing_events llm_routes / 関門 C2 C3 C6 C8
 - 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-05 T-D-09 T-D-11 T-D-14 T-F-02
 - 根拠（逐語）：D-006「スコープの採否は『抜いてもループが閉じるか』。CRM・請求・経理を切ると目標の数値が出せなくなるので切らない」 ／ D-013「実行層は接続の器を1回作れば設定で増える形にする。連携を1本ずつ書かない」
 - 触るファイル：apps/api/src/routes/llm_routes.ts (new)、apps/api/src/routes/push_devices.ts (new)、apps/api/src/app.ts (modify)
@@ -1015,16 +1015,16 @@
 - L1 行 35（['SCR-SIGNUP-001', 'SCR-SIGNUP-002', 'SCR-SIGNUP-003'] …）／ L2 ['J-01']
 - audit: 07_tasks/audit/T-U-01.md
 
-### T-U-02 画面 メールを確認する（3 状態・R1/R2）
+### T-U-02 画面 メールを確認する（4 状態・R1/R2）
 
 - group U-screen / layer ui / phase 5_ui_parallel / wave 11 / Human 14.5 h・AI 1.4 h・wall-clock 1.4 h
 - 行為 A02 / 画面 verify-email / 表 members permissions layers / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-01 T-A-03 T-A-04
 - 根拠（逐語）：D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」 ／ D-053「画面は行為から導出する。画面から始めると『この画面で何をしたいか分からない』が必ず起きる。役割×用事→行為の背骨→オブジ」
 - 触るファイル：apps/web/app/(public)/verify-email/page.tsx (new)、apps/web/tests/screens/verify-email.spec.ts (new)
-- AC（Tier 1）：UBIQUITOUS: 画面 verify-email は URL /verify-email で開く（apps/web/app/(public)/verify ／ STATE-DRIVEN: WHILE 画面 verify-email が描画中 THEN h1「メールを確認する」・第2ナビ ・状態 3（送信済み、確認できた
+- AC（Tier 1）：UBIQUITOUS: 画面 verify-email は URL /verify-email で開く（apps/web/app/(public)/verify ／ STATE-DRIVEN: WHILE 画面 verify-email が描画中 THEN h1「メールを確認する」・第2ナビ ・状態 4（送信済み、出せなかっ
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/members が「届いたリンクを押す」として呼ばれたとき THEN Kaname は「本人確認を ／ EVENT-DRIVEN: WHEN GET /api/v1/members が「認証アプリを登録する」として呼ばれたとき THEN Kaname は「TOTP ／ EVENT-DRIVEN: WHEN 「はじめの設定をはじめる」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映
-- L1 行 31（['SCR-VERIFY-EMAIL-001', 'SCR-VERIFY-EMAIL-002', 'SCR-VERIFY-EMAIL-003'] …）／ L2 ['J-01']
+- L1 行 41（['SCR-VERIFY-EMAIL-001', 'SCR-VERIFY-EMAIL-029', 'SCR-VERIFY-EMAIL-030'] …）／ L2 ['J-01']
 - audit: 07_tasks/audit/T-U-02.md
 
 ### T-U-03 画面 招待を受けて参加する（3 状態・R3/R4）

@@ -62,16 +62,16 @@
    "total_screens": 64,
    "uncovered_screens": []
   },
-  "total_estimate_hours_human": 5534.5,
-  "total_estimate_hours_ai_compute": 991.1,
+  "total_estimate_hours_human": 5540.5,
+  "total_estimate_hours_ai_compute": 991.6,
   "human_review_total_h": 52.0,
   "total_wall_clock_h_ai_parallel": 278.8,
   "parallel_capacity": 10,
   "calendar_days_ai": 47,
-  "calendar_days_human": 692,
-  "total_estimate_hours": 1043.1,
+  "calendar_days_human": 693,
+  "total_estimate_hours": 1043.6,
   "total_estimate_sessions": 346,
-  "qa_rows_total": 4740,
+  "qa_rows_total": 4751,
   "journeys": 9
  },
  "waves": [
@@ -159,8 +159,8 @@
    ],
    "parallel": 4,
    "wall_clock_h_ai": 23.5,
-   "estimate_hours_human": 196,
-   "estimate_hours_ai_compute": 30.9
+   "estimate_hours_human": 202,
+   "estimate_hours_ai_compute": 31.4
   },
   {
    "wave": 5,
@@ -1147,10 +1147,8 @@
     "security_events_tenant_read",
     "security_events_ops_read_with_grant",
     "security_events_append_only",
-    "export_jobs_tenant_read",
-    "export_jobs_self_only_write",
-    "export_jobs_permission_write",
-    "export_jobs_ops_read_with_grant"
+    "pending_signup_all_read",
+    "pending_signup_ops_write"
    ],
    "spec_links": [
     "03_architecture/アーキテクチャ設計書.md",
@@ -6221,7 +6219,7 @@
   },
   {
    "id": "T-D-12",
-   "title": "データ層 13. 取り込み・正規連携・招待・持ち出し・添付（5 表・migration・RLS・索引・seed）",
+   "title": "データ層 13. 取り込み・正規連携・招待・持ち出し・添付（6 表・migration・RLS・索引・seed）",
    "category": "db",
    "label": "NEW",
    "feature_id": null,
@@ -6232,7 +6230,8 @@
     "E-078",
     "E-079",
     "E-080",
-    "E-081"
+    "E-081",
+    "E-082"
    ],
    "acts": [],
    "legacy_task_id": null,
@@ -6285,7 +6284,7 @@
    },
    "acceptance_criteria": {
     "structural": [
-     "UBIQUITOUS: 表 imports, integrations, invitations, export_jobs, attachments が ER 図 §13. 取り込み・正規連 の列・型・関係どおりに存在し、全表に RLS が定義されている（RLS 未定義の表は CI で作れない）"
+     "UBIQUITOUS: 表 imports, integrations, invitations, pending_signup, export_jobs, attachments が ER 図 §13. 取り込み・正規連 の列・型・関係どおりに存在し、全表に RLS が定義されている（RLS 未定義の表は CI で作れない）"
     ],
     "functional": [
      "UNWANTED: IF 他テナントの行を SELECT/UPDATE しようとしたら 0 行／403 で副作用が起きない（imports_tenant_read）",
@@ -6316,6 +6315,8 @@
     "invitations_tenant_read",
     "invitations_permission_write",
     "invitations_ops_read_with_grant",
+    "pending_signup_all_read",
+    "pending_signup_ops_write",
     "export_jobs_tenant_read",
     "export_jobs_self_only_write",
     "export_jobs_permission_write",
@@ -6336,6 +6337,7 @@
      "RLS-D12-001",
      "RLS-D12-002",
      "RLS-D12-003",
+     "RLS-D12-013",
      "RLS-D12-004",
      "RLS-D12-005",
      "RLS-D12-006",
@@ -6367,7 +6369,8 @@
     "D-076",
     "D-076.3",
     "D-076.4",
-    "D-085"
+    "D-085",
+    "D-088.2"
    ],
    "decision_summaries": [
     {
@@ -6391,7 +6394,7 @@
    "why": "",
    "acceptance_criteria_inline": {
     "tier_1_structural": [
-     "UBIQUITOUS: 表 imports, integrations, invitations, export_jobs, attachments が ER 図 §13. 取り込み・正規連 の列・型・関係どおりに存在し、全表に RLS が定義されている（RLS 未定義の表は CI で作れない）"
+     "UBIQUITOUS: 表 imports, integrations, invitations, pending_signup, export_jobs, attachments が ER 図 §13. 取り込み・正規連 の列・型・関係どおりに存在し、全表に RLS が定義されている（RLS 未定義の表は CI で作れない）"
     ],
     "tier_2_functional": [
      {
@@ -6440,15 +6443,15 @@
      "audit MD（07_tasks/audit/<id>.md）に impl line を記入"
     ]
    },
-   "estimate_hours_human": 34,
-   "estimate_hours_ai": 2.8,
+   "estimate_hours_human": 40,
+   "estimate_hours_ai": 3.3,
    "human_review_h": 0.0,
-   "wall_clock_h_ai": 2.8,
+   "wall_clock_h_ai": 3.3,
    "ai_acceleration_factor": 12,
    "blocking_dependencies_h": 0,
    "estimate_method": "reference",
    "estimate_confidence": "medium",
-   "estimate_hours": 2.8,
+   "estimate_hours": 3.3,
    "estimate_sessions": 1
   },
   {
@@ -6460,10 +6463,10 @@
    "feature_ids": [],
    "screen_ids": [],
    "entity_ids": [
-    "E-082",
     "E-083",
     "E-084",
-    "E-085"
+    "E-085",
+    "E-086"
    ],
    "acts": [],
    "legacy_task_id": null,
@@ -6670,13 +6673,13 @@
    "feature_ids": [],
    "screen_ids": [],
    "entity_ids": [
-    "E-086",
     "E-087",
     "E-088",
     "E-089",
     "E-090",
     "E-091",
-    "E-092"
+    "E-092",
+    "E-093"
    ],
    "acts": [],
    "legacy_task_id": null,
@@ -15585,6 +15588,7 @@
     "T-D-04",
     "T-D-05",
     "T-D-10",
+    "T-D-12",
     "T-D-13",
     "T-F-02",
     "T-F-03",
@@ -18987,7 +18991,7 @@
   },
   {
    "id": "T-U-02",
-   "title": "画面 メールを確認する（3 状態・R1/R2）",
+   "title": "画面 メールを確認する（4 状態・R1/R2）",
    "category": "frontend",
    "label": "NEW",
    "feature_id": "F-V3-C-verify-email",
@@ -19060,7 +19064,7 @@
    "acceptance_criteria": {
     "structural": [
      "UBIQUITOUS: 画面 verify-email は URL /verify-email で開く（apps/web/app/(public)/verify-email/page.tsx。遷移の href は flow の route と機械照合）",
-     "STATE-DRIVEN: WHILE 画面 verify-email が描画中 THEN h1「メールを確認する」・第2ナビ ・状態 3（送信済み、確認できた、期限切れ）がモック 06_mockup/v1/v1-verify-email.html と一致する",
+     "STATE-DRIVEN: WHILE 画面 verify-email が描画中 THEN h1「メールを確認する」・第2ナビ ・状態 4（送信済み、出せなかった、登録できた、リンクが使えない）がモック 06_mockup/v1/v1-verify-email.html と一致する",
      "STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い"
     ],
     "functional": [
@@ -19096,8 +19100,9 @@
    "qa_rows": {
     "l1": [
      "SCR-VERIFY-EMAIL-001",
-     "SCR-VERIFY-EMAIL-002",
-     "SCR-VERIFY-EMAIL-003",
+     "SCR-VERIFY-EMAIL-029",
+     "SCR-VERIFY-EMAIL-030",
+     "SCR-VERIFY-EMAIL-031",
      "SCR-VERIFY-EMAIL-004",
      "SCR-VERIFY-EMAIL-005",
      "SCR-VERIFY-EMAIL-006",
@@ -19113,10 +19118,10 @@
      "SCR-VERIFY-EMAIL-016",
      "SCR-VERIFY-EMAIL-017",
      "SCR-VERIFY-EMAIL-018",
-     "SCR-VERIFY-EMAIL-019",
+     "SCR-VERIFY-EMAIL-032",
      "SCR-VERIFY-EMAIL-020",
-     "SCR-VERIFY-EMAIL-021",
-     "SCR-VERIFY-EMAIL-022",
+     "SCR-VERIFY-EMAIL-033",
+     "SCR-VERIFY-EMAIL-034",
      "SCR-VERIFY-EMAIL-023",
      "SCR-VERIFY-EMAIL-024",
      "SCR-VERIFY-EMAIL-025",
@@ -19125,7 +19130,16 @@
      "SCR-VERIFY-EMAIL-028",
      "E-AUTH-003-A",
      "E-AUTH-003-B",
-     "E-AUTH-003-C"
+     "E-AUTH-003-C",
+     "E-MAIL-001-A",
+     "E-MAIL-001-B",
+     "E-MAIL-001-C",
+     "E-MAIL-002-A",
+     "E-MAIL-002-B",
+     "E-MAIL-002-C",
+     "E-MAIL-003-A",
+     "E-MAIL-003-B",
+     "E-MAIL-003-C"
     ],
     "l2_flows": [
      "J-01"
@@ -19141,7 +19155,7 @@
      "expected": "モックと一致"
     },
     {
-     "name": "状態 確認できた",
+     "name": "状態 出せなかった",
      "steps": [
       "状態を作る",
       "開く"
@@ -19149,7 +19163,15 @@
      "expected": "モックと一致"
     },
     {
-     "name": "状態 期限切れ",
+     "name": "状態 登録できた",
+     "steps": [
+      "状態を作る",
+      "開く"
+     ],
+     "expected": "モックと一致"
+    },
+    {
+     "name": "状態 リンクが使えない",
      "steps": [
       "状態を作る",
       "開く"
@@ -19189,7 +19211,7 @@
    "acceptance_criteria_inline": {
     "tier_1_structural": [
      "UBIQUITOUS: 画面 verify-email は URL /verify-email で開く（apps/web/app/(public)/verify-email/page.tsx。遷移の href は flow の route と機械照合）",
-     "STATE-DRIVEN: WHILE 画面 verify-email が描画中 THEN h1「メールを確認する」・第2ナビ ・状態 3（送信済み、確認できた、期限切れ）がモック 06_mockup/v1/v1-verify-email.html と一致する",
+     "STATE-DRIVEN: WHILE 画面 verify-email が描画中 THEN h1「メールを確認する」・第2ナビ ・状態 4（送信済み、出せなかった、登録できた、リンクが使えない）がモック 06_mockup/v1/v1-verify-email.html と一致する",
      "STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い"
     ],
     "tier_2_functional": [
@@ -23824,10 +23846,10 @@
     "E-061",
     "E-062",
     "E-033",
-    "E-082",
     "E-083",
     "E-084",
     "E-085",
+    "E-086",
     "E-040"
    ],
    "acts": [
@@ -24699,7 +24721,7 @@
     "E-019",
     "E-028",
     "E-029",
-    "E-081",
+    "E-082",
     "E-041",
     "E-061",
     "E-062",
@@ -25002,10 +25024,10 @@
     "E-011",
     "E-012",
     "E-008",
-    "E-082",
     "E-083",
     "E-084",
     "E-085",
+    "E-086",
     "E-023",
     "E-070",
     "E-055",
@@ -29593,10 +29615,10 @@
     "E-049",
     "E-052",
     "E-053",
-    "E-082",
     "E-083",
     "E-084",
-    "E-085"
+    "E-085",
+    "E-086"
    ],
    "acts": [
     "A46",
@@ -30164,7 +30186,7 @@
     "export"
    ],
    "entity_ids": [
-    "E-080",
+    "E-081",
     "E-001",
     "E-010",
     "E-017",
@@ -30432,7 +30454,7 @@
     "E-004",
     "E-047",
     "E-044",
-    "E-080",
+    "E-081",
     "E-041",
     "E-061",
     "E-062",
@@ -32107,7 +32129,7 @@
     "import"
    ],
    "entity_ids": [
-    "E-081",
+    "E-082",
     "E-017",
     "E-020",
     "E-021",
@@ -32882,10 +32904,10 @@
     "ops-skills"
    ],
    "entity_ids": [
-    "E-082",
     "E-083",
     "E-084",
     "E-085",
+    "E-086",
     "E-054",
     "E-055",
     "E-056",
@@ -34297,8 +34319,8 @@
     "E-002",
     "E-032",
     "E-027",
-    "E-087",
-    "E-086"
+    "E-088",
+    "E-087"
    ],
    "acts": [
     "A72",
@@ -34590,10 +34612,10 @@
     "E-059",
     "E-055",
     "E-056",
-    "E-082",
     "E-083",
     "E-084",
-    "E-085"
+    "E-085",
+    "E-086"
    ],
    "acts": [
     "A64"
@@ -35731,7 +35753,7 @@
     "E-071",
     "E-073",
     "E-072",
-    "E-086",
+    "E-087",
     "E-074",
     "E-075"
    ],
@@ -35993,8 +36015,8 @@
     "disclosure"
    ],
    "entity_ids": [
-    "E-091",
     "E-092",
+    "E-093",
     "E-041",
     "E-061",
     "E-062"
@@ -36261,9 +36283,9 @@
     "llm-routes"
    ],
    "entity_ids": [
-    "E-088",
+    "E-089",
     "E-037",
-    "E-089"
+    "E-090"
    ],
    "acts": [
     "A82"
@@ -36544,7 +36566,7 @@
     "app-setup"
    ],
    "entity_ids": [
-    "E-090",
+    "E-091",
     "E-050",
     "E-068",
     "E-067",
@@ -36803,7 +36825,7 @@
     "ops-llm"
    ],
    "entity_ids": [
-    "E-088",
+    "E-089",
     "E-074",
     "E-075"
    ],
@@ -37033,8 +37055,8 @@
     "ops-disclosure"
    ],
    "entity_ids": [
-    "E-091",
     "E-092",
+    "E-093",
     "E-064",
     "E-065",
     "E-066"
