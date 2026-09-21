@@ -59,7 +59,30 @@ def tab_name(tid: str, title: str) -> str:
     return (tid + ' ' + re.sub(r'[\[\]:*?/\\]', '', title)[:20]).strip()[:31]
 
 
+def prev_answers(path: str) -> dict[tuple[str, str], tuple[str, str]]:
+    """前に渡した Excel に書かれた答えを (タブ名, 何をする) で引けるようにする。
+    作り直すたびに人が書いた OK／NG と気づいたことが消えるのを防ぐ（正本の行は ID を変えない・test-ladder §9 と同じ考え）"""
+    if not os.path.exists(path):
+        return {}
+    try:
+        wb = load_workbook(path)
+    except Exception:
+        return {}
+    out: dict[tuple[str, str], tuple[str, str]] = {}
+    for name in wb.sheetnames:
+        s = wb[name]
+        for row in s.iter_rows(min_col=1, max_col=5):
+            act = row[1].value
+            res = row[3].value
+            note = row[4].value
+            if isinstance(row[0].value, int) and isinstance(act, str) and act.strip():
+                if (res and res != "未確認") or note:
+                    out[(name, act.strip())] = (str(res or "未確認"), str(note or ""))
+    return out
+
+
 def write(a, order: list[tuple[str, dict]]) -> int:
+    keep = prev_answers(a.out)
     wb = Workbook()
     ws = wb.active
     ws.title = "はじめに"
@@ -123,10 +146,11 @@ def write(a, order: list[tuple[str, dict]]) -> int:
             s.cell(row=rr, column=1, value=i).alignment = TOP
             s.cell(row=rr, column=2, value=act).alignment = WRAP
             s.cell(row=rr, column=3, value=exp).alignment = WRAP
-            c = s.cell(row=rr, column=4, value="未確認")
+            res, note = keep.get((s.title, act.strip()), ("未確認", ""))
+            c = s.cell(row=rr, column=4, value=res)
             c.alignment = TOP
             dv.add(c)
-            s.cell(row=rr, column=5, value="").alignment = WRAP
+            s.cell(row=rr, column=5, value=note).alignment = WRAP
         s.freeze_panes = s.cell(row=first, column=1)
         last = first + len(p["steps"]) - 1
         if p["steps"]:
@@ -141,7 +165,7 @@ def write(a, order: list[tuple[str, dict]]) -> int:
                 c = s.cell(row=rr + j, column=1, value="・" + x); c.alignment = WRAP; s.merge_cells(start_row=rr + j, start_column=1, end_row=rr + j, end_column=5)
     os.makedirs(os.path.dirname(a.out) or ".", exist_ok=True)
     wb.save(a.out)
-    print(f"Excel → {a.out}（タブ {len(order) + 1}・チケット {len(order)}）")
+    print(f"Excel → {a.out}（タブ {len(order) + 1}・チケット {len(order)}・前に書いた答えを引き継いだ {len(keep)} 行）")
     return 0
 
 

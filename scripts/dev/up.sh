@@ -117,5 +117,6 @@ cat <<EOM
   見本（土台）     http://127.0.0.1:$WEB_PORT/dev/shell
   手順（何を見るか） 07_tasks/handoff/README.md
   メールの受信箱   http://127.0.0.1:$WEB_PORT/dev/mail（送れなくてもここからリンクを押せる）
+  テストの後片付け bash scripts/dev/clean-qa.sh（自動テストが作った口座だけ消す）
   止める           bash scripts/dev/up.sh --stop
 EOM
