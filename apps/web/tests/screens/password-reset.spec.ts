@@ -1,6 +1,6 @@
 // T-U-06 パスワードの再設定。テストの名前に正本の行 ID を持つ（op_gate.py）
 import { expect, test } from "@playwright/test";
-import { api, lastMailUrl, mailLog, noOverflow, PW, signupViaApi, uniqEmail } from "../_lib/api";
+import { api, lastMailUrl, mailLog, noOverflow, pwToggle, PW, signupViaApi, uniqEmail } from "../_lib/api";
 
 test("SCR-PASSWORD-RESET-001 SCR-PASSWORD-RESET-009 SCR-PASSWORD-RESET-010 SCR-PASSWORD-RESET-008 状態 再設定を送る：4 幅で横溢れ 0・時点の部品なし・「ログインへ戻る」→ /login", async ({
   page,
@@ -45,7 +45,7 @@ test("SCR-PASSWORD-RESET-003 SCR-PASSWORD-RESET-027 SCR-PASSWORD-RESET-028 SCR-P
   await page.goto(nu.pathname + nu.search);
   await expect(page.locator("[data-state='p'] h1")).toHaveText("新しいパスワード");
   const fresh = "new-password-abc-12345";
-  await page.getByLabel("新しいパスワード").fill(fresh);
+  await page.getByLabel("新しいパスワード", { exact: true }).fill(fresh);
   await page.getByLabel("もう一度").fill("different-1234567890");
   await page.getByRole("button", { name: "変更してログイン" }).click();
   await expect(page.locator("p[role=alert]")).toContainText("2 つのパスワードが違います");
@@ -58,7 +58,7 @@ test("SCR-PASSWORD-RESET-003 SCR-PASSWORD-RESET-027 SCR-PASSWORD-RESET-028 SCR-P
 test("E-AUTH-006-A E-AUTH-006-C 使用済み・期限切れのリンクは文言と一手（もう一度メールを送る）", async ({ page }) => {
   await page.goto("/password-reset?token=used-or-expired-token");
   await expect(page.locator("[data-state='p'] h1")).toHaveText("新しいパスワード");
-  await page.getByLabel("新しいパスワード").fill("new-password-abc-12345");
+  await page.getByLabel("新しいパスワード", { exact: true }).fill("new-password-abc-12345");
   await page.getByLabel("もう一度").fill("new-password-abc-12345");
   await page.getByRole("button", { name: "変更してログイン" }).click();
   await expect(page.locator("p[role=alert]")).toContainText("もう一度メールを送ってください");
@@ -98,4 +98,19 @@ test("SCR-PASSWORD-RESET-034 届かないときに詰まらない：登録の無
   await page.getByLabel("メールアドレス").fill(uniqEmail());
   await page.getByRole("button", { name: "再設定メールを送る" }).click();
   await expect(page.locator("[data-state='s']")).toBeVisible();
+});
+
+test("SCR-PASSWORD-RESET-036 パスワードは見る・隠すを切り替えられる（既定は隠す・押すと見える・的は 24px 以上）", async ({
+  page,
+}) => {
+  const u = await signupViaApi();
+  await page.goto("/password-reset");
+  await page.getByLabel("メールアドレス").fill(u.email);
+  await page.getByRole("button", { name: "再設定メールを送る" }).click();
+  await expect(page.locator("[data-state='s']")).toBeVisible();
+  const url = lastMailUrl("reset", u.email);
+  test.skip(!url, "KANAME_API_LOG が無い");
+  await page.goto(new URL(url!).pathname + new URL(url!).search);
+  await page.getByLabel("新しいパスワード", { exact: true }).fill(PW);
+  await pwToggle(page, "新しいパスワード");
 });

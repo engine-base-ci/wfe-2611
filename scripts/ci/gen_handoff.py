@@ -19,6 +19,8 @@ EXPECT = {"button": "画面が変わる・保存される・文言が出る（�
           "textarea": "入れた値がそのまま入る（送信に載る）", "checkbox": "切り替わる", "radio": "選べる", "select": "選べる",
           "tab": "中身が入れ替わる", "toggle": "開く・閉じる"}
 ORDER = {"input": 0, "textarea": 0, "checkbox": 1, "radio": 1, "select": 1, "button": 2, "tab": 3, "toggle": 3, "link": 4, "error": 5}
+# 押した結果が種類だけでは言えない的は、ここで言葉にする（発注者が何を見ればよいか分かるように）
+BY_LABEL = {"パスワードを表示": "伏せ字（●●●）が読める文字に変わる。アイコンが目に斜線になり、もう一度押すと伏せ字に戻る"}
 
 
 def load_rows(spec: str) -> dict[str, dict]:
@@ -100,7 +102,7 @@ def main() -> int:
                     name = S.get(o.get("target") or "", {}).get("name", "")
                     steps.append(f"「{label}」を押す{st} → **{dest} が開く**（{name}）。戻る" if dest else f"「{label}」を押す{st} → **リンク先が開く**（戻る）")
                 else:
-                    exp = EXPECT.get(o["kind"]) or (r["expect"] if r else "").split("（")[0][:44] or "何かが起きる"
+                    exp = BY_LABEL.get(o["label"]) or EXPECT.get(o["kind"]) or (r["expect"] if r else "").split("（")[0][:44] or "何かが起きる"
                     steps.append(f"「{label}」を{VERB.get(o['kind'], '押す')}{st} → **{exp}**")
         for f in flows:   # 流れ（L2）：ジャーニーの行を順番に、1 行＝1 手順
             for r in [x for x in J if x.get("journey") == f]:

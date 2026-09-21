@@ -62,6 +62,20 @@
    "ps": [
     "PS3"
    ]
+  },
+  {
+   "key": "button:パスワードを表示",
+   "kind": "button",
+   "label": "パスワードを表示",
+   "target": null,
+   "states": [
+    "担当者として",
+    "閲覧のみとして"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
   }
  ]
 }

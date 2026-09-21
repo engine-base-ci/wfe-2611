@@ -1,10 +1,10 @@
-# Kaname v3 タスク分解結果（api_first・2026-09-20）
+# Kaname v3 タスク分解結果（api_first・2026-09-21）
 
 ## サマリー
 
 - 総タスク数：171（A 26 / D 14 / F 18 / I 22 / S 15 / U-screen 64 / U-shared 7 / V2 5）
 - 画面の被覆：64/64
-- L1 テスト行：4729（正本 07_qa/test-specs）／ 流れ（L2）：9
+- L1 テスト行：4736（正本 07_qa/test-specs）／ 流れ（L2）：9
 - 工数：Human 5534.5 h（692 日）／ AI 計算 991.1 h ＋ 人のレビュー 52.0 h → wall-clock 278.8 h（47 日・並列 10）
 - Wave 数：25
 
@@ -109,16 +109,16 @@
 
 | ID | タイトル | category | layer | Human h | AI h | wall-clock | wave | depends_on | L1 行 |
 |---|---|---|---|---|---|---|---|---|---|
-| T-U-01 | 画面 アカウントを作る（2 状態・R1/R2） | frontend | ui | 12.0 | 1.2 | 1.2 | 11 | 8 | 34 |
+| T-U-01 | 画面 アカウントを作る（2 状態・R1/R2） | frontend | ui | 12.0 | 1.2 | 1.2 | 11 | 8 | 35 |
 | T-U-02 | 画面 メールを確認する（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 11 | 11 | 31 |
-| T-U-03 | 画面 招待を受けて参加する（3 状態・R3/R4） | frontend | ui | 14.5 | 1.4 | 1.4 | 11 | 8 | 27 |
+| T-U-03 | 画面 招待を受けて参加する（3 状態・R3/R4） | frontend | ui | 14.5 | 1.4 | 1.4 | 11 | 8 | 28 |
 | T-U-04 | 画面 2段階認証を設定する（2 状態・R1/R2/R3） | frontend | ui | 13.5 | 1.4 | 1.4 | 11 | 11 | 30 |
-| T-U-05 | 画面 ログインする（3 状態・R1/R2/R3/R4） | frontend | ui | 17.5 | 1.8 | 1.8 | 11 | 11 | 44 |
-| T-U-06 | 画面 パスワードの再設定（3 状態・R1/R2/R3） | frontend | ui | 16.0 | 1.6 | 1.6 | 11 | 11 | 38 |
+| T-U-05 | 画面 ログインする（3 状態・R1/R2/R3/R4） | frontend | ui | 17.5 | 1.8 | 1.8 | 11 | 11 | 45 |
+| T-U-06 | 画面 パスワードの再設定（3 状態・R1/R2/R3） | frontend | ui | 16.0 | 1.6 | 1.6 | 11 | 11 | 39 |
 | T-U-07 | 画面 自分のAIと話す（4 状態・R1/R2） | frontend | ui | 17.0 | 1.7 | 1.7 | 11 | 9 | 53 |
 | T-U-08 | 画面 たたき台を確かめる（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 11 | 12 | 50 |
 | T-U-09 | 画面 自分のPCをつなぐ（4 状態・R1/R2） | frontend | ui | 17.0 | 1.7 | 1.7 | 11 | 9 | 52 |
-| T-U-10 | 画面 ログイン情報を預ける（5 状態・R1/R2） | frontend | ui | 19.5 | 1.9 | 1.9 | 11 | 8 | 56 |
+| T-U-10 | 画面 ログイン情報を預ける（5 状態・R1/R2） | frontend | ui | 19.5 | 1.9 | 1.9 | 11 | 8 | 57 |
 | T-U-11 | 画面 テストで動かす（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 12 | 8 | 41 |
 | T-U-12 | 画面 本番に切り替える（2 状態・R1/R2） | frontend | ui | 12.0 | 1.2 | 1.2 | 12 | 12 | 34 |
 | T-U-13 | 画面 今日（5 状態・R1/R2/R3） | frontend | ui | 21.0 | 2.1 | 2.1 | 12 | 9 | 106 |
@@ -152,7 +152,7 @@
 | T-U-41 | 画面 運営の支援（2 状態・R6） | frontend | ui | 10.5 | 1.1 | 1.1 | 15 | 9 | 42 |
 | T-U-42 | 画面 運営：会社の一覧（4 状態・R6） | frontend | ui | 15.5 | 1.6 | 1.6 | 15 | 9 | 39 |
 | T-U-43 | 画面 運営：配るもの（7 状態・R6） | frontend | ui | 23.0 | 2.3 | 2.3 | 15 | 12 | 41 |
-| T-U-44 | 画面 自分のアカウント（2 状態・R1/R2/R3/R4） | frontend | ui | 15.0 | 1.5 | 1.5 | 15 | 9 | 55 |
+| T-U-44 | 画面 自分のアカウント（2 状態・R1/R2/R3/R4） | frontend | ui | 15.0 | 1.5 | 1.5 | 15 | 9 | 56 |
 | T-U-45 | 画面 会社の設定（2 状態・R1/R2） | frontend | ui | 12.0 | 1.2 | 1.2 | 15 | 8 | 41 |
 | T-U-46 | 画面 取り込み（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 15 | 8 | 41 |
 | T-U-47 | 画面 外部サービスの連携（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 15 | 8 | 37 |
@@ -169,7 +169,7 @@
 | T-U-58 | 画面 メンバーの1人（4 状態・R1/R2） | frontend | ui | 17.0 | 1.7 | 1.7 | 16 | 10 | 74 |
 | T-U-59 | 画面 支払い方法を登録する（4 状態・R1/R2・段階 2） | frontend | ui | 17.0 | 1.7 | 1.7 | 24 | 8 | 37 |
 | T-U-60 | 画面 開示資料（4 状態・R1/R2・段階 2） | frontend | ui | 17.0 | 1.7 | 1.7 | 24 | 8 | 40 |
-| T-U-61 | 画面 AI の経路（4 状態・R1/R2・段階 2） | frontend | ui | 17.0 | 1.7 | 1.7 | 24 | 8 | 56 |
+| T-U-61 | 画面 AI の経路（4 状態・R1/R2・段階 2） | frontend | ui | 17.0 | 1.7 | 1.7 | 24 | 8 | 57 |
 | T-U-62 | 画面 アプリと通知（3 状態・R1/R2/R3/R4・段階 2） | frontend | ui | 17.5 | 1.8 | 1.8 | 24 | 8 | 44 |
 | T-U-63 | 画面 運営：AI の経路と使用量（3 状態・R6・段階 2） | frontend | ui | 13.0 | 1.3 | 1.3 | 24 | 8 | 25 |
 | T-U-64 | 画面 運営：開示資料（3 状態・R6・段階 2） | frontend | ui | 13.0 | 1.3 | 1.3 | 24 | 8 | 36 |
@@ -1012,7 +1012,7 @@
 - 触るファイル：apps/web/app/(public)/signup/page.tsx (new)、apps/web/tests/screens/signup.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 signup は URL /signup で開く（apps/web/app/(public)/signup/page.tsx。遷移 ／ STATE-DRIVEN: WHILE 画面 signup が描画中 THEN h1「アカウントを作る」・第2ナビ ・状態 2（通常、既に登録済み）がモック 0
 - AC（Tier 2）：EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「会社名とメールを入れる」として呼ばれたとき THEN Kanam ／ EVENT-DRIVEN: WHEN POST /api/v1/subscriptions が「プランを選んで Stripe の登録画面へ進む」として呼ばれたと ／ EVENT-DRIVEN: WHEN 「はじめる」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
-- L1 行 34（['SCR-SIGNUP-001', 'SCR-SIGNUP-002', 'SCR-SIGNUP-003'] …）／ L2 ['J-01']
+- L1 行 35（['SCR-SIGNUP-001', 'SCR-SIGNUP-002', 'SCR-SIGNUP-003'] …）／ L2 ['J-01']
 - audit: 07_tasks/audit/T-U-01.md
 
 ### T-U-02 画面 メールを確認する（3 状態・R1/R2）
@@ -1036,7 +1036,7 @@
 - 触るファイル：apps/web/app/(public)/invite/[token]/page.tsx (new)、apps/web/tests/screens/invite-accept.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 invite-accept は URL /invite/:token で開く（apps/web/app/(public)/invi ／ STATE-DRIVEN: WHILE 画面 invite-accept が描画中 THEN h1「招待を受けて参加する」・第2ナビ ・状態 3（担当者として、
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/invitations が「招待リンクを押して名前を入れる」として呼ばれたとき THEN Kana ／ UNWANTED: IF 10/min/ip を超えたら、Kaname は 429 と retry_after_sec を返す ／ EVENT-DRIVEN: WHEN 「参加する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
-- L1 行 27（['SCR-INVITE-ACCEPT-001', 'SCR-INVITE-ACCEPT-002', 'SCR-INVITE-ACCEPT-003'] …）／ L2 ['J-01']
+- L1 行 28（['SCR-INVITE-ACCEPT-001', 'SCR-INVITE-ACCEPT-002', 'SCR-INVITE-ACCEPT-003'] …）／ L2 ['J-01']
 - audit: 07_tasks/audit/T-U-03.md
 
 ### T-U-04 画面 2段階認証を設定する（2 状態・R1/R2/R3）
@@ -1060,7 +1060,7 @@
 - 触るファイル：apps/web/app/(public)/login/page.tsx (new)、apps/web/tests/screens/login.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 login は URL /login で開く（apps/web/app/(public)/login/page.tsx。遷移の h ／ STATE-DRIVEN: WHILE 画面 login が描画中 THEN h1「ログインする」・第2ナビ ・状態 3（通常、6桁の入力、失敗）がモック 06
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/members が「届いたリンクを押す」として呼ばれたとき THEN Kaname は「本人確認を ／ EVENT-DRIVEN: WHEN GET /api/v1/members が「認証アプリを登録する」として呼ばれたとき THEN Kaname は「TOTP ／ EVENT-DRIVEN: WHEN 「ログイン」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
-- L1 行 44（['SCR-LOGIN-001', 'SCR-LOGIN-002', 'SCR-LOGIN-003'] …）／ L2 ['J-03']
+- L1 行 45（['SCR-LOGIN-001', 'SCR-LOGIN-002', 'SCR-LOGIN-003'] …）／ L2 ['J-03']
 - audit: 07_tasks/audit/T-U-05.md
 
 ### T-U-06 画面 パスワードの再設定（3 状態・R1/R2/R3）
@@ -1072,7 +1072,7 @@
 - 触るファイル：apps/web/app/(public)/password-reset/page.tsx (new)、apps/web/tests/screens/password-reset.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 password-reset は URL /password-reset で開く（apps/web/app/(public)/pa ／ STATE-DRIVEN: WHILE 画面 password-reset が描画中 THEN h1「パスワードの再設定」・第2ナビ ・状態 3（再設定を送る、
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/members が「届いたリンクを押す」として呼ばれたとき THEN Kaname は「本人確認を ／ EVENT-DRIVEN: WHEN GET /api/v1/members が「認証アプリを登録する」として呼ばれたとき THEN Kaname は「TOTP ／ EVENT-DRIVEN: WHEN 「再設定メールを送る」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
-- L1 行 38（['SCR-PASSWORD-RESET-001', 'SCR-PASSWORD-RESET-002', 'SCR-PASSWORD-RESET-003'] …）／ L2 ['J-06']
+- L1 行 39（['SCR-PASSWORD-RESET-001', 'SCR-PASSWORD-RESET-002', 'SCR-PASSWORD-RESET-003'] …）／ L2 ['J-06']
 - audit: 07_tasks/audit/T-U-06.md
 
 ### T-U-07 画面 自分のAIと話す（4 状態・R1/R2）
@@ -1120,7 +1120,7 @@
 - 触るファイル：apps/web/app/(app)/settings/credentials/page.tsx (new)、apps/web/tests/screens/credentials.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 credentials は URL /settings/credentials で開く（apps/web/app/(app)/se ／ STATE-DRIVEN: WHILE 画面 credentials が描画中 THEN h1「ログイン情報を預ける」・第2ナビ 預けたもの / 自動操作の可否
 - AC（Tier 2）：EVENT-DRIVEN: WHEN POST /api/v1/credentials が「使うサービスを選びログイン情報を入れる」として呼ばれたとき THEN ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「保存する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
-- L1 行 56（['SCR-CREDENTIALS-001', 'SCR-CREDENTIALS-002', 'SCR-CREDENTIALS-003'] …）／ L2 ['J-02']
+- L1 行 57（['SCR-CREDENTIALS-001', 'SCR-CREDENTIALS-002', 'SCR-CREDENTIALS-003'] …）／ L2 ['J-02']
 - audit: 07_tasks/audit/T-U-10.md
 
 ### T-U-11 画面 テストで動かす（3 状態・R1/R2）
@@ -1528,7 +1528,7 @@
 - 触るファイル：apps/web/app/(app)/account/page.tsx (new)、apps/web/tests/screens/account.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 account は URL /account で開く（apps/web/app/(app)/account/page.tsx。遷移 ／ STATE-DRIVEN: WHILE 画面 account が描画中 THEN h1「自分のアカウント」・第2ナビ 基本 / パスワードと 2 段階認証 / 
 - AC（Tier 2）：EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「人を招いて見える範囲を決める」として呼ばれたとき THEN Kan ／ EVENT-DRIVEN: WHEN PATCH /api/v1/members/:id が「1人の権限を決める」として呼ばれたとき THEN Kaname は ／ EVENT-DRIVEN: WHEN 「保存する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
-- L1 行 55（['SCR-ACCOUNT-001', 'SCR-ACCOUNT-002', 'SCR-ACCOUNT-003'] …）／ L2 ['J-07']
+- L1 行 56（['SCR-ACCOUNT-001', 'SCR-ACCOUNT-002', 'SCR-ACCOUNT-003'] …）／ L2 ['J-07']
 - audit: 07_tasks/audit/T-U-44.md
 
 ### T-U-45 画面 会社の設定（2 状態・R1/R2）
@@ -1732,7 +1732,7 @@
 - 触るファイル：apps/web/app/(app)/settings/llm/page.tsx (new)、apps/web/tests/screens/llm-routes.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 llm-routes は URL /settings/llm で開く（apps/web/app/(app)/settings/ll ／ STATE-DRIVEN: WHILE 画面 llm-routes が描画中 THEN h1「AI の経路」・第2ナビ 既定の経路 / PC が閉じているとき 
 - AC（Tier 2）：EVENT-DRIVEN: WHEN POST /api/v1/llm_routes が「会社の設定で AI の経路を選び、必要ならキーを入れる」として呼ばれた ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「保存する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
-- L1 行 56（['SCR-LLM-ROUTES-001', 'SCR-LLM-ROUTES-002', 'SCR-LLM-ROUTES-003'] …）／ L2 —
+- L1 行 57（['SCR-LLM-ROUTES-001', 'SCR-LLM-ROUTES-002', 'SCR-LLM-ROUTES-003'] …）／ L2 —
 - audit: 07_tasks/audit/T-U-61.md
 
 ### T-U-62 画面 アプリと通知（3 状態・R1/R2/R3/R4・段階 2）

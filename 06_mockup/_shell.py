@@ -383,6 +383,13 @@ def _page(ver, sid, states, extra_css="", actions_extra="", no_shell=False, coun
  if(window.fitThreePane) setTimeout(window.fitThreePane,0); }})();
 (function(){{ const fit=()=>{{ const els=[...document.querySelectorAll('.statepane:not([hidden]) [data-fix]')]; const wide=window.innerWidth>=1024; if(!els.length) return; document.documentElement.style.overflow=wide?'hidden':''; els.forEach(el=>{{ if(!wide){{ el.style.removeProperty('--fix-top'); return; }} el.style.setProperty('--fix-top', Math.round(el.getBoundingClientRect().top+window.scrollY)+'px'); let b=0, s=el.nextElementSibling; while(s){{ const cs=getComputedStyle(s); b+=s.offsetHeight+parseFloat(cs.marginTop)+parseFloat(cs.marginBottom); s=s.nextElementSibling; }} el.style.setProperty('--fix-bottom', Math.round(b)+'px'); }}); }};
  window.addEventListener('load',fit); window.addEventListener('resize',fit); document.addEventListener('click',()=>setTimeout(fit,0)); setTimeout(fit,0); window.fitFixed=fit; }})();
+// パスワードの見る・隠す（D-087）。押すたびに type と読み上げの名前が変わる
+document.addEventListener('click',e=>{{ const b=e.target.closest('.pw-btn'); if(!b)return;
+ const i=b.parentElement.querySelector('.pw-inp'); if(!i)return;
+ const show=i.type==='password'; i.type=show?'text':'password';
+ b.setAttribute('aria-pressed',String(show));
+ b.setAttribute('aria-label',show?'パスワードを隠す':'パスワードを表示');
+ i.focus(); }});
 document.querySelectorAll('.mockbar .wsw button').forEach(b=>b.addEventListener('click',()=>{{ const f=location.pathname.split('/').pop(); const top=(window.top===window)?window:window.top; top.location.href='_viewer.html?p='+encodeURIComponent(f)+'&w='+b.dataset.w; }}));
 document.querySelectorAll('.states').forEach(b=>b.addEventListener('click',e=>{{
  const t=e.target.closest('button[data-t]'); if(!t)return;

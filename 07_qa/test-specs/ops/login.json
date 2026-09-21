@@ -51,6 +51,20 @@
    ]
   },
   {
+   "key": "button:パスワードを表示",
+   "kind": "button",
+   "label": "パスワードを表示",
+   "target": null,
+   "states": [
+    "通常",
+    "失敗"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
    "key": "link:パスワードをお忘れの方→password-reset",
    "kind": "link",
    "label": "パスワードをお忘れの方",

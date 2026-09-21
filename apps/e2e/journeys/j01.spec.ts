@@ -13,7 +13,7 @@ test.describe.serial("J-01 契約・登録", () => {
   test("J01-01 会社名とメールを入れる → アカウントと会社を作る（signup）", async ({ page }) => {
     await page.goto("/signup");
     await page.getByLabel("メールアドレス").fill(email);
-    await page.getByLabel("パスワード").fill(PW);
+    await page.getByLabel("パスワード", { exact: true }).fill(PW);
     await page.getByLabel("会社名（または屋号）").fill("通しの会社");
     await page.getByLabel("利用規約とプライバシーポリシーに同意します").check();
     await page.getByRole("button", { name: "はじめる" }).click();
@@ -50,7 +50,7 @@ test.describe.serial("J-01 契約・登録", () => {
     await page.goto(`/invite/${inviteToken}`);
     await expect(page.locator("form[data-state='n']")).toContainText("通しの会社");
     await page.getByLabel("お名前").fill("招かれた人");
-    await page.getByLabel("パスワード").fill(PW);
+    await page.getByLabel("パスワード", { exact: true }).fill(PW);
     await page.getByRole("button", { name: "参加する" }).click();
     await page.waitForURL(/\/today/).catch(() => undefined);
     const m = await admin<{ scope_id: string | null }>(
@@ -66,7 +66,7 @@ test.describe.serial("J-01 契約・登録", () => {
     expect(r.status).toBe(200);
     await page.addInitScript((t) => window.localStorage.setItem("kaname.token", t), r.json.data.token);
     await page.goto("/mfa-setup");
-    await page.getByLabel("パスワード").fill(PW);
+    await page.getByLabel("パスワード", { exact: true }).fill(PW);
     await page.getByRole("button", { name: "認証アプリを登録する" }).click();
     const secret = (await page.locator("[data-totp-secret]").textContent())!.replace(/\s+/g, "");
     await page.getByLabel("アプリに出た6桁").fill(totp(secret));

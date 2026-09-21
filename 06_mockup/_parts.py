@@ -53,7 +53,17 @@ def field(label, inner, help_=None, err=False):
     return f'<div class="field"><label>{label}</label>{inner}{h}</div>'
 
 def inp(value="", ph="", type_="text", cls="", style=""):
-    return f'<input class="inp {cls}" type="{type_}" value="{value}" placeholder="{ph}" style="{style}">'
+    el = f'<input class="inp {cls}" type="{type_}" value="{value}" placeholder="{ph}" style="{style}">'
+    if type_ != "password":
+        return el
+    # パスワードは見る・隠すを切り替えられる（D-087）。打ち間違いを目で直せるようにする。
+    # 既定は隠す。押すと text になり、アイコンと読み上げの名前が変わる
+    return ('<div class="pw">'
+            + el.replace('class="inp ', 'class="inp pw-inp ')
+            + '<button type="button" class="pw-btn" aria-label="パスワードを表示" aria-pressed="false">'
+            + '<span class="pw-on">' + ic("eye") + '</span>'
+            + '<span class="pw-off">' + ic("eyeoff") + '</span>'
+            + '</button></div>')
 
 def dot(color): return f'<span class="dot" style="background:var(--{color});display:inline-block;width:4px;height:4px;border-radius:50%;margin-right:7px"></span>'
 

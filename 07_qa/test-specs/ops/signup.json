@@ -50,6 +50,20 @@
    ]
   },
   {
+   "key": "button:パスワードを表示",
+   "kind": "button",
+   "label": "パスワードを表示",
+   "target": null,
+   "states": [
+    "通常",
+    "既に登録済み"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0"
+   ]
+  },
+  {
    "key": "input:会社名（または屋号）",
    "kind": "input",
    "label": "会社名（または屋号）",

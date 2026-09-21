@@ -178,6 +178,16 @@ tr:last-child td{border-bottom:0}
 .inp{width:100%;background:var(--sv);border:1px solid transparent;border-radius:var(--r-md);padding:10px 13px;font-family:inherit;font-size:14px;color:var(--on-surface)}
 .inp:focus{outline:2px solid var(--primary);outline-offset:1px;background:var(--card)}
 .inp.err{outline:2px solid var(--error);background:#FDF2F2}
+.pw{position:relative}
+.pw .pw-inp{padding-right:44px}
+.pw-btn{position:absolute;top:50%;right:4px;transform:translateY(-50%);width:32px;height:32px;display:grid;place-items:center;background:none;border:0;border-radius:var(--r-sm);color:var(--on-sv);cursor:pointer}
+.pw-btn svg{width:17px;height:17px;display:block}
+.pw-btn .pw-on,.pw-btn .pw-off{display:grid;place-items:center}
+.pw-btn .pw-off{display:none}
+.pw-btn[aria-pressed="true"] .pw-on{display:none}
+.pw-btn[aria-pressed="true"] .pw-off{display:grid}
+.pw-btn:hover{background:var(--surface);color:var(--on-surface)}
+.pw-btn:focus-visible{outline:2px solid var(--primary);outline-offset:1px}
 .help{font-size:12px;color:var(--on-sv);margin-top:5px}
 .help.err{color:var(--error);font-weight:500;display:flex;gap:6px;align-items:flex-start}
 .help.err svg{width:14px;height:14px;margin-top:3px;flex:none}

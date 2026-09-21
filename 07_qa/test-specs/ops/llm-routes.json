@@ -206,6 +206,19 @@
    ]
   },
   {
+   "key": "button:パスワードを表示",
+   "kind": "button",
+   "label": "パスワードを表示",
+   "target": null,
+   "states": [
+    "キーを預ける"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
    "key": "button:確かめて預ける",
    "kind": "button",
    "label": "確かめて預ける",

@@ -1,6 +1,6 @@
 // T-U-05 ログイン。テストの名前に正本の行 ID を持つ（op_gate.py）
 import { expect, test } from "@playwright/test";
-import { api, loginAs, noOverflow, PW, signupViaApi, totp } from "../_lib/api";
+import { pwToggle, api, loginAs, noOverflow, PW, signupViaApi, totp } from "../_lib/api";
 
 test("SCR-LOGIN-001 SCR-LOGIN-012 SCR-LOGIN-013 状態 通常：h1・4 幅で横溢れ 0・外の画面なので時点の部品は無い", async ({
   page,
@@ -29,7 +29,7 @@ test("SCR-LOGIN-008 SCR-LOGIN-025 SCR-LOGIN-026 SCR-LOGIN-027 SCR-LOGIN-014 SCR-
   const [local, domain] = [u.email.split("@")[0]!, u.email.split("@")[1]!];
   // eslint-disable-next-line no-irregular-whitespace -- 全角の空白と全角の＠を意図して入れる
   await page.getByLabel("メールアドレス").fill(`　${local.toUpperCase()}＠${domain.toUpperCase()} `);
-  await page.getByLabel("パスワード").fill(PW);
+  await page.getByLabel("パスワード", { exact: true }).fill(PW);
   await page.getByRole("button", { name: "ログイン" }).click();
   await page.waitForURL(/\/today/, { timeout: 15_000 }).catch(() => undefined);
   expect(page.url()).toMatch(/\/today/);
@@ -41,7 +41,7 @@ test("SCR-LOGIN-016 SCR-LOGIN-017 記号の種別・NFD：メールは ASCII な
   const u = await signupViaApi();
   await page.goto("/login");
   await page.getByLabel("メールアドレス").fill(u.email.normalize("NFD"));
-  await page.getByLabel("パスワード").fill(PW);
+  await page.getByLabel("パスワード", { exact: true }).fill(PW);
   await page.getByRole("button", { name: "ログイン" }).click();
   await page.waitForURL(/\/today/, { timeout: 15_000 }).catch(() => undefined);
   expect(page.url()).toMatch(/\/today/);
@@ -53,11 +53,11 @@ test("SCR-LOGIN-003 SCR-LOGIN-034 E-AUTH-001-A E-AUTH-001-C E-AUTH-002-A E-AUTH-
   await page.goto("/login");
   await page.getByLabel("メールアドレス").fill(u.email);
   for (let i = 4; i >= 1; i--) {
-    await page.getByLabel("パスワード").fill("wrong-password-000");
+    await page.getByLabel("パスワード", { exact: true }).fill("wrong-password-000");
     await page.getByRole("button", { name: "ログイン" }).click();
     await expect(page.locator("form[data-state='e']")).toContainText(`あと ${i} 回で 15 分ロックします`);
   }
-  await page.getByLabel("パスワード").fill("wrong-password-000");
+  await page.getByLabel("パスワード", { exact: true }).fill("wrong-password-000");
   await page.getByRole("button", { name: "ログイン" }).click();
   await expect(page.locator("form[data-state='e']")).toContainText("15 分間ロックしました");
   const r = await api("/api/auth-ext/sign-in", { email: u.email, password: PW });
@@ -71,7 +71,7 @@ test("SCR-LOGIN-002 SCR-LOGIN-030 SCR-LOGIN-031 SCR-LOGIN-032 SCR-LOGIN-033 SCR-
   const u = await signupViaApi();
   await loginAs(page, u.token);
   await page.goto("/mfa-setup");
-  await page.getByLabel("パスワード").fill(PW);
+  await page.getByLabel("パスワード", { exact: true }).fill(PW);
   await page.getByRole("button", { name: "認証アプリを登録する" }).click();
   const secret = (await page.locator("[data-totp-secret]").textContent({ timeout: 15_000 }))!.replace(/\s+/g, "");
   await page.getByLabel("アプリに出た6桁").fill(totp(secret));
@@ -81,7 +81,7 @@ test("SCR-LOGIN-002 SCR-LOGIN-030 SCR-LOGIN-031 SCR-LOGIN-032 SCR-LOGIN-033 SCR-
   await page.evaluate(() => window.localStorage.removeItem("kaname.token"));
   await page.goto("/login");
   await page.getByLabel("メールアドレス").fill(u.email);
-  await page.getByLabel("パスワード").fill(PW);
+  await page.getByLabel("パスワード", { exact: true }).fill(PW);
   await page.getByRole("button", { name: "ログイン" }).click();
   await expect(page.locator("form[data-state='m'] h1")).toHaveText("6桁を入れてください");
   const trust = page.getByLabel("この端末では30日間きかない");
@@ -98,7 +98,7 @@ test("SCR-LOGIN-002 SCR-LOGIN-030 SCR-LOGIN-031 SCR-LOGIN-032 SCR-LOGIN-033 SCR-
   await page.evaluate(() => window.localStorage.removeItem("kaname.token"));
   await page.goto("/login");
   await page.getByLabel("メールアドレス").fill(u.email);
-  await page.getByLabel("パスワード").fill(PW);
+  await page.getByLabel("パスワード", { exact: true }).fill(PW);
   await page.getByRole("button", { name: "ログイン" }).click();
   await page.getByRole("button", { name: "端末を失くした（回復コードで入る）" }).click();
   await page.getByLabel("回復コード").fill(backup);
@@ -109,4 +109,12 @@ test("SCR-LOGIN-002 SCR-LOGIN-030 SCR-LOGIN-031 SCR-LOGIN-032 SCR-LOGIN-033 SCR-
   await page.getByRole("button", { name: "今日の画面へ" }).click();
   await page.waitForURL(/\/today/, { timeout: 15_000 }).catch(() => undefined);
   expect(page.url()).toMatch(/\/today/);
+});
+
+test("SCR-LOGIN-036 パスワードは見る・隠すを切り替えられる（既定は隠す・押すと見える・的は 24px 以上）", async ({
+  page,
+}) => {
+  await page.goto("/login");
+  await page.getByLabel("パスワード", { exact: true }).fill(PW);
+  await pwToggle(page, "パスワード");
 });

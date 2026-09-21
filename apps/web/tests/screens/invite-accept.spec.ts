@@ -1,7 +1,7 @@
 // T-U-03 招待を受けて参加する。テストの名前に正本の行 ID を持つ（op_gate.py）
 import { expect, test } from "@playwright/test";
 import { randomBytes } from "node:crypto";
-import { admin, noOverflow, PW, sha256, signupViaApi, uniqEmail } from "../_lib/api";
+import { pwToggle, admin, noOverflow, PW, sha256, signupViaApi, uniqEmail } from "../_lib/api";
 
 async function invite(roleId: string, opts: { revoked?: boolean; email?: string } = {}) {
   const boss = await signupViaApi("招く会社");
@@ -26,7 +26,7 @@ test("SCR-INVITE-ACCEPT-001 SCR-INVITE-ACCEPT-007 SCR-INVITE-ACCEPT-008 SCR-INVI
   await expect(mail).toHaveValue(email);
   await expect(mail).toHaveAttribute("readonly", "");
   await page.getByLabel("お名前").fill("  佐藤 健゙ ".normalize("NFD"));
-  await page.getByLabel("パスワード").fill(PW);
+  await page.getByLabel("パスワード", { exact: true }).fill(PW);
   await page.getByRole("button", { name: "参加する" }).click();
   await page.waitForURL(/\/today/, { timeout: 15_000 }).catch(() => undefined);
   const m = await admin<{ display_name: string }>(
@@ -42,7 +42,7 @@ test("SCR-INVITE-ACCEPT-009 SCR-INVITE-ACCEPT-011 SCR-INVITE-ACCEPT-013 全角�
   const { boss, token } = await invite("staff");
   await page.goto(`/invite/${token}`);
   await page.getByLabel("お名前").fill("ＡＢＣ‐ｄｅｆ　商店");
-  await page.getByLabel("パスワード").fill(PW);
+  await page.getByLabel("パスワード", { exact: true }).fill(PW);
   await page.getByRole("button", { name: "参加する" }).click();
   await page.waitForURL(/\/today/, { timeout: 15_000 }).catch(() => undefined);
   const m = await admin<{ display_name: string }>(
@@ -58,7 +58,7 @@ test("SCR-INVITE-ACCEPT-002 閲覧のみとして：書き込めないと先に�
   await page.goto(`/invite/${token}`);
   await expect(page.locator("form[data-state='r4'][data-roles='R4']")).toContainText("進捗を見るだけの参加です");
   await page.getByLabel("お名前").fill("外部 花子");
-  await page.getByLabel("パスワード").fill(PW);
+  await page.getByLabel("パスワード", { exact: true }).fill(PW);
   await page.getByRole("button", { name: "参加する" }).click();
   await page.waitForURL(/\/today/, { timeout: 15_000 }).catch(() => undefined);
   const m = await admin<{ n: string }>(
@@ -76,4 +76,13 @@ test("SCR-INVITE-ACCEPT-003 E-NF-001-A E-NF-001-C 取り消し済み・無い招
   await expect(page.locator("[data-state='x']")).toContainText("もう一度招待してもらってください");
   await page.goto("/invite/no-such-token");
   await expect(page.locator("[data-state='x']")).toBeVisible();
+});
+
+test("SCR-INVITE-ACCEPT-025 パスワードは見る・隠すを切り替えられる（既定は隠す・押すと見える・的は 24px 以上）", async ({
+  page,
+}) => {
+  const { token } = await invite("staff");
+  await page.goto(`/invite/${token}`);
+  await page.getByLabel("パスワード", { exact: true }).fill(PW);
+  await pwToggle(page, "パスワード");
 });

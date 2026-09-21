@@ -29,8 +29,41 @@ REG_BASE = ["pnpm test（該当パッケージ）PASS", "pnpm typecheck 0 errors
 REG_UI = REG_BASE + ["mock-impl-diff（h1・状態・第2ナビ・列の値）PASS", "AC-R9 動作実証：実ブラウザで全操作要素を押し、遷移／別 GET 再取得／表示変化を確認。href は実在ルートを機械照合"]
 # ---------------------------------------------------------------- QA 行（L1）の正本
 qa_files = {}   # file → [rows]
+# 既に出してある行の ID を「行の中身」で引けるようにする。
+# 途中に行が 1 本増えただけで後ろの ID が全部ずれると、実ブラウザで取った結果が別の行に付く。
+# だから連番ではなく「同じ中身なら同じ ID・新しい行だけ末尾の番号」にする（test-ladder §9「ID は変えない」）
+def _cell(x) -> str:
+    """正本のセルと同じ形にする。書き出しは | を ／ に置き換え、読み出しは前後の空白を落とす"""
+    return str(x).replace("|", "／").strip()
+
+_OLD_ID: dict[tuple, list[str]] = {}
+_MAX_SEQ: dict[str, int] = {}
+for _fp in glob.glob(f"{SPEC}/**/*.md", recursive=True):
+    for _ln in open(_fp, encoding="utf-8"):
+        if not _ln.startswith("| ") or _ln.startswith("| ID "):
+            continue
+        _c = [x.strip() for x in _ln.strip().strip("|").split("|")]
+        if len(_c) < 11 or not re.match(r"^[A-Z]", _c[0]):
+            continue
+        _pre, _, _num = _c[0].rpartition("-")
+        if not _num.isdigit():
+            continue
+        _MAX_SEQ[_pre] = max(_MAX_SEQ.get(_pre, 0), int(_num))
+        # 備考は後からゲート（ops_block・write_results）が書き換えるので鍵に入れない
+        _OLD_ID.setdefault((_pre, _c[1], _c[2], _c[3]), []).append(_c[0])
+
 def qrow(file, prefix, screen, view, item, pre, steps, expect, note, task):
-    rows = qa_files.setdefault(file, []); rid = f"{prefix}-{len([r for r in rows if r[0].startswith(prefix)]) + 1:03d}"
+    rows = qa_files.setdefault(file, [])
+    used = {r[0] for f in qa_files.values() for r in f}
+    key = (prefix,) + tuple(_cell(x) for x in (screen, view, item))
+    rid = ""
+    for cand in _OLD_ID.get(key, []):
+        if cand not in used:
+            rid = cand
+            break
+    if not rid:
+        _MAX_SEQ[prefix] = _MAX_SEQ.get(prefix, 0) + 1
+        rid = f"{prefix}-{_MAX_SEQ[prefix]:03d}"
     rows.append((rid, screen, view, item, pre, steps, expect, "", note, task, "L1")); return rid
 def variance_rows(file, prefix, sid, task, html):
     ids = []

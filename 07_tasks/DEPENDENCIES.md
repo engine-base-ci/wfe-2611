@@ -1,4 +1,4 @@
-# v3 Dependencies / Wave Plan — Kaname（2026-09-20）
+# v3 Dependencies / Wave Plan — Kaname（2026-09-21）
 
 | 指標 | 値 |
 |---|---|

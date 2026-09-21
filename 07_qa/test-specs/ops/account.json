@@ -116,6 +116,21 @@
    ]
   },
   {
+   "key": "button:パスワードを表示",
+   "kind": "button",
+   "label": "パスワードを表示",
+   "target": null,
+   "states": [
+    "自分のアカウント",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
    "key": "input:新しいパスワード",
    "kind": "input",
    "label": "新しいパスワード",

@@ -1,6 +1,6 @@
 // T-U-10 ログイン情報を預ける。テストの名前に正本の行 ID を持つ（op_gate.py）。平文は関門 C8 の先＝DB には vault_ref だけ
 import { expect, test } from "@playwright/test";
-import { admin, loginAs, noOverflow, signupViaApi } from "../_lib/api";
+import { admin, loginAs, noOverflow, pwToggle, signupViaApi } from "../_lib/api";
 
 test("SCR-CREDENTIALS-005 SCR-CREDENTIALS-017 SCR-CREDENTIALS-018 SCR-CREDENTIALS-002 SCR-CREDENTIALS-003 SCR-CREDENTIALS-001 SCR-CREDENTIALS-008 SCR-CREDENTIALS-033 SCR-CREDENTIALS-040 SCR-CREDENTIALS-041 SCR-CREDENTIALS-043 SCR-CREDENTIALS-044 SCR-CREDENTIALS-045 SCR-CREDENTIALS-019 SCR-CREDENTIALS-020 E-DATA-001-B E-GATE-003-B E-VAL-003-B 空 → 追加する → サービス（全角・空白入り）→ 入力 3 つ → 保存する → 預けたものに並ぶ。DB は vault_ref だけで平文は無い", async ({
   page,
@@ -80,4 +80,17 @@ test("SCR-CREDENTIALS-034 SCR-CREDENTIALS-035 SCR-CREDENTIALS-036 SCR-CREDENTIAL
     await page.getByRole("list", { name: "手順" }).getByRole("link", { name: label }).click();
     await expect(page).toHaveURL(new RegExp(href.replace(/\//g, "\\/") + "$"));
   }
+});
+
+test("SCR-CREDENTIALS-048 パスワードは見る・隠すを切り替えられる（既定は隠す・押すと見える・的は 24px 以上）", async ({
+  page,
+}) => {
+  const u = await signupViaApi();
+  await loginAs(page, u.token);
+  await page.goto("/settings/credentials");
+  await page.getByRole("button", { name: "追加する" }).click();
+  await page.getByLabel("サービス").fill("発注ナビ");
+  await page.getByRole("button", { name: "次へ" }).click();
+  await page.getByLabel("パスワード", { exact: true }).fill("S3cret-Plain!");
+  await pwToggle(page, "パスワード");
 });

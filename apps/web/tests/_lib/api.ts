@@ -2,7 +2,7 @@
 import { createHash, createHmac } from "node:crypto";
 import { readFileSync } from "node:fs";
 import pg from "pg";
-import type { Page } from "@playwright/test";
+import { expect, type Page } from "@playwright/test";
 
 export const API = process.env["API_BASE"] ?? "http://127.0.0.1:3011";
 const ADMIN = process.env["DATABASE_URL_ADMIN"] ?? "postgres://postgres:postgres@127.0.0.1:55433/kaname_test";
@@ -138,4 +138,23 @@ export function mailLog(email: string): { sent: string; failed: string } {
     sent: lines.filter((l) => l.includes("[mail] 送った")).pop() ?? "",
     failed: lines.filter((l) => l.includes("[mail] 送れなかった")).pop() ?? "",
   };
+}
+
+/** パスワードの見る・隠す（D-087）：既定は隠す → 押すと見える → もう一度で隠れる。
+ *  読み上げの名前（aria-label）と aria-pressed も一緒に変わることまで見る。
+ *  画面ごとに書かずここに 1 つ置く（部品が 1 つなので検査も 1 つ） */
+export async function pwToggle(page: Page, labelOfField: string) {
+  const input = page.getByLabel(labelOfField, { exact: true });
+  await expect(input).toHaveAttribute("type", "password"); // 既定は隠す
+  const btn = page.getByRole("button", { name: "パスワードを表示" }).first();
+  await expect(btn).toHaveAttribute("aria-pressed", "false");
+  const box = await btn.boundingBox();
+  if (!box || box.width < 24 || box.height < 24)
+    throw new Error(`的が小さい（${box?.width}x${box?.height}・24px 以上）`);
+  await btn.click();
+  await expect(input).toHaveAttribute("type", "text"); // 見える
+  const hide = page.getByRole("button", { name: "パスワードを隠す" }).first();
+  await expect(hide).toHaveAttribute("aria-pressed", "true");
+  await hide.click();
+  await expect(input).toHaveAttribute("type", "password"); // また隠れる
 }

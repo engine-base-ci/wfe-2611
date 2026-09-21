@@ -180,6 +180,16 @@ tr:last-child td{border-bottom:0}
 .inp{width:100%;background:var(--sv);border:1px solid transparent;border-radius:var(--r-md);padding:10px 13px;font-family:inherit;font-size:14px;color:var(--on-surface)}
 .inp:focus{outline:2px solid var(--primary);outline-offset:1px;background:var(--card)}
 .inp.err{outline:2px solid var(--error);background:#FDF2F2}
+.pw{position:relative}
+.pw .pw-inp{padding-right:44px}
+.pw-btn{position:absolute;top:50%;right:4px;transform:translateY(-50%);width:32px;height:32px;display:grid;place-items:center;background:none;border:0;border-radius:var(--r-sm);color:var(--on-sv);cursor:pointer}
+.pw-btn svg{width:17px;height:17px;display:block}
+.pw-btn .pw-on,.pw-btn .pw-off{display:grid;place-items:center}
+.pw-btn .pw-off{display:none}
+.pw-btn[aria-pressed="true"] .pw-on{display:none}
+.pw-btn[aria-pressed="true"] .pw-off{display:grid}
+.pw-btn:hover{background:var(--surface);color:var(--on-surface)}
+.pw-btn:focus-visible{outline:2px solid var(--primary);outline-offset:1px}
 .help{font-size:12px;color:var(--on-sv);margin-top:5px}
 .help.err{color:var(--error);font-weight:500;display:flex;gap:6px;align-items:flex-start}
 .help.err svg{width:14px;height:14px;margin-top:3px;flex:none}
@@ -481,6 +491,13 @@ tr:last-child td{border-bottom:0}
  if(window.fitThreePane) setTimeout(window.fitThreePane,0); })();
 (function(){ const fit=()=>{ const els=[...document.querySelectorAll('.statepane:not([hidden]) [data-fix]')]; const wide=window.innerWidth>=1024; if(!els.length) return; document.documentElement.style.overflow=wide?'hidden':''; els.forEach(el=>{ if(!wide){ el.style.removeProperty('--fix-top'); return; } el.style.setProperty('--fix-top', Math.round(el.getBoundingClientRect().top+window.scrollY)+'px'); let b=0, s=el.nextElementSibling; while(s){ const cs=getComputedStyle(s); b+=s.offsetHeight+parseFloat(cs.marginTop)+parseFloat(cs.marginBottom); s=s.nextElementSibling; } el.style.setProperty('--fix-bottom', Math.round(b)+'px'); }); };
  window.addEventListener('load',fit); window.addEventListener('resize',fit); document.addEventListener('click',()=>setTimeout(fit,0)); setTimeout(fit,0); window.fitFixed=fit; })();
+// パスワードの見る・隠す（D-087）。押すたびに type と読み上げの名前が変わる
+document.addEventListener('click',e=>{ const b=e.target.closest('.pw-btn'); if(!b)return;
+ const i=b.parentElement.querySelector('.pw-inp'); if(!i)return;
+ const show=i.type==='password'; i.type=show?'text':'password';
+ b.setAttribute('aria-pressed',String(show));
+ b.setAttribute('aria-label',show?'パスワードを隠す':'パスワードを表示');
+ i.focus(); });
 document.querySelectorAll('.mockbar .wsw button').forEach(b=>b.addEventListener('click',()=>{ const f=location.pathname.split('/').pop(); const top=(window.top===window)?window:window.top; top.location.href='_viewer.html?p='+encodeURIComponent(f)+'&w='+b.dataset.w; }));
 document.querySelectorAll('.states').forEach(b=>b.addEventListener('click',e=>{
  const t=e.target.closest('button[data-t]'); if(!t)return;

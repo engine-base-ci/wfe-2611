@@ -1,6 +1,6 @@
 // T-U-01 アカウントを作る。テストの名前に正本の行 ID（SCR-SIGNUP-NNN・E-…）を持つ。op_gate.py はこの名前と直近の JSON 報告で PASS を検査する
 import { expect, test } from "@playwright/test";
-import { admin, api, noOverflow, PW, uniqEmail } from "../_lib/api";
+import { pwToggle, admin, api, noOverflow, PW, uniqEmail } from "../_lib/api";
 
 test("SCR-SIGNUP-001 SCR-SIGNUP-007 状態 通常：h1・4 幅で横溢れ 0", async ({ page }) => {
   await noOverflow(page, "/signup");
@@ -15,7 +15,7 @@ test("SCR-SIGNUP-005 SCR-SIGNUP-020 SCR-SIGNUP-021 SCR-SIGNUP-022 SCR-SIGNUP-023
   const [local, domain] = [gen.split("@")[0]!.toUpperCase(), gen.split("@")[1]!];
   // eslint-disable-next-line no-irregular-whitespace -- 全角の空白を意図して入れる（表記ゆらぎ）
   await page.getByLabel("メールアドレス").fill(`　${local}＠${domain.toUpperCase()} `);
-  await page.getByLabel("パスワード").fill(PW);
+  await page.getByLabel("パスワード", { exact: true }).fill(PW);
   await page.getByLabel("会社名（または屋号）").fill("　株式会社テスト ");
   const agree = page.getByLabel("利用規約とプライバシーポリシーに同意します");
   await agree.check();
@@ -37,7 +37,7 @@ test("SCR-SIGNUP-011 SCR-SIGNUP-012 記号の種別と NFD：会社名の長音�
   await page.goto("/signup");
   const email = uniqEmail();
   await page.getByLabel("メールアドレス").fill(email);
-  await page.getByLabel("パスワード").fill(PW);
+  await page.getByLabel("パスワード", { exact: true }).fill(PW);
   await page.getByLabel("会社名（または屋号）").fill("テスト‐カ\u3099ー－商店"); // ‐（U+2010）・カ＋結合の濁点（NFD）・全角ハイフン
   await page.getByLabel("利用規約とプライバシーポリシーに同意します").check();
   await page.getByRole("button", { name: "はじめる" }).click();
@@ -55,7 +55,7 @@ test("SCR-SIGNUP-002 SCR-SIGNUP-026 SCR-SIGNUP-025 SCR-SIGNUP-027 E-CONF-001-A E
   expect((await api("/api/auth-ext/sign-up", { email, password: PW, company_name: "先客" })).status).toBe(201);
   await page.goto("/signup");
   await page.getByLabel("メールアドレス").fill(email);
-  await page.getByLabel("パスワード").fill(PW);
+  await page.getByLabel("パスワード", { exact: true }).fill(PW);
   await page.getByLabel("会社名（または屋号）").fill("後客");
   await page.getByLabel("利用規約とプライバシーポリシーに同意します").check();
   await page.getByRole("button", { name: "はじめる" }).click();
@@ -81,7 +81,7 @@ test("SCR-SIGNUP-008 E-CONF-001-B 空・止まっている：外の画面なの�
   await page.goto("/signup");
   await expect(page.locator("[data-requires]")).toHaveCount(0);
   await page.getByLabel("メールアドレス").fill(uniqEmail());
-  await page.getByLabel("パスワード").fill(PW);
+  await page.getByLabel("パスワード", { exact: true }).fill(PW);
   await page.getByLabel("会社名（または屋号）").fill("新規");
   await page.getByLabel("利用規約とプライバシーポリシーに同意します").check();
   await page.getByRole("button", { name: "はじめる" }).click();
@@ -93,9 +93,17 @@ test("E-VAL-004-A E-VAL-004-C 形式違い（abc@）は画面の文言（require
   await page.getByRole("button", { name: "はじめる" }).click();
   await expect(page.getByText("メールアドレスの形式が違います")).toBeVisible();
   await page.getByLabel("メールアドレス").fill(uniqEmail());
-  await page.getByLabel("パスワード").fill(PW);
+  await page.getByLabel("パスワード", { exact: true }).fill(PW);
   await page.getByLabel("会社名（または屋号）").fill("直した");
   await page.getByLabel("利用規約とプライバシーポリシーに同意します").check();
   await page.getByRole("button", { name: "はじめる" }).click();
   await expect(page).toHaveURL(/\/verify-email/);
+});
+
+test("SCR-SIGNUP-029 パスワードは見る・隠すを切り替えられる（既定は隠す・押すと見える・的は 24px 以上）", async ({
+  page,
+}) => {
+  await page.goto("/signup");
+  await page.getByLabel("パスワード", { exact: true }).fill(PW);
+  await pwToggle(page, "パスワード");
 });

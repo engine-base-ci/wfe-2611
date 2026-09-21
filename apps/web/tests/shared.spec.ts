@@ -51,7 +51,7 @@ test("USH-04-001 認証の配管：未ログインで守られた画面は入り
   await expect(page.locator("form[data-state='n'] h1")).toHaveText("ログイン"); // 入り直しの画面が出てから入れる
   const u = await signupViaApi();
   await page.getByLabel("メールアドレス").fill(u.email);
-  await page.getByLabel("パスワード").fill(PW);
+  await page.getByLabel("パスワード", { exact: true }).fill(PW);
   await page.getByRole("button", { name: "ログイン" }).click();
   await expect(page).toHaveURL(/\/settings\/credentials$/, { timeout: 15_000 });
   await expect(page.locator("h1")).toHaveText("ログイン情報を預ける");

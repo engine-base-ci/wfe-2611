@@ -19,7 +19,7 @@ test("SCR-MFA-SETUP-002 SCR-MFA-SETUP-006 SCR-MFA-SETUP-007 SCR-MFA-SETUP-021 SC
   await loginAs(page, u.token);
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   await page.goto("/mfa-setup");
-  await page.getByLabel("パスワード").fill(PW);
+  await page.getByLabel("パスワード", { exact: true }).fill(PW);
   await page.getByRole("button", { name: "認証アプリを登録する" }).click();
   const secret = (await page.locator("[data-totp-secret]").textContent({ timeout: 15_000 }))!.replace(/\s+/g, "");
   expect(secret.length).toBeGreaterThan(10);
@@ -50,7 +50,7 @@ test("SCR-MFA-SETUP-012 SCR-MFA-SETUP-013 SCR-MFA-SETUP-014 記号・NFD・大�
   const u = await signupViaApi();
   await loginAs(page, u.token);
   await page.goto("/mfa-setup");
-  await page.getByLabel("パスワード").fill(PW);
+  await page.getByLabel("パスワード", { exact: true }).fill(PW);
   await page.getByRole("button", { name: "認証アプリを登録する" }).click();
   await page.locator("[data-totp-secret]").waitFor({ timeout: 15_000 });
   await page.getByLabel("アプリに出た6桁").fill("12-34‐56");
@@ -61,7 +61,7 @@ test("E-AUTH-004-A E-AUTH-004-C 6 桁が違う：文言と一手（今の数字�
   const u = await signupViaApi();
   await loginAs(page, u.token);
   await page.goto("/mfa-setup");
-  await page.getByLabel("パスワード").fill(PW);
+  await page.getByLabel("パスワード", { exact: true }).fill(PW);
   await page.getByRole("button", { name: "認証アプリを登録する" }).click();
   const secret = (await page.locator("[data-totp-secret]").textContent({ timeout: 15_000 }))!.replace(/\s+/g, "");
   await page.getByLabel("アプリに出た6桁").fill("000000");
@@ -73,7 +73,7 @@ test("E-AUTH-004-A E-AUTH-004-C 6 桁が違う：文言と一手（今の数字�
 });
 test("ログインしていないと登録できない（401 の文言）", async ({ page }) => {
   await page.goto("/mfa-setup");
-  await page.getByLabel("パスワード").fill(PW);
+  await page.getByLabel("パスワード", { exact: true }).fill(PW);
   await page.getByRole("button", { name: "認証アプリを登録する" }).click();
   await expect(page.locator("p[role=alert]")).toContainText("ログインしてから設定してください");
 });
