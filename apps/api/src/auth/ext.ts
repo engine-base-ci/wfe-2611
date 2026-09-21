@@ -90,6 +90,19 @@ export function authExt(d: AuthExtDeps): Hono {
     return c.json({ data: { email, sent: r.sent, mail_error: r.error, mail_error_kind: r.kind } }, 201);
   });
 
+  // この申し込みがいまどうなっているか（T-U-02・D-088.3）。待つ画面が「ずっと待つだけ」にならないように、
+  // 開いた時点で 登録済み／まだ有効／もう無い を返し、画面が行き先を変える。
+  // 登録の有無は sign-up が 409 で既に返すので、ここで新たに漏れるものは無い
+  app.get("/signup-status", async (c) => {
+    const email = normalizeEmail(String(c.req.query("email") ?? ""));
+    if (!EMAIL_RE.test(email)) return bad(c, 422, "E-VAL-004", "メールアドレスの形式が違います", { field: "email" });
+    if (await already(email)) return c.json({ data: { state: "registered", expires_at: null } });
+    const p = await getPendingByEmail(d.authPool, email);
+    return c.json({
+      data: p ? { state: "pending", expires_at: p.expiresAt } : { state: "none", expires_at: null },
+    });
+  });
+
   // 確認のリンクを送り直す（T-U-02）。保留が無ければ「送った」と嘘をつかず、登録の有無も漏らさない
   app.post("/resend-signup", async (c) => {
     const b = (await c.req.json().catch(() => ({}))) as { email?: string };

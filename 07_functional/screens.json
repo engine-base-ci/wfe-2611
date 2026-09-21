@@ -179,6 +179,10 @@
      "label": "送信済み"
     },
     {
+     "id": "gone",
+     "label": "申し込みが残っていない"
+    },
+    {
      "id": "f",
      "label": "出せなかった"
     },
@@ -193,6 +197,7 @@
    ],
    "transitions": [
     "bridge-setup",
+    "login",
     "signup"
    ],
    "responsive": "375/768/1024/1440（横溢れ 0・本文 720 以上）",
@@ -242,6 +247,15 @@
     {
      "role": "transition",
      "method": "navigate",
+     "path_draft": "/login",
+     "to_screen": "login",
+     "source": [
+      "D-042"
+     ]
+    },
+    {
+     "role": "transition",
+     "method": "navigate",
      "path_draft": "/signup",
      "to_screen": "signup",
      "source": [
@@ -274,6 +288,15 @@
      "method": "navigate",
      "path_draft": "/setup/bridge",
      "to_screen": "bridge-setup",
+     "source": [
+      "D-042"
+     ]
+    },
+    {
+     "role": "transition",
+     "method": "navigate",
+     "path_draft": "/login",
+     "to_screen": "login",
      "source": [
       "D-042"
      ]

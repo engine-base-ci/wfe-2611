@@ -48,6 +48,7 @@
    "related_apis": [
     "GET /api/members",
     "navigate /setup/bridge",
+    "navigate /login",
     "navigate /signup"
    ],
    "access_roles": [
@@ -3998,6 +3999,12 @@
      "method": "navigate",
      "path_draft": "/setup/bridge",
      "to_screen": "bridge-setup"
+    },
+    {
+     "role": "transition",
+     "method": "navigate",
+     "path_draft": "/login",
+     "to_screen": "login"
     },
     {
      "role": "transition",

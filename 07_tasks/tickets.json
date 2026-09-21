@@ -71,7 +71,7 @@
   "calendar_days_human": 693,
   "total_estimate_hours": 1043.6,
   "total_estimate_sessions": 346,
-  "qa_rows_total": 4751,
+  "qa_rows_total": 4754,
   "journeys": 9
  },
  "waves": [
@@ -18991,7 +18991,7 @@
   },
   {
    "id": "T-U-02",
-   "title": "画面 メールを確認する（4 状態・R1/R2）",
+   "title": "画面 メールを確認する（5 状態・R1/R2）",
    "category": "frontend",
    "label": "NEW",
    "feature_id": "F-V3-C-verify-email",
@@ -19064,7 +19064,7 @@
    "acceptance_criteria": {
     "structural": [
      "UBIQUITOUS: 画面 verify-email は URL /verify-email で開く（apps/web/app/(public)/verify-email/page.tsx。遷移の href は flow の route と機械照合）",
-     "STATE-DRIVEN: WHILE 画面 verify-email が描画中 THEN h1「メールを確認する」・第2ナビ ・状態 4（送信済み、出せなかった、登録できた、リンクが使えない）がモック 06_mockup/v1/v1-verify-email.html と一致する",
+     "STATE-DRIVEN: WHILE 画面 verify-email が描画中 THEN h1「メールを確認する」・第2ナビ ・状態 5（送信済み、申し込みが残っていない、出せなかった、登録できた、リンクが使えない）がモック 06_mockup/v1/v1-verify-email.html と一致する",
      "STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い"
     ],
     "functional": [
@@ -19100,6 +19100,7 @@
    "qa_rows": {
     "l1": [
      "SCR-VERIFY-EMAIL-001",
+     "SCR-VERIFY-EMAIL-035",
      "SCR-VERIFY-EMAIL-029",
      "SCR-VERIFY-EMAIL-030",
      "SCR-VERIFY-EMAIL-031",
@@ -19107,6 +19108,7 @@
      "SCR-VERIFY-EMAIL-005",
      "SCR-VERIFY-EMAIL-006",
      "SCR-VERIFY-EMAIL-007",
+     "SCR-VERIFY-EMAIL-036",
      "SCR-VERIFY-EMAIL-008",
      "SCR-VERIFY-EMAIL-009",
      "SCR-VERIFY-EMAIL-010",
@@ -19120,7 +19122,8 @@
      "SCR-VERIFY-EMAIL-018",
      "SCR-VERIFY-EMAIL-032",
      "SCR-VERIFY-EMAIL-020",
-     "SCR-VERIFY-EMAIL-033",
+     "SCR-VERIFY-EMAIL-037",
+     "SCR-VERIFY-EMAIL-038",
      "SCR-VERIFY-EMAIL-034",
      "SCR-VERIFY-EMAIL-023",
      "SCR-VERIFY-EMAIL-024",
@@ -19155,6 +19158,14 @@
      "expected": "モックと一致"
     },
     {
+     "name": "状態 申し込みが残っていない",
+     "steps": [
+      "状態を作る",
+      "開く"
+     ],
+     "expected": "モックと一致"
+    },
+    {
      "name": "状態 出せなかった",
      "steps": [
       "状態を作る",
@@ -19164,14 +19175,6 @@
     },
     {
      "name": "状態 登録できた",
-     "steps": [
-      "状態を作る",
-      "開く"
-     ],
-     "expected": "モックと一致"
-    },
-    {
-     "name": "状態 リンクが使えない",
      "steps": [
       "状態を作る",
       "開く"
@@ -19211,7 +19214,7 @@
    "acceptance_criteria_inline": {
     "tier_1_structural": [
      "UBIQUITOUS: 画面 verify-email は URL /verify-email で開く（apps/web/app/(public)/verify-email/page.tsx。遷移の href は flow の route と機械照合）",
-     "STATE-DRIVEN: WHILE 画面 verify-email が描画中 THEN h1「メールを確認する」・第2ナビ ・状態 4（送信済み、出せなかった、登録できた、リンクが使えない）がモック 06_mockup/v1/v1-verify-email.html と一致する",
+     "STATE-DRIVEN: WHILE 画面 verify-email が描画中 THEN h1「メールを確認する」・第2ナビ ・状態 5（送信済み、申し込みが残っていない、出せなかった、登録できた、リンクが使えない）がモック 06_mockup/v1/v1-verify-email.html と一致する",
      "STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い"
     ],
     "tier_2_functional": [

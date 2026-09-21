@@ -61,6 +61,13 @@ export const signUp = (b: { email: string; password: string; company_name: strin
     "/sign-up",
     b,
   );
+/** この申し込みがいまどうなっているか（登録済み／まだ有効／もう無い） */
+export const signupStatus = (email: string) =>
+  ext<{ state: "registered" | "pending" | "none"; expires_at: string | null }>(
+    `/signup-status?email=${encodeURIComponent(email)}`,
+    undefined,
+    "GET",
+  );
 /** 確認のリンクを送り直す */
 export const resendSignup = (email: string) =>
   ext<{

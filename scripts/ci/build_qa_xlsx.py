@@ -59,6 +59,27 @@ def tab_name(tid: str, title: str) -> str:
     return (tid + ' ' + re.sub(r'[\[\]:*?/\\]', '', title)[:20]).strip()[:31]
 
 
+def prev_widths(path: str) -> dict[str, dict[str, float]]:
+    """前に渡した Excel の列幅を (タブ名 → 列 → 幅) で読む。人が広げた幅を作り直しでつぶさない"""
+    if not os.path.exists(path):
+        return {}
+    try:
+        wb = load_workbook(path)
+    except Exception:
+        return {}
+    out: dict[str, dict[str, float]] = {}
+    for name in wb.sheetnames:
+        w = {k: d.width for k, d in wb[name].column_dimensions.items() if d.width}
+        if w:
+            out[name] = w
+    return out
+
+
+def apply_widths(ws, keep: dict[str, dict[str, float]]) -> None:
+    for col, w in (keep.get(ws.title) or {}).items():
+        ws.column_dimensions[col].width = w
+
+
 def prev_answers(path: str) -> dict[tuple[str, str], tuple[str, str]]:
     """前に渡した Excel に書かれた答えを (タブ名, 何をする) で引けるようにする。
     作り直すたびに人が書いた OK／NG と気づいたことが消えるのを防ぐ（正本の行は ID を変えない・test-ladder §9 と同じ考え）"""
@@ -83,6 +104,7 @@ def prev_answers(path: str) -> dict[tuple[str, str], tuple[str, str]]:
 
 def write(a, order: list[tuple[str, dict]]) -> int:
     keep = prev_answers(a.out)
+    widths = prev_widths(a.out)
     wb = Workbook()
     ws = wb.active
     ws.title = "はじめに"
@@ -122,6 +144,7 @@ def write(a, order: list[tuple[str, dict]]) -> int:
             c.fill = OKF
         elif c.value == "NG":
             c.fill = NGF
+    apply_widths(ws, widths)   # 既定を置き終えてから、人が広げた幅を戻す
 
     for tid, d in order:
         p = d["p"]
@@ -158,6 +181,7 @@ def write(a, order: list[tuple[str, dict]]) -> int:
             s.conditional_formatting.add(rng, CellIsRule(operator="equal", formula=['"OK"'], fill=OKF))
             s.conditional_formatting.add(rng, CellIsRule(operator="equal", formula=['"NG"'], fill=NGF))
         s.auto_filter.ref = f"A{row}:E{last if p["steps"] else row}"
+        apply_widths(s, widths)
         if p["later"]:
             rr = first + len(p["steps"]) + 2
             s.cell(row=rr, column=1, value="今はまだ押せないもの（触らなくてよい）").font = Font(bold=True)
@@ -165,7 +189,7 @@ def write(a, order: list[tuple[str, dict]]) -> int:
                 c = s.cell(row=rr + j, column=1, value="・" + x); c.alignment = WRAP; s.merge_cells(start_row=rr + j, start_column=1, end_row=rr + j, end_column=5)
     os.makedirs(os.path.dirname(a.out) or ".", exist_ok=True)
     wb.save(a.out)
-    print(f"Excel → {a.out}（タブ {len(order) + 1}・チケット {len(order)}・前に書いた答えを引き継いだ {len(keep)} 行）")
+    print(f"Excel → {a.out}（タブ {len(order) + 1}・チケット {len(order)}・引き継いだ 答え {len(keep)} 行／幅 {sum(len(v) for v in widths.values())} 列）")
     return 0
 
 

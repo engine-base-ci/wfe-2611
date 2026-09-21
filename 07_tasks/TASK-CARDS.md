@@ -4,7 +4,7 @@
 
 - 総タスク数：171（A 26 / D 14 / F 18 / I 22 / S 15 / U-screen 64 / U-shared 7 / V2 5）
 - 画面の被覆：64/64
-- L1 テスト行：4751（正本 07_qa/test-specs）／ 流れ（L2）：9
+- L1 テスト行：4754（正本 07_qa/test-specs）／ 流れ（L2）：9
 - 工数：Human 5540.5 h（693 日）／ AI 計算 991.6 h ＋ 人のレビュー 52.0 h → wall-clock 278.8 h（47 日・並列 10）
 - Wave 数：25
 
@@ -110,7 +110,7 @@
 | ID | タイトル | category | layer | Human h | AI h | wall-clock | wave | depends_on | L1 行 |
 |---|---|---|---|---|---|---|---|---|---|
 | T-U-01 | 画面 アカウントを作る（2 状態・R1/R2） | frontend | ui | 12.0 | 1.2 | 1.2 | 11 | 8 | 35 |
-| T-U-02 | 画面 メールを確認する（4 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 11 | 11 | 41 |
+| T-U-02 | 画面 メールを確認する（5 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 11 | 11 | 44 |
 | T-U-03 | 画面 招待を受けて参加する（3 状態・R3/R4） | frontend | ui | 14.5 | 1.4 | 1.4 | 11 | 8 | 28 |
 | T-U-04 | 画面 2段階認証を設定する（3 状態・R1/R2/R3） | frontend | ui | 13.5 | 1.4 | 1.4 | 11 | 11 | 34 |
 | T-U-05 | 画面 ログインする（3 状態・R1/R2/R3/R4） | frontend | ui | 17.5 | 1.8 | 1.8 | 11 | 11 | 45 |
@@ -1015,16 +1015,16 @@
 - L1 行 35（['SCR-SIGNUP-001', 'SCR-SIGNUP-002', 'SCR-SIGNUP-003'] …）／ L2 ['J-01']
 - audit: 07_tasks/audit/T-U-01.md
 
-### T-U-02 画面 メールを確認する（4 状態・R1/R2）
+### T-U-02 画面 メールを確認する（5 状態・R1/R2）
 
 - group U-screen / layer ui / phase 5_ui_parallel / wave 11 / Human 14.5 h・AI 1.4 h・wall-clock 1.4 h
 - 行為 A02 / 画面 verify-email / 表 members permissions layers / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-01 T-A-03 T-A-04
 - 根拠（逐語）：D-042「情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エ」 ／ D-053「画面は行為から導出する。画面から始めると『この画面で何をしたいか分からない』が必ず起きる。役割×用事→行為の背骨→オブジ」
 - 触るファイル：apps/web/app/(public)/verify-email/page.tsx (new)、apps/web/tests/screens/verify-email.spec.ts (new)
-- AC（Tier 1）：UBIQUITOUS: 画面 verify-email は URL /verify-email で開く（apps/web/app/(public)/verify ／ STATE-DRIVEN: WHILE 画面 verify-email が描画中 THEN h1「メールを確認する」・第2ナビ ・状態 4（送信済み、出せなかっ
+- AC（Tier 1）：UBIQUITOUS: 画面 verify-email は URL /verify-email で開く（apps/web/app/(public)/verify ／ STATE-DRIVEN: WHILE 画面 verify-email が描画中 THEN h1「メールを確認する」・第2ナビ ・状態 5（送信済み、申し込みが
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/members が「届いたリンクを押す」として呼ばれたとき THEN Kaname は「本人確認を ／ EVENT-DRIVEN: WHEN GET /api/v1/members が「認証アプリを登録する」として呼ばれたとき THEN Kaname は「TOTP ／ EVENT-DRIVEN: WHEN 「はじめの設定をはじめる」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映
-- L1 行 41（['SCR-VERIFY-EMAIL-001', 'SCR-VERIFY-EMAIL-029', 'SCR-VERIFY-EMAIL-030'] …）／ L2 ['J-01']
+- L1 行 44（['SCR-VERIFY-EMAIL-001', 'SCR-VERIFY-EMAIL-035', 'SCR-VERIFY-EMAIL-029'] …）／ L2 ['J-01']
 - audit: 07_tasks/audit/T-U-02.md
 
 ### T-U-03 画面 招待を受けて参加する（3 状態・R3/R4）

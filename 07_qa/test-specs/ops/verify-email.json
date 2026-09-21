@@ -3,6 +3,7 @@
  "mock": "06_mockup/v1/v1-verify-email.html",
  "state_labels": {
   "n": "送信済み",
+  "gone": "申し込みが残っていない",
   "f": "出せなかった",
   "ok": "登録できた",
   "x": "リンクが使えない"
@@ -52,8 +53,22 @@
    "label": "はじめから登録し直す",
    "target": "signup",
    "states": [
+    "申し込みが残っていない",
     "出せなかった",
     "リンクが使えない"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0"
+   ]
+  },
+  {
+   "key": "link:ログイン→login",
+   "kind": "link",
+   "label": "ログイン",
+   "target": "login",
+   "states": [
+    "申し込みが残っていない"
    ],
    "roles": [],
    "ps": [

@@ -67,7 +67,7 @@ test("SCR-VERIFY-EMAIL-030 SCR-VERIFY-EMAIL-034 SCR-VERIFY-EMAIL-018 SCR-VERIFY-
   await expect(page).toHaveURL(/\/setup\/bridge$/);
 });
 
-test("SCR-VERIFY-EMAIL-031 SCR-VERIFY-EMAIL-033 E-AUTH-003-A E-AUTH-003-C 状態 リンクが使えない：壊れたリンクは文言と「はじめから登録し直す」の一手", async ({
+test("SCR-VERIFY-EMAIL-031 SCR-VERIFY-EMAIL-037 E-AUTH-003-A E-AUTH-003-C 状態 リンクが使えない：壊れたリンクは文言と「はじめから登録し直す」の一手", async ({
   page,
 }) => {
   await page.goto("/verify-email?token=broken-token-000");
@@ -87,7 +87,8 @@ test("二度押し・リロード：確認の済んだリンクをもう一度�
 });
 
 test("SCR-VERIFY-EMAIL-008 SCR-VERIFY-EMAIL-020 リンク「入力し直す」→ /signup が開く", async ({ page }) => {
-  await page.goto(`/verify-email?sent=1&email=x%40example.com`);
+  const u = await signupPending("入力し直す社", uniqEmail());
+  await page.goto(`/verify-email?sent=1&email=${encodeURIComponent(u.email)}`);
   await page.getByRole("link", { name: "入力し直す" }).click();
   await expect(page).toHaveURL(/\/signup$/);
 });
@@ -98,11 +99,13 @@ test("主アクションは確認の後にだけ出る（確認前の画面に�
   await expect(page.getByRole("link", { name: /はじめの設定/ })).toHaveCount(0);
 });
 
-test("SCR-VERIFY-EMAIL-029 SCR-VERIFY-EMAIL-032 E-MAIL-001-A E-MAIL-001-C 状態 出せなかった：「送りました」と言わず、相手のせいにせず、次の一手を出す", async ({
+test("SCR-VERIFY-EMAIL-029 SCR-VERIFY-EMAIL-032 SCR-VERIFY-EMAIL-033 E-MAIL-001-A E-MAIL-001-C 状態 出せなかった：「送りました」と言わず、相手のせいにせず、次の一手を出す", async ({
   page,
 }) => {
+  // 送れなかったときも申し込みは 30 分残る（残っていなければ「残っていません」が正しい）
+  const u = await signupPending("出せなかった社", uniqEmail());
   await page.goto(
-    `/verify-email?sent=0&email=${encodeURIComponent(uniqEmail())}&why=${encodeURIComponent("送出先の 1 日の上限")}`,
+    `/verify-email?sent=0&email=${encodeURIComponent(u.email)}&why=${encodeURIComponent("送出先の 1 日の上限")}`,
   );
   const f = page.locator("[data-state='f']");
   await expect(f.locator("h1")).toHaveText("確認のメールを出せませんでした");
@@ -117,8 +120,9 @@ test("SCR-VERIFY-EMAIL-029 SCR-VERIFY-EMAIL-032 E-MAIL-001-A E-MAIL-001-C 状態
 test("E-MAIL-002-A E-MAIL-002-C 宛先が受け取らない：受信箱が満杯・アドレスが違うときは、相手に直せる形で言う（こちらの都合とは別の文言）", async ({
   page,
 }) => {
+  const u = await signupPending("受け取らない社", uniqEmail());
   await page.goto(
-    `/verify-email?sent=0&kind=recipient&email=${encodeURIComponent(uniqEmail())}&why=${encodeURIComponent("552 5.2.2 Quota exceeded (mailbox for user is full)")}`,
+    `/verify-email?sent=0&kind=recipient&email=${encodeURIComponent(u.email)}&why=${encodeURIComponent("552 5.2.2 Quota exceeded (mailbox for user is full)")}`,
   );
   const f = page.locator("[data-state='f']");
   await expect(f.locator("h1")).toHaveText("このメールアドレスに届けられませんでした");
@@ -192,4 +196,27 @@ test("E-CONF-001-A E-CONF-001-C 既に登録が済んだメールで申し込む
   });
   expect(r.status).toBe(409);
   expect(r.json.code).toBe("E-CONF-001");
+});
+
+test("SCR-VERIFY-EMAIL-035 SCR-VERIFY-EMAIL-036 SCR-VERIFY-EMAIL-038 待つ画面に居続けさせない：申し込みが残っていなければその旨と 2 つの行き先を出す", async ({
+  page,
+}) => {
+  const email = uniqEmail();
+  await signupPending("消える社", email);
+  await admin("delete from kaname_auth.pending_signup where email = $1", [email]);
+  await page.goto(`/verify-email?sent=1&email=${encodeURIComponent(email)}`);
+  const g = page.locator("[data-state='gone']");
+  await expect(g.locator("h1")).toHaveText("この申し込みは残っていません", { timeout: 15_000 });
+  await expect(g).toContainText("登録はまだ済んでいません");
+  await g.getByRole("link", { name: "もう登録した人はログイン" }).click();
+  await expect(page).toHaveURL(/\/login$/);
+  await page.goBack();
+  await page.getByRole("link", { name: "はじめから登録し直す" }).click();
+  await expect(page).toHaveURL(/\/signup$/);
+});
+
+test("待つ画面に居続けさせない：もう登録が済んでいたら入る画面へ送る", async ({ page }) => {
+  const u = await signupViaApi("もう済んだ社");
+  await page.goto(`/verify-email?sent=1&email=${encodeURIComponent(u.email)}`);
+  await expect(page).toHaveURL(/\/login/, { timeout: 15_000 });
 });

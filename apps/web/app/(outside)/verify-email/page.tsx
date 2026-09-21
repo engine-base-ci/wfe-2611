@@ -6,10 +6,11 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { Button } from "@/components/ui";
 import { OutsideLayout, SETUP_STEPS } from "@/components/outside/outside-layout";
-import { AuthExtError, resendSignup, verifySignup } from "@/lib/auth/ext";
+import { AuthExtError, resendSignup, signupStatus, verifySignup } from "@/lib/auth/ext";
+import { navRoute } from "@/lib/pending-route";
 import { OPS_EMAIL } from "@/lib/ops";
 
-type State = "n" | "f" | "ok" | "x";
+type State = "n" | "f" | "ok" | "x" | "gone";
 
 function VerifyEmailInner() {
   const router = useRouter();
@@ -25,6 +26,32 @@ function VerifyEmailInner() {
   // 宛先の側（受信箱が満杯・存在しない）か、こちらの側（送出先が落ちている・上限）か。
   // 当たらないときは「こちらの側」に倒す（相手のせいにしない・D-088.5）
   const [kind, setKind] = useState<"recipient" | "provider">(sp.get("kind") === "recipient" ? "recipient" : "provider");
+  const [until, setUntil] = useState<string>("");
+
+  // 待つ画面に来たら、その申し込みが今どうなっているかを見て行き先を変える（D-088.3）。
+  // ずっと同じ画面に居させない：もう登録が済んでいれば入る画面へ、申し込みが無ければその旨を出す
+  useEffect(() => {
+    if (token || !email) return;
+    let alive = true;
+    signupStatus(email)
+      .then((r) => {
+        if (!alive) return;
+        if (r.state === "registered") {
+          router.replace(navRoute("/login?done=1"));
+          return;
+        }
+        if (r.state === "none") {
+          setState("gone");
+          return;
+        }
+        if (r.expires_at)
+          setUntil(new Date(r.expires_at).toLocaleTimeString("ja-JP", { hour: "2-digit", minute: "2-digit" }));
+      })
+      .catch(() => undefined);
+    return () => {
+      alive = false;
+    };
+  }, [token, email, router]);
 
   useEffect(() => {
     if (!token) return;
@@ -41,7 +68,7 @@ function VerifyEmailInner() {
         // 既に登録が済んでいる（二度押し・リロード）＝詰まらせず、入る画面へ送る
         if (e instanceof AuthExtError && e.code === "E-CONF-001") {
           setNotice("この登録はもう終わっています。ログインしてください");
-          router.replace("/login?done=1");
+          router.replace(navRoute("/login?done=1"));
           return;
         }
         setState("x");
@@ -114,6 +141,24 @@ function VerifyEmailInner() {
     </>
   );
 
+  const gone = (
+    <div data-state="gone">
+      <h1 className="text-h1 font-bold tracking-[-0.015em]">この申し込みは残っていません</h1>
+      <p className="mt-2 text-[14px] leading-[1.8]">
+        30 分を過ぎたか、もう登録が終わっています。<b>登録はまだ済んでいません。</b>
+        はじめから登録し直すと、新しいリンクを送ります。
+      </p>
+      <div className="mt-6 flex flex-wrap items-center gap-3">
+        <Link href="/signup">
+          <Button>はじめから登録し直す</Button>
+        </Link>
+        <Link className="text-[13px] font-semibold text-[var(--primary)] underline" href="/login">
+          もう登録した人はログイン
+        </Link>
+      </div>
+    </div>
+  );
+
   return (
     <OutsideLayout
       pitch={
@@ -126,7 +171,9 @@ function VerifyEmailInner() {
       lead="会社のことを自分のAIに話すだけで、目標・台帳・担当業務・AI社員のたたき台ができます。"
       steps={SETUP_STEPS}
     >
-      {state === "ok" ? (
+      {state === "gone" ? (
+        gone
+      ) : state === "ok" ? (
         <div data-state="ok">
           <h1 className="text-h1 font-bold tracking-[-0.015em]">登録できました</h1>
           <p className="mt-2 text-[14px] leading-[1.8]">
@@ -180,7 +227,13 @@ function VerifyEmailInner() {
             <b>押した時点で登録が終わります。</b>押すまで会社は作られません。
           </p>
           <p className="mt-2 text-[13px] text-[var(--on-sv)]">
-            リンクは <b>30分</b> で失効します。届かない場合は迷惑メールも確認してください。
+            リンクは <b>30分</b>
+            {until ? (
+              <>
+                （<span className="num">{until}</span> まで）
+              </>
+            ) : null}{" "}
+            で失効します。届かない場合は迷惑メールも確認してください。
           </p>
           <div className="mt-6 flex flex-wrap items-center gap-3">
             <Button variant="outline" onClick={resend}>

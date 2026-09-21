@@ -74,7 +74,14 @@ _ve_fail = _wrap(_left(*LEAD, steps=[("アカウントを作る",True)]+STEPS[1:
  <div class="pz">{ic("info")}<span>少し時間をおいて「もう一度送る」を押してください。急ぐときは別のメールアドレスで <a href="v1-signup.html" style="color:var(--primary);font-weight:600">はじめから登録し直す</a> こともできます。</span></div>
  <button class="btn btn-p" style="width:100%">{ic("repeat")}もう一度送る</button>
  <p class="muted" style="font-size:12.5px;text-align:center;margin-top:18px">それでも出せないときは <b>info@engine-base.com</b> までご連絡ください</p>"""))
-VERIFY = ("verify-email", [("n","送信済み","",_ve),("f","出せなかった","こちらの都合で送れないとき。相手のせいにせず、次の一手を出す。",_ve_fail),
+# 30 分を過ぎた・もう登録が済んでいる。待つ画面に居続けさせない（D-088.3）
+_ve_gone = _wrap(_left(*LEAD, steps=[("アカウントを作る",True)]+STEPS[1:]), _box(f"""
+ <div style="width:52px;height:52px;border-radius:var(--r-full);background:var(--sv);display:grid;place-items:center;margin-bottom:18px;color:var(--on-sv)">{ic("info")}</div>
+ <h1>この申し込みは残っていません</h1>
+ <div class="sub">30 分を過ぎたか、もう登録が終わっています。<b>登録はまだ済んでいません。</b>はじめから登録し直すと、新しいリンクを送ります。</div>
+ <a class="btn btn-p" style="width:100%" href="v1-signup.html">{ic("mail")}はじめから登録し直す</a>
+ <p class="muted" style="font-size:12.5px;text-align:center;margin-top:18px">もう登録した人は <a href="v1-login.html" style="color:var(--primary);font-weight:600">ログイン</a></p>"""))
+VERIFY = ("verify-email", [("n","送信済み","",_ve),("gone","申し込みが残っていない","30 分を過ぎた・もう登録が済んでいる。待つ画面に居続けさせない。",_ve_gone),("f","出せなかった","こちらの都合で送れないとき。相手のせいにせず、次の一手を出す。",_ve_fail),
   ("ok","登録できた","リンクを押した時点で登録が終わる。ここからはじめの設定へ。",_ve_ok),
   ("x","リンクが使えない","期限切れか使用済み。はじめから登録し直す。",_ve_exp)], AUTH_CSS, True)
 
