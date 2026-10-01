@@ -1955,6 +1955,17 @@
    "ps": [
     "PS3"
    ]
+  },
+  {
+   "key": "button:会話の一覧",
+   "kind": "button",
+   "label": "会話の一覧",
+   "target": null,
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
   }
  ]
 }

@@ -473,6 +473,27 @@ tr:last-child td{border-bottom:0}
 }
 @media(max-width:767px){.mockbar .states{max-width:100%;flex-basis:100%;order:9}}
 
+/* 第2ナビの中身（会話の一覧）は 1179 以下で左からの引き出し（D-064.7）。右の自分のAIのパネルと同じ「重なる引き出し」の型。
+   開きっぱなしの重なるパネルは本文を隠す（2026-10-01 user「レスポンシブ全くできていない」） */
+.shell .sub-toggle{display:none}   /* .shell .btn より強く（1180 以上では左の列にあるので出さない） */
+.sub-scrim{display:none}
+@media(max-width:1179px){
+  .shell .sub-toggle{display:inline-flex}
+  .sub-toggle[aria-expanded="true"]{background:var(--primary-c)}
+  .sub-scrim{display:block;position:fixed;inset:34px 0 0 0;z-index:56;background:rgba(0,0,0,.25)}
+  .sub-scrim[hidden]{display:none}
+  .shell .subnav.has-body{display:none;position:fixed;left:72px;top:34px;bottom:0;width:280px;height:auto;z-index:57;overflow-y:auto;background:var(--card);border-right:1px solid var(--line);border-bottom:0;box-shadow:8px 0 24px rgba(0,0,0,.12)}
+  .shell .subnav.has-body.open{display:block}
+  .shell .subnav.has-body .subnav-b[data-sub-body]{display:block;padding:14px 12px;overflow:visible}
+}
+@media(max-width:767px){.shell .subnav.has-body{left:0;width:min(320px,88vw)}}
+/* 1179 以下：見出しの帯は上に貼り付く（下へ読み進めても一覧を開ける・2026-10-01）。手本：Claude・ChatGPT の狭い幅＝上の帯は固定・一覧は左の引き出し・入力欄は下に固定 */
+@media(max-width:1179px){
+  .shell .shead{position:sticky;top:34px;z-index:50}
+  .shell .side{z-index:60}   /* レールは sticky（重なり順の文脈）。中の引き出しが見出しの下に潜らないよう、レールごと上に */
+  .topbar{flex-wrap:nowrap}.topbar .tt{flex:1 1 auto;min-width:0}.topbar h1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.topbar .sp{display:none}
+}
+@media(max-width:767px){.shead .purpose{display:none}.topbar .crumb{display:none}.topbar{padding:12px 16px}}
 /* タブレットは基本規則より後に置く（同じ詳細度では後勝ち） */
 /* ============ タブレット 768〜1179（D-064）：レール＋横チップの第2ナビ＋重なるパネル ============ */
 @media(min-width:768px) and (max-width:1179px){
@@ -824,9 +845,11 @@ a.ecard:hover{border-color:var(--primary)}
 @keyframes blink{50%{opacity:0}}
 @media (prefers-reduced-motion:reduce){.streaming{animation:none}}
 
-@media(min-width:1024px){
+@media(min-width:768px){
   [data-chat-frame]{height:calc(100vh - var(--fix-top,180px) - var(--fix-bottom,0px));min-height:0;align-items:stretch;grid-template-rows:minmax(0,1fr)}
   [data-chat-frame] .col,[data-chat-frame] [data-chat-col],[data-chat-frame] [data-chat-state],[data-chat-frame] .kc[data-part="conversation"]{display:flex;flex-direction:column;flex:1 1 auto;min-height:0}
+  /* 枠の中の見出し（会話の名前）や注意書きは縮めない。縮むと会話が溢れたとき 15px に潰れて頭が切れる（2026-10-01 実測） */
+  [data-chat-frame]>h2,[data-chat-frame]>p{flex:none}
   /* 会話の中だけが動く。スクロールバーは出さない（出たり消えたりで中身が横にずれる・2026-09-30 user「スクロールバーいらない」） */
   /* overflow-x:hidden：会話の欄は横に動かさない（幅の広い表・コードはその箱の中で横に送る。トラックパッドで欄ごと横にずれる・2026-09-30 user）。
      position:relative：中の読み上げ用の隠し文字（sr-only・絶対位置）を会話の欄の中に置く。無いとページの下にはみ出してページごと縦に動く（2026-09-30 実測 487px） */
@@ -1003,7 +1026,7 @@ a.ecard:hover{border-color:var(--primary)}
 (function(){ const st=document.querySelector('.states'); const mb=document.querySelector('.mockbar'); if(st&&mb){ const sp=mb.querySelector('.sp'); mb.insertBefore(st, sp); }
  const sh=document.querySelector('.shell'); if(sh&&sh.dataset.layout==='threepane'){ const nb=document.querySelector('.subnav-b'); const tb=document.querySelector('.topbar'); if(nb&&tb){ const acts=document.createElement('span'); acts.className='sn-acts'; [...tb.querySelectorAll('.ap-toggle,.ai-stopped,.btn-p')].forEach(b=>acts.appendChild(b)); nb.appendChild(acts); } }
  if(window.fitThreePane) setTimeout(window.fitThreePane,0); })();
-(function(){ const fit=()=>{ const els=[...document.querySelectorAll('.statepane:not([hidden]) [data-fix], .statepane:not([hidden]) [data-chat-frame]')]; const wide=window.innerWidth>=1024; if(!els.length) return; document.documentElement.style.overflow=wide?'hidden':''; els.forEach(el=>{ if(!wide){ el.style.removeProperty('--fix-top'); return; } el.style.setProperty('--fix-top', Math.round(el.getBoundingClientRect().top+window.scrollY)+'px'); let b=0, s=el.nextElementSibling; while(s){ const cs=getComputedStyle(s); b+=s.offsetHeight+parseFloat(cs.marginTop)+parseFloat(cs.marginBottom); s=s.nextElementSibling; } el.style.setProperty('--fix-bottom', Math.round(b)+'px'); }); };
+(function(){ const fit=()=>{ const els=[...document.querySelectorAll('.statepane:not([hidden]) [data-fix], .statepane:not([hidden]) [data-chat-frame]')]; const wide=window.innerWidth>=768;   /* 会話の固定枠はタブレットでも（D-064.7） */ if(!els.length) return; document.documentElement.style.overflow=wide?'hidden':''; els.forEach(el=>{ if(!wide){ el.style.removeProperty('--fix-top'); return; } el.style.setProperty('--fix-top', Math.round(el.getBoundingClientRect().top+window.scrollY)+'px'); let b=0, s=el.nextElementSibling; while(s){ const cs=getComputedStyle(s); b+=s.offsetHeight+parseFloat(cs.marginTop)+parseFloat(cs.marginBottom); s=s.nextElementSibling; } el.style.setProperty('--fix-bottom', Math.round(b)+'px'); }); };
  window.addEventListener('load',fit); window.addEventListener('resize',fit); document.addEventListener('click',()=>setTimeout(fit,0)); setTimeout(fit,0); window.fitFixed=fit; })();
 // パスワードの見る・隠す（D-087）。押すたびに type と読み上げの名前が変わる
 document.addEventListener('click',e=>{ const b=e.target.closest('.pw-btn'); if(!b)return;
@@ -1056,14 +1079,28 @@ if(!document.querySelector('.subnav[data-mode="anchors"]'))
 })();
 (function(){ const mq=window.matchMedia('(min-width:768px) and (max-width:1179px)'); const sh=document.querySelector('.shell');
  const tab={get matches(){ return mq.matches || (!!sh && sh.dataset.layout==='threepane' && window.innerWidth>=1180); }};   // レールのときは開いた section を外側クリックで閉じる
- const closeAll=()=>document.querySelectorAll('.side-grp.open').forEach(b=>{b.classList.remove('open');b.setAttribute('aria-expanded','false');const sub=b.parentElement.querySelector('.side-sub[data-sec="'+b.dataset.sec+'"]');if(sub) sub.hidden=true;});
+ const closeAll=()=>{document.querySelectorAll('.side-grp.open').forEach(b=>{b.classList.remove('open');b.setAttribute('aria-expanded','false');const sub=b.parentElement.querySelector('.side-sub[data-sec="'+b.dataset.sec+'"]');if(sub) sub.hidden=true;}); const sc=document.querySelector('[data-side-scrim]'); if(sc) sc.hidden=true;};
+ window.railCloseAll=closeAll;
  if(tab.matches) closeAll();
+ mq.addEventListener('change',()=>{ if(tab.matches) closeAll(); });   // 幅が変わってレールになった瞬間も閉じる（開きっぱなしで本文に重ねない・D-064.7）
  document.addEventListener('click',e=>{ if(tab.matches && !e.target.closest('.side-nav')) closeAll(); });
+ document.addEventListener('keydown',e=>{ if(tab.matches && e.key==='Escape') closeAll(); });
+})();
+(function(){ const t=document.querySelector('.sub-toggle'), sn=document.querySelector('.subnav.has-body'), sc=document.querySelector('[data-sub-scrim]'); if(!t||!sn) return;   // 会話の一覧の引き出し（D-064.7）
+ const set=o=>{ sn.classList.toggle('open',o); t.setAttribute('aria-expanded',String(o)); if(sc) sc.hidden=!o; }; window.subDrawerSet=set;
+ t.addEventListener('click',()=>set(!sn.classList.contains('open')));
+ if(sc) sc.addEventListener('click',()=>set(false));
+ document.addEventListener('keydown',e=>{ if(e.key==='Escape') set(false); });
+ sn.addEventListener('click',e=>{ if(e.target.closest('.tl-open,.tl-new')) set(false); });
 })();
 document.querySelectorAll('.side-grp').forEach(b=>b.addEventListener('click',()=>{   // 押した分類だけ開け閉め。ほかは開いたまま（2026-09-30）
+ if(window.matchMedia('(max-width:1179px)').matches && window.subDrawerSet) window.subDrawerSet(false);   // 左に 2 枚重ねない
  const open=!b.classList.contains('open'); b.classList.toggle('open',open); b.setAttribute('aria-expanded',String(open));
  document.querySelectorAll('.side-sub[data-last]').forEach(x=>x.removeAttribute('data-last'));   // 細いサイドバーは最後に押した 1 つだけ飛び出す
- const sub=b.parentElement.querySelector('.side-sub[data-sec="'+b.dataset.sec+'"]'); if(sub){ sub.hidden=!open; sub.setAttribute('data-last',''); }}));
+ const sub=b.parentElement.querySelector('.side-sub[data-sec="'+b.dataset.sec+'"]'); if(sub){ sub.hidden=!open; sub.setAttribute('data-last',''); }
+ const rail=window.matchMedia('(max-width:1179px)').matches || document.querySelector('.shell')?.dataset.layout==='threepane';
+ const sc=document.querySelector('[data-side-scrim]'); if(sc) sc.hidden=!(rail&&open); }));
+document.querySelectorAll('.side-sub a').forEach(a=>a.addEventListener('click',()=>{ if(window.matchMedia('(max-width:1179px)').matches && window.railCloseAll) window.railCloseAll(); }));
 (function(){
  const apply=r=>{
   document.querySelectorAll('.side[data-role]').forEach(s=>s.classList.toggle('on',s.dataset.role===r));

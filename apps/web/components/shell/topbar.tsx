@@ -1,6 +1,6 @@
 "use client";
 import { navRoute } from "@/lib/pending-route";
-import { Bot, PauseCircle } from "lucide-react";
+import { Bot, PanelLeft, PauseCircle } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Info } from "lucide-react";
@@ -9,8 +9,19 @@ import { useShell } from "./context";
 
 /** 見出しの行：くくり・h1・自分のAIのトグル・主アクション 1 つ（D-071・D-072。三画面では第2ナビの行に寄せる） */
 /** hasPanel が false の画面（会話モード＝会話そのものが本文）は、右パネルが無いのでトグルを出さない（押しても何も起きないボタンを作らない・G-01） */
-export function TopBar({ primary, extra, hasPanel = true }: { primary?: ReactNode; extra?: ReactNode; hasPanel?: boolean }) {
-  const { screenId, caps, panelOpen, setPanelOpen, aiName, layout } = useShell();
+export function TopBar({
+  primary,
+  extra,
+  hasPanel = true,
+  subToggle = false,
+}: {
+  primary?: ReactNode;
+  extra?: ReactNode;
+  hasPanel?: boolean;
+  /** 第2ナビの中身（会話の一覧）を 1179 以下で引き出しとして開くボタンを出す（D-064.7） */
+  subToggle?: boolean;
+}) {
+  const { screenId, caps, panelOpen, setPanelOpen, aiName, layout, subOpen, setSubOpen } = useShell();
   if (!screenId) return null;
   const s = NAV.screens[screenId];
   const crumb = NAV.sections.find((x) => (x.screens as readonly string[]).includes(screenId))?.label ?? "";
@@ -19,6 +30,18 @@ export function TopBar({ primary, extra, hasPanel = true }: { primary?: ReactNod
   const nobridge = caps.includes("nobridge");
   const btns = (
     <>
+      {subToggle ? (
+        <button
+          type="button"
+          className="btn btn-o sub-toggle"
+          aria-expanded={subOpen}
+          aria-controls="subnav"
+          data-sub-toggle
+          onClick={() => setSubOpen(!subOpen)}
+        >
+          <PanelLeft /> <span>会話の一覧</span>
+        </button>
+      ) : null}
       {aiOk ? (
         <button
           type="button"

@@ -76,7 +76,7 @@ export function AppShell({ children, panel: panelProp, selected, primary, subAct
         {head ? (
           <header className="shead">
             {banner}
-            <TopBar {...(primary ? { primary } : {})} hasPanel={hasPanel} />
+            <TopBar {...(primary ? { primary } : {})} hasPanel={hasPanel} subToggle={!!subBody} />
           </header>
         ) : null}
         {frame === "app" && !blocked ? (
@@ -101,7 +101,7 @@ export function AppShell({ children, panel: panelProp, selected, primary, subAct
             {head ? null : (
               <>
                 {banner}
-                <TopBar {...(primary && layout !== "threepane" ? { primary } : {})} hasPanel={hasPanel} />
+                <TopBar {...(primary && layout !== "threepane" ? { primary } : {})} hasPanel={hasPanel} subToggle={!!subBody} />
               </>
             )}
             <div className={cn("content", layout === "threepane" && "content-tp")}>{children}</div>

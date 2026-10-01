@@ -377,7 +377,7 @@
   width: 100%;
 }
 /* 会話が本文の画面は上下の余白を詰め、入力欄を下へ（会話に高さを渡す・2026-09-30）。chat.css は @layer の中なので、ここ（層の外）に置く */
-@media (min-width: 1024px) {
+@media (min-width: 768px) {
   .content:has([data-chat-frame]) {
     padding-top: 12px;
     padding-bottom: 12px;
@@ -925,3 +925,101 @@
 .tl-foot b{font-weight:600}
 .tl-foot .muted{display:block;color:var(--on-sv);font-size:11px;line-height:1.6;margin-top:2px}
 @media(max-width:767px){.tl-search input,.tl-rename input{font-size:16px}}
+
+/* 第2ナビの中身（会話の一覧）は 1179 以下で左からの引き出し（D-064.7）。見出しの行の「会話の一覧」で開き、選ぶ・外を押す・Esc で閉じる。
+   開きっぱなしの重なるパネルは本文を隠す（2026-10-01 user「レスポンシブ全くできていない」）。右の自分のAIのパネルと同じ「重なる引き出し」の型 */
+.shell .sub-toggle {
+  display: none; /* .shell .btn より強く（1180 以上では左の列にあるので出さない） */
+}
+.sub-scrim {
+  display: none;
+}
+@media (max-width: 1179px) {
+  .shell .sub-toggle {
+    display: inline-flex;
+  }
+  .sub-toggle[aria-expanded="true"] {
+    background: var(--primary-c);
+  }
+  .sub-scrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 56;
+    background: rgba(0, 0, 0, 0.25);
+  }
+  .sub-scrim[hidden] {
+    display: none;
+  }
+  .shell .subnav.has-body {
+    display: none;
+    position: fixed;
+    left: 72px;
+    top: 0;
+    bottom: 0;
+    width: 280px;
+    height: auto;
+    z-index: 57;
+    overflow-y: auto;
+    background: var(--card);
+    border-right: 1px solid var(--line);
+    border-bottom: 0;
+    box-shadow: 8px 0 24px rgba(0, 0, 0, 0.12);
+  }
+  .shell .subnav.has-body.open {
+    display: block;
+  }
+  .shell .subnav.has-body .subnav-b[data-sub-body] {
+    display: block;
+    padding: 14px 12px;
+    overflow: visible;
+  }
+}
+@media (max-width: 767px) {
+  .shell .subnav.has-body {
+    left: 0;
+    width: min(320px, 88vw);
+  }
+}
+
+/* 1179 以下：見出しの帯（画面名・会話の一覧・自分のAI）は上に貼り付く。下へ読み進めても一覧を開けなくならない
+   （2026-10-01 user「なんで上まで行かないとヘッドが出てこんのんや」）。手本：Claude・ChatGPT の狭い幅＝上の帯は固定・一覧は左の引き出し・入力欄は下に固定 */
+@media (max-width: 1179px) {
+  .shell[data-frame="app"] .shead {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  /* レールは sticky なので中の引き出し（z 57）と幕（z 56）はレールの重なり順の中に閉じる。レールごと見出し（50）より上に置かないと、
+     引き出しが見出しの下に潜って頭が切れる（2026-10-01 実機） */
+  .shell[data-frame="app"] .side {
+    z-index: 60;
+  }
+  .topbar {
+    flex-wrap: nowrap;
+  }
+  .topbar .tt {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .topbar h1 {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .topbar .sp {
+    display: none;
+  }
+}
+/* スマホ：帯は 56px に。説明の行は出さない（画面名に乗せると出る）。手本の固定の帯は 56〜64px */
+@media (max-width: 767px) {
+  .shead .purpose {
+    display: none;
+  }
+  .topbar .crumb {
+    display: none;
+  }
+  .topbar {
+    padding: 12px 16px;
+  }
+}

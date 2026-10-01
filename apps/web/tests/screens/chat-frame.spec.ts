@@ -1,5 +1,5 @@
-// 会話の固定枠（T-B-33・D-072「会話の固定枠」）：1024 以上では会話の箱だけを画面の残りの高さにし、吹き出しだけがスクロールする。
-// 段の帯・見出し・右の欄・入力欄は動かない。1023 以下は今までどおり流れる。テストの名前に正本の行 ID を持つ（op_gate.py）。本人の本物の Bridge は止めない
+// 会話の固定枠（T-B-33・D-072「会話の固定枠」・D-064.7 で 768 以上に）：768 以上では会話の箱だけを画面の残りの高さにし、吹き出しだけがスクロールする。
+// 段の帯・見出し・右の欄・入力欄は動かない。767 以下は今までどおり流れる。テストの名前に正本の行 ID を持つ（op_gate.py）。本人の本物の Bridge は止めない
 import { expect, test, type Page } from "@playwright/test";
 import { admin, API, hideRealBridge, loginAs, setupStep, signupViaApi } from "../_lib/api";
 import { startAgentBridge, type AgentBridge } from "../_lib/agent-bridge";
@@ -93,7 +93,7 @@ test("CHT-33-002 会話モード（/ai/chat・幅 1440）：会話の名前と�
   expect((await measure(page)).composerBottom).toBeLessThanOrEqual(m.vh);
 });
 
-test("CHT-33-003 1023 以下（幅 375）は今までどおりページごとに流れる（会話の箱だけを固定しない）", async ({ page }) => {
+test("CHT-33-003 767 以下（幅 375）は今までどおりページごとに流れる（会話の箱だけを固定しない）", async ({ page }) => {
   const u = await longTalk(2);
   await loginAs(page, u.token);
   await page.setViewportSize({ width: 375, height: 812 });

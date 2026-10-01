@@ -54,7 +54,7 @@ async function settled(page: Page, memberId: string) {
 const lastJob = async (memberId: string) =>
   (await admin<{ state_id: string; conversation_id: string | null }>("select state_id, conversation_id from bridge_jobs where member_id = $1 order by created_at desc limit 1", [memberId]))[0];
 
-test("CHT-37-006 Chrome の拡張機能とつながっていないと、会話に理由の 1 行が 1 回だけ出て、PC の状態の Chrome の行が赤になる", async ({ page }) => {
+test("CHT-37-006 SCR-CLONE-CHAT-294 Chrome の拡張機能とつながっていないと、会話に理由の 1 行が 1 回だけ出て、PC の状態の Chrome の行が赤になる", async ({ page }) => {
   await ready(page, "chrome");
   await say(page, "ブラウザで example.com を開いて");
   await expect(page.getByText("Chrome の拡張機能とつながっていないので、ブラウザを使わずに答えます。")).toBeVisible({ timeout: 30_000 });
@@ -76,7 +76,7 @@ test("CHT-37-006 Chrome の拡張機能とつながっていないと、会話�
   await expect(page.locator("[data-browser-off]"), "PC の画面にも、その場でやる一手が出る").toBeVisible();
 });
 
-test("CHT-37-010 会話の 1 行と PC の画面の「つなぎ方を見る」で、3 つの手順と公式の入口が出る", async ({ page }) => {
+test("CHT-37-010 SCR-CLONE-CHAT-288 会話の 1 行と PC の画面の「つなぎ方を見る」で、3 つの手順と公式の入口が出る", async ({ page }) => {
   const u = await ready(page, "chrome");
   await say(page, "ブラウザで example.com を開いて");
   await expect(offLine(page)).toBeVisible({ timeout: 30_000 });

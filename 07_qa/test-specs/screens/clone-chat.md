@@ -1,6 +1,6 @@
 # clone-chat テスト仕様（L1・機械生成）
 
-> 05_flow/build_tasks.py がタスクと同時に生成。ID は変えない。途中変更は qa_delta.py で差分。結果列は staging で流した人が書く（再生成しても残る。今の行 418・結果あり 408 行）。
+> 05_flow/build_tasks.py がタスクと同時に生成。ID は変えない。途中変更は qa_delta.py で差分。結果列は staging で流した人が書く（再生成しても残る。今の行 419・結果あり 408 行）。
 
 | ID | 画面 | テスト観点 | テスト項目 | 前提条件 | 操作手順 | 期待結果 | 結果 | 備考 | タスク | 実行条件 |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -170,7 +170,7 @@
 | SCR-CLONE-CHAT-129 | clone-chat | 状態 | 状態「許可（今回だけ／いつも／しない）」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-clone-chat.html の状態 a と一致 | BLOCKED（自動：状態 許可：3 択と一言は動く（206〜209 のテスト）が、h1／AI の名前（D-060）が無い。AI社員からの許可（名前とアイコン）は偽の Claude に作る振る舞いが無く未確認。T-U-17） | G-06・G-07 | T-U-17 | L1 |
 | SCR-CLONE-CHAT-130 | clone-chat | 状態 | 状態「許可のモード」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-clone-chat.html の状態 pm と一致 | BLOCKED（自動：状態 許可のモード：5 つのモードと全部許可の確かめは動く（279・USH-02-034 のテスト）が、h1／AI の名前（D-060）が無い。T-U-17） | G-06・G-07 | T-U-17 | L1 |
 | SCR-CLONE-CHAT-131 | clone-chat | 状態 | 状態「止まった（理由だけ）」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-clone-chat.html の状態 stp と一致 | BLOCKED（自動：状態 止まった：理由だけの行は出るが、止まった仕事の作業の 1 行（210）と h1／AI の名前（D-060）が無い。T-U-17・T-US-08） | G-06・G-07 | T-U-17 | L1 |
-| SCR-CLONE-CHAT-294 | clone-chat | 状態 | 状態「AI が Chrome を使えなかった」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-clone-chat.html の状態 br と一致 |  | G-06・G-07 | T-U-17 | L1 |
+| SCR-CLONE-CHAT-294 | clone-chat | 状態 | 状態「AI が Chrome を使えなかった」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-clone-chat.html の状態 br と一致 | PASS（screens/browser-notice.spec.ts・実 Chrome・2026-10-01） | G-06・G-07 | T-U-17 | L1 |
 | SCR-CLONE-CHAT-132 | clone-chat | 状態 | 状態「PC が閉じている・送れなかった・使用量」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-clone-chat.html の状態 x と一致 | BLOCKED（自動：状態 PC が閉じている・送れなかった・使用量：帯・もう一度送るは動く（211・212 のテスト）が、『使用量を見る』の行き先 /account が無く（213）、h1／AI の名前（D-060）が無い。T-U-17・T-U-44） | G-06・G-07 | T-U-17 | L1 |
 | SCR-CLONE-CHAT-133 | clone-chat | 状態 | 状態「資料と画像を付ける・声で入力」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-clone-chat.html の状態 f と一致 | BLOCKED（自動：状態 資料と画像を付ける・声：付ける・外す・声は動く（277・219・220・278 のテスト）が、自分が付けた資料のカード（横で開く・落とす）が無く（253・254）、h1／AI の名前（D-060）が無い。T-U-17・T-US-08） | G-06・G-07 | T-U-17 | L1 |
 | SCR-CLONE-CHAT-134 | clone-chat | 状態 | 状態「文脈・@ で指す」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-clone-chat.html の状態 c と一致 | BLOCKED（自動：状態 文脈・@：会話モードに文脈のチップ（この画面・選んでいる 1 件）が出ない（224・275）。h1／AI の名前（D-060）も無い。T-U-17・T-US-08） | G-06・G-07 | T-U-17 | L1 |
@@ -200,7 +200,7 @@
 | SCR-CLONE-CHAT-029 | clone-chat | 表記ゆらぎ | 記号の種別（ハイフン・長音）：‐ ー − を混ぜる | 入力欄がある状態 | 入力して保存 | 同一として扱われ、サーバー側で正規化されて保存される（クライアント側だけに頼らない） | PASS（screens/qa-a1-chat.spec.ts・実 Chrome・2026-10-01） | human-grade-qa 第11軸 | T-U-17 | L1 |
 | SCR-CLONE-CHAT-030 | clone-chat | 表記ゆらぎ | Unicode 正規化（NFC/NFD）：macOS の入力（NFD）で入れる | 入力欄がある状態 | 入力して保存 | 同一として扱われ、サーバー側で正規化されて保存される（クライアント側だけに頼らない） | PASS（screens/qa-a1-chat.spec.ts・実 Chrome・2026-10-01） | human-grade-qa 第11軸 | T-U-17 | L1 |
 | SCR-CLONE-CHAT-031 | clone-chat | 表記ゆらぎ | 大文字小文字：メールを大文字で入れる | 入力欄がある状態 | 入力して保存 | 同一として扱われ、サーバー側で正規化されて保存される（クライアント側だけに頼らない） | PASS（screens/qa-a1-chat.spec.ts・実 Chrome・2026-10-01） | human-grade-qa 第11軸 | T-U-17 | L1 |
-| SCR-CLONE-CHAT-032 | clone-chat | G-11 外部リソースの実在 | N/A：外部リソースを触らない | migration/IaC 適用後 | 起動時の存在確認を読む | 無ければ起動時に落ちる（黙って 502 にならない） |  | 環境ごと | T-U-17 | L1 |
+| SCR-CLONE-CHAT-032 | clone-chat | G-11 外部リソースの実在 | N/A：外部リソースを触らない | migration/IaC 適用後 | 起動時の存在確認を読む | 無ければ起動時に落ちる（黙って 502 にならない） | N/A（この画面は外部リソース（バケット・キュー・外部 API 設定）を触らない。会話は DB（関門 C2）と Bridge の口だけ。資料の置き場（バケット）は T-B-18 の行で確かめる・2026-10-01） | 環境ごと | T-U-17 | L1 |
 | SCR-CLONE-CHAT-033 | clone-chat | G-12 切り替わりの瞬間 | Bridge が切れた直後 0 秒・鮮度窓の内側に操作する | 本番稼働中 | PC を閉じた直後に主アクションを押す | 「AI は止まっています」が出て、押した内容は失われない | PASS（screens/qa-a1-chat.spec.ts・実 Chrome・2026-10-01） |  | T-U-17 | L1 |
 | SCR-CLONE-CHAT-034 | clone-chat | G-13 機能の組み合わせ | 実行中 × 切替／中断 × 再開／別ロール同時 の直積のうち該当分 | — | 同時に起こす | 後勝ちでなく、規則どおり（承認は 1 人 1 回・切替は次の実行から） | PASS（screens/qa-a1-chat.spec.ts・実 Chrome・2026-10-01） | features.json combination_points | T-U-17 | L1 |
 | SCR-CLONE-CHAT-035 | clone-chat | G-14 口座状態の波及 | 退会・停止・権限変更・パスワード変更の後に、この機能の既存セッション・接続・共有リンクが無効 | ログイン中の別端末と Bridge | 権限を変える | 別端末と Bridge は 0 秒で 401（sessions が revoked） | PASS（screens/qa-a1-chat.spec.ts・実 Chrome・2026-10-01） |  | T-U-17 | L1 |
@@ -289,7 +289,7 @@
 | SCR-CLONE-CHAT-210 | clone-chat | 操作 | 開閉「2 つの操作 · 1分40秒」（状態 止まった（理由だけ）） | 状態 止まった（理由だけ） を作る（全役割） | 押す／入れる（実ブラウザ） | 開閉する | BLOCKED（自動：止まった仕事の上に作業の 1 行（N つの操作・時間）が出ない（messages.work には入っているが『ここで止まりました』の行が描かない）。T-US-08（T-B-16）） | op=toggle:2 つの操作 · 1分40秒 | T-U-17 | L1 |
 | SCR-CLONE-CHAT-286 | clone-chat | 操作 | 開閉「1 つの操作 · 12秒」（状態 AI が Chrome を使えなかった） | 状態 AI が Chrome を使えなかった を作る（全役割） | 押す／入れる（実ブラウザ） | 開閉する | PASS（screens/qa-a1-chat.spec.ts・実 Chrome・2026-10-01） | op=toggle:1 つの操作 · 12秒 | T-U-17 | L1 |
 | SCR-CLONE-CHAT-287 | clone-chat | 操作 | 開閉「つなぎ方を見る」（状態 AI が Chrome を使えなかった） | 状態 AI が Chrome を使えなかった を作る（全役割） | 押す／入れる（実ブラウザ） | 開閉する | PASS（screens/qa-a1-chat.spec.ts・実 Chrome・2026-10-01） | op=toggle:つなぎ方を見る | T-U-17 | L1 |
-| SCR-CLONE-CHAT-288 | clone-chat | 操作 | リンク「Chrome ウェブストアで開く」（状態 AI が Chrome を使えなかった） | 状態 AI が Chrome を使えなかった を作る（全役割） | 押す／入れる（実ブラウザ） | リンク先が開く（外なら新しいタブ） |  | op=link:Chrome ウェブストアで開く | T-U-17 | L1 |
+| SCR-CLONE-CHAT-288 | clone-chat | 操作 | リンク「Chrome ウェブストアで開く」（状態 AI が Chrome を使えなかった） | 状態 AI が Chrome を使えなかった を作る（全役割） | 押す／入れる（実ブラウザ） | リンク先が開く（外なら新しいタブ） | PASS（screens/browser-notice.spec.ts・実 Chrome・2026-10-01） | op=link:Chrome ウェブストアで開く | T-U-17 | L1 |
 | SCR-CLONE-CHAT-289 | clone-chat | 操作 | ボタン「もう一度確かめる」（状態 AI が Chrome を使えなかった） | 状態 AI が Chrome を使えなかった を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） | PASS（screens/qa-a1-chat.spec.ts・実 Chrome・2026-10-01） | op=button:もう一度確かめる | T-U-17 | L1 |
 | SCR-CLONE-CHAT-290 | clone-chat | 操作 | ボタン「Bridge 専用のブラウザに切り替える」（状態 AI が Chrome を使えなかった） | 状態 AI が Chrome を使えなかった を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） | PASS（screens/qa-a1-chat.spec.ts・実 Chrome・2026-10-01） | op=button:Bridge 専用のブラウザに切り替える | T-U-17 | L1 |
 | SCR-CLONE-CHAT-211 | clone-chat | 操作 | リンク「PC の状態を見る」（状態 PC が閉じている・送れなかった・使用量） | 状態 PC が閉じている・送れなかった・使用量 を作る（全役割） | 押す／入れる（実ブラウザ） | /bridge-setup が実在ルートで 200 で開く（G-04） | PASS（screens/qa-a1-chat.spec.ts・実 Chrome・2026-10-01） | op=link:PC の状態を見る→bridge-setup | T-U-17 | L1 |
@@ -319,6 +319,7 @@
 | SCR-CLONE-CHAT-233 | clone-chat | 操作 | ボタン「無名（アイコンだけ。実装では aria-label を付ける）」（状態 会話の一覧（探す・星・消す）） | 状態 会話の一覧（探す・星・消す） を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） | PASS（screens/qa-a1-chat.spec.ts・実 Chrome・2026-10-01） | op=button:無名（アイコンだけ。実装では aria-label を付ける） | T-U-17 | L1 |
 | SCR-CLONE-CHAT-234 | clone-chat | 操作 | ボタン「引用して続ける」（状態 返事への操作） | 状態 返事への操作 を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） | PASS（screens/qa-a1-chat.spec.ts・実 Chrome・2026-10-01） | op=button:引用して続ける | T-U-17 | L1 |
 | SCR-CLONE-CHAT-235 | clone-chat | 操作 | リンク「覚えました：初回は紹介でも値引きしない（個人）直す」（状態 覚えました） | 状態 覚えました を作る（全役割） | 押す／入れる（実ブラウザ） | /clone-memory が実在ルートで 200 で開く（G-04） | BLOCKED（自動：行き先の画面 clone-memory は T-B-22 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） | op=link:覚えました：初回は紹介でも値引きしない（個人）直す→clone-memory | T-U-17 | L1 |
+| SCR-CLONE-CHAT-295 | clone-chat | 操作 | ボタン「会話の一覧」（状態 共通） | 状態 共通 を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） | PASS（screens/qa-e-responsive.spec.ts・実 Chrome・2026-10-01） | op=button:会話の一覧 | T-U-17 | L1 |
 | SCR-CLONE-CHAT-098 | clone-chat | 発注者確認 | 手順 07_tasks/handoff/T-U-17.md を発注者が実際に触って OK を出す（Rule 12） | staging か ローカル | 手順どおりに触る | 手順の末尾に「OK: 日付 名前」が書かれる。無い間は BLOCKED（発注者の確認待ち） | BLOCKED（発注者の確認待ち：手順 07_tasks/handoff/T-U-17.md を高本さんが触って OK: を書く。ローカル 3123 で触れる・staging は無い） | Rule 12 | T-U-17 | L1 |
 | CHT-15-001 | clone-chat | 分ける | 「新しく話す」を押すと新しい会話ができ、次の一言は新しいセッションで始まる（前の会話の続きにならない） | 会話が 1 つある | 新しく話す → 言う（実ブラウザ） | 一覧に 2 つ並び、新しい方の agent_session_id は前と違う | PASS（screens/clone-chat.spec.ts・実 Chrome・2026-10-01） | D-104.1 | T-B-15 | L1 |
 | CHT-15-002 | clone-chat | 戻る | 一覧から前の会話を選ぶと、その会話の続きとして話せる（同じセッションを --resume） | 会話が 2 つある | 前の会話を選んで言う（実ブラウザ） | 前の会話の吹き出しの下に続きが出て、agent_session_id が前と同じ | PASS（screens/clone-chat.spec.ts・実 Chrome・2026-10-01） | D-104.1 | T-B-15 | L1 |

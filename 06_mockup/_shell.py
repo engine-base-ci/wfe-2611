@@ -110,7 +110,9 @@ def _subnav(sid, ver, counts=None, sub=None):
     if isinstance(sub, str):   # 項目の代わりに中身をそのまま出す（会話の一覧＝左パネルの一覧の共通の部品・_threadlist.py）
         s = SCR[sid]
         meta = f'<!-- acts: {" ".join(s["acts"])} / roles: {" ".join(s.get("roles", []))} / source: {" ".join(s.get("source", []))} -->'
-        return f'<aside class="subnav" data-mode="column" data-requires="app">{meta}<div class="subnav-b" data-sub-body>{sub}</div></aside>'
+        # 1179 以下では左からの引き出し（D-064.7）。見出しの行の「会話の一覧」で開き、選ぶ・外を押す・Esc で閉じる
+        return (f'<div class="sub-scrim" hidden data-sub-scrim></div>'
+                f'<aside class="subnav has-body" id="subnav" data-mode="column" data-requires="app">{meta}<div class="subnav-b" data-sub-body>{sub}</div></aside>')
     items = sub if sub is not None else SUB.get(sid)
     if not items: return ""
     s = dict(SCR[sid]); s['name'] = _lbl(s['name'], 'R1'); s['purpose'] = _lbl(s['purpose'], 'R1'); rows = []; counts = counts or {}
@@ -302,6 +304,27 @@ SHELL_CSS = THREADLIST_CSS + CONFIRM_CSS + """
 }
 @media(max-width:767px){.mockbar .states{max-width:100%;flex-basis:100%;order:9}}
 
+/* 第2ナビの中身（会話の一覧）は 1179 以下で左からの引き出し（D-064.7）。右の自分のAIのパネルと同じ「重なる引き出し」の型。
+   開きっぱなしの重なるパネルは本文を隠す（2026-10-01 user「レスポンシブ全くできていない」） */
+.shell .sub-toggle{display:none}   /* .shell .btn より強く（1180 以上では左の列にあるので出さない） */
+.sub-scrim{display:none}
+@media(max-width:1179px){
+  .shell .sub-toggle{display:inline-flex}
+  .sub-toggle[aria-expanded="true"]{background:var(--primary-c)}
+  .sub-scrim{display:block;position:fixed;inset:34px 0 0 0;z-index:56;background:rgba(0,0,0,.25)}
+  .sub-scrim[hidden]{display:none}
+  .shell .subnav.has-body{display:none;position:fixed;left:72px;top:34px;bottom:0;width:280px;height:auto;z-index:57;overflow-y:auto;background:var(--card);border-right:1px solid var(--line);border-bottom:0;box-shadow:8px 0 24px rgba(0,0,0,.12)}
+  .shell .subnav.has-body.open{display:block}
+  .shell .subnav.has-body .subnav-b[data-sub-body]{display:block;padding:14px 12px;overflow:visible}
+}
+@media(max-width:767px){.shell .subnav.has-body{left:0;width:min(320px,88vw)}}
+/* 1179 以下：見出しの帯は上に貼り付く（下へ読み進めても一覧を開ける・2026-10-01）。手本：Claude・ChatGPT の狭い幅＝上の帯は固定・一覧は左の引き出し・入力欄は下に固定 */
+@media(max-width:1179px){
+  .shell .shead{position:sticky;top:34px;z-index:50}
+  .shell .side{z-index:60}   /* レールは sticky（重なり順の文脈）。中の引き出しが見出しの下に潜らないよう、レールごと上に */
+  .topbar{flex-wrap:nowrap}.topbar .tt{flex:1 1 auto;min-width:0}.topbar h1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.topbar .sp{display:none}
+}
+@media(max-width:767px){.shead .purpose{display:none}.topbar .crumb{display:none}.topbar{padding:12px 16px}}
 /* タブレットは基本規則より後に置く（同じ詳細度では後勝ち） */
 /* ============ タブレット 768〜1179（D-064）：レール＋横チップの第2ナビ＋重なるパネル ============ */
 @media(min-width:768px) and (max-width:1179px){
@@ -351,6 +374,9 @@ def _page(ver, sid, states, extra_css="", actions_extra="", no_shell=False, coun
     foot = ""
 
     primary = f'<button class="btn btn-p">{ic("check")}{s["primary_action"]}</button>'
+    # 第2ナビの中身（会話の一覧）を 1179 以下で引き出しとして開く（D-064.7）。1180 以上では出ない（左の列にある）
+    sub_btn = (f'<button class="btn btn-o sub-toggle" aria-expanded="false" aria-controls="subnav" data-sub-toggle>{ic("panel-left")}<span>会話の一覧</span></button>'
+               if isinstance(sub, str) else "")
     ai_btn = "" if (no_shell or sid in ("clone-chat", "clone-thread")) else (   # 会話そのものが本文の画面に、もう 1 つの会話を並べない
         f'<button class="btn btn-o ap-toggle" aria-pressed="false" data-requires="ai app">{ic("clone")}<span class="ap-name">高本AI</span><span class="ap-unread" title="見ていない間の返事" data-requires="model">1</span></button>'
         f'<a class="btn btn-g ai-stopped" data-requires="stopped app" href="v1-automation-repair.html" title="AI は止まっています">{ic("pause")}<span>AI は止まっています</span></a>'
@@ -361,7 +387,7 @@ def _page(ver, sid, states, extra_css="", actions_extra="", no_shell=False, coun
     head = (f'<header class="shead"><div class="topbar"><div class="tt">'
             f'<div class="crumb">{crumb}<span class="path" style="font-size:11px;font-family:ui-monospace,SFMono-Regular,monospace;margin-left:8px">{s.get("route", "")}</span></div>'
             f'<h1 title="{s["purpose"]}">{s["name"]}</h1></div>'
-            f'<div class="sp"></div>{ai_btn}{actions_extra}{primary}</div>'
+            f'<div class="sp"></div>{sub_btn}{ai_btn}{actions_extra}{primary}</div>'
             f'<div class="purpose">{ic("info")}<div title="{s["purpose"]}">{s["purpose"]}</div></div></header>')
     main = (f'{same}<main class="main">'
             f'{tabs}<div class="content">{panes}</div>{foot}</main>')
@@ -369,7 +395,7 @@ def _page(ver, sid, states, extra_css="", actions_extra="", no_shell=False, coun
     if no_shell:
         body = f'<div class="shell" style="flex-direction:column">{head}{main}</div>'; rolebar = ""
     else:
-        sides = "".join(_sidebar(r, sid, ver) for r in SHOW_ROLES)
+        sides = '<div class="sub-scrim" hidden data-side-scrim></div>' + "".join(_sidebar(r, sid, ver) for r in SHOW_ROLES)   # レールの引き出しの幕
         tabbars = "".join(_tabbar(r, sid, ver) for r in SHOW_ROLES)
         panels = "" if sid in ("clone-chat", "clone-thread") else "".join(_aipanel(sid, r) for r in SHOW_ROLES)
         body = f'<div class="shell" data-layout="{LAYOUT.get(sid, "page")}">{sides}{head}{_subnav(sid, ver, counts, sub)}{main}{panels}{_blocked(sid, ver)}</div>{tabbars}'
@@ -395,7 +421,7 @@ def _page(ver, sid, states, extra_css="", actions_extra="", no_shell=False, coun
 (function(){{ const st=document.querySelector('.states'); const mb=document.querySelector('.mockbar'); if(st&&mb){{ const sp=mb.querySelector('.sp'); mb.insertBefore(st, sp); }}
  const sh=document.querySelector('.shell'); if(sh&&sh.dataset.layout==='threepane'){{ const nb=document.querySelector('.subnav-b'); const tb=document.querySelector('.topbar'); if(nb&&tb){{ const acts=document.createElement('span'); acts.className='sn-acts'; [...tb.querySelectorAll('.ap-toggle,.ai-stopped,.btn-p')].forEach(b=>acts.appendChild(b)); nb.appendChild(acts); }} }}
  if(window.fitThreePane) setTimeout(window.fitThreePane,0); }})();
-(function(){{ const fit=()=>{{ const els=[...document.querySelectorAll('.statepane:not([hidden]) [data-fix], .statepane:not([hidden]) [data-chat-frame]')]; const wide=window.innerWidth>=1024; if(!els.length) return; document.documentElement.style.overflow=wide?'hidden':''; els.forEach(el=>{{ if(!wide){{ el.style.removeProperty('--fix-top'); return; }} el.style.setProperty('--fix-top', Math.round(el.getBoundingClientRect().top+window.scrollY)+'px'); let b=0, s=el.nextElementSibling; while(s){{ const cs=getComputedStyle(s); b+=s.offsetHeight+parseFloat(cs.marginTop)+parseFloat(cs.marginBottom); s=s.nextElementSibling; }} el.style.setProperty('--fix-bottom', Math.round(b)+'px'); }}); }};
+(function(){{ const fit=()=>{{ const els=[...document.querySelectorAll('.statepane:not([hidden]) [data-fix], .statepane:not([hidden]) [data-chat-frame]')]; const wide=window.innerWidth>=768;   /* 会話の固定枠はタブレットでも（D-064.7） */ if(!els.length) return; document.documentElement.style.overflow=wide?'hidden':''; els.forEach(el=>{{ if(!wide){{ el.style.removeProperty('--fix-top'); return; }} el.style.setProperty('--fix-top', Math.round(el.getBoundingClientRect().top+window.scrollY)+'px'); let b=0, s=el.nextElementSibling; while(s){{ const cs=getComputedStyle(s); b+=s.offsetHeight+parseFloat(cs.marginTop)+parseFloat(cs.marginBottom); s=s.nextElementSibling; }} el.style.setProperty('--fix-bottom', Math.round(b)+'px'); }}); }};
  window.addEventListener('load',fit); window.addEventListener('resize',fit); document.addEventListener('click',()=>setTimeout(fit,0)); setTimeout(fit,0); window.fitFixed=fit; }})();
 // パスワードの見る・隠す（D-087）。押すたびに type と読み上げの名前が変わる
 document.addEventListener('click',e=>{{ const b=e.target.closest('.pw-btn'); if(!b)return;
@@ -448,14 +474,28 @@ if(!document.querySelector('.subnav[data-mode="anchors"]'))
 }})();
 (function(){{ const mq=window.matchMedia('(min-width:768px) and (max-width:1179px)'); const sh=document.querySelector('.shell');
  const tab={{get matches(){{ return mq.matches || (!!sh && sh.dataset.layout==='threepane' && window.innerWidth>=1180); }}}};   // レールのときは開いた section を外側クリックで閉じる
- const closeAll=()=>document.querySelectorAll('.side-grp.open').forEach(b=>{{b.classList.remove('open');b.setAttribute('aria-expanded','false');const sub=b.parentElement.querySelector('.side-sub[data-sec="'+b.dataset.sec+'"]');if(sub) sub.hidden=true;}});
+ const closeAll=()=>{{document.querySelectorAll('.side-grp.open').forEach(b=>{{b.classList.remove('open');b.setAttribute('aria-expanded','false');const sub=b.parentElement.querySelector('.side-sub[data-sec="'+b.dataset.sec+'"]');if(sub) sub.hidden=true;}}); const sc=document.querySelector('[data-side-scrim]'); if(sc) sc.hidden=true;}};
+ window.railCloseAll=closeAll;
  if(tab.matches) closeAll();
+ mq.addEventListener('change',()=>{{ if(tab.matches) closeAll(); }});   // 幅が変わってレールになった瞬間も閉じる（開きっぱなしで本文に重ねない・D-064.7）
  document.addEventListener('click',e=>{{ if(tab.matches && !e.target.closest('.side-nav')) closeAll(); }});
+ document.addEventListener('keydown',e=>{{ if(tab.matches && e.key==='Escape') closeAll(); }});
+}})();
+(function(){{ const t=document.querySelector('.sub-toggle'), sn=document.querySelector('.subnav.has-body'), sc=document.querySelector('[data-sub-scrim]'); if(!t||!sn) return;   // 会話の一覧の引き出し（D-064.7）
+ const set=o=>{{ sn.classList.toggle('open',o); t.setAttribute('aria-expanded',String(o)); if(sc) sc.hidden=!o; }}; window.subDrawerSet=set;
+ t.addEventListener('click',()=>set(!sn.classList.contains('open')));
+ if(sc) sc.addEventListener('click',()=>set(false));
+ document.addEventListener('keydown',e=>{{ if(e.key==='Escape') set(false); }});
+ sn.addEventListener('click',e=>{{ if(e.target.closest('.tl-open,.tl-new')) set(false); }});
 }})();
 document.querySelectorAll('.side-grp').forEach(b=>b.addEventListener('click',()=>{{   // 押した分類だけ開け閉め。ほかは開いたまま（2026-09-30）
+ if(window.matchMedia('(max-width:1179px)').matches && window.subDrawerSet) window.subDrawerSet(false);   // 左に 2 枚重ねない
  const open=!b.classList.contains('open'); b.classList.toggle('open',open); b.setAttribute('aria-expanded',String(open));
  document.querySelectorAll('.side-sub[data-last]').forEach(x=>x.removeAttribute('data-last'));   // 細いサイドバーは最後に押した 1 つだけ飛び出す
- const sub=b.parentElement.querySelector('.side-sub[data-sec="'+b.dataset.sec+'"]'); if(sub){{ sub.hidden=!open; sub.setAttribute('data-last',''); }}}}));
+ const sub=b.parentElement.querySelector('.side-sub[data-sec="'+b.dataset.sec+'"]'); if(sub){{ sub.hidden=!open; sub.setAttribute('data-last',''); }}
+ const rail=window.matchMedia('(max-width:1179px)').matches || document.querySelector('.shell')?.dataset.layout==='threepane';
+ const sc=document.querySelector('[data-side-scrim]'); if(sc) sc.hidden=!(rail&&open); }}));
+document.querySelectorAll('.side-sub a').forEach(a=>a.addEventListener('click',()=>{{ if(window.matchMedia('(max-width:1179px)').matches && window.railCloseAll) window.railCloseAll(); }}));
 (function(){{
  const apply=r=>{{
   document.querySelectorAll('.side[data-role]').forEach(s=>s.classList.toggle('on',s.dataset.role===r));

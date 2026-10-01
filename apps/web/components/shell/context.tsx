@@ -15,6 +15,9 @@ export interface ShellState {
   layout: Layout;
   subMode: "column" | "anchors";
   panelOpen: boolean;
+  /** 第2ナビの中身（会話の一覧）の引き出し。1179 以下だけ意味を持つ（D-064.7） */
+  subOpen: boolean;
+  setSubOpen: (v: boolean) => void;
   setPanelOpen: (v: boolean) => void;
   aiName: string;
 }
@@ -52,6 +55,7 @@ export function ShellProvider({
   const subMode = (screenId && NAV.subModeByScreen[screenId] === "anchors" ? "anchors" : "column") as
     "column" | "anchors";
   const [panelOpen, setPanel] = useState(false);
+  const [subOpen, setSubOpen] = useState(false);
   useEffect(() => {
     // パネルの既定：本文が 720（三画面は中央 640）を保てる幅でだけ開く。覚えるのは広い幅（1180+）だけ（D-070）
     const vw = window.innerWidth;
@@ -77,8 +81,8 @@ export function ShellProvider({
     }
   };
   const value = useMemo<ShellState>(
-    () => ({ role, caps, psId, screenId, counts, frame, layout, subMode, panelOpen, setPanelOpen, aiName }),
-    [role, caps, psId, screenId, counts, frame, layout, subMode, panelOpen, aiName],
+    () => ({ role, caps, psId, screenId, counts, frame, layout, subMode, panelOpen, setPanelOpen, subOpen, setSubOpen, aiName }),
+    [role, caps, psId, screenId, counts, frame, layout, subMode, panelOpen, subOpen, aiName],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

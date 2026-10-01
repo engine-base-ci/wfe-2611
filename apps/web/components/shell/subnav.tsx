@@ -1,4 +1,5 @@
 "use client";
+import { useEffect } from "react";
 import { cn } from "@/lib/cn";
 import { NAV } from "@/lib/nav";
 import { useShell } from "./context";
@@ -17,49 +18,78 @@ export function SubNav({
   body?: React.ReactNode;
 }) {
   // 見出し（くくり・画面名・説明）は本文の上の帯に 1 つだけ（app-shell の .shead）。ここでは出さない（2026-09-30 user「同じ文章が 2 回」）
-  const { screenId, subMode, counts } = useShell();
+  const { screenId, subMode, counts, subOpen, setSubOpen } = useShell();
+  // 1179 以下では、中身（会話の一覧）は左からの引き出し（D-064.7）。見出しの行の「会話の一覧」で開き、選ぶ・外を押す・Esc で閉じる
+  useEffect(() => {
+    if (!body || !subOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSubOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [body, subOpen, setSubOpen]);
   if (!screenId) return null;
   const items = NAV.subByScreen[screenId];
   if (!items?.length) return null;
   let lastGroup: string | undefined;
   return (
-    <aside className="subnav" data-mode={subMode} data-requires="app" aria-label="第2ナビ">
-      {body ? <div className="subnav-b" data-sub-body>{body}</div> : null}
-      <div className="subnav-b" hidden={!!body}>
-        {items.map((it, i) => {
-          const g = it.group && it.group !== lastGroup ? it.group : null;
-          if (g) lastGroup = it.group;
-          const n = counts[`${screenId}:${it.label}`];
-          return (
-            <span key={i} className="contents">
-              {g ? <div className="subnav-sec">{g}</div> : null}
-              <a
-                href={subMode === "anchors" ? `#sec-${i}` : undefined}
-                role={subMode === "anchors" ? undefined : "tab"}
-                aria-selected={subMode === "anchors" ? undefined : i === (active ?? 0)}
-                tabIndex={0}
-                className={cn("sn", i === (active ?? 0) && "on")}
-                title={it.desc}
-                onClick={(e) => {
-                  if (subMode !== "anchors") e.preventDefault();
-                  onSelect?.(i);
-                }}
-              >
-                <span className="sn-l">
-                  {it.label}
-                  {n ? (
-                    <span className="n" data-requires="data">
-                      {n}
-                    </span>
-                  ) : null}
-                </span>
-                {it.desc ? <span className="sn-d">{it.desc}</span> : null}
-              </a>
-            </span>
-          );
-        })}
-        {actions ? <span className="sn-acts">{actions}</span> : null}
-      </div>
-    </aside>
+    <>
+      {body ? <div className="sub-scrim" hidden={!subOpen} onClick={() => setSubOpen(false)} data-sub-scrim /> : null}
+      <aside
+        className={cn("subnav", body && "has-body", body && subOpen && "open")}
+        data-mode={subMode}
+        data-requires="app"
+        aria-label="第2ナビ"
+        id="subnav"
+      >
+        {body ? (
+          <div
+            className="subnav-b"
+            data-sub-body
+            onClick={(e) => {
+              // 一覧で会話を選んだ・新しく話す → 引き出しを閉じて会話へ
+              if ((e.target as Element).closest(".tl-open, .tl-new")) setSubOpen(false);
+            }}
+          >
+            {body}
+          </div>
+        ) : null}
+        <div className="subnav-b" hidden={!!body}>
+          {items.map((it, i) => {
+            const g = it.group && it.group !== lastGroup ? it.group : null;
+            if (g) lastGroup = it.group;
+            const n = counts[`${screenId}:${it.label}`];
+            return (
+              <span key={i} className="contents">
+                {g ? <div className="subnav-sec">{g}</div> : null}
+                <a
+                  href={subMode === "anchors" ? `#sec-${i}` : undefined}
+                  role={subMode === "anchors" ? undefined : "tab"}
+                  aria-selected={subMode === "anchors" ? undefined : i === (active ?? 0)}
+                  tabIndex={0}
+                  className={cn("sn", i === (active ?? 0) && "on")}
+                  title={it.desc}
+                  onClick={(e) => {
+                    if (subMode !== "anchors") e.preventDefault();
+                    onSelect?.(i);
+                  }}
+                >
+                  <span className="sn-l">
+                    {it.label}
+                    {n ? (
+                      <span className="n" data-requires="data">
+                        {n}
+                      </span>
+                    ) : null}
+                  </span>
+                  {it.desc ? <span className="sn-d">{it.desc}</span> : null}
+                </a>
+              </span>
+            );
+          })}
+          {actions ? <span className="sn-acts">{actions}</span> : null}
+        </div>
+      </aside>
+    </>
   );
 }

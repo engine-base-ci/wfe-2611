@@ -234,13 +234,15 @@ def tree(lines): return '<pre class="ftree">' + "\n".join(lines) + '</pre>'
 
 
 # 会話の固定枠（D-072「会話の固定枠」・user「チャットは動いていい。周りは固定」）。会話を本文に出す画面はどれもこれ（L-008）。
-# 1024 以上で枠の高さを画面の残りに合わせ、中の吹き出しだけがスクロールする（入力欄・見出し・段の帯・右の欄は動かない）。
+# 768 以上で枠の高さを画面の残りに合わせ、中の吹き出しだけがスクロールする（入力欄・見出し・段の帯・右の欄は動かない。D-072 の 1024 を D-064.7 で 768 に）。
 # 枠の高さはモックでは --fix-top／--fix-bottom（_shell.py の台本）、実装では components/ai/frame.tsx が直に入れる。
 # 会話の中（.kc）に閉じない規則なので、export_web_css.py はこれを閉じずに書き出す
 FRAME_CSS = """
-@media(min-width:1024px){
+@media(min-width:768px){
   [data-chat-frame]{height:calc(100vh - var(--fix-top,180px) - var(--fix-bottom,0px));min-height:0;align-items:stretch;grid-template-rows:minmax(0,1fr)}
   [data-chat-frame] .col,[data-chat-frame] [data-chat-col],[data-chat-frame] [data-chat-state],[data-chat-frame] .kc[data-part="conversation"]{display:flex;flex-direction:column;flex:1 1 auto;min-height:0}
+  /* 枠の中の見出し（会話の名前）や注意書きは縮めない。縮むと会話が溢れたとき 15px に潰れて頭が切れる（2026-10-01 実測） */
+  [data-chat-frame]>h2,[data-chat-frame]>p{flex:none}
   /* 会話の中だけが動く。スクロールバーは出さない（出たり消えたりで中身が横にずれる・2026-09-30 user「スクロールバーいらない」） */
   /* overflow-x:hidden：会話の欄は横に動かさない（幅の広い表・コードはその箱の中で横に送る。トラックパッドで欄ごと横にずれる・2026-09-30 user）。
      position:relative：中の読み上げ用の隠し文字（sr-only・絶対位置）を会話の欄の中に置く。無いとページの下にはみ出してページごと縦に動く（2026-09-30 実測 487px） */

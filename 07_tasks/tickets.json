@@ -73,7 +73,7 @@
   "calendar_days_human": 786,
   "total_estimate_hours": 1226.3,
   "total_estimate_sessions": 407,
-  "qa_rows_total": 5128,
+  "qa_rows_total": 5129,
   "journeys": 9
  },
  "waves": [
@@ -25496,6 +25496,7 @@
      "SCR-CLONE-CHAT-233",
      "SCR-CLONE-CHAT-234",
      "SCR-CLONE-CHAT-235",
+     "SCR-CLONE-CHAT-295",
      "SCR-CLONE-CHAT-098",
      "E-ART-001-A",
      "E-ART-001-B",

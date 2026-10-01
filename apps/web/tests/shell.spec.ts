@@ -1,6 +1,14 @@
 // 共通シェル（T-US-01・02）：4 幅で横溢れ 0・本文の最小幅（D-070）・役割で主ナビが変わる・枠の導出（D-065）・自分のAIのパネル（D-062）
 import { expect, test, type Page } from "@playwright/test";
 import { WIDTHS } from "./_lib/browser";
+import { loginAs, setupStep, signupViaApi } from "./_lib/api";
+
+// 見本の画面（/dev/shell）もログインが要る（2026-09-30 から。ログインせずに開いて .shell が出ず落ちていた）
+test.beforeEach(async ({ page }) => {
+  const u = await signupViaApi();
+  await setupStep(u.memberId, 6);
+  await loginAs(page, u.token);
+});
 
 const overflow = (page: Page) =>
   page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);

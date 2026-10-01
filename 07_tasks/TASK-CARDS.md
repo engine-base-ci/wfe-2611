@@ -4,7 +4,7 @@
 
 - 総タスク数：214（A 28 / B 40 / D 14 / F 18 / I 22 / S 15 / U-screen 64 / U-shared 8 / V2 5）
 - 画面の被覆：64/64
-- L1 テスト行：5128（正本 07_qa/test-specs）／ 流れ（L2）：9
+- L1 テスト行：5129（正本 07_qa/test-specs）／ 流れ（L2）：9
 - 工数：Human 6284.5 h（786 日）／ AI 計算 1138.3 h ＋ 人のレビュー 88.0 h → wall-clock 334.8 h（56 日・並列 10）
 - Wave 数：34
 
@@ -173,7 +173,7 @@
 | T-U-14 | 画面 承認待ち（4 状態・R1/R2/R3） | frontend | ui | 18.5 | 1.9 | 1.9 | 21 | 8 | 62 |
 | T-U-15 | 画面 自分のAIとAI社員のやりとり（5 状態・R1/R2/R3） | frontend | ui | 21.0 | 2.1 | 2.1 | 21 | 9 | 57 |
 | T-U-16 | 画面 タスク（12 状態・R1/R2/R3/R4） | frontend | ui | 40.0 | 4.0 | 4.0 | 21 | 13 | 134 |
-| T-U-17 | 画面 自分のAIと話す（21 状態・R1/R2/R3/R4） | frontend | ui | 62.5 | 6.2 | 6.2 | 21 | 11 | 219 |
+| T-U-17 | 画面 自分のAIと話す（21 状態・R1/R2/R3/R4） | frontend | ui | 62.5 | 6.2 | 6.2 | 21 | 11 | 220 |
 | T-U-18 | 画面 AI社員の動き（4 状態・R1/R2/R3） | frontend | ui | 18.5 | 1.9 | 1.9 | 21 | 12 | 48 |
 | T-U-19 | 画面 探す（3 状態・R1/R2/R3/R4） | frontend | ui | 17.5 | 1.8 | 1.8 | 21 | 8 | 41 |
 | T-U-20 | 画面 台帳（6 状態・R1/R2/R3/R4） | frontend | ui | 25.0 | 2.5 | 2.5 | 21 | 9 | 57 |
@@ -1276,7 +1276,7 @@
 - 触るファイル：apps/web/app/(app)/ai/chat/page.tsx (new)、apps/web/tests/screens/clone-chat.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 clone-chat は URL /ai/chat で開く（apps/web/app/(app)/ai/chat/page.tsx ／ STATE-DRIVEN: WHILE 画面 clone-chat が描画中 THEN h1「高本AIと話す」・第2ナビ 新しく話す / 会話 / 星 / 記憶
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/conversations が「聞く・頼む」として呼ばれたとき THEN Kaname は「会話を ／ EVENT-DRIVEN: WHEN GET /api/v1/conversations が「資料や画像を付けて渡す」として呼ばれたとき THEN Kaname ／ EVENT-DRIVEN: WHEN POST /api/v1/conversations が「会話を分けて始める・一覧から戻る」として呼ばれたとき THEN 
-- L1 行 219（['SCR-CLONE-CHAT-122', 'SCR-CLONE-CHAT-123', 'SCR-CLONE-CHAT-124'] …）／ L2 ['J-03', 'J-07']
+- L1 行 220（['SCR-CLONE-CHAT-122', 'SCR-CLONE-CHAT-123', 'SCR-CLONE-CHAT-124'] …）／ L2 ['J-03', 'J-07']
 - audit: 07_tasks/audit/T-U-17.md
 
 ### T-U-18 画面 AI社員の動き（4 状態・R1/R2/R3）
