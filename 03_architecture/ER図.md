@@ -308,7 +308,6 @@ erDiagram
 | **`notices`** | `<common>`（tenant_id＝運営）/ `kind_id`（release / incident / maintenance / rule_version / individual）/ `title` / `body` / `target_plan_ids uuid[]` / `target_tenant_id` / `publish_at` / `published_by` | **★新設（D-075.2・D-077.8）。**全体のお知らせも会社ごとのお知らせも同じ表（`target_tenant_id` の有無） |
 | **`notice_deliveries`** | `<common>` / `notice_id` / `member_id` / `delivered_at` / `read_at` | 会社側「お知らせ」の既読 |
 | **`status_incidents`** | `<common>`（tenant_id＝運営）/ `component_id`（kaname / bridge / server_route / external_service）/ `service_id` / `state_id` / `started_at` / `resolved_at` / `note` | **★新設（D-075.2・D-076.9）。**稼働状況。会社側は自分の Bridge・経路の状態を `sessions` と `action_runs` から足して表示 |
-| **`bridge_releases`** | `<common>`（tenant_id＝運営）/ `version` / `os_id`（mac / win）/ `storage_ref`（Kaname のサーバーの置き場）/ `sha256` / `signed`（署名・公証が済んでいるか）/ `published_at` / `notes` | **★新設（D-015.7）。**顧客の PC に入れる Bridge の版。**配るのは Kaname のサーバーから**（顧客に外のサービスを見せない）。画面のダウンロードはこの表のいまの版を指し、無ければ「まだ配布していません」。自動更新もここを見る |
 | **`notification_preferences`** | `<common>` / `member_id` / `event_kind_id`（approval_waiting / ai_stopped / sole_approver / notice_incident / notice_release / inquiry_answered）/ `channel_id`（in_app / email / push）/ `enabled` | **★新設（D-075.3・D-043）。**通知の届け先。関門 C6 が宛先解決に読む |
 | **`notifications`** | `<common>` / `member_id` / `channel_id` / `event_kind_id` / `payload jsonb` / `dedupe_key` / `sent_at` / `failed_at` / `retry_count` | **★新設（D-043・C6）。**送出の outbox。重複抑止・再送・証跡は関門 C6 の責務 |
 | **`plans`** | `<common>`（tenant_id＝運営）/ `key`（entry / standard / pro）/ `name` / `price_monthly` / `limits jsonb`（AI社員・担当業務・自律実行／日・人・層）/ `current_version` | **★新設（D-076.6・D-077.5）。マスタ。**「配るもの」の画面で版管理。段階 2 の注記（注 7）から段階 1 に繰り上げ |
@@ -437,7 +436,7 @@ erDiagram
 | お知らせ | `notices` `notice_deliveries` `status_incidents` | |
 | 請求 | `invoices` `payments` | 段階 1 は請求書払い |
 | 会話 | `conversations` `messages` | |
-| Bridge の配布物 | `bridge_releases` | 版・置き場・ハッシュ・署名の有無。運営の資産（D-015.7） |
+| Bridge の配布物 | — | 表を持たない。版・OS と CPU ごとのファイル・指紋（sha256）・大きさは置き場の目録ファイル `kaname-bridge.json` が正本（D-109.8）。会社の行を持たないので行の制御の対象も無い |
 | AIに頼んだこと | `bridge_jobs` `bridge_job_states` | 待っている／動いている／終わった／止まった／やめた。止まったものは人が選ぶまで残す（D-090） |
 | AIの途中経過と確認 | `bridge_job_events` | 何をしているか・会話の id・「これを実行していいか」と本人の答え（D-093）。答えは `audit_events` にも。道具の呼び出しと使った量も（D-100） |
 | 持ち出し | `export_jobs` | |
@@ -597,4 +596,4 @@ erDiagram
 | D-084 | アプリ：PC は Bridge の窓・スマホは Capacitor・通知は native・オフラインは読むだけ | `push_devices`（D-084.3）。画面と証跡は既存の表（D-084.1・D-084.2・D-084.4）。ストアと証明書は外部リソース（D-084.5） |
 | D-085 | 開示資料：成果物から生成・版・画面と PDF・監査ログの保持 | `disclosure_versions`（D-085.1・D-085.2・D-085.3）・`subprocessors`（D-085.2）・`export_jobs`（D-085.4） |
 | D-090 | 自分のAIが実際に動く：文脈は Claude Code が持つ・止まったら止めたまま・分岐で session を変える・自己診断と生存を Kaname に返す | `bridge_jobs` / `bridge_job_states`（D-090.2・D-090.4・D-090.5）・`conversations.agent_session_id`（D-090.1）・`conversations.branched_from_message_id`（D-090.3）・`sessions.health` / `health_at`（D-090.7）・`sessions.last_seen_at`（D-090.8）。読む側で生の select をせず `app.bridge_take_job` / `app.bridge_finish_job` / `app.bridge_resume_job` / `app.agent_state` / `app.bridge_state` を通す |
-| D-015 | Bridge の配布：インストーラは Kaname のサーバーから配り、自動更新も同じ置き場を見る | `bridge_releases`（D-015.7）。画面は `/api/auth-ext/bridge/download?os=` を通す |
+| D-015 | Bridge の配布：インストーラは Kaname のサーバーから配り、自動更新も同じ置き場を見る 表は持たず、置き場の目録ファイル `kaname-bridge.json`（D-109.8）。画面は `/api/auth-ext/bridge/download?os=` を通す |

@@ -387,7 +387,7 @@
     "A91"
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/conversations が「会話を分けて始める・一覧から戻る」として呼ばれたとき THEN Kaname は「conversations に 1 行（agent_session_id は最初の返事で決まる）。一覧・探す（本文の PGroonga）・星・名前を直す・消す・記憶に残さない会話（毎朝のまとめから外す）」を行い 2xx を返す（自動側：新しい会話は Claude Code の新しいセッション。名前は最初の一言から自分のAIが付ける）",
+    "EVENT-DRIVEN: WHEN POST /api/v1/conversations が「会話を分けて始める・一覧から戻る」として呼ばれたとき THEN Kaname は「conversations に 1 行（agent_session_id は最初の返事で決まる）。一覧・探す（本文の PGroonga）・星・名前を直す・消す・記憶に使わない会話（毎朝のまとめから外す）」を行い 2xx を返す（自動側：新しい会話は Claude Code の新しいセッション。名前は最初の一言から自分のAIが付ける）",
     "EVENT-DRIVEN: WHEN POST /api/v1/conversations が「許可に答える・許可のモードを選ぶ」として呼ばれたとき THEN Kaname は「答えは bridge_job_events と証跡に。「いつも」は permission_rules に。全部許可は本人が選んだときだけ・既定にしない」を行い 2xx を返す（自動側：Claude Code の許可の問いを会話に出す（今回だけ／いつも／しない＋一言）。モードは Claude Code の公式の選択肢をそのまま渡す）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
@@ -485,7 +485,8 @@
     "D-117.3",
     "D-117.4",
     "D-117.5",
-    "D-117.6"
+    "D-117.6",
+    "D-119.5"
    ]
   },
   {
@@ -1629,7 +1630,14 @@
     "D-055.1",
     "D-055.2",
     "D-055.3",
-    "D-109.3"
+    "D-109.3",
+    "D-119.1",
+    "D-119.2",
+    "D-119.4",
+    "D-120.1",
+    "D-120.2",
+    "D-120.3",
+    "D-120.4"
    ]
   },
   {

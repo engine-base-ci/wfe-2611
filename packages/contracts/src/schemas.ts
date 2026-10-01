@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:a4b1f23c1a63ade0
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:3628e8eacceea669
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -844,6 +844,7 @@ export const BridgeJobs = z.strictObject({
   attachment_ids: z.array(z.string()).optional(),
   steer_seq: z.string().max(10000).optional(),
   tool_token_hash: z.string().max(10000).optional(),
+  browser: z.string().max(10000).optional(),
   started_at: z.iso.datetime({ offset: true }).optional(),
   finished_at: z.iso.datetime({ offset: true }).optional(),
   id: z.uuid(),
@@ -867,6 +868,7 @@ export const BridgeJobsInput = z.strictObject({
   attachment_ids: z.array(z.string()).optional(),
   steer_seq: z.string().max(10000).optional(),
   tool_token_hash: z.string().max(10000).optional(),
+  browser: z.string().max(10000).optional(),
   started_at: z.iso.datetime({ offset: true }).optional(),
   finished_at: z.iso.datetime({ offset: true }).optional(),
 });
@@ -1493,26 +1495,6 @@ export const StatusIncidentsInput = z.strictObject({
   started_at: z.iso.datetime({ offset: true }).optional(),
   resolved_at: z.iso.datetime({ offset: true }).optional(),
   note: z.string().max(10000).optional(),
-});
-export const BridgeReleases = z.strictObject({
-  version: z.number().int().optional(),
-  os_id: z.string().max(10000).optional(),
-  storage_ref: z.string().max(10000).optional(),
-  sha256: z.string().max(10000).optional(),
-  signed: z.string().max(10000).optional(),
-  published_at: z.iso.datetime({ offset: true }).optional(),
-  notes: z.string().max(10000).optional(),
-  id: z.uuid(),
-  tenant_id: z.uuid().optional(),
-  created_at: z.iso.datetime({ offset: true }).optional(),
-  updated_at: z.iso.datetime({ offset: true }).optional(),
-});
-export const BridgeReleasesInput = z.strictObject({
-  os_id: z.string().max(10000).optional(),
-  sha256: z.string().max(10000).optional(),
-  signed: z.string().max(10000).optional(),
-  published_at: z.iso.datetime({ offset: true }).optional(),
-  notes: z.string().max(10000).optional(),
 });
 export const NotificationPreferences = z.strictObject({
   member_id: z.uuid().optional(),
@@ -2231,8 +2213,6 @@ export const SCHEMAS: Record<string, z.ZodType> = {
   NoticeDeliveriesInput,
   StatusIncidents,
   StatusIncidentsInput,
-  BridgeReleases,
-  BridgeReleasesInput,
   NotificationPreferences,
   NotificationPreferencesInput,
   Notifications,

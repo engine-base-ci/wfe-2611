@@ -30,6 +30,16 @@ rels = {}
 for m in re.finditer(r"^\s*([a-z_]+) (\|\||\}o|o\||\}\|)--(o\{|\|\||o\||\|\{) ([a-z_]+) : \"?([^\"\n]*)\"?", ER, flags=re.M):
     a, b, lab = m.group(1), m.group(4), m.group(5).strip()
     rels.setdefault(a, []).append({"to": b, "label": lab}); rels.setdefault(b, []).append({"from": a, "label": lab})
+# 実体の ID は表の名前で引き継ぐ（並び順で振らない：表を 1 つ消しただけで後ろの ID が全部ずれ、参照が別の表を指すのを防ぐ・L-023）
+try:
+    _PREV_EID = {e["table_name"]: e["id"] for e in json.load(open("07_functional/entities.json", encoding="utf-8"))["entities"]}
+except (FileNotFoundError, KeyError, json.JSONDecodeError):
+    _PREV_EID = {}
+_NEXT_EID = [max([int(v[2:]) for v in _PREV_EID.values()] or [0])]
+def _eid(table):
+    if table in _PREV_EID: return _PREV_EID[table]
+    _NEXT_EID[0] += 1
+    return f"E-{_NEXT_EID[0]:03d}"
 entities, seen = [], set()
 sec = ""; sec_dec = []
 for line in ER.split("\n"):
@@ -75,11 +85,12 @@ for line in ER.split("\n"):
         pol = [p if p["operation"] == "select" else {**p, "operation": "select"} for p in pol if p["operation"] in ("select", "all")] + [{"name": f"{name}_append_only", "operation": "insert,update,delete", "role": "system", "predicate": "false", "rationale": "追記専用。書き込みは関門の関数 app.record_*（security definer）だけ。UPDATE/DELETE は誰にも無い", "source": ["D-042.3", "D-074.4"]}]
     src = sorted(set(D(note)) | tbl_dec.get(name, set()) | set(sec_dec))
     if not src: src = ["D-010"]   # 会社モデル＝1 つの定義（§1〜§6 の表は D-010 の背骨）
-    entities.append({"id": f"E-{len(entities)+1:03d}", "name": name, "table_name": name, "section": sec.strip("# ").split("（")[0], "fields": fields, "relations": rels.get(name, []),
+    entities.append({"id": _eid(name), "name": name, "table_name": name, "section": sec.strip("# ").split("（")[0], "fields": fields, "relations": rels.get(name, []),
                      "soft_delete": "<common>" in cols or "<scoped>" in cols or "<versioned>" in cols, "timestamps": True, "tenant_field": "tenant_id" if iso != "none" else None,
                      "indexes": [], "computed": [], "tenant_isolation": {"type": iso, "column": "tenant_id" if iso != "none" else None, "fk_table": "tenants" if iso != "none" else None},
                      "access_control_policies": pol, "legacy_drift_notes": None, "note": note.strip(), "status": "decided", "decided_at": TODAY, "source": src})
 ent_by_tbl = {e["table_name"]: e["id"] for e in entities}
+_tbl_by_id = {e["id"]: e["table_name"] for e in entities}
 
 # ---------------------------------------------------------------- screens（flow と 1 対 1）
 acts = {a["id"]: dict(a, phase=ph["phase"]) for ph in F["backbone"] for a in ph["acts"]}
@@ -193,7 +204,7 @@ matrix_roles = {s["id"]: {r["id"]: ("edit" if r["id"] in s["edit_roles"] else ("
 f_by_s = {}
 for f_ in features:
     for s in f_["related_screens"]: f_by_s.setdefault(s, []).append(f_["id"])
-matrix = [{"screen_id": s["id"], "screen_name": s["name"], "features": f_by_s.get(s["id"], []), "entities": [f'{e} {entities[int(e[2:])-1]["table_name"]}' for e in s["related_entities"]],
+matrix = [{"screen_id": s["id"], "screen_name": s["name"], "features": f_by_s.get(s["id"], []), "entities": [f'{e} {_tbl_by_id[e]}' for e in s["related_entities"]],
            "related_apis": [f'{a["method"]} {a["path_draft"]}' for a in s["required_apis"]], "access_roles": s["access_roles"]} for s in screens]
 tm = {"version": "v3.1", "created_at": TODAY, "summary": {"screens_count": len(screens), "features_count": len(features), "entities_count": len(entities),
       "uncovered_screens": [s["id"] for s in screens if not s["required_apis"]], "uncovered_features": [f_["id"] for f_ in features if not f_["related_screens"] and f_["category"] == "job"]},

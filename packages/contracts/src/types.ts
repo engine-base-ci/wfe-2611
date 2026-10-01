@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:a4b1f23c1a63ade0
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:3628e8eacceea669
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = {
   error: string;
@@ -794,6 +794,7 @@ export type BridgeJobs = {
   attachment_ids?: string[];
   steer_seq?: string;
   tool_token_hash?: string;
+  browser?: string;
   started_at?: string;
   finished_at?: string;
   id: string;
@@ -817,6 +818,7 @@ export type BridgeJobsInput = {
   attachment_ids?: string[];
   steer_seq?: string;
   tool_token_hash?: string;
+  browser?: string;
   started_at?: string;
   finished_at?: string;
 };
@@ -1412,26 +1414,6 @@ export type StatusIncidentsInput = {
   started_at?: string;
   resolved_at?: string;
   note?: string;
-};
-export type BridgeReleases = {
-  version?: number;
-  os_id?: string;
-  storage_ref?: string;
-  sha256?: string;
-  signed?: string;
-  published_at?: string;
-  notes?: string;
-  id: string;
-  tenant_id?: string;
-  created_at?: string;
-  updated_at?: string;
-};
-export type BridgeReleasesInput = {
-  os_id?: string;
-  sha256?: string;
-  signed?: string;
-  published_at?: string;
-  notes?: string;
 };
 export type NotificationPreferences = {
   member_id?: string;

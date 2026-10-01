@@ -3927,6 +3927,15 @@
   },
   {
    "entity": "bridge_jobs",
+   "field": "browser",
+   "consumed_by_screens": [
+    "clone-chat"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "bridge_jobs",
    "field": "started_at",
    "consumed_by_screens": [
     "clone-chat"
@@ -6660,72 +6669,6 @@
     "ops-notices",
     "ops-disclosure",
     "ops-tenant"
-   ],
-   "internal": false,
-   "reason": null
-  },
-  {
-   "entity": "bridge_releases",
-   "field": "<common>",
-   "consumed_by_screens": [],
-   "internal": true,
-   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
-  },
-  {
-   "entity": "bridge_releases",
-   "field": "version",
-   "consumed_by_screens": [],
-   "internal": true,
-   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
-  },
-  {
-   "entity": "bridge_releases",
-   "field": "os_id",
-   "consumed_by_screens": [
-    "bridge-setup"
-   ],
-   "internal": false,
-   "reason": null
-  },
-  {
-   "entity": "bridge_releases",
-   "field": "storage_ref",
-   "consumed_by_screens": [],
-   "internal": true,
-   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
-  },
-  {
-   "entity": "bridge_releases",
-   "field": "sha256",
-   "consumed_by_screens": [
-    "bridge-setup"
-   ],
-   "internal": false,
-   "reason": null
-  },
-  {
-   "entity": "bridge_releases",
-   "field": "signed",
-   "consumed_by_screens": [
-    "bridge-setup"
-   ],
-   "internal": false,
-   "reason": null
-  },
-  {
-   "entity": "bridge_releases",
-   "field": "published_at",
-   "consumed_by_screens": [
-    "bridge-setup"
-   ],
-   "internal": false,
-   "reason": null
-  },
-  {
-   "entity": "bridge_releases",
-   "field": "notes",
-   "consumed_by_screens": [
-    "bridge-setup"
    ],
    "internal": false,
    "reason": null

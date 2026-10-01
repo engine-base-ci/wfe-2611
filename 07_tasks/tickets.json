@@ -64,16 +64,16 @@
    "total_screens": 64,
    "uncovered_screens": []
   },
-  "total_estimate_hours_human": 6286.5,
-  "total_estimate_hours_ai_compute": 1140.4,
+  "total_estimate_hours_human": 6284.5,
+  "total_estimate_hours_ai_compute": 1138.3,
   "human_review_total_h": 88.0,
-  "total_wall_clock_h_ai_parallel": 336.1,
+  "total_wall_clock_h_ai_parallel": 334.8,
   "parallel_capacity": 10,
-  "calendar_days_ai": 57,
+  "calendar_days_ai": 56,
   "calendar_days_human": 786,
-  "total_estimate_hours": 1228.4,
-  "total_estimate_sessions": 408,
-  "qa_rows_total": 5125,
+  "total_estimate_hours": 1226.3,
+  "total_estimate_sessions": 407,
+  "qa_rows_total": 5128,
   "journeys": 9
  },
  "waves": [
@@ -160,9 +160,9 @@
     "T-D-14"
    ],
    "parallel": 4,
-   "wall_clock_h_ai": 25.0,
-   "estimate_hours_human": 208,
-   "estimate_hours_ai_compute": 32.9
+   "wall_clock_h_ai": 23.5,
+   "estimate_hours_human": 202,
+   "estimate_hours_ai_compute": 31.4
   },
   {
    "wave": 5,
@@ -197,9 +197,9 @@
     "T-A-10"
    ],
    "parallel": 10,
-   "wall_clock_h_ai": 33.5,
-   "estimate_hours_human": 794,
-   "estimate_hours_ai_compute": 198.7
+   "wall_clock_h_ai": 32.7,
+   "estimate_hours_human": 788,
+   "estimate_hours_ai_compute": 197.1
   },
   {
    "wave": 7,
@@ -424,9 +424,9 @@
     "T-U-10"
    ],
    "parallel": 10,
-   "wall_clock_h_ai": 3.2,
-   "estimate_hours_human": 176.0,
-   "estimate_hours_ai_compute": 17.4
+   "wall_clock_h_ai": 4.0,
+   "estimate_hours_human": 183.5,
+   "estimate_hours_ai_compute": 18.2
   },
   {
    "wave": 21,
@@ -445,9 +445,9 @@
     "T-U-20"
    ],
    "parallel": 10,
-   "wall_clock_h_ai": 6.5,
-   "estimate_hours_human": 252.0,
-   "estimate_hours_ai_compute": 25.3
+   "wall_clock_h_ai": 6.7,
+   "estimate_hours_human": 254.5,
+   "estimate_hours_ai_compute": 25.5
   },
   {
    "wave": 22,
@@ -5908,7 +5908,8 @@
     "D-076.1",
     "D-076.13",
     "D-090.7",
-    "D-090.8"
+    "D-090.8",
+    "D-120.1"
    ],
    "decision_summaries": [
     {
@@ -5922,6 +5923,10 @@
     {
      "id": "D-090",
      "summary": "Bridge が仕事を受け取り、本人の Claude Code を --resume で呼んで返す。文脈は Claude Code が持ち Kaname は二重に持たない。止まったら自動で再開せず、会話の中に「止まりました」を出して人が選ぶ。ここから分岐＝新しい session。つながっただけでは仕事は流れないことを画面に書く"
+    },
+    {
+     "id": "D-120",
+     "summary": "AI が使うブラウザ（自分の Chrome／Bridge 専用のブラウザ／使わない）は PC ごとに Kaname の「自分の PC をつなぐ」画面で選び、Kaname が正本として仕事と一緒に Bridge へ渡す（Bridge の窓でも同じ値を変えられる）。Chrome とつながっていないと分かったら、会話の 1 行と PC の画面の行から、つなぎ方の手順（公式の入口へのリンク）・もう一度確かめる（Bridge が小さな仕事で本当に開けるか試す）・専用のブラウザに切り替える、がその場でできる。「使わない」の PC でも、使うへの切り替えはその画面でできる"
     }
    ],
    "critical": true,
@@ -6243,7 +6248,7 @@
   },
   {
    "id": "T-D-11",
-   "title": "データ層 12. 運営と顧客の間で往復するもの・自分で整えるもの（15 表・migration・RLS・索引・seed）",
+   "title": "データ層 12. 運営と顧客の間で往復するもの・自分で整えるもの（14 表・migration・RLS・索引・seed）",
    "category": "db",
    "label": "NEW",
    "feature_id": null,
@@ -6254,7 +6259,6 @@
     "E-075",
     "E-076",
     "E-077",
-    "E-078",
     "E-079",
     "E-080",
     "E-081",
@@ -6317,7 +6321,7 @@
    },
    "acceptance_criteria": {
     "structural": [
-     "UBIQUITOUS: 表 inquiries, notices, notice_deliveries, status_incidents, bridge_releases, notification_preferences … が ER 図 §12. 運営と顧客の間で の列・型・関係どおりに存在し、全表に RLS が定義されている（RLS 未定義の表は CI で作れない）"
+     "UBIQUITOUS: 表 inquiries, notices, notice_deliveries, status_incidents, notification_preferences, notifications … が ER 図 §12. 運営と顧客の間で の列・型・関係どおりに存在し、全表に RLS が定義されている（RLS 未定義の表は CI で作れない）"
     ],
     "functional": [
      "UNWANTED: IF 他テナントの行を SELECT/UPDATE しようとしたら 0 行／403 で副作用が起きない（inquiries_tenant_read）",
@@ -6350,7 +6354,6 @@
     "notice_deliveries_permission_write",
     "notice_deliveries_ops_read_with_grant",
     "status_incidents_ops_all",
-    "bridge_releases_ops_all",
     "notification_preferences_tenant_read",
     "notification_preferences_self_only_write",
     "notification_preferences_permission_write",
@@ -6400,7 +6403,6 @@
      "RLS-D11-004",
      "RLS-D11-005",
      "RLS-D11-006",
-     "RLS-D11-027",
      "RLS-D11-007",
      "RLS-D11-008",
      "RLS-D11-009",
@@ -6436,8 +6438,6 @@
    ],
    "source": [
     "D-002",
-    "D-015",
-    "D-015.7",
     "D-043",
     "D-069",
     "D-069.3",
@@ -6465,23 +6465,23 @@
      "summary": "65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集客ファネル"
     },
     {
-     "id": "D-015",
-     "summary": "Bridgeは顧客PCで動く万能実行器。本人のIP・本人のログイン済みセッションで動くのでCAPTCHA/bot検知に到達しない。Kaname最大の武器"
-    },
-    {
      "id": "D-043",
      "summary": "ネイティブアプリはレスポンシブとは別物。プッシュ通知が本質(承認待ちの通知)。段階2でPWA"
     },
     {
      "id": "D-069",
      "summary": "エラーの正本は 07_qa/test-specs/errors.json（第13軸）。モックの異常状態・関門・行為の裏側・普遍の類型 14 から機械で導出し（error_catalog.py derive）、E1〜E9 のゲートを通す。1 件＝出る条件・出ない条件・文言（顧客の言葉・内部語なし）・次の一手・守る層（起きてはいけないものは 2 層以上）・再現手順（上流を故意に壊す）・根拠。errors.md（L1・11 列・1 件 3 行）を機械生成し、タスクの qa_rows に入れる。出せないエラーはデッドコード"
+    },
+    {
+     "id": "D-075",
+     "summary": "運営と顧客の間で往復するものは 6 つ（問い合わせ／お知らせと稼働状況／通知の届け先／プランと利用量／請求と入金／セキュリティの出来事）。顧客側 3 画面（問い合わせ・お知らせと通知・プランと請求）と運営側 2 画面（お知らせ・請求と入金）を足し、運営の支援は受信箱（問い合わせ＋詰まり）、運営の証跡はセキュリティの出来事を持つ。支払い方法の登録は段階2（D-002）で、v1 は請求書払い。運営の連絡先は OPS_EMAIL（info@engine-base.com）"
     }
    ],
    "critical": true,
    "why": "",
    "acceptance_criteria_inline": {
     "tier_1_structural": [
-     "UBIQUITOUS: 表 inquiries, notices, notice_deliveries, status_incidents, bridge_releases, notification_preferences … が ER 図 §12. 運営と顧客の間で の列・型・関係どおりに存在し、全表に RLS が定義されている（RLS 未定義の表は CI で作れない）"
+     "UBIQUITOUS: 表 inquiries, notices, notice_deliveries, status_incidents, notification_preferences, notifications … が ER 図 §12. 運営と顧客の間で の列・型・関係どおりに存在し、全表に RLS が定義されている（RLS 未定義の表は CI で作れない）"
     ],
     "tier_2_functional": [
      {
@@ -6530,16 +6530,16 @@
      "audit MD（07_tasks/audit/<id>.md）に impl line を記入"
     ]
    },
-   "estimate_hours_human": 94,
-   "estimate_hours_ai": 23.5,
+   "estimate_hours_human": 88,
+   "estimate_hours_ai": 22.0,
    "human_review_h": 1.0,
-   "wall_clock_h_ai": 24.5,
+   "wall_clock_h_ai": 23.0,
    "ai_acceleration_factor": 4,
    "blocking_dependencies_h": 0,
    "estimate_method": "reference",
    "estimate_confidence": "medium",
-   "estimate_hours": 24.5,
-   "estimate_sessions": 7
+   "estimate_hours": 23.0,
+   "estimate_sessions": 6
   },
   {
    "id": "T-D-12",
@@ -7272,7 +7272,6 @@
     "E-055",
     "E-058",
     "E-061",
-    "E-078",
     "E-081",
     "E-082",
     "E-083",
@@ -7594,7 +7593,14 @@
     "D-118.1",
     "D-118.2",
     "D-118.3",
-    "D-118.4"
+    "D-118.4",
+    "D-119.1",
+    "D-119.2",
+    "D-119.4",
+    "D-120.1",
+    "D-120.2",
+    "D-120.3",
+    "D-120.4"
    ],
    "decision_summaries": [
     {
@@ -7748,15 +7754,15 @@
      "endpoint 実在性チェック PASS"
     ]
    },
-   "estimate_hours_human": 128,
-   "estimate_hours_ai": 32.0,
+   "estimate_hours_human": 125,
+   "estimate_hours_ai": 31.2,
    "human_review_h": 1.0,
-   "wall_clock_h_ai": 33.0,
+   "wall_clock_h_ai": 32.2,
    "ai_acceleration_factor": 4,
    "blocking_dependencies_h": 0,
    "estimate_method": "reference",
    "estimate_confidence": "medium",
-   "estimate_hours": 33.0,
+   "estimate_hours": 32.2,
    "estimate_sessions": 9
   },
   {
@@ -8354,7 +8360,7 @@
      "EVENT-DRIVEN: WHEN GET /api/v1/conversations が「聞く・頼む」として呼ばれたとき THEN Kaname は「会話を記憶へ。指示をAI社員へ。道具の呼び出しは名前・対象・成否・時間だけ残し、中身の全文は本人の PC に置いたまま。サービス台帳で禁止・銀行のドメインは、仕事を渡すたびに使わない道具として渡し、道具を使う直前のフックでも止める（許可のモードに関わらず）」を行い 2xx を返す（自動側：自分のAIが答え、必要ならAI社員に配る。数値もここで出す。返事は書きながら少しずつ出し、作業中は吹き出しの外に 1 行・手順・経過時間・道具の行。表・図・コード・実物のカード・問い合わせまで出せる）",
      "EVENT-DRIVEN: WHEN GET /api/v1/conversations が「資料や画像を付けて渡す」として呼ばれたとき THEN Kaname は「attachments に 1 行、実体は会社の置き場（関門 C4）。messages.attachments は参照だけ」を行い 2xx を返す（自動側：Bridge が期限つきの署名 URL で受け取り、本人の PC の作業場所に置いて自分のAI に渡す（保存先の鍵は AI に見せない））",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-     "EVENT-DRIVEN: WHEN POST /api/v1/conversations が「会話を分けて始める・一覧から戻る」として呼ばれたとき THEN Kaname は「conversations に 1 行（agent_session_id は最初の返事で決まる）。一覧・探す（本文の PGroonga）・星・名前を直す・消す・記憶に残さない会話（毎朝のまとめから外す）」を行い 2xx を返す（自動側：新しい会話は Claude Code の新しいセッション。名前は最初の一言から自分のAIが付ける）",
+     "EVENT-DRIVEN: WHEN POST /api/v1/conversations が「会話を分けて始める・一覧から戻る」として呼ばれたとき THEN Kaname は「conversations に 1 行（agent_session_id は最初の返事で決まる）。一覧・探す（本文の PGroonga）・星・名前を直す・消す・記憶に使わない会話（毎朝のまとめから外す）」を行い 2xx を返す（自動側：新しい会話は Claude Code の新しいセッション。名前は最初の一言から自分のAIが付ける）",
      "EVENT-DRIVEN: WHEN POST /api/v1/conversations が「許可に答える・許可のモードを選ぶ」として呼ばれたとき THEN Kaname は「答えは bridge_job_events と証跡に。「いつも」は permission_rules に。全部許可は本人が選んだときだけ・既定にしない」を行い 2xx を返す（自動側：Claude Code の許可の問いを会話に出す（今回だけ／いつも／しない＋一言）。モードは Claude Code の公式の選択肢をそのまま渡す）",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "EVENT-DRIVEN: WHEN PATCH /api/v1/conversations/:id が「成果物に書き出して横で直す」として呼ばれたとき THEN Kaname は「artifacts に 1 行・artifact_versions に版ごとに 1 行。中身は会社の置き場（関門 C4）。自分のAI に置き場の鍵を見せない」を行い 2xx を返す（自動側：返事の本文から成果物を作って会話の横に開く。文書と表は直すと新しい版、版の一覧から戻せる（戻すのも新しい版））",
@@ -8688,7 +8694,7 @@
      },
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN POST /api/v1/conversations が「会話を分けて始める・一覧から戻る」として呼ばれたとき THEN Kaname は「conversations に 1 行（agent_session_id は最初の返事で決まる）。一覧・探す（本文の PGroonga）・星・名前を直す・消す・記憶に残さない会話（毎朝のまとめから外す）」を行い 2xx を返す（自動側：新しい会話は Claude Code の新しいセッション。名前は最初の一言から自分のAIが付ける）",
+      "text": "EVENT-DRIVEN: WHEN POST /api/v1/conversations が「会話を分けて始める・一覧から戻る」として呼ばれたとき THEN Kaname は「conversations に 1 行（agent_session_id は最初の返事で決まる）。一覧・探す（本文の PGroonga）・星・名前を直す・消す・記憶に使わない会話（毎朝のまとめから外す）」を行い 2xx を返す（自動側：新しい会話は Claude Code の新しいセッション。名前は最初の一言から自分のAIが付ける）",
       "critical": false
      },
      {
@@ -9796,8 +9802,7 @@
     "E-042",
     "E-061",
     "E-068",
-    "E-069",
-    "E-078"
+    "E-069"
    ],
    "acts": [
     "A07",
@@ -9832,7 +9837,6 @@
     "T-D-05",
     "T-D-09",
     "T-D-10",
-    "T-D-11",
     "T-F-02",
     "T-F-03",
     "T-F-04",
@@ -10112,7 +10116,15 @@
     "D-117.3",
     "D-117.4",
     "D-117.5",
-    "D-117.6"
+    "D-117.6",
+    "D-119.1",
+    "D-119.2",
+    "D-119.4",
+    "D-119.5",
+    "D-120.1",
+    "D-120.2",
+    "D-120.3",
+    "D-120.4"
    ],
    "decision_summaries": [
     {
@@ -10266,15 +10278,15 @@
      "endpoint 実在性チェック PASS"
     ]
    },
-   "estimate_hours_human": 116,
-   "estimate_hours_ai": 29.0,
+   "estimate_hours_human": 113,
+   "estimate_hours_ai": 28.2,
    "human_review_h": 1.0,
-   "wall_clock_h_ai": 30.0,
+   "wall_clock_h_ai": 29.2,
    "ai_acceleration_factor": 4,
    "blocking_dependencies_h": 0,
    "estimate_method": "reference",
    "estimate_confidence": "medium",
-   "estimate_hours": 30.0,
+   "estimate_hours": 29.2,
    "estimate_sessions": 8
   },
   {
@@ -10934,7 +10946,7 @@
      "UBIQUITOUS: POST /api/v1/tasks は 08_api/openapi.yaml の operation postTasks どおりの入出力（201 と 4xx 401/403/409/422/429/502）"
     ],
     "functional": [
-     "EVENT-DRIVEN: WHEN POST /api/v1/conversations が「会話を分けて始める・一覧から戻る」として呼ばれたとき THEN Kaname は「conversations に 1 行（agent_session_id は最初の返事で決まる）。一覧・探す（本文の PGroonga）・星・名前を直す・消す・記憶に残さない会話（毎朝のまとめから外す）」を行い 2xx を返す（自動側：新しい会話は Claude Code の新しいセッション。名前は最初の一言から自分のAIが付ける）",
+     "EVENT-DRIVEN: WHEN POST /api/v1/conversations が「会話を分けて始める・一覧から戻る」として呼ばれたとき THEN Kaname は「conversations に 1 行（agent_session_id は最初の返事で決まる）。一覧・探す（本文の PGroonga）・星・名前を直す・消す・記憶に使わない会話（毎朝のまとめから外す）」を行い 2xx を返す（自動側：新しい会話は Claude Code の新しいセッション。名前は最初の一言から自分のAIが付ける）",
      "EVENT-DRIVEN: WHEN POST /api/v1/conversations が「許可に答える・許可のモードを選ぶ」として呼ばれたとき THEN Kaname は「答えは bridge_job_events と証跡に。「いつも」は permission_rules に。全部許可は本人が選んだときだけ・既定にしない」を行い 2xx を返す（自動側：Claude Code の許可の問いを会話に出す（今回だけ／いつも／しない＋一言）。モードは Claude Code の公式の選択肢をそのまま渡す）",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "EVENT-DRIVEN: WHEN DELETE /api/v1/conversations/:id が「止める・止めずに直す・順番待ちを取り消す」として呼ばれたとき THEN Kaname は「bridge_jobs の状態（止めた＝理由つき）。順番待ちは待っている行、取り消すと やめた」を行い 2xx を返す（自動側：止めるは Bridge が Claude Code を止める。止めずに送った文は動いている Claude Code に次の区切りで渡る）",
@@ -11146,7 +11158,7 @@
     "tier_2_functional": [
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN POST /api/v1/conversations が「会話を分けて始める・一覧から戻る」として呼ばれたとき THEN Kaname は「conversations に 1 行（agent_session_id は最初の返事で決まる）。一覧・探す（本文の PGroonga）・星・名前を直す・消す・記憶に残さない会話（毎朝のまとめから外す）」を行い 2xx を返す（自動側：新しい会話は Claude Code の新しいセッション。名前は最初の一言から自分のAIが付ける）",
+      "text": "EVENT-DRIVEN: WHEN POST /api/v1/conversations が「会話を分けて始める・一覧から戻る」として呼ばれたとき THEN Kaname は「conversations に 1 行（agent_session_id は最初の返事で決まる）。一覧・探す（本文の PGroonga）・星・名前を直す・消す・記憶に使わない会話（毎朝のまとめから外す）」を行い 2xx を返す（自動側：新しい会話は Claude Code の新しいセッション。名前は最初の一言から自分のAIが付ける）",
       "critical": false
      },
      {
@@ -14649,7 +14661,7 @@
      "EVENT-DRIVEN: WHEN GET /api/v1/conversations が「聞く・頼む」として呼ばれたとき THEN Kaname は「会話を記憶へ。指示をAI社員へ。道具の呼び出しは名前・対象・成否・時間だけ残し、中身の全文は本人の PC に置いたまま。サービス台帳で禁止・銀行のドメインは、仕事を渡すたびに使わない道具として渡し、道具を使う直前のフックでも止める（許可のモードに関わらず）」を行い 2xx を返す（自動側：自分のAIが答え、必要ならAI社員に配る。数値もここで出す。返事は書きながら少しずつ出し、作業中は吹き出しの外に 1 行・手順・経過時間・道具の行。表・図・コード・実物のカード・問い合わせまで出せる）",
      "EVENT-DRIVEN: WHEN GET /api/v1/conversations が「資料や画像を付けて渡す」として呼ばれたとき THEN Kaname は「attachments に 1 行、実体は会社の置き場（関門 C4）。messages.attachments は参照だけ」を行い 2xx を返す（自動側：Bridge が期限つきの署名 URL で受け取り、本人の PC の作業場所に置いて自分のAI に渡す（保存先の鍵は AI に見せない））",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-     "EVENT-DRIVEN: WHEN POST /api/v1/conversations が「会話を分けて始める・一覧から戻る」として呼ばれたとき THEN Kaname は「conversations に 1 行（agent_session_id は最初の返事で決まる）。一覧・探す（本文の PGroonga）・星・名前を直す・消す・記憶に残さない会話（毎朝のまとめから外す）」を行い 2xx を返す（自動側：新しい会話は Claude Code の新しいセッション。名前は最初の一言から自分のAIが付ける）",
+     "EVENT-DRIVEN: WHEN POST /api/v1/conversations が「会話を分けて始める・一覧から戻る」として呼ばれたとき THEN Kaname は「conversations に 1 行（agent_session_id は最初の返事で決まる）。一覧・探す（本文の PGroonga）・星・名前を直す・消す・記憶に使わない会話（毎朝のまとめから外す）」を行い 2xx を返す（自動側：新しい会話は Claude Code の新しいセッション。名前は最初の一言から自分のAIが付ける）",
      "EVENT-DRIVEN: WHEN POST /api/v1/conversations が「許可に答える・許可のモードを選ぶ」として呼ばれたとき THEN Kaname は「答えは bridge_job_events と証跡に。「いつも」は permission_rules に。全部許可は本人が選んだときだけ・既定にしない」を行い 2xx を返す（自動側：Claude Code の許可の問いを会話に出す（今回だけ／いつも／しない＋一言）。モードは Claude Code の公式の選択肢をそのまま渡す）",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
      "EVENT-DRIVEN: WHEN PATCH /api/v1/conversations/:id が「成果物に書き出して横で直す」として呼ばれたとき THEN Kaname は「artifacts に 1 行・artifact_versions に版ごとに 1 行。中身は会社の置き場（関門 C4）。自分のAI に置き場の鍵を見せない」を行い 2xx を返す（自動側：返事の本文から成果物を作って会話の横に開く。文書と表は直すと新しい版、版の一覧から戻せる（戻すのも新しい版））",
@@ -14962,7 +14974,7 @@
      },
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN POST /api/v1/conversations が「会話を分けて始める・一覧から戻る」として呼ばれたとき THEN Kaname は「conversations に 1 行（agent_session_id は最初の返事で決まる）。一覧・探す（本文の PGroonga）・星・名前を直す・消す・記憶に残さない会話（毎朝のまとめから外す）」を行い 2xx を返す（自動側：新しい会話は Claude Code の新しいセッション。名前は最初の一言から自分のAIが付ける）",
+      "text": "EVENT-DRIVEN: WHEN POST /api/v1/conversations が「会話を分けて始める・一覧から戻る」として呼ばれたとき THEN Kaname は「conversations に 1 行（agent_session_id は最初の返事で決まる）。一覧・探す（本文の PGroonga）・星・名前を直す・消す・記憶に使わない会話（毎朝のまとめから外す）」を行い 2xx を返す（自動側：新しい会話は Claude Code の新しいセッション。名前は最初の一言から自分のAIが付ける）",
       "critical": false
      },
      {
@@ -22554,7 +22566,7 @@
   },
   {
    "id": "T-U-09",
-   "title": "画面 自分のPCをつなぐ（8 状態・R1/R2）",
+   "title": "画面 自分のPCをつなぐ（11 状態・R1/R2）",
    "category": "frontend",
    "label": "NEW",
    "feature_id": "F-V3-C-bridge-setup",
@@ -22566,8 +22578,7 @@
    ],
    "entity_ids": [
     "E-061",
-    "E-039",
-    "E-078"
+    "E-039"
    ],
    "acts": [
     "A09"
@@ -22625,7 +22636,7 @@
    "acceptance_criteria": {
     "structural": [
      "UBIQUITOUS: 画面 bridge-setup は URL /setup/bridge で開く（apps/web/app/(app)/setup/bridge/page.tsx。遷移の href は flow の route と機械照合）",
-     "STATE-DRIVEN: WHILE 画面 bridge-setup が描画中 THEN h1「自分のPCをつなぐ」・第2ナビ 接続 / この端末 / 動く条件・状態 8（接続中（ブラウザ・未インストール）、ブラウザ・Bridge が入っている、アプリ（Bridge の窓）の中、Claude Code が無い、つながった）がモック 06_mockup/v1/v1-bridge-setup.html と一致する",
+     "STATE-DRIVEN: WHILE 画面 bridge-setup が描画中 THEN h1「自分のPCをつなぐ」・第2ナビ 接続 / この端末 / 動く条件・状態 11（接続中（ブラウザ・未インストール）、ブラウザ・Bridge が入っている、アプリ（Bridge の窓）の中、Claude Code が無い、つながった）がモック 06_mockup/v1/v1-bridge-setup.html と一致する",
      "STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い"
     ],
     "functional": [
@@ -22665,6 +22676,9 @@
      "SCR-BRIDGE-SETUP-061",
      "SCR-BRIDGE-SETUP-072",
      "SCR-BRIDGE-SETUP-002",
+     "SCR-BRIDGE-SETUP-107",
+     "SCR-BRIDGE-SETUP-108",
+     "SCR-BRIDGE-SETUP-109",
      "SCR-BRIDGE-SETUP-062",
      "SCR-BRIDGE-SETUP-003",
      "SCR-BRIDGE-SETUP-004",
@@ -22821,7 +22835,12 @@
     "D-091.6",
     "D-089.10",
     "D-015.7",
-    "D-015.8"
+    "D-015.8",
+    "D-119.4",
+    "D-120.1",
+    "D-120.2",
+    "D-120.3",
+    "D-120.4"
    ],
    "decision_summaries": [
     {
@@ -22846,7 +22865,7 @@
    "acceptance_criteria_inline": {
     "tier_1_structural": [
      "UBIQUITOUS: 画面 bridge-setup は URL /setup/bridge で開く（apps/web/app/(app)/setup/bridge/page.tsx。遷移の href は flow の route と機械照合）",
-     "STATE-DRIVEN: WHILE 画面 bridge-setup が描画中 THEN h1「自分のPCをつなぐ」・第2ナビ 接続 / この端末 / 動く条件・状態 8（接続中（ブラウザ・未インストール）、ブラウザ・Bridge が入っている、アプリ（Bridge の窓）の中、Claude Code が無い、つながった）がモック 06_mockup/v1/v1-bridge-setup.html と一致する",
+     "STATE-DRIVEN: WHILE 画面 bridge-setup が描画中 THEN h1「自分のPCをつなぐ」・第2ナビ 接続 / この端末 / 動く条件・状態 11（接続中（ブラウザ・未インストール）、ブラウザ・Bridge が入っている、アプリ（Bridge の窓）の中、Claude Code が無い、つながった）がモック 06_mockup/v1/v1-bridge-setup.html と一致する",
      "STATE-DRIVEN: WHILE 役割 R1/R2 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い"
     ],
     "tier_2_functional": [
@@ -22883,15 +22902,15 @@
      "AC-R9 動作実証：実ブラウザで全操作要素を押し、遷移／別 GET 再取得／表示変化を確認。href は実在ルートを機械照合"
     ]
    },
-   "estimate_hours_human": 27.0,
-   "estimate_hours_ai": 2.7,
+   "estimate_hours_human": 34.5,
+   "estimate_hours_ai": 3.5,
    "human_review_h": 0.0,
-   "wall_clock_h_ai": 2.7,
+   "wall_clock_h_ai": 3.5,
    "ai_acceleration_factor": 10,
    "blocking_dependencies_h": 0,
    "estimate_method": "reference",
    "estimate_confidence": "medium",
-   "estimate_hours": 2.7,
+   "estimate_hours": 3.5,
    "estimate_sessions": 1
   },
   {
@@ -25188,7 +25207,7 @@
   },
   {
    "id": "T-U-17",
-   "title": "画面 自分のAIと話す（20 状態・R1/R2/R3/R4）",
+   "title": "画面 自分のAIと話す（21 状態・R1/R2/R3/R4）",
    "category": "frontend",
    "label": "NEW",
    "feature_id": "F-V3-C-clone-chat",
@@ -25279,13 +25298,13 @@
    "acceptance_criteria": {
     "structural": [
      "UBIQUITOUS: 画面 clone-chat は URL /ai/chat で開く（apps/web/app/(app)/ai/chat/page.tsx。遷移の href は flow の route と機械照合）",
-     "STATE-DRIVEN: WHILE 画面 clone-chat が描画中 THEN h1「高本AIと話す」・第2ナビ 新しく話す / 会話 / 星 / 記憶に残さない・状態 20（書式（表・コード・注意・数式・目次・出典）、図とデータ、実物のカード、資料（横で開く・PDF・表計算・画像ほか）、成果物（横で直す・版を戻す））がモック 06_mockup/v1/v1-clone-chat.html と一致する",
+     "STATE-DRIVEN: WHILE 画面 clone-chat が描画中 THEN h1「高本AIと話す」・第2ナビ 新しく話す / 会話 / 星 / 記憶に使わない・状態 21（書式（表・コード・注意・数式・目次・出典）、図とデータ、実物のカード、資料（横で開く・PDF・表計算・画像ほか）、成果物（横で直す・版を戻す））がモック 06_mockup/v1/v1-clone-chat.html と一致する",
      "STATE-DRIVEN: WHILE 役割 R1/R2/R3/R4 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い"
     ],
     "functional": [
      "EVENT-DRIVEN: WHEN GET /api/v1/conversations が「聞く・頼む」として呼ばれたとき THEN Kaname は「会話を記憶へ。指示をAI社員へ。道具の呼び出しは名前・対象・成否・時間だけ残し、中身の全文は本人の PC に置いたまま。サービス台帳で禁止・銀行のドメインは、仕事を渡すたびに使わない道具として渡し、道具を使う直前のフックでも止める（許可のモードに関わらず）」を行い 2xx を返す（自動側：自分のAIが答え、必要ならAI社員に配る。数値もここで出す。返事は書きながら少しずつ出し、作業中は吹き出しの外に 1 行・手順・経過時間・道具の行。表・図・コード・実物のカード・問い合わせまで出せる）",
      "EVENT-DRIVEN: WHEN GET /api/v1/conversations が「資料や画像を付けて渡す」として呼ばれたとき THEN Kaname は「attachments に 1 行、実体は会社の置き場（関門 C4）。messages.attachments は参照だけ」を行い 2xx を返す（自動側：Bridge が期限つきの署名 URL で受け取り、本人の PC の作業場所に置いて自分のAI に渡す（保存先の鍵は AI に見せない））",
-     "EVENT-DRIVEN: WHEN POST /api/v1/conversations が「会話を分けて始める・一覧から戻る」として呼ばれたとき THEN Kaname は「conversations に 1 行（agent_session_id は最初の返事で決まる）。一覧・探す（本文の PGroonga）・星・名前を直す・消す・記憶に残さない会話（毎朝のまとめから外す）」を行い 2xx を返す（自動側：新しい会話は Claude Code の新しいセッション。名前は最初の一言から自分のAIが付ける）",
+     "EVENT-DRIVEN: WHEN POST /api/v1/conversations が「会話を分けて始める・一覧から戻る」として呼ばれたとき THEN Kaname は「conversations に 1 行（agent_session_id は最初の返事で決まる）。一覧・探す（本文の PGroonga）・星・名前を直す・消す・記憶に使わない会話（毎朝のまとめから外す）」を行い 2xx を返す（自動側：新しい会話は Claude Code の新しいセッション。名前は最初の一言から自分のAIが付ける）",
      "EVENT-DRIVEN: WHEN POST /api/v1/conversations が「許可に答える・許可のモードを選ぶ」として呼ばれたとき THEN Kaname は「答えは bridge_job_events と証跡に。「いつも」は permission_rules に。全部許可は本人が選んだときだけ・既定にしない」を行い 2xx を返す（自動側：Claude Code の許可の問いを会話に出す（今回だけ／いつも／しない＋一言）。モードは Claude Code の公式の選択肢をそのまま渡す）",
      "EVENT-DRIVEN: WHEN PATCH /api/v1/conversations/:id が「成果物に書き出して横で直す」として呼ばれたとき THEN Kaname は「artifacts に 1 行・artifact_versions に版ごとに 1 行。中身は会社の置き場（関門 C4）。自分のAI に置き場の鍵を見せない」を行い 2xx を返す（自動側：返事の本文から成果物を作って会話の横に開く。文書と表は直すと新しい版、版の一覧から戻せる（戻すのも新しい版））",
      "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
@@ -25328,6 +25347,7 @@
      "SCR-CLONE-CHAT-129",
      "SCR-CLONE-CHAT-130",
      "SCR-CLONE-CHAT-131",
+     "SCR-CLONE-CHAT-294",
      "SCR-CLONE-CHAT-132",
      "SCR-CLONE-CHAT-133",
      "SCR-CLONE-CHAT-134",
@@ -25648,7 +25668,11 @@
     "D-104.17",
     "D-104.18",
     "D-104.19",
-    "D-104.20"
+    "D-104.20",
+    "D-119.4",
+    "D-120.2",
+    "D-120.3",
+    "D-120.4"
    ],
    "decision_summaries": [
     {
@@ -25673,7 +25697,7 @@
    "acceptance_criteria_inline": {
     "tier_1_structural": [
      "UBIQUITOUS: 画面 clone-chat は URL /ai/chat で開く（apps/web/app/(app)/ai/chat/page.tsx。遷移の href は flow の route と機械照合）",
-     "STATE-DRIVEN: WHILE 画面 clone-chat が描画中 THEN h1「高本AIと話す」・第2ナビ 新しく話す / 会話 / 星 / 記憶に残さない・状態 20（書式（表・コード・注意・数式・目次・出典）、図とデータ、実物のカード、資料（横で開く・PDF・表計算・画像ほか）、成果物（横で直す・版を戻す））がモック 06_mockup/v1/v1-clone-chat.html と一致する",
+     "STATE-DRIVEN: WHILE 画面 clone-chat が描画中 THEN h1「高本AIと話す」・第2ナビ 新しく話す / 会話 / 星 / 記憶に使わない・状態 21（書式（表・コード・注意・数式・目次・出典）、図とデータ、実物のカード、資料（横で開く・PDF・表計算・画像ほか）、成果物（横で直す・版を戻す））がモック 06_mockup/v1/v1-clone-chat.html と一致する",
      "STATE-DRIVEN: WHILE 役割 R1/R2/R3/R4 で開いたとき THEN 役割ごとの中身（data-roles）が出て、錠前だけの画面が無い"
     ],
     "tier_2_functional": [
@@ -25689,7 +25713,7 @@
      },
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN POST /api/v1/conversations が「会話を分けて始める・一覧から戻る」として呼ばれたとき THEN Kaname は「conversations に 1 行（agent_session_id は最初の返事で決まる）。一覧・探す（本文の PGroonga）・星・名前を直す・消す・記憶に残さない会話（毎朝のまとめから外す）」を行い 2xx を返す（自動側：新しい会話は Claude Code の新しいセッション。名前は最初の一言から自分のAIが付ける）",
+      "text": "EVENT-DRIVEN: WHEN POST /api/v1/conversations が「会話を分けて始める・一覧から戻る」として呼ばれたとき THEN Kaname は「conversations に 1 行（agent_session_id は最初の返事で決まる）。一覧・探す（本文の PGroonga）・星・名前を直す・消す・記憶に使わない会話（毎朝のまとめから外す）」を行い 2xx を返す（自動側：新しい会話は Claude Code の新しいセッション。名前は最初の一言から自分のAIが付ける）",
       "critical": false
      },
      {
@@ -25730,15 +25754,15 @@
      "AC-R9 動作実証：実ブラウザで全操作要素を押し、遷移／別 GET 再取得／表示変化を確認。href は実在ルートを機械照合"
     ]
    },
-   "estimate_hours_human": 60.0,
-   "estimate_hours_ai": 6.0,
+   "estimate_hours_human": 62.5,
+   "estimate_hours_ai": 6.2,
    "human_review_h": 0.0,
-   "wall_clock_h_ai": 6.0,
+   "wall_clock_h_ai": 6.2,
    "ai_acceleration_factor": 10,
    "blocking_dependencies_h": 0,
    "estimate_method": "reference",
    "estimate_confidence": "medium",
-   "estimate_hours": 6.0,
+   "estimate_hours": 6.2,
    "estimate_sessions": 2
   },
   {

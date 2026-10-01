@@ -1,7 +1,7 @@
 {
  "meta": {
   "project": "Kaname",
-  "created_at": "2026-09-29",
+  "created_at": "2026-10-01",
   "skill_version": "v3",
   "total_features": 122,
   "parallel_groups": 14
@@ -66,6 +66,6 @@
   "findings": [
    "結線機能を独立させないと stub のまま完了に見える（本スキルの汎用規則）"
   ],
-  "research_date": "2026-09-29"
+  "research_date": "2026-10-01"
  }
 }

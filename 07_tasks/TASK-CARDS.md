@@ -4,8 +4,8 @@
 
 - 総タスク数：214（A 28 / B 40 / D 14 / F 18 / I 22 / S 15 / U-screen 64 / U-shared 8 / V2 5）
 - 画面の被覆：64/64
-- L1 テスト行：5125（正本 07_qa/test-specs）／ 流れ（L2）：9
-- 工数：Human 6286.5 h（786 日）／ AI 計算 1140.4 h ＋ 人のレビュー 88.0 h → wall-clock 336.1 h（57 日・並列 10）
+- L1 テスト行：5128（正本 07_qa/test-specs）／ 流れ（L2）：9
+- 工数：Human 6284.5 h（786 日）／ AI 計算 1138.3 h ＋ 人のレビュー 88.0 h → wall-clock 334.8 h（56 日・並列 10）
 - Wave 数：34
 
 ## Group 別タスク一覧
@@ -47,7 +47,7 @@
 | T-D-08 | データ層 9. 層と権限（4 表・migration・RLS・索引・seed） | db | foundation | 28 | 7.0 | 8.0 | 3 | 3 | 10 |
 | T-D-09 | データ層 10. 口座状態の出来事・失効・サポートアクセス（6 表・migration・RLS・索引 | db | foundation | 40 | 10.0 | 11.0 | 3 | 3 | 13 |
 | T-D-10 | データ層 11. 運営（9 表・migration・RLS・索引・seed） | db | foundation | 58 | 4.8 | 4.8 | 3 | 3 | 16 |
-| T-D-11 | データ層 12. 運営と顧客の間で往復するもの・自分で整えるもの（15 表・migration・RL | db | foundation | 94 | 23.5 | 24.5 | 4 | 3 | 27 |
+| T-D-11 | データ層 12. 運営と顧客の間で往復するもの・自分で整えるもの（14 表・migration・RL | db | foundation | 88 | 22.0 | 23.0 | 4 | 3 | 26 |
 | T-D-12 | データ層 13. 取り込み・正規連携・招待・持ち出し・添付（6 表・migration・RLS・索引 | db | foundation | 40 | 3.3 | 3.3 | 4 | 3 | 13 |
 | T-D-13 | データ層 14. スキル（4 表・migration・RLS・索引・seed） | db | foundation | 28 | 2.3 | 2.3 | 4 | 3 | 10 |
 | T-D-14 | データ層 15. 段階 2 で足す表（7 表・migration・RLS・索引・seed） | db | foundation | 46 | 3.8 | 3.8 | 4 | 3 | 14 |
@@ -66,13 +66,13 @@
 
 | ID | タイトル | category | layer | Human h | AI h | wall-clock | wave | depends_on | L1 行 |
 |---|---|---|---|---|---|---|---|---|---|
-| T-A-01 | API 契約してから、自力で動く状態まで持っていきたい — データ・API・（5 endpoint） | backend | backend | 128 | 32.0 | 33.0 | 6 | 22 | 38 |
+| T-A-01 | API 契約してから、自力で動く状態まで持っていきたい — データ・API・（5 endpoint） | backend | backend | 125 | 31.2 | 32.2 | 6 | 22 | 38 |
 | T-A-02 | API 招かれたので、自分がやることだけ分かる状態にしたい — データ・AP（1 endpoint） | backend | backend | 26 | 6.5 | 7.5 | 6 | 8 | 10 |
 | T-A-03 | API 入れなくなったときに、自分でパスワードを再設定したい — データ・A（1 endpoint） | backend | backend | 32 | 8.0 | 9.0 | 6 | 9 | 11 |
 | T-A-04 | API 今日なにをすればいいか、迷わず決めたい — データ・API・権限（1/3）（6 endpoi | backend | backend | 59 | 14.8 | 15.8 | 6 | 16 | 41 |
 | T-A-05 | API 今日なにをすればいいか、迷わず決めたい — データ・API・権限（2/3）（6 endpoi | backend | backend | 59 | 14.8 | 15.8 | 6 | 17 | 41 |
 | T-A-06 | API 今日なにをすればいいか、迷わず決めたい — データ・API・権限（3/3）（1 endpoi | backend | backend | 59 | 14.8 | 15.8 | 6 | 12 | 12 |
-| T-A-07 | API 手でやっている繰り返しを、自分の代わりにやらせたい — データ・AP（5 endpoint） | backend | backend | 116 | 29.0 | 30.0 | 6 | 19 | 39 |
+| T-A-07 | API 手でやっている繰り返しを、自分の代わりにやらせたい — データ・AP（5 endpoint） | backend | backend | 113 | 28.2 | 29.2 | 6 | 18 | 39 |
 | T-A-08 | API AIが勝手に外に出すのが怖い。押す前に中身を見て決めたい — データ（1/2）（6 endp | backend | backend | 104 | 26.0 | 27.0 | 6 | 17 | 47 |
 | T-A-09 | API AIが勝手に外に出すのが怖い。押す前に中身を見て決めたい — データ（2/2）（4 endp | backend | backend | 104 | 26.0 | 27.0 | 6 | 17 | 30 |
 | T-A-10 | API 案件・請求・問い合わせが今どうなっているか、1か所で見たい — デー（5 endpoint） | backend | backend | 107 | 26.8 | 27.8 | 6 | 15 | 35 |
@@ -165,7 +165,7 @@
 | T-U-06 | 画面 パスワードの再設定（3 状態・R1/R2/R3） | frontend | ui | 16.0 | 1.6 | 1.6 | 20 | 11 | 37 |
 | T-U-07 | 画面 自分のAIと話す（5 状態・R1/R2） | frontend | ui | 19.5 | 1.9 | 1.9 | 20 | 9 | 58 |
 | T-U-08 | 画面 たたき台を確かめる（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 20 | 12 | 52 |
-| T-U-09 | 画面 自分のPCをつなぐ（8 状態・R1/R2） | frontend | ui | 27.0 | 2.7 | 2.7 | 20 | 9 | 82 |
+| T-U-09 | 画面 自分のPCをつなぐ（11 状態・R1/R2） | frontend | ui | 34.5 | 3.5 | 3.5 | 20 | 9 | 85 |
 | T-U-10 | 画面 ログイン情報を預ける（5 状態・R1/R2） | frontend | ui | 19.5 | 1.9 | 1.9 | 20 | 8 | 64 |
 | T-U-11 | 画面 テストで動かす（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 21 | 8 | 41 |
 | T-U-12 | 画面 本番に切り替える（2 状態・R1/R2） | frontend | ui | 12.0 | 1.2 | 1.2 | 21 | 12 | 34 |
@@ -173,7 +173,7 @@
 | T-U-14 | 画面 承認待ち（4 状態・R1/R2/R3） | frontend | ui | 18.5 | 1.9 | 1.9 | 21 | 8 | 62 |
 | T-U-15 | 画面 自分のAIとAI社員のやりとり（5 状態・R1/R2/R3） | frontend | ui | 21.0 | 2.1 | 2.1 | 21 | 9 | 57 |
 | T-U-16 | 画面 タスク（12 状態・R1/R2/R3/R4） | frontend | ui | 40.0 | 4.0 | 4.0 | 21 | 13 | 134 |
-| T-U-17 | 画面 自分のAIと話す（20 状態・R1/R2/R3/R4） | frontend | ui | 60.0 | 6.0 | 6.0 | 21 | 11 | 218 |
+| T-U-17 | 画面 自分のAIと話す（21 状態・R1/R2/R3/R4） | frontend | ui | 62.5 | 6.2 | 6.2 | 21 | 11 | 219 |
 | T-U-18 | 画面 AI社員の動き（4 状態・R1/R2/R3） | frontend | ui | 18.5 | 1.9 | 1.9 | 21 | 12 | 48 |
 | T-U-19 | 画面 探す（3 状態・R1/R2/R3/R4） | frontend | ui | 17.5 | 1.8 | 1.8 | 21 | 8 | 41 |
 | T-U-20 | 画面 台帳（6 状態・R1/R2/R3/R4） | frontend | ui | 25.0 | 2.5 | 2.5 | 21 | 9 | 57 |
@@ -607,16 +607,16 @@
 - L1 行 16（['RLS-D10-001', 'RLS-D10-002', 'RLS-D10-003'] …）／ L2 —
 - audit: 07_tasks/audit/T-D-10.md
 
-### T-D-11 データ層 12. 運営と顧客の間で往復するもの・自分で整えるもの（15 表・migration・RLS・索引・seed）
+### T-D-11 データ層 12. 運営と顧客の間で往復するもの・自分で整えるもの（14 表・migration・RLS・索引・seed）
 
-- group D / layer foundation / phase 2_data / wave 4 / Human 94 h・AI 23.5 h・wall-clock 24.5 h
-- 行為 — / 画面 — / 表 inquiries notices notice_deliveries status_incidents bridge_releases notification_preferences / 関門 C2
+- group D / layer foundation / phase 2_data / wave 4 / Human 88 h・AI 22.0 h・wall-clock 23.0 h
+- 行為 — / 画面 — / 表 inquiries notices notice_deliveries status_incidents notification_preferences notifications / 関門 C2
 - 依存 T-F-01 T-F-02 T-F-03
-- 根拠（逐語）：D-002「65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集」 ／ D-015「Bridgeは顧客PCで動く万能実行器。本人のIP・本人のログイン済みセッションで動くのでCAPTCHA/bot検知に到」
+- 根拠（逐語）：D-002「65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集」 ／ D-043「ネイティブアプリはレスポンシブとは別物。プッシュ通知が本質(承認待ちの通知)。段階2でPWA」
 - 触るファイル：packages/db/migrations/0111_12.sql (new)、packages/db/policies/inquiries.sql (new)、packages/db/schema.ts (modify)
-- AC（Tier 1）：UBIQUITOUS: 表 inquiries, notices, notice_deliveries, status_incidents, bridge_re
+- AC（Tier 1）：UBIQUITOUS: 表 inquiries, notices, notice_deliveries, status_incidents, notificat
 - AC（Tier 2）：UNWANTED: IF 他テナントの行を SELECT/UPDATE しようとしたら 0 行／403 で副作用が起きない（inquiries_tenant_r ／ UBIQUITOUS: inquiries_tenant_read ／ UBIQUITOUS: inquiries_self_only_write
-- L1 行 27（['RLS-D11-001', 'RLS-D11-002', 'RLS-D11-003'] …）／ L2 —
+- L1 行 26（['RLS-D11-001', 'RLS-D11-002', 'RLS-D11-003'] …）／ L2 —
 - audit: 07_tasks/audit/T-D-11.md
 
 ### T-D-12 データ層 13. 取り込み・正規連携・招待・持ち出し・添付（6 表・migration・RLS・索引・seed）
@@ -657,7 +657,7 @@
 
 ### T-A-01 API 契約してから、自力で動く状態まで持っていきたい — データ・API・（5 endpoint）
 
-- group A / layer backend / phase 3_api / wave 6 / Human 128 h・AI 32.0 h・wall-clock 33.0 h
+- group A / layer backend / phase 3_api / wave 6 / Human 125 h・AI 31.2 h・wall-clock 32.2 h
 - 行為 A01 A02 A04 A05 A06 A07 A08 A09 A12 A13 A31 A45 A94 / 画面 account bridge-setup company-model login mfa-setup onboard-draft onboard-golive onboard-interview password-reset signup verify-email / 表 tenants members clones goals ledger_definitions duties / 関門 C2 C3 C5 C7 C8
 - 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-02 T-D-03 T-D-04 T-D-05
 - 根拠（逐語）：D-001「2028-09までに200社→65社に修正。自社SaaS外販。初期顧客が自力で回せることが前提」 ／ D-002「65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集」
@@ -729,7 +729,7 @@
 
 ### T-A-07 API 手でやっている繰り返しを、自分の代わりにやらせたい — データ・AP（5 endpoint）
 
-- group A / layer backend / phase 3_api / wave 6 / Human 116 h・AI 29.0 h・wall-clock 30.0 h
+- group A / layer backend / phase 3_api / wave 6 / Human 113 h・AI 28.2 h・wall-clock 29.2 h
 - 行為 A07 A08 A09 A10 A12 A32 A37 A45 A46 A53 A59 A79 / 画面 ai-activity ai-staff ai-staff-detail automation-repair bridge-setup company-model credentials onboard-draft onboard-golive ops-catalog / 表 tenants members clones ai_employees goals ledger_definitions / 関門 C2 C5 C8
 - 依存 T-F-01 T-F-02 T-F-03 T-F-04 T-F-05 T-D-01 T-D-02 T-D-03 T-D-04 T-D-05
 - 根拠（逐語）：D-003「スキルは堀ではない。堀は『閉じたループ』(目標→逆算→配布→実行→測定→再計画)と会社モデル」 ／ D-004「LLMは顧客のサブスク内(Bridge)が既定。APIは顧客負担。運営マネージドは既定OFFの管理者トグル」
@@ -1171,16 +1171,16 @@
 - L1 行 52（['SCR-ONBOARD-DRAFT-001', 'SCR-ONBOARD-DRAFT-002', 'SCR-ONBOARD-DRAFT-003'] …）／ L2 ['J-02']
 - audit: 07_tasks/audit/T-U-08.md
 
-### T-U-09 画面 自分のPCをつなぐ（8 状態・R1/R2）
+### T-U-09 画面 自分のPCをつなぐ（11 状態・R1/R2）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 20 / Human 27.0 h・AI 2.7 h・wall-clock 2.7 h
-- 行為 A09 / 画面 bridge-setup / 表 sessions action_runs bridge_releases / 関門 —（画面。外界に出ない（API は関門の先））
+- group U-screen / layer ui / phase 5_ui_parallel / wave 20 / Human 34.5 h・AI 3.5 h・wall-clock 3.5 h
+- 行為 A09 / 画面 bridge-setup / 表 sessions action_runs / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-01 T-A-07
 - 根拠（逐語）：D-055「段階1で AI が動く経路は Bridge（顧客PCで本人のサブスクの公式CLI）だけ。BYOK・運営マネージドは段階2」 ／ D-015「Bridgeは顧客PCで動く万能実行器。本人のIP・本人のログイン済みセッションで動くのでCAPTCHA/bot検知に到」
 - 触るファイル：apps/web/app/(app)/setup/bridge/page.tsx (new)、apps/web/tests/screens/bridge-setup.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 bridge-setup は URL /setup/bridge で開く（apps/web/app/(app)/setup/bri ／ STATE-DRIVEN: WHILE 画面 bridge-setup が描画中 THEN h1「自分のPCをつなぐ」・第2ナビ 接続 / この端末 / 動く条
 - AC（Tier 2）：EVENT-DRIVEN: WHEN POST /api/v1/sessions が「Bridge を入れて開き、「Claude Code を入れる」を押し、ロ ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「接続を確かめる」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
-- L1 行 82（['SCR-BRIDGE-SETUP-059', 'SCR-BRIDGE-SETUP-060', 'SCR-BRIDGE-SETUP-061'] …）／ L2 ['J-02']
+- L1 行 85（['SCR-BRIDGE-SETUP-059', 'SCR-BRIDGE-SETUP-060', 'SCR-BRIDGE-SETUP-061'] …）／ L2 ['J-02']
 - audit: 07_tasks/audit/T-U-09.md
 
 ### T-U-10 画面 ログイン情報を預ける（5 状態・R1/R2）
@@ -1267,16 +1267,16 @@
 - L1 行 134（['SCR-TASKS-001', 'SCR-TASKS-002', 'SCR-TASKS-003'] …）／ L2 ['J-03']
 - audit: 07_tasks/audit/T-U-16.md
 
-### T-U-17 画面 自分のAIと話す（20 状態・R1/R2/R3/R4）
+### T-U-17 画面 自分のAIと話す（21 状態・R1/R2/R3/R4）
 
-- group U-screen / layer ui / phase 5_ui_parallel / wave 21 / Human 60.0 h・AI 6.0 h・wall-clock 6.0 h
+- group U-screen / layer ui / phase 5_ui_parallel / wave 21 / Human 62.5 h・AI 6.2 h・wall-clock 6.2 h
 - 行為 A20 A88 A89 A90 A91 A95 / 画面 clone-chat / 表 conversations messages clones members memories goals / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-04 T-A-09 T-A-11
 - 根拠（逐語）：D-106「返事の「書き出す」で成果物ができ、会話の横で開く。文書（md）と表（csv）はその場で直して保存すると新しい版になり、版」 ／ D-107「サービス台帳で禁止（forbidden）と銀行（bank）のドメインは、自分のAI に仕事を渡すたびに Bridge が」
 - 触るファイル：apps/web/app/(app)/ai/chat/page.tsx (new)、apps/web/tests/screens/clone-chat.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 clone-chat は URL /ai/chat で開く（apps/web/app/(app)/ai/chat/page.tsx ／ STATE-DRIVEN: WHILE 画面 clone-chat が描画中 THEN h1「高本AIと話す」・第2ナビ 新しく話す / 会話 / 星 / 記憶
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/conversations が「聞く・頼む」として呼ばれたとき THEN Kaname は「会話を ／ EVENT-DRIVEN: WHEN GET /api/v1/conversations が「資料や画像を付けて渡す」として呼ばれたとき THEN Kaname ／ EVENT-DRIVEN: WHEN POST /api/v1/conversations が「会話を分けて始める・一覧から戻る」として呼ばれたとき THEN 
-- L1 行 218（['SCR-CLONE-CHAT-122', 'SCR-CLONE-CHAT-123', 'SCR-CLONE-CHAT-124'] …）／ L2 ['J-03', 'J-07']
+- L1 行 219（['SCR-CLONE-CHAT-122', 'SCR-CLONE-CHAT-123', 'SCR-CLONE-CHAT-124'] …）／ L2 ['J-03', 'J-07']
 - audit: 07_tasks/audit/T-U-17.md
 
 ### T-U-18 画面 AI社員の動き（4 状態・R1/R2/R3）

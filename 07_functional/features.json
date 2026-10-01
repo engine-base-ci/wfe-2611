@@ -1,7 +1,7 @@
 {
  "meta": {
   "version": "v3.1",
-  "created_at": "2026-09-29",
+  "created_at": "2026-10-01",
   "_doc": "05_flow/build_functional.py が flow.json・ER図・モック・errors.json から生成。手で直さない。",
   "source": [
    "D-053.1",
@@ -94,7 +94,6 @@
     "E-055",
     "E-058",
     "E-061",
-    "E-078",
     "E-081",
     "E-082",
     "E-083",
@@ -188,8 +187,7 @@
      "related_entities": [
       "E-061",
       "E-039",
-      "E-039",
-      "E-078"
+      "E-039"
      ],
      "choke_points": [
       "C5",
@@ -207,7 +205,14 @@
       "D-055.1",
       "D-055.2",
       "D-055.3",
-      "D-109.3"
+      "D-109.3",
+      "D-119.1",
+      "D-119.2",
+      "D-119.4",
+      "D-120.1",
+      "D-120.2",
+      "D-120.3",
+      "D-120.4"
      ],
      "inputs": "画面の入力（モック参照）",
      "outputs_2xx": "更新後の対象",
@@ -335,7 +340,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-001",
     "D-001.5",
@@ -381,7 +386,14 @@
     "D-118.1",
     "D-118.2",
     "D-118.3",
-    "D-118.4"
+    "D-118.4",
+    "D-119.1",
+    "D-119.2",
+    "D-119.4",
+    "D-120.1",
+    "D-120.2",
+    "D-120.3",
+    "D-120.4"
    ]
   },
   {
@@ -453,7 +465,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-026",
     "D-037",
@@ -533,7 +545,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-042",
     "D-053.3"
@@ -1273,7 +1285,7 @@
     "UNWANTED: IF 書き出す・保存する成果物の本文が上限（1 MB）を超える THEN Kaname は「大きすぎて成果物にできません（1 MB まで）。分けて書き出してください」を出し、本文を分けて、別々に書き出す（E-ART-001）",
     "UNWANTED: IF 成果物の中身を会社の置き場に置けなかった（置き場が応答しない・書き込みを断られた） THEN Kaname は「成果物を保存できませんでした（保存先が応答しません）。直した中身は残っているので、もう一度保存してください」を出し、もう一度保存する（E-ART-002）",
     "UNWANTED: IF この PC の Bridge が古い（Kaname と話す約束の版が合わない） THEN Kaname は「この PC の Bridge が古いので、自分のAI に仕事を渡せません。Bridge を入れ直してください」を出し、Bridge を入れ直す（書いたことは溜めておき、入れ直した後に順に片づける）（E-CONN-012）",
-    "EVENT-DRIVEN: WHEN R1／R2／R3／R4 が「会話を分けて始める・一覧から戻る」したとき THEN Kaname は「conversations に 1 行（agent_session_id は最初の返事で決まる）。一覧・探す（本文の PGroonga）・星・名前を直す・消す・記憶に残さない会話（毎朝のまとめから外す）」を行う（自動側：新しい会話は Claude Code の新しいセッション。名前は最初の一言から自分のAIが付ける）",
+    "EVENT-DRIVEN: WHEN R1／R2／R3／R4 が「会話を分けて始める・一覧から戻る」したとき THEN Kaname は「conversations に 1 行（agent_session_id は最初の返事で決まる）。一覧・探す（本文の PGroonga）・星・名前を直す・消す・記憶に使わない会話（毎朝のまとめから外す）」を行う（自動側：新しい会話は Claude Code の新しいセッション。名前は最初の一言から自分のAIが付ける）",
     "UNWANTED: IF プランの月間の実行量（トークン・実行時間）の上限に達した THEN Kaname は「今月の AI の実行量が上限に達しました。来月まで待つか、プランを変えると続けられます」を出し、プランを見る／来月まで待つ（E-LIM-004）",
     "UNWANTED: IF 自分のAIが「これを実行していいか」と聞いたのに、本人が答えないまま 30 分たった THEN Kaname は「本人が許可しませんでした（確認に答えが無いまま時間がたったので、実行していません）」を出し、会話で「続けて」と書いて送り、次の問いで答える（E-GATE-010）",
     "UNWANTED: IF 自分のAIが、サービス台帳で規約により自動操作が禁止のサービスか銀行を操作しようとした（全部許可を含む） THEN Kaname は「{サービス}（{ドメイン}）は規約で自動操作が禁止のため止めました。正規の連携か、手で操作してください」を出し、返事にある正規の連携の案内か、手作業の手順に沿って進める（E-GATE-011）",
@@ -1322,7 +1334,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-002",
     "D-003.1",
@@ -1504,7 +1516,6 @@
     "E-061",
     "E-068",
     "E-069",
-    "E-078",
     "E-081",
     "E-082",
     "E-083",
@@ -1522,8 +1533,7 @@
      "related_entities": [
       "E-061",
       "E-039",
-      "E-039",
-      "E-078"
+      "E-039"
      ],
      "choke_points": [
       "C5",
@@ -1541,7 +1551,14 @@
       "D-055.1",
       "D-055.2",
       "D-055.3",
-      "D-109.3"
+      "D-109.3",
+      "D-119.1",
+      "D-119.2",
+      "D-119.4",
+      "D-120.1",
+      "D-120.2",
+      "D-120.3",
+      "D-120.4"
      ],
      "inputs": "画面の入力（モック参照）",
      "outputs_2xx": "更新後の対象",
@@ -1575,7 +1592,8 @@
       "D-117.3",
       "D-117.4",
       "D-117.5",
-      "D-117.6"
+      "D-117.6",
+      "D-119.5"
      ],
      "inputs": "画面の入力（モック参照）",
      "outputs_2xx": "更新後の対象",
@@ -1687,7 +1705,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-003.7",
     "D-004",
@@ -1730,7 +1748,15 @@
     "D-117.3",
     "D-117.4",
     "D-117.5",
-    "D-117.6"
+    "D-117.6",
+    "D-119.1",
+    "D-119.2",
+    "D-119.4",
+    "D-119.5",
+    "D-120.1",
+    "D-120.2",
+    "D-120.3",
+    "D-120.4"
    ]
   },
   {
@@ -2237,7 +2263,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-003.7",
     "D-008.2",
@@ -2560,7 +2586,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-006.2",
     "D-007",
@@ -3030,7 +3056,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-003",
     "D-003.1",
@@ -3270,7 +3296,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-003.1",
     "D-003.3",
@@ -3777,7 +3803,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-003.1",
     "D-004.10",
@@ -3993,7 +4019,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-003",
     "D-003.1",
@@ -4302,7 +4328,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-010.7",
     "D-015",
@@ -4746,7 +4772,7 @@
     "UNWANTED: IF 書き出す・保存する成果物の本文が上限（1 MB）を超える THEN Kaname は「大きすぎて成果物にできません（1 MB まで）。分けて書き出してください」を出し、本文を分けて、別々に書き出す（E-ART-001）",
     "UNWANTED: IF 成果物の中身を会社の置き場に置けなかった（置き場が応答しない・書き込みを断られた） THEN Kaname は「成果物を保存できませんでした（保存先が応答しません）。直した中身は残っているので、もう一度保存してください」を出し、もう一度保存する（E-ART-002）",
     "UNWANTED: IF この PC の Bridge が古い（Kaname と話す約束の版が合わない） THEN Kaname は「この PC の Bridge が古いので、自分のAI に仕事を渡せません。Bridge を入れ直してください」を出し、Bridge を入れ直す（書いたことは溜めておき、入れ直した後に順に片づける）（E-CONN-012）",
-    "EVENT-DRIVEN: WHEN R1／R2／R3／R4 が「会話を分けて始める・一覧から戻る」したとき THEN Kaname は「conversations に 1 行（agent_session_id は最初の返事で決まる）。一覧・探す（本文の PGroonga）・星・名前を直す・消す・記憶に残さない会話（毎朝のまとめから外す）」を行う（自動側：新しい会話は Claude Code の新しいセッション。名前は最初の一言から自分のAIが付ける）",
+    "EVENT-DRIVEN: WHEN R1／R2／R3／R4 が「会話を分けて始める・一覧から戻る」したとき THEN Kaname は「conversations に 1 行（agent_session_id は最初の返事で決まる）。一覧・探す（本文の PGroonga）・星・名前を直す・消す・記憶に使わない会話（毎朝のまとめから外す）」を行う（自動側：新しい会話は Claude Code の新しいセッション。名前は最初の一言から自分のAIが付ける）",
     "UNWANTED: IF プランの月間の実行量（トークン・実行時間）の上限に達した THEN Kaname は「今月の AI の実行量が上限に達しました。来月まで待つか、プランを変えると続けられます」を出し、プランを見る／来月まで待つ（E-LIM-004）",
     "UNWANTED: IF 自分のAIが「これを実行していいか」と聞いたのに、本人が答えないまま 30 分たった THEN Kaname は「本人が許可しませんでした（確認に答えが無いまま時間がたったので、実行していません）」を出し、会話で「続けて」と書いて送り、次の問いで答える（E-GATE-010）",
     "UNWANTED: IF 自分のAIが、サービス台帳で規約により自動操作が禁止のサービスか銀行を操作しようとした（全部許可を含む） THEN Kaname は「{サービス}（{ドメイン}）は規約で自動操作が禁止のため止めました。正規の連携か、手で操作してください」を出し、返事にある正規の連携の案内か、手作業の手順に沿って進める（E-GATE-011）",
@@ -4782,7 +4808,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-003.7",
     "D-003.9",
@@ -5065,7 +5091,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-030",
     "D-030.10",
@@ -5261,7 +5287,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-002",
     "D-002.2",
@@ -5569,7 +5595,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-002",
     "D-002.2",
@@ -5888,7 +5914,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-006.5",
     "D-013.1",
@@ -6089,7 +6115,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-030.2",
     "D-030.3",
@@ -6290,7 +6316,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-010.7",
     "D-019.3",
@@ -6428,7 +6454,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-026",
     "D-026.2",
@@ -6507,7 +6533,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-013",
     "D-014",
@@ -6725,7 +6751,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-010",
     "D-038",
@@ -6836,7 +6862,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-004",
     "D-007",
@@ -6907,7 +6933,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-029",
     "D-025",
@@ -6972,7 +6998,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-015",
     "D-044",
@@ -7070,7 +7096,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-012",
     "D-043",
@@ -7138,7 +7164,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-002",
     "D-004",
@@ -7208,7 +7234,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-017",
     "D-042",

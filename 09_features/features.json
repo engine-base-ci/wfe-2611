@@ -1,7 +1,7 @@
 {
  "meta": {
   "version": "v3",
-  "created_at": "2026-09-29",
+  "created_at": "2026-10-01",
   "_doc": "05_flow/build_features.py が機械生成。手で直さない",
   "source": [
    "D-053.1",
@@ -20,10 +20,10 @@
   },
   "waves": 14,
   "parallel_capacity": 10,
-  "total_estimate_hours_human": 4377.5,
-  "total_estimate_hours_ai_compute": 772.2,
+  "total_estimate_hours_human": 4381.5,
+  "total_estimate_hours_ai_compute": 771.6,
   "human_review_total_h": 25.0,
-  "total_wall_clock_h_ai_parallel": 157.8,
+  "total_wall_clock_h_ai_parallel": 158.0,
   "calendar_days_ai": 27,
   "calendar_days_human": 548,
   "orphan_components": [],
@@ -99,7 +99,7 @@
    "difficulty": "medium",
    "risk": "",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "(基盤)",
     "D-046",
@@ -195,7 +195,7 @@
    "difficulty": "hard",
    "risk": "上流を故意に壊す検証（SET を飛ばす）が無いと正常系で判別できない",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-026.1",
     "D-073.1",
@@ -299,7 +299,7 @@
    "difficulty": "medium",
    "risk": "",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-042.3",
     "D-074.4",
@@ -400,7 +400,7 @@
    "difficulty": "hard",
    "risk": "失効がトークン期限に頼る実装になると G-14 が破れる",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-042.8",
     "D-051.2",
@@ -496,7 +496,7 @@
    "difficulty": "medium",
    "risk": "",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-013",
     "D-014",
@@ -591,7 +591,7 @@
    "difficulty": "medium",
    "risk": "",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-010",
     "D-038",
@@ -691,7 +691,7 @@
    "difficulty": "medium",
    "risk": "",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-004",
     "D-007",
@@ -790,7 +790,7 @@
    "difficulty": "medium",
    "risk": "",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-029",
     "D-025",
@@ -881,7 +881,7 @@
    "difficulty": "medium",
    "risk": "",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-015",
     "D-044",
@@ -987,7 +987,7 @@
    "difficulty": "medium",
    "risk": "",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-012",
     "D-043",
@@ -1089,7 +1089,7 @@
    "difficulty": "medium",
    "risk": "",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-002",
     "D-004",
@@ -1187,7 +1187,7 @@
    "difficulty": "medium",
    "risk": "",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-017",
     "D-042",
@@ -1275,7 +1275,7 @@
    "difficulty": "medium",
    "risk": "",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-043.2",
     "D-051.1",
@@ -1385,7 +1385,7 @@
    "difficulty": "medium",
    "risk": "",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-046",
     "D-049.5",
@@ -1464,7 +1464,7 @@
    "difficulty": "medium",
    "risk": "",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-069.1",
     "D-069.3",
@@ -1553,7 +1553,7 @@
    "difficulty": "medium",
    "risk": "Supabase の auth schema は GoTrue が持つ。Better Auth を同じ名前に置くと auth.users／auth.sessions が衝突する",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-053.1",
     "D-046",
@@ -1577,7 +1577,7 @@
    "group": "B",
    "phase": "Backend",
    "kind": "api",
-   "role": "用事 J0 の裏側（5 endpoint・30 表）",
+   "role": "用事 J0 の裏側（5 endpoint・29 表）",
    "category": "job",
    "acts": [
     "A01",
@@ -1611,7 +1611,6 @@
     "E-055",
     "E-058",
     "E-061",
-    "E-078",
     "E-081",
     "E-082",
     "E-083",
@@ -1826,7 +1825,6 @@
      "E-055",
      "E-058",
      "E-061",
-     "E-078",
      "E-081",
      "E-082",
      "E-083",
@@ -1898,7 +1896,7 @@
    "difficulty": "hard",
    "risk": "関門を通らない直接呼び出し・RLS 拒否に頼った副作用",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-001",
     "D-001.5",
@@ -1944,12 +1942,19 @@
     "D-118.1",
     "D-118.2",
     "D-118.3",
-    "D-118.4"
+    "D-118.4",
+    "D-119.1",
+    "D-119.2",
+    "D-119.4",
+    "D-120.1",
+    "D-120.2",
+    "D-120.3",
+    "D-120.4"
    ],
-   "estimate_hours_human": 128,
-   "estimate_hours_ai": 32.0,
+   "estimate_hours_human": 125,
+   "estimate_hours_ai": 31.2,
    "human_review_h": 1.0,
-   "wall_clock_h_ai": 33.0,
+   "wall_clock_h_ai": 32.2,
    "ai_acceleration_factor": 4,
    "blocking_dependencies_h": 0,
    "estimate_method": "reference",
@@ -2115,7 +2120,7 @@
    "difficulty": "hard",
    "risk": "関門を通らない直接呼び出し・RLS 拒否に頼った副作用",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-026",
     "D-037",
@@ -2301,7 +2306,7 @@
    "difficulty": "hard",
    "risk": "関門を通らない直接呼び出し・RLS 拒否に頼った副作用",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-042",
     "D-053.3"
@@ -2454,7 +2459,7 @@
     "EVENT-DRIVEN: WHEN R1／R2／R3 が「自分のタスクを終える」したとき THEN Kaname は「タスクの状態を更新し、目標の実績に積む」を行う",
     "EVENT-DRIVEN: WHEN GET /api/v1/conversations が「聞く・頼む」として呼ばれたとき THEN Kaname は「会話を記憶へ。指示をAI社員へ。道具の呼び出しは名前・対象・成否・時間だけ残し、中身の全文は本人の PC に置いたまま。サービス台帳で禁止・銀行のドメインは、仕事を渡すたびに使わない道具として渡し、道具を使う直前のフックでも止める（許可のモードに関わらず）」を行い 2xx を返す（自動側：自分のAIが答え、必要ならAI社員に配る。数値もここで出す。返事は書きながら少しずつ出し、作業中は吹き出しの外に 1 行・手順・経過時間・道具の行。表・図・コード・実物のカード・問い合わせまで出せる）",
     "EVENT-DRIVEN: WHEN GET /api/v1/conversations が「資料や画像を付けて渡す」として呼ばれたとき THEN Kaname は「attachments に 1 行、実体は会社の置き場（関門 C4）。messages.attachments は参照だけ」を行い 2xx を返す（自動側：Bridge が期限つきの署名 URL で受け取り、本人の PC の作業場所に置いて自分のAI に渡す（保存先の鍵は AI に見せない））",
-    "EVENT-DRIVEN: WHEN POST /api/v1/conversations が「会話を分けて始める・一覧から戻る」として呼ばれたとき THEN Kaname は「conversations に 1 行（agent_session_id は最初の返事で決まる）。一覧・探す（本文の PGroonga）・星・名前を直す・消す・記憶に残さない会話（毎朝のまとめから外す）」を行い 2xx を返す（自動側：新しい会話は Claude Code の新しいセッション。名前は最初の一言から自分のAIが付ける）",
+    "EVENT-DRIVEN: WHEN POST /api/v1/conversations が「会話を分けて始める・一覧から戻る」として呼ばれたとき THEN Kaname は「conversations に 1 行（agent_session_id は最初の返事で決まる）。一覧・探す（本文の PGroonga）・星・名前を直す・消す・記憶に使わない会話（毎朝のまとめから外す）」を行い 2xx を返す（自動側：新しい会話は Claude Code の新しいセッション。名前は最初の一言から自分のAIが付ける）",
     "EVENT-DRIVEN: WHEN POST /api/v1/conversations が「許可に答える・許可のモードを選ぶ」として呼ばれたとき THEN Kaname は「答えは bridge_job_events と証跡に。「いつも」は permission_rules に。全部許可は本人が選んだときだけ・既定にしない」を行い 2xx を返す（自動側：Claude Code の許可の問いを会話に出す（今回だけ／いつも／しない＋一言）。モードは Claude Code の公式の選択肢をそのまま渡す）",
     "EVENT-DRIVEN: WHEN PATCH /api/v1/conversations/:id が「成果物に書き出して横で直す」として呼ばれたとき THEN Kaname は「artifacts に 1 行・artifact_versions に版ごとに 1 行。中身は会社の置き場（関門 C4）。自分のAI に置き場の鍵を見せない」を行い 2xx を返す（自動側：返事の本文から成果物を作って会話の横に開く。文書と表は直すと新しい版、版の一覧から戻せる（戻すのも新しい版））",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
@@ -2763,7 +2768,7 @@
    "difficulty": "hard",
    "risk": "関門を通らない直接呼び出し・RLS 拒否に頼った副作用",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-002",
     "D-003.1",
@@ -2887,7 +2892,7 @@
    "group": "B",
    "phase": "Backend",
    "kind": "api",
-   "role": "用事 J2 の裏側（5 endpoint・26 表）",
+   "role": "用事 J2 の裏側（5 endpoint・25 表）",
    "category": "job",
    "acts": [
     "A09",
@@ -2917,7 +2922,6 @@
     "E-061",
     "E-068",
     "E-069",
-    "E-078",
     "E-081",
     "E-082",
     "E-083",
@@ -3146,7 +3150,6 @@
      "E-061",
      "E-068",
      "E-069",
-     "E-078",
      "E-081",
      "E-082",
      "E-083",
@@ -3220,7 +3223,7 @@
    "difficulty": "hard",
    "risk": "関門を通らない直接呼び出し・RLS 拒否に頼った副作用",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-003.7",
     "D-004",
@@ -3263,12 +3266,20 @@
     "D-117.3",
     "D-117.4",
     "D-117.5",
-    "D-117.6"
+    "D-117.6",
+    "D-119.1",
+    "D-119.2",
+    "D-119.4",
+    "D-119.5",
+    "D-120.1",
+    "D-120.2",
+    "D-120.3",
+    "D-120.4"
    ],
-   "estimate_hours_human": 116,
-   "estimate_hours_ai": 29.0,
+   "estimate_hours_human": 113,
+   "estimate_hours_ai": 28.2,
    "human_review_h": 1.0,
-   "wall_clock_h_ai": 30.0,
+   "wall_clock_h_ai": 29.2,
    "ai_acceleration_factor": 4,
    "blocking_dependencies_h": 0,
    "estimate_method": "reference",
@@ -3425,7 +3436,7 @@
     "EVENT-DRIVEN: WHEN DELETE /api/v1/approvals/:id が「運営にサポートアクセスを許可する」として呼ばれたとき THEN Kaname は「範囲・期限つきの許可を保存。運営が見た記録を顧客の証跡に残す」を行い 2xx を返す",
     "EVENT-DRIVEN: WHEN GET /api/v1/audit_events が「いつ何をしたかを追う」として呼ばれたとき THEN Kaname は「証跡を検索」を行い 2xx を返す",
     "EVENT-DRIVEN: WHEN GET /api/v1/audit_events が「誰が何をしたかを確認する」として呼ばれたとき THEN Kaname は「証跡を人・期間で集計」を行い 2xx を返す",
-    "EVENT-DRIVEN: WHEN POST /api/v1/conversations が「会話を分けて始める・一覧から戻る」として呼ばれたとき THEN Kaname は「conversations に 1 行（agent_session_id は最初の返事で決まる）。一覧・探す（本文の PGroonga）・星・名前を直す・消す・記憶に残さない会話（毎朝のまとめから外す）」を行い 2xx を返す（自動側：新しい会話は Claude Code の新しいセッション。名前は最初の一言から自分のAIが付ける）",
+    "EVENT-DRIVEN: WHEN POST /api/v1/conversations が「会話を分けて始める・一覧から戻る」として呼ばれたとき THEN Kaname は「conversations に 1 行（agent_session_id は最初の返事で決まる）。一覧・探す（本文の PGroonga）・星・名前を直す・消す・記憶に使わない会話（毎朝のまとめから外す）」を行い 2xx を返す（自動側：新しい会話は Claude Code の新しいセッション。名前は最初の一言から自分のAIが付ける）",
     "EVENT-DRIVEN: WHEN POST /api/v1/conversations が「許可に答える・許可のモードを選ぶ」として呼ばれたとき THEN Kaname は「答えは bridge_job_events と証跡に。「いつも」は permission_rules に。全部許可は本人が選んだときだけ・既定にしない」を行い 2xx を返す（自動側：Claude Code の許可の問いを会話に出す（今回だけ／いつも／しない＋一言）。モードは Claude Code の公式の選択肢をそのまま渡す）",
     "EVENT-DRIVEN: WHEN DELETE /api/v1/conversations/:id が「止める・止めずに直す・順番待ちを取り消す」として呼ばれたとき THEN Kaname は「bridge_jobs の状態（止めた＝理由つき）。順番待ちは待っている行、取り消すと やめた」を行い 2xx を返す（自動側：止めるは Bridge が Claude Code を止める。止めずに送った文は動いている Claude Code に次の区切りで渡る）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
@@ -3752,7 +3763,7 @@
    "difficulty": "hard",
    "risk": "関門を通らない直接呼び出し・RLS 拒否に頼った副作用",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-003.7",
     "D-008.2",
@@ -4142,7 +4153,7 @@
    "difficulty": "hard",
    "risk": "関門を通らない直接呼び出し・RLS 拒否に頼った副作用",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-006.2",
     "D-007",
@@ -4571,7 +4582,7 @@
    "difficulty": "hard",
    "risk": "関門を通らない直接呼び出し・RLS 拒否に頼った副作用",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-003",
     "D-003.1",
@@ -4927,7 +4938,7 @@
    "difficulty": "medium",
    "risk": "関門を通らない直接呼び出し・RLS 拒否に頼った副作用",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-003.1",
     "D-003.3",
@@ -5393,7 +5404,7 @@
    "difficulty": "hard",
    "risk": "関門を通らない直接呼び出し・RLS 拒否に頼った副作用",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-003.1",
     "D-004.10",
@@ -5704,7 +5715,7 @@
    "difficulty": "hard",
    "risk": "関門を通らない直接呼び出し・RLS 拒否に頼った副作用",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-003",
     "D-003.1",
@@ -6098,7 +6109,7 @@
    "difficulty": "hard",
    "risk": "関門を通らない直接呼び出し・RLS 拒否に頼った副作用",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-010.7",
     "D-015",
@@ -6242,7 +6253,7 @@
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "EVENT-DRIVEN: WHEN GET /api/v1/conversations が「聞く・頼む」として呼ばれたとき THEN Kaname は「会話を記憶へ。指示をAI社員へ。道具の呼び出しは名前・対象・成否・時間だけ残し、中身の全文は本人の PC に置いたまま。サービス台帳で禁止・銀行のドメインは、仕事を渡すたびに使わない道具として渡し、道具を使う直前のフックでも止める（許可のモードに関わらず）」を行い 2xx を返す（自動側：自分のAIが答え、必要ならAI社員に配る。数値もここで出す。返事は書きながら少しずつ出し、作業中は吹き出しの外に 1 行・手順・経過時間・道具の行。表・図・コード・実物のカード・問い合わせまで出せる）",
     "EVENT-DRIVEN: WHEN GET /api/v1/conversations が「資料や画像を付けて渡す」として呼ばれたとき THEN Kaname は「attachments に 1 行、実体は会社の置き場（関門 C4）。messages.attachments は参照だけ」を行い 2xx を返す（自動側：Bridge が期限つきの署名 URL で受け取り、本人の PC の作業場所に置いて自分のAI に渡す（保存先の鍵は AI に見せない））",
-    "EVENT-DRIVEN: WHEN POST /api/v1/conversations が「会話を分けて始める・一覧から戻る」として呼ばれたとき THEN Kaname は「conversations に 1 行（agent_session_id は最初の返事で決まる）。一覧・探す（本文の PGroonga）・星・名前を直す・消す・記憶に残さない会話（毎朝のまとめから外す）」を行い 2xx を返す（自動側：新しい会話は Claude Code の新しいセッション。名前は最初の一言から自分のAIが付ける）",
+    "EVENT-DRIVEN: WHEN POST /api/v1/conversations が「会話を分けて始める・一覧から戻る」として呼ばれたとき THEN Kaname は「conversations に 1 行（agent_session_id は最初の返事で決まる）。一覧・探す（本文の PGroonga）・星・名前を直す・消す・記憶に使わない会話（毎朝のまとめから外す）」を行い 2xx を返す（自動側：新しい会話は Claude Code の新しいセッション。名前は最初の一言から自分のAIが付ける）",
     "EVENT-DRIVEN: WHEN POST /api/v1/conversations が「許可に答える・許可のモードを選ぶ」として呼ばれたとき THEN Kaname は「答えは bridge_job_events と証跡に。「いつも」は permission_rules に。全部許可は本人が選んだときだけ・既定にしない」を行い 2xx を返す（自動側：Claude Code の許可の問いを会話に出す（今回だけ／いつも／しない＋一言）。モードは Claude Code の公式の選択肢をそのまま渡す）",
     "EVENT-DRIVEN: WHEN PATCH /api/v1/conversations/:id が「成果物に書き出して横で直す」として呼ばれたとき THEN Kaname は「artifacts に 1 行・artifact_versions に版ごとに 1 行。中身は会社の置き場（関門 C4）。自分のAI に置き場の鍵を見せない」を行い 2xx を返す（自動側：返事の本文から成果物を作って会話の横に開く。文書と表は直すと新しい版、版の一覧から戻せる（戻すのも新しい版））",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
@@ -6535,7 +6546,7 @@
    "difficulty": "medium",
    "risk": "関門を通らない直接呼び出し・RLS 拒否に頼った副作用",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-003.7",
     "D-003.9",
@@ -6906,7 +6917,7 @@
    "difficulty": "hard",
    "risk": "関門を通らない直接呼び出し・RLS 拒否に頼った副作用",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-030",
     "D-030.10",
@@ -7180,7 +7191,7 @@
    "difficulty": "hard",
    "risk": "関門を通らない直接呼び出し・RLS 拒否に頼った副作用",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-002",
     "D-002.2",
@@ -7522,7 +7533,7 @@
    "difficulty": "hard",
    "risk": "関門を通らない直接呼び出し・RLS 拒否に頼った副作用",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-002",
     "D-002.2",
@@ -7911,7 +7922,7 @@
    "difficulty": "hard",
    "risk": "関門を通らない直接呼び出し・RLS 拒否に頼った副作用",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-006.5",
     "D-013.1",
@@ -8202,7 +8213,7 @@
    "difficulty": "medium",
    "risk": "関門を通らない直接呼び出し・RLS 拒否に頼った副作用",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-030.2",
     "D-030.3",
@@ -8496,7 +8507,7 @@
    "difficulty": "hard",
    "risk": "関門を通らない直接呼び出し・RLS 拒否に頼った副作用",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-010.7",
     "D-019.3",
@@ -8740,7 +8751,7 @@
    "difficulty": "medium",
    "risk": "関門を通らない直接呼び出し・RLS 拒否に頼った副作用",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-026",
     "D-026.2",
@@ -8898,7 +8909,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-001",
     "D-011",
@@ -9049,7 +9060,7 @@
    "difficulty": "hard",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-042",
     "D-053.10",
@@ -9200,7 +9211,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-026",
     "D-037",
@@ -9352,7 +9363,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-042",
     "D-051",
@@ -9483,7 +9494,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-002",
     "D-081.2",
@@ -9631,7 +9642,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-042",
     "D-051",
@@ -9786,7 +9797,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-042",
     "D-053.10",
@@ -9935,7 +9946,7 @@
    "difficulty": "hard",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-003.7",
     "D-010",
@@ -10122,7 +10133,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-003.7",
     "D-010",
@@ -10160,7 +10171,7 @@
   },
   {
    "id": "F-V3-C-bridge-setup",
-   "name": "画面 自分のPCをつなぐ（8 状態・2 役割）",
+   "name": "画面 自分のPCをつなぐ（11 状態・2 役割）",
    "group": "C",
    "phase": "UI",
    "kind": "ui",
@@ -10174,15 +10185,14 @@
    ],
    "entity_ids": [
     "E-061",
-    "E-039",
-    "E-078"
+    "E-039"
    ],
    "api_endpoints": [
     "EP-056"
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
-    "UBIQUITOUS: 画面 bridge-setup はモック 06_mockup/v1/v1-bridge-setup.html の状態 8（接続中（ブラウザ・未インストール）、ブラウザ・Bridge が入っている、アプリ（Bridge の窓）の中、Claude Code が無い、つながった、切れている（知らせが来ていない））と役割 R1/R2 を実装し、h1 は「自分のPCをつなぐ」",
+    "UBIQUITOUS: 画面 bridge-setup はモック 06_mockup/v1/v1-bridge-setup.html の状態 11（接続中（ブラウザ・未インストール）、ブラウザ・Bridge が入っている、アプリ（Bridge の窓）の中、Claude Code が無い、つながった、つながった・AI が Chrome を使えない）と役割 R1/R2 を実装し、h1 は「自分のPCをつなぐ」",
     "EVENT-DRIVEN: WHEN 主アクション「接続を確かめる」を押したとき THEN 対応する endpoint を呼び、結果を別 GET で再取得して画面に反映する"
    ],
    "depends_on": [
@@ -10251,8 +10261,7 @@
    "vertical_slice_components": {
     "entities": [
      "E-061",
-     "E-039",
-     "E-078"
+     "E-039"
     ],
     "api_endpoints": [
      "EP-056"
@@ -10283,7 +10292,7 @@
    "difficulty": "hard",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-055",
     "D-015",
@@ -10316,12 +10325,17 @@
     "D-091.6",
     "D-089.10",
     "D-015.7",
-    "D-015.8"
+    "D-015.8",
+    "D-119.4",
+    "D-120.1",
+    "D-120.2",
+    "D-120.3",
+    "D-120.4"
    ],
-   "estimate_hours_human": 27.0,
-   "estimate_hours_ai": 2.7,
+   "estimate_hours_human": 34.5,
+   "estimate_hours_ai": 3.5,
    "human_review_h": 0.0,
-   "wall_clock_h_ai": 2.7,
+   "wall_clock_h_ai": 3.5,
    "ai_acceleration_factor": 10,
    "blocking_dependencies_h": 0,
    "estimate_method": "reference",
@@ -10459,7 +10473,7 @@
    "difficulty": "hard",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-017",
     "D-041",
@@ -10622,7 +10636,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-028",
     "D-040",
@@ -10782,7 +10796,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-028",
     "D-019",
@@ -10950,7 +10964,7 @@
    "difficulty": "hard",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-008",
     "D-024",
@@ -11137,7 +11151,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-012",
     "D-037",
@@ -11304,7 +11318,7 @@
    "difficulty": "hard",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-012",
     "D-012.7",
@@ -11489,7 +11503,7 @@
    "difficulty": "hard",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-008",
     "D-034",
@@ -11534,11 +11548,11 @@
   },
   {
    "id": "F-V3-C-clone-chat",
-   "name": "画面 自分のAIと話す（20 状態・4 役割）",
+   "name": "画面 自分のAIと話す（21 状態・4 役割）",
    "group": "C",
    "phase": "UI",
    "kind": "ui",
-   "role": "会話モード。指示・相談・数値の質問をここでする。左は会話の一覧（新しく話す・探す・星・記憶に残さない会話）、中央は会話。",
+   "role": "会話モード。指示・相談・数値の質問をここでする。左は会話の一覧（新しく話す・探す・星・記憶に使わない会話）、中央は会話。",
    "category": "ui",
    "acts": [
     "A20",
@@ -11577,7 +11591,7 @@
    ],
    "access_control_policies": [],
    "ears_ac_seed": [
-    "UBIQUITOUS: 画面 clone-chat はモック 06_mockup/v1/v1-clone-chat.html の状態 20（書式（表・コード・注意・数式・目次・出典）、図とデータ、実物のカード、資料（横で開く・PDF・表計算・画像ほか）、成果物（横で直す・版を戻す）、作業の記録（差分・コマンド・フォルダ））と役割 R1/R2/R3/R4 を実装し、h1 は「高本AIと話す」",
+    "UBIQUITOUS: 画面 clone-chat はモック 06_mockup/v1/v1-clone-chat.html の状態 21（書式（表・コード・注意・数式・目次・出典）、図とデータ、実物のカード、資料（横で開く・PDF・表計算・画像ほか）、成果物（横で直す・版を戻す）、作業の記録（差分・コマンド・フォルダ））と役割 R1/R2/R3/R4 を実装し、h1 は「高本AIと話す」",
     "EVENT-DRIVEN: WHEN 主アクション「送る」を押したとき THEN 対応する endpoint を呼び、結果を別 GET で再取得して画面に反映する"
    ],
    "depends_on": [
@@ -11724,7 +11738,7 @@
    "difficulty": "hard",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-106.1",
     "D-106.2",
@@ -11790,12 +11804,16 @@
     "D-104.17",
     "D-104.18",
     "D-104.19",
-    "D-104.20"
+    "D-104.20",
+    "D-119.4",
+    "D-120.2",
+    "D-120.3",
+    "D-120.4"
    ],
-   "estimate_hours_human": 60.0,
-   "estimate_hours_ai": 6.0,
+   "estimate_hours_human": 62.5,
+   "estimate_hours_ai": 6.2,
    "human_review_h": 0.0,
-   "wall_clock_h_ai": 6.0,
+   "wall_clock_h_ai": 6.2,
    "ai_acceleration_factor": 10,
    "blocking_dependencies_h": 0,
    "estimate_method": "reference",
@@ -11951,7 +11969,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-062",
     "D-037",
@@ -12113,7 +12131,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-007",
     "D-029",
@@ -12288,7 +12306,7 @@
    "difficulty": "hard",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-038",
     "D-039",
@@ -12459,7 +12477,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-038",
     "D-039",
@@ -12631,7 +12649,7 @@
    "difficulty": "hard",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-058",
     "D-032",
@@ -12819,7 +12837,7 @@
    "difficulty": "hard",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-058",
     "D-032",
@@ -12995,7 +13013,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-032",
     "D-034",
@@ -13159,7 +13177,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-058",
     "D-026",
@@ -13314,7 +13332,7 @@
    "difficulty": "hard",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-035",
     "D-006",
@@ -13475,7 +13493,7 @@
    "difficulty": "hard",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-035",
     "D-063",
@@ -13641,7 +13659,7 @@
    "difficulty": "hard",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-030",
     "D-022",
@@ -13808,7 +13826,7 @@
    "difficulty": "hard",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-060",
     "D-024",
@@ -13979,7 +13997,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-038",
     "D-039",
@@ -14166,7 +14184,7 @@
    "difficulty": "hard",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-010",
     "D-024",
@@ -14324,7 +14342,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-018",
     "D-014",
@@ -14545,7 +14563,7 @@
    "difficulty": "hard",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-042",
     "D-012",
@@ -14698,7 +14716,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-040",
     "D-041",
@@ -14875,7 +14893,7 @@
    "difficulty": "hard",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-026",
     "D-002",
@@ -15043,7 +15061,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-037",
     "D-027",
@@ -15248,7 +15266,7 @@
    "difficulty": "hard",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-037",
     "D-026",
@@ -15402,7 +15420,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-042",
     "D-015",
@@ -15533,7 +15551,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-081.5",
     "D-085.1",
@@ -15687,7 +15705,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-025",
     "D-050",
@@ -15849,7 +15867,7 @@
    "difficulty": "hard",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-042",
     "D-074.1",
@@ -16016,7 +16034,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-030",
     "D-042",
@@ -16185,7 +16203,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-037",
     "D-030",
@@ -16350,7 +16368,7 @@
    "difficulty": "hard",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-027",
     "D-037",
@@ -16523,7 +16541,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-076.1",
     "D-042",
@@ -16692,7 +16710,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-076.2",
     "D-042",
@@ -16815,7 +16833,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-081.3",
     "D-083.1",
@@ -16940,7 +16958,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-081.4",
     "D-084.1",
@@ -17095,7 +17113,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-076.3",
     "D-029",
@@ -17251,7 +17269,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-076.4",
     "D-041",
@@ -17405,7 +17423,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-076.5",
     "D-041",
@@ -17575,7 +17593,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-030.1",
     "D-030.2",
@@ -17738,7 +17756,7 @@
    "difficulty": "hard",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-075.1",
     "D-042",
@@ -17889,7 +17907,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-075.2",
     "D-075.3",
@@ -18064,7 +18082,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-075.4",
     "D-075.5",
@@ -18224,7 +18242,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-075.2",
     "D-077.4",
@@ -18396,7 +18414,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-075.4",
     "D-075.5",
@@ -18520,7 +18538,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-083.5",
     "D-083.6"
@@ -18641,7 +18659,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-085.1",
     "D-085.2",
@@ -18861,7 +18879,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-042",
     "D-037",
@@ -19025,7 +19043,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-027",
     "D-073.7",
@@ -19189,7 +19207,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-042",
     "D-073.7",
@@ -19351,7 +19369,7 @@
    "difficulty": "medium",
    "risk": "モックの状態と役割を落とす・API を呼ばずにダミーで描く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-026",
     "D-037",
@@ -19482,7 +19500,7 @@
    "difficulty": "hard",
    "risk": "stub・echo・境界で throw のまま「完了」に見える",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-010.1",
     "D-012.1",
@@ -19584,7 +19602,7 @@
    "difficulty": "hard",
    "risk": "stub・echo・境界で throw のまま「完了」に見える",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-073.1",
     "D-073.2",
@@ -19740,7 +19758,7 @@
    "difficulty": "hard",
    "risk": "stub・echo・境界で throw のまま「完了」に見える",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-043.2",
     "D-053.2"
@@ -19849,7 +19867,7 @@
    "difficulty": "hard",
    "risk": "stub・echo・境界で throw のまま「完了」に見える",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-075.1",
     "D-075.2",
@@ -19971,7 +19989,7 @@
    "difficulty": "hard",
    "risk": "stub・echo・境界で throw のまま「完了」に見える",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-074.1",
     "D-074.2",
@@ -20087,7 +20105,7 @@
    "difficulty": "hard",
    "risk": "stub・echo・境界で throw のまま「完了」に見える",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-078.1",
     "D-078.2",
@@ -20195,7 +20213,7 @@
    "difficulty": "hard",
    "risk": "stub・echo・境界で throw のまま「完了」に見える",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-043",
     "D-075.2",
@@ -20314,7 +20332,7 @@
    "difficulty": "hard",
    "risk": "stub・echo・境界で throw のまま「完了」に見える",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-075.4",
     "D-075.5",
@@ -20438,7 +20456,7 @@
    "difficulty": "hard",
    "risk": "stub・echo・境界で throw のまま「完了」に見える",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-001",
     "D-001.5",
@@ -20571,7 +20589,7 @@
    "difficulty": "hard",
    "risk": "stub・echo・境界で throw のまま「完了」に見える",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-003.7",
     "D-004",
@@ -20719,7 +20737,7 @@
    "difficulty": "hard",
    "risk": "stub・echo・境界で throw のまま「完了」に見える",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-003.1",
     "D-003.9",
@@ -20849,7 +20867,7 @@
    "difficulty": "hard",
    "risk": "stub・echo・境界で throw のまま「完了」に見える",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-002",
     "D-003.1",
@@ -20989,7 +21007,7 @@
    "difficulty": "hard",
    "risk": "stub・echo・境界で throw のまま「完了」に見える",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-003",
     "D-003.1",
@@ -21116,7 +21134,7 @@
    "difficulty": "hard",
    "risk": "stub・echo・境界で throw のまま「完了」に見える",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-003.7",
     "D-012",
@@ -21274,7 +21292,7 @@
    "difficulty": "hard",
    "risk": "stub・echo・境界で throw のまま「完了」に見える",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-002",
     "D-002.2",
@@ -21394,7 +21412,7 @@
    "difficulty": "hard",
    "risk": "stub・echo・境界で throw のまま「完了」に見える",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-010.7",
     "D-015",
@@ -21543,7 +21561,7 @@
    "difficulty": "hard",
    "risk": "stub・echo・境界で throw のまま「完了」に見える",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-002",
     "D-002.2",
@@ -21701,7 +21719,7 @@
    "difficulty": "hard",
    "risk": "stub・echo・境界で throw のまま「完了」に見える",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-053.2",
     "D-059.1"
@@ -21790,7 +21808,7 @@
    "difficulty": "medium",
    "risk": "専用接続の多用で接続上限に張り付く",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "(基盤)",
     "D-004.10"
@@ -21888,7 +21906,7 @@
    "difficulty": "medium",
    "risk": "",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-042.6",
     "D-042.8",
@@ -21967,7 +21985,7 @@
    "difficulty": "medium",
    "risk": "",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-049.1",
     "D-050.1",
@@ -22063,7 +22081,7 @@
    "difficulty": "medium",
    "risk": "",
    "status": "decided",
-   "decided_at": "2026-09-29",
+   "decided_at": "2026-10-01",
    "source": [
     "D-042.1",
     "D-042.10"
@@ -22138,8 +22156,8 @@
    ],
    "parallel": 10,
    "wall_clock_h_ai": 53.7,
-   "estimate_hours_human": 1484,
-   "estimate_hours_ai_compute": 355.8
+   "estimate_hours_human": 1481,
+   "estimate_hours_ai_compute": 355.0
   },
   {
    "wave": 3,
@@ -22159,8 +22177,8 @@
    ],
    "parallel": 10,
    "wall_clock_h_ai": 43.3,
-   "estimate_hours_human": 1016,
-   "estimate_hours_ai_compute": 218.2
+   "estimate_hours_human": 1013,
+   "estimate_hours_ai_compute": 217.4
   },
   {
    "wave": 4,
@@ -22179,9 +22197,9 @@
     "F-V3-C-approvals"
    ],
    "parallel": 10,
-   "wall_clock_h_ai": 6.5,
-   "estimate_hours_human": 225.5,
-   "estimate_hours_ai_compute": 22.6
+   "wall_clock_h_ai": 6.7,
+   "estimate_hours_human": 228.0,
+   "estimate_hours_ai_compute": 22.8
   },
   {
    "wave": 5,
@@ -22222,8 +22240,8 @@
    ],
    "parallel": 10,
    "wall_clock_h_ai": 4.5,
-   "estimate_hours_human": 199.0,
-   "estimate_hours_ai_compute": 19.9
+   "estimate_hours_human": 206.5,
+   "estimate_hours_ai_compute": 20.7
   },
   {
    "wave": 7,

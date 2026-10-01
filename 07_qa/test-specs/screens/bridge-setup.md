@@ -1,6 +1,6 @@
 # bridge-setup テスト仕様（L1・機械生成）
 
-> 05_flow/build_tasks.py がタスクと同時に生成。ID は変えない。途中変更は qa_delta.py で差分。結果列は staging で流した人が書く（再生成しても残る。今の行 61・結果あり 61 行）。
+> 05_flow/build_tasks.py がタスクと同時に生成。ID は変えない。途中変更は qa_delta.py で差分。結果列は staging で流した人が書く（再生成しても残る。今の行 64・結果あり 61 行）。
 
 | ID | 画面 | テスト観点 | テスト項目 | 前提条件 | 操作手順 | 期待結果 | 結果 | 備考 | タスク | 実行条件 |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -9,6 +9,9 @@
 | SCR-BRIDGE-SETUP-061 | bridge-setup | 状態 | 状態「アプリ（Bridge の窓）の中」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-bridge-setup.html の状態 inapp と一致 | PASS（screens/qa-b-bridge-setup.spec.ts・実 Chrome・2026-10-01） | G-06・G-07 | T-U-09 | L1 |
 | SCR-BRIDGE-SETUP-072 | bridge-setup | 状態 | 状態「Claude Code が無い」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-bridge-setup.html の状態 cc と一致 | PASS（screens/qa-b-bridge-setup.spec.ts・実 Chrome・2026-10-01） | G-06・G-07 | T-U-09 | L1 |
 | SCR-BRIDGE-SETUP-002 | bridge-setup | 状態 | 状態「つながった」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-bridge-setup.html の状態 ok と一致 | BLOCKED（この PC で本人の Bridge が動いている。止めると本人の仕事が止まるので流さない（BLOCKED：QA_STOP_REAL_BRIDGE=1 で止めて流す）・2026-09-28） | G-06・G-07 | T-U-09 | L1 |
+| SCR-BRIDGE-SETUP-107 | bridge-setup | 状態 | 状態「つながった・AI が Chrome を使えない」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-bridge-setup.html の状態 chromeoff と一致 |  | G-06・G-07 | T-U-09 | L1 |
+| SCR-BRIDGE-SETUP-108 | bridge-setup | 状態 | 状態「つながった・ブラウザを使わない設定」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-bridge-setup.html の状態 nobrowser と一致 |  | G-06・G-07 | T-U-09 | L1 |
+| SCR-BRIDGE-SETUP-109 | bridge-setup | 状態 | 状態「つながった・Bridge が古い」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-bridge-setup.html の状態 old と一致 |  | G-06・G-07 | T-U-09 | L1 |
 | SCR-BRIDGE-SETUP-062 | bridge-setup | 状態 | 状態「切れている（知らせが来ていない）」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-bridge-setup.html の状態 slp と一致 | PASS（screens/qa-b-bridge-setup.spec.ts・実 Chrome・2026-10-01） | G-06・G-07 | T-U-09 | L1 |
 | SCR-BRIDGE-SETUP-003 | bridge-setup | 状態 | 状態「つながらない」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-bridge-setup.html の状態 ng と一致 | BLOCKED（この PC で本人の Bridge が動いている。止めると本人の仕事が止まるので流さない（BLOCKED：QA_STOP_REAL_BRIDGE=1 で止めて流す）・2026-09-28） | G-06・G-07 | T-U-09 | L1 |
 | SCR-BRIDGE-SETUP-004 | bridge-setup | 状態 | 状態「運用中（設定として）」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-bridge-setup.html の状態 s と一致 | BLOCKED（運用中（アプリの枠）は時点 PS3 の導出＝結線 T-I-02 の後。今は はじめの設定の枠だけ） | G-06・G-07 | T-U-09 | L1 |

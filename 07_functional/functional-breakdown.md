@@ -1,4 +1,4 @@
-# Kaname 機能分解（functional-breakdown）v3.1 — 2026-09-29
+# Kaname 機能分解（functional-breakdown）v3.1 — 2026-10-01
 
 > 信頼源は 07_functional/*.json（05_flow/build_functional.py が機械生成）。この文書は写し。
 
@@ -6,7 +6,7 @@
 
 | 種別 | 件数 | 根拠（source）| 備考 |
 |---|---|---|---|
-| エンティティ | 105 | 全件 | ER図 §1〜§14 の表から。table_name・tenant_isolation・access_control_policies |
+| エンティティ | 104 | 全件 | ER図 §1〜§14 の表から。table_name・tenant_isolation・access_control_policies |
 | 機能 | 28 | 全件 | 用事 20 ＋ 関門 8。api_endpoints（下書き）・ears_ac_seed |
 | ロール | 5 | 全件 | 権限の型（誰に×何に×どの層で×できること）を access_predicate_expr で |
 | 画面 | 64 | 全件 | flow.json と 1 対 1。states はモックの状態タブ、transitions はモックのリンクから |
@@ -92,7 +92,6 @@
 | E-075 | `notices` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | ops_scoped | 1 | D-069 D-075 D-075.2 D-076 |
 | E-076 | `notice_deliveries` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 4 | D-069 D-075 D-076 |
 | E-077 | `status_incidents` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | ops_scoped | 1 | D-069 D-075 D-075.2 D-076 |
-| E-078 | `bridge_releases` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | ops_scoped | 1 | D-015 D-015.7 D-069 D-075 |
 | E-079 | `notification_preferences` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 4 | D-043 D-069 D-075 D-075.3 |
 | E-080 | `notifications` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 4 | D-043 D-069 D-075 D-076 |
 | E-081 | `plans` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | ops_scoped | 1 | D-069 D-075 D-076 D-076.6 |
@@ -177,7 +176,7 @@
 | password-reset | パスワードの再設定 | A31 | 3 | 1 | 2 | 6 | R1 R2 R3 |
 | onboard-interview | 自分のAIと話す | A06 | 5 | 5 | 6 | 5 | R1 R2 |
 | onboard-draft | たたき台を確かめる | A07 A08 | 3 | 5 | 7 | 14 | R1 R2 |
-| bridge-setup | 自分のPCをつなぐ | A09 | 8 | 48 | 49 | 3 | R1 R2 |
+| bridge-setup | 自分のPCをつなぐ | A09 | 11 | 48 | 49 | 2 | R1 R2 |
 | credentials | ログイン情報を預ける | A10 | 5 | 48 | 49 | 5 | R1 R2 |
 | onboard-testrun | テストで動かす | A11 | 3 | 5 | 6 | 6 | R1 R2 |
 | onboard-golive | 本番に切り替える | A12 | 2 | 6 | 7 | 10 | R1 R2 |
@@ -185,7 +184,7 @@
 | approvals | 承認待ち | A15 | 4 | 45 | 46 | 6 | R1 R2 R3 |
 | clone-thread | 自分のAIとAI社員のやりとり | A16 | 5 | 44 | 45 | 5 | R1 R2 R3 |
 | tasks | タスク | A17 A48 A50 A51 A57 A58 | 12 | 45 | 51 | 11 | R1 R2 R3 R4 |
-| clone-chat | 自分のAIと話す | A20 A88 A89 A90 A91 A95 | 20 | 45 | 51 | 16 | R1 R2 R3 R4 |
+| clone-chat | 自分のAIと話す | A20 A88 A89 A90 A91 A95 | 21 | 45 | 51 | 16 | R1 R2 R3 R4 |
 | ai-activity | AI社員の動き | A53 | 4 | 45 | 46 | 12 | R1 R2 R3 |
 | search | 探す | A21 | 3 | 47 | 48 | 8 | R1 R2 R3 R4 |
 | records | 台帳 | A24 A47 | 6 | 46 | 48 | 4 | R1 R2 R3 R4 |

@@ -103,7 +103,7 @@
   {
    "task_id": "T-D-11",
    "risk_type": "致命級（人のレビュー）",
-   "description": "データ層 12. 運営と顧客の間で往復するもの・自分で整えるもの（15 表・migration・RL",
+   "description": "データ層 12. 運営と顧客の間で往復するもの・自分で整えるもの（14 表・migration・RL",
    "mitigation": "human_review_h を持つ。上流を故意に壊す検証"
   },
   {

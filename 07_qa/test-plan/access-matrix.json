@@ -1,11 +1,11 @@
 {
  "version": "v3",
- "created_at": "2026-09-29",
+ "created_at": "2026-10-01",
  "_doc": "entities.json の access_control_policies × 場合（見える範囲／見えない層／他の会社／SET LOCAL 無し／権限なし）。1 行 1 test。pnpm ci:access-matrix が全行を実 Postgres で流す",
  "counts": {
-  "entities": 105,
-  "policies": 298,
-  "cases": 1121
+  "entities": 104,
+  "policies": 297,
+  "cases": 1118
  },
  "cases": [
   {
@@ -12865,51 +12865,6 @@
    "entity": "E-077",
    "table": "status_incidents",
    "policy": "status_incidents_ops_all",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "all",
-   "case": "SET LOCAL を飛ばす",
-   "expected": "NG（0 行）",
-   "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
-   "source": [
-    "D-073.7",
-    "D-077.4"
-   ]
-  },
-  {
-   "entity": "E-078",
-   "table": "bridge_releases",
-   "policy": "bridge_releases_ops_all",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "all",
-   "case": "運営の文脈",
-   "expected": "OK",
-   "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
-   "source": [
-    "D-073.7",
-    "D-077.4"
-   ]
-  },
-  {
-   "entity": "E-078",
-   "table": "bridge_releases",
-   "policy": "bridge_releases_ops_all",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "all",
-   "case": "会社の人（自社の文脈）",
-   "expected": "NG（0 行）",
-   "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
-   "source": [
-    "D-073.7",
-    "D-077.4"
-   ]
-  },
-  {
-   "entity": "E-078",
-   "table": "bridge_releases",
-   "policy": "bridge_releases_ops_all",
    "role": "ops",
    "role_ja": "運営（R6）",
    "operation": "all",

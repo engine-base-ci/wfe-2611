@@ -1,7 +1,7 @@
 {
  "version": "v3",
  "skill": "test-verification",
- "created_at": "2026-09-29",
+ "created_at": "2026-10-01",
  "_doc": "08_api/ears-ac-seed.json の 1 文 = 1 test。05_flow/build_testplan.py が生成。tickets の tier_2 と同じ文なので、実装者は tasks の列で自分の分を引く",
  "generator": "packages/api/test/generate_from_ears.ts（EARS の文 → vitest/jest の骨組み。EVENT-DRIVEN=正常・UNWANTED=異常・UBIQUITOUS=契約の形）",
  "counts": {
@@ -4590,7 +4590,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/conversations が「会話を分けて始める・一覧から戻る」として呼ばれたとき THEN Kaname は「conversations に 1 行（agent_session_id は最初の返事で決まる）。一覧・探す（本文の PGroonga）・星・名前を直す・消す・記憶に残さない会話（毎朝のまとめから外す）」を行い 2xx を返す（自動側：新しい会話は Claude Code の新しいセッション。名前は最初の一言から自分のAIが付ける）",
+   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/conversations が「会話を分けて始める・一覧から戻る」として呼ばれたとき THEN Kaname は「conversations に 1 行（agent_session_id は最初の返事で決まる）。一覧・探す（本文の PGroonga）・星・名前を直す・消す・記憶に使わない会話（毎朝のまとめから外す）」を行い 2xx を返す（自動側：新しい会話は Claude Code の新しいセッション。名前は最初の一言から自分のAIが付ける）",
    "test_file": "apps/api/test/generated/post_conversations.test.ts",
    "test_function": "test_post_conversations_ok",
    "test_level": "contract+integration",
