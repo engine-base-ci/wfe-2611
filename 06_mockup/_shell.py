@@ -304,19 +304,25 @@ SHELL_CSS = THREADLIST_CSS + CONFIRM_CSS + """
 }
 @media(max-width:767px){.mockbar .states{max-width:100%;flex-basis:100%;order:9}}
 
-/* 第2ナビの中身（会話の一覧）は 1179 以下で左からの引き出し（D-064.7）。右の自分のAIのパネルと同じ「重なる引き出し」の型。
-   開きっぱなしの重なるパネルは本文を隠す（2026-10-01 user「レスポンシブ全くできていない」） */
+/* 第2ナビの中身（会話の一覧）は 1179 以下で左からの引き出し（D-064.7）。タイトル左のアイコンで開き、選ぶ・外を押す・Esc で閉じる。
+   出し方：左から滑り出し（.22s・ease-out）、幕はフェード。閉じるときも滑って消える（2026-10-01 user「カクカク」）。右のパネルも同じ動き */
 .shell .sub-toggle{display:none}   /* .shell .btn より強く（1180 以上では左の列にあるので出さない） */
 .sub-scrim{display:none}
 @media(max-width:1179px){
-  .shell .sub-toggle{display:inline-flex}
-  .sub-toggle[aria-expanded="true"]{background:var(--primary-c)}
-  .sub-scrim{display:block;position:fixed;inset:34px 0 0 0;z-index:56;background:rgba(0,0,0,.25)}
-  .sub-scrim[hidden]{display:none}
-  .shell .subnav.has-body{display:none;position:fixed;left:72px;top:34px;bottom:0;width:280px;height:auto;z-index:57;overflow-y:auto;background:var(--card);border-right:1px solid var(--line);border-bottom:0;box-shadow:8px 0 24px rgba(0,0,0,.12)}
-  .shell .subnav.has-body.open{display:block}
+  .shell .sub-toggle{display:inline-flex;width:36px;height:36px;padding:0;margin-left:-8px;flex:none;border-radius:var(--r-md)}
+  .shell .sub-toggle svg{width:18px;height:18px}
+  .shell .sub-toggle[aria-expanded="true"]{background:var(--sv);color:var(--on-surface)}
+  .sub-scrim{display:block;position:fixed;inset:34px 0 0 0;z-index:56;background:rgba(20,24,36,.28);opacity:1;transition:opacity .22s ease}
+  .sub-scrim[hidden]{display:block;opacity:0;pointer-events:none}
+  .shell .subnav.has-body{display:block;position:fixed;left:72px;top:34px;bottom:0;width:280px;height:auto;z-index:57;overflow-y:auto;background:var(--card);border-right:0;border-bottom:0;border-radius:0 var(--r-lg) var(--r-lg) 0;box-shadow:0 16px 40px rgba(0,0,0,.16);visibility:hidden;transform:translateX(calc(-100% - 24px));transition:transform .22s cubic-bezier(.16,1,.3,1),visibility 0s .22s}
+  .shell .subnav.has-body.open{visibility:visible;transform:none;transition:transform .22s cubic-bezier(.16,1,.3,1),visibility 0s}
   .shell .subnav.has-body .subnav-b[data-sub-body]{display:block;padding:14px 12px;overflow:visible}
+  .shell .side-sub[data-last]{transition:transform .22s cubic-bezier(.16,1,.3,1),visibility 0s;border-radius:0 var(--r-lg) var(--r-lg) 0;box-shadow:0 16px 40px rgba(0,0,0,.16)}
+  .shell .side-sub[data-last][hidden]{display:flex;visibility:hidden;transform:translateX(calc(-100% - 24px));transition:transform .22s cubic-bezier(.16,1,.3,1),visibility 0s .22s}
+  .shell .aipanel.on{display:flex;visibility:hidden;transform:translateX(calc(100% + 24px));transition:transform .22s cubic-bezier(.16,1,.3,1),visibility 0s .22s}
+  .shell.panel-open .aipanel.on{visibility:visible;transform:none;transition:transform .22s cubic-bezier(.16,1,.3,1),visibility 0s}
 }
+@media(max-width:1179px){.shell:not([data-nav-ready]) .side-sub,.shell:not([data-nav-ready]) .subnav.has-body,.shell:not([data-nav-ready]) .aipanel{visibility:hidden!important;transition:none!important}}   /* 組み上がる前は引き出しを閉じたまま動かさない */
 @media(max-width:767px){.shell .subnav.has-body{left:0;width:min(320px,88vw)}}
 /* 1179 以下：見出しの帯は上に貼り付く（下へ読み進めても一覧を開ける・2026-10-01）。手本：Claude・ChatGPT の狭い幅＝上の帯は固定・一覧は左の引き出し・入力欄は下に固定 */
 @media(max-width:1179px){
@@ -375,7 +381,7 @@ def _page(ver, sid, states, extra_css="", actions_extra="", no_shell=False, coun
 
     primary = f'<button class="btn btn-p">{ic("check")}{s["primary_action"]}</button>'
     # 第2ナビの中身（会話の一覧）を 1179 以下で引き出しとして開く（D-064.7）。1180 以上では出ない（左の列にある）
-    sub_btn = (f'<button class="btn btn-o sub-toggle" aria-expanded="false" aria-controls="subnav" data-sub-toggle>{ic("panel-left")}<span>会話の一覧</span></button>'
+    sub_btn = (f'<button class="btn btn-g sub-toggle" aria-label="会話の一覧" title="会話の一覧" aria-expanded="false" aria-controls="subnav" data-sub-toggle>{ic("panel-left")}</button>'
                if isinstance(sub, str) else "")
     ai_btn = "" if (no_shell or sid in ("clone-chat", "clone-thread")) else (   # 会話そのものが本文の画面に、もう 1 つの会話を並べない
         f'<button class="btn btn-o ap-toggle" aria-pressed="false" data-requires="ai app">{ic("clone")}<span class="ap-name">高本AI</span><span class="ap-unread" title="見ていない間の返事" data-requires="model">1</span></button>'
@@ -384,10 +390,10 @@ def _page(ver, sid, states, extra_css="", actions_extra="", no_shell=False, coun
     same = f'<!-- role-same: {ROLE_SAME[sid]} -->' if sid in ROLE_SAME else ''
     cv = COVER.get(sid, {}); same += ('<!-- cover: ' + ' '.join(f'{k}={v}' for k, v in cv.items() if k != 'na') + ' -->' if any(k != 'na' for k in cv) else '') + _cover_na(cv.get('na'))   # G18：時点の被覆の宣言   # G15：役割ごとに同じ中身でよいと決めた宣言
     # 見出しの帯：第2ナビと本文の上にまたがる 1 つだけ（2026-09-30 user「同じ文章が 2 回・ヘッドはパネルの幅も」）
-    head = (f'<header class="shead"><div class="topbar"><div class="tt">'
+    head = (f'<header class="shead"><div class="topbar">{sub_btn}<div class="tt">'
             f'<div class="crumb">{crumb}<span class="path" style="font-size:11px;font-family:ui-monospace,SFMono-Regular,monospace;margin-left:8px">{s.get("route", "")}</span></div>'
             f'<h1 title="{s["purpose"]}">{s["name"]}</h1></div>'
-            f'<div class="sp"></div>{sub_btn}{ai_btn}{actions_extra}{primary}</div>'
+            f'<div class="sp"></div>{ai_btn}{actions_extra}{primary}</div>'
             f'<div class="purpose">{ic("info")}<div title="{s["purpose"]}">{s["purpose"]}</div></div></header>')
     main = (f'{same}<main class="main">'
             f'{tabs}<div class="content">{panes}</div>{foot}</main>')
@@ -477,6 +483,7 @@ if(!document.querySelector('.subnav[data-mode="anchors"]'))
  const closeAll=()=>{{document.querySelectorAll('.side-grp.open').forEach(b=>{{b.classList.remove('open');b.setAttribute('aria-expanded','false');const sub=b.parentElement.querySelector('.side-sub[data-sec="'+b.dataset.sec+'"]');if(sub) sub.hidden=true;}}); const sc=document.querySelector('[data-side-scrim]'); if(sc) sc.hidden=true;}};
  window.railCloseAll=closeAll;
  if(tab.matches) closeAll();
+ requestAnimationFrame(()=>requestAnimationFrame(()=>{{ if(sh) sh.setAttribute('data-nav-ready',''); }}));   // 閉じた状態を描いてから動きを有効にする
  mq.addEventListener('change',()=>{{ if(tab.matches) closeAll(); }});   // 幅が変わってレールになった瞬間も閉じる（開きっぱなしで本文に重ねない・D-064.7）
  document.addEventListener('click',e=>{{ if(tab.matches && !e.target.closest('.side-nav')) closeAll(); }});
  document.addEventListener('keydown',e=>{{ if(tab.matches && e.key==='Escape') closeAll(); }});

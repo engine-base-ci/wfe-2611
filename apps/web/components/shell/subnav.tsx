@@ -1,5 +1,5 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/cn";
 import { NAV } from "@/lib/nav";
 import { useShell } from "./context";
@@ -19,6 +19,23 @@ export function SubNav({
 }) {
   // 見出し（くくり・画面名・説明）は本文の上の帯に 1 つだけ（app-shell の .shead）。ここでは出さない（2026-09-30 user「同じ文章が 2 回」）
   const { screenId, subMode, counts, subOpen, setSubOpen } = useShell();
+  // 動きは、中身（一覧）が付いて閉じた状態を 1 度描いてから（付いた瞬間に横帯から引き出しへ変わるので、そのまま動かすと一瞬滑って消える）
+  const hasBody = !!body;
+  const [anim, setAnim] = useState(false);
+  useEffect(() => {
+    if (!hasBody) {
+      setAnim(false);
+      return;
+    }
+    let id2 = 0;
+    const id = requestAnimationFrame(() => {
+      id2 = requestAnimationFrame(() => setAnim(true));
+    });
+    return () => {
+      cancelAnimationFrame(id);
+      cancelAnimationFrame(id2);
+    };
+  }, [hasBody]);
   // 1179 以下では、中身（会話の一覧）は左からの引き出し（D-064.7）。見出しの行の「会話の一覧」で開き、選ぶ・外を押す・Esc で閉じる
   useEffect(() => {
     if (!body || !subOpen) return;
@@ -41,6 +58,7 @@ export function SubNav({
         data-requires="app"
         aria-label="第2ナビ"
         id="subnav"
+        data-anim={anim ? "" : undefined}
       >
         {body ? (
           <div

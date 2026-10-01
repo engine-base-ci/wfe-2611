@@ -53,10 +53,7 @@ export function Sidebar({ who }: { who?: { initials: string; name: string; org: 
   }, []);
   useEffect(() => {
     if (!rail) return;
-    const close = () => {
-      setOpened(new Set());
-      setLast(null);
-    };
+    const close = () => setOpened(new Set()); // data-last は残す（閉じるときも滑って消える）
     const onDoc = (e: MouseEvent) => {
       if (!(e.target as Element | null)?.closest?.(".side-nav")) close();
     };
@@ -90,14 +87,7 @@ export function Sidebar({ who }: { who?: { initials: string; name: string; org: 
     <aside className="side" data-role={role} data-requires="app" aria-label="主ナビ">
       {/* レールの引き出しが開いている間の幕：外を押すと閉じる（引き出しだと分かる・本文に重なったままにしない） */}
       {rail && last && opened.has(last) ? (
-        <div
-          className="sub-scrim"
-          data-side-scrim
-          onClick={() => {
-            setOpened(new Set());
-            setLast(null);
-          }}
-        />
+        <div className="sub-scrim" data-side-scrim onClick={() => setOpened(new Set())} />
       ) : null}
       <div className="side-brand">
         <KanameMark className="side-mark" />
@@ -165,10 +155,7 @@ export function Sidebar({ who }: { who?: { initials: string; name: string; org: 
                 data-last={last === key ? "" : undefined}
                 onClick={(e) => {
                   // 引き出しの中の画面を押したら閉じる（レールのときだけ。列のときは開いたまま）
-                  if (rail && (e.target as Element).closest("a")) {
-                    setOpened(new Set());
-                    setLast(null);
-                  }
+                  if (rail && (e.target as Element).closest("a")) setOpened(new Set());
                 }}
               >
                 {hit.map((m) => {

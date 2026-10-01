@@ -28,7 +28,8 @@ async function overlapping(page: Page): Promise<string[]> {
     const hits: string[] = [];
     for (const el of document.querySelectorAll<HTMLElement>("body *")) {
       const cs = getComputedStyle(el);
-      if (cs.position !== "fixed" || cs.display === "none" || cs.visibility === "hidden") continue;
+      // 見えない・触れないもの（閉じた引き出し・消えた幕）は重なっていない
+      if (cs.position !== "fixed" || cs.display === "none" || cs.visibility === "hidden" || cs.opacity === "0" || cs.pointerEvents === "none") continue;
       if (el.closest(".tabbar") || el.closest("[popover]") || el.closest(".kc")) continue; // 下タブ・入力欄の箱・会話の中は除く
       const b = el.getBoundingClientRect();
       if (b.width < 8 || b.height < 8) continue;
@@ -92,7 +93,7 @@ test("SCR-CLONE-CHAT-295 幅 1180 以上：一覧は左の列。「会話の一�
 test("D-064.7 幅 955：レールの分類の引き出しは既定で閉じ、押すと 1 つ出て、外を押す・Esc で閉じる", async ({ page }) => {
   await ready(page, 955);
   const drawer = page.locator(".side-sub[data-last]");
-  await expect(drawer).toHaveCount(0);
+  await expect(drawer).toHaveCount(0); // 一度も押していなければ無い
   await page.locator(".side-grp", { hasText: "自分のAI" }).click();
   await expect(drawer).toBeVisible();
   await expect(drawer).toHaveCSS("position", "fixed");
@@ -101,7 +102,7 @@ test("D-064.7 幅 955：レールの分類の引き出しは既定で閉じ、�
   expect(top, "引き出しの頭が見出しの下に潜っている").toBe(true);
   // 会話の一覧を開いてから分類を押すと、一覧は閉じる（左に 2 枚重ねない）
   await page.locator("[data-side-scrim]").click({ position: { x: 700, y: 300 } });
-  await expect(page.locator(".side-sub[data-last]")).toHaveCount(0);
+  await expect(page.locator(".side-sub[data-last]")).toBeHidden();
   await page.getByRole("button", { name: "会話の一覧" }).click();
   await expect(page.locator('[data-part="conversation-list"]')).toBeVisible();
   await page.locator(".side-grp", { hasText: "自分のAI" }).click();
@@ -110,10 +111,10 @@ test("D-064.7 幅 955：レールの分類の引き出しは既定で閉じ、�
   // 外を押す（引き出しの外は幕が受ける）→ 閉じる
   await expect(page.locator("[data-side-scrim]")).toBeVisible();
   await page.locator("[data-side-scrim]").click({ position: { x: 700, y: 300 } });
-  await expect(drawer).toHaveCount(0);
+  await expect(drawer).toBeHidden(); // 閉じたあとも滑って消えるために残る（見えない）
   await page.locator(".side-grp", { hasText: "仕事" }).click();
   await expect(page.locator(".side-sub[data-last]")).toBeVisible();
   await page.keyboard.press("Escape");
-  await expect(page.locator(".side-sub[data-last]")).toHaveCount(0);
+  await expect(page.locator(".side-sub[data-last]")).toBeHidden();
   expect(await overlapping(page)).toEqual([]);
 });

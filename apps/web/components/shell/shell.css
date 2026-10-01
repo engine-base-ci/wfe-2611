@@ -926,8 +926,9 @@
 .tl-foot .muted{display:block;color:var(--on-sv);font-size:11px;line-height:1.6;margin-top:2px}
 @media(max-width:767px){.tl-search input,.tl-rename input{font-size:16px}}
 
-/* 第2ナビの中身（会話の一覧）は 1179 以下で左からの引き出し（D-064.7）。見出しの行の「会話の一覧」で開き、選ぶ・外を押す・Esc で閉じる。
-   開きっぱなしの重なるパネルは本文を隠す（2026-10-01 user「レスポンシブ全くできていない」）。右の自分のAIのパネルと同じ「重なる引き出し」の型 */
+/* 第2ナビの中身（会話の一覧）は 1179 以下で左からの引き出し（D-064.7）。タイトル左のアイコンで開き、選ぶ・外を押す・Esc で閉じる。
+   出し方：左から滑り出し（.22s・ease-out）、幕はフェード。閉じるときも滑って消える（display の切り替えで一瞬で出さない：2026-10-01 user「カクカク」）。
+   右の自分のAIのパネル（1179 以下）も同じ動き。prefers-reduced-motion では globals.css が動きを止める */
 .shell .sub-toggle {
   display: none; /* .shell .btn より強く（1180 以上では左の列にあるので出さない） */
 }
@@ -937,22 +938,37 @@
 @media (max-width: 1179px) {
   .shell .sub-toggle {
     display: inline-flex;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    margin-left: -8px;
+    flex: none;
+    border-radius: var(--r-md);
   }
-  .sub-toggle[aria-expanded="true"] {
-    background: var(--primary-c);
+  .shell .sub-toggle svg {
+    width: 18px;
+    height: 18px;
+  }
+  .shell .sub-toggle[aria-expanded="true"] {
+    background: var(--sv);
+    color: var(--on-surface);
   }
   .sub-scrim {
     display: block;
     position: fixed;
     inset: 0;
     z-index: 56;
-    background: rgba(0, 0, 0, 0.25);
+    background: rgba(20, 24, 36, 0.28);
+    opacity: 1;
+    transition: opacity 0.22s ease;
   }
   .sub-scrim[hidden] {
-    display: none;
+    display: block;
+    opacity: 0;
+    pointer-events: none;
   }
   .shell .subnav.has-body {
-    display: none;
+    display: block;
     position: fixed;
     left: 72px;
     top: 0;
@@ -962,17 +978,69 @@
     z-index: 57;
     overflow-y: auto;
     background: var(--card);
-    border-right: 1px solid var(--line);
+    border-right: 0;
     border-bottom: 0;
-    box-shadow: 8px 0 24px rgba(0, 0, 0, 0.12);
+    border-radius: 0 var(--r-lg) var(--r-lg) 0;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.16);
+    visibility: hidden;
+    transform: translateX(calc(-100% - 24px));
+    transition:
+      transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+      visibility 0s 0.22s;
   }
   .shell .subnav.has-body.open {
-    display: block;
+    visibility: visible;
+    transform: none;
+    transition:
+      transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+      visibility 0s;
   }
   .shell .subnav.has-body .subnav-b[data-sub-body] {
     display: block;
     padding: 14px 12px;
     overflow: visible;
+  }
+  /* 分類（レール）の引き出しも同じ動き。閉じたあとも data-last が残るので滑って消える */
+  .shell[data-frame="app"] .side-sub[data-last] {
+    transition:
+      transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+      visibility 0s;
+    border-radius: 0 var(--r-lg) var(--r-lg) 0;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.16);
+  }
+  .shell[data-frame="app"] .side-sub[data-last][hidden] {
+    display: flex;
+    visibility: hidden;
+    transform: translateX(calc(-100% - 24px));
+    transition:
+      transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+      visibility 0s 0.22s;
+  }
+  /* 右の自分のAIのパネルも右から滑り出す */
+  .shell[data-frame="app"] .aipanel.on {
+    display: flex;
+    visibility: hidden;
+    transform: translateX(calc(100% + 24px));
+    transition:
+      transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+      visibility 0s 0.22s;
+  }
+  .shell[data-frame="app"].panel-open .aipanel.on {
+    visibility: visible;
+    transform: none;
+    transition:
+      transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+      visibility 0s;
+  }
+}
+@media (max-width: 1179px) {
+  /* 組み上がる前（SSR の最初の描画）は引き出しを閉じたまま、動かさない */
+  .shell:not([data-nav-ready]) .side-sub,
+  .shell:not([data-nav-ready]) .subnav.has-body,
+  .shell .subnav.has-body:not([data-anim]),
+  .shell:not([data-nav-ready]) .aipanel {
+    visibility: hidden !important;
+    transition: none !important;
   }
 }
 @media (max-width: 767px) {

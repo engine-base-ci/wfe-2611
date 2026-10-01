@@ -1,7 +1,7 @@
 "use client";
 // 共通シェル（T-US-01）。枠は導出（外／はじめの設定／アプリ）。全画面がこれを通る（画面ごとにナビを手書きしない）
 import type { ReactNode } from "react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NAV } from "@/lib/nav";
 import { cn } from "@/lib/cn";
 import { useShell } from "./context";
@@ -33,6 +33,9 @@ export function AppShell({ children, panel: panelProp, selected, primary, subAct
   const { frame, layout, subMode, panelOpen, screenId, role } = useShell();
   const hasPanel = !!panel;
   const ref = useRef<HTMLDivElement>(null);
+  // 動きは組み上がってから（SSR の最初の描画では引き出しは閉じたまま・滑り出しもしない。1179 以下で開いた分類が一瞬見えて滑って消えていた）
+  const [navReady, setNavReady] = useState(false);
+  useEffect(() => setNavReady(true), []);
   // 本文の最小幅（D-070）：幅 − サイドバー − 第2ナビ（列のとき）− パネル（開いているとき）− 一覧（三画面）が 720 を下回るなら第2ナビを上の帯（chips）に畳む
   useEffect(() => {
     const el = ref.current;
@@ -69,6 +72,7 @@ export function AppShell({ children, panel: panelProp, selected, primary, subAct
         className={cn("shell", panelOpen && panel && "panel-open")}
         data-frame={frame}
         data-layout={layout}
+        data-nav-ready={navReady ? "" : undefined}
       >
         {frame === "app" ? <Sidebar {...(who ? { who } : {})} /> : null}
         {/* 見出しの帯：左パネル（第2ナビ）と本文の上にまたがって 1 つだけ（2026-09-30 user「同じ文章が 2 回・ヘッドはパネルの幅も」）。

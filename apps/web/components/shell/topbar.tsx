@@ -30,18 +30,6 @@ export function TopBar({
   const nobridge = caps.includes("nobridge");
   const btns = (
     <>
-      {subToggle ? (
-        <button
-          type="button"
-          className="btn btn-o sub-toggle"
-          aria-expanded={subOpen}
-          aria-controls="subnav"
-          data-sub-toggle
-          onClick={() => setSubOpen(!subOpen)}
-        >
-          <PanelLeft /> <span>会話の一覧</span>
-        </button>
-      ) : null}
       {aiOk ? (
         <button
           type="button"
@@ -82,6 +70,21 @@ export function TopBar({
   return (
     <>
       <div className="topbar">
+        {/* 一覧を開く：タイトルの左のアイコン（Claude・ChatGPT の狭い幅と同じ置き場）。1180 以上では出ない（左の列にある） */}
+        {subToggle ? (
+          <button
+            type="button"
+            className="btn btn-g sub-toggle"
+            aria-label="会話の一覧"
+            title="会話の一覧"
+            aria-expanded={subOpen}
+            aria-controls="subnav"
+            data-sub-toggle
+            onClick={() => setSubOpen(!subOpen)}
+          >
+            <PanelLeft />
+          </button>
+        ) : null}
         <div className="tt">
           <div className="crumb">{crumb}</div>
           <h1 title={s.purpose}>{s.name}</h1>
