@@ -120,3 +120,4 @@ export class NotifyGateway {
 }
 
 export { resendMail, resendTransport, type MailLike } from "./resend.js";
+export { mailSignature, withSignature, signedMail, type Operator } from "./signature.js";

@@ -1,16 +1,17 @@
 // API の起動口（T-F-18）。設定（packages/config）→ DB のプール・認証・関門 → 起動時の存在確認（G-11）→ HTTP。
-// 画面は API を叩くだけ（D-043.3）。Railway の Dockerfile はこれを `pnpm api:start` で動かす。存在確認に落ちたら起動しない（黙って 502 を返さない）
+// 画面は API を叩くだけ（D-043.3）。常駐（ローカル・Docker）はこれを `pnpm api:start` で動かし、Vercel は vercel.ts が bootApi だけ使う（D-097）。存在確認に落ちたら起動しない（黙って 502 を返さない）
 import { serve, type ServerType } from "@hono/node-server";
 import { loadConfig, type Config, type StartupReport } from "@kaname/config";
 import { createPool } from "@kaname/db/pool";
+import { createMemberHub } from "@kaname/db/listen";
 import { createRepository } from "@kaname/db/repository";
 import { createAuth } from "@kaname/auth";
 import { createSessionResolver } from "@kaname/auth/resolver";
-import { s3Client, s3Driver } from "@kaname/storage";
+import { ObjectStore, s3Client, s3Driver, type StorageDriver } from "@kaname/storage";
 import { createApp } from "./app.js";
 import { authExt } from "./auth/ext.js";
-import { MemoryVault, SecretsGateway, type Vault } from "@kaname/secrets";
-import { resendMail } from "@kaname/notify";
+import { InfisicalVault, MemoryVault, SecretsGateway, type Vault } from "@kaname/secrets";
+import { resendMail, signedMail } from "@kaname/notify";
 import { assertApiStartup } from "./startup.js";
 
 export interface BootOptions {
@@ -19,6 +20,11 @@ export interface BootOptions {
   version?: string;
   /** 秘密の保管先（既定 MemoryVault＝開発。staging／本番は Infisical のドライバを差す） */
   vault?: Vault;
+  /** DB のプールの本数（業務・認証）。常駐のサーバーは 10／5、Vercel の関数は 1 つにつき 3／2
+   *  （関数は同時にいくつも立つ。常駐と同じ本数だと 同時の数 × 15 本で接続の上限を食い潰す・G-16・D-097） */
+  poolMax?: { app: number; auth: number };
+  /** 資料の置き場のドライバ（既定は S3 互換。開発で S3 が無いときはローカルのフォルダ・dev.ts） */
+  storageDriver?: StorageDriver;
 }
 export interface Booted {
   app: ReturnType<typeof createApp>;
@@ -28,10 +34,11 @@ export interface Booted {
 
 /** 設定から API を組み立て、存在確認を通す。落ちたら例外（起動しない） */
 export async function bootApi(config: Config, o: BootOptions = {}): Promise<Booted> {
-  const appPool = createPool({ databaseUrl: config.databaseUrl, max: 10 });
+  const appPool = createPool({ databaseUrl: config.databaseUrl, max: o.poolMax?.app ?? 10 });
   const repo = await createRepository(appPool);
   // メールの送出（関門 C6）：Resend の鍵があれば送る。無ければ URL をログに出す（開発）
-  const mail = config.resendApiKey ? resendMail(config.resendApiKey) : null;
+  // 署名（会社名・代表者名・問い合わせ）と返信先（info@）は、ここで全部のメールに付ける（D-096・関門 C6）
+  const mail = config.resendApiKey ? signedMail(resendMail(config.resendApiKey), config.operator, config.mailReplyTo) : null;
   // 送出は 1 か所。認証（再設定）と保留の申し込み（確認）の両方がこれを通る
   const mailer = mail
     ? async (m: { to: string; subject: string; text: string }) => {
@@ -44,7 +51,7 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
             return;
           }
           // send は投げずに { error } を返す。見ないと拒否されても「送った」になる（G-15）
-          const r = await mail.send({ from: config.mailFrom, to: m.to, subject: m.subject, text: m.text });
+          const r = await mail.send({ from: config.mailFrom, to: m.to, subject: m.subject, text: m.text });   // 署名と返信先は signedMail が付ける
           if (r.error) throw new Error(r.error.message);
           console.log(`[mail] 送った → ${m.to}（${m.subject}）`);
         } catch (e) {
@@ -56,25 +63,42 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
   const { auth, pool: authPool } = createAuth({
     authDatabaseUrl: config.authDatabaseUrl,
     appPool,
+    ...(o.poolMax ? { poolMax: o.poolMax.auth } : {}),
     secret: config.authSecret,
     baseURL: config.baseUrl,
     ...(config.webBaseUrl ? { webBaseURL: config.webBaseUrl } : {}),
     ...(mailer ? { mailer } : {}),
   });
-  // 秘密の保管（関門 C8）：staging／本番は Infisical、ローカルは MemoryVault（再起動で消える＝開発だけ）
-  const secrets = new SecretsGateway(
-    repo,
-    o.vault ?? new MemoryVault(),
-    Buffer.from(config.secretsMasterKey, "base64"),
-  );
-  const bucketExists = o.bucketExists ?? s3Driver(s3Client(config.storage), config.storage.bucket).exists;
+  // 秘密の保管（関門 C8・D-101）：設定があれば Infisical、無ければ MemoryVault（再起動で消える＝開発だけ）。
+  // staging／本番で Infisical が無い・入れないなら起動時の確認で落とす（startup.ts の secrets:vault）
+  // 上限の 8 割に来たら運営に知らせる（D-102.5）。メールは 1 つの実体につき 1 時間に 1 回まで
+  let nearLimitMailedAt = 0;
+  const onNearLimit = (u: { perMinute: number; limit: number }): void => {
+    console.warn(`[ops] Infisical の秘密の操作が上限の 8 割（${u.perMinute}／毎分 ${u.limit}）`);
+    if (!mailer || Date.now() - nearLimitMailedAt < 3_600_000) return;
+    nearLimitMailedAt = Date.now();
+    void mailer({
+      to: config.opsEmail,
+      subject: "Kaname｜資格情報の置き場（Infisical）の上限に近づいています",
+      text: `直近 1 分の秘密の操作が ${u.perMinute} 回で、上限（毎分 ${u.limit} 回）の 8 割に来ました。\n当たると利用者の保存・実行が「混み合っています」で止まります。\n続くようなら Pro（毎分 300 回）にするか、自分で動かすかを決めてください（決定ログ §102）。`,
+    }).catch(() => undefined);
+  };
+  const vault = o.vault ?? (config.infisical ? new InfisicalVault({ ...config.infisical, onNearLimit }) : new MemoryVault());
+  const secrets = new SecretsGateway(repo, vault, Buffer.from(config.secretsMasterKey, "base64"));
+  const s3 = s3Driver(s3Client(config.storage), config.storage.bucket);
+  const bucketExists = o.bucketExists ?? s3.exists;
+  // 資料の置き場（関門 C4・D-104.11）。署名は資格情報の鍵とは別の用途の鍵から作る
+  const objects = new ObjectStore(repo, o.storageDriver ?? s3, { signingSecret: `${config.authSecret}:files` });
+  // 会話が変わった知らせを受ける 1 本（D-113・台帳 X-008）。URL が無ければ持たない（画面は見に行く形のまま）
+  const hub = config.listenDatabaseUrl ? createMemberHub({ url: config.listenDatabaseUrl }) : null;
   const close = async () => {
+    await hub?.close();
     await authPool.end();
     await appPool.end();
   };
   let report: StartupReport;
   try {
-    report = await assertApiStartup({ config, repo, bucketExists });
+    report = await assertApiStartup({ config, repo, bucketExists, vault });
   } catch (e) {
     await close();
     throw e;
@@ -84,7 +108,7 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
     repo,
     auth,
     resolve: createSessionResolver(auth, appPool),
-    authExt: authExt({ auth, appPool, authPool, repo, secrets, config, ...(mailer ? { mailer } : {}) }),
+    authExt: authExt({ auth, appPool, authPool, repo, secrets, objects, config, hub, ...(mailer ? { mailer } : {}) }),
     corsOrigin: config.webOrigins.join(","),
   });
   return { app, report, close };

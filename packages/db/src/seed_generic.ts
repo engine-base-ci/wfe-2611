@@ -41,6 +41,16 @@ export async function seedGenericRows(
     )
   ).rows)
     pks.set(r.t, r.c);
+  // 値の候補が CHECK で決まっている列（kind in ('init', …) 等）は、候補の先頭を種にする（"seed" では通らない）
+  const allowed = new Map<string, string>(); // `${table}.${col}` → 最初の候補
+  for (const r of (
+    await c.query<{ t: string; def: string }>(
+      "select conrelid::regclass::text as t, pg_get_constraintdef(oid) as def from pg_constraint where contype = 'c' and connamespace = 'public'::regnamespace",
+    )
+  ).rows) {
+    const m = /\(?(\w+) = ANY \(ARRAY\['([^']*)'/.exec(r.def);
+    if (m) allowed.set(`${r.t}.${m[1]}`, m[2]!);
+  }
   const tables = [...new Set(cols.map((x) => x.table))].filter((t) => !explicit.has(t));
   const colsOf = (t: string) => cols.filter((x) => x.table === t);
   const fkOf = (t: string, col: string) => fks.find((f) => f.table === t && f.col === col);
@@ -54,7 +64,22 @@ export async function seedGenericRows(
     const ready = [...pending].filter(
       (t) => !fks.some((f) => f.table === t && f.refTable !== t && pending.has(f.refTable)),
     );
-    for (const t of ready.length ? ready : [[...pending][0]!]) {
+    // 行き詰まったら（輪がある）、輪の上にある表から 1 つ崩す。名前順の先頭を選ぶと、輪の外で順番待ちの表
+    // （例：bridge_job_events は bridge_jobs の後）を先に出してしまい、親の種が無く FK が null になる
+    const deps = (t: string) => fks.filter((f) => f.table === t && f.refTable !== t && pending.has(f.refTable)).map((f) => f.refTable);
+    const onCycle = (t: string): boolean => {
+      const seen = new Set<string>();
+      const stack = deps(t);
+      while (stack.length) {
+        const u = stack.pop()!;
+        if (u === t) return true;
+        if (seen.has(u)) continue;
+        seen.add(u);
+        stack.push(...deps(u));
+      }
+      return false;
+    };
+    for (const t of ready.length ? ready : [[...pending].find(onCycle) ?? [...pending][0]!]) {
       order.push(t);
       pending.delete(t);
     }
@@ -72,7 +97,7 @@ export async function seedGenericRows(
     tenant === b.tenantA ? "A" : tenant === b.tenantB ? "B" : "ops";
   const defaultOf = (x: Col): unknown => {
     if (x.type === "boolean") return false;
-    if (x.type === "integer" || x.type === "bigint" || x.type === "numeric") return 1;
+    if (["smallint", "integer", "bigint", "numeric", "real", "double precision"].includes(x.type)) return 1;
     if (x.type === "date") return new Date().toISOString().slice(0, 10);
     if (x.type.startsWith("timestamp")) return new Date();
     if (x.type === "jsonb" || x.type === "json") return "{}";
@@ -85,6 +110,11 @@ export async function seedGenericRows(
     const tenant = tenantOf(t, which);
     for (const x of colsOf(t)) {
       if (x.col === pks.get(t) && x.col === "id") continue;
+      // 自然な主キー（setup_steps の n 等）：新しく足す行は既存と重ならない値にする
+      if (x.col === pks.get(t) && fresh) {
+        row[x.col] = ["smallint", "integer", "bigint", "numeric"].includes(x.type) ? 1000 + Math.floor(Math.random() * 30000) : `k9-${rnd()}`;
+        continue;
+      }
       if (["created_at", "updated_at", "deleted_at", "created_by", "updated_by"].includes(x.col)) continue;
       const fk = fkOf(t, x.col);
       if (x.col === "tenant_id") row[x.col] = tenant;
@@ -103,7 +133,7 @@ export async function seedGenericRows(
           null;
       else if (x.col === "key") row[x.col] = fresh ? `k9-${rnd()}` : "seed";
       else if (x.col === "version") row[x.col] = fresh ? Math.floor(Math.random() * 1e6) + 2 : 1;
-      else if (!x.nullable && x.def === null) row[x.col] = defaultOf(x);
+      else if (!x.nullable && x.def === null) row[x.col] = allowed.get(`${t}.${x.col}`) ?? defaultOf(x);
     }
     return row;
   };
@@ -126,6 +156,18 @@ export async function seedGenericRows(
       continue;
     }
     if (!hasTenant(t)) {
+      // 自然な主キー（id 以外）で migration が既に中身を入れている表（例：setup_steps の n）は、その 1 行を種にする
+      const pkCol = pks.get(t) ?? "id";
+      if (pkCol !== "id") {
+        const have = (await c.query<Record<string, string>>(`select "${pkCol}" from "${t}" order by 1 limit 1`)).rows[0]?.[pkCol];
+        if (have !== undefined) {
+          const id = String(have);
+          seeded.set(`${t}:${b.opsTenant}`, id);
+          seeded.set(`${t}:${b.tenantA}`, id);
+          out[t] = { visible: id, hiddenLayer: null, other: id, insert: () => build(t, "ops", true) };
+          continue;
+        }
+      }
       // 版の表（親の FK だけ）。親の種（運営 → 会社 a の順）に繋ぐ
       const id = await insertRow(t, build(t, "ops", false));
       seeded.set(`${t}:${b.opsTenant}`, id);

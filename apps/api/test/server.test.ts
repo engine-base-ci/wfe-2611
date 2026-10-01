@@ -67,11 +67,11 @@ describe("apps/api の起動口（server.ts）", () => {
     await expect(bootApi(config, { bucketExists: async () => false })).rejects.toThrow(/storage:bucket=missing/);
   });
 
-  it("存在確認の報告は 4 項目（db:tables・storage:bucket・secrets:master-key・notify:resend）", async () => {
+  it("存在確認の報告は 5 項目（db:tables・storage:bucket・secrets:master-key・notify:resend・secrets:vault〔D-101.4〕）", async () => {
     const b = await bootApi(config, { bucketExists: async () => true });
     try {
       expect(Object.keys(b.report.results).sort()).toEqual(
-        ["db:tables", "notify:resend", "secrets:master-key", "storage:bucket"].sort(),
+        ["db:tables", "notify:resend", "secrets:master-key", "secrets:vault", "storage:bucket"].sort(),
       );
       expect(b.report.ok).toBe(true);
     } finally {

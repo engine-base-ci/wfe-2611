@@ -33,6 +33,8 @@ describe("G33 access-matrix（RLS の場合表を実表で流す）", () => {
     ).toEqual([]);
     // 全表が migration 済みなら skip は 0。skip があるなら担当の T-D-* が未了
     expect(r.executed + r.skipped.length).toBeGreaterThanOrEqual(cases.length - r.executed);
-    expect(r.executed).toBeGreaterThanOrEqual(cases.length - r.skipped.length * 4);
+    // 未 migration の表（段階を後にした表 等）の場合を除いた全部が流れていること。表ごとの場合の数は決め打ちしない（1 表 4 件と仮定すると、場合の多い表で誤って赤になる）
+    const skippedTables = new Set(r.skipped.map((x) => x.table));
+    expect(r.executed).toBeGreaterThanOrEqual(cases.filter((c) => !skippedTables.has(c.table)).length);
   }, 60_000);
 });

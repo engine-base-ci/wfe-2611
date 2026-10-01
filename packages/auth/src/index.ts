@@ -18,6 +18,8 @@ export interface AuthOptions {
   mailer?: Mailer;
   /** 画面の URL（メールのリンクの先）。無ければ baseURL */
   webBaseURL?: string;
+  /** 認証のプールの本数（既定 5。Vercel の関数は 1 つにつき 2・G-16） */
+  poolMax?: number;
 }
 export interface Mail {
   to: string;
@@ -32,7 +34,7 @@ export type Mailer = (m: Mail) => Promise<void>;
 export type Auth = ReturnType<typeof betterAuth<BetterAuthOptions>>;
 
 export function createAuth(o: AuthOptions): { auth: Auth; pool: pg.Pool } {
-  const pool = new pg.Pool({ connectionString: o.authDatabaseUrl, max: 5 });
+  const pool = new pg.Pool({ connectionString: o.authDatabaseUrl, max: o.poolMax ?? 5 });
   // 送出先が無ければリンクをログに出す（開発）。送出先があっても、本番以外はリンクを残す
   // （実際に送っていても、確かめる人が受信箱を開かずに先へ進めるように）
   const dev = process.env["NODE_ENV"] !== "production";
@@ -62,6 +64,11 @@ export function createAuth(o: AuthOptions): { auth: Auth; pool: pg.Pool } {
         });
       },
       resetPasswordTokenExpiresIn: 60 * 30,
+      // 再設定したら、認証側のほかのセッションも、Kaname の端末（画面・Bridge）も全部切る（G-14・変更と同じ。2026-10-01 QA で抜けていた）
+      revokeSessionsOnPasswordReset: true,
+      onPasswordReset: async ({ user }) => {
+        await o.appPool.query("select app.revoke_sessions_for_auth_user($1, 'password_changed')", [user.id]);
+      },
     },
     emailVerification: {
       sendOnSignUp: false, // 保留の申し込みから自分で送る（D-088.1）。登録の時点では利用者がまだ無い
@@ -130,8 +137,8 @@ export async function sendPendingVerification(
   try {
     await o.mailer({
       to: p.email,
-      subject: "Kaname のメールアドレスを確認する",
-      text: `次のリンクを押すと登録が終わります（30 分で失効）。\n${url}`,
+      subject: "Kaname｜メールアドレスの確認（登録を確定する）",
+      text: `Kaname の登録を確定するには、次のリンクを押してください。押した時点で登録が終わります。\n${url}\nこのリンクは 30 分で失効します。心当たりが無ければ、このメールは無視してください。`,
       url,
       kind: "verify",
     });

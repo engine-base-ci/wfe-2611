@@ -1,87 +1,96 @@
-# staging の作り方（本番と同じ構成をもう 1 組）
+# staging の作り方（段階 1：Vercel ＋ Supabase・D-097）
 
-2026-09-16 user「staging を作る。作り方を出して」。画面のタスク（W9 以降）は、ここでブラウザの L1 と流れの L2 を流す（規約 test-ladder §5）。
-本番と同じ migration／deploy／プロビジョニングのコードで作る。ダッシュボードで手で作ってよいのは「口座・支払い・鍵の登録」だけ。
+2026-09-16 user「staging を作る。作り方を出して」。2026-09-27 に置き場を決め直した（D-097：段階 1 は画面も API も Vercel、DB は Supabase。Railway・Infisical は段階 2）。
+画面のタスクは、ここでブラウザの L1 と流れの L2 を流す（規約 test-ladder §5）。本番と同じ migration／deploy／プロビジョニングのコードで作る。
+ダッシュボードで手で作ってよいのは「口座・支払い・鍵の登録」だけ。
 
-## 0. いま無いもの（コード側 3 つは T-F-18 で直した・2026-09-16。残りは GitHub のリモート）
+段階 1 は**環境を 1 組だけ**作る（user「一旦は dev でいい。環境は僕だけで十分」）。Vercel の Production を staging として使い、Supabase も staging の 1 プロジェクトだけ。
+**顧客に触らせる前に**、同じ手順で本番をもう 1 組作る（Supabase の本番プロジェクト・Vercel の本番用の環境変数・Vercel Pro）。
 
-| 無いもの                                                                | 何が困るか                                                                                                             | 直し方（T-F-18）                                                                                                                                                                         |
-| ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| API の起動口と Dockerfile                                               | Railway に置けない（apps/api には app.ts しか無い）                                                                    | `apps/api/src/server.ts`（@hono/node-server・GET /health・起動時確認）と `apps/api/Dockerfile`                                                                                           |
-| 認証の schema 名 `auth`                                                 | Supabase は schema `auth` を自社の認証（auth.users／auth.sessions）に使う。同じ名前に Better Auth の表を作ると衝突する | schema 名を `kaname_auth` に変える（migration 0004・packages/auth・テスト）                                                                                                              |
-| DB 役割のパスワードが migration に直書き（`kaname_app`／`kaname_auth`） | staging と本番で同じ・公開されたパスワードになる                                                                       | migration は役割を作るだけ。パスワードは migrate の CLI が環境変数 `KANAME_APP_DB_PASSWORD`／`KANAME_AUTH_DB_PASSWORD` から `alter role … password` で入れる（ローカルは今の値を既定に） |
-| GitHub のリモート                                                       | Railway と Vercel は GitHub から読む                                                                                   | 高本さんが private リポジトリを作り `git remote add origin …`。私は push しない（確認してから）                                                                                          |
+## 0. いま無いもの
+
+| 無いもの | 何が困るか | 誰が |
+| --- | --- | --- |
+| GitHub のリモート | Vercel は GitHub から読む | 高本さんが private リポジトリを作り `git remote add origin …`。私は push しない（確認してから） |
+| Supabase のプロジェクト（staging） | DB・添付の置き場が無い | 高本さん（S1） |
+| Vercel のプロジェクト 2 つ（画面・API） | 置き場が無い | 高本さん（S2・S4） |
+| Infisical のアカウントと機械の身元（資格情報の預かり先・D-101） | 無いと staging／本番の API が起動時の確認（secrets:vault）で止まる | 高本さん（S1b） |
+
+コード側（API を Vercel の関数 1 本にする入口・組み立て・Bridge の問い合わせ）は済み（`apps/api/src/vercel.ts`・`apps/api/build-vercel.mjs`・`apps/api/vercel.json`）。
 
 ## 1. 誰が何をするか
 
-- 高本さん：口座を作る・支払い方法を登録する・鍵と接続文字列を **Infisical に直接入れる**。鍵をチャットや ファイルに貼らない。私は値を一切見ない。
-- Claude：T-F-18 のコード、この手順、起動時確認、`db:migrate`／`provision:bucket` を deploy の前段（Railway の pre-deploy）で流す配線。
+- 高本さん：口座を作る・支払い方法を登録する・鍵と接続文字列を **Vercel の環境変数に直接入れる**（Sensitive にする）。鍵をチャットやファイルに貼らない。私は値を一切見ない。
+- Claude：コード、この手順、起動時確認、`db:migrate`／`provision:bucket` を API の Build Command で流す配線。
 
 ## 2. 順序
 
 ### S0 GitHub
 
 1. private リポジトリを作る（例 `engine-base/kaname`）
-2. `git remote add origin git@github.com:<org>/kaname.git`
-3. Settings → Secrets and variables → Actions に `STAGING_BASE_URL`（S3 で決まる Railway の URL）を後で入れる
+2. `git remote add origin git@github.com:<org>/kaname.git`（push は確認してから）
 
-### S1 Supabase（DB とバケット）
+### S1 Supabase（DB と添付）
 
-1. Organization に staging 用のプロジェクトを 1 つ作る（名前 `kaname-staging`・Region `Northeast Asia (Tokyo)`）。本番は別プロジェクト
-2. Connect から接続文字列を 2 つ取る
-   - Direct connection（5432）＝ migration 用（管理者）→ Infisical の `DATABASE_ADMIN_URL`
-   - Transaction pooler（6543）＝ 実行時。ユーザー名を `kaname_app`／`kaname_auth` に、パスワードを S2 で決めた値に置き換えて `DATABASE_URL`／`AUTH_DATABASE_URL`
+1. プロジェクトを 1 つ作る（名前 `kaname-staging`・Region `Northeast Asia (Tokyo)`・**Free**）
+2. Connect から接続文字列を取る。**Direct connection は IPv6 だけなので Vercel から届かない。全部 pooler を使う**
+   - **Session pooler**（`aws-…pooler.supabase.com:5432`・ユーザー `postgres.<ref>`）＝ migration 用（管理者）→ `DATABASE_ADMIN_URL`
+   - **Transaction pooler**（同じ host の `:6543`）＝ 実行時。ユーザー名を `kaname_app.<ref>`／`kaname_auth.<ref>`、パスワードを S2-3 で作る値に置き換えて `DATABASE_URL`／`AUTH_DATABASE_URL`
 3. Storage → Settings → S3 Connection：S3 access keys を作る → `STORAGE_ACCESS_KEY_ID`／`STORAGE_SECRET_ACCESS_KEY`。Endpoint（`https://<ref>.storage.supabase.co/storage/v1/s3`）→ `STORAGE_ENDPOINT`、Region → `STORAGE_REGION`、`STORAGE_FORCE_PATH_STYLE=true`、`STORAGE_BUCKET=kaname-staging`
-4. Free プランのプロジェクトは 1 週間使わないと休止する。staging を常時使うなら Pro（目安 月 25 USD）にする
+4. 無料枠は 1 週間使わないと休止し、バックアップが無い。**顧客のデータを入れる前に Pro**（D-097.7）
 
-### S2 Infisical（鍵の置き場）
+### S1b Infisical（顧客の資格情報の預かり先・D-101）
 
-1. Organization → Project `kaname` を作る。環境は `staging` と `production`（`dev` は使わない）
-2. `staging` に、下の「秘密の名前」の表の値を入れる。役割のパスワード 2 つ（`KANAME_APP_DB_PASSWORD`／`KANAME_AUTH_DB_PASSWORD`）はここで作った長い乱数を使う（S1-2 の接続文字列にも同じ値）
-3. `SECRETS_MASTER_KEY` は 32 バイト以上を base64 で（`openssl rand -base64 48`）。`AUTH_SECRET` は 32 文字以上の乱数
-4. Integrations → Railway（S3 の後）と Vercel（S5 の後）を接続し、`staging` 環境を同期する
+1. https://app.infisical.com でアカウントを作る（無料枠）。地域（US／EU）を覚えておく → `INFISICAL_SITE_URL`（`https://us.infisical.com` か `https://eu.infisical.com`）
+2. Project を 1 つ作る（名前 `kaname`）。環境は `staging` と `prod` の 2 つだけ使う（`dev` は使わない）→ Project ID を `INFISICAL_PROJECT_ID`、`staging` を `INFISICAL_ENVIRONMENT`
+3. Organization → Access Control → Identities → Machine Identity を作る（名前 `kaname-api-staging`・Auth は **Universal Auth**）。Client ID と Client Secret を `INFISICAL_CLIENT_ID`／`INFISICAL_CLIENT_SECRET` に（Vercel の環境変数に直接・Sensitive。チャットに貼らない）
+4. その Identity を Project `kaname` に追加し、`staging` 環境の Secrets を **読み書き** できる役割にする（`/tenants` の下を作れるように）。**組織全体の権限（project を作る・消す）は付けない**（D-102.3）
+5. 無料枠（公式 2026-09-27：identity 5・project 無制限・環境 3・秘密の操作 毎分 120 回）を画面で確かめる。Kaname が使う identity は **サーバーの staging 用・本番用と高本さんの 3 つだけ**（会社・人・PC が増えても増えない・D-102.1）。Bridge 用の identity は作らない（D-102.2）
+6. 上限の 8 割（毎分 96 回）で info@ にメールが届く。続くようなら Pro（毎分 300 回・3 つで月 60 ドル前後）か自前ホストを決める（D-102.6）
 
-### S3 Railway（API）
+### S2 Vercel：API（プロジェクト `kaname-api`）
 
-1. New Project `kaname` → Deploy from GitHub → リポジトリを選ぶ。Environment を `staging` と `production` に分ける
-2. Service `api`：Root Directory `/`、Builder `Dockerfile`（`apps/api/Dockerfile`）。Healthcheck Path `/health`
-3. Variables は Infisical の同期で入れる（手で貼らない）。`NODE_ENV=staging`、`PORT=3001`、`BASE_URL=https://<railway の URL>`
-4. Deploy 設定 → Pre-deploy command：`pnpm db:migrate && pnpm provision:bucket`（本番と同じ migration・バケット作成。鍵は Railway の中だけ）
-5. Public Networking でドメインを出す → その URL を `BASE_URL`・GitHub の `STAGING_BASE_URL`・Vercel の `NEXT_PUBLIC_API_BASE` に
+1. Add New → Project → GitHub のリポジトリ → **Root Directory `apps/api`**・Framework Preset **Other**。Build と Install は `apps/api/vercel.json` が決める（手で書かない）
+2. Settings → Environment Variables（Production と Preview の両方・**Sensitive**）に下の「秘密の名前」の表の値を入れる
+3. 役割のパスワード 2 つ（`KANAME_APP_DB_PASSWORD`／`KANAME_AUTH_DB_PASSWORD`）は長い乱数（`openssl rand -base64 32`）。S1-2 の接続文字列にも同じ値。`SECRETS_MASTER_KEY` は `openssl rand -base64 48`、`AUTH_SECRET` も長い乱数
+4. `NODE_ENV=staging`、`BASE_URL=https://<kaname-api の URL>`、`WEB_BASE_URL=https://<kaname-web の URL>`（S4 の後に入れて Redeploy）
+5. Deploy。Build Command が `pnpm db:migrate && pnpm provision:bucket` を流してから関数を組み立てる（本番と同じコード・D-097.6）。**Preview のビルドも同じ DB に流れる**（段階 1 は開発者 1 人なので許す。2 人目が入る前に GitHub Actions へ）
 
-### S4 Resend（メール・任意）
+### S3 Resend（メール）
 
-1. API Keys → staging 用のキー → `RESEND_API_KEY`。無ければメールは送らず inapp だけ（起動は止まらない）
-2. 送信ドメインは本番と同じでよい（DNS の SPF／DKIM は本番の作業で 1 回）
+1. 送信ドメイン engine-base.com は検証済み（2026-09-20）。staging 用の API キーを作り `RESEND_API_KEY` に。無ければメールは送らない（staging では起動は止まらない）
+2. `MAIL_FROM=Kaname <noreply@engine-base.com>`・`MAIL_REPLY_TO=info@engine-base.com`（D-096）
 
-### S5 Vercel（画面。T-US-00 の後）
+### S4 Vercel：画面（プロジェクト `kaname-web`）
 
-1. apps/web ができてから。Project `kaname-web`、Root Directory `apps/web`、Framework Next.js
-2. Preview 環境の `NEXT_PUBLIC_API_BASE` を Railway staging の URL に（Infisical の同期で）
-3. Preview の URL がブラウザの L1・L2 を流す先
+1. 同じリポジトリでもう 1 つ Project → **Root Directory `apps/web`**・Framework Next.js
+2. `NEXT_PUBLIC_API_BASE=https://<kaname-api の URL>`（秘密ではない）
+3. Deploy → この URL を S2-4 の `WEB_BASE_URL` に入れて API を Redeploy（CORS）
 
-### S6 できたかの確認（機械）
+### S5 できたかの確認（機械）
 
-1. `curl -s https://<api>/health` が 200 で版を返す
-2. Railway の起動ログに 起動時確認 4／4（db:tables・storage:bucket・secrets:master-key・notify:resend）
-3. 正本の行 `FND-01-001`／`FND-06-001`（prod-smoke.md）を BLOCKED から PASS に書き直す。T-F-16 の BLOCKED も同じ回で流し直す
-4. `wave_gate W2` が完了 → W9（T-US-00）へ
+1. `curl -s https://<kaname-api>/health` が 200 で版を返す。503 なら本文の理由（`STARTUP_FAILED`）と Vercel の関数のログ（`[api] 起動しない: …`）を見る
+2. 起動時確認 5／5（db:tables・storage:bucket・secrets:master-key・notify:resend・secrets:vault）がログに出る。secrets:vault が落ちたら S1b の値と役割を見直す
+3. `kaname_app.<ref>`／`kaname_auth.<ref>` で Transaction pooler に入れること（custom role が pooler を通るか）を 1 で確かめる。入れなければ Supabase 側で role の `login` と pooler の設定を見直す
+4. 画面から新規登録 → 確認メール → Bridge をつなぐ → 自分のAIと話す、を 1 周（L2）
+5. 正本の行 `FND-01-001`／`FND-06-001`（prod-smoke.md）を BLOCKED から PASS に書き直す
 
 ## 3. 秘密の名前（`.env.example` が正本。G13 ci:env-audit が突き合わせる）
 
-| 名前                                                                                                                         | 誰が                                   | どこから                                 | 使う所                                                |
-| ---------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- | ---------------------------------------- | ----------------------------------------------------- |
-| DATABASE_ADMIN_URL                                                                                                           | 高本さん                               | Supabase Direct connection               | Railway pre-deploy（migration・役割のパスワード）だけ |
-| DATABASE_URL                                                                                                                 | 高本さん                               | Transaction pooler・ユーザー kaname_app  | API                                                   |
-| AUTH_DATABASE_URL                                                                                                            | 高本さん                               | Transaction pooler・ユーザー kaname_auth | API（認証）                                           |
-| KANAME_APP_DB_PASSWORD／KANAME_AUTH_DB_PASSWORD                                                                              | 高本さん（乱数）                       | Infisical で生成                         | migrate が役割に入れる                                |
-| AUTH_SECRET                                                                                                                  | 高本さん（乱数）                       | —                                        | API（認証）                                           |
-| SECRETS_MASTER_KEY                                                                                                           | 高本さん（乱数・base64 32 バイト以上） | —                                        | API（関門 C8）                                        |
-| STORAGE_ENDPOINT／STORAGE_REGION／STORAGE_BUCKET／STORAGE_ACCESS_KEY_ID／STORAGE_SECRET_ACCESS_KEY／STORAGE_FORCE_PATH_STYLE | 高本さん                               | Supabase S3 Connection                   | API・provision:bucket                                 |
-| RESEND_API_KEY                                                                                                               | 高本さん（任意）                       | Resend                                   | API（関門 C6）                                        |
-| NODE_ENV／PORT／BASE_URL                                                                                                     | Claude（値は秘密でない）               | —                                        | API                                                   |
-| NEXT_PUBLIC_API_BASE                                                                                                         | Claude（値は秘密でない）               | Railway の URL                           | Vercel Preview                                        |
-| STAGING_BASE_URL                                                                                                             | 高本さん                               | Railway の URL                           | GitHub Actions（e2e job）                             |
+| 名前 | 誰が | どこから | 使う所 |
+| --- | --- | --- | --- |
+| DATABASE_ADMIN_URL | 高本さん | Supabase Session pooler（`postgres.<ref>`） | API の Build Command（migration・役割のパスワード）だけ |
+| DATABASE_URL | 高本さん | Transaction pooler・ユーザー `kaname_app.<ref>` | API |
+| AUTH_DATABASE_URL | 高本さん | Transaction pooler・ユーザー `kaname_auth.<ref>` | API（認証） |
+| KANAME_APP_DB_PASSWORD／KANAME_AUTH_DB_PASSWORD | 高本さん（乱数） | 自分で生成 | migrate が役割に入れる |
+| AUTH_SECRET | 高本さん（乱数） | — | API（認証） |
+| SECRETS_MASTER_KEY | 高本さん（乱数・base64 32 バイト以上） | — | API（関門 C8） |
+| STORAGE_ENDPOINT／STORAGE_REGION／STORAGE_BUCKET／STORAGE_ACCESS_KEY_ID／STORAGE_SECRET_ACCESS_KEY／STORAGE_FORCE_PATH_STYLE | 高本さん | Supabase S3 Connection | API・provision:bucket |
+| RESEND_API_KEY | 高本さん | Resend | API（関門 C6） |
+| INFISICAL_SITE_URL／INFISICAL_CLIENT_ID／INFISICAL_CLIENT_SECRET／INFISICAL_PROJECT_ID／INFISICAL_ENVIRONMENT | 高本さん | Infisical（S1b） | API（関門 C8・顧客の資格情報の預かり先） |
+| MAIL_FROM／MAIL_REPLY_TO／OPS_EMAIL／OPERATOR_* | Claude（値は秘密でない） | D-096 | API |
+| NODE_ENV／BASE_URL／WEB_BASE_URL | Claude（値は秘密でない） | Vercel の URL | API |
+| NEXT_PUBLIC_API_BASE | Claude（値は秘密でない） | kaname-api の URL | 画面 |
 
 ## 4. 触らないもの
 
@@ -91,4 +100,6 @@
 
 ## 5. 費用の目安（2026-09 時点の私の知識。実際の料金は各社の画面で確認）
 
-Supabase Pro 25 USD／月（Free は 1 週間で休止）・Railway Hobby 5 USD／月＋使用量・Vercel Hobby 無料（会社利用は Pro）・Infisical 無料枠・Resend 無料枠。合計の目安 月 30〜50 USD。
+段階 1 の staging：Supabase Free・Vercel Hobby（2 プロジェクト）・Infisical 無料枠・Resend 無料枠 → **0 円**。
+Vercel Hobby の目安の枠（関数の呼び出し 月 100 万回 等）に収まるよう、Bridge の問い合わせは 1 台あたり月およそ 50 万回（動いていない間 5 秒ごと）に抑えてある（D-097.4）。
+顧客に触らせる前：Vercel Pro 20 USD／月・Supabase Pro 25 USD／月（D-097.7）。

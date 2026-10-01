@@ -21,6 +21,7 @@
     "./context": "./src/context.ts",
     "./repository": "./src/repository.ts",
     "./pool": "./src/pool.ts",
+    "./listen": "./src/listen.ts",
     "./id": "./src/id.ts",
     "./matrix": "./src/matrix.ts",
     "./seeds": "./src/seeds.ts",

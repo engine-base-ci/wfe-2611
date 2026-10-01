@@ -4,6 +4,7 @@ import { createCipheriv, createDecipheriv, hkdfSync, randomBytes } from "node:cr
 import type { TenantContext } from "@kaname/db/context";
 import type { Repository } from "@kaname/db/repository";
 import { uuidv7 } from "@kaname/db/id";
+import { RateLimited } from "./infisical.js";
 
 export interface SecretRef {
   ref: string;
@@ -16,22 +17,26 @@ export interface StoredSecret {
   kind: string;
   revokedAt: string | null;
 }
-/** 保管の実体（本番 Infisical／開発はメモリ・ファイル）。復号の鍵は持たない（暗号文だけを預かる） */
+/** 保管の実体（staging／本番 Infisical・D-101／開発はメモリ）。復号の鍵は持たない（暗号文だけを預かる）。
+ *  会社ごとに置き場を分けるので、読む・失効させるときも会社を渡す（別の会社の置き場は見に行かない） */
 export interface Vault {
   put(ref: string, s: StoredSecret): Promise<void>;
-  get(ref: string): Promise<StoredSecret | null>;
-  revoke(ref: string): Promise<boolean>;
+  get(ref: string, tenantId: string): Promise<StoredSecret | null>;
+  revoke(ref: string, tenantId: string): Promise<boolean>;
   revokeTenant(tenantId: string): Promise<number>;
+  /** 再起動・別の実体で消えないか。false の保管先は開発だけ（staging／本番では預からない・D-097.8） */
+  readonly durable?: boolean;
 }
 export class MemoryVault implements Vault {
+  readonly durable = false; // 再起動・Vercel の関数の実体ごとに消える
   private readonly m = new Map<string, StoredSecret>();
   async put(ref: string, s: StoredSecret) {
     this.m.set(ref, s);
   }
-  async get(ref: string) {
+  async get(ref: string, _tenantId?: string) {
     return this.m.get(ref) ?? null;
   }
-  async revoke(ref: string) {
+  async revoke(ref: string, _tenantId?: string) {
     const s = this.m.get(ref);
     if (!s || s.revokedAt) return false;
     s.revokedAt = new Date().toISOString();
@@ -49,7 +54,7 @@ export class MemoryVault implements Vault {
 }
 export type Outcome =
   | { status: "done"; value: string; auditId?: string }
-  | { status: "denied" | "failed"; reason: string; handoff: string; auditId?: string };
+  | { status: "denied" | "failed"; reason: string; handoff: string; auditId?: string; retryAfterSec?: number };
 
 /** ログ・スクリーンショット向け：先頭 2 文字だけ残して隠す */
 export function mask(value: string): string {
@@ -67,6 +72,10 @@ export class SecretsGateway {
   ) {
     if (masterKey.length < 32) throw new Error("鍵は 32 バイト以上");
   }
+  /** 預けたものが消えない保管先か（D-097.8）。消える保管先で「預かりました」と言わない */
+  get durable(): boolean {
+    return this.vault.durable !== false;
+  }
   /** テナントごとの鍵（HKDF で分離。マスターが 1 つでも会社をまたいで復号できない） */
   private keyFor(tenantId: string): Buffer {
     return Buffer.from(hkdfSync("sha256", this.masterKey, Buffer.from(tenantId), Buffer.from("kaname.secrets.v1"), 32));
@@ -82,14 +91,22 @@ export class SecretsGateway {
     const iv = randomBytes(12);
     const c = createCipheriv("aes-256-gcm", this.keyFor(ctx.tenantId), iv);
     const data = Buffer.concat([c.update(plaintext, "utf8"), c.final()]);
-    await this.vault.put(ref, {
-      tenantId: ctx.tenantId,
-      iv: iv.toString("base64"),
-      tag: c.getAuthTag().toString("base64"),
-      data: data.toString("base64"),
-      kind,
-      revokedAt: null,
-    });
+    try {
+      await this.vault.put(ref, {
+        tenantId: ctx.tenantId,
+        iv: iv.toString("base64"),
+        tag: c.getAuthTag().toString("base64"),
+        data: data.toString("base64"),
+        kind,
+        revokedAt: null,
+      });
+    } catch (e) {
+      // 預かり先に書けなかった（届かない・認証が切れた・上限）。預かったことにしない（E-SEC-001／上限は E-SEC-003）
+      await this.repo.audit(ctx, "secret.store_failed", "secret", ref, "C8", { kind, error: (e as Error).message.slice(0, 120) });
+      if (e instanceof RateLimited)
+        return { status: "failed", reason: "預かり先が混み合っています", handoff: "少し待ってからもう一度保存する", retryAfterSec: e.retryAfterSec };
+      return { status: "failed", reason: "預かり先に保管できませんでした", handoff: "もう一度保存する。続くときは運営に連絡する" };
+    }
     const auditId = await this.repo.audit(ctx, "secret.store", "secret", ref, "C8", { kind, length: plaintext.length }); // 値は書かない
     return { status: "done", value: { ref }, auditId };
   }
@@ -102,7 +119,14 @@ export class SecretsGateway {
         reason: "AI や画面には秘密の実体を渡さない（参照 ID だけ）",
         handoff: "実行器から呼ぶ",
       });
-    const s = await this.vault.get(ref);
+    let s: StoredSecret | null;
+    try {
+      s = await this.vault.get(ref, ctx.tenantId);
+    } catch (e) {
+      if (e instanceof RateLimited)
+        return this.finish(ctx, ref, { status: "failed", reason: "預かり先が混み合っています", handoff: "少し待ってからもう一度", retryAfterSec: e.retryAfterSec });
+      return this.finish(ctx, ref, { status: "failed", reason: "預かり先に届きません", handoff: "少し待ってからもう一度" });
+    }
     if (!s || s.tenantId !== ctx.tenantId)
       return this.finish(ctx, ref, { status: "denied", reason: "この参照は見られない", handoff: "預け直す" });
     if (s.revokedAt)
@@ -126,9 +150,10 @@ export class SecretsGateway {
   }
   /** 失効（退会・停止・権限変更・鍵の失効）：即時 */
   async revoke(ctx: TenantContext, ref: string): Promise<boolean> {
-    const s = await this.vault.get(ref);
+    if (!ctx.tenantId) return false;
+    const s = await this.vault.get(ref, ctx.tenantId);
     if (!s || s.tenantId !== ctx.tenantId) return false;
-    const ok = await this.vault.revoke(ref);
+    const ok = await this.vault.revoke(ref, ctx.tenantId);
     await this.repo.audit(ctx, "secret.revoke", "secret", ref, "C8", { ok });
     return ok;
   }
@@ -150,3 +175,4 @@ export class SecretsGateway {
     return o;
   }
 }
+export { InfisicalVault, RateLimited, INFISICAL_FREE_SECRET_PER_MIN, INFISICAL_ALERT_RATIO, type InfisicalOptions } from "./infisical.js";

@@ -3,6 +3,9 @@
 export interface Config {
   env: "development" | "staging" | "production" | "test";
   databaseUrl: string;
+  /** 会話が変わった知らせを受ける接続（D-113・台帳 X-008）。LISTEN が効く直の接続か Session pooler（5432）。
+   *  Transaction pooler（6543）では受けられない。無ければ null（画面は今までどおり見に行く） */
+  listenDatabaseUrl: string | null;
   authDatabaseUrl: string;
   authSecret: string;
   baseUrl: string;
@@ -25,8 +28,28 @@ export interface Config {
   mailFrom: string;
   /** 運営（ENGINE BASE）の連絡先。問い合わせの届け先・運営アカウントのログイン名 */
   opsEmail: string;
+  /** 返信したときの宛先（D-096.5）。差出人は noreply、返信は問い合わせの窓口へ */
+  mailReplyTo: string;
+  /** 運営者の情報（D-096）。メールの署名・画面・特商法表記が同じ値を読む。ここ以外に書かない */
+  operator: {
+    service: string;
+    company: string;
+    representative: string;
+    email: string;
+    /** メールには載せない（D-096.3）。特商法表記・請求書で使う */
+    phone: string;
+    /** まだ持たない（D-096.4）。宣伝メール・有料化の前に決め直す */
+    address: string | null;
+  };
   /** この接頭辞で始まる宛先には送らない（dev で自動テストが送出先の上限を食い潰さないため）。空なら必ず送る */
   mailSuppressPrefix: string;
+  /** Bridge の配布物（インストーラ）の置き場。Kaname のサーバーから配る（D-015.6）。
+   *  空なら「まだ配布していません」。顧客に外のサービス（GitHub 等）を見せない */
+  bridgeReleaseBase: string;
+  /** 配布物を置いた手元のフォルダ（署名・置き場が決まる前でも、ここから配れる）。本番では使わない */
+  bridgeReleaseDir: string;
+  /** 資格情報の預かり先 Infisical（D-101）。staging／本番は必須（起動時に確かめる）。開発は無くてよい（メモリ） */
+  infisical: { siteUrl: string; clientId: string; clientSecret: string; projectId: string; environment: string } | null;
   port: number;
 }
 const REQUIRED = [
@@ -49,10 +72,16 @@ export const ENV_KEYS = [
   "PORT",
   "STORAGE_FORCE_PATH_STYLE",
   "DATABASE_ADMIN_URL",
+  "DATABASE_LISTEN_URL",
   "KANAME_APP_DB_PASSWORD",
   "KANAME_AUTH_DB_PASSWORD",
   "WEB_BASE_URL",
   "MAIL_FROM",
+  "INFISICAL_SITE_URL",
+  "INFISICAL_CLIENT_ID",
+  "INFISICAL_CLIENT_SECRET",
+  "INFISICAL_PROJECT_ID",
+  "INFISICAL_ENVIRONMENT",
 ] as const;
 export type EnvKey = (typeof ENV_KEYS)[number];
 /** migration が役割に入れるパスワード（T-F-18）。process.env を読むのはここだけ（X-002） */
@@ -86,9 +115,15 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
   if (Buffer.from(mk, "base64").length < 32) throw new Error("SECRETS_MASTER_KEY は base64 で 32 バイト以上");
   const e = (env["NODE_ENV"] ?? "development") as Config["env"];
   if (!["development", "staging", "production", "test"].includes(e)) throw new Error(`NODE_ENV が不明: ${e}`);
+  // Infisical は全部そろっているか、全部無いか。半端は設定の間違い（黙ってメモリに落とさない）
+  const INF = ["INFISICAL_CLIENT_ID", "INFISICAL_CLIENT_SECRET", "INFISICAL_PROJECT_ID", "INFISICAL_ENVIRONMENT"] as const;
+  const infHave = INF.filter((k) => env[k]);
+  if (infHave.length && infHave.length < INF.length)
+    throw new Error(`Infisical の設定が半端: ${INF.filter((k) => !env[k]).join(", ")} が無い`);
   return {
     env: e,
     databaseUrl: env["DATABASE_URL"]!,
+    listenDatabaseUrl: env["DATABASE_LISTEN_URL"] || null,
     authDatabaseUrl: env["AUTH_DATABASE_URL"]!,
     authSecret: env["AUTH_SECRET"]!,
     baseUrl: env["BASE_URL"]!,
@@ -109,7 +144,27 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
       .filter(Boolean),
     mailFrom: env["MAIL_FROM"] || "Kaname <noreply@engine-base.com>",
     opsEmail: env["OPS_EMAIL"] || "info@engine-base.com",
+    mailReplyTo: env["MAIL_REPLY_TO"] || env["OPS_EMAIL"] || "info@engine-base.com",
+    operator: {
+      service: "Kaname",
+      company: env["OPERATOR_COMPANY"] || "株式会社ENGINE BASE",
+      representative: env["OPERATOR_REPRESENTATIVE"] || "高本聖斗",
+      email: env["OPS_EMAIL"] || "info@engine-base.com",
+      phone: env["OPERATOR_PHONE"] || "090-1180-5989",
+      address: env["OPERATOR_ADDRESS"] || null,
+    },
     mailSuppressPrefix: env["MAIL_SUPPRESS_PREFIX"] || "",
+    bridgeReleaseBase: (env["BRIDGE_RELEASE_BASE"] || "").replace(/\/$/, ""),
+    bridgeReleaseDir: env["BRIDGE_RELEASE_DIR"] || "",
+    infisical: infHave.length
+      ? {
+          siteUrl: (env["INFISICAL_SITE_URL"] || "https://us.infisical.com").replace(/\/$/, ""),
+          clientId: env["INFISICAL_CLIENT_ID"]!,
+          clientSecret: env["INFISICAL_CLIENT_SECRET"]!,
+          projectId: env["INFISICAL_PROJECT_ID"]!,
+          environment: env["INFISICAL_ENVIRONMENT"]!,
+        }
+      : null,
     port: Number(env["PORT"] ?? 3001),
   };
 }

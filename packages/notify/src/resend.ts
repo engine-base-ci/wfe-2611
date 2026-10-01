@@ -8,6 +8,8 @@ export interface MailLike {
     to: string;
     subject: string;
     text: string;
+    /** 返信したときの宛先（差出人とは別に持てる・D-096.5） */
+    replyTo?: string;
   }): Promise<{ error: { message: string } | null }>;
 }
 export function resendMail(apiKey: string): MailLike {
