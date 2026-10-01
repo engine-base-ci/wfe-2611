@@ -8,7 +8,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button, Field, Input } from "@/components/ui";
-import { OutsideLayout, SETUP_STEPS } from "@/components/outside/outside-layout";
+import { LogIn } from "lucide-react";
+import { AuthFoot, AuthHead, OutsideLayout, SETUP_STEPS } from "@/components/outside/outside-layout";
 import { AuthExtError, signUp } from "@/lib/auth/ext";
 
 const schema = z.object({
@@ -67,11 +68,10 @@ export default function SignupPage() {
       lead="会社のことを自分のAIに話すだけで、目標・台帳・担当業務・AI社員のたたき台ができます。毎日は自分のAIと話し、自分のAIがAI社員に配り、上がってきたものを一次確認してからあなたに上げます。あなたが押すのは、最後の一手だけです。"
       steps={SETUP_STEPS}
     >
-      <h1 className="text-h1 font-bold tracking-[-0.015em]">アカウントを作る</h1>
-      <p className="mt-1 text-[13.5px] text-[var(--on-sv)]">
+      <AuthHead title="アカウントを作る">
         会社名とメールだけ。ここではまだ何も設定しません。設定はこのあと自分のAIと話しながら作ります。
-      </p>
-      <form className="mt-6" onSubmit={onSubmit} noValidate data-state={state}>
+      </AuthHead>
+      <form onSubmit={onSubmit} noValidate data-state={state}>
         <Field
           label="メールアドレス"
           error={
@@ -151,16 +151,13 @@ export default function SignupPage() {
             {serverError}
           </p>
         ) : null}
-        <Button type="submit" className="w-full" disabled={f.formState.isSubmitting}>
+        <Button type="submit" className="w-full" icon={<LogIn />} disabled={f.formState.isSubmitting}>
           {f.formState.isSubmitting ? "作っています" : "はじめる"}
         </Button>
       </form>
-      <p className="mt-5 text-[13px] text-[var(--on-sv)]">
-        すでにお持ちですか？{" "}
-        <Link className="font-semibold text-[var(--primary)] underline" href="/login">
-          ログイン
-        </Link>
-      </p>
+      <AuthFoot>
+        すでにお持ちですか？ <Link href="/login">ログイン</Link>
+      </AuthFoot>
     </OutsideLayout>
   );
 }

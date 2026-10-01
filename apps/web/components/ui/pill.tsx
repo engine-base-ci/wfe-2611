@@ -8,14 +8,14 @@ const TONE: Record<PillTone, string> = {
   warning: "bg-[var(--st-warning)] text-white",
   danger: "bg-[var(--st-danger)] text-white",
   progress: "bg-[var(--st-progress)] text-white",
-  neutral: "bg-[#6b7585] text-white",
+  neutral: "bg-[var(--neutral-strong)] text-white",
   ai: "bg-[var(--tertiary-c)] text-[var(--on-tertiary-c)]",
 };
 export function Pill({ tone = "neutral", className, ...rest }: HTMLAttributes<HTMLSpanElement> & { tone?: PillTone }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-[5px] rounded-full px-2.5 py-[3px] text-[11.5px] font-semibold whitespace-nowrap [&>svg]:size-3",
+        "inline-flex items-center gap-[5px] rounded-full px-2.5 py-[3px] text-[var(--text-label-sm)] font-semibold whitespace-nowrap [&>svg]:size-3",
         TONE[tone],
         className,
       )}

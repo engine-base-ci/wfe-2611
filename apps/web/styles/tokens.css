@@ -20,6 +20,7 @@
   --color-error: #b91c1c;
   --color-on-error: #ffffff;
   --color-neutral: #8a94a3;
+  --color-neutral-strong: #6b7585;
   --color-card: #ffffff;
   --color-line: #dde2e9;
   --color-line-soft: #edf0f4;
@@ -41,13 +42,6 @@
   --font-sans: "M PLUS 2", "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
   --font-code: ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  --spacing-xs: 4px;
-  --spacing-sm: 8px;
-  --spacing-md: 16px;
-  --spacing-lg: 24px;
-  --spacing-xl: 48px;
-  --spacing-2xl: 96px;
-
   --radius-sm: 4px;
   --radius-md: 6px;
   --radius-lg: 12px;
@@ -62,6 +56,7 @@
   --text-h2--line-height: 1.4;
   --text-h3: 15px;
   --text-label: 12px;
+  --text-label-sm: 11px;
   --text-label--letter-spacing: 0.05em;
   --text-metric: 34px;
   --text-metric--line-height: 1;
@@ -85,6 +80,7 @@
   --on-sv: #4a5563;
   --error: #b91c1c;
   --neutral: #8a94a3;
+  --neutral-strong: #6b7585;   /* 面に使う中立（白文字で 4.5:1）*/
   --card: #ffffff;
   --line: #dde2e9;
   --line-soft: #edf0f4;
@@ -92,9 +88,44 @@
   --st-warning: #b45309;
   --st-danger: #b91c1c;
   --st-progress: #1d4ed8;
+  /* 状態の淡い面と濃い文字の対・会話の書式（D-104：蛍光ペン・AI の印・コードの色分け）。06_mockup/_tokens.py と同じ値 */
+  --st-success-c: #dcfce7;
+  --on-st-success-c: #2e5b26;
+  --st-warning-c: #fcebd5;
+  --on-st-warning-c: #7a4a05;
+  --st-danger-c: #fdecec;
+  --on-st-danger-c: #991b1b;
+  --st-progress-c: #dbeafe;
+  --on-st-progress-c: #1e40af;
+  --mark: #fff1b8;
+  --ai-c: #edeaf6;
+  --on-code: #d8dee9;
+  --syn-keyword: #22345c;
+  --syn-string: #186f69;
+  --syn-number: #7e570d;
+  --syn-comment: #4a5563;
+  --syn-function: #6b3f5e;
+  --syn-type: #2f4b7c;
+  --d-indigo: #2f4b7c;
+  --d-teal: #186f69;
+  --d-amber: #7e570d;
+  --d-coral: #a34a3e;
+  --d-sage: #516f46;
+  --d-plum: #6b3f5e;
+  --font: "M PLUS 2", "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
+  --font-code: ui-monospace, SFMono-Regular, Menlo, monospace;
   --side-bg: #eef0f4;
   --side-hover: rgba(19, 27, 39, 0.06);
   --side-on: #ffffff;
+  /* 余白の段（DESIGN spacing）。Tailwind の --spacing-* 名前空間には置かない。
+     置くと max-w-2xl / w-xl などが 96px・48px に化ける（実際に 404 と権限なしの画面が潰れた） */
+  --s-xs: 4px;
+  --s-sm: 8px;
+  --s-md: 16px;
+  --s-lg: 24px;
+  --s-xl: 48px;
+  --s-2xl: 96px;
+
   --r-sm: 4px;
   --r-md: 6px;
   --r-lg: 12px;

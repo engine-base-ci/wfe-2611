@@ -1,11 +1,12 @@
 // UI 共通基盤（T-US-03 API クライアントと型／T-US-04 認証の配管）の実ブラウザの証拠。行 ID を名前に持つ（op_gate.py）
 import { expect, test } from "@playwright/test";
-import { admin, bridgeRow, ensureGoalKind, loginAs, noOverflow, PW, signupViaApi, WIDTHS } from "./_lib/api";
+import { admin, bridgeRow, ensureGoalKind, loginAs, noOverflow, PW, signupViaApi, WIDTHS , setupDone } from "./_lib/api";
 
 test("USH-03-001 API クライアント：契約の path で GET し、返った値が画面に出る（プレースホルダ固定でない）。書き込みの後は別 GET で読み直す。4 幅で溢れ 0", async ({
   page,
 }) => {
   const u = await signupViaApi();
+  await setupDone(u); // はじめの設定を通し終わった人（D-089）
   await loginAs(page, u.token);
   await ensureGoalKind();
   await admin(
@@ -34,6 +35,7 @@ test("USH-03-006 USH-04-006 口座状態の波及（G-14）：セッションを
   page,
 }) => {
   const u = await signupViaApi();
+  await setupDone(u); // はじめの設定を通し終わった人（D-089）
   await loginAs(page, u.token);
   await bridgeRow(u);
   await page.goto("/onboard/interview");
@@ -52,6 +54,7 @@ test("USH-04-001 認証の配管：未ログインで守られた画面は入り
   expect(page.url()).toContain("next=%2Fsettings%2Fcredentials");
   await expect(page.locator("form[data-state='n'] h1")).toHaveText("ログイン"); // 入り直しの画面が出てから入れる
   const u = await signupViaApi();
+  await setupDone(u); // はじめの設定を通し終わった人（D-089）
   await page.getByLabel("メールアドレス").fill(u.email);
   await page.getByLabel("パスワード", { exact: true }).fill(PW);
   await page.getByRole("button", { name: "ログイン" }).click();

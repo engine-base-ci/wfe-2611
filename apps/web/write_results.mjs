@@ -13,20 +13,43 @@ const label = rest.includes("--label") ? rest[rest.indexOf("--label") + 1] : "�
 const ID = /\b[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)+-\d{3}(?:-[ABC])?\b/g;
 const rank = { passed: 0, skipped: 1, failed: 2, timedOut: 2, interrupted: 2 };
 const byId = new Map();
+const whyById = new Map(); // 飛ばした理由（BLOCKED の理由として正本に書く）
 const files = new Map();
 const walk = (s, path) => {
   for (const sp of s.specs ?? []) {
     let st = "skipped";
-    for (const t of sp.tests ?? []) for (const r of t.results ?? []) st = r.status ?? st;
+    let why = "";
+    for (const t of sp.tests ?? []) {
+      for (const r of t.results ?? []) st = r.status ?? st;
+      for (const a of t.annotations ?? []) if (a.type === "skip" || a.type === "fixme") why = a.description ?? why;
+    }
     for (const id of `${path.join(" ")} ${sp.title}`.match(ID) ?? []) {
       const cur = byId.get(id);
       if (cur === undefined || (rank[st] ?? 2) > (rank[cur] ?? 0)) byId.set(id, st);
+      if (why) whyById.set(id, why);
       files.set(id, sp.file ?? s.file ?? "");
     }
   }
   for (const c of s.suites ?? []) walk(c, [...path, s.title ?? ""]);
 };
-for (const p of reportPaths) for (const s of JSON.parse(readFileSync(p, "utf8")).suites ?? []) walk(s, []);
+// vitest の JSON 報告（--reporter=json）も読む：testResults[].assertionResults[]（名前に行 ID を持つもの）
+const walkVitest = (j) => {
+  for (const f of j.testResults ?? []) {
+    for (const a of f.assertionResults ?? []) {
+      const st = a.status === "passed" ? "passed" : a.status === "failed" ? "failed" : "skipped";
+      for (const id of `${(a.ancestorTitles ?? []).join(" ")} ${a.title ?? ""}`.match(ID) ?? []) {
+        const cur = byId.get(id);
+        if (cur === undefined || (rank[st] ?? 2) > (rank[cur] ?? 0)) byId.set(id, st);
+        files.set(id, f.name ?? "");
+      }
+    }
+  }
+};
+for (const p of reportPaths) {
+  const j = JSON.parse(readFileSync(p, "utf8"));
+  if (Array.isArray(j.testResults)) walkVitest(j);
+  for (const s of j.suites ?? []) walk(s, []);
+}
 const today = new Date().toISOString().slice(0, 10);
 const mds = [];
 const dig = (d) => {
@@ -55,7 +78,10 @@ for (const p of mds) {
       st === "passed"
         ? ` PASS（${f || "playwright"}・${label}・${today}） `
         : st === "skipped"
-          ? c[8]
+          ? // 飛ばしたなら、そう書く。前の結果を残すと「通ったまま」に見える
+            whyById.has(id)
+            ? ` BLOCKED（${whyById.get(id)}・${today}） `
+            : c[8]
           : ` 未通過（${today}・${f}・報告を見る） `;
     if (c[8] !== cell) {
       c[8] = cell;

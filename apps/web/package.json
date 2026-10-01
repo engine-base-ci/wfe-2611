@@ -12,12 +12,10 @@
     "build:test": "NEXT_DIST_DIR=.next-prod next build",
     "start:test": "NEXT_DIST_DIR=.next-prod next start --port 3124",
     "e2e:screens": "PW_REPORT=pw-reports/screens.json BASE_URL=http://127.0.0.1:3124 playwright test tests/screens tests/shared.spec.ts tests/reachability.spec.ts tests/layout.spec.ts",
-    "e2e:showcase": "PW_REPORT=pw-reports/showcase.json BASE_URL=http://localhost:3123 playwright test tests/shell.spec.ts tests/shell-ops.spec.ts tests/ui.spec.ts tests/views.spec.ts"
+    "e2e:showcase": "PW_REPORT=pw-reports/showcase.json BASE_URL=http://localhost:3123 playwright test tests/shell.spec.ts tests/shell-ops.spec.ts tests/ui.spec.ts tests/views.spec.ts",
+    "e2e:bridge": "PW_REPORT=pw-reports/bridge-loop.json BASE_URL=http://127.0.0.1:3124 playwright test tests/screens/bridge-loop.spec.ts tests/screens/setup-gate.spec.ts --retries=2"
   },
   "dependencies": {
-    "@ag-ui/client": "^0.0.59",
-    "@assistant-ui/react": "^0.15.20",
-    "@assistant-ui/react-ag-ui": "^0.0.59",
     "@base-ui-components/react": "1.0.0-rc.0",
     "@hookform/resolvers": "^5.9.1",
     "@kaname/contracts": "workspace:*",
@@ -27,13 +25,22 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
+    "mermaid": "^12.0.0",
     "next": "^15.5.0",
     "qrcode": "^1.5.4",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.88.0",
+    "react-markdown": "^10.1.0",
+    "rehype-raw": "^7.0.0",
+    "rehype-sanitize": "^6.0.0",
+    "remark-cjk-friendly": "2.3.1",
+    "remark-gfm": "^4.0.1",
+    "remark-math": "^6.0.0",
+    "shiki": "^4.4.3",
     "sonner": "^2.0.8",
     "tailwind-merge": "^3.7.0",
+    "temml": "^0.13.5",
     "zod": "^4.6.5"
   },
   "devDependencies": {

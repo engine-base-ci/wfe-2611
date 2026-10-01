@@ -1,5 +1,5 @@
 // /api/auth-ext（Kaname としての認証の段取り）を画面から呼ぶ。エラーは正本の形（code・message・一手）
-import { apiBase, getToken, setToken } from "@/lib/api/client";
+import { apiBase, getToken, notifyUnauthorized, setToken } from "@/lib/api/client";
 import { refreshSession } from "./client";
 
 export interface ExtError {
@@ -43,6 +43,9 @@ export async function ext<T>(path: string, body?: unknown, method = "POST"): Pro
     remaining?: number;
     retry_after_sec?: number;
   };
+  // ログインが要る口で「入っていない」（鍵が切れた・会社の人が消えた）。空白のまま止めず、鍵を捨てて入り直しへ（D-086.4）。
+  // ログインそのものの失敗（E-AUTH-001 等）は各画面が文言で出すので、ここでは UNAUTHENTICATED だけを見る
+  if (res.status === 401 && json.code === "UNAUTHENTICATED") notifyUnauthorized();
   if (!res.ok)
     throw new AuthExtError({
       status: res.status,
@@ -75,7 +78,7 @@ export const resendSignup = (email: string) =>
     sent: boolean;
     mail_error: string | null;
     mail_error_kind: "recipient" | "provider" | null;
-    pending: boolean;
+    pending: boolean; registered?: boolean;
   }>("/resend-signup", { email });
 /** 確認：ここで初めて利用者と会社ができ、そのままログインする */
 export const verifySignup = (token: string) =>
@@ -116,3 +119,342 @@ export const me = () =>
     undefined,
     "GET",
   );
+
+/** はじめの設定の進み具合（D-089）。0＝まだ何もしていない、6＝通し終わり */
+export const setupState = () => ext<{ step: number; total: number }>("/setup-state", undefined, "GET");
+export const setupStepDone = (step: number) => ext<{ step: number; total: number }>("/setup-step", { step });
+
+// ---- 自分のAIに言う・いまどうなっているか（D-090・D-104）
+export interface AgentMsg {
+  id: string;
+  /** me＝自分が言ったこと、ai＝返ってきたこと、stopped＝ここで止まりました（理由だけ）、note＝許可した／しなかった の記録、memo＝覚えました（D-105.1） */
+  who: "me" | "ai" | "stopped" | "note" | "memo";
+  /** memo のとき、入れた記憶の id */
+  memory_id?: string | null;
+  text: string;
+  at: string;
+  job_id?: string | null;
+  /** 引用して続けた一部（D-104.17） */
+  quote?: { text: string; message_id: string | null } | null;
+  /** 終わった作業の 1 行（N つの操作・時間。D-104.8） */
+  work?: { ops: number; ms: number } | null;
+  attachments?: { id: string; name: string; mime?: string; size?: number }[] | null;
+}
+export interface Todo {
+  content: string;
+  status: "pending" | "in_progress" | "completed";
+}
+export interface WorkTool {
+  at: string;
+  name: string;
+  target: string;
+  ok: boolean;
+  ms: number | null;
+}
+/** 動いている仕事のいま（D-104.8）：何をしているかの 1 行・手順・道具の行・書きかけの返事 */
+export interface Work {
+  job_id: string;
+  state: "running" | "asking";
+  started_at: string | null;
+  elapsed_ms: number;
+  status: string | null;
+  plan: Todo[] | null;
+  tools: WorkTool[];
+  partial: string | null;
+  stopping: boolean;
+  permission_mode: PermissionMode;
+  /** 最後に動いた時刻（途中経過・書きかけ・状態の変化） */
+  last_at?: string | null;
+}
+import type { DefaultMode, PermissionMode } from "@/lib/agent-modes";
+export type { PermissionMode } from "@/lib/agent-modes";
+export type Effort = "low" | "medium" | "high" | "xhigh" | "max";
+/** 使用量（D-104.16）：5 時間の枠・週の枠。割合（0〜1）と戻る時刻 */
+export type Usage = Partial<Record<"five_hour" | "week", { utilization: number; resets_at: string; observed_at: string }>>;
+export interface Asking {
+  job_id: string;
+  request_id: string;
+  tool: string | null;
+  summary: string | null;
+  input: unknown;
+  at: string;
+  /** AI社員からの問いならその名前（D-104.14） */
+  by?: string | null;
+}
+export interface QueuedItem {
+  id: string;
+  kind: "steer" | "job";
+  job_id: string;
+  text: string | null;
+  at: string;
+}
+export interface AgentState {
+  conversation_id: string | null;
+  conversation: { id: string; title: string; starred: boolean; incognito: boolean } | null;
+  messages: AgentMsg[];
+  /** 待っている・動いている仕事。あるあいだは作業中 */
+  running_job_id: string | null;
+  /** いちばん新しい仕事が止まっていて、その後に何も言っていないとき（理由だけ出す。D-104.15） */
+  stopped: { job_id: string; reason: string } | null;
+  progress?: { at: string; text: string | null }[];
+  asking?: Asking | null;
+  work?: Work | null;
+  /** 順番待ち（D-104.9）：steer＝動いている仕事に次の区切りで渡す一言／job＝後ろに並んだ仕事。どちらも取り消せる */
+  queued?: QueuedItem[];
+  /** この会話に並んだ仕事が、別の会話の仕事の後ろで待っている（本人の PC の Claude Code は一度に 1 つ） */
+  waiting_on?: { conversation_id: string; title: string; asking: boolean } | null;
+  usage?: Usage;
+}
+export interface BridgeState {
+  connected: boolean;
+  /** 最後の知らせが 75 秒以内か。つながった記録があっても、止まっていれば false（G-12） */
+  live: boolean;
+  device_label?: string;
+  last_seen_sec?: number;
+  /** fix=update は Bridge が古い（入れ直しが要る・E-CONN-012） */
+  health?: { name: string; ok: boolean; detail?: string; fix?: string | null }[] | null;
+  health_at?: string | null;
+  /** この端末で AI が使うブラウザ（D-120.1）。Kaname が正本 */
+  browser?: AgentBrowser;
+  /** この PC の Claude Code がふだん使うモデル（例 claude-opus-4-8）。何も選んでいないときにボタンへ出す */
+  cli_model?: string | null;
+}
+export type AgentBrowser = "chrome" | "dedicated" | "off";
+/** どこで話しかけられたか（D-103）。会話には出さず、自分のAI に渡す指示にだけ添える */
+export interface AgentContext {
+  screen: string;
+  screen_name?: string;
+  selected?: string;
+}
+/** 言う（D-104）。モード・モデル・強さ・資料・引用は選んだときだけ乗せる。全部許可は本人がこの会話で選んだときだけ */
+export interface SayBody {
+  text: string;
+  conversation_id?: string;
+  branch_from?: string;
+  context?: AgentContext;
+  permission_mode?: PermissionMode;
+  model?: string;
+  effort?: Effort;
+  attachment_ids?: string[];
+  quote?: { text: string; message_id: string | null };
+}
+export const agentSay = (b: SayBody) => ext<{ conversation_id: string; job_id: string }>("/agent/say", b);
+/** 確認に答える（旧：許可する／許可しない）。答えは証跡に残る（D-093.8） */
+export const agentAnswer = (job_id: string, request_id: string, allow: boolean) =>
+  ext<{ ok: boolean }>("/agent/answer", { job_id, request_id, allow });
+/** 許可の 3 択＋一言・問い合わせの答え（D-104.7・D-104.14） */
+export const agentAnswer2 = (b: {
+  job_id: string;
+  request_id: string;
+  allow: boolean;
+  scope?: "once" | "always";
+  note?: string;
+  answers?: Record<string, string>;
+}) => ext<{ ok: boolean }>("/agent/answer2", b);
+export const agentResume = (job_id: string, how: "continue" | "restart" | "cancel") =>
+  ext<{ job_id: string }>("/agent/resume", { job_id, how });
+export const agentState = (conversationId?: string | null) =>
+  ext<AgentState>(
+    `/agent/state${conversationId ? `?conversation_id=${encodeURIComponent(conversationId)}` : ""}`,
+    undefined,
+    "GET",
+  );
+/** 会話の一覧（D-104.1）：星が上・新しい順。q で名前と中身を探す */
+export interface ConversationItem {
+  id: string;
+  title: string;
+  title_auto: boolean;
+  starred: boolean;
+  incognito: boolean;
+  updated_at: string;
+  unread: number;
+  hit: string | null;
+}
+export const agentConversations = (q?: string) =>
+  ext<ConversationItem[]>(`/agent/conversations${q ? `?q=${encodeURIComponent(q)}` : ""}`, undefined, "GET");
+export const agentNewConversation = (incognito = false) =>
+  ext<{ conversation_id: string }>("/agent/conversations", { incognito });
+export const agentConversationSet = (id: string, b: { title?: string; starred?: boolean; incognito?: boolean }) =>
+  ext<{ ok: boolean }>(`/agent/conversations/${encodeURIComponent(id)}`, b, "PATCH");
+export const agentConversationDelete = (id: string) =>
+  ext<{ ok: boolean }>(`/agent/conversations/${encodeURIComponent(id)}`, undefined, "DELETE");
+export const agentMarkRead = (id: string) => ext<{ ok: boolean }>(`/agent/conversations/${encodeURIComponent(id)}/read`, {});
+/** 止める（動いているもの）／順番待ちを取り消す（D-104.9） */
+export const agentStop = (job_id: string) => ext<{ state: string }>("/agent/stop", { job_id });
+/** 止めずに方向を直す（次の区切りで効く。それまでは順番待ちで取り消せる） */
+/** 動いている仕事に一言。送ったときのモード・モデルも添える（区切りに間に合わず次の仕事になったときに使う） */
+export const agentSteer = (job_id: string, text: string, opts: { permission_mode?: string; model?: string | null; effort?: string | null } = {}) =>
+  ext<{ ok: boolean }>("/agent/steer", { job_id, text, ...opts });
+export const agentSteerCancel = (id: string) => ext<{ ok: boolean }>(`/agent/steer/${encodeURIComponent(id)}`, undefined, "DELETE");
+/** 「いつも許可」の一覧と既定のモード（ルール › 個人・D-104.14） */
+export const agentPermissionRules = () =>
+  ext<{ rules: { id: string; tool: string; target: string | null; at: string }[]; default_mode: PermissionMode }>(
+    "/agent/permission-rules",
+    undefined,
+    "GET",
+  );
+export const agentPermissionRevoke = (id: string) =>
+  ext<{ ok: boolean }>(`/agent/permission-rules/${encodeURIComponent(id)}`, undefined, "DELETE");
+export const agentSetDefaultMode = (mode: DefaultMode) =>
+  ext<{ ok: boolean }>("/agent/default-mode", { mode });
+export const agentUsage = () => ext<Usage>("/agent/usage", undefined, "GET");
+/** 資料を付ける（D-104.11）。置き場に置いてから id が返る。置けなければ理由つきで失敗（E-CHAT-002・E-LIM-002） */
+export async function agentAttach(file: File): Promise<{ id: string; name: string; mime: string; size: number }> {
+  const fd = new FormData();
+  fd.append("file", file, file.name);
+  const headers: Record<string, string> = { accept: "application/json" };
+  const tk = getToken();
+  if (tk) headers["authorization"] = `Bearer ${tk}`;
+  const res = await fetch(`${apiBase()}/api/auth-ext/agent/attachments`, { method: "POST", headers, body: fd });
+  const json = (await res.json().catch(() => ({}))) as { data?: { id: string; name: string; mime: string; size: number }; code?: string; message?: string };
+  if (res.status === 401 && json.code === "UNAUTHENTICATED") notifyUnauthorized();
+  if (!res.ok || !json.data)
+    throw new AuthExtError({ status: res.status, code: json.code ?? String(res.status), message: json.message ?? "資料を付けられませんでした" });
+  return json.data;
+}
+export const bridgeState = () => ext<BridgeState>("/bridge/state", undefined, "GET");
+/** AI が使うブラウザを、いまの端末について選ぶ（D-120.1）。次の仕事から効く */
+export const agentSetBrowser = (browser: AgentBrowser) => ext<{ browser: AgentBrowser }>("/agent/browser", { browser });
+/** もう一度確かめる（D-120.3）。Bridge が小さな仕事で Chrome を本当に使えるか試す。結果は PC の状態に出る */
+export const agentBrowserCheck = () => ext<{ job_id: string }>("/agent/browser-check", {});
+/** この端末を外す（自分の Bridge の端末だけ）。外した Bridge は次の要求で鍵を捨て、仕事を取りに来なくなる */
+export const agentRevokeBridge = (session_id: string) => ext<{ revoked: boolean }>("/agent/bridge-revoke", { session_id });
+/** 「新しい会話」（D-062）。いまの 1 本を閉じる。前のやりとりは消えない */
+export const agentNew = (conversation_id?: string | undefined) =>
+  ext<{ closed: boolean }>("/agent/new", conversation_id ? { conversation_id } : {});
+
+// ---- 記憶（D-105）：毎朝のまとめ・結果をその場で直す・上の層へ上げる候補・確認待ち
+export interface DigestItem {
+  memory_id: string;
+  title: string;
+  body: string;
+  kind?: string;
+  source?: string;
+}
+export interface DigestResult {
+  remembered: DigestItem[];
+  merged: (DigestItem & { before: { id: string; title: string; body: string }[] })[];
+  propose: { proposal_id: string; memory_id: string; title: string; body: string; target_scope_id: string; why: string }[];
+  discarded: { text: string; why: string }[];
+}
+export interface DigestStatus {
+  pending: { from_on: string; to_on: string; days: number; conversations: number } | null;
+  running: { id: string; started_at: string; from_on: string; to_on: string; conversations: number } | null;
+  last: { id: string; from_on: string; to_on: string; conversations: number; finished_at: string; result: DigestResult } | null;
+  upper: { id: string; title: string; body: string; kind: string; scope: string; at: string }[];
+  solo: boolean;
+  proposals: { proposal_id: string; title: string; state: "sent" | "accepted" | "returned"; target_scope: string; reviewer: string | null; decided_at: string | null; conflict: boolean }[];
+  scopes: { id: string; name: string }[];
+}
+export const memoryDigest = () => ext<DigestStatus>("/agent/memory/digest", undefined, "GET");
+export const memoryDigestStart = () => ext<{ digest_id: string; already?: boolean }>("/agent/memory/digest", {});
+export const memoryDigestUndo = (digest: string, memory_id: string) => ext<{ ok: boolean }>(`/agent/memory/digest/${encodeURIComponent(digest)}/undo`, { memory_id });
+export const memoryDigestPick = (digest: string, index: number) => ext<{ memory_id: string }>(`/agent/memory/digest/${encodeURIComponent(digest)}/pick`, { index });
+export const memoryEdit = (id: string, body: string, title?: string) => ext<{ ok: boolean }>(`/agent/memory/${encodeURIComponent(id)}`, { body, ...(title ? { title } : {}) }, "PATCH");
+export const memoryDelete = (id: string) => ext<{ ok: boolean }>(`/agent/memory/${encodeURIComponent(id)}`, undefined, "DELETE");
+export const proposalSend = (id: string, target_scope_id?: string) =>
+  ext<{ reviewer_member_id: string; target_scope_id: string; conflict: boolean }>(`/agent/memory/proposals/${encodeURIComponent(id)}/send`, target_scope_id ? { target_scope_id } : {});
+export interface Review {
+  proposal_id: string;
+  title: string;
+  body: string;
+  kind: string;
+  target_scope_id: string;
+  target_scope: string;
+  proposer: string;
+  evidence: { why?: string; source?: string } | null;
+  conflict_group_id: string | null;
+  at: string;
+}
+export const memoryReviews = () => ext<Review[]>("/agent/memory/reviews", undefined, "GET");
+export const proposalDecide = (id: string, accept: boolean, body?: string) =>
+  ext<{ ok: boolean }>(`/agent/memory/proposals/${encodeURIComponent(id)}/decide`, { accept, ...(body ? { body } : {}) });
+/** 長い会話は上へ戻ると古い分を読み込む（D-104.18） */
+export const agentMessagesBefore = (conversationId: string, before: string) =>
+  ext<{ messages: AgentMsg[]; has_more: boolean }>(
+    `/agent/messages?conversation_id=${encodeURIComponent(conversationId)}&before=${encodeURIComponent(before)}`,
+    undefined,
+    "GET",
+  );
+
+// ---- 成果物（D-106）：返事から書き出す・横で開いて直す（保存で新しい版）・版を戻す（戻すのも新しい版）・落とす
+export type ArtifactFormat = "md" | "csv" | string;
+export interface ArtifactItem {
+  id: string;
+  title: string;
+  format: ArtifactFormat;
+  current_version: number;
+  message_id: string | null;
+  conversation_id: string | null;
+  updated_at: string;
+}
+export interface ArtifactVersion {
+  version: number;
+  at: string;
+  by: string;
+  reverted_from: number | null;
+  size: number | null;
+  note: string | null;
+}
+export interface Artifact extends ArtifactItem {
+  editable: boolean;
+  /** いま開いている版（?version= で前の版を開いたときはその版） */
+  viewing: number;
+  /** 直せる種類（md・csv）の中身 */
+  text?: string | null;
+  /** 見るだけの種類（画像・PDF・動画・音声）の期限つきの場所 */
+  url?: string | null;
+  versions: ArtifactVersion[];
+}
+export const artifactList = (conversationId?: string | null) =>
+  ext<ArtifactItem[]>(`/agent/artifacts${conversationId ? `?conversation_id=${encodeURIComponent(conversationId)}` : ""}`, undefined, "GET");
+export const artifactCreate = (b: { message_id: string; text: string; format?: "md" | "csv"; title?: string }) => ext<Artifact>("/agent/artifacts", b);
+export const artifactGet = (id: string, version?: number | null) =>
+  ext<Artifact>(`/agent/artifacts/${encodeURIComponent(id)}${version ? `?version=${version}` : ""}`, undefined, "GET");
+export const artifactSave = (id: string, text: string) => ext<Artifact>(`/agent/artifacts/${encodeURIComponent(id)}/versions`, { text });
+export const artifactRevert = (id: string, version: number) => ext<Artifact>(`/agent/artifacts/${encodeURIComponent(id)}/revert`, { version });
+export const artifactRename = (id: string, title: string) => ext<{ ok: boolean }>(`/agent/artifacts/${encodeURIComponent(id)}`, { title }, "PATCH");
+/** 今の版（か指定の版）の中身をファイルとして受け取る。名前は API が付けたもの */
+export async function artifactDownload(id: string, version?: number | null): Promise<{ blob: Blob; name: string }> {
+  const headers: Record<string, string> = {};
+  const tk = getToken();
+  if (tk) headers["authorization"] = `Bearer ${tk}`;
+  const res = await fetch(`${apiBase()}/api/auth-ext/agent/artifacts/${encodeURIComponent(id)}/download${version ? `?version=${version}` : ""}`, { headers });
+  if (!res.ok) {
+    const j = (await res.json().catch(() => ({}))) as { code?: string; message?: string };
+    if (res.status === 401 && j.code === "UNAUTHENTICATED") notifyUnauthorized();
+    throw new AuthExtError({ status: res.status, code: j.code ?? String(res.status), message: j.message ?? "落とせませんでした" });
+  }
+  const cd = res.headers.get("content-disposition") ?? "";
+  const m = /filename\*=UTF-8''([^;]+)/.exec(cd);
+  return { blob: await res.blob(), name: m ? decodeURIComponent(m[1]!) : "成果物" };
+}
+
+// ---- たたき台と預けたログイン情報（D-108）
+export interface DraftGoal {
+  id: string;
+  name: string;
+  target_value: number | string | null;
+  unit: string;
+  scope: string;
+  period_start: string | null;
+  period_end: string | null;
+}
+export interface OnboardDraft {
+  goals: DraftGoal[];
+  ledgers: { id: string; name: string; stages: string[]; fields: string[] }[];
+  duties: { id: string; name: string; staff: string; summary: string; origin: "distributed" | "company" }[];
+}
+export const onboardDraft = () => ext<OnboardDraft>("/onboard/draft", undefined, "GET");
+export type Verdict = "api" | "allowed" | "unspecified" | "forbidden" | "bank";
+export interface MyCredential {
+  id: string;
+  service_name: string;
+  service_domain: string;
+  verdict: Verdict;
+  kind: string;
+  state: "stored" | "connected" | "revoked";
+  ref_tail: string;
+  created_at: string;
+}
+export const myCredentials = () => ext<MyCredential[]>("/vault/credentials", undefined, "GET");

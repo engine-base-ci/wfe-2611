@@ -8,28 +8,24 @@ export function SubNav({
   active,
   onSelect,
   actions,
+  body,
 }: {
   active?: number;
   onSelect?: (i: number) => void;
   actions?: React.ReactNode;
+  /** 項目の代わりに出す中身（会話モードの会話の一覧・D-104.1） */
+  body?: React.ReactNode;
 }) {
-  const { screenId, subMode, counts, layout } = useShell();
+  // 見出し（くくり・画面名・説明）は本文の上の帯に 1 つだけ（app-shell の .shead）。ここでは出さない（2026-09-30 user「同じ文章が 2 回」）
+  const { screenId, subMode, counts } = useShell();
   if (!screenId) return null;
   const items = NAV.subByScreen[screenId];
-  const s = NAV.screens[screenId];
   if (!items?.length) return null;
-  const crumb = NAV.sections.find((x) => (x.screens as readonly string[]).includes(screenId))?.label ?? "";
   let lastGroup: string | undefined;
   return (
     <aside className="subnav" data-mode={subMode} data-requires="app" aria-label="第2ナビ">
-      {layout !== "threepane" ? (
-        <div className="subnav-h">
-          <div className="crumb">{crumb}</div>
-          <div className="ttl">{s.name}</div>
-          <div className="why">{s.purpose}</div>
-        </div>
-      ) : null}
-      <div className="subnav-b">
+      {body ? <div className="subnav-b" data-sub-body>{body}</div> : null}
+      <div className="subnav-b" hidden={!!body}>
         {items.map((it, i) => {
           const g = it.group && it.group !== lastGroup ? it.group : null;
           if (g) lastGroup = it.group;

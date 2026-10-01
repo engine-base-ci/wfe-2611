@@ -1,6 +1,6 @@
 // T-U-05 ログイン。テストの名前に正本の行 ID を持つ（op_gate.py）
 import { expect, test } from "@playwright/test";
-import { pwToggle, api, loginAs, noOverflow, PW, signupViaApi, totp } from "../_lib/api";
+import { HOME_RE, PW, api, loginAs, noOverflow, pwToggle, setupDone, signupViaApi, totp } from "../_lib/api";
 
 test("SCR-LOGIN-001 SCR-LOGIN-012 SCR-LOGIN-013 状態 通常：h1・4 幅で横溢れ 0・外の画面なので時点の部品は無い", async ({
   page,
@@ -21,35 +21,38 @@ test("SCR-LOGIN-009 SCR-LOGIN-010 SCR-LOGIN-028 SCR-LOGIN-029 リンク「パス
   await expect(page).toHaveURL(/\/signup$/);
   await expect(page.locator("h1")).toHaveText("アカウントを作る");
 });
-test("SCR-LOGIN-008 SCR-LOGIN-025 SCR-LOGIN-026 SCR-LOGIN-027 SCR-LOGIN-014 SCR-LOGIN-015 SCR-LOGIN-018 E-AUTH-001-B E-AUTH-002-B ログイン：正しい組み合わせで今日の画面へ（大文字・全角・空白の違いは同一）", async ({
+test("SCR-LOGIN-008 SCR-LOGIN-025 SCR-LOGIN-026 SCR-LOGIN-027 SCR-LOGIN-014 SCR-LOGIN-015 SCR-LOGIN-018 E-AUTH-001-B E-AUTH-002-B E-AUTH-007-B ログイン：正しい組み合わせで今日の画面へ（大文字・全角・空白の違いは同一）", async ({
   page,
 }) => {
   const u = await signupViaApi();
+  await setupDone(u); // 今日 が行き先になるのは はじめの設定を通し終わった人（D-089）
   await page.goto("/login");
   const [local, domain] = [u.email.split("@")[0]!, u.email.split("@")[1]!];
   // eslint-disable-next-line no-irregular-whitespace -- 全角の空白と全角の＠を意図して入れる
   await page.getByLabel("メールアドレス").fill(`　${local.toUpperCase()}＠${domain.toUpperCase()} `);
   await page.getByLabel("パスワード", { exact: true }).fill(PW);
   await page.getByRole("button", { name: "ログイン" }).click();
-  await page.waitForURL(/\/today/, { timeout: 15_000 }).catch(() => undefined);
-  expect(page.url()).toMatch(/\/today/);
+  await page.waitForURL(HOME_RE, { timeout: 30_000 }).catch(() => undefined);
+  expect(page.url()).toMatch(HOME_RE);
   expect(await page.evaluate(() => window.localStorage.getItem("kaname.token"))).toBeTruthy();
 });
 test("SCR-LOGIN-016 SCR-LOGIN-017 記号の種別・NFD：メールは ASCII なので該当なし＝ハイフンの種別や NFD を混ぜても入れる（‐ を含む local はそのまま比較）", async ({
   page,
 }) => {
   const u = await signupViaApi();
+  await setupDone(u); // 今日 が行き先になるのは はじめの設定を通し終わった人（D-089）
   await page.goto("/login");
   await page.getByLabel("メールアドレス").fill(u.email.normalize("NFD"));
   await page.getByLabel("パスワード", { exact: true }).fill(PW);
   await page.getByRole("button", { name: "ログイン" }).click();
-  await page.waitForURL(/\/today/, { timeout: 15_000 }).catch(() => undefined);
-  expect(page.url()).toMatch(/\/today/);
+  await page.waitForURL(HOME_RE, { timeout: 30_000 }).catch(() => undefined);
+  expect(page.url()).toMatch(HOME_RE);
 });
 test("SCR-LOGIN-003 SCR-LOGIN-034 E-AUTH-001-A E-AUTH-001-C E-AUTH-002-A E-AUTH-002-C 失敗：残り回数の文言 → 5 回で 15 分ロック（正しくても入れない・サーバが最後の砦）→ パスワードの再設定への一手", async ({
   page,
 }) => {
   const u = await signupViaApi();
+  await setupDone(u); // 今日 が行き先になるのは はじめの設定を通し終わった人（D-089）
   await page.goto("/login");
   await page.getByLabel("メールアドレス").fill(u.email);
   for (let i = 4; i >= 1; i--) {
@@ -69,6 +72,7 @@ test("SCR-LOGIN-002 SCR-LOGIN-030 SCR-LOGIN-031 SCR-LOGIN-032 SCR-LOGIN-033 SCR-
   page,
 }) => {
   const u = await signupViaApi();
+  await setupDone(u); // 今日 が行き先になるのは はじめの設定を通し終わった人（D-089）
   await loginAs(page, u.token);
   await page.goto("/mfa-setup");
   await page.getByLabel("パスワード", { exact: true }).fill(PW);
@@ -92,8 +96,8 @@ test("SCR-LOGIN-002 SCR-LOGIN-030 SCR-LOGIN-031 SCR-LOGIN-032 SCR-LOGIN-033 SCR-
   await expect(page.locator("form[data-state='m'] h1")).toHaveText("回復コードを入れてください");
   await page.getByLabel("回復コード").fill(backup);
   await page.getByRole("button", { name: "今日の画面へ" }).click();
-  await page.waitForURL(/\/today/, { timeout: 15_000 }).catch(() => undefined);
-  expect(page.url()).toMatch(/\/today/);
+  await page.waitForURL(HOME_RE, { timeout: 30_000 }).catch(() => undefined);
+  expect(page.url()).toMatch(HOME_RE);
   // 使った回復コードは消える（サーバ）
   await page.evaluate(() => window.localStorage.removeItem("kaname.token"));
   await page.goto("/login");
@@ -107,8 +111,8 @@ test("SCR-LOGIN-002 SCR-LOGIN-030 SCR-LOGIN-031 SCR-LOGIN-032 SCR-LOGIN-033 SCR-
   await page.getByRole("button", { name: "認証アプリの6桁で入る" }).click();
   await page.getByLabel("6桁").fill(totp(secret));
   await page.getByRole("button", { name: "今日の画面へ" }).click();
-  await page.waitForURL(/\/today/, { timeout: 15_000 }).catch(() => undefined);
-  expect(page.url()).toMatch(/\/today/);
+  await page.waitForURL(HOME_RE, { timeout: 30_000 }).catch(() => undefined);
+  expect(page.url()).toMatch(HOME_RE);
 });
 
 test("SCR-LOGIN-036 パスワードは見る・隠すを切り替えられる（既定は隠す・押すと見える・的は 24px 以上）", async ({

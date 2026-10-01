@@ -1,19 +1,7 @@
 // T-U-02 メールを確認する。テストの名前に正本の行 ID を持つ（op_gate.py）
 // D-088：登録が終わるのはリンクを押した時点。押すまで利用者も会社も作られない
 import { expect, test } from "@playwright/test";
-import {
-  admin,
-  api,
-  lastMailUrl,
-  mailLog,
-  noOverflow,
-  pendingToken,
-  PW,
-  realMailEmail,
-  signupPending,
-  signupViaApi,
-  uniqEmail,
-} from "../_lib/api";
+import { PW, admin, api, lastMailUrl, mailLog, noOverflow, pendingToken, realMailEmail, signupPending, signupViaApi, uniqEmail } from "../_lib/api";
 
 const userCount = async (email: string) =>
   (await admin<{ n: string }>('select count(*)::text as n from kaname_auth."user" where email = $1', [email]))[0]!.n;
@@ -25,7 +13,7 @@ const companyOf = async (email: string) =>
     )
   )[0]?.name ?? null;
 
-test("SCR-VERIFY-EMAIL-001 SCR-VERIFY-EMAIL-009 SCR-VERIFY-EMAIL-010 SCR-VERIFY-EMAIL-011 状態 送信済み：4 幅で横溢れ 0・宛先が出る・「もう一度送る」で送った旨が出る（入力欄は無い＝表記ゆらぎは該当なし）", async ({
+test("E-CONF-011-B SCR-VERIFY-EMAIL-001 SCR-VERIFY-EMAIL-009 SCR-VERIFY-EMAIL-010 SCR-VERIFY-EMAIL-011 状態 送信済み：4 幅で横溢れ 0・宛先が出る・「もう一度送る」で送った旨が出る（入力欄は無い＝表記ゆらぎは該当なし）", async ({
   page,
 }) => {
   const u = await signupPending("QA 社", uniqEmail());
@@ -49,7 +37,7 @@ test("押すまで登録されない：申し込んだ時点では利用者も�
   );
   expect(pend[0]!.n, "保留の申し込みが残っていない").toBe("1");
   await page.goto(`/verify-email?sent=1&email=${encodeURIComponent(email)}`);
-  await expect(page.locator("[data-state='n']")).toContainText("押した時点で登録が終わります");
+  await expect(page.locator("[data-state='n']")).toContainText("押すと登録が終わります");
 });
 
 test("SCR-VERIFY-EMAIL-030 SCR-VERIFY-EMAIL-034 SCR-VERIFY-EMAIL-018 SCR-VERIFY-EMAIL-006 SCR-VERIFY-EMAIL-007 E-AUTH-003-B 状態 登録できた：リンクを押すと利用者と会社ができ、ログインして「はじめの設定をはじめる」→ /setup/bridge", async ({
@@ -83,7 +71,9 @@ test("二度押し・リロード：確認の済んだリンクをもう一度�
   const first = await api("/api/auth-ext/verify-signup", { token });
   expect(first.status).toBe(201);
   await page.goto(`/verify-email?token=${encodeURIComponent(token)}`);
-  await expect(page).toHaveURL(/\/login/, { timeout: 15_000 });
+  await expect(page.locator("[data-state='done']")).toContainText("登録は確認まで終わっています"); // 黙って飛ばさず、言い直す（D-088.9）
+  await expect(page.locator("[data-state='done']").getByRole("link", { name: "ログインへ" })).toBeVisible();
+  // await expect(page).toHaveURL(/\/login/, { timeout: 15_000 });
 });
 
 test("SCR-VERIFY-EMAIL-008 SCR-VERIFY-EMAIL-020 リンク「入力し直す」→ /signup が開く", async ({ page }) => {
@@ -218,5 +208,24 @@ test("SCR-VERIFY-EMAIL-035 SCR-VERIFY-EMAIL-036 SCR-VERIFY-EMAIL-038 待つ画�
 test("待つ画面に居続けさせない：もう登録が済んでいたら入る画面へ送る", async ({ page }) => {
   const u = await signupViaApi("もう済んだ社");
   await page.goto(`/verify-email?sent=1&email=${encodeURIComponent(u.email)}`);
-  await expect(page).toHaveURL(/\/login/, { timeout: 15_000 });
+  await expect(page.locator("[data-state='done']")).toContainText("登録は確認まで終わっています"); // 居続けさせないが、飛ばさず言い直す（D-088.9）
+  // await expect(page).toHaveURL(/\/login/, { timeout: 15_000 });
+});
+
+test("SCR-VERIFY-EMAIL-039 E-CONF-011-A E-CONF-011-C 確認まで終わった人が戻って「もう一度送る」を押しても、送り直さず「終わっています」と言う", async ({ page }) => {
+  const { email } = await signupPending();
+  await page.goto(`/verify-email?email=${encodeURIComponent(email)}`);
+  await expect(page.locator("[data-state='n'] h1")).toHaveText("メールを確認してください");
+  // 別のタブでリンクを押して登録を終えたことにする（本物の口）
+  const v = await api("/api/auth-ext/verify-signup", { token: pendingToken(email) });
+  expect(v.status).toBe(201);
+  await page.getByRole("button", { name: "もう一度送る" }).click();
+  const done = page.locator("[data-state='done']");
+  await expect(done).toContainText("登録は確認まで終わっています");
+  await expect(page.getByText("もう一度送りました")).toHaveCount(0);
+  await expect(page.getByText("この申し込みは残っていません")).toHaveCount(0);
+  await expect(done.getByRole("link", { name: "ログインへ" })).toBeVisible();
+  // 開き直しても同じ（戻るで古い画面を見せない）
+  await page.goto(`/verify-email?email=${encodeURIComponent(email)}`);
+  await expect(page.locator("[data-state='done']")).toBeVisible();
 });

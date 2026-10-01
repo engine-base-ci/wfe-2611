@@ -4,7 +4,7 @@ import { defineConfig, devices } from "@playwright/test";
 const base = process.env["BASE_URL"];
 export default defineConfig({
   testDir: "./tests",
-  timeout: 30_000,
+  timeout: 60_000, // 開発機は DB が Docker の向こう。登録 1 件に十数秒かかる日がある（実機の遅さでテストを落とさない）
   expect: { timeout: 15_000 }, // next dev は初回描画が遅い。実機の待ちを既定 5 秒から上げる
   fullyParallel: false,
   workers: 1, // next dev は 1 本。並列で叩くと初回コンパイルが詰まってタイムアウトする

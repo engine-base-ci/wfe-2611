@@ -39,6 +39,11 @@ let onUnauthorized: (() => void) | null = null;
 export const setUnauthorizedHandler = (fn: (() => void) | null): void => {
   onUnauthorized = fn;
 };
+/** 「入っていない」と分かった（API が 401）。手元の鍵を捨てて入り直しへ（auth-ext の口も同じ扱い・D-086.4） */
+export const notifyUnauthorized = (): void => {
+  setToken(null);
+  onUnauthorized?.();
+};
 
 export interface RequestOptions {
   body?: unknown;
@@ -74,7 +79,7 @@ export async function request<T>(method: string, path: string, o: RequestOptions
     ...(write ? { body: JSON.stringify(o.body ?? {}) } : {}),
   });
   if (res.status === 401) {
-    onUnauthorized?.();
+    notifyUnauthorized();
   }
   if (res.status === 204) return undefined as T;
   const json = (await res.json().catch(() => ({ error: "bad_response" }))) as unknown;

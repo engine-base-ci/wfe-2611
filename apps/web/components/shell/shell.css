@@ -66,27 +66,18 @@
   font-weight: 700;
   letter-spacing: 0.01em;
 }
-.side-logo {
+/* 印は 06_mockup/_tokens.py の .side-brand svg と同じ（主色・20px） */
+.side-mark {
   width: 20px;
   height: 20px;
-  border-radius: 6px;
-  background: conic-gradient(
-    from 0deg,
-    var(--d-indigo, #2f4b7c),
-    var(--d-teal, #186f69),
-    var(--d-amber, #7e570d),
-    var(--d-coral, #a34a3e),
-    var(--d-sage, #516f46),
-    var(--d-plum, #6b3f5e),
-    var(--d-indigo, #2f4b7c)
-  );
   flex: none;
+  color: var(--primary);
 }
 .side-nav {
   padding: 4px 10px 10px;
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 3px; /* 選んだ行の枠と、マウスを乗せた行の色がくっつかない間（2026-09-30 user「ホバーするとくっついている」） */
 }
 .side-item {
   display: flex;
@@ -121,6 +112,28 @@
   opacity: 1;
   color: var(--primary);
 }
+/* まだ作っていない画面：押させない（行き止まりの 404 に当てない）。設計にはあるので隠さない */
+.side-item.soon,
+.side-sub .soon {
+  cursor: default;
+  opacity: 0.55;
+}
+.side-item.soon:hover,
+.side-sub .soon:hover {
+  background: transparent;
+  color: var(--on-sv);
+}
+.soon-tag {
+  margin-left: auto;
+  background: var(--sv);
+  color: var(--on-sv);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 0 6px;
+  border-radius: var(--r-full);
+  white-space: nowrap;
+}
+
 .side-item .badge,
 .side-sub .badge {
   margin-left: auto;
@@ -153,10 +166,13 @@
 .side-sub {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 3px;
   padding-left: 26px;
+  margin-top: 3px;
 }
-.side-sub a {
+/* 準備中の行も、押せる行と同じ大きさ・余白（2026-09-30 user「準備中だけフォントが大きい」） */
+.side-sub a,
+.side-sub .soon {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -226,24 +242,8 @@
   display: flex;
   flex-direction: column;
 }
-.subnav-h {
-  padding: 14px 16px 12px;
-}
-.subnav-h .crumb {
-  font-size: 12px;
-  color: var(--on-sv);
-  margin-bottom: 2px;
-}
-.subnav-h .ttl {
-  font-size: 14px;
-  line-height: 1.5;
-  font-weight: 700;
-}
-.subnav-h .why {
-  font-size: 12px;
-  color: var(--on-sv);
-  line-height: 1.6;
-  margin-top: 4px;
+.subnav-b[hidden] {
+  display: none; /* class の display が [hidden] より強い。隠した項目の塊を出さない */
 }
 .subnav-b {
   display: flex;
@@ -318,14 +318,20 @@
 }
 .topbar {
   background: var(--card);
-  padding: 14px 28px 4px;
+  padding: 10px 28px 2px;
   display: flex;
   align-items: center;
   gap: 16px;
   flex-wrap: wrap;
 }
+/* 見出しの帯：第2ナビと本文の上にまたがって 1 つだけ（2026-09-30）。画面名は第2ナビの項目（13px）より少し大きい 18px */
+.shead {
+  background: var(--card);
+  border-bottom: 1px solid var(--line);
+  min-width: 0;
+}
 .topbar h1 {
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 700;
   letter-spacing: -0.015em;
 }
@@ -333,28 +339,49 @@
   font-size: 12px;
   color: var(--on-sv);
 }
+/* 見出しの帯は低く（2026-09-30 user「ヘッドの幅が広すぎる」）：くくりと画面名を横 1 行、説明は 1 行（全文は乗せると出る） */
+.topbar .tt {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+}
 .topbar .sp {
   flex: 1;
 }
 .purpose {
   display: flex;
   gap: 8px;
-  align-items: flex-start;
-  padding: 10px 28px;
-  font-size: 12.5px;
+  align-items: center;
+  padding: 0 28px 8px;
+  font-size: 12px;
   color: var(--on-sv);
   background: var(--card);
+}
+.main > .purpose {
   border-bottom: 1px solid var(--line);
 }
 .purpose svg {
   width: 14px;
   height: 14px;
-  margin-top: 4px;
   flex: none;
+}
+.purpose > div {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .content {
   padding: 24px 32px 64px;
   width: 100%;
+}
+/* 会話が本文の画面は上下の余白を詰め、入力欄を下へ（会話に高さを渡す・2026-09-30）。chat.css は @layer の中なので、ここ（層の外）に置く */
+@media (min-width: 1024px) {
+  .content:has([data-chat-frame]) {
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
 }
 
 /* 自分のAIのパネル（右） */
@@ -460,6 +487,10 @@
   .shell[data-layout="threepane"] .side-grp .chev {
     display: none;
   }
+  /* 細いサイドバーは横に飛び出すので、開いていても最後に押した 1 つだけ出す（重ならない） */
+  .shell[data-layout="threepane"] .side-sub:not([data-last]) {
+    display: none;
+  }
   .shell[data-layout="threepane"] .side-sub {
     position: fixed;
     left: 72px;
@@ -479,32 +510,68 @@
     padding: 10px 6px;
     justify-content: center;
   }
-  /* 本文が痩せるなら第2ナビを上の帯へ（D-070）。三画面と入口画面（anchors）は常に上の帯 */
-  .shell.sub-chips {
+  /* 見出しの帯は第2ナビと本文の上にまたがる（左からサイドバー｜第2ナビ｜本文｜右パネル、上の行が見出し） */
+  .shell[data-frame="app"]:not(.sub-chips) {
     display: grid;
-    grid-template-columns: var(--sidebar-w) minmax(0, 1fr) auto;
+    grid-template-columns: var(--sidebar-w) auto minmax(0, 1fr) auto;
     grid-template-rows: auto minmax(0, 1fr);
   }
-  .shell.sub-chips .side {
+  .shell[data-frame="app"]:not(.sub-chips) .side {
     grid-column: 1;
     grid-row: 1 / 3;
   }
-  .shell.sub-chips .subnav {
+  .shell[data-frame="app"]:not(.sub-chips) .shead {
+    grid-column: 2 / 4;
+    grid-row: 1;
+  }
+  .shell[data-frame="app"]:not(.sub-chips) .subnav {
+    grid-column: 2;
+    grid-row: 2;
+    /* 見出しの帯の下に置くので、画面の高さのままだと帯の分だけページが余分に動く。列は行いっぱいに伸ばし、中の一覧だけを画面に貼り付ける */
+    position: static;
+    height: auto;
+    overflow: visible;
+  }
+  .shell[data-frame="app"]:not(.sub-chips) .subnav > * {
+    position: sticky;
+    top: 0;
+    max-height: 100dvh;
+    overflow-y: auto;
+  }
+  .shell[data-frame="app"]:not(.sub-chips) .main {
+    grid-column: 3;
+    grid-row: 2;
+  }
+  .shell[data-frame="app"]:not(.sub-chips) .aipanel {
+    grid-column: 4;
+    grid-row: 1 / 3;
+  }
+  .shell[data-frame="app"]:not(.sub-chips) .norole {
+    grid-column: 2 / 4;
+    grid-row: 1 / 3;
+  }
+  /* 本文が痩せるなら第2ナビを上の帯へ（D-070）。三画面と入口画面（anchors）は常に上の帯。見出し → 帯 → 本文 の順 */
+  .shell.sub-chips {
+    display: grid;
+    grid-template-columns: var(--sidebar-w) minmax(0, 1fr) auto;
+    grid-template-rows: auto auto minmax(0, 1fr);
+  }
+  .shell.sub-chips .side {
+    grid-column: 1;
+    grid-row: 1 / 4;
+  }
+  .shell.sub-chips .shead {
     grid-column: 2;
     grid-row: 1;
+  }
+  .shell.sub-chips .subnav {
+    grid-column: 2;
+    grid-row: 2;
     width: auto;
     height: auto;
     position: static;
     border-right: 0;
     border-bottom: 1px solid var(--line);
-  }
-  .shell.sub-chips .subnav-h {
-    padding: 12px 28px 4px;
-  }
-  .shell.sub-chips .subnav-h .why,
-  .shell.sub-chips .subnav-h .crumb,
-  .shell.sub-chips .subnav-h .ttl {
-    display: none;
   }
   .shell.sub-chips .subnav-b {
     flex-direction: row;
@@ -529,15 +596,15 @@
   }
   .shell.sub-chips .main {
     grid-column: 2;
-    grid-row: 2;
+    grid-row: 3;
   }
   .shell.sub-chips .aipanel {
     grid-column: 3;
-    grid-row: 1 / 3;
+    grid-row: 1 / 4;
   }
   .shell.sub-chips .norole {
     grid-column: 2;
-    grid-row: 1 / 3;
+    grid-row: 1 / 4;
   }
 }
 /* はじめの設定の枠（運用前）：サイドバー・第2ナビ・下タブは出ない。本文だけ */
@@ -556,13 +623,17 @@
   .shell[data-frame="app"] {
     display: grid;
     grid-template-columns: 72px minmax(0, 1fr);
-    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(0, 1fr);
     min-height: 100dvh;
   }
   .shell[data-frame="app"] .side {
     grid-column: 1;
-    grid-row: 1 / 3;
+    grid-row: 1 / 4;
     width: 72px;
+  }
+  .shell[data-frame="app"] .shead {
+    grid-column: 2;
+    grid-row: 1;
   }
   .side-brand {
     justify-content: center;
@@ -595,6 +666,9 @@
   .side-grp .chev {
     display: none;
   }
+  .side-sub:not([data-last]) {
+    display: none;
+  }
   .side-sub {
     position: fixed;
     left: 72px;
@@ -616,19 +690,12 @@
   }
   .subnav {
     grid-column: 2;
-    grid-row: 1;
+    grid-row: 2;
     width: auto;
     height: auto;
     position: static;
     border-right: 0;
     border-bottom: 1px solid var(--line);
-  }
-  .subnav-h {
-    padding: 12px 20px 6px;
-  }
-  .subnav-h .why,
-  .subnav-h .crumb {
-    display: none;
   }
   .subnav-b {
     flex-direction: row;
@@ -649,11 +716,11 @@
   }
   .main {
     grid-column: 2;
-    grid-row: 2;
+    grid-row: 3;
   }
   .norole {
     grid-column: 2;
-    grid-row: 1 / 3;
+    grid-row: 1 / 4;
   }
   .content {
     padding: 20px 24px 64px;
@@ -662,7 +729,7 @@
     padding: 12px 20px 4px;
   }
   .purpose {
-    padding: 10px 20px;
+    padding: 0 20px 8px;
   }
   .aipanel {
     position: fixed;
@@ -707,8 +774,7 @@
     display: block;
     padding-bottom: 64px;
   }
-  .side,
-  .subnav .subnav-h {
+  .side {
     display: none;
   }
   .subnav {
@@ -739,10 +805,13 @@
     padding: 12px 16px 4px;
   }
   .topbar h1 {
-    font-size: 20px;
+    font-size: 18px;
   }
   .purpose {
-    padding: 8px 16px;
+    padding: 0 16px 8px;
+  }
+  .purpose > div {
+    white-space: normal;
   }
   .content {
     padding: 16px 16px 48px;
@@ -809,3 +878,50 @@
     display: none;
   }
 }
+
+/* ---- 06_mockup/_threadlist.py の THREADLIST_CSS と同じ値（モックが正） ---- */
+/* 左パネルの一覧（会話・スレッド）の共通の部品（2026-09-30 user「一つひとつ大きい」）。手本は assistant-ui の ThreadList・Vercel ai-chatbot・LibreChat：
+   1 行 32px・14px・1 行で省略・行の間 2px・日付の見出し 11px・操作は「…」にまとめて、乗せた行・開いている行・タッチの端末だけに出す */
+.tlist{display:flex;flex-direction:column;gap:2px;min-width:0}
+.tlist ul{display:flex;flex-direction:column;gap:2px;list-style:none;margin:0;padding:0}
+.tlist svg{width:16px;height:16px;flex:none}
+.tl-top{display:flex;gap:4px;margin-bottom:4px}
+/* 新しく話す：アイコンだけ（ChatGPT・Claude と同じペンと四角）。乗せると名前が出る */
+.tl-new{flex:none;width:32px;height:32px;display:grid;place-items:center;border:1px solid var(--line);border-radius:var(--r-md);background:var(--card);color:var(--on-surface)}
+.tl-new:hover{background:var(--sv)}
+.tl-new:focus-visible,.tl-open:focus-visible,.tl-more:focus-visible,.tl-menu button:focus-visible{outline:2px solid var(--primary);outline-offset:1px}
+.tl-search{flex:1;min-width:0;display:flex;align-items:center;gap:6px;height:32px;padding:0 10px;border-radius:var(--r-md);background:var(--sv);color:var(--on-sv)}
+.tl-search input{flex:1;min-width:0;height:100%;border:0;background:none;font:inherit;font-size:14px;color:var(--on-surface);outline:none}
+.tl-grp{font-size:11px;font-weight:600;color:var(--on-sv);padding:10px 10px 4px}
+.tl-item{position:relative;display:flex;align-items:center;min-height:32px;border-radius:var(--r-md)}
+.tl-item:hover,.tl-item.on{background:var(--sv)}
+.tl-open{flex:1;min-width:0;align-self:stretch;display:flex;flex-direction:column;justify-content:center;padding:0 10px;text-align:left;border-radius:var(--r-md);font-size:14px;color:var(--on-sv)}
+.tl-item:hover .tl-open,.tl-item.on .tl-open{color:var(--on-surface)}
+.tl-item.on .tl-open{font-weight:600}
+.tl-t{display:flex;align-items:center;gap:6px;min-width:0}
+/* 記憶に使わない会話の札（目のマークは意味が分からない・2026-09-30 user） */
+.tl-tag{flex:none;font-size:11px;font-weight:600;color:var(--on-sv);background:var(--line);padding:0 6px;border-radius:var(--r-full)}
+.tl-name{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-hit{display:block;font-size:12px;font-weight:400;color:var(--on-sv);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-bottom:4px}
+.tl-unread{flex:none;margin-right:8px;min-width:18px;height:18px;padding:0 5px;border-radius:var(--r-full);background:var(--primary);color:var(--on-primary);font-size:11px;font-weight:600;display:grid;place-items:center}
+.tl-more{flex:none;width:24px;height:24px;margin-right:4px;display:grid;place-items:center;border-radius:var(--r-sm);color:var(--on-sv);opacity:0}
+.tl-more svg{width:16px;height:16px}
+.tl-more:hover{background:var(--line)}
+.tl-item:hover .tl-more,.tl-item.on .tl-more,.tl-more:focus-visible,.tl-more[aria-expanded="true"]{opacity:1}
+@media(hover:none){.tl-more{opacity:1}}
+.tl-menu{position:absolute;right:4px;top:calc(100% + 2px);z-index:30;min-width:160px;padding:4px;display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:var(--r-md);box-shadow:0 8px 24px rgba(0,0,0,.12)}
+.tl-menu[popover]{margin:0;color:var(--on-surface)}
+/* メニューの中は一覧より一段小さく（2026-09-30 user「…の中のフォントも大きい」） */
+.tl-menu button{display:flex;align-items:center;gap:8px;height:28px;padding:0 8px;border-radius:var(--r-sm);font-size:12px;color:var(--on-surface);text-align:left}
+.tl-menu button svg{width:14px;height:14px}
+.tl-menu button:hover{background:var(--sv)}
+.tl-menu button.danger{color:var(--st-danger)}
+.tl-rename{flex:1;display:flex;padding:0 4px}
+.tl-rename input{flex:1;min-width:0;height:28px;padding:0 8px;border:1px solid var(--primary);border-radius:var(--r-sm);background:var(--card);font:inherit;font-size:14px}
+.tl-empty{font-size:12px;color:var(--on-sv);padding:6px 10px}
+/* この会話を記憶に使わない：何が起きるかを添える（2026-09-30 user「何のことかわからない」） */
+.tl-foot{display:flex;align-items:flex-start;gap:8px;margin-top:8px;padding:10px;border-top:1px solid var(--line);font-size:12px;color:var(--on-surface);cursor:pointer}
+.tl-foot input{margin-top:2px;accent-color:var(--primary)}
+.tl-foot b{font-weight:600}
+.tl-foot .muted{display:block;color:var(--on-sv);font-size:11px;line-height:1.6;margin-top:2px}
+@media(max-width:767px){.tl-search input,.tl-rename input{font-size:16px}}

@@ -1,18 +1,70 @@
 "use client";
 // 共通シェルの見本（T-US-01・02）。?screen=today&role=R1&ps=PS3 で切り替える。治具（tests/shell.spec.ts）がここを 4 幅で測る
 import { useSearchParams } from "next/navigation";
-import { Suspense, useMemo, useState } from "react";
+import { Suspense, useState } from "react";
 import { AppShell, ShellProvider, ThreePane, PsGate, RoleGate } from "@/components/shell";
-import { AssistantPanel, ApprovalCard, ChoiceChips, Confidence, Citation, ReceiptCard } from "@/components/ai";
+import { AssistantPanelView, ApprovalCard, ChoiceChips, Confidence, Citation, ReceiptCard } from "@/components/ai";
 import { Button, Section, Table, Th, Td, Pill, Empty, StoppedBanner } from "@/components/ui";
 import { NAV, type RoleId, type ScreenId } from "@/lib/nav";
-import { unavailableAdapter, type ChatAdapter } from "@/lib/agent-ui";
+import { chatState, type Agent, type AgentChatModel, type Prefs } from "@/lib/agent";
+import type { AgentMsg, AgentState } from "@/lib/auth/ext";
 import { Inbox } from "lucide-react";
 
-const echo: ChatAdapter = {
-  send: async ({ text, context }) =>
-    `（見本）「${text}」を受け取りました。いま見ている画面は ${context.screenId ?? "—"} です。`,
-};
+/** 見本の画面の相手（ログインも Bridge も無しで右パネルの形を確かめる）。部品は本物と同じ AgentChat を通る。
+ *  言ったことをそのまま受け取ったと返すだけ。時点（ps）に AI が無ければ「つながっていない」を返す */
+function useEchoChat(hasAi: boolean): AgentChatModel {
+  const [msgs, setMsgs] = useState<AgentMsg[]>([]);
+  const [prefs, setPrefsState] = useState<Prefs>({ mode: "manual", model: null, effort: null });
+  const at = () => new Date().toISOString();
+  const state: AgentState = {
+    conversation_id: "echo",
+    conversation: { id: "echo", title: "見本の会話", starred: false, incognito: false },
+    messages: msgs,
+    running_job_id: null,
+    stopped: null,
+    progress: [],
+    asking: null,
+    work: null,
+    queued: [],
+  };
+  const agent: Agent = {
+    state,
+    missing: false,
+    hasOlder: false,
+    loadingOlder: false,
+    loadOlder: async () => undefined,
+    olderFailed: false,
+    retryOlder: () => undefined,
+    conversationId: "echo",
+    loading: false,
+    sending: false,
+    error: null,
+    running: false,
+    working: false,
+    failed: [],
+    prefs,
+    setPrefs: (p) => setPrefsState((x) => ({ ...x, ...p })),
+    say: async (text, o) => {
+      const ctx = o && "screen" in o ? o : o?.context;
+      setMsgs((m) => [
+        ...m,
+        { id: `u${m.length}`, who: "me", text, at: at() },
+        { id: `a${m.length}`, who: "ai", text: `（見本）「${text}」を受け取りました。いま見ている画面は ${ctx?.screen ?? "—"} です。`, at: at() },
+      ]);
+      return true;
+    },
+    retry: async () => undefined,
+    dismissFailed: () => undefined,
+    stop: async () => undefined,
+    cancelQueued: async () => undefined,
+    answer: async () => undefined,
+    select: () => undefined,
+    startNew: async () => setMsgs([]),
+    attach: async (f) => ({ key: f.name, name: f.name, size: f.size, id: null, error: "見本では付けられません" }),
+  };
+  const b = { bridge: hasAi ? { connected: true, live: true } : { connected: false, live: false }, loading: false, usable: hasAi, asleep: false, refetch: () => undefined };
+  return { ...b, agent, state: chatState(b, agent) };
+}
 
 function DevShellInner() {
   const sp = useSearchParams();
@@ -20,17 +72,9 @@ function DevShellInner() {
   const role = (sp.get("role") ?? "R1") as RoleId;
   const psId = sp.get("ps") ?? "PS3";
   const caps = NAV.productStates.find((p) => p.id === psId)?.caps ?? [];
-  const adapter = useMemo(
-    () =>
-      caps.includes("ai")
-        ? echo
-        : unavailableAdapter(
-            caps.includes("nobridge")
-              ? "PC をつなぐと話せます。"
-              : "AI は止まっています。PC を開くと続きから動きます。",
-          ),
-    [caps],
-  );
+  const chat = useEchoChat(caps.includes("ai"));
+  // ?live=1 のときは見本の相手を使わず、本物の右パネル（共通の枠が出すもの・ログインと Bridge が要る）を出す。D-103 の実ブラウザの確かめ用
+  const live = sp.get("live") === "1";
   const [sel, setSel] = useState<string | null>(null);
   const [sub, setSub] = useState(0);
   const layout = NAV.layoutByScreen[screenId] === "threepane" ? "threepane" : "page";
@@ -84,7 +128,8 @@ function DevShellInner() {
     <ShellProvider role={role} psId={psId} screenId={screenId} counts={{ approvals: 2, today: 3 }} aiName="高本AI">
       <AppShell
         who={{ initials: "高", name: "高本 雅人", org: "ENGINE BASE" }}
-        panel={<AssistantPanel adapter={adapter} selectedId={sel} />}
+        panel={live ? undefined : <AssistantPanelView chat={chat} selected={sel} />}
+        selected={sel ? (rows.find((r) => r.id === sel)?.t ?? null) : null}
         primary={<Button>{NAV.screens[screenId].primaryAction || "主アクション"}</Button>}
         subActive={sub}
         onSubSelect={setSub}

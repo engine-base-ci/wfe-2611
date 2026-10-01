@@ -8,12 +8,13 @@ import { NAV } from "@/lib/nav";
 import { useShell } from "./context";
 
 /** 見出しの行：くくり・h1・自分のAIのトグル・主アクション 1 つ（D-071・D-072。三画面では第2ナビの行に寄せる） */
-export function TopBar({ primary, extra }: { primary?: ReactNode; extra?: ReactNode }) {
+/** hasPanel が false の画面（会話モード＝会話そのものが本文）は、右パネルが無いのでトグルを出さない（押しても何も起きないボタンを作らない・G-01） */
+export function TopBar({ primary, extra, hasPanel = true }: { primary?: ReactNode; extra?: ReactNode; hasPanel?: boolean }) {
   const { screenId, caps, panelOpen, setPanelOpen, aiName, layout } = useShell();
   if (!screenId) return null;
   const s = NAV.screens[screenId];
   const crumb = NAV.sections.find((x) => (x.screens as readonly string[]).includes(screenId))?.label ?? "";
-  const aiOk = caps.includes("ai") && caps.includes("app");
+  const aiOk = hasPanel && caps.includes("ai") && caps.includes("app");
   const stopped = caps.includes("stopped");
   const nobridge = caps.includes("nobridge");
   const btns = (
@@ -67,7 +68,7 @@ export function TopBar({ primary, extra }: { primary?: ReactNode; extra?: ReactN
       </div>
       <div className="purpose">
         <Info />
-        <div>{s.purpose}</div>
+        <div title={s.purpose}>{s.purpose}</div>
       </div>
     </>
   );

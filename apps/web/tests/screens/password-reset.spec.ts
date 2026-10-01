@@ -73,15 +73,10 @@ test("E-AUTH-006-A E-AUTH-006-C 使用済み・期限切れのリンクは文言
   await page.getByRole("button", { name: "変更してログイン" }).click();
   await expect(page.locator("p[role=alert]")).toContainText("もう一度メールを送ってください");
 });
-test("SCR-PASSWORD-RESET-025 端末を失くした：「回復コードで入る（ログインへ）」→ /login（回復コードはパスワードの後に入れる）", async ({
-  page,
-}) => {
+test("端末を失くした人の出口はここに置かない（ログインの 6 桁の画面が持つ・重複を消した）", async ({ page }) => {
   await page.goto("/password-reset");
-  await page
-    .locator("[data-backup]")
-    .getByRole("link", { name: /回復コードで入る/ })
-    .click();
-  await expect(page).toHaveURL(/\/login$/);
+  await expect(page.locator("[data-backup]"), "看板だけの出口を残さない").toHaveCount(0);
+  await expect(page.getByText("端末を失くした")).toHaveCount(0);
 });
 
 // メール（関門 C6）

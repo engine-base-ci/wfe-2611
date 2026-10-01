@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import { Button, Field, Input } from "@/components/ui";
-import { OutsideLayout } from "@/components/outside/outside-layout";
+import { Check, Info, Mail } from "lucide-react";
+import { AuthFoot, AuthHead, AuthIcon, AuthNote, OutsideLayout } from "@/components/outside/outside-layout";
 import { authClient } from "@/lib/auth/client";
 
 function PasswordResetInner() {
@@ -41,13 +42,12 @@ function PasswordResetInner() {
   return (
     <OutsideLayout
       pitch={<>詰まらせない。</>}
-      lead="パスワードを忘れても、端末を失くしても、自分で入り直せます。運営に連絡しなくて済むように作ってあります。"
+      lead="パスワードを忘れても、自分で入り直せます。運営に連絡しなくて済むように作ってあります。"
     >
       {state === "p" ? (
         <form onSubmit={reset} noValidate data-state="p">
-          <h1 className="text-h1 font-bold tracking-[-0.015em]">新しいパスワード</h1>
-          <p className="mt-1 text-[13.5px] text-[var(--on-sv)]">前と同じものは使えません。</p>
-          <div className="mt-6">
+          <AuthHead title="新しいパスワード">前と同じものは使えません。</AuthHead>
+          <div>
             <Field label="新しいパスワード">
               {(id) => (
                 <Input
@@ -73,31 +73,33 @@ function PasswordResetInner() {
                 />
               )}
             </Field>
-            <Button type="submit" className="w-full" disabled={busy}>
+            <Button type="submit" className="w-full" icon={<Check />} disabled={busy}>
               変更してログイン
             </Button>
           </div>
         </form>
       ) : state === "s" ? (
         <div data-state="s">
-          <h1 className="text-h1 font-bold tracking-[-0.015em]">送りました</h1>
-          <p className="mt-2 text-[14px] leading-[1.8]">
+          <AuthIcon>
+            <Mail />
+          </AuthIcon>
+          <AuthHead title="送りました">
             登録があれば、<b>{email}</b> に届きます（登録の有無はここでは表示しません）。リンクは30分で失効します。
-          </p>
-          <p className="mt-2 text-[13.5px] leading-[1.8]">
-            再設定すると、<b>今ログイン中の端末と Bridge の接続はすべて切れます</b>
-            。入り直してからつなぎ直してください。
-          </p>
-          <Link href="/login" className="mt-6 inline-flex">
-            <Button variant="outline">ログインへ戻る</Button>
+          </AuthHead>
+          <AuthNote icon={<Info />}>
+            再設定すると、<b>今ログイン中の端末と Bridge の接続はすべて切れます</b>。入り直してからつなぎ直してください。
+          </AuthNote>
+          <Link href="/login" className="block">
+            <Button variant="ghost" className="w-full">
+              ログインへ戻る
+            </Button>
           </Link>
         </div>
       ) : (
         <div data-state="n">
           <form onSubmit={send} noValidate>
-            <h1 className="text-h1 font-bold tracking-[-0.015em]">パスワードの再設定</h1>
-            <p className="mt-1 text-[13.5px] text-[var(--on-sv)]">登録したメールアドレスに再設定のリンクを送ります。</p>
-            <div className="mt-6">
+            <AuthHead title="パスワードの再設定">登録したメールアドレスに再設定のリンクを送ります。</AuthHead>
+            <div>
               <Field label="メールアドレス">
                 {(id) => (
                   <Input
@@ -111,25 +113,14 @@ function PasswordResetInner() {
                   />
                 )}
               </Field>
-              <Button type="submit" className="w-full" disabled={busy}>
+              <Button type="submit" className="w-full" icon={<Mail />} disabled={busy}>
                 再設定メールを送る
               </Button>
             </div>
           </form>
-          <section className="mt-10 border-t border-[var(--line)] pt-6" data-backup>
-            <h2 className="text-h2 font-bold">端末を失くした（認証アプリが使えない）</h2>
-            <p className="mt-1 text-[13.5px] text-[var(--on-sv)]">
-              設定時に保管した回復コードのどれか1つで入れます。ログインでパスワードを入れたあと、「端末を失くした（回復コードで入る）」を押してください。
-            </p>
-            <Link href="/login" className="mt-4 inline-flex">
-              <Button variant="outline">回復コードで入る（ログインへ）</Button>
-            </Link>
-          </section>
-          <p className="mt-6 text-[13px] text-[var(--on-sv)]">
-            <Link className="font-semibold text-[var(--primary)] underline" href="/login">
-              ログインへ戻る
-            </Link>
-          </p>
+          <AuthFoot>
+            <Link href="/login">ログインへ戻る</Link>
+          </AuthFoot>
         </div>
       )}
     </OutsideLayout>

@@ -12,7 +12,7 @@ const mainWidth = (page: Page) =>
   );
 
 for (const screen of ["today", "goals", "clone-memory"]) {
-  test(`USH-01-001 USH-02-001 /dev/shell?screen=${screen}：${WIDTHS.join("・")} で横溢れ 0`, async ({ page }) => {
+  test(`USH-01-001 USH-02-020 /dev/shell?screen=${screen}：${WIDTHS.join("・")} で横溢れ 0`, async ({ page }) => {
     for (const width of WIDTHS) {
       await page.setViewportSize({ width, height: 900 });
       const res = await page.goto(`/dev/shell?screen=${screen}`);
@@ -85,10 +85,13 @@ test("USH-02-010 USH-02-017 USH-02-018 自分のAIのパネル：会話全体が
   await page.goto("/dev/shell?screen=goals&ps=PS3");
   const panel = page.locator(".aipanel");
   await expect(panel).toBeVisible();
-  await page.getByPlaceholder("続けて話す").fill("受注 10 件いける？");
-  await page.getByRole("button", { name: "送る" }).click();
-  await expect(panel.locator(".pm.u")).toContainText("受注 10 件いける？");
-  await expect(panel.locator(".pm.a").last()).toContainText("受け取りました");
+  // 中身は会話モードと同じ部品（AgentChat・D-103）。見本の相手は言ったことを受け取ったと返す
+  await expect(panel.locator('[data-part="conversation"]')).toBeVisible();
+  await panel.getByPlaceholder("続けて話す").fill("受注 10 件いける？");
+  await panel.getByRole("button", { name: "送る" }).click();
+  await expect(panel.locator('[data-who="me"]').last()).toContainText("受注 10 件いける？");
+  await expect(panel.locator('[data-who="ai"]').last()).toContainText("受け取りました");
+  await expect(panel.locator('[data-who="ai"]').last(), "見ている画面が自分のAI に添えられる").toContainText("goals");
   await panel.locator(".ap-close").click();
   await expect(panel).toBeHidden();
   await page.locator(".ap-toggle").click();

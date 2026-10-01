@@ -28,7 +28,7 @@ test("SCR-INVITE-ACCEPT-001 SCR-INVITE-ACCEPT-007 SCR-INVITE-ACCEPT-008 SCR-INVI
   await page.getByLabel("お名前").fill("  佐藤 健゙ ".normalize("NFD"));
   await page.getByLabel("パスワード", { exact: true }).fill(PW);
   await page.getByRole("button", { name: "参加する" }).click();
-  await page.waitForURL(/\/today/, { timeout: 15_000 }).catch(() => undefined);
+  await page.waitForURL(/\/setup\/bridge/, { timeout: 15_000 }).catch(() => undefined); // 参加した直後は はじめの設定 0（D-089）
   const m = await admin<{ display_name: string }>(
     "select display_name from members where tenant_id = $1 and role_id = 'staff'",
     [boss.tenantId],
@@ -44,7 +44,7 @@ test("SCR-INVITE-ACCEPT-009 SCR-INVITE-ACCEPT-011 SCR-INVITE-ACCEPT-013 全角�
   await page.getByLabel("お名前").fill("ＡＢＣ‐ｄｅｆ　商店");
   await page.getByLabel("パスワード", { exact: true }).fill(PW);
   await page.getByRole("button", { name: "参加する" }).click();
-  await page.waitForURL(/\/today/, { timeout: 15_000 }).catch(() => undefined);
+  await page.waitForURL(/\/setup\/bridge/, { timeout: 15_000 }).catch(() => undefined); // 参加した直後は はじめの設定 0（D-089）
   const m = await admin<{ display_name: string }>(
     "select display_name from members where tenant_id = $1 and role_id = 'staff'",
     [boss.tenantId],
@@ -60,7 +60,7 @@ test("SCR-INVITE-ACCEPT-002 閲覧のみとして：書き込めないと先に�
   await page.getByLabel("お名前").fill("外部 花子");
   await page.getByLabel("パスワード", { exact: true }).fill(PW);
   await page.getByRole("button", { name: "参加する" }).click();
-  await page.waitForURL(/\/today/, { timeout: 15_000 }).catch(() => undefined);
+  await page.waitForURL(/\/setup\/bridge/, { timeout: 15_000 }).catch(() => undefined); // 参加した直後は はじめの設定 0（D-089）
   const m = await admin<{ n: string }>(
     "select count(*) as n from members where tenant_id = $1 and role_id = 'viewer'",
     [boss.tenantId],

@@ -4,7 +4,8 @@ import Link from "next/link";
 import QRCode from "qrcode";
 import { useEffect, useState } from "react";
 import { Button, Field, Input } from "@/components/ui";
-import { OutsideLayout } from "@/components/outside/outside-layout";
+import { Check, Lock, Plug } from "lucide-react";
+import { AuthHead, OutsideLayout } from "@/components/outside/outside-layout";
 import { authClient } from "@/lib/auth/client";
 
 export default function MfaSetupPage() {
@@ -66,13 +67,12 @@ export default function MfaSetupPage() {
     >
       {state === "rc" ? (
         <div data-state="rc">
-          <h1 className="text-h1 font-bold tracking-[-0.015em]">回復コードを保管してください</h1>
-          <p className="mt-2 text-[14px] leading-[1.8]">
+          <AuthHead title="回復コードを保管してください">
             端末を失くしたとき、この10個のどれか1つで入れます。1つ使うと消えます。
             <b>ここを閉じると二度と表示しません。</b>
-          </p>
+          </AuthHead>
           <ul
-            className="num mt-5 grid grid-cols-2 gap-2 rounded-[var(--r-md)] bg-[var(--sv)] p-4 font-[var(--font-code)] text-[14px]"
+            className="num grid grid-cols-2 gap-2 rounded-[var(--r-md)] bg-[var(--sv)] p-4 font-[var(--font-code)] text-[14px]"
             data-backup-codes
           >
             {codes.map((c) => (
@@ -93,20 +93,21 @@ export default function MfaSetupPage() {
           </label>
           <Link
             href="/setup/bridge"
-            className={`mt-4 inline-flex ${saved ? "" : "pointer-events-none"}`}
+            className={`mt-4 block ${saved ? "" : "pointer-events-none"}`}
             aria-disabled={!saved}
           >
-            <Button disabled={!saved}>次へ（PCをつなぐ）</Button>
+            <Button className="w-full" icon={<Plug />} disabled={!saved}>
+              次へ（PCをつなぐ）
+            </Button>
           </Link>
         </div>
       ) : (
         <div data-state={uri ? "n" : "pw"}>
-          <h1 className="text-h1 font-bold tracking-[-0.015em]">2段階認証を設定する</h1>
           {!uri ? (
-            <form onSubmit={start} noValidate className="mt-6">
-              <p className="mb-4 text-[13.5px] text-[var(--on-sv)]">
+            <form onSubmit={start} noValidate>
+              <AuthHead title="2段階認証を設定する">
                 確認のため、いまのパスワードを入れてください。認証アプリ（Google Authenticator 等）が要ります。
-              </p>
+              </AuthHead>
               <Field label="パスワード" error={msg ?? undefined}>
                 {(id) => (
                   <Input
@@ -120,15 +121,13 @@ export default function MfaSetupPage() {
                   />
                 )}
               </Field>
-              <Button type="submit" className="w-full" disabled={busy}>
+              <Button type="submit" className="w-full" icon={<Lock />} disabled={busy}>
                 認証アプリを登録する
               </Button>
             </form>
           ) : (
-            <form onSubmit={verify} noValidate className="mt-6">
-              <p className="text-[13.5px] text-[var(--on-sv)]">
-                認証アプリ（Google Authenticator 等）で読み取ってください。
-              </p>
+            <form onSubmit={verify} noValidate>
+              <AuthHead title="2段階認証を設定する">認証アプリ（Google Authenticator 等）で読み取ってください。</AuthHead>
               <div className="mt-4 flex flex-wrap items-start gap-5">
                 {qr ? (
                   <img
@@ -164,7 +163,7 @@ export default function MfaSetupPage() {
                     />
                   )}
                 </Field>
-                <Button type="submit" className="w-full" disabled={busy}>
+                <Button type="submit" className="w-full" icon={<Check />} disabled={busy}>
                   登録する
                 </Button>
               </div>

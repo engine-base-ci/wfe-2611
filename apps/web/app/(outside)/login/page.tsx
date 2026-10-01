@@ -4,14 +4,15 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import { Button, Field, Input } from "@/components/ui";
-import { OutsideLayout } from "@/components/outside/outside-layout";
+import { LogIn } from "lucide-react";
+import { AuthFoot, OutsideLayout } from "@/components/outside/outside-layout";
 import { AuthExtError, signIn, verifyTwoFactor } from "@/lib/auth/ext";
-import { pendingRoute } from "@/lib/pending-route";
+import { afterLogin } from "@/lib/after-login";
 
 function LoginInner() {
   const router = useRouter();
   const sp = useSearchParams();
-  const next = pendingRoute(sp.get("next")?.startsWith("/") ? sp.get("next")! : "/today", "T-U-13"); // 既定の行き先 今日 は T-U-13
+  const next = sp.get("next"); // 行き先は afterLogin が今のデータから決める（設定が済んでいない人を 今日 へ飛ばさない）
   const [state, setState] = useState<"n" | "m" | "e">("n");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -31,7 +32,7 @@ function LoginInner() {
         setTfCookie(r.two_factor_cookie);
         return setState("m");
       }
-      router.push(next);
+      router.push(afterLogin(next));
     } catch (err) {
       setState("e");
       setMsg(err instanceof AuthExtError ? err.message : "うまくいきませんでした。もう一度試してください");
@@ -48,7 +49,7 @@ function LoginInner() {
         two_factor_cookie: tfCookie ?? "",
         ...(useBackup ? { backup_code: code } : { code, trust_device: trust }),
       });
-      router.push(next);
+      router.push(afterLogin(next));
     } catch (err) {
       setMsg(err instanceof AuthExtError ? err.message : "うまくいきませんでした");
     } finally {
@@ -102,7 +103,7 @@ function LoginInner() {
                 この端末では30日間きかない
               </label>
             ) : null}
-            <Button type="submit" className="w-full" disabled={busy}>
+            <Button type="submit" className="w-full" icon={<LogIn />} disabled={busy}>
               今日の画面へ
             </Button>
           </div>
@@ -152,19 +153,15 @@ function LoginInner() {
                 />
               )}
             </Field>
-            <Button type="submit" className="w-full" disabled={busy}>
+            <Button type="submit" className="w-full" icon={<LogIn />} disabled={busy}>
               ログイン
             </Button>
           </div>
-          <p className="mt-5 text-[13px] text-[var(--on-sv)]">
-            <Link className="font-semibold text-[var(--primary)] underline" href="/password-reset">
-              パスワードをお忘れの方
-            </Link>{" "}
-            ·{" "}
-            <Link className="font-semibold text-[var(--primary)] underline" href="/signup">
-              アカウントを作る
-            </Link>
-          </p>
+          <AuthFoot>
+            <Link href="/password-reset">パスワードをお忘れの方</Link>
+            <span aria-hidden="true" className="mx-3">·</span>
+            <Link href="/signup">アカウントを作る</Link>
+          </AuthFoot>
         </form>
       )}
     </OutsideLayout>

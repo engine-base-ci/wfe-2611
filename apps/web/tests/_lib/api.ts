@@ -2,10 +2,10 @@
 import { createHash, createHmac } from "node:crypto";
 import { readFileSync } from "node:fs";
 import pg from "pg";
-import { expect, type Page } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
 export const API = process.env["API_BASE"] ?? "http://127.0.0.1:3011";
-const ADMIN = process.env["DATABASE_URL_ADMIN"] ?? "postgres://postgres:postgres@127.0.0.1:55433/kaname_test";
+const ADMIN = process.env["DATABASE_URL_ADMIN"] ?? "postgres://postgres:postgres@127.0.0.1:55433/kaname_dev"; // 画面のテストは手元の画面（up.sh）と同じ DB を見る。単体テストの kaname_test とは分ける
 export const PW = "correct-horse-battery-1";
 // 宛先は「送出先が本当に受け取れるもの」にする。example.com は送出先に拒否され、
 // 「本当に送られたか」の行が検証できない（拒否を握り潰していた間だけ緑に見えていた）。
@@ -186,3 +186,126 @@ export async function ensureGoalKind(key = "seed", label = "テストの目標�
   await admin("insert into goal_kinds (key, label) values ($1, $2) on conflict (key) do nothing", [key, label]);
   return key;
 }
+
+/** はじめの設定（1〜6）を通し終わった人にする（D-089）。ログイン後の行き先が 今日 になるのはこの人だけ */
+export async function setupDone(u: { tenantId: string; memberId: string }) {
+  await bridgeRow(u);
+  await admin("select app.setup_step_done($1, 6::smallint)", [u.memberId]);
+}
+
+/** はじめの設定を n 段目まで通したことにする（Bridge の行は作らない。D-089） */
+export const setupStep = (memberId: string, n: number) =>
+  admin("select app.setup_step_done($1, $2::smallint)", [memberId, n]);
+
+// ---- Bridge の実物の経路（D-090・T-B-02／T-B-03）。画面から見た振る舞いを確かめるための前提を、本物の口で作る
+/** 接続コードを出して引き取る＝この PC を端末として登録する。返るのは Bridge の鍵（session の id） */
+export async function claimBridge(token: string, label = "MacBook Pro（QA）"): Promise<string> {
+  const p = await api<{ data: { code: string } }>("/api/auth-ext/bridge/pair", {}, token);
+  if (p.status !== 201) throw new Error(`bridge/pair ${p.status}`);
+  const c = await api<{ data: { session_id: string } }>("/api/auth-ext/bridge/claim", {
+    code: p.json.data.code,
+    device_label: label,
+  });
+  if (c.status !== 201) throw new Error(`bridge/claim ${c.status} ${JSON.stringify(c.json)}`);
+  return c.json.data.session_id;
+}
+const asBridge = async <T>(sid: string, path: string, body: unknown) => {
+  const r = await fetch(`${API}/api/auth-ext${path}`, {
+    method: "POST",
+    headers: { "content-type": "application/json", "x-bridge-session": sid },
+    body: JSON.stringify(body),
+  });
+  return { status: r.status, json: (await r.json().catch(() => ({}))) as T };
+};
+/** Bridge が仕事を 1 件もらう */
+export const bridgeTake = (sid: string) =>
+  asBridge<{ data: { job_id: string; prompt: string; agent_session_id: string | null } | null }>(
+    sid,
+    "/bridge/take",
+    { protocol: 4 },
+  );
+/** Bridge が結末を返す（done／stopped／cancelled）。止まったものは止まったまま置かれる */
+export const bridgeFinish = (
+  sid: string,
+  b: { job_id: string; state: "done" | "stopped" | "cancelled"; result?: string; reason?: string; agent_session_id?: string },
+) => asBridge<{ data: { ok: boolean } }>(sid, "/bridge/finish", b);
+/** 生きていると知らせる（自己診断の報告も一緒に返す） */
+export const bridgeBeat = (sid: string, health?: { name: string; ok: boolean; detail?: string }[]) =>
+  asBridge<{ data: { ok: boolean } }>(sid, "/bridge/heartbeat", health ? { health, protocol: 4 } : { protocol: 4 });
+/** 知らせが来なくなった状態を作る（PC を閉じた・Bridge を終了した）。75 秒で「切れている」 */
+export const bridgeAsleep = (sid: string) =>
+  admin("update sessions set last_seen_at = now() - interval '5 minutes' where id = $1", [sid]);
+/** この人の仕事の並び（状態の列） */
+export const jobStates = (memberId: string) =>
+  admin<{ state_id: string; agent_session_id: string | null }>(
+    "select state_id, agent_session_id from bridge_jobs where member_id = $1 order by created_at",
+    [memberId],
+  );
+
+/** ログイン後・入口の行き先。今日（T-U-13）がまだ無い間は、ある画面へ送る（D-086.6）。
+ *  画面ができたら built-routes に載るので、このテストの期待も自動で 今日 に切り替わる */
+export const HOME_RE = /\/(today|ai\/chat)$/;
+/** 「新しい会話」（D-062）。次に言ったことが新しい 1 本になる（最初の質問と選択肢がまた出る） */
+export const agentNewConversation = (token: string) => api("/api/auth-ext/agent/new", {}, token);
+
+/** この PC で本物の Bridge が動いていると、偽の Bridge が港（38617）を取れず、
+ *  画面も「入っている」側に倒れる。偽で演じるテストの間だけ止め、終わったら必ず戻す（G-10）。 */
+let realWasUp: boolean | null = null;
+export async function realBridge(on: boolean): Promise<void> {
+  const { execSync } = await import("node:child_process");
+  const up = async (): Promise<boolean> => {
+    try {
+      return (await fetch("http://127.0.0.1:38617/ping", {
+        headers: { origin: "http://127.0.0.1:3124" },
+        signal: AbortSignal.timeout(2000),
+      })).ok;
+    } catch {
+      return false;
+    }
+  };
+  if (process.platform !== "darwin") return;
+  if (!on) {
+    if (realWasUp === null) realWasUp = await up();
+    // 本人の本物の Bridge が動いているなら、黙って止めない。止めると本人の仕事（答え待ちを含む）が途中で死ぬ
+    // （2026-09-28 実例：回帰テストが本人の Bridge を 2 回止め、答えが届かなくなった）。止めてよいと明示したときだけ止める
+    if ((await up()) && process.env["QA_STOP_REAL_BRIDGE"] !== "1") {
+      test.skip(true, "この PC で本人の Bridge が動いている。止めると本人の仕事が止まるので流さない（BLOCKED：QA_STOP_REAL_BRIDGE=1 で止めて流す）");
+      return;
+    }
+    // 途中で「起こす」が押されて立ち上がることがあるので、毎回必ず止める（最初の状態に関わらず）
+    execSync('pkill -f "Kaname Bridge" || true');
+    for (let i = 0; i < 30 && (await up()); i++) await new Promise((r) => setTimeout(r, 200));
+    return;
+  }
+  if (!realWasUp) return;
+  try {
+    execSync('open -a "/Applications/Kaname Bridge.app"');
+  } catch {
+    /* 入っていないなら戻すものも無い */
+  }
+  realWasUp = null;
+}
+
+/** 本物の Bridge を止めずに、画面からだけ見えなくする（この PC の口 38617 への問い合わせを落とす）。
+ *  偽の口を立てない画面のテストはこれで足りる。本人の Bridge と仕事はそのまま動き続ける */
+export async function hideRealBridge(page: Page): Promise<void> {
+  await page.route("http://127.0.0.1:38617/**", (r) => r.abort("connectionrefused"));
+  await page.route("http://localhost:38617/**", (r) => r.abort("connectionrefused"));
+}
+
+// ---- 1 行 1 イベント（D-093）：Bridge が流す途中経過・確認 と、本人の答え を本物の口で作る
+/** 途中経過（何をしているか）／init（会話の id） */
+export const bridgeProgress = (sid: string, b: { job_id: string; seq: number; kind: "init" | "progress" | "status"; text?: string; agent_session_id?: string }) =>
+  asBridge<{ data: { ok: boolean } }>(sid, "/bridge/progress", b);
+/** 確認：「これを実行していいか」 */
+export const bridgeAsk = (sid: string, b: { job_id: string; request_id: string; tool: string; input?: unknown; summary: string }) =>
+  asBridge<{ data: { ok: boolean } }>(sid, "/bridge/ask", b);
+/** Bridge が答えを取りに来る（無ければ null） */
+export const bridgeAnswer = (sid: string, b: { job_id: string; request_id: string }) =>
+  asBridge<{ data: { answer: "allow" | "deny" | null } }>(sid, "/bridge/answer", b);
+/** 証跡：この仕事に対する許可／不許可の記録 */
+export const toolAudit = (jobId: string) =>
+  admin<{ action: string; actor_member_id: string | null }>(
+    "select action, actor_member_id from audit_events where target_type = 'bridge_jobs' and target_id = $1 order by occurred_at",
+    [jobId],
+  );

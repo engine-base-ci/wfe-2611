@@ -29,10 +29,13 @@ select {
     opacity var(--dur),
     transform 0.08s;
 }
-:focus-visible {
-  outline: 2px solid var(--ring);
-  outline-offset: 2px;
-  border-radius: var(--r-sm);
+/* base の層に置く：部品が自分の見せ方（入力欄の箱の枠など）を持つときはそちらが勝つ */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: var(--r-sm);
+  }
 }
 button,
 [role="button"] {
@@ -56,3 +59,21 @@ button,
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ---- 06_mockup/_threadlist.py の CONFIRM_CSS と同じ値（モックが正） ---- */
+/* 確かめの画面（2026-09-30）。ブラウザの確認の箱は使わない。部品は apps/web/components/ui/confirm.tsx */
+/* 画面のまん中に出す。土台の CSS（Tailwind の preflight）が全要素の margin を 0 にするので、<dialog> の既定の中央寄せ（margin:auto）を書き戻す（2026-10-01 user「左上に出る」） */
+.cdlg{margin:auto;inset:0;max-height:calc(100dvh - 32px);padding:0;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--card);color:var(--on-surface);width:min(400px,calc(100vw - 32px));box-shadow:0 16px 48px rgba(0,0,0,.18)}
+.cdlg::backdrop{background:rgba(15,20,30,.35)}
+.cdlg-in{padding:18px 20px 16px}
+.cdlg-h{display:flex;gap:8px;align-items:center;font-size:16px}
+.cdlg-h b{font-weight:700}
+.cdlg-h svg{width:18px;height:18px;color:var(--st-danger);flex:none}
+.cdlg-b{margin:8px 0 0;font-size:13px;line-height:1.7;color:var(--on-sv)}
+.cdlg-f{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+.cdlg-f button{height:32px;padding:0 14px;border-radius:var(--r-md);font-size:13px;font-weight:600}
+.cdlg-no{color:var(--on-sv)}
+.cdlg-no:hover{background:var(--sv);color:var(--on-surface)}
+.cdlg-ok{background:var(--primary);color:var(--on-primary)}
+.cdlg-ok.danger{background:var(--st-danger);color:#fff}
+.cdlg-f button:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
