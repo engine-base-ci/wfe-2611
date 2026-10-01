@@ -180,8 +180,8 @@ describe("BRG-06-014 G-15 配布の外のプロセスが完了の合図を出さ
     const script = join(root, "replace.sh");
     writeFileSync(script, replaceScript({ pid: 999_999, target, source, backup, relaunch: ["/usr/bin/touch", join(root, "relaunched")] }), { mode: 0o755 });
     const p = spawn("/bin/sh", [script], { detached: true, stdio: "ignore" });
-    // 元の版を退けて、新しい版を写している最中に殺す（電源が落ちた・強制終了された）
-    await until(() => existsSync(backup) && existsSync(join(target, "Contents")), 10_000);
+    // 新しい版を写している最中に殺す（電源が落ちた・強制終了された）。写す先が元の版の場所か隣かは問わない：写し始めたら殺す
+    await until(() => (existsSync(backup) && existsSync(join(target, "Contents"))) || existsSync(join(`${target}.incoming`, "Contents")), 10_000);
     process.kill(-p.pid!, "SIGKILL");
     await new Promise((r) => setTimeout(r, 300));
     const left = whole(target, FILES);

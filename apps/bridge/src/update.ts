@@ -129,10 +129,13 @@ export function replaceScript(o: { pid: number; target: string; source: string; 
     // 終わるのを待つ（最大 60 秒。終わらなければ何もしない＝いまの版が動き続ける）。ゾンビは終わったものとみなす
     'alive() { kill -0 "$PID" 2>/dev/null && [ "$(ps -o stat= -p "$PID" 2>/dev/null | cut -c1)" != "Z" ]; }',
     'i=0; while alive; do sleep 0.2; i=$((i+1)); [ "$i" -gt 300 ] && exit 1; done',
-    'rm -rf "$BAK"',
-    'if mv "$OLD" "$BAK"; then',
-    '  if /usr/bin/ditto "$NEW" "$OLD"; then rm -rf "$BAK" "$NEW"; else rm -rf "$OLD"; mv "$BAK" "$OLD"; fi',
-    "fi",
+    // 新しい版は先に元の版の隣（同じディスク）へ全部写し、写し終えてから名前の付け替え 2 回で入れ替える。
+    // 写している途中で止まっても元の版は手つかず（欠けた .app を残さない）。付け替えに失敗したら退けた版を戻す
+    'STAGE="$OLD.incoming"; rm -rf "$STAGE" "$BAK"',
+    'if /usr/bin/ditto "$NEW" "$STAGE"; then',
+    '  mv "$OLD" "$BAK" && mv "$STAGE" "$OLD" && rm -rf "$BAK" "$NEW"',
+    '  [ -d "$OLD" ] || mv "$BAK" "$OLD"',
+    'else rm -rf "$STAGE"; fi',
     relaunch,
     "",
   ].join("\n");
@@ -200,7 +203,8 @@ export function startUpdater(d: UpdaterDeps): Updater {
     if (source && bundle) {
       const script = join(d.dir, "replace.sh");
       const relaunch = (d.relaunch ?? ((b) => ["/usr/bin/open", "-n", b]))(bundle);
-      writeFileSync(script, replaceScript({ pid: d.pid ?? process.pid, target: bundle, source, backup: join(d.dir, "previous.app"), relaunch }), { mode: 0o755 });
+      // 退ける先は元の版の隣（同じディスク＝名前の付け替えで済む。受け取りの置き場は起動のたびに消すので使わない）
+      writeFileSync(script, replaceScript({ pid: d.pid ?? process.pid, target: bundle, source, backup: `${bundle}.previous`, relaunch }), { mode: 0o755 });
       spawn("/bin/sh", [script], { detached: true, stdio: "ignore" }).unref();
     } else {
       // 1 クリックのインストーラ（人に選ばせない・管理者権限なし）を黙って走らせ、終わったら立ち上げさせる
@@ -216,7 +220,16 @@ export function startUpdater(d: UpdaterDeps): Updater {
       if (!u || staged === u.version || stopped) return;
       const why = blocker(u);
       if (why) return note(`skip-${u.version}`, why);
-      await apply(u, await download(u, d.dir)); // 受け取るたびに指紋と大きさを確かめる
+      let file: string;
+      try {
+        file = await download(u, d.dir); // 受け取るたびに指紋と大きさを確かめる
+      } catch (e) {
+        const m = e instanceof Error ? e.message : "不明";
+        if (/指紋|大きさ|Kaname Bridge ではありません|版が目録|開けません/.test(m)) throw e;
+        // 新しい版があると分かってから受け取りが途中で切れた。黙って次の機会を待たず、1 回知らせる（G-15）
+        return note(`cut-${u.version}`, `新しい版（${u.version}）の受け取りが途中で止まりました。いまの版のまま動き、次の機会にもう一度受け取ります（${m}）`);
+      }
+      await apply(u, file);
     } catch (e) {
       // つながらないだけなら黙って次の機会に（起動も仕事も止めない）。確かめられなかったことは 1 回知らせる
       const m = e instanceof Error ? e.message : "不明";
@@ -229,6 +242,9 @@ export function startUpdater(d: UpdaterDeps): Updater {
   };
   // 立ち上がった＝前の入れ替えは済んだか諦めた。受け取った残り（zip・展開したもの・手順）を片づける（約 100MB を残さない）
   rmSync(d.dir, { recursive: true, force: true });
+  // 前の入れ替えの途中で止まった残り（写しかけの .incoming・退けた .previous）も片づける。いま動いている版が正
+  const running = os === "mac" ? appBundleOf(d.execPath) : null;
+  if (running && d.isPackaged) for (const x of [`${running}.incoming`, `${running}.previous`]) rmSync(x, { recursive: true, force: true });
   void checkNow();
   const t = setInterval(() => void checkNow(), HOUR_MS);
   return {
