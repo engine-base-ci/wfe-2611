@@ -33,15 +33,16 @@ def load_rows(spec: str) -> dict[str, dict]:
 
 
 def load_report(paths: list[str]) -> tuple[dict[str, str], float]:
-    """テスト名 → 状態（passed/failed/skipped）。名前に含まれる行 ID を鍵にして最悪の状態を取る"""
+    """テスト名 → 状態（passed/failed/skipped）。
+    同じ報告の中では、名前に含まれる行 ID を鍵にして最悪の状態を取る。
+    報告どうしは **新しい報告が古い報告を上書きする**（「直近の報告」が真実。古い報告の失敗を、直した後の報告より優先しない）"""
     by_id: dict[str, str] = {}
     newest = 0.0
     rank = {"passed": 0, "skipped": 1, "timedOut": 2, "failed": 2, "interrupted": 2}
-    for p in paths:
-        if not os.path.exists(p):
-            continue
+    for p in sorted((x for x in paths if os.path.exists(x)), key=os.path.getmtime):
         newest = max(newest, os.path.getmtime(p))
         rep = json.load(open(p, encoding="utf-8"))
+        seen_here: set[str] = set()
 
         def walk(s, path):
             for sp in s.get("specs", []):
@@ -51,9 +52,10 @@ def load_report(paths: list[str]) -> tuple[dict[str, str], float]:
                     for r in t.get("results", []):
                         st = r.get("status", st)
                 for rid in ID_RE.findall(title):
-                    cur = by_id.get(rid)
+                    cur = by_id.get(rid) if rid in seen_here else None   # 別の（古い）報告の値は上書きする
                     if cur is None or rank.get(st, 2) > rank.get(cur, 0):
                         by_id[rid] = st
+                    seen_here.add(rid)
             for c in s.get("suites", []):
                 walk(c, path + [s.get("title", "")])
 

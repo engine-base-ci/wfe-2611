@@ -10,17 +10,6 @@
  },
  "ops": [
   {
-   "key": "button:はじめの設定をはじめる",
-   "kind": "button",
-   "label": "はじめの設定をはじめる",
-   "target": null,
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
    "key": "button:もう一度送る",
    "kind": "button",
    "label": "もう一度送る",
@@ -87,6 +76,17 @@
    "ps": [
     "PS0"
    ]
+  },
+  {
+   "key": "button:はじめの設定をはじめる",
+   "kind": "button",
+   "label": "はじめの設定をはじめる",
+   "target": null,
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
   }
  ]
 }

@@ -9,53 +9,6 @@
  },
  "ops": [
   {
-   "key": "button:高本AI",
-   "kind": "button",
-   "label": "高本AI",
-   "target": null,
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
-   "key": "link:AI は止まっています→automation-repair",
-   "kind": "link",
-   "label": "AI は止まっています",
-   "target": "automation-repair",
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
-   "key": "link:PC をつなぐと話せます→bridge-setup",
-   "kind": "link",
-   "label": "PC をつなぐと話せます",
-   "target": "bridge-setup",
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
-   "key": "button:AI社員を作る",
-   "kind": "button",
-   "label": "AI社員を作る",
-   "target": null,
-   "states": [
-    "共通",
-    "空"
-   ],
-   "roles": [],
-   "ps": [
-    "PS2"
-   ]
-  },
-  {
    "key": "link:営業社員運営配布発注ナビの取り込み ／ アプローチ文の下書き効く範囲 会社止まっている（覚え直し待ち）→ai-staff-detail",
    "kind": "link",
    "label": "営業社員運営配布発注ナビの取り込み ／ アプローチ文の下書き効く範囲 会社止まっている（覚え直し待ち）",
@@ -204,6 +157,19 @@
    "roles": [],
    "ps": [
     "PS3"
+   ]
+  },
+  {
+   "key": "button:AI社員を作る",
+   "kind": "button",
+   "label": "AI社員を作る",
+   "target": null,
+   "states": [
+    "空"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
    ]
   },
   {

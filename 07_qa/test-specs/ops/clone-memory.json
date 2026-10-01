@@ -3,51 +3,18 @@
  "mock": "06_mockup/v1/v1-clone-memory.html",
  "state_labels": {
   "n": "範囲ごと",
+  "up": "確認待ち（上がってきた記憶・食い違い）",
   "t": "教える",
   "ge": "空",
   "gs": "AI が止まっている"
  },
  "ops": [
   {
-   "key": "button:高本AI",
-   "kind": "button",
-   "label": "高本AI",
-   "target": null,
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
-   "key": "link:AI は止まっています→automation-repair",
-   "kind": "link",
-   "label": "AI は止まっています",
-   "target": "automation-repair",
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
-   "key": "link:PC をつなぐと話せます→bridge-setup",
-   "kind": "link",
-   "label": "PC をつなぐと話せます",
-   "target": "bridge-setup",
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
    "key": "button:教える",
    "kind": "button",
    "label": "教える",
    "target": null,
    "states": [
-    "共通",
     "範囲ごと",
     "空",
     "AI が止まっている"
@@ -732,6 +699,86 @@
    "ps": [
     "PS3",
     "PS4"
+   ]
+  },
+  {
+   "key": "button:OK（会社全体に効く）",
+   "kind": "button",
+   "label": "OK（会社全体に効く）",
+   "target": null,
+   "states": [
+    "確認待ち（上がってきた記憶・食い違い）"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:差し戻す",
+   "kind": "button",
+   "label": "差し戻す",
+   "target": null,
+   "states": [
+    "確認待ち（上がってきた記憶・食い違い）"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:月末締めにする",
+   "kind": "button",
+   "label": "月末締めにする",
+   "target": null,
+   "states": [
+    "確認待ち（上がってきた記憶・食い違い）"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:20 日締めにする",
+   "kind": "button",
+   "label": "20 日締めにする",
+   "target": null,
+   "states": [
+    "確認待ち（上がってきた記憶・食い違い）"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:書き直す",
+   "kind": "button",
+   "label": "書き直す",
+   "target": null,
+   "states": [
+    "確認待ち（上がってきた記憶・食い違い）"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3"
    ]
   },
   {

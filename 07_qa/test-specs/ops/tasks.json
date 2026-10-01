@@ -17,60 +17,6 @@
  },
  "ops": [
   {
-   "key": "button:高本AI",
-   "kind": "button",
-   "label": "高本AI",
-   "target": null,
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
-   "key": "link:AI は止まっています→automation-repair",
-   "kind": "link",
-   "label": "AI は止まっています",
-   "target": "automation-repair",
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
-   "key": "link:PC をつなぐと話せます→bridge-setup",
-   "kind": "link",
-   "label": "PC をつなぐと話せます",
-   "target": "bridge-setup",
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
-   "key": "button:終わりにする",
-   "kind": "button",
-   "label": "終わりにする",
-   "target": null,
-   "states": [
-    "共通",
-    "リスト（今日）",
-    "空",
-    "AI が止まっている"
-   ],
-   "roles": [
-    "R1",
-    "R2"
-   ],
-   "ps": [
-    "PS3",
-    "PS2",
-    "PS4"
-   ]
-  },
-  {
    "key": "button:リスト",
    "kind": "button",
    "label": "リスト",
@@ -478,6 +424,26 @@
    ],
    "ps": [
     "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:終わりにする",
+   "kind": "button",
+   "label": "終わりにする",
+   "target": null,
+   "states": [
+    "リスト（今日）",
+    "空",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS2",
     "PS4"
    ]
   },

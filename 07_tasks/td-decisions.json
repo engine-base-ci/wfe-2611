@@ -1,9 +1,9 @@
 {
  "meta": {
   "project": "Kaname",
-  "created_at": "2026-09-21",
+  "created_at": "2026-10-01",
   "skill_version": "v3.2-machine",
-  "total_tasks": 171
+  "total_tasks": 214
  },
  "context": {
   "project_type": "SaaS（マルチテナント・AI社員・運営）",
@@ -103,7 +103,7 @@
   {
    "task_id": "T-D-11",
    "risk_type": "致命級（人のレビュー）",
-   "description": "データ層 12. 運営と顧客の間で往復するもの・自分で整えるもの（14 表・migration・RL",
+   "description": "データ層 12. 運営と顧客の間で往復するもの・自分で整えるもの（15 表・migration・RL",
    "mitigation": "human_review_h を持つ。上流を故意に壊す検証"
   },
   {
@@ -127,43 +127,43 @@
   {
    "task_id": "T-A-04",
    "risk_type": "致命級（人のレビュー）",
-   "description": "API 今日なにをすればいいか、迷わず決めたい — データ・API・権限（1/2）（6 endpoi",
+   "description": "API 今日なにをすればいいか、迷わず決めたい — データ・API・権限（1/3）（6 endpoi",
    "mitigation": "human_review_h を持つ。上流を故意に壊す検証"
   },
   {
    "task_id": "T-A-05",
    "risk_type": "致命級（人のレビュー）",
-   "description": "API 今日なにをすればいいか、迷わず決めたい — データ・API・権限（2/2）（4 endpoi",
+   "description": "API 今日なにをすればいいか、迷わず決めたい — データ・API・権限（2/3）（6 endpoi",
    "mitigation": "human_review_h を持つ。上流を故意に壊す検証"
   },
   {
    "task_id": "T-A-06",
    "risk_type": "致命級（人のレビュー）",
-   "description": "API 手でやっている繰り返しを、自分の代わりにやらせたい — データ・AP（5 endpoint）",
+   "description": "API 今日なにをすればいいか、迷わず決めたい — データ・API・権限（3/3）（1 endpoi",
    "mitigation": "human_review_h を持つ。上流を故意に壊す検証"
   },
   {
    "task_id": "T-A-07",
    "risk_type": "致命級（人のレビュー）",
-   "description": "API AIが勝手に外に出すのが怖い。押す前に中身を見て決めたい — データ（1/2）（6 endp",
+   "description": "API 手でやっている繰り返しを、自分の代わりにやらせたい — データ・AP（5 endpoint）",
    "mitigation": "human_review_h を持つ。上流を故意に壊す検証"
   },
   {
    "task_id": "T-A-08",
    "risk_type": "致命級（人のレビュー）",
-   "description": "API AIが勝手に外に出すのが怖い。押す前に中身を見て決めたい — データ（2/2）（2 endp",
+   "description": "API AIが勝手に外に出すのが怖い。押す前に中身を見て決めたい — データ（1/2）（6 endp",
    "mitigation": "human_review_h を持つ。上流を故意に壊す検証"
   },
   {
    "task_id": "T-A-09",
    "risk_type": "致命級（人のレビュー）",
-   "description": "API 案件・請求・問い合わせが今どうなっているか、1か所で見たい — デー（5 endpoint）",
+   "description": "API AIが勝手に外に出すのが怖い。押す前に中身を見て決めたい — データ（2/2）（4 endp",
    "mitigation": "human_review_h を持つ。上流を故意に壊す検証"
   },
   {
    "task_id": "T-A-10",
    "risk_type": "致命級（人のレビュー）",
-   "description": "API 目標に届くのか、届かないなら何を変えるか知りたい — データ・API（6 endpoint）",
+   "description": "API 案件・請求・問い合わせが今どうなっているか、1か所で見たい — デー（5 endpoint）",
    "mitigation": "human_review_h を持つ。上流を故意に壊す検証"
   }
  ],
@@ -172,6 +172,6 @@
   "findings": [
    "機械生成のため件数は入力ではなく出力"
   ],
-  "research_date": "2026-09-21"
+  "research_date": "2026-10-01"
  }
 }

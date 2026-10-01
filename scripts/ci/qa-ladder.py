@@ -44,6 +44,7 @@ SPEC_FILES = (
     "screens/*.md",
     "spec-work.md",         # 後回し（段階 2）の仕様づくりの行（Group V2）
     "skills.md",            # スキル一式の 5 場面（D-080・build_tasks Group S が生成）
+    "bridge.md",            # Bridge＝顧客 PC の実行器（D-015・build_tasks Group B が生成）
     "errors.md",            # 第13軸（error_catalog.py rows が生成。11 列）
     "ai-runtime-matrix.md",
     "prod-smoke.md",
@@ -333,6 +334,9 @@ def cmd_gate(spec: Path, tickets: Path, task: str, extra_done: list[str]) -> int
         )
     for r in res["l1"] + res["l2_rows"]:
         if r["status"] == "passed":
+            continue
+        # 生成元から消えた行（削除・結果は残す：test-ladder §9-1）は消化の対象にしない。流す対象は今の行だけ
+        if "削除（生成元から消えた" in str(r.get("note", "")):
             continue
         if r["status"] == "blocked" and r["note"]:
             continue

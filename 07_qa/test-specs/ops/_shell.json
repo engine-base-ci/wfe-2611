@@ -446,9 +446,20 @@
   ],
   "aipanel": [
    {
-    "key": "link:会話モードで開く→clone-chat",
+    "key": "link:新しく話す（新しい会話）→clone-chat",
     "kind": "link",
-    "label": "会話モードで開く",
+    "label": "新しく話す（新しい会話）",
+    "target": "clone-chat",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:会話モードで開く（一覧から前の会話へ）→clone-chat",
+    "kind": "link",
+    "label": "会話モードで開く（一覧から前の会話へ）",
     "target": "clone-chat",
     "states": [
      "共通"
@@ -538,9 +549,9 @@
     "ps": []
    },
    {
-    "key": "textarea:続けて話す",
-    "kind": "textarea",
-    "label": "続けて話す",
+    "key": "button:この画面：今日を外す",
+    "kind": "button",
+    "label": "この画面：今日を外す",
     "target": null,
     "states": [
      "共通"
@@ -549,9 +560,86 @@
     "ps": []
    },
    {
-    "key": "button:無名（アイコンだけ。実装では aria-label を付ける）",
+    "key": "textarea:自分のAIに書く",
+    "kind": "textarea",
+    "label": "自分のAIに書く",
+    "target": null,
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "button:資料・画像を付ける",
     "kind": "button",
-    "label": "無名（アイコンだけ。実装では aria-label を付ける）",
+    "label": "資料・画像を付ける",
+    "target": null,
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "button:声で入力",
+    "kind": "button",
+    "label": "声で入力",
+    "target": null,
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "button:毎回聞く",
+    "kind": "button",
+    "label": "毎回聞く",
+    "target": null,
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "button:使うもの 3",
+    "kind": "button",
+    "label": "使うもの 3",
+    "target": null,
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "button:Opus 5.5",
+    "kind": "button",
+    "label": "Opus 5.5",
+    "target": null,
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "button:中",
+    "kind": "button",
+    "label": "中",
+    "target": null,
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "button:送る",
+    "kind": "button",
+    "label": "送る",
     "target": null,
     "states": [
      "共通"
@@ -610,6 +698,41 @@
     "kind": "link",
     "label": "メニュー",
     "target": null,
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   }
+  ],
+  "head": [
+   {
+    "key": "button:高本AI1",
+    "kind": "button",
+    "label": "高本AI1",
+    "target": null,
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:AI は止まっています→automation-repair",
+    "kind": "link",
+    "label": "AI は止まっています",
+    "target": "automation-repair",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:PC をつなぐと話せます→bridge-setup",
+    "kind": "link",
+    "label": "PC をつなぐと話せます",
+    "target": "bridge-setup",
     "states": [
      "共通"
     ],

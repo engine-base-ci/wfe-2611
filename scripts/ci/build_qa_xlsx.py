@@ -42,7 +42,7 @@ def parse(md: str) -> dict:
         act, _, exp = t.partition(" → ")
         steps.append((act.replace("**", "").strip(), exp.replace("**", "").strip()))
     later = [x.lstrip("- ").strip() for x in section("今はまだ押せないもの（理由つき・触らなくてよい）") if x.strip().startswith("-")]
-    ok = re.search(r"^(OK|NG):\s*(.+)$", md, re.M)
+    ok = next((m for m in re.finditer(r"^(OK|NG):\s*(.+)$", md, re.M) if "YYYY" not in m.group(2)), None)   # 書き方の見本「OK: YYYY-MM-DD 名前」は答えではない
     return {"title": title, "before": before, "steps": steps, "later": later,
             "result": (ok.group(1) + ": " + ok.group(2)) if ok else ""}
 
@@ -55,7 +55,12 @@ def head(ws, cols: list[tuple[str, int]], row: int = 1) -> None:
     ws.freeze_panes = ws.cell(row=row + 1, column=1)
 
 
+KEEP_TABS: dict[str, str] = {}   # 前の Excel にあったタブの名前（チケット ID → 名前）。名前を変えると人の付けた印・リンクが切れる
+
+
 def tab_name(tid: str, title: str) -> str:
+    if tid in KEEP_TABS:
+        return KEEP_TABS[tid]
     return (tid + ' ' + re.sub(r'[\[\]:*?/\\]', '', title)[:20]).strip()[:31]
 
 
@@ -96,14 +101,30 @@ def prev_answers(path: str) -> dict[tuple[str, str], tuple[str, str]]:
             act = row[1].value
             res = row[3].value
             note = row[4].value
-            if isinstance(row[0].value, int) and isinstance(act, str) and act.strip():
+            if isinstance(row[0].value, (int, float)) and isinstance(act, str) and act.strip():   # Google の書き出しは番号が 1.0
                 if (res and res != "未確認") or note:
                     out[(name, act.strip())] = (str(res or "未確認"), str(note or ""))
     return out
 
 
+def bare(act: str) -> str:
+    """手順の言い方のゆれ（「（状態：…）」の有無）を除いた形。答えを引き継ぐときだけ使う"""
+    return re.sub(r"（状態：[^）]*）", "", act).strip()
+
+
 def write(a, order: list[tuple[str, dict]]) -> int:
+    if os.path.exists(a.out):   # 前からあるチケットのタブは、前の名前のまま（2026-10-01）
+        from openpyxl import load_workbook as _lw
+        for _n in _lw(a.out, read_only=True).sheetnames:
+            _m = re.match(r"^(T-[A-Z0-9]+-\d+) ", _n)
+            if _m:
+                KEEP_TABS[_m.group(1)] = _n
     keep = prev_answers(a.out)
+    # 言い方が少し変わった手順にも答えを引き継ぐ（同じタブで、ゆれを除いた形が 1 つに決まるときだけ）
+    _cnt: dict = {}
+    for (tab, act) in keep:
+        _cnt[(tab, bare(act))] = _cnt.get((tab, bare(act)), 0) + 1
+    loose = {(tab, bare(act)): v for (tab, act), v in keep.items() if _cnt[(tab, bare(act))] == 1}
     widths = prev_widths(a.out)
     wb = Workbook()
     ws = wb.active
@@ -120,7 +141,8 @@ def write(a, order: list[tuple[str, dict]]) -> int:
         ("運営の宛先", "運営（ENGINE BASE）は info@engine-base.com。問い合わせの届け先と運営アカウントのログイン名はこれです"),
         ("届かないとき", a.base + "/dev/mail を開くと、送ったリンクが並んでいます。そこから押せば先へ進めます（ローカルで確かめるためだけの画面）"),
         ("招待の URL", "`bash scripts/dev/invite.sh` で作れます（メンバーの画面ができるまでの代わり）"),
-        ("まだ無いもの", "自分のPC（Bridge）と自分のAIの返答は未実装です。各タブの「今はまだ押せないもの」に理由つきで書いてあります"),
+        ("自分のPC（Bridge）", "本物で動きます。「自分のPCをつなぐ」の画面から Kaname Bridge を受け取って入れ、つないでください（入っていれば自動で新しい版に上がります）。自分のAI は、その PC の本物の Claude Code で答えます"),
+        ("まだ無いもの", "まだ作っていないものは、各タブの下の「今はまだ押せないもの」に理由つきで書いてあります。触らなくて大丈夫です"),
         ("結果の書き方", "各タブの「結果」列から OK／NG を選ぶ。NG なら「気づいたこと」に 1 行書く"),
         ("戻し方", "保存したら `python3 scripts/ci/build_qa_xlsx.py --read` を実行（チケットの状態に反映されます）"),
     ]
@@ -138,7 +160,11 @@ def write(a, order: list[tuple[str, dict]]) -> int:
         ws.cell(row=i, column=2, value=d["screen"]).alignment = TOP
         ws.cell(row=i, column=3, value=d["url"]).alignment = TOP
         ws.cell(row=i, column=4, value=len(d["p"]["steps"])).alignment = TOP
-        c = ws.cell(row=i, column=5, value=d["p"]["result"].split(":")[0] if d["p"]["result"] else "未確認")
+        # 状態は、そのタブに書かれた答えから出す（全部 OK＝OK・NG が 1 つでも＝NG・一部＝途中）。無ければ手順ファイルの OK:／NG:
+        _ans = [(keep.get((tab_name(tid, d["short"]), act.strip())) or loose.get((tab_name(tid, d["short"]), bare(act))) or ("未確認", ""))[0] for act, _ in d["p"]["steps"]]
+        _st = ("NG" if "NG" in _ans else "OK" if _ans and all(x == "OK" for x in _ans) else f"途中 {sum(x == 'OK' for x in _ans)}/{len(_ans)}" if any(x == "OK" for x in _ans)
+               else (d["p"]["result"].split(":")[0] if d["p"]["result"] else "未確認"))
+        c = ws.cell(row=i, column=5, value=_st)
         c.alignment = TOP
         if c.value == "OK":
             c.fill = OKF
@@ -169,7 +195,7 @@ def write(a, order: list[tuple[str, dict]]) -> int:
             s.cell(row=rr, column=1, value=i).alignment = TOP
             s.cell(row=rr, column=2, value=act).alignment = WRAP
             s.cell(row=rr, column=3, value=exp).alignment = WRAP
-            res, note = keep.get((s.title, act.strip()), ("未確認", ""))
+            res, note = keep.get((s.title, act.strip())) or loose.get((s.title, bare(act)), ("未確認", ""))
             c = s.cell(row=rr, column=4, value=res)
             c.alignment = TOP
             dv.add(c)
@@ -233,7 +259,7 @@ def main() -> int:
     S = {s["id"]: s for s in json.load(open(a.screens, encoding="utf-8"))["items"]}
     pos = {sid: i for i, sid in enumerate(S)}
     T = json.load(open(a.tickets, encoding="utf-8"))["tasks"]
-    done = [t for t in T if t.get("status") == "done" and t.get("deliverable_layer") in ("ui", "integration")]
+    done = pick_tickets(T)
     order: list[tuple[str, dict]] = []
     for t in sorted(done, key=lambda t: (t["deliverable_layer"] != "ui", bool(not t.get("screen_ids")), pos.get((t.get("screen_ids") or [""])[0], 999))):
         fp = os.path.join(a.handoff, f"{t['id']}.md")
@@ -243,10 +269,25 @@ def main() -> int:
         if not p["steps"]:
             continue
         sid = (t.get("screen_ids") or [None])[0]
-        order.append((t["id"], {"p": p, "short": S.get(sid, {}).get("name") or t["title"],
+        # タブの名前：画面のチケットは画面の名前、裏側のチケット（Bridge・会話の動き）は中身の頭（同じ画面の名前が並んで区別できなかった）
+        _short = (S.get(sid, {}).get("name") if t["id"].startswith("T-U-") else None) or re.split(r"[（(]", t["title"])[0].strip() or t["title"]
+        order.append((t["id"], {"p": p, "short": _short,
                                 "screen": S.get(sid, {}).get("name", "（土台・通し）"),
                                 "url": a.base + (S.get(sid, {}).get("route") or "")}))
     return read_back(a, order) if a.read else write(a, order)
+
+
+def pick_tickets(T: list[dict], spec: str = "07_qa/test-specs") -> list[dict]:
+    """触って確かめるチケット：完了にした画面・流れのチケット ＋ 作り終わっていて実ブラウザで押した証拠がある（完了の印はまだの）チケット。
+    確認表のページ（build_qa_artifact.py）と同じ選び方（2026-10-01：会話・Bridge のチケットが表に出ていなかった）"""
+    import glob as _g
+    proof = set()
+    for fp in _g.glob(os.path.join(spec, "**", "*.md"), recursive=True):
+        for ln in open(fp, encoding="utf-8"):
+            c = [x.strip() for x in ln.strip().strip("|").split("|")] if ln.startswith("| ") else []
+            if len(c) >= 11 and c[7].startswith("PASS") and "実 Chrome" in c[7]:
+                proof.update(x.strip() for x in c[9].split(","))
+    return [t for t in T if (t.get("status") == "done" and t.get("deliverable_layer") in ("ui", "integration")) or (t.get("status") != "done" and t["id"] in proof)]
 
 
 if __name__ == "__main__":

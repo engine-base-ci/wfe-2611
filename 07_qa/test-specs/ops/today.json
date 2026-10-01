@@ -5,54 +5,11 @@
   "n": "通常",
   "m": "朝の計画",
   "v": "夕方の持ち越し",
+  "dg": "昨日の会話をまとめた",
   "e": "はじめの設定の前",
   "s": "自動実行が止まっている"
  },
  "ops": [
-  {
-   "key": "button:高本AI",
-   "kind": "button",
-   "label": "高本AI",
-   "target": null,
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
-   "key": "link:AI は止まっています→automation-repair",
-   "kind": "link",
-   "label": "AI は止まっています",
-   "target": "automation-repair",
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
-   "key": "link:PC をつなぐと話せます→bridge-setup",
-   "kind": "link",
-   "label": "PC をつなぐと話せます",
-   "target": "bridge-setup",
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
-   "key": "button:今日を確定する",
-   "kind": "button",
-   "label": "今日を確定する",
-   "target": null,
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
   {
    "key": "button:申し送り",
    "kind": "button",
@@ -88,12 +45,30 @@
    ]
   },
   {
+   "key": "button:まとめる",
+   "kind": "button",
+   "label": "まとめる",
+   "target": null,
+   "states": [
+    "通常"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R4"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
    "key": "button:直す",
    "kind": "button",
    "label": "直す",
    "target": null,
    "states": [
-    "通常"
+    "通常",
+    "昨日の会話をまとめた"
    ],
    "roles": [
     "R1",
@@ -924,7 +899,8 @@
    "target": null,
    "states": [
     "朝の計画",
-    "夕方の持ち越し"
+    "夕方の持ち越し",
+    "昨日の会話をまとめた"
    ],
    "roles": [],
    "ps": [
@@ -951,6 +927,71 @@
    "target": null,
    "states": [
     "夕方の持ち越し"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:戻す",
+   "kind": "button",
+   "label": "戻す",
+   "target": null,
+   "states": [
+    "昨日の会話をまとめた"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:上げ先を変える",
+   "kind": "button",
+   "label": "上げ先を変える",
+   "target": null,
+   "states": [
+    "昨日の会話をまとめた"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:送る",
+   "kind": "button",
+   "label": "送る",
+   "target": null,
+   "states": [
+    "昨日の会話をまとめた"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:拾い直す",
+   "kind": "button",
+   "label": "拾い直す",
+   "target": null,
+   "states": [
+    "昨日の会話をまとめた"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:見る→clone-memory",
+   "kind": "link",
+   "label": "見る",
+   "target": "clone-memory",
+   "states": [
+    "昨日の会話をまとめた"
    ],
    "roles": [],
    "ps": [
@@ -995,6 +1036,17 @@
    "ps": [
     "PS4"
    ]
+  },
+  {
+   "key": "button:今日を確定する",
+   "kind": "button",
+   "label": "今日を確定する",
+   "target": null,
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
   }
  ]
 }

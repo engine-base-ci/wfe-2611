@@ -8,47 +8,12 @@
  },
  "ops": [
   {
-   "key": "button:高本AI",
+   "key": "button:止める",
    "kind": "button",
-   "label": "高本AI",
+   "label": "止める",
    "target": null,
    "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
-   "key": "link:AI は止まっています→automation-repair",
-   "kind": "link",
-   "label": "AI は止まっています",
-   "target": "automation-repair",
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
-   "key": "link:PC をつなぐと話せます→bridge-setup",
-   "kind": "link",
-   "label": "PC をつなぐと話せます",
-   "target": "bridge-setup",
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
-   "key": "button:許可する",
-   "kind": "button",
-   "label": "許可する",
-   "target": null,
-   "states": [
-    "共通",
-    "経路と使用量",
-    "空"
+    "経路と使用量"
    ],
    "roles": [],
    "ps": [
@@ -56,12 +21,13 @@
    ]
   },
   {
-   "key": "button:止める",
+   "key": "button:許可する",
    "kind": "button",
-   "label": "止める",
+   "label": "許可する",
    "target": null,
    "states": [
-    "経路と使用量"
+    "経路と使用量",
+    "空"
    ],
    "roles": [],
    "ps": [

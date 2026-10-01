@@ -212,6 +212,18 @@ def main():
     os.makedirs(a.out, exist_ok=True)
     total = 0
     shell_src = a.shell_from or next((s["id"] for s in S if needs.get(s["id"], True) and s.get("mock_path")), "")
+    # 画面の上の帯（.shead）：全画面に同じもの（自分の AI・AI の状態）は共通の枠で 1 回だけ、画面ごとに違うもの（その画面の主ボタン）はその画面で数える
+    def head_ops(mp):
+        if not mp or not os.path.exists(mp):
+            return []
+        hs = find(parse(open(mp, encoding="utf-8").read()), lambda x: x.tag == "header" and "shead" in x.cls())
+        return collect(hs[0], {}, ids) if hs else []
+    _heads = [{(o["kind"], o["label"]) for o in head_ops(s.get("mock_path"))} for s in S]
+    _heads = [h for h in _heads if h]
+    # 共通＝帯を持つ画面の半分以上に出るもの（運営の画面・はじめの設定の枠は帯の中身が少し違うので、全部の積にはしない）
+    from collections import Counter
+    _freq = Counter(k for h in _heads for k in h)
+    head_common = {k for k, n in _freq.items() if n * 2 >= len(_heads)}
     for s in S:
         mp = s.get("mock_path")
         if not mp or not os.path.exists(mp):
@@ -224,15 +236,21 @@ def main():
             continue
         labels = state_labels(mains[0])
         ops = collect(mains[0], labels, ids)
+        _seen = {o["key"] for o in ops}
+        ops += [o for o in head_ops(mp) if (o["kind"], o["label"]) not in head_common and o["key"] not in _seen]
         total += len(ops)
         json.dump({"screen": s["id"], "mock": mp, "state_labels": labels, "ops": ops}, open(os.path.join(a.out, f"{s['id']}.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
         if s["id"] == shell_src:
             shell = {}
-            for region, sel in (("side", lambda x: x.tag == "aside" and "side" in x.cls()), ("aipanel", lambda x: x.tag == "aside" and "aipanel" in x.cls()), ("tabbar", lambda x: x.tag == "nav" and ("tabbar" in x.cls() or "bottom" in x.cls()))):
+            for region, sel in (("side", lambda x: x.tag == "aside" and "side" in x.cls()), ("aipanel", lambda x: x.tag == "aside" and "aipanel" in x.cls()), ("tabbar", lambda x: x.tag == "nav" and ("tabbar" in x.cls() or "bottom" in x.cls())),
+                                # 画面の上の帯（見出し・AI の状態・自分の AI）は <main> の外の共通の枠（2026-10-01：ヘッダを .shead に出したので画面ごとには数えない）
+                                ("head", lambda x: x.tag == "header" and "shead" in x.cls())):
                 for reg in find(root, sel)[:1]:   # 代表の役割（最初の aside／nav）だけ。役割ごとの出し分けは「役割の出し分け」の行で見る
                     shell.setdefault(region, [])
                     seen = {o["key"] for o in shell[region]}
                     for o in collect(reg, {}, ids):
+                        if region == "head" and (o["kind"], o["label"]) not in head_common:
+                            continue   # その画面だけのもの（主ボタン）は画面の側で数える
                         if o["key"] not in seen:
                             shell[region].append(o); seen.add(o["key"])
             json.dump({"screen": "_shell", "from": mp, "regions": shell}, open(os.path.join(a.out, "_shell.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)

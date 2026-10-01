@@ -16,6 +16,9 @@
    confirmed の決定が全部そこから参照されているかを検査する。要件一覧（requirements_index）は
    正本から機械生成し、手で書いた要約が正本になりすまさないようにする（--index で生成、T7 で鮮度を検査）。
 
+T12（2026-09-27 追加）: 決定のメタ amends: [D-xxx.n] で「別の決定の文を改めた」ことを書く。改められた文を根拠に持つ要素が
+  改める決定を持っていなければ赤（前提が変わったのに置き場・設計が古いまま、を機械で出す）。
+
 使い方:
   python3 trace_gate.py                  # spec-dependencies.yaml の decision_traceability を読んで全検査
   python3 trace_gate.py --json           # CI 用
@@ -60,6 +63,7 @@ def load_decisions(cfg):
                 "clauses": clauses,                                   # [(n, 題名)]
                 "clauses_out": {str(k): v for k, v in (meta.get("clauses_out") or {}).items()},
                 "clauses_noobj": {str(k): v for k, v in (meta.get("clauses_noobj") or {}).items()},
+                "amends": [str(x) for x in (meta.get("amends") or [])],   # この決定が改める別の決定の文（T12）
                 "id": did, "section": num, "title": title, "file": p,
                 "status": meta.get("status", "unlabeled"),
                 "decided_at": meta.get("decided_at"),
@@ -235,6 +239,26 @@ def run(cfg, snapshot):
     if t10:
         fails.append(("T10", "資産・配布物・台帳の文が裏側の動きとしてしか反映されていない（オブジェクトが無い＝画面も DB も出ない）", t10))
 
+    # T12 改められた文に取り残された要素（2026-09-27・D-097.9）
+    #   決定が別の決定の文を改めるときはメタに amends: [D-045.4] と書く。改められた文を根拠に持つ要素（JSON の要素・テキストの文書）が
+    #   改める決定を持っていなければ赤。由来：§55 が §45 の前提（サーバーで長く動かす）を段階 1 から外したのに、置き場（Railway）が残った
+    t12 = []
+    by_file = {}
+    for e in elems:
+        if e["path"] == "(text)":
+            by_file.setdefault(e["file"], set()).update(str(x) for x in e["source"] or [])
+    units = [(f'{e["file"]}#{e["id"]}', {str(x) for x in e["source"] or []}) for e in elems if e["path"] != "(text)"]
+    units += [(f, srcs) for f, srcs in by_file.items()]
+    for d in D.values():
+        if d["status"] != "confirmed" or not d["amends"]: continue
+        for x in d["amends"]:
+            hit = (lambda src, x=x: src == x or ("." not in x and src.startswith(x + ".")))
+            for name, srcs in units:
+                if any(hit(v) for v in srcs) and not any(v == d["id"] or v.startswith(d["id"] + ".") for v in srcs):
+                    t12.append(f'{name} は {x} を根拠に持つが、それを改めた {d["id"]}（§{d["section"]}）を持っていない')
+    if t12:
+        fails.append(("T12", "改められた決定の文を根拠にしたまま取り残された要素（amends）", t12))
+
     # T7 必須層の被覆（reflect_in に依らず、要件のまとめ等は全 confirmed 決定を参照していなければならない）
     for layer in cfg.get("required_layers", []):
         files = layer.get("files", [])
@@ -374,7 +398,7 @@ def main():
             print()
         print("下流スキルへ進んではならない。未反映の決定を反映するか、理由つきで out_of_scope にする。")
         return 1
-    print("PASS — T1〜T8 すべて緑")
+    print("PASS — T1〜T12 すべて緑")
     return 0
 
 

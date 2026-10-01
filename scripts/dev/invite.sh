@@ -15,7 +15,7 @@ TOKEN_JSON=$(curl -s -X POST "$API/api/auth-ext/sign-up" -H 'content-type: appli
 USER_ID=$(printf '%s' "$TOKEN_JSON" | /opt/homebrew/bin/python3 -c 'import sys,json;print(json.load(sys.stdin)["data"]["user_id"])')
 TOKEN=$(/opt/homebrew/bin/python3 -c 'import secrets,base64;print(base64.urlsafe_b64encode(secrets.token_bytes(24)).decode().rstrip("="))')
 HASH=$(printf '%s' "$TOKEN" | shasum -a 256 | cut -d' ' -f1)
-docker exec "$PG" psql -U postgres -d kaname_test -qtAc \
+docker exec "$PG" psql -U postgres -d kaname_dev -qtAc \
   "insert into invitations (tenant_id, email, role_id, token_hash, expires_at, created_by)
    select m.tenant_id, '$EMAIL', '$ROLE', '$HASH', now() + interval '7 days', m.id
    from members m where m.auth_user_id = '$USER_ID'" >/dev/null

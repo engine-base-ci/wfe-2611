@@ -8,21 +8,6 @@
  },
  "ops": [
   {
-   "key": "button:参加する",
-   "kind": "button",
-   "label": "参加する",
-   "target": null,
-   "states": [
-    "共通",
-    "担当者として",
-    "閲覧のみとして"
-   ],
-   "roles": [],
-   "ps": [
-    "PS3"
-   ]
-  },
-  {
    "key": "input:お名前",
    "kind": "input",
    "label": "お名前",
@@ -67,6 +52,20 @@
    "key": "button:パスワードを表示",
    "kind": "button",
    "label": "パスワードを表示",
+   "target": null,
+   "states": [
+    "担当者として",
+    "閲覧のみとして"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:参加する",
+   "kind": "button",
+   "label": "参加する",
    "target": null,
    "states": [
     "担当者として",

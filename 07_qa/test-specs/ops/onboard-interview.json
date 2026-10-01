@@ -5,20 +5,10 @@
   "nb": "Bridge 未接続",
   "n": "途中",
   "0": "最初",
-  "f": "資料を読ませる"
+  "f": "資料を読ませる",
+  "stp": "止まりました"
  },
  "ops": [
-  {
-   "key": "button:次の質問へ",
-   "kind": "button",
-   "label": "次の質問へ",
-   "target": null,
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
   {
    "key": "link:1. PCをつなぐ→bridge-setup",
    "kind": "link",
@@ -28,7 +18,8 @@
     "Bridge 未接続",
     "途中",
     "最初",
-    "資料を読ませる"
+    "資料を読ませる",
+    "止まりました"
    ],
    "roles": [],
    "ps": [
@@ -45,7 +36,8 @@
     "Bridge 未接続",
     "途中",
     "最初",
-    "資料を読ませる"
+    "資料を読ませる",
+    "止まりました"
    ],
    "roles": [],
    "ps": [
@@ -62,7 +54,8 @@
     "Bridge 未接続",
     "途中",
     "最初",
-    "資料を読ませる"
+    "資料を読ませる",
+    "止まりました"
    ],
    "roles": [],
    "ps": [
@@ -79,7 +72,8 @@
     "Bridge 未接続",
     "途中",
     "最初",
-    "資料を読ませる"
+    "資料を読ませる",
+    "止まりました"
    ],
    "roles": [],
    "ps": [
@@ -96,7 +90,8 @@
     "Bridge 未接続",
     "途中",
     "最初",
-    "資料を読ませる"
+    "資料を読ませる",
+    "止まりました"
    ],
    "roles": [],
    "ps": [
@@ -113,7 +108,8 @@
     "Bridge 未接続",
     "途中",
     "最初",
-    "資料を読ませる"
+    "資料を読ませる",
+    "止まりました"
    ],
    "roles": [],
    "ps": [
@@ -142,7 +138,8 @@
    "states": [
     "途中",
     "最初",
-    "資料を読ませる"
+    "資料を読ませる",
+    "止まりました"
    ],
    "roles": [],
    "ps": [
@@ -150,9 +147,9 @@
    ]
   },
   {
-   "key": "button:もう一度",
+   "key": "button:タスクにする",
    "kind": "button",
-   "label": "もう一度",
+   "label": "タスクにする",
    "target": null,
    "states": [
     "途中",
@@ -165,9 +162,9 @@
    ]
   },
   {
-   "key": "button:ここから分岐",
+   "key": "button:書き出す",
    "kind": "button",
-   "label": "ここから分岐",
+   "label": "書き出す",
    "target": null,
    "states": [
     "途中",
@@ -180,43 +177,14 @@
    ]
   },
   {
-   "key": "button:記憶に入れる",
+   "key": "button:直して送り直す",
    "kind": "button",
-   "label": "記憶に入れる",
+   "label": "直して送り直す",
    "target": null,
    "states": [
     "途中",
-    "最初",
-    "資料を読ませる"
-   ],
-   "roles": [],
-   "ps": [
-    "PS1"
-   ]
-  },
-  {
-   "key": "button:根拠を見る",
-   "kind": "button",
-   "label": "根拠を見る",
-   "target": null,
-   "states": [
-    "途中",
-    "最初",
-    "資料を読ませる"
-   ],
-   "roles": [],
-   "ps": [
-    "PS1"
-   ]
-  },
-  {
-   "key": "button:編集して送り直す",
-   "kind": "button",
-   "label": "編集して送り直す",
-   "target": null,
-   "states": [
-    "途中",
-    "資料を読ませる"
+    "資料を読ませる",
+    "止まりました"
    ],
    "roles": [],
    "ps": [
@@ -276,9 +244,9 @@
    ]
   },
   {
-   "key": "button:その他（自由に書く）",
+   "key": "button:その他（自分で書く）",
    "kind": "button",
-   "label": "その他（自由に書く）",
+   "label": "その他（自分で書く）",
    "target": null,
    "states": [
     "途中",
@@ -290,43 +258,111 @@
    ]
   },
   {
-   "key": "button:あとで",
-   "kind": "button",
-   "label": "あとで",
-   "target": null,
-   "states": [
-    "途中",
-    "最初"
-   ],
-   "roles": [],
-   "ps": [
-    "PS1"
-   ]
-  },
-  {
-   "key": "button:無名（アイコンだけ。実装では aria-label を付ける）",
-   "kind": "button",
-   "label": "無名（アイコンだけ。実装では aria-label を付ける）",
-   "target": null,
-   "states": [
-    "途中",
-    "最初",
-    "資料を読ませる"
-   ],
-   "roles": [],
-   "ps": [
-    "PS1"
-   ]
-  },
-  {
-   "key": "textarea:ここに書く。声で話しても、資料を投げても構いません",
+   "key": "textarea:自分のAIに書く",
    "kind": "textarea",
-   "label": "ここに書く。声で話しても、資料を投げても構いません",
+   "label": "自分のAIに書く",
    "target": null,
    "states": [
     "途中",
     "最初",
-    "資料を読ませる"
+    "資料を読ませる",
+    "止まりました"
+   ],
+   "roles": [],
+   "ps": [
+    "PS1"
+   ]
+  },
+  {
+   "key": "button:資料・画像を付ける",
+   "kind": "button",
+   "label": "資料・画像を付ける",
+   "target": null,
+   "states": [
+    "途中",
+    "最初",
+    "資料を読ませる",
+    "止まりました"
+   ],
+   "roles": [],
+   "ps": [
+    "PS1"
+   ]
+  },
+  {
+   "key": "button:声で入力",
+   "kind": "button",
+   "label": "声で入力",
+   "target": null,
+   "states": [
+    "途中",
+    "最初",
+    "資料を読ませる",
+    "止まりました"
+   ],
+   "roles": [],
+   "ps": [
+    "PS1"
+   ]
+  },
+  {
+   "key": "button:毎回聞く",
+   "kind": "button",
+   "label": "毎回聞く",
+   "target": null,
+   "states": [
+    "途中",
+    "最初",
+    "資料を読ませる",
+    "止まりました"
+   ],
+   "roles": [],
+   "ps": [
+    "PS1"
+   ]
+  },
+  {
+   "key": "button:使うもの 3",
+   "kind": "button",
+   "label": "使うもの 3",
+   "target": null,
+   "states": [
+    "途中",
+    "最初",
+    "資料を読ませる",
+    "止まりました"
+   ],
+   "roles": [],
+   "ps": [
+    "PS1"
+   ]
+  },
+  {
+   "key": "button:Opus 5.5",
+   "kind": "button",
+   "label": "Opus 5.5",
+   "target": null,
+   "states": [
+    "途中",
+    "最初",
+    "資料を読ませる",
+    "止まりました"
+   ],
+   "roles": [],
+   "ps": [
+    "PS1"
+   ]
+  },
+  {
+   "key": "button:中",
+   "kind": "button",
+   "label": "中",
+   "target": null,
+   "states": [
+    "途中",
+    "最初",
+    "資料を読ませる",
+    "止まりました"
    ],
    "roles": [],
    "ps": [
@@ -341,7 +377,23 @@
    "states": [
     "途中",
     "最初",
-    "資料を読ませる"
+    "資料を読ませる",
+    "止まりました"
+   ],
+   "roles": [],
+   "ps": [
+    "PS1"
+   ]
+  },
+  {
+   "key": "link:次へ：3. たたき台→onboard-draft",
+   "kind": "link",
+   "label": "次へ：3. たたき台",
+   "target": "onboard-draft",
+   "states": [
+    "途中",
+    "資料を読ませる",
+    "止まりました"
    ],
    "roles": [],
    "ps": [
@@ -399,6 +451,17 @@
    "ps": [
     "PS1"
    ]
+  },
+  {
+   "key": "button:次の質問へ",
+   "kind": "button",
+   "label": "次の質問へ",
+   "target": null,
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
   }
  ]
 }

@@ -20,6 +20,13 @@ EXPECT = {"button": "画面が変わる・保存される・文言が出る（�
           "tab": "中身が入れ替わる", "toggle": "開く・閉じる"}
 ORDER = {"input": 0, "textarea": 0, "checkbox": 1, "radio": 1, "select": 1, "button": 2, "tab": 3, "toggle": 3, "link": 4, "error": 5}
 # 押した結果が種類だけでは言えない的は、ここで言葉にする（発注者が何を見ればよいか分かるように）
+WIDTHS = [   # レスポンシブ（G-05）。仕様の「横溢れ」1 行を、幅ごとに触って確かめる形にほどく
+    (375, "横スクロールが出ない。文字が読める大きさ（11px 以上）で、入力欄を押しても勝手に拡大しない（16px 以上）。ボタンが指で押せる（24px 以上）。スマホで使わせない画面なら『PC で開いてください』と出て、崩れた画面を見せない"),
+    (768, "横スクロールが出ない。ヘッダ・ナビが箱からはみ出さない（縮んだタブ・チップの文字が切れない）"),
+    (1024, "横スクロールが出ない。第2ナビと本文が重ならない"),
+    (1440, "横スクロールが出ない。本文が 720px 以上あり、左に寄らない"),
+]
+
 BY_LABEL = {"パスワードを表示": "伏せ字（●●●）が読める文字に変わる。アイコンが目に斜線になり、もう一度押すと伏せ字に戻る"}
 
 
@@ -32,7 +39,7 @@ def load_rows(spec: str) -> dict[str, dict]:
             c = [x.strip() for x in ln.strip().strip("|").split("|")]
             if len(c) < 11 or not re.match(r"^[A-Z]", c[0]):
                 continue
-            rows[c[0]] = {"view": c[2], "item": c[3], "expect": c[6], "result": c[7], "note": c[8]}
+            rows[c[0]] = {"view": c[2], "item": c[3], "pre": c[4], "steps": c[5], "expect": c[6], "result": c[7], "note": c[8]}
     return rows
 
 
@@ -43,6 +50,31 @@ def op_row(rows: dict, tid_rows: list[str], key: str) -> dict | None:
         if r and r["view"] == "操作" and r["note"].strip() == f"op={key}":
             return {**r, "id": rid}
     return None
+
+
+# このチケットで決めたこと（仕様の行）のうち、人が画面で触って確かめられるもの。機械だけで見る行（API・RLS・判定・押せるものの一覧・状態の見た目・役割）は除く
+MACHINE_VIEW = re.compile(r"^(API|RLS|G-1\d|状態$|役割$|本人のもの|操作$|メール$|共通シェル$|発注者確認$|エラーが出ない$|文言と一手が正しい$|到達性$|横溢れ$|空・止まっている$|主アクション$|役割の出し分け$|前提が揃っている$|置き場$|資格情報$|残さない$|他人の分$)")
+# 人が画面から起こせない条件（時刻・鍵・置き場・回線を裏で壊す）を作る行も、人の手順には入れない（試験が見る）
+MACHINE_HOW = re.compile(r"(時刻を|時間前にする|無効な値|書けなくして|落とす|ネットワークを切る|30 分待つ|上限に当たった|data-|endpoint|別 GET|cover|^N/A)")
+MACHINE_STEP = re.compile(r"(依存の一覧|node |python3|pnpm|vitest|CI |ci:|scripts/|自己検査|単体試験|\.test\.)")
+
+
+def own_checks(rows: dict, l1: list[str]) -> tuple[list[str], list[str]]:
+    """チケットの L1 行のうち人が触って確かめるもの → (手順, 今はまだのもの)"""
+    steps, later = [], []
+    for rid in l1:
+        r = rows.get(rid)
+        if not r or MACHINE_VIEW.match(r["view"]) or MACHINE_STEP.search(r["steps"] + r["pre"]) or MACHINE_HOW.search(r["item"] + " " + r["steps"]):
+            continue
+        if "生成元から消えた" in r["note"]:
+            continue
+        if r["result"].startswith("BLOCKED"):
+            later.append(f"{r['item'][:50]} … {reason(r['result'])[:70]}")
+            continue
+        pre = f"（前提：{r['pre']}）" if r["pre"] and r["pre"] not in ("—", "-") else ""
+        how = re.sub(r"（実ブラウザ）", "", r["steps"]).strip() or "触る"
+        steps.append(f"{r['item']}{pre}：{how} → **{r['expect']}**")
+    return steps, later
 
 
 def reason(text: str) -> str:
@@ -56,6 +88,13 @@ def main() -> int:
     ap.add_argument("--spec", required=True); ap.add_argument("--out", required=True)
     ap.add_argument("--task", action="append", default=[]); ap.add_argument("--base", default="http://127.0.0.1:3124")
     a = ap.parse_args()
+    # 画面の言葉と手順の言葉をそろえる（モックは例の人の名前で描く。実物はまだその名前を持たない）
+    cfgp = os.path.join(a.spec, "handoff.json")
+    rewrite: dict[str, str] = (json.load(open(cfgp, encoding="utf-8")).get("label_rewrite") or {}) if os.path.exists(cfgp) else {}
+    def say(t: str) -> str:
+        for k, v in rewrite.items():
+            t = t.replace(k, v)
+        return t
     S = {s["id"]: s for s in json.load(open(a.screens, encoding="utf-8"))["items"]}
     T = json.load(open(a.tickets, encoding="utf-8"))["tasks"]
     rows = load_rows(a.spec)
@@ -82,7 +121,12 @@ def main() -> int:
                 before.append("先に入っておく（下の『入っておく』）")
             op = os.path.join(a.ops, f"{sid}.json")
             ops = json.load(open(op, encoding="utf-8"))["ops"] if os.path.exists(op) else []
-            steps.append(f"**{a.base}{route}** を開く。見出しが「{s.get('h1_text', '')}」で、横にスクロールしない")
+            # 見出しは画面の名前で言う。モックの h1 は例の人の名前（「高本AI」）が入っていることがあり、
+            # そのまま手順に書くと、正しい画面を見た人が NG を付けてしまう
+            _h1 = s.get("name") or s.get("h1_text", "")
+            steps.append(f"**{a.base}{route}** を開く。見出しが「{_h1}」で、横にスクロールしない")
+            if t.get("deliverable_layer") != "ui":
+                continue   # 画面の押せるもの一つひとつは、その画面のチケットの手順にある。ここではこのチケットで決めたことだけを確かめる
             seen = set()
             for o in sorted(ops, key=lambda o: ("" if o["states"][0] == "共通" else o["states"][0], ORDER.get(o["kind"], 9))):
                 k = (o["kind"], o["label"])
@@ -104,6 +148,9 @@ def main() -> int:
                 else:
                     exp = BY_LABEL.get(o["label"]) or EXPECT.get(o["kind"]) or (r["expect"] if r else "").split("（")[0][:44] or "何かが起きる"
                     steps.append(f"「{label}」を{VERB.get(o['kind'], '押す')}{st} → **{exp}**")
+        _own, _own_later = own_checks(rows, l1)   # このチケットで決めたこと（2026-10-01 user「手動でのテストを現状でできるものを全て」）
+        steps += _own
+        later += _own_later
         for f in flows:   # 流れ（L2）：ジャーニーの行を順番に、1 行＝1 手順
             for r in [x for x in J if x.get("journey") == f]:
                 scr = S.get(r.get("screen") or "", {})
@@ -115,10 +162,17 @@ def main() -> int:
                 steps.append("本文を読む → **内部の言葉（ID・テーブル名）が無く、誰宛てで何をすればよいかが分かる**")
                 steps.append("`.dev-logs/api.log` の `[mail]` の行を見る → **「送った → 自分のアドレス」が出ている**。「送れなかった」が出ていたら、その理由が NG の中身")
                 break
+        for sid in (sids if t.get("deliverable_layer") == "ui" else []):   # レスポンシブ：幅ごとに 1 行（1 画面 1 回だけ。画面のチケットで）
+            s = S.get(sid, {})
+            route = s.get("route") or "/" + sid
+            for w, exp in WIDTHS:
+                steps.append(f"ブラウザの幅を **{w}px** にして **{a.base}{route}** を開き直す → **{exp}**")
         if t["id"].startswith("T-US-"):
             steps.append(f"**{a.base}/dev/shell** を開き、役割（R1〜R6）と時点（PS0〜PS4）を切り替えて、サイドバー・下タブ・自分のAIのパネルの項目を押す（見本の画面。dev でだけ出る）")
         if not steps:
             continue
+        steps = [say(x) for x in steps]
+        later = [say(x) for x in later]
         fp = os.path.join(a.out, f"{t['id']}.md")
         keep = [ln.rstrip("\n") for ln in open(fp, encoding="utf-8")] if os.path.exists(fp) else []
         keep = [x for x in keep if re.match(r"^(OK|NG):", x.strip()) and "YYYY" not in x]   # 見本の行は残さない

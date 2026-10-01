@@ -8,50 +8,6 @@
  },
  "ops": [
   {
-   "key": "button:高本AI",
-   "kind": "button",
-   "label": "高本AI",
-   "target": null,
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
-   "key": "link:AI は止まっています→automation-repair",
-   "kind": "link",
-   "label": "AI は止まっています",
-   "target": "automation-repair",
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
-   "key": "link:PC をつなぐと話せます→bridge-setup",
-   "kind": "link",
-   "label": "PC をつなぐと話せます",
-   "target": "bridge-setup",
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
-   "key": "button:次の段階へ",
-   "kind": "button",
-   "label": "次の段階へ",
-   "target": null,
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
    "key": "link:台帳に戻る→records",
    "kind": "link",
    "label": "台帳に戻る",
@@ -306,6 +262,17 @@
    "ps": [
     "PS4"
    ]
+  },
+  {
+   "key": "button:次の段階へ",
+   "kind": "button",
+   "label": "次の段階へ",
+   "target": null,
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
   }
  ]
 }

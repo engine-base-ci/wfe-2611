@@ -8,17 +8,6 @@
  },
  "ops": [
   {
-   "key": "button:これでいく",
-   "kind": "button",
-   "label": "これでいく",
-   "target": null,
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
    "key": "link:1. PCをつなぐ→bridge-setup",
    "kind": "link",
    "label": "1. PCをつなぐ",
@@ -136,12 +125,14 @@
    ]
   },
   {
-   "key": "link:これでいく→bridge-setup",
+   "key": "link:これでいく（次：4. ログイン情報）→credentials",
    "kind": "link",
-   "label": "これでいく",
-   "target": "bridge-setup",
+   "label": "これでいく（次：4. ログイン情報）",
+   "target": "credentials",
    "states": [
-    "たたき台"
+    "たたき台",
+    "会話で直す",
+    "直接編集"
    ],
    "roles": [],
    "ps": [
@@ -162,9 +153,9 @@
    ]
   },
   {
-   "key": "button:もう一度",
+   "key": "button:タスクにする",
    "kind": "button",
-   "label": "もう一度",
+   "label": "タスクにする",
    "target": null,
    "states": [
     "会話で直す"
@@ -175,9 +166,9 @@
    ]
   },
   {
-   "key": "button:ここから分岐",
+   "key": "button:書き出す",
    "kind": "button",
-   "label": "ここから分岐",
+   "label": "書き出す",
    "target": null,
    "states": [
     "会話で直す"
@@ -188,35 +179,9 @@
    ]
   },
   {
-   "key": "button:記憶に入れる",
+   "key": "button:直して送り直す",
    "kind": "button",
-   "label": "記憶に入れる",
-   "target": null,
-   "states": [
-    "会話で直す"
-   ],
-   "roles": [],
-   "ps": [
-    "PS2"
-   ]
-  },
-  {
-   "key": "button:根拠を見る",
-   "kind": "button",
-   "label": "根拠を見る",
-   "target": null,
-   "states": [
-    "会話で直す"
-   ],
-   "roles": [],
-   "ps": [
-    "PS2"
-   ]
-  },
-  {
-   "key": "button:編集して送り直す",
-   "kind": "button",
-   "label": "編集して送り直す",
+   "label": "直して送り直す",
    "target": null,
    "states": [
     "会話で直す"
@@ -266,9 +231,9 @@
    ]
   },
   {
-   "key": "button:その他（自由に書く）",
+   "key": "button:その他（自分で書く）",
    "kind": "button",
-   "label": "その他（自由に書く）",
+   "label": "その他（自分で書く）",
    "target": null,
    "states": [
     "会話で直す"
@@ -279,35 +244,87 @@
    ]
   },
   {
-   "key": "button:あとで",
-   "kind": "button",
-   "label": "あとで",
-   "target": null,
-   "states": [
-    "会話で直す"
-   ],
-   "roles": [],
-   "ps": [
-    "PS2"
-   ]
-  },
-  {
-   "key": "button:無名（アイコンだけ。実装では aria-label を付ける）",
-   "kind": "button",
-   "label": "無名（アイコンだけ。実装では aria-label を付ける）",
-   "target": null,
-   "states": [
-    "会話で直す"
-   ],
-   "roles": [],
-   "ps": [
-    "PS2"
-   ]
-  },
-  {
-   "key": "textarea:違うところを言う",
+   "key": "textarea:自分のAIに書く",
    "kind": "textarea",
-   "label": "違うところを言う",
+   "label": "自分のAIに書く",
+   "target": null,
+   "states": [
+    "会話で直す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "button:資料・画像を付ける",
+   "kind": "button",
+   "label": "資料・画像を付ける",
+   "target": null,
+   "states": [
+    "会話で直す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "button:声で入力",
+   "kind": "button",
+   "label": "声で入力",
+   "target": null,
+   "states": [
+    "会話で直す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "button:毎回聞く",
+   "kind": "button",
+   "label": "毎回聞く",
+   "target": null,
+   "states": [
+    "会話で直す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "button:使うもの 3",
+   "kind": "button",
+   "label": "使うもの 3",
+   "target": null,
+   "states": [
+    "会話で直す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "button:Opus 5.5",
+   "kind": "button",
+   "label": "Opus 5.5",
+   "target": null,
+   "states": [
+    "会話で直す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "button:中",
+   "kind": "button",
+   "label": "中",
    "target": null,
    "states": [
     "会話で直す"
@@ -342,6 +359,17 @@
    "ps": [
     "PS2"
    ]
+  },
+  {
+   "key": "button:これでいく",
+   "kind": "button",
+   "label": "これでいく",
+   "target": null,
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
   }
  ]
 }

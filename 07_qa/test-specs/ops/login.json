@@ -8,21 +8,6 @@
  },
  "ops": [
   {
-   "key": "button:ログイン",
-   "kind": "button",
-   "label": "ログイン",
-   "target": null,
-   "states": [
-    "共通",
-    "通常",
-    "失敗"
-   ],
-   "roles": [],
-   "ps": [
-    "PS3"
-   ]
-  },
-  {
    "key": "input:メールアドレス",
    "kind": "input",
    "label": "メールアドレス",
@@ -54,6 +39,20 @@
    "key": "button:パスワードを表示",
    "kind": "button",
    "label": "パスワードを表示",
+   "target": null,
+   "states": [
+    "通常",
+    "失敗"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:ログイン",
+   "kind": "button",
+   "label": "ログイン",
    "target": null,
    "states": [
     "通常",

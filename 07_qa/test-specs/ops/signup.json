@@ -7,21 +7,6 @@
  },
  "ops": [
   {
-   "key": "button:はじめる",
-   "kind": "button",
-   "label": "はじめる",
-   "target": null,
-   "states": [
-    "共通",
-    "通常",
-    "既に登録済み"
-   ],
-   "roles": [],
-   "ps": [
-    "PS0"
-   ]
-  },
-  {
    "key": "input:メールアドレス",
    "kind": "input",
    "label": "メールアドレス",
@@ -84,6 +69,20 @@
    "target": null,
    "states": [
     "通常"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0"
+   ]
+  },
+  {
+   "key": "button:はじめる",
+   "kind": "button",
+   "label": "はじめる",
+   "target": null,
+   "states": [
+    "通常",
+    "既に登録済み"
    ],
    "roles": [],
    "ps": [

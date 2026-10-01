@@ -7,55 +7,6 @@
  },
  "ops": [
   {
-   "key": "button:高本AI",
-   "kind": "button",
-   "label": "高本AI",
-   "target": null,
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
-   "key": "link:AI は止まっています→automation-repair",
-   "kind": "link",
-   "label": "AI は止まっています",
-   "target": "automation-repair",
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
-   "key": "link:PC をつなぐと話せます→bridge-setup",
-   "kind": "link",
-   "label": "PC をつなぐと話せます",
-   "target": "bridge-setup",
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
-   "key": "button:保存する",
-   "kind": "button",
-   "label": "保存する",
-   "target": null,
-   "states": [
-    "共通",
-    "会社の設定",
-    "AI が止まっている"
-   ],
-   "roles": [],
-   "ps": [
-    "PS3",
-    "PS4"
-   ]
-  },
-  {
    "key": "input:会社名",
    "kind": "input",
    "label": "会社名",
@@ -89,6 +40,21 @@
    "key": "input:請求先",
    "kind": "input",
    "label": "請求先",
+   "target": null,
+   "states": [
+    "会社の設定",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:保存する",
+   "kind": "button",
+   "label": "保存する",
    "target": null,
    "states": [
     "会社の設定",

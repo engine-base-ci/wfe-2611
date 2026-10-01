@@ -5,7 +5,7 @@
 set -uo pipefail
 cd "$(dirname "$0")/../.."
 PG=${PG_CONTAINER:-kaname-pg}
-DB=${DB_NAME:-kaname_test}
+DB=${DB_NAME:-kaname_dev}
 SQL=$(cat <<'EOS'
 with qa as (
   select id from kaname_auth."user" where email like 'qa-%' or email like 'delivered+%'
@@ -45,9 +45,14 @@ begin
     delete from layers  where tenant_id = t;
     delete from tenants where id = t;
   end loop;
-  delete from kaname_auth.pending_signup where email like 'qa-%' or email like 'delivered+%';
-  delete from kaname_auth.\"user\"        where email like 'qa-%' or email like 'delivered+%';
 end \$\$;
-set session_replication_role = origin;" 2>&1 | grep -v "^$" | tail -3
+-- 通常に戻してから利用者を消す（replica のままだと session・account・twoFactor の連鎖削除が止まる）
+set session_replication_role = origin;
+delete from kaname_auth.pending_signup where email like 'qa-%' or email like 'delivered+%';
+delete from kaname_auth.\"user\"        where email like 'qa-%' or email like 'delivered+%';
+delete from kaname_auth.\"session\"   where \"userId\" not in (select id from kaname_auth.\"user\");
+delete from kaname_auth.\"account\"   where \"userId\" not in (select id from kaname_auth.\"user\");
+delete from kaname_auth.\"twoFactor\" where \"userId\" not in (select id from kaname_auth.\"user\");
+delete from kaname_auth.verification where \"expiresAt\" < now();" 2>&1 | grep -v "^$" | tail -3
 left=$(docker exec "$PG" psql -U postgres -d "$DB" -tAc "select count(*) from kaname_auth.\"user\"" 2>/dev/null | tr -d ' ')
 echo "自動テストの会社 ${n:-0} 社を消した。残っている利用者 ${left:-?} 人（手で作ったものだけ）"

@@ -9,55 +9,6 @@
  },
  "ops": [
   {
-   "key": "button:高本AI",
-   "kind": "button",
-   "label": "高本AI",
-   "target": null,
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
-   "key": "link:AI は止まっています→automation-repair",
-   "kind": "link",
-   "label": "AI は止まっています",
-   "target": "automation-repair",
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
-   "key": "link:PC をつなぐと話せます→bridge-setup",
-   "kind": "link",
-   "label": "PC をつなぐと話せます",
-   "target": "bridge-setup",
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
-   "key": "button:保存する",
-   "kind": "button",
-   "label": "保存する",
-   "target": null,
-   "states": [
-    "共通",
-    "AI の経路",
-    "AI が止まっている"
-   ],
-   "roles": [],
-   "ps": [
-    "PS3",
-    "PS4"
-   ]
-  },
-  {
    "key": "radio:Bridge（あなたの PC で、あなたのサブスク）既定。PC が開いている間に動く。費用は Kaname の請求に乗ら",
    "kind": "radio",
    "label": "Bridge（あなたの PC で、あなたのサブスク）既定。PC が開いている間に動く。費用は Kaname の請求に乗ら",
@@ -136,6 +87,21 @@
    "key": "radio:運営マネージドで動かす上限に近づくと高本AIが先に言う",
    "kind": "radio",
    "label": "運営マネージドで動かす上限に近づくと高本AIが先に言う",
+   "target": null,
+   "states": [
+    "AI の経路",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:保存する",
+   "kind": "button",
+   "label": "保存する",
    "target": null,
    "states": [
     "AI の経路",

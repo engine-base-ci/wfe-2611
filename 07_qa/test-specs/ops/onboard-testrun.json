@@ -8,17 +8,6 @@
  },
  "ops": [
   {
-   "key": "button:本番に切り替える",
-   "kind": "button",
-   "label": "本番に切り替える",
-   "target": null,
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
    "key": "link:1. PCをつなぐ→bridge-setup",
    "kind": "link",
    "label": "1. PCをつなぐ",
@@ -198,6 +187,17 @@
    "ps": [
     "PS2"
    ]
+  },
+  {
+   "key": "button:本番に切り替える",
+   "kind": "button",
+   "label": "本番に切り替える",
+   "target": null,
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
   }
  ]
 }

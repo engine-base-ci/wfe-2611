@@ -1,6 +1,6 @@
 # onboard-testrun テスト仕様（L1・機械生成）
 
-> 05_flow/build_tasks.py がタスクと同時に生成。ID は変えない。途中変更は qa_delta.py で差分。結果列は staging で流した人が書く（再生成しても残る。結果あり 5 行）。
+> 05_flow/build_tasks.py がタスクと同時に生成。ID は変えない。途中変更は qa_delta.py で差分。結果列は staging で流した人が書く（再生成しても残る。今の行 35・結果あり 5 行）。
 
 | ID | 画面 | テスト観点 | テスト項目 | 前提条件 | 操作手順 | 期待結果 | 結果 | 備考 | タスク | 実行条件 |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -24,7 +24,6 @@
 | SCR-ONBOARD-TESTRUN-018 | onboard-testrun | G-14 口座状態の波及 | 退会・停止・権限変更・パスワード変更の後に、この機能の既存セッション・接続・共有リンクが無効 | ログイン中の別端末と Bridge | 権限を変える | 別端末と Bridge は 0 秒で 401（sessions が revoked） |  |  | T-U-11 | L1 |
 | SCR-ONBOARD-TESTRUN-019 | onboard-testrun | G-15 信号なし終了 | N/A：外部を呼ばない | 外部を故意に切る | 実行する | 成功扱いにせず、502 と次の一手（人へのハンドオフ） |  |  | T-U-11 | L1 |
 | SCR-ONBOARD-TESTRUN-020 | onboard-testrun | G-16 有限資源 | 消費する資源：DB 接続（プール経由）・メモリ。1 要求あたり 1 接続以下・上限時は待機列 | 同時 50 要求 | 同時に叩く | ログインが落ちない・接続上限に張り付かない（関門 C2 のプール） |  | L4 で負荷試験 | T-U-11 | L1 |
-| SCR-ONBOARD-TESTRUN-021 | onboard-testrun | 操作 | ボタン「本番に切り替える」（状態 共通） | 状態 共通 を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） |  | op=button:本番に切り替える | T-U-11 | L1 |
 | SCR-ONBOARD-TESTRUN-022 | onboard-testrun | 操作 | リンク「1. PCをつなぐ」（状態 動かした・最初・止まった） | 状態 動かした を作る（全役割） | 押す／入れる（実ブラウザ） | /bridge-setup が実在ルートで 200 で開く（G-04） |  | op=link:1. PCをつなぐ→bridge-setup | T-U-11 | L1 |
 | SCR-ONBOARD-TESTRUN-023 | onboard-testrun | 操作 | リンク「2. 話す」（状態 動かした・最初・止まった） | 状態 動かした を作る（全役割） | 押す／入れる（実ブラウザ） | /onboard-interview が実在ルートで 200 で開く（G-04） |  | op=link:2. 話す→onboard-interview | T-U-11 | L1 |
 | SCR-ONBOARD-TESTRUN-024 | onboard-testrun | 操作 | リンク「3. たたき台」（状態 動かした・最初・止まった） | 状態 動かした を作る（全役割） | 押す／入れる（実ブラウザ） | /onboard-draft が実在ルートで 200 で開く（G-04） |  | op=link:3. たたき台→onboard-draft | T-U-11 | L1 |
@@ -38,4 +37,5 @@
 | SCR-ONBOARD-TESTRUN-032 | onboard-testrun | 操作 | ボタン「経理社員を動かす」（状態 最初） | 状態 最初 を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） |  | op=button:経理社員を動かす | T-U-11 | L1 |
 | SCR-ONBOARD-TESTRUN-033 | onboard-testrun | 操作 | ボタン「ブラウザで開く」（状態 止まった） | 状態 止まった を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） |  | op=button:ブラウザで開く | T-U-11 | L1 |
 | SCR-ONBOARD-TESTRUN-034 | onboard-testrun | 操作 | ボタン「この仕事はやめる」（状態 止まった） | 状態 止まった を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） |  | op=button:この仕事はやめる | T-U-11 | L1 |
+| SCR-ONBOARD-TESTRUN-021 | onboard-testrun | 操作 | ボタン「本番に切り替える」（状態 共通） | 状態 共通 を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） |  | op=button:本番に切り替える | T-U-11 | L1 |
 | SCR-ONBOARD-TESTRUN-035 | onboard-testrun | 発注者確認 | 手順 07_tasks/handoff/T-U-11.md を発注者が実際に触って OK を出す（Rule 12） | staging か ローカル | 手順どおりに触る | 手順の末尾に「OK: 日付 名前」が書かれる。無い間は BLOCKED（発注者の確認待ち） | BLOCKED（発注者の確認待ち：手順 07_tasks/handoff/T-U-11.md を高本さんが触って OK: を書く。ローカル 3123 で触れる・staging は無い） | Rule 12 | T-U-11 | L1 |

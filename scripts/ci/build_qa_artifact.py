@@ -9,17 +9,17 @@
 プロジェクト名は持たない。
 """
 from __future__ import annotations
-import argparse, datetime as dt, json, os, sys
+import argparse, hashlib, datetime as dt, json, os, sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from build_qa_xlsx import parse, tab_name  # 手順の読み方は 1 か所
+from build_qa_xlsx import parse, pick_tickets, tab_name  # 手順の読み方は 1 か所
 
 
 def collect(a) -> list[dict]:
     S = {s["id"]: s for s in json.load(open(a.screens, encoding="utf-8"))["items"]}
     pos = {sid: i for i, sid in enumerate(S)}
     T = json.load(open(a.tickets, encoding="utf-8"))["tasks"]
-    done = [t for t in T if t.get("status") == "done" and t.get("deliverable_layer") in ("ui", "integration")]
+    done = pick_tickets(T)   # 確認の表（build_qa_xlsx.py）と同じ選び方
     out = []
     for t in sorted(done, key=lambda t: (t["deliverable_layer"] != "ui", bool(not t.get("screen_ids")), pos.get((t.get("screen_ids") or [""])[0], 999))):
         fp = os.path.join(a.handoff, f"{t['id']}.md")
@@ -34,7 +34,8 @@ def collect(a) -> list[dict]:
             "name": S.get(sid, {}).get("name") or t["title"],
             "url": a.base + (S.get(sid, {}).get("route") or ""),
             "before": p["before"],
-            "steps": [{"act": x, "expect": y} for x, y in p["steps"]],
+            # 答えは手順の中身から決まる ID で保存する（並び順の番号だと、手順を作り直すたびに答えが別の手順に付く・2026-10-01）
+            "steps": [{"id": hashlib.sha1((t["id"] + "\n" + x).encode("utf-8")).hexdigest()[:12], "act": x, "expect": y} for x, y in p["steps"]],
             "later": p["later"],
         })
     return out
@@ -125,7 +126,8 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;
       <dt>メールが届かないとき</dt><dd><code>__BASE__/dev/mail</code> に送ったリンクが並びます。そこから押せば先へ進めます</dd>
       <dt>後片付け</dt><dd><code>bash scripts/dev/clean-qa.sh</code>（自動テストが作った口座だけ消す）</dd>
       <dt>止める</dt><dd><code>bash scripts/dev/up.sh --stop</code>／状態は <code>--status</code></dd>
-      <dt>まだ無いもの</dt><dd>自分のPC（Bridge）と自分のAIの返答は未実装です。各タブの下に理由つきで出します</dd>
+      <dt>自分のPC（Bridge）</dt><dd>本物で動きます。「自分のPCをつなぐ」の画面から Kaname Bridge を受け取って入れ、つないでください（入っていれば自動で新しい版に上がります）。自分のAI は、その PC の本物の Claude Code で答えます。Claude Code が無ければ、その画面のボタンで入れられます</dd>
+      <dt>まだ無いもの</dt><dd>各タブの下に「今はまだ押せないもの」を理由つきで出します。触らなくて大丈夫です</dd>
     </dl>
   </section>
 
@@ -143,12 +145,12 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;
   const tabs = document.getElementById("tabs"), panel = document.getElementById("panel");
   const meter = document.getElementById("meter"), foot = document.getElementById("foot"), save = document.getElementById("save");
   let db = null, answers = {}, cur = 0, saveTimer = null;
-  const key = (t, i) => t + "__" + String(i).padStart(3, "0");
+  const key = (t, s) => t + "__" + s.id;
   const toast = () => { save.classList.add("on"); clearTimeout(saveTimer); saveTimer = setTimeout(() => save.classList.remove("on"), 1400); };
 
   function counts(t) {
     let done = 0;
-    t.steps.forEach((_, i) => { const a = answers[key(t.id, i)]; if (a && a.result && a.result !== "-") done++; });
+    t.steps.forEach((s) => { const a = answers[key(t.id, s)]; if (a && a.result && a.result !== "-") done++; });
     return done;
   }
   function renderTabs() {
@@ -186,7 +188,7 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;
       d.append(ol); panel.append(d);
     }
     t.steps.forEach((s, i) => {
-      const k = key(t.id, i), cur_ = answers[k] || { result: "-", note: "" };
+      const k = key(t.id, s), cur_ = answers[k] || { result: "-", note: "" };
       const row = document.createElement("div"); row.className = "step";
       const n = document.createElement("div"); n.className = "num"; n.textContent = i + 1;
       const body = document.createElement("div");

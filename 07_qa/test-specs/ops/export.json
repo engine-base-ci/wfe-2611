@@ -7,55 +7,6 @@
  },
  "ops": [
   {
-   "key": "button:高本AI",
-   "kind": "button",
-   "label": "高本AI",
-   "target": null,
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
-   "key": "link:AI は止まっています→automation-repair",
-   "kind": "link",
-   "label": "AI は止まっています",
-   "target": "automation-repair",
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
-   "key": "link:PC をつなぐと話せます→bridge-setup",
-   "kind": "link",
-   "label": "PC をつなぐと話せます",
-   "target": "bridge-setup",
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
-   "key": "button:書き出す",
-   "kind": "button",
-   "label": "書き出す",
-   "target": null,
-   "states": [
-    "共通",
-    "持ち出す",
-    "AI が止まっている"
-   ],
-   "roles": [],
-   "ps": [
-    "PS3",
-    "PS4"
-   ]
-  },
-  {
    "key": "checkbox:会社モデル（目標・台帳の定義・担当業務・組織・ルール・記憶）",
    "kind": "checkbox",
    "label": "会社モデル（目標・台帳の定義・担当業務・組織・ルール・記憶）",
@@ -134,6 +85,21 @@
    "key": "select:形式",
    "kind": "select",
    "label": "形式",
+   "target": null,
+   "states": [
+    "持ち出す",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:書き出す",
+   "kind": "button",
+   "label": "書き出す",
    "target": null,
    "states": [
     "持ち出す",

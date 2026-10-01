@@ -11,7 +11,7 @@ import ts from "typescript";
 
 const ROOT = process.cwd();
 const SCAN_DIRS = ["apps", "packages"];
-const SKIP = /(^|\/)(node_modules|dist|coverage|\.next)(\/|$)|\.test\.(ts|tsx|mts)$|(^|\/)test(s)?\//;
+const SKIP = /(^|\/)(node_modules|dist|coverage|\.next|\.vercel|release)(\/|$)|\.test\.(ts|tsx|mts)$|(^|\/)test(s)?\//;
 
 export function loadChoke(root = ROOT) {
   return JSON.parse(readFileSync(join(root, "03_architecture/choke-points.json"), "utf8"));

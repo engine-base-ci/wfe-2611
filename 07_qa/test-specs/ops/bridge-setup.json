@@ -2,67 +2,34 @@
  "screen": "bridge-setup",
  "mock": "06_mockup/v1/v1-bridge-setup.html",
  "state_labels": {
-  "n": "接続中",
+  "n": "接続中（ブラウザ・未インストール）",
+  "ins": "ブラウザ・Bridge が入っている",
+  "inapp": "アプリ（Bridge の窓）の中",
+  "cc": "Claude Code が無い",
   "ok": "つながった",
+  "chromeoff": "つながった・AI が Chrome を使えない",
+  "nobrowser": "つながった・ブラウザを使わない設定",
+  "old": "つながった・Bridge が古い",
+  "slp": "切れている（知らせが来ていない）",
   "ng": "つながらない",
   "s": "運用中（設定として）"
  },
  "ops": [
-  {
-   "key": "button:高本AI",
-   "kind": "button",
-   "label": "高本AI",
-   "target": null,
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
-   "key": "link:AI は止まっています→automation-repair",
-   "kind": "link",
-   "label": "AI は止まっています",
-   "target": "automation-repair",
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
-   "key": "link:PC をつなぐと話せます→bridge-setup",
-   "kind": "link",
-   "label": "PC をつなぐと話せます",
-   "target": "bridge-setup",
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
-   "key": "button:接続を確かめる",
-   "kind": "button",
-   "label": "接続を確かめる",
-   "target": null,
-   "states": [
-    "共通",
-    "運用中（設定として）"
-   ],
-   "roles": [],
-   "ps": [
-    "PS3"
-   ]
-  },
   {
    "key": "link:1. PCをつなぐ→bridge-setup",
    "kind": "link",
    "label": "1. PCをつなぐ",
    "target": "bridge-setup",
    "states": [
-    "接続中",
+    "接続中（ブラウザ・未インストール）",
+    "ブラウザ・Bridge が入っている",
+    "アプリ（Bridge の窓）の中",
+    "Claude Code が無い",
     "つながった",
+    "つながった・AI が Chrome を使えない",
+    "つながった・ブラウザを使わない設定",
+    "つながった・Bridge が古い",
+    "切れている（知らせが来ていない）",
     "つながらない"
    ],
    "roles": [],
@@ -77,8 +44,15 @@
    "label": "2. 話す",
    "target": "onboard-interview",
    "states": [
-    "接続中",
+    "接続中（ブラウザ・未インストール）",
+    "ブラウザ・Bridge が入っている",
+    "アプリ（Bridge の窓）の中",
+    "Claude Code が無い",
     "つながった",
+    "つながった・AI が Chrome を使えない",
+    "つながった・ブラウザを使わない設定",
+    "つながった・Bridge が古い",
+    "切れている（知らせが来ていない）",
     "つながらない"
    ],
    "roles": [],
@@ -93,8 +67,15 @@
    "label": "3. たたき台",
    "target": "onboard-draft",
    "states": [
-    "接続中",
+    "接続中（ブラウザ・未インストール）",
+    "ブラウザ・Bridge が入っている",
+    "アプリ（Bridge の窓）の中",
+    "Claude Code が無い",
     "つながった",
+    "つながった・AI が Chrome を使えない",
+    "つながった・ブラウザを使わない設定",
+    "つながった・Bridge が古い",
+    "切れている（知らせが来ていない）",
     "つながらない"
    ],
    "roles": [],
@@ -109,8 +90,15 @@
    "label": "4. ログイン情報",
    "target": "credentials",
    "states": [
-    "接続中",
+    "接続中（ブラウザ・未インストール）",
+    "ブラウザ・Bridge が入っている",
+    "アプリ（Bridge の窓）の中",
+    "Claude Code が無い",
     "つながった",
+    "つながった・AI が Chrome を使えない",
+    "つながった・ブラウザを使わない設定",
+    "つながった・Bridge が古い",
+    "切れている（知らせが来ていない）",
     "つながらない"
    ],
    "roles": [],
@@ -125,8 +113,15 @@
    "label": "5. テスト",
    "target": "onboard-testrun",
    "states": [
-    "接続中",
+    "接続中（ブラウザ・未インストール）",
+    "ブラウザ・Bridge が入っている",
+    "アプリ（Bridge の窓）の中",
+    "Claude Code が無い",
     "つながった",
+    "つながった・AI が Chrome を使えない",
+    "つながった・ブラウザを使わない設定",
+    "つながった・Bridge が古い",
+    "切れている（知らせが来ていない）",
     "つながらない"
    ],
    "roles": [],
@@ -141,8 +136,15 @@
    "label": "6. 本番へ",
    "target": "onboard-golive",
    "states": [
-    "接続中",
+    "接続中（ブラウザ・未インストール）",
+    "ブラウザ・Bridge が入っている",
+    "アプリ（Bridge の窓）の中",
+    "Claude Code が無い",
     "つながった",
+    "つながった・AI が Chrome を使えない",
+    "つながった・ブラウザを使わない設定",
+    "つながった・Bridge が古い",
+    "切れている（知らせが来ていない）",
     "つながらない"
    ],
    "roles": [],
@@ -157,7 +159,7 @@
    "label": "macOSApple Silicon / Intel · 38 MB",
    "target": null,
    "states": [
-    "接続中"
+    "接続中（ブラウザ・未インストール）"
    ],
    "roles": [],
    "ps": [
@@ -170,7 +172,7 @@
    "label": "Windows10 以降 · 41 MB",
    "target": null,
    "states": [
-    "接続中"
+    "接続中（ブラウザ・未インストール）"
    ],
    "roles": [],
    "ps": [
@@ -183,8 +185,15 @@
    "label": "できること・できないことの全一覧 →",
    "target": "security-brief",
    "states": [
-    "接続中",
+    "接続中（ブラウザ・未インストール）",
+    "ブラウザ・Bridge が入っている",
+    "アプリ（Bridge の窓）の中",
+    "Claude Code が無い",
     "つながった",
+    "つながった・AI が Chrome を使えない",
+    "つながった・ブラウザを使わない設定",
+    "つながった・Bridge が古い",
+    "切れている（知らせが来ていない）",
     "つながらない"
    ],
    "roles": [],
@@ -194,17 +203,86 @@
    ]
   },
   {
+   "key": "button:このPCの Bridge につなぐ",
+   "kind": "button",
+   "label": "このPCの Bridge につなぐ",
+   "target": null,
+   "states": [
+    "ブラウザ・Bridge が入っている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0"
+   ]
+  },
+  {
+   "key": "button:接続を確かめる",
+   "kind": "button",
+   "label": "接続を確かめる",
+   "target": null,
+   "states": [
+    "ブラウザ・Bridge が入っている",
+    "運用中（設定として）"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0",
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:高本AIと話すへ",
+   "kind": "button",
+   "label": "高本AIと話すへ",
+   "target": null,
+   "states": [
+    "アプリ（Bridge の窓）の中"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0"
+   ]
+  },
+  {
+   "key": "button:Claude Code を入れる",
+   "kind": "button",
+   "label": "Claude Code を入れる",
+   "target": null,
+   "states": [
+    "Claude Code が無い"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0"
+   ]
+  },
+  {
+   "key": "button:ログインする",
+   "kind": "button",
+   "label": "ログインする",
+   "target": null,
+   "states": [
+    "Claude Code が無い"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0"
+   ]
+  },
+  {
    "key": "button:この端末を外す",
    "kind": "button",
    "label": "この端末を外す",
    "target": null,
    "states": [
     "つながった",
+    "切れている（知らせが来ていない）",
     "運用中（設定として）"
    ],
    "roles": [],
    "ps": [
     "PS1",
+    "PS0",
     "PS3"
    ]
   },
@@ -222,29 +300,151 @@
    ]
   },
   {
+   "key": "radio:自分の Chrome（Claude in Chrome）いつもの Chrome とそのログインの状態をそのまま使います。",
+   "kind": "radio",
+   "label": "自分の Chrome（Claude in Chrome）いつもの Chrome とそのログインの状態をそのまま使います。",
+   "target": null,
+   "states": [
+    "つながった",
+    "つながった・AI が Chrome を使えない",
+    "つながった・ブラウザを使わない設定",
+    "つながった・Bridge が古い"
+   ],
+   "roles": [],
+   "ps": [
+    "PS1"
+   ]
+  },
+  {
+   "key": "radio:Bridge 専用のブラウザいつもの Chrome とは別のログインの状態で動きます。Chrome を閉じていても使えま",
+   "kind": "radio",
+   "label": "Bridge 専用のブラウザいつもの Chrome とは別のログインの状態で動きます。Chrome を閉じていても使えま",
+   "target": null,
+   "states": [
+    "つながった",
+    "つながった・AI が Chrome を使えない",
+    "つながった・ブラウザを使わない設定",
+    "つながった・Bridge が古い"
+   ],
+   "roles": [],
+   "ps": [
+    "PS1"
+   ]
+  },
+  {
+   "key": "radio:使わないAI はブラウザを開きません",
+   "kind": "radio",
+   "label": "使わないAI はブラウザを開きません",
+   "target": null,
+   "states": [
+    "つながった",
+    "つながった・AI が Chrome を使えない",
+    "つながった・ブラウザを使わない設定",
+    "つながった・Bridge が古い"
+   ],
+   "roles": [],
+   "ps": [
+    "PS1"
+   ]
+  },
+  {
+   "key": "link:次へ：2. 話す→onboard-interview",
+   "kind": "link",
+   "label": "次へ：2. 話す",
+   "target": "onboard-interview",
+   "states": [
+    "つながった",
+    "つながった・AI が Chrome を使えない",
+    "つながった・ブラウザを使わない設定",
+    "つながった・Bridge が古い",
+    "切れている（知らせが来ていない）",
+    "つながらない"
+   ],
+   "roles": [],
+   "ps": [
+    "PS1",
+    "PS0"
+   ]
+  },
+  {
+   "key": "toggle:つなぎ方を見る",
+   "kind": "toggle",
+   "label": "つなぎ方を見る",
+   "target": null,
+   "states": [
+    "つながった・AI が Chrome を使えない"
+   ],
+   "roles": [],
+   "ps": [
+    "PS1"
+   ]
+  },
+  {
+   "key": "link:Chrome ウェブストアで開く",
+   "kind": "link",
+   "label": "Chrome ウェブストアで開く",
+   "target": null,
+   "states": [
+    "つながった・AI が Chrome を使えない"
+   ],
+   "roles": [],
+   "ps": [
+    "PS1"
+   ]
+  },
+  {
    "key": "button:もう一度確かめる",
    "kind": "button",
    "label": "もう一度確かめる",
    "target": null,
    "states": [
+    "つながった・AI が Chrome を使えない",
+    "切れている（知らせが来ていない）",
     "つながらない"
    ],
    "roles": [],
    "ps": [
+    "PS1",
     "PS0"
    ]
   },
   {
-   "key": "button:あとでやる（高本AIはまだ話せません）",
+   "key": "button:Bridge 専用のブラウザに切り替える",
    "kind": "button",
-   "label": "あとでやる（高本AIはまだ話せません）",
+   "label": "Bridge 専用のブラウザに切り替える",
    "target": null,
    "states": [
-    "つながらない"
+    "つながった・AI が Chrome を使えない"
    ],
    "roles": [],
    "ps": [
-    "PS0"
+    "PS1"
+   ]
+  },
+  {
+   "key": "button:macOS 版",
+   "kind": "button",
+   "label": "macOS 版",
+   "target": null,
+   "states": [
+    "つながった・Bridge が古い"
+   ],
+   "roles": [],
+   "ps": [
+    "PS1"
+   ]
+  },
+  {
+   "key": "button:Windows 版",
+   "kind": "button",
+   "label": "Windows 版",
+   "target": null,
+   "states": [
+    "つながった・Bridge が古い"
+   ],
+   "roles": [],
+   "ps": [
+    "PS1"
    ]
   }
  ]

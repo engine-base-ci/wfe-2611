@@ -39,6 +39,9 @@ class Rules:
         t = e["table_name"]; stem = col[:-3]
         if col == "parent_id": return "uuid", (t, "id")
         if MEMBER_COLS.search(col) or MEMBER_COLS.search(stem) or col.endswith("ops_member_id"): return "uuid", (self.members, "id")
+        # 表の名前そのものに当たるなら、それが先（別名の「_event → account_events」に bridge_job_event_id を取られた・2026-09-27）
+        exact = next((tb for tb in self.by_table if singular(tb) == stem), None)
+        if exact and not is_master(self.by_table[exact]) and stem not in self.aliases: return "uuid", (exact, "id")
         for k, v in self.aliases.items():
             if stem == k or stem.endswith("_" + k):
                 if v == "text": return "text", None

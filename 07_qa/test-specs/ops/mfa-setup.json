@@ -8,20 +8,6 @@
  },
  "ops": [
   {
-   "key": "button:登録する",
-   "kind": "button",
-   "label": "登録する",
-   "target": null,
-   "states": [
-    "共通",
-    "登録"
-   ],
-   "roles": [],
-   "ps": [
-    "PS0"
-   ]
-  },
-  {
    "key": "input:パスワード",
    "kind": "input",
    "label": "パスワード",
@@ -64,6 +50,19 @@
    "key": "input:アプリに出た6桁",
    "kind": "input",
    "label": "アプリに出た6桁",
+   "target": null,
+   "states": [
+    "登録"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0"
+   ]
+  },
+  {
+   "key": "button:登録する",
+   "kind": "button",
+   "label": "登録する",
    "target": null,
    "states": [
     "登録"

@@ -809,8 +809,8 @@
    },
    "when": "常駐アプリ（Bridge）がつながらない（未起動・古い版・トークン失効）",
    "false_when": "つながっている",
-   "message": "PC につながっていません。段階 1 は PC がつながるまで高本AIは話せません",
-   "action": "もう一度つなぐ／あとでやる",
+   "message": "まだつながっていません。Bridge を開いたら、この画面が自分で気づきます",
+   "action": "Bridge を開く／入れる（接続を確かめる を押してもよい）",
    "undo": false,
    "layers": [
     "UI",
@@ -826,8 +826,9 @@
    },
    "severity": "high",
    "source": [
+    "D-015",
     "D-055",
-    "D-015"
+    "D-089.10"
    ]
   },
   {
@@ -839,8 +840,8 @@
    },
    "when": "PC が閉じている間に指示を送った",
    "false_when": "PC が起きている",
-   "message": "あなたの PC が閉じているので、高本AIは動けません。PC を起こすと、溜まった分から続けます",
-   "action": "起きたら続き（そのまま）／今すぐ起こす",
+   "message": "あなたのPCが閉じているので、いまは動けません。ここで言ったことは溜めておいて、PC が起きたときに順に片づけます",
+   "action": "PC を起こす／PC の状態を見る（書いたことは起きたら順に送る）",
    "undo": false,
    "layers": [
     "UI",
@@ -858,8 +859,10 @@
    "severity": "high",
    "source": [
     "D-045",
+    "D-055",
     "D-066",
-    "D-055"
+    "D-090",
+    "D-104.15"
    ]
   },
   {
@@ -1121,28 +1124,31 @@
    "class": "no_signal",
    "where": {
     "screen": "clone-chat",
-    "state": "s"
+    "state": "stp"
    },
-   "when": "生成の途中で切れた（接続断・停止）",
-   "false_when": "最後まで届く",
-   "message": "途中で切れました。ここまでの分は残っています",
-   "action": "続きを頼む／もう一度",
+   "when": "本人の Claude Code が完了の合図を出さずに終わった（何も返さない・途中で切れた・時間切れ）",
+   "false_when": "最後まで返ってくる",
+   "message": "ここで止まりました。Claude Code が何も返さずに終わりました",
+   "action": "続けるなら「続けて」と書いて送る／ほかのことならそのまま書く（ボタンは置かない）",
    "undo": false,
    "layers": [
     "UI",
-    "API"
+    "API",
+    "Bridge"
    ],
    "must_not": false,
    "reproduce": {
-    "setup": "生成中",
+    "setup": "仕事が動いている",
     "steps": [
-     "生成中に接続を切る"
+     "結末を「止まった（合図なし）」で返す"
     ],
-    "needs": "ネットワーク操作"
+    "needs": "つないだ PC"
    },
    "severity": "medium",
    "source": [
-    "D-066"
+    "D-066",
+    "D-090",
+    "D-104.15"
    ]
   },
   {
@@ -1368,8 +1374,8 @@
    },
    "when": "常駐アプリを終了した直後（0〜90 秒）に指示を送る（切り替わりの瞬間）",
    "false_when": "終了から十分たった後",
-   "message": "PC との接続が切れました。指示は溜めておき、つながったら続けます",
-   "action": "起きたら続き",
+   "message": "切れています。いまは仕事を渡せません。言ったことは溜めておき、Bridge を開いたら続けます",
+   "action": "Bridge を開く（接続を確かめる を押してもよい）",
    "undo": false,
    "layers": [
     "UI",
@@ -1385,8 +1391,10 @@
    },
    "severity": "high",
    "source": [
+    "D-015",
     "D-055",
-    "D-015"
+    "D-089.10",
+    "D-090.8"
    ]
   },
   {
@@ -3518,6 +3526,537 @@
    "severity": "low",
    "source": [
     "D-088.3"
+   ]
+  },
+  {
+   "id": "E-CONN-010",
+   "class": "auth",
+   "where": {
+    "screen": "clone-chat",
+    "state": "stp"
+   },
+   "when": "本人の Claude Code にログインしていない状態で仕事を渡した",
+   "false_when": "ログイン済み。上限にも当たっていない",
+   "message": "Claude Code にログインできていません。Bridge の「ログインする」を押して、ブラウザで 1 回許可してください",
+   "action": "Bridge で「ログインする」を押す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "Bridge"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "Bridge がつながっている",
+    "steps": [
+     "本人の Claude Code にログインしていない状態で仕事を渡した"
+    ],
+    "needs": "この PC の Claude Code"
+   },
+   "source": [
+    "D-093.5",
+    "D-092.1",
+    "D-104.15"
+   ],
+   "severity": "high"
+  },
+  {
+   "id": "E-LIM-010",
+   "class": "limit",
+   "where": {
+    "screen": "clone-chat",
+    "state": "x"
+   },
+   "when": "本人のサブスクの上限に当たった（数値の境界は公式に無いので、出力から読み取る）",
+   "false_when": "上限に当たっていない。ログインもできている",
+   "message": "サブスクの 5 時間の枠に達しました。18:40 に戻ります。それまで自分のAI は動けません。ここで書いたことは送れます（戻ったら順に）",
+   "action": "使用量を見る／戻ってからそのまま書く",
+   "undo": false,
+   "layers": [
+    "UI",
+    "Bridge"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "Bridge がつながっている",
+    "steps": [
+     "本人のサブスクの上限に当たった（数値の境界は公式に無いので、出力から読み取る）"
+    ],
+    "needs": "この PC の Claude Code"
+   },
+   "source": [
+    "D-092.8",
+    "D-093.5",
+    "D-104.16"
+   ],
+   "severity": "medium"
+  },
+  {
+   "id": "E-CONN-011",
+   "class": "dependency",
+   "where": {
+    "screen": "bridge-setup",
+    "state": "e"
+   },
+   "when": "Claude Code が入っているが本体（native binary）が落ちてきておらず動かない",
+   "false_when": "実行できる claude がある",
+   "message": "Claude Code は入っていますが、本体が落ちてきていないので動きません。下のボタンで取り直せば直ります",
+   "action": "Bridge で「Claude Code を取り直す」を押す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "Bridge"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "Bridge がつながっている",
+    "steps": [
+     "Claude Code が入っているが本体（native binary）が落ちてきておらず動かない"
+    ],
+    "needs": "この PC の Claude Code"
+   },
+   "source": [
+    "D-091.2",
+    "D-093.6",
+    "D-104.14",
+    "D-107.2"
+   ],
+   "severity": "high"
+  },
+  {
+   "id": "E-GATE-010",
+   "class": "gate",
+   "severity": "medium",
+   "where": {
+    "screen": "clone-chat",
+    "state": "a"
+   },
+   "when": "自分のAIが「これを実行していいか」と聞いたのに、本人が答えないまま 30 分たった",
+   "false_when": "許可する／許可しない を押した。押した時点で動き直す／止まる",
+   "message": "本人が許可しませんでした（確認に答えが無いまま時間がたったので、実行していません）",
+   "action": "会話で「続けて」と書いて送り、次の問いで答える",
+   "undo": false,
+   "layers": [
+    "Bridge",
+    "UI"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "確認待ちのまま",
+    "steps": [
+     "30 分待つ"
+    ],
+    "needs": "この PC の Claude Code"
+   },
+   "source": [
+    "D-093.3",
+    "D-093.8",
+    "D-104.14",
+    "D-104.15",
+    "D-107.2"
+   ]
+  },
+  {
+   "id": "E-GATE-011",
+   "class": "gate",
+   "severity": "high",
+   "where": {
+    "screen": "clone-chat",
+    "state": "a"
+   },
+   "when": "自分のAIが、サービス台帳で規約により自動操作が禁止のサービスか銀行を操作しようとした（全部許可を含む）",
+   "false_when": "台帳で禁止でも銀行でもない宛先",
+   "message": "{サービス}（{ドメイン}）は規約で自動操作が禁止のため止めました。正規の連携か、手で操作してください",
+   "action": "返事にある正規の連携の案内か、手作業の手順に沿って進める",
+   "undo": false,
+   "layers": [
+    "Bridge",
+    "UI"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "台帳に bank のドメイン・全部許可の会話",
+    "steps": [
+     "そのドメインを取り込む・curl する頼みを送る"
+    ],
+    "needs": "この PC の Claude Code"
+   },
+   "source": [
+    "D-107.3",
+    "D-107.4",
+    "D-041"
+   ]
+  },
+  {
+   "id": "E-CONF-011",
+   "class": "conflict",
+   "severity": "low",
+   "where": {
+    "screen": "verify-email",
+    "state": "done"
+   },
+   "when": "登録が終わった人が、確認のリンクをもう一度押した／待つ画面に戻って「もう一度送る」を押した",
+   "false_when": "まだ確認していない（保留がある）。そのときは送り直す",
+   "message": "このメールアドレスの登録は確認まで終わっています。ログインしてください",
+   "action": "ログインへ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "リンクを押して登録を終えた",
+    "steps": [
+     "ブラウザで戻る",
+     "「もう一度送る」を押す"
+    ],
+    "needs": "なし"
+   },
+   "source": [
+    "D-088.8"
+   ]
+  },
+  {
+   "class": "dependency",
+   "where": {
+    "screen": "credentials",
+    "state": "e"
+   },
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "id": "E-SEC-001",
+   "when": "資格情報を預ける口で、暗号化した中身を預かり先（Infisical）に書けなかった（届かない・入れない・上限）",
+   "false_when": "預かり先に書けた（参照 ID が返る）",
+   "message": "預かり先に保管できませんでした。もう一度試してください",
+   "action": "もう一度「保存」を押す。続くときは運営に連絡する",
+   "reproduce": {
+    "setup": "ログインしている",
+    "steps": [
+     "預かり先を止めた状態でログイン情報を保存する"
+    ],
+    "needs": "預かり先を止められる環境"
+   },
+   "source": [
+    "D-017.1",
+    "D-101.1",
+    "D-102.3"
+   ],
+   "severity": "high"
+  },
+  {
+   "class": "dependency",
+   "where": {
+    "screen": "credentials",
+    "state": "e"
+   },
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "id": "E-SEC-002",
+   "when": "staging／本番で、資格情報の預かり先が消えない保管先（Infisical）になっていないのに預けようとした（起動時の確認をすり抜けた設定の誤り）",
+   "false_when": "Infisical に入れている／開発環境",
+   "message": "いまはログイン情報を預かれません。預かり先の用意ができたら使えるようになります",
+   "action": "預かり先が決まるまで、そのサービスは本人がログインして使う",
+   "reproduce": {
+    "setup": "staging（NODE_ENV=staging）でメモリの預かり先のまま起動している",
+    "steps": [
+     "ログイン情報を保存する"
+    ],
+    "needs": "staging"
+   },
+   "source": [
+    "D-097.8",
+    "D-101.1",
+    "D-101.4"
+   ],
+   "severity": "medium"
+  },
+  {
+   "id": "E-SEC-003",
+   "class": "dependency",
+   "where": {
+    "screen": "credentials",
+    "state": "e"
+   },
+   "when": "資格情報の置き場（Infisical）の秘密の操作の上限（無料は毎分 120 回）に当たった（429）",
+   "false_when": "上限の内側（毎分 120 回未満）",
+   "message": "いま混み合っています。◯ 秒ほど待ってからもう一度保存してください",
+   "action": "待ってからもう一度保存する（上限の 8 割で運営に知らせが届いている）",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ログインしている",
+    "steps": [
+     "置き場が 429 を返す状態で資格情報を保存する"
+    ],
+    "needs": "置き場の上限を再現できる環境"
+   },
+   "source": [
+    "D-102.4",
+    "D-102.5"
+   ],
+   "severity": "medium"
+  },
+  {
+   "id": "E-AUTH-007",
+   "class": "auth",
+   "where": {
+    "screen": "login",
+    "state": "e"
+   },
+   "when": "メールアドレスとパスワードは合っているが、その人の会社の登録（会社の人）が見つからない（会社が消えた・登録の途中で壊れた）",
+   "false_when": "会社の人の記録がある",
+   "message": "このアカウントは、会社の登録が見つからないため使えません。もう一度アカウントを作るか、運営に連絡してください",
+   "action": "アカウントを作る／運営に連絡する",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "ログインはできるが会社の人の記録が無いアカウント",
+    "steps": [
+     "そのメールアドレスとパスワードでログインする"
+    ],
+    "needs": "会社の人の記録を消せる環境"
+   },
+   "source": [
+    "D-086.4",
+    "D-074"
+   ],
+   "severity": "high"
+  },
+  {
+   "id": "E-CHAT-001",
+   "class": "connectivity",
+   "where": {
+    "screen": "clone-chat",
+    "state": "x"
+   },
+   "when": "送る途中で回線が切れた・API が応答しない（Kaname に届いていない）",
+   "false_when": "Kaname に届いて順番待ちか作業中の印が付いた",
+   "message": "送れませんでした（回線が切れていました）。書いた文は残っています",
+   "action": "もう一度送る",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "会話を開く",
+    "steps": [
+     "ネットワークを切る",
+     "文を書いて Enter",
+     "吹き出しに「送れませんでした」と「もう一度送る」が出て、文が消えていないことを確かめる"
+    ],
+    "needs": "—"
+   },
+   "severity": "high",
+   "source": [
+    "D-104.15",
+    "D-066.9"
+   ]
+  },
+  {
+   "id": "E-CHAT-002",
+   "class": "external",
+   "where": {
+    "screen": "clone-chat",
+    "state": "f",
+    "choke_point": "C4"
+   },
+   "when": "付けた資料・画像を会社の置き場に置けなかった（置き場が応答しない・書き込みを断られた）",
+   "false_when": "置けて、添付の一覧に付いた",
+   "message": "資料を置けませんでした（保存先が応答しません）。付けた一覧に残っているので、もう一度送ってください",
+   "action": "もう一度送る／外す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "C4"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "置き場を止める（dev は KANAME_DEV_FAKE_BUCKET を外して置き場を落とす）",
+    "steps": [
+     "資料を付ける",
+     "送る",
+     "一覧に残り、文も消えていないことを確かめる"
+    ],
+    "needs": "置き場"
+   },
+   "severity": "high",
+   "source": [
+    "D-104.11"
+   ]
+  },
+  {
+   "id": "E-CHAT-003",
+   "class": "no_signal",
+   "where": {
+    "screen": "clone-chat",
+    "state": "s"
+   },
+   "when": "止めるを押したが、Bridge から止めた知らせが一定時間来ない（PC が応答しない）",
+   "false_when": "Bridge が止めた知らせを返し、会話に「止まりました」と理由が出た",
+   "message": "止める合図を PC に届けられませんでした（PC が応答しません）。PC が起きたらすぐ止めます",
+   "action": "PC の状態を見る",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "Bridge"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "作業中の会話",
+    "steps": [
+     "Bridge を落とす",
+     "止めるを押す",
+     "止めたことにせず、この文が出ることを確かめる"
+    ],
+    "needs": "この PC の Bridge"
+   },
+   "severity": "medium",
+   "source": [
+    "D-104.9",
+    "D-090.4"
+   ]
+  },
+  {
+   "id": "E-MEM-001",
+   "class": "connectivity",
+   "where": {
+    "screen": "today",
+    "state": "dg"
+   },
+   "when": "「昨日の会話をまとめる」を押したが PC が閉じている（Bridge が生きていない）",
+   "false_when": "Bridge が生きていて、まとめが始まった",
+   "message": "あなたの PC が閉じているので、まとめを始められません。PC を起こしてから、もう一度押してください。溜まっている分は消えません",
+   "action": "PC の状態を見る／あとで押す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "Bridge を止める",
+    "steps": [
+     "今日 を開く",
+     "昨日の会話をまとめる を押す",
+     "始めたことにせず、この文が出て、溜まっている量が変わらないことを確かめる"
+    ],
+    "needs": "—"
+   },
+   "severity": "medium",
+   "source": [
+    "D-105.2"
+   ]
+  },
+  {
+   "id": "E-ART-001",
+   "class": "validation",
+   "severity": "medium",
+   "where": {
+    "screen": "clone-chat",
+    "state": "art",
+    "choke_point": "C4"
+   },
+   "when": "書き出す・保存する成果物の本文が上限（1 MB）を超える",
+   "false_when": "1 MB 以下",
+   "message": "大きすぎて成果物にできません（1 MB まで）。分けて書き出してください",
+   "action": "本文を分けて、別々に書き出す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "自分のAI の返事がある",
+    "steps": [
+     "1 MB を超える本文を書き出す・保存する"
+    ],
+    "needs": "ローカル"
+   },
+   "source": [
+    "D-106.6"
+   ]
+  },
+  {
+   "id": "E-ART-002",
+   "class": "dependency",
+   "severity": "high",
+   "where": {
+    "screen": "clone-chat",
+    "state": "art",
+    "choke_point": "C4"
+   },
+   "when": "成果物の中身を会社の置き場に置けなかった（置き場が応答しない・書き込みを断られた）",
+   "false_when": "置けた",
+   "message": "成果物を保存できませんでした（保存先が応答しません）。直した中身は残っているので、もう一度保存してください",
+   "action": "もう一度保存する",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "横で開いた成果物",
+    "steps": [
+     "置き場を書けなくして保存する"
+    ],
+    "needs": "ローカル"
+   },
+   "source": [
+    "D-106.3",
+    "D-106.6"
+   ]
+  },
+  {
+   "id": "E-CONN-012",
+   "class": "dependency",
+   "severity": "high",
+   "where": {
+    "screen": "clone-chat",
+    "state": "x"
+   },
+   "when": "この PC の Bridge が古い（Kaname と話す約束の版が合わない）",
+   "false_when": "Bridge が新しい",
+   "message": "この PC の Bridge が古いので、自分のAI に仕事を渡せません。Bridge を入れ直してください",
+   "action": "Bridge を入れ直す（書いたことは溜めておき、入れ直した後に順に片づける）",
+   "undo": false,
+   "layers": [
+    "Bridge",
+    "API",
+    "UI"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "約束の版を送らない Bridge",
+    "steps": [
+     "仕事を渡す"
+    ],
+    "needs": "ローカル"
+   },
+   "source": [
+    "D-093.8",
+    "D-104.7"
    ]
   }
  ],

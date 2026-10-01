@@ -29,8 +29,8 @@ status() {
 
 stop() {
   say "止める"
-  lsof -ti:$API_PORT 2>/dev/null | xargs kill 2>/dev/null && ok "API を止めた" || ok "API は動いていない"
-  lsof -ti:$WEB_PORT 2>/dev/null | xargs kill 2>/dev/null && ok "画面を止めた" || ok "画面は動いていない"
+  lsof -ti tcp:$API_PORT -sTCP:LISTEN 2>/dev/null | xargs kill 2>/dev/null && ok "API を止めた" || ok "API は動いていない"
+  lsof -ti tcp:$WEB_PORT -sTCP:LISTEN 2>/dev/null | xargs kill 2>/dev/null && ok "画面を止めた" || ok "画面は動いていない"
   echo "  DB（docker $PG_CONTAINER）はそのまま。止めるなら docker stop $PG_CONTAINER"
 }
 
@@ -52,12 +52,16 @@ if ! docker ps --format '{{.Names}}' | grep -qx "$PG_CONTAINER"; then
   fi
   sleep 3
 else ok "動いている（$PG_CONTAINER）"; fi
+# 手元で触る画面の DB（kaname_dev）と、単体テストの DB（kaname_test）は分ける。
+# 単体テストは準備のたびに会社・会社の人の表を空にするので、同じ DB だと手元のアカウントが「ログインだけ生きて会社が無い」状態になる（2026-09-27）
+docker exec "$PG_CONTAINER" psql -U postgres -tAc "select 1 from pg_database where datname='kaname_dev'" 2>/dev/null | grep -q 1 \
+  || { docker exec "$PG_CONTAINER" psql -U postgres -c "create database kaname_dev" >/dev/null 2>&1 && ok "手元の DB を作った（kaname_dev）"; }
 
 # ---- 2. 設定（ローカル専用の既定。秘密ではない）
 say "2／4 設定"
 set -a
 # .env.example は「KEY=値」の並び。値に < > や空白が入る行があるので source せずに読む
-while IFS= read -r line; do
+while IFS= read -r line || [ -n "$line" ]; do  # 最後の行に改行が無くても読む
   case "$line" in ''|'#'*) continue ;; esac
   key=${line%%=*}; val=${line#*=}
   case "$key" in *[!A-Za-z0-9_]*) continue ;; esac
@@ -65,7 +69,7 @@ while IFS= read -r line; do
 done < "$ROOT/.env.example"
 # ローカルだけの上書き（.env は git に入らない）。Resend の鍵などはここから
 if [ -f "$ROOT/.env" ]; then
-  while IFS= read -r line; do
+  while IFS= read -r line || [ -n "$line" ]; do  # 最後の行に改行が無くても読む
     case "$line" in ''|'#'*) continue ;; esac
     key=${line%%=*}; val=${line#*=}
     case "$key" in *[!A-Za-z0-9_]*) continue ;; esac
@@ -78,6 +82,8 @@ BASE_URL="http://127.0.0.1:$API_PORT"
 # 画面の出どころ（CORS）。本番ビルド 3124 と next dev 3123 の両方を許す
 WEB_BASE_URL="http://127.0.0.1:$WEB_PORT,http://localhost:$WEB_PORT,http://localhost:3123"
 KANAME_DEV_FAKE_BUCKET=1   # MinIO を立てずに触るため（添付の保存だけ使えない）
+# 作った Bridge のインストーラを、画面のダウンロードのボタンから配る（署名・置き場が決まる前の橋渡し）
+BRIDGE_RELEASE_DIR="$ROOT/apps/bridge/release"
 KANAME_API_LOG="$LOG/api.log"
 set +a
 ok "ローカルの既定を読んだ（.env.example）"
@@ -87,11 +93,10 @@ echo "  メールが届かなくても http://127.0.0.1:$WEB_PORT/dev/mail か�
 say "3／4 API"
 if [ "$(alive http://127.0.0.1:$API_PORT/health)" = 200 ]; then ok "もう動いている"
 else
-  if ! docker exec "$PG_CONTAINER" psql -U postgres -d kaname_test -tAc "select 1 from pg_roles where rolname='kaname_app'" 2>/dev/null | grep -q 1; then
-    echo "  はじめてなので DB を作る（1〜2 分）"
-    DATABASE_ADMIN_URL="postgres://postgres:postgres@127.0.0.1:55433/kaname_test" pnpm -s db:migrate >"$LOG/migrate.log" 2>&1 \
-      && ok "DB を作った" || { ng "DB を作れない → $LOG/migrate.log"; exit 1; }
-  fi
+  # 手元の DB に migration を流す（済んだものは飛ばす。新しい migration もここで入る）
+  echo "  手元の DB（kaname_dev）を最新にする"
+  DATABASE_ADMIN_URL="postgres://postgres:postgres@127.0.0.1:55433/kaname_dev" pnpm -s db:migrate >"$LOG/migrate.log" 2>&1 \
+    && ok "DB は最新（$(grep -o 'migration 適用 [0-9]*' "$LOG/migrate.log" | head -1)）" || { ng "DB を最新にできない → $LOG/migrate.log"; exit 1; }
   nohup pnpm -s api:dev >"$LOG/api.log" 2>&1 &
   for _ in $(seq 1 30); do [ "$(alive http://127.0.0.1:$API_PORT/health)" = 200 ] && break; sleep 1; done
   [ "$(alive http://127.0.0.1:$API_PORT/health)" = 200 ] && ok "起動した" || { ng "起動しない → $LOG/api.log"; tail -5 "$LOG/api.log"; exit 1; }
@@ -104,7 +109,7 @@ else
   echo "  ビルドする（初回 1〜2 分）"
   rm -rf apps/web/.next-prod   # 前のビルドの残りが混ざると /404 の生成で落ちる
   # next build は NODE_ENV=production で走らせる（development のままだと /404 の生成で落ちる）
-  (cd apps/web && NODE_ENV=production KANAME_DEV_PAGES=1 NEXT_PUBLIC_API_BASE="http://127.0.0.1:$API_PORT" pnpm -s build:test) >"$LOG/build.log" 2>&1 \
+  (cd apps/web && NODE_ENV=production KANAME_DEV_PAGES=1 NEXT_PUBLIC_KANAME_DEV_PAGES=1 NEXT_PUBLIC_API_BASE="http://127.0.0.1:$API_PORT" pnpm -s build:test) >"$LOG/build.log" 2>&1 \
     || { ng "ビルドできない → $LOG/build.log"; tail -5 "$LOG/build.log"; exit 1; }
   (cd apps/web && NODE_ENV=production KANAME_DEV_PAGES=1 KANAME_API_LOG="$LOG/api.log" NEXT_PUBLIC_API_BASE="http://127.0.0.1:$API_PORT" nohup pnpm -s start:test >"$LOG/web.log" 2>&1 &)
   for _ in $(seq 1 40); do [ "$(alive http://127.0.0.1:$WEB_PORT/login)" = 200 ] && break; sleep 1; done

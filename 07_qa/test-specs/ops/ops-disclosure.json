@@ -8,53 +8,6 @@
  },
  "ops": [
   {
-   "key": "button:高本AI",
-   "kind": "button",
-   "label": "高本AI",
-   "target": null,
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
-   "key": "link:AI は止まっています→automation-repair",
-   "kind": "link",
-   "label": "AI は止まっています",
-   "target": "automation-repair",
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
-   "key": "link:PC をつなぐと話せます→bridge-setup",
-   "kind": "link",
-   "label": "PC をつなぐと話せます",
-   "target": "bridge-setup",
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
-   "key": "button:版を出す",
-   "kind": "button",
-   "label": "版を出す",
-   "target": null,
-   "states": [
-    "共通",
-    "空"
-   ],
-   "roles": [],
-   "ps": [
-    "PS3"
-   ]
-  },
-  {
    "key": "button:新しい版を出す",
    "kind": "button",
    "label": "新しい版を出す",
@@ -113,6 +66,19 @@
    "target": null,
    "states": [
     "DPA とサブプロセッサ"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:版を出す",
+   "kind": "button",
+   "label": "版を出す",
+   "target": null,
+   "states": [
+    "空"
    ],
    "roles": [],
    "ps": [

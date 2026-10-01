@@ -8,47 +8,12 @@
  },
  "ops": [
   {
-   "key": "button:高本AI",
-   "kind": "button",
-   "label": "高本AI",
+   "key": "input:text",
+   "kind": "input",
+   "label": "text",
    "target": null,
    "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
-   "key": "link:AI は止まっています→automation-repair",
-   "kind": "link",
-   "label": "AI は止まっています",
-   "target": "automation-repair",
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
-   "key": "link:PC をつなぐと話せます→bridge-setup",
-   "kind": "link",
-   "label": "PC をつなぐと話せます",
-   "target": "bridge-setup",
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
-   "key": "button:探す",
-   "kind": "button",
-   "label": "探す",
-   "target": null,
-   "states": [
-    "共通",
     "結果",
-    "最初",
     "AI が止まっている"
    ],
    "roles": [],
@@ -58,12 +23,13 @@
    ]
   },
   {
-   "key": "input:text",
-   "kind": "input",
-   "label": "text",
+   "key": "button:探す",
+   "kind": "button",
+   "label": "探す",
    "target": null,
    "states": [
     "結果",
+    "最初",
     "AI が止まっている"
    ],
    "roles": [],

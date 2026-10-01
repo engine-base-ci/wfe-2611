@@ -7,53 +7,6 @@
  },
  "ops": [
   {
-   "key": "button:高本AI",
-   "kind": "button",
-   "label": "高本AI",
-   "target": null,
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
-   "key": "link:AI は止まっています→automation-repair",
-   "kind": "link",
-   "label": "AI は止まっています",
-   "target": "automation-repair",
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
-   "key": "link:PC をつなぐと話せます→bridge-setup",
-   "kind": "link",
-   "label": "PC をつなぐと話せます",
-   "target": "bridge-setup",
-   "states": [
-    "共通"
-   ],
-   "roles": [],
-   "ps": []
-  },
-  {
-   "key": "button:返答する",
-   "kind": "button",
-   "label": "返答する",
-   "target": null,
-   "states": [
-    "共通",
-    "空"
-   ],
-   "roles": [],
-   "ps": [
-    "PS3"
-   ]
-  },
-  {
    "key": "link:会社の詳細で返答→ops-tenant",
    "kind": "link",
    "label": "会社の詳細で返答",
@@ -138,6 +91,19 @@
    "target": "ops-catalog",
    "states": [
     "受信箱"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:返答する",
+   "kind": "button",
+   "label": "返答する",
+   "target": null,
+   "states": [
+    "空"
    ],
    "roles": [],
    "ps": [

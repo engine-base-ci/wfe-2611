@@ -1,6 +1,6 @@
 # member-detail テスト仕様（L1・機械生成）
 
-> 05_flow/build_tasks.py がタスクと同時に生成。ID は変えない。途中変更は qa_delta.py で差分。結果列は staging で流した人が書く（再生成しても残る。結果あり 15 行）。
+> 05_flow/build_tasks.py がタスクと同時に生成。ID は変えない。途中変更は qa_delta.py で差分。結果列は staging で流した人が書く（再生成しても残る。今の行 65・結果あり 14 行）。
 
 | ID | 画面 | テスト観点 | テスト項目 | 前提条件 | 操作手順 | 期待結果 | 結果 | 備考 | タスク | 実行条件 |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -11,11 +11,11 @@
 | SCR-MEMBER-DETAIL-005 | member-detail | 役割 | 役割 R1 で開くと、その役割の中身（data-roles）が出て、他の役割の中身は出ない | R1 でログイン | 画面を開く | 役割ごとの中身（G15） |  |  | T-U-58 | L1 |
 | SCR-MEMBER-DETAIL-006 | member-detail | 役割 | 役割 R2 で開くと、その役割の中身（data-roles）が出て、他の役割の中身は出ない | R2 でログイン | 画面を開く | 役割ごとの中身（G15） |  |  | T-U-58 | L1 |
 | SCR-MEMBER-DETAIL-007 | member-detail | 主アクション | 「保存する」を押すと対応する endpoint が呼ばれ、別 GET で再取得した画面に反映される | 権限のある会員 | 押す | DB と画面が変わる（G-01・G-03） |  | PATCH /api/members/:id DELETE /api/members/:id | T-U-58 | L1 |
-| SCR-MEMBER-DETAIL-008 | member-detail | 到達性 | リンク先 account が実在ルートで 200 で開く | — | 押す | /account が開く（G-04） | BLOCKED（自動：行き先の画面 account は T-U-44 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） |  | T-U-58 | L1 |
+| SCR-MEMBER-DETAIL-008 | member-detail | 到達性 | リンク先 account が実在ルートで 200 で開く | — | 押す | /account が開く（G-04） | BLOCKED（自動：行き先の画面 account は T-B-20 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） |  | T-U-58 | L1 |
 | SCR-MEMBER-DETAIL-009 | member-detail | 到達性 | リンク先 account-close が実在ルートで 200 で開く | — | 押す | /account-close が開く（G-04） | BLOCKED（自動：行き先の画面 account-close は T-U-40 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） |  | T-U-58 | L1 |
 | SCR-MEMBER-DETAIL-010 | member-detail | 到達性 | リンク先 ai-activity が実在ルートで 200 で開く | — | 押す | /ai-activity が開く（G-04） | BLOCKED（自動：行き先の画面 ai-activity は T-U-18 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） |  | T-U-58 | L1 |
 | SCR-MEMBER-DETAIL-011 | member-detail | 到達性 | リンク先 ai-staff が実在ルートで 200 で開く | — | 押す | /ai-staff が開く（G-04） | BLOCKED（自動：行き先の画面 ai-staff は T-U-36 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） |  | T-U-58 | L1 |
-| SCR-MEMBER-DETAIL-012 | member-detail | 到達性 | リンク先 approvals が実在ルートで 200 で開く | — | 押す | /approvals が開く（G-04） | BLOCKED（自動：行き先の画面 approvals は T-U-14 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） |  | T-U-58 | L1 |
+| SCR-MEMBER-DETAIL-012 | member-detail | 到達性 | リンク先 approvals が実在ルートで 200 で開く | — | 押す | /approvals が開く（G-04） | BLOCKED（自動：行き先の画面 approvals は T-B-39 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） |  | T-U-58 | L1 |
 | SCR-MEMBER-DETAIL-013 | member-detail | 到達性 | リンク先 audit が実在ルートで 200 で開く | — | 押す | /audit が開く（G-04） | BLOCKED（自動：行き先の画面 audit は T-U-33 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） |  | T-U-58 | L1 |
 | SCR-MEMBER-DETAIL-014 | member-detail | 到達性 | リンク先 automation-repair が実在ルートで 200 で開く | — | 押す | /automation-repair が開く（G-04） | BLOCKED（自動：行き先の画面 automation-repair は T-U-32 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） |  | T-U-58 | L1 |
 | SCR-MEMBER-DETAIL-015 | member-detail | 到達性 | リンク先 billing が実在ルートで 200 で開く | — | 押す | /billing が開く（G-04） | BLOCKED（自動：行き先の画面 billing は T-U-52 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） |  | T-U-58 | L1 |
@@ -32,10 +32,6 @@
 | SCR-MEMBER-DETAIL-026 | member-detail | G-14 口座状態の波及 | 退会・停止・権限変更・パスワード変更の後に、この機能の既存セッション・接続・共有リンクが無効 | ログイン中の別端末と Bridge | 権限を変える | 別端末と Bridge は 0 秒で 401（sessions が revoked） |  |  | T-U-58 | L1 |
 | SCR-MEMBER-DETAIL-027 | member-detail | G-15 信号なし終了 | N/A：外部を呼ばない | 外部を故意に切る | 実行する | 成功扱いにせず、502 と次の一手（人へのハンドオフ） |  |  | T-U-58 | L1 |
 | SCR-MEMBER-DETAIL-028 | member-detail | G-16 有限資源 | 消費する資源：DB 接続（プール経由）・メモリ。1 要求あたり 1 接続以下・上限時は待機列 | 同時 50 要求 | 同時に叩く | ログインが落ちない・接続上限に張り付かない（関門 C2 のプール） |  | L4 で負荷試験 | T-U-58 | L1 |
-| SCR-MEMBER-DETAIL-029 | member-detail | 操作 | ボタン「高本AI」（状態 共通） | 状態 共通 を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） |  | op=button:高本AI | T-U-58 | L1 |
-| SCR-MEMBER-DETAIL-030 | member-detail | 操作 | リンク「AI は止まっています」（状態 共通） | 状態 共通 を作る（全役割） | 押す／入れる（実ブラウザ） | /automation-repair が実在ルートで 200 で開く（G-04） | BLOCKED（自動：行き先の画面 automation-repair は T-U-32 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） | op=link:AI は止まっています→automation-repair | T-U-58 | L1 |
-| SCR-MEMBER-DETAIL-031 | member-detail | 操作 | リンク「PC をつなぐと話せます」（状態 共通） | 状態 共通 を作る（全役割） | 押す／入れる（実ブラウザ） | /bridge-setup が実在ルートで 200 で開く（G-04） |  | op=link:PC をつなぐと話せます→bridge-setup | T-U-58 | L1 |
-| SCR-MEMBER-DETAIL-032 | member-detail | 操作 | ボタン「保存する」（状態 共通・佐藤 健・AI が止まっている） | 状態 共通 を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） |  | op=button:保存する | T-U-58 | L1 |
 | SCR-MEMBER-DETAIL-033 | member-detail | 操作 | ボタン「範囲を変える」（状態 佐藤 健・AI が止まっている） | 状態 佐藤 健 を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） |  | op=button:範囲を変える | T-U-58 | L1 |
 | SCR-MEMBER-DETAIL-034 | member-detail | 操作 | ボタン「無効にする」（状態 佐藤 健・AI が止まっている） | 状態 佐藤 健 を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） |  | op=button:無効にする | T-U-58 | L1 |
 | SCR-MEMBER-DETAIL-035 | member-detail | 操作 | 選択「制作の長（制作の 直す・配る・承認 が付く）」（状態 佐藤 健・AI が止まっている） | 状態 佐藤 健 を作る（全役割） | 押す／入れる（実ブラウザ） | 切り替わり、送信に載る |  | op=select:制作の長（制作の 直す・配る・承認 が付く） | T-U-58 | L1 |
@@ -49,6 +45,7 @@
 | SCR-MEMBER-DETAIL-043 | member-detail | 操作 | ボタン「制作 → 人に託す」（状態 佐藤 健・AI が止まっている） | 状態 佐藤 健 を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） |  | op=button:制作 → 人に託す | T-U-58 | L1 |
 | SCR-MEMBER-DETAIL-044 | member-detail | 操作 | ボタン「制作のAI社員の外向き」（状態 佐藤 健・AI が止まっている） | 状態 佐藤 健 を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） |  | op=button:制作のAI社員の外向き | T-U-58 | L1 |
 | SCR-MEMBER-DETAIL-045 | member-detail | 操作 | ボタン「制作の確認待ち」（状態 佐藤 健・AI が止まっている） | 状態 佐藤 健 を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） |  | op=button:制作の確認待ち | T-U-58 | L1 |
+| SCR-MEMBER-DETAIL-070 | member-detail | 操作 | ボタン「保存する」（状態 佐藤 健・AI が止まっている） | 状態 佐藤 健 を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） |  | op=button:保存する | T-U-58 | L1 |
 | SCR-MEMBER-DETAIL-046 | member-detail | 操作 | ボタン「既定に戻す」（状態 佐藤 健・AI が止まっている） | 状態 佐藤 健 を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） |  | op=button:既定に戻す | T-U-58 | L1 |
 | SCR-MEMBER-DETAIL-047 | member-detail | 操作 | リンク「AI社員を託す」（状態 佐藤 健・AI が止まっている） | 状態 佐藤 健 を作る（全役割） | 押す／入れる（実ブラウザ） | /ai-staff が実在ルートで 200 で開く（G-04） | BLOCKED（自動：行き先の画面 ai-staff は T-U-36 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） | op=link:AI社員を託す→ai-staff | T-U-58 | L1 |
 | SCR-MEMBER-DETAIL-048 | member-detail | 操作 | ボタン「全部切る」（状態 佐藤 健・AI が止まっている） | 状態 佐藤 健 を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） |  | op=button:全部切る | T-U-58 | L1 |
@@ -72,3 +69,15 @@
 | SCR-MEMBER-DETAIL-066 | member-detail | メール | 文面に内部の言葉（ID・関門・テーブル名）が出ていない。誰宛てか・何をすればよいかが 1 行で分かる | 届いたメール | 本文を読む | 宛先の名前・用件・次の一手・差出人。内部語なし | BLOCKED（人が文面を読む：発注者確認の手順に入れた。機械では読めない） | ui_lint の対象外なので人が見る | T-U-58 | L1 |
 | SCR-MEMBER-DETAIL-067 | member-detail | メール | 届かないときに詰まらない（再送の導線がある・登録の有無は漏らさない） | 存在しないアドレス／受信箱が拒否 | 送る → 届かない | 画面は「送りました」のまま（有無を漏らさない）。再送で回復できる |  | G-15 | T-U-58 | L1 |
 | SCR-MEMBER-DETAIL-068 | member-detail | メール | 送れなかったものが「送った」になっていない（送出先が返す拒否を握り潰さない） | 送信ドメインが未検証、または宛先が拒否される | 拒否されるアドレスに送る | ログに「[mail] 送れなかった → 宛先: 理由」。「送った」は出ない |  | G-15。send は投げずに error を返すので、呼ぶ側が必ず見る | T-U-58 | L1 |
+
+## もう無い行（5 行）
+
+> モックや決定が変わって今の画面には無くなった行。ID と当時の結果を残すためだけに置く（同じ ID を二度使わない）。確かめる対象ではない。
+
+| ID | 画面 | テスト観点 | テスト項目 | 前提条件 | 操作手順 | 期待結果 | 結果 | 備考 | タスク | 実行条件 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| SCR-MEMBER-DETAIL-069 | member-detail | 操作 | ボタン「高本AI1」（状態 共通） | 状態 共通 を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） |  | op=button:高本AI1／削除（生成元から消えた・2026-10-01。結果は残す） | T-U-58 | L1 |
+| SCR-MEMBER-DETAIL-030 | member-detail | 操作 | リンク「AI は止まっています」（状態 共通） | 状態 共通 を作る（全役割） | 押す／入れる（実ブラウザ） | /automation-repair が実在ルートで 200 で開く（G-04） |  | op=link:AI は止まっています→automation-repair／削除（生成元から消えた・2026-10-01。結果は残す） | T-U-58 | L1 |
+| SCR-MEMBER-DETAIL-031 | member-detail | 操作 | リンク「PC をつなぐと話せます」（状態 共通） | 状態 共通 を作る（全役割） | 押す／入れる（実ブラウザ） | /bridge-setup が実在ルートで 200 で開く（G-04） |  | op=link:PC をつなぐと話せます→bridge-setup／削除（生成元から消えた・2026-10-01。結果は残す） | T-U-58 | L1 |
+| SCR-MEMBER-DETAIL-032 | member-detail | 操作 | ボタン「保存する」（状態 共通・佐藤 健・AI が止まっている） | 状態 共通 を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） |  | op=button:保存する／削除（生成元から消えた・2026-10-01。結果は残す） | T-U-58 | L1 |
+| SCR-MEMBER-DETAIL-029 | member-detail | 操作 | ボタン「高本AI」（状態 共通） | 状態 共通 を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） |  | op=button:高本AI／削除（生成元から消えた・2026-09-27。結果は残す） | T-U-58 | L1 |

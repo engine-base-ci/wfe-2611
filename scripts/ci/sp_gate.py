@@ -25,7 +25,7 @@ m += [f"未割り当て:{j}" for j in after if j not in seen and after[j]]
 if m: fails.append(("SP3", f"流れの割り当て {m[:6]}"))
 m = [w["id"] for i, w in enumerate(W) if w["qa_scope"]["regression_from"] != [x["id"] for x in W[:i]]]
 if m: fails.append(("SP4", f"regression_from が前の全 Wave でない {m[:5]}"))
-order = {"F": 0, "D": 1, "A": 2, "U-shared": 3, "U-screen": 4, "I": 5}; last = {}; m = []   # 段階（stage）ごとに順序を見る（段階 2 は段階 1 の後に A → U-screen で再開する）
+order = {"F": 0, "D": 1, "A": 2, "B": 2.5, "U-shared": 3, "U-screen": 4, "I": 5}; last = {}; m = []   # 段階（stage）ごとに順序を見る（段階 2 は段階 1 の後に A → U-screen で再開する）
 for w in W:
     if w["group"] in ("S", "V2"): continue
     st = w.get("stage", "v1")
