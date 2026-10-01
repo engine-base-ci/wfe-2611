@@ -31,6 +31,19 @@ const post = (path: string, body: unknown, headers: Record<string, string> = {})
   });
 const uniq = () => `u${Date.now().toString(36)}${Math.floor(Math.random() * 1e4)}`;
 const PW = "correct-horse-battery-1";
+/** 登録は 2 段（D-088）：申し込み（201・まだ会社は無い）→ 確認メールのリンクを押す（verify-signup・ここで会社と本人ができ、そのまま入る） */
+async function register(email: string, company: string, password = PW): Promise<{ token: string; userId: string }> {
+  const su = await post("/api/auth-ext/sign-up", { email, password, company_name: company });
+  expect(su.status, await su.clone().text()).toBe(201);
+  const key = email.normalize("NFKC").replace(/\s+/g, "").toLowerCase();
+  const mail = [...mails].reverse().find((m) => m.kind === "verify" && m.to === key);
+  expect(mail, `${key} に確認メールが出ていない`).toBeTruthy();
+  const token = new URL(mail!.url).searchParams.get("token")!;
+  const v = await post("/api/auth-ext/verify-signup", { token });
+  expect(v.status, await v.clone().text()).toBe(201);
+  const j = (await v.json()) as { data: { token: string; user_id: string } };
+  return { token: j.data.token, userId: j.data.user_id };
+}
 
 beforeAll(async () => {
   await migrate(ADMIN, DB_PKG);
@@ -51,19 +64,27 @@ beforeAll(async () => {
     repo,
     auth,
     resolve: createSessionResolver(auth, appPool),
-    authExt: authExt({ auth, appPool, authPool: new pg.Pool({ connectionString: AUTH_URL, max: 2 }), repo, secrets, config: { secretsMasterKey: "test-master", baseUrl: "http://localhost:3001", webBaseUrl: "http://localhost:3123", opsEmail: "ops@example.com", env: "test" as const } }),
+    authExt: authExt({ auth, appPool, authPool: new pg.Pool({ connectionString: AUTH_URL, max: 2 }), repo, secrets, mailer: async (m) => void mails.push(m), config: { secretsMasterKey: "test-master", baseUrl: "http://localhost:3001", webBaseUrl: "http://localhost:3123", opsEmail: "ops@example.com", env: "test" as const } }),
   });
 }, 60_000);
 
 describe("登録（T-U-01）", () => {
-  it("会社名とメールで登録すると 201。会社・根の層・代表・権限・自分のAI ができ、確認メールが出る。メールは全角・空白・大文字を直して保存", async () => {
+  it("会社名とメールで申し込むと 201 と確認メール。リンクを押すと会社・根の層・代表・権限・自分のAI ができて入れる。メールは全角・空白・大文字を直して保存", async () => {
     // eslint-disable-next-line no-irregular-whitespace -- 全角の空白を意図して入れる（表記ゆらぎ）
     const raw = `　${uniq().toUpperCase()}＠Example.COM `;
     const email = raw.normalize("NFKC").replace(/\s+/g, "").toLowerCase();
     const r = await post("/api/auth-ext/sign-up", { email: raw, password: PW, company_name: "　株式会社テスト " });
     expect(r.status).toBe(201);
-    const j = (await r.json()) as { data: { token: string; email: string } };
-    expect(j.data.email).toBe(email);
+    const j0 = (await r.json()) as { data: { email: string; token?: string } };
+    expect(j0.data.email).toBe(email);
+    expect(j0.data.token).toBeUndefined(); // 申し込みの時点では入れない・会社もまだ無い（D-088）
+    const before = await admin.query('select count(*)::int as n from kaname_auth."user" where email = $1', [email]);
+    expect(before.rows[0].n).toBe(0);
+    const mail = mails.find((m) => m.kind === "verify" && m.to === email);
+    expect(mail?.url).toContain("/verify-email?token=");
+    const v = await post("/api/auth-ext/verify-signup", { token: new URL(mail!.url).searchParams.get("token") });
+    expect(v.status).toBe(201);
+    const j = (await v.json()) as { data: { token: string; email: string } };
     const t = await admin.query(
       'select t.name from members m join tenants t on t.id = m.tenant_id where m.auth_user_id = (select id from kaname_auth."user" where email = $1)',
       [email],
@@ -75,18 +96,18 @@ describe("登録（T-U-01）", () => {
     );
     expect(Number(n.rows[0].perms)).toBeGreaterThan(10);
     expect(Number(n.rows[0].clones)).toBe(1);
-    expect(mails.some((m) => m.kind === "verify" && m.to === email && m.url.includes("/verify-email?token="))).toBe(
-      true,
-    );
     // 別 GET：発行された token で自分の会社が読める（別 GET 再取得）
     const me = await app.request("http://localhost/api/v1/tenants?limit=5", {
       headers: { authorization: `Bearer ${j.data.token}` },
     });
     expect(me.status).toBe(200);
   });
-  it("同じメールは 409（E-CONF-001）・形式違いは 422（E-VAL-004）・会社名なしは 422", async () => {
+  it("確認まで済んだメールは 409（E-CONF-001）・形式違いは 422（E-VAL-004）・会社名なしは 422", async () => {
     const email = `${uniq()}@example.com`;
+    // 確認する前は何度でも申し込み直せる（D-088.3）。確認まで終わった人だけ 409
     expect((await post("/api/auth-ext/sign-up", { email, password: PW, company_name: "A" })).status).toBe(201);
+    expect((await post("/api/auth-ext/sign-up", { email, password: PW, company_name: "A2" })).status).toBe(201);
+    await register(email, "A");
     const dup = await post("/api/auth-ext/sign-up", { email: email.toUpperCase(), password: PW, company_name: "B" });
     expect(dup.status).toBe(409);
     expect(((await dup.json()) as { code: string }).code).toBe("E-CONF-001");
@@ -100,14 +121,14 @@ describe("登録（T-U-01）", () => {
 describe("ログイン（T-U-05）", () => {
   it("正しい組み合わせは 200 で token。大文字・空白の違いだけなら通る", async () => {
     const email = `${uniq()}@example.com`;
-    await post("/api/auth-ext/sign-up", { email, password: PW, company_name: "C" });
+    await register(email, "C");
     const r = await post("/api/auth-ext/sign-in", { email: ` ${email.toUpperCase()} `, password: PW });
     expect(r.status).toBe(200);
     expect(((await r.json()) as { data: { token: string } }).data.token).toBeTruthy();
   });
   it("間違えると 401 で残り回数が減り、5 回でロック（429・retry_after_sec）。正しいパスワードでも入れない", async () => {
     const email = `${uniq()}@example.com`;
-    await post("/api/auth-ext/sign-up", { email, password: PW, company_name: "D" });
+    await register(email, "D");
     const rems: number[] = [];
     for (let i = 0; i < 4; i++) {
       const r = await post("/api/auth-ext/sign-in", { email, password: "wrong-password-000" });
@@ -144,8 +165,7 @@ describe("2 段階（T-U-04／05）", () => {
   };
   it("有効化 → ログインは two_factor=true と待ちの cookie → /two-factor/verify（6 桁）で token。違う 6 桁は 401 E-AUTH-004。回復コードでも入れる", async () => {
     const email = `${uniq()}@example.com`;
-    const su = await post("/api/auth-ext/sign-up", { email, password: PW, company_name: "G" });
-    const token = ((await su.json()) as { data: { token: string } }).data.token;
+    const { token } = await register(email, "G");
     const en = await post("/api/auth/two-factor/enable", { password: PW }, { authorization: `Bearer ${token}` });
     expect(en.status).toBe(200);
     const { totpURI, backupCodes } = (await en.json()) as { totpURI: string; backupCodes: string[] };
@@ -190,8 +210,7 @@ describe("2 段階（T-U-04／05）", () => {
 describe("招待（T-U-03）", () => {
   it("下見で会社名・役割・期限が見え、名前とパスワードで受けると会社の一員になる。取り消し済みは 410", async () => {
     const boss = `${uniq()}@example.com`;
-    const su = await post("/api/auth-ext/sign-up", { email: boss, password: PW, company_name: "招く会社" });
-    const token = ((await su.json()) as { data: { token: string } }).data.token;
+    const { token } = await register(boss, "招く会社");
     const ctx = await admin.query(
       'select m.id, m.tenant_id from members m join kaname_auth."user" u on u.id = m.auth_user_id where u.email = $1',
       [boss],
@@ -222,8 +241,7 @@ describe("招待（T-U-03）", () => {
 describe("Bridge の接続コードと資格情報（T-U-09／10）", () => {
   it("ログイン済みなら KNM-#### の接続コード。未ログインは 401", async () => {
     const email = `${uniq()}@example.com`;
-    const su = await post("/api/auth-ext/sign-up", { email, password: PW, company_name: "E" });
-    const token = ((await su.json()) as { data: { token: string } }).data.token;
+    const { token } = await register(email, "E");
     const r = await post("/api/auth-ext/bridge/pair", {}, { authorization: `Bearer ${token}` });
     expect(r.status).toBe(201);
     expect(((await r.json()) as { data: { code: string } }).data.code).toMatch(/^KNM-\d{4}$/);
@@ -231,8 +249,7 @@ describe("Bridge の接続コードと資格情報（T-U-09／10）", () => {
   });
   it("資格情報を預けると表には vault_ref だけ。平文はどこにも無い", async () => {
     const email = `${uniq()}@example.com`;
-    const su = await post("/api/auth-ext/sign-up", { email, password: PW, company_name: "F" });
-    const token = ((await su.json()) as { data: { token: string } }).data.token;
+    const { token } = await register(email, "F");
     const r = await post(
       "/api/auth-ext/vault/credentials",
       {
