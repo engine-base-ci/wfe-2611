@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:9b7e329a125e8264
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:a4b1f23c1a63ade0
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -209,9 +209,63 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       perMinute: 120,
       key: "user",
     },
-    chokePoints: [],
+    chokePoints: ["C4"],
     errors: [401, 403, 429, 502],
-    acts: ["A20"],
+    acts: ["A20", "A90"],
+    screens: ["clone-chat"],
+  },
+  {
+    method: "POST",
+    path: "/api/v1/conversations",
+    operationId: "postConversations",
+    table: "conversations",
+    kind: "create",
+    input: "ConversationsInput",
+    success: 201,
+    auth: "member",
+    rateLimit: {
+      perMinute: 60,
+      key: "user",
+    },
+    chokePoints: ["C2", "C5"],
+    errors: [401, 403, 409, 422, 429, 502],
+    acts: ["A88", "A91"],
+    screens: ["clone-chat"],
+  },
+  {
+    method: "PATCH",
+    path: "/api/v1/conversations/:id",
+    operationId: "patchConversationsById",
+    table: "conversations",
+    kind: "update",
+    input: "ConversationsInput",
+    success: 200,
+    auth: "member",
+    rateLimit: {
+      perMinute: 60,
+      key: "user",
+    },
+    chokePoints: ["C2", "C4"],
+    errors: [401, 403, 404, 422, 429],
+    acts: ["A95"],
+    screens: ["clone-chat"],
+  },
+  {
+    method: "DELETE",
+    path: "/api/v1/conversations/:id",
+    operationId: "deleteConversationsById",
+    table: "conversations",
+    kind: "delete",
+    input: null,
+    success: 200,
+    auth: "member",
+    rateLimit: {
+      perMinute: 60,
+      key: "user",
+    },
+    chokePoints: ["C2", "C5"],
+    errors: [401, 403, 404, 429, 502],
+    acts: ["A89"],
     screens: ["clone-chat"],
   },
   {
@@ -636,15 +690,15 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     kind: "list",
     input: null,
     success: 200,
-    auth: "public",
+    auth: "member",
     rateLimit: {
-      perMinute: 10,
-      key: "ip",
+      perMinute: 120,
+      key: "user",
     },
     chokePoints: ["C8"],
-    errors: [429],
-    acts: ["A02", "A04", "A13"],
-    screens: ["login", "mfa-setup", "verify-email"],
+    errors: [401, 403, 429],
+    acts: ["A02", "A04", "A13", "A31", "A94"],
+    screens: ["account", "login", "mfa-setup", "password-reset", "verify-email"],
   },
   {
     method: "PATCH",
@@ -661,8 +715,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     },
     chokePoints: ["C2", "C6", "C8"],
     errors: [401, 403, 404, 422, 429],
-    acts: ["A31", "A36", "A61", "A74"],
-    screens: ["account", "member-detail", "members", "password-reset"],
+    acts: ["A36", "A61", "A74"],
+    screens: ["account", "member-detail", "members"],
   },
   {
     method: "DELETE",
@@ -701,6 +755,24 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     screens: ["clone-memory"],
   },
   {
+    method: "PATCH",
+    path: "/api/v1/memories/:id",
+    operationId: "patchMemoriesById",
+    table: "memories",
+    kind: "update",
+    input: "MemoriesInput",
+    success: 200,
+    auth: "member",
+    rateLimit: {
+      perMinute: 60,
+      key: "user",
+    },
+    chokePoints: ["C2", "C6"],
+    errors: [401, 403, 404, 422, 429],
+    acts: ["A93"],
+    screens: ["clone-memory"],
+  },
+  {
     method: "GET",
     path: "/api/v1/messages",
     operationId: "getMessages",
@@ -715,7 +787,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     },
     chokePoints: [],
     errors: [401, 403, 429, 502],
-    acts: ["A14"],
+    acts: ["A14", "A92"],
     screens: ["today"],
   },
   {
@@ -1097,4 +1169,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     screens: ["company-settings"],
   },
 ];
-export const OPENAPI_HASH = "9b7e329a125e8264";
+export const OPENAPI_HASH = "a4b1f23c1a63ade0";

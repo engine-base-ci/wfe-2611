@@ -5,4 +5,7 @@ import { op, type ContractDeps } from "../contract/op.js";
 
 export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.get("/api/v1/conversations", op(deps, "getConversations"));
+  app.post("/api/v1/conversations", op(deps, "postConversations"));
+  app.patch("/api/v1/conversations/:id", op(deps, "patchConversationsById"));
+  app.delete("/api/v1/conversations/:id", op(deps, "deleteConversationsById"));
 }

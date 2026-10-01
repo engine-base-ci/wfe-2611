@@ -9,6 +9,7 @@ import type { TenantContext } from "@kaname/db/context";
 import type { ObjectStore } from "@kaname/storage";
 import { digestPrompt, takeRemember, type DigestSource } from "./memory.js";
 import { artifactRoutes } from "./artifacts.js";
+import { deleteConversation, editMemory, newConversation, setConversation } from "./agent-ops.js";
 
 type Resolve = (h: Headers) => Promise<{ ctx: TenantContext } | null>;
 export interface AgentDeps {
@@ -61,9 +62,9 @@ export function agentRoutes(d: AgentDeps): Hono {
     const ctx = await me(c);
     if (!ctx) return NO(c);
     const b = (await c.req.json().catch(() => ({}))) as { incognito?: unknown };
-    const r = await q1<{ id: string | null }>("select app.agent_new_conversation($1, $2) as id", [ctx.userId, b.incognito === true]);
-    if (!r?.id) return NO(c);
-    return c.json({ data: { conversation_id: r.id } }, 201);
+    const id = await newConversation(d.appPool, ctx.userId!, b.incognito === true);
+    if (!id) return NO(c);
+    return c.json({ data: { conversation_id: id } }, 201);
   });
   app.patch("/agent/conversations/:id", async (c) => {
     const ctx = await me(c);
@@ -73,10 +74,10 @@ export function agentRoutes(d: AgentDeps): Hono {
     const b = (await c.req.json().catch(() => ({}))) as { title?: unknown; starred?: unknown; incognito?: unknown };
     const title = b.title === undefined ? null : line(b.title, 80);
     if (b.title !== undefined && !title) return bad(c, 422, "VALIDATION_FAILED", "名前が空です", { field: "title" });
-    const r = await q1<{ ok: boolean }>("select app.agent_conversation_set($1, $2, $3, $4, $5) as ok", [
-      ctx.userId, id, title, typeof b.starred === "boolean" ? b.starred : null, typeof b.incognito === "boolean" ? b.incognito : null,
-    ]);
-    if (!r?.ok) return bad(c, 404, "CONVERSATION_NOT_FOUND", "この会話はありません");
+    const ok = await setConversation(d.appPool, ctx.userId!, id, {
+      title, starred: typeof b.starred === "boolean" ? b.starred : null, incognito: typeof b.incognito === "boolean" ? b.incognito : null,
+    });
+    if (!ok) return bad(c, 404, "CONVERSATION_NOT_FOUND", "この会話はありません");
     return c.json({ data: { ok: true } });
   });
   app.delete("/agent/conversations/:id", async (c) => {
@@ -84,8 +85,7 @@ export function agentRoutes(d: AgentDeps): Hono {
     if (!ctx) return NO(c);
     const id = c.req.param("id");
     if (!UUID.test(id)) return bad(c, 422, "VALIDATION_FAILED", "会話の id の形が違います", { field: "id" });
-    const r = await q1<{ ok: boolean }>("select app.agent_conversation_delete($1, $2) as ok", [ctx.userId, id]);
-    if (!r?.ok) return bad(c, 404, "CONVERSATION_NOT_FOUND", "この会話はありません");
+    if (!(await deleteConversation(d.appPool, ctx.userId!, id))) return bad(c, 404, "CONVERSATION_NOT_FOUND", "この会話はありません");
     return c.json({ data: { ok: true } });
   });
   app.post("/agent/conversations/:id/read", async (c) => {
@@ -261,8 +261,8 @@ export function agentRoutes(d: AgentDeps): Hono {
     const b = (await c.req.json().catch(() => ({}))) as { title?: unknown; body?: unknown };
     const body = typeof b.body === "string" ? b.body.trim() : "";
     if (!UUID.test(c.req.param("id")) || !body) return bad(c, 422, "VALIDATION_FAILED", "覚えることが空です", { field: "body" });
-    const r = await q1<{ ok: boolean }>("select app.agent_memory_edit($1, $2, $3, $4) as ok", [ctx.userId, c.req.param("id"), line(b.title, 80) || null, body.slice(0, 2000)]);
-    if (!r?.ok) return bad(c, 404, "MEMORY_NOT_FOUND", "直せる記憶が見つかりません（自分の記憶だけ直せます）");
+    if (!(await editMemory(d.appPool, ctx.userId!, c.req.param("id"), line(b.title, 80) || null, body.slice(0, 2000))))
+      return bad(c, 404, "MEMORY_NOT_FOUND", "直せる記憶が見つかりません（自分の記憶だけ直せます）");
     return c.json({ data: { ok: true } });
   });
   app.delete("/agent/memory/:id", async (c) => {

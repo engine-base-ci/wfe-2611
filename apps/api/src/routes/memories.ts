@@ -5,4 +5,5 @@ import { op, type ContractDeps } from "../contract/op.js";
 
 export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.post("/api/v1/memories", op(deps, "postMemories"));
+  app.patch("/api/v1/memories/:id", op(deps, "patchMemoriesById"));
 }

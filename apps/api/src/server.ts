@@ -13,6 +13,7 @@ import { authExt } from "./auth/ext.js";
 import { InfisicalVault, MemoryVault, SecretsGateway, type Vault } from "@kaname/secrets";
 import { resendMail, signedMail } from "@kaname/notify";
 import { assertApiStartup } from "./startup.js";
+import { agentHooks } from "./hooks/agent.js";
 
 export interface BootOptions {
   /** 起動時の存在確認の差し替え（テスト用。本番は S3 の HEAD） */
@@ -110,6 +111,7 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
     resolve: createSessionResolver(auth, appPool),
     authExt: authExt({ auth, appPool, authPool, repo, secrets, objects, config, hub, ...(mailer ? { mailer } : {}) }),
     corsOrigin: config.webOrigins.join(","),
+    contract: { hooks: agentHooks(appPool) }, // 会話・記憶の契約の口は画面の口と同じ本体を通す
   });
   return { app, report, close };
 }

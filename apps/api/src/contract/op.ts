@@ -5,7 +5,7 @@ import { ENDPOINTS, type EndpointDef } from "@kaname/contracts";
 import { SCHEMAS } from "@kaname/contracts/schemas";
 import type { Row, TableName } from "@kaname/db/repository";
 import type { Vars } from "../middleware/tenant.js";
-import type { ContractDeps, HookArgs } from "./deps.js";
+import type { ContractDeps, Hook, HookArgs } from "./deps.js";
 export type { ContractDeps } from "./deps.js";
 
 const LIMIT_DEFAULT = 50;
@@ -103,87 +103,108 @@ export function op(deps: ContractDeps, operationId: string) {
         ...(q["sort"] ? { orderBy: q["sort"] } : {}),
       };
     }
-    // 5) 冪等（POST）
+    // 5) 冪等（POST）。同じキーで同時に来た要求は、先に来た 1 本の結果を待って同じ結果を返す（記録は 1 回）
     const idem = def.kind === "create" ? c.req.header("idempotency-key") : undefined;
     const idemKey = idem ? `${ctx.tenantId}:${ctx.userId}:${def.path}:${idem}` : null;
     const inputHash = hashOf(input);
     if (idemKey) {
-      const seen = deps.idempotency.get(idemKey);
+      const pending = INFLIGHT.get(idemKey); // 同期で見る（await を挟むと同時の要求がすり抜ける）
+      const seen = deps.idempotency.get(idemKey) ?? (pending ? await pending : undefined);
       if (seen) {
         if (seen.hash !== inputHash) return err(c, 409, "conflict", "CONFLICT", { message: "同じ冪等キーで違う内容" });
         return c.json(seen.body, seen.status as 200); // 最初の結果を返し、副作用を繰り返さない
       }
     }
     const args: HookArgs = { e: def, ctx, repo, input, id, c };
-    const hook = deps.hooks[operationId];
-    // 6) ポリシー・承認
-    if (hook?.before) {
-      const r = await hook.before(args);
-      if (r) return c.json(r.body, r.status as 200);
-    }
-    // 7) 副作用（外向き・関門経由）は記録の前。失敗は 502 で記録しない
-    if (hook?.effect) {
-      const r = await hook.effect(args);
-      if (r.status !== "done")
-        return err(
-          c,
-          r.status === "denied" ? 403 : 502,
-          r.status === "denied" ? "forbidden" : "external_failed",
-          r.status === "denied" ? "FORBIDDEN" : "EXTERNAL_FAILED",
-          { message: r.reason, handoff: r.handoff },
-        );
-    }
-    // 8) 記録（関門 C2・RLS）
-    const table = repo.table(def.table as TableName);
-    const status = def.success;
-    let body: unknown;
+    const run = execute(deps.hooks[operationId], args, list).then((r) => ({ hash: inputHash, ...r }));
+    if (idemKey) INFLIGHT.set(idemKey, run.catch(() => undefined));
     try {
-      if (def.kind === "list") {
-        const rows = await table.list(ctx, { ...list!, limit: list!.limit + 1 });
-        const data = rows.slice(0, list!.limit);
-        body = {
-          data,
-          meta: {
-            limit: list!.limit,
-            ...(rows.length > list!.limit ? { cursor: encodeCursor(list!.offset + list!.limit) } : {}),
-          },
-        };
-      } else if (def.kind === "get") {
-        const row = await table.get(ctx, id!);
-        if (!row) return err(c, 404, "not_found", "NOT_FOUND");
-        body = { data: row };
-      } else if (def.kind === "create") {
-        const row = await table.create(ctx, await withScope(args, input));
-        body = { data: row };
-      } else if (def.kind === "update") {
-        const row = await table.update(ctx, id!, input);
-        if (!row) return err(c, 404, "not_found", "NOT_FOUND");
-        body = { data: row };
-      } else {
-        const ok = await table.softDelete(ctx, id!);
-        if (!ok) return err(c, 404, "not_found", "NOT_FOUND");
-        body = { data: { id } };
-      }
-    } catch (ex) {
-      if (isRlsError(ex) || /追記専用/.test(String(ex))) return err(c, 403, "forbidden", "FORBIDDEN"); // RLS が弾いた＝権限なし／追記専用は直接書けない。副作用は起きていない
-      const code = pgCode(ex);
-      if (code === "23505") return err(c, 409, "conflict", "CONFLICT", { message: "既に登録済み" });
-      if (code === "23503" || code === "22P02" || code === "23502" || /許可されていない識別子/.test(String(ex)))
-        return err(c, 422, "validation_failed", "VALIDATION_ERROR", {
-          details: [{ field: "body", message: String((ex as Error).message).slice(0, 200) }],
-        });
-      throw ex;
+      const r = await run;
+      if (idemKey && r.status < 300) deps.idempotency.set(idemKey, r);
+      return c.json(r.body, r.status as 200);
+    } finally {
+      if (idemKey) INFLIGHT.delete(idemKey);
     }
-    if (idemKey) deps.idempotency.set(idemKey, { hash: inputHash, status, body });
-    if (hook?.after) {
-      try {
-        await hook.after(args, (body as { data: Row | Row[] }).data);
-      } catch {
-        /* 記録の後の通知の失敗で応答を落とさない（再送は関門 C6 の仕事） */
-      }
-    }
-    return c.json(body, status as 200);
   };
+}
+
+export type Reply = { status: number; body: unknown };
+/** 同じ冪等キーで処理中の要求（キーに会社・本人を含む）。終わったら消え、結果は idempotency の器に残る */
+const INFLIGHT = new Map<string, Promise<(Reply & { hash: string }) | undefined>>();
+const fail = (status: number, error: string, code: string, extra: Partial<ErrBody> = {}): Reply => ({
+  status,
+  body: { error, code, ...extra },
+});
+
+/** 6) ポリシー・承認 → 7) 副作用（外向き・関門経由・記録の前。失敗は 502 で記録しない）→ 8) 記録（関門 C2・RLS）→ 9) 記録の後 */
+async function execute(
+  hook: Hook | undefined,
+  args: HookArgs,
+  list: { where: Row; limit: number; offset: number; orderBy?: string } | null,
+): Promise<Reply> {
+  const { e: def, ctx, repo, input, id } = args;
+  if (hook?.before) {
+    const r = await hook.before(args);
+    if (r) return r;
+  }
+  if (hook?.effect) {
+    const r = await hook.effect(args);
+    if (r.status !== "done")
+      return r.status === "denied"
+        ? fail(403, "forbidden", "FORBIDDEN", { message: r.reason, handoff: r.handoff })
+        : fail(502, "external_failed", "EXTERNAL_FAILED", { message: r.reason, handoff: r.handoff });
+  }
+  const table = repo.table(def.table as TableName);
+  let body: unknown;
+  try {
+    if (def.kind === "list") {
+      const rows = await table.list(ctx, { ...list!, limit: list!.limit + 1 });
+      const data = rows.slice(0, list!.limit);
+      body = {
+        data,
+        meta: {
+          limit: list!.limit,
+          ...(rows.length > list!.limit ? { cursor: encodeCursor(list!.offset + list!.limit) } : {}),
+        },
+      };
+    } else if (def.kind === "get") {
+      const row = await table.get(ctx, id!);
+      if (!row) return fail(404, "not_found", "NOT_FOUND");
+      body = { data: row };
+    } else if (def.kind === "create") {
+      body = { data: await table.create(ctx, await withScope(args, input)) };
+    } else if (def.kind === "update") {
+      const row = await table.update(ctx, id!, input);
+      if (!row) return await unwritable(args);
+      body = { data: row };
+    } else {
+      if (!(await table.softDelete(ctx, id!))) return await unwritable(args);
+      body = { data: { id } };
+    }
+  } catch (ex) {
+    if (isRlsError(ex) || /追記専用/.test(String(ex))) return fail(403, "forbidden", "FORBIDDEN"); // RLS が弾いた＝権限なし／追記専用は直接書けない。副作用は起きていない
+    const code = pgCode(ex);
+    if (code === "23505") return fail(409, "conflict", "CONFLICT", { message: "既に登録済み" });
+    if (/決まった承認は変えられません/.test(String(ex))) return fail(409, "conflict", "CONFLICT", { message: "この承認はもう決まっています" });
+    if (code === "23503" || code === "22P02" || code === "23502" || /許可されていない識別子/.test(String(ex)))
+      return fail(422, "validation_failed", "VALIDATION_ERROR", {
+        details: [{ field: "body", message: String((ex as Error).message).slice(0, 200) }],
+      });
+    throw ex;
+  }
+  if (hook?.after) {
+    try {
+      await hook.after(args, (body as { data: Row | Row[] }).data);
+    } catch {
+      /* 記録の後の通知の失敗で応答を落とさない（再送は関門 C6 の仕事） */
+    }
+  }
+  return { status: def.success, body };
+}
+/** 書けなかった行：見えるのに書けない＝権限なし（403）／見えない＝無い（404。ほかの会社の行があるかどうかは教えない） */
+export async function unwritable(a: Pick<HookArgs, "e" | "ctx" | "repo" | "id">, notFound: Reply = fail(404, "not_found", "NOT_FOUND")): Promise<Reply> {
+  const visible = a.id ? await a.repo.table(a.e.table as TableName).get(a.ctx, a.id) : null;
+  return visible ? fail(403, "forbidden", "FORBIDDEN") : notFound;
 }
 /** 層を持つ表の作成：契約の入力に scope_id は無い（自分の範囲＝本人の層）。tenant_id は関門が入れる */
 async function withScope(a: HookArgs, input: Row): Promise<Row> {

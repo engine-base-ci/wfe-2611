@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:9b7e329a125e8264
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:a4b1f23c1a63ade0
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = {
   error: string;
@@ -43,6 +43,10 @@ export type Members = {
   role_id?: string;
   manager_member_id?: string;
   auth_user_id?: string;
+  setup_step?: string;
+  agent_permission_mode?: string;
+  agent_model?: string;
+  agent_effort?: string;
   id: string;
   tenant_id?: string;
   created_at?: string;
@@ -54,7 +58,20 @@ export type MembersInput = {
   role_id?: string;
   manager_member_id?: string;
   auth_user_id?: string;
+  setup_step?: string;
+  agent_permission_mode?: string;
+  agent_model?: string;
+  agent_effort?: string;
 };
+export type SetupSteps = {
+  n?: string;
+  label?: string;
+  id: string;
+  tenant_id?: string;
+  created_at?: string;
+  updated_at?: string;
+};
+export type SetupStepsInput = { n?: string; label?: string };
 export type Clones = {
   owner_member_id?: string;
   persona?: string;
@@ -168,6 +185,7 @@ export type GoalContributionsInput = {
 export type GoalVersions = {
   goal_id?: string;
   version?: number;
+  name?: string;
   snapshot?: Record<string, unknown>;
   changed_at?: string;
   changed_by?: string;
@@ -178,6 +196,7 @@ export type GoalVersions = {
 };
 export type GoalVersionsInput = {
   goal_id?: string;
+  name?: string;
   snapshot?: Record<string, unknown>;
   changed_at?: string;
   changed_by?: string;
@@ -405,9 +424,10 @@ export type Memories = {
   confidence?: number;
   source_type_id?: string;
   source_ref_id?: string;
-  embedding?: string[];
   approved_by?: string;
   approved_at?: string;
+  digest_id?: string;
+  superseded_by?: string;
   id: string;
   tenant_id?: string;
   created_at?: string;
@@ -423,6 +443,96 @@ export type MemoriesInput = {
   source_ref_id?: string;
   approved_by?: string;
   approved_at?: string;
+  digest_id?: string;
+  superseded_by?: string;
+};
+export type MemoryDigests = {
+  member_id?: string;
+  from_on?: string;
+  to_on?: string;
+  conversation_count?: number;
+  state_id?: string;
+  result?: Record<string, unknown>;
+  bridge_job_id?: string;
+  started_at?: string;
+  finished_at?: string;
+  id: string;
+  tenant_id?: string;
+  created_at?: string;
+  updated_at?: string;
+};
+export type MemoryDigestsInput = {
+  member_id?: string;
+  from_on?: string;
+  to_on?: string;
+  conversation_count?: number;
+  state_id?: string;
+  result?: Record<string, unknown>;
+  bridge_job_id?: string;
+  started_at?: string;
+  finished_at?: string;
+};
+export type MemoryProposals = {
+  memory_id?: string;
+  target_scope_id?: string;
+  proposer_member_id?: string;
+  reviewer_member_id?: string;
+  state_id?: string;
+  conflict_group_id?: string;
+  evidence?: Record<string, unknown>;
+  decided_at?: string;
+  id: string;
+  tenant_id?: string;
+  created_at?: string;
+  updated_at?: string;
+};
+export type MemoryProposalsInput = {
+  memory_id?: string;
+  target_scope_id?: string;
+  proposer_member_id?: string;
+  reviewer_member_id?: string;
+  state_id?: string;
+  conflict_group_id?: string;
+  evidence?: Record<string, unknown>;
+  decided_at?: string;
+};
+export type EmbeddingModels = {
+  key?: string;
+  label?: string;
+  dim?: number;
+  state_id?: string;
+  artifact_url?: string;
+  sha256?: string;
+  id: string;
+  tenant_id?: string;
+  created_at?: string;
+  updated_at?: string;
+};
+export type EmbeddingModelsInput = {
+  key?: string;
+  label?: string;
+  dim?: number;
+  state_id?: string;
+  artifact_url?: string;
+  sha256?: string;
+};
+export type SearchEmbeddings = {
+  target_type_id?: string;
+  target_id?: string;
+  model_id?: string;
+  chunk_no?: string;
+  content_hash?: string;
+  embedding?: string;
+  id: string;
+  tenant_id?: string;
+  created_at?: string;
+  updated_at?: string;
+};
+export type SearchEmbeddingsInput = {
+  target_type_id?: string;
+  target_id?: string;
+  model_id?: string;
+  chunk_no?: string;
 };
 export type Tasks = {
   goal_id?: string;
@@ -612,6 +722,8 @@ export type CredentialKinds = {
 export type CredentialKindsInput = { key?: string; label?: string };
 export type Credentials = {
   service_id?: string;
+  service_name?: string;
+  service_domain?: string;
   kind_id?: string;
   provider_id?: string;
   vault_ref?: string;
@@ -624,6 +736,8 @@ export type Credentials = {
 };
 export type CredentialsInput = {
   service_id?: string;
+  service_name?: string;
+  service_domain?: string;
   kind_id?: string;
   provider_id?: string;
   owner_member_id?: string;
@@ -635,6 +749,15 @@ export type Conversations = {
   area?: string;
   subject_type?: string;
   parent_conversation_id?: string;
+  agent_session_id?: string;
+  branched_from_message_id?: string;
+  owner_member_id?: string;
+  closed_at?: string;
+  title_auto?: string;
+  starred_at?: string;
+  incognito?: string;
+  last_read_at?: string;
+  deleted_at?: string;
   id: string;
   tenant_id?: string;
   created_at?: string;
@@ -646,6 +769,123 @@ export type ConversationsInput = {
   area?: string;
   subject_type?: string;
   parent_conversation_id?: string;
+  agent_session_id?: string;
+  branched_from_message_id?: string;
+  owner_member_id?: string;
+  closed_at?: string;
+  title_auto?: string;
+  starred_at?: string;
+  incognito?: string;
+  last_read_at?: string;
+};
+export type BridgeJobs = {
+  member_id?: string;
+  conversation_id?: string;
+  state_id?: string;
+  prompt?: string;
+  agent_session_id?: string;
+  result?: string;
+  partial?: string;
+  stopped_reason?: string;
+  permission_mode?: string;
+  model?: string;
+  effort?: string;
+  tools?: string[];
+  attachment_ids?: string[];
+  steer_seq?: string;
+  tool_token_hash?: string;
+  started_at?: string;
+  finished_at?: string;
+  id: string;
+  tenant_id?: string;
+  created_at?: string;
+  updated_at?: string;
+};
+export type BridgeJobsInput = {
+  member_id?: string;
+  conversation_id?: string;
+  state_id?: string;
+  prompt?: string;
+  agent_session_id?: string;
+  result?: string;
+  partial?: string;
+  stopped_reason?: string;
+  permission_mode?: string;
+  model?: string;
+  effort?: string;
+  tools?: string[];
+  attachment_ids?: string[];
+  steer_seq?: string;
+  tool_token_hash?: string;
+  started_at?: string;
+  finished_at?: string;
+};
+export type BridgeJobStates = {
+  key?: string;
+  label?: string;
+  id: string;
+  tenant_id?: string;
+  created_at?: string;
+  updated_at?: string;
+};
+export type BridgeJobStatesInput = { key?: string; label?: string };
+export type BridgeJobEvents = {
+  member_id?: string;
+  job_id?: string;
+  kind?: string;
+  seq?: string;
+  request_id?: string;
+  payload?: Record<string, unknown>;
+  id: string;
+  tenant_id?: string;
+  created_at?: string;
+  updated_at?: string;
+};
+export type BridgeJobEventsInput = {
+  member_id?: string;
+  job_id?: string;
+  kind?: string;
+  seq?: string;
+  request_id?: string;
+  payload?: Record<string, unknown>;
+};
+export type PermissionRules = {
+  member_id?: string;
+  tool?: string;
+  target_pattern?: string;
+  decision_id?: string;
+  bridge_job_event_id?: string;
+  revoked_at?: string;
+  id: string;
+  tenant_id?: string;
+  created_at?: string;
+  updated_at?: string;
+};
+export type PermissionRulesInput = {
+  member_id?: string;
+  tool?: string;
+  target_pattern?: string;
+  decision_id?: string;
+  bridge_job_event_id?: string;
+  revoked_at?: string;
+};
+export type AgentUsageSnapshots = {
+  member_id?: string;
+  window_id?: string;
+  utilization?: number;
+  resets_at?: string;
+  observed_at?: string;
+  id: string;
+  tenant_id?: string;
+  created_at?: string;
+  updated_at?: string;
+};
+export type AgentUsageSnapshotsInput = {
+  member_id?: string;
+  window_id?: string;
+  utilization?: number;
+  resets_at?: string;
+  observed_at?: string;
 };
 export type Messages = {
   conversation_id?: string;
@@ -658,6 +898,10 @@ export type Messages = {
   confidence?: number;
   citations?: Record<string, unknown>;
   parent_message_id?: string;
+  quote?: Record<string, unknown>;
+  work?: Record<string, unknown>;
+  send_state?: string;
+  transcript_uuid?: string;
   undo_action_run_id?: string;
   read_at?: string;
   id: string;
@@ -676,6 +920,10 @@ export type MessagesInput = {
   confidence?: number;
   citations?: Record<string, unknown>;
   parent_message_id?: string;
+  quote?: Record<string, unknown>;
+  work?: Record<string, unknown>;
+  send_state?: string;
+  transcript_uuid?: string;
   undo_action_run_id?: string;
   read_at?: string;
 };
@@ -685,12 +933,47 @@ export type Artifacts = {
   storage_ref?: string;
   template_id?: string;
   approved_by?: string;
+  source_message_id?: string;
+  title?: string;
+  owner_member_id?: string;
+  current_version?: number;
+  source_conversation_id?: string;
   id: string;
   tenant_id?: string;
   created_at?: string;
   updated_at?: string;
 };
-export type ArtifactsInput = { task_id?: string; format_id?: string; template_id?: string; approved_by?: string };
+export type ArtifactsInput = {
+  task_id?: string;
+  format_id?: string;
+  template_id?: string;
+  approved_by?: string;
+  source_message_id?: string;
+  title?: string;
+  owner_member_id?: string;
+  current_version?: number;
+  source_conversation_id?: string;
+};
+export type ArtifactVersions = {
+  artifact_id?: string;
+  version?: number;
+  storage_ref?: string;
+  size_bytes?: number;
+  owner_member_id?: string;
+  reverted_from?: number;
+  note?: string;
+  id: string;
+  tenant_id?: string;
+  created_at?: string;
+  updated_at?: string;
+};
+export type ArtifactVersionsInput = {
+  artifact_id?: string;
+  size_bytes?: number;
+  owner_member_id?: string;
+  reverted_from?: number;
+  note?: string;
+};
 export type AuditEvents = {
   actor_member_id?: string;
   actor_role?: string;
@@ -1130,6 +1413,26 @@ export type StatusIncidentsInput = {
   resolved_at?: string;
   note?: string;
 };
+export type BridgeReleases = {
+  version?: number;
+  os_id?: string;
+  storage_ref?: string;
+  sha256?: string;
+  signed?: string;
+  published_at?: string;
+  notes?: string;
+  id: string;
+  tenant_id?: string;
+  created_at?: string;
+  updated_at?: string;
+};
+export type BridgeReleasesInput = {
+  os_id?: string;
+  sha256?: string;
+  signed?: string;
+  published_at?: string;
+  notes?: string;
+};
 export type NotificationPreferences = {
   member_id?: string;
   event_kind_id?: string;
@@ -1389,6 +1692,31 @@ export type InvitationsInput = {
   accepted_member_id?: string;
   revoked_at?: string;
 };
+export type PendingSignup = {
+  email?: string;
+  name?: string;
+  company_name?: string;
+  pw_iv?: string;
+  token_hash?: string;
+  expires_at?: string;
+  sent_at?: string;
+  send_error?: string;
+  consumed_at?: string;
+  id: string;
+  tenant_id?: string;
+  created_at?: string;
+  updated_at?: string;
+};
+export type PendingSignupInput = {
+  email?: string;
+  name?: string;
+  company_name?: string;
+  pw_iv?: string;
+  expires_at?: string;
+  sent_at?: string;
+  send_error?: string;
+  consumed_at?: string;
+};
 export type ExportJobs = {
   requested_by?: string;
   kind_id?: string;
@@ -1414,6 +1742,8 @@ export type Attachments = {
   storage_ref?: string;
   mime?: string;
   size?: number;
+  name?: string;
+  uploaded_by?: string;
   scanned_at?: string;
   id: string;
   tenant_id?: string;
@@ -1425,6 +1755,8 @@ export type AttachmentsInput = {
   owner_id?: string;
   mime?: string;
   size?: number;
+  name?: string;
+  uploaded_by?: string;
   scanned_at?: string;
 };
 export type Skills = {
@@ -1729,347 +2061,375 @@ export const ENDPOINTS = [
     id: "EP-011",
     method: "GET",
     path: "/api/v1/conversations",
-    acts: ["A20"],
+    acts: ["A20", "A90"],
     screens: ["clone-chat"],
   },
   {
     id: "EP-012",
+    method: "POST",
+    path: "/api/v1/conversations",
+    acts: ["A88", "A91"],
+    screens: ["clone-chat"],
+  },
+  {
+    id: "EP-013",
+    method: "PATCH",
+    path: "/api/v1/conversations/:id",
+    acts: ["A95"],
+    screens: ["clone-chat"],
+  },
+  {
+    id: "EP-014",
+    method: "DELETE",
+    path: "/api/v1/conversations/:id",
+    acts: ["A89"],
+    screens: ["clone-chat"],
+  },
+  {
+    id: "EP-015",
     method: "POST",
     path: "/api/v1/credentials",
     acts: ["A10"],
     screens: ["credentials"],
   },
   {
-    id: "EP-013",
+    id: "EP-016",
     method: "GET",
     path: "/api/v1/disclosure_versions",
     acts: ["A84"],
     screens: ["disclosure"],
   },
   {
-    id: "EP-014",
+    id: "EP-017",
     method: "PATCH",
     path: "/api/v1/disclosure_versions/:id",
     acts: ["A86"],
     screens: ["ops-disclosure"],
   },
   {
-    id: "EP-015",
+    id: "EP-018",
     method: "POST",
     path: "/api/v1/distributions",
     acts: ["A63"],
     screens: ["ops-review"],
   },
   {
-    id: "EP-016",
+    id: "EP-019",
     method: "PATCH",
     path: "/api/v1/duties/:id",
     acts: ["A28"],
     screens: ["duties"],
   },
   {
-    id: "EP-017",
+    id: "EP-020",
     method: "POST",
     path: "/api/v1/export_jobs",
     acts: ["A41"],
     screens: ["export"],
   },
   {
-    id: "EP-018",
+    id: "EP-021",
     method: "GET",
     path: "/api/v1/goal_allocations",
     acts: ["A25"],
     screens: ["my-progress"],
   },
   {
-    id: "EP-019",
+    id: "EP-022",
     method: "PATCH",
     path: "/api/v1/goal_allocations/:id",
     acts: ["A23", "A49"],
     screens: ["goal-allocation", "my-progress"],
   },
   {
-    id: "EP-020",
+    id: "EP-023",
     method: "GET",
     path: "/api/v1/goals",
     acts: ["A22", "A52", "A54"],
     screens: ["goal-edit", "goals"],
   },
   {
-    id: "EP-021",
+    id: "EP-024",
     method: "PATCH",
     path: "/api/v1/goals/:id",
     acts: ["A29"],
     screens: ["goal-edit"],
   },
   {
-    id: "EP-022",
+    id: "EP-025",
     method: "GET",
     path: "/api/v1/hypotheses",
     acts: ["A26"],
     screens: ["review"],
   },
   {
-    id: "EP-023",
+    id: "EP-026",
     method: "PATCH",
     path: "/api/v1/hypotheses/:id",
     acts: ["A27"],
     screens: ["hypotheses"],
   },
   {
-    id: "EP-024",
+    id: "EP-027",
     method: "GET",
     path: "/api/v1/inquiries",
     acts: ["A67"],
     screens: ["inquiry"],
   },
   {
-    id: "EP-025",
+    id: "EP-028",
     method: "PATCH",
     path: "/api/v1/inquiries/:id",
     acts: ["A43", "A70"],
     screens: ["ops-support"],
   },
   {
-    id: "EP-026",
+    id: "EP-029",
     method: "GET",
     path: "/api/v1/invitations",
     acts: ["A03"],
     screens: ["invite-accept"],
   },
   {
-    id: "EP-027",
+    id: "EP-030",
     method: "GET",
     path: "/api/v1/invoices",
     acts: ["A72", "A87"],
     screens: ["ops-billing"],
   },
   {
-    id: "EP-028",
+    id: "EP-031",
     method: "GET",
     path: "/api/v1/learned_procedures",
     acts: ["A32"],
     screens: ["automation-repair"],
   },
   {
-    id: "EP-029",
+    id: "EP-032",
     method: "GET",
     path: "/api/v1/ledger_definitions",
     acts: ["A21", "A47"],
     screens: ["records", "search"],
   },
   {
-    id: "EP-030",
+    id: "EP-033",
     method: "PATCH",
     path: "/api/v1/ledger_definitions/:id",
     acts: ["A24", "A44"],
     screens: ["ledger-def", "records"],
   },
   {
-    id: "EP-031",
+    id: "EP-034",
     method: "GET",
     path: "/api/v1/ledger_records",
     acts: ["A18"],
     screens: ["record-detail"],
   },
   {
-    id: "EP-032",
+    id: "EP-035",
     method: "PATCH",
     path: "/api/v1/ledger_records/:id",
     acts: ["A19"],
     screens: ["record-detail"],
   },
   {
-    id: "EP-033",
+    id: "EP-036",
     method: "POST",
     path: "/api/v1/llm_routes",
     acts: ["A82"],
     screens: ["llm-routes"],
   },
   {
-    id: "EP-034",
+    id: "EP-037",
     method: "PATCH",
     path: "/api/v1/llm_routes/:id",
     acts: ["A85"],
     screens: ["ops-llm"],
   },
   {
-    id: "EP-035",
+    id: "EP-038",
     method: "GET",
     path: "/api/v1/members",
-    acts: ["A02", "A04", "A13"],
-    screens: ["login", "mfa-setup", "verify-email"],
+    acts: ["A02", "A04", "A13", "A31", "A94"],
+    screens: ["account", "login", "mfa-setup", "password-reset", "verify-email"],
   },
   {
-    id: "EP-036",
+    id: "EP-039",
     method: "PATCH",
     path: "/api/v1/members/:id",
-    acts: ["A31", "A36", "A61", "A74"],
-    screens: ["account", "member-detail", "members", "password-reset"],
+    acts: ["A36", "A61", "A74"],
+    screens: ["account", "member-detail", "members"],
   },
   {
-    id: "EP-037",
+    id: "EP-040",
     method: "DELETE",
     path: "/api/v1/members/:id",
     acts: ["A42", "A62"],
     screens: ["account-close", "member-detail"],
   },
   {
-    id: "EP-038",
+    id: "EP-041",
     method: "POST",
     path: "/api/v1/memories",
     acts: ["A30"],
     screens: ["clone-memory"],
   },
   {
-    id: "EP-039",
+    id: "EP-042",
+    method: "PATCH",
+    path: "/api/v1/memories/:id",
+    acts: ["A93"],
+    screens: ["clone-memory"],
+  },
+  {
+    id: "EP-043",
     method: "GET",
     path: "/api/v1/messages",
-    acts: ["A14"],
+    acts: ["A14", "A92"],
     screens: ["today"],
   },
   {
-    id: "EP-040",
+    id: "EP-044",
     method: "PATCH",
     path: "/api/v1/messages/:id",
     acts: ["A55"],
     screens: ["today"],
   },
   {
-    id: "EP-041",
+    id: "EP-045",
     method: "DELETE",
     path: "/api/v1/messages/:id",
     acts: ["A56"],
     screens: ["today"],
   },
   {
-    id: "EP-042",
+    id: "EP-046",
     method: "PATCH",
     path: "/api/v1/notice_deliveries/:id",
     acts: ["A68"],
     screens: ["notices"],
   },
   {
-    id: "EP-043",
+    id: "EP-047",
     method: "POST",
     path: "/api/v1/notices",
     acts: ["A71"],
     screens: ["ops-notices"],
   },
   {
-    id: "EP-044",
+    id: "EP-048",
     method: "PATCH",
     path: "/api/v1/ops_members/:id",
     acts: ["A65"],
     screens: ["ops-audit"],
   },
   {
-    id: "EP-045",
+    id: "EP-049",
     method: "GET",
     path: "/api/v1/plans",
     acts: ["A60"],
     screens: ["ops-home"],
   },
   {
-    id: "EP-046",
+    id: "EP-050",
     method: "DELETE",
     path: "/api/v1/plans/:id",
     acts: ["A64"],
     screens: ["ops-tenant"],
   },
   {
-    id: "EP-047",
+    id: "EP-051",
     method: "PATCH",
     path: "/api/v1/policies/:id",
     acts: ["A35"],
     screens: ["policies"],
   },
   {
-    id: "EP-048",
+    id: "EP-052",
     method: "PATCH",
     path: "/api/v1/push_devices/:id",
     acts: ["A83"],
     screens: ["app-setup"],
   },
   {
-    id: "EP-049",
+    id: "EP-053",
     method: "POST",
     path: "/api/v1/service_registry",
     acts: ["A77"],
     screens: ["services"],
   },
   {
-    id: "EP-050",
+    id: "EP-054",
     method: "PATCH",
     path: "/api/v1/service_registry_versions/:id",
     acts: ["A78"],
     screens: ["ops-services"],
   },
   {
-    id: "EP-051",
+    id: "EP-055",
     method: "GET",
     path: "/api/v1/sessions",
     acts: ["A39"],
     screens: ["security-brief"],
   },
   {
-    id: "EP-052",
+    id: "EP-056",
     method: "POST",
     path: "/api/v1/sessions",
     acts: ["A09"],
     screens: ["bridge-setup"],
   },
   {
-    id: "EP-053",
+    id: "EP-057",
     method: "POST",
     path: "/api/v1/skills",
     acts: ["A80"],
     screens: ["ops-skills"],
   },
   {
-    id: "EP-054",
+    id: "EP-058",
     method: "POST",
     path: "/api/v1/subscriptions",
     acts: ["A01", "A05"],
     screens: ["billing-setup", "signup"],
   },
   {
-    id: "EP-055",
+    id: "EP-059",
     method: "PATCH",
     path: "/api/v1/subscriptions/:id",
     acts: ["A69"],
     screens: ["billing"],
   },
   {
-    id: "EP-056",
+    id: "EP-060",
     method: "GET",
     path: "/api/v1/tasks",
     acts: ["A48", "A58"],
     screens: ["tasks"],
   },
   {
-    id: "EP-057",
+    id: "EP-061",
     method: "POST",
     path: "/api/v1/tasks",
     acts: ["A50", "A57"],
     screens: ["tasks"],
   },
   {
-    id: "EP-058",
+    id: "EP-062",
     method: "PATCH",
     path: "/api/v1/tasks/:id",
     acts: ["A17", "A51"],
     screens: ["tasks"],
   },
   {
-    id: "EP-059",
+    id: "EP-063",
     method: "GET",
     path: "/api/v1/tenants",
     acts: ["A07", "A08", "A12", "A45"],
     screens: ["company-model", "onboard-draft", "onboard-golive"],
   },
   {
-    id: "EP-060",
+    id: "EP-064",
     method: "PATCH",
     path: "/api/v1/tenants/:id",
     acts: ["A75"],
