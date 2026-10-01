@@ -16,3 +16,14 @@ apps/web/next-env.d.ts
 **/playwright-report/
 **/test-results/
 .dev-logs/
+.dev-storage/
+
+# Vercel の組み立て結果（apps/api/build-vercel.mjs が作る・D-097）
+.vercel/
+
+# Bridge の組み立て結果（dmg / zip / app）。配布は GitHub Releases から
+apps/bridge/release/
+# Python と TypeScript のキャッシュ
+__pycache__/
+*.pyc
+*.tsbuildinfo
