@@ -833,6 +833,9 @@ test("SCR-CLONE-CHAT-033 G-12 Bridge が切れた直後（鮮度の窓の内側�
   const u = await ready(page);
   await say(page, "はじめ");
   await expect(lastAi(page)).toBeVisible({ timeout: 30_000 });
+  // 返事の文が出終わっても、仕事の終わりの知らせは少し遅れて来る。その間に送ると「止めずに直す」として今の仕事に並ぶ（D-104.9）。
+  // この行の前提は「最初の仕事が終わってから PC が切れた」なので、仕事が終わるのを待つ
+  await expect.poll(async () => (await jobs(u.memberId)).map((j) => j.state_id), { timeout: 30_000 }).toEqual(["done"]);
   for (const b of bridges) b.stop();
   bridges = [];
   // 切れた直後 0 秒：画面はまだ知らない。送る

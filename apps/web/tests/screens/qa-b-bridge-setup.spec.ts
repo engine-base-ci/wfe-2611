@@ -4,6 +4,7 @@
 // 期待はモック 06_mockup/v1/v1-bridge-setup.html と決定ログ（D-089.8・D-089.10・D-091・D-119・D-120）から書く。テストの名前に正本の行 ID を持つ
 import { expect, test, type Page } from "@playwright/test";
 import {
+  API,
   admin,
   api,
   bridgeBeat,
@@ -515,4 +516,52 @@ test("SCR-BRIDGE-SETUP-070 状態「つながった」：「この端末を外�
     .not.toBeNull();
   expect((await bridgeTake(sid)).status, "外した鍵では仕事を取れない").toBe(410);
   void u;
+});
+
+// ---------------------------------------------------------------- つながった後の 3 つの状態（モック v1-bridge-setup の chromeoff／nobrowser／old）
+// 期待はモックから：見出しは「自分のPCをつなぐ」、一言はモックの状態の一言、その状態の一手がその場に出る
+async function connectedAs(page: Page, o: { health?: { name: string; ok: boolean; detail?: string }[]; browser?: "off"; old?: boolean }) {
+  const u = await signupViaApi();
+  const sid = await claimBridge(u.token, "MacBook Pro（QA-B 状態）");
+  if (o.old)
+    // 約束の版を送らない（古い）Bridge の知らせ
+    await fetch(`${API}/api/auth-ext/bridge/heartbeat`, { method: "POST", headers: { "content-type": "application/json", "x-bridge-session": sid }, body: JSON.stringify({ health: [] }) });
+  else await bridgeBeat(sid, o.health);
+  await setupStep(u.memberId, 1);
+  if (o.browser) await api("/api/auth-ext/agent/browser", { browser: o.browser }, u.token);
+  await hideRealBridge(page);
+  await localBridge(page, { label: "MacBook Pro（QA-B 状態）" });
+  await loginAs(page, u.token);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/setup/bridge");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("自分のPCをつなぐ", { timeout: 20_000 });
+}
+
+test("SCR-BRIDGE-SETUP-107 状態「つながった・AI が Chrome を使えない」がモックどおり：つながりました の一言と、その場のつなぎ方", async ({ page }) => {
+  await connectedAs(page, { health: CHROME_NG });
+  await expect(page.locator("[data-connected]")).toContainText("つながりました。", { timeout: 20_000 });
+  await expect(page.locator("tr[data-check]", { hasText: CHROME_CHECK })).toHaveAttribute("data-check", "ng");
+  await expect(page.locator("[data-browser-off] [data-browser-fix]")).toBeVisible();
+});
+
+test("SCR-BRIDGE-SETUP-108 状態「つながった・ブラウザを使わない設定」がモックどおり：使わない設定の行は「できる」、ここで使うに戻せる", async ({ page }) => {
+  await connectedAs(page, {
+    browser: "off",
+    health: [
+      { name: "本人のサブスクの Claude Code がある", ok: true, detail: "/usr/local/bin/claude" },
+      { name: "AI はブラウザを使わない設定です", ok: true },
+    ],
+  });
+  await expect(page.locator("[data-connected]")).toContainText("つながりました。", { timeout: 20_000 });
+  await expect(page.locator("tr[data-check]", { hasText: "AI はブラウザを使わない設定です" })).toHaveAttribute("data-check", "ok");
+  await expect(page.locator('[data-browser-pick] input[value="off"]')).toBeChecked();
+  await expect(page.locator('[data-browser-pick] input[value="chrome"]')).toBeEnabled();
+});
+
+test("SCR-BRIDGE-SETUP-109 状態「つながった・Bridge が古い」がモックどおり：「仕事を渡せません」と言い（「いま仕事を渡せます」と言わない）、その場に入れ直す口", async ({ page }) => {
+  await connectedAs(page, { old: true });
+  const lead = page.locator("[data-connected]");
+  await expect(lead).toContainText("つながっていますが、Bridge が古いので仕事を渡せません。", { timeout: 20_000 });
+  await expect(lead).not.toContainText("いま仕事を渡せます");
+  await expect(page.locator("[data-bridge-reinstall]")).toBeVisible();
 });

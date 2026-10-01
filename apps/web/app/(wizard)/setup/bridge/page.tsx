@@ -5,6 +5,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Button, Section, Table, Td, Th, Pill } from "@/components/ui";
+import { cn } from "@/lib/cn";
 import { ago, useBridge } from "@/lib/agent";
 import { WizardLayout } from "@/components/wizard/wizard-layout";
 import { WIZARD_EXISTING } from "@/components/wizard/existing";
@@ -471,8 +472,12 @@ function Bridge() {
         </div>
       ) : state === "ok" ? (
         <div data-state="ok" data-requires="bridge">
-          <p className="text-[15px] font-semibold text-[var(--st-success)]" data-connected>
-            つながりました。いま仕事を渡せます
+          {/* 古い Bridge には仕事を渡さない（D-109）。つながっていても「渡せます」とは言わない */}
+          <p
+            className={cn("text-[15px] font-semibold", outdated ? "text-[var(--st-danger)]" : "text-[var(--st-success)]")}
+            data-connected
+          >
+            {outdated ? "つながっていますが、Bridge が古いので仕事を渡せません。" : "つながりました。いま仕事を渡せます"}
           </p>
           <Devices rows={bridges} st={st} />
           {needBlock}

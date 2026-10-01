@@ -14,7 +14,7 @@ test("USH-03-001 API クライアント：契約の path で GET し、返った
     [u.tenantId, u.scopeId, u.memberId],
   );
   await noOverflow(page, "/onboard/draft");
-  await expect(page.locator("[data-state='n']")).toContainText("7654321", { timeout: 15_000 }); // API から来た実値
+  await expect(page.locator("[data-state='n']")).toContainText("7,654,321", { timeout: 15_000 }); // API から来た実値（画面は 3 桁区切りで出す）
   // 別 GET で再取得：もう 1 件足して開き直すと増えている
   await ensureGoalKind();
   await admin(
@@ -22,7 +22,7 @@ test("USH-03-001 API クライアント：契約の path で GET し、返った
     [u.tenantId, u.scopeId, u.memberId],
   );
   await page.goto("/onboard/draft");
-  await expect(page.locator("[data-state='n']")).toContainText("1234567", { timeout: 15_000 });
+  await expect(page.locator("[data-state='n']")).toContainText("1,234,567", { timeout: 15_000 });
   for (const width of WIDTHS) {
     await page.setViewportSize({ width, height: 900 });
     expect(
