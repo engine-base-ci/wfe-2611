@@ -79,13 +79,14 @@ for s in S:
     have = {f'{e["method"]} {e["path"]}' for e in endpoints}; miss = [r["endpoint"] for r in req if r["endpoint"] not in have]
     cov.append({"screen_id": s["id"], "screen_name": s["name"], "mock_path": s.get("mock_path"), "required_apis": req, "transitions": s.get("transitions", []), "coverage_status": "OK" if not miss and req else ("NG" if miss else "NONE"), "missing": miss})
 # ---------------------------------------------------------------- 逆カバレッジ（フィールド → 消費画面）
+INTERNAL_TABLES = {"search_embeddings": "検索用の内部の索引（段階 1 は作らない・D-099.2）。画面には元の行（記憶・台帳・証跡）が出る"}
 INTERNAL = {"id", "tenant_id", "created_at", "updated_at", "created_by", "updated_by", "deleted_at", "scope_id", "version", "token_hash", "package_ref", "storage_ref", "vault_ref", "content_hash", "locator", "embedding", "dedupe_key"}
 consumption = []
 for e in E:
     scr = [s["id"] for s in S if e["id"] in s["related_entities"]]
     for f_ in e["fields"]:
-        n = f_["name"]; is_master = e["tenant_isolation"]["type"] == "none"; internal = n in INTERNAL or n.startswith("<") or is_master
-        consumption.append({"entity": e["table_name"], "field": n, "consumed_by_screens": [] if internal else scr, "internal": internal, "reason": ("マスタ。label は各画面の札・選択肢として出る" if is_master else ("共通列・参照 ID・秘密の実体は画面に出さない" if internal else (None if scr else "★ どの画面にも出ない")))})
+        n = f_["name"]; is_master = e["tenant_isolation"]["type"] == "none"; internal = n in INTERNAL or n.startswith("<") or is_master or e["table_name"] in INTERNAL_TABLES
+        consumption.append({"entity": e["table_name"], "field": n, "consumed_by_screens": [] if internal else scr, "internal": internal, "reason": ("マスタ。label は各画面の札・選択肢として出る" if is_master else INTERNAL_TABLES[e["table_name"]] if e["table_name"] in INTERNAL_TABLES else ("共通列・参照 ID・秘密の実体は画面に出さない" if internal else (None if scr else "★ どの画面にも出ない")))})
 unconsumed = [c for c in consumption if not c["internal"] and not c["consumed_by_screens"]]
 # ---------------------------------------------------------------- OpenAPI / types.ts
 import sys as _sys, os as _os

@@ -8,6 +8,8 @@ import json, os
 from _tokens import TOKENS, BASE
 from _icons import ic, LOGO
 from _ps import ROLE_SAME, COVER
+from _composer import chat_composer, COMPOSER_CSS
+from _chat import CHAT_CSS as _CHAT_CSS, FRAME_CSS as _FRAME_CSS
 
 FLOW = json.load(open(os.path.join(os.path.dirname(__file__), "..", "05_flow", "flow.json"), encoding="utf-8"))
 SCR   = {s["id"]: s for s in FLOW["screens"]}
@@ -75,7 +77,7 @@ def _nav_for(role, active, ver):
             bb = BADGE.get((m, role), "")
             bb = f'<span class="badge" data-requires="data">{bb}</span>' if bb else ""
             subs += f'<a class="{"on" if m == active else ""}" href="{_href(m, ver)}">{ic(ICON.get(m,"file"))}<span>{_lbl(SCR[m]["name"], role)}</span>{bb}</a>'
-        out.append(f'<div class="side-sub" data-sec="{key}"{"" if is_on else " hidden"}{req}>{subs}</div>')
+        out.append(f'<div class="side-sub" data-sec="{key}"{" data-last" if is_on else " hidden"}{req}>{subs}</div>')
     return "\n".join(out)
 
 def _href(m, ver):
@@ -105,6 +107,10 @@ def _tabbar(role, active, ver):
 def _subnav(sid, ver, counts=None, sub=None):
     """第2ナビ＝画面ごとに変える。押すと画面の中（data-sec）が切り替わる。項目は1行の説明を持つ（D-059）。
        sub を渡すと flow.json の定義の代わりに使う（例：会話画面はスレッド一覧）。"""
+    if isinstance(sub, str):   # 項目の代わりに中身をそのまま出す（会話の一覧＝左パネルの一覧の共通の部品・_threadlist.py）
+        s = SCR[sid]
+        meta = f'<!-- acts: {" ".join(s["acts"])} / roles: {" ".join(s.get("roles", []))} / source: {" ".join(s.get("source", []))} -->'
+        return f'<aside class="subnav" data-mode="column" data-requires="app">{meta}<div class="subnav-b" data-sub-body>{sub}</div></aside>'
     items = sub if sub is not None else SUB.get(sid)
     if not items: return ""
     s = dict(SCR[sid]); s['name'] = _lbl(s['name'], 'R1'); s['purpose'] = _lbl(s['purpose'], 'R1'); rows = []; counts = counts or {}
@@ -121,8 +127,8 @@ def _subnav(sid, ver, counts=None, sub=None):
     meta = f'<!-- acts: {" ".join(s["acts"])} / roles: {" ".join(s.get("roles", []))} / source: {" ".join(s.get("source", []))} -->'
     sec_key = SEC_OF.get(sid); crumb = next((x["label"] for x in SECT if x["key"] == sec_key), "")
     mode = SUB_MODE.get(sid, "column")
-    return (f'<aside class="subnav" data-mode="{mode}" data-requires="app">{meta}<div class="subnav-h"><div class="crumb">{crumb}</div><div class="ttl">{s["name"]}</div><div class="path" style="font-size:11px;color:var(--on-sv);font-family:ui-monospace,SFMono-Regular,monospace;margin-top:2px">{s.get("route", "")}</div>'
-            f'<div class="why">{s["purpose"]}</div></div>'
+    # 見出し（くくり・画面名・説明）は本文の上の帯（.shead）に 1 つだけ。第2ナビには出さない（2026-09-30）
+    return (f'<aside class="subnav" data-mode="{mode}" data-requires="app">{meta}'
             f'<div class="subnav-b">{"".join(rows)}</div></aside>')
 
 PANEL_MSGS = {
@@ -155,11 +161,11 @@ def _aipanel(sid, role):
             '<a href="v1-ai-activity.html" style="font-size:12px;color:var(--primary);font-weight:600">動きを全部見る →</a></details>').replace("{nm}", nm)
     return (f'<aside class="aipanel" data-role="{role}" data-requires="ai app"><div class="ap-h"><div class="av">{ic("clone")}</div>'
             f'<div style="min-width:0"><div class="nm">{nm}</div><div class="ctx">いま見ている：{_lbl(s["name"], role)}</div></div>'
-            f'<a class="btn btn-g btn-sm" href="v1-clone-chat.html" title="会話モードで開く">{ic("chat")}</a>'
+            f'<a class="btn btn-g btn-sm ap-new" href="v1-clone-chat.html" title="新しく話す（新しい会話）">{ic("plus")}</a>'
+            f'<a class="btn btn-g btn-sm" href="v1-clone-chat.html" title="会話モードで開く（一覧から前の会話へ）">{ic("chat")}</a>'
             f'<button class="btn btn-g btn-sm ap-close" title="閉じる">{ic("x")}</button></div>'
             f'<div class="ap-b">{body}{tree}</div>'
-            f'<div class="ap-c"><div class="slash"><span>/配る</span><span>/数値</span><span>/覚えて</span></div>'
-            f'<div class="box">{ic("upload")}<textarea placeholder="続けて話す"></textarea><button class="btn btn-p btn-sm">{ic("send")}</button></div></div></aside>')
+            f'{chat_composer("続けて話す", compact=True, ctx=["この画面：" + _lbl(s["name"], role)])}</aside>')
 
 def _blocked(sid, ver):
     """権限判定は screens[].roles（主ナビに出るかとは別物）。"""
@@ -191,10 +197,12 @@ def _rail_css(pre):
         (".side-grp .chev", "display:none"),
         (".side-sub", "position:fixed;left:72px;top:34px;bottom:0;width:216px;background:var(--side-bg);border-right:1px solid var(--line);padding:14px 10px;z-index:57;box-shadow:8px 0 24px rgba(0,0,0,.12);gap:2px"),
         (".side-sub a", "font-size:13px;padding:8px 10px"),
+        (".side-sub:not([data-last])", "display:none"),   # 横に飛び出すので、最後に押した 1 つだけ（重ならない）
         (".side-foot", "padding:10px 6px;justify-content:center"), (".side-foot .who", "display:none"),
     ])
 
-SHELL_CSS = """
+from _threadlist import THREADLIST_CSS, CONFIRM_CSS  # noqa: E402
+SHELL_CSS = THREADLIST_CSS + CONFIRM_CSS + """
 .side-grp{width:100%;text-align:left}
 .side-grp .chev{margin-left:auto;display:flex;opacity:.55;transition:.15s}
 .side-grp .chev svg{width:14px;height:14px}
@@ -222,47 +230,50 @@ SHELL_CSS = """
 .ap-h .nm{font-size:13.5px;font-weight:700}.ap-h .ctx{font-size:11.5px;color:var(--on-sv);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ap-h .btn-sm{padding:5px 7px}
 .ap-b{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
-.pm{max-width:92%;padding:9px 12px;border-radius:var(--r-lg);font-size:13px;line-height:1.75}
-.pm.u{align-self:flex-end;background:var(--primary-c);color:var(--on-primary-c)}
-.pm.a{align-self:flex-start;background:var(--surface);border:1px solid var(--line)}
-.pm .pm-when{display:block;font-size:11.5px;color:var(--tertiary);font-weight:600;margin-bottom:3px}
+/* 右パネルの吹き出しは会話モードと同じ部品（D-104.2）。パネルの幅に合わせて詰めるだけ */
+.pm{max-width:92%;padding:8px 12px;border-radius:var(--r-lg);font-size:14px;line-height:1.7}
+.pm.u{align-self:flex-end;background:var(--sv);color:var(--on-surface)}
+.pm.a{align-self:flex-start;background:var(--card);border:1px solid var(--line)}
+.pm .pm-when{display:block;font-size:11px;color:var(--tertiary);font-weight:600;margin-bottom:2px}
 .pm .opts{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.ap-h .ap-new{margin-left:auto}
+.ap-toggle .ap-unread{min-width:16px;height:16px;border-radius:var(--r-full);background:var(--primary);color:var(--on-primary);font-size:11px;display:inline-grid;place-items:center;padding:0 4px}
 .ptree{border:1px solid var(--line);border-radius:var(--r-md);padding:8px 11px;font-size:12.5px}
 .ptree summary{cursor:pointer;font-weight:600;color:var(--on-sv);font-size:12px}
 .ptree .tl{margin-top:8px}
 .ptree .tl>div{display:flex;gap:8px;align-items:flex-start;padding:4px 0;font-size:12px}
 .ptree .tl .d{width:7px;height:7px;border-radius:50%;margin-top:5px;flex:none;background:var(--neutral)}
 .ptree .tl .done .d{background:var(--st-success)}.ptree .tl .now .d{background:var(--st-progress)}
-.ap-c{border-top:1px solid var(--line-soft);padding:10px 12px}
-.ap-c .slash{display:flex;gap:6px;margin-bottom:7px}.ap-c .slash span{font-size:11px;background:var(--sv);padding:2px 8px;border-radius:var(--r-full);color:var(--on-sv)}
-.ap-c .box{display:flex;gap:8px;align-items:flex-end;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:8px 10px}
-.ap-c .box svg{margin-bottom:6px;color:var(--on-sv)}
-.ap-c textarea{flex:1;border:0;background:none;font:inherit;font-size:13px;resize:none;min-height:24px}
-.ap-c textarea:focus-visible{outline:none}
-.ap-c:focus-within{outline:2px solid var(--primary);outline-offset:2px;border-radius:var(--r-md)}
 .ap-toggle[aria-pressed="true"]{background:var(--primary-c)}
 .ai-stopped{color:var(--st-warning);font-weight:600}
 /* はじめの設定の枠（運用前）：サイドバー・第2ナビ・下タブは data-requires=app で隠れる。格子も1列に */
 .shell[data-frame="wizard"]{display:block!important}
 .shell[data-frame="wizard"] .main{width:100%}
-.subnav-h .crumb{font-size:12px;color:var(--on-sv);margin-bottom:2px}
-.subnav-h{padding:14px 16px 12px}
-.subnav-h .ttl{font-size:14px;line-height:1.5}
 [data-ps-only]{display:none}
 .ai-fab{display:none}
 /* ============ 本文の最小幅（D-070）：本文が 720px を下回るなら第2ナビを上の帯に畳む。入口画面（anchors）は常に上の帯 ============ */
 @media(min-width:1180px){
-  .shell.sub-chips{display:grid;grid-template-columns:var(--sidebar-w) minmax(0,1fr) auto;grid-template-rows:auto minmax(0,1fr)}
-  .shell.sub-chips .side{grid-column:1;grid-row:1/3}
-  .shell.sub-chips .subnav{grid-column:2;grid-row:1;width:auto;height:auto;position:static;border-right:0;border-bottom:1px solid var(--line);flex-direction:column}
-  .shell.sub-chips .subnav-h{padding:12px 28px 4px}.shell.sub-chips .subnav-h .why{display:none}.shell.sub-chips .subnav-h .crumb{display:none}.shell.sub-chips .subnav-h .ttl{display:none}
+  /* 見出しの帯は第2ナビと本文の上にまたがる（左からサイドバー｜第2ナビ｜本文｜右パネル、上の行が見出し） */
+  .shell:not(.sub-chips):not([data-frame="wizard"]){display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;grid-template-rows:auto minmax(0,1fr)}
+  .shell:not(.sub-chips) .side{grid-column:1;grid-row:1/3}
+  .shell:not(.sub-chips) .shead{grid-column:2/4;grid-row:1}
+  .shell:not(.sub-chips) .subnav{grid-column:2;grid-row:2;position:static;height:auto;overflow:visible}   /* 帯の分だけページが余分に動かないよう、一覧だけを画面に貼り付ける */
+  .subnav-b[hidden]{display:none}
+  .shell:not(.sub-chips) .subnav>.subnav-b{position:sticky;top:34px;max-height:calc(100vh - 34px);overflow-y:auto}
+  .shell:not(.sub-chips) .main{grid-column:3;grid-row:2}
+  .shell:not(.sub-chips) .aipanel{grid-column:4;grid-row:1/3}
+  .shell:not(.sub-chips) .norole,.shell:not(.sub-chips) .blocked{grid-column:2/4;grid-row:1/3}
+  .shell.sub-chips{display:grid;grid-template-columns:var(--sidebar-w) minmax(0,1fr) auto;grid-template-rows:auto auto minmax(0,1fr)}
+  .shell.sub-chips .side{grid-column:1;grid-row:1/4}
+  .shell.sub-chips .shead{grid-column:2;grid-row:1}
+  .shell.sub-chips .subnav{grid-column:2;grid-row:2;width:auto;height:auto;position:static;border-right:0;border-bottom:1px solid var(--line);flex-direction:column}
   .shell.sub-chips .subnav-b{flex-direction:row;overflow-x:auto;gap:6px;padding:8px 28px 12px}
   .shell.sub-chips .subnav-b .sn{white-space:nowrap;background:var(--sv);flex:none;flex-direction:row;padding:6px 12px}
   .shell.sub-chips .subnav-sec{display:none}.shell.sub-chips .sn .sn-d{display:none}
-  .shell.sub-chips .main{grid-column:2;grid-row:2}
-  .shell.sub-chips .aipanel{grid-column:3;grid-row:1/3}
-  .shell.sub-chips .norole{grid-column:2;grid-row:1/3}
-  .shell.sub-chips .blocked{grid-column:2;grid-row:1/3}
+  .shell.sub-chips .main{grid-column:2;grid-row:3}
+  .shell.sub-chips .aipanel{grid-column:3;grid-row:1/4}
+  .shell.sub-chips .norole{grid-column:2;grid-row:1/4}
+  .shell.sub-chips .blocked{grid-column:2;grid-row:1/4}
 }
 @media(max-width:767px){
   .aipanel{position:fixed;left:0;right:0;bottom:0;top:auto;width:auto;height:72vh;z-index:58;border-left:0;border-top:1px solid var(--line);border-radius:var(--r-xl) var(--r-xl) 0 0}
@@ -281,7 +292,7 @@ SHELL_CSS = """
 .mockbar .states button[aria-selected="true"]{color:#fff;background:rgba(255,255,255,.16)}
 .mockbar .states button .mk{display:none}
 .shell[data-layout=threepane] .topbar{display:none}
-.shell[data-layout=threepane] .subnav-h{display:none}
+.shell[data-layout=threepane] .shead{display:none}
 .shell[data-layout=threepane] .subnav-b{align-items:center;padding:8px 24px}
 .shell[data-layout=threepane] .subnav-b .sn{flex:none}
 .shell[data-layout=threepane] .subnav-b .sn-acts{margin-left:auto;display:flex;gap:8px;flex:none;align-items:center}
@@ -294,16 +305,16 @@ SHELL_CSS = """
 /* タブレットは基本規則より後に置く（同じ詳細度では後勝ち） */
 /* ============ タブレット 768〜1179（D-064）：レール＋横チップの第2ナビ＋重なるパネル ============ */
 @media(min-width:768px) and (max-width:1179px){
-  .shell{display:grid;grid-template-columns:72px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);min-height:calc(100vh - 34px)}
-  .side{grid-column:1;grid-row:1/3}
+  .shell{display:grid;grid-template-columns:72px minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr);min-height:calc(100vh - 34px)}
+  .side{grid-column:1;grid-row:1/4}
+  .shead{grid-column:2;grid-row:1}
 """ + _rail_css("") + """
-  .subnav{grid-column:2;grid-row:1;width:auto;height:auto;position:static;border-right:0;border-bottom:1px solid var(--line);flex-direction:column}
-  .subnav-h{padding:12px 20px 6px}.subnav-h .why{display:none}.subnav-h .crumb{display:none}
+  .subnav{grid-column:2;grid-row:2;width:auto;height:auto;position:static;border-right:0;border-bottom:1px solid var(--line);flex-direction:column}
   .subnav-b{flex-direction:row;overflow-x:auto;gap:6px;padding:8px 20px 12px}
   .subnav-b .sn{white-space:nowrap;background:var(--sv);flex:none;flex-direction:row;padding:6px 12px}
   .subnav-sec{display:none}.sn .sn-d{display:none}
-  .main{grid-column:2;grid-row:2}
-  .norole{grid-column:2;grid-row:1/3}
+  .main{grid-column:2;grid-row:3}
+  .norole{grid-column:2;grid-row:1/4}
   .content{padding:20px 24px 64px}
   .topbar{padding:12px 20px 4px}.purpose{padding:10px 20px}
   .aipanel{position:fixed;right:0;top:34px;bottom:0;width:360px;height:auto;z-index:58;box-shadow:-8px 0 24px rgba(0,0,0,.12);border-radius:0}
@@ -341,24 +352,27 @@ def _page(ver, sid, states, extra_css="", actions_extra="", no_shell=False, coun
 
     primary = f'<button class="btn btn-p">{ic("check")}{s["primary_action"]}</button>'
     ai_btn = "" if (no_shell or sid in ("clone-chat", "clone-thread")) else (   # 会話そのものが本文の画面に、もう 1 つの会話を並べない
-        f'<button class="btn btn-o ap-toggle" aria-pressed="false" data-requires="ai app">{ic("clone")}<span class="ap-name">高本AI</span></button>'
+        f'<button class="btn btn-o ap-toggle" aria-pressed="false" data-requires="ai app">{ic("clone")}<span class="ap-name">高本AI</span><span class="ap-unread" title="見ていない間の返事" data-requires="model">1</span></button>'
         f'<a class="btn btn-g ai-stopped" data-requires="stopped app" href="v1-automation-repair.html" title="AI は止まっています">{ic("pause")}<span>AI は止まっています</span></a>'
         f'<a class="btn btn-g ai-stopped" data-requires="nobridge" hidden href="v1-bridge-setup.html">{ic("bridge")}<span>PC をつなぐと話せます</span></a>')
     same = f'<!-- role-same: {ROLE_SAME[sid]} -->' if sid in ROLE_SAME else ''
     cv = COVER.get(sid, {}); same += ('<!-- cover: ' + ' '.join(f'{k}={v}' for k, v in cv.items() if k != 'na') + ' -->' if any(k != 'na' for k in cv) else '') + _cover_na(cv.get('na'))   # G18：時点の被覆の宣言   # G15：役割ごとに同じ中身でよいと決めた宣言
-    main = (f'{same}<main class="main"><div class="topbar"><div class="tt">'
-            f'<div class="crumb">{crumb}</div><h1 title="{s["purpose"]}">{s["name"]}</h1></div>'
+    # 見出しの帯：第2ナビと本文の上にまたがる 1 つだけ（2026-09-30 user「同じ文章が 2 回・ヘッドはパネルの幅も」）
+    head = (f'<header class="shead"><div class="topbar"><div class="tt">'
+            f'<div class="crumb">{crumb}<span class="path" style="font-size:11px;font-family:ui-monospace,SFMono-Regular,monospace;margin-left:8px">{s.get("route", "")}</span></div>'
+            f'<h1 title="{s["purpose"]}">{s["name"]}</h1></div>'
             f'<div class="sp"></div>{ai_btn}{actions_extra}{primary}</div>'
-            f'<div class="purpose">{ic("info")}<div>{s["purpose"]}</div></div>'
+            f'<div class="purpose">{ic("info")}<div title="{s["purpose"]}">{s["purpose"]}</div></div></header>')
+    main = (f'{same}<main class="main">'
             f'{tabs}<div class="content">{panes}</div>{foot}</main>')
 
     if no_shell:
-        body = f'<div class="shell">{main}</div>'; rolebar = ""
+        body = f'<div class="shell" style="flex-direction:column">{head}{main}</div>'; rolebar = ""
     else:
         sides = "".join(_sidebar(r, sid, ver) for r in SHOW_ROLES)
         tabbars = "".join(_tabbar(r, sid, ver) for r in SHOW_ROLES)
         panels = "" if sid in ("clone-chat", "clone-thread") else "".join(_aipanel(sid, r) for r in SHOW_ROLES)
-        body = f'<div class="shell" data-layout="{LAYOUT.get(sid, "page")}">{sides}{_subnav(sid, ver, counts, sub)}{main}{panels}{_blocked(sid, ver)}</div>{tabbars}'
+        body = f'<div class="shell" data-layout="{LAYOUT.get(sid, "page")}">{sides}{head}{_subnav(sid, ver, counts, sub)}{main}{panels}{_blocked(sid, ver)}</div>{tabbars}'
         btns = "".join(f'<button data-role="{r}" aria-pressed="{"true" if i==0 else "false"}" '
                        f'title="{ROLES[r]["name"]}">{ROLE_SHORT[r]}</button>' for i, r in enumerate(SHOW_ROLES))
         rolebar = f'<span class="rolebar"><b>アカウント</b>{btns}</span>'
@@ -370,7 +384,7 @@ def _page(ver, sid, states, extra_css="", actions_extra="", no_shell=False, coun
 <!-- screen: {sid} / acts: {" ".join(s["acts"])} / source: {src} / shell: D-052 D-053 D-059 D-060 D-065 D-066 -->
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=M+PLUS+2:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>{TOKENS}{BASE}{SHELL_CSS}{extra_css}
+<style>{TOKENS}{BASE}{SHELL_CSS}{_CHAT_CSS}{_FRAME_CSS}{COMPOSER_CSS}{extra_css}
 .css-sentinel{{visibility:hidden;position:absolute}}</style></head><body><i class="css-sentinel" aria-hidden="true"></i>
 <div class="mockbar"><b>モックアップ</b><span class="tagv" style="background:{vcolor}">{ver.upper()}</span>
 <span class="ph">{crumb}</span>{rolebar}<span class="sp"></span>
@@ -381,7 +395,7 @@ def _page(ver, sid, states, extra_css="", actions_extra="", no_shell=False, coun
 (function(){{ const st=document.querySelector('.states'); const mb=document.querySelector('.mockbar'); if(st&&mb){{ const sp=mb.querySelector('.sp'); mb.insertBefore(st, sp); }}
  const sh=document.querySelector('.shell'); if(sh&&sh.dataset.layout==='threepane'){{ const nb=document.querySelector('.subnav-b'); const tb=document.querySelector('.topbar'); if(nb&&tb){{ const acts=document.createElement('span'); acts.className='sn-acts'; [...tb.querySelectorAll('.ap-toggle,.ai-stopped,.btn-p')].forEach(b=>acts.appendChild(b)); nb.appendChild(acts); }} }}
  if(window.fitThreePane) setTimeout(window.fitThreePane,0); }})();
-(function(){{ const fit=()=>{{ const els=[...document.querySelectorAll('.statepane:not([hidden]) [data-fix]')]; const wide=window.innerWidth>=1024; if(!els.length) return; document.documentElement.style.overflow=wide?'hidden':''; els.forEach(el=>{{ if(!wide){{ el.style.removeProperty('--fix-top'); return; }} el.style.setProperty('--fix-top', Math.round(el.getBoundingClientRect().top+window.scrollY)+'px'); let b=0, s=el.nextElementSibling; while(s){{ const cs=getComputedStyle(s); b+=s.offsetHeight+parseFloat(cs.marginTop)+parseFloat(cs.marginBottom); s=s.nextElementSibling; }} el.style.setProperty('--fix-bottom', Math.round(b)+'px'); }}); }};
+(function(){{ const fit=()=>{{ const els=[...document.querySelectorAll('.statepane:not([hidden]) [data-fix], .statepane:not([hidden]) [data-chat-frame]')]; const wide=window.innerWidth>=1024; if(!els.length) return; document.documentElement.style.overflow=wide?'hidden':''; els.forEach(el=>{{ if(!wide){{ el.style.removeProperty('--fix-top'); return; }} el.style.setProperty('--fix-top', Math.round(el.getBoundingClientRect().top+window.scrollY)+'px'); let b=0, s=el.nextElementSibling; while(s){{ const cs=getComputedStyle(s); b+=s.offsetHeight+parseFloat(cs.marginTop)+parseFloat(cs.marginBottom); s=s.nextElementSibling; }} el.style.setProperty('--fix-bottom', Math.round(b)+'px'); }}); }};
  window.addEventListener('load',fit); window.addEventListener('resize',fit); document.addEventListener('click',()=>setTimeout(fit,0)); setTimeout(fit,0); window.fitFixed=fit; }})();
 // パスワードの見る・隠す（D-087）。押すたびに type と読み上げの名前が変わる
 document.addEventListener('click',e=>{{ const b=e.target.closest('.pw-btn'); if(!b)return;
@@ -438,9 +452,10 @@ if(!document.querySelector('.subnav[data-mode="anchors"]'))
  if(tab.matches) closeAll();
  document.addEventListener('click',e=>{{ if(tab.matches && !e.target.closest('.side-nav')) closeAll(); }});
 }})();
-document.querySelectorAll('.side-grp').forEach(b=>b.addEventListener('click',()=>{{
+document.querySelectorAll('.side-grp').forEach(b=>b.addEventListener('click',()=>{{   // 押した分類だけ開け閉め。ほかは開いたまま（2026-09-30）
  const open=!b.classList.contains('open'); b.classList.toggle('open',open); b.setAttribute('aria-expanded',String(open));
- const sub=b.parentElement.querySelector('.side-sub[data-sec="'+b.dataset.sec+'"]'); if(sub) sub.hidden=!open;}}));
+ document.querySelectorAll('.side-sub[data-last]').forEach(x=>x.removeAttribute('data-last'));   // 細いサイドバーは最後に押した 1 つだけ飛び出す
+ const sub=b.parentElement.querySelector('.side-sub[data-sec="'+b.dataset.sec+'"]'); if(sub){{ sub.hidden=!open; sub.setAttribute('data-last',''); }}}}));
 (function(){{
  const apply=r=>{{
   document.querySelectorAll('.side[data-role]').forEach(s=>s.classList.toggle('on',s.dataset.role===r));

@@ -131,7 +131,42 @@
     "clone-chat"
    ],
    "acts": [
-    "A20"
+    "A20",
+    "A90"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/conversations",
+   "implementation_path": "apps/api/src/routes/conversations.ts::postConversations",
+   "screen_ids_referencing": [
+    "clone-chat"
+   ],
+   "acts": [
+    "A88",
+    "A91"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/conversations/:id",
+   "implementation_path": "apps/api/src/routes/conversations.ts::patchConversationsById",
+   "screen_ids_referencing": [
+    "clone-chat"
+   ],
+   "acts": [
+    "A95"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/api/v1/conversations/:id",
+   "implementation_path": "apps/api/src/routes/conversations.ts::deleteConversationsById",
+   "screen_ids_referencing": [
+    "clone-chat"
+   ],
+   "acts": [
+    "A89"
    ]
   },
   {
@@ -403,6 +438,7 @@
    "path": "/api/v1/members",
    "implementation_path": "apps/api/src/routes/members.ts::getMembers",
    "screen_ids_referencing": [
+    "account",
     "login",
     "mfa-setup",
     "password-reset",
@@ -412,7 +448,8 @@
     "A02",
     "A04",
     "A13",
-    "A31"
+    "A31",
+    "A94"
    ]
   },
   {
@@ -455,6 +492,17 @@
    ]
   },
   {
+   "method": "PATCH",
+   "path": "/api/v1/memories/:id",
+   "implementation_path": "apps/api/src/routes/memories.ts::patchMemoriesById",
+   "screen_ids_referencing": [
+    "clone-memory"
+   ],
+   "acts": [
+    "A93"
+   ]
+  },
+  {
    "method": "GET",
    "path": "/api/v1/messages",
    "implementation_path": "apps/api/src/routes/messages.ts::getMessages",
@@ -462,7 +510,8 @@
     "today"
    ],
    "acts": [
-    "A14"
+    "A14",
+    "A92"
    ]
   },
   {

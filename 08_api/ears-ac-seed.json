@@ -1,7 +1,7 @@
 {
  "version": "v3",
  "skill": "api-design",
- "endpoints_count": 60,
+ "endpoints_count": 64,
  "ac_seeds": [
   {
    "endpoint": "GET /api/v1/action_runs",
@@ -305,7 +305,12 @@
     "D-030",
     "D-030.3",
     "D-055",
-    "D-055.3"
+    "D-055.3",
+    "D-110.1",
+    "D-118.1",
+    "D-118.2",
+    "D-118.3",
+    "D-118.4"
    ]
   },
   {
@@ -315,15 +320,17 @@
     "clone-chat"
    ],
    "acts": [
-    "A20"
+    "A20",
+    "A90"
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN GET /api/v1/conversations が「聞く・頼む」として呼ばれたとき THEN Kaname は「会話を記憶へ。指示をAI社員へ」を行い 2xx を返す（自動側：自分のAIが答え、必要ならAI社員に配る。数値もここで出す。配布・承認・記憶は AG-UI イベントで画面へ）",
+    "EVENT-DRIVEN: WHEN GET /api/v1/conversations が「聞く・頼む」として呼ばれたとき THEN Kaname は「会話を記憶へ。指示をAI社員へ。道具の呼び出しは名前・対象・成否・時間だけ残し、中身の全文は本人の PC に置いたまま。サービス台帳で禁止・銀行のドメインは、仕事を渡すたびに使わない道具として渡し、道具を使う直前のフックでも止める（許可のモードに関わらず）」を行い 2xx を返す（自動側：自分のAIが答え、必要ならAI社員に配る。数値もここで出す。返事は書きながら少しずつ出し、作業中は吹き出しの外に 1 行・手順・経過時間・道具の行。表・図・コード・実物のカード・問い合わせまで出せる）",
+    "EVENT-DRIVEN: WHEN GET /api/v1/conversations が「資料や画像を付けて渡す」として呼ばれたとき THEN Kaname は「attachments に 1 行、実体は会社の置き場（関門 C4）。messages.attachments は参照だけ」を行い 2xx を返す（自動側：Bridge が期限つきの署名 URL で受け取り、本人の PC の作業場所に置いて自分のAI に渡す（保存先の鍵は AI に見せない））",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す",
-    "UBIQUITOUS: GET /api/v1/conversations の副作用は関門 C2・C3 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+    "UBIQUITOUS: GET /api/v1/conversations の副作用は関門 C1・C2・C3・C4・C5 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
    ],
    "source": [
     "D-003.9",
@@ -333,7 +340,120 @@
     "D-024.7",
     "D-037",
     "D-037.5",
-    "D-060.3"
+    "D-060.3",
+    "D-104.10",
+    "D-104.11",
+    "D-104.12",
+    "D-104.13",
+    "D-104.17",
+    "D-104.18",
+    "D-104.2",
+    "D-104.20",
+    "D-104.3",
+    "D-104.4",
+    "D-104.5",
+    "D-104.6",
+    "D-104.7",
+    "D-111.1",
+    "D-111.2",
+    "D-111.3",
+    "D-111.4",
+    "D-111.5",
+    "D-112.1",
+    "D-112.2",
+    "D-112.3",
+    "D-112.4",
+    "D-112.5",
+    "D-112.6",
+    "D-113.1",
+    "D-113.3",
+    "D-113.4",
+    "D-113.7",
+    "D-114.2",
+    "D-114.3",
+    "D-115.1",
+    "D-115.2",
+    "D-115.3"
+   ]
+  },
+  {
+   "endpoint": "POST /api/v1/conversations",
+   "feature_id": "F-004",
+   "screen_ids": [
+    "clone-chat"
+   ],
+   "acts": [
+    "A88",
+    "A91"
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN POST /api/v1/conversations が「会話を分けて始める・一覧から戻る」として呼ばれたとき THEN Kaname は「conversations に 1 行（agent_session_id は最初の返事で決まる）。一覧・探す（本文の PGroonga）・星・名前を直す・消す・記憶に残さない会話（毎朝のまとめから外す）」を行い 2xx を返す（自動側：新しい会話は Claude Code の新しいセッション。名前は最初の一言から自分のAIが付ける）",
+    "EVENT-DRIVEN: WHEN POST /api/v1/conversations が「許可に答える・許可のモードを選ぶ」として呼ばれたとき THEN Kaname は「答えは bridge_job_events と証跡に。「いつも」は permission_rules に。全部許可は本人が選んだときだけ・既定にしない」を行い 2xx を返す（自動側：Claude Code の許可の問いを会話に出す（今回だけ／いつも／しない＋一言）。モードは Claude Code の公式の選択肢をそのまま渡す）",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+    "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
+    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す",
+    "UBIQUITOUS: POST /api/v1/conversations の副作用は関門 C2・C5 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+   ],
+   "source": [
+    "D-104.1",
+    "D-104.14",
+    "D-107.2"
+   ]
+  },
+  {
+   "endpoint": "PATCH /api/v1/conversations/:id",
+   "feature_id": "F-004",
+   "screen_ids": [
+    "clone-chat"
+   ],
+   "acts": [
+    "A95"
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN PATCH /api/v1/conversations/:id が「成果物に書き出して横で直す」として呼ばれたとき THEN Kaname は「artifacts に 1 行・artifact_versions に版ごとに 1 行。中身は会社の置き場（関門 C4）。自分のAI に置き場の鍵を見せない」を行い 2xx を返す（自動側：返事の本文から成果物を作って会話の横に開く。文書と表は直すと新しい版、版の一覧から戻せる（戻すのも新しい版））",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+    "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
+    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UBIQUITOUS: PATCH /api/v1/conversations/:id の副作用は関門 C2・C4 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+   ],
+   "source": [
+    "D-106.1",
+    "D-106.2",
+    "D-106.3",
+    "D-106.4",
+    "D-106.5",
+    "D-106.6",
+    "D-106.7",
+    "D-106.8"
+   ]
+  },
+  {
+   "endpoint": "DELETE /api/v1/conversations/:id",
+   "feature_id": "F-004",
+   "screen_ids": [
+    "clone-chat"
+   ],
+   "acts": [
+    "A89"
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN DELETE /api/v1/conversations/:id が「止める・止めずに直す・順番待ちを取り消す」として呼ばれたとき THEN Kaname は「bridge_jobs の状態（止めた＝理由つき）。順番待ちは待っている行、取り消すと やめた」を行い 2xx を返す（自動側：止めるは Bridge が Claude Code を止める。止めずに送った文は動いている Claude Code に次の区切りで渡る）",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+    "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
+    "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す",
+    "UBIQUITOUS: DELETE /api/v1/conversations/:id の副作用は関門 C2・C5 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+   ],
+   "source": [
+    "D-104.15",
+    "D-104.8",
+    "D-104.9"
    ]
   },
   {
@@ -346,7 +466,7 @@
     "A10"
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/credentials が「使うサービスを選びログイン情報を入れる」として呼ばれたとき THEN Kaname は「vaultに暗号化保管。AIには参照IDのみ」を行い 2xx を返す（自動側：サービス台帳から自動操作可否を判定して出す）",
+    "EVENT-DRIVEN: WHEN POST /api/v1/credentials が「使うサービスを選びログイン情報を入れる」として呼ばれたとき THEN Kaname は「vaultに暗号化保管。AIには参照IDのみ。資格情報は会社ごとの鍵で暗号化して Infisical の会社の置き場へ（AI には参照 ID だけ）。Bridge は Infisical に入らず、実行の間だけ値を受け取って捨てる」を行い 2xx を返す（自動側：サービス台帳から自動操作可否を判定して出す）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
@@ -359,7 +479,13 @@
     "D-017",
     "D-017.1",
     "D-041",
-    "D-042.8"
+    "D-042.8",
+    "D-117.1",
+    "D-117.2",
+    "D-117.3",
+    "D-117.4",
+    "D-117.5",
+    "D-117.6"
    ]
   },
   {
@@ -816,7 +942,7 @@
     "A47"
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN GET /api/v1/ledger_definitions が「言葉で探す」として呼ばれたとき THEN Kaname は「台帳・記憶・証跡を横断」を行い 2xx を返す（自動側：自分のAIが意味で探す）",
+    "EVENT-DRIVEN: WHEN GET /api/v1/ledger_definitions が「言葉で探す」として呼ばれたとき THEN Kaname は「台帳・記憶・証跡の本文の PGroonga 索引を横断（候補は行レベルの制御の内側だけ）。ベクトルは境を越えてから（本人の PC で作る）」を行い 2xx を返す（自動側：自分のAIが PGroonga で言い換えを広げながら何度か探し、中身を読んで選ぶ（段階 1 はベクトルを使わない）。探した件数と時間を記録し、境を越えたら運営に知らせる。人が直接探すときは言葉の一致）",
     "EVENT-DRIVEN: WHEN GET /api/v1/ledger_definitions が「一覧を見る」として呼ばれたとき THEN Kaname は「見える範囲だけのレコードを読む」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
@@ -962,6 +1088,7 @@
    "endpoint": "GET /api/v1/members",
    "feature_id": "F-001",
    "screen_ids": [
+    "account",
     "login",
     "mfa-setup",
     "password-reset",
@@ -971,19 +1098,24 @@
     "A02",
     "A04",
     "A13",
-    "A31"
+    "A31",
+    "A94"
    ],
    "ears_ac_seed": [
     "EVENT-DRIVEN: WHEN GET /api/v1/members が「届いたリンクを押す」として呼ばれたとき THEN Kaname は「本人確認を記録」を行い 2xx を返す",
     "EVENT-DRIVEN: WHEN GET /api/v1/members が「認証アプリを登録する」として呼ばれたとき THEN Kaname は「TOTPシークレットを暗号化保管」を行い 2xx を返す",
     "EVENT-DRIVEN: WHEN GET /api/v1/members が「メールとパスワードと6桁を入れる」として呼ばれたとき THEN Kaname は「トークンを発行」を行い 2xx を返す",
     "EVENT-DRIVEN: WHEN GET /api/v1/members が「メールでパスワードを再設定する／回復コードを使う」として呼ばれたとき THEN Kaname は「トークンを失効させて再発行」を行い 2xx を返す",
-    "UNWANTED: IF 10/min/ip を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "EVENT-DRIVEN: WHEN GET /api/v1/members が「自分のAIの使用量を見る」として呼ばれたとき THEN Kaname は「agent_usage_snapshots の最新」を行い 2xx を返す（自動側：Bridge が Claude Code から受け取った使用量（5 時間の枠・週の枠・いつ戻るか）を出す。近い・達したら会話にも案内）",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+    "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UBIQUITOUS: GET /api/v1/members の副作用は関門 C2・C6・C8 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
    ],
    "source": [
     "D-042",
-    "D-053.4"
+    "D-053.4",
+    "D-104.16"
    ]
   },
   {
@@ -1070,7 +1202,7 @@
     "A30"
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/memories が「自分の考え方を教える」として呼ばれたとき THEN Kaname は「記憶をスコープ付きで保存」を行い 2xx を返す（自動側：自分のAIが記憶に落として次から参照する）",
+    "EVENT-DRIVEN: WHEN POST /api/v1/memories が「自分の考え方を教える」として呼ばれたとき THEN Kaname は「記憶をスコープ付きで保存。本文が直されたら指紋が変わった行だけ Bridge がベクトルを作り直す」を行い 2xx を返す（自動側：自分のAIが記憶に落として次から参照する）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
@@ -1086,7 +1218,34 @@
     "D-025.4",
     "D-030",
     "D-030.8",
-    "D-066.7"
+    "D-066.7",
+    "D-104.17",
+    "D-105.1",
+    "D-105.8"
+   ]
+  },
+  {
+   "endpoint": "PATCH /api/v1/memories/:id",
+   "feature_id": "F-013",
+   "screen_ids": [
+    "clone-memory"
+   ],
+   "acts": [
+    "A93"
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN PATCH /api/v1/memories/:id が「上がってきた記憶と食い違いを確かめる」として呼ばれたとき THEN Kaname は「memory_proposals の状態（送った／OK／差し戻し）。確認者がいない層は 1 つ上へ。決まったら両者に知らせる」を行い 2xx を返す（自動側：同じことへの食い違う提案を 1 件にまとめ、両方の根拠を並べる）",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+    "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
+    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UBIQUITOUS: PATCH /api/v1/memories/:id の副作用は関門 C2・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+   ],
+   "source": [
+    "D-105.10",
+    "D-105.6",
+    "D-105.9"
    ]
   },
   {
@@ -1096,10 +1255,12 @@
     "today"
    ],
    "acts": [
-    "A14"
+    "A14",
+    "A92"
    ],
    "ears_ac_seed": [
     "EVENT-DRIVEN: WHEN GET /api/v1/messages が「申し送りを読む」として呼ばれたとき THEN Kaname は「タスクと承認待ちを集約」を行い 2xx を返す（自動側：自分のAIが夜間の結果をまとめ、今日の並びを決める）",
+    "EVENT-DRIVEN: WHEN GET /api/v1/messages が「昨日の会話をまとめる」として呼ばれたとき THEN Kaname は「memory_digests に 1 行（溜まった日数・結果）。個人の記憶は memories に自動で入れ、整理の前後を残す」を行い 2xx を返す（自動側：自分のAI が溜まった会話と承認・差し戻しを読み、覚えた／まとめた／上げる候補／捨てた に分ける）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
@@ -1110,7 +1271,12 @@
     "D-008",
     "D-010",
     "D-024",
-    "D-024.1"
+    "D-024.1",
+    "D-105.2",
+    "D-105.3",
+    "D-105.4",
+    "D-105.5",
+    "D-105.7"
    ]
   },
   {
@@ -1189,7 +1355,8 @@
     "D-043.2",
     "D-075.2",
     "D-075.3",
-    "D-076.9"
+    "D-076.9",
+    "D-104.19"
    ]
   },
   {
@@ -1318,7 +1485,9 @@
     "D-040.1",
     "D-041",
     "D-042.2",
-    "D-066.10"
+    "D-066.10",
+    "D-104.14",
+    "D-107.2"
    ]
   },
   {
@@ -1439,7 +1608,7 @@
     "A09"
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/sessions が「インストーラを入れて許可する」として呼ばれたとき THEN Kaname は「端末を登録、トークン発行。LLM経路＝Bridge を確定」を行い 2xx を返す（自動側：Bridgeが自己診断して結果を返す。つながるまで自分のAIは話せない）",
+    "EVENT-DRIVEN: WHEN POST /api/v1/sessions が「Bridge を入れて開き、「Claude Code を入れる」を押し、ログインを 1 回承認して、つなぐ」として呼ばれたとき THEN Kaname は「端末を登録、トークン発行。LLM経路＝Bridge を確定」を行い 2xx を返す（自動側：Bridge は PC の起動時に立ち上がる。止まっていれば画面のボタン 1 つで起こせる。Bridge が Claude Code を入れ、自己診断して結果を返す）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
@@ -1459,7 +1628,8 @@
     "D-055",
     "D-055.1",
     "D-055.2",
-    "D-055.3"
+    "D-055.3",
+    "D-109.3"
    ]
   },
   {
@@ -1532,7 +1702,7 @@
     "A69"
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN PATCH /api/v1/subscriptions/:id が「プランと請求書を見る」として呼ばれたとき THEN Kaname は「プラン・利用量・請求書を読む。プラン変更を申請」を行い 2xx を返す（自動側：自分のAIが上限に近いものを先に言う）",
+    "EVENT-DRIVEN: WHEN PATCH /api/v1/subscriptions/:id が「プランと請求書を見る」として呼ばれたとき THEN Kaname は「プラン・利用量・請求書を読む。プラン変更を申請。上限の見込みは仕事ごとに残した使った量（往復数・時間・量）から出す」を行い 2xx を返す（自動側：自分のAIが上限に近いものを先に言う）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
@@ -1616,7 +1786,8 @@
     "D-066",
     "D-066.9",
     "D-068",
-    "D-068.7"
+    "D-068.7",
+    "D-104.15"
    ]
   },
   {
@@ -1670,7 +1841,7 @@
     "A45"
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN GET /api/v1/tenants が「出てきたたたき台を見る」として呼ばれたとき THEN Kaname は「会社モデルの下書きを保存」を行い 2xx を返す（自動側：自分のAIが目標・台帳定義・担当業務・AI社員の初期案を作る）",
+    "EVENT-DRIVEN: WHEN GET /api/v1/tenants が「出てきたたたき台を見る」として呼ばれたとき THEN Kaname は「会社モデルの下書きを保存（道具の口 /bridge/tool が DB の関数で書き、証跡に残す）」を行い 2xx を返す（自動側：自分のAIが目標・台帳定義・担当業務・AI社員の初期案を作り、Kaname の道具（MCP・その仕事の間だけの鍵）で置く）",
     "EVENT-DRIVEN: WHEN GET /api/v1/tenants が「違うところを言う」として呼ばれたとき THEN Kaname は「会社モデルの下書きを更新」を行い 2xx を返す（自動側：自分のAIが直して出し直す）",
     "EVENT-DRIVEN: WHEN GET /api/v1/tenants が「本番に切り替える」として呼ばれたとき THEN Kaname は「会社モデルを確定、自動実行を有効化」を行い 2xx を返す（自動側：自分のAIが未設定を洗い出して止める）",
     "EVENT-DRIVEN: WHEN GET /api/v1/tenants が「会社モデルの全体を見る」として呼ばれたとき THEN Kaname は「会社モデルの現在の版を読む」を行い 2xx を返す（自動側：自分のAIが直近で変わったところを示す）",
@@ -1700,7 +1871,14 @@
     "D-028.4",
     "D-030",
     "D-030.3",
-    "D-039.1"
+    "D-039.1",
+    "D-110.2",
+    "D-116.1",
+    "D-116.2",
+    "D-116.3",
+    "D-116.4",
+    "D-116.5",
+    "D-116.6"
    ]
   },
   {

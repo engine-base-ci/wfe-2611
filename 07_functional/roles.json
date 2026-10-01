@@ -1,7 +1,7 @@
 {
  "meta": {
   "version": "v3.1",
-  "created_at": "2026-09-21",
+  "created_at": "2026-09-29",
   "_doc": "05_flow/build_functional.py が flow.json・ER図・モック・errors.json から生成。手で直さない。",
   "source": [
    "D-053.1",
@@ -137,7 +137,7 @@
     }
    ],
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-002",
     "D-008",
@@ -275,7 +275,7 @@
     }
    ],
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-002",
     "D-026",
@@ -356,7 +356,7 @@
     }
    ],
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-002",
     "D-026",
@@ -371,6 +371,7 @@
    "screens": [
     "invite-accept",
     "login",
+    "today",
     "tasks",
     "clone-chat",
     "search",
@@ -408,7 +409,7 @@
     }
    ],
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-002",
     "D-026"
@@ -468,7 +469,7 @@
     }
    ],
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-030",
     "D-042",
@@ -577,7 +578,7 @@
    "R1": "edit",
    "R2": "edit",
    "R3": "edit",
-   "R4": "-",
+   "R4": "view",
    "R6": "-"
   },
   "approvals": {

@@ -13,8 +13,9 @@ def clone_box(title, body, buttons=""):
 # ============================================================ 今日（D-071・D-072）：三画面。左＝押してほしいもの → 今日やる分 → 夕方、中央＝選んだ 1 件、右＝高本AI（申し送りは会話の最初の 1 通）
 from _threepane import TP_CSS, TP_JS, qrow, group, dpane, dkv, dlog, threepane, qhead, vrow, vgroup, ico, due, flow_lanes
 from _taskdata import task_queue, TODAY, CAP, EST
+from _memdigest import digest_bar, digest_result, DIGEST_CSS
 
-TP_TODAY_CSS = ""
+TP_TODAY_CSS = DIGEST_CSS
 
 # --- 承認待ち（一覧の行と中央の中身）。approvals 画面も同じ 3 件・同じ関数を使う
 APPROVALS = [
@@ -56,7 +57,7 @@ def approval_queue(items, sec=None, right="", title="押してほしいもの", 
 
 # --- 今日（通常）：左の一覧 = 申し送りの要点 → 朝の計画 1 行 → 押してほしいもの → 今日やる分 → 夕方
 _q_tasks, _p_tasks = task_queue("normal", head=False)
-_head = (qhead("今日", "9月10日（水）", right=f'<button class="open-panel">{ic("clone")}申し送り</button><button>{ic("plus")}足す</button>', sec=0)
+_head = (qhead("今日", "9月10日（水）", right=f'<button class="open-panel">{ic("clone")}申し送り</button><button>{ic("plus")}足す</button>', sec=0) + digest_bar()
          + f'<div class="qnote" id="sec-1" data-sec="1">{ic("check")} 朝の計画 7:42 に確定（候補 5 → 3）<button style="color:var(--primary);font-weight:600;margin-left:6px">直す</button> · 時間の割り振りは <a href="v1-tasks.html" style="color:var(--primary);font-weight:600">タスク</a> で</div>')
 _q_today = (approval_queue(APPROVALS, sec=2, right='<a href="v1-approvals.html">承認待ちへ →</a>')
   + _q_tasks
@@ -90,9 +91,11 @@ _t_stop = ('<div data-sec="0 1 2 3 4">' + clone_box("高本AI",
   '<div style="height:18px"></div>' + card(head("今日やること（自分の分）", sub="残り 3") +
   '<p class="muted" style="font-size:13px">AIが止まっていても、あなたのタスクはそのまま進められます。</p>') + '</div>')
 
-TODAY = ("today", [("n","通常","",'<div data-roles="R1 R2">' + _t_norm + '</div><div data-roles="R3">' + _t_r3 + '</div>' + TP_JS),
+_t_r4 = ('<div data-sec="0 1 2 3 4">' + digest_bar(1, 2) + card(head("今日", sub="閲覧のみ") + '<p class="muted" style="font-size:14px">共有された案件の予定だけが見えます。聞きたいことは右の自分のAI へ。</p>') + '</div>')
+TODAY = ("today", [("n","通常","",'<div data-roles="R1 R2">' + _t_norm + '</div><div data-roles="R3">' + _t_r3 + '</div><div data-roles="R4">' + _t_r4 + '</div>' + TP_JS),
   ("m","朝の計画","自分のAIの候補にチェック → 今日を確定。見込みの合計 vs 使える時間。勝手に詰めない。",_plan_card + TP_JS),
   ("v","夕方の持ち越し","残りを 消す／明日へ／引き継いでもらう。実時間を目標の実コストに積む。",_carry_card + TP_JS),
+  ("dg","昨日の会話をまとめた","毎朝押して始める（時間で勝手に動かさない）。覚えた／まとめた（前と後）／上の層に上げる候補／捨てた／上の層で変わったこと。その場で直す・戻す・拾い直す。",'<div data-sec="0 1 2 3 4">' + digest_bar(running=True) + digest_result() + '</div>'),
   ("e","はじめの設定の前","",_t_empty),
   ("s","自動実行が止まっている","止まった理由と、回復の1手を出す。",_t_stop)], TP_CSS + TP_TODAY_CSS, False, {"申し送り":"","朝の計画":"5","承認待ち":"!3","今日のタスク":"3","持ち越し":"3"})
 

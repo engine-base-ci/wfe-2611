@@ -196,11 +196,13 @@ def _teach(role):
              '<div class="card2"><div class="k">効く相手</div>' + ("あなたとあなたのAI" if role != "R2" else "あなたとあなたのAI（範囲を変えると広がります）") + '</div>'
              '<div class="card2"><div class="k">いつ使うか</div>見積の下書きを作るとき・提案の文面を書くとき</div>'
              '<div class="card2"><div class="k">出どころ</div>あなたが 9/15 に教えた（即反映）</div>'
-             f'<div class="muted" style="font-size:12px;margin-top:10px">人が書いたものは承認なしで即反映。{me}AIが会話から拾ったものは「確認待ち」に置き、認めてから使います。</div></div>')
+             f'<div class="muted" style="font-size:12px;margin-top:10px">人が書いたものは承認なしで即反映。{me}AIが毎朝のまとめで拾ったものは、あなたの範囲なら自動で入り（前と後を残して戻せる）、上の層へはあなたが送ってから確認待ちに置きます。</div></div>')
     return f'<div data-roles="{role}" class="teach"><div>{left}</div>{right}</div>'
 _cm_teach = '<div data-sec="0 1 2 3 4 5">' + "".join(_teach(r) for r in ("R1","R2","R3","R4")) + '</div>'
-CLONE_MEMORY = ("clone-memory", [("n","範囲ごと","",_cm + TP_JS),("t","教える","人が書いたものは即反映。AIが拾ったものは提案→承認。直せる範囲だけ選べる。",_cm_teach)],
-  TP_CSS + ORG_CSS + TEACH_CSS, False, {"運営":"2","会社":"3","層ごと":"5","個人":"3","AI社員":"3","確認待ち":"!2"})
+from _memdigest import review_queue, DIGEST_CSS
+_cm_up = ('<div data-sec="0 1 2 3 4 5"><div data-roles="R1 R2">' + review_queue() + '</div><div data-roles="R3 R4">' + card(head("確認待ち") + '<p class="muted" style="font-size:14px">あなたが確認する層はありません。あなたが上げた候補は「送った」のまま、OK が出るまであなたの記憶として効いています。</p>') + '</div></div>')
+CLONE_MEMORY = ("clone-memory", [("n","範囲ごと","",_cm + TP_JS),("up","確認待ち（上がってきた記憶・食い違い）","上げ先の層の確認者が決める。確認者がいない層は 1 つ上へ。決まるまでは送った人の記憶として効く。決めたら両者に知らせる。",_cm_up),("t","教える","人が書いたものは即反映。AIが拾ったものは提案→承認。直せる範囲だけ選べる。",_cm_teach)],
+  TP_CSS + ORG_CSS + TEACH_CSS + DIGEST_CSS, False, {"運営":"2","会社":"3","層ごと":"5","個人":"3","AI社員":"3","確認待ち":"!2"})
 
 # ============================================================ ledger-def
 _ld = grid([

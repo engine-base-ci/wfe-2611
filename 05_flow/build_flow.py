@@ -63,10 +63,8 @@ flow = {
    "shell_rule": {"id": "shell-rule", "name": "枠の導出",
      "rule": "needs_login=false → 外（枠なし）／ app ∉ caps(時点) → はじめの設定（手順バーだけ）／ それ以外 → アプリ（サイドバー・第2ナビ・下タブ・パネル）。画面ごとに手で決めない",
      "frames": ["outside", "wizard", "app"], "source": ["D-065"]},
-   "assistant_panel": {"id": "assistant-panel", "name": "自分のAIの右パネル",
-     "rule": "全ての作業画面（has_shell）に同じ会話のパネル。トグルで開閉。広い画面は既定で開く。スマホは下からのシート。"
-             "自分のAIは『いま見ている画面・選んでいる1件』を知る。右に入力だけを置く形は禁止",
-     "width": "360-400px", "source": ["D-062", "D-057"]},
+   "assistant_panel": D.ASSISTANT_PANEL,
+   "fallbacks": D.FALLBACKS,
    "conversation_layers": {"id": "conversation-layers", "layers": ["領域（担当業務・部署から自動）", "対象（台帳・目標の1件）", "流れ（時間）"], "source": ["D-062"]},
    "by_role": {r: [sid for k in keys for _, _, _, ss, _ in [next(x for x in D.NAV_SECTIONS if x[0] == k)]
                    for sid in ss if r in s2r.get(sid, [])]

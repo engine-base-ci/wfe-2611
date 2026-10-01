@@ -27,45 +27,100 @@ colors:
   # Neutral
   neutral: "#8A94A3"
   on-neutral: "#131B27"
+  # 面に使う中立（白文字で 4.5:1 を満たす。--neutral は線と文字用で面には暗さが足りない）
+  neutral-strong: "#6B7585"
+  # 面と線（D-071：1px の箱を並べず、罫線 1 本と余白で段を区切る）
+  card: "#FFFFFF"
+  line: "#DDE2E9"
+  line-soft: "#EDF0F4"
+  side-bg: "#EEF0F4"
+  primary-hover: "#1A2848"
+  on-code: "#D8DEE9"
+  ai-container: "#EDEAF6"
+  # 蛍光ペン（D-104.3）。返事の中の大事な所の淡い地。状態の色とは別
+  mark: "#FFF1B8"
+syntax:
+  # コードの色分け（D-104.4）。新しい色は作らず、既存の値を字の色としてだけ使う（面に使わない）
+  keyword: "#22345C"
+  string: "#186F69"
+  number: "#7E570D"
+  comment: "#4A5563"
+  function: "#6B3F5E"
+  type: "#2F4B7C"
+state:
+  # 状態の色（D-052）。画面に一番長く映るのはここ。濃い文字 / 淡い面 / 面の上の文字 の 3 点で 1 組
+  success: "#166534"
+  success-container: "#DCFCE7"
+  on-success-container: "#2E5B26"
+  warning: "#B45309"
+  warning-container: "#FCEBD5"
+  on-warning-container: "#7A4A05"
+  danger: "#B91C1C"
+  danger-container: "#FDECEC"
+  on-danger-container: "#991B1B"
+  progress: "#1D4ED8"
+  progress-container: "#DBEAFE"
+  on-progress-container: "#1E40AF"
+data:
+  # データの色（D-023）。点と線だけに使い、面に使わない。状態の色と混ぜない
+  indigo: "#2F4B7C"
+  teal: "#186F69"
+  amber: "#7E570D"
+  coral: "#A34A3E"
+  sage: "#516F46"
+  plum: "#6B3F5E"
 typography:
-  headline-display:
+  # 道具の段（D-071）。読み物の 72/48/36 は 1 度も使わないので持たない
+  metric-lg:
     fontFamily: "M PLUS 2"
-    fontSize: 72px
-    fontWeight: 700
-    lineHeight: 1.1
+    fontSize: 34px
+    fontWeight: 600
+    lineHeight: 1.0
     letterSpacing: -0.02em
-  headline-lg:
+    fontVariantNumeric: tabular-nums
+  metric-md:
     fontFamily: "M PLUS 2"
-    fontSize: 48px
+    fontSize: 26px
+    fontWeight: 600
+    lineHeight: 1.1
+    fontVariantNumeric: tabular-nums
+  h1:
+    fontFamily: "M PLUS 2"
+    fontSize: 24px
     fontWeight: 700
-    lineHeight: 1.2
+    lineHeight: 1.3
     letterSpacing: -0.01em
-  headline-md:
+  h2:
     fontFamily: "M PLUS 2"
-    fontSize: 36px
+    fontSize: 20px
     fontWeight: 700
-    lineHeight: 1.25
-  body-lg:
+    lineHeight: 1.35
+  h3:
     fontFamily: "M PLUS 2"
     fontSize: 18px
-    fontWeight: 400
-    lineHeight: 1.7
-    letterSpacing: 0.01em
-  body-md:
+    fontWeight: 600
+    lineHeight: 1.4
+  input:
     fontFamily: "M PLUS 2"
     fontSize: 16px
     fontWeight: 400
-    lineHeight: 1.6
+    lineHeight: 1.5
+  body:
+    fontFamily: "M PLUS 2"
+    fontSize: 15px
+    fontWeight: 400
+    lineHeight: 1.7
   body-sm:
     fontFamily: "M PLUS 2"
     fontSize: 14px
     fontWeight: 400
     lineHeight: 1.5
-  label-lg:
+  # 会話の本文（2026-09-30 user「チャットはもう少しフォント小さくていい」）。やり取りを一通り見渡せる密度。手本の Vercel ai-chatbot の返事も 13px／1.65
+  chat:
     fontFamily: "M PLUS 2"
-    fontSize: 14px
-    fontWeight: 600
-    letterSpacing: 0.04em
+    fontSize: 13px
+    fontWeight: 400
+    lineHeight: 1.65
   label-md:
     fontFamily: "M PLUS 2"
     fontSize: 12px
@@ -76,26 +131,6 @@ typography:
     fontSize: 11px
     fontWeight: 600
     letterSpacing: 0.06em
-  metric-lg:
-    fontFamily: "M PLUS 2"
-    fontSize: 40px
-    fontWeight: 600
-    lineHeight: 1.0
-    letterSpacing: -0.02em
-    fontVariantNumeric: tabular-nums
-  metric-md:
-    fontFamily: "M PLUS 2"
-    fontSize: 26px
-    fontWeight: 600
-    lineHeight: 1.1
-    letterSpacing: -0.01em
-    fontVariantNumeric: tabular-nums
-  metric-sm:
-    fontFamily: "M PLUS 2"
-    fontSize: 14px
-    fontWeight: 500
-    lineHeight: 1.5
-    fontVariantNumeric: tabular-nums
 spacing:
   xs: 4px
   sm: 8px
@@ -114,26 +149,26 @@ components:
   button-primary:
     backgroundColor: "{colors.primary}"
     textColor: "{colors.on-primary}"
-    typography: "{typography.label-lg}"
+    typography: "{typography.body-sm}"
     rounded: "{rounded.md}"
     padding: "12px 24px"
   button-secondary:
     backgroundColor: "{colors.secondary-container}"
     textColor: "{colors.on-secondary-container}"
-    typography: "{typography.label-lg}"
+    typography: "{typography.body-sm}"
     rounded: "{rounded.md}"
     padding: "12px 24px"
   button-outlined:
     backgroundColor: "transparent"
     textColor: "{colors.primary}"
     border: "1.5px solid {colors.primary}"
-    typography: "{typography.label-lg}"
+    typography: "{typography.body-sm}"
     rounded: "{rounded.md}"
     padding: "12px 24px"
   button-inverted:
     backgroundColor: "{colors.on-primary}"
     textColor: "{colors.primary}"
-    typography: "{typography.label-lg}"
+    typography: "{typography.body-sm}"
     rounded: "{rounded.md}"
     padding: "12px 24px"
   card:
@@ -147,6 +182,65 @@ components:
     textColor: "{colors.on-surface}"
     rounded: "{rounded.md}"
     padding: "{spacing.md}"
+  # ---- 自分のAIとの会話（D-104）。会話を出す 5 か所は全部この部品（AgentChat）
+  chat-bubble-me:
+    backgroundColor: "{colors.surface-variant}"
+    textColor: "{colors.on-surface}"
+    typography: "{typography.body}"
+    rounded: "{rounded.lg}"
+    padding: "10px 14px"
+  chat-bubble-ai:
+    backgroundColor: "{colors.card}"
+    textColor: "{colors.on-surface}"
+    border: "1px solid {colors.line}"
+    typography: "{typography.body}"
+    rounded: "{rounded.lg}"
+    padding: "12px 16px"
+  chat-composer:
+    backgroundColor: "{colors.card}"
+    border: "1px solid {colors.line}"
+    typography: "{typography.input}"
+    rounded: "{rounded.xl}"
+    padding: "{spacing.sm} {spacing.md}"
+  chat-work-line:
+    backgroundColor: "transparent"
+    textColor: "{colors.on-surface-variant}"
+    typography: "{typography.body-sm}"
+  chat-chip:
+    backgroundColor: "{colors.surface-variant}"
+    textColor: "{colors.on-surface}"
+    typography: "{typography.label-md}"
+    rounded: "{rounded.full}"
+    padding: "2px 10px"
+  code-block:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.on-surface}"
+    border: "1px solid {colors.line}"
+    typography: "{typography.body-sm}"
+    rounded: "{rounded.md}"
+    padding: "{spacing.md}"
+  callout-info:
+    backgroundColor: "{state.progress-container}"
+    textColor: "{state.on-progress-container}"
+    rounded: "{rounded.md}"
+    padding: "{spacing.sm} {spacing.md}"
+  callout-warn:
+    backgroundColor: "{state.warning-container}"
+    textColor: "{state.on-warning-container}"
+    rounded: "{rounded.md}"
+    padding: "{spacing.sm} {spacing.md}"
+  callout-danger:
+    backgroundColor: "{state.danger-container}"
+    textColor: "{state.on-danger-container}"
+    rounded: "{rounded.md}"
+    padding: "{spacing.sm} {spacing.md}"
+  kbd:
+    backgroundColor: "{colors.card}"
+    textColor: "{colors.on-surface}"
+    border: "1px solid {colors.line}"
+    typography: "{typography.label-md}"
+    rounded: "{rounded.sm}"
+    padding: "0 6px"
 ---
 
 # Kaname Design System
@@ -371,6 +465,15 @@ Tertiary の細い左罫、または `tertiary-container` の淡い背景 ＋ Lu
 ### Inputs
 `surface-variant` 背景でフォームフィールドを背景から浮かせる。フォーカスは `2px solid primary` のアウトライン。
 
+### Chat（自分のAIとの会話・D-104）
+会話を出す 5 か所（会話モード・右パネル・はじめの設定の聞き取り・たたき台・AI社員とのやりとり）は全部この部品。落ち着いた道具の空気（余白広め・色は最小・状態だけ色）。
+
+- **吹き出し**：自分は `chat-bubble-me`（淡い灰の面・右寄せ）、AI は `chat-bubble-ai`（白い面＋罫線 1 本）。名前の横はアイコン＋名前（「高本AI」・AI社員の名前）。AI の文は 40 字前後で折り返し、**表・図・コード・カードだけ会話の幅いっぱい**まで広げる
+- **作業中**：吹き出しを出さず `chat-work-line`（枠なし・`on-surface-variant`・14px）で「〇〇を調べています…」・手順（済は `st-success` の印）・経過時間・道具の行。終わると「N つの操作・時間」の 1 行に畳む
+- **入力欄**：`chat-composer`（下に固定の角丸 20px の箱）。上に文脈と添付の `chat-chip`、下の列に ＋・マイク・モデル・使うもの・許可のモード・送る（動いている間は止める）
+- **書式**：コードは `code-block`（字の色は `syntax` の値だけ）、注意の帯は `callout-info／warn／danger`（状態の淡い面）、キー表示は `kbd`、蛍光ペンは `colors.mark`。差分の行は `success-container`／`danger-container`、数式はブラウザの MathML で描く（書体を増やさない）
+- 図（流れ図・順序図）・進み具合・予定の流れは既存のデータ色と状態色だけで描く。新しい色は `mark` と、既存値の再利用の `syntax` だけ
+
 ## Do's and Don'ts
 
 ### Do's
@@ -428,4 +531,6 @@ Tertiary の細い左罫、または `tertiary-container` の淡い背景 ＋ Lu
 - D-052.6 分数表記の禁止
 - D-052.7 形
 - D-052.8 アイコン
+| D-104 | 自分のAIとの会話の作り込み（吹き出し・作業中の行・入力欄の箱・書式・コード・注意の帯・キー表示・蛍光ペン） | Components（`chat-*`・`code-block`・`callout-*`・`kbd`）・colors.mark・syntax |
+| D-105 | 記憶の毎朝のまとめ（今日の一番上の帯・結果の群・前と後・食い違いの束） | Components（新しいトークンなし。既存の card・line・tertiary・状態の淡い面だけ） |
 | D-079 | 目標と施策のタイムラインは svar-gantt。棒＝期間・線＝前後関係・ひし形＝検証。棒を押すと右に詳細。1023 以下は切り替え | Components（タイムライン：棒は primary-container、進みは primary、検証のひし形は tertiary。詳細パネルは card と同じ縁と角丸） |

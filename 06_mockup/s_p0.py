@@ -179,17 +179,13 @@ LOGIN = ("login", [("n","通常","",_lg),("m","6桁の入力","2段階目。「�
   ("e","失敗","回数制限を出す（無制限試行を構造で潰す）。",_lg_err)], AUTH_CSS, True)
 
 # ============================================================ password-reset
-_pr_left = _left("詰まらせない。", "パスワードを忘れても、端末を失くしても、自分で入り直せます。運営に連絡しなくて済むように作ってあります。")
+_pr_left = _left("詰まらせない。", "パスワードを忘れても、自分で入り直せます。運営に連絡しなくて済むように作ってあります。")
 _pr = _wrap(_pr_left, _box(f"""
  <h1>パスワードの再設定</h1>
  <div class="sub">登録したメールアドレスに再設定のリンクを送ります。</div>
  {field("メールアドレス", inp("", "yamada@example.com", "email"))}
  <button class="btn btn-p" style="width:100%">{ic("mail")}再設定メールを送る</button>
- <div style="height:1px;background:var(--line);margin:22px 0"></div>
- <div style="font-size:13px;font-weight:600;margin-bottom:6px">端末を失くした（認証アプリが使えない）</div>
- <div class="muted" style="font-size:12.5px;margin-bottom:12px">設定時に保管した回復コードのどれか1つで入れます。</div>
- {field("回復コード", inp("", "k8f2-9x1m", "text", "", "font-family:var(--font-code)"))}
- <button class="btn btn-o" style="width:100%">{ic("key")}回復コードで入る</button>"""))
+"""))
 _pr_sent = _wrap(_pr_left, _box(f"""
  <div style="width:52px;height:52px;border-radius:var(--r-full);background:var(--secondary-c);display:grid;place-items:center;margin-bottom:18px;color:var(--on-secondary-c)">{ic("mail")}</div>
  <h1>送りました</h1>

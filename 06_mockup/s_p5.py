@@ -131,7 +131,7 @@ def _po_for(role):
         if l == "部署" and not rules and role != "R2": continue      # 他の部署の空札は出さない
         secs += _rsec(role, l, u, rules)
     layers = "会社 › " + " › ".join(cfg["layers"]) + " › 個人" if cfg["layers"] else "個人だけ"
-    hd = f'<div class="muted" style="font-size:12.5px;margin-bottom:12px">層：{layers}。近い範囲が勝ちます（個人 › 層 › 会社 › 運営）。運営の安全ルールだけは上書きできません。</div>'
+    hd = f'<div class="muted" style="font-size:12px;margin-bottom:12px">層：{layers}。決まり（やらせない・必ず承認）は上の範囲ほど強く、下で上書きできません。好み・やり方は近い範囲が勝ちます（個人 › 層 › 会社 › 運営）。</div>'
     return f'<div data-roles="{role}">{hd}<div class="rg">{secs}</div></div>'
 _ladder = card(head("AI にやらせる範囲", sub="4 段。上ほど自動。ルールはこの段を動かす") + '<div class="ladder">' + "".join(
     f'<div class="ld"><span class="lv {k}">{ic(i)}{lv}</span><div class="it">' + "".join(f'<span>{x}</span>' for x in items) + '</div></div>'
@@ -140,7 +140,11 @@ _ladder = card(head("AI にやらせる範囲", sub="4 段。上ほど自動。�
                             ("wa","inbox","必ず承認",["送信・送付・投稿","台帳の外部更新","CS社員の一次返信"]),
                             ("da","ban","やらせない",["支払い・購入","銀行の画面","CAPTCHA","値引き・金額の提示"])]) + '</div>' +
   clone_box("高本AI","「送信は承認」を「CS社員の一次返信だけ自動」に緩めると、承認待ちが1日2件減ります。テンプレの範囲内に限るなら、リスクは低いと思います。", btn("そうする","o","check")+btn("今のまま","g")))
-_po = "".join(_po_for(r) for r in ("R1","R2","R3","R4")) + f'<div data-roles="R1 R2">{_ladder}</div>'
+_always = card(head("自分のAIの許可（あなただけに効く）", sub="許可のモードと、会話で「いつも許可」にしたもの。取り消すと次から聞きます") +
+  '<div style="display:flex;gap:8px;align-items:center;font-size:14px;margin-bottom:10px">' + ic("shield") + '<b>許可のモード：毎回聞く</b><span class="muted" style="font-size:12px">会話の入力欄で切り替えます。全部許可は自分で選んだときだけ・その会話だけ</span></div>' +
+  table(["道具", "対象", "いつ", ""], [["コマンド", '<span style="font-family:var(--font-code)">freee-cli invoice draft *</span>', ("9/10","n"), btn("取り消す","g","x")],
+                                     ["ファイルを書く", '<span style="font-family:var(--font-code)">請求書/*</span>', ("9/08","n"), btn("取り消す","g","x")]]))
+_po = "".join(_po_for(r) for r in ("R1","R2","R3","R4")) + f'<div data-roles="R1 R2">{_ladder}</div>' + f'<div data-roles="R1 R2 R3 R4"><div style="height:14px"></div>{_always}</div>'
 POLICIES = ("policies", [("n","ルール","運営ルールは変えられない。範囲（運営／会社／この会社の層／個人）で編集できる人が決まる。自分のものは自由。",_po)], PO_CSS + ORG_CSS, False, {"運営":"4","会社":"3","層ごと":"2","個人":"1"})
 
 SCREENS = [AUTO_REPAIR, AUDIT, POLICIES]

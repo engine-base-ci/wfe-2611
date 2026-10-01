@@ -25,7 +25,7 @@ _iv = grid([
  umsg("見積出して、契約して、着手金もらって、作って納品して、残金請求。月2〜3件くらい。") +
  cmsg("分かりました。いま一番時間を取られているのはどこですか？",
       ["営業のアプローチ","見積・提案書","請求と入金確認","進行の管理"]) +
- chat_close(composer()),
+ chat_close(chat_composer("ここに書く。声で話しても、資料を投げても構いません")),
  _learn], "g21")
 
 _iv0 = grid([
@@ -33,7 +33,7 @@ _iv0 = grid([
  cmsg("はじめまして。私は高本AI、あなたの代わりに動くAIです。これから会社のことを教えてもらって、私が目標・台帳・担当業務・AI社員のたたき台を作ります。"
       "<b>あなたが欄を埋めることはありません。</b>訊かれたことに答えるだけで大丈夫です。まず、何をしている会社ですか？",
       ["受託・制作","店舗・サービス業","EC・物販","その他"]) +
- chat_close(composer()),
+ chat_close(chat_composer("ここに書く。声で話しても、資料を投げても構いません")),
  card(head("分かったこと") + empty("brain","まだ何もありません","答えるたびに、ここに積み上がります。あとから見直せますし、直せます。"))], "g21")
 
 _ivf = grid([
@@ -42,21 +42,32 @@ _ivf = grid([
  umsg('<div style="display:flex;gap:9px;align-items:center">' + ic("file") + '<div><div style="font-weight:600">2025_請求一覧.xlsx</div><div class="muted" style="font-size:12px">38 KB</div></div></div>'
       '<div style="display:flex;gap:9px;align-items:center;margin-top:8px">' + ic("file") + '<div><div style="font-weight:600">案件メモ.pdf</div><div class="muted" style="font-size:12px">1.2 MB</div></div></div>') +
  cmsg('<div style="display:flex;gap:8px;align-items:center"><span class="spin dark"></span>読んでいます… 請求 27件・案件 14件を見つけました</div>') +
- chat_close(composer()),
+ chat_close(chat_composer("ここに書く。声で話しても、資料を投げても構いません")),
  card(head("分かったこと", sub="ファイルから") + '<div class="learn">' + "".join(
   f'<div class="it">{ic("check")}<div><div class="k">{k}</div>{v}</div></div>' for k, v in [
    ("去年の売上","9,840,000円（請求27件）"),("平均単価","364,000円 · 最大 2,670,000円"),
    ("よく出る項目","案件名／顧客／金額／着手金／残金／入金日"),("段階の候補","引合 → 提案 → 受注 → 制作中 → 納品 → 請求 → 入金"),
   ]) + '</div>')], "g21")
 
+# 止まりました（D-090）。本人のサブスクの上限・PC の終了・時間切れ など、止まった理由をそのまま出す
+_iv_stp = grid([
+ CHAT_OPEN +
+ umsg("見積出して、契約して、着手金もらって、作って納品して、残金請求。月2〜3件くらい。") +
+ stopped_msg("Claude Code が途中で終わりました（本人のサブスクの上限に当たりました）。ここまでに聞いたことは残っています。") +
+ chat_close(chat_composer("ここに書く。声で話しても、資料を投げても構いません")),
+ _learn], "g21")
+
 _iv_nb = card(empty("bridge","先に自分のPCをつないでください",
   "高本AIはあなたのPCで、あなたのサブスクで動きます。つながるまで話せません（API は使いません）。",
   btn("PCをつなぐ","p","bridge","v1-bridge-setup.html")))
+# 会話の固定枠（D-072）：1024 以上で会話の箱だけを画面の残りの高さにし、吹き出しだけが動く。段の帯・見出し・分かったことは動かない
+_iv, _iv0, _ivf, _iv_stp = [x.replace('<div class="grid g21">', '<div class="grid g21" data-chat-frame>', 1) for x in (_iv, _iv0, _ivf, _iv_stp)]
 INTERVIEW = ("onboard-interview", [
-  ("nb","Bridge 未接続","段階1は Bridge のみ。無言の空画面にしない。",wiz("onboard-interview",_iv_nb,"高本AIと話す","")),
+  ("nb","Bridge 未接続","段階1は Bridge のみ。無言の空画面にしない。",wiz("onboard-interview",_iv_nb,"高本AIと話す","",wait="先に PC をつなぐと、話して進めます")),
   ("n","途中","",wiz("onboard-interview",_iv,"高本AIと話す","訊かれたことに答えるだけ。10分ほどで、会社のたたき台ができます。")),
-  ("0","最初","何も知らない状態から。選択肢を出して、書かせない。",wiz("onboard-interview",_iv0,"高本AIと話す","訊かれたことに答えるだけ。10分ほどで、会社のたたき台ができます。")),
+  ("0","最初","何も知らない状態から。選択肢を出して、書かせない。",wiz("onboard-interview",_iv0,"高本AIと話す","訊かれたことに答えるだけ。10分ほどで、会社のたたき台ができます。",wait="高本AIに 1 つ答えると進めます")),
   ("f","資料を読ませる","形式を指定しない。AIが読んで台帳の形と相場を掴む。",wiz("onboard-interview",_ivf,"高本AIと話す","持っているものを投げてください。私が読みます。")),
+  ("stp","止まりました","自動で再開しない。理由だけを出し、ボタンは置かない。入力欄は開いたままで、次に送る文で決まる。",wiz("onboard-interview",_iv_stp,"高本AIと話す","止まっています。続けるなら「続けて」と送ってください。")),
  ], WIZ_CSS, True)
 
 # ============================================================ onboard-draft
@@ -92,8 +103,7 @@ def _rule_card():
       ]) + '</div>')
 
 _dr = ('<div class="draft">' + _goal_card() + _ledger_card() + _duty_card() + _rule_card() + '</div>' +
-  '<div style="display:flex;gap:10px;margin-top:22px;flex-wrap:wrap">' + btn("違うところを言う","o","chat") +
-  '<a class="btn btn-p" href="v1-bridge-setup.html">' + ic("check") + 'これでいく</a></div>')
+  '<div style="display:flex;gap:10px;margin-top:22px;flex-wrap:wrap">' + btn("違うところを言う","o","chat") + '</div>')   # 「これでいく」は下の帯（D-116）
 
 _dr_fix = grid([
  CHAT_OPEN +
@@ -101,7 +111,7 @@ _dr_fix = grid([
  umsg("成約は8件じゃなくて10件。あと稼働率は要らない。") +
  cmsg("直しました。今期の成約を <b>8 → 10件</b> に。稼働率の目標は消しました。<br>成約10件だと、月のアプローチは <b>30 → 38件</b> が目安になります（去年の成約率 2.6% から）。アプローチも上げますか？",
       ["38件にする","30のままでいい","別の考え方がある"]) +
- chat_close(composer("違うところを言う")),
+ chat_close(chat_composer("違うところを言う")),
  card(head("直したところ") + '<div class="dl">'
    '<div class="diff"><span style="flex:1">今期の成約</span><span class="num"><span class="del">8</span> → <b>10</b></span><span class="u">件</span></div>'
    '<div class="diff del"><span style="flex:1">稼働率 75%</span><span class="muted" style="font-size:12px">消した</span></div>'

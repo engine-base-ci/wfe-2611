@@ -1,368 +1,406 @@
 {
-  "version": "1.0",
-  "project": "Kaname",
-  "created_at": "2026-09-08",
-  "_positioning": "★これは防御機構ではなく【設計の見通し文書】。防御は choke-points.json が担う。列挙に抜けがあっても横断的関心事は漏れない。完全性を求めて時間を使わない。",
-  "_judgement_rule": "3問（①横断的関心事の再実装 ②既存の呼び出し側の書き換え ③2以上見えている）でYESが2つ以上",
-  "extension_points": [
-    {
-      "id": "E1",
-      "name": "アクション種別",
-      "first": "ブラウザ操作",
-      "future": [
-        "API/MCP",
-        "コード実行",
-        "ローカル操作",
-        "人へのハンドオフ"
-      ],
-      "source": "決定ログ §44",
-      "abstraction": "Action interface + ディスパッチ表",
-      "choke_point": "C1",
-      "slice": "S6"
-    },
-    {
-      "id": "E2",
-      "name": "LLMプロバイダ（データ所在を含む）",
-      "first": "Claude",
-      "future": [
-        "OpenAI",
-        "Gemini",
-        "ローカルLLM",
-        "Bedrock東京",
-        "Vertex"
-      ],
-      "source": "selected-stack.agent_harness",
-      "abstraction": "LlmProvider interface + 能力表",
-      "choke_point": "C3",
-      "slice": "S4"
-    },
-    {
-      "id": "E3",
-      "name": "実行経路",
-      "first": "Bridge",
-      "future": [
-        "BYOK",
-        "運営マネージド",
-        "ローカル"
-      ],
-      "source": [
-        "決定ログ §45",
-        "D-045",
-        "D-076.9"
-      ],
-      "abstraction": "resolveRoute() 1関数",
-      "choke_point": "C3",
-      "slice": "S4"
-    },
-    {
-      "id": "E4",
-      "name": "台帳の型",
-      "first": "ファネル型",
-      "future": [
-        "取引型"
-      ],
-      "source": "決定ログ §11",
-      "abstraction": "LedgerKind + 論理層の共通API",
-      "choke_point": "C2",
-      "slice": "S1"
-    },
-    {
-      "id": "E5",
-      "name": "スコープ層",
-      "first": "個人+運営",
-      "future": [
-        "会社",
-        "部署"
-      ],
-      "source": [
-        "決定ログ §26",
-        "D-073.4"
-      ],
-      "abstraction": "resolveScope()（近い層が勝つ）",
-      "choke_point": "C2",
-      "slice": "S0"
-    },
-    {
-      "id": "E6",
-      "name": "トリガー種別",
-      "first": "手動",
-      "future": [
-        "時間(cron)",
-        "イベント"
-      ],
-      "source": "決定ログ §3-3",
-      "abstraction": "Trigger interface",
-      "choke_point": "C2",
-      "slice": "S3"
-    },
-    {
-      "id": "E7",
-      "name": "通知チャネル",
-      "first": "アプリ内",
-      "future": [
-        "メール",
-        "Slack",
-        "LINE",
-        "プッシュ"
-      ],
-      "source": [
-        "ヒアリングMust",
-        "D-075.3",
-        "D-043"
-      ],
-      "abstraction": "NotificationChannel interface",
-      "choke_point": "C6",
-      "slice": "S7"
-    },
-    {
-      "id": "E8",
-      "name": "承認ポリシー",
-      "first": "auto/approve/off",
-      "future": [
-        "段階承認",
-        "金額しきい値",
-        "複数承認者"
-      ],
-      "source": "決定ログ §37",
-      "abstraction": "Policy の宣言的評価器",
-      "choke_point": "C1",
-      "slice": "S7"
-    },
-    {
-      "id": "E9",
-      "name": "担当業務",
-      "first": "OJTで作る数個",
-      "future": [
-        "無制限",
-        "運営配布",
-        "中身非公開"
-      ],
-      "source": "決定ログ §23 §37",
-      "abstraction": "定義はデータ。コードに書かない",
-      "choke_point": "C2",
-      "slice": "S5"
-    },
-    {
-      "id": "E11",
-      "name": "課金プラン（計測軸を含む）",
-      "first": "3プラン",
-      "future": [
-        "エンタープライズ",
-        "従量",
-        "人数課金"
-      ],
-      "source": [
-        "決定ログ §37 §2",
-        "D-075.4",
-        "D-075.5",
-        "D-076.6"
-      ],
-      "abstraction": "制限を数量のデータで持つ。計測軸もマスタ",
-      "choke_point": "C7",
-      "slice": "S0"
-    },
-    {
-      "id": "E12",
-      "name": "クライアント",
-      "first": "Web",
-      "future": [
-        "Bridge",
-        "ネイティブアプリ"
-      ],
-      "source": "決定ログ §43",
-      "abstraction": "APIを唯一の入口にする（OpenAPI契約）",
-      "choke_point": null,
-      "slice": "S0"
-    },
-    {
-      "id": "E13",
-      "name": "成果物の出力形式",
-      "first": "PDF",
-      "future": [
-        "PPTX",
-        "Excel",
-        "Word",
-        "Markdown",
-        "HTML",
-        "CSV"
-      ],
-      "source": "ヒアリングMust／旧jobrainで7形式",
-      "abstraction": "Renderer interface",
-      "choke_point": "C4",
-      "slice": "S5"
-    },
-    {
-      "id": "E14",
-      "name": "目標の種類",
-      "first": "数値目標",
-      "future": [
-        "状態目標",
-        "習慣目標"
-      ],
-      "source": "決定ログ §31",
-      "abstraction": "GoalKind + 進捗計算/達成判定/積み上げ/未配分計算の差し替え",
-      "choke_point": "C2",
-      "slice": "S2"
-    },
-    {
-      "id": "E15",
-      "name": "外部サービスの認証方式",
-      "first": "ID/PW + TOTP",
-      "future": [
-        "OAuth2",
-        "APIキー",
-        "Basic",
-        "メールOTP",
-        "SAML"
-      ],
-      "source": "決定ログ §14-8",
-      "abstraction": "CredentialKind + 注入器",
-      "choke_point": "C8",
-      "slice": "S6"
-    },
-    {
-      "id": "E16",
-      "name": "Bridgeの実行器",
-      "first": "Claude Code CLI",
-      "future": [
-        "Codex",
-        "Gemini CLI"
-      ],
-      "source": "selected-stack.agent_harness",
-      "abstraction": "Runner interface（承認中継/ストリーム変換/完了検知）",
-      "choke_point": "C5",
-      "slice": "S4"
-    },
-    {
-      "id": "E17",
-      "name": "台帳のビュー種別",
-      "first": "一覧",
-      "future": [
-        "カンバン",
-        "カレンダー",
-        "グラフ",
-        "集計"
-      ],
-      "source": "決定ログ §11（フィルター・集計）",
-      "abstraction": "View定義 + 描画器",
-      "choke_point": null,
-      "slice": "S1"
-    },
-    {
-      "id": "E18",
-      "name": "判断基準・ルールの種類",
-      "first": "値域・必須",
-      "future": [
-        "状態遷移",
-        "しきい値",
-        "期限（3日経過で警告）",
-        "自動アラート"
-      ],
-      "source": "決定ログ §11（判断基準）",
-      "abstraction": "Rule interface（JSON Schemaで表現できないルールを含む）",
-      "choke_point": "C2",
-      "slice": "S1"
-    },
-    {
-      "id": "E19",
-      "name": "AI社員の出どころ",
-      "first": "個人作成",
-      "future": [
-        "運営配布",
-        "会社配布",
-        "マーケット"
-      ],
-      "source": [
-        "決定ログ §37",
-        "D-037",
-        "D-077.6"
-      ],
-      "abstraction": "Provisioning（コピーか参照か/更新伝播/匿名化/審査）",
-      "choke_point": "C2",
-      "slice": "S5"
-    },
-    {
-      "id": "E20",
-      "name": "メンバー種別",
-      "first": "人間/AI社員/自分のAI",
-      "future": [
-        "ゲスト",
-        "外部パートナー"
-      ],
-      "source": "決定ログ §2-3 §30",
-      "abstraction": "MemberKind（認証方法/通知宛先/タスク割当/課金カウント/可視性）",
-      "choke_point": "C6",
-      "slice": "S0"
-    },
-    {
-      "id": "E21",
-      "name": "スキルの種類（構築メタ／目標／業務 …）",
-      "first": "meta / goal / duty（段階 1 は 14 本：構築メタ 7・目標 3・業務 4）",
-      "future": [
-        "業界別の目標スキル",
-        "会社が作る業務スキル（公開審査を通ったもの）"
-      ],
-      "source": [
-        "D-078.1",
-        "D-078.4",
-        "D-080.2",
-        "D-080.7"
-      ],
-      "abstraction": "skills.kind_id（マスタ）＋ skill_attachments.target_type",
-      "choke_point": "C4",
-      "slice": "S1"
-    },
-    {
-      "id": "E22",
-      "name": "スキルの一式の節と検査項目",
-      "first": "SKILL.md の 7 節 ＋ references ＋ evals（SK1〜SK6）",
-      "future": [
-        "会社が書く型の節（公開審査向け）",
-        "場面の自動生成（記憶からの引き当て）"
-      ],
-      "source": [
-        "D-080.1",
-        "D-080.4",
-        "D-080.5"
-      ]
-    }
-  ],
-  "moved_to_design_principle": [
-    {
-      "id": "E10",
-      "name": "画面",
-      "reason": "3問判定が2/3。実態は『業務ロジックを画面に置かない』という設計原則。API前方互換の節へ移動"
-    }
-  ],
-  "rejected_as_speculative": [
-    {
-      "candidate": "記憶の格納方式",
-      "reason": "pgvectorで固定。増加が要件に無い"
-    },
-    {
-      "candidate": "決済プロバイダ",
-      "reason": "Stripe以外が要件に書かれていない"
-    },
-    {
-      "candidate": "検索エンジン",
-      "reason": "Postgres FTSで固定"
-    },
-    {
-      "candidate": "サンドボックス",
-      "reason": "境界B・関門C5で吸収"
-    },
-    {
-      "candidate": "i18n（多言語）",
-      "reason": "要件に無い"
-    },
-    {
-      "candidate": "取り込みの入力形式",
-      "reason": "独立サービス内部。HTTP越しなので呼び出し側が変わらない"
-    }
-  ],
-  "updated_at": "2026-09-15",
-  "_clauses": [
-    "D-043.1",
-    "D-043.4"
-  ]
+ "version": "1.0",
+ "project": "Kaname",
+ "created_at": "2026-09-08",
+ "_positioning": "★これは防御機構ではなく【設計の見通し文書】。防御は choke-points.json が担う。列挙に抜けがあっても横断的関心事は漏れない。完全性を求めて時間を使わない。",
+ "_judgement_rule": "3問（①横断的関心事の再実装 ②既存の呼び出し側の書き換え ③2以上見えている）でYESが2つ以上",
+ "extension_points": [
+  {
+   "id": "E1",
+   "name": "アクション種別",
+   "first": "ブラウザ操作",
+   "future": [
+    "API/MCP",
+    "コード実行",
+    "ローカル操作",
+    "人へのハンドオフ"
+   ],
+   "source": "決定ログ §44",
+   "abstraction": "Action interface + ディスパッチ表",
+   "choke_point": "C1",
+   "slice": "S6"
+  },
+  {
+   "id": "E2",
+   "name": "LLMプロバイダ（データ所在を含む）",
+   "first": "Claude",
+   "future": [
+    "OpenAI",
+    "Gemini",
+    "ローカルLLM",
+    "Bedrock東京",
+    "Vertex"
+   ],
+   "source": "selected-stack.agent_harness",
+   "abstraction": "LlmProvider interface + 能力表",
+   "choke_point": "C3",
+   "slice": "S4"
+  },
+  {
+   "id": "E3",
+   "name": "実行経路",
+   "first": "Bridge",
+   "future": [
+    "BYOK",
+    "運営マネージド",
+    "ローカル"
+   ],
+   "source": [
+    "決定ログ §45",
+    "D-045",
+    "D-076.9"
+   ],
+   "abstraction": "resolveRoute() 1関数",
+   "choke_point": "C3",
+   "slice": "S4"
+  },
+  {
+   "id": "E4",
+   "name": "台帳の型",
+   "first": "ファネル型",
+   "future": [
+    "取引型"
+   ],
+   "source": "決定ログ §11",
+   "abstraction": "LedgerKind + 論理層の共通API",
+   "choke_point": "C2",
+   "slice": "S1"
+  },
+  {
+   "id": "E5",
+   "name": "スコープ層",
+   "first": "個人+運営",
+   "future": [
+    "会社",
+    "部署"
+   ],
+   "source": [
+    "決定ログ §26",
+    "D-073.4"
+   ],
+   "abstraction": "resolveScope()（近い層が勝つ）",
+   "choke_point": "C2",
+   "slice": "S0"
+  },
+  {
+   "id": "E6",
+   "name": "トリガー種別",
+   "first": "手動",
+   "future": [
+    "時間(cron)",
+    "イベント"
+   ],
+   "source": "決定ログ §3-3",
+   "abstraction": "Trigger interface",
+   "choke_point": "C2",
+   "slice": "S3"
+  },
+  {
+   "id": "E7",
+   "name": "通知チャネル",
+   "first": "アプリ内",
+   "future": [
+    "メール",
+    "Slack",
+    "LINE",
+    "プッシュ"
+   ],
+   "source": [
+    "ヒアリングMust",
+    "D-075.3",
+    "D-043"
+   ],
+   "abstraction": "NotificationChannel interface",
+   "choke_point": "C6",
+   "slice": "S7"
+  },
+  {
+   "id": "E8",
+   "name": "承認ポリシー",
+   "first": "auto/approve/off",
+   "future": [
+    "段階承認",
+    "金額しきい値",
+    "複数承認者"
+   ],
+   "source": "決定ログ §37",
+   "abstraction": "Policy の宣言的評価器",
+   "choke_point": "C1",
+   "slice": "S7"
+  },
+  {
+   "id": "E9",
+   "name": "担当業務",
+   "first": "OJTで作る数個",
+   "future": [
+    "無制限",
+    "運営配布",
+    "中身非公開"
+   ],
+   "source": "決定ログ §23 §37",
+   "abstraction": "定義はデータ。コードに書かない",
+   "choke_point": "C2",
+   "slice": "S5"
+  },
+  {
+   "id": "E11",
+   "name": "課金プラン（計測軸を含む）",
+   "first": "3プラン",
+   "future": [
+    "エンタープライズ",
+    "従量",
+    "人数課金"
+   ],
+   "source": [
+    "決定ログ §37 §2",
+    "D-075.4",
+    "D-075.5",
+    "D-076.6"
+   ],
+   "abstraction": "制限を数量のデータで持つ。計測軸もマスタ",
+   "choke_point": "C7",
+   "slice": "S0"
+  },
+  {
+   "id": "E12",
+   "name": "クライアント",
+   "first": "Web",
+   "future": [
+    "Bridge",
+    "ネイティブアプリ"
+   ],
+   "source": "決定ログ §43",
+   "abstraction": "APIを唯一の入口にする（OpenAPI契約）",
+   "choke_point": null,
+   "slice": "S0"
+  },
+  {
+   "id": "E13",
+   "name": "成果物の出力形式",
+   "first": "PDF",
+   "future": [
+    "PPTX",
+    "Excel",
+    "Word",
+    "Markdown",
+    "HTML",
+    "CSV"
+   ],
+   "source": "ヒアリングMust／旧jobrainで7形式",
+   "abstraction": "Renderer interface",
+   "choke_point": "C4",
+   "slice": "S5"
+  },
+  {
+   "id": "E14",
+   "name": "目標の種類",
+   "first": "数値目標",
+   "future": [
+    "状態目標",
+    "習慣目標"
+   ],
+   "source": "決定ログ §31",
+   "abstraction": "GoalKind + 進捗計算/達成判定/積み上げ/未配分計算の差し替え",
+   "choke_point": "C2",
+   "slice": "S2"
+  },
+  {
+   "id": "E15",
+   "name": "外部サービスの認証方式",
+   "first": "ID/PW + TOTP",
+   "future": [
+    "OAuth2",
+    "APIキー",
+    "Basic",
+    "メールOTP",
+    "SAML"
+   ],
+   "source": "決定ログ §14-8",
+   "abstraction": "CredentialKind + 注入器",
+   "choke_point": "C8",
+   "slice": "S6"
+  },
+  {
+   "id": "E16",
+   "name": "Bridgeの実行器",
+   "first": "Claude Code CLI",
+   "future": [
+    "Codex",
+    "Gemini CLI"
+   ],
+   "source": "selected-stack.agent_harness",
+   "abstraction": "Runner interface（承認中継/ストリーム変換/完了検知）",
+   "choke_point": "C5",
+   "slice": "S4"
+  },
+  {
+   "id": "E17",
+   "name": "台帳のビュー種別",
+   "first": "一覧",
+   "future": [
+    "カンバン",
+    "カレンダー",
+    "グラフ",
+    "集計"
+   ],
+   "source": "決定ログ §11（フィルター・集計）",
+   "abstraction": "View定義 + 描画器",
+   "choke_point": null,
+   "slice": "S1"
+  },
+  {
+   "id": "E18",
+   "name": "判断基準・ルールの種類",
+   "first": "値域・必須",
+   "future": [
+    "状態遷移",
+    "しきい値",
+    "期限（3日経過で警告）",
+    "自動アラート"
+   ],
+   "source": "決定ログ §11（判断基準）",
+   "abstraction": "Rule interface（JSON Schemaで表現できないルールを含む）",
+   "choke_point": "C2",
+   "slice": "S1"
+  },
+  {
+   "id": "E19",
+   "name": "AI社員の出どころ",
+   "first": "個人作成",
+   "future": [
+    "運営配布",
+    "会社配布",
+    "マーケット"
+   ],
+   "source": [
+    "決定ログ §37",
+    "D-037",
+    "D-077.6"
+   ],
+   "abstraction": "Provisioning（コピーか参照か/更新伝播/匿名化/審査）",
+   "choke_point": "C2",
+   "slice": "S5"
+  },
+  {
+   "id": "E20",
+   "name": "メンバー種別",
+   "first": "人間/AI社員/自分のAI",
+   "future": [
+    "ゲスト",
+    "外部パートナー"
+   ],
+   "source": "決定ログ §2-3 §30",
+   "abstraction": "MemberKind（認証方法/通知宛先/タスク割当/課金カウント/可視性）",
+   "choke_point": "C6",
+   "slice": "S0"
+  },
+  {
+   "id": "E21",
+   "name": "スキルの種類（構築メタ／目標／業務 …）",
+   "first": "meta / goal / duty（段階 1 は 14 本：構築メタ 7・目標 3・業務 4）",
+   "future": [
+    "業界別の目標スキル",
+    "会社が作る業務スキル（公開審査を通ったもの）"
+   ],
+   "source": [
+    "D-078.1",
+    "D-078.4",
+    "D-080.2",
+    "D-080.7"
+   ],
+   "abstraction": "skills.kind_id（マスタ）＋ skill_attachments.target_type",
+   "choke_point": "C4",
+   "slice": "S1"
+  },
+  {
+   "id": "E22",
+   "name": "スキルの一式の節と検査項目",
+   "first": "SKILL.md の 7 節 ＋ references ＋ evals（SK1〜SK6）",
+   "future": [
+    "会社が書く型の節（公開審査向け）",
+    "場面の自動生成（記憶からの引き当て）"
+   ],
+   "source": [
+    "D-080.1",
+    "D-080.4",
+    "D-080.5"
+   ]
+  },
+  {
+   "id": "E23",
+   "name": "返事の中に出せる形（書式・図・実物のカード・資料）",
+   "first": "D-104.3〜D-104.6 の一式（Markdown＋MathML＋shiki＋mermaid＋Kaname のカード）",
+   "future": [
+    "新しい実物のカード（台帳の 1 件・施策）",
+    "表計算の直し"
+   ],
+   "source": [
+    "D-104.3",
+    "D-104.4",
+    "D-104.5",
+    "D-104.21"
+   ]
+  },
+  {
+   "id": "E24",
+   "name": "許可のモード",
+   "first": "Claude の公式の 5 つ（毎回聞く／編集は自動／自動で判断／計画だけ／全部許可）",
+   "future": [
+    "提供元がモードを足したとき"
+   ],
+   "source": [
+    "D-104.14",
+    "D-107.2"
+   ]
+  },
+  {
+   "id": "E25",
+   "name": "記憶のまとめの結果の分け方",
+   "first": "覚えた／まとめた／上げる候補／捨てた",
+   "future": [
+    "期限つきの記憶（来月には変わる話）"
+   ],
+   "source": [
+    "D-105.4"
+   ]
+  }
+ ],
+ "moved_to_design_principle": [
+  {
+   "id": "E10",
+   "name": "画面",
+   "reason": "3問判定が2/3。実態は『業務ロジックを画面に置かない』という設計原則。API前方互換の節へ移動"
+  }
+ ],
+ "rejected_as_speculative": [
+  {
+   "candidate": "記憶の格納方式",
+   "reason": "pgvectorで固定。増加が要件に無い"
+  },
+  {
+   "candidate": "決済プロバイダ",
+   "reason": "Stripe以外が要件に書かれていない"
+  },
+  {
+   "candidate": "検索エンジン",
+   "reason": "Postgres FTSで固定"
+  },
+  {
+   "candidate": "サンドボックス",
+   "reason": "境界B・関門C5で吸収"
+  },
+  {
+   "candidate": "i18n（多言語）",
+   "reason": "要件に無い"
+  },
+  {
+   "candidate": "取り込みの入力形式",
+   "reason": "独立サービス内部。HTTP越しなので呼び出し側が変わらない"
+  }
+ ],
+ "updated_at": "2026-09-27",
+ "_clauses": [
+  "D-043.1",
+  "D-043.4"
+ ]
 }

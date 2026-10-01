@@ -38,15 +38,35 @@
         "失敗時の人へのハンドオフ（黙って止まるを作らない）"
       ],
       "ci_check": "pnpm ci:choke -- --id C1",
-      "exceptions": [],
+      "exceptions": [
+        {
+          "id": "X-005",
+          "path": "packages/secrets/src/infisical.ts",
+          "reason": "資格情報の預かり先（Infisical）への通信は関門 C8 の中の作業。業務の外部送信（C1）ではない（D-101）",
+          "compensating_control": "宛先は設定の INFISICAL_SITE_URL だけ。送るのは会社ごとの鍵で暗号化した中身だけ。全アクセスは C8 の secret.* 証跡に残る。失敗の理由に中身を入れない",
+          "expires_at": null,
+          "source": [
+            "D-101.1",
+            "D-101.2"
+          ]
+        },
+        {
+          "path": "apps/api/src/auth/bridge-release.ts",
+          "reason": "Bridge の配布物の目録（kaname-bridge.json）を運営の置き場から読むのは配布の口そのもの（D-109）。業務の外部送信・利用者のファイルではない",
+          "compensating_control": "読む先は設定の BRIDGE_RELEASE_DIR／BRIDGE_RELEASE_BASE だけ。利用者由来のパスを受け取らず、配るのは目録に載った名前（英数と . _ - だけ）のファイルだけ。書かない",
+          "expires_at": null
+        }
+      ],
       "source": [
-        "D-014",
         "D-013",
+        "D-014",
         "D-040",
-        "D-041",
-        "D-050",
         "D-040.5",
-        "D-041.6"
+        "D-041",
+        "D-041.6",
+        "D-050",
+        "D-101.1",
+        "D-101.2"
       ]
     },
     {
@@ -148,6 +168,12 @@
           "reason": "Bridge は顧客PCのローカルファイルを直接操作するのが機能そのもの。サーバー側の objectStore とは対象が違う",
           "compensating_control": "作業フォルダの範囲外アクセスを Bridge 内で拒否し、全操作を証跡に送る。範囲チェックは packages/bridge-guard/ に集約し、そこ以外からの fs 使用は fail",
           "expires_at": null
+        },
+        {
+          "path": "apps/api/src/auth/bridge-release.ts",
+          "reason": "Bridge の配布物の目録（kaname-bridge.json）を運営の置き場から読むのは配布の口そのもの（D-109）。業務の外部送信・利用者のファイルではない",
+          "compensating_control": "読む先は設定の BRIDGE_RELEASE_DIR／BRIDGE_RELEASE_BASE だけ。利用者由来のパスを受け取らず、配るのは目録に載った名前（英数と . _ - だけ）のファイルだけ。書かない",
+          "expires_at": null
         }
       ],
       "source": [
@@ -189,8 +215,17 @@
         "D-015",
         "D-044",
         "D-045",
-        "D-050"
-      ]
+        "D-050",
+        "D-092.2",
+        "D-093.1",
+        "D-093.2",
+        "D-093.3",
+        "D-093.4",
+        "D-104.14",
+        "D-107.2"
+      ],
+      "_cli_form": "公式 CLI は未改変のまま stream-json で起動し、完了イベントで成功を判定する（D-093）。承認を弱める引数を渡さない（D-092.2）",
+      "permission_mode_rule": "Claude の許可のモードは公式の選択肢をそのまま渡す。全部許可（bypassPermissions）は本人が選んだ会話だけ・既定にしない（D-104.14）。全部許可でも、サービス台帳で禁止・銀行のドメインは --disallowedTools と PreToolUse のフックで止める（D-107.2・D-107.3）"
     },
     {
       "id": "C6",
@@ -211,17 +246,23 @@
         "購読設定・通知の希望",
         "重複抑止",
         "失敗時の再送",
-        "証跡"
+        "証跡",
+        "署名と返信先（D-096）"
       ],
       "ci_check": "pnpm ci:choke -- --id C6",
       "exceptions": [],
       "source": [
-        "D-043",
         "D-012",
+        "D-043",
         "D-050",
         "D-075.2",
         "D-075.3",
-        "D-077.8"
+        "D-077.8",
+        "D-096.1",
+        "D-096.2",
+        "D-096.3",
+        "D-096.4",
+        "D-096.5"
       ]
     },
     {
@@ -291,13 +332,18 @@
         "D-042",
         "D-050",
         "D-074.5",
-        "D-076.4"
+        "D-076.4",
+        "D-092.1",
+        "D-101.1",
+        "D-101.2",
+        "D-102.2",
+        "D-102.5"
       ]
     }
   ],
   "project_specific_candidates_judged": [
     {
-      "candidate": "ブラウザ操作（Stagehand/Playwright）",
+      "candidate": "ブラウザ操作（Claude in Chrome／Playwright MCP・D-119）",
       "irreversible_effect": true,
       "needs_cross_cutting": true,
       "verdict": "C1に含める（ネットワーク経由の外部操作であり、認可・承認・証跡・サービス台帳判定が同一）"
@@ -373,5 +419,16 @@
     ],
     "blocking": true
   },
-  "exception_policy": "例外は 03_architecture/choke-point-exceptions.md に理由・代替統制・期限つきで登録する。登録の無い迂回はCIでfail。期限切れの例外もfail。"
+  "exception_policy": "例外は 03_architecture/choke-point-exceptions.md に理由・代替統制・期限つきで登録する。登録の無い迂回はCIでfail。期限切れの例外もfail。",
+  "ci_policy": {
+    "_doc": "関門の検査の回し方（D-095）",
+    "source": [
+      "D-095.1",
+      "D-095.2",
+      "D-095.4"
+    ],
+    "command": "node scripts/ci/choke.mjs --all",
+    "status": "未配線（2026-09-25 時点で迂回 55 件：C1 42・C4 9・C5 4）。T-B-07 で片付けてから CI に並べる",
+    "rule": "実体のある検査は作った時点で CI から呼ぶ。入れた検査は 1 回壊して赤を出し、戻して緑を確認する"
+  }
 }

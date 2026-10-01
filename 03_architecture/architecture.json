@@ -83,7 +83,7 @@
     "react-jsonschema-form",
     "TanStack Table"
    ],
-   "chat": "assistant-ui",
+   "chat": "自前の AgentChat（会話の部品 1 つ・D-103）。会話は人が分け一覧から戻る・書きながら出る・止める／直す／順番待ち・資料・許可は Claude と同じ・使用量（D-104）。書式は react-markdown＋MathML＋shiki＋mermaid、声はブラウザの音声認識（D-104.21・D-104.22）。記憶は毎朝人が押してまとめる（D-105）",
    "charts": "Recharts",
    "constraint": "業務ロジックをServer Actionsに置かない"
   },
@@ -132,7 +132,7 @@
    "server_gemini": "LangGraph.js",
    "server_local": "LangGraph.js"
   },
-  "browser_automation": "Stagehand + Playwright",
+  "browser_automation": "Claude in Chrome（本人の Chrome・既定）＋ Playwright MCP（Bridge 専用のブラウザ）。どちらも本人のサブスクの Claude Code に渡す道具。Stagehand はやめる（D-119）",
   "observability": "langfuse（ee/不使用）",
   "email": {
    "customer_outbound": "Gmail API / Microsoft Graph API",
@@ -261,7 +261,7 @@
    "data": "seed のみ"
   },
   "staging": {
-   "hosting": "dev用Supabaseプロジェクト + Railway別環境 + Vercel Preview",
+   "hosting": "dev 用 Supabase（東京・無料枠）＋ Vercel（画面 kaname-web と API kaname-api の 2 プロジェクト）",
    "data": "高本さんの実データ",
    "destructive_tests_allowed": [
     "RLSを故意に壊す",
@@ -278,8 +278,32 @@
    ]
   },
   "production": {
-   "hosting": "Supabase + Railway + Vercel",
+   "hosting": "Supabase ＋ Vercel（画面・API の別プロジェクト）。顧客に触らせる前に Vercel Pro・Supabase Pro",
    "smoke_only": true
+  },
+  "stage1_hosting": {
+   "api_entry": "apps/api/src/vercel.ts（Node の関数 1 本・起動時確認は実体ごとに 1 回・落ちている間は 503）",
+   "build": "apps/api/build-vercel.mjs → .vercel/output（Build Output API）",
+   "db_pool_per_function": {
+    "app": 3,
+    "auth": 2
+   },
+   "secrets": "Vercel の環境変数（Sensitive）",
+   "migration": "API の Build Command",
+   "bridge_polling": "1 回で生存を兼ねる・動いている最中だけ最長 20 秒待ち受け・それ以外は 5 秒",
+   "vault": "Infisical（クラウド・無料枠）。起動時に入れるか確かめる（D-101）",
+   "stage2": "Railway・Hatchet・Microsandbox・取り込みは段階 2 で決め直す（Infisical は段階 1 から・D-101.1）",
+   "source": [
+    "D-097.1",
+    "D-097.2",
+    "D-097.3",
+    "D-097.4",
+    "D-097.5",
+    "D-097.6",
+    "D-097.7",
+    "D-101.1",
+    "D-101.4"
+   ]
   }
  },
  "external_resources_as_code": [
@@ -356,7 +380,7 @@
    "basis": "Turborepoでapi/web/e2eを並列実行"
   }
  ],
- "updated_at": "2026-09-16",
+ "updated_at": "2026-09-27",
  "permission_model": {
   "shape": "誰に × 何に × どの層で × できること（permissions）",
   "self_only": "本人のもの（個人の範囲）は権限なしで自由＝RLS predicate self_only。行を作らない",
@@ -540,6 +564,61 @@
    "D-085.4",
    "D-085.5",
    "D-042"
+  ]
+ },
+ "search": {
+  "semantic": "Ruri v3 を本人の PC で（サブスクでも API でも）。PC が無い会社だけ段階 2 のサーバー（D-099.3）",
+  "lexical": "PGroonga（台帳・記憶・証跡の本文）",
+  "rerank": "自分のAI（本人のサブスク）",
+  "tables": [
+   "search_embeddings",
+   "embedding_models"
+  ],
+  "swap": "building で足す → 全部作り直す → active に切り替え・古いものを retired にして消す。そろうまでは古いモデルで探す",
+  "reembed_on_edit": "content_hash が変わった行だけ",
+  "offline": "Bridge が止まっている間は言葉の一致だけ・画面にそう出す",
+  "model_distribution": "Bridge が自分で取る・確かめる・直す（D-099.4）",
+  "local_db": "pgvector と PGroonga の両方を入れた像",
+  "source": [
+   "D-098.10",
+   "D-098.2",
+   "D-098.3",
+   "D-098.4",
+   "D-098.5",
+   "D-098.6",
+   "D-098.7",
+   "D-098.9",
+   "D-099.1",
+   "D-099.2",
+   "D-099.3",
+   "D-099.4"
+  ],
+  "stage1": "自分のAI が PGroonga で探して読む。ベクトルは境を越えてから（D-099.1・D-099.2）"
+ },
+ "agent_work_record": {
+  "stored": "bridge_job_events の kind=tool（名前・対象・成否・時間）と kind=usage（往復数・時間・量・費用の見込み）",
+  "not_stored": "中身の全文",
+  "source": [
+   "D-100.1",
+   "D-100.2",
+   "D-100.3"
+  ]
+ },
+ "secrets_vault": {
+  "service": "Infisical（クラウド・無料枠）",
+  "identities": "サーバー staging・本番＋運営の人＝3（会社・人・PC が増えても増えない）",
+  "bridge": "Infisical に入らない。C8 が解いた値を実行の間だけ受け取り、ディスクに書かず捨てる",
+  "layout": "1 project＋/tenants/<会社>。サーバーの身元は project の読み書きだけ",
+  "limits": "秘密の操作 毎分 120（無料）・8 割で運営にメール・429 は E-SEC-003",
+  "source": [
+   "D-101.1",
+   "D-101.2",
+   "D-102.1",
+   "D-102.2",
+   "D-102.3",
+   "D-102.4",
+   "D-102.5",
+   "D-102.6"
   ]
  }
 }

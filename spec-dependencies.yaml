@@ -34,7 +34,7 @@ counters:
     type: json_nested_array_length
     file: 05_flow/flow.json
     json_path: $.backbone[*].acts
-  expected_value: 87
+  expected_value: 95
   mirrors:
   - file: 01_hearing/決定ログ_進行中.md
     regex: \| 行為 \| (\d+)（段階1
@@ -46,7 +46,7 @@ counters:
     type: json_array_length
     file: 05_flow/flow.json
     json_path: $.objects
-  expected_value: 66
+  expected_value: 76
   mirrors:
   - file: 01_hearing/決定ログ_進行中.md
     regex: \| オブジェクト \| (\d+) \|
@@ -373,6 +373,7 @@ decision_traceability:
   - file: 03_architecture/choke-points.json
     elements:
     - choke_points[*]
+    - ci_policy
     source_field: source
   - file: 03_architecture/アーキテクチャ設計書.md
     ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
@@ -486,9 +487,14 @@ decision_traceability:
 # G21 層の棚卸し（layer_audit.py）：全成果物に「機械の検査」か「手で見る理由」を持たせる。検査の無い層は赤。
 layer_checks:
 - file: 05_flow/flow.json
-  check: python3 scripts/ci/flow_gate.py --mocks 06_mockup/v1 --choke 03_architecture/choke-points.json && python3 scripts/ci/trace_gate.py
+  check: python3 scripts/ci/flow_gate.py --mocks 06_mockup/v1 --choke 03_architecture/choke-points.json && python3 scripts/ci/trace_gate.py && python3 scripts/ci/flow_fresh.py
 - file: 03_architecture/choke-points.json
   check: python3 scripts/ci/flow_gate.py --choke 03_architecture/choke-points.json
+- file: 02_tech_stack/selected-stack.json
+  check: node scripts/ci/claude-terms.mjs
+- file: product-reach-exempt.json
+  manual: T11 道具どまりの文。2026-09-25 時点で 39 件（うち今回の決定は 0）。T-B-08 で 1 文ずつ棚卸しし、
+    0 件になったら check（python3 scripts/ci/product_reach.py）に切り替える。数は CI の G34 が毎回出す
 - file: 03_architecture/ER図.md
   check: python3 scripts/ci/er_gate.py --flow 05_flow/flow.json --er 03_architecture/ER図.md
 - file: 03_architecture/アーキテクチャ設計書.md
@@ -502,7 +508,7 @@ layer_checks:
 - file: 03_architecture/extension-points.json
   manual: 増えるものの見通し文書。決定でオブジェクトが増えたら source を足す（防御は関門と G20）
 - file: 06_mockup/v1/v1-*.html
-  check: python3 scripts/ci/mock_state_gate.py --flow 05_flow/flow.json --mocks 06_mockup/v1 && python3 scripts/ci/role_gate.py --flow 05_flow/flow.json --mocks 06_mockup/v1 && python3 scripts/ci/ui_lint.py 06_mockup/v1 --config 06_mockup/ui-lint.json && python3 scripts/ci/coverage_review.py --flow 05_flow/flow.json --mocks 06_mockup/v1 --surfaces scripts/ci/references/saas-surfaces.yaml --er 03_architecture/ER図.md --gate
+  check: python3 scripts/ci/mock_state_gate.py --flow 05_flow/flow.json --mocks 06_mockup/v1 && python3 scripts/ci/role_gate.py --flow 05_flow/flow.json --mocks 06_mockup/v1 && python3 scripts/ci/ui_lint.py 06_mockup/v1 --config 06_mockup/ui-lint.json && python3 scripts/ci/coverage_review.py --flow 05_flow/flow.json --mocks 06_mockup/v1 --surfaces scripts/ci/references/saas-surfaces.yaml --er 03_architecture/ER図.md --gate && node scripts/ci/chat_one.mjs
 - file: 06_mockup/v2/v2-*.html
   check: python3 scripts/ci/mock_state_gate.py --flow 05_flow/flow.json --mocks 06_mockup/v2 && python3 scripts/ci/role_gate.py --flow 05_flow/flow.json --mocks 06_mockup/v2 --prefix v2- --release v2 && python3 scripts/ci/ui_lint.py 06_mockup/v2 --config 06_mockup/ui-lint.json
 - file: 04_design/DESIGN-kaname.md

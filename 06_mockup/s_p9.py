@@ -65,8 +65,8 @@ _nt = ('<div data-sec="0">' + card(head("お知らせ", sub="運営から。あ�
   _nrow("policy","rule","運営ルール 第 2 版：自動操作を禁じるサービスに 3 件追加","サービス台帳を見てください。該当があれば人へのハンドオフに落ちます","9/12") + '</div>') + '</div>' +
   '<div data-sec="1"><div style="height:14px"></div>' + card(head("稼働状況", sub="今どの経路で動いているか。止まっているものは赤") + _nt_status +
   '<div class="muted" style="font-size:12px">PC が閉じている間はサーバー経路（段階2 で本格化）に切り替わり、溜まった分は起きたときに順に片づけます。切り替わった記録は証跡に残ります。</div>') + '</div>' +
-  '<div data-sec="2"><div style="height:14px"></div>' + card(head("通知の届け先", sub="承認待ち・止まった・お知らせを、どこに届けるか") + '<div class="t-wrap"><table class="ptbl"><thead><tr><th>何を</th><th>アプリ内</th><th>メール</th><th>スマホ（段階2）</th></tr></thead><tbody>' +
-  "".join(f'<tr><td>{w}</td><td><input type="checkbox" {"checked" if a else ""} style="accent-color:#22345C"></td><td><input type="checkbox" {"checked" if b else ""} style="accent-color:#22345C"></td><td><input type="checkbox" disabled></td></tr>' for w, a, b in [("承認待ちが来た",1,1),("AI が止まった",1,1),("承認者が自分 1 人になった",1,1),("お知らせ（障害・メンテ）",1,1),("お知らせ（リリース）",1,0),("問い合わせに返答が来た",1,1)]) + '</tbody></table></div>' +
+  '<div data-sec="2"><div style="height:14px"></div>' + card(head("通知の届け先", sub="終わった・許可が要る・承認待ち・止まった・お知らせを、どこに届けるか。その会話を見ている間は知らせません") + '<div class="t-wrap"><table class="ptbl"><thead><tr><th>何を</th><th>アプリ内</th><th>メール</th><th>スマホ（段階2）</th></tr></thead><tbody>' +
+  "".join(f'<tr><td>{w}</td><td><input type="checkbox" {"checked" if a else ""} style="accent-color:#22345C"></td><td><input type="checkbox" {"checked" if b else ""} style="accent-color:#22345C"></td><td><input type="checkbox" disabled></td></tr>' for w, a, b in [("自分のAI の作業が終わった",1,1),("自分のAI が許可を待っている",1,1),("承認待ちが来た",1,1),("AI が止まった",1,1),("承認者が自分 1 人になった",1,1),("お知らせ（障害・メンテ）",1,1),("お知らせ（リリース）",1,0),("問い合わせに返答が来た",1,1)]) + '</tbody></table></div>' +
   '<div class="acts">' + btn("保存する","p","check") + '</div>') + '</div>')
 NOTICES = ("notices", [("n","お知らせと通知","",_nt)], P9_CSS, False, {"お知らせ":"4","稼働状況":"!1","通知の届け先":""})
 
@@ -98,7 +98,11 @@ _ac_basic = ('<div data-sec="0">' + card(head("自分のアカウント") + fiel
   note("パスワード・2 段階認証を変えると、<b>他の端末と Bridge の接続は即失効</b>します。入り直してください（G-14）。", "warn")) + '</div>' +
   '<div data-sec="2"><div style="height:14px"></div>' + card(head("端末", btn("この端末以外を切る","d","ban"), "ログイン中の端末と Bridge") + table(["端末","場所","最終","Bridge",""], [
     ["MacBook Pro · Chrome（この端末）","東京",("9/15 09:12","n"),pill("つながっている","su"),""],["iPhone · Safari","東京",("9/14 22:40","n"),pill("なし","ne"),btn("切る","g","x")],["Windows · Edge","大阪（出張）",("9/8 11:02","n"),pill("なし","ne"),btn("切る","g","x")]])) + '</div>')
-ACCOUNT = ("account", [("n","自分のアカウント","変えると他の端末は即失効（G-14）。",_ac_basic)], P9_CSS + LEAVE_CSS, False, {"基本":"","パスワードと 2 段階認証":"","端末":"3"})
+_ac_usage = ('<div data-sec="3"><div style="height:14px"></div>' + card(head("自分のAIの使用量", sub="あなたのサブスク（Claude）の枠。Bridge が Claude Code から受け取った値 · 9/10 09:12") + '<div class="ub">' + "".join(
+  f'<div><span class="l">{k}</span><span class="bar"><i class="{c}" style="width:{v}%"></i></span><span class="v">{v}% · {r}</span></div>'
+  for k, v, c, r in [("5 時間の枠",82,"warn","18:40 に戻ります"),("週の枠",41,"ok","9/15（月）09:00 に戻ります")]) + '</div>' +
+  '<div class="muted" style="font-size:12px;margin-top:12px">枠に近づくと会話の中でも知らせます。枠に達すると戻るまで自分のAI は動けません（書いたことは戻ったら順に送ります）。</div>') + '</div>')
+ACCOUNT = ("account", [("n","自分のアカウント","変えると他の端末は即失効（G-14）。自分のAIの使用量もここ。",_ac_basic + _ac_usage)], P9_CSS + LEAVE_CSS, False, {"基本":"","パスワードと 2 段階認証":"","端末":"3","自分のAIの使用量":"!82%"})
 
 # ============================================================ company-settings（会社の設定）
 _cs = ('<div data-sec="0">' + card(head("会社") + grid([field("会社名", inp("株式会社ENGINE BASE")), field("タイムゾーン", '<select class="inp"><option>Asia/Tokyo（日本）</option><option>UTC</option></select>')], "g2") +

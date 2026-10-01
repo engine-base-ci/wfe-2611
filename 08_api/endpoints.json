@@ -1,8 +1,8 @@
 {
  "meta": {
   "version": "v3.1",
-  "created_at": "2026-09-20",
-  "frozen_at": "2026-09-20",
+  "created_at": "2026-09-29",
+  "frozen_at": "2026-09-29",
   "base_url": "/api/v1",
   "_doc": "05_flow/build_api.py が機械生成。手で直さない。凍結後の変更は決定（ADR）＋影響解析",
   "source": [
@@ -24,9 +24,9 @@
    ],
    "related_entities": [
     "E-004",
-    "E-006",
-    "E-034",
-    "E-041"
+    "E-007",
+    "E-039",
+    "E-052"
    ],
    "choke_points": [],
    "source": [
@@ -143,10 +143,10 @@
    ],
    "related_entities": [
     "E-004",
-    "E-005",
     "E-006",
-    "E-022",
-    "E-023"
+    "E-007",
+    "E-023",
+    "E-024"
    ],
    "choke_points": [],
    "source": [
@@ -287,9 +287,9 @@
    ],
    "related_entities": [
     "E-004",
-    "E-006",
-    "E-022",
-    "E-023"
+    "E-007",
+    "E-023",
+    "E-024"
    ],
    "choke_points": [
     "C2"
@@ -401,9 +401,9 @@
    ],
    "related_entities": [
     "E-004",
-    "E-005",
-    "E-033",
-    "E-039"
+    "E-006",
+    "E-038",
+    "E-049"
    ],
    "choke_points": [],
    "source": [
@@ -511,10 +511,10 @@
     "audit"
    ],
    "related_entities": [
-    "E-033",
-    "E-041",
-    "E-061",
-    "E-062"
+    "E-038",
+    "E-052",
+    "E-072",
+    "E-073"
    ],
    "choke_points": [
     "C2",
@@ -623,9 +623,9 @@
    ],
    "related_entities": [
     "E-004",
-    "E-005",
-    "E-033",
-    "E-068"
+    "E-006",
+    "E-038",
+    "E-080"
    ],
    "choke_points": [
     "C1",
@@ -762,10 +762,10 @@
     "audit"
    ],
    "related_entities": [
-    "E-033",
-    "E-041",
-    "E-061",
-    "E-062"
+    "E-038",
+    "E-052",
+    "E-072",
+    "E-073"
    ],
    "choke_points": [
     "C1",
@@ -880,10 +880,10 @@
     "import"
    ],
    "related_entities": [
-    "E-017",
-    "E-020",
+    "E-018",
     "E-021",
-    "E-081"
+    "E-022",
+    "E-094"
    ],
    "choke_points": [
     "C2",
@@ -1012,10 +1012,10 @@
    ],
    "related_entities": [
     "E-004",
-    "E-033",
-    "E-041",
-    "E-061",
-    "E-062"
+    "E-038",
+    "E-052",
+    "E-072",
+    "E-073"
    ],
    "choke_points": [],
    "source": [
@@ -1117,9 +1117,9 @@
    ],
    "related_entities": [
     "E-004",
-    "E-005",
-    "E-038",
-    "E-039"
+    "E-006",
+    "E-043",
+    "E-049"
    ],
    "choke_points": [
     "C2",
@@ -1134,7 +1134,12 @@
     "D-030",
     "D-030.3",
     "D-055",
-    "D-055.3"
+    "D-055.3",
+    "D-110.1",
+    "D-118.1",
+    "D-118.2",
+    "D-118.3",
+    "D-118.4"
    ],
    "features": [
     "F-001"
@@ -1148,6 +1153,7 @@
     "members_permission_write",
     "clones_self_only_write",
     "clones_permission_write",
+    "conversations_self_only_write",
     "conversations_permission_write",
     "messages_permission_write"
    ],
@@ -1241,18 +1247,21 @@
    "method": "GET",
    "path": "/api/v1/conversations",
    "acts": [
-    "A20"
+    "A20",
+    "A90"
    ],
    "screens": [
     "clone-chat"
    ],
    "related_entities": [
     "E-004",
-    "E-005",
-    "E-038",
-    "E-039"
+    "E-006",
+    "E-043",
+    "E-049"
    ],
-   "choke_points": [],
+   "choke_points": [
+    "C4"
+   ],
    "source": [
     "D-003.9",
     "D-007",
@@ -1261,7 +1270,40 @@
     "D-024.7",
     "D-037",
     "D-037.5",
-    "D-060.3"
+    "D-060.3",
+    "D-104.10",
+    "D-104.11",
+    "D-104.12",
+    "D-104.13",
+    "D-104.17",
+    "D-104.18",
+    "D-104.2",
+    "D-104.20",
+    "D-104.3",
+    "D-104.4",
+    "D-104.5",
+    "D-104.6",
+    "D-104.7",
+    "D-111.1",
+    "D-111.2",
+    "D-111.3",
+    "D-111.4",
+    "D-111.5",
+    "D-112.1",
+    "D-112.2",
+    "D-112.3",
+    "D-112.4",
+    "D-112.5",
+    "D-112.6",
+    "D-113.1",
+    "D-113.3",
+    "D-113.4",
+    "D-113.7",
+    "D-114.2",
+    "D-114.3",
+    "D-115.1",
+    "D-115.2",
+    "D-115.3"
    ],
    "features": [
     "F-004"
@@ -1321,18 +1363,22 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN GET /api/v1/conversations が「聞く・頼む」として呼ばれたとき THEN Kaname は「会話を記憶へ。指示をAI社員へ」を行い 2xx を返す（自動側：自分のAIが答え、必要ならAI社員に配る。数値もここで出す。配布・承認・記憶は AG-UI イベントで画面へ）",
+    "EVENT-DRIVEN: WHEN GET /api/v1/conversations が「聞く・頼む」として呼ばれたとき THEN Kaname は「会話を記憶へ。指示をAI社員へ。道具の呼び出しは名前・対象・成否・時間だけ残し、中身の全文は本人の PC に置いたまま。サービス台帳で禁止・銀行のドメインは、仕事を渡すたびに使わない道具として渡し、道具を使う直前のフックでも止める（許可のモードに関わらず）」を行い 2xx を返す（自動側：自分のAIが答え、必要ならAI社員に配る。数値もここで出す。返事は書きながら少しずつ出し、作業中は吹き出しの外に 1 行・手順・経過時間・道具の行。表・図・コード・実物のカード・問い合わせまで出せる）",
+    "EVENT-DRIVEN: WHEN GET /api/v1/conversations が「資料や画像を付けて渡す」として呼ばれたとき THEN Kaname は「attachments に 1 行、実体は会社の置き場（関門 C4）。messages.attachments は参照だけ」を行い 2xx を返す（自動側：Bridge が期限つきの署名 URL で受け取り、本人の PC の作業場所に置いて自分のAI に渡す（保存先の鍵は AI に見せない））",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す",
-    "UBIQUITOUS: GET /api/v1/conversations の副作用は関門 C2・C3 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+    "UBIQUITOUS: GET /api/v1/conversations の副作用は関門 C1・C2・C3・C4・C5 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
    ],
    "outward_side_effects": [
-    "モデル呼び出し"
+    "ネットワーク",
+    "モデル呼び出し",
+    "ファイル / オブジェクト",
+    "プロセス起動"
    ],
    "side_effect_ordering": null,
-   "description": "取得（conversations）— 自分のAIに指示する・相談する",
+   "description": "取得（conversations）— 自分のAIに指示する・相談する／資料や画像を付けて自分のAIに渡す",
    "implementation_path": "apps/api/src/routes/conversations.ts::getConversations",
    "inputs": {
     "path": [],
@@ -1353,6 +1399,375 @@
   },
   {
    "method": "POST",
+   "path": "/api/v1/conversations",
+   "acts": [
+    "A88",
+    "A91"
+   ],
+   "screens": [
+    "clone-chat"
+   ],
+   "related_entities": [
+    "E-004",
+    "E-006",
+    "E-043",
+    "E-049"
+   ],
+   "choke_points": [
+    "C2",
+    "C5"
+   ],
+   "source": [
+    "D-104.1",
+    "D-104.14",
+    "D-107.2"
+   ],
+   "features": [
+    "F-004",
+    "F-006"
+   ],
+   "auth": {
+    "role": "member",
+    "scheme": "session（Better Auth・sessions 表を見る。app.tenant_id / app.user_id / app.role を SET LOCAL）"
+   },
+   "rate_limit": "60/min/user",
+   "access_control_policies": [
+    "members_permission_write",
+    "clones_self_only_write",
+    "clones_permission_write",
+    "conversations_self_only_write",
+    "conversations_permission_write",
+    "messages_permission_write"
+   ],
+   "outputs_4xx": [
+    {
+     "status": 401,
+     "code": "UNAUTHENTICATED",
+     "body": {
+      "error": "unauthenticated"
+     },
+     "trigger": "セッションが無い・失効している（退会・停止・権限変更・パスワード変更で即失効）",
+     "ears_form": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）"
+    },
+    {
+     "status": 403,
+     "code": "FORBIDDEN",
+     "body": {
+      "error": "forbidden"
+     },
+     "trigger": "権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした",
+     "ears_form": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）"
+    },
+    {
+     "status": 409,
+     "code": "CONFLICT",
+     "body": {
+      "error": "conflict"
+     },
+     "trigger": "二重送信・同時編集・既に登録済み（冪等キーで防ぐ）",
+     "ears_form": "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない"
+    },
+    {
+     "status": 422,
+     "code": "VALIDATION_ERROR",
+     "body": {
+      "error": "validation_failed",
+      "details": []
+     },
+     "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）",
+     "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+    },
+    {
+     "status": 429,
+     "code": "RATE_LIMITED",
+     "body": {
+      "error": "rate_limited",
+      "retry_after_sec": 60
+     },
+     "trigger": "60/min/user",
+     "ears_form": "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す"
+    },
+    {
+     "status": 502,
+     "code": "EXTERNAL_FAILED",
+     "body": {
+      "error": "external_failed"
+     },
+     "trigger": "外部サービス・モデル・プロセスが失敗した／合図を出さずに終わった",
+     "ears_form": "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す"
+    }
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN POST /api/v1/conversations が「会話を分けて始める・一覧から戻る」として呼ばれたとき THEN Kaname は「conversations に 1 行（agent_session_id は最初の返事で決まる）。一覧・探す（本文の PGroonga）・星・名前を直す・消す・記憶に残さない会話（毎朝のまとめから外す）」を行い 2xx を返す（自動側：新しい会話は Claude Code の新しいセッション。名前は最初の一言から自分のAIが付ける）",
+    "EVENT-DRIVEN: WHEN POST /api/v1/conversations が「許可に答える・許可のモードを選ぶ」として呼ばれたとき THEN Kaname は「答えは bridge_job_events と証跡に。「いつも」は permission_rules に。全部許可は本人が選んだときだけ・既定にしない」を行い 2xx を返す（自動側：Claude Code の許可の問いを会話に出す（今回だけ／いつも／しない＋一言）。モードは Claude Code の公式の選択肢をそのまま渡す）",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+    "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
+    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す",
+    "UBIQUITOUS: POST /api/v1/conversations の副作用は関門 C2・C5 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+   ],
+   "outward_side_effects": [
+    "プロセス起動"
+   ],
+   "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
+   "description": "作成・実行（conversations）— 自分のAIとの会話を分けて始める・一覧から選んで続きを話／自分のAIの許可に答える・許可のモードを選ぶ",
+   "implementation_path": "apps/api/src/routes/conversations.ts::postConversations",
+   "inputs": {
+    "path": [],
+    "body": "conversations の入力（types.ts の ConversationsInput）",
+    "query": []
+   },
+   "outputs_2xx": {
+    "status": 201,
+    "body": "{ data: Conversations, meta?: { cursor, limit, total } }"
+   },
+   "id": "EP-012",
+   "feature_id": "F-004"
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/conversations/:id",
+   "acts": [
+    "A95"
+   ],
+   "screens": [
+    "clone-chat"
+   ],
+   "related_entities": [
+    "E-004",
+    "E-006",
+    "E-043",
+    "E-049"
+   ],
+   "choke_points": [
+    "C2",
+    "C4"
+   ],
+   "source": [
+    "D-106.1",
+    "D-106.2",
+    "D-106.3",
+    "D-106.4",
+    "D-106.5",
+    "D-106.6",
+    "D-106.7",
+    "D-106.8"
+   ],
+   "features": [
+    "F-004"
+   ],
+   "auth": {
+    "role": "member",
+    "scheme": "session（Better Auth・sessions 表を見る。app.tenant_id / app.user_id / app.role を SET LOCAL）"
+   },
+   "rate_limit": "60/min/user",
+   "access_control_policies": [
+    "members_permission_write",
+    "clones_self_only_write",
+    "clones_permission_write",
+    "conversations_self_only_write",
+    "conversations_permission_write",
+    "messages_permission_write"
+   ],
+   "outputs_4xx": [
+    {
+     "status": 401,
+     "code": "UNAUTHENTICATED",
+     "body": {
+      "error": "unauthenticated"
+     },
+     "trigger": "セッションが無い・失効している（退会・停止・権限変更・パスワード変更で即失効）",
+     "ears_form": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）"
+    },
+    {
+     "status": 403,
+     "code": "FORBIDDEN",
+     "body": {
+      "error": "forbidden"
+     },
+     "trigger": "権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした",
+     "ears_form": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）"
+    },
+    {
+     "status": 404,
+     "code": "NOT_FOUND",
+     "body": {
+      "error": "not_found"
+     },
+     "trigger": "無い・消えた・取り消された（期限切れ・削除済み・他社の行）",
+     "ears_form": "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）"
+    },
+    {
+     "status": 422,
+     "code": "VALIDATION_ERROR",
+     "body": {
+      "error": "validation_failed",
+      "details": []
+     },
+     "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）",
+     "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+    },
+    {
+     "status": 429,
+     "code": "RATE_LIMITED",
+     "body": {
+      "error": "rate_limited",
+      "retry_after_sec": 60
+     },
+     "trigger": "60/min/user",
+     "ears_form": "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す"
+    }
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN PATCH /api/v1/conversations/:id が「成果物に書き出して横で直す」として呼ばれたとき THEN Kaname は「artifacts に 1 行・artifact_versions に版ごとに 1 行。中身は会社の置き場（関門 C4）。自分のAI に置き場の鍵を見せない」を行い 2xx を返す（自動側：返事の本文から成果物を作って会話の横に開く。文書と表は直すと新しい版、版の一覧から戻せる（戻すのも新しい版））",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+    "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
+    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UBIQUITOUS: PATCH /api/v1/conversations/:id の副作用は関門 C2・C4 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+   ],
+   "outward_side_effects": [
+    "ファイル / オブジェクト"
+   ],
+   "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
+   "description": "更新（conversations）— 自分のAIの返事を成果物に書き出し、会話の横で開いて直す",
+   "implementation_path": "apps/api/src/routes/conversations.ts::patchConversationsById",
+   "inputs": {
+    "path": [
+     "id"
+    ],
+    "body": "conversations の入力（types.ts の ConversationsInput）",
+    "query": []
+   },
+   "outputs_2xx": {
+    "status": 200,
+    "body": "{ data: Conversations, meta?: { cursor, limit, total } }"
+   },
+   "id": "EP-013",
+   "feature_id": "F-004"
+  },
+  {
+   "method": "DELETE",
+   "path": "/api/v1/conversations/:id",
+   "acts": [
+    "A89"
+   ],
+   "screens": [
+    "clone-chat"
+   ],
+   "related_entities": [
+    "E-004",
+    "E-006",
+    "E-043",
+    "E-049"
+   ],
+   "choke_points": [
+    "C2",
+    "C5"
+   ],
+   "source": [
+    "D-104.15",
+    "D-104.8",
+    "D-104.9"
+   ],
+   "features": [
+    "F-004"
+   ],
+   "auth": {
+    "role": "member",
+    "scheme": "session（Better Auth・sessions 表を見る。app.tenant_id / app.user_id / app.role を SET LOCAL）"
+   },
+   "rate_limit": "60/min/user",
+   "access_control_policies": [
+    "members_permission_write",
+    "clones_self_only_write",
+    "clones_permission_write",
+    "conversations_self_only_write",
+    "conversations_permission_write",
+    "messages_permission_write"
+   ],
+   "outputs_4xx": [
+    {
+     "status": 401,
+     "code": "UNAUTHENTICATED",
+     "body": {
+      "error": "unauthenticated"
+     },
+     "trigger": "セッションが無い・失効している（退会・停止・権限変更・パスワード変更で即失効）",
+     "ears_form": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）"
+    },
+    {
+     "status": 403,
+     "code": "FORBIDDEN",
+     "body": {
+      "error": "forbidden"
+     },
+     "trigger": "権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした",
+     "ears_form": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）"
+    },
+    {
+     "status": 404,
+     "code": "NOT_FOUND",
+     "body": {
+      "error": "not_found"
+     },
+     "trigger": "無い・消えた・取り消された（期限切れ・削除済み・他社の行）",
+     "ears_form": "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）"
+    },
+    {
+     "status": 429,
+     "code": "RATE_LIMITED",
+     "body": {
+      "error": "rate_limited",
+      "retry_after_sec": 60
+     },
+     "trigger": "60/min/user",
+     "ears_form": "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す"
+    },
+    {
+     "status": 502,
+     "code": "EXTERNAL_FAILED",
+     "body": {
+      "error": "external_failed"
+     },
+     "trigger": "外部サービス・モデル・プロセスが失敗した／合図を出さずに終わった",
+     "ears_form": "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す"
+    }
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN DELETE /api/v1/conversations/:id が「止める・止めずに直す・順番待ちを取り消す」として呼ばれたとき THEN Kaname は「bridge_jobs の状態（止めた＝理由つき）。順番待ちは待っている行、取り消すと やめた」を行い 2xx を返す（自動側：止めるは Bridge が Claude Code を止める。止めずに送った文は動いている Claude Code に次の区切りで渡る）",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+    "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
+    "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す",
+    "UBIQUITOUS: DELETE /api/v1/conversations/:id の副作用は関門 C2・C5 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+   ],
+   "outward_side_effects": [
+    "プロセス起動"
+   ],
+   "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
+   "description": "削除（conversations）— 自分のAIの作業を止める・止めずに直す・順番待ちを取り消",
+   "implementation_path": "apps/api/src/routes/conversations.ts::deleteConversationsById",
+   "inputs": {
+    "path": [
+     "id"
+    ],
+    "body": null,
+    "query": []
+   },
+   "outputs_2xx": {
+    "status": 200,
+    "body": "{ data: Conversations, meta?: { cursor, limit, total } }"
+   },
+   "id": "EP-014",
+   "feature_id": "F-004"
+  },
+  {
+   "method": "POST",
    "path": "/api/v1/credentials",
    "acts": [
     "A10"
@@ -1361,10 +1776,10 @@
     "credentials"
    ],
    "related_entities": [
-    "E-035",
-    "E-037",
-    "E-057",
-    "E-058"
+    "E-040",
+    "E-042",
+    "E-068",
+    "E-069"
    ],
    "choke_points": [
     "C2",
@@ -1375,7 +1790,13 @@
     "D-017",
     "D-017.1",
     "D-041",
-    "D-042.8"
+    "D-042.8",
+    "D-117.1",
+    "D-117.2",
+    "D-117.3",
+    "D-117.4",
+    "D-117.5",
+    "D-117.6"
    ],
    "features": [
     "F-005"
@@ -1442,7 +1863,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/credentials が「使うサービスを選びログイン情報を入れる」として呼ばれたとき THEN Kaname は「vaultに暗号化保管。AIには参照IDのみ」を行い 2xx を返す（自動側：サービス台帳から自動操作可否を判定して出す）",
+    "EVENT-DRIVEN: WHEN POST /api/v1/credentials が「使うサービスを選びログイン情報を入れる」として呼ばれたとき THEN Kaname は「vaultに暗号化保管。AIには参照IDのみ。資格情報は会社ごとの鍵で暗号化して Infisical の会社の置き場へ（AI には参照 ID だけ）。Bridge は Infisical に入らず、実行の間だけ値を受け取って捨てる」を行い 2xx を返す（自動側：サービス台帳から自動操作可否を判定して出す）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
@@ -1465,7 +1886,7 @@
     "status": 201,
     "body": "{ data: Credentials, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-012",
+   "id": "EP-015",
    "feature_id": "F-005"
   },
   {
@@ -1478,10 +1899,10 @@
     "disclosure"
    ],
    "related_entities": [
-    "E-041",
-    "E-061",
-    "E-091",
-    "E-092"
+    "E-052",
+    "E-072",
+    "E-104",
+    "E-105"
    ],
    "choke_points": [
     "C4"
@@ -1561,7 +1982,7 @@
     "status": 200,
     "body": "{ data: DisclosureVersions[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-013",
+   "id": "EP-016",
    "feature_id": "F-012"
   },
   {
@@ -1574,10 +1995,10 @@
     "ops-disclosure"
    ],
    "related_entities": [
-    "E-064",
-    "E-065",
-    "E-091",
-    "E-092"
+    "E-075",
+    "E-076",
+    "E-104",
+    "E-105"
    ],
    "choke_points": [
     "C2",
@@ -1677,7 +2098,7 @@
     "status": 200,
     "body": "{ data: DisclosureVersions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-014",
+   "id": "EP-017",
    "feature_id": "F-016"
   },
   {
@@ -1690,10 +2111,10 @@
     "ops-review"
    ],
    "related_entities": [
-    "E-022",
     "E-023",
-    "E-040",
-    "E-054"
+    "E-024",
+    "E-050",
+    "E-065"
    ],
    "choke_points": [
     "C2"
@@ -1718,6 +2139,7 @@
    "access_control_policies": [
     "duties_permission_write",
     "duty_versions_permission_write",
+    "artifacts_self_only_write",
     "artifacts_permission_write"
    ],
    "outputs_4xx": [
@@ -1791,7 +2213,7 @@
     "status": 201,
     "body": "{ data: Distributions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-015",
+   "id": "EP-018",
    "feature_id": "F-019"
   },
   {
@@ -1804,10 +2226,10 @@
     "duties"
    ],
    "related_entities": [
-    "E-022",
     "E-023",
     "E-024",
-    "E-025"
+    "E-025",
+    "E-026"
    ],
    "choke_points": [
     "C2",
@@ -1923,7 +2345,7 @@
     "status": 200,
     "body": "{ data: Duties, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-016",
+   "id": "EP-019",
    "feature_id": "F-011"
   },
   {
@@ -1937,9 +2359,9 @@
    ],
    "related_entities": [
     "E-001",
-    "E-010",
-    "E-017",
-    "E-080"
+    "E-011",
+    "E-018",
+    "E-093"
    ],
    "choke_points": [
     "C2",
@@ -2040,7 +2462,7 @@
     "status": 201,
     "body": "{ data: ExportJobs, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-017",
+   "id": "EP-020",
    "feature_id": "F-012"
   },
   {
@@ -2053,10 +2475,10 @@
     "my-progress"
    ],
    "related_entities": [
-    "E-011",
     "E-012",
-    "E-028",
-    "E-029"
+    "E-013",
+    "E-033",
+    "E-034"
    ],
    "choke_points": [],
    "source": [
@@ -2139,7 +2561,7 @@
     "status": 200,
     "body": "{ data: GoalAllocations[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-018",
+   "id": "EP-021",
    "feature_id": "F-004"
   },
   {
@@ -2154,12 +2576,12 @@
     "my-progress"
    ],
    "related_entities": [
-    "E-010",
     "E-011",
     "E-012",
     "E-013",
-    "E-028",
-    "E-029"
+    "E-014",
+    "E-033",
+    "E-034"
    ],
    "choke_points": [
     "C2",
@@ -2286,7 +2708,7 @@
     "status": 200,
     "body": "{ data: GoalAllocations, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-019",
+   "id": "EP-022",
    "feature_id": "F-004"
   },
   {
@@ -2302,11 +2724,11 @@
     "goals"
    ],
    "related_entities": [
-    "E-008",
-    "E-010",
+    "E-009",
     "E-011",
     "E-012",
-    "E-013"
+    "E-013",
+    "E-014"
    ],
    "choke_points": [],
    "source": [
@@ -2413,7 +2835,7 @@
     "status": 200,
     "body": "{ data: Goals[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-020",
+   "id": "EP-023",
    "feature_id": "F-008"
   },
   {
@@ -2426,10 +2848,10 @@
     "goal-edit"
    ],
    "related_entities": [
-    "E-008",
-    "E-010",
+    "E-009",
     "E-011",
-    "E-013"
+    "E-012",
+    "E-014"
    ],
    "choke_points": [
     "C2",
@@ -2542,7 +2964,7 @@
     "status": 200,
     "body": "{ data: Goals, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-021",
+   "id": "EP-024",
    "feature_id": "F-008"
   },
   {
@@ -2555,10 +2977,10 @@
     "review"
    ],
    "related_entities": [
-    "E-010",
-    "E-013",
+    "E-011",
     "E-014",
-    "E-016"
+    "E-015",
+    "E-017"
    ],
    "choke_points": [],
    "source": [
@@ -2654,7 +3076,7 @@
     "status": 200,
     "body": "{ data: Hypotheses[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-022",
+   "id": "EP-025",
    "feature_id": "F-009"
   },
   {
@@ -2667,10 +3089,10 @@
     "hypotheses"
    ],
    "related_entities": [
-    "E-014",
     "E-015",
     "E-016",
-    "E-028"
+    "E-017",
+    "E-033"
    ],
    "choke_points": [
     "C2",
@@ -2782,7 +3204,7 @@
     "status": 200,
     "body": "{ data: Hypotheses, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-023",
+   "id": "EP-026",
    "feature_id": "F-009"
   },
   {
@@ -2795,10 +3217,10 @@
     "inquiry"
    ],
    "related_entities": [
-    "E-038",
-    "E-041",
-    "E-061",
-    "E-063"
+    "E-043",
+    "E-052",
+    "E-072",
+    "E-074"
    ],
    "choke_points": [],
    "source": [
@@ -2878,7 +3300,7 @@
     "status": 200,
     "body": "{ data: Inquiries[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-024",
+   "id": "EP-027",
    "feature_id": "F-015"
   },
   {
@@ -2893,9 +3315,9 @@
    ],
    "related_entities": [
     "E-001",
-    "E-010",
-    "E-038",
-    "E-063"
+    "E-011",
+    "E-043",
+    "E-074"
    ],
    "choke_points": [
     "C2",
@@ -2921,6 +3343,7 @@
    "access_control_policies": [
     "tenants_permission_write",
     "goals_permission_write",
+    "conversations_self_only_write",
     "conversations_permission_write",
     "inquiries_self_only_write",
     "inquiries_permission_write",
@@ -3002,7 +3425,7 @@
     "status": 200,
     "body": "{ data: Inquiries, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-025",
+   "id": "EP-028",
    "feature_id": "F-014"
   },
   {
@@ -3016,9 +3439,9 @@
    ],
    "related_entities": [
     "E-004",
-    "E-044",
-    "E-047",
-    "E-079"
+    "E-055",
+    "E-058",
+    "E-091"
    ],
    "choke_points": [],
    "source": [
@@ -3090,7 +3513,7 @@
     "status": 200,
     "body": "{ data: Invitations[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-026",
+   "id": "EP-029",
    "feature_id": "F-002"
   },
   {
@@ -3104,10 +3527,10 @@
     "ops-billing"
    ],
    "related_entities": [
-    "E-069",
-    "E-070",
-    "E-074",
-    "E-075"
+    "E-081",
+    "E-082",
+    "E-086",
+    "E-087"
    ],
    "choke_points": [],
    "source": [
@@ -3192,7 +3615,7 @@
     "status": 200,
     "body": "{ data: Invoices[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-027",
+   "id": "EP-030",
    "feature_id": "F-016"
   },
   {
@@ -3205,10 +3628,10 @@
     "automation-repair"
    ],
    "related_entities": [
-    "E-024",
     "E-025",
-    "E-034",
-    "E-050"
+    "E-026",
+    "E-039",
+    "E-061"
    ],
    "choke_points": [],
    "source": [
@@ -3306,7 +3729,7 @@
     "status": 200,
     "body": "{ data: LearnedProcedures[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-028",
+   "id": "EP-031",
    "feature_id": "F-005"
   },
   {
@@ -3321,12 +3744,12 @@
     "search"
    ],
    "related_entities": [
-    "E-017",
-    "E-019",
+    "E-018",
     "E-020",
     "E-021",
-    "E-027",
-    "E-041"
+    "E-022",
+    "E-028",
+    "E-052"
    ],
    "choke_points": [],
    "source": [
@@ -3398,7 +3821,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN GET /api/v1/ledger_definitions が「言葉で探す」として呼ばれたとき THEN Kaname は「台帳・記憶・証跡を横断」を行い 2xx を返す（自動側：自分のAIが意味で探す）",
+    "EVENT-DRIVEN: WHEN GET /api/v1/ledger_definitions が「言葉で探す」として呼ばれたとき THEN Kaname は「台帳・記憶・証跡の本文の PGroonga 索引を横断（候補は行レベルの制御の内側だけ）。ベクトルは境を越えてから（本人の PC で作る）」を行い 2xx を返す（自動側：自分のAIが PGroonga で言い換えを広げながら何度か探し、中身を読んで選ぶ（段階 1 はベクトルを使わない）。探した件数と時間を記録し、境を越えたら運営に知らせる。人が直接探すときは言葉の一致）",
     "EVENT-DRIVEN: WHEN GET /api/v1/ledger_definitions が「一覧を見る」として呼ばれたとき THEN Kaname は「見える範囲だけのレコードを読む」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
@@ -3426,7 +3849,7 @@
     "status": 200,
     "body": "{ data: LedgerDefinitions[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-029",
+   "id": "EP-032",
    "feature_id": "F-007"
   },
   {
@@ -3441,11 +3864,11 @@
     "records"
    ],
    "related_entities": [
-    "E-017",
     "E-018",
     "E-019",
     "E-020",
-    "E-021"
+    "E-021",
+    "E-022"
    ],
    "choke_points": [
     "C2",
@@ -3561,7 +3984,7 @@
     "status": 200,
     "body": "{ data: LedgerDefinitions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-030",
+   "id": "EP-033",
    "feature_id": "F-007"
   },
   {
@@ -3574,10 +3997,10 @@
     "record-detail"
    ],
    "related_entities": [
-    "E-019",
-    "E-021",
-    "E-028",
-    "E-029"
+    "E-020",
+    "E-022",
+    "E-033",
+    "E-034"
    ],
    "choke_points": [],
    "source": [
@@ -3657,7 +4080,7 @@
     "status": 200,
     "body": "{ data: LedgerRecords[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-031",
+   "id": "EP-034",
    "feature_id": "F-007"
   },
   {
@@ -3670,10 +4093,10 @@
     "record-detail"
    ],
    "related_entities": [
-    "E-019",
-    "E-021",
-    "E-028",
-    "E-029"
+    "E-020",
+    "E-022",
+    "E-033",
+    "E-034"
    ],
    "choke_points": [
     "C2",
@@ -3782,7 +4205,7 @@
     "status": 200,
     "body": "{ data: LedgerRecords, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-032",
+   "id": "EP-035",
    "feature_id": "F-007"
   },
   {
@@ -3795,9 +4218,9 @@
     "llm-routes"
    ],
    "related_entities": [
-    "E-037",
-    "E-088",
-    "E-089"
+    "E-042",
+    "E-101",
+    "E-102"
    ],
    "choke_points": [
     "C2",
@@ -3909,7 +4332,7 @@
     "status": 201,
     "body": "{ data: LlmRoutes, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-033",
+   "id": "EP-036",
    "feature_id": "F-017"
   },
   {
@@ -3922,9 +4345,9 @@
     "ops-llm"
    ],
    "related_entities": [
-    "E-074",
-    "E-075",
-    "E-088"
+    "E-086",
+    "E-087",
+    "E-101"
    ],
    "choke_points": [
     "C2"
@@ -4021,7 +4444,7 @@
     "status": 200,
     "body": "{ data: LlmRoutes, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-034",
+   "id": "EP-037",
    "feature_id": "F-016"
   },
   {
@@ -4031,9 +4454,11 @@
     "A02",
     "A04",
     "A13",
-    "A31"
+    "A31",
+    "A94"
    ],
    "screens": [
+    "account",
     "login",
     "mfa-setup",
     "password-reset",
@@ -4041,16 +4466,17 @@
    ],
    "related_entities": [
     "E-004",
-    "E-041",
-    "E-044",
-    "E-047"
+    "E-052",
+    "E-055",
+    "E-058"
    ],
    "choke_points": [
     "C8"
    ],
    "source": [
     "D-042",
-    "D-053.4"
+    "D-053.4",
+    "D-104.16"
    ],
    "features": [
     "F-001",
@@ -4059,10 +4485,10 @@
     "F-012"
    ],
    "auth": {
-    "role": "public",
-    "scheme": "none"
+    "role": "member",
+    "scheme": "session（Better Auth・sessions 表を見る。app.tenant_id / app.user_id / app.role を SET LOCAL）"
    },
-   "rate_limit": "10/min/ip",
+   "rate_limit": "120/min/user",
    "access_control_policies": [
     "members_tenant_read",
     "members_ops_read_with_grant",
@@ -4075,14 +4501,32 @@
    ],
    "outputs_4xx": [
     {
+     "status": 401,
+     "code": "UNAUTHENTICATED",
+     "body": {
+      "error": "unauthenticated"
+     },
+     "trigger": "セッションが無い・失効している（退会・停止・権限変更・パスワード変更で即失効）",
+     "ears_form": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）"
+    },
+    {
+     "status": 403,
+     "code": "FORBIDDEN",
+     "body": {
+      "error": "forbidden"
+     },
+     "trigger": "権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした",
+     "ears_form": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）"
+    },
+    {
      "status": 429,
      "code": "RATE_LIMITED",
      "body": {
       "error": "rate_limited",
       "retry_after_sec": 60
      },
-     "trigger": "10/min/ip",
-     "ears_form": "UNWANTED: IF 10/min/ip を超えたら、Kaname は 429 と retry_after_sec を返す"
+     "trigger": "120/min/user",
+     "ears_form": "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す"
     }
    ],
    "ears_ac_seed": [
@@ -4090,7 +4534,10 @@
     "EVENT-DRIVEN: WHEN GET /api/v1/members が「認証アプリを登録する」として呼ばれたとき THEN Kaname は「TOTPシークレットを暗号化保管」を行い 2xx を返す",
     "EVENT-DRIVEN: WHEN GET /api/v1/members が「メールとパスワードと6桁を入れる」として呼ばれたとき THEN Kaname は「トークンを発行」を行い 2xx を返す",
     "EVENT-DRIVEN: WHEN GET /api/v1/members が「メールでパスワードを再設定する／回復コードを使う」として呼ばれたとき THEN Kaname は「トークンを失効させて再発行」を行い 2xx を返す",
-    "UNWANTED: IF 10/min/ip を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "EVENT-DRIVEN: WHEN GET /api/v1/members が「自分のAIの使用量を見る」として呼ばれたとき THEN Kaname は「agent_usage_snapshots の最新」を行い 2xx を返す（自動側：Bridge が Claude Code から受け取った使用量（5 時間の枠・週の枠・いつ戻るか）を出す。近い・達したら会話にも案内）",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+    "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UBIQUITOUS: GET /api/v1/members の副作用は関門 C2・C6・C8 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
    ],
    "outward_side_effects": [
@@ -4114,7 +4561,7 @@
     "status": 200,
     "body": "{ data: Members[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-035",
+   "id": "EP-038",
    "feature_id": "F-001"
   },
   {
@@ -4132,11 +4579,11 @@
    ],
    "related_entities": [
     "E-004",
-    "E-006",
-    "E-041",
-    "E-044",
-    "E-047",
-    "E-079"
+    "E-007",
+    "E-052",
+    "E-055",
+    "E-058",
+    "E-091"
    ],
    "choke_points": [
     "C2",
@@ -4254,7 +4701,7 @@
     "status": 200,
     "body": "{ data: Members, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-036",
+   "id": "EP-039",
    "feature_id": "F-010"
   },
   {
@@ -4270,10 +4717,10 @@
    ],
    "related_entities": [
     "E-004",
-    "E-006",
-    "E-044",
-    "E-047",
-    "E-080"
+    "E-007",
+    "E-055",
+    "E-058",
+    "E-093"
    ],
    "choke_points": [
     "C2",
@@ -4376,7 +4823,7 @@
     "status": 200,
     "body": "{ data: Members, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-037",
+   "id": "EP-040",
    "feature_id": "F-010"
   },
   {
@@ -4390,8 +4837,9 @@
    ],
    "related_entities": [
     "E-004",
-    "E-005",
-    "E-027"
+    "E-006",
+    "E-028",
+    "E-030"
    ],
    "choke_points": [
     "C2",
@@ -4404,7 +4852,10 @@
     "D-025.4",
     "D-030",
     "D-030.8",
-    "D-066.7"
+    "D-066.7",
+    "D-104.17",
+    "D-105.1",
+    "D-105.8"
    ],
    "features": [
     "F-013"
@@ -4419,7 +4870,8 @@
     "clones_self_only_write",
     "clones_permission_write",
     "memories_self_only_write",
-    "memories_permission_write"
+    "memories_permission_write",
+    "memory_proposals_permission_write"
    ],
    "outputs_4xx": [
     {
@@ -4480,7 +4932,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/memories が「自分の考え方を教える」として呼ばれたとき THEN Kaname は「記憶をスコープ付きで保存」を行い 2xx を返す（自動側：自分のAIが記憶に落として次から参照する）",
+    "EVENT-DRIVEN: WHEN POST /api/v1/memories が「自分の考え方を教える」として呼ばれたとき THEN Kaname は「記憶をスコープ付きで保存。本文が直されたら指紋が変わった行だけ Bridge がベクトルを作り直す」を行い 2xx を返す（自動側：自分のAIが記憶に落として次から参照する）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
@@ -4504,29 +4956,153 @@
     "status": 201,
     "body": "{ data: Memories, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-038",
+   "id": "EP-041",
+   "feature_id": "F-013"
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/memories/:id",
+   "acts": [
+    "A93"
+   ],
+   "screens": [
+    "clone-memory"
+   ],
+   "related_entities": [
+    "E-004",
+    "E-006",
+    "E-028",
+    "E-030"
+   ],
+   "choke_points": [
+    "C2",
+    "C6"
+   ],
+   "source": [
+    "D-105.10",
+    "D-105.6",
+    "D-105.9"
+   ],
+   "features": [
+    "F-013"
+   ],
+   "auth": {
+    "role": "member",
+    "scheme": "session（Better Auth・sessions 表を見る。app.tenant_id / app.user_id / app.role を SET LOCAL）"
+   },
+   "rate_limit": "60/min/user",
+   "access_control_policies": [
+    "members_permission_write",
+    "clones_self_only_write",
+    "clones_permission_write",
+    "memories_self_only_write",
+    "memories_permission_write",
+    "memory_proposals_permission_write"
+   ],
+   "outputs_4xx": [
+    {
+     "status": 401,
+     "code": "UNAUTHENTICATED",
+     "body": {
+      "error": "unauthenticated"
+     },
+     "trigger": "セッションが無い・失効している（退会・停止・権限変更・パスワード変更で即失効）",
+     "ears_form": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）"
+    },
+    {
+     "status": 403,
+     "code": "FORBIDDEN",
+     "body": {
+      "error": "forbidden"
+     },
+     "trigger": "権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした",
+     "ears_form": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）"
+    },
+    {
+     "status": 404,
+     "code": "NOT_FOUND",
+     "body": {
+      "error": "not_found"
+     },
+     "trigger": "無い・消えた・取り消された（期限切れ・削除済み・他社の行）",
+     "ears_form": "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）"
+    },
+    {
+     "status": 422,
+     "code": "VALIDATION_ERROR",
+     "body": {
+      "error": "validation_failed",
+      "details": []
+     },
+     "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）",
+     "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+    },
+    {
+     "status": 429,
+     "code": "RATE_LIMITED",
+     "body": {
+      "error": "rate_limited",
+      "retry_after_sec": 60
+     },
+     "trigger": "60/min/user",
+     "ears_form": "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す"
+    }
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN PATCH /api/v1/memories/:id が「上がってきた記憶と食い違いを確かめる」として呼ばれたとき THEN Kaname は「memory_proposals の状態（送った／OK／差し戻し）。確認者がいない層は 1 つ上へ。決まったら両者に知らせる」を行い 2xx を返す（自動側：同じことへの食い違う提案を 1 件にまとめ、両方の根拠を並べる）",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+    "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
+    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UBIQUITOUS: PATCH /api/v1/memories/:id の副作用は関門 C2・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+   ],
+   "outward_side_effects": [
+    "通知送出"
+   ],
+   "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
+   "description": "更新（memories）— 上の層に上がってきた記憶と、メンバー同士の食い違いを確か",
+   "implementation_path": "apps/api/src/routes/memories.ts::patchMemoriesById",
+   "inputs": {
+    "path": [
+     "id"
+    ],
+    "body": "memories の入力（types.ts の MemoriesInput）",
+    "query": []
+   },
+   "outputs_2xx": {
+    "status": 200,
+    "body": "{ data: Memories, meta?: { cursor, limit, total } }"
+   },
+   "id": "EP-042",
    "feature_id": "F-013"
   },
   {
    "method": "GET",
    "path": "/api/v1/messages",
    "acts": [
-    "A14"
+    "A14",
+    "A92"
    ],
    "screens": [
     "today"
    ],
    "related_entities": [
-    "E-028",
-    "E-030",
-    "E-039"
+    "E-033",
+    "E-035",
+    "E-049"
    ],
    "choke_points": [],
    "source": [
     "D-008",
     "D-010",
     "D-024",
-    "D-024.1"
+    "D-024.1",
+    "D-105.2",
+    "D-105.3",
+    "D-105.4",
+    "D-105.5",
+    "D-105.7"
    ],
    "features": [
     "F-004"
@@ -4585,6 +5161,7 @@
    ],
    "ears_ac_seed": [
     "EVENT-DRIVEN: WHEN GET /api/v1/messages が「申し送りを読む」として呼ばれたとき THEN Kaname は「タスクと承認待ちを集約」を行い 2xx を返す（自動側：自分のAIが夜間の結果をまとめ、今日の並びを決める）",
+    "EVENT-DRIVEN: WHEN GET /api/v1/messages が「昨日の会話をまとめる」として呼ばれたとき THEN Kaname は「memory_digests に 1 行（溜まった日数・結果）。個人の記憶は memories に自動で入れ、整理の前後を残す」を行い 2xx を返す（自動側：自分のAI が溜まった会話と承認・差し戻しを読み、覚えた／まとめた／上げる候補／捨てた に分ける）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
@@ -4595,7 +5172,7 @@
     "モデル呼び出し"
    ],
    "side_effect_ordering": null,
-   "description": "取得（messages）— 今日ひらいて、自分のAIの申し送りを読む",
+   "description": "取得（messages）— 今日ひらいて、自分のAIの申し送りを読む／毎朝「昨日の会話をまとめる」を押して、自分のAIに記憶を",
    "implementation_path": "apps/api/src/routes/messages.ts::getMessages",
    "inputs": {
     "path": [],
@@ -4611,7 +5188,7 @@
     "status": 200,
     "body": "{ data: Messages[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-039",
+   "id": "EP-043",
    "feature_id": "F-004"
   },
   {
@@ -4624,9 +5201,9 @@
     "today"
    ],
    "related_entities": [
-    "E-028",
-    "E-030",
-    "E-039"
+    "E-033",
+    "E-035",
+    "E-049"
    ],
    "choke_points": [
     "C2",
@@ -4738,7 +5315,7 @@
     "status": 200,
     "body": "{ data: Messages, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-040",
+   "id": "EP-044",
    "feature_id": "F-004"
   },
   {
@@ -4751,9 +5328,9 @@
     "today"
    ],
    "related_entities": [
-    "E-028",
-    "E-030",
-    "E-039"
+    "E-033",
+    "E-035",
+    "E-049"
    ],
    "choke_points": [
     "C2",
@@ -4855,7 +5432,7 @@
     "status": 200,
     "body": "{ data: Messages, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-041",
+   "id": "EP-045",
    "feature_id": "F-004"
   },
   {
@@ -4868,10 +5445,10 @@
     "notices"
    ],
    "related_entities": [
-    "E-064",
-    "E-065",
-    "E-066",
-    "E-068"
+    "E-075",
+    "E-076",
+    "E-077",
+    "E-080"
    ],
    "choke_points": [
     "C2",
@@ -4883,7 +5460,8 @@
     "D-043.2",
     "D-075.2",
     "D-075.3",
-    "D-076.9"
+    "D-076.9",
+    "D-104.19"
    ],
    "features": [
     "F-015"
@@ -4974,7 +5552,7 @@
     "status": 200,
     "body": "{ data: NoticeDeliveries, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-042",
+   "id": "EP-046",
    "feature_id": "F-015"
   },
   {
@@ -4987,10 +5565,10 @@
     "ops-notices"
    ],
    "related_entities": [
-    "E-064",
-    "E-065",
-    "E-066",
-    "E-069"
+    "E-075",
+    "E-076",
+    "E-077",
+    "E-081"
    ],
    "choke_points": [
     "C2",
@@ -5087,7 +5665,7 @@
     "status": 201,
     "body": "{ data: Notices, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-043",
+   "id": "EP-047",
    "feature_id": "F-016"
   },
   {
@@ -5100,10 +5678,10 @@
     "ops-audit"
    ],
    "related_entities": [
-    "E-041",
-    "E-060",
-    "E-061",
-    "E-062"
+    "E-052",
+    "E-071",
+    "E-072",
+    "E-073"
    ],
    "choke_points": [
     "C2"
@@ -5196,7 +5774,7 @@
     "status": 200,
     "body": "{ data: OpsMembers, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-044",
+   "id": "EP-048",
    "feature_id": "F-019"
   },
   {
@@ -5209,10 +5787,10 @@
     "ops-home"
    ],
    "related_entities": [
-    "E-069",
-    "E-070",
-    "E-071",
-    "E-073"
+    "E-081",
+    "E-082",
+    "E-083",
+    "E-085"
    ],
    "choke_points": [],
    "source": [
@@ -5290,7 +5868,7 @@
     "status": 200,
     "body": "{ data: Plans[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-045",
+   "id": "EP-049",
    "feature_id": "F-014"
   },
   {
@@ -5303,10 +5881,10 @@
     "ops-tenant"
    ],
    "related_entities": [
-    "E-069",
-    "E-070",
-    "E-071",
-    "E-073"
+    "E-081",
+    "E-082",
+    "E-083",
+    "E-085"
    ],
    "choke_points": [
     "C2"
@@ -5396,7 +5974,7 @@
     "status": 200,
     "body": "{ data: Plans, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-046",
+   "id": "EP-050",
    "feature_id": "F-014"
   },
   {
@@ -5409,10 +5987,10 @@
     "policies"
    ],
    "related_entities": [
-    "E-032",
-    "E-035",
-    "E-057",
-    "E-058"
+    "E-037",
+    "E-040",
+    "E-068",
+    "E-069"
    ],
    "choke_points": [
     "C2"
@@ -5425,7 +6003,9 @@
     "D-040.1",
     "D-041",
     "D-042.2",
-    "D-066.10"
+    "D-066.10",
+    "D-104.14",
+    "D-107.2"
    ],
    "features": [
     "F-006"
@@ -5514,7 +6094,7 @@
     "status": 200,
     "body": "{ data: Policies, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-047",
+   "id": "EP-051",
    "feature_id": "F-006"
   },
   {
@@ -5527,10 +6107,10 @@
     "app-setup"
    ],
    "related_entities": [
-    "E-050",
-    "E-067",
-    "E-068",
-    "E-090"
+    "E-061",
+    "E-079",
+    "E-080",
+    "E-103"
    ],
    "choke_points": [
     "C2",
@@ -5634,7 +6214,7 @@
     "status": 200,
     "body": "{ data: PushDevices, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-048",
+   "id": "EP-052",
    "feature_id": "F-017"
   },
   {
@@ -5647,10 +6227,10 @@
     "services"
    ],
    "related_entities": [
-    "E-035",
-    "E-037",
-    "E-057",
-    "E-058"
+    "E-040",
+    "E-042",
+    "E-068",
+    "E-069"
    ],
    "choke_points": [
     "C1",
@@ -5769,7 +6349,7 @@
     "status": 201,
     "body": "{ data: ServiceRegistry, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-049",
+   "id": "EP-053",
    "feature_id": "F-017"
   },
   {
@@ -5782,10 +6362,10 @@
     "ops-services"
    ],
    "related_entities": [
-    "E-032",
-    "E-035",
-    "E-057",
-    "E-058"
+    "E-037",
+    "E-040",
+    "E-068",
+    "E-069"
    ],
    "choke_points": [
     "C2"
@@ -5883,7 +6463,7 @@
     "status": 200,
     "body": "{ data: ServiceRegistryVersions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-050",
+   "id": "EP-054",
    "feature_id": "F-018"
   },
   {
@@ -5896,10 +6476,10 @@
     "security-brief"
    ],
    "related_entities": [
-    "E-041",
-    "E-050",
+    "E-052",
     "E-061",
-    "E-062"
+    "E-072",
+    "E-073"
    ],
    "choke_points": [],
    "source": [
@@ -5981,7 +6561,7 @@
     "status": 200,
     "body": "{ data: Sessions[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-051",
+   "id": "EP-055",
    "feature_id": "F-012"
   },
   {
@@ -5994,8 +6574,9 @@
     "bridge-setup"
    ],
    "related_entities": [
-    "E-034",
-    "E-050"
+    "E-039",
+    "E-061",
+    "E-078"
    ],
    "choke_points": [
     "C2",
@@ -6012,7 +6593,8 @@
     "D-055",
     "D-055.1",
     "D-055.2",
-    "D-055.3"
+    "D-055.3",
+    "D-109.3"
    ],
    "features": [
     "F-001"
@@ -6085,7 +6667,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/sessions が「インストーラを入れて許可する」として呼ばれたとき THEN Kaname は「端末を登録、トークン発行。LLM経路＝Bridge を確定」を行い 2xx を返す（自動側：Bridgeが自己診断して結果を返す。つながるまで自分のAIは話せない）",
+    "EVENT-DRIVEN: WHEN POST /api/v1/sessions が「Bridge を入れて開き、「Claude Code を入れる」を押し、ログインを 1 回承認して、つなぐ」として呼ばれたとき THEN Kaname は「端末を登録、トークン発行。LLM経路＝Bridge を確定」を行い 2xx を返す（自動側：Bridge は PC の起動時に立ち上がる。止まっていれば画面のボタン 1 つで起こせる。Bridge が Claude Code を入れ、自己診断して結果を返す）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
@@ -6109,7 +6691,7 @@
     "status": 201,
     "body": "{ data: Sessions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-052",
+   "id": "EP-056",
    "feature_id": "F-001"
   },
   {
@@ -6122,10 +6704,10 @@
     "ops-skills"
    ],
    "related_entities": [
-    "E-082",
-    "E-083",
-    "E-084",
-    "E-085"
+    "E-095",
+    "E-096",
+    "E-097",
+    "E-098"
    ],
    "choke_points": [
     "C2",
@@ -6230,7 +6812,7 @@
     "status": 201,
     "body": "{ data: Skills, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-053",
+   "id": "EP-057",
    "feature_id": "F-018"
   },
   {
@@ -6245,10 +6827,10 @@
     "signup"
    ],
    "related_entities": [
-    "E-069",
-    "E-070",
-    "E-071",
-    "E-073"
+    "E-081",
+    "E-082",
+    "E-083",
+    "E-085"
    ],
    "choke_points": [
     "C2",
@@ -6348,7 +6930,7 @@
     "status": 201,
     "body": "{ data: Subscriptions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-054",
+   "id": "EP-058",
    "feature_id": "F-001"
   },
   {
@@ -6361,10 +6943,10 @@
     "billing"
    ],
    "related_entities": [
-    "E-069",
-    "E-070",
-    "E-071",
-    "E-073"
+    "E-081",
+    "E-082",
+    "E-083",
+    "E-085"
    ],
    "choke_points": [
     "C2"
@@ -6440,7 +7022,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN PATCH /api/v1/subscriptions/:id が「プランと請求書を見る」として呼ばれたとき THEN Kaname は「プラン・利用量・請求書を読む。プラン変更を申請」を行い 2xx を返す（自動側：自分のAIが上限に近いものを先に言う）",
+    "EVENT-DRIVEN: WHEN PATCH /api/v1/subscriptions/:id が「プランと請求書を見る」として呼ばれたとき THEN Kaname は「プラン・利用量・請求書を読む。プラン変更を申請。上限の見込みは仕事ごとに残した使った量（往復数・時間・量）から出す」を行い 2xx を返す（自動側：自分のAIが上限に近いものを先に言う）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
@@ -6463,7 +7045,7 @@
     "status": 200,
     "body": "{ data: Subscriptions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-055",
+   "id": "EP-059",
    "feature_id": "F-015"
   },
   {
@@ -6477,10 +7059,10 @@
     "tasks"
    ],
    "related_entities": [
-    "E-010",
-    "E-013",
-    "E-028",
-    "E-029"
+    "E-011",
+    "E-014",
+    "E-033",
+    "E-034"
    ],
    "choke_points": [],
    "source": [
@@ -6583,7 +7165,7 @@
     "status": 200,
     "body": "{ data: Tasks[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-056",
+   "id": "EP-060",
    "feature_id": "F-004"
   },
   {
@@ -6597,10 +7179,10 @@
     "tasks"
    ],
    "related_entities": [
-    "E-010",
-    "E-013",
-    "E-028",
-    "E-029"
+    "E-011",
+    "E-014",
+    "E-033",
+    "E-034"
    ],
    "choke_points": [
     "C2",
@@ -6620,7 +7202,8 @@
     "D-066",
     "D-066.9",
     "D-068",
-    "D-068.7"
+    "D-068.7",
+    "D-104.15"
    ],
    "features": [
     "F-004"
@@ -6721,7 +7304,7 @@
     "status": 201,
     "body": "{ data: Tasks, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-057",
+   "id": "EP-061",
    "feature_id": "F-004"
   },
   {
@@ -6735,10 +7318,10 @@
     "tasks"
    ],
    "related_entities": [
-    "E-010",
-    "E-013",
-    "E-028",
-    "E-029"
+    "E-011",
+    "E-014",
+    "E-033",
+    "E-034"
    ],
    "choke_points": [
     "C2",
@@ -6849,7 +7432,7 @@
     "status": 200,
     "body": "{ data: Tasks, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-058",
+   "id": "EP-062",
    "feature_id": "F-004"
   },
   {
@@ -6868,9 +7451,9 @@
    ],
    "related_entities": [
     "E-001",
-    "E-010",
-    "E-017",
-    "E-022"
+    "E-011",
+    "E-018",
+    "E-023"
    ],
    "choke_points": [],
    "source": [
@@ -6892,7 +7475,14 @@
     "D-028.4",
     "D-030",
     "D-030.3",
-    "D-039.1"
+    "D-039.1",
+    "D-110.2",
+    "D-116.1",
+    "D-116.2",
+    "D-116.3",
+    "D-116.4",
+    "D-116.5",
+    "D-116.6"
    ],
    "features": [
     "F-001",
@@ -6954,7 +7544,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN GET /api/v1/tenants が「出てきたたたき台を見る」として呼ばれたとき THEN Kaname は「会社モデルの下書きを保存」を行い 2xx を返す（自動側：自分のAIが目標・台帳定義・担当業務・AI社員の初期案を作る）",
+    "EVENT-DRIVEN: WHEN GET /api/v1/tenants が「出てきたたたき台を見る」として呼ばれたとき THEN Kaname は「会社モデルの下書きを保存（道具の口 /bridge/tool が DB の関数で書き、証跡に残す）」を行い 2xx を返す（自動側：自分のAIが目標・台帳定義・担当業務・AI社員の初期案を作り、Kaname の道具（MCP・その仕事の間だけの鍵）で置く）",
     "EVENT-DRIVEN: WHEN GET /api/v1/tenants が「違うところを言う」として呼ばれたとき THEN Kaname は「会社モデルの下書きを更新」を行い 2xx を返す（自動側：自分のAIが直して出し直す）",
     "EVENT-DRIVEN: WHEN GET /api/v1/tenants が「本番に切り替える」として呼ばれたとき THEN Kaname は「会社モデルを確定、自動実行を有効化」を行い 2xx を返す（自動側：自分のAIが未設定を洗い出して止める）",
     "EVENT-DRIVEN: WHEN GET /api/v1/tenants が「会社モデルの全体を見る」として呼ばれたとき THEN Kaname は「会社モデルの現在の版を読む」を行い 2xx を返す（自動側：自分のAIが直近で変わったところを示す）",
@@ -6985,7 +7575,7 @@
     "status": 200,
     "body": "{ data: Tenants[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-059",
+   "id": "EP-063",
    "feature_id": "F-001"
   },
   {
@@ -6999,9 +7589,9 @@
    ],
    "related_entities": [
     "E-001",
-    "E-010",
-    "E-017",
-    "E-022"
+    "E-011",
+    "E-018",
+    "E-023"
    ],
    "choke_points": [
     "C2"
@@ -7098,7 +7688,7 @@
     "status": 200,
     "body": "{ data: Tenants, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-060",
+   "id": "EP-064",
    "feature_id": "F-017"
   }
  ],

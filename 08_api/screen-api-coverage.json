@@ -1,10 +1,10 @@
 {
  "version": "v3.1",
  "skill": "api-design",
- "frozen_at": "2026-09-20",
+ "frozen_at": "2026-09-29",
  "summary": {
   "total_screens": 64,
-  "total_apis": 60,
+  "total_apis": 64,
   "coverage_rate": 1.0,
   "uncovered_screens": [],
   "acts_without_endpoint": []
@@ -40,6 +40,7 @@
    ],
    "transitions": [
     "bridge-setup",
+    "login",
     "signup"
    ],
    "coverage_status": "OK",
@@ -365,6 +366,11 @@
      "role": "action",
      "endpoint": "DELETE /api/v1/messages/:id",
      "act": "A56"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/messages",
+     "act": "A92"
     }
    ],
    "transitions": [
@@ -633,6 +639,31 @@
      "role": "data_fetch",
      "endpoint": "GET /api/v1/conversations",
      "act": "A20"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/conversations",
+     "act": "A88"
+    },
+    {
+     "role": "action",
+     "endpoint": "DELETE /api/v1/conversations/:id",
+     "act": "A89"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/conversations",
+     "act": "A90"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/conversations",
+     "act": "A91"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/conversations/:id",
+     "act": "A95"
     }
    ],
    "transitions": [
@@ -640,6 +671,7 @@
     "account-close",
     "ai-activity",
     "ai-staff",
+    "ai-staff-detail",
     "approvals",
     "audit",
     "automation-repair",
@@ -1393,6 +1425,11 @@
      "role": "action",
      "endpoint": "POST /api/v1/memories",
      "act": "A30"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/memories/:id",
+     "act": "A93"
     }
    ],
    "transitions": [
@@ -2361,6 +2398,11 @@
      "role": "action",
      "endpoint": "PATCH /api/v1/members/:id",
      "act": "A74"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/members",
+     "act": "A94"
     }
    ],
    "transitions": [

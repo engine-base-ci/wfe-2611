@@ -1,6 +1,6 @@
 # Kaname ER 図 v1.1（段階 1 の範囲）
 
-作成 2026-09-08 ／ 更新 2026-09-15（D-069〜D-077：層と権限・出来事と失効・運営・往復するもの・取り込みと連携を追加）/ DB: PostgreSQL 16+ (pgvector) / ORM: Drizzle
+作成 2026-09-08 ／ 更新 2026-09-27（D-098：検索用のベクトルと、それを作るモデル）／ 2026-09-15（D-069〜D-077：層と権限・出来事と失効・運営・往復するもの・取り込みと連携を追加）/ DB: PostgreSQL 16+ (pgvector) / ORM: Drizzle
 推定テーブル数: **77**（段階 1。§1〜§6 の 37 ＋ §7 マスタ 8 ＋ §9〜§13 の 38。カード決済（段階 2・D-002）と BYOK／運営マネージド（段階 2・D-055）だけが後）
 
 ---
@@ -39,7 +39,8 @@ erDiagram
 | `tenants` | `<common>` / `name` / `plan_id` / `status_id` | 契約の単位 |
 | `scopes` | `<common>` / `parent_id` / `layer_id` / `name` | **4 層の実体**（運営／会社／部署／個人）。層は省略可 |
 | `member_kinds` | `key` / `label` | **マスタ**（human / ai_employee / clone / 将来 guest） ← E20 |
-| `members` | `<scoped>` / `kind_id` / `display_name` / `role_id` / `manager_member_id` / `auth_user_id`（認証の利用者。Better Auth の user。AI社員・自分のAI は null） | **人間と AI が同じ席に座る** |
+| `members` | `<scoped>` / `kind_id` / `display_name` / `role_id` / `manager_member_id` / `auth_user_id`（認証の利用者。Better Auth の user。AI社員・自分のAI は null） / `setup_step`（はじめの設定をどこまで通したか 0〜6・D-089）/ **`agent_permission_mode`**（自分のAI の許可のモード。既定 default。全部許可は本人が選んだときだけ・D-104.14）/ **`agent_model`** / **`agent_effort`**（本人が選んだモデルと考える強さ・D-104.13） | **人間と AI が同じ席に座る**。はじめの設定の進み具合は人ごと（Bridge はその人の PC・ログイン情報はその人が預ける） |
+| `setup_steps` | `n`（1〜6・PK） / `label` | **マスタ**（`<common>`）。はじめの設定の段の名前。1 PCをつなぐ／2 話す／3 たたき台／4 ログイン情報／5 テスト／6 本番へ（D-089） |
 | `clones` | `<common>` / `owner_member_id` / `persona` | 各個人の写し。1 人 1 体 |
 | `ai_employees` | `<scoped>` / `member_id` / `provisioning_id` / `template_ref` | ← E19（出どころ）|
 
@@ -69,7 +70,7 @@ erDiagram
 | `goals` | `<versioned>` / **`ended_at`**（無くす＝消さない）/ `parent_id` / **`rollup_kind_id`** / **`rollup_spec jsonb`** / `kind_id` / `period_start` / `period_end` / `target_value` / `unit_id` / `origin_id` | `origin` = 配られた／自主。**`rollup_kind` は「この目標が親にどう積み上がるか」**。`rollup_spec` は変換の定義（式・係数）を入れる**開いた器**。中身は目標設定スキルが決める |
 | `goal_allocations` | `<common>` / `goal_id` / `assignee_member_id` / `allocated_value` / `agreement_status_id` | **`rollup_kind = sum` のときだけ使う。** 未配分＝親の target − 子の合計 |
 | **`goal_contributions`** | `<common>` / `child_goal_id` / `parent_goal_id` / `hypothesis_id` / `verdict_id` | **★新設。`rollup_kind = none` のとき、どの仮説で親に効くかを繋ぐ。**効いたかは `validations` で検証する |
-| `goal_versions` | `<common>` / `goal_id` / `version` / `snapshot jsonb` / `changed_at` / `changed_by` | 期中変更の履歴。会社のデータなので `<common>`（tenant_id で分離。全員が読めるマスタではない） |
+| `goal_versions` | `<common>` / `goal_id` / `version` / **`name`**（目標の名前。今期の売上 など ← D-108.1）/ `snapshot jsonb` / `changed_at` / `changed_by` | 期中変更の履歴。会社のデータなので `<common>`（tenant_id で分離。全員が読めるマスタではない）。**目標の名前は版に持ち、画面は今の版（goals.version と同じ版）の名前を出す（D-108.1）** |
 | `hypotheses` | `<scoped>` / `goal_id` / `statement` / `evidence` | **目標とタスクの間の層** |
 | `measures` | `<scoped>` / `hypothesis_id` / `statement` / `expected_effect` | 施策 |
 | `validations` | `<common>` / `measure_id` / `measured_value` / `verdict_id` / `measured_at` | 検証 |
@@ -125,7 +126,11 @@ erDiagram
 | `learned_procedures` | `<scoped>` / `duty_id` / `target_service_id` / `status_id` / `run_count` / `avg_ms` / `fail_count` / `last_verified_at` | `status` = learning / mastered / needs_review |
 | `procedure_steps` | `<common>` / `procedure_id` / `order_no` / `intent_ja` / `locator jsonb` / `is_variable` | **`intent_ja` が顧客に見える日本語**。`locator` は隠す |
 | `memory_kinds` | `key` / `label` | **マスタ**（rule / preference / example） |
-| `memories` | `<scoped>` / `kind_id` / `owner_member_id` / `title` / `body` / `confidence numeric(3,2)` / `source_type_id` / `source_ref_id` / **`embedding vector(N)`** / `approved_by` / `approved_at` | **HNSW 索引**。`example` のみ埋め込みを持つ |
+| `memories` | `<scoped>` / `kind_id` / `owner_member_id` / `title` / `body` / `confidence numeric(3,2)` / `source_type_id` / `source_ref_id` / `approved_by` / `approved_at` / **`digest_id`**（どの朝のまとめで入ったか ← D-105.2）/ **`superseded_by`**（整理で置き換えた先。前は残して戻せる ← D-105.5） | `kind` の rule＝**決まり（上の層ほど強い）**・preference／example＝**好み・やり方（本人に近い層ほど強い）**（D-105.8）。個人の範囲は自分のAI が自動で入れる（D-105.5）。本文に **PGroonga** の索引。意味の検索用のベクトルは `search_embeddings` に持つ（D-098.10） |
+| **`memory_digests`** | `<common>` / `member_id` / `from_on date` / `to_on date` / `conversation_count int` / `state_id`（running／done／failed）/ `result jsonb`（覚えた／まとめた〔前と後〕／上げる候補／捨てた）/ `bridge_job_id` / `started_at` / `finished_at` | **★新設（D-105.2・D-105.3・D-105.4）。本人だけが読む。**記憶のまとめ。毎朝本人が「今日」で押して始める（時間で勝手に動かさない）。押さない日は溜まり、次に押したときに `from_on`〜`to_on` をまとめる。読むのは会話（`incognito` を除く）と、その日の承認・差し戻し |
+| **`memory_proposals`** | `<scoped>` / `memory_id`（送った人の個人の記憶）/ `target_scope_id`（上げ先の層）/ `proposer_member_id` / `reviewer_member_id` / `state_id`（sent／accepted／returned）/ `conflict_group_id`（同じことへの食い違う提案の束）/ `evidence jsonb`（誰のどの会話から）/ `decided_at` | **★新設（D-105.6・D-105.9）。**上げる候補。上げ先は自分のAI が選び、本人が変えて送る。OK までは送った人の個人の記憶として効く。確認者がいない層は 1 つ上の層へ、最後は会社の代表（D-105.6）。決まったら束の全員に知らせる |
+| `embedding_models` | `key` / `label` / `dim int` / `state_id`（active ／ building ／ retired）/ `artifact_url` / `sha256` | **段階 1 は作らない**（入れる境を越えたら・D-099.2）。**マスタ（運営）**。検索用のベクトルを作るモデル。使用中は 1 つ。替えるときは building で足し、そろったら active に切り替えて古いものを retired（D-098.4・D-098.5・D-099.4・D-099.6） |
+| `search_embeddings` | `<scoped>` / `target_type_id`（memories ／ ledger_records ／ audit_events）/ `target_id` / `model_id` / `chunk_no` / `content_hash` / `embedding vector` | **段階 1 は作らない**（入れる境を越えたら・D-099.2）。**検索用のベクトル**（D-098.4）。作るのは本人の PC（Bridge）。PC が無い会社だけ段階 2 のサーバーで同じモデル（D-099.3）。次元はモデルごと（`vector` に次元を付けず、モデルごとに `(embedding::vector(dim))` の HNSW 部分索引）。本文が直されたら `content_hash` が変わった行だけ作り直す（D-098.6）。見えるかは元の行の行レベルの制御で決まる（D-098.3） |
 
 ---
 
@@ -141,6 +146,7 @@ erDiagram
   triggers ||--o{ tasks : "発火して作る"
   members ||--o{ daily_plans : "朝に確定"
   daily_plans ||--o{ tasks : "今日やる分"
+  artifacts ||--o{ artifact_versions : "版"
 ```
 
 | テーブル | 主な列 | 備考 |
@@ -152,9 +158,9 @@ erDiagram
 | `policies` | `<scoped>` / `subject_kind_id` / `action_kind_id` / `mode_id` / `params jsonb` / `is_locked` | `mode` = auto / approve / off。`is_locked` ＝ **運営の安全ルール（上書き不可）** ← **E8** |
 | `approvals` | `<scoped>` / `action_run_id` / `requested_by` / `approver_member_id` / `status_id` / `resolved_at` / `note` | **すべての提案の入口** |
 | `action_runs` | `<scoped>` / `task_id` / `action_kind_id` / **`choke_point_id`** / `service_id` / `procedure_id` / `status_id` / `started_at` / `finished_at` / `tokens_in` / `tokens_out` / `cost` / `error_summary` | **`choke_point_id` を記録**（どの関門を通ったか） |
-| `service_registry` | `<common>` / `name` / `domain` / `automation_verdict_id` / `notes` | `verdict` = api / allowed / unspecified / **forbidden** / **bank** |
+| `service_registry` | `<common>` / `name` / `domain` / `automation_verdict_id` / `notes` | `verdict` = api / allowed / unspecified / **forbidden** / **bank**。forbidden と bank の `domain` は、仕事を渡すたびに Bridge が本人の Claude Code に「使わない道具」とフックの一覧として渡す（D-107.1〜D-107.3）。見抜けない形は `notes` に書く（D-107.6） |
 | `credential_kinds` | `key` / `label` | **マスタ**（password_totp / oauth2 / api_key / basic / email_otp / saml）← **E15** |
-| `credentials` | `<scoped>` / `service_id` / `kind_id`（＋ llm_api_key・D-083.3）/ `provider_id`（anthropic ／ openai ／ google）/ **`vault_ref`** / `owner_member_id` / `revoked_at` | **実体は持たない。vault の参照 ID のみ** |
+| `credentials` | `<scoped>` / `service_id` / **`service_name`**（本人が入れたサービス名 ← D-108.4）/ **`service_domain`**（宛先 ← D-108.4）/ `kind_id`（＋ llm_api_key・D-083.3）/ `provider_id`（anthropic ／ openai ／ google）/ **`vault_ref`** / `owner_member_id` / `revoked_at` | **実体は持たない。vault の参照 ID のみ**。一覧は `app.my_credentials`（サービス名・台帳の可否・状態だけ・D-108.3） |
 
 ---
 
@@ -162,9 +168,15 @@ erDiagram
 
 | テーブル | 主な列 | 備考 |
 |---|---|---|
-| `conversations` | `<scoped>` / `title` / `participant_member_ids uuid[]` / **`area`**（領域＝営業／経理／会社全体…）/ **`subject_type` + `subject_id`**（対象＝案件・目標・施策・タスク）/ **`parent_conversation_id`**（流れ＝分岐元） | 人↔AI・人↔人・AI↔AI を区別しない。**3 層（領域×対象×流れ）で引ける ← D-062** |
-| `messages` | `<common>` / `conversation_id` / `sender_member_id` / `body` / `attachments jsonb` / `action_run_id` / **`kind`**（text／question／approval／receipt／status／error）/ **`options jsonb`**（選択肢。必ず「その他」「あとで」を含む）/ **`confidence`**（high／check）/ **`citations jsonb`**（台帳行・記憶・証跡の参照）/ **`parent_message_id`**（分岐）/ **`undo_action_run_id`**（取り消し先）/ `read_at` | **会話の部品 1 組を列で持つ ← D-066**。受領・取り消しは `action_runs` / `audit_events` の実体があるときだけ描く |
-| `artifacts` | `<scoped>` / `task_id` / `format_id` / `storage_ref` / `template_id` / `approved_by` | `format` = pdf / pptx / xlsx / docx / md / html / csv ← **E13** |
+| `conversations` | `<scoped>` / `title` / `participant_member_ids uuid[]` / **`area`**（領域＝営業／経理／会社全体…）/ **`subject_type` + `subject_id`**（対象＝案件・目標・施策・タスク）/ **`parent_conversation_id`**（流れ＝分岐元）/ **`agent_session_id`**（本人の Claude Code の続きの id。文脈そのものは Claude Code が持ち、ここは対応だけ ← D-090.1）/ `branched_from_message_id`（ここから分岐 ← D-090.3）/ `owner_member_id` / `closed_at`（「新しい会話」で閉じる ← D-062）/ **`title_auto bool`**（名前を自分のAIが付けたか。人が直したら false ← D-104.1）/ **`starred_at`**（星 ← D-104.1）/ **`incognito bool`**（記憶に残さない会話＝毎朝のまとめから外す ← D-104.1）/ **`last_read_at`**（見ていない間の返事の印 ← D-104.18）/ `deleted_at`（消す） | 人↔AI・人↔人・AI↔AI を区別しない。**会話は人が「新しく話す」で分け、一覧から戻る（D-104.1）。1 会話＝本人の Claude Code の 1 セッション**。一覧の探すは `title` と `messages.body` の PGroonga。領域・対象の列は残すが一覧の整理には使わない（D-062.5 を D-104.1 で改めた）。Bridge 経路の文脈は二重に持たない（← D-090.1） |
+| **`bridge_jobs`** | `<scoped>` / `member_id` / `conversation_id` / `state_id`（`bridge_job_states`）/ `prompt` / `agent_session_id` / `result` / **`partial`**（書きながら出る返事の途中。終わると `result` と同じになる ← D-104.8）/ `stopped_reason`（そのまま人に見せる文）/ **`permission_mode`**（manual／acceptEdits／auto／plan／bypassPermissions。全部許可は本人が選んだときだけ ← D-104.14）/ **`model`** / **`effort`**（本人のサブスクで使えるものだけ ← D-104.13）/ **`tools text[]`**（使うもの＝スキル・道具 ← D-104.13）/ **`attachment_ids uuid[]`**（付けた資料 ← D-104.11）/ **`steer_seq`**（止めずに送った文の数 ← D-104.9）/ **`tool_token_hash`**（Kaname の道具の鍵のハッシュ。仕事を渡すたびに作り、その仕事が動いている間だけ効く ← D-110.3）/ **`browser`**（その仕事だけのブラウザの指定。もう一度確かめる仕事は chrome。空なら会話の仕事は端末の選択・それ以外は使わない ← D-120.1・D-120.3）/ `started_at` / `finished_at` | **★新設（D-090.2・D-090.4・D-090.5）。**自分のAIに言ったことの並び。Bridge が 1 件ずつ取り（`app.bridge_take_job`・`for update skip locked`）、結末を返す（`app.bridge_finish_job`）。**止まったものは `stopped` のまま残り、自動で再開しない。**続けるかは次に送る文で決まる（D-104.15。ボタンで選ばせない）。**動いている間に送った文は `queued` の行として順番待ちに並び、取り消すと `cancelled`（D-104.9）。止めずに直す文は `bridge_job_events(kind=steer)` で動いている仕事に渡す** |
+| `bridge_job_states` | `key`（PK）/ `label` | **マスタ**（`<common>`）。待っている／動いている／終わった／止まった（人が選ぶまでそのまま）／やめた（D-090.4）／**確認待ち**（本人が許可するまで・D-093.3） |
+| **`bridge_job_events`** | `<scoped>` / `member_id` / `job_id`（`bridge_jobs`）/ `kind`（init／progress／ask／answer／tool／usage／**status**〔「〇〇を調べています」の 1 行〕／**plan**〔手順のチェックリスト〕／**steer**〔止めずに直す文〕／**stop**〔止める〕／**question**〔自分のAIからの問い合わせ：問い・選択肢・見本・複数〕／**limit**〔サブスクの使用量〕 ← D-104.7・D-104.8・D-104.9・D-104.16）/ `seq` / `request_id`（確認とその答えを結ぶ）/ `payload jsonb`（progress: text ／ ask: tool・input・summary ／ answer: allow・scope（once／always）・note ／ tool: name・target・ok・ms ／ usage: turns・duration_ms・input_tokens・output_tokens・cost_usd） | **★新設（D-093.2・D-093.3・D-093.4・D-093.7・D-093.8）。**公式 CLI の 1 行 1 イベントのうち、人に見せるものと本人の答え。`init` で会話の id を先に覚える（落ちても続きから）。確認の答えは `audit_events`（`bridge.tool_allowed`／`tool_denied`・関門 C5）にも出す。書くのは `app.bridge_progress` / `app.bridge_ask` / `app.agent_answer`、読むのは `app.agent_state`。**仕事の記録（D-100.1・D-100.2）**：道具の呼び出しと使った量を残す。**中身の全文（ファイルの中身・道具の返り値）は残さない**（D-100.3）。会話に出すのは progress だけ |
+| **`permission_rules`** | `<scoped>` / `member_id` / `tool` / `target_pattern` / `decision_id`（allow／deny）/ `bridge_job_event_id`（「いつも」を押した問い）/ `revoked_at` | **★新設（D-104.14）。本人だけが読む。**許可の決まり。本人が「いつも」にした道具と対象。Bridge が仕事を渡すときに Claude Code の許可の一覧として渡す。設定で一覧・取り消し。選んでいるモードは `members.agent_permission_mode`。**全部許可でも、サービス台帳で禁止・銀行のドメインは許可の一覧より強く止める（D-107.2）** |
+| **`agent_usage_snapshots`** | `<common>` / `member_id` / `window_id`（five_hour／week）/ `utilization numeric(5,2)` / `resets_at` / `observed_at` | **★新設（D-104.16）。本人だけが読む。**自分のAIの使用量。Bridge が Claude Code から受けた使用量を最新だけ残す（会員ごと・枠ごとに 1 行を上書き）。近い・達したら会話に案内 |
+| `messages` | `<common>` / `conversation_id` / `sender_member_id` / `body` / `attachments jsonb` / `action_run_id` / **`kind`**（text／question／approval／receipt／status／error）/ **`options jsonb`**（自分のAIからの問い合わせ：問い 1〜4・選択肢・説明・推奨・見本・複数・「その他」← D-104.7。「あとで」は置かない）/ **`confidence`**（high／check）/ **`citations jsonb`**（台帳行・記憶・証跡の参照）/ **`parent_message_id`**（直して送り直した元 ← D-104.17）/ **`quote jsonb`**（一部を選んで引用して続けた元 ← D-104.17）/ **`work jsonb`**（畳んだ作業の 1 行：操作の数・時間 ← D-104.8）/ **`send_state`**（送れなかった＝failed ← D-104.15）/ **`transcript_uuid`**（本人の PC の Claude Code の記録の id。会話の中で一意。自分のAI の文の写し ← D-112）/ **`undo_action_run_id`**（取り消し先）/ `read_at` | **会話の部品 1 組を列で持つ ← D-066**。受領・取り消しは `action_runs` / `audit_events` の実体があるときだけ描く |
+| `artifacts` | `<scoped>` / `task_id` / `format_id` / `storage_ref` / `template_id` / `approved_by` / **`source_message_id`**（会話の返事から書き出した ← D-104.17）/ **`title`**（返事の最初の見出しか最初の行から付き、直せる ← D-106.1）/ **`owner_member_id`**（書き出した人 ← D-106.8）/ **`current_version int`**（今の版 ← D-106.3）/ **`source_conversation_id`**（どの会話から ← D-106.2） | `format` = pdf / pptx / xlsx / docx / md / html / csv ← **E13**。会話から書き出した資料も成果物に入る（手元に落とすのは自由、外に出すときだけ承認）。`storage_ref` は今の版の置き場（版の表と同じ値）。**直す・戻す・読むは `app.artifact_*` の関数を通す**（生の select をしない） |
+| **`artifact_versions`** | `<scoped>` / `artifact_id` / `version int` / `storage_ref` / `size_bytes bigint` / `owner_member_id`（その版を作った人）/ `reverted_from int`（戻したときの元の版）/ `note` | **★新設（D-106.3・D-106.4）。**直すと 1 行増える。戻すのも新しい行（消さない）。`(artifact_id, version)` は一意。中身は置き場（関門 C4） |
 | **`audit_events`** | `<common>` / `actor_member_id` / `actor_role` / `action` / `target_type` / `target_id` / `choke_point_id` / `payload jsonb` / `occurred_at` | **追記専用**（UPDATE / DELETE を許可しない）。パーティション |
 
 ---
@@ -192,7 +204,7 @@ erDiagram
 | 3 | `audit_events` は**追記専用**。UPDATE / DELETE 権限を与えない |
 | 4 | `credentials` は**実体を持たない**。vault の参照 ID のみ。AI に渡すのも参照 ID |
 | 5 | `ledger_records.data` への動的クエリは**許可リスト方式**。文字列連結は CI（ゲート 10）で禁止 |
-| 6 | `memories.embedding` は **HNSW**。次元数はプロバイダ確定後に決定 |
+| 6 | **段階 1 の「探す」は自分のAI が PGroonga（台帳・記憶・証跡の本文）で言い換えを広げて探し、読んで選ぶ。ベクトルは作らない**（D-099.1）。件数と探す時間が境を越えたら `search_embeddings`（モデルごとの HNSW 部分索引・次元はモデルで決まる）を入れる（D-099.2・D-098.4・D-098.5） |
 | 6b | **目標の単位は運営が列挙しない。** `units` は `<scoped>` なので、運営／会社／部署／個人のどの層でも作れる。目標をどう分解するかは**目標設定スキルが決め、Kaname はその出力を受け取る器**（決定ログ §30 構築メタスキル「目標の分解」） |
 | 6c | **`rollup_kind` は「足す／変換して足す／足さない」の3つで論理的に尽きている**（列挙ではなく導出）。増えるのは `rollup_spec` の中身であって、型ではない |
 | 7 | ~~段階 2 以降で追加：plans / plan_limits / usage_meters / invoices / notifications / subscriptions / error_events~~ → **D-069・D-075・D-076 で段階 1 に繰り上げ（§12）。**段階 2 に残るのはカード決済（`payments.method` の追加と関門 C7 の決済プロバイダ）だけ |
@@ -240,7 +252,7 @@ erDiagram
 |---|---|---|
 | **`account_events`** | `<common>` / `kind_id`（member_leave / company_close / suspend / permission_change / plan_change / layer_delete / staff_delete）/ `subject_type` / `subject_id` / `requested_by` / `status_id`（pending / resolving / done）/ `resolved_at` | **★新設（D-074.1・D-076.13）。**出来事 7 つの実体。画面の依存表（G16）はここから |
 | **`account_event_items`** | `<common>` / `event_id` / `object_kind`（flow.json の objects 名）/ `disposition_id`（消える／残る／移る・戻る／止まる／即失効）/ `target_ref` / `decided_by` / `done_at` | **★新設。**オブジェクトごとの「何が起きるか」と引き継ぎ先の決定。全部 done になるまで出来事は終わらない（引き継ぎ先を決めるまで消せない） |
-| **`sessions`** | `<common>` / `member_id` / `kind_id`（web / bridge / api）/ `auth_session_id`（Better Auth のセッション。失効の判定はこの表が正） / `device_label` / `ip_region` / `issued_at` / `last_seen_at` / `revoked_at` / `revoke_reason_id` | **★新設（D-076.1・G-14）。**端末の一覧。退会・停止・権限変更・パスワード変更で **全行を即 revoked** にし、API と Bridge はこの表を見て拒否する（発行済みトークンの有効期限に頼らない） |
+| **`sessions`** | `<common>` / `member_id` / `kind_id`（web / bridge / api）/ `auth_session_id`（Better Auth のセッション。失効の判定はこの表が正） / `device_label` / `ip_region` / `issued_at` / `last_seen_at` / `revoked_at` / `revoke_reason_id` | **★新設（D-076.1・G-14）。**端末の一覧。退会・停止・権限変更・パスワード変更で **全行を即 revoked** にし、API と Bridge はこの表を見て拒否する（発行済みトークンの有効期限に頼らない） / **`health`** / **`health_at`**（Bridge が返した自己診断。Bridge の中で完結させない ← D-090.7）。`last_seen_at` は生存の知らせで動き、75 秒来なければ画面は「切れています」← D-090.8 / **`browser`**（chrome／dedicated／off。この端末で AI が使うブラウザ。Kaname が正本で、PC の画面か Bridge の窓で変える ← D-120.1） |
 | **`support_access_grants`** | `<common>` / `granted_by_member_id` / `scope jsonb`（構成／手順／証跡 …）/ `expires_at` / `revoked_at` / `ops_member_id` | **★新設（D-074.5）。**運営は既定で顧客データを見られない。会社が範囲と期限つきで許可したときだけ、この行を根拠に読める。閲覧は会社側 `audit_events` と運営側 `ops_audit_events` の両方に残る |
 | **`retention_holds`** | `<common>` / `record_type` / `record_ref` / `retain_until` / `legal_basis` | **★新設（D-074.3）。**退会後も法令で残す記録（請求の記録 7 年 等）。消去バッチはこの表の行を除外する |
 | **`erasure_certificates`** | `<common>` / `issued_at` / `content_hash` / `sent_to` / `storage_ref` | **★新設（D-074.3）。**猶予（30 日・復元可）の後の完全消去で自動生成し、会社の代表に送る |
@@ -296,6 +308,7 @@ erDiagram
 | **`notices`** | `<common>`（tenant_id＝運営）/ `kind_id`（release / incident / maintenance / rule_version / individual）/ `title` / `body` / `target_plan_ids uuid[]` / `target_tenant_id` / `publish_at` / `published_by` | **★新設（D-075.2・D-077.8）。**全体のお知らせも会社ごとのお知らせも同じ表（`target_tenant_id` の有無） |
 | **`notice_deliveries`** | `<common>` / `notice_id` / `member_id` / `delivered_at` / `read_at` | 会社側「お知らせ」の既読 |
 | **`status_incidents`** | `<common>`（tenant_id＝運営）/ `component_id`（kaname / bridge / server_route / external_service）/ `service_id` / `state_id` / `started_at` / `resolved_at` / `note` | **★新設（D-075.2・D-076.9）。**稼働状況。会社側は自分の Bridge・経路の状態を `sessions` と `action_runs` から足して表示 |
+| **`bridge_releases`** | `<common>`（tenant_id＝運営）/ `version` / `os_id`（mac / win）/ `storage_ref`（Kaname のサーバーの置き場）/ `sha256` / `signed`（署名・公証が済んでいるか）/ `published_at` / `notes` | **★新設（D-015.7）。**顧客の PC に入れる Bridge の版。**配るのは Kaname のサーバーから**（顧客に外のサービスを見せない）。画面のダウンロードはこの表のいまの版を指し、無ければ「まだ配布していません」。自動更新もここを見る |
 | **`notification_preferences`** | `<common>` / `member_id` / `event_kind_id`（approval_waiting / ai_stopped / sole_approver / notice_incident / notice_release / inquiry_answered）/ `channel_id`（in_app / email / push）/ `enabled` | **★新設（D-075.3・D-043）。**通知の届け先。関門 C6 が宛先解決に読む |
 | **`notifications`** | `<common>` / `member_id` / `channel_id` / `event_kind_id` / `payload jsonb` / `dedupe_key` / `sent_at` / `failed_at` / `retry_count` | **★新設（D-043・C6）。**送出の outbox。重複抑止・再送・証跡は関門 C6 の責務 |
 | **`plans`** | `<common>`（tenant_id＝運営）/ `key`（entry / standard / pro）/ `name` / `price_monthly` / `limits jsonb`（AI社員・担当業務・自律実行／日・人・層）/ `current_version` | **★新設（D-076.6・D-077.5）。マスタ。**「配るもの」の画面で版管理。段階 2 の注記（注 7）から段階 1 に繰り上げ |
@@ -318,7 +331,7 @@ erDiagram
 | **`invitations`** | `<common>` / `email` / `scope_id` / `role_id` / `permission_preset jsonb` / `token_hash` / `expires_at` / `accepted_member_id` / `revoked_at` | **★新設（D-026・D-037）。**招待。取り消しで `token_hash` は即無効（G-14） |
 | **`pending_signup`** | `email`（主キー）/ `name` / `company_name` / `pw_iv` `pw_tag` `pw_data`（鍵で包んだパスワード）/ `token_hash` / `expires_at` / `sent_at` / `send_error` / `consumed_at` | **★新設（D-088.2）。**保留の申し込み。「はじめる」ではここに 1 行置くだけで、会社も利用者も作らない。リンクを押した時点で作る。会社のデータではない（まだ会社が無い）ので `public` ではなく スキーマ `kaname_auth` に置き、触れるのは認証の接続だけ。平文のパスワードは持たず 30 分で失効し、確認が済んだら `consumed_at` を立てる（消すと「もう済んだ」と「期限切れ」が同じ見た目になる） |
 | **`export_jobs`** | `<common>` / `requested_by` / `kind_id`（all / audit / ledger / conversations）/ `storage_ref` / `status_id` / `expires_at` / `downloaded_at` | **★新設（D-042）。**持ち出し。関門 C4 を通る。ダウンロード URL は期限つき署名 |
-| **`attachments`** | `<scoped>` / `owner_type`（message / task / record / inquiry）/ `owner_id` / `storage_ref` / `mime` / `size` / `scanned_at` | **★新設。**添付の実体を 1 表に。`messages.attachments jsonb` は参照だけ持つ |
+| **`attachments`** | `<scoped>` / `owner_type`（message / task / record / inquiry）/ `owner_id` / `storage_ref` / `mime` / `size` / `name` / `uploaded_by` / `scanned_at` | **★新設。**添付の実体を 1 表に。`messages.attachments jsonb` は参照だけ持つ。**会話で付けた資料・画像（D-104.11）**もここ。実体は会社の置き場（関門 C4）で、Bridge は期限つきの署名 URL で受け取る（保存先の鍵は AI に見せない） |
 
 ---
 
@@ -377,6 +390,7 @@ erDiagram
 
 | オブジェクト | テーブル | 備考 |
 |---|---|---|
+| はじめの設定の進み具合 | `members` | 列 `setup_step`（0〜6）。独立した表にしない（1 人 1 値・戻らない）。段の名前は `setup_steps`（マスタ）。上げるのは `app.setup_step_done`（D-089） |
 | 会社モデル | `tenants` `goals` `ledger_definitions` `duties` `scopes` `policies` `memories` | 1 つの定義＝これらの版の集合（D-010）。`company_model_versions` は持たず各表の `version` で表す |
 | 自分のAI | `clones` `members` | 1 人 1 体（D-060） |
 | AI社員 | `ai_employees` `members` | 出どころは `distributions`（D-037） |
@@ -398,7 +412,12 @@ erDiagram
 | 承認待ち | `approvals` | |
 | 差し戻し | `approvals` `messages` | 差し戻し＝`approvals.status_id = returned` ＋ 理由の `messages` |
 | 申し送り | `messages` `daily_plans` | 自分のAIの朝の申し送り＝`messages.kind = status`、夕方の持ち越しは `daily_plans.carry_over` |
-| 記憶 | `memories` | 4 層は `scope_id`（D-072.22） |
+| 記憶 | `memories` | 4 層は `scope_id`（D-072.22）。決まり＝rule は上の層ほど強い（D-105.8） |
+| 記憶のまとめ | `memory_digests` | 毎朝人が押す（D-105.2） |
+| 記憶の上げる候補 | `memory_proposals` | 上げ先・確認者・食い違いの束（D-105.6・D-105.9） |
+| 許可の決まり | `permission_rules` | 「いつも」にしたもの（D-104.14） |
+| 自分のAIの使用量 | `agent_usage_snapshots` | サブスクの枠（D-104.16） |
+| 検索の索引 | `search_embeddings` `embedding_models` | 台帳・記憶・証跡を意味で探すためのベクトルと、それを作るモデル（D-098） |
 | ルール | `policies` | 範囲の札＝`scope_id`（D-072.26） |
 | サービス台帳 | `service_registry` `service_registry_versions` `service_requests` | |
 | 資格情報 | `credentials` | vault の参照 ID のみ |
@@ -418,6 +437,9 @@ erDiagram
 | お知らせ | `notices` `notice_deliveries` `status_incidents` | |
 | 請求 | `invoices` `payments` | 段階 1 は請求書払い |
 | 会話 | `conversations` `messages` | |
+| Bridge の配布物 | `bridge_releases` | 版・置き場・ハッシュ・署名の有無。運営の資産（D-015.7） |
+| AIに頼んだこと | `bridge_jobs` `bridge_job_states` | 待っている／動いている／終わった／止まった／やめた。止まったものは人が選ぶまで残す（D-090） |
+| AIの途中経過と確認 | `bridge_job_events` | 何をしているか・会話の id・「これを実行していいか」と本人の答え（D-093）。答えは `audit_events` にも。道具の呼び出しと使った量も（D-100） |
 | 持ち出し | `export_jobs` | |
 | 出来事 | `account_events` `account_event_items` `retention_holds` `erasure_certificates` | 7 つの出来事と依存の処理・法令保管・消去の証明 |
 | サポートアクセス | `support_access_grants` | 閲覧の記録は `audit_events` と `ops_audit_events` |
@@ -432,6 +454,7 @@ erDiagram
 | 変更履歴 | `goal_versions` `duty_versions` `plan_versions` `distribution_versions` `service_registry_versions` `audit_events` | 版の表の総称 |
 | 能力表 | — | 段階 2（D-055）。経路ごとの能力は `distributions(kind=capability)` か固定表で持つ。段階 1 は Bridge だけなので表が無い |
 | 成果物 | `artifacts` |  |
+| 成果物の版 | `artifact_versions` | 直す・戻すごとに 1 行（D-106.3・D-106.4） |
 | セキュリティ開示資料 | — | 段階 2〜4 の運営の文書。`distributions(kind=document)` で持てる。段階 1 では作らない |
 | 端末 | `sessions` | web / bridge / push の宛先 |
 | 支払い方法 | `payment_methods` | 段階 2（D-082）。カードは Stripe の参照だけ |
@@ -453,6 +476,14 @@ erDiagram
 
 | 決定 | 何を決めたか | 効いているテーブル |
 |---|---|---|
+| D-112 | 自分のAI の会話は本人の PC の Claude Code の記録が正本（文を記録と同じ id で写す） | `messages.transcript_uuid`（会話の中で一意）。書くのは `app.bridge_entries`、取り戻す先は `app.bridge_mirror_targets`、結末は `app.bridge_finish_job`（写した文があれば答えを重ねない） |
+| D-120 | AI が使うブラウザを PC ごとに Kaname で選ぶ・もう一度確かめる | `sessions.browser` `bridge_jobs.browser`。`app.agent_set_browser` / `app.bridge_set_browser` / `app.bridge_browser` / `app.bridge_job_browser` / `app.agent_browser_check` / `app.bridge_state`（browser を足す）（0057） |
+| D-110 | 自分のAI が Kaname の道具でたたき台に置く（鍵はその仕事の間だけ・証跡） | `bridge_jobs.tool_token_hash` `goals` `goal_versions` `ledger_definitions` `duties` `ai_employees` `members` `units` `memories` `audit_events`。書くのは `app.agent_goal_set` / `app.agent_ledger_set` / `app.agent_duty_set` / `app.agent_draft_remove` / `app.agent_remember_tool`（security definer・会社をまたがない） |
+| D-104 | 会話は人が分けて一覧から戻る・書きながら出る返事・止める／直す／順番待ち・資料を付ける・許可は Claude と同じ・使用量 | `conversations` `bridge_jobs` `bridge_job_events` `messages` `permission_rules` `agent_usage_snapshots` `attachments` `artifacts` |
+| D-105 | 記憶は毎朝人が押してまとめる・上の層へ上げる候補・決まりは上ほど強い | `memory_digests` `memory_proposals` `memories` |
+| D-106 | 成果物は会話の横で開いて直し、版を残して戻せる・返事から書き出す | `artifacts`（`title` `owner_member_id` `current_version` `source_conversation_id`）・`artifact_versions`。読む・直す・戻すは `app.artifact_*` を通す |
+| D-107 | 規約で自動操作が禁止のサービスと銀行は、全部許可でも PC の上で止める | `service_registry`（forbidden・bank の `domain`）→ `app.bridge_blocked_domains`。止めた記録は `bridge_job_events`（kind＝blocked）と `audit_events` |
+| D-108 | 目標の名前は版に持つ・預けたログイン情報の一覧・たたき台は 1 回で読む | `goal_versions.name`・`credentials.service_name` `service_domain`・`app.onboard_draft`・`app.my_credentials` |
 | D-004 | LLMは顧客のサブスク内(Bridge)が既定。APIは顧客負担。運営マネージドは既定OFFの管理者トグル | `credentials` |
 | D-010 | 製品の背骨。会社モデル(目標・台帳定義・担当業務・組織・ポリシー・記憶)を1つの定義に。画面もAI社員も自動実行もこの定義だけを読む。AIが | `all` |
 | D-013 | 実行層は接続の器を1回作れば設定で増える形にする。連携を1本ずつ書かない | `service_registry` |
@@ -565,3 +596,5 @@ erDiagram
 | D-083 | LLM の経路：BYOK と運営マネージド・3 社で能力を揃える・キーは C8・費用は上限＋従量 | `llm_routes`（D-083.1・D-083.4・D-083.6）・`llm_capabilities`（D-083.2）・`credentials.kind=llm_api_key / provider_id`（D-083.3）・`usage_meters.meter_key=llm_tokens:<provider>`（D-083.5） |
 | D-084 | アプリ：PC は Bridge の窓・スマホは Capacitor・通知は native・オフラインは読むだけ | `push_devices`（D-084.3）。画面と証跡は既存の表（D-084.1・D-084.2・D-084.4）。ストアと証明書は外部リソース（D-084.5） |
 | D-085 | 開示資料：成果物から生成・版・画面と PDF・監査ログの保持 | `disclosure_versions`（D-085.1・D-085.2・D-085.3）・`subprocessors`（D-085.2）・`export_jobs`（D-085.4） |
+| D-090 | 自分のAIが実際に動く：文脈は Claude Code が持つ・止まったら止めたまま・分岐で session を変える・自己診断と生存を Kaname に返す | `bridge_jobs` / `bridge_job_states`（D-090.2・D-090.4・D-090.5）・`conversations.agent_session_id`（D-090.1）・`conversations.branched_from_message_id`（D-090.3）・`sessions.health` / `health_at`（D-090.7）・`sessions.last_seen_at`（D-090.8）。読む側で生の select をせず `app.bridge_take_job` / `app.bridge_finish_job` / `app.bridge_resume_job` / `app.agent_state` / `app.bridge_state` を通す |
+| D-015 | Bridge の配布：インストーラは Kaname のサーバーから配り、自動更新も同じ置き場を見る | `bridge_releases`（D-015.7）。画面は `/api/auth-ext/bridge/download?os=` を通す |

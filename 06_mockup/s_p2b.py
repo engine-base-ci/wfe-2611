@@ -2,7 +2,8 @@
 """P2 毎日：clone-thread / tasks"""
 from _icons import ic
 from _parts import *
-from _wiz import cmsg, umsg, composer, WIZ_CSS, CHAT_OPEN, chat_close
+from _wiz import cmsg, umsg, WIZ_CSS, CHAT_OPEN, chat_close
+from _composer import chat_composer
 from s_p2 import CB, clone_box
 
 def amsg(text, who="経理社員"):
@@ -17,7 +18,7 @@ _ct = grid([
   amsg("期日を 2026-10-31 にしました。") +
   cmsg("OKです。承認待ちに上げます。", who="高本AI") +
   '<div style="text-align:center;font-size:12px;color:var(--on-sv);padding:8px">— 承認待ちへ · 9/10 06:42 —</div>' +
-  chat_close(composer("高本AIに伝える（例：京蟻は来月から税込を先に書いて）")),
+  chat_close(chat_composer("高本AIに伝える（例：京蟻は来月から税込を先に書いて）")),
   card(head("この差し戻し") + kv([("AI社員","経理社員"),("仕事","京蟻 請求書の作成"),("差し戻し","2回"),("今","承認待ち"),("かかった時間","6分")]) +
     f'<div class="ai" style="margin-top:14px"><div class="ai-h">{ic("clone")}高本AIが覚えたこと</div>京蟻は「税込を先に書く」「月末締め翌月末払い」。次からは差し戻しなしで作れるよう、担当業務のルールに足しました。</div>' +
     '<div style="margin-top:12px"><a href="v1-approvals.html" style="color:var(--primary);font-weight:600;font-size:13px">承認待ちを見る →</a></div>')
@@ -33,26 +34,18 @@ _ct_ask = grid([
   CHAT_OPEN +
   cmsg("◇◇様の問い合わせ、3回直させましたが、<b>値引きに応じるかどうか</b>は私では決められません。過去にあなたは「初回は値引きしない」と言っていましたが、◇◇様は紹介案件です。どうしますか？",
        ["値引きしない","1割まで","私が直接返す"], who="高本AI → あなた") +
-  chat_close(composer()),
+  chat_close(chat_composer("ここに書く。声で話しても、資料を投げても構いません")),
   card(head("やりとりの経緯") + '<div style="display:flex;flex-direction:column;gap:8px;font-size:13px">' + "".join(
     f'<div style="display:flex;gap:9px;padding:9px 11px;background:var(--surface);border-radius:var(--r-md)"><span class="num muted" style="min-width:40px">{t}</span>{x}</div>'
     for t,x in [("06:10","CS社員が一次返信を下書き"),("06:12","高本AI差し戻し：値段の話をしない"),("06:15","CS社員が直す → 値引きの質問に答えていない"),
                 ("06:16","高本AI差し戻し：質問には答える"),("06:20","CS社員が直す → 1割引で回答"),("06:21","高本AI：判断できない → あなたに聞く")]) + '</div>')
 ], "g21")
 
-THREAD_CSS = WIZ_CSS + """
-@media(min-width:1024px){
-  .g21[data-fix]{height:calc(100vh - var(--fix-top,180px) - var(--fix-bottom,0px));min-height:0;margin-bottom:-64px;align-items:stretch}
-  .g21[data-fix] .col{display:flex;flex-direction:column;min-height:0}
-  .g21[data-fix] .col .chat{flex:1;min-height:0;overflow-y:auto;padding-right:8px;overscroll-behavior:contain}
-  .g21[data-fix] .col .composer{position:static;flex:none}
-  .g21[data-fix]>.card{overflow-y:auto;min-height:0}
-}
-"""
-_ct = _ct.replace('<div class="grid g21">', '<div class="grid g21" data-fix>', 1); _ct_ask = _ct_ask.replace('<div class="grid g21">', '<div class="grid g21" data-fix>', 1)
+THREAD_CSS = WIZ_CSS   # 会話の固定枠は共通の FRAME_CSS（_chat.py）。WIZ_CSS に入っている
+_ct = _ct.replace('<div class="grid g21">', '<div class="grid g21" data-chat-frame>', 1); _ct_ask = _ct_ask.replace('<div class="grid g21">', '<div class="grid g21" data-chat-frame>', 1)
 _ct_r3 = grid([card(head("佐藤AI とのやりとり", pill("差し戻し 1 件","wa"), "京蟻 ガチャ演出の実装 · あなたの分だけ") +
   '<div class="chat">' + umsg("演出の 2 つ目、前回の型で下書きして", read="佐藤AI が読んだ 10:02") + cmsg("フェード → 拡大の型で 1 案作りました。尺が 2.4 秒で、前回の 1.8 秒より長いです。<b>短くしますか？</b>") +
-  umsg("2.0 秒にして") + cmsg("2.0 秒に直しました。実装のタスクに付けています。終わったら「終わり」を押してください。") + '</div>' + composer()),
+  umsg("2.0 秒にして") + cmsg("2.0 秒に直しました。実装のタスクに付けています。終わったら「終わり」を押してください。") + '</div>' + chat_composer()),
   card(head("経緯") + '<div style="display:flex;flex-direction:column;gap:8px;font-size:13px">' + "".join(
     f'<div style="display:flex;gap:9px;padding:9px 11px;background:var(--surface);border-radius:var(--r-md)"><span class="num muted" style="min-width:40px">{a}</span>{b}</div>'
     for a,b in [("10:02","佐藤AI が下書き（2.4 秒）"),("10:05","あなた：2.0 秒に"),("10:06","佐藤AI が直した → タスクに付けた")]) + '</div>' +

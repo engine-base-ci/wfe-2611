@@ -1,7 +1,7 @@
 {
  "meta": {
   "version": "v3.1",
-  "created_at": "2026-09-21",
+  "created_at": "2026-09-29",
   "_doc": "05_flow/build_functional.py が flow.json・ER図・モック・errors.json から生成。手で直さない。",
   "source": [
    "D-053.1",
@@ -141,7 +141,7 @@
    "legacy_drift_notes": null,
    "note": "契約の単位",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-076"
    ]
@@ -245,7 +245,7 @@
    "legacy_drift_notes": null,
    "note": "**4 層の実体**（運営／会社／部署／個人）。層は省略可",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-026"
    ]
@@ -307,7 +307,7 @@
    "legacy_drift_notes": null,
    "note": "**マスタ**（human / ai_employee / clone / 将来 guest） ← E20",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-010"
    ]
@@ -341,6 +341,22 @@
     {
      "name": "auth_user_id",
      "note": "認証の利用者。Better Auth の user。AI社員・自分のAI は null"
+    },
+    {
+     "name": "setup_step",
+     "note": "はじめの設定をどこまで通したか 0〜6・D-089"
+    },
+    {
+     "name": "agent_permission_mode",
+     "note": "自分のAI の許可のモード。既定 default。全部許可は本人が選んだときだけ・D-104.14"
+    },
+    {
+     "name": "agent_model",
+     "note": null
+    },
+    {
+     "name": "agent_effort",
+     "note": "本人が選んだモデルと考える強さ・D-104.13"
     }
    ],
    "relations": [
@@ -437,15 +453,73 @@
     }
    ],
    "legacy_drift_notes": null,
-   "note": "**人間と AI が同じ席に座る**",
+   "note": "**人間と AI が同じ席に座る**。はじめの設定の進み具合は人ごと（Bridge はその人の PC・ログイン情報はその人が預ける）",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
-    "D-037"
+    "D-037",
+    "D-110"
    ]
   },
   {
    "id": "E-005",
+   "name": "setup_steps",
+   "table_name": "setup_steps",
+   "section": "1. テナント・組織・メンバー",
+   "fields": [
+    {
+     "name": "n",
+     "note": "1〜6・PK"
+    },
+    {
+     "name": "label",
+     "note": null
+    }
+   ],
+   "relations": [],
+   "soft_delete": false,
+   "timestamps": true,
+   "tenant_field": null,
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "none",
+    "column": null,
+    "fk_table": null
+   },
+   "access_control_policies": [
+    {
+     "name": "setup_steps_all_read",
+     "operation": "select",
+     "role": "authenticated",
+     "predicate": "true",
+     "rationale": "マスタ。全員が読む",
+     "source": [
+      "D-026"
+     ]
+    },
+    {
+     "name": "setup_steps_ops_write",
+     "operation": "insert,update,delete",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops'",
+     "rationale": "マスタは運営だけが変える",
+     "source": [
+      "D-037",
+      "D-077.4"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**マスタ**（`<common>`）。はじめの設定の段の名前。1 PCをつなぐ／2 話す／3 たたき台／4 ログイン情報／5 テスト／6 本番へ（D-089）",
+   "status": "decided",
+   "decided_at": "2026-09-29",
+   "source": [
+    "D-089"
+   ]
+  },
+  {
+   "id": "E-006",
    "name": "clones",
    "table_name": "clones",
    "section": "1. テナント・組織・メンバー",
@@ -529,13 +603,13 @@
    "legacy_drift_notes": null,
    "note": "各個人の写し。1 人 1 体",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-073"
    ]
   },
   {
-   "id": "E-006",
+   "id": "E-007",
    "name": "ai_employees",
    "table_name": "ai_employees",
    "section": "1. テナント・組織・メンバー",
@@ -627,13 +701,13 @@
    "legacy_drift_notes": null,
    "note": "← E19（出どころ）",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
-    "D-010"
+    "D-110"
    ]
   },
   {
-   "id": "E-007",
+   "id": "E-008",
    "name": "goal_kinds",
    "table_name": "goal_kinds",
    "section": "2. 会社モデル ── 目標",
@@ -688,13 +762,13 @@
    "legacy_drift_notes": null,
    "note": "**マスタ**（numeric / state / habit）← **E14**",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-010"
    ]
   },
   {
-   "id": "E-008",
+   "id": "E-009",
    "name": "units",
    "table_name": "units",
    "section": "2. 会社モデル ── 目標",
@@ -780,13 +854,13 @@
    "legacy_drift_notes": null,
    "note": "**★新設マスタ。顧客が作れる。**運営が列挙しない（円・件・%・時間・回・独自スコア…）",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
-    "D-010"
+    "D-110"
    ]
   },
   {
-   "id": "E-009",
+   "id": "E-010",
    "name": "rollup_kinds",
    "table_name": "rollup_kinds",
    "section": "2. 会社モデル ── 目標",
@@ -842,13 +916,13 @@
    "legacy_drift_notes": null,
    "note": "**★新設マスタ。**親への積み上がり方 = `sum`（そのまま足す）/ `convert`（変換して足す）/ `none`（足さない）",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-010"
    ]
   },
   {
-   "id": "E-010",
+   "id": "E-011",
    "name": "goals",
    "table_name": "goals",
    "section": "2. 会社モデル ── 目標",
@@ -982,15 +1056,16 @@
    "legacy_drift_notes": null,
    "note": "`origin` = 配られた／自主。**`rollup_kind` は「この目標が親にどう積み上がるか」**。`rollup_spec` は変換の定義（式・係数）を入れる**開いた器**。中身は目標設定スキルが決める",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-032",
     "D-034",
-    "D-058"
+    "D-058",
+    "D-110"
    ]
   },
   {
-   "id": "E-011",
+   "id": "E-012",
    "name": "goal_allocations",
    "table_name": "goal_allocations",
    "section": "2. 会社モデル ── 目標",
@@ -1072,13 +1147,13 @@
    "legacy_drift_notes": null,
    "note": "**`rollup_kind = sum` のときだけ使う。** 未配分＝親の target − 子の合計",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-058"
    ]
   },
   {
-   "id": "E-012",
+   "id": "E-013",
    "name": "goal_contributions",
    "table_name": "goal_contributions",
    "section": "2. 会社モデル ── 目標",
@@ -1160,13 +1235,13 @@
    "legacy_drift_notes": null,
    "note": "**★新設。`rollup_kind = none` のとき、どの仮説で親に効くかを繋ぐ。**効いたかは `validations` で検証する",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-010"
    ]
   },
   {
-   "id": "E-013",
+   "id": "E-014",
    "name": "goal_versions",
    "table_name": "goal_versions",
    "section": "2. 会社モデル ── 目標",
@@ -1182,6 +1257,10 @@
     {
      "name": "version",
      "note": null
+    },
+    {
+     "name": "name",
+     "note": "目標の名前。今期の売上 など ← D-108.1"
     },
     {
      "name": "snapshot",
@@ -1250,15 +1329,17 @@
     }
    ],
    "legacy_drift_notes": null,
-   "note": "期中変更の履歴。会社のデータなので `<common>`（tenant_id で分離。全員が読めるマスタではない）",
+   "note": "期中変更の履歴。会社のデータなので `<common>`（tenant_id で分離。全員が読めるマスタではない）。**目標の名前は版に持ち、画面は今の版（goals.version と同じ版）の名前を出す（D-108.1）**",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
-    "D-061"
+    "D-061",
+    "D-108.1",
+    "D-110"
    ]
   },
   {
-   "id": "E-014",
+   "id": "E-015",
    "name": "hypotheses",
    "table_name": "hypotheses",
    "section": "2. 会社モデル ── 目標",
@@ -1340,13 +1421,13 @@
    "legacy_drift_notes": null,
    "note": "**目標とタスクの間の層**",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-035"
    ]
   },
   {
-   "id": "E-015",
+   "id": "E-016",
    "name": "measures",
    "table_name": "measures",
    "section": "2. 会社モデル ── 目標",
@@ -1432,13 +1513,13 @@
    "legacy_drift_notes": null,
    "note": "施策",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-010"
    ]
   },
   {
-   "id": "E-016",
+   "id": "E-017",
    "name": "validations",
    "table_name": "validations",
    "section": "2. 会社モデル ── 目標",
@@ -1520,13 +1601,13 @@
    "legacy_drift_notes": null,
    "note": "検証",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-010"
    ]
   },
   {
-   "id": "E-017",
+   "id": "E-018",
    "name": "ledger_definitions",
    "table_name": "ledger_definitions",
    "section": "3. 会社モデル ── 台帳",
@@ -1616,13 +1697,14 @@
    "legacy_drift_notes": null,
    "note": "`kind` = funnel / transaction ← **E4**",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
-    "D-038"
+    "D-038",
+    "D-110"
    ]
   },
   {
-   "id": "E-018",
+   "id": "E-019",
    "name": "ledger_fields",
    "table_name": "ledger_fields",
    "section": "3. 会社モデル ── 台帳",
@@ -1724,13 +1806,13 @@
    "legacy_drift_notes": null,
    "note": "`is_filterable=true` の項目に**式インデックスを自動生成**",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-010"
    ]
   },
   {
-   "id": "E-019",
+   "id": "E-020",
    "name": "ledger_stages",
    "table_name": "ledger_stages",
    "section": "3. 会社モデル ── 台帳",
@@ -1820,13 +1902,13 @@
    "legacy_drift_notes": null,
    "note": "`rules` ← **E18**（値域・状態遷移・しきい値・期限）",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-010"
    ]
   },
   {
-   "id": "E-020",
+   "id": "E-021",
    "name": "ledger_views",
    "table_name": "ledger_views",
    "section": "3. 会社モデル ── 台帳",
@@ -1912,13 +1994,13 @@
    "legacy_drift_notes": null,
    "note": "`kind` = list / kanban / calendar / chart ← **E17**",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-010"
    ]
   },
   {
-   "id": "E-021",
+   "id": "E-022",
    "name": "ledger_records",
    "table_name": "ledger_records",
    "section": "3. 会社モデル ── 台帳",
@@ -2020,13 +2102,13 @@
    "legacy_drift_notes": null,
    "note": "**太字＝固定列**（目標の集計に使う）。それ以外は `data`",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-010"
    ]
   },
   {
-   "id": "E-022",
+   "id": "E-023",
    "name": "duties",
    "table_name": "duties",
    "section": "4. 会社モデル ── 担当業務・記憶",
@@ -2120,13 +2202,13 @@
    "legacy_drift_notes": null,
    "note": "← **E9**。`visibility` で中身非公開の配布に対応",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
-    "D-010"
+    "D-110"
    ]
   },
   {
-   "id": "E-023",
+   "id": "E-024",
    "name": "duty_versions",
    "table_name": "duty_versions",
    "section": "4. 会社モデル ── 担当業務・記憶",
@@ -2212,13 +2294,13 @@
    "legacy_drift_notes": null,
    "note": "**改訂履歴＝堀の実体**。会社のデータなので `<common>`",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-010"
    ]
   },
   {
-   "id": "E-024",
+   "id": "E-025",
    "name": "learned_procedures",
    "table_name": "learned_procedures",
    "section": "4. 会社モデル ── 担当業務・記憶",
@@ -2316,13 +2398,13 @@
    "legacy_drift_notes": null,
    "note": "`status` = learning / mastered / needs_review",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-010"
    ]
   },
   {
-   "id": "E-025",
+   "id": "E-026",
    "name": "procedure_steps",
    "table_name": "procedure_steps",
    "section": "4. 会社モデル ── 担当業務・記憶",
@@ -2408,13 +2490,13 @@
    "legacy_drift_notes": null,
    "note": "**`intent_ja` が顧客に見える日本語**。`locator` は隠す",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-010"
    ]
   },
   {
-   "id": "E-026",
+   "id": "E-027",
    "name": "memory_kinds",
    "table_name": "memory_kinds",
    "section": "4. 会社モデル ── 担当業務・記憶",
@@ -2470,13 +2552,13 @@
    "legacy_drift_notes": null,
    "note": "**マスタ**（rule / preference / example）",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-010"
    ]
   },
   {
-   "id": "E-027",
+   "id": "E-028",
    "name": "memories",
    "table_name": "memories",
    "section": "4. 会社モデル ── 担当業務・記憶",
@@ -2514,16 +2596,20 @@
      "note": null
     },
     {
-     "name": "embedding",
-     "note": "vector(N"
-    },
-    {
      "name": "approved_by",
      "note": null
     },
     {
      "name": "approved_at",
      "note": null
+    },
+    {
+     "name": "digest_id",
+     "note": "どの朝のまとめで入ったか ← D-105.2"
+    },
+    {
+     "name": "superseded_by",
+     "note": "整理で置き換えた先。前は残して戻せる ← D-105.5"
     }
    ],
    "relations": [
@@ -2590,15 +2676,387 @@
     }
    ],
    "legacy_drift_notes": null,
-   "note": "**HNSW 索引**。`example` のみ埋め込みを持つ",
+   "note": "`kind` の rule＝**決まり（上の層ほど強い）**・preference／example＝**好み・やり方（本人に近い層ほど強い）**（D-105.8）。個人の範囲は自分のAI が自動で入れる（D-105.5）。本文に **PGroonga** の索引。意味の検索用のベクトルは `search_embeddings` に持つ（D-098.10）",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
-    "D-060"
+    "D-060",
+    "D-098.10",
+    "D-105",
+    "D-105.5",
+    "D-105.8",
+    "D-110"
    ]
   },
   {
-   "id": "E-028",
+   "id": "E-029",
+   "name": "memory_digests",
+   "table_name": "memory_digests",
+   "section": "4. 会社モデル ── 担当業務・記憶",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "member_id",
+     "note": null
+    },
+    {
+     "name": "from_on",
+     "note": "date"
+    },
+    {
+     "name": "to_on",
+     "note": "date"
+    },
+    {
+     "name": "conversation_count",
+     "note": "int"
+    },
+    {
+     "name": "state_id",
+     "note": "running／done／failed"
+    },
+    {
+     "name": "result",
+     "note": "jsonb（覚えた／まとめた〔前と後〕／上げる候補／捨てた"
+    },
+    {
+     "name": "bridge_job_id",
+     "note": null
+    },
+    {
+     "name": "started_at",
+     "note": null
+    },
+    {
+     "name": "finished_at",
+     "note": null
+    }
+   ],
+   "relations": [],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "memory_digests_self_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND member_id = current_setting('app.user_id', true)::uuid",
+     "rationale": "本人だけが読む（同じ会社の人にも見せない）",
+     "source": [
+      "D-073.1",
+      "D-104.14",
+      "D-104.16",
+      "D-105.2"
+     ]
+    },
+    {
+     "name": "memory_digests_self_only_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND member_id = current_setting('app.user_id', true)::uuid",
+     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "source": [
+      "D-073.1"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-105.2・D-105.3・D-105.4）。本人だけが読む。**記憶のまとめ。毎朝本人が「今日」で押して始める（時間で勝手に動かさない）。押さない日は溜まり、次に押したときに `from_on`〜`to_on` をまとめる。読むのは会話（`incognito` を除く）と、その日の承認・差し戻し",
+   "status": "decided",
+   "decided_at": "2026-09-29",
+   "source": [
+    "D-105",
+    "D-105.2",
+    "D-105.3",
+    "D-105.4"
+   ]
+  },
+  {
+   "id": "E-030",
+   "name": "memory_proposals",
+   "table_name": "memory_proposals",
+   "section": "4. 会社モデル ── 担当業務・記憶",
+   "fields": [
+    {
+     "name": "<scoped>",
+     "note": null
+    },
+    {
+     "name": "memory_id",
+     "note": "送った人の個人の記憶"
+    },
+    {
+     "name": "target_scope_id",
+     "note": "上げ先の層"
+    },
+    {
+     "name": "proposer_member_id",
+     "note": null
+    },
+    {
+     "name": "reviewer_member_id",
+     "note": null
+    },
+    {
+     "name": "state_id",
+     "note": "sent／accepted／returned"
+    },
+    {
+     "name": "conflict_group_id",
+     "note": "同じことへの食い違う提案の束"
+    },
+    {
+     "name": "evidence",
+     "note": "jsonb（誰のどの会話から"
+    },
+    {
+     "name": "decided_at",
+     "note": null
+    }
+   ],
+   "relations": [],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "scope_layered",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "memory_proposals_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "memory_proposals_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'memory_proposals', scope_id, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "memory_proposals_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = memory_proposals.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-105.6・D-105.9）。**上げる候補。上げ先は自分のAI が選び、本人が変えて送る。OK までは送った人の個人の記憶として効く。確認者がいない層は 1 つ上の層へ、最後は会社の代表（D-105.6）。決まったら束の全員に知らせる",
+   "status": "decided",
+   "decided_at": "2026-09-29",
+   "source": [
+    "D-105",
+    "D-105.6",
+    "D-105.9"
+   ]
+  },
+  {
+   "id": "E-031",
+   "name": "embedding_models",
+   "table_name": "embedding_models",
+   "section": "4. 会社モデル ── 担当業務・記憶",
+   "fields": [
+    {
+     "name": "key",
+     "note": null
+    },
+    {
+     "name": "label",
+     "note": null
+    },
+    {
+     "name": "dim",
+     "note": "int"
+    },
+    {
+     "name": "state_id",
+     "note": "active ／ building ／ retired"
+    },
+    {
+     "name": "artifact_url",
+     "note": null
+    },
+    {
+     "name": "sha256",
+     "note": null
+    }
+   ],
+   "relations": [],
+   "soft_delete": false,
+   "timestamps": true,
+   "tenant_field": null,
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "none",
+    "column": null,
+    "fk_table": null
+   },
+   "access_control_policies": [
+    {
+     "name": "embedding_models_all_read",
+     "operation": "select",
+     "role": "authenticated",
+     "predicate": "true",
+     "rationale": "マスタ。全員が読む",
+     "source": [
+      "D-026"
+     ]
+    },
+    {
+     "name": "embedding_models_ops_write",
+     "operation": "insert,update,delete",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops'",
+     "rationale": "マスタは運営だけが変える",
+     "source": [
+      "D-037",
+      "D-077.4"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**段階 1 は作らない**（入れる境を越えたら・D-099.2）。**マスタ（運営）**。検索用のベクトルを作るモデル。使用中は 1 つ。替えるときは building で足し、そろったら active に切り替えて古いものを retired（D-098.4・D-098.5・D-099.4・D-099.6）",
+   "status": "decided",
+   "decided_at": "2026-09-29",
+   "source": [
+    "D-098.4",
+    "D-098.5",
+    "D-099.2",
+    "D-099.4",
+    "D-099.6"
+   ]
+  },
+  {
+   "id": "E-032",
+   "name": "search_embeddings",
+   "table_name": "search_embeddings",
+   "section": "4. 会社モデル ── 担当業務・記憶",
+   "fields": [
+    {
+     "name": "<scoped>",
+     "note": null
+    },
+    {
+     "name": "target_type_id",
+     "note": "memories ／ ledger_records ／ audit_events"
+    },
+    {
+     "name": "target_id",
+     "note": null
+    },
+    {
+     "name": "model_id",
+     "note": null
+    },
+    {
+     "name": "chunk_no",
+     "note": null
+    },
+    {
+     "name": "content_hash",
+     "note": null
+    },
+    {
+     "name": "embedding",
+     "note": "vector"
+    }
+   ],
+   "relations": [],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "scope_layered",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "search_embeddings_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "search_embeddings_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'search_embeddings', scope_id, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "search_embeddings_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = search_embeddings.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**段階 1 は作らない**（入れる境を越えたら・D-099.2）。**検索用のベクトル**（D-098.4）。作るのは本人の PC（Bridge）。PC が無い会社だけ段階 2 のサーバーで同じモデル（D-099.3）。次元はモデルごと（`vector` に次元を付けず、モデルごとに `(embedding::vector(dim))` の HNSW 部分索引）。本文が直されたら `content_hash` が変わった行だけ作り直す（D-098.6）。見えるかは元の行の行レベルの制御で決まる（D-098.3）",
+   "status": "decided",
+   "decided_at": "2026-09-29",
+   "source": [
+    "D-098.3",
+    "D-098.4",
+    "D-098.6",
+    "D-099.2",
+    "D-099.3"
+   ]
+  },
+  {
+   "id": "E-033",
    "name": "tasks",
    "table_name": "tasks",
    "section": "5. 実行・統制",
@@ -2732,13 +3190,13 @@
    "legacy_drift_notes": null,
    "note": "`status` は **今日／あとで／詰まっている／終わった の 4 つだけ**（優先度フラグは持たない）。詰まっているは理由必須（D-068）",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-068"
    ]
   },
   {
-   "id": "E-029",
+   "id": "E-034",
    "name": "task_handovers",
    "table_name": "task_handovers",
    "section": "5. 実行・統制",
@@ -2823,7 +3281,7 @@
    "legacy_drift_notes": null,
    "note": "★新設。引き継いでもらう（push）も引き継ぐ（pull）もここ（画面の言葉は D-068）。**`tasks.goal_id` は変えない**（誰の目標かは変わらない）",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-058",
     "D-061",
@@ -2831,7 +3289,7 @@
    ]
   },
   {
-   "id": "E-030",
+   "id": "E-035",
    "name": "daily_plans",
    "table_name": "daily_plans",
    "section": "5. 実行・統制",
@@ -2935,13 +3393,13 @@
    "legacy_drift_notes": null,
    "note": "★新設（D-068）。1 人 1 日 1 行。見込みの合計は `tasks.estimate_minutes` から集計",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-068"
    ]
   },
   {
-   "id": "E-031",
+   "id": "E-036",
    "name": "triggers",
    "table_name": "triggers",
    "section": "5. 実行・統制",
@@ -3031,13 +3489,13 @@
    "legacy_drift_notes": null,
    "note": "`on_missed` = catch_up / latest_only / skip ← **E6**",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-010"
    ]
   },
   {
-   "id": "E-032",
+   "id": "E-037",
    "name": "policies",
    "table_name": "policies",
    "section": "5. 実行・統制",
@@ -3123,13 +3581,13 @@
    "legacy_drift_notes": null,
    "note": "`mode` = auto / approve / off。`is_locked` ＝ **運営の安全ルール（上書き不可）** ← **E8**",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-060"
    ]
   },
   {
-   "id": "E-033",
+   "id": "E-038",
    "name": "approvals",
    "table_name": "approvals",
    "section": "5. 実行・統制",
@@ -3229,13 +3687,13 @@
    "legacy_drift_notes": null,
    "note": "**すべての提案の入口**",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-010"
    ]
   },
   {
-   "id": "E-034",
+   "id": "E-039",
    "name": "action_runs",
    "table_name": "action_runs",
    "section": "5. 実行・統制",
@@ -3361,13 +3819,13 @@
    "legacy_drift_notes": null,
    "note": "**`choke_point_id` を記録**（どの関門を通ったか）",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-062"
    ]
   },
   {
-   "id": "E-035",
+   "id": "E-040",
    "name": "service_registry",
    "table_name": "service_registry",
    "section": "5. 実行・統制",
@@ -3451,16 +3909,20 @@
     }
    ],
    "legacy_drift_notes": null,
-   "note": "`verdict` = api / allowed / unspecified / **forbidden** / **bank**",
+   "note": "`verdict` = api / allowed / unspecified / **forbidden** / **bank**。forbidden と bank の `domain` は、仕事を渡すたびに Bridge が本人の Claude Code に「使わない道具」とフックの一覧として渡す（D-107.1〜D-107.3）。見抜けない形は `notes` に書く（D-107.6）",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-013",
-    "D-041"
+    "D-041",
+    "D-107",
+    "D-107.1",
+    "D-107.3",
+    "D-107.6"
    ]
   },
   {
-   "id": "E-036",
+   "id": "E-041",
    "name": "credential_kinds",
    "table_name": "credential_kinds",
    "section": "5. 実行・統制",
@@ -3516,13 +3978,13 @@
    "legacy_drift_notes": null,
    "note": "**マスタ**（password_totp / oauth2 / api_key / basic / email_otp / saml）← **E15**",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-010"
    ]
   },
   {
-   "id": "E-037",
+   "id": "E-042",
    "name": "credentials",
    "table_name": "credentials",
    "section": "5. 実行・統制",
@@ -3534,6 +3996,14 @@
     {
      "name": "service_id",
      "note": null
+    },
+    {
+     "name": "service_name",
+     "note": "本人が入れたサービス名 ← D-108.4"
+    },
+    {
+     "name": "service_domain",
+     "note": "宛先 ← D-108.4"
     },
     {
      "name": "kind_id",
@@ -3624,16 +4094,17 @@
     }
    ],
    "legacy_drift_notes": null,
-   "note": "**実体は持たない。vault の参照 ID のみ**",
+   "note": "**実体は持たない。vault の参照 ID のみ**。一覧は `app.my_credentials`（サービス名・台帳の可否・状態だけ・D-108.3）",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-004",
-    "D-017"
+    "D-017",
+    "D-108.3"
    ]
   },
   {
-   "id": "E-038",
+   "id": "E-043",
    "name": "conversations",
    "table_name": "conversations",
    "section": "6. 会話・成果物・証跡",
@@ -3661,6 +4132,42 @@
     {
      "name": "parent_conversation_id",
      "note": "流れ＝分岐元"
+    },
+    {
+     "name": "agent_session_id",
+     "note": "本人の Claude Code の続きの id。文脈そのものは Claude Code が持ち、ここは対応だけ ← D-090.1"
+    },
+    {
+     "name": "branched_from_message_id",
+     "note": "ここから分岐 ← D-090.3"
+    },
+    {
+     "name": "owner_member_id",
+     "note": null
+    },
+    {
+     "name": "closed_at",
+     "note": "「新しい会話」で閉じる ← D-062"
+    },
+    {
+     "name": "title_auto",
+     "note": "bool（名前を自分のAIが付けたか。人が直したら false ← D-104.1"
+    },
+    {
+     "name": "starred_at",
+     "note": "星 ← D-104.1"
+    },
+    {
+     "name": "incognito",
+     "note": "bool（記憶に残さない会話＝毎朝のまとめから外す ← D-104.1"
+    },
+    {
+     "name": "last_read_at",
+     "note": "見ていない間の返事の印 ← D-104.18"
+    },
+    {
+     "name": "deleted_at",
+     "note": "消す"
     }
    ],
    "relations": [
@@ -3693,6 +4200,16 @@
      ]
     },
     {
+     "name": "conversations_self_only_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND owner_member_id = current_setting('app.user_id', true)::uuid",
+     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "source": [
+      "D-073.1"
+     ]
+    },
+    {
      "name": "conversations_permission_write",
      "operation": "insert,update,delete",
      "role": "member",
@@ -3717,15 +4234,495 @@
     }
    ],
    "legacy_drift_notes": null,
-   "note": "人↔AI・人↔人・AI↔AI を区別しない。**3 層（領域×対象×流れ）で引ける ← D-062**",
+   "note": "人↔AI・人↔人・AI↔AI を区別しない。**会話は人が「新しく話す」で分け、一覧から戻る（D-104.1）。1 会話＝本人の Claude Code の 1 セッション**。一覧の探すは `title` と `messages.body` の PGroonga。領域・対象の列は残すが一覧の整理には使わない（D-062.5 を D-104.1 で改めた）。Bridge 経路の文脈は二重に持たない（← D-090.1）",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
-    "D-062"
+    "D-062.5",
+    "D-090.1",
+    "D-104",
+    "D-104.1"
    ]
   },
   {
-   "id": "E-039",
+   "id": "E-044",
+   "name": "bridge_jobs",
+   "table_name": "bridge_jobs",
+   "section": "6. 会話・成果物・証跡",
+   "fields": [
+    {
+     "name": "<scoped>",
+     "note": null
+    },
+    {
+     "name": "member_id",
+     "note": null
+    },
+    {
+     "name": "conversation_id",
+     "note": null
+    },
+    {
+     "name": "state_id",
+     "note": "bridge_job_states"
+    },
+    {
+     "name": "prompt",
+     "note": null
+    },
+    {
+     "name": "agent_session_id",
+     "note": null
+    },
+    {
+     "name": "result",
+     "note": null
+    },
+    {
+     "name": "partial",
+     "note": "書きながら出る返事の途中。終わると result と同じになる ← D-104.8"
+    },
+    {
+     "name": "stopped_reason",
+     "note": "そのまま人に見せる文"
+    },
+    {
+     "name": "permission_mode",
+     "note": "manual／acceptEdits／auto／plan／bypassPermissions。全部許可は本人が選んだときだけ ← D-104.14"
+    },
+    {
+     "name": "model",
+     "note": null
+    },
+    {
+     "name": "effort",
+     "note": "本人のサブスクで使えるものだけ ← D-104.13"
+    },
+    {
+     "name": "tools",
+     "note": "text[]（使うもの＝スキル・道具 ← D-104.13"
+    },
+    {
+     "name": "attachment_ids",
+     "note": "uuid[]（付けた資料 ← D-104.11"
+    },
+    {
+     "name": "steer_seq",
+     "note": "止めずに送った文の数 ← D-104.9"
+    },
+    {
+     "name": "tool_token_hash",
+     "note": "Kaname の道具の鍵のハッシュ。仕事を渡すたびに作り、その仕事が動いている間だけ効く ← D-110.3"
+    },
+    {
+     "name": "started_at",
+     "note": null
+    },
+    {
+     "name": "finished_at",
+     "note": null
+    }
+   ],
+   "relations": [],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "scope_layered",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "bridge_jobs_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "bridge_jobs_self_only_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND member_id = current_setting('app.user_id', true)::uuid",
+     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "source": [
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "bridge_jobs_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'bridge_jobs', scope_id, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "bridge_jobs_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = bridge_jobs.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-090.2・D-090.4・D-090.5）。**自分のAIに言ったことの並び。Bridge が 1 件ずつ取り（`app.bridge_take_job`・`for update skip locked`）、結末を返す（`app.bridge_finish_job`）。**止まったものは `stopped` のまま残り、自動で再開しない。**続けるかは次に送る文で決まる（D-104.15。ボタンで選ばせない）。**動いている間に送った文は `queued` の行として順番待ちに並び、取り消すと `cancelled`（D-104.9）。止めずに直す文は `bridge_job_events(kind=steer)` で動いている仕事に渡す**",
+   "status": "decided",
+   "decided_at": "2026-09-29",
+   "source": [
+    "D-090",
+    "D-090.2",
+    "D-090.4",
+    "D-090.5",
+    "D-104",
+    "D-104.15",
+    "D-104.9"
+   ]
+  },
+  {
+   "id": "E-045",
+   "name": "bridge_job_states",
+   "table_name": "bridge_job_states",
+   "section": "6. 会話・成果物・証跡",
+   "fields": [
+    {
+     "name": "key",
+     "note": "PK"
+    },
+    {
+     "name": "label",
+     "note": null
+    }
+   ],
+   "relations": [],
+   "soft_delete": false,
+   "timestamps": true,
+   "tenant_field": null,
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "none",
+    "column": null,
+    "fk_table": null
+   },
+   "access_control_policies": [
+    {
+     "name": "bridge_job_states_all_read",
+     "operation": "select",
+     "role": "authenticated",
+     "predicate": "true",
+     "rationale": "マスタ。全員が読む",
+     "source": [
+      "D-026"
+     ]
+    },
+    {
+     "name": "bridge_job_states_ops_write",
+     "operation": "insert,update,delete",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops'",
+     "rationale": "マスタは運営だけが変える",
+     "source": [
+      "D-037",
+      "D-077.4"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**マスタ**（`<common>`）。待っている／動いている／終わった／止まった（人が選ぶまでそのまま）／やめた（D-090.4）／**確認待ち**（本人が許可するまで・D-093.3）",
+   "status": "decided",
+   "decided_at": "2026-09-29",
+   "source": [
+    "D-090",
+    "D-090.4",
+    "D-093.3"
+   ]
+  },
+  {
+   "id": "E-046",
+   "name": "bridge_job_events",
+   "table_name": "bridge_job_events",
+   "section": "6. 会話・成果物・証跡",
+   "fields": [
+    {
+     "name": "<scoped>",
+     "note": null
+    },
+    {
+     "name": "member_id",
+     "note": null
+    },
+    {
+     "name": "job_id",
+     "note": "bridge_jobs"
+    },
+    {
+     "name": "kind",
+     "note": "init／progress／ask／answer／tool／usage／status〔「〇〇を調べています」の 1 行〕／plan〔手順のチェックリスト〕／steer〔止めずに直す文〕／stop〔止める〕／question〔自分のAIからの問い合わせ：問い・選択肢・見本・複数〕／limit〔サブスクの使用量〕 ← D-104.7・D-104.8・D-104.9・D-104.16"
+    },
+    {
+     "name": "seq",
+     "note": null
+    },
+    {
+     "name": "request_id",
+     "note": "確認とその答えを結ぶ"
+    },
+    {
+     "name": "payload",
+     "note": "jsonb（progress: text ／ ask: tool・input・summary ／ answer: allow・scope（once／always）・note ／ tool: name・target・ok・ms ／ usage: turns・duration_ms・input_tokens・output_tokens・cost_usd"
+    }
+   ],
+   "relations": [],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "scope_layered",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "bridge_job_events_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "bridge_job_events_self_only_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND member_id = current_setting('app.user_id', true)::uuid",
+     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "source": [
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "bridge_job_events_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'bridge_job_events', scope_id, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "bridge_job_events_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = bridge_job_events.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-093.2・D-093.3・D-093.4・D-093.7・D-093.8）。**公式 CLI の 1 行 1 イベントのうち、人に見せるものと本人の答え。`init` で会話の id を先に覚える（落ちても続きから）。確認の答えは `audit_events`（`bridge.tool_allowed`／`tool_denied`・関門 C5）にも出す。書くのは `app.bridge_progress` / `app.bridge_ask` / `app.agent_answer`、読むのは `app.agent_state`。**仕事の記録（D-100.1・D-100.2）**：道具の呼び出しと使った量を残す。**中身の全文（ファイルの中身・道具の返り値）は残さない**（D-100.3）。会話に出すのは progress だけ",
+   "status": "decided",
+   "decided_at": "2026-09-29",
+   "source": [
+    "D-093.2",
+    "D-093.3",
+    "D-093.4",
+    "D-093.7",
+    "D-093.8",
+    "D-100.1",
+    "D-100.2",
+    "D-100.3",
+    "D-104",
+    "D-107"
+   ]
+  },
+  {
+   "id": "E-047",
+   "name": "permission_rules",
+   "table_name": "permission_rules",
+   "section": "6. 会話・成果物・証跡",
+   "fields": [
+    {
+     "name": "<scoped>",
+     "note": null
+    },
+    {
+     "name": "member_id",
+     "note": null
+    },
+    {
+     "name": "tool",
+     "note": null
+    },
+    {
+     "name": "target_pattern",
+     "note": null
+    },
+    {
+     "name": "decision_id",
+     "note": "allow／deny"
+    },
+    {
+     "name": "bridge_job_event_id",
+     "note": "「いつも」を押した問い"
+    },
+    {
+     "name": "revoked_at",
+     "note": null
+    }
+   ],
+   "relations": [],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "scope_layered",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "permission_rules_self_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND member_id = current_setting('app.user_id', true)::uuid",
+     "rationale": "本人だけが読む（同じ会社の人にも見せない）",
+     "source": [
+      "D-073.1",
+      "D-104.14",
+      "D-104.16",
+      "D-105.2"
+     ]
+    },
+    {
+     "name": "permission_rules_self_only_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND member_id = current_setting('app.user_id', true)::uuid",
+     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "source": [
+      "D-073.1"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-104.14）。本人だけが読む。**許可の決まり。本人が「いつも」にした道具と対象。Bridge が仕事を渡すときに Claude Code の許可の一覧として渡す。設定で一覧・取り消し。選んでいるモードは `members.agent_permission_mode`。**全部許可でも、サービス台帳で禁止・銀行のドメインは許可の一覧より強く止める（D-107.2）**",
+   "status": "decided",
+   "decided_at": "2026-09-29",
+   "source": [
+    "D-104",
+    "D-104.14",
+    "D-107.2"
+   ]
+  },
+  {
+   "id": "E-048",
+   "name": "agent_usage_snapshots",
+   "table_name": "agent_usage_snapshots",
+   "section": "6. 会話・成果物・証跡",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "member_id",
+     "note": null
+    },
+    {
+     "name": "window_id",
+     "note": "five_hour／week"
+    },
+    {
+     "name": "utilization",
+     "note": "numeric(5,2"
+    },
+    {
+     "name": "resets_at",
+     "note": null
+    },
+    {
+     "name": "observed_at",
+     "note": null
+    }
+   ],
+   "relations": [],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "agent_usage_snapshots_self_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND member_id = current_setting('app.user_id', true)::uuid",
+     "rationale": "本人だけが読む（同じ会社の人にも見せない）",
+     "source": [
+      "D-073.1",
+      "D-104.14",
+      "D-104.16",
+      "D-105.2"
+     ]
+    },
+    {
+     "name": "agent_usage_snapshots_self_only_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND member_id = current_setting('app.user_id', true)::uuid",
+     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "source": [
+      "D-073.1"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-104.16）。本人だけが読む。**自分のAIの使用量。Bridge が Claude Code から受けた使用量を最新だけ残す（会員ごと・枠ごとに 1 行を上書き）。近い・達したら会話に案内",
+   "status": "decided",
+   "decided_at": "2026-09-29",
+   "source": [
+    "D-104",
+    "D-104.16"
+   ]
+  },
+  {
+   "id": "E-049",
    "name": "messages",
    "table_name": "messages",
    "section": "6. 会話・成果物・証跡",
@@ -3760,7 +4757,7 @@
     },
     {
      "name": "options",
-     "note": "jsonb（選択肢。必ず「その他」「あとで」を含む"
+     "note": "jsonb（自分のAIからの問い合わせ：問い 1〜4・選択肢・説明・推奨・見本・複数・「その他」← D-104.7。「あとで」は置かない"
     },
     {
      "name": "confidence",
@@ -3772,7 +4769,23 @@
     },
     {
      "name": "parent_message_id",
-     "note": "分岐"
+     "note": "直して送り直した元 ← D-104.17"
+    },
+    {
+     "name": "quote",
+     "note": "jsonb（一部を選んで引用して続けた元 ← D-104.17"
+    },
+    {
+     "name": "work",
+     "note": "jsonb（畳んだ作業の 1 行：操作の数・時間 ← D-104.8"
+    },
+    {
+     "name": "send_state",
+     "note": "送れなかった＝failed ← D-104.15"
+    },
+    {
+     "name": "transcript_uuid",
+     "note": "本人の PC の Claude Code の記録の id。会話の中で一意。自分のAI の文の写し ← D-112"
     },
     {
      "name": "undo_action_run_id",
@@ -3834,13 +4847,14 @@
    "legacy_drift_notes": null,
    "note": "**会話の部品 1 組を列で持つ ← D-066**。受領・取り消しは `action_runs` / `audit_events` の実体があるときだけ描く",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
-    "D-066"
+    "D-066",
+    "D-104"
    ]
   },
   {
-   "id": "E-040",
+   "id": "E-050",
    "name": "artifacts",
    "table_name": "artifacts",
    "section": "6. 会話・成果物・証跡",
@@ -3868,9 +4882,34 @@
     {
      "name": "approved_by",
      "note": null
+    },
+    {
+     "name": "source_message_id",
+     "note": "会話の返事から書き出した ← D-104.17"
+    },
+    {
+     "name": "title",
+     "note": "返事の最初の見出しか最初の行から付き、直せる ← D-106.1"
+    },
+    {
+     "name": "owner_member_id",
+     "note": "書き出した人 ← D-106.8"
+    },
+    {
+     "name": "current_version",
+     "note": "int（今の版 ← D-106.3"
+    },
+    {
+     "name": "source_conversation_id",
+     "note": "どの会話から ← D-106.2"
     }
    ],
-   "relations": [],
+   "relations": [
+    {
+     "to": "artifact_versions",
+     "label": "版"
+    }
+   ],
    "soft_delete": true,
    "timestamps": true,
    "tenant_field": "tenant_id",
@@ -3891,6 +4930,16 @@
      "source": [
       "D-026.1",
       "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "artifacts_self_only_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND owner_member_id = current_setting('app.user_id', true)::uuid",
+     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "source": [
       "D-073.1"
      ]
     },
@@ -3919,15 +4968,128 @@
     }
    ],
    "legacy_drift_notes": null,
-   "note": "`format` = pdf / pptx / xlsx / docx / md / html / csv ← **E13**",
+   "note": "`format` = pdf / pptx / xlsx / docx / md / html / csv ← **E13**。会話から書き出した資料も成果物に入る（手元に落とすのは自由、外に出すときだけ承認）。`storage_ref` は今の版の置き場（版の表と同じ値）。**直す・戻す・読むは `app.artifact_*` の関数を通す**（生の select をしない）",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
-    "D-010"
+    "D-104",
+    "D-106"
    ]
   },
   {
-   "id": "E-041",
+   "id": "E-051",
+   "name": "artifact_versions",
+   "table_name": "artifact_versions",
+   "section": "6. 会話・成果物・証跡",
+   "fields": [
+    {
+     "name": "<scoped>",
+     "note": null
+    },
+    {
+     "name": "artifact_id",
+     "note": null
+    },
+    {
+     "name": "version",
+     "note": "int"
+    },
+    {
+     "name": "storage_ref",
+     "note": null
+    },
+    {
+     "name": "size_bytes",
+     "note": "bigint"
+    },
+    {
+     "name": "owner_member_id",
+     "note": "その版を作った人"
+    },
+    {
+     "name": "reverted_from",
+     "note": "int（戻したときの元の版"
+    },
+    {
+     "name": "note",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "artifacts",
+     "label": "版"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "scope_layered",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "artifact_versions_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "artifact_versions_self_only_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND owner_member_id = current_setting('app.user_id', true)::uuid",
+     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "source": [
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "artifact_versions_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'artifact_versions', scope_id, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "artifact_versions_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = artifact_versions.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-106.3・D-106.4）。**直すと 1 行増える。戻すのも新しい行（消さない）。`(artifact_id, version)` は一意。中身は置き場（関門 C4）",
+   "status": "decided",
+   "decided_at": "2026-09-29",
+   "source": [
+    "D-106",
+    "D-106.3",
+    "D-106.4"
+   ]
+  },
+  {
+   "id": "E-052",
    "name": "audit_events",
    "table_name": "audit_events",
    "section": "6. 会話・成果物・証跡",
@@ -4019,13 +5181,14 @@
    "legacy_drift_notes": null,
    "note": "**追記専用**（UPDATE / DELETE を許可しない）。パーティション",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
-    "D-010"
+    "D-107",
+    "D-110"
    ]
   },
   {
-   "id": "E-042",
+   "id": "E-053",
    "name": "session_kinds",
    "table_name": "session_kinds",
    "section": "7. マスタ",
@@ -4076,13 +5239,13 @@
    "legacy_drift_notes": null,
    "note": "**マスタ**（web / bridge / api。sessions.kind_id）",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-010"
    ]
   },
   {
-   "id": "E-043",
+   "id": "E-054",
    "name": "revoke_reasons",
    "table_name": "revoke_reasons",
    "section": "7. マスタ",
@@ -4133,13 +5296,13 @@
    "legacy_drift_notes": null,
    "note": "**マスタ**（logout / password_changed / permission_changed / member_left / suspended / tenant_closed / invite_revoked / expired / admin。sessions.revoke_reason_id）",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-010"
    ]
   },
   {
-   "id": "E-044",
+   "id": "E-055",
    "name": "layers",
    "table_name": "layers",
    "section": "9. 層と権限",
@@ -4221,14 +5384,14 @@
    "legacy_drift_notes": null,
    "note": "**★新設（D-073.4）。層は会社ごと。**運営／会社／個人は固定、その間の層（部署・事業…）は会社が 0〜n 個作る。`scopes.layer_id` が指す。画面に「部署」を固定名で書かない",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-073",
     "D-073.4"
    ]
   },
   {
-   "id": "E-045",
+   "id": "E-056",
    "name": "target_kinds",
    "table_name": "target_kinds",
    "section": "9. 層と権限",
@@ -4284,13 +5447,13 @@
    "legacy_drift_notes": null,
    "note": "**マスタ**（memory / rule / goal / duty / ledger / ai_employee / template / procedure / member / plan …＝権限の「何に」）",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-073"
    ]
   },
   {
-   "id": "E-046",
+   "id": "E-057",
    "name": "abilities",
    "table_name": "abilities",
    "section": "9. 層と権限",
@@ -4346,13 +5509,13 @@
    "legacy_drift_notes": null,
    "note": "**マスタ**（view / edit / create / delete / allocate / approve / invite ＝「できること」）",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-073"
    ]
   },
   {
-   "id": "E-047",
+   "id": "E-058",
    "name": "permissions",
    "table_name": "permissions",
    "section": "9. 層と権限",
@@ -4454,7 +5617,7 @@
    "legacy_drift_notes": null,
    "note": "**★新設（D-073.1〜D-073.3）。権限＝誰に×何に×どの層で×できること。**本人のもの（`owner_member_id = app.user_id` の個人の範囲）は権限なしで自由＝RLS の predicate `self_only` で表し、行を作らない。R3（担当者）・R4（閲覧のみ）も `abilities=view` の行で「見える」を持つ（見えないのが既定ではない）",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-073",
     "D-073.1",
@@ -4462,7 +5625,7 @@
    ]
   },
   {
-   "id": "E-048",
+   "id": "E-059",
    "name": "account_events",
    "table_name": "account_events",
    "section": "10. 口座状態の出来事・失効・サポートアクセス",
@@ -4566,7 +5729,7 @@
    "legacy_drift_notes": null,
    "note": "**★新設（D-074.1・D-076.13）。**出来事 7 つの実体。画面の依存表（G16）はここから",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-074",
     "D-074.1",
@@ -4575,7 +5738,7 @@
    ]
   },
   {
-   "id": "E-049",
+   "id": "E-060",
    "name": "account_event_items",
    "table_name": "account_event_items",
    "section": "10. 口座状態の出来事・失効・サポートアクセス",
@@ -4665,14 +5828,14 @@
    "legacy_drift_notes": null,
    "note": "**★新設。**オブジェクトごとの「何が起きるか」と引き継ぎ先の決定。全部 done になるまで出来事は終わらない（引き継ぎ先を決めるまで消せない）",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-074",
     "D-076.13"
    ]
   },
   {
-   "id": "E-050",
+   "id": "E-061",
    "name": "sessions",
    "table_name": "sessions",
    "section": "10. 口座状態の出来事・失効・サポートアクセス",
@@ -4772,18 +5935,20 @@
     }
    ],
    "legacy_drift_notes": null,
-   "note": "**★新設（D-076.1・G-14）。**端末の一覧。退会・停止・権限変更・パスワード変更で **全行を即 revoked** にし、API と Bridge はこの表を見て拒否する（発行済みトークンの有効期限に頼らない）",
+   "note": "**★新設（D-076.1・G-14）。**端末の一覧。退会・停止・権限変更・パスワード変更で **全行を即 revoked** にし、API と Bridge はこの表を見て拒否する（発行済みトークンの有効期限に頼らない） / **`health`** / **`health_at`**（Bridge が返した自己診断。Bridge の中で完結させない ← D-090.7）。`last_seen_at` は生存の知らせで動き、75 秒来なければ画面は「切れています」← D-090.8",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-074",
     "D-076",
     "D-076.1",
-    "D-076.13"
+    "D-076.13",
+    "D-090.7",
+    "D-090.8"
    ]
   },
   {
-   "id": "E-051",
+   "id": "E-062",
    "name": "support_access_grants",
    "table_name": "support_access_grants",
    "section": "10. 口座状態の出来事・失効・サポートアクセス",
@@ -4869,7 +6034,7 @@
    "legacy_drift_notes": null,
    "note": "**★新設（D-074.5）。**運営は既定で顧客データを見られない。会社が範囲と期限つきで許可したときだけ、この行を根拠に読める。閲覧は会社側 `audit_events` と運営側 `ops_audit_events` の両方に残る",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-074",
     "D-074.5",
@@ -4877,7 +6042,7 @@
    ]
   },
   {
-   "id": "E-052",
+   "id": "E-063",
    "name": "retention_holds",
    "table_name": "retention_holds",
    "section": "10. 口座状態の出来事・失効・サポートアクセス",
@@ -4959,7 +6124,7 @@
    "legacy_drift_notes": null,
    "note": "**★新設（D-074.3）。**退会後も法令で残す記録（請求の記録 7 年 等）。消去バッチはこの表の行を除外する",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-074",
     "D-074.3",
@@ -4967,7 +6132,7 @@
    ]
   },
   {
-   "id": "E-053",
+   "id": "E-064",
    "name": "erasure_certificates",
    "table_name": "erasure_certificates",
    "section": "10. 口座状態の出来事・失効・サポートアクセス",
@@ -5049,7 +6214,7 @@
    "legacy_drift_notes": null,
    "note": "**★新設（D-074.3）。**猶予（30 日・復元可）の後の完全消去で自動生成し、会社の代表に送る",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-074",
     "D-074.3",
@@ -5057,7 +6222,7 @@
    ]
   },
   {
-   "id": "E-054",
+   "id": "E-065",
    "name": "distributions",
    "table_name": "distributions",
    "section": "11. 運営",
@@ -5127,7 +6292,7 @@
    "legacy_drift_notes": null,
    "note": "**★新設（D-037・D-076.10・D-077.4）。運営配布物のマスタ。**`ai_employees.provisioning_id` はここを指す。目標スキル（D-063）も配布物の一種。`is_locked`＝上書き不可の安全ルール",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-037",
     "D-063",
@@ -5140,7 +6305,7 @@
    ]
   },
   {
-   "id": "E-055",
+   "id": "E-066",
    "name": "distribution_versions",
    "table_name": "distribution_versions",
    "section": "11. 運営",
@@ -5212,7 +6377,7 @@
    "legacy_drift_notes": null,
    "note": "版。会社側は版を上げるまで変わらない（D-076.10）",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-073.7",
     "D-074.4",
@@ -5222,7 +6387,7 @@
    ]
   },
   {
-   "id": "E-056",
+   "id": "E-067",
    "name": "tenant_distributions",
    "table_name": "tenant_distributions",
    "section": "11. 運営",
@@ -5316,7 +6481,7 @@
    "legacy_drift_notes": null,
    "note": "**★新設（D-077.6）。**会社の詳細「配布したもの」＝この会社が使っている配布物・版・上書き。運営はマスタを直し、ここは 1 社への配布の状態",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-073.7",
     "D-074.4",
@@ -5327,7 +6492,7 @@
    ]
   },
   {
-   "id": "E-057",
+   "id": "E-068",
    "name": "service_registry_versions",
    "table_name": "service_registry_versions",
    "section": "11. 運営",
@@ -5389,7 +6554,7 @@
    "legacy_drift_notes": null,
    "note": "**★新設（D-076.5）。**サービス台帳の可否は版で持ち、全社に効く。禁止に変えたら使っている会社に自動でお知らせ",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-073.7",
     "D-074.4",
@@ -5400,7 +6565,7 @@
    ]
   },
   {
-   "id": "E-058",
+   "id": "E-069",
    "name": "service_requests",
    "table_name": "service_requests",
    "section": "11. 運営",
@@ -5491,7 +6656,7 @@
    "legacy_drift_notes": null,
    "note": "**★新設（D-076.5）。**会社からの「このサービスは触れるか」の申請",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-073.7",
     "D-074.4",
@@ -5502,7 +6667,7 @@
    ]
   },
   {
-   "id": "E-059",
+   "id": "E-070",
    "name": "review_requests",
    "table_name": "review_requests",
    "section": "11. 運営",
@@ -5607,7 +6772,7 @@
    "legacy_drift_notes": null,
    "note": "**★新設（D-027・D-074.4・D-077.3）。**会社が明示的に公開したものの審査。承認・却下は会社の詳細の「審査」で行う。公開時の出どころは業種名だけ",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-027",
     "D-073.7",
@@ -5620,7 +6785,7 @@
    ]
   },
   {
-   "id": "E-060",
+   "id": "E-071",
    "name": "ops_members",
    "table_name": "ops_members",
    "section": "11. 運営",
@@ -5674,7 +6839,7 @@
    "legacy_drift_notes": null,
    "note": "**★新設（D-073.7・D-074.4）。**運営メンバーと権限。運営の権限も 誰に×何に×できること",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-073",
     "D-073.7",
@@ -5685,7 +6850,7 @@
    ]
   },
   {
-   "id": "E-061",
+   "id": "E-072",
    "name": "ops_audit_events",
    "table_name": "ops_audit_events",
    "section": "11. 運営",
@@ -5770,7 +6935,7 @@
    "legacy_drift_notes": null,
    "note": "**★新設（D-074.4・D-077.7）。追記専用。**運営が「どの会社に何をしたか」。同じ行を対象会社の `audit_events` にも書く（顧客が自分の証跡で見られる）",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-073.7",
     "D-074",
@@ -5782,7 +6947,7 @@
    ]
   },
   {
-   "id": "E-062",
+   "id": "E-073",
    "name": "security_events",
    "table_name": "security_events",
    "section": "11. 運営",
@@ -5862,7 +7027,7 @@
    "legacy_drift_notes": null,
    "note": "**★新設（D-075.6）。追記専用。**セキュリティの出来事。会社側「できること・できないこと」と運営側「運営の証跡」の両方から読む",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-073.7",
     "D-074.4",
@@ -5874,7 +7039,7 @@
    ]
   },
   {
-   "id": "E-063",
+   "id": "E-074",
    "name": "inquiries",
    "table_name": "inquiries",
    "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
@@ -5989,7 +7154,7 @@
    "legacy_drift_notes": null,
    "note": "**★新設（D-075.1・D-077.1）。**まず自分のAIが答え、解けなければ運営へ。やりとりの本文は `conversations` / `messages`（同じ部品）。運営に届くのは構成と型だけで台帳の中身は送らない",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-069",
     "D-075",
@@ -5999,7 +7164,7 @@
    ]
   },
   {
-   "id": "E-064",
+   "id": "E-075",
    "name": "notices",
    "table_name": "notices",
    "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
@@ -6069,7 +7234,7 @@
    "legacy_drift_notes": null,
    "note": "**★新設（D-075.2・D-077.8）。**全体のお知らせも会社ごとのお知らせも同じ表（`target_tenant_id` の有無）",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-069",
     "D-075",
@@ -6079,7 +7244,7 @@
    ]
   },
   {
-   "id": "E-065",
+   "id": "E-076",
    "name": "notice_deliveries",
    "table_name": "notice_deliveries",
    "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
@@ -6171,7 +7336,7 @@
    "legacy_drift_notes": null,
    "note": "会社側「お知らせ」の既読",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-069",
     "D-075",
@@ -6179,7 +7344,7 @@
    ]
   },
   {
-   "id": "E-066",
+   "id": "E-077",
    "name": "status_incidents",
    "table_name": "status_incidents",
    "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
@@ -6240,7 +7405,7 @@
    "legacy_drift_notes": null,
    "note": "**★新設（D-075.2・D-076.9）。**稼働状況。会社側は自分の Bridge・経路の状態を `sessions` と `action_runs` から足して表示",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-069",
     "D-075",
@@ -6250,7 +7415,82 @@
    ]
   },
   {
-   "id": "E-067",
+   "id": "E-078",
+   "name": "bridge_releases",
+   "table_name": "bridge_releases",
+   "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": "tenant_id＝運営"
+    },
+    {
+     "name": "version",
+     "note": null
+    },
+    {
+     "name": "os_id",
+     "note": "mac ／ win"
+    },
+    {
+     "name": "storage_ref",
+     "note": "Kaname のサーバーの置き場"
+    },
+    {
+     "name": "sha256",
+     "note": null
+    },
+    {
+     "name": "signed",
+     "note": "署名・公証が済んでいるか"
+    },
+    {
+     "name": "published_at",
+     "note": null
+    },
+    {
+     "name": "notes",
+     "note": null
+    }
+   ],
+   "relations": [],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "ops_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "bridge_releases_ops_all",
+     "operation": "all",
+     "role": "ops",
+     "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
+     "rationale": "運営テナントの行。顧客は読めない",
+     "source": [
+      "D-073.7",
+      "D-077.4"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-015.7）。**顧客の PC に入れる Bridge の版。**配るのは Kaname のサーバーから**（顧客に外のサービスを見せない）。画面のダウンロードはこの表のいまの版を指し、無ければ「まだ配布していません」。自動更新もここを見る",
+   "status": "decided",
+   "decided_at": "2026-09-29",
+   "source": [
+    "D-015",
+    "D-015.7",
+    "D-069",
+    "D-075",
+    "D-076"
+   ]
+  },
+  {
+   "id": "E-079",
    "name": "notification_preferences",
    "table_name": "notification_preferences",
    "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
@@ -6342,7 +7582,7 @@
    "legacy_drift_notes": null,
    "note": "**★新設（D-075.3・D-043）。**通知の届け先。関門 C6 が宛先解決に読む",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-043",
     "D-069",
@@ -6352,7 +7592,7 @@
    ]
   },
   {
-   "id": "E-068",
+   "id": "E-080",
    "name": "notifications",
    "table_name": "notifications",
    "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
@@ -6460,7 +7700,7 @@
    "legacy_drift_notes": null,
    "note": "**★新設（D-043・C6）。**送出の outbox。重複抑止・再送・証跡は関門 C6 の責務",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-043",
     "D-069",
@@ -6469,7 +7709,7 @@
    ]
   },
   {
-   "id": "E-069",
+   "id": "E-081",
    "name": "plans",
    "table_name": "plans",
    "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
@@ -6535,7 +7775,7 @@
    "legacy_drift_notes": null,
    "note": "**★新設（D-076.6・D-077.5）。マスタ。**「配るもの」の画面で版管理。段階 2 の注記（注 7）から段階 1 に繰り上げ",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-069",
     "D-075",
@@ -6546,7 +7786,7 @@
    ]
   },
   {
-   "id": "E-070",
+   "id": "E-082",
    "name": "plan_versions",
    "table_name": "plan_versions",
    "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
@@ -6610,7 +7850,7 @@
    "legacy_drift_notes": null,
    "note": "価格・上限の版",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-069",
     "D-075",
@@ -6618,7 +7858,7 @@
    ]
   },
   {
-   "id": "E-071",
+   "id": "E-083",
    "name": "subscriptions",
    "table_name": "subscriptions",
    "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
@@ -6728,7 +7968,7 @@
    "legacy_drift_notes": null,
    "note": "**★新設（D-075.4）。**会社の契約。休止（D-076.13）は `status=suspended`。請求先は会社の設定（D-076.2）",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-069",
     "D-075",
@@ -6739,7 +7979,7 @@
    ]
   },
   {
-   "id": "E-072",
+   "id": "E-084",
    "name": "plan_change_requests",
    "table_name": "plan_change_requests",
    "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
@@ -6849,7 +8089,7 @@
    "legacy_drift_notes": null,
    "note": "下げるときは `account_events(kind=plan_change)` を作って依存を片づけてから",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-069",
     "D-075",
@@ -6857,7 +8097,7 @@
    ]
   },
   {
-   "id": "E-073",
+   "id": "E-085",
    "name": "usage_meters",
    "table_name": "usage_meters",
    "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
@@ -6939,7 +8179,7 @@
    "legacy_drift_notes": null,
    "note": "**★新設（D-075.5）。**上限に近いものを自分のAIが先に言う。上限超過は止まるだけで消えない",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-069",
     "D-075",
@@ -6949,7 +8189,7 @@
    ]
   },
   {
-   "id": "E-074",
+   "id": "E-086",
    "name": "invoices",
    "table_name": "invoices",
    "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
@@ -7059,7 +8299,7 @@
    "legacy_drift_notes": null,
    "note": "**★新設（D-075.4）。段階 1 は請求書払い。**カードは段階 2（D-002）で `payments.method` が増えるだけ",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-002",
     "D-069",
@@ -7069,7 +8309,7 @@
    ]
   },
   {
-   "id": "E-075",
+   "id": "E-087",
    "name": "payments",
    "table_name": "payments",
    "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
@@ -7170,7 +8410,7 @@
    "legacy_drift_notes": null,
    "note": "入金の記録は運営が会社の詳細で行う（D-077.1）。未収 30 日超で休止の案内",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-069",
     "D-075",
@@ -7179,7 +8419,7 @@
    ]
   },
   {
-   "id": "E-076",
+   "id": "E-088",
    "name": "error_events",
    "table_name": "error_events",
    "section": "12. 運営と顧客の間で往復するもの・自分で整えるもの",
@@ -7274,7 +8514,7 @@
    "legacy_drift_notes": null,
    "note": "**★新設（D-069.3・D-069.4）。**エラー一覧の 1 件が「出た」記録。文言と次の一手は errors.json が正本",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-069",
     "D-069.3",
@@ -7284,7 +8524,7 @@
    ]
   },
   {
-   "id": "E-077",
+   "id": "E-089",
    "name": "imports",
    "table_name": "imports",
    "section": "13. 取り込み・正規連携・招待・持ち出し・添付",
@@ -7369,7 +8609,7 @@
    "legacy_drift_notes": null,
    "note": "**★新設（D-076.3・D-025）。**形式を問わず受け取り自分のAIが読む。本番の台帳には人が押してから入る（3 経路の (3)）",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-025",
     "D-026",
@@ -7380,7 +8620,7 @@
    ]
   },
   {
-   "id": "E-078",
+   "id": "E-090",
    "name": "integrations",
    "table_name": "integrations",
    "section": "13. 取り込み・正規連携・招待・持ち出し・添付",
@@ -7469,7 +8709,7 @@
    "legacy_drift_notes": null,
    "note": "**★新設（D-076.4・D-041）。**正規連携（freee / Google …）。資格情報は `credentials` 経由で vault 参照だけ",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-026",
     "D-041",
@@ -7480,7 +8720,7 @@
    ]
   },
   {
-   "id": "E-079",
+   "id": "E-091",
    "name": "invitations",
    "table_name": "invitations",
    "section": "13. 取り込み・正規連携・招待・持ち出し・添付",
@@ -7573,7 +8813,7 @@
    "legacy_drift_notes": null,
    "note": "**★新設（D-026・D-037）。**招待。取り消しで `token_hash` は即無効（G-14）",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-026",
     "D-037",
@@ -7583,7 +8823,7 @@
    ]
   },
   {
-   "id": "E-080",
+   "id": "E-092",
    "name": "pending_signup",
    "table_name": "pending_signup",
    "section": "13. 取り込み・正規連携・招待・持ち出し・添付",
@@ -7662,7 +8902,7 @@
    "legacy_drift_notes": null,
    "note": "**★新設（D-088.2）。**保留の申し込み。「はじめる」ではここに 1 行置くだけで、会社も利用者も作らない。リンクを押した時点で作る。会社のデータではない（まだ会社が無い）ので `public` ではなく スキーマ `kaname_auth` に置き、触れるのは認証の接続だけ。平文のパスワードは持たず 30 分で失効し、確認が済んだら `consumed_at` を立てる（消すと「もう済んだ」と「期限切れ」が同じ見た目になる）",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-026",
     "D-042",
@@ -7672,7 +8912,7 @@
    ]
   },
   {
-   "id": "E-081",
+   "id": "E-093",
    "name": "export_jobs",
    "table_name": "export_jobs",
    "section": "13. 取り込み・正規連携・招待・持ち出し・添付",
@@ -7767,7 +9007,7 @@
    "legacy_drift_notes": null,
    "note": "**★新設（D-042）。**持ち出し。関門 C4 を通る。ダウンロード URL は期限つき署名",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-026",
     "D-042",
@@ -7777,7 +9017,7 @@
    ]
   },
   {
-   "id": "E-082",
+   "id": "E-094",
    "name": "attachments",
    "table_name": "attachments",
    "section": "13. 取り込み・正規連携・招待・持ち出し・添付",
@@ -7804,6 +9044,14 @@
     },
     {
      "name": "size",
+     "note": null
+    },
+    {
+     "name": "name",
+     "note": null
+    },
+    {
+     "name": "uploaded_by",
      "note": null
     },
     {
@@ -7860,18 +9108,20 @@
     }
    ],
    "legacy_drift_notes": null,
-   "note": "**★新設。**添付の実体を 1 表に。`messages.attachments jsonb` は参照だけ持つ",
+   "note": "**★新設。**添付の実体を 1 表に。`messages.attachments jsonb` は参照だけ持つ。**会話で付けた資料・画像（D-104.11）**もここ。実体は会社の置き場（関門 C4）で、Bridge は期限つきの署名 URL で受け取る（保存先の鍵は AI に見せない）",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-026",
     "D-042",
     "D-076.3",
-    "D-076.4"
+    "D-076.4",
+    "D-104",
+    "D-104.11"
    ]
   },
   {
-   "id": "E-083",
+   "id": "E-095",
    "name": "skills",
    "table_name": "skills",
    "section": "14. スキル",
@@ -7945,14 +9195,14 @@
    "legacy_drift_notes": null,
    "note": "**★新設（D-078.1）。**構築メタスキル 7 種・目標スキル・業務スキルのマスタ。顧客には名前・目的・版だけ見える。`distributions(kind=goal_skill)` はここへ移す",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-078",
     "D-078.1"
    ]
   },
   {
-   "id": "E-084",
+   "id": "E-096",
    "name": "skill_versions",
    "table_name": "skill_versions",
    "section": "14. スキル",
@@ -8040,14 +9290,14 @@
    "legacy_drift_notes": null,
    "note": "**★新設（D-078.2）。**出す前に運営がテストで動かす。前の版に戻せる",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-078",
     "D-078.2"
    ]
   },
   {
-   "id": "E-085",
+   "id": "E-097",
    "name": "skill_test_runs",
    "table_name": "skill_test_runs",
    "section": "14. スキル",
@@ -8113,13 +9363,13 @@
    "legacy_drift_notes": null,
    "note": "テストは外に出ない（`action_runs.mode_id = test` と同じ規則）",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-078"
    ]
   },
   {
-   "id": "E-086",
+   "id": "E-098",
    "name": "skill_attachments",
    "table_name": "skill_attachments",
    "section": "14. スキル",
@@ -8217,7 +9467,7 @@
    "legacy_drift_notes": null,
    "note": "**★新設（D-078.3・D-078.4）。**会社の詳細「配布したもの」と AI社員の 1 体「使えるスキル」はここを読む。会社の権限者が `enabled=false` にできる。AI社員を消す → 行が消える（D-078.7）",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-078",
     "D-078.3",
@@ -8227,7 +9477,7 @@
    ]
   },
   {
-   "id": "E-087",
+   "id": "E-099",
    "name": "payment_methods",
    "table_name": "payment_methods",
    "section": "15. 段階 2 で足す表",
@@ -8317,7 +9567,7 @@
    "legacy_drift_notes": null,
    "note": "**★段階 2（D-082.1・D-082.2）。**会社が選んだ支払い方法。カードの実体は Stripe。番号は持たない",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-082",
     "D-082.1",
@@ -8326,7 +9576,7 @@
    ]
   },
   {
-   "id": "E-088",
+   "id": "E-100",
    "name": "billing_events",
    "table_name": "billing_events",
    "section": "15. 段階 2 で足す表",
@@ -8416,7 +9666,7 @@
    "legacy_drift_notes": null,
    "note": "**★段階 2（D-082.3・D-082.4）。**Stripe の webhook の写し。同じ出来事は二度処理しない（stripe_event_ref に unique）。失敗 → 猶予 → 休止の判定の元",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-082",
     "D-082.3",
@@ -8425,7 +9675,7 @@
    ]
   },
   {
-   "id": "E-089",
+   "id": "E-101",
    "name": "llm_routes",
    "table_name": "llm_routes",
    "section": "15. 段階 2 で足す表",
@@ -8530,7 +9780,7 @@
    "legacy_drift_notes": null,
    "note": "**★段階 2（D-083.1・D-083.4・D-083.6）。**会社ごとの AI の経路。運営マネージドの許可は運営が書く",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-082",
     "D-083",
@@ -8541,7 +9791,7 @@
    ]
   },
   {
-   "id": "E-090",
+   "id": "E-102",
    "name": "llm_capabilities",
    "table_name": "llm_capabilities",
    "section": "15. 段階 2 で足す表",
@@ -8604,7 +9854,7 @@
    "legacy_drift_notes": null,
    "note": "**★段階 2（D-083.2・D-004）。マスタ。**3 社で揃えた能力表。揃わない能力はどの経路でも出さない",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-004",
     "D-082",
@@ -8614,7 +9864,7 @@
    ]
   },
   {
-   "id": "E-091",
+   "id": "E-103",
    "name": "push_devices",
    "table_name": "push_devices",
    "section": "15. 段階 2 で足す表",
@@ -8714,7 +9964,7 @@
    "legacy_drift_notes": null,
    "note": "**★段階 2（D-084.3）。**アプリのプッシュ通知の届け先。失効は即時（G-14）",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-082",
     "D-084",
@@ -8723,7 +9973,7 @@
    ]
   },
   {
-   "id": "E-092",
+   "id": "E-104",
    "name": "disclosure_versions",
    "table_name": "disclosure_versions",
    "section": "15. 段階 2 で足す表",
@@ -8793,7 +10043,7 @@
    "legacy_drift_notes": null,
    "note": "**★段階 2（D-085.1・D-085.2）。**成果物から生成した開示資料の版。変わったらお知らせ",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-082",
     "D-085",
@@ -8802,7 +10052,7 @@
    ]
   },
   {
-   "id": "E-093",
+   "id": "E-105",
    "name": "subprocessors",
    "table_name": "subprocessors",
    "section": "15. 段階 2 で足す表",
@@ -8872,7 +10122,7 @@
    "legacy_drift_notes": null,
    "note": "**★段階 2（D-085.2・D-042）。**顧客のデータを触る外部の会社。変更は事前通知",
    "status": "decided",
-   "decided_at": "2026-09-21",
+   "decided_at": "2026-09-29",
    "source": [
     "D-042",
     "D-082",

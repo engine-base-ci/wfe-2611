@@ -364,6 +364,196 @@
    "reason": null
   },
   {
+   "entity": "members",
+   "field": "setup_step",
+   "consumed_by_screens": [
+    "verify-email",
+    "invite-accept",
+    "mfa-setup",
+    "login",
+    "password-reset",
+    "onboard-interview",
+    "onboard-draft",
+    "onboard-testrun",
+    "onboard-golive",
+    "today",
+    "approvals",
+    "clone-thread",
+    "tasks",
+    "clone-chat",
+    "ai-activity",
+    "goal-allocation",
+    "my-progress",
+    "duties",
+    "clone-memory",
+    "company-model",
+    "audit",
+    "policies",
+    "members",
+    "ai-staff",
+    "ai-staff-detail",
+    "account-close",
+    "ops-home",
+    "ops-catalog",
+    "account",
+    "import",
+    "ops-skills",
+    "inquiry",
+    "billing",
+    "ops-tenant",
+    "ops-audit",
+    "member-detail"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "members",
+   "field": "agent_permission_mode",
+   "consumed_by_screens": [
+    "verify-email",
+    "invite-accept",
+    "mfa-setup",
+    "login",
+    "password-reset",
+    "onboard-interview",
+    "onboard-draft",
+    "onboard-testrun",
+    "onboard-golive",
+    "today",
+    "approvals",
+    "clone-thread",
+    "tasks",
+    "clone-chat",
+    "ai-activity",
+    "goal-allocation",
+    "my-progress",
+    "duties",
+    "clone-memory",
+    "company-model",
+    "audit",
+    "policies",
+    "members",
+    "ai-staff",
+    "ai-staff-detail",
+    "account-close",
+    "ops-home",
+    "ops-catalog",
+    "account",
+    "import",
+    "ops-skills",
+    "inquiry",
+    "billing",
+    "ops-tenant",
+    "ops-audit",
+    "member-detail"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "members",
+   "field": "agent_model",
+   "consumed_by_screens": [
+    "verify-email",
+    "invite-accept",
+    "mfa-setup",
+    "login",
+    "password-reset",
+    "onboard-interview",
+    "onboard-draft",
+    "onboard-testrun",
+    "onboard-golive",
+    "today",
+    "approvals",
+    "clone-thread",
+    "tasks",
+    "clone-chat",
+    "ai-activity",
+    "goal-allocation",
+    "my-progress",
+    "duties",
+    "clone-memory",
+    "company-model",
+    "audit",
+    "policies",
+    "members",
+    "ai-staff",
+    "ai-staff-detail",
+    "account-close",
+    "ops-home",
+    "ops-catalog",
+    "account",
+    "import",
+    "ops-skills",
+    "inquiry",
+    "billing",
+    "ops-tenant",
+    "ops-audit",
+    "member-detail"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "members",
+   "field": "agent_effort",
+   "consumed_by_screens": [
+    "verify-email",
+    "invite-accept",
+    "mfa-setup",
+    "login",
+    "password-reset",
+    "onboard-interview",
+    "onboard-draft",
+    "onboard-testrun",
+    "onboard-golive",
+    "today",
+    "approvals",
+    "clone-thread",
+    "tasks",
+    "clone-chat",
+    "ai-activity",
+    "goal-allocation",
+    "my-progress",
+    "duties",
+    "clone-memory",
+    "company-model",
+    "audit",
+    "policies",
+    "members",
+    "ai-staff",
+    "ai-staff-detail",
+    "account-close",
+    "ops-home",
+    "ops-catalog",
+    "account",
+    "import",
+    "ops-skills",
+    "inquiry",
+    "billing",
+    "ops-tenant",
+    "ops-audit",
+    "member-detail"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "setup_steps",
+   "field": "n",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "マスタ。label は各画面の札・選択肢として出る"
+  },
+  {
+   "entity": "setup_steps",
+   "field": "label",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "マスタ。label は各画面の札・選択肢として出る"
+  },
+  {
    "entity": "clones",
    "field": "<common>",
    "consumed_by_screens": [],
@@ -984,6 +1174,24 @@
    "consumed_by_screens": [],
    "internal": true,
    "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "goal_versions",
+   "field": "name",
+   "consumed_by_screens": [
+    "onboard-draft",
+    "tasks",
+    "clone-chat",
+    "goals",
+    "goal-allocation",
+    "goal-edit",
+    "my-progress",
+    "review",
+    "company-model",
+    "ops-skills"
+   ],
+   "internal": false,
+   "reason": null
   },
   {
    "entity": "goal_versions",
@@ -2086,13 +2294,6 @@
   },
   {
    "entity": "memories",
-   "field": "embedding",
-   "consumed_by_screens": [],
-   "internal": true,
-   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
-  },
-  {
-   "entity": "memories",
    "field": "approved_by",
    "consumed_by_screens": [
     "onboard-interview",
@@ -2132,6 +2333,306 @@
    ],
    "internal": false,
    "reason": null
+  },
+  {
+   "entity": "memories",
+   "field": "digest_id",
+   "consumed_by_screens": [
+    "onboard-interview",
+    "onboard-draft",
+    "onboard-golive",
+    "clone-chat",
+    "search",
+    "clone-memory",
+    "company-model",
+    "export",
+    "ops-support",
+    "ops-home",
+    "company-settings",
+    "ops-billing",
+    "ops-tenant"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "memories",
+   "field": "superseded_by",
+   "consumed_by_screens": [
+    "onboard-interview",
+    "onboard-draft",
+    "onboard-golive",
+    "clone-chat",
+    "search",
+    "clone-memory",
+    "company-model",
+    "export",
+    "ops-support",
+    "ops-home",
+    "company-settings",
+    "ops-billing",
+    "ops-tenant"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "memory_digests",
+   "field": "<common>",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "memory_digests",
+   "field": "member_id",
+   "consumed_by_screens": [
+    "today"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "memory_digests",
+   "field": "from_on",
+   "consumed_by_screens": [
+    "today"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "memory_digests",
+   "field": "to_on",
+   "consumed_by_screens": [
+    "today"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "memory_digests",
+   "field": "conversation_count",
+   "consumed_by_screens": [
+    "today"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "memory_digests",
+   "field": "state_id",
+   "consumed_by_screens": [
+    "today"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "memory_digests",
+   "field": "result",
+   "consumed_by_screens": [
+    "today"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "memory_digests",
+   "field": "bridge_job_id",
+   "consumed_by_screens": [
+    "today"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "memory_digests",
+   "field": "started_at",
+   "consumed_by_screens": [
+    "today"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "memory_digests",
+   "field": "finished_at",
+   "consumed_by_screens": [
+    "today"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "memory_proposals",
+   "field": "<scoped>",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "memory_proposals",
+   "field": "memory_id",
+   "consumed_by_screens": [
+    "clone-memory"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "memory_proposals",
+   "field": "target_scope_id",
+   "consumed_by_screens": [
+    "clone-memory"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "memory_proposals",
+   "field": "proposer_member_id",
+   "consumed_by_screens": [
+    "clone-memory"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "memory_proposals",
+   "field": "reviewer_member_id",
+   "consumed_by_screens": [
+    "clone-memory"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "memory_proposals",
+   "field": "state_id",
+   "consumed_by_screens": [
+    "clone-memory"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "memory_proposals",
+   "field": "conflict_group_id",
+   "consumed_by_screens": [
+    "clone-memory"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "memory_proposals",
+   "field": "evidence",
+   "consumed_by_screens": [
+    "clone-memory"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "memory_proposals",
+   "field": "decided_at",
+   "consumed_by_screens": [
+    "clone-memory"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "embedding_models",
+   "field": "key",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "マスタ。label は各画面の札・選択肢として出る"
+  },
+  {
+   "entity": "embedding_models",
+   "field": "label",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "マスタ。label は各画面の札・選択肢として出る"
+  },
+  {
+   "entity": "embedding_models",
+   "field": "dim",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "マスタ。label は各画面の札・選択肢として出る"
+  },
+  {
+   "entity": "embedding_models",
+   "field": "state_id",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "マスタ。label は各画面の札・選択肢として出る"
+  },
+  {
+   "entity": "embedding_models",
+   "field": "artifact_url",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "マスタ。label は各画面の札・選択肢として出る"
+  },
+  {
+   "entity": "embedding_models",
+   "field": "sha256",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "マスタ。label は各画面の札・選択肢として出る"
+  },
+  {
+   "entity": "search_embeddings",
+   "field": "<scoped>",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "検索用の内部の索引（段階 1 は作らない・D-099.2）。画面には元の行（記憶・台帳・証跡）が出る"
+  },
+  {
+   "entity": "search_embeddings",
+   "field": "target_type_id",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "検索用の内部の索引（段階 1 は作らない・D-099.2）。画面には元の行（記憶・台帳・証跡）が出る"
+  },
+  {
+   "entity": "search_embeddings",
+   "field": "target_id",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "検索用の内部の索引（段階 1 は作らない・D-099.2）。画面には元の行（記憶・台帳・証跡）が出る"
+  },
+  {
+   "entity": "search_embeddings",
+   "field": "model_id",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "検索用の内部の索引（段階 1 は作らない・D-099.2）。画面には元の行（記憶・台帳・証跡）が出る"
+  },
+  {
+   "entity": "search_embeddings",
+   "field": "chunk_no",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "検索用の内部の索引（段階 1 は作らない・D-099.2）。画面には元の行（記憶・台帳・証跡）が出る"
+  },
+  {
+   "entity": "search_embeddings",
+   "field": "content_hash",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "検索用の内部の索引（段階 1 は作らない・D-099.2）。画面には元の行（記憶・台帳・証跡）が出る"
+  },
+  {
+   "entity": "search_embeddings",
+   "field": "embedding",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "検索用の内部の索引（段階 1 は作らない・D-099.2）。画面には元の行（記憶・台帳・証跡）が出る"
   },
   {
    "entity": "tasks",
@@ -3009,6 +3510,30 @@
   },
   {
    "entity": "credentials",
+   "field": "service_name",
+   "consumed_by_screens": [
+    "credentials",
+    "security-brief",
+    "llm-routes",
+    "services"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "credentials",
+   "field": "service_domain",
+   "consumed_by_screens": [
+    "credentials",
+    "security-brief",
+    "llm-routes",
+    "services"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "credentials",
    "field": "kind_id",
    "consumed_by_screens": [
     "credentials",
@@ -3135,6 +3660,484 @@
     "ops-support",
     "inquiry",
     "ops-tenant"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "conversations",
+   "field": "agent_session_id",
+   "consumed_by_screens": [
+    "onboard-interview",
+    "clone-chat",
+    "search",
+    "ops-support",
+    "inquiry",
+    "ops-tenant"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "conversations",
+   "field": "branched_from_message_id",
+   "consumed_by_screens": [
+    "onboard-interview",
+    "clone-chat",
+    "search",
+    "ops-support",
+    "inquiry",
+    "ops-tenant"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "conversations",
+   "field": "owner_member_id",
+   "consumed_by_screens": [
+    "onboard-interview",
+    "clone-chat",
+    "search",
+    "ops-support",
+    "inquiry",
+    "ops-tenant"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "conversations",
+   "field": "closed_at",
+   "consumed_by_screens": [
+    "onboard-interview",
+    "clone-chat",
+    "search",
+    "ops-support",
+    "inquiry",
+    "ops-tenant"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "conversations",
+   "field": "title_auto",
+   "consumed_by_screens": [
+    "onboard-interview",
+    "clone-chat",
+    "search",
+    "ops-support",
+    "inquiry",
+    "ops-tenant"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "conversations",
+   "field": "starred_at",
+   "consumed_by_screens": [
+    "onboard-interview",
+    "clone-chat",
+    "search",
+    "ops-support",
+    "inquiry",
+    "ops-tenant"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "conversations",
+   "field": "incognito",
+   "consumed_by_screens": [
+    "onboard-interview",
+    "clone-chat",
+    "search",
+    "ops-support",
+    "inquiry",
+    "ops-tenant"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "conversations",
+   "field": "last_read_at",
+   "consumed_by_screens": [
+    "onboard-interview",
+    "clone-chat",
+    "search",
+    "ops-support",
+    "inquiry",
+    "ops-tenant"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "conversations",
+   "field": "deleted_at",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "bridge_jobs",
+   "field": "<scoped>",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "bridge_jobs",
+   "field": "member_id",
+   "consumed_by_screens": [
+    "clone-chat"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "bridge_jobs",
+   "field": "conversation_id",
+   "consumed_by_screens": [
+    "clone-chat"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "bridge_jobs",
+   "field": "state_id",
+   "consumed_by_screens": [
+    "clone-chat"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "bridge_jobs",
+   "field": "prompt",
+   "consumed_by_screens": [
+    "clone-chat"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "bridge_jobs",
+   "field": "agent_session_id",
+   "consumed_by_screens": [
+    "clone-chat"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "bridge_jobs",
+   "field": "result",
+   "consumed_by_screens": [
+    "clone-chat"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "bridge_jobs",
+   "field": "partial",
+   "consumed_by_screens": [
+    "clone-chat"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "bridge_jobs",
+   "field": "stopped_reason",
+   "consumed_by_screens": [
+    "clone-chat"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "bridge_jobs",
+   "field": "permission_mode",
+   "consumed_by_screens": [
+    "clone-chat"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "bridge_jobs",
+   "field": "model",
+   "consumed_by_screens": [
+    "clone-chat"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "bridge_jobs",
+   "field": "effort",
+   "consumed_by_screens": [
+    "clone-chat"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "bridge_jobs",
+   "field": "tools",
+   "consumed_by_screens": [
+    "clone-chat"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "bridge_jobs",
+   "field": "attachment_ids",
+   "consumed_by_screens": [
+    "clone-chat"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "bridge_jobs",
+   "field": "steer_seq",
+   "consumed_by_screens": [
+    "clone-chat"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "bridge_jobs",
+   "field": "tool_token_hash",
+   "consumed_by_screens": [
+    "clone-chat"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "bridge_jobs",
+   "field": "started_at",
+   "consumed_by_screens": [
+    "clone-chat"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "bridge_jobs",
+   "field": "finished_at",
+   "consumed_by_screens": [
+    "clone-chat"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "bridge_job_states",
+   "field": "key",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "マスタ。label は各画面の札・選択肢として出る"
+  },
+  {
+   "entity": "bridge_job_states",
+   "field": "label",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "マスタ。label は各画面の札・選択肢として出る"
+  },
+  {
+   "entity": "bridge_job_events",
+   "field": "<scoped>",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "bridge_job_events",
+   "field": "member_id",
+   "consumed_by_screens": [
+    "clone-chat"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "bridge_job_events",
+   "field": "job_id",
+   "consumed_by_screens": [
+    "clone-chat"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "bridge_job_events",
+   "field": "kind",
+   "consumed_by_screens": [
+    "clone-chat"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "bridge_job_events",
+   "field": "seq",
+   "consumed_by_screens": [
+    "clone-chat"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "bridge_job_events",
+   "field": "request_id",
+   "consumed_by_screens": [
+    "clone-chat"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "bridge_job_events",
+   "field": "payload",
+   "consumed_by_screens": [
+    "clone-chat"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "permission_rules",
+   "field": "<scoped>",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "permission_rules",
+   "field": "member_id",
+   "consumed_by_screens": [
+    "clone-chat",
+    "policies"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "permission_rules",
+   "field": "tool",
+   "consumed_by_screens": [
+    "clone-chat",
+    "policies"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "permission_rules",
+   "field": "target_pattern",
+   "consumed_by_screens": [
+    "clone-chat",
+    "policies"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "permission_rules",
+   "field": "decision_id",
+   "consumed_by_screens": [
+    "clone-chat",
+    "policies"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "permission_rules",
+   "field": "bridge_job_event_id",
+   "consumed_by_screens": [
+    "clone-chat",
+    "policies"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "permission_rules",
+   "field": "revoked_at",
+   "consumed_by_screens": [
+    "clone-chat",
+    "policies"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "agent_usage_snapshots",
+   "field": "<common>",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "agent_usage_snapshots",
+   "field": "member_id",
+   "consumed_by_screens": [
+    "clone-chat",
+    "account"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "agent_usage_snapshots",
+   "field": "window_id",
+   "consumed_by_screens": [
+    "clone-chat",
+    "account"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "agent_usage_snapshots",
+   "field": "utilization",
+   "consumed_by_screens": [
+    "clone-chat",
+    "account"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "agent_usage_snapshots",
+   "field": "resets_at",
+   "consumed_by_screens": [
+    "clone-chat",
+    "account"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "agent_usage_snapshots",
+   "field": "observed_at",
+   "consumed_by_screens": [
+    "clone-chat",
+    "account"
    ],
    "internal": false,
    "reason": null
@@ -3278,6 +4281,58 @@
   },
   {
    "entity": "messages",
+   "field": "quote",
+   "consumed_by_screens": [
+    "onboard-interview",
+    "today",
+    "clone-thread",
+    "clone-chat",
+    "search"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "messages",
+   "field": "work",
+   "consumed_by_screens": [
+    "onboard-interview",
+    "today",
+    "clone-thread",
+    "clone-chat",
+    "search"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "messages",
+   "field": "send_state",
+   "consumed_by_screens": [
+    "onboard-interview",
+    "today",
+    "clone-thread",
+    "clone-chat",
+    "search"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "messages",
+   "field": "transcript_uuid",
+   "consumed_by_screens": [
+    "onboard-interview",
+    "today",
+    "clone-thread",
+    "clone-chat",
+    "search"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "messages",
    "field": "undo_action_run_id",
    "consumed_by_screens": [
     "onboard-interview",
@@ -3314,6 +4369,7 @@
    "field": "task_id",
    "consumed_by_screens": [
     "tasks",
+    "clone-chat",
     "ai-activity",
     "record-detail",
     "company-model",
@@ -3329,6 +4385,7 @@
    "field": "format_id",
    "consumed_by_screens": [
     "tasks",
+    "clone-chat",
     "ai-activity",
     "record-detail",
     "company-model",
@@ -3351,6 +4408,7 @@
    "field": "template_id",
    "consumed_by_screens": [
     "tasks",
+    "clone-chat",
     "ai-activity",
     "record-detail",
     "company-model",
@@ -3366,12 +4424,159 @@
    "field": "approved_by",
    "consumed_by_screens": [
     "tasks",
+    "clone-chat",
     "ai-activity",
     "record-detail",
     "company-model",
     "ops-catalog",
     "ops-tenant",
     "ops-review"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "artifacts",
+   "field": "source_message_id",
+   "consumed_by_screens": [
+    "tasks",
+    "clone-chat",
+    "ai-activity",
+    "record-detail",
+    "company-model",
+    "ops-catalog",
+    "ops-tenant",
+    "ops-review"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "artifacts",
+   "field": "title",
+   "consumed_by_screens": [
+    "tasks",
+    "clone-chat",
+    "ai-activity",
+    "record-detail",
+    "company-model",
+    "ops-catalog",
+    "ops-tenant",
+    "ops-review"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "artifacts",
+   "field": "owner_member_id",
+   "consumed_by_screens": [
+    "tasks",
+    "clone-chat",
+    "ai-activity",
+    "record-detail",
+    "company-model",
+    "ops-catalog",
+    "ops-tenant",
+    "ops-review"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "artifacts",
+   "field": "current_version",
+   "consumed_by_screens": [
+    "tasks",
+    "clone-chat",
+    "ai-activity",
+    "record-detail",
+    "company-model",
+    "ops-catalog",
+    "ops-tenant",
+    "ops-review"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "artifacts",
+   "field": "source_conversation_id",
+   "consumed_by_screens": [
+    "tasks",
+    "clone-chat",
+    "ai-activity",
+    "record-detail",
+    "company-model",
+    "ops-catalog",
+    "ops-tenant",
+    "ops-review"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "artifact_versions",
+   "field": "<scoped>",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "artifact_versions",
+   "field": "artifact_id",
+   "consumed_by_screens": [
+    "clone-chat"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "artifact_versions",
+   "field": "version",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "artifact_versions",
+   "field": "storage_ref",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "artifact_versions",
+   "field": "size_bytes",
+   "consumed_by_screens": [
+    "clone-chat"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "artifact_versions",
+   "field": "owner_member_id",
+   "consumed_by_screens": [
+    "clone-chat"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "artifact_versions",
+   "field": "reverted_from",
+   "consumed_by_screens": [
+    "clone-chat"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "artifact_versions",
+   "field": "note",
+   "consumed_by_screens": [
+    "clone-chat"
    ],
    "internal": false,
    "reason": null
@@ -5460,6 +6665,72 @@
    "reason": null
   },
   {
+   "entity": "bridge_releases",
+   "field": "<common>",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "bridge_releases",
+   "field": "version",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "bridge_releases",
+   "field": "os_id",
+   "consumed_by_screens": [
+    "bridge-setup"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "bridge_releases",
+   "field": "storage_ref",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "bridge_releases",
+   "field": "sha256",
+   "consumed_by_screens": [
+    "bridge-setup"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "bridge_releases",
+   "field": "signed",
+   "consumed_by_screens": [
+    "bridge-setup"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "bridge_releases",
+   "field": "published_at",
+   "consumed_by_screens": [
+    "bridge-setup"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "bridge_releases",
+   "field": "notes",
+   "consumed_by_screens": [
+    "bridge-setup"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
    "entity": "notification_preferences",
    "field": "<common>",
    "consumed_by_screens": [],
@@ -6631,6 +7902,69 @@
    "reason": null
   },
   {
+   "entity": "pending_signup",
+   "field": "email",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "マスタ。label は各画面の札・選択肢として出る"
+  },
+  {
+   "entity": "pending_signup",
+   "field": "name",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "マスタ。label は各画面の札・選択肢として出る"
+  },
+  {
+   "entity": "pending_signup",
+   "field": "company_name",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "マスタ。label は各画面の札・選択肢として出る"
+  },
+  {
+   "entity": "pending_signup",
+   "field": "pw_iv",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "マスタ。label は各画面の札・選択肢として出る"
+  },
+  {
+   "entity": "pending_signup",
+   "field": "token_hash",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "マスタ。label は各画面の札・選択肢として出る"
+  },
+  {
+   "entity": "pending_signup",
+   "field": "expires_at",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "マスタ。label は各画面の札・選択肢として出る"
+  },
+  {
+   "entity": "pending_signup",
+   "field": "sent_at",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "マスタ。label は各画面の札・選択肢として出る"
+  },
+  {
+   "entity": "pending_signup",
+   "field": "send_error",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "マスタ。label は各画面の札・選択肢として出る"
+  },
+  {
+   "entity": "pending_signup",
+   "field": "consumed_at",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "マスタ。label は各画面の札・選択肢として出る"
+  },
+  {
    "entity": "export_jobs",
    "field": "<common>",
    "consumed_by_screens": [],
@@ -6705,6 +8039,7 @@
    "entity": "attachments",
    "field": "owner_type",
    "consumed_by_screens": [
+    "clone-chat",
     "record-detail",
     "import"
    ],
@@ -6715,6 +8050,7 @@
    "entity": "attachments",
    "field": "owner_id",
    "consumed_by_screens": [
+    "clone-chat",
     "record-detail",
     "import"
    ],
@@ -6732,6 +8068,7 @@
    "entity": "attachments",
    "field": "mime",
    "consumed_by_screens": [
+    "clone-chat",
     "record-detail",
     "import"
    ],
@@ -6742,6 +8079,29 @@
    "entity": "attachments",
    "field": "size",
    "consumed_by_screens": [
+    "clone-chat",
+    "record-detail",
+    "import"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "attachments",
+   "field": "name",
+   "consumed_by_screens": [
+    "clone-chat",
+    "record-detail",
+    "import"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "attachments",
+   "field": "uploaded_by",
+   "consumed_by_screens": [
+    "clone-chat",
     "record-detail",
     "import"
    ],
@@ -6752,6 +8112,7 @@
    "entity": "attachments",
    "field": "scanned_at",
    "consumed_by_screens": [
+    "clone-chat",
     "record-detail",
     "import"
    ],

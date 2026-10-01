@@ -3,6 +3,7 @@
 from _icons import ic
 from _parts import *
 from _wiz import *
+from _browser import pick as browser_pick, fix as browser_fix
 
 def _step(n, t, d, state):
     i = {"done":ic("check"),"now":'<span class="spin dark"></span>',"todo":ic("clock")}[state]
@@ -28,36 +29,103 @@ _br = grid([
     '<div style="display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-bottom:16px">' + "".join(
       f'<a class="card" style="padding:16px;display:flex;gap:10px;align-items:center" href="#">{ic("download")}<div><b>{o}</b><div class="muted" style="font-size:12px">{d}</div></div></a>'
       for o,d in [("macOS","Apple Silicon / Intel · 38 MB"),("Windows","10 以降 · 41 MB")]) + '</div>' +
-    _step(1,"インストーラを入れる","ダウンロードして開く。管理者権限は要りません","done") +
-    _step(2,"ブラウザの許可を出す","Bridge が Chrome を操作するための許可を1回だけ","now") +
-    _step(3,"接続コードを入れる",'<span style="font-family:var(--font-code);font-size:15px;letter-spacing:.2em">KNM-4821</span>　この画面の番号を Bridge に入れる',"todo") +
-    _step(4,"自己診断","Bridge が自分で確かめて、結果をここに返す","todo")),
+    _step(1,"Bridge（つなぐアプリ）を受け取って、開く","上の OS のものをダウンロードし、ダウンロードフォルダの中身をダブルクリックして開く。管理者権限は要りません。署名の手続きが済むまでは初回に OS が止めます：Mac は「完了」→ システム設定 → プライバシーとセキュリティ →「このまま開く」、Windows は「詳細情報」→「実行」","done") +
+    _step(2,"Bridge を起動して、ブラウザの許可を出す","初回だけ OS が「Bridge が Chrome を操作してよいか」を聞きます。「許可」を押す。ここで断ると Bridge は何もできません","now") +
+    _step(3,"下の接続コードを Bridge に入れる",'Bridge の最初の画面に「接続コード」の欄があります。<span style="font-family:var(--font-code);font-size:15px;letter-spacing:.2em">KNM-4821</span> をそのまま入れて「つなぐ」を押す（10 分で失効。切れたらこの画面を開き直すと新しい番号が出ます）',"todo") +
+    _step(4,"自己診断が終わるのを待って、「接続を確かめる」を押す","Bridge が「ブラウザを開けるか・お使いのサブスクにログイン済みか」を自分で確かめ、結果をこの画面に返します","todo")),
   _br_why], "g21")
 
-_br_ok = grid([
-  card(head("つながりました", pill("接続中","su","check")) +
+_br_ins = grid([
+  card(head("このPCで Bridge が動いています", pill("入っている","su","check")) +
+    note("ダウンロードは要りません。下の番号で、このまま Bridge につなぎます。", "info") +
+    _step(1,"接続コード",'<span style="font-family:var(--font-code);font-size:15px;letter-spacing:.2em">KNM-4821</span>　この番号でつなぎます（人が打ち直す必要はありません）',"now") +
+    _step(2,"つないで確かめる","Bridge が自己診断をして、結果をこの画面に返します","todo") +
+    '<div style="margin-top:16px;display:flex;gap:9px;flex-wrap:wrap">' + btn("このPCの Bridge につなぐ","p","check") + btn("接続を確かめる","o","repeat") + '</div>'),
+  _br_why], "g21")
+
+_br_inapp = grid([
+  card(head("Kaname のアプリの中で開いています", pill("アプリ","su","check")) +
+    note("入れる作業も接続コードの入力も要りません。同じ PC の同じアプリなので、このままつながります。", "primary") +
+    '<div style="margin-top:16px;display:flex;gap:9px;flex-wrap:wrap">' + btn("高本AIと話すへ","p","clone") + '</div>'),
+  _br_why], "g21")
+
+# Claude Code が無い（D-091）。AI は本人のサブスクの Claude Code で動くので、これが無いと 1 件も動かない。
+# 入れるのは Bridge。人はボタンを押すだけで、ターミナルは触らない
+_br_cc = grid([
+  card(head("このPCに Claude Code がありません", pill("あと 1 つ","wa","alert")) +
+    note("自分のAIもAI社員も、<b>あなたのサブスクの Claude Code</b> で動きます。これが無いと 1 件も動きません。"
+         "下のボタンで入れられます（ターミナルは触りません）。入れ終わったら、ログインを <b>1 回だけ</b>承認してください。", "warn") +
+    '<div style="margin-top:14px;display:flex;gap:9px;flex-wrap:wrap">' + btn("Claude Code を入れる","p","download") + btn("ログインする","o","globe") + '</div>' +
+    '<div class="muted" style="font-size:12.5px;margin-top:10px">入れている間もこの画面のままで大丈夫です（1〜2 分）。終わると下の自己診断が ✓ に変わります。</div>'),
+  card(head("Bridge が自分で確かめた結果", sub="30 秒ごとに Bridge が返します") + table(["確かめたこと","結果"], [
+      ["本人のサブスクの Claude Code がある", pill("ありません","da","x")],["Chrome がある（本人のログイン済みプロファイルを使う）", pill("できる","su")],
+      ["Kaname につながる", pill("できる","su")],["資格情報を直接読まない", pill("できる（預かり先の番号だけ）","su")]])),
+  _br_why], "g21")
+
+# 左の列に縦に積む（右は「Bridge が何をするか」）
+_col = lambda *xs: '<div style="display:grid;gap:16px;align-content:start">' + "".join(xs) + '</div>'
+
+# AI が使うブラウザ（D-120.1）：PC ごとに Kaname で選ぶ。変えると次の仕事から効く
+def _br_pick(cur):
+    return card(head("AI が使うブラウザ", sub="この PC の分。変えると次の仕事から使います（Bridge の窓でも同じ値を変えられます）") + browser_pick(cur))
+
+# Bridge が確かめた結果。Chrome の行は、つながっていなければその場でやる一手を出す（D-120.2〜4）
+def _br_checks(chrome="ok", old=False):
+    row = {"ok": ["AI が Chrome を使える（Claude in Chrome）", pill("できる","su") + ' <span class="muted" style="font-size:12px">つながっています（9/30 14:02）</span>'],
+           "ng": ["AI が Chrome を使える（Claude in Chrome）", pill("できません","da") + ' <span class="muted" style="font-size:12px">つながっていません（9/30 14:02）</span>'],
+           "off": ["AI はブラウザを使わない設定です", pill("できる","su") + ' <span class="muted" style="font-size:12px">下の「AI が使うブラウザ」で変えられます</span>']}[chrome]
+    return card(head("Bridge が自分で確かめた結果", sub="30 秒ごとと、仕事の後に Bridge が返します") + table(["確かめたこと","結果"], [
+      ["本人のサブスクの Claude Code がある", pill("できる","su")],["Chrome がある（本人のログイン済みプロファイルを使う）", pill("できる","su")],
+      row, ["Kaname につながる", pill("できる","su")],["資格情報を直接読まない", pill("できる（預かり先の番号だけ）","su")]] +
+      ([["Bridge が新しい", pill("できません","da") + ' <span class="muted" style="font-size:12px">この PC の Bridge が古いので、自分のAI に仕事を渡せません</span>']] if old else [])) +
+      # Bridge が古い（E-CONN-012）：文だけにせず、その場で入れ直す口を出す。書いたことは溜めておき、入れ直した後に順に片づける（2026-10-01）
+      (note("<b>この PC の Bridge が古いので、自分のAI に仕事を渡せません。</b>入れ直してください。書いたことは溜めておき、入れ直した後に順に片づけます。"
+            '<div style="margin-top:10px;display:flex;gap:9px;flex-wrap:wrap">' + btn("macOS 版","p","download") + btn("Windows 版","o","download") + '</div>', "danger") if old else "") +
+      (note("<b>AI が Chrome を使えません。</b>拡張機能「Claude in Chrome」とつながっていません。ブラウザを使わない仕事はそのまま動きます。" + browser_fix(open_=True), "warn") if chrome == "ng" else ""))
+
+_br_ok = grid([_col(
+  card(head("つながりました。いま仕事を渡せます", pill("渡せる","su","check")) +
     kv([("端末","MacBook Pro（高本）· macOS 15.6"),("ブラウザ","Chrome 129 · ログイン済みプロファイル"),
         ("経路","Bridge（本人PC・本人のサブスク）· API は使いません"),("Bridge の版","1.4.2 · 自動更新"),("接続コード","KNM-4821 · 使用済み")]) +
     '<div style="margin-top:16px;display:flex;gap:9px;flex-wrap:wrap">' + btn("この端末を外す","d","x") +
     '<a class="btn btn-p btn-sm" href="v1-onboard-interview.html">' + ic("clone") + '高本AIと話すへ</a></div>') +
-  card(head("自己診断の結果") + table(["確かめたこと","結果"], [
-      ["Chrome を開いて閉じられる", pill("OK","su")],["ログイン済みのセッションが使える（Google）", pill("OK","su")],
-      ["外部への送信を Kaname 経由に限定", pill("OK","su")],["資格情報の直接読み取り", pill("できない（想定どおり）","su")],
-      ["PC を閉じたとき", pill("止まる → 起きたら追いつく","su")]])),
+  _br_checks(), _br_pick("chrome")),
+  _br_why], "g21")
+
+_br_head = card(head("つながりました。いま仕事を渡せます", pill("渡せる","su","check")) +
+    kv([("端末","MacBook Pro（高本）· macOS 15.6"),("経路","Bridge（本人PC・本人のサブスク）· API は使いません")]))
+_br_chromeoff = grid([_col(_br_head, _br_checks("ng"), _br_pick("chrome")), _br_why], "g21")
+_br_nobrowser = grid([_col(_br_head, _br_checks("off"), _br_pick("off")), _br_why], "g21")
+_br_old = grid([_col(_br_head, _br_checks(old=True), _br_pick("chrome")), _br_why], "g21")
+
+# 切れている（G-12）：つないだ記録はあるが、最後の知らせから 75 秒以上。「接続中」のまま放置しない
+_br_slp = grid([
+  card(head("切れています。いまは仕事を渡せません", pill("切れている","wa","clock")) +
+    note("MacBook Pro（高本）とはつながっていますが、<b>最後の知らせから 4 分 12 秒</b>たっています。PC が閉じているか、Bridge を終了しています。Bridge を起動すると、また渡せるようになります。<b>溜まった分は消えません。</b>", "warn") +
+    kv([("端末","MacBook Pro（高本）· macOS 15.6"),("最後の知らせ",'<span class="num">4分12秒前</span>（知らせは 30 秒ごと）'),
+        ("溜まっているもの",'<span class="num">2</span> 件 · PC が起きたら順に動きます'),("止まったもの","0 件（止まったものは自動で再開しません）")]) +
+    '<div style="margin-top:16px;display:flex;gap:9px;flex-wrap:wrap">' + btn("もう一度確かめる","p","repeat") + btn("この端末を外す","d","x") + '</div>'),
   _br_why], "g21")
 
 _br_ng = grid([
   card(head("つながっていません", pill("未接続","da","x")) +
     note("Bridge は入っていますが、<b>ブラウザの許可</b>が出ていません。Chrome の「拡張機能」で Kaname Bridge を有効にしてください。", "danger") +
-    _step(1,"インストーラを入れる","","done") + _step(2,"ブラウザの許可を出す","ここで止まっています","now") +
-    _step(3,"接続コードを入れる","","todo") + _step(4,"自己診断","","todo") +
-    '<div style="margin-top:16px;display:flex;gap:9px;flex-wrap:wrap">' + btn("もう一度確かめる","p","repeat") + btn("あとでやる（高本AIはまだ話せません）","g") + '</div>'),
+    _step(1,"Bridge（つなぐアプリ）を受け取って、開く","","done") + _step(2,"Bridge を起動して、ブラウザの許可を出す","ここで止まっています","now") +
+    _step(3,"下の接続コードを Bridge に入れる","","todo") + _step(4,"自己診断が終わるのを待って、「接続を確かめる」を押す","","todo") +
+    '<div style="margin-top:16px;display:flex;gap:9px;flex-wrap:wrap">' + btn("もう一度確かめる","p","repeat") + '</div>'),
   _br_why], "g21")
 
 BRIDGE = ("bridge-setup", [
-  ("n","接続中","",wiz("bridge-setup",_br,"自分のPCをつなぐ","高本AIもAI社員も、あなたのPCで・あなたのサブスクで動きます。つながるまで高本AIは話せません。API は使いません。",brand=False)),
+  ("n","接続中（ブラウザ・未インストール）","ダウンロード＝インストール動線を出すのはこの状態だけ。入れてある人・アプリの中の人には出さない。",wiz("bridge-setup",_br,"自分のPCをつなぐ","高本AIもAI社員も、あなたのPCで・あなたのサブスクで動きます。つながるまで高本AIは話せません。API は使いません。",brand=False,wait="PC の Bridge がつながると進めます")),
+  ("ins","ブラウザ・Bridge が入っている","この PC で Bridge が動いている。ダウンロードは出さず、接続コードも人に打たせずボタン 1 つでつなぐ。",wiz("bridge-setup",_br_ins,"自分のPCをつなぐ","このPCで Bridge が動いています。",brand=False,wait="PC の Bridge がつながると進めます")),
+  ("inapp","アプリ（Bridge の窓）の中","入れる作業も接続コードも要らない。開いた時点で自動でつながる。",wiz("bridge-setup",_br_inapp,"自分のPCをつなぐ","Kaname のアプリの中で開いています。",brand=False,wait="PC の Bridge がつながると進めます")),
+  ("cc","Claude Code が無い","AI は本人のサブスクの Claude Code で動く。入れるのは Bridge（人はボタンを押すだけ・ターミナルは触らない）。ログインの承認だけ本人がやる。",wiz("bridge-setup",_br_cc,"自分のPCをつなぐ","あと 1 つだけ：Claude Code を入れます。",brand=False,wait="PC の Bridge がつながると進めます")),
   ("ok","つながった","",wiz("bridge-setup",_br_ok,"自分のPCをつなぐ","つながりました。",brand=False)),
-  ("ng","つながらない","止まっている段を示す。段階1は Bridge 以外の経路が無いので「あとでやる」しか出さない。",wiz("bridge-setup",_br_ng,"自分のPCをつなぐ","止まっています。",brand=False)),
+  ("chromeoff","つながった・AI が Chrome を使えない","Chrome の行は文だけにしない。つなぎ方（公式の入口）・もう一度確かめる・Bridge 専用のブラウザに切り替える、をその場で出す。",wiz("bridge-setup",_br_chromeoff,"自分のPCをつなぐ","つながりました。",brand=False)),
+  ("nobrowser","つながった・ブラウザを使わない設定","使わないを選んでいても、ここで使うに戻せる。",wiz("bridge-setup",_br_nobrowser,"自分のPCをつなぐ","つながりました。",brand=False)),
+  ("old","つながった・Bridge が古い","古い Bridge には仕事を渡さない（書いたことは溜める）。会話の「PC の状態を見る」からここへ来る。文だけにせず、その場で入れ直す口を出す。",wiz("bridge-setup",_br_old,"自分のPCをつなぐ","つながっていますが、Bridge が古いので仕事を渡せません。",brand=False)),
+  ("slp","切れている（知らせが来ていない）","つないだ記録があっても「接続中」と出し続けない。渡せないことと、起こせば戻ることを言う。",wiz("bridge-setup",_br_slp,"自分のPCをつなぐ","切れています。Bridge を起動すると、また渡せます。",brand=False)),
+  ("ng","つながらない","止まっている段を示す。はじめの設定は飛ばせないので「あとでやる」は出さない。",wiz("bridge-setup",_br_ng,"自分のPCをつなぐ","止まっています。",brand=False)),
   ("s","運用中（設定として）","同じ画面が運用中はアプリの枠で出る（サイドバー・第2ナビあり）。手順バーは無い。",
    '<div data-sec="0">' + card(head("接続", pill("つながっている","su","check"), "この PC") + kv([("端末","MacBook Pro（高本）· macOS 15"),("最後の応答",'<span class="num">3秒前</span>'),("今日の実行",'<span class="num">14 件</span> · 失敗 0'),("経路","Bridge（本人PC・本人のサブスク）· API は使いません")]) +
      '<div style="display:flex;gap:9px;margin-top:14px;flex-wrap:wrap">' + btn("接続を確かめる","o","repeat") + btn("この端末を外す","d","x") + '</div>') + '</div>' +

@@ -8,8 +8,8 @@ J = lambda p: json.load(open(p, encoding="utf-8"))
 T = J("07_tasks/tickets.json"); TASKS = {t["id"]: t for t in T["tasks"]}; PLAN = {x["id"]: x for x in J("07_tasks/tickets_plan.json")["tickets"] if x.get("kind") == "story"}
 MS = J(f"{OUT}/milestones.json"); JR = J("07_qa/test-specs/journeys/plan.json")["rows"]; ST = J("02_tech_stack/selected-stack.json")
 staging = ST["stack"].get("environments", {}).get("staging") or ST.get("environments", {}).get("staging")
-PHASE = {"F": ("1_foundation", "Foundation"), "D": ("2_data", "Data Layer"), "A": ("3_api", "API Layer"), "U-shared": ("4_ui_foundation", "UI Foundation"), "U-screen": ("5_ui_parallel", "UI Parallel"), "I": ("6_integration", "Integration & Polish"), "S": ("7_content", "スキル制作（運営の資産・開発と並行）"), "V2": ("8_spec_v2", "段階 2 の仕様づくり（実装と並行・D-081）")}
-SP = {"F": "F", "D": "D", "A": "A", "U-shared": "U0-", "U-screen": "U", "I": "I", "S": "S", "V2": "V2-"}
+PHASE = {"F": ("1_foundation", "Foundation"), "D": ("2_data", "Data Layer"), "A": ("3_api", "API Layer"), "B": ("3_bridge", "Bridge（顧客 PC の実行器・D-015）"), "U-shared": ("4_ui_foundation", "UI Foundation"), "U-screen": ("5_ui_parallel", "UI Parallel"), "I": ("6_integration", "Integration & Polish"), "S": ("7_content", "スキル制作（運営の資産・開発と並行）"), "V2": ("8_spec_v2", "段階 2 の仕様づくり（実装と並行・D-081）")}
+SP = {"F": "F", "D": "D", "A": "A", "B": "B", "U-shared": "U0-", "U-screen": "U", "I": "I", "S": "S", "V2": "V2-"}
 # 流れ（L2）: runnable_after が揃う最初の Wave に付ける
 flows = collections.OrderedDict()
 for r in JR: flows.setdefault(r["journey"], {"name": r["name"], "after": set()})["after"] |= set(r["runnable_after"])

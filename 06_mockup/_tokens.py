@@ -9,6 +9,10 @@ TOKENS = """
   --surface:#F7F8FA; --on-surface:#131B27; --sv:#E9ECF1; --on-sv:#4A5563;
   --error:#B91C1C; --on-error:#FFFFFF; --neutral:#8A94A3;
   --card:#FFFFFF; --line:#DDE2E9; --line-soft:#EDF0F4;
+  --st-success-c:#DCFCE7; --on-st-success-c:#2E5B26; --st-warning-c:#FCEBD5; --on-st-warning-c:#7A4A05;
+  --st-danger-c:#FDECEC; --on-st-danger-c:#991B1B; --st-progress-c:#DBEAFE; --on-st-progress-c:#1E40AF;
+  --mark:#FFF1B8; --ai-c:#EDEAF6; --on-code:#D8DEE9;
+  --syn-keyword:#22345C; --syn-string:#186F69; --syn-number:#7E570D; --syn-comment:#4A5563; --syn-function:#6B3F5E; --syn-type:#2F4B7C;
 
   --st-success:#166534; --st-warning:#B45309; --st-danger:#B91C1C; --st-progress:#1D4ED8;
   --d-indigo:#2F4B7C; --d-teal:#186F69; --d-amber:#7E570D; --d-coral:#A34A3E; --d-sage:#516F46; --d-plum:#6B3F5E;
@@ -74,7 +78,7 @@ tbody tr:hover>td{background:var(--surface)}
 .side{width:var(--sidebar-w);flex:none;background:var(--side-bg);color:var(--on-surface);border-right:1px solid var(--line);display:flex;flex-direction:column;position:sticky;top:34px;height:calc(100vh - 34px);overflow-y:auto}
 .side-brand{padding:18px 18px 14px;display:flex;align-items:center;gap:9px;font-size:16px;font-weight:700;letter-spacing:.01em;color:var(--on-surface)}
 .side-brand svg{width:20px;height:20px;color:var(--primary)}
-.side-nav{padding:4px 10px 10px;display:flex;flex-direction:column;gap:1px}
+.side-nav{padding:4px 10px 10px;display:flex;flex-direction:column;gap:3px}
 .side-sec{font-size:11px;font-weight:600;letter-spacing:.12em;color:var(--neutral);padding:14px 10px 5px}
 .side-item{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:var(--r-md);font-size:13.5px;font-weight:500;color:var(--on-sv);position:relative}
 .side-item svg{width:16px;height:16px;opacity:.85}
@@ -83,7 +87,7 @@ tbody tr:hover>td{background:var(--surface)}
 .side-item.on svg{opacity:1;color:var(--primary)}
 .side-item .badge{margin-left:auto;background:var(--st-warning);color:#fff;font-size:11px;font-weight:600;padding:1px 7px;border-radius:var(--r-full)}
 .side-item .badge.badge-ai{background:var(--tertiary)}
-.side-sub{display:flex;flex-direction:column;gap:1px;padding-left:26px}
+.side-sub{display:flex;flex-direction:column;gap:3px;padding-left:26px;margin-top:3px}
 .side-sub a{display:flex;align-items:center;gap:8px;padding:5px 10px;border-radius:var(--r-md);font-size:12.5px;color:var(--on-sv)}
 .side-sub a:hover{background:var(--side-hover);color:var(--on-surface)}
 .side-sub .dot{width:4px;height:4px;border-radius:50%}
@@ -95,8 +99,10 @@ tbody tr:hover>td{background:var(--surface)}
 
 /* 本体 */
 .main{flex:1;min-width:0;display:flex;flex-direction:column}
-.topbar{background:var(--card);padding:14px 28px 4px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-.topbar h1{font-size:24px;font-weight:700;letter-spacing:-.015em}
+.topbar{background:var(--card);padding:10px 28px 2px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+/* 見出しの帯は低く（2026-09-30 user「ヘッドの幅が広すぎる」）：くくりと画面名を横 1 行、説明は 1 行（全文は乗せると出る） */
+.topbar .tt{display:flex;align-items:baseline;gap:10px;min-width:0}
+.topbar h1{font-size:18px;font-weight:700;letter-spacing:-.015em}
 .topbar .crumb{font-size:12px;color:var(--on-sv)}
 .topbar .sp{flex:1}
 .content{padding:24px 32px 64px;width:100%}
@@ -210,9 +216,6 @@ tr:last-child td{border-bottom:0}
 /* ============ 画面ごとの第2サイドバー（画面によって中身が変わる） ============ */
 .subnav{width:var(--subnav-w);flex:none;background:var(--card);border-right:1px solid var(--line);
         position:sticky;top:34px;height:calc(100vh - 34px);overflow-y:auto;display:flex;flex-direction:column}
-.subnav-h{padding:16px 16px 12px;border-bottom:1px solid var(--line-soft)}
-.subnav-h .ttl{font-size:14px;font-weight:700;margin-bottom:5px}
-.subnav-h .why{font-size:11.5px;color:var(--on-sv);line-height:1.65}
 .subnav-b{padding:10px;display:flex;flex-direction:column;gap:1px}
 .subnav-sec{font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--on-sv);padding:13px 8px 5px}
 .sn{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:var(--r-md);font-size:13px;color:var(--on-sv)}
@@ -238,8 +241,12 @@ tr:last-child td{border-bottom:0}
 .norole p{font-size:13px;color:var(--on-sv);line-height:1.8}
 
 /* 画面の目的（topbar 下） */
-.purpose{display:none!important;background:var(--card);border-bottom:1px solid var(--line);padding:11px 32px;
-  display:flex;gap:11px;align-items:center;font-size:13px;color:var(--on-sv);line-height:1.75}
+/* 見出しの帯（.shead）：第2ナビと本文の上にまたがって 1 つだけ。画面名 18px・説明はその下に 1 回だけ（2026-09-30） */
+.shead{background:var(--card);border-bottom:1px solid var(--line);min-width:0}
+.purpose{background:var(--card);padding:0 28px 8px;
+  display:flex;gap:8px;align-items:center;font-size:12px;color:var(--on-sv);line-height:1.6}
+.purpose>div{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:767px){.purpose>div{white-space:normal}}
 .purpose svg{color:var(--primary)}
 .purpose b{color:var(--on-surface)}
 
