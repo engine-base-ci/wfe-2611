@@ -40,6 +40,16 @@ afterAll(async () => {
   await admin.end();
 });
 
+// テスト仕様書の「本人のもの」の行（rls-matrix.md・「もう無い行」の節は除く）。テスト名の先頭に行 ID を付け、結果は報告から機械で書く
+const specIds = new Map<string, string[]>(); // table → 行 ID
+{
+  let gone = false;
+  for (const line of readFileSync(join(here, "..", "..", "..", "07_qa", "test-specs", "rls-matrix.md"), "utf8").split("\n")) {
+    if (line.startsWith("#")) gone = line.includes("もう無い行");
+    const m = /^\|\s*(RLS-[A-Z0-9]+-\d+)\s*\|\s*(\w+)\s*\|\s*本人のもの\s*\|/.exec(line);
+    if (m && !gone) specIds.set(m[2]!, [...(specIds.get(m[2]!) ?? []), m[1]!]);
+  }
+}
 const selfOnly = new Map<string, string>(); // table → 本人の列
 for (const cs of matrix.cases) {
   const m = /AND (\w+) = current_setting\('app\.user_id'/.exec(cs.predicate);
@@ -50,8 +60,11 @@ describe("本人のもの（self_only_write）", () => {
   it("場合表に self_only の表がある", () => {
     expect(selfOnly.size).toBeGreaterThan(0);
   });
+  it("テスト仕様書の「本人のもの」の行は、全部 self_only の表を指している（試験の無い行を作らない）", () => {
+    expect([...specIds.keys()].filter((t) => !selfOnly.has(t))).toEqual([]);
+  });
   for (const [table, ownerCol] of selfOnly) {
-    it(`${table}: 担当者は自分の行を作れて直せる。他人（代表）の行は 0 行`, async () => {
+    it(`${(specIds.get(table) ?? []).join(" ")} ${table}: 担当者は自分の行を作れて直せる。他人（代表）の行は 0 行`.trim(), async () => {
       if (!existing.has(table)) return; // 未 migration は担当の T-D-* で
       const seed = S.rows[table];
       expect(seed?.insert, `${table} の種が無い`).toBeTruthy();

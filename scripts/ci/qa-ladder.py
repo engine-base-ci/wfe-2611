@@ -38,6 +38,9 @@ ROW_ID = re.compile(r"^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*-\d{2,3}(?:-[A-C])?$")   # e
 PASS = re.compile(r"\b(PASS|FIXED)\b|完了")
 BLOCKED = re.compile(r"\bBLOCKED\b")
 FAIL = re.compile(r"\b(FAIL|NG)\b")
+# 「該当 / N/A + 理由」で判定する観点（G-11〜G-16：test-ladder §4）だけ、理由つきの N/A を消化とみなす。操作の行は N/A にできない（L-018）
+NA = re.compile(r"^\s*N/A\s*[（(]")
+NA_ASPECT = re.compile(r"G-1[1-6]")
 LEVEL = re.compile(r"\bL([1-5])\b")
 
 SPEC_FILES = (
@@ -67,6 +70,8 @@ def status_of(result: str) -> str:
         return "blocked"
     if PASS.search(result):
         return "passed"
+    if NA.match(result):
+        return "na"
     return "planned"
 
 
@@ -94,7 +99,10 @@ def load_spec_rows(spec: Path) -> list[Row]:
         files.extend(sorted(spec.glob(pat)))
     for fp in files:
         idx: dict[str, int] = {}
+        gone = False  # 「もう無い行」の節（生成元から消えた行。結果は残すが、流す対象ではない：test-ladder §9-1）
         for line in fp.read_text(encoding="utf-8", errors="replace").splitlines():
+            if line.startswith("#"):
+                gone = "もう無い行" in line
             if not line.lstrip().startswith("|"):
                 idx = {}
                 continue
@@ -116,6 +124,8 @@ def load_spec_rows(spec: Path) -> list[Row]:
                         idx.setdefault("item", i)
                     elif key in ("備考", "note"):
                         idx["note"] = i
+                    elif key in ("テスト観点", "観点"):
+                        idx["aspect"] = i
                 continue
 
             result = _cell(cells, idx, "result")
@@ -134,6 +144,8 @@ def load_spec_rows(spec: Path) -> list[Row]:
                     screen=_cell(cells, idx, "screen"),
                     item=_cell(cells, idx, "item"),
                     note=_cell(cells, idx, "note"),
+                    gone=gone,
+                    aspect=_cell(cells, idx, "aspect"),
                 )
             )
     return rows
@@ -336,9 +348,11 @@ def cmd_gate(spec: Path, tickets: Path, task: str, extra_done: list[str]) -> int
         if r["status"] == "passed":
             continue
         # 生成元から消えた行（削除・結果は残す：test-ladder §9-1）は消化の対象にしない。流す対象は今の行だけ
-        if "削除（生成元から消えた" in str(r.get("note", "")):
+        if r.get("gone") or "削除（生成元から消えた" in str(r.get("note", "")):
             continue
-        if r["status"] == "blocked" and r["note"]:
+        if r["status"] == "blocked" and (r["note"] or re.search(r"BLOCKED\s*[（(].{8,}", r["result"])):
+            continue  # 理由は備考か、結果の括弧の中
+        if r["status"] == "na" and NA_ASPECT.search(str(r.get("aspect", ""))) and len(r["result"]) > 12:
             continue
         problems.append(f"{r['id']}: {r['status']} (PASS か理由つき BLOCKED が要る)")
     for fid, f in res["l2_flows"]:
