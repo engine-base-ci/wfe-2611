@@ -46941,7 +46941,7 @@
     "03_architecture/アーキテクチャ設計書.md"
    ],
    "audit_md_path": "07_tasks/audit/T-B-13.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "BRG-13-001",
@@ -47011,7 +47011,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 2.5,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-10-03"
   },
   {
    "id": "T-B-12",

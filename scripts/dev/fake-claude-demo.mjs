@@ -10,6 +10,7 @@
 //   「禁止を見せて」 → 受け取った「使わない道具」（--disallowedTools）をそのまま答える
 //   「引数を見せて」 → 受け取った --model・--effort・--permission-mode を答える
 //   「絵文字で」 → 絵文字入りの返事（画面が消して描くのを確かめる）
+//   「ゆっくり読んで」 → 台帳を読む道具に 6 秒かける（作業の行「読んでいます：…」を画面で確かめる・T-B-13）
 //   「考えて」  → 考えている切り替わり（thinking の block）を出してから 6 秒黙り、その後に書く（作業中の行が「考えています」・最後の動きが進むのを確かめる）
 //   「たたき台を置いて」 → 受け取った --mcp-config の kaname を本物と同じく起こし、目標・台帳・担当業務を置いてから答える（D-110）
 //   「ブラウザで」 → --chrome が渡っていれば Claude in Chrome の道具で開こうとして「拡張機能とつながっていない」で失敗する（D-119.4）。
@@ -117,7 +118,7 @@ const onUser = async (text) => {
   out({ type: "assistant", message: { content: [{ type: "tool_use", id: `td-${Date.now()}`, name: "TodoWrite", input: { todos: [{ content: "台帳を読む", status: "completed" }, { content: "金額と期日を確かめる", status: "in_progress" }, { content: "まとめる", status: "pending" }] } }] } });
   const id = `tu-${Date.now()}`;
   out({ type: "assistant", message: { content: [{ type: "tool_use", id, name: "Read", input: { file_path: "/w/請求台帳.csv" } }] } });
-  await sleep(1200);
+  await sleep(text.includes("ゆっくり読んで") ? 6000 : 1200); // 「ゆっくり読んで」→ 道具の行を画面で見られる長さ（T-B-13）
   out({ type: "user", message: { content: [{ type: "tool_result", tool_use_id: id, is_error: false, content: "（略）" }] } });
   out({ type: "rate_limit_event", rate_limit_info: { unifiedWindows: { five_hour: { utilization: text.includes("上限") ? 0.92 : 0.41, resetsAt: Math.floor(Date.now() / 1000) + 5400 }, seven_day: { utilization: 0.12, resetsAt: Math.floor(Date.now() / 1000) + 400000 } } } });
   if (text.includes("聞いて")) {

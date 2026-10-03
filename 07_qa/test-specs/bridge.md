@@ -73,10 +73,10 @@
 | BRG-06-018 | bridge-setup | 確かめる | 受け取ったものは指紋と大きさが目録と合うときだけ使う。合わなければ捨てて、理由を 1 回窓に出す | 置き場の中身が目録と違う | Bridge を開く | 入れ替えず「確かめられなかったので使いませんでした」と出る | PASS（apps/bridge/test/update.test.ts・実 Chrome・2026-10-01） | D-109.4 | T-B-06 | L1 |
 | BRG-06-019 | bridge-setup | 入れ替える | 仕事を動かしていない間にだけ入れ替え、立ち上げ直す。つなぎ直しは要らない | 新しい版を受け取った | 仕事が終わるのを待つ | 仕事中は入れ替えず、終わったら新しい版で立ち上がり直し、つながったまま | PASS（apps/bridge/test/update.test.ts・実 Chrome・2026-10-01） | D-109.5 | T-B-06 | L1 |
 | BRG-06-020 | bridge-setup | 入れ替えられない | 書けない場所・開発中の起動なら入れ替えず、入れ直しを案内する | 書けない場所に入っている | Bridge を開く | 「新しい版があります。…入れ直してください」と出て、受け取りにも行かない | PASS（apps/bridge/test/update.test.ts・実 Chrome・2026-10-01） | D-109.6 | T-B-06 | L1 |
-| BRG-13-001 | clone-chat | 残す | 道具を使うたびに、名前・対象・成功／失敗・時間が残る | 仕事を渡した | 自分のAI にファイルを読ませる | bridge_job_events に kind=tool の行（name・target・ok・ms）が残る |  | D-100.2 | T-B-13 | L1 |
-| BRG-13-002 | clone-chat | 残す | 仕事が終わると、使った量（往復数・時間・量・費用の見込み）が結末より先に残る | 仕事を渡した | 最後まで動かす | kind=usage の行が残り、その後に結末が書かれる |  | D-100.1 | T-B-13 | L1 |
-| BRG-13-003 | clone-chat | 残さない | ファイルの中身・道具の返り値・途中の文章の全文は Kaname に残らない | 中身の全文を含む記録を送る | API に送る | 決めた欄だけが残り、全文は捨てられる |  | D-100.3 | T-B-13 | L1 |
-| BRG-13-004 | clone-chat | 散らからない | 道具の記録と使った量は会話の途中経過に出ない | 記録がある仕事 | 会話を開く（実ブラウザ） | 会話には「…を使っています」の 1 行だけが出る |  | D-100.2 | T-B-13 | L1 |
+| BRG-13-001 | clone-chat | 残す | 道具を使うたびに、名前・対象・成功／失敗・時間が残る | 仕事を渡した | 自分のAI にファイルを読ませる | bridge_job_events に kind=tool の行（name・target・ok・ms）が残る | PASS（screens/qa-b-work-record.spec.ts・実 Chrome・2026-10-03） | D-100.2 | T-B-13 | L1 |
+| BRG-13-002 | clone-chat | 残す | 仕事が終わると、使った量（往復数・時間・量・費用の見込み）が結末より先に残る | 仕事を渡した | 最後まで動かす | kind=usage の行が残り、その後に結末が書かれる | PASS（screens/qa-b-work-record.spec.ts・実 Chrome・2026-10-03） | D-100.1 | T-B-13 | L1 |
+| BRG-13-003 | clone-chat | 残さない | ファイルの中身・道具の返り値・途中の文章の全文は Kaname に残らない | 中身の全文を含む記録を送る | API に送る | 決めた欄だけが残り、全文は捨てられる | PASS（apps/bridge/src/stream.test.ts・vitest（kaname_test）・2026-10-03） | API 側も apps/api/test/bridge_stream.test.ts（BRG-13-001 BRG-13-003：content・transcript を送っても欄に残らない） | T-B-13 | L1 |
+| BRG-13-004 | clone-chat | 散らからない | 道具の記録と使った量は会話の途中経過に出ない | 記録がある仕事 | 会話を開く（実ブラウザ） | 会話には「…を使っています」の 1 行だけが出る | PASS（screens/qa-b-work-record.spec.ts・実 Chrome・2026-10-03） | D-100.2 | T-B-13 | L1 |
 | BRG-12-001 | bridge-setup | 立てる | kaname-api の /health が 200 で版を返し、起動時確認 4／4 がログに出る | S0〜S3 を済ませた | curl で /health | 200。落ちていれば 503 と理由（黙って 502 にしない） |  | D-097.5 | T-B-12 | L1 |
 | BRG-12-002 | bridge-setup | 立てる | Supabase の Transaction pooler に kaname_app／kaname_auth で入れる | S1 の接続文字列を入れた | /health と登録を 1 回 | DB に書ける（custom role が pooler を通る） |  | D-097.1 | T-B-12 | L1 |
 | BRG-12-003 | bridge-setup | 問い合わせ | Bridge は仕事が動いていない間 5 秒ごと、動いている最中だけ最長 20 秒待ち受ける | Bridge をつないだ | 1 時間放っておいた後に言う | 関数の呼び出しが 1 時間あたり約 720 回・言ってから数秒で動き出す |  | D-097.4 | T-B-12 | L1 |

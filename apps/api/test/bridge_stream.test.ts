@@ -124,7 +124,7 @@ describe("確認と答え（D-093.3・D-093.8）", () => {
 });
 
 describe("仕事の記録（D-100）", () => {
-  it("道具の呼び出しと使った量が残る。決めた欄だけで、中身の全文は残らない。会話の途中経過には出ない", async () => {
+  it("BRG-13-001 BRG-13-003 道具の呼び出し（名前・対象・成否・時間）と使った量が残る。決めた欄だけで、中身の全文は残らない。会話の途中経過には出ない", async () => {
     const { H, B, job } = await ready();
     const t = await post("/api/auth-ext/bridge/progress", { job_id: job, seq: 5, kind: "tool", tool: { name: "Read", target: "/w/台帳.csv", ok: true, ms: 120, content: "社外秘の中身" } }, B);
     expect(t.status).toBe(200);

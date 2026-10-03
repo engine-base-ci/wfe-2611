@@ -20,7 +20,9 @@
     "apps/web/pw-reports/d104.json",
     "apps/web/pw-reports/d104b.json",
     "apps/web/pw-reports/qa-b-infisical.json",
-    "apps/api/vt-reports/t-b-14.json"
+    "apps/api/vt-reports/t-b-14.json",
+    "apps/web/pw-reports/qa-b-work-record.json",
+    "apps/api/vt-reports/t-b-13.json"
   ],
   "report_max_age_h": 48,
   "evidence_views": [

@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-03T16:53:20",
+ "generated_at": "2026-10-03T17:38:46",
  "inputs": {
   "tickets": "07_tasks/tickets.json",
   "roster": "07_tasks/roster.json",
@@ -16,12 +16,12 @@
  "summary": {
   "as_of": "2026-10-03",
   "by_status": {
-   "done": 113,
-   "todo": 101
+   "done": 114,
+   "todo": 100
   },
-  "hours_done": 825.9,
+  "hours_done": 828.4,
   "hours_total": 1226.3,
-  "progress_pct": 67,
+  "progress_pct": 68,
   "epic": 16,
   "story": 214,
   "subtask": 6027,
@@ -42,7 +42,7 @@
   "cycle": [],
   "ghost_dependencies": [],
   "unassignable": [],
-  "tentative": 9,
+  "tentative": 8,
   "assigned": 169,
   "broken_links": [],
   "milestone_overrun": [],
@@ -58,7 +58,7 @@
    "claude-01": 36.8,
    "claude-02": 45.8,
    "claude-03": 6.5,
-   "claude-04": 8.7,
+   "claude-04": 6.2,
    "claude-05": 36.8,
    "claude-06": 24.4,
    "claude-07": 24.1,
@@ -24877,10 +24877,10 @@
    "layer": "backend",
    "estimate_hours": 2.5,
    "estimate_default": false,
-   "start": "2026-10-05",
-   "finish": "2026-10-06",
+   "start": "2026-10-03",
+   "finish": "2026-10-03",
    "critical": false,
-   "tentative": true,
+   "tentative": false,
    "assignable": [
     "takamoto",
     "claude-01",
@@ -24891,7 +24891,7 @@
    ],
    "assignee": null,
    "assigned_by": null,
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -24922,9 +24922,9 @@
    },
    "delta": "unchanged",
    "dropped_reason": null,
-   "done_at": null,
+   "done_at": "2026-10-03",
    "started_at": null,
-   "tentative_assignee": "claude-04"
+   "actual": true
   },
   {
    "id": "T-B-12",
@@ -101456,7 +101456,7 @@
    "sub": "impl",
    "title": "packages/db/migrations/0038_bridge_work_record.sql (new)",
    "parent": "T-B-13",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/migrations/0038_bridge_work_record.sql (new)"
@@ -101469,7 +101469,7 @@
    "sub": "impl",
    "title": "apps/bridge/src/stream.ts (new)",
    "parent": "T-B-13",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/bridge/src/stream.ts (new)"
@@ -101482,7 +101482,7 @@
    "sub": "impl",
    "title": "apps/bridge/src/runner.ts (new)",
    "parent": "T-B-13",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/bridge/src/runner.ts (new)"
@@ -101495,7 +101495,7 @@
    "sub": "impl",
    "title": "apps/bridge/src/loop.ts (new)",
    "parent": "T-B-13",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/bridge/src/loop.ts (new)"
@@ -101508,7 +101508,7 @@
    "sub": "impl",
    "title": "apps/api/src/auth/ext.ts (new)",
    "parent": "T-B-13",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/auth/ext.ts (new)"
@@ -101521,7 +101521,7 @@
    "sub": "impl",
    "title": "apps/api/test/bridge_stream.test.ts (new)",
    "parent": "T-B-13",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/test/bridge_stream.test.ts (new)"

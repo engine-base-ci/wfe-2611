@@ -70,7 +70,7 @@ describe("書く側", () => {
 
 // 仕事の記録（D-100）：道具の呼び出しの始まりと終わり、使った量。中身の全文は拾わない
 describe("仕事の記録（D-100）", () => {
-  it("tool_use は id・名前・対象を持ち、tool_result は成否だけを返す（返り値の中身は拾わない）", () => {
+  it("BRG-13-003 tool_use は id・名前・対象を持ち、tool_result は成否だけを返す（返り値の中身は拾わない）", () => {
     const a = parseLine(JSON.stringify({ type: "assistant", message: { content: [{ type: "tool_use", id: "tu_1", name: "Read", input: { file_path: "/w/台帳.csv" } }] } }));
     expect(a).toMatchObject({ type: "progress", tools: [{ id: "tu_1", name: "Read", target: "/w/台帳.csv" }] });
     const u = parseLine(JSON.stringify({ type: "user", message: { content: [{ type: "tool_result", tool_use_id: "tu_1", is_error: false, content: "社外秘の中身" }, { type: "tool_result", tool_use_id: "tu_2", is_error: true, content: "x" }] } }));

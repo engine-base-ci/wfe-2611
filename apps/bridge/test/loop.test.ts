@@ -66,11 +66,19 @@ const kinds = (p: Posted[]) => p.filter((x) => x.path === "/bridge/progress").ma
 const finished = (p: Posted[]) => p.some((x) => x.path === "/bridge/finish");
 
 describe("startLoop", () => {
-  it("書きながらの返事・手順・何をしているか・使用量・使った量を送り、結末を返す。資料は置き場に取って文に添える", async () => {
+  it("BRG-13-002 書きながらの返事・手順・何をしているか・使用量・使った量を送り、結末を返す（使った量は結末より先）。資料は置き場に取って文に添える", async () => {
     const p = await runOne({ job_id: "11111111-1111-1111-1111-111111111111", prompt: "請求書 ゆっくり", agent_session_id: null, conversation_id: "c", attachments: [{ id: "a1", name: "台帳.csv", mime: "text/csv", size: 20 }, { id: "a2", name: "無い.pdf", mime: "application/pdf", size: 5 }] }, finished);
     expect(kinds(p)).toEqual(expect.arrayContaining(["init", "plan", "status", "limit", "tool", "usage"]));
     expect(p.find((x) => x.path === "/bridge/progress" && x.body["kind"] === "status")?.body["text"]).toBe("読んでいます：/w/a.csv");
     expect(p.some((x) => x.path === "/bridge/partial")).toBe(true);
+    // 使った量（D-100.1）は結末より先に届く（結末の後は仕事が閉じて受け取られない）。道具の行は名前・対象・成否・時間だけ（D-100.2・D-100.3）
+    const iUsage = p.findIndex((x) => x.path === "/bridge/progress" && x.body["kind"] === "usage");
+    const iFinish = p.findIndex((x) => x.path === "/bridge/finish");
+    expect(iUsage, "使った量が届く").toBeGreaterThanOrEqual(0);
+    expect(iUsage, "結末より先").toBeLessThan(iFinish);
+    const tool = p.find((x) => x.path === "/bridge/progress" && x.body["kind"] === "tool")!.body["tool"] as Record<string, unknown>;
+    expect(Object.keys(tool).sort()).toEqual(["ms", "name", "ok", "target"]);
+    expect(tool).toMatchObject({ name: "Read", target: "/w/a.csv", ok: true });
     const fin = p.find((x) => x.path === "/bridge/finish")!.body;
     expect(fin["state"]).toBe("done");
     // 置き場の外に出る名前は潰し、取れなかったものは理由つきで添える
