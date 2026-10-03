@@ -932,6 +932,58 @@ export function authExt(d: AuthExtDeps): Hono {
     });
     return c.json({ data: { id: row["id"], vault_ref: ref, service_name: name || null } }, 201);
   });
+  // Bridge が「いま動いている仕事」のために資格情報 1 件を受け取る（T-B-05・D-102.2・D-017.1・関門 C8）。
+  //   本人の Bridge の鍵・本人の動いている仕事・本人の資格情報、の 3 つがそろったときだけ。解くのは関門（caller=executor）で、証跡に残す。
+  //   値はこの応答にだけ載る（表・ログ・AI の道具には載らない）
+  const UUID_RE_CRED = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  app.post("/bridge/credentials/resolve", async (c) => {
+    const sid = await bridgeSession(c);
+    if (!sid) return bad(c, 401, "UNAUTHENTICATED", "この Bridge は分かりません");
+    if (!(await bridgeAlive(sid))) return GONE(c);
+    const b = (await c.req.json().catch(() => ({}))) as { job_id?: unknown; credential_id?: unknown };
+    if (typeof b.job_id !== "string" || !UUID_RE_CRED.test(b.job_id) || typeof b.credential_id !== "string" || !UUID_RE_CRED.test(b.credential_id))
+      return bad(c, 422, "VALIDATION_FAILED", "仕事の id と資格情報の id が要ります");
+    const row = (
+      await d.appPool.query<{ tenant_id: string; member_id: string; vault_ref: string | null; service_name: string | null; revoked: boolean; job_ok: boolean }>(
+        "select * from app.bridge_credential($1, $2, $3)",
+        [sid, b.job_id, b.credential_id],
+      )
+    ).rows[0];
+    if (!row || !row.vault_ref) return bad(c, 404, "CREDENTIAL_NOT_FOUND", "預けたログイン情報が見つかりません");
+    const ctx = { tenantId: row.tenant_id, userId: row.member_id, role: "member" as const };
+    if (!row.job_ok) {
+      await d.repo.audit(ctx, "credential.bridge_denied", "credentials", b.credential_id, "C8", { job_id: b.job_id, reason: "job_not_running" });
+      return bad(c, 403, "JOB_NOT_RUNNING", "動いている仕事のためにだけ受け取れます", { handoff: "仕事を始めてから" });
+    }
+    if (row.revoked) {
+      await d.repo.audit(ctx, "credential.bridge_denied", "credentials", b.credential_id, "C8", { job_id: b.job_id, reason: "revoked" });
+      return bad(c, 403, "CREDENTIAL_REVOKED", "このログイン情報は失効しています。預け直してください", { handoff: "預け直す" });
+    }
+    const o = await d.secrets.resolve(row.vault_ref, { ...ctx, caller: "executor" });
+    if (o.status !== "done") {
+      // 届かない・混んでいる・読めない：成功にしない。理由に値は無い
+      return bad(c, o.status === "denied" ? 403 : 502, o.status === "denied" ? "CREDENTIAL_DENIED" : "E-SEC-001", o.reason, {
+        handoff: o.handoff,
+        ...("retryAfterSec" in o && o.retryAfterSec ? { retry_after_sec: o.retryAfterSec } : {}),
+      });
+    }
+    let v: { login?: unknown; password?: unknown; totp_secret?: unknown };
+    try {
+      v = JSON.parse(o.value) as typeof v;
+    } catch {
+      return bad(c, 502, "E-SEC-001", "預かった情報が読めません。安全のため、もう一度預け直してください", { handoff: "預け直す" });
+    }
+    // 受け取った仕事と資格情報の結びつきだけを証跡に（値は書かない）
+    await d.repo.audit(ctx, "credential.bridge_resolve", "credentials", b.credential_id, "C8", { job_id: b.job_id, service_name: row.service_name });
+    return c.json({
+      data: {
+        login: typeof v.login === "string" ? v.login : "",
+        password: typeof v.password === "string" ? v.password : "",
+        totp_secret: typeof v.totp_secret === "string" ? v.totp_secret : null,
+        service_name: row.service_name,
+      },
+    });
+  });
   // 預けたものの一覧（D-108.3）：サービス名・台帳の可否・状態・預かり先の番号の頭だけ。中身は返さない
   app.get("/vault/credentials", async (c) => {
     const s = await resolve(c.req.raw.headers);

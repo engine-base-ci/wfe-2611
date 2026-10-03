@@ -80,7 +80,7 @@ fi
 PORT=$API_PORT
 BASE_URL="http://127.0.0.1:$API_PORT"
 # 画面の出どころ（CORS）。本番ビルド 3124 と next dev 3123 の両方を許す
-WEB_BASE_URL="http://127.0.0.1:$WEB_PORT,http://localhost:$WEB_PORT,http://localhost:3123"
+WEB_BASE_URL="http://127.0.0.1:$WEB_PORT,http://localhost:$WEB_PORT,http://localhost:3123,http://127.0.0.1:3123"   # 3123 は Playwright が自分で立てる next dev（127.0.0.1 でも開く）
 KANAME_DEV_FAKE_BUCKET=1   # MinIO を立てずに触るため（添付の保存だけ使えない）
 # 作った Bridge のインストーラを、画面のダウンロードのボタンから配る（署名・置き場が決まる前の橋渡し）
 BRIDGE_RELEASE_DIR="$ROOT/apps/bridge/release"

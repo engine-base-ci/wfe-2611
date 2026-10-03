@@ -68,6 +68,7 @@ export const MIGRATIONS = [
   "0061_search_normalize.sql",
   "0062_search_norm_dash.sql",
   "0063_approval_once.sql",
+  "0064_bridge_credential.sql",
 ] as const;
 
 /** migration 名の並びを検査する。重複・順序違い・4 桁でない名前があれば理由を返す。 */

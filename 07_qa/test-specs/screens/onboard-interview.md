@@ -68,7 +68,7 @@
 | CHT-25-004 | onboard-interview | 聞かずに使える | 許可のモードが毎回聞くでも、Kaname の道具は許可の問いを出さずに使える | 毎回聞くの会話 | たたき台を置かせる（実ブラウザ） | 許可の問いが出ずに置かれる | PASS（screens/onboard-tools.spec.ts・実 Chrome・2026-10-01） | D-110.4 | T-B-25 | L1 |
 | CHT-25-005 | onboard-interview | 残す | 道具で書いたことは証跡（誰の仕事・どの道具・何を）に残る | 置いた後 | 証跡を見る | audit_events に agent.goal_created 等が 1 件ずつ | PASS（screens/onboard-tools.spec.ts・実 Chrome・2026-10-01） | D-110.5 | T-B-25 | L1 |
 | CHT-25-006 | onboard-interview | 資格情報 | 道具に渡るのは Kaname の宛先とその仕事の鍵だけで、資格情報は渡らない | Bridge が渡す引数 | 引数を見る | 資格情報・Bridge の session が無い | PASS（apps/bridge/test/kaname-tools.test.ts・実 Chrome・2026-10-01） | D-110.6 | T-B-25 | L1 |
-| CHT-25-007 | onboard-interview | 止める目安 | Bridge が仕事を止める目安は何も進まない時間で、本人の答えを待っている間は数えない | 問い合わせに 10 分以上答えない | 答える | 止まらずに続きが動く。何も出ないまま上限を過ぎたときだけ止まる | PASS（apps/bridge/test/runner.test.ts・実 Chrome・2026-10-01） | D-110.7 | T-B-25 | L1 |
+| CHT-25-007 | onboard-interview | 止める目安 | Bridge が仕事を止める目安は何も進まない時間で、本人の答えを待っている間は数えない | 問い合わせに 10 分以上答えない | 答える | 止まらずに続きが動く。何も出ないまま上限を過ぎたときだけ止まる | PASS（apps/bridge/test/runner.test.ts・実 Chrome・2026-10-03） | D-110.7 | T-B-25 | L1 |
 
 ## もう無い行（26 行）
 

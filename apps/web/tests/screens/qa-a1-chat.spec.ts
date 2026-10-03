@@ -906,7 +906,7 @@ test("SCR-CLONE-CHAT-035 G-14 パスワードを変えると、会話を開い�
   await expect(page).toHaveURL(/\/login/, { timeout: 30_000 });
 });
 
-test("SCR-CLONE-CHAT-036 G-15 完了の知らせが無いまま Claude Code が終わったら成功にせず、理由と次の一手（続けて）を出す", async ({ page }) => {
+test("BRG-01-003 BRG-02-003 BRG-04-003 SCR-CLONE-CHAT-036 G-15 完了の知らせが無いまま Claude Code が終わったら成功にせず、理由と次の一手（続けて）を出す", async ({ page }) => {
   const u = await ready(page);
   await say(page, "途中で落ちてみて");
   await expect(page.locator("[data-stopped-reason]").last()).toContainText("Claude Code が途中で終わりました", { timeout: 30_000 });

@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-03T10:10:17",
+ "generated_at": "2026-10-03T10:39:58",
  "inputs": {
   "tickets": "07_tasks/tickets.json",
   "roster": "07_tasks/roster.json",
@@ -16,12 +16,12 @@
  "summary": {
   "as_of": "2026-10-03",
   "by_status": {
-   "done": 105,
-   "todo": 109
+   "done": 109,
+   "todo": 105
   },
-  "hours_done": 798.4,
+  "hours_done": 813.9,
   "hours_total": 1226.3,
-  "progress_pct": 65,
+  "progress_pct": 66,
   "epic": 16,
   "story": 214,
   "subtask": 6024,
@@ -42,24 +42,24 @@
   "cycle": [],
   "ghost_dependencies": [],
   "unassignable": [],
-  "tentative": 17,
+  "tentative": 13,
   "assigned": 169,
   "broken_links": [],
   "milestone_overrun": [],
   "estimate_default": [],
   "delta": {
    "added": 0,
-   "updated": 5,
-   "unchanged": 209,
+   "updated": 0,
+   "unchanged": 214,
    "dropped": 0
   },
   "load": {
    "takamoto": 43.3,
-   "claude-01": 37.3,
-   "claude-02": 40.8,
-   "claude-03": 16.5,
-   "claude-04": 19.2,
-   "claude-05": 48.3,
+   "claude-01": 37.8,
+   "claude-02": 39.8,
+   "claude-03": 45.8,
+   "claude-04": 11.2,
+   "claude-05": 12.0,
    "claude-06": 24.4,
    "claude-07": 24.1,
    "claude-08": 33.1,
@@ -2792,7 +2792,7 @@
      "07_tasks/tickets.json#T-D-11"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null,
    "done_at": "2026-09-16",
    "started_at": null,
@@ -3316,7 +3316,7 @@
      "07_tasks/tickets.json#T-A-01"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null,
    "done_at": "2026-09-16",
    "started_at": null,
@@ -4526,7 +4526,7 @@
      "07_tasks/tickets.json#T-A-07"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null,
    "done_at": "2026-09-16",
    "started_at": null,
@@ -8227,7 +8227,7 @@
    "estimate_hours": 36.8,
    "estimate_default": false,
    "start": "2026-10-05",
-   "finish": "2026-10-13",
+   "finish": "2026-10-09",
    "critical": false,
    "tentative": true,
    "assignable": [
@@ -8360,8 +8360,8 @@
    "layer": "backend",
    "estimate_hours": 42.8,
    "estimate_default": false,
-   "start": "2026-10-07",
-   "finish": "2026-10-15",
+   "start": "2026-10-05",
+   "finish": "2026-10-13",
    "critical": false,
    "tentative": true,
    "assignable": [
@@ -8450,7 +8450,7 @@
    "dropped_reason": null,
    "done_at": null,
    "started_at": null,
-   "tentative_assignee": "claude-05"
+   "tentative_assignee": "claude-03"
   },
   {
    "id": "T-US-00",
@@ -10771,7 +10771,7 @@
      "07_tasks/tickets.json#T-U-09"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null,
    "done_at": "2026-09-16",
    "started_at": null,
@@ -13073,7 +13073,7 @@
      "07_tasks/tickets.json#T-U-17"
     ]
    },
-   "delta": "updated",
+   "delta": "unchanged",
    "dropped_reason": null,
    "done_at": "2026-10-03",
    "started_at": null,
@@ -21032,8 +21032,8 @@
    "layer": "ui",
    "estimate_hours": 1.3,
    "estimate_default": false,
-   "start": "2026-10-14",
-   "finish": "2026-10-14",
+   "start": "2026-10-13",
+   "finish": "2026-10-13",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -21672,8 +21672,8 @@
    "layer": "integration",
    "estimate_hours": 2.0,
    "estimate_default": false,
-   "start": "2026-10-16",
-   "finish": "2026-10-16",
+   "start": "2026-10-14",
+   "finish": "2026-10-14",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -21747,8 +21747,8 @@
    "layer": "integration",
    "estimate_hours": 1.2,
    "estimate_default": false,
-   "start": "2026-10-16",
-   "finish": "2026-10-16",
+   "start": "2026-10-14",
+   "finish": "2026-10-14",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -22327,8 +22327,8 @@
    "layer": "integration",
    "estimate_hours": 3.8,
    "estimate_default": false,
-   "start": "2026-10-16",
-   "finish": "2026-10-16",
+   "start": "2026-10-14",
+   "finish": "2026-10-14",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -24031,10 +24031,10 @@
    "layer": "backend",
    "estimate_hours": 3.5,
    "estimate_default": false,
-   "start": "2026-10-05",
-   "finish": "2026-10-06",
+   "start": "2026-10-03",
+   "finish": "2026-10-03",
    "critical": false,
-   "tentative": true,
+   "tentative": false,
    "assignable": [
     "takamoto",
     "claude-01",
@@ -24045,7 +24045,7 @@
    ],
    "assignee": null,
    "assigned_by": null,
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -24074,9 +24074,9 @@
    },
    "delta": "unchanged",
    "dropped_reason": null,
-   "done_at": null,
+   "done_at": "2026-10-03",
    "started_at": null,
-   "tentative_assignee": "takamoto"
+   "actual": true
   },
   {
    "id": "T-B-02",
@@ -24100,10 +24100,10 @@
    "layer": "backend",
    "estimate_hours": 3.0,
    "estimate_default": false,
-   "start": "2026-10-07",
-   "finish": "2026-10-07",
+   "start": "2026-10-03",
+   "finish": "2026-10-03",
    "critical": false,
-   "tentative": true,
+   "tentative": false,
    "assignable": [
     "takamoto",
     "claude-01",
@@ -24114,7 +24114,7 @@
    ],
    "assignee": null,
    "assigned_by": null,
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -24143,9 +24143,9 @@
    },
    "delta": "unchanged",
    "dropped_reason": null,
-   "done_at": null,
+   "done_at": "2026-10-03",
    "started_at": null,
-   "tentative_assignee": "claude-05"
+   "actual": true
   },
   {
    "id": "T-B-03",
@@ -24254,10 +24254,10 @@
    "layer": "backend",
    "estimate_hours": 5.0,
    "estimate_default": false,
-   "start": "2026-10-06",
-   "finish": "2026-10-07",
+   "start": "2026-10-03",
+   "finish": "2026-10-03",
    "critical": false,
-   "tentative": true,
+   "tentative": false,
    "assignable": [
     "takamoto",
     "claude-01",
@@ -24268,7 +24268,7 @@
    ],
    "assignee": null,
    "assigned_by": null,
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -24297,9 +24297,9 @@
    },
    "delta": "unchanged",
    "dropped_reason": null,
-   "done_at": null,
+   "done_at": "2026-10-03",
    "started_at": null,
-   "tentative_assignee": "claude-03"
+   "actual": true
   },
   {
    "id": "T-B-05",
@@ -24321,10 +24321,10 @@
    "layer": "backend",
    "estimate_hours": 4.0,
    "estimate_default": false,
-   "start": "2026-10-08",
-   "finish": "2026-10-08",
+   "start": "2026-10-03",
+   "finish": "2026-10-03",
    "critical": false,
-   "tentative": true,
+   "tentative": false,
    "assignable": [
     "takamoto",
     "claude-01",
@@ -24335,7 +24335,7 @@
    ],
    "assignee": null,
    "assigned_by": null,
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -24366,9 +24366,9 @@
    },
    "delta": "unchanged",
    "dropped_reason": null,
-   "done_at": null,
+   "done_at": "2026-10-03",
    "started_at": null,
-   "tentative_assignee": "claude-03"
+   "actual": true
   },
   {
    "id": "T-B-08",
@@ -24391,7 +24391,7 @@
    "estimate_hours": 3.5,
    "estimate_default": false,
    "start": "2026-10-05",
-   "finish": "2026-10-05",
+   "finish": "2026-10-06",
    "critical": false,
    "tentative": true,
    "assignable": [
@@ -24436,7 +24436,7 @@
    "dropped_reason": null,
    "done_at": null,
    "started_at": null,
-   "tentative_assignee": "claude-01"
+   "tentative_assignee": "takamoto"
   },
   {
    "id": "T-B-07",
@@ -24505,7 +24505,7 @@
    "dropped_reason": null,
    "done_at": null,
    "started_at": null,
-   "tentative_assignee": "claude-02"
+   "tentative_assignee": "claude-01"
   },
   {
    "id": "T-B-06",
@@ -24678,7 +24678,7 @@
    "dropped_reason": null,
    "done_at": null,
    "started_at": null,
-   "tentative_assignee": "claude-03"
+   "tentative_assignee": "claude-02"
   },
   {
    "id": "T-B-10",
@@ -24765,7 +24765,7 @@
    "dropped_reason": null,
    "done_at": null,
    "started_at": null,
-   "tentative_assignee": "claude-04"
+   "tentative_assignee": "claude-05"
   },
   {
    "id": "T-B-11",
@@ -24843,7 +24843,7 @@
    "dropped_reason": null,
    "done_at": null,
    "started_at": null,
-   "tentative_assignee": "claude-03"
+   "tentative_assignee": "claude-05"
   },
   {
    "id": "T-B-13",
@@ -24918,7 +24918,7 @@
    "dropped_reason": null,
    "done_at": null,
    "started_at": null,
-   "tentative_assignee": "claude-04"
+   "tentative_assignee": "claude-05"
   },
   {
    "id": "T-B-12",
@@ -24994,7 +24994,7 @@
    "dropped_reason": null,
    "done_at": null,
    "started_at": null,
-   "tentative_assignee": "claude-04"
+   "tentative_assignee": "claude-03"
   },
   {
    "id": "T-B-14",
@@ -25081,7 +25081,7 @@
    "dropped_reason": null,
    "done_at": null,
    "started_at": null,
-   "tentative_assignee": "claude-05"
+   "tentative_assignee": "claude-04"
   },
   {
    "id": "T-B-15",
@@ -26943,8 +26943,8 @@
    "layer": "backend",
    "estimate_hours": 2.5,
    "estimate_default": false,
-   "start": "2026-10-09",
-   "finish": "2026-10-09",
+   "start": "2026-10-06",
+   "finish": "2026-10-06",
    "critical": false,
    "tentative": true,
    "assignable": [
@@ -27015,8 +27015,8 @@
    "layer": "backend",
    "estimate_hours": 3.0,
    "estimate_default": false,
-   "start": "2026-10-09",
-   "finish": "2026-10-09",
+   "start": "2026-10-07",
+   "finish": "2026-10-07",
    "critical": false,
    "tentative": true,
    "assignable": [
@@ -27067,7 +27067,7 @@
    "dropped_reason": null,
    "done_at": null,
    "started_at": null,
-   "tentative_assignee": "claude-04"
+   "tentative_assignee": "claude-05"
   },
   {
    "id": "T-B-40",
@@ -100010,7 +100010,7 @@
    "sub": "impl",
    "title": "apps/bridge/package.json (new)",
    "parent": "T-B-01",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/bridge/package.json (new)"
@@ -100023,7 +100023,7 @@
    "sub": "impl",
    "title": "apps/bridge/tsconfig.json (new)",
    "parent": "T-B-01",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/bridge/tsconfig.json (new)"
@@ -100036,7 +100036,7 @@
    "sub": "impl",
    "title": "apps/bridge/src/main.ts (new)",
    "parent": "T-B-01",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/bridge/src/main.ts (new)"
@@ -100049,7 +100049,7 @@
    "sub": "impl",
    "title": "apps/bridge/src/preload.ts (new)",
    "parent": "T-B-01",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/bridge/src/preload.ts (new)"
@@ -100062,7 +100062,7 @@
    "sub": "impl",
    "title": "apps/bridge/src/renderer/index.html (new)",
    "parent": "T-B-01",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/bridge/src/renderer/index.html (new)"
@@ -100130,7 +100130,7 @@
    "sub": "impl",
    "title": "apps/bridge/src/main.ts (new)",
    "parent": "T-B-02",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/bridge/src/main.ts (new)"
@@ -100143,7 +100143,7 @@
    "sub": "impl",
    "title": "apps/api/src/auth/ext.ts (new)",
    "parent": "T-B-02",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/api/src/auth/ext.ts (new)"
@@ -100156,7 +100156,7 @@
    "sub": "impl",
    "title": "packages/db/migrations/0026_bridge_claim.sql (new)",
    "parent": "T-B-02",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/db/migrations/0026_bridge_claim.sql (new)"
@@ -100383,7 +100383,7 @@
    "sub": "impl",
    "title": "packages/bridge-guard/src/index.ts (new)",
    "parent": "T-B-04",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "packages/bridge-guard/src/index.ts (new)"
@@ -100396,7 +100396,7 @@
    "sub": "impl",
    "title": "apps/bridge/src/runner.ts (new)",
    "parent": "T-B-04",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/bridge/src/runner.ts (new)"
@@ -100464,7 +100464,7 @@
    "sub": "impl",
    "title": "apps/bridge/src/vault.ts (new)",
    "parent": "T-B-05",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/bridge/src/vault.ts (new)"

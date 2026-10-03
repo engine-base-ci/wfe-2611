@@ -2,12 +2,12 @@
 
 | 人 | 技能 | 1 日 | 負荷（h） | チケット |
 |---|---|---|---|---|
-| 高本（PM・レビュー） | backend, content, foundation, integration, polish, review, spec | 3.0h | 43.3 | T-F-01, T-F-04, T-F-05, T-F-10, T-F-12, T-F-14, T-D-02, T-D-06, T-D-08, T-D-10, T-D-13, T-D-14, T-A-17, T-A-24, T-B-01 |
-| Claude セッション 01（基盤・DB） | backend, foundation | 8.0h | 37.3 | T-F-02, T-F-06, T-F-15, T-F-16, T-F-17, T-D-03, T-D-05, T-D-12, T-A-08, T-A-12, T-A-18, T-A-26, T-B-08 |
-| Claude セッション 02（基盤・DB） | backend, foundation | 8.0h | 40.8 | T-F-03, T-F-07, T-F-08, T-F-09, T-F-11, T-F-13, T-D-01, T-D-04, T-D-07, T-D-09, T-D-11, T-A-06, T-A-22, T-A-27, T-B-07 |
-| Claude セッション 03（API） | backend, integration | 8.0h | 16.5 | T-A-01, T-A-03, T-A-04, T-A-14, T-A-16, T-A-20, T-B-04, T-B-05, T-B-09, T-B-11 |
-| Claude セッション 04（API） | backend, integration | 8.0h | 19.2 | T-A-05, T-A-10, T-A-11, T-A-19, T-A-21, T-A-25, T-B-10, T-B-13, T-B-12, T-B-38, T-B-39 |
-| Claude セッション 05（API・結線） | backend, integration | 8.0h | 48.3 | T-A-02, T-A-07, T-A-09, T-A-13, T-A-15, T-A-23, T-A-28, T-B-02, T-B-14 |
+| 高本（PM・レビュー） | backend, content, foundation, integration, polish, review, spec | 3.0h | 43.3 | T-F-01, T-F-04, T-F-05, T-F-10, T-F-12, T-F-14, T-D-02, T-D-06, T-D-08, T-D-10, T-D-13, T-D-14, T-A-17, T-A-24, T-B-08 |
+| Claude セッション 01（基盤・DB） | backend, foundation | 8.0h | 37.8 | T-F-02, T-F-06, T-F-15, T-F-16, T-F-17, T-D-03, T-D-05, T-D-12, T-A-08, T-A-12, T-A-18, T-A-26, T-B-07 |
+| Claude セッション 02（基盤・DB） | backend, foundation | 8.0h | 39.8 | T-F-03, T-F-07, T-F-08, T-F-09, T-F-11, T-F-13, T-D-01, T-D-04, T-D-07, T-D-09, T-D-11, T-A-06, T-A-22, T-A-27, T-B-09 |
+| Claude セッション 03（API） | backend, integration | 8.0h | 45.8 | T-A-01, T-A-03, T-A-04, T-A-14, T-A-16, T-A-20, T-A-28, T-B-12 |
+| Claude セッション 04（API） | backend, integration | 8.0h | 11.2 | T-A-05, T-A-10, T-A-11, T-A-19, T-A-21, T-A-25, T-B-14, T-B-38 |
+| Claude セッション 05（API・結線） | backend, integration | 8.0h | 12.0 | T-A-02, T-A-07, T-A-09, T-A-13, T-A-15, T-A-23, T-B-10, T-B-11, T-B-13, T-B-39 |
 | Claude セッション 06（UI） | ui | 8.0h | 24.4 | T-US-01, T-U-01, T-U-04, T-U-08, T-U-12, T-U-14, T-U-18, T-U-20, T-U-26, T-U-30, T-U-32, T-U-36, T-U-39, T-U-43, T-U-48, T-U-51, T-U-56, T-U-60, T-U-64 |
 | Claude セッション 07（UI） | ui | 8.0h | 24.1 | T-US-02, T-U-03, T-U-07, T-U-11, T-U-15, T-U-19, T-U-21, T-U-24, T-U-27, T-U-31, T-U-35, T-U-41, T-U-44, T-U-47, T-U-52, T-U-54, T-U-59, T-U-63 |
 | Claude セッション 08（UI） | ui | 8.0h | 33.1 | T-US-03, T-US-05, T-U-02, T-U-06, T-U-10, T-U-16, T-U-22, T-U-25, T-U-29, T-U-34, T-U-37, T-U-42, T-U-45, T-U-49, T-U-53, T-U-57, T-U-61, T-US-08 |

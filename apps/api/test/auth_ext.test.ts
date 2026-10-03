@@ -239,7 +239,7 @@ describe("招待（T-U-03）", () => {
 });
 
 describe("Bridge の接続コードと資格情報（T-U-09／10）", () => {
-  it("ログイン済みなら KNM-#### の接続コード。未ログインは 401", async () => {
+  it("BRG-02-001 ログイン済みなら KNM-#### の接続コード。未ログインは 401", async () => {
     const email = `${uniq()}@example.com`;
     const { token } = await register(email, "E");
     const r = await post("/api/auth-ext/bridge/pair", {}, { authorization: `Bearer ${token}` });

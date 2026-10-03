@@ -77,7 +77,7 @@ describe("runClaude（偽の CLI）", () => {
     expect(await run).toMatchObject({ state: "stopped", reason: "あなたが止めました", agent_session_id: "sess-fake" });
   });
 
-  it("完了信号を出さずに終わったものを成功にしない（G-15）", async () => {
+  it("BRG-01-003 BRG-02-003 BRG-04-003 完了信号を出さずに終わったものを成功にしない（G-15）", async () => {
     const f = await runClaude(job("SILENT"));
     expect(f.state).toBe("stopped");
   });

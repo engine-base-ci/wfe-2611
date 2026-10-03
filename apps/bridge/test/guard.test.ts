@@ -73,7 +73,7 @@ describe("フックを本物の node で動かす（D-107.3・D-107.4）", () =>
       env: { ...process.env, KANAME_BLOCKED: JSON.stringify(LIST), KANAME_GUARD_LOG: log },
       encoding: "utf8",
     });
-  it("禁止の宛先は終了コード 2 と理由で止め、1 行書き残す。そうでなければ 0 で通す", () => {
+  it("BRG-04-001 禁止の宛先は終了コード 2 と理由で止め、1 行書き残す。そうでなければ 0 で通す", () => {
     const ok = run({ tool_name: "Bash", tool_input: { command: "ls -la" } });
     expect(ok.status).toBe(0);
     const ng = run({ tool_name: "Bash", tool_input: { command: "curl -s https://www.mizuhobank.co.jp/login" } });

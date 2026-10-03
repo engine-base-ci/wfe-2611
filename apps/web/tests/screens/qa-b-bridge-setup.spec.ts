@@ -138,7 +138,7 @@ async function connected(page: Page, health?: { name: string; ok: boolean; detai
   return { u, sid };
 }
 
-test("SCR-BRIDGE-SETUP-059 状態「接続中（ブラウザ・未インストール）」：手順バー・見出し・受け取る（macOS／Windows）・開く・許可の 3 つ・何をするか／しないか が出て、接続コードは本物（引き取れる）", async ({ page }) => {
+test("BRG-02-001 SCR-BRIDGE-SETUP-059 状態「接続中（ブラウザ・未インストール）」：手順バー・見出し・受け取る（macOS／Windows）・開く・許可の 3 つ・何をするか／しないか が出て、接続コードは本物（引き取れる）", async ({ page }) => {
   await hideRealBridge(page); // この PC の口は答えない＝入っていない
   const u = await signupViaApi();
   await loginAs(page, u.token);
@@ -210,7 +210,7 @@ test("SCR-BRIDGE-SETUP-060 SCR-BRIDGE-SETUP-096 状態「ブラウザ・Bridge �
   await expect(page.locator('[data-state="ok"]')).toBeVisible({ timeout: 20_000 });
 });
 
-test("SCR-BRIDGE-SETUP-061 状態「アプリ（Bridge の窓）の中」：入れる作業も接続コードも出さず、開いた時点で自動でつながり「自分のAIと話すへ」が出る", async ({ browser }) => {
+test("BRG-01-001 SCR-BRIDGE-SETUP-061 状態「アプリ（Bridge の窓）の中」：入れる作業も接続コードも出さず、開いた時点で自動でつながり「自分のAIと話すへ」が出る", async ({ browser }) => {
   const u = await signupViaApi();
   const g = gate();
   const ctx = await browser.newContext({ userAgent: "Mozilla/5.0 KanameBridge/0.0.0-qa" });
@@ -243,7 +243,7 @@ test("SCR-BRIDGE-SETUP-061 状態「アプリ（Bridge の窓）の中」：入�
   }
 });
 
-test("SCR-BRIDGE-SETUP-072 SCR-BRIDGE-SETUP-080 SCR-BRIDGE-SETUP-081 状態「Claude Code が無い」：理由と「Claude Code を入れる」が出て、押すと Bridge が入れ、続けて「ログインする」で入口とコード欄が出て、決定で出なくなる", async ({ page }) => {
+test("BRG-01-002 BRG-02-002 BRG-04-002 SCR-BRIDGE-SETUP-072 SCR-BRIDGE-SETUP-080 SCR-BRIDGE-SETUP-081 状態「Claude Code が無い」：理由と「Claude Code を入れる」が出て、押すと Bridge が入れ、続けて「ログインする」で入口とコード欄が出て、決定で出なくなる", async ({ page }) => {
   const u = await signupViaApi();
   const g = gate();
   await hideRealBridge(page);

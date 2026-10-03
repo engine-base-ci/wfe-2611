@@ -1,12 +1,12 @@
 {
  "version": "v3.2",
  "project": "Kaname",
- "created_at": "2026-10-01",
+ "created_at": "2026-10-03",
  "decomposition_mode": "api_first",
  "api_design_ref": {
   "openapi_path": "08_api/openapi.yaml",
   "screen_api_coverage_path": "08_api/screen-api-coverage.json",
-  "contract_frozen_at": "2026-10-01"
+  "contract_frozen_at": "2026-10-03"
  },
  "_doc": "05_flow/build_tasks.py が機械生成。手で直さない。途中変更は差分（qa_delta.py）",
  "source": [
@@ -25334,6 +25334,7 @@
    ],
    "audit_md_path": "07_tasks/audit/T-U-17.md",
    "status": "done",
+   "done_at": "2026-10-03",
    "qa_rows": {
     "l1": [
      "SCR-CLONE-CHAT-122",
@@ -25764,8 +25765,7 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 6.2,
-   "estimate_sessions": 2,
-   "done_at": "2026-10-03"
+   "estimate_sessions": 2
   },
   {
    "id": "T-U-18",
@@ -45138,7 +45138,8 @@
     "03_architecture/アーキテクチャ設計書.md"
    ],
    "audit_md_path": "07_tasks/audit/T-B-01.md",
-   "status": "todo",
+   "status": "done",
+   "done_at": "2026-10-03",
    "qa_rows": {
     "l1": [
      "BRG-01-001",
@@ -45295,7 +45296,8 @@
     "03_architecture/アーキテクチャ設計書.md"
    ],
    "audit_md_path": "07_tasks/audit/T-B-02.md",
-   "status": "todo",
+   "status": "done",
+   "done_at": "2026-10-03",
    "qa_rows": {
     "l1": [
      "BRG-02-001",
@@ -45451,6 +45453,7 @@
    ],
    "audit_md_path": "07_tasks/audit/T-B-03.md",
    "status": "done",
+   "done_at": "2026-10-03",
    "qa_rows": {
     "l1": [
      "BRG-03-001",
@@ -45540,8 +45543,7 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 7.0,
-   "estimate_sessions": 2,
-   "done_at": "2026-10-03"
+   "estimate_sessions": 2
   },
   {
    "id": "T-B-04",
@@ -45622,7 +45624,8 @@
     "03_architecture/アーキテクチャ設計書.md"
    ],
    "audit_md_path": "07_tasks/audit/T-B-04.md",
-   "status": "todo",
+   "status": "done",
+   "done_at": "2026-10-03",
    "qa_rows": {
     "l1": [
      "BRG-04-001",
@@ -45775,7 +45778,7 @@
     "03_architecture/アーキテクチャ設計書.md"
    ],
    "audit_md_path": "07_tasks/audit/T-B-05.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "BRG-05-004",
@@ -45855,7 +45858,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 4.0,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-10-03"
   },
   {
    "id": "T-B-08",
@@ -46256,6 +46260,7 @@
    ],
    "audit_md_path": "07_tasks/audit/T-B-06.md",
    "status": "done",
+   "done_at": "2026-10-03",
    "qa_rows": {
     "l1": [
      "BRG-06-012",
@@ -46352,8 +46357,7 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 6.0,
-   "estimate_sessions": 2,
-   "done_at": "2026-10-03"
+   "estimate_sessions": 2
   },
   {
    "id": "T-B-09",
@@ -47429,6 +47433,7 @@
    ],
    "audit_md_path": "07_tasks/audit/T-B-15.md",
    "status": "done",
+   "done_at": "2026-10-03",
    "qa_rows": {
     "l1": [
      "CHT-15-001",
@@ -47510,8 +47515,7 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 3.5,
-   "estimate_sessions": 1,
-   "done_at": "2026-10-03"
+   "estimate_sessions": 1
   },
   {
    "id": "T-B-16",
@@ -47600,6 +47604,7 @@
    ],
    "audit_md_path": "07_tasks/audit/T-B-16.md",
    "status": "done",
+   "done_at": "2026-10-03",
    "qa_rows": {
     "l1": [
      "CHT-16-001",
@@ -47679,8 +47684,7 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 4.0,
-   "estimate_sessions": 1,
-   "done_at": "2026-10-03"
+   "estimate_sessions": 1
   },
   {
    "id": "T-B-17",
@@ -47769,6 +47773,7 @@
    ],
    "audit_md_path": "07_tasks/audit/T-B-17.md",
    "status": "done",
+   "done_at": "2026-10-03",
    "qa_rows": {
     "l1": [
      "CHT-17-001",
@@ -47846,8 +47851,7 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 3.5,
-   "estimate_sessions": 1,
-   "done_at": "2026-10-03"
+   "estimate_sessions": 1
   },
   {
    "id": "T-B-18",
@@ -47937,6 +47941,7 @@
    ],
    "audit_md_path": "07_tasks/audit/T-B-18.md",
    "status": "done",
+   "done_at": "2026-10-03",
    "qa_rows": {
     "l1": [
      "CHT-18-001",
@@ -48018,8 +48023,7 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 4.0,
-   "estimate_sessions": 1,
-   "done_at": "2026-10-03"
+   "estimate_sessions": 1
   },
   {
    "id": "T-B-19",
@@ -48110,6 +48114,7 @@
    ],
    "audit_md_path": "07_tasks/audit/T-B-19.md",
    "status": "done",
+   "done_at": "2026-10-03",
    "qa_rows": {
     "l1": [
      "CHT-19-001",
@@ -48198,8 +48203,7 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 4.0,
-   "estimate_sessions": 1,
-   "done_at": "2026-10-03"
+   "estimate_sessions": 1
   },
   {
    "id": "T-B-20",
@@ -48285,6 +48289,7 @@
    ],
    "audit_md_path": "07_tasks/audit/T-B-20.md",
    "status": "done",
+   "done_at": "2026-10-03",
    "qa_rows": {
     "l1": [
      "CHT-20-001",
@@ -48362,8 +48367,7 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 2.5,
-   "estimate_sessions": 1,
-   "done_at": "2026-10-03"
+   "estimate_sessions": 1
   },
   {
    "id": "T-B-21",
@@ -48453,6 +48457,7 @@
    ],
    "audit_md_path": "07_tasks/audit/T-B-21.md",
    "status": "done",
+   "done_at": "2026-10-03",
    "qa_rows": {
     "l1": [
      "CHT-21-001",
@@ -48528,8 +48533,7 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 4.5,
-   "estimate_sessions": 2,
-   "done_at": "2026-10-03"
+   "estimate_sessions": 2
   },
   {
    "id": "T-B-22",
@@ -48615,6 +48619,7 @@
    ],
    "audit_md_path": "07_tasks/audit/T-B-22.md",
    "status": "done",
+   "done_at": "2026-10-03",
    "qa_rows": {
     "l1": [
      "CHT-22-001",
@@ -48695,8 +48700,7 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 3.5,
-   "estimate_sessions": 1,
-   "done_at": "2026-10-03"
+   "estimate_sessions": 1
   },
   {
    "id": "T-B-23",
@@ -48783,6 +48787,7 @@
    ],
    "audit_md_path": "07_tasks/audit/T-B-23.md",
    "status": "done",
+   "done_at": "2026-10-03",
    "qa_rows": {
     "l1": [
      "CHT-23-001",
@@ -48871,8 +48876,7 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 4.5,
-   "estimate_sessions": 2,
-   "done_at": "2026-10-03"
+   "estimate_sessions": 2
   },
   {
    "id": "T-B-24",
@@ -48962,6 +48966,7 @@
    ],
    "audit_md_path": "07_tasks/audit/T-B-24.md",
    "status": "done",
+   "done_at": "2026-10-03",
    "qa_rows": {
     "l1": [
      "CHT-24-001",
@@ -49051,8 +49056,7 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 4.0,
-   "estimate_sessions": 1,
-   "done_at": "2026-10-03"
+   "estimate_sessions": 1
   },
   {
    "id": "T-B-25",
@@ -49143,6 +49147,7 @@
    ],
    "audit_md_path": "07_tasks/audit/T-B-25.md",
    "status": "done",
+   "done_at": "2026-10-03",
    "qa_rows": {
     "l1": [
      "CHT-25-001",
@@ -49237,8 +49242,7 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 4.0,
-   "estimate_sessions": 1,
-   "done_at": "2026-10-03"
+   "estimate_sessions": 1
   },
   {
    "id": "T-B-26",
@@ -49323,6 +49327,7 @@
    ],
    "audit_md_path": "07_tasks/audit/T-B-26.md",
    "status": "done",
+   "done_at": "2026-10-03",
    "qa_rows": {
     "l1": [
      "CHT-26-001",
@@ -49392,8 +49397,7 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 2.0,
-   "estimate_sessions": 1,
-   "done_at": "2026-10-03"
+   "estimate_sessions": 1
   },
   {
    "id": "T-B-27",
@@ -49481,6 +49485,7 @@
    ],
    "audit_md_path": "07_tasks/audit/T-B-27.md",
    "status": "done",
+   "done_at": "2026-10-03",
    "qa_rows": {
     "l1": [
      "CHT-27-001",
@@ -49554,8 +49559,7 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 2.5,
-   "estimate_sessions": 1,
-   "done_at": "2026-10-03"
+   "estimate_sessions": 1
   },
   {
    "id": "T-B-29",
@@ -49641,6 +49645,7 @@
    ],
    "audit_md_path": "07_tasks/audit/T-B-29.md",
    "status": "done",
+   "done_at": "2026-10-03",
    "qa_rows": {
     "l1": [
      "CHT-29-001",
@@ -49709,8 +49714,7 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 1.8,
-   "estimate_sessions": 1,
-   "done_at": "2026-10-03"
+   "estimate_sessions": 1
   },
   {
    "id": "T-B-31",
@@ -49800,6 +49804,7 @@
    ],
    "audit_md_path": "07_tasks/audit/T-B-31.md",
    "status": "done",
+   "done_at": "2026-10-03",
    "qa_rows": {
     "l1": [
      "CHT-31-001",
@@ -49881,8 +49886,7 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 3.0,
-   "estimate_sessions": 1,
-   "done_at": "2026-10-03"
+   "estimate_sessions": 1
   },
   {
    "id": "T-B-30",
@@ -49969,6 +49973,7 @@
    ],
    "audit_md_path": "07_tasks/audit/T-B-30.md",
    "status": "done",
+   "done_at": "2026-10-03",
    "qa_rows": {
     "l1": [
      "CHT-30-001",
@@ -50045,8 +50050,7 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 2.0,
-   "estimate_sessions": 1,
-   "done_at": "2026-10-03"
+   "estimate_sessions": 1
   },
   {
    "id": "T-B-28",
@@ -50133,6 +50137,7 @@
    ],
    "audit_md_path": "07_tasks/audit/T-B-28.md",
    "status": "done",
+   "done_at": "2026-10-03",
    "qa_rows": {
     "l1": [
      "CHT-28-001",
@@ -50202,8 +50207,7 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 1.8,
-   "estimate_sessions": 1,
-   "done_at": "2026-10-03"
+   "estimate_sessions": 1
   },
   {
    "id": "T-B-32",
@@ -50294,6 +50298,7 @@
    ],
    "audit_md_path": "07_tasks/audit/T-B-32.md",
    "status": "done",
+   "done_at": "2026-10-03",
    "qa_rows": {
     "l1": [
      "CHT-32-001",
@@ -50373,8 +50378,7 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 2.5,
-   "estimate_sessions": 1,
-   "done_at": "2026-10-03"
+   "estimate_sessions": 1
   },
   {
    "id": "T-B-33",
@@ -50461,6 +50465,7 @@
    ],
    "audit_md_path": "07_tasks/audit/T-B-33.md",
    "status": "done",
+   "done_at": "2026-10-03",
    "qa_rows": {
     "l1": [
      "CHT-33-001",
@@ -50531,8 +50536,7 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 0.2,
-   "estimate_sessions": 1,
-   "done_at": "2026-10-03"
+   "estimate_sessions": 1
   },
   {
    "id": "T-B-34",
@@ -50620,6 +50624,7 @@
    ],
    "audit_md_path": "07_tasks/audit/T-B-34.md",
    "status": "done",
+   "done_at": "2026-10-03",
    "qa_rows": {
     "l1": [
      "CHT-34-001",
@@ -50692,8 +50697,7 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 0.2,
-   "estimate_sessions": 1,
-   "done_at": "2026-10-03"
+   "estimate_sessions": 1
   },
   {
    "id": "T-B-35",
@@ -50787,6 +50791,7 @@
    ],
    "audit_md_path": "07_tasks/audit/T-B-35.md",
    "status": "done",
+   "done_at": "2026-10-03",
    "qa_rows": {
     "l1": [
      "CHT-35-001",
@@ -50852,8 +50857,7 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 0.2,
-   "estimate_sessions": 1,
-   "done_at": "2026-10-03"
+   "estimate_sessions": 1
   },
   {
    "id": "T-B-36",
@@ -50941,6 +50945,7 @@
    ],
    "audit_md_path": "07_tasks/audit/T-B-36.md",
    "status": "done",
+   "done_at": "2026-10-03",
    "qa_rows": {
     "l1": [
      "CHT-36-001",
@@ -51011,8 +51016,7 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 0.2,
-   "estimate_sessions": 1,
-   "done_at": "2026-10-03"
+   "estimate_sessions": 1
   },
   {
    "id": "T-B-37",
@@ -51122,6 +51126,7 @@
    ],
    "audit_md_path": "07_tasks/audit/T-B-37.md",
    "status": "done",
+   "done_at": "2026-10-03",
    "qa_rows": {
     "l1": [
      "CHT-37-003",
@@ -51224,8 +51229,7 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 5.0,
-   "estimate_sessions": 2,
-   "done_at": "2026-10-03"
+   "estimate_sessions": 2
   },
   {
    "id": "T-B-38",
@@ -51633,6 +51637,7 @@
    ],
    "audit_md_path": "07_tasks/audit/T-B-40.md",
    "status": "done",
+   "done_at": "2026-10-03",
    "qa_rows": {
     "l1": [
      "CHT-40-001",
@@ -51704,8 +51709,7 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 0.2,
-   "estimate_sessions": 1,
-   "done_at": "2026-10-03"
+   "estimate_sessions": 1
   },
   {
    "id": "T-US-08",

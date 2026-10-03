@@ -386,10 +386,16 @@ BRIDGE = [
     ("T-B-06", "配布（インストーラ・macOS の公証・Windows の署名・自動更新：署名までは指紋を確かめて自分で入れ替え、署名後は electron-updater）", 20, ["T-B-02"], ["apps/bridge/electron-builder.yml", "apps/bridge/scripts/release.mjs", "apps/bridge/src/update.ts", "apps/api/src/auth/bridge-release.ts", ".github/workflows/bridge-release.yml"],
      "macOS / Windows のインストーラが出て、入れた人に自動で新しい版が届く（指紋を確かめて自分で入れ替える）", "D-015.6", ["D-109.1", "D-109.2", "D-109.3", "D-109.4", "D-109.5", "D-109.6", "D-109.7"]),
 ]
+# 手で触る確認の手順（発注者が dev で踏める形。無いタスクは「手順どおり操作する」のまま）。ID は item で引き継ぐので、ここを書き換えても行 ID は変わらない
+BRIDGE_STEPS = {
+    "T-B-05": ("①「ログイン情報を預ける」（/settings/credentials）で 追加する → サービス「発注ナビ」→ ログイン名・パスワード・2段階認証の鍵を入れて 保存する ② 一覧に「預けた · 預かり先の番号 …」の行が出る。読み直しても同じ ③ 画面のどこにも入れたパスワード・鍵の文字が出ない（Cmd+F で探す） ④ この行の結果列が PASS（実 Chrome の自動確認：本人の Bridge が動いている仕事のためにだけ受け取り、使った後に消え、証跡 credential.bridge_resolve（C8）が 1 行。他人の鍵・終わった仕事・届かない・欠けた応答は成功にしない）",
+              "画面と DB と証跡に値が無い（預かり先の番号だけ）。Bridge は動いている仕事のためにだけ受け取り、使った後は消え、証跡は関門 C8 で 1 行。※実際のログインに使うのは T-B-38（その場で 1 回試す）で触れる"),
+}
 for _row in BRIDGE:
     _tid, _title, _h, _dep, _files, _ok, _src = _row[:7]
     _more = list(_row[7]) if len(_row) > 7 else []   # 追加で紐づける決定の文（D-093 等）
-    _rows = [qrow(_spb, _tid.replace("T-B-", "BRG-"), _bt, "Bridge", _title, "Bridge を入れた PC", "手順どおり操作する", _ok, _src, _tid),
+    _st1, _ok1 = BRIDGE_STEPS.get(_tid, ("手順どおり操作する", _ok))
+    _rows = [qrow(_spb, _tid.replace("T-B-", "BRG-"), _bt, "Bridge", _title, "Bridge を入れた PC", _st1, _ok1, _src, _tid),
              qrow(_spb, _tid.replace("T-B-", "BRG-"), _bt, "G-11 外部リソースの実在", f"{_title}：触る外部リソース（本人の Claude Code・Chrome・Kaname の API）が対象の PC に存在する", "対象の PC", "自己診断を走らせる", "無ければ理由が出る（黙って落ちない）", "G-11", _tid),
              qrow(_spb, _tid.replace("T-B-", "BRG-"), _bt, "G-15 信号なし終了", f"{_title}：外部プロセスが完了信号を出さずに終わる・空を返す", "対象の PC", "途中で殺す", "成功にしない。止まったことが画面と証跡に出る", "G-15", _tid)]
     # 1 行 1 イベント（T-B-03・D-093）：途中経過・確認・会話の id・完了の判定。画面は clone-chat（会話モード）
