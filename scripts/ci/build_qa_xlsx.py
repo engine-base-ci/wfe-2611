@@ -285,9 +285,10 @@ def pick_tickets(T: list[dict], spec: str = "07_qa/test-specs") -> list[dict]:
     for fp in _g.glob(os.path.join(spec, "**", "*.md"), recursive=True):
         for ln in open(fp, encoding="utf-8"):
             c = [x.strip() for x in ln.strip().strip("|").split("|")] if ln.startswith("| ") else []
-            if len(c) >= 11 and c[7].startswith("PASS") and "実 Chrome" in c[7]:
+            if len(c) >= 11 and c[7].startswith("PASS") and "実 Chrome" in c[7] and ".spec.ts" in c[7]:   # 画面のテスト（Playwright）だけ。API の行の「実 Chrome」は手で触る手順にならない
                 proof.update(x.strip() for x in c[9].split(","))
-    return [t for t in T if (t.get("status") == "done" and t.get("deliverable_layer") in ("ui", "integration")) or (t.get("status") != "done" and t["id"] in proof)]
+    # 実ブラウザで押した証拠があるチケットは、完了にしても層（backend の Bridge・会話）に関わらず残す（2026-10-03：done にした Bridge のタブが消えた）
+    return [t for t in T if (t.get("status") == "done" and t.get("deliverable_layer") in ("ui", "integration")) or t["id"] in proof]
 
 
 if __name__ == "__main__":
