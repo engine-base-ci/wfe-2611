@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-03T17:38:46",
+ "generated_at": "2026-10-03T18:01:04",
  "inputs": {
   "tickets": "07_tasks/tickets.json",
   "roster": "07_tasks/roster.json",
@@ -16,10 +16,10 @@
  "summary": {
   "as_of": "2026-10-03",
   "by_status": {
-   "done": 114,
-   "todo": 100
+   "done": 115,
+   "todo": 99
   },
-  "hours_done": 828.4,
+  "hours_done": 839.4,
   "hours_total": 1226.3,
   "progress_pct": 68,
   "epic": 16,
@@ -42,7 +42,7 @@
   "cycle": [],
   "ghost_dependencies": [],
   "unassignable": [],
-  "tentative": 8,
+  "tentative": 7,
   "assigned": 169,
   "broken_links": [],
   "milestone_overrun": [],
@@ -62,7 +62,7 @@
    "claude-05": 36.8,
    "claude-06": 24.4,
    "claude-07": 24.1,
-   "claude-08": 33.1,
+   "claude-08": 22.1,
    "claude-09": 68.3,
    "claude-10": 72.6
   }
@@ -27187,14 +27187,14 @@
     "T-B-16"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W1",
    "layer": "ui",
    "estimate_hours": 11.0,
    "estimate_default": false,
-   "start": "2026-10-27",
-   "finish": "2026-10-28",
+   "start": "2026-10-03",
+   "finish": "2026-10-03",
    "critical": false,
-   "tentative": true,
+   "tentative": false,
    "assignable": [
     "claude-06",
     "claude-07",
@@ -27203,7 +27203,7 @@
    ],
    "assignee": null,
    "assigned_by": null,
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -27265,9 +27265,9 @@
    },
    "delta": "unchanged",
    "dropped_reason": null,
-   "done_at": null,
+   "done_at": "2026-10-03",
    "started_at": null,
-   "tentative_assignee": "claude-08"
+   "actual": true
   },
   {
    "id": "T-V2-01",
@@ -105854,7 +105854,7 @@
    "sub": "impl",
    "title": "apps/web/components/ai/markdown.tsx (new)",
    "parent": "T-US-08",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/components/ai/markdown.tsx (new)"
@@ -105867,7 +105867,7 @@
    "sub": "impl",
    "title": "apps/web/components/ai/work.tsx (new)",
    "parent": "T-US-08",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/components/ai/work.tsx (new)"
@@ -105880,7 +105880,7 @@
    "sub": "impl",
    "title": "apps/web/components/ai/question.tsx (new)",
    "parent": "T-US-08",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/components/ai/question.tsx (new)"
@@ -105893,7 +105893,7 @@
    "sub": "impl",
    "title": "apps/web/components/ai/composer.tsx (new)",
    "parent": "T-US-08",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/components/ai/composer.tsx (new)"
@@ -105906,7 +105906,7 @@
    "sub": "impl",
    "title": "apps/web/components/ai/conversation.tsx (modify)",
    "parent": "T-US-08",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/components/ai/conversation.tsx (modify)"

@@ -51818,7 +51818,7 @@
     "04_design/チャット調査_2026-09-27.md"
    ],
    "audit_md_path": "07_tasks/audit/T-US-08.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "USH-08-001",
@@ -51909,7 +51909,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 11.0,
-   "estimate_sessions": 3
+   "estimate_sessions": 3,
+   "done_at": "2026-10-03"
   },
   {
    "id": "T-V2-01",
