@@ -114,7 +114,7 @@ async function ready() {
     json<{ job_id: string; kind: string; credential_id: string | null } | null>(
       post("/bridge/take", { protocol: 4 }, B),
     );
-  return { H, B, store, list, take, member: claim };
+  return { H, B, store, list, take, member: claim, email };
 }
 
 describe("CHT-39-001 預けるときに 2 段階の種類を選べる（D-117.2）", () => {
@@ -170,6 +170,10 @@ describe("CHT-39-002 Bridge がコードの画面で止まって本人に頼む�
       kind: "code",
       text: "発注ナビ から届いたSMSのコードを入れてください",
     });
+    // メールでも知らせる（D-117.3 の通知・C6）。本文に値は無い（試験では宛先・種類・行き先だけ記録している）
+    const mail = sent.filter((m) => m.to === r.email && m.kind === "code");
+    expect(mail).toHaveLength(1);
+    expect(mail[0]!.url).toContain("/settings/credentials");
     expect(row.login_check).toMatchObject({ state: "running" });
     // まだ答えが無い
     expect(

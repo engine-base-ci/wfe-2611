@@ -54,7 +54,13 @@ export interface AuthExtDeps {
     /** 手元のフォルダから配る（署名と置き場が決まる前の橋渡し） */
     bridgeReleaseDir?: string;
   };
-  mailer?: (m: { to: string; subject: string; text: string; url: string; kind: "verify" | "reset" }) => Promise<void>;
+  mailer?: (m: {
+    to: string;
+    subject: string;
+    text: string;
+    url: string;
+    kind: "verify" | "reset" | "code";
+  }) => Promise<void>;
   /** 会話が変わった知らせ（D-113）。無ければ /agent/stream は 503 で、画面は見に行く形のまま */
   hub?: MemberHub | null;
 }
@@ -991,6 +997,25 @@ export function authExt(d: AuthExtDeps): Hono {
       JSON.stringify(payload),
     ]);
     if (!r.rows[0]?.ok) return bad(c, 404, "JOB_NOT_FOUND", "その仕事は動いていません");
+    // 2 段階のコード・承認を頼むときは、画面に出すだけでなくメールでも知らせる（D-117.3「承認待ち・通知」・関門 C6）。
+    //   送れなくても頼み自体は立つ（画面の行に出ている）。本文にコードや値は無い
+    if ((payload.tool === "TwoFactorCode" || payload.tool === "TwoFactorApprove") && d.mailer) {
+      const to =
+        (await d.appPool.query<{ v: string | null }>("select app.bridge_session_email($1) as v", [sid])).rows[0]?.v ??
+        null;
+      if (to) {
+        const url = `${d.config.webBaseUrl ?? ""}/settings/credentials`;
+        void d
+          .mailer({
+            to,
+            kind: "code",
+            url,
+            subject: `Kaname｜${payload.summary || "ログインの確認が要ります"}`,
+            text: `PC の Bridge が、預けたログイン情報でログインを試しています。\n\n${payload.summary}\n\n次のページで答えてください（10 分返事が無ければ止まり、押したときにもう一度試せます）:\n${url}\n\n入れたコードは PC の Bridge だけに渡り、AI にも記録にも残りません。`,
+          })
+          .catch(() => undefined);
+      }
+    }
     return c.json({ data: { ok: true } }, 201);
   });
   // Bridge が答えを取りに来る（無ければ null。勝手に許可しない）
