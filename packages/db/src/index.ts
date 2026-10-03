@@ -70,6 +70,7 @@ export const MIGRATIONS = [
   "0063_approval_once.sql",
   "0064_bridge_credential.sql",
   "0065_login_check.sql",
+  "0066_two_factor.sql",
 ] as const;
 
 /** migration 名の並びを検査する。重複・順序違い・4 桁でない名前があれば理由を返す。 */

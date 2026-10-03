@@ -101,11 +101,19 @@ describe("BRG-05-004 鍵を受け取る：値は use の中だけ。終わった
         totpSecret: "JBSWY3DPEHPK3PXP",
         serviceName: "発注ナビ",
         serviceDomain: null,
+        twoFactor: "none",
       });
       return `${c.login.length}`;
     });
     expect(out).toBe("14");
-    expect(held).toEqual({ login: "", password: "", totpSecret: null, serviceName: "発注ナビ", serviceDomain: null });
+    expect(held).toEqual({
+      login: "",
+      password: "",
+      totpSecret: null,
+      serviceName: "発注ナビ",
+      serviceDomain: null,
+      twoFactor: "none",
+    });
     // 頼み方：Bridge の鍵がヘッダに・仕事と資格情報の id が本文に。値は送っていない
     expect(seen).toHaveLength(1);
     expect(seen[0]!.path).toBe("/api/auth-ext/bridge/credentials/resolve");

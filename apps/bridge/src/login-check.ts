@@ -8,8 +8,10 @@ import { createRequire } from "node:module";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { CredentialError, redact, withCredential, type Credential, type VaultDeps } from "./vault";
+import { ANSWER_WAIT_MS, askPerson, totpCode } from "./two-factor";
 
-export type LoginCheckState = "ok" | "bad_password" | "needs_2fa" | "captcha" | "unreachable" | "no_form" | "stopped";
+export type LoginCheckState =
+  "ok" | "bad_password" | "needs_2fa" | "bad_code" | "captcha" | "unreachable" | "no_form" | "stopped" | "no_answer";
 export interface LoginCheckResult {
   state: LoginCheckState;
   /** 本人に見せる理由と一手（値は含まない） */
@@ -20,8 +22,12 @@ export interface LoginCheckDeps extends VaultDeps {
   dataDir: string;
   /** 試験だけ true（本人の画面では見えるように動かす） */
   headless?: boolean;
-  /** 全体の上限（既定 90 秒） */
+  /** 全体の上限（既定：返事を待つ上限 ＋ 2 分） */
   timeoutMs?: number;
+  /** 本人の返事（コード・承認）を待つ上限（既定 10 分・D-117.5） */
+  answerWaitMs?: number;
+  /** 返事を取りに行く間隔（既定 2 秒） */
+  pollMs?: number;
 }
 
 // playwright-core の、ここで使う分だけの型（直接の依存に足さず、@playwright/mcp が持つものを借りる）
@@ -34,6 +40,7 @@ interface Locator {
   click(o?: { timeout?: number }): Promise<void>;
   getAttribute(n: string): Promise<string | null>;
   nth(i: number): Locator;
+  innerText(): Promise<string>;
 }
 interface Page {
   goto(url: string, o?: { waitUntil?: string; timeout?: number }): Promise<unknown>;
@@ -131,13 +138,123 @@ async function hasCaptcha(page: Page): Promise<boolean> {
 async function userField(page: Page): Promise<Locator | null> {
   return visible(page, USER_SEL);
 }
+/** 画面に見えている文字（script や隠れた中身を含まない。2026-10-03：page.content() は承認後も「承認」を含んでいた） */
+const bodyText = async (page: Page): Promise<string> =>
+  page
+    .locator("body")
+    .innerText()
+    .catch(() => "");
 const settle = async (page: Page): Promise<void> => {
   await page.waitForLoadState("networkidle", { timeout: 15_000 }).catch(() => undefined);
   await page.waitForTimeout(500);
 };
 
+const TWO_FACTOR_LABEL: Record<Credential["twoFactor"], string> = {
+  none: "",
+  totp: "認証アプリ",
+  sms: "SMS",
+  email: "メール",
+  push: "スマホ",
+};
+const PUSH_WAIT_MS = 60_000;
+const PUSH_TEXT = /承認|approve|確認してください|notification|通知/i;
+const NO_ANSWER = {
+  state: "no_answer" as const,
+  detail: "10 分返事が無かったので止めました。いるときに「もう一度試す」を押してください（勝手には試しません）",
+};
+
+/** 2 段階の画面に来た（コードの欄がある・スマホの承認を待っている）ときの扱い（D-117.2〜D-117.5・D-017.2・D-017.4） */
+async function secondFactor(
+  page: Page,
+  c: Credential,
+  d: LoginCheckDeps,
+  jobId: string,
+  otp: Locator | null,
+): Promise<LoginCheckResult> {
+  const service = c.serviceName ?? c.serviceDomain ?? "サービス";
+  const ask = {
+    apiBase: d.apiBase,
+    sessionId: d.sessionId,
+    ...(d.answerWaitMs ? { answerWaitMs: d.answerWaitMs } : {}),
+    ...(d.pollMs ? { pollMs: d.pollMs } : {}),
+  };
+  if (c.twoFactor === "none")
+    return {
+      state: "needs_2fa",
+      detail:
+        "2 段階認証のコードを求められました。2 段階の種類を選んで預け直してください（認証アプリは鍵から自動で入れます）",
+    };
+  if (c.twoFactor === "push") {
+    // スマホで承認：本人に頼み、承認したと言ったらサービスが進むのを待つ
+    const ok = await askPerson(ask, jobId, "approve", `${service} のログインをスマホで承認してください`);
+    if (!ok) return NO_ANSWER;
+    const until = Date.now() + PUSH_WAIT_MS;
+    while (Date.now() < until) {
+      await settle(page);
+      const text = await bodyText(page);
+      if (!(await visible(page, [PASS_SEL])) && !(await visible(page, OTP_SEL)) && !PUSH_TEXT.test(text))
+        return { state: "ok", detail: "ログインできました（スマホで承認・入れたらそのまま出ました）" };
+      await page.waitForTimeout(2_000);
+    }
+    return {
+      state: "bad_code",
+      detail: "承認が確認できませんでした。スマホで承認してから「もう一度試す」を押してください",
+    };
+  }
+  if (!otp)
+    return {
+      state: "needs_2fa",
+      detail: "2 段階認証のコードの欄が見つかりませんでした。ログイン画面の URL を入れて預け直してください",
+    };
+  let code: string | null;
+  if (c.twoFactor === "totp") {
+    if (!c.totpSecret)
+      return {
+        state: "needs_2fa",
+        detail: "認証アプリの鍵を預かっていません。登録時に出た秘密鍵を入れて預け直してください",
+      };
+    code = totpCode(c.totpSecret);
+  } else {
+    code = await askPerson(
+      ask,
+      jobId,
+      "code",
+      `${service} から届いた${TWO_FACTOR_LABEL[c.twoFactor]}のコードを入れてください`,
+    );
+    if (!code) return NO_ANSWER;
+  }
+  await otp.fill(code);
+  await otp.press("Enter");
+  await settle(page);
+  if (await visible(page, OTP_SEL))
+    return c.twoFactor === "totp"
+      ? { state: "bad_code", detail: "認証アプリのコードが通りませんでした。鍵（秘密鍵）を確かめて預け直してください" }
+      : {
+          state: "bad_code",
+          detail: "入れたコードが通りませんでした。届いたコードを確かめて「もう一度試す」を押してください",
+        };
+  if (await visible(page, [PASS_SEL]))
+    return {
+      state: "bad_password",
+      detail: "ログイン名かパスワードが違うようです（サービスが受け付けませんでした）。確かめて預け直してください",
+    };
+  return {
+    state: "ok",
+    detail:
+      c.twoFactor === "totp"
+        ? "ログインできました（認証アプリのコードは自動で入れました）"
+        : "ログインできました（入れてもらったコードで通りました）",
+  };
+}
+
 /** 1 回だけ入ってみる。値は c の中にだけある。戻り値・例外の文に値を混ぜない */
-async function attempt(page: Page, url: string, c: Credential): Promise<LoginCheckResult> {
+async function attempt(
+  page: Page,
+  url: string,
+  c: Credential,
+  d: LoginCheckDeps,
+  jobId: string,
+): Promise<LoginCheckResult> {
   try {
     await page.goto(url, { waitUntil: "domcontentloaded", timeout: 30_000 });
   } catch {
@@ -199,18 +316,16 @@ async function attempt(page: Page, url: string, c: Credential): Promise<LoginChe
       state: "captcha",
       detail: "CAPTCHA（ロボットでない確認）が出るサービスです。一度ご自身でログインしてから預け直してください",
     };
-  if (await visible(page, OTP_SEL))
-    return {
-      state: "needs_2fa",
-      detail:
-        "2 段階認証のコードを求められました。2 段階の種類を選んで預け直してください（認証アプリは鍵から自動で入れます）",
-    };
+  const otp = await visible(page, OTP_SEL);
+  if (otp) return secondFactor(page, c, d, jobId, otp);
   const stillPass = await visible(page, [PASS_SEL]);
   if (stillPass && (page.url() === before || !(await visible(page, OTP_SEL))))
     return {
       state: "bad_password",
       detail: "ログイン名かパスワードが違うようです（サービスが受け付けませんでした）。確かめて預け直してください",
     };
+  // スマホで承認のサービスは、パスワードの後に「承認してください」の画面で止まる（コードの欄は無い）
+  if (c.twoFactor === "push" && PUSH_TEXT.test(await bodyText(page))) return secondFactor(page, c, d, jobId, null);
   return { state: "ok", detail: "ログインできました（入れたらそのまま出ました）" };
 }
 
@@ -244,7 +359,7 @@ export async function runLoginCheck(d: LoginCheckDeps, jobId: string, credential
   const profileDir = join(d.dataDir, "browser-profile"); // AI の専用ブラウザと同じ置き場（通したログインを残す・D-117.4）
   mkdirSync(profileDir, { recursive: true });
   noPasswordManager(profileDir);
-  const limit = d.timeoutMs ?? 90_000;
+  const limit = d.timeoutMs ?? (d.answerWaitMs ?? ANSWER_WAIT_MS) + 120_000;
   let ctx: Context | null = null;
   try {
     return await withCredential(d, jobId, credentialId, async (c) => {
@@ -276,7 +391,7 @@ export async function runLoginCheck(d: LoginCheckDeps, jobId: string, credential
           limit,
         ),
       );
-      const r = await Promise.race([attempt(page, url, c), timer]);
+      const r = await Promise.race([attempt(page, url, c, d, jobId), timer]);
       // 入れた欄を画面に残さない（タブの復元・保存の確認に値を渡さない）。ログインの状態（Cookie）は残る
       await page.goto("about:blank", { timeout: 5_000 }).catch(() => undefined);
       // 文の中に値が紛れていないことを最後に確かめる（無いはずだが、最後の砦）

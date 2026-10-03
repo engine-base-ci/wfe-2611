@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-03T12:06:33",
+ "generated_at": "2026-10-03T13:43:51",
  "inputs": {
   "tickets": "07_tasks/tickets.json",
   "roster": "07_tasks/roster.json",
@@ -16,18 +16,18 @@
  "summary": {
   "as_of": "2026-10-03",
   "by_status": {
-   "done": 110,
-   "todo": 104
+   "done": 111,
+   "todo": 103
   },
-  "hours_done": 816.4,
+  "hours_done": 819.4,
   "hours_total": 1226.3,
   "progress_pct": 67,
   "epic": 16,
   "story": 214,
-  "subtask": 6024,
+  "subtask": 6027,
   "subtask_by": {
    "impl": 612,
-   "test": 5129,
+   "test": 5132,
    "mock": 283
   },
   "critical_path": [
@@ -42,7 +42,7 @@
   "cycle": [],
   "ghost_dependencies": [],
   "unassignable": [],
-  "tentative": 12,
+  "tentative": 11,
   "assigned": 169,
   "broken_links": [],
   "milestone_overrun": [],
@@ -58,7 +58,7 @@
    "claude-01": 37.8,
    "claude-02": 39.8,
    "claude-03": 45.8,
-   "claude-04": 11.7,
+   "claude-04": 8.7,
    "claude-05": 9.0,
    "claude-06": 24.4,
    "claude-07": 24.1,
@@ -10849,6 +10849,9 @@
     "T-U-10.t62",
     "T-U-10.t63",
     "T-U-10.t64",
+    "T-U-10.t65",
+    "T-U-10.t66",
+    "T-U-10.t67",
     "T-U-10.m1"
    ],
    "depends_on": [
@@ -10946,13 +10949,16 @@
      "SCR-CREDENTIALS-038",
      "SCR-CREDENTIALS-039",
      "SCR-CREDENTIALS-040",
+     "SCR-CREDENTIALS-052",
+     "SCR-CREDENTIALS-053",
      "SCR-CREDENTIALS-041",
      "SCR-CREDENTIALS-050",
      "SCR-CREDENTIALS-042",
      "SCR-CREDENTIALS-043",
      "SCR-CREDENTIALS-044",
      "SCR-CREDENTIALS-048",
-     "SCR-CREDENTIALS-045",
+     "SCR-CREDENTIALS-054",
+     "SCR-CREDENTIALS-055",
      "SCR-CREDENTIALS-051",
      "SCR-CREDENTIALS-046",
      "SCR-CREDENTIALS-047",
@@ -27015,10 +27021,10 @@
    "layer": "backend",
    "estimate_hours": 3.0,
    "estimate_default": false,
-   "start": "2026-10-06",
-   "finish": "2026-10-06",
+   "start": "2026-10-03",
+   "finish": "2026-10-03",
    "critical": false,
-   "tentative": true,
+   "tentative": false,
    "assignable": [
     "takamoto",
     "claude-01",
@@ -27029,7 +27035,7 @@
    ],
    "assignee": null,
    "assigned_by": null,
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -27065,9 +27071,9 @@
    },
    "delta": "unchanged",
    "dropped_reason": null,
-   "done_at": null,
+   "done_at": "2026-10-03",
    "started_at": null,
-   "tentative_assignee": "claude-04"
+   "actual": true
   },
   {
    "id": "T-B-40",
@@ -56261,6 +56267,32 @@
    "id": "T-U-10.t37",
    "kind": "subtask",
    "sub": "test",
+   "title": "L1 SCR-CREDENTIALS-052 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-10",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-CREDENTIALS-052"
+    ]
+   }
+  },
+  {
+   "id": "T-U-10.t38",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-CREDENTIALS-053 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-10",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-CREDENTIALS-053"
+    ]
+   }
+  },
+  {
+   "id": "T-U-10.t39",
+   "kind": "subtask",
+   "sub": "test",
    "title": "L1 SCR-CREDENTIALS-041 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-U-10",
    "status": "todo",
@@ -56271,7 +56303,7 @@
    }
   },
   {
-   "id": "T-U-10.t38",
+   "id": "T-U-10.t40",
    "kind": "subtask",
    "sub": "test",
    "title": "L1 SCR-CREDENTIALS-050 を staging で流して PASS/BLOCKED を正本に書く",
@@ -56284,7 +56316,7 @@
    }
   },
   {
-   "id": "T-U-10.t39",
+   "id": "T-U-10.t41",
    "kind": "subtask",
    "sub": "test",
    "title": "L1 SCR-CREDENTIALS-042 を staging で流して PASS/BLOCKED を正本に書く",
@@ -56297,7 +56329,7 @@
    }
   },
   {
-   "id": "T-U-10.t40",
+   "id": "T-U-10.t42",
    "kind": "subtask",
    "sub": "test",
    "title": "L1 SCR-CREDENTIALS-043 を staging で流して PASS/BLOCKED を正本に書く",
@@ -56310,7 +56342,7 @@
    }
   },
   {
-   "id": "T-U-10.t41",
+   "id": "T-U-10.t43",
    "kind": "subtask",
    "sub": "test",
    "title": "L1 SCR-CREDENTIALS-044 を staging で流して PASS/BLOCKED を正本に書く",
@@ -56323,7 +56355,7 @@
    }
   },
   {
-   "id": "T-U-10.t42",
+   "id": "T-U-10.t44",
    "kind": "subtask",
    "sub": "test",
    "title": "L1 SCR-CREDENTIALS-048 を staging で流して PASS/BLOCKED を正本に書く",
@@ -56336,20 +56368,33 @@
    }
   },
   {
-   "id": "T-U-10.t43",
+   "id": "T-U-10.t45",
    "kind": "subtask",
    "sub": "test",
-   "title": "L1 SCR-CREDENTIALS-045 を staging で流して PASS/BLOCKED を正本に書く",
+   "title": "L1 SCR-CREDENTIALS-054 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-U-10",
    "status": "todo",
    "links": {
     "qa_rows": [
-     "SCR-CREDENTIALS-045"
+     "SCR-CREDENTIALS-054"
     ]
    }
   },
   {
-   "id": "T-U-10.t44",
+   "id": "T-U-10.t46",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 SCR-CREDENTIALS-055 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-U-10",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "SCR-CREDENTIALS-055"
+    ]
+   }
+  },
+  {
+   "id": "T-U-10.t47",
    "kind": "subtask",
    "sub": "test",
    "title": "L1 SCR-CREDENTIALS-051 を staging で流して PASS/BLOCKED を正本に書く",
@@ -56362,7 +56407,7 @@
    }
   },
   {
-   "id": "T-U-10.t45",
+   "id": "T-U-10.t48",
    "kind": "subtask",
    "sub": "test",
    "title": "L1 SCR-CREDENTIALS-046 を staging で流して PASS/BLOCKED を正本に書く",
@@ -56375,7 +56420,7 @@
    }
   },
   {
-   "id": "T-U-10.t46",
+   "id": "T-U-10.t49",
    "kind": "subtask",
    "sub": "test",
    "title": "L1 SCR-CREDENTIALS-047 を staging で流して PASS/BLOCKED を正本に書く",
@@ -56388,7 +56433,7 @@
    }
   },
   {
-   "id": "T-U-10.t47",
+   "id": "T-U-10.t50",
    "kind": "subtask",
    "sub": "test",
    "title": "L1 E-DATA-001-A を staging で流して PASS/BLOCKED を正本に書く",
@@ -56401,7 +56446,7 @@
    }
   },
   {
-   "id": "T-U-10.t48",
+   "id": "T-U-10.t51",
    "kind": "subtask",
    "sub": "test",
    "title": "L1 E-DATA-001-B を staging で流して PASS/BLOCKED を正本に書く",
@@ -56414,7 +56459,7 @@
    }
   },
   {
-   "id": "T-U-10.t49",
+   "id": "T-U-10.t52",
    "kind": "subtask",
    "sub": "test",
    "title": "L1 E-DATA-001-C を staging で流して PASS/BLOCKED を正本に書く",
@@ -56427,7 +56472,7 @@
    }
   },
   {
-   "id": "T-U-10.t50",
+   "id": "T-U-10.t53",
    "kind": "subtask",
    "sub": "test",
    "title": "L1 E-GATE-003-A を staging で流して PASS/BLOCKED を正本に書く",
@@ -56440,7 +56485,7 @@
    }
   },
   {
-   "id": "T-U-10.t51",
+   "id": "T-U-10.t54",
    "kind": "subtask",
    "sub": "test",
    "title": "L1 E-GATE-003-B を staging で流して PASS/BLOCKED を正本に書く",
@@ -56453,7 +56498,7 @@
    }
   },
   {
-   "id": "T-U-10.t52",
+   "id": "T-U-10.t55",
    "kind": "subtask",
    "sub": "test",
    "title": "L1 E-GATE-003-C を staging で流して PASS/BLOCKED を正本に書く",
@@ -56466,7 +56511,7 @@
    }
   },
   {
-   "id": "T-U-10.t53",
+   "id": "T-U-10.t56",
    "kind": "subtask",
    "sub": "test",
    "title": "L1 E-SEC-001-A を staging で流して PASS/BLOCKED を正本に書く",
@@ -56479,7 +56524,7 @@
    }
   },
   {
-   "id": "T-U-10.t54",
+   "id": "T-U-10.t57",
    "kind": "subtask",
    "sub": "test",
    "title": "L1 E-SEC-001-B を staging で流して PASS/BLOCKED を正本に書く",
@@ -56492,7 +56537,7 @@
    }
   },
   {
-   "id": "T-U-10.t55",
+   "id": "T-U-10.t58",
    "kind": "subtask",
    "sub": "test",
    "title": "L1 E-SEC-001-C を staging で流して PASS/BLOCKED を正本に書く",
@@ -56505,7 +56550,7 @@
    }
   },
   {
-   "id": "T-U-10.t56",
+   "id": "T-U-10.t59",
    "kind": "subtask",
    "sub": "test",
    "title": "L1 E-SEC-002-A を staging で流して PASS/BLOCKED を正本に書く",
@@ -56518,7 +56563,7 @@
    }
   },
   {
-   "id": "T-U-10.t57",
+   "id": "T-U-10.t60",
    "kind": "subtask",
    "sub": "test",
    "title": "L1 E-SEC-002-B を staging で流して PASS/BLOCKED を正本に書く",
@@ -56531,7 +56576,7 @@
    }
   },
   {
-   "id": "T-U-10.t58",
+   "id": "T-U-10.t61",
    "kind": "subtask",
    "sub": "test",
    "title": "L1 E-SEC-002-C を staging で流して PASS/BLOCKED を正本に書く",
@@ -56544,7 +56589,7 @@
    }
   },
   {
-   "id": "T-U-10.t59",
+   "id": "T-U-10.t62",
    "kind": "subtask",
    "sub": "test",
    "title": "L1 E-SEC-003-A を staging で流して PASS/BLOCKED を正本に書く",
@@ -56557,7 +56602,7 @@
    }
   },
   {
-   "id": "T-U-10.t60",
+   "id": "T-U-10.t63",
    "kind": "subtask",
    "sub": "test",
    "title": "L1 E-SEC-003-B を staging で流して PASS/BLOCKED を正本に書く",
@@ -56570,7 +56615,7 @@
    }
   },
   {
-   "id": "T-U-10.t61",
+   "id": "T-U-10.t64",
    "kind": "subtask",
    "sub": "test",
    "title": "L1 E-SEC-003-C を staging で流して PASS/BLOCKED を正本に書く",
@@ -56583,7 +56628,7 @@
    }
   },
   {
-   "id": "T-U-10.t62",
+   "id": "T-U-10.t65",
    "kind": "subtask",
    "sub": "test",
    "title": "L1 E-VAL-003-A を staging で流して PASS/BLOCKED を正本に書く",
@@ -56596,7 +56641,7 @@
    }
   },
   {
-   "id": "T-U-10.t63",
+   "id": "T-U-10.t66",
    "kind": "subtask",
    "sub": "test",
    "title": "L1 E-VAL-003-B を staging で流して PASS/BLOCKED を正本に書く",
@@ -56609,7 +56654,7 @@
    }
   },
   {
-   "id": "T-U-10.t64",
+   "id": "T-U-10.t67",
    "kind": "subtask",
    "sub": "test",
    "title": "L1 E-VAL-003-C を staging で流して PASS/BLOCKED を正本に書く",
@@ -105576,7 +105621,7 @@
    "sub": "impl",
    "title": "apps/bridge/src/two-factor.ts (new)",
    "parent": "T-B-39",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/bridge/src/two-factor.ts (new)"
@@ -105589,7 +105634,7 @@
    "sub": "impl",
    "title": "apps/web/app/(app)/settings/credentials/page.tsx (new)",
    "parent": "T-B-39",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/app/(app)/settings/credentials/page.tsx (new)"
@@ -105602,7 +105647,7 @@
    "sub": "impl",
    "title": "apps/web/tests/screens/credentials.spec.ts (new)",
    "parent": "T-B-39",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/tests/screens/credentials.spec.ts (new)"

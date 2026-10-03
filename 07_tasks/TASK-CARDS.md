@@ -4,7 +4,7 @@
 
 - 総タスク数：214（A 28 / B 40 / D 14 / F 18 / I 22 / S 15 / U-screen 64 / U-shared 8 / V2 5）
 - 画面の被覆：64/64
-- L1 テスト行：5129（正本 07_qa/test-specs）／ 流れ（L2）：9
+- L1 テスト行：5132（正本 07_qa/test-specs）／ 流れ（L2）：9
 - 工数：Human 6284.5 h（786 日）／ AI 計算 1138.3 h ＋ 人のレビュー 88.0 h → wall-clock 334.8 h（56 日・並列 10）
 - Wave 数：34
 
@@ -166,7 +166,7 @@
 | T-U-07 | 画面 自分のAIと話す（5 状態・R1/R2） | frontend | ui | 19.5 | 1.9 | 1.9 | 20 | 9 | 58 |
 | T-U-08 | 画面 たたき台を確かめる（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 20 | 12 | 52 |
 | T-U-09 | 画面 自分のPCをつなぐ（11 状態・R1/R2） | frontend | ui | 34.5 | 3.5 | 3.5 | 20 | 9 | 85 |
-| T-U-10 | 画面 ログイン情報を預ける（5 状態・R1/R2） | frontend | ui | 19.5 | 1.9 | 1.9 | 20 | 8 | 64 |
+| T-U-10 | 画面 ログイン情報を預ける（5 状態・R1/R2） | frontend | ui | 19.5 | 1.9 | 1.9 | 20 | 8 | 67 |
 | T-U-11 | 画面 テストで動かす（3 状態・R1/R2） | frontend | ui | 14.5 | 1.4 | 1.4 | 21 | 8 | 41 |
 | T-U-12 | 画面 本番に切り替える（2 状態・R1/R2） | frontend | ui | 12.0 | 1.2 | 1.2 | 21 | 12 | 34 |
 | T-U-13 | 画面 今日（6 状態・R1/R2/R3/R4） | frontend | ui | 25.0 | 2.5 | 2.5 | 21 | 9 | 114 |
@@ -1192,7 +1192,7 @@
 - 触るファイル：apps/web/app/(app)/settings/credentials/page.tsx (new)、apps/web/tests/screens/credentials.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 credentials は URL /settings/credentials で開く（apps/web/app/(app)/se ／ STATE-DRIVEN: WHILE 画面 credentials が描画中 THEN h1「ログイン情報を預ける」・第2ナビ 預けたもの / 自動操作の可否
 - AC（Tier 2）：EVENT-DRIVEN: WHEN POST /api/v1/credentials が「使うサービスを選びログイン情報を入れる」として呼ばれたとき THEN ／ UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない） ／ EVENT-DRIVEN: WHEN 「保存する」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する
-- L1 行 64（['SCR-CREDENTIALS-001', 'SCR-CREDENTIALS-002', 'SCR-CREDENTIALS-003'] …）／ L2 ['J-02']
+- L1 行 67（['SCR-CREDENTIALS-001', 'SCR-CREDENTIALS-002', 'SCR-CREDENTIALS-003'] …）／ L2 ['J-02']
 - audit: 07_tasks/audit/T-U-10.md
 
 ### T-U-11 画面 テストで動かす（3 状態・R1/R2）
@@ -2751,7 +2751,7 @@
 - 根拠（逐語）：D-117「ログイン情報を預けたら、Bridge がそのサービスに 1 回だけログインして、入れたらそのまま出る（ほかの操作はしない」 ／ D-017「vaultにID/PW＋TOTPシークレットを暗号化保管し実行器が直接入力。AIには一切渡さない(参照IDのみ)」
 - 触るファイル：apps/bridge/src/two-factor.ts (new)、apps/web/app/(app)/settings/credentials/page.tsx (new)、apps/web/tests/screens/credentials.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 2 段階認証（種類を選ぶ・認証アプリは鍵で自動・SMS／メール／スマホ承認はその の成果物があり、type-check と build 
-- AC（Tier 2）：EVENT-DRIVEN: WHEN 承認待ちでコードを入れる（実ブラウザ）、システムは ログインが通り、コードは AI の会話にも記録にも出ない ／ UNWANTED: IF コードを頼んだまま 10 分、システムは 仕事が理由つきで止まり、何度も試さない
+- AC（Tier 2）：EVENT-DRIVEN: WHEN ①サービスに http://127.0.0.1:3124/dev/fake-login?mode=sms&dev=手元1・ ／ UNWANTED: IF コードを頼んだまま 10 分（自動テストは 20 秒）、システムは 仕事が理由つきで止まり（「返事が無かったので止めました」）、何度も
 - L1 行 4（['CHT-39-001', 'CHT-39-002', 'CHT-39-003'] …）／ L2 —
 - audit: 07_tasks/audit/T-B-39.md
 

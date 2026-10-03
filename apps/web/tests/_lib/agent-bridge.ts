@@ -13,7 +13,10 @@ export interface AgentBridge {
 }
 /** この人の PC をつないだことにして、Bridge の輪を回し始める。stop() で止める（PC を閉じた）
  *  browser を渡すと、Bridge の窓でそのブラウザを選んだことにする（D-119.2）。自己診断は本物の判定（browser.ts）で返す */
-export async function startAgentBridge(token: string, opts: { browser?: "chrome" | "dedicated" | "off" } = {}): Promise<AgentBridge> {
+export async function startAgentBridge(
+  token: string,
+  opts: { browser?: "chrome" | "dedicated" | "off" } = {},
+): Promise<AgentBridge> {
   process.env["KANAME_CLAUDE_BIN"] = join(ROOT, "scripts/dev/fake-claude-demo.mjs");
   // Bridge の輪（loop.js）と同じ場所から読む。試験の側から別に読むと、Playwright では runner が 2 つになり、
   // 輪が覚えた Chrome のつながりを試験の側が読めない（2026-09-30 実例）
@@ -26,7 +29,12 @@ export async function startAgentBridge(token: string, opts: { browser?: "chrome"
   runner.forgetClaude();
   runner.forgetChromeState();
   const { browserCheck } = fromLoop("./browser.js") as {
-    browserCheck: (c: "chrome" | "dedicated" | "off", hasChrome: boolean, seen: { status: string; at: number } | null, hasPw: boolean) => unknown;
+    browserCheck: (
+      c: "chrome" | "dedicated" | "off",
+      hasChrome: boolean,
+      seen: { status: string; at: number } | null,
+      hasPw: boolean,
+    ) => unknown;
   };
   const { startLoop } = fromLoop("./loop.js") as {
     startLoop: (d: {
@@ -37,6 +45,7 @@ export async function startAgentBridge(token: string, opts: { browser?: "chrome"
       onGone: () => void;
       onBrowser?: (b: "chrome" | "dedicated" | "off") => void;
       loginCheckHeadless?: boolean;
+      loginCheckAnswerWaitMs?: number;
     }) => () => void;
   };
   const sid = await claimBridge(token);
@@ -54,6 +63,7 @@ export async function startAgentBridge(token: string, opts: { browser?: "chrome"
     apiBase: API,
     sessionId: () => sid,
     loginCheckHeadless: true, // 試験では Chrome の窓を出さない（T-B-38）
+    loginCheckAnswerWaitMs: Number(process.env["KANAME_TEST_ANSWER_WAIT_MS"] ?? 20_000), // 試験では 10 分待たない（T-B-39）
     health: async () => (current ? [browserCheck(current, true, runner.chromeState(), true)] : []),
     onChange: () => undefined,
     onGone: () => undefined,

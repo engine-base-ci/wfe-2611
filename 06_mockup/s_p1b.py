@@ -144,6 +144,7 @@ _cr = grid([
     table(["サービス","自動操作","状態","1 回のログイン"], [
       _svc_row("発注ナビ","案件の入口","allowed", pill("預けた · 預かり先の番号 cr_8a21","ne","key"), pill("ログインできました","su","check")),
       _svc_row("imitsu","見積の入口","unspecified", pill("預けた · 預かり先の番号 cr_3f07","ne","key"), pill("ログイン名かパスワードが違うようです","da","alert") + '<div class="muted" style="font-size:12px;margin-top:4px">サービスが受け付けませんでした。確かめて預け直してください</div>'),
+      _svc_row("楽楽精算","経費の入口","allowed", pill("預けた · 預かり先の番号 cr_9c12","ne","key"), pill("ログインを試しています…","ne","clock") + '<div class="ai" style="margin-top:8px"><div class="ai-h">' + ic("smartphone") + '楽楽精算 から届いた SMS のコードを入れてください</div><div style="display:flex;gap:8px;align-items:center;margin-top:6px">' + inp("","6 桁","text","","max-width:160px") + btn("送る","p") + '</div><div class="muted" style="font-size:12px;margin-top:6px">入れたコードは PC の Bridge だけに渡り、AI にも記録にも残りません</div></div>'),
       _svc_row("Google Workspace","メール・カレンダー","api", pill("連携済み（OAuth）","ne","check"), '<span class="muted" style="font-size:12px">—</span>'),
       _svc_row("freee","会計・請求","api", pill("連携済み（正規API）","ne","check"), '<span class="muted" style="font-size:12px">—</span>'),
     ])) +
@@ -172,7 +173,8 @@ _cr_in = grid([
     note("ここに入れた値は、<b>この画面を閉じた後は誰にも表示されません</b>。あなたにも、高本AIにも。", "primary") +
     field("メールアドレス（ログイン名）", inp("info@engine-base.com")) +
     field("パスワード", inp("••••••••••","","password")) +
-    field("2段階認証のシークレット（あれば）", inp("","JBSW Y3DP ...","text","","font-family:var(--font-code)"), "認証アプリの登録時に出る文字列。Bridge が6桁を生成します") +
+    field("2段階認証", '<select class="inp"><option>なし</option><option selected>認証アプリ（Google Authenticator など）</option><option>SMS で届くコード</option><option>メールで届くコード</option><option>スマホで承認</option></select>', "鍵を預かり、Bridge が 6 桁を作って入れます。あなたに頼みません") +
+    field("認証アプリの秘密鍵", inp("","JBSW Y3DP ...","text","","font-family:var(--font-code)"), "認証アプリの登録時に出る文字列。Bridge が6桁を生成します") +
     '<div style="display:flex;gap:9px;margin-top:6px">' + btn("保存する","p","lock") + btn("やめる","g") + '</div>'),
   card(head("保存されたあと") + kv([("あなたに見えるもの","預かり先の番号 <span style='font-family:var(--font-code)'>cr_8a21</span> と最終使用日"),
     ("AIに渡るもの","預かり先の番号だけ"),("入力するのは","Bridge（あなたのPC）"),("消したいとき","この画面から1回で消える。証跡は残る")]))], "g2")

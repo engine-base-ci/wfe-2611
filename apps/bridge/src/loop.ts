@@ -66,6 +66,8 @@ export interface LoopDeps {
   onBrowser?: (b: Browser) => void;
   /** 試験だけ：1 回のログインを画面に出さずに動かす（本人の PC では出す・D-119.6） */
   loginCheckHeadless?: boolean;
+  /** 試験だけ：2 段階のコード・承認の返事を待つ上限（本人の PC では 10 分・D-117.5） */
+  loginCheckAnswerWaitMs?: number;
 }
 export type Browser = "chrome" | "dedicated" | "off";
 
@@ -168,7 +170,13 @@ export function startLoop(d: LoopDeps): () => void {
     // 預けたログイン情報で 1 回だけ入ってみる仕事（D-117.1）：AI は起こさない。鍵は受け取り口の中だけ。結果は種類と理由だけを返す
     if (job.kind === "login_check" && job.credential_id) {
       const r = await runLoginCheck(
-        { apiBase: d.apiBase, sessionId: d.sessionId, dataDir: d.dataDir ?? join(tmpdir(), "kaname-bridge"), ...(d.loginCheckHeadless ? { headless: true } : {}) },
+        {
+          apiBase: d.apiBase,
+          sessionId: d.sessionId,
+          dataDir: d.dataDir ?? join(tmpdir(), "kaname-bridge"),
+          ...(d.loginCheckHeadless ? { headless: true } : {}),
+          ...(d.loginCheckAnswerWaitMs ? { answerWaitMs: d.loginCheckAnswerWaitMs, pollMs: 1_000 } : {}),
+        },
         job.job_id,
         job.credential_id,
       );
@@ -253,7 +261,8 @@ export function startLoop(d: LoopDeps): () => void {
     // AI が使うブラウザ（D-119）。専用のブラウザはログインの状態を Bridge の置き場に持ち続ける（tmp に置かない）
     const browser = browserFor(job, d.browser?.());
     let browserWasOff = false; // 使えなかったか（知らせは 1 回）
-    const dedicated = browser === "dedicated" ? dedicatedBrowser(d.dataDir ?? join(tmpdir(), "kaname-bridge"), process.execPath) : null;
+    const dedicated =
+      browser === "dedicated" ? dedicatedBrowser(d.dataDir ?? join(tmpdir(), "kaname-bridge"), process.execPath) : null;
     const f: Finish = await runClaude(
       { ...job, prompt, browser },
       {

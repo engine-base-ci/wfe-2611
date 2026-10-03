@@ -152,6 +152,7 @@ describe("BRG-05-004 鍵を受け取る：本人の Bridge・動いている仕�
       totp_secret: "JBSWY3DPEHPK3PXP",
       service_name: "発注ナビ",
       service_domain: null, // 名前だけで預けた（URL ではない）
+      two_factor: "totp", // 鍵（totp_secret）を入れて預けたので認証アプリ
     });
     const a = await auditsOf(r.member.tenant_id, r.credId);
     expect(a.map((x) => [x.action, x.choke_point_id])).toEqual([["credential.bridge_resolve", "C8"]]);

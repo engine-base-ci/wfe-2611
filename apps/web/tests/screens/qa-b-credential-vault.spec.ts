@@ -34,7 +34,8 @@ async function stored(page: import("@playwright/test").Page) {
   await page.getByRole("button", { name: "ログイン情報を入れる" }).click();
   await page.getByLabel("メールアドレス（ログイン名）").fill("me@example.com");
   await page.getByLabel("パスワード", { exact: true }).fill(PASSWORD);
-  await page.getByLabel("2段階認証のシークレット（あれば）").fill(TOTP);
+  await page.locator("[data-two-factor]").selectOption("totp");
+  await page.getByLabel("認証アプリの秘密鍵").fill(TOTP);
   await page.getByRole("button", { name: "保存する" }).click();
   await expect(page.locator("[data-state='n']")).toContainText("発注ナビ", { timeout: 15_000 });
   const cred = (
@@ -86,6 +87,7 @@ test("BRG-05-004 画面で預けたログイン情報を、本人の Bridge が�
     totpSecret: TOTP,
     serviceName: "発注ナビ",
     serviceDomain: null,
+    twoFactor: "totp",
   });
   // 使い終わったら消えている
   expect(held).toMatchObject({ login: "", password: "", totpSecret: null });

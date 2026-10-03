@@ -7,7 +7,17 @@ import { WizardLayout } from "@/components/wizard/wizard-layout";
 import { WIZARD_EXISTING } from "@/components/wizard/existing";
 import { RequireSession } from "@/lib/auth/session";
 import { RequireRole } from "@/lib/auth/role";
-import { AuthExtError, myCredentials, storeCredential, type LoginCheckState, type MyCredential, type Verdict } from "@/lib/auth/ext";
+import {
+  AuthExtError,
+  answerCredential,
+  myCredentials,
+  retryLoginCheck,
+  storeCredential,
+  type LoginCheckState,
+  type MyCredential,
+  type TwoFactorKind,
+  type Verdict,
+} from "@/lib/auth/ext";
 import { useMarkStep } from "@/lib/onboarding";
 import { Ban, Check, KeyRound, Lock, Plus, ShieldCheck } from "lucide-react";
 
@@ -33,7 +43,13 @@ function Credentials() {
     queryKey: ["my-credentials"],
     queryFn: myCredentials,
     // 預けた直後は Bridge が 1 回ログインを試している（D-117.1）。終わるまで 2 秒ごとに読み直す
-    refetchInterval: (q) => ((q.state.data ?? []).some((r) => r.login_check && ["pending", "running"].includes(r.login_check.state)) ? 2000 : false),
+    // コードを頼まれている間（asking）も読み直す：答えたら行が進む
+    refetchInterval: (q) =>
+      (q.state.data ?? []).some(
+        (r) => r.asking || (r.login_check && ["pending", "running"].includes(r.login_check.state)),
+      )
+        ? 2000
+        : false,
   });
   const rows = list.data ?? [];
   const [state, setState] = useState<"a" | "i">("a");
@@ -41,6 +57,7 @@ function Credentials() {
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [totp, setTotp] = useState("");
+  const [twoFactor, setTwoFactor] = useState<TwoFactorKind>("none");
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const markStep = useMarkStep();
@@ -54,13 +71,15 @@ function Credentials() {
         service_name: service.normalize("NFKC").trim(),
         login,
         password,
-        ...(totp ? { totp_secret: totp } : {}),
+        two_factor: twoFactor,
+        ...(twoFactor === "totp" && totp ? { totp_secret: totp } : {}),
       });
       await qc.invalidateQueries({ queryKey: ["my-credentials"] });
       setService("");
       setLogin("");
       setPassword("");
       setTotp("");
+      setTwoFactor("none");
       setState("a");
       await markStep(4); // 段 4 を通した（D-089）
     } catch (err) {
@@ -130,12 +149,29 @@ function Credentials() {
               />
             )}
           </Field>
-          <Field
-            label="2段階認証のシークレット（あれば）"
-            help="認証アプリの登録時に出る文字列。Bridge が6桁を生成します"
-          >
-            {(id) => <Input id={id} autoComplete="off" value={totp} onChange={(e) => setTotp(e.target.value)} />}
+          {/* 2 段階認証の種類（D-117.2）。認証アプリは鍵を預かって Bridge が 6 桁を作る。SMS・メール・スマホ承認はその場で本人に頼む */}
+          <Field label="2段階認証" help={TWO_FACTOR_HELP[twoFactor]}>
+            {(id) => (
+              <select
+                id={id}
+                data-two-factor
+                value={twoFactor}
+                onChange={(e) => setTwoFactor(e.target.value as TwoFactorKind)}
+                className="w-full rounded-[var(--r-md)] border border-transparent bg-[var(--sv)] px-[13px] py-2.5 text-[16px] text-[var(--on-surface)] focus:bg-[var(--card)] focus:outline-2 focus:outline-offset-1 focus:outline-[var(--primary)] md:text-[14px]"
+              >
+                {TWO_FACTOR_OPTIONS.map(([k, label]) => (
+                  <option key={k} value={k}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            )}
           </Field>
+          {twoFactor === "totp" ? (
+            <Field label="認証アプリの秘密鍵" help="認証アプリの登録時に出る文字列。Bridge が6桁を生成します">
+              {(id) => <Input id={id} autoComplete="off" value={totp} onChange={(e) => setTotp(e.target.value)} />}
+            </Field>
+          ) : null}
           <div className="flex gap-2">
             <Button type="submit" icon={<Check />} disabled={busy}>
               保存する
@@ -232,6 +268,7 @@ function Credentials() {
                         </Td>
                         <Td>
                           <LoginCheckCell c={r} />
+                          <AskCell c={r} onDone={() => qc.invalidateQueries({ queryKey: ["my-credentials"] })} />
                         </Td>
                       </tr>
                     ))}
@@ -263,9 +300,124 @@ function Credentials() {
     </WizardLayout>
   );
 }
+// 2 段階認証の種類（D-117.2）
+const TWO_FACTOR_OPTIONS: [TwoFactorKind, string][] = [
+  ["none", "なし"],
+  ["totp", "認証アプリ（Google Authenticator など）"],
+  ["sms", "SMS で届くコード"],
+  ["email", "メールで届くコード"],
+  ["push", "スマホで承認"],
+];
+const TWO_FACTOR_HELP: Record<TwoFactorKind, string> = {
+  none: "ログインに 2 段階認証が無いサービス",
+  totp: "鍵を預かり、Bridge が 6 桁を作って入れます。あなたに頼みません",
+  sms: "ログインのたびに、届いたコードをこの画面で入れてもらいます（AI には渡りません）",
+  email: "ログインのたびに、届いたコードをこの画面で入れてもらいます（AI には渡りません）",
+  push: "ログインのたびに、スマホで承認してからこの画面で知らせてもらいます",
+};
+// いま本人に頼んでいること（D-117.3）：コードを入れる／スマホで承認した。コードは Bridge が取った時点で消える
+function AskCell({ c, onDone }: { c: MyCredential; onDone: () => void }) {
+  const [code, setCode] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  if (!c.asking) return null;
+  const send = async (b: { code?: string; approved?: boolean }) => {
+    setBusy(true);
+    setErr(null);
+    try {
+      await answerCredential(c.id, { request_id: c.asking!.request_id, ...b });
+      setCode("");
+      onDone();
+    } catch (e) {
+      setErr(e instanceof AuthExtError ? e.message : "うまくいきませんでした");
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <div
+      className="mt-2 rounded-[var(--r-md)] border-l-[3px] border-[var(--tertiary)] bg-[var(--tertiary-c)] px-3 py-2.5"
+      data-asking={c.asking.kind}
+    >
+      <div className="text-[13px] font-semibold text-[var(--on-tertiary-c)]">{c.asking.text}</div>
+      {c.asking.kind === "approve" ? (
+        <div className="mt-2 flex items-center gap-2">
+          <Button size="sm" disabled={busy} onClick={() => void send({ approved: true })}>
+            スマホで承認した
+          </Button>
+        </div>
+      ) : (
+        <form
+          className="mt-2 flex items-center gap-2"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!code.trim()) return setErr("届いたコードを入れてください");
+            void send({ code });
+          }}
+          noValidate
+        >
+          <Input
+            aria-label="届いたコード"
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            className="max-w-[160px]"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+          />
+          <Button size="sm" type="submit" disabled={busy}>
+            送る
+          </Button>
+        </form>
+      )}
+      {err ? (
+        <p className="mt-1 text-[12px] text-[var(--error)]" role="alert">
+          {err}
+        </p>
+      ) : null}
+      <p className="mt-1 text-[12px] text-[var(--on-tertiary-c)]">
+        入れたコードは PC の Bridge だけに渡り、AI にも記録にも残りません
+      </p>
+    </div>
+  );
+}
+/** 本人が押したときだけもう一度試す（D-117.5） */
+function RetryButton({ c, onDone }: { c: MyCredential; onDone: () => void }) {
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  return (
+    <div className="mt-1">
+      <Button
+        size="sm"
+        variant="outline"
+        disabled={busy}
+        onClick={async () => {
+          setBusy(true);
+          setErr(null);
+          try {
+            await retryLoginCheck(c.id);
+            onDone();
+          } catch (e) {
+            setErr(e instanceof AuthExtError ? e.message : "うまくいきませんでした");
+          } finally {
+            setBusy(false);
+          }
+        }}
+      >
+        もう一度試す
+      </Button>
+      {err ? (
+        <p className="mt-1 text-[12px] text-[var(--error)]" role="alert">
+          {err}
+        </p>
+      ) : null}
+    </div>
+  );
+}
 // 預けた直後の 1 回のログイン（D-117.1）：結果の種類ごとに、本人に見せる文と一手。値（ログイン名・パスワード）はどこにも出ない
 const LOGIN_CHECK: Record<LoginCheckState, { label: string; tone: "success" | "warning" | "danger" | "neutral" }> = {
   pending: { label: "PC がログインを試す順番を待っています", tone: "neutral" },
+  bad_code: { label: "コードが通りませんでした", tone: "danger" },
+  no_answer: { label: "返事が無かったので止めました", tone: "warning" },
   running: { label: "ログインを試しています…", tone: "neutral" },
   ok: { label: "ログインできました", tone: "success" },
   bad_password: { label: "ログイン名かパスワードが違うようです", tone: "danger" },
@@ -277,7 +429,9 @@ const LOGIN_CHECK: Record<LoginCheckState, { label: string; tone: "success" | "w
   no_bridge: { label: "PC をつなぐと試します", tone: "neutral" },
   stopped: { label: "途中で止まりました", tone: "warning" },
 };
+const RETRYABLE: LoginCheckState[] = ["no_answer", "stopped", "unreachable", "bad_code"];
 function LoginCheckCell({ c }: { c: MyCredential }) {
+  const qc = useQueryClient();
   if (!c.login_check || c.state !== "stored") return <span className="text-[12px] text-[var(--on-sv)]">—</span>;
   const k = LOGIN_CHECK[c.login_check.state] ?? LOGIN_CHECK.stopped;
   return (
@@ -285,6 +439,9 @@ function LoginCheckCell({ c }: { c: MyCredential }) {
       <Pill tone={k.tone}>{k.label}</Pill>
       {c.login_check.detail && c.login_check.state !== "ok" ? (
         <div className="mt-1 text-[12px] leading-[1.6] text-[var(--on-sv)]">{c.login_check.detail}</div>
+      ) : null}
+      {RETRYABLE.includes(c.login_check.state) && !c.asking ? (
+        <RetryButton c={c} onDone={() => qc.invalidateQueries({ queryKey: ["my-credentials"] })} />
       ) : null}
     </div>
   );

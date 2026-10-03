@@ -10,6 +10,8 @@ export interface Credential {
   serviceName: string | null;
   /** 開く先のドメイン（名前だけで預けたとき用）。無ければ null */
   serviceDomain: string | null;
+  /** 2 段階認証の種類（D-117.2）：none／totp（鍵から作る）／sms／email／push（本人に頼む） */
+  twoFactor: "none" | "totp" | "sms" | "email" | "push";
 }
 export interface VaultDeps {
   apiBase: string;
@@ -32,7 +34,8 @@ const UUID = /^[0-9a-f-]{36}$/i;
 async function fetchCredential(d: VaultDeps, jobId: string, credentialId: string): Promise<Credential> {
   const sid = d.sessionId();
   if (!sid) throw new CredentialError("この端末の接続は切れています。つなぎ直してください", "gone");
-  if (!UUID.test(credentialId) || !UUID.test(jobId)) throw new CredentialError("資格情報の指定が正しくありません", "notfound");
+  if (!UUID.test(credentialId) || !UUID.test(jobId))
+    throw new CredentialError("資格情報の指定が正しくありません", "notfound");
   const ctl = new AbortController();
   const timer = setTimeout(() => ctl.abort(), d.timeoutMs ?? 15_000);
   let r: Response;
@@ -45,12 +48,18 @@ async function fetchCredential(d: VaultDeps, jobId: string, credentialId: string
     });
   } catch {
     // 届かない（G-11）：黙って失敗せず理由を返す。値は無いので漏れない
-    throw new CredentialError("Kaname に届かないので、ログイン情報を受け取れませんでした", "unreachable", "少し待ってからもう一度");
+    throw new CredentialError(
+      "Kaname に届かないので、ログイン情報を受け取れませんでした",
+      "unreachable",
+      "少し待ってからもう一度",
+    );
   } finally {
     clearTimeout(timer);
   }
-  if (r.status === 401 || r.status === 410) throw new CredentialError("この端末の接続は切れています。つなぎ直してください", "gone");
-  if (r.status === 404) throw new CredentialError("預けたログイン情報が見つかりません（消した・失効した）", "notfound", "預け直す");
+  if (r.status === 401 || r.status === 410)
+    throw new CredentialError("この端末の接続は切れています。つなぎ直してください", "gone");
+  if (r.status === 404)
+    throw new CredentialError("預けたログイン情報が見つかりません（消した・失効した）", "notfound", "預け直す");
   if (!r.ok) {
     const body = (await r.json().catch(() => ({}))) as { message?: unknown; handoff?: unknown };
     throw new CredentialError(
@@ -60,7 +69,16 @@ async function fetchCredential(d: VaultDeps, jobId: string, credentialId: string
     );
   }
   // 途中で切れた・空・欠け（G-15）：成功にしない
-  let j: { data?: { login?: unknown; password?: unknown; totp_secret?: unknown; service_name?: unknown; service_domain?: unknown } };
+  let j: {
+    data?: {
+      login?: unknown;
+      password?: unknown;
+      totp_secret?: unknown;
+      service_name?: unknown;
+      service_domain?: unknown;
+      two_factor?: unknown;
+    };
+  };
   try {
     j = (await r.json()) as typeof j;
   } catch {
@@ -75,6 +93,10 @@ async function fetchCredential(d: VaultDeps, jobId: string, credentialId: string
     totpSecret: typeof dd.totp_secret === "string" && dd.totp_secret ? dd.totp_secret : null,
     serviceName: typeof dd.service_name === "string" ? dd.service_name : null,
     serviceDomain: typeof dd.service_domain === "string" ? dd.service_domain : null,
+    twoFactor:
+      dd.two_factor === "totp" || dd.two_factor === "sms" || dd.two_factor === "email" || dd.two_factor === "push"
+        ? dd.two_factor
+        : "none",
   };
 }
 
@@ -86,7 +108,12 @@ function wipe(c: Credential): void {
 }
 
 /** 値を使う間だけ持つ。use の中でだけ値に触れ、戻ったら（失敗しても）消す。use の外に値を持ち出さない */
-export async function withCredential<T>(d: VaultDeps, jobId: string, credentialId: string, use: (c: Credential) => Promise<T>): Promise<T> {
+export async function withCredential<T>(
+  d: VaultDeps,
+  jobId: string,
+  credentialId: string,
+  use: (c: Credential) => Promise<T>,
+): Promise<T> {
   const c = await fetchCredential(d, jobId, credentialId);
   try {
     return await use(c);

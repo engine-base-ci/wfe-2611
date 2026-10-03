@@ -73,7 +73,7 @@
   "calendar_days_human": 786,
   "total_estimate_hours": 1226.3,
   "total_estimate_sessions": 407,
-  "qa_rows_total": 5129,
+  "qa_rows_total": 5132,
   "journeys": 9
  },
  "waves": [
@@ -23058,13 +23058,16 @@
      "SCR-CREDENTIALS-038",
      "SCR-CREDENTIALS-039",
      "SCR-CREDENTIALS-040",
+     "SCR-CREDENTIALS-052",
+     "SCR-CREDENTIALS-053",
      "SCR-CREDENTIALS-041",
      "SCR-CREDENTIALS-050",
      "SCR-CREDENTIALS-042",
      "SCR-CREDENTIALS-043",
      "SCR-CREDENTIALS-044",
      "SCR-CREDENTIALS-048",
-     "SCR-CREDENTIALS-045",
+     "SCR-CREDENTIALS-054",
+     "SCR-CREDENTIALS-055",
      "SCR-CREDENTIALS-051",
      "SCR-CREDENTIALS-046",
      "SCR-CREDENTIALS-047",
@@ -51315,6 +51318,7 @@
    ],
    "audit_md_path": "07_tasks/audit/T-B-38.md",
    "status": "done",
+   "done_at": "2026-10-03",
    "qa_rows": {
     "l1": [
      "CHT-38-001",
@@ -51386,8 +51390,7 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 2.5,
-   "estimate_sessions": 1,
-   "done_at": "2026-10-03"
+   "estimate_sessions": 1
   },
   {
    "id": "T-B-39",
@@ -51455,8 +51458,8 @@
      "UBIQUITOUS: 2 段階認証（種類を選ぶ・認証アプリは鍵で自動・SMS／メール／スマホ承認はその の成果物があり、type-check と build が通る"
     ],
     "functional": [
-     "EVENT-DRIVEN: WHEN 承認待ちでコードを入れる（実ブラウザ）、システムは ログインが通り、コードは AI の会話にも記録にも出ない",
-     "UNWANTED: IF コードを頼んだまま 10 分、システムは 仕事が理由つきで止まり、何度も試さない"
+     "EVENT-DRIVEN: WHEN ①サービスに http://127.0.0.1:3124/dev/fake-login?mode=sms&dev=手元1・2段階認証「SMS で届くコード」で預ける ② 行に「…SMSのコードを入れてください」の欄が出たら 246810 を入れて 送る ③ ?mode=push を「スマホで承認」で預け、「スマホで承認した」を押す（実ブラウザ）、システムは ログインが通り（行が「ログインできました」）、コードは AI の会話にも記録にも出ない（自動テストが DB の出来事・証跡・メッセージに無いことを確かめる）",
+     "UNWANTED: IF コードを頼んだまま 10 分（自動テストは 20 秒）、システムは 仕事が理由つきで止まり（「返事が無かったので止めました」）、何度も試さない。押したときだけ 1 回試し直す"
     ],
     "regression": [
      "pnpm test（該当パッケージ）PASS",
@@ -51475,7 +51478,7 @@
     "06_mockup/v1/v1-clone-chat.html"
    ],
    "audit_md_path": "07_tasks/audit/T-B-39.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "CHT-39-001",
@@ -51489,12 +51492,12 @@
     {
      "name": "2 段階認証（種類を選ぶ・認証アプリは鍵で自動・SMS／メール／スマホ承認はその",
      "steps": [
-      "種類を選ぶ（実ブラウザ）",
-      "承認待ちでコードを入れる（実ブラウザ）",
-      "もう一度ログインする",
-      "待つ"
+      "①「ログイン情報を預ける」で 追加する → サービスに http://127.0.0.1:3124/dev/fake-login?mode=totp → 2段階認証を「認証アプリ」にすると秘密鍵の欄が出る（SMS・なし では出ない） ② 鍵を空のまま 保存する → 文言 ③ JBSW Y3DP EHPK 3PXP を入れて 保存する（実ブラウザ）",
+      "①サービスに http://127.0.0.1:3124/dev/fake-login?mode=sms&dev=手元1・2段階認証「SMS で届くコード」で預ける ② 行に「…SMSのコードを入れてください」の欄が出たら 246810 を入れて 送る ③ ?mode=push を「スマホで承認」で預け、「スマホで承認した」を押す（実ブラウザ）",
+      "同じ的（?mode=sms&dev=手元1）をもう一度預ける（実ブラウザ）",
+      "?mode=sms&dev=手元2 を預け、コードを入れずに待つ → 「もう一度試す」を押してコードを入れる（実ブラウザ）"
      ],
-     "expected": "ログインが通り、コードは AI の会話にも記録にも出ない"
+     "expected": "ログインが通り（行が「ログインできました」）、コードは AI の会話にも記録にも出ない（自動テストが DB の出来事・証跡・メッセージに無いことを確かめる）"
     }
    ],
    "source": [
@@ -51524,12 +51527,12 @@
     "tier_2_functional": [
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN 承認待ちでコードを入れる（実ブラウザ）、システムは ログインが通り、コードは AI の会話にも記録にも出ない",
+      "text": "EVENT-DRIVEN: WHEN ①サービスに http://127.0.0.1:3124/dev/fake-login?mode=sms&dev=手元1・2段階認証「SMS で届くコード」で預ける ② 行に「…SMSのコードを入れてください」の欄が出たら 246810 を入れて 送る ③ ?mode=push を「スマホで承認」で預け、「スマホで承認した」を押す（実ブラウザ）、システムは ログインが通り（行が「ログインできました」）、コードは AI の会話にも記録にも出ない（自動テストが DB の出来事・証跡・メッセージに無いことを確かめる）",
       "critical": false
      },
      {
       "type": "UNWANTED",
-      "text": "UNWANTED: IF コードを頼んだまま 10 分、システムは 仕事が理由つきで止まり、何度も試さない",
+      "text": "UNWANTED: IF コードを頼んだまま 10 分（自動テストは 20 秒）、システムは 仕事が理由つきで止まり（「返事が無かったので止めました」）、何度も試さない。押したときだけ 1 回試し直す",
       "critical": true
      }
     ],
@@ -51552,7 +51555,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 3.0,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-10-03"
   },
   {
    "id": "T-B-40",
