@@ -6,7 +6,9 @@ import { dirname, join } from "node:path";
 import { migrate } from "@kaname/db/migrate";
 import { migrateAuth } from "@kaname/auth/migrate";
 import type { Config } from "@kaname/config";
+import { MemoryVault } from "@kaname/secrets";
 import { bootApi, startServer } from "../src/server.js";
+import { lazyBoot, vercelFetch } from "../src/vercel.js";
 
 const DB_PKG = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "packages", "db");
 const ADMIN = process.env["DATABASE_URL"] ?? "postgres://postgres:postgres@127.0.0.1:55433/kaname_test";
@@ -65,6 +67,28 @@ describe("apps/api の起動口（server.ts）", () => {
 
   it("バケットが無ければ起動しない（storage:bucket=missing を名指しで）", async () => {
     await expect(bootApi(config, { bucketExists: async () => false })).rejects.toThrow(/storage:bucket=missing/);
+  });
+
+  it("BRG-14-003 staging／本番で Infisical に入れない設定なら起動しない（メモリのまま＝secrets:vault=missing・入れない＝secrets:vault=error）。Vercel の口は 503 と理由（D-101.4）", async () => {
+    const ok = { bucketExists: async () => true };
+    await expect(bootApi({ ...config, env: "staging" }, ok), "設定が無くメモリの預かり先のまま").rejects.toThrow(/secrets:vault=missing/);
+    const cannotLogin = Object.assign(new MemoryVault(), {
+      durable: true,
+      ping: async (): Promise<true> => {
+        throw new Error("Infisical で入ることができない（401）");
+      },
+    });
+    await expect(bootApi({ ...config, env: "production" }, { ...ok, vault: cannotLogin }), "Infisical に入れない").rejects.toThrow(
+      /secrets:vault=error/,
+    );
+    // 落ちている間、Vercel の口は 503 と「どの確認が落ちたか」。値や接続先は出さない
+    const handler = vercelFetch(lazyBoot(() => bootApi({ ...config, env: "staging" }, { ...ok, vault: cannotLogin })));
+    const r = await handler(new Request("http://x/health"));
+    expect(r.status).toBe(503);
+    const j = (await r.json()) as { code: string; reason: string[]; message: string };
+    expect(j.code).toBe("STARTUP_FAILED");
+    expect(j.reason).toEqual(["secrets:vault=error"]);
+    expect(JSON.stringify(j)).not.toContain("401"); // 中の例外の文言は外に出さない
   });
 
   it("存在確認の報告は 5 項目（db:tables・storage:bucket・secrets:master-key・notify:resend・secrets:vault〔D-101.4〕）", async () => {

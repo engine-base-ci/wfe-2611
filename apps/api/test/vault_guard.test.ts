@@ -41,7 +41,13 @@ async function signedIn(app: ReturnType<typeof createApp>) {
   const mail = sent.filter((m) => m.to === email && m.kind === "verify").at(-1)!;
   const ver = await post("/api/auth-ext/verify-signup", { token: new URL(mail.url).searchParams.get("token") ?? "" });
   const H = { authorization: `Bearer ${((await ver.json()) as { data: { token: string } }).data.token}` };
-  return (b: unknown) => post("/api/auth-ext/vault/credentials", b, H);
+  const store = (b: unknown) => post("/api/auth-ext/vault/credentials", b, H);
+  /** 預けたものの一覧（表に行ができていないことを見る） */
+  const list = async () => {
+    const r = await app.request("http://localhost/api/auth-ext/vault/credentials", { headers: H });
+    return ((await r.json()) as { data: unknown[] }).data;
+  };
+  return Object.assign(store, { list });
 }
 const cred = { service_name: "freee", login: "a@example.com", password: "p" };
 
@@ -87,7 +93,7 @@ describe("起動時の確認 secrets:vault（D-101）", () => {
 });
 
 describe("上限に当たったとき（D-102.5・E-SEC-003）", () => {
-  it("預かり先が 429 なら、待つ秒数つきで断り、表に行を作らない", async () => {
+  it("BRG-14-008 E-SEC-003-A 預かり先が 429 なら、待つ秒数つきで断り、表に行を作らない", async () => {
     const busy = Object.assign(new MemoryVault(), { durable: true, put: async () => { throw new RateLimited(42); } });
     const store = await signedIn(build("development", busy));
     const r = await store(cred);
@@ -95,6 +101,31 @@ describe("上限に当たったとき（D-102.5・E-SEC-003）", () => {
     const j = (await r.json()) as { code: string; message: string; retry_after_sec: number };
     expect(j.code).toBe("E-SEC-003");
     expect(j.retry_after_sec).toBe(42);
-    expect(j.message).toContain("42 秒");
+    expect(j.message).toBe("いま混み合っています。42 秒ほど待ってからもう一度保存してください");
+    expect(await store.list(), "預かったことにしない＝表に行が無い").toHaveLength(0);
+  });
+});
+
+describe("預かり先に届かないとき（D-101.1・E-SEC-001・G-15）", () => {
+  it("BRG-14-005 E-SEC-001-A 置き場に書けなければ 502 と文言・一手。預かったことにしない（表に行が無い）。理由に値は出ない", async () => {
+    const down = Object.assign(new MemoryVault(), {
+      durable: true,
+      put: async () => {
+        throw new Error("Infisical で預ける ことができない（503）");
+      },
+    });
+    const store = await signedIn(build("development", down));
+    const r = await store(cred);
+    expect(r.status).toBe(502);
+    const j = (await r.json()) as { code: string; message: string; handoff: string };
+    expect(j.code).toBe("E-SEC-001");
+    expect(j.message).toBe("預かり先に保管できませんでした。もう一度試してください");
+    expect(j.handoff).toContain("もう一度保存する");
+    expect(JSON.stringify(j)).not.toContain(cred.password);
+    expect(await store.list(), "預かったことにしない＝表に行が無い").toHaveLength(0);
+    // 置き場が戻れば同じ入力で預かる（一手「もう一度保存する」が成り立つ）
+    const back = await signedIn(build("development", Object.assign(new MemoryVault(), { durable: true })));
+    expect((await back(cred)).status).toBe(201);
+    expect(await back.list()).toHaveLength(1);
   });
 });

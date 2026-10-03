@@ -14,6 +14,7 @@ import { InfisicalVault, MemoryVault, SecretsGateway, type Vault } from "@kaname
 import { resendMail, signedMail } from "@kaname/notify";
 import { assertApiStartup } from "./startup.js";
 import { agentHooks } from "./hooks/agent.js";
+import { nearLimitNotifier } from "./ops-alert.js";
 
 export interface BootOptions {
   /** 起動時の存在確認の差し替え（テスト用。本番は S3 の HEAD） */
@@ -72,18 +73,8 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
   });
   // 秘密の保管（関門 C8・D-101）：設定があれば Infisical、無ければ MemoryVault（再起動で消える＝開発だけ）。
   // staging／本番で Infisical が無い・入れないなら起動時の確認で落とす（startup.ts の secrets:vault）
-  // 上限の 8 割に来たら運営に知らせる（D-102.5）。メールは 1 つの実体につき 1 時間に 1 回まで
-  let nearLimitMailedAt = 0;
-  const onNearLimit = (u: { perMinute: number; limit: number }): void => {
-    console.warn(`[ops] Infisical の秘密の操作が上限の 8 割（${u.perMinute}／毎分 ${u.limit}）`);
-    if (!mailer || Date.now() - nearLimitMailedAt < 3_600_000) return;
-    nearLimitMailedAt = Date.now();
-    void mailer({
-      to: config.opsEmail,
-      subject: "Kaname｜資格情報の置き場（Infisical）の上限に近づいています",
-      text: `直近 1 分の秘密の操作が ${u.perMinute} 回で、上限（毎分 ${u.limit} 回）の 8 割に来ました。\n当たると利用者の保存・実行が「混み合っています」で止まります。\n続くようなら Pro（毎分 300 回）にするか、自分で動かすかを決めてください（決定ログ §102）。`,
-    }).catch(() => undefined);
-  };
+  // 上限の 8 割に来たら運営に知らせる（D-102.5）。メールは 1 つの実体につき 1 時間に 1 回まで（ops-alert.ts）
+  const onNearLimit = nearLimitNotifier({ ...(mailer ? { mailer } : {}), opsEmail: config.opsEmail });
   const vault = o.vault ?? (config.infisical ? new InfisicalVault({ ...config.infisical, onNearLimit }) : new MemoryVault());
   const secrets = new SecretsGateway(repo, vault, Buffer.from(config.secretsMasterKey, "base64"));
   const s3 = s3Driver(s3Client(config.storage), config.storage.bucket);

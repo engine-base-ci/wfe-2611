@@ -1139,8 +1139,9 @@ export function authExt(d: AuthExtDeps): Hono {
             retry_after_sec: stored.retryAfterSec,
           },
         );
+      // 一手は関門の handoff（「もう一度保存する。続くときは運営に連絡する」）。理由を一手の欄に入れていた（T-B-14 の試験で発覚）
       return bad(c, 502, "E-SEC-001", "預かり先に保管できませんでした。もう一度試してください", {
-        handoff: "reason" in stored ? stored.reason : null,
+        handoff: "handoff" in stored ? stored.handoff : null,
       });
     }
     const ref = typeof stored.value === "string" ? stored.value : stored.value.ref;

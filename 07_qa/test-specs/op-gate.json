@@ -18,7 +18,9 @@
     "apps/web/pw-reports/d103e.json",
     "apps/web/pw-reports/d103f.json",
     "apps/web/pw-reports/d104.json",
-    "apps/web/pw-reports/d104b.json"
+    "apps/web/pw-reports/d104b.json",
+    "apps/web/pw-reports/qa-b-infisical.json",
+    "apps/api/vt-reports/t-b-14.json"
   ],
   "report_max_age_h": 48,
   "evidence_views": [
@@ -53,5 +55,6 @@
     "署名",
     "起こす"
   ],
-  "_doc2": "観点を足す＝説明文の PASS を赤にする範囲を広げる。D-090（受け取って返す）の規則は全部この一覧に入れ、行 ID を名前に持つ実ブラウザのテストが無い限り PASS と書けないようにした"
+  "_doc2": "観点を足す＝説明文の PASS を赤にする範囲を広げる。D-090（受け取って返す）の規則は全部この一覧に入れ、行 ID を名前に持つ実ブラウザのテストが無い限り PASS と書けないようにした",
+  "_doc3": "apps/api/vt-reports/*.json は vitest の JSON 報告（本物の DB の上で流した API の行の証拠）。op_gate.py は testResults[].assertionResults[] の名前の行 ID も読む（2026-10-03・T-B-14）"
 }

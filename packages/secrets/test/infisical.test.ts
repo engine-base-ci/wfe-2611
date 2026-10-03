@@ -120,7 +120,7 @@ describe("預ける・読む・失効（D-101）", () => {
     expect(store.at(-1)).toMatchObject({ key: "sec_0190_abc", path: `/tenants/${A}` });
     expect(await v.get("sec_0190-abc", A)).toMatchObject({ tenantId: A, data: "Y2lwaGVy" });
   });
-  it("別の会社の置き場は見に行かない（B として読むと無い）", async () => {
+  it("BRG-14-002 別の会社の置き場は見に行かない（B として読むと無い）", async () => {
     expect(await vault().get("sec_0190-abc", B)).toBeNull();
   });
   it("失効すると revokedAt が付き、二度目は false。会社ごと失効は、その会社の分だけ", async () => {

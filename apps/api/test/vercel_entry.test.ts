@@ -5,7 +5,7 @@ import http from "node:http";
 import type { AddressInfo } from "node:net";
 import { getRequestListener } from "@hono/node-server";
 import { Hono } from "hono";
-import { loadConfig } from "@kaname/config";
+import { loadConfig, StartupFailed } from "@kaname/config";
 import { bootApi, type Booted } from "../src/server.js";
 import { lazyBoot, vercelFetch, VERCEL_POOL } from "../src/vercel.js";
 
@@ -27,12 +27,14 @@ describe("組み立ては 1 回・失敗は覚えない", () => {
     let n = 0;
     const handler = vercelFetch(lazyBoot(async () => {
       n++;
-      if (n === 1) throw new Error("storage:bucket=missing");
+      if (n === 1) throw new StartupFailed({ ok: false, results: { "storage:bucket": "missing", "db:tables": "ok" } });
       return fake();
     }));
     const r1 = await handler(new Request("http://x/health"));
     expect(r1.status).toBe(503);
-    expect(((await r1.json()) as { code: string }).code).toBe("STARTUP_FAILED");
+    const j1 = (await r1.json()) as { code: string; reason: string[] };
+    expect(j1.code).toBe("STARTUP_FAILED");
+    expect(j1.reason, "落ちた確認の名前だけ").toEqual(["storage:bucket=missing"]);
     const r2 = await handler(new Request("http://x/health"));
     expect(r2.status, "2 回目は組み立て直して通る").toBe(200);
     expect(n).toBe(2);

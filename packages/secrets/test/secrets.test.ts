@@ -50,7 +50,7 @@ describe("関門 C8（secrets）", () => {
     expect(v.status).toBe("done");
     if (v.status === "done") expect(v.value).toBe("p@ssw0rd-very-secret");
   });
-  it("上流を壊す：AI や画面の文脈には渡さない。他社の文脈では見られない", async () => {
+  it("BRG-14-002 上流を壊す：AI や画面の文脈には渡さない。他社の文脈では見られない（A の文脈で B の参照 ID を解く → この参照は見られない）", async () => {
     expect((await g.resolve(ref, { ...boss(), caller: "ai" })).status).toBe("denied");
     expect((await g.resolve(ref, { ...boss(), caller: "screen" })).status).toBe("denied");
     expect((await g.resolve(ref, { ...other(), caller: "executor" })).status).toBe("denied");

@@ -7,6 +7,7 @@
   O1 実ブラウザで確かめる観点（既定：操作・状態・主アクション・到達性・横溢れ・空・止まっている・表記ゆらぎ・共通シェル・部品・エラー A/B/C）の行は、
      結果が PASS なら **その行 ID を名前に含む Playwright のテストが、直近の JSON 報告で passed** でなければ赤。
      説明文だけの PASS・テストが無い PASS・落ちたテストの PASS は全部赤。
+     API の層の行（E-…-A の「エラーが出る」等）は、本物の DB の上で流した vitest の JSON 報告（名前に行 ID）も証拠に数える（op-gate.json の reports に並べる）。
   O2 結果が空の行は「未実施」で赤。BLOCKED は理由（結果か備考に「（…）」）が無ければ赤。N/A は観点「操作」には書けない（要素がモックにある）。
   O3 「発注者確認」の行は、手順ファイル（テスト項目に書いてある .md）の末尾に「OK: 日付 名前」があるときだけ PASS。無ければ BLOCKED（発注者の確認待ち）だけを許す。
   O4 報告が無い・空・仕様より古い（行の結果が書かれた後に流していない）なら、その旨を赤で出す。
@@ -61,6 +62,17 @@ def load_report(paths: list[str]) -> tuple[dict[str, str], float]:
 
         for s in rep.get("suites", []):
             walk(s, [])
+        # vitest の JSON 報告（--reporter=json）も証拠にする：API の層の行（E-…-A の「エラーが出る」・BRG の API の行）は
+        # 本物の DB の上で流した vitest が実測で、名前に行 ID を持つ（write_results.mjs と同じ読み方・T-B-14）
+        for f in rep.get("testResults", []):
+            for a in f.get("assertionResults", []):
+                st = "passed" if a.get("status") == "passed" else "failed" if a.get("status") == "failed" else "skipped"
+                title = " ".join(a.get("ancestorTitles", []) + [a.get("title", "")])
+                for rid in ID_RE.findall(title):
+                    cur = by_id.get(rid) if rid in seen_here else None
+                    if cur is None or rank.get(st, 2) > rank.get(cur, 0):
+                        by_id[rid] = st
+                    seen_here.add(rid)
     return by_id, newest
 
 

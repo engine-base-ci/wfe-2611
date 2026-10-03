@@ -210,7 +210,7 @@ describe("BRG-05-004 鍵を受け取る：本人の Bridge・動いている仕�
     expect(a.every((x) => x.payload["reason"] === "job_not_running" && x.choke_point_id === "C8")).toBe(true);
   });
 
-  it("BRG-05-004 他社・他人の資格情報 → 404（あることも教えない）。消したもの → 404。失効したもの → 403 と預け直しの一手", async () => {
+  it("BRG-05-004 BRG-14-002 他社・他人の資格情報 → 404（あることも教えない）。消したもの → 404。失効したもの → 403 と預け直しの一手", async () => {
     const me = await ready();
     const other = await ready();
     const x = await me.resolve({ job_id: me.jobId, credential_id: other.credId });

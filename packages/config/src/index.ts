@@ -64,7 +64,7 @@ const REQUIRED = [
   "STORAGE_SECRET_ACCESS_KEY",
   "SECRETS_MASTER_KEY",
 ] as const;
-export { runStartupChecks, assertStartup, type StartupCheck, type StartupReport } from "./startup.js";
+export { runStartupChecks, assertStartup, StartupFailed, type StartupCheck, type StartupReport } from "./startup.js";
 export const ENV_KEYS = [
   ...REQUIRED,
   "NODE_ENV",
