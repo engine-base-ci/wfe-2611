@@ -1,7 +1,7 @@
 {
  "version": "v3",
  "project": "Kaname",
- "created_at": "2026-10-01",
+ "created_at": "2026-10-03",
  "skill": "test-verification",
  "_doc": "05_flow/build_testplan.py が上流（tickets・EARS・entities・foundation_gates・choke-points・stack）から機械生成。手で直さない",
  "source": [
@@ -654,7 +654,7 @@
  ],
  "inputs": {
   "tickets": 214,
-  "l1_rows": 5128,
+  "l1_rows": 5132,
   "ears_endpoints": 64,
   "ears_tests": 467,
   "entities": 104,
@@ -1216,6 +1216,20 @@
    "job": "static"
   },
   {
+   "id": 39,
+   "name": "外へ出る口の宛先（apps/bridge・apps/web の fetch は Kaname か Bridge の口だけ・関門 C1 の例外 X-009／X-010 の代替統制）",
+   "script": "pnpm ci:net-boundary && pnpm ci:net-boundary:selftest && pnpm ci:choke:selftest",
+   "blocking": true,
+   "detects": [
+    "Bridge・画面からよそ（Kaname 以外）への fetch",
+    "検出器そのものが黙って緑になること（自己検査）"
+   ],
+   "source": "choke-point-exceptions.md（X-009・X-010）",
+   "owner_task": "T-B-07",
+   "kaname_critical": true,
+   "job": "static"
+  },
+  {
    "id": 27,
    "name": "層の棚卸し（G21）",
    "script": "python3 scripts/ci/layer_audit.py --run",
@@ -1313,7 +1327,8 @@
   20,
   22,
   23,
-  24
+  24,
+  39
  ],
  "retry_protocol": {
   "max_attempts": 3,

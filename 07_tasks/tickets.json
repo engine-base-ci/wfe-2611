@@ -46099,7 +46099,7 @@
     "03_architecture/アーキテクチャ設計書.md"
    ],
    "audit_md_path": "07_tasks/audit/T-B-07.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "BRG-07-001",
@@ -46175,7 +46175,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 4.0,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-10-03"
   },
   {
    "id": "T-B-06",

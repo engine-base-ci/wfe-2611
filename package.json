@@ -64,7 +64,9 @@
     "e2e:all": "pnpm --filter @kaname/web build:test && pnpm --filter @kaname/web e2e:screens && pnpm --filter @kaname/web e2e:showcase",
     "ci:chat-one": "node scripts/ci/chat_one.mjs",
     "ci:chat-one:selftest": "node scripts/ci/chat_one.test.mjs",
-    "ci:flow-fresh": "python3 scripts/ci/flow_fresh.py"
+    "ci:flow-fresh": "python3 scripts/ci/flow_fresh.py",
+    "ci:net-boundary": "node scripts/ci/net_boundary.mjs",
+    "ci:net-boundary:selftest": "node scripts/ci/net_boundary.test.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",

@@ -37,7 +37,7 @@
         "課金計測",
         "失敗時の人へのハンドオフ（黙って止まるを作らない）"
       ],
-      "ci_check": "pnpm ci:choke -- --id C1",
+      "ci_check": "pnpm ci:choke -- --id C1 && pnpm ci:net-boundary",
       "exceptions": [
         {
           "id": "X-005",
@@ -55,6 +55,28 @@
           "reason": "Bridge の配布物の目録（kaname-bridge.json）を運営の置き場から読むのは配布の口そのもの（D-109）。業務の外部送信・利用者のファイルではない",
           "compensating_control": "読む先は設定の BRIDGE_RELEASE_DIR／BRIDGE_RELEASE_BASE だけ。利用者由来のパスを受け取らず、配るのは目録に載った名前（英数と . _ - だけ）のファイルだけ。書かない",
           "expires_at": null
+        },
+        {
+          "id": "X-009",
+          "path": "apps/bridge/src/",
+          "reason": "Bridge は顧客 PC の実行器で、Kaname（設定の API の基点）に仕事を取りに行く・結果を返す・鍵を受け取るのが機能そのもの。local.ts の node:http は 127.0.0.1 だけに bind する Bridge の口（D-089.8）",
+          "compensating_control": "宛先は KANAME_API_BASE か Kaname が返した URL だけ。scripts/ci/net_boundary.mjs（G16b）が fetch の宛先の基点を AST で検査。外のサービスはブラウザが開き、禁止の宛先は bridge-guard が止める",
+          "expires_at": null,
+          "source": [
+            "D-095.2",
+            "D-055.1",
+            "D-107.3"
+          ]
+        },
+        {
+          "id": "X-010",
+          "path": "apps/web/lib/",
+          "reason": "画面が Kaname 自身の API を呼ぶ口。業務の外部送信ではない（D-095.2）。LOCAL は本人の PC の Bridge の口",
+          "compensating_control": "宛先は apiBase() か LOCAL だけ。scripts/ci/net_boundary.mjs（G16b）が検査",
+          "expires_at": null,
+          "source": [
+            "D-095.2"
+          ]
         }
       ],
       "source": [
@@ -164,9 +186,9 @@
       "ci_check": "pnpm ci:choke -- --id C4",
       "exceptions": [
         {
-          "path": "apps/bridge/src/workspace/",
-          "reason": "Bridge は顧客PCのローカルファイルを直接操作するのが機能そのもの。サーバー側の objectStore とは対象が違う",
-          "compensating_control": "作業フォルダの範囲外アクセスを Bridge 内で拒否し、全操作を証跡に送る。範囲チェックは packages/bridge-guard/ に集約し、そこ以外からの fs 使用は fail",
+          "path": "apps/bridge/src/",
+          "reason": "Bridge は顧客 PC の中で動く実行器で、ローカルのファイルを読み書きするのは機能そのもの（作業フォルダ・置き場・記録・配布物の入れ替え）",
+          "compensating_control": "作業フォルダの範囲外は guard.ts（packages/bridge-guard）が止めて証跡へ。それ以外の fs は Bridge 自身の置き場と sha256 を確かめた配布物だけ。資格情報の値は書かない（vault.test・login-check.test）",
           "expires_at": null
         },
         {
@@ -174,6 +196,16 @@
           "reason": "Bridge の配布物の目録（kaname-bridge.json）を運営の置き場から読むのは配布の口そのもの（D-109）。業務の外部送信・利用者のファイルではない",
           "compensating_control": "読む先は設定の BRIDGE_RELEASE_DIR／BRIDGE_RELEASE_BASE だけ。利用者由来のパスを受け取らず、配るのは目録に載った名前（英数と . _ - だけ）のファイルだけ。書かない",
           "expires_at": null
+        },
+        {
+          "id": "X-012",
+          "path": "apps/web/app/(dev)/dev/mail/page.tsx",
+          "reason": "開発の受信箱。本番には出ない（(dev) の枠は 404）",
+          "compensating_control": "読むのは KANAME_API_LOG の 1 ファイルだけ・書かない",
+          "expires_at": null,
+          "source": [
+            "D-095.2"
+          ]
         }
       ],
       "source": [
@@ -210,7 +242,19 @@
         "証跡"
       ],
       "ci_check": "pnpm ci:choke -- --id C5",
-      "exceptions": [],
+      "exceptions": [
+        {
+          "id": "X-011",
+          "path": "apps/bridge/src/",
+          "reason": "公式 CLI・専用ブラウザ・配布物の入れ替えを起こすのが Bridge の機能そのもの（D-055・D-119）",
+          "compensating_control": "起こす実体は proc.ts／runner.ts／install-claude.ts／update.ts に閉じ、引数は設定と目録から組む。完了信号の無い終了は成功にしない（G-15）",
+          "expires_at": null,
+          "source": [
+            "D-055.1",
+            "D-119.1"
+          ]
+        }
+      ],
       "source": [
         "D-015",
         "D-044",

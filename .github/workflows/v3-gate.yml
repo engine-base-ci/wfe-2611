@@ -1,4 +1,4 @@
-# .github/workflows/v3-gate.yml — Kaname CI ゲート 38 本（05_flow/build_testplan.py が生成。手で直さない）
+# .github/workflows/v3-gate.yml — Kaname CI ゲート 39 本（05_flow/build_testplan.py が生成。手で直さない）
 # 方針: ゲートが緑を維持できないなら次のスライスに進まない。旧jobrainはCIが全ゲート赤のまま進み、それが死因の一つ。
 # 段: static（静的・関門）→ database（実 Postgres・RLS・契約）／ spec（仕様の層・Python）／ task-gate（そのタスクの L1 行）→ e2e（has-ui）→ auto-merge
 name: v3-gate
@@ -69,6 +69,8 @@ jobs:
         run: pnpm ci:routes
       - name: "G28 実ブラウザで押した証拠（操作要素 1 つ＝1 行。行 ID を名前に持つ Playwright が通っている）"
         run: pnpm ci:op-gate
+      - name: "G39 外へ出る口の宛先（apps/bridge・apps/web の fetch は Kaname か Bridge の口だけ・関門 C1 の例外 X-009／X-010 の代替統制） [CRITICAL]"
+        run: pnpm ci:net-boundary && pnpm ci:net-boundary:selftest && pnpm ci:choke:selftest
       - name: "G35 有限資源の静的検査（G-16：関門外の生クライアント・タイムアウト無し・冪等キー無しの書込）"
         run: pnpm ci:resource-static
 

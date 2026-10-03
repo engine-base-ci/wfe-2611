@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-03T13:43:51",
+ "generated_at": "2026-10-03T14:37:34",
  "inputs": {
   "tickets": "07_tasks/tickets.json",
   "roster": "07_tasks/roster.json",
@@ -16,10 +16,10 @@
  "summary": {
   "as_of": "2026-10-03",
   "by_status": {
-   "done": 111,
-   "todo": 103
+   "done": 112,
+   "todo": 102
   },
-  "hours_done": 819.4,
+  "hours_done": 823.4,
   "hours_total": 1226.3,
   "progress_pct": 67,
   "epic": 16,
@@ -42,7 +42,7 @@
   "cycle": [],
   "ghost_dependencies": [],
   "unassignable": [],
-  "tentative": 11,
+  "tentative": 10,
   "assigned": 169,
   "broken_links": [],
   "milestone_overrun": [],
@@ -55,11 +55,11 @@
   },
   "load": {
    "takamoto": 43.3,
-   "claude-01": 37.8,
-   "claude-02": 39.8,
-   "claude-03": 45.8,
-   "claude-04": 8.7,
-   "claude-05": 9.0,
+   "claude-01": 36.8,
+   "claude-02": 7.5,
+   "claude-03": 45.3,
+   "claude-04": 10.7,
+   "claude-05": 36.8,
    "claude-06": 24.4,
    "claude-07": 24.1,
    "claude-08": 33.1,
@@ -7986,8 +7986,8 @@
    "layer": "backend",
    "estimate_hours": 6.2,
    "estimate_default": false,
-   "start": "2026-10-05",
-   "finish": "2026-10-06",
+   "start": "2026-10-06",
+   "finish": "2026-10-07",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -8305,7 +8305,7 @@
    "dropped_reason": null,
    "done_at": null,
    "started_at": null,
-   "tentative_assignee": "claude-02"
+   "tentative_assignee": "claude-05"
   },
   {
    "id": "T-A-28",
@@ -13162,8 +13162,8 @@
    "layer": "ui",
    "estimate_hours": 1.9,
    "estimate_default": false,
-   "start": "2026-10-07",
-   "finish": "2026-10-07",
+   "start": "2026-10-08",
+   "finish": "2026-10-08",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -13503,8 +13503,8 @@
    "layer": "ui",
    "estimate_hours": 2.5,
    "estimate_default": false,
-   "start": "2026-10-07",
-   "finish": "2026-10-07",
+   "start": "2026-10-08",
+   "finish": "2026-10-08",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -14691,8 +14691,8 @@
    "layer": "ui",
    "estimate_hours": 1.9,
    "estimate_default": false,
-   "start": "2026-10-07",
-   "finish": "2026-10-07",
+   "start": "2026-10-08",
+   "finish": "2026-10-08",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -15544,8 +15544,8 @@
    "layer": "ui",
    "estimate_hours": 1.4,
    "estimate_default": false,
-   "start": "2026-10-07",
-   "finish": "2026-10-07",
+   "start": "2026-10-08",
+   "finish": "2026-10-08",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -15868,8 +15868,8 @@
    "layer": "ui",
    "estimate_hours": 1.4,
    "estimate_default": false,
-   "start": "2026-10-07",
-   "finish": "2026-10-08",
+   "start": "2026-10-08",
+   "finish": "2026-10-09",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -16673,8 +16673,8 @@
    "layer": "ui",
    "estimate_hours": 1.7,
    "estimate_default": false,
-   "start": "2026-10-08",
-   "finish": "2026-10-08",
+   "start": "2026-10-09",
+   "finish": "2026-10-09",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -16852,8 +16852,8 @@
    "layer": "ui",
    "estimate_hours": 1.9,
    "estimate_default": false,
-   "start": "2026-10-07",
-   "finish": "2026-10-07",
+   "start": "2026-10-08",
+   "finish": "2026-10-08",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -17168,8 +17168,8 @@
    "layer": "ui",
    "estimate_hours": 1.2,
    "estimate_default": false,
-   "start": "2026-10-08",
-   "finish": "2026-10-08",
+   "start": "2026-10-09",
+   "finish": "2026-10-09",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -17646,8 +17646,8 @@
    "layer": "ui",
    "estimate_hours": 1.6,
    "estimate_default": false,
-   "start": "2026-10-07",
-   "finish": "2026-10-07",
+   "start": "2026-10-08",
+   "finish": "2026-10-08",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -17795,8 +17795,8 @@
    "layer": "ui",
    "estimate_hours": 2.3,
    "estimate_default": false,
-   "start": "2026-10-08",
-   "finish": "2026-10-08",
+   "start": "2026-10-09",
+   "finish": "2026-10-09",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -18139,8 +18139,8 @@
    "layer": "ui",
    "estimate_hours": 1.2,
    "estimate_default": false,
-   "start": "2026-10-07",
-   "finish": "2026-10-07",
+   "start": "2026-10-08",
+   "finish": "2026-10-08",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -18577,8 +18577,8 @@
    "layer": "ui",
    "estimate_hours": 1.1,
    "estimate_default": false,
-   "start": "2026-10-08",
-   "finish": "2026-10-08",
+   "start": "2026-10-09",
+   "finish": "2026-10-09",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -18721,8 +18721,8 @@
    "layer": "ui",
    "estimate_hours": 1.6,
    "estimate_default": false,
-   "start": "2026-10-07",
-   "finish": "2026-10-07",
+   "start": "2026-10-08",
+   "finish": "2026-10-08",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -19071,8 +19071,8 @@
    "layer": "ui",
    "estimate_hours": 1.8,
    "estimate_default": false,
-   "start": "2026-10-08",
-   "finish": "2026-10-09",
+   "start": "2026-10-09",
+   "finish": "2026-10-13",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -19421,8 +19421,8 @@
    "layer": "ui",
    "estimate_hours": 1.1,
    "estimate_default": false,
-   "start": "2026-10-07",
-   "finish": "2026-10-07",
+   "start": "2026-10-08",
+   "finish": "2026-10-08",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -21279,8 +21279,8 @@
    "layer": "integration",
    "estimate_hours": 9.0,
    "estimate_default": false,
-   "start": "2026-10-08",
-   "finish": "2026-10-09",
+   "start": "2026-10-09",
+   "finish": "2026-10-13",
    "critical": true,
    "tentative": false,
    "assignable": [
@@ -21446,8 +21446,8 @@
    "layer": "integration",
    "estimate_hours": 2.4,
    "estimate_default": false,
-   "start": "2026-10-09",
-   "finish": "2026-10-13",
+   "start": "2026-10-13",
+   "finish": "2026-10-14",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -21678,8 +21678,8 @@
    "layer": "integration",
    "estimate_hours": 2.0,
    "estimate_default": false,
-   "start": "2026-10-14",
-   "finish": "2026-10-14",
+   "start": "2026-10-15",
+   "finish": "2026-10-15",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -21753,8 +21753,8 @@
    "layer": "integration",
    "estimate_hours": 1.2,
    "estimate_default": false,
-   "start": "2026-10-14",
-   "finish": "2026-10-14",
+   "start": "2026-10-15",
+   "finish": "2026-10-15",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -22046,8 +22046,8 @@
    "layer": "integration",
    "estimate_hours": 5.2,
    "estimate_default": false,
-   "start": "2026-10-09",
-   "finish": "2026-10-09",
+   "start": "2026-10-13",
+   "finish": "2026-10-13",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -22114,8 +22114,8 @@
    "layer": "integration",
    "estimate_hours": 1.8,
    "estimate_default": false,
-   "start": "2026-10-13",
-   "finish": "2026-10-13",
+   "start": "2026-10-14",
+   "finish": "2026-10-14",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -22185,8 +22185,8 @@
    "layer": "integration",
    "estimate_hours": 2.4,
    "estimate_default": false,
-   "start": "2026-10-13",
-   "finish": "2026-10-13",
+   "start": "2026-10-14",
+   "finish": "2026-10-14",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -22251,8 +22251,8 @@
    "layer": "integration",
    "estimate_hours": 1.6,
    "estimate_default": false,
-   "start": "2026-10-13",
-   "finish": "2026-10-13",
+   "start": "2026-10-14",
+   "finish": "2026-10-14",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -22333,8 +22333,8 @@
    "layer": "integration",
    "estimate_hours": 3.8,
    "estimate_default": false,
-   "start": "2026-10-14",
-   "finish": "2026-10-14",
+   "start": "2026-10-15",
+   "finish": "2026-10-15",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -22397,8 +22397,8 @@
    "layer": "integration",
    "estimate_hours": 1.4,
    "estimate_default": false,
-   "start": "2026-10-13",
-   "finish": "2026-10-14",
+   "start": "2026-10-14",
+   "finish": "2026-10-15",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -22561,8 +22561,8 @@
    "layer": "integration",
    "estimate_hours": 1.2,
    "estimate_default": false,
-   "start": "2026-10-09",
-   "finish": "2026-10-09",
+   "start": "2026-10-13",
+   "finish": "2026-10-13",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -24464,10 +24464,10 @@
    "layer": "backend",
    "estimate_hours": 4.0,
    "estimate_default": false,
-   "start": "2026-10-05",
-   "finish": "2026-10-05",
+   "start": "2026-10-03",
+   "finish": "2026-10-03",
    "critical": false,
-   "tentative": true,
+   "tentative": false,
    "assignable": [
     "takamoto",
     "claude-01",
@@ -24478,7 +24478,7 @@
    ],
    "assignee": null,
    "assigned_by": null,
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -24509,9 +24509,9 @@
    },
    "delta": "unchanged",
    "dropped_reason": null,
-   "done_at": null,
+   "done_at": "2026-10-03",
    "started_at": null,
-   "tentative_assignee": "claude-01"
+   "actual": true
   },
   {
    "id": "T-B-06",
@@ -24684,7 +24684,7 @@
    "dropped_reason": null,
    "done_at": null,
    "started_at": null,
-   "tentative_assignee": "claude-02"
+   "tentative_assignee": "claude-01"
   },
   {
    "id": "T-B-10",
@@ -24771,7 +24771,7 @@
    "dropped_reason": null,
    "done_at": null,
    "started_at": null,
-   "tentative_assignee": "claude-05"
+   "tentative_assignee": "claude-02"
   },
   {
    "id": "T-B-11",
@@ -24849,7 +24849,7 @@
    "dropped_reason": null,
    "done_at": null,
    "started_at": null,
-   "tentative_assignee": "claude-05"
+   "tentative_assignee": "claude-04"
   },
   {
    "id": "T-B-13",
@@ -24924,7 +24924,7 @@
    "dropped_reason": null,
    "done_at": null,
    "started_at": null,
-   "tentative_assignee": "claude-05"
+   "tentative_assignee": "claude-02"
   },
   {
    "id": "T-B-12",
@@ -25000,7 +25000,7 @@
    "dropped_reason": null,
    "done_at": null,
    "started_at": null,
-   "tentative_assignee": "claude-03"
+   "tentative_assignee": "claude-02"
   },
   {
    "id": "T-B-14",
@@ -25087,7 +25087,7 @@
    "dropped_reason": null,
    "done_at": null,
    "started_at": null,
-   "tentative_assignee": "claude-04"
+   "tentative_assignee": "claude-03"
   },
   {
    "id": "T-B-15",
@@ -100671,7 +100671,7 @@
    "sub": "impl",
    "title": ".github/workflows/v3-gate.yml (new)",
    "parent": "T-B-07",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      ".github/workflows/v3-gate.yml (new)"
@@ -100684,7 +100684,7 @@
    "sub": "impl",
    "title": "03_architecture/choke-points.json (new)",
    "parent": "T-B-07",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "03_architecture/choke-points.json (new)"
@@ -100697,7 +100697,7 @@
    "sub": "impl",
    "title": "03_architecture/choke-point-exceptions.md (new)",
    "parent": "T-B-07",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "03_architecture/choke-point-exceptions.md (new)"

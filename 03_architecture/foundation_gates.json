@@ -324,6 +324,20 @@
     "発注者確認（Rule 12）が無いまま done"
    ],
    "owner_task": "T-US-00"
+  },
+  {
+   "id": 39,
+   "name": "外へ出る口の宛先（apps/bridge・apps/web の fetch は Kaname か Bridge の口だけ・関門 C1 の例外 X-009／X-010 の代替統制）",
+   "script": "pnpm ci:net-boundary && pnpm ci:net-boundary:selftest && pnpm ci:choke:selftest",
+   "blocking": true,
+   "detects": [
+    "Bridge・画面からよそ（Kaname 以外）への fetch",
+    "検出器そのものが黙って緑になること（自己検査）"
+   ],
+   "source": "choke-point-exceptions.md（X-009・X-010）",
+   "owner_task": "T-B-07",
+   "kaname_critical": true,
+   "job": "static"
   }
  ],
  "kaname_critical_gates": [
@@ -337,7 +351,8 @@
   20,
   22,
   23,
-  24
+  24,
+  39
  ],
  "kaname_critical_reason": "これらが緑でないと、テナント越え・SQLインジェクション・二重課金・資格情報漏洩・移行不能のいずれかが起きる",
  "retry_protocol": {
