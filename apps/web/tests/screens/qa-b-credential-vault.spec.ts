@@ -10,7 +10,12 @@ import { API, admin, api, bridgeTake, claimBridge, loginAs, setupDone, signupVia
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "..");
 type Cred = { login: string; password: string; totpSecret: string | null; serviceName: string | null };
 type VaultMod = {
-  withCredential: <T>(d: { apiBase: string; sessionId: () => string | null; timeoutMs?: number }, jobId: string, credentialId: string, use: (c: Cred) => Promise<T>) => Promise<T>;
+  withCredential: <T>(
+    d: { apiBase: string; sessionId: () => string | null; timeoutMs?: number },
+    jobId: string,
+    credentialId: string,
+    use: (c: Cred) => Promise<T>,
+  ) => Promise<T>;
   CredentialError: new (...a: never[]) => Error & { kind: string; handoff: string | null };
 };
 const vault = () => createRequire(join(ROOT, "apps/bridge/dist/loop.js"))("./vault.js") as VaultMod;
@@ -32,12 +37,16 @@ async function stored(page: import("@playwright/test").Page) {
   await page.getByLabel("2段階認証のシークレット（あれば）").fill(TOTP);
   await page.getByRole("button", { name: "保存する" }).click();
   await expect(page.locator("[data-state='n']")).toContainText("発注ナビ", { timeout: 15_000 });
-  const cred = (await admin<{ id: string; vault_ref: string }>("select id, vault_ref from credentials where tenant_id = $1", [u.tenantId]))[0]!;
+  const cred = (
+    await admin<{ id: string; vault_ref: string }>("select id, vault_ref from credentials where tenant_id = $1", [
+      u.tenantId,
+    ])
+  )[0]!;
   const sid = await claimBridge(u.token, "QA の PC（鍵を受け取る）");
-  const say = await api<{ data: { job_id: string } }>("/api/auth-ext/agent/say", { text: "発注ナビに入って見積を出す" }, u.token);
-  expect(say.status).toBe(201);
+  // 預けた直後に積まれる「1 回だけログインを試す」仕事（T-B-38）が、この人の動いている仕事。Bridge が取る
   const took = await bridgeTake(sid);
-  expect(took.json.data?.job_id).toBe(say.json.data.job_id);
+  expect(took.json.data).toMatchObject({ kind: "login_check", credential_id: cred.id });
+  const say = { json: { data: { job_id: took.json.data!.job_id } } };
   const deps = { apiBase: API, sessionId: () => sid, timeoutMs: 10_000 };
   const audits = () =>
     admin<{ action: string; choke_point_id: string; payload: Record<string, unknown> }>(
@@ -60,7 +69,9 @@ async function noLeak(page: import("@playwright/test").Page, tenantId: string) {
   expect(Number(leak[0]!.n), "証跡に値が書かれている").toBe(0);
 }
 
-test("BRG-05-004 画面で預けたログイン情報を、本人の Bridge が動いている仕事のためにだけ受け取る。使った後は消え、画面・DB・証跡に値は出ない。証跡は C8 で 1 行", async ({ page }) => {
+test("BRG-05-004 画面で預けたログイン情報を、本人の Bridge が動いている仕事のためにだけ受け取る。使った後は消え、画面・DB・証跡に値は出ない。証跡は C8 で 1 行", async ({
+  page,
+}) => {
   const s = await stored(page);
   const { withCredential } = vault();
   let held: Cred | null = null;
@@ -69,7 +80,13 @@ test("BRG-05-004 画面で預けたログイン情報を、本人の Bridge が�
     return { ...c };
   });
   // 画面で入れた値がそのまま Bridge に届く（AI には渡らない：ここは Bridge の鍵で頼んでいる）
-  expect(seen).toEqual({ login: "me@example.com", password: PASSWORD, totpSecret: TOTP, serviceName: "発注ナビ" });
+  expect(seen).toEqual({
+    login: "me@example.com",
+    password: PASSWORD,
+    totpSecret: TOTP,
+    serviceName: "発注ナビ",
+    serviceDomain: null,
+  });
   // 使い終わったら消えている
   expect(held).toMatchObject({ login: "", password: "", totpSecret: null });
   // 証跡：関門 C8 で 1 行。値は書かない
@@ -81,7 +98,9 @@ test("BRG-05-004 画面で預けたログイン情報を、本人の Bridge が�
   await expect(page.locator("[data-state='n']")).toContainText("預かり先の番号");
 });
 
-test("BRG-05-004 他人の Bridge の鍵では受け取れない（404・あることも教えない）。仕事が終わった後は 403 と理由。拒んだことが証跡に残る", async ({ page }) => {
+test("BRG-05-004 他人の Bridge の鍵では受け取れない（404・あることも教えない）。仕事が終わった後は 403 と理由。拒んだことが証跡に残る", async ({
+  page,
+}) => {
   const s = await stored(page);
   const { withCredential } = vault();
   // 別の会社の Bridge
@@ -89,12 +108,22 @@ test("BRG-05-004 他人の Bridge の鍵では受け取れない（404・ある�
   const otherSid = await claimBridge(other.token, "よその PC");
   const o = await api<{ data: { job_id: string } }>("/api/auth-ext/agent/say", { text: "x" }, other.token);
   await bridgeTake(otherSid);
-  const e1 = await withCredential({ ...s.deps, sessionId: () => otherSid }, o.json.data.job_id, s.cred.id, async () => "成功してはいけない").catch((e: Error & { kind: string }) => e);
+  const e1 = await withCredential(
+    { ...s.deps, sessionId: () => otherSid },
+    o.json.data.job_id,
+    s.cred.id,
+    async () => "成功してはいけない",
+  ).catch((e: Error & { kind: string }) => e);
   expect(e1).toBeInstanceOf(Error);
   expect((e1 as Error & { kind: string }).kind).toBe("notfound");
   // 自分の仕事が終わった（Bridge が途中で死んで止まった、でも同じ）→ 動いていないので受け取れない
-  await admin("update bridge_jobs set state_id = 'stopped', stopped_reason = 'テストで止めた', finished_at = now() where id = $1", [s.jobId]);
-  const e2 = await withCredential(s.deps, s.jobId, s.cred.id, async () => "成功してはいけない").catch((e: Error & { kind: string; handoff: string | null }) => e);
+  await admin(
+    "update bridge_jobs set state_id = 'stopped', stopped_reason = 'テストで止めた', finished_at = now() where id = $1",
+    [s.jobId],
+  );
+  const e2 = await withCredential(s.deps, s.jobId, s.cred.id, async () => "成功してはいけない").catch(
+    (e: Error & { kind: string; handoff: string | null }) => e,
+  );
   expect((e2 as Error & { kind: string }).kind).toBe("denied");
   expect((e2 as Error).message).toContain("動いている仕事");
   expect((e2 as Error & { handoff: string | null }).handoff).toBe("仕事を始めてから");
@@ -104,22 +133,33 @@ test("BRG-05-004 他人の Bridge の鍵では受け取れない（404・ある�
   await noLeak(page, s.u.tenantId);
 });
 
-test("BRG-05-005 Kaname に届かないとき（G-11）、Bridge は成功にせず理由を持って止まる。預けたものは画面にそのまま残る", async ({ page }) => {
+test("BRG-05-005 Kaname に届かないとき（G-11）、Bridge は成功にせず理由を持って止まる。預けたものは画面にそのまま残る", async ({
+  page,
+}) => {
   const s = await stored(page);
   const { withCredential } = vault();
-  const e = await withCredential({ ...s.deps, apiBase: "http://127.0.0.1:9", timeoutMs: 2_000 }, s.jobId, s.cred.id, async () => "成功してはいけない").catch((x: Error & { kind: string }) => x);
+  const e = await withCredential(
+    { ...s.deps, apiBase: "http://127.0.0.1:9", timeoutMs: 2_000 },
+    s.jobId,
+    s.cred.id,
+    async () => "成功してはいけない",
+  ).catch((x: Error & { kind: string }) => x);
   expect((e as Error & { kind: string }).kind).toBe("unreachable");
   expect((e as Error).message).toContain("届かない");
   expect(await s.audits()).toEqual([]);
   await noLeak(page, s.u.tenantId);
 });
 
-test("BRG-05-006 預かり先の中身が欠けている・読めないとき（G-15）、成功にしない。画面の行は変わらず、預け直しの一手が返る", async ({ page }) => {
+test("BRG-05-006 預かり先の中身が欠けている・読めないとき（G-15）、成功にしない。画面の行は変わらず、預け直しの一手が返る", async ({
+  page,
+}) => {
   const s = await stored(page);
   const { withCredential } = vault();
   // 預かり先の参照を、存在しないものに差し替える（預かり先が消えた・読めない）
   await admin("update credentials set vault_ref = 'sec_0000000000000000000000000000' where id = $1", [s.cred.id]);
-  const e = await withCredential(s.deps, s.jobId, s.cred.id, async () => "成功してはいけない").catch((x: Error & { kind: string; handoff: string | null }) => x);
+  const e = await withCredential(s.deps, s.jobId, s.cred.id, async () => "成功してはいけない").catch(
+    (x: Error & { kind: string; handoff: string | null }) => x,
+  );
   expect(["denied", "unreachable", "incomplete"]).toContain((e as Error & { kind: string }).kind);
   expect((e as Error & { handoff: string | null }).handoff).toBeTruthy();
   expect((e as Error).message.length).toBeGreaterThan(5);

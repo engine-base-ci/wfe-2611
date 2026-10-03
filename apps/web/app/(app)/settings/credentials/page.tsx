@@ -7,7 +7,7 @@ import { WizardLayout } from "@/components/wizard/wizard-layout";
 import { WIZARD_EXISTING } from "@/components/wizard/existing";
 import { RequireSession } from "@/lib/auth/session";
 import { RequireRole } from "@/lib/auth/role";
-import { AuthExtError, myCredentials, storeCredential, type Verdict } from "@/lib/auth/ext";
+import { AuthExtError, myCredentials, storeCredential, type LoginCheckState, type MyCredential, type Verdict } from "@/lib/auth/ext";
 import { useMarkStep } from "@/lib/onboarding";
 import { Ban, Check, KeyRound, Lock, Plus, ShieldCheck } from "lucide-react";
 
@@ -29,7 +29,12 @@ export default function CredentialsPage() {
 function Credentials() {
   // 預けたものは API から読む（D-108.3）。中身は返らない（サービス名・台帳の可否・状態・預かり先の番号の頭だけ）
   const qc = useQueryClient();
-  const list = useQuery({ queryKey: ["my-credentials"], queryFn: myCredentials });
+  const list = useQuery({
+    queryKey: ["my-credentials"],
+    queryFn: myCredentials,
+    // 預けた直後は Bridge が 1 回ログインを試している（D-117.1）。終わるまで 2 秒ごとに読み直す
+    refetchInterval: (q) => ((q.state.data ?? []).some((r) => r.login_check && ["pending", "running"].includes(r.login_check.state)) ? 2000 : false),
+  });
   const rows = list.data ?? [];
   const [state, setState] = useState<"a" | "i">("a");
   const [service, setService] = useState("");
@@ -200,6 +205,7 @@ function Credentials() {
                       <Th>サービス</Th>
                       <Th>自動操作</Th>
                       <Th>状態</Th>
+                      <Th>1 回のログイン</Th>
                     </tr>
                   </thead>
                   <tbody>
@@ -223,6 +229,9 @@ function Credentials() {
                                 ? "連携済み"
                                 : `預けた · 預かり先の番号 …${r.ref_tail}`}
                           </Pill>
+                        </Td>
+                        <Td>
+                          <LoginCheckCell c={r} />
                         </Td>
                       </tr>
                     ))}
@@ -252,6 +261,32 @@ function Credentials() {
         <div>{addPanel}</div>
       </div>
     </WizardLayout>
+  );
+}
+// 預けた直後の 1 回のログイン（D-117.1）：結果の種類ごとに、本人に見せる文と一手。値（ログイン名・パスワード）はどこにも出ない
+const LOGIN_CHECK: Record<LoginCheckState, { label: string; tone: "success" | "warning" | "danger" | "neutral" }> = {
+  pending: { label: "PC がログインを試す順番を待っています", tone: "neutral" },
+  running: { label: "ログインを試しています…", tone: "neutral" },
+  ok: { label: "ログインできました", tone: "success" },
+  bad_password: { label: "ログイン名かパスワードが違うようです", tone: "danger" },
+  needs_2fa: { label: "2 段階認証が要ります", tone: "warning" },
+  captcha: { label: "CAPTCHA が出ました", tone: "warning" },
+  forbidden: { label: "規約で自動操作が禁止なので試しません", tone: "danger" },
+  unreachable: { label: "開けませんでした", tone: "danger" },
+  no_form: { label: "ログインの欄が見つかりません", tone: "warning" },
+  no_bridge: { label: "PC をつなぐと試します", tone: "neutral" },
+  stopped: { label: "途中で止まりました", tone: "warning" },
+};
+function LoginCheckCell({ c }: { c: MyCredential }) {
+  if (!c.login_check || c.state !== "stored") return <span className="text-[12px] text-[var(--on-sv)]">—</span>;
+  const k = LOGIN_CHECK[c.login_check.state] ?? LOGIN_CHECK.stopped;
+  return (
+    <div data-login-check={c.login_check.state}>
+      <Pill tone={k.tone}>{k.label}</Pill>
+      {c.login_check.detail && c.login_check.state !== "ok" ? (
+        <div className="mt-1 text-[12px] leading-[1.6] text-[var(--on-sv)]">{c.login_check.detail}</div>
+      ) : null}
+    </div>
   );
 }
 // サービス台帳の可否（D-041）。色は状態の 4 色だけ（DESIGN の状態の色）

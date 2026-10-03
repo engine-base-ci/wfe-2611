@@ -153,6 +153,9 @@ export interface Job {
   conventions?: string | null;
   /** AI が使うブラウザ（D-119）：chrome＝本人の Chrome（Claude in Chrome）／off＝使わない。無ければ使わない（古い Kaname） */
   browser?: "chrome" | "dedicated" | "off" | null;
+  /** 仕事の種類（D-117.1）：login_check＝預けたログイン情報で 1 回だけ入ってみる（AI は起こさない）。無ければ会話 */
+  kind?: "chat" | "login_check" | null;
+  credential_id?: string | null;
 }
 
 /** Claude in Chrome の道具（聞かずに使える。開く先は禁止の宛先の見張りが止める・D-107・D-119） */

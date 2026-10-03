@@ -134,16 +134,18 @@ BRIDGE = ("bridge-setup", [
  ], WIZ_CSS, False)
 
 # ============================================================ credentials
-def _svc_row(name, kind, k, extra=""):
+def _svc_row(name, kind, k, extra="", check=None):
     lab = {"api":("正規API","su"),"allowed":("自動操作OK","su"),"unspecified":("規約に記載なし","wa"),"forbidden":("自動操作禁止","da"),"bank":("銀行","da")}[k]
-    return [f'<b>{name}</b><div class="muted" style="font-size:12px">{kind}</div>', pill(*lab), extra]
+    row = [f'<b>{name}</b><div class="muted" style="font-size:12px">{kind}</div>', pill(*lab), extra]
+    return row + [check] if check is not None else row
 
 _cr = grid([
   card(head("預けたもの", btn("追加する","o","plus"), "3件") +
-    table(["サービス","自動操作","状態"], [
-      _svc_row("発注ナビ","案件の入口","allowed", pill("預けた · 預かり先の番号 cr_8a21","ne","key")),
-      _svc_row("Google Workspace","メール・カレンダー","api", pill("連携済み（OAuth）","ne","check")),
-      _svc_row("freee","会計・請求","api", pill("連携済み（正規API）","ne","check")),
+    table(["サービス","自動操作","状態","1 回のログイン"], [
+      _svc_row("発注ナビ","案件の入口","allowed", pill("預けた · 預かり先の番号 cr_8a21","ne","key"), pill("ログインできました","su","check")),
+      _svc_row("imitsu","見積の入口","unspecified", pill("預けた · 預かり先の番号 cr_3f07","ne","key"), pill("ログイン名かパスワードが違うようです","da","alert") + '<div class="muted" style="font-size:12px;margin-top:4px">サービスが受け付けませんでした。確かめて預け直してください</div>'),
+      _svc_row("Google Workspace","メール・カレンダー","api", pill("連携済み（OAuth）","ne","check"), '<span class="muted" style="font-size:12px">—</span>'),
+      _svc_row("freee","会計・請求","api", pill("連携済み（正規API）","ne","check"), '<span class="muted" style="font-size:12px">—</span>'),
     ])) +
   card(head("追加する") +
     field("サービス", inp("","サービス名か URL を入れる")) +

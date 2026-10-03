@@ -45779,6 +45779,7 @@
    ],
    "audit_md_path": "07_tasks/audit/T-B-05.md",
    "status": "done",
+   "done_at": "2026-10-03",
    "qa_rows": {
     "l1": [
      "BRG-05-004",
@@ -45858,8 +45859,7 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 4.0,
-   "estimate_sessions": 1,
-   "done_at": "2026-10-03"
+   "estimate_sessions": 1
   },
   {
    "id": "T-B-08",
@@ -51294,8 +51294,8 @@
      "UBIQUITOUS: ログイン情報を預けたらその場で 1 回ログインだけ試す（入れたらそのまま出る・ほ の成果物があり、type-check と build が通る"
     ],
     "functional": [
-     "EVENT-DRIVEN: WHEN 保存する（実ブラウザ）、システムは 理由と次の一手が出る。何度も試さない",
-     "UNWANTED: IF 預けたログイン情報、システムは 入力された後、鍵がメモリにもファイルにも残っていない"
+     "EVENT-DRIVEN: WHEN ①同じ的で違うパスワード（wrong-1234）を預ける ② ?mode=2fa を預ける ③ ?mode=captcha を預ける ④ 台帳で禁止のサービス名で預ける ⑤ PC をつながずに預ける（実ブラウザ）、システムは ①「ログイン名かパスワードが違うようです」＋預け直しの一手 ②「2 段階認証が要ります」③「CAPTCHA が出ました」④「規約で自動操作が禁止なので試しません」⑤「PC をつなぐと試します」。どれも 1 回で止まり、何度も試さない",
+     "UNWANTED: IF 預けたログイン情報、システムは 入力された後、鍵がメモリにもファイルにも残っていない（画面・DB・証跡・Chrome の置き場のどこにも値が無い）"
     ],
     "regression": [
      "pnpm test（該当パッケージ）PASS",
@@ -51314,7 +51314,7 @@
     "06_mockup/v1/v1-clone-chat.html"
    ],
    "audit_md_path": "07_tasks/audit/T-B-38.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "CHT-38-001",
@@ -51327,11 +51327,11 @@
     {
      "name": "ログイン情報を預けたらその場で 1 回ログインだけ試す（入れたらそのまま出る・ほ",
      "steps": [
-      "保存する（実ブラウザ）",
-      "保存する（実ブラウザ）",
-      "ログインに使う"
+      "①「ログイン情報を預ける」で 追加する → サービスに http://127.0.0.1:3124/dev/fake-login?mode=ok → ログイン名 me@example.com・パスワード S3cret-Plain! を入れて 保存する ② 行の「1 回のログイン」が「順番待ち／試しています」になり、PC で Chrome が開いて閉じる（実ブラウザ）",
+      "①同じ的で違うパスワード（wrong-1234）を預ける ② ?mode=2fa を預ける ③ ?mode=captcha を預ける ④ 台帳で禁止のサービス名で預ける ⑤ PC をつながずに預ける（実ブラウザ）",
+      "ログインを試した後、画面を Cmd+F でパスワードを探す。DB（credentials・bridge_jobs・audit_events）と Bridge の置き場（browser-profile）にも無いことを自動テストが確かめる"
      ],
-     "expected": "理由と次の一手が出る。何度も試さない"
+     "expected": "①「ログイン名かパスワードが違うようです」＋預け直しの一手 ②「2 段階認証が要ります」③「CAPTCHA が出ました」④「規約で自動操作が禁止なので試しません」⑤「PC をつなぐと試します」。どれも 1 回で止まり、何度も試さない"
     }
    ],
    "source": [
@@ -51358,12 +51358,12 @@
     "tier_2_functional": [
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN 保存する（実ブラウザ）、システムは 理由と次の一手が出る。何度も試さない",
+      "text": "EVENT-DRIVEN: WHEN ①同じ的で違うパスワード（wrong-1234）を預ける ② ?mode=2fa を預ける ③ ?mode=captcha を預ける ④ 台帳で禁止のサービス名で預ける ⑤ PC をつながずに預ける（実ブラウザ）、システムは ①「ログイン名かパスワードが違うようです」＋預け直しの一手 ②「2 段階認証が要ります」③「CAPTCHA が出ました」④「規約で自動操作が禁止なので試しません」⑤「PC をつなぐと試します」。どれも 1 回で止まり、何度も試さない",
       "critical": false
      },
      {
       "type": "UNWANTED",
-      "text": "UNWANTED: IF 預けたログイン情報、システムは 入力された後、鍵がメモリにもファイルにも残っていない",
+      "text": "UNWANTED: IF 預けたログイン情報、システムは 入力された後、鍵がメモリにもファイルにも残っていない（画面・DB・証跡・Chrome の置き場のどこにも値が無い）",
       "critical": true
      }
     ],
@@ -51386,7 +51386,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 2.5,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-10-03"
   },
   {
    "id": "T-B-39",

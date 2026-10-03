@@ -36,6 +36,7 @@ export async function startAgentBridge(token: string, opts: { browser?: "chrome"
       onChange: () => void;
       onGone: () => void;
       onBrowser?: (b: "chrome" | "dedicated" | "off") => void;
+      loginCheckHeadless?: boolean;
     }) => () => void;
   };
   const sid = await claimBridge(token);
@@ -52,6 +53,7 @@ export async function startAgentBridge(token: string, opts: { browser?: "chrome"
   const stop = startLoop({
     apiBase: API,
     sessionId: () => sid,
+    loginCheckHeadless: true, // 試験では Chrome の窓を出さない（T-B-38）
     health: async () => (current ? [browserCheck(current, true, runner.chromeState(), true)] : []),
     onChange: () => undefined,
     onGone: () => undefined,

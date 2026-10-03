@@ -455,6 +455,9 @@ export interface MyCredential {
   kind: string;
   state: "stored" | "connected" | "revoked";
   ref_tail: string;
+  /** 預けた直後の 1 回のログイン（D-117.1）。まだ無ければ null */
+  login_check: { state: LoginCheckState; detail: string | null; at: string | null } | null;
   created_at: string;
 }
+export type LoginCheckState = "pending" | "running" | "ok" | "bad_password" | "needs_2fa" | "captcha" | "forbidden" | "unreachable" | "no_form" | "no_bridge" | "stopped";
 export const myCredentials = () => ext<MyCredential[]>("/vault/credentials", undefined, "GET");

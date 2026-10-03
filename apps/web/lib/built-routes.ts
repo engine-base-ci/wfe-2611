@@ -4,6 +4,7 @@
 export const BUILT_ROUTES: readonly string[] = [
   "/",
   "/ai/chat",
+  "/dev/fake-login",
   "/dev/mail",
   "/dev/memory",
   "/dev/shell",

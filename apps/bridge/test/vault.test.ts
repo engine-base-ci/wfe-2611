@@ -100,11 +100,12 @@ describe("BRG-05-004 鍵を受け取る：値は use の中だけ。終わった
         password: "S3cret-Plain!",
         totpSecret: "JBSWY3DPEHPK3PXP",
         serviceName: "発注ナビ",
+        serviceDomain: null,
       });
       return `${c.login.length}`;
     });
     expect(out).toBe("14");
-    expect(held).toEqual({ login: "", password: "", totpSecret: null, serviceName: "発注ナビ" });
+    expect(held).toEqual({ login: "", password: "", totpSecret: null, serviceName: "発注ナビ", serviceDomain: null });
     // 頼み方：Bridge の鍵がヘッダに・仕事と資格情報の id が本文に。値は送っていない
     expect(seen).toHaveLength(1);
     expect(seen[0]!.path).toBe("/api/auth-ext/bridge/credentials/resolve");
@@ -126,7 +127,8 @@ describe("BRG-05-004 鍵を受け取る：値は use の中だけ。終わった
     expect(src).not.toMatch(/from "node:fs|from "fs"|writeFile|appendFile|console\.|electron|localStorage|safeStorage/);
     // 値を参照 ID として AI に渡す道（道具）にも、値を書く口が無い
     const srcDir = join(__dirname, "..", "src");
-    const others = readdirSync(srcDir).filter((f) => f.endsWith(".ts") && f !== "vault.ts");
+    // 値を扱ってよいのは vault.ts と、1 回だけログインを試す login-check.ts（T-B-38・自分の試験で fs／console を呼ばないことを確かめる）
+    const others = readdirSync(srcDir).filter((f) => f.endsWith(".ts") && f !== "vault.ts" && f !== "login-check.ts");
     for (const f of others)
       expect(readFileSync(join(srcDir, f), "utf8"), `${f} が資格情報の値を扱っている`).not.toMatch(
         /withCredential\(|\.password\b/,

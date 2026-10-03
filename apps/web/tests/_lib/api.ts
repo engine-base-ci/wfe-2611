@@ -11,7 +11,7 @@ export const PW = "correct-horse-battery-1";
 // 「本当に送られたか」の行が検証できない（拒否を握り潰していた間だけ緑に見えていた）。
 // QA_MAIL_TO で環境ごとに変えられる（<uniq> がその回の一意な文字に置き換わる）。
 const MAIL_TO = process.env["QA_MAIL_TO"] ?? "<uniq>@resend.dev";
-const uniq = () => `${Date.now().toString(36)}-${Math.floor(Math.random() * 1e5)}`;
+export const uniq = () => `${Date.now().toString(36)}-${Math.floor(Math.random() * 1e5)}`;
 /** ふつうのテストの宛先。`qa-` で始まるので API は実際には送らない（MAIL_SUPPRESS_PREFIX）。
  *  リンクは API のログに出るので手順はそのまま通る */
 export const uniqEmail = () => MAIL_TO.replace("<uniq>", `qa-${uniq()}`);

@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-03T10:39:58",
+ "generated_at": "2026-10-03T12:06:33",
  "inputs": {
   "tickets": "07_tasks/tickets.json",
   "roster": "07_tasks/roster.json",
@@ -16,12 +16,12 @@
  "summary": {
   "as_of": "2026-10-03",
   "by_status": {
-   "done": 109,
-   "todo": 105
+   "done": 110,
+   "todo": 104
   },
-  "hours_done": 813.9,
+  "hours_done": 816.4,
   "hours_total": 1226.3,
-  "progress_pct": 66,
+  "progress_pct": 67,
   "epic": 16,
   "story": 214,
   "subtask": 6024,
@@ -42,7 +42,7 @@
   "cycle": [],
   "ghost_dependencies": [],
   "unassignable": [],
-  "tentative": 13,
+  "tentative": 12,
   "assigned": 169,
   "broken_links": [],
   "milestone_overrun": [],
@@ -58,8 +58,8 @@
    "claude-01": 37.8,
    "claude-02": 39.8,
    "claude-03": 45.8,
-   "claude-04": 11.2,
-   "claude-05": 12.0,
+   "claude-04": 11.7,
+   "claude-05": 9.0,
    "claude-06": 24.4,
    "claude-07": 24.1,
    "claude-08": 33.1,
@@ -26943,10 +26943,10 @@
    "layer": "backend",
    "estimate_hours": 2.5,
    "estimate_default": false,
-   "start": "2026-10-06",
-   "finish": "2026-10-06",
+   "start": "2026-10-03",
+   "finish": "2026-10-03",
    "critical": false,
-   "tentative": true,
+   "tentative": false,
    "assignable": [
     "takamoto",
     "claude-01",
@@ -26957,7 +26957,7 @@
    ],
    "assignee": null,
    "assigned_by": null,
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -26986,9 +26986,9 @@
    },
    "delta": "unchanged",
    "dropped_reason": null,
-   "done_at": null,
+   "done_at": "2026-10-03",
    "started_at": null,
-   "tentative_assignee": "claude-04"
+   "actual": true
   },
   {
    "id": "T-B-39",
@@ -27015,8 +27015,8 @@
    "layer": "backend",
    "estimate_hours": 3.0,
    "estimate_default": false,
-   "start": "2026-10-07",
-   "finish": "2026-10-07",
+   "start": "2026-10-06",
+   "finish": "2026-10-06",
    "critical": false,
    "tentative": true,
    "assignable": [
@@ -27067,7 +27067,7 @@
    "dropped_reason": null,
    "done_at": null,
    "started_at": null,
-   "tentative_assignee": "claude-05"
+   "tentative_assignee": "claude-04"
   },
   {
    "id": "T-B-40",
@@ -105482,7 +105482,7 @@
    "sub": "impl",
    "title": "apps/bridge/src/login-check.ts (new)",
    "parent": "T-B-38",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/bridge/src/login-check.ts (new)"
@@ -105495,7 +105495,7 @@
    "sub": "impl",
    "title": "apps/web/app/(app)/settings/credentials/page.tsx (new)",
    "parent": "T-B-38",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/app/(app)/settings/credentials/page.tsx (new)"
@@ -105508,7 +105508,7 @@
    "sub": "impl",
    "title": "apps/web/tests/screens/credentials.spec.ts (new)",
    "parent": "T-B-38",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/tests/screens/credentials.spec.ts (new)"

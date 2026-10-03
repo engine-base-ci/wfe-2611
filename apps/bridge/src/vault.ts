@@ -8,6 +8,8 @@ export interface Credential {
   /** 認証アプリの秘密鍵（Base32）。無ければ null */
   totpSecret: string | null;
   serviceName: string | null;
+  /** 開く先のドメイン（名前だけで預けたとき用）。無ければ null */
+  serviceDomain: string | null;
 }
 export interface VaultDeps {
   apiBase: string;
@@ -58,7 +60,7 @@ async function fetchCredential(d: VaultDeps, jobId: string, credentialId: string
     );
   }
   // 途中で切れた・空・欠け（G-15）：成功にしない
-  let j: { data?: { login?: unknown; password?: unknown; totp_secret?: unknown; service_name?: unknown } };
+  let j: { data?: { login?: unknown; password?: unknown; totp_secret?: unknown; service_name?: unknown; service_domain?: unknown } };
   try {
     j = (await r.json()) as typeof j;
   } catch {
@@ -72,6 +74,7 @@ async function fetchCredential(d: VaultDeps, jobId: string, credentialId: string
     password: dd.password,
     totpSecret: typeof dd.totp_secret === "string" && dd.totp_secret ? dd.totp_secret : null,
     serviceName: typeof dd.service_name === "string" ? dd.service_name : null,
+    serviceDomain: typeof dd.service_domain === "string" ? dd.service_domain : null,
   };
 }
 

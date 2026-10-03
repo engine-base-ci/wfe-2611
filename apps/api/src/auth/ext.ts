@@ -672,6 +672,7 @@ export function authExt(d: AuthExtDeps): Hono {
         job_id: string; prompt: string; agent_session_id: string | null; conversation_id: string | null;
         permission_mode: string; model: string | null; effort: string | null; tools: string[] | null; allowed_tools: string[] | null;
         attachments: { id: string; name: string; mime: string; size: number }[];
+        kind: "chat" | "login_check"; credential_id: string | null;
       }>("select * from app.bridge_take_job($1)", [sid])
     ).rows[0] ?? null;
   app.post("/bridge/take", async (c) => {
@@ -868,6 +869,7 @@ export function authExt(d: AuthExtDeps): Hono {
   });
 
   // 資格情報を預ける（T-U-10・関門 C8）：平文はここで暗号化して vault へ。表（credentials）には参照 ID だけ。AI には渡らない
+  const UUID_RE_CRED = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   app.post("/vault/credentials", async (c) => {
     const s = await resolve(c.req.raw.headers);
     if (!s?.ctx.tenantId || !s.ctx.userId) return bad(c, 401, "UNAUTHENTICATED", "ログインしてください");
@@ -930,12 +932,30 @@ export function authExt(d: AuthExtDeps): Hono {
       owner_member_id: s.ctx.userId,
       scope_id: me?.["scope_id"] ?? null,
     });
-    return c.json({ data: { id: row["id"], vault_ref: ref, service_name: name || null } }, 201);
+    // 預けたらその場で 1 回だけログインを試す（D-117.1）。禁止・銀行は試さない。Bridge の端末が無ければ積まない
+    const check = (await d.appPool.query<{ id: string | null }>("select app.credential_login_check_enqueue($1, $2) as id", [s.ctx.userId, row["id"]])).rows[0]?.id ?? null;
+    return c.json({ data: { id: row["id"], vault_ref: ref, service_name: name || null, login_check_job_id: check } }, 201);
+  });
+  // Bridge が 1 回のログインの結果を返す（T-B-38・D-117.1）。本人の Bridge が取った動いている仕事に対してだけ。値は無い（結果の種類と理由だけ）
+  app.post("/bridge/credentials/check-result", async (c) => {
+    const sid = await bridgeSession(c);
+    if (!sid) return bad(c, 401, "UNAUTHENTICATED", "この Bridge は分かりません");
+    if (!(await bridgeAlive(sid))) return GONE(c);
+    const b = (await c.req.json().catch(() => ({}))) as { job_id?: unknown; state?: unknown; detail?: unknown };
+    const states = ["ok", "bad_password", "needs_2fa", "captcha", "unreachable", "no_form", "stopped"];
+    if (typeof b.job_id !== "string" || !UUID_RE_CRED.test(b.job_id) || typeof b.state !== "string" || !states.includes(b.state))
+      return bad(c, 422, "VALIDATION_FAILED", "仕事の id と結果（ok／bad_password／needs_2fa／captcha／unreachable／no_form／stopped）が要ります");
+    const detail = typeof b.detail === "string" ? b.detail.slice(0, 400) : "";
+    const r = (await d.appPool.query<{ v: { tenant_id: string; member_id: string; credential_id: string } | null }>(
+      "select app.bridge_login_check_result($1, $2, $3, $4) as v", [sid, b.job_id, b.state, detail],
+    )).rows[0]?.v ?? null;
+    if (!r) return bad(c, 404, "JOB_NOT_FOUND", "その仕事は見つかりません");
+    await d.repo.audit({ tenantId: r.tenant_id, userId: r.member_id, role: "member" }, "credential.login_check", "credentials", r.credential_id, "C1", { job_id: b.job_id, state: b.state });
+    return c.json({ data: { ok: true } });
   });
   // Bridge が「いま動いている仕事」のために資格情報 1 件を受け取る（T-B-05・D-102.2・D-017.1・関門 C8）。
   //   本人の Bridge の鍵・本人の動いている仕事・本人の資格情報、の 3 つがそろったときだけ。解くのは関門（caller=executor）で、証跡に残す。
   //   値はこの応答にだけ載る（表・ログ・AI の道具には載らない）
-  const UUID_RE_CRED = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   app.post("/bridge/credentials/resolve", async (c) => {
     const sid = await bridgeSession(c);
     if (!sid) return bad(c, 401, "UNAUTHENTICATED", "この Bridge は分かりません");
@@ -944,7 +964,7 @@ export function authExt(d: AuthExtDeps): Hono {
     if (typeof b.job_id !== "string" || !UUID_RE_CRED.test(b.job_id) || typeof b.credential_id !== "string" || !UUID_RE_CRED.test(b.credential_id))
       return bad(c, 422, "VALIDATION_FAILED", "仕事の id と資格情報の id が要ります");
     const row = (
-      await d.appPool.query<{ tenant_id: string; member_id: string; vault_ref: string | null; service_name: string | null; revoked: boolean; job_ok: boolean }>(
+      await d.appPool.query<{ tenant_id: string; member_id: string; vault_ref: string | null; service_name: string | null; service_domain: string | null; revoked: boolean; job_ok: boolean }>(
         "select * from app.bridge_credential($1, $2, $3)",
         [sid, b.job_id, b.credential_id],
       )
@@ -981,6 +1001,7 @@ export function authExt(d: AuthExtDeps): Hono {
         password: typeof v.password === "string" ? v.password : "",
         totp_secret: typeof v.totp_secret === "string" ? v.totp_secret : null,
         service_name: row.service_name,
+        service_domain: row.service_domain,
       },
     });
   });

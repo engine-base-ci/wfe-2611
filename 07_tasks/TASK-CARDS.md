@@ -2739,7 +2739,7 @@
 - 根拠（逐語）：D-117「ログイン情報を預けたら、Bridge がそのサービスに 1 回だけログインして、入れたらそのまま出る（ほかの操作はしない」 ／ D-017「vaultにID/PW＋TOTPシークレットを暗号化保管し実行器が直接入力。AIには一切渡さない(参照IDのみ)」
 - 触るファイル：apps/bridge/src/login-check.ts (new)、apps/web/app/(app)/settings/credentials/page.tsx (new)、apps/web/tests/screens/credentials.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: ログイン情報を預けたらその場で 1 回ログインだけ試す（入れたらそのまま出る・ほ の成果物があり、type-check と build 
-- AC（Tier 2）：EVENT-DRIVEN: WHEN 保存する（実ブラウザ）、システムは 理由と次の一手が出る。何度も試さない ／ UNWANTED: IF 預けたログイン情報、システムは 入力された後、鍵がメモリにもファイルにも残っていない
+- AC（Tier 2）：EVENT-DRIVEN: WHEN ①同じ的で違うパスワード（wrong-1234）を預ける ② ?mode=2fa を預ける ③ ?mode=captcha ／ UNWANTED: IF 預けたログイン情報、システムは 入力された後、鍵がメモリにもファイルにも残っていない（画面・DB・証跡・Chrome の置き場のどこに
 - L1 行 3（['CHT-38-001', 'CHT-38-002', 'CHT-38-003'] …）／ L2 —
 - audit: 07_tasks/audit/T-B-38.md
 

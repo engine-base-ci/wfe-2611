@@ -9,6 +9,7 @@ import { writeMcpServer, type KanameTools } from "./kaname-tools";
 import { dedicatedBrowser } from "./browser";
 import { aiEntries, joinResponse, sessionFile, sizeOf } from "./transcript";
 import { runClaude, stopCurrent, type Answer, type Finish, type Guard, type Job } from "./runner";
+import { runLoginCheck } from "./login-check";
 import { label, phaseText, type Entry } from "./stream";
 
 const ANSWER_POLL_MS = 1_500;
@@ -63,6 +64,8 @@ export interface LoopDeps {
   dataDir?: string;
   /** Kaname に知らされた、この端末で AI が使うブラウザ（D-120.1）。窓に同じ値を出す */
   onBrowser?: (b: Browser) => void;
+  /** 試験だけ：1 回のログインを画面に出さずに動かす（本人の PC では出す・D-119.6） */
+  loginCheckHeadless?: boolean;
 }
 export type Browser = "chrome" | "dedicated" | "off";
 
@@ -162,6 +165,18 @@ export function startLoop(d: LoopDeps): () => void {
     if (!job) return typeof r.next_ms === "number" && r.next_ms >= 0 ? r.next_ms : RETRY_MS;
     state.working = job.job_id;
     d.onChange({ ...state });
+    // 預けたログイン情報で 1 回だけ入ってみる仕事（D-117.1）：AI は起こさない。鍵は受け取り口の中だけ。結果は種類と理由だけを返す
+    if (job.kind === "login_check" && job.credential_id) {
+      const r = await runLoginCheck(
+        { apiBase: d.apiBase, sessionId: d.sessionId, dataDir: d.dataDir ?? join(tmpdir(), "kaname-bridge"), ...(d.loginCheckHeadless ? { headless: true } : {}) },
+        job.job_id,
+        job.credential_id,
+      );
+      await post("/bridge/credentials/check-result", { job_id: job.job_id, state: r.state, detail: r.detail });
+      state.working = null;
+      d.onChange({ ...state });
+      return 0;
+    }
     let seq = 0;
     // 途中経過は仕事を待たせずに、出た順に 1 本ずつ送る（追い越すと古い使用量が新しいものを上書きする）。
     // 結末の前には必ず届け終える（後から届くと仕事が閉じていて捨てられる）

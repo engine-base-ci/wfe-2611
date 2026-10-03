@@ -29,7 +29,11 @@ let admin: pg.Pool;
 let secrets: SecretsGateway;
 const X = "/api/auth-ext";
 const req = (method: string, path: string, body?: unknown, headers: Record<string, string> = {}) =>
-  app.request(`http://localhost${X}${path}`, { method, headers: { "content-type": "application/json", ...headers }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
+  app.request(`http://localhost${X}${path}`, {
+    method,
+    headers: { "content-type": "application/json", ...headers },
+    ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+  });
 const post = (path: string, body: unknown, h: Record<string, string> = {}) => req("POST", path, body, h);
 const json = async <T>(r: Response | Promise<Response>) => ((await (await r).json()) as { data: T }).data;
 const uniq = () => `qa-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
@@ -51,17 +55,37 @@ beforeAll(async () => {
   const appPool = createPool({ databaseUrl: APP_URL, max: 3 });
   const repo = await createRepository(appPool);
   const { auth } = createAuth({
-    authDatabaseUrl: AUTH_URL, appPool, secret: "test-secret-0123456789-abcdefghijklmnop",
-    baseURL: "http://localhost:3001", webBaseURL: "http://localhost:3123", mailer: async () => undefined,
+    authDatabaseUrl: AUTH_URL,
+    appPool,
+    secret: "test-secret-0123456789-abcdefghijklmnop",
+    baseURL: "http://localhost:3001",
+    webBaseURL: "http://localhost:3123",
+    mailer: async () => undefined,
   });
   secrets = new SecretsGateway(repo, vault, Buffer.alloc(32, 9));
-  const objects = new ObjectStore(repo, localDriver(mkdtempSync(join(tmpdir(), "kaname-obj-"))), { signingSecret: "test-files", maxBytes: 1024 * 1024 });
+  const objects = new ObjectStore(repo, localDriver(mkdtempSync(join(tmpdir(), "kaname-obj-"))), {
+    signingSecret: "test-files",
+    maxBytes: 1024 * 1024,
+  });
   app = createApp({
-    repo, auth, resolve: createSessionResolver(auth, appPool),
+    repo,
+    auth,
+    resolve: createSessionResolver(auth, appPool),
     authExt: authExt({
-      auth, appPool, authPool: new pg.Pool({ connectionString: AUTH_URL, max: 2 }), repo, secrets, objects,
+      auth,
+      appPool,
+      authPool: new pg.Pool({ connectionString: AUTH_URL, max: 2 }),
+      repo,
+      secrets,
+      objects,
       mailer: async (m) => void sent.push({ to: m.to, url: m.url, kind: m.kind }),
-      config: { secretsMasterKey: "test-master", baseUrl: "http://localhost:3001", webBaseUrl: "http://localhost:3123", opsEmail: "ops@example.com", env: "test" as const },
+      config: {
+        secretsMasterKey: "test-master",
+        baseUrl: "http://localhost:3001",
+        webBaseUrl: "http://localhost:3123",
+        opsEmail: "ops@example.com",
+        env: "test" as const,
+      },
     }),
   });
 }, 60_000);
@@ -71,19 +95,33 @@ async function ready(opts: { job?: boolean } = { job: true }) {
   const email = `${uniq()}@example.com`;
   expect((await post("/sign-up", { email, password: PW, company_name: "K" })).status).toBe(201);
   const mail = sent.filter((m) => m.to === email && m.kind === "verify").at(-1)!;
-  const ver = await json<{ token: string }>(post("/verify-signup", { token: new URL(mail.url).searchParams.get("token") }));
+  const ver = await json<{ token: string }>(
+    post("/verify-signup", { token: new URL(mail.url).searchParams.get("token") }),
+  );
   const H = { authorization: `Bearer ${ver.token}` };
   const pair = await json<{ code: string }>(post("/bridge/pair", {}, H));
-  const claim = await json<{ session_id: string }>(post("/bridge/claim", { code: pair.code, device_label: "QA の PC" }));
+  const claim = await json<{ session_id: string }>(
+    post("/bridge/claim", { code: pair.code, device_label: "QA の PC" }),
+  );
   const B = { "x-bridge-session": claim.session_id };
-  const member = (await admin.query("select member_id, tenant_id from sessions where id = $1", [claim.session_id])).rows[0] as { member_id: string; tenant_id: string };
-  const stored = await json<{ vault_ref: string }>(post("/vault/credentials", { service_name: "発注ナビ", login: "me@example.com", password: "S3cret-Plain!", totp_secret: "JBSWY3DPEHPK3PXP" }, H));
-  const credId = (await admin.query("select id from credentials where vault_ref = $1", [stored.vault_ref])).rows[0].id as string;
+  const member = (await admin.query("select member_id, tenant_id from sessions where id = $1", [claim.session_id]))
+    .rows[0] as { member_id: string; tenant_id: string };
+  const stored = await json<{ vault_ref: string }>(
+    post(
+      "/vault/credentials",
+      { service_name: "発注ナビ", login: "me@example.com", password: "S3cret-Plain!", totp_secret: "JBSWY3DPEHPK3PXP" },
+      H,
+    ),
+  );
+  const credId = (await admin.query("select id from credentials where vault_ref = $1", [stored.vault_ref])).rows[0]
+    .id as string;
   let jobId: string | null = null;
   if (opts.job) {
-    const s = await json<{ job_id: string }>(post("/agent/say", { text: "発注ナビに入って見積を出す" }, H));
-    const job = await json<{ job_id: string }>(post("/bridge/take", { protocol: 4 }, B));
-    expect(job.job_id).toBe(s.job_id);
+    // 預けた直後に積まれる「1 回だけログインを試す」仕事（T-B-38）が、この人の動いている仕事になる。Bridge が取る
+    const job = await json<{ job_id: string; kind: string; credential_id: string }>(
+      post("/bridge/take", { protocol: 4 }, B),
+    );
+    expect(job).toMatchObject({ kind: "login_check", credential_id: credId });
     jobId = job.job_id;
   }
   const resolve = (body: unknown, h: Record<string, string> = B) => post("/bridge/credentials/resolve", body, h);
@@ -91,7 +129,12 @@ async function ready(opts: { job?: boolean } = { job: true }) {
 }
 /** Bridge の受け取りに関する証跡だけ（預けたときの credentials.create は別） */
 const auditsOf = async (tenant: string, cred: string) =>
-  (await admin.query("select action, choke_point_id, payload from audit_events where tenant_id = $1 and target_type = 'credentials' and target_id = $2 and action like 'credential.bridge_%' order by created_at", [tenant, cred])).rows as {
+  (
+    await admin.query(
+      "select action, choke_point_id, payload from audit_events where tenant_id = $1 and target_type = 'credentials' and target_id = $2 and action like 'credential.bridge_%' order by created_at",
+      [tenant, cred],
+    )
+  ).rows as {
     action: string;
     choke_point_id: string;
     payload: Record<string, unknown>;
@@ -103,13 +146,22 @@ describe("BRG-05-004 鍵を受け取る：本人の Bridge・動いている仕�
     const res = await r.resolve({ job_id: r.jobId, credential_id: r.credId });
     expect(res.status).toBe(200);
     const d = ((await res.json()) as { data: Record<string, unknown> }).data;
-    expect(d).toEqual({ login: "me@example.com", password: "S3cret-Plain!", totp_secret: "JBSWY3DPEHPK3PXP", service_name: "発注ナビ" });
+    expect(d).toEqual({
+      login: "me@example.com",
+      password: "S3cret-Plain!",
+      totp_secret: "JBSWY3DPEHPK3PXP",
+      service_name: "発注ナビ",
+      service_domain: null, // 名前だけで預けた（URL ではない）
+    });
     const a = await auditsOf(r.member.tenant_id, r.credId);
     expect(a.map((x) => [x.action, x.choke_point_id])).toEqual([["credential.bridge_resolve", "C8"]]);
     expect(a[0]!.payload).toMatchObject({ job_id: r.jobId, service_name: "発注ナビ" });
     expect(JSON.stringify(a)).not.toContain("S3cret-Plain!");
     // 関門 C8 の秘密の側にも「解いた」証跡が残る（SecretsGateway.finish）。値は無い
-    const sec = await admin.query("select action, payload from audit_events where tenant_id = $1 and target_type = 'secret' and target_id = $2 order by created_at", [r.member.tenant_id, r.vaultRef]);
+    const sec = await admin.query(
+      "select action, payload from audit_events where tenant_id = $1 and target_type = 'secret' and target_id = $2 order by created_at",
+      [r.member.tenant_id, r.vaultRef],
+    );
     expect(sec.rows.map((x: { action: string }) => x.action)).toContain("secret.resolve");
     expect(JSON.stringify(sec.rows)).not.toContain("S3cret-Plain!");
     // 画面の一覧（D-108.3）は中身を返さない
@@ -120,7 +172,14 @@ describe("BRG-05-004 鍵を受け取る：本人の Bridge・動いている仕�
   it("BRG-05-004 Bridge の鍵が無い／ログインの鍵を Bridge の鍵として出す → 401。何も解かれない", async () => {
     const r = await ready();
     expect((await r.resolve({ job_id: r.jobId, credential_id: r.credId }, {})).status).toBe(401);
-    expect((await r.resolve({ job_id: r.jobId, credential_id: r.credId }, { "x-bridge-session": r.H.authorization.slice(7) })).status).toBe(401);
+    expect(
+      (
+        await r.resolve(
+          { job_id: r.jobId, credential_id: r.credId },
+          { "x-bridge-session": r.H.authorization.slice(7) },
+        )
+      ).status,
+    ).toBe(401);
     expect(await auditsOf(r.member.tenant_id, r.credId)).toEqual([]);
   });
 
@@ -130,7 +189,11 @@ describe("BRG-05-004 鍵を受け取る：本人の Bridge・動いている仕�
     for (const job of [other.jobId, "00000000-0000-4000-8000-000000000000"]) {
       const res = await r.resolve({ job_id: job, credential_id: r.credId });
       expect(res.status).toBe(403);
-      expect(await res.json()).toMatchObject({ code: "JOB_NOT_RUNNING", message: expect.stringContaining("動いている仕事"), handoff: expect.any(String) });
+      expect(await res.json()).toMatchObject({
+        code: "JOB_NOT_RUNNING",
+        message: expect.stringContaining("動いている仕事"),
+        handoff: expect.any(String),
+      });
     }
     // 自分の仕事でも、終わっていれば出ない
     const s = await json<{ job_id: string }>(post("/agent/say", { text: "x" }, r.H));
@@ -138,7 +201,11 @@ describe("BRG-05-004 鍵を受け取る：本人の Bridge・動いている仕�
     await admin.query("update bridge_jobs set state_id = 'done', finished_at = now() where id = $1", [s.job_id]);
     expect((await r.resolve({ job_id: s.job_id, credential_id: r.credId })).status).toBe(403);
     const a = await auditsOf(r.member.tenant_id, r.credId);
-    expect(a.map((x) => x.action)).toEqual(["credential.bridge_denied", "credential.bridge_denied", "credential.bridge_denied"]);
+    expect(a.map((x) => x.action)).toEqual([
+      "credential.bridge_denied",
+      "credential.bridge_denied",
+      "credential.bridge_denied",
+    ]);
     expect(a.every((x) => x.payload["reason"] === "job_not_running" && x.choke_point_id === "C8")).toBe(true);
   });
 
@@ -172,7 +239,9 @@ describe("BRG-05-004 鍵を受け取る：本人の Bridge・動いている仕�
     // 道具（AI が呼ぶ口）の一覧に、資格情報を解く道具が無い
     const job = await json<{ tool_token: string | null }>(post("/bridge/take", { protocol: 4 }, r.B)).catch(() => null);
     void job;
-    const src = await import("node:fs/promises").then((fs) => fs.readFile(join(dirname(fileURLToPath(import.meta.url)), "..", "src", "auth", "agent-tools.ts"), "utf8"));
+    const src = await import("node:fs/promises").then((fs) =>
+      fs.readFile(join(dirname(fileURLToPath(import.meta.url)), "..", "src", "auth", "agent-tools.ts"), "utf8"),
+    );
     expect(src).not.toMatch(/credentials\/resolve|secrets\.resolve/);
   });
 });
@@ -185,7 +254,11 @@ describe("BRG-05-005 外部リソースの実在（G-11）：預かり先に届�
       const res = await r.resolve({ job_id: r.jobId, credential_id: r.credId });
       expect(res.status).toBe(502);
       const body = await res.json();
-      expect(body).toMatchObject({ code: "E-SEC-001", message: expect.stringContaining("届きません"), handoff: expect.any(String) });
+      expect(body).toMatchObject({
+        code: "E-SEC-001",
+        message: expect.stringContaining("届きません"),
+        handoff: expect.any(String),
+      });
       expect(JSON.stringify(body)).not.toContain("S3cret-Plain!");
     } finally {
       vault.down = false;
@@ -201,7 +274,10 @@ describe("BRG-05-006 信号なし終了（G-15）：預かったものが読め�
     const ctx = { tenantId: r.member.tenant_id, userId: r.member.member_id, role: "member" as const };
     const broken = await secrets.store(ctx, "password", "これは JSON ではない");
     expect(broken.status).toBe("done");
-    await admin.query("update credentials set vault_ref = $2 where id = $1", [r.credId, (broken as { value: { ref: string } }).value.ref]);
+    await admin.query("update credentials set vault_ref = $2 where id = $1", [
+      r.credId,
+      (broken as { value: { ref: string } }).value.ref,
+    ]);
     const res = await r.resolve({ job_id: r.jobId, credential_id: r.credId });
     expect(res.status).toBe(502);
     expect(await res.json()).toMatchObject({ code: "E-SEC-001", handoff: "預け直す" });
