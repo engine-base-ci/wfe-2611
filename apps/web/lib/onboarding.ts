@@ -20,7 +20,7 @@ export const SETUP_STEPS: readonly SetupStep[] = [
   { n: 2, label: "話す", href: "/onboard/interview" as Route, built: true, doneWhen: "自分のAI に 1 つ答える" },
   { n: 3, label: "たたき台", href: "/onboard/draft" as Route, built: true, doneWhen: "たたき台を見て「これでいく」を押す" },
   { n: 4, label: "ログイン情報", href: "/settings/credentials" as Route, built: true, doneWhen: "ログイン情報を 1 件預ける" },
-  { n: 5, label: "テスト", href: "/onboard/testrun" as Route, built: false, doneWhen: "AI社員を全員 1 回ずつテストで動かし、出てきたものを見て「本番に切り替える」を押す" },
+  { n: 5, label: "テスト", href: "/onboard/testrun" as Route, built: true, doneWhen: "AI社員を全員 1 回ずつテストで動かし、出てきたものを見て「本番に切り替える」を押す" },
   { n: 6, label: "本番へ", href: "/onboard/golive" as Route, built: false, doneWhen: "切り替える前の確認に赤が無い状態で「切り替える」を押す" },
 ] as const;
 

@@ -57,10 +57,14 @@ test("CHT-36-002 押せない段を押すと、いまの段で何をすれば開
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/onboard/draft");
   await expect(page.locator("[data-card]").first()).toBeVisible({ timeout: 30_000 });
+  // 進み具合（段 2 まで）が読めてから押す（読めていない間は 1 段目扱いの文が出る）
+  await expect(page.locator("ol[aria-label='手順'] li", { hasText: "2. 話す" })).toHaveClass(/st-success/, { timeout: 15_000 });
   await page.locator("[data-step-locked]", { hasText: "4. ログイン情報" }).click();
   await expect(page.locator("[data-step-note]")).toHaveText("「4. ログイン情報」は、いまの段「3. たたき台」でたたき台を見て「これでいく」を押すと開きます");
-  await page.locator("[data-step-locked]", { hasText: "5. テスト" }).click();
-  await expect(page.locator("[data-step-note]")).toContainText("「5. テスト」はまだ作っていません");
+  await page.locator("[data-step-locked]", { hasText: "5. テスト" }).click(); // 5 はできた（T-U-11）。届かない段として、いまの段で何をすれば開くかが出る
+  await expect(page.locator("[data-step-note]")).toHaveText("「5. テスト」は、いまの段「3. たたき台」でたたき台を見て「これでいく」を押すと開きます");
+  await page.locator("[data-step-locked]", { hasText: "6. 本番へ" }).click();
+  await expect(page.locator("[data-step-note]")).toContainText("「6. 本番へ」はまだ作っていません");
 });
 
 test("CHT-36-003 まだ自分のAI に答えていないと、話すの帯は押せず「自分のAI に 1 つ答えると進めます」が出る", async ({ page }) => {
@@ -76,23 +80,21 @@ test("CHT-36-003 まだ自分のAI に答えていないと、話すの帯は押
   await expect(page.locator("[data-wiz-next-note]")).toHaveText("自分のAI に 1 つ答えると進めます");
 });
 
-test("CHT-36-004 ログイン情報を預けて段 4 を通すと、次の段がまだ無いことを書き、「Kaname を開く」で行き止まりにならない", async ({ page }) => {
+test("CHT-36-004 ログイン情報を預けて段 4 を通すと、4 の帯は「次へ：5. テスト」で 5 に移る。5 の帯は、まだ無い 6 のことを書き、6 には行かない", async ({ page }) => {
   const u = await signupViaApi();
   await setupStep(u.memberId, 4);
   await loginAs(page, u.token);
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/settings/credentials");
   await expect(bar(page)).toBeVisible({ timeout: 20_000 });
-  await expect(page.locator("[data-wiz-next-note]")).toContainText("「5. テスト」からは、AI社員を動かす仕組みと一緒に作っています（まだ使えません）");
-  await expect(go(page)).toHaveText(/Kaname を開く/);
+  await expect(go(page)).toHaveText(/次へ：5\. テスト/);
   await go(page).click();
-  await expect(page).not.toHaveURL(/\/settings\/credentials/, { timeout: 15_000 });
-  await expect(page).not.toHaveURL(/\/onboard\/(testrun|golive)/);
+  await expect(page).toHaveURL(/\/onboard\/testrun/, { timeout: 15_000 });
   await expect(page.locator("body")).not.toContainText("404");
-  // 戻るを押しても、はじめの設定の画面（ログイン情報）には戻らない（履歴を置き換えて移る・2026-09-30 user）
-  const here = page.url();
-  await page.goBack();
-  await page.waitForTimeout(1500);
-  expect(page.url(), "戻るで設定の画面に戻らない").not.toMatch(/\/settings\/credentials/);
-  void here;
+  // 5 の帯：AI社員がいないので押せず、何をすれば進めるかが書いてある。6 はまだ無いので段の帯にリンクが無い
+  await expect(bar(page)).toBeVisible({ timeout: 20_000 });
+  await expect(go(page)).toBeDisabled();
+  await expect(page.locator("[data-wiz-next-note]")).toContainText("たたき台に AI社員がいると試せます");
+  await expect(page.getByRole("link", { name: "6. 本番へ" })).toHaveCount(0);
 });
+

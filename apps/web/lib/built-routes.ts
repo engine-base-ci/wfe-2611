@@ -15,6 +15,7 @@ export const BUILT_ROUTES: readonly string[] = [
   "/mfa-setup",
   "/onboard/draft",
   "/onboard/interview",
+  "/onboard/testrun",
   "/password-reset",
   "/settings/credentials",
   "/setup/bridge",

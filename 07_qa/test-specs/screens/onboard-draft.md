@@ -1,6 +1,6 @@
 # onboard-draft テスト仕様（L1・機械生成）
 
-> 05_flow/build_tasks.py がタスクと同時に生成。ID は変えない。途中変更は qa_delta.py で差分。結果列は staging で流した人が書く（再生成しても残る。今の行 52・結果あり 52 行）。
+> 05_flow/build_tasks.py がタスクと同時に生成。ID は変えない。途中変更は qa_delta.py で差分。結果列は staging で流した人が書く（再生成しても残る。今の行 52・結果あり 51 行）。
 
 | ID | 画面 | テスト観点 | テスト項目 | 前提条件 | 操作手順 | 期待結果 | 結果 | 備考 | タスク | 実行条件 |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -32,7 +32,7 @@
 | SCR-ONBOARD-DRAFT-027 | onboard-draft | 操作 | リンク「2. 話す」（状態 たたき台・会話で直す・直接編集） | 状態 たたき台 を作る（全役割） | 押す／入れる（実ブラウザ） | /onboard-interview が実在ルートで 200 で開く（G-04） | PASS（screens/onboard-draft.spec.ts・実 Chrome・2026-10-01） | op=link:2. 話す→onboard-interview | T-U-08 | L1 |
 | SCR-ONBOARD-DRAFT-028 | onboard-draft | 操作 | リンク「3. たたき台」（状態 たたき台・会話で直す・直接編集） | 状態 たたき台 を作る（全役割） | 押す／入れる（実ブラウザ） | /onboard-draft が実在ルートで 200 で開く（G-04） | PASS（screens/onboard-draft.spec.ts・実 Chrome・2026-10-01） | op=link:3. たたき台→onboard-draft | T-U-08 | L1 |
 | SCR-ONBOARD-DRAFT-029 | onboard-draft | 操作 | リンク「4. ログイン情報」（状態 たたき台・会話で直す・直接編集） | 状態 たたき台 を作る（全役割） | 押す／入れる（実ブラウザ） | /credentials が実在ルートで 200 で開く（G-04） | PASS（screens/onboard-draft.spec.ts・実 Chrome・2026-10-01） | op=link:4. ログイン情報→credentials | T-U-08 | L1 |
-| SCR-ONBOARD-DRAFT-030 | onboard-draft | 操作 | リンク「5. テスト」（状態 たたき台・会話で直す・直接編集） | 状態 たたき台 を作る（全役割） | 押す／入れる（実ブラウザ） | /onboard-testrun が実在ルートで 200 で開く（G-04） | BLOCKED（自動：行き先の画面 onboard-testrun は T-U-11 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） | op=link:5. テスト→onboard-testrun | T-U-08 | L1 |
+| SCR-ONBOARD-DRAFT-030 | onboard-draft | 操作 | リンク「5. テスト」（状態 たたき台・会話で直す・直接編集） | 状態 たたき台 を作る（全役割） | 押す／入れる（実ブラウザ） | /onboard-testrun が実在ルートで 200 で開く（G-04） |  | op=link:5. テスト→onboard-testrun | T-U-08 | L1 |
 | SCR-ONBOARD-DRAFT-031 | onboard-draft | 操作 | リンク「6. 本番へ」（状態 たたき台・会話で直す・直接編集） | 状態 たたき台 を作る（全役割） | 押す／入れる（実ブラウザ） | /onboard-golive が実在ルートで 200 で開く（G-04） | BLOCKED（自動：行き先の画面 onboard-golive は T-U-12 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） | op=link:6. 本番へ→onboard-golive | T-U-08 | L1 |
 | SCR-ONBOARD-DRAFT-032 | onboard-draft | 操作 | ボタン「会話で直す」（状態 たたき台・直接編集） | 状態 たたき台 を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） | PASS（screens/onboard-draft.spec.ts・実 Chrome・2026-10-01） | op=button:会話で直す | T-U-08 | L1 |
 | SCR-ONBOARD-DRAFT-033 | onboard-draft | 操作 | ボタン「違うところを言う」（状態 たたき台） | 状態 たたき台 を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） | PASS（screens/onboard-draft.spec.ts・実 Chrome・2026-10-01） | op=button:違うところを言う | T-U-08 | L1 |
@@ -74,4 +74,4 @@
 | SCR-ONBOARD-DRAFT-045 | onboard-draft | 操作 | ボタン「あとで」（状態 会話で直す） | 状態 会話で直す を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） | BLOCKED（自動：自分のAIの提案の選択肢（あとで）。T-I-01） | op=button:あとで／削除（生成元から消えた・2026-09-27。結果は残す） | T-U-08 | L1 |
 | SCR-ONBOARD-DRAFT-046 | onboard-draft | 操作 | ボタン「無名（アイコンだけ。実装では aria-label を付ける）」（状態 会話で直す） | 状態 会話で直す を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） | BLOCKED（自動：資料を投げる（添付）。T-I-01） | op=button:無名（アイコンだけ。実装では aria-label を付ける）／削除（生成元から消えた・2026-09-27。結果は残す） | T-U-08 | L1 |
 | SCR-ONBOARD-DRAFT-047 | onboard-draft | 操作 | 入力欄「違うところを言う」（状態 会話で直す） | 状態 会話で直す を作る（全役割） | 押す／入れる（実ブラウザ） | 入力が受け付けられ、送信に載って別 GET で読める（G-01・反映） | PASS（screens/agent-chat.spec.ts・実 Chrome・2026-10-01） | op=textarea:違うところを言う／削除（生成元から消えた・2026-09-27。結果は残す） | T-U-08 | L1 |
-| SCR-ONBOARD-DRAFT-051 | onboard-draft | 操作 | ボタン「声で話す」（状態 会話で直す） | 状態 会話で直す を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） | BLOCKED（自動：「声で話す」は会話の部品（AgentChat）にまだ無い。会話を出す全部の場所で同時に入る（部品は 1 つ・D-103）。T-U-17 で入れる） | op=button:声で話す／削除（生成元から消えた・2026-09-27。結果は残す） | T-U-08 | L1 |
+| SCR-ONBOARD-DRAFT-051 | onboard-draft | 操作 | ボタン「声で話す」（状態 会話で直す） | 状態 会話で直す を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） |  | op=button:声で話す／削除（生成元から消えた・2026-09-27。結果は残す） | T-U-08 | L1 |

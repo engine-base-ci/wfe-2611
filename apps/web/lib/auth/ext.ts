@@ -515,6 +515,23 @@ export interface OnboardDraft {
   duties: { id: string; name: string; staff: string; summary: string; origin: "distributed" | "company" }[];
 }
 export const onboardDraft = () => ext<OnboardDraft>("/onboard/draft", undefined, "GET");
+/** 5 テストで動かす（T-U-11・D-028）：AI社員ごとの最新のテストの実行と、出てきた成果物 */
+export type TestRunStatus = "running" | "done" | "stopped" | "cancelled";
+export interface TestRunEmployee {
+  employee_id: string;
+  name: string;
+  duty_id: string | null;
+  duty: string;
+  run: { id: string; status: TestRunStatus; reason: string | null; finished_at: string | null; count: number } | null;
+}
+export interface OnboardTestrun {
+  employees: TestRunEmployee[];
+  outputs: { id: string; title: string; format: string; at: string; employee: string }[];
+  /** 全員が 完了 か「この仕事はやめる」＝本番に切り替えられる（D-116.4） */
+  ready: boolean;
+}
+export const onboardTestrun = () => ext<OnboardTestrun>("/onboard/testrun", undefined, "GET");
+export const testrunCancel = (run_id: string) => ext<{ ok: boolean }>("/onboard/testrun/cancel", { run_id });
 export type Verdict = "api" | "allowed" | "unspecified" | "forbidden" | "bank";
 export interface MyCredential {
   id: string;

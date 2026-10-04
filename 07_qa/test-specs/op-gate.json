@@ -26,7 +26,9 @@
     "apps/web/pw-reports/us08-recheck.json",
     "apps/web/pw-reports/us08-fix.json",
     "apps/web/pw-reports/qa-b-artifact-put.json",
-    "apps/api/vt-reports/t-b-41.json"
+    "apps/api/vt-reports/t-b-41.json",
+    "apps/web/pw-reports/onboard-testrun.json",
+    "apps/web/pw-reports/wizard-next.json"
   ],
   "report_max_age_h": 48,
   "evidence_views": [

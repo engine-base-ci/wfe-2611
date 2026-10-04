@@ -33,9 +33,9 @@ WIZ_CSS = AUTH_CSS + """
 WIZ_NEXT = {"bridge-setup": ("次へ：2. 話す", "v1-onboard-interview.html"),
             "onboard-interview": ("次へ：3. たたき台", "v1-onboard-draft.html"),
             "onboard-draft": ("これでいく（次：4. ログイン情報）", "v1-credentials.html"),
-            # 5・6 はまだ作っていない（AI社員を動かす仕組みと一緒に作る）。まだ無いものを隠さず、いま使える所へ送る（D-089.6）
-            "credentials": ("Kaname を開く", "v1-today.html")}
-NEXT_NOTE = {"credentials": "次の「5. テスト」からは、AI社員を動かす仕組みと一緒に作っています（まだ使えません）。それまでは高本AIとの会話とたたき台の手直しが使えます"}
+            # 5 テスト ができた（T-U-11）。6 本番へ はまだ無い（AI社員を動かす仕組みと一緒に作る）。まだ無いものを隠さず、5 の帯からいま使える所へ送る（D-089.6）
+            "credentials": ("次へ：5. テスト", "v1-onboard-testrun.html")}
+NEXT_NOTE = {"onboard-testrun": "次の「6. 本番へ」からは、AI社員を動かす仕組みと一緒に作っています（まだ使えません）。切り替えたら、いま使える画面へ移ります。"}
 def next_bar(label, href=None, hint=""):
     b = (f'<a class="btn btn-p" href="{href}">{ic("check")}{label}</a>' if href
          else f'<span class="btn btn-p" aria-disabled="true" style="opacity:.5;cursor:not-allowed">{label}</span>')

@@ -604,7 +604,7 @@ test("SCR-CREDENTIALS-051 ボタン「保存する」（入力・空）：空の
   await expect(page.locator("[data-state='n']")).toContainText("二件目社", { timeout: 15_000 });
 });
 
-test("SCR-CREDENTIALS-050 「Kaname を開く」（預けたもの・追加する・入力）：はじめの設定 4 を通した後は下の帯の「Kaname を開く」がどの状態でも押せ、押すと入口の画面が開く（行き止まり・404 にならない）", async ({
+test("SCR-CREDENTIALS-056 SCR-CREDENTIALS-050 「次へ：5. テスト」（預けたもの・追加する・入力）：はじめの設定 4 を通した後は下の帯の「次へ：5. テスト」がどの状態でも押せ、5 テストで動かす（/onboard/testrun）に移る（「Kaname を開く」は 5 ができたので無い）", async ({
   page,
 }) => {
   const u = await signupViaApi();
@@ -627,10 +627,12 @@ test("SCR-CREDENTIALS-050 「Kaname を開く」（預けたもの・追加す�
         await expect(page.locator("[data-state='i']")).toBeVisible();
       }
     }
-    await expect(go).toHaveText(/Kaname を開く/);
+    await expect(go).toHaveText(/次へ：5\. テスト/);
     await expect(go).toBeEnabled();
+    await expect(page.getByRole("link", { name: "Kaname を開く" })).toHaveCount(0);
     await go.click();
-    await page.waitForURL(HOME_RE, { timeout: 20_000 });
-    await expect(page.locator("body")).not.toContainText("404");
+    await page.waitForURL(/\/onboard\/testrun/, { timeout: 20_000 });
+    await expect(page.locator("h1")).toHaveText("テストで動かす");
   }
 });
+

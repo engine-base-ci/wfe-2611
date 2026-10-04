@@ -1389,6 +1389,23 @@ export function authExt(d: AuthExtDeps): Hono {
     const r = await d.appPool.query<{ v: unknown }>("select app.onboard_draft($1) as v", [s.ctx.userId]);
     return c.json({ data: r.rows[0]?.v ?? { goals: [], ledgers: [], duties: [] } });
   });
+  // 5 テストで動かす（T-U-11・D-028・D-116.4）：AI社員ごとの最新のテストの実行・出てきた成果物・本番に切り替えられるか
+  app.get("/onboard/testrun", async (c) => {
+    const s = await resolve(c.req.raw.headers);
+    if (!s?.ctx.tenantId || !s.ctx.userId) return bad(c, 401, "UNAUTHENTICATED", "ログインしてください");
+    const r = await d.appPool.query<{ v: unknown }>("select app.onboard_testrun($1) as v", [s.ctx.userId]);
+    return c.json({ data: r.rows[0]?.v ?? { employees: [], outputs: [], ready: false } });
+  });
+  // 「この仕事はやめる」：止まった・実行中のテストの実行を やめた にする（本人の会社の分だけ・証跡に残る）
+  app.post("/onboard/testrun/cancel", async (c) => {
+    const s = await resolve(c.req.raw.headers);
+    if (!s?.ctx.tenantId || !s.ctx.userId) return bad(c, 401, "UNAUTHENTICATED", "ログインしてください");
+    const b = (await c.req.json().catch(() => ({}))) as { run_id?: unknown };
+    if (typeof b.run_id !== "string" || !UUID_RE_CRED.test(b.run_id)) return bad(c, 422, "VALIDATION_FAILED", "どの実行をやめるかが要ります", { field: "run_id" });
+    const r = await d.appPool.query<{ ok: boolean }>("select app.testrun_cancel($1, $2) as ok", [s.ctx.userId, b.run_id]);
+    if (!r.rows[0]?.ok) return bad(c, 404, "NOT_FOUND", "やめられる実行がありません（止まった・実行中のテストだけ）");
+    return c.json({ data: { ok: true } });
+  });
   // 自分のAI が Kaname の道具でたたき台に置く（D-110）
   app.route("/", agentToolRoutes({ appPool: d.appPool, ...(d.objects ? { objects: d.objects } : {}) }));
   return app;

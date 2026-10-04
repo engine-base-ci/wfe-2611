@@ -1,6 +1,6 @@
 # onboard-golive テスト仕様（L1・機械生成）
 
-> 05_flow/build_tasks.py がタスクと同時に生成。ID は変えない。途中変更は qa_delta.py で差分。結果列は staging で流した人が書く（再生成しても残る。今の行 31・結果あり 6 行）。
+> 05_flow/build_tasks.py がタスクと同時に生成。ID は変えない。途中変更は qa_delta.py で差分。結果列は staging で流した人が書く（再生成しても残る。今の行 31・結果あり 4 行）。
 
 | ID | 画面 | テスト観点 | テスト項目 | 前提条件 | 操作手順 | 期待結果 | 結果 | 備考 | タスク | 実行条件 |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -13,7 +13,7 @@
 | SCR-ONBOARD-GOLIVE-007 | onboard-golive | 到達性 | リンク先 credentials が実在ルートで 200 で開く | — | 押す | /credentials が開く（G-04） |  |  | T-U-12 | L1 |
 | SCR-ONBOARD-GOLIVE-008 | onboard-golive | 到達性 | リンク先 onboard-draft が実在ルートで 200 で開く | — | 押す | /onboard-draft が開く（G-04） |  |  | T-U-12 | L1 |
 | SCR-ONBOARD-GOLIVE-009 | onboard-golive | 到達性 | リンク先 onboard-interview が実在ルートで 200 で開く | — | 押す | /onboard-interview が開く（G-04） |  |  | T-U-12 | L1 |
-| SCR-ONBOARD-GOLIVE-010 | onboard-golive | 到達性 | リンク先 onboard-testrun が実在ルートで 200 で開く | — | 押す | /onboard-testrun が開く（G-04） | BLOCKED（自動：行き先の画面 onboard-testrun は T-U-11 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） |  | T-U-12 | L1 |
+| SCR-ONBOARD-GOLIVE-010 | onboard-golive | 到達性 | リンク先 onboard-testrun が実在ルートで 200 で開く | — | 押す | /onboard-testrun が開く（G-04） |  |  | T-U-12 | L1 |
 | SCR-ONBOARD-GOLIVE-011 | onboard-golive | 到達性 | リンク先 today が実在ルートで 200 で開く | — | 押す | /today が開く（G-04） | BLOCKED（自動：行き先の画面 today は T-B-22 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） |  | T-U-12 | L1 |
 | SCR-ONBOARD-GOLIVE-012 | onboard-golive | 横溢れ | 375・768・1024・1440 で scrollWidth - clientWidth <= 1、1180+ で本文 720 以上 | — | 各幅で開く | 溢れ 0 |  | G-05 | T-U-12 | L1 |
 | SCR-ONBOARD-GOLIVE-013 | onboard-golive | 空・止まっている | データ 0 件の状態と AI が止まっている状態が cover 宣言どおりに出る | PS2 / PS4 | 開く | 空状態と止まっている帯 |  | G18 | T-U-12 | L1 |
@@ -28,7 +28,7 @@
 | SCR-ONBOARD-GOLIVE-023 | onboard-golive | 操作 | リンク「2. 話す」（状態 確認・切り替えた） | 状態 確認 を作る（全役割） | 押す／入れる（実ブラウザ） | /onboard-interview が実在ルートで 200 で開く（G-04） |  | op=link:2. 話す→onboard-interview | T-U-12 | L1 |
 | SCR-ONBOARD-GOLIVE-024 | onboard-golive | 操作 | リンク「3. たたき台」（状態 確認・切り替えた） | 状態 確認 を作る（全役割） | 押す／入れる（実ブラウザ） | /onboard-draft が実在ルートで 200 で開く（G-04） |  | op=link:3. たたき台→onboard-draft | T-U-12 | L1 |
 | SCR-ONBOARD-GOLIVE-025 | onboard-golive | 操作 | リンク「4. ログイン情報」（状態 確認・切り替えた） | 状態 確認 を作る（全役割） | 押す／入れる（実ブラウザ） | /credentials が実在ルートで 200 で開く（G-04） |  | op=link:4. ログイン情報→credentials | T-U-12 | L1 |
-| SCR-ONBOARD-GOLIVE-026 | onboard-golive | 操作 | リンク「5. テスト」（状態 確認・切り替えた） | 状態 確認 を作る（全役割） | 押す／入れる（実ブラウザ） | /onboard-testrun が実在ルートで 200 で開く（G-04） | BLOCKED（自動：行き先の画面 onboard-testrun は T-U-11 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） | op=link:5. テスト→onboard-testrun | T-U-12 | L1 |
+| SCR-ONBOARD-GOLIVE-026 | onboard-golive | 操作 | リンク「5. テスト」（状態 確認・切り替えた） | 状態 確認 を作る（全役割） | 押す／入れる（実ブラウザ） | /onboard-testrun が実在ルートで 200 で開く（G-04） |  | op=link:5. テスト→onboard-testrun | T-U-12 | L1 |
 | SCR-ONBOARD-GOLIVE-027 | onboard-golive | 操作 | リンク「6. 本番へ」（状態 確認・切り替えた） | 状態 確認 を作る（全役割） | 押す／入れる（実ブラウザ） | /onboard-golive が実在ルートで 200 で開く（G-04） | BLOCKED（自動：行き先の画面 onboard-golive は T-U-12 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） | op=link:6. 本番へ→onboard-golive | T-U-12 | L1 |
 | SCR-ONBOARD-GOLIVE-028 | onboard-golive | 操作 | リンク「連携を直す」（状態 確認） | 状態 確認 を作る（全役割） | 押す／入れる（実ブラウザ） | /credentials が実在ルートで 200 で開く（G-04） |  | op=link:連携を直す→credentials | T-U-12 | L1 |
 | SCR-ONBOARD-GOLIVE-029 | onboard-golive | 操作 | ボタン「切り替える（1件の警告を承知のうえで）」（状態 確認） | 状態 確認 を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） |  | op=button:切り替える（1件の警告を承知のうえで） | T-U-12 | L1 |

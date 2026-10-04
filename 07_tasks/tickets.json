@@ -23073,7 +23073,7 @@
      "SCR-CREDENTIALS-052",
      "SCR-CREDENTIALS-053",
      "SCR-CREDENTIALS-041",
-     "SCR-CREDENTIALS-050",
+     "SCR-CREDENTIALS-056",
      "SCR-CREDENTIALS-042",
      "SCR-CREDENTIALS-043",
      "SCR-CREDENTIALS-044",
@@ -23345,7 +23345,7 @@
     "01_hearing/決定ログ_進行中.md#D-003.7"
    ],
    "audit_md_path": "07_tasks/audit/T-U-11.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "SCR-ONBOARD-TESTRUN-001",
@@ -23507,7 +23507,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 1.4,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-10-04"
   },
   {
    "id": "T-U-12",
@@ -50943,7 +50944,7 @@
     ],
     "functional": [
      "EVENT-DRIVEN: WHEN 4 と 5 を押す（実ブラウザ）、システムは 「いまの段『3. たたき台』で…と開きます」「まだ作っていません」が出る",
-     "UNWANTED: IF 段 4 まで通した、システムは 「まだ使えません」が出て、押すといま使える画面へ移る（5・6 には行かない）"
+     "UNWANTED: IF 段 4 まで通した、システムは 4 から 5（/onboard/testrun）へ移る。5 の帯に「6. 本番へ」がまだ無いことが書いてあり、6 には行かない"
     ],
     "regression": [
      "pnpm test（該当パッケージ）PASS",
@@ -50969,7 +50970,7 @@
      "CHT-36-001",
      "CHT-36-002",
      "CHT-36-003",
-     "CHT-36-004"
+     "CHT-36-005"
     ],
     "l2_flows": []
    },
@@ -50980,7 +50981,7 @@
       "帯のボタンを押す（実ブラウザ）",
       "4 と 5 を押す（実ブラウザ）",
       "話すを開く（実ブラウザ）",
-      "帯のボタンを押す（実ブラウザ）"
+      "4 の帯のボタンを押す → 5 の帯を見る（実ブラウザ）"
      ],
      "expected": "「いまの段『3. たたき台』で…と開きます」「まだ作っていません」が出る"
     }
@@ -51011,7 +51012,7 @@
      },
      {
       "type": "UNWANTED",
-      "text": "UNWANTED: IF 段 4 まで通した、システムは 「まだ使えません」が出て、押すといま使える画面へ移る（5・6 には行かない）",
+      "text": "UNWANTED: IF 段 4 まで通した、システムは 4 から 5（/onboard/testrun）へ移る。5 の帯に「6. 本番へ」がまだ無いことが書いてあり、6 には行かない",
       "critical": false
      }
     ],
@@ -51821,6 +51822,7 @@
    ],
    "audit_md_path": "07_tasks/audit/T-B-41.md",
    "status": "done",
+   "done_at": "2026-10-04",
    "qa_rows": {
     "l1": [
      "CHT-41-001",
@@ -51907,8 +51909,7 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 0.7,
-   "estimate_sessions": 1,
-   "done_at": "2026-10-04"
+   "estimate_sessions": 1
   },
   {
    "id": "T-US-08",

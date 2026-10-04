@@ -1,6 +1,6 @@
 # credentials テスト仕様（L1・機械生成）
 
-> 05_flow/build_tasks.py がタスクと同時に生成。ID は変えない。途中変更は qa_delta.py で差分。結果列は staging で流した人が書く（再生成しても残る。今の行 49・結果あり 49 行）。
+> 05_flow/build_tasks.py がタスクと同時に生成。ID は変えない。途中変更は qa_delta.py で差分。結果列は staging で流した人が書く（再生成しても残る。今の行 49・結果あり 47 行）。
 
 | ID | 画面 | テスト観点 | テスト項目 | 前提条件 | 操作手順 | 期待結果 | 結果 | 備考 | タスク | 実行条件 |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -37,13 +37,13 @@
 | SCR-CREDENTIALS-035 | credentials | 操作 | リンク「2. 話す」（状態 預けたもの・追加する・入力） | 状態 預けたもの を作る（全役割） | 押す／入れる（実ブラウザ） | /onboard-interview が実在ルートで 200 で開く（G-04） | PASS（screens/credentials.spec.ts・実 Chrome・2026-10-03） | op=link:2. 話す→onboard-interview | T-U-10 | L1 |
 | SCR-CREDENTIALS-036 | credentials | 操作 | リンク「3. たたき台」（状態 預けたもの・追加する・入力） | 状態 預けたもの を作る（全役割） | 押す／入れる（実ブラウザ） | /onboard-draft が実在ルートで 200 で開く（G-04） | PASS（screens/credentials.spec.ts・実 Chrome・2026-10-03） | op=link:3. たたき台→onboard-draft | T-U-10 | L1 |
 | SCR-CREDENTIALS-037 | credentials | 操作 | リンク「4. ログイン情報」（状態 預けたもの・追加する・入力） | 状態 預けたもの を作る（全役割） | 押す／入れる（実ブラウザ） | /credentials が実在ルートで 200 で開く（G-04） | PASS（screens/credentials.spec.ts・実 Chrome・2026-10-03） | op=link:4. ログイン情報→credentials | T-U-10 | L1 |
-| SCR-CREDENTIALS-038 | credentials | 操作 | リンク「5. テスト」（状態 預けたもの・追加する・入力） | 状態 預けたもの を作る（全役割） | 押す／入れる（実ブラウザ） | /onboard-testrun が実在ルートで 200 で開く（G-04） | BLOCKED（自動：行き先の画面 onboard-testrun は T-U-11 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） | op=link:5. テスト→onboard-testrun | T-U-10 | L1 |
+| SCR-CREDENTIALS-038 | credentials | 操作 | リンク「5. テスト」（状態 預けたもの・追加する・入力） | 状態 預けたもの を作る（全役割） | 押す／入れる（実ブラウザ） | /onboard-testrun が実在ルートで 200 で開く（G-04） |  | op=link:5. テスト→onboard-testrun | T-U-10 | L1 |
 | SCR-CREDENTIALS-039 | credentials | 操作 | リンク「6. 本番へ」（状態 預けたもの・追加する・入力） | 状態 預けたもの を作る（全役割） | 押す／入れる（実ブラウザ） | /onboard-golive が実在ルートで 200 で開く（G-04） | BLOCKED（自動：行き先の画面 onboard-golive は T-U-12 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） | op=link:6. 本番へ→onboard-golive | T-U-10 | L1 |
 | SCR-CREDENTIALS-040 | credentials | 操作 | ボタン「追加する」（状態 預けたもの・運用中（設定として）） | 状態 預けたもの を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） | PASS（screens/credentials.spec.ts・実 Chrome・2026-10-03） | op=button:追加する | T-U-10 | L1 |
 | SCR-CREDENTIALS-052 | credentials | 操作 | 入力欄「6 桁」（状態 預けたもの・運用中（設定として）） | 状態 預けたもの を作る（全役割） | 押す／入れる（実ブラウザ） | 入力が受け付けられ、送信に載って別 GET で読める（G-01・反映） | PASS（screens/qa-b-two-factor.spec.ts・実 Chrome・2026-10-03） | op=input:6 桁 | T-U-10 | L1 |
 | SCR-CREDENTIALS-053 | credentials | 操作 | ボタン「送る」（状態 預けたもの・運用中（設定として）） | 状態 預けたもの を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） | PASS（screens/qa-b-two-factor.spec.ts・実 Chrome・2026-10-03） | op=button:送る | T-U-10 | L1 |
 | SCR-CREDENTIALS-041 | credentials | 操作 | 入力欄「サービス」（状態 預けたもの・追加する・運用中（設定として）） | 状態 預けたもの を作る（全役割） | 押す／入れる（実ブラウザ） | 入力が受け付けられ、送信に載って別 GET で読める（G-01・反映） | PASS（screens/credentials.spec.ts・実 Chrome・2026-10-03） | op=input:サービス | T-U-10 | L1 |
-| SCR-CREDENTIALS-050 | credentials | 操作 | リンク「Kaname を開く」（状態 預けたもの・追加する・入力） | 状態 預けたもの を作る（全役割） | 押す／入れる（実ブラウザ） | /today が実在ルートで 200 で開く（G-04） | PASS（screens/qa-c-onboard.spec.ts・実 Chrome・2026-10-01） | op=link:Kaname を開く→today | T-U-10 | L1 |
+| SCR-CREDENTIALS-056 | credentials | 操作 | リンク「次へ：5. テスト」（状態 預けたもの・追加する・入力） | 状態 預けたもの を作る（全役割） | 押す／入れる（実ブラウザ） | /onboard-testrun が実在ルートで 200 で開く（G-04） | PASS（screens/qa-c-onboard.spec.ts・実 Chrome・2026-10-04） | op=link:次へ：5. テスト→onboard-testrun | T-U-10 | L1 |
 | SCR-CREDENTIALS-042 | credentials | 操作 | リンク「マネーフォワードで連携を許可する」（状態 追加する） | 状態 追加する を作る（全役割） | 押す／入れる（実ブラウザ） | リンク先が開く（外なら新しいタブ） | BLOCKED（自動：「マネーフォワードで連携を許可する」は正規連携（OAuth）。外部サービスの連携 T-U-41 と関門 C1 の結線 T-I-03） | op=link:マネーフォワードで連携を許可する | T-U-10 | L1 |
 | SCR-CREDENTIALS-043 | credentials | 操作 | 入力欄「メールアドレス（ログイン名）」（状態 入力） | 状態 入力 を作る（全役割） | 押す／入れる（実ブラウザ） | 入力が受け付けられ、送信に載って別 GET で読める（G-01・反映） | PASS（screens/credentials.spec.ts・実 Chrome・2026-10-03） | op=input:メールアドレス（ログイン名） | T-U-10 | L1 |
 | SCR-CREDENTIALS-044 | credentials | 操作 | 入力欄「パスワード」（状態 入力） | 状態 入力 を作る（全役割） | 押す／入れる（実ブラウザ） | 入力が受け付けられ、送信に載って別 GET で読める（G-01・反映） | PASS（screens/credentials.spec.ts・実 Chrome・2026-10-03） | op=input:パスワード | T-U-10 | L1 |
@@ -54,12 +54,13 @@
 | SCR-CREDENTIALS-046 | credentials | 操作 | ボタン「やめる」（状態 入力） | 状態 入力 を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） | PASS（screens/credentials.spec.ts・実 Chrome・2026-10-03） | op=button:やめる | T-U-10 | L1 |
 | SCR-CREDENTIALS-047 | credentials | 発注者確認 | 手順 07_tasks/handoff/T-U-10.md を発注者が実際に触って OK を出す（Rule 12） | staging か ローカル | 手順どおりに触る | 手順の末尾に「OK: 日付 名前」が書かれる。無い間は BLOCKED（発注者の確認待ち） | BLOCKED（発注者の確認待ち：手順 07_tasks/handoff/T-U-10.md を高本さんが触って OK: を書く。ローカル 3123 で触れる・staging は無い） | Rule 12 | T-U-10 | L1 |
 
-## もう無い行（6 行）
+## もう無い行（7 行）
 
 > モックや決定が変わって今の画面には無くなった行。ID と当時の結果を残すためだけに置く（同じ ID を二度使わない）。確かめる対象ではない。
 
 | ID | 画面 | テスト観点 | テスト項目 | 前提条件 | 操作手順 | 期待結果 | 結果 | 備考 | タスク | 実行条件 |
 |---|---|---|---|---|---|---|---|---|---|---|
+| SCR-CREDENTIALS-050 | credentials | 操作 | リンク「Kaname を開く」（状態 預けたもの・追加する・入力） | 状態 預けたもの を作る（全役割） | 押す／入れる（実ブラウザ） | /today が実在ルートで 200 で開く（G-04） | PASS（screens/qa-c-onboard.spec.ts・実 Chrome・2026-10-04） | 削除（D-116.6 の「まだ無い間」が終わった） | T-U-10 | L1 |
 | SCR-CREDENTIALS-045 | credentials | 操作 | 入力欄「2段階認証のシークレット（あれば）」（状態 入力） | 状態 入力 を作る（全役割） | 押す／入れる（実ブラウザ） | 入力が受け付けられ、送信に載って別 GET で読める（G-01・反映） | PASS（screens/credentials.spec.ts・実 Chrome・2026-10-03） | op=input:2段階認証のシークレット（あれば）／削除（生成元から消えた・2026-10-03。結果は残す） | T-U-10 | L1 |
 | SCR-CREDENTIALS-049 | credentials | 操作 | ボタン「高本AI1」（状態 共通） | 状態 共通 を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） |  | op=button:高本AI1／削除（生成元から消えた・2026-10-01。結果は残す） | T-U-10 | L1 |
 | SCR-CREDENTIALS-031 | credentials | 操作 | リンク「AI は止まっています」（状態 共通） | 状態 共通 を作る（全役割） | 押す／入れる（実ブラウザ） | /automation-repair が実在ルートで 200 で開く（G-04） | BLOCKED（自動：「AI は止まっています」はアプリの枠の帯（T-I-02 の後）） | op=link:AI は止まっています→automation-repair／削除（生成元から消えた・2026-10-01。結果は残す） | T-U-10 | L1 |
