@@ -226,7 +226,7 @@ _gl = grid([
   card(head("本番に切り替える前に") +
     '<div class="dl">' + "".join(f'<div>{ic("check")}<span style="flex:1">{t}</span>{pill("OK","su")}</div>' for t in [
       "会社モデル（目標・台帳・担当業務・AI社員・ルール）が確定している","Bridge がつながっている","外に出るものは承認が要るルールになっている"]) +
-    f'<div style="border-left:3px solid var(--st-warning);background:#FEF6EC"><span style="flex:1">経理社員が使う freee の連携が<b>読み取りのみ</b>です。請求書の作成には書き込み権限が要ります</span>{btn("連携を直す","o","wrench","v1-credentials.html")}</div>' +
+    f'<div style="border-left:3px solid var(--st-warning);background:var(--st-warning-c)"><span style="flex:1">経理社員が使う freee の連携が<b>読み取りのみ</b>です。請求書の作成には書き込み権限が要ります</span>{btn("連携を直す","o","wrench","v1-credentials.html")}</div>' +
     '</div>'),
   card(head("切り替えると、明日から") + '<div class="dl">' + "".join(f'<div>{ic("clock")}<span class="num muted" style="min-width:48px">{t}</span><span>{x}</span></div>' for t,x in [
       ("06:00","営業社員が発注ナビの新着を台帳に入れる"),("06:30","経理社員が入金を照合して台帳に書く"),
@@ -234,7 +234,7 @@ _gl = grid([
     f'<div class="ai" style="margin-top:14px"><div class="ai-h">{ic("clone")}高本AI</div>freee の権限だけ直せば切り替えられます。切り替えたあとも、私は外に出る前に必ずあなたに見せます。</div>')], "g2") + \
   '<div style="display:flex;gap:10px;margin-top:22px;flex-wrap:wrap">' + btn("切り替える（1件の警告を承知のうえで）","o","zap") + '</div>'
 
-_gl_ok = card(f'<div style="text-align:center;padding:36px 20px"><div style="width:60px;height:60px;border-radius:var(--r-full);background:#DCFCE7;display:grid;place-items:center;margin:0 auto 18px;color:var(--st-success)">{ic("check")}</div>'
+_gl_ok = card(f'<div style="text-align:center;padding:36px 20px"><div style="width:60px;height:60px;border-radius:var(--r-full);background:var(--st-success-c);display:grid;place-items:center;margin:0 auto 18px;color:var(--st-success)">{ic("check")}</div>'
   '<h2 style="font-size:20px;font-weight:700;margin-bottom:8px">本番で動いています</h2>'
   '<p class="muted" style="max-width:520px;margin:0 auto 22px;line-height:1.85">明日の朝、高本AIの申し送りから始まります。今日はもう何もしなくて大丈夫です。'
   '止めたいときは「今日」の画面からいつでも止められます。</p>'

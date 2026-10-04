@@ -1,6 +1,6 @@
 # credentials テスト仕様（L1・機械生成）
 
-> 05_flow/build_tasks.py がタスクと同時に生成。ID は変えない。途中変更は qa_delta.py で差分。結果列は staging で流した人が書く（再生成しても残る。今の行 49・結果あり 47 行）。
+> 05_flow/build_tasks.py がタスクと同時に生成。ID は変えない。途中変更は qa_delta.py で差分。結果列は staging で流した人が書く（再生成しても残る。今の行 49・結果あり 48 行）。
 
 | ID | 画面 | テスト観点 | テスト項目 | 前提条件 | 操作手順 | 期待結果 | 結果 | 備考 | タスク | 実行条件 |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -37,8 +37,8 @@
 | SCR-CREDENTIALS-035 | credentials | 操作 | リンク「2. 話す」（状態 預けたもの・追加する・入力） | 状態 預けたもの を作る（全役割） | 押す／入れる（実ブラウザ） | /onboard-interview が実在ルートで 200 で開く（G-04） | PASS（screens/credentials.spec.ts・実 Chrome・2026-10-03） | op=link:2. 話す→onboard-interview | T-U-10 | L1 |
 | SCR-CREDENTIALS-036 | credentials | 操作 | リンク「3. たたき台」（状態 預けたもの・追加する・入力） | 状態 預けたもの を作る（全役割） | 押す／入れる（実ブラウザ） | /onboard-draft が実在ルートで 200 で開く（G-04） | PASS（screens/credentials.spec.ts・実 Chrome・2026-10-03） | op=link:3. たたき台→onboard-draft | T-U-10 | L1 |
 | SCR-CREDENTIALS-037 | credentials | 操作 | リンク「4. ログイン情報」（状態 預けたもの・追加する・入力） | 状態 預けたもの を作る（全役割） | 押す／入れる（実ブラウザ） | /credentials が実在ルートで 200 で開く（G-04） | PASS（screens/credentials.spec.ts・実 Chrome・2026-10-03） | op=link:4. ログイン情報→credentials | T-U-10 | L1 |
-| SCR-CREDENTIALS-038 | credentials | 操作 | リンク「5. テスト」（状態 預けたもの・追加する・入力） | 状態 預けたもの を作る（全役割） | 押す／入れる（実ブラウザ） | /onboard-testrun が実在ルートで 200 で開く（G-04） |  | op=link:5. テスト→onboard-testrun | T-U-10 | L1 |
-| SCR-CREDENTIALS-039 | credentials | 操作 | リンク「6. 本番へ」（状態 預けたもの・追加する・入力） | 状態 預けたもの を作る（全役割） | 押す／入れる（実ブラウザ） | /onboard-golive が実在ルートで 200 で開く（G-04） | BLOCKED（自動：行き先の画面 onboard-golive は T-U-12 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） | op=link:6. 本番へ→onboard-golive | T-U-10 | L1 |
+| SCR-CREDENTIALS-038 | credentials | 操作 | リンク「5. テスト」（状態 預けたもの・追加する・入力） | 状態 預けたもの を作る（全役割） | 押す／入れる（実ブラウザ） | /onboard-testrun が実在ルートで 200 で開く（G-04） | PASS（screens/setup-steps-links.spec.ts・実 Chrome・2026-10-04） | op=link:5. テスト→onboard-testrun | T-U-10 | L1 |
+| SCR-CREDENTIALS-039 | credentials | 操作 | リンク「6. 本番へ」（状態 預けたもの・追加する・入力） | 状態 預けたもの を作る（全役割） | 押す／入れる（実ブラウザ） | /onboard-golive が実在ルートで 200 で開く（G-04） | PASS（screens/setup-steps-links.spec.ts・実 Chrome・2026-10-04） | op=link:6. 本番へ→onboard-golive | T-U-10 | L1 |
 | SCR-CREDENTIALS-040 | credentials | 操作 | ボタン「追加する」（状態 預けたもの・運用中（設定として）） | 状態 預けたもの を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） | PASS（screens/credentials.spec.ts・実 Chrome・2026-10-03） | op=button:追加する | T-U-10 | L1 |
 | SCR-CREDENTIALS-052 | credentials | 操作 | 入力欄「6 桁」（状態 預けたもの・運用中（設定として）） | 状態 預けたもの を作る（全役割） | 押す／入れる（実ブラウザ） | 入力が受け付けられ、送信に載って別 GET で読める（G-01・反映） | PASS（screens/qa-b-two-factor.spec.ts・実 Chrome・2026-10-03） | op=input:6 桁 | T-U-10 | L1 |
 | SCR-CREDENTIALS-053 | credentials | 操作 | ボタン「送る」（状態 預けたもの・運用中（設定として）） | 状態 預けたもの を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） | PASS（screens/qa-b-two-factor.spec.ts・実 Chrome・2026-10-03） | op=button:送る | T-U-10 | L1 |
@@ -60,7 +60,7 @@
 
 | ID | 画面 | テスト観点 | テスト項目 | 前提条件 | 操作手順 | 期待結果 | 結果 | 備考 | タスク | 実行条件 |
 |---|---|---|---|---|---|---|---|---|---|---|
-| SCR-CREDENTIALS-050 | credentials | 操作 | リンク「Kaname を開く」（状態 預けたもの・追加する・入力） | 状態 預けたもの を作る（全役割） | 押す／入れる（実ブラウザ） | /today が実在ルートで 200 で開く（G-04） | PASS（screens/qa-c-onboard.spec.ts・実 Chrome・2026-10-04） | 削除（D-116.6 の「まだ無い間」が終わった） | T-U-10 | L1 |
+| SCR-CREDENTIALS-050 | credentials | 操作 | リンク「Kaname を開く」（状態 預けたもの・追加する・入力） | 状態 預けたもの を作る（全役割） | 押す／入れる（実ブラウザ） | /today が実在ルートで 200 で開く（G-04） | PASS（screens/qa-c-onboard.spec.ts・実 Chrome・2026-10-04） | 削除（D-116.6 の「まだ無い間」が終わった）／削除（生成元から消えた・2026-10-04。結果は残す） | T-U-10 | L1 |
 | SCR-CREDENTIALS-045 | credentials | 操作 | 入力欄「2段階認証のシークレット（あれば）」（状態 入力） | 状態 入力 を作る（全役割） | 押す／入れる（実ブラウザ） | 入力が受け付けられ、送信に載って別 GET で読める（G-01・反映） | PASS（screens/credentials.spec.ts・実 Chrome・2026-10-03） | op=input:2段階認証のシークレット（あれば）／削除（生成元から消えた・2026-10-03。結果は残す） | T-U-10 | L1 |
 | SCR-CREDENTIALS-049 | credentials | 操作 | ボタン「高本AI1」（状態 共通） | 状態 共通 を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） |  | op=button:高本AI1／削除（生成元から消えた・2026-10-01。結果は残す） | T-U-10 | L1 |
 | SCR-CREDENTIALS-031 | credentials | 操作 | リンク「AI は止まっています」（状態 共通） | 状態 共通 を作る（全役割） | 押す／入れる（実ブラウザ） | /automation-repair が実在ルートで 200 で開く（G-04） | BLOCKED（自動：「AI は止まっています」はアプリの枠の帯（T-I-02 の後）） | op=link:AI は止まっています→automation-repair／削除（生成元から消えた・2026-10-01。結果は残す） | T-U-10 | L1 |

@@ -16,7 +16,10 @@ async function employee(u: U, name: string, duty: string) {
     "insert into members (tenant_id, scope_id, kind_id, display_name, role_id) values ($1, $2, 'ai_employee', $3, 'staff') returning id",
     [u.tenantId, u.scopeId, name],
   );
-  const a = await admin<{ id: string }>("insert into ai_employees (tenant_id, scope_id, member_id, created_by) values ($1, $2, $3, $4) returning id", [u.tenantId, u.scopeId, m[0]!.id, u.memberId]);
+  const a = await admin<{ id: string }>(
+    "insert into ai_employees (tenant_id, scope_id, member_id, created_by) values ($1, $2, $3, $4) returning id",
+    [u.tenantId, u.scopeId, m[0]!.id, u.memberId],
+  );
   const d = await admin<{ id: string }>(
     "insert into duties (tenant_id, scope_id, ai_employee_id, name, definition_md, created_by) values ($1, $2, $3, $4, $5, $6) returning id",
     [u.tenantId, u.scopeId, a[0]!.id, duty, `${duty}\n読むだけ`, u.memberId],
@@ -24,16 +27,28 @@ async function employee(u: U, name: string, duty: string) {
   return { aiId: a[0]!.id, dutyId: d[0]!.id, memberId: m[0]!.id };
 }
 /** テストの実行の記録（status：done／stopped／running）。done には本人の PC の仕事と成果物を 1 つ結ぶ */
-async function run(u: U, e: { aiId: string; dutyId: string }, status: "done" | "stopped" | "running", reason: string | null = null, artifactTitle: string | null = null) {
+async function run(
+  u: U,
+  e: { aiId: string; dutyId: string },
+  status: "done" | "stopped" | "running",
+  reason: string | null = null,
+  artifactTitle: string | null = null,
+) {
   let jobId: string | null = null;
   if (artifactTitle) {
-    const j = await admin<{ id: string }>("insert into bridge_jobs (tenant_id, member_id, prompt, state_id, started_at, finished_at) values ($1, $2, $3, 'done', now(), now()) returning id", [u.tenantId, u.memberId, "テストで動かす"]);
+    const j = await admin<{ id: string }>(
+      "insert into bridge_jobs (tenant_id, member_id, prompt, state_id, started_at, finished_at) values ($1, $2, $3, 'done', now(), now()) returning id",
+      [u.tenantId, u.memberId, "テストで動かす"],
+    );
     jobId = j[0]!.id;
     const ar = await admin<{ id: string }>(
       "insert into artifacts (tenant_id, scope_id, format_id, storage_ref, title, owner_member_id, current_version, source_job_id, created_by) values ($1, $2, 'md', $3, $4, $5, 1, $6, $5) returning id",
       [u.tenantId, u.scopeId, `test/${Date.now()}`, artifactTitle, u.memberId, jobId],
     );
-    await admin("insert into artifact_versions (tenant_id, scope_id, artifact_id, version, storage_ref, size_bytes, owner_member_id, note) values ($1, $2, $3, 1, $4, 10, $5, 'テスト')", [u.tenantId, u.scopeId, ar[0]!.id, `test/${Date.now()}`, u.memberId]);
+    await admin(
+      "insert into artifact_versions (tenant_id, scope_id, artifact_id, version, storage_ref, size_bytes, owner_member_id, note) values ($1, $2, $3, 1, $4, 10, $5, 'テスト')",
+      [u.tenantId, u.scopeId, ar[0]!.id, `test/${Date.now()}`, u.memberId],
+    );
   }
   const r = await admin<{ id: string }>(
     "insert into action_runs (tenant_id, scope_id, ai_employee_id, duty_id, mode_id, status_id, started_at, finished_at, error_summary, bridge_job_id, created_by) values ($1, $2, $3, $4, 'test', $5, now() - interval '2 minutes', case when $5 = 'running' then null else now() end, $6, $7, $8) returning id",
@@ -65,7 +80,9 @@ test("SCR-ONBOARD-TESTRUN-002 SCR-ONBOARD-TESTRUN-004 SCR-ONBOARD-TESTRUN-005 SC
   await expect(page.getByRole("button", { name: "営業社員を動かす" })).toBeDisabled();
   await expect(page.getByRole("button", { name: "経理社員を動かす" })).toBeDisabled();
   await expect(page.locator("[data-not-yet]")).toContainText("AI社員を動かす仕組みは作っています");
-  await expect(band(page).locator("[data-wiz-next-note]")).toContainText("AI社員を全員 1 回ずつテストで動かすと切り替えられます");
+  await expect(band(page).locator("[data-wiz-next-note]")).toContainText(
+    "AI社員を全員 1 回ずつテストで動かすと切り替えられます",
+  );
   // 段の帯（1〜4 は通した段・5 はいま。6 はまだ無いのでリンクにしない）
   for (const [label, re] of [
     ["1. PCをつなぐ", /\/setup\/bridge/],
@@ -80,7 +97,7 @@ test("SCR-ONBOARD-TESTRUN-002 SCR-ONBOARD-TESTRUN-004 SCR-ONBOARD-TESTRUN-005 SC
   await page.goto("/onboard/testrun");
   await page.getByRole("link", { name: "5. テスト" }).click(); // いまの段（自分自身）
   await expect(page).toHaveURL(/\/onboard\/testrun/);
-  await expect(page.getByRole("link", { name: "6. 本番へ" })).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "6. 本番へ" }), "6 は届いていない段（5 を通すと開く）").toHaveCount(0);
   // 役割：R1 R2 で同じ中身（モックの role-same 宣言どおり。役割で変わる中身は無い）
   await expect(page.locator("[data-roles]")).toHaveCount(0);
 });
@@ -125,12 +142,22 @@ test("SCR-ONBOARD-TESTRUN-001 SCR-ONBOARD-TESTRUN-028 SCR-ONBOARD-TESTRUN-006 SC
   await expect(go).toBeEnabled();
   await expect(go).toHaveText(/本番に切り替える/);
   await go.click();
-  await expect(page).not.toHaveURL(/\/onboard\/testrun/, { timeout: 15_000 });
-  await expect.poll(async () => (await api<{ data: { step: number } }>("/api/auth-ext/setup-state", undefined, u.token)).json.data.step, { timeout: 10_000 }).toBe(5);
-  expect((await admin<{ setup_step: number }>("select setup_step from members where id = $1", [u.memberId]))[0]!.setup_step).toBe(5);
+  await expect(page, "6 本番へ（T-U-12）で切り替える前の確認へ").toHaveURL(/\/onboard\/golive/, { timeout: 15_000 });
+  await expect
+    .poll(
+      async () =>
+        (await api<{ data: { step: number } }>("/api/auth-ext/setup-state", undefined, u.token)).json.data.step,
+      { timeout: 10_000 },
+    )
+    .toBe(5);
+  expect(
+    (await admin<{ setup_step: number }>("select setup_step from members where id = $1", [u.memberId]))[0]!.setup_step,
+  ).toBe(5);
 });
 
-test("SCR-ONBOARD-TESTRUN-003 SCR-ONBOARD-TESTRUN-034 止まった：止まった理由と一手。「ブラウザで開く」は仕組みができるまで押せない。「この仕事はやめる」で やめた になり、帯が押せるようになる", async ({ page }) => {
+test("SCR-ONBOARD-TESTRUN-003 SCR-ONBOARD-TESTRUN-034 止まった：止まった理由と一手。「ブラウザで開く」は仕組みができるまで押せない。「この仕事はやめる」で やめた になり、帯が押せるようになる", async ({
+  page,
+}) => {
   const u = await person();
   const sales = await employee(u, "営業社員", "発注ナビの新着を台帳に入れる");
   const acct = await employee(u, "経理社員", "納品済み案件の請求書を下書きする");
@@ -147,16 +174,26 @@ test("SCR-ONBOARD-TESTRUN-003 SCR-ONBOARD-TESTRUN-034 止まった：止まっ�
   await expect(reason).toContainText("Kaname は CAPTCHA を突破しません");
   await expect(reason.getByRole("button", { name: "ブラウザで開く" })).toBeDisabled();
   await expect(band(page).locator("[data-wiz-next-go]")).toBeDisabled();
-  await expect(band(page).locator("[data-wiz-next-note]")).toContainText("止まった AI社員を通すか「この仕事はやめる」を選ぶと");
+  await expect(band(page).locator("[data-wiz-next-note]")).toContainText(
+    "止まった AI社員を通すか「この仕事はやめる」を選ぶと",
+  );
   await reason.getByRole("button", { name: "この仕事はやめる" }).click();
   const n = page.locator("[data-state='n']");
   await expect(n).toBeVisible({ timeout: 15_000 });
   await expect(n.locator("[data-row-employee][data-run-status='cancelled']")).toContainText("やめた");
   await expect(band(page).locator("[data-wiz-next-go]")).toBeEnabled();
-  const row = (await admin<{ status_id: string; finished_at: string | null }>("select status_id, finished_at from action_runs where id = $1", [stoppedId]))[0]!;
+  const row = (
+    await admin<{ status_id: string; finished_at: string | null }>(
+      "select status_id, finished_at from action_runs where id = $1",
+      [stoppedId],
+    )
+  )[0]!;
   expect(row.status_id).toBe("cancelled");
   expect(row.finished_at).toBeTruthy();
-  const au = await admin<{ action: string }>("select action from audit_events where target_type = 'action_runs' and target_id = $1", [stoppedId]);
+  const au = await admin<{ action: string }>(
+    "select action from audit_events where target_type = 'action_runs' and target_id = $1",
+    [stoppedId],
+  );
   expect(au.map((a) => a.action)).toEqual(["testrun.cancelled"]);
   // やめた後は 止まった理由 の箱は消える。もう一度 やめる は 404（本人の会社の、止まった・実行中のものだけ）
   const again = await api("/api/auth-ext/onboard/testrun/cancel", { run_id: stoppedId }, u.token);
@@ -166,5 +203,7 @@ test("SCR-ONBOARD-TESTRUN-003 SCR-ONBOARD-TESTRUN-034 止まった：止まっ�
   const o2 = await employee(other, "営業社員", "x");
   const theirs = await run(other, o2, "stopped", "止まった");
   expect((await api("/api/auth-ext/onboard/testrun/cancel", { run_id: theirs }, u.token)).status).toBe(404);
-  expect((await admin<{ status_id: string }>("select status_id from action_runs where id = $1", [theirs]))[0]!.status_id).toBe("stopped");
+  expect(
+    (await admin<{ status_id: string }>("select status_id from action_runs where id = $1", [theirs]))[0]!.status_id,
+  ).toBe("stopped");
 });

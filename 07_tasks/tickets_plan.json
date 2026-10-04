@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-04T14:15:58",
+ "generated_at": "2026-10-04T15:02:27",
  "inputs": {
   "tickets": "07_tasks/tickets.json",
   "roster": "07_tasks/roster.json",
@@ -16,10 +16,10 @@
  "summary": {
   "as_of": "2026-10-04",
   "by_status": {
-   "done": 117,
-   "todo": 98
+   "done": 118,
+   "todo": 97
   },
-  "hours_done": 841.5,
+  "hours_done": 842.7,
   "hours_total": 1227.0,
   "progress_pct": 69,
   "epic": 16,
@@ -60,7 +60,7 @@
    "claude-03": 6.5,
    "claude-04": 6.2,
    "claude-05": 36.8,
-   "claude-06": 24.4,
+   "claude-06": 23.2,
    "claude-07": 22.7,
    "claude-08": 22.1,
    "claude-09": 68.3,
@@ -11236,8 +11236,8 @@
    "layer": "ui",
    "estimate_hours": 1.2,
    "estimate_default": false,
-   "start": "2026-10-05",
-   "finish": "2026-10-05",
+   "start": "2026-10-04",
+   "finish": "2026-10-04",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -11248,7 +11248,7 @@
    ],
    "assignee": "claude-06",
    "assigned_by": "auto",
-   "status": "todo",
+   "status": "done",
    "external": {},
    "links": {
     "mock": [
@@ -11316,8 +11316,9 @@
    },
    "delta": "unchanged",
    "dropped_reason": null,
-   "done_at": null,
-   "started_at": null
+   "done_at": "2026-10-04",
+   "started_at": null,
+   "actual": true
   },
   {
    "id": "T-U-13",
@@ -21969,8 +21970,8 @@
    "layer": "integration",
    "estimate_hours": 2.0,
    "estimate_default": false,
-   "start": "2026-10-06",
-   "finish": "2026-10-06",
+   "start": "2026-10-05",
+   "finish": "2026-10-05",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -26806,9 +26807,9 @@
     ],
     "qa_rows": [
      "CHT-36-001",
-     "CHT-36-002",
+     "CHT-36-006",
      "CHT-36-003",
-     "CHT-36-005"
+     "CHT-36-007"
     ],
     "errors": [],
     "spec": [
@@ -57349,7 +57350,7 @@
    "sub": "impl",
    "title": "apps/web/app/(public)/onboard/golive/page.tsx (new)",
    "parent": "T-U-12",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/app/(public)/onboard/golive/page.tsx (new)"
@@ -57362,7 +57363,7 @@
    "sub": "impl",
    "title": "apps/web/tests/screens/onboard-golive.spec.ts (new)",
    "parent": "T-U-12",
-   "status": "todo",
+   "status": "done",
    "links": {
     "file": [
      "apps/web/tests/screens/onboard-golive.spec.ts (new)"
@@ -105164,12 +105165,12 @@
    "id": "T-B-36.t2",
    "kind": "subtask",
    "sub": "test",
-   "title": "L1 CHT-36-002 を staging で流して PASS/BLOCKED を正本に書く",
+   "title": "L1 CHT-36-006 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-B-36",
    "status": "todo",
    "links": {
     "qa_rows": [
-     "CHT-36-002"
+     "CHT-36-006"
     ]
    }
   },
@@ -105190,12 +105191,12 @@
    "id": "T-B-36.t4",
    "kind": "subtask",
    "sub": "test",
-   "title": "L1 CHT-36-005 を staging で流して PASS/BLOCKED を正本に書く",
+   "title": "L1 CHT-36-007 を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-B-36",
    "status": "todo",
    "links": {
     "qa_rows": [
-     "CHT-36-005"
+     "CHT-36-007"
     ]
    }
   },

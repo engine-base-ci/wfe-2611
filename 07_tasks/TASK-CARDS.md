@@ -2716,8 +2716,8 @@
 - 根拠（逐語）：D-116「はじめの設定の次の段へ進む主ボタンは、画面の下に常に見える帯に 1 つ。進めないときは何をすれば進めるかを帯に書く。押せ」
 - 触るファイル：apps/web/components/wizard/wizard-layout.tsx (new)、apps/web/lib/onboarding.ts (new)、06_mockup/_wiz.py (new)、apps/web/tests/screens/wizard-next.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: はじめの設定の進み方（次へ進むボタンは画面の下の帯に 1 つ・進めないときは理由 の成果物があり、type-check と build 
-- AC（Tier 2）：EVENT-DRIVEN: WHEN 4 と 5 を押す（実ブラウザ）、システムは 「いまの段『3. たたき台』で…と開きます」「まだ作っていません」が出る ／ UNWANTED: IF 段 4 まで通した、システムは 4 から 5（/onboard/testrun）へ移る。5 の帯に「6. 本番へ」がまだ無いことが書い
-- L1 行 4（['CHT-36-001', 'CHT-36-002', 'CHT-36-003'] …）／ L2 —
+- AC（Tier 2）：EVENT-DRIVEN: WHEN 4 と 5 と 6 を押す（実ブラウザ）、システムは 4・5・6 のどれを押しても「いまの段『3. たたき台』で…と開きま ／ UNWANTED: IF 段 4 まで通した、システムは 4 から 5（/onboard/testrun）へ移る。5 の帯は押せず「たたき台に AI社員がいると
+- L1 行 4（['CHT-36-001', 'CHT-36-006', 'CHT-36-003'] …）／ L2 —
 - audit: 07_tasks/audit/T-B-36.md
 
 ### T-B-37 AI がブラウザを動かす土台（本人の Chrome＝Claude in Chrome が既定・Bridge 専用のブラウザ＝Playwright MCP・Bridge の窓で選ぶ・つながらないときは会話と自己診断に理由を出す・禁止の宛先は開く前と開いた後の両方で止める・Stagehand はやめる）

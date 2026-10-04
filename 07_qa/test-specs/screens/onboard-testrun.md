@@ -1,6 +1,6 @@
 # onboard-testrun テスト仕様（L1・機械生成）
 
-> 05_flow/build_tasks.py がタスクと同時に生成。ID は変えない。途中変更は qa_delta.py で差分。結果列は staging で流した人が書く（再生成しても残る。今の行 35・結果あり 34 行）。
+> 05_flow/build_tasks.py がタスクと同時に生成。ID は変えない。途中変更は qa_delta.py で差分。結果列は staging で流した人が書く（再生成しても残る。今の行 35・結果あり 35 行）。
 
 | ID | 画面 | テスト観点 | テスト項目 | 前提条件 | 操作手順 | 期待結果 | 結果 | 備考 | タスク | 実行条件 |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -13,7 +13,7 @@
 | SCR-ONBOARD-TESTRUN-007 | onboard-testrun | 到達性 | リンク先 bridge-setup が実在ルートで 200 で開く | — | 押す | /bridge-setup が開く（G-04） | PASS（screens/onboard-testrun.spec.ts・実 Chrome・2026-10-04） |  | T-U-11 | L1 |
 | SCR-ONBOARD-TESTRUN-008 | onboard-testrun | 到達性 | リンク先 credentials が実在ルートで 200 で開く | — | 押す | /credentials が開く（G-04） | PASS（screens/onboard-testrun.spec.ts・実 Chrome・2026-10-04） |  | T-U-11 | L1 |
 | SCR-ONBOARD-TESTRUN-009 | onboard-testrun | 到達性 | リンク先 onboard-draft が実在ルートで 200 で開く | — | 押す | /onboard-draft が開く（G-04） | PASS（screens/onboard-testrun.spec.ts・実 Chrome・2026-10-04） |  | T-U-11 | L1 |
-| SCR-ONBOARD-TESTRUN-010 | onboard-testrun | 到達性 | リンク先 onboard-golive が実在ルートで 200 で開く | — | 押す | /onboard-golive が開く（G-04） | BLOCKED（自動：行き先の画面 onboard-golive は T-U-12 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） |  | T-U-11 | L1 |
+| SCR-ONBOARD-TESTRUN-010 | onboard-testrun | 到達性 | リンク先 onboard-golive が実在ルートで 200 で開く | — | 押す | /onboard-golive が開く（G-04） | PASS（screens/setup-steps-links.spec.ts・実 Chrome・2026-10-04） |  | T-U-11 | L1 |
 | SCR-ONBOARD-TESTRUN-011 | onboard-testrun | 到達性 | リンク先 onboard-interview が実在ルートで 200 で開く | — | 押す | /onboard-interview が開く（G-04） | PASS（screens/onboard-testrun.spec.ts・実 Chrome・2026-10-04） |  | T-U-11 | L1 |
 | SCR-ONBOARD-TESTRUN-012 | onboard-testrun | 横溢れ | 375・768・1024・1440 で scrollWidth - clientWidth <= 1、1180+ で本文 720 以上 | — | 各幅で開く | 溢れ 0 | PASS（screens/onboard-testrun.spec.ts・実 Chrome・2026-10-04） | G-05 | T-U-11 | L1 |
 | SCR-ONBOARD-TESTRUN-013 | onboard-testrun | 空・止まっている | データ 0 件の状態と AI が止まっている状態が cover 宣言どおりに出る | PS2 / PS4 | 開く | 空状態と止まっている帯 | PASS（screens/onboard-testrun.spec.ts・実 Chrome・2026-10-04） | G18 | T-U-11 | L1 |
@@ -29,9 +29,9 @@
 | SCR-ONBOARD-TESTRUN-024 | onboard-testrun | 操作 | リンク「3. たたき台」（状態 動かした・最初・止まった） | 状態 動かした を作る（全役割） | 押す／入れる（実ブラウザ） | /onboard-draft が実在ルートで 200 で開く（G-04） | PASS（screens/onboard-testrun.spec.ts・実 Chrome・2026-10-04） | op=link:3. たたき台→onboard-draft | T-U-11 | L1 |
 | SCR-ONBOARD-TESTRUN-025 | onboard-testrun | 操作 | リンク「4. ログイン情報」（状態 動かした・最初・止まった） | 状態 動かした を作る（全役割） | 押す／入れる（実ブラウザ） | /credentials が実在ルートで 200 で開く（G-04） | PASS（screens/onboard-testrun.spec.ts・実 Chrome・2026-10-04） | op=link:4. ログイン情報→credentials | T-U-11 | L1 |
 | SCR-ONBOARD-TESTRUN-026 | onboard-testrun | 操作 | リンク「5. テスト」（状態 動かした・最初・止まった） | 状態 動かした を作る（全役割） | 押す／入れる（実ブラウザ） | /onboard-testrun が実在ルートで 200 で開く（G-04） | PASS（screens/onboard-testrun.spec.ts・実 Chrome・2026-10-04） | op=link:5. テスト→onboard-testrun | T-U-11 | L1 |
-| SCR-ONBOARD-TESTRUN-027 | onboard-testrun | 操作 | リンク「6. 本番へ」（状態 動かした・最初・止まった） | 状態 動かした を作る（全役割） | 押す／入れる（実ブラウザ） | /onboard-golive が実在ルートで 200 で開く（G-04） | BLOCKED（自動：行き先の画面 onboard-golive は T-U-12 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） | op=link:6. 本番へ→onboard-golive | T-U-11 | L1 |
+| SCR-ONBOARD-TESTRUN-027 | onboard-testrun | 操作 | リンク「6. 本番へ」（状態 動かした・最初・止まった） | 状態 動かした を作る（全役割） | 押す／入れる（実ブラウザ） | /onboard-golive が実在ルートで 200 で開く（G-04） | PASS（screens/setup-steps-links.spec.ts・実 Chrome・2026-10-04） | op=link:6. 本番へ→onboard-golive | T-U-11 | L1 |
 | SCR-ONBOARD-TESTRUN-028 | onboard-testrun | 操作 | ボタン「見る」（状態 動かした） | 状態 動かした を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） | PASS（screens/onboard-testrun.spec.ts・実 Chrome・2026-10-04） | op=button:見る | T-U-11 | L1 |
-| SCR-ONBOARD-TESTRUN-029 | onboard-testrun | 操作 | リンク「本番に切り替える」（状態 動かした） | 状態 動かした を作る（全役割） | 押す／入れる（実ブラウザ） | /onboard-golive が実在ルートで 200 で開く（G-04） | BLOCKED（自動：行き先の画面 onboard-golive は T-U-12 で実装（未着手）。href は flow の route と機械照合済み・押すと 404 になるので今は押せない） | op=link:本番に切り替える→onboard-golive | T-U-11 | L1 |
+| SCR-ONBOARD-TESTRUN-029 | onboard-testrun | 操作 | リンク「本番に切り替える」（状態 動かした・最初・止まった） | 状態 動かした を作る（全役割） | 押す／入れる（実ブラウザ） | /onboard-golive が実在ルートで 200 で開く（G-04） | PASS（screens/setup-steps-links.spec.ts・実 Chrome・2026-10-04） | op=link:本番に切り替える→onboard-golive | T-U-11 | L1 |
 | SCR-ONBOARD-TESTRUN-030 | onboard-testrun | 操作 | ボタン「もう少し試す」（状態 動かした） | 状態 動かした を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） | BLOCKED（自動：「もう少し試す」は AI社員をもう一度テストモードで動かす結線が要る。T-I-01） | op=button:もう少し試す | T-U-11 | L1 |
 | SCR-ONBOARD-TESTRUN-031 | onboard-testrun | 操作 | ボタン「営業社員を動かす」（状態 最初） | 状態 最初 を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） | BLOCKED（自動：「営業社員を動かす」は AI社員をテストモードで動かす結線（実行ループ）が要る。T-I-01） | op=button:営業社員を動かす | T-U-11 | L1 |
 | SCR-ONBOARD-TESTRUN-032 | onboard-testrun | 操作 | ボタン「経理社員を動かす」（状態 最初） | 状態 最初 を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） | BLOCKED（自動：「経理社員を動かす」は AI社員をテストモードで動かす結線が要る。T-I-01） | op=button:経理社員を動かす | T-U-11 | L1 |

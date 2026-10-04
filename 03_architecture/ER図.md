@@ -36,13 +36,13 @@ erDiagram
 
 | テーブル | 主な列 | 備考 |
 |---|---|---|
-| `tenants` | `<common>` / `name` / `plan_id` / `status_id` | 契約の単位 |
+| `tenants` | `<common>` / `name` / `plan_id` / `status_id` / **`live_at`**・**`live_by`**（本番に切り替えた日時と人。切り替える前の確認に赤が無いときだけ `app.onboard_golive_switch` が書く ← D-116.5・D-028.4） | 契約の単位。切り替える前の確認は `app.onboard_golive`（会社モデル・Bridge・承認のルール・AI社員ごとのログイン情報と目標を本物の記録から） |
 | `scopes` | `<common>` / `parent_id` / `layer_id` / `name` | **4 層の実体**（運営／会社／部署／個人）。層は省略可 |
 | `member_kinds` | `key` / `label` | **マスタ**（human / ai_employee / clone / 将来 guest） ← E20 |
 | `members` | `<scoped>` / `kind_id` / `display_name` / `role_id` / `manager_member_id` / `auth_user_id`（認証の利用者。Better Auth の user。AI社員・自分のAI は null） / `setup_step`（はじめの設定をどこまで通したか 0〜6・D-089）/ **`agent_permission_mode`**（自分のAI の許可のモード。既定 default。全部許可は本人が選んだときだけ・D-104.14）/ **`agent_model`** / **`agent_effort`**（本人が選んだモデルと考える強さ・D-104.13） | **人間と AI が同じ席に座る**。はじめの設定の進み具合は人ごと（Bridge はその人の PC・ログイン情報はその人が預ける） |
 | `setup_steps` | `n`（1〜6・PK） / `label` | **マスタ**（`<common>`）。はじめの設定の段の名前。1 PCをつなぐ／2 話す／3 たたき台／4 ログイン情報／5 テスト／6 本番へ（D-089） |
 | `clones` | `<common>` / `owner_member_id` / `persona` | 各個人の写し。1 人 1 体 |
-| `ai_employees` | `<scoped>` / `member_id` / `provisioning_id` / `template_ref` | ← E19（出どころ）|
+| `ai_employees` | `<scoped>` / `member_id` / `provisioning_id` / `template_ref` / **`paused_at`**・**`paused_reason`**（「止めたまま本番へ」。足りない AI社員を動かさないまま切り替える。`app.golive_pause` で付け外し・証跡 ← E-DEP-004・D-116.5） | ← E19（出どころ）|
 
 ---
 
@@ -475,6 +475,7 @@ erDiagram
 
 | 決定 | 何を決めたか | 効いているテーブル |
 |---|---|---|
+| D-116 | 6 本番へは、切り替える前の確認に赤が無ければ切り替えられる（黄は承知のうえで）。押したら通し、翌朝から動く | `tenants.live_at` `tenants.live_by` `ai_employees.paused_at`（止めたまま本番へ） `action_runs.ai_employee_id/duty_id/mode_id`。判定は `app.onboard_golive`、切り替えは `app.onboard_golive_switch`（段 6 を通した記録・証跡 golive.switched）、止めるは `app.golive_pause`（0070） |
 | D-112 | 自分のAI の会話は本人の PC の Claude Code の記録が正本（文を記録と同じ id で写す） | `messages.transcript_uuid`（会話の中で一意）。書くのは `app.bridge_entries`、取り戻す先は `app.bridge_mirror_targets`、結末は `app.bridge_finish_job`（写した文があれば答えを重ねない） |
 | D-120 | AI が使うブラウザを PC ごとに Kaname で選ぶ・もう一度確かめる | `sessions.browser` `bridge_jobs.browser`。`app.agent_set_browser` / `app.bridge_set_browser` / `app.bridge_browser` / `app.bridge_job_browser` / `app.agent_browser_check` / `app.bridge_state`（browser を足す）（0057） |
 | D-110 | 自分のAI が Kaname の道具でたたき台に置く（鍵はその仕事の間だけ・証跡） | `bridge_jobs.tool_token_hash` `goals` `goal_versions` `ledger_definitions` `duties` `ai_employees` `members` `units` `memories` `audit_events`。書くのは `app.agent_goal_set` / `app.agent_ledger_set` / `app.agent_duty_set` / `app.agent_draft_remove` / `app.agent_remember_tool`（security definer・会社をまたがない） |

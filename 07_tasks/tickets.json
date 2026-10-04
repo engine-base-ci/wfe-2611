@@ -23346,6 +23346,7 @@
    ],
    "audit_md_path": "07_tasks/audit/T-U-11.md",
    "status": "done",
+   "done_at": "2026-10-04",
    "qa_rows": {
     "l1": [
      "SCR-ONBOARD-TESTRUN-001",
@@ -23507,8 +23508,7 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 1.4,
-   "estimate_sessions": 1,
-   "done_at": "2026-10-04"
+   "estimate_sessions": 1
   },
   {
    "id": "T-U-12",
@@ -23625,7 +23625,7 @@
     "01_hearing/決定ログ_進行中.md#D-003.7"
    ],
    "audit_md_path": "07_tasks/audit/T-U-12.md",
-   "status": "todo",
+   "status": "done",
    "qa_rows": {
     "l1": [
      "SCR-ONBOARD-GOLIVE-001",
@@ -23767,7 +23767,8 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 1.2,
-   "estimate_sessions": 1
+   "estimate_sessions": 1,
+   "done_at": "2026-10-04"
   },
   {
    "id": "T-U-13",
@@ -50943,8 +50944,8 @@
      "UBIQUITOUS: はじめの設定の進み方（次へ進むボタンは画面の下の帯に 1 つ・進めないときは理由 の成果物があり、type-check と build が通る"
     ],
     "functional": [
-     "EVENT-DRIVEN: WHEN 4 と 5 を押す（実ブラウザ）、システムは 「いまの段『3. たたき台』で…と開きます」「まだ作っていません」が出る",
-     "UNWANTED: IF 段 4 まで通した、システムは 4 から 5（/onboard/testrun）へ移る。5 の帯に「6. 本番へ」がまだ無いことが書いてあり、6 には行かない"
+     "EVENT-DRIVEN: WHEN 4 と 5 と 6 を押す（実ブラウザ）、システムは 4・5・6 のどれを押しても「いまの段『3. たたき台』で…と開きます」が出る。移らない",
+     "UNWANTED: IF 段 4 まで通した、システムは 4 から 5（/onboard/testrun）へ移る。5 の帯は押せず「たたき台に AI社員がいると試せます」。6 はまだ届かない段としてリンクでない"
     ],
     "regression": [
      "pnpm test（該当パッケージ）PASS",
@@ -50968,9 +50969,9 @@
    "qa_rows": {
     "l1": [
      "CHT-36-001",
-     "CHT-36-002",
+     "CHT-36-006",
      "CHT-36-003",
-     "CHT-36-005"
+     "CHT-36-007"
     ],
     "l2_flows": []
    },
@@ -50979,11 +50980,11 @@
      "name": "はじめの設定の進み方（次へ進むボタンは画面の下の帯に 1 つ・進めないときは理由",
      "steps": [
       "帯のボタンを押す（実ブラウザ）",
-      "4 と 5 を押す（実ブラウザ）",
+      "4 と 5 と 6 を押す（実ブラウザ）",
       "話すを開く（実ブラウザ）",
       "4 の帯のボタンを押す → 5 の帯を見る（実ブラウザ）"
      ],
-     "expected": "「いまの段『3. たたき台』で…と開きます」「まだ作っていません」が出る"
+     "expected": "4・5・6 のどれを押しても「いまの段『3. たたき台』で…と開きます」が出る。移らない"
     }
    ],
    "source": [
@@ -51007,12 +51008,12 @@
     "tier_2_functional": [
      {
       "type": "EVENT-DRIVEN",
-      "text": "EVENT-DRIVEN: WHEN 4 と 5 を押す（実ブラウザ）、システムは 「いまの段『3. たたき台』で…と開きます」「まだ作っていません」が出る",
+      "text": "EVENT-DRIVEN: WHEN 4 と 5 と 6 を押す（実ブラウザ）、システムは 4・5・6 のどれを押しても「いまの段『3. たたき台』で…と開きます」が出る。移らない",
       "critical": false
      },
      {
       "type": "UNWANTED",
-      "text": "UNWANTED: IF 段 4 まで通した、システムは 4 から 5（/onboard/testrun）へ移る。5 の帯に「6. 本番へ」がまだ無いことが書いてあり、6 には行かない",
+      "text": "UNWANTED: IF 段 4 まで通した、システムは 4 から 5（/onboard/testrun）へ移る。5 の帯は押せず「たたき台に AI社員がいると試せます」。6 はまだ届かない段としてリンクでない",
       "critical": false
      }
     ],

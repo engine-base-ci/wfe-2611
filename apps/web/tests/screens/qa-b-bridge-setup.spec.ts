@@ -16,9 +16,9 @@ import {
   signupViaApi,
 } from "../_lib/api";
 import { startAgentBridge, type AgentBridge } from "../_lib/agent-bridge";
+import { localBridge } from "../_lib/local-bridge";
 
 const CHROME_CHECK = "AI が Chrome を使える（Claude in Chrome）";
-const CWS = "https://chromewebstore.google.com/detail/claude/fcoeoabgfenejglbffodgkkbkcdhcgfn";
 
 let bridges: AgentBridge[] = [];
 test.afterEach(() => {
@@ -26,85 +26,6 @@ test.afterEach(() => {
   bridges = [];
 });
 
-interface LocalOpts {
-  /** /ping に答えるときの端末名（画面に出る） */
-  label?: string;
-  claudeOk?: boolean;
-  loggedIn?: boolean;
-  /** 画面が渡した接続コードで何をするか。返す true でつながった（201）、false で 400 */
-  onPair?: (code: string) => Promise<boolean>;
-}
-interface LocalSeen {
-  codes: string[];
-  install: number;
-  login: number;
-  loginCode: string;
-}
-/** この PC の Bridge の口を、試験のブラウザの中だけで演じる（本物には届かない）。本物の Bridge と同じ形で答える */
-async function localBridge(page: Page, o: LocalOpts = {}): Promise<LocalSeen> {
-  const seen: LocalSeen = { codes: [], install: 0, login: 0, loginCode: "" };
-  let claudeOk = o.claudeOk ?? true;
-  let loggedIn = o.loggedIn ?? true;
-  const cors = {
-    "access-control-allow-origin": "*",
-    "access-control-allow-headers": "content-type",
-    "access-control-allow-methods": "GET, POST, OPTIONS",
-  };
-  // hideRealBridge の後に足す（後から足した経路が先に効く）。知らない口は断る
-  await page.route("http://127.0.0.1:38617/**", async (r) => {
-    const req = r.request();
-    const path = new URL(req.url()).pathname;
-    const json = (status: number, body: unknown) =>
-      r.fulfill({ status, headers: cors, contentType: "application/json", body: JSON.stringify(body) });
-    if (req.method() === "OPTIONS") return r.fulfill({ status: 204, headers: cors });
-    if (path === "/ping")
-      return json(200, { app: "kaname-bridge", version: "0.0.0-qa", device_label: o.label ?? "MacBook Pro（QA-B）", connected: false });
-    if (path === "/check")
-      return json(200, {
-        checks: [
-          {
-            name: "本人のサブスクの Claude Code がある",
-            ok: claudeOk,
-            detail: claudeOk ? "/usr/local/bin/claude" : "この PC にありません",
-            fix: claudeOk ? null : "install",
-          },
-          {
-            name: "Claude Code にログインできている",
-            ok: loggedIn,
-            detail: loggedIn ? "できています" : "まだログインしていません",
-            fix: loggedIn ? null : "login",
-          },
-          { name: "Kaname につながる", ok: true, detail: "http://127.0.0.1:3011" },
-        ],
-      });
-    if (path === "/install-claude") {
-      seen.install++;
-      claudeOk = true;
-      return json(200, { ok: true, message: "入りました。次に「ログインする」を押してください" });
-    }
-    if (path === "/login-claude") {
-      seen.login++;
-      return json(200, {
-        ok: true,
-        url: "https://claude.com/cai/oauth/authorize?code=true",
-        message: "ブラウザで承認してください。コードが出たら、下に貼って「決定」を押します",
-      });
-    }
-    if (path === "/login-code") {
-      seen.loginCode = String((req.postDataJSON() as { code?: string })?.code ?? "");
-      loggedIn = true;
-      return json(200, { ok: true, message: "ログインできました。これで仕事を渡せます" });
-    }
-    if (path === "/pair") {
-      const code = String((req.postDataJSON() as { code?: string })?.code ?? "");
-      seen.codes.push(code);
-      const ok = o.onPair ? await o.onPair(code) : false;
-      return json(ok ? 201 : 400, ok ? { connected: true } : { message: "つなげませんでした" });
-    }
-    return r.abort("connectionrefused");
-  });
-  return seen;
-}
 /** 押すまで待たせる関門（その間の画面を見るため） */
 function gate() {
   let open!: () => void;
@@ -117,10 +38,12 @@ const claimWith = (label: string) => async (code: string) =>
 const stepOf = async (memberId: string) =>
   (await admin<{ s: number }>("select setup_step as s from members where id = $1", [memberId]))[0]!.s;
 const browserOf = async (memberId: string) =>
-  (await admin<{ b: string }>(
-    "select browser as b from sessions where member_id = $1 and kind_id = 'bridge' and revoked_at is null order by last_seen_at desc limit 1",
-    [memberId],
-  ))[0]?.b;
+  (
+    await admin<{ b: string }>(
+      "select browser as b from sessions where member_id = $1 and kind_id = 'bridge' and revoked_at is null order by last_seen_at desc limit 1",
+      [memberId],
+    )
+  )[0]?.b;
 const steps = (page: Page) => page.getByRole("list", { name: "手順" }).locator("li");
 
 /** つながった人（端末の行・知らせが来ている・この PC の口が答える）。health を渡すと Bridge の自己診断として返す */
@@ -138,7 +61,9 @@ async function connected(page: Page, health?: { name: string; ok: boolean; detai
   return { u, sid };
 }
 
-test("BRG-02-001 SCR-BRIDGE-SETUP-059 状態「接続中（ブラウザ・未インストール）」：手順バー・見出し・受け取る（macOS／Windows）・開く・許可の 3 つ・何をするか／しないか が出て、接続コードは本物（引き取れる）", async ({ page }) => {
+test("BRG-02-001 SCR-BRIDGE-SETUP-059 状態「接続中（ブラウザ・未インストール）」：手順バー・見出し・受け取る（macOS／Windows）・開く・許可の 3 つ・何をするか／しないか が出て、接続コードは本物（引き取れる）", async ({
+  page,
+}) => {
   await hideRealBridge(page); // この PC の口は答えない＝入っていない
   const u = await signupViaApi();
   await loginAs(page, u.token);
@@ -146,7 +71,14 @@ test("BRG-02-001 SCR-BRIDGE-SETUP-059 状態「接続中（ブラウザ・未イ
   await page.goto("/setup/bridge");
   await expect(page.locator("h1")).toHaveText("自分のPCをつなぐ");
   await expect(steps(page)).toHaveCount(6);
-  await expect(steps(page)).toHaveText(["1. PCをつなぐ", "2. 話す", "3. たたき台", "4. ログイン情報", "5. テスト", "6. 本番へ"]);
+  await expect(steps(page)).toHaveText([
+    "1. PCをつなぐ",
+    "2. 話す",
+    "3. たたき台",
+    "4. ログイン情報",
+    "5. テスト",
+    "6. 本番へ",
+  ]);
   const web = page.locator('[data-where="web"]');
   await expect(web).toBeVisible({ timeout: 20_000 });
   await expect(web).toContainText("この PC に Bridge がまだありません");
@@ -166,11 +98,16 @@ test("BRG-02-001 SCR-BRIDGE-SETUP-059 状態「接続中（ブラウザ・未イ
   await page.getByText("うまくつながらないとき（接続コードを手で入れる）").click();
   const code = (await page.locator("[data-pair-code]").innerText()).trim();
   expect(code).toMatch(/^KNM-\d{4}$/);
-  const c = await api<{ data: { connected: boolean } }>("/api/auth-ext/bridge/claim", { code, device_label: "QA-B 確かめ" });
+  const c = await api<{ data: { connected: boolean } }>("/api/auth-ext/bridge/claim", {
+    code,
+    device_label: "QA-B 確かめ",
+  });
   expect(c.status, "画面に出た番号はそのまま引き取れる").toBe(201);
 });
 
-test("SCR-BRIDGE-SETUP-060 SCR-BRIDGE-SETUP-096 状態「ブラウザ・Bridge が入っている」：ダウンロードもコードも出さずこの PC の Bridge につなぐ。「接続を確かめる」を押すと見直して結果が出る", async ({ page }) => {
+test("SCR-BRIDGE-SETUP-060 SCR-BRIDGE-SETUP-096 状態「ブラウザ・Bridge が入っている」：ダウンロードもコードも出さずこの PC の Bridge につなぐ。「接続を確かめる」を押すと見直して結果が出る", async ({
+  page,
+}) => {
   const u = await signupViaApi();
   const g = gate();
   await hideRealBridge(page);
@@ -188,7 +125,9 @@ test("SCR-BRIDGE-SETUP-060 SCR-BRIDGE-SETUP-096 状態「ブラウザ・Bridge �
   await expect(ins).toBeVisible({ timeout: 20_000 });
   await expect(ins).toContainText("この PC で Bridge が動いています。");
   await expect(ins).toContainText("入れる作業も接続コードの入力も要りません");
-  await expect(ins, "端末名は この PC の Bridge が答えた値（決め打ちでない）").toContainText("（MacBook Pro（QA-B 入っている））");
+  await expect(ins, "端末名は この PC の Bridge が答えた値（決め打ちでない）").toContainText(
+    "（MacBook Pro（QA-B 入っている））",
+  );
   await expect(page.locator("[data-install-lead]"), "入っている人にダウンロードは出さない").toHaveCount(0);
   await expect(page.locator("[data-pair-code]"), "コードも見せない").toHaveCount(0);
   await expect(page.locator("[data-connect-here]")).toBeVisible();
@@ -210,7 +149,9 @@ test("SCR-BRIDGE-SETUP-060 SCR-BRIDGE-SETUP-096 状態「ブラウザ・Bridge �
   await expect(page.locator('[data-state="ok"]')).toBeVisible({ timeout: 20_000 });
 });
 
-test("BRG-01-001 SCR-BRIDGE-SETUP-061 状態「アプリ（Bridge の窓）の中」：入れる作業も接続コードも出さず、開いた時点で自動でつながり「自分のAIと話すへ」が出る", async ({ browser }) => {
+test("BRG-01-001 SCR-BRIDGE-SETUP-061 状態「アプリ（Bridge の窓）の中」：入れる作業も接続コードも出さず、開いた時点で自動でつながり「自分のAIと話すへ」が出る", async ({
+  browser,
+}) => {
   const u = await signupViaApi();
   const g = gate();
   const ctx = await browser.newContext({ userAgent: "Mozilla/5.0 KanameBridge/0.0.0-qa" });
@@ -243,7 +184,9 @@ test("BRG-01-001 SCR-BRIDGE-SETUP-061 状態「アプリ（Bridge の窓）の�
   }
 });
 
-test("BRG-01-002 BRG-02-002 BRG-04-002 SCR-BRIDGE-SETUP-072 SCR-BRIDGE-SETUP-080 SCR-BRIDGE-SETUP-081 状態「Claude Code が無い」：理由と「Claude Code を入れる」が出て、押すと Bridge が入れ、続けて「ログインする」で入口とコード欄が出て、決定で出なくなる", async ({ page }) => {
+test("BRG-01-002 BRG-02-002 BRG-04-002 SCR-BRIDGE-SETUP-072 SCR-BRIDGE-SETUP-080 SCR-BRIDGE-SETUP-081 状態「Claude Code が無い」：理由と「Claude Code を入れる」が出て、押すと Bridge が入れ、続けて「ログインする」で入口とコード欄が出て、決定で出なくなる", async ({
+  page,
+}) => {
   const u = await signupViaApi();
   const g = gate();
   await hideRealBridge(page);
@@ -289,7 +232,9 @@ test("BRG-01-002 BRG-02-002 BRG-04-002 SCR-BRIDGE-SETUP-072 SCR-BRIDGE-SETUP-080
   }
 });
 
-test("SCR-BRIDGE-SETUP-062 状態「切れている（知らせが来ていない）」：渡せないことと、端末名・最後の知らせ（実データ）・溜まった分は消えない・やること が出る", async ({ page }) => {
+test("SCR-BRIDGE-SETUP-062 状態「切れている（知らせが来ていない）」：渡せないことと、端末名・最後の知らせ（実データ）・溜まった分は消えない・やること が出る", async ({
+  page,
+}) => {
   const u = await signupViaApi();
   const sid = await claimBridge(u.token, "MacBook Pro（QA-B 寝ている）");
   await admin("update sessions set last_seen_at = now() - interval '7 minutes' where id = $1", [sid]);
@@ -302,7 +247,9 @@ test("SCR-BRIDGE-SETUP-062 状態「切れている（知らせが来ていな�
   await expect(page.locator("h1")).toHaveText("自分のPCをつなぐ");
   await expect(slp.locator("[data-disconnected]")).toHaveText("切れています。いまは仕事を渡せません");
   await expect(slp, "端末名は登録の値").toContainText("MacBook Pro（QA-B 寝ている） とはつながっていますが");
-  await expect(slp, "最後の知らせは DB の値から（モックの 4 分 12 秒の決め打ちでない）").toContainText(/最後の知らせは [78] 分前\s*です/);
+  await expect(slp, "最後の知らせは DB の値から（モックの 4 分 12 秒の決め打ちでない）").toContainText(
+    /最後の知らせは [78] 分前\s*です/,
+  );
   await expect(slp).toContainText("溜まった分は消えません");
   await expect(slp.getByRole("heading", { name: "やること" })).toBeVisible();
   await expect(slp.locator("[data-wake]"), "つないだことのある端末なので起こす道が出る").toBeVisible();
@@ -311,7 +258,9 @@ test("SCR-BRIDGE-SETUP-062 状態「切れている（知らせが来ていな�
   await expect(page.getByRole("link", { name: "2. 話す" })).toHaveAttribute("href", "/onboard/interview");
 });
 
-test("SCR-BRIDGE-SETUP-089 SCR-BRIDGE-SETUP-090 状態「接続中」：手順バーの「1. PCをつなぐ」はこの画面を開き、まだ届かない「2. 話す」は押すと何をすれば開くかが出る（飛ばせない・D-089）", async ({ page }) => {
+test("SCR-BRIDGE-SETUP-089 SCR-BRIDGE-SETUP-090 状態「接続中」：手順バーの「1. PCをつなぐ」はこの画面を開き、まだ届かない「2. 話す」は押すと何をすれば開くかが出る（飛ばせない・D-089）", async ({
+  page,
+}) => {
   await hideRealBridge(page);
   const u = await signupViaApi();
   await loginAs(page, u.token);
@@ -331,7 +280,9 @@ test("SCR-BRIDGE-SETUP-089 SCR-BRIDGE-SETUP-090 状態「接続中」：手順�
   await expect(page).toHaveURL(/\/setup\/bridge$/);
 });
 
-test("SCR-BRIDGE-SETUP-090 SCR-BRIDGE-SETUP-091 SCR-BRIDGE-SETUP-092 状態「つながった」（段 3 まで通した人）：手順バーの 2・3・4 を押すとそれぞれの画面が開く（200・h1）。5・6 はまだ作っていないと出る", async ({ page }) => {
+test("SCR-BRIDGE-SETUP-090 SCR-BRIDGE-SETUP-091 SCR-BRIDGE-SETUP-092 状態「つながった」（段 3 まで通した人）：手順バーの 2・3・4 を押すとそれぞれの画面が開く（200・h1）。5・6 は届いていない段として、いまの段で何をすれば開くかが出る", async ({
+  page,
+}) => {
   await connected(page, undefined, 3);
   for (const [name, url, h1] of [
     ["2. 話す", /\/onboard\/interview$/, "自分のAIと話す"],
@@ -345,13 +296,25 @@ test("SCR-BRIDGE-SETUP-090 SCR-BRIDGE-SETUP-091 SCR-BRIDGE-SETUP-092 状態「�
     await expect(page.locator("h1").first()).toHaveText(h1, { timeout: 15_000 });
     expect((await page.request.get(page.url())).status(), "実在ルート（200）").toBe(200);
   }
-  // 5・6 は画面がまだ無い（押しても 404 にせず、まだ作っていないと言う）
+  // 5・6 は届いていない段（押しても 404 にせず、いまの段で何をすれば開くかを言う・D-116.2）
   await page.goto("/setup/bridge");
+  // 進み具合（段 3 まで）が読めてから押す（読めていない間は 1 段目扱いの文が出る）
+  await expect(page.locator("ol[aria-label='手順'] li", { hasText: "3. たたき台" })).toHaveClass(/st-success/, {
+    timeout: 15_000,
+  });
   await page.getByRole("button", { name: "5. テスト（まだ開けません。押すと理由が出ます）" }).click();
-  await expect(page.locator("[data-step-note]")).toContainText("「5. テスト」はまだ作っていません");
+  await expect(page.locator("[data-step-note]")).toHaveText(
+    "「5. テスト」は、いまの段「4. ログイン情報」でログイン情報を 1 件預けると開きます",
+  );
+  await page.getByRole("button", { name: "6. 本番へ（まだ開けません。押すと理由が出ます）" }).click();
+  await expect(page.locator("[data-step-note]")).toHaveText(
+    "「6. 本番へ」は、いまの段「4. ログイン情報」でログイン情報を 1 件預けると開きます",
+  );
 });
 
-test("SCR-BRIDGE-SETUP-100 状態「つながった」：下の帯の「次へ：2. 話す」が押せて、自分のAIと話す が開く", async ({ page }) => {
+test("SCR-BRIDGE-SETUP-100 状態「つながった」：下の帯の「次へ：2. 話す」が押せて、自分のAIと話す が開く", async ({
+  page,
+}) => {
   await connected(page);
   const next = page.locator("[data-wiz-next-go]");
   await expect(next).toHaveText("次へ：2. 話す");
@@ -361,7 +324,9 @@ test("SCR-BRIDGE-SETUP-100 状態「つながった」：下の帯の「次へ�
   await expect(page.locator("h1").first()).toHaveText("自分のAIと話す", { timeout: 15_000 });
 });
 
-test("SCR-BRIDGE-SETUP-097 SCR-BRIDGE-SETUP-098 SCR-BRIDGE-SETUP-099 状態「つながった」：AI が使うブラウザの 3 つを選ぶと切り替わり、Kaname に送られる（端末の行が変わる）", async ({ page }) => {
+test("SCR-BRIDGE-SETUP-097 SCR-BRIDGE-SETUP-098 SCR-BRIDGE-SETUP-099 状態「つながった」：AI が使うブラウザの 3 つを選ぶと切り替わり、Kaname に送られる（端末の行が変わる）", async ({
+  page,
+}) => {
   const { u } = await connected(page);
   const pick = page.locator("[data-browser-pick]");
   await expect(pick.locator('input[value="chrome"]')).toBeChecked();
@@ -385,7 +350,9 @@ const CHROME_NG = [
   { name: CHROME_CHECK, ok: false, detail: "つながっていません" },
 ];
 
-test("SCR-BRIDGE-SETUP-101 SCR-BRIDGE-SETUP-102 状態「つながった・AI が Chrome を使えない」：「つなぎ方を見る」は開いて出て、押すと閉じ・もう一度で開く。「Chrome ウェブストアで開く」は公式の入口を新しいタブで開く", async ({ page }) => {
+test("SCR-BRIDGE-SETUP-101 SCR-BRIDGE-SETUP-102 状態「つながった・AI が Chrome を使えない」：「つなぎ方を見る」は開いて出て、押すと閉じ・もう一度で開く。「Chrome ウェブストアで開く」は公式の入口を新しいタブで開く", async ({
+  page,
+}) => {
   test.setTimeout(120_000);
   await connected(page, CHROME_NG);
   await expect(page.locator("tr[data-check]", { hasText: CHROME_CHECK })).toHaveAttribute("data-check", "ng");
@@ -404,21 +371,29 @@ test("SCR-BRIDGE-SETUP-101 SCR-BRIDGE-SETUP-102 状態「つながった・AI �
   await expect(link).toHaveText("Chrome ウェブストアで開く");
   await expect(link).toHaveAttribute("target", "_blank");
   const [tab] = await Promise.all([page.waitForEvent("popup"), link.click()]);
-  await expect.poll(() => tab.url(), { timeout: 15_000 }).toContain("chromewebstore.google.com/detail/claude/fcoeoabgfenejglbffodgkkbkcdhcgfn");
+  await expect
+    .poll(() => tab.url(), { timeout: 15_000 })
+    .toContain("chromewebstore.google.com/detail/claude/fcoeoabgfenejglbffodgkkbkcdhcgfn");
   await tab.close().catch(() => undefined);
   await expect(page, "元の画面はそのまま").toHaveURL(/\/setup\/bridge$/);
 });
 
-test("SCR-BRIDGE-SETUP-104 状態「つながった・AI が Chrome を使えない」：「Bridge 専用のブラウザに切り替える」で端末の選択が専用になり、下の選ぶ欄にも印が付く", async ({ page }) => {
+test("SCR-BRIDGE-SETUP-104 状態「つながった・AI が Chrome を使えない」：「Bridge 専用のブラウザに切り替える」で端末の選択が専用になり、下の選ぶ欄にも印が付く", async ({
+  page,
+}) => {
   const { u } = await connected(page, CHROME_NG);
   const off = page.locator("[data-browser-off]");
   await off.locator("[data-browser-dedicated]").click();
-  await expect(off.locator("[data-browser-fix-msg]")).toHaveText("Bridge 専用のブラウザに切り替えました。次の仕事から使います");
+  await expect(off.locator("[data-browser-fix-msg]")).toHaveText(
+    "Bridge 専用のブラウザに切り替えました。次の仕事から使います",
+  );
   await expect.poll(() => browserOf(u.memberId)).toBe("dedicated");
   await expect(page.locator('[data-browser-pick] input[value="dedicated"]')).toBeChecked({ timeout: 15_000 });
 });
 
-test("SCR-BRIDGE-SETUP-103 状態「つながった・AI が Chrome を使えない」：PC の画面の「もう一度確かめる」で Bridge が小さな仕事で試し、つながれば「つながりました」と出て、Chrome の行が「できる」になる", async ({ page }) => {
+test("SCR-BRIDGE-SETUP-103 状態「つながった・AI が Chrome を使えない」：PC の画面の「もう一度確かめる」で Bridge が小さな仕事で試し、つながれば「つながりました」と出て、Chrome の行が「できる」になる", async ({
+  page,
+}) => {
   test.setTimeout(180_000);
   await hideRealBridge(page);
   const u = await signupViaApi();
@@ -433,9 +408,17 @@ test("SCR-BRIDGE-SETUP-103 状態「つながった・AI が Chrome を使えな
   await expect(box).toBeVisible({ timeout: 30_000 });
   await box.fill("ブラウザで example.com を開いて");
   await box.press("Enter");
-  await expect(page.getByText("Chrome の拡張機能とつながっていないので、ブラウザを使わずに答えます。")).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByText("Chrome の拡張機能とつながっていないので、ブラウザを使わずに答えます。")).toBeVisible({
+    timeout: 30_000,
+  });
   await expect
-    .poll(async () => JSON.stringify((await admin<{ h: unknown }>("select health as h from sessions where id = $1", [b.sid]))[0]?.h ?? null), { timeout: 30_000 })
+    .poll(
+      async () =>
+        JSON.stringify(
+          (await admin<{ h: unknown }>("select health as h from sessions where id = $1", [b.sid]))[0]?.h ?? null,
+        ),
+      { timeout: 30_000 },
+    )
     .toContain('"ok":false');
   await localBridge(page);
   await page.goto("/setup/bridge");
@@ -454,7 +437,10 @@ test("SCR-BRIDGE-SETUP-103 状態「つながった・AI が Chrome を使えな
     [u.memberId],
   );
   expect(jobs.at(-1)).toEqual({ state_id: "done", nocv: true });
-  expect(jobs.filter((j) => j.nocv), "確かめる仕事は 1 件だけ").toHaveLength(1);
+  expect(
+    jobs.filter((j) => j.nocv),
+    "確かめる仕事は 1 件だけ",
+  ).toHaveLength(1);
 });
 
 // ---- 共通の枠（T-US-01）の上の帯。アプリの枠の見本（/dev/shell）で、時点（ps）ごとに出る操作を押す
@@ -479,7 +465,9 @@ test("USH-01-055 上の帯の「高本AI」を押すと自分のAIのパネル�
   await expect.poll(isOn).toBe(was);
 });
 
-test("USH-01-057 AI がまだ無い時点（PS0）の上の帯の「PC をつなぐと話せます」を押すと 自分のPCをつなぐ が開く（200・h1）", async ({ page }) => {
+test("USH-01-057 AI がまだ無い時点（PS0）の上の帯の「PC をつなぐと話せます」を押すと 自分のPCをつなぐ が開く（200・h1）", async ({
+  page,
+}) => {
   await hideRealBridge(page);
   const u = await signupViaApi();
   await setupStep(u.memberId, 6);
@@ -495,7 +483,9 @@ test("USH-01-057 AI がまだ無い時点（PS0）の上の帯の「PC をつな
   expect((await page.request.get(page.url())).status(), "実在ルート（200）").toBe(200);
 });
 
-test("SCR-BRIDGE-SETUP-070 状態「つながった」：「この端末を外す」は確かめてから外す。やめると何も変わらず、外すとその端末の鍵が失効して Bridge は仕事を取れなくなる", async ({ page }) => {
+test("SCR-BRIDGE-SETUP-070 状態「つながった」：「この端末を外す」は確かめてから外す。やめると何も変わらず、外すとその端末の鍵が失効して Bridge は仕事を取れなくなる", async ({
+  page,
+}) => {
   const { u, sid } = await connected(page);
   const btn = page.locator(`[data-bridge-revoke="${sid}"]`);
   await expect(btn).toHaveText("この端末を外す");
@@ -506,13 +496,20 @@ test("SCR-BRIDGE-SETUP-070 状態「つながった」：「この端末を外�
   await expect(dlg).toContainText("MacBook Pro（QA-B つながった）");
   await dlg.locator("[data-confirm-cancel]").click();
   await expect(dlg).toBeHidden();
-  expect((await admin<{ r: string | null }>("select revoked_at as r from sessions where id = $1", [sid]))[0]!.r).toBeNull();
+  expect(
+    (await admin<{ r: string | null }>("select revoked_at as r from sessions where id = $1", [sid]))[0]!.r,
+  ).toBeNull();
   // 外す → 失効し、その鍵では仕事を取れない（410）
   await btn.click();
   await dlg.locator("[data-confirm-ok]").click();
-  await expect(page.getByText("外しました。もう一度つなぐときは、この画面からつなぎ直してください")).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByText("外しました。もう一度つなぐときは、この画面からつなぎ直してください")).toBeVisible({
+    timeout: 15_000,
+  });
   await expect
-    .poll(async () => (await admin<{ r: string | null }>("select revoked_at as r from sessions where id = $1", [sid]))[0]!.r)
+    .poll(
+      async () =>
+        (await admin<{ r: string | null }>("select revoked_at as r from sessions where id = $1", [sid]))[0]!.r,
+    )
     .not.toBeNull();
   expect((await bridgeTake(sid)).status, "外した鍵では仕事を取れない").toBe(410);
   void u;
@@ -520,12 +517,19 @@ test("SCR-BRIDGE-SETUP-070 状態「つながった」：「この端末を外�
 
 // ---------------------------------------------------------------- つながった後の 3 つの状態（モック v1-bridge-setup の chromeoff／nobrowser／old）
 // 期待はモックから：見出しは「自分のPCをつなぐ」、一言はモックの状態の一言、その状態の一手がその場に出る
-async function connectedAs(page: Page, o: { health?: { name: string; ok: boolean; detail?: string }[]; browser?: "off"; old?: boolean }) {
+async function connectedAs(
+  page: Page,
+  o: { health?: { name: string; ok: boolean; detail?: string }[]; browser?: "off"; old?: boolean },
+) {
   const u = await signupViaApi();
   const sid = await claimBridge(u.token, "MacBook Pro（QA-B 状態）");
   if (o.old)
     // 約束の版を送らない（古い）Bridge の知らせ
-    await fetch(`${API}/api/auth-ext/bridge/heartbeat`, { method: "POST", headers: { "content-type": "application/json", "x-bridge-session": sid }, body: JSON.stringify({ health: [] }) });
+    await fetch(`${API}/api/auth-ext/bridge/heartbeat`, {
+      method: "POST",
+      headers: { "content-type": "application/json", "x-bridge-session": sid },
+      body: JSON.stringify({ health: [] }),
+    });
   else await bridgeBeat(sid, o.health);
   await setupStep(u.memberId, 1);
   if (o.browser) await api("/api/auth-ext/agent/browser", { browser: o.browser }, u.token);
@@ -537,14 +541,18 @@ async function connectedAs(page: Page, o: { health?: { name: string; ok: boolean
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("自分のPCをつなぐ", { timeout: 20_000 });
 }
 
-test("SCR-BRIDGE-SETUP-107 状態「つながった・AI が Chrome を使えない」がモックどおり：つながりました の一言と、その場のつなぎ方", async ({ page }) => {
+test("SCR-BRIDGE-SETUP-107 状態「つながった・AI が Chrome を使えない」がモックどおり：つながりました の一言と、その場のつなぎ方", async ({
+  page,
+}) => {
   await connectedAs(page, { health: CHROME_NG });
   await expect(page.locator("[data-connected]")).toContainText("つながりました。", { timeout: 20_000 });
   await expect(page.locator("tr[data-check]", { hasText: CHROME_CHECK })).toHaveAttribute("data-check", "ng");
   await expect(page.locator("[data-browser-off] [data-browser-fix]")).toBeVisible();
 });
 
-test("SCR-BRIDGE-SETUP-108 状態「つながった・ブラウザを使わない設定」がモックどおり：使わない設定の行は「できる」、ここで使うに戻せる", async ({ page }) => {
+test("SCR-BRIDGE-SETUP-108 状態「つながった・ブラウザを使わない設定」がモックどおり：使わない設定の行は「できる」、ここで使うに戻せる", async ({
+  page,
+}) => {
   await connectedAs(page, {
     browser: "off",
     health: [
@@ -553,12 +561,17 @@ test("SCR-BRIDGE-SETUP-108 状態「つながった・ブラウザを使わな�
     ],
   });
   await expect(page.locator("[data-connected]")).toContainText("つながりました。", { timeout: 20_000 });
-  await expect(page.locator("tr[data-check]", { hasText: "AI はブラウザを使わない設定です" })).toHaveAttribute("data-check", "ok");
+  await expect(page.locator("tr[data-check]", { hasText: "AI はブラウザを使わない設定です" })).toHaveAttribute(
+    "data-check",
+    "ok",
+  );
   await expect(page.locator('[data-browser-pick] input[value="off"]')).toBeChecked();
   await expect(page.locator('[data-browser-pick] input[value="chrome"]')).toBeEnabled();
 });
 
-test("SCR-BRIDGE-SETUP-109 状態「つながった・Bridge が古い」がモックどおり：「仕事を渡せません」と言い（「いま仕事を渡せます」と言わない）、その場に入れ直す口", async ({ page }) => {
+test("SCR-BRIDGE-SETUP-109 状態「つながった・Bridge が古い」がモックどおり：「仕事を渡せません」と言い（「いま仕事を渡せます」と言わない）、その場に入れ直す口", async ({
+  page,
+}) => {
   await connectedAs(page, { old: true });
   const lead = page.locator("[data-connected]");
   await expect(lead).toContainText("つながっていますが、Bridge が古いので仕事を渡せません。", { timeout: 20_000 });

@@ -116,7 +116,9 @@
    "label": "本番に切り替える",
    "target": "onboard-golive",
    "states": [
-    "動かした"
+    "動かした",
+    "最初",
+    "止まった"
    ],
    "roles": [],
    "ps": [

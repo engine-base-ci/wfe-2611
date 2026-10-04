@@ -106,8 +106,10 @@
     "T-A-07",
     "T-U-09"
    ],
-   "result": "",
-   "task": ""
+   "result": "PASS（apps/e2e/journeys・実 Chrome・2026-10-04）",
+   "task": "T-U-12",
+   "status": "PASS",
+   "note": "apps/e2e/journeys・実 Chrome・2026-10-04"
   },
   {
    "id": "J02-02",
@@ -126,8 +128,10 @@
     "T-A-17",
     "T-U-07"
    ],
-   "result": "",
-   "task": ""
+   "result": "PASS（apps/e2e/journeys・実 Chrome・2026-10-04）",
+   "task": "T-U-12",
+   "status": "PASS",
+   "note": "apps/e2e/journeys・実 Chrome・2026-10-04"
   },
   {
    "id": "J02-03",
@@ -149,8 +153,10 @@
     "T-A-18",
     "T-U-08"
    ],
-   "result": "",
-   "task": ""
+   "result": "PASS（apps/e2e/journeys・実 Chrome・2026-10-04）",
+   "task": "T-U-12",
+   "status": "PASS",
+   "note": "apps/e2e/journeys・実 Chrome・2026-10-04"
   },
   {
    "id": "J02-04",
@@ -172,8 +178,10 @@
     "T-A-18",
     "T-U-08"
    ],
-   "result": "",
-   "task": ""
+   "result": "BLOCKED（前提が無い・2026-10-04）",
+   "task": "T-U-12",
+   "status": "BLOCKED",
+   "note": "前提が無い・2026-10-04"
   },
   {
    "id": "J02-05",
@@ -191,8 +199,10 @@
     "T-A-07",
     "T-U-10"
    ],
-   "result": "",
-   "task": ""
+   "result": "PASS（apps/e2e/journeys・実 Chrome・2026-10-04）",
+   "task": "T-U-12",
+   "status": "PASS",
+   "note": "apps/e2e/journeys・実 Chrome・2026-10-04"
   },
   {
    "id": "J02-06",
@@ -210,8 +220,10 @@
     "T-A-08",
     "T-U-11"
    ],
-   "result": "",
-   "task": ""
+   "result": "BLOCKED（前提が無い・2026-10-04）",
+   "task": "T-U-12",
+   "status": "BLOCKED",
+   "note": "前提が無い・2026-10-04"
   },
   {
    "id": "J02-07",
@@ -233,8 +245,10 @@
     "T-A-18",
     "T-U-12"
    ],
-   "result": "",
-   "task": ""
+   "result": "PASS（apps/e2e/journeys・実 Chrome・2026-10-04）",
+   "task": "T-U-12",
+   "status": "PASS",
+   "note": "apps/e2e/journeys・実 Chrome・2026-10-04"
   },
   {
    "id": "J03-01",

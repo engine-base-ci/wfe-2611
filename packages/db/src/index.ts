@@ -74,6 +74,7 @@ export const MIGRATIONS = [
   "0067_two_factor_notice.sql",
   "0068_artifact_from_job.sql",
   "0069_testrun.sql",
+  "0070_golive.sql",
 ] as const;
 
 /** migration 名の並びを検査する。重複・順序違い・4 桁でない名前があれば理由を返す。 */

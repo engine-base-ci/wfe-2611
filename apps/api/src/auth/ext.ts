@@ -1401,9 +1401,54 @@ export function authExt(d: AuthExtDeps): Hono {
     const s = await resolve(c.req.raw.headers);
     if (!s?.ctx.tenantId || !s.ctx.userId) return bad(c, 401, "UNAUTHENTICATED", "ログインしてください");
     const b = (await c.req.json().catch(() => ({}))) as { run_id?: unknown };
-    if (typeof b.run_id !== "string" || !UUID_RE_CRED.test(b.run_id)) return bad(c, 422, "VALIDATION_FAILED", "どの実行をやめるかが要ります", { field: "run_id" });
-    const r = await d.appPool.query<{ ok: boolean }>("select app.testrun_cancel($1, $2) as ok", [s.ctx.userId, b.run_id]);
+    if (typeof b.run_id !== "string" || !UUID_RE_CRED.test(b.run_id))
+      return bad(c, 422, "VALIDATION_FAILED", "どの実行をやめるかが要ります", { field: "run_id" });
+    const r = await d.appPool.query<{ ok: boolean }>("select app.testrun_cancel($1, $2) as ok", [
+      s.ctx.userId,
+      b.run_id,
+    ]);
     if (!r.rows[0]?.ok) return bad(c, 404, "NOT_FOUND", "やめられる実行がありません（止まった・実行中のテストだけ）");
+    return c.json({ data: { ok: true } });
+  });
+  // 6 本番に切り替える（T-U-12・D-028.4・D-116.5）：切り替える前の確認（赤・黄）・明日から動くもの・切り替えたか
+  app.get("/onboard/golive", async (c) => {
+    const s = await resolve(c.req.raw.headers);
+    if (!s?.ctx.tenantId || !s.ctx.userId) return bad(c, 401, "UNAUTHENTICATED", "ログインしてください");
+    const r = await d.appPool.query<{ v: unknown }>("select app.onboard_golive($1) as v", [s.ctx.userId]);
+    return c.json({
+      data: r.rows[0]?.v ?? { checks: [], schedule: [], red: 0, warn: 0, ready: false, shortfall: null, live: null },
+    });
+  });
+  // 「切り替える」：赤が 1 件でもあれば 409（E-DEP-004 の文言）。黄は accept_warnings=true で。押したら会社が本番になり、段 6 を通したと記録される
+  app.post("/onboard/golive", async (c) => {
+    const s = await resolve(c.req.raw.headers);
+    if (!s?.ctx.tenantId || !s.ctx.userId) return bad(c, 401, "UNAUTHENTICATED", "ログインしてください");
+    const b = (await c.req.json().catch(() => ({}))) as { accept_warnings?: unknown };
+    const r = await d.appPool.query<{
+      v: { error?: string; message?: string; ok?: boolean; live_at?: string; red?: number; warn?: number };
+    }>("select app.onboard_golive_switch($1, $2) as v", [s.ctx.userId, b.accept_warnings === true]);
+    const v = r.rows[0]!.v;
+    if (v.error === "RED") return bad(c, 409, "GOLIVE_BLOCKED", v.message ?? "足りない設定があります", { red: v.red });
+    if (v.error === "WARN") return bad(c, 409, "GOLIVE_WARNINGS", v.message ?? "警告があります", { warn: v.warn });
+    if (v.error) return bad(c, 404, "MEMBER_NOT_FOUND", "あなたの会員の行が見つかりません");
+    return c.json({ data: { ok: true, live_at: v.live_at } });
+  });
+  // 「止めたまま本番へ」／「動かす」（E-DEP-004 の一手）：足りない AI社員を動かさないまま切り替えられるようにする
+  app.post("/onboard/golive/pause", async (c) => {
+    const s = await resolve(c.req.raw.headers);
+    if (!s?.ctx.tenantId || !s.ctx.userId) return bad(c, 401, "UNAUTHENTICATED", "ログインしてください");
+    const b = (await c.req.json().catch(() => ({}))) as { employee_id?: unknown; paused?: unknown; reason?: unknown };
+    if (typeof b.employee_id !== "string" || !UUID_RE_CRED.test(b.employee_id))
+      return bad(c, 422, "VALIDATION_FAILED", "どの AI社員かが要ります", { field: "employee_id" });
+    if (typeof b.paused !== "boolean")
+      return bad(c, 422, "VALIDATION_FAILED", "止めるか動かすかが要ります", { field: "paused" });
+    const r = await d.appPool.query<{ ok: boolean }>("select app.golive_pause($1, $2, $3, $4) as ok", [
+      s.ctx.userId,
+      b.employee_id,
+      b.paused,
+      typeof b.reason === "string" ? b.reason : "",
+    ]);
+    if (!r.rows[0]?.ok) return bad(c, 404, "NOT_FOUND", "その AI社員はこの会社にいません");
     return c.json({ data: { ok: true } });
   });
   // 自分のAI が Kaname の道具でたたき台に置く（D-110）

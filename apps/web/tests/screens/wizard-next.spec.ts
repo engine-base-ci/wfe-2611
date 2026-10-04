@@ -25,14 +25,19 @@ async function withDraft() {
     body: JSON.stringify({ text: "たたき台を置いて" }),
   });
   for (let i = 0; i < 40; i++) {
-    const n = await admin<{ n: number }>("select count(*)::int as n from duties d join members m on m.tenant_id = d.tenant_id where m.id = $1", [u.memberId]).catch(() => [{ n: 0 }]);
+    const n = await admin<{ n: number }>(
+      "select count(*)::int as n from duties d join members m on m.tenant_id = d.tenant_id where m.id = $1",
+      [u.memberId],
+    ).catch(() => [{ n: 0 }]);
     if ((n[0]?.n ?? 0) > 0) break;
     await new Promise((r) => setTimeout(r, 1000));
   }
   return u;
 }
 
-test("CHT-36-001 画面が低くても（1512×700）、たたき台の「これでいく」は下の帯に見えていて、押すと段 3 を通して 4 へ進む", async ({ page }) => {
+test("CHT-36-001 画面が低くても（1512×700）、たたき台の「これでいく」は下の帯に見えていて、押すと段 3 を通して 4 へ進む", async ({
+  page,
+}) => {
   const u = await withDraft();
   await loginAs(page, u.token);
   await page.setViewportSize({ width: 1512, height: 700 });
@@ -51,23 +56,35 @@ test("CHT-36-001 画面が低くても（1512×700）、たたき台の「これ
   expect(s[0]!.s).toBe(3);
 });
 
-test("CHT-36-002 押せない段を押すと、いまの段で何をすれば開くかが出る（まだ作っていない段は、そう出る）", async ({ page }) => {
+test("CHT-36-006 CHT-36-002 押せない段を押すと、いまの段で何をすれば開くかが出る（6 まで全部の段ができたので「まだ作っていません」は出ない）", async ({
+  page,
+}) => {
   const u = await withDraft();
   await loginAs(page, u.token);
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/onboard/draft");
   await expect(page.locator("[data-card]").first()).toBeVisible({ timeout: 30_000 });
   // 進み具合（段 2 まで）が読めてから押す（読めていない間は 1 段目扱いの文が出る）
-  await expect(page.locator("ol[aria-label='手順'] li", { hasText: "2. 話す" })).toHaveClass(/st-success/, { timeout: 15_000 });
+  await expect(page.locator("ol[aria-label='手順'] li", { hasText: "2. 話す" })).toHaveClass(/st-success/, {
+    timeout: 15_000,
+  });
   await page.locator("[data-step-locked]", { hasText: "4. ログイン情報" }).click();
-  await expect(page.locator("[data-step-note]")).toHaveText("「4. ログイン情報」は、いまの段「3. たたき台」でたたき台を見て「これでいく」を押すと開きます");
+  await expect(page.locator("[data-step-note]")).toHaveText(
+    "「4. ログイン情報」は、いまの段「3. たたき台」でたたき台を見て「これでいく」を押すと開きます",
+  );
   await page.locator("[data-step-locked]", { hasText: "5. テスト" }).click(); // 5 はできた（T-U-11）。届かない段として、いまの段で何をすれば開くかが出る
-  await expect(page.locator("[data-step-note]")).toHaveText("「5. テスト」は、いまの段「3. たたき台」でたたき台を見て「これでいく」を押すと開きます");
-  await page.locator("[data-step-locked]", { hasText: "6. 本番へ" }).click();
-  await expect(page.locator("[data-step-note]")).toContainText("「6. 本番へ」はまだ作っていません");
+  await expect(page.locator("[data-step-note]")).toHaveText(
+    "「5. テスト」は、いまの段「3. たたき台」でたたき台を見て「これでいく」を押すと開きます",
+  );
+  await page.locator("[data-step-locked]", { hasText: "6. 本番へ" }).click(); // 6 もできた（T-U-12）。届かない段として、いまの段で何をすれば開くかが出る
+  await expect(page.locator("[data-step-note]")).toHaveText(
+    "「6. 本番へ」は、いまの段「3. たたき台」でたたき台を見て「これでいく」を押すと開きます",
+  );
 });
 
-test("CHT-36-003 まだ自分のAI に答えていないと、話すの帯は押せず「自分のAI に 1 つ答えると進めます」が出る", async ({ page }) => {
+test("CHT-36-003 まだ自分のAI に答えていないと、話すの帯は押せず「自分のAI に 1 つ答えると進めます」が出る", async ({
+  page,
+}) => {
   const u = await signupViaApi();
   bridges.push(await startAgentBridge(u.token));
   await setupStep(u.memberId, 1);
@@ -80,7 +97,9 @@ test("CHT-36-003 まだ自分のAI に答えていないと、話すの帯は押
   await expect(page.locator("[data-wiz-next-note]")).toHaveText("自分のAI に 1 つ答えると進めます");
 });
 
-test("CHT-36-004 ログイン情報を預けて段 4 を通すと、4 の帯は「次へ：5. テスト」で 5 に移る。5 の帯は、まだ無い 6 のことを書き、6 には行かない", async ({ page }) => {
+test("CHT-36-007 CHT-36-004 ログイン情報を預けて段 4 を通すと、4 の帯は「次へ：5. テスト」で 5 に移る。5 の帯は「本番に切り替える」で、AI社員がいなければ押せず理由が出る。6 は届いていない段", async ({
+  page,
+}) => {
   const u = await signupViaApi();
   await setupStep(u.memberId, 4);
   await loginAs(page, u.token);
@@ -95,6 +114,5 @@ test("CHT-36-004 ログイン情報を預けて段 4 を通すと、4 の帯は�
   await expect(bar(page)).toBeVisible({ timeout: 20_000 });
   await expect(go(page)).toBeDisabled();
   await expect(page.locator("[data-wiz-next-note]")).toContainText("たたき台に AI社員がいると試せます");
-  await expect(page.getByRole("link", { name: "6. 本番へ" })).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "6. 本番へ" }), "6 は届いていない段（5 を通すと開く）").toHaveCount(0);
 });
-

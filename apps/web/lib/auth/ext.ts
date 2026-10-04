@@ -532,6 +532,34 @@ export interface OnboardTestrun {
 }
 export const onboardTestrun = () => ext<OnboardTestrun>("/onboard/testrun", undefined, "GET");
 export const testrunCancel = (run_id: string) => ext<{ ok: boolean }>("/onboard/testrun/cancel", { run_id });
+/** 6 本番に切り替える（T-U-12・D-116.5）：切り替える前の確認。red＝押せない・warn＝承知すれば押せる・paused＝止めたまま本番へ */
+export type GoLiveLevel = "ok" | "warn" | "red" | "paused";
+export interface GoLiveCheck {
+  id: string;
+  level: GoLiveLevel;
+  title: string;
+  detail: string;
+  fix?: { label: string; href: string };
+  employee_id?: string;
+}
+export interface OnboardGoLive {
+  checks: GoLiveCheck[];
+  schedule: { duty: string; staff: string; paused: boolean }[];
+  red: number;
+  warn: number;
+  /** 赤が 0 ＝ 切り替えられる */
+  ready: boolean;
+  /** 赤の文（E-DEP-004）。赤が無ければ null */
+  shortfall: string | null;
+  /** 切り替えた日時と人。まだなら null */
+  live: { at: string; by: string } | null;
+  step: number;
+}
+export const onboardGoLive = () => ext<OnboardGoLive>("/onboard/golive", undefined, "GET");
+export const goLiveSwitch = (accept_warnings: boolean) =>
+  ext<{ ok: boolean; live_at: string }>("/onboard/golive", { accept_warnings });
+export const goLivePause = (employee_id: string, paused: boolean, reason = "") =>
+  ext<{ ok: boolean }>("/onboard/golive/pause", { employee_id, paused, reason });
 export type Verdict = "api" | "allowed" | "unspecified" | "forbidden" | "bank";
 export interface MyCredential {
   id: string;

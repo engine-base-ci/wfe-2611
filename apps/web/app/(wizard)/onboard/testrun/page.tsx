@@ -5,6 +5,7 @@
 //   「本番に切り替える」は下の帯（D-116.1）。全員が 完了 か「この仕事はやめる」のときだけ押せ、段 5 を通したと記録する（D-116.4）
 import "@/components/ai/chat.css";
 import Link from "next/link";
+import type { Route } from "next";
 import { useState, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
@@ -37,7 +38,18 @@ const STATUS: Record<TestRunStatus, { label: string; tone: "success" | "progress
   stopped: { label: "止まった", tone: "danger" },
   cancelled: { label: "やめた", tone: "neutral" },
 };
-const FORMAT: Record<string, string> = { md: "文書", csv: "表", pdf: "PDF", png: "画像", jpg: "画像", gif: "画像", webp: "画像", xlsx: "表計算", docx: "文書", pptx: "資料" };
+const FORMAT: Record<string, string> = {
+  md: "文書",
+  csv: "表",
+  pdf: "PDF",
+  png: "画像",
+  jpg: "画像",
+  gif: "画像",
+  webp: "画像",
+  xlsx: "表計算",
+  docx: "文書",
+  pptx: "資料",
+};
 const NOT_YET = "AI社員を動かす仕組みは作っています（できたら、ここから動かせます）";
 
 function Testrun() {
@@ -76,14 +88,14 @@ function Testrun() {
         : "AI社員を全員 1 回ずつテストで動かすと切り替えられます";
   return (
     <WizardLayout
-      // 「本番に切り替える」は下の帯（D-116.1）。全員が 完了 か やめた のときだけ押せる。押したら段 5 を通したと記録（D-116.4）。6 の画面はまだ無いので入口へ
+      // 「本番に切り替える」は下の帯（D-116.1）。全員が 完了 か やめた のときだけ押せる。押したら段 5 を通したと記録し（D-116.4）、6 本番へ（T-U-12）で切り替える前の確認をする
       next={{
         ready: !q.isPending && !q.isError && !!d?.ready,
         label: "本番に切り替える",
         waiting,
         onGo: async () => {
           await markStep(5);
-          router.replace("/");
+          router.push("/onboard/golive" as Route);
         },
       }}
       title="テストで動かす"
@@ -110,7 +122,14 @@ function Testrun() {
                 <div className="flex flex-col items-center gap-2">
                   <div className="flex flex-wrap justify-center gap-2">
                     {emps.map((e, i) => (
-                      <Button key={e.employee_id} variant={i === 0 ? "primary" : "outline"} icon={<Play />} disabled title={NOT_YET} data-run-employee={e.employee_id}>
+                      <Button
+                        key={e.employee_id}
+                        variant={i === 0 ? "primary" : "outline"}
+                        icon={<Play />}
+                        disabled
+                        title={NOT_YET}
+                        data-run-employee={e.employee_id}
+                      >
                         {e.name}を動かす
                       </Button>
                     ))}
@@ -138,7 +157,8 @@ function Testrun() {
             >
               <p className="mb-3 text-[13px] leading-[1.8] text-[var(--on-sv)]">
                 テストモードでは、AI社員は<b className="text-[var(--on-surface)]">実データを読みます</b>が、
-                <b className="text-[var(--on-surface)]">外に一切出しません</b>（送信・投稿・書き込みはすべて止まります）。出てきたものを見て、納得したら本番に切り替えます。
+                <b className="text-[var(--on-surface)]">外に一切出しません</b>
+                （送信・投稿・書き込みはすべて止まります）。出てきたものを見て、納得したら本番に切り替えます。
               </p>
               <table className="w-full text-[13.5px]">
                 <thead>
@@ -150,14 +170,21 @@ function Testrun() {
                 </thead>
                 <tbody>
                   {emps.map((e) => (
-                    <tr key={e.employee_id} className="border-t border-[var(--line)]" data-row-employee={e.employee_id} data-run-status={e.run?.status ?? "none"}>
+                    <tr
+                      key={e.employee_id}
+                      className="border-t border-[var(--line)]"
+                      data-row-employee={e.employee_id}
+                      data-run-status={e.run?.status ?? "none"}
+                    >
                       <td className="py-2.5 pr-2 align-top">
                         <span className="flex items-center gap-1.5 whitespace-nowrap">
                           <Bot className="size-4 text-[var(--on-sv)]" aria-hidden="true" />
                           {e.name}
                         </span>
                       </td>
-                      <td className="py-2.5 pr-2 align-top text-[var(--on-sv)]">{e.duty || "担当業務はまだありません"}</td>
+                      <td className="py-2.5 pr-2 align-top text-[var(--on-sv)]">
+                        {e.duty || "担当業務はまだありません"}
+                      </td>
                       <td className="py-2.5 align-top">
                         <RunState e={e} />
                       </td>
@@ -167,16 +194,35 @@ function Testrun() {
               </table>
             </Card>
             {state === "x" ? (
-              <Card icon={<AlertTriangle />} title="止まった理由" aside={<span className="text-[12px] text-[var(--on-sv)]">自分のAIから</span>} data-card="stopped">
+              <Card
+                icon={<AlertTriangle />}
+                title="止まった理由"
+                aside={<span className="text-[12px] text-[var(--on-sv)]">自分のAIから</span>}
+                data-card="stopped"
+              >
                 {stopped.map((e) => (
-                  <div key={e.employee_id} className="mb-3 rounded-[var(--r-md)] border-l-[3px] border-[var(--st-warning)] bg-[var(--st-warning-c)] px-3.5 py-3 text-[13.5px] leading-[1.8] text-[var(--on-st-warning-c)]" data-stopped-reason={e.run!.id}>
+                  <div
+                    key={e.employee_id}
+                    className="mb-3 rounded-[var(--r-md)] border-l-[3px] border-[var(--st-warning)] bg-[var(--st-warning-c)] px-3.5 py-3 text-[13.5px] leading-[1.8] text-[var(--on-st-warning-c)]"
+                    data-stopped-reason={e.run!.id}
+                  >
                     <b>{e.name}</b>：{e.run?.reason || "理由は分かりません"}
-                    <div className="mt-1 text-[12px]">Kaname は CAPTCHA を突破しません。あなたが一度ブラウザで通してくれれば、そのセッションで続きを動かします。</div>
+                    <div className="mt-1 text-[12px]">
+                      Kaname は CAPTCHA
+                      を突破しません。あなたが一度ブラウザで通してくれれば、そのセッションで続きを動かします。
+                    </div>
                     <div className="mt-3 flex flex-wrap gap-2">
                       <Button size="sm" icon={<Globe />} disabled title={NOT_YET} data-open-browser>
                         ブラウザで開く
                       </Button>
-                      <Button size="sm" variant="ghost" icon={<X />} disabled={busy === e.run!.id} onClick={() => void cancel(e.run!.id)} data-cancel-run={e.run!.id}>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        icon={<X />}
+                        disabled={busy === e.run!.id}
+                        onClick={() => void cancel(e.run!.id)}
+                        data-cancel-run={e.run!.id}
+                      >
                         この仕事はやめる
                       </Button>
                     </div>
@@ -190,13 +236,24 @@ function Testrun() {
                 ) : null}
               </Card>
             ) : (
-              <Card icon={<Eye />} title="上がってきたもの" aside={<span className="text-[12px] text-[var(--on-sv)]">AI社員が渡したもの</span>} data-card="outputs">
+              <Card
+                icon={<Eye />}
+                title="上がってきたもの"
+                aside={<span className="text-[12px] text-[var(--on-sv)]">AI社員が渡したもの</span>}
+                data-card="outputs"
+              >
                 {d!.outputs.length === 0 ? (
-                  <p className="text-[13px] text-[var(--on-sv)]">まだ出てきたものはありません。AI社員が成果物を渡すと、ここに並びます。</p>
+                  <p className="text-[13px] text-[var(--on-sv)]">
+                    まだ出てきたものはありません。AI社員が成果物を渡すと、ここに並びます。
+                  </p>
                 ) : (
                   <div className="flex flex-col gap-2 text-[13.5px]">
                     {d!.outputs.map((o) => (
-                      <div key={o.id} className="flex min-w-0 flex-wrap items-center gap-2.5 rounded-[var(--r-md)] bg-[var(--surface)] px-3 py-2.5" data-output={o.id}>
+                      <div
+                        key={o.id}
+                        className="flex min-w-0 flex-wrap items-center gap-2.5 rounded-[var(--r-md)] bg-[var(--surface)] px-3 py-2.5"
+                        data-output={o.id}
+                      >
                         <div className="min-w-0 flex-1">
                           <b className="block truncate">{o.title}</b>
                           <span className="text-[12px] text-[var(--on-sv)]">
@@ -212,7 +269,8 @@ function Testrun() {
                   </div>
                 )}
                 <p className="mt-4 text-[13px] leading-[1.8]" data-ai-note>
-                  {emps.filter((e) => e.run?.status === "done").length}体を動かしました。出てきたものを見て、納得したら下の「本番に切り替える」を押してください。止めたいときはいつでも止められます。
+                  {emps.filter((e) => e.run?.status === "done").length}
+                  体を動かしました。出てきたものを見て、納得したら下の「本番に切り替える」を押してください。止めたいときはいつでも止められます。
                 </p>
               </Card>
             )}
@@ -240,7 +298,9 @@ function RunState({ e }: { e: TestRunEmployee }) {
   return (
     <span className="flex flex-wrap items-center gap-1.5">
       <Pill tone={s.tone}>{s.label}</Pill>
-      {e.run.status === "done" && e.run.count > 1 ? <span className="text-[12px] text-[var(--on-sv)]">{e.run.count} 回</span> : null}
+      {e.run.status === "done" && e.run.count > 1 ? (
+        <span className="text-[12px] text-[var(--on-sv)]">{e.run.count} 回</span>
+      ) : null}
     </span>
   );
 }
