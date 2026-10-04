@@ -1,6 +1,6 @@
 {
  "version": "v3.2",
- "created_at": "2026-10-03",
+ "created_at": "2026-10-04",
  "_doc": "背骨のフェーズ → 流れ（J-xx）。runnable_after は揃うべきタスク。05_flow/build_tasks.py が生成。status／result は apps/e2e の実走が書く（再生成で消えない）",
  "rows": [
   {

@@ -1,6 +1,6 @@
 # clone-chat テスト仕様（L1・機械生成）
 
-> 05_flow/build_tasks.py がタスクと同時に生成。ID は変えない。途中変更は qa_delta.py で差分。結果列は staging で流した人が書く（再生成しても残る。今の行 419・結果あり 415 行）。
+> 05_flow/build_tasks.py がタスクと同時に生成。ID は変えない。途中変更は qa_delta.py で差分。結果列は staging で流した人が書く（再生成しても残る。今の行 425・結果あり 419 行）。
 
 | ID | 画面 | テスト観点 | テスト項目 | 前提条件 | 操作手順 | 期待結果 | 結果 | 備考 | タスク | 実行条件 |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -423,6 +423,12 @@
 | CHT-39-004 | credentials | 返事が無い | 10 分返事が無ければ、その仕事は理由つきで止め、次に本人がいる時間に回す | コードを頼んだまま 10 分（自動テストは 20 秒） | ?mode=sms&dev=手元2 を預け、コードを入れずに待つ → 「もう一度試す」を押してコードを入れる（実ブラウザ） | 仕事が理由つきで止まり（「返事が無かったので止めました」）、何度も試さない。押したときだけ 1 回試し直す | PASS（screens/qa-b-two-factor.spec.ts・実 Chrome・2026-10-03） | D-117.5 | T-B-39 | L1 |
 | CHT-40-001 | onboard-interview | 詰める | 画面が低くても、見出しと説明は 1 行に詰まり、会話に高さが渡る。「Shift+Enter」の行は書いている間だけ出る | 長い会話（1512×640） | 開く・入力欄に入る・1 文字書く・空のまま許可のしかたを押す（実ブラウザ） | 会話が 260px 以上（詰める前は 179px）。見出しと説明が同じ行。案内は書いている間だけ出る。入力欄に入っただけでは形が変わらず、下のボタンを押し損ねない | PASS（screens/chat-frame.spec.ts・実 Chrome・2026-10-01） | D-118.1 | T-B-40 | L1 |
 | CHT-40-002 | onboard-interview | 広げる | 「会話を広げる」で段の帯・説明・分かったことを閉じて会話だけになり、「元に戻す」か Esc で戻る。広げても読んでいた所のまま | 長い会話 | 広げる → Esc → 広げる → 元に戻す（実ブラウザ） | 縦にも横にも広がり、いちばん下のまま。ページは動かない。戻すと元の形 | PASS（screens/chat-frame.spec.ts・実 Chrome・2026-10-01） | D-118.3 | T-B-40 | L1 |
+| CHT-41-001 | clone-chat | 渡す | 自分のAI が作ったファイル（画像・PDF・表・文書）を道具 artifact_put で渡すと成果物（版 1）になり、返事の下に資料のカードが並ぶ | 会話で自分のAI に頼む（PC をつないで Bridge が動いている） | 「請求のまとめを成果物にして」と送る（実ブラウザ） | 返事の下にカードが 4 枚並び、横で開くと 画像が見える・PDF が読める・CSV が表・文書が読める。artifacts に行・版 1 | PASS（screens/qa-b-artifact-put.spec.ts・実 Chrome・2026-10-04） | D-121.1 | T-B-41 | L1 |
+| CHT-41-002 | clone-chat | 置き場と台帳 | 中身は置き場（C4）、台帳は DB。元のファイルは PC に残る | 渡した成果物 | DB と置き場を見る（API） | artifact_versions に storage_ref・size・source_job_id が入り、中身は DB に無い。本人の PC のファイルは消えていない | PASS（apps/api/test/agent_tools.test.ts・vitest（kaname_test）・2026-10-04） | D-121.2 | T-B-41 | L1 |
+| CHT-41-003 | clone-chat | 見える | 画像・PDF・表・文書は会話の横で見え、表計算（xlsx）は落として開く | 渡した成果物 | カードを押す（実ブラウザ） | 画像は img・PDF は枠の中・CSV は表・md は文書。xlsx は「落として開いてください」と落とす | PASS（screens/qa-b-artifact-put.spec.ts・実 Chrome・2026-10-04） | D-121.3 | T-B-41 | L1 |
+| CHT-41-004 | clone-chat | 制限 | 20 MB 超・受けない種類・ホームの外のファイル・終わった仕事の鍵は断る | 道具の鍵 | 大きいファイル／.exe／ホームの外／終わった仕事の鍵で渡す（API と道具のサーバー） | 413・422・401 で断り、行も置き場の中身もできない。道具のサーバーはホームの外・無いファイルを Kaname に送らない | PASS（apps/bridge/test/kaname-tools.test.ts・vitest（kaname_test）・2026-10-04） | D-121.4 | T-B-41 | L1 |
+| CHT-41-005 | clone-chat | 証跡 | 渡したことは証跡に名前・種類・大きさで残り、中身は書かない | 渡した成果物 | 証跡を見る | audit_events に agent.artifact_put（title・format・size・job_id）。中身は無い | PASS（apps/api/test/agent_tools.test.ts・vitest（kaname_test）・2026-10-04） | D-121.5 | T-B-41 | L1 |
+| CHT-41-006 | clone-chat | 勝手に集めない | 道具を呼んだときだけ渡る。仕事の中で AI が読んだだけのファイルは渡らない | 記録がある仕事 | 道具を呼ばない仕事を最後まで動かす | 成果物は増えない（道具の呼び出しの行だけが残る） | PASS（screens/qa-b-artifact-put.spec.ts・実 Chrome・2026-10-04） | D-121.6 | T-B-41 | L1 |
 
 ## もう無い行（276 行）
 

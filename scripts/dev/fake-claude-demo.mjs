@@ -12,6 +12,7 @@
 //   「絵文字で」 → 絵文字入りの返事（画面が消して描くのを確かめる）
 //   「ゆっくり読んで」 → 台帳を読む道具に 6 秒かける（作業の行「読んでいます：…」を画面で確かめる・T-B-13）
 //   「考えて」  → 考えている切り替わり（thinking の block）を出してから 6 秒黙り、その後に書く（作業中の行が「考えています」・最後の動きが進むのを確かめる）
+//   「成果物にして」 → 作ったファイル（画像・PDF・CSV・文書・xlsx）を Kaname の道具 artifact_put で成果物として渡す（D-121）
 //   「たたき台を置いて」 → 受け取った --mcp-config の kaname を本物と同じく起こし、目標・台帳・担当業務を置いてから答える（D-110）
 //   「ブラウザで」 → --chrome が渡っていれば Claude in Chrome の道具で開こうとして「拡張機能とつながっていない」で失敗する（D-119.4）。
 //                    渡っていなければ「ブラウザの道具がありません」と答える（どの仕事に Chrome を渡したかの確かめ）
@@ -193,6 +194,58 @@ const onUser = async (text) => {
     }
     srv.kill();
     const t = `たたき台に置きました：${done.join("・")}`;
+    await stream(t, false);
+    return result(t);
+  }
+  if (text.includes("成果物にして")) {
+    // 作ったファイル（画像・PDF・CSV・文書）を Kaname の道具 artifact_put で渡す（D-121）。ファイルは一時フォルダ（ホームの外でも tmp は可）に置く
+    const { mkdtempSync, writeFileSync } = await import("node:fs");
+    const { tmpdir } = await import("node:os");
+    const { join } = await import("node:path");
+    const dir = mkdtempSync(join(tmpdir(), "kaname-demo-art-"));
+    const png = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==", "base64"); // 1×1 の青
+    const pdf = Buffer.from("%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj\n3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 200 100]>>endobj\nxref\n0 4\n0000000000 65535 f \n0000000009 00000 n \n0000000052 00000 n \n0000000101 00000 n \ntrailer<</Size 4/Root 1 0 R>>\nstartxref\n160\n%%EOF\n");
+    const files = [
+      ["請求のまとめ.png", png, "請求のグラフ"],
+      ["請求のまとめ.pdf", pdf, "請求のまとめ（PDF）"],
+      ["請求台帳.csv", Buffer.from("取引先,金額,期日\nセイコー,990000,9/30\n京蟻,120000,10/05\n", "utf8"), "請求台帳"],
+      ["調べた結果.md", Buffer.from("# 調べた結果\n\n- セイコーの着手金は契約時に 3 割\n- 京蟻は月末締め\n", "utf8"), "調べた結果"],
+      ["請求のまとめ.xlsx", Buffer.from("UEsDBBQAAAAIAAAAIQAAAAAAAAAAAAAAAAALAAAAX3JlbHMvLnJlbHM=", "base64"), "請求のまとめ（表計算）"],
+    ];
+    const mi = process.argv.indexOf("--mcp-config");
+    const cfg = mi > 0 ? JSON.parse(process.argv[mi + 1]) : null;
+    const k = cfg?.mcpServers?.kaname;
+    if (!k) { const t = "成果物を渡す道具がありません"; await stream(t, false); return result(t); }
+    const { spawn } = await import("node:child_process");
+    const srv = spawn(k.command, k.args, { env: { ...process.env, ...k.env }, stdio: ["pipe", "pipe", "inherit"] });
+    const waiters = [];
+    let buf = "";
+    srv.stdout.on("data", (c) => {
+      buf += c;
+      let i;
+      while ((i = buf.indexOf("\n")) >= 0) {
+        const ln = buf.slice(0, i);
+        buf = buf.slice(i + 1);
+        if (ln.trim()) waiters.shift()?.(JSON.parse(ln));
+      }
+    });
+    let rid = 0;
+    const rpc = (method, params) => new Promise((res) => (waiters.push(res), srv.stdin.write(JSON.stringify({ jsonrpc: "2.0", id: ++rid, method, params }) + "\n")));
+    await rpc("initialize", { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "demo", version: "1" } });
+    const done = [];
+    for (const [name, body, title] of files) {
+      const p = join(dir, name);
+      writeFileSync(p, body);
+      const tid = `tk-art-${Date.now()}-${done.length}`;
+      out({ type: "assistant", message: { content: [{ type: "tool_use", id: tid, name: "mcp__kaname__artifact_put", input: { path: p, title } }] } });
+      const r = await rpc("tools/call", { name: "artifact_put", arguments: { path: p, title } });
+      const ok = !r.result?.isError;
+      out({ type: "user", message: { content: [{ type: "tool_result", tool_use_id: tid, is_error: !ok, content: r.result?.content?.[0]?.text ?? "" }] } });
+      done.push(ok ? title : `${title}（渡せませんでした：${r.result?.content?.[0]?.text ?? ""}）`);
+      await sleep(400);
+    }
+    srv.kill();
+    const t = `成果物を渡しました：${done.join("・")}`;
     await stream(t, false);
     return result(t);
   }

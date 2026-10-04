@@ -78,6 +78,13 @@ export function Conversation({
   const qc = useQueryClient();
   const convId = agent.conversationId;
   const arts = useQuery({ queryKey: ["agent-artifacts", convId], queryFn: () => artifactList(convId), enabled: !!convId });
+  // 自分のAI が仕事の中で道具で渡した成果物（D-121）は、返事が届いた時点で読み直してカードに出す（返事に結ばれるのは結末のとき）
+  // 返事の文は書きながら先に出る（D-112）ので、返事が出た時だけでなく、仕事が終わった時（結末で返事に結ばれる）にも読み直す
+  const aiCount = (s?.messages ?? []).filter((m) => m.who === "ai").length;
+  const workJob = s?.work?.job_id ?? null;
+  useEffect(() => {
+    if (convId) void qc.invalidateQueries({ queryKey: ["agent-artifacts", convId] });
+  }, [aiCount, workJob, convId, qc]);
   const [openArt, setOpenArt] = useState<string | null>(null);
   useEffect(() => setOpenArt(null), [convId]);
   const exportFrom = useCallback(

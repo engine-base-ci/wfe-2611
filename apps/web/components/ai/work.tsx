@@ -32,6 +32,7 @@ const KANAME_TOOL: Record<string, string> = {
   duty_set: "たたき台に担当業務を置いています",
   duty_remove: "担当業務を外しています",
   remember: "覚えています",
+  artifact_put: "成果物を渡しています",
 };
 export function humanStatus(t: string): string {
   if (/ToolSearch|select:mcp__/.test(t)) return "使う道具を探しています";

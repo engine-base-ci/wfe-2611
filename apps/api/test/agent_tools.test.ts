@@ -156,3 +156,72 @@ describe("Kaname の道具でたたき台に置く（D-110）", () => {
     expect(job!.tool_token).toBeNull();
   });
 });
+
+// T-B-41 自分のAI が作ったファイル・調べた結果を道具 artifact_put で成果物として渡す（D-121）
+const PNG = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==", "base64");
+const putFile = (token: string, name: string, body: Uint8Array, title = "") =>
+  app.request(`http://localhost${X}/bridge/artifact`, {
+    method: "POST",
+    headers: { "content-type": "application/octet-stream", "content-length": String(body.byteLength), "x-kaname-tool-token": token, "x-artifact-name": encodeURIComponent(name), "x-artifact-title": encodeURIComponent(title) },
+    body,
+  });
+describe("成果物を渡す（D-121・T-B-41）", () => {
+  it("CHT-41-001 CHT-41-002 CHT-41-005 道具で渡すと置き場に中身・台帳に行と版 1・仕事に結ぶ。本人は一覧と 1 件（署名つき URL）で見える。証跡は名前・種類・大きさだけ", async () => {
+    const { H, member, job, tool } = await withJob();
+    const r = await putFile(job.tool_token!, "請求のまとめ.png", PNG, "請求のグラフ");
+    expect(r.status).toBe(201);
+    const a = (await r.json()) as { data: { id: string; title: string; format: string; version: number; size: number } };
+    expect(a.data).toMatchObject({ title: "請求のグラフ", format: "png", version: 1, size: PNG.byteLength });
+    const row = (await admin.query("select a.source_job_id, a.source_message_id, a.owner_member_id, a.current_version, v.storage_ref, v.size_bytes, v.note from artifacts a join artifact_versions v on v.artifact_id = a.id where a.id = $1", [a.data.id])).rows[0];
+    expect(row).toMatchObject({ source_job_id: job.job_id, source_message_id: null, owner_member_id: member, current_version: 1, note: "自分のAI が渡した" });
+    expect(String(row.storage_ref)).toMatch(/\S/);
+    expect(Number(row.size_bytes)).toBe(PNG.byteLength);
+    // 本人の画面の口：1 件は署名つき URL（見るだけの種類）。中身は URL から取れる（置き場にある）
+    const one = await json<{ format: string; url: string | null; editable: boolean }>(req("GET", `/agent/artifacts/${a.data.id}`, undefined, H));
+    expect(one).toMatchObject({ format: "png", editable: false });
+    expect(one.url).toMatch(/^http:\/\/localhost:3001\/api\/auth-ext\//);
+    const got = await app.request(one.url!.replace("http://localhost:3001", "http://localhost"));
+    expect(got.status).toBe(200);
+    expect(Buffer.from(await got.arrayBuffer()).equals(PNG), "置き場の中身は渡したものと同じ").toBe(true);
+    // 証跡：名前・種類・大きさ・仕事だけ
+    const au = (await admin.query("select payload from audit_events where action = 'agent.artifact_put' and target_id = $1", [a.data.id])).rows[0];
+    expect(Object.keys(au.payload as object).sort()).toEqual(["format", "job_id", "size", "title"]);
+    // 文書（md）はそのまま読める種類
+    const md = await putFile(job.tool_token!, "調べた結果.md", Buffer.from("# 調べた結果\n\n- 着手金は 3 割\n", "utf8"));
+    expect(md.status).toBe(201);
+    const mdId = ((await md.json()) as { data: { id: string; title: string } }).data;
+    expect(mdId.title, "名前が無ければファイル名").toBe("調べた結果");
+    expect(await json<{ editable: boolean; text: string }>(req("GET", `/agent/artifacts/${mdId.id}`, undefined, H))).toMatchObject({ editable: true, text: "# 調べた結果\n\n- 着手金は 3 割\n" });
+    // 一覧は会話のもの。結末が書かれる前は返事に結ばれていない
+    const list = await json<{ id: string; message_id: string | null }[]>(req("GET", "/agent/artifacts", undefined, H));
+    expect(list.map((x) => x.id).sort()).toEqual([a.data.id, mdId.id].sort());
+    expect(list.every((x) => x.message_id === null)).toBe(true);
+    void tool;
+  });
+  it("CHT-41-003 結末が書かれると、その仕事で渡した成果物は返事に結ばれる（返事の下にカードが並ぶ）", async () => {
+    const { H, B, job } = await withJob();
+    const a = ((await (await putFile(job.tool_token!, "a.pdf", Buffer.from("%PDF-1.4\n%%EOF\n"))).json()) as { data: { id: string } }).data;
+    expect((await post("/bridge/finish", { job_id: job.job_id, state: "done", result: "渡しました" }, B)).status).toBe(200);
+    const msg = (await admin.query("select id from messages where job_id = $1 and kind = 'ai'", [job.job_id])).rows[0];
+    expect(msg).toBeTruthy();
+    expect((await admin.query("select source_message_id from artifacts where id = $1", [a.id])).rows[0].source_message_id).toBe(msg.id);
+    const list = await json<{ id: string; message_id: string | null }[]>(req("GET", "/agent/artifacts", undefined, H));
+    expect(list.find((x) => x.id === a.id)?.message_id).toBe(msg.id);
+  });
+  it("CHT-41-004 20 MB 超・受けない種類・空・終わった仕事の鍵・知らない鍵は断り、行も置き場の中身もできない", async () => {
+    const { B, job, member } = await withJob();
+    const before = Number((await admin.query("select count(*) as n from artifacts where owner_member_id = $1", [member])).rows[0].n);
+    expect((await putFile(job.tool_token!, "big.png", new Uint8Array(20 * 1024 * 1024 + 1))).status).toBe(413);
+    expect((await putFile(job.tool_token!, "evil.exe", PNG)).status).toBe(422);
+    expect((await putFile(job.tool_token!, "noext", PNG)).status).toBe(422);
+    expect((await putFile(job.tool_token!, "empty.png", new Uint8Array(0))).status).toBe(422);
+    expect((await putFile("x".repeat(40), "a.png", PNG)).status).toBe(401);
+    expect((await post("/bridge/finish", { job_id: job.job_id, state: "done", result: "終わり" }, B)).status).toBe(200);
+    expect((await putFile(job.tool_token!, "late.png", PNG)).status, "終わった仕事の鍵").toBe(401);
+    // 守りは 2 層：鍵の照合（bridge_tool_job は動いている仕事だけ）と、台帳を書く関数（終わった仕事では作らない）。関数だけでも断ることを直接確かめる
+    expect((await admin.query("select app.artifact_create_from_job($1, $2, 't', 'png', 'ref-x', 1) as id", [member, job.job_id])).rows[0].id, "終わった仕事では台帳の関数も作らない").toBeNull();
+    const after = Number((await admin.query("select count(*) as n from artifacts where owner_member_id = $1", [member])).rows[0].n);
+    expect(after).toBe(before);
+  }, 30_000);
+});
+

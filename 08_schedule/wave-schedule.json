@@ -1,7 +1,7 @@
 {
  "version": "v3",
  "project": "Kaname",
- "created_at": "2026-09-29",
+ "created_at": "2026-10-04",
  "skill": "sprint-planning",
  "_doc": "05_flow/build_waves.py が tickets.json の Wave・tickets_plan.json の日付・milestones・journeys から機械生成。手で直さない",
  "source": [
@@ -83,9 +83,9 @@
    4.5,
    1.8,
    17.5,
-   25.0,
+   23.5,
    3.2,
-   33.5,
+   32.7,
    44.7,
    43.3,
    4.5,
@@ -96,11 +96,12 @@
    5.0,
    3.5,
    5.0,
+   1.2,
    2.1,
    3.7,
    11.5,
-   3.2,
-   6.5,
+   4.0,
+   6.7,
    2.7,
    3.0,
    2.8,
@@ -115,16 +116,16 @@
    2.3
   ],
   "capacity_per_day_ai_h": 60,
-  "calendar_days_ai": 57,
-  "calendar_days_human": 786
+  "calendar_days_ai": 56,
+  "calendar_days_human": 787
  },
  "totals": {
-  "waves": 34,
-  "tasks": 214,
-  "estimate_hours_human": 6286.5,
-  "estimate_hours_ai_compute": 1140.4,
+  "waves": 35,
+  "tasks": 215,
+  "estimate_hours_human": 6292.5,
+  "estimate_hours_ai_compute": 1139.0,
   "human_review_total_h": 88.0,
-  "total_wall_clock_h_ai_parallel": 336.1,
+  "total_wall_clock_h_ai_parallel": 336.0,
   "parallel_capacity": 10,
   "l2_flows_total": 9,
   "l2_flows_unassigned": []
@@ -420,10 +421,10 @@
     "T-D-14"
    ],
    "parallel": 4,
-   "estimate_hours_human": 208,
-   "estimate_hours_ai_compute": 32.9,
+   "estimate_hours_human": 202,
+   "estimate_hours_ai_compute": 31.4,
    "human_review_h": 1.0,
-   "wall_clock_h_ai": 25.0,
+   "wall_clock_h_ai": 23.5,
    "parallel_capacity": 10,
    "start": "2026-09-16",
    "finish": "2026-09-16",
@@ -445,7 +446,7 @@
      "T-D-13",
      "T-D-14"
     ],
-    "l1_rows": 64,
+    "l1_rows": 63,
     "l2_flows": [],
     "regression_from": [
      "W0",
@@ -541,10 +542,10 @@
     "T-A-10"
    ],
    "parallel": 10,
-   "estimate_hours_human": 794,
-   "estimate_hours_ai_compute": 198.7,
+   "estimate_hours_human": 788,
+   "estimate_hours_ai_compute": 197.1,
    "human_review_h": 10.0,
-   "wall_clock_h_ai": 33.5,
+   "wall_clock_h_ai": 32.7,
    "parallel_capacity": 10,
    "start": "2026-09-16",
    "finish": "2026-09-16",
@@ -706,7 +707,7 @@
    "wall_clock_h_ai": 43.3,
    "parallel_capacity": 10,
    "start": "2026-09-16",
-   "finish": "2026-10-20",
+   "finish": "2026-10-26",
    "milestone": "W2",
    "milestone_due": "2026-10-30",
    "assignees": {
@@ -773,10 +774,10 @@
    "human_review_h": 6.0,
    "wall_clock_h_ai": 4.5,
    "parallel_capacity": 10,
-   "start": "2026-09-29",
-   "finish": "2026-09-30",
-   "milestone": "W0",
-   "milestone_due": "2026-10-02",
+   "start": "2026-10-03",
+   "finish": "2026-10-06",
+   "milestone": "W1",
+   "milestone_due": "2026-10-16",
    "assignees": {},
    "critical_tasks": [
     "T-B-01",
@@ -837,10 +838,10 @@
    "human_review_h": 2.0,
    "wall_clock_h_ai": 5.0,
    "parallel_capacity": 10,
-   "start": "2026-09-30",
-   "finish": "2026-10-01",
-   "milestone": "W0",
-   "milestone_due": "2026-10-02",
+   "start": "2026-10-03",
+   "finish": "2026-10-06",
+   "milestone": "W1",
+   "milestone_due": "2026-10-16",
    "assignees": {},
    "critical_tasks": [
     "T-B-02",
@@ -896,8 +897,8 @@
    "human_review_h": 4.0,
    "wall_clock_h_ai": 7.5,
    "parallel_capacity": 10,
-   "start": "2026-10-02",
-   "finish": "2026-10-05",
+   "start": "2026-10-03",
+   "finish": "2026-10-03",
    "milestone": "W1",
    "milestone_due": "2026-10-16",
    "assignees": {},
@@ -915,7 +916,7 @@
      "T-B-28",
      "T-B-37"
     ],
-    "l1_rows": 28,
+    "l1_rows": 36,
     "l2_flows": [],
     "regression_from": [
      "W0",
@@ -960,8 +961,8 @@
    "human_review_h": 3.0,
    "wall_clock_h_ai": 5.5,
    "parallel_capacity": 10,
-   "start": "2026-10-05",
-   "finish": "2026-10-06",
+   "start": "2026-10-03",
+   "finish": "2026-10-07",
    "milestone": "W1",
    "milestone_due": "2026-10-16",
    "assignees": {},
@@ -1023,8 +1024,8 @@
    "human_review_h": 3.0,
    "wall_clock_h_ai": 4.5,
    "parallel_capacity": 10,
-   "start": "2026-10-06",
-   "finish": "2026-10-07",
+   "start": "2026-10-03",
+   "finish": "2026-10-03",
    "milestone": "W1",
    "milestone_due": "2026-10-16",
    "assignees": {},
@@ -1093,8 +1094,8 @@
    "human_review_h": 10.0,
    "wall_clock_h_ai": 5.0,
    "parallel_capacity": 10,
-   "start": "2026-10-08",
-   "finish": "2026-10-09",
+   "start": "2026-10-03",
+   "finish": "2026-10-03",
    "milestone": "W1",
    "milestone_due": "2026-10-16",
    "assignees": {},
@@ -1175,10 +1176,10 @@
    "human_review_h": 3.0,
    "wall_clock_h_ai": 3.5,
    "parallel_capacity": 10,
-   "start": "2026-10-07",
-   "finish": "2026-10-20",
-   "milestone": "W2",
-   "milestone_due": "2026-10-30",
+   "start": "2026-10-03",
+   "finish": "2026-10-03",
+   "milestone": "W1",
+   "milestone_due": "2026-10-16",
    "assignees": {},
    "critical_tasks": [
     "T-B-32",
@@ -1196,7 +1197,7 @@
      "T-B-39",
      "T-B-40"
     ],
-    "l1_rows": 27,
+    "l1_rows": 28,
     "l2_flows": [],
     "regression_from": [
      "W0",
@@ -1245,10 +1246,10 @@
    "human_review_h": 3.0,
    "wall_clock_h_ai": 5.0,
    "parallel_capacity": 10,
-   "start": "2026-10-09",
-   "finish": "2026-10-21",
-   "milestone": "W2",
-   "milestone_due": "2026-10-30",
+   "start": "2026-10-03",
+   "finish": "2026-10-03",
+   "milestone": "W1",
+   "milestone_due": "2026-10-16",
    "assignees": {},
    "critical_tasks": [
     "T-B-22",
@@ -1296,6 +1297,65 @@
   },
   {
    "id": "W17",
+   "sprint": "B9",
+   "phase": "3_bridge",
+   "phase_name": "Bridge（顧客 PC の実行器・D-015）",
+   "group": "B",
+   "stage": "v1",
+   "tasks": [
+    "T-B-41"
+   ],
+   "parallel": 1,
+   "estimate_hours_human": 8,
+   "estimate_hours_ai_compute": 0.7,
+   "human_review_h": 0.0,
+   "wall_clock_h_ai": 1.2,
+   "parallel_capacity": 10,
+   "start": "2026-10-05",
+   "finish": "2026-10-05",
+   "milestone": "W1",
+   "milestone_due": "2026-10-16",
+   "assignees": {},
+   "critical_tasks": [],
+   "goal": "Bridge（顧客 PC の実行器・D-015）：自分のAI が作ったファイル・調べた",
+   "qa_scope": {
+    "l1_tasks": [
+     "T-B-41"
+    ],
+    "l1_rows": 6,
+    "l2_flows": [],
+    "regression_from": [
+     "W0",
+     "W1",
+     "W2",
+     "W3",
+     "W4",
+     "W5",
+     "W6",
+     "W7",
+     "W8",
+     "W9",
+     "W10",
+     "W11",
+     "W12",
+     "W13",
+     "W14",
+     "W15",
+     "W16"
+    ],
+    "gate": "bash scripts/ci/completion_gate.sh --wave W17"
+   },
+   "done_when": [
+    "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
+    "揃った流れ（l2_flows）が staging で全行 PASS（L2）",
+    "前 Wave の回帰（regression_from の差分）PASS",
+    "completion_gate.sh STATUS 完了 → 次の Wave を始める"
+   ],
+   "runnable": true,
+   "preconditions": []
+  },
+  {
+   "id": "W18",
    "sprint": "U0",
    "phase": "4_ui_foundation",
    "phase_name": "UI Foundation",
@@ -1340,9 +1400,10 @@
      "W13",
      "W14",
      "W15",
-     "W16"
+     "W16",
+     "W17"
     ],
-    "gate": "bash scripts/ci/completion_gate.sh --wave W17"
+    "gate": "bash scripts/ci/completion_gate.sh --wave W18"
    },
    "done_when": [
     "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
@@ -1354,7 +1415,7 @@
    "preconditions": []
   },
   {
-   "id": "W18",
+   "id": "W19",
    "sprint": "U0",
    "phase": "4_ui_foundation",
    "phase_name": "UI Foundation",
@@ -1395,69 +1456,7 @@
      "T-US-05",
      "T-US-06"
     ],
-    "l1_rows": 115,
-    "l2_flows": [],
-    "regression_from": [
-     "W0",
-     "W1",
-     "W2",
-     "W3",
-     "W4",
-     "W5",
-     "W6",
-     "W7",
-     "W8",
-     "W9",
-     "W10",
-     "W11",
-     "W12",
-     "W13",
-     "W14",
-     "W15",
-     "W16",
-     "W17"
-    ],
-    "gate": "bash scripts/ci/completion_gate.sh --wave W18"
-   },
-   "done_when": [
-    "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
-    "揃った流れ（l2_flows）が staging で全行 PASS（L2）",
-    "前 Wave の回帰（regression_from の差分）PASS",
-    "completion_gate.sh STATUS 完了 → 次の Wave を始める"
-   ],
-   "runnable": true,
-   "preconditions": []
-  },
-  {
-   "id": "W19",
-   "sprint": "U0",
-   "phase": "4_ui_foundation",
-   "phase_name": "UI Foundation",
-   "group": "U-shared",
-   "stage": "v1",
-   "tasks": [
-    "T-US-08"
-   ],
-   "parallel": 1,
-   "estimate_hours_human": 40,
-   "estimate_hours_ai_compute": 10.0,
-   "human_review_h": 1.0,
-   "wall_clock_h_ai": 11.5,
-   "parallel_capacity": 10,
-   "start": "2026-10-21",
-   "finish": "2026-10-22",
-   "milestone": "W2",
-   "milestone_due": "2026-10-30",
-   "assignees": {},
-   "critical_tasks": [
-    "T-US-08"
-   ],
-   "goal": "UI Foundation：会話の部品の作り込み（D-104：吹",
-   "qa_scope": {
-    "l1_tasks": [
-     "T-US-08"
-    ],
-    "l1_rows": 15,
+    "l1_rows": 119,
     "l2_flows": [],
     "regression_from": [
      "W0",
@@ -1493,58 +1492,35 @@
   },
   {
    "id": "W20",
-   "sprint": "U1",
-   "phase": "5_ui_parallel",
-   "phase_name": "UI Parallel",
-   "group": "U-screen",
+   "sprint": "U0",
+   "phase": "4_ui_foundation",
+   "phase_name": "UI Foundation",
+   "group": "U-shared",
    "stage": "v1",
    "tasks": [
-    "T-U-01",
-    "T-U-02",
-    "T-U-03",
-    "T-U-04",
-    "T-U-05",
-    "T-U-06",
-    "T-U-07",
-    "T-U-08",
-    "T-U-09",
-    "T-U-10"
+    "T-US-08"
    ],
-   "parallel": 10,
-   "estimate_hours_human": 176.0,
-   "estimate_hours_ai_compute": 17.4,
-   "human_review_h": 0.0,
-   "wall_clock_h_ai": 3.2,
+   "parallel": 1,
+   "estimate_hours_human": 40,
+   "estimate_hours_ai_compute": 10.0,
+   "human_review_h": 1.0,
+   "wall_clock_h_ai": 11.5,
    "parallel_capacity": 10,
-   "start": "2026-09-16",
-   "finish": "2026-09-16",
-   "milestone": "W0",
-   "milestone_due": "2026-10-02",
-   "assignees": {
-    "claude-06": 3,
-    "claude-08": 3,
-    "claude-07": 2,
-    "claude-09": 2
-   },
-   "critical_tasks": [],
-   "goal": "UI Parallel：画面 アカウントを作る（2 状態・R, 画面 メールを確認する（5 状態・R, 画面 招待を受けて参加する（3 状態 …",
+   "start": "2026-10-03",
+   "finish": "2026-10-03",
+   "milestone": "W1",
+   "milestone_due": "2026-10-16",
+   "assignees": {},
+   "critical_tasks": [
+    "T-US-08"
+   ],
+   "goal": "UI Foundation：会話の部品の作り込み（D-104：吹",
    "qa_scope": {
     "l1_tasks": [
-     "T-U-01",
-     "T-U-02",
-     "T-U-03",
-     "T-U-04",
-     "T-U-05",
-     "T-U-06",
-     "T-U-07",
-     "T-U-08",
-     "T-U-09",
-     "T-U-10"
+     "T-US-08"
     ],
-    "l1_rows": 481,
-    "l2_flows": [
-     "J-01"
-    ],
+    "l1_rows": 17,
+    "l2_flows": [],
     "regression_from": [
      "W0",
      "W1",
@@ -1580,57 +1556,57 @@
   },
   {
    "id": "W21",
-   "sprint": "U2",
+   "sprint": "U1",
    "phase": "5_ui_parallel",
    "phase_name": "UI Parallel",
    "group": "U-screen",
    "stage": "v1",
    "tasks": [
-    "T-U-11",
-    "T-U-12",
-    "T-U-13",
-    "T-U-14",
-    "T-U-15",
-    "T-U-16",
-    "T-U-17",
-    "T-U-18",
-    "T-U-19",
-    "T-U-20"
+    "T-U-01",
+    "T-U-02",
+    "T-U-03",
+    "T-U-04",
+    "T-U-05",
+    "T-U-06",
+    "T-U-07",
+    "T-U-08",
+    "T-U-09",
+    "T-U-10"
    ],
    "parallel": 10,
-   "estimate_hours_human": 252.0,
-   "estimate_hours_ai_compute": 25.3,
+   "estimate_hours_human": 183.5,
+   "estimate_hours_ai_compute": 18.2,
    "human_review_h": 0.0,
-   "wall_clock_h_ai": 6.5,
+   "wall_clock_h_ai": 4.0,
    "parallel_capacity": 10,
-   "start": "2026-09-29",
-   "finish": "2026-10-01",
+   "start": "2026-09-16",
+   "finish": "2026-09-16",
    "milestone": "W0",
    "milestone_due": "2026-10-02",
    "assignees": {
-    "claude-07": 3,
-    "claude-06": 4,
-    "claude-09": 2,
-    "claude-08": 1
+    "claude-06": 3,
+    "claude-08": 3,
+    "claude-07": 2,
+    "claude-09": 2
    },
    "critical_tasks": [],
-   "goal": "UI Parallel：画面 テストで動かす（3 状態・R1, 画面 本番に切り替える（2 状態・R, 画面 今日（6 状態・R1/R2/R …",
+   "goal": "UI Parallel：画面 アカウントを作る（2 状態・R, 画面 メールを確認する（5 状態・R, 画面 招待を受けて参加する（3 状態 …",
    "qa_scope": {
     "l1_tasks": [
-     "T-U-11",
-     "T-U-12",
-     "T-U-13",
-     "T-U-14",
-     "T-U-15",
-     "T-U-16",
-     "T-U-17",
-     "T-U-18",
-     "T-U-19",
-     "T-U-20"
+     "T-U-01",
+     "T-U-02",
+     "T-U-03",
+     "T-U-04",
+     "T-U-05",
+     "T-U-06",
+     "T-U-07",
+     "T-U-08",
+     "T-U-09",
+     "T-U-10"
     ],
-    "l1_rows": 814,
+    "l1_rows": 491,
     "l2_flows": [
-     "J-02"
+     "J-01"
     ],
     "regression_from": [
      "W0",
@@ -1668,58 +1644,57 @@
   },
   {
    "id": "W22",
-   "sprint": "U3",
+   "sprint": "U2",
    "phase": "5_ui_parallel",
    "phase_name": "UI Parallel",
    "group": "U-screen",
    "stage": "v1",
    "tasks": [
-    "T-U-21",
-    "T-U-22",
-    "T-U-23",
-    "T-U-24",
-    "T-U-25",
-    "T-U-26",
-    "T-U-27",
-    "T-U-28",
-    "T-U-29",
-    "T-U-30"
+    "T-U-11",
+    "T-U-12",
+    "T-U-13",
+    "T-U-14",
+    "T-U-15",
+    "T-U-16",
+    "T-U-17",
+    "T-U-18",
+    "T-U-19",
+    "T-U-20"
    ],
    "parallel": 10,
-   "estimate_hours_human": 188.0,
-   "estimate_hours_ai_compute": 18.7,
+   "estimate_hours_human": 254.5,
+   "estimate_hours_ai_compute": 25.5,
    "human_review_h": 0.0,
-   "wall_clock_h_ai": 2.7,
+   "wall_clock_h_ai": 6.7,
    "parallel_capacity": 10,
-   "start": "2026-09-29",
-   "finish": "2026-10-01",
-   "milestone": "W0",
-   "milestone_due": "2026-10-02",
+   "start": "2026-10-03",
+   "finish": "2026-10-06",
+   "milestone": "W1",
+   "milestone_due": "2026-10-16",
    "assignees": {
     "claude-07": 3,
-    "claude-08": 3,
+    "claude-06": 4,
     "claude-09": 2,
-    "claude-06": 2
+    "claude-08": 1
    },
    "critical_tasks": [],
-   "goal": "UI Parallel：画面 台帳の1件（3 状態・R1/R, 画面 目標（5 状態・R1/R2/R, 画面 目標の配分（6 状態・R1/R …",
+   "goal": "UI Parallel：画面 テストで動かす（3 状態・R1, 画面 本番に切り替える（2 状態・R, 画面 今日（6 状態・R1/R2/R …",
    "qa_scope": {
     "l1_tasks": [
-     "T-U-21",
-     "T-U-22",
-     "T-U-23",
-     "T-U-24",
-     "T-U-25",
-     "T-U-26",
-     "T-U-27",
-     "T-U-28",
-     "T-U-29",
-     "T-U-30"
+     "T-U-11",
+     "T-U-12",
+     "T-U-13",
+     "T-U-14",
+     "T-U-15",
+     "T-U-16",
+     "T-U-17",
+     "T-U-18",
+     "T-U-19",
+     "T-U-20"
     ],
-    "l1_rows": 601,
+    "l1_rows": 808,
     "l2_flows": [
-     "J-03",
-     "J-04"
+     "J-02"
     ],
     "regression_from": [
      "W0",
@@ -1758,59 +1733,58 @@
   },
   {
    "id": "W23",
-   "sprint": "U4",
+   "sprint": "U3",
    "phase": "5_ui_parallel",
    "phase_name": "UI Parallel",
    "group": "U-screen",
    "stage": "v1",
    "tasks": [
-    "T-U-31",
-    "T-U-32",
-    "T-U-33",
-    "T-U-34",
-    "T-U-35",
-    "T-U-36",
-    "T-U-37",
-    "T-U-38",
-    "T-U-39",
-    "T-U-40"
+    "T-U-21",
+    "T-U-22",
+    "T-U-23",
+    "T-U-24",
+    "T-U-25",
+    "T-U-26",
+    "T-U-27",
+    "T-U-28",
+    "T-U-29",
+    "T-U-30"
    ],
    "parallel": 10,
-   "estimate_hours_human": 180.5,
-   "estimate_hours_ai_compute": 18.0,
+   "estimate_hours_human": 188.0,
+   "estimate_hours_ai_compute": 18.7,
    "human_review_h": 0.0,
-   "wall_clock_h_ai": 3.0,
+   "wall_clock_h_ai": 2.7,
    "parallel_capacity": 10,
-   "start": "2026-09-30",
-   "finish": "2026-10-02",
-   "milestone": "W0",
-   "milestone_due": "2026-10-02",
+   "start": "2026-10-05",
+   "finish": "2026-10-06",
+   "milestone": "W1",
+   "milestone_due": "2026-10-16",
    "assignees": {
-    "claude-07": 2,
-    "claude-06": 3,
-    "claude-09": 3,
-    "claude-08": 2
+    "claude-07": 3,
+    "claude-08": 3,
+    "claude-09": 2,
+    "claude-06": 2
    },
    "critical_tasks": [],
-   "goal": "UI Parallel：画面 会社モデル（5 状態・R1/R, 画面 覚え直させる（3 状態・R1/, 画面 証跡（6 状態・R1/R2） …",
+   "goal": "UI Parallel：画面 台帳の1件（3 状態・R1/R, 画面 目標（5 状態・R1/R2/R, 画面 目標の配分（6 状態・R1/R …",
    "qa_scope": {
     "l1_tasks": [
-     "T-U-31",
-     "T-U-32",
-     "T-U-33",
-     "T-U-34",
-     "T-U-35",
-     "T-U-36",
-     "T-U-37",
-     "T-U-38",
-     "T-U-39",
-     "T-U-40"
+     "T-U-21",
+     "T-U-22",
+     "T-U-23",
+     "T-U-24",
+     "T-U-25",
+     "T-U-26",
+     "T-U-27",
+     "T-U-28",
+     "T-U-29",
+     "T-U-30"
     ],
-    "l1_rows": 523,
+    "l1_rows": 571,
     "l2_flows": [
-     "J-05",
-     "J-06",
-     "J-08"
+     "J-03",
+     "J-04"
     ],
     "regression_from": [
      "W0",
@@ -1850,56 +1824,60 @@
   },
   {
    "id": "W24",
-   "sprint": "U5",
+   "sprint": "U4",
    "phase": "5_ui_parallel",
    "phase_name": "UI Parallel",
    "group": "U-screen",
    "stage": "v1",
    "tasks": [
-    "T-U-41",
-    "T-U-42",
-    "T-U-43",
-    "T-U-44",
-    "T-U-45",
-    "T-U-46",
-    "T-U-47",
-    "T-U-48",
-    "T-U-49",
-    "T-U-50"
+    "T-U-31",
+    "T-U-32",
+    "T-U-33",
+    "T-U-34",
+    "T-U-35",
+    "T-U-36",
+    "T-U-37",
+    "T-U-38",
+    "T-U-39",
+    "T-U-40"
    ],
    "parallel": 10,
-   "estimate_hours_human": 153.5,
-   "estimate_hours_ai_compute": 15.4,
+   "estimate_hours_human": 180.5,
+   "estimate_hours_ai_compute": 18.0,
    "human_review_h": 0.0,
-   "wall_clock_h_ai": 2.8,
+   "wall_clock_h_ai": 3.0,
    "parallel_capacity": 10,
-   "start": "2026-09-30",
-   "finish": "2026-10-02",
-   "milestone": "W0",
-   "milestone_due": "2026-10-02",
+   "start": "2026-10-05",
+   "finish": "2026-10-07",
+   "milestone": "W1",
+   "milestone_due": "2026-10-16",
    "assignees": {
-    "claude-07": 3,
-    "claude-08": 3,
-    "claude-06": 2,
-    "claude-09": 2
+    "claude-07": 2,
+    "claude-06": 3,
+    "claude-09": 3,
+    "claude-08": 2
    },
    "critical_tasks": [],
-   "goal": "UI Parallel：画面 運営の支援（2 状態・R6）, 画面 運営：会社の一覧（4 状態・R, 画面 運営：配るもの（7 状態・R6 …",
+   "goal": "UI Parallel：画面 会社モデル（5 状態・R1/R, 画面 覚え直させる（3 状態・R1/, 画面 証跡（6 状態・R1/R2） …",
    "qa_scope": {
     "l1_tasks": [
-     "T-U-41",
-     "T-U-42",
-     "T-U-43",
-     "T-U-44",
-     "T-U-45",
-     "T-U-46",
-     "T-U-47",
-     "T-U-48",
-     "T-U-49",
-     "T-U-50"
+     "T-U-31",
+     "T-U-32",
+     "T-U-33",
+     "T-U-34",
+     "T-U-35",
+     "T-U-36",
+     "T-U-37",
+     "T-U-38",
+     "T-U-39",
+     "T-U-40"
     ],
-    "l1_rows": 436,
-    "l2_flows": [],
+    "l1_rows": 493,
+    "l2_flows": [
+     "J-05",
+     "J-06",
+     "J-08"
+    ],
     "regression_from": [
      "W0",
      "W1",
@@ -1939,55 +1917,56 @@
   },
   {
    "id": "W25",
-   "sprint": "U6",
+   "sprint": "U5",
    "phase": "5_ui_parallel",
    "phase_name": "UI Parallel",
    "group": "U-screen",
    "stage": "v1",
    "tasks": [
-    "T-U-51",
-    "T-U-52",
-    "T-U-53",
-    "T-U-54",
-    "T-U-55",
-    "T-U-56",
-    "T-U-57",
-    "T-U-58"
+    "T-U-41",
+    "T-U-42",
+    "T-U-43",
+    "T-U-44",
+    "T-U-45",
+    "T-U-46",
+    "T-U-47",
+    "T-U-48",
+    "T-U-49",
+    "T-U-50"
    ],
-   "parallel": 8,
-   "estimate_hours_human": 99.0,
-   "estimate_hours_ai_compute": 10.1,
+   "parallel": 10,
+   "estimate_hours_human": 153.5,
+   "estimate_hours_ai_compute": 15.4,
    "human_review_h": 0.0,
-   "wall_clock_h_ai": 2.3,
+   "wall_clock_h_ai": 2.8,
    "parallel_capacity": 10,
-   "start": "2026-10-01",
-   "finish": "2026-10-21",
-   "milestone": "W2",
-   "milestone_due": "2026-10-30",
+   "start": "2026-10-06",
+   "finish": "2026-10-07",
+   "milestone": "W1",
+   "milestone_due": "2026-10-16",
    "assignees": {
+    "claude-07": 3,
+    "claude-08": 3,
     "claude-06": 2,
-    "claude-07": 2,
-    "claude-08": 2,
     "claude-09": 2
    },
    "critical_tasks": [],
-   "goal": "UI Parallel：画面 お知らせと通知（3 状態・R1, 画面 プランと請求（3 状態・R1/, 画面 運営：お知らせ（2 状態・R6 …",
+   "goal": "UI Parallel：画面 運営の支援（2 状態・R6）, 画面 運営：会社の一覧（4 状態・R, 画面 運営：配るもの（7 状態・R6 …",
    "qa_scope": {
     "l1_tasks": [
-     "T-U-51",
-     "T-U-52",
-     "T-U-53",
-     "T-U-54",
-     "T-U-55",
-     "T-U-56",
-     "T-U-57",
-     "T-U-58"
+     "T-U-41",
+     "T-U-42",
+     "T-U-43",
+     "T-U-44",
+     "T-U-45",
+     "T-U-46",
+     "T-U-47",
+     "T-U-48",
+     "T-U-49",
+     "T-U-50"
     ],
-    "l1_rows": 384,
-    "l2_flows": [
-     "J-07",
-     "J-09"
-    ],
+    "l1_rows": 406,
+    "l2_flows": [],
     "regression_from": [
      "W0",
      "W1",
@@ -2028,6 +2007,96 @@
   },
   {
    "id": "W26",
+   "sprint": "U6",
+   "phase": "5_ui_parallel",
+   "phase_name": "UI Parallel",
+   "group": "U-screen",
+   "stage": "v1",
+   "tasks": [
+    "T-U-51",
+    "T-U-52",
+    "T-U-53",
+    "T-U-54",
+    "T-U-55",
+    "T-U-56",
+    "T-U-57",
+    "T-U-58"
+   ],
+   "parallel": 8,
+   "estimate_hours_human": 99.0,
+   "estimate_hours_ai_compute": 10.1,
+   "human_review_h": 0.0,
+   "wall_clock_h_ai": 2.3,
+   "parallel_capacity": 10,
+   "start": "2026-10-07",
+   "finish": "2026-10-27",
+   "milestone": "W2",
+   "milestone_due": "2026-10-30",
+   "assignees": {
+    "claude-06": 2,
+    "claude-07": 2,
+    "claude-08": 2,
+    "claude-09": 2
+   },
+   "critical_tasks": [],
+   "goal": "UI Parallel：画面 お知らせと通知（3 状態・R1, 画面 プランと請求（3 状態・R1/, 画面 運営：お知らせ（2 状態・R6 …",
+   "qa_scope": {
+    "l1_tasks": [
+     "T-U-51",
+     "T-U-52",
+     "T-U-53",
+     "T-U-54",
+     "T-U-55",
+     "T-U-56",
+     "T-U-57",
+     "T-U-58"
+    ],
+    "l1_rows": 360,
+    "l2_flows": [
+     "J-07",
+     "J-09"
+    ],
+    "regression_from": [
+     "W0",
+     "W1",
+     "W2",
+     "W3",
+     "W4",
+     "W5",
+     "W6",
+     "W7",
+     "W8",
+     "W9",
+     "W10",
+     "W11",
+     "W12",
+     "W13",
+     "W14",
+     "W15",
+     "W16",
+     "W17",
+     "W18",
+     "W19",
+     "W20",
+     "W21",
+     "W22",
+     "W23",
+     "W24",
+     "W25"
+    ],
+    "gate": "bash scripts/ci/completion_gate.sh --wave W26"
+   },
+   "done_when": [
+    "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
+    "揃った流れ（l2_flows）が staging で全行 PASS（L2）",
+    "前 Wave の回帰（regression_from の差分）PASS",
+    "completion_gate.sh STATUS 完了 → 次の Wave を始める"
+   ],
+   "runnable": true,
+   "preconditions": []
+  },
+  {
+   "id": "W27",
    "sprint": "I1",
    "phase": "6_integration",
    "phase_name": "Integration & Polish",
@@ -2052,7 +2121,7 @@
    "wall_clock_h_ai": 9.5,
    "parallel_capacity": 10,
    "start": "2026-09-20",
-   "finish": "2026-10-26",
+   "finish": "2026-10-30",
    "milestone": "W2",
    "milestone_due": "2026-10-30",
    "assignees": {
@@ -2106,9 +2175,10 @@
      "W22",
      "W23",
      "W24",
-     "W25"
+     "W25",
+     "W26"
     ],
-    "gate": "bash scripts/ci/completion_gate.sh --wave W26"
+    "gate": "bash scripts/ci/completion_gate.sh --wave W27"
    },
    "done_when": [
     "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
@@ -2120,7 +2190,7 @@
    "preconditions": []
   },
   {
-   "id": "W27",
+   "id": "W28",
    "sprint": "I2",
    "phase": "6_integration",
    "phase_name": "Integration & Polish",
@@ -2143,8 +2213,8 @@
    "human_review_h": 0.0,
    "wall_clock_h_ai": 5.7,
    "parallel_capacity": 10,
-   "start": "2026-09-29",
-   "finish": "2026-10-23",
+   "start": "2026-10-05",
+   "finish": "2026-10-29",
    "milestone": "W2",
    "milestone_due": "2026-10-30",
    "assignees": {
@@ -2194,84 +2264,6 @@
      "W23",
      "W24",
      "W25",
-     "W26"
-    ],
-    "gate": "bash scripts/ci/completion_gate.sh --wave W27"
-   },
-   "done_when": [
-    "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
-    "揃った流れ（l2_flows）が staging で全行 PASS（L2）",
-    "前 Wave の回帰（regression_from の差分）PASS",
-    "completion_gate.sh STATUS 完了 → 次の Wave を始める"
-   ],
-   "runnable": true,
-   "preconditions": []
-  },
-  {
-   "id": "W28",
-   "sprint": "I3",
-   "phase": "6_integration",
-   "phase_name": "Integration & Polish",
-   "group": "I",
-   "stage": "v1",
-   "tasks": [
-    "T-I-19",
-    "T-I-20",
-    "T-I-22"
-   ],
-   "parallel": 3,
-   "estimate_hours_human": 44,
-   "estimate_hours_ai_compute": 6.8,
-   "human_review_h": 1.0,
-   "wall_clock_h_ai": 5.5,
-   "parallel_capacity": 10,
-   "start": "2026-10-21",
-   "finish": "2026-10-29",
-   "milestone": "W2",
-   "milestone_due": "2026-10-30",
-   "assignees": {
-    "claude-09": 2,
-    "claude-10": 1
-   },
-   "critical_tasks": [
-    "T-I-20"
-   ],
-   "goal": "Integration & Polish：負荷試験（同時接続・集中時の rps, セキュリティ監査（RLS を故意に壊, 文書とリリース準備（できること・でき",
-   "qa_scope": {
-    "l1_tasks": [
-     "T-I-19",
-     "T-I-20",
-     "T-I-22"
-    ],
-    "l1_rows": 21,
-    "l2_flows": [],
-    "regression_from": [
-     "W0",
-     "W1",
-     "W2",
-     "W3",
-     "W4",
-     "W5",
-     "W6",
-     "W7",
-     "W8",
-     "W9",
-     "W10",
-     "W11",
-     "W12",
-     "W13",
-     "W14",
-     "W15",
-     "W16",
-     "W17",
-     "W18",
-     "W19",
-     "W20",
-     "W21",
-     "W22",
-     "W23",
-     "W24",
-     "W25",
      "W26",
      "W27"
     ],
@@ -2288,36 +2280,41 @@
   },
   {
    "id": "W29",
-   "sprint": "S1",
-   "phase": "7_content",
-   "phase_name": "スキル制作（運営の資産・開発と並行）",
-   "group": "S",
+   "sprint": "I3",
+   "phase": "6_integration",
+   "phase_name": "Integration & Polish",
+   "group": "I",
    "stage": "v1",
    "tasks": [
-    "T-S-01"
+    "T-I-19",
+    "T-I-20",
+    "T-I-22"
    ],
-   "parallel": 1,
-   "estimate_hours_human": 8,
-   "estimate_hours_ai_compute": 2.0,
+   "parallel": 3,
+   "estimate_hours_human": 44,
+   "estimate_hours_ai_compute": 6.8,
    "human_review_h": 1.0,
-   "wall_clock_h_ai": 3.5,
+   "wall_clock_h_ai": 5.5,
    "parallel_capacity": 10,
-   "start": "2026-10-21",
-   "finish": "2026-10-21",
-   "milestone": "W2",
-   "milestone_due": "2026-10-30",
+   "start": "2026-10-27",
+   "finish": "2026-11-05",
+   "milestone": "W3",
+   "milestone_due": "2026-11-20",
    "assignees": {
-    "claude-09": 1
+    "claude-09": 2,
+    "claude-10": 1
    },
    "critical_tasks": [
-    "T-S-01"
+    "T-I-20"
    ],
-   "goal": "スキル制作（運営の資産・開発と並行）：スキル一式の形式・雛形・検査（ski",
+   "goal": "Integration & Polish：負荷試験（同時接続・集中時の rps, セキュリティ監査（RLS を故意に壊, 文書とリリース準備（できること・でき",
    "qa_scope": {
     "l1_tasks": [
-     "T-S-01"
+     "T-I-19",
+     "T-I-20",
+     "T-I-22"
     ],
-    "l1_rows": 6,
+    "l1_rows": 21,
     "l2_flows": [],
     "regression_from": [
      "W0",
@@ -2363,6 +2360,82 @@
   },
   {
    "id": "W30",
+   "sprint": "S1",
+   "phase": "7_content",
+   "phase_name": "スキル制作（運営の資産・開発と並行）",
+   "group": "S",
+   "stage": "v1",
+   "tasks": [
+    "T-S-01"
+   ],
+   "parallel": 1,
+   "estimate_hours_human": 8,
+   "estimate_hours_ai_compute": 2.0,
+   "human_review_h": 1.0,
+   "wall_clock_h_ai": 3.5,
+   "parallel_capacity": 10,
+   "start": "2026-10-27",
+   "finish": "2026-10-27",
+   "milestone": "W2",
+   "milestone_due": "2026-10-30",
+   "assignees": {
+    "claude-09": 1
+   },
+   "critical_tasks": [
+    "T-S-01"
+   ],
+   "goal": "スキル制作（運営の資産・開発と並行）：スキル一式の形式・雛形・検査（ski",
+   "qa_scope": {
+    "l1_tasks": [
+     "T-S-01"
+    ],
+    "l1_rows": 6,
+    "l2_flows": [],
+    "regression_from": [
+     "W0",
+     "W1",
+     "W2",
+     "W3",
+     "W4",
+     "W5",
+     "W6",
+     "W7",
+     "W8",
+     "W9",
+     "W10",
+     "W11",
+     "W12",
+     "W13",
+     "W14",
+     "W15",
+     "W16",
+     "W17",
+     "W18",
+     "W19",
+     "W20",
+     "W21",
+     "W22",
+     "W23",
+     "W24",
+     "W25",
+     "W26",
+     "W27",
+     "W28",
+     "W29"
+    ],
+    "gate": "bash scripts/ci/completion_gate.sh --wave W30"
+   },
+   "done_when": [
+    "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
+    "揃った流れ（l2_flows）が staging で全行 PASS（L2）",
+    "前 Wave の回帰（regression_from の差分）PASS",
+    "completion_gate.sh STATUS 完了 → 次の Wave を始める"
+   ],
+   "runnable": true,
+   "preconditions": []
+  },
+  {
+   "id": "W31",
    "sprint": "S2",
    "phase": "7_content",
    "phase_name": "スキル制作（運営の資産・開発と並行）",
@@ -2386,10 +2459,10 @@
    "human_review_h": 10.0,
    "wall_clock_h_ai": 4.5,
    "parallel_capacity": 10,
-   "start": "2026-10-22",
-   "finish": "2026-10-28",
-   "milestone": "W2",
-   "milestone_due": "2026-10-30",
+   "start": "2026-10-28",
+   "finish": "2026-11-04",
+   "milestone": "W3",
+   "milestone_due": "2026-11-20",
    "assignees": {
     "claude-09": 8,
     "claude-10": 2
@@ -2452,9 +2525,10 @@
      "W26",
      "W27",
      "W28",
-     "W29"
+     "W29",
+     "W30"
     ],
-    "gate": "bash scripts/ci/completion_gate.sh --wave W30"
+    "gate": "bash scripts/ci/completion_gate.sh --wave W31"
    },
    "done_when": [
     "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
@@ -2466,7 +2540,7 @@
    "preconditions": []
   },
   {
-   "id": "W31",
+   "id": "W32",
    "sprint": "S3",
    "phase": "7_content",
    "phase_name": "スキル制作（運営の資産・開発と並行）",
@@ -2484,10 +2558,10 @@
    "human_review_h": 4.0,
    "wall_clock_h_ai": 3.5,
    "parallel_capacity": 10,
-   "start": "2026-10-27",
-   "finish": "2026-10-28",
-   "milestone": "W2",
-   "milestone_due": "2026-10-30",
+   "start": "2026-11-02",
+   "finish": "2026-11-04",
+   "milestone": "W3",
+   "milestone_due": "2026-11-20",
    "assignees": {
     "claude-09": 2,
     "claude-10": 2
@@ -2539,9 +2613,10 @@
      "W27",
      "W28",
      "W29",
-     "W30"
+     "W30",
+     "W31"
     ],
-    "gate": "bash scripts/ci/completion_gate.sh --wave W31"
+    "gate": "bash scripts/ci/completion_gate.sh --wave W32"
    },
    "done_when": [
     "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
@@ -2553,7 +2628,7 @@
    "preconditions": []
   },
   {
-   "id": "W32",
+   "id": "W33",
    "sprint": "A4",
    "phase": "9_v2_api",
    "phase_name": "段階 2 API Layer",
@@ -2570,8 +2645,8 @@
    "human_review_h": 3.0,
    "wall_clock_h_ai": 43.3,
    "parallel_capacity": 10,
-   "start": "2026-09-29",
-   "finish": "2026-10-08",
+   "start": "2026-10-05",
+   "finish": "2026-10-13",
    "milestone": "W1",
    "milestone_due": "2026-10-16",
    "assignees": {
@@ -2623,9 +2698,10 @@
      "W28",
      "W29",
      "W30",
-     "W31"
+     "W31",
+     "W32"
     ],
-    "gate": "bash scripts/ci/completion_gate.sh --wave W32"
+    "gate": "bash scripts/ci/completion_gate.sh --wave W33"
    },
    "done_when": [
     "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",
@@ -2637,7 +2713,7 @@
    "preconditions": []
   },
   {
-   "id": "W33",
+   "id": "W34",
    "sprint": "U7",
    "phase": "9_v2_ui_parallel",
    "phase_name": "段階 2 UI Parallel",
@@ -2657,8 +2733,8 @@
    "human_review_h": 0.0,
    "wall_clock_h_ai": 2.3,
    "parallel_capacity": 10,
-   "start": "2026-10-01",
-   "finish": "2026-10-21",
+   "start": "2026-10-07",
+   "finish": "2026-10-27",
    "milestone": "W2",
    "milestone_due": "2026-10-30",
    "assignees": {
@@ -2678,7 +2754,7 @@
      "T-U-63",
      "T-U-64"
     ],
-    "l1_rows": 239,
+    "l1_rows": 224,
     "l2_flows": [],
     "regression_from": [
      "W0",
@@ -2713,9 +2789,10 @@
      "W29",
      "W30",
      "W31",
-     "W32"
+     "W32",
+     "W33"
     ],
-    "gate": "bash scripts/ci/completion_gate.sh --wave W33"
+    "gate": "bash scripts/ci/completion_gate.sh --wave W34"
    },
    "done_when": [
     "Wave 内の全タスクが qa-ladder gate --task PASS（L1）",

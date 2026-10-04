@@ -834,6 +834,8 @@ export function authExt(d: AuthExtDeps): Hono {
       b.agent_session_id ?? null,
     ]);
     if (!r.rows[0]?.ok) return bad(c, 404, "JOB_NOT_FOUND", "その仕事は見つかりません");
+    // この仕事で道具から渡した成果物を、書かれた返事に結ぶ（返事の下にカードが並ぶ・D-121.3）
+    await d.appPool.query("select app.artifact_attach_job($1)", [b.job_id]);
     if (rem.items.length) await d.appPool.query("select app.agent_remember($1, $2, $3)", [sid, b.job_id, rem.items]);
     if (digestId) {
       const parsed = b.state === "done" && b.result ? parseDigest(b.result) : null;
@@ -1388,6 +1390,6 @@ export function authExt(d: AuthExtDeps): Hono {
     return c.json({ data: r.rows[0]?.v ?? { goals: [], ledgers: [], duties: [] } });
   });
   // 自分のAI が Kaname の道具でたたき台に置く（D-110）
-  app.route("/", agentToolRoutes({ appPool: d.appPool }));
+  app.route("/", agentToolRoutes({ appPool: d.appPool, ...(d.objects ? { objects: d.objects } : {}) }));
   return app;
 }

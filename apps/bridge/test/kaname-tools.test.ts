@@ -137,3 +137,82 @@ describe("覚える道具の形（D-114）", () => {
     expect(r.description).not.toContain("1 件 1 文");
   });
 });
+
+// T-B-41 成果物を渡す道具（D-121）：PC のファイルを読んでそのまま Kaname に送る。ホームの外・無いファイル・大きいファイルは Kaname に送らない
+describe("CHT-41-004 artifact_put の道具のサーバー（D-121）", () => {
+  let srv: Server;
+  let base = "";
+  const got: { url: string; headers: Record<string, string | string[] | undefined>; body: Buffer }[] = [];
+  let proc: ChildProcessWithoutNullStreams | null = null;
+  const dir = mkdtempSync(join(tmpdir(), "kaname-art-"));
+  beforeAll(async () => {
+    srv = createServer((req, res) => {
+      const chunks: Buffer[] = [];
+      req.on("data", (c: Buffer) => chunks.push(c));
+      req.on("end", () => {
+        got.push({ url: req.url ?? "", headers: req.headers, body: Buffer.concat(chunks) });
+        res.writeHead(201, { "content-type": "application/json" });
+        res.end(JSON.stringify({ data: { id: "art-1", title: "x", format: "png", version: 1 } }));
+      });
+    });
+    await new Promise<void>((r) => srv.listen(0, "127.0.0.1", r));
+    base = `http://127.0.0.1:${(srv.address() as { port: number }).port}`;
+  });
+  afterAll(() => {
+    proc?.kill();
+    srv.close();
+  });
+  const rpc = (() => {
+    let id = 0;
+    const waiters: ((m: { result?: { isError?: boolean; content: { text: string }[]; tools?: { name: string }[] } }) => void)[] = [];
+    let rest = "";
+    return async (method: string, params: unknown) => {
+      if (!proc) {
+        proc = spawn(process.execPath, [writeMcpServer(dir)], { env: { ...process.env, KANAME_API_BASE: base, KANAME_TOOL_TOKEN: "tok-123456789012345678901234" } });
+        proc.stdout.setEncoding("utf8");
+        proc.stdout.on("data", (c: string) => {
+          const lines = (rest + c).split("\n");
+          rest = lines.pop() ?? "";
+          for (const ln of lines) if (ln.trim()) waiters.shift()?.(JSON.parse(ln));
+        });
+      }
+      return new Promise<{ result?: { isError?: boolean; content: { text: string }[]; tools?: { name: string }[] } }>((res) => {
+        waiters.push(res);
+        proc!.stdin.write(`${JSON.stringify({ jsonrpc: "2.0", id: ++id, method, params })}\n`);
+      });
+    };
+  })();
+  it("一覧に artifact_put がある。一時フォルダのファイルはそのまま（名前は URL エンコード・中身は同じ）Kaname に届く", async () => {
+    const { writeFileSync } = await import("node:fs");
+    const list = await rpc("tools/list", {});
+    expect(list.result?.tools?.map((t) => t.name)).toContain("artifact_put");
+    const file = join(dir, "請求のまとめ.png");
+    const bytes = Buffer.from([0x89, 0x50, 0x4e, 0x47, 1, 2, 3, 4, 5]);
+    writeFileSync(file, bytes);
+    const r = await rpc("tools/call", { name: "artifact_put", arguments: { path: file, title: "請求のグラフ" } });
+    expect(r.result?.isError).toBeFalsy();
+    expect(JSON.parse(r.result!.content[0]!.text)).toMatchObject({ id: "art-1" });
+    expect(got).toHaveLength(1);
+    expect(got[0]!.url).toBe("/api/auth-ext/bridge/artifact");
+    expect(got[0]!.headers["x-kaname-tool-token"]).toBe("tok-123456789012345678901234");
+    expect(decodeURIComponent(String(got[0]!.headers["x-artifact-name"]))).toBe("請求のまとめ.png");
+    expect(decodeURIComponent(String(got[0]!.headers["x-artifact-title"]))).toBe("請求のグラフ");
+    expect(got[0]!.body.equals(bytes)).toBe(true);
+    expect(JSON.stringify(got[0]!.headers)).not.toMatch(/session|vault|password|secret/i);
+  });
+  it("ホームの外・無いファイル・path 無し・フォルダ は Kaname に送らずに理由を返す", async () => {
+    const n = got.length;
+    for (const [args, re] of [
+      [{ path: "/etc/hosts" }, /ホームの中/],
+      [{ path: join(dir, "無い.png") }, /ありません/],
+      [{}, /path/],
+      [{ path: dir }, /ファイルではありません/],
+    ] as const) {
+      const r = await rpc("tools/call", { name: "artifact_put", arguments: args });
+      expect(r.result?.isError, JSON.stringify(args)).toBe(true);
+      expect(r.result!.content[0]!.text).toMatch(re);
+    }
+    expect(got.length, "Kaname には何も送っていない").toBe(n);
+  });
+});
+

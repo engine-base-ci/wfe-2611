@@ -170,6 +170,7 @@ export function label(tool: string): string {
     duty_set: "たたき台に担当業務を置いています",
     duty_remove: "担当業務を外しています",
     remember: "覚えています",
+    artifact_put: "成果物を渡しています",
   };
   if (tool.startsWith("mcp__kaname__")) return KANAME[tool.slice("mcp__kaname__".length)] ?? "Kaname に書いています";
   // ブラウザの道具（Claude in Chrome・Bridge 専用のブラウザ・D-119）。内部の名前は出さない

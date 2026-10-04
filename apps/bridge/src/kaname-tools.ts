@@ -50,6 +50,11 @@ export const TOOL_DEFS: ToolDef[] = [
     },
   },
   { name: "duty_remove", description: "置いた担当業務を外す", inputSchema: { type: "object", properties: { id: ID }, required: ["id"] } },
+  {
+    name: "artifact_put",
+    description: "作ったファイル（PDF・画像・表計算・文書）や調べた結果（文書にして）を、本人が会話の横で開ける成果物として Kaname に渡す。本人に渡すものは必ずこれで渡す（渡さないと本人の画面に出ない）。path はあなたの PC のファイルの絶対パス（ホームの中・20 MB まで）",
+    inputSchema: { type: "object", properties: { path: s("ファイルの絶対パス（例：/Users/me/work/請求まとめ.pdf）"), title: s("成果物の名前（無ければファイル名）") }, required: ["path"] },
+  },
   { name: "remember", description: "本人から聞いた会社のこと（事業・顧客・体制・困りごと 等）を記憶に残す。1 件＝事実 1 つで、形は「項目：内容」（例：案件の入口：紹介と営業会社からの商談確約）。画面の「分かったこと」に項目と内容に分けて並ぶ", inputSchema: { type: "object", properties: { items: arr("覚えること（1 件 1 つ。「項目：内容」の形。例：社員数：3 人）") }, required: ["items"] } },
 ];
 /** 許可のモードに関わらず聞かずに使える道具（本人の会社のたたき台に書くだけ・外に出ない・D-110.4） */
@@ -79,6 +84,39 @@ async function call(id, name, input) {
     reply(id, text("Kaname に届きませんでした（" + (e && e.message ? e.message : "不明") + "）", true));
   }
 }
+// 成果物を渡す（D-121）：PC のファイルを読んでそのまま Kaname に送る。ホームの中（と一時フォルダ）・20 MB まで。置き場の鍵は持たない
+const fs = require("fs"), path = require("path"), os = require("os");
+const inside = (p, root) => p === root || p.startsWith(root.endsWith(path.sep) ? root : root + path.sep);
+async function putArtifact(id, input) {
+  const raw = String((input && input.path) || "").trim();
+  if (!raw) return reply(id, text("path（ファイルの絶対パス）が要ります", true));
+  const p = path.resolve(raw);
+  const roots = [os.homedir(), os.tmpdir(), fs.realpathSync(os.tmpdir())];
+  if (!roots.some((r) => inside(p, r))) return reply(id, text("渡せるのはあなたのホームの中のファイルだけです：" + p, true));
+  let st;
+  try { st = fs.statSync(p); } catch { return reply(id, text("ファイルがありません：" + p, true)); }
+  if (!st.isFile()) return reply(id, text("ファイルではありません：" + p, true));
+  if (st.size > 20 * 1024 * 1024) return reply(id, text("20 MB を超えるファイルは渡せません：" + p, true));
+  if (st.size === 0) return reply(id, text("中身が空です：" + p, true));
+  try {
+    const r = await fetch(API + "/api/auth-ext/bridge/artifact", {
+      method: "POST",
+      headers: {
+        "content-type": "application/octet-stream",
+        "x-kaname-tool-token": TOKEN,
+        "x-artifact-name": encodeURIComponent(path.basename(p)),
+        "x-artifact-title": encodeURIComponent(String((input && input.title) || "")),
+      },
+      body: fs.readFileSync(p),
+      signal: AbortSignal.timeout(60000),
+    });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) return reply(id, text("Kaname に渡せませんでした：" + (j.message || ("Kaname が " + r.status)), true));
+    reply(id, text(JSON.stringify(j.data ?? null)));
+  } catch (e) {
+    reply(id, text("Kaname に届きませんでした（" + (e && e.message ? e.message : "不明") + "）", true));
+  }
+}
 function onMessage(m) {
   if (!m || m.id === undefined || m.id === null) return; // 通知には答えない
   if (m.method === "initialize")
@@ -87,6 +125,7 @@ function onMessage(m) {
   if (m.method === "tools/call") {
     const name = m.params && m.params.name;
     if (!TOOLS.some((t) => t.name === name)) return reply(m.id, text("その道具はありません：" + name, true));
+    if (name === "artifact_put") return void putArtifact(m.id, m.params.arguments);
     return void call(m.id, name, m.params.arguments);
   }
   if (m.method === "ping") return reply(m.id, {});

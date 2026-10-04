@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-03T18:01:04",
+ "generated_at": "2026-10-04T10:12:55",
  "inputs": {
   "tickets": "07_tasks/tickets.json",
   "roster": "07_tasks/roster.json",
@@ -14,21 +14,21 @@
   "errors": "07_qa/test-specs/errors.json"
  },
  "summary": {
-  "as_of": "2026-10-03",
+  "as_of": "2026-10-04",
   "by_status": {
-   "done": 115,
+   "done": 116,
    "todo": 99
   },
-  "hours_done": 839.4,
-  "hours_total": 1226.3,
+  "hours_done": 840.1,
+  "hours_total": 1227.0,
   "progress_pct": 68,
   "epic": 16,
-  "story": 214,
-  "subtask": 6027,
+  "story": 215,
+  "subtask": 6040,
   "subtask_by": {
-   "impl": 612,
-   "test": 5132,
-   "mock": 283
+   "impl": 618,
+   "test": 5138,
+   "mock": 284
   },
   "critical_path": [
    "T-F-03",
@@ -50,7 +50,7 @@
   "delta": {
    "added": 0,
    "updated": 0,
-   "unchanged": 214,
+   "unchanged": 215,
    "dropped": 0
   },
   "load": {
@@ -450,7 +450,8 @@
     "T-B-37",
     "T-B-38",
     "T-B-39",
-    "T-B-40"
+    "T-B-40",
+    "T-B-41"
    ],
    "depends_on": [],
    "status": "todo",
@@ -27146,6 +27147,90 @@
    "delta": "unchanged",
    "dropped_reason": null,
    "done_at": "2026-10-03",
+   "started_at": null,
+   "actual": true
+  },
+  {
+   "id": "T-B-41",
+   "kind": "story",
+   "title": "自分のAI が作ったファイル・調べた結果を道具 artifact_put で成果物として渡す（PC 側の Bridge が読んで上げる・置き場は C4・台帳は DB・会話の横で開ける・20 MB・ホームの中・仕事の間だけ）",
+   "parent": "E-backend",
+   "children": [
+    "T-B-41.s1",
+    "T-B-41.s2",
+    "T-B-41.s3",
+    "T-B-41.s4",
+    "T-B-41.s5",
+    "T-B-41.s6",
+    "T-B-41.t1",
+    "T-B-41.t2",
+    "T-B-41.t3",
+    "T-B-41.t4",
+    "T-B-41.t5",
+    "T-B-41.t6",
+    "T-B-41.m1"
+   ],
+   "depends_on": [
+    "T-B-23"
+   ],
+   "blocked_by": [],
+   "wave": "W1",
+   "layer": "backend",
+   "estimate_hours": 0.7,
+   "estimate_default": false,
+   "start": "2026-10-04",
+   "finish": "2026-10-04",
+   "critical": false,
+   "tentative": false,
+   "assignable": [
+    "takamoto",
+    "claude-01",
+    "claude-02",
+    "claude-03",
+    "claude-04",
+    "claude-05"
+   ],
+   "assignee": null,
+   "assigned_by": null,
+   "status": "done",
+   "external": {},
+   "links": {
+    "mock": [
+     "06_mockup/v1/v1-clone-chat.html"
+    ],
+    "screens": [
+     "clone-chat"
+    ],
+    "decisions": [
+     "D-121.1",
+     "D-121.2",
+     "D-121.3",
+     "D-121.4",
+     "D-121.5",
+     "D-121.6",
+     "D-106.5",
+     "D-110.3"
+    ],
+    "acts": [
+     "A95",
+     "A20"
+    ],
+    "qa_rows": [
+     "CHT-41-001",
+     "CHT-41-002",
+     "CHT-41-003",
+     "CHT-41-004",
+     "CHT-41-005",
+     "CHT-41-006"
+    ],
+    "errors": [],
+    "spec": [
+     "07_tasks/tickets.json#T-B-41"
+    ]
+   },
+   "delta": "unchanged",
+   "dropped_reason": null,
+   "done_at": "2026-10-04",
    "started_at": null,
    "actual": true
   },
@@ -105845,6 +105930,178 @@
     ],
     "screens": [
      "onboard-draft"
+    ]
+   }
+  },
+  {
+   "id": "T-B-41.s1",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "packages/db/migrations/0068_artifact_from_job.sql (new)",
+   "parent": "T-B-41",
+   "status": "done",
+   "links": {
+    "file": [
+     "packages/db/migrations/0068_artifact_from_job.sql (new)"
+    ]
+   }
+  },
+  {
+   "id": "T-B-41.s2",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "apps/api/src/auth/agent-tools.ts (new)",
+   "parent": "T-B-41",
+   "status": "done",
+   "links": {
+    "file": [
+     "apps/api/src/auth/agent-tools.ts (new)"
+    ]
+   }
+  },
+  {
+   "id": "T-B-41.s3",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "apps/bridge/src/kaname-tools.ts (new)",
+   "parent": "T-B-41",
+   "status": "done",
+   "links": {
+    "file": [
+     "apps/bridge/src/kaname-tools.ts (new)"
+    ]
+   }
+  },
+  {
+   "id": "T-B-41.s4",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "apps/api/test/agent_tools.test.ts (new)",
+   "parent": "T-B-41",
+   "status": "done",
+   "links": {
+    "file": [
+     "apps/api/test/agent_tools.test.ts (new)"
+    ]
+   }
+  },
+  {
+   "id": "T-B-41.s5",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "apps/bridge/test/kaname-tools.test.ts (new)",
+   "parent": "T-B-41",
+   "status": "done",
+   "links": {
+    "file": [
+     "apps/bridge/test/kaname-tools.test.ts (new)"
+    ]
+   }
+  },
+  {
+   "id": "T-B-41.s6",
+   "kind": "subtask",
+   "sub": "impl",
+   "title": "apps/web/tests/screens/qa-b-artifact-put.spec.ts (new)",
+   "parent": "T-B-41",
+   "status": "done",
+   "links": {
+    "file": [
+     "apps/web/tests/screens/qa-b-artifact-put.spec.ts (new)"
+    ]
+   }
+  },
+  {
+   "id": "T-B-41.t1",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 CHT-41-001 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-B-41",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "CHT-41-001"
+    ]
+   }
+  },
+  {
+   "id": "T-B-41.t2",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 CHT-41-002 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-B-41",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "CHT-41-002"
+    ]
+   }
+  },
+  {
+   "id": "T-B-41.t3",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 CHT-41-003 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-B-41",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "CHT-41-003"
+    ]
+   }
+  },
+  {
+   "id": "T-B-41.t4",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 CHT-41-004 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-B-41",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "CHT-41-004"
+    ]
+   }
+  },
+  {
+   "id": "T-B-41.t5",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 CHT-41-005 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-B-41",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "CHT-41-005"
+    ]
+   }
+  },
+  {
+   "id": "T-B-41.t6",
+   "kind": "subtask",
+   "sub": "test",
+   "title": "L1 CHT-41-006 を staging で流して PASS/BLOCKED を正本に書く",
+   "parent": "T-B-41",
+   "status": "todo",
+   "links": {
+    "qa_rows": [
+     "CHT-41-006"
+    ]
+   }
+  },
+  {
+   "id": "T-B-41.m1",
+   "kind": "subtask",
+   "sub": "mock",
+   "title": "モック clone-chat と突き合わせる（全要素・全ボタン・値が固定でない）",
+   "parent": "T-B-41",
+   "status": "todo",
+   "links": {
+    "mock": [
+     "06_mockup/v1/v1-clone-chat.html"
+    ],
+    "screens": [
+     "clone-chat"
     ]
    }
   },

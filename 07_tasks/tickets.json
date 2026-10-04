@@ -1,12 +1,12 @@
 {
  "version": "v3.2",
  "project": "Kaname",
- "created_at": "2026-10-03",
+ "created_at": "2026-10-04",
  "decomposition_mode": "api_first",
  "api_design_ref": {
   "openapi_path": "08_api/openapi.yaml",
   "screen_api_coverage_path": "08_api/screen-api-coverage.json",
-  "contract_frozen_at": "2026-10-03"
+  "contract_frozen_at": "2026-10-04"
  },
  "_doc": "05_flow/build_tasks.py が機械生成。手で直さない。途中変更は差分（qa_delta.py）",
  "source": [
@@ -14,10 +14,10 @@
   "D-036.4"
  ],
  "summary": {
-  "total_tasks": 214,
+  "total_tasks": 215,
   "by_group": {
    "A": 28,
-   "B": 40,
+   "B": 41,
    "D": 14,
    "F": 18,
    "I": 22,
@@ -27,7 +27,7 @@
    "V2": 5
   },
   "by_category": {
-   "backend": 68,
+   "backend": 69,
    "db": 20,
    "frontend": 72,
    "infra": 12,
@@ -35,10 +35,10 @@
    "test": 22
   },
   "by_label": {
-   "NEW": 214
+   "NEW": 215
   },
   "by_deliverable_layer": {
-   "backend": 68,
+   "backend": 69,
    "content": 15,
    "foundation": 32,
    "integration": 18,
@@ -50,7 +50,7 @@
    "1_foundation": 18,
    "2_data": 14,
    "3_api": 25,
-   "3_backend": 40,
+   "3_backend": 41,
    "4_ui_foundation": 8,
    "5_ui_parallel": 58,
    "6_integration": 22,
@@ -64,16 +64,16 @@
    "total_screens": 64,
    "uncovered_screens": []
   },
-  "total_estimate_hours_human": 6284.5,
-  "total_estimate_hours_ai_compute": 1138.3,
+  "total_estimate_hours_human": 6292.5,
+  "total_estimate_hours_ai_compute": 1139.0,
   "human_review_total_h": 88.0,
-  "total_wall_clock_h_ai_parallel": 334.8,
+  "total_wall_clock_h_ai_parallel": 336.0,
   "parallel_capacity": 10,
   "calendar_days_ai": 56,
-  "calendar_days_human": 786,
-  "total_estimate_hours": 1226.3,
-  "total_estimate_sessions": 407,
-  "qa_rows_total": 5132,
+  "calendar_days_human": 787,
+  "total_estimate_hours": 1227.0,
+  "total_estimate_sessions": 408,
+  "qa_rows_total": 5138,
   "journeys": 9
  },
  "waves": [
@@ -368,6 +368,18 @@
   },
   {
    "wave": 17,
+   "group": "B",
+   "stage": "v1",
+   "tasks": [
+    "T-B-41"
+   ],
+   "parallel": 1,
+   "wall_clock_h_ai": 1.2,
+   "estimate_hours_human": 8,
+   "estimate_hours_ai_compute": 0.7
+  },
+  {
+   "wave": 18,
    "group": "U-shared",
    "stage": "v1",
    "tasks": [
@@ -379,7 +391,7 @@
    "estimate_hours_ai_compute": 1.6
   },
   {
-   "wave": 18,
+   "wave": 19,
    "group": "U-shared",
    "stage": "v1",
    "tasks": [
@@ -396,7 +408,7 @@
    "estimate_hours_ai_compute": 11.2
   },
   {
-   "wave": 19,
+   "wave": 20,
    "group": "U-shared",
    "stage": "v1",
    "tasks": [
@@ -408,7 +420,7 @@
    "estimate_hours_ai_compute": 10.0
   },
   {
-   "wave": 20,
+   "wave": 21,
    "group": "U-screen",
    "stage": "v1",
    "tasks": [
@@ -429,7 +441,7 @@
    "estimate_hours_ai_compute": 18.2
   },
   {
-   "wave": 21,
+   "wave": 22,
    "group": "U-screen",
    "stage": "v1",
    "tasks": [
@@ -450,7 +462,7 @@
    "estimate_hours_ai_compute": 25.5
   },
   {
-   "wave": 22,
+   "wave": 23,
    "group": "U-screen",
    "stage": "v1",
    "tasks": [
@@ -471,7 +483,7 @@
    "estimate_hours_ai_compute": 18.7
   },
   {
-   "wave": 23,
+   "wave": 24,
    "group": "U-screen",
    "stage": "v1",
    "tasks": [
@@ -492,7 +504,7 @@
    "estimate_hours_ai_compute": 18.0
   },
   {
-   "wave": 24,
+   "wave": 25,
    "group": "U-screen",
    "stage": "v1",
    "tasks": [
@@ -513,7 +525,7 @@
    "estimate_hours_ai_compute": 15.4
   },
   {
-   "wave": 25,
+   "wave": 26,
    "group": "U-screen",
    "stage": "v1",
    "tasks": [
@@ -532,7 +544,7 @@
    "estimate_hours_ai_compute": 10.1
   },
   {
-   "wave": 26,
+   "wave": 27,
    "group": "I",
    "stage": "v1",
    "tasks": [
@@ -553,7 +565,7 @@
    "estimate_hours_ai_compute": 35.0
   },
   {
-   "wave": 27,
+   "wave": 28,
    "group": "I",
    "stage": "v1",
    "tasks": [
@@ -573,7 +585,7 @@
    "estimate_hours_ai_compute": 21.6
   },
   {
-   "wave": 28,
+   "wave": 29,
    "group": "I",
    "stage": "v1",
    "tasks": [
@@ -587,7 +599,7 @@
    "estimate_hours_ai_compute": 6.8
   },
   {
-   "wave": 29,
+   "wave": 30,
    "group": "S",
    "stage": "v1",
    "tasks": [
@@ -599,7 +611,7 @@
    "estimate_hours_ai_compute": 2.0
   },
   {
-   "wave": 30,
+   "wave": 31,
    "group": "S",
    "stage": "v1",
    "tasks": [
@@ -620,7 +632,7 @@
    "estimate_hours_ai_compute": 28.5
   },
   {
-   "wave": 31,
+   "wave": 32,
    "group": "S",
    "stage": "v1",
    "tasks": [
@@ -635,7 +647,7 @@
    "estimate_hours_ai_compute": 8.0
   },
   {
-   "wave": 32,
+   "wave": 33,
    "group": "A",
    "stage": "v2",
    "tasks": [
@@ -649,7 +661,7 @@
    "estimate_hours_ai_compute": 110.4
   },
   {
-   "wave": 33,
+   "wave": 34,
    "group": "U-screen",
    "stage": "v2",
    "tasks": [
@@ -18188,7 +18200,7 @@
    ],
    "legacy_task_id": null,
    "phase": "9_v2_api",
-   "wave": 32,
+   "wave": 33,
    "group": "A",
    "deliverable_layer": "backend",
    "stage": "v2",
@@ -18435,7 +18447,7 @@
    ],
    "legacy_task_id": null,
    "phase": "9_v2_api",
-   "wave": 32,
+   "wave": 33,
    "group": "A",
    "deliverable_layer": "backend",
    "stage": "v2",
@@ -18748,7 +18760,7 @@
    ],
    "legacy_task_id": null,
    "phase": "9_v2_api",
-   "wave": 32,
+   "wave": 33,
    "group": "A",
    "deliverable_layer": "backend",
    "stage": "v2",
@@ -19065,7 +19077,7 @@
    "acts": [],
    "legacy_task_id": null,
    "phase": "4_ui_foundation",
-   "wave": 17,
+   "wave": 18,
    "group": "U-shared",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -19280,7 +19292,7 @@
    "acts": [],
    "legacy_task_id": null,
    "phase": "4_ui_foundation",
-   "wave": 18,
+   "wave": 19,
    "group": "U-shared",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -19498,7 +19510,7 @@
    "acts": [],
    "legacy_task_id": null,
    "phase": "4_ui_foundation",
-   "wave": 18,
+   "wave": 19,
    "group": "U-shared",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -19697,7 +19709,7 @@
    "acts": [],
    "legacy_task_id": null,
    "phase": "4_ui_foundation",
-   "wave": 18,
+   "wave": 19,
    "group": "U-shared",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -19860,7 +19872,7 @@
    "acts": [],
    "legacy_task_id": null,
    "phase": "4_ui_foundation",
-   "wave": 18,
+   "wave": 19,
    "group": "U-shared",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -20023,7 +20035,7 @@
    "acts": [],
    "legacy_task_id": null,
    "phase": "4_ui_foundation",
-   "wave": 18,
+   "wave": 19,
    "group": "U-shared",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -20189,7 +20201,7 @@
    "acts": [],
    "legacy_task_id": null,
    "phase": "4_ui_foundation",
-   "wave": 18,
+   "wave": 19,
    "group": "U-shared",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -20361,7 +20373,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 20,
+   "wave": 21,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -20618,7 +20630,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 20,
+   "wave": 21,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -20904,7 +20916,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 20,
+   "wave": 21,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -21159,7 +21171,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 20,
+   "wave": 21,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -21421,7 +21433,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 20,
+   "wave": 21,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -21703,7 +21715,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 20,
+   "wave": 21,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -21969,7 +21981,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 20,
+   "wave": 21,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -22290,7 +22302,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 20,
+   "wave": 21,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -22585,7 +22597,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 20,
+   "wave": 21,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -22937,7 +22949,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 20,
+   "wave": 21,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -23251,7 +23263,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 21,
+   "wave": 22,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -23526,7 +23538,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 21,
+   "wave": 22,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -23786,7 +23798,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 21,
+   "wave": 22,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -24192,7 +24204,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 21,
+   "wave": 22,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -24502,7 +24514,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 21,
+   "wave": 22,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -24813,7 +24825,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 21,
+   "wave": 22,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -25248,7 +25260,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 21,
+   "wave": 22,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -25801,7 +25813,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 21,
+   "wave": 22,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -26094,7 +26106,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 21,
+   "wave": 22,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -26350,7 +26362,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 21,
+   "wave": 22,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -26668,7 +26680,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 22,
+   "wave": 23,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -26972,7 +26984,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 22,
+   "wave": 23,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -27316,7 +27328,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 22,
+   "wave": 23,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -27623,7 +27635,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 22,
+   "wave": 23,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -27916,7 +27928,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 22,
+   "wave": 23,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -28200,7 +28212,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 22,
+   "wave": 23,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -28480,7 +28492,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 22,
+   "wave": 23,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -28776,7 +28788,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 22,
+   "wave": 23,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -29085,7 +29097,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 22,
+   "wave": 23,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -29457,7 +29469,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 22,
+   "wave": 23,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -29739,7 +29751,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 23,
+   "wave": 24,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -30030,7 +30042,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 23,
+   "wave": 24,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -30306,7 +30318,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 23,
+   "wave": 24,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -30625,7 +30637,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 23,
+   "wave": 24,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -30914,7 +30926,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 23,
+   "wave": 24,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -31249,7 +31261,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 23,
+   "wave": 24,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -31548,7 +31560,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 23,
+   "wave": 24,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -31856,7 +31868,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 23,
+   "wave": 24,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -32117,7 +32129,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 23,
+   "wave": 24,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -32383,7 +32395,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 23,
+   "wave": 24,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -32671,7 +32683,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 24,
+   "wave": 25,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -32938,7 +32950,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 24,
+   "wave": 25,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -33215,7 +33227,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 24,
+   "wave": 25,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -33506,7 +33518,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 24,
+   "wave": 25,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -33802,7 +33814,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 24,
+   "wave": 25,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -34062,7 +34074,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 24,
+   "wave": 25,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -34324,7 +34336,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 24,
+   "wave": 25,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -34588,7 +34600,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 24,
+   "wave": 25,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -34836,7 +34848,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 24,
+   "wave": 25,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -35125,7 +35137,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 24,
+   "wave": 25,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -35405,7 +35417,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 25,
+   "wave": 26,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -35687,7 +35699,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 25,
+   "wave": 26,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -35968,7 +35980,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 25,
+   "wave": 26,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -36231,7 +36243,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 25,
+   "wave": 26,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -36522,7 +36534,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 25,
+   "wave": 26,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -36789,7 +36801,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 25,
+   "wave": 26,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -37050,7 +37062,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 25,
+   "wave": 26,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -37320,7 +37332,7 @@
    ],
    "legacy_task_id": null,
    "phase": "5_ui_parallel",
-   "wave": 25,
+   "wave": 26,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -37650,7 +37662,7 @@
    ],
    "legacy_task_id": null,
    "phase": "9_v2_ui",
-   "wave": 33,
+   "wave": 34,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v2",
@@ -37914,7 +37926,7 @@
    ],
    "legacy_task_id": null,
    "phase": "9_v2_ui",
-   "wave": 33,
+   "wave": 34,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v2",
@@ -38177,7 +38189,7 @@
    ],
    "legacy_task_id": null,
    "phase": "9_v2_ui",
-   "wave": 33,
+   "wave": 34,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v2",
@@ -38459,7 +38471,7 @@
    ],
    "legacy_task_id": null,
    "phase": "9_v2_ui",
-   "wave": 33,
+   "wave": 34,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v2",
@@ -38713,7 +38725,7 @@
    ],
    "legacy_task_id": null,
    "phase": "9_v2_ui",
-   "wave": 33,
+   "wave": 34,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v2",
@@ -38942,7 +38954,7 @@
    ],
    "legacy_task_id": null,
    "phase": "9_v2_ui",
-   "wave": 33,
+   "wave": 34,
    "group": "U-screen",
    "deliverable_layer": "ui",
    "stage": "v2",
@@ -39174,7 +39186,7 @@
    "acts": [],
    "legacy_task_id": null,
    "phase": "6_integration",
-   "wave": 26,
+   "wave": 27,
    "group": "I",
    "deliverable_layer": "integration",
    "stage": "v1",
@@ -39349,7 +39361,7 @@
    "acts": [],
    "legacy_task_id": null,
    "phase": "6_integration",
-   "wave": 26,
+   "wave": 27,
    "group": "I",
    "deliverable_layer": "integration",
    "stage": "v1",
@@ -39506,7 +39518,7 @@
    "acts": [],
    "legacy_task_id": null,
    "phase": "6_integration",
-   "wave": 26,
+   "wave": 27,
    "group": "I",
    "deliverable_layer": "integration",
    "stage": "v1",
@@ -39672,7 +39684,7 @@
    "acts": [],
    "legacy_task_id": null,
    "phase": "6_integration",
-   "wave": 26,
+   "wave": 27,
    "group": "I",
    "deliverable_layer": "integration",
    "stage": "v1",
@@ -39828,7 +39840,7 @@
    "acts": [],
    "legacy_task_id": null,
    "phase": "6_integration",
-   "wave": 26,
+   "wave": 27,
    "group": "I",
    "deliverable_layer": "integration",
    "stage": "v1",
@@ -39990,7 +40002,7 @@
    "acts": [],
    "legacy_task_id": null,
    "phase": "6_integration",
-   "wave": 26,
+   "wave": 27,
    "group": "I",
    "deliverable_layer": "integration",
    "stage": "v1",
@@ -40141,7 +40153,7 @@
    "acts": [],
    "legacy_task_id": null,
    "phase": "6_integration",
-   "wave": 26,
+   "wave": 27,
    "group": "I",
    "deliverable_layer": "integration",
    "stage": "v1",
@@ -40292,7 +40304,7 @@
    "acts": [],
    "legacy_task_id": null,
    "phase": "6_integration",
-   "wave": 26,
+   "wave": 27,
    "group": "I",
    "deliverable_layer": "integration",
    "stage": "v1",
@@ -40449,7 +40461,7 @@
    "acts": [],
    "legacy_task_id": null,
    "phase": "6_integration",
-   "wave": 26,
+   "wave": 27,
    "group": "I",
    "deliverable_layer": "integration",
    "stage": "v1",
@@ -40609,7 +40621,7 @@
    "acts": [],
    "legacy_task_id": null,
    "phase": "6_integration",
-   "wave": 26,
+   "wave": 27,
    "group": "I",
    "deliverable_layer": "integration",
    "stage": "v1",
@@ -40768,7 +40780,7 @@
    "acts": [],
    "legacy_task_id": null,
    "phase": "6_integration",
-   "wave": 27,
+   "wave": 28,
    "group": "I",
    "deliverable_layer": "integration",
    "stage": "v1",
@@ -40936,7 +40948,7 @@
    "acts": [],
    "legacy_task_id": null,
    "phase": "6_integration",
-   "wave": 27,
+   "wave": 28,
    "group": "I",
    "deliverable_layer": "integration",
    "stage": "v1",
@@ -41097,7 +41109,7 @@
    "acts": [],
    "legacy_task_id": null,
    "phase": "6_integration",
-   "wave": 27,
+   "wave": 28,
    "group": "I",
    "deliverable_layer": "integration",
    "stage": "v1",
@@ -41257,7 +41269,7 @@
    "acts": [],
    "legacy_task_id": null,
    "phase": "6_integration",
-   "wave": 27,
+   "wave": 28,
    "group": "I",
    "deliverable_layer": "integration",
    "stage": "v1",
@@ -41416,7 +41428,7 @@
    "acts": [],
    "legacy_task_id": null,
    "phase": "6_integration",
-   "wave": 27,
+   "wave": 28,
    "group": "I",
    "deliverable_layer": "integration",
    "stage": "v1",
@@ -41591,7 +41603,7 @@
    "acts": [],
    "legacy_task_id": null,
    "phase": "6_integration",
-   "wave": 27,
+   "wave": 28,
    "group": "I",
    "deliverable_layer": "integration",
    "stage": "v1",
@@ -41744,7 +41756,7 @@
    "acts": [],
    "legacy_task_id": null,
    "phase": "6_integration",
-   "wave": 27,
+   "wave": 28,
    "group": "I",
    "deliverable_layer": "integration",
    "stage": "v1",
@@ -41914,7 +41926,7 @@
    "acts": [],
    "legacy_task_id": null,
    "phase": "6_integration",
-   "wave": 27,
+   "wave": 28,
    "group": "I",
    "deliverable_layer": "integration",
    "stage": "v1",
@@ -42080,7 +42092,7 @@
    "acts": [],
    "legacy_task_id": null,
    "phase": "6_integration",
-   "wave": 28,
+   "wave": 29,
    "group": "I",
    "deliverable_layer": "polish",
    "stage": "v1",
@@ -42221,7 +42233,7 @@
    "acts": [],
    "legacy_task_id": null,
    "phase": "6_integration",
-   "wave": 28,
+   "wave": 29,
    "group": "I",
    "deliverable_layer": "polish",
    "stage": "v1",
@@ -42369,7 +42381,7 @@
    "acts": [],
    "legacy_task_id": null,
    "phase": "6_integration",
-   "wave": 27,
+   "wave": 28,
    "group": "I",
    "deliverable_layer": "polish",
    "stage": "v1",
@@ -42513,7 +42525,7 @@
    "acts": [],
    "legacy_task_id": null,
    "phase": "6_integration",
-   "wave": 28,
+   "wave": 29,
    "group": "I",
    "deliverable_layer": "polish",
    "stage": "v1",
@@ -42671,7 +42683,7 @@
    ],
    "legacy_task_id": null,
    "phase": "7_content",
-   "wave": 29,
+   "wave": 30,
    "group": "S",
    "deliverable_layer": "content",
    "stage": "v1",
@@ -42839,7 +42851,7 @@
    ],
    "legacy_task_id": null,
    "phase": "7_content",
-   "wave": 30,
+   "wave": 31,
    "group": "S",
    "deliverable_layer": "content",
    "stage": "v1",
@@ -42998,7 +43010,7 @@
    ],
    "legacy_task_id": null,
    "phase": "7_content",
-   "wave": 30,
+   "wave": 31,
    "group": "S",
    "deliverable_layer": "content",
    "stage": "v1",
@@ -43157,7 +43169,7 @@
    ],
    "legacy_task_id": null,
    "phase": "7_content",
-   "wave": 30,
+   "wave": 31,
    "group": "S",
    "deliverable_layer": "content",
    "stage": "v1",
@@ -43315,7 +43327,7 @@
    ],
    "legacy_task_id": null,
    "phase": "7_content",
-   "wave": 30,
+   "wave": 31,
    "group": "S",
    "deliverable_layer": "content",
    "stage": "v1",
@@ -43478,7 +43490,7 @@
    ],
    "legacy_task_id": null,
    "phase": "7_content",
-   "wave": 30,
+   "wave": 31,
    "group": "S",
    "deliverable_layer": "content",
    "stage": "v1",
@@ -43641,7 +43653,7 @@
    ],
    "legacy_task_id": null,
    "phase": "7_content",
-   "wave": 30,
+   "wave": 31,
    "group": "S",
    "deliverable_layer": "content",
    "stage": "v1",
@@ -43799,7 +43811,7 @@
    ],
    "legacy_task_id": null,
    "phase": "7_content",
-   "wave": 30,
+   "wave": 31,
    "group": "S",
    "deliverable_layer": "content",
    "stage": "v1",
@@ -43962,7 +43974,7 @@
    ],
    "legacy_task_id": null,
    "phase": "7_content",
-   "wave": 30,
+   "wave": 31,
    "group": "S",
    "deliverable_layer": "content",
    "stage": "v1",
@@ -44121,7 +44133,7 @@
    ],
    "legacy_task_id": null,
    "phase": "7_content",
-   "wave": 30,
+   "wave": 31,
    "group": "S",
    "deliverable_layer": "content",
    "stage": "v1",
@@ -44280,7 +44292,7 @@
    ],
    "legacy_task_id": null,
    "phase": "7_content",
-   "wave": 30,
+   "wave": 31,
    "group": "S",
    "deliverable_layer": "content",
    "stage": "v1",
@@ -44439,7 +44451,7 @@
    ],
    "legacy_task_id": null,
    "phase": "7_content",
-   "wave": 31,
+   "wave": 32,
    "group": "S",
    "deliverable_layer": "content",
    "stage": "v1",
@@ -44598,7 +44610,7 @@
    ],
    "legacy_task_id": null,
    "phase": "7_content",
-   "wave": 31,
+   "wave": 32,
    "group": "S",
    "deliverable_layer": "content",
    "stage": "v1",
@@ -44757,7 +44769,7 @@
    ],
    "legacy_task_id": null,
    "phase": "7_content",
-   "wave": 31,
+   "wave": 32,
    "group": "S",
    "deliverable_layer": "content",
    "stage": "v1",
@@ -44916,7 +44928,7 @@
    ],
    "legacy_task_id": null,
    "phase": "7_content",
-   "wave": 31,
+   "wave": 32,
    "group": "S",
    "deliverable_layer": "content",
    "stage": "v1",
@@ -46100,6 +46112,7 @@
    ],
    "audit_md_path": "07_tasks/audit/T-B-07.md",
    "status": "done",
+   "done_at": "2026-10-03",
    "qa_rows": {
     "l1": [
      "BRG-07-001",
@@ -46175,8 +46188,7 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 4.0,
-   "estimate_sessions": 1,
-   "done_at": "2026-10-03"
+   "estimate_sessions": 1
   },
   {
    "id": "T-B-06",
@@ -46942,6 +46954,7 @@
    ],
    "audit_md_path": "07_tasks/audit/T-B-13.md",
    "status": "done",
+   "done_at": "2026-10-03",
    "qa_rows": {
     "l1": [
      "BRG-13-001",
@@ -47011,8 +47024,7 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 2.5,
-   "estimate_sessions": 1,
-   "done_at": "2026-10-03"
+   "estimate_sessions": 1
   },
   {
    "id": "T-B-12",
@@ -47259,6 +47271,7 @@
    ],
    "audit_md_path": "07_tasks/audit/T-B-14.md",
    "status": "done",
+   "done_at": "2026-10-03",
    "qa_rows": {
     "l1": [
      "BRG-14-001",
@@ -47352,8 +47365,7 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 2.5,
-   "estimate_sessions": 1,
-   "done_at": "2026-10-03"
+   "estimate_sessions": 1
   },
   {
    "id": "T-B-15",
@@ -51482,6 +51494,7 @@
    ],
    "audit_md_path": "07_tasks/audit/T-B-39.md",
    "status": "done",
+   "done_at": "2026-10-03",
    "qa_rows": {
     "l1": [
      "CHT-39-001",
@@ -51558,8 +51571,7 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 3.0,
-   "estimate_sessions": 1,
-   "done_at": "2026-10-03"
+   "estimate_sessions": 1
   },
   {
    "id": "T-B-40",
@@ -51720,6 +51732,185 @@
    "estimate_sessions": 1
   },
   {
+   "id": "T-B-41",
+   "title": "自分のAI が作ったファイル・調べた結果を道具 artifact_put で成果物として渡す（PC 側の Bridge が読んで上げる・置き場は C4・台帳は DB・会話の横で開ける・20 MB・ホームの中・仕事の間だけ）",
+   "category": "backend",
+   "label": "NEW",
+   "feature_id": null,
+   "feature_ids": [],
+   "screen_ids": [
+    "clone-chat"
+   ],
+   "entity_ids": [],
+   "acts": [
+    "A95",
+    "A20"
+   ],
+   "legacy_task_id": null,
+   "phase": "3_backend",
+   "wave": 17,
+   "group": "B",
+   "deliverable_layer": "backend",
+   "stage": "v1",
+   "depends_on": [
+    "T-B-23"
+   ],
+   "choke_points": [
+    "C4",
+    "C2"
+   ],
+   "choke_points_rationale": "成果物の中身を置き場に置く（C4）、成果物と版を DB に書く（C2）",
+   "forbidden_direct_apis_reminder": [
+    "fetch",
+    "axios",
+    "undici",
+    "pg / drizzle の生クライアント（関門の外）",
+    "child_process",
+    "fs（関門の外）",
+    "nodemailer / resend（関門の外）",
+    "anthropic / openai SDK（関門の外）"
+   ],
+   "files_changed": [
+    "packages/db/migrations/0068_artifact_from_job.sql (new)",
+    "apps/api/src/auth/agent-tools.ts (new)",
+    "apps/bridge/src/kaname-tools.ts (new)",
+    "apps/api/test/agent_tools.test.ts (new)",
+    "apps/bridge/test/kaname-tools.test.ts (new)",
+    "apps/web/tests/screens/qa-b-artifact-put.spec.ts (new)"
+   ],
+   "files_changed_predicted": {
+    "new": [
+     "packages/db/migrations/0068_artifact_from_job.sql",
+     "apps/api/src/auth/agent-tools.ts",
+     "apps/bridge/src/kaname-tools.ts",
+     "apps/api/test/agent_tools.test.ts",
+     "apps/bridge/test/kaname-tools.test.ts",
+     "apps/web/tests/screens/qa-b-artifact-put.spec.ts"
+    ],
+    "modify": [],
+    "shared_read": [
+     "03_architecture/アーキテクチャ設計書.md",
+     "03_architecture/ER図.md",
+     "06_mockup/v1/v1-clone-chat.html"
+    ],
+    "forbidden": []
+   },
+   "acceptance_criteria": {
+    "structural": [
+     "UBIQUITOUS: 自分のAI が作ったファイル・調べた結果を道具 artifact_put で成果 の成果物があり、type-check と build が通る"
+    ],
+    "functional": [
+     "EVENT-DRIVEN: WHEN DB と置き場を見る（API）、システムは artifact_versions に storage_ref・size・source_job_id が入り、中身は DB に無い。本人の PC のファイルは消えていない",
+     "UNWANTED: IF 記録がある仕事、システムは 成果物は増えない（道具の呼び出しの行だけが残る）"
+    ],
+    "regression": [
+     "pnpm test（該当パッケージ）PASS",
+     "pnpm typecheck 0 errors（触ったファイル）",
+     "coverage >= 80%（触ったファイル）",
+     "pnpm lint OK",
+     "python3 scripts/ci/layer_audit.py --run PASS",
+     "関門の迂回検出（choke-points ci_check）PASS",
+     "audit MD（07_tasks/audit/<id>.md）に impl line を記入"
+    ]
+   },
+   "access_policies_required": [],
+   "spec_links": [
+    "01_hearing/決定ログ_進行中.md#121",
+    "03_architecture/アーキテクチャ設計書.md",
+    "06_mockup/v1/v1-clone-chat.html"
+   ],
+   "audit_md_path": "07_tasks/audit/T-B-41.md",
+   "status": "done",
+   "qa_rows": {
+    "l1": [
+     "CHT-41-001",
+     "CHT-41-002",
+     "CHT-41-003",
+     "CHT-41-004",
+     "CHT-41-005",
+     "CHT-41-006"
+    ],
+    "l2_flows": []
+   },
+   "test_scenarios_inline": [
+    {
+     "name": "自分のAI が作ったファイル・調べた結果を道具 artifact_put で成果",
+     "steps": [
+      "「請求のまとめを成果物にして」と送る（実ブラウザ）",
+      "DB と置き場を見る（API）",
+      "カードを押す（実ブラウザ）",
+      "大きいファイル／.exe／ホームの外／終わった仕事の鍵で渡す（API と道具のサーバー）",
+      "証跡を見る",
+      "道具を呼ばない仕事を最後まで動かす"
+     ],
+     "expected": "artifact_versions に storage_ref・size・source_job_id が入り、中身は DB に無い。本人の PC のファイルは消えていない"
+    }
+   ],
+   "source": [
+    "D-121.1",
+    "D-121.2",
+    "D-121.3",
+    "D-121.4",
+    "D-121.5",
+    "D-121.6",
+    "D-106.5",
+    "D-110.3"
+   ],
+   "decision_summaries": [
+    {
+     "id": "D-121",
+     "summary": "自分のAI（本人の PC の Claude Code）が作ったファイル（PDF・画像・表計算・文書）や調べた結果は、Kaname の道具 artifact_put で成果物として渡す。PC 側の Bridge がファイルを読んで上げ、中身は会社の置き場（C4）、台帳は DB（artifacts／artifact_versions）。会話の横で開ける。20 MB・ホームの中・仕事の間だけ"
+    },
+    {
+     "id": "D-106",
+     "summary": "返事の「書き出す」で成果物ができ、会話の横で開く。文書（md）と表（csv）はその場で直して保存すると新しい版になり、版の一覧からいつでも戻せる（戻すのも新しい版として残し、消さない）。画像・PDF・動画・音声の成果物は横で見るだけ。置き場は関門 C4 を通り、自分のAI には置き場の鍵を見せない。手元に落とすのは今の版を自由に"
+    },
+    {
+     "id": "D-110",
+     "summary": "自分のAI（本人の Claude Code）に Kaname の道具（MCP：目標・台帳・担当業務とAI社員を置く／直す／外す・覚える・いまのたたき台を読む）を仕事ごとに渡す。書き込みは Kaname の API を通り、その仕事の間だけ効く鍵で本人の会社にだけ書ける。置いたものはたたき台の画面にそのまま出て、人が確かめる。資格情報は渡さない。Bridge が仕事の上限で止める目安は「何も進まない時間」で、本人の答えを待つ間は数えない"
+    }
+   ],
+   "critical": false,
+   "why": "D-121 で決めたことを日程に載せる（決めたのに日程に無い、を作らない）",
+   "acceptance_criteria_inline": {
+    "tier_1_structural": [
+     "UBIQUITOUS: 自分のAI が作ったファイル・調べた結果を道具 artifact_put で成果 の成果物があり、type-check と build が通る"
+    ],
+    "tier_2_functional": [
+     {
+      "type": "EVENT-DRIVEN",
+      "text": "EVENT-DRIVEN: WHEN DB と置き場を見る（API）、システムは artifact_versions に storage_ref・size・source_job_id が入り、中身は DB に無い。本人の PC のファイルは消えていない",
+      "critical": false
+     },
+     {
+      "type": "UNWANTED",
+      "text": "UNWANTED: IF 記録がある仕事、システムは 成果物は増えない（道具の呼び出しの行だけが残る）",
+      "critical": false
+     }
+    ],
+    "tier_3_regression": [
+     "pnpm test（該当パッケージ）PASS",
+     "pnpm typecheck 0 errors（触ったファイル）",
+     "coverage >= 80%（触ったファイル）",
+     "pnpm lint OK",
+     "python3 scripts/ci/layer_audit.py --run PASS",
+     "関門の迂回検出（choke-points ci_check）PASS",
+     "audit MD（07_tasks/audit/<id>.md）に impl line を記入"
+    ]
+   },
+   "estimate_hours_human": 8,
+   "estimate_hours_ai": 0.7,
+   "human_review_h": 0.0,
+   "wall_clock_h_ai": 0.7,
+   "ai_acceleration_factor": 12,
+   "blocking_dependencies_h": 0,
+   "estimate_method": "reference",
+   "estimate_confidence": "medium",
+   "estimate_hours": 0.7,
+   "estimate_sessions": 1,
+   "done_at": "2026-10-04"
+  },
+  {
    "id": "T-US-08",
    "title": "会話の部品の作り込み（D-104：吹き出し・書式と図とカードと資料の描画・作業の行・問い合わせ・許可の 3 択・入力欄の箱・声・@・文脈・返事への操作・画面の動き・知らせ・読み上げ）",
    "category": "frontend",
@@ -51742,7 +51933,7 @@
    ],
    "legacy_task_id": null,
    "phase": "4_ui_foundation",
-   "wave": 19,
+   "wave": 20,
    "group": "U-shared",
    "deliverable_layer": "ui",
    "stage": "v1",
@@ -51819,6 +52010,7 @@
    ],
    "audit_md_path": "07_tasks/audit/T-US-08.md",
    "status": "done",
+   "done_at": "2026-10-03",
    "qa_rows": {
     "l1": [
      "USH-08-001",
@@ -51909,8 +52101,7 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 11.0,
-   "estimate_sessions": 3,
-   "done_at": "2026-10-03"
+   "estimate_sessions": 3
   },
   {
    "id": "T-V2-01",

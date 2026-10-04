@@ -1,6 +1,6 @@
 # bridge テスト仕様（L1・機械生成）
 
-> 05_flow/build_tasks.py がタスクと同時に生成。ID は変えない。途中変更は qa_delta.py で差分。結果列は staging で流した人が書く（再生成しても残る。今の行 86・結果あり 63 行）。
+> 05_flow/build_tasks.py がタスクと同時に生成。ID は変えない。途中変更は qa_delta.py で差分。結果列は staging で流した人が書く（再生成しても残る。今の行 86・結果あり 78 行）。
 
 | ID | 画面 | テスト観点 | テスト項目 | 前提条件 | 操作手順 | 期待結果 | 結果 | 備考 | タスク | 実行条件 |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -75,7 +75,7 @@
 | BRG-06-020 | bridge-setup | 入れ替えられない | 書けない場所・開発中の起動なら入れ替えず、入れ直しを案内する | 書けない場所に入っている | Bridge を開く | 「新しい版があります。…入れ直してください」と出て、受け取りにも行かない | PASS（apps/bridge/test/update.test.ts・実 Chrome・2026-10-01） | D-109.6 | T-B-06 | L1 |
 | BRG-13-001 | clone-chat | 残す | 道具を使うたびに、名前・対象・成功／失敗・時間が残る | 仕事を渡した | 自分のAI にファイルを読ませる | bridge_job_events に kind=tool の行（name・target・ok・ms）が残る | PASS（screens/qa-b-work-record.spec.ts・実 Chrome・2026-10-03） | D-100.2 | T-B-13 | L1 |
 | BRG-13-002 | clone-chat | 残す | 仕事が終わると、使った量（往復数・時間・量・費用の見込み）が結末より先に残る | 仕事を渡した | 最後まで動かす | kind=usage の行が残り、その後に結末が書かれる | PASS（screens/qa-b-work-record.spec.ts・実 Chrome・2026-10-03） | D-100.1 | T-B-13 | L1 |
-| BRG-13-003 | clone-chat | 残さない | ファイルの中身・道具の返り値・途中の文章の全文は Kaname に残らない | 中身の全文を含む記録を送る | API に送る | 決めた欄だけが残り、全文は捨てられる | PASS（apps/bridge/src/stream.test.ts・vitest（kaname_test）・2026-10-03） | API 側も apps/api/test/bridge_stream.test.ts（BRG-13-001 BRG-13-003：content・transcript を送っても欄に残らない） | T-B-13 | L1 |
+| BRG-13-003 | clone-chat | 残さない | ファイルの中身・道具の返り値・途中の文章の全文は Kaname に残らない | 中身の全文を含む記録を送る | API に送る | 決めた欄だけが残り、全文は捨てられる | PASS（apps/bridge/src/stream.test.ts・vitest（kaname_test）・2026-10-04） | D-100.3 | T-B-13 | L1 |
 | BRG-13-004 | clone-chat | 散らからない | 道具の記録と使った量は会話の途中経過に出ない | 記録がある仕事 | 会話を開く（実ブラウザ） | 会話には「…を使っています」の 1 行だけが出る | PASS（screens/qa-b-work-record.spec.ts・実 Chrome・2026-10-03） | D-100.2 | T-B-13 | L1 |
 | BRG-12-001 | bridge-setup | 立てる | kaname-api の /health が 200 で版を返し、起動時確認 4／4 がログに出る | S0〜S3 を済ませた | curl で /health | 200。落ちていれば 503 と理由（黙って 502 にしない） |  | D-097.5 | T-B-12 | L1 |
 | BRG-12-002 | bridge-setup | 立てる | Supabase の Transaction pooler に kaname_app／kaname_auth で入れる | S1 の接続文字列を入れた | /health と登録を 1 回 | DB に書ける（custom role が pooler を通る） |  | D-097.1 | T-B-12 | L1 |
@@ -83,13 +83,13 @@
 | BRG-12-006 | bridge-setup | 預かり先 | staging では資格情報が Infisical に預けられる（メモリには置かない） | S2 で Infisical を用意した | 資格情報を保存する（実ブラウザ） | 預けられ、Infisical の /tenants/<会社> に暗号文だけがある |  | D-101.1 | T-B-12 | L1 |
 | BRG-12-005 | bridge-setup | 1 周 | 新規登録 → 確認メール → Bridge をつなぐ → 自分のAIと話す が staging で通る | S0〜S4 を済ませた | 実ブラウザで 1 周 | 全部通る（L2） |  | D-097.1 | T-B-12 | L1 |
 | BRG-14-001 | credentials | 預ける | 資格情報を保存すると、Infisical の会社の置き場（/tenants/<会社>）に暗号文だけが入る | Infisical を設定した staging | 資格情報を保存する（実ブラウザ） | Infisical の画面で見ても中身は暗号文。表（credentials）には参照 ID だけ | PASS（screens/qa-b-infisical.spec.ts・実 Chrome・2026-10-03） | D-101.2 | T-B-14 | L1 |
-| BRG-14-002 | credentials | 分ける | 別の会社の置き場は見に行かない | 会社 A と B が預けた | A の文脈で B の参照 ID を解く | 見られない（この参照は見られない） | PASS（screens/qa-b-infisical.spec.ts・実 Chrome・2026-10-03） | A の文脈で B の参照 ID を解く → 404 は apps/api/test/bridge_credentials.test.ts（BRG-14-002）、関門は packages/secrets/test/secrets.test.ts、置き場は infisical.test.ts と本物（infisical.live.test.ts）で 2026-10-03 に実測 | T-B-14 | L1 |
+| BRG-14-002 | credentials | 分ける | 別の会社の置き場は見に行かない | 会社 A と B が預けた | A の文脈で B の参照 ID を解く | 見られない（この参照は見られない） | PASS（screens/qa-b-infisical.spec.ts・実 Chrome・2026-10-03） | D-101.2 | T-B-14 | L1 |
 | BRG-14-003 | credentials | 起動 | Infisical に入れない設定では staging／本番は起動しない（黙ってメモリに落とさない） | INFISICAL_CLIENT_SECRET を間違える | API を起動する | 起動時の確認 secrets:vault で落ち、/health は 503 と理由 | PASS（apps/api/test/server.test.ts BRG-14-003：staging で secrets:vault=missing、Infisical に入れず secrets:vault=error で bootApi が落ち、Vercel の口は 503 {code: STARTUP_FAILED, reason: ["secrets:vault=error"]}・2026-10-03。常駐（dev.ts）は exit 1。中の例外の文言は外に出ない） | D-101.4 | T-B-14 | L1 |
 | BRG-14-004 | credentials | 失効 | 退会・停止で、その会社の置き場の資格情報が全部失効する | 資格情報を 2 件預けた会社 | 会社を停止する | 2 件とも revokedAt が付き、解けなくなる | BLOCKED（会社を停止する口は T-I-05（出来事の依存処理 → 全失効）で作る。置き場側の一括失効（revokeTenant）は本物の Infisical で「2 件とも revokedAt・別の会社は触らない・二度目は 0」を実測：packages/secrets/test/infisical.live.test.ts 2026-10-03。失効済みは解けない：secrets.test.ts） | D-101.2 | T-B-14 | L1 |
-| BRG-14-005 | credentials | G-15 信号なし終了 | Infisical に届かないときは預かったことにしない | Infisical に届かない状態 | 資格情報を保存する（実ブラウザ） | E-SEC-001 の文言と一手が出て、表に行ができない | PASS（screens/qa-b-infisical.spec.ts・実 Chrome・2026-10-03） | API の返しは apps/api/test/vault_guard.test.ts（E-SEC-001-A）で置き場を落として実測（502・一手・表に行なし）。画面はその返しを差し込んで押した（本物の置き場は落とせない） | T-B-14 | L1 |
+| BRG-14-005 | credentials | G-15 信号なし終了 | Infisical に届かないときは預かったことにしない | Infisical に届かない状態 | 資格情報を保存する（実ブラウザ） | E-SEC-001 の文言と一手が出て、表に行ができない | PASS（screens/qa-b-infisical.spec.ts・実 Chrome・2026-10-03） | D-101.1 | T-B-14 | L1 |
 | BRG-14-006 | credentials | 身元 | Infisical に入るのはサーバー（staging・本番）と運営の人の 3 つだけ。サーバーの身元は kaname project の読み書きだけで、project を作る・消すはできない | S1b を済ませた | Infisical の画面で Identities と役割を見る | 身元は 3 つ。サーバーの身元で project を作ろうとすると断られる | BLOCKED（Infisical の画面で見た 2026-10-03：組織の人＝info@（Admin）1、機械の身元＝kaname-api-dev（組織の役割 Member・project kaname の Member＝読み書き）1。staging／本番の身元はまだ無い（staging を作るときに 2 つ足す）。「サーバーの身元で project を作ろうとすると断られる」は未確認：組織の役割 Member は既定で project を作れる可能性があるので、組織の役割を No Access に落とすのを運営に依頼してから確かめる） | D-102.3 | T-B-14 | L1 |
 | BRG-14-007 | credentials | 上限 | 秘密の操作が毎分 96 回（上限の 8 割）に来たら、運営（info@）にメールが届く（1 時間に 1 回まで） | 上限を小さくした設定（secretPerMinute） | 資格情報を続けて読む | 運営にメールが 1 通届く。同じ 1 時間には繰り返さない | PASS（apps/api/test/ops_alert.test.ts BRG-14-007：関門 C8 の実物の数え方で 96 回目に 1 回だけ呼ばれ、運営の宛先（OPS_EMAIL）に 1 通・同じ 1 時間は繰り返さない・1 時間たてば再送・送れなくてもログに残して API は止めない・2026-10-03） | D-102.5 | T-B-14 | L1 |
-| BRG-14-008 | credentials | 上限 | 上限に当たったら（429）、待つ秒数つきで「いま混み合っています」と出し、預かったことにしない | 置き場が 429 を返す | 資格情報を保存する（実ブラウザ） | E-SEC-003 の文言と待つ秒数が出て、表に行ができない | PASS（screens/qa-b-infisical.spec.ts・実 Chrome・2026-10-03） | API の返しは apps/api/test/vault_guard.test.ts（E-SEC-003-A）で 429 を実測（503・42 秒・表に行なし）。画面はその返しを差し込んで押した（本物の置き場の上限は再現できない） | T-B-14 | L1 |
+| BRG-14-008 | credentials | 上限 | 上限に当たったら（429）、待つ秒数つきで「いま混み合っています」と出し、預かったことにしない | 置き場が 429 を返す | 資格情報を保存する（実ブラウザ） | E-SEC-003 の文言と待つ秒数が出て、表に行ができない | PASS（screens/qa-b-infisical.spec.ts・実 Chrome・2026-10-03） | D-102.5 | T-B-14 | L1 |
 
 ## もう無い行（18 行）
 

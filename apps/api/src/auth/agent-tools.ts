@@ -4,10 +4,23 @@
 import { createHash, randomBytes } from "node:crypto";
 import { Hono } from "hono";
 import type pg from "pg";
+import type { ObjectStore } from "@kaname/storage";
 
 export interface AgentToolDeps {
   appPool: pg.Pool;
+  /** 成果物の置き場（関門 C4）。無ければ artifact_put は 503 */
+  objects?: ObjectStore;
 }
+/** 道具で渡せる成果物の上限（D-121.4） */
+export const ARTIFACT_PUT_MAX = 20 * 1024 * 1024;
+/** 受ける種類（拡張子 → content-type）。実行ファイル等は受けない（D-121.4） */
+export const ARTIFACT_PUT_TYPES: Record<string, string> = {
+  md: "text/markdown; charset=utf-8", txt: "text/plain; charset=utf-8", csv: "text/csv; charset=utf-8", json: "application/json", html: "text/html; charset=utf-8",
+  pdf: "application/pdf", png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", gif: "image/gif", webp: "image/webp", svg: "image/svg+xml",
+  mp4: "video/mp4", webm: "video/webm", mov: "video/quicktime", mp3: "audio/mpeg", m4a: "audio/mp4", wav: "audio/wav", ogg: "audio/ogg",
+  xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  pptx: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+};
 type Json = { json: (b: unknown, s: number) => Response };
 const bad = (c: Json, status: number, code: string, message: string) => c.json({ error: code.toLowerCase(), code, message }, status);
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -75,6 +88,39 @@ export function agentToolRoutes(d: AgentToolDeps): Hono {
     const v = (await call(d.appPool, job.member_id, job.job_id, input)) as { error?: string } | null;
     if (v && typeof v === "object" && "error" in v && v.error) return bad(c, 422, "VALIDATION_FAILED", String(v.error));
     return c.json({ data: v ?? null });
+  });
+  // 自分のAI が作ったファイル・調べた結果を成果物として渡す（D-121）。中身はそのまま本文で届く（道具のサーバーが PC のファイルを読んで送る）。
+  // 置き場（C4）に置いてから台帳を書く。台帳を書けなければ（仕事が終わっていた等）置いた中身は消す
+  app.post("/bridge/artifact", async (c) => {
+    const token = c.req.header("x-kaname-tool-token") ?? "";
+    if (token.length < 20) return bad(c, 401, "UNAUTHENTICATED", "この道具の鍵は分かりません");
+    const job = (
+      await d.appPool.query<{ job_id: string; member_id: string; tenant_id: string }>("select job_id, member_id, tenant_id from app.bridge_tool_job($1)", [hashToolToken(token)])
+    ).rows[0];
+    if (!job) return bad(c, 401, "UNAUTHENTICATED", "この道具の鍵はもう使えません（仕事が終わっています）");
+    const name = decodeURIComponent(c.req.header("x-artifact-name") ?? "").trim();
+    const ext = (/\.([A-Za-z0-9]{1,5})$/.exec(name)?.[1] ?? "").toLowerCase();
+    const contentType = ARTIFACT_PUT_TYPES[ext];
+    if (!name || !contentType) return bad(c, 422, "VALIDATION_FAILED", `この種類のファイルは成果物にできません（${ext || "拡張子なし"}）。文書・表・画像・PDF・動画・音声・Office の書類だけです`);
+    const len = Number(c.req.header("content-length") ?? "0");
+    if (len > ARTIFACT_PUT_MAX) return bad(c, 413, "VALIDATION_FAILED", "20 MB を超えるファイルは成果物にできません");
+    const body = new Uint8Array(await c.req.arrayBuffer());
+    if (!body.byteLength) return bad(c, 422, "VALIDATION_FAILED", "中身が空です");
+    if (body.byteLength > ARTIFACT_PUT_MAX) return bad(c, 413, "VALIDATION_FAILED", "20 MB を超えるファイルは成果物にできません");
+    if (!d.objects) return bad(c, 503, "E-ART-002", "成果物を保存できませんでした（保存先が応答しません）");
+    const ctx = { tenantId: job.tenant_id, userId: job.member_id, role: "member" as const };
+    const put = await d.objects.put(ctx, body, { contentType });
+    if (put.status !== "done") return bad(c, put.status === "denied" ? 413 : 502, "E-ART-002", "成果物を保存できませんでした（保存先が応答しません）");
+    const title = decodeURIComponent(c.req.header("x-artifact-title") ?? "").trim() || name.replace(/\.[A-Za-z0-9]{1,5}$/, "");
+    const r = await d.appPool.query<{ id: string | null }>("select app.artifact_create_from_job($1, $2, $3, $4, $5, $6) as id", [
+      job.member_id, job.job_id, title, ext === "jpeg" ? "jpg" : ext, put.value.ref, put.value.size,
+    ]);
+    const id = r.rows[0]?.id ?? null;
+    if (!id) {
+      await d.objects.delete(ctx, put.value.ref); // 行を作れなかった中身は置き場に残さない
+      return bad(c, 401, "UNAUTHENTICATED", "この道具の鍵はもう使えません（仕事が終わっています）");
+    }
+    return c.json({ data: { id, title, format: ext === "jpeg" ? "jpg" : ext, version: 1, size: put.value.size, done: "成果物として渡しました。本人は会話の横で開けます" } }, 201);
   });
   return app;
 }
