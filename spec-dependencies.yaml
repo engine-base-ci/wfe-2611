@@ -226,6 +226,31 @@ alignment_decisions:
     check: 単位と関係の型を表示
   - file: 06_mockup/v1/v1-goal-allocate.html
     check: 配分／分解／寄与の3択
+- id: AD-072-12
+  decision: タスクは親子で開ける（親の行に ▸ と終わった数／全部・親の中身に子の一覧・足す／自分のAIに分けてもらう・ガントで親の下に子）。ER は tasks.parent_task_id
+  decided_at: 2026-09-14
+  source: 01_hearing/決定ログ_進行中.md（D-072.12）
+  must_be_reflected_in:
+  - file: 03_architecture/ER図.md
+    check: tasks の行に parent_task_id・mermaid に tasks の自己参照・根拠の表に D-072
+    gate: python3 scripts/ci/er_gate.py --flow 05_flow/flow.json --er 03_architecture/ER図.md
+  - file: 07_functional/entities.json
+    check: tasks の fields に parent_task_id（ER図から機械生成）
+    gate: python3 -c "import json,sys; e=json.load(open('07_functional/entities.json'))['entities']; t=[x for x in e if x['table_name']=='tasks'][0]; sys.exit(0 if any(f['name']=='parent_task_id' for f in t['fields']) else 1)"
+  - file: 08_api/openapi.yaml
+    check: components.schemas.Tasks.properties に parent_task_id（entities から機械生成）・types.ts も同じ
+    gate: node scripts/ci/contract.mjs check
+  - file: 05_flow/flow.json
+    check: objects[タスク] が relates_to にタスク（自己参照）を持ち source に D-072.12
+  - file: 06_mockup/v1/v1-tasks.html
+    check: 親の行（▸・終わった数／全部）と子タスクの一覧（足す／自分のAIに分けてもらう）が出る
+    count: all
+    marker: '子タスク'
+    exclude: 'v1-index'
+  - file: 07_tasks/tickets.json
+    check: T-U-16（画面 タスク）の functional に 親子 の基準があり、files_changed に migration と routes/tasks.ts がある
+  - file: 07_qa/test-specs/screens/tasks.md
+    check: 子タスクの 足す／自分のAIに分けてもらう の操作の行がある（derive_ops から）
 downstream_coverage:
 - id: screen_to_mock
   description: flow.json の画面が全てモックとして存在する

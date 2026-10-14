@@ -809,6 +809,22 @@ for _t in tasks:
             _t["acceptance_criteria"]["functional"].append(_ac)
             _t["source"] = sorted(set(_t.get("source", []) + [_src, "D-116.6"]))
 
+# ---------------------------------------------------------------- タスクの親子（D-072.12）← 2026-10-14 spec-sync。決定だけ先行して ER・契約・下流に無かった
+# 表の列（tasks.parent_task_id）は画面のタスクが自分の migration で足す（表の追加は担当チケットで・L-024）。契約（openapi の Tasks.parent_task_id）は ER図 → entities.json → build_api で機械生成
+_TASK_PARENT = ("D-072.12", [
+    "EVENT-DRIVEN: WHEN 親タスクの行の ▸ を押したとき THEN 子タスクが下に開き、親の行に「終わった数／全部」が出る。子も自分の中身を持つ（tasks.parent_task_id・別 GET で親子を読む）",
+    "EVENT-DRIVEN: WHEN 親の中身で「足す」を押して子を作ったとき THEN POST /api/v1/tasks が parent_task_id つきで呼ばれ、子は親の目標（goal_id）を継ぐ。「自分のAIに分けてもらう」は自分のAI の道具（T-I-01）で同じ口を呼ぶ",
+    "STATE-DRIVEN: WHILE ガント THEN 親の下に子が並び、子の棒は親の中に収まる",
+])
+for _t in tasks:
+    if _t["group"] == "U-screen" and "tasks" in _t.get("screen_ids", []):
+        _t["acceptance_criteria"]["functional"] += _TASK_PARENT[1]
+        _t["source"] = sorted(set(_t.get("source", []) + [_TASK_PARENT[0]]))
+        _t["files_changed"] = _t["files_changed"] + ["packages/db/migrations/00NN_task_parent.sql (new・tasks.parent_task_id と索引)", "apps/api/src/routes/tasks.ts (modify・parent_task_id を受けて返す)"]
+        _t["files_changed_predicted"]["new"] = _t["files_changed_predicted"]["new"] + ["packages/db/migrations/00NN_task_parent.sql"]
+        _t["files_changed_predicted"]["modify"] = _t["files_changed_predicted"]["modify"] + ["apps/api/src/routes/tasks.ts", "03_architecture/ER図.md"]
+        _t["files_changed_predicted"]["forbidden"] = [x for x in _t["files_changed_predicted"]["forbidden"] if not x.startswith("packages/**")] + ["packages/**（migrations/00NN_task_parent.sql 以外）"]
+
 # ---------------------------------------------------------------- Group V2（後回し＝段階 2 の仕様づくり）← 決定ログの「段階 2：…」の文と flow.json の deferred
 # 後回しにした決定の文は、実装タスクにならないだけでなく「仕様づくり」のタスクにもならず日程から消えていた（2026-09-15・user「v2 のモックとか仕様書とかいつ作るの？」）。
 # 文（D-xxx.n）ごとに 1 タスク。段階 2 の実装タスクは、その仕様が揃って flow の release に入った時点で本スクリプトが通常の Group として生成する。
@@ -867,7 +883,8 @@ for j in FD["journeys"]:
 _prev_j = {r["id"]: r for r in (json.load(open(f"{SPEC}/journeys/plan.json", encoding="utf-8"))["rows"] if os.path.exists(f"{SPEC}/journeys/plan.json") else [])}
 for r in jrows:
     for k in ("status", "result", "note", "task"):
-        if k in _prev_j.get(r["id"], {}) and k not in r: r[k] = _prev_j[r["id"]][k]
+        # result／task は行を作るときに "" で持たせているので「無ければ」ではなく「空なら」引き継ぐ（2026-10-14：J-02 の実走の結果が再生成で消えていた）
+        if k in _prev_j.get(r["id"], {}) and not r.get(k): r[k] = _prev_j[r["id"]][k]
 json.dump({"version": "v3.2", "created_at": TODAY, "_doc": "背骨のフェーズ → 流れ（J-xx）。runnable_after は揃うべきタスク。05_flow/build_tasks.py が生成。status／result は apps/e2e の実走が書く（再生成で消えない）", "rows": jrows}, open(f"{SPEC}/journeys/plan.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 # ---------------------------------------------------------------- Wave（依存順・CAP）
 order = ["F", "D", "V2", "A", "B", "U-shared", "U-screen", "I", "S"]; w = 0; waves = []   # B＝Bridge（顧客 PC の実行器）。API の後・画面の前（画面が「つないだ」前提で書かれている）; w = 0; waves = []

@@ -62,6 +62,40 @@
    "reason": null
   },
   {
+   "entity": "tenants",
+   "field": "live_at",
+   "consumed_by_screens": [
+    "onboard-draft",
+    "onboard-golive",
+    "company-model",
+    "export",
+    "ops-support",
+    "ops-home",
+    "company-settings",
+    "ops-billing",
+    "ops-tenant"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "tenants",
+   "field": "live_by",
+   "consumed_by_screens": [
+    "onboard-draft",
+    "onboard-golive",
+    "company-model",
+    "export",
+    "ops-support",
+    "ops-home",
+    "company-settings",
+    "ops-billing",
+    "ops-tenant"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
    "entity": "scopes",
    "field": "<common>",
    "consumed_by_screens": [],
@@ -664,6 +698,62 @@
   {
    "entity": "ai_employees",
    "field": "template_ref",
+   "consumed_by_screens": [
+    "onboard-draft",
+    "onboard-testrun",
+    "onboard-golive",
+    "clone-thread",
+    "tasks",
+    "clone-chat",
+    "ai-activity",
+    "goal-allocation",
+    "my-progress",
+    "duties",
+    "policies",
+    "ai-staff",
+    "ai-staff-detail",
+    "account-close",
+    "ops-home",
+    "ops-catalog",
+    "ops-skills",
+    "billing",
+    "ops-tenant",
+    "member-detail"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "ai_employees",
+   "field": "paused_at",
+   "consumed_by_screens": [
+    "onboard-draft",
+    "onboard-testrun",
+    "onboard-golive",
+    "clone-thread",
+    "tasks",
+    "clone-chat",
+    "ai-activity",
+    "goal-allocation",
+    "my-progress",
+    "duties",
+    "policies",
+    "ai-staff",
+    "ai-staff-detail",
+    "account-close",
+    "ops-home",
+    "ops-catalog",
+    "ops-skills",
+    "billing",
+    "ops-tenant",
+    "member-detail"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "ai_employees",
+   "field": "paused_reason",
    "consumed_by_screens": [
     "onboard-draft",
     "onboard-testrun",
@@ -2643,6 +2733,20 @@
   },
   {
    "entity": "tasks",
+   "field": "parent_task_id",
+   "consumed_by_screens": [
+    "today",
+    "tasks",
+    "record-detail",
+    "goal-edit",
+    "my-progress",
+    "hypotheses"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "tasks",
    "field": "goal_id",
    "consumed_by_screens": [
     "today",
@@ -3411,6 +3515,54 @@
   {
    "entity": "action_runs",
    "field": "error_summary",
+   "consumed_by_screens": [
+    "bridge-setup",
+    "onboard-testrun",
+    "automation-repair",
+    "services"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "action_runs",
+   "field": "ai_employee_id",
+   "consumed_by_screens": [
+    "bridge-setup",
+    "onboard-testrun",
+    "automation-repair",
+    "services"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "action_runs",
+   "field": "duty_id",
+   "consumed_by_screens": [
+    "bridge-setup",
+    "onboard-testrun",
+    "automation-repair",
+    "services"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "action_runs",
+   "field": "mode_id",
+   "consumed_by_screens": [
+    "bridge-setup",
+    "onboard-testrun",
+    "automation-repair",
+    "services"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "action_runs",
+   "field": "bridge_job_id",
    "consumed_by_screens": [
     "bridge-setup",
     "onboard-testrun",
@@ -4511,6 +4663,22 @@
   {
    "entity": "artifacts",
    "field": "source_conversation_id",
+   "consumed_by_screens": [
+    "tasks",
+    "clone-chat",
+    "ai-activity",
+    "record-detail",
+    "company-model",
+    "ops-catalog",
+    "ops-tenant",
+    "ops-review"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "artifacts",
+   "field": "source_job_id",
    "consumed_by_screens": [
     "tasks",
     "clone-chat",

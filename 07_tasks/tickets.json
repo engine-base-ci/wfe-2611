@@ -1,12 +1,12 @@
 {
  "version": "v3.2",
  "project": "Kaname",
- "created_at": "2026-10-04",
+ "created_at": "2026-10-14",
  "decomposition_mode": "api_first",
  "api_design_ref": {
   "openapi_path": "08_api/openapi.yaml",
   "screen_api_coverage_path": "08_api/screen-api-coverage.json",
-  "contract_frozen_at": "2026-10-04"
+  "contract_frozen_at": "2026-10-14"
  },
  "_doc": "05_flow/build_tasks.py が機械生成。手で直さない。途中変更は差分（qa_delta.py）",
  "source": [
@@ -23626,6 +23626,7 @@
    ],
    "audit_md_path": "07_tasks/audit/T-U-12.md",
    "status": "done",
+   "done_at": "2026-10-04",
    "qa_rows": {
     "l1": [
      "SCR-ONBOARD-GOLIVE-001",
@@ -23767,8 +23768,7 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 1.2,
-   "estimate_sessions": 1,
-   "done_at": "2026-10-04"
+   "estimate_sessions": 1
   },
   {
    "id": "T-U-13",
@@ -24860,15 +24860,21 @@
    ],
    "files_changed": [
     "apps/web/app/(app)/tasks/page.tsx (new)",
-    "apps/web/tests/screens/tasks.spec.ts (new)"
+    "apps/web/tests/screens/tasks.spec.ts (new)",
+    "packages/db/migrations/00NN_task_parent.sql (new・tasks.parent_task_id と索引)",
+    "apps/api/src/routes/tasks.ts (modify・parent_task_id を受けて返す)"
    ],
    "files_changed_predicted": {
     "new": [
      "apps/web/app/(app)/tasks/page.tsx",
      "apps/web/components/screens/tasks/*.tsx",
-     "apps/web/tests/screens/tasks.spec.ts"
+     "apps/web/tests/screens/tasks.spec.ts",
+     "packages/db/migrations/00NN_task_parent.sql"
     ],
-    "modify": [],
+    "modify": [
+     "apps/api/src/routes/tasks.ts",
+     "03_architecture/ER図.md"
+    ],
     "shared_read": [
      "06_mockup/v1/v1-tasks.html",
      "08_api/types.ts",
@@ -24876,7 +24882,7 @@
     ],
     "forbidden": [
      "apps/web/components/shell/**（共通シェルは T-US-01）",
-     "packages/**"
+     "packages/**（migrations/00NN_task_parent.sql 以外）"
     ]
    },
    "acceptance_criteria": {
@@ -24893,7 +24899,10 @@
      "EVENT-DRIVEN: WHEN PATCH /api/v1/tasks/:id が「自分のタスクを終える」として呼ばれたとき THEN Kaname は「タスクの状態を更新し、目標の実績に積む」を行い 2xx を返す",
      "EVENT-DRIVEN: WHEN PATCH /api/v1/tasks/:id が「誰に引き継いでもらうか選ぶ（負荷を見て）」として呼ばれたとき THEN Kaname は「担当を移す（合意 or 指示）。goal_id は変えない。task_handovers に記録」を行い 2xx を返す（自動側：自分のAIが相手の負荷と合意の要否を出す）",
      "EVENT-DRIVEN: WHEN 「終わりにする」を押したとき THEN 対応する endpoint が呼ばれ、別 GET で再取得して画面に反映する",
-     "UNWANTED: IF 列の値が実データでも「—」固定なら未実装として落とす"
+     "UNWANTED: IF 列の値が実データでも「—」固定なら未実装として落とす",
+     "EVENT-DRIVEN: WHEN 親タスクの行の ▸ を押したとき THEN 子タスクが下に開き、親の行に「終わった数／全部」が出る。子も自分の中身を持つ（tasks.parent_task_id・別 GET で親子を読む）",
+     "EVENT-DRIVEN: WHEN 親の中身で「足す」を押して子を作ったとき THEN POST /api/v1/tasks が parent_task_id つきで呼ばれ、子は親の目標（goal_id）を継ぐ。「自分のAIに分けてもらう」は自分のAI の道具（T-I-01）で同じ口を呼ぶ",
+     "STATE-DRIVEN: WHILE ガント THEN 親の下に子が並び、子の棒は親の中に収まる"
     ],
     "regression": [
      "pnpm test（該当パッケージ）PASS",
@@ -25102,34 +25111,34 @@
     }
    ],
    "source": [
-    "D-008",
-    "D-034",
-    "D-058",
-    "D-061",
-    "D-068",
-    "D-072",
-    "D-067.5",
-    "D-071.3",
-    "D-071.5",
-    "D-072.2",
-    "D-072.3",
-    "D-072.5",
-    "D-072.8",
-    "D-072.12",
-    "D-072.13",
-    "D-072.15",
     "D-003.1",
+    "D-008",
     "D-008.6",
     "D-013.9",
     "D-032.2",
+    "D-034",
     "D-034.2",
+    "D-058",
     "D-058.7",
-    "D-061.2",
+    "D-061",
     "D-061.10",
+    "D-061.2",
+    "D-067.5",
+    "D-068",
     "D-068.1",
     "D-068.5",
     "D-068.7",
-    "D-068.9"
+    "D-068.9",
+    "D-071.3",
+    "D-071.5",
+    "D-072",
+    "D-072.12",
+    "D-072.13",
+    "D-072.15",
+    "D-072.2",
+    "D-072.3",
+    "D-072.5",
+    "D-072.8"
    ],
    "decision_summaries": [
     {
@@ -25691,7 +25700,8 @@
     "D-119.4",
     "D-120.2",
     "D-120.3",
-    "D-120.4"
+    "D-120.4",
+    "D-064.7"
    ],
    "decision_summaries": [
     {

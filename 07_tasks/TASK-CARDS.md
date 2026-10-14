@@ -1,4 +1,4 @@
-# Kaname v3 タスク分解結果（api_first・2026-10-04）
+# Kaname v3 タスク分解結果（api_first・2026-10-14）
 
 ## サマリー
 
@@ -1262,7 +1262,7 @@
 - 行為 A17 A48 A50 A51 A57 A58 / 画面 tasks / 表 tasks task_handovers goals goal_versions measures members / 関門 —（画面。外界に出ない（API は関門の先））
 - 依存 T-US-00 T-US-01 T-US-02 T-US-03 T-US-04 T-US-05 T-US-06 T-A-05 T-A-06 T-A-09
 - 根拠（逐語）：D-008「ペルソナ1=高本本人。一人で受託・キャパ限界・人に任せたい・目標は決めているだけで実行が回らない」 ／ D-034「目標は双方向。降ろす(逆算)と積み上げる(実績)が同じ画面に出る」
-- 触るファイル：apps/web/app/(app)/tasks/page.tsx (new)、apps/web/tests/screens/tasks.spec.ts (new)
+- 触るファイル：apps/web/app/(app)/tasks/page.tsx (new)、apps/web/tests/screens/tasks.spec.ts (new)、packages/db/migrations/00NN_task_parent.sql (new・tasks.parent_task_id と索引)、apps/api/src/routes/tasks.ts (modify・parent_task_id を受けて返す)
 - AC（Tier 1）：UBIQUITOUS: 画面 tasks は URL /tasks で開く（apps/web/app/(app)/tasks/page.tsx。遷移の href ／ STATE-DRIVEN: WHILE 画面 tasks が描画中 THEN h1「タスク」・第2ナビ 今日 / 今週 / 詰まっている / 期限切れ / 引き
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/tasks が「残っている仕事から引き継ぐ」として呼ばれたとき THEN Kaname は「タスク ／ EVENT-DRIVEN: WHEN GET /api/v1/tasks が「見え方を切り替える（URL に残る）」として呼ばれたとき THEN Kaname  ／ EVENT-DRIVEN: WHEN POST /api/v1/tasks が「やることを書いて、どの目標かを選ぶ」として呼ばれたとき THEN Kaname 
 - L1 行 134（['SCR-TASKS-001', 'SCR-TASKS-002', 'SCR-TASKS-003'] …）／ L2 ['J-03']

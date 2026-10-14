@@ -36,13 +36,13 @@ erDiagram
 
 | テーブル | 主な列 | 備考 |
 |---|---|---|
-| `tenants` | `<common>` / `name` / `plan_id` / `status_id` / **`live_at`**・**`live_by`**（本番に切り替えた日時と人。切り替える前の確認に赤が無いときだけ `app.onboard_golive_switch` が書く ← D-116.5・D-028.4） | 契約の単位。切り替える前の確認は `app.onboard_golive`（会社モデル・Bridge・承認のルール・AI社員ごとのログイン情報と目標を本物の記録から） |
+| `tenants` | `<common>` / `name` / `plan_id` / `status_id` / **`live_at`** / **`live_by`**（本番に切り替えた日時と人。切り替える前の確認に赤が無いときだけ `app.onboard_golive_switch` が書く ← D-116.5・D-028.4） | 契約の単位。切り替える前の確認は `app.onboard_golive`（会社モデル・Bridge・承認のルール・AI社員ごとのログイン情報と目標を本物の記録から） |
 | `scopes` | `<common>` / `parent_id` / `layer_id` / `name` | **4 層の実体**（運営／会社／部署／個人）。層は省略可 |
 | `member_kinds` | `key` / `label` | **マスタ**（human / ai_employee / clone / 将来 guest） ← E20 |
 | `members` | `<scoped>` / `kind_id` / `display_name` / `role_id` / `manager_member_id` / `auth_user_id`（認証の利用者。Better Auth の user。AI社員・自分のAI は null） / `setup_step`（はじめの設定をどこまで通したか 0〜6・D-089）/ **`agent_permission_mode`**（自分のAI の許可のモード。既定 default。全部許可は本人が選んだときだけ・D-104.14）/ **`agent_model`** / **`agent_effort`**（本人が選んだモデルと考える強さ・D-104.13） | **人間と AI が同じ席に座る**。はじめの設定の進み具合は人ごと（Bridge はその人の PC・ログイン情報はその人が預ける） |
 | `setup_steps` | `n`（1〜6・PK） / `label` | **マスタ**（`<common>`）。はじめの設定の段の名前。1 PCをつなぐ／2 話す／3 たたき台／4 ログイン情報／5 テスト／6 本番へ（D-089） |
 | `clones` | `<common>` / `owner_member_id` / `persona` | 各個人の写し。1 人 1 体 |
-| `ai_employees` | `<scoped>` / `member_id` / `provisioning_id` / `template_ref` / **`paused_at`**・**`paused_reason`**（「止めたまま本番へ」。足りない AI社員を動かさないまま切り替える。`app.golive_pause` で付け外し・証跡 ← E-DEP-004・D-116.5） | ← E19（出どころ）|
+| `ai_employees` | `<scoped>` / `member_id` / `provisioning_id` / `template_ref` / **`paused_at`** / **`paused_reason`**（「止めたまま本番へ」。足りない AI社員を動かさないまま切り替える。`app.golive_pause` で付け外し・証跡 ← E-DEP-004・D-116.5） | ← E19（出どころ）|
 
 ---
 
@@ -138,6 +138,7 @@ erDiagram
 
 ```mermaid
 erDiagram
+  tasks ||--o{ tasks : "親子"
   tasks ||--o{ action_runs : "実行"
   action_runs ||--o| approvals : "承認待ち"
   action_runs }o--|| service_registry : "対象サービス"
@@ -151,13 +152,13 @@ erDiagram
 
 | テーブル | 主な列 | 備考 |
 |---|---|---|
-| `tasks` | `<scoped>` / `goal_id`（**null 可＝行き先のないタスク**）/ `measure_id` / `assignee_member_id`（人でも AI社員でも）/ `status_id` / `due_on` / `title` / **`origin_id`**（人／自分のAI／AI社員／台帳の段階）/ **`goal_changed_at`**（目標が改訂された印）/ **`next_action`**（次の一手・1 行）/ **`estimate_minutes`** / `actual_minutes` / **`planned_for date`**（朝の計画に入れた日）/ **`blocked_reason_id`**（返事待ち／承認待ち／PC停止／AI社員停止）/ `blocked_since` | `status` は **今日／あとで／詰まっている／終わった の 4 つだけ**（優先度フラグは持たない）。詰まっているは理由必須（D-068） | **人間にも AI にも同じ形**。`goal_id` が null のものは赤で出す（D-061） |
+| `tasks` | `<scoped>` / **`parent_task_id`**（親タスク。null＝親無し。親の行に ▸ と「終わった数／全部」、親の中身に子の一覧。子は自分の中身を持つ ← D-072.12）/ `goal_id`（**null 可＝行き先のないタスク**）/ `measure_id` / `assignee_member_id`（人でも AI社員でも）/ `status_id` / `due_on` / `title` / **`origin_id`**（人／自分のAI／AI社員／台帳の段階）/ **`goal_changed_at`**（目標が改訂された印）/ **`next_action`**（次の一手・1 行）/ **`estimate_minutes`** / `actual_minutes` / **`planned_for date`**（朝の計画に入れた日）/ **`blocked_reason_id`**（返事待ち／承認待ち／PC停止／AI社員停止）/ `blocked_since` | `status` は **今日／あとで／詰まっている／終わった の 4 つだけ**（優先度フラグは持たない）。詰まっているは理由必須（D-068） | **人間にも AI にも同じ形**。`goal_id` が null のものは赤で出す（D-061） |
 | **`task_handovers`** | `<common>` / `task_id` / `from_member_id` / `to_member_id` / `mode_id`（合意／指示）/ `agreement_status_id` / `reason` | ★新設。引き継いでもらう（push）も引き継ぐ（pull）もここ（画面の言葉は D-068）。**`tasks.goal_id` は変えない**（誰の目標かは変わらない） |
 | **`daily_plans`** | `<common>` / `member_id` / `plan_date` / `capacity_minutes`（使える時間）/ `committed_at`（朝の確定）/ `closed_at`（夕方の整理）/ `carry_over jsonb`（残りをどう振り分けたか） | ★新設（D-068）。1 人 1 日 1 行。見込みの合計は `tasks.estimate_minutes` から集計 |
 | `triggers` | `<scoped>` / `kind_id` / `cron_expr` / `timezone` / `on_missed_id` / `ttl_minutes` / `enabled` | `on_missed` = catch_up / latest_only / skip ← **E6** |
 | `policies` | `<scoped>` / `subject_kind_id` / `action_kind_id` / `mode_id` / `params jsonb` / `is_locked` | `mode` = auto / approve / off。`is_locked` ＝ **運営の安全ルール（上書き不可）** ← **E8** |
 | `approvals` | `<scoped>` / `action_run_id` / `requested_by` / `approver_member_id` / `status_id` / `resolved_at` / `note` | **すべての提案の入口** |
-| `action_runs` | `<scoped>` / `task_id` / `action_kind_id` / **`choke_point_id`** / `service_id` / `procedure_id` / `status_id`（running／done／stopped／cancelled） / `started_at` / `finished_at` / `tokens_in` / `tokens_out` / `cost` / `error_summary`（止まった理由） / **`ai_employee_id`**・**`duty_id`**（どのAI社員がどの担当業務を ← D-116.4） / **`mode_id`**（test＝外に出ない／live ← D-028.2） / **`bridge_job_id`**（本人の PC で動いた仕事。成果物は artifacts.source_job_id で結ぶ ← D-121.2） | **`choke_point_id` を記録**（どの関門を通ったか） |
+| `action_runs` | `<scoped>` / `task_id` / `action_kind_id` / **`choke_point_id`** / `service_id` / `procedure_id` / `status_id`（running／done／stopped／cancelled） / `started_at` / `finished_at` / `tokens_in` / `tokens_out` / `cost` / `error_summary`（止まった理由） / **`ai_employee_id`** / **`duty_id`**（どのAI社員がどの担当業務を ← D-116.4） / **`mode_id`**（test＝外に出ない／live ← D-028.2） / **`bridge_job_id`**（本人の PC で動いた仕事。成果物は artifacts.source_job_id で結ぶ ← D-121.2） | **`choke_point_id` を記録**（どの関門を通ったか） |
 | `service_registry` | `<common>` / `name` / `domain` / `automation_verdict_id` / `notes` | `verdict` = api / allowed / unspecified / **forbidden** / **bank**。forbidden と bank の `domain` は、仕事を渡すたびに Bridge が本人の Claude Code に「使わない道具」とフックの一覧として渡す（D-107.1〜D-107.3）。見抜けない形は `notes` に書く（D-107.6） |
 | `credential_kinds` | `key` / `label` | **マスタ**（password_totp / oauth2 / api_key / basic / email_otp / saml）← **E15** |
 | `credentials` | `<scoped>` / `service_id` / **`service_name`**（本人が入れたサービス名 ← D-108.4）/ **`service_domain`**（宛先 ← D-108.4）/ `kind_id`（＋ llm_api_key・D-083.3）/ `provider_id`（anthropic ／ openai ／ google）/ **`vault_ref`** / `owner_member_id` / `revoked_at` | **実体は持たない。vault の参照 ID のみ**。一覧は `app.my_credentials`（サービス名・台帳の可否・状態だけ・D-108.3） |
@@ -475,6 +476,7 @@ erDiagram
 
 | 決定 | 何を決めたか | 効いているテーブル |
 |---|---|---|
+| D-072 | タスクは親子で開ける（親の行に ▸ と終わった数／全部・親の中身に子の一覧・足す／自分のAIに分けてもらう・ガントで親の下に子） | `tasks.parent_task_id`（自己参照。子の goal_id は親と同じにするかは実装時に決める：既定は親から継ぐ）。表の追加は画面タスク T-U-16 の migration で行う |
 | D-116 | 6 本番へは、切り替える前の確認に赤が無ければ切り替えられる（黄は承知のうえで）。押したら通し、翌朝から動く | `tenants.live_at` `tenants.live_by` `ai_employees.paused_at`（止めたまま本番へ） `action_runs.ai_employee_id/duty_id/mode_id`。判定は `app.onboard_golive`、切り替えは `app.onboard_golive_switch`（段 6 を通した記録・証跡 golive.switched）、止めるは `app.golive_pause`（0070） |
 | D-112 | 自分のAI の会話は本人の PC の Claude Code の記録が正本（文を記録と同じ id で写す） | `messages.transcript_uuid`（会話の中で一意）。書くのは `app.bridge_entries`、取り戻す先は `app.bridge_mirror_targets`、結末は `app.bridge_finish_job`（写した文があれば答えを重ねない） |
 | D-120 | AI が使うブラウザを PC ごとに Kaname で選ぶ・もう一度確かめる | `sessions.browser` `bridge_jobs.browser`。`app.agent_set_browser` / `app.bridge_set_browser` / `app.bridge_browser` / `app.bridge_job_browser` / `app.agent_browser_check` / `app.bridge_state`（browser を足す）（0057） |
