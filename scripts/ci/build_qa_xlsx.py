@@ -251,17 +251,26 @@ def main() -> int:
     ap.add_argument("--handoff", default="07_tasks/handoff")
     ap.add_argument("--tickets", default="07_tasks/tickets.json")
     ap.add_argument("--screens", default="07_functional/screens.json")
+    ap.add_argument("--flow", default="05_flow/flow.json")
     ap.add_argument("--out", default="07_tasks/handoff/確認.xlsx")
     ap.add_argument("--base", default="http://127.0.0.1:3124")
     ap.add_argument("--by", default="高本")
     ap.add_argument("--read", action="store_true")
     a = ap.parse_args()
     S = {s["id"]: s for s in json.load(open(a.screens, encoding="utf-8"))["items"]}
-    pos = {sid: i for i, sid in enumerate(S)}
+    pos, phase_of = flow_order(a.flow)   # タブの順＝使う流れの順（登録 → はじめの設定 → 毎日 → …）。画面ごとに 画面のチケット → その画面を触る裏側のチケット
     T = json.load(open(a.tickets, encoding="utf-8"))["tasks"]
     done = pick_tickets(T)
     order: list[tuple[str, dict]] = []
-    for t in sorted(done, key=lambda t: (t["deliverable_layer"] != "ui", bool(not t.get("screen_ids")), pos.get((t.get("screen_ids") or [""])[0], 999))):
+    def _key(t):
+        sid = (t.get("screen_ids") or [""])[0]
+        flows = (t.get("qa_rows") or {}).get("l2_flows") or []
+        if sid in pos:
+            return (phase_of[sid], pos[sid], 0 if t["id"].startswith("T-U-") else 1, t["id"])
+        if flows and re.match(r"^J-\d+$", flows[0]):       # 流れ（J-01 → P0 の終わり、J-02 → P1 の終わり）
+            return (int(flows[0][2:]) - 1, 9999, 2, t["id"])
+        return (99, 9999, 3, t["id"])                     # 土台（画面を持たない）は最後
+    for t in sorted(done, key=_key):
         fp = os.path.join(a.handoff, f"{t['id']}.md")
         if not os.path.exists(fp):
             continue
@@ -275,6 +284,22 @@ def main() -> int:
                                 "screen": S.get(sid, {}).get("name", "（土台・通し）"),
                                 "url": a.base + (S.get(sid, {}).get("route") or "")}))
     return read_back(a, order) if a.read else write(a, order)
+
+
+def flow_order(flow_path: str) -> tuple[dict, dict]:
+    """画面 → (位置, フェーズ番号)。flow.json の背骨（フェーズ × 行為）の順に画面を並べる（2026-10-19 user「タブをフローの順番に」）。
+    登録まわり（P0）に ログイン と パスワードの再設定 を寄せる（使う人にとっては同じ入口）。背骨に無い画面は screens の順で後ろ"""
+    F = json.load(open(flow_path, encoding="utf-8"))
+    seq: list[tuple[str, int]] = []
+    for pi, ph in enumerate(F["backbone"]):
+        for a in ph["acts"]:
+            for sid in F["act_to_screen"].get(a["id"]) or []:
+                sid = sid.replace("new:", "")
+                if sid not in [x for x, _ in seq]:
+                    seq.append((sid, pi))
+    front = ["signup", "verify-email", "invite-accept", "mfa-setup", "billing-setup", "login", "password-reset"]
+    seq = [(x, 0) for x in front if x in dict(seq)] + [(x, pi) for x, pi in seq if x not in front]
+    return {x: i for i, (x, _) in enumerate(seq)}, {x: pi for x, pi in seq}
 
 
 def pick_tickets(T: list[dict], spec: str = "07_qa/test-specs") -> list[dict]:
