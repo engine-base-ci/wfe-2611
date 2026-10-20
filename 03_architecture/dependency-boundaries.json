@@ -31,7 +31,8 @@
    "concern": "認証",
    "vendor": "Better Auth",
    "allowed_paths": [
-    "packages/auth/"
+    "packages/auth/",
+    "apps/web/lib/auth/client.ts"
    ],
    "forbidden_import_patterns": [
     "better-auth"
@@ -43,7 +44,8 @@
    "source": [
     "D-076.1",
     "D-074.2"
-   ]
+   ],
+   "note_client": "画面側の口は apps/web/lib/auth/client.ts の 1 枚だけ（Better Auth の react client）。他の画面はこのファイル経由で呼ぶ"
   },
   {
    "id": "B3",
@@ -99,7 +101,12 @@
    "interface": "LlmProvider + 能力表",
    "swap_cost_days": "—",
    "also_choke_point": "C3",
-   "ci_check": "pnpm ci:boundary -- --id B5"
+   "ci_check": "pnpm ci:boundary -- --id B5",
+   "source": [
+    "D-004.2",
+    "D-083.2"
+   ],
+   "note": "段階 1 は本人の PC の公式 CLI（Bridge）だけ。packages/llm は段階 2（D-083）の経路の入れ物"
   },
   {
    "id": "B6",

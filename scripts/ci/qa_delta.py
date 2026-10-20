@@ -25,7 +25,7 @@ import argparse, json, re, sys, subprocess, datetime
 from collections import defaultdict
 from pathlib import Path
 
-ROW_ID = re.compile(r"^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*-\d{2,3}$")
+ROW_ID = re.compile(r"^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*-\d{2,3}(?:-[ABC])?$")  # エラー一覧の行 E-…-A/B/C も行
 TASK_ID = re.compile(r"^T-[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)?-\d+[a-z]?$")
 API_ID = re.compile(r"^(GET|POST|PUT|PATCH|DELETE)\s+/")
 DEC_ID = re.compile(r"^D-\d{3}$")
@@ -104,6 +104,10 @@ def classify(changed, rows, edges, rev, journeys):
     covered = {r["screen"] for r in upd} | {r["task"] for r in upd} | {r["id"] for r in upd}
     for r in upd:
         for t in re.split(r"[,\s、/]+", r["task"] or ""): covered.add(t)
+    # エラー（E-…）は errors.md の行 E-…-A/B/C（出る／出ない／文言と一手）で覆われる。行 ID の頭で照合する
+    for r in rows:
+        if r["id"].startswith("E-") and r["id"].count("-") >= 3:
+            covered.add(r["id"].rsplit("-", 1)[0])
     missing = sorted(c for c in direct if c not in covered and not DEC_ID.match(c) and not API_ID.match(c) and not c.startswith("A"))
     flows = set()
     for jr in (journeys or {}).get("rows", []):

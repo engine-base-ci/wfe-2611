@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* global process, console, setTimeout */
+/* global process, console, setTimeout, Buffer */
 // テスト用の偽の CLI。stream-json の行の形は 2026-09-25〜27 に実測した claude 2.1.x の出力に合わせる。
 //   普通の文 → init・書きながらの返事・手順・使用量・result
 //   「止めずに直す」の一言が来たら、それにも result を返す（実測：次の区切りでもう 1 回 result）

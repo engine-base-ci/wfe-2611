@@ -9,6 +9,7 @@ import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
+import { hostname } from "node:os";
 import { startLocalServer } from "./local";
 import { startLoop, type Browser, type LoopState } from "./loop";
 import { stopCurrent, isRunning, findClaude, warmShellPath, chromeState } from "./runner";
@@ -50,7 +51,7 @@ const writeState = (s: State): void => {
 };
 function defaultLabel(): string {
   const os = process.platform === "darwin" ? "macOS" : process.platform === "win32" ? "Windows" : process.platform;
-  return `${require("node:os").hostname()}（${os}）`;
+  return `${hostname()}（${os}）`;
 }
 
 /** いま覚えている鍵が Kaname でまだ通るか（通れば、この PC は別のアカウントでつながったまま） */
@@ -292,8 +293,10 @@ void app.whenReady().then(() => {
       // 口座が消えた・停止された・つなぎ直された。覚えている鍵を捨てて、つなぎ直しを促す
       const st = readState();
       if (!st.connected && !st.sessionId) return;
-      const { sessionId: _drop, connectedAt: _at, ...rest } = st;
-      writeState({ ...rest, connected: false });
+      const rest = { ...st, connected: false };
+      delete rest.sessionId; // 覚えている鍵を捨てる
+      delete rest.connectedAt;
+      writeState(rest);
       for (const w of BrowserWindow.getAllWindows()) w.webContents.send("bridge:state", { connected: false });
     },
     health: async () => await selfCheck(),

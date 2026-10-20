@@ -56,6 +56,9 @@ else ok "動いている（$PG_CONTAINER）"; fi
 # 単体テストは準備のたびに会社・会社の人の表を空にするので、同じ DB だと手元のアカウントが「ログインだけ生きて会社が無い」状態になる（2026-09-27）
 docker exec "$PG_CONTAINER" psql -U postgres -tAc "select 1 from pg_database where datname='kaname_dev'" 2>/dev/null | grep -q 1 \
   || { docker exec "$PG_CONTAINER" psql -U postgres -c "create database kaname_dev" >/dev/null 2>&1 && ok "手元の DB を作った（kaname_dev）"; }
+# 単体テストの DB も、無ければ毎回作る（作った直後の 6 秒では DB がまだ起きておらず、黙って失敗していた・2026-10-20：kaname_test が無く packages/db の試験 8 ファイルが接続の時間切れで赤）
+docker exec "$PG_CONTAINER" psql -U postgres -tAc "select 1 from pg_database where datname='kaname_test'" 2>/dev/null | grep -q 1 \
+  || { docker exec "$PG_CONTAINER" psql -U postgres -c "create database kaname_test" >/dev/null 2>&1 && ok "単体テストの DB を作った（kaname_test）"; }
 
 # ---- 2. 設定（ローカル専用の既定。秘密ではない）
 say "2／4 設定"

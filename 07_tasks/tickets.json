@@ -25710,7 +25710,8 @@
     "D-120.2",
     "D-120.3",
     "D-120.4",
-    "D-064.7"
+    "D-064.7",
+    "D-111"
    ],
    "decision_summaries": [
     {
@@ -27248,7 +27249,8 @@
     "D-079.2",
     "D-079.3",
     "D-079.4",
-    "D-079.5"
+    "D-079.5",
+    "D-036.1"
    ],
    "decision_summaries": [
     {
@@ -31181,7 +31183,8 @@
     "D-008.6",
     "D-026.4",
     "D-053.10",
-    "D-058.2"
+    "D-058.2",
+    "D-036.1"
    ],
    "decision_summaries": [
     {
@@ -32865,7 +32868,8 @@
     "D-075.1",
     "D-077.3",
     "D-030.9",
-    "D-103.6"
+    "D-103.6",
+    "D-073"
    ],
    "decision_summaries": [
     {
@@ -52027,6 +52031,7 @@
    ],
    "audit_md_path": "07_tasks/audit/T-B-42.md",
    "status": "done",
+   "done_at": "2026-10-20",
    "qa_rows": {
     "l1": [
      "CHT-42-001",
@@ -52110,8 +52115,7 @@
    "estimate_method": "reference",
    "estimate_confidence": "medium",
    "estimate_hours": 0.5,
-   "estimate_sessions": 1,
-   "done_at": "2026-10-20"
+   "estimate_sessions": 1
   },
   {
    "id": "T-US-08",
