@@ -1,11 +1,11 @@
-# Kaname v3 タスク分解結果（api_first・2026-10-14）
+# Kaname v3 タスク分解結果（api_first・2026-10-20）
 
 ## サマリー
 
-- 総タスク数：215（A 28 / B 41 / D 14 / F 18 / I 22 / S 15 / U-screen 64 / U-shared 8 / V2 5）
+- 総タスク数：218（A 28 / B 42 / D 14 / F 18 / I 22 / S 15 / U-screen 64 / U-shared 8 / V2 7）
 - 画面の被覆：64/64
-- L1 テスト行：5138（正本 07_qa/test-specs）／ 流れ（L2）：9
-- 工数：Human 6292.5 h（787 日）／ AI 計算 1139.0 h ＋ 人のレビュー 88.0 h → wall-clock 336.0 h（56 日・並列 10）
+- L1 テスト行：5160（正本 07_qa/test-specs）／ 流れ（L2）：9
+- 工数：Human 6330.5 h（792 日）／ AI 計算 1144.9 h ＋ 人のレビュー 88.0 h → wall-clock 336.0 h（56 日・並列 10）
 - Wave 数：35
 
 ## Group 別タスク一覧
@@ -61,6 +61,8 @@
 | T-V2-03 | 段階 2 の仕様づくり：LLM の経路の追加 | spec | spec | 16 | 2.7 | 2.7 | 5 | 1 | 5 |
 | T-V2-04 | 段階 2 の仕様づくり：アプリ（PC・スマホ） | spec | spec | 16 | 2.7 | 2.7 | 5 | 1 | 5 |
 | T-V2-05 | 段階 2 の仕様づくり：情シス向けの開示資料 | spec | spec | 16 | 2.7 | 2.7 | 5 | 1 | 5 |
+| T-V2-06 | 段階 2 の仕様づくり：会社ごとの鍵での保存時暗号 | spec | spec | 16 | 2.7 | 2.7 | 5 | 1 | 5 |
+| T-V2-07 | 段階 2 の仕様づくり：Codex と Gemini の包み方 | spec | spec | 16 | 2.7 | 2.7 | 5 | 1 | 5 |
 
 ### Group A
 
@@ -140,6 +142,7 @@
 | T-B-39 | 2 段階認証（種類を選ぶ・認証アプリは鍵で自動・SMS／メール／スマホ承認はその場で本人に頼む・コー | backend | backend | 8 | 2.0 | 3.0 | 15 | 2 | 4 |
 | T-B-40 | 会話の画面を詰める・広げる（見出しと説明を 1 行に・入力欄を低く・「会話を広げる」で会話だけ・Es | backend | backend | 3 | 0.2 | 0.2 | 15 | 1 | 2 |
 | T-B-41 | 自分のAI が作ったファイル・調べた結果を道具 artifact_put で成果物として渡す（PC  | backend | backend | 8 | 0.7 | 0.7 | 17 | 1 | 6 |
+| T-B-42 | Bridge は仕事の間 PC を寝かせず、止めたら途中の道具の結末は不明と言い、記録が無ければ新し | backend | backend | 6 | 0.5 | 0.5 | 16 | 2 | 6 |
 
 ### Group U-shared
 
@@ -174,7 +177,7 @@
 | T-U-14 | 画面 承認待ち（4 状態・R1/R2/R3） | frontend | ui | 18.5 | 1.9 | 1.9 | 22 | 8 | 62 |
 | T-U-15 | 画面 自分のAIとAI社員のやりとり（5 状態・R1/R2/R3） | frontend | ui | 21.0 | 2.1 | 2.1 | 22 | 9 | 57 |
 | T-U-16 | 画面 タスク（12 状態・R1/R2/R3/R4） | frontend | ui | 40.0 | 4.0 | 4.0 | 22 | 13 | 134 |
-| T-U-17 | 画面 自分のAIと話す（21 状態・R1/R2/R3/R4） | frontend | ui | 62.5 | 6.2 | 6.2 | 22 | 11 | 220 |
+| T-U-17 | 画面 自分のAIと話す（21 状態・R1/R2/R3/R4） | frontend | ui | 62.5 | 6.2 | 6.2 | 22 | 11 | 226 |
 | T-U-18 | 画面 AI社員の動き（4 状態・R1/R2/R3） | frontend | ui | 18.5 | 1.9 | 1.9 | 22 | 12 | 48 |
 | T-U-19 | 画面 探す（3 状態・R1/R2/R3/R4） | frontend | ui | 17.5 | 1.8 | 1.8 | 22 | 8 | 41 |
 | T-U-20 | 画面 台帳（6 状態・R1/R2/R3/R4） | frontend | ui | 25.0 | 2.5 | 2.5 | 22 | 9 | 57 |
@@ -1277,7 +1280,7 @@
 - 触るファイル：apps/web/app/(app)/ai/chat/page.tsx (new)、apps/web/tests/screens/clone-chat.spec.ts (new)
 - AC（Tier 1）：UBIQUITOUS: 画面 clone-chat は URL /ai/chat で開く（apps/web/app/(app)/ai/chat/page.tsx ／ STATE-DRIVEN: WHILE 画面 clone-chat が描画中 THEN h1「高本AIと話す」・第2ナビ 新しく話す / 会話 / 星 / 記憶
 - AC（Tier 2）：EVENT-DRIVEN: WHEN GET /api/v1/conversations が「聞く・頼む」として呼ばれたとき THEN Kaname は「会話を ／ EVENT-DRIVEN: WHEN GET /api/v1/conversations が「資料や画像を付けて渡す」として呼ばれたとき THEN Kaname ／ EVENT-DRIVEN: WHEN POST /api/v1/conversations が「会話を分けて始める・一覧から戻る」として呼ばれたとき THEN 
-- L1 行 220（['SCR-CLONE-CHAT-122', 'SCR-CLONE-CHAT-123', 'SCR-CLONE-CHAT-124'] …）／ L2 ['J-03', 'J-07']
+- L1 行 226（['SCR-CLONE-CHAT-122', 'SCR-CLONE-CHAT-123', 'SCR-CLONE-CHAT-124'] …）／ L2 ['J-03', 'J-07']
 - audit: 07_tasks/audit/T-U-17.md
 
 ### T-U-18 画面 AI社員の動き（4 状態・R1/R2/R3）
@@ -2780,6 +2783,18 @@
 - L1 行 6（['CHT-41-001', 'CHT-41-002', 'CHT-41-003'] …）／ L2 —
 - audit: 07_tasks/audit/T-B-41.md
 
+### T-B-42 Bridge は仕事の間 PC を寝かせず、止めたら途中の道具の結末は不明と言い、記録が無ければ新しいセッションで続ける（powerSaveBlocker は working の間だけ・E-SIG-003・E-NF-003・本物の CLI で実測した形）
+
+- group B / layer backend / phase 3_backend / wave 16 / Human 6 h・AI 0.5 h・wall-clock 0.5 h
+- 行為 A89 A20 / 画面 clone-chat / 表 — / 関門 C5
+- 依存 T-B-17 T-B-31
+- 根拠（逐語）：D-124「仕事の間だけ OS に「寝ないで」を頼む（画面は消えてよい・ふたを閉じたら従う・電源設定は変えない）。止めたとき道具が動」 ／ D-093「端末(tty)は要らずパイプで足りる。stream-json で完了イベントを受けるので「終了コード0=成功」にしない。」
+- 触るファイル：apps/bridge/src/awake.ts (new)、apps/bridge/src/main.ts (new)、apps/bridge/src/runner.ts (new)、apps/bridge/src/loop.ts (new)
+- AC（Tier 1）：UBIQUITOUS: Bridge は仕事の間 PC を寝かせず、止めたら途中の道具の結末は不明と言い の成果物があり、type-check と build 
+- AC（Tier 2）：EVENT-DRIVEN: WHEN 止める（偽の CLI で道具の最中に stopCurrent）、システムは 結末の理由に道具の名前と対象が入る（E-SIG ／ UNWANTED: IF つないだ PC（本物の Bridge の輪＋偽の CLI）、システムは 「ここで止まりました」の理由に途中の道具の文が入る／吹き出しの
+- L1 行 6（['CHT-42-001', 'CHT-42-002', 'CHT-42-003'] …）／ L2 —
+- audit: 07_tasks/audit/T-B-42.md
+
 ### T-US-08 会話の部品の作り込み（D-104：吹き出し・書式と図とカードと資料の描画・作業の行・問い合わせ・許可の 3 択・入力欄の箱・声・@・文脈・返事への操作・画面の動き・知らせ・読み上げ）
 
 - group U-shared / layer ui / phase 4_ui_foundation / wave 20 / Human 40 h・AI 10.0 h・wall-clock 11.0 h
@@ -2851,3 +2866,27 @@
 - AC（Tier 2）：EVENT-DRIVEN: WHEN 決定ログに 情シス向けの開示資料 の節を足したら、システム（ゲート）は trace_gate T1〜T10・flow_ga ／ UNWANTED: IF 決定の無い後回しや、オブジェクトの無い『作る・配る・版』の文が残ったら、G17／T10 が赤のまま実装タスクを生成しない
 - L1 行 5（['SPC-05-001', 'SPC-05-002', 'SPC-05-003'] …）／ L2 —
 - audit: 07_tasks/audit/T-V2-05.md
+
+### T-V2-06 段階 2 の仕様づくり：会社ごとの鍵での保存時暗号
+
+- group V2 / layer spec / phase 8_spec_v2 / wave 5 / Human 16 h・AI 2.7 h・wall-clock 2.7 h
+- 行為 — / 画面 — / 表 — / 関門 —（仕様の作業。外界には触れない）
+- 依存 T-F-18
+- 根拠（逐語）：D-122「情シスの「運営も見られない」には E2E ではなく、会社ごとのデータ鍵で本文を保存時に暗号化する（封筒・AAD にテナン」 ／ D-099「段階1の探すは自分のAIが全文検索を繰り返して読んで選ぶ。ベクトルは件数と探す時間が境を超えてから入れ、作るのは本人のP」
+- 触るファイル：01_hearing/決定ログ_進行中.md (modify)、05_flow/data.py (modify)、06_mockup/s_p11.py (new)、03_architecture/ER図.md (modify)
+- AC（Tier 1）：UBIQUITOUS: 会社ごとの鍵での保存時暗号 の画面・行為が flow.json の release に入り、G17 の deferred から D-12
+- AC（Tier 2）：EVENT-DRIVEN: WHEN 決定ログに 会社ごとの鍵での保存時暗号 の節を足したら、システム（ゲート）は trace_gate T1〜T10・flow ／ UNWANTED: IF 決定の無い後回しや、オブジェクトの無い『作る・配る・版』の文が残ったら、G17／T10 が赤のまま実装タスクを生成しない
+- L1 行 5（['SPC-06-001', 'SPC-06-002', 'SPC-06-003'] …）／ L2 —
+- audit: 07_tasks/audit/T-V2-06.md
+
+### T-V2-07 段階 2 の仕様づくり：Codex と Gemini の包み方
+
+- group V2 / layer spec / phase 8_spec_v2 / wave 5 / Human 16 h・AI 2.7 h・wall-clock 2.7 h
+- 行為 — / 画面 — / 表 — / 関門 —（仕様の作業。外界には触れない）
+- 依存 T-F-18
+- 根拠（逐語）：D-123「D-083 の 3 社のうち Codex は codex app-server（JSON-RPC・承認の割り込み）、Ge」 ／ D-083「段階 2 で足す経路は BYOK（顧客の API キー）と運営マネージド（運営のキー・既定 OFF）。提供者は Anth」
+- 触るファイル：01_hearing/決定ログ_進行中.md (modify)、05_flow/data.py (modify)、06_mockup/s_p11.py (new)、03_architecture/ER図.md (modify)
+- AC（Tier 1）：UBIQUITOUS: Codex と Gemini の包み方 の画面・行為が flow.json の release に入り、G17 の deferred か
+- AC（Tier 2）：EVENT-DRIVEN: WHEN 決定ログに Codex と Gemini の包み方 の節を足したら、システム（ゲート）は trace_gate T1〜T1 ／ UNWANTED: IF 決定の無い後回しや、オブジェクトの無い『作る・配る・版』の文が残ったら、G17／T10 が赤のまま実装タスクを生成しない
+- L1 行 5（['SPC-07-001', 'SPC-07-002', 'SPC-07-003'] …）／ L2 —
+- audit: 07_tasks/audit/T-V2-07.md

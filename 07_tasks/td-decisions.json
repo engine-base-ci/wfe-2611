@@ -1,9 +1,9 @@
 {
  "meta": {
   "project": "Kaname",
-  "created_at": "2026-10-14",
+  "created_at": "2026-10-20",
   "skill_version": "v3.2-machine",
-  "total_tasks": 215
+  "total_tasks": 218
  },
  "context": {
   "project_type": "SaaS（マルチテナント・AI社員・運営）",
@@ -172,6 +172,6 @@
   "findings": [
    "機械生成のため件数は入力ではなく出力"
   ],
-  "research_date": "2026-10-14"
+  "research_date": "2026-10-20"
  }
 }

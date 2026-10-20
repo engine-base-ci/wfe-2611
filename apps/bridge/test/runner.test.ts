@@ -2,7 +2,7 @@
 import { chmodSync } from "node:fs";
 import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { forgetClaude, isRunning, runClaude, steerCurrent, stopCurrent, type Answer } from "../src/runner";
+import { forgetClaude, isResumeLost, isRunning, RESUME_LOST_NOTICE, runClaude, steerCurrent, stopCurrent, type Answer } from "../src/runner";
 import type { Ev } from "../src/stream";
 
 const FAKE = join(__dirname, "fake-claude.mjs");
@@ -75,6 +75,53 @@ describe("runClaude（偽の CLI）", () => {
     expect(isRunning()).toBe(true);
     stopCurrent("あなたが止めました");
     expect(await run).toMatchObject({ state: "stopped", reason: "あなたが止めました", agent_session_id: "sess-fake" });
+  });
+
+  it("CHT-42-002 道具が動いている最中に止めると、理由に「途中だった道具の結末は分からない」が付く（D-124.2・E-SIG-003）", async () => {
+    const run = runClaude(job("SLOW_TOOL 送って"));
+    await wait(400);
+    stopCurrent("あなたが止めました");
+    const f = await run;
+    expect(f.state).toBe("stopped");
+    expect(f.state === "stopped" ? f.reason : "").toBe(
+      "あなたが止めました。「curl -X POST https://mail.example.com/send」は途中だったので、その結末は分かりません。先方の画面で確かめてください",
+    );
+  });
+  it("CHT-42-002 文を書いている最中（道具が動いていない）に止めたときは添えない", async () => {
+    const run = runClaude(job("SLOW 長い仕事"));
+    await wait(300);
+    stopCurrent("あなたが止めました");
+    expect(await run).toMatchObject({ state: "stopped", reason: "あなたが止めました" });
+  });
+  it("CHT-42-003 記録が無い --resume は、--resume 無しで 1 回だけやり直し、知らせを 1 回出し、新しい id で終わる（D-124.3・E-NF-003）", async () => {
+    const notices: string[] = [];
+    const inits: (string | null)[] = [];
+    const f = await runClaude(
+      { ...job("請求書"), agent_session_id: "sess-lost" },
+      { onNotice: (t) => notices.push(t), onEvent: (e) => { if (e.type === "init") inits.push(e.session); } },
+    );
+    expect(f).toMatchObject({ state: "done", result: "答え:請求書", agent_session_id: "sess-fake" });
+    expect(notices).toEqual([RESUME_LOST_NOTICE]);
+    expect(inits, "やり直した方の init だけが会話の id になる（失敗した方は init を出さない）").toEqual(["sess-fake"]);
+  });
+  it("CHT-42-005 記録があるときはやり直さない・知らせない。同じ id のまま 1 回で終わる", async () => {
+    const notices: string[] = [];
+    const inits: (string | null)[] = [];
+    const f = await runClaude(
+      { ...job("請求書"), agent_session_id: "sess-fake" },
+      { onNotice: (t) => notices.push(t), onEvent: (e) => { if (e.type === "init") inits.push(e.session); } },
+    );
+    expect(f).toMatchObject({ state: "done", result: "答え:請求書", agent_session_id: "sess-fake" });
+    expect(notices).toEqual([]);
+    expect(inits).toEqual(["sess-fake"]);
+  });
+  it("CHT-42-004 本物の形の判定：記録が無い（stderr／API を呼ばず本文なし）は当たり、上限（API は呼んだ）や本文のある失敗は当たらない", () => {
+    const lost = { type: "result", subtype: "error_during_execution", duration_ms: 0, duration_api_ms: 0, is_error: true, num_turns: 0, result: "" };
+    expect(isResumeLost(lost, "", "")).toBe(true);
+    expect(isResumeLost({ subtype: "success" }, "No conversation found with session ID: x\n", "")).toBe(true);
+    expect(isResumeLost({ subtype: "error_during_execution", num_turns: 0, duration_api_ms: 812, is_error: true }, "", "")).toBe(false);
+    expect(isResumeLost({ subtype: "error_during_execution", num_turns: 0, duration_api_ms: 0 }, "", "途中まで")).toBe(false);
+    expect(isResumeLost({ subtype: "error_during_execution", num_turns: 2, duration_api_ms: 0 }, "", "")).toBe(false);
   });
 
   it("BRG-01-003 BRG-02-003 BRG-04-003 完了信号を出さずに終わったものを成功にしない（G-15）", async () => {

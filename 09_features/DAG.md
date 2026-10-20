@@ -1,4 +1,4 @@
-# DAG / Wave Plan — Kaname（2026-10-14）
+# DAG / Wave Plan — Kaname（2026-10-20）
 
 ## 物量
 

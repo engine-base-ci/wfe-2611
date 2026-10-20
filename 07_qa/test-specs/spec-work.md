@@ -1,6 +1,6 @@
 # spec-work テスト仕様（L1・機械生成）
 
-> 05_flow/build_tasks.py がタスクと同時に生成。ID は変えない。途中変更は qa_delta.py で差分。結果列は staging で流した人が書く（再生成しても残る。今の行 25・結果あり 25 行）。
+> 05_flow/build_tasks.py がタスクと同時に生成。ID は変えない。途中変更は qa_delta.py で差分。結果列は staging で流した人が書く（再生成しても残る。今の行 35・結果あり 25 行）。
 
 | ID | 画面 | テスト観点 | テスト項目 | 前提条件 | 操作手順 | 期待結果 | 結果 | 備考 | タスク | 実行条件 |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -29,3 +29,13 @@
 | SPC-05-003 | 仕様 | モック | 情シス向けの開示資料：モックが時点・役割・空／止まっている を持ち、治具（状態・横溢れ・レイアウト）が緑 | この文が後回しのまま | 仕様づくりを 1 周回す | mock_state・role_gate・ui_lint・治具 ★0 | PASS（06_mockup/v2/ の 6 画面（21 状態・data-ps・data-roles）。mock_state S0〜S5・role_gate G15・ui_lint・leave_gate G16（account-close／member-detail に 7 オブジェクト）PASS。治具（ブラウザ実測）：時点 1400／375 ★0・レイアウト 1400／375 OK・横溢れ 375／768／1024／1440 = 0・内部リンク 404 = 0。2026-09-16） | D-081.5 | T-V2-05 | L1 |
 | SPC-05-004 | 仕様 | DB と設計書 | 情シス向けの開示資料：オブジェクトに ER 図の表と設計書の節がある（G20）。エラー一覧に異常状態が足されている（E1〜E9） | この文が後回しのまま | 仕様づくりを 1 周回す | er_gate・error_catalog gate PASS | PASS（ER図 §15 に 7 表（payment_methods・billing_events・llm_routes・llm_capabilities・push_devices・disclosure_versions・subprocessors）＋ subscriptions／invoices／payments／credentials の列。オブジェクト↔テーブル・根拠の表。設計書 §6c・architecture.json（billing／llm_routes／app／disclosure）・selected-stack（mobile／payments／llm_providers）。er_gate G20 PASS。エラー一覧 E-PAY 6／E-LLM 4／E-APP 2／E-DISC 2・error_catalog E1〜E9 PASS（v1／v2）。migration 0019（gen_ddl）・G12 19/19。2026-09-16） | D-081.5 | T-V2-05 | L1 |
 | SPC-05-005 | 仕様 | 下流の再生成 | 情シス向けの開示資料：functional → api → features → tasks → tickets → waves → test-plan を再生成し、実装タスクが日程に出る | この文が後回しのまま | 仕様づくりを 1 周回す | layer_audit --run PASS・ticket_gate PASS | PASS（functional（92 表・64 画面）→ api（60 endpoint・A1〜A8）→ features（121）→ tasks（169：段階 2 の実装 T-A-24〜26・T-U-59〜64・T-D-14 が Wave 20〜21 に）→ tickets（K1〜K9）→ waves（22・SP1〜SP8・節目 R2 は仮置き）→ test-plan（TV1〜TV8・EARS 432）。契約と生成テスト再生成・test 558 本 PASS。layer_audit G21 PASS。2026-09-16） | D-081.5 | T-V2-05 | L1 |
+| SPC-06-001 | 仕様 | 決定ログ | 会社ごとの鍵での保存時暗号：決定ログに節（decision／status／reflect_in／決めたこと表）が足され、trace_gate T1〜T10 が緑 | この文が後回しのまま | 仕様づくりを 1 周回す | trace_gate PASS |  | D-122.1 | T-V2-06 | L1 |
+| SPC-06-002 | 仕様 | 画面と行為 | 会社ごとの鍵での保存時暗号：flow.json に行為・画面が入り、G17 の deferred からこの文が消える（release を v1 か次の段階に） | この文が後回しのまま | 仕様づくりを 1 周回す | flow_gate G1〜G10・G17 PASS |  | D-122.1 | T-V2-06 | L1 |
+| SPC-06-003 | 仕様 | モック | 会社ごとの鍵での保存時暗号：モックが時点・役割・空／止まっている を持ち、治具（状態・横溢れ・レイアウト）が緑 | この文が後回しのまま | 仕様づくりを 1 周回す | mock_state・role_gate・ui_lint・治具 ★0 |  | D-122.1 | T-V2-06 | L1 |
+| SPC-06-004 | 仕様 | DB と設計書 | 会社ごとの鍵での保存時暗号：オブジェクトに ER 図の表と設計書の節がある（G20）。エラー一覧に異常状態が足されている（E1〜E9） | この文が後回しのまま | 仕様づくりを 1 周回す | er_gate・error_catalog gate PASS |  | D-122.1 | T-V2-06 | L1 |
+| SPC-06-005 | 仕様 | 下流の再生成 | 会社ごとの鍵での保存時暗号：functional → api → features → tasks → tickets → waves → test-plan を再生成し、実装タスクが日程に出る | この文が後回しのまま | 仕様づくりを 1 周回す | layer_audit --run PASS・ticket_gate PASS |  | D-122.1 | T-V2-06 | L1 |
+| SPC-07-001 | 仕様 | 決定ログ | Codex と Gemini の包み方：決定ログに節（decision／status／reflect_in／決めたこと表）が足され、trace_gate T1〜T10 が緑 | この文が後回しのまま | 仕様づくりを 1 周回す | trace_gate PASS |  | D-123.1 | T-V2-07 | L1 |
+| SPC-07-002 | 仕様 | 画面と行為 | Codex と Gemini の包み方：flow.json に行為・画面が入り、G17 の deferred からこの文が消える（release を v1 か次の段階に） | この文が後回しのまま | 仕様づくりを 1 周回す | flow_gate G1〜G10・G17 PASS |  | D-123.1 | T-V2-07 | L1 |
+| SPC-07-003 | 仕様 | モック | Codex と Gemini の包み方：モックが時点・役割・空／止まっている を持ち、治具（状態・横溢れ・レイアウト）が緑 | この文が後回しのまま | 仕様づくりを 1 周回す | mock_state・role_gate・ui_lint・治具 ★0 |  | D-123.1 | T-V2-07 | L1 |
+| SPC-07-004 | 仕様 | DB と設計書 | Codex と Gemini の包み方：オブジェクトに ER 図の表と設計書の節がある（G20）。エラー一覧に異常状態が足されている（E1〜E9） | この文が後回しのまま | 仕様づくりを 1 周回す | er_gate・error_catalog gate PASS |  | D-123.1 | T-V2-07 | L1 |
+| SPC-07-005 | 仕様 | 下流の再生成 | Codex と Gemini の包み方：functional → api → features → tasks → tickets → waves → test-plan を再生成し、実装タスクが日程に出る | この文が後回しのまま | 仕様づくりを 1 周回す | layer_audit --run PASS・ticket_gate PASS |  | D-123.1 | T-V2-07 | L1 |

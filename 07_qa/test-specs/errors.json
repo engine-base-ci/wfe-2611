@@ -4058,6 +4058,64 @@
     "D-093.8",
     "D-104.7"
    ]
+  },
+  {
+   "id": "E-SIG-003",
+   "class": "no_signal",
+   "where": {
+    "screen": "clone-chat",
+    "state": "stp"
+   },
+   "when": "本人が止めた・何も進まないので止めた とき、道具（送信・書き込み・ブラウザ操作）が動いている最中だった",
+   "false_when": "止めたとき道具が動いていない（文を書いている・考えている）",
+   "message": "ここで止まりました。あなたが止めました。「{対象}」は途中だったので、その結末は分かりません。先方の画面で確かめてください",
+   "action": "先方の画面（送った先・書いた先）で結末を確かめる／続けるなら「続けて」と書いて送る",
+   "undo": false,
+   "layers": [
+    "UI",
+    "Bridge"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "道具が動いている仕事（偽の CLI：SLOW_TOOL）",
+    "steps": [
+     "止める を押す"
+    ],
+    "needs": "つないだ PC"
+   },
+   "severity": "medium",
+   "source": [
+    "D-124.2"
+   ]
+  },
+  {
+   "id": "E-NF-003",
+   "class": "not_found",
+   "where": {
+    "screen": "clone-chat",
+    "state": "n"
+   },
+   "when": "続きの会話の記録（本人の PC のセッション）が無い（30 日で消えた・PC を替えた・消した）",
+   "false_when": "記録がある",
+   "message": "前の会話の記録がこの PC に無かったので、新しい会話として続けます。これまでの内容は Kaname の写しに残っています",
+   "action": "そのまま続ける（何もしなくてよい）",
+   "undo": false,
+   "layers": [
+    "UI",
+    "Bridge"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "記録に無い id を持つ会話（偽の CLI：--resume sess-lost）",
+    "steps": [
+     "何か頼む"
+    ],
+    "needs": "つないだ PC"
+   },
+   "severity": "low",
+   "source": [
+    "D-124.3"
+   ]
   }
  ],
  "meta": {

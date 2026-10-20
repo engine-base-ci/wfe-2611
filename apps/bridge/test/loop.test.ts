@@ -87,6 +87,15 @@ describe("startLoop", () => {
     expect(existsSync(dir)).toBe(false); // 終わったら片付ける
   });
 
+  it("CHT-42-003 記録が無い会話の仕事は、新しいセッションでやり直して知らせ（notice）を 1 行流し、新しい id の init と結末を返す（D-124.3・E-NF-003）", async () => {
+    const p = await runOne({ job_id: "44444444-4444-4444-4444-444444444444", prompt: "請求書", agent_session_id: "sess-lost", conversation_id: "c" }, finished);
+    const notices = p.filter((x) => x.path === "/bridge/progress" && x.body["kind"] === "notice").map((x) => x.body["text"]);
+    expect(notices).toEqual(["前の会話の記録がこの PC に無かったので、新しい会話として続けます。これまでの内容は Kaname の写しに残っています"]);
+    const inits = p.filter((x) => x.path === "/bridge/progress" && x.body["kind"] === "init").map((x) => x.body["agent_session_id"]);
+    expect(inits, "新しい id が Kaname に入る（D-093.4）").toEqual(["sess-fake"]);
+    expect(p.find((x) => x.path === "/bridge/finish")!.body).toMatchObject({ state: "done", result: "答え:請求書", agent_session_id: "sess-fake" });
+  });
+
   it("止めるの合図で、理由「あなたが止めました」を返す（D-104.9）", async () => {
     control = { stop: false, steer: [] };
     setTimeout(() => (control = { stop: true, steer: [] }), 400);

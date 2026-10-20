@@ -1,12 +1,12 @@
 {
  "version": "v3.2",
  "project": "Kaname",
- "created_at": "2026-10-14",
+ "created_at": "2026-10-20",
  "decomposition_mode": "api_first",
  "api_design_ref": {
   "openapi_path": "08_api/openapi.yaml",
   "screen_api_coverage_path": "08_api/screen-api-coverage.json",
-  "contract_frozen_at": "2026-10-14"
+  "contract_frozen_at": "2026-10-20"
  },
  "_doc": "05_flow/build_tasks.py が機械生成。手で直さない。途中変更は差分（qa_delta.py）",
  "source": [
@@ -14,48 +14,48 @@
   "D-036.4"
  ],
  "summary": {
-  "total_tasks": 215,
+  "total_tasks": 218,
   "by_group": {
    "A": 28,
-   "B": 41,
+   "B": 42,
    "D": 14,
    "F": 18,
    "I": 22,
    "S": 15,
    "U-screen": 64,
    "U-shared": 8,
-   "V2": 5
+   "V2": 7
   },
   "by_category": {
-   "backend": 69,
+   "backend": 70,
    "db": 20,
    "frontend": 72,
    "infra": 12,
-   "spec": 20,
+   "spec": 22,
    "test": 22
   },
   "by_label": {
-   "NEW": 215
+   "NEW": 218
   },
   "by_deliverable_layer": {
-   "backend": 69,
+   "backend": 70,
    "content": 15,
    "foundation": 32,
    "integration": 18,
    "polish": 4,
-   "spec": 5,
+   "spec": 7,
    "ui": 72
   },
   "by_phase": {
    "1_foundation": 18,
    "2_data": 14,
    "3_api": 25,
-   "3_backend": 41,
+   "3_backend": 42,
    "4_ui_foundation": 8,
    "5_ui_parallel": 58,
    "6_integration": 22,
    "7_content": 15,
-   "8_spec_v2": 5,
+   "8_spec_v2": 7,
    "9_v2_api": 3,
    "9_v2_ui": 6
   },
@@ -64,16 +64,16 @@
    "total_screens": 64,
    "uncovered_screens": []
   },
-  "total_estimate_hours_human": 6292.5,
-  "total_estimate_hours_ai_compute": 1139.0,
+  "total_estimate_hours_human": 6330.5,
+  "total_estimate_hours_ai_compute": 1144.9,
   "human_review_total_h": 88.0,
   "total_wall_clock_h_ai_parallel": 336.0,
   "parallel_capacity": 10,
   "calendar_days_ai": 56,
-  "calendar_days_human": 787,
-  "total_estimate_hours": 1227.0,
-  "total_estimate_sessions": 408,
-  "qa_rows_total": 5138,
+  "calendar_days_human": 792,
+  "total_estimate_hours": 1232.9,
+  "total_estimate_sessions": 411,
+  "qa_rows_total": 5160,
   "journeys": 9
  },
  "waves": [
@@ -173,12 +173,14 @@
     "T-V2-02",
     "T-V2-03",
     "T-V2-04",
-    "T-V2-05"
+    "T-V2-05",
+    "T-V2-06",
+    "T-V2-07"
    ],
-   "parallel": 5,
+   "parallel": 7,
    "wall_clock_h_ai": 3.2,
-   "estimate_hours_human": 80,
-   "estimate_hours_ai_compute": 13.5
+   "estimate_hours_human": 112,
+   "estimate_hours_ai_compute": 18.9
   },
   {
    "wave": 6,
@@ -359,12 +361,13 @@
     "T-B-22",
     "T-B-23",
     "T-B-24",
-    "T-B-35"
+    "T-B-35",
+    "T-B-42"
    ],
-   "parallel": 4,
+   "parallel": 5,
    "wall_clock_h_ai": 5.0,
-   "estimate_hours_human": 38,
-   "estimate_hours_ai_compute": 9.2
+   "estimate_hours_human": 44,
+   "estimate_hours_ai_compute": 9.7
   },
   {
    "wave": 17,
@@ -25567,9 +25570,15 @@
      "E-LIM-010-A",
      "E-LIM-010-B",
      "E-LIM-010-C",
+     "E-NF-003-A",
+     "E-NF-003-B",
+     "E-NF-003-C",
      "E-SIG-002-A",
      "E-SIG-002-B",
      "E-SIG-002-C",
+     "E-SIG-003-A",
+     "E-SIG-003-B",
+     "E-SIG-003-C",
      "BRG-03-004",
      "BRG-03-005",
      "BRG-03-006",
@@ -51923,6 +51932,188 @@
    "estimate_sessions": 1
   },
   {
+   "id": "T-B-42",
+   "title": "Bridge は仕事の間 PC を寝かせず、止めたら途中の道具の結末は不明と言い、記録が無ければ新しいセッションで続ける（powerSaveBlocker は working の間だけ・E-SIG-003・E-NF-003・本物の CLI で実測した形）",
+   "category": "backend",
+   "label": "NEW",
+   "feature_id": null,
+   "feature_ids": [],
+   "screen_ids": [
+    "clone-chat"
+   ],
+   "entity_ids": [],
+   "acts": [
+    "A89",
+    "A20"
+   ],
+   "legacy_task_id": null,
+   "phase": "3_backend",
+   "wave": 16,
+   "group": "B",
+   "deliverable_layer": "backend",
+   "stage": "v1",
+   "depends_on": [
+    "T-B-17",
+    "T-B-31"
+   ],
+   "choke_points": [
+    "C5"
+   ],
+   "choke_points_rationale": "本人の Claude Code を起こす（C5）。外に出るものは無い",
+   "forbidden_direct_apis_reminder": [
+    "fetch",
+    "axios",
+    "undici",
+    "pg / drizzle の生クライアント（関門の外）",
+    "child_process",
+    "fs（関門の外）",
+    "nodemailer / resend（関門の外）",
+    "anthropic / openai SDK（関門の外）"
+   ],
+   "files_changed": [
+    "apps/bridge/src/awake.ts (new)",
+    "apps/bridge/src/main.ts (new)",
+    "apps/bridge/src/runner.ts (new)",
+    "apps/bridge/src/loop.ts (new)",
+    "apps/bridge/test/awake.test.ts (new)",
+    "apps/bridge/test/runner.test.ts (new)",
+    "apps/bridge/test/fake-claude.mjs (new)",
+    "scripts/dev/fake-claude-demo.mjs (new)",
+    "apps/web/tests/screens/qa-b-bridge-stop.spec.ts (new)"
+   ],
+   "files_changed_predicted": {
+    "new": [
+     "apps/bridge/src/awake.ts",
+     "apps/bridge/src/main.ts",
+     "apps/bridge/src/runner.ts",
+     "apps/bridge/src/loop.ts",
+     "apps/bridge/test/awake.test.ts",
+     "apps/bridge/test/runner.test.ts",
+     "apps/bridge/test/fake-claude.mjs",
+     "scripts/dev/fake-claude-demo.mjs",
+     "apps/web/tests/screens/qa-b-bridge-stop.spec.ts"
+    ],
+    "modify": [],
+    "shared_read": [
+     "03_architecture/アーキテクチャ設計書.md",
+     "03_architecture/ER図.md",
+     "06_mockup/v1/v1-clone-chat.html"
+    ],
+    "forbidden": []
+   },
+   "acceptance_criteria": {
+    "structural": [
+     "UBIQUITOUS: Bridge は仕事の間 PC を寝かせず、止めたら途中の道具の結末は不明と言い の成果物があり、type-check と build が通る"
+    ],
+    "functional": [
+     "EVENT-DRIVEN: WHEN 止める（偽の CLI で道具の最中に stopCurrent）、システムは 結末の理由に道具の名前と対象が入る（E-SIG-003）。文を書いている最中に止めたときは付かない",
+     "UNWANTED: IF つないだ PC（本物の Bridge の輪＋偽の CLI）、システムは 「ここで止まりました」の理由に途中の道具の文が入る／吹き出しの外に E-NF-003 の 1 行が出て、返事は新しいセッションで返る"
+    ],
+    "regression": [
+     "pnpm test（該当パッケージ）PASS",
+     "pnpm typecheck 0 errors（触ったファイル）",
+     "coverage >= 80%（触ったファイル）",
+     "pnpm lint OK",
+     "python3 scripts/ci/layer_audit.py --run PASS",
+     "関門の迂回検出（choke-points ci_check）PASS",
+     "audit MD（07_tasks/audit/<id>.md）に impl line を記入"
+    ]
+   },
+   "access_policies_required": [],
+   "spec_links": [
+    "01_hearing/決定ログ_進行中.md#124",
+    "03_architecture/アーキテクチャ設計書.md",
+    "06_mockup/v1/v1-clone-chat.html"
+   ],
+   "audit_md_path": "07_tasks/audit/T-B-42.md",
+   "status": "done",
+   "qa_rows": {
+    "l1": [
+     "CHT-42-001",
+     "CHT-42-002",
+     "CHT-42-003",
+     "CHT-42-004",
+     "CHT-42-005",
+     "CHT-42-006"
+    ],
+    "l2_flows": []
+   },
+   "test_scenarios_inline": [
+    {
+     "name": "Bridge は仕事の間 PC を寝かせず、止めたら途中の道具の結末は不明と言い",
+     "steps": [
+      "仕事を始める → 終える（単体：働いている状態の切り替わりで powerSaveBlocker の開始・停止が 1 回ずつ呼ばれる）",
+      "止める（偽の CLI で道具の最中に stopCurrent）",
+      "記録に無い id の仕事を流す（偽の CLI）",
+      "存在しない id で 1 回呼ぶ（本物・短い頼み）",
+      "普通に続きを頼む（偽の CLI）",
+      "会話で「道具の最中に止めて」→ 止める／「記録を失って」と送る（実ブラウザ）"
+     ],
+     "expected": "結末の理由に道具の名前と対象が入る（E-SIG-003）。文を書いている最中に止めたときは付かない"
+    }
+   ],
+   "source": [
+    "D-124.1",
+    "D-124.2",
+    "D-124.3",
+    "D-093.4",
+    "D-104.9"
+   ],
+   "decision_summaries": [
+    {
+     "id": "D-124",
+     "summary": "仕事の間だけ OS に「寝ないで」を頼む（画面は消えてよい・ふたを閉じたら従う・電源設定は変えない）。止めたとき道具が動いている最中なら「途中だったので結末は分かりません」を理由に添える。--resume の記録が PC に無ければ新しいセッションで 1 回だけやり直し、会話に 1 行知らせる（本物の CLI で 2026-10-20 に実測：No conversation found・is_error・num_turns 0）"
+    },
+    {
+     "id": "D-093",
+     "summary": "端末(tty)は要らずパイプで足りる。stream-json で完了イベントを受けるので「終了コード0=成功」にしない。承認待ちは同じ経路に出す。中断・再開は resume で受ける"
+    },
+    {
+     "id": "D-104",
+     "summary": "会話は人が「新しく話す」で分け、一覧（探す・星・消す・記憶に残さない）から戻って続ける（1会話＝PCのClaudeの1セッション、名前は自動で付き直せる）。両方吹き出し（自分は淡い灰、AIの表・図・カードは幅いっぱい）。返事は書式・印・図・コード・実物カード・資料・作業の記録・AIからの問い合わせまで Claude のデスクトップと同じだけ出せる。作業中は吹き出しの外に「〇〇を調べています」と手順・経過時間・道具の行、終われば畳む。止める・止めずに直す・順番待ち。入力欄は大きな箱（文脈のチップ・添付・声・@・モデルと使うもの・許可のモード）。許可は Claude と同じモードと3択（全部許可も本人が選べる）。止まったら理由だけ。使用量は Claude と同じ形。コピー・直して送り直す・タスク化・引用・書き出し（成果物へ）。勝手に下へ飛ばない・見ていない間の印・終わった／許可が要るの知らせ"
+    }
+   ],
+   "critical": false,
+   "why": "D-124 で決めたことを日程に載せる（決めたのに日程に無い、を作らない）",
+   "acceptance_criteria_inline": {
+    "tier_1_structural": [
+     "UBIQUITOUS: Bridge は仕事の間 PC を寝かせず、止めたら途中の道具の結末は不明と言い の成果物があり、type-check と build が通る"
+    ],
+    "tier_2_functional": [
+     {
+      "type": "EVENT-DRIVEN",
+      "text": "EVENT-DRIVEN: WHEN 止める（偽の CLI で道具の最中に stopCurrent）、システムは 結末の理由に道具の名前と対象が入る（E-SIG-003）。文を書いている最中に止めたときは付かない",
+      "critical": false
+     },
+     {
+      "type": "UNWANTED",
+      "text": "UNWANTED: IF つないだ PC（本物の Bridge の輪＋偽の CLI）、システムは 「ここで止まりました」の理由に途中の道具の文が入る／吹き出しの外に E-NF-003 の 1 行が出て、返事は新しいセッションで返る",
+      "critical": false
+     }
+    ],
+    "tier_3_regression": [
+     "pnpm test（該当パッケージ）PASS",
+     "pnpm typecheck 0 errors（触ったファイル）",
+     "coverage >= 80%（触ったファイル）",
+     "pnpm lint OK",
+     "python3 scripts/ci/layer_audit.py --run PASS",
+     "関門の迂回検出（choke-points ci_check）PASS",
+     "audit MD（07_tasks/audit/<id>.md）に impl line を記入"
+    ]
+   },
+   "estimate_hours_human": 6,
+   "estimate_hours_ai": 0.5,
+   "human_review_h": 0.0,
+   "wall_clock_h_ai": 0.5,
+   "ai_acceleration_factor": 12,
+   "blocking_dependencies_h": 0,
+   "estimate_method": "reference",
+   "estimate_confidence": "medium",
+   "estimate_hours": 0.5,
+   "estimate_sessions": 1,
+   "done_at": "2026-10-20"
+  },
+  {
    "id": "T-US-08",
    "title": "会話の部品の作り込み（D-104：吹き出し・書式と図とカードと資料の描画・作業の行・問い合わせ・許可の 3 択・入力欄の箱・声・@・文脈・返事への操作・画面の動き・知らせ・読み上げ）",
    "category": "frontend",
@@ -52828,6 +53019,294 @@
      {
       "type": "EVENT-DRIVEN",
       "text": "EVENT-DRIVEN: WHEN 決定ログに 情シス向けの開示資料 の節を足したら、システム（ゲート）は trace_gate T1〜T10・flow_gate G17・er_gate G20・layer_audit G21 を全部緑で通す",
+      "critical": false
+     },
+     {
+      "type": "UNWANTED",
+      "text": "UNWANTED: IF 決定の無い後回しや、オブジェクトの無い『作る・配る・版』の文が残ったら、G17／T10 が赤のまま実装タスクを生成しない",
+      "critical": false
+     }
+    ],
+    "tier_3_regression": [
+     "python3 scripts/ci/layer_audit.py --run PASS",
+     "python3 scripts/ci/td_gate.py（TD11：後回しの文に仕様づくりのタスク）PASS"
+    ]
+   },
+   "estimate_hours_human": 16,
+   "estimate_hours_ai": 2.7,
+   "human_review_h": 0.0,
+   "wall_clock_h_ai": 2.7,
+   "ai_acceleration_factor": 6,
+   "blocking_dependencies_h": 0,
+   "estimate_method": "reference",
+   "estimate_confidence": "medium",
+   "estimate_hours": 2.7,
+   "estimate_sessions": 1
+  },
+  {
+   "id": "T-V2-06",
+   "title": "段階 2 の仕様づくり：会社ごとの鍵での保存時暗号",
+   "category": "spec",
+   "label": "NEW",
+   "feature_id": null,
+   "feature_ids": [],
+   "screen_ids": [],
+   "entity_ids": [],
+   "acts": [],
+   "legacy_task_id": null,
+   "phase": "8_spec_v2",
+   "wave": 5,
+   "group": "V2",
+   "deliverable_layer": "spec",
+   "stage": "v1",
+   "depends_on": [
+    "T-F-18"
+   ],
+   "choke_points": [],
+   "choke_points_rationale": "仕様の作業。外界には触れない",
+   "forbidden_direct_apis_reminder": [
+    "fetch",
+    "axios",
+    "undici",
+    "pg / drizzle の生クライアント（関門の外）",
+    "child_process",
+    "fs（関門の外）",
+    "nodemailer / resend（関門の外）",
+    "anthropic / openai SDK（関門の外）"
+   ],
+   "files_changed": [
+    "01_hearing/決定ログ_進行中.md (modify)",
+    "05_flow/data.py (modify)",
+    "06_mockup/s_p11.py (new)",
+    "03_architecture/ER図.md (modify)"
+   ],
+   "files_changed_predicted": {
+    "new": [
+     "01_hearing/決定ログ_進行中.md#新しい節",
+     "06_mockup/s_p11.py"
+    ],
+    "modify": [
+     "05_flow/data.py",
+     "03_architecture/ER図.md",
+     "03_architecture/アーキテクチャ設計書.md",
+     "07_qa/test-specs/errors.json"
+    ],
+    "shared_read": [
+     "01_hearing/ヒアリングサマリー.md#段階リリース",
+     "05_flow/flow.json#deferred"
+    ],
+    "forbidden": [
+     "apps/**",
+     "packages/**（仕様が揃うまで実装しない）"
+    ]
+   },
+   "acceptance_criteria": {
+    "structural": [
+     "UBIQUITOUS: 会社ごとの鍵での保存時暗号 の画面・行為が flow.json の release に入り、G17 の deferred から D-122.1 が消えている"
+    ],
+    "functional": [
+     "EVENT-DRIVEN: WHEN 決定ログに 会社ごとの鍵での保存時暗号 の節を足したら、システム（ゲート）は trace_gate T1〜T10・flow_gate G17・er_gate G20・layer_audit G21 を全部緑で通す",
+     "UNWANTED: IF 決定の無い後回しや、オブジェクトの無い『作る・配る・版』の文が残ったら、G17／T10 が赤のまま実装タスクを生成しない"
+    ],
+    "regression": [
+     "python3 scripts/ci/layer_audit.py --run PASS",
+     "python3 scripts/ci/td_gate.py（TD11：後回しの文に仕様づくりのタスク）PASS"
+    ]
+   },
+   "access_policies_required": [],
+   "spec_links": [
+    "01_hearing/ヒアリングサマリー.md",
+    "05_flow/flow.json"
+   ],
+   "audit_md_path": "07_tasks/audit/T-V2-06.md",
+   "status": "todo",
+   "qa_rows": {
+    "l1": [
+     "SPC-06-001",
+     "SPC-06-002",
+     "SPC-06-003",
+     "SPC-06-004",
+     "SPC-06-005"
+    ],
+    "l2_flows": []
+   },
+   "test_scenarios_inline": [
+    {
+     "name": "仕様を 1 周回す",
+     "steps": [
+      "決定 → flow → モック → ER → 下流"
+     ],
+     "expected": "実装タスクが日程に出る"
+    }
+   ],
+   "source": [
+    "D-122.1",
+    "D-099"
+   ],
+   "decision_summaries": [
+    {
+     "id": "D-122",
+     "summary": "情シスの「運営も見られない」には E2E ではなく、会社ごとのデータ鍵で本文を保存時に暗号化する（封筒・AAD にテナント・鍵は C8）＋行レベル制御＋サポート時の明示的許可と証跡で答える。E2E はサーバーが記憶・承認・検索を作れなくなるので採らない"
+    },
+    {
+     "id": "D-099",
+     "summary": "段階1の探すは自分のAIが全文検索を繰り返して読んで選ぶ。ベクトルは件数と探す時間が境を超えてから入れ、作るのは本人のPC（サブスクでもAPIでも）。PCが無い会社だけ段階2のサーバーで同じモデル。モデルの取得・確認・直しはBridgeが自分でやり、人にやらせない"
+    }
+   ],
+   "critical": false,
+   "why": "後回しにした文 D-122.1「会社ごとの鍵での保存時暗号」の仕様を作る（D-081.7：後回しは日程に載せる）",
+   "acceptance_criteria_inline": {
+    "tier_1_structural": [
+     "UBIQUITOUS: 会社ごとの鍵での保存時暗号 の画面・行為が flow.json の release に入り、G17 の deferred から D-122.1 が消えている"
+    ],
+    "tier_2_functional": [
+     {
+      "type": "EVENT-DRIVEN",
+      "text": "EVENT-DRIVEN: WHEN 決定ログに 会社ごとの鍵での保存時暗号 の節を足したら、システム（ゲート）は trace_gate T1〜T10・flow_gate G17・er_gate G20・layer_audit G21 を全部緑で通す",
+      "critical": false
+     },
+     {
+      "type": "UNWANTED",
+      "text": "UNWANTED: IF 決定の無い後回しや、オブジェクトの無い『作る・配る・版』の文が残ったら、G17／T10 が赤のまま実装タスクを生成しない",
+      "critical": false
+     }
+    ],
+    "tier_3_regression": [
+     "python3 scripts/ci/layer_audit.py --run PASS",
+     "python3 scripts/ci/td_gate.py（TD11：後回しの文に仕様づくりのタスク）PASS"
+    ]
+   },
+   "estimate_hours_human": 16,
+   "estimate_hours_ai": 2.7,
+   "human_review_h": 0.0,
+   "wall_clock_h_ai": 2.7,
+   "ai_acceleration_factor": 6,
+   "blocking_dependencies_h": 0,
+   "estimate_method": "reference",
+   "estimate_confidence": "medium",
+   "estimate_hours": 2.7,
+   "estimate_sessions": 1
+  },
+  {
+   "id": "T-V2-07",
+   "title": "段階 2 の仕様づくり：Codex と Gemini の包み方",
+   "category": "spec",
+   "label": "NEW",
+   "feature_id": null,
+   "feature_ids": [],
+   "screen_ids": [],
+   "entity_ids": [],
+   "acts": [],
+   "legacy_task_id": null,
+   "phase": "8_spec_v2",
+   "wave": 5,
+   "group": "V2",
+   "deliverable_layer": "spec",
+   "stage": "v1",
+   "depends_on": [
+    "T-F-18"
+   ],
+   "choke_points": [],
+   "choke_points_rationale": "仕様の作業。外界には触れない",
+   "forbidden_direct_apis_reminder": [
+    "fetch",
+    "axios",
+    "undici",
+    "pg / drizzle の生クライアント（関門の外）",
+    "child_process",
+    "fs（関門の外）",
+    "nodemailer / resend（関門の外）",
+    "anthropic / openai SDK（関門の外）"
+   ],
+   "files_changed": [
+    "01_hearing/決定ログ_進行中.md (modify)",
+    "05_flow/data.py (modify)",
+    "06_mockup/s_p11.py (new)",
+    "03_architecture/ER図.md (modify)"
+   ],
+   "files_changed_predicted": {
+    "new": [
+     "01_hearing/決定ログ_進行中.md#新しい節",
+     "06_mockup/s_p11.py"
+    ],
+    "modify": [
+     "05_flow/data.py",
+     "03_architecture/ER図.md",
+     "03_architecture/アーキテクチャ設計書.md",
+     "07_qa/test-specs/errors.json"
+    ],
+    "shared_read": [
+     "01_hearing/ヒアリングサマリー.md#段階リリース",
+     "05_flow/flow.json#deferred"
+    ],
+    "forbidden": [
+     "apps/**",
+     "packages/**（仕様が揃うまで実装しない）"
+    ]
+   },
+   "acceptance_criteria": {
+    "structural": [
+     "UBIQUITOUS: Codex と Gemini の包み方 の画面・行為が flow.json の release に入り、G17 の deferred から D-123.1 が消えている"
+    ],
+    "functional": [
+     "EVENT-DRIVEN: WHEN 決定ログに Codex と Gemini の包み方 の節を足したら、システム（ゲート）は trace_gate T1〜T10・flow_gate G17・er_gate G20・layer_audit G21 を全部緑で通す",
+     "UNWANTED: IF 決定の無い後回しや、オブジェクトの無い『作る・配る・版』の文が残ったら、G17／T10 が赤のまま実装タスクを生成しない"
+    ],
+    "regression": [
+     "python3 scripts/ci/layer_audit.py --run PASS",
+     "python3 scripts/ci/td_gate.py（TD11：後回しの文に仕様づくりのタスク）PASS"
+    ]
+   },
+   "access_policies_required": [],
+   "spec_links": [
+    "01_hearing/ヒアリングサマリー.md",
+    "05_flow/flow.json"
+   ],
+   "audit_md_path": "07_tasks/audit/T-V2-07.md",
+   "status": "todo",
+   "qa_rows": {
+    "l1": [
+     "SPC-07-001",
+     "SPC-07-002",
+     "SPC-07-003",
+     "SPC-07-004",
+     "SPC-07-005"
+    ],
+    "l2_flows": []
+   },
+   "test_scenarios_inline": [
+    {
+     "name": "仕様を 1 周回す",
+     "steps": [
+      "決定 → flow → モック → ER → 下流"
+     ],
+     "expected": "実装タスクが日程に出る"
+    }
+   ],
+   "source": [
+    "D-123.1",
+    "D-083"
+   ],
+   "decision_summaries": [
+    {
+     "id": "D-123",
+     "summary": "D-083 の 3 社のうち Codex は codex app-server（JSON-RPC・承認の割り込み）、Gemini は ACP（session/request_permission）で包む。codex mcp 経由は承認が取れないので使わない。Bridge 側で変えるのは提供元ごとの parse／response の 1 層と対応表だけ。道具の自動許可は完全一致だけで判定する"
+    },
+    {
+     "id": "D-083",
+     "summary": "段階 2 で足す経路は BYOK（顧客の API キー）と運営マネージド（運営のキー・既定 OFF）。提供者は Anthropic・OpenAI・Google の 3 社で、使える機能は 3 社で徹底して同じにする（能力表を揃え、揃わない能力は出さない）。キーは C8 の vault 参照だけ。運営マネージドの費用はプランの上限に含め、超過は従量で同じ請求書に"
+    }
+   ],
+   "critical": false,
+   "why": "後回しにした文 D-123.1「Codex と Gemini の包み方」の仕様を作る（D-081.7：後回しは日程に載せる）",
+   "acceptance_criteria_inline": {
+    "tier_1_structural": [
+     "UBIQUITOUS: Codex と Gemini の包み方 の画面・行為が flow.json の release に入り、G17 の deferred から D-123.1 が消えている"
+    ],
+    "tier_2_functional": [
+     {
+      "type": "EVENT-DRIVEN",
+      "text": "EVENT-DRIVEN: WHEN 決定ログに Codex と Gemini の包み方 の節を足したら、システム（ゲート）は trace_gate T1〜T10・flow_gate G17・er_gate G20・layer_audit G21 を全部緑で通す",
       "critical": false
      },
      {

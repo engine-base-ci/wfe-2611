@@ -756,6 +756,17 @@ EXTRA_CHAT = [
       ("証跡", "渡したことは証跡に名前・種類・大きさで残り、中身は書かない", "渡した成果物", "証跡を見る", "audit_events に agent.artifact_put（title・format・size・job_id）。中身は無い", "D-121.5"),
       ("勝手に集めない", "道具を呼んだときだけ渡る。仕事の中で AI が読んだだけのファイルは渡らない", "記録がある仕事", "道具を呼ばない仕事を最後まで動かす", "成果物は増えない（道具の呼び出しの行だけが残る）", "D-121.6")],
      "D-121.1", ["D-121.2", "D-121.3", "D-121.4", "D-121.5", "D-121.6", "D-106.5", "D-110.3"], False),
+    # Happy／Omnara との照合から（D-124・2026-10-20）：寝かせない・途中の道具の結末・記録が無いときの resume
+    ("T-B-42", "Bridge は仕事の間 PC を寝かせず、止めたら途中の道具の結末は不明と言い、記録が無ければ新しいセッションで続ける（powerSaveBlocker は working の間だけ・E-SIG-003・E-NF-003・本物の CLI で実測した形）", 6, ["T-B-17", "T-B-31"],
+     ["apps/bridge/src/awake.ts", "apps/bridge/src/main.ts", "apps/bridge/src/runner.ts", "apps/bridge/src/loop.ts", "apps/bridge/test/awake.test.ts", "apps/bridge/test/runner.test.ts", "apps/bridge/test/fake-claude.mjs", "scripts/dev/fake-claude-demo.mjs", "apps/web/tests/screens/qa-b-bridge-stop.spec.ts"],
+     ["A89", "A20"], ["clone-chat"], ["C5"], "本人の Claude Code を起こす（C5）。外に出るものは無い", _spc,
+     [("寝かせない", "仕事が動いている間だけ OS に「寝ないで」を頼み、終わったら解く。待っているだけの間は頼まない・本人の電源の設定は変えない", "Bridge を入れた PC", "仕事を始める → 終える（単体：働いている状態の切り替わりで powerSaveBlocker の開始・停止が 1 回ずつ呼ばれる）", "working が入ったら 1 回だけ開始、空になったら 1 回だけ停止。同じ状態が続いても呼び直さない", "D-124.1"),
+      ("途中の道具", "道具が動いている最中に止めると、理由に「◯◯（対象）は途中だったので、その結末は分かりません。先方の画面で確かめてください」が付く", "道具が動いている仕事（偽の CLI：SLOW_TOOL）", "止める（偽の CLI で道具の最中に stopCurrent）", "結末の理由に道具の名前と対象が入る（E-SIG-003）。文を書いている最中に止めたときは付かない", "D-124.2"),
+      ("記録が無い", "前の記録が PC に無いとき、同じ仕事を --resume 無しで 1 回だけやり直し、会話に 1 行知らせる", "記録に無い id（偽の CLI：--resume sess-lost は stderr『No conversation found…』・result is_error・num_turns 0 を返す）", "記録に無い id の仕事を流す（偽の CLI）", "新しいセッションの id で結末が返り、notice（E-NF-003）が 1 回。2 回目の失敗はやり直さず理由を出して止まる", "D-124.3"),
+      ("本物で確かめた", "本物の Claude Code が記録の無い id の --resume で何を返すか", "この PC の Claude Code（2.1.283）", "存在しない id で 1 回呼ぶ（本物・短い頼み）", "stderr『No conversation found with session ID』・result is_error・error_during_execution・num_turns 0・本文なし（2026-10-20 実測）。偽の CLI はこの形を写している", "D-124.3"),
+      ("記録がある", "記録があるときはやり直さない・知らせない", "記録のある id", "普通に続きを頼む（偽の CLI）", "notice は出ない・同じ id のまま 1 回で終わる", "D-124.3"),
+      ("会話で見える", "止めた理由と記録の無い知らせが会話に出る", "つないだ PC（本物の Bridge の輪＋偽の CLI）", "会話で「道具の最中に止めて」→ 止める／「記録を失って」と送る（実ブラウザ）", "「ここで止まりました」の理由に途中の道具の文が入る／吹き出しの外に E-NF-003 の 1 行が出て、返事は新しいセッションで返る", "D-124.2")],
+     "D-124.1", ["D-124.2", "D-124.3", "D-093.4", "D-104.9"], False),
 ]
 for _tid, _title, _h, _dep, _files, _acts, _scr, _ch, _chr, _spf, _qs, _src, _more, _crit in EXTRA_CHAT:
     _rows = [qrow(_spf, _tid.replace("T-B-", "CHT-"), _scr[0], _v, _it, _pre_, _st, _ex, _s2, _tid) for _v, _it, _pre_, _st, _ex, _s2 in _qs]

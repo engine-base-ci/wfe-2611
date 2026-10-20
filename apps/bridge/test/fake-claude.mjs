@@ -8,12 +8,20 @@
 //   SLOW を含む → result を返さず居座る（止めるの確かめ）
 //   ゆっくり を含む → 書きかけのまま少し待つ
 //   SILENT を含む → result を返さずに終わる（G-15）
+//   SLOW_TOOL を含む → 道具（送信）を始めたまま居座る（D-124.2）／--resume sess-lost → 記録が無い（D-124.3）
 if (process.argv.includes("--version")) {
   console.log("2.1.280 (fake)");
   process.exit(0);
 }
 const out = (o) => process.stdout.write(`${JSON.stringify(o)}\n`);
 const args = process.argv.slice(2);
+// --resume sess-lost → 記録が無い（本物の claude 2.1.283 で 2026-10-20 に実測した形・D-124.3）：
+//   stderr に 1 行、stdout の result は is_error・error_during_execution・num_turns 0・duration_api_ms 0・本文なし、終了コード 1
+if (args.includes("--resume") && args[args.indexOf("--resume") + 1] === "sess-lost") {
+  process.stderr.write("No conversation found with session ID: sess-lost\n");
+  out({ type: "result", subtype: "error_during_execution", duration_ms: 0, duration_api_ms: 0, is_error: true, num_turns: 0, stop_reason: null, session_id: "sess-lost", total_cost_usd: 0, usage: { input_tokens: 0, output_tokens: 0 }, result: "" });
+  process.exit(1);
+}
 let n = 0;
 let waiting = null;
 let rest = "";
@@ -43,6 +51,11 @@ const finish = (text) => {
 const onUser = (text) => {
   n += 1;
   if (text.includes("SILENT")) process.exit(0);
+  // SLOW_TOOL：道具（送信）を始めたまま居座る（止めたとき「途中だった道具の結末は分からない」の確かめ・D-124.2）
+  if (text.includes("SLOW_TOOL")) {
+    out({ type: "assistant", message: { content: [{ type: "tool_use", id: `sl${n}`, name: "Bash", input: { command: "curl -X POST https://mail.example.com/send" } }] } });
+    return;
+  }
   if (text.includes("SLOW")) return;
   if (text.includes("THINK")) {
     out({ type: "stream_event", event: { type: "message_start", message: {} } });

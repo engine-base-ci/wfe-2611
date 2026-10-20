@@ -3,7 +3,8 @@
 //   1 つなぐ（接続コードを引き取って端末として登録）／2 受け取って返す（T-B-03）
 //   3 見張る（bridge-guard・T-B-04）／4 鍵を解く（資格情報は参照 ID だけ受け取る・関門 C8・T-B-05）
 // この版は 1 と 自己診断 まで。2〜4 は別チケット。
-import { app, BrowserWindow, ipcMain, shell } from "electron";
+import { app, BrowserWindow, ipcMain, powerSaveBlocker, shell } from "electron";
+import { createAwake } from "./awake";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
@@ -281,6 +282,8 @@ void app.whenReady().then(() => {
     loginCode: (code: string) => submitCode(code),
     loginCancel: () => cancelLogin(),
   });
+  // 仕事の間だけ OS に「寝ないで」を頼む（D-124.1）。画面は消えてよい・ふたを閉じたら従う・電源の設定は変えない
+  const awake = createAwake(powerSaveBlocker);
   // 受け取って返す輪（T-B-03）。生存の知らせ・仕事の受け取り・結末の返送
   startLoop({
     apiBase: API_BASE,
@@ -304,6 +307,7 @@ void app.whenReady().then(() => {
     onOutdated: () => void updater?.checkNow(),
     onChange: (s) => {
       loop = s;
+      awake(s.working); // 仕事の間だけ PC を寝かせない（D-124.1）。終わったら解く
       for (const w of BrowserWindow.getAllWindows()) w.webContents.send("bridge:loop", s);
     },
   });

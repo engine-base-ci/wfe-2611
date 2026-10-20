@@ -1,4 +1,4 @@
-# Kaname 機能分解結果（feature-decomposition v3・2026-10-14）
+# Kaname 機能分解結果（feature-decomposition v3・2026-10-20）
 
 ## 分解の方針
 

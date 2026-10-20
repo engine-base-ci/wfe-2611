@@ -1,6 +1,6 @@
 # clone-chat テスト仕様（L1・機械生成）
 
-> 05_flow/build_tasks.py がタスクと同時に生成。ID は変えない。途中変更は qa_delta.py で差分。結果列は staging で流した人が書く（再生成しても残る。今の行 425・結果あり 389 行）。
+> 05_flow/build_tasks.py がタスクと同時に生成。ID は変えない。途中変更は qa_delta.py で差分。結果列は staging で流した人が書く（再生成しても残る。今の行 431・結果あり 389 行）。
 
 | ID | 画面 | テスト観点 | テスト項目 | 前提条件 | 操作手順 | 期待結果 | 結果 | 備考 | タスク | 実行条件 |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -429,6 +429,12 @@
 | CHT-41-004 | clone-chat | 制限 | 20 MB 超・受けない種類・ホームの外のファイル・終わった仕事の鍵は断る | 道具の鍵 | 大きいファイル／.exe／ホームの外／終わった仕事の鍵で渡す（API と道具のサーバー） | 413・422・401 で断り、行も置き場の中身もできない。道具のサーバーはホームの外・無いファイルを Kaname に送らない | PASS（apps/bridge/test/kaname-tools.test.ts・vitest（kaname_test）・2026-10-04） | D-121.4 | T-B-41 | L1 |
 | CHT-41-005 | clone-chat | 証跡 | 渡したことは証跡に名前・種類・大きさで残り、中身は書かない | 渡した成果物 | 証跡を見る | audit_events に agent.artifact_put（title・format・size・job_id）。中身は無い | PASS（apps/api/test/agent_tools.test.ts・vitest（kaname_test）・2026-10-04） | D-121.5 | T-B-41 | L1 |
 | CHT-41-006 | clone-chat | 勝手に集めない | 道具を呼んだときだけ渡る。仕事の中で AI が読んだだけのファイルは渡らない | 記録がある仕事 | 道具を呼ばない仕事を最後まで動かす | 成果物は増えない（道具の呼び出しの行だけが残る） | PASS（screens/qa-b-artifact-put.spec.ts・実 Chrome・2026-10-04） | D-121.6 | T-B-41 | L1 |
+| CHT-42-001 | clone-chat | 寝かせない | 仕事が動いている間だけ OS に「寝ないで」を頼み、終わったら解く。待っているだけの間は頼まない・本人の電源の設定は変えない | Bridge を入れた PC | 仕事を始める → 終える（単体：働いている状態の切り替わりで powerSaveBlocker の開始・停止が 1 回ずつ呼ばれる） | working が入ったら 1 回だけ開始、空になったら 1 回だけ停止。同じ状態が続いても呼び直さない | PASS（apps/bridge/test/awake.test.ts・vitest（偽の CLI）・2026-10-20） | D-124.1 | T-B-42 | L1 |
+| CHT-42-002 | clone-chat | 途中の道具 | 道具が動いている最中に止めると、理由に「◯◯（対象）は途中だったので、その結末は分かりません。先方の画面で確かめてください」が付く | 道具が動いている仕事（偽の CLI：SLOW_TOOL） | 止める（偽の CLI で道具の最中に stopCurrent） | 結末の理由に道具の名前と対象が入る（E-SIG-003）。文を書いている最中に止めたときは付かない | PASS（screens/qa-b-bridge-stop.spec.ts・実 Chrome・2026-10-20） | D-124.2 | T-B-42 | L1 |
+| CHT-42-003 | clone-chat | 記録が無い | 前の記録が PC に無いとき、同じ仕事を --resume 無しで 1 回だけやり直し、会話に 1 行知らせる | 記録に無い id（偽の CLI：--resume sess-lost は stderr『No conversation found…』・result is_error・num_turns 0 を返す） | 記録に無い id の仕事を流す（偽の CLI） | 新しいセッションの id で結末が返り、notice（E-NF-003）が 1 回。2 回目の失敗はやり直さず理由を出して止まる | PASS（screens/qa-b-bridge-stop.spec.ts・実 Chrome・2026-10-20） | D-124.3 | T-B-42 | L1 |
+| CHT-42-004 | clone-chat | 本物で確かめた | 本物の Claude Code が記録の無い id の --resume で何を返すか | この PC の Claude Code（2.1.283） | 存在しない id で 1 回呼ぶ（本物・短い頼み） | stderr『No conversation found with session ID』・result is_error・error_during_execution・num_turns 0・本文なし（2026-10-20 実測）。偽の CLI はこの形を写している | PASS（apps/bridge/test/runner.test.ts・vitest（偽の CLI）・2026-10-20） | D-124.3 | T-B-42 | L1 |
+| CHT-42-005 | clone-chat | 記録がある | 記録があるときはやり直さない・知らせない | 記録のある id | 普通に続きを頼む（偽の CLI） | notice は出ない・同じ id のまま 1 回で終わる | PASS（apps/bridge/test/runner.test.ts・vitest（偽の CLI）・2026-10-20） | D-124.3 | T-B-42 | L1 |
+| CHT-42-006 | clone-chat | 会話で見える | 止めた理由と記録の無い知らせが会話に出る | つないだ PC（本物の Bridge の輪＋偽の CLI） | 会話で「道具の最中に止めて」→ 止める／「記録を失って」と送る（実ブラウザ） | 「ここで止まりました」の理由に途中の道具の文が入る／吹き出しの外に E-NF-003 の 1 行が出て、返事は新しいセッションで返る | PASS（screens/qa-b-bridge-stop.spec.ts・実 Chrome・2026-10-20） | D-124.2 | T-B-42 | L1 |
 
 ## もう無い行（279 行）
 

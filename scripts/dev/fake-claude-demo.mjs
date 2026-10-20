@@ -24,6 +24,12 @@ const out = (o) => process.stdout.write(`${JSON.stringify(o)}\n`);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 // --resume が来たら同じ続き（session）で答える（本物と同じ）
 const ri = process.argv.indexOf("--resume");
+// id に lost を含む --resume → 記録が無い（本物の claude 2.1.283 で 2026-10-20 に実測した形・D-124.3）
+if (ri > 0 && /lost/.test(process.argv[ri + 1] ?? "")) {
+  process.stderr.write(`No conversation found with session ID: ${process.argv[ri + 1]}\n`);
+  process.stdout.write(`${JSON.stringify({ type: "result", subtype: "error_during_execution", duration_ms: 0, duration_api_ms: 0, is_error: true, num_turns: 0, stop_reason: null, session_id: process.argv[ri + 1], total_cost_usd: 0, usage: { input_tokens: 0, output_tokens: 0 }, result: "" })}\n`);
+  process.exit(1);
+}
 const SESSION = ri > 0 ? process.argv[ri + 1] : crypto.randomUUID(); // 本物と同じ形（uuid）
 // 起動の知らせの mcp_servers（2026-09-30 実測の形）。--chrome なら Claude in Chrome はつながっている
 out({ type: "system", subtype: "init", session_id: SESSION, model: (() => { const i = process.argv.indexOf("--model"); return i > 0 ? process.argv[i + 1] : "claude-opus-4-8"; })(), mcp_servers: process.argv.includes("--chrome") ? [{ name: "claude-in-chrome", status: "connected", source: "dynamic" }] : [] });
@@ -122,6 +128,11 @@ const onUser = async (text) => {
   await sleep(text.includes("ゆっくり読んで") ? 6000 : 1200); // 「ゆっくり読んで」→ 道具の行を画面で見られる長さ（T-B-13）
   out({ type: "user", message: { content: [{ type: "tool_result", tool_use_id: id, is_error: false, content: "（略）" }] } });
   out({ type: "rate_limit_event", rate_limit_info: { unifiedWindows: { five_hour: { utilization: text.includes("上限") ? 0.92 : 0.41, resetsAt: Math.floor(Date.now() / 1000) + 5400 }, seven_day: { utilization: 0.12, resetsAt: Math.floor(Date.now() / 1000) + 400000 } } } });
+  // 「道具の最中で止めて」→ 送信の道具を始めたまま居座る（止めると「途中だった道具の結末は分からない」が理由に付く・D-124.2）
+  if (text.includes("道具の最中で止めて")) {
+    out({ type: "assistant", message: { content: [{ type: "tool_use", id: `sl-${Date.now()}`, name: "Bash", input: { command: "curl -X POST https://mail.example.com/send" } }] } });
+    return;
+  }
   if (text.includes("聞いて")) {
     waiting = { id: `q-${Date.now()}`, kind: "ask" };
     return out({ type: "control_request", request_id: waiting.id, request: { subtype: "can_use_tool", tool_name: "AskUserQuestion", input: { questions: [

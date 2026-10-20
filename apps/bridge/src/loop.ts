@@ -329,6 +329,8 @@ export function startLoop(d: LoopDeps): () => void {
           browserWasOff = true;
           progress("notice", { text: BROWSER_OFF_NOTICE[which] });
         },
+        // 記録が無く新しいセッションで続けた知らせ（D-124.3・E-NF-003）。会話に 1 行、仕事は続く
+        onNotice: (text) => progress("notice", { text }),
         // 確認・問い合わせは画面に出して、本人の答えを待つ（D-093.3・D-104.5・D-104.14）。答えが無ければ許可しない
         ask: async (q) => {
           // 会話の無い仕事（記憶のまとめ）は答える画面が無い。道具は使わずに答えてもらう

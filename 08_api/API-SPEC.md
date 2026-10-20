@@ -1,4 +1,4 @@
-# Kaname API 設計書 v1.0（2026-10-14 凍結）
+# Kaname API 設計書 v1.0（2026-10-20 凍結）
 
 > 信頼源は `08_api/endpoints.json` と `openapi.yaml`（05_flow/build_api.py が機械生成）。
 
@@ -95,4 +95,4 @@
 
 ## 6. 変更履歴
 
-- v1.0 2026-10-14 凍結（endpoints 64）
+- v1.0 2026-10-20 凍結（endpoints 64）

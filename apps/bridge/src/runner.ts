@@ -13,7 +13,7 @@ import { guardArgs, guardEnv, type Blocked } from "./guard";
 import { KANAME_TOOL_RULE, kanameServer, mcpArgs, type KanameTools } from "./kaname-tools";
 import { DEDICATED_SERVER, DEDICATED_TOOL_RULE, dedicatedServer, type DedicatedBrowser } from "./browser";
 import { modeArgs, optionArgs } from "./modes";
-import { controlResponse, parseLine, splitLines, userMessage, type Entry, type Ev, type Usage } from "./stream";
+import { controlResponse, label, parseLine, splitLines, userMessage, type Entry, type Ev, type Usage } from "./stream";
 
 const WIN = process.platform === "win32";
 const SEP = WIN ? ";" : ":";
@@ -212,7 +212,29 @@ export interface RunHooks {
   takeSteers?: (reply: string) => Promise<string[]>;
   /** CLI が「これを実行していいか」「どれにするか」と聞いた。本人の答えが返るまで待つ。無ければ許可しない */
   ask?: (q: { requestId: string; tool: string; input: unknown; summary: string }) => Promise<Answer>;
+  /** 会話に 1 行残す知らせ（記録が無く新しいセッションで続けた・D-124.3）。仕事は続く */
+  onNotice?: (text: string) => void;
 }
+
+/** 記録が無いときに、新しいセッションで続けたことの知らせ（D-124.3） */ // E-NF-003
+export const RESUME_LOST_NOTICE = "前の会話の記録がこの PC に無かったので、新しい会話として続けます。これまでの内容は Kaname の写しに残っています";
+
+/** 記録が無い --resume（本物の claude 2.1.283 で 2026-10-20 に実測）：stderr に「No conversation found with session ID」、
+ *  または API を 1 度も呼ばずに（duration_api_ms 0・num_turns 0）本文なしで error_during_execution。上限（rate limit）は API を呼んでいるので当たらない */
+export function isResumeLost(raw: Record<string, unknown>, err: string, text: string): boolean {
+  if (/No conversation found with session ID/i.test(err)) return true;
+  return raw["subtype"] === "error_during_execution" && raw["num_turns"] === 0 && raw["duration_api_ms"] === 0 && !text.trim();
+}
+
+/** 止めたとき道具が動いている最中なら、その結末は分からないと添える（D-124.2）。文を書いている最中なら添えない */ // E-SIG-003
+export function inflightNote(started: Map<string, { name: string; target: string; at: number }>): string {
+  const s = [...started.values()].sort((a, b) => a.at - b.at).at(-1);
+  if (!s) return "";
+  return `。「${s.target || label(s.name)}」は途中だったので、その結末は分かりません。先方の画面で確かめてください`;
+}
+
+/** 1 回の起動の結末。resumeLost は「記録が無かった」の内部の印（外には出さない） */
+type Outcome = Finish & { resumeLost?: boolean };
 
 /** いま動いている 1 件。人が「止める」を押したら殺す／「止めずに直す」なら次の区切りで伝える（D-104.9） */
 let current: { kill: (reason?: string) => void; steer: (text: string) => boolean } | null = null;
@@ -298,6 +320,29 @@ export async function runClaude(
       agent_session_id: job.agent_session_id,
     };
   }
+  const strip = (o: Outcome): Finish => {
+    const f: Outcome = { ...o };
+    delete f.resumeLost; // 内部の印は外に出さない
+    return f;
+  };
+  const first = await runOnce(bin, job, hooks, timeoutMs, extraDirs, guard, tools, dedicated);
+  if (!first.resumeLost) return strip(first);
+  // 記録が無い（D-124.3）：同じ仕事を --resume 無しで 1 回だけやり直し、会話に 1 行知らせる。新しい id は init で Kaname に入る。
+  // やり直しても失敗なら、いままでどおり理由を出して止める（やり直しは 1 回だけ）
+  hooks.onNotice?.(RESUME_LOST_NOTICE);
+  return strip(await runOnce(bin, { ...job, agent_session_id: null }, hooks, timeoutMs, extraDirs, guard, tools, dedicated));
+}
+
+function runOnce(
+  bin: string,
+  job: Job,
+  hooks: RunHooks,
+  timeoutMs: number,
+  extraDirs: string[],
+  guard?: Guard | null,
+  tools?: KanameTools | null,
+  dedicated?: DedicatedBrowser | null,
+): Promise<Outcome> {
   return new Promise((resolve) => {
     // 承認の仕組みを弱める引数は、本人が選んだモードの対応表（modes.ts）からしか来ない（claude-terms.mjs が検査）
     const args = buildArgs(job, extraDirs, guard, tools, dedicated);
@@ -318,7 +363,7 @@ export async function runClaude(
     let usage: Usage | null = null;
     let partial = "";
     let limits: { window: string; utilization: number; resets_at: number }[] = [];
-    const done = (f: Finish): void => {
+    const done = (f: Outcome): void => {
       if (settled) return;
       settled = true;
       clearTimeout(timer);
@@ -339,14 +384,14 @@ export async function runClaude(
       if (settled || waitingHuman > 0) return;
       timer = setTimeout(() => {
         p.kill("SIGTERM");
-        done({ state: "stopped", reason: `${Math.round(timeoutMs / 60_000)} 分のあいだ何も進まなかったので止めました`, agent_session_id: session });
+        done({ state: "stopped", reason: `${Math.round(timeoutMs / 60_000)} 分のあいだ何も進まなかったので止めました${inflightNote(started)}`, agent_session_id: session });
       }, timeoutMs);
     };
     arm();
     current = {
       kill: (reason) => {
         p.kill("SIGTERM");
-        done({ state: "stopped", reason: reason ?? "あなたが止めました", agent_session_id: session });
+        done({ state: "stopped", reason: `${reason ?? "あなたが止めました"}${inflightNote(started)}`, agent_session_id: session });
       },
       steer: (text) => {
         if (settled || !text.trim()) return false;
@@ -441,6 +486,9 @@ export async function runClaude(
           return;
         }
         if (e.ok) return done({ state: "done", result: e.text, agent_session_id: session, usage: e.usage });
+        // 記録が無い（D-124.3）：外の runClaude が --resume 無しでやり直す。会話の id はまだ書き換えない
+        if (job.agent_session_id && isResumeLost(e.raw, err, e.text))
+          return done({ state: "stopped", reason: "前の会話の記録がこの PC に無かったので止まりました", agent_session_id: job.agent_session_id, usage: e.usage, resumeLost: true });
         done({
           state: "stopped",
           reason: e.reason === "empty" ? "Claude Code が何も返さずに終わりました" : whyStopped(JSON.stringify(e.raw), err, null, limits),
