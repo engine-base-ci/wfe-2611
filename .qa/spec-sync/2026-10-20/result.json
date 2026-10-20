@@ -1,0 +1,84 @@
+{
+ "status": "PASS（この変更の線は全部緑：AD-122〜124 の 12 本・T1〜T12・A/B/C/L。D0／D8／F／G／H／P は前からの穴で、この回の対象外として明記）",
+ "run_id": "20261020-happy-omnara-D122-124-TB42",
+ "executed_at": "2026-10-20T12:30:17",
+ "change": "D-122（段階 2：会社ごとの保存時暗号）・D-123（段階 2：Codex app-server／Gemini ACP・自動許可は完全一致）・D-124（寝かせない・途中の道具の結末・記録が無い resume）を正本に足し、T-B-42 を実装して done",
+ "checks": [
+  {
+   "tier": "impl_gate",
+   "status": "pass",
+   "detail": "skill_impl_gate SK1〜SK4 緑（名乗っている検査は全部実物がある）"
+  },
+  {
+   "tier": "A",
+   "status": "pass"
+  },
+  {
+   "tier": "B",
+   "status": "pass"
+  },
+  {
+   "tier": "C",
+   "status": "pass"
+  },
+  {
+   "tier": "T",
+   "status": "pass",
+   "detail": "trace_gate T1〜T12 緑。D-124.3 は clauses_noobj（本人の PC の記録で Kaname のオブジェクトではない）。要件一覧を --index で再生成"
+  },
+  {
+   "tier": "D",
+   "status": "pass_for_this_change",
+   "detail": "AD-122（3 本）・AD-123（3 本：T-V2-07・設計書・modes.ts の完全一致）・AD-124（6 本：tickets／errors.json／設計書／awake.ts／runner.ts／op_gate --task T-B-42）全部 OK。D0（112 件未登録）・D8（1569 組 未判定）は前からの穴で、この回の対象外（10-14 と同じ）。warn「データ・API の線が無い」は 3 決定とも表・endpoint を増やさないので情報のみ"
+  },
+  {
+   "tier": "F",
+   "status": "skipped",
+   "detail": "spec-validator が Kaname の downstream_coverage の形を読めず（10-14 と同じ）。同じ検査は td_gate TD1〜TD12（TD11：段階 2 の文 → T-V2-06・07）・flow_gate G1〜G22 で緑"
+  },
+  {
+   "tier": "G",
+   "status": "pre_existing_fail",
+   "detail": "packages/auth/src/{migrate,index}.ts の境界越え ほか（10-14 と同じ・T-F-05 の例外台帳の扱い）。この回で触っていない"
+  },
+  {
+   "tier": "H",
+   "status": "pre_existing_fail",
+   "detail": "packages/{auth,db}/src/{migrate,cli,ci}.ts の C2／C4（10-14 と同じ）。Kaname の choke.mjs --all は例外台帳込みで 8/8 緑"
+  },
+  {
+   "tier": "L",
+   "status": "pass",
+   "detail": "layer_audit G21 PASS・op_gate --all 188 行 不合格 0・qa-ladder validate／gate T-B-42 PASS"
+  },
+  {
+   "tier": "P",
+   "status": "pre_existing_fail",
+   "detail": "P3 古い成果物 208・P4 幽霊 v1-goal-allocate.html（10-14 と同じ）"
+  },
+  {
+   "tier": "qa_delta",
+   "status": "pass_with_tool_noise",
+   "detail": "--changed T-B-42 D-124 E-SIG-003 E-NF-003 clone-chat：直接 13・派生 29。「行を足す: E-SIG-003, E-NF-003」は qa_delta が errors.md を見ない噪音（既存の E-DEP-004 でも同じ出方）。実際の行 E-SIG-003-A/B/C・E-NF-003-A/B/C は errors.md にあり実 Chrome で PASS"
+  },
+  {
+   "tier": "spec-scan",
+   "status": "tool_error",
+   "detail": "spec-scan.py が Kaname の counters（list）を読めず AttributeError。影響範囲は依存マップの AD-122〜124 の線＋qa_delta で代えた"
+  }
+ ],
+ "files": [
+  "01_hearing/決定ログ_進行中.md(§122〜124)",
+  "07_qa/test-specs/errors.json(E-SIG-003・E-NF-003)＋errors.md",
+  "03_architecture/アーキテクチャ設計書.md(Bridge の表 3 行・CLI 自動許可・6c 2 行)",
+  "05_flow/build_tasks.py(T-B-42)",
+  "spec-dependencies.yaml(AD-122〜124)",
+  "apps/bridge/src/{awake,runner,loop,main}.ts＋test",
+  "apps/web/tests/screens/qa-b-bridge-stop.spec.ts",
+  "生成: flow.json/entities.json/features.json/screens.json/openapi.yaml/types.ts/packages/contracts/tickets.json/tickets_plan.json/要件一覧/schedule/handoff"
+ ],
+ "notes": [
+  "本物の Claude Code 2.1.283 で --resume の記録無しを実測し、runner の不具合（記録が消えた会話が二度と動かない）を直した",
+  "spec-sync は最初の回で起動を飛ばした（user 指摘）。以後、決定を足す回は必ず起動する"
+ ]
+}
