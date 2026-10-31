@@ -197,20 +197,55 @@ Notion に溜まるのはドキュメント（エクスポート可能）。Kana
 
 ### ライセンス調査結果（2026-10 時点）
 
-| プロダクト | ライセンス | 判定 |
+#### チケット管理 / プロジェクト管理 OSS
+
+| プロダクト | ライセンス | 保守状況 | 判定 |
+|---|---|---|---|
+| **Planka** | **Fair Use License**（source-available / fair-code） | 活発 | ❌ **第三者へのホスティング提供を明示的に禁止**。最も危険 |
+| Plane | AGPL-3.0 | 活発 | ❌ ネットワーク条項。改変してSaaS提供すると改変部分の開示義務 |
+| Taiga / Vikunja / Worklenz / Leantime | AGPL-3.0 | — | ❌ |
+| Redmine (GPL-v2) / OpenProject (GPL-v3) | GPL | 活発 | ❌ |
+| Focalboard | AGPL-3.0（かつてMIT） | **2024-06 に Mattermost が開発停止** | ❌ |
+| Kanboard | MIT | **maintenance mode**（新機能なし） | 🟡 参考のみ |
+| **Wekan** | **MIT** | 活発（v8.35 / 2026-02、週次リリース） | 🟡 Meteor 製。今から乗るのは技術負債 |
+| **Gitea** | **MIT** | 活発（v1.26.4 / 2026-06） | 🟡 Go製で言語が違う。**設計の教科書としては最良**（issues / kanban / milestones） |
+| **Huly** | **EPL-2.0** | 活発 | 🟡→⭕️寄り。ファイル単位の弱いコピーレフトで、義務のトリガーは「**配布**」であり**ネットワーク提供ではない**。ビジョンが最も近い（Linear＋Notion＋Slack 統合）が巨大 |
+
+#### エディタ
+
+| | ライセンス | 判定 |
 |---|---|---|
-| Plane | AGPL-3.0 | ❌ ネットワーク条項。改変してSaaS提供すると改変部分の開示義務 |
-| Twenty (CRM) | AGPL-3.0 ＋ `twenty-ee` は別の商用ライセンス | ❌ 製品の構成要素にしない（自社業務での利用は可） |
-| Taiga / Vikunja / Worklenz / Leantime | AGPL-3.0 | ❌ |
-| Redmine | GPL-v2 / OpenProject GPL-v3 | ❌ |
-| Huly | EPL-2.0 | 🟡 弱いコピーレフト。改変ファイル単位で開示義務 |
-| Kanboard | MIT | 🟡 ライセンスOK。ただし maintenance mode（新機能開発なし） |
-| **Lexical** (Meta) | **MIT**（LICENSE 直接確認済み） | ⭕️ エディタはこれ |
+| **Lexical** (Meta) | **MIT**（LICENSE 直接確認済み） | ⭕️ 採用 |
+| ProseMirror | MIT | ⭕️ 代替候補 |
 | TipTap | core MIT / Pro はサブスク必須 | ❌ 「エンドユーザーが自分のEnd Productを作れる製品」禁止条項あり。プラットフォーム製品に抵触リスク |
 | BlockNote | base OSS / 商用は別ライセンスのケースあり / XL は別 | ❌ |
 
+#### 認証・権限・マルチテナント
+
+| | ライセンス | 判定 |
+|---|---|---|
+| **better-auth** | **MIT** | ⭕️ **採用**。TSライブラリ。organizations / SSO / SCIM を持つ |
+| Keycloak | **Apache-2.0**（有料機能の囲い込みなし） | ⭕️ 将来SSO必須要件が来たら。realms ＋ Organizations で B2B マルチテナント。ただし重い |
+| ZITADEL | ⚠️ **v2 まで Apache-2.0 → v3 で AGPL-3.0 に移行** | ❌ バージョンで変わる。採用しない |
+
 > **外部サービスとして使うもの（Firebase / Supabase Cloud 等）はライセンス問題ではない。**
 > ライセンスが問題になるのは「自社製品に同梱・改変して提供するコード」だけ。
+
+### 何を流用し、何を流用しないか
+
+**チケット管理アプリ全体を流用する価値は低い。**
+
+理由: チケット管理OSSの重さは **UI と周辺機能**（盤・ガント・通知・検索・各種インテグレーション）にある。
+データモデル自体は Postgres のテーブル10枚程度で済む。
+そして **Kaname はその豪華な管理UIを作らないと決めている**（製品憲法・やらないこと）。
+→ **流用したい「重い部分」が、要らないと決めた部分と一致している。**
+
+| | 方針 |
+|---|---|
+| チケット管理アプリ（Plane / Huly / Wekan 等） | **流用しない。** 設計を読む対象。特に **Huly のデータモデル**（チケット＋ドキュメント＋チャット統合の唯一のOSS実装）と **Gitea の issues 周り** を教科書にする |
+| UI部品（表・盤・DnD・エディタ） | **流用する。** パーミッシブのみ |
+| **認証・権限・マルチテナント** | **流用する。** ここを自作するとSaaSで最も事故る（テナント間のデータ漏洩）。**better-auth（MIT）＋ Postgres RLS** |
+| **検査層** | **自作。** 差別化なのでOSSに頼らない |
 
 ### 採用スタック
 
@@ -221,6 +256,7 @@ Notion に溜まるのはドキュメント（エクスポート可能）。Kana
 | UI | shadcn/ui + Radix + Tailwind | MIT |
 | 表・盤 | TanStack Table + dnd-kit | MIT |
 | エディタ（設計欄） | **Lexical** | MIT |
+| 認証・組織・権限 | **better-auth** ＋ Postgres RLS | MIT |
 | **検査層（独自CI）** | **全部自作** | 差別化のためOSSに頼らない |
 
 Postgres を選んだ理由: 親子孫・履歴・監査ログ・権限マトリクスが全部関係データ。
@@ -258,9 +294,11 @@ RLS でロール別アクセス制御（クライアント招待含む）をDB�
 | | 内容 | リスク |
 |---|---|---|
 | 1 | **`proposal` スキルの実績base64画像** | 過去クライアントの実績画像を製品テンプレに同梱すると守秘義務違反・権利侵害 |
-| 2 | **`twenty-metadata` / `twenty-records` の Twenty 依存** | Twenty は AGPL-3.0。製品の構成要素にすると製品ごとAGPLに巻き込まれる |
-| 3 | 117スキル全体の他者由来素材 | テンプレ・画像・文面に第三者の権利物が混ざっていないか |
-| 4 | OSS/ライブラリのライセンス | 採用時に必ず LICENSE 原文を確認（Supabase は情報源が Apache-2.0 / MIT で割れていた） |
+| 2 | 117スキル全体の他者由来素材 | テンプレ・画像・文面に第三者の権利物が混ざっていないか |
+| 3 | OSS/ライブラリのライセンス | 採用時に必ず LICENSE 原文を確認（Supabase は情報源が Apache-2.0 / MIT で割れていた。Planka の Fair Use License も原文確認が必要） |
+
+> **Twenty（`twenty-metadata` / `twenty-records` スキル）は対象外。** ユーザー確認済みで、既に使っていない。
+> ただしスキルファイルはディスクに残っているため、**製品の構成要素には持ち込まない**（Twenty は AGPL-3.0）。
 
 > 本番投入前に、AGPL周りは専門家レビューを推奨。
 
