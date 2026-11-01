@@ -3258,6 +3258,10 @@ decision_traceability:
     ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
   - file: 03_architecture/ER図.md
     ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+  - file: 01_hearing/第1フェーズ_要件定義書_v1.md
+    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+  - file: 01_hearing/第1フェーズ_画面と面_20261101.md
+    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
   - file: 06_mockup/v1/v1-*.html
     ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
   - file: 04_design/DESIGN-kaname.md
