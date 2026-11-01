@@ -36,7 +36,8 @@ flow = {
  "jobs": [{"id": i, "statement": st, "roles": r, "when": w, "pain": p, "source": s}
           for i, st, r, w, p, s in D.JOBS],
  "backbone": [{"phase": ph, "acts": [
-     {"id": i, "act": a, "roles": r, "jobs": j, "frequency": f, "release": rel, "source": s}
+     {"id": i, "act": a, "roles": r, "jobs": j, "frequency": f, "release": rel,
+      **({"milestone": D.MILESTONE[i]} if i in getattr(D, "MILESTONE", {}) else {}), "source": s}
      for i, a, r, j, f, rel, s in rows]} for ph, rows in D.BACKBONE],
  "walking_skeleton": D.SKELETON,
  "product_states": [{"id": i, "name": n, "after_act": a, "caps": c, "source": src} for i, n, a, c, src in D.PRODUCT_STATES],
@@ -50,7 +51,9 @@ flow = {
  "surface_map": D.SURFACE_MAP,
  "screens": [{"id": sid, "name": n, "acts": sorted(s2a[sid]), "purpose": p,
               "primary_action": pa, "objects": o, "roles": s2r.get(sid, []),
-              "route": D.ROUTES[sid], "release": rel, "needs_login": sh, "has_shell": sh, "source": s}
+              "route": D.ROUTES[sid], "release": rel,
+              **({"milestone": D.MILESTONE_SCREENS[sid]} if sid in getattr(D, "MILESTONE_SCREENS", {}) else {}),
+              "needs_login": sh, "has_shell": sh, "source": s}
              for sid, (n, p, pa, o, rel, sh, s) in D.SCREENS.items()],
  "navigation": {
    "_rule": "主ナビは6本まで。フェーズ順で並べ、役割で出る本数が変わる。中は第2ナビ（タブ）で分ける。"
