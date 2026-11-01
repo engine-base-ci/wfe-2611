@@ -1,0 +1,311 @@
+// 画面の L1 を実データで流す土台：API（apps/api・3011）と DB（管理者）を直接使って前提を作る。QA が作ったデータだけを触る（G-10）
+import { createHash, createHmac } from "node:crypto";
+import { readFileSync } from "node:fs";
+import pg from "pg";
+import { expect, test, type Page } from "@playwright/test";
+
+export const API = process.env["API_BASE"] ?? "http://127.0.0.1:3011";
+const ADMIN = process.env["DATABASE_URL_ADMIN"] ?? "postgres://postgres:postgres@127.0.0.1:55433/kaname_dev"; // 画面のテストは手元の画面（up.sh）と同じ DB を見る。単体テストの kaname_test とは分ける
+export const PW = "correct-horse-battery-1";
+// 宛先は「送出先が本当に受け取れるもの」にする。example.com は送出先に拒否され、
+// 「本当に送られたか」の行が検証できない（拒否を握り潰していた間だけ緑に見えていた）。
+// QA_MAIL_TO で環境ごとに変えられる（<uniq> がその回の一意な文字に置き換わる）。
+const MAIL_TO = process.env["QA_MAIL_TO"] ?? "<uniq>@resend.dev";
+export const uniq = () => `${Date.now().toString(36)}-${Math.floor(Math.random() * 1e5)}`;
+/** ふつうのテストの宛先。`qa-` で始まるので API は実際には送らない（MAIL_SUPPRESS_PREFIX）。
+ *  リンクは API のログに出るので手順はそのまま通る */
+export const uniqEmail = () => MAIL_TO.replace("<uniq>", `qa-${uniq()}`);
+/** 「本当に送られるか」を見る行だけが使う宛先。抑止の接頭辞を付けないので実際に送出先へ出る */
+export const realMailEmail = () => MAIL_TO.replace("<uniq>", `delivered+${uniq()}`);
+
+export async function api<T>(
+  path: string,
+  body?: unknown,
+  token?: string,
+  method = body === undefined ? "GET" : "POST",
+): Promise<{ status: number; json: T }> {
+  const res = await fetch(`${API}${path}`, {
+    method,
+    headers: { "content-type": "application/json", ...(token ? { authorization: `Bearer ${token}` } : {}) },
+    ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
+  });
+  return { status: res.status, json: (await res.json().catch(() => ({}))) as T };
+}
+/** 申し込む → 確認のリンクを踏む → 会社ができて token が返る（D-088：登録が終わるのは確認の時点）。
+ *  リンクは API のログから拾う（KANAME_API_LOG）。本物の流れをそのまま通すので、画面の前提もこれで揃う */
+export async function signupPending(company = "QA 社", email = uniqEmail()) {
+  const r = await api<{ data: { email: string; sent: boolean; mail_error: string | null } }>("/api/auth-ext/sign-up", {
+    email,
+    password: PW,
+    company_name: company,
+  });
+  if (r.status !== 201) throw new Error(`sign-up ${r.status} ${JSON.stringify(r.json)}`);
+  return { email, sent: r.json.data.sent, mailError: r.json.data.mail_error };
+}
+/** 確認のリンクの手がかりを API のログから取る */
+export function pendingToken(email: string): string {
+  const url = lastMailUrl("verify", email);
+  if (!url) throw new Error(`確認のリンクがログに無い（KANAME_API_LOG を渡す）: ${email}`);
+  const t = new URL(url).searchParams.get("token");
+  if (!t) throw new Error(`リンクに token が無い: ${url}`);
+  return t;
+}
+/** 会社ごと登録して token を返す（画面の前提）。申し込み → 確認 まで通す */
+export async function signupViaApi(company = "QA 社", email = uniqEmail()) {
+  await signupPending(company, email);
+  const r = await api<{ data: { token: string; user_id: string } }>("/api/auth-ext/verify-signup", {
+    token: pendingToken(email),
+  });
+  if (r.status !== 201) throw new Error(`verify-signup ${r.status} ${JSON.stringify(r.json)}`);
+  const c = new pg.Client({ connectionString: ADMIN });
+  await c.connect();
+  const m = await c.query<{ id: string; tenant_id: string; scope_id: string }>(
+    "select id, tenant_id, scope_id from members where auth_user_id = $1",
+    [r.json.data.user_id],
+  );
+  await c.end();
+  return {
+    email,
+    token: r.json.data.token,
+    userId: r.json.data.user_id,
+    memberId: m.rows[0]!.id,
+    tenantId: m.rows[0]!.tenant_id,
+    scopeId: m.rows[0]!.scope_id,
+  };
+}
+/** ブラウザにトークンを持たせる（画面は localStorage の kaname.token を Bearer に載せる） */
+export async function loginAs(page: Page, token: string) {
+  await page.addInitScript((t) => window.localStorage.setItem("kaname.token", t), token);
+}
+export async function admin<T extends Record<string, unknown>>(sql: string, params: unknown[] = []): Promise<T[]> {
+  const c = new pg.Client({ connectionString: ADMIN });
+  await c.connect();
+  try {
+    return (await c.query<T>(sql, params)).rows;
+  } finally {
+    await c.end();
+  }
+}
+export const sha256 = (s: string) => createHash("sha256").update(s).digest("hex");
+/** TOTP（RFC 6238・SHA1・30 秒・6 桁）。認証アプリの代わり */
+export function totp(secretBase32: string, at = Date.now()): string {
+  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+  const clean = secretBase32.toUpperCase().replace(/[^A-Z2-7]/g, "");
+  let bits = "";
+  for (const ch of clean) bits += alphabet.indexOf(ch).toString(2).padStart(5, "0");
+  const key = Buffer.from(bits.match(/.{8}/g)!.map((b) => parseInt(b, 2)));
+  const counter = Buffer.alloc(8);
+  counter.writeBigUInt64BE(BigInt(Math.floor(at / 30000)));
+  const h = createHmac("sha1", key).update(counter).digest();
+  const off = h[h.length - 1]! & 0xf;
+  const code =
+    ((h[off]! & 0x7f) << 24) | ((h[off + 1]! & 0xff) << 16) | ((h[off + 2]! & 0xff) << 8) | (h[off + 3]! & 0xff);
+  return String(code % 1_000_000).padStart(6, "0");
+}
+/** メールのリンク：開発では API がログに URL を出す（Resend の鍵が無いとき）。KANAME_API_LOG が無ければ null */
+export function lastMailUrl(kind: "verify" | "reset", email: string): string | null {
+  const p = process.env["KANAME_API_LOG"];
+  if (!p) return null;
+  const lines = readFileSync(p, "utf8")
+    .split("\n")
+    .filter((l) => l.includes(`（${kind} → ${email}）`)); // 「送出先が無い」でも「リンク」でも拾う
+  const last = lines[lines.length - 1];
+  const m = last ? /: (https?:\S+)/.exec(last) : null;
+  return m ? m[1]! : null;
+}
+export const WIDTHS = [375, 768, 1024, 1440] as const;
+export async function noOverflow(page: Page, path: string) {
+  for (const width of WIDTHS) {
+    await page.setViewportSize({ width, height: 900 });
+    const res = await page.goto(path);
+    if (!res || res.status() >= 400) throw new Error(`${path} が ${res?.status()}`);
+    const o = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    if (o > 0) throw new Error(`${path} 幅 ${width} で ${o}px 溢れ`);
+  }
+}
+/** Bridge の行を前提として置く（claim の実体は T-I-02。画面は sessions の行で「つながった」を判定する） */
+export const bridgeRow = (u: { tenantId: string; memberId: string }) =>
+  admin(
+    "insert into sessions (tenant_id, member_id, kind_id, device_label, auth_session_id) values ($1, $2, 'bridge', 'MacBook Pro（QA）', $3)",
+    [u.tenantId, u.memberId, `qa-${Date.now()}`],
+  );
+
+/** 閲覧のみ（R4）で参加した人。招待を作って受ける（権限で見えない画面の検査に使う） */
+export async function viewerViaApi() {
+  const { randomBytes } = await import("node:crypto");
+  const boss = await signupViaApi("招く会社");
+  const token = randomBytes(24).toString("base64url");
+  const email = uniqEmail();
+  await admin(
+    "insert into invitations (tenant_id, email, role_id, token_hash, expires_at, created_by) values ($1, $2, 'viewer', $3, now() + interval '7 days', $4)",
+    [boss.tenantId, email, sha256(token), boss.memberId],
+  );
+  const r = await api<{ data: { token: string } }>(`/api/auth-ext/invitations/${token}/accept`, {
+    name: "閲覧のみ QA",
+    password: PW,
+  });
+  if (r.status !== 200 && r.status !== 201) throw new Error(`accept ${r.status} ${JSON.stringify(r.json)}`);
+  return { ...boss, token: r.json.data.token, email };
+}
+
+/** API のログから、そのアドレス宛の送信の記録を読む（[mail] 送った／送れなかった） */
+export function mailLog(email: string): { sent: string; failed: string } {
+  const p = process.env["KANAME_API_LOG"];
+  if (!p) return { sent: "", failed: "" };
+  const lines = readFileSync(p, "utf8")
+    .split("\n")
+    .filter((l) => l.includes(email));
+  return {
+    sent: lines.filter((l) => l.includes("[mail] 送った")).pop() ?? "",
+    failed: lines.filter((l) => l.includes("[mail] 送れなかった")).pop() ?? "",
+  };
+}
+
+/** パスワードの見る・隠す（D-087）：既定は隠す → 押すと見える → もう一度で隠れる。
+ *  読み上げの名前（aria-label）と aria-pressed も一緒に変わることまで見る。
+ *  画面ごとに書かずここに 1 つ置く（部品が 1 つなので検査も 1 つ） */
+export async function pwToggle(page: Page, labelOfField: string) {
+  const input = page.getByLabel(labelOfField, { exact: true });
+  await expect(input).toHaveAttribute("type", "password"); // 既定は隠す
+  const btn = page.getByRole("button", { name: "パスワードを表示" }).first();
+  await expect(btn).toHaveAttribute("aria-pressed", "false");
+  const box = await btn.boundingBox();
+  if (!box || box.width < 24 || box.height < 24)
+    throw new Error(`的が小さい（${box?.width}x${box?.height}・24px 以上）`);
+  await btn.click();
+  await expect(input).toHaveAttribute("type", "text"); // 見える
+  const hide = page.getByRole("button", { name: "パスワードを隠す" }).first();
+  await expect(hide).toHaveAttribute("aria-pressed", "true");
+  await hide.click();
+  await expect(input).toHaveAttribute("type", "password"); // また隠れる
+}
+
+/** テストが要るマスタ行は自分で用意する（他の検査の副作用に頼らない・L-014）。
+ *  権限の総当たり検査は捨てる DB で回すようになったので、この DB には種が入らない */
+export async function ensureGoalKind(key = "seed", label = "テストの目標の種類"): Promise<string> {
+  await admin("insert into goal_kinds (key, label) values ($1, $2) on conflict (key) do nothing", [key, label]);
+  return key;
+}
+
+/** はじめの設定（1〜6）を通し終わった人にする（D-089）。ログイン後の行き先が 今日 になるのはこの人だけ */
+export async function setupDone(u: { tenantId: string; memberId: string }) {
+  await bridgeRow(u);
+  await admin("select app.setup_step_done($1, 6::smallint)", [u.memberId]);
+}
+
+/** はじめの設定を n 段目まで通したことにする（Bridge の行は作らない。D-089） */
+export const setupStep = (memberId: string, n: number) =>
+  admin("select app.setup_step_done($1, $2::smallint)", [memberId, n]);
+
+// ---- Bridge の実物の経路（D-090・T-B-02／T-B-03）。画面から見た振る舞いを確かめるための前提を、本物の口で作る
+/** 接続コードを出して引き取る＝この PC を端末として登録する。返るのは Bridge の鍵（session の id） */
+export async function claimBridge(token: string, label = "MacBook Pro（QA）"): Promise<string> {
+  const p = await api<{ data: { code: string } }>("/api/auth-ext/bridge/pair", {}, token);
+  if (p.status !== 201) throw new Error(`bridge/pair ${p.status}`);
+  const c = await api<{ data: { session_id: string } }>("/api/auth-ext/bridge/claim", {
+    code: p.json.data.code,
+    device_label: label,
+  });
+  if (c.status !== 201) throw new Error(`bridge/claim ${c.status} ${JSON.stringify(c.json)}`);
+  return c.json.data.session_id;
+}
+const asBridge = async <T>(sid: string, path: string, body: unknown) => {
+  const r = await fetch(`${API}/api/auth-ext${path}`, {
+    method: "POST",
+    headers: { "content-type": "application/json", "x-bridge-session": sid },
+    body: JSON.stringify(body),
+  });
+  return { status: r.status, json: (await r.json().catch(() => ({}))) as T };
+};
+/** Bridge が仕事を 1 件もらう */
+export const bridgeTake = (sid: string) =>
+  asBridge<{ data: { job_id: string; prompt: string; agent_session_id: string | null } | null }>(
+    sid,
+    "/bridge/take",
+    { protocol: 4 },
+  );
+/** Bridge が結末を返す（done／stopped／cancelled）。止まったものは止まったまま置かれる */
+export const bridgeFinish = (
+  sid: string,
+  b: { job_id: string; state: "done" | "stopped" | "cancelled"; result?: string; reason?: string; agent_session_id?: string },
+) => asBridge<{ data: { ok: boolean } }>(sid, "/bridge/finish", b);
+/** 生きていると知らせる（自己診断の報告も一緒に返す） */
+export const bridgeBeat = (sid: string, health?: { name: string; ok: boolean; detail?: string }[]) =>
+  asBridge<{ data: { ok: boolean } }>(sid, "/bridge/heartbeat", health ? { health, protocol: 4 } : { protocol: 4 });
+/** 知らせが来なくなった状態を作る（PC を閉じた・Bridge を終了した）。75 秒で「切れている」 */
+export const bridgeAsleep = (sid: string) =>
+  admin("update sessions set last_seen_at = now() - interval '5 minutes' where id = $1", [sid]);
+/** この人の仕事の並び（状態の列） */
+export const jobStates = (memberId: string) =>
+  admin<{ state_id: string; agent_session_id: string | null }>(
+    "select state_id, agent_session_id from bridge_jobs where member_id = $1 order by created_at",
+    [memberId],
+  );
+
+/** ログイン後・入口の行き先。今日（T-U-13）がまだ無い間は、ある画面へ送る（D-086.6）。
+ *  画面ができたら built-routes に載るので、このテストの期待も自動で 今日 に切り替わる */
+export const HOME_RE = /\/(today|ai\/chat)$/;
+/** 「新しい会話」（D-062）。次に言ったことが新しい 1 本になる（最初の質問と選択肢がまた出る） */
+export const agentNewConversation = (token: string) => api("/api/auth-ext/agent/new", {}, token);
+
+/** この PC で本物の Bridge が動いていると、偽の Bridge が港（38617）を取れず、
+ *  画面も「入っている」側に倒れる。偽で演じるテストの間だけ止め、終わったら必ず戻す（G-10）。 */
+let realWasUp: boolean | null = null;
+export async function realBridge(on: boolean): Promise<void> {
+  const { execSync } = await import("node:child_process");
+  const up = async (): Promise<boolean> => {
+    try {
+      return (await fetch("http://127.0.0.1:38617/ping", {
+        headers: { origin: "http://127.0.0.1:3124" },
+        signal: AbortSignal.timeout(2000),
+      })).ok;
+    } catch {
+      return false;
+    }
+  };
+  if (process.platform !== "darwin") return;
+  if (!on) {
+    if (realWasUp === null) realWasUp = await up();
+    // 本人の本物の Bridge が動いているなら、黙って止めない。止めると本人の仕事（答え待ちを含む）が途中で死ぬ
+    // （2026-09-28 実例：回帰テストが本人の Bridge を 2 回止め、答えが届かなくなった）。止めてよいと明示したときだけ止める
+    if ((await up()) && process.env["QA_STOP_REAL_BRIDGE"] !== "1") {
+      test.skip(true, "この PC で本人の Bridge が動いている。止めると本人の仕事が止まるので流さない（BLOCKED：QA_STOP_REAL_BRIDGE=1 で止めて流す）");
+      return;
+    }
+    // 途中で「起こす」が押されて立ち上がることがあるので、毎回必ず止める（最初の状態に関わらず）
+    execSync('pkill -f "Kaname Bridge" || true');
+    for (let i = 0; i < 30 && (await up()); i++) await new Promise((r) => setTimeout(r, 200));
+    return;
+  }
+  if (!realWasUp) return;
+  try {
+    execSync('open -a "/Applications/Kaname Bridge.app"');
+  } catch {
+    /* 入っていないなら戻すものも無い */
+  }
+  realWasUp = null;
+}
+
+/** 本物の Bridge を止めずに、画面からだけ見えなくする（この PC の口 38617 への問い合わせを落とす）。
+ *  偽の口を立てない画面のテストはこれで足りる。本人の Bridge と仕事はそのまま動き続ける */
+export async function hideRealBridge(page: Page): Promise<void> {
+  await page.route("http://127.0.0.1:38617/**", (r) => r.abort("connectionrefused"));
+  await page.route("http://localhost:38617/**", (r) => r.abort("connectionrefused"));
+}
+
+// ---- 1 行 1 イベント（D-093）：Bridge が流す途中経過・確認 と、本人の答え を本物の口で作る
+/** 途中経過（何をしているか）／init（会話の id） */
+export const bridgeProgress = (sid: string, b: { job_id: string; seq: number; kind: "init" | "progress" | "status"; text?: string; agent_session_id?: string }) =>
+  asBridge<{ data: { ok: boolean } }>(sid, "/bridge/progress", b);
+/** 確認：「これを実行していいか」 */
+export const bridgeAsk = (sid: string, b: { job_id: string; request_id: string; tool: string; input?: unknown; summary: string }) =>
+  asBridge<{ data: { ok: boolean } }>(sid, "/bridge/ask", b);
+/** Bridge が答えを取りに来る（無ければ null） */
+export const bridgeAnswer = (sid: string, b: { job_id: string; request_id: string }) =>
+  asBridge<{ data: { answer: "allow" | "deny" | null } }>(sid, "/bridge/answer", b);
+/** 証跡：この仕事に対する許可／不許可の記録 */
+export const toolAudit = (jobId: string) =>
+  admin<{ action: string; actor_member_id: string | null }>(
+    "select action, actor_member_id from audit_events where target_type = 'bridge_jobs' and target_id = $1 order by occurred_at",
+    [jobId],
+  );

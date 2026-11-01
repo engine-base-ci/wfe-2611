@@ -1,0 +1,363 @@
+{
+ "version": "v3.4",
+ "project": "Kaname",
+ "created_at": "2026-09-08",
+ "ci_workflow_path": ".github/workflows/v3-gate.yml",
+ "policy": "ゲートが緑を維持できないなら次のスライスに進まない。旧jobrainはCIが全ゲート赤のまま進み、それが死因の一つ。",
+ "merge_gates": [
+  {
+   "id": 1,
+   "name": "lint",
+   "script": "pnpm lint",
+   "blocking": true,
+   "detects": [
+    "記法",
+    "import順序",
+    "shell script"
+   ],
+   "tools": [
+    "ESLint",
+    "Prettier",
+    "ruff",
+    "shellcheck"
+   ],
+   "owner_task": "T-F-01"
+  },
+  {
+   "id": 2,
+   "name": "type check",
+   "script": "pnpm type-check",
+   "blocking": true,
+   "detects": [
+    "型不整合"
+   ],
+   "tools": [
+    "tsc strict",
+    "pyright strict"
+   ],
+   "owner_task": "T-F-02"
+  },
+  {
+   "id": 3,
+   "name": "unit test + coverage",
+   "script": "pnpm test -- --coverage",
+   "blocking": true,
+   "detects": [
+    "退行"
+   ],
+   "threshold": {
+    "lines": 80,
+    "branches": 70
+   },
+   "owner_task": "T-F-03"
+  },
+  {
+   "id": 4,
+   "name": "RLS 全テーブル有効",
+   "script": "pnpm ci:rls-enabled",
+   "blocking": true,
+   "detects": [
+    "RLS未有効のテーブル＝テナント越え"
+   ],
+   "owner_task": "T-F-04",
+   "kaname_critical": true
+  },
+  {
+   "id": 5,
+   "name": "auth.uid() 検出",
+   "script": "pnpm ci:no-vendor-sql",
+   "blocking": true,
+   "detects": [
+    "Supabase Authへのロックイン",
+    "pgsodium/supabase_vault/pg_graphql"
+   ],
+   "owner_task": "T-F-04",
+   "kaname_critical": true
+  },
+  {
+   "id": 6,
+   "name": "テナント文脈の網羅",
+   "script": "pnpm ci:context-set",
+   "blocking": true,
+   "detects": [
+    "全API経路でSET LOCALが呼ばれているか。設定漏れ＝全テナントが見える"
+   ],
+   "owner_task": "T-F-04",
+   "kaname_critical": true
+  },
+  {
+   "id": 7,
+   "name": "import 境界検査",
+   "script": "pnpm ci:boundary",
+   "blocking": true,
+   "detects": [
+    "境界パス以外からのベンダーSDK import"
+   ],
+   "source": "dependency-boundaries.json",
+   "owner_task": "T-F-05",
+   "kaname_critical": true
+  },
+  {
+   "id": 8,
+   "name": "Open Core ee/ 検出",
+   "script": "pnpm ci:license-boundary",
+   "blocking": true,
+   "detects": [
+    "商用専用ディレクトリのimport（Infisical / langfuse）"
+   ],
+   "owner_task": "T-F-05"
+  },
+  {
+   "id": 9,
+   "name": "ポータビリティ台帳の整合",
+   "script": "pnpm ci:ledger-sync",
+   "blocking": true,
+   "detects": [
+    "台帳に無い越境"
+   ],
+   "source": "portability-ledger.md",
+   "owner_task": "T-F-05"
+  },
+  {
+   "id": 10,
+   "name": "動的クエリの文字列連結禁止",
+   "script": "pnpm ci:no-sql-concat",
+   "blocking": true,
+   "detects": [
+    "SQLインジェクション"
+   ],
+   "owner_task": "T-F-06",
+   "kaname_critical": true
+  },
+  {
+   "id": 11,
+   "name": "OpenAPI 破壊的変更検出",
+   "script": "pnpm ci:openapi-diff",
+   "blocking": true,
+   "detects": [
+    "フィールド削除・リネーム・型変更"
+   ],
+   "source": "packages/contracts/openapi.yaml",
+   "owner_task": "T-F-07"
+  },
+  {
+   "id": 12,
+   "name": "実Postgresでmigration+seed適用",
+   "script": "pnpm ci:migration-integration",
+   "blocking": true,
+   "detects": [
+    "migrationの順序・冪等性",
+    "外部リソースの未作成"
+   ],
+   "owner_task": "T-F-08"
+  },
+  {
+   "id": 13,
+   "name": "env 整合",
+   "script": "pnpm ci:env-audit",
+   "blocking": true,
+   "detects": [
+    "コード参照と .env.example の乖離"
+   ],
+   "owner_task": "T-F-08"
+  },
+  {
+   "id": 14,
+   "name": "AC validator（4-tier）",
+   "script": "pnpm ci:ac-validate",
+   "blocking": true,
+   "detects": [
+    "Tier1-3の不備",
+    "Tier4（発注者確認）の欠落"
+   ],
+   "owner_task": "T-F-09"
+  },
+  {
+   "id": 15,
+   "name": "E2E（Playwright）",
+   "script": "pnpm e2e:web",
+   "blocking": true,
+   "condition": "UIを含むスライスのみ（apps/web/tests・BASE_URL が無ければローカルの next dev）",
+   "owner_task": "T-US-00"
+  },
+  {
+   "id": 16,
+   "name": "関門C1 ネットワークの迂回検出",
+   "script": "pnpm ci:choke -- --id C1",
+   "blocking": true,
+   "detects": [
+    "認可・承認・証跡・課金・サービス台帳判定の迂回"
+   ],
+   "source": "choke-points.json",
+   "owner_task": "T-F-11",
+   "kaname_critical": true
+  },
+  {
+   "id": 17,
+   "name": "関門C2 永続化の迂回検出",
+   "script": "pnpm ci:choke -- --id C2",
+   "blocking": true,
+   "detects": [
+    "テナント文脈・監査列の欠落"
+   ],
+   "owner_task": "T-F-11",
+   "kaname_critical": true
+  },
+  {
+   "id": 18,
+   "name": "関門C3 モデル呼び出しの迂回検出",
+   "script": "pnpm ci:choke -- --id C3",
+   "blocking": true,
+   "detects": [
+    "課金計測・経路解決の迂回"
+   ],
+   "owner_task": "T-F-11"
+  },
+  {
+   "id": 19,
+   "name": "関門C4 ファイルの迂回検出",
+   "script": "pnpm ci:choke -- --id C4",
+   "blocking": true,
+   "detects": [
+    "権限・保持期間の迂回"
+   ],
+   "owner_task": "T-F-11"
+  },
+  {
+   "id": 20,
+   "name": "関門C5 プロセス起動の迂回検出",
+   "script": "pnpm ci:choke -- --id C5",
+   "blocking": true,
+   "detects": [
+    "サンドボックス迂回",
+    "完了信号の未検証（Atelier GAP-241）"
+   ],
+   "owner_task": "T-F-11",
+   "kaname_critical": true
+  },
+  {
+   "id": 21,
+   "name": "関門C6 通知の迂回検出",
+   "script": "pnpm ci:choke -- --id C6",
+   "blocking": true,
+   "detects": [
+    "宛先解決・購読設定の迂回"
+   ],
+   "owner_task": "T-F-11"
+  },
+  {
+   "id": 22,
+   "name": "関門C7 決済の迂回検出",
+   "script": "pnpm ci:choke -- --id C7",
+   "blocking": true,
+   "detects": [
+    "冪等性キーの欠落＝二重課金",
+    "Webhook署名の未検証"
+   ],
+   "owner_task": "T-F-11",
+   "kaname_critical": true
+  },
+  {
+   "id": 23,
+   "name": "関門C8 秘密の迂回検出",
+   "script": "pnpm ci:choke -- --id C8",
+   "blocking": true,
+   "detects": [
+    "資格情報のログ露出",
+    "失効の未反映"
+   ],
+   "owner_task": "T-F-11",
+   "kaname_critical": true
+  },
+  {
+   "id": 24,
+   "name": "動的呼び出し禁止",
+   "script": "pnpm ci:no-dynamic-call",
+   "blocking": true,
+   "detects": [
+    "eval / new Function / 動的import / 文字列からの関数解決"
+   ],
+   "note": "これを許すと関門検査(16-23)が原理的に破れる",
+   "owner_task": "T-F-11",
+   "kaname_critical": true
+  },
+  {
+   "id": 25,
+   "name": "関門例外台帳の整合",
+   "script": "pnpm ci:choke-exceptions",
+   "blocking": true,
+   "detects": [
+    "未登録の迂回",
+    "期限切れの例外"
+   ],
+   "source": "choke-point-exceptions.md",
+   "owner_task": "T-F-11"
+  },
+  {
+   "id": 26,
+   "name": "タスクのchoke_points宣言",
+   "script": "pnpm ci:task-choke-declared",
+   "blocking": true,
+   "detects": [
+    "choke_points未設定のタスク"
+   ],
+   "owner_task": "T-F-09"
+  },
+  {
+   "id": 27,
+   "name": "画面の route の生成物が最新（flow.json → apps/web/lib/routes.ts）",
+   "script": "pnpm ci:routes",
+   "blocking": true,
+   "detects": [
+    "flow を変えたのに画面の URL 一覧が古い（G22）"
+   ],
+   "owner_task": "T-US-00"
+  },
+  {
+   "id": 28,
+   "name": "実ブラウザで押した証拠（操作要素 1 つ＝1 行。行 ID を名前に持つ Playwright が通っている）",
+   "script": "pnpm ci:op-gate",
+   "blocking": true,
+   "detects": [
+    "説明文だけの PASS（G-01・G-08）",
+    "押していない操作要素（分母はモックから機械で）",
+    "発注者確認（Rule 12）が無いまま done"
+   ],
+   "owner_task": "T-US-00"
+  },
+  {
+   "id": 39,
+   "name": "外へ出る口の宛先（apps/bridge・apps/web の fetch は Kaname か Bridge の口だけ・関門 C1 の例外 X-009／X-010 の代替統制）",
+   "script": "pnpm ci:net-boundary && pnpm ci:net-boundary:selftest && pnpm ci:choke:selftest",
+   "blocking": true,
+   "detects": [
+    "Bridge・画面からよそ（Kaname 以外）への fetch",
+    "検出器そのものが黙って緑になること（自己検査）"
+   ],
+   "source": "choke-point-exceptions.md（X-009・X-010）",
+   "owner_task": "T-B-07",
+   "kaname_critical": true,
+   "job": "static"
+  }
+ ],
+ "kaname_critical_gates": [
+  4,
+  5,
+  6,
+  7,
+  10,
+  16,
+  17,
+  20,
+  22,
+  23,
+  24,
+  39
+ ],
+ "kaname_critical_reason": "これらが緑でないと、テナント越え・SQLインジェクション・二重課金・資格情報漏洩・移行不能のいずれかが起きる",
+ "retry_protocol": {
+  "max_attempts": 3,
+  "on_failure": "実装を止めて設計に戻る（無理に通さない）",
+  "escalation_to": "高本さん"
+ }
+}

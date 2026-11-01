@@ -1,0 +1,29 @@
+{
+  "name": "@kaname/bridge",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Kaname Bridge ── 顧客 PC で動く実行器（D-015）。本人のサブスクの Claude Code を起動する窓口",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json && mkdir -p dist/renderer && cp src/renderer/index.html src/renderer/tokens.css dist/renderer/",
+    "dev": "pnpm -s build && electron dist/main.js",
+    "type-check": "tsc -p tsconfig.json --noEmit",
+    "dist": "pnpm -s build && electron-builder --publish never",
+    "dist:mac": "pnpm -s build && electron-builder --mac --publish never",
+    "dist:win": "pnpm -s build && electron-builder --win --publish never",
+    "release": "node scripts/release.mjs"
+  },
+  "devDependencies": {
+    "electron": "^33.2.1",
+    "electron-builder": "^25.1.8",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "@playwright/mcp": "0.0.83",
+    "electron-updater": "^6.3.9"
+  },
+  "author": {
+    "name": "ENGINE BASE",
+    "email": "info@engine-base.com"
+  }
+}

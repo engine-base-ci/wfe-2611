@@ -1,0 +1,17 @@
+node_modules
+dist
+coverage
+pnpm-lock.yaml
+0*_*/
+10_skills/
+scripts/
+.qa/
+.spec-sync/
+.claude/
+.github/workflows/v3-gate.yml
+07_tasks/audit/
+proposals_objects.json
+spec-dependencies.yaml
+
+.next-prod/
+pw-reports/

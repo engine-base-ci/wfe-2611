@@ -1,0 +1,3658 @@
+version: 1.0
+project: Kaname
+generated_at: 2026-09-09
+spec_root: .
+code_root: .
+counters:
+- id: role_count
+  description: 役割の数（flow.json の roles）
+  source_of_truth:
+    type: json_array_length
+    file: 05_flow/flow.json
+    json_path: $.roles
+  expected_value: 5
+  mirrors:
+  - file: 01_hearing/決定ログ_進行中.md
+    regex: \| 役割 \| (\d+)（R1
+  - file: 05_flow/使ってもらい方.md
+    regex: 役割 (\d+) ／ 用事
+- id: job_count
+  description: 用事（JTBD）の数
+  source_of_truth:
+    type: json_array_length
+    file: 05_flow/flow.json
+    json_path: $.jobs
+  expected_value: 20
+  mirrors:
+  - file: 01_hearing/決定ログ_進行中.md
+    regex: \| 用事（JTBD） \| (\d+) \|
+  - file: 05_flow/使ってもらい方.md
+    regex: 用事 (\d+) ／ 行為
+- id: act_count
+  description: 行為の数（背骨の全 acts）
+  source_of_truth:
+    type: json_nested_array_length
+    file: 05_flow/flow.json
+    json_path: $.backbone[*].acts
+  expected_value: 95
+  mirrors:
+  - file: 01_hearing/決定ログ_進行中.md
+    regex: \| 行為 \| (\d+)（段階1
+  - file: 05_flow/使ってもらい方.md
+    regex: 行為 (\d+) ／ オブジェクト
+- id: object_count
+  description: オブジェクト（OOUX）の数
+  source_of_truth:
+    type: json_array_length
+    file: 05_flow/flow.json
+    json_path: $.objects
+  expected_value: 76
+  mirrors:
+  - file: 01_hearing/決定ログ_進行中.md
+    regex: \| オブジェクト \| (\d+) \|
+  - file: 05_flow/使ってもらい方.md
+    regex: オブジェクト (\d+) ／ 画面
+- id: screen_count_all
+  description: 導出された画面の総数（段階1＋段階2）
+  source_of_truth:
+    type: json_array_length
+    file: 05_flow/flow.json
+    json_path: $.screens
+  expected_value: 64
+  mirrors:
+  - file: 01_hearing/決定ログ_進行中.md
+    regex: \| 画面（導出） \| (\d+)（段階1
+  - file: 05_flow/使ってもらい方.md
+    regex: 画面 (\d+) ／ 最初の一周
+- id: screen_count_v1
+  description: 段階1（v1）の画面数。モックのファイル数と一致すること
+  source_of_truth:
+    type: json_filtered_count
+    file: 05_flow/flow.json
+    json_path: $.screens
+    filter:
+      release: v1
+  expected_value: 58
+  mirrors:
+  - file: 01_hearing/決定ログ_進行中.md
+    regex: 画面（導出） \| \d+（段階1が(\d+)
+  - file: 06_mockup/v1/v1-index.html
+    regex: <b>(\d+) 画面。</b>
+- id: choke_point_count
+  description: 関門の数（C1〜C8）
+  source_of_truth:
+    type: json_array_length
+    file: 03_architecture/choke-points.json
+    json_path: $.choke_points
+  expected_value: 8
+  mirrors:
+  - file: 03_architecture/アーキテクチャ設計書.md
+    regex: 外界に影響を与える経路を (\d+) 本に絞り
+- id: walking_skeleton_len
+  description: 最初の一周の手数
+  source_of_truth:
+    type: json_array_length
+    file: 05_flow/flow.json
+    json_path: $.walking_skeleton
+  expected_value: 12
+  mirrors:
+  - file: 01_hearing/決定ログ_進行中.md
+    regex: \| 最初の一周 \| (\d+) 手 \|
+  - file: 05_flow/使ってもらい方.md
+    regex: 最初の一周 (\d+) 手
+references:
+- id_pattern: A\d{2}
+  description: 行為ID。背骨で定義され、ブループリント・画面割当・モックの第2ナビに現れる
+  defined_in:
+    file: 05_flow/flow.json
+    json_path: $.backbone[*].acts[*].id
+  must_exist_in:
+  - file: 05_flow/flow.json
+    json_path: $.blueprint
+    as: key
+    reason: 全行為に裏側の記述が要る（G7）
+  - file: 05_flow/flow.json
+    json_path: $.act_to_screen
+    as: key
+    reason: 全行為に画面の割当が要る（G1）
+  - file: 05_flow/使ってもらい方.md
+    as: text
+    reason: MD は flow.json から自動生成される
+- id_pattern: R[1-6]
+  description: 役割ID
+  defined_in:
+    file: 05_flow/flow.json
+    json_path: $.roles[*].id
+  must_exist_in:
+  - file: 05_flow/flow.json
+    json_path: $.navigation.by_role
+    as: key
+    reason: 全役割に主ナビが要る（G6）
+- id_pattern: C[1-8]
+  description: 関門ID
+  defined_in:
+    file: 03_architecture/choke-points.json
+    json_path: $.choke_points[*].id
+  must_exist_in:
+  - file: 05_flow/flow.json
+    json_path: $.blueprint
+    as: value_member
+    reason: ブループリントの関門IDが実在すること（G8）
+- id_pattern: J\d[a-c]?
+  description: 用事ID（JTBD）
+  defined_in:
+    file: 05_flow/flow.json
+    json_path: $.jobs[*].id
+  must_exist_in:
+  - file: 05_flow/flow.json
+    json_path: $.backbone[*].acts[*].jobs
+    as: value_member
+    reason: どの行為からも辿れない用事は無い（G5）
+deprecated_terms:
+- term: jobrain
+  replacement: Kaname
+  reason: 2026-09-04 に製品名を変更（決定ログ §11）
+  allowed_context: 旧\s*jobrain|旧称\s*jobrain|former_name|old_jobrain|jobrain継続|jobrain_更新版|/jobrain|jobrainを1から|jobrainから改名|jobrainの死因|jobrainが仕様変更|jobrainからKaname|「jobrain」から改名
+  allowed_in:
+  - 00_research/
+  - .spec-sync/
+  - spec-dependencies.yaml
+- term: 未配分・遅れを直す
+  replacement: 目標の下ろし方を決める・直す
+  reason: 配分型を前提にした命名だった。単位が変わる親子関係に対応するため（本変更）
+  allowed_in:
+  - .spec-sync/
+  - 01_hearing/決定ログ_進行中.md
+  - spec-dependencies.yaml
+- term: クローン
+  replacement: 自分のAI（画面では 高本AI のように本人の名前＋AI）
+  reason: 2026-09-10 user 決定（決定ログ §60）。旧称 COO → クローン → 自分のAI
+  allowed_context: 旧称\s*クローン|旧称クローン|→ クローン|クローン（2026-09-04|クローンって呼び方|「クローン」をやめ|クローン、COO）
+  allowed_in:
+  - .spec-sync/
+  - spec-dependencies.yaml
+  - 06_mockup/_old/
+  - _icons.py
+versions:
+- id: flow_version
+  source_of_truth:
+    file: 05_flow/flow.json
+    json_path: $.version
+  expected_value: '1.0'
+alignment_decisions:
+- id: AD-001
+  decision: 画面は行為から導出する。画面一覧を人が列挙しない
+  decided_at: 2026-09-08
+  source: .claude/rules/common/screen-derivation.md
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: screens[].acts が全て非空
+  - file: 06_mockup/v1/
+    check: flow_gate.py --mocks が PASS
+- id: AD-002
+  decision: 外界に影響する操作は関門C1〜C8を必ず通る
+  decided_at: 2026-09-08
+  source: .claude/rules/common/choke-points.md
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: blueprint の全行為に choke_points がある
+- id: AD-003
+  decision: 台帳ごとに画面を作らない。定義が違うだけで画面は1つ
+  decided_at: 2026-09-04
+  source: 01_hearing/決定ログ_進行中.md §39
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: screens に ledger が1つだけ（ledger-pipeline / ledger-invoice を作らない）
+- id: AD-004
+  decision: 一人社長は運営＋個人の2層で成立する。使わない層は画面に出さない
+  decided_at: 2026-09-04
+  source: 01_hearing/決定ログ_進行中.md §36
+  must_be_reflected_in:
+  - file: 06_mockup/v1/v1-members.html
+    check: スコープ4層で未使用の層を薄く出す
+- id: AD-005
+  decision: 目標の親子関係は同一単位とは限らない（本変更で追加）
+  decided_at: 2026-09-09
+  source: 本 spec-sync 実行
+  status: in_progress
+  must_be_reflected_in:
+  - file: 01_hearing/決定ログ_進行中.md
+    check: §32 に親子の関係の型を追記
+  - file: 03_architecture/ER図.md
+    check: goals に親子関係の型・式・寄与の紐づけ
+  - file: 05_flow/flow.json
+    check: A23 の命名と blueprint
+  - file: 06_mockup/v1/v1-goals.html
+    check: 単位と関係の型を表示
+  - file: 06_mockup/v1/v1-goal-allocation.html
+    check: 配分／分解／寄与の3択
+- id: AD-122
+  decision: 段階 2：会社ごとの鍵での保存時暗号（封筒・AAD にテナント・鍵は C8）。E2E は採らない（サーバーが記憶・承認・検索を作れなくなる）
+  decided_at: 2026-10-20
+  source: 01_hearing/決定ログ_進行中.md（D-122）
+  must_be_reflected_in:
+  - file: 07_tasks/tickets.json
+    check: 段階 2 の仕様づくりのチケット T-V2-06 が D-122.1 を source に持つ（TD11）
+    gate: python3 -c "import json,sys; t=json.load(open('07_tasks/tickets.json'))['tasks']; sys.exit(0 if any(x['id'].startswith('T-V2') and 'D-122.1' in x.get('source',[]) for x in t) else 1)"
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: 6c 段階 2 の表に「会社ごとの保存時暗号」の行（D-122.1・D-122.2）
+    gate: grep -q "D-122.1・D-122.2" 03_architecture/アーキテクチャ設計書.md
+  - file: 01_hearing/要件一覧.md
+    check: 要件一覧が D-122 を含む（trace_gate --index）
+    gate: grep -q "D-122" 01_hearing/要件一覧.md
+- id: AD-123
+  decision: 段階 2：Codex は codex app-server・Gemini は ACP で包む（codex mcp は承認が取れないので使わない）。道具の自動許可は完全一致だけ
+  decided_at: 2026-10-20
+  source: 01_hearing/決定ログ_進行中.md（D-123）
+  must_be_reflected_in:
+  - file: 07_tasks/tickets.json
+    check: 段階 2 の仕様づくりのチケット T-V2-07 が D-123.1 を source に持つ（TD11）
+    gate: python3 -c "import json,sys; t=json.load(open('07_tasks/tickets.json'))['tasks']; sys.exit(0 if any(x['id'].startswith('T-V2') and 'D-123.1' in x.get('source',[]) for x in t) else 1)"
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: 6c の表に「Codex・Gemini の包み方」（D-123.1）・CLI の表に「自動許可」（D-123.2）
+    gate: bash -c "grep -q 'D-123.1' 03_architecture/アーキテクチャ設計書.md && grep -q 'D-123.2' 03_architecture/アーキテクチャ設計書.md"
+  - file: apps/bridge/src/modes.ts
+    check: allowed_tools は完全一致の規則（正規表現の全体一致）だけ。部分一致・接頭辞の判定が無い
+    gate: python3 -c "import sys; l=[x for x in open('apps/bridge/src/modes.ts',encoding='utf-8') if 'allowed_tools' in x and '.filter(' in x][0]; sys.exit(0 if '/^[A-Za-z]' in l and '$/s.test(' in l and 'startsWith' not in l and 'includes(' not in l else 1)"
+- id: AD-124
+  decision: Bridge は仕事の間だけ PC を寝かせず（powerSaveBlocker）、止めたとき途中の道具の結末は不明と言い（E-SIG-003）、--resume の記録が無ければ新しいセッションで 1 回やり直して知らせる（E-NF-003）
+  decided_at: 2026-10-20
+  source: 01_hearing/決定ログ_進行中.md（D-124）
+  must_be_reflected_in:
+  - file: 07_tasks/tickets.json
+    check: T-B-42 が D-124.1〜3 を source に持ち、行 CHT-42-001〜006 を持ち、done
+    gate: python3 -c "import json,sys; t=[x for x in json.load(open('07_tasks/tickets.json'))['tasks'] if x['id']=='T-B-42'][0]; sys.exit(0 if t['status']=='done' and {'D-124.1','D-124.2','D-124.3'}<=set(t['source']) and len(t['qa_rows']['l1'])>=6 else 1)"
+  - file: 07_qa/test-specs/errors.json
+    check: E-SIG-003（source D-124.2）・E-NF-003（source D-124.3）がある
+    gate: python3 -c "import json,sys; e={x['id']:x for x in json.load(open('07_qa/test-specs/errors.json'))['errors']}; sys.exit(0 if 'D-124.2' in e['E-SIG-003']['source'] and 'D-124.3' in e['E-NF-003']['source'] else 1)"
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: Bridge の表に 寝かせない（D-124.1）・止めたとき途中だった道具（D-124.2）・記録が無いとき（D-124.3）
+    gate: bash -c "grep -q 'D-124.1' 03_architecture/アーキテクチャ設計書.md && grep -q 'D-124.2' 03_architecture/アーキテクチャ設計書.md && grep -q 'D-124.3' 03_architecture/アーキテクチャ設計書.md"
+  - file: apps/bridge/src/awake.ts
+    check: createAwake（working の間だけ prevent-app-suspension）があり main.ts から呼ばれる
+    gate: bash -c "grep -q 'prevent-app-suspension' apps/bridge/src/awake.ts && grep -q 'createAwake(powerSaveBlocker)' apps/bridge/src/main.ts"
+  - file: apps/bridge/src/runner.ts
+    check: inflightNote（E-SIG-003）と isResumeLost＋RESUME_LOST_NOTICE（E-NF-003）があり、やり直しは 1 回だけ
+    gate: bash -c "grep -q 'E-SIG-003' apps/bridge/src/runner.ts && grep -q 'E-NF-003' apps/bridge/src/runner.ts && grep -q 'isResumeLost(e.raw' apps/bridge/src/runner.ts"
+  - file: 07_qa/test-specs/screens/clone-chat.md
+    check: CHT-42-001〜006 と E-SIG-003-A/B/C・E-NF-003-A/B/C が実ブラウザ（か vitest の印つき）で PASS
+    gate: python3 scripts/ci/op_gate.py --spec 07_qa/test-specs --tickets 07_tasks/tickets.json --task T-B-42
+- id: AD-072-12
+  decision: タスクは親子で開ける（親の行に ▸ と終わった数／全部・親の中身に子の一覧・足す／自分のAIに分けてもらう・ガントで親の下に子）。ER は tasks.parent_task_id
+  decided_at: 2026-09-14
+  source: 01_hearing/決定ログ_進行中.md（D-072.12）
+  must_be_reflected_in:
+  - file: 03_architecture/ER図.md
+    check: tasks の行に parent_task_id・mermaid に tasks の自己参照・根拠の表に D-072
+    gate: python3 scripts/ci/er_gate.py --flow 05_flow/flow.json --er 03_architecture/ER図.md
+  - file: 07_functional/entities.json
+    check: tasks の fields に parent_task_id（ER図から機械生成）
+    gate: python3 -c "import json,sys; e=json.load(open('07_functional/entities.json'))['entities']; t=[x for x in e if x['table_name']=='tasks'][0]; sys.exit(0 if any(f['name']=='parent_task_id' for f in t['fields']) else 1)"
+  - file: 08_api/openapi.yaml
+    check: components.schemas.Tasks.properties に parent_task_id（entities から機械生成）・types.ts も同じ
+    gate: node scripts/ci/contract.mjs check
+  - file: 05_flow/flow.json
+    check: objects[タスク] が relates_to にタスク（自己参照）を持ち source に D-072.12
+  - file: 06_mockup/v1/v1-tasks.html
+    check: 親の行（▸・終わった数／全部）と子タスクの一覧（足す／自分のAIに分けてもらう）が出る
+    count: all
+    marker: '子タスク'
+    exclude: 'v1-index'
+  - file: 07_tasks/tickets.json
+    check: T-U-16（画面 タスク）の functional に 親子 の基準があり、files_changed に migration と routes/tasks.ts がある
+  - file: 07_qa/test-specs/screens/tasks.md
+    check: 子タスクの 足す／自分のAIに分けてもらう の操作の行がある（derive_ops から）
+- id: AD-001-2
+  decision: 2028-09までに200社→65社に修正。自社SaaS外販。初期顧客が自力で回せることが前提
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-001）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/jobs に D-001 の反映がある
+    marker: ['D-001']
+    count: all
+- id: AD-002-2
+  decision: 65社・月630万。エントリー(個人/一人社長3万)・スタンダード(中小8万)・プロ(中堅15万)の3層。エントリーが集客ファネル
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-002）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/roles に D-002 の反映がある
+    marker: ['D-002']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/jobs に D-002 の反映がある
+    marker: ['D-002']
+    count: all
+- id: AD-003-2
+  decision: スキルは堀ではない。堀は『閉じたループ』(目標→逆算→配布→実行→測定→再計画)と会社モデル
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-003）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-003 の反映がある
+    marker: ['D-003']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/screens に D-003 の反映がある
+    marker: ['D-003']
+    count: all
+  - file: 06_mockup/v1/v1-*.html
+    check: 全画面が閉じたループの行為（目標→逆算→配布→実行→測定→再計画）から導出されている。画面と行為の双方向の照合（G1〜G10）
+    gate: python3 scripts/ci/flow_gate.py --mocks 06_mockup/v1 --choke 03_architecture/choke-points.json
+- id: AD-004-2
+  decision: LLMは顧客のサブスク内(Bridge)が既定。APIは顧客負担。運営マネージドは既定OFFの管理者トグル
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-004）
+  must_be_reflected_in:
+  - file: 03_architecture/ER図.md
+    check: ER図/credentials に D-004 の反映がある
+    marker: ['D-004']
+  - file: 06_mockup/v1/v1-bridge-setup.html
+    check: mockup/bridge-setup に D-004 の反映がある
+    marker: ['D-004']
+    count: all
+  - file: 06_mockup/v1/v1-company-settings.html
+    check: mockup/company-settings に D-004 の反映がある
+    marker: ['D-004']
+    count: all
+- id: AD-006
+  decision: スコープの採否は『抜いてもループが閉じるか』。CRM・請求・経理を切ると目標の数値が出せなくなるので切らない
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-006）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-006 の反映がある
+    marker: ['D-006']
+    count: all
+- id: AD-007
+  decision: 数値はAI社員が会話で出す。分析系の固定画面(ランキング・チャネル別・期間比較)を一切作らない
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-007）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/screens に D-007 の反映がある
+    marker: ['D-007']
+    count: all
+  - file: 06_mockup/v1/v1-clone-chat.html
+    check: mockup/clone-chat に D-007 の反映がある
+    marker: ['D-007']
+    count: all
+  - file: 06_mockup/v1/v1-search.html
+    check: mockup/search に D-007 の反映がある
+    marker: ['D-007']
+    trace: "D-007 -> screens: [search]"
+- id: AD-008
+  decision: ペルソナ1=高本本人。一人で受託・キャパ限界・人に任せたい・目標は決めているだけで実行が回らない
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-008）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/roles に D-008 の反映がある
+    marker: ['D-008']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/jobs に D-008 の反映がある
+    marker: ['D-008']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-008 の反映がある
+    marker: ['D-008']
+    count: all
+- id: AD-010
+  decision: 製品の背骨。会社モデル(目標・台帳定義・担当業務・組織・ポリシー・記憶)を1つの定義に。画面もAI社員も自動実行もこの定義だけを読む。AIが
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-010）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/objects に D-010 の反映がある
+    marker: ['D-010']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-010 の反映がある
+    marker: ['D-010']
+    count: all
+  - file: 03_architecture/ER図.md
+    check: ER図/all に D-010 の反映がある
+    marker: ['D-010']
+    count: all
+  - file: 05_flow/flow.json
+    check: 全画面が会社モデルの定義（オブジェクト）を読んで描かれる＝screens[].objects が空でない
+    gate: python3 -c "import json,sys; f=json.load(open('05_flow/flow.json')); b=[s['id'] for s in f['screens'] if not s.get('objects')]; print('objects の無い画面:', b) if b else print('全 %d 画面がオブジェクトを扱う' % len(f['screens'])); sys.exit(1 if b else 0)"
+- id: AD-011
+  decision: 製品名は Kaname。旧製品から改名。表記は半角の Kaname だけ（漢字のかなめは使わない）
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-011）
+  must_be_reflected_in:
+  - file: 06_mockup/v1/v1-*.html
+    check: 製品名の表記は半角の Kaname だけ（漢字の「かなめ」「要」を製品名に使わない）。全モックで検査
+    gate: python3 -c "import glob,sys,re; bad=[f for f in glob.glob('06_mockup/v1/v1-*.html') if re.search(r'かなめ|製品名[：:]\s*要', open(f,encoding='utf-8').read())]; print('かなめ を使っている画面:', bad) if bad else print('全モック OK'); sys.exit(1 if bad else 0)"
+- id: AD-012
+  decision: AIは直接変えない。必ず提案として出し人が承認して反映。ただし動線が増えすぎるUX低下は避ける。プルリクエスト的な形は採らない
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-012）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-012 の反映がある
+    marker: ['D-012']
+    count: all
+  - file: 06_mockup/v1/v1-approvals.html
+    check: mockup/approvals に D-012 の反映がある
+    marker: ['D-012']
+    trace: "D-012 -> screens: [approvals]"
+- id: AD-013
+  decision: 実行層は接続の器を1回作れば設定で増える形にする。連携を1本ずつ書かない
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-013）
+  must_be_reflected_in:
+  - file: 03_architecture/ER図.md
+    check: ER図/service_registry に D-013 の反映がある
+    marker: ['D-013']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/blueprint に D-013 の反映がある
+    marker: ['D-013']
+    count: all
+- id: AD-014
+  decision: ブラウザ操作が標準の万能手段。API/MCPは後からの最適化。API主・ブラウザは逃げ道という順序付けは誤りとして撤回
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-014）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/blueprint に D-014 の反映がある
+    marker: ['D-014']
+    count: all
+  - file: 06_mockup/v1/v1-services.html
+    check: mockup/services に D-014 の反映がある（ブラウザ操作が標準・API／MCP は後からの最適化）
+    marker: ['D-014']
+    count: all
+- id: AD-015
+  decision: Bridgeは顧客PCで動く万能実行器。本人のIP・本人のログイン済みセッションで動くのでCAPTCHA/bot検知に到達しない。Kanam
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-015）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-015 の反映がある
+    marker: ['D-015']
+    count: all
+  - file: 06_mockup/v1/v1-bridge-setup.html
+    check: mockup/bridge-setup に D-015 の反映がある
+    marker: ['D-015']
+    count: all
+  - file: 06_mockup/v1/v1-bridge-setup.html
+    check: mockup/bridge-setup に D-015 の反映がある
+    marker: ['D-015']
+    count: all
+- id: AD-017
+  decision: vaultにID/PW＋TOTPシークレットを暗号化保管し実行器が直接入力。AIには一切渡さない(参照IDのみ)
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-017）
+  must_be_reflected_in:
+  - file: 03_architecture/ER図.md
+    check: ER図/credentials に D-017 の反映がある
+    marker: ['D-017']
+  - file: 06_mockup/v1/v1-credentials.html
+    check: mockup/credentials に D-017 の反映がある
+    marker: ['D-017']
+    trace: "D-017 -> screens: [credentials]"
+- id: AD-018
+  decision: 画面が変わる/毎回要望が違うへの対応は3層。座標でなく意味で記録し、壊れたらAIが覚え直す
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-018）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-018 の反映がある
+    marker: ['D-018']
+    count: all
+  - file: 06_mockup/v1/v1-duties.html
+    check: mockup/duties に D-018 の反映がある
+    marker: ['D-018']
+    count: all
+- id: AD-019
+  decision: 実装順序。Bridge(万能実行器)を最初に作る
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-019）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-019 の反映がある
+    marker: ['D-019']
+    count: all
+- id: AD-022
+  decision: 覚えた操作は担当業務の下に畳む。ユーザーが普段見るのは担当業務まで。飽和させない
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-022）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/screens に D-022 の反映がある
+    marker: ['D-022']
+    count: all
+  - file: 06_mockup/v1/v1-duties.html
+    check: mockup/duties に D-022 の反映がある
+    marker: ['D-022']
+    count: all
+  - file: 06_mockup/v1/v1-duties.html
+    check: mockup/duties に D-022 の反映がある
+    marker: ['D-022']
+    count: all
+- id: AD-023
+  decision: ロゴ=バラバラの色(業務/ツール/メンバー)がひとつの中心(かなめ)に留められる。データ色6色の根拠
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-023）
+  must_be_reflected_in:
+  - file: 04_design/DESIGN-kaname.md
+    check: DESIGN-kaname.md/colors に D-023 の反映がある
+    marker: ['D-023']
+    count: all
+- id: AD-024
+  decision: 主役は会社モデル(Hub)＋ループ。用語と部品の正確な定義。自分のAI（旧称自分のAI／COO）は1人1体
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-024）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/objects に D-024 の反映がある
+    marker: ['D-024']
+    count: all
+- id: AD-025
+  decision: 編集の3経路。(1)画面で直接編集=人が変える時は即反映(承認を挟まない) (2)AIに頼む(会話)=AIが変える時だけ提案→承認 (3)フ
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-025）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-025 の反映がある
+    marker: ['D-025']
+    count: all
+  - file: 06_mockup/v1/v1-ai-staff-detail.html
+    check: mockup/ai-staff-detail に D-025 の反映がある（編集の 3 経路：画面で直す・AI に頼む・ファイル一括）
+    marker: ['D-025']
+    trace: "D-025 -> screens: [ai-staff-detail]"
+  - file: 06_mockup/v1/v1-clone-chat.html
+    check: mockup/clone-chat に D-025 の反映がある（編集の 3 経路：画面で直す・AI に頼む・ファイル一括）
+    marker: ['D-025']
+    trace: "D-025 -> screens: [clone-chat]"
+  - file: 06_mockup/v1/v1-duties.html
+    check: mockup/duties に D-025 の反映がある（編集の 3 経路：画面で直す・AI に頼む・ファイル一括）
+    marker: ['D-025']
+    trace: "D-025 -> screens: [duties]"
+  - file: 06_mockup/v1/v1-export.html
+    check: mockup/export に D-025 の反映がある（編集の 3 経路：画面で直す・AI に頼む・ファイル一括）
+    marker: ['D-025']
+    trace: "D-025 -> screens: [export]"
+  - file: 06_mockup/v1/v1-clone-memory.html
+    check: mockup/clone-memory に D-025 の反映がある（編集の 3 経路：画面で直す・AI に頼む・ファイル一括）
+    marker: ['D-025']
+    trace: "D-025 -> screens: [clone-memory]"
+  - file: 06_mockup/v1/v1-credentials.html
+    check: mockup/credentials に D-025 の反映がある（編集の 3 経路：画面で直す・AI に頼む・ファイル一括）
+    marker: ['D-025']
+    trace: "D-025 -> screens: [credentials]"
+  - file: 06_mockup/v1/v1-import.html
+    check: mockup/import に D-025 の反映がある（編集の 3 経路：画面で直す・AI に頼む・ファイル一括）
+    marker: ['D-025']
+    trace: "D-025 -> screens: [import]"
+  - file: 06_mockup/v1/v1-onboard-draft.html
+    check: mockup/onboard-draft に D-025 の反映がある（編集の 3 経路：画面で直す・AI に頼む・ファイル一括）
+    marker: ['D-025']
+    trace: "D-025 -> screens: [onboard-draft]"
+  - file: 06_mockup/v1/v1-my-progress.html
+    check: mockup/my-progress に D-025 の反映がある（編集の 3 経路：画面で直す・AI に頼む・ファイル一括）
+    marker: ['D-025']
+    trace: "D-025 -> screens: [my-progress]"
+- id: AD-026
+  decision: スコープ4層(運営/会社/部署/個人)を担当業務・ルール・テンプレ・覚えた操作・記憶すべてに同じ形で使う
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-026）
+  must_be_reflected_in:
+  - file: 03_architecture/ER図.md
+    check: ER図/scopes に D-026 の反映がある
+    marker: ['D-026']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/objects に D-026 の反映がある
+    marker: ['D-026']
+    count: all
+  - file: 06_mockup/v1/v1-members.html
+    check: mockup/members に D-026 の反映がある
+    marker: ['D-026']
+    trace: "D-026 -> screens: [members]"
+  - file: 06_mockup/v1/v1-policies.html
+    check: mockup/policies に D-026 の反映がある
+    marker: ['D-026']
+    trace: "D-026 -> screens: [policies]"
+- id: AD-027
+  decision: テンプレは自動共有しない。運営配布＋各社作成＋明示的な公開のみ。最初の1社のものが自動でテンプレになるという記述は破棄
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-027）
+  must_be_reflected_in:
+  - file: 06_mockup/v1/v1-duties.html
+    check: mockup/duties に D-027 の反映がある
+    marker: ['D-027']
+    trace: "D-027 -> screens: [duties]"
+- id: AD-028
+  decision: テストモード。OJTの入口を『見せてください』から『まず作ってみます』に変える。外に一切出さず実データは読む。納得したら本番へ
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-028）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-028 の反映がある
+    marker: ['D-028']
+    count: all
+  - file: 06_mockup/v1/v1-onboard-testrun.html
+    check: mockup/onboard-testrun に D-028 の反映がある
+    marker: ['D-028']
+    count: all
+  - file: 06_mockup/v1/v1-onboard-interview.html
+    check: mockup/onboard-interview に D-028 の反映がある
+    marker: ['D-028']
+    count: all
+- id: AD-029
+  decision: アップロードは形式を指定しない。何でも受け取ってAIが読む
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-029）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-029 の反映がある
+    marker: ['D-029']
+    count: all
+- id: AD-030
+  decision: 構築メタスキル群は運営の資産で顧客に見えない。会社モデル構築・担当業務の定義・台帳の設計・目標の分解・改善提案・自分のAIの育成・トラブル対
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-030）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-030 の反映がある
+    marker: ['D-030']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/blueprint に D-030 の反映がある
+    marker: ['D-030']
+    count: all
+- id: AD-032
+  decision: 目標の階層と配分。スコープ層と目標階層は別概念。未配分の可視化。配る権限。合意/指示の2通り。AI社員にも配れる。未達は下から上へ返る。段の
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-032）
+  must_be_reflected_in:
+  - file: 03_architecture/ER図.md
+    check: ER図/goals に D-032 の反映がある
+    marker: ['D-032']
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-032 の反映がある
+    marker: ['D-032']
+    count: all
+  - file: 06_mockup/v1/v1-goals.html
+    check: mockup/goals に D-032 の反映がある
+    marker: ['D-032']
+    trace: "D-032 -> screens: [goals]"
+  - file: 06_mockup/v1/v1-goal-allocation.html
+    check: mockup/goal-allocation に D-032 の反映がある
+    marker: ['D-032']
+    count: all
+- id: AD-034
+  decision: 目標は双方向。降ろす(逆算)と積み上げる(実績)が同じ画面に出る
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-034）
+  must_be_reflected_in:
+  - file: 03_architecture/ER図.md
+    check: ER図/goals に D-034 の反映がある
+    marker: ['D-034']
+  - file: 06_mockup/v1/v1-goals.html
+    check: mockup/goals に D-034 の反映がある
+    marker: ['D-034']
+    trace: "D-034 -> screens: [goals]"
+- id: AD-035
+  decision: 目標とタスクの間に仮説と施策を置く。目標→現状分析→仮説→施策→タスク→検証→次の仮説。効かなかった仮説も残す
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-035）
+  must_be_reflected_in:
+  - file: 03_architecture/ER図.md
+    check: ER図/hypotheses に D-035 の反映がある
+    marker: ['D-035']
+  - file: 05_flow/flow.json
+    check: flow.json/objects に D-035 の反映がある
+    marker: ['D-035']
+    count: all
+  - file: 06_mockup/v1/v1-review.html
+    check: mockup/review に D-035 の反映がある
+    marker: ['D-035']
+    count: all
+- id: AD-036
+  decision: 一人社長は運営＋個人の2層で成立。使わない層は画面に出ない(存在すら見えない)。最小構成=個人＋自分のAI＋AI社員
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-036）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/roles に D-036 の反映がある
+    marker: ['D-036']
+    count: all
+  - file: 06_mockup/v1/v1-members.html
+    check: mockup/members に D-036 の反映がある
+    marker: ['D-036']
+    trace: "D-036 -> screens: [members]"
+  - file: 06_mockup/v1/v1-goals.html
+    check: mockup/goals に D-036 の反映がある
+    marker: ['D-036']
+    trace: "D-036 -> screens: [goals]"
+- id: AD-037
+  decision: AI社員の出どころは運営配布/会社作成/個人作成の3経路。託されたAI社員は使えるが定義は編集できない。個人ルールだけは足せる。★本人のAI
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-037）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-037 の反映がある
+    marker: ['D-037']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/screens に D-037 の反映がある
+    marker: ['D-037']
+    count: all
+  - file: 03_architecture/ER図.md
+    check: ER図/members に D-037 の反映がある
+    marker: ['D-037']
+  - file: 06_mockup/v1/v1-members.html
+    check: mockup/members に D-037 の反映がある
+    marker: ['D-037']
+    trace: "D-037 -> screens: [members]"
+  - file: 06_mockup/v1/v1-ai-staff.html
+    check: mockup/ai-staff に D-037 の反映がある
+    marker: ['D-037']
+    count: all
+- id: AD-038
+  decision: 台帳は『計算しないが、結果は持つ』。CRM/会計の計算は担わないが結果は台帳に持つ
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-038）
+  must_be_reflected_in:
+  - file: 03_architecture/ER図.md
+    check: ER図/ledger_definitions に D-038 の反映がある
+    marker: ['D-038']
+    count: all
+  - file: 06_mockup/v1/v1-records.html
+    check: mockup/records に D-038 の反映がある
+    marker: ['D-038']
+    count: all
+  - file: 06_mockup/v1/v1-ledger-def.html
+    check: mockup/ledger-def に D-038 の反映がある
+    marker: ['D-038']
+    trace: "D-038 -> screens: [ledger-def]"
+- id: AD-039
+  decision: 業界別パッケージ(別製品)は作らない。業界別テンプレ(定義のスナップショット)は作る。各企業ごとに専用の会社モデルができる。台帳ごとに画面を
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-039）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/screens に D-039 の反映がある
+    marker: ['D-039']
+    count: all
+  - file: 06_mockup/v1/v1-records.html
+    check: mockup/records に D-039 の反映がある
+    marker: ['D-039']
+    count: all
+  - file: 06_mockup/v1/v1-ledger-def.html
+    check: mockup/ledger-def に D-039 の反映がある
+    marker: ['D-039']
+    trace: "D-039 -> screens: [ledger-def]"
+- id: AD-040
+  decision: CAPTCHAは突破しない。本人環境・本人資格情報・本人のペースで動くので到達しない。突破は運営の安全ルールで禁止
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-040）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/blueprint に D-040 の反映がある
+    marker: ['D-040']
+    count: all
+  - file: 06_mockup/v1/v1-policies.html
+    check: mockup/policies に D-040 の反映がある
+    marker: ['D-040']
+    trace: "D-040 -> screens: [policies]"
+  - file: 06_mockup/v1/v1-bridge-setup.html
+    check: mockup/bridge-setup に D-040 の反映がある
+    marker: ['D-040']
+    count: all
+- id: AD-041
+  decision: サービス台帳で外部サービスごとの自動操作可否を持つ(api/allowed/unspecified/forbidden/bank)。規約で自
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-041）
+  must_be_reflected_in:
+  - file: 03_architecture/ER図.md
+    check: ER図/service_registry に D-041 の反映がある
+    marker: ['D-041']
+    count: all
+  - file: 06_mockup/v1/v1-credentials.html
+    check: mockup/credentials に D-041 の反映がある
+    marker: ['D-041']
+    trace: "D-041 -> screens: [credentials]"
+  - file: 06_mockup/v1/v1-policies.html
+    check: mockup/policies に D-041 の反映がある
+    marker: ['D-041']
+    trace: "D-041 -> screens: [policies]"
+- id: AD-042
+  decision: 情シス・コンプラが必ず聞くこと。Bridgeで何ができるか完全列挙・送るもの/送らないもの・全操作の証跡を管理者が閲覧エクスポートできる・残
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-042）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/jobs に D-042 の反映がある
+    marker: ['D-042']
+    count: all
+  - file: 06_mockup/v1/v1-bridge-setup.html
+    check: mockup/bridge-setup に D-042 の反映がある
+    marker: ['D-042']
+    count: all
+  - file: 06_mockup/v1/v1-export.html
+    check: mockup/export に D-042 の反映がある
+    marker: ['D-042']
+    count: all
+- id: AD-043
+  decision: ネイティブアプリはレスポンシブとは別物。プッシュ通知が本質(承認待ちの通知)。段階2でPWA
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-043）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/screens に D-043 の反映がある
+    marker: ['D-043']
+    count: all
+- id: AD-044
+  decision: アクションは5方式。コード実行を追加。Kanameを作る手段としてのノーコードは使わない
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-044）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/blueprint に D-044 の反映がある
+    marker: ['D-044']
+    count: all
+  - file: 03_architecture/choke-points.json
+    check: choke-points/C5 に D-044 の反映がある
+    marker: ['D-044']
+    count: all
+- id: AD-045
+  decision: サーバー側実行も必要。Bridgeだけでは成り立たない。PCが閉じている間はサーバー経路に切り替わる
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-045）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/blueprint に D-045 の反映がある
+    marker: ['D-045']
+    count: all
+  - file: 06_mockup/v1/v1-bridge-setup.html
+    check: mockup/bridge-setup に D-045 の反映がある
+    marker: ['D-045']
+    count: all
+- id: AD-046
+  decision: 段階1〜3はSupabase。段階4でエンタープライズ向けの別経路
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-046）
+  must_be_reflected_in:
+  - file: 02_tech_stack/selected-stack.json
+    check: selected-stack/cloud に D-046 の反映がある
+    marker: ['D-046']
+    count: all
+- id: AD-047
+  decision: Bridge経路ではClaudeの全機能がそのまま使える。コード実行のサンドボックスを作るとしたのは過剰だった
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-047）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/blueprint に D-047 の反映がある
+    marker: ['D-047']
+    count: all
+- id: AD-048
+  decision: 選定基準から『1人運用の負荷』を外す。今後人を増やす前提
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-048）
+  must_be_reflected_in:
+  - file: 02_tech_stack/selected-stack.json
+    check: selected-stack/criteria に D-048 の反映がある
+    marker: ['D-048']
+    count: all
+- id: AD-049
+  decision: 移行は簡単ではない。何が動いて何が動かないかを正直に記録
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-049）
+  must_be_reflected_in:
+  - file: 03_architecture/portability-ledger.md
+    check: portability-ledger に D-049 の反映がある
+    marker: ['D-049']
+    count: all
+  - file: 06_mockup/v1/v1-*.html
+    not_applicable: 画面の決定ではない。「何が動いて何が動かないか」は portability-ledger.md と dependency-boundaries.json（boundary.mjs --ledger）で記録する
+- id: AD-050
+  decision: ポータビリティは3つの仕組みで担保。境界ディレクトリ＋CI検査＋台帳。追跡しなければ『後で移行できる』は必ず嘘になる
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-050）
+  must_be_reflected_in:
+  - file: 03_architecture/dependency-boundaries.json
+    check: dependency-boundaries に D-050 の反映がある
+    marker: ['D-050']
+    count: all
+  - file: 03_architecture/portability-ledger.md
+    check: portability-ledger に D-050 の反映がある
+    marker: ['D-050']
+    count: all
+  - file: 03_architecture/choke-points.json
+    check: choke-points/all に D-050 の反映がある
+    marker: ['D-050']
+    count: all
+- id: AD-051
+  decision: ネイティブアプリは今4つだけ決める(認証をトークンベースに等)。後からアプリを足すのが画面を作るだけになる
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-051）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/screens に D-051 の反映がある
+    marker: ['D-051']
+    count: all
+  - file: 02_tech_stack/selected-stack.json
+    check: selected-stack/native に D-051 の反映がある
+    marker: ['D-051']
+    count: all
+- id: AD-052
+  decision: デザインシステム確定。Primary#22345C・M PLUS 2単一書体・色の二層分離(状態色は面/データ色は点と線)・影より罫線・数値
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-052）
+  must_be_reflected_in:
+  - file: 04_design/DESIGN-kaname.md
+    check: DESIGN-kaname.md/all に D-052 の反映がある
+    marker: ['D-052']
+    count: all
+  - file: 06_mockup/v1/v1-*.html
+    check: mockup/all に D-052 の反映がある
+    marker: ['D-052']
+    count: all
+    exclude: 'v1-index'
+- id: AD-053
+  decision: 画面は行為から導出する。画面から始めると『この画面で何をしたいか分からない』が必ず起きる。役割×用事→行為の背骨→オブジェクト→ブループリン
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-053）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/all に D-053 の反映がある
+    marker: ['D-053']
+    count: all
+  - file: 06_mockup/v1/v1-*.html
+    check: mockup/all に D-053 の反映がある
+    marker: ['D-053']
+    count: all
+    exclude: 'v1-index'
+- id: AD-055
+  decision: 段階1で AI が動く経路は Bridge（顧客PCで本人のサブスクの公式CLI）だけ。BYOK・運営マネージドは段階2以降。だから立ち上げ
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-055）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-055 の反映がある
+    marker: ['D-055']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/screens に D-055 の反映がある
+    marker: ['D-055']
+    count: all
+  - file: 06_mockup/v1/v1-bridge-setup.html
+    check: mockup/bridge-setup に D-055 の反映がある
+    marker: ['D-055']
+    trace: "D-055 -> screens: [bridge-setup]"
+  - file: 06_mockup/v1/v1-onboard-interview.html
+    check: mockup/onboard-interview に D-055 の反映がある
+    marker: ['D-055']
+    trace: "D-055 -> screens: [onboard-interview]"
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-055 の反映がある
+    marker: ['D-055']
+    count: all
+  - file: 01_hearing/ヒアリングサマリー.md
+    check: ヒアリングサマリー に D-055 の反映がある
+    marker: ['D-055']
+    count: all
+- id: AD-056
+  decision: user が想起した「Cloudflare の OSS エージェント」は Moltworker（OpenClaw を Cloudflare 
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-056）
+  must_be_reflected_in:
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-056 の反映がある
+    marker: ['D-056']
+    count: all
+  - file: 01_hearing/ヒアリングサマリー.md
+    check: ヒアリングサマリー に D-056 の反映がある
+    marker: ['D-056']
+    count: all
+- id: AD-057
+  decision: 自分のAI⇄画面の配線は AG-UI 規格（テキスト・ツール呼び出し・状態・承認割り込みのイベント列。Google/LangChain/AW
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-057）
+  must_be_reflected_in:
+  - file: 02_tech_stack/selected-stack.json
+    check: selected-stack に D-057 の反映がある
+    marker: ['D-057']
+    count: all
+  - file: 06_mockup/v1/v1-clone-chat.html
+    check: mockup/clone-chat に D-057 の反映がある
+    marker: ['D-057']
+    trace: "D-057 -> screens: [clone-chat]"
+  - file: 05_flow/flow.json
+    check: flow.json/blueprint に D-057 の反映がある
+    marker: ['D-057']
+    count: all
+  - file: 01_hearing/ヒアリングサマリー.md
+    check: ヒアリングサマリー に D-057 の反映がある
+    marker: ['D-057']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-057 の反映がある
+    marker: ['D-057']
+    count: all
+  - file: 00_research/自前実装リスト.md
+    check: 自前実装リスト に D-057 の反映がある
+    marker: ['D-057']
+    count: all
+  - file: 00_research/影響マップ.md
+    check: 影響マップ に D-057 の反映がある
+    marker: ['D-057']
+    count: all
+- id: AD-058
+  decision: 目標の層は可変（会社＞事業＞部署＞…＞個人＞AI社員）で、必ずログイン中の個人まで落とす。個人の層は本人が画面で管理する（配られた分の進み・
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-058）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-058 の反映がある
+    marker: ['D-058']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/screens に D-058 の反映がある
+    marker: ['D-058']
+    count: all
+  - file: 06_mockup/v1/v1-goals.html
+    check: mockup/goals に D-058 の反映がある
+    marker: ['D-058']
+    trace: "D-058 -> screens: [goals]"
+  - file: 06_mockup/v1/v1-goal-allocation.html
+    check: mockup/goal-allocation に D-058 の反映がある
+    marker: ['D-058']
+    trace: "D-058 -> screens: [goal-allocation]"
+  - file: 06_mockup/v1/v1-my-progress.html
+    check: mockup/my-progress に D-058 の反映がある
+    marker: ['D-058']
+    trace: "D-058 -> screens: [my-progress]"
+  - file: 06_mockup/v1/v1-tasks.html
+    check: mockup/tasks に D-058 の反映がある
+    marker: ['D-058']
+    trace: "D-058 -> screens: [tasks]"
+  - file: 03_architecture/ER図.md
+    check: ER図/goals に D-058 の反映がある
+    marker: ['D-058']
+  - file: 01_hearing/ヒアリングサマリー.md
+    check: ヒアリングサマリー に D-058 の反映がある
+    marker: ['D-058']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-058 の反映がある
+    marker: ['D-058']
+    count: all
+  - file: 00_research/影響マップ.md
+    check: 影響マップ に D-058 の反映がある
+    marker: ['D-058']
+    count: all
+- id: AD-059
+  decision: 行為ID・役割ID・決定IDは設計者の道具であって顧客に見せるものではない。モックの画面上から消し、HTMLコメントにだけ残す（trace_
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-059）
+  must_be_reflected_in:
+  - file: 06_mockup/v1/v1-*.html
+    check: mockup/all に D-059 の反映がある
+    marker: ['D-059']
+    count: all
+    exclude: 'v1-index'
+  - file: 01_hearing/ヒアリングサマリー.md
+    check: ヒアリングサマリー に D-059 の反映がある
+    marker: ['D-059']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-059 の反映がある
+    marker: ['D-059']
+    count: all
+- id: AD-060
+  decision: 旧称 COO → クローン → 自分のAI。文書上の用語は「自分のAI」。画面では本人の名前＋AI（高本AI／佐藤AI）で表示し、名前は付け
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-060）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/objects に D-060 の反映がある
+    marker: ['D-060']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/screens に D-060 の反映がある
+    marker: ['D-060']
+    count: all
+  - file: 06_mockup/v1/v1-*.html
+    check: mockup/all に D-060 の反映がある
+    marker: ['D-060']
+    count: all
+    exclude: 'v1-index'
+  - file: 03_architecture/ER図.md
+    check: ER図 に D-060 の反映がある
+    marker: ['D-060']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-060 の反映がある
+    marker: ['D-060']
+    count: all
+  - file: 01_hearing/ヒアリングサマリー.md
+    check: ヒアリングサマリー に D-060 の反映がある
+    marker: ['D-060']
+    count: all
+- id: AD-061
+  decision: タスクは必ず目標（または自主）に紐づく。足す・渡す・担当を変える・目標を改訂する・目標を無くす、のどれをやっても「行き先のないもの」を作らな
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-061）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-061 の反映がある
+    marker: ['D-061']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/screens に D-061 の反映がある
+    marker: ['D-061']
+    count: all
+  - file: 06_mockup/v1/v1-tasks.html
+    check: mockup/tasks に D-061 の反映がある
+    marker: ['D-061']
+    trace: "D-061 -> screens: [tasks]"
+  - file: 06_mockup/v1/v1-goal-edit.html
+    check: mockup/goal-edit に D-061 の反映がある
+    marker: ['D-061']
+    trace: "D-061 -> screens: [goal-edit]"
+  - file: 06_mockup/v1/v1-goals.html
+    check: mockup/goals に D-061 の反映がある
+    marker: ['D-061']
+    trace: "D-061 -> screens: [goals]"
+  - file: 03_architecture/ER図.md
+    check: ER図/tasks に D-061 の反映がある
+    marker: ['D-061']
+  - file: 01_hearing/ヒアリングサマリー.md
+    check: ヒアリングサマリー に D-061 の反映がある
+    marker: ['D-061']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-061 の反映がある
+    marker: ['D-061']
+    count: all
+  - file: 00_research/影響マップ.md
+    check: 影響マップ に D-061 の反映がある
+    marker: ['D-061']
+    count: all
+- id: AD-062
+  decision: 会話は1本で見え方が2つ。A 会話モード（Claude/LINE 型の専用画面）と B 作業モード（中央＝反映先の画面、右＝同じ会話のパネル
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-062）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/screens に D-062 の反映がある
+    marker: ['D-062']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/navigation に D-062 の反映がある
+    marker: ['D-062']
+    count: all
+  - file: 06_mockup/v1/v1-clone-chat.html
+    check: mockup/clone-chat に D-062 の反映がある
+    marker: ['D-062']
+    trace: "D-062 -> screens: [clone-chat]"
+  - file: 06_mockup/v1/v1-ai-activity.html
+    check: mockup/ai-activity に D-062 の反映がある
+    marker: ['D-062']
+    trace: "D-062 -> screens: [ai-activity]"
+  - file: 06_mockup/v1/v1-*.html
+    check: どの画面からでも自分のAI を呼べる＝会話は 1 本・同じ部品（モックは _composer.py の入力欄だけ・画面は AgentChat だけ）
+    gate: node scripts/ci/chat_one.mjs
+  - file: 01_hearing/ヒアリングサマリー.md
+    check: ヒアリングサマリー に D-062 の反映がある
+    marker: ['D-062']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-062 の反映がある
+    marker: ['D-062']
+    count: all
+  - file: 03_architecture/ER図.md
+    check: ER図 に D-062 の反映がある
+    marker: ['D-062']
+    count: all
+  - file: 00_research/自前実装リスト.md
+    check: 自前実装リスト に D-062 の反映がある
+    marker: ['D-062']
+    count: all
+  - file: 00_research/影響マップ.md
+    check: 影響マップ に D-062 の反映がある
+    marker: ['D-062']
+    count: all
+- id: AD-063
+  decision: 営業目標の件数・工程・数値・FB・目的を決めるのは運営が作る目標スキル（§30）で、実装ではなくアップロード物。Kaname はその出力を受
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-063）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/objects に D-063 の反映がある
+    marker: ['D-063']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-063 の反映がある
+    marker: ['D-063']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/screens に D-063 の反映がある
+    marker: ['D-063']
+    count: all
+  - file: 03_architecture/ER図.md
+    check: ER図/measures に D-063 の反映がある
+    marker: ['D-063']
+    count: all
+  - file: 06_mockup/v1/v1-goals.html
+    check: mockup/goals に D-063 の反映がある
+    marker: ['D-063']
+    trace: "D-063 -> screens: [goals]"
+  - file: 06_mockup/v1/v1-hypotheses.html
+    check: mockup/hypotheses に D-063 の反映がある
+    marker: ['D-063']
+    trace: "D-063 -> screens: [hypotheses]"
+  - file: 01_hearing/ヒアリングサマリー.md
+    check: ヒアリングサマリー に D-063 の反映がある
+    marker: ['D-063']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-063 の反映がある
+    marker: ['D-063']
+    count: all
+  - file: 00_research/影響マップ.md
+    check: 影響マップ に D-063 の反映がある
+    marker: ['D-063']
+    count: all
+- id: AD-064
+  decision: タブレット（768〜1179）はスマホの流用でも PC の縮小でもない。サイドバーはアイコンのレール（72px）、第2ナビは横のチップ、自分
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-064）
+  must_be_reflected_in:
+  - file: 06_mockup/v1/v1-*.html
+    check: mockup/all に D-064 の反映がある
+    marker: ['D-064']
+    count: all
+    exclude: 'v1-index'
+  - file: 01_hearing/ヒアリングサマリー.md
+    check: ヒアリングサマリー に D-064 の反映がある
+    marker: ['D-064']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-064 の反映がある
+    marker: ['D-064']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/screens に D-064 の反映がある
+    marker: ['D-064']
+    count: all
+- id: AD-065
+  decision: 枠は3種。外（ログイン前）＝枠なし／はじめの設定（ログイン後・運用前 PS0〜PS2）＝手順バーだけの枠／アプリ（運用中 PS3〜）＝サイド
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-065）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/navigation に D-065 の反映がある
+    marker: ['D-065']
+    count: all
+  - file: 06_mockup/v1/v1-*.html
+    check: mockup/all に D-065 の反映がある
+    marker: ['D-065']
+    count: all
+    exclude: 'v1-index'
+  - file: 01_hearing/ヒアリングサマリー.md
+    check: ヒアリングサマリー に D-065 の反映がある
+    marker: ['D-065']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-065 の反映がある
+    marker: ['D-065']
+    count: all
+- id: AD-066
+  decision: 会話の部品は1組で、会話モード・右パネル・はじめの設定の会話が同じものを使う。①質問には選択肢チップ＋必ず「その他（自由に書く）」「あとで」
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-066）
+  must_be_reflected_in:
+  - file: 06_mockup/v1/v1-clone-chat.html
+    check: mockup/clone-chat に D-066 の反映がある
+    marker: ['D-066']
+    trace: "D-066 -> screens: [clone-chat]"
+  - file: 06_mockup/v1/v1-onboard-interview.html
+    check: mockup/onboard-interview に D-066 の反映がある
+    marker: ['D-066']
+    trace: "D-066 -> screens: [onboard-interview]"
+  - file: 06_mockup/v1/v1-*.html
+    check: mockup/all に D-066 の反映がある
+    marker: ['D-066']
+    count: all
+    exclude: 'v1-index'
+  - file: 01_hearing/ヒアリングサマリー.md
+    check: ヒアリングサマリー に D-066 の反映がある
+    marker: ['D-066']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-066 の反映がある
+    marker: ['D-066']
+    count: all
+  - file: 03_architecture/ER図.md
+    check: ER図 に D-066 の反映がある
+    marker: ['D-066']
+    count: all
+  - file: 00_research/自前実装リスト.md
+    check: 自前実装リスト に D-066 の反映がある
+    marker: ['D-066']
+    count: all
+  - file: 00_research/影響マップ.md
+    check: 影響マップ に D-066 の反映がある
+    marker: ['D-066']
+    count: all
+- id: AD-067
+  decision: 部品の土台は shadcn/ui（Base UI 版）。フォームは React Hook Form＋Zod（rjsf は動的台帳の入力欄だけ
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-067）
+  must_be_reflected_in:
+  - file: 02_tech_stack/selected-stack.json
+    check: selected-stack に D-067 の反映がある
+    marker: ['D-067']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-067 の反映がある
+    marker: ['D-067']
+    count: all
+  - file: 00_research/自前実装リスト.md
+    check: 自前実装リスト に D-067 の反映がある
+    marker: ['D-067']
+    count: all
+  - file: 01_hearing/ヒアリングサマリー.md
+    check: ヒアリングサマリー に D-067 の反映がある
+    marker: ['D-067']
+    count: all
+  - file: 00_research/UIライブラリ候補.md
+    check: UIライブラリ候補 に D-067 の反映がある
+    marker: ['D-067']
+    count: all
+- id: AD-068
+  decision: 画面の言葉は「渡す→引き継いでもらう」「引き取る→引き継ぐ」。今日は朝の確定（自分のAIの候補＋見込み時間の合計 vs 使える時間）と夕方の
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-068）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-068 の反映がある
+    marker: ['D-068']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/objects に D-068 の反映がある
+    marker: ['D-068']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/screens に D-068 の反映がある
+    marker: ['D-068']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/navigation に D-068 の反映がある
+    marker: ['D-068']
+    count: all
+  - file: 06_mockup/v1/v1-today.html
+    check: mockup/today に D-068 の反映がある
+    marker: ['D-068']
+    trace: "D-068 -> screens: [today]"
+  - file: 06_mockup/v1/v1-tasks.html
+    check: mockup/tasks に D-068 の反映がある
+    marker: ['D-068']
+    trace: "D-068 -> screens: [tasks]"
+  - file: 06_mockup/v1/v1-records.html
+    check: mockup/records に D-068 の反映がある
+    marker: ['D-068']
+    trace: "D-068 -> screens: [records]"
+  - file: 06_mockup/v1/v1-goals.html
+    check: mockup/goals に D-068 の反映がある
+    marker: ['D-068']
+    trace: "D-068 -> screens: [goals]"
+  - file: 06_mockup/v1/v1-hypotheses.html
+    check: mockup/hypotheses に D-068 の反映がある
+    marker: ['D-068']
+    trace: "D-068 -> screens: [hypotheses]"
+  - file: 03_architecture/ER図.md
+    check: ER図 に D-068 の反映がある
+    marker: ['D-068']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-068 の反映がある
+    marker: ['D-068']
+    count: all
+  - file: 01_hearing/ヒアリングサマリー.md
+    check: ヒアリングサマリー に D-068 の反映がある
+    marker: ['D-068']
+    count: all
+  - file: 00_research/自前実装リスト.md
+    check: 自前実装リスト に D-068 の反映がある
+    marker: ['D-068']
+    count: all
+  - file: 00_research/影響マップ.md
+    check: 影響マップ に D-068 の反映がある
+    marker: ['D-068']
+    count: all
+  - file: 02_tech_stack/selected-stack.json
+    check: selected-stack に D-068 の反映がある
+    marker: ['D-068']
+    count: all
+  - file: 00_research/UIライブラリ候補.md
+    check: UIライブラリ候補 に D-068 の反映がある
+    marker: ['D-068']
+    count: all
+- id: AD-069
+  decision: エラーの正本は 07_qa/test-specs/errors.json（第13軸）。モックの異常状態・関門・行為の裏側・普遍の類型 14 
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-069）
+  must_be_reflected_in:
+  - file: 07_qa/test-specs/errors.json
+    check: errors.json に D-069 の反映がある
+    marker: ['D-069']
+    count: all
+  - file: 01_hearing/ヒアリングサマリー.md
+    check: ヒアリングサマリー に D-069 の反映がある
+    marker: ['D-069']
+    count: all
+  - file: 01_hearing/要件一覧.md
+    check: 要件一覧 に D-069 の反映がある
+    marker: ['D-069']
+    count: all
+  - file: 03_architecture/ER図.md
+    check: ER図/error_events に D-069 の反映がある
+    marker: ['D-069']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-069 の反映がある
+    marker: ['D-069']
+    count: all
+- id: AD-070
+  decision: ①本文（.main）は幅 1180 以上で 720px を下回らない。自分のAIのパネルを開いて下回るなら第2ナビを上の帯に畳む。パネルの既
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-070）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/navigation に D-070 の反映がある
+    marker: ['D-070']
+    count: all
+  - file: 06_mockup/v1/v1-today.html
+    check: mockup/today に D-070 の反映がある
+    marker: ['D-070']
+    trace: "D-070 -> screens: [today]"
+  - file: 06_mockup/v1/v1-*.html
+    check: mockup/all に D-070 の反映がある
+    marker: ['D-070']
+    count: all
+    exclude: 'v1-index'
+  - file: 01_hearing/ヒアリングサマリー.md
+    check: ヒアリングサマリー に D-070 の反映がある
+    marker: ['D-070']
+    count: all
+- id: AD-071
+  decision: 画面は部品を並べる前に「10 秒で分かる順番」を決める。今日＝手紙（自分のAIの申し送り。まずこれ・押してほしい 3 件が文中）→ 今日やる
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-071）
+  must_be_reflected_in:
+  - file: 06_mockup/v1/v1-today.html
+    check: mockup/today に D-071 の反映がある
+    marker: ['D-071']
+    trace: "D-071 -> screens: [today]"
+  - file: 06_mockup/v1/v1-tasks.html
+    check: mockup/tasks に D-071 の反映がある
+    marker: ['D-071']
+    trace: "D-071 -> screens: [tasks]"
+  - file: 06_mockup/v1/v1-*.html
+    check: mockup/all に D-071 の反映がある
+    marker: ['D-071']
+    count: all
+    exclude: 'v1-index'
+  - file: 01_hearing/ヒアリングサマリー.md
+    check: ヒアリングサマリー に D-071 の反映がある
+    marker: ['D-071']
+    count: all
+- id: AD-073
+  decision: 自分のもの（個人の範囲・自主目標・自分のAIの記憶・自分が作ったAI社員）は権限なしで作る・直す・消す。それ以外は権限のある人だけ。権限は「
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-073）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/roles に D-073 の反映がある
+    marker: ['D-073']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-073 の反映がある
+    marker: ['D-073']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/screens に D-073 の反映がある
+    marker: ['D-073']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/navigation に D-073 の反映がある
+    marker: ['D-073']
+    count: all
+  - file: 06_mockup/v1/v1-clone-memory.html
+    check: mockup/clone-memory に D-073 の反映がある
+    marker: ['D-073']
+    trace: "D-073 -> screens: [clone-memory]"
+  - file: 06_mockup/v1/v1-members.html
+    check: mockup/members に D-073 の反映がある
+    marker: ['D-073']
+    trace: "D-073 -> screens: [members]"
+  - file: 06_mockup/v1/v1-member-detail.html
+    check: mockup/member-detail に D-073 の反映がある
+    marker: ['D-073']
+    trace: "D-073 -> screens: [member-detail]"
+  - file: 06_mockup/v1/v1-goals.html
+    check: mockup/goals に D-073 の反映がある
+    marker: ['D-073']
+    trace: "D-073 -> screens: [goals]"
+  - file: 06_mockup/v1/v1-policies.html
+    check: mockup/policies に D-073 の反映がある
+    marker: ['D-073']
+    trace: "D-073 -> screens: [policies]"
+  - file: 06_mockup/v1/v1-ops-home.html
+    check: mockup/ops-home に D-073 の反映がある
+    marker: ['D-073']
+    trace: "D-073 -> screens: [ops-home]"
+  - file: 06_mockup/v1/v1-ops-catalog.html
+    check: mockup/ops-catalog に D-073 の反映がある
+    marker: ['D-073']
+    trace: "D-073 -> screens: [ops-catalog]"
+  - file: 06_mockup/v1/v1-ops-support.html
+    check: mockup/ops-support に D-073 の反映がある
+    marker: ['D-073']
+    trace: "D-073 -> screens: [ops-support]"
+  - file: 01_hearing/ヒアリングサマリー.md
+    check: ヒアリングサマリー に D-073 の反映がある
+    marker: ['D-073']
+    count: all
+  - file: 03_architecture/ER図.md
+    check: ER図/permissions に D-073 の反映がある
+    marker: ['D-073']
+    count: all
+  - file: 03_architecture/ER図.md
+    check: ER図/layers に D-073 の反映がある
+    marker: ['D-073']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-073 の反映がある
+    marker: ['D-073']
+    count: all
+- id: AD-074
+  decision: 人が抜ける（無効化・退会）と会社が退会するときに、flow.json の全オブジェクトで何が起きるかを 1 つの表で決める（消える／残る／移
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-074）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/jobs に D-074 の反映がある
+    marker: ['D-074']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-074 の反映がある
+    marker: ['D-074']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/screens に D-074 の反映がある
+    marker: ['D-074']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/navigation に D-074 の反映がある
+    marker: ['D-074']
+    count: all
+  - file: 06_mockup/v1/v1-account-close.html
+    check: mockup/account-close に D-074 の反映がある
+    marker: ['D-074']
+    trace: "D-074 -> screens: [account-close]"
+  - file: 06_mockup/v1/v1-member-detail.html
+    check: mockup/member-detail に D-074 の反映がある
+    marker: ['D-074']
+    trace: "D-074 -> screens: [member-detail]"
+  - file: 06_mockup/v1/v1-audit.html
+    check: mockup/audit に D-074 の反映がある
+    marker: ['D-074']
+    trace: "D-074 -> screens: [audit]"
+  - file: 06_mockup/v1/v1-ops-tenant.html
+    check: mockup/ops-tenant に D-074 の反映がある
+    marker: ['D-074']
+    trace: "D-074 -> screens: [ops-tenant]"
+  - file: 06_mockup/v1/v1-ops-review.html
+    check: mockup/ops-review に D-074 の反映がある
+    marker: ['D-074']
+    trace: "D-074 -> screens: [ops-review]"
+  - file: 06_mockup/v1/v1-ops-audit.html
+    check: mockup/ops-audit に D-074 の反映がある
+    marker: ['D-074']
+    trace: "D-074 -> screens: [ops-audit]"
+  - file: 01_hearing/ヒアリングサマリー.md
+    check: ヒアリングサマリー に D-074 の反映がある
+    marker: ['D-074']
+    count: all
+  - file: 03_architecture/ER図.md
+    check: ER図/account_events に D-074 の反映がある
+    marker: ['D-074']
+    count: all
+  - file: 03_architecture/ER図.md
+    check: ER図/support_access_grants に D-074 の反映がある
+    marker: ['D-074']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-074 の反映がある
+    marker: ['D-074']
+    count: all
+- id: AD-075
+  decision: 運営と顧客の間で往復するものは 6 つ（問い合わせ／お知らせと稼働状況／通知の届け先／プランと利用量／請求と入金／セキュリティの出来事）。顧
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-075）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/jobs に D-075 の反映がある
+    marker: ['D-075']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-075 の反映がある
+    marker: ['D-075']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/screens に D-075 の反映がある
+    marker: ['D-075']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/objects に D-075 の反映がある
+    marker: ['D-075']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/navigation に D-075 の反映がある
+    marker: ['D-075']
+    count: all
+  - file: 06_mockup/v1/v1-inquiry.html
+    check: mockup/inquiry に D-075 の反映がある
+    marker: ['D-075']
+    trace: "D-075 -> screens: [inquiry]"
+  - file: 06_mockup/v1/v1-notices.html
+    check: mockup/notices に D-075 の反映がある
+    marker: ['D-075']
+    trace: "D-075 -> screens: [notices]"
+  - file: 06_mockup/v1/v1-billing.html
+    check: mockup/billing に D-075 の反映がある
+    marker: ['D-075']
+    trace: "D-075 -> screens: [billing]"
+  - file: 06_mockup/v1/v1-ops-support.html
+    check: mockup/ops-support に D-075 の反映がある
+    marker: ['D-075']
+    trace: "D-075 -> screens: [ops-support]"
+  - file: 06_mockup/v1/v1-ops-notices.html
+    check: mockup/ops-notices に D-075 の反映がある
+    marker: ['D-075']
+    trace: "D-075 -> screens: [ops-notices]"
+  - file: 06_mockup/v1/v1-ops-billing.html
+    check: mockup/ops-billing に D-075 の反映がある
+    marker: ['D-075']
+    trace: "D-075 -> screens: [ops-billing]"
+  - file: 06_mockup/v1/v1-ops-audit.html
+    check: mockup/ops-audit に D-075 の反映がある
+    marker: ['D-075']
+    trace: "D-075 -> screens: [ops-audit]"
+  - file: 01_hearing/ヒアリングサマリー.md
+    check: ヒアリングサマリー に D-075 の反映がある
+    marker: ['D-075']
+    count: all
+  - file: 03_architecture/ER図.md
+    check: ER図/inquiries に D-075 の反映がある
+    marker: ['D-075']
+    count: all
+  - file: 03_architecture/ER図.md
+    check: ER図/invoices に D-075 の反映がある
+    marker: ['D-075']
+    count: all
+  - file: 03_architecture/ER図.md
+    check: ER図/notifications に D-075 の反映がある
+    marker: ['D-075']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-075 の反映がある
+    marker: ['D-075']
+    count: all
+- id: AD-076
+  decision: 全体見直し（01_hearing/全体見直し_20260915.md）の §2・§3・§6 を決定にする。顧客側に 自分のアカウント・会社の
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-076）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/jobs に D-076 の反映がある
+    marker: ['D-076']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-076 の反映がある
+    marker: ['D-076']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/screens に D-076 の反映がある
+    marker: ['D-076']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/navigation に D-076 の反映がある
+    marker: ['D-076']
+    count: all
+  - file: 06_mockup/v1/v1-account.html
+    check: mockup/account に D-076 の反映がある
+    marker: ['D-076']
+    trace: "D-076 -> screens: [account]"
+  - file: 06_mockup/v1/v1-company-settings.html
+    check: mockup/company-settings に D-076 の反映がある
+    marker: ['D-076']
+    trace: "D-076 -> screens: [company-settings]"
+  - file: 06_mockup/v1/v1-import.html
+    check: mockup/import に D-076 の反映がある
+    marker: ['D-076']
+    trace: "D-076 -> screens: [import]"
+  - file: 06_mockup/v1/v1-services.html
+    check: mockup/services に D-076 の反映がある
+    marker: ['D-076']
+    trace: "D-076 -> screens: [services]"
+  - file: 06_mockup/v1/v1-ops-services.html
+    check: mockup/ops-services に D-076 の反映がある
+    marker: ['D-076']
+    trace: "D-076 -> screens: [ops-services]"
+  - file: 06_mockup/v1/v1-ops-billing.html
+    check: mockup/ops-billing に D-076 の反映がある
+    marker: ['D-076']
+    trace: "D-076 -> screens: [ops-billing]"
+  - file: 06_mockup/v1/v1-duties.html
+    check: mockup/duties に D-076 の反映がある
+    marker: ['D-076']
+    trace: "D-076 -> screens: [duties]"
+  - file: 06_mockup/v1/v1-ai-staff-detail.html
+    check: mockup/ai-staff-detail に D-076 の反映がある
+    marker: ['D-076']
+    trace: "D-076 -> screens: [ai-staff-detail]"
+  - file: 06_mockup/v1/v1-notices.html
+    check: mockup/notices に D-076 の反映がある
+    marker: ['D-076']
+    trace: "D-076 -> screens: [notices]"
+  - file: 06_mockup/v1/v1-ops-catalog.html
+    check: mockup/ops-catalog に D-076 の反映がある
+    marker: ['D-076']
+    trace: "D-076 -> screens: [ops-catalog]"
+  - file: 06_mockup/v1/v1-review.html
+    check: mockup/review に D-076 の反映がある
+    marker: ['D-076']
+    trace: "D-076 -> screens: [review]"
+  - file: 06_mockup/v1/v1-goal-allocation.html
+    check: mockup/goal-allocation に D-076 の反映がある
+    marker: ['D-076']
+    trace: "D-076 -> screens: [goal-allocation]"
+  - file: 01_hearing/ヒアリングサマリー.md
+    check: ヒアリングサマリー に D-076 の反映がある
+    marker: ['D-076']
+    count: all
+  - file: 03_architecture/ER図.md
+    check: ER図/sessions に D-076 の反映がある
+    marker: ['D-076']
+    count: all
+  - file: 03_architecture/ER図.md
+    check: ER図/plans に D-076 の反映がある
+    marker: ['D-076']
+    count: all
+  - file: 03_architecture/ER図.md
+    check: ER図/imports に D-076 の反映がある
+    marker: ['D-076']
+    count: all
+  - file: 03_architecture/ER図.md
+    check: ER図/integrations に D-076 の反映がある
+    marker: ['D-076']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-076 の反映がある
+    marker: ['D-076']
+    count: all
+- id: AD-077
+  decision: 請求・問い合わせ・配布したもの・証跡・公開審査・お知らせは会社ごとに違う。運営の対応は 会社の 1 社（詳細）の 8 面（構成と状態／請求と
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-077）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-077 の反映がある
+    marker: ['D-077']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/screens に D-077 の反映がある
+    marker: ['D-077']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/navigation に D-077 の反映がある
+    marker: ['D-077']
+    count: all
+  - file: 06_mockup/v1/v1-ops-tenant.html
+    check: mockup/ops-tenant に D-077 の反映がある
+    marker: ['D-077']
+    trace: "D-077 -> screens: [ops-tenant]"
+  - file: 06_mockup/v1/v1-ops-billing.html
+    check: mockup/ops-billing に D-077 の反映がある
+    marker: ['D-077']
+    trace: "D-077 -> screens: [ops-billing]"
+  - file: 06_mockup/v1/v1-ops-support.html
+    check: mockup/ops-support に D-077 の反映がある
+    marker: ['D-077']
+    trace: "D-077 -> screens: [ops-support]"
+  - file: 06_mockup/v1/v1-ops-review.html
+    check: mockup/ops-review に D-077 の反映がある
+    marker: ['D-077']
+    trace: "D-077 -> screens: [ops-review]"
+  - file: 06_mockup/v1/v1-ops-catalog.html
+    check: mockup/ops-catalog に D-077 の反映がある
+    marker: ['D-077']
+    trace: "D-077 -> screens: [ops-catalog]"
+  - file: 01_hearing/ヒアリングサマリー.md
+    check: ヒアリングサマリー に D-077 の反映がある
+    marker: ['D-077']
+    count: all
+  - file: 03_architecture/ER図.md
+    check: ER図/tenant_distributions に D-077 の反映がある
+    marker: ['D-077']
+    count: all
+  - file: 03_architecture/ER図.md
+    check: ER図/ops_audit_events に D-077 の反映がある
+    marker: ['D-077']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-077 の反映がある
+    marker: ['D-077']
+    count: all
+- id: AD-078
+  decision: §30（構築メタスキル群）と §63（目標スキル）は決めたのに、運営がスキルを構築・アップロード・テスト・版管理・配布し、自分のAIと AI
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-078）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-078 の反映がある
+    marker: ['D-078']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/objects に D-078 の反映がある
+    marker: ['D-078']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/screens に D-078 の反映がある
+    marker: ['D-078']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/navigation に D-078 の反映がある
+    marker: ['D-078']
+    count: all
+  - file: 06_mockup/v1/v1-ops-skills.html
+    check: mockup/ops-skills に D-078 の反映がある
+    marker: ['D-078']
+    trace: "D-078 -> screens: [ops-skills]"
+  - file: 06_mockup/v1/v1-ai-staff-detail.html
+    check: mockup/ai-staff-detail に D-078 の反映がある
+    marker: ['D-078']
+    trace: "D-078 -> screens: [ai-staff-detail]"
+  - file: 06_mockup/v1/v1-goals.html
+    check: mockup/goals に D-078 の反映がある
+    marker: ['D-078']
+    trace: "D-078 -> screens: [goals]"
+  - file: 06_mockup/v1/v1-ai-activity.html
+    check: mockup/ai-activity に D-078 の反映がある
+    marker: ['D-078']
+    trace: "D-078 -> screens: [ai-activity]"
+  - file: 03_architecture/ER図.md
+    check: ER図/skills に D-078 の反映がある
+    marker: ['D-078']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-078 の反映がある
+    marker: ['D-078']
+    count: all
+  - file: 01_hearing/ヒアリングサマリー.md
+    check: ヒアリングサマリー に D-078 の反映がある
+    marker: ['D-078']
+    count: all
+- id: AD-079
+  decision: タイムライン（期間と前後関係）の部品は svar-gantt（MIT）。目標・施策・検証の 3 段、棒＝期間、線＝前後関係、棒を押すと右に詳
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-079）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/screens に D-079 の反映がある
+    marker: ['D-079']
+    count: all
+  - file: 06_mockup/v1/v1-goals.html
+    check: mockup/goals に D-079 の反映がある
+    marker: ['D-079']
+    trace: "D-079 -> screens: [goals]"
+  - file: 06_mockup/v1/v1-hypotheses.html
+    check: mockup/hypotheses に D-079 の反映がある
+    marker: ['D-079']
+    trace: "D-079 -> screens: [hypotheses]"
+  - file: 04_design/DESIGN-kaname-preview.html
+    check: DESIGN に D-079 の反映がある
+    marker: ['D-079']
+    count: all
+  - file: 02_tech_stack/selected-stack.json
+    check: selected-stack に D-079 の反映がある
+    marker: ['D-079']
+    count: all
+- id: AD-080
+  decision: D-078 は器（保存・版・装着）。ここで中身を決める。スキルは SKILL.md ＋ references ＋ evals の一式（Cla
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-080）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/objects に D-080 の反映がある
+    marker: ['D-080']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/screens に D-080 の反映がある
+    marker: ['D-080']
+    count: all
+  - file: 06_mockup/v1/v1-ops-skills.html
+    check: mockup/ops-skills に D-080 の反映がある
+    marker: ['D-080']
+    trace: "D-080 -> screens: [ops-skills]"
+  - file: 10_skills/*/SKILL.md
+    check: 10_skills に D-080 の反映がある
+    marker: ['D-080']
+    count: all
+  - file: 03_architecture/ER図.md
+    check: ER図/skill_versions に D-080 の反映がある
+    marker: ['D-080']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-080 の反映がある
+    marker: ['D-080']
+    count: all
+  - file: 01_hearing/ヒアリングサマリー.md
+    check: ヒアリングサマリー に D-080 の反映がある
+    marker: ['D-080']
+    count: all
+  - file: 07_tasks/tickets.json
+    check: tickets に D-080 の反映がある
+    marker: ['D-080']
+    count: all
+- id: AD-081
+  decision: サマリーの段階表（段階 2＝課金・オンボーディング・構築メタスキル・運営コンソール）は D-073〜D-080 で v1 に引き上げた後も古
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-081）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/deferred に D-081 の反映がある
+    marker: ['D-081']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/screens に D-081 の反映がある
+    marker: ['D-081']
+    count: all
+  - file: 01_hearing/ヒアリングサマリー.md
+    check: ヒアリングサマリー に D-081 の反映がある
+    marker: ['D-081']
+    count: all
+- id: AD-082
+  decision: カードの会社は Stripe Billing のサブスク（毎月自動請求）。カードの登録と変更は Stripe のホスト画面（Checkout
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-082）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-082 の反映がある
+    marker: ['D-082']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/screens に D-082 の反映がある
+    marker: ['D-082']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/objects に D-082 の反映がある
+    marker: ['D-082']
+    count: all
+  - file: 06_mockup/v2/v2-billing-setup.html
+    check: mockup/billing-setup に D-082 の反映がある
+    marker: ['D-082']
+    trace: "D-082 -> screens: [billing-setup]"
+  - file: 06_mockup/v1/v1-billing.html
+    todo: 段階 2（Stripe 課金・T-V2-02）で billing に反映する。段階 1 の billing は請求書払い（D-002）。v2 の下書きは 06_mockup/v2/v2-billing-setup.html
+  - file: 03_architecture/ER図.md
+    check: ER図/subscriptions に D-082 の反映がある
+    marker: ['D-082']
+    count: all
+  - file: 03_architecture/ER図.md
+    check: ER図/payment_methods に D-082 の反映がある
+    marker: ['D-082']
+    count: all
+  - file: 03_architecture/ER図.md
+    check: ER図/billing_events に D-082 の反映がある
+    marker: ['D-082']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-082 の反映がある
+    marker: ['D-082']
+    count: all
+  - file: 07_qa/test-specs/errors.json
+    check: errors.json に D-082 の反映がある
+    marker: ['D-082']
+    count: all
+  - file: 01_hearing/ヒアリングサマリー.md
+    check: ヒアリングサマリー に D-082 の反映がある
+    marker: ['D-082']
+    count: all
+- id: AD-083
+  decision: 段階 2 で足す経路は BYOK（顧客の API キー）と運営マネージド（運営のキー・既定 OFF）。提供者は Anthropic・Open
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-083）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-083 の反映がある
+    marker: ['D-083']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/screens に D-083 の反映がある
+    marker: ['D-083']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/objects に D-083 の反映がある
+    marker: ['D-083']
+    count: all
+  - file: 06_mockup/v2/v2-llm-routes.html
+    check: mockup/llm-routes に D-083 の反映がある
+    marker: ['D-083']
+    trace: "D-083 -> screens: [llm-routes]"
+  - file: 06_mockup/v1/v1-company-settings.html
+    check: mockup/company-settings に D-083 の反映がある
+    marker: ['D-083']
+    trace: "D-083 -> screens: [company-settings]"
+  - file: 06_mockup/v1/v1-ops-tenant.html
+    check: mockup/ops-tenant に D-083 の反映がある
+    marker: ['D-083']
+    trace: "D-083 -> screens: [ops-tenant]"
+  - file: 03_architecture/ER図.md
+    check: ER図/llm_routes に D-083 の反映がある
+    marker: ['D-083']
+    count: all
+  - file: 03_architecture/ER図.md
+    check: ER図/llm_capabilities に D-083 の反映がある
+    marker: ['D-083']
+    count: all
+  - file: 03_architecture/ER図.md
+    check: ER図/credentials に D-083 の反映がある
+    marker: ['D-083']
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-083 の反映がある
+    marker: ['D-083']
+    count: all
+  - file: 07_qa/test-specs/errors.json
+    check: errors.json に D-083 の反映がある
+    marker: ['D-083']
+    count: all
+  - file: 01_hearing/ヒアリングサマリー.md
+    check: ヒアリングサマリー に D-083 の反映がある
+    marker: ['D-083']
+    count: all
+- id: AD-084
+  decision: PC は Bridge（Electron）の窓に Kaname の画面を出す。スマホは同じ Web を Capacitor の殻に入れて A
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-084）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-084 の反映がある
+    marker: ['D-084']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/screens に D-084 の反映がある
+    marker: ['D-084']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/objects に D-084 の反映がある
+    marker: ['D-084']
+    count: all
+  - file: 06_mockup/v2/v2-app-setup.html
+    check: mockup/app-setup に D-084 の反映がある
+    marker: ['D-084']
+    trace: "D-084 -> screens: [app-setup]"
+  - file: 06_mockup/v1/v1-account.html
+    check: mockup/account に D-084 の反映がある
+    marker: ['D-084']
+    trace: "D-084 -> screens: [account]"
+  - file: 03_architecture/ER図.md
+    check: ER図/push_devices に D-084 の反映がある
+    marker: ['D-084']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-084 の反映がある
+    marker: ['D-084']
+    count: all
+  - file: 01_hearing/ヒアリングサマリー.md
+    check: ヒアリングサマリー に D-084 の反映がある
+    marker: ['D-084']
+    count: all
+  - file: 02_tech_stack/selected-stack.json
+    check: selected-stack.json に D-084 の反映がある
+    marker: ['D-084']
+    count: all
+- id: AD-085
+  decision: できる操作の完全な列挙・送るもの／送らないもの・サブプロセッサ一覧・アンインストールの検証結果 は成果物（行為×関門・依存の境界・selec
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-085）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-085 の反映がある
+    marker: ['D-085']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/screens に D-085 の反映がある
+    marker: ['D-085']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/objects に D-085 の反映がある
+    marker: ['D-085']
+    count: all
+  - file: 06_mockup/v1/v1-security-brief.html
+    check: mockup/security-brief に D-085 の反映がある
+    marker: ['D-085']
+    trace: "D-085 -> screens: [security-brief]"
+  - file: 06_mockup/v2/v2-ops-disclosure.html
+    check: mockup/ops-disclosure に D-085 の反映がある
+    marker: ['D-085']
+    trace: "D-085 -> screens: [ops-disclosure]"
+  - file: 03_architecture/ER図.md
+    check: ER図/disclosure_versions に D-085 の反映がある
+    marker: ['D-085']
+    count: all
+  - file: 03_architecture/ER図.md
+    check: ER図/subprocessors に D-085 の反映がある
+    marker: ['D-085']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-085 の反映がある
+    marker: ['D-085']
+    count: all
+  - file: 07_qa/test-specs/errors.json
+    check: errors.json に D-085 の反映がある
+    marker: ['D-085']
+    count: all
+  - file: 01_hearing/ヒアリングサマリー.md
+    check: ヒアリングサマリー に D-085 の反映がある
+    marker: ['D-085']
+    count: all
+- id: AD-086
+  decision: / は入っているかで行き先が変わる（未ログイン→入る画面・ログイン済み→時点の画面）。無いパスは「ありません」と戻る導線。権限で見えない画面
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-086）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/navigation に D-086 の反映がある
+    marker: ['D-086']
+    count: all
+  - file: 01_hearing/ヒアリングサマリー.md
+    check: ヒアリングサマリー に D-086 の反映がある
+    marker: ['D-086']
+    count: all
+  - file: 01_hearing/要件一覧.md
+    check: 要件一覧 に D-086 の反映がある
+    marker: ['D-086']
+    count: all
+- id: AD-087
+  decision: パスワードの入力欄は必ず「見る・隠す」を切り替える的を持つ。既定は隠す。入力欄は 1 つの部品から出し、画面ごとに作らない
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-087）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/screens に D-087 の反映がある
+    marker: ['D-087']
+    count: all
+  - file: 06_mockup/v1/v1-signup.html
+    check: mockup/signup に D-087 の反映がある
+    marker: ['D-087']
+    trace: "D-087 -> screens: [signup]"
+  - file: 06_mockup/v1/v1-login.html
+    check: mockup/login に D-087 の反映がある
+    marker: ['D-087']
+    trace: "D-087 -> screens: [login]"
+  - file: 06_mockup/v1/v1-password-reset.html
+    check: mockup/password-reset に D-087 の反映がある
+    marker: ['D-087']
+    trace: "D-087 -> screens: [password-reset]"
+  - file: 06_mockup/v1/v1-invite-accept.html
+    check: mockup/invite-accept に D-087 の反映がある
+    marker: ['D-087']
+    trace: "D-087 -> screens: [invite-accept]"
+  - file: 06_mockup/v1/v1-mfa-setup.html
+    check: mockup/mfa-setup に D-087 の反映がある
+    marker: ['D-087']
+    trace: "D-087 -> screens: [mfa-setup]"
+  - file: 06_mockup/v1/v1-credentials.html
+    check: mockup/credentials に D-087 の反映がある
+    marker: ['D-087']
+    trace: "D-087 -> screens: [credentials]"
+  - file: 06_mockup/v1/v1-account.html
+    check: mockup/account に D-087 の反映がある
+    marker: ['D-087']
+    trace: "D-087 -> screens: [account]"
+  - file: 01_hearing/ヒアリングサマリー.md
+    check: ヒアリングサマリー に D-087 の反映がある
+    marker: ['D-087']
+    count: all
+  - file: 01_hearing/要件一覧.md
+    check: 要件一覧 に D-087 の反映がある
+    marker: ['D-087']
+    count: all
+- id: AD-088
+  decision: 「はじめる」では何も作らない（保留の申し込みが 1 行だけ）。メールのリンクを押した時点で 利用者・会社・層・代表・自分のAI を作り、そこ
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-088）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/screens に D-088 の反映がある
+    marker: ['D-088']
+    count: all
+  - file: 06_mockup/v1/v1-signup.html
+    check: mockup/signup に D-088 の反映がある
+    marker: ['D-088']
+    trace: "D-088 -> screens: [signup]"
+  - file: 06_mockup/v1/v1-verify-email.html
+    check: mockup/verify-email に D-088 の反映がある
+    marker: ['D-088']
+    trace: "D-088 -> screens: [verify-email]"
+  - file: 03_architecture/ER図.md
+    check: ER図/pending_signup に D-088 の反映がある
+    marker: ['D-088']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-088 の反映がある
+    marker: ['D-088']
+    count: all
+  - file: 01_hearing/ヒアリングサマリー.md
+    check: ヒアリングサマリー に D-088 の反映がある
+    marker: ['D-088']
+    count: all
+  - file: 01_hearing/要件一覧.md
+    check: 要件一覧 に D-088 の反映がある
+    marker: ['D-088']
+    count: all
+- id: AD-089
+  decision: はじめの設定の進み具合を人ごとに記録する（0〜6）。ログインや入口はその段へ戻す。飛ばす出口（あとでやる）は出さない。PC をつなぐ手順は「
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-089）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/screens に D-089 の反映がある
+    marker: ['D-089']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/objects に D-089 の反映がある
+    marker: ['D-089']
+    count: all
+  - file: 06_mockup/v1/v1-bridge-setup.html
+    check: mockup/bridge-setup に D-089 の反映がある
+    marker: ['D-089']
+    trace: "D-089 -> screens: [bridge-setup]"
+  - file: 03_architecture/ER図.md
+    check: ER図/members に D-089 の反映がある
+    marker: ['D-089']
+  - file: 03_architecture/ER図.md
+    check: ER図/setup_steps に D-089 の反映がある
+    marker: ['D-089']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-089 の反映がある
+    marker: ['D-089']
+    count: all
+  - file: 01_hearing/要件一覧.md
+    check: 要件一覧 に D-089 の反映がある
+    marker: ['D-089']
+    count: all
+- id: AD-090
+  decision: Bridge が仕事を受け取り、本人の Claude Code を --resume で呼んで返す。文脈は Claude Code が持ち 
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-090）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/screens に D-090 の反映がある
+    marker: ['D-090']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/objects に D-090 の反映がある
+    marker: ['D-090']
+    count: all
+  - file: 06_mockup/v1/v1-bridge-setup.html
+    check: mockup/bridge-setup に D-090 の反映がある
+    marker: ['D-090']
+    trace: "D-090 -> screens: [bridge-setup]"
+  - file: 06_mockup/v1/v1-clone-chat.html
+    check: mockup/clone-chat に D-090 の反映がある
+    marker: ['D-090']
+    trace: "D-090 -> screens: [clone-chat]"
+  - file: 06_mockup/v1/v1-onboard-interview.html
+    check: mockup/onboard-interview に D-090 の反映がある
+    marker: ['D-090']
+    trace: "D-090 -> screens: [onboard-interview]"
+  - file: 03_architecture/ER図.md
+    check: ER図/bridge_jobs に D-090 の反映がある
+    marker: ['D-090']
+    count: all
+  - file: 03_architecture/ER図.md
+    check: ER図/conversations に D-090 の反映がある
+    marker: ['D-090']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-090 の反映がある
+    marker: ['D-090']
+    count: all
+  - file: 01_hearing/要件一覧.md
+    check: 要件一覧 に D-090 の反映がある
+    marker: ['D-090']
+    count: all
+- id: AD-091
+  decision: 段階 1 の AI は本人の Claude Code で動く（D-055）。その Claude Code を入れるところまで Bridge 
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-091）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/screens に D-091 の反映がある
+    marker: ['D-091']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/blueprint に D-091 の反映がある
+    marker: ['D-091']
+    count: all
+  - file: 06_mockup/v1/v1-bridge-setup.html
+    check: mockup/bridge-setup に D-091 の反映がある
+    marker: ['D-091']
+    trace: "D-091 -> screens: [bridge-setup]"
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-091 の反映がある
+    marker: ['D-091']
+    count: all
+  - file: 01_hearing/要件一覧.md
+    check: 要件一覧 に D-091 の反映がある
+    marker: ['D-091']
+    count: all
+- id: AD-092
+  decision: 守る条件は5つ（資格情報を仲介しない／バイナリを改変しない／代わりに支払わない／商用規約に同意／名前とロゴを製品名に使わない）。サブスクを第
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-092）
+  must_be_reflected_in:
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-092 の反映がある
+    marker: ['D-092']
+    count: all
+  - file: 02_tech_stack/selected-stack.json
+    check: 02_tech_stack/selected-stack.json に D-092 の反映がある
+    marker: ['D-092']
+    count: all
+  - file: 01_hearing/要件一覧.md
+    check: 要件一覧 に D-092 の反映がある
+    marker: ['D-092']
+    count: all
+  - file: 03_architecture/choke-points.json
+    check: choke-points.json に D-092 の反映がある
+    marker: ['D-092']
+    count: all
+- id: AD-093
+  decision: 端末(tty)は要らずパイプで足りる。stream-json で完了イベントを受けるので「終了コード0=成功」にしない。承認待ちは同じ経路に
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-093）
+  must_be_reflected_in:
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-093 の反映がある
+    marker: ['D-093']
+    count: all
+  - file: 02_tech_stack/selected-stack.json
+    check: 02_tech_stack/selected-stack.json に D-093 の反映がある
+    marker: ['D-093']
+    count: all
+  - file: 07_tasks/tickets.json
+    check: tickets.json に D-093 の反映がある
+    marker: ['D-093']
+    count: all
+  - file: 03_architecture/ER図.md
+    check: ER図/bridge_job_events に D-093 の反映がある
+    marker: ['D-093']
+    count: all
+  - file: 06_mockup/v1/v1-clone-chat.html
+    check: mockup/clone-chat に D-093 の反映がある（1 行 1 イベント・確認は同じ経路）
+    marker: ['D-093']
+    count: all
+    trace: "D-093 -> screens: [clone-chat]"
+  - file: 07_qa/test-specs/errors.json
+    check: errors.json に D-093 の反映がある
+    marker: ['D-093']
+    count: all
+- id: AD-094
+  decision: 再生成で結果列・status・流れの結果が消えると、実ブラウザで取った証拠が黙って失われる。生成器は作らなくなった行も残し、人が書いた欄を引
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-094）
+  must_be_reflected_in:
+  - file: 01_hearing/要件一覧.md
+    check: 要件一覧 に D-094 の反映がある
+    marker: ['D-094']
+    count: all
+- id: AD-095
+  decision: 関門の検査は実装済みなのに CI から呼ばれておらず、回すと迂回 55 件で赤。検査は作った時点で CI に並べる。決定が道具にしか届いてい
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-095）
+  must_be_reflected_in:
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-095 の反映がある
+    marker: ['D-095']
+    count: all
+  - file: 03_architecture/choke-points.json
+    check: choke-points.json に D-095 の反映がある
+    marker: ['D-095']
+    count: all
+  - file: 07_tasks/tickets.json
+    check: tickets.json に D-095 の反映がある
+    marker: ['D-095']
+    count: all
+- id: AD-096
+  decision: 運営者の情報は設定値の1か所。全メールの末尾にサービス名・会社名・代表者名・問い合わせを付け、返信はinfo@へ。電話はメールに載せない。住
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-096）
+  must_be_reflected_in:
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-096 の反映がある
+    marker: ['D-096']
+    count: all
+  - file: 03_architecture/choke-points.json
+    check: choke-points.json に D-096 の反映がある
+    marker: ['D-096']
+    count: all
+  - file: 01_hearing/要件一覧.md
+    check: 要件一覧 に D-096 の反映がある
+    marker: ['D-096']
+    count: all
+- id: AD-097
+  decision: 段階1は画面もAPIもVercel（別プロジェクト・APIは独立のまま）＋Supabase東京。Railway・Hatchet・Micros
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-097）
+  must_be_reflected_in:
+  - file: 02_tech_stack/selected-stack.json
+    check: selected-stack/hosting に D-097 の反映がある
+    marker: ['D-097']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-097 の反映がある
+    marker: ['D-097']
+    count: all
+  - file: 01_hearing/要件一覧.md
+    check: 要件一覧 に D-097 の反映がある
+    marker: ['D-097']
+    count: all
+- id: AD-098
+  decision: 意味の近さはRuri v3をBridgeのPCで動かしてベクトルにし、言葉の一致はPGroongaで拾い、最後に自分のAIが読んで選ぶ。外部
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-098）
+  must_be_reflected_in:
+  - file: 03_architecture/ER図.md
+    check: ER図/search_embeddings に D-098 の反映がある
+    marker: ['D-098']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-098 の反映がある
+    marker: ['D-098']
+    count: all
+  - file: 02_tech_stack/selected-stack.json
+    check: selected-stack/search に D-098 の反映がある
+    marker: ['D-098']
+  - file: 05_flow/flow.json
+    check: flow.json/objects に D-098 の反映がある
+    marker: ['D-098']
+    count: all
+  - file: 01_hearing/要件一覧.md
+    check: 要件一覧 に D-098 の反映がある
+    marker: ['D-098']
+    count: all
+- id: AD-099
+  decision: 段階1の探すは自分のAIが全文検索を繰り返して読んで選ぶ。ベクトルは件数と探す時間が境を超えてから入れ、作るのは本人のPC（サブスクでもAP
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-099）
+  must_be_reflected_in:
+  - file: 03_architecture/ER図.md
+    check: ER図/search_embeddings に D-099 の反映がある
+    marker: ['D-099']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-099 の反映がある
+    marker: ['D-099']
+    count: all
+  - file: 02_tech_stack/selected-stack.json
+    check: selected-stack/search に D-099 の反映がある
+    marker: ['D-099']
+  - file: 05_flow/flow.json
+    check: flow.json/blueprint に D-099 の反映がある
+    marker: ['D-099']
+    count: all
+  - file: 01_hearing/要件一覧.md
+    check: 要件一覧 に D-099 の反映がある
+    marker: ['D-099']
+    count: all
+- id: AD-100
+  decision: 仕事ごとに使った量（往復数・時間・入力と出力の量・費用の見込み）を残し、上限の知らせに使う。道具の呼び出しは名前・対象・成否・時間まで残す。
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-100）
+  must_be_reflected_in:
+  - file: 03_architecture/ER図.md
+    check: ER図/bridge_jobs に D-100 の反映がある
+    marker: ['D-100']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-100 の反映がある
+    marker: ['D-100']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/blueprint に D-100 の反映がある
+    marker: ['D-100']
+    count: all
+  - file: 01_hearing/要件一覧.md
+    check: 要件一覧 に D-100 の反映がある
+    marker: ['D-100']
+    count: all
+- id: AD-101
+  decision: 顧客の資格情報は段階1からInfisicalのクラウド無料枠に置く。Kanameが会社ごとの鍵で暗号化した中身だけを会社ごとの置き場に預ける
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-101）
+  must_be_reflected_in:
+  - file: 02_tech_stack/selected-stack.json
+    check: selected-stack/secrets_vault に D-101 の反映がある
+    marker: ['D-101']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-101 の反映がある
+    marker: ['D-101']
+    count: all
+  - file: 03_architecture/choke-points.json
+    check: choke-points.json に D-101 の反映がある
+    marker: ['D-101']
+    count: all
+  - file: 01_hearing/要件一覧.md
+    check: 要件一覧 に D-101 の反映がある
+    marker: ['D-101']
+    count: all
+- id: AD-102
+  decision: Infisicalの費用はidentityの数で決まるので、入るのはKanameのサーバーと運営の人だけ（3つ）。BridgeはInfisi
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-102）
+  must_be_reflected_in:
+  - file: 06_mockup/v1/v1-*.html
+    not_applicable: 画面の決定ではない（Infisical に入る identity の数と費用）。Bridge が Infisical に入らないことは apps/bridge/src/vault.ts と boundary.mjs（B6 packages/secrets/ の外から @infisical/sdk を呼ばない）で守る
+  - file: 02_tech_stack/selected-stack.json
+    check: selected-stack/secrets_vault に D-102 の反映がある
+    marker: ['D-102']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-102 の反映がある
+    marker: ['D-102']
+    count: all
+  - file: 03_architecture/choke-points.json
+    check: choke-points.json に D-102 の反映がある
+    marker: ['D-102']
+    count: all
+  - file: 01_hearing/要件一覧.md
+    check: 要件一覧 に D-102 の反映がある
+    marker: ['D-102']
+    count: all
+- id: AD-103
+  decision: 自分のAIとの会話を出す5か所は全部AgentChat 1つ。場所ごとに違うのは最初のひとこと・入力欄の見本・自分のAIに添える文脈だけ。右
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-103）
+  must_be_reflected_in:
+  - file: 06_mockup/v1/v1-*.html
+    check: 会話を出す 5 か所が全部 AgentChat 1 つ（モックは _composer.py の入力欄だけ・コードは components/ai/ だけ）
+    gate: node scripts/ci/chat_one.mjs
+  - file: 05_flow/flow.json
+    check: flow.json/navigation に D-103 の反映がある
+    marker: ['D-103']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-103 の反映がある
+    marker: ['D-103']
+    count: all
+  - file: 02_tech_stack/selected-stack.json
+    check: selected-stack/agent_ui に D-103 の反映がある
+    marker: ['D-103']
+    count: all
+  - file: 01_hearing/要件一覧.md
+    check: 要件一覧 に D-103 の反映がある
+    marker: ['D-103']
+    count: all
+- id: AD-104
+  decision: 会話は人が「新しく話す」で分け、一覧（探す・星・消す・記憶に残さない）から戻って続ける（1会話＝PCのClaudeの1セッション、名前は自動
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-104）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/objects に D-104 の反映がある
+    marker: ['D-104']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/screens に D-104 の反映がある
+    marker: ['D-104']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-104 の反映がある
+    marker: ['D-104']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/blueprint に D-104 の反映がある
+    marker: ['D-104']
+    count: all
+  - file: 06_mockup/v1/v1-clone-chat.html
+    check: mockup/clone-chat に D-104 の反映がある
+    marker: ['D-104']
+    trace: "D-104 -> screens: [clone-chat]"
+  - file: 06_mockup/v1/v1-*.html
+    check: mockup/all に D-104 の反映がある
+    marker: ['D-104']
+    count: all
+    exclude: 'v1-index'
+  - file: 04_design/DESIGN-kaname.md
+    check: DESIGN-kaname.md に D-104 の反映がある
+    marker: ['D-104']
+    count: all
+  - file: 03_architecture/ER図.md
+    check: ER図/conversations に D-104 の反映がある
+    marker: ['D-104']
+    count: all
+  - file: 03_architecture/ER図.md
+    check: ER図/attachments に D-104 の反映がある
+    marker: ['D-104']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-104 の反映がある
+    marker: ['D-104']
+    count: all
+  - file: 02_tech_stack/selected-stack.json
+    check: selected-stack/agent_ui に D-104 の反映がある
+    marker: ['D-104']
+    count: all
+  - file: 07_qa/test-specs/errors.json
+    check: errors.json に D-104 の反映がある
+    marker: ['D-104']
+    count: all
+  - file: 01_hearing/要件一覧.md
+    check: 要件一覧 に D-104 の反映がある
+    marker: ['D-104']
+    count: all
+- id: AD-105
+  decision: 「覚えて」はその場で入れる。それ以外は毎朝「今日」の一番上の「昨日の会話をまとめる」を人が押して始め、会話と承認・差し戻しを読んで 覚えた／
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-105）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/objects に D-105 の反映がある
+    marker: ['D-105']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/screens に D-105 の反映がある
+    marker: ['D-105']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-105 の反映がある
+    marker: ['D-105']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/blueprint に D-105 の反映がある
+    marker: ['D-105']
+    count: all
+  - file: 06_mockup/v1/v1-today.html
+    check: mockup/today に D-105 の反映がある
+    marker: ['D-105']
+    trace: "D-105 -> screens: [today]"
+  - file: 06_mockup/v1/v1-clone-memory.html
+    check: mockup/clone-memory に D-105 の反映がある
+    marker: ['D-105']
+    trace: "D-105 -> screens: [clone-memory]"
+  - file: 03_architecture/ER図.md
+    check: ER図/memories に D-105 の反映がある
+    marker: ['D-105']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-105 の反映がある
+    marker: ['D-105']
+    count: all
+  - file: 01_hearing/要件一覧.md
+    check: 要件一覧 に D-105 の反映がある
+    marker: ['D-105']
+    count: all
+- id: AD-106
+  decision: 返事の「書き出す」で成果物ができ、会話の横で開く。文書（md）と表（csv）はその場で直して保存すると新しい版になり、版の一覧からいつでも戻
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-106）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/objects に D-106 の反映がある
+    marker: ['D-106']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-106 の反映がある
+    marker: ['D-106']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/blueprint に D-106 の反映がある
+    marker: ['D-106']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/screens に D-106 の反映がある
+    marker: ['D-106']
+    count: all
+  - file: 06_mockup/v1/v1-clone-chat.html
+    check: mockup/clone-chat に D-106 の反映がある
+    marker: ['D-106']
+    trace: "D-106 -> screens: [clone-chat]"
+  - file: 03_architecture/ER図.md
+    check: ER図/artifacts に D-106 の反映がある
+    marker: ['D-106']
+    count: all
+  - file: 03_architecture/ER図.md
+    check: ER図/artifact_versions に D-106 の反映がある
+    marker: ['D-106']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-106 の反映がある
+    marker: ['D-106']
+    count: all
+  - file: 01_hearing/要件一覧.md
+    check: 要件一覧 に D-106 の反映がある
+    marker: ['D-106']
+    count: all
+- id: AD-107
+  decision: サービス台帳で禁止（forbidden）と銀行（bank）のドメインは、自分のAI に仕事を渡すたびに Bridge が本人の Claude
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-107）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/blueprint に D-107 の反映がある
+    marker: ['D-107']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/objects に D-107 の反映がある
+    marker: ['D-107']
+    count: all
+  - file: 03_architecture/ER図.md
+    check: ER図/service_registry に D-107 の反映がある
+    marker: ['D-107']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-107 の反映がある
+    marker: ['D-107']
+    count: all
+  - file: 01_hearing/要件一覧.md
+    check: 要件一覧 に D-107 の反映がある
+    marker: ['D-107']
+    count: all
+- id: AD-108
+  decision: 目標の名前（今期の売上 など）は目標の版（goal_versions）に持ち、画面は今の版の名前を出す（改訂の履歴に名前も残る）。預けたログ
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-108）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/objects に D-108 の反映がある
+    marker: ['D-108']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/screens に D-108 の反映がある
+    marker: ['D-108']
+    count: all
+  - file: 06_mockup/v1/v1-onboard-draft.html
+    check: mockup/onboard-draft に D-108 の反映がある
+    marker: ['D-108']
+    trace: "D-108 -> screens: [onboard-draft]"
+  - file: 06_mockup/v1/v1-credentials.html
+    check: mockup/credentials に D-108 の反映がある
+    marker: ['D-108']
+    trace: "D-108 -> screens: [credentials]"
+  - file: 03_architecture/ER図.md
+    check: ER図/goal_versions に D-108 の反映がある
+    marker: ['D-108']
+    count: all
+  - file: 03_architecture/ER図.md
+    check: ER図/credentials に D-108 の反映がある
+    marker: ['D-108']
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-108 の反映がある
+    marker: ['D-108']
+    count: all
+  - file: 01_hearing/要件一覧.md
+    check: 要件一覧 に D-108 の反映がある
+    marker: ['D-108']
+    count: all
+- id: AD-109
+  decision: 配布するたびに版の番号を上げ、置き場に「いまの版・ファイル・指紋（sha256）」を書く。Bridge は起動時・1 時間ごと・Kaname
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-109）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-109 の反映がある
+    marker: ['D-109']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/objects に D-109 の反映がある
+    marker: ['D-109']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-109 の反映がある
+    marker: ['D-109']
+    count: all
+  - file: 01_hearing/要件一覧.md
+    check: 要件一覧 に D-109 の反映がある
+    marker: ['D-109']
+    count: all
+  - file: 03_architecture/ER図.md
+    check: ER図 に D-109 の反映がある
+    marker: ['D-109']
+    count: all
+- id: AD-110
+  decision: 自分のAI（本人の Claude Code）に Kaname の道具（MCP：目標・台帳・担当業務とAI社員を置く／直す／外す・覚える・いま
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-110）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-110 の反映がある
+    marker: ['D-110']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/objects に D-110 の反映がある
+    marker: ['D-110']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/screens に D-110 の反映がある
+    marker: ['D-110']
+    count: all
+  - file: 03_architecture/ER図.md
+    check: ER図/bridge_jobs に D-110 の反映がある
+    marker: ['D-110']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-110 の反映がある
+    marker: ['D-110']
+    count: all
+  - file: 01_hearing/要件一覧.md
+    check: 要件一覧 に D-110 の反映がある
+    marker: ['D-110']
+    count: all
+- id: AD-111
+  decision: 作業中は道具の行を並べず、いまの動きを「〇〇しています…」の 1 行で切り替えて出す（D-104.8 を改める）。道具の内部の名前（mcp_
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-111）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-111 の反映がある
+    marker: ['D-111']
+    count: all
+  - file: 06_mockup/v1/v1-clone-chat.html
+    check: mockup/clone-chat に D-111 の反映がある
+    marker: ['D-111']
+    trace: "D-111 -> screens: [clone-chat]"
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-111 の反映がある
+    marker: ['D-111']
+    count: all
+  - file: 01_hearing/要件一覧.md
+    check: 要件一覧 に D-111 の反映がある
+    marker: ['D-111']
+    count: all
+- id: AD-112
+  decision: 自分のAI の会話の正本は、本人の PC の Claude Code の会話記録（~/.claude/projects の session）
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-112）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-112 の反映がある
+    marker: ['D-112']
+    count: all
+  - file: 03_architecture/ER図.md
+    check: ER図/messages に D-112 の反映がある
+    marker: ['D-112']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-112 の反映がある
+    marker: ['D-112']
+    count: all
+  - file: 01_hearing/要件一覧.md
+    check: 要件一覧 に D-112 の反映がある
+    marker: ['D-112']
+    count: all
+- id: AD-113
+  decision: 自分のAI の会話が変わったら（仕事・途中経過・会話・言ったこと の書き込み）、DB がその人の member id だけを知らせ、API 
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-113）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-113 の反映がある
+    marker: ['D-113']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-113 の反映がある
+    marker: ['D-113']
+    count: all
+  - file: 07_tasks/tickets.json
+    check: tickets.json に D-113 の反映がある
+    marker: ['D-113']
+    count: all
+  - file: 01_hearing/要件一覧.md
+    check: 要件一覧 に D-113 の反映がある
+    marker: ['D-113']
+    count: all
+- id: AD-114
+  decision: はじめの設定の「話す」の右の欄「分かったこと」は、自分のAI が聞き取って記憶に落とした事実を「項目：内容」で出す（本人が送った文は並べない
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-114）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-114 の反映がある
+    marker: ['D-114']
+    count: all
+  - file: 07_tasks/tickets.json
+    check: tickets.json に D-114 の反映がある
+    marker: ['D-114']
+    count: all
+  - file: 01_hearing/要件一覧.md
+    check: 要件一覧 に D-114 の反映がある
+    marker: ['D-114']
+    count: all
+- id: AD-115
+  decision: 自分のAI の吹き出しは、Claude の返答（返答の id）ごとに 1 つ。道具を使ってその結果を受け取ると次の返答になるので、そこでだけ
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-115）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-115 の反映がある
+    marker: ['D-115']
+    count: all
+  - file: 07_tasks/tickets.json
+    check: tickets.json に D-115 の反映がある
+    marker: ['D-115']
+    count: all
+  - file: 01_hearing/要件一覧.md
+    check: 要件一覧 に D-115 の反映がある
+    marker: ['D-115']
+    count: all
+- id: AD-116
+  decision: はじめの設定の次の段へ進む主ボタンは、画面の下に常に見える帯に 1 つ。進めないときは何をすれば進めるかを帯に書く。押せない段を押すと、いま
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-116）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-116 の反映がある
+    marker: ['D-116']
+    count: all
+  - file: 07_tasks/tickets.json
+    check: tickets.json に D-116 の反映がある
+    marker: ['D-116']
+    count: all
+  - file: 01_hearing/要件一覧.md
+    check: 要件一覧 に D-116 の反映がある
+    marker: ['D-116']
+    count: all
+  - file: 03_architecture/ER図.md
+    check: ER図/tenants に D-116 の反映がある
+    marker: ['D-116']
+    count: all
+  - file: 03_architecture/ER図.md
+    check: ER図/action_runs に D-116 の反映がある
+    marker: ['D-116']
+    count: all
+- id: AD-117
+  decision: ログイン情報を預けたら、Bridge がそのサービスに 1 回だけログインして、入れたらそのまま出る（ほかの操作はしない）。入れなければ理由
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-117）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-117 の反映がある
+    marker: ['D-117']
+    count: all
+  - file: 07_tasks/tickets.json
+    check: tickets.json に D-117 の反映がある
+    marker: ['D-117']
+    count: all
+  - file: 01_hearing/要件一覧.md
+    check: 要件一覧 に D-117 の反映がある
+    marker: ['D-117']
+    count: all
+- id: AD-118
+  decision: 会話が本文の画面（はじめの設定の話す・たたき台を会話で直す）は、見出しと説明を 1 行に詰め、押せない段の案内は出たときだけ場所を取り、入力
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-118）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-118 の反映がある
+    marker: ['D-118']
+    count: all
+  - file: 07_tasks/tickets.json
+    check: tickets.json に D-118 の反映がある
+    marker: ['D-118']
+    count: all
+  - file: 01_hearing/要件一覧.md
+    check: 要件一覧 に D-118 の反映がある
+    marker: ['D-118']
+    count: all
+- id: AD-119
+  decision: AI（自分のAI・AI社員）がブラウザを動かすのは、本人のサブスクの Claude Code に渡す 2 つの道具だけ。① Claude i
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-119）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-119 の反映がある
+    marker: ['D-119']
+    count: all
+  - file: 07_tasks/tickets.json
+    check: tickets.json に D-119 の反映がある
+    marker: ['D-119']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-119 の反映がある
+    marker: ['D-119']
+    count: all
+  - file: 02_tech_stack/selected-stack.json
+    check: 02_tech_stack/selected-stack.json に D-119 の反映がある
+    marker: ['D-119']
+    count: all
+  - file: 01_hearing/要件一覧.md
+    check: 要件一覧 に D-119 の反映がある
+    marker: ['D-119']
+    count: all
+- id: AD-120
+  decision: AI が使うブラウザ（自分の Chrome／Bridge 専用のブラウザ／使わない）は PC ごとに Kaname の「自分の PC をつな
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-120）
+  must_be_reflected_in:
+  - file: 05_flow/flow.json
+    check: flow.json/backbone に D-120 の反映がある
+    marker: ['D-120']
+    count: all
+  - file: 07_tasks/tickets.json
+    check: tickets.json に D-120 の反映がある
+    marker: ['D-120']
+    count: all
+  - file: 06_mockup/v1/v1-bridge-setup.html
+    check: mockup/bridge-setup に D-120 の反映がある
+    marker: ['D-120']
+    trace: "D-120 -> screens: [bridge-setup]"
+  - file: 06_mockup/v1/v1-clone-chat.html
+    check: mockup/clone-chat に D-120 の反映がある
+    marker: ['D-120']
+    trace: "D-120 -> screens: [clone-chat]"
+  - file: 03_architecture/ER図.md
+    check: ER図/sessions に D-120 の反映がある
+    marker: ['D-120']
+    count: all
+  - file: 03_architecture/アーキテクチャ設計書.md
+    check: アーキテクチャ設計書 に D-120 の反映がある
+    marker: ['D-120']
+    count: all
+  - file: 01_hearing/要件一覧.md
+    check: 要件一覧 に D-120 の反映がある
+    marker: ['D-120']
+    count: all
+- id: AD-121
+  decision: 自分のAI（本人の PC の Claude Code）が作ったファイル（PDF・画像・表計算・文書）や調べた結果は、Kaname の道具 a
+  decided_at: 正本を見る
+  source: 01_hearing/決定ログ_進行中.md（D-121）
+  must_be_reflected_in:
+  - file: 07_tasks/tickets.json
+    check: tickets.json に D-121 の反映がある
+    marker: ['D-121']
+    count: all
+  - file: 03_architecture/ER図.md
+    check: ER図/artifacts に D-121 の反映がある
+    marker: ['D-121']
+    count: all
+  - file: 05_flow/flow.json
+    check: flow.json/objects に D-121 の反映がある
+    marker: ['D-121']
+    count: all
+  - file: 01_hearing/要件一覧.md
+    check: 要件一覧 に D-121 の反映がある
+    marker: ['D-121']
+    count: all
+downstream_coverage:
+- id: screen_to_mock
+  description: flow.json の画面が全てモックとして存在する
+  upstream:
+    file: 05_flow/flow.json
+    json_path: $.screens[?(@.release=='v1')].id
+  downstream:
+    glob: 06_mockup/v1/v1-*.html
+    extract: v1-(.+)\.html
+  severity: error
+  command: python3 scripts/ci/flow_gate.py --mocks 06_mockup/v1 --choke 03_architecture/choke-points.json
+- id: act_to_screen
+  description: 全行為に画面が割り当たっている
+  upstream:
+    file: 05_flow/flow.json
+    json_path: $.backbone[*].acts[*].id
+  downstream:
+    file: 05_flow/flow.json
+    json_path: $.act_to_screen
+    as: key
+  severity: error
+  command: python3 scripts/ci/flow_gate.py --choke 03_architecture/choke-points.json
+- id: object_to_table
+  description: flow.json の全オブジェクトに ER 図のテーブル（実体）がある（G20）
+  upstream:
+    file: 05_flow/flow.json
+    json_path: $.objects[*].name
+  downstream:
+    file: 03_architecture/ER図.md
+    note: 「## オブジェクト ↔ テーブル」の表
+  severity: error
+  command: python3 scripts/ci/er_gate.py --flow 05_flow/flow.json --er 03_architecture/ER図.md
+- id: screen_to_feature
+  description: 画面が機能分解に到達している
+  upstream:
+    file: 05_flow/flow.json
+    json_path: $.screens[*].id
+  downstream:
+    file: 07_functional/screens.json
+    json_path: $.screens[*].id
+  severity: error
+  command: python3 scripts/ci/fb_gate.py --flow 05_flow/flow.json --er 03_architecture/ER図.md --dir 07_functional
+- id: act_to_endpoint
+  description: 全行為（v1）に endpoint が 1 本以上・全画面の必要 API がカバー・逆カバレッジ（G2）
+  upstream:
+    file: 05_flow/flow.json
+    json_path: $.backbone[*].acts[*].id
+  downstream:
+    file: 08_api/endpoints.json
+    json_path: $.endpoints[*].acts[*]
+  severity: error
+  command: python3 scripts/ci/api_gate.py --flow 05_flow/flow.json --dir 08_api
+- id: act_to_feature_v3
+  description: 全 v1 行為・画面が Group B/C の機能に含まれ、全部品が結線（D）から参照される
+  upstream:
+    file: 05_flow/flow.json
+    json_path: $.backbone[*].acts[*].id
+  downstream:
+    file: 09_features/features.json
+    json_path: $.items[*].acts[*]
+  severity: error
+  command: python3 scripts/ci/fd_gate.py --flow 05_flow/flow.json --dir 09_features
+- id: feature_to_ticket
+  description: 全 v1 画面・行為がタスクに含まれ、tickets.json の完全性（JIT）とテスト・ラダーの両方向整合が緑
+  upstream:
+    file: 09_features/features.json
+    json_path: $.items[*].id
+  downstream:
+    file: 07_tasks/tickets.json
+    json_path: $.tasks[*].feature_ids[*]
+  severity: error
+  command: PYTHON=python3 bash 09_dispatch/scripts/validate.sh
+dependency_boundaries:
+  file: 03_architecture/dependency-boundaries.json
+  ledger: 03_architecture/portability-ledger.md
+  checks:
+  - kind: import_boundary
+    note: allowed_paths の外から forbidden_import_patterns を呼んだら赤（型だけ・台帳の越境は許す）
+    command: node scripts/ci/boundary.mjs --import
+  - kind: vendor_sql
+    note: auth.uid() / pgsodium / supabase_vault / pg_graphql が migration・query に出たら赤
+    command: bash -c 'DATABASE_URL=${DATABASE_URL:-postgres://kaname_app:kaname_app@127.0.0.1:55433/kaname_dev} AUTH_DATABASE_URL=${AUTH_DATABASE_URL:-postgres://kaname_auth:kaname_auth@127.0.0.1:55433/kaname_dev} pnpm -s ci:no-vendor-sql'
+  - kind: license_boundary
+    note: Open Core の ee/ を含むパスからの import は赤（Infisical / langfuse / litellm）
+    command: node scripts/ci/boundary.mjs --license
+  - kind: ledger_consistency
+    note: portability-ledger.md の越境が実在し、台帳に無い越境が無い
+    command: node scripts/ci/boundary.mjs --ledger
+extension_points:
+  file: 03_architecture/extension-points.json
+  severity: warn
+  note: 関門で守るため、拡張点の列挙漏れは事故にならない（choke-points.md §5）
+choke_points:
+  file: 03_architecture/choke-points.json
+  exceptions: 03_architecture/choke-point-exceptions.md
+  checks:
+  - id: H-1
+    kind: bypass_detection
+    note: 実装開始後に scripts/ci/choke-check.ts で有効化
+  - id: H-2
+    kind: no_dynamic_call
+    note: 同上
+  - id: H-3
+    kind: exception_ledger
+    note: choke-point-exceptions.md に未登録の迂回が無いこと
+  - id: H-4
+    kind: coverage
+    note: 標準6関門＋固有関門が定義され ci_check を持つこと
+flow_gate:
+  file: 05_flow/flow.json
+  command: python3 scripts/ci/flow_gate.py --mocks 06_mockup/v1 --choke 03_architecture/choke-points.json
+  gates:
+  - G1
+  - G2
+  - G3
+  - G4
+  - G5
+  - G6
+  - G7
+  - G8
+  - G9
+  - G10
+  severity: error
+decision_traceability:
+  sources:
+  - file: 01_hearing/決定ログ_進行中.md
+    id_prefix: D-
+    section_regex: ^## (\d+)\.\s*(.+)$
+  products:
+  - file: 05_flow/flow.json
+    elements:
+    - meta
+    - backbone[*].acts[*]
+    - screens[*]
+    - objects[*]
+    - roles[*]
+    - jobs[*]
+    - navigation.sections[*]
+    - navigation.shell_rule
+    - navigation.assistant_panel
+    - navigation.conversation_layers
+    - navigation.sub_mode
+    - navigation.main_width
+    - navigation.layout
+    - navigation.fallbacks
+    - product_states[*]
+    - blueprint[*]
+    source_field: source
+  - file: 03_architecture/choke-points.json
+    elements:
+    - choke_points[*]
+    - ci_policy
+    source_field: source
+  - file: 03_architecture/アーキテクチャ設計書.md
+    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+  - file: 03_architecture/ER図.md
+    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+  - file: 06_mockup/v1/v1-*.html
+    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+  - file: 04_design/DESIGN-kaname.md
+    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+  - file: 02_tech_stack/selected-stack.json
+    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+  - file: 03_architecture/portability-ledger.md
+    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+  - file: 03_architecture/dependency-boundaries.json
+    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+  - file: 03_architecture/extension-points.json
+    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+  - file: 01_hearing/ヒアリングサマリー.md
+    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+  - file: 01_hearing/要件一覧.md
+    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+  - file: 00_research/影響マップ.md
+    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+  - file: 00_research/自前実装リスト.md
+    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+  - file: 00_research/UIライブラリ候補.md
+    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+  - file: 07_qa/test-specs/errors.json
+    elements:
+    - meta
+    - errors[*]
+    source_field: source
+  - file: 07_tasks/tickets.json
+    elements:
+    - tasks[*]
+    source_field: source
+  - file: 08_schedule/sprint.md
+    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+  - file: 07_qa/test-plan/test-plan.md
+    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+  - file: 10_skills/catalog.json
+    elements:
+    - skills[*]
+    source_field: source
+  - file: 10_skills/*/SKILL.md
+    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+  - file: 09_features/features.json
+    elements:
+    - meta
+    - items[*]
+    source_field: source
+  - file: 08_api/endpoints.json
+    elements:
+    - meta
+    - endpoints[*]
+    source_field: source
+  - file: 08_api/api-decisions.json
+    elements:
+    - decision_log[*]
+    source_field: source
+  - file: 07_functional/entities.json
+    elements:
+    - meta
+    - entities[*]
+    source_field: source
+  - file: 07_functional/features.json
+    elements:
+    - meta
+    - items[*]
+    source_field: source
+  - file: 07_functional/roles.json
+    elements:
+    - meta
+    - roles[*]
+    source_field: source
+  - file: 07_functional/screens.json
+    elements:
+    - meta
+    - items[*]
+    source_field: source
+  # T7: reflect_in を狭く書いても素通りしないよう、必ず参照されるべき層を固定する
+  # T8: 決定を文（決めたことの表の 1 行 = D-xxx.n）に割り、文ごとに導出物を検査する。since 以降の決定は必ず検査
+  clauses:
+    since: "2026-09-15"
+    ids: []
+    all: true            # T8 を全 confirmed 決定に（since の逃げ道を無くす・2026-09-15）
+    require_table: true  # T9：決めたことの表が無い confirmed は赤
+    # T10：作る・配る・版・台帳 の文はオブジェクトが要る（裏側の動きだけで反映済みにしない）
+  required_layers:
+  - name: 要件
+    files: [01_hearing/要件一覧.md]
+  requirements_index:
+    file: 01_hearing/要件一覧.md
+    title: Kaname 要件一覧（決定ログからの機械生成）
+  out_of_scope:
+  - section: '5'
+    reason: 旧jobrain資産の残す/変える/捨てるの判定記録。成果物に反映する対象ではない
+  - section: '9'
+    reason: OSSライセンスの扱い方の整理。設計判断の前提であって導出物に直接反映しない
+  - section: '16'
+    reason: 採用候補OSSの調査記録。00_research/OSS候補一覧.md が正本
+  - section: '20'
+    reason: 限界の正直な記録。導出物に反映する性質のものではない
+  - section: '21'
+    reason: OSS候補の一覧。別文書に分離済み
+  - section: '33'
+    reason: 図解の公開URL記録
+  - section: '54'
+    reason: 参照ファイルの一覧。決定ではない
+
+# G21 層の棚卸し（layer_audit.py）：全成果物に「機械の検査」か「手で見る理由」を持たせる。検査の無い層は赤。
+layer_checks:
+- file: 05_flow/flow.json
+  check: python3 scripts/ci/flow_gate.py --mocks 06_mockup/v1 --choke 03_architecture/choke-points.json && python3 scripts/ci/trace_gate.py && python3 scripts/ci/flow_fresh.py
+- file: 03_architecture/choke-points.json
+  check: python3 scripts/ci/flow_gate.py --choke 03_architecture/choke-points.json
+- file: 02_tech_stack/selected-stack.json
+  check: node scripts/ci/claude-terms.mjs
+- file: product-reach-exempt.json
+  manual: T11 道具どまりの文。2026-09-25 時点で 39 件（うち今回の決定は 0）。T-B-08 で 1 文ずつ棚卸しし、
+    0 件になったら check（python3 scripts/ci/product_reach.py）に切り替える。数は CI の G34 が毎回出す
+- file: 03_architecture/ER図.md
+  check: python3 scripts/ci/er_gate.py --flow 05_flow/flow.json --er 03_architecture/ER図.md
+- file: 03_architecture/アーキテクチャ設計書.md
+  manual: 決定の反映先に必ず「アーキテクチャ設計書」を書き、T6 で参照を検査する。節の構成（§2b 運営・§4 権限と出来事・§6b 課金/通知/エラー）が決定と対応しているかは人が読む
+- file: 03_architecture/architecture.json
+  manual: 設計書の機械可読の写し。設計書を更新したら同じ回で更新する（source 付きの節：permission_model / account_lifecycle / ops_console / billing / notifications / error_catalog）
+- file: 03_architecture/portability-ledger.md
+  manual: 境界を越えた箇所だけの台帳。実装が始まるまで空に近い
+- file: 03_architecture/dependency-boundaries.json
+  manual: 関心事ごとの境界。ベンダー確定（段階 1 凍結）で見直す。各境界に source
+- file: 03_architecture/extension-points.json
+  manual: 増えるものの見通し文書。決定でオブジェクトが増えたら source を足す（防御は関門と G20）
+- file: 06_mockup/v1/v1-*.html
+  check: python3 scripts/ci/mock_state_gate.py --flow 05_flow/flow.json --mocks 06_mockup/v1 && python3 scripts/ci/role_gate.py --flow 05_flow/flow.json --mocks 06_mockup/v1 && python3 scripts/ci/ui_lint.py 06_mockup/v1 --config 06_mockup/ui-lint.json && python3 scripts/ci/coverage_review.py --flow 05_flow/flow.json --mocks 06_mockup/v1 --surfaces scripts/ci/references/saas-surfaces.yaml --er 03_architecture/ER図.md --gate && node scripts/ci/chat_one.mjs
+- file: 06_mockup/v2/v2-*.html
+  check: python3 scripts/ci/mock_state_gate.py --flow 05_flow/flow.json --mocks 06_mockup/v2 && python3 scripts/ci/role_gate.py --flow 05_flow/flow.json --mocks 06_mockup/v2 --prefix v2- --release v2 && python3 scripts/ci/ui_lint.py 06_mockup/v2 --config 06_mockup/ui-lint.json
+- file: 04_design/DESIGN-kaname.md
+  manual: 色・書体・部品のトークン。D-067（部品の土台）・D-072（三画面）が最新で、D-073 以降はトークンを増やしていない。トークンが増える決定が出たら手で更新
+- file: 02_tech_stack/selected-stack.json
+  manual: 技術選定は決め打ち禁止（user 合意で確定）。決定で新しい基盤が要るときだけ AskUserQuestion で確認してから更新
+- file: 01_hearing/ヒアリングサマリー.md
+  check: python3 scripts/ci/trace_gate.py
+- file: 01_hearing/要件一覧.md
+  check: python3 scripts/ci/trace_gate.py
+- file: 00_research/影響マップ.md
+  manual: 決定 × 影響レイヤーの調査記録。§2b に D-073〜D-077。新しい決定の節を足すときに行を足す
+- file: 00_research/自前実装リスト.md
+  manual: 自前で作るものの一覧（D-068 時点）。段階 1 凍結時に見直す
+- file: 00_research/UIライブラリ候補.md
+  manual: 調査記録（D-067 で確定）。更新しない
+- file: 07_qa/test-specs/errors.json
+  check: python3 scripts/ci/error_catalog.py gate --catalog 07_qa/test-specs/errors.json --mocks 06_mockup/v1 --spec 07_qa/test-specs --choke 03_architecture/choke-points.json
+- file: 07_qa/test-specs/errors.md
+  check: python3 scripts/ci/error_catalog.py gate --catalog 07_qa/test-specs/errors.json --mocks 06_mockup/v1 --spec 07_qa/test-specs --choke 03_architecture/choke-points.json
+- file: 05_flow/使ってもらい方.md
+  check: python3 scripts/ci/spec_check.py
+- file: 01_hearing/決定ログ_進行中.md
+  check: python3 scripts/ci/trace_gate.py && python3 scripts/ci/spec_check.py
+- file: 07_functional/entities.json
+  check: python3 scripts/ci/fb_gate.py --flow 05_flow/flow.json --er 03_architecture/ER図.md --dir 07_functional
+- file: 07_functional/features.json
+  check: python3 scripts/ci/fb_gate.py --flow 05_flow/flow.json --er 03_architecture/ER図.md --dir 07_functional
+- file: 07_functional/roles.json
+  check: python3 scripts/ci/fb_gate.py --flow 05_flow/flow.json --er 03_architecture/ER図.md --dir 07_functional
+- file: 07_functional/screens.json
+  check: python3 scripts/ci/fb_gate.py --flow 05_flow/flow.json --er 03_architecture/ER図.md --dir 07_functional
+- file: 07_functional/traceability-matrix.json
+  check: python3 scripts/ci/fb_gate.py --flow 05_flow/flow.json --er 03_architecture/ER図.md --dir 07_functional
+- file: 07_functional/functional-breakdown.md
+  manual: JSON からの機械生成の写し（05_flow/build_functional.py）。手で直さない
+- file: 08_api/endpoints.json
+  check: python3 scripts/ci/api_gate.py --flow 05_flow/flow.json --dir 08_api
+- file: 08_api/api-decisions.json
+  check: python3 scripts/ci/api_gate.py --flow 05_flow/flow.json --dir 08_api
+- file: 08_api/openapi.yaml
+  check: python3 -c "import yaml,json;o=yaml.safe_load(open('08_api/openapi.yaml',encoding='utf-8'));e=json.load(open('08_api/endpoints.json',encoding='utf-8'))['endpoints'];n=sum(len(v) for v in o['paths'].values());assert n==len(e),(n,len(e));print('openapi paths',n)"
+- file: 08_api/API-SPEC.md
+  manual: JSON からの機械生成の写し（05_flow/build_api.py）。手で直さない
+- file: 09_features/features.json
+  check: python3 scripts/ci/fd_gate.py --flow 05_flow/flow.json --dir 09_features
+- file: 09_features/DAG.md
+  manual: JSON からの機械生成の写し（05_flow/build_features.py）。手で直さない
+- file: 07_tasks/tickets.json
+  check: PYTHON=python3 bash 09_dispatch/scripts/validate.sh
+- file: 08_schedule/wave-schedule.json
+  check: python3 scripts/ci/sp_gate.py
+- file: 08_schedule/sprint.md
+  manual: JSON からの機械生成の写し（05_flow/build_waves.py）。手で直さない
+- file: 08_schedule/sprint.html
+  manual: JSON からの機械生成の写し（05_flow/build_waves.py）。手で直さない
+- file: 07_qa/test-plan/test-plan.json
+  check: python3 scripts/ci/tv_gate.py
+- file: 07_qa/test-plan/ears-test-mapping.json
+  check: python3 scripts/ci/tv_gate.py
+- file: 07_qa/test-plan/access-matrix.json
+  check: python3 scripts/ci/tv_gate.py
+- file: .github/workflows/v3-gate.yml
+  check: python3 scripts/ci/tv_gate.py
+- file: 07_qa/test-plan/test-plan.md
+  manual: JSON からの機械生成の写し（05_flow/build_testplan.py）。手で直さない
+- file: 07_qa/test-plan/test-plan.html
+  manual: JSON からの機械生成の写し（05_flow/build_testplan.py）。手で直さない
+- file: 03_architecture/v3-gate.yml
+  manual: architecture-design 時点の 26 本の原案。正は .github/workflows/v3-gate.yml（build_testplan.py が foundation_gates.json から生成）
+- file: 10_skills/*/SKILL.md
+  check: python3 scripts/ci/skill_pkg_gate.py 10_skills
+- file: 10_skills/catalog.json
+  check: python3 scripts/ci/skill_pkg_gate.py 10_skills
+- file: 07_tasks/tickets_plan.json
+  check: python3 ~/.claude/skills/ticket-planning/scripts/ticket_gate.py 07_tasks/tickets_plan.json --flow 05_flow/flow.json --mocks 06_mockup/v1
+- file: 07_qa/test-specs/screens/*.md
+  check: python3 scripts/ci/qa-ladder.py validate --spec 07_qa/test-specs --tickets 07_tasks/tickets.json
+- file: 07_qa/test-specs/journeys/plan.json
+  check: python3 scripts/ci/qa-ladder.py validate --spec 07_qa/test-specs --tickets 07_tasks/tickets.json
+- file: 07_qa/test-specs/ops/*.json
+  check: python3 scripts/ci/derive_ops.py --screens 07_functional/screens.json --out 07_qa/test-specs/ops --flow 05_flow/flow.json --shell-from today
+- file: 07_qa/test-specs/screens/*.md#操作
+  check: python3 scripts/ci/op_gate.py --spec 07_qa/test-specs --tickets 07_tasks/tickets.json --all
+- file: 07_tasks/handoff/*.md
+  check: python3 scripts/ci/gen_handoff.py --tickets 07_tasks/tickets.json --screens 07_functional/screens.json --ops 07_qa/test-specs/ops --spec 07_qa/test-specs --out 07_tasks/handoff --base http://127.0.0.1:3124
+- file: 07_tasks/TASK-CARDS.md
+  manual: tickets.json からの機械生成の写し（05_flow/build_tasks.py）。手で直さない
+
+# ---- 2026-10-20 project_audit（Tier P）で出た穴：ディスクにあるのに検査の無い層 ----
+- file: packages/db/migrations/*.sql
+  check: bash -c 'DATABASE_URL=${DATABASE_URL:-postgres://kaname_app:kaname_app@127.0.0.1:55433/kaname_dev} AUTH_DATABASE_URL=${AUTH_DATABASE_URL:-postgres://kaname_auth:kaname_auth@127.0.0.1:55433/kaname_dev} pnpm -s ci:rls-enabled && DATABASE_URL=${DATABASE_URL:-postgres://kaname_app:kaname_app@127.0.0.1:55433/kaname_dev} AUTH_DATABASE_URL=${AUTH_DATABASE_URL:-postgres://kaname_auth:kaname_auth@127.0.0.1:55433/kaname_dev} pnpm -s ci:no-vendor-sql && pnpm exec vitest run packages/db/test --no-file-parallelism --reporter=dot'  # 並列だと kaname_test の接続を食い合って時間切れになる（2026-10-20）
+- file: packages/*/package.json
+  check: pnpm -s type-check
+- file: packages/*/tsconfig.json
+  check: pnpm -s type-check
+- file: apps/*/package.json
+  check: pnpm -s type-check
+- file: apps/*/tsconfig.json
+  check: pnpm -s type-check
+- file: package.json
+  check: pnpm -s type-check && node scripts/ci/boundary.mjs --all
+- file: tsconfig.json
+  check: pnpm -s type-check
+- file: tsconfig.base.json
+  check: pnpm -s type-check
+- file: pnpm-workspace.yaml
+  check: pnpm -s type-check
+- file: pnpm-lock.yaml
+  manual: pnpm が管理する生成物。CI（v3-gate.yml）の pnpm install --frozen-lockfile が合っていることを検査する
+- file: apps/api/vercel.json
+  manual: 配布先（Vercel）の設定。段階 1 の置き場（T-B-12）で staging に当てて確かめる。手元では実在と JSON の形だけ
+- file: apps/bridge/electron-builder.yml
+  check: (cd apps/bridge && pnpm -s build) && python3 -c "import yaml; yaml.safe_load(open('apps/bridge/electron-builder.yml'))"
+- file: apps/bridge/src/renderer/index.html
+  check: (cd apps/bridge && pnpm -s build)
+- file: apps/web/public/_plan/schedule.html
+  check: python3 ~/.claude/skills/ticket-planning/scripts/ticket_gate.py 07_tasks/tickets_plan.json
+- file: 07_tasks/schedule.html
+  check: python3 ~/.claude/skills/ticket-planning/scripts/ticket_gate.py 07_tasks/tickets_plan.json
+- file: 07_tasks/schedule.md
+  check: python3 ~/.claude/skills/ticket-planning/scripts/ticket_gate.py 07_tasks/tickets_plan.json
+- file: 07_tasks/board.md
+  check: python3 ~/.claude/skills/ticket-planning/scripts/ticket_gate.py 07_tasks/tickets_plan.json
+- file: 07_tasks/assign.md
+  check: python3 ~/.claude/skills/ticket-planning/scripts/ticket_gate.py 07_tasks/tickets_plan.json
+- file: 07_tasks/td-decisions.json
+  check: python3 scripts/ci/td_gate.py --flow 05_flow/flow.json --log 01_hearing/決定ログ_進行中.md --tickets 07_tasks/tickets.json
+- file: 07_tasks/DEPENDENCIES.md
+  manual: tickets.json からの機械生成の写し（05_flow/build_tasks.py）。手で直さない
+- file: 07_tasks/TASK-CARDS.html
+  manual: tickets.json からの機械生成の写し（05_flow/build_tasks.py）。手で直さない
+- file: 07_tasks/roster.json
+  manual: 名簿。PM（高本さん）が埋める入力。実行者が勝手に担当を付けない（未割り当ては ticket_gate が赤で出す）
+- file: 08_schedule/milestones.json
+  manual: 節目。PM が埋める入力。sp_gate が節目をはみ出す Wave を赤で出す
+- file: 07_tasks/audit/*.md
+  check: python3 -c "import json,os,sys; t=json.load(open('07_tasks/tickets.json'))['tasks']; m=[x['id'] for x in t if x.get('status')=='done' and not os.path.exists(f\"07_tasks/audit/{x['id']}.md\")]; print('done なのに監査の記録が無い:', m) if m else print('監査の記録 OK'); sys.exit(1 if m else 0)"
+- file: 07_tasks/handoff/csv/*.csv
+  manual: 確認シート（Google・ID 1WrPB6f9f8o5Y4dWPo5FDPz5o5xXn5EzDk_SDVe99aHE）が手で触る確認の正本。csv・xlsx は取り込み用の書き出し（build_qa_xlsx.py）で、シートを入れ替えた後に作り直す
+- file: 07_tasks/handoff/確認.xlsx
+  manual: 同上（確認シートへ Replace した版の写し）
+- file: 07_qa/xlsx/テスト仕様書.xlsx
+  manual: 2026-10-01 より前の書き出し。正本は Google の確認シートと 07_qa/test-specs。参照用に残す
+- file: 00_research/OSS候補一覧.md
+  manual: 調査記録（2026-09-04）。採用は 02_tech_stack/selected-stack.json が正本。更新しない
+- file: 00_research/プロバイダ能力表.md
+  manual: 調査記録。段階 2（D-083）の能力表（llm_capabilities）の下敷き。T-V2-03 で見直す
+- file: 00_research/拡張設計と開発単位.md
+  manual: 調査記録（2026-09-10）。防御は関門（choke-points.json）と G20 が担う
+- file: 00_research/Happy_Omnara_照合_2026-10-20.md
+  manual: 調査記録（2026-10-20）。決めたことは D-122〜D-124 に昇格済み。更新しない
+- file: 01_hearing/データ蓄積.json
+  manual: ヒアリングの入力の記録。決定ログが正本
+- file: 01_hearing/プロジェクト起点.json
+  manual: ヒアリングの入力の記録。決定ログが正本
+- file: 01_hearing/全体見直し_20260915.md
+  manual: 2026-09-15 の全体見直しの記録（coverage_review の結果）。決定ログに落とした
+- file: 03_architecture/adrs-to-create.json
+  manual: ADR の起票候補（architecture-design の出力）。決定は決定ログ、技術選定は selected-stack.json が正本
+- file: 03_architecture/colrules.json
+  check: node scripts/ci/contract.mjs check
+- file: 03_architecture/foundation_gates.json
+  check: python3 -c "import json,os,sys; g=json.load(open('03_architecture/foundation_gates.json')); gs=g.get('gates') or g.get('foundation_gates') or g; n=len(gs) if isinstance(gs,(list,dict)) else 0; print('foundation gates', n); sys.exit(0 if n else 1)"
+- file: 03_architecture/判断ログ.json
+  manual: architecture-design の判断の記録。決定ログが正本
+- file: 04_design/DESIGN-kaname-preview.html
+  manual: _gen_preview.py の出力（DESIGN.md と同じ入力から）。DESIGN.md を変えたら同じ回で作り直す。design_gate の D1／D4（共通 CSS の値）は別の回で片付ける
+- file: 04_design/font-compare.html
+  manual: 書体の比較の治具（D-079 の選定のとき）。決定後は更新しない
+- file: 04_design/チャット調査_2026-09-27.md
+  manual: 会話 UI の調査記録（D-104 の下敷き）。更新しない
+- file: design-gate.json
+  manual: design_gate.py のプロジェクト固有の設定。D1／D4 の共通 CSS の片付けと一緒に見直す
+- file: 05_flow/flow.html
+  manual: flow.json からの機械生成の写し（05_flow/build_views.py）。手で直さない
+- file: apps/e2e/journeys/README.md
+  manual: 流れ（L2）の流し方の説明。journeys/plan.json と qa-ladder validate が正本
+- file: infra/docker-compose.dev.yml
+  check: docker compose -f infra/docker-compose.dev.yml config -q
+- file: infra/STAGING.md
+  manual: staging の作り方（T-F-16・selected-stack.json environments.staging が正本）
+- file: infra/provision/README.md
+  manual: 外部リソースのコード化（T-F-16）の説明。実在は G-11 の行で確かめる
+- file: apps/bridge/release/builder-debug.yml
+  manual: electron-builder の出力（ビルドのデバッグ記録）。成果物ではない
+- file: apps/bridge/release/kaname-bridge.json
+  check: node scripts/ci/bridge_release_check.mjs
+
+- file: packages/db/policies/*.sql
+  check: bash -c 'DATABASE_URL=${DATABASE_URL:-postgres://kaname_app:kaname_app@127.0.0.1:55433/kaname_dev} AUTH_DATABASE_URL=${AUTH_DATABASE_URL:-postgres://kaname_auth:kaname_auth@127.0.0.1:55433/kaname_dev} pnpm -s ci:rls-enabled'
+- file: packages/db/README.md
+  manual: データ層の使い方の説明。正は migrations／policies と gen_ddl（ER図から機械生成）
+- file: packages/gateways/README.md
+  manual: 関門（C1〜C8）の使い方の説明。正は choke-points.json と choke.mjs
+- file: skill-pipeline.yaml
+  check: python3 scripts/ci/pipeline-next.py check-staging && python3 scripts/ci/pipeline-next.py check-spec-sync
+# ---- Tier P（project_audit.py）：見ない層と、追いつかなくてよい層。理由の無い除外は書けない ----
+project_audit:
+  ignore:
+  - path: apps/web/pw-reports/
+    reason: 実ブラウザの試験の報告（証拠）。op-gate.json の reports に並べ op_gate.py が読む入力で、成果物ではない
+  - path: apps/api/vt-reports/
+    reason: 単体試験（vitest）の報告（証拠）。op-gate.json 経由で op_gate.py が読む
+  - path: apps/bridge/vt-reports/
+    reason: 同上
+  - path: apps/web/playwright-report/
+    reason: Playwright の HTML 報告（証拠の閲覧用）。成果物ではない
+  - path: apps/e2e/playwright-report/
+    reason: 同上
+  - path: apps/e2e/test-results/
+    reason: 流れ（L2）の JSON 報告。apps/e2e/write_results.mjs が読んで journeys/plan.json に書く
+  - path: apps/bridge/release/mac/
+    reason: electron-builder のビルド出力（.app）。配布物の正本は bridge-release の目録（kaname-bridge.json）
+  - path: apps/bridge/release/mac-arm64/
+    reason: 同上
+  stale_ok:
+  - path: 06_mockup/_old/
+    reason: 置き換え前のモックの保管。正は 06_mockup/v1。決定を追随させない
+  - path: 06_mockup/_variants/
+    reason: 「今日」の画面の案 A〜E の比較（D-071 のとき）。決定後は更新しない
+  - path: 06_mockup/v2/
+    reason: 段階 2 の画面の下書き（D-081〜D-085）。段階 2 の仕様づくり（T-V2-*）で作り直す
+  - path: 06_mockup/v1/_st/
+    reason: 治具（make_state_rig.py）が v1-*.html から作る時点×状態の写し。正は v1-*.html
+  - path: 06_mockup/v1/_st375/
+    reason: 同上（375 幅）
+  - path: 06_mockup/v1/_ly/
+    reason: 治具が作る幅ごとの写し。正は v1-*.html
+  - path: 06_mockup/v1/_ly768/
+    reason: 同上
+  - path: 06_mockup/v1/_ly1024/
+    reason: 同上
+  - path: 06_mockup/v1/_ly1400/
+    reason: 同上
+  - path: 06_mockup/v1/_m375/
+    reason: 同上
+  - path: 06_mockup/v1/_m768/
+    reason: 同上
+  - path: 06_mockup/v1/_m1024/
+    reason: 同上
+  - path: 06_mockup/v1/_m1440/
+    reason: 同上
+  - path: 06_mockup/v1/_runner.html
+    reason: 治具（window.audit を回す枠）。決定を参照しない
+  - path: 06_mockup/v1/_viewer.html
+    reason: 治具（モックを並べて見る枠）。決定を参照しない
+  - path: 06_mockup/v1/v1-index.html
+    reason: 索引。画面の集合は flow_gate G9 が v1-*.html で検査する
+  - path: 06_mockup/mock-contract-hints.json
+    reason: D-068 時点の契約のヒント。画面 ↔ API の契約は 08_api（api_gate）が正本
+  - path: 04_design/
+    reason: DESIGN-kaname.md が正本（layer_checks の manual）。preview・font-compare・調査記録は選定のときの治具
+  - path: 10_skills/_template/
+    reason: スキルの雛形。決定を参照しない
+  - path: 10_skills/goal-sales-contract-dev/
+    reason: 見本のスキル（D-080 の形の確認用）。skill_pkg_gate が形を検査する
+  - path: 10_skills/README.md
+    reason: 置き場の説明。catalog.json が正本
+  - path: design-gate.json
+    reason: design_gate.py の設定。決定を参照しない
+  - path: 06_mockup/state-requires.json
+    reason: 時点×cap の表（mock_state_gate の入力）。決定を参照しない設定
+  - path: 06_mockup/ui-lint.json
+    reason: ui_lint の禁止語の設定（D-059 時点）。決定を参照しない設定
+  - path: 10_skills/skill-lint.json
+    reason: skill_pkg_gate の設定。決定を参照しない
+

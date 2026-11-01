@@ -1,0 +1,1979 @@
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:2fd2afdde63e44ad
+export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
+export interface EndpointDef {
+  method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+  path: string;
+  operationId: string;
+  table: string;
+  kind: EndpointKind;
+  input: string | null;
+  success: number;
+  auth: "member" | "ops" | "public";
+  rateLimit: { perMinute: number; key: "user" | "ip" };
+  chokePoints: string[];
+  errors: number[];
+  acts: string[];
+  screens: string[];
+}
+export const ENDPOINTS: readonly EndpointDef[] = [
+  {
+    "method": "GET",
+    "path": "/api/v1/action_runs",
+    "operationId": "getActionRuns",
+    "table": "action_runs",
+    "kind": "list",
+    "input": null,
+    "success": 200,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 120,
+      "key": "user"
+    },
+    "chokePoints": [],
+    "errors": [
+      401,
+      403,
+      429,
+      502
+    ],
+    "acts": [
+      "A11"
+    ],
+    "screens": [
+      "onboard-testrun"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/ai_employees",
+    "operationId": "getAiEmployees",
+    "table": "ai_employees",
+    "kind": "list",
+    "input": null,
+    "success": 200,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 120,
+      "key": "user"
+    },
+    "chokePoints": [],
+    "errors": [
+      401,
+      403,
+      429,
+      502
+    ],
+    "acts": [
+      "A37",
+      "A46",
+      "A53",
+      "A59",
+      "A79"
+    ],
+    "screens": [
+      "ai-activity",
+      "ai-staff",
+      "ai-staff-detail",
+      "ops-catalog"
+    ]
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/ai_employees/:id",
+    "operationId": "patchAiEmployeesById",
+    "table": "ai_employees",
+    "kind": "update",
+    "input": "AiEmployeesInput",
+    "success": 200,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      429
+    ],
+    "acts": [
+      "A81"
+    ],
+    "screens": [
+      "ai-staff-detail"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/approvals",
+    "operationId": "getApprovals",
+    "table": "approvals",
+    "kind": "list",
+    "input": null,
+    "success": 200,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 120,
+      "key": "user"
+    },
+    "chokePoints": [],
+    "errors": [
+      401,
+      403,
+      429,
+      502
+    ],
+    "acts": [
+      "A16"
+    ],
+    "screens": [
+      "clone-thread"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/approvals",
+    "operationId": "postApprovals",
+    "table": "approvals",
+    "kind": "create",
+    "input": "ApprovalsInput",
+    "success": 201,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2",
+      "C4"
+    ],
+    "errors": [
+      401,
+      403,
+      409,
+      422,
+      429
+    ],
+    "acts": [
+      "A40"
+    ],
+    "screens": [
+      "audit"
+    ]
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/approvals/:id",
+    "operationId": "patchApprovalsById",
+    "table": "approvals",
+    "kind": "update",
+    "input": "ApprovalsInput",
+    "success": 200,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C1",
+      "C2",
+      "C6"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      429,
+      502
+    ],
+    "acts": [
+      "A15"
+    ],
+    "screens": [
+      "approvals"
+    ]
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/approvals/:id",
+    "operationId": "deleteApprovalsById",
+    "table": "approvals",
+    "kind": "delete",
+    "input": null,
+    "success": 200,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C1",
+      "C2"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      429,
+      502
+    ],
+    "acts": [
+      "A34",
+      "A66"
+    ],
+    "screens": [
+      "audit"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/attachments",
+    "operationId": "postAttachments",
+    "table": "attachments",
+    "kind": "create",
+    "input": "AttachmentsInput",
+    "success": 201,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2",
+      "C3",
+      "C4"
+    ],
+    "errors": [
+      401,
+      403,
+      409,
+      422,
+      429,
+      502
+    ],
+    "acts": [
+      "A76"
+    ],
+    "screens": [
+      "import"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/audit_events",
+    "operationId": "getAuditEvents",
+    "table": "audit_events",
+    "kind": "list",
+    "input": null,
+    "success": 200,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 120,
+      "key": "user"
+    },
+    "chokePoints": [],
+    "errors": [
+      401,
+      403,
+      429
+    ],
+    "acts": [
+      "A33",
+      "A38",
+      "A73"
+    ],
+    "screens": [
+      "audit",
+      "ops-audit"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/clones",
+    "operationId": "postClones",
+    "table": "clones",
+    "kind": "create",
+    "input": "ClonesInput",
+    "success": 201,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2",
+      "C3"
+    ],
+    "errors": [
+      401,
+      403,
+      409,
+      422,
+      429,
+      502
+    ],
+    "acts": [
+      "A06"
+    ],
+    "screens": [
+      "onboard-interview"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/conversations",
+    "operationId": "getConversations",
+    "table": "conversations",
+    "kind": "list",
+    "input": null,
+    "success": 200,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 120,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C4"
+    ],
+    "errors": [
+      401,
+      403,
+      429,
+      502
+    ],
+    "acts": [
+      "A20",
+      "A90"
+    ],
+    "screens": [
+      "clone-chat"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/conversations",
+    "operationId": "postConversations",
+    "table": "conversations",
+    "kind": "create",
+    "input": "ConversationsInput",
+    "success": 201,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2",
+      "C5"
+    ],
+    "errors": [
+      401,
+      403,
+      409,
+      422,
+      429,
+      502
+    ],
+    "acts": [
+      "A88",
+      "A91"
+    ],
+    "screens": [
+      "clone-chat"
+    ]
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/conversations/:id",
+    "operationId": "patchConversationsById",
+    "table": "conversations",
+    "kind": "update",
+    "input": "ConversationsInput",
+    "success": 200,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2",
+      "C4"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      429
+    ],
+    "acts": [
+      "A95"
+    ],
+    "screens": [
+      "clone-chat"
+    ]
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/conversations/:id",
+    "operationId": "deleteConversationsById",
+    "table": "conversations",
+    "kind": "delete",
+    "input": null,
+    "success": 200,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2",
+      "C5"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      429,
+      502
+    ],
+    "acts": [
+      "A89"
+    ],
+    "screens": [
+      "clone-chat"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/credentials",
+    "operationId": "postCredentials",
+    "table": "credentials",
+    "kind": "create",
+    "input": "CredentialsInput",
+    "success": 201,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2",
+      "C8"
+    ],
+    "errors": [
+      401,
+      403,
+      409,
+      422,
+      429
+    ],
+    "acts": [
+      "A10"
+    ],
+    "screens": [
+      "credentials"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/disclosure_versions",
+    "operationId": "getDisclosureVersions",
+    "table": "disclosure_versions",
+    "kind": "list",
+    "input": null,
+    "success": 200,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 120,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C4"
+    ],
+    "errors": [
+      401,
+      403,
+      429
+    ],
+    "acts": [
+      "A84"
+    ],
+    "screens": [
+      "disclosure"
+    ]
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/disclosure_versions/:id",
+    "operationId": "patchDisclosureVersionsById",
+    "table": "disclosure_versions",
+    "kind": "update",
+    "input": "DisclosureVersionsInput",
+    "success": 200,
+    "auth": "ops",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2",
+      "C4",
+      "C6"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      429
+    ],
+    "acts": [
+      "A86"
+    ],
+    "screens": [
+      "ops-disclosure"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/distributions",
+    "operationId": "postDistributions",
+    "table": "distributions",
+    "kind": "create",
+    "input": "DistributionsInput",
+    "success": 201,
+    "auth": "ops",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2"
+    ],
+    "errors": [
+      401,
+      403,
+      409,
+      422,
+      429
+    ],
+    "acts": [
+      "A63"
+    ],
+    "screens": [
+      "ops-review"
+    ]
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/duties/:id",
+    "operationId": "patchDutiesById",
+    "table": "duties",
+    "kind": "update",
+    "input": "DutiesInput",
+    "success": 200,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2",
+      "C3"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      429,
+      502
+    ],
+    "acts": [
+      "A28"
+    ],
+    "screens": [
+      "duties"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/export_jobs",
+    "operationId": "postExportJobs",
+    "table": "export_jobs",
+    "kind": "create",
+    "input": "ExportJobsInput",
+    "success": 201,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2",
+      "C4"
+    ],
+    "errors": [
+      401,
+      403,
+      409,
+      422,
+      429
+    ],
+    "acts": [
+      "A41"
+    ],
+    "screens": [
+      "export"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/goal_allocations",
+    "operationId": "getGoalAllocations",
+    "table": "goal_allocations",
+    "kind": "list",
+    "input": null,
+    "success": 200,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 120,
+      "key": "user"
+    },
+    "chokePoints": [],
+    "errors": [
+      401,
+      403,
+      429
+    ],
+    "acts": [
+      "A25"
+    ],
+    "screens": [
+      "my-progress"
+    ]
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/goal_allocations/:id",
+    "operationId": "patchGoalAllocationsById",
+    "table": "goal_allocations",
+    "kind": "update",
+    "input": "GoalAllocationsInput",
+    "success": 200,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2",
+      "C3"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      429,
+      502
+    ],
+    "acts": [
+      "A23",
+      "A49"
+    ],
+    "screens": [
+      "goal-allocation",
+      "my-progress"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/goals",
+    "operationId": "getGoals",
+    "table": "goals",
+    "kind": "list",
+    "input": null,
+    "success": 200,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 120,
+      "key": "user"
+    },
+    "chokePoints": [],
+    "errors": [
+      401,
+      403,
+      429,
+      502
+    ],
+    "acts": [
+      "A22",
+      "A52",
+      "A54"
+    ],
+    "screens": [
+      "goal-edit",
+      "goals"
+    ]
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/goals/:id",
+    "operationId": "patchGoalsById",
+    "table": "goals",
+    "kind": "update",
+    "input": "GoalsInput",
+    "success": 200,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2",
+      "C3"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      429,
+      502
+    ],
+    "acts": [
+      "A29"
+    ],
+    "screens": [
+      "goal-edit"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/hypotheses",
+    "operationId": "getHypotheses",
+    "table": "hypotheses",
+    "kind": "list",
+    "input": null,
+    "success": 200,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 120,
+      "key": "user"
+    },
+    "chokePoints": [],
+    "errors": [
+      401,
+      403,
+      429,
+      502
+    ],
+    "acts": [
+      "A26"
+    ],
+    "screens": [
+      "review"
+    ]
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/hypotheses/:id",
+    "operationId": "patchHypothesesById",
+    "table": "hypotheses",
+    "kind": "update",
+    "input": "HypothesesInput",
+    "success": 200,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2",
+      "C3"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      429,
+      502
+    ],
+    "acts": [
+      "A27"
+    ],
+    "screens": [
+      "hypotheses"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/inquiries",
+    "operationId": "getInquiries",
+    "table": "inquiries",
+    "kind": "list",
+    "input": null,
+    "success": 200,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 120,
+      "key": "user"
+    },
+    "chokePoints": [],
+    "errors": [
+      401,
+      403,
+      429
+    ],
+    "acts": [
+      "A67"
+    ],
+    "screens": [
+      "inquiry"
+    ]
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/inquiries/:id",
+    "operationId": "patchInquiriesById",
+    "table": "inquiries",
+    "kind": "update",
+    "input": "InquiriesInput",
+    "success": 200,
+    "auth": "ops",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2",
+      "C6"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      429
+    ],
+    "acts": [
+      "A43",
+      "A70"
+    ],
+    "screens": [
+      "ops-support"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/invitations",
+    "operationId": "getInvitations",
+    "table": "invitations",
+    "kind": "list",
+    "input": null,
+    "success": 200,
+    "auth": "public",
+    "rateLimit": {
+      "perMinute": 10,
+      "key": "ip"
+    },
+    "chokePoints": [],
+    "errors": [
+      429,
+      502
+    ],
+    "acts": [
+      "A03"
+    ],
+    "screens": [
+      "invite-accept"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/invoices",
+    "operationId": "getInvoices",
+    "table": "invoices",
+    "kind": "list",
+    "input": null,
+    "success": 200,
+    "auth": "ops",
+    "rateLimit": {
+      "perMinute": 120,
+      "key": "user"
+    },
+    "chokePoints": [],
+    "errors": [
+      401,
+      403,
+      429
+    ],
+    "acts": [
+      "A72",
+      "A87"
+    ],
+    "screens": [
+      "ops-billing"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/learned_procedures",
+    "operationId": "getLearnedProcedures",
+    "table": "learned_procedures",
+    "kind": "list",
+    "input": null,
+    "success": 200,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 120,
+      "key": "user"
+    },
+    "chokePoints": [],
+    "errors": [
+      401,
+      403,
+      429,
+      502
+    ],
+    "acts": [
+      "A32"
+    ],
+    "screens": [
+      "automation-repair"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/ledger_definitions",
+    "operationId": "getLedgerDefinitions",
+    "table": "ledger_definitions",
+    "kind": "list",
+    "input": null,
+    "success": 200,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 120,
+      "key": "user"
+    },
+    "chokePoints": [],
+    "errors": [
+      401,
+      403,
+      429,
+      502
+    ],
+    "acts": [
+      "A21",
+      "A47"
+    ],
+    "screens": [
+      "records",
+      "search"
+    ]
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/ledger_definitions/:id",
+    "operationId": "patchLedgerDefinitionsById",
+    "table": "ledger_definitions",
+    "kind": "update",
+    "input": "LedgerDefinitionsInput",
+    "success": 200,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2",
+      "C3"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      429,
+      502
+    ],
+    "acts": [
+      "A24",
+      "A44"
+    ],
+    "screens": [
+      "ledger-def",
+      "records"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/ledger_records",
+    "operationId": "getLedgerRecords",
+    "table": "ledger_records",
+    "kind": "list",
+    "input": null,
+    "success": 200,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 120,
+      "key": "user"
+    },
+    "chokePoints": [],
+    "errors": [
+      401,
+      403,
+      429
+    ],
+    "acts": [
+      "A18"
+    ],
+    "screens": [
+      "record-detail"
+    ]
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/ledger_records/:id",
+    "operationId": "patchLedgerRecordsById",
+    "table": "ledger_records",
+    "kind": "update",
+    "input": "LedgerRecordsInput",
+    "success": 200,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2",
+      "C3"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      429,
+      502
+    ],
+    "acts": [
+      "A19"
+    ],
+    "screens": [
+      "record-detail"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/llm_routes",
+    "operationId": "postLlmRoutes",
+    "table": "llm_routes",
+    "kind": "create",
+    "input": "LlmRoutesInput",
+    "success": 201,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2",
+      "C3",
+      "C8"
+    ],
+    "errors": [
+      401,
+      403,
+      409,
+      422,
+      429,
+      502
+    ],
+    "acts": [
+      "A82"
+    ],
+    "screens": [
+      "llm-routes"
+    ]
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/llm_routes/:id",
+    "operationId": "patchLlmRoutesById",
+    "table": "llm_routes",
+    "kind": "update",
+    "input": "LlmRoutesInput",
+    "success": 200,
+    "auth": "ops",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      429
+    ],
+    "acts": [
+      "A85"
+    ],
+    "screens": [
+      "ops-llm"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/members",
+    "operationId": "getMembers",
+    "table": "members",
+    "kind": "list",
+    "input": null,
+    "success": 200,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 120,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C8"
+    ],
+    "errors": [
+      401,
+      403,
+      429
+    ],
+    "acts": [
+      "A02",
+      "A04",
+      "A13",
+      "A31",
+      "A94"
+    ],
+    "screens": [
+      "account",
+      "login",
+      "mfa-setup",
+      "password-reset",
+      "verify-email"
+    ]
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/members/:id",
+    "operationId": "patchMembersById",
+    "table": "members",
+    "kind": "update",
+    "input": "MembersInput",
+    "success": 200,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2",
+      "C6",
+      "C8"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      429
+    ],
+    "acts": [
+      "A36",
+      "A61",
+      "A74"
+    ],
+    "screens": [
+      "account",
+      "member-detail",
+      "members"
+    ]
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/members/:id",
+    "operationId": "deleteMembersById",
+    "table": "members",
+    "kind": "delete",
+    "input": null,
+    "success": 200,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2",
+      "C6",
+      "C8"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      429
+    ],
+    "acts": [
+      "A42",
+      "A62"
+    ],
+    "screens": [
+      "account-close",
+      "member-detail"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/memories",
+    "operationId": "postMemories",
+    "table": "memories",
+    "kind": "create",
+    "input": "MemoriesInput",
+    "success": 201,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2",
+      "C3"
+    ],
+    "errors": [
+      401,
+      403,
+      409,
+      422,
+      429,
+      502
+    ],
+    "acts": [
+      "A30"
+    ],
+    "screens": [
+      "clone-memory"
+    ]
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/memories/:id",
+    "operationId": "patchMemoriesById",
+    "table": "memories",
+    "kind": "update",
+    "input": "MemoriesInput",
+    "success": 200,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2",
+      "C6"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      429
+    ],
+    "acts": [
+      "A93"
+    ],
+    "screens": [
+      "clone-memory"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/messages",
+    "operationId": "getMessages",
+    "table": "messages",
+    "kind": "list",
+    "input": null,
+    "success": 200,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 120,
+      "key": "user"
+    },
+    "chokePoints": [],
+    "errors": [
+      401,
+      403,
+      429,
+      502
+    ],
+    "acts": [
+      "A14",
+      "A92"
+    ],
+    "screens": [
+      "today"
+    ]
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/messages/:id",
+    "operationId": "patchMessagesById",
+    "table": "messages",
+    "kind": "update",
+    "input": "MessagesInput",
+    "success": 200,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2",
+      "C3"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      429,
+      502
+    ],
+    "acts": [
+      "A55"
+    ],
+    "screens": [
+      "today"
+    ]
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/messages/:id",
+    "operationId": "deleteMessagesById",
+    "table": "messages",
+    "kind": "delete",
+    "input": null,
+    "success": 200,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2",
+      "C3",
+      "C6"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      429,
+      502
+    ],
+    "acts": [
+      "A56"
+    ],
+    "screens": [
+      "today"
+    ]
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/notice_deliveries/:id",
+    "operationId": "patchNoticeDeliveriesById",
+    "table": "notice_deliveries",
+    "kind": "update",
+    "input": "NoticeDeliveriesInput",
+    "success": 200,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2",
+      "C6"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      429
+    ],
+    "acts": [
+      "A68"
+    ],
+    "screens": [
+      "notices"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/notices",
+    "operationId": "postNotices",
+    "table": "notices",
+    "kind": "create",
+    "input": "NoticesInput",
+    "success": 201,
+    "auth": "ops",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2",
+      "C6"
+    ],
+    "errors": [
+      401,
+      403,
+      409,
+      422,
+      429
+    ],
+    "acts": [
+      "A71"
+    ],
+    "screens": [
+      "ops-notices"
+    ]
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/ops_members/:id",
+    "operationId": "patchOpsMembersById",
+    "table": "ops_members",
+    "kind": "update",
+    "input": "OpsMembersInput",
+    "success": 200,
+    "auth": "ops",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      429
+    ],
+    "acts": [
+      "A65"
+    ],
+    "screens": [
+      "ops-audit"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/plans",
+    "operationId": "getPlans",
+    "table": "plans",
+    "kind": "list",
+    "input": null,
+    "success": 200,
+    "auth": "ops",
+    "rateLimit": {
+      "perMinute": 120,
+      "key": "user"
+    },
+    "chokePoints": [],
+    "errors": [
+      401,
+      403,
+      429
+    ],
+    "acts": [
+      "A60"
+    ],
+    "screens": [
+      "ops-home"
+    ]
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/plans/:id",
+    "operationId": "deletePlansById",
+    "table": "plans",
+    "kind": "delete",
+    "input": null,
+    "success": 200,
+    "auth": "ops",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      429
+    ],
+    "acts": [
+      "A64"
+    ],
+    "screens": [
+      "ops-tenant"
+    ]
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/policies/:id",
+    "operationId": "patchPoliciesById",
+    "table": "policies",
+    "kind": "update",
+    "input": "PoliciesInput",
+    "success": 200,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      429
+    ],
+    "acts": [
+      "A35"
+    ],
+    "screens": [
+      "policies"
+    ]
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/push_devices/:id",
+    "operationId": "patchPushDevicesById",
+    "table": "push_devices",
+    "kind": "update",
+    "input": "PushDevicesInput",
+    "success": 200,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2",
+      "C6"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      429
+    ],
+    "acts": [
+      "A83"
+    ],
+    "screens": [
+      "app-setup"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/service_registry",
+    "operationId": "postServiceRegistry",
+    "table": "service_registry",
+    "kind": "create",
+    "input": "ServiceRegistryInput",
+    "success": 201,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C1",
+      "C2",
+      "C8"
+    ],
+    "errors": [
+      401,
+      403,
+      409,
+      422,
+      429,
+      502
+    ],
+    "acts": [
+      "A77"
+    ],
+    "screens": [
+      "services"
+    ]
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/service_registry_versions/:id",
+    "operationId": "patchServiceRegistryVersionsById",
+    "table": "service_registry_versions",
+    "kind": "update",
+    "input": "ServiceRegistryVersionsInput",
+    "success": 200,
+    "auth": "ops",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      429
+    ],
+    "acts": [
+      "A78"
+    ],
+    "screens": [
+      "ops-services"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/sessions",
+    "operationId": "getSessions",
+    "table": "sessions",
+    "kind": "list",
+    "input": null,
+    "success": 200,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 120,
+      "key": "user"
+    },
+    "chokePoints": [],
+    "errors": [
+      401,
+      403,
+      429
+    ],
+    "acts": [
+      "A39"
+    ],
+    "screens": [
+      "security-brief"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/sessions",
+    "operationId": "postSessions",
+    "table": "sessions",
+    "kind": "create",
+    "input": "SessionsInput",
+    "success": 201,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2",
+      "C5"
+    ],
+    "errors": [
+      401,
+      403,
+      409,
+      422,
+      429,
+      502
+    ],
+    "acts": [
+      "A09"
+    ],
+    "screens": [
+      "bridge-setup"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/skills",
+    "operationId": "postSkills",
+    "table": "skills",
+    "kind": "create",
+    "input": "SkillsInput",
+    "success": 201,
+    "auth": "ops",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2",
+      "C4",
+      "C6"
+    ],
+    "errors": [
+      401,
+      403,
+      409,
+      422,
+      429
+    ],
+    "acts": [
+      "A80"
+    ],
+    "screens": [
+      "ops-skills"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/subscriptions",
+    "operationId": "postSubscriptions",
+    "table": "subscriptions",
+    "kind": "create",
+    "input": "SubscriptionsInput",
+    "success": 201,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2",
+      "C7"
+    ],
+    "errors": [
+      401,
+      403,
+      409,
+      422,
+      429
+    ],
+    "acts": [
+      "A01",
+      "A05"
+    ],
+    "screens": [
+      "billing-setup",
+      "signup"
+    ]
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/subscriptions/:id",
+    "operationId": "patchSubscriptionsById",
+    "table": "subscriptions",
+    "kind": "update",
+    "input": "SubscriptionsInput",
+    "success": 200,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      429
+    ],
+    "acts": [
+      "A69"
+    ],
+    "screens": [
+      "billing"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/tasks",
+    "operationId": "getTasks",
+    "table": "tasks",
+    "kind": "list",
+    "input": null,
+    "success": 200,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 120,
+      "key": "user"
+    },
+    "chokePoints": [],
+    "errors": [
+      401,
+      403,
+      429,
+      502
+    ],
+    "acts": [
+      "A48",
+      "A58"
+    ],
+    "screens": [
+      "tasks"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/tasks",
+    "operationId": "postTasks",
+    "table": "tasks",
+    "kind": "create",
+    "input": "TasksInput",
+    "success": 201,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2",
+      "C3",
+      "C6"
+    ],
+    "errors": [
+      401,
+      403,
+      409,
+      422,
+      429,
+      502
+    ],
+    "acts": [
+      "A50",
+      "A57"
+    ],
+    "screens": [
+      "tasks"
+    ]
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/tasks/:id",
+    "operationId": "patchTasksById",
+    "table": "tasks",
+    "kind": "update",
+    "input": "TasksInput",
+    "success": 200,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2",
+      "C6"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      429
+    ],
+    "acts": [
+      "A17",
+      "A51"
+    ],
+    "screens": [
+      "tasks"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/tenants",
+    "operationId": "getTenants",
+    "table": "tenants",
+    "kind": "list",
+    "input": null,
+    "success": 200,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 120,
+      "key": "user"
+    },
+    "chokePoints": [],
+    "errors": [
+      401,
+      403,
+      429,
+      502
+    ],
+    "acts": [
+      "A07",
+      "A08",
+      "A12",
+      "A45"
+    ],
+    "screens": [
+      "company-model",
+      "onboard-draft",
+      "onboard-golive"
+    ]
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/tenants/:id",
+    "operationId": "patchTenantsById",
+    "table": "tenants",
+    "kind": "update",
+    "input": "TenantsInput",
+    "success": 200,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      429
+    ],
+    "acts": [
+      "A75"
+    ],
+    "screens": [
+      "company-settings"
+    ]
+  }
+];
+export const OPENAPI_HASH = "2fd2afdde63e44ad";

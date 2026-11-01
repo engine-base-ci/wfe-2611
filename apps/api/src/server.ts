@@ -1,0 +1,146 @@
+// API の起動口（T-F-18）。設定（packages/config）→ DB のプール・認証・関門 → 起動時の存在確認（G-11）→ HTTP。
+// 画面は API を叩くだけ（D-043.3）。常駐（ローカル・Docker）はこれを `pnpm api:start` で動かし、Vercel は vercel.ts が bootApi だけ使う（D-097）。存在確認に落ちたら起動しない（黙って 502 を返さない）
+import { serve, type ServerType } from "@hono/node-server";
+import { loadConfig, type Config, type StartupReport } from "@kaname/config";
+import { createPool } from "@kaname/db/pool";
+import { createMemberHub } from "@kaname/db/listen";
+import { createRepository } from "@kaname/db/repository";
+import { createAuth } from "@kaname/auth";
+import { createSessionResolver } from "@kaname/auth/resolver";
+import { ObjectStore, s3Client, s3Driver, type StorageDriver } from "@kaname/storage";
+import { createApp } from "./app.js";
+import { authExt } from "./auth/ext.js";
+import { InfisicalVault, MemoryVault, SecretsGateway, type Vault } from "@kaname/secrets";
+import { resendMail, signedMail } from "@kaname/notify";
+import { assertApiStartup } from "./startup.js";
+import { agentHooks } from "./hooks/agent.js";
+import { nearLimitNotifier } from "./ops-alert.js";
+
+export interface BootOptions {
+  /** 起動時の存在確認の差し替え（テスト用。本番は S3 の HEAD） */
+  bucketExists?: () => Promise<boolean>;
+  version?: string;
+  /** 秘密の保管先（既定 MemoryVault＝開発。staging／本番は Infisical のドライバを差す） */
+  vault?: Vault;
+  /** DB のプールの本数（業務・認証）。常駐のサーバーは 10／5、Vercel の関数は 1 つにつき 3／2
+   *  （関数は同時にいくつも立つ。常駐と同じ本数だと 同時の数 × 15 本で接続の上限を食い潰す・G-16・D-097） */
+  poolMax?: { app: number; auth: number };
+  /** 資料の置き場のドライバ（既定は S3 互換。開発で S3 が無いときはローカルのフォルダ・dev.ts） */
+  storageDriver?: StorageDriver;
+}
+export interface Booted {
+  app: ReturnType<typeof createApp>;
+  report: StartupReport;
+  close: () => Promise<void>;
+}
+
+/** 設定から API を組み立て、存在確認を通す。落ちたら例外（起動しない） */
+export async function bootApi(config: Config, o: BootOptions = {}): Promise<Booted> {
+  const appPool = createPool({ databaseUrl: config.databaseUrl, max: o.poolMax?.app ?? 10 });
+  const repo = await createRepository(appPool);
+  // メールの送出（関門 C6）：Resend の鍵があれば送る。無ければ URL をログに出す（開発）
+  // 署名（会社名・代表者名・問い合わせ）と返信先（info@）は、ここで全部のメールに付ける（D-096・関門 C6）
+  const mail = config.resendApiKey ? signedMail(resendMail(config.resendApiKey), config.operator, config.mailReplyTo) : null;
+  // 送出は 1 か所。認証（再設定）と保留の申し込み（確認）の両方がこれを通る
+  const mailer = mail
+    ? async (m: { to: string; subject: string; text: string }) => {
+        // 送れたか／送れなかったかを必ず残す（黙って落ちると「メールが来ない」を誰も再現できない・G-15）
+        try {
+          // dev の自動テスト宛ては送らない（送出先の 1 日の上限を食い潰すため）。
+          // 「送った」とは書かない。リンクは [auth] の行に出るので手順はそのまま通る
+          if (config.mailSuppressPrefix && m.to.startsWith(config.mailSuppressPrefix)) {
+            console.log(`[mail] 送らなかった（dev の抑止 ${config.mailSuppressPrefix}）→ ${m.to}（${m.subject}）`);
+            return;
+          }
+          // send は投げずに { error } を返す。見ないと拒否されても「送った」になる（G-15）
+          const r = await mail.send({ from: config.mailFrom, to: m.to, subject: m.subject, text: m.text });   // 署名と返信先は signedMail が付ける
+          if (r.error) throw new Error(r.error.message);
+          console.log(`[mail] 送った → ${m.to}（${m.subject}）`);
+        } catch (e) {
+          console.error(`[mail] 送れなかった → ${m.to}（${m.subject}）: ${(e as Error).message}`);
+          throw e;
+        }
+      }
+    : undefined;
+  const { auth, pool: authPool } = createAuth({
+    authDatabaseUrl: config.authDatabaseUrl,
+    appPool,
+    ...(o.poolMax ? { poolMax: o.poolMax.auth } : {}),
+    secret: config.authSecret,
+    baseURL: config.baseUrl,
+    ...(config.webBaseUrl ? { webBaseURL: config.webBaseUrl } : {}),
+    ...(mailer ? { mailer } : {}),
+  });
+  // 秘密の保管（関門 C8・D-101）：設定があれば Infisical、無ければ MemoryVault（再起動で消える＝開発だけ）。
+  // staging／本番で Infisical が無い・入れないなら起動時の確認で落とす（startup.ts の secrets:vault）
+  // 上限の 8 割に来たら運営に知らせる（D-102.5）。メールは 1 つの実体につき 1 時間に 1 回まで（ops-alert.ts）
+  const onNearLimit = nearLimitNotifier({ ...(mailer ? { mailer } : {}), opsEmail: config.opsEmail });
+  const vault = o.vault ?? (config.infisical ? new InfisicalVault({ ...config.infisical, onNearLimit }) : new MemoryVault());
+  const secrets = new SecretsGateway(repo, vault, Buffer.from(config.secretsMasterKey, "base64"));
+  const s3 = s3Driver(s3Client(config.storage), config.storage.bucket);
+  const bucketExists = o.bucketExists ?? s3.exists;
+  // 資料の置き場（関門 C4・D-104.11）。署名は資格情報の鍵とは別の用途の鍵から作る
+  const objects = new ObjectStore(repo, o.storageDriver ?? s3, { signingSecret: `${config.authSecret}:files` });
+  // 会話が変わった知らせを受ける 1 本（D-113・台帳 X-008）。URL が無ければ持たない（画面は見に行く形のまま）
+  const hub = config.listenDatabaseUrl ? createMemberHub({ url: config.listenDatabaseUrl }) : null;
+  const close = async () => {
+    await hub?.close();
+    await authPool.end();
+    await appPool.end();
+  };
+  let report: StartupReport;
+  try {
+    report = await assertApiStartup({ config, repo, bucketExists, vault });
+  } catch (e) {
+    await close();
+    throw e;
+  }
+  const app = createApp({
+    version: o.version ?? "0.1.0",
+    repo,
+    auth,
+    resolve: createSessionResolver(auth, appPool),
+    authExt: authExt({ auth, appPool, authPool, repo, secrets, objects, config, hub, ...(mailer ? { mailer } : {}) }),
+    corsOrigin: config.webOrigins.join(","),
+    contract: { hooks: agentHooks(appPool) }, // 会話・記憶の契約の口は画面の口と同じ本体を通す
+  });
+  return { app, report, close };
+}
+
+export interface Started {
+  server: ServerType;
+  port: number;
+  close: () => Promise<void>;
+}
+/** HTTP で待ち受ける。port 0 なら空いている口（テスト）。戻り値の close で止める */
+export async function startServer(config: Config, o: BootOptions = {}): Promise<Started> {
+  const booted = await bootApi(config, o);
+  // listen が終わってから返す（port 0 なら実際に取れた口を返す。閉じるのも listen 後）
+  const { server, port } = await new Promise<{ server: ServerType; port: number }>((resolve) => {
+    const srv = serve({ fetch: booted.app.fetch, port: config.port, hostname: "0.0.0.0" }, (info) =>
+      resolve({ server: srv, port: info.port }),
+    );
+  });
+  return {
+    server,
+    port,
+    close: () =>
+      new Promise<void>((resolve, reject) => {
+        server.close((err) => {
+          if (err) reject(err);
+          else booted.close().then(resolve, reject);
+        });
+      }),
+  };
+}
+
+const entry = process.argv[1] ?? "";
+if (entry.endsWith("server.ts") || entry.endsWith("server.js")) {
+  startServer(loadConfig()).then(
+    (s) => console.log(`[api] 起動 port ${s.port}（存在確認 OK）`),
+    (e: unknown) => {
+      console.error("[api] 起動しない:", (e as Error).message);
+      process.exit(1);
+    },
+  );
+}

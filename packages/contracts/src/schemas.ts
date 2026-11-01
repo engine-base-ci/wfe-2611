@@ -1,0 +1,2081 @@
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:2fd2afdde63e44ad
+import { z } from "zod";
+
+export const Tenants = z.strictObject({
+  name: z.string().max(10000).optional(),
+  plan_id: z.uuid().optional(),
+  status_id: z.string().max(10000).optional(),
+  live_at: z.iso.datetime({ offset: true }).optional(),
+  live_by: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const TenantsInput = z.strictObject({
+  name: z.string().max(10000).optional(),
+  plan_id: z.uuid().optional(),
+  status_id: z.string().max(10000).optional(),
+  live_at: z.iso.datetime({ offset: true }).optional(),
+  live_by: z.string().max(10000).optional(),
+});
+export const Scopes = z.strictObject({
+  parent_id: z.uuid().optional(),
+  layer_id: z.uuid().optional(),
+  name: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const ScopesInput = z.strictObject({
+  parent_id: z.uuid().optional(),
+  layer_id: z.uuid().optional(),
+  name: z.string().max(10000).optional(),
+});
+export const MemberKinds = z.strictObject({
+  key: z.string().max(10000).optional(),
+  label: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const MemberKindsInput = z.strictObject({
+  key: z.string().max(10000).optional(),
+  label: z.string().max(10000).optional(),
+});
+export const Members = z.strictObject({
+  kind_id: z.string().max(10000).optional(),
+  display_name: z.string().max(10000).optional(),
+  role_id: z.string().max(10000).optional(),
+  manager_member_id: z.uuid().optional(),
+  auth_user_id: z.uuid().optional(),
+  setup_step: z.string().max(10000).optional(),
+  agent_permission_mode: z.string().max(10000).optional(),
+  agent_model: z.string().max(10000).optional(),
+  agent_effort: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const MembersInput = z.strictObject({
+  kind_id: z.string().max(10000).optional(),
+  display_name: z.string().max(10000).optional(),
+  role_id: z.string().max(10000).optional(),
+  manager_member_id: z.uuid().optional(),
+  auth_user_id: z.uuid().optional(),
+  setup_step: z.string().max(10000).optional(),
+  agent_permission_mode: z.string().max(10000).optional(),
+  agent_model: z.string().max(10000).optional(),
+  agent_effort: z.string().max(10000).optional(),
+});
+export const SetupSteps = z.strictObject({
+  n: z.string().max(10000).optional(),
+  label: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const SetupStepsInput = z.strictObject({
+  n: z.string().max(10000).optional(),
+  label: z.string().max(10000).optional(),
+});
+export const Clones = z.strictObject({
+  owner_member_id: z.uuid().optional(),
+  persona: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const ClonesInput = z.strictObject({
+  owner_member_id: z.uuid().optional(),
+  persona: z.string().max(10000).optional(),
+});
+export const AiEmployees = z.strictObject({
+  member_id: z.uuid().optional(),
+  provisioning_id: z.uuid().optional(),
+  template_ref: z.string().max(10000).optional(),
+  paused_at: z.iso.datetime({ offset: true }).optional(),
+  paused_reason: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const AiEmployeesInput = z.strictObject({
+  member_id: z.uuid().optional(),
+  provisioning_id: z.uuid().optional(),
+  template_ref: z.string().max(10000).optional(),
+  paused_at: z.iso.datetime({ offset: true }).optional(),
+  paused_reason: z.string().max(10000).optional(),
+});
+export const GoalKinds = z.strictObject({
+  key: z.string().max(10000).optional(),
+  label: z.string().max(10000).optional(),
+  progress_strategy: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const GoalKindsInput = z.strictObject({
+  key: z.string().max(10000).optional(),
+  label: z.string().max(10000).optional(),
+  progress_strategy: z.string().max(10000).optional(),
+});
+export const Units = z.strictObject({
+  key: z.string().max(10000).optional(),
+  label: z.string().max(10000).optional(),
+  symbol: z.string().max(10000).optional(),
+  value_type_id: z.string().max(10000).optional(),
+  decimals: z.number().int().optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const UnitsInput = z.strictObject({
+  key: z.string().max(10000).optional(),
+  label: z.string().max(10000).optional(),
+  symbol: z.string().max(10000).optional(),
+  value_type_id: z.string().max(10000).optional(),
+  decimals: z.number().int().optional(),
+});
+export const RollupKinds = z.strictObject({
+  key: z.string().max(10000).optional(),
+  label: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const RollupKindsInput = z.strictObject({
+  key: z.string().max(10000).optional(),
+  label: z.string().max(10000).optional(),
+});
+export const Goals = z.strictObject({
+  ended_at: z.iso.datetime({ offset: true }).optional(),
+  parent_id: z.uuid().optional(),
+  rollup_kind_id: z.string().max(10000).optional(),
+  rollup_spec: z.record(z.string(), z.unknown()).optional(),
+  kind_id: z.string().max(10000).optional(),
+  period_start: z.iso.date().optional(),
+  period_end: z.iso.date().optional(),
+  target_value: z.number().optional(),
+  unit_id: z.uuid().optional(),
+  origin_id: z.uuid().optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const GoalsInput = z.strictObject({
+  ended_at: z.iso.datetime({ offset: true }).optional(),
+  parent_id: z.uuid().optional(),
+  rollup_kind_id: z.string().max(10000).optional(),
+  rollup_spec: z.record(z.string(), z.unknown()).optional(),
+  kind_id: z.string().max(10000).optional(),
+  period_start: z.iso.date().optional(),
+  period_end: z.iso.date().optional(),
+  target_value: z.number().optional(),
+  unit_id: z.uuid().optional(),
+  origin_id: z.uuid().optional(),
+});
+export const GoalAllocations = z.strictObject({
+  goal_id: z.uuid().optional(),
+  assignee_member_id: z.uuid().optional(),
+  allocated_value: z.number().optional(),
+  agreement_status_id: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const GoalAllocationsInput = z.strictObject({
+  goal_id: z.uuid().optional(),
+  assignee_member_id: z.uuid().optional(),
+  allocated_value: z.number().optional(),
+  agreement_status_id: z.string().max(10000).optional(),
+});
+export const GoalContributions = z.strictObject({
+  child_goal_id: z.uuid().optional(),
+  parent_goal_id: z.uuid().optional(),
+  hypothesis_id: z.uuid().optional(),
+  verdict_id: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const GoalContributionsInput = z.strictObject({
+  child_goal_id: z.uuid().optional(),
+  parent_goal_id: z.uuid().optional(),
+  hypothesis_id: z.uuid().optional(),
+  verdict_id: z.string().max(10000).optional(),
+});
+export const GoalVersions = z.strictObject({
+  goal_id: z.uuid().optional(),
+  version: z.number().int().optional(),
+  name: z.string().max(10000).optional(),
+  snapshot: z.record(z.string(), z.unknown()).optional(),
+  changed_at: z.iso.datetime({ offset: true }).optional(),
+  changed_by: z.uuid().optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const GoalVersionsInput = z.strictObject({
+  goal_id: z.uuid().optional(),
+  name: z.string().max(10000).optional(),
+  snapshot: z.record(z.string(), z.unknown()).optional(),
+  changed_at: z.iso.datetime({ offset: true }).optional(),
+  changed_by: z.uuid().optional(),
+});
+export const Hypotheses = z.strictObject({
+  goal_id: z.uuid().optional(),
+  statement: z.string().max(10000).optional(),
+  evidence: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const HypothesesInput = z.strictObject({
+  goal_id: z.uuid().optional(),
+  statement: z.string().max(10000).optional(),
+  evidence: z.string().max(10000).optional(),
+});
+export const Measures = z.strictObject({
+  hypothesis_id: z.uuid().optional(),
+  statement: z.string().max(10000).optional(),
+  expected_effect: z.number().optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const MeasuresInput = z.strictObject({
+  hypothesis_id: z.uuid().optional(),
+  statement: z.string().max(10000).optional(),
+  expected_effect: z.number().optional(),
+});
+export const Validations = z.strictObject({
+  measure_id: z.uuid().optional(),
+  measured_value: z.number().optional(),
+  verdict_id: z.string().max(10000).optional(),
+  measured_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const ValidationsInput = z.strictObject({
+  measure_id: z.uuid().optional(),
+  measured_value: z.number().optional(),
+  verdict_id: z.string().max(10000).optional(),
+  measured_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const LedgerDefinitions = z.strictObject({
+  kind_id: z.string().max(10000).optional(),
+  name: z.string().max(10000).optional(),
+  json_schema: z.record(z.string(), z.unknown()).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const LedgerDefinitionsInput = z.strictObject({
+  kind_id: z.string().max(10000).optional(),
+  name: z.string().max(10000).optional(),
+  json_schema: z.record(z.string(), z.unknown()).optional(),
+});
+export const LedgerFields = z.strictObject({
+  definition_id: z.uuid().optional(),
+  key: z.string().max(10000).optional(),
+  label: z.string().max(10000).optional(),
+  data_type_id: z.string().max(10000).optional(),
+  required: z.boolean().optional(),
+  options_master_id: z.uuid().optional(),
+  order_no: z.number().int().optional(),
+  is_filterable: z.boolean().optional(),
+  is_sortable: z.boolean().optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const LedgerFieldsInput = z.strictObject({
+  definition_id: z.uuid().optional(),
+  key: z.string().max(10000).optional(),
+  label: z.string().max(10000).optional(),
+  data_type_id: z.string().max(10000).optional(),
+  required: z.boolean().optional(),
+  options_master_id: z.uuid().optional(),
+  order_no: z.number().int().optional(),
+  is_filterable: z.boolean().optional(),
+  is_sortable: z.boolean().optional(),
+});
+export const LedgerStages = z.strictObject({
+  definition_id: z.uuid().optional(),
+  key: z.string().max(10000).optional(),
+  label: z.string().max(10000).optional(),
+  order_no: z.number().int().optional(),
+  rules: z.record(z.string(), z.unknown()).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const LedgerStagesInput = z.strictObject({
+  definition_id: z.uuid().optional(),
+  key: z.string().max(10000).optional(),
+  label: z.string().max(10000).optional(),
+  order_no: z.number().int().optional(),
+  rules: z.record(z.string(), z.unknown()).optional(),
+});
+export const LedgerViews = z.strictObject({
+  definition_id: z.uuid().optional(),
+  kind_id: z.string().max(10000).optional(),
+  filters: z.record(z.string(), z.unknown()).optional(),
+  sorts: z.record(z.string(), z.unknown()).optional(),
+  columns: z.record(z.string(), z.unknown()).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const LedgerViewsInput = z.strictObject({
+  definition_id: z.uuid().optional(),
+  kind_id: z.string().max(10000).optional(),
+  filters: z.record(z.string(), z.unknown()).optional(),
+  sorts: z.record(z.string(), z.unknown()).optional(),
+  columns: z.record(z.string(), z.unknown()).optional(),
+});
+export const LedgerRecords = z.strictObject({
+  definition_id: z.uuid().optional(),
+  stage_id: z.uuid().optional(),
+  amount: z.number().optional(),
+  occurred_on: z.iso.date().optional(),
+  assignee_id: z.uuid().optional(),
+  goal_id: z.uuid().optional(),
+  measure_id: z.uuid().optional(),
+  data: z.record(z.string(), z.unknown()).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const LedgerRecordsInput = z.strictObject({
+  definition_id: z.uuid().optional(),
+  stage_id: z.uuid().optional(),
+  amount: z.number().optional(),
+  occurred_on: z.iso.date().optional(),
+  assignee_id: z.uuid().optional(),
+  goal_id: z.uuid().optional(),
+  measure_id: z.uuid().optional(),
+  data: z.record(z.string(), z.unknown()).optional(),
+});
+export const Duties = z.strictObject({
+  ai_employee_id: z.uuid().optional(),
+  name: z.string().max(10000).optional(),
+  definition_md: z.string().max(10000).optional(),
+  constraints: z.record(z.string(), z.unknown()).optional(),
+  visibility_id: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const DutiesInput = z.strictObject({
+  ai_employee_id: z.uuid().optional(),
+  name: z.string().max(10000).optional(),
+  definition_md: z.string().max(10000).optional(),
+  constraints: z.record(z.string(), z.unknown()).optional(),
+  visibility_id: z.string().max(10000).optional(),
+});
+export const DutyVersions = z.strictObject({
+  duty_id: z.uuid().optional(),
+  version: z.number().int().optional(),
+  snapshot: z.record(z.string(), z.unknown()).optional(),
+  changed_by: z.uuid().optional(),
+  change_reason: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const DutyVersionsInput = z.strictObject({
+  duty_id: z.uuid().optional(),
+  snapshot: z.record(z.string(), z.unknown()).optional(),
+  changed_by: z.uuid().optional(),
+  change_reason: z.string().max(10000).optional(),
+});
+export const LearnedProcedures = z.strictObject({
+  duty_id: z.uuid().optional(),
+  target_service_id: z.uuid().optional(),
+  status_id: z.string().max(10000).optional(),
+  run_count: z.number().int().optional(),
+  avg_ms: z.number().int().optional(),
+  fail_count: z.number().int().optional(),
+  last_verified_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const LearnedProceduresInput = z.strictObject({
+  duty_id: z.uuid().optional(),
+  target_service_id: z.uuid().optional(),
+  status_id: z.string().max(10000).optional(),
+  run_count: z.number().int().optional(),
+  avg_ms: z.number().int().optional(),
+  fail_count: z.number().int().optional(),
+  last_verified_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const ProcedureSteps = z.strictObject({
+  procedure_id: z.uuid().optional(),
+  order_no: z.number().int().optional(),
+  intent_ja: z.string().max(10000).optional(),
+  locator: z.record(z.string(), z.unknown()).optional(),
+  is_variable: z.boolean().optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const ProcedureStepsInput = z.strictObject({
+  procedure_id: z.uuid().optional(),
+  order_no: z.number().int().optional(),
+  intent_ja: z.string().max(10000).optional(),
+  is_variable: z.boolean().optional(),
+});
+export const MemoryKinds = z.strictObject({
+  key: z.string().max(10000).optional(),
+  label: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const MemoryKindsInput = z.strictObject({
+  key: z.string().max(10000).optional(),
+  label: z.string().max(10000).optional(),
+});
+export const Memories = z.strictObject({
+  kind_id: z.string().max(10000).optional(),
+  owner_member_id: z.uuid().optional(),
+  title: z.string().max(10000).optional(),
+  body: z.string().max(10000).optional(),
+  confidence: z.number().optional(),
+  source_type_id: z.string().max(10000).optional(),
+  source_ref_id: z.uuid().optional(),
+  approved_by: z.uuid().optional(),
+  approved_at: z.iso.datetime({ offset: true }).optional(),
+  digest_id: z.uuid().optional(),
+  superseded_by: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const MemoriesInput = z.strictObject({
+  kind_id: z.string().max(10000).optional(),
+  owner_member_id: z.uuid().optional(),
+  title: z.string().max(10000).optional(),
+  body: z.string().max(10000).optional(),
+  confidence: z.number().optional(),
+  source_type_id: z.string().max(10000).optional(),
+  source_ref_id: z.uuid().optional(),
+  approved_by: z.uuid().optional(),
+  approved_at: z.iso.datetime({ offset: true }).optional(),
+  digest_id: z.uuid().optional(),
+  superseded_by: z.string().max(10000).optional(),
+});
+export const MemoryDigests = z.strictObject({
+  member_id: z.uuid().optional(),
+  from_on: z.iso.date().optional(),
+  to_on: z.iso.date().optional(),
+  conversation_count: z.number().int().optional(),
+  state_id: z.string().max(10000).optional(),
+  result: z.record(z.string(), z.unknown()).optional(),
+  bridge_job_id: z.uuid().optional(),
+  started_at: z.iso.datetime({ offset: true }).optional(),
+  finished_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const MemoryDigestsInput = z.strictObject({
+  member_id: z.uuid().optional(),
+  from_on: z.iso.date().optional(),
+  to_on: z.iso.date().optional(),
+  conversation_count: z.number().int().optional(),
+  state_id: z.string().max(10000).optional(),
+  result: z.record(z.string(), z.unknown()).optional(),
+  bridge_job_id: z.uuid().optional(),
+  started_at: z.iso.datetime({ offset: true }).optional(),
+  finished_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const MemoryProposals = z.strictObject({
+  memory_id: z.uuid().optional(),
+  target_scope_id: z.uuid().optional(),
+  proposer_member_id: z.uuid().optional(),
+  reviewer_member_id: z.uuid().optional(),
+  state_id: z.string().max(10000).optional(),
+  conflict_group_id: z.uuid().optional(),
+  evidence: z.record(z.string(), z.unknown()).optional(),
+  decided_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const MemoryProposalsInput = z.strictObject({
+  memory_id: z.uuid().optional(),
+  target_scope_id: z.uuid().optional(),
+  proposer_member_id: z.uuid().optional(),
+  reviewer_member_id: z.uuid().optional(),
+  state_id: z.string().max(10000).optional(),
+  conflict_group_id: z.uuid().optional(),
+  evidence: z.record(z.string(), z.unknown()).optional(),
+  decided_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const EmbeddingModels = z.strictObject({
+  key: z.string().max(10000).optional(),
+  label: z.string().max(10000).optional(),
+  dim: z.number().int().optional(),
+  state_id: z.string().max(10000).optional(),
+  artifact_url: z.string().max(10000).optional(),
+  sha256: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const EmbeddingModelsInput = z.strictObject({
+  key: z.string().max(10000).optional(),
+  label: z.string().max(10000).optional(),
+  dim: z.number().int().optional(),
+  state_id: z.string().max(10000).optional(),
+  artifact_url: z.string().max(10000).optional(),
+  sha256: z.string().max(10000).optional(),
+});
+export const SearchEmbeddings = z.strictObject({
+  target_type_id: z.string().max(10000).optional(),
+  target_id: z.uuid().optional(),
+  model_id: z.string().max(10000).optional(),
+  chunk_no: z.string().max(10000).optional(),
+  content_hash: z.string().max(10000).optional(),
+  embedding: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const SearchEmbeddingsInput = z.strictObject({
+  target_type_id: z.string().max(10000).optional(),
+  target_id: z.uuid().optional(),
+  model_id: z.string().max(10000).optional(),
+  chunk_no: z.string().max(10000).optional(),
+});
+export const Tasks = z.strictObject({
+  parent_task_id: z.uuid().optional(),
+  goal_id: z.uuid().optional(),
+  measure_id: z.uuid().optional(),
+  assignee_member_id: z.uuid().optional(),
+  status_id: z.string().max(10000).optional(),
+  due_on: z.iso.date().optional(),
+  title: z.string().max(10000).optional(),
+  origin_id: z.uuid().optional(),
+  goal_changed_at: z.iso.datetime({ offset: true }).optional(),
+  next_action: z.string().max(10000).optional(),
+  estimate_minutes: z.number().int().optional(),
+  actual_minutes: z.number().int().optional(),
+  planned_for: z.iso.date().optional(),
+  blocked_reason_id: z.string().max(10000).optional(),
+  blocked_since: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const TasksInput = z.strictObject({
+  parent_task_id: z.uuid().optional(),
+  goal_id: z.uuid().optional(),
+  measure_id: z.uuid().optional(),
+  assignee_member_id: z.uuid().optional(),
+  status_id: z.string().max(10000).optional(),
+  due_on: z.iso.date().optional(),
+  title: z.string().max(10000).optional(),
+  origin_id: z.uuid().optional(),
+  goal_changed_at: z.iso.datetime({ offset: true }).optional(),
+  next_action: z.string().max(10000).optional(),
+  estimate_minutes: z.number().int().optional(),
+  actual_minutes: z.number().int().optional(),
+  planned_for: z.iso.date().optional(),
+  blocked_reason_id: z.string().max(10000).optional(),
+  blocked_since: z.iso.datetime({ offset: true }).optional(),
+});
+export const TaskHandovers = z.strictObject({
+  task_id: z.uuid().optional(),
+  from_member_id: z.uuid().optional(),
+  to_member_id: z.uuid().optional(),
+  mode_id: z.string().max(10000).optional(),
+  agreement_status_id: z.string().max(10000).optional(),
+  reason: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const TaskHandoversInput = z.strictObject({
+  task_id: z.uuid().optional(),
+  from_member_id: z.uuid().optional(),
+  to_member_id: z.uuid().optional(),
+  mode_id: z.string().max(10000).optional(),
+  agreement_status_id: z.string().max(10000).optional(),
+  reason: z.string().max(10000).optional(),
+});
+export const DailyPlans = z.strictObject({
+  member_id: z.uuid().optional(),
+  plan_date: z.iso.date().optional(),
+  capacity_minutes: z.number().int().optional(),
+  committed_at: z.iso.datetime({ offset: true }).optional(),
+  closed_at: z.iso.datetime({ offset: true }).optional(),
+  carry_over: z.record(z.string(), z.unknown()).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const DailyPlansInput = z.strictObject({
+  member_id: z.uuid().optional(),
+  plan_date: z.iso.date().optional(),
+  capacity_minutes: z.number().int().optional(),
+  committed_at: z.iso.datetime({ offset: true }).optional(),
+  closed_at: z.iso.datetime({ offset: true }).optional(),
+  carry_over: z.record(z.string(), z.unknown()).optional(),
+});
+export const Triggers = z.strictObject({
+  kind_id: z.string().max(10000).optional(),
+  cron_expr: z.string().max(10000).optional(),
+  timezone: z.string().max(10000).optional(),
+  on_missed_id: z.string().max(10000).optional(),
+  ttl_minutes: z.number().int().optional(),
+  enabled: z.boolean().optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const TriggersInput = z.strictObject({
+  kind_id: z.string().max(10000).optional(),
+  cron_expr: z.string().max(10000).optional(),
+  timezone: z.string().max(10000).optional(),
+  on_missed_id: z.string().max(10000).optional(),
+  ttl_minutes: z.number().int().optional(),
+  enabled: z.boolean().optional(),
+});
+export const Policies = z.strictObject({
+  subject_kind_id: z.string().max(10000).optional(),
+  action_kind_id: z.string().max(10000).optional(),
+  mode_id: z.string().max(10000).optional(),
+  params: z.record(z.string(), z.unknown()).optional(),
+  is_locked: z.boolean().optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const PoliciesInput = z.strictObject({
+  subject_kind_id: z.string().max(10000).optional(),
+  action_kind_id: z.string().max(10000).optional(),
+  mode_id: z.string().max(10000).optional(),
+  params: z.record(z.string(), z.unknown()).optional(),
+  is_locked: z.boolean().optional(),
+});
+export const Approvals = z.strictObject({
+  action_run_id: z.uuid().optional(),
+  requested_by: z.uuid().optional(),
+  approver_member_id: z.uuid().optional(),
+  status_id: z.string().max(10000).optional(),
+  resolved_at: z.iso.datetime({ offset: true }).optional(),
+  note: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const ApprovalsInput = z.strictObject({
+  action_run_id: z.uuid().optional(),
+  requested_by: z.uuid().optional(),
+  approver_member_id: z.uuid().optional(),
+  status_id: z.string().max(10000).optional(),
+  resolved_at: z.iso.datetime({ offset: true }).optional(),
+  note: z.string().max(10000).optional(),
+});
+export const ActionRuns = z.strictObject({
+  task_id: z.uuid().optional(),
+  action_kind_id: z.string().max(10000).optional(),
+  choke_point_id: z.string().max(10000).optional(),
+  service_id: z.uuid().optional(),
+  procedure_id: z.uuid().optional(),
+  status_id: z.string().max(10000).optional(),
+  started_at: z.iso.datetime({ offset: true }).optional(),
+  finished_at: z.iso.datetime({ offset: true }).optional(),
+  tokens_in: z.number().int().optional(),
+  tokens_out: z.number().int().optional(),
+  cost: z.number().optional(),
+  error_summary: z.string().max(10000).optional(),
+  ai_employee_id: z.uuid().optional(),
+  duty_id: z.uuid().optional(),
+  mode_id: z.string().max(10000).optional(),
+  bridge_job_id: z.uuid().optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const ActionRunsInput = z.strictObject({
+  task_id: z.uuid().optional(),
+  action_kind_id: z.string().max(10000).optional(),
+  choke_point_id: z.string().max(10000).optional(),
+  service_id: z.uuid().optional(),
+  procedure_id: z.uuid().optional(),
+  status_id: z.string().max(10000).optional(),
+  started_at: z.iso.datetime({ offset: true }).optional(),
+  finished_at: z.iso.datetime({ offset: true }).optional(),
+  tokens_in: z.number().int().optional(),
+  tokens_out: z.number().int().optional(),
+  cost: z.number().optional(),
+  error_summary: z.string().max(10000).optional(),
+  ai_employee_id: z.uuid().optional(),
+  duty_id: z.uuid().optional(),
+  mode_id: z.string().max(10000).optional(),
+  bridge_job_id: z.uuid().optional(),
+});
+export const ServiceRegistry = z.strictObject({
+  name: z.string().max(10000).optional(),
+  domain: z.string().max(10000).optional(),
+  automation_verdict_id: z.string().max(10000).optional(),
+  notes: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const ServiceRegistryInput = z.strictObject({
+  name: z.string().max(10000).optional(),
+  domain: z.string().max(10000).optional(),
+  automation_verdict_id: z.string().max(10000).optional(),
+  notes: z.string().max(10000).optional(),
+});
+export const CredentialKinds = z.strictObject({
+  key: z.string().max(10000).optional(),
+  label: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const CredentialKindsInput = z.strictObject({
+  key: z.string().max(10000).optional(),
+  label: z.string().max(10000).optional(),
+});
+export const Credentials = z.strictObject({
+  service_id: z.uuid().optional(),
+  service_name: z.string().max(10000).optional(),
+  service_domain: z.string().max(10000).optional(),
+  kind_id: z.string().max(10000).optional(),
+  provider_id: z.string().max(10000).optional(),
+  vault_ref: z.string().max(10000).optional(),
+  owner_member_id: z.uuid().optional(),
+  revoked_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const CredentialsInput = z.strictObject({
+  service_id: z.uuid().optional(),
+  service_name: z.string().max(10000).optional(),
+  service_domain: z.string().max(10000).optional(),
+  kind_id: z.string().max(10000).optional(),
+  provider_id: z.string().max(10000).optional(),
+  owner_member_id: z.uuid().optional(),
+  revoked_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const Conversations = z.strictObject({
+  title: z.string().max(10000).optional(),
+  participant_member_ids: z.array(z.string()).optional(),
+  area: z.string().max(10000).optional(),
+  subject_type: z.string().max(10000).optional(),
+  parent_conversation_id: z.uuid().optional(),
+  agent_session_id: z.uuid().optional(),
+  branched_from_message_id: z.uuid().optional(),
+  owner_member_id: z.uuid().optional(),
+  closed_at: z.iso.datetime({ offset: true }).optional(),
+  title_auto: z.string().max(10000).optional(),
+  starred_at: z.iso.datetime({ offset: true }).optional(),
+  incognito: z.string().max(10000).optional(),
+  last_read_at: z.iso.datetime({ offset: true }).optional(),
+  deleted_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const ConversationsInput = z.strictObject({
+  title: z.string().max(10000).optional(),
+  participant_member_ids: z.array(z.string()).optional(),
+  area: z.string().max(10000).optional(),
+  subject_type: z.string().max(10000).optional(),
+  parent_conversation_id: z.uuid().optional(),
+  agent_session_id: z.uuid().optional(),
+  branched_from_message_id: z.uuid().optional(),
+  owner_member_id: z.uuid().optional(),
+  closed_at: z.iso.datetime({ offset: true }).optional(),
+  title_auto: z.string().max(10000).optional(),
+  starred_at: z.iso.datetime({ offset: true }).optional(),
+  incognito: z.string().max(10000).optional(),
+  last_read_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const BridgeJobs = z.strictObject({
+  member_id: z.uuid().optional(),
+  conversation_id: z.uuid().optional(),
+  state_id: z.string().max(10000).optional(),
+  prompt: z.string().max(10000).optional(),
+  agent_session_id: z.uuid().optional(),
+  result: z.string().max(10000).optional(),
+  partial: z.string().max(10000).optional(),
+  stopped_reason: z.string().max(10000).optional(),
+  permission_mode: z.string().max(10000).optional(),
+  model: z.string().max(10000).optional(),
+  effort: z.string().max(10000).optional(),
+  tools: z.array(z.string()).optional(),
+  attachment_ids: z.array(z.string()).optional(),
+  steer_seq: z.string().max(10000).optional(),
+  tool_token_hash: z.string().max(10000).optional(),
+  browser: z.string().max(10000).optional(),
+  started_at: z.iso.datetime({ offset: true }).optional(),
+  finished_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const BridgeJobsInput = z.strictObject({
+  member_id: z.uuid().optional(),
+  conversation_id: z.uuid().optional(),
+  state_id: z.string().max(10000).optional(),
+  prompt: z.string().max(10000).optional(),
+  agent_session_id: z.uuid().optional(),
+  result: z.string().max(10000).optional(),
+  partial: z.string().max(10000).optional(),
+  stopped_reason: z.string().max(10000).optional(),
+  permission_mode: z.string().max(10000).optional(),
+  model: z.string().max(10000).optional(),
+  effort: z.string().max(10000).optional(),
+  tools: z.array(z.string()).optional(),
+  attachment_ids: z.array(z.string()).optional(),
+  steer_seq: z.string().max(10000).optional(),
+  tool_token_hash: z.string().max(10000).optional(),
+  browser: z.string().max(10000).optional(),
+  started_at: z.iso.datetime({ offset: true }).optional(),
+  finished_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const BridgeJobStates = z.strictObject({
+  key: z.string().max(10000).optional(),
+  label: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const BridgeJobStatesInput = z.strictObject({
+  key: z.string().max(10000).optional(),
+  label: z.string().max(10000).optional(),
+});
+export const BridgeJobEvents = z.strictObject({
+  member_id: z.uuid().optional(),
+  job_id: z.uuid().optional(),
+  kind: z.string().max(10000).optional(),
+  seq: z.string().max(10000).optional(),
+  request_id: z.uuid().optional(),
+  payload: z.record(z.string(), z.unknown()).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const BridgeJobEventsInput = z.strictObject({
+  member_id: z.uuid().optional(),
+  job_id: z.uuid().optional(),
+  kind: z.string().max(10000).optional(),
+  seq: z.string().max(10000).optional(),
+  request_id: z.uuid().optional(),
+  payload: z.record(z.string(), z.unknown()).optional(),
+});
+export const PermissionRules = z.strictObject({
+  member_id: z.uuid().optional(),
+  tool: z.string().max(10000).optional(),
+  target_pattern: z.string().max(10000).optional(),
+  decision_id: z.string().max(10000).optional(),
+  bridge_job_event_id: z.uuid().optional(),
+  revoked_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const PermissionRulesInput = z.strictObject({
+  member_id: z.uuid().optional(),
+  tool: z.string().max(10000).optional(),
+  target_pattern: z.string().max(10000).optional(),
+  decision_id: z.string().max(10000).optional(),
+  bridge_job_event_id: z.uuid().optional(),
+  revoked_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const AgentUsageSnapshots = z.strictObject({
+  member_id: z.uuid().optional(),
+  window_id: z.string().max(10000).optional(),
+  utilization: z.number().optional(),
+  resets_at: z.iso.datetime({ offset: true }).optional(),
+  observed_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const AgentUsageSnapshotsInput = z.strictObject({
+  member_id: z.uuid().optional(),
+  window_id: z.string().max(10000).optional(),
+  utilization: z.number().optional(),
+  resets_at: z.iso.datetime({ offset: true }).optional(),
+  observed_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const Messages = z.strictObject({
+  conversation_id: z.uuid().optional(),
+  sender_member_id: z.uuid().optional(),
+  body: z.string().max(10000).optional(),
+  attachments: z.record(z.string(), z.unknown()).optional(),
+  action_run_id: z.uuid().optional(),
+  kind: z.string().max(10000).optional(),
+  options: z.record(z.string(), z.unknown()).optional(),
+  confidence: z.number().optional(),
+  citations: z.record(z.string(), z.unknown()).optional(),
+  parent_message_id: z.uuid().optional(),
+  quote: z.record(z.string(), z.unknown()).optional(),
+  work: z.record(z.string(), z.unknown()).optional(),
+  send_state: z.string().max(10000).optional(),
+  transcript_uuid: z.string().max(10000).optional(),
+  undo_action_run_id: z.uuid().optional(),
+  read_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const MessagesInput = z.strictObject({
+  conversation_id: z.uuid().optional(),
+  sender_member_id: z.uuid().optional(),
+  body: z.string().max(10000).optional(),
+  attachments: z.record(z.string(), z.unknown()).optional(),
+  action_run_id: z.uuid().optional(),
+  kind: z.string().max(10000).optional(),
+  options: z.record(z.string(), z.unknown()).optional(),
+  confidence: z.number().optional(),
+  citations: z.record(z.string(), z.unknown()).optional(),
+  parent_message_id: z.uuid().optional(),
+  quote: z.record(z.string(), z.unknown()).optional(),
+  work: z.record(z.string(), z.unknown()).optional(),
+  send_state: z.string().max(10000).optional(),
+  transcript_uuid: z.string().max(10000).optional(),
+  undo_action_run_id: z.uuid().optional(),
+  read_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const Artifacts = z.strictObject({
+  task_id: z.uuid().optional(),
+  format_id: z.string().max(10000).optional(),
+  storage_ref: z.string().max(10000).optional(),
+  template_id: z.uuid().optional(),
+  approved_by: z.uuid().optional(),
+  source_message_id: z.uuid().optional(),
+  title: z.string().max(10000).optional(),
+  owner_member_id: z.uuid().optional(),
+  current_version: z.number().int().optional(),
+  source_conversation_id: z.uuid().optional(),
+  source_job_id: z.uuid().optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const ArtifactsInput = z.strictObject({
+  task_id: z.uuid().optional(),
+  format_id: z.string().max(10000).optional(),
+  template_id: z.uuid().optional(),
+  approved_by: z.uuid().optional(),
+  source_message_id: z.uuid().optional(),
+  title: z.string().max(10000).optional(),
+  owner_member_id: z.uuid().optional(),
+  current_version: z.number().int().optional(),
+  source_conversation_id: z.uuid().optional(),
+  source_job_id: z.uuid().optional(),
+});
+export const ArtifactVersions = z.strictObject({
+  artifact_id: z.uuid().optional(),
+  version: z.number().int().optional(),
+  storage_ref: z.string().max(10000).optional(),
+  size_bytes: z.number().int().optional(),
+  owner_member_id: z.uuid().optional(),
+  reverted_from: z.number().int().optional(),
+  note: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const ArtifactVersionsInput = z.strictObject({
+  artifact_id: z.uuid().optional(),
+  size_bytes: z.number().int().optional(),
+  owner_member_id: z.uuid().optional(),
+  reverted_from: z.number().int().optional(),
+  note: z.string().max(10000).optional(),
+});
+export const AuditEvents = z.strictObject({
+  actor_member_id: z.uuid().optional(),
+  actor_role: z.string().max(10000).optional(),
+  action: z.string().max(10000).optional(),
+  target_type: z.string().max(10000).optional(),
+  target_id: z.uuid().optional(),
+  choke_point_id: z.string().max(10000).optional(),
+  payload: z.record(z.string(), z.unknown()).optional(),
+  occurred_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const AuditEventsInput = z.strictObject({
+  actor_member_id: z.uuid().optional(),
+  actor_role: z.string().max(10000).optional(),
+  action: z.string().max(10000).optional(),
+  target_type: z.string().max(10000).optional(),
+  target_id: z.uuid().optional(),
+  choke_point_id: z.string().max(10000).optional(),
+  payload: z.record(z.string(), z.unknown()).optional(),
+  occurred_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const SessionKinds = z.strictObject({
+  key: z.string().max(10000).optional(),
+  label: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const SessionKindsInput = z.strictObject({
+  key: z.string().max(10000).optional(),
+  label: z.string().max(10000).optional(),
+});
+export const RevokeReasons = z.strictObject({
+  key: z.string().max(10000).optional(),
+  label: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const RevokeReasonsInput = z.strictObject({
+  key: z.string().max(10000).optional(),
+  label: z.string().max(10000).optional(),
+});
+export const Layers = z.strictObject({
+  key: z.string().max(10000).optional(),
+  label: z.string().max(10000).optional(),
+  order_no: z.number().int().optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const LayersInput = z.strictObject({
+  key: z.string().max(10000).optional(),
+  label: z.string().max(10000).optional(),
+  order_no: z.number().int().optional(),
+});
+export const TargetKinds = z.strictObject({
+  key: z.string().max(10000).optional(),
+  label: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const TargetKindsInput = z.strictObject({
+  key: z.string().max(10000).optional(),
+  label: z.string().max(10000).optional(),
+});
+export const Abilities = z.strictObject({
+  key: z.string().max(10000).optional(),
+  label: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const AbilitiesInput = z.strictObject({
+  key: z.string().max(10000).optional(),
+  label: z.string().max(10000).optional(),
+});
+export const Permissions = z.strictObject({
+  grantee_member_id: z.uuid().optional(),
+  target_kind_id: z.string().max(10000).optional(),
+  scope_id: z.uuid().optional(),
+  ability_id: z.string().max(10000).optional(),
+  granted_by: z.string().max(10000).optional(),
+  revoked_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const PermissionsInput = z.strictObject({
+  grantee_member_id: z.uuid().optional(),
+  target_kind_id: z.string().max(10000).optional(),
+  ability_id: z.string().max(10000).optional(),
+  granted_by: z.string().max(10000).optional(),
+  revoked_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const AccountEvents = z.strictObject({
+  kind_id: z.string().max(10000).optional(),
+  subject_type: z.string().max(10000).optional(),
+  subject_id: z.uuid().optional(),
+  requested_by: z.uuid().optional(),
+  status_id: z.string().max(10000).optional(),
+  resolved_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const AccountEventsInput = z.strictObject({
+  kind_id: z.string().max(10000).optional(),
+  subject_type: z.string().max(10000).optional(),
+  subject_id: z.uuid().optional(),
+  requested_by: z.uuid().optional(),
+  status_id: z.string().max(10000).optional(),
+  resolved_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const AccountEventItems = z.strictObject({
+  event_id: z.uuid().optional(),
+  object_kind: z.string().max(10000).optional(),
+  disposition_id: z.string().max(10000).optional(),
+  target_ref: z.string().max(10000).optional(),
+  decided_by: z.uuid().optional(),
+  done_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const AccountEventItemsInput = z.strictObject({
+  event_id: z.uuid().optional(),
+  object_kind: z.string().max(10000).optional(),
+  disposition_id: z.string().max(10000).optional(),
+  target_ref: z.string().max(10000).optional(),
+  decided_by: z.uuid().optional(),
+  done_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const Sessions = z.strictObject({
+  member_id: z.uuid().optional(),
+  kind_id: z.string().max(10000).optional(),
+  auth_session_id: z.string().max(10000).optional(),
+  device_label: z.string().max(10000).optional(),
+  ip_region: z.string().max(10000).optional(),
+  issued_at: z.iso.datetime({ offset: true }).optional(),
+  last_seen_at: z.iso.datetime({ offset: true }).optional(),
+  revoked_at: z.iso.datetime({ offset: true }).optional(),
+  revoke_reason_id: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const SessionsInput = z.strictObject({
+  member_id: z.uuid().optional(),
+  kind_id: z.string().max(10000).optional(),
+  auth_session_id: z.string().max(10000).optional(),
+  device_label: z.string().max(10000).optional(),
+  ip_region: z.string().max(10000).optional(),
+  issued_at: z.iso.datetime({ offset: true }).optional(),
+  last_seen_at: z.iso.datetime({ offset: true }).optional(),
+  revoked_at: z.iso.datetime({ offset: true }).optional(),
+  revoke_reason_id: z.string().max(10000).optional(),
+});
+export const SupportAccessGrants = z.strictObject({
+  granted_by_member_id: z.uuid().optional(),
+  scope: z.record(z.string(), z.unknown()).optional(),
+  expires_at: z.iso.datetime({ offset: true }).optional(),
+  revoked_at: z.iso.datetime({ offset: true }).optional(),
+  ops_member_id: z.uuid().optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const SupportAccessGrantsInput = z.strictObject({
+  granted_by_member_id: z.uuid().optional(),
+  scope: z.record(z.string(), z.unknown()).optional(),
+  expires_at: z.iso.datetime({ offset: true }).optional(),
+  revoked_at: z.iso.datetime({ offset: true }).optional(),
+  ops_member_id: z.uuid().optional(),
+});
+export const RetentionHolds = z.strictObject({
+  record_type: z.string().max(10000).optional(),
+  record_ref: z.string().max(10000).optional(),
+  retain_until: z.iso.date().optional(),
+  legal_basis: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const RetentionHoldsInput = z.strictObject({
+  record_type: z.string().max(10000).optional(),
+  record_ref: z.string().max(10000).optional(),
+  retain_until: z.iso.date().optional(),
+  legal_basis: z.string().max(10000).optional(),
+});
+export const ErasureCertificates = z.strictObject({
+  issued_at: z.iso.datetime({ offset: true }).optional(),
+  content_hash: z.string().max(10000).optional(),
+  sent_to: z.string().max(10000).optional(),
+  storage_ref: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const ErasureCertificatesInput = z.strictObject({
+  issued_at: z.iso.datetime({ offset: true }).optional(),
+  sent_to: z.string().max(10000).optional(),
+});
+export const Distributions = z.strictObject({
+  kind_id: z.string().max(10000).optional(),
+  key: z.string().max(10000).optional(),
+  name: z.string().max(10000).optional(),
+  current_version: z.number().int().optional(),
+  plan_ids: z.array(z.string()).optional(),
+  is_locked: z.boolean().optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const DistributionsInput = z.strictObject({
+  kind_id: z.string().max(10000).optional(),
+  key: z.string().max(10000).optional(),
+  name: z.string().max(10000).optional(),
+  current_version: z.number().int().optional(),
+  plan_ids: z.array(z.string()).optional(),
+  is_locked: z.boolean().optional(),
+});
+export const DistributionVersions = z.strictObject({
+  distribution_id: z.uuid().optional(),
+  version: z.number().int().optional(),
+  snapshot: z.record(z.string(), z.unknown()).optional(),
+  released_at: z.iso.datetime({ offset: true }).optional(),
+  released_by: z.uuid().optional(),
+  change_reason: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const DistributionVersionsInput = z.strictObject({
+  distribution_id: z.uuid().optional(),
+  snapshot: z.record(z.string(), z.unknown()).optional(),
+  released_at: z.iso.datetime({ offset: true }).optional(),
+  released_by: z.uuid().optional(),
+  change_reason: z.string().max(10000).optional(),
+});
+export const TenantDistributions = z.strictObject({
+  distribution_id: z.uuid().optional(),
+  version_in_use: z.number().int().optional(),
+  enabled: z.boolean().optional(),
+  override: z.record(z.string(), z.unknown()).optional(),
+  disabled_by: z.uuid().optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const TenantDistributionsInput = z.strictObject({
+  distribution_id: z.uuid().optional(),
+  version_in_use: z.number().int().optional(),
+  enabled: z.boolean().optional(),
+  override: z.record(z.string(), z.unknown()).optional(),
+  disabled_by: z.uuid().optional(),
+});
+export const ServiceRegistryVersions = z.strictObject({
+  service_id: z.uuid().optional(),
+  version: z.number().int().optional(),
+  automation_verdict_id: z.string().max(10000).optional(),
+  reason: z.string().max(10000).optional(),
+  released_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const ServiceRegistryVersionsInput = z.strictObject({
+  service_id: z.uuid().optional(),
+  automation_verdict_id: z.string().max(10000).optional(),
+  reason: z.string().max(10000).optional(),
+  released_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const ServiceRequests = z.strictObject({
+  service_name: z.string().max(10000).optional(),
+  url: z.string().max(10000).optional(),
+  requested_by: z.uuid().optional(),
+  verdict_id: z.string().max(10000).optional(),
+  decided_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const ServiceRequestsInput = z.strictObject({
+  service_name: z.string().max(10000).optional(),
+  url: z.string().max(10000).optional(),
+  requested_by: z.uuid().optional(),
+  verdict_id: z.string().max(10000).optional(),
+  decided_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const ReviewRequests = z.strictObject({
+  subject_type: z.string().max(10000).optional(),
+  subject_id: z.uuid().optional(),
+  anonymization_check: z.record(z.string(), z.unknown()).optional(),
+  status_id: z.string().max(10000).optional(),
+  reviewer_ops_member_id: z.uuid().optional(),
+  decided_at: z.iso.datetime({ offset: true }).optional(),
+  reason: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const ReviewRequestsInput = z.strictObject({
+  subject_type: z.string().max(10000).optional(),
+  subject_id: z.uuid().optional(),
+  anonymization_check: z.record(z.string(), z.unknown()).optional(),
+  status_id: z.string().max(10000).optional(),
+  reviewer_ops_member_id: z.uuid().optional(),
+  decided_at: z.iso.datetime({ offset: true }).optional(),
+  reason: z.string().max(10000).optional(),
+});
+export const OpsMembers = z.strictObject({
+  member_id: z.uuid().optional(),
+  ops_role_id: z.string().max(10000).optional(),
+  revoked_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const OpsMembersInput = z.strictObject({
+  member_id: z.uuid().optional(),
+  ops_role_id: z.string().max(10000).optional(),
+  revoked_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const OpsAuditEvents = z.strictObject({
+  ops_member_id: z.uuid().optional(),
+  target_tenant_id: z.uuid().optional(),
+  action: z.string().max(10000).optional(),
+  target_type: z.string().max(10000).optional(),
+  target_id: z.uuid().optional(),
+  grant_id: z.uuid().optional(),
+  payload: z.record(z.string(), z.unknown()).optional(),
+  occurred_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const OpsAuditEventsInput = z.strictObject({
+  ops_member_id: z.uuid().optional(),
+  target_tenant_id: z.uuid().optional(),
+  action: z.string().max(10000).optional(),
+  target_type: z.string().max(10000).optional(),
+  target_id: z.uuid().optional(),
+  grant_id: z.uuid().optional(),
+  payload: z.record(z.string(), z.unknown()).optional(),
+  occurred_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const SecurityEvents = z.strictObject({
+  kind_id: z.string().max(10000).optional(),
+  member_id: z.uuid().optional(),
+  ip_region: z.string().max(10000).optional(),
+  detail: z.record(z.string(), z.unknown()).optional(),
+  occurred_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const SecurityEventsInput = z.strictObject({
+  kind_id: z.string().max(10000).optional(),
+  member_id: z.uuid().optional(),
+  ip_region: z.string().max(10000).optional(),
+  detail: z.record(z.string(), z.unknown()).optional(),
+  occurred_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const Inquiries = z.strictObject({
+  opened_by_member_id: z.uuid().optional(),
+  kind_id: z.string().max(10000).optional(),
+  status_id: z.string().max(10000).optional(),
+  conversation_id: z.uuid().optional(),
+  assignee_ops_member_id: z.uuid().optional(),
+  ai_first_answered_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const InquiriesInput = z.strictObject({
+  opened_by_member_id: z.uuid().optional(),
+  kind_id: z.string().max(10000).optional(),
+  status_id: z.string().max(10000).optional(),
+  conversation_id: z.uuid().optional(),
+  assignee_ops_member_id: z.uuid().optional(),
+  ai_first_answered_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const Notices = z.strictObject({
+  kind_id: z.string().max(10000).optional(),
+  title: z.string().max(10000).optional(),
+  body: z.string().max(10000).optional(),
+  target_plan_ids: z.array(z.string()).optional(),
+  target_tenant_id: z.uuid().optional(),
+  publish_at: z.iso.datetime({ offset: true }).optional(),
+  published_by: z.uuid().optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const NoticesInput = z.strictObject({
+  kind_id: z.string().max(10000).optional(),
+  title: z.string().max(10000).optional(),
+  body: z.string().max(10000).optional(),
+  target_plan_ids: z.array(z.string()).optional(),
+  target_tenant_id: z.uuid().optional(),
+  publish_at: z.iso.datetime({ offset: true }).optional(),
+  published_by: z.uuid().optional(),
+});
+export const NoticeDeliveries = z.strictObject({
+  notice_id: z.uuid().optional(),
+  member_id: z.uuid().optional(),
+  delivered_at: z.iso.datetime({ offset: true }).optional(),
+  read_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const NoticeDeliveriesInput = z.strictObject({
+  notice_id: z.uuid().optional(),
+  member_id: z.uuid().optional(),
+  delivered_at: z.iso.datetime({ offset: true }).optional(),
+  read_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const StatusIncidents = z.strictObject({
+  component_id: z.string().max(10000).optional(),
+  service_id: z.uuid().optional(),
+  state_id: z.string().max(10000).optional(),
+  started_at: z.iso.datetime({ offset: true }).optional(),
+  resolved_at: z.iso.datetime({ offset: true }).optional(),
+  note: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const StatusIncidentsInput = z.strictObject({
+  component_id: z.string().max(10000).optional(),
+  service_id: z.uuid().optional(),
+  state_id: z.string().max(10000).optional(),
+  started_at: z.iso.datetime({ offset: true }).optional(),
+  resolved_at: z.iso.datetime({ offset: true }).optional(),
+  note: z.string().max(10000).optional(),
+});
+export const NotificationPreferences = z.strictObject({
+  member_id: z.uuid().optional(),
+  event_kind_id: z.string().max(10000).optional(),
+  channel_id: z.string().max(10000).optional(),
+  enabled: z.boolean().optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const NotificationPreferencesInput = z.strictObject({
+  member_id: z.uuid().optional(),
+  event_kind_id: z.string().max(10000).optional(),
+  channel_id: z.string().max(10000).optional(),
+  enabled: z.boolean().optional(),
+});
+export const Notifications = z.strictObject({
+  member_id: z.uuid().optional(),
+  channel_id: z.string().max(10000).optional(),
+  event_kind_id: z.string().max(10000).optional(),
+  payload: z.record(z.string(), z.unknown()).optional(),
+  dedupe_key: z.string().max(10000).optional(),
+  sent_at: z.iso.datetime({ offset: true }).optional(),
+  failed_at: z.iso.datetime({ offset: true }).optional(),
+  retry_count: z.number().int().optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const NotificationsInput = z.strictObject({
+  member_id: z.uuid().optional(),
+  channel_id: z.string().max(10000).optional(),
+  event_kind_id: z.string().max(10000).optional(),
+  payload: z.record(z.string(), z.unknown()).optional(),
+  sent_at: z.iso.datetime({ offset: true }).optional(),
+  failed_at: z.iso.datetime({ offset: true }).optional(),
+  retry_count: z.number().int().optional(),
+});
+export const Plans = z.strictObject({
+  key: z.string().max(10000).optional(),
+  name: z.string().max(10000).optional(),
+  price_monthly: z.number().optional(),
+  limits: z.record(z.string(), z.unknown()).optional(),
+  current_version: z.number().int().optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const PlansInput = z.strictObject({
+  key: z.string().max(10000).optional(),
+  name: z.string().max(10000).optional(),
+  price_monthly: z.number().optional(),
+  limits: z.record(z.string(), z.unknown()).optional(),
+  current_version: z.number().int().optional(),
+});
+export const PlanVersions = z.strictObject({
+  plan_id: z.uuid().optional(),
+  version: z.number().int().optional(),
+  snapshot: z.record(z.string(), z.unknown()).optional(),
+  released_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const PlanVersionsInput = z.strictObject({
+  plan_id: z.uuid().optional(),
+  snapshot: z.record(z.string(), z.unknown()).optional(),
+  released_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const Subscriptions = z.strictObject({
+  plan_id: z.uuid().optional(),
+  status_id: z.string().max(10000).optional(),
+  started_at: z.iso.datetime({ offset: true }).optional(),
+  suspended_at: z.iso.datetime({ offset: true }).optional(),
+  ended_at: z.iso.datetime({ offset: true }).optional(),
+  billing_contact: z.record(z.string(), z.unknown()).optional(),
+  payment_method_id: z.uuid().optional(),
+  stripe_customer_ref: z.string().max(10000).optional(),
+  stripe_subscription_ref: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const SubscriptionsInput = z.strictObject({
+  plan_id: z.uuid().optional(),
+  status_id: z.string().max(10000).optional(),
+  started_at: z.iso.datetime({ offset: true }).optional(),
+  suspended_at: z.iso.datetime({ offset: true }).optional(),
+  ended_at: z.iso.datetime({ offset: true }).optional(),
+  billing_contact: z.record(z.string(), z.unknown()).optional(),
+  payment_method_id: z.uuid().optional(),
+  stripe_customer_ref: z.string().max(10000).optional(),
+  stripe_subscription_ref: z.string().max(10000).optional(),
+});
+export const PlanChangeRequests = z.strictObject({
+  from_plan_id: z.uuid().optional(),
+  to_plan_id: z.uuid().optional(),
+  requested_by: z.uuid().optional(),
+  status_id: z.string().max(10000).optional(),
+  dependencies_event_id: z.uuid().optional(),
+  decided_by_ops_member_id: z.uuid().optional(),
+  decided_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const PlanChangeRequestsInput = z.strictObject({
+  from_plan_id: z.uuid().optional(),
+  to_plan_id: z.uuid().optional(),
+  requested_by: z.uuid().optional(),
+  status_id: z.string().max(10000).optional(),
+  dependencies_event_id: z.uuid().optional(),
+  decided_by_ops_member_id: z.uuid().optional(),
+  decided_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const UsageMeters = z.strictObject({
+  meter_key: z.string().max(10000).optional(),
+  period_start: z.iso.date().optional(),
+  value: z.number().optional(),
+  limit_value: z.number().optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const UsageMetersInput = z.strictObject({
+  meter_key: z.string().max(10000).optional(),
+  period_start: z.iso.date().optional(),
+  value: z.number().optional(),
+  limit_value: z.number().optional(),
+});
+export const Invoices = z.strictObject({
+  subscription_id: z.uuid().optional(),
+  period_start: z.iso.date().optional(),
+  period_end: z.iso.date().optional(),
+  amount: z.number().optional(),
+  issued_at: z.iso.datetime({ offset: true }).optional(),
+  due_on: z.iso.date().optional(),
+  status_id: z.string().max(10000).optional(),
+  pdf_ref: z.string().max(10000).optional(),
+  stripe_invoice_ref: z.string().max(10000).optional(),
+  hosted_url: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const InvoicesInput = z.strictObject({
+  subscription_id: z.uuid().optional(),
+  period_start: z.iso.date().optional(),
+  period_end: z.iso.date().optional(),
+  amount: z.number().optional(),
+  issued_at: z.iso.datetime({ offset: true }).optional(),
+  due_on: z.iso.date().optional(),
+  status_id: z.string().max(10000).optional(),
+  pdf_ref: z.string().max(10000).optional(),
+  stripe_invoice_ref: z.string().max(10000).optional(),
+  hosted_url: z.string().max(10000).optional(),
+});
+export const Payments = z.strictObject({
+  invoice_id: z.uuid().optional(),
+  paid_on: z.iso.date().optional(),
+  amount: z.number().optional(),
+  method_id: z.string().max(10000).optional(),
+  recorded_by_ops_member_id: z.uuid().optional(),
+  stripe_payment_ref: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const PaymentsInput = z.strictObject({
+  invoice_id: z.uuid().optional(),
+  paid_on: z.iso.date().optional(),
+  amount: z.number().optional(),
+  method_id: z.string().max(10000).optional(),
+  recorded_by_ops_member_id: z.uuid().optional(),
+  stripe_payment_ref: z.string().max(10000).optional(),
+});
+export const ErrorEvents = z.strictObject({
+  error_code: z.string().max(10000).optional(),
+  member_id: z.uuid().optional(),
+  screen_id: z.uuid().optional(),
+  context: z.record(z.string(), z.unknown()).optional(),
+  shown_at: z.iso.datetime({ offset: true }).optional(),
+  next_action_taken_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const ErrorEventsInput = z.strictObject({
+  error_code: z.string().max(10000).optional(),
+  member_id: z.uuid().optional(),
+  screen_id: z.uuid().optional(),
+  context: z.record(z.string(), z.unknown()).optional(),
+  shown_at: z.iso.datetime({ offset: true }).optional(),
+  next_action_taken_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const Imports = z.strictObject({
+  file_ref: z.string().max(10000).optional(),
+  detected_kind_id: z.string().max(10000).optional(),
+  proposal: z.record(z.string(), z.unknown()).optional(),
+  status_id: z.string().max(10000).optional(),
+  applied_at: z.iso.datetime({ offset: true }).optional(),
+  applied_by: z.uuid().optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const ImportsInput = z.strictObject({
+  file_ref: z.string().max(10000).optional(),
+  detected_kind_id: z.string().max(10000).optional(),
+  proposal: z.record(z.string(), z.unknown()).optional(),
+  status_id: z.string().max(10000).optional(),
+  applied_at: z.iso.datetime({ offset: true }).optional(),
+  applied_by: z.uuid().optional(),
+});
+export const Integrations = z.strictObject({
+  service_id: z.uuid().optional(),
+  kind_id: z.string().max(10000).optional(),
+  credential_id: z.uuid().optional(),
+  scopes: z.array(z.string()).optional(),
+  status_id: z.string().max(10000).optional(),
+  connected_at: z.iso.datetime({ offset: true }).optional(),
+  revoked_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const IntegrationsInput = z.strictObject({
+  service_id: z.uuid().optional(),
+  kind_id: z.string().max(10000).optional(),
+  credential_id: z.uuid().optional(),
+  scopes: z.array(z.string()).optional(),
+  status_id: z.string().max(10000).optional(),
+  connected_at: z.iso.datetime({ offset: true }).optional(),
+  revoked_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const Invitations = z.strictObject({
+  email: z.string().max(10000).optional(),
+  scope_id: z.uuid().optional(),
+  role_id: z.string().max(10000).optional(),
+  permission_preset: z.record(z.string(), z.unknown()).optional(),
+  token_hash: z.string().max(10000).optional(),
+  expires_at: z.iso.datetime({ offset: true }).optional(),
+  accepted_member_id: z.uuid().optional(),
+  revoked_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const InvitationsInput = z.strictObject({
+  email: z.string().max(10000).optional(),
+  role_id: z.string().max(10000).optional(),
+  permission_preset: z.record(z.string(), z.unknown()).optional(),
+  expires_at: z.iso.datetime({ offset: true }).optional(),
+  accepted_member_id: z.uuid().optional(),
+  revoked_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const PendingSignup = z.strictObject({
+  email: z.string().max(10000).optional(),
+  name: z.string().max(10000).optional(),
+  company_name: z.string().max(10000).optional(),
+  pw_iv: z.string().max(10000).optional(),
+  token_hash: z.string().max(10000).optional(),
+  expires_at: z.iso.datetime({ offset: true }).optional(),
+  sent_at: z.iso.datetime({ offset: true }).optional(),
+  send_error: z.string().max(10000).optional(),
+  consumed_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const PendingSignupInput = z.strictObject({
+  email: z.string().max(10000).optional(),
+  name: z.string().max(10000).optional(),
+  company_name: z.string().max(10000).optional(),
+  pw_iv: z.string().max(10000).optional(),
+  expires_at: z.iso.datetime({ offset: true }).optional(),
+  sent_at: z.iso.datetime({ offset: true }).optional(),
+  send_error: z.string().max(10000).optional(),
+  consumed_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const ExportJobs = z.strictObject({
+  requested_by: z.uuid().optional(),
+  kind_id: z.string().max(10000).optional(),
+  storage_ref: z.string().max(10000).optional(),
+  status_id: z.string().max(10000).optional(),
+  expires_at: z.iso.datetime({ offset: true }).optional(),
+  downloaded_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const ExportJobsInput = z.strictObject({
+  requested_by: z.uuid().optional(),
+  kind_id: z.string().max(10000).optional(),
+  status_id: z.string().max(10000).optional(),
+  expires_at: z.iso.datetime({ offset: true }).optional(),
+  downloaded_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const Attachments = z.strictObject({
+  owner_type: z.string().max(10000).optional(),
+  owner_id: z.uuid().optional(),
+  storage_ref: z.string().max(10000).optional(),
+  mime: z.string().max(10000).optional(),
+  size: z.number().int().optional(),
+  name: z.string().max(10000).optional(),
+  uploaded_by: z.string().max(10000).optional(),
+  scanned_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const AttachmentsInput = z.strictObject({
+  owner_type: z.string().max(10000).optional(),
+  owner_id: z.uuid().optional(),
+  mime: z.string().max(10000).optional(),
+  size: z.number().int().optional(),
+  name: z.string().max(10000).optional(),
+  uploaded_by: z.string().max(10000).optional(),
+  scanned_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const Skills = z.strictObject({
+  kind_id: z.string().max(10000).optional(),
+  key: z.string().max(10000).optional(),
+  name: z.string().max(10000).optional(),
+  purpose: z.string().max(10000).optional(),
+  current_version: z.number().int().optional(),
+  plan_ids: z.array(z.string()).optional(),
+  visibility_id: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const SkillsInput = z.strictObject({
+  kind_id: z.string().max(10000).optional(),
+  key: z.string().max(10000).optional(),
+  name: z.string().max(10000).optional(),
+  purpose: z.string().max(10000).optional(),
+  current_version: z.number().int().optional(),
+  plan_ids: z.array(z.string()).optional(),
+  visibility_id: z.string().max(10000).optional(),
+});
+export const SkillVersions = z.strictObject({
+  skill_id: z.uuid().optional(),
+  version: z.number().int().optional(),
+  package_ref: z.string().max(10000).optional(),
+  changelog: z.string().max(10000).optional(),
+  tested_at: z.iso.datetime({ offset: true }).optional(),
+  test_result: z.record(z.string(), z.unknown()).optional(),
+  released_at: z.iso.datetime({ offset: true }).optional(),
+  released_by: z.uuid().optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const SkillVersionsInput = z.strictObject({
+  skill_id: z.uuid().optional(),
+  changelog: z.string().max(10000).optional(),
+  tested_at: z.iso.datetime({ offset: true }).optional(),
+  test_result: z.record(z.string(), z.unknown()).optional(),
+  released_at: z.iso.datetime({ offset: true }).optional(),
+  released_by: z.uuid().optional(),
+});
+export const SkillTestRuns = z.strictObject({
+  skill_version_id: z.uuid().optional(),
+  ops_member_id: z.uuid().optional(),
+  mode: z.string().max(10000).optional(),
+  started_at: z.iso.datetime({ offset: true }).optional(),
+  finished_at: z.iso.datetime({ offset: true }).optional(),
+  result: z.record(z.string(), z.unknown()).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const SkillTestRunsInput = z.strictObject({
+  skill_version_id: z.uuid().optional(),
+  ops_member_id: z.uuid().optional(),
+  mode: z.string().max(10000).optional(),
+  started_at: z.iso.datetime({ offset: true }).optional(),
+  finished_at: z.iso.datetime({ offset: true }).optional(),
+  result: z.record(z.string(), z.unknown()).optional(),
+});
+export const SkillAttachments = z.strictObject({
+  skill_id: z.uuid().optional(),
+  version_in_use: z.number().int().optional(),
+  target_type: z.string().max(10000).optional(),
+  target_id: z.uuid().optional(),
+  enabled: z.boolean().optional(),
+  disabled_by: z.uuid().optional(),
+  attached_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const SkillAttachmentsInput = z.strictObject({
+  skill_id: z.uuid().optional(),
+  version_in_use: z.number().int().optional(),
+  target_type: z.string().max(10000).optional(),
+  target_id: z.uuid().optional(),
+  enabled: z.boolean().optional(),
+  disabled_by: z.uuid().optional(),
+  attached_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const PaymentMethods = z.strictObject({
+  kind_id: z.string().max(10000).optional(),
+  stripe_customer_ref: z.string().max(10000).optional(),
+  brand: z.string().max(10000).optional(),
+  last4: z.string().max(10000).optional(),
+  expires_on: z.iso.date().optional(),
+  registered_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const PaymentMethodsInput = z.strictObject({
+  kind_id: z.string().max(10000).optional(),
+  stripe_customer_ref: z.string().max(10000).optional(),
+  brand: z.string().max(10000).optional(),
+  last4: z.string().max(10000).optional(),
+  expires_on: z.iso.date().optional(),
+  registered_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const BillingEvents = z.strictObject({
+  stripe_event_ref: z.string().max(10000).optional(),
+  kind: z.string().max(10000).optional(),
+  payload: z.record(z.string(), z.unknown()).optional(),
+  received_at: z.iso.datetime({ offset: true }).optional(),
+  processed_at: z.iso.datetime({ offset: true }).optional(),
+  signature_ok: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const BillingEventsInput = z.strictObject({
+  stripe_event_ref: z.string().max(10000).optional(),
+  kind: z.string().max(10000).optional(),
+  payload: z.record(z.string(), z.unknown()).optional(),
+  received_at: z.iso.datetime({ offset: true }).optional(),
+  processed_at: z.iso.datetime({ offset: true }).optional(),
+  signature_ok: z.string().max(10000).optional(),
+});
+export const LlmRoutes = z.strictObject({
+  default_kind_id: z.string().max(10000).optional(),
+  offline_kind_id: z.string().max(10000).optional(),
+  provider_id: z.string().max(10000).optional(),
+  credential_id: z.uuid().optional(),
+  managed_allowed_by_ops_member_id: z.uuid().optional(),
+  managed_allowed_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const LlmRoutesInput = z.strictObject({
+  default_kind_id: z.string().max(10000).optional(),
+  offline_kind_id: z.string().max(10000).optional(),
+  provider_id: z.string().max(10000).optional(),
+  credential_id: z.uuid().optional(),
+  managed_allowed_by_ops_member_id: z.uuid().optional(),
+  managed_allowed_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const LlmCapabilities = z.strictObject({
+  key: z.string().max(10000).optional(),
+  label: z.string().max(10000).optional(),
+  provider_id: z.uuid().optional(),
+  capability_id: z.string().max(10000).optional(),
+  supported: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const LlmCapabilitiesInput = z.strictObject({
+  key: z.string().max(10000).optional(),
+  label: z.string().max(10000).optional(),
+  provider_id: z.uuid().optional(),
+  capability_id: z.string().max(10000).optional(),
+  supported: z.string().max(10000).optional(),
+});
+export const PushDevices = z.strictObject({
+  member_id: z.uuid().optional(),
+  platform_id: z.string().max(10000).optional(),
+  token_ref: z.string().max(10000).optional(),
+  app_version: z.number().int().optional(),
+  last_seen_at: z.iso.datetime({ offset: true }).optional(),
+  revoked_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const PushDevicesInput = z.strictObject({
+  member_id: z.uuid().optional(),
+  platform_id: z.string().max(10000).optional(),
+  token_ref: z.string().max(10000).optional(),
+  app_version: z.number().int().optional(),
+  last_seen_at: z.iso.datetime({ offset: true }).optional(),
+  revoked_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const DisclosureVersions = z.strictObject({
+  version: z.number().int().optional(),
+  generated_at: z.iso.datetime({ offset: true }).optional(),
+  content_hash: z.string().max(10000).optional(),
+  pdf_ref: z.string().max(10000).optional(),
+  dpa_ref: z.string().max(10000).optional(),
+  released_by: z.uuid().optional(),
+  notice_id: z.uuid().optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const DisclosureVersionsInput = z.strictObject({
+  generated_at: z.iso.datetime({ offset: true }).optional(),
+  pdf_ref: z.string().max(10000).optional(),
+  dpa_ref: z.string().max(10000).optional(),
+  released_by: z.uuid().optional(),
+  notice_id: z.uuid().optional(),
+});
+export const Subprocessors = z.strictObject({
+  name: z.string().max(10000).optional(),
+  purpose: z.string().max(10000).optional(),
+  region: z.string().max(10000).optional(),
+  data_kinds: z.array(z.string()).optional(),
+  effective_from: z.string().max(10000).optional(),
+  announced_at: z.iso.datetime({ offset: true }).optional(),
+  retired_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const SubprocessorsInput = z.strictObject({
+  name: z.string().max(10000).optional(),
+  purpose: z.string().max(10000).optional(),
+  region: z.string().max(10000).optional(),
+  data_kinds: z.array(z.string()).optional(),
+  effective_from: z.string().max(10000).optional(),
+  announced_at: z.iso.datetime({ offset: true }).optional(),
+  retired_at: z.iso.datetime({ offset: true }).optional(),
+});
+
+export const SCHEMAS: Record<string, z.ZodType> = { Tenants, TenantsInput, Scopes, ScopesInput, MemberKinds, MemberKindsInput, Members, MembersInput, SetupSteps, SetupStepsInput, Clones, ClonesInput, AiEmployees, AiEmployeesInput, GoalKinds, GoalKindsInput, Units, UnitsInput, RollupKinds, RollupKindsInput, Goals, GoalsInput, GoalAllocations, GoalAllocationsInput, GoalContributions, GoalContributionsInput, GoalVersions, GoalVersionsInput, Hypotheses, HypothesesInput, Measures, MeasuresInput, Validations, ValidationsInput, LedgerDefinitions, LedgerDefinitionsInput, LedgerFields, LedgerFieldsInput, LedgerStages, LedgerStagesInput, LedgerViews, LedgerViewsInput, LedgerRecords, LedgerRecordsInput, Duties, DutiesInput, DutyVersions, DutyVersionsInput, LearnedProcedures, LearnedProceduresInput, ProcedureSteps, ProcedureStepsInput, MemoryKinds, MemoryKindsInput, Memories, MemoriesInput, MemoryDigests, MemoryDigestsInput, MemoryProposals, MemoryProposalsInput, EmbeddingModels, EmbeddingModelsInput, SearchEmbeddings, SearchEmbeddingsInput, Tasks, TasksInput, TaskHandovers, TaskHandoversInput, DailyPlans, DailyPlansInput, Triggers, TriggersInput, Policies, PoliciesInput, Approvals, ApprovalsInput, ActionRuns, ActionRunsInput, ServiceRegistry, ServiceRegistryInput, CredentialKinds, CredentialKindsInput, Credentials, CredentialsInput, Conversations, ConversationsInput, BridgeJobs, BridgeJobsInput, BridgeJobStates, BridgeJobStatesInput, BridgeJobEvents, BridgeJobEventsInput, PermissionRules, PermissionRulesInput, AgentUsageSnapshots, AgentUsageSnapshotsInput, Messages, MessagesInput, Artifacts, ArtifactsInput, ArtifactVersions, ArtifactVersionsInput, AuditEvents, AuditEventsInput, SessionKinds, SessionKindsInput, RevokeReasons, RevokeReasonsInput, Layers, LayersInput, TargetKinds, TargetKindsInput, Abilities, AbilitiesInput, Permissions, PermissionsInput, AccountEvents, AccountEventsInput, AccountEventItems, AccountEventItemsInput, Sessions, SessionsInput, SupportAccessGrants, SupportAccessGrantsInput, RetentionHolds, RetentionHoldsInput, ErasureCertificates, ErasureCertificatesInput, Distributions, DistributionsInput, DistributionVersions, DistributionVersionsInput, TenantDistributions, TenantDistributionsInput, ServiceRegistryVersions, ServiceRegistryVersionsInput, ServiceRequests, ServiceRequestsInput, ReviewRequests, ReviewRequestsInput, OpsMembers, OpsMembersInput, OpsAuditEvents, OpsAuditEventsInput, SecurityEvents, SecurityEventsInput, Inquiries, InquiriesInput, Notices, NoticesInput, NoticeDeliveries, NoticeDeliveriesInput, StatusIncidents, StatusIncidentsInput, NotificationPreferences, NotificationPreferencesInput, Notifications, NotificationsInput, Plans, PlansInput, PlanVersions, PlanVersionsInput, Subscriptions, SubscriptionsInput, PlanChangeRequests, PlanChangeRequestsInput, UsageMeters, UsageMetersInput, Invoices, InvoicesInput, Payments, PaymentsInput, ErrorEvents, ErrorEventsInput, Imports, ImportsInput, Integrations, IntegrationsInput, Invitations, InvitationsInput, PendingSignup, PendingSignupInput, ExportJobs, ExportJobsInput, Attachments, AttachmentsInput, Skills, SkillsInput, SkillVersions, SkillVersionsInput, SkillTestRuns, SkillTestRunsInput, SkillAttachments, SkillAttachmentsInput, PaymentMethods, PaymentMethodsInput, BillingEvents, BillingEventsInput, LlmRoutes, LlmRoutesInput, LlmCapabilities, LlmCapabilitiesInput, PushDevices, PushDevicesInput, DisclosureVersions, DisclosureVersionsInput, Subprocessors, SubprocessorsInput };

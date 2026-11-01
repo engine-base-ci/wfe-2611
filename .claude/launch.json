@@ -1,0 +1,26 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "kaname-static",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8765",
+        "--bind",
+        "127.0.0.1"
+      ],
+      "port": 8765
+    },
+    {
+      "name": "web",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": [
+        "-c",
+        "cd apps/web && NEXT_PUBLIC_API_BASE=http://127.0.0.1:3011 KANAME_DEV_PAGES=1 NEXT_PUBLIC_KANAME_DEV_PAGES=1 pnpm exec next dev --port 3123"
+      ],
+      "port": 3123
+    }
+  ]
+}

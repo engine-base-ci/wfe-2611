@@ -1,0 +1,171 @@
+# .github/workflows/v3-gate.yml — Kaname CI ゲート 39 本（05_flow/build_testplan.py が生成。手で直さない）
+# 方針: ゲートが緑を維持できないなら次のスライスに進まない。旧jobrainはCIが全ゲート赤のまま進み、それが死因の一つ。
+# 段: static（静的・関門）→ database（実 Postgres・RLS・契約）／ spec（仕様の層・Python）／ task-gate（そのタスクの L1 行）→ e2e（has-ui）→ auto-merge
+name: v3-gate
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  NODE_VERSION: '22'
+  PNPM_VERSION: '10'
+jobs:
+  static:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: '${{ env.PNPM_VERSION }}' }
+      - uses: actions/setup-node@v4
+        with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - name: "G1 lint"
+        run: pnpm lint
+      - name: "G2 type check"
+        run: pnpm type-check
+      - name: "G5 auth.uid() 検出 [CRITICAL]"
+        run: pnpm ci:no-vendor-sql
+      - name: "G7 import 境界検査 [CRITICAL]"
+        run: pnpm ci:boundary
+      - name: "G8 Open Core ee/ 検出"
+        run: pnpm ci:license-boundary
+      - name: "G9 ポータビリティ台帳の整合"
+        run: pnpm ci:ledger-sync
+      - name: "G10 動的クエリの文字列連結禁止 [CRITICAL]"
+        run: pnpm ci:no-sql-concat
+      - name: "G11 OpenAPI 破壊的変更検出"
+        run: pnpm ci:openapi-diff
+      - name: "G13 env 整合"
+        run: pnpm ci:env-audit
+      - name: "G14 AC validator（4-tier）"
+        run: pnpm ci:ac-validate
+      - name: "G16 関門C1 ネットワークの迂回検出 [CRITICAL]"
+        run: pnpm ci:choke -- --id C1
+      - name: "G17 関門C2 永続化の迂回検出 [CRITICAL]"
+        run: pnpm ci:choke -- --id C2
+      - name: "G18 関門C3 モデル呼び出しの迂回検出"
+        run: pnpm ci:choke -- --id C3
+      - name: "G19 関門C4 ファイルの迂回検出"
+        run: pnpm ci:choke -- --id C4
+      - name: "G20 関門C5 プロセス起動の迂回検出 [CRITICAL]"
+        run: pnpm ci:choke -- --id C5
+      - name: "G21 関門C6 通知の迂回検出"
+        run: pnpm ci:choke -- --id C6
+      - name: "G22 関門C7 決済の迂回検出 [CRITICAL]"
+        run: pnpm ci:choke -- --id C7
+      - name: "G23 関門C8 秘密の迂回検出 [CRITICAL]"
+        run: pnpm ci:choke -- --id C8
+      - name: "G24 動的呼び出し禁止 [CRITICAL]"
+        run: pnpm ci:no-dynamic-call
+      - name: "G25 関門例外台帳の整合"
+        run: pnpm ci:choke-exceptions
+      - name: "G26 タスクのchoke_points宣言"
+        run: pnpm ci:task-choke-declared
+      - name: "G27 画面の route の生成物が最新（flow.json → apps/web/lib/routes.ts）"
+        run: pnpm ci:routes
+      - name: "G28 実ブラウザで押した証拠（操作要素 1 つ＝1 行。行 ID を名前に持つ Playwright が通っている）"
+        run: pnpm ci:op-gate
+      - name: "G39 外へ出る口の宛先（apps/bridge・apps/web の fetch は Kaname か Bridge の口だけ・関門 C1 の例外 X-009／X-010 の代替統制） [CRITICAL]"
+        run: pnpm ci:net-boundary && pnpm ci:net-boundary:selftest && pnpm ci:choke:selftest
+      - name: "G35 有限資源の静的検査（G-16：関門外の生クライアント・タイムアウト無し・冪等キー無しの書込）"
+        run: pnpm ci:resource-static
+
+  database:
+    runs-on: ubuntu-latest
+    needs: [static]
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env: { POSTGRES_PASSWORD: postgres, POSTGRES_DB: kaname_test }
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    env:
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/kaname_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: '${{ env.PNPM_VERSION }}' }
+      - uses: actions/setup-node@v4
+        with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - name: "G3 unit test + coverage"
+        run: pnpm test -- --coverage
+      - name: "G4 RLS 全テーブル有効 [CRITICAL]"
+        run: pnpm ci:rls-enabled
+      - name: "G6 テナント文脈の網羅 [CRITICAL]"
+        run: pnpm ci:context-set
+      - name: "G12 実Postgresでmigration+seed適用"
+        run: pnpm ci:migration-integration
+      - name: "G33 RLS の場合表（access-matrix.json 全行）"
+        run: pnpm ci:access-matrix -- --matrix 07_qa/test-plan/access-matrix.json
+      - name: "G34 EARS → test の対応（mapping の test が全部存在）"
+        run: pnpm ci:ears-mapping -- --mapping 07_qa/test-plan/ears-test-mapping.json
+      - name: "G36 契約 fuzz（Schemathesis・openapi.yaml）"
+        run: pnpm ci:schemathesis -- 08_api/openapi.yaml
+
+  spec:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install pyyaml
+      - name: "G27 層の棚卸し（G21）"
+        run: python3 scripts/ci/layer_audit.py --run
+      - name: "G28 正本 ↔ tickets の参照整合（qa-ladder validate）"
+        run: python3 scripts/ci/qa-ladder.py validate --spec 07_qa/test-specs --tickets 07_tasks/tickets.json
+      - name: "G29 エラー一覧 E1〜E9（引数を省かない）"
+        run: python3 scripts/ci/error_catalog.py gate --catalog 07_qa/test-specs/errors.json --mocks 06_mockup/v1 --spec 07_qa/test-specs --choke 03_architecture/choke-points.json
+      - name: "G30 スキル一式 SK1〜SK6"
+        run: python3 scripts/ci/skill_pkg_gate.py 10_skills
+      - name: "G31 テスト計画の整合 TV1〜TV8"
+        run: python3 scripts/ci/tv_gate.py
+
+  task-gate:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && startsWith(github.head_ref, 'task/')
+    needs: [spec]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install pyyaml
+      - name: "ブランチ名からタスク ID を取る（task/T-A-01 → T-A-01）"
+        run: echo "TASK_ID=${{ github.head_ref }}" | sed 's#task/##' >> "$GITHUB_ENV"
+      - name: "G32 そのタスクの L1 行（ブランチ task/<ID>）"
+        run: python3 scripts/ci/qa-ladder.py gate --spec 07_qa/test-specs --tickets 07_tasks/tickets.json --task "$TASK_ID"
+
+  e2e:
+    runs-on: ubuntu-latest
+    if: contains(github.event.pull_request.labels.*.name, 'has-ui')
+    needs: [static, database, spec]
+    env:
+      BASE_URL: ${{ secrets.STAGING_BASE_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: '${{ env.PNPM_VERSION }}' }
+      - uses: actions/setup-node@v4
+        with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @kaname/web exec playwright install --with-deps chromium
+      - name: "G15 E2E（Playwright）"
+        run: pnpm e2e:web
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with: { name: playwright-report, path: apps/web/playwright-report/ }
+  auto-merge:
+    runs-on: ubuntu-latest
+    needs: [static, database, spec, task-gate]
+    if: github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'no-auto-merge')
+    permissions: { contents: write, pull-requests: write }
+    steps:
+      - name: Enable auto-merge (squash)
+        run: gh pr merge --squash --auto "${{ github.event.pull_request.number }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

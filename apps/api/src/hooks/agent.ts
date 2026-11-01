@@ -1,0 +1,59 @@
+// 契約の口（/api/v1/conversations・/api/v1/memories/:id）を、画面の口（/api/auth-ext/agent/*）と同じ本体に通す。
+// 汎用の書き込み（表に直接 insert／update）をさせない：会話と記憶は DB の関数が本人かどうかを判定する（agent-ops.ts）
+import type pg from "pg";
+import type { Hook, HookArgs, HookReply } from "../contract/deps.js";
+import { deleteConversation, editMemory, newConversation, setConversation } from "../auth/agent-ops.js";
+import { unwritable } from "../contract/op.js";
+
+const notFound = (code: string, message: string): HookReply => ({ status: 404, body: { error: "not_found", code, message } });
+const invalid = (field: string, message: string): HookReply => ({
+  status: 422,
+  body: { error: "validation_failed", code: "VALIDATION_ERROR", details: [{ field, message }] },
+});
+/** 契約では文字で来る（"true"／"false"）。それ以外は「変えない」 */
+const flag = (v: unknown): boolean | null => (v === "true" || v === true ? true : v === "false" || v === false ? false : null);
+const text = (v: unknown, n: number): string | null => {
+  const s = typeof v === "string" ? v.replace(/[\r\n]+/g, " ").trim().slice(0, n) : "";
+  return s || null;
+};
+
+export function agentHooks(pool: pg.Pool): Record<string, Hook> {
+  const user = (a: HookArgs) => a.ctx.userId as string; // 認証（401）は op が先に済ませている
+  return {
+    postConversations: {
+      before: async (a) => {
+        const id = await newConversation(pool, user(a), flag(a.input["incognito"]) === true);
+        if (!id) return { status: 403, body: { error: "forbidden", code: "FORBIDDEN" } };
+        return { status: 201, body: { data: { id, conversation_id: id } } };
+      },
+    },
+    patchConversationsById: {
+      before: async (a) => {
+        const title = a.input["title"] === undefined ? null : text(a.input["title"], 80);
+        if (a.input["title"] !== undefined && !title) return invalid("title", "名前が空です");
+        const ok = await setConversation(pool, user(a), a.id!, {
+          title,
+          starred: a.input["starred_at"] === undefined ? null : Boolean(a.input["starred_at"]),
+          incognito: flag(a.input["incognito"]),
+        });
+        return ok ? { status: 200, body: { data: { id: a.id, ok: true } } } : unwritable(a, notFound("CONVERSATION_NOT_FOUND", "この会話はありません"));
+      },
+    },
+    deleteConversationsById: {
+      before: async (a) =>
+        (await deleteConversation(pool, user(a), a.id!))
+          ? { status: 200, body: { data: { id: a.id } } }
+          : unwritable(a, notFound("CONVERSATION_NOT_FOUND", "この会話はありません")),
+    },
+    patchMemoriesById: {
+      before: async (a) => {
+        const body = typeof a.input["body"] === "string" ? a.input["body"].trim().slice(0, 2000) : "";
+        if (!body) return invalid("body", "覚えることが空です");
+        const ok = await editMemory(pool, user(a), a.id!, text(a.input["title"], 80), body);
+        return ok
+          ? { status: 200, body: { data: { id: a.id, ok: true } } }
+          : unwritable(a, notFound("MEMORY_NOT_FOUND", "直せる記憶が見つかりません（自分の記憶だけ直せます）"));
+      },
+    },
+  };
+}

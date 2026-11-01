@@ -1,0 +1,759 @@
+{
+ "version": "v3",
+ "skill": "api-design",
+ "endpoints": [
+  {
+   "method": "GET",
+   "path": "/api/v1/action_runs",
+   "implementation_path": "apps/api/src/routes/action_runs.ts::getActionRuns",
+   "screen_ids_referencing": [
+    "onboard-testrun"
+   ],
+   "acts": [
+    "A11"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/ai_employees",
+   "implementation_path": "apps/api/src/routes/ai_employees.ts::getAiEmployees",
+   "screen_ids_referencing": [
+    "ai-activity",
+    "ai-staff",
+    "ai-staff-detail",
+    "ops-catalog"
+   ],
+   "acts": [
+    "A37",
+    "A46",
+    "A53",
+    "A59",
+    "A79"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/ai_employees/:id",
+   "implementation_path": "apps/api/src/routes/ai_employees.ts::patchAiEmployeesById",
+   "screen_ids_referencing": [
+    "ai-staff-detail"
+   ],
+   "acts": [
+    "A81"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/approvals",
+   "implementation_path": "apps/api/src/routes/approvals.ts::getApprovals",
+   "screen_ids_referencing": [
+    "clone-thread"
+   ],
+   "acts": [
+    "A16"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/approvals",
+   "implementation_path": "apps/api/src/routes/approvals.ts::postApprovals",
+   "screen_ids_referencing": [
+    "audit"
+   ],
+   "acts": [
+    "A40"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/approvals/:id",
+   "implementation_path": "apps/api/src/routes/approvals.ts::patchApprovalsById",
+   "screen_ids_referencing": [
+    "approvals"
+   ],
+   "acts": [
+    "A15"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/api/v1/approvals/:id",
+   "implementation_path": "apps/api/src/routes/approvals.ts::deleteApprovalsById",
+   "screen_ids_referencing": [
+    "audit"
+   ],
+   "acts": [
+    "A34",
+    "A66"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/attachments",
+   "implementation_path": "apps/api/src/routes/attachments.ts::postAttachments",
+   "screen_ids_referencing": [
+    "import"
+   ],
+   "acts": [
+    "A76"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/audit_events",
+   "implementation_path": "apps/api/src/routes/audit_events.ts::getAuditEvents",
+   "screen_ids_referencing": [
+    "audit",
+    "ops-audit"
+   ],
+   "acts": [
+    "A33",
+    "A38",
+    "A73"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/clones",
+   "implementation_path": "apps/api/src/routes/clones.ts::postClones",
+   "screen_ids_referencing": [
+    "onboard-interview"
+   ],
+   "acts": [
+    "A06"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/conversations",
+   "implementation_path": "apps/api/src/routes/conversations.ts::getConversations",
+   "screen_ids_referencing": [
+    "clone-chat"
+   ],
+   "acts": [
+    "A20",
+    "A90"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/conversations",
+   "implementation_path": "apps/api/src/routes/conversations.ts::postConversations",
+   "screen_ids_referencing": [
+    "clone-chat"
+   ],
+   "acts": [
+    "A88",
+    "A91"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/conversations/:id",
+   "implementation_path": "apps/api/src/routes/conversations.ts::patchConversationsById",
+   "screen_ids_referencing": [
+    "clone-chat"
+   ],
+   "acts": [
+    "A95"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/api/v1/conversations/:id",
+   "implementation_path": "apps/api/src/routes/conversations.ts::deleteConversationsById",
+   "screen_ids_referencing": [
+    "clone-chat"
+   ],
+   "acts": [
+    "A89"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/credentials",
+   "implementation_path": "apps/api/src/routes/credentials.ts::postCredentials",
+   "screen_ids_referencing": [
+    "credentials"
+   ],
+   "acts": [
+    "A10"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/disclosure_versions",
+   "implementation_path": "apps/api/src/routes/disclosure_versions.ts::getDisclosureVersions",
+   "screen_ids_referencing": [
+    "disclosure"
+   ],
+   "acts": [
+    "A84"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/disclosure_versions/:id",
+   "implementation_path": "apps/api/src/routes/disclosure_versions.ts::patchDisclosureVersionsById",
+   "screen_ids_referencing": [
+    "ops-disclosure"
+   ],
+   "acts": [
+    "A86"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/distributions",
+   "implementation_path": "apps/api/src/routes/distributions.ts::postDistributions",
+   "screen_ids_referencing": [
+    "ops-review"
+   ],
+   "acts": [
+    "A63"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/duties/:id",
+   "implementation_path": "apps/api/src/routes/duties.ts::patchDutiesById",
+   "screen_ids_referencing": [
+    "duties"
+   ],
+   "acts": [
+    "A28"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/export_jobs",
+   "implementation_path": "apps/api/src/routes/export_jobs.ts::postExportJobs",
+   "screen_ids_referencing": [
+    "export"
+   ],
+   "acts": [
+    "A41"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/goal_allocations",
+   "implementation_path": "apps/api/src/routes/goal_allocations.ts::getGoalAllocations",
+   "screen_ids_referencing": [
+    "my-progress"
+   ],
+   "acts": [
+    "A25"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/goal_allocations/:id",
+   "implementation_path": "apps/api/src/routes/goal_allocations.ts::patchGoalAllocationsById",
+   "screen_ids_referencing": [
+    "goal-allocation",
+    "my-progress"
+   ],
+   "acts": [
+    "A23",
+    "A49"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/goals",
+   "implementation_path": "apps/api/src/routes/goals.ts::getGoals",
+   "screen_ids_referencing": [
+    "goal-edit",
+    "goals"
+   ],
+   "acts": [
+    "A22",
+    "A52",
+    "A54"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/goals/:id",
+   "implementation_path": "apps/api/src/routes/goals.ts::patchGoalsById",
+   "screen_ids_referencing": [
+    "goal-edit"
+   ],
+   "acts": [
+    "A29"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/hypotheses",
+   "implementation_path": "apps/api/src/routes/hypotheses.ts::getHypotheses",
+   "screen_ids_referencing": [
+    "review"
+   ],
+   "acts": [
+    "A26"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/hypotheses/:id",
+   "implementation_path": "apps/api/src/routes/hypotheses.ts::patchHypothesesById",
+   "screen_ids_referencing": [
+    "hypotheses"
+   ],
+   "acts": [
+    "A27"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/inquiries",
+   "implementation_path": "apps/api/src/routes/inquiries.ts::getInquiries",
+   "screen_ids_referencing": [
+    "inquiry"
+   ],
+   "acts": [
+    "A67"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/inquiries/:id",
+   "implementation_path": "apps/api/src/routes/inquiries.ts::patchInquiriesById",
+   "screen_ids_referencing": [
+    "ops-support"
+   ],
+   "acts": [
+    "A43",
+    "A70"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/invitations",
+   "implementation_path": "apps/api/src/routes/invitations.ts::getInvitations",
+   "screen_ids_referencing": [
+    "invite-accept"
+   ],
+   "acts": [
+    "A03"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/invoices",
+   "implementation_path": "apps/api/src/routes/invoices.ts::getInvoices",
+   "screen_ids_referencing": [
+    "ops-billing"
+   ],
+   "acts": [
+    "A72",
+    "A87"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/learned_procedures",
+   "implementation_path": "apps/api/src/routes/learned_procedures.ts::getLearnedProcedures",
+   "screen_ids_referencing": [
+    "automation-repair"
+   ],
+   "acts": [
+    "A32"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/ledger_definitions",
+   "implementation_path": "apps/api/src/routes/ledger_definitions.ts::getLedgerDefinitions",
+   "screen_ids_referencing": [
+    "records",
+    "search"
+   ],
+   "acts": [
+    "A21",
+    "A47"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/ledger_definitions/:id",
+   "implementation_path": "apps/api/src/routes/ledger_definitions.ts::patchLedgerDefinitionsById",
+   "screen_ids_referencing": [
+    "ledger-def",
+    "records"
+   ],
+   "acts": [
+    "A24",
+    "A44"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/ledger_records",
+   "implementation_path": "apps/api/src/routes/ledger_records.ts::getLedgerRecords",
+   "screen_ids_referencing": [
+    "record-detail"
+   ],
+   "acts": [
+    "A18"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/ledger_records/:id",
+   "implementation_path": "apps/api/src/routes/ledger_records.ts::patchLedgerRecordsById",
+   "screen_ids_referencing": [
+    "record-detail"
+   ],
+   "acts": [
+    "A19"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/llm_routes",
+   "implementation_path": "apps/api/src/routes/llm_routes.ts::postLlmRoutes",
+   "screen_ids_referencing": [
+    "llm-routes"
+   ],
+   "acts": [
+    "A82"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/llm_routes/:id",
+   "implementation_path": "apps/api/src/routes/llm_routes.ts::patchLlmRoutesById",
+   "screen_ids_referencing": [
+    "ops-llm"
+   ],
+   "acts": [
+    "A85"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/members",
+   "implementation_path": "apps/api/src/routes/members.ts::getMembers",
+   "screen_ids_referencing": [
+    "account",
+    "login",
+    "mfa-setup",
+    "password-reset",
+    "verify-email"
+   ],
+   "acts": [
+    "A02",
+    "A04",
+    "A13",
+    "A31",
+    "A94"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/members/:id",
+   "implementation_path": "apps/api/src/routes/members.ts::patchMembersById",
+   "screen_ids_referencing": [
+    "account",
+    "member-detail",
+    "members"
+   ],
+   "acts": [
+    "A36",
+    "A61",
+    "A74"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/api/v1/members/:id",
+   "implementation_path": "apps/api/src/routes/members.ts::deleteMembersById",
+   "screen_ids_referencing": [
+    "account-close",
+    "member-detail"
+   ],
+   "acts": [
+    "A42",
+    "A62"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/memories",
+   "implementation_path": "apps/api/src/routes/memories.ts::postMemories",
+   "screen_ids_referencing": [
+    "clone-memory"
+   ],
+   "acts": [
+    "A30"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/memories/:id",
+   "implementation_path": "apps/api/src/routes/memories.ts::patchMemoriesById",
+   "screen_ids_referencing": [
+    "clone-memory"
+   ],
+   "acts": [
+    "A93"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/messages",
+   "implementation_path": "apps/api/src/routes/messages.ts::getMessages",
+   "screen_ids_referencing": [
+    "today"
+   ],
+   "acts": [
+    "A14",
+    "A92"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/messages/:id",
+   "implementation_path": "apps/api/src/routes/messages.ts::patchMessagesById",
+   "screen_ids_referencing": [
+    "today"
+   ],
+   "acts": [
+    "A55"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/api/v1/messages/:id",
+   "implementation_path": "apps/api/src/routes/messages.ts::deleteMessagesById",
+   "screen_ids_referencing": [
+    "today"
+   ],
+   "acts": [
+    "A56"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/notice_deliveries/:id",
+   "implementation_path": "apps/api/src/routes/notice_deliveries.ts::patchNoticeDeliveriesById",
+   "screen_ids_referencing": [
+    "notices"
+   ],
+   "acts": [
+    "A68"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/notices",
+   "implementation_path": "apps/api/src/routes/notices.ts::postNotices",
+   "screen_ids_referencing": [
+    "ops-notices"
+   ],
+   "acts": [
+    "A71"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/ops_members/:id",
+   "implementation_path": "apps/api/src/routes/ops_members.ts::patchOpsMembersById",
+   "screen_ids_referencing": [
+    "ops-audit"
+   ],
+   "acts": [
+    "A65"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/plans",
+   "implementation_path": "apps/api/src/routes/plans.ts::getPlans",
+   "screen_ids_referencing": [
+    "ops-home"
+   ],
+   "acts": [
+    "A60"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/api/v1/plans/:id",
+   "implementation_path": "apps/api/src/routes/plans.ts::deletePlansById",
+   "screen_ids_referencing": [
+    "ops-tenant"
+   ],
+   "acts": [
+    "A64"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/policies/:id",
+   "implementation_path": "apps/api/src/routes/policies.ts::patchPoliciesById",
+   "screen_ids_referencing": [
+    "policies"
+   ],
+   "acts": [
+    "A35"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/push_devices/:id",
+   "implementation_path": "apps/api/src/routes/push_devices.ts::patchPushDevicesById",
+   "screen_ids_referencing": [
+    "app-setup"
+   ],
+   "acts": [
+    "A83"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/service_registry",
+   "implementation_path": "apps/api/src/routes/service_registry.ts::postServiceRegistry",
+   "screen_ids_referencing": [
+    "services"
+   ],
+   "acts": [
+    "A77"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/service_registry_versions/:id",
+   "implementation_path": "apps/api/src/routes/service_registry_versions.ts::patchServiceRegistryVersionsById",
+   "screen_ids_referencing": [
+    "ops-services"
+   ],
+   "acts": [
+    "A78"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/sessions",
+   "implementation_path": "apps/api/src/routes/sessions.ts::getSessions",
+   "screen_ids_referencing": [
+    "security-brief"
+   ],
+   "acts": [
+    "A39"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/sessions",
+   "implementation_path": "apps/api/src/routes/sessions.ts::postSessions",
+   "screen_ids_referencing": [
+    "bridge-setup"
+   ],
+   "acts": [
+    "A09"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/skills",
+   "implementation_path": "apps/api/src/routes/skills.ts::postSkills",
+   "screen_ids_referencing": [
+    "ops-skills"
+   ],
+   "acts": [
+    "A80"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/subscriptions",
+   "implementation_path": "apps/api/src/routes/subscriptions.ts::postSubscriptions",
+   "screen_ids_referencing": [
+    "billing-setup",
+    "signup"
+   ],
+   "acts": [
+    "A01",
+    "A05"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/subscriptions/:id",
+   "implementation_path": "apps/api/src/routes/subscriptions.ts::patchSubscriptionsById",
+   "screen_ids_referencing": [
+    "billing"
+   ],
+   "acts": [
+    "A69"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/tasks",
+   "implementation_path": "apps/api/src/routes/tasks.ts::getTasks",
+   "screen_ids_referencing": [
+    "tasks"
+   ],
+   "acts": [
+    "A48",
+    "A58"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/tasks",
+   "implementation_path": "apps/api/src/routes/tasks.ts::postTasks",
+   "screen_ids_referencing": [
+    "tasks"
+   ],
+   "acts": [
+    "A50",
+    "A57"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/tasks/:id",
+   "implementation_path": "apps/api/src/routes/tasks.ts::patchTasksById",
+   "screen_ids_referencing": [
+    "tasks"
+   ],
+   "acts": [
+    "A17",
+    "A51"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/tenants",
+   "implementation_path": "apps/api/src/routes/tenants.ts::getTenants",
+   "screen_ids_referencing": [
+    "company-model",
+    "onboard-draft",
+    "onboard-golive"
+   ],
+   "acts": [
+    "A07",
+    "A08",
+    "A12",
+    "A45"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/tenants/:id",
+   "implementation_path": "apps/api/src/routes/tenants.ts::patchTenantsById",
+   "screen_ids_referencing": [
+    "company-settings"
+   ],
+   "acts": [
+    "A75"
+   ]
+  }
+ ]
+}

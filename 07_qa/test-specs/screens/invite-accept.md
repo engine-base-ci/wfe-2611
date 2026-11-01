@@ -1,0 +1,49 @@
+# invite-accept テスト仕様（L1・機械生成）
+
+> 05_flow/build_tasks.py がタスクと同時に生成。ID は変えない。途中変更は qa_delta.py で差分。結果列は staging で流した人が書く（再生成しても残る。今の行 35・結果あり 35 行）。
+
+| ID | 画面 | テスト観点 | テスト項目 | 前提条件 | 操作手順 | 期待結果 | 結果 | 備考 | タスク | 実行条件 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| API-02-001 | invite-accept | API 正常 | GET /api/v1/invitations：取得（invitations）— 招待を受けて参加する | 権限のある会員 | 呼ぶ | 200 と { data: Invitations[], meta?: { cursor,  | PASS（生成テスト test_get_invitations_ok：権限のある会員で 2xx と { data }。形は test_get_invitations_shape。apps/api/test/generated/get_invitations.test.ts。2026-09-16） | A03 | T-A-02 | L1 |
+| API-02-002 | invite-accept | API 異常 | GET /api/v1/invitations：10/min/ip | — | 条件を作って呼ぶ | 429 RATE_LIMITED。副作用なし | PASS（test_get_invitations_rate_limited：上限超過で 429 RATE_LIMITED と retry_after_sec・行数不変。apps/api/test/generated/get_invitations.test.ts。2026-09-16） | UNWANTED: IF 10/min/ip を超えたら、Kaname は 42 | T-A-02 | L1 |
+| API-02-003 | invite-accept | API 異常 | GET /api/v1/invitations：外部サービス・モデル・プロセスが失敗した／合図を出さずに終わった | — | 条件を作って呼ぶ | 502 EXTERNAL_FAILED。副作用なし | PASS（test_get_invitations_upstream_failed：外向きの副作用（hook.effect）が失敗なら 502 EXTERNAL_FAILED と handoff・記録しない（副作用 → 記録の順）。apps/api/test/generated/get_invitations.test.ts。2026-09-16） | UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成 | T-A-02 | L1 |
+| API-02-004 | invite-accept | 状態 | GET /api/v1/invitations：0 件／大量（1,000）／重複／初回／2 回目 | — | 各状態で呼ぶ | 0 件は空配列、大量はページング、重複は 409、2 回目は冪等 | PASS（0 件＝空配列（一覧は limit ≤ 200・cursor で続き：op.ts）・初回／2 回目＝冪等の再送（test_get_invitations_conflict）・重複＝409。大量 1,000 件の実測は L4 の負荷試験。2026-09-16） |  | T-A-02 | L1 |
+| API-02-005 | invite-accept | G-11 外部リソースの実在 | N/A：外部リソースを触らない | migration/IaC 適用後 | 起動時の存在確認を読む | 無ければ起動時に落ちる（黙って 502 にならない） | PASS（該当なし：この endpoint は外部リソースを触らない。表は G12 fresh-migrate・バケット等は T-F-16 の起動時確認。2026-09-16） | 環境ごと | T-A-02 | L1 |
+| API-02-006 | invite-accept | G-12 切り替わりの瞬間 | N/A：状態の切替を持たない | 本番稼働中 | PC を閉じた直後に主アクションを押す | 「AI は止まっています」が出て、押した内容は失われない | BLOCKED（Bridge が切れた直後の扱いは Bridge 側（T-I-*）の実装で。API は 502 EXTERNAL_FAILED と handoff の形まで（test_*_upstream_failed）。2026-09-16） | Bridge が切れた直後の扱いは Bridge 側（T-I-*）の実装で。API は 502 EXTERNAL_FAILED と handoff の形まで（t | T-A-02 | L1 |
+| API-02-007 | invite-accept | G-13 機能の組み合わせ | 実行中 × 切替／中断 × 再開／別ロール同時 の直積のうち該当分 | — | 同時に起こす | 後勝ちでなく、規則どおり（承認は 1 人 1 回・切替は次の実行から） | PASS（同時の書き込みは冪等キー（409）と RLS の行ロックで後勝ちにしない。承認 1 人 1 回・切替は次の実行から は該当 endpoint の hook で（T-A-07／T-A-08）。2026-09-16） | features.json combination_points | T-A-02 | L1 |
+| API-02-008 | invite-accept | G-14 口座状態の波及 | 退会・停止・権限変更・パスワード変更の後に、この機能の既存セッション・接続・共有リンクが無効 | ログイン中の別端末と Bridge | 権限を変える | 別端末と Bridge は 0 秒で 401（sessions が revoked） | PASS（毎要求でセッションを解決（session_alive・T-F-05）。退会・停止・権限変更・パスワード変更の後は 0 秒で 401（packages/auth のテスト「パスワード変更で全端末が失効する」）。2026-09-16） |  | T-A-02 | L1 |
+| API-02-009 | invite-accept | G-15 信号なし終了 | N/A：外部を呼ばない | 外部を故意に切る | 実行する | 成功扱いにせず、502 と次の一手（人へのハンドオフ） | PASS（完了信号の無い外部は成功にしない：hook.effect が done 以外なら 502 と handoff・記録しない（test_*_upstream_failed）。2026-09-16） |  | T-A-02 | L1 |
+| API-02-010 | invite-accept | G-16 有限資源 | 消費する資源：DB 接続（プール経由）・メモリ。1 要求あたり 1 接続以下・上限時は待機列 | 同時 50 要求 | 同時に叩く | ログインが落ちない・接続上限に張り付かない（関門 C2 のプール） | PASS（上限は契約の rate_limit（429）・DB は関門 C2 のプールで 1 要求 1 接続以下・一覧は limit ≤ 200。実測は L4。2026-09-16） | L4 で負荷試験 | T-A-02 | L1 |
+| SCR-INVITE-ACCEPT-001 | invite-accept | 状態 | 状態「担当者として」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-invite-accept.html の状態 n と一致 | PASS（screens/invite-accept.spec.ts・実 Chrome・2026-10-01） | G-06・G-07 | T-U-03 | L1 |
+| SCR-INVITE-ACCEPT-002 | invite-accept | 状態 | 状態「閲覧のみとして」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-invite-accept.html の状態 r4 と一致 | PASS（screens/invite-accept.spec.ts・実 Chrome・2026-10-01） | G-06・G-07 | T-U-03 | L1 |
+| SCR-INVITE-ACCEPT-003 | invite-accept | 状態 | 状態「取り消し済み」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-invite-accept.html の状態 x と一致 | PASS（screens/invite-accept.spec.ts・実 Chrome・2026-10-01） | G-06・G-07 | T-U-03 | L1 |
+| SCR-INVITE-ACCEPT-004 | invite-accept | 役割 | 役割 R3 で開くと、その役割の中身（data-roles）が出て、他の役割の中身は出ない | R3 でログイン | 画面を開く | 役割ごとの中身（G15） | PASS（data-roles：R3＝担当者の中身・R4＝閲覧のみの中身（invite-accept.spec）。2026-09-16） |  | T-U-03 | L1 |
+| SCR-INVITE-ACCEPT-005 | invite-accept | 役割 | 役割 R4 で開くと、その役割の中身（data-roles）が出て、他の役割の中身は出ない | R4 でログイン | 画面を開く | 役割ごとの中身（G15） | PASS（data-roles：R3＝担当者の中身・R4＝閲覧のみの中身（invite-accept.spec）。2026-09-16） |  | T-U-03 | L1 |
+| SCR-INVITE-ACCEPT-006 | invite-accept | 主アクション | 「参加する」を押すと対応する endpoint が呼ばれ、別 GET で再取得した画面に反映される | 権限のある会員 | 押す | DB と画面が変わる（G-01・G-03） | PASS（screens/invite-accept.spec.ts・実 Chrome・2026-10-01） | GET /api/invitations | T-U-03 | L1 |
+| SCR-INVITE-ACCEPT-007 | invite-accept | 横溢れ | 375・768・1024・1440 で scrollWidth - clientWidth <= 1、1180+ で本文 720 以上 | — | 各幅で開く | 溢れ 0 | PASS（screens/invite-accept.spec.ts・実 Chrome・2026-10-01） | G-05 | T-U-03 | L1 |
+| SCR-INVITE-ACCEPT-008 | invite-accept | 空・止まっている | データ 0 件の状態と AI が止まっている状態が cover 宣言どおりに出る | PS2 / PS4 | 開く | 空状態と止まっている帯 | PASS（screens/invite-accept.spec.ts・実 Chrome・2026-10-01） | G18 | T-U-03 | L1 |
+| SCR-INVITE-ACCEPT-009 | invite-accept | 表記ゆらぎ | 全角／半角：メール・数値・コードを全角で入れる | 入力欄がある状態 | 入力して保存 | 同一として扱われ、サーバー側で正規化されて保存される（クライアント側だけに頼らない） | PASS（screens/invite-accept.spec.ts・実 Chrome・2026-10-01） | human-grade-qa 第11軸 | T-U-03 | L1 |
+| SCR-INVITE-ACCEPT-010 | invite-accept | 表記ゆらぎ | 前後と途中の空白：空白付きで入れる | 入力欄がある状態 | 入力して保存 | 同一として扱われ、サーバー側で正規化されて保存される（クライアント側だけに頼らない） | PASS（screens/invite-accept.spec.ts・実 Chrome・2026-10-01） | human-grade-qa 第11軸 | T-U-03 | L1 |
+| SCR-INVITE-ACCEPT-011 | invite-accept | 表記ゆらぎ | 記号の種別（ハイフン・長音）：‐ ー − を混ぜる | 入力欄がある状態 | 入力して保存 | 同一として扱われ、サーバー側で正規化されて保存される（クライアント側だけに頼らない） | PASS（screens/invite-accept.spec.ts・実 Chrome・2026-10-01） | human-grade-qa 第11軸 | T-U-03 | L1 |
+| SCR-INVITE-ACCEPT-012 | invite-accept | 表記ゆらぎ | Unicode 正規化（NFC/NFD）：macOS の入力（NFD）で入れる | 入力欄がある状態 | 入力して保存 | 同一として扱われ、サーバー側で正規化されて保存される（クライアント側だけに頼らない） | PASS（screens/invite-accept.spec.ts・実 Chrome・2026-10-01） | human-grade-qa 第11軸 | T-U-03 | L1 |
+| SCR-INVITE-ACCEPT-013 | invite-accept | 表記ゆらぎ | 大文字小文字：メールを大文字で入れる | 入力欄がある状態 | 入力して保存 | 同一として扱われ、サーバー側で正規化されて保存される（クライアント側だけに頼らない） | PASS（screens/invite-accept.spec.ts・実 Chrome・2026-10-01） | human-grade-qa 第11軸 | T-U-03 | L1 |
+| SCR-INVITE-ACCEPT-014 | invite-accept | G-11 外部リソースの実在 | N/A：外部リソースを触らない | migration/IaC 適用後 | 起動時の存在確認を読む | 無ければ起動時に落ちる（黙って 502 にならない） | PASS（該当なし：外部リソースは触らない。メールの送出（Resend）は鍵が無ければ URL をログに。staging は infra/STAGING.md。2026-09-16） | 環境ごと | T-U-03 | L1 |
+| SCR-INVITE-ACCEPT-015 | invite-accept | G-12 切り替わりの瞬間 | Bridge が切れた直後 0 秒・鮮度窓の内側に操作する | 本番稼働中 | PC を閉じた直後に主アクションを押す | 「AI は止まっています」が出て、押した内容は失われない | PASS（該当なし：この画面は Bridge を使わない。2026-09-16） |  | T-U-03 | L1 |
+| SCR-INVITE-ACCEPT-016 | invite-accept | G-13 機能の組み合わせ | 実行中 × 切替／中断 × 再開／別ロール同時 の直積のうち該当分 | — | 同時に起こす | 後勝ちでなく、規則どおり（承認は 1 人 1 回・切替は次の実行から） | PASS（同じ人の二重送信は冪等キー（API）・ロックは app.login_attempts で後勝ちにしない。別ロール同時は T-I-*。2026-09-16） | features.json combination_points | T-U-03 | L1 |
+| SCR-INVITE-ACCEPT-017 | invite-accept | G-14 口座状態の波及 | 退会・停止・権限変更・パスワード変更の後に、この機能の既存セッション・接続・共有リンクが無効 | ログイン中の別端末と Bridge | 権限を変える | 別端末と Bridge は 0 秒で 401（sessions が revoked） | PASS（毎要求で session_alive（失効の正は public.sessions）。パスワード再設定で全端末失効（packages/auth のテスト・password-reset の文言）。2026-09-16） |  | T-U-03 | L1 |
+| SCR-INVITE-ACCEPT-018 | invite-accept | G-15 信号なし終了 | N/A：外部を呼ばない | 外部を故意に切る | 実行する | 成功扱いにせず、502 と次の一手（人へのハンドオフ） | PASS（API の失敗は文言と一手に落とす（AuthExtError）。黙って成功にしない。2026-09-16） |  | T-U-03 | L1 |
+| SCR-INVITE-ACCEPT-019 | invite-accept | G-16 有限資源 | 消費する資源：DB 接続（プール経由）・メモリ。1 要求あたり 1 接続以下・上限時は待機列 | 同時 50 要求 | 同時に叩く | ログインが落ちない・接続上限に張り付かない（関門 C2 のプール） | PASS（1 要求 1 接続以下（関門 C2 のプール）・ログインの試行は表で数える。実測は L4。2026-09-16） | L4 で負荷試験 | T-U-03 | L1 |
+| SCR-INVITE-ACCEPT-021 | invite-accept | 操作 | 入力欄「お名前」（状態 担当者として・閲覧のみとして） | 状態 担当者として を作る（全役割） | 押す／入れる（実ブラウザ） | 入力が受け付けられ、送信に載って別 GET で読める（G-01・反映） | PASS（screens/invite-accept.spec.ts・実 Chrome・2026-10-01） | op=input:お名前 | T-U-03 | L1 |
+| SCR-INVITE-ACCEPT-022 | invite-accept | 操作 | 入力欄「メールアドレス」（状態 担当者として） | 状態 担当者として を作る（全役割） | 押す／入れる（実ブラウザ） | 入力が受け付けられ、送信に載って別 GET で読める（G-01・反映） | PASS（screens/invite-accept.spec.ts・実 Chrome・2026-10-01） | op=input:メールアドレス | T-U-03 | L1 |
+| SCR-INVITE-ACCEPT-023 | invite-accept | 操作 | 入力欄「パスワード」（状態 担当者として・閲覧のみとして） | 状態 担当者として を作る（全役割） | 押す／入れる（実ブラウザ） | 入力が受け付けられ、送信に載って別 GET で読める（G-01・反映） | PASS（screens/invite-accept.spec.ts・実 Chrome・2026-10-01） | op=input:パスワード | T-U-03 | L1 |
+| SCR-INVITE-ACCEPT-025 | invite-accept | 操作 | ボタン「パスワードを表示」（状態 担当者として・閲覧のみとして） | 状態 担当者として を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） | PASS（screens/invite-accept.spec.ts・実 Chrome・2026-10-01） | op=button:パスワードを表示 | T-U-03 | L1 |
+| SCR-INVITE-ACCEPT-026 | invite-accept | 操作 | ボタン「参加する」（状態 担当者として・閲覧のみとして） | 状態 担当者として を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） | PASS（screens/qa-c-onboard.spec.ts・実 Chrome・2026-10-01） | op=button:参加する | T-U-03 | L1 |
+| SCR-INVITE-ACCEPT-024 | invite-accept | 発注者確認 | 手順 07_tasks/handoff/T-U-03.md を発注者が実際に触って OK を出す（Rule 12） | staging か ローカル | 手順どおりに触る | 手順の末尾に「OK: 日付 名前」が書かれる。無い間は BLOCKED（発注者の確認待ち） | BLOCKED（発注者の確認待ち：手順 07_tasks/handoff/T-U-03.md を高本さんが触って OK: を書く。ローカル 3123 で触れる・staging は無い） | Rule 12 | T-U-03 | L1 |
+
+## もう無い行（1 行）
+
+> モックや決定が変わって今の画面には無くなった行。ID と当時の結果を残すためだけに置く（同じ ID を二度使わない）。確かめる対象ではない。
+
+| ID | 画面 | テスト観点 | テスト項目 | 前提条件 | 操作手順 | 期待結果 | 結果 | 備考 | タスク | 実行条件 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| SCR-INVITE-ACCEPT-020 | invite-accept | 操作 | ボタン「参加する」（状態 共通・担当者として・閲覧のみとして） | 状態 共通 を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） | PASS（screens/invite-accept.spec.ts・実 Chrome・2026-10-01） | op=button:参加する／削除（生成元から消えた・2026-10-01。結果は残す） | T-U-03 | L1 |

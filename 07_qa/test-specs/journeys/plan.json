@@ -1,0 +1,1785 @@
+{
+ "version": "v3.2",
+ "created_at": "2026-10-20",
+ "_doc": "背骨のフェーズ → 流れ（J-xx）。runnable_after は揃うべきタスク。05_flow/build_tasks.py が生成。status／result は apps/e2e の実走が書く（再生成で消えない）",
+ "rows": [
+  {
+   "id": "J01-01",
+   "journey": "J-01",
+   "name": "P0 契約・登録（1回だけ）",
+   "act": "A01",
+   "role": "R1/R2",
+   "step": "会社名とメールを入れる",
+   "expected": "アカウントと会社を作る",
+   "screen": "signup",
+   "depends_on": [],
+   "runnable_after": [
+    "T-A-01",
+    "T-U-01"
+   ],
+   "result": "",
+   "task": "",
+   "status": "PASS",
+   "note": "apps/e2e/journeys・実 Chrome・2026-09-21"
+  },
+  {
+   "id": "J01-02",
+   "journey": "J-01",
+   "name": "P0 契約・登録（1回だけ）",
+   "act": "A02",
+   "role": "R1/R2",
+   "step": "届いたリンクを押す",
+   "expected": "本人確認を記録",
+   "screen": "verify-email",
+   "depends_on": [
+    "J01-01"
+   ],
+   "runnable_after": [
+    "T-A-01",
+    "T-A-03",
+    "T-A-05",
+    "T-A-16",
+    "T-U-02"
+   ],
+   "result": "",
+   "task": "",
+   "status": "PASS",
+   "note": "apps/e2e/journeys・実 Chrome・2026-09-21"
+  },
+  {
+   "id": "J01-03",
+   "journey": "J-01",
+   "name": "P0 契約・登録（1回だけ）",
+   "act": "A03",
+   "role": "R3/R4",
+   "step": "招待リンクを押して名前を入れる",
+   "expected": "メンバーを作り、スコープを結ぶ",
+   "screen": "invite-accept",
+   "depends_on": [
+    "J01-02"
+   ],
+   "runnable_after": [
+    "T-A-02",
+    "T-U-03"
+   ],
+   "result": "",
+   "task": "",
+   "status": "PASS",
+   "note": "apps/e2e/journeys・実 Chrome・2026-09-21"
+  },
+  {
+   "id": "J01-04",
+   "journey": "J-01",
+   "name": "P0 契約・登録（1回だけ）",
+   "act": "A04",
+   "role": "R1/R2/R3",
+   "step": "認証アプリを登録する",
+   "expected": "TOTPシークレットを暗号化保管",
+   "screen": "mfa-setup",
+   "depends_on": [
+    "J01-03"
+   ],
+   "runnable_after": [
+    "T-A-01",
+    "T-A-03",
+    "T-A-05",
+    "T-A-16",
+    "T-U-04"
+   ],
+   "result": "",
+   "task": "",
+   "status": "PASS",
+   "note": "apps/e2e/journeys・実 Chrome・2026-09-21"
+  },
+  {
+   "id": "J02-01",
+   "journey": "J-02",
+   "name": "P1 はじめの設定 ── PCをつないで、自分のAIと作る（初日〜3日）",
+   "act": "A09",
+   "role": "R1/R2",
+   "step": "Bridge を入れて開き、「Claude Code を入れる」を押し、ログインを 1 回承認して、つなぐ",
+   "expected": "端末を登録、トークン発行。LLM経路＝Bridge を確定",
+   "screen": "bridge-setup",
+   "depends_on": [],
+   "runnable_after": [
+    "T-A-01",
+    "T-A-07",
+    "T-U-09"
+   ],
+   "result": "PASS（apps/e2e/journeys・実 Chrome・2026-10-04）",
+   "task": "T-U-12",
+   "status": "PASS",
+   "note": "apps/e2e/journeys・実 Chrome・2026-10-04"
+  },
+  {
+   "id": "J02-02",
+   "journey": "J-02",
+   "name": "P1 はじめの設定 ── PCをつないで、自分のAIと作る（初日〜3日）",
+   "act": "A06",
+   "role": "R1/R2",
+   "step": "自分のAIの質問に答える",
+   "expected": "会話を記憶へ、業種の手がかりを保存",
+   "screen": "onboard-interview",
+   "depends_on": [
+    "J02-01"
+   ],
+   "runnable_after": [
+    "T-A-01",
+    "T-A-17",
+    "T-U-07"
+   ],
+   "result": "PASS（apps/e2e/journeys・実 Chrome・2026-10-04）",
+   "task": "T-U-12",
+   "status": "PASS",
+   "note": "apps/e2e/journeys・実 Chrome・2026-10-04"
+  },
+  {
+   "id": "J02-03",
+   "journey": "J-02",
+   "name": "P1 はじめの設定 ── PCをつないで、自分のAIと作る（初日〜3日）",
+   "act": "A07",
+   "role": "R1/R2",
+   "step": "出てきたたたき台を見る",
+   "expected": "会社モデルの下書きを保存（道具の口 /bridge/tool が DB の関数で書き、証跡に残す）",
+   "screen": "onboard-draft",
+   "depends_on": [
+    "J02-02"
+   ],
+   "runnable_after": [
+    "T-A-01",
+    "T-A-07",
+    "T-A-11",
+    "T-A-15",
+    "T-A-18",
+    "T-U-08"
+   ],
+   "result": "PASS（apps/e2e/journeys・実 Chrome・2026-10-04）",
+   "task": "T-U-12",
+   "status": "PASS",
+   "note": "apps/e2e/journeys・実 Chrome・2026-10-04"
+  },
+  {
+   "id": "J02-04",
+   "journey": "J-02",
+   "name": "P1 はじめの設定 ── PCをつないで、自分のAIと作る（初日〜3日）",
+   "act": "A08",
+   "role": "R1/R2",
+   "step": "違うところを言う",
+   "expected": "会社モデルの下書きを更新",
+   "screen": "onboard-draft",
+   "depends_on": [
+    "J02-03"
+   ],
+   "runnable_after": [
+    "T-A-01",
+    "T-A-07",
+    "T-A-11",
+    "T-A-15",
+    "T-A-18",
+    "T-U-08"
+   ],
+   "result": "BLOCKED（前提が無い・2026-10-04）",
+   "task": "T-U-12",
+   "status": "BLOCKED",
+   "note": "前提が無い・2026-10-04"
+  },
+  {
+   "id": "J02-05",
+   "journey": "J-02",
+   "name": "P1 はじめの設定 ── PCをつないで、自分のAIと作る（初日〜3日）",
+   "act": "A10",
+   "role": "R1/R2",
+   "step": "使うサービスを選びログイン情報を入れる",
+   "expected": "vaultに暗号化保管。AIには参照IDのみ。資格情報は会社ごとの鍵で暗号化して Infisical の会社の置き場へ（AI には参照 ID だけ）。Bridge は Infisical に入らず、実行の間だけ値を受け取って捨てる",
+   "screen": "credentials",
+   "depends_on": [
+    "J02-04"
+   ],
+   "runnable_after": [
+    "T-A-07",
+    "T-U-10"
+   ],
+   "result": "PASS（apps/e2e/journeys・実 Chrome・2026-10-04）",
+   "task": "T-U-12",
+   "status": "PASS",
+   "note": "apps/e2e/journeys・実 Chrome・2026-10-04"
+  },
+  {
+   "id": "J02-06",
+   "journey": "J-02",
+   "name": "P1 はじめの設定 ── PCをつないで、自分のAIと作る（初日〜3日）",
+   "act": "A11",
+   "role": "R1/R2",
+   "step": "試しに動かして結果を見る",
+   "expected": "テスト実行の証跡を残す",
+   "screen": "onboard-testrun",
+   "depends_on": [
+    "J02-05"
+   ],
+   "runnable_after": [
+    "T-A-08",
+    "T-U-11"
+   ],
+   "result": "BLOCKED（前提が無い・2026-10-04）",
+   "task": "T-U-12",
+   "status": "BLOCKED",
+   "note": "前提が無い・2026-10-04"
+  },
+  {
+   "id": "J02-07",
+   "journey": "J-02",
+   "name": "P1 はじめの設定 ── PCをつないで、自分のAIと作る（初日〜3日）",
+   "act": "A12",
+   "role": "R1/R2",
+   "step": "本番に切り替える",
+   "expected": "会社モデルを確定、自動実行を有効化",
+   "screen": "onboard-golive",
+   "depends_on": [
+    "J02-06"
+   ],
+   "runnable_after": [
+    "T-A-01",
+    "T-A-07",
+    "T-A-11",
+    "T-A-15",
+    "T-A-18",
+    "T-U-12"
+   ],
+   "result": "PASS（apps/e2e/journeys・実 Chrome・2026-10-04）",
+   "task": "T-U-12",
+   "status": "PASS",
+   "note": "apps/e2e/journeys・実 Chrome・2026-10-04"
+  },
+  {
+   "id": "J03-01",
+   "journey": "J-03",
+   "name": "P2 毎日 ── 自分のAIと回す",
+   "act": "A13",
+   "role": "R1/R2/R3/R4",
+   "step": "メールとパスワードと6桁を入れる",
+   "expected": "トークンを発行",
+   "screen": "login",
+   "depends_on": [],
+   "runnable_after": [
+    "T-A-01",
+    "T-A-03",
+    "T-A-05",
+    "T-A-16",
+    "T-U-05"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J03-02",
+   "journey": "J-03",
+   "name": "P2 毎日 ── 自分のAIと回す",
+   "act": "A14",
+   "role": "R1/R2/R3",
+   "step": "申し送りを読む",
+   "expected": "タスクと承認待ちを集約",
+   "screen": "today",
+   "depends_on": [
+    "J03-01"
+   ],
+   "runnable_after": [
+    "T-A-05",
+    "T-A-18",
+    "T-U-13"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J03-03",
+   "journey": "J-03",
+   "name": "P2 毎日 ── 自分のAIと回す",
+   "act": "A92",
+   "role": "R1/R2/R3/R4",
+   "step": "昨日の会話をまとめる",
+   "expected": "memory_digests に 1 行（溜まった日数・結果）。個人の記憶は memories に自動で入れ、整理の前後を残す",
+   "screen": "today",
+   "depends_on": [
+    "J03-02"
+   ],
+   "runnable_after": [
+    "T-A-05",
+    "T-A-18",
+    "T-U-13"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J03-04",
+   "journey": "J-03",
+   "name": "P2 毎日 ── 自分のAIと回す",
+   "act": "A55",
+   "role": "R1/R2/R3",
+   "step": "候補にチェックを入れて「今日を確定」を押す",
+   "expected": "daily_plans に確定を保存。tasks.planned_for＝今日",
+   "screen": "today",
+   "depends_on": [
+    "J03-03"
+   ],
+   "runnable_after": [
+    "T-A-05",
+    "T-U-13"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J03-05",
+   "journey": "J-03",
+   "name": "P2 毎日 ── 自分のAIと回す",
+   "act": "A15",
+   "role": "R1/R2/R3",
+   "step": "中身を見て押す／止める",
+   "expected": "承認したら実行、止めたらAI社員へ戻る",
+   "screen": "approvals",
+   "depends_on": [
+    "J03-04"
+   ],
+   "runnable_after": [
+    "T-A-08",
+    "T-U-14"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J03-06",
+   "journey": "J-03",
+   "name": "P2 毎日 ── 自分のAIと回す",
+   "act": "A53",
+   "role": "R1/R2/R3",
+   "step": "木を開いて、止まっているところを見る",
+   "expected": "AI社員ごとのセッション履歴・関門通過を読む",
+   "screen": "ai-activity",
+   "depends_on": [
+    "J03-05"
+   ],
+   "runnable_after": [
+    "T-A-07",
+    "T-A-08",
+    "T-A-13",
+    "T-A-23",
+    "T-A-25",
+    "T-U-18"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J03-07",
+   "journey": "J-03",
+   "name": "P2 毎日 ── 自分のAIと回す",
+   "act": "A16",
+   "role": "R1/R2/R3",
+   "step": "自分のAIとAI社員のやりとりを見る",
+   "expected": "差し戻しの履歴",
+   "screen": "clone-thread",
+   "depends_on": [
+    "J03-06"
+   ],
+   "runnable_after": [
+    "T-A-08",
+    "T-A-13",
+    "T-U-15"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J03-08",
+   "journey": "J-03",
+   "name": "P2 毎日 ── 自分のAIと回す",
+   "act": "A17",
+   "role": "R1/R2/R3",
+   "step": "自分のタスクを終える",
+   "expected": "タスクの状態を更新し、目標の実績に積む",
+   "screen": "tasks",
+   "depends_on": [
+    "J03-07"
+   ],
+   "runnable_after": [
+    "T-A-06",
+    "T-A-14",
+    "T-U-16"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J03-09",
+   "journey": "J-03",
+   "name": "P2 毎日 ── 自分のAIと回す",
+   "act": "A57",
+   "role": "R1/R2/R3",
+   "step": "詰まっている理由を見て、理由ごとの一手を押す",
+   "expected": "tasks.blocked_reason_id・blocked_since。催促は通知、承認は approvals へ",
+   "screen": "tasks",
+   "depends_on": [
+    "J03-08"
+   ],
+   "runnable_after": [
+    "T-A-05",
+    "T-A-09",
+    "T-A-14",
+    "T-U-16"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J03-10",
+   "journey": "J-03",
+   "name": "P2 毎日 ── 自分のAIと回す",
+   "act": "A56",
+   "role": "R1/R2/R3",
+   "step": "残りを 消す／明日へ／引き継いでもらう に振り分ける",
+   "expected": "tasks.planned_for を更新。引き継ぎは task_handovers。消すは ended_at",
+   "screen": "today",
+   "depends_on": [
+    "J03-09"
+   ],
+   "runnable_after": [
+    "T-A-05",
+    "T-U-13"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J03-11",
+   "journey": "J-03",
+   "name": "P2 毎日 ── 自分のAIと回す",
+   "act": "A50",
+   "role": "R1/R2/R3",
+   "step": "やることを書いて、どの目標かを選ぶ",
+   "expected": "タスクを保存。目標が無ければ「行き先のないタスク」に",
+   "screen": "tasks",
+   "depends_on": [
+    "J03-10"
+   ],
+   "runnable_after": [
+    "T-A-05",
+    "T-A-09",
+    "T-A-14",
+    "T-U-16"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J03-12",
+   "journey": "J-03",
+   "name": "P2 毎日 ── 自分のAIと回す",
+   "act": "A51",
+   "role": "R1/R2/R3",
+   "step": "誰に引き継いでもらうか選ぶ（負荷を見て）",
+   "expected": "担当を移す（合意 or 指示）。goal_id は変えない。task_handovers に記録",
+   "screen": "tasks",
+   "depends_on": [
+    "J03-11"
+   ],
+   "runnable_after": [
+    "T-A-06",
+    "T-A-14",
+    "T-U-16"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J03-13",
+   "journey": "J-03",
+   "name": "P2 毎日 ── 自分のAIと回す",
+   "act": "A48",
+   "role": "R1/R2/R3",
+   "step": "残っている仕事から引き継ぐ",
+   "expected": "タスクの担当を移す（合意 or そのまま）。task_handovers に記録",
+   "screen": "tasks",
+   "depends_on": [
+    "J03-12"
+   ],
+   "runnable_after": [
+    "T-A-05",
+    "T-A-10",
+    "T-A-11",
+    "T-A-14",
+    "T-U-16"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J03-14",
+   "journey": "J-03",
+   "name": "P2 毎日 ── 自分のAIと回す",
+   "act": "A18",
+   "role": "R1/R2/R3/R4",
+   "step": "1件を開いて中を見る",
+   "expected": "レコードと関連（タスク・添付・証跡）を読む",
+   "screen": "record-detail",
+   "depends_on": [
+    "J03-13"
+   ],
+   "runnable_after": [
+    "T-A-10",
+    "T-U-21"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J03-15",
+   "journey": "J-03",
+   "name": "P2 毎日 ── 自分のAIと回す",
+   "act": "A19",
+   "role": "R1/R2/R3",
+   "step": "段階を次へ動かす",
+   "expected": "レコード更新→タスク生成→目標の実績",
+   "screen": "record-detail",
+   "depends_on": [
+    "J03-14"
+   ],
+   "runnable_after": [
+    "T-A-10",
+    "T-U-21"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J03-16",
+   "journey": "J-03",
+   "name": "P2 毎日 ── 自分のAIと回す",
+   "act": "A20",
+   "role": "R1/R2/R3/R4",
+   "step": "聞く・頼む",
+   "expected": "会話を記憶へ。指示をAI社員へ。道具の呼び出しは名前・対象・成否・時間だけ残し、中身の全文は本人の PC に置いたまま。サービス台帳で禁止・銀行のドメインは、仕事を渡すたびに使わない道具として渡し、道具を使う直前のフックでも止める（許可のモードに関わらず）",
+   "screen": "clone-chat",
+   "depends_on": [
+    "J03-15"
+   ],
+   "runnable_after": [
+    "T-A-04",
+    "T-A-11",
+    "T-A-17",
+    "T-U-17"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J03-17",
+   "journey": "J-03",
+   "name": "P2 毎日 ── 自分のAIと回す",
+   "act": "A88",
+   "role": "R1/R2/R3/R4",
+   "step": "会話を分けて始める・一覧から戻る",
+   "expected": "conversations に 1 行（agent_session_id は最初の返事で決まる）。一覧・探す（本文の PGroonga）・星・名前を直す・消す・記憶に使わない会話（毎朝のまとめから外す）",
+   "screen": "clone-chat",
+   "depends_on": [
+    "J03-16"
+   ],
+   "runnable_after": [
+    "T-A-04",
+    "T-A-09",
+    "T-A-17",
+    "T-U-17"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J03-18",
+   "journey": "J-03",
+   "name": "P2 毎日 ── 自分のAIと回す",
+   "act": "A89",
+   "role": "R1/R2/R3/R4",
+   "step": "止める・止めずに直す・順番待ちを取り消す",
+   "expected": "bridge_jobs の状態（止めた＝理由つき）。順番待ちは待っている行、取り消すと やめた",
+   "screen": "clone-chat",
+   "depends_on": [
+    "J03-17"
+   ],
+   "runnable_after": [
+    "T-A-04",
+    "T-A-09",
+    "T-U-17"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J03-19",
+   "journey": "J-03",
+   "name": "P2 毎日 ── 自分のAIと回す",
+   "act": "A90",
+   "role": "R1/R2/R3/R4",
+   "step": "資料や画像を付けて渡す",
+   "expected": "attachments に 1 行、実体は会社の置き場（関門 C4）。messages.attachments は参照だけ",
+   "screen": "clone-chat",
+   "depends_on": [
+    "J03-18"
+   ],
+   "runnable_after": [
+    "T-A-04",
+    "T-A-11",
+    "T-A-17",
+    "T-U-17"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J03-20",
+   "journey": "J-03",
+   "name": "P2 毎日 ── 自分のAIと回す",
+   "act": "A91",
+   "role": "R1/R2/R3/R4",
+   "step": "許可に答える・許可のモードを選ぶ",
+   "expected": "答えは bridge_job_events と証跡に。「いつも」は permission_rules に。全部許可は本人が選んだときだけ・既定にしない",
+   "screen": "clone-chat",
+   "depends_on": [
+    "J03-19"
+   ],
+   "runnable_after": [
+    "T-A-04",
+    "T-A-09",
+    "T-A-17",
+    "T-U-17"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J03-21",
+   "journey": "J-03",
+   "name": "P2 毎日 ── 自分のAIと回す",
+   "act": "A47",
+   "role": "R1/R2/R3/R4",
+   "step": "一覧を見る",
+   "expected": "見える範囲だけのレコードを読む",
+   "screen": "records",
+   "depends_on": [
+    "J03-20"
+   ],
+   "runnable_after": [
+    "T-A-10",
+    "T-U-20"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J03-22",
+   "journey": "J-03",
+   "name": "P2 毎日 ── 自分のAIと回す",
+   "act": "A58",
+   "role": "R1/R2/R3/R4",
+   "step": "見え方を切り替える（URL に残る）",
+   "expected": "同じデータを別の見え方で読む（書き込み無し）",
+   "screen": "tasks",
+   "depends_on": [
+    "J03-21"
+   ],
+   "runnable_after": [
+    "T-A-05",
+    "T-A-10",
+    "T-A-11",
+    "T-A-14",
+    "T-U-16"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J03-23",
+   "journey": "J-03",
+   "name": "P2 毎日 ── 自分のAIと回す",
+   "act": "A21",
+   "role": "R1/R2/R3/R4",
+   "step": "言葉で探す",
+   "expected": "台帳・記憶・証跡の本文の PGroonga 索引を横断（候補は行レベルの制御の内側だけ）。ベクトルは境を越えてから（本人の PC で作る）",
+   "screen": "search",
+   "depends_on": [
+    "J03-22"
+   ],
+   "runnable_after": [
+    "T-A-10",
+    "T-U-19"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J04-01",
+   "journey": "J-04",
+   "name": "P3 毎週",
+   "act": "A22",
+   "role": "R1/R2/R3",
+   "step": "届くか見る",
+   "expected": "目標と実績を突き合わせ、未配分を計算",
+   "screen": "goals",
+   "depends_on": [],
+   "runnable_after": [
+    "T-A-11",
+    "T-A-12",
+    "T-U-22"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J04-02",
+   "journey": "J-04",
+   "name": "P3 毎週",
+   "act": "A54",
+   "role": "R1/R2",
+   "step": "かけたものと出たものを並べて見る",
+   "expected": "ledger_records/tasks の goal_id・measure_id を読んで集計",
+   "screen": "goals",
+   "depends_on": [
+    "J04-01"
+   ],
+   "runnable_after": [
+    "T-A-11",
+    "T-A-12",
+    "T-U-22"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J04-03",
+   "journey": "J-04",
+   "name": "P3 毎週",
+   "act": "A23",
+   "role": "R1/R2",
+   "step": "誰に・どれだけ降ろすか決める",
+   "expected": "配分を保存",
+   "screen": "goal-allocation",
+   "depends_on": [
+    "J04-02"
+   ],
+   "runnable_after": [
+    "T-A-04",
+    "T-A-11",
+    "T-U-23"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J04-04",
+   "journey": "J-04",
+   "name": "P3 毎週",
+   "act": "A24",
+   "role": "R1/R2",
+   "step": "止まっている案件を動かす",
+   "expected": "レコード一覧",
+   "screen": "records",
+   "depends_on": [
+    "J04-03"
+   ],
+   "runnable_after": [
+    "T-A-10",
+    "T-A-15",
+    "T-U-20"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J04-05",
+   "journey": "J-04",
+   "name": "P3 毎週",
+   "act": "A25",
+   "role": "R1/R2/R3/R4",
+   "step": "自分の担当分の進みを見る",
+   "expected": "自分に配られた分だけを読む",
+   "screen": "my-progress",
+   "depends_on": [
+    "J04-04"
+   ],
+   "runnable_after": [
+    "T-A-04",
+    "T-U-25"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J04-06",
+   "journey": "J-04",
+   "name": "P3 毎週",
+   "act": "A49",
+   "role": "R1/R2/R3",
+   "step": "自分の目標を直す・自主目標を足す",
+   "expected": "個人層の目標を保存（本人は即反映）",
+   "screen": "my-progress",
+   "depends_on": [
+    "J04-05"
+   ],
+   "runnable_after": [
+    "T-A-04",
+    "T-A-11",
+    "T-U-25"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J05-01",
+   "journey": "J-05",
+   "name": "P4 毎月・四半期",
+   "act": "A26",
+   "role": "R1/R2",
+   "step": "ふりかえりを読む",
+   "expected": "期間の実績と目標の差を集計",
+   "screen": "review",
+   "depends_on": [],
+   "runnable_after": [
+    "T-A-12",
+    "T-U-26"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J05-02",
+   "journey": "J-05",
+   "name": "P4 毎月・四半期",
+   "act": "A27",
+   "role": "R1/R2",
+   "step": "採る仮説と施策を決める",
+   "expected": "仮説・施策・検証を保存",
+   "screen": "hypotheses",
+   "depends_on": [
+    "J05-01"
+   ],
+   "runnable_after": [
+    "T-A-12",
+    "T-U-27"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J05-03",
+   "journey": "J-05",
+   "name": "P4 毎月・四半期",
+   "act": "A28",
+   "role": "R1/R2",
+   "step": "担当業務を書き換える",
+   "expected": "担当業務を更新、AI社員に反映",
+   "screen": "duties",
+   "depends_on": [
+    "J05-02"
+   ],
+   "runnable_after": [
+    "T-A-15",
+    "T-U-28"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J05-04",
+   "journey": "J-05",
+   "name": "P4 毎月・四半期",
+   "act": "A29",
+   "role": "R1/R2",
+   "step": "目標を改訂する",
+   "expected": "目標を版で保存。紐づくタスクに印",
+   "screen": "goal-edit",
+   "depends_on": [
+    "J05-03"
+   ],
+   "runnable_after": [
+    "T-A-11",
+    "T-U-24"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J05-05",
+   "journey": "J-05",
+   "name": "P4 毎月・四半期",
+   "act": "A52",
+   "role": "R1/R2",
+   "step": "無くす目標を選び、紐づくものの行き先を決める",
+   "expected": "goals.ended_at。孤児のタスク・配分・仮説を赤で残す",
+   "screen": "goal-edit",
+   "depends_on": [
+    "J05-04"
+   ],
+   "runnable_after": [
+    "T-A-11",
+    "T-A-12",
+    "T-U-24"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J05-06",
+   "journey": "J-05",
+   "name": "P4 毎月・四半期",
+   "act": "A30",
+   "role": "R1/R2/R3/R4",
+   "step": "自分の考え方を教える",
+   "expected": "記憶をスコープ付きで保存。本文が直されたら指紋が変わった行だけ Bridge がベクトルを作り直す",
+   "screen": "clone-memory",
+   "depends_on": [
+    "J05-05"
+   ],
+   "runnable_after": [
+    "T-A-17",
+    "T-U-29"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J05-07",
+   "journey": "J-05",
+   "name": "P4 毎月・四半期",
+   "act": "A93",
+   "role": "R1/R2/R3",
+   "step": "上がってきた記憶と食い違いを確かめる",
+   "expected": "memory_proposals の状態（送った／OK／差し戻し）。確認者がいない層は 1 つ上へ。決まったら両者に知らせる",
+   "screen": "clone-memory",
+   "depends_on": [
+    "J05-06"
+   ],
+   "runnable_after": [
+    "T-A-17",
+    "T-U-29"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J05-08",
+   "journey": "J-05",
+   "name": "P4 毎月・四半期",
+   "act": "A44",
+   "role": "R1/R2",
+   "step": "台帳の項目・段階を変える",
+   "expected": "台帳の定義を版で更新",
+   "screen": "ledger-def",
+   "depends_on": [
+    "J05-07"
+   ],
+   "runnable_after": [
+    "T-A-10",
+    "T-A-15",
+    "T-U-30"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J05-09",
+   "journey": "J-05",
+   "name": "P4 毎月・四半期",
+   "act": "A45",
+   "role": "R1/R2",
+   "step": "会社モデルの全体を見る",
+   "expected": "会社モデルの現在の版を読む",
+   "screen": "company-model",
+   "depends_on": [
+    "J05-08"
+   ],
+   "runnable_after": [
+    "T-A-01",
+    "T-A-07",
+    "T-A-11",
+    "T-A-15",
+    "T-A-18",
+    "T-U-31"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J06-01",
+   "journey": "J-06",
+   "name": "P5 例外・困ったとき",
+   "act": "A31",
+   "role": "R1/R2/R3",
+   "step": "メールでパスワードを再設定する／回復コードを使う",
+   "expected": "トークンを失効させて再発行",
+   "screen": "password-reset",
+   "depends_on": [],
+   "runnable_after": [
+    "T-A-01",
+    "T-A-03",
+    "T-A-05",
+    "T-A-16",
+    "T-U-06"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J06-02",
+   "journey": "J-06",
+   "name": "P5 例外・困ったとき",
+   "act": "A32",
+   "role": "R1/R2",
+   "step": "何が変わったかを見せて覚え直させる",
+   "expected": "覚えた操作を版で更新",
+   "screen": "automation-repair",
+   "depends_on": [
+    "J06-01"
+   ],
+   "runnable_after": [
+    "T-A-07",
+    "T-U-32"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J06-03",
+   "journey": "J-06",
+   "name": "P5 例外・困ったとき",
+   "act": "A33",
+   "role": "R1/R2",
+   "step": "いつ何をしたかを追う",
+   "expected": "証跡を検索",
+   "screen": "audit",
+   "depends_on": [
+    "J06-02"
+   ],
+   "runnable_after": [
+    "T-A-08",
+    "T-A-13",
+    "T-A-21",
+    "T-U-33"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J06-04",
+   "journey": "J-06",
+   "name": "P5 例外・困ったとき",
+   "act": "A34",
+   "role": "R1/R2",
+   "step": "やってしまったことを取り消す",
+   "expected": "打ち消しの操作を実行し証跡に残す",
+   "screen": "audit",
+   "depends_on": [
+    "J06-03"
+   ],
+   "runnable_after": [
+    "T-A-08",
+    "T-A-16",
+    "T-U-33"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J06-05",
+   "journey": "J-06",
+   "name": "P5 例外・困ったとき",
+   "act": "A35",
+   "role": "R1/R2/R3/R4",
+   "step": "やらせる範囲を変える",
+   "expected": "ルールを更新",
+   "screen": "policies",
+   "depends_on": [
+    "J06-04"
+   ],
+   "runnable_after": [
+    "T-A-09",
+    "T-U-34"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J07-01",
+   "journey": "J-07",
+   "name": "P6 人が増えたら",
+   "act": "A36",
+   "role": "R1/R2",
+   "step": "人を招いて見える範囲を決める",
+   "expected": "招待を発行、スコープを結ぶ",
+   "screen": "members",
+   "depends_on": [],
+   "runnable_after": [
+    "T-A-13",
+    "T-A-22",
+    "T-U-35"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J07-02",
+   "journey": "J-07",
+   "name": "P6 人が増えたら",
+   "act": "A62",
+   "role": "R1/R2",
+   "step": "抜ける人の依存を片づける",
+   "expected": "依存の表どおりに移す／失効させる。証跡に残す",
+   "screen": "member-detail",
+   "depends_on": [
+    "J07-01"
+   ],
+   "runnable_after": [
+    "T-A-13",
+    "T-A-16",
+    "T-U-58"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J07-03",
+   "journey": "J-07",
+   "name": "P6 人が増えたら",
+   "act": "A67",
+   "role": "R1/R2/R3/R4",
+   "step": "問い合わせを書く",
+   "expected": "問い合わせを保存。運営の受信箱へ。証跡に残す",
+   "screen": "inquiry",
+   "depends_on": [
+    "J07-02"
+   ],
+   "runnable_after": [
+    "T-A-20",
+    "T-U-50"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J07-04",
+   "journey": "J-07",
+   "name": "P6 人が増えたら",
+   "act": "A68",
+   "role": "R1/R2/R3/R4",
+   "step": "お知らせを読む・通知の届け先を選ぶ",
+   "expected": "お知らせと稼働状況を読む。通知の設定を保存",
+   "screen": "notices",
+   "depends_on": [
+    "J07-03"
+   ],
+   "runnable_after": [
+    "T-A-20",
+    "T-U-51"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J07-05",
+   "journey": "J-07",
+   "name": "P6 人が増えたら",
+   "act": "A69",
+   "role": "R1/R2",
+   "step": "プランと請求書を見る",
+   "expected": "プラン・利用量・請求書を読む。プラン変更を申請。上限の見込みは仕事ごとに残した使った量（往復数・時間・量）から出す",
+   "screen": "billing",
+   "depends_on": [
+    "J07-04"
+   ],
+   "runnable_after": [
+    "T-A-20",
+    "T-U-52"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J07-06",
+   "journey": "J-07",
+   "name": "P6 人が増えたら",
+   "act": "A74",
+   "role": "R1/R2/R3/R4",
+   "step": "自分のアカウントを整える",
+   "expected": "名前・メール・パスワード・2 段階認証・端末を保存。変更は即失効の対象（G-14）",
+   "screen": "account",
+   "depends_on": [
+    "J07-05"
+   ],
+   "runnable_after": [
+    "T-A-13",
+    "T-A-22",
+    "T-U-44"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J07-07",
+   "journey": "J-07",
+   "name": "P6 人が増えたら",
+   "act": "A94",
+   "role": "R1/R2/R3/R4",
+   "step": "自分のAIの使用量を見る",
+   "expected": "agent_usage_snapshots の最新",
+   "screen": "account",
+   "depends_on": [
+    "J07-06"
+   ],
+   "runnable_after": [
+    "T-A-01",
+    "T-A-03",
+    "T-A-05",
+    "T-A-16",
+    "T-U-44"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J07-08",
+   "journey": "J-07",
+   "name": "P6 人が増えたら",
+   "act": "A95",
+   "role": "R1/R2/R3/R4",
+   "step": "成果物に書き出して横で直す",
+   "expected": "artifacts に 1 行・artifact_versions に版ごとに 1 行。中身は会社の置き場（関門 C4）。自分のAI に置き場の鍵を見せない",
+   "screen": "clone-chat",
+   "depends_on": [
+    "J07-07"
+   ],
+   "runnable_after": [
+    "T-A-04",
+    "T-A-17",
+    "T-U-17"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J07-09",
+   "journey": "J-07",
+   "name": "P6 人が増えたら",
+   "act": "A75",
+   "role": "R1/R2",
+   "step": "会社の設定を決める",
+   "expected": "会社名・請求先・データの所在・タイムゾーンを保存",
+   "screen": "company-settings",
+   "depends_on": [
+    "J07-08"
+   ],
+   "runnable_after": [
+    "T-A-22",
+    "T-U-45"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J07-10",
+   "journey": "J-07",
+   "name": "P6 人が増えたら",
+   "act": "A76",
+   "role": "R1/R2",
+   "step": "取り込む",
+   "expected": "添付を保存し、台帳の下書きレコードを作る（本番には人が押してから）",
+   "screen": "import",
+   "depends_on": [
+    "J07-09"
+   ],
+   "runnable_after": [
+    "T-A-22",
+    "T-U-46"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J07-11",
+   "journey": "J-07",
+   "name": "P6 人が増えたら",
+   "act": "A77",
+   "role": "R1/R2",
+   "step": "外部サービスの連携と可否を見る",
+   "expected": "サービス台帳を読む。正規連携（OAuth）を関門経由で結ぶ",
+   "screen": "services",
+   "depends_on": [
+    "J07-10"
+   ],
+   "runnable_after": [
+    "T-A-22",
+    "T-U-47"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J07-12",
+   "journey": "J-07",
+   "name": "P6 人が増えたら",
+   "act": "A66",
+   "role": "R1/R2",
+   "step": "運営にサポートアクセスを許可する",
+   "expected": "範囲・期限つきの許可を保存。運営が見た記録を顧客の証跡に残す",
+   "screen": "audit",
+   "depends_on": [
+    "J07-11"
+   ],
+   "runnable_after": [
+    "T-A-08",
+    "T-A-16",
+    "T-U-33"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J07-13",
+   "journey": "J-07",
+   "name": "P6 人が増えたら",
+   "act": "A61",
+   "role": "R1/R2",
+   "step": "1人の権限を決める",
+   "expected": "層への所属・役割・権限の表を保存。既存セッションを無効化",
+   "screen": "member-detail",
+   "depends_on": [
+    "J07-12"
+   ],
+   "runnable_after": [
+    "T-A-13",
+    "T-A-22",
+    "T-U-58"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J07-14",
+   "journey": "J-07",
+   "name": "P6 人が増えたら",
+   "act": "A37",
+   "role": "R1/R2",
+   "step": "AI社員を増やす・人に託す",
+   "expected": "AI社員を作成・付与。プラン上限を判定",
+   "screen": "ai-staff",
+   "depends_on": [
+    "J07-13"
+   ],
+   "runnable_after": [
+    "T-A-07",
+    "T-A-08",
+    "T-A-13",
+    "T-A-23",
+    "T-A-25",
+    "T-U-36"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J07-15",
+   "journey": "J-07",
+   "name": "P6 人が増えたら",
+   "act": "A38",
+   "role": "R1/R2",
+   "step": "誰が何をしたかを確認する",
+   "expected": "証跡を人・期間で集計",
+   "screen": "audit",
+   "depends_on": [
+    "J07-14"
+   ],
+   "runnable_after": [
+    "T-A-08",
+    "T-A-13",
+    "T-A-21",
+    "T-U-33"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J07-16",
+   "journey": "J-07",
+   "name": "P6 人が増えたら",
+   "act": "A46",
+   "role": "R1/R2",
+   "step": "このAI社員の中身を見る",
+   "expected": "担当業務・託し先・ルール・証跡を読む",
+   "screen": "ai-staff-detail",
+   "depends_on": [
+    "J07-15"
+   ],
+   "runnable_after": [
+    "T-A-07",
+    "T-A-08",
+    "T-A-13",
+    "T-A-23",
+    "T-A-25",
+    "T-U-37"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J08-01",
+   "journey": "J-08",
+   "name": "P7 外に説明する・出る",
+   "act": "A39",
+   "role": "R1/R2",
+   "step": "何ができるアプリかを見せる",
+   "expected": "Bridgeの権限・送るもの/送らないものを列挙",
+   "screen": "security-brief",
+   "depends_on": [],
+   "runnable_after": [
+    "T-A-16",
+    "T-U-38"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J08-02",
+   "journey": "J-08",
+   "name": "P7 外に説明する・出る",
+   "act": "A40",
+   "role": "R1/R2",
+   "step": "全操作の証跡を出す",
+   "expected": "証跡をファイルに書き出す",
+   "screen": "audit",
+   "depends_on": [
+    "J08-01"
+   ],
+   "runnable_after": [
+    "T-A-16",
+    "T-U-33"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J08-03",
+   "journey": "J-08",
+   "name": "P7 外に説明する・出る",
+   "act": "A41",
+   "role": "R1/R2",
+   "step": "データを全部持ち出す",
+   "expected": "会社モデルと台帳を一括で書き出す",
+   "screen": "export",
+   "depends_on": [
+    "J08-02"
+   ],
+   "runnable_after": [
+    "T-A-16",
+    "T-U-39"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J08-04",
+   "journey": "J-08",
+   "name": "P7 外に説明する・出る",
+   "act": "A42",
+   "role": "R1/R2",
+   "step": "退会する",
+   "expected": "トークン・Bridge接続・共有を全部無効化",
+   "screen": "account-close",
+   "depends_on": [
+    "J08-03"
+   ],
+   "runnable_after": [
+    "T-A-13",
+    "T-A-16",
+    "T-U-40"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J09-01",
+   "journey": "J-09",
+   "name": "P8 運営（段階2）",
+   "act": "A43",
+   "role": "R6",
+   "step": "顧客のデータを見ずに直す",
+   "expected": "構成と失敗の型だけを見る",
+   "screen": "ops-support",
+   "depends_on": [],
+   "runnable_after": [
+    "T-A-19",
+    "T-A-21",
+    "T-U-41"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J09-02",
+   "journey": "J-09",
+   "name": "P8 運営（段階2）",
+   "act": "A59",
+   "role": "R6",
+   "step": "配布物を直す・プランに割り当てる",
+   "expected": "運営層の定義を版で更新し、各社の「使う／使わない」に反映",
+   "screen": "ops-catalog",
+   "depends_on": [
+    "J09-01"
+   ],
+   "runnable_after": [
+    "T-A-07",
+    "T-A-08",
+    "T-A-13",
+    "T-A-23",
+    "T-A-25",
+    "T-U-43"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J09-03",
+   "journey": "J-09",
+   "name": "P8 運営（段階2）",
+   "act": "A60",
+   "role": "R6",
+   "step": "会社の一覧を見る",
+   "expected": "各社のプラン・体数・稼働・詰まりの型だけを集計（中身は読まない）",
+   "screen": "ops-home",
+   "depends_on": [
+    "J09-02"
+   ],
+   "runnable_after": [
+    "T-A-19",
+    "T-A-25",
+    "T-U-42"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J09-04",
+   "journey": "J-09",
+   "name": "P8 運営（段階2）",
+   "act": "A70",
+   "role": "R6",
+   "step": "問い合わせに答える",
+   "expected": "受信箱（問い合わせ＋詰まり）。返答は顧客の問い合わせと証跡に残る",
+   "screen": "ops-support",
+   "depends_on": [
+    "J09-03"
+   ],
+   "runnable_after": [
+    "T-A-19",
+    "T-A-21",
+    "T-U-41"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J09-05",
+   "journey": "J-09",
+   "name": "P8 運営（段階2）",
+   "act": "A71",
+   "role": "R6",
+   "step": "お知らせを出す",
+   "expected": "お知らせ・稼働状況を公開（対象プラン・公開日時）。全社に通知",
+   "screen": "ops-notices",
+   "depends_on": [
+    "J09-04"
+   ],
+   "runnable_after": [
+    "T-A-21",
+    "T-U-53"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J09-06",
+   "journey": "J-09",
+   "name": "P8 運営（段階2）",
+   "act": "A72",
+   "role": "R6",
+   "step": "請求・入金・利用量を見る",
+   "expected": "各社の請求・入金・未収・利用量／上限を集計（中身は見ない）",
+   "screen": "ops-billing",
+   "depends_on": [
+    "J09-05"
+   ],
+   "runnable_after": [
+    "T-A-21",
+    "T-U-54"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J09-07",
+   "journey": "J-09",
+   "name": "P8 運営（段階2）",
+   "act": "A73",
+   "role": "R6",
+   "step": "セキュリティの出来事を見る",
+   "expected": "失敗したログイン・鍵の失効・不審な接続の記録",
+   "screen": "ops-audit",
+   "depends_on": [
+    "J09-06"
+   ],
+   "runnable_after": [
+    "T-A-08",
+    "T-A-13",
+    "T-A-21",
+    "T-U-57"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J09-08",
+   "journey": "J-09",
+   "name": "P8 運営（段階2）",
+   "act": "A78",
+   "role": "R6",
+   "step": "サービス台帳を更新する",
+   "expected": "可否と理由を版で更新。全社に効く",
+   "screen": "ops-services",
+   "depends_on": [
+    "J09-07"
+   ],
+   "runnable_after": [
+    "T-A-23",
+    "T-U-48"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J09-09",
+   "journey": "J-09",
+   "name": "P8 運営（段階2）",
+   "act": "A79",
+   "role": "R6",
+   "step": "プランの定義と目標スキルを扱う",
+   "expected": "価格・上限を版で更新。目標スキルは配るものに載せる",
+   "screen": "ops-catalog",
+   "depends_on": [
+    "J09-08"
+   ],
+   "runnable_after": [
+    "T-A-07",
+    "T-A-08",
+    "T-A-13",
+    "T-A-23",
+    "T-A-25",
+    "T-U-43"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J09-10",
+   "journey": "J-09",
+   "name": "P8 運営（段階2）",
+   "act": "A80",
+   "role": "R6",
+   "step": "スキルを構築・アップロード・テストして配る",
+   "expected": "版を保存（C4）・配布先の会社に版の更新を通知・装着の状況を集計",
+   "screen": "ops-skills",
+   "depends_on": [
+    "J09-09"
+   ],
+   "runnable_after": [
+    "T-A-23",
+    "T-U-49"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J09-11",
+   "journey": "J-09",
+   "name": "P8 運営（段階2）",
+   "act": "A81",
+   "role": "R1/R2",
+   "step": "使えるスキルを見て絞る",
+   "expected": "装着の有効／無効を会社の範囲で保存。外したスキルはその AI社員では動かない",
+   "screen": "ai-staff-detail",
+   "depends_on": [
+    "J09-10"
+   ],
+   "runnable_after": [
+    "T-A-13",
+    "T-U-37"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J09-12",
+   "journey": "J-09",
+   "name": "P8 運営（段階2）",
+   "act": "A63",
+   "role": "R6",
+   "step": "公開の申請を審査する",
+   "expected": "匿名化の確認・承認／却下を版で記録",
+   "screen": "ops-review",
+   "depends_on": [
+    "J09-11"
+   ],
+   "runnable_after": [
+    "T-A-24",
+    "T-U-56"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J09-13",
+   "journey": "J-09",
+   "name": "P8 運営（段階2）",
+   "act": "A64",
+   "role": "R6",
+   "step": "会社の 1 社を扱う",
+   "expected": "会社の詳細の 8 面。入金の記録・返答・承認・対処・個別のお知らせはここから。中身は読まない",
+   "screen": "ops-tenant",
+   "depends_on": [
+    "J09-12"
+   ],
+   "runnable_after": [
+    "T-A-19",
+    "T-A-24",
+    "T-U-55"
+   ],
+   "result": "",
+   "task": ""
+  },
+  {
+   "id": "J09-14",
+   "journey": "J-09",
+   "name": "P8 運営（段階2）",
+   "act": "A65",
+   "role": "R6",
+   "step": "運営の証跡を見る",
+   "expected": "運営側の操作記録と運営メンバーの権限",
+   "screen": "ops-audit",
+   "depends_on": [
+    "J09-13"
+   ],
+   "runnable_after": [
+    "T-A-24",
+    "T-U-57"
+   ],
+   "result": "",
+   "task": ""
+  }
+ ]
+}
