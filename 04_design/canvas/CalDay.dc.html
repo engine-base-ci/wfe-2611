@@ -28,6 +28,7 @@ button{white-space:nowrap}
 
 
 
+
 /* kn-shell: bars and panels run edge to edge; menu and side panel open/close */
 [data-shell]{min-height:100vh !important;align-items:stretch}
 [data-shell]>main{display:flex !important;flex-direction:column}
@@ -52,6 +53,21 @@ aside[aria-label="チケットのパネル"]{position:sticky;top:0;height:calc(1
 .kn-reopen:hover{color:#22345C;background:#F7F8FA}
 body:has(#kn-tg-side:checked) .kn-side{display:none !important}
 body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
+/* kn-sub: secondary left panel, white floating card for the current item */
+.kn-sub{width:232px;flex:none;background:#EDF0F4;border-right:1px solid #DDE2E9;padding:10px 10px 14px;display:flex;flex-direction:column;gap:2px;box-sizing:border-box}
+.kn-sub-h{font-size:11px;color:#6B7585;padding:12px 10px 4px;letter-spacing:.02em}
+.kn-sub-h:first-child{padding-top:4px}
+.kn-sub-i{display:flex;align-items:center;gap:10px;height:36px;padding:0 10px;border-radius:8px;color:#3A4453;text-decoration:none;transition:background .12s}
+.kn-sub-i:hover{background:rgba(255,255,255,.55);color:#131B27}
+.kn-sub-i[aria-current="page"]{background:#FFFFFF;color:#131B27;font-weight:600;box-shadow:0 1px 2px rgba(19,27,39,.08),0 0 0 1px rgba(19,27,39,.06)}
+.kn-sub-ic{display:grid;place-items:center;width:20px;color:#6B7585}
+.kn-sub-i[aria-current="page"] .kn-sub-ic{color:#22345C}
+.kn-sub-t{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kn-sub-n{font-size:12px;color:#6B7585;font-weight:400}
+.kn-sub-badge{font-size:11px;background:#B45309;color:#FFFFFF;border-radius:99px;padding:0 7px;font-weight:500}
+.kn-sub-note{margin-top:auto;font-size:11px;color:#6B7585;padding:10px}
+@media (max-width:1023px){.kn-sub{width:64px;padding:10px 8px}.kn-sub-h,.kn-sub-t,.kn-sub-n,.kn-sub-note{display:none}.kn-sub-i{justify-content:center;padding:0}.kn-sub-badge{position:absolute;margin:-18px 0 0 18px;font-size:9px;padding:0 4px}}
+@media (max-width:767px){.kn-sub{width:auto;flex:none;flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid #DDE2E9;padding:6px 8px}.kn-sub-t{display:inline}.kn-sub-i{padding:0 10px;flex:none}}
 @media (max-width:1023px){.kn-nav{flex-basis:56px !important;padding:10px 6px !important}.kn-lbl{display:none !important}.kn-top{flex-direction:column;padding:4px 0 !important}.kn-tg{margin-left:0 !important}.kn-item{justify-content:center;padding:0 !important}}
 </style>
 </helmet>

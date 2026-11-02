@@ -29,6 +29,7 @@ span[style*="border-radius: 99px"],b[style*="border-radius: 99px"]{white-space:n
 
 
 
+
 /* kn-shell: bars and panels run edge to edge; menu and side panel open/close */
 [data-shell]{min-height:100vh !important;align-items:stretch}
 [data-shell]>main{display:flex !important;flex-direction:column}
@@ -53,6 +54,21 @@ aside[aria-label="チケットのパネル"]{position:sticky;top:0;height:calc(1
 .kn-reopen:hover{color:#22345C;background:#F7F8FA}
 body:has(#kn-tg-side:checked) .kn-side{display:none !important}
 body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
+/* kn-sub: secondary left panel, white floating card for the current item */
+.kn-sub{width:232px;flex:none;background:#EDF0F4;border-right:1px solid #DDE2E9;padding:10px 10px 14px;display:flex;flex-direction:column;gap:2px;box-sizing:border-box}
+.kn-sub-h{font-size:11px;color:#6B7585;padding:12px 10px 4px;letter-spacing:.02em}
+.kn-sub-h:first-child{padding-top:4px}
+.kn-sub-i{display:flex;align-items:center;gap:10px;height:36px;padding:0 10px;border-radius:8px;color:#3A4453;text-decoration:none;transition:background .12s}
+.kn-sub-i:hover{background:rgba(255,255,255,.55);color:#131B27}
+.kn-sub-i[aria-current="page"]{background:#FFFFFF;color:#131B27;font-weight:600;box-shadow:0 1px 2px rgba(19,27,39,.08),0 0 0 1px rgba(19,27,39,.06)}
+.kn-sub-ic{display:grid;place-items:center;width:20px;color:#6B7585}
+.kn-sub-i[aria-current="page"] .kn-sub-ic{color:#22345C}
+.kn-sub-t{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kn-sub-n{font-size:12px;color:#6B7585;font-weight:400}
+.kn-sub-badge{font-size:11px;background:#B45309;color:#FFFFFF;border-radius:99px;padding:0 7px;font-weight:500}
+.kn-sub-note{margin-top:auto;font-size:11px;color:#6B7585;padding:10px}
+@media (max-width:1023px){.kn-sub{width:64px;padding:10px 8px}.kn-sub-h,.kn-sub-t,.kn-sub-n,.kn-sub-note{display:none}.kn-sub-i{justify-content:center;padding:0}.kn-sub-badge{position:absolute;margin:-18px 0 0 18px;font-size:9px;padding:0 4px}}
+@media (max-width:767px){.kn-sub{width:auto;flex:none;flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid #DDE2E9;padding:6px 8px}.kn-sub-t{display:inline}.kn-sub-i{padding:0 10px;flex:none}}
 @media (max-width:1023px){.kn-nav{flex-basis:56px !important;padding:10px 6px !important}.kn-lbl{display:none !important}.kn-top{flex-direction:column;padding:4px 0 !important}.kn-tg{margin-left:0 !important}.kn-item{justify-content:center;padding:0 !important}}
 </style>
 </helmet>
@@ -86,13 +102,7 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
    </nav>
   </header>
   <div style="display: flex; min-height: 0">
-   <aside aria-label="知っていることの種類" style="width: 220px; flex: none; background: #FFFFFF; border-right: 1px solid #DDE2E9; padding: 12px 8px; display: flex; flex-direction: column; gap: 2px; box-sizing: border-box">
-    <a href="RoomKnows.dc.html" style="display: flex; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 8px; text-decoration: none; color: #131B27"><span style="width: 28px; height: 28px; border-radius: 8px; background: #186F69; color: #FFFFFF; display: grid; place-items: center; font-weight: 700; font-size: 12px">守</span><span style="flex: 1"><b style="font-weight: 500; display: block">必ず守ること</b><span style="font-size: 11px; color: #4A5563">常に効く</span></span><span style="font-size: 12px; color: #4A5563">9</span></a>
-    <a href="RoomWays.dc.html" style="display: flex; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 8px; text-decoration: none; color: #131B27"><span style="width: 28px; height: 28px; border-radius: 8px; background: #22345C; color: #FFFFFF; display: grid; place-items: center; font-weight: 700; font-size: 12px">型</span><span style="flex: 1"><b style="font-weight: 500; display: block">やり方</b><span style="font-size: 11px; color: #4A5563">その仕事のときだけ</span></span><span style="font-size: 12px; color: #4A5563">8</span></a>
-    <a href="RoomMemory.dc.html" style="display: flex; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 8px; text-decoration: none; color: #131B27"><span style="width: 28px; height: 28px; border-radius: 8px; background: #6D4AA6; color: #FFFFFF; display: grid; place-items: center; font-weight: 700; font-size: 12px">憶</span><span style="flex: 1"><b style="font-weight: 500; display: block">覚えていること</b><span style="font-size: 11px; color: #4A5563">好み・事実・実例</span></span><span style="font-size: 12px; color: #4A5563">23</span></a>
-    <div style="border-top: 1px solid #EDF0F4; margin: 8px 0"></div>
-    <a href="RoomWants.dc.html" aria-current="page" style="display: flex; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 8px; background: #EEF3FD; text-decoration: none; color: #131B27"><span style="width: 28px; height: 28px; border-radius: 8px; background: #FCEBD5; color: #7A4A05; display: grid; place-items: center; font-weight: 700; font-size: 12px">？</span><span style="flex: 1"><b style="font-weight: 500; display: block">覚えたいこと</b><span style="font-size: 11px; color: #4A5563">確かめてほしい候補</span></span><b style="font-size: 11px; background: #B45309; color: #FFFFFF; border-radius: 99px; padding: 0 7px">4</b></a>
-   </aside>
+   <aside aria-label="知っていることの種類" class="kn-sub"><div class="kn-sub-h">知っていること</div><a href="RoomKnows.dc.html" class="kn-sub-i"><span class="kn-sub-ic"><span style="width: 20px; height: 20px; flex: none; border-radius: 6px; background: #186F69; color: #FFFFFF; display: grid; place-items: center; font-size: 11px; font-weight: 700">守</span></span><span class="kn-sub-t">必ず守ること</span><span class="kn-sub-n">9</span></a><a href="RoomWays.dc.html" class="kn-sub-i"><span class="kn-sub-ic"><span style="width: 20px; height: 20px; flex: none; border-radius: 6px; background: #22345C; color: #FFFFFF; display: grid; place-items: center; font-size: 11px; font-weight: 700">型</span></span><span class="kn-sub-t">やり方</span><span class="kn-sub-n">8</span></a><a href="RoomMemory.dc.html" class="kn-sub-i"><span class="kn-sub-ic"><span style="width: 20px; height: 20px; flex: none; border-radius: 6px; background: #6D4AA6; color: #FFFFFF; display: grid; place-items: center; font-size: 11px; font-weight: 700">憶</span></span><span class="kn-sub-t">覚えていること</span><span class="kn-sub-n">23</span></a><div class="kn-sub-h">確かめること</div><a href="RoomWants.dc.html" aria-current="page" class="kn-sub-i"><span class="kn-sub-ic"><span style="width: 20px; height: 20px; flex: none; border-radius: 6px; background: #FCEBD5; color: #7A4A05; display: grid; place-items: center; font-size: 11px; font-weight: 700">？</span></span><span class="kn-sub-t">覚えたいこと</span><b class="kn-sub-badge">4</b></a></aside>
    <section style="flex: 1; min-width: 0; padding: 16px 24px; display: flex; flex-direction: column; gap: 12px">
     <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap"><h2 style="font-size: 17px; margin: 0">覚えたいこと</h2><span style="font-size: 12px; color: #4A5563">分身が覚えたいと言っているもの。決めるまで使わない</span><span style="margin-left: auto; display: flex; gap: 6px"><span style="font-size: 12px; color: #4A5563">きっかけ</span></span></div>
     <div style="display: flex; gap: 6px; flex-wrap: wrap"><button type="button" style="height: 28px; border: 1px solid #22345C; background: #22345C; color: #FFFFFF; border-radius: 99px; padding: 0 12px; font-size: 12px">すべて 4</button><button type="button" style="height: 28px; border: 1px solid #DDE2E9; background: #FFFFFF; color: #4A5563; border-radius: 99px; padding: 0 12px; font-size: 12px">直したところ 1</button><button type="button" style="height: 28px; border: 1px solid #DDE2E9; background: #FFFFFF; color: #4A5563; border-radius: 99px; padding: 0 12px; font-size: 12px">差し戻し 1</button><button type="button" style="height: 28px; border: 1px solid #DDE2E9; background: #FFFFFF; color: #4A5563; border-radius: 99px; padding: 0 12px; font-size: 12px">話の中で 1</button><button type="button" style="height: 28px; border: 1px solid #DDE2E9; background: #FFFFFF; color: #4A5563; border-radius: 99px; padding: 0 12px; font-size: 12px">同じ流れ 1</button><button type="button" style="height: 28px; border: 1px solid #DDE2E9; background: #FFFFFF; color: #4A5563; border-radius: 99px; padding: 0 12px; font-size: 12px">ナレッジ 0</button></div>
