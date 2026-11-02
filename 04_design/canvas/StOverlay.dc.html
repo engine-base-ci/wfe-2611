@@ -79,7 +79,7 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
  <section aria-label="知らせ" style="position: absolute; top: 56px; right: 24px; width: 420px; background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 10px; box-shadow: 0 16px 40px rgba(19,27,39,0.18); overflow: hidden">
   <div style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-bottom: 1px solid #DDE2E9"><b>知らせ</b><span style="font-size: 12px; color: #4A5563">未読 3</span><span style="margin-left: auto; display: flex; gap: 6px; align-items: center; font-size: 12px"><label style="display: inline-flex; gap: 4px; align-items: center"><input type="checkbox" checked>未読だけ</label><button type="button" style="height: 26px; border: 1px solid #DDE2E9; border-radius: 6px; background: #FFFFFF; font-size: 12px; color: #131B27; padding: 0 8px">人で絞る ▾</button></span></div>
   <sc-for list="{{notes}}" as="n" hint-placeholder-count="5">
-   <a href="TicketDetail.dc.html" style="{{n.rowStyle}}">
+   <a href="{{n.href}}" style="{{n.rowStyle}}">
     <span style="{{n.av}}">{{n.ini}}</span>
     <span style="flex: 1; min-width: 0"><span style="display: block; font-size: 12px">{{n.text}}</span><span style="display: block; font-size: 11px; color: #4A5563">{{n.key}} ・ {{n.when}}</span></span>
     <span style="{{n.tagStyle}}">{{n.tag}}</span>
@@ -111,11 +111,11 @@ class Component extends DCLogic {
     var tg = function (bg) { return "font-size:11px;color:#FFFFFF;border-radius:99px;padding:0 8px;white-space:nowrap;background:" + bg; };
     var row = function (unread) { return "display:flex;gap:10px;align-items:center;padding:10px 14px;border-bottom:1px solid #EDF0F4;text-decoration:none;color:#131B27;" + (unread ? "background:#FFFBEB" : ""); };
     return { notes: [
-      { ini: "佐", av: av("#186F69"), text: "佐藤さんが EG-119 を渡しました。返事の期限 11/03", key: "EG-119", when: "1時間前", tag: "受ける？", tagStyle: tg("#7E570D"), rowStyle: row(true) },
-      { ini: "AI", av: av("#4A5563"), text: "EG-128 の確認が終わり、あなたの承認を待っています", key: "EG-128", when: "4時間前", tag: "承認待ち", tagStyle: tg("#B45309"), rowStyle: row(true) },
-      { ini: "鈴", av: av("#2F4B7C"), text: "鈴木さんが EG-128 であなたを @ しました", key: "EG-128", when: "5時間前", tag: "@", tagStyle: tg("#22345C"), rowStyle: row(true) },
-      { ini: "AI", av: av("#4A5563"), text: "EG-127 が止まりました：発注ナビの画面が変わっていた", key: "EG-127", when: "昨日", tag: "止まった", tagStyle: tg("#B91C1C"), rowStyle: row(false) },
-      { ini: "運", av: av("#22345C"), text: "お知らせ：11/10 2:00〜3:00 メンテナンス", key: "お知らせ", when: "昨日", tag: "運営", tagStyle: tg("#6B7585"), rowStyle: row(false) }
+      { ini: "佐", av: av("#186F69"), text: "佐藤さんが EG-119 を渡しました。返事の期限 11/03", key: "EG-119", when: "1時間前", href: "StModal.dc.html", tag: "受ける？", tagStyle: tg("#7E570D"), rowStyle: row(true) },
+      { ini: "AI", av: av("#4A5563"), text: "EG-128 の確認が終わり、あなたの承認を待っています", key: "EG-128", when: "4時間前", href: "TicketDetail.dc.html", tag: "承認待ち", tagStyle: tg("#B45309"), rowStyle: row(true) },
+      { ini: "鈴", av: av("#2F4B7C"), text: "鈴木さんが EG-128 であなたを @ しました", key: "EG-128", when: "5時間前", href: "TdTalk.dc.html", tag: "@", tagStyle: tg("#22345C"), rowStyle: row(true) },
+      { ini: "AI", av: av("#4A5563"), text: "EG-127 が止まりました：発注ナビの画面が変わっていた", key: "EG-127", when: "昨日", href: "StFailed.dc.html", tag: "止まった", tagStyle: tg("#B91C1C"), rowStyle: row(false) },
+      { ini: "運", av: av("#22345C"), text: "お知らせ：11/10 2:00〜3:00 メンテナンス", key: "お知らせ", when: "昨日", href: "#", tag: "運営", tagStyle: tg("#6B7585"), rowStyle: row(false) }
     ] };
   }
 }

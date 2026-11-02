@@ -118,7 +118,7 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
           <tr style="{{r.rowStyle}}">
            <td><span style="{{r.typeStyle}}">{{r.type}}</span></td>
            <td><a href="TicketDetail.dc.html" style="font-size: 12px">{{r.key}}</a></td>
-           <td style="max-width: 360px; overflow: hidden; text-overflow: ellipsis"><a href="TicketDetail.dc.html" style="color: #131B27; text-decoration: none">{{r.title}}</a><sc-if value="{{r.kids}}" hint-placeholder-val="{{ false }}"><span style="margin-left: 6px; font-size: 11px; color: #4A5563; border: 1px solid #DDE2E9; border-radius: 4px; padding: 0 4px">子 {{r.kids}}</span></sc-if></td>
+           <td style="max-width: 360px; overflow: hidden; text-overflow: ellipsis"><a href="TicketDetail.dc.html" style="color: #131B27; text-decoration: none">{{r.title}}</a><sc-if value="{{r.talk}}" hint-placeholder-val="{{ false }}"><a href="TdTalk.dc.html" title="やり取りを開く" style="{{r.talkStyle}}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>{{r.talk}}</a></sc-if><sc-if value="{{r.kids}}" hint-placeholder-val="{{ false }}"><span style="margin-left: 6px; font-size: 11px; color: #4A5563; border: 1px solid #DDE2E9; border-radius: 4px; padding: 0 4px">子 {{r.kids}}</span></sc-if></td>
            <td><span style="{{r.stStyle}}">{{r.state}}</span></td>
            <td><span style="display: inline-flex; align-items: center; gap: 5px"><span style="{{r.doerAv}}">{{r.doerIni}}</span>{{r.doer}}<sc-if value="{{r.ai}}" hint-placeholder-val="{{ false }}"><span title="AI に任せている" style="display: inline-flex; align-items: center; gap: 2px; font-size: 11px; color: #4A5563; border: 1px solid #DDE2E9; border-radius: 99px; padding: 0 6px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 8V4H8"></path><rect width="16" height="12" x="4" y="8" rx="2"></rect><path d="M2 14h2M20 14h2M15 13v2M9 13v2"></path></svg>AI</span></sc-if></span></td>
            <td style="color: #4A5563">{{r.group}}</td>
@@ -160,7 +160,7 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
     <section style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 8px">
      <h2 style="font-size: 13px; margin: 0; padding: 10px 12px; border-bottom: 1px solid #DDE2E9">最近の知らせ</h2>
      <sc-for list="{{notes}}" as="n" hint-placeholder-count="4">
-      <div style="display: flex; gap: 8px; padding: 8px 12px; border-bottom: 1px solid #EDF0F4"><span style="width: 22px; height: 22px; border-radius: 99px; background: {{n.bg}}; color: #FFFFFF; font-size: 10px; display: grid; place-items: center; flex: none">{{n.ini}}</span><div style="min-width: 0"><div style="font-size: 12px">{{n.text}}</div><div style="font-size: 11px; color: #4A5563">{{n.key}} ・ {{n.when}}</div></div></div>
+      <a href="{{n.href}}" style="display: flex; gap: 8px; padding: 8px 12px; border-bottom: 1px solid #EDF0F4; text-decoration: none; color: #131B27"><span style="width: 22px; height: 22px; border-radius: 99px; background: {{n.bg}}; color: #FFFFFF; font-size: 10px; display: grid; place-items: center; flex: none">{{n.ini}}</span><div style="min-width: 0"><div style="font-size: 12px">{{n.text}}</div><div style="font-size: 11px; color: #4A5563">{{n.key}} ・ {{n.when}}</div></div></a>
      </sc-for>
     </section>
    </aside>
@@ -174,12 +174,14 @@ class Component extends DCLogic {
     var T = { "タスク": "#186F69", "QA": "#B91C1C", "課題": "#B45309", "会議": "#6D4AA6" };
     var S = { "承認待ち": "#B45309", "実行中": "#1D4ED8", "確認中": "#6D4AA6", "作業中": "#2F4B7C", "未着手": "#6B7585", "渡し中": "#7E570D", "完了": "#166534" };
     var tag = function (c) { return "display:inline-block;min-width:44px;text-align:center;font-size:11px;font-weight:500;border-radius:99px;padding:1px 8px;color:#FFFFFF;background:" + c; };
+    var TK = { "EG-128": [6, 1], "EG-124": [3, 0], "JD-204": [4, 2], "EG-119": [2, 0], "EG-126": [5, 0], "JD-198": [1, 0] };
+    var talkOf = function (k) { var t = TK[k] || [0, 0]; return { talk: t[0], talkStyle: "margin-left:6px;display:inline-flex;align-items:center;gap:3px;font-size:11px;border-radius:99px;padding:0 6px;text-decoration:none;" + (t[1] ? "background:#22345C;color:#FFFFFF" : "color:#4A5563;border:1px solid #DDE2E9") }; };
     var mk = function (o) {
       var who = o[4].replace("のAI", "");
       return { type: o[0], key: o[1], title: o[2], state: o[3], doer: who, ai: o[4].indexOf("AI") >= 0,
         doerIni: who.slice(0, 1), doerAv: "width:20px;height:20px;border-radius:99px;background:" + (who === "佐藤" ? "#186F69" : "#6B5B99") + ";color:#FFFFFF;font-size:10px;display:grid;place-items:center",
         group: o[5], due: o[6], late: !!o[7], est: o[8], upd: o[9], kids: o[10] || 0,
-        typeStyle: tag(T[o[0]]), stStyle: tag(S[o[3]]), dueStyle: o[7] ? "color:#B91C1C;font-weight:500" : "", rowStyle: "" };
+        typeStyle: tag(T[o[0]]), talk: talkOf(o[1]).talk, talkStyle: talkOf(o[1]).talkStyle, stStyle: tag(S[o[3]]), dueStyle: o[7] ? "color:#B91C1C;font-weight:500" : "", rowStyle: "" };
     };
     return {
       sections: [
@@ -201,10 +203,10 @@ class Component extends DCLogic {
           mk(["タスク", "KR-033", "11月分 請求書をまとめて出す", "未着手", "高本のAI", "経理", "11/25", 0, "1h / —", "今日"]) ] }
       ],
       notes: [
-        { ini: "佐", bg: "#186F69", text: "佐藤さんが EG-119 を渡しました（返事の期限 11/03）", key: "EG-119", when: "1時間前" },
-        { ini: "AI", bg: "#4A5563", text: "高本のAI が EG-128 の成果物を作り、確認 ①② を通過", key: "EG-128", when: "4時間前" },
-        { ini: "山", bg: "#2F4B7C", text: "山田様（セイコー）から依頼が届きました", key: "依頼", when: "昨日" },
-        { ini: "佐", bg: "#186F69", text: "佐藤さんが JD-204 で上位の承認を求めています", key: "JD-204", when: "昨日" }
+        { href: "StModal.dc.html", ini: "佐", bg: "#186F69", text: "佐藤さんが EG-119 を渡しました（返事の期限 11/03）", key: "EG-119", when: "1時間前" },
+        { href: "TicketDetail.dc.html", ini: "AI", bg: "#4A5563", text: "高本のAI が EG-128 の成果物を作り、確認 ①② を通過", key: "EG-128", when: "4時間前" },
+        { href: "#", ini: "山", bg: "#2F4B7C", text: "山田様（セイコー）から依頼が届きました", key: "依頼", when: "昨日" },
+        { href: "TdTalk.dc.html", ini: "佐", bg: "#186F69", text: "佐藤さんが EG-128 に書き込みました（期限を 11/02 に）", key: "JD-204", when: "昨日" }
       ]
     };
   }

@@ -132,7 +132,7 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
          <td><input type="checkbox" aria-label="選ぶ"></td>
          <td><span style="{{r.typeStyle}}">{{r.type}}</span></td>
          <td><a href="TicketDetail.dc.html" style="font-size: 12px">{{r.key}}</a></td>
-         <td style="max-width: 340px; overflow: hidden; text-overflow: ellipsis"><span style="{{r.indent}}"></span><sc-if value="{{r.parent}}" hint-placeholder-val="{{ false }}"><span style="color: #4A5563; margin-right: 4px">▾</span></sc-if><a href="TicketDetail.dc.html" style="color: #131B27; text-decoration: none">{{r.title}}</a><sc-if value="{{r.kids}}" hint-placeholder-val="{{ false }}"><span style="margin-left: 6px; font-size: 11px; color: #4A5563; border: 1px solid #DDE2E9; border-radius: 4px; padding: 0 4px">子 {{r.kids}}</span></sc-if></td>
+         <td style="max-width: 340px; overflow: hidden; text-overflow: ellipsis"><span style="{{r.indent}}"></span><sc-if value="{{r.parent}}" hint-placeholder-val="{{ false }}"><span style="color: #4A5563; margin-right: 4px">▾</span></sc-if><a href="TicketDetail.dc.html" style="color: #131B27; text-decoration: none">{{r.title}}</a><sc-if value="{{r.talk}}" hint-placeholder-val="{{ false }}"><a href="TdTalk.dc.html" title="やり取りを開く" style="{{r.talkStyle}}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>{{r.talk}}</a></sc-if><sc-if value="{{r.kids}}" hint-placeholder-val="{{ false }}"><span style="margin-left: 6px; font-size: 11px; color: #4A5563; border: 1px solid #DDE2E9; border-radius: 4px; padding: 0 4px">子 {{r.kids}}</span></sc-if></td>
          <td><span style="{{r.stStyle}}">{{r.state}}</span></td>
          <td><span style="display: inline-flex; align-items: center; gap: 5px">{{r.owner}}<sc-if value="{{r.ai}}" hint-placeholder-val="{{ false }}"><span title="AI に任せている" style="display: inline-flex; align-items: center; gap: 2px; font-size: 11px; color: #4A5563; border: 1px solid #DDE2E9; border-radius: 99px; padding: 0 6px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 8V4H8"></path><rect width="16" height="12" x="4" y="8" rx="2"></rect><path d="M2 14h2M20 14h2M15 13v2M9 13v2"></path></svg>AI</span></sc-if></span></td>
          <td style="color: #4A5563">{{r.cat}}</td>
@@ -158,10 +158,12 @@ class Component extends DCLogic {
     var T = { "タスク": "#186F69", "QA": "#B91C1C", "課題": "#B45309", "会議": "#6D4AA6" };
     var S = { "承認待ち": "#B45309", "実行中": "#1D4ED8", "確認中": "#6D4AA6", "作業中": "#2F4B7C", "未着手": "#6B7585", "渡し中": "#7E570D", "保留": "#374151", "完了": "#166534" };
     var tag = function (c) { return "display:inline-block;min-width:44px;text-align:center;font-size:11px;font-weight:500;border-radius:99px;padding:1px 8px;color:#FFFFFF;background:" + c; };
+    var TK = { "EG-128": [6, 1], "EG-124": [3, 0], "JD-204": [4, 2], "EG-119": [2, 0], "EG-126": [5, 0], "JD-198": [1, 0] };
+    var talkOf = function (k) { var t = TK[k] || [0, 0]; return { talk: t[0], talkStyle: "margin-left:6px;display:inline-flex;align-items:center;gap:3px;font-size:11px;border-radius:99px;padding:0 6px;text-decoration:none;" + (t[1] ? "background:#22345C;color:#FFFFFF" : "color:#4A5563;border:1px solid #DDE2E9") }; };
     var mk = function (o) {
       return { type: o[0], key: o[1], title: o[2], state: o[3], doer: o[4], ai: o[4].indexOf("AI") >= 0, owner: o[5], cat: o[6], ms: o[7], start: o[8], due: o[9], late: !!o[10], est: o[11], act: o[12], upd: o[13],
         parent: o[14] === "p", kids: o[14] === "p" ? o[15] : 0, indent: o[14] === "c" ? "display:inline-block;width:22px" : "", rowStyle: o[14] === "c" ? "background:#FBFCFD" : "",
-        typeStyle: tag(T[o[0]]), stStyle: tag(S[o[3]]), dueStyle: o[10] ? "color:#B91C1C;font-weight:500" : "" };
+        typeStyle: tag(T[o[0]]), talk: talkOf(o[1]).talk, talkStyle: talkOf(o[1]).talkStyle, stStyle: tag(S[o[3]]), dueStyle: o[10] ? "color:#B91C1C;font-weight:500" : "" };
     };
     var f = function (l, on) { return { label: l, style: on ? "height:24px;border:1px solid #22345C;background:#22345C;color:#FFFFFF;border-radius:99px;padding:0 9px;font-size:12px" : "height:24px;border:1px solid #DDE2E9;background:#FFFFFF;color:#4A5563;border-radius:99px;padding:0 9px;font-size:12px" }; };
     return {
