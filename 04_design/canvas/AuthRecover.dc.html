@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>端末をなくしたとき</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:"Noto Sans JP",system-ui,sans-serif;color:#131B27;background:#F2F4F7;font-size:13px;line-height:1.6}
+a{color:#22345C}a:hover{color:#1A2848}
+button,input,select{font-family:inherit}
+th{font-size:12px;color:#4A5563;font-weight:500;text-align:left;padding:0 8px;height:32px;border-bottom:1px solid #DDE2E9;white-space:nowrap;background:#FAFBFC}
+td{height:36px;padding:0 8px;border-bottom:1px solid #EDF0F4;white-space:nowrap}
+th,button{white-space:nowrap}
+span[style*="border-radius: 99px"],b[style*="border-radius: 99px"]{white-space:nowrap}
+@media (max-width:1023px){nav[aria-label="メニュー"]{flex-basis:56px !important;font-size:0 !important;padding:10px 6px !important}nav[aria-label="メニュー"] a,nav[aria-label="メニュー"] button,nav[aria-label="メニュー"] div{justify-content:center !important;padding-left:0 !important;padding-right:0 !important}nav[aria-label="メニュー"] b{display:none}}
+@media (max-width:767px){nav[aria-label="メニュー"]{display:none !important}header label{width:auto !important;flex:1 1 120px;min-width:0}header>div{flex-wrap:wrap}aside{max-width:none !important}[style*="repeat(6, minmax(0, 1fr))"],[style*="repeat(4, minmax(0, 1fr))"]{grid-template-columns:repeat(2,minmax(0,1fr)) !important}[style*="repeat(2, minmax(0, 1fr)); gap: 0 24px"]{grid-template-columns:1fr !important}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* kn-shell: bars and panels run edge to edge; menu and side panel open/close */
+[data-shell]{min-height:100vh !important;align-items:stretch}
+[data-shell]>main{display:flex !important;flex-direction:column}
+[data-shell]>main>.kn-bar~*:last-child{flex:1 0 auto}
+.kn-bar~header{flex:none}
+.kn-tgc{position:absolute;opacity:0;pointer-events:none}
+.kn-tg:hover{background:#DDE2E9}
+.kn-nav{transition:flex-basis .15s}
+body:has(#kn-tg-nav:checked) .kn-nav{flex-basis:56px !important;padding:10px 6px !important}
+body:has(#kn-tg-nav:checked) .kn-lbl{display:none !important}
+body:has(#kn-tg-nav:checked) .kn-top{flex-direction:column;padding:4px 0 !important}
+body:has(#kn-tg-nav:checked) .kn-tg{margin-left:0 !important}
+body:has(#kn-tg-nav:checked) .kn-item{justify-content:center;padding:0 !important}
+aside[aria-label="チケットのパネル"]{position:sticky;top:0;height:calc(100vh - 48px);align-self:flex-start}
+.kn-pbody{flex:1 1 auto !important;min-height:0;overflow:auto}
+.kn-thread{flex:1 1 auto;min-height:0;overflow:auto;display:flex;flex-direction:column-reverse}
+@media (max-width:1023px){aside[aria-label="チケットのパネル"]{position:static;height:auto}}
+.kn-side{position:relative}
+.kn-side>.kn-tg+*{padding-right:44px !important}
+.kn-side>.kn-tg{position:absolute;top:10px;right:10px;width:28px;height:28px;border-radius:6px;display:grid;place-items:center;color:#4A5563;cursor:pointer;background:#FFFFFF}
+.kn-reopen{display:none;flex:0 0 36px;background:#FFFFFF;border-left:1px solid #DDE2E9;justify-content:center;padding-top:10px;color:#4A5563;cursor:pointer}
+.kn-reopen:hover{color:#22345C;background:#F7F8FA}
+body:has(#kn-tg-side:checked) .kn-side{display:none !important}
+body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
+/* kn-sub: secondary left panel, white floating card for the current item */
+.kn-sub{width:232px;flex:none;background:#EDF0F4;border-right:1px solid #DDE2E9;padding:10px 10px 14px;display:flex;flex-direction:column;gap:2px;box-sizing:border-box}
+.kn-sub-h{font-size:11px;color:#6B7585;padding:12px 10px 4px;letter-spacing:.02em}
+.kn-sub-h:first-child{padding-top:4px}
+.kn-sub-i{display:flex;align-items:center;gap:10px;height:36px;padding:0 10px;border-radius:8px;color:#3A4453;text-decoration:none;transition:background .12s}
+.kn-sub-i:hover{background:rgba(255,255,255,.55);color:#131B27}
+.kn-sub-i[aria-current="page"]{background:#FFFFFF;color:#131B27;font-weight:600;box-shadow:0 1px 2px rgba(19,27,39,.08),0 0 0 1px rgba(19,27,39,.06)}
+.kn-sub-ic{display:grid;place-items:center;width:20px;color:#6B7585}
+.kn-sub-i[aria-current="page"] .kn-sub-ic{color:#22345C}
+.kn-sub-t{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kn-sub-n{font-size:12px;color:#6B7585;font-weight:400}
+.kn-sub-badge{font-size:11px;background:#B45309;color:#FFFFFF;border-radius:99px;padding:0 7px;font-weight:500}
+.kn-sub-note{margin-top:auto;font-size:11px;color:#6B7585;padding:10px}
+@media (max-width:1023px){.kn-sub{width:64px;padding:10px 8px}.kn-sub-h,.kn-sub-t,.kn-sub-n,.kn-sub-note{display:none}.kn-sub-i{justify-content:center;padding:0}.kn-sub-badge{position:absolute;margin:-18px 0 0 18px;font-size:9px;padding:0 4px}}
+@media (max-width:767px){.kn-sub{width:auto;flex:none;flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid #DDE2E9;padding:6px 8px}.kn-sub-t{display:inline}.kn-sub-i{padding:0 10px;flex:none}}
+@media (max-width:1023px){.kn-nav{flex-basis:56px !important;padding:10px 6px !important}.kn-lbl{display:none !important}.kn-top{flex-direction:column;padding:4px 0 !important}.kn-tg{margin-left:0 !important}.kn-item{justify-content:center;padding:0 !important}}
+</style>
+</helmet>
+<div data-shell style="min-height: 100vh; background: #F2F4F7; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px 16px; box-sizing: border-box; gap: 18px">
+ <input type="checkbox" id="kn-tg-nav" class="kn-tgc" aria-label="メニューを閉じる"><input type="checkbox" id="kn-tg-side" class="kn-tgc" aria-label="パネルを閉じる"><div style="display: flex; align-items: center; gap: 10px; justify-content: center"><span style="width: 36px; height: 36px; border-radius: 10px; background: #22345C; color: #FFFFFF; display: grid; place-items: center; font-weight: 700; font-size: 18px">K</span><b style="font-size: 20px; letter-spacing: .02em">Kaname</b></div><div style="width: 100%; max-width: 460px; background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 14px; padding: 26px 28px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px"><a href="AuthLogin.dc.html" style="font-size: 12px">← ログインに戻る</a><b style="font-size: 18px">端末をなくしたとき</b><div style="font-size: 13px; color: #4A5563; line-height: 1.7">パスキーの端末や認証アプリが使えないときは、次のどちらかで入れます。SMS では入れません（乗っ取りに弱いため）。</div><a href="#" style="display: flex; gap: 12px; align-items: flex-start; border: 1px solid #DDE2E9; border-radius: 10px; padding: 12px 14px; text-decoration: none; color: #131B27"><span style="width: 30px; height: 30px; flex: none; border-radius: 8px; background: #22345C; color: #FFFFFF; display: grid; place-items: center; font-weight: 700; font-size: 12px">鍵</span><span style="flex: 1"><b style="font-weight: 600; display: block">バックアップコードで入る</b><span style="font-size: 12px; color: #4A5563; line-height: 1.6">2 段階認証を付けたときに保存した 10 個のコードのうち 1 つを入れる。1 つは 1 回だけ使える</span></span><span style="color: #8A94A3">›</span></a><div style="display: flex; gap: 8px; margin-top: -4px"><input type="text" placeholder="例：7KQM-2XPA" value="" style="width: 100%; box-sizing: border-box; height: 42px; border: 1px solid #DDE2E9;  border-radius: 8px; padding: 0 12px; font-family: inherit; font-size: 14px"></div><a href="#" style="display: flex; gap: 12px; align-items: flex-start; border: 1px solid #DDE2E9; border-radius: 10px; padding: 12px 14px; text-decoration: none; color: #131B27"><span style="width: 30px; height: 30px; flex: none; border-radius: 8px; background: #22345C; color: #FFFFFF; display: grid; place-items: center; font-weight: 700; font-size: 12px">管</span><span style="flex: 1"><b style="font-weight: 600; display: block">ワークスペースの管理者に再設定を頼む</b><span style="font-size: 12px; color: #4A5563; line-height: 1.6">管理者が本人であることを確かめて、入り方を作り直す。頼んだこと・作り直したことは記録に残る</span></span><span style="color: #8A94A3">›</span></a><div style="background: #F7F8FA; border-radius: 8px; padding: 10px 12px; font-size: 12px; line-height: 1.7">入れたら、すぐに新しいパスキーを付け、なくした端末を「ログインと安全」から取り消してください。なくした端末の分身の作業は止まります</div></div><div style="font-size: 11px; color: #4A5563; display: flex; gap: 12px"><a href="#" style="color: #4A5563">利用規約</a><a href="#" style="color: #4A5563">プライバシー</a><a href="#" style="color: #4A5563">困ったとき</a></div></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1080}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var T = { "タスク": "#186F69", "QA": "#B91C1C", "課題": "#B45309", "会議": "#6D4AA6" };
+    var S = { "承認待ち": "#B45309", "実行中": "#1D4ED8", "確認中": "#6D4AA6", "作業中": "#2F4B7C", "未着手": "#6B7585", "渡し中": "#7E570D", "完了": "#166534" };
+    var tag = function (c) { return "display:inline-block;min-width:44px;text-align:center;font-size:11px;font-weight:500;border-radius:99px;padding:1px 8px;color:#FFFFFF;background:" + c; };
+    var TK = { "EG-128": [6, 1], "EG-124": [3, 0], "JD-204": [4, 2], "EG-119": [2, 0], "EG-126": [5, 0], "JD-198": [1, 0] };
+    var talkOf = function (k) { var t = TK[k] || [0, 0]; return { talk: t[0], talkStyle: "margin-left:6px;display:inline-flex;align-items:center;gap:3px;font-size:11px;border-radius:99px;padding:0 6px;text-decoration:none;" + (t[1] ? "background:#22345C;color:#FFFFFF" : "color:#4A5563;border:1px solid #DDE2E9") }; };
+    var mk = function (o) {
+      var who = o[4].replace("のAI", "");
+      return { type: o[0], key: o[1], title: o[2], state: o[3], doer: who, ai: o[4].indexOf("AI") >= 0,
+        doerIni: who.slice(0, 1), doerAv: "width:20px;height:20px;border-radius:99px;background:" + (who === "佐藤" ? "#186F69" : "#6B5B99") + ";color:#FFFFFF;font-size:10px;display:grid;place-items:center",
+        group: o[5], due: o[6], late: !!o[7], est: o[8], upd: o[9], kids: o[10] || 0,
+        typeStyle: tag(T[o[0]]), talk: talkOf(o[1]).talk, talkStyle: talkOf(o[1]).talkStyle, stStyle: tag(S[o[3]]), dueStyle: o[7] ? "color:#B91C1C;font-weight:500" : "", rowStyle: "" };
+    };
+    return {
+      sections: [
+        { label: "期限切れ", color: "#B91C1C", count: 2, rows: [
+          mk(["タスク", "EG-128", "セイコー様へ 11月分の請求書を送る", "承認待ち", "高本のAI", "営業", "11/01", 1, "30分 / 12分", "10分前"]),
+          mk(["課題", "JD-198", "京蟻 管理画面の表示崩れ（Safari）", "作業中", "高本", "受託開発", "10/31", 1, "2h / 1.5h", "昨日"]) ] },
+        { label: "今日", color: "#131B27", count: 3, rows: [
+          mk(["タスク", "EG-127", "発注ナビ 新着案件に応募文を出す", "実行中", "高本のAI", "営業", "11/02", 0, "20分 / —", "3分前"]),
+          mk(["QA", "EG-121", "京蟻 見積の金額と単価の根拠を確認する", "確認中", "高本のAI", "営業", "11/02", 0, "15分 / 9分", "1時間前"]),
+          mk(["タスク", "JD-204", "京蟻 追加開発の見積を出す", "承認待ち", "佐藤", "受託開発", "11/02", 0, "1h / 40分", "2時間前", 3]) ] },
+        { label: "今週", color: "#131B27", count: 5, rows: [
+          mk(["タスク", "EG-119", "問い合わせ（山田様）に一次返信する", "渡し中", "佐藤", "営業", "11/05", 0, "15分 / —", "昨日"]),
+          mk(["会議", "JD-200", "受託開発 定例（議題・議事・決定）", "未着手", "高本", "受託開発", "11/06", 0, "1h / —", "2日前"]),
+          mk(["タスク", "KR-031", "入金の照合（10月分）", "実行中", "高本のAI", "経理", "11/06", 0, "30分 / —", "3時間前"]),
+          mk(["タスク", "JD-190", "【親】京蟻 v2.1 リリース", "作業中", "高本", "受託開発", "11/07", 0, "40h / 26h", "4時間前", 8]),
+          mk(["課題", "EG-110", "提案資料の事例を 3 件に差し替え", "未着手", "高本", "営業", "11/07", 0, "2h / —", "3日前"]) ] },
+        { label: "来週以降", color: "#4A5563", count: 4, rows: [
+          mk(["タスク", "EG-131", "11月分 月次レポートを送る", "未着手", "高本のAI", "営業", "11/10", 0, "30分 / —", "今日"]),
+          mk(["タスク", "KR-033", "11月分 請求書をまとめて出す", "未着手", "高本のAI", "経理", "11/25", 0, "1h / —", "今日"]) ] }
+      ],
+      notes: [
+        { href: "StModal.dc.html", ini: "佐", bg: "#186F69", text: "佐藤さんが EG-119 を渡しました（返事の期限 11/03）", key: "EG-119", when: "1時間前" },
+        { href: "TicketDetail.dc.html", ini: "AI", bg: "#4A5563", text: "高本のAI が EG-128 の成果物を作り、確認 ①② を通過", key: "EG-128", when: "4時間前" },
+        { href: "#", ini: "山", bg: "#2F4B7C", text: "山田様（セイコー）から依頼が届きました", key: "依頼", when: "昨日" },
+        { href: "TdTalk.dc.html", ini: "佐", bg: "#186F69", text: "佐藤さんが EG-128 に書き込みました（期限を 11/02 に）", key: "JD-204", when: "昨日" }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

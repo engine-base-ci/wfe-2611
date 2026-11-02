@@ -847,6 +847,51 @@
    "title": "名前を直す（長い名前・自動で保存）",
    "expand": "fill",
    "page": "me"
+  },
+  "AuthLogin.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 1440,
+   "h": 900,
+   "title": "ログイン（パスキー・メールとパスワード）",
+   "expand": "fill",
+   "page": "auth"
+  },
+  "Auth2FA.dc.html": {
+   "x": 1520,
+   "y": 0,
+   "w": 1440,
+   "h": 900,
+   "title": "2 段階認証のコード ← パスワードで入ったとき",
+   "expand": "fill",
+   "page": "auth"
+  },
+  "AuthRecover.dc.html": {
+   "x": 3040,
+   "y": 0,
+   "w": 1440,
+   "h": 900,
+   "title": "端末をなくしたとき（バックアップコード・管理者に再設定）",
+   "expand": "fill",
+   "page": "auth"
+  },
+  "MeTotp.dc.html": {
+   "x": 0,
+   "y": 2480,
+   "w": 1440,
+   "h": 1000,
+   "title": "パスワードと 2 段階認証を付ける ← ログインと安全「パスワード › 決める」",
+   "expand": "fill",
+   "page": "me"
+  },
+  "MeBackup.dc.html": {
+   "x": 1520,
+   "y": 2480,
+   "w": 1440,
+   "h": 1000,
+   "title": "バックアップコード（いまだけ表示）",
+   "expand": "fill",
+   "page": "me"
   }
  },
  "createdOnFiles": {
@@ -1072,9 +1117,20 @@
    "w": 240,
    "x": 0,
    "y": -300
+  },
+  "t_auth": {
+   "x": 0,
+   "y": -300,
+   "text": "ログイン — パスキーを勧め、パスワードの人は 2 段階認証が必ず要る",
+   "kind": "title1",
+   "maxW": 4480,
+   "page": "auth"
   }
  },
  "order": [
+  "AuthRecover.dc.html",
+  "Auth2FA.dc.html",
+  "AuthLogin.dc.html",
   "Main.dc.html",
   "Overview.dc.html",
   "List.dc.html",
@@ -1169,9 +1225,15 @@
   "MePC.dc.html",
   "MeSecrets.dc.html",
   "MeSecretAdd.dc.html",
-  "MeNotify.dc.html"
+  "MeNotify.dc.html",
+  "MeTotp.dc.html",
+  "MeBackup.dc.html"
  ],
  "pages": [
+  {
+   "id": "auth",
+   "name": "ログイン"
+  },
   {
    "id": "tickets",
    "name": "チケット"
