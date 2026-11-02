@@ -44,6 +44,10 @@
   {
    "id": "ws",
    "name": "ワークスペース"
+  },
+  {
+   "id": "me",
+   "name": "自分の設定"
   }
  ],
  "boards": {
@@ -721,6 +725,60 @@
    "title": "【先方の画面】検収（OK／直してほしい）",
    "expand": "fill",
    "page": "cu"
+  },
+  "MeProfile.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 1440,
+   "h": 1000,
+   "title": "プロフィール ← 右上の顔 › 自分の設定",
+   "expand": "fill",
+   "page": "me"
+  },
+  "MeLogin.dc.html": {
+   "x": 1520,
+   "y": 0,
+   "w": 1440,
+   "h": 1000,
+   "title": "ログインと安全（パスキー・端末・最近の記録）",
+   "expand": "fill",
+   "page": "me"
+  },
+  "MePC.dc.html": {
+   "x": 3040,
+   "y": 0,
+   "w": 1440,
+   "h": 1000,
+   "title": "PC と使った量 ← 右上の顔 › 自分の使った量・PC が切れた知らせ",
+   "expand": "fill",
+   "page": "me"
+  },
+  "MeSecrets.dc.html": {
+   "x": 0,
+   "y": 1240,
+   "w": 1440,
+   "h": 1000,
+   "title": "預けたログイン情報（値は見せない）",
+   "expand": "fill",
+   "page": "me"
+  },
+  "MeSecretAdd.dc.html": {
+   "x": 1520,
+   "y": 1240,
+   "w": 1440,
+   "h": 1000,
+   "title": "ログイン情報を預ける（本人確認して保存）",
+   "expand": "fill",
+   "page": "me"
+  },
+  "MeNotify.dc.html": {
+   "x": 3040,
+   "y": 1240,
+   "w": 1440,
+   "h": 1000,
+   "title": "知らせ（ワークスペースごと）",
+   "expand": "fill",
+   "page": "me"
   }
  },
  "order": [
@@ -799,7 +857,13 @@
   "CuReview.dc.html",
   "CpHome.dc.html",
   "CpNew.dc.html",
-  "CpReview.dc.html"
+  "CpReview.dc.html",
+  "MeProfile.dc.html",
+  "MeLogin.dc.html",
+  "MePC.dc.html",
+  "MeSecrets.dc.html",
+  "MeSecretAdd.dc.html",
+  "MeNotify.dc.html"
  ],
  "notes": {
   "t1": {
@@ -952,6 +1016,22 @@
    "w": 900,
    "text": "逆算と調べたこと：01_hearing/取引先の逆算_20261102.md（Linear・Basecamp・Zendesk・Attio・Moxo/Copilot・Backlog）。既定は社内だけで、見せるものに目のしるし。先方の画面（クライアントの場所）は Kaname と別の簡単な 1 画面：確認してほしいもの・依頼・進んでいる仕事",
    "page": "cu",
+   "fill": "blue"
+  },
+  "t_me": {
+   "x": 0,
+   "y": -300,
+   "text": "自分の設定 — アカウント・分身の動く場所と預けもの・知らせ",
+   "kind": "title1",
+   "maxW": 4480,
+   "page": "me"
+  },
+  "s_me": {
+   "x": 0,
+   "y": -190,
+   "w": 900,
+   "text": "逆算と調べたこと：01_hearing/自分の設定の逆算_20261102.md（GitHub Secrets・Linear・Slack・Google・Claude）。名前・ログイン・PC・使った量はアカウント全体、預けたログイン情報と知らせはワークスペースごと。預けた値は誰にも見せず、上書きと消すだけ",
+   "page": "me",
    "fill": "blue"
   }
  },
