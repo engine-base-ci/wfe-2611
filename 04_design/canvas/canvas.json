@@ -1072,6 +1072,62 @@
    "title": "Kaname の調子が悪い（いまの様子）",
    "expand": "fill",
    "page": "on"
+  },
+  "MbApprovals.dc.html": {
+   "x": 3980,
+   "y": 1560,
+   "w": 390,
+   "h": 844,
+   "title": "スマホ｜承認（下のタブ）",
+   "page": "tickets"
+  },
+  "MbApproveOne.dc.html": {
+   "x": 4450,
+   "y": 1560,
+   "w": 390,
+   "h": 844,
+   "title": "スマホ｜1 件ずつ裁く",
+   "page": "tickets"
+  },
+  "MbCreate.dc.html": {
+   "x": 4920,
+   "y": 1560,
+   "w": 390,
+   "h": 844,
+   "title": "スマホ｜＋ 作る（話すか書くだけ）",
+   "page": "tickets"
+  },
+  "MbAI.dc.html": {
+   "x": 5390,
+   "y": 1560,
+   "w": 390,
+   "h": 844,
+   "title": "スマホ｜分身（下のタブ AI）",
+   "page": "tickets"
+  },
+  "MbMenu.dc.html": {
+   "x": 3980,
+   "y": 2500,
+   "w": 390,
+   "h": 844,
+   "title": "スマホ｜メニュー",
+   "page": "tickets"
+  },
+  "MbNotify.dc.html": {
+   "x": 4450,
+   "y": 2500,
+   "w": 390,
+   "h": 844,
+   "title": "スマホ｜知らせ（ベル）",
+   "page": "tickets"
+  },
+  "MbTalk.dc.html": {
+   "x": 4920,
+   "y": 2500,
+   "w": 390,
+   "h": 844,
+   "title": "スマホ｜チケットのやり取り",
+   "page": "tickets"
   }
  },
  "createdOnFiles": {
@@ -1443,7 +1499,14 @@
   "ErrSession.dc.html",
   "ErrLinkExpired.dc.html",
   "ErrMaintenance.dc.html",
-  "ErrDown.dc.html"
+  "ErrDown.dc.html",
+  "MbApprovals.dc.html",
+  "MbApproveOne.dc.html",
+  "MbCreate.dc.html",
+  "MbAI.dc.html",
+  "MbMenu.dc.html",
+  "MbNotify.dc.html",
+  "MbTalk.dc.html"
  ],
  "pages": [
   {
