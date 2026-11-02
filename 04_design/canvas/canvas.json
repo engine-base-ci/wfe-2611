@@ -1128,6 +1128,78 @@
    "h": 844,
    "title": "スマホ｜チケットのやり取り",
    "page": "tickets"
+  },
+  "EdKind.dc.html": {
+   "x": 0,
+   "y": 4960,
+   "w": 1440,
+   "h": 1000,
+   "title": "種別を足す ← チケットの形「＋ 種別を足す」",
+   "expand": "fill",
+   "page": "ed"
+  },
+  "EdParent.dc.html": {
+   "x": 1520,
+   "y": 4960,
+   "w": 1440,
+   "h": 1000,
+   "title": "親チケットを決める ← 作る「親チケットを決める」",
+   "expand": "fill",
+   "page": "ed"
+  },
+  "EdTeach.dc.html": {
+   "x": 3040,
+   "y": 4960,
+   "w": 1440,
+   "h": 1000,
+   "title": "分身に覚えさせる ← 覚えていること「＋ 覚えさせる」",
+   "expand": "fill",
+   "page": "ed"
+  },
+  "EdTypeChange.dc.html": {
+   "x": 0,
+   "y": 6200,
+   "w": 1440,
+   "h": 1000,
+   "title": "種別を変える ← チケットの「…」",
+   "expand": "fill",
+   "page": "ed"
+  },
+  "EdPlan.dc.html": {
+   "x": 1520,
+   "y": 6200,
+   "w": 1440,
+   "h": 1000,
+   "title": "プランを変える ← ワークスペースの設定",
+   "expand": "fill",
+   "page": "ed"
+  },
+  "EdDeleteWs.dc.html": {
+   "x": 3040,
+   "y": 6200,
+   "w": 1440,
+   "h": 1000,
+   "title": "ワークスペースを消す（名前を打って確かめる・14 日は取り消せる）",
+   "expand": "fill",
+   "page": "ed"
+  },
+  "EdLeaveWs.dc.html": {
+   "x": 0,
+   "y": 7440,
+   "w": 1440,
+   "h": 1000,
+   "title": "ワークスペースから抜ける ← プロフィール「抜ける」",
+   "expand": "fill",
+   "page": "ed"
+  },
+  "EdPasskey.dc.html": {
+   "x": 1520,
+   "y": 7440,
+   "w": 1440,
+   "h": 1000,
+   "title": "パスキーを足す ← ログインと安全「足す」",
+   "expand": "fill",
+   "page": "ed"
   }
  },
  "createdOnFiles": {
@@ -1506,7 +1578,15 @@
   "MbAI.dc.html",
   "MbMenu.dc.html",
   "MbNotify.dc.html",
-  "MbTalk.dc.html"
+  "MbTalk.dc.html",
+  "EdKind.dc.html",
+  "EdParent.dc.html",
+  "EdTeach.dc.html",
+  "EdTypeChange.dc.html",
+  "EdPlan.dc.html",
+  "EdDeleteWs.dc.html",
+  "EdLeaveWs.dc.html",
+  "EdPasskey.dc.html"
  ],
  "pages": [
   {
