@@ -22,6 +22,10 @@
    "name": "詳細から開く"
   },
   {
+   "id": "listopen",
+   "name": "一覧などから開く"
+  },
+  {
    "id": "approvals",
    "name": "承認待ち"
   },
@@ -381,6 +385,87 @@
    "title": "やり取り ← 詳細の右「やり取り」タブ／知らせの @・書き込み／一覧の吹き出し数",
    "expand": "fill",
    "page": "tdopen"
+  },
+  "LsView.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 1440,
+   "h": 1000,
+   "title": "表示設定（列） ← 一覧の「表示設定（列）」",
+   "expand": "fill",
+   "page": "listopen"
+  },
+  "LsFilter.dc.html": {
+   "x": 1520,
+   "y": 0,
+   "w": 1440,
+   "h": 1000,
+   "title": "条件を組む ← 一覧の検索条件「詳しく」",
+   "expand": "fill",
+   "page": "listopen"
+  },
+  "LsBulk.dc.html": {
+   "x": 3040,
+   "y": 0,
+   "w": 1440,
+   "h": 1000,
+   "title": "まとめて操作 ← 一覧で行を選ぶ／「まとめて操作」",
+   "expand": "fill",
+   "page": "listopen"
+  },
+  "LsSave.dc.html": {
+   "x": 0,
+   "y": 1240,
+   "w": 1440,
+   "h": 1000,
+   "title": "検索条件を保存 ← 一覧の「検索条件を保存」",
+   "expand": "fill",
+   "page": "listopen"
+  },
+  "ApHistory.dc.html": {
+   "x": 1520,
+   "y": 1240,
+   "w": 1440,
+   "h": 1000,
+   "title": "決めた履歴 ← 承認待ちの「決めた履歴」",
+   "expand": "fill",
+   "page": "listopen"
+  },
+  "ApBulk.dc.html": {
+   "x": 3040,
+   "y": 1240,
+   "w": 1440,
+   "h": 1000,
+   "title": "まとめて承認 ← 承認待ちで選んで「まとめて承認」",
+   "expand": "fill",
+   "page": "listopen"
+  },
+  "CalDay.dc.html": {
+   "x": 0,
+   "y": 2480,
+   "w": 1440,
+   "h": 1000,
+   "title": "日を開く ← カレンダーの日をクリック",
+   "expand": "fill",
+   "page": "listopen"
+  },
+  "GtMove.dc.html": {
+   "x": 1520,
+   "y": 2480,
+   "w": 1440,
+   "h": 1000,
+   "title": "期限を動かす ← ガントのバーをつかんで動かす",
+   "expand": "fill",
+   "page": "listopen"
+  },
+  "GtNoDate.dc.html": {
+   "x": 3040,
+   "y": 2480,
+   "w": 1440,
+   "h": 1000,
+   "title": "開始・期限が無いもの ← ガントの「開始・期限が無い 4 件」",
+   "expand": "fill",
+   "page": "listopen"
   }
  },
  "order": [
@@ -423,7 +508,16 @@
   "TdLink.dc.html",
   "TdDecision.dc.html",
   "TdPreview.dc.html",
-  "TdCheck.dc.html"
+  "TdCheck.dc.html",
+  "LsView.dc.html",
+  "LsFilter.dc.html",
+  "LsBulk.dc.html",
+  "LsSave.dc.html",
+  "ApHistory.dc.html",
+  "ApBulk.dc.html",
+  "CalDay.dc.html",
+  "GtMove.dc.html",
+  "GtNoDate.dc.html"
  ],
  "notes": {
   "t1": {
@@ -512,6 +606,22 @@
    "w": 900,
    "text": "各ボードの題名の「←」が開く場所。詳細（④）のボタン・リンクはすべてここへつながっている。小さな選択は押した場所のすぐ下、決めることが多いものは真ん中の小窓、記録は右から出す",
    "page": "tdopen",
+   "fill": "blue"
+  },
+  "t_ls": {
+   "x": 0,
+   "y": -300,
+   "text": "一覧・承認待ち・カレンダー・ガントから開くもの",
+   "kind": "title1",
+   "maxW": 4480,
+   "page": "listopen"
+  },
+  "s_ls": {
+   "x": 0,
+   "y": -190,
+   "w": 900,
+   "text": "各ボードの題名の「←」が開く場所。小さな選択は押した場所のすぐ下、決めることが多いものは真ん中の小窓、履歴は右から出す",
+   "page": "listopen",
    "fill": "blue"
   }
  },
