@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>チケット（見本）</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<!-- design-md の見本（D-128）。トークンは DESIGN-kaname.md の色（D-128.2）＋ Noto Sans JP（D-128.3）。画面の正式なモックは ui-mockup で作る -->
+<style>
+:root{--pri:#22345C;--pri-c:#DCE4F2;--on-pri-c:#101C33;--ter:#6D4AA6;--ter-c:#E9E0F5;--bg:#F7F8FA;--card:#fff;--fg:#131B27;--sub:#4A5563;--line:#DDE2E9;--soft:#EDF0F4;--side:#EEF0F4;
+--ok:#166534;--ok-c:#DCFCE7;--wa:#B45309;--wa-c:#FCEBD5;--ng:#B91C1C;--ng-c:#FDECEC;--info:#1D4ED8;--info-c:#DBEAFE}
+*{box-sizing:border-box}body{margin:0;font:14px/1.6 "Noto Sans JP",system-ui,sans-serif;color:var(--fg);background:var(--bg)}
+.app{display:flex;min-height:100vh}
+/* 左のバー */
+.side{width:220px;flex:none;background:var(--side);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:10px 8px;gap:2px;position:sticky;top:0;height:100vh}
+.tenant{display:flex;align-items:center;gap:8px;padding:6px 8px;font-weight:700;border-radius:6px}
+.tenant .logo{width:24px;height:24px;border-radius:6px;background:var(--pri);color:#fff;display:grid;place-items:center;font-size:12px}
+.create{margin:6px 0 4px;background:var(--pri);color:#fff;border:0;border-radius:6px;height:34px;font:inherit;font-weight:500;display:flex;align-items:center;justify-content:center;gap:6px}
+.create kbd{font-size:11px;opacity:.7;border:1px solid rgba(255,255,255,.4);border-radius:4px;padding:0 4px}
+.row2{display:flex;gap:4px;margin-bottom:6px}.row2 a{flex:1;white-space:nowrap;padding:0 6px}
+.it{display:flex;align-items:center;gap:8px;height:32px;padding:0 8px;border-radius:6px;color:var(--fg);text-decoration:none}
+.it:hover{background:var(--soft)}.it.on{background:var(--pri);color:#fff}
+.it .n{margin-left:auto;font-size:12px;background:var(--wa-c);color:#7A4A05;border-radius:99px;padding:0 7px}
+.it.on .n{background:rgba(255,255,255,.2);color:#fff}
+.ic{width:16px;height:16px;flex:none;border:1.6px solid currentColor;border-radius:4px;opacity:.8}
+.sec{font-size:12px;color:var(--sub);padding:10px 8px 2px}
+.dot{width:8px;height:8px;border-radius:99px;flex:none}
+.grow{flex:1}
+.pc{font-size:12px;color:var(--ok);display:flex;align-items:center;gap:6px;padding:6px 8px}
+.me{display:flex;align-items:center;gap:8px;padding:6px 8px;border-top:1px solid var(--line);margin-top:4px}
+.av{width:26px;height:26px;border-radius:99px;background:#8C7AB8;color:#fff;display:grid;place-items:center;font-size:12px;flex:none}
+/* 本文 */
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.head{display:flex;align-items:center;gap:12px;padding:16px 24px 8px}
+.head h1{font-size:20px;margin:0}.head .sub{color:var(--sub);font-size:13px}
+.head .sp{margin-left:auto}
+.btn{height:32px;border-radius:6px;border:1px solid var(--line);background:var(--card);font:inherit;padding:0 12px;color:var(--fg)}
+.btn.p{background:var(--pri);color:#fff;border-color:var(--pri);font-weight:500}
+.tabs{display:flex;gap:2px;padding:0 24px;border-bottom:1px solid var(--line)}
+.tabs a{padding:8px 12px;color:var(--sub);text-decoration:none;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.tabs a.on{color:var(--pri);border-color:var(--pri);font-weight:500}
+.bar{display:flex;gap:8px;align-items:center;padding:10px 24px;flex-wrap:wrap}
+.chip{flex:none;white-space:nowrap;height:28px;border:1px solid var(--line);background:var(--card);border-radius:99px;padding:0 10px;font:inherit;font-size:13px;color:var(--sub)}
+.chip.on{background:var(--pri-c);border-color:var(--pri-c);color:var(--on-pri-c)}
+.bar .sp{margin-left:auto;color:var(--sub);font-size:13px}
+.body{display:flex;flex:1;min-height:0;border-top:1px solid var(--line)}
+.list{flex:1;min-width:0;overflow:auto;background:var(--card)}
+table{border-collapse:collapse;width:100%}
+th{font-size:12px;color:var(--sub);font-weight:500;text-align:left;padding:0 10px;height:34px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--card);white-space:nowrap}
+td{height:40px;padding:0 10px;border-bottom:1px solid var(--soft);white-space:nowrap}
+tr.sel td{background:#F1F4FA}tr:hover td{background:#F7F9FC}
+.key{color:var(--sub);font-size:12px;font-variant-numeric:tabular-nums}
+.ttl{max-width:420px;overflow:hidden;text-overflow:ellipsis}
+.tg{font-size:12px;border-radius:4px;padding:1px 6px}
+.st{font-size:12px;border-radius:99px;padding:2px 8px}
+.s-wait{background:var(--wa-c);color:#7A4A05}.s-run{background:var(--info-c);color:#1E3A8A}.s-ok{background:var(--ok-c);color:#2E5B26}.s-chk{background:var(--ter-c);color:#33235C}.s-do{background:var(--soft);color:var(--sub)}
+.ai{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--ter)}
+.due{font-variant-numeric:tabular-nums}.due.late{color:var(--ng);font-weight:500}
+.grp td{background:var(--bg);height:30px;font-size:12px;color:var(--sub);font-weight:500}
+/* 詳細（右に開く） */
+.det{width:460px;flex:none;border-left:1px solid var(--line);background:var(--card);overflow:auto;padding:16px 20px}
+.det .k{font-size:12px;color:var(--sub)}.det h2{font-size:18px;margin:4px 0 10px}
+.meta{display:grid;grid-template-columns:96px 1fr;gap:6px 10px;font-size:13px;margin-bottom:14px}.meta dt{color:var(--sub)}.meta dd{margin:0}
+.blk{border-top:1px solid var(--line);padding:12px 0}.blk h3{font-size:13px;margin:0 0 6px;color:var(--sub);font-weight:500}
+.chk{display:flex;gap:8px;align-items:center;font-size:13px;padding:3px 0}
+.mark{font-size:11px;border-radius:4px;padding:0 5px;border:1px solid var(--line);color:var(--sub)}
+.act{display:flex;gap:8px;position:sticky;bottom:0;background:var(--card);padding:10px 0;border-top:1px solid var(--line)}
+/* スマホ */
+.tabbar{display:none}
+@media (max-width:1023px){.det{display:none}}
+@media (min-width:1024px) and (max-width:1599px){.up{display:none}}
+@media (max-width:767px){
+ .side{display:none}.head{padding:12px 16px 6px}.head h1{font-size:18px}.head .btn.p{display:none}
+ .tabs,.bar{padding-left:16px;padding-right:16px;overflow-x:auto;flex-wrap:nowrap}
+ .bar .sp{display:none}
+ table thead{display:none}td{display:none}td.m{display:table-cell}.grp td{display:table-cell}
+ .mrow{display:flex;flex-direction:column;gap:2px;padding:8px 0;white-space:normal}
+ .mrow .l2{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--sub)}
+ .tabbar{display:flex;position:fixed;bottom:0;left:0;right:0;height:56px;background:var(--card);border-top:1px solid var(--line)}
+ .tabbar a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;color:var(--sub);text-decoration:none;gap:2px}
+ .tabbar a.on{color:var(--pri)}.tabbar .plus{width:40px;height:40px;border-radius:99px;background:var(--pri);color:#fff;display:grid;place-items:center;font-size:22px}
+ .list{padding-bottom:60px}
+}
+@media (min-width:768px){td.m{display:none}}
+</style></head>
+<body><div class="app">
+<nav class="side">
+ <div class="tenant"><span class="logo">E</span>ENGINE BASE <span style="margin-left:auto;color:var(--sub)">▾</span></div>
+ <button class="create">＋ チケットを作る <kbd>C</kbd></button>
+ <div class="row2"><a class="it" href="#"><span class="ic"></span>探す</a><a class="it" href="#"><span class="ic"></span>知らせ<span class="n">3</span></a></div>
+ <a class="it on" href="#"><span class="ic"></span>チケット</a>
+ <a class="it" href="#"><span class="ic"></span>承認待ち<span class="n">2</span></a>
+ <a class="it" href="#"><span class="ic"></span>AI</a>
+ <a class="it" href="#"><span class="ic"></span>ナレッジ</a>
+ <a class="it" href="#"><span class="ic"></span>取引先</a>
+ <div class="sec">グループ ★</div>
+ <a class="it" href="#"><span class="dot" style="background:#186F69"></span>営業</a>
+ <a class="it" href="#"><span class="dot" style="background:#6D4AA6"></span>受託開発</a>
+ <a class="it" href="#"><span class="dot" style="background:#B45309"></span>経理</a>
+ <div class="grow"></div>
+ <a class="it" href="#"><span class="ic"></span>会社</a>
+ <div class="pc"><span class="dot" style="background:var(--ok)"></span>PC つながっている</div>
+ <div class="me"><span class="av">高</span>高本 <span style="margin-left:auto;color:var(--sub)">▾</span></div>
+</nav>
+<main class="main">
+ <div class="head"><h1>チケット</h1><span class="sub">自分に関わるもの・12 件</span><span class="sp"></span><button class="btn">表示設定</button><button class="btn p">＋ 作る</button></div>
+ <div class="tabs"><a class="on" href="#">自分に関わるもの</a><a href="#">概要</a><a href="#">一覧</a><a href="#">カレンダー</a><a href="#">ガント</a></div>
+ <div class="bar"><button class="chip on">すべて 12</button><button class="chip">自分が責任者 7</button><button class="chip">AI が動いている 3</button><button class="chip">自分が承認 2</button><button class="chip">＋ 絞り込み</button><span class="sp">期限の近い順 ▾</span></div>
+ <div class="body">
+  <div class="list"><table>
+   <thead><tr><th>番号</th><th>題名</th><th>種別</th><th>状態</th><th>実行者</th><th>責任者</th><th>期限</th><th class="up">更新</th></tr></thead>
+   <tbody>
+   <tr class="grp"><td colspan="8">期限切れ・今日</td></tr>
+   <tr class="sel"><td class="key">EG-128</td><td class="ttl">セイコー様へ 11月分の請求書を送る</td><td><span class="tg" style="background:#CFEAE7;color:#0A3330">タスク</span></td><td><span class="st s-wait">承認待ち</span></td><td><span class="ai">✦ 自分の AI</span></td><td>高本</td><td class="due late">11/01</td><td class="key up">10分前</td>
+    <td class="m"><div class="mrow"><b>セイコー様へ 11月分の請求書を送る</b><div class="l2"><span class="key">EG-128</span><span class="st s-wait">承認待ち</span><span class="ai">✦ AI</span><span class="due late">11/01</span></div></div></td></tr>
+   <tr><td class="key">EG-127</td><td class="ttl">発注ナビ 新着案件に応募文を出す</td><td><span class="tg" style="background:#CFEAE7;color:#0A3330">タスク</span></td><td><span class="st s-run">実行中</span></td><td><span class="ai">✦ 自分の AI</span></td><td>高本</td><td class="due">11/02</td><td class="key up">2分前</td>
+    <td class="m"><div class="mrow"><b>発注ナビ 新着案件に応募文を出す</b><div class="l2"><span class="key">EG-127</span><span class="st s-run">実行中</span><span class="ai">✦ AI</span><span class="due">11/02</span></div></div></td></tr>
+   <tr><td class="key">EG-121</td><td class="ttl">京蟻 見積の金額を確認する</td><td><span class="tg" style="background:#FDECEC;color:#991B1B">QA</span></td><td><span class="st s-chk">確認中</span></td><td>高本</td><td>高本</td><td class="due">11/02</td><td class="key up">1時間前</td>
+    <td class="m"><div class="mrow"><b>京蟻 見積の金額を確認する</b><div class="l2"><span class="key">EG-121</span><span class="st s-chk">確認中</span><span class="due">11/02</span></div></div></td></tr>
+   <tr class="grp"><td colspan="8">今週</td></tr>
+   <tr><td class="key">EG-119</td><td class="ttl">問い合わせ（山田様）に一次返信する</td><td><span class="tg" style="background:#CFEAE7;color:#0A3330">タスク</span></td><td><span class="st s-do">作業中</span></td><td>佐藤</td><td>高本</td><td class="due">11/05</td><td class="key up">昨日</td>
+    <td class="m"><div class="mrow"><b>問い合わせ（山田様）に一次返信する</b><div class="l2"><span class="key">EG-119</span><span class="st s-do">作業中</span><span class="due">11/05</span></div></div></td></tr>
+   <tr><td class="key">EG-115</td><td class="ttl">受託開発 定例の議事と決定を残す</td><td><span class="tg" style="background:#E9E0F5;color:#33235C">会議</span></td><td><span class="st s-do">未着手</span></td><td>高本</td><td>高本</td><td class="due">11/06</td><td class="key up">2日前</td>
+    <td class="m"><div class="mrow"><b>受託開発 定例の議事と決定を残す</b><div class="l2"><span class="key">EG-115</span><span class="st s-do">未着手</span><span class="due">11/06</span></div></div></td></tr>
+   <tr><td class="key">EG-112</td><td class="ttl">入金の照合（10月分）</td><td><span class="tg" style="background:#CFEAE7;color:#0A3330">タスク</span></td><td><span class="st s-ok">完了</span></td><td><span class="ai">✦ 自分の AI</span></td><td>高本</td><td class="due">11/07</td><td class="key up">3日前</td>
+    <td class="m"><div class="mrow"><b>入金の照合（10月分）</b><div class="l2"><span class="key">EG-112</span><span class="st s-ok">完了</span><span class="due">11/07</span></div></div></td></tr>
+   </tbody></table></div>
+  <aside class="det">
+   <div class="k">EG-128 ・ タスク ・ 営業</div>
+   <h2>セイコー様へ 11月分の請求書を送る</h2>
+   <dl class="meta"><dt>状態</dt><dd><span class="st s-wait">承認待ち</span></dd><dt>責任者</dt><dd>高本</dd><dt>実行者</dt><dd><span class="ai">✦ 自分の AI</span>（業務の型：請求書を作る v3）</dd><dt>期限</dt><dd class="due late">11/01（1 日過ぎ）</dd></dl>
+   <div class="blk"><h3>目的</h3>セイコー様に 11 月分を請求する</div>
+   <div class="blk"><h3>完了の条件</h3>金額が見積と一致し、PDF がセイコー様に送られている</div>
+   <div class="blk"><h3>確認の結果</h3>
+    <div class="chk">✓ 金額が見積（EG-097）と一致 <span class="mark">① 確実</span></div>
+    <div class="chk">✓ インボイスの必須記載事項 <span class="mark">① 確実</span></div>
+    <div class="chk">✓ 宛名と敬称 <span class="mark">② AI 判定・根拠あり</span></div>
+    <div class="chk">□ 送る前に PDF を目で見る <span class="mark">③ 人</span></div></div>
+   <div class="act"><button class="btn p">承認して送る</button><button class="btn">自分で直す</button><button class="btn">差し戻す</button></div>
+  </aside>
+ </div>
+</main>
+<nav class="tabbar"><a class="on" href="#">▤<span>チケット</span></a><a href="#">✓<span>承認</span></a><a href="#"><span class="plus">＋</span></a><a href="#">✦<span>AI</span></a><a href="#">≡<span>メニュー</span></a></nav>
+</div></body></html>
