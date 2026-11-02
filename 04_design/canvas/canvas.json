@@ -892,6 +892,24 @@
    "title": "バックアップコード（いまだけ表示）",
    "expand": "fill",
    "page": "me"
+  },
+  "AuthQR.dc.html": {
+   "x": 0,
+   "y": 1140,
+   "w": 1440,
+   "h": 900,
+   "title": "スマホで QR を読み取って入る ← ログイン（この PC にパスキーが無いとき）",
+   "expand": "fill",
+   "page": "auth"
+  },
+  "AuthAddPasskey.dc.html": {
+   "x": 1520,
+   "y": 1140,
+   "w": 1440,
+   "h": 900,
+   "title": "この PC にもパスキーを付ける？ ← スマホで入ったあと",
+   "expand": "fill",
+   "page": "auth"
   }
  },
  "createdOnFiles": {
@@ -1227,7 +1245,9 @@
   "MeSecretAdd.dc.html",
   "MeNotify.dc.html",
   "MeTotp.dc.html",
-  "MeBackup.dc.html"
+  "MeBackup.dc.html",
+  "AuthQR.dc.html",
+  "AuthAddPasskey.dc.html"
  ],
  "pages": [
   {
