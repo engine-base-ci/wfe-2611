@@ -1398,6 +1398,42 @@
    "title": "請求書 ← ワークスペースの管理 › 設定「請求書」",
    "expand": "fill",
    "page": "ops"
+  },
+  "OpPlanEdit.dc.html": {
+   "x": 0,
+   "y": 11640,
+   "w": 1440,
+   "h": 1000,
+   "title": "値段を変える案を作る ← プラン「変える案を作る」",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "OpPlanReview.dc.html": {
+   "x": 1520,
+   "y": 11640,
+   "w": 1440,
+   "h": 1000,
+   "title": "案を確かめて決める（別の人）← プラン「変える案」タブ",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "OpPlanLog.dc.html": {
+   "x": 3040,
+   "y": 11640,
+   "w": 1440,
+   "h": 1000,
+   "title": "プランの記録（案・差し戻し・決めた）← プラン「記録」タブ",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "WsPriceChange.dc.html": {
+   "x": 0,
+   "y": 12880,
+   "w": 1440,
+   "h": 1000,
+   "title": "顧客の側：値段が変わる知らせ（決めたあと）← ワークスペースの管理 › 設定",
+   "expand": "fill",
+   "page": "ops"
   }
  },
  "createdOnFiles": {
@@ -1435,7 +1471,8 @@
   "t_ops2",
   "t_ops3",
   "t_ops4",
-  "s_ops"
+  "s_ops",
+  "t_ops5"
  ],
  "notes": {
   "n_ai1": {
@@ -1696,6 +1733,15 @@
    "w": 900,
    "x": 0,
    "y": -190
+  },
+  "t_ops5": {
+   "kind": "title1",
+   "maxW": 4480,
+   "page": "ops",
+   "text": "値段を変える — 案を作る人と決める人を分ける・いまの顧客の値段は変えるたびに選ぶ",
+   "w": 240,
+   "x": 0,
+   "y": 11530
   }
  },
  "order": [
@@ -1855,7 +1901,11 @@
   "MeHelp.dc.html",
   "EdInquiry.dc.html",
   "MnIncident.dc.html",
-  "WsBills.dc.html"
+  "WsBills.dc.html",
+  "OpPlanEdit.dc.html",
+  "OpPlanReview.dc.html",
+  "OpPlanLog.dc.html",
+  "WsPriceChange.dc.html"
  ],
  "pages": [
   {
