@@ -1170,7 +1170,7 @@
    "y": 6200,
    "w": 1440,
    "h": 1000,
-   "title": "プランを変える ← ワークスペースの設定",
+   "title": "プランを変える ← ワークスペースの設定（払い方は請求書払い・値段は仮）",
    "expand": "fill",
    "page": "ed"
   },
@@ -1200,6 +1200,204 @@
    "title": "パスキーを足す ← ログインと安全「足す」",
    "expand": "fill",
    "page": "ed"
+  },
+  "OpList.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 1440,
+   "h": 1000,
+   "title": "ワークスペース（一覧）← 運営の左のメニュー",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "OpWs.dc.html": {
+   "x": 1520,
+   "y": 0,
+   "w": 1440,
+   "h": 1000,
+   "title": "1 社 いまの状態 ← 一覧の行",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "OpWsMembers.dc.html": {
+   "x": 3040,
+   "y": 0,
+   "w": 1440,
+   "h": 1000,
+   "title": "1 社 メンバー ← タブ",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "OpWsBilling.dc.html": {
+   "x": 0,
+   "y": 1240,
+   "w": 1440,
+   "h": 1000,
+   "title": "1 社 プランと請求 ← タブ",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "OpWsLog.dc.html": {
+   "x": 1520,
+   "y": 1240,
+   "w": 1440,
+   "h": 1000,
+   "title": "1 社 記録（運営の誰が何をしたか）← タブ",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "OpPeek.dc.html": {
+   "x": 3040,
+   "y": 1240,
+   "w": 1440,
+   "h": 1000,
+   "title": "中を見る（理由・1 時間・見るだけ）← 1 社「中を見る」",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "PeekMain.dc.html": {
+   "x": 0,
+   "y": 2480,
+   "w": 1440,
+   "h": 1000,
+   "title": "中を見ている（顧客の画面の上に帯）← 中を見る「見るだけで開く」",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "OpStop.dc.html": {
+   "x": 1520,
+   "y": 2480,
+   "w": 1440,
+   "h": 1000,
+   "title": "止める（先に知らせる・データは残る）← 1 社「⋯」",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "OpInbox.dc.html": {
+   "x": 0,
+   "y": 3840,
+   "w": 1440,
+   "h": 1000,
+   "title": "問い合わせ（受信箱）← 左のメニュー",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "OpNotices.dc.html": {
+   "x": 1520,
+   "y": 3840,
+   "w": 1440,
+   "h": 1000,
+   "title": "お知らせ（一覧）← 左のメニュー",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "OpNoticeNew.dc.html": {
+   "x": 3040,
+   "y": 3840,
+   "w": 1440,
+   "h": 1000,
+   "title": "お知らせを書く（メンテ）← お知らせ「＋ お知らせを書く」",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "OpNotice.dc.html": {
+   "x": 0,
+   "y": 5080,
+   "w": 1440,
+   "h": 1000,
+   "title": "障害のお知らせ（状態を足していく）← お知らせの行",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "OpBills.dc.html": {
+   "x": 0,
+   "y": 6440,
+   "w": 1440,
+   "h": 1000,
+   "title": "請求（月ごと・期限を過ぎた）← 左のメニュー",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "OpPay.dc.html": {
+   "x": 1520,
+   "y": 6440,
+   "w": 1440,
+   "h": 1000,
+   "title": "入金を記録 ← 請求「入金を記録」",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "OpTypes.dc.html": {
+   "x": 3040,
+   "y": 6440,
+   "w": 1440,
+   "h": 1000,
+   "title": "配るもの 業務の型と操作 ← 左のメニュー",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "OpTypeUpload.dc.html": {
+   "x": 0,
+   "y": 7680,
+   "w": 1440,
+   "h": 1000,
+   "title": "業務の型を上げる（機械の検査 → 版を出す）← 「＋ 業務の型を上げる」",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "OpPlans.dc.html": {
+   "x": 1520,
+   "y": 7680,
+   "w": 1440,
+   "h": 1000,
+   "title": "配るもの プラン（値段は仮・版で持つ）← 配るもの",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "OpTeam.dc.html": {
+   "x": 3040,
+   "y": 7680,
+   "w": 1440,
+   "h": 1000,
+   "title": "運営の人 ← 左のメニューの下",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "MeHelp.dc.html": {
+   "x": 0,
+   "y": 9040,
+   "w": 1440,
+   "h": 1000,
+   "title": "困ったとき・お知らせ ← 右上の顔「困ったとき・お知らせ」",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "EdInquiry.dc.html": {
+   "x": 1520,
+   "y": 9040,
+   "w": 1440,
+   "h": 1000,
+   "title": "問い合わせる ← 困ったとき・お知らせ「問い合わせる」",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "MnIncident.dc.html": {
+   "x": 3040,
+   "y": 9040,
+   "w": 1440,
+   "h": 1000,
+   "title": "障害のお知らせの帯 ← 障害が出ている間",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "WsBills.dc.html": {
+   "x": 0,
+   "y": 10280,
+   "w": 1440,
+   "h": 1000,
+   "title": "請求書 ← ワークスペースの管理 › 設定「請求書」",
+   "expand": "fill",
+   "page": "ops"
   }
  },
  "createdOnFiles": {
@@ -1232,7 +1430,12 @@
   "s_cu",
   "t_me",
   "s_me",
-  "t_ed"
+  "t_ed",
+  "t_ops1",
+  "t_ops2",
+  "t_ops3",
+  "t_ops4",
+  "s_ops"
  ],
  "notes": {
   "n_ai1": {
@@ -1449,6 +1652,50 @@
    "kind": "title1",
    "maxW": 4480,
    "page": "on"
+  },
+  "t_ops1": {
+   "kind": "title1",
+   "maxW": 4480,
+   "page": "ops",
+   "text": "ワークスペース — 気づく・1 社を見る・止める",
+   "w": 240,
+   "x": 0,
+   "y": -300
+  },
+  "t_ops2": {
+   "kind": "title1",
+   "maxW": 4480,
+   "page": "ops",
+   "text": "問い合わせ・お知らせ",
+   "w": 240,
+   "x": 0,
+   "y": 3730
+  },
+  "t_ops3": {
+   "kind": "title1",
+   "maxW": 4480,
+   "page": "ops",
+   "text": "お金・配るもの・運営の人",
+   "w": 240,
+   "x": 0,
+   "y": 6330
+  },
+  "t_ops4": {
+   "kind": "title1",
+   "maxW": 4480,
+   "page": "ops",
+   "text": "顧客の側 — 運営と往復するもの",
+   "w": 240,
+   "x": 0,
+   "y": 8930
+  },
+  "s_ops": {
+   "fill": "blue",
+   "page": "ops",
+   "text": "逆算と調べたこと：01_hearing/運営の逆算_20261102.md（Intercom・Front/Help Scout・Stripe・freee 請求書・Chargebee・Statuspage・Notion・中を見る の作法）。運営は顧客の画面とは別の場所（左上「Kaname 運営」）。1 社のことは 1 社のページのタブに集める。中を見るのは理由つき・1 時間・見るだけで、運営の記録に残る。第1フェーズは請求書払い＋運営が入金を記録。値段は仮",
+   "w": 900,
+   "x": 0,
+   "y": -190
   }
  },
  "order": [
@@ -1586,7 +1833,29 @@
   "EdPlan.dc.html",
   "EdDeleteWs.dc.html",
   "EdLeaveWs.dc.html",
-  "EdPasskey.dc.html"
+  "EdPasskey.dc.html",
+  "OpList.dc.html",
+  "OpWs.dc.html",
+  "OpWsMembers.dc.html",
+  "OpWsBilling.dc.html",
+  "OpWsLog.dc.html",
+  "OpPeek.dc.html",
+  "PeekMain.dc.html",
+  "OpStop.dc.html",
+  "OpInbox.dc.html",
+  "OpNotices.dc.html",
+  "OpNoticeNew.dc.html",
+  "OpNotice.dc.html",
+  "OpBills.dc.html",
+  "OpPay.dc.html",
+  "OpTypes.dc.html",
+  "OpTypeUpload.dc.html",
+  "OpPlans.dc.html",
+  "OpTeam.dc.html",
+  "MeHelp.dc.html",
+  "EdInquiry.dc.html",
+  "MnIncident.dc.html",
+  "WsBills.dc.html"
  ],
  "pages": [
   {
@@ -1640,6 +1909,10 @@
   {
    "id": "ed",
    "name": "直す・足す"
+  },
+  {
+   "id": "ops",
+   "name": "運営"
   }
  ],
  "title": "Kaname 第1フェーズ 画面デザイン"
