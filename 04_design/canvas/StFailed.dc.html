@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>確認で落ちて直しているとき</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:"Noto Sans JP",system-ui,sans-serif;color:#131B27;background:#F2F4F7;font-size:13px;line-height:1.7}
+a{color:#22345C}a:hover{color:#1A2848}
+button{font-family:inherit}
+th{font-size:12px;color:#4A5563;font-weight:500;text-align:left;padding:6px 10px;border-bottom:1px solid #DDE2E9;background:#F7F8FA}
+td{padding:8px 10px;border-bottom:1px solid #EDF0F4;vertical-align:top}
+</style>
+</helmet>
+<div style="width: 1440px; height: 1000px; display: flex; overflow: hidden">
+ <nav aria-label="メニュー" style="flex: 0 0 216px; background: #EEF0F4; border-right: 1px solid #DDE2E9; padding: 10px 8px; box-sizing: border-box; display: flex; flex-direction: column; gap: 1px">
+  <div style="display: flex; align-items: center; gap: 8px; padding: 6px 8px; font-weight: 700"><span style="width: 24px; height: 24px; border-radius: 6px; background: #22345C; color: #FFFFFF; display: grid; place-items: center; font-size: 12px">E</span>ENGINE BASE</div>
+  <a href="#" style="margin: 6px 0; background: #22345C; color: #FFFFFF; border-radius: 6px; height: 34px; display: flex; align-items: center; justify-content: center; text-decoration: none; font-weight: 500">＋ チケットを作る</a>
+  <a href="#" style="height: 32px; display: flex; align-items: center; padding: 0 10px; color: #131B27; text-decoration: none">チケット</a><a href="#" style="height: 32px; display: flex; align-items: center; padding: 0 10px; color: #131B27; text-decoration: none">承認待ち</a><a href="#" style="height: 32px; display: flex; align-items: center; padding: 0 10px; color: #131B27; text-decoration: none">AI</a>
+  <a href="#" aria-current="page" style="height: 30px; display: flex; align-items: center; padding: 0 10px; border-radius: 6px; background: #22345C; color: #FFFFFF; text-decoration: none; margin-top: 12px">営業</a>
+ </nav>
+ <main style="flex: 1; min-width: 0; padding: 16px 24px; display: flex; gap: 16px">
+  <article style="flex: 1; min-width: 0; background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 8px; overflow: hidden">
+   <div style="display: flex; align-items: center; gap: 8px; padding: 12px 20px 0"><span style="font-size: 11px; font-weight: 500; border-radius: 99px; padding: 1px 10px; color: #FFFFFF; background: #186F69">タスク</span><span style="color: #4A5563">EG-126</span><span style="margin-left: auto; font-size: 12px; font-weight: 500; border-radius: 99px; padding: 2px 12px; color: #FFFFFF; background: #6D4AA6">確認中</span></div>
+   <h1 style="font-size: 22px; margin: 4px 20px 12px">セイコー様 保守更新の見積を作る</h1>
+   <div role="alert" style="margin: 0 20px 14px; border: 1px solid #F1C4C4; background: #FDECEC; border-radius: 8px; padding: 12px 14px">
+    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap"><b style="color: #991B1B">確認で 1 件落ちました</b><span style="font-size: 12px; color: #991B1B">鈴木のAI が直して流し直しています（2 / 3 回目）・ 3 回落ちたら鈴木さんに戻ります</span>
+     <span style="margin-left: auto; display: flex; gap: 6px"><button type="button" style="height: 30px; border-radius: 6px; border: 1px solid #E3A9A9; background: #FFFFFF; padding: 0 10px; font-size: 12px; color: #131B27">直し方を AI に伝える</button><button type="button" style="height: 30px; border-radius: 6px; border: 1px solid #E3A9A9; background: #FFFFFF; padding: 0 10px; font-size: 12px; color: #131B27">自分で直す</button><button type="button" style="height: 30px; border-radius: 6px; border: 1px solid #E3A9A9; background: #FFFFFF; padding: 0 10px; font-size: 12px; color: #131B27">AI を止める</button></span>
+    </div>
+   </div>
+   <div style="padding: 0 20px 20px">
+    <div style="border: 1px solid #DDE2E9; border-radius: 8px; overflow: hidden">
+     <div style="display: flex; gap: 10px; align-items: center; padding: 8px 10px; background: #F7F8FA; border-bottom: 1px solid #DDE2E9; font-size: 12px"><b>テスト仕様と確認の結果</b><span style="color: #4A5563">版 2 ・ 2 回目を実行中</span><span style="margin-left: auto"><b style="color: #166534">通過 2</b> ・ <b style="color: #B91C1C">落ちた 1</b> ・ <b style="color: #7A4A05">不確か 1</b></span></div>
+     <table style="border-collapse: collapse; width: 100%">
+      <thead><tr><th>確認項目</th><th>種類</th><th>1 回目</th><th>2 回目</th><th>根拠</th></tr></thead>
+      <tbody>
+       <tr><td>月額が前年の契約と同じ（据え置きの決定）</td><td>① 機械</td><td><b style="color: #166534">通過</b></td><td><b style="color: #166534">通過</b></td><td style="font-size: 12px; color: #4A5563">1,500,000 = 1,500,000</td></tr>
+       <tr style="background: #FDF5F5"><td><b>単価が会社の単価表と一致</b></td><td>① 機械</td><td><b style="color: #B91C1C">落ちた</b></td><td><span style="color: #1D4ED8">● 実行中</span></td><td style="font-size: 12px; color: #991B1B">追加対応の単価 35,000 ≠ 単価表 30,000（ナレッジ「単価表」版 7 の 3 行目）</td></tr>
+       <tr><td>契約期間が 1 年</td><td>① 機械</td><td><b style="color: #166534">通過</b></td><td><b style="color: #166534">通過</b></td><td style="font-size: 12px; color: #4A5563">2026/12/01〜2027/11/30</td></tr>
+       <tr style="background: #FDF6EC"><td>先方の要望（据え置き・1 年）がすべて入っている</td><td>② AI</td><td><b style="color: #7A4A05">不確か</b></td><td style="color: #4A5563">—</td><td style="font-size: 12px; color: #7A4A05">2 回の判定が食い違い：1 回目「入っている」・2 回目「支払条件の記載が無い」→ 人が見る項目に回しました<div style="margin-top: 4px; padding: 4px 8px; border-left: 3px solid #8A94A3; background: #F7F8FA; color: #4A5563">引用（やり取り 10/28）：「月額据え置き・期間 1 年で了承」</div></td></tr>
+      </tbody>
+     </table>
+    </div>
+    <h2 style="font-size: 15px; margin: 18px 0 6px">直した記録</h2>
+    <div style="border-left: 2px solid #DDE2E9; padding-left: 14px; display: flex; flex-direction: column; gap: 8px; font-size: 12px">
+     <div><b>1 回目 10:05</b>　鈴木のAI が見積を作成 → 確認で「単価」が落ちた・「先方の要望」が不確か</div>
+     <div><b>直した 10:06</b>　鈴木のAI：追加対応の単価を単価表の 30,000 に直した（本文：見積の内訳 版 2 → 3）</div>
+     <div style="color: #1D4ED8"><b>2 回目 10:07</b>　確認を流し直している…</div>
+    </div>
+   </div>
+  </article>
+  <aside style="width: 320px; display: flex; flex-direction: column; gap: 12px">
+   <section style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 8px; padding: 12px 14px; font-size: 12px">
+    <b style="font-size: 13px">結果の見せ方</b>
+    <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 8px">
+     <span><b style="color: #166534">通過・確実</b>　① 機械が確かめた</span>
+     <span><b style="color: #166534">通過</b> <span style="color: #4A5563">AI 判定</span>　② を 2 回・引用つき</span>
+     <span><b style="color: #B91C1C">落ちた</b>　根拠を赤で。AI が直して流し直す（3 回まで）</span>
+     <span><b style="color: #7A4A05">不確か</b>　2 回の判定が食い違う・引用が無い → 人が見る</span>
+     <span><b style="color: #4A5563">検査なし</b>　テスト仕様を OFF にした理由を出す</span>
+    </div>
+   </section>
+   <section style="background: #FFFFFF; border: 1px solid #F1C4C4; border-radius: 8px; padding: 12px 14px; font-size: 12px">
+    <b style="font-size: 13px; color: #991B1B">3 回落ちたとき</b>
+    <p style="margin: 6px 0 0; color: #4A5563">状態は「作業中」に戻り、担当者に知らせが届く。チケットの頭に「AI では通せませんでした（3 回）」と、落ちた項目と根拠が残る。</p>
+   </section>
+  </aside>
+ </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

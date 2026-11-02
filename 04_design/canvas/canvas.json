@@ -1,4 +1,4 @@
-{"v":3,"createdOnFiles":{"v":1,"at":"2026-11-02T06:00:00Z"},"title":"Kaname 第1フェーズ 画面デザイン","launch":{"view":"canvas"},"pages":[{"id":"tickets","name":"チケット"}],
+{"v":3,"createdOnFiles":{"v":1,"at":"2026-11-02T06:00:00Z"},"title":"Kaname 第1フェーズ 画面デザイン","launch":{"view":"canvas"},"pages":[{"id":"tickets","name":"チケット"},{"id":"states","name":"チケットの動き"}],
 "boards":{
  "Main.dc.html":{"x":0,"y":0,"w":1440,"h":1080,"title":"① 自分に関わるもの（既定のホーム）","expand":"fill","page":"tickets"},
  "Overview.dc.html":{"x":1520,"y":0,"w":1440,"h":1320,"title":"② 概要（グループのホーム）","expand":"fill","page":"tickets"},
@@ -8,13 +8,21 @@
  "Calendar.dc.html":{"x":0,"y":4800,"w":1440,"h":1000,"title":"⑥ カレンダー","expand":"fill","page":"tickets"},
  "Gantt.dc.html":{"x":1520,"y":4800,"w":1440,"h":1000,"title":"⑦ ガント","expand":"fill","page":"tickets"},
  "MobileList.dc.html":{"x":3040,"y":1560,"w":390,"h":844,"title":"スマホ｜一覧（390）","page":"tickets"},
- "MobileDetail.dc.html":{"x":3510,"y":1560,"w":390,"h":844,"title":"スマホ｜詳細（390）","page":"tickets"}
+ "MobileDetail.dc.html":{"x":3510,"y":1560,"w":390,"h":844,"title":"スマホ｜詳細（390）","page":"tickets"},
+ "StEdit.dc.html":{"x":0,"y":0,"w":1440,"h":1000,"title":"1 本文を書いているとき（「/」で部品）","page":"states"},
+ "StAiPanel.dc.html":{"x":1520,"y":0,"w":1440,"h":1000,"title":"2 右のパネルで自分の AI と話す","page":"states"},
+ "StRunning.dc.html":{"x":3040,"y":0,"w":1440,"h":1000,"title":"3 AI が実行しているとき","page":"states"},
+ "StFailed.dc.html":{"x":0,"y":1240,"w":1440,"h":1000,"title":"4 確認で落ちて直しているとき","page":"states"},
+ "StCreateAi.dc.html":{"x":1520,"y":1240,"w":1440,"h":1000,"title":"5 AI と話してチケットを作る","page":"states"},
+ "StOverlay.dc.html":{"x":3040,"y":1240,"w":1440,"h":1000,"title":"6 知らせと探すが重なって開く","page":"states"},
+ "StModal.dc.html":{"x":0,"y":2480,"w":1440,"h":1000,"title":"7 引き継いでもらう・差し戻すの小窓","page":"states"}
 },
-"order":["Main.dc.html","Overview.dc.html","List.dc.html","TicketDetail.dc.html","Create.dc.html","Calendar.dc.html","Gantt.dc.html","MobileList.dc.html","MobileDetail.dc.html"],
+"order":["Main.dc.html","Overview.dc.html","List.dc.html","TicketDetail.dc.html","Create.dc.html","Calendar.dc.html","Gantt.dc.html","MobileList.dc.html","MobileDetail.dc.html","StEdit.dc.html","StAiPanel.dc.html","StRunning.dc.html","StFailed.dc.html","StCreateAi.dc.html","StOverlay.dc.html","StModal.dc.html"],
 "notes":{
  "t1":{"x":0,"y":-300,"text":"チケット（毎日の入口）— 7 つの面","kind":"title1","maxW":4480,"page":"tickets"},
  "s1":{"x":0,"y":-190,"w":640,"text":"Backlog（04_design/reference/backlog-20261102）の作りを土台にした。決まっていること：色は紺／書体 Noto Sans JP／1 行 36px・本文 13px／上の帯なし・左のバーに寄せる／既定は『自分に関わるもの』／AI はロボットの絵＋『高本のAI』（決定ログ D-128）","page":"tickets","fill":"blue"},
  "t2":{"x":0,"y":1300,"text":"詳細と作る","kind":"title1","maxW":3900,"page":"tickets"},
- "t3":{"x":0,"y":4540,"text":"時間で見る","kind":"title1","maxW":2960,"page":"tickets"}
+ "t3":{"x":0,"y":4540,"text":"時間で見る","kind":"title1","maxW":2960,"page":"tickets"},
+ "t4":{"x":0,"y":-300,"text":"チケットの動き — 書く・AI・確認・重なる画面","kind":"title1","maxW":4480,"page":"states"}
 },
 "designSystems":[]}

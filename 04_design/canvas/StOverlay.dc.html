@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>知らせと探すが重なって開く</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:"Noto Sans JP",system-ui,sans-serif;color:#131B27;background:#F2F4F7;font-size:13px;line-height:1.6}
+a{color:#22345C}a:hover{color:#1A2848}
+button,input{font-family:inherit}
+</style>
+</helmet>
+<div style="width: 1440px; height: 1000px; position: relative; overflow: hidden; display: flex">
+ <nav aria-label="メニュー" style="flex: 0 0 216px; background: #EEF0F4; border-right: 1px solid #DDE2E9"></nav>
+ <main style="flex: 1; min-width: 0">
+  <header style="background: #FFFFFF; border-bottom: 1px solid #DDE2E9; padding: 12px 24px; display: flex; align-items: center; gap: 10px">
+   <h1 style="font-size: 18px; margin: 0">チケット</h1>
+   <span style="margin-left: auto; display: flex; gap: 6px; align-items: center">
+    <span style="display: flex; align-items: center; gap: 6px; height: 32px; width: 280px; border: 1px solid #DDE2E9; border-radius: 99px; padding: 0 12px; background: #F7F8FA; color: #4A5563; font-size: 12px">探す　<span style="margin-left: auto; border: 1px solid #DDE2E9; border-radius: 4px; padding: 0 4px; font-size: 11px">⌘K</span></span>
+    <span style="position: relative; width: 36px; height: 36px; border-radius: 99px; background: #DCE4F2; display: grid; place-items: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22345C" stroke-width="2" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg></span>
+    <span style="width: 28px; height: 28px; border-radius: 99px; background: #6B5B99; color: #FFFFFF; display: grid; place-items: center; font-size: 12px">高</span>
+   </span>
+  </header>
+  <div style="padding: 16px 24px; display: flex; flex-direction: column; gap: 8px; opacity: 0.45">
+   <div style="height: 40px; background: #FFFFFF; border-radius: 8px"></div><div style="height: 420px; background: #FFFFFF; border-radius: 8px"></div>
+  </div>
+ </main>
+
+ <section aria-label="知らせ" style="position: absolute; top: 56px; right: 24px; width: 420px; background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 10px; box-shadow: 0 16px 40px rgba(19,27,39,0.18); overflow: hidden">
+  <div style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-bottom: 1px solid #DDE2E9"><b>知らせ</b><span style="font-size: 12px; color: #4A5563">未読 3</span><span style="margin-left: auto; display: flex; gap: 6px; align-items: center; font-size: 12px"><label style="display: inline-flex; gap: 4px; align-items: center"><input type="checkbox" checked>未読だけ</label><button type="button" style="height: 26px; border: 1px solid #DDE2E9; border-radius: 6px; background: #FFFFFF; font-size: 12px; color: #131B27; padding: 0 8px">人で絞る ▾</button></span></div>
+  <sc-for list="{{notes}}" as="n" hint-placeholder-count="5">
+   <a href="TicketDetail.dc.html" style="{{n.rowStyle}}">
+    <span style="{{n.av}}">{{n.ini}}</span>
+    <span style="flex: 1; min-width: 0"><span style="display: block; font-size: 12px">{{n.text}}</span><span style="display: block; font-size: 11px; color: #4A5563">{{n.key}} ・ {{n.when}}</span></span>
+    <span style="{{n.tagStyle}}">{{n.tag}}</span>
+   </a>
+  </sc-for>
+  <div style="display: flex; padding: 8px 14px; font-size: 12px; border-top: 1px solid #EDF0F4"><a href="#">すべて既読にする</a><a href="#" style="margin-left: auto">過去の知らせ</a></div>
+ </section>
+
+ <section aria-label="探す" style="position: absolute; top: 160px; left: 340px; width: 620px; background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 12px; box-shadow: 0 24px 60px rgba(19,27,39,0.22); overflow: hidden">
+  <div style="display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-bottom: 1px solid #DDE2E9"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4A5563" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><label style="flex: 1"><span style="position: absolute; left: -9999px">探す</span><input type="search" value="セイコー 請求" style="border: 0; width: 100%; font-size: 15px"></label><span style="font-size: 11px; color: #4A5563">別の時：⌘K で開く</span></div>
+  <div style="display: flex; gap: 6px; padding: 8px 16px; border-bottom: 1px solid #EDF0F4"><button type="button" style="height: 24px; border: 1px solid #22345C; background: #22345C; color: #FFFFFF; border-radius: 99px; padding: 0 9px; font-size: 12px">すべて</button><button type="button" style="height: 24px; border: 1px solid #DDE2E9; background: #FFFFFF; color: #4A5563; border-radius: 99px; padding: 0 9px; font-size: 12px">チケット 6</button><button type="button" style="height: 24px; border: 1px solid #DDE2E9; background: #FFFFFF; color: #4A5563; border-radius: 99px; padding: 0 9px; font-size: 12px">ナレッジ 2</button><button type="button" style="height: 24px; border: 1px solid #DDE2E9; background: #FFFFFF; color: #4A5563; border-radius: 99px; padding: 0 9px; font-size: 12px">決定 3</button><button type="button" style="height: 24px; border: 1px solid #DDE2E9; background: #FFFFFF; color: #4A5563; border-radius: 99px; padding: 0 9px; font-size: 12px">会話 1</button></div>
+  <div style="padding: 6px 0">
+   <div style="font-size: 11px; color: #4A5563; padding: 4px 16px">チケット</div>
+   <a href="TicketDetail.dc.html" style="display: flex; gap: 8px; align-items: center; padding: 6px 16px; background: #EEF3FD; color: #131B27; text-decoration: none"><span style="font-size: 12px; color: #4A5563">EG-128</span><span><b>セイコー</b>様へ 11月分の<b>請求</b>書を送る</span><span style="margin-left: auto; font-size: 11px; color: #FFFFFF; background: #B45309; border-radius: 99px; padding: 0 8px">承認待ち</span></a>
+   <a href="#" style="display: flex; gap: 8px; align-items: center; padding: 6px 16px; color: #131B27; text-decoration: none"><span style="font-size: 12px; color: #4A5563">EG-112</span><span><b>セイコー</b>様へ 10月分の<b>請求</b>書を送る</span><span style="margin-left: auto; font-size: 11px; color: #FFFFFF; background: #166534; border-radius: 99px; padding: 0 8px">完了</span></a>
+   <div style="font-size: 11px; color: #4A5563; padding: 8px 16px 4px">決定</div>
+   <a href="#" style="display: flex; gap: 8px; align-items: center; padding: 6px 16px; color: #131B27; text-decoration: none"><span>支払期日は月末締め翌月末</span><span style="margin-left: auto; font-size: 11px; color: #4A5563">EG-128 ・ 10/28</span></a>
+   <div style="font-size: 11px; color: #4A5563; padding: 8px 16px 4px">ナレッジ</div>
+   <a href="#" style="display: flex; gap: 8px; align-items: center; padding: 6px 16px; color: #131B27; text-decoration: none"><span>請求のルール</span><span style="margin-left: auto; font-size: 11px; color: #4A5563">会社 ・ 版 4</span></a>
+  </div>
+  <div style="padding: 6px 16px; font-size: 11px; color: #4A5563; background: #FAFBFC; border-top: 1px solid #EDF0F4">↑↓ で選ぶ ・ Enter で開く ・ 細かく絞るならチケットの一覧の検索条件へ</div>
+ </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var av = function (bg) { return "width:28px;height:28px;border-radius:99px;background:" + bg + ";color:#FFFFFF;font-size:11px;display:grid;place-items:center;flex:none"; };
+    var tg = function (bg) { return "font-size:11px;color:#FFFFFF;border-radius:99px;padding:0 8px;white-space:nowrap;background:" + bg; };
+    var row = function (unread) { return "display:flex;gap:10px;align-items:center;padding:10px 14px;border-bottom:1px solid #EDF0F4;text-decoration:none;color:#131B27;" + (unread ? "background:#FFFBEB" : ""); };
+    return { notes: [
+      { ini: "佐", av: av("#186F69"), text: "佐藤さんが EG-119 を渡しました。返事の期限 11/03", key: "EG-119", when: "1時間前", tag: "受ける？", tagStyle: tg("#7E570D"), rowStyle: row(true) },
+      { ini: "AI", av: av("#4A5563"), text: "EG-128 の確認が終わり、あなたの承認を待っています", key: "EG-128", when: "4時間前", tag: "承認待ち", tagStyle: tg("#B45309"), rowStyle: row(true) },
+      { ini: "鈴", av: av("#2F4B7C"), text: "鈴木さんが EG-128 であなたを @ しました", key: "EG-128", when: "5時間前", tag: "@", tagStyle: tg("#22345C"), rowStyle: row(true) },
+      { ini: "AI", av: av("#4A5563"), text: "EG-127 が止まりました：発注ナビの画面が変わっていた", key: "EG-127", when: "昨日", tag: "止まった", tagStyle: tg("#B91C1C"), rowStyle: row(false) },
+      { ini: "運", av: av("#22345C"), text: "お知らせ：11/10 2:00〜3:00 メンテナンス", key: "お知らせ", when: "昨日", tag: "運営", tagStyle: tg("#6B7585"), rowStyle: row(false) }
+    ] };
+  }
+}
+</script>
+</body>
+</html>
