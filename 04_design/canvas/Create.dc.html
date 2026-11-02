@@ -20,7 +20,6 @@ input[type=text],select,textarea{border:1px solid #CBD2DC;border-radius:6px;back
  <nav aria-label="メニュー" style="flex: 0 0 216px; background: #EEF0F4; border-right: 1px solid #DDE2E9; display: flex; flex-direction: column; gap: 1px; padding: 10px 8px; box-sizing: border-box">
   <div style="display: flex; align-items: center; gap: 8px; padding: 6px 8px; font-weight: 700"><span style="width: 24px; height: 24px; border-radius: 6px; background: #22345C; color: #FFFFFF; display: grid; place-items: center; font-size: 12px">E</span>ENGINE BASE<span style="margin-left: auto; color: #4A5563">▾</span></div>
   <a href="Create.dc.html" aria-current="page" style="margin: 6px 0; background: #1A2848; color: #FFFFFF; border-radius: 6px; height: 34px; display: flex; align-items: center; justify-content: center; text-decoration: none; font-weight: 500; outline: 2px solid #DCE4F2">＋ チケットを作る</a>
-  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; margin-bottom: 6px"><a href="#" style="height: 30px; display: flex; align-items: center; padding: 0 8px; border-radius: 6px; color: #131B27; text-decoration: none; background: #FFFFFF; border: 1px solid #DDE2E9">探す</a><a href="#" style="height: 30px; display: flex; align-items: center; padding: 0 8px; border-radius: 6px; color: #131B27; text-decoration: none; background: #FFFFFF; border: 1px solid #DDE2E9">知らせ<b style="margin-left: auto; font-size: 11px; background: #B45309; color: #FFFFFF; border-radius: 99px; padding: 0 6px">3</b></a></div>
   <a href="Main.dc.html" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none">チケット</a>
   <a href="#" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none">承認待ち<b style="margin-left: auto; font-size: 11px; background: #B45309; color: #FFFFFF; border-radius: 99px; padding: 0 6px">2</b></a>
   <a href="#" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none">AI</a>
@@ -33,14 +32,18 @@ input[type=text],select,textarea{border:1px solid #CBD2DC;border-radius:6px;back
   <div style="flex: 1"></div>
   <a href="#" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none">会社</a>
   <div style="font-size: 12px; color: #166534; display: flex; align-items: center; gap: 6px; padding: 6px 10px"><span style="width: 8px; height: 8px; border-radius: 99px; background: #166534"></span>PC つながっている</div>
-  <div style="display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-top: 1px solid #DDE2E9"><span style="width: 26px; height: 26px; border-radius: 99px; background: #6B5B99; color: #FFFFFF; display: grid; place-items: center; font-size: 12px">高</span>高本 聖斗</div>
  </nav>
 
  <main style="flex: 999 1 640px; min-width: 0; display: flex; flex-direction: column">
   <header style="background: #FFFFFF; border-bottom: 1px solid #DDE2E9; padding: 12px 24px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap">
    <h1 style="font-size: 18px; margin: 0">チケットを作る</h1>
    <span style="display: inline-flex; border: 1px solid #DDE2E9; border-radius: 6px; overflow: hidden"><button type="button" aria-pressed="true" style="height: 28px; border: 0; background: #22345C; color: #FFFFFF; padding: 0 12px; font-size: 12px">自分で書く</button><button type="button" style="height: 28px; border: 0; background: #FFFFFF; color: #4A5563; padding: 0 12px; font-size: 12px">AI と話して作る</button><button type="button" style="height: 28px; border: 0; background: #FFFFFF; color: #4A5563; padding: 0 12px; font-size: 12px">過去のチケットから複製</button></span>
-   <span style="margin-left: auto; font-size: 12px; color: #4A5563">下書きを自動で保存しました（10:42）</span>
+   <span style="font-size: 12px; color: #4A5563">下書きを自動で保存しました（10:42）</span>
+   <span style="margin-left: auto; display: flex; gap: 6px; align-items: center">
+    <label style="display: flex; align-items: center; gap: 6px; height: 32px; width: 240px; border: 1px solid #DDE2E9; border-radius: 99px; padding: 0 12px; background: #F7F8FA; color: #4A5563"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><span style="position: absolute; left: -9999px">探す</span><input type="search" placeholder="探す" style="border: 0; background: transparent; flex: 1; font-size: 12px; min-width: 0"></label>
+    <button type="button" aria-label="知らせ（3 件）" style="position: relative; width: 36px; height: 36px; border: 0; border-radius: 99px; background: transparent; color: #131B27"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg><b style="position: absolute; top: 2px; right: 2px; min-width: 16px; height: 16px; border-radius: 99px; background: #B45309; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">3</b></button>
+    <button type="button" aria-label="自分のメニュー" style="display: flex; align-items: center; gap: 4px; height: 36px; border: 0; background: transparent; color: #4A5563"><span style="width: 28px; height: 28px; border-radius: 99px; background: #6B5B99; color: #FFFFFF; display: grid; place-items: center; font-size: 12px">高</span>▾</button>
+   </span>
   </header>
 
   <div style="display: flex; flex-wrap: wrap; gap: 16px; padding: 16px 24px 96px; align-items: flex-start; flex: 1">
@@ -55,23 +58,34 @@ input[type=text],select,textarea{border:1px solid #CBD2DC;border-radius:6px;back
      <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #4A5563">題名 <b style="color: #B91C1C">*</b><input type="text" value="セイコー様へ 12月分の請求書を送る" style="font-size: 15px; font-weight: 500; height: 40px"></label>
     </section>
 
-    <section style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 14px">
-     <div style="display: flex; align-items: center; gap: 8px"><h2 style="font-size: 14px; margin: 0">本文</h2><span style="font-size: 12px; color: #4A5563">種別「タスク」の区画 ・ 区画ごとに版が残る</span></div>
-     <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #4A5563"><span>目的 <b style="color: #B91C1C">*</b>　<span style="font-weight: 400">何のためにやるか</span></span><textarea style="min-height: 56px">セイコー様に 12 月分の保守費を請求し、月末までに入金してもらう。</textarea></label>
-     <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #4A5563"><span>完了の条件 <b style="color: #B91C1C">*</b>　<span style="font-weight: 400">これが満たされたら終わり（テスト仕様の元になる）</span></span><textarea style="min-height: 76px">・金額が見積（EG-097）の月額と一致している
-・インボイスの必須記載事項を満たしている
-・PDF が経理部 山田様に送られている</textarea></label>
-     <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #4A5563"><span>請求の内訳　<span style="font-weight: 400">種別の区画（会社のマスタで決めた欄）</span></span><textarea style="min-height: 56px" placeholder="項目・数量・単価（空なら AI が見積から作る）"></textarea></label>
-     <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #4A5563"><span>自由欄</span><textarea style="min-height: 44px" placeholder="補足・注意"></textarea></label>
-    </section>
-
-    <section style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 8px; padding: 16px">
-     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap"><h2 style="font-size: 14px; margin: 0">テスト仕様</h2><span style="font-size: 12px; color: #4A5563">完了の条件から AI が案を出した ・ 種類と判定のしかたを確かめる</span><button type="button" style="margin-left: auto; height: 28px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 10px; font-size: 12px; color: #131B27">抜けを点検する</button></div>
-     <div style="display: flex; flex-direction: column">
-      <sc-for list="{{tests}}" as="t" hint-placeholder-count="4">
-       <div style="display: flex; gap: 8px; align-items: center; padding: 7px 0; border-bottom: 1px solid #EDF0F4; flex-wrap: wrap"><input type="checkbox" checked aria-label="この項目を使う"><span style="flex: 1 1 260px">{{t.item}}</span><span style="font-size: 11px; border: 1px solid #DDE2E9; border-radius: 4px; padding: 0 6px">{{t.kind}}</span><span style="font-size: 12px; color: #4A5563; flex: 0 1 260px">{{t.how}}</span></div>
-      </sc-for>
-      <a href="#" style="font-size: 12px; padding-top: 8px">＋ 項目を足す</a>
+    <section aria-label="本文" style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 8px; overflow: hidden">
+     <div style="display: flex; align-items: center; gap: 2px; padding: 6px 12px; border-bottom: 1px solid #EDF0F4; background: #FAFBFC; flex-wrap: wrap">
+      <sc-for list="{{tools}}" as="t" hint-placeholder-count="14"><button type="button" aria-label="{{t.name}}" title="{{t.name}}" style="min-width: 30px; height: 28px; border: 0; border-radius: 4px; background: transparent; color: #4A5563; font-size: 12px; padding: 0 6px">{{t.label}}</button></sc-for>
+      <span style="margin-left: auto; font-size: 12px; color: #4A5563">種別「タスク」のひな形 ・ 「/」で部品</span>
+     </div>
+     <div style="padding: 8px 28px 24px; max-width: 900px">
+      <h2 style="font-size: 16px; margin: 20px 0 6px; padding-bottom: 6px; border-bottom: 1px solid #DDE2E9">目的 <b style="color: #B91C1C; font-size: 12px">必須</b></h2>
+      <p style="margin: 0">セイコー様に <b>12 月分の保守費</b>を請求し、<b>12/31 までに入金</b>してもらう。</p>
+      <h2 style="font-size: 16px; margin: 22px 0 6px; padding-bottom: 6px; border-bottom: 1px solid #DDE2E9">完了の条件 <b style="color: #B91C1C; font-size: 12px">必須</b> <span style="font-size: 11px; color: #4A5563; font-weight: 400">ここからテスト仕様の案ができる</span></h2>
+      <ul style="margin: 0; padding-left: 20px"><li>金額が見積 <span style="display: inline-flex; gap: 4px; align-items: center; border: 1px solid #DDE2E9; border-radius: 99px; padding: 0 8px; font-size: 12px"><span style="width: 6px; height: 6px; border-radius: 99px; background: #166534"></span>EG-097 保守契約の見積</span> の月額と一致している</li><li>インボイスの必須記載事項を満たしている</li><li>PDF が経理部 <span style="background: #DCE4F2; border-radius: 4px; padding: 0 4px">@山田様</span> に送られている（CC 鈴木様）</li></ul>
+      <h2 style="font-size: 16px; margin: 22px 0 6px; padding-bottom: 6px; border-bottom: 1px solid #DDE2E9">前提と制約</h2>
+      <p style="margin: 0; color: #8A94A3">例：支払期日・送り方・使ってはいけないもの</p>
+      <h2 style="font-size: 16px; margin: 22px 0 6px; padding-bottom: 6px; border-bottom: 1px solid #DDE2E9">請求の内訳 <span style="font-size: 11px; color: #4A5563; font-weight: 400">種別の区画</span></h2>
+      <table style="border-collapse: collapse; width: 100%; max-width: 640px"><thead><tr><th style="font-size: 12px; color: #4A5563; font-weight: 500; text-align: left; padding: 6px 10px; border: 1px solid #DDE2E9; background: #F7F8FA">項目</th><th style="font-size: 12px; color: #4A5563; font-weight: 500; text-align: left; padding: 6px 10px; border: 1px solid #DDE2E9; background: #F7F8FA">数量</th><th style="font-size: 12px; color: #4A5563; font-weight: 500; text-align: left; padding: 6px 10px; border: 1px solid #DDE2E9; background: #F7F8FA">単価</th></tr></thead><tbody><tr><td style="padding: 6px 10px; border: 1px solid #DDE2E9; color: #8A94A3">空なら AI が見積から作る</td><td style="padding: 6px 10px; border: 1px solid #DDE2E9"></td><td style="padding: 6px 10px; border: 1px solid #DDE2E9"></td></tr></tbody></table>
+      <h2 style="font-size: 16px; margin: 22px 0 6px; padding-bottom: 6px; border-bottom: 1px solid #DDE2E9">実施事項</h2>
+      <div style="display: flex; flex-direction: column; gap: 4px; color: #4A5563"><label style="display: flex; gap: 8px"><input type="checkbox">見積の月額を確かめる</label><label style="display: flex; gap: 8px"><input type="checkbox">請求書 PDF を作る</label><label style="display: flex; gap: 8px"><input type="checkbox">メールで送る</label></div>
+      <h2 style="font-size: 16px; margin: 22px 0 6px; padding-bottom: 6px; border-bottom: 1px solid #DDE2E9">テスト仕様 <span style="font-size: 11px; color: #4A5563; font-weight: 400">完了の条件から AI が案を出した ・ 種類と判定のしかたを確かめる</span></h2>
+      <div style="border: 1px solid #DDE2E9; border-radius: 8px; overflow: hidden">
+       <sc-for list="{{tests}}" as="t" hint-placeholder-count="4">
+        <div style="display: flex; gap: 8px; align-items: center; padding: 7px 10px; border-bottom: 1px solid #EDF0F4; flex-wrap: wrap"><input type="checkbox" checked aria-label="この項目を使う"><span style="flex: 1 1 240px">{{t.item}}</span><span style="font-size: 11px; border: 1px solid #DDE2E9; border-radius: 4px; padding: 0 6px">{{t.kind}}</span><span style="font-size: 12px; color: #4A5563; flex: 0 1 240px">{{t.how}}</span></div>
+       </sc-for>
+       <div style="display: flex; gap: 12px; padding: 7px 10px; font-size: 12px; background: #FAFBFC"><a href="#">＋ 項目を足す</a><a href="#">抜けを点検する</a></div>
+      </div>
+      <h2 style="font-size: 16px; margin: 22px 0 6px; padding-bottom: 6px; border-bottom: 1px solid #DDE2E9">参照するもの</h2>
+      <p style="margin: 0; color: #8A94A3"># でチケット、ナレッジのページ名、添付を置く</p>
+      <h2 style="font-size: 16px; margin: 22px 0 6px; padding-bottom: 6px; border-bottom: 1px solid #DDE2E9">未決事項と質問・リスクと懸念</h2>
+      <p style="margin: 0; color: #8A94A3">「/注意」で注意の枠、「/質問」で質問の枠</p>
+      <p style="margin: 18px 0 0; color: #8A94A3; border-top: 1px dashed #DDE2E9; padding-top: 10px">＋ 見出しを足す（相手・成果物・決定ログ・申し送り・自由欄 など）</p>
      </div>
     </section>
 
@@ -95,8 +109,8 @@ input[type=text],select,textarea{border:1px solid #CBD2DC;border-radius:6px;back
     <section style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 8px; padding: 12px 14px">
      <h2 style="font-size: 13px; margin: 0 0 8px">作る前に</h2>
      <div style="display: flex; flex-direction: column; gap: 6px; font-size: 12px">
-      <span style="color: #166534">✓ 題名</span><span style="color: #166534">✓ 種別</span><span style="color: #166534">✓ 責任者</span><span style="color: #166534">✓ 期限</span><span style="color: #166534">✓ 目的</span><span style="color: #166534">✓ 完了の条件</span>
-      <span style="color: #7A4A05">△ テスト仕様の ③ 人の項目を誰が見るか未定（承認する人＝責任者になる）</span>
+      <span style="color: #166534">✓ 題名</span><span style="color: #166534">✓ 種別</span><span style="color: #166534">✓ 担当者</span><span style="color: #166534">✓ 期限</span><span style="color: #166534">✓ 目的</span><span style="color: #166534">✓ 完了の条件</span>
+      <span style="color: #7A4A05">△ テスト仕様の ③ 人の項目を誰が見るか未定（承認する人＝担当者になる）</span>
      </div>
     </section>
     <section style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 8px; padding: 12px 14px">
@@ -121,6 +135,7 @@ input[type=text],select,textarea{border:1px solid #CBD2DC;border-radius:6px;back
 class Component extends DCLogic {
   renderVals() {
     return {
+      tools: [ { name: "太字", label: "B" }, { name: "斜体", label: "I" }, { name: "見出し", label: "見出し" }, { name: "箇条書き", label: "・" }, { name: "番号つき", label: "1." }, { name: "チェックリスト", label: "☐" }, { name: "表", label: "表" }, { name: "画像・添付", label: "画像" }, { name: "引用", label: "引用" }, { name: "コード", label: "</>" }, { name: "注意の枠", label: "注意" }, { name: "チケットを引く", label: "#" }, { name: "人を呼ぶ", label: "@" }, { name: "リンク", label: "リンク" } ],
       tests: [
         { item: "金額が見積の月額と一致", kind: "① 機械", how: "数値の一致（EG-097 の月額）" },
         { item: "インボイスの必須記載事項", kind: "① 機械", how: "必須項目がそろう（会社の型）" },
@@ -128,8 +143,8 @@ class Component extends DCLogic {
         { item: "送る前に PDF を目で見る", kind: "③ 人", how: "承認する人がチェック" }
       ],
       fields: [
-        { label: "責任者", req: true, value: "高本 聖斗", extra: "自分" },
-        { label: "実行者", req: false, value: "高本のAI（責任者の AI）", extra: "" },
+        { label: "担当者", req: true, value: "高本 聖斗", extra: "自分" },
+        { label: "AI に任せる", req: false, value: "作ったらすぐ任せる（担当者の AI）", extra: "" },
         { label: "業務の型", req: false, value: "選んでください（候補 2）", extra: "" },
         { label: "期限", req: true, value: "12/01（月）", extra: "" },
         { label: "開始日", req: false, value: "11/28（金）", extra: "" },
