@@ -503,70 +503,70 @@
    "y": 2480,
    "w": 1440,
    "h": 1000,
-   "title": "ワークスペースを切り替える ← どの画面でも左上（役割はワークスペースごと）",
-   "expand": "fill",
-   "page": "ws"
-  },
-  "CoMembers.dc.html": {
-   "x": 0,
-   "y": 0,
-   "w": 1440,
-   "h": 1000,
-   "title": "メンバー ← 左のメニュー「ワークスペース」",
-   "expand": "fill",
-   "page": "ws"
-  },
-  "CoInvite.dc.html": {
-   "x": 1520,
-   "y": 0,
-   "w": 1440,
-   "h": 1000,
-   "title": "メンバーを招く ← メンバーの「＋ メンバーを招く」／左上のメニュー",
-   "expand": "fill",
-   "page": "ws"
-  },
-  "CoGroups.dc.html": {
-   "x": 3040,
-   "y": 0,
-   "w": 1440,
-   "h": 1000,
-   "title": "層とグループ",
-   "expand": "fill",
-   "page": "ws"
-  },
-  "CoMaster.dc.html": {
-   "x": 0,
-   "y": 1240,
-   "w": 1440,
-   "h": 1000,
-   "title": "マスタ（種別・段・分類・ルール）",
-   "expand": "fill",
-   "page": "ws"
-  },
-  "CoAudit.dc.html": {
-   "x": 1520,
-   "y": 1240,
-   "w": 1440,
-   "h": 1000,
-   "title": "証跡",
-   "expand": "fill",
-   "page": "ws"
-  },
-  "CoSettings.dc.html": {
-   "x": 3040,
-   "y": 1240,
-   "w": 1440,
-   "h": 1000,
-   "title": "ワークスペースの設定 ← 左上のメニュー「このワークスペースの設定」",
+   "title": "ワークスペースを切り替える ← どの画面でも左上",
    "expand": "fill",
    "page": "ws"
   },
   "TnNew.dc.html": {
    "x": 1520,
-   "y": 2480,
+   "y": 3480,
    "w": 1440,
    "h": 1000,
    "title": "新しいワークスペースを作る ← 左上のメニュー",
+   "expand": "fill",
+   "page": "ws"
+  },
+  "WsPeople.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 1440,
+   "h": 1000,
+   "title": "人 ← 左のメニュー「ワークスペース」",
+   "expand": "fill",
+   "page": "ws"
+  },
+  "WsInvite.dc.html": {
+   "x": 1520,
+   "y": 0,
+   "w": 1440,
+   "h": 1000,
+   "title": "招く ← 人の「＋ 招く」",
+   "expand": "fill",
+   "page": "ws"
+  },
+  "WsRules.dc.html": {
+   "x": 3040,
+   "y": 0,
+   "w": 1440,
+   "h": 1000,
+   "title": "決まり（守ること・承認を上に回すとき・やり方）",
+   "expand": "fill",
+   "page": "ws"
+  },
+  "WsLog.dc.html": {
+   "x": 0,
+   "y": 1240,
+   "w": 1440,
+   "h": 1000,
+   "title": "記録（探すことから始める）",
+   "expand": "fill",
+   "page": "ws"
+  },
+  "WsSettings.dc.html": {
+   "x": 1520,
+   "y": 1240,
+   "w": 1440,
+   "h": 1000,
+   "title": "設定（変えることがあるものだけ）",
+   "expand": "fill",
+   "page": "ws"
+  },
+  "TkShape.dc.html": {
+   "x": 3040,
+   "y": 1240,
+   "w": 1440,
+   "h": 1950,
+   "title": "チケットの形を直す ← チケットを作る画面の「この形を直す」",
    "expand": "fill",
    "page": "ws"
   }
@@ -625,13 +625,13 @@
   "OvGroup.dc.html",
   "TopMe.dc.html",
   "TopOrg.dc.html",
-  "CoMembers.dc.html",
-  "CoInvite.dc.html",
-  "CoGroups.dc.html",
-  "CoMaster.dc.html",
-  "CoAudit.dc.html",
-  "CoSettings.dc.html",
-  "TnNew.dc.html"
+  "TnNew.dc.html",
+  "WsPeople.dc.html",
+  "WsInvite.dc.html",
+  "WsRules.dc.html",
+  "WsLog.dc.html",
+  "WsSettings.dc.html",
+  "TkShape.dc.html"
  ],
  "notes": {
   "t1": {
@@ -750,7 +750,7 @@
    "x": 0,
    "y": -190,
    "w": 900,
-   "text": "アカウントは 1 人 1 つで、いくつものワークスペースに入れる。役割はワークスペースごと（ある所では管理者、別の所ではメンバー、クライアントの場所では依頼する側）。作った人を特別扱いせず、直せるのは管理者と権限を付けた人",
+   "text": "人が何をしに来るかから逆算した（01_hearing/ワークスペースの逆算_20261102.md）。毎日来る場所ではないので軽く作る。人（グループごと）・決まり・記録・設定 の 4 つ。チケットの形は使う場所で直す。役割はワークスペースごと、作った人を特別扱いしない",
    "page": "ws",
    "fill": "blue"
   }
