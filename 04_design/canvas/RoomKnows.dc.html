@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>高本のAI が知っていること</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:"Noto Sans JP",system-ui,sans-serif;color:#131B27;background:#F2F4F7;font-size:13px;line-height:1.6}
+a{color:#22345C}a:hover{color:#1A2848}
+button{font-family:inherit;white-space:nowrap}
+span[style*="border-radius: 99px"],b[style*="border-radius: 99px"]{white-space:nowrap}
+@media (max-width:1023px){nav[aria-label="メニュー"]{flex-basis:56px !important;font-size:0 !important;padding:10px 6px !important}nav[aria-label="メニュー"] a,nav[aria-label="メニュー"] div{justify-content:center !important;padding-left:0 !important;padding-right:0 !important}nav[aria-label="メニュー"] b{display:none}}
+@media (max-width:767px){nav[aria-label="メニュー"]{display:none !important}[style*="repeat(auto-fill"]{grid-template-columns:repeat(2,minmax(0,1fr)) !important}aside{max-width:none !important}}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; min-height: 1100px">
+ <nav aria-label="メニュー" style="flex: 0 0 216px; background: #EEF0F4; border-right: 1px solid #DDE2E9; display: flex; flex-direction: column; gap: 1px; padding: 10px 8px; box-sizing: border-box">
+  <div style="display: flex; align-items: center; gap: 8px; padding: 6px 8px; font-weight: 700"><span style="width: 24px; height: 24px; border-radius: 6px; background: #22345C; color: #FFFFFF; display: grid; place-items: center; font-size: 12px">E</span>ENGINE BASE<span style="margin-left: auto; color: #4A5563">▾</span></div>
+  <a href="Create.dc.html" style="margin: 6px 0; background: #22345C; color: #FFFFFF; border-radius: 6px; height: 34px; display: flex; align-items: center; justify-content: center; text-decoration: none; font-weight: 500">＋ チケットを作る</a>
+  <a href="Main.dc.html" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none">チケット</a>
+  <a href="Approvals.dc.html" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none">承認待ち<b style="margin-left: auto; font-size: 11px; background: #B45309; color: #FFFFFF; border-radius: 99px; padding: 0 6px">7</b></a>
+  <a href="Room.dc.html" aria-current="page" style="display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 10px; border-radius: 6px; background: #22345C; color: #FFFFFF; text-decoration: none; font-weight: 500"><span style="width: 18px; height: 18px; border-radius: 99px; background: #FFFFFF; color: #22345C; font-size: 10px; display: grid; place-items: center">高</span>高本のAI</a>
+  <a href="#" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none">ナレッジ</a>
+  <a href="#" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none">取引先</a>
+ </nav>
+ <main style="flex: 999 1 640px; min-width: 0">
+  <header style="background: #FFFFFF; border-bottom: 1px solid #DDE2E9">
+   <div style="display: flex; align-items: center; gap: 12px; padding: 12px 24px 4px; flex-wrap: wrap">
+    <span style="width: 40px; height: 40px; border-radius: 99px; background: #DCE4F2; border: 2px solid #22345C; display: grid; place-items: center; color: #22345C; font-weight: 700">高</span>
+    <h1 style="font-size: 18px; margin: 0">高本のAI</h1><span style="font-size: 12px; color: #4A5563">高本 聖斗 の分身</span>
+   </div>
+   <nav aria-label="部屋のタブ" style="display: flex; gap: 2px; padding: 6px 24px 0">
+    <a href="Room.dc.html" style="padding: 8px 12px; border-bottom: 2px solid transparent; color: #4A5563; text-decoration: none">ようす</a>
+    <a href="AiChat.dc.html" style="padding: 8px 12px; border-bottom: 2px solid transparent; color: #4A5563; text-decoration: none">話す</a>
+    <a href="RoomKnows.dc.html" aria-current="page" style="padding: 8px 12px; border-bottom: 2px solid #22345C; color: #22345C; font-weight: 500; text-decoration: none">知っていること</a>
+    <a href="#" style="padding: 8px 12px; border-bottom: 2px solid transparent; color: #4A5563; text-decoration: none">やったこと</a>
+   </nav>
+  </header>
+  <div style="display: flex; flex-wrap: wrap; gap: 16px; padding: 16px 24px; align-items: flex-start">
+   <div style="flex: 999 1 640px; min-width: 0; display: flex; flex-direction: column; gap: 14px">
+    <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center"><button type="button" style="height: 28px; border: 1px solid #22345C; background: #22345C; color: #FFFFFF; border-radius: 99px; padding: 0 12px; font-size: 12px">すべて</button><button type="button" style="height: 28px; border: 1px solid #DDE2E9; background: #FFFFFF; color: #4A5563; border-radius: 99px; padding: 0 12px; font-size: 12px">自分の</button><button type="button" style="height: 28px; border: 1px solid #DDE2E9; background: #FFFFFF; color: #4A5563; border-radius: 99px; padding: 0 12px; font-size: 12px">会社・層から</button><button type="button" style="height: 28px; border: 1px solid #DDE2E9; background: #FFFFFF; color: #4A5563; border-radius: 99px; padding: 0 12px; font-size: 12px">運営から</button><span style="margin-left: auto; font-size: 12px; color: #4A5563">会社・層・運営から来たものは鍵の印。自分では直せず、上に重ねる</span></div>
+    <sc-for list="{{groups}}" as="g" hint-placeholder-count="3">
+     <section style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 10px; padding: 14px 16px">
+      <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px"><h2 style="font-size: 15px; margin: 0">{{g.title}}</h2><span style="font-size: 12px; color: #4A5563">{{g.desc}}</span><span style="margin-left: auto; font-size: 12px; color: #4A5563">{{g.n}}</span></div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px">
+       <sc-for list="{{g.tiles}}" as="t" hint-placeholder-count="6">
+        <a href="{{t.href}}" style="display: flex; flex-direction: column; gap: 6px; border: 1px solid #DDE2E9; border-radius: 10px; padding: 12px; text-decoration: none; color: #131B27; min-width: 0; position: relative">
+         <span style="{{t.icon}}">{{t.mark}}</span>
+         <b style="font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{t.name}}</b>
+         <span style="font-size: 11px; color: #4A5563; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{t.sub}}</span>
+         <sc-if value="{{t.lock}}" hint-placeholder-val="{{ false }}"><span title="会社・層・運営から" style="position: absolute; top: 10px; right: 10px; color: #8A94A3"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></span></sc-if>
+        </a>
+       </sc-for>
+       <a href="{{g.addHref}}" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border: 1.5px dashed #CBD2DC; border-radius: 10px; color: #4A5563; text-decoration: none; min-height: 104px"><span style="font-size: 22px">＋</span><span style="font-size: 12px">{{g.add}}</span></a>
+      </div>
+     </section>
+    </sc-for>
+   </div>
+   <aside style="flex: 1 1 320px; max-width: 380px; display: flex; flex-direction: column; gap: 12px">
+    <section style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 10px; padding: 14px 16px">
+     <h2 style="font-size: 14px; margin: 0 0 4px">覚えたいこと <span style="font-size: 12px; color: #4A5563; font-weight: 400">4</span></h2>
+     <div style="font-size: 12px; color: #4A5563; margin-bottom: 8px">差し戻し・直した中身・壁打ち・チケットの完了・同じ指摘 2 回 から分身が拾ったもの</div>
+     <div style="border: 1px solid #F3D3A7; border-radius: 8px; padding: 10px; background: #FFFDF8; margin-bottom: 8px">
+      <div style="font-size: 11px; color: #4A5563">同じ指摘が 2 回（EG-117・EG-122）</div>
+      <div>外に出すメールの署名は個人の署名にする</div>
+      <div style="margin-top: 8px; border-top: 1px dashed #F3D3A7; padding-top: 8px; font-size: 12px"><b style="color: #7A4A05">ぶつかっています</b><div style="color: #4A5563">会社のルール「署名は会社の署名（設定の値）」と食い違います</div>
+       <div style="display: flex; flex-direction: column; gap: 4px; margin-top: 6px">
+        <label style="display: flex; gap: 6px"><input type="radio" name="c" checked>取引先「京蟻」だけ個人の署名にする</label>
+        <label style="display: flex; gap: 6px"><input type="radio" name="c">会社のルールを変える（会社の管理者の OK が要る）</label>
+        <label style="display: flex; gap: 6px"><input type="radio" name="c">覚えない</label>
+       </div></div>
+      <div style="display: flex; gap: 6px; margin-top: 8px"><button type="button" style="height: 28px; border-radius: 6px; border: 1px solid #22345C; background: #22345C; color: #FFFFFF; padding: 0 10px; font-size: 12px">これで覚えさせる</button></div>
+     </div>
+     <sc-for list="{{wants}}" as="w" hint-placeholder-count="3">
+      <div style="border: 1px solid #DDE2E9; border-radius: 8px; padding: 8px 10px; margin-bottom: 8px"><div style="font-size: 11px; color: #4A5563">{{w.from}}</div><div>{{w.text}}</div><div style="display: flex; gap: 6px; margin-top: 6px; align-items: center"><span style="{{w.kindStyle}}">{{w.kind}}</span><button type="button" style="margin-left: auto; height: 26px; border-radius: 6px; border: 1px solid #22345C; background: #22345C; color: #FFFFFF; padding: 0 10px; font-size: 12px">覚えさせる</button><button type="button" style="height: 26px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 8px; font-size: 12px; color: #131B27">直して</button></div></div>
+     </sc-for>
+    </section>
+    <section style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 10px; padding: 14px 16px; font-size: 12px">
+     <h2 style="font-size: 14px; margin: 0 0 6px">新しく覚えた（自分だけ・自動）</h2>
+     <div style="display: flex; flex-direction: column; gap: 6px"><span style="display: flex">午前の会議は入れない<a href="#" style="margin-left: auto">消す</a></span><span style="display: flex">見積の端数は切り捨て<a href="#" style="margin-left: auto">消す</a></span><span style="display: flex">京蟻の田村様は電話よりメール<a href="#" style="margin-left: auto">消す</a></span></div>
+    </section>
+   </aside>
+  </div>
+ </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1100}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var C = { r: "#186F69", w: "#22345C", m: "#6D4AA6" };
+    var tile = function (k, mark, name, sub, lock, href) { return { mark: mark, name: name, sub: sub, lock: !!lock, href: href || "#", icon: "width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font-size:15px;font-weight:700;color:#FFFFFF;background:" + C[k] }; };
+    var w = function (from, text, kind, c) { return { from: from, text: text, kind: kind, kindStyle: "font-size:11px;color:#FFFFFF;border-radius:99px;padding:0 8px;background:" + c }; };
+    return {
+      groups: [
+        { title: "必ず守ること", desc: "どの仕事でも常に効く", n: "9", add: "守ることを足す", addHref: "#", tiles: [
+          tile("r", "宛", "宛名と CC", "取引先：セイコー ・ 3 回効いた"), tile("r", "署", "署名は会社の署名", "会社 ・ 22 回", true), tile("r", "締", "請求は 25 日締め", "会社 ・ 9 回", true), tile("r", "禁", "値引きを書かない", "会社 ・ 11 回", true),
+          tile("r", "字", "応募文は 400 字以内", "層：営業 ・ 14 回", true), tile("r", "文", "です・ます", "自分 ・ 31 回"), tile("r", "送", "午前のメールは前日に止める", "自分 ・ 5 回") ] },
+        { title: "やり方", desc: "その仕事のときだけ効く（業務の型）", n: "8", add: "やり方を作る", addHref: "RoomType.dc.html", tiles: [
+          tile("w", "請", "請求書を作る", "会社 ・ v3 ・ 9 回", false, "RoomType.dc.html"), tile("w", "応", "応募文", "運営 ・ v2 ・ 14 回", true), tile("w", "返", "問い合わせの一次返信", "運営 ・ v4 ・ 11 回", true), tile("w", "照", "入金の照合", "運営（会社向け）・ v2", true),
+          tile("w", "見", "見積を作る", "層：受託開発 ・ v2", true), tile("w", "礼", "お礼のメール", "運営 ・ v1 ・ 8 回", true), tile("w", "簡", "請求書（シンプル）", "自分 ・ v1"), tile("w", "月", "月次レポート", "自分 ・ v1") ] },
+        { title: "知っていること", desc: "好み・事実・うまくいった実例（記憶）", n: "23", add: "覚えさせる", addHref: "#", tiles: [
+          tile("m", "好", "午前の会議は入れない", "自分 ・ 自動で覚えた"), tile("m", "人", "田村様はメールが好き", "取引先：京蟻"), tile("m", "例", "採用された応募文 3 件", "実例 ・ 応募文で使う"), tile("m", "数", "見積の端数は切り捨て", "自分"),
+          tile("m", "社", "保守は 90 日までのログが範囲内", "会社 ・ JD-155 の決定", true), tile("m", "癖", "12 月は保守更新を先に", "壁打ちから") ] }
+      ],
+      wants: [ w("差し戻しの理由から（EG-128）", "無償にした追加対応は請求に入れない", "必ず守ること", "#186F69"), w("あなたが直した中身から（EG-117）", "お礼のメールは 3 行以内", "必ず守ること", "#186F69"), w("壁打ちから", "12 月は保守更新を新規より先にやる", "知っていること", "#6D4AA6") ]
+    };
+  }
+}
+</script>
+</body>
+</html>
