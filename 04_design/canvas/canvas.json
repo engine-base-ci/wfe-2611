@@ -48,6 +48,10 @@
   {
    "id": "me",
    "name": "自分の設定"
+  },
+  {
+   "id": "ed",
+   "name": "直す・足す"
   }
  ],
  "boards": {
@@ -779,6 +783,114 @@
    "title": "知らせ（ワークスペースごと）",
    "expand": "fill",
    "page": "me"
+  },
+  "EdRule.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 1440,
+   "h": 1000,
+   "title": "守ることを直す ← 分身の部屋 › 必ず守ること の「直す」",
+   "expand": "fill",
+   "page": "ed"
+  },
+  "EdMemory.dc.html": {
+   "x": 1520,
+   "y": 0,
+   "w": 1440,
+   "h": 1000,
+   "title": "覚えていることを直す ← 覚えていること の「直す」（右のパネルでそのまま）",
+   "expand": "fill",
+   "page": "ed"
+  },
+  "EdClient.dc.html": {
+   "x": 3040,
+   "y": 0,
+   "w": 1440,
+   "h": 1000,
+   "title": "取引先を足す ← 取引先の「＋ 取引先」",
+   "expand": "fill",
+   "page": "ed"
+  },
+  "EdContact.dc.html": {
+   "x": 0,
+   "y": 1240,
+   "w": 1440,
+   "h": 1000,
+   "title": "先方の人を招く ← 人と見せ方 の「＋ 先方の人を招く」",
+   "expand": "fill",
+   "page": "ed"
+  },
+  "EdMemberMenu.dc.html": {
+   "x": 1520,
+   "y": 1240,
+   "w": 1440,
+   "h": 1000,
+   "title": "メンバーの操作 ← メンバーの「⋯」",
+   "expand": "fill",
+   "page": "ed"
+  },
+  "EdMemberRemove.dc.html": {
+   "x": 3040,
+   "y": 1240,
+   "w": 1440,
+   "h": 1000,
+   "title": "メンバーを外す（担当の引き継ぎ先を選ぶ）",
+   "expand": "fill",
+   "page": "ed"
+  },
+  "EdGroup.dc.html": {
+   "x": 0,
+   "y": 2480,
+   "w": 1440,
+   "h": 1000,
+   "title": "グループを足す ← メンバーの「＋ グループ」",
+   "expand": "fill",
+   "page": "ed"
+  },
+  "EdApproval.dc.html": {
+   "x": 1520,
+   "y": 2480,
+   "w": 1440,
+   "h": 1000,
+   "title": "承認を上に回す決まりを足す ← 決まり",
+   "expand": "fill",
+   "page": "ed"
+  },
+  "EdSection.dc.html": {
+   "x": 3040,
+   "y": 2480,
+   "w": 1440,
+   "h": 1000,
+   "title": "区画を足す ← チケットの形",
+   "expand": "fill",
+   "page": "ed"
+  },
+  "EdPC.dc.html": {
+   "x": 0,
+   "y": 3720,
+   "w": 1440,
+   "h": 1000,
+   "title": "PC をつなぐ ← PC と使った量 の「＋ PC をつなぐ」",
+   "expand": "fill",
+   "page": "ed"
+  },
+  "EdMove.dc.html": {
+   "x": 1520,
+   "y": 3720,
+   "w": 1440,
+   "h": 1000,
+   "title": "ほかのグループへ移す ← チケットの「…」",
+   "expand": "fill",
+   "page": "ed"
+  },
+  "MeSecretEdit.dc.html": {
+   "x": 3040,
+   "y": 3720,
+   "w": 1440,
+   "h": 1000,
+   "title": "ログイン情報を上書きする ← 預けたログイン情報 の「上書き」",
+   "expand": "fill",
+   "page": "ed"
   }
  },
  "order": [
@@ -863,7 +975,19 @@
   "MePC.dc.html",
   "MeSecrets.dc.html",
   "MeSecretAdd.dc.html",
-  "MeNotify.dc.html"
+  "MeNotify.dc.html",
+  "EdRule.dc.html",
+  "EdMemory.dc.html",
+  "EdClient.dc.html",
+  "EdContact.dc.html",
+  "EdMemberMenu.dc.html",
+  "EdMemberRemove.dc.html",
+  "EdGroup.dc.html",
+  "EdApproval.dc.html",
+  "EdSection.dc.html",
+  "EdPC.dc.html",
+  "EdMove.dc.html",
+  "MeSecretEdit.dc.html"
  ],
  "notes": {
   "t1": {
@@ -1033,6 +1157,14 @@
    "text": "逆算と調べたこと：01_hearing/自分の設定の逆算_20261102.md（GitHub Secrets・Linear・Slack・Google・Claude）。名前・ログイン・PC・使った量はアカウント全体、預けたログイン情報と知らせはワークスペースごと。預けた値は誰にも見せず、上書きと消すだけ",
    "page": "me",
    "fill": "blue"
+  },
+  "t_ed": {
+   "x": 0,
+   "y": -300,
+   "text": "直す・足す — 作ったものを直す、新しく足す、外す",
+   "kind": "title1",
+   "maxW": 4480,
+   "page": "ed"
   }
  },
  "designSystems": []
