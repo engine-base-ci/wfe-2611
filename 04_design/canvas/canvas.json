@@ -1,36 +1,369 @@
-{"v":3,"createdOnFiles":{"v":1,"at":"2026-11-02T06:00:00Z"},"title":"Kaname 第1フェーズ 画面デザイン","launch":{"view":"canvas"},"pages":[{"id":"tickets","name":"チケット"},{"id":"states","name":"チケットの動き"},{"id":"approvals","name":"承認待ち"},{"id":"ai","name":"AI"}],
-"boards":{
- "Main.dc.html":{"x":0,"y":0,"w":1440,"h":1080,"title":"① 自分に関わるもの（既定のホーム）","expand":"fill","page":"tickets"},
- "Overview.dc.html":{"x":1520,"y":0,"w":1440,"h":1320,"title":"② 概要（グループのホーム）","expand":"fill","page":"tickets"},
- "List.dc.html":{"x":3040,"y":0,"w":1440,"h":1180,"title":"③ 一覧（検索条件・親子・まとめて操作）","expand":"fill","page":"tickets"},
- "TicketDetail.dc.html":{"x":0,"y":1560,"w":1440,"h":3000,"title":"④ 詳細（本文は 1 枚の文書）","expand":"fill","page":"tickets"},
- "Create.dc.html":{"x":1520,"y":1560,"w":1440,"h":1950,"title":"⑤ 作る（種別のひな形の文書）","expand":"fill","page":"tickets"},
- "Calendar.dc.html":{"x":0,"y":4800,"w":1440,"h":1000,"title":"⑥ カレンダー","expand":"fill","page":"tickets"},
- "Gantt.dc.html":{"x":1520,"y":4800,"w":1440,"h":1000,"title":"⑦ ガント","expand":"fill","page":"tickets"},
- "MobileList.dc.html":{"x":3040,"y":1560,"w":390,"h":844,"title":"スマホ｜一覧（390）","page":"tickets"},
- "MobileDetail.dc.html":{"x":3510,"y":1560,"w":390,"h":844,"title":"スマホ｜詳細（390）","page":"tickets"},
- "StEdit.dc.html":{"x":0,"y":0,"w":1440,"h":1000,"title":"1 本文を書いているとき（「/」で部品）","page":"states"},
- "StAiPanel.dc.html":{"x":1520,"y":0,"w":1440,"h":1000,"title":"2 右のパネルで自分の AI と話す","page":"states"},
- "StRunning.dc.html":{"x":3040,"y":0,"w":1440,"h":1000,"title":"3 AI が実行しているとき","page":"states"},
- "StFailed.dc.html":{"x":0,"y":1240,"w":1440,"h":1000,"title":"4 確認で落ちて直しているとき","page":"states"},
- "StCreateAi.dc.html":{"x":1520,"y":1240,"w":1440,"h":1000,"title":"5 AI と話してチケットを作る","page":"states"},
- "StOverlay.dc.html":{"x":3040,"y":1240,"w":1440,"h":1000,"title":"6 知らせと探すが重なって開く","page":"states"},
- "StModal.dc.html":{"x":0,"y":2480,"w":1440,"h":1000,"title":"7 引き継いでもらう・差し戻すの小窓","page":"states"},
- "Approvals.dc.html":{"x":0,"y":0,"w":1440,"h":900,"title":"承認待ち｜チケットと同じ表・その場で決める","expand":"fill","page":"approvals"},
- "ApprovalsFocus.dc.html":{"x":1520,"y":0,"w":1440,"h":1100,"title":"承認待ち｜続けて裁く（1 件ずつ全画面）","expand":"fill","page":"approvals"},
- "Room.dc.html":{"x":0,"y":0,"w":1440,"h":1080,"title":"分身の部屋｜ようす","expand":"fill","page":"ai"},
- "AiChat.dc.html":{"x":1520,"y":0,"w":1440,"h":960,"title":"分身の部屋｜話す（壁打ち）","expand":"fill","page":"ai"},
- "RoomKnows.dc.html":{"x":0,"y":1320,"w":1440,"h":1100,"title":"分身の部屋｜知っていること","expand":"fill","page":"ai"},
- "RoomType.dc.html":{"x":1520,"y":1320,"w":1440,"h":1100,"title":"分身の部屋｜やり方を作る・直す（組む＋試す）","expand":"fill","page":"ai"}
-},
-"order":["Main.dc.html","Overview.dc.html","List.dc.html","TicketDetail.dc.html","Create.dc.html","Calendar.dc.html","Gantt.dc.html","MobileList.dc.html","MobileDetail.dc.html","StEdit.dc.html","StAiPanel.dc.html","StRunning.dc.html","StFailed.dc.html","StCreateAi.dc.html","StOverlay.dc.html","StModal.dc.html","Approvals.dc.html","ApprovalsFocus.dc.html","Room.dc.html","AiChat.dc.html","RoomKnows.dc.html","RoomType.dc.html"],
-"notes":{
- "t1":{"x":0,"y":-300,"text":"チケット（毎日の入口）— 7 つの面","kind":"title1","maxW":4480,"page":"tickets"},
- "s1":{"x":0,"y":-190,"w":640,"text":"Backlog（04_design/reference/backlog-20261102）の作りを土台にした。決まっていること：色は紺／書体 Noto Sans JP／1 行 36px・本文 13px／上の帯なし・左のバーに寄せる／既定は『自分に関わるもの』／AI はロボットの絵＋『高本のAI』（決定ログ D-128）","page":"tickets","fill":"blue"},
- "t2":{"x":0,"y":1300,"text":"詳細と作る","kind":"title1","maxW":3900,"page":"tickets"},
- "t3":{"x":0,"y":4540,"text":"時間で見る","kind":"title1","maxW":2960,"page":"tickets"},
- "t4":{"x":0,"y":-300,"text":"チケットの動き — 書く・AI・確認・重なる画面","kind":"title1","maxW":4480,"page":"states"},
- "t5":{"x":0,"y":-300,"text":"承認待ち — 自分が決めるものを 1 か所に","kind":"title1","maxW":2960,"page":"approvals"},
- "t6":{"x":0,"y":-300,"text":"分身の部屋 — もう一人の自分を育てる・話す・知っていることを整える","kind":"title1","maxW":2960,"page":"ai"}
-},
-"designSystems":[]}
+{
+ "v": 3,
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-11-02T06:00:00Z"
+ },
+ "title": "Kaname 第1フェーズ 画面デザイン",
+ "launch": {
+  "view": "canvas"
+ },
+ "pages": [
+  {
+   "id": "tickets",
+   "name": "チケット"
+  },
+  {
+   "id": "states",
+   "name": "チケットの動き"
+  },
+  {
+   "id": "approvals",
+   "name": "承認待ち"
+  },
+  {
+   "id": "ai",
+   "name": "AI"
+  }
+ ],
+ "boards": {
+  "Main.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 1440,
+   "h": 1080,
+   "title": "① 自分に関わるもの（既定のホーム）",
+   "expand": "fill",
+   "page": "tickets"
+  },
+  "Overview.dc.html": {
+   "x": 1520,
+   "y": 0,
+   "w": 1440,
+   "h": 1320,
+   "title": "② 概要（グループのホーム）",
+   "expand": "fill",
+   "page": "tickets"
+  },
+  "List.dc.html": {
+   "x": 3040,
+   "y": 0,
+   "w": 1440,
+   "h": 1180,
+   "title": "③ 一覧（検索条件・親子・まとめて操作）",
+   "expand": "fill",
+   "page": "tickets"
+  },
+  "TicketDetail.dc.html": {
+   "x": 0,
+   "y": 1560,
+   "w": 1440,
+   "h": 3000,
+   "title": "④ 詳細（本文は 1 枚の文書）",
+   "expand": "fill",
+   "page": "tickets"
+  },
+  "Create.dc.html": {
+   "x": 1520,
+   "y": 1560,
+   "w": 1440,
+   "h": 1950,
+   "title": "⑤ 作る（種別のひな形の文書）",
+   "expand": "fill",
+   "page": "tickets"
+  },
+  "Calendar.dc.html": {
+   "x": 0,
+   "y": 4800,
+   "w": 1440,
+   "h": 1000,
+   "title": "⑥ カレンダー",
+   "expand": "fill",
+   "page": "tickets"
+  },
+  "Gantt.dc.html": {
+   "x": 1520,
+   "y": 4800,
+   "w": 1440,
+   "h": 1000,
+   "title": "⑦ ガント",
+   "expand": "fill",
+   "page": "tickets"
+  },
+  "MobileList.dc.html": {
+   "x": 3040,
+   "y": 1560,
+   "w": 390,
+   "h": 844,
+   "title": "スマホ｜一覧（390）",
+   "page": "tickets"
+  },
+  "MobileDetail.dc.html": {
+   "x": 3510,
+   "y": 1560,
+   "w": 390,
+   "h": 844,
+   "title": "スマホ｜詳細（390）",
+   "page": "tickets"
+  },
+  "StEdit.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 1440,
+   "h": 1000,
+   "title": "1 本文を書いているとき（「/」で部品）",
+   "page": "states"
+  },
+  "StAiPanel.dc.html": {
+   "x": 1520,
+   "y": 0,
+   "w": 1440,
+   "h": 1000,
+   "title": "2 右のパネルで自分の AI と話す",
+   "page": "states"
+  },
+  "StRunning.dc.html": {
+   "x": 3040,
+   "y": 0,
+   "w": 1440,
+   "h": 1000,
+   "title": "3 AI が実行しているとき",
+   "page": "states"
+  },
+  "StFailed.dc.html": {
+   "x": 0,
+   "y": 1240,
+   "w": 1440,
+   "h": 1000,
+   "title": "4 確認で落ちて直しているとき",
+   "page": "states"
+  },
+  "StCreateAi.dc.html": {
+   "x": 1520,
+   "y": 1240,
+   "w": 1440,
+   "h": 1000,
+   "title": "5 AI と話してチケットを作る",
+   "page": "states"
+  },
+  "StOverlay.dc.html": {
+   "x": 3040,
+   "y": 1240,
+   "w": 1440,
+   "h": 1000,
+   "title": "6 知らせと探すが重なって開く",
+   "page": "states"
+  },
+  "StModal.dc.html": {
+   "x": 0,
+   "y": 2480,
+   "w": 1440,
+   "h": 1000,
+   "title": "7 引き継いでもらう・差し戻すの小窓",
+   "page": "states"
+  },
+  "Approvals.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 1440,
+   "h": 900,
+   "title": "承認待ち｜チケットと同じ表・その場で決める",
+   "expand": "fill",
+   "page": "approvals"
+  },
+  "ApprovalsFocus.dc.html": {
+   "x": 1520,
+   "y": 0,
+   "w": 1440,
+   "h": 1100,
+   "title": "承認待ち｜続けて裁く（1 件ずつ全画面）",
+   "expand": "fill",
+   "page": "approvals"
+  },
+  "Room.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 1440,
+   "h": 1080,
+   "title": "分身の部屋｜ようす",
+   "expand": "fill",
+   "page": "ai"
+  },
+  "AiChat.dc.html": {
+   "x": 1520,
+   "y": 0,
+   "w": 1440,
+   "h": 960,
+   "title": "分身の部屋｜話す（壁打ち）",
+   "expand": "fill",
+   "page": "ai"
+  },
+  "RoomKnows.dc.html": {
+   "x": 0,
+   "y": 1320,
+   "w": 1440,
+   "h": 1100,
+   "title": "知っていること｜必ず守ること（アイコンで並べる）",
+   "expand": "fill",
+   "page": "ai"
+  },
+  "RoomType.dc.html": {
+   "x": 1520,
+   "y": 1320,
+   "w": 1440,
+   "h": 1100,
+   "title": "分身の部屋｜やり方を作る・直す（組む＋試す）",
+   "expand": "fill",
+   "page": "ai"
+  },
+  "RoomWays.dc.html": {
+   "x": 0,
+   "y": 2660,
+   "w": 1440,
+   "h": 1100,
+   "title": "知っていること｜やり方（カードで並べる）",
+   "expand": "fill",
+   "page": "ai"
+  },
+  "RoomMemory.dc.html": {
+   "x": 1520,
+   "y": 2660,
+   "w": 1440,
+   "h": 1000,
+   "title": "知っていること｜覚えていること（自動で入る・消せる）",
+   "expand": "fill",
+   "page": "ai"
+  },
+  "RoomWants.dc.html": {
+   "x": 0,
+   "y": 4000,
+   "w": 1440,
+   "h": 1150,
+   "title": "知っていること｜覚えたいこと（分身の点検つき）",
+   "expand": "fill",
+   "page": "ai"
+  },
+  "RoomAddRule.dc.html": {
+   "x": 1520,
+   "y": 4000,
+   "w": 1440,
+   "h": 1000,
+   "title": "小窓｜守ることを足す（足すときに点検）",
+   "expand": "fill",
+   "page": "ai"
+  },
+  "RoomDone.dc.html": {
+   "x": 0,
+   "y": 5390,
+   "w": 1440,
+   "h": 1100,
+   "title": "分身の部屋｜やったこと（何を使ったかの記録）",
+   "expand": "fill",
+   "page": "ai"
+  }
+ },
+ "order": [
+  "Main.dc.html",
+  "Overview.dc.html",
+  "List.dc.html",
+  "TicketDetail.dc.html",
+  "Create.dc.html",
+  "Calendar.dc.html",
+  "Gantt.dc.html",
+  "MobileList.dc.html",
+  "MobileDetail.dc.html",
+  "StEdit.dc.html",
+  "StAiPanel.dc.html",
+  "StRunning.dc.html",
+  "StFailed.dc.html",
+  "StCreateAi.dc.html",
+  "StOverlay.dc.html",
+  "StModal.dc.html",
+  "Approvals.dc.html",
+  "ApprovalsFocus.dc.html",
+  "Room.dc.html",
+  "AiChat.dc.html",
+  "RoomKnows.dc.html",
+  "RoomType.dc.html",
+  "RoomWays.dc.html",
+  "RoomMemory.dc.html",
+  "RoomWants.dc.html",
+  "RoomAddRule.dc.html",
+  "RoomDone.dc.html"
+ ],
+ "notes": {
+  "t1": {
+   "x": 0,
+   "y": -300,
+   "text": "チケット（毎日の入口）— 7 つの面",
+   "kind": "title1",
+   "maxW": 4480,
+   "page": "tickets"
+  },
+  "s1": {
+   "x": 0,
+   "y": -190,
+   "w": 640,
+   "text": "Backlog（04_design/reference/backlog-20261102）の作りを土台にした。決まっていること：色は紺／書体 Noto Sans JP／1 行 36px・本文 13px／上の帯なし・左のバーに寄せる／既定は『自分に関わるもの』／AI はロボットの絵＋『高本のAI』（決定ログ D-128）",
+   "page": "tickets",
+   "fill": "blue"
+  },
+  "t2": {
+   "x": 0,
+   "y": 1300,
+   "text": "詳細と作る",
+   "kind": "title1",
+   "maxW": 3900,
+   "page": "tickets"
+  },
+  "t3": {
+   "x": 0,
+   "y": 4540,
+   "text": "時間で見る",
+   "kind": "title1",
+   "maxW": 2960,
+   "page": "tickets"
+  },
+  "t4": {
+   "x": 0,
+   "y": -300,
+   "text": "チケットの動き — 書く・AI・確認・重なる画面",
+   "kind": "title1",
+   "maxW": 4480,
+   "page": "states"
+  },
+  "t5": {
+   "x": 0,
+   "y": -300,
+   "text": "承認待ち — 自分が決めるものを 1 か所に",
+   "kind": "title1",
+   "maxW": 2960,
+   "page": "approvals"
+  },
+  "t6": {
+   "x": 0,
+   "y": -300,
+   "text": "分身の部屋 — もう一人の自分を育てる・話す・知っていることを整える",
+   "kind": "title1",
+   "maxW": 2960,
+   "page": "ai"
+  },
+  "n_ai1": {
+   "x": 0,
+   "y": 2440,
+   "text": "知っていること — 4 つに分けて左で切り替える",
+   "kind": "title1",
+   "maxW": 2960,
+   "page": "ai"
+  },
+  "n_ai2": {
+   "x": 0,
+   "y": 5150,
+   "text": "やったこと",
+   "kind": "title1",
+   "maxW": 2960,
+   "page": "ai"
+  }
+ },
+ "designSystems": []
+}
