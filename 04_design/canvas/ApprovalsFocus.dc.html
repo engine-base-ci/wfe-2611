@@ -19,9 +19,32 @@ td{padding:7px 10px;border-bottom:1px solid #EDF0F4;vertical-align:top}
 td:nth-child(2),td:nth-child(3){white-space:nowrap}
 kbd{font-size:11px;border:1px solid #CBD2DC;border-bottom-width:2px;border-radius:4px;padding:0 5px;background:#FFFFFF;color:#4A5563}
 @media (max-width:767px){[data-wide]{flex-direction:column}}
+
+
+/* kn-shell: bars and panels run edge to edge; menu and side panel open/close */
+[data-shell]{min-height:100vh !important;align-items:stretch}
+[data-shell]>main{display:flex !important;flex-direction:column}
+[data-shell]>main>header~*:last-child{flex:1 0 auto}
+.kn-tgc{position:absolute;opacity:0;pointer-events:none}
+.kn-tg:hover{background:#DDE2E9}
+.kn-nav{transition:flex-basis .15s}
+body:has(#kn-tg-nav:checked) .kn-nav{flex-basis:56px !important;padding:10px 6px !important}
+body:has(#kn-tg-nav:checked) .kn-lbl{display:none !important}
+body:has(#kn-tg-nav:checked) .kn-top{flex-direction:column;padding:4px 0 !important}
+body:has(#kn-tg-nav:checked) .kn-tg{margin-left:0 !important}
+body:has(#kn-tg-nav:checked) .kn-item{justify-content:center;padding:0 !important}
+.kn-side{position:relative}
+.kn-side>.kn-tg+*{padding-right:44px !important}
+.kn-side>.kn-tg{position:absolute;top:10px;right:10px;width:28px;height:28px;border-radius:6px;display:grid;place-items:center;color:#4A5563;cursor:pointer;background:#FFFFFF}
+.kn-reopen{display:none;flex:0 0 36px;background:#FFFFFF;border-left:1px solid #DDE2E9;justify-content:center;padding-top:10px;color:#4A5563;cursor:pointer}
+.kn-reopen:hover{color:#22345C;background:#F7F8FA}
+body:has(#kn-tg-side:checked) .kn-side{display:none !important}
+body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
+@media (max-width:1023px){.kn-nav{flex-basis:56px !important;padding:10px 6px !important}.kn-lbl{display:none !important}.kn-top{flex-direction:column;padding:4px 0 !important}.kn-tg{margin-left:0 !important}.kn-item{justify-content:center;padding:0 !important}}
 </style>
 </helmet>
-<div style="min-height: 1100px; display: flex; flex-direction: column">
+<div data-shell style="min-height: 100vh; display: flex; flex-direction: column">
+ <input type="checkbox" id="kn-tg-nav" class="kn-tgc" aria-label="メニューを閉じる"><input type="checkbox" id="kn-tg-side" class="kn-tgc" aria-label="パネルを閉じる">
  <header style="background: #FFFFFF; border-bottom: 1px solid #DDE2E9; padding: 10px 24px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap">
   <a href="Approvals.dc.html" style="height: 30px; display: inline-flex; align-items: center; border: 1px solid #DDE2E9; border-radius: 6px; padding: 0 10px; font-size: 12px; color: #131B27; text-decoration: none">← 一覧に戻る</a>
   <b style="font-size: 15px">続けて裁く</b>
