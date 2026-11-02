@@ -16,6 +16,10 @@ button,input,select{font-family:inherit}
 th{font-size:12px;color:#4A5563;font-weight:500;text-align:left;padding:0 8px;height:32px;border-bottom:1px solid #DDE2E9;white-space:nowrap;background:#FAFBFC}
 td{height:36px;padding:0 8px;border-bottom:1px solid #EDF0F4;white-space:nowrap}
 select,input[type=text]{height:30px;border:1px solid #DDE2E9;border-radius:6px;background:#FFFFFF;padding:0 8px;font-size:12px;color:#131B27}
+th,button{white-space:nowrap}
+span[style*="border-radius: 99px"],b[style*="border-radius: 99px"]{white-space:nowrap}
+@media (max-width:1023px){nav[aria-label="メニュー"]{flex-basis:56px !important;font-size:0 !important;padding:10px 6px !important}nav[aria-label="メニュー"] a,nav[aria-label="メニュー"] button,nav[aria-label="メニュー"] div{justify-content:center !important;padding-left:0 !important;padding-right:0 !important}nav[aria-label="メニュー"] b{display:none}}
+@media (max-width:767px){nav[aria-label="メニュー"]{display:none !important}header label{width:auto !important;flex:1 1 120px;min-width:0}header>div{flex-wrap:wrap}aside{max-width:none !important}[style*="repeat(6, minmax(0, 1fr))"],[style*="repeat(4, minmax(0, 1fr))"]{grid-template-columns:repeat(2,minmax(0,1fr)) !important}[style*="repeat(2, minmax(0, 1fr)); gap: 0 24px"]{grid-template-columns:1fr !important}}
 </style>
 </helmet>
 <div style="display: flex; flex-wrap: wrap; min-height: 1180px">

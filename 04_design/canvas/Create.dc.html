@@ -14,6 +14,10 @@ body{margin:0;font-family:"Noto Sans JP",system-ui,sans-serif;color:#131B27;back
 a{color:#22345C}a:hover{color:#1A2848}
 button,input,select,textarea{font-family:inherit}
 input[type=text],select,textarea{border:1px solid #CBD2DC;border-radius:6px;background:#FFFFFF;padding:6px 10px;font-size:13px;color:#131B27;box-sizing:border-box}
+th,button{white-space:nowrap}
+span[style*="border-radius: 99px"],b[style*="border-radius: 99px"],span[style*="border-radius: 4px; padding: 0 6px"]{white-space:nowrap}
+@media (max-width:1023px){nav[aria-label="メニュー"]{flex-basis:56px !important;font-size:0 !important;padding:10px 6px !important}nav[aria-label="メニュー"] a,nav[aria-label="メニュー"] button,nav[aria-label="メニュー"] div{justify-content:center !important;padding-left:0 !important;padding-right:0 !important}nav[aria-label="メニュー"] b{display:none}}
+@media (max-width:767px){nav[aria-label="メニュー"]{display:none !important}header label{width:auto !important;flex:1 1 120px;min-width:0}header{flex-wrap:wrap}aside{max-width:none !important}[style*="repeat(2, minmax(0, 1fr)); gap: 0 24px"]{grid-template-columns:1fr !important}section[aria-label="本文"]>div{padding-left:16px !important;padding-right:16px !important}}
 </style>
 </helmet>
 <div style="display: flex; flex-wrap: wrap; min-height: 1500px">

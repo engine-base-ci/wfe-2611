@@ -13,6 +13,11 @@
 body{margin:0;font-family:"Noto Sans JP",system-ui,sans-serif;color:#131B27;background:#F2F4F7;font-size:13px;line-height:1.6}
 a{color:#22345C}a:hover{color:#1A2848}
 button,select{font-family:inherit}
+button{white-space:nowrap}
+section{overflow-x:auto}
+section>div{min-width:980px}
+@media (max-width:1023px){nav[aria-label="メニュー"]{flex-basis:56px !important;font-size:0 !important;padding:10px 6px !important}nav[aria-label="メニュー"] a,nav[aria-label="メニュー"] div{justify-content:center !important;padding-left:0 !important;padding-right:0 !important}nav[aria-label="メニュー"] b{display:none}}
+@media (max-width:767px){nav[aria-label="メニュー"]{display:none !important}header label{width:auto !important;flex:1 1 120px;min-width:0}header>div{flex-wrap:wrap}}
 </style>
 </helmet>
 <div style="display: flex; flex-wrap: wrap; min-height: 1000px">
