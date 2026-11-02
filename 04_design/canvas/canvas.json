@@ -862,7 +862,7 @@
    "y": 0,
    "w": 1440,
    "h": 900,
-   "title": "2 段階認証のコード ← パスワードで入ったとき",
+   "title": "確認のコード ← 2 段階認証を付けている人だけ",
    "expand": "fill",
    "page": "auth"
   },
@@ -880,7 +880,7 @@
    "y": 2480,
    "w": 1440,
    "h": 1000,
-   "title": "パスワードと 2 段階認証を付ける ← ログインと安全「パスワード › 決める」",
+   "title": "パスワードを決める（パスワードだけで入るなら 2 段階認証も一緒に）",
    "expand": "fill",
    "page": "me"
   },
@@ -910,6 +910,24 @@
    "title": "この PC にもパスキーを付ける？ ← スマホで入ったあと",
    "expand": "fill",
    "page": "auth"
+  },
+  "MeLogin2FA.dc.html": {
+   "x": 1520,
+   "y": 1240,
+   "w": 1440,
+   "h": 1100,
+   "title": "ログインと安全（2 段階認証を付けているとき）",
+   "expand": "fill",
+   "page": "me"
+  },
+  "Me2FA.dc.html": {
+   "x": 3040,
+   "y": 2480,
+   "w": 1440,
+   "h": 1000,
+   "title": "2 段階認証を付ける ← ログインと安全「2 段階認証 › 付ける」（任意）",
+   "expand": "fill",
+   "page": "me"
   }
  },
  "createdOnFiles": {
@@ -1247,7 +1265,9 @@
   "MeTotp.dc.html",
   "MeBackup.dc.html",
   "AuthQR.dc.html",
-  "AuthAddPasskey.dc.html"
+  "AuthAddPasskey.dc.html",
+  "MeLogin2FA.dc.html",
+  "Me2FA.dc.html"
  ],
  "pages": [
   {
