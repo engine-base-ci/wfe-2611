@@ -466,6 +466,42 @@
    "title": "開始・期限が無いもの ← ガントの「開始・期限が無い 4 件」",
    "expand": "fill",
    "page": "listopen"
+  },
+  "MnView.dc.html": {
+   "x": 0,
+   "y": 3720,
+   "w": 1440,
+   "h": 1000,
+   "title": "自分に関わるものの見え方 ← 自分に関わるものの「表示設定」",
+   "expand": "fill",
+   "page": "listopen"
+  },
+  "OvGroup.dc.html": {
+   "x": 1520,
+   "y": 3720,
+   "w": 1440,
+   "h": 1000,
+   "title": "グループのメンバーと決まり ← 概要の右上のメンバーの顔",
+   "expand": "fill",
+   "page": "listopen"
+  },
+  "TopMe.dc.html": {
+   "x": 3040,
+   "y": 3720,
+   "w": 1440,
+   "h": 1000,
+   "title": "自分のメニュー ← どの画面でも右上の顔",
+   "expand": "fill",
+   "page": "listopen"
+  },
+  "TopOrg.dc.html": {
+   "x": 0,
+   "y": 4960,
+   "w": 1440,
+   "h": 1000,
+   "title": "会社を切り替える ← どの画面でも左上「ENGINE BASE ▾」",
+   "expand": "fill",
+   "page": "listopen"
   }
  },
  "order": [
@@ -517,7 +553,11 @@
   "ApBulk.dc.html",
   "CalDay.dc.html",
   "GtMove.dc.html",
-  "GtNoDate.dc.html"
+  "GtNoDate.dc.html",
+  "MnView.dc.html",
+  "OvGroup.dc.html",
+  "TopMe.dc.html",
+  "TopOrg.dc.html"
  ],
  "notes": {
   "t1": {
@@ -611,7 +651,7 @@
   "t_ls": {
    "x": 0,
    "y": -300,
-   "text": "一覧・承認待ち・カレンダー・ガントから開くもの",
+   "text": "一覧・承認待ち・カレンダー・ガント・自分に関わるもの・概要から開くもの（右上と左上のメニューも）",
    "kind": "title1",
    "maxW": 4480,
    "page": "listopen"

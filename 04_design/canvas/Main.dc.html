@@ -27,6 +27,7 @@ span[style*="border-radius: 99px"],b[style*="border-radius: 99px"]{white-space:n
 
 
 
+
 /* kn-shell: bars and panels run edge to edge; menu and side panel open/close */
 [data-shell]{min-height:100vh !important;align-items:stretch}
 [data-shell]>main{display:flex !important;flex-direction:column}
@@ -108,7 +109,7 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
        <button type="button" style="height: 26px; border: 1px solid #DDE2E9; background: #FFFFFF; color: #4A5563; border-radius: 99px; padding: 0 10px; font-size: 12px">自分が承認 2</button>
        <button type="button" style="height: 26px; border: 1px solid #DDE2E9; background: #FFFFFF; color: #4A5563; border-radius: 99px; padding: 0 10px; font-size: 12px">渡されたもの 1</button>
       </span>
-      <span style="margin-left: auto; display: flex; gap: 6px; align-items: center"><span style="color: #4A5563; font-size: 12px">並び：期限の近い順 ▾</span><button type="button" style="height: 26px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 8px; font-size: 12px; color: #131B27">条件を保存</button><button type="button" style="height: 26px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 8px; font-size: 12px; color: #131B27">表示設定</button></span>
+      <span style="margin-left: auto; display: flex; gap: 6px; align-items: center"><span style="color: #4A5563; font-size: 12px">並び：期限の近い順 ▾</span><a href="LsSave.dc.html" style="height: 26px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 8px; font-size: 12px; color: #131B27; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; box-sizing: border-box">条件を保存</a><a href="MnView.dc.html" style="height: 26px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 8px; font-size: 12px; color: #131B27; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; box-sizing: border-box">表示設定</a></span>
      </div>
      <div style="overflow-x: auto">
       <table style="border-collapse: collapse; width: 100%">
@@ -138,7 +139,7 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
 
    <aside style="flex: 1 1 300px; max-width: 360px; display: flex; flex-direction: column; gap: 12px">
     <section style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 8px">
-     <h2 style="font-size: 13px; margin: 0; padding: 10px 12px; border-bottom: 1px solid #DDE2E9; display: flex">自分の承認を待っているもの<a href="#" style="margin-left: auto; font-size: 12px; font-weight: 400">すべて</a></h2>
+     <h2 style="font-size: 13px; margin: 0; padding: 10px 12px; border-bottom: 1px solid #DDE2E9; display: flex">自分の承認を待っているもの<a href="Approvals.dc.html" style="margin-left: auto; font-size: 12px; font-weight: 400">すべて</a></h2>
      <div style="padding: 10px 12px; border-bottom: 1px solid #EDF0F4">
       <div style="font-size: 12px; color: #4A5563">EG-128 ・ 営業 ・ 成果物は高本のAI が作成</div>
       <a href="TicketDetail.dc.html" style="color: #131B27; text-decoration: none; font-weight: 500">セイコー様へ 11月分の請求書を送る</a>
@@ -152,7 +153,7 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
      </div>
     </section>
     <section style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 8px">
-     <h2 style="font-size: 13px; margin: 0; padding: 10px 12px; border-bottom: 1px solid #DDE2E9; display: flex">自分の AI の動き<a href="#" style="margin-left: auto; font-size: 12px; font-weight: 400">AI の動きへ</a></h2>
+     <h2 style="font-size: 13px; margin: 0; padding: 10px 12px; border-bottom: 1px solid #DDE2E9; display: flex">高本のAI のいま<a href="Room.dc.html" style="margin-left: auto; font-size: 12px; font-weight: 400">分身の部屋へ</a></h2>
      <div style="padding: 8px 12px; display: flex; flex-direction: column; gap: 8px">
       <div style="display: flex; gap: 8px; align-items: flex-start"><span style="width: 8px; height: 8px; border-radius: 99px; background: #1D4ED8; margin-top: 7px"></span><div><b style="font-weight: 500">EG-127 応募文を作っている</b><div style="font-size: 12px; color: #4A5563">発注ナビ ・ 開始 3 分前 ・ 業務の型：応募文 v2</div></div></div>
       <div style="display: flex; gap: 8px; align-items: flex-start"><span style="width: 8px; height: 8px; border-radius: 99px; background: #6D4AA6; margin-top: 7px"></span><div><b style="font-weight: 500">EG-121 ② AI の判定（2 回目）</b><div style="font-size: 12px; color: #4A5563">別のセッションで確認中</div></div></div>

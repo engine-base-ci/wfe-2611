@@ -25,6 +25,7 @@ span[style*="border-radius: 99px"],b[style*="border-radius: 99px"]{white-space:n
 
 
 
+
 /* kn-shell: bars and panels run edge to edge; menu and side panel open/close */
 [data-shell]{min-height:100vh !important;align-items:stretch}
 [data-shell]>main{display:flex !important;flex-direction:column}
@@ -77,12 +78,12 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
    <div style="display: flex; align-items: center; gap: 10px; padding: 12px 24px 0; flex-wrap: wrap">
     <span style="width: 26px; height: 26px; border-radius: 6px; background: #186F69; color: #FFFFFF; font-size: 11px; display: grid; place-items: center; font-weight: 700">EG</span>
     <h1 style="font-size: 18px; margin: 0">営業</h1><span style="color: #4A5563; font-size: 12px">（EG）・メンバー 4 人・自分の AI 4</span>
-    <span style="margin-left: auto; display: flex; gap: 4px; align-items: center">
+    <a href="OvGroup.dc.html" title="メンバーと決まり" style="margin-left: auto; display: flex; gap: 4px; align-items: center; text-decoration: none">
      <span style="width: 24px; height: 24px; border-radius: 99px; background: #6B5B99; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">高</span>
      <span style="width: 24px; height: 24px; border-radius: 99px; background: #186F69; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">佐</span>
      <span style="width: 24px; height: 24px; border-radius: 99px; background: #2F4B7C; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">鈴</span>
      <span style="width: 24px; height: 24px; border-radius: 99px; background: #7E570D; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">田</span>
-    </span>
+    </a>
    </div>
    <nav aria-label="チケットの見え方" style="display: flex; gap: 2px; padding: 6px 24px 0; overflow-x: auto">
     <a href="Main.dc.html" style="padding: 8px 12px; border-bottom: 2px solid transparent; color: #4A5563; text-decoration: none; white-space: nowrap">自分に関わるもの</a>
@@ -141,7 +142,7 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
     <section style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 8px; padding: 12px 14px">
      <h2 style="font-size: 13px; margin: 0 0 6px">節目</h2>
      <sc-for list="{{mss}}" as="m" hint-placeholder-count="4">
-      <div style="padding: 8px 0; border-bottom: 1px solid #EDF0F4"><div style="display: flex"><a href="#">{{m.name}}</a><span style="margin-left: auto; font-size: 12px; color: #4A5563">{{m.pct}}% 完了</span></div>
+      <div style="padding: 8px 0; border-bottom: 1px solid #EDF0F4"><div style="display: flex"><a href="List.dc.html">{{m.name}}</a><span style="margin-left: auto; font-size: 12px; color: #4A5563">{{m.pct}}% 完了</span></div>
        <div style="height: 6px; background: #EDF0F4; border-radius: 99px; overflow: hidden; margin: 4px 0"><div style="{{m.bar}}"></div></div><div style="font-size: 11px; color: #4A5563">{{m.end}}</div></div>
      </sc-for>
     </section>
