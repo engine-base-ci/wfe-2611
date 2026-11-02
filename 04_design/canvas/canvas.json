@@ -38,6 +38,10 @@
    "name": "ナレッジ"
   },
   {
+   "id": "cu",
+   "name": "取引先"
+  },
+  {
    "id": "ws",
    "name": "ワークスペース"
   }
@@ -645,6 +649,78 @@
    "title": "取り込む ← ホームの「取り込む」（Obsidian・Notion・Markdown）",
    "expand": "fill",
    "page": "kn"
+  },
+  "CuList.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 1440,
+   "h": 1000,
+   "title": "取引先 ← 左のメニュー「取引先」",
+   "expand": "fill",
+   "page": "cu"
+  },
+  "CuPage.dc.html": {
+   "x": 1520,
+   "y": 0,
+   "w": 1440,
+   "h": 1000,
+   "title": "取引先のページ › いま ← 一覧・チケットの「取引先の 1 社を開く」",
+   "expand": "fill",
+   "page": "cu"
+  },
+  "CuRequests.dc.html": {
+   "x": 3040,
+   "y": 0,
+   "w": 1440,
+   "h": 1000,
+   "title": "届いた依頼 ← 左のパネル・取引先のいま「さばく」",
+   "expand": "fill",
+   "page": "cu"
+  },
+  "CuShare.dc.html": {
+   "x": 0,
+   "y": 1240,
+   "w": 1440,
+   "h": 1000,
+   "title": "人と見せ方 ← 取引先のページのタブ",
+   "expand": "fill",
+   "page": "cu"
+  },
+  "CuReview.dc.html": {
+   "x": 1520,
+   "y": 1240,
+   "w": 1440,
+   "h": 1000,
+   "title": "検収を頼む ← チケットの成果物「先方に確かめてもらう」",
+   "expand": "fill",
+   "page": "cu"
+  },
+  "CpHome.dc.html": {
+   "x": 3040,
+   "y": 1240,
+   "w": 1440,
+   "h": 1000,
+   "title": "【先方の画面】クライアントの場所 ← 招待のメール",
+   "expand": "fill",
+   "page": "cu"
+  },
+  "CpNew.dc.html": {
+   "x": 0,
+   "y": 2480,
+   "w": 1440,
+   "h": 1000,
+   "title": "【先方の画面】依頼を出す",
+   "expand": "fill",
+   "page": "cu"
+  },
+  "CpReview.dc.html": {
+   "x": 1520,
+   "y": 2480,
+   "w": 1440,
+   "h": 1000,
+   "title": "【先方の画面】検収（OK／直してほしい）",
+   "expand": "fill",
+   "page": "cu"
   }
  },
  "order": [
@@ -715,7 +791,15 @@
   "KnProposal.dc.html",
   "KnNew.dc.html",
   "KnLinks.dc.html",
-  "KnImport.dc.html"
+  "KnImport.dc.html",
+  "CuList.dc.html",
+  "CuPage.dc.html",
+  "CuRequests.dc.html",
+  "CuShare.dc.html",
+  "CuReview.dc.html",
+  "CpHome.dc.html",
+  "CpNew.dc.html",
+  "CpReview.dc.html"
  ],
  "notes": {
   "t1": {
@@ -852,6 +936,22 @@
    "w": 900,
    "text": "逆算と調べたこと：01_hearing/ナレッジの逆算_20261102.md（Confluence・Notion・Guru・Document360・Slab・esa・Outline）。1 ページ＝置き場・親ページ・持ち主・状態（下書き／公開／しまった）・確かめ（期限）・話題・版・つながり・使われ方。流れ：書く→使う→直す案→確かめる→しまう。分身は公開のページだけ読む",
    "page": "kn",
+   "fill": "blue"
+  },
+  "t_cu": {
+   "x": 0,
+   "y": -300,
+   "text": "取引先 — 取引先ごとに集まる・先方の入口・分身が守る決まり",
+   "kind": "title1",
+   "maxW": 4480,
+   "page": "cu"
+  },
+  "s_cu": {
+   "x": 0,
+   "y": -190,
+   "w": 900,
+   "text": "逆算と調べたこと：01_hearing/取引先の逆算_20261102.md（Linear・Basecamp・Zendesk・Attio・Moxo/Copilot・Backlog）。既定は社内だけで、見せるものに目のしるし。先方の画面（クライアントの場所）は Kaname と別の簡単な 1 画面：確認してほしいもの・依頼・進んでいる仕事",
+   "page": "cu",
    "fill": "blue"
   }
  },
