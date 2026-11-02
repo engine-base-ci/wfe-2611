@@ -1018,6 +1018,60 @@
    "title": "読み込めない・保存できない・オフライン・権限がない",
    "expand": "fill",
    "page": "on"
+  },
+  "ErrNotFound.dc.html": {
+   "x": 0,
+   "y": 2480,
+   "w": 1440,
+   "h": 900,
+   "title": "見つからない（404）",
+   "expand": "fill",
+   "page": "on"
+  },
+  "ErrNoAccess.dc.html": {
+   "x": 1520,
+   "y": 2480,
+   "w": 1440,
+   "h": 900,
+   "title": "権限がない（頼める）",
+   "expand": "fill",
+   "page": "on"
+  },
+  "ErrSession.dc.html": {
+   "x": 3040,
+   "y": 2480,
+   "w": 1440,
+   "h": 900,
+   "title": "ログインが切れた（書きかけは残る）",
+   "expand": "fill",
+   "page": "on"
+  },
+  "ErrLinkExpired.dc.html": {
+   "x": 0,
+   "y": 3580,
+   "w": 1440,
+   "h": 900,
+   "title": "リンクの期限が切れた（招待・作り直し）",
+   "expand": "fill",
+   "page": "on"
+  },
+  "ErrMaintenance.dc.html": {
+   "x": 1520,
+   "y": 3580,
+   "w": 1440,
+   "h": 900,
+   "title": "メンテナンス中（分身の作業はどうなるか）",
+   "expand": "fill",
+   "page": "on"
+  },
+  "ErrDown.dc.html": {
+   "x": 3040,
+   "y": 3580,
+   "w": 1440,
+   "h": 900,
+   "title": "Kaname の調子が悪い（いまの様子）",
+   "expand": "fill",
+   "page": "on"
   }
  },
  "createdOnFiles": {
@@ -1259,6 +1313,14 @@
    "kind": "title1",
    "maxW": 4480,
    "page": "on"
+  },
+  "t_err": {
+   "x": 0,
+   "y": 2300,
+   "text": "エラーの画面 — 何が起きたか・次にすること・書きかけは残る",
+   "kind": "title1",
+   "maxW": 4480,
+   "page": "on"
   }
  },
  "order": [
@@ -1375,7 +1437,13 @@
   "OnKnowledge.dc.html",
   "OnClients.dc.html",
   "OnLoading.dc.html",
-  "OnError.dc.html"
+  "OnError.dc.html",
+  "ErrNotFound.dc.html",
+  "ErrNoAccess.dc.html",
+  "ErrSession.dc.html",
+  "ErrLinkExpired.dc.html",
+  "ErrMaintenance.dc.html",
+  "ErrDown.dc.html"
  ],
  "pages": [
   {
