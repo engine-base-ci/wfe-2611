@@ -6,7 +6,7 @@
 <style>
 :root{--pri:#22345C;--pri-c:#DCE4F2;--on-pri-c:#101C33;--ter:#6D4AA6;--ter-c:#E9E0F5;--bg:#F7F8FA;--card:#fff;--fg:#131B27;--sub:#4A5563;--line:#DDE2E9;--soft:#EDF0F4;--side:#EEF0F4;
 --ok:#166534;--ok-c:#DCFCE7;--wa:#B45309;--wa-c:#FCEBD5;--ng:#B91C1C;--ng-c:#FDECEC;--info:#1D4ED8;--info-c:#DBEAFE}
-*{box-sizing:border-box}body{margin:0;font:14px/1.6 "Noto Sans JP",system-ui,sans-serif;color:var(--fg);background:var(--bg)}
+*{box-sizing:border-box}body{margin:0;font:13px/1.6 "Noto Sans JP",system-ui,sans-serif;color:var(--fg);background:var(--bg)}
 .app{display:flex;min-height:100vh}
 /* 左のバー */
 .side{width:220px;flex:none;background:var(--side);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:10px 8px;gap:2px;position:sticky;top:0;height:100vh}
@@ -15,7 +15,7 @@
 .create{margin:6px 0 4px;background:var(--pri);color:#fff;border:0;border-radius:6px;height:34px;font:inherit;font-weight:500;display:flex;align-items:center;justify-content:center;gap:6px}
 .create kbd{font-size:11px;opacity:.7;border:1px solid rgba(255,255,255,.4);border-radius:4px;padding:0 4px}
 .row2{display:flex;gap:4px;margin-bottom:6px}.row2 a{flex:1;white-space:nowrap;padding:0 6px}
-.it{display:flex;align-items:center;gap:8px;height:32px;padding:0 8px;border-radius:6px;color:var(--fg);text-decoration:none}
+.it{display:flex;align-items:center;gap:8px;height:30px;padding:0 8px;border-radius:6px;color:var(--fg);text-decoration:none}
 .it:hover{background:var(--soft)}.it.on{background:var(--pri);color:#fff}
 .it .n{margin-left:auto;font-size:12px;background:var(--wa-c);color:#7A4A05;border-radius:99px;padding:0 7px}
 .it.on .n{background:rgba(255,255,255,.2);color:#fff}
@@ -44,14 +44,14 @@
 .list{flex:1;min-width:0;overflow:auto;background:var(--card)}
 table{border-collapse:collapse;width:100%}
 th{font-size:12px;color:var(--sub);font-weight:500;text-align:left;padding:0 10px;height:34px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--card);white-space:nowrap}
-td{height:40px;padding:0 10px;border-bottom:1px solid var(--soft);white-space:nowrap}
+td{height:36px;padding:0 10px;border-bottom:1px solid var(--soft);white-space:nowrap}
 tr.sel td{background:#F1F4FA}tr:hover td{background:#F7F9FC}
 .key{color:var(--sub);font-size:12px;font-variant-numeric:tabular-nums}
 .ttl{max-width:420px;overflow:hidden;text-overflow:ellipsis}
 .tg{font-size:12px;border-radius:4px;padding:1px 6px}
 .st{font-size:12px;border-radius:99px;padding:2px 8px}
 .s-wait{background:var(--wa-c);color:#7A4A05}.s-run{background:var(--info-c);color:#1E3A8A}.s-ok{background:var(--ok-c);color:#2E5B26}.s-chk{background:var(--ter-c);color:#33235C}.s-do{background:var(--soft);color:var(--sub)}
-.ai{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--ter)}
+.ai{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--fg)}.ai svg{color:var(--sub)}
 .due{font-variant-numeric:tabular-nums}.due.late{color:var(--ng);font-weight:500}
 .grp td{background:var(--bg);height:30px;font-size:12px;color:var(--sub);font-weight:500}
 /* 詳細（右に開く） */
@@ -65,6 +65,7 @@ tr.sel td{background:#F1F4FA}tr:hover td{background:#F7F9FC}
 /* スマホ */
 .tabbar{display:none}
 @media (max-width:1023px){.det{display:none}}
+@media (min-width:1024px) and (max-width:1279px){.side{width:56px;align-items:center}.side .it{width:40px;justify-content:center;padding:0;font-size:0}.side .it .n{display:none}.side .sec,.side .pc{font-size:0}.side .tenant{font-size:0;padding:6px}.side .tenant span:last-child{display:none}.side .create{width:40px;font-size:0}.side .create::before{content:"＋";font-size:16px}.side .create kbd{display:none}.det{width:400px}td.ttl{max-width:220px}.side .row2{flex-direction:column}.side .me{font-size:0;padding:6px}.side .me span:last-child{display:none}}
 @media (min-width:1024px) and (max-width:1599px){.up{display:none}}
 @media (max-width:767px){
  .side{display:none}.head{padding:12px 16px 6px}.head h1{font-size:18px}.head .btn.p{display:none}
@@ -108,10 +109,10 @@ tr.sel td{background:#F1F4FA}tr:hover td{background:#F7F9FC}
    <thead><tr><th>番号</th><th>題名</th><th>種別</th><th>状態</th><th>実行者</th><th>責任者</th><th>期限</th><th class="up">更新</th></tr></thead>
    <tbody>
    <tr class="grp"><td colspan="8">期限切れ・今日</td></tr>
-   <tr class="sel"><td class="key">EG-128</td><td class="ttl">セイコー様へ 11月分の請求書を送る</td><td><span class="tg" style="background:#CFEAE7;color:#0A3330">タスク</span></td><td><span class="st s-wait">承認待ち</span></td><td><span class="ai">✦ 自分の AI</span></td><td>高本</td><td class="due late">11/01</td><td class="key up">10分前</td>
-    <td class="m"><div class="mrow"><b>セイコー様へ 11月分の請求書を送る</b><div class="l2"><span class="key">EG-128</span><span class="st s-wait">承認待ち</span><span class="ai">✦ AI</span><span class="due late">11/01</span></div></div></td></tr>
-   <tr><td class="key">EG-127</td><td class="ttl">発注ナビ 新着案件に応募文を出す</td><td><span class="tg" style="background:#CFEAE7;color:#0A3330">タスク</span></td><td><span class="st s-run">実行中</span></td><td><span class="ai">✦ 自分の AI</span></td><td>高本</td><td class="due">11/02</td><td class="key up">2分前</td>
-    <td class="m"><div class="mrow"><b>発注ナビ 新着案件に応募文を出す</b><div class="l2"><span class="key">EG-127</span><span class="st s-run">実行中</span><span class="ai">✦ AI</span><span class="due">11/02</span></div></div></td></tr>
+   <tr class="sel"><td class="key">EG-128</td><td class="ttl">セイコー様へ 11月分の請求書を送る</td><td><span class="tg" style="background:#CFEAE7;color:#0A3330">タスク</span></td><td><span class="st s-wait">承認待ち</span></td><td><span class="ai"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2M20 14h2M15 13v2M9 13v2"/></svg>高本のAI</span></td><td>高本</td><td class="due late">11/01</td><td class="key up">10分前</td>
+    <td class="m"><div class="mrow"><b>セイコー様へ 11月分の請求書を送る</b><div class="l2"><span class="key">EG-128</span><span class="st s-wait">承認待ち</span><span class="ai"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2M20 14h2M15 13v2M9 13v2"/></svg>AI</span><span class="due late">11/01</span></div></div></td></tr>
+   <tr><td class="key">EG-127</td><td class="ttl">発注ナビ 新着案件に応募文を出す</td><td><span class="tg" style="background:#CFEAE7;color:#0A3330">タスク</span></td><td><span class="st s-run">実行中</span></td><td><span class="ai"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2M20 14h2M15 13v2M9 13v2"/></svg>高本のAI</span></td><td>高本</td><td class="due">11/02</td><td class="key up">2分前</td>
+    <td class="m"><div class="mrow"><b>発注ナビ 新着案件に応募文を出す</b><div class="l2"><span class="key">EG-127</span><span class="st s-run">実行中</span><span class="ai"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2M20 14h2M15 13v2M9 13v2"/></svg>AI</span><span class="due">11/02</span></div></div></td></tr>
    <tr><td class="key">EG-121</td><td class="ttl">京蟻 見積の金額を確認する</td><td><span class="tg" style="background:#FDECEC;color:#991B1B">QA</span></td><td><span class="st s-chk">確認中</span></td><td>高本</td><td>高本</td><td class="due">11/02</td><td class="key up">1時間前</td>
     <td class="m"><div class="mrow"><b>京蟻 見積の金額を確認する</b><div class="l2"><span class="key">EG-121</span><span class="st s-chk">確認中</span><span class="due">11/02</span></div></div></td></tr>
    <tr class="grp"><td colspan="8">今週</td></tr>
@@ -119,13 +120,13 @@ tr.sel td{background:#F1F4FA}tr:hover td{background:#F7F9FC}
     <td class="m"><div class="mrow"><b>問い合わせ（山田様）に一次返信する</b><div class="l2"><span class="key">EG-119</span><span class="st s-do">作業中</span><span class="due">11/05</span></div></div></td></tr>
    <tr><td class="key">EG-115</td><td class="ttl">受託開発 定例の議事と決定を残す</td><td><span class="tg" style="background:#E9E0F5;color:#33235C">会議</span></td><td><span class="st s-do">未着手</span></td><td>高本</td><td>高本</td><td class="due">11/06</td><td class="key up">2日前</td>
     <td class="m"><div class="mrow"><b>受託開発 定例の議事と決定を残す</b><div class="l2"><span class="key">EG-115</span><span class="st s-do">未着手</span><span class="due">11/06</span></div></div></td></tr>
-   <tr><td class="key">EG-112</td><td class="ttl">入金の照合（10月分）</td><td><span class="tg" style="background:#CFEAE7;color:#0A3330">タスク</span></td><td><span class="st s-ok">完了</span></td><td><span class="ai">✦ 自分の AI</span></td><td>高本</td><td class="due">11/07</td><td class="key up">3日前</td>
+   <tr><td class="key">EG-112</td><td class="ttl">入金の照合（10月分）</td><td><span class="tg" style="background:#CFEAE7;color:#0A3330">タスク</span></td><td><span class="st s-ok">完了</span></td><td><span class="ai"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2M20 14h2M15 13v2M9 13v2"/></svg>高本のAI</span></td><td>高本</td><td class="due">11/07</td><td class="key up">3日前</td>
     <td class="m"><div class="mrow"><b>入金の照合（10月分）</b><div class="l2"><span class="key">EG-112</span><span class="st s-ok">完了</span><span class="due">11/07</span></div></div></td></tr>
    </tbody></table></div>
   <aside class="det">
    <div class="k">EG-128 ・ タスク ・ 営業</div>
    <h2>セイコー様へ 11月分の請求書を送る</h2>
-   <dl class="meta"><dt>状態</dt><dd><span class="st s-wait">承認待ち</span></dd><dt>責任者</dt><dd>高本</dd><dt>実行者</dt><dd><span class="ai">✦ 自分の AI</span>（業務の型：請求書を作る v3）</dd><dt>期限</dt><dd class="due late">11/01（1 日過ぎ）</dd></dl>
+   <dl class="meta"><dt>状態</dt><dd><span class="st s-wait">承認待ち</span></dd><dt>責任者</dt><dd>高本</dd><dt>実行者</dt><dd><span class="ai"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2M20 14h2M15 13v2M9 13v2"/></svg>高本のAI</span>（業務の型：請求書を作る v3）</dd><dt>期限</dt><dd class="due late">11/01（1 日過ぎ）</dd></dl>
    <div class="blk"><h3>目的</h3>セイコー様に 11 月分を請求する</div>
    <div class="blk"><h3>完了の条件</h3>金額が見積と一致し、PDF がセイコー様に送られている</div>
    <div class="blk"><h3>確認の結果</h3>
