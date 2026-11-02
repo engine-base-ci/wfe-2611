@@ -18,6 +18,9 @@ button{white-space:nowrap}
 
 
 
+
+
+
 /* kn-shell: bars and panels run edge to edge; menu and side panel open/close */
 [data-shell]{min-height:100vh !important;align-items:stretch}
 [data-shell]>main{display:flex !important;flex-direction:column}
@@ -31,6 +34,10 @@ body:has(#kn-tg-nav:checked) .kn-lbl{display:none !important}
 body:has(#kn-tg-nav:checked) .kn-top{flex-direction:column;padding:4px 0 !important}
 body:has(#kn-tg-nav:checked) .kn-tg{margin-left:0 !important}
 body:has(#kn-tg-nav:checked) .kn-item{justify-content:center;padding:0 !important}
+aside[aria-label="チケットのパネル"]{position:sticky;top:0;height:calc(100vh - 48px);align-self:flex-start}
+.kn-pbody{flex:1 1 auto !important;min-height:0;overflow:auto}
+.kn-thread{flex:1 1 auto;min-height:0;overflow:auto;display:flex;flex-direction:column-reverse}
+@media (max-width:1023px){aside[aria-label="チケットのパネル"]{position:static;height:auto}}
 .kn-side{position:relative}
 .kn-side>.kn-tg+*{padding-right:44px !important}
 .kn-side>.kn-tg{position:absolute;top:10px;right:10px;width:28px;height:28px;border-radius:6px;display:grid;place-items:center;color:#4A5563;cursor:pointer;background:#FFFFFF}
