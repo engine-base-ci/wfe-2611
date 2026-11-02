@@ -18,6 +18,10 @@
    "name": "チケットの動き"
   },
   {
+   "id": "tdopen",
+   "name": "詳細から開く"
+  },
+  {
    "id": "approvals",
    "name": "承認待ち"
   },
@@ -260,6 +264,114 @@
    "title": "分身の部屋｜やったこと（何を使ったかの記録）",
    "expand": "fill",
    "page": "ai"
+  },
+  "TdMore.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 1440,
+   "h": 1000,
+   "title": "…（ほかの操作）",
+   "expand": "fill",
+   "page": "tdopen"
+  },
+  "TdDelete.dc.html": {
+   "x": 1520,
+   "y": 0,
+   "w": 1440,
+   "h": 1000,
+   "title": "消す前の確認",
+   "expand": "fill",
+   "page": "tdopen"
+  },
+  "TdDuplicate.dc.html": {
+   "x": 3040,
+   "y": 0,
+   "w": 1440,
+   "h": 1000,
+   "title": "複製する",
+   "expand": "fill",
+   "page": "tdopen"
+  },
+  "TdWatch.dc.html": {
+   "x": 0,
+   "y": 1240,
+   "w": 1440,
+   "h": 1000,
+   "title": "ウォッチ",
+   "expand": "fill",
+   "page": "tdopen"
+  },
+  "TdAssignee.dc.html": {
+   "x": 1520,
+   "y": 1240,
+   "w": 1440,
+   "h": 1000,
+   "title": "担当者を変える",
+   "expand": "fill",
+   "page": "tdopen"
+  },
+  "TdDue.dc.html": {
+   "x": 3040,
+   "y": 1240,
+   "w": 1440,
+   "h": 1000,
+   "title": "期限を変える",
+   "expand": "fill",
+   "page": "tdopen"
+  },
+  "TdVersions.dc.html": {
+   "x": 0,
+   "y": 2480,
+   "w": 1440,
+   "h": 1000,
+   "title": "版と差分",
+   "expand": "fill",
+   "page": "tdopen"
+  },
+  "TdRunLog.dc.html": {
+   "x": 1520,
+   "y": 2480,
+   "w": 1440,
+   "h": 1000,
+   "title": "実行の記録（右から出る）",
+   "expand": "fill",
+   "page": "tdopen"
+  },
+  "TdLink.dc.html": {
+   "x": 3040,
+   "y": 2480,
+   "w": 1440,
+   "h": 1000,
+   "title": "つながり・子を足す",
+   "expand": "fill",
+   "page": "tdopen"
+  },
+  "TdDecision.dc.html": {
+   "x": 0,
+   "y": 3720,
+   "w": 1440,
+   "h": 1000,
+   "title": "書き込みを決定にする",
+   "expand": "fill",
+   "page": "tdopen"
+  },
+  "TdPreview.dc.html": {
+   "x": 1520,
+   "y": 3720,
+   "w": 1440,
+   "h": 1000,
+   "title": "成果物を大きく見る・データ・試し打ち",
+   "expand": "fill",
+   "page": "tdopen"
+  },
+  "TdCheck.dc.html": {
+   "x": 3040,
+   "y": 3720,
+   "w": 1440,
+   "h": 1000,
+   "title": "抜けを点検する・確認の項目を足す",
+   "expand": "fill",
+   "page": "tdopen"
   }
  },
  "order": [
@@ -289,7 +401,19 @@
   "RoomMemory.dc.html",
   "RoomWants.dc.html",
   "RoomAddRule.dc.html",
-  "RoomDone.dc.html"
+  "RoomDone.dc.html",
+  "TdMore.dc.html",
+  "TdDelete.dc.html",
+  "TdDuplicate.dc.html",
+  "TdWatch.dc.html",
+  "TdAssignee.dc.html",
+  "TdDue.dc.html",
+  "TdVersions.dc.html",
+  "TdRunLog.dc.html",
+  "TdLink.dc.html",
+  "TdDecision.dc.html",
+  "TdPreview.dc.html",
+  "TdCheck.dc.html"
  ],
  "notes": {
   "t1": {
@@ -363,6 +487,22 @@
    "kind": "title1",
    "maxW": 2960,
    "page": "ai"
+  },
+  "t_td": {
+   "x": 0,
+   "y": -300,
+   "text": "チケットの詳細から開くもの — 押したあとの画面・小窓",
+   "kind": "title1",
+   "maxW": 4480,
+   "page": "tdopen"
+  },
+  "s_td": {
+   "x": 0,
+   "y": -190,
+   "w": 900,
+   "text": "詳細（④）のボタン・リンクから開く。小さな選択は押した場所のすぐ下に開く（ウォッチ・…・担当者・期限）。決めることが多いものは真ん中の小窓、記録を読むものは右から出す。版と差分は 1 画面",
+   "page": "tdopen",
+   "fill": "blue"
   }
  },
  "designSystems": []
