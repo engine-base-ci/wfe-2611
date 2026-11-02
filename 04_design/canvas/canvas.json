@@ -928,6 +928,96 @@
    "title": "2 段階認証を付ける ← ログインと安全「2 段階認証 › 付ける」（任意）",
    "expand": "fill",
    "page": "me"
+  },
+  "AuthSignup.dc.html": {
+   "x": 0,
+   "y": 2280,
+   "w": 1440,
+   "h": 900,
+   "title": "アカウントを作る（設定の段はない）",
+   "expand": "fill",
+   "page": "auth"
+  },
+  "AuthVerify.dc.html": {
+   "x": 1520,
+   "y": 2280,
+   "w": 1440,
+   "h": 900,
+   "title": "メールを確かめる・入り方を決める",
+   "expand": "fill",
+   "page": "auth"
+  },
+  "AuthReset.dc.html": {
+   "x": 3040,
+   "y": 2280,
+   "w": 1440,
+   "h": 900,
+   "title": "パスワードを忘れた",
+   "expand": "fill",
+   "page": "auth"
+  },
+  "AuthInvite.dc.html": {
+   "x": 0,
+   "y": 3420,
+   "w": 1440,
+   "h": 900,
+   "title": "招待されて入る",
+   "expand": "fill",
+   "page": "auth"
+  },
+  "OnHome.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 1440,
+   "h": 1000,
+   "title": "はじめて入ったとき（チケットが空・はじめにやること 3 つ）",
+   "expand": "fill",
+   "page": "on"
+  },
+  "OnRoom.dc.html": {
+   "x": 1520,
+   "y": 0,
+   "w": 1440,
+   "h": 1000,
+   "title": "分身の部屋（はじめて・PC がまだ）",
+   "expand": "fill",
+   "page": "on"
+  },
+  "OnKnowledge.dc.html": {
+   "x": 3040,
+   "y": 0,
+   "w": 1440,
+   "h": 1000,
+   "title": "ナレッジ（まだページがない）",
+   "expand": "fill",
+   "page": "on"
+  },
+  "OnClients.dc.html": {
+   "x": 0,
+   "y": 1240,
+   "w": 1440,
+   "h": 1000,
+   "title": "取引先（まだない）",
+   "expand": "fill",
+   "page": "on"
+  },
+  "OnLoading.dc.html": {
+   "x": 1520,
+   "y": 1240,
+   "w": 1440,
+   "h": 1000,
+   "title": "読み込み中（3 秒より長いときだけ）",
+   "expand": "fill",
+   "page": "on"
+  },
+  "OnError.dc.html": {
+   "x": 3040,
+   "y": 1240,
+   "w": 1440,
+   "h": 1000,
+   "title": "読み込めない・保存できない・オフライン・権限がない",
+   "expand": "fill",
+   "page": "on"
   }
  },
  "createdOnFiles": {
@@ -1161,6 +1251,14 @@
    "kind": "title1",
    "maxW": 4480,
    "page": "auth"
+  },
+  "t_on": {
+   "x": 0,
+   "y": -300,
+   "text": "はじめて・空・失敗 — 登録したらすぐ使える。空の画面は次の一歩を出す",
+   "kind": "title1",
+   "maxW": 4480,
+   "page": "on"
   }
  },
  "order": [
@@ -1267,12 +1365,26 @@
   "AuthQR.dc.html",
   "AuthAddPasskey.dc.html",
   "MeLogin2FA.dc.html",
-  "Me2FA.dc.html"
+  "Me2FA.dc.html",
+  "AuthSignup.dc.html",
+  "AuthVerify.dc.html",
+  "AuthReset.dc.html",
+  "AuthInvite.dc.html",
+  "OnHome.dc.html",
+  "OnRoom.dc.html",
+  "OnKnowledge.dc.html",
+  "OnClients.dc.html",
+  "OnLoading.dc.html",
+  "OnError.dc.html"
  ],
  "pages": [
   {
    "id": "auth",
    "name": "ログイン"
+  },
+  {
+   "id": "on",
+   "name": "はじめて・空・失敗"
   },
   {
    "id": "tickets",
