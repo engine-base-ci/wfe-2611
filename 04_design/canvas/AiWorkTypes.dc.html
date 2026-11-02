@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>業務の型</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:"Noto Sans JP",system-ui,sans-serif;color:#131B27;background:#F2F4F7;font-size:13px;line-height:1.6}
+a{color:#22345C}a:hover{color:#1A2848}
+button,input{font-family:inherit}
+th,button{white-space:nowrap}
+span[style*="border-radius: 99px"],b[style*="border-radius: 99px"]{white-space:nowrap}
+th{font-size:12px;color:#4A5563;font-weight:500;text-align:left;padding:0 8px;height:32px;border-bottom:1px solid #DDE2E9;background:#FAFBFC}
+td{height:40px;padding:0 8px;border-bottom:1px solid #EDF0F4;white-space:nowrap}
+h3{font-size:13px;margin:14px 0 4px;color:#4A5563;font-weight:500}
+@media (max-width:1023px){nav[aria-label="メニュー"]{flex-basis:56px !important;font-size:0 !important;padding:10px 6px !important}nav[aria-label="メニュー"] a,nav[aria-label="メニュー"] div{justify-content:center !important;padding-left:0 !important;padding-right:0 !important}nav[aria-label="メニュー"] b{display:none}}
+@media (max-width:767px){nav[aria-label="メニュー"]{display:none !important}header label{width:auto !important;flex:1 1 120px;min-width:0}header>div{flex-wrap:wrap}aside{max-width:none !important}}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; min-height: 1000px">
+ <nav aria-label="メニュー" style="flex: 0 0 216px; background: #EEF0F4; border-right: 1px solid #DDE2E9; display: flex; flex-direction: column; gap: 1px; padding: 10px 8px; box-sizing: border-box">
+  <div style="display: flex; align-items: center; gap: 8px; padding: 6px 8px; font-weight: 700"><span style="width: 24px; height: 24px; border-radius: 6px; background: #22345C; color: #FFFFFF; display: grid; place-items: center; font-size: 12px">E</span>ENGINE BASE<span style="margin-left: auto; color: #4A5563">▾</span></div>
+  <a href="Create.dc.html" style="margin: 6px 0; background: #22345C; color: #FFFFFF; border-radius: 6px; height: 34px; display: flex; align-items: center; justify-content: center; text-decoration: none; font-weight: 500">＋ チケットを作る</a>
+  <a href="Main.dc.html" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none">チケット</a>
+  <a href="Approvals.dc.html" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none">承認待ち<b style="margin-left: auto; font-size: 11px; background: #B45309; color: #FFFFFF; border-radius: 99px; padding: 0 6px">7</b></a>
+  <a href="AiChat.dc.html" aria-current="page" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 6px; background: #22345C; color: #FFFFFF; text-decoration: none; font-weight: 500">AI</a>
+  <a href="#" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none">ナレッジ</a>
+  <a href="#" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none">取引先</a>
+ </nav>
+ <main style="flex: 999 1 640px; min-width: 0">
+  <header style="background: #FFFFFF; border-bottom: 1px solid #DDE2E9">
+   <div style="display: flex; align-items: center; gap: 10px; padding: 12px 24px 0; flex-wrap: wrap">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#131B27" stroke-width="2" aria-hidden="true"><path d="M12 8V4H8"></path><rect width="16" height="12" x="4" y="8" rx="2"></rect><path d="M2 14h2M20 14h2M15 13v2M9 13v2"></path></svg>
+    <h1 style="font-size: 18px; margin: 0">高本のAI</h1>
+    <span style="margin-left: auto; display: flex; gap: 6px; align-items: center">
+     <label style="display: flex; align-items: center; gap: 6px; height: 32px; width: 260px; border: 1px solid #DDE2E9; border-radius: 99px; padding: 0 12px; background: #F7F8FA; color: #4A5563"><span style="position: absolute; left: -9999px">探す</span><input type="search" placeholder="探す" style="border: 0; background: transparent; flex: 1; font-size: 12px; min-width: 0"></label>
+     <button type="button" aria-label="知らせ" style="width: 36px; height: 36px; border: 0; border-radius: 99px; background: transparent; color: #131B27"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path></svg></button>
+     <span style="width: 28px; height: 28px; border-radius: 99px; background: #6B5B99; color: #FFFFFF; display: grid; place-items: center; font-size: 12px">高</span>
+    </span>
+   </div>
+   <nav aria-label="AI のタブ" style="display: flex; gap: 2px; padding: 6px 24px 0">
+    <a href="AiChat.dc.html" style="padding: 8px 12px; border-bottom: 2px solid transparent; color: #4A5563; text-decoration: none">会話</a>
+    <a href="AiActivity.dc.html" style="padding: 8px 12px; border-bottom: 2px solid transparent; color: #4A5563; text-decoration: none">AI の動き</a>
+    <a href="AiWorkTypes.dc.html" aria-current="page" style="padding: 8px 12px; border-bottom: 2px solid #22345C; color: #22345C; font-weight: 500; text-decoration: none">業務の型</a>
+    <a href="AiRules.dc.html" style="padding: 8px 12px; border-bottom: 2px solid transparent; color: #4A5563; text-decoration: none">ルール</a>
+   </nav>
+  </header>
+  <div style="display: flex; flex-wrap: wrap; gap: 16px; padding: 16px 24px; align-items: flex-start">
+   <section style="flex: 999 1 560px; min-width: 0; background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 8px">
+    <div style="display: flex; gap: 8px; align-items: center; padding: 10px 12px; border-bottom: 1px solid #DDE2E9; flex-wrap: wrap">
+     <span style="display: flex; gap: 6px; flex-wrap: wrap"><button type="button" style="height: 26px; border: 1px solid #22345C; background: #22345C; color: #FFFFFF; border-radius: 99px; padding: 0 10px; font-size: 12px">使える型 12</button><button type="button" style="height: 26px; border: 1px solid #DDE2E9; background: #FFFFFF; color: #4A5563; border-radius: 99px; padding: 0 10px; font-size: 12px">自分で作った 2</button><button type="button" style="height: 26px; border: 1px solid #DDE2E9; background: #FFFFFF; color: #4A5563; border-radius: 99px; padding: 0 10px; font-size: 12px">広げる申請（OK 待ち）1</button></span>
+     <button type="button" style="margin-left: auto; height: 30px; border-radius: 6px; border: 1px solid #22345C; background: #22345C; color: #FFFFFF; padding: 0 12px; font-size: 12px; font-weight: 500">＋ 型を作る</button>
+    </div>
+    <div style="overflow-x: auto">
+     <table style="border-collapse: collapse; width: 100%">
+      <thead><tr><th>名前</th><th>範囲</th><th>版</th><th>作った人</th><th>使った回数（30 日）</th><th>最後に使った</th></tr></thead>
+      <tbody>
+       <sc-for list="{{rows}}" as="r" hint-placeholder-count="10">
+        <tr style="{{r.rowStyle}}"><td style="font-weight: 500">{{r.name}}<span style="display: block; font-size: 11px; color: #4A5563; font-weight: 400">{{r.desc}}</span></td><td><span style="{{r.scopeStyle}}">{{r.scope}}</span></td><td style="font-size: 12px; color: #4A5563">{{r.ver}}</td><td style="font-size: 12px">{{r.by}}</td><td style="font-size: 12px">{{r.uses}}</td><td style="font-size: 12px; color: #4A5563">{{r.last}}</td></tr>
+       </sc-for>
+      </tbody>
+     </table>
+    </div>
+   </section>
+   <aside aria-label="選んだ型" style="flex: 1 1 380px; max-width: 460px; background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 8px; overflow: hidden">
+    <div style="padding: 12px 16px; border-bottom: 1px solid #EDF0F4">
+     <div style="display: flex; gap: 6px; align-items: center; font-size: 12px; color: #4A5563"><span style="font-size: 11px; color: #FFFFFF; background: #186F69; border-radius: 99px; padding: 0 8px">会社</span>版 3 ・ 作った人 高本 ・ 検査 通過</div>
+     <h2 style="font-size: 17px; margin: 4px 0 2px">請求書を作る</h2>
+     <div style="font-size: 12px; color: #4A5563">見積から請求書の内訳を作り、インボイスの形の PDF にする</div>
+     <div style="display: flex; gap: 6px; margin-top: 8px"><button type="button" style="height: 28px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 10px; font-size: 12px; color: #131B27">欄を直す</button><button type="button" style="height: 28px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 10px; font-size: 12px; color: #131B27">AI と直す</button><button type="button" style="height: 28px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 10px; font-size: 12px; color: #131B27">試し打ち</button><button type="button" style="height: 28px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 10px; font-size: 12px; color: #131B27">版と差分</button></div>
+    </div>
+    <div style="padding: 4px 16px 16px">
+     <h3>いつ使う</h3><p style="margin: 0">種別「タスク」で分類が「請求」のチケット。見積のチケットがつながっているとき</p>
+     <h3>確かめること</h3><ul style="margin: 0; padding-left: 18px"><li>金額が見積の月額と一致</li><li>インボイスの必須記載事項</li><li>宛名は取引先のルールどおり</li></ul>
+     <h3>書式</h3><p style="margin: 0">会社の請求書のひな形（ナレッジ「請求書の書式」版 2）・件名の型「【請求書】{月}月分 ご請求のご案内」</p>
+     <h3>注意と禁止</h3><ul style="margin: 0; padding-left: 18px"><li>値引きは決定ログに無ければ入れない</li><li>口座番号は設定の値から入れる（本文に書かない）</li></ul>
+     <h3>使う操作</h3><div style="display: flex; gap: 6px; flex-wrap: wrap"><span style="font-size: 12px; border: 1px solid #DDE2E9; border-radius: 99px; padding: 0 8px">PDF を作る</span><span style="font-size: 12px; border: 1px solid #DDE2E9; border-radius: 99px; padding: 0 8px">ブラウザでメールを送る</span></div>
+     <h3>重ねたルール</h3><div style="font-size: 12px; display: flex; flex-direction: column; gap: 2px"><span>会社：請求は 25 日締め</span><span>取引先（セイコー）：経理部 山田様宛・CC 鈴木様</span></div>
+     <h3>使った記録</h3><div style="font-size: 12px; color: #4A5563">30 日で 9 回 ・ 確認で落ちた 1 回 ・ 差し戻し 0 回 <a href="AiActivity.dc.html">実行を見る</a></div>
+     <div style="margin-top: 12px; font-size: 12px; color: #4A5563; background: #F7F8FA; border-radius: 6px; padding: 8px 10px">運営の全社向けの型は、欄と説明だけを見られます（直せない）。合わせたいことはルールを重ねます</div>
+    </div>
+   </aside>
+  </div>
+ </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var C = { "運営・全社向け": "#22345C", "運営・会社向け": "#2F4B7C", "会社": "#186F69", "グループ": "#6D4AA6", "自分": "#7E570D" };
+    var r = function (name, desc, scope, ver, by, uses, last, sel) { return { name: name, desc: desc, scope: scope, ver: ver, by: by, uses: uses, last: last,
+      scopeStyle: "font-size:11px;color:#FFFFFF;border-radius:99px;padding:1px 8px;background:" + C[scope], rowStyle: sel ? "background:#EEF3FD" : "" }; };
+    return { rows: [
+      r("請求書を作る", "見積から内訳と PDF を作る", "会社", "v3", "高本", "9", "今日", true),
+      r("応募文", "発注ナビの案件に応募文を作って出す", "運営・全社向け", "v2", "運営", "14", "今日"),
+      r("問い合わせの一次返信", "問い合わせに 1 回目の返事をする", "運営・全社向け", "v4", "運営", "11", "昨日"),
+      r("入金の照合", "通帳の明細と請求書を突き合わせる", "運営・会社向け", "v2", "運営（CS）", "4", "11/01"),
+      r("見積を作る", "単価表と過去の実績から見積を作る", "グループ", "v2", "佐藤（受託開発）", "6", "10/30"),
+      r("お礼のメール", "打ち合わせのあとにお礼を送る", "運営・全社向け", "v1", "運営", "8", "11/01"),
+      r("請求書（シンプル）", "個人向けの簡単な請求書", "自分", "v1", "高本", "1", "10/12"),
+      r("月次レポート", "先月の対応をまとめて送る", "自分", "v1", "高本", "2", "10/05")
+    ] };
+  }
+}
+</script>
+</body>
+</html>
