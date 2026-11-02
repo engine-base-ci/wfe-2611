@@ -21,10 +21,12 @@ kbd{font-size:11px;border:1px solid #CBD2DC;border-bottom-width:2px;border-radiu
 @media (max-width:767px){[data-wide]{flex-direction:column}}
 
 
+
 /* kn-shell: bars and panels run edge to edge; menu and side panel open/close */
 [data-shell]{min-height:100vh !important;align-items:stretch}
 [data-shell]>main{display:flex !important;flex-direction:column}
-[data-shell]>main>header~*:last-child{flex:1 0 auto}
+[data-shell]>main>.kn-bar~*:last-child{flex:1 0 auto}
+.kn-bar~header{flex:none}
 .kn-tgc{position:absolute;opacity:0;pointer-events:none}
 .kn-tg:hover{background:#DDE2E9}
 .kn-nav{transition:flex-basis .15s}
