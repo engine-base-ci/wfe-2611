@@ -28,6 +28,9 @@ td{height:44px;padding:0 8px;border-bottom:1px solid #EDF0F4;white-space:nowrap}
 
 
 
+
+
+
 /* kn-shell: bars and panels run edge to edge; menu and side panel open/close */
 [data-shell]{min-height:100vh !important;align-items:stretch}
 [data-shell]>main{display:flex !important;flex-direction:column}
@@ -70,7 +73,7 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
   <a href="#" title="受託開発" class="kn-item" style="display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none"><span style="width: 18px; height: 18px; flex: none; border-radius: 4px; background: #6D4AA6; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">JD</span><span class="kn-lbl">受託開発</span><span class="kn-lbl" style="margin-left: auto; font-size: 12px; color: #4A5563">42</span></a>
   <a href="#" title="経理" class="kn-item" style="display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none"><span style="width: 18px; height: 18px; flex: none; border-radius: 4px; background: #B45309; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">KR</span><span class="kn-lbl">経理</span><span class="kn-lbl" style="margin-left: auto; font-size: 12px; color: #4A5563">9</span></a>
   <div style="flex: 1"></div>
-  <a href="#" title="会社" class="kn-item" style="display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 10px; border-radius: 6px; text-decoration: none; color: #131B27"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"></path></svg><span class="kn-lbl">会社</span></a>
+  <a href="CoMembers.dc.html" title="ワークスペース" class="kn-item" style="display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 10px; border-radius: 6px; text-decoration: none; color: #131B27"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"></path></svg><span class="kn-lbl">ワークスペース</span></a>
   <div title="PC つながっている" style="font-size: 12px; color: #166534; display: flex; align-items: center; gap: 6px; padding: 6px 10px"><span style="width: 8px; height: 8px; flex: none; border-radius: 99px; background: #166534"></span><span class="kn-lbl">PC つながっている</span></div>
  </nav>
 
@@ -145,7 +148,7 @@ class Component extends DCLogic {
       sections: [
         { label: "期限切れ・今日", color: "#B91C1C", n: 3, rows: [
           row("AI の成果物", "タスク", "EG-128", "セイコー様へ 11月分の請求書を送る", "承認するとメールを送る（取り消せない）", "高本のAI", "確実 2 ・ AI 1 ・ 人 1", "11/01", true, "中身を見る", "差し戻す", false),
-          row("上位の承認", "タスク", "JD-204", "京蟻 追加開発の見積を出す（1,826,000 円）", "150 万円以上はマネージャーの承認（会社のルール）", "佐藤", "確実 2 ・ AI 1", "今日 18:00", false, "承認する", "差し戻す", false),
+          row("上位の承認", "タスク", "JD-204", "京蟻 追加開発の見積を出す（1,826,000 円）", "150 万円以上はマネージャーの承認（ワークスペースのルール）", "佐藤", "確実 2 ・ AI 1", "今日 18:00", false, "承認する", "差し戻す", false),
           row("渡された", "タスク", "EG-119", "問い合わせ（山田様）に一次返信する", "理由：先方と面識がある ・ 返事の期限 11/03", "佐藤", "—", "11/03", false, "受ける", "断る", false) ] },
         { label: "今週", color: "#131B27", n: 3, rows: [
           row("AI の成果物", "タスク", "EG-127", "発注ナビ 応募文を出す", "承認すると応募する（取り下げ可）", "高本のAI", "確実 2", "11/04", false, "承認する", "差し戻す", true),

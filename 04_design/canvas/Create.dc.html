@@ -28,6 +28,9 @@ span[style*="border-radius: 99px"],b[style*="border-radius: 99px"],span[style*="
 
 
 
+
+
+
 /* kn-shell: bars and panels run edge to edge; menu and side panel open/close */
 [data-shell]{min-height:100vh !important;align-items:stretch}
 [data-shell]>main{display:flex !important;flex-direction:column}
@@ -70,7 +73,7 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
   <a href="#" title="受託開発" class="kn-item" style="display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none"><span style="width: 18px; height: 18px; flex: none; border-radius: 4px; background: #6D4AA6; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">JD</span><span class="kn-lbl">受託開発</span><span class="kn-lbl" style="margin-left: auto; font-size: 12px; color: #4A5563">42</span></a>
   <a href="#" title="経理" class="kn-item" style="display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none"><span style="width: 18px; height: 18px; flex: none; border-radius: 4px; background: #B45309; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">KR</span><span class="kn-lbl">経理</span><span class="kn-lbl" style="margin-left: auto; font-size: 12px; color: #4A5563">9</span></a>
   <div style="flex: 1"></div>
-  <a href="#" title="会社" class="kn-item" style="display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 10px; border-radius: 6px; text-decoration: none; color: #131B27"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"></path></svg><span class="kn-lbl">会社</span></a>
+  <a href="CoMembers.dc.html" title="ワークスペース" class="kn-item" style="display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 10px; border-radius: 6px; text-decoration: none; color: #131B27"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"></path></svg><span class="kn-lbl">ワークスペース</span></a>
   <div title="PC つながっている" style="font-size: 12px; color: #166534; display: flex; align-items: center; gap: 6px; padding: 6px 10px"><span style="width: 8px; height: 8px; flex: none; border-radius: 99px; background: #166534"></span><span class="kn-lbl">PC つながっている</span></div>
  </nav>
 
@@ -153,7 +156,7 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
      <h2 style="font-size: 13px; margin: 0 0 6px; display: flex; gap: 6px; align-items: center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 8V4H8"></path><rect width="16" height="12" x="4" y="8" rx="2"></rect><path d="M2 14h2M20 14h2M15 13v2M9 13v2"></path></svg>自分の AI から</h2>
      <div style="font-size: 12px; display: flex; flex-direction: column; gap: 6px">
       <span>先月の EG-128 とほぼ同じです。複製して日付と金額だけ変えますか？</span>
-      <span style="color: #4A5563">業務の型の候補：請求書を作る v3（会社）・請求書（シンプル）v1（自分）→ 2 つあるので選んでください</span>
+      <span style="color: #4A5563">業務の型の候補：請求書を作る v3（ワークスペース）・請求書（シンプル）v1（自分）→ 2 つあるので選んでください</span>
       <span style="color: #4A5563">取引先のルール「セイコー様は経理部 山田様宛」が効きます</span>
      </div>
     </section>
@@ -174,7 +177,7 @@ class Component extends DCLogic {
       tools: [ { name: "太字", label: "B" }, { name: "斜体", label: "I" }, { name: "見出し", label: "見出し" }, { name: "箇条書き", label: "・" }, { name: "番号つき", label: "1." }, { name: "チェックリスト", label: "☐" }, { name: "表", label: "表" }, { name: "画像・添付", label: "画像" }, { name: "引用", label: "引用" }, { name: "コード", label: "</>" }, { name: "注意の枠", label: "注意" }, { name: "チケットを引く", label: "#" }, { name: "人を呼ぶ", label: "@" }, { name: "リンク", label: "リンク" } ],
       tests: [
         { item: "金額が見積の月額と一致", kind: "① 機械", how: "数値の一致（EG-097 の月額）" },
-        { item: "インボイスの必須記載事項", kind: "① 機械", how: "必須項目がそろう（会社の型）" },
+        { item: "インボイスの必須記載事項", kind: "① 機械", how: "必須項目がそろう（ワークスペースの型）" },
         { item: "宛名と敬称が取引先のルールどおり", kind: "② AI", how: "別のセッションで 2 回判定・引用つき" },
         { item: "送る前に PDF を目で見る", kind: "③ 人", how: "承認する人がチェック" }
       ],

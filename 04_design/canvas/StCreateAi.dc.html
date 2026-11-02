@@ -26,6 +26,9 @@ h3{font-size:16px;margin:20px 0 6px;padding-bottom:6px;border-bottom:1px solid #
 
 
 
+
+
+
 /* kn-shell: bars and panels run edge to edge; menu and side panel open/close */
 [data-shell]{min-height:100vh !important;align-items:stretch}
 [data-shell]>main{display:flex !important;flex-direction:column}
@@ -68,7 +71,7 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
   <a href="#" title="受託開発" class="kn-item" style="display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none"><span style="width: 18px; height: 18px; flex: none; border-radius: 4px; background: #6D4AA6; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">JD</span><span class="kn-lbl">受託開発</span><span class="kn-lbl" style="margin-left: auto; font-size: 12px; color: #4A5563">42</span></a>
   <a href="#" title="経理" class="kn-item" style="display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none"><span style="width: 18px; height: 18px; flex: none; border-radius: 4px; background: #B45309; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">KR</span><span class="kn-lbl">経理</span><span class="kn-lbl" style="margin-left: auto; font-size: 12px; color: #4A5563">9</span></a>
   <div style="flex: 1"></div>
-  <a href="#" title="会社" class="kn-item" style="display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 10px; border-radius: 6px; text-decoration: none; color: #131B27"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"></path></svg><span class="kn-lbl">会社</span></a>
+  <a href="CoMembers.dc.html" title="ワークスペース" class="kn-item" style="display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 10px; border-radius: 6px; text-decoration: none; color: #131B27"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"></path></svg><span class="kn-lbl">ワークスペース</span></a>
   <div title="PC つながっている" style="font-size: 12px; color: #166534; display: flex; align-items: center; gap: 6px; padding: 6px 10px"><span style="width: 8px; height: 8px; flex: none; border-radius: 99px; background: #166534"></span><span class="kn-lbl">PC つながっている</span></div>
  </nav>
  <main style="flex: 1; min-width: 0; display: flex; flex-direction: column">
@@ -99,7 +102,7 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
       <h3>目的</h3>
       <p style="margin: 0">京蟻様の管理画面に、一覧の CSV 書き出しを足す見積を出し、受注する。</p>
       <h3>完了の条件</h3>
-      <ul style="margin: 0; padding-left: 20px"><li>見積の工数が <span style="display: inline-flex; gap: 4px; align-items: center; border: 1px solid #DDE2E9; border-radius: 99px; padding: 0 8px; font-size: 12px"><span style="width: 6px; height: 6px; border-radius: 99px; background: #166534"></span>JD-142 帳票の PDF 出力</span> の実績をもとに出ている</li><li>単価が会社の単価表と一致している</li><li>見積書 PDF が京蟻 田村様に送られている</li></ul>
+      <ul style="margin: 0; padding-left: 20px"><li>見積の工数が <span style="display: inline-flex; gap: 4px; align-items: center; border: 1px solid #DDE2E9; border-radius: 99px; padding: 0 8px; font-size: 12px"><span style="width: 6px; height: 6px; border-radius: 99px; background: #166534"></span>JD-142 帳票の PDF 出力</span> の実績をもとに出ている</li><li>単価がワークスペースの単価表と一致している</li><li>見積書 PDF が京蟻 田村様に送られている</li></ul>
       <h3>子チケット <span style="font-size: 11px; color: #6D4AA6; font-weight: 400">AI が足しています</span></h3>
       <div style="display: flex; flex-direction: column; gap: 4px"><span>□ 設計：書き出す項目と形式を決める <span style="color: #4A5563; font-size: 12px">2h</span></span><span>□ 実装：CSV 書き出し <span style="color: #4A5563; font-size: 12px">6h</span></span><span style="color: #8A94A3; background: #F2F4F7; border-radius: 4px; padding: 0 6px; align-self: flex-start">□ テスト：…（作っています）</span></div>
       <h3>テスト仕様の案</h3>

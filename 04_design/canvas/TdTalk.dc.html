@@ -30,6 +30,9 @@ article table{min-width:520px}
 
 
 
+
+
+
 /* kn-shell: bars and panels run edge to edge; menu and side panel open/close */
 [data-shell]{min-height:100vh !important;align-items:stretch}
 [data-shell]>main{display:flex !important;flex-direction:column}
@@ -72,7 +75,7 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
   <a href="#" title="受託開発" class="kn-item" style="display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none"><span style="width: 18px; height: 18px; flex: none; border-radius: 4px; background: #6D4AA6; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">JD</span><span class="kn-lbl">受託開発</span><span class="kn-lbl" style="margin-left: auto; font-size: 12px; color: #4A5563">42</span></a>
   <a href="#" title="経理" class="kn-item" style="display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none"><span style="width: 18px; height: 18px; flex: none; border-radius: 4px; background: #B45309; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">KR</span><span class="kn-lbl">経理</span><span class="kn-lbl" style="margin-left: auto; font-size: 12px; color: #4A5563">9</span></a>
   <div style="flex: 1"></div>
-  <a href="#" title="会社" class="kn-item" style="display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 10px; border-radius: 6px; text-decoration: none; color: #131B27"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"></path></svg><span class="kn-lbl">会社</span></a>
+  <a href="CoMembers.dc.html" title="ワークスペース" class="kn-item" style="display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 10px; border-radius: 6px; text-decoration: none; color: #131B27"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"></path></svg><span class="kn-lbl">ワークスペース</span></a>
   <div title="PC つながっている" style="font-size: 12px; color: #166534; display: flex; align-items: center; gap: 6px; padding: 6px 10px"><span style="width: 8px; height: 8px; flex: none; border-radius: 99px; background: #166534"></span><span class="kn-lbl">PC つながっている</span></div>
  </nav>
 
@@ -161,7 +164,7 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
         <thead><tr><th>確認項目</th><th>種類</th><th>判定のしかた</th><th>結果</th><th>根拠</th></tr></thead>
         <tbody>
          <tr><td>金額が見積の月額と一致</td><td>① 機械</td><td style="color: #4A5563">数値の一致（EG-097 の月額）</td><td><b style="color: #166534">通過・確実</b></td><td style="color: #4A5563; font-size: 12px">1,500,000 = 1,500,000</td></tr>
-         <tr><td>インボイスの必須記載事項</td><td>① 機械</td><td style="color: #4A5563">必須項目がそろう（会社の型）</td><td><b style="color: #166534">通過・確実</b></td><td style="color: #4A5563; font-size: 12px">登録番号・税率別の金額と税額あり</td></tr>
+         <tr><td>インボイスの必須記載事項</td><td>① 機械</td><td style="color: #4A5563">必須項目がそろう（ワークスペースの型）</td><td><b style="color: #166534">通過・確実</b></td><td style="color: #4A5563; font-size: 12px">登録番号・税率別の金額と税額あり</td></tr>
          <tr><td>宛名と CC が取引先のルールどおり</td><td>② AI</td><td style="color: #4A5563">別のセッションで 2 回判定・引用つき</td><td><b style="color: #166534">通過</b> <span style="font-size: 11px; color: #4A5563">AI 判定</span></td><td style="color: #4A5563; font-size: 12px">「経理部 山田宛・CC 鈴木様」（取引先のルール・山田様のメール）</td></tr>
          <tr><td>送る前に PDF を目で見る</td><td>③ 人</td><td style="color: #4A5563">承認する人がチェック</td><td><label style="display: inline-flex; gap: 6px; align-items: center"><input type="checkbox">見た</label></td><td style="color: #4A5563; font-size: 12px">—</td></tr>
         </tbody>
