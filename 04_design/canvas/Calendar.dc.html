@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>チケット カレンダー（営業）</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:"Noto Sans JP",system-ui,sans-serif;color:#131B27;background:#F2F4F7;font-size:13px;line-height:1.6}
+a{color:#22345C}a:hover{color:#1A2848}
+button,select{font-family:inherit}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; min-height: 1000px">
+ <nav aria-label="メニュー" style="flex: 0 0 216px; background: #EEF0F4; border-right: 1px solid #DDE2E9; display: flex; flex-direction: column; gap: 1px; padding: 10px 8px; box-sizing: border-box">
+  <div style="display: flex; align-items: center; gap: 8px; padding: 6px 8px; font-weight: 700"><span style="width: 24px; height: 24px; border-radius: 6px; background: #22345C; color: #FFFFFF; display: grid; place-items: center; font-size: 12px">E</span>ENGINE BASE</div>
+  <a href="Create.dc.html" style="margin: 6px 0; background: #22345C; color: #FFFFFF; border-radius: 6px; height: 34px; display: flex; align-items: center; justify-content: center; text-decoration: none; font-weight: 500">＋ チケットを作る</a>
+  <a href="Main.dc.html" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none">チケット</a>
+  <a href="#" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none">承認待ち<b style="margin-left: auto; font-size: 11px; background: #B45309; color: #FFFFFF; border-radius: 99px; padding: 0 6px">2</b></a>
+  <a href="#" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none">AI</a>
+  <a href="#" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none">ナレッジ</a>
+  <a href="#" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none">取引先</a>
+  <div style="font-size: 12px; color: #4A5563; padding: 12px 10px 4px">グループ ★</div>
+  <a href="Overview.dc.html" aria-current="page" style="display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 10px; border-radius: 6px; background: #22345C; color: #FFFFFF; text-decoration: none; font-weight: 500"><span style="width: 18px; height: 18px; border-radius: 4px; background: #FFFFFF; color: #186F69; font-size: 10px; display: grid; place-items: center">EG</span>営業</a>
+  <a href="#" style="display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none"><span style="width: 18px; height: 18px; border-radius: 4px; background: #6D4AA6; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">JD</span>受託開発</a>
+  <a href="#" style="display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none"><span style="width: 18px; height: 18px; border-radius: 4px; background: #B45309; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">KR</span>経理</a>
+ </nav>
+
+ <main style="flex: 999 1 640px; min-width: 0">
+  <header style="background: #FFFFFF; border-bottom: 1px solid #DDE2E9">
+   <div style="display: flex; align-items: center; gap: 10px; padding: 12px 24px 0"><span style="width: 26px; height: 26px; border-radius: 6px; background: #186F69; color: #FFFFFF; font-size: 11px; display: grid; place-items: center; font-weight: 700">EG</span><h1 style="font-size: 18px; margin: 0">営業</h1></div>
+   <nav aria-label="チケットの見え方" style="display: flex; gap: 2px; padding: 6px 24px 0; overflow-x: auto">
+    <a href="Main.dc.html" style="padding: 8px 12px; border-bottom: 2px solid transparent; color: #4A5563; text-decoration: none; white-space: nowrap">自分に関わるもの</a>
+    <a href="Overview.dc.html" style="padding: 8px 12px; border-bottom: 2px solid transparent; color: #4A5563; text-decoration: none">概要</a>
+    <a href="List.dc.html" style="padding: 8px 12px; border-bottom: 2px solid transparent; color: #4A5563; text-decoration: none">一覧</a>
+    <a href="Calendar.dc.html" aria-current="page" style="padding: 8px 12px; border-bottom: 2px solid #22345C; color: #22345C; font-weight: 500; text-decoration: none">カレンダー</a>
+    <a href="Gantt.dc.html" style="padding: 8px 12px; border-bottom: 2px solid transparent; color: #4A5563; text-decoration: none">ガント</a>
+   </nav>
+  </header>
+  <div style="padding: 16px 24px; display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
+   <section style="flex: 999 1 640px; min-width: 0; background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 8px">
+    <div style="display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-bottom: 1px solid #DDE2E9; flex-wrap: wrap">
+     <button type="button" aria-label="前の月" style="width: 30px; height: 30px; border: 1px solid #DDE2E9; border-radius: 6px; background: #FFFFFF; color: #131B27">‹</button>
+     <b style="font-size: 15px">2026年 11月</b>
+     <button type="button" aria-label="次の月" style="width: 30px; height: 30px; border: 1px solid #DDE2E9; border-radius: 6px; background: #FFFFFF; color: #131B27">›</button>
+     <button type="button" style="height: 30px; border: 1px solid #DDE2E9; border-radius: 6px; background: #FFFFFF; padding: 0 10px; font-size: 12px; color: #131B27">今日</button>
+     <span style="display: inline-flex; border: 1px solid #DDE2E9; border-radius: 6px; overflow: hidden; margin-left: 8px"><button type="button" style="height: 28px; border: 0; background: #22345C; color: #FFFFFF; padding: 0 10px; font-size: 12px">月</button><button type="button" style="height: 28px; border: 0; background: #FFFFFF; color: #4A5563; padding: 0 10px; font-size: 12px">週</button></span>
+     <span style="margin-left: auto; display: flex; gap: 8px; font-size: 12px; color: #4A5563; align-items: center">並べる日付<select style="height: 28px; border: 1px solid #DDE2E9; border-radius: 6px; font-size: 12px"><option>期限</option><option>開始日〜期限</option></select>責任者<select style="height: 28px; border: 1px solid #DDE2E9; border-radius: 6px; font-size: 12px"><option>すべて</option></select></span>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border-bottom: 1px solid #DDE2E9; background: #FAFBFC; font-size: 12px; color: #4A5563; text-align: center">
+     <span style="padding: 6px 0; color: #B91C1C">日</span><span style="padding: 6px 0">月</span><span style="padding: 6px 0">火</span><span style="padding: 6px 0">水</span><span style="padding: 6px 0">木</span><span style="padding: 6px 0">金</span><span style="padding: 6px 0; color: #1D4ED8">土</span>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr))">
+     <sc-for list="{{cells}}" as="c" hint-placeholder-count="35">
+      <div style="{{c.style}}">
+       <div style="{{c.numStyle}}">{{c.d}}</div>
+       <sc-for list="{{c.items}}" as="i" hint-placeholder-count="1">
+        <a href="TicketDetail.dc.html" style="{{i.style}}"><span style="{{i.dot}}"></span>{{i.text}}</a>
+       </sc-for>
+       <sc-if value="{{c.more}}" hint-placeholder-val="{{ false }}"><span style="font-size: 11px; color: #4A5563; padding-left: 4px">ほか {{c.more}} 件</span></sc-if>
+      </div>
+     </sc-for>
+    </div>
+   </section>
+   <aside style="flex: 1 1 260px; max-width: 320px; background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 8px">
+    <h2 style="font-size: 13px; margin: 0; padding: 10px 12px; border-bottom: 1px solid #DDE2E9">期限が決まっていない <span style="color: #B45309">4 件</span></h2>
+    <div style="padding: 4px 12px; font-size: 12px; color: #4A5563">カレンダーに置くと期限が決まる</div>
+    <sc-for list="{{nodue}}" as="n" hint-placeholder-count="4"><div style="padding: 8px 12px; border-top: 1px solid #EDF0F4"><div style="font-size: 12px; color: #4A5563">{{n.key}}</div>{{n.title}}</div></sc-for>
+   </aside>
+  </div>
+ </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var C = { t: "#186F69", q: "#B91C1C", k: "#B45309", m: "#6D4AA6" };
+    var ev = {
+      1: [["k", "EG-118 応募結果まとめ", 1]], 2: [["t", "EG-127 応募文を出す"], ["q", "EG-121 見積の根拠"]], 1.5: [],
+      4: [["t", "EG-132 名刺を登録"]], 5: [["t", "EG-119 一次返信"], ["t", "EG-126 更新の見積"]], 7: [["k", "EG-110 事例の差し替え"]],
+      10: [["t", "EG-131 月次レポート"]], 12: [["t", "EG-129 契約書の更新版"]], 14: [["m", "EG-130 更新の最終確認"]], 15: [["t", "EG-124 保守契約の更新"]],
+      18: [["t", "EG-140 発注ナビ 応募"]], 20: [["m", "EG-141 営業定例"]], 25: [["t", "EG-143 12月分の請求準備"]], 30: [["t", "EG-145 11月の締め"], ["t", "EG-146 入金の確認"], ["q", "EG-147 単価の見直し"]]
+    };
+    ev[1].push(["t", "EG-128 11月分の請求書", 1]);
+    var cells = [];
+    for (var i = 0; i < 35; i++) {
+      var d = i + 1, inMonth = d <= 30, dow = i % 7;
+      var label = inMonth ? String(d) : String(d - 30);
+      var items = (inMonth && ev[d] ? ev[d] : []).slice(0, 2).map(function (e) {
+        return { text: e[1], dot: "width:6px;height:6px;border-radius:99px;flex:none;background:" + C[e[0]],
+          style: "display:flex;align-items:center;gap:4px;font-size:11px;text-decoration:none;border-radius:4px;padding:1px 4px;margin-top:2px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;" + (e[2] ? "background:#FDECEC;color:#991B1B" : "background:#F2F4F7;color:#131B27") };
+      });
+      var more = inMonth && ev[d] && ev[d].length > 2 ? ev[d].length - 2 : 0;
+      var today = d === 2;
+      cells.push({ d: label, items: items, more: more,
+        style: "min-height:112px;border-right:1px solid #EDF0F4;border-bottom:1px solid #EDF0F4;padding:4px;box-sizing:border-box;min-width:0;" + (inMonth ? "" : "background:#FAFBFC;") + (today ? "box-shadow:inset 0 0 0 2px #22345C;" : ""),
+        numStyle: "font-size:12px;" + (today ? "display:inline-block;background:#22345C;color:#FFFFFF;border-radius:99px;padding:0 7px;" : (inMonth ? (dow === 0 ? "color:#B91C1C" : dow === 6 ? "color:#1D4ED8" : "color:#131B27") : "color:#8A94A3")) });
+    }
+    return { cells: cells, nodue: [
+      { key: "EG-150", title: "紹介先リストの洗い出し" }, { key: "EG-151", title: "LP の問い合わせ文面を直す" },
+      { key: "EG-152", title: "展示会の出展可否を決める" }, { key: "EG-153", title: "見積のひな形を見直す" } ] };
+  }
+}
+</script>
+</body>
+</html>

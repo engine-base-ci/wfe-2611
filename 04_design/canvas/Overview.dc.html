@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>チケット 概要（営業）</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:"Noto Sans JP",system-ui,sans-serif;color:#131B27;background:#F2F4F7;font-size:13px;line-height:1.6}
+a{color:#22345C}a:hover{color:#1A2848}
+button{font-family:inherit}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; min-height: 1320px">
+ <nav aria-label="メニュー" style="flex: 0 0 216px; background: #EEF0F4; border-right: 1px solid #DDE2E9; display: flex; flex-direction: column; gap: 1px; padding: 10px 8px; box-sizing: border-box">
+  <div style="display: flex; align-items: center; gap: 8px; padding: 6px 8px; font-weight: 700"><span style="width: 24px; height: 24px; border-radius: 6px; background: #22345C; color: #FFFFFF; display: grid; place-items: center; font-size: 12px">E</span>ENGINE BASE<span style="margin-left: auto; color: #4A5563">▾</span></div>
+  <a href="Create.dc.html" style="margin: 6px 0; background: #22345C; color: #FFFFFF; border-radius: 6px; height: 34px; display: flex; align-items: center; justify-content: center; text-decoration: none; font-weight: 500">＋ チケットを作る</a>
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; margin-bottom: 6px"><a href="#" style="height: 30px; display: flex; align-items: center; padding: 0 8px; border-radius: 6px; color: #131B27; text-decoration: none; background: #FFFFFF; border: 1px solid #DDE2E9">探す</a><a href="#" style="height: 30px; display: flex; align-items: center; padding: 0 8px; border-radius: 6px; color: #131B27; text-decoration: none; background: #FFFFFF; border: 1px solid #DDE2E9">知らせ<b style="margin-left: auto; font-size: 11px; background: #B45309; color: #FFFFFF; border-radius: 99px; padding: 0 6px">3</b></a></div>
+  <a href="Main.dc.html" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none">チケット</a>
+  <a href="#" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none">承認待ち<b style="margin-left: auto; font-size: 11px; background: #B45309; color: #FFFFFF; border-radius: 99px; padding: 0 6px">2</b></a>
+  <a href="#" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none">AI</a>
+  <a href="#" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none">ナレッジ</a>
+  <a href="#" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none">取引先</a>
+  <div style="font-size: 12px; color: #4A5563; padding: 12px 10px 4px; display: flex">グループ<span style="margin-left: auto">★</span></div>
+  <a href="Overview.dc.html" aria-current="page" style="display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 10px; border-radius: 6px; background: #22345C; color: #FFFFFF; text-decoration: none; font-weight: 500"><span style="width: 18px; height: 18px; border-radius: 4px; background: #FFFFFF; color: #186F69; font-size: 10px; display: grid; place-items: center">EG</span>営業<span style="margin-left: auto; font-size: 12px">18</span></a>
+  <a href="#" style="display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none"><span style="width: 18px; height: 18px; border-radius: 4px; background: #6D4AA6; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">JD</span>受託開発<span style="margin-left: auto; font-size: 12px; color: #4A5563">42</span></a>
+  <a href="#" style="display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none"><span style="width: 18px; height: 18px; border-radius: 4px; background: #B45309; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">KR</span>経理<span style="margin-left: auto; font-size: 12px; color: #4A5563">9</span></a>
+  <div style="flex: 1"></div>
+  <a href="#" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none">会社</a>
+  <div style="font-size: 12px; color: #166534; display: flex; align-items: center; gap: 6px; padding: 6px 10px"><span style="width: 8px; height: 8px; border-radius: 99px; background: #166534"></span>PC つながっている</div>
+  <div style="display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-top: 1px solid #DDE2E9"><span style="width: 26px; height: 26px; border-radius: 99px; background: #6B5B99; color: #FFFFFF; display: grid; place-items: center; font-size: 12px">高</span>高本 聖斗</div>
+ </nav>
+
+ <main style="flex: 999 1 640px; min-width: 0">
+  <header style="background: #FFFFFF; border-bottom: 1px solid #DDE2E9">
+   <div style="display: flex; align-items: center; gap: 10px; padding: 12px 24px 0; flex-wrap: wrap">
+    <span style="width: 26px; height: 26px; border-radius: 6px; background: #186F69; color: #FFFFFF; font-size: 11px; display: grid; place-items: center; font-weight: 700">EG</span>
+    <h1 style="font-size: 18px; margin: 0">営業</h1><span style="color: #4A5563; font-size: 12px">（EG）・メンバー 4 人・自分の AI 4</span>
+    <span style="margin-left: auto; display: flex; gap: 4px; align-items: center">
+     <span style="width: 24px; height: 24px; border-radius: 99px; background: #6B5B99; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">高</span>
+     <span style="width: 24px; height: 24px; border-radius: 99px; background: #186F69; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">佐</span>
+     <span style="width: 24px; height: 24px; border-radius: 99px; background: #2F4B7C; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">鈴</span>
+     <span style="width: 24px; height: 24px; border-radius: 99px; background: #7E570D; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">田</span>
+    </span>
+   </div>
+   <nav aria-label="チケットの見え方" style="display: flex; gap: 2px; padding: 6px 24px 0; overflow-x: auto">
+    <a href="Main.dc.html" style="padding: 8px 12px; border-bottom: 2px solid transparent; color: #4A5563; text-decoration: none; white-space: nowrap">自分に関わるもの</a>
+    <a href="Overview.dc.html" aria-current="page" style="padding: 8px 12px; border-bottom: 2px solid #22345C; color: #22345C; font-weight: 500; text-decoration: none">概要</a>
+    <a href="List.dc.html" style="padding: 8px 12px; border-bottom: 2px solid transparent; color: #4A5563; text-decoration: none">一覧</a>
+    <a href="Calendar.dc.html" style="padding: 8px 12px; border-bottom: 2px solid transparent; color: #4A5563; text-decoration: none">カレンダー</a>
+    <a href="Gantt.dc.html" style="padding: 8px 12px; border-bottom: 2px solid transparent; color: #4A5563; text-decoration: none">ガント</a>
+   </nav>
+  </header>
+
+  <div style="display: flex; flex-wrap: wrap; gap: 16px; padding: 16px 24px; align-items: flex-start">
+   <section style="flex: 999 1 560px; min-width: 0; background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 8px">
+    <div style="display: flex; align-items: center; padding: 10px 14px; border-bottom: 1px solid #DDE2E9; gap: 8px; flex-wrap: wrap">
+     <h2 style="font-size: 14px; margin: 0">最近の更新</h2>
+     <span style="display: flex; gap: 6px; margin-left: 8px">
+      <button type="button" style="height: 26px; border: 1px solid #22345C; background: #22345C; color: #FFFFFF; border-radius: 99px; padding: 0 10px; font-size: 12px">すべて</button>
+      <button type="button" style="height: 26px; border: 1px solid #DDE2E9; background: #FFFFFF; color: #4A5563; border-radius: 99px; padding: 0 10px; font-size: 12px">人</button>
+      <button type="button" style="height: 26px; border: 1px solid #DDE2E9; background: #FFFFFF; color: #4A5563; border-radius: 99px; padding: 0 10px; font-size: 12px">AI の実行</button>
+      <button type="button" style="height: 26px; border: 1px solid #DDE2E9; background: #FFFFFF; color: #4A5563; border-radius: 99px; padding: 0 10px; font-size: 12px">決定</button>
+     </span>
+    </div>
+    <sc-for list="{{days}}" as="d" hint-placeholder-count="2">
+     <div style="background: #F7F8FA; padding: 6px 14px; font-size: 12px; font-weight: 500; color: #4A5563; border-bottom: 1px solid #EDF0F4">{{d.label}}</div>
+     <sc-for list="{{d.items}}" as="e" hint-placeholder-count="4">
+      <div style="display: flex; gap: 10px; padding: 10px 14px; border-bottom: 1px solid #EDF0F4">
+       <span style="{{e.avStyle}}">{{e.ini}}</span>
+       <div style="flex: 1; min-width: 0">
+        <div style="font-size: 12px; color: #4A5563"><b style="color: #131B27; font-weight: 500">{{e.who}}</b> が {{e.verb}}<span style="{{e.tagStyle}}">{{e.tag}}</span><span style="float: right">{{e.when}}</span></div>
+        <div><a href="TicketDetail.dc.html" style="font-size: 12px">{{e.key}}</a>　<span>{{e.title}}</span></div>
+        <div style="font-size: 12px; color: #4A5563">{{e.change}}</div>
+       </div>
+      </div>
+     </sc-for>
+    </sc-for>
+   </section>
+
+   <aside style="flex: 1 1 340px; max-width: 420px; display: flex; flex-direction: column; gap: 12px">
+    <section style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 8px; padding: 12px 14px">
+     <h2 style="font-size: 13px; margin: 0 0 8px; display: flex">状態<span style="margin-left: auto; font-size: 12px; color: #4A5563; font-weight: 400">62% 完了（72 件中 45）</span></h2>
+     <div role="img" aria-label="状態の内訳" style="display: flex; height: 10px; border-radius: 99px; overflow: hidden; margin-bottom: 10px"><span style="width: 8%; background: #6B7585"></span><span style="width: 10%; background: #2F4B7C"></span><span style="width: 5%; background: #6D4AA6"></span><span style="width: 6%; background: #B45309"></span><span style="width: 4%; background: #1D4ED8"></span><span style="width: 5%; background: #7E570D"></span><span style="width: 62%; background: #166534"></span></div>
+     <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; text-align: center; font-size: 11px">
+      <sc-for list="{{states}}" as="s" hint-placeholder-count="7"><div><div style="color: #4A5563">{{s.label}}</div><div style="{{s.pill}}">{{s.n}}</div></div></sc-for>
+     </div>
+    </section>
+    <section style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 8px; padding: 12px 14px">
+     <h2 style="font-size: 13px; margin: 0 0 8px">残りの量（節目：11月 末締め）</h2>
+     <svg viewBox="0 0 360 150" width="100%" role="img" aria-label="残りの量の推移。予定の線より実績が少し上">
+      <g stroke="#EDF0F4"><line x1="30" y1="20" x2="350" y2="20"></line><line x1="30" y1="55" x2="350" y2="55"></line><line x1="30" y1="90" x2="350" y2="90"></line><line x1="30" y1="125" x2="350" y2="125"></line></g>
+      <line x1="30" y1="20" x2="350" y2="125" stroke="#8A94A3" stroke-dasharray="4 4"></line>
+      <polyline points="30,20 70,28 110,30 150,52 190,58 230,66" fill="none" stroke="#22345C" stroke-width="2"></polyline>
+      <circle cx="230" cy="66" r="3.5" fill="#22345C"></circle>
+      <g font-size="10" fill="#4A5563"><text x="30" y="142">11/1</text><text x="150" y="142">11/15</text><text x="318" y="142">11/30</text><text x="0" y="24">40h</text><text x="6" y="128">0</text></g>
+     </svg>
+     <div style="font-size: 11px; color: #4A5563; display: flex; gap: 12px"><span>━ 実績</span><span>┅ 予定</span><span style="margin-left: auto; color: #B45309">予定より 4h 遅れ</span></div>
+    </section>
+    <section style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 8px; padding: 12px 14px">
+     <h2 style="font-size: 13px; margin: 0 0 6px">節目</h2>
+     <sc-for list="{{mss}}" as="m" hint-placeholder-count="4">
+      <div style="padding: 8px 0; border-bottom: 1px solid #EDF0F4"><div style="display: flex"><a href="#">{{m.name}}</a><span style="margin-left: auto; font-size: 12px; color: #4A5563">{{m.pct}}% 完了</span></div>
+       <div style="height: 6px; background: #EDF0F4; border-radius: 99px; overflow: hidden; margin: 4px 0"><div style="{{m.bar}}"></div></div><div style="font-size: 11px; color: #4A5563">{{m.end}}</div></div>
+     </sc-for>
+    </section>
+    <section style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 8px; padding: 12px 14px">
+     <h2 style="font-size: 13px; margin: 0 0 6px">分類ごと</h2>
+     <sc-for list="{{cats}}" as="c" hint-placeholder-count="4">
+      <div style="display: flex; align-items: center; gap: 8px; padding: 5px 0"><span style="width: 72px">{{c.name}}</span><div style="flex: 1; height: 6px; background: #EDF0F4; border-radius: 99px; overflow: hidden"><div style="{{c.bar}}"></div></div><span style="font-size: 12px; color: #4A5563; width: 64px; text-align: right">{{c.n}}</span></div>
+     </sc-for>
+    </section>
+   </aside>
+  </div>
+ </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1320}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var av = function (bg) { return "width:28px;height:28px;border-radius:99px;background:" + bg + ";color:#FFFFFF;font-size:11px;display:grid;place-items:center;flex:none"; };
+    var tg = function (bg) { return "margin-left:6px;font-size:11px;color:#FFFFFF;border-radius:99px;padding:0 7px;background:" + bg; };
+    var ev = function (ini, bg, who, verb, tag, tagc, when, key, title, change) { return { ini: ini, avStyle: av(bg), who: who, verb: verb, tag: tag, tagStyle: tg(tagc), when: when, key: key, title: title, change: change }; };
+    var pill = function (c) { return "margin-top:2px;color:#FFFFFF;border-radius:99px;padding:1px 0;font-size:12px;background:" + c; };
+    return {
+      days: [
+        { label: "11月2日（月）", items: [
+          ev("AI", "#4A5563", "高本のAI", "チケットを", "実行", "#1D4ED8", "4時間前", "EG-128", "セイコー様へ 11月分の請求書を送る", "成果物を作成 → 確認 ① 2 件確実・② 1 件 AI 判定 → 状態：作業中 → 承認待ち"),
+          ev("佐", "#186F69", "佐藤", "チケットを", "渡した", "#7E570D", "1時間前", "EG-119", "問い合わせ（山田様）に一次返信する", "責任者：佐藤 → 高本（返事の期限 11/03・理由：先方と面識がある）"),
+          ev("鈴", "#2F4B7C", "鈴木", "チケットに", "書き込み", "#6B7585", "2時間前", "EG-124", "セイコー様 保守契約の更新", "「更新の条件、先方から月額据え置きで了承をもらいました」"),
+          ev("高", "#6B5B99", "高本", "チケットで", "決定", "#166534", "3時間前", "EG-124", "セイコー様 保守契約の更新", "決定：月額据え置き・期間 1 年（スレッドから確定）") ] },
+        { label: "11月1日（日）", items: [
+          ev("田", "#7E570D", "田中", "チケットを", "完了", "#166534", "昨日", "EG-117", "新規 3 社にお礼のメール", "完了の条件を満たした（送信 3 件・実行後の確認 OK）"),
+          ev("AI", "#4A5563", "田中のAI", "チケットを", "実行", "#1D4ED8", "昨日", "EG-117", "新規 3 社にお礼のメール", "メールを 3 件送信（承認：田中）・12 分"),
+          ev("高", "#6B5B99", "高本", "チケットを", "追加", "#22345C", "昨日", "EG-128", "セイコー様へ 11月分の請求書を送る", "種別：タスク・期限 11/01・業務の型：請求書を作る v3") ] }
+      ],
+      states: [ { label: "未着手", n: 6, pill: pill("#6B7585") }, { label: "作業中", n: 7, pill: pill("#2F4B7C") }, { label: "確認中", n: 4, pill: pill("#6D4AA6") }, { label: "承認待ち", n: 4, pill: pill("#B45309") },
+                { label: "実行中", n: 3, pill: pill("#1D4ED8") }, { label: "渡し中", n: 3, pill: pill("#7E570D") }, { label: "完了", n: 45, pill: pill("#166534") } ],
+      mss: [ { name: "11月 月次の締め", pct: 38, end: "11/30 まで ・ 残り 13 件", bar: "height:100%;width:38%;background:#22345C" },
+             { name: "セイコー様 保守更新", pct: 72, end: "11/15 まで ・ 残り 4 件", bar: "height:100%;width:72%;background:#22345C" },
+             { name: "新規開拓 Q4", pct: 15, end: "12/25 まで ・ 残り 22 件", bar: "height:100%;width:15%;background:#22345C" },
+             { name: "10月 月次の締め", pct: 100, end: "10/31 終了", bar: "height:100%;width:100%;background:#166534" } ],
+      cats: [ { name: "請求", n: "9 / 12", bar: "height:100%;width:75%;background:#186F69" }, { name: "提案", n: "6 / 14", bar: "height:100%;width:43%;background:#186F69" },
+              { name: "問い合わせ", n: "20 / 24", bar: "height:100%;width:83%;background:#186F69" }, { name: "応募", n: "10 / 22", bar: "height:100%;width:45%;background:#186F69" } ]
+    };
+  }
+}
+</script>
+</body>
+</html>

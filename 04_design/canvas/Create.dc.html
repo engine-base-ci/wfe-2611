@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>チケットを作る</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:"Noto Sans JP",system-ui,sans-serif;color:#131B27;background:#F2F4F7;font-size:13px;line-height:1.6}
+a{color:#22345C}a:hover{color:#1A2848}
+button,input,select,textarea{font-family:inherit}
+input[type=text],select,textarea{border:1px solid #CBD2DC;border-radius:6px;background:#FFFFFF;padding:6px 10px;font-size:13px;color:#131B27;box-sizing:border-box}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; min-height: 1500px">
+ <nav aria-label="メニュー" style="flex: 0 0 216px; background: #EEF0F4; border-right: 1px solid #DDE2E9; display: flex; flex-direction: column; gap: 1px; padding: 10px 8px; box-sizing: border-box">
+  <div style="display: flex; align-items: center; gap: 8px; padding: 6px 8px; font-weight: 700"><span style="width: 24px; height: 24px; border-radius: 6px; background: #22345C; color: #FFFFFF; display: grid; place-items: center; font-size: 12px">E</span>ENGINE BASE<span style="margin-left: auto; color: #4A5563">▾</span></div>
+  <a href="Create.dc.html" aria-current="page" style="margin: 6px 0; background: #1A2848; color: #FFFFFF; border-radius: 6px; height: 34px; display: flex; align-items: center; justify-content: center; text-decoration: none; font-weight: 500; outline: 2px solid #DCE4F2">＋ チケットを作る</a>
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; margin-bottom: 6px"><a href="#" style="height: 30px; display: flex; align-items: center; padding: 0 8px; border-radius: 6px; color: #131B27; text-decoration: none; background: #FFFFFF; border: 1px solid #DDE2E9">探す</a><a href="#" style="height: 30px; display: flex; align-items: center; padding: 0 8px; border-radius: 6px; color: #131B27; text-decoration: none; background: #FFFFFF; border: 1px solid #DDE2E9">知らせ<b style="margin-left: auto; font-size: 11px; background: #B45309; color: #FFFFFF; border-radius: 99px; padding: 0 6px">3</b></a></div>
+  <a href="Main.dc.html" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none">チケット</a>
+  <a href="#" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none">承認待ち<b style="margin-left: auto; font-size: 11px; background: #B45309; color: #FFFFFF; border-radius: 99px; padding: 0 6px">2</b></a>
+  <a href="#" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none">AI</a>
+  <a href="#" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none">ナレッジ</a>
+  <a href="#" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none">取引先</a>
+  <div style="font-size: 12px; color: #4A5563; padding: 12px 10px 4px; display: flex">グループ<span style="margin-left: auto">★</span></div>
+  <a href="Overview.dc.html" style="display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none"><span style="width: 18px; height: 18px; border-radius: 4px; background: #186F69; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">EG</span>営業</a>
+  <a href="#" style="display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none"><span style="width: 18px; height: 18px; border-radius: 4px; background: #6D4AA6; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">JD</span>受託開発</a>
+  <a href="#" style="display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none"><span style="width: 18px; height: 18px; border-radius: 4px; background: #B45309; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">KR</span>経理</a>
+  <div style="flex: 1"></div>
+  <a href="#" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none">会社</a>
+  <div style="font-size: 12px; color: #166534; display: flex; align-items: center; gap: 6px; padding: 6px 10px"><span style="width: 8px; height: 8px; border-radius: 99px; background: #166534"></span>PC つながっている</div>
+  <div style="display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-top: 1px solid #DDE2E9"><span style="width: 26px; height: 26px; border-radius: 99px; background: #6B5B99; color: #FFFFFF; display: grid; place-items: center; font-size: 12px">高</span>高本 聖斗</div>
+ </nav>
+
+ <main style="flex: 999 1 640px; min-width: 0; display: flex; flex-direction: column">
+  <header style="background: #FFFFFF; border-bottom: 1px solid #DDE2E9; padding: 12px 24px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap">
+   <h1 style="font-size: 18px; margin: 0">チケットを作る</h1>
+   <span style="display: inline-flex; border: 1px solid #DDE2E9; border-radius: 6px; overflow: hidden"><button type="button" aria-pressed="true" style="height: 28px; border: 0; background: #22345C; color: #FFFFFF; padding: 0 12px; font-size: 12px">自分で書く</button><button type="button" style="height: 28px; border: 0; background: #FFFFFF; color: #4A5563; padding: 0 12px; font-size: 12px">AI と話して作る</button><button type="button" style="height: 28px; border: 0; background: #FFFFFF; color: #4A5563; padding: 0 12px; font-size: 12px">過去のチケットから複製</button></span>
+   <span style="margin-left: auto; font-size: 12px; color: #4A5563">下書きを自動で保存しました（10:42）</span>
+  </header>
+
+  <div style="display: flex; flex-wrap: wrap; gap: 16px; padding: 16px 24px 96px; align-items: flex-start; flex: 1">
+   <form style="flex: 999 1 640px; min-width: 0; display: flex; flex-direction: column; gap: 12px">
+    <section style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+     <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end">
+      <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #4A5563">グループ<select style="width: 160px"><option>営業（EG）</option></select></label>
+      <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #4A5563">種別 <b style="color: #B91C1C">*</b><select style="width: 160px"><option>タスク</option><option>QA</option><option>課題</option><option>会議</option></select></label>
+      <a href="#" style="font-size: 12px; margin-bottom: 8px">親チケットを決める</a>
+      <span style="font-size: 12px; color: #4A5563; margin: 0 0 8px auto">番号は作ったときに付く（EG-133 の予定）</span>
+     </div>
+     <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #4A5563">題名 <b style="color: #B91C1C">*</b><input type="text" value="セイコー様へ 12月分の請求書を送る" style="font-size: 15px; font-weight: 500; height: 40px"></label>
+    </section>
+
+    <section style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 14px">
+     <div style="display: flex; align-items: center; gap: 8px"><h2 style="font-size: 14px; margin: 0">本文</h2><span style="font-size: 12px; color: #4A5563">種別「タスク」の区画 ・ 区画ごとに版が残る</span></div>
+     <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #4A5563"><span>目的 <b style="color: #B91C1C">*</b>　<span style="font-weight: 400">何のためにやるか</span></span><textarea style="min-height: 56px">セイコー様に 12 月分の保守費を請求し、月末までに入金してもらう。</textarea></label>
+     <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #4A5563"><span>完了の条件 <b style="color: #B91C1C">*</b>　<span style="font-weight: 400">これが満たされたら終わり（テスト仕様の元になる）</span></span><textarea style="min-height: 76px">・金額が見積（EG-097）の月額と一致している
+・インボイスの必須記載事項を満たしている
+・PDF が経理部 山田様に送られている</textarea></label>
+     <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #4A5563"><span>請求の内訳　<span style="font-weight: 400">種別の区画（会社のマスタで決めた欄）</span></span><textarea style="min-height: 56px" placeholder="項目・数量・単価（空なら AI が見積から作る）"></textarea></label>
+     <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #4A5563"><span>自由欄</span><textarea style="min-height: 44px" placeholder="補足・注意"></textarea></label>
+    </section>
+
+    <section style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 8px; padding: 16px">
+     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap"><h2 style="font-size: 14px; margin: 0">テスト仕様</h2><span style="font-size: 12px; color: #4A5563">完了の条件から AI が案を出した ・ 種類と判定のしかたを確かめる</span><button type="button" style="margin-left: auto; height: 28px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 10px; font-size: 12px; color: #131B27">抜けを点検する</button></div>
+     <div style="display: flex; flex-direction: column">
+      <sc-for list="{{tests}}" as="t" hint-placeholder-count="4">
+       <div style="display: flex; gap: 8px; align-items: center; padding: 7px 0; border-bottom: 1px solid #EDF0F4; flex-wrap: wrap"><input type="checkbox" checked aria-label="この項目を使う"><span style="flex: 1 1 260px">{{t.item}}</span><span style="font-size: 11px; border: 1px solid #DDE2E9; border-radius: 4px; padding: 0 6px">{{t.kind}}</span><span style="font-size: 12px; color: #4A5563; flex: 0 1 260px">{{t.how}}</span></div>
+      </sc-for>
+      <a href="#" style="font-size: 12px; padding-top: 8px">＋ 項目を足す</a>
+     </div>
+    </section>
+
+    <section style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 8px; padding: 16px">
+     <h2 style="font-size: 14px; margin: 0 0 10px">振り分け</h2>
+     <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 24px">
+      <sc-for list="{{fields}}" as="f" hint-placeholder-count="10">
+       <div style="display: grid; grid-template-columns: 96px 1fr; gap: 8px; align-items: center; padding: 8px 0; border-bottom: 1px solid #EDF0F4">
+        <span style="font-size: 12px; color: #4A5563">{{f.label}}<sc-if value="{{f.req}}" hint-placeholder-val="{{ false }}"> <b style="color: #B91C1C">*</b></sc-if></span>
+        <span style="display: flex; gap: 6px; align-items: center"><select style="flex: 1; min-width: 0"><option>{{f.value}}</option></select><sc-if value="{{f.extra}}" hint-placeholder-val="{{ false }}"><button type="button" style="height: 30px; white-space: nowrap; border-radius: 99px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 10px; font-size: 12px; color: #131B27">{{f.extra}}</button></sc-if></span>
+       </div>
+      </sc-for>
+     </div>
+    </section>
+
+    <section style="background: #FFFFFF; border: 1px dashed #CBD2DC; border-radius: 8px; padding: 16px; text-align: center; color: #4A5563">ファイルをここに置くか、貼り付ける　<button type="button" style="height: 28px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 10px; font-size: 12px; color: #131B27">ファイルを選ぶ</button></section>
+    <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #4A5563">作ったことを知らせる人<input type="text" placeholder="名前で絞り込む（責任者とウォッチする人には自動で届く）"></label>
+   </form>
+
+   <aside style="flex: 1 1 280px; max-width: 340px; display: flex; flex-direction: column; gap: 12px">
+    <section style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 8px; padding: 12px 14px">
+     <h2 style="font-size: 13px; margin: 0 0 8px">作る前に</h2>
+     <div style="display: flex; flex-direction: column; gap: 6px; font-size: 12px">
+      <span style="color: #166534">✓ 題名</span><span style="color: #166534">✓ 種別</span><span style="color: #166534">✓ 責任者</span><span style="color: #166534">✓ 期限</span><span style="color: #166534">✓ 目的</span><span style="color: #166534">✓ 完了の条件</span>
+      <span style="color: #7A4A05">△ テスト仕様の ③ 人の項目を誰が見るか未定（承認する人＝責任者になる）</span>
+     </div>
+    </section>
+    <section style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 8px; padding: 12px 14px">
+     <h2 style="font-size: 13px; margin: 0 0 6px; display: flex; gap: 6px; align-items: center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 8V4H8"></path><rect width="16" height="12" x="4" y="8" rx="2"></rect><path d="M2 14h2M20 14h2M15 13v2M9 13v2"></path></svg>自分の AI から</h2>
+     <div style="font-size: 12px; display: flex; flex-direction: column; gap: 6px">
+      <span>先月の EG-128 とほぼ同じです。複製して日付と金額だけ変えますか？</span>
+      <span style="color: #4A5563">業務の型の候補：請求書を作る v3（会社）・請求書（シンプル）v1（自分）→ 2 つあるので選んでください</span>
+      <span style="color: #4A5563">取引先のルール「セイコー様は経理部 山田様宛」が効きます</span>
+     </div>
+    </section>
+   </aside>
+  </div>
+
+  <div style="position: sticky; bottom: 0; background: #FFFFFF; border-top: 1px solid #DDE2E9; padding: 10px 24px; display: flex; gap: 8px; align-items: center">
+   <span style="font-size: 12px; color: #4A5563">作るとチケットになり、責任者に知らせが届きます</span>
+   <span style="margin-left: auto; display: flex; gap: 8px"><button type="button" style="height: 34px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 14px; font-size: 13px; color: #131B27">下書きのまま閉じる</button><button type="button" style="height: 34px; border-radius: 6px; border: 1px solid #22345C; background: #22345C; color: #FFFFFF; padding: 0 18px; font-size: 13px; font-weight: 500">作る</button></span>
+  </div>
+ </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1500}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      tests: [
+        { item: "金額が見積の月額と一致", kind: "① 機械", how: "数値の一致（EG-097 の月額）" },
+        { item: "インボイスの必須記載事項", kind: "① 機械", how: "必須項目がそろう（会社の型）" },
+        { item: "宛名と敬称が取引先のルールどおり", kind: "② AI", how: "別のセッションで 2 回判定・引用つき" },
+        { item: "送る前に PDF を目で見る", kind: "③ 人", how: "承認する人がチェック" }
+      ],
+      fields: [
+        { label: "責任者", req: true, value: "高本 聖斗", extra: "自分" },
+        { label: "実行者", req: false, value: "高本のAI（責任者の AI）", extra: "" },
+        { label: "業務の型", req: false, value: "選んでください（候補 2）", extra: "" },
+        { label: "期限", req: true, value: "12/01（月）", extra: "" },
+        { label: "開始日", req: false, value: "11/28（金）", extra: "" },
+        { label: "予定", req: false, value: "30 分", extra: "" },
+        { label: "分類", req: false, value: "請求", extra: "" },
+        { label: "節目", req: false, value: "12月 月次の締め", extra: "" },
+        { label: "取引先", req: false, value: "セイコー株式会社", extra: "" },
+        { label: "優先度", req: false, value: "中", extra: "" }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>
