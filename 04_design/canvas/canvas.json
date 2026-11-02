@@ -627,6 +627,24 @@
    "title": "ページを書く ← 「＋ ページを書く」・ページの下に書く",
    "expand": "fill",
    "page": "kn"
+  },
+  "KnLinks.dc.html": {
+   "x": 0,
+   "y": 2800,
+   "w": 1440,
+   "h": 1200,
+   "title": "つながり ← ページの右「つながり」（まわりの図・まだつないでいない言及）",
+   "expand": "fill",
+   "page": "kn"
+  },
+  "KnImport.dc.html": {
+   "x": 1520,
+   "y": 2800,
+   "w": 1440,
+   "h": 1000,
+   "title": "取り込む ← ホームの「取り込む」（Obsidian・Notion・Markdown）",
+   "expand": "fill",
+   "page": "kn"
   }
  },
  "order": [
@@ -695,7 +713,9 @@
   "KnEdit.dc.html",
   "KnVerify.dc.html",
   "KnProposal.dc.html",
-  "KnNew.dc.html"
+  "KnNew.dc.html",
+  "KnLinks.dc.html",
+  "KnImport.dc.html"
  ],
  "notes": {
   "t1": {
