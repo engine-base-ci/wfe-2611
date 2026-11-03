@@ -145,7 +145,12 @@
    "service": "Better Auth",
    "location": "自前Postgres上",
    "sso": "OIDC経由（Entra ID / Okta 等）",
-   "rationale": "Supabase Authに寄せるとRLSがauth.uid()に固定され、DB層までロックインされる。Better Authなら認証データがDBごと移る"
+   "rationale": "Supabase Authに寄せるとRLSがauth.uid()に固定され、DB層までロックインされる。Better Authなら認証データがDBごと移る",
+   "device_parsing": {
+    "library": "ua-parser-js 1.0.41",
+    "license": "MIT",
+    "rationale": "セッションの見張り（D-128.120）の端末（ブラウザの種類・OS）の読み取り。自前の正規表現だと新しいブラウザに追いつけない。2 系はライセンスが AGPL に変わったので 1 系に留める（2026-11-03 高本さん了承）"
+   }
   },
   "storage": {
    "service": "Supabase Storage",
@@ -341,7 +346,11 @@
   "testing": {
    "unit_contract": "Vitest",
    "e2e": "Playwright",
-   "contract_fuzz": "Schemathesis（openapi.yaml）",
+   "contract_fuzz": {
+    "library": "Schemathesis 4.33.0",
+    "license": "MIT",
+    "rationale": "G36 の契約 fuzz。CI の database で pip から入れる（KN-55）"
+   },
    "consumer_contract": "なし（段階 1。OpenAPI 生成型＋openapi-diff で代替）",
    "load": "k6（L4 リリース前のみ）",
    "rationale": "Hono＋Next.js の TypeScript で標準的・速い・設定が少ない。user 選択 2026-09-15（候補 Vitest／Jest を提示）",

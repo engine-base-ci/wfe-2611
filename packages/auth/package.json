@@ -24,10 +24,12 @@
     "better-auth": "^1.7.15",
     "kysely": "^0.29.5",
     "pg": "^8.16.3",
+    "ua-parser-js": "1.0.41",
     "zod": "^4.6.7"
   },
   "devDependencies": {
     "@types/pg": "^8.15.5",
+    "@types/ua-parser-js": "0.7.39",
     "typescript": "^5.9.3"
   }
 }
