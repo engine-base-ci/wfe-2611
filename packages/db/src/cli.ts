@@ -6,7 +6,7 @@ import { MIGRATIONS } from "./index.js";
 import { noVendorSql, rlsEnabled } from "./ci.js";
 import { runMatrix } from "./matrix.js";
 import { seedAccessMatrix } from "./seeds.js";
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import pg from "pg";
 import { adminDatabaseUrl, requireEnv, rolePasswords } from "@kaname/config";
 
@@ -64,6 +64,51 @@ async function main(): Promise<number> {
       return ok ? 0 : 1;
     } finally {
       await admin.end();
+    }
+  }
+  if (cmd === "columns") {
+    // 本物の DB の列（型・null を許すか）を書き出す／書き出しと合っているか確かめる（KN-55・G36）。
+    //   契約（05_flow/build_api.py）は、表の行の答えの形をこの書き出しから作る（ER の名前の規則と migration がずれても、契約は DB に合う）
+    const [mode, file] = process.argv.slice(3).filter((x) => x !== "--");
+    if ((mode !== "--out" && mode !== "--check") || !file) {
+      console.error("使い方: columns --out|--check 08_api/db-columns.json");
+      return 2;
+    }
+    await migrate(url, pkg);
+    const c = new pg.Client({ connectionString: url });
+    await c.connect();
+    try {
+      const r = await c.query<{ t: string; c: string; ty: string; udt: string; nul: string }>(
+        "select table_name as t, column_name as c, data_type as ty, udt_name as udt, is_nullable as nul from information_schema.columns where table_schema = 'public' order by table_name, column_name",
+      );
+      const out: Record<string, Record<string, { type: string; nullable: boolean }>> = {};
+      for (const x of r.rows) {
+        const ty = x.ty === "ARRAY" ? `${x.udt.replace(/^_/, "")}[]` : x.ty === "USER-DEFINED" ? x.udt : x.ty;
+        (out[x.t] ??= {})[x.c] = { type: ty, nullable: x.nul === "YES" };
+      }
+      const text =
+        JSON.stringify(
+          {
+            _doc: "生成物（pnpm db:columns）。本物の DB の列。05_flow/build_api.py が契約の答えの形に使う。手で直さない",
+            tables: out,
+          },
+          null,
+          1,
+        ) + "\n";
+      if (mode === "--out") {
+        writeFileSync(file, text);
+        console.log(`[columns] ${Object.keys(out).length} 表 → ${file}`);
+        return 0;
+      }
+      const ok = readFileSync(file, "utf8") === text;
+      console.log(
+        ok
+          ? `[columns] ${file} は本物の DB と合っている（${Object.keys(out).length} 表）`
+          : `[columns] ${file} が本物の DB と合っていない（migration を足したら pnpm db:columns と python3 05_flow/build_api.py と pnpm ci:contract:gen）`,
+      );
+      return ok ? 0 : 1;
+    } finally {
+      await c.end();
     }
   }
   if (cmd === "access-matrix") {

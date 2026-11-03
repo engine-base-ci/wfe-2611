@@ -249,6 +249,20 @@ export class Repository {
     });
   }
 
+  /** 行に結ぶ言葉の確かめ（KN-52）。:id の行を行の守り（RLS）の中で読む。見えなければ missing、条件（契約の perm.row.sql）が偽なら denied。
+   *  条件は契約の生成（scripts/ci/row_rules.mjs）が出した式だけ（利用者の入力は $1 の id だけ） */
+  async rowAllowed(ctx: TenantContext, table: string, id: string, sql: string): Promise<"ok" | "missing" | "denied"> {
+    if (!this.columns.has(table as TableName)) return "missing";
+    return withTenant(this.pool, ctx, async (c) => {
+      const r = await c.query<{ ok: boolean | null }>(
+        `select (${sql}) as ok from ${ident(table)} where id = $1 limit 1`,
+        [id],
+      );
+      if (!r.rows[0]) return "missing";
+      return r.rows[0].ok === true ? "ok" : "denied";
+    });
+  }
+
   /** 運営の人のできること（ops_members.caps・KN-51）。運営の文脈でだけ。運営の人の行が無ければ null */
   async opsCaps(ctx: TenantContext): Promise<string[] | null> {
     if (ctx.role !== "ops" || !ctx.userId) return null;

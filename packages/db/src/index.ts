@@ -86,6 +86,7 @@ export const MIGRATIONS = [
   "0079_contract_tables.sql",
   "0080_permission_bundles.sql",
   "0081_step_up.sql",
+  "0082_row_words.sql",
 ] as const;
 
 /** migration 名の並びを検査する。重複・順序違い・4 桁でない名前があれば理由を返す。 */

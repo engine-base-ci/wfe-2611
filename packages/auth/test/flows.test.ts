@@ -70,7 +70,7 @@ describe("招待（作る → 受ける → 取り消し）", () => {
     const member = await acceptInvitation(app, inv.token, su.user.id, "招かれた人");
     const si = await signIn(auth, email, password);
     const r = await createSessionResolver(auth, app)(bearer(si.token!));
-    expect(r?.ctx).toEqual({ tenantId: S.tenantA, userId: member, role: "member" });
+    expect(r?.ctx).toEqual({ tenantId: S.tenantA, userId: member, role: "member", stepUpAt: null });
     await expect(acceptInvitation(app, inv.token, su.user.id, "x")).rejects.toThrow(/無効|既に/); // 2 回目は無効
   });
   it("権限の無い担当者は招待を作れない。取り消した招待は即受けられない（G-14）", async () => {

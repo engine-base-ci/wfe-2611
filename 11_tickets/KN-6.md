@@ -9,7 +9,7 @@ area: 試験
 assignee: 未定
 due: 
 decisions: [D-128.113, D-125.167]
-split: これから
+split: KN-55（G36）・ほかはこれから切る
 depends_on: []
 ---
 

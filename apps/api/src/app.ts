@@ -6,6 +6,7 @@ import { tenantContext, type SessionResolver, type Vars } from "./middleware/ten
 import type { Auth } from "@kaname/auth";
 import type { Resolved } from "@kaname/auth/resolver";
 import { KanameError, recordErrorEvent } from "@kaname/errors";
+import { ENDPOINTS } from "@kaname/contracts";
 import { registerAll } from "./routes/index.js";
 import { defaultDeps } from "./contract/memory.js";
 import type { ContractDeps } from "./contract/deps.js";
@@ -16,6 +17,11 @@ export interface Health {
   version: string;
   migrations: { expected: readonly string[]; order: "ok" | "ng" };
 }
+
+const CONTRACT_PATHS = ENDPOINTS.map((e) => ({
+  method: e.method,
+  re: new RegExp(`^${e.path.replace(/:[a-z_]+/gi, "[^/]+")}$`),
+}));
 
 export function health(version = "0.1.0"): Health {
   const order = checkMigrationOrder(MIGRATIONS);
@@ -70,6 +76,13 @@ export function createApp(o: AppOptions | string = {}): Hono<Vars> {
     : opts.resolveSession;
   if (opts.repo) app.use("/api/*", tenantContext(opts.repo, resolver));
   if (opts.repo && opts.contract !== false) registerAll(app, defaultDeps(opts.contract ?? {}));
+  // 契約にある道すじに、契約に無いメソッド（TRACE など）で来たら 405 と使えるメソッド（Allow）を返す（404 にしない・KN-55）
+  app.notFound((c) => {
+    const allow = [...new Set(CONTRACT_PATHS.filter((p) => p.re.test(c.req.path)).map((p) => p.method))];
+    if (allow.length)
+      return c.json({ error: "method_not_allowed", code: "METHOD_NOT_ALLOWED" }, 405, { allow: allow.join(", ") });
+    return c.json({ error: "not_found", code: "NOT_FOUND" }, 404);
+  });
   // エラーは正本（errors.json）の 1 件として返す（D-069）。出た記録は error_events に（文脈があるときだけ）。正本に無い例外は 500・文言を作らない
   app.onError(async (err, c) => {
     if (err instanceof KanameError) {

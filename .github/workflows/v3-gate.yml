@@ -152,9 +152,9 @@ jobs:
       - name: "G34 EARS → test の対応（mapping の test が全部存在）"
         if: ${{ !cancelled() }}
         run: pnpm ci:ears-mapping -- --mapping 07_qa/test-plan/ears-test-mapping.json
-      - name: "G36 契約 fuzz（Schemathesis・openapi.yaml）"
+      - name: "G36 契約 fuzz（Schemathesis・openapi.yaml・作った口を本物の DB の上で叩く。答えの形の元の DB の列の書き出しも確かめる）"
         if: ${{ !cancelled() }}
-        run: pnpm ci:schemathesis -- 08_api/openapi.yaml
+        run: pip install -q schemathesis==4.33.0 && pnpm ci:schemathesis
 
   spec:
     runs-on: ubuntu-latest

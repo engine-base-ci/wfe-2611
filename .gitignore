@@ -27,3 +27,4 @@ apps/bridge/release/
 __pycache__/
 *.pyc
 *.tsbuildinfo
+.schemathesis/

@@ -28,7 +28,7 @@ const row = async (table: string, id: string) =>
 
 describe("会話の契約の口は画面の口と同じ本体を通る", () => {
   it("作る → 名前を変える → ほかの人は変えられない → 消す。ログインなしは 401", async () => {
-    const created = await h.call(endpointOf("createConversation"), "boss", { body: { incognito: "true" } });
+    const created = await h.call(endpointOf("createConversation"), "boss", { body: { incognito: true } });
     expect(created.status, await created.clone().text()).toBe(201);
     const id = ((await created.json()) as { data: { id: string } }).data.id;
     const r0 = await row("conversations", id);

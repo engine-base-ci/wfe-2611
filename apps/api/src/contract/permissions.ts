@@ -1,6 +1,6 @@
 // 権限の言葉の段（ZT1・ZT5・KN-51）。契約の perm（08_api の permission から生成）を、入口（op.ts）で言葉ごとに確かめる。
 //   役の段（member／ops／client／device）は op.ts が先に見る。ここはその上の「誰が呼べるか」。
-//   行に結ぶ言葉（self・assignee・approver・recipient・manager・read・write）は KN-52 で足す。それまでは行の守り（RLS）が行を絞る。
+//   行に結ぶ言葉（self・assignee・approver・recipient・manager・read・write）は、:id の行を読む段（op.ts の 4.1・契約の perm.row）で確かめる（KN-52）。
 import type { EndpointDef } from "@kaname/contracts";
 import type { TenantContext } from "@kaname/db/context";
 import type { Repository } from "@kaname/db/repository";
@@ -27,6 +27,14 @@ export const CHECKS: Record<string, Check> = {
   },
   // 運営：そのできること（ops_members.caps）を持つ運営の人だけ
   //   ops:any は運営の人なら誰でも（運営の人の行があること）
+  // 行に結ぶ言葉：この段では社内の人であること（役は 2 の段で確かめた）。:id の行は 4.1 で perm.row を確かめる（一覧・作るは RLS が絞る）
+  self: async ({ ctx }) => ctx.role === "member",
+  read: async ({ ctx }) => ctx.role === "member" || ctx.role === "ops",
+  write: async ({ ctx }) => ctx.role === "member",
+  assignee: async ({ ctx }) => ctx.role === "member",
+  approver: async ({ ctx }) => ctx.role === "member",
+  recipient: async ({ ctx }) => ctx.role === "member",
+  manager: async ({ ctx }) => ctx.role === "member",
   "ops:*": async ({ e, ctx, repo }) => {
     if (ctx.role !== "ops" || !e.perm.cap) return false;
     const caps = await repo.opsCaps(ctx);

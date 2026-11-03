@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:97208711802d3bba
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:57ecabc4a41c2424
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -25,6 +25,8 @@ export interface EndpointDef {
     adminOnly: boolean;
     cap: string | null;
     stepUp: string | null;
+    /** 行に結ぶ言葉の確かめ（KN-52・scripts/ci/row_rules.mjs）。:id の行を RLS の中で読み、見えなければ 404・sql が偽なら 403 */
+    row: { table: string; sql: string } | null;
   };
 }
 export const ENDPOINTS: readonly EndpointDef[] = [
@@ -67,7 +69,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "acceptances",
+        "sql": "exists (select 1 from tickets t where t.id = ticket_id and (t.assignee_member_id = app.user_id() or t.created_by = app.user_id() or app.manages_scope(t.scope_id)))"
+      }
     }
   },
   {
@@ -89,6 +95,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429,
       502
     ],
@@ -105,7 +112,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "action_runs",
+        "sql": "true"
+      }
     }
   },
   {
@@ -146,7 +157,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "action_runs",
+        "sql": "(created_by = app.user_id() or app.manages_scope(scope_id) or exists (select 1 from approvals a join tickets t on t.id = a.ticket_id where a.action_run_id = action_runs.id and t.assignee_member_id = app.user_id()))"
+      }
     }
   },
   {
@@ -189,7 +204,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "action_runs",
+        "sql": "(created_by = app.user_id() or app.manages_scope(scope_id) or exists (select 1 from approvals a join tickets t on t.id = a.ticket_id where a.action_run_id = action_runs.id and t.assignee_member_id = app.user_id()))"
+      }
     }
   },
   {
@@ -230,7 +249,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "action_runs",
+        "sql": "(created_by = app.user_id() or app.manages_scope(scope_id) or exists (select 1 from approvals a join tickets t on t.id = a.ticket_id where a.action_run_id = action_runs.id and t.assignee_member_id = app.user_id()))"
+      }
     }
   },
   {
@@ -252,6 +275,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -267,7 +291,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "approvals",
+        "sql": "(approver_member_id = app.user_id() or app.manages_scope(scope_id) or exists (select 1 from tickets t where t.id = ticket_id and (t.assignee_member_id = app.user_id() or t.created_by = app.user_id() or app.manages_scope(t.scope_id))))"
+      }
     }
   },
   {
@@ -308,7 +336,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": "irreversible"
+      "stepUp": "irreversible",
+      "row": {
+        "table": "approvals",
+        "sql": "approver_member_id = app.user_id()"
+      }
     }
   },
   {
@@ -349,7 +381,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "approvals",
+        "sql": "approver_member_id = app.user_id()"
+      }
     }
   },
   {
@@ -390,7 +426,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "approvals",
+        "sql": "approver_member_id = app.user_id()"
+      }
     }
   },
   {
@@ -434,7 +474,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "approvals",
+        "sql": "(approver_member_id = app.user_id() or app.manages_scope(scope_id) or exists (select 1 from tickets t where t.id = ticket_id and (t.assignee_member_id = app.user_id() or t.created_by = app.user_id() or app.manages_scope(t.scope_id))))"
+      }
     }
   },
   {
@@ -477,7 +521,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "approvals",
+        "sql": "approver_member_id = app.user_id()"
+      }
     }
   },
   {
@@ -517,7 +565,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -557,7 +606,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -578,6 +628,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -593,7 +644,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -614,6 +666,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -629,7 +682,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -651,6 +705,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -666,7 +721,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "artifact_versions",
+        "sql": "true"
+      }
     }
   },
   {
@@ -708,7 +767,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "artifact_versions",
+        "sql": "owner_member_id = app.user_id()"
+      }
     }
   },
   {
@@ -749,7 +812,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "artifacts",
+        "sql": "owner_member_id = app.user_id()"
+      }
     }
   },
   {
@@ -770,6 +837,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -785,7 +853,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -804,6 +873,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     },
     "chokePoints": [],
     "errors": [
+      422,
       429
     ],
     "acts": [
@@ -819,7 +889,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -858,7 +929,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -897,7 +969,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -936,7 +1009,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -974,7 +1048,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -993,6 +1068,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     },
     "chokePoints": [],
     "errors": [
+      422,
       429
     ],
     "acts": [
@@ -1008,7 +1084,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -1046,7 +1123,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -1086,7 +1164,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -1125,7 +1204,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -1163,7 +1243,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -1182,6 +1263,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     },
     "chokePoints": [],
     "errors": [
+      422,
       429
     ],
     "acts": [
@@ -1197,7 +1279,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -1236,7 +1319,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -1276,7 +1360,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -1316,7 +1401,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -1335,6 +1421,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     },
     "chokePoints": [],
     "errors": [
+      422,
       429
     ],
     "acts": [
@@ -1350,7 +1437,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -1388,7 +1476,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -1430,7 +1519,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -1472,7 +1562,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -1513,7 +1604,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -1534,6 +1626,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429,
       502
     ],
@@ -1550,7 +1643,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -1592,7 +1686,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "sessions",
+        "sql": "member_id = app.user_id()"
+      }
     }
   },
   {
@@ -1617,6 +1715,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429,
       502
     ],
@@ -1633,7 +1732,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": "always"
+      "stepUp": "always",
+      "row": {
+        "table": "sessions",
+        "sql": "member_id = app.user_id()"
+      }
     }
   },
   {
@@ -1654,6 +1757,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429,
       502
     ],
@@ -1670,7 +1774,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -1712,7 +1817,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -1754,7 +1860,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -1798,7 +1905,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -1820,6 +1928,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429,
       502
     ],
@@ -1836,7 +1945,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -1880,7 +1990,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -1924,7 +2035,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -1968,7 +2080,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -2011,7 +2124,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -2033,6 +2147,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429,
       502
     ],
@@ -2049,7 +2164,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -2093,7 +2209,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -2136,7 +2253,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -2178,7 +2296,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -2199,6 +2318,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429,
       502
     ],
@@ -2215,7 +2335,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -2236,6 +2357,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429,
       502
     ],
@@ -2252,7 +2374,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -2292,7 +2415,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -2333,7 +2457,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "checks",
+        "sql": "exists (select 1 from approvals a where a.ticket_id = checks.ticket_id and a.approver_member_id = app.user_id() and a.deleted_at is null)"
+      }
     }
   },
   {
@@ -2354,6 +2482,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -2369,7 +2498,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -2410,7 +2540,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "client_contacts",
+        "sql": "(app.client_editable(client_contacts.client_id) or exists (select 1 from client_groups g where g.client_id = client_contacts.client_id and g.deleted_at is null and app.manages_scope(g.scope_id)))"
+      }
     }
   },
   {
@@ -2435,6 +2569,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -2450,7 +2585,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "client_contacts",
+        "sql": "(app.client_editable(client_contacts.client_id) or exists (select 1 from client_groups g where g.client_id = client_contacts.client_id and g.deleted_at is null and app.manages_scope(g.scope_id)))"
+      }
     }
   },
   {
@@ -2492,7 +2631,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "client_contacts",
+        "sql": "(app.client_editable(client_contacts.client_id) or exists (select 1 from client_groups g where g.client_id = client_contacts.client_id and g.deleted_at is null and app.manages_scope(g.scope_id)))"
+      }
     }
   },
   {
@@ -2513,6 +2656,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429,
       502
     ],
@@ -2529,7 +2673,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -2551,6 +2696,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429,
       502
     ],
@@ -2567,7 +2713,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "client_requests",
+        "sql": "true"
+      }
     }
   },
   {
@@ -2609,7 +2759,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "client_requests",
+        "sql": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.client_visible(client_id) AND (app.client_editable(client_id) OR has_permission(current_setting('app.user_id', true)::uuid, 'client_requests', routed_scope_id, 'edit'))"
+      }
     }
   },
   {
@@ -2652,7 +2806,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "client_requests",
+        "sql": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.client_visible(client_id) AND (app.client_editable(client_id) OR has_permission(current_setting('app.user_id', true)::uuid, 'client_requests', routed_scope_id, 'edit'))"
+      }
     }
   },
   {
@@ -2695,7 +2853,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "client_requests",
+        "sql": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.client_visible(client_id) AND (app.client_editable(client_id) OR has_permission(current_setting('app.user_id', true)::uuid, 'client_requests', routed_scope_id, 'edit'))"
+      }
     }
   },
   {
@@ -2738,7 +2900,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "client_requests",
+        "sql": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.client_visible(client_id) AND (app.client_editable(client_id) OR has_permission(current_setting('app.user_id', true)::uuid, 'client_requests', routed_scope_id, 'edit'))"
+      }
     }
   },
   {
@@ -2759,6 +2925,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -2776,7 +2943,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -2817,7 +2985,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -2839,6 +3008,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -2854,7 +3024,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "clients",
+        "sql": "true"
+      }
     }
   },
   {
@@ -2895,7 +3069,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "clients",
+        "sql": "(app.client_editable(clients.id) or exists (select 1 from client_groups g where g.client_id = clients.id and g.deleted_at is null and app.manages_scope(g.scope_id)))"
+      }
     }
   },
   {
@@ -2917,6 +3095,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -2932,7 +3111,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "clients",
+        "sql": "true"
+      }
     }
   },
   {
@@ -2974,7 +3157,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "clients",
+        "sql": "(app.client_editable(clients.id) or exists (select 1 from client_groups g where g.client_id = clients.id and g.deleted_at is null and app.manages_scope(g.scope_id)))"
+      }
     }
   },
   {
@@ -2996,6 +3183,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -3011,7 +3199,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "clients",
+        "sql": "true"
+      }
     }
   },
   {
@@ -3052,7 +3244,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "clients",
+        "sql": "(app.client_editable(clients.id) or exists (select 1 from client_groups g where g.client_id = clients.id and g.deleted_at is null and app.manages_scope(g.scope_id)))"
+      }
     }
   },
   {
@@ -3073,6 +3269,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -3088,7 +3285,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -3111,6 +3309,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429,
       502
     ],
@@ -3127,7 +3326,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -3168,7 +3368,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -3189,6 +3390,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -3204,7 +3406,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -3244,7 +3447,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -3265,6 +3469,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -3280,7 +3485,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -3301,6 +3507,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -3316,7 +3523,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -3337,6 +3545,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -3352,7 +3561,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -3373,6 +3583,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -3388,7 +3599,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -3431,7 +3643,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -3453,6 +3666,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -3468,7 +3682,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "conversations",
+        "sql": "owner_member_id = app.user_id()"
+      }
     }
   },
   {
@@ -3508,7 +3726,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "conversations",
+        "sql": "owner_member_id = app.user_id()"
+      }
     }
   },
   {
@@ -3532,6 +3754,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -3547,7 +3770,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "conversations",
+        "sql": "owner_member_id = app.user_id()"
+      }
     }
   },
   {
@@ -3591,7 +3818,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "conversations",
+        "sql": "owner_member_id = app.user_id()"
+      }
     }
   },
   {
@@ -3615,6 +3846,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429,
       502
     ],
@@ -3631,7 +3863,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "conversations",
+        "sql": "owner_member_id = app.user_id()"
+      }
     }
   },
   {
@@ -3676,7 +3912,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "conversations",
+        "sql": "owner_member_id = app.user_id()"
+      }
     }
   },
   {
@@ -3719,7 +3959,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "conversations",
+        "sql": "owner_member_id = app.user_id()"
+      }
     }
   },
   {
@@ -3763,7 +4007,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "conversations",
+        "sql": "owner_member_id = app.user_id()"
+      }
     }
   },
   {
@@ -3786,6 +4034,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -3801,7 +4050,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -3842,7 +4092,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": "always"
+      "stepUp": "always",
+      "row": null
     }
   },
   {
@@ -3883,7 +4134,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": "always"
+      "stepUp": "always",
+      "row": {
+        "table": "credentials",
+        "sql": "owner_member_id = app.user_id()"
+      }
     }
   },
   {
@@ -3908,6 +4163,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -3923,7 +4179,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "credentials",
+        "sql": "owner_member_id = app.user_id()"
+      }
     }
   },
   {
@@ -3965,7 +4225,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "credentials",
+        "sql": "owner_member_id = app.user_id()"
+      }
     }
   },
   {
@@ -4007,7 +4271,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "credentials",
+        "sql": "owner_member_id = app.user_id()"
+      }
     }
   },
   {
@@ -4049,7 +4317,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "any",
       "adminOnly": false,
       "cap": null,
-      "stepUp": "always"
+      "stepUp": "always",
+      "row": null
     }
   },
   {
@@ -4073,6 +4342,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -4088,7 +4358,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "export_jobs",
+        "sql": "requested_by = app.user_id()"
+      }
     }
   },
   {
@@ -4109,6 +4383,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -4124,7 +4399,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -4145,6 +4421,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -4160,7 +4437,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -4201,7 +4479,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -4223,6 +4502,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -4238,7 +4518,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "inquiries",
+        "sql": "opened_by_member_id = app.user_id()"
+      }
     }
   },
   {
@@ -4280,7 +4564,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "inquiries",
+        "sql": "opened_by_member_id = app.user_id()"
+      }
     }
   },
   {
@@ -4322,7 +4610,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "inquiries",
+        "sql": "opened_by_member_id = app.user_id()"
+      }
     }
   },
   {
@@ -4363,7 +4655,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -4404,7 +4697,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": "admin_role"
+      "stepUp": "admin_role",
+      "row": null
     }
   },
   {
@@ -4429,6 +4723,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -4444,7 +4739,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -4486,7 +4782,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -4527,7 +4824,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": "admin_role"
+      "stepUp": "admin_role",
+      "row": null
     }
   },
   {
@@ -4549,6 +4847,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -4564,7 +4863,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -4604,7 +4904,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -4644,7 +4945,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -4665,6 +4967,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -4680,7 +4983,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -4701,6 +5005,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -4716,7 +5021,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -4737,6 +5043,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -4752,7 +5059,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -4793,7 +5101,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "knowledge_page_versions",
+        "sql": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.kpage_writable(page_id)"
+      }
     }
   },
   {
@@ -4834,7 +5146,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "knowledge_page_versions",
+        "sql": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.kpage_writable(page_id)"
+      }
     }
   },
   {
@@ -4855,6 +5171,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -4870,7 +5187,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -4891,6 +5209,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -4906,7 +5225,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -4946,7 +5266,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -4968,6 +5289,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -4983,7 +5305,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "imports",
+        "sql": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'imports', scope_id, 'edit')"
+      }
     }
   },
   {
@@ -5024,7 +5350,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "imports",
+        "sql": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'imports', scope_id, 'edit')"
+      }
     }
   },
   {
@@ -5045,6 +5375,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -5060,7 +5391,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -5100,7 +5432,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -5122,6 +5455,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -5137,7 +5471,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "knowledge_pages",
+        "sql": "true"
+      }
     }
   },
   {
@@ -5177,7 +5515,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "knowledge_pages",
+        "sql": "app.kpage_writable(id)"
+      }
     }
   },
   {
@@ -5218,7 +5560,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "knowledge_pages",
+        "sql": "app.kpage_writable(id)"
+      }
     }
   },
   {
@@ -5259,7 +5605,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "knowledge_pages",
+        "sql": "app.kpage_writable(id)"
+      }
     }
   },
   {
@@ -5299,7 +5649,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "knowledge_pages",
+        "sql": "app.kpage_writable(id)"
+      }
     }
   },
   {
@@ -5323,6 +5677,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -5338,7 +5693,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "knowledge_pages",
+        "sql": "app.kpage_writable(id)"
+      }
     }
   },
   {
@@ -5360,6 +5719,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -5375,7 +5735,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "knowledge_pages",
+        "sql": "true"
+      }
     }
   },
   {
@@ -5416,7 +5780,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "knowledge_pages",
+        "sql": "app.kpage_writable(id)"
+      }
     }
   },
   {
@@ -5438,6 +5806,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -5453,7 +5822,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "knowledge_pages",
+        "sql": "true"
+      }
     }
   },
   {
@@ -5475,6 +5848,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -5490,7 +5864,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "knowledge_pages",
+        "sql": "true"
+      }
     }
   },
   {
@@ -5531,7 +5909,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "knowledge_pages",
+        "sql": "true"
+      }
     }
   },
   {
@@ -5572,7 +5954,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "knowledge_pages",
+        "sql": "app.kpage_writable(id)"
+      }
     }
   },
   {
@@ -5613,7 +5999,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "knowledge_pages",
+        "sql": "app.kpage_writable(id)"
+      }
     }
   },
   {
@@ -5635,6 +6025,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -5650,7 +6041,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "knowledge_pages",
+        "sql": "true"
+      }
     }
   },
   {
@@ -5691,7 +6086,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "knowledge_pages",
+        "sql": "app.kpage_writable(id)"
+      }
     }
   },
   {
@@ -5713,6 +6112,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -5728,7 +6128,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "knowledge_pages",
+        "sql": "true"
+      }
     }
   },
   {
@@ -5769,7 +6173,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "knowledge_pages",
+        "sql": "app.kpage_writable(id)"
+      }
     }
   },
   {
@@ -5809,7 +6217,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -5849,7 +6258,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -5870,6 +6280,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -5886,7 +6297,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -5928,7 +6340,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "learning_candidates",
+        "sql": "owner_member_id = app.user_id()"
+      }
     }
   },
   {
@@ -5970,7 +6386,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "learning_candidates",
+        "sql": "owner_member_id = app.user_id()"
+      }
     }
   },
   {
@@ -6011,7 +6431,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "learning_candidates",
+        "sql": "owner_member_id = app.user_id()"
+      }
     }
   },
   {
@@ -6052,7 +6476,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "learning_candidates",
+        "sql": "owner_member_id = app.user_id()"
+      }
     }
   },
   {
@@ -6073,6 +6501,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -6088,7 +6517,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -6127,7 +6557,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -6167,7 +6598,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -6208,7 +6640,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": "always"
+      "stepUp": "always",
+      "row": null
     }
   },
   {
@@ -6248,7 +6681,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": "always"
+      "stepUp": "always",
+      "row": null
     }
   },
   {
@@ -6288,7 +6722,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -6309,6 +6744,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -6324,7 +6760,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -6363,7 +6800,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -6403,7 +6841,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -6444,7 +6883,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -6469,6 +6909,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -6484,7 +6925,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": "always"
+      "stepUp": "always",
+      "row": null
     }
   },
   {
@@ -6524,7 +6966,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": "always"
+      "stepUp": "always",
+      "row": null
     }
   },
   {
@@ -6547,6 +6990,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -6563,7 +7007,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -6584,6 +7029,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -6599,7 +7045,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -6623,6 +7070,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -6638,7 +7086,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "sessions",
+        "sql": "member_id = app.user_id()"
+      }
     }
   },
   {
@@ -6678,7 +7130,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -6699,6 +7152,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -6714,7 +7168,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -6754,7 +7209,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -6793,7 +7249,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": "always"
+      "stepUp": "always",
+      "row": null
     }
   },
   {
@@ -6834,7 +7291,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -6875,7 +7333,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": "always"
+      "stepUp": "always",
+      "row": null
     }
   },
   {
@@ -6896,6 +7355,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -6911,7 +7371,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -6935,6 +7396,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -6950,7 +7412,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": "always"
+      "stepUp": "always",
+      "row": {
+        "table": "tenant_memberships",
+        "sql": "member_id = app.user_id()"
+      }
     }
   },
   {
@@ -6971,6 +7437,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -6986,7 +7453,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -7008,6 +7476,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -7023,7 +7492,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -7047,6 +7517,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -7062,7 +7533,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": "always"
+      "stepUp": "always",
+      "row": null
     }
   },
   {
@@ -7097,12 +7569,13 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "perm": {
       "word": "admin",
-      "target": "scope_memberships",
+      "target": "members",
       "ability": "edit",
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": "always"
+      "stepUp": "always",
+      "row": null
     }
   },
   {
@@ -7139,12 +7612,13 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "perm": {
       "word": "admin",
-      "target": "notifications",
+      "target": "members",
       "ability": "edit",
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -7179,12 +7653,13 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "perm": {
       "word": "admin",
-      "target": "permissions",
+      "target": "members",
       "ability": "edit",
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": "always"
+      "stepUp": "always",
+      "row": null
     }
   },
   {
@@ -7206,6 +7681,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -7217,11 +7693,12 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "perm": {
       "word": "admin",
       "target": "members",
-      "ability": "view",
+      "ability": "edit",
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -7262,7 +7739,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": "always"
+      "stepUp": "always",
+      "row": null
     }
   },
   {
@@ -7302,7 +7780,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": "always"
+      "stepUp": "always",
+      "row": null
     }
   },
   {
@@ -7343,7 +7822,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": "always"
+      "stepUp": "always",
+      "row": null
     }
   },
   {
@@ -7381,12 +7861,13 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "perm": {
       "word": "admin",
-      "target": "security_events",
+      "target": "members",
       "ability": "edit",
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": "always"
+      "stepUp": "always",
+      "row": null
     }
   },
   {
@@ -7407,6 +7888,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -7422,7 +7904,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -7462,7 +7945,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -7502,7 +7986,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "memories",
+        "sql": "owner_member_id = app.user_id()"
+      }
     }
   },
   {
@@ -7526,6 +8014,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -7541,7 +8030,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "memories",
+        "sql": "owner_member_id = app.user_id()"
+      }
     }
   },
   {
@@ -7583,7 +8076,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "memories",
+        "sql": "owner_member_id = app.user_id()"
+      }
     }
   },
   {
@@ -7625,7 +8122,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "messages",
+        "sql": "exists (select 1 from conversations c where c.id = conversation_id and c.owner_member_id = app.user_id())"
+      }
     }
   },
   {
@@ -7646,6 +8147,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -7661,7 +8163,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -7702,7 +8205,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "notices",
+        "sql": "true"
+      }
     }
   },
   {
@@ -7723,6 +8230,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -7738,7 +8246,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -7778,7 +8287,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "notifications",
+        "sql": "member_id = app.user_id()"
+      }
     }
   },
   {
@@ -7818,7 +8331,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -7839,6 +8353,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -7854,7 +8369,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "inquiry",
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -7876,6 +8392,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -7891,7 +8408,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "inquiry",
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -7932,7 +8450,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "inquiry",
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -7974,7 +8493,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "inquiry",
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -8016,7 +8536,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "inquiry",
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -8037,6 +8558,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -8052,7 +8574,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "money",
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -8093,7 +8616,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "money",
-      "stepUp": "always"
+      "stepUp": "always",
+      "row": null
     }
   },
   {
@@ -8133,7 +8657,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "money",
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -8173,7 +8698,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "money",
-      "stepUp": "always"
+      "stepUp": "always",
+      "row": null
     }
   },
   {
@@ -8196,6 +8722,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -8211,7 +8738,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "ops_people",
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -8252,7 +8780,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "ops_people",
-      "stepUp": "always"
+      "stepUp": "always",
+      "row": null
     }
   },
   {
@@ -8293,7 +8822,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "ops_people",
-      "stepUp": "always"
+      "stepUp": "always",
+      "row": null
     }
   },
   {
@@ -8318,6 +8848,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -8333,7 +8864,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "ops_people",
-      "stepUp": "always"
+      "stepUp": "always",
+      "row": null
     }
   },
   {
@@ -8354,6 +8886,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -8369,7 +8902,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "notice",
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -8410,7 +8944,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "notice",
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -8432,6 +8967,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -8447,7 +8983,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "notice",
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -8488,7 +9025,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "notice",
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -8530,7 +9068,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "notice",
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -8572,7 +9111,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "notice",
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -8595,6 +9135,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -8610,7 +9151,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "distribute",
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -8634,6 +9176,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -8649,7 +9192,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "peek",
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -8672,6 +9216,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -8687,7 +9232,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "plan_propose",
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -8710,6 +9256,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -8725,7 +9272,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "plan_propose",
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -8767,7 +9315,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "plan_propose",
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -8809,7 +9358,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "plan_propose",
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -8852,7 +9402,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "plan_decide",
-      "stepUp": "always"
+      "stepUp": "always",
+      "row": null
     }
   },
   {
@@ -8876,6 +9427,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -8891,7 +9443,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "plan_propose",
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -8934,7 +9487,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "plan_decide",
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -8977,7 +9531,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "plan_propose",
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -9000,6 +9555,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -9015,7 +9571,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "plan_propose",
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -9036,6 +9593,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -9051,7 +9609,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "any",
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -9072,6 +9631,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -9087,7 +9647,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "distribute",
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -9109,6 +9670,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -9124,7 +9686,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "distribute",
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -9166,7 +9729,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "distribute",
-      "stepUp": "always"
+      "stepUp": "always",
+      "row": null
     }
   },
   {
@@ -9207,7 +9771,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "distribute",
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -9231,6 +9796,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -9246,7 +9812,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "distribute",
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -9269,6 +9836,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -9284,7 +9852,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "distribute",
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -9308,6 +9877,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -9323,7 +9893,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "distribute",
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -9365,7 +9936,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "distribute",
-      "stepUp": "always"
+      "stepUp": "always",
+      "row": null
     }
   },
   {
@@ -9407,7 +9979,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "distribute",
-      "stepUp": "always"
+      "stepUp": "always",
+      "row": null
     }
   },
   {
@@ -9428,6 +10001,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -9443,7 +10017,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "any",
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -9465,6 +10040,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -9480,7 +10056,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "any",
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -9502,6 +10079,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -9517,7 +10095,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "any",
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -9539,6 +10118,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -9554,7 +10134,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "money",
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -9576,6 +10157,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -9591,7 +10173,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "inquiry",
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -9613,6 +10196,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -9628,7 +10212,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "inquiry",
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -9669,7 +10254,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "inquiry",
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -9710,7 +10296,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "notice",
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -9751,7 +10338,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "peek",
-      "stepUp": "always"
+      "stepUp": "always",
+      "row": null
     }
   },
   {
@@ -9792,7 +10380,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "money",
-      "stepUp": "always"
+      "stepUp": "always",
+      "row": null
     }
   },
   {
@@ -9833,7 +10422,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "stop",
-      "stepUp": "always"
+      "stepUp": "always",
+      "row": null
     }
   },
   {
@@ -9874,7 +10464,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "stop",
-      "stepUp": "always"
+      "stepUp": "always",
+      "row": null
     }
   },
   {
@@ -9914,7 +10505,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": "any",
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -9935,6 +10527,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -9950,7 +10543,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -9972,6 +10566,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -9987,7 +10582,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -10029,7 +10625,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -10070,7 +10667,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -10091,6 +10689,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -10106,7 +10705,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -10147,7 +10747,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -10169,6 +10770,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -10184,7 +10786,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -10226,7 +10829,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -10267,7 +10871,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -10289,6 +10894,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -10304,7 +10910,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -10325,6 +10932,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -10342,7 +10950,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -10385,7 +10994,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -10407,6 +11017,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -10422,7 +11033,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "policies",
+        "sql": "true"
+      }
     }
   },
   {
@@ -10462,7 +11077,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "policies",
+        "sql": "created_by = app.user_id()"
+      }
     }
   },
   {
@@ -10486,6 +11105,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -10501,7 +11121,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "policies",
+        "sql": "created_by = app.user_id()"
+      }
     }
   },
   {
@@ -10543,7 +11167,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -10564,6 +11189,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -10579,7 +11205,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -10619,7 +11246,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -10659,7 +11287,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "saved_views",
+        "sql": "(member_id = app.user_id() or app.manages_scope(scope_id))"
+      }
     }
   },
   {
@@ -10683,6 +11315,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -10698,7 +11331,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "saved_views",
+        "sql": "(member_id = app.user_id() or app.manages_scope(scope_id))"
+      }
     }
   },
   {
@@ -10719,6 +11356,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -10734,7 +11372,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -10774,7 +11413,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -10814,7 +11454,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -10836,6 +11477,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -10851,7 +11493,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "scopes",
+        "sql": "true"
+      }
     }
   },
   {
@@ -10872,6 +11518,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -10887,7 +11534,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -10908,6 +11556,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -10923,7 +11572,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -10944,6 +11594,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -10959,7 +11610,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -11001,7 +11653,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "test_specs",
+        "sql": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.ticket_writable(ticket_id)"
+      }
     }
   },
   {
@@ -11026,6 +11682,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429,
       502
     ],
@@ -11042,7 +11699,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "test_specs",
+        "sql": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.ticket_writable(ticket_id)"
+      }
     }
   },
   {
@@ -11082,7 +11743,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "ticket_decisions",
+        "sql": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.ticket_writable(ticket_id)"
+      }
     }
   },
   {
@@ -11124,7 +11789,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "ticket_handovers",
+        "sql": "to_member_id = app.user_id()"
+      }
     }
   },
   {
@@ -11165,7 +11834,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -11187,6 +11857,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -11202,7 +11873,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "ticket_imports",
+        "sql": "uploaded_by = app.user_id()"
+      }
     }
   },
   {
@@ -11243,7 +11918,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "ticket_imports",
+        "sql": "uploaded_by = app.user_id()"
+      }
     }
   },
   {
@@ -11264,6 +11943,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -11279,7 +11959,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -11320,7 +12001,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -11341,6 +12023,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -11356,7 +12039,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -11397,7 +12081,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -11421,6 +12106,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -11436,7 +12122,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "ticket_links",
+        "sql": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.ticket_writable(from_ticket_id) AND app.ticket_visible(to_ticket_id)"
+      }
     }
   },
   {
@@ -11477,7 +12167,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "ticket_messages",
+        "sql": "author_member_id = app.user_id()"
+      }
     }
   },
   {
@@ -11502,6 +12196,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -11517,7 +12212,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "ticket_messages",
+        "sql": "author_member_id = app.user_id()"
+      }
     }
   },
   {
@@ -11559,7 +12258,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "ticket_messages",
+        "sql": "true"
+      }
     }
   },
   {
@@ -11580,6 +12283,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -11595,7 +12299,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -11616,6 +12321,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -11632,7 +12338,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -11674,7 +12381,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -11696,6 +12404,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -11711,7 +12420,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "true"
+      }
     }
   },
   {
@@ -11754,7 +12467,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "app.ticket_writable(id)"
+      }
     }
   },
   {
@@ -11778,6 +12495,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -11793,7 +12511,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "((tickets.assignee_member_id = app.user_id() or tickets.created_by = app.user_id() or app.manages_scope(tickets.scope_id)) or deleted_by = app.user_id())"
+      }
     }
   },
   {
@@ -11835,7 +12557,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "((tickets.assignee_member_id = app.user_id() or tickets.created_by = app.user_id() or app.manages_scope(tickets.scope_id)) or deleted_by = app.user_id())"
+      }
     }
   },
   {
@@ -11859,6 +12585,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429,
       502
     ],
@@ -11875,7 +12602,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "true"
+      }
     }
   },
   {
@@ -11916,7 +12647,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "app.ticket_writable(id)"
+      }
     }
   },
   {
@@ -11962,7 +12697,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "app.ticket_writable(id)"
+      }
     }
   },
   {
@@ -11984,6 +12723,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -11999,7 +12739,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "true"
+      }
     }
   },
   {
@@ -12041,7 +12785,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "app.ticket_writable(id)"
+      }
     }
   },
   {
@@ -12063,6 +12811,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429,
       502
     ],
@@ -12079,7 +12828,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "true"
+      }
     }
   },
   {
@@ -12120,7 +12873,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "((tickets.assignee_member_id = app.user_id() or tickets.created_by = app.user_id() or app.manages_scope(tickets.scope_id)) or deleted_by = app.user_id())"
+      }
     }
   },
   {
@@ -12162,7 +12919,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "((tickets.assignee_member_id = app.user_id() or tickets.created_by = app.user_id() or app.manages_scope(tickets.scope_id)) or deleted_by = app.user_id())"
+      }
     }
   },
   {
@@ -12184,6 +12945,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -12199,7 +12961,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "true"
+      }
     }
   },
   {
@@ -12240,7 +13006,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "app.ticket_writable(id)"
+      }
     }
   },
   {
@@ -12284,7 +13054,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "((tickets.assignee_member_id = app.user_id() or tickets.created_by = app.user_id() or app.manages_scope(tickets.scope_id)) or deleted_by = app.user_id())"
+      }
     }
   },
   {
@@ -12306,6 +13080,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -12321,7 +13096,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "((tickets.assignee_member_id = app.user_id() or tickets.created_by = app.user_id() or app.manages_scope(tickets.scope_id)) or deleted_by = app.user_id())"
+      }
     }
   },
   {
@@ -12365,7 +13144,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "((tickets.assignee_member_id = app.user_id() or tickets.created_by = app.user_id() or app.manages_scope(tickets.scope_id)) or deleted_by = app.user_id())"
+      }
     }
   },
   {
@@ -12410,7 +13193,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "app.ticket_writable(id)"
+      }
     }
   },
   {
@@ -12432,6 +13219,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -12447,7 +13235,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "app.ticket_writable(id)"
+      }
     }
   },
   {
@@ -12469,6 +13261,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -12484,7 +13277,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "true"
+      }
     }
   },
   {
@@ -12525,7 +13322,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "app.ticket_writable(id)"
+      }
     }
   },
   {
@@ -12567,7 +13368,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "app.ticket_writable(id)"
+      }
     }
   },
   {
@@ -12589,6 +13394,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -12604,7 +13410,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "true"
+      }
     }
   },
   {
@@ -12646,7 +13456,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "((tickets.assignee_member_id = app.user_id() or tickets.created_by = app.user_id() or app.manages_scope(tickets.scope_id)) or deleted_by = app.user_id())"
+      }
     }
   },
   {
@@ -12668,6 +13482,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429,
       502
     ],
@@ -12684,7 +13499,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "true"
+      }
     }
   },
   {
@@ -12724,7 +13543,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "app.ticket_writable(id)"
+      }
     }
   },
   {
@@ -12746,6 +13569,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429,
       502
     ],
@@ -12762,7 +13586,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "true"
+      }
     }
   },
   {
@@ -12805,7 +13633,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "app.ticket_writable(id)"
+      }
     }
   },
   {
@@ -12848,7 +13680,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "app.ticket_writable(id)"
+      }
     }
   },
   {
@@ -12891,7 +13727,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "app.ticket_writable(id)"
+      }
     }
   },
   {
@@ -12913,6 +13753,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -12928,7 +13769,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "true"
+      }
     }
   },
   {
@@ -12950,6 +13795,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -12965,7 +13811,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "true"
+      }
     }
   },
   {
@@ -13006,7 +13856,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "app.ticket_writable(id)"
+      }
     }
   },
   {
@@ -13028,6 +13882,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -13043,7 +13898,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "true"
+      }
     }
   },
   {
@@ -13084,7 +13943,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -13105,6 +13965,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429,
       502
     ],
@@ -13121,7 +13982,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -13163,7 +14025,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -13185,6 +14048,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429,
       502
     ],
@@ -13201,7 +14065,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "skills",
+        "sql": "true"
+      }
     }
   },
   {
@@ -13244,7 +14112,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "skills",
+        "sql": "true"
+      }
     }
   },
   {
@@ -13286,7 +14158,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "skills",
+        "sql": "owner_member_id = app.user_id()"
+      }
     }
   },
   {
@@ -13329,7 +14205,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "skills",
+        "sql": "owner_member_id = app.user_id()"
+      }
     }
   },
   {
@@ -13372,7 +14252,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "skills",
+        "sql": "owner_member_id = app.user_id()"
+      }
     }
   },
   {
@@ -13415,7 +14299,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "skills",
+        "sql": "owner_member_id = app.user_id()"
+      }
     }
   },
   {
@@ -13437,6 +14325,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429,
       502
     ],
@@ -13453,7 +14342,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": {
+        "table": "skills",
+        "sql": "true"
+      }
     }
   },
   {
@@ -13474,6 +14367,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -13489,7 +14383,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -13528,7 +14423,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -13549,6 +14445,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -13564,7 +14461,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -13603,7 +14501,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -13643,7 +14542,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": "always"
+      "stepUp": "always",
+      "row": null
     }
   },
   {
@@ -13681,7 +14581,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -13721,7 +14622,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -13761,7 +14663,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -13785,6 +14688,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -13800,7 +14704,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -13840,7 +14745,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -13880,7 +14786,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -13901,6 +14808,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -13916,7 +14824,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -13955,7 +14864,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": true,
       "cap": null,
-      "stepUp": "always"
+      "stepUp": "always",
+      "row": null
     }
   },
   {
@@ -13995,7 +14905,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": "always"
+      "stepUp": "always",
+      "row": null
     }
   },
   {
@@ -14016,6 +14927,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -14031,7 +14943,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -14052,6 +14965,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -14067,7 +14981,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -14107,7 +15022,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "any",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -14147,7 +15063,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "any",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -14171,6 +15088,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
       429
     ],
     "acts": [
@@ -14186,7 +15104,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "any",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -14207,6 +15126,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      422,
       429
     ],
     "acts": [
@@ -14222,7 +15142,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -14261,7 +15182,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   },
   {
@@ -14301,8 +15223,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": null
+      "stepUp": null,
+      "row": null
     }
   }
 ];
-export const OPENAPI_HASH = "97208711802d3bba";
+export const OPENAPI_HASH = "57ecabc4a41c2424";

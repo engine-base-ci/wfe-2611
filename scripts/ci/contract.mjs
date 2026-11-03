@@ -8,6 +8,7 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, unlinkSync, writeFile
 import { join } from "node:path";
 import { execSync } from "node:child_process";
 import { pathToFileURL } from "node:url";
+import { rowOf, rulesSource } from "./row_rules.mjs";
 
 const ROOT = process.cwd();
 const OPENAPI = "08_api/openapi.yaml";
@@ -83,15 +84,20 @@ export function parseComponents(yaml) {
     if (sec === "props" && (m = /^        (\w+):(?: &(\w+))?$/.exec(l))) { prop = m[1]; propAnchor = m[2] ?? null; out[name].props[prop] = {}; if (propAnchor) anchors[propAnchor] = out[name].props[prop]; continue; }
     if (sec === "props" && (m = /^        (\w+): \*(\w+)$/.exec(l))) { out[name].props[m[1]] = anchors[m[2]] ?? {}; prop = null; continue; }
     if (sec === "props" && prop && (m = /^          (type|format): (\S+)/.exec(l))) { out[name].props[prop][m[1]] = m[2]; continue; }
+    if (sec === "props" && prop && /^          nullable: true/.test(l)) { out[name].props[prop].nullable = true; continue; }
     if (sec === "props" && prop && (m = /^            type: (\S+)/.exec(l))) { out[name].props[prop].items = m[1]; continue; }
   }
   return out;
 }
+/** 行の確かめの元（row_rules.mjs と、write の条件に使う entities.json）。変われば生成物も作り直す */
+const rowSources = (root) => rulesSource(root) + (existsSync(join(root, "07_functional/entities.json")) ? readFileSync(join(root, "07_functional/entities.json"), "utf8") : "");
 const hashOf = (s) => createHash("sha256").update(s).digest("hex").slice(0, 16);
 const slug = (s) => s.replace(/^\/api\/v1\//, "").replace(/[{}:]/g, "").replace(/[^a-z0-9]+/gi, "_").replace(/_+$/, "");
 const kindOf = (method, path) => (method === "GET" ? (path.includes("{") ? "get" : "list") : method === "POST" ? "create" : method === "DELETE" ? "delete" : "update");
 
 function zodOf(p) {
+  // null を許す列（DB で null 可・KN-55）は、入力でも null を受ける（PATCH で空に戻す）
+  if (p.nullable) return `${zodOf({ ...p, nullable: false })}.nullable()`;
   if (p.type === "string" && p.format === "uuid") return "z.uuid()";
   if (p.type === "string" && p.format === "date-time") return "z.iso.datetime({ offset: true })";
   if (p.type === "string" && p.format === "date") return "z.iso.date()";
@@ -118,6 +124,7 @@ export function permOf(e, table, method) {
   else if (/\/invitations\b/.test(path)) Object.assign(out, { target: "members", ability: "invite" });
   else if (/\/workspace\/deletion\b/.test(path)) Object.assign(out, { target: "tenants", ability: "delete_workspace" });
   else if (/\/workspace\/(billing|plan|plans|billing-contact)\b|\/invoices\b/.test(path)) Object.assign(out, { target: "tenants", ability: "billing" });
+  else if (/\/members\/:id\//.test(path)) Object.assign(out, { target: "members", ability: "edit" }); // 人のこと（2 段階のリセット など）は人の表の能力
   else if (/\/workspace\/permissions\b/.test(path)) Object.assign(out, { target: "permissions", ability: "edit", adminOnly: true });
   else if (/\/workspace\/rules\b/.test(path)) Object.assign(out, { target: table, ability: method === "GET" ? "view" : "edit", scope: "any" });
   else Object.assign(out, { target: table, ability: method === "GET" ? "view" : "edit" });
@@ -127,13 +134,14 @@ export function permOf(e, table, method) {
 export function gen(root = ROOT) {
   const yaml = readFileSync(join(root, OPENAPI), "utf8");
   const epJson = readFileSync(join(root, ENDPOINTS_JSON), "utf8");
-  const h = hashOf(yaml + epJson);
+  const h = hashOf(yaml + epJson + rowSources(root));
   const types = readFileSync(join(root, "08_api/types.ts"), "utf8");
   mkdirSync(join(root, OUT), { recursive: true });
   writeFileSync(join(root, OUT, "types.ts"), `// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:${h}\n` + types.replace(/^\/\/.*\n/, ""));
   const paths = parsePaths(yaml);
   const meta = new Map(JSON.parse(epJson).endpoints.map((e) => [`${e.method} ${e.path}`, e]));
   const eps = [];
+  const rowErrors = [];
   const GENERIC_OK = new Set(existsSync(join(root, "08_api/generic-ok.json")) ? JSON.parse(readFileSync(join(root, "08_api/generic-ok.json"), "utf8")).ok.filter((x) => String(x.reason ?? "").trim()).map((x) => x.op) : []);
   for (const [p, ms] of Object.entries(paths)) for (const [m, d] of Object.entries(ms)) {
     const hono = p.replace(/\{(\w+)\}/g, ":$1");
@@ -147,7 +155,13 @@ export function gen(root = ROOT) {
       chokePoints: e.choke_points ?? [], errors: (e.outputs_4xx ?? []).map((x) => x.status), acts: e.acts ?? [], screens: e.screens ?? [],
       perm: permOf({ ...e, path: hono }, d.tag || slug(p).split("_")[0], m),
     });
+    const last = eps[eps.length - 1];
+    const row = rowOf(root, last, last.perm.word);
+    if (row?.error) rowErrors.push(row.error);
+    last.perm.row = row && !row.error ? row : null;
   }
+  // 行に結ぶ口は全部、どの表のどの列で確かめるかを持つ（KN-52）。無ければ生成を止める
+  if (rowErrors.length) throw new Error(`行の確かめが無い口 ${rowErrors.length} 本:\n  ${rowErrors.join("\n  ")}`);
   const body = `// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:${h}
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
@@ -175,6 +189,8 @@ export interface EndpointDef {
     adminOnly: boolean;
     cap: string | null;
     stepUp: string | null;
+    /** 行に結ぶ言葉の確かめ（KN-52・scripts/ci/row_rules.mjs）。:id の行を RLS の中で読み、見えなければ 404・sql が偽なら 403 */
+    row: { table: string; sql: string } | null;
   };
 }
 export const ENDPOINTS: readonly EndpointDef[] = ${JSON.stringify(eps, null, 2)};
@@ -232,7 +248,7 @@ export const OPENAPI_HASH = "${h}";
 export function check(root = ROOT, base = "main") {
   const yaml = readFileSync(join(root, OPENAPI), "utf8");
   const epJson = existsSync(join(root, ENDPOINTS_JSON)) ? readFileSync(join(root, ENDPOINTS_JSON), "utf8") : "";
-  const h = hashOf(yaml + epJson);
+  const h = hashOf(yaml + epJson + rowSources(root));
   const bad = [];
   for (const f of ["types.ts", "registry.ts", "schemas.ts"]) {
     const p = join(root, OUT, f);

@@ -21,6 +21,10 @@ type CallOpts = { body?: unknown; id?: string; query?: Record<string, string>; h
 export interface Harness {
   S: Awaited<ReturnType<typeof seedAccessMatrix>>;
   repo: Repository;
+  /** 業務の接続（kaname_app）。本物の hooks（agentHooks など）を差すとき */
+  pool: pg.Pool;
+  /** 本物の登録の順のアプリ（契約 fuzz・G36 が HTTP で立てる） */
+  fetch: (req: Request) => Response | Promise<Response>;
   hooks: Record<string, Hook>;
   limits: Record<string, number>;
   call: (e: EndpointDef, who: Who, o?: CallOpts) => Promise<Response>;
@@ -45,15 +49,24 @@ export async function makeHarness(): Promise<Harness> {
   let S: Harness["S"];
   try {
     S = await seedAccessMatrix(c);
+    // 入口の権限の言葉（KN-51）：「正しい役の人」は、社長＝管理者、運営の人＝全部のできること を持つ
+    await c.query(
+      "insert into tenant_memberships (tenant_id, member_id, role) values ($1, $2, 'admin') on conflict (tenant_id, member_id) do update set role = 'admin', status = 'active', deleted_at = null",
+      [S.tenantA, S.bossA],
+    );
+    await c.query(
+      "update ops_members set caps = array['inquiry', 'peek', 'money', 'stop', 'notice', 'distribute', 'plan_propose', 'plan_decide', 'ops_people'] where member_id = $1",
+      [S.opsId],
+    );
   } finally {
     c.release();
   }
   const app = createPool({ databaseUrl: APP_URL, max: 3 });
   const repo = await createRepository(app);
   const who: Record<Exclude<Who, "anon">, TenantContext> = {
-    boss: { tenantId: S.tenantA, userId: S.bossA, role: "member" },
+    boss: { tenantId: S.tenantA, userId: S.bossA, role: "member", stepUpAt: new Date() }, // 直前に本人確認を取り直した
     staff: { tenantId: S.tenantA, userId: S.staffA, role: "member" },
-    ops: { tenantId: S.opsTenant, userId: S.opsId, role: "ops" }, // 対象の会社は x-tenant-id（call が表に合わせて入れる）。会社 a は許可あり
+    ops: { tenantId: S.opsTenant, userId: S.opsId, role: "ops", stepUpAt: new Date() }, // 対象の会社は x-tenant-id（call が表に合わせて入れる）。会社 a は許可あり
     opsB: { tenantId: S.tenantB, userId: S.opsId, role: "ops" }, // 会社 b は許可が期限切れ
   };
   const hooks: Record<string, Hook> = {};
@@ -114,6 +127,8 @@ export async function makeHarness(): Promise<Harness> {
   return {
     S,
     repo,
+    pool: app,
+    fetch: (req) => hono.fetch(req),
     hooks,
     limits,
     call,

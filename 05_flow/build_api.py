@@ -43,7 +43,7 @@ def four(e):
     if auth: out.append({"status": 403, "code": "FORBIDDEN", "body": {"error": "forbidden"}, "trigger": "権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした", "ears_form": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）"})
     if ":id" in e["path"]: out.append({"status": 404, "code": "NOT_FOUND", "body": {"error": "not_found"}, "trigger": "無い・消えた・取り消された（期限切れ・削除済み・他社の行）", "ears_form": "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）"})
     if e["method"] == "POST": out.append({"status": 409, "code": "CONFLICT", "body": {"error": "conflict"}, "trigger": "二重送信・同時編集・既に登録済み（冪等キーで防ぐ）", "ears_form": "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない"})
-    if e["method"] in ("POST", "PATCH"): out.append({"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）", "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"})
+    if e["method"] in ("POST", "PATCH") or ":id" in e["path"] or e["method"] == "GET": out.append({"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形", "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"})
     out.append({"status": 429, "code": "RATE_LIMITED", "body": {"error": "rate_limited", "retry_after_sec": 60}, "trigger": e["rate_limit"], "ears_form": f"UNWANTED: IF {e['rate_limit']} を超えたら、Kaname は 429 と retry_after_sec を返す"})
     if e["choke_points"] & {"C1", "C3", "C5"}: out.append({"status": 502, "code": "EXTERNAL_FAILED", "body": {"error": "external_failed"}, "trigger": "外部サービス・モデル・プロセスが失敗した／合図を出さずに終わった", "ears_form": "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す"})
     return out
@@ -116,22 +116,57 @@ def ptype(n, note, e=None):
     if n in ("created_at", "updated_at"): return {"type": "string", "format": "date-time"}
     if e is None: return {"type": "string"}
     return openapi_of(_R.col_type(e, {"name": n, "note": note})[0])
+# 本物の DB の列（08_api/db-columns.json・pnpm db:columns が書き出す）。表の行の答えの形は DB に合わせる（KN-55・G36 の契約 fuzz が答えを確かめる）
+#   ER の名前の規則（colrules）と migration がずれた列（例：incognito は真偽）も、契約は DB のとおりになる。null を許す列は nullable
+_DBC = json.load(open(f"{OUT}/db-columns.json", encoding="utf-8"))["tables"] if os.path.exists(f"{OUT}/db-columns.json") else {}
+def dbtype(c):
+    t = c["type"]
+    if t == "uuid": s = {"type": "string", "format": "uuid"}
+    elif t in ("text", "character varying", "character", "inet", "citext", "bytea", "interval"): s = {"type": "string"}
+    elif t == "boolean": s = {"type": "boolean"}
+    elif t in ("integer", "smallint"): s = {"type": "integer"}
+    elif t == "bigint": s = {"type": "string", "pattern": "^-?[0-9]+$"}            # 64 ビットの整数は文字列で返る（pg の既定・桁を落とさない）
+    elif t == "numeric": s = {"type": "string", "pattern": "^-?[0-9]+(\\.[0-9]+)?$"}  # 小数（お金など）は文字列で返る（丸めない）
+    elif t in ("double precision", "real"): s = {"type": "number"}
+    elif t == "timestamp with time zone": s = {"type": "string", "format": "date-time"}
+    elif t == "date": s = {"type": "string", "format": "date"}
+    elif t in ("jsonb", "json"): s = {}                                                # 中身は表ごと（オブジェクトも配列もある）
+    elif t.endswith("[]"): s = {"type": "array", "items": dbtype({"type": t[:-2]}) or {}}
+    elif t == "vector": s = {"type": "array", "items": {"type": "number"}}
+    else: s = {"type": "string"}
+    if c.get("nullable"): s = {**s, "nullable": True}
+    return s
 schemas = {}
 for e in E:
     name = "".join(w.capitalize() for w in e["table_name"].split("_"))
     props = {f_["name"]: ptype(f_["name"], f_.get("note"), e) for f_ in e["fields"] if not f_["name"].startswith("<")}
     for c in ("id", "tenant_id", "created_at", "updated_at"): props.setdefault(c, ptype(c, ""))
-    schemas[name] = {"type": "object", "properties": props, "required": ["id"], "x-table": e["table_name"], "x-source": e["source"]}
+    dbc = _DBC.get(e["table_name"], {})
+    props = {k: (dbtype(dbc[k]) if k in dbc else v) for k, v in props.items()}
+    resp = {**props, **{k: dbtype(v) for k, v in sorted(dbc.items()) if k not in props}}   # 答えは DB の列を全部持つ（ER に無い列も）
+    schemas[name] = {"type": "object", "properties": resp, "required": ["id"], "x-table": e["table_name"], "x-source": e["source"]}
     schemas[name + "Input"] = {"type": "object", "properties": {k: v for k, v in props.items() if k not in INTERNAL}}
 for _op, (_n, _props) in _sa.RESPONSES.items():   # 表の行ではない答えの形（D-128.78）
     schemas[_n] = {"type": "object", "properties": {k: ({"type": "array", "items": {"type": "object"}} if v == "array" else {"type": v}) for k, v in _props.items()}, "x-operation": _op}
 schemas["Error"] = {"type": "object", "properties": {"error": {"type": "string"}, "code": {"type": "string"}, "message": {"type": "string"}, "details": {"type": "array", "items": {"type": "object"}}, "retry_after_sec": {"type": "integer"}}, "required": ["error"]}
+# 問い合わせの値の形（入口 op.ts が確かめるのと同じ。KN-55）
+#   sort は表の列の名前だけ。scope_id は表に scope_id があるときだけ出す。空の値（?limit=）は指定なしと同じ（allowEmptyValue）
+def qtype(q, table):
+    cols = sorted(_DBC.get(table, {}))
+    if q == "limit": return {"type": "integer", "minimum": 1, "maximum": 200}
+    if q == "sort": return {"type": "string", "enum": cols} if cols else {"type": "string", "pattern": "^[a-z_][a-z0-9_]{0,62}$"}
+    if q == "scope_id": return {"type": "string", "format": "uuid"}
+    if q == "cursor": return {"type": "string", "pattern": "^[0-9]{1,9}$"}
+    return {"type": "string"}
+def qparams(names, table):
+    has = _DBC.get(table)
+    return [{"name": q, "in": "query", "allowEmptyValue": True, "schema": qtype(q, table)} for q in names if not (q == "scope_id" and has is not None and "scope_id" not in has)]
 paths = {}
 for e in endpoints:
     tname = e.get("table") or e["path"].split("/")[3]; name = _sa.RESPONSES[e["operation_id"]][0] if e.get("operation_id") in _sa.RESPONSES else "".join(w.capitalize() for w in tname.split("_")); op = {"operationId": e["implementation_path"].split("::")[1], "summary": e["description"], "tags": [tname], "x-acts": e["acts"], "x-screens": e["screens"], "x-choke-points": e["choke_points"], "x-source": e["source"], **({"x-permission": e["permission"]["who"], "x-permission-scope": e["permission"]["scope"], "x-step-up": e["permission"]["step_up"]} if e.get("permission") else {}), "security": [] if e["auth"]["role"] == "public" else [{"session": []}]}
     op["parameters"] = [{"name": n, "in": "path", "required": True, "schema": {"type": "string", "format": "uuid"} if n == "id" else {"type": "string"}} for n in e["path_params"]]
-    if e.get("operation_id") in _sa.QUERIES: op["parameters"] += [{"name": q, "in": "query", "schema": {"type": "string"}} for q in _sa.QUERIES[e["operation_id"]] + (["cursor", "limit", "sort"] if e["returns_list"] else [])]
-    elif e["returns_list"]: op["parameters"] += [{"name": q, "in": "query", "schema": {"type": "string"}} for q in ("scope_id", "cursor", "limit", "sort")]
+    if e.get("operation_id") in _sa.QUERIES: op["parameters"] += qparams(_sa.QUERIES[e["operation_id"]] + (["cursor", "limit", "sort"] if e["returns_list"] else []), tname)
+    elif e["returns_list"]: op["parameters"] += qparams(("scope_id", "cursor", "limit", "sort"), tname)
     if not op["parameters"]: del op["parameters"]
     tbl = "".join(w.capitalize() for w in tname.split("_"))
     if e["method"] in ("POST", "PATCH"): op["requestBody"] = {"required": True, "content": {"application/json": {"schema": {"$ref": f"#/components/schemas/{tbl}Input"}}}}
@@ -141,7 +176,7 @@ for e in endpoints:
 openapi = {"openapi": "3.0.3", "info": {"title": "Kaname API", "version": "1.0.0", "description": f"Mock-Driven Contract Generation。{TODAY} 凍結。信頼源は 08_api/endpoints.json。x-acts / x-screens / x-choke-points / x-source で行為・画面・関門・決定に辿れる"},
            "servers": [{"url": BASE}], "components": {"securitySchemes": {"session": {"type": "http", "scheme": "bearer", "description": "Better Auth のセッション。sessions 表を見て失効を判定"}}, "schemas": schemas}, "paths": paths}
 ts = ["// 生成物（05_flow/build_api.py）。手で直さない。OpenAPI 3.0.3 と同じ内容。", "export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };", "export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };", ""]
-def tst(p): return {"string": "string", "number": "number", "boolean": "boolean", "object": "Record<string, unknown>", "array": "string[]", "integer": "number"}[p["type"]]
+def tst(p): return {"string": "string", "number": "number", "boolean": "boolean", "object": "Record<string, unknown>", "array": "string[]", "integer": "number"}.get(p.get("type"), "unknown") + (" | null" if p.get("nullable") else "")
 for n, sc in schemas.items():
     if n == "Error": continue
     ts.append(f"export type {n} = {{ " + "; ".join(f"{k}{'?' if k not in sc.get('required', []) else ''}: {tst(v)}" for k, v in sc["properties"].items()) + " };")

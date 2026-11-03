@@ -4,6 +4,9 @@
 // 枠を受け取ってから pg-pool の connect を呼ぶ（このときは作る時間だけが connectionTimeoutMillis に当たる）。
 import pg from "pg";
 
+// 日付（date）は文字列のまま返す（KN-55）。Date にすると、サーバーの時刻の帯で前の日に化ける（Asia/Tokyo の 0 時 → 前日 15 時 Z）。契約は format: date
+pg.types.setTypeParser(1082, (v: string) => v);
+
 export interface PoolOptions {
   databaseUrl: string;
   max?: number;

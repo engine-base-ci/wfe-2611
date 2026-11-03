@@ -34,11 +34,11 @@ export function normalize(v: unknown): unknown {
     return Object.fromEntries(Object.entries(v as Record<string, unknown>).map(([k, x]) => [k, normalize(x)]));
   return v;
 }
-const encodeCursor = (n: number) => Buffer.from(String(n)).toString("base64url");
+// 続きの印は、何件目から読むかの数（10 進の文字列・最大 9 桁）。画面はもらったものを返すだけ（契約は pattern で書ける形にした・KN-55）
+const encodeCursor = (n: number) => String(n);
 const decodeCursor = (s: string | undefined): number | null => {
   if (!s) return 0;
-  const n = Number(Buffer.from(s, "base64url").toString());
-  return Number.isInteger(n) && n >= 0 ? n : null;
+  return /^[0-9]{1,9}$/.test(s) ? Number(s) : null;
 };
 const isRlsError = (e: unknown) => /row-level security|permission denied/.test(String(e));
 const pgCode = (e: unknown) => (e as { code?: string }).code ?? "";
@@ -71,7 +71,7 @@ export function op(deps: ContractDeps, operationId: string) {
         if (ctx.role === "ops" && !(await repo.opsAllowed(ctx))) return err(c, 403, "forbidden", "FORBIDDEN");
       }
     }
-    // 3.1) 権限の言葉の段（KN-51）：admin の能力・運営のできること など。言葉の確かめが無い言葉は行の守り（RLS）に任せる（KN-52 で入口にも足す）
+    // 3.1) 権限の言葉の段（KN-51）：admin の能力・運営のできること など。行に結ぶ言葉は 4.1 で :id の行を読んで確かめる（KN-52）
     if (def.auth !== "public") {
       const check = checkFor(def.perm.word);
       const pid = def.path.includes(":id") ? (c.req.param("id") ?? null) : null;
@@ -88,6 +88,13 @@ export function op(deps: ContractDeps, operationId: string) {
     const id = def.path.includes(":id") ? (c.req.param("id") ?? "") : null;
     if (id !== null && !/^[0-9a-f-]{36}$/i.test(id))
       return err(c, 422, "validation_failed", "VALIDATION_ERROR", { details: [{ field: "id", message: "uuid" }] });
+    // 4.1) 行に結ぶ言葉（KN-52・ZT4）：:id の行を行の守りの中で読み、見えなければ 404（無いのと同じ）・言葉の中の人でなければ 403
+    //      本人・担当者・承認する人・受ける人・マネージャー・書ける人。条件は契約の perm.row（scripts/ci/row_rules.mjs）
+    if (id !== null && def.perm.row && def.auth === "member") {
+      const r = await repo.rowAllowed(ctx, def.perm.row.table, id, def.perm.row.sql);
+      if (r === "missing") return err(c, 404, "not_found", "NOT_FOUND");
+      if (r === "denied") return err(c, 403, "forbidden", "FORBIDDEN");
+    }
     let input: Row = {};
     if (def.kind === "create" || def.kind === "update") {
       let raw: unknown;
@@ -105,7 +112,8 @@ export function op(deps: ContractDeps, operationId: string) {
     }
     let list: { where: Row; limit: number; offset: number; orderBy?: string } | null = null;
     if (def.kind === "list") {
-      const q = c.req.query();
+      // 空の値（?limit=）は「指定なし」と同じ（画面の検索欄が空のまま送っても 422 にしない・KN-55）
+      const q = Object.fromEntries(Object.entries(c.req.query()).filter(([, v]) => v !== ""));
       const limit = q["limit"] === undefined ? LIMIT_DEFAULT : Number(q["limit"]);
       const offset = decodeCursor(q["cursor"]);
       const details: { field: string; message: string }[] = [];
@@ -114,7 +122,12 @@ export function op(deps: ContractDeps, operationId: string) {
       if (offset === null) details.push({ field: "cursor", message: "不正" });
       if (q["scope_id"] !== undefined && !/^[0-9a-f-]{36}$/i.test(q["scope_id"]))
         details.push({ field: "scope_id", message: "uuid" });
-      if (q["sort"] !== undefined && !/^[a-z_][a-z0-9_]{0,62}$/.test(q["sort"]))
+      else if (q["scope_id"] !== undefined && !repo.hasColumn(def.table as TableName, "scope_id"))
+        details.push({ field: "scope_id", message: "この一覧はグループで絞れない" });
+      if (
+        q["sort"] !== undefined &&
+        (!/^[a-z_][a-z0-9_]{0,62}$/.test(q["sort"]) || !repo.hasColumn(def.table as TableName, q["sort"]))
+      )
         details.push({ field: "sort", message: "列名" });
       if (details.length) return err(c, 422, "validation_failed", "VALIDATION_ERROR", { details });
       list = {
