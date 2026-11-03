@@ -55,7 +55,7 @@ stages:
     skill: api-design
     title: API 設計（build_api.py・契約）
     produces: [08_api/openapi.yaml, 08_api/endpoints.json]
-    done_when: python3 scripts/ci/api_gate.py --flow 05_flow/flow.json --dir 08_api && node scripts/ci/contract.mjs check
+    done_when: python3 scripts/ci/api_gate.py --flow 05_flow/flow.json --dir 08_api && node scripts/ci/contract.mjs check && python3 scripts/ci/zt_gate.py
   - id: S07b
     skill: spec-sync-orchestrator
     title: 仕様間の整合同期（決定を足すたび）

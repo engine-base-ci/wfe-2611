@@ -20,6 +20,8 @@ chk = {c["id"]: c for c in CH}
 OPS_SCREENS = {s["id"] for s in S if s["id"].startswith("ops-")}
 PUBLIC = {s["id"] for s in S if s.get("has_shell") is False and s["id"] in ("signup", "login", "verify-email", "password-reset", "invite-accept", "mfa-setup")}
 
+import importlib.util as _ilu
+_spec = _ilu.spec_from_file_location("screen_api", os.path.join(os.path.dirname(os.path.abspath(__file__)), "screen_api.py")); _sa = _ilu.module_from_spec(_spec); _spec.loader.exec_module(_sa)
 # ---------------------------------------------------------------- endpoints（画面の下書きを (method, path) で束ねる）
 eps = {}
 for s in S:
@@ -67,6 +69,8 @@ for (m, p), e in sorted(eps.items(), key=lambda kv: (kv[0][1], ["GET", "POST", "
     e["choke_points"] = sorted(e["choke_points"]) if m != "GET" else sorted(e["choke_points"] & {"C4", "C8"})
     e["description"] = desc(e)
     e["implementation_path"] = f"apps/api/src/routes/{tname}.ts::" + (e["operation_id"] if e.get("operation_id") else f"{m.lower()}{''.join(w.capitalize() for w in tname.split('_'))}{'ById' if ':id' in p else ''}")
+    if e.get("operation_id") in getattr(_sa, "PERMS", {}):   # 誰が呼べるか（ZT1）
+        _pm = _sa.PERMS[e["operation_id"]]; e["permission"] = {"who": _pm[0], "scope": _pm[1], "step_up": _pm[2]}
     e["path_params"] = params; e["returns_list"] = (m == "GET" and e["operation_id"].startswith(("list", "search"))) if e.get("operation_id") else (m == "GET" and ":id" not in p)
     e["inputs"] = {"path": params, "body": f"{tname} の入力（types.ts の {''.join(w.capitalize() for w in tname.split('_'))}Input）" if m in ("POST", "PATCH") else None, "query": ["scope_id", "cursor", "limit", "sort"] if m == "GET" and ":id" not in p else []}
     e["outputs_2xx"] = {"status": 201 if m == "POST" else 200, "body": f"{{ data: {''.join(w.capitalize() for w in tname.split('_'))}{'[]' if e['returns_list'] else ''}, meta?: {{ cursor, limit, total }} }}"}
@@ -95,8 +99,7 @@ import sys as _sys, os as _os
 _sys.path.insert(0, _os.path.join(_os.path.dirname(__file__), "..", "scripts", "ci"))
 from colrules import Rules, load_rules, openapi_of  # noqa: E402  DB（gen_ddl）と同じ規則で契約の型を決める
 _cr = load_rules(); _R = Rules(E, _cr.get("aliases", {}), _cr.get("vector_dim", 1536))
-import importlib.util as _ilu
-_spec = _ilu.spec_from_file_location("screen_api", os.path.join(os.path.dirname(os.path.abspath(__file__)), "screen_api.py")); _sa = _ilu.module_from_spec(_spec); _spec.loader.exec_module(_sa)
+
 def ptype(n, note, e=None):
     if n == "id" or n == "tenant_id": return {"type": "string", "format": "uuid"}
     if n in ("created_at", "updated_at"): return {"type": "string", "format": "date-time"}
@@ -114,7 +117,7 @@ for _op, (_n, _props) in _sa.RESPONSES.items():   # 表の行ではない答え�
 schemas["Error"] = {"type": "object", "properties": {"error": {"type": "string"}, "code": {"type": "string"}, "message": {"type": "string"}, "details": {"type": "array", "items": {"type": "object"}}, "retry_after_sec": {"type": "integer"}}, "required": ["error"]}
 paths = {}
 for e in endpoints:
-    tname = e.get("table") or e["path"].split("/")[3]; name = _sa.RESPONSES[e["operation_id"]][0] if e.get("operation_id") in _sa.RESPONSES else "".join(w.capitalize() for w in tname.split("_")); op = {"operationId": e["implementation_path"].split("::")[1], "summary": e["description"], "tags": [tname], "x-acts": e["acts"], "x-screens": e["screens"], "x-choke-points": e["choke_points"], "x-source": e["source"], "security": [] if e["auth"]["role"] == "public" else [{"session": []}]}
+    tname = e.get("table") or e["path"].split("/")[3]; name = _sa.RESPONSES[e["operation_id"]][0] if e.get("operation_id") in _sa.RESPONSES else "".join(w.capitalize() for w in tname.split("_")); op = {"operationId": e["implementation_path"].split("::")[1], "summary": e["description"], "tags": [tname], "x-acts": e["acts"], "x-screens": e["screens"], "x-choke-points": e["choke_points"], "x-source": e["source"], **({"x-permission": e["permission"]["who"], "x-permission-scope": e["permission"]["scope"], "x-step-up": e["permission"]["step_up"]} if e.get("permission") else {}), "security": [] if e["auth"]["role"] == "public" else [{"session": []}]}
     op["parameters"] = [{"name": n, "in": "path", "required": True, "schema": {"type": "string", "format": "uuid"} if n == "id" else {"type": "string"}} for n in e["path_params"]]
     if e.get("operation_id") in _sa.QUERIES: op["parameters"] += [{"name": q, "in": "query", "schema": {"type": "string"}} for q in _sa.QUERIES[e["operation_id"]] + (["cursor", "limit", "sort"] if e["returns_list"] else [])]
     elif e["returns_list"]: op["parameters"] += [{"name": q, "in": "query", "schema": {"type": "string"}} for q in ("scope_id", "cursor", "limit", "sort")]

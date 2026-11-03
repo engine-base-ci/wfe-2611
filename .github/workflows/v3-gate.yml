@@ -39,6 +39,8 @@ jobs:
         run: pnpm ci:no-sql-concat
       - name: "G11 OpenAPI 破壊的変更検出"
         run: pnpm ci:openapi-diff
+      - name: "G-ZT ゼロトラストの設計の決まり（誰が呼べるか・本人確認・運営と顧客）"
+        run: pnpm ci:zt
       - name: "G13 env 整合"
         run: pnpm ci:env-audit
       - name: "G14 AC validator（4-tier）"
