@@ -23,7 +23,7 @@ OPS_CAPS = {"inquiry", "peek", "money", "stop", "notice", "distribute", "plan_pr
 STEP_UP_REQUIRED = {"approveApproval", "createCredential", "updateCredential", "updateMemberRole", "updateMemberPermissions",
                     "createExport", "openPeek", "stopWorkspace", "recordPayment", "decidePlanProposal",
                     "startTwoFactor", "disableTwoFactor", "regenerateBackupCodes", "changePassword", "deletePasskey", "resetMemberTwoFactor",
-                    "requestEmailChange", "revokeMyDevice"}
+                    "requestEmailChange", "revokeMyDevice", "releaseOpsWorkType", "rollbackOpsWorkType", "releaseOpsTemplate"}
 PUBLIC_OK = {"signup", "verify-email", "login", "password-reset", "invite-accept"}   # ログイン前の画面だけが public を使える
 
 

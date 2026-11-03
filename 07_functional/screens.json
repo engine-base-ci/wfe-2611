@@ -24429,63 +24429,21 @@
    ],
    "related_apis": [
     {
-     "act": "A128",
-     "role": "action",
-     "method": "POST",
-     "path_draft": "/api/operations",
-     "auth": "session（会社・層・権限）",
-     "related_entities": [
-      "E-133",
-      "E-095",
-      "E-096",
-      "E-097"
-     ],
-     "choke_points": [
-      "C2",
-      "C6"
-     ],
-     "source": [
-      "D-125.72",
-      "D-125.167"
-     ]
-    },
-    {
-     "act": "A133",
-     "role": "action",
-     "method": "PATCH",
-     "path_draft": "/api/operations/:id",
-     "auth": "session（会社・層・権限）",
-     "related_entities": [
-      "E-133",
-      "E-095",
-      "E-096",
-      "E-097"
-     ],
-     "choke_points": [
-      "C4",
-      "C2",
-      "C6"
-     ],
-     "source": [
-      "D-128.72",
-      "D-125.167"
-     ]
-    },
-    {
      "act": "A80",
-     "role": "action",
-     "method": "POST",
-     "path_draft": "/api/operations",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/work_types",
+     "table": "skills",
+     "operation_id": "listOpsWorkTypes",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-133",
       "E-095",
       "E-096",
-      "E-097"
+      "E-067"
      ],
      "choke_points": [
-      "C4",
-      "C2"
+      "C2",
+      "C4"
      ],
      "source": [
       "D-126.3",
@@ -24503,6 +24461,479 @@
       "D-080.4",
       "D-080.5",
       "D-126.18"
+     ]
+    },
+    {
+     "act": "A80",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/work_types/:id",
+     "table": "skills",
+     "operation_id": "getOpsWorkType",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-095",
+      "E-096",
+      "E-097",
+      "E-067"
+     ],
+     "choke_points": [
+      "C2",
+      "C4"
+     ],
+     "source": [
+      "D-126.3",
+      "D-126.5",
+      "D-126.19",
+      "D-126.23",
+      "D-125.167",
+      "D-030.2",
+      "D-030.3",
+      "D-063.1",
+      "D-078.1",
+      "D-078.2",
+      "D-078.3",
+      "D-078.5",
+      "D-080.4",
+      "D-080.5",
+      "D-126.18"
+     ]
+    },
+    {
+     "act": "A80",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ops/work_type_uploads",
+     "table": "skill_versions",
+     "operation_id": "uploadWorkTypePackage",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-096",
+      "E-097"
+     ],
+     "choke_points": [
+      "C2",
+      "C4"
+     ],
+     "source": [
+      "D-126.3",
+      "D-126.5",
+      "D-126.19",
+      "D-126.23",
+      "D-125.167",
+      "D-030.2",
+      "D-030.3",
+      "D-063.1",
+      "D-078.1",
+      "D-078.2",
+      "D-078.3",
+      "D-078.5",
+      "D-080.4",
+      "D-080.5",
+      "D-126.18"
+     ]
+    },
+    {
+     "act": "A80",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/work_type_uploads/:id",
+     "table": "skill_versions",
+     "operation_id": "getWorkTypeUpload",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-096",
+      "E-097"
+     ],
+     "choke_points": [
+      "C2",
+      "C4"
+     ],
+     "source": [
+      "D-126.3",
+      "D-126.5",
+      "D-126.19",
+      "D-126.23",
+      "D-125.167",
+      "D-030.2",
+      "D-030.3",
+      "D-063.1",
+      "D-078.1",
+      "D-078.2",
+      "D-078.3",
+      "D-078.5",
+      "D-080.4",
+      "D-080.5",
+      "D-126.18"
+     ]
+    },
+    {
+     "act": "A80",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ops/work_types/:id/versions",
+     "table": "skill_versions",
+     "operation_id": "releaseOpsWorkType",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-096",
+      "E-067",
+      "E-080",
+      "E-072"
+     ],
+     "choke_points": [
+      "C2",
+      "C4"
+     ],
+     "source": [
+      "D-126.3",
+      "D-126.5",
+      "D-126.19",
+      "D-126.23",
+      "D-125.167",
+      "D-030.2",
+      "D-030.3",
+      "D-063.1",
+      "D-078.1",
+      "D-078.2",
+      "D-078.3",
+      "D-078.5",
+      "D-080.4",
+      "D-080.5",
+      "D-126.18"
+     ]
+    },
+    {
+     "act": "A80",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ops/work_types/:id/versions/:v/rollback",
+     "table": "skill_versions",
+     "operation_id": "rollbackOpsWorkType",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-096",
+      "E-067",
+      "E-072"
+     ],
+     "choke_points": [
+      "C2",
+      "C4"
+     ],
+     "source": [
+      "D-126.3",
+      "D-126.5",
+      "D-126.19",
+      "D-126.23",
+      "D-125.167",
+      "D-030.2",
+      "D-030.3",
+      "D-063.1",
+      "D-078.1",
+      "D-078.2",
+      "D-078.3",
+      "D-078.5",
+      "D-080.4",
+      "D-080.5",
+      "D-126.18"
+     ]
+    },
+    {
+     "act": "A80",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/operations",
+     "table": "operations",
+     "operation_id": "listOperations",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-133"
+     ],
+     "choke_points": [
+      "C2",
+      "C4"
+     ],
+     "source": [
+      "D-126.3",
+      "D-126.5",
+      "D-126.19",
+      "D-126.23",
+      "D-125.167",
+      "D-030.2",
+      "D-030.3",
+      "D-063.1",
+      "D-078.1",
+      "D-078.2",
+      "D-078.3",
+      "D-078.5",
+      "D-080.4",
+      "D-080.5",
+      "D-126.18"
+     ]
+    },
+    {
+     "act": "A128",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/templates",
+     "table": "distributions",
+     "operation_id": "listOpsTemplates",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-065",
+      "E-067"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.72",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A128",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/templates/:id",
+     "table": "distributions",
+     "operation_id": "getOpsTemplate",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-065",
+      "E-067"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.72",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A128",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ops/templates/:id/versions",
+     "table": "distributions",
+     "operation_id": "releaseOpsTemplate",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-065",
+      "E-067",
+      "E-080",
+      "E-072"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.72",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A133",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/plans",
+     "table": "plans",
+     "operation_id": "listOpsPlans",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-081",
+      "E-082",
+      "E-083"
+     ],
+     "choke_points": [
+      "C2",
+      "C4",
+      "C6"
+     ],
+     "source": [
+      "D-128.72",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A133",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/plan_proposals",
+     "table": "ops_plan_proposals",
+     "operation_id": "listPlanProposals",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-134"
+     ],
+     "choke_points": [
+      "C2",
+      "C4",
+      "C6"
+     ],
+     "source": [
+      "D-128.72",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A133",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ops/plan_proposals",
+     "table": "ops_plan_proposals",
+     "operation_id": "createPlanProposal",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-134",
+      "E-081"
+     ],
+     "choke_points": [
+      "C2",
+      "C4",
+      "C6"
+     ],
+     "source": [
+      "D-128.72",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A133",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/ops/plan_proposals/:id",
+     "table": "ops_plan_proposals",
+     "operation_id": "updatePlanProposal",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-134"
+     ],
+     "choke_points": [
+      "C2",
+      "C4",
+      "C6"
+     ],
+     "source": [
+      "D-128.72",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A133",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/plan_proposals/:id/impact",
+     "table": "ops_plan_proposals",
+     "operation_id": "getPlanProposalImpact",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-134",
+      "E-083",
+      "E-001"
+     ],
+     "choke_points": [
+      "C2",
+      "C4",
+      "C6"
+     ],
+     "source": [
+      "D-128.72",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A133",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ops/plan_proposals/:id/submit",
+     "table": "ops_plan_proposals",
+     "operation_id": "submitPlanProposal",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-134",
+      "E-080"
+     ],
+     "choke_points": [
+      "C2",
+      "C4",
+      "C6"
+     ],
+     "source": [
+      "D-128.72",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A133",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ops/plan_proposals/:id/decide",
+     "table": "ops_plan_proposals",
+     "operation_id": "decidePlanProposal",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-134",
+      "E-082",
+      "E-075",
+      "E-072"
+     ],
+     "choke_points": [
+      "C2",
+      "C4",
+      "C6"
+     ],
+     "source": [
+      "D-128.72",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A133",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ops/plan_proposals/:id/return",
+     "table": "ops_plan_proposals",
+     "operation_id": "returnPlanProposal",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-134",
+      "E-080"
+     ],
+     "choke_points": [
+      "C2",
+      "C4",
+      "C6"
+     ],
+     "source": [
+      "D-128.72",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A133",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/plan_history",
+     "table": "ops_audit_events",
+     "operation_id": "listPlanHistory",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-072",
+      "E-134"
+     ],
+     "choke_points": [
+      "C2",
+      "C4",
+      "C6"
+     ],
+     "source": [
+      "D-128.72",
+      "D-125.167"
      ]
     },
     {
@@ -24913,63 +25344,21 @@
    ],
    "required_apis": [
     {
-     "act": "A128",
-     "role": "action",
-     "method": "POST",
-     "path_draft": "/api/operations",
-     "auth": "session（会社・層・権限）",
-     "related_entities": [
-      "E-133",
-      "E-095",
-      "E-096",
-      "E-097"
-     ],
-     "choke_points": [
-      "C2",
-      "C6"
-     ],
-     "source": [
-      "D-125.72",
-      "D-125.167"
-     ]
-    },
-    {
-     "act": "A133",
-     "role": "action",
-     "method": "PATCH",
-     "path_draft": "/api/operations/:id",
-     "auth": "session（会社・層・権限）",
-     "related_entities": [
-      "E-133",
-      "E-095",
-      "E-096",
-      "E-097"
-     ],
-     "choke_points": [
-      "C4",
-      "C2",
-      "C6"
-     ],
-     "source": [
-      "D-128.72",
-      "D-125.167"
-     ]
-    },
-    {
      "act": "A80",
-     "role": "action",
-     "method": "POST",
-     "path_draft": "/api/operations",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/work_types",
+     "table": "skills",
+     "operation_id": "listOpsWorkTypes",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-133",
       "E-095",
       "E-096",
-      "E-097"
+      "E-067"
      ],
      "choke_points": [
-      "C4",
-      "C2"
+      "C2",
+      "C4"
      ],
      "source": [
       "D-126.3",
@@ -24987,6 +25376,479 @@
       "D-080.4",
       "D-080.5",
       "D-126.18"
+     ]
+    },
+    {
+     "act": "A80",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/work_types/:id",
+     "table": "skills",
+     "operation_id": "getOpsWorkType",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-095",
+      "E-096",
+      "E-097",
+      "E-067"
+     ],
+     "choke_points": [
+      "C2",
+      "C4"
+     ],
+     "source": [
+      "D-126.3",
+      "D-126.5",
+      "D-126.19",
+      "D-126.23",
+      "D-125.167",
+      "D-030.2",
+      "D-030.3",
+      "D-063.1",
+      "D-078.1",
+      "D-078.2",
+      "D-078.3",
+      "D-078.5",
+      "D-080.4",
+      "D-080.5",
+      "D-126.18"
+     ]
+    },
+    {
+     "act": "A80",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ops/work_type_uploads",
+     "table": "skill_versions",
+     "operation_id": "uploadWorkTypePackage",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-096",
+      "E-097"
+     ],
+     "choke_points": [
+      "C2",
+      "C4"
+     ],
+     "source": [
+      "D-126.3",
+      "D-126.5",
+      "D-126.19",
+      "D-126.23",
+      "D-125.167",
+      "D-030.2",
+      "D-030.3",
+      "D-063.1",
+      "D-078.1",
+      "D-078.2",
+      "D-078.3",
+      "D-078.5",
+      "D-080.4",
+      "D-080.5",
+      "D-126.18"
+     ]
+    },
+    {
+     "act": "A80",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/work_type_uploads/:id",
+     "table": "skill_versions",
+     "operation_id": "getWorkTypeUpload",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-096",
+      "E-097"
+     ],
+     "choke_points": [
+      "C2",
+      "C4"
+     ],
+     "source": [
+      "D-126.3",
+      "D-126.5",
+      "D-126.19",
+      "D-126.23",
+      "D-125.167",
+      "D-030.2",
+      "D-030.3",
+      "D-063.1",
+      "D-078.1",
+      "D-078.2",
+      "D-078.3",
+      "D-078.5",
+      "D-080.4",
+      "D-080.5",
+      "D-126.18"
+     ]
+    },
+    {
+     "act": "A80",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ops/work_types/:id/versions",
+     "table": "skill_versions",
+     "operation_id": "releaseOpsWorkType",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-096",
+      "E-067",
+      "E-080",
+      "E-072"
+     ],
+     "choke_points": [
+      "C2",
+      "C4"
+     ],
+     "source": [
+      "D-126.3",
+      "D-126.5",
+      "D-126.19",
+      "D-126.23",
+      "D-125.167",
+      "D-030.2",
+      "D-030.3",
+      "D-063.1",
+      "D-078.1",
+      "D-078.2",
+      "D-078.3",
+      "D-078.5",
+      "D-080.4",
+      "D-080.5",
+      "D-126.18"
+     ]
+    },
+    {
+     "act": "A80",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ops/work_types/:id/versions/:v/rollback",
+     "table": "skill_versions",
+     "operation_id": "rollbackOpsWorkType",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-096",
+      "E-067",
+      "E-072"
+     ],
+     "choke_points": [
+      "C2",
+      "C4"
+     ],
+     "source": [
+      "D-126.3",
+      "D-126.5",
+      "D-126.19",
+      "D-126.23",
+      "D-125.167",
+      "D-030.2",
+      "D-030.3",
+      "D-063.1",
+      "D-078.1",
+      "D-078.2",
+      "D-078.3",
+      "D-078.5",
+      "D-080.4",
+      "D-080.5",
+      "D-126.18"
+     ]
+    },
+    {
+     "act": "A80",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/operations",
+     "table": "operations",
+     "operation_id": "listOperations",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-133"
+     ],
+     "choke_points": [
+      "C2",
+      "C4"
+     ],
+     "source": [
+      "D-126.3",
+      "D-126.5",
+      "D-126.19",
+      "D-126.23",
+      "D-125.167",
+      "D-030.2",
+      "D-030.3",
+      "D-063.1",
+      "D-078.1",
+      "D-078.2",
+      "D-078.3",
+      "D-078.5",
+      "D-080.4",
+      "D-080.5",
+      "D-126.18"
+     ]
+    },
+    {
+     "act": "A128",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/templates",
+     "table": "distributions",
+     "operation_id": "listOpsTemplates",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-065",
+      "E-067"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.72",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A128",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/templates/:id",
+     "table": "distributions",
+     "operation_id": "getOpsTemplate",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-065",
+      "E-067"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.72",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A128",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ops/templates/:id/versions",
+     "table": "distributions",
+     "operation_id": "releaseOpsTemplate",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-065",
+      "E-067",
+      "E-080",
+      "E-072"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.72",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A133",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/plans",
+     "table": "plans",
+     "operation_id": "listOpsPlans",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-081",
+      "E-082",
+      "E-083"
+     ],
+     "choke_points": [
+      "C2",
+      "C4",
+      "C6"
+     ],
+     "source": [
+      "D-128.72",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A133",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/plan_proposals",
+     "table": "ops_plan_proposals",
+     "operation_id": "listPlanProposals",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-134"
+     ],
+     "choke_points": [
+      "C2",
+      "C4",
+      "C6"
+     ],
+     "source": [
+      "D-128.72",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A133",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ops/plan_proposals",
+     "table": "ops_plan_proposals",
+     "operation_id": "createPlanProposal",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-134",
+      "E-081"
+     ],
+     "choke_points": [
+      "C2",
+      "C4",
+      "C6"
+     ],
+     "source": [
+      "D-128.72",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A133",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/ops/plan_proposals/:id",
+     "table": "ops_plan_proposals",
+     "operation_id": "updatePlanProposal",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-134"
+     ],
+     "choke_points": [
+      "C2",
+      "C4",
+      "C6"
+     ],
+     "source": [
+      "D-128.72",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A133",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/plan_proposals/:id/impact",
+     "table": "ops_plan_proposals",
+     "operation_id": "getPlanProposalImpact",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-134",
+      "E-083",
+      "E-001"
+     ],
+     "choke_points": [
+      "C2",
+      "C4",
+      "C6"
+     ],
+     "source": [
+      "D-128.72",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A133",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ops/plan_proposals/:id/submit",
+     "table": "ops_plan_proposals",
+     "operation_id": "submitPlanProposal",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-134",
+      "E-080"
+     ],
+     "choke_points": [
+      "C2",
+      "C4",
+      "C6"
+     ],
+     "source": [
+      "D-128.72",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A133",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ops/plan_proposals/:id/decide",
+     "table": "ops_plan_proposals",
+     "operation_id": "decidePlanProposal",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-134",
+      "E-082",
+      "E-075",
+      "E-072"
+     ],
+     "choke_points": [
+      "C2",
+      "C4",
+      "C6"
+     ],
+     "source": [
+      "D-128.72",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A133",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ops/plan_proposals/:id/return",
+     "table": "ops_plan_proposals",
+     "operation_id": "returnPlanProposal",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-134",
+      "E-080"
+     ],
+     "choke_points": [
+      "C2",
+      "C4",
+      "C6"
+     ],
+     "source": [
+      "D-128.72",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A133",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/plan_history",
+     "table": "ops_audit_events",
+     "operation_id": "listPlanHistory",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-072",
+      "E-134"
+     ],
+     "choke_points": [
+      "C2",
+      "C4",
+      "C6"
+     ],
+     "source": [
+      "D-128.72",
+      "D-125.167"
      ]
     },
     {
@@ -25409,7 +26271,12 @@
     "E-083",
     "E-085",
     "E-084",
-    "E-134"
+    "E-134",
+    "E-067",
+    "E-080",
+    "E-072",
+    "E-001",
+    "E-075"
    ],
    "mock_path": "06_mockup/v1/v1-ops-skills.html",
    "route": "/ops/skills",

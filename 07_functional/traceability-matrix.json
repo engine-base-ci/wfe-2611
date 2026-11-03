@@ -2026,12 +2026,33 @@
     "E-083 subscriptions",
     "E-085 usage_meters",
     "E-084 plan_change_requests",
-    "E-134 ops_plan_proposals"
+    "E-134 ops_plan_proposals",
+    "E-067 tenant_distributions",
+    "E-080 notifications",
+    "E-072 ops_audit_events",
+    "E-001 tenants",
+    "E-075 notices"
    ],
    "related_apis": [
-    "POST /api/operations",
-    "PATCH /api/operations/:id",
-    "POST /api/operations",
+    "GET /api/ops/work_types",
+    "GET /api/ops/work_types/:id",
+    "POST /api/ops/work_type_uploads",
+    "GET /api/ops/work_type_uploads/:id",
+    "POST /api/ops/work_types/:id/versions",
+    "POST /api/ops/work_types/:id/versions/:v/rollback",
+    "GET /api/ops/operations",
+    "GET /api/ops/templates",
+    "GET /api/ops/templates/:id",
+    "POST /api/ops/templates/:id/versions",
+    "GET /api/ops/plans",
+    "GET /api/ops/plan_proposals",
+    "POST /api/ops/plan_proposals",
+    "PATCH /api/ops/plan_proposals/:id",
+    "GET /api/ops/plan_proposals/:id/impact",
+    "POST /api/ops/plan_proposals/:id/submit",
+    "POST /api/ops/plan_proposals/:id/decide",
+    "POST /api/ops/plan_proposals/:id/return",
+    "GET /api/ops/plan_history",
     "navigate /account",
     "navigate /settings/close",
     "navigate /ai-staff/activity",
@@ -7468,22 +7489,118 @@
    "screen_name": "運営：配るもの",
    "required_apis": [
     {
-     "act": "A128",
-     "role": "action",
-     "method": "POST",
-     "path_draft": "/api/operations"
+     "act": "A80",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/work_types"
     },
     {
-     "act": "A133",
-     "role": "action",
-     "method": "PATCH",
-     "path_draft": "/api/operations/:id"
+     "act": "A80",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/work_types/:id"
     },
     {
      "act": "A80",
      "role": "action",
      "method": "POST",
-     "path_draft": "/api/operations"
+     "path_draft": "/api/ops/work_type_uploads"
+    },
+    {
+     "act": "A80",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/work_type_uploads/:id"
+    },
+    {
+     "act": "A80",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ops/work_types/:id/versions"
+    },
+    {
+     "act": "A80",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ops/work_types/:id/versions/:v/rollback"
+    },
+    {
+     "act": "A80",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/operations"
+    },
+    {
+     "act": "A128",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/templates"
+    },
+    {
+     "act": "A128",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/templates/:id"
+    },
+    {
+     "act": "A128",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ops/templates/:id/versions"
+    },
+    {
+     "act": "A133",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/plans"
+    },
+    {
+     "act": "A133",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/plan_proposals"
+    },
+    {
+     "act": "A133",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ops/plan_proposals"
+    },
+    {
+     "act": "A133",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/ops/plan_proposals/:id"
+    },
+    {
+     "act": "A133",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/plan_proposals/:id/impact"
+    },
+    {
+     "act": "A133",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ops/plan_proposals/:id/submit"
+    },
+    {
+     "act": "A133",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ops/plan_proposals/:id/decide"
+    },
+    {
+     "act": "A133",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ops/plan_proposals/:id/return"
+    },
+    {
+     "act": "A133",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/plan_history"
     },
     {
      "role": "transition",
@@ -10505,7 +10622,8 @@
     "onboard-golive",
     "company-model",
     "export",
-    "account"
+    "account",
+    "ops-skills"
    ],
    "used_by_features": [
     "F-001",
@@ -10516,7 +10634,9 @@
     "F-011",
     "F-012",
     "F-013",
-    "F-017"
+    "F-016",
+    "F-017",
+    "F-020"
    ]
   },
   {
@@ -11637,8 +11757,13 @@
   {
    "entity_id": "E-067",
    "entity_name": "tenant_distributions",
-   "used_by_screens": [],
-   "used_by_features": []
+   "used_by_screens": [
+    "ops-skills"
+   ],
+   "used_by_features": [
+    "F-016",
+    "F-020"
+   ]
   },
   {
    "entity_id": "E-068",
@@ -11709,6 +11834,7 @@
     "security-brief",
     "disclosure",
     "account-close",
+    "ops-skills",
     "ops-tenant",
     "ops-review",
     "ops-audit"
@@ -11722,6 +11848,7 @@
     "F-016",
     "F-017",
     "F-019",
+    "F-020",
     "F-023"
    ]
   },
@@ -11777,13 +11904,15 @@
    "entity_id": "E-075",
    "entity_name": "notices",
    "used_by_screens": [
+    "ops-skills",
     "notices",
     "ops-notices",
     "ops-disclosure"
    ],
    "used_by_features": [
     "F-015",
-    "F-016"
+    "F-016",
+    "F-020"
    ]
   },
   {
@@ -11835,6 +11964,7 @@
     "bridge-setup",
     "clone-chat",
     "app-setup",
+    "ops-skills",
     "tickets",
     "work-types"
    ],
@@ -11847,7 +11977,9 @@
     "F-011",
     "F-012",
     "F-013",
+    "F-016",
     "F-017",
+    "F-020",
     "F-021",
     "F-023",
     "F-024"
@@ -13817,6 +13949,7 @@
     "ops-tenant"
    ],
    "entities": [
+    "E-001",
     "E-004",
     "E-025",
     "E-026",
@@ -13826,6 +13959,7 @@
     "E-058",
     "E-062",
     "E-065",
+    "E-067",
     "E-071",
     "E-072",
     "E-073",
@@ -13833,6 +13967,7 @@
     "E-075",
     "E-076",
     "E-077",
+    "E-080",
     "E-081",
     "E-082",
     "E-083",
@@ -13986,6 +14121,7 @@
     "ops-skills"
    ],
    "entities": [
+    "E-001",
     "E-004",
     "E-007",
     "E-023",
@@ -13994,6 +14130,10 @@
     "E-026",
     "E-037",
     "E-065",
+    "E-067",
+    "E-072",
+    "E-075",
+    "E-080",
     "E-081",
     "E-082",
     "E-083",

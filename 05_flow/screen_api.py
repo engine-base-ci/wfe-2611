@@ -248,6 +248,31 @@ SCREEN_API = {
         ("POST", "/bridge/credentials/:id/check-result", "A10", "credentials", "reportCredentialCheck", []),
         ("GET", "/bridge/files/:ref", "A104", "attachments", "getFileForBridge", []),
     ],
+    # ---------------------------------------------------------------- 運営：配るもの（08_api/phase1/06_運営の配るもの.md）
+    "ops-skills": [
+        # 業務の型と操作（全社向け・節目①）
+        ("GET", "/ops/work_types", "A80", "skills", "listOpsWorkTypes", ["skill_versions", "tenant_distributions"]),
+        ("GET", "/ops/work_types/:id", "A80", "skills", "getOpsWorkType", ["skill_versions", "skill_test_runs", "tenant_distributions"]),
+        ("POST", "/ops/work_type_uploads", "A80", "skill_versions", "uploadWorkTypePackage", ["skill_test_runs"]),
+        ("GET", "/ops/work_type_uploads/:id", "A80", "skill_versions", "getWorkTypeUpload", ["skill_test_runs"]),
+        ("POST", "/ops/work_types/:id/versions", "A80", "skill_versions", "releaseOpsWorkType", ["tenant_distributions", "notifications", "ops_audit_events"]),
+        ("POST", "/ops/work_types/:id/versions/:v/rollback", "A80", "skill_versions", "rollbackOpsWorkType", ["tenant_distributions", "ops_audit_events"]),
+        ("GET", "/ops/operations", "A80", "operations", "listOperations", []),
+        # ひな形（D-125.72）
+        ("GET", "/ops/templates", "A128", "distributions", "listOpsTemplates", ["tenant_distributions"]),
+        ("GET", "/ops/templates/:id", "A128", "distributions", "getOpsTemplate", ["tenant_distributions"]),
+        ("POST", "/ops/templates/:id/versions", "A128", "distributions", "releaseOpsTemplate", ["tenant_distributions", "notifications", "ops_audit_events"]),
+        # プランの値段と中身（D-128.72）
+        ("GET", "/ops/plans", "A133", "plans", "listOpsPlans", ["plan_versions", "subscriptions"]),
+        ("GET", "/ops/plan_proposals", "A133", "ops_plan_proposals", "listPlanProposals", []),
+        ("POST", "/ops/plan_proposals", "A133", "ops_plan_proposals", "createPlanProposal", ["plans"]),
+        ("PATCH", "/ops/plan_proposals/:id", "A133", "ops_plan_proposals", "updatePlanProposal", []),
+        ("GET", "/ops/plan_proposals/:id/impact", "A133", "ops_plan_proposals", "getPlanProposalImpact", ["subscriptions", "tenants"]),
+        ("POST", "/ops/plan_proposals/:id/submit", "A133", "ops_plan_proposals", "submitPlanProposal", ["notifications"]),
+        ("POST", "/ops/plan_proposals/:id/decide", "A133", "ops_plan_proposals", "decidePlanProposal", ["plan_versions", "notices", "ops_audit_events"]),
+        ("POST", "/ops/plan_proposals/:id/return", "A133", "ops_plan_proposals", "returnPlanProposal", ["notifications"]),
+        ("GET", "/ops/plan_history", "A133", "ops_audit_events", "listPlanHistory", ["ops_plan_proposals"]),
+    ],
 }
 
 
@@ -287,6 +312,8 @@ RESPONSES = {
     "takeBridgeJob": ("BridgeJob", {"job": "object", "allowed_tools": "array", "forbidden_domains": "array", "rules": "array"}),
     "getJobControl": ("JobControl", {"stop": "boolean", "steers": "array"}),
     "resolveCredential": ("ResolvedCredential", {"ref": "string", "ciphertext_for_executor": "string", "destinations": "array", "expires_at": "string"}),
+    "getWorkTypeUpload": ("WorkTypeUploadCheck", {"package": "object", "checks": "array", "passed": "boolean", "test_scenarios": "integer", "changelog": "string"}),
+    "getPlanProposalImpact": ("PlanProposalImpact", {"tenants": "integer", "monthly_revenue_diff": "integer", "existing_from": "string", "new_from": "string", "by_workspace": "array"}),
     "checkRule": ("RuleCheck", {"conflicts": "array", "similar": "array", "needs_approval_from": "string", "warnings": "array"}),
 }
 # 一覧の絞り込み（operationId → query の名前）。cursor・limit・sort はいつも付く
@@ -307,6 +334,8 @@ QUERIES = {
     "listWorkTypes": ["origin", "sort"],
     "listCloneActivity": ["kind", "from", "to"],
     "listCredentials": ["tenant_id"],
+    "listPlanProposals": ["state"],
+    "listPlanHistory": ["plan_id"],
     "getNotificationSettings": ["tenant_id"],
 }
 
@@ -518,4 +547,24 @@ PERMS = {
     "resolveCredential": ("device", "その人の PC の実行器だけ。持ち主と使える場所が合うときだけ・その仕事の間だけ。AI と画面には返さない（D-128.57）", False),
     "reportCredentialCheck": ("device", "その人の PC", False),
     "getFileForBridge": ("device", "その仕事に付いたファイルだけ（期限つきの署名 URL）", False),
+    # 運営：配るもの（運営の人で、そのできることを持つ人だけ・D-128.70）
+    "listOpsWorkTypes": ("ops:distribute", "配るものを持つ運営の人", False),
+    "getOpsWorkType": ("ops:distribute", "同上。どのワークスペースがどの版を使っているかは数だけ（中身は見ない）", False),
+    "uploadWorkTypePackage": ("ops:distribute", "同上。上げた一式は機械の検査（必須の節・資格情報や固有名が入っていない・テスト場面 5 以上・版と変更点）を通す（D-080）", False),
+    "getWorkTypeUpload": ("ops:distribute", "同上", False),
+    "releaseOpsWorkType": ("ops:distribute", "同上。検査が通らない一式は出せない。全部のワークスペースに効くので本人確認を取り直す", True),
+    "rollbackOpsWorkType": ("ops:distribute", "同上（前の版に戻す）", True),
+    "listOperations": ("ops:distribute", "同上（第1フェーズは汎用のブラウザ操作 1 つ・D-126.19）", False),
+    "listOpsTemplates": ("ops:distribute", "同上", False),
+    "getOpsTemplate": ("ops:distribute", "同上", False),
+    "releaseOpsTemplate": ("ops:distribute", "同上。使っているワークスペースには知らせが届き、取り込むかは各管理者が選ぶ（D-125.72）", True),
+    "listOpsPlans": ("ops:plan_propose", "値段の案か値段を決めるを持つ運営の人", False),
+    "listPlanProposals": ("ops:plan_propose", "同上", False),
+    "createPlanProposal": ("ops:plan_propose", "値段の案を持つ運営の人。理由が必須", False),
+    "updatePlanProposal": ("ops:plan_propose", "案を作った本人（決める人に回す前だけ）", False),
+    "getPlanProposalImpact": ("ops:plan_propose", "値段の案か値段を決めるを持つ運営の人", False),
+    "submitPlanProposal": ("ops:plan_propose", "案を作った本人", False),
+    "decidePlanProposal": ("ops:plan_decide", "値段を決めるを持つ運営の人。自分の案は決められない（決められる人が 1 人しかいないときだけ例外）。全部の顧客に効くので本人確認を取り直す（D-128.72）", True),
+    "returnPlanProposal": ("ops:plan_decide", "同上（差し戻す理由が必須）", False),
+    "listPlanHistory": ("ops:plan_propose", "値段の案か値段を決めるを持つ運営の人（消せない記録）", False),
 }
