@@ -120,7 +120,7 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
 class Component extends DCLogic {
   renderVals() {
     var t = function (mark, name, sub, lock, sel) { return { mark: mark, name: name, sub: sub, lock: !!lock,
-      icon: "width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font-size:15px;font-weight:700;color:#FFFFFF;background:" + (lock ? "#5E8F8B" : "#186F69"),
+      icon: "width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font-size:15px;font-weight:700;color:#FFFFFF;background:" + (lock ? "#537E7B" : "#186F69"),
       style: "position:relative;display:flex;flex-direction:column;gap:6px;border:1px solid " + (sel ? "#22345C" : "#DDE2E9") + ";box-shadow:" + (sel ? "0 0 0 2px #DCE4F2" : "none") + ";background:#FFFFFF;border-radius:10px;padding:12px;text-decoration:none;color:#131B27" }; };
     return { groups: [
       { label: "自分・取引先（直せる）", tiles: [ t("宛", "宛名と CC", "取引先：セイコー ・ 3 回", false, true), t("文", "です・ます", "自分 ・ 31 回"), t("送", "午前のメールは前日に止める", "自分 ・ 5 回"), t("礼", "お礼のメールは 3 行以内", "自分 ・ 新しい") ] },

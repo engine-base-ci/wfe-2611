@@ -51,7 +51,7 @@ body = (ttl("決まり", "全員の分身とチケットに効く。足すとき
   + '<div style="font-size: 13px; font-weight: 600; margin-top: 4px">必ず守ること</div>'
   + '<div style="font-size: 12px; color: %s; margin-top: -8px">ワークスペース全体</div>' % MUTED
   + grid + tile("署", "署名はワークスペースの署名", "22 回") + tile("締", "請求は 25 日締め", "9 回") + tile("禁", "値引きを書かない", "11 回") + tile("秘", "口座番号は本文に書かない", "7 回") + add + '</div>'
-  + '<div style="font-size: 12px; color: %s">層：営業</div>' % MUTED + grid + tile("字", "応募文は 400 字以内", "14 回", bg="#5E8F8B") + add + '</div>'
+  + '<div style="font-size: 12px; color: %s">層：営業</div>' % MUTED + grid + tile("字", "応募文は 400 字以内", "14 回", bg="#537E7B") + add + '</div>'
   + '<div style="font-size: 13px; font-weight: 600; margin-top: 10px">承認を上に回すとき</div>'
   + '<div style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 10px; overflow: hidden">' + lim("見積", "100 万円を超える", "そのグループのマネージャー") + lim("外へのメール", "はじめて送る相手", "担当者のほかにマネージャーも") + lim("持ち出し", "チケットを CSV で書き出す", "管理者") + '<div style="padding: 10px 16px; border-top: 1px solid #EDF0F4"><a href="#" style="font-size: 12px">＋ 回す決まりを足す</a></div></div>'
   + '<div style="font-size: 13px; font-weight: 600; margin-top: 10px">やり方（全員で使う）</div>'

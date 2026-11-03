@@ -84,7 +84,7 @@ data:
   plum: "#6B3F5E"
   # 人の顔の色・層の札に使う 2 色（D-128.75）
   lavender: "#6B5B99"
-  teal-light: "#5E8F8B"
+  teal-light: "#537E7B"  # 白い字で 4.5:1（もとの #5E8F8B は 3.63:1 で AA に届かなかった・KN-104 の確かめで見つけた）
 typography:
   # 書体は Noto Sans JP 1 つ（D-128.3）。密度は 1 行 36px・本文 13px（D-128.13）
   metric-lg:
@@ -258,6 +258,79 @@ components:
     typography: "{typography.label-md}"
     rounded: "{rounded.sm}"
     padding: "0 6px"
+# 暗いテーマ（D-128.55 の「見た目：システム・明るい・暗い」・2026-11-03 高本さん了承・KN-104）。明るいテーマと同じ名前を全部持つ。
+# 文字と地の組み合わせ 41 組を WCAG で確かめた（全部 AA 以上・最低 6.36:1）。値を変えたら 04_design/gen_tokens.py の確かめが赤になる
+dark:
+  colors:
+    primary: "#9DB5E8"
+    on-primary: "#0F1A30"
+    primary-container: "#22345C"
+    on-primary-container: "#DCE4F2"
+    secondary: "#6CC4BC"
+    on-secondary: "#062421"
+    secondary-container: "#14302D"
+    on-secondary-container: "#CFEAE7"
+    tertiary: "#B9A2E6"
+    on-tertiary: "#22163D"
+    tertiary-container: "#2C2240"
+    on-tertiary-container: "#E9E0F5"
+    surface: "#121820"
+    on-surface: "#E6EAF0"
+    surface-variant: "#1E2632"
+    on-surface-variant: "#B3BCC9"
+    error: "#F28B82"
+    on-error: "#3B0A08"
+    neutral: "#7D8796"
+    on-neutral: "#0F141C"
+    neutral-strong: "#566070"
+    card: "#171E29"
+    line: "#2A3443"
+    line-soft: "#212A37"
+    side-bg: "#141A23"
+    primary-hover: "#B4C7EE"
+    on-code: "#D8DEE9"
+    ai-container: "#251E36"
+    mark: "#4A3F12"
+    page: "#0F141C"
+    select: "#1E2734"
+    table-head: "#141B25"
+    line-strong: "#3D4858"
+    primary-soft: "#1B2638"
+    primary-line: "#34476B"
+  syntax:
+    keyword: "#9DB5E8"
+    string: "#6CC4BC"
+    number: "#E0B25A"
+    comment: "#9AA4B2"
+    function: "#D29BC2"
+    type: "#8FA6D6"
+  state:
+    success: "#6FD49A"
+    success-container: "#12301F"
+    on-success-container: "#A7E8C0"
+    warning: "#F0A35A"
+    warning-container: "#33240F"
+    on-warning-container: "#F5C890"
+    danger: "#F28B82"
+    danger-container: "#3A1614"
+    on-danger-container: "#F7B4AE"
+    progress: "#8AB4F8"
+    progress-container: "#142640"
+    on-progress-container: "#B9D2FB"
+    success-soft: "#0F2418"
+    success-line: "#1F4A30"
+    warning-soft: "#2A1E0E"
+    warning-line: "#5A3F18"
+    danger-line: "#5C2522"
+  data:
+    indigo: "#8FA6D6"
+    teal: "#6CC4BC"
+    amber: "#E0B25A"
+    coral: "#EE9A8E"
+    sage: "#9CC08E"
+    plum: "#D29BC2"
+    lavender: "#B1A3DE"
+    teal-light: "#8FC2BE"
 ---
 
 # Kaname Design System
@@ -353,7 +426,7 @@ Material Design 3 の役割ベース命名を採用する。加えて Kaname 固
 | error / on-error | 6.47:1 | AA |
 | 状態色（4 色すべて） | 4.73〜7.13:1 | AA 以上 |
 | データ色（6 色すべて） | 5.32〜8.17:1 | AA 以上 |
-| ダークモード（6 ペア） | 7.66〜15.29:1 | AAA |
+| 暗いテーマ（41 組・D-128.55） | 6.36〜15.29:1 | AA 以上（gen_tokens.py が毎回確かめる） |
 
 **全ペアが AA（4.5:1）以上。** データ色の amber は初案 `#9C6C12` が 4.33:1 で不合格だったため `#7E570D` に修正した。
 

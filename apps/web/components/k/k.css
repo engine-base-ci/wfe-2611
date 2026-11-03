@@ -1,0 +1,461 @@
+/* 新しい画面の部品の見た目（KN-104・D-128.78）。値は全部 --k-*（04_design/gen_tokens.py --web が正本から作る）。
+   ここに生の色・文字の大きさ・角丸を書かない（apps/web/test/k-raw-values.test.ts が見張る）。
+   操作の状態（hover / focus / active / disabled）は部品ごとに同じ書き方をする */
+
+.k-root {
+  /* 入力欄・スクロールの棒もテーマに合わせる（前の画面には効かせない：:root でなく .k-root に置く） */
+  color-scheme: var(--k-scheme);
+  background: var(--k-page);
+  color: var(--k-on-surface);
+  font-family: var(--k-font);
+  font-size: var(--k-text-body);
+  line-height: var(--k-lh-body);
+}
+.k-root :focus-visible {
+  outline: 2px solid var(--k-primary);
+  outline-offset: 2px;
+}
+
+/* ---- ボタン（正本 components.button-*）。1 画面に主ボタンは 1 つ ---- */
+.k-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--k-s-sm);
+  min-height: 36px;
+  padding: var(--k-c-button-primary-pad);
+  border: 0;
+  border-radius: var(--k-c-button-primary-radius);
+  font: inherit;
+  font-size: var(--k-c-button-primary-text);
+  line-height: var(--k-c-button-primary-lh);
+  font-weight: var(--k-fw-h3);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+}
+.k-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.k-btn:disabled,
+.k-btn[aria-disabled="true"] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.k-btn[data-size="sm"] {
+  min-height: 28px;
+  padding: var(--k-s-xs) var(--k-s-sm);
+  font-size: var(--k-text-label-md);
+}
+.k-btn[data-variant="primary"] {
+  background: var(--k-c-button-primary-bg);
+  color: var(--k-c-button-primary-fg);
+}
+.k-btn[data-variant="primary"]:hover:not(:disabled) {
+  background: var(--k-primary-hover);
+}
+.k-btn[data-variant="secondary"] {
+  background: var(--k-c-button-secondary-bg);
+  color: var(--k-c-button-secondary-fg);
+}
+.k-btn[data-variant="outlined"] {
+  background: var(--k-c-button-outlined-bg);
+  color: var(--k-c-button-outlined-fg);
+  border: var(--k-c-button-outlined-border);
+}
+.k-btn[data-variant="inverted"] {
+  background: var(--k-c-button-inverted-bg);
+  color: var(--k-c-button-inverted-fg);
+}
+.k-btn[data-variant="ghost"] {
+  background: transparent;
+  color: var(--k-on-surface-variant);
+}
+.k-btn[data-variant="danger"] {
+  background: transparent;
+  color: var(--k-error);
+  border: 1.5px solid var(--k-error);
+}
+.k-btn[data-variant="secondary"]:hover:not(:disabled),
+.k-btn[data-variant="outlined"]:hover:not(:disabled),
+.k-btn[data-variant="inverted"]:hover:not(:disabled),
+.k-btn[data-variant="ghost"]:hover:not(:disabled),
+.k-btn[data-variant="danger"]:hover:not(:disabled) {
+  background-image: linear-gradient(
+    color-mix(in srgb, currentColor 10%, transparent),
+    color-mix(in srgb, currentColor 10%, transparent)
+  );
+}
+.k-spin {
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: var(--k-r-full);
+  animation: k-spin 0.8s linear infinite;
+}
+@keyframes k-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---- 入力（正本 components.input）---- */
+.k-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-s-xs);
+  min-width: 0;
+}
+.k-label {
+  font-size: var(--k-text-body-sm);
+  font-weight: var(--k-fw-h3);
+  color: var(--k-on-surface);
+}
+.k-req {
+  color: var(--k-error);
+  margin-left: var(--k-s-xs);
+}
+.k-desc {
+  font-size: var(--k-text-body-sm);
+  color: var(--k-on-surface-variant);
+}
+.k-err {
+  font-size: var(--k-text-body-sm);
+  color: var(--k-error);
+}
+.k-input,
+.k-select-trigger {
+  width: 100%;
+  min-height: 36px;
+  padding: var(--k-s-sm) var(--k-s-md);
+  background: var(--k-c-input-bg);
+  color: var(--k-c-input-fg);
+  border: 1px solid transparent;
+  border-radius: var(--k-c-input-radius);
+  font: inherit;
+  /* 16px 未満だと iPhone が入力のたびに拡大する */
+  font-size: var(--k-text-input);
+  line-height: var(--k-lh-input);
+}
+.k-input::placeholder {
+  color: var(--k-on-surface-variant);
+}
+.k-input:hover,
+.k-select-trigger:hover {
+  border-color: var(--k-line-strong);
+}
+.k-input[data-invalid],
+.k-input[aria-invalid="true"] {
+  border-color: var(--k-error);
+}
+.k-input:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+textarea.k-input {
+  resize: vertical;
+  min-height: 96px;
+}
+
+/* ---- 選ぶ（Base UI Select）---- */
+.k-select-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--k-s-sm);
+  cursor: pointer;
+  text-align: left;
+}
+.k-select-popup {
+  min-width: var(--anchor-width);
+  max-height: var(--available-height);
+  overflow-y: auto;
+  padding: var(--k-s-xs);
+  background: var(--k-card);
+  color: var(--k-on-surface);
+  border: 1px solid var(--k-line);
+  border-radius: var(--k-r-field);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--k-on-surface) 14%, transparent);
+  outline: 0;
+}
+.k-select-item {
+  display: flex;
+  align-items: center;
+  gap: var(--k-s-sm);
+  min-height: 36px;
+  padding: 0 var(--k-s-sm);
+  border-radius: var(--k-r-sm);
+  font-size: var(--k-text-body-md);
+  cursor: default;
+  outline: 0;
+}
+.k-select-item[data-highlighted] {
+  background: var(--k-select);
+}
+.k-select-item[data-selected] {
+  font-weight: var(--k-fw-h3);
+}
+.k-select-check {
+  width: 1em;
+  color: var(--k-primary);
+}
+
+/* ---- 表 ---- */
+.k-table-wrap {
+  overflow-x: auto;
+  background: var(--k-card);
+  border: 1px solid var(--k-line);
+  border-radius: var(--k-r-card);
+}
+.k-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--k-text-body);
+}
+.k-table caption {
+  text-align: left;
+  padding: var(--k-s-sm) var(--k-s-md);
+  font-size: var(--k-text-body-sm);
+  color: var(--k-on-surface-variant);
+}
+.k-table th {
+  background: var(--k-table-head);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  font-weight: var(--k-fw-h3);
+  text-align: left;
+  white-space: nowrap;
+}
+.k-table th,
+.k-table td {
+  height: 36px;
+  padding: 0 var(--k-s-md);
+  border-top: 1px solid var(--k-line-soft);
+}
+.k-table tbody tr:hover > td {
+  background: var(--k-select);
+}
+.k-table td[data-num],
+.k-table th[data-num] {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- 札（状態の淡い面と濃い文字の対・D-052）---- */
+.k-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--k-s-xs);
+  padding: var(--k-c-chat-chip-pad);
+  border-radius: var(--k-r-full);
+  font-size: var(--k-text-label-md);
+  font-weight: var(--k-fw-label-md);
+  line-height: var(--k-lh-body-sm);
+  white-space: nowrap;
+}
+.k-badge[data-tone="neutral"] {
+  background: var(--k-surface-variant);
+  color: var(--k-on-surface-variant);
+}
+.k-badge[data-tone="success"] {
+  background: var(--k-st-success-container);
+  color: var(--k-st-on-success-container);
+}
+.k-badge[data-tone="warning"] {
+  background: var(--k-st-warning-container);
+  color: var(--k-st-on-warning-container);
+}
+.k-badge[data-tone="danger"] {
+  background: var(--k-st-danger-container);
+  color: var(--k-st-on-danger-container);
+}
+.k-badge[data-tone="progress"] {
+  background: var(--k-st-progress-container);
+  color: var(--k-st-on-progress-container);
+}
+.k-badge[data-tone="ai"] {
+  background: var(--k-tertiary-container);
+  color: var(--k-on-tertiary-container);
+}
+
+/* ---- タブ（Base UI Tabs）---- */
+.k-tabs-list {
+  position: relative;
+  display: flex;
+  gap: var(--k-s-xs);
+  border-bottom: 1px solid var(--k-line);
+  overflow-x: auto;
+}
+.k-tab {
+  flex: none;
+  min-height: 36px;
+  padding: 0 var(--k-s-md);
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--k-on-surface-variant);
+  font: inherit;
+  font-size: var(--k-text-body-md);
+  cursor: pointer;
+}
+.k-tab:hover {
+  color: var(--k-on-surface);
+}
+.k-tab[data-selected] {
+  color: var(--k-primary);
+  border-bottom-color: var(--k-primary);
+  font-weight: var(--k-fw-h3);
+}
+.k-tab[data-disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.k-tab-panel {
+  padding-top: var(--k-s-md);
+  outline: 0;
+}
+
+/* ---- 知らせ（帯：正本 components.callout-*）---- */
+.k-callout {
+  display: flex;
+  gap: var(--k-s-sm);
+  align-items: flex-start;
+  padding: var(--k-c-callout-info-pad);
+  border-radius: var(--k-c-callout-info-radius);
+  font-size: var(--k-text-body);
+}
+.k-callout[data-tone="info"] {
+  background: var(--k-c-callout-info-bg);
+  color: var(--k-c-callout-info-fg);
+}
+.k-callout[data-tone="warn"] {
+  background: var(--k-c-callout-warn-bg);
+  color: var(--k-c-callout-warn-fg);
+}
+.k-callout[data-tone="danger"] {
+  background: var(--k-c-callout-danger-bg);
+  color: var(--k-c-callout-danger-fg);
+}
+.k-callout-title {
+  font-weight: var(--k-fw-h3);
+}
+
+/* ---- 知らせ（小さな知らせ：Base UI Toast）---- */
+.k-toast-viewport {
+  position: fixed;
+  z-index: 70;
+  bottom: var(--k-s-md);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-s-sm);
+  width: min(420px, calc(100vw - 2 * var(--k-s-md)));
+}
+.k-toast {
+  display: flex;
+  gap: var(--k-s-sm);
+  align-items: flex-start;
+  padding: var(--k-s-sm) var(--k-s-md);
+  background: var(--k-on-surface);
+  color: var(--k-surface);
+  border-radius: var(--k-r-field);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--k-on-surface) 20%, transparent);
+  font-size: var(--k-text-body);
+}
+.k-toast[data-type="error"] {
+  background: var(--k-st-danger-container);
+  color: var(--k-st-on-danger-container);
+}
+.k-toast-close {
+  margin-left: auto;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  min-width: 24px;
+  min-height: 24px;
+}
+
+/* ---- ダイアログ（Base UI Dialog）---- */
+.k-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: color-mix(in srgb, var(--k-on-surface) 40%, transparent);
+}
+.k-dialog {
+  position: fixed;
+  z-index: 81;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(480px, calc(100vw - 2 * var(--k-s-md)));
+  max-height: calc(100dvh - 2 * var(--k-s-md));
+  overflow-y: auto;
+  padding: var(--k-s-lg);
+  background: var(--k-card);
+  color: var(--k-on-surface);
+  border: 1px solid var(--k-line);
+  border-radius: var(--k-r-lg);
+  outline: 0;
+}
+.k-dialog-title {
+  margin: 0;
+  font-size: var(--k-text-h2);
+  line-height: var(--k-lh-h2);
+  font-weight: var(--k-fw-h2);
+}
+.k-dialog-desc {
+  margin: var(--k-s-sm) 0 0;
+  color: var(--k-on-surface-variant);
+}
+.k-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: var(--k-s-sm);
+  margin-top: var(--k-s-lg);
+}
+
+/* ---- 見た目の切り替え（システム・明るい・暗い・D-128.55）---- */
+.k-theme {
+  display: inline-flex;
+  padding: 2px;
+  background: var(--k-surface-variant);
+  border-radius: var(--k-r-full);
+  border: 0;
+  margin: 0;
+}
+.k-theme label {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 var(--k-s-sm);
+  border-radius: var(--k-r-full);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  cursor: pointer;
+}
+.k-theme input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.k-theme label:has(input:checked) {
+  background: var(--k-card);
+  color: var(--k-on-surface);
+  font-weight: var(--k-fw-h3);
+}
+.k-theme label:has(input:focus-visible) {
+  outline: 2px solid var(--k-primary);
+  outline-offset: 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .k-spin {
+    animation-duration: 2.4s;
+  }
+}

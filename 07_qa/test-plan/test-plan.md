@@ -84,7 +84,7 @@
 | L4 | 正本 full ＋ 本番スモーク（prod-smoke.md）＋ 負荷実測 | staging ＋ 本番（スモークのみ） | リリース前 | qa-coverage.py STATUS 完了 |
 | L5 | full ＋ 正本の鮮度監査 | staging | 年次・大改修 | 同上 |
 
-## CI ゲート 45 本（.github/workflows/v3-gate.yml）
+## CI ゲート 46 本（.github/workflows/v3-gate.yml）
 
 | # | 名前 | script | job | 致命 |
 |---|---|---|---|---|
@@ -133,6 +133,7 @@
 | G34 | EARS → test の対応（mapping の test が全部存在） | `pnpm ci:ears-mapping -- --mapping 07_qa/test-plan/ears-test-mapping.json` | database |  |
 | G35 | 有限資源の静的検査（G-16：関門外の生クライアント・タイムアウト無し・冪等キー無しの書込） | `pnpm ci:resource-static` | static |  |
 | G36 | 契約 fuzz（Schemathesis・openapi.yaml・作った口を本物の DB の上で叩く。答えの形の元の DB の列の書き出しも確かめる） | `pip install -q schemathesis==4.33.0 && pnpm ci:schemathesis` | database |  |
+| G37 | デザインのトークンと新しい部品（正本どおり・明るい／暗いのコントラスト AA・生の値 D1〜D4） | `python3 04_design/gen_tokens.py --web --check && python3 scripts/ci/design_gate.py --design 04_design/DESIGN-kaname.md --mocks apps/web/components/k --css apps/web/styles/k-tokens.css --part` | spec |  |
 
 ## マージ可能の判断
 
