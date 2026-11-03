@@ -12,8 +12,9 @@ import { adminDatabaseUrl, requireEnv, rolePasswords } from "@kaname/config";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const pkg = join(here, "..");
-const url = adminDatabaseUrl() ?? requireEnv("DATABASE_URL"); // 管理者の接続（staging／本番は DATABASE_ADMIN_URL・ローカルは superuser の DATABASE_URL）
 const cmd = process.argv[2];
+// 管理者の接続（staging／本番は DATABASE_ADMIN_URL・ローカルは superuser の DATABASE_URL）。DB に触らない検査（no-vendor-sql）では読まない
+const url = cmd === "no-vendor-sql" ? null : (adminDatabaseUrl() ?? requireEnv("DATABASE_URL"));
 
 async function main(): Promise<number> {
   if (cmd === "no-vendor-sql") {

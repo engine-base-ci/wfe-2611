@@ -84,7 +84,7 @@ SPEC_GATES = [
     {"id": 36, "name": "契約 fuzz（Schemathesis・openapi.yaml）", "script": "pnpm ci:schemathesis -- 08_api/openapi.yaml", "job": "database", "blocking": True},
 ]
 ALL_GATES = [{**g, "job": "database" if g["id"] in (3, 4, 6, 12) else ("e2e" if g["id"] == 15 else "static")} for g in FG["merge_gates"]] + SPEC_GATES
-def step(g): return f'      - name: "G{g["id"]} {g["name"]}{" [CRITICAL]" if g["id"] in FG.get("kaname_critical_gates", []) else ""}"\n        run: {g["script"]}\n'
+def step(g): return f'      - name: "G{g["id"]} {g["name"]}{" [CRITICAL]" if g["id"] in FG.get("kaname_critical_gates", []) else ""}"\n        if: ${{{{ !cancelled() }}}}\n        run: {g["script"]}\n'   # 前の検査が赤でも次の検査を流す（赤を全部いっぺんに見る。job は赤のまま）
 NODE = "      - uses: actions/checkout@v4\n      - uses: pnpm/action-setup@v4\n      - uses: actions/setup-node@v4\n        with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }\n      - run: pnpm install --frozen-lockfile\n"
 PYS = "      - uses: actions/checkout@v4\n      - uses: actions/setup-python@v5\n        with: { python-version: '3.12' }\n      - run: pip install pyyaml\n"
 yml = f"""# .github/workflows/v3-gate.yml — Kaname CI ゲート {len(ALL_GATES)} 本（05_flow/build_testplan.py が生成。手で直さない）

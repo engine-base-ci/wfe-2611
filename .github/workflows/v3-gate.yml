@@ -23,66 +23,97 @@ jobs:
         with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
       - run: pnpm install --frozen-lockfile
       - name: "G1 lint"
+        if: ${{ !cancelled() }}
         run: pnpm lint
       - name: "G2 type check"
+        if: ${{ !cancelled() }}
         run: pnpm type-check
       - name: "G5 auth.uid() 検出 [CRITICAL]"
+        if: ${{ !cancelled() }}
         run: pnpm ci:no-vendor-sql
       - name: "G7 import 境界検査 [CRITICAL]"
+        if: ${{ !cancelled() }}
         run: pnpm ci:boundary
       - name: "G8 Open Core ee/ 検出"
+        if: ${{ !cancelled() }}
         run: pnpm ci:license-boundary
       - name: "G9 ポータビリティ台帳の整合"
+        if: ${{ !cancelled() }}
         run: pnpm ci:ledger-sync
       - name: "G10 動的クエリの文字列連結禁止 [CRITICAL]"
+        if: ${{ !cancelled() }}
         run: pnpm ci:no-sql-concat
       - name: "G11 OpenAPI 破壊的変更検出"
+        if: ${{ !cancelled() }}
         run: pnpm ci:openapi-diff
       - name: "G13 env 整合"
+        if: ${{ !cancelled() }}
         run: pnpm ci:env-audit
       - name: "G14 AC validator（4-tier）"
+        if: ${{ !cancelled() }}
         run: pnpm ci:ac-validate
       - name: "G16 関門C1 ネットワークの迂回検出 [CRITICAL]"
+        if: ${{ !cancelled() }}
         run: pnpm ci:choke -- --id C1
       - name: "G17 関門C2 永続化の迂回検出 [CRITICAL]"
+        if: ${{ !cancelled() }}
         run: pnpm ci:choke -- --id C2
       - name: "G18 関門C3 モデル呼び出しの迂回検出"
+        if: ${{ !cancelled() }}
         run: pnpm ci:choke -- --id C3
       - name: "G19 関門C4 ファイルの迂回検出"
+        if: ${{ !cancelled() }}
         run: pnpm ci:choke -- --id C4
       - name: "G20 関門C5 プロセス起動の迂回検出 [CRITICAL]"
+        if: ${{ !cancelled() }}
         run: pnpm ci:choke -- --id C5
       - name: "G21 関門C6 通知の迂回検出"
+        if: ${{ !cancelled() }}
         run: pnpm ci:choke -- --id C6
       - name: "G22 関門C7 決済の迂回検出 [CRITICAL]"
+        if: ${{ !cancelled() }}
         run: pnpm ci:choke -- --id C7
       - name: "G23 関門C8 秘密の迂回検出 [CRITICAL]"
+        if: ${{ !cancelled() }}
         run: pnpm ci:choke -- --id C8
       - name: "G24 動的呼び出し禁止 [CRITICAL]"
+        if: ${{ !cancelled() }}
         run: pnpm ci:no-dynamic-call
       - name: "G25 関門例外台帳の整合"
+        if: ${{ !cancelled() }}
         run: pnpm ci:choke-exceptions
       - name: "G26 タスクのchoke_points宣言"
+        if: ${{ !cancelled() }}
         run: pnpm ci:task-choke-declared
       - name: "G27 画面の route の生成物が最新（flow.json → apps/web/lib/routes.ts）"
+        if: ${{ !cancelled() }}
         run: pnpm ci:routes
       - name: "G28 実ブラウザで押した証拠（操作要素 1 つ＝1 行。行 ID を名前に持つ Playwright が通っている）"
+        if: ${{ !cancelled() }}
         run: pnpm ci:op-gate
       - name: "G39 外へ出る口の宛先（apps/bridge・apps/web の fetch は Kaname か Bridge の口だけ・関門 C1 の例外 X-009／X-010 の代替統制） [CRITICAL]"
+        if: ${{ !cancelled() }}
         run: pnpm ci:net-boundary && pnpm ci:net-boundary:selftest && pnpm ci:choke:selftest
       - name: "G40 ゼロトラストの決まり（設計の赤 0・実装の残りが記録より増えない） [CRITICAL]"
+        if: ${{ !cancelled() }}
         run: pnpm ci:zt
       - name: "G41 権限の試験（契約の全 API で、役が合わない人・ログインしていない人を止め、副作用に届かせない） [CRITICAL]"
+        if: ${{ !cancelled() }}
         run: pnpm ci:authz
       - name: "G42 契約の外の道すじが無い（登録した道すじ＝契約） [CRITICAL]"
+        if: ${{ !cancelled() }}
         run: pnpm ci:endpoints
       - name: "G43 秘密の混入（鍵・トークン・秘密鍵・パスワード入りの DB の URL・.env） [CRITICAL]"
+        if: ${{ !cancelled() }}
         run: pnpm ci:secret-scan
       - name: "G44 部品の弱点（本番で使う部品に high 以上の弱点が無い）"
+        if: ${{ !cancelled() }}
         run: pnpm ci:deps-audit
       - name: "G45 Kaname を作るためのチケットの形（番号・親子 3 段・区画・決定 ID・先に要るもの）"
+        if: ${{ !cancelled() }}
         run: pnpm ci:tickets
       - name: "G35 有限資源の静的検査（G-16：関門外の生クライアント・タイムアウト無し・冪等キー無しの書込）"
+        if: ${{ !cancelled() }}
         run: pnpm ci:resource-static
 
   database:
@@ -104,18 +135,25 @@ jobs:
         with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
       - run: pnpm install --frozen-lockfile
       - name: "G3 unit test + coverage"
+        if: ${{ !cancelled() }}
         run: pnpm test -- --coverage
       - name: "G4 RLS 全テーブル有効 [CRITICAL]"
+        if: ${{ !cancelled() }}
         run: pnpm ci:rls-enabled
       - name: "G6 テナント文脈の網羅 [CRITICAL]"
+        if: ${{ !cancelled() }}
         run: pnpm ci:context-set
       - name: "G12 実Postgresでmigration+seed適用"
+        if: ${{ !cancelled() }}
         run: pnpm ci:migration-integration
       - name: "G33 RLS の場合表（access-matrix.json 全行）"
+        if: ${{ !cancelled() }}
         run: pnpm ci:access-matrix -- --matrix 07_qa/test-plan/access-matrix.json
       - name: "G34 EARS → test の対応（mapping の test が全部存在）"
+        if: ${{ !cancelled() }}
         run: pnpm ci:ears-mapping -- --mapping 07_qa/test-plan/ears-test-mapping.json
       - name: "G36 契約 fuzz（Schemathesis・openapi.yaml）"
+        if: ${{ !cancelled() }}
         run: pnpm ci:schemathesis -- 08_api/openapi.yaml
 
   spec:
@@ -140,14 +178,19 @@ jobs:
         with: { python-version: '3.12' }
       - run: pip install pyyaml
       - name: "G27 層の棚卸し（G21）"
+        if: ${{ !cancelled() }}
         run: python3 scripts/ci/layer_audit.py --run
       - name: "G28 正本 ↔ tickets の参照整合（qa-ladder validate）"
+        if: ${{ !cancelled() }}
         run: python3 scripts/ci/qa-ladder.py validate --spec 07_qa/test-specs --tickets 07_tasks/tickets.json
       - name: "G29 エラー一覧 E1〜E9（引数を省かない）"
+        if: ${{ !cancelled() }}
         run: python3 scripts/ci/error_catalog.py gate --catalog 07_qa/test-specs/errors.json --mocks 06_mockup/v1 --spec 07_qa/test-specs --choke 03_architecture/choke-points.json
       - name: "G30 スキル一式 SK1〜SK6"
+        if: ${{ !cancelled() }}
         run: python3 scripts/ci/skill_pkg_gate.py 10_skills
       - name: "G31 テスト計画の整合 TV1〜TV8"
+        if: ${{ !cancelled() }}
         run: python3 scripts/ci/tv_gate.py
 
   task-gate:
@@ -162,6 +205,7 @@ jobs:
       - name: "ブランチ名からタスク ID を取る（task/T-A-01 → T-A-01）"
         run: echo "TASK_ID=${{ github.head_ref }}" | sed 's#task/##' >> "$GITHUB_ENV"
       - name: "G32 そのタスクの L1 行（ブランチ task/<ID>）"
+        if: ${{ !cancelled() }}
         run: python3 scripts/ci/qa-ladder.py gate --spec 07_qa/test-specs --tickets 07_tasks/tickets.json --task "$TASK_ID"
 
   e2e:
@@ -178,6 +222,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @kaname/web exec playwright install --with-deps chromium
       - name: "G15 E2E（Playwright）"
+        if: ${{ !cancelled() }}
         run: pnpm e2e:web
       - uses: actions/upload-artifact@v4
         if: failure()
