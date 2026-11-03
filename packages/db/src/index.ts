@@ -88,6 +88,7 @@ export const MIGRATIONS = [
   "0081_step_up.sql",
   "0082_row_words.sql",
   "0083_session_watch.sql",
+  "0084_private_rows.sql",
 ] as const;
 
 /** migration 名の並びを検査する。重複・順序違い・4 桁でない名前があれば理由を返す。 */

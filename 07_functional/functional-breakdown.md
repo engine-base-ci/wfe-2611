@@ -42,7 +42,7 @@
 | E-025 | `learned_procedures` | 4. 会社モデル ── 担当業務・記憶 | scope_layered | 3 | D-010 |
 | E-026 | `procedure_steps` | 4. 会社モデル ── 担当業務・記憶 | account_scoped | 3 | D-010 |
 | E-027 | `memory_kinds` | 4. 会社モデル ── 担当業務・記憶 | none | 2 | D-010 |
-| E-028 | `memories` | 4. 会社モデル ── 担当業務・記憶 | scope_layered | 4 | D-060 D-098.10 D-105 D-105.5 |
+| E-028 | `memories` | 4. 会社モデル ── 担当業務・記憶 | scope_layered | 3 | D-060 D-098.10 D-105 D-105.5 |
 | E-029 | `memory_digests` | 4. 会社モデル ── 担当業務・記憶 | account_scoped | 2 | D-105 D-105.2 D-105.3 D-105.4 |
 | E-030 | `memory_proposals` | 4. 会社モデル ── 担当業務・記憶 | scope_layered | 3 | D-105 D-105.6 D-105.9 |
 | E-031 | `embedding_models` | 4. 会社モデル ── 担当業務・記憶 | none | 2 | D-098.4 D-098.5 D-099.2 D-099.4 |
@@ -57,7 +57,7 @@
 | E-040 | `service_registry` | 5. 実行・統制 | account_scoped | 3 | D-013 D-041 D-107 D-107.1 |
 | E-041 | `credential_kinds` | 5. 実行・統制 | none | 2 | D-010 |
 | E-042 | `credentials` | 5. 実行・統制 | scope_layered | 4 | D-004 D-017 D-108.3 |
-| E-043 | `conversations` | 6. 会話・成果物・証跡 | scope_layered | 4 | D-062.5 D-090.1 D-104 D-104.1 |
+| E-043 | `conversations` | 6. 会話・成果物・証跡 | scope_layered | 3 | D-062.5 D-090.1 D-104 D-104.1 |
 | E-044 | `bridge_jobs` | 6. 会話・成果物・証跡 | scope_layered | 3 | D-090 D-090.2 D-090.4 D-090.5 |
 | E-045 | `bridge_job_states` | 6. 会話・成果物・証跡 | none | 2 | D-090 D-090.4 D-093.3 |
 | E-046 | `bridge_job_events` | 6. 会話・成果物・証跡 | scope_layered | 3 | D-093.2 D-093.3 D-093.4 D-093.7 |
@@ -88,7 +88,7 @@
 | E-071 | `ops_members` | 11. 運営 | ops_scoped | 1 | D-073 D-073.7 D-074.4 D-076.10 |
 | E-072 | `ops_audit_events` | 11. 運営 | ops_scoped | 2 | D-073.7 D-074 D-074.4 D-076.10 |
 | E-073 | `security_events` | 11. 運営 | account_scoped | 3 | D-073.7 D-074.4 D-075 D-075.6 |
-| E-074 | `inquiries` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 5 | D-069 D-075 D-075.1 D-076 |
+| E-074 | `inquiries` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 4 | D-069 D-075 D-075.1 D-076 |
 | E-075 | `notices` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | ops_scoped | 1 | D-069 D-075 D-075.2 D-076 |
 | E-076 | `notice_deliveries` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 4 | D-069 D-075 D-076 |
 | E-077 | `status_incidents` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | ops_scoped | 1 | D-069 D-075 D-075.2 D-076 |

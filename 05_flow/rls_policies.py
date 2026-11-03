@@ -271,6 +271,39 @@ POLICIES: dict[str, list[dict]] = {
          "rationale": "会社のルールとぶつかるものに OK を出すのは管理者（OK を待つ間か、その決め直しだけ）", "source": ["D-128.43"]},
         ops_read("learning_candidates"),
     ],
+    # ---- 分身との会話・記憶・問い合わせ（KN-54 で見つけた穴・2026-11-03）：本人のものは本人だけ。管理者・マネージャーでも中身は見ない
+    #      前の形（ER の印からの当てはめ）は「同じグループなら読める・グループの権限があれば他人のものも書ける」になっていた
+    "conversations": [
+        {"name": "conversations_self_read", "operation": "select", "role": "member",
+         "predicate": f"tenant_id = {T} AND (owner_member_id = {U} OR {U} = ANY(participant_member_ids))",
+         "rationale": "自分の会話だけ（一緒に話している人を含む）。管理者も中身は見ない（screen_api の listConversations・D-104）", "source": ["D-104", "D-128.96"]},
+        {"name": "conversations_self_only_write", "operation": "insert,update,delete", "role": "member", "predicate": f"tenant_id = {T} AND owner_member_id = {U}",
+         "rationale": "自分の会話だけを作り・直し・消す", "source": ["D-104"]},
+        ops_read("conversations"),
+    ],
+    "messages": [
+        {"name": "messages_conversation_read", "operation": "select", "role": "member", "predicate": f"tenant_id = {T} AND app.conversation_visible(conversation_id)",
+         "rationale": "その会話を読める人だけ（自分の会話・一緒に話している人）。同じ会社の他人の会話の発言は見せない", "source": ["D-104", "D-112"]},
+        {"name": "messages_conversation_write", "operation": "insert,update", "role": "member", "predicate": f"tenant_id = {T} AND app.conversation_visible(conversation_id)",
+         "rationale": "その会話の人だけが書く（PC の写し・分身の返事は関門の関数 app.* が書く）", "source": ["D-104", "D-112"]},
+        ops_read("messages"),
+    ],
+    "memories": [
+        {"name": "memories_self_read", "operation": "select", "role": "member", "predicate": f"tenant_id = {T} AND owner_member_id = {U}",
+         "rationale": "自分だけの記憶（D-128.42）。会社・層に上げるものは決まり（policies）になる", "source": ["D-128.42", "D-125.110"]},
+        {"name": "memories_self_only_write", "operation": "insert,update,delete", "role": "member", "predicate": f"tenant_id = {T} AND owner_member_id = {U}",
+         "rationale": "自分の記憶だけを足し・直し・消す。他人を持ち主にして作れない", "source": ["D-128.42"]},
+        ops_read("memories"),
+    ],
+    "inquiries": [
+        {"name": "inquiries_self_read", "operation": "select", "role": "member", "predicate": f"tenant_id = {T} AND opened_by_member_id = {U}",
+         "rationale": "自分の問い合わせだけ（契約の権限の言葉 self・screen_api の listMyInquiries）", "source": ["D-128.88", "D-125.24"]},
+        {"name": "inquiries_self_only_write", "operation": "insert,update", "role": "member", "predicate": f"tenant_id = {T} AND opened_by_member_id = {U}",
+         "rationale": "自分の問い合わせを出し・閉じる", "source": ["D-128.88", "D-125.24"]},
+        ops_read("inquiries"),
+        {"name": "inquiries_ops_write", "operation": "update", "role": "ops", "predicate": f"current_setting('app.role', true) = 'ops' AND tenant_id = {T}",
+         "rationale": "運営が対応して書く行（assignee_ops_member_id）。会社の 1 社の中で・証跡に残す", "source": ["D-075", "D-077.1"]},
+    ],
     # ---- 承認（KN-44・D-128.86・D-128.87・D-128.89）：承認する人・頼んだ人・担当者（チケットを読める人）・マネージャー
     "approvals": [
         {"name": "approvals_read", "operation": "select", "role": "member",

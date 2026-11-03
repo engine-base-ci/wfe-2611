@@ -2,7 +2,7 @@
 // 契約（@kaname/contracts の ENDPOINTS）と「誰が呼べるか」（08_api/endpoints.json の permission）を毎回読んで回すので、API が増えても古くならない。
 //   1) 役の段（いま実装済み）：ログインしていない・役が合わない人は、どの API も 401／403 で止まり、hooks（副作用）まで届かない
 //   2) 権限の言葉の段：admin・ops:<できること>・いつも要る本人確認は入口で（KN-51）。行に結ぶ言葉は :id の行を読む段で（KN-52）
-//   3) 一覧・作る口の行の絞り込み（RLS）と条件つきの本人確認は、まだ it.todo で 1 本ずつ並べる（KN-54 で実 DB の試験にする）
+//   3) 一覧・作る口の行の絞り込み（RLS）と条件つきの本人確認は apps/api/test/authz_rows.test.ts（本物の DB・KN-54）
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
@@ -169,8 +169,6 @@ const RIGHT_ROLE: Record<EndpointDef["auth"], Role> = {
   client: "client",
   device: "device",
 };
-const ENTRANCE_WORDS = new Set(["admin", "public", "client", "device"]);
-const atEntrance = (w: string) => ENTRANCE_WORDS.has(w) || w.startsWith("ops:");
 const OLD = () => new Date(Date.now() - 16 * 60 * 1000); // 16 分前
 
 describe("権限の試験：会社の段の言葉（admin・運営のできること）と、いつも要る本人確認（KN-51）", () => {
@@ -238,15 +236,7 @@ describe("権限の試験：行に結ぶ言葉（KN-52・ZT4）", () => {
   );
 });
 
-describe("権限の試験：一覧・作る口の行の絞り込みと、条件つきの本人確認（KN-54 で実 DB の試験にする）", () => {
-  for (const e of ENDPOINTS) {
-    const p = PERMS.get(e.operationId);
-    if (!p || atEntrance(p.who) || e.perm.row) continue;
-    it.todo(`${e.method} ${e.path}：権限 ${p.who} の外の人の行は返らない・作れない（${p.scope}）`);
-  }
-  for (const e of ENDPOINTS.filter((x) => x.perm.stepUp && x.perm.stepUp !== "always"))
-    it.todo(`${e.method} ${e.path}：条件（${e.perm.stepUp}）のときは直前 15 分以内の本人確認が無ければ 403`);
-});
+// 一覧・作る口の行の絞り込みと条件つきの本人確認は、本物の DB の試験 apps/api/test/authz_rows.test.ts（KN-54）。まだの口は作るチケットの番号つきの it.todo
 
 describe("道すじが別の口に吸われない（本物の登録の順・D-128.113）", () => {
   it("契約の全 API が、本物の登録の順で、自分の振る舞いに届く（/approvals/history が /approvals/:id に吸われない など）", async () => {

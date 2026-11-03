@@ -2734,15 +2734,14 @@
    },
    "access_control_policies": [
     {
-     "name": "memories_tenant_read",
+     "name": "memories_self_read",
      "operation": "select",
      "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
-     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND owner_member_id = current_setting('app.user_id', true)::uuid",
+     "rationale": "自分だけの記憶（D-128.42）。会社・層に上げるものは決まり（policies）になる",
      "source": [
-      "D-026.1",
-      "D-058.5",
-      "D-073.1"
+      "D-128.42",
+      "D-125.110"
      ]
     },
     {
@@ -2750,21 +2749,9 @@
      "operation": "insert,update,delete",
      "role": "member",
      "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND owner_member_id = current_setting('app.user_id', true)::uuid",
-     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "rationale": "自分の記憶だけを足し・直し・消す。他人を持ち主にして作れない",
      "source": [
-      "D-073.1"
-     ]
-    },
-    {
-     "name": "memories_permission_write",
-     "operation": "insert,update,delete",
-     "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'memories', scope_id, 'edit')",
-     "rationale": "権限＝誰に×何に×どの層で×できること",
-     "source": [
-      "D-073.1",
-      "D-073.2",
-      "D-073.3"
+      "D-128.42"
      ]
     },
     {
@@ -2772,13 +2759,9 @@
      "operation": "select",
      "role": "ops",
      "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = memories.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
-     "rationale": "運営は既定で読めない。規約で先に許可をもらい、中を見るを持つ運営の人が理由を書いて開いた 1 時間だけ（見るだけ）。したことは両側の証跡へ",
+     "rationale": "運営は理由つき・1 時間・見るだけの許可があるときだけ（D-128.68）",
      "source": [
-      "D-074.5",
-      "D-125.128",
-      "D-128.68",
-      "D-128.108",
-      "D-077.7"
+      "D-128.68"
      ]
     }
    ],
@@ -4354,15 +4337,14 @@
    },
    "access_control_policies": [
     {
-     "name": "conversations_tenant_read",
+     "name": "conversations_self_read",
      "operation": "select",
      "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
-     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND (owner_member_id = current_setting('app.user_id', true)::uuid OR current_setting('app.user_id', true)::uuid = ANY(participant_member_ids))",
+     "rationale": "自分の会話だけ（一緒に話している人を含む）。管理者も中身は見ない（screen_api の listConversations・D-104）",
      "source": [
-      "D-026.1",
-      "D-058.5",
-      "D-073.1"
+      "D-104",
+      "D-128.96"
      ]
     },
     {
@@ -4370,21 +4352,9 @@
      "operation": "insert,update,delete",
      "role": "member",
      "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND owner_member_id = current_setting('app.user_id', true)::uuid",
-     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "rationale": "自分の会話だけを作り・直し・消す",
      "source": [
-      "D-073.1"
-     ]
-    },
-    {
-     "name": "conversations_permission_write",
-     "operation": "insert,update,delete",
-     "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'conversations', scope_id, 'edit')",
-     "rationale": "権限＝誰に×何に×どの層で×できること",
-     "source": [
-      "D-073.1",
-      "D-073.2",
-      "D-073.3"
+      "D-104"
      ]
     },
     {
@@ -4392,13 +4362,9 @@
      "operation": "select",
      "role": "ops",
      "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = conversations.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
-     "rationale": "運営は既定で読めない。規約で先に許可をもらい、中を見るを持つ運営の人が理由を書いて開いた 1 時間だけ（見るだけ）。したことは両側の証跡へ",
+     "rationale": "運営は理由つき・1 時間・見るだけの許可があるときだけ（D-128.68）",
      "source": [
-      "D-074.5",
-      "D-125.128",
-      "D-128.68",
-      "D-128.108",
-      "D-077.7"
+      "D-128.68"
      ]
     }
    ],
@@ -4953,27 +4919,25 @@
    },
    "access_control_policies": [
     {
-     "name": "messages_tenant_read",
+     "name": "messages_conversation_read",
      "operation": "select",
      "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
-     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.conversation_visible(conversation_id)",
+     "rationale": "その会話を読める人だけ（自分の会話・一緒に話している人）。同じ会社の他人の会話の発言は見せない",
      "source": [
-      "D-026.1",
-      "D-058.5",
-      "D-073.1"
+      "D-104",
+      "D-112"
      ]
     },
     {
-     "name": "messages_permission_write",
-     "operation": "insert,update,delete",
+     "name": "messages_conversation_write",
+     "operation": "insert,update",
      "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'messages', NULL, 'edit')",
-     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.conversation_visible(conversation_id)",
+     "rationale": "その会話の人だけが書く（PC の写し・分身の返事は関門の関数 app.* が書く）",
      "source": [
-      "D-073.1",
-      "D-073.2",
-      "D-073.3"
+      "D-104",
+      "D-112"
      ]
     },
     {
@@ -4981,13 +4945,9 @@
      "operation": "select",
      "role": "ops",
      "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = messages.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
-     "rationale": "運営は既定で読めない。規約で先に許可をもらい、中を見るを持つ運営の人が理由を書いて開いた 1 時間だけ（見るだけ）。したことは両側の証跡へ",
+     "rationale": "運営は理由つき・1 時間・見るだけの許可があるときだけ（D-128.68）",
      "source": [
-      "D-074.5",
-      "D-125.128",
-      "D-128.68",
-      "D-128.108",
-      "D-077.7"
+      "D-128.68"
      ]
     }
    ],
@@ -7291,37 +7251,25 @@
    },
    "access_control_policies": [
     {
-     "name": "inquiries_tenant_read",
+     "name": "inquiries_self_read",
      "operation": "select",
      "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
-     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND opened_by_member_id = current_setting('app.user_id', true)::uuid",
+     "rationale": "自分の問い合わせだけ（契約の権限の言葉 self・screen_api の listMyInquiries）",
      "source": [
-      "D-026.1",
-      "D-058.5",
-      "D-073.1"
+      "D-128.88",
+      "D-125.24"
      ]
     },
     {
      "name": "inquiries_self_only_write",
-     "operation": "insert,update,delete",
+     "operation": "insert,update",
      "role": "member",
      "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND opened_by_member_id = current_setting('app.user_id', true)::uuid",
-     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "rationale": "自分の問い合わせを出し・閉じる",
      "source": [
-      "D-073.1"
-     ]
-    },
-    {
-     "name": "inquiries_permission_write",
-     "operation": "insert,update,delete",
-     "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'inquiries', NULL, 'edit')",
-     "rationale": "権限＝誰に×何に×どの層で×できること",
-     "source": [
-      "D-073.1",
-      "D-073.2",
-      "D-073.3"
+      "D-128.88",
+      "D-125.24"
      ]
     },
     {
@@ -7329,13 +7277,9 @@
      "operation": "select",
      "role": "ops",
      "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = inquiries.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
-     "rationale": "運営は既定で読めない。規約で先に許可をもらい、中を見るを持つ運営の人が理由を書いて開いた 1 時間だけ（見るだけ）。したことは両側の証跡へ",
+     "rationale": "運営は理由つき・1 時間・見るだけの許可があるときだけ（D-128.68）",
      "source": [
-      "D-074.5",
-      "D-125.128",
-      "D-128.68",
-      "D-128.108",
-      "D-077.7"
+      "D-128.68"
      ]
     },
     {
