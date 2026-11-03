@@ -483,6 +483,11 @@ erDiagram
 - `acceptances`：`reminded_at`（催促した日。期限の前日に自動でも 1 回）
 - 先方の人への知らせは `notifications` の `channel_id = email` で出来事ごとに送る（確認してほしいもの・依頼への返事・催促）。メールにはリンクだけ載せ、本文・成果物は載せない（D-128.103）
 
+ナレッジで足す列（D-128.105・D-128.106）：
+- `knowledge_page_versions`：`kind`（下書き・案・公開）/ `author_member_id` / `proposed_from_ticket_id`・`proposed_by_clone`（チケットの完了で分身が出した直す案）/ `decision`（入れた・直して入れた・入れない）/ `decline_reason` / `decided_by` / `decided_at`。下書きと直す案も同じ表で持ち、公開したときだけ `version` が増える
+- `knowledge_pages`：`archived_at` / `archived_to_page_id`（しまって新しいページへつなぐ）
+- ページのやり取りは `messages`（`owner_type = knowledge_page`）に置く
+
 前の表の扱い：`tasks` `task_handovers` `daily_plans` は後のフェーズ（チケットに置き換え）。`skills` 系は「業務の型」として使い続ける（`skills.kind_id` に work_type を足す・D-126.26）。`learned_procedures` は「記録した動かし方」として使い続け、入力した値を空欄に置き換えた形だけを持つ（D-126.25）。`support_access_grants` は「運営の閲覧」の記録として使い、許可の範囲と期限は契約で先に持つ（D-125.128・D-128.68）。
 
 ---

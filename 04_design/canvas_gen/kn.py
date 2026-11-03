@@ -56,7 +56,7 @@ sup = lambda n: '<sup style="font-size: 10px; color: #22345C; background: #EEF3F
 home = ('\n  <div style="display: flex; flex: 1 0 auto; min-height: 0">' + tree("home")
   + '<section style="flex: 1; min-width: 0; padding: 22px 28px; display: flex; flex-direction: column; gap: 16px">'
   + '<div style="display: flex; align-items: center; gap: 10px"><h1 style="font-size: 20px; margin: 0">ナレッジ</h1><span style="font-size: 12px; color: %s">会社のやり方の文書 ・ 24 ページ</span><span style="margin-left: auto; display: flex; gap: 6px">%s%s</span></div>' % (MUTED, btn("取り込む", "", "KnImport.dc.html"), btn("＋ ページを書く", "p", "KnNew.dc.html"))
-  + '<div style="display: flex; gap: 10px; align-items: center; background: #FFFFFF; border: 1px solid #22345C; box-shadow: 0 0 0 2px #DCE4F2; border-radius: 12px; padding: 0 16px; height: 50px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4A5563" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><span style="flex: 1; font-size: 15px">セイコー様への請求書は誰に送る？</span><span style="font-size: 11px; color: %s">ことばで聞ける ・ 見られるページだけから答える</span></div>' % MUTED
+  + '<div style="display: flex; gap: 10px; align-items: center; background: #FFFFFF; border: 1px solid #22345C; box-shadow: 0 0 0 2px #DCE4F2; border-radius: 12px; padding: 0 16px; height: 50px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4A5563" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><span style="flex: 1; font-size: 15px">セイコー様への請求書は誰に送る？</span><span style="font-size: 11px; color: %s">ことばで聞ける ・ 見られる公開のページだけから答える（PC がつながっていないときは、当てはまるページと行を出す）</span></div>' % MUTED
   + '<div style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 12px; padding: 14px 18px; display: flex; flex-direction: column; gap: 10px">'
   + '<div style="display: flex; gap: 8px; align-items: center">' + icon("AI", NAVY, 22) + '<b style="font-weight: 600">答え</b><span style="font-size: 11px; color: %s">2 つのページから</span></div>' % MUTED
   + '<div style="font-size: 14px; line-height: 1.8">宛名は先方の経理部 山田様、CC に営業の鈴木様を入れます%s。PDF をメールに添付して送り、先方の請求書システムへの登録は要りません%s。</div>' % (sup("1"), sup("2"))
@@ -174,7 +174,7 @@ s = modal(H, mhead("ページを書く", "KnHome.dc.html", "", "下書きで始�
   + '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px"><div>' + lab("持ち主", "（正しさに責任を持つ人）") + field(av("高", OWN["高"]) + "&nbsp;高本（自分） ▾") + '</div><div>' + lab("確かめの間隔") + field("90 日ごと ▾") + '</div></div>'
   + '<div>' + lab("形") + '<div style="display: flex; gap: 8px; flex-wrap: wrap">' + kind("手順", "順番にやること", True) + kind("決まり・仕様", "表と箇条書き") + kind("まとめ", "ほかのページを集める") + kind("白紙", "何もない") + '</div></div>'
   + '<div style="display: flex; gap: 8px; align-items: center; background: #F7F8FA; border-radius: 8px; padding: 8px 10px; font-size: 12px">' + check("", True).replace("padding: 4px 0", "padding: 0") + '<span>分身にたたき台を書いてもらう（関わるチケットとやり取りから）</span></div>'
-  + '<div style="font-size: 11px; color: %s">ワークスペース全体と層のページは権限のある人が直せる。自分のページは自分だけ</div>' % MUTED)
+  + '<div style="font-size: 11px; color: %s">ワークスペース全体のページはメンバー以上、グループのページはそのグループのメンバー以上が書いて直せる（閲覧のみは読むだけ）。自分のページは自分だけ</div>' % MUTED)
   + mfoot(btn("やめる", "", "KnHome.dc.html"), btn("下書きで書き始める", "p", "KnEdit.dc.html")), 600, "ページを書く")
 save("KnNew.dc.html", "ページを書く", s)
 

@@ -392,6 +392,46 @@ SCREEN_API = {
         ("GET", "/portal/acceptances/:id", "A126", "acceptances", "getPortalAcceptance", ["artifact_versions"]),
         ("POST", "/portal/acceptances/:id/answer", "A126", "acceptances", "answerAcceptance", [T, "ticket_messages", "notifications"]),
     ],
+    # ---------------------------------------------------------------- ナレッジ（08_api/phase1/09_ナレッジ.md）
+    "knowledge": [
+        # ホーム・置き場・探す
+        ("GET", "/knowledge/home", "A114", "knowledge_pages", "getKnowledgeHome", ["knowledge_page_versions", "reference_logs"]),
+        ("GET", "/knowledge/tree", "A114", "knowledge_pages", "getKnowledgeTree", ["scopes"]),
+        ("GET", "/knowledge_pages", "A114", "knowledge_pages", "listKnowledgePages", ["reference_logs", "members"]),
+        ("POST", "/knowledge/ask", "A114", "knowledge_pages", "askKnowledge", ["bridge_jobs", "policies", "clients"]),
+        ("POST", "/knowledge/ask/feedback", "A114", "knowledge_page_versions", "sendKnowledgeAnswerFeedback", []),
+        # 1 ページ・書く・下書き・公開
+        ("GET", "/knowledge_pages/:id", "A114", "knowledge_pages", "getKnowledgePage", ["knowledge_page_versions", "knowledge_links", "policies", "skills"]),
+        ("POST", "/knowledge_pages", "A114", "knowledge_pages", "createKnowledgePage", ["knowledge_page_versions", "bridge_jobs"]),
+        ("PATCH", "/knowledge_pages/:id", "A114", "knowledge_pages", "updateKnowledgePage", []),
+        ("PATCH", "/knowledge_pages/:id/draft", "A114", "knowledge_page_versions", "saveKnowledgeDraft", ["knowledge_links"]),
+        ("DELETE", "/knowledge_pages/:id/draft", "A114", "knowledge_page_versions", "discardKnowledgeDraft", []),
+        ("POST", "/knowledge_pages/:id/publish", "A114", "knowledge_page_versions", "publishKnowledgePage", ["knowledge_pages", "knowledge_links", "notifications"]),
+        ("POST", "/knowledge_pages/:id/attachments", "A114", "attachments", "uploadKnowledgeAttachment", []),
+        ("GET", "/knowledge_pages/:id/versions", "A114", "knowledge_page_versions", "listKnowledgeVersions", []),
+        ("POST", "/knowledge_pages/:id/versions/:v/restore", "A114", "knowledge_page_versions", "restoreKnowledgeVersion", ["knowledge_pages"]),
+        ("GET", "/knowledge_pages/:id/markdown", "A114", "knowledge_pages", "exportKnowledgeMarkdown", []),
+        # 使われ方・つながり・やり取り
+        ("GET", "/knowledge_pages/:id/usage", "A114", "reference_logs", "getKnowledgeUsage", ["tickets", "action_runs"]),
+        ("GET", "/knowledge_pages/:id/links", "A114", "knowledge_links", "getKnowledgeLinks", ["policies", "clients", "tickets"]),
+        ("POST", "/knowledge_pages/:id/links", "A114", "knowledge_links", "linkKnowledgeMention", ["knowledge_page_versions"]),
+        ("GET", "/knowledge/link-targets", "A114", "knowledge_pages", "searchKnowledgeLinkTargets", ["clients", "policies"]),
+        ("GET", "/knowledge_pages/:id/messages", "A114", "messages", "listKnowledgeMessages", []),
+        ("POST", "/knowledge_pages/:id/messages", "A114", "messages", "postKnowledgeMessage", ["notifications"]),
+        # 確かめる・しまう
+        ("GET", "/knowledge/verifications", "A114", "knowledge_pages", "listKnowledgeVerifications", ["reference_logs", "bridge_jobs"]),
+        ("POST", "/knowledge_pages/:id/verify", "A114", "knowledge_pages", "verifyKnowledgePage", []),
+        ("POST", "/knowledge_pages/:id/archive", "A114", "knowledge_pages", "archiveKnowledgePage", ["knowledge_links"]),
+        ("POST", "/knowledge_pages/:id/unarchive", "A114", "knowledge_pages", "unarchiveKnowledgePage", []),
+        # 直す案（チケットの完了から）
+        ("GET", "/knowledge/proposals", "A114", "knowledge_page_versions", "listKnowledgeProposals", ["tickets"]),
+        ("POST", "/knowledge/proposals/:id/accept", "A114", "knowledge_page_versions", "acceptKnowledgeProposal", ["knowledge_pages", "notifications"]),
+        ("POST", "/knowledge/proposals/:id/decline", "A114", "knowledge_page_versions", "declineKnowledgeProposal", []),
+        # 取り込む
+        ("POST", "/knowledge_imports", "A114", "imports", "createKnowledgeImport", ["attachments"]),
+        ("GET", "/knowledge_imports/:id", "A114", "imports", "getKnowledgeImport", []),
+        ("POST", "/knowledge_imports/:id/commit", "A114", "imports", "commitKnowledgeImport", ["knowledge_pages", "knowledge_page_versions", "knowledge_links"]),
+    ],
 }
 
 
@@ -457,6 +497,16 @@ RESPONSES = {
     "getPortalRequest": ("PortalRequest", {"request": "object", "messages": "array"}),
     "getPortalTicket": ("PortalTicket", {"title": "string", "stage": "string", "due_on": "string", "artifacts": "array", "messages": "array", "sections": "array"}),
     "getPortalAcceptance": ("PortalAcceptance", {"acceptance": "object", "artifact": "object", "preview_url": "string", "message": "string", "due_on": "string"}),
+    "getKnowledgeHome": ("KnowledgeHome", {"to_verify": "array", "proposals": "array", "recent": "array", "popular": "array", "count": "integer"}),
+    "getKnowledgeTree": ("KnowledgeTree", {"places": "array", "topics": "array", "archived": "integer"}),
+    "askKnowledge": ("KnowledgeAnswer", {"mode": "string", "answer": "string", "citations": "array", "hits": "array"}),
+    "getKnowledgePage": ("KnowledgePageDetail", {"page": "object", "body": "object", "toc": "array", "children": "array", "backlinks": "array", "related_rules": "array", "proposal_marks": "array", "draft": "object"}),
+    "getKnowledgeUsage": ("KnowledgeUsage", {"reads_3m": "integer", "returns": "integer", "recent_tickets": "array", "hot_sections": "array"}),
+    "getKnowledgeLinks": ("KnowledgeLinks", {"nodes": "array", "edges": "array", "unlinked_mentions": "array"}),
+    "searchKnowledgeLinkTargets": ("KnowledgeLinkTarget", {"kind": "string", "id": "string", "title": "string", "place": "string"}),
+    "listKnowledgeVerifications": ("KnowledgeVerification", {"page_id": "string", "title": "string", "place": "string", "owner_member_id": "string", "due_on": "string", "interval": "string", "ai_check": "string", "suggested_action": "string", "newer_page_id": "string"}),
+    "exportKnowledgeMarkdown": ("SignedUrl", {"url": "string", "expires_at": "string"}),
+    "getKnowledgeImport": ("KnowledgeImportPreview", {"source": "string", "pages": "integer", "folders": "integer", "links": "integer", "topics": "integer", "images": "integer", "mapping": "object", "warnings": "array"}),
 }
 # 一覧の絞り込み（operationId → query の名前）。cursor・limit・sort はいつも付く
 QUERIES = {
@@ -484,6 +534,10 @@ QUERIES = {
     "listClientActivity": ["client_visible"],
     "listClientRequests": ["state", "client_id"],
     "listClientLinkCandidates": ["name", "domain"],
+    "listKnowledgePages": ["scope_id", "parent_id", "topic", "owner_id", "state", "sort"],
+    "searchKnowledgeLinkTargets": ["q"],
+    "listKnowledgeVerifications": ["mine", "soon"],
+    "listKnowledgeProposals": ["mine"],
 }
 
 # 誰が呼べるか（03_architecture/ゼロトラストの決まり.md §2・ZT1・ZT5）。operationId → (権限, 範囲の説明, step_up)
@@ -803,4 +857,36 @@ PERMS = {
     "getPortalTicket": ("client", "自分の取引先のチケットで、見せると決めた項目だけ", False),
     "getPortalAcceptance": ("client", "確かめてもらう相手と、同じ取引先の人（見るだけ）", False),
     "answerAcceptance": ("client", "確かめてもらう相手だけ。OK がチケットの完了の条件になる（D-125.124）", False),
+    # ナレッジ（D-128.50〜.52・D-128.105・.106）
+    "getKnowledgeHome": ("read", "見られるページだけ（置き場の権限・自分のページは本人）", False),
+    "getKnowledgeTree": ("read", "同上", False),
+    "listKnowledgePages": ("read", "同上。しまったページは書ける人だけ", False),
+    "askKnowledge": ("read", "見られる公開のページだけから答える。PC がつながっていれば本人の分身が出典つきで答え、なければ当てはまるページと行を出す（D-128.105）", False),
+    "sendKnowledgeAnswerFeedback": ("read", "答えを見た本人。「いいえ」は持ち主への直す案になる", False),
+    "getKnowledgePage": ("read", "見られるページだけ。下書きは書いている本人と書ける人", False),
+    "createKnowledgePage": ("write", "書ける人：ワークスペース全体のページはメンバー以上・グループのページはそのグループのメンバー以上・自分のページは本人（D-128.106）", False),
+    "updateKnowledgePage": ("write", "同上（置き場・親・持ち主・確かめの間隔・話題）", False),
+    "saveKnowledgeDraft": ("write", "同上。下書きは公開するまで知らせない・分身も読まない", False),
+    "discardKnowledgeDraft": ("write", "下書きを書いた本人", False),
+    "publishKnowledgePage": ("write", "書ける人：ワークスペース全体のページはメンバー以上・グループのページはそのグループのメンバー以上・自分のページは本人（D-128.106）。公開すると版が増え、持ち主に知らせる", False),
+    "uploadKnowledgeAttachment": ("write", "同上。ファイルは検査してから置く（関門 C4）", False),
+    "listKnowledgeVersions": ("read", "見られるページだけ", False),
+    "restoreKnowledgeVersion": ("write", "書ける人：ワークスペース全体のページはメンバー以上・グループのページはそのグループのメンバー以上・自分のページは本人（D-128.106）（新しい版として戻す）", False),
+    "exportKnowledgeMarkdown": ("read", "見られるページだけ（期限つきの署名 URL）", False),
+    "getKnowledgeUsage": ("read", "見られるページだけ。読んだチケットは見られるものだけ出す", False),
+    "getKnowledgeLinks": ("read", "同上。つながりの先も見られるものだけ", False),
+    "linkKnowledgeMention": ("write", "書ける人：ワークスペース全体のページはメンバー以上・グループのページはそのグループのメンバー以上・自分のページは本人（D-128.106）", False),
+    "searchKnowledgeLinkTargets": ("read", "見られるページ・決まり・取引先だけ", False),
+    "listKnowledgeMessages": ("read", "見られるページだけ", False),
+    "postKnowledgeMessage": ("read", "見られる人なら書ける（閲覧のみも質問できる）", False),
+    "listKnowledgeVerifications": ("read", "見られるページだけ。分身の点検は持ち主の PC がつながっているときに作る", False),
+    "verifyKnowledgePage": ("write", "持ち主と、その置き場のマネージャー・管理者", False),
+    "archiveKnowledgePage": ("write", "同上。しまうと探しても出ず分身も読まない。版と記録は残り戻せる", False),
+    "unarchiveKnowledgePage": ("write", "同上", False),
+    "listKnowledgeProposals": ("read", "見られるページへの案だけ", False),
+    "acceptKnowledgeProposal": ("write", "持ち主と、その置き場のマネージャー・管理者。自分のページへの案は確かめずに入る", False),
+    "declineKnowledgeProposal": ("write", "同上（理由を残す）", False),
+    "createKnowledgeImport": ("write", "書ける人：ワークスペース全体のページはメンバー以上・グループのページはそのグループのメンバー以上・自分のページは本人（D-128.106）（取り込む先の置き場に書ける人）。ファイルは検査してから読む（関門 C4）", False),
+    "getKnowledgeImport": ("write", "取り込んだ本人", False),
+    "commitKnowledgeImport": ("write", "取り込んだ本人。既定は下書きで入れる（持ち主が公開するまで分身は読まない）", False),
 }

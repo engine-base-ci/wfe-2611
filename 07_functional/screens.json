@@ -41709,15 +41709,16 @@
    "related_apis": [
     {
      "act": "A114",
-     "role": "action",
-     "method": "PATCH",
-     "path_draft": "/api/knowledge_pages/:id",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge/home",
+     "table": "knowledge_pages",
+     "operation_id": "getKnowledgeHome",
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-121",
       "E-122",
-      "E-123",
-      "E-028"
+      "E-120"
      ],
      "choke_points": [
       "C2"
@@ -41729,73 +41730,655 @@
      ]
     },
     {
-     "act": "A30",
-     "role": "action",
-     "method": "POST",
-     "path_draft": "/api/knowledge_pages",
+     "act": "A114",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge/tree",
+     "table": "knowledge_pages",
+     "operation_id": "getKnowledgeTree",
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-121",
-      "E-122",
-      "E-123",
-      "E-028"
+      "E-002"
      ],
      "choke_points": [
       "C2"
      ],
      "source": [
-      "D-125.111",
-      "D-125.108",
-      "D-125.167",
-      "D-024",
-      "D-030",
-      "D-025",
-      "D-024.7",
-      "D-025.4",
-      "D-030.8",
-      "D-066.7",
-      "D-105.1",
-      "D-105.8",
-      "D-104.17"
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
      ]
     },
     {
-     "act": "A93",
+     "act": "A114",
      "role": "data_fetch",
      "method": "GET",
      "path_draft": "/api/knowledge_pages",
+     "table": "knowledge_pages",
+     "operation_id": "listKnowledgePages",
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-121",
-      "E-122",
-      "E-123",
-      "E-028"
+      "E-120",
+      "E-004"
      ],
      "choke_points": [
       "C2"
      ],
      "source": [
-      "D-105",
-      "D-125.118",
-      "D-125.167",
-      "D-105.6",
-      "D-105.9",
-      "D-105.10"
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge/ask",
+     "table": "knowledge_pages",
+     "operation_id": "askKnowledge",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-121",
+      "E-044",
+      "E-037",
+      "E-124"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge/ask/feedback",
+     "table": "knowledge_page_versions",
+     "operation_id": "sendKnowledgeAnswerFeedback",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-122"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge_pages/:id",
+     "table": "knowledge_pages",
+     "operation_id": "getKnowledgePage",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-121",
+      "E-122",
+      "E-123",
+      "E-037",
+      "E-095"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge_pages",
+     "table": "knowledge_pages",
+     "operation_id": "createKnowledgePage",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-121",
+      "E-122",
+      "E-044"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/knowledge_pages/:id",
+     "table": "knowledge_pages",
+     "operation_id": "updateKnowledgePage",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-121"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/knowledge_pages/:id/draft",
+     "table": "knowledge_page_versions",
+     "operation_id": "saveKnowledgeDraft",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-122",
+      "E-123"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/knowledge_pages/:id/draft",
+     "table": "knowledge_page_versions",
+     "operation_id": "discardKnowledgeDraft",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-122"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge_pages/:id/publish",
+     "table": "knowledge_page_versions",
+     "operation_id": "publishKnowledgePage",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-122",
+      "E-121",
+      "E-123",
+      "E-080"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge_pages/:id/attachments",
+     "table": "attachments",
+     "operation_id": "uploadKnowledgeAttachment",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-094"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge_pages/:id/versions",
+     "table": "knowledge_page_versions",
+     "operation_id": "listKnowledgeVersions",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-122"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge_pages/:id/versions/:v/restore",
+     "table": "knowledge_page_versions",
+     "operation_id": "restoreKnowledgeVersion",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-122",
+      "E-121"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge_pages/:id/markdown",
+     "table": "knowledge_pages",
+     "operation_id": "exportKnowledgeMarkdown",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-121"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge_pages/:id/usage",
+     "table": "reference_logs",
+     "operation_id": "getKnowledgeUsage",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-120",
+      "E-106",
+      "E-039"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge_pages/:id/links",
+     "table": "knowledge_links",
+     "operation_id": "getKnowledgeLinks",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-123",
+      "E-037",
+      "E-124",
+      "E-106"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge_pages/:id/links",
+     "table": "knowledge_links",
+     "operation_id": "linkKnowledgeMention",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-123",
+      "E-122"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge/link-targets",
+     "table": "knowledge_pages",
+     "operation_id": "searchKnowledgeLinkTargets",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-121",
+      "E-124",
+      "E-037"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge_pages/:id/messages",
+     "table": "messages",
+     "operation_id": "listKnowledgeMessages",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-049"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge_pages/:id/messages",
+     "table": "messages",
+     "operation_id": "postKnowledgeMessage",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-049",
+      "E-080"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge/verifications",
+     "table": "knowledge_pages",
+     "operation_id": "listKnowledgeVerifications",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-121",
+      "E-120",
+      "E-044"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge_pages/:id/verify",
+     "table": "knowledge_pages",
+     "operation_id": "verifyKnowledgePage",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-121"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge_pages/:id/archive",
+     "table": "knowledge_pages",
+     "operation_id": "archiveKnowledgePage",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-121",
+      "E-123"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge_pages/:id/unarchive",
+     "table": "knowledge_pages",
+     "operation_id": "unarchiveKnowledgePage",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-121"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge/proposals",
+     "table": "knowledge_page_versions",
+     "operation_id": "listKnowledgeProposals",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-122",
+      "E-106"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge/proposals/:id/accept",
+     "table": "knowledge_page_versions",
+     "operation_id": "acceptKnowledgeProposal",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-122",
+      "E-121",
+      "E-080"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge/proposals/:id/decline",
+     "table": "knowledge_page_versions",
+     "operation_id": "declineKnowledgeProposal",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-122"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge_imports",
+     "table": "imports",
+     "operation_id": "createKnowledgeImport",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-089",
+      "E-094"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge_imports/:id",
+     "table": "imports",
+     "operation_id": "getKnowledgeImport",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-089"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge_imports/:id/commit",
+     "table": "imports",
+     "operation_id": "commitKnowledgeImport",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-089",
+      "E-121",
+      "E-122",
+      "E-123"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
      ]
     }
    ],
    "required_apis": [
     {
      "act": "A114",
-     "role": "action",
-     "method": "PATCH",
-     "path_draft": "/api/knowledge_pages/:id",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge/home",
+     "table": "knowledge_pages",
+     "operation_id": "getKnowledgeHome",
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-121",
       "E-122",
-      "E-123",
-      "E-028"
+      "E-120"
      ],
      "choke_points": [
       "C2"
@@ -41807,58 +42390,639 @@
      ]
     },
     {
-     "act": "A30",
-     "role": "action",
-     "method": "POST",
-     "path_draft": "/api/knowledge_pages",
+     "act": "A114",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge/tree",
+     "table": "knowledge_pages",
+     "operation_id": "getKnowledgeTree",
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-121",
-      "E-122",
-      "E-123",
-      "E-028"
+      "E-002"
      ],
      "choke_points": [
       "C2"
      ],
      "source": [
-      "D-125.111",
-      "D-125.108",
-      "D-125.167",
-      "D-024",
-      "D-030",
-      "D-025",
-      "D-024.7",
-      "D-025.4",
-      "D-030.8",
-      "D-066.7",
-      "D-105.1",
-      "D-105.8",
-      "D-104.17"
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
      ]
     },
     {
-     "act": "A93",
+     "act": "A114",
      "role": "data_fetch",
      "method": "GET",
      "path_draft": "/api/knowledge_pages",
+     "table": "knowledge_pages",
+     "operation_id": "listKnowledgePages",
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-121",
-      "E-122",
-      "E-123",
-      "E-028"
+      "E-120",
+      "E-004"
      ],
      "choke_points": [
       "C2"
      ],
      "source": [
-      "D-105",
-      "D-125.118",
-      "D-125.167",
-      "D-105.6",
-      "D-105.9",
-      "D-105.10"
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge/ask",
+     "table": "knowledge_pages",
+     "operation_id": "askKnowledge",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-121",
+      "E-044",
+      "E-037",
+      "E-124"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge/ask/feedback",
+     "table": "knowledge_page_versions",
+     "operation_id": "sendKnowledgeAnswerFeedback",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-122"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge_pages/:id",
+     "table": "knowledge_pages",
+     "operation_id": "getKnowledgePage",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-121",
+      "E-122",
+      "E-123",
+      "E-037",
+      "E-095"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge_pages",
+     "table": "knowledge_pages",
+     "operation_id": "createKnowledgePage",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-121",
+      "E-122",
+      "E-044"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/knowledge_pages/:id",
+     "table": "knowledge_pages",
+     "operation_id": "updateKnowledgePage",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-121"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/knowledge_pages/:id/draft",
+     "table": "knowledge_page_versions",
+     "operation_id": "saveKnowledgeDraft",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-122",
+      "E-123"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/knowledge_pages/:id/draft",
+     "table": "knowledge_page_versions",
+     "operation_id": "discardKnowledgeDraft",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-122"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge_pages/:id/publish",
+     "table": "knowledge_page_versions",
+     "operation_id": "publishKnowledgePage",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-122",
+      "E-121",
+      "E-123",
+      "E-080"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge_pages/:id/attachments",
+     "table": "attachments",
+     "operation_id": "uploadKnowledgeAttachment",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-094"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge_pages/:id/versions",
+     "table": "knowledge_page_versions",
+     "operation_id": "listKnowledgeVersions",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-122"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge_pages/:id/versions/:v/restore",
+     "table": "knowledge_page_versions",
+     "operation_id": "restoreKnowledgeVersion",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-122",
+      "E-121"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge_pages/:id/markdown",
+     "table": "knowledge_pages",
+     "operation_id": "exportKnowledgeMarkdown",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-121"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge_pages/:id/usage",
+     "table": "reference_logs",
+     "operation_id": "getKnowledgeUsage",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-120",
+      "E-106",
+      "E-039"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge_pages/:id/links",
+     "table": "knowledge_links",
+     "operation_id": "getKnowledgeLinks",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-123",
+      "E-037",
+      "E-124",
+      "E-106"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge_pages/:id/links",
+     "table": "knowledge_links",
+     "operation_id": "linkKnowledgeMention",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-123",
+      "E-122"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge/link-targets",
+     "table": "knowledge_pages",
+     "operation_id": "searchKnowledgeLinkTargets",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-121",
+      "E-124",
+      "E-037"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge_pages/:id/messages",
+     "table": "messages",
+     "operation_id": "listKnowledgeMessages",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-049"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge_pages/:id/messages",
+     "table": "messages",
+     "operation_id": "postKnowledgeMessage",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-049",
+      "E-080"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge/verifications",
+     "table": "knowledge_pages",
+     "operation_id": "listKnowledgeVerifications",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-121",
+      "E-120",
+      "E-044"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge_pages/:id/verify",
+     "table": "knowledge_pages",
+     "operation_id": "verifyKnowledgePage",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-121"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge_pages/:id/archive",
+     "table": "knowledge_pages",
+     "operation_id": "archiveKnowledgePage",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-121",
+      "E-123"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge_pages/:id/unarchive",
+     "table": "knowledge_pages",
+     "operation_id": "unarchiveKnowledgePage",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-121"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge/proposals",
+     "table": "knowledge_page_versions",
+     "operation_id": "listKnowledgeProposals",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-122",
+      "E-106"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge/proposals/:id/accept",
+     "table": "knowledge_page_versions",
+     "operation_id": "acceptKnowledgeProposal",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-122",
+      "E-121",
+      "E-080"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge/proposals/:id/decline",
+     "table": "knowledge_page_versions",
+     "operation_id": "declineKnowledgeProposal",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-122"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge_imports",
+     "table": "imports",
+     "operation_id": "createKnowledgeImport",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-089",
+      "E-094"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge_imports/:id",
+     "table": "imports",
+     "operation_id": "getKnowledgeImport",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-089"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge_imports/:id/commit",
+     "table": "imports",
+     "operation_id": "commitKnowledgeImport",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-089",
+      "E-121",
+      "E-122",
+      "E-123"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.34",
+      "D-125.113",
+      "D-125.167"
      ]
     }
    ],
@@ -41869,7 +43033,19 @@
     "E-028",
     "E-055",
     "E-002",
-    "E-142"
+    "E-142",
+    "E-120",
+    "E-004",
+    "E-044",
+    "E-037",
+    "E-124",
+    "E-095",
+    "E-080",
+    "E-094",
+    "E-106",
+    "E-039",
+    "E-049",
+    "E-089"
    ],
    "mock_path": null,
    "route": "/knowledge",

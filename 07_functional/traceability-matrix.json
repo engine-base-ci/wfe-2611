@@ -3073,12 +3073,52 @@
     "E-028 memories",
     "E-055 layers",
     "E-002 scopes",
-    "E-142 scope_memberships"
+    "E-142 scope_memberships",
+    "E-120 reference_logs",
+    "E-004 members",
+    "E-044 bridge_jobs",
+    "E-037 policies",
+    "E-124 clients",
+    "E-095 skills",
+    "E-080 notifications",
+    "E-094 attachments",
+    "E-106 tickets",
+    "E-039 action_runs",
+    "E-049 messages",
+    "E-089 imports"
    ],
    "related_apis": [
-    "PATCH /api/knowledge_pages/:id",
+    "GET /api/knowledge/home",
+    "GET /api/knowledge/tree",
+    "GET /api/knowledge_pages",
+    "POST /api/knowledge/ask",
+    "POST /api/knowledge/ask/feedback",
+    "GET /api/knowledge_pages/:id",
     "POST /api/knowledge_pages",
-    "GET /api/knowledge_pages"
+    "PATCH /api/knowledge_pages/:id",
+    "PATCH /api/knowledge_pages/:id/draft",
+    "DELETE /api/knowledge_pages/:id/draft",
+    "POST /api/knowledge_pages/:id/publish",
+    "POST /api/knowledge_pages/:id/attachments",
+    "GET /api/knowledge_pages/:id/versions",
+    "POST /api/knowledge_pages/:id/versions/:v/restore",
+    "GET /api/knowledge_pages/:id/markdown",
+    "GET /api/knowledge_pages/:id/usage",
+    "GET /api/knowledge_pages/:id/links",
+    "POST /api/knowledge_pages/:id/links",
+    "GET /api/knowledge/link-targets",
+    "GET /api/knowledge_pages/:id/messages",
+    "POST /api/knowledge_pages/:id/messages",
+    "GET /api/knowledge/verifications",
+    "POST /api/knowledge_pages/:id/verify",
+    "POST /api/knowledge_pages/:id/archive",
+    "POST /api/knowledge_pages/:id/unarchive",
+    "GET /api/knowledge/proposals",
+    "POST /api/knowledge/proposals/:id/accept",
+    "POST /api/knowledge/proposals/:id/decline",
+    "POST /api/knowledge_imports",
+    "GET /api/knowledge_imports/:id",
+    "POST /api/knowledge_imports/:id/commit"
    ],
    "access_roles": [
     "R1",
@@ -11003,21 +11043,189 @@
    "required_apis": [
     {
      "act": "A114",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge/home"
+    },
+    {
+     "act": "A114",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge/tree"
+    },
+    {
+     "act": "A114",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge_pages"
+    },
+    {
+     "act": "A114",
      "role": "action",
-     "method": "PATCH",
+     "method": "POST",
+     "path_draft": "/api/knowledge/ask"
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge/ask/feedback"
+    },
+    {
+     "act": "A114",
+     "role": "data_fetch",
+     "method": "GET",
      "path_draft": "/api/knowledge_pages/:id"
     },
     {
-     "act": "A30",
+     "act": "A114",
      "role": "action",
      "method": "POST",
      "path_draft": "/api/knowledge_pages"
     },
     {
-     "act": "A93",
+     "act": "A114",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/knowledge_pages/:id"
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/knowledge_pages/:id/draft"
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/knowledge_pages/:id/draft"
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge_pages/:id/publish"
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge_pages/:id/attachments"
+    },
+    {
+     "act": "A114",
      "role": "data_fetch",
      "method": "GET",
-     "path_draft": "/api/knowledge_pages"
+     "path_draft": "/api/knowledge_pages/:id/versions"
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge_pages/:id/versions/:v/restore"
+    },
+    {
+     "act": "A114",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge_pages/:id/markdown"
+    },
+    {
+     "act": "A114",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge_pages/:id/usage"
+    },
+    {
+     "act": "A114",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge_pages/:id/links"
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge_pages/:id/links"
+    },
+    {
+     "act": "A114",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge/link-targets"
+    },
+    {
+     "act": "A114",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge_pages/:id/messages"
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge_pages/:id/messages"
+    },
+    {
+     "act": "A114",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge/verifications"
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge_pages/:id/verify"
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge_pages/:id/archive"
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge_pages/:id/unarchive"
+    },
+    {
+     "act": "A114",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge/proposals"
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge/proposals/:id/accept"
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge/proposals/:id/decline"
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge_imports"
+    },
+    {
+     "act": "A114",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge_imports/:id"
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge_imports/:id/commit"
     }
    ]
   },
@@ -11343,7 +11551,8 @@
     "ops-audit",
     "member-detail",
     "tickets",
-    "layers"
+    "layers",
+    "knowledge"
    ],
    "used_by_features": [
     "F-001",
@@ -11862,6 +12071,7 @@
     "masters",
     "rules",
     "work-types",
+    "knowledge",
     "clients"
    ],
    "used_by_features": [
@@ -11926,6 +12136,7 @@
     "tickets",
     "masters",
     "rules",
+    "knowledge",
     "clients"
    ],
    "used_by_features": [
@@ -12015,11 +12226,14 @@
     "bridge-setup",
     "credentials",
     "member-detail",
+    "knowledge",
     "portal"
    ],
    "used_by_features": [
     "F-005",
     "F-010",
+    "F-011",
+    "F-013",
     "F-017",
     "F-022"
    ]
@@ -12075,6 +12289,7 @@
     "clone-thread",
     "clone-chat",
     "tickets",
+    "knowledge",
     "requests",
     "portal"
    ],
@@ -12084,6 +12299,7 @@
     "F-005",
     "F-006",
     "F-010",
+    "F-011",
     "F-013",
     "F-021",
     "F-022",
@@ -12651,6 +12867,7 @@
     "member-detail",
     "tickets",
     "work-types",
+    "knowledge",
     "clients",
     "requests",
     "portal"
@@ -12859,9 +13076,12 @@
    "entity_id": "E-089",
    "entity_name": "imports",
    "used_by_screens": [
-    "import"
+    "import",
+    "knowledge"
    ],
    "used_by_features": [
+    "F-011",
+    "F-013",
     "F-017"
    ]
   },
@@ -12933,6 +13153,7 @@
     "company-settings",
     "import",
     "tickets",
+    "knowledge",
     "portal"
    ],
    "used_by_features": [
@@ -12962,6 +13183,7 @@
     "tickets",
     "masters",
     "work-types",
+    "knowledge",
     "requests"
    ],
    "used_by_features": [
@@ -13138,6 +13360,7 @@
     "tickets",
     "masters",
     "work-types",
+    "knowledge",
     "clients",
     "requests",
     "portal"
@@ -13420,7 +13643,8 @@
    "used_by_screens": [
     "bridge-setup",
     "clone-chat",
-    "tickets"
+    "tickets",
+    "knowledge"
    ],
    "used_by_features": [
     "F-001",
@@ -13428,6 +13652,7 @@
     "F-005",
     "F-006",
     "F-010",
+    "F-011",
     "F-013",
     "F-021",
     "F-023",
@@ -13484,6 +13709,7 @@
     "member-detail",
     "tickets",
     "rules",
+    "knowledge",
     "clients",
     "requests",
     "portal"
@@ -14490,6 +14716,8 @@
     "E-037",
     "E-038",
     "E-039",
+    "E-044",
+    "E-049",
     "E-052",
     "E-055",
     "E-057",
@@ -14508,6 +14736,7 @@
     "E-085",
     "E-086",
     "E-087",
+    "E-089",
     "E-093",
     "E-094",
     "E-095",
@@ -14524,6 +14753,7 @@
     "E-115",
     "E-117",
     "E-119",
+    "E-120",
     "E-121",
     "E-122",
     "E-123",
@@ -14633,6 +14863,7 @@
     "E-038",
     "E-039",
     "E-043",
+    "E-044",
     "E-049",
     "E-050",
     "E-051",
@@ -14640,6 +14871,7 @@
     "E-055",
     "E-061",
     "E-080",
+    "E-089",
     "E-094",
     "E-095",
     "E-096",
