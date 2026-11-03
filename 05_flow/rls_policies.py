@@ -291,6 +291,15 @@ POLICIES: dict[str, list[dict]] = {
         {"name": "skills_ops_all", "operation": "all", "role": "ops", "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
          "rationale": "運営の業務の型は運営が作る（会社・層・個人の型は節目②・KN-21）", "source": ["D-126.4", "D-126.23"]},
     ],
+    # ---- 中を見るの許可（KN-45・D-125.128・D-128.68・D-128.108）：運営の人が理由を書いて開く。会社は誰がいつ見たかを見られる
+    "support_access_grants": [
+        {"name": "support_access_grants_tenant_view", "operation": "select", "role": "member",
+         "predicate": f"tenant_id = {T} AND has_permission({U}, 'support_access_grants', NULL, 'view')",
+         "rationale": "会社は、運営が中を見た記録（誰が・いつ・理由）を見られる（既定は管理者）。会社が許可を出す形はやめた（D-125.128）", "source": ["D-125.128", "D-128.108"]},
+        {"name": "support_access_grants_ops_open", "operation": "select,insert,update", "role": "ops",
+         "predicate": f"current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM ops_members om WHERE om.id = support_access_grants.ops_member_id AND om.member_id = {U} AND 'peek' = ANY(om.caps) AND om.revoked_at IS NULL AND om.deleted_at IS NULL)",
+         "rationale": "「中を見る」ができる運営の人が、自分の許可だけを開く・見る・閉じる（理由・1 時間は行の決まりで守る）", "source": ["D-128.68", "D-128.70"]},
+    ],
     # 登録の保留（ログインの前）。表は kaname_auth の側にあり、登録の口（auth-ext）だけが読み書きする。アプリの役からは誰も読めない
     "pending_signup": [{"name": "pending_signup_no_app_access", "operation": "select", "role": "member", "predicate": "false",
                         "rationale": "ログインの前の保留。アプリの役からは読めない（登録の口だけが kaname_auth の側で扱う・D-088.2）", "source": ["D-088.2", "D-128.115"]}],

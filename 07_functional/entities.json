@@ -6207,41 +6207,25 @@
    },
    "access_control_policies": [
     {
-     "name": "support_access_grants_tenant_read",
+     "name": "support_access_grants_tenant_view",
      "operation": "select",
      "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
-     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'support_access_grants', NULL, 'view')",
+     "rationale": "会社は、運営が中を見た記録（誰が・いつ・理由）を見られる（既定は管理者）。会社が許可を出す形はやめた（D-125.128）",
      "source": [
-      "D-026.1",
-      "D-058.5",
-      "D-073.1"
-     ]
-    },
-    {
-     "name": "support_access_grants_permission_write",
-     "operation": "insert,update,delete",
-     "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'support_access_grants', NULL, 'edit')",
-     "rationale": "権限＝誰に×何に×どの層で×できること",
-     "source": [
-      "D-073.1",
-      "D-073.2",
-      "D-073.3"
-     ]
-    },
-    {
-     "name": "support_access_grants_ops_read_with_grant",
-     "operation": "select",
-     "role": "ops",
-     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = support_access_grants.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
-     "rationale": "運営は既定で読めない。規約で先に許可をもらい、中を見るを持つ運営の人が理由を書いて開いた 1 時間だけ（見るだけ）。したことは両側の証跡へ",
-     "source": [
-      "D-074.5",
       "D-125.128",
+      "D-128.108"
+     ]
+    },
+    {
+     "name": "support_access_grants_ops_open",
+     "operation": "select,insert,update",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM ops_members om WHERE om.id = support_access_grants.ops_member_id AND om.member_id = current_setting('app.user_id', true)::uuid AND 'peek' = ANY(om.caps) AND om.revoked_at IS NULL AND om.deleted_at IS NULL)",
+     "rationale": "「中を見る」ができる運営の人が、自分の許可だけを開く・見る・閉じる（理由・1 時間は行の決まりで守る）",
+     "source": [
       "D-128.68",
-      "D-128.108",
-      "D-077.7"
+      "D-128.70"
      ]
     }
    ],

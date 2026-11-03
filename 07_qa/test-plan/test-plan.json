@@ -118,6 +118,7 @@
   "D-128.106",
   "D-128.108",
   "D-128.109",
+  "D-128.110",
   "D-128.111",
   "D-128.112",
   "D-128.113",
@@ -180,8 +181,8 @@
   "ears_endpoints": 361,
   "ears_tests": 2459,
   "entities": 141,
-  "policies": 416,
-  "access_cases": 1579,
+  "policies": 415,
+  "access_cases": 1574,
   "errors": 134,
   "journey_rows": 88,
   "critical_tasks": 88

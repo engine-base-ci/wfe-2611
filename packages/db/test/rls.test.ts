@@ -183,26 +183,47 @@ describe("書く（権限＝誰に×何に×どの層で×できること）", (
 });
 
 describe("運営（既定で読めない）", () => {
-  const ops = { tenantId: T.a, userId: null, role: "ops" as const };
+  // 中を見るの許可は、開いた運営の人に結ぶ（KN-45・D-128.68）。運営の人の行を用意する
+  const ops = { tenantId: T.a, userId: null as string | null, role: "ops" as const };
+  let opsMember = "";
+  const grant = (tenant: string, extra = "") =>
+    admin.query<{ id: string }>(
+      `insert into support_access_grants (tenant_id, scope, expires_at, reason, ops_member_id${extra ? ", " + extra.split("=")[0] : ""}) values ($1, 'members', now() + interval '1 hour', '問い合わせの調べ', $2${extra ? ", " + extra.split("=")[1] : ""}) returning id`,
+      [tenant, opsMember],
+    );
+  beforeAll(async () => {
+    const opsT = (
+      await admin.query<{ id: string }>(
+        "insert into tenants (id, tenant_id, name) values (app.ops_tenant_id(), app.ops_tenant_id(), '運営') on conflict (id) do update set name = excluded.name returning id",
+      )
+    ).rows[0]!.id;
+    const sc = (
+      await admin.query<{ id: string }>("insert into scopes (tenant_id, name) values ($1, '運営') returning id", [opsT])
+    ).rows[0]!.id;
+    ops.userId = (
+      await admin.query<{ id: string }>(
+        "insert into members (tenant_id, scope_id, kind_id, display_name) values ($1, $2, 'human', '運営の人') returning id",
+        [opsT, sc],
+      )
+    ).rows[0]!.id;
+    opsMember = (
+      await admin.query<{ id: string }>(
+        "insert into ops_members (tenant_id, member_id, caps) values ($1, $2, '{peek}') returning id",
+        [opsT, ops.userId],
+      )
+    ).rows[0]!.id;
+  });
   it("grant が無ければ 0 行", async () => {
     expect(await withTenant(app, { ...ops, tenantId: T.a }, (c) => count(c, "select id from members"))).toBe(0);
   });
   it("範囲・期限つきの grant があるときだけ読める。期限切れ・取り消しは 0 行", async () => {
-    const g = (
-      await admin.query<{ id: string }>(
-        "insert into support_access_grants (tenant_id, scope, expires_at) values ($1, 'members', now() + interval '1 hour') returning id",
-        [T.a],
-      )
-    ).rows[0]!.id;
+    const g = (await grant(T.a)).rows[0]!.id;
     expect(await withTenant(app, { ...ops, tenantId: T.a }, (c) => count(c, "select id from members"))).toBe(2);
     await admin.query("update support_access_grants set revoked_at = now() where id = $1", [g]);
     expect(await withTenant(app, { ...ops, tenantId: T.a }, (c) => count(c, "select id from members"))).toBe(0);
   });
   it("運営は grant があっても書けない", async () => {
-    await admin.query(
-      "insert into support_access_grants (tenant_id, scope, expires_at) values ($1, 'members', now() + interval '1 hour')",
-      [T.a],
-    );
+    await grant(T.a);
     // UPDATE は policy に合わない行を黙って 0 行にする（Postgres の RLS の仕様）。件数 0 と値が変わっていないことで確かめる。INSERT は弾かれる
     const n = await withTenant(app, { ...ops, tenantId: T.a }, (c) =>
       count(c, "update members set display_name = 'x' where id = $1", [M.aStaff]),

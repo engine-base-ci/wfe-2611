@@ -56,19 +56,24 @@ export async function seedAccessMatrix(c: pg.PoolClient): Promise<Seeded> {
     "insert into permissions (tenant_id, grantee_member_id, target_kind_id, ability_id) values ($1, $2, 'layers', 'view') returning id",
     [tenantB, bossB],
   );
-  const grantA = await one(
-    "insert into support_access_grants (tenant_id, scope, expires_at) values ($1, 'all', now() + interval '1 hour') returning id",
-    [tenantA],
-  );
   const opsTenant = (await c.query<{ id: string }>("select app.ops_tenant_id() as id")).rows[0]!.id;
   const opsScope = await one("insert into scopes (tenant_id, name) values ($1, '運営') returning id", [opsTenant]);
   const opsId = await one(
     "insert into members (tenant_id, scope_id, kind_id, display_name) values ($1, $2, 'human', '運営') returning id",
     [opsTenant, opsScope],
   );
+  // 中を見るの許可は、開いた運営の人に結ぶ（KN-45・D-128.68）。会社 a は有効、会社 b は期限切れ
+  const opsMemberRow = await one(
+    "insert into ops_members (tenant_id, member_id, caps) values ($1, $2, '{peek,inquiries}') returning id",
+    [opsTenant, opsId],
+  );
+  const grantA = await one(
+    "insert into support_access_grants (tenant_id, scope, expires_at, reason, ops_member_id) values ($1, 'all', now() + interval '1 hour', '問い合わせの調べ', $2) returning id",
+    [tenantA, opsMemberRow],
+  );
   const grantB = await one(
-    "insert into support_access_grants (tenant_id, scope, expires_at) values ($1, 'all', now() - interval '1 hour') returning id",
-    [tenantB],
+    "insert into support_access_grants (tenant_id, scope, expires_at, reason, created_at, ops_member_id) values ($1, 'all', now() - interval '1 hour', '問い合わせの調べ', now() - interval '2 hours', $2) returning id",
+    [tenantB, opsMemberRow],
   ); // 期限切れ
   // 証跡：関門の関数で作る（直接 INSERT は無い）。会社 a は担当者の文脈、会社 b は別会社の代表の文脈、運営は運営の文脈
   const rec = async (tenant: string, user: string, role: string, sql: string, params: unknown[]) => {
@@ -188,7 +193,13 @@ export async function seedAccessMatrix(c: pg.PoolClient): Promise<Seeded> {
       visible: grantA,
       hiddenLayer: null,
       other: grantB,
-      insert: (t) => ({ tenant_id: t, scope: "x", expires_at: new Date(Date.now() + 3600e3) }),
+      insert: (t) => ({
+        tenant_id: t,
+        scope: "x",
+        expires_at: new Date(Date.now() + 3000e3),
+        reason: "問い合わせの調べ",
+        ops_member_id: opsMemberRow,
+      }),
     },
     member_kinds: {
       visible: "human",

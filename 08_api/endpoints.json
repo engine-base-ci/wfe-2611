@@ -26772,9 +26772,7 @@
     "scheme": "session（Better Auth・sessions 表を見る。app.tenant_id / app.user_id / app.role を SET LOCAL）"
    },
    "rate_limit": "60/min/user",
-   "access_control_policies": [
-    "support_access_grants_permission_write"
-   ],
+   "access_control_policies": [],
    "outputs_4xx": [
     {
      "status": 401,
@@ -30190,7 +30188,6 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "support_access_grants_permission_write",
     "inquiries_self_only_write",
     "inquiries_permission_write",
     "inquiries_ops_write"

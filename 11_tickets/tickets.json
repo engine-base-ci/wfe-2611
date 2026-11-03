@@ -1493,11 +1493,11 @@
    "id": "KN-45",
    "title": "前からある表に足す列：人・会社・運営",
    "kind": "タスク",
-   "stage": "未着手",
+   "stage": "確認中",
    "parent": "KN-2",
    "milestone": "基盤",
    "area": "DB",
-   "assignee": "未定",
+   "assignee": "Claude（このセッション）",
    "due": "",
    "decisions": [
     "D-128.55",
@@ -1505,7 +1505,13 @@
     "D-128.58",
     "D-128.95",
     "D-128.108",
-    "D-128.109"
+    "D-128.109",
+    "D-125.128",
+    "D-128.46",
+    "D-128.68",
+    "D-128.70",
+    "D-128.98",
+    "D-128.110"
    ],
    "split": "",
    "choke_points": [
@@ -1513,15 +1519,15 @@
    ],
    "depends_on": [],
    "sections": {
-    "目的": "前からある表に足す列：人・会社・運営。契約の API がこの表を読み書きできるようにし、行の守りで範囲の外を見せない。",
-    "完了の条件": "- [ ] migration（packages/db/migrations）で表と列ができる\n- [ ] 表ごとに RLS の決まり（packages/db/policies）がある\n- [ ] repository の表の一覧（packages/db/src/repository.ts の TABLES）に入っている\n- [ ] 場合表（access-matrix.json）にこの表の行があり、全部通る\n- [ ] CI が緑のまま",
-    "前提と制約": "- 表は ER 図 §16 と「足す列」が正。足すだけで、消す・名前を変える migration は作らない\n- 全部の表に `tenant_id` と RLS。RLS を飛ばす鍵はサーバーで使わない（ZT3）\n- 範囲（グループ・本人・担当・承認する人・取引先の人・運営の 1 時間の許可）は RLS の条件と API の権限の両方で見る（ZT4・D-073）",
-    "実施事項": "- [ ] 表：\n- [ ] 列：`members`（call_name・avatar_ref・language・theme・week_start・timezone・setup_dismissed_at・suspended_at・suspended_by）・`tenants`（logo_ref・client_visibility_default・request_routing・deletion_requested_at）・`credentials`（destinations・read_only・client_id・purpose・expires_at など）・`abilities` に billing・export・delete_workspace・`support_access_grants`（reason・inquiry_id・closed_at）・`ops_members.caps`・`notices`・`status_incidents`・`inquiries.context`・`audit_events` に運営の操作\n- [ ] RLS の範囲：前のまま（列を足すだけ）。運営の操作は顧客の記録にも書く（D-128.108）\n- [ ] 種（seeds）に見本の行を足す（試験と画面の見本用）\n- [ ] `zt_gate.py --lower-baseline` で記録を下げる",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた |\n|---|---|---|\n| migration が新しい DB に全部入る | ① 機械 | `pnpm ci:migration-integration` |\n| 表の RLS が有効 | ① 機械 | `pnpm ci:rls-enabled` |\n| 範囲の外の行が取れない（場合表の全行） | ① 機械 | `pnpm ci:access-matrix`（この表の行を access-matrix.json に足す） |\n| 会社をまたいで読めない | ① 機械 | 別の会社の文脈で SELECT して 0 行（わざと壊す試験） |",
-    "成果物": "- migration・policies・seeds・repository の表の一覧・access-matrix.json の行",
-    "決定ログ": "- D-128.55・D-128.57・D-128.58・D-128.95・D-128.108・D-128.109",
-    "リスクと懸念": "- 前からある表と名前が近いもの（tasks と tickets など）を取り違えない。前の表は後のフェーズのものとして残す（D-127.1）",
-    "申し送り": ""
+    "目的": "前からある表（人・ワークスペース・預けたログイン情報・権限の言葉・中を見るの許可・運営の人・お知らせ・障害・問い合わせ）に、第1フェーズの列を足す。運営が中を見るのを、開いた本人だけに絞る。",
+    "完了の条件": "- [x] migration（`packages/db/migrations/0078_people_tenant_ops.sql`）で列が足され、まっさらな DB に全部入る（78/78）\n- [x] 中を見るの許可の RLS（`packages/db/policies/0078_people_tenant_ops.sql`）を「運営の人が理由を書いて開く・会社は誰が見たかを見られる」にした\n- [x] 場合表が全部通る（1548/1548）・DB の試験が全部通る\n- [ ] CI が緑のまま",
+    "前提と制約": "- 足すだけ（消す・名前を変える migration は作らない）。前からある行が新しい決まりに合わないことがあるので、行の決まりは NOT VALID で足した（新しい行から効く）\n- 運営がしたことを相手のワークスペースの記録にも書く（D-128.108）のは、運営の口（KN-28）で app.record_audit を呼んで守る",
+    "実施事項": "- [x] `members`：call_name（20 文字まで）・avatar_ref・language・theme・week_start・timezone・setup_dismissed_at・suspended_at・suspended_by。名前は 100 文字まで\n- [x] `tenants`：logo_ref・client_visibility_default（全員・担当グループだけ）・request_routing・deletion_requested_at\n- [x] `credentials`：destinations・read_only・client_id・purpose・expires_at・use_count・last_used_at\n- [x] `abilities`：billing（プランと支払い）・export（書き出す）・delete_workspace（ワークスペースを消す）\n- [x] `support_access_grants`：reason（必須）・inquiry_id・closed_at・1 時間まで・開いた運営の人（ops_member_id）が必須\n- [x] `ops_members.caps`（問い合わせ・中を見る・お金・止める・お知らせ・配るもの・値段の案・値段を決める・運営の人。決まった言葉だけ）\n- [x] `notices`：state・affects・placements・maintenance_from／to・emailed_admins_at。`status_incidents`：notice_id・state・body。`inquiries`：context・later_until\n- [x] ★`app.ops_grant_ok` を、許可を開いた運営の人だけに効くようにした（今までは、その会社に有効な許可が 1 つあれば、どの運営の人でも中を読めた）。閉じた許可も効かない\n- [x] 見本と前からの試験（rls.test.ts）の許可に、理由と開いた人を入れた",
+    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| migration が新しい DB に全部入る | ① 機械 | `pnpm ci:migration-integration` | 通過（78/78） |\n| 範囲の外の行が取れない（場合表の全行） | ① 機械 | `pnpm ci:access-matrix` | 通過（1548/1548） |\n| 許可は開いた人だけ・別の運営の人は見られない・閉じたら効かない | ① 機械 | `packages/db/test/ops_grants.test.ts` | 通過。前の作りに戻すと 2 件が赤 |\n| 理由・1 時間・開いた人が要る・中を見るができない人は開けない | ① 機械 | 同上 | 通過 |\n| 会社は誰が見たかを見られる・会社の人は許可を作れない | ① 機械 | 同上 | 通過 |\n| 足した列の決まり（呼ばれ方・できること・取引先の見え方の既定） | ① 機械 | 同上 | 通過 |\n| DB の試験すべて | ① 機械 | `vitest run packages/db` | 通過 |\n| 全部の試験 | ① 機械 | CI | 流している |",
+    "成果物": "- `packages/db/migrations/0078_people_tenant_ops.sql`・`packages/db/policies/0078_people_tenant_ops.sql`・`packages/db/test/ops_grants.test.ts`\n- `packages/db/src/seeds.ts`（許可を開いた運営の人）・`packages/db/test/rls.test.ts`",
+    "決定ログ": "- 決定に従った：運営の閲覧は規約で先に許可（D-125.128）、中を見るの作法（D-128.68）、運営の人ができること（D-128.70）、運営の操作は顧客の記録にも（D-128.108）、ワークスペースの役割と権限の 3 つ（D-128.46・D-128.98）、自分の設定（D-128.55・D-128.58）、預けたログイン情報（D-128.57）、お知らせ・障害（D-128.109・D-128.110）\n- 中を見るの許可は、開いた本人だけに効かせた（D-128.68 の「理由を書いて開く」を、別の運営の人に使い回させないため）",
+    "リスクと懸念": "- 前からある行（運営の許可・名前の長さ）は NOT VALID の決まりなので、古い行は直していない。本番に入れる前に古い行が無いことを確かめる（KN-34）",
+    "申し送り": "- KN-28：中を見る・止める の口で、運営の記録と相手のワークスペースの記録（actor_role = ops）の両方に書く・開く前に本人確認を取り直す\n- KN-43：値段を決める人の数は ops_members.caps の pricing_decide で数える（この列ができた）\n- KN-9：自分の設定の口（呼ばれ方・顔・言葉・見た目・時刻）"
    },
    "file": "11_tickets/KN-45.md"
   },

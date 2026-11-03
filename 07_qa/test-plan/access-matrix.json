@@ -4,8 +4,8 @@
  "_doc": "entities.json の access_control_policies × 場合（見える範囲／見えない層／他の会社／SET LOCAL 無し／権限なし）。1 行 1 test。pnpm ci:access-matrix が全行を実 Postgres で流す",
  "counts": {
   "entities": 141,
-  "policies": 416,
-  "cases": 1579
+  "policies": 415,
+  "cases": 1574
  },
  "cases": [
   {
@@ -11088,201 +11088,106 @@
   {
    "entity": "E-062",
    "table": "support_access_grants",
-   "policy": "support_access_grants_tenant_read",
+   "policy": "support_access_grants_tenant_view",
    "role": "member",
    "role_ja": "会社の人（R1〜R4・権限で分かれる）",
    "operation": "select",
    "case": "同じ会社・見える範囲",
    "expected": "OK",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'support_access_grants', NULL, 'view')",
    "source": [
-    "D-026.1",
-    "D-058.5",
-    "D-073.1"
+    "D-125.128",
+    "D-128.108"
    ]
   },
   {
    "entity": "E-062",
    "table": "support_access_grants",
-   "policy": "support_access_grants_tenant_read",
+   "policy": "support_access_grants_tenant_view",
    "role": "member",
    "role_ja": "会社の人（R1〜R4・権限で分かれる）",
    "operation": "select",
    "case": "同じ会社・見えない層",
    "expected": "NG（0 行）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'support_access_grants', NULL, 'view')",
    "source": [
-    "D-026.1",
-    "D-058.5",
-    "D-073.1"
+    "D-125.128",
+    "D-128.108"
    ]
   },
   {
    "entity": "E-062",
    "table": "support_access_grants",
-   "policy": "support_access_grants_tenant_read",
+   "policy": "support_access_grants_tenant_view",
    "role": "member",
    "role_ja": "会社の人（R1〜R4・権限で分かれる）",
    "operation": "select",
    "case": "他の会社（SET LOCAL を別テナントに）",
    "expected": "NG（0 行）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'support_access_grants', NULL, 'view')",
    "source": [
-    "D-026.1",
-    "D-058.5",
-    "D-073.1"
+    "D-125.128",
+    "D-128.108"
    ]
   },
   {
    "entity": "E-062",
    "table": "support_access_grants",
-   "policy": "support_access_grants_tenant_read",
+   "policy": "support_access_grants_tenant_view",
    "role": "member",
    "role_ja": "会社の人（R1〜R4・権限で分かれる）",
    "operation": "select",
    "case": "SET LOCAL を飛ばす",
    "expected": "NG（0 行・エラー）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'support_access_grants', NULL, 'view')",
    "source": [
-    "D-026.1",
-    "D-058.5",
-    "D-073.1"
+    "D-125.128",
+    "D-128.108"
    ]
   },
   {
    "entity": "E-062",
    "table": "support_access_grants",
-   "policy": "support_access_grants_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "権限あり・自分の範囲",
+   "policy": "support_access_grants_ops_open",
+   "role": "ops",
+   "role_ja": "運営（R6）",
+   "operation": "select,insert,update",
+   "case": "運営の文脈",
    "expected": "OK",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'support_access_grants', NULL, 'edit')",
+   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM ops_members om WHERE om.id = support_access_grants.ops_member_id AND om.member_id = current_",
    "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
+    "D-128.68",
+    "D-128.70"
    ]
   },
   {
    "entity": "E-062",
    "table": "support_access_grants",
-   "policy": "support_access_grants_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "権限なし（担当者・閲覧のみ）",
-   "expected": "NG（403・副作用なし）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'support_access_grants', NULL, 'edit')",
+   "policy": "support_access_grants_ops_open",
+   "role": "ops",
+   "role_ja": "運営（R6）",
+   "operation": "select,insert,update",
+   "case": "会社の人（運営でない）",
+   "expected": "NG（弾く・副作用なし）",
+   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM ops_members om WHERE om.id = support_access_grants.ops_member_id AND om.member_id = current_",
    "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
+    "D-128.68",
+    "D-128.70"
    ]
   },
   {
    "entity": "E-062",
    "table": "support_access_grants",
-   "policy": "support_access_grants_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "他の会社",
-   "expected": "NG（0 行・副作用なし）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'support_access_grants', NULL, 'edit')",
-   "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
-   ]
-  },
-  {
-   "entity": "E-062",
-   "table": "support_access_grants",
-   "policy": "support_access_grants_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
+   "policy": "support_access_grants_ops_open",
+   "role": "ops",
+   "role_ja": "運営（R6）",
+   "operation": "select,insert,update",
    "case": "SET LOCAL を飛ばす",
-   "expected": "NG（エラー）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'support_access_grants', NULL, 'edit')",
+   "expected": "NG（弾く）",
+   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM ops_members om WHERE om.id = support_access_grants.ops_member_id AND om.member_id = current_",
    "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
-   ]
-  },
-  {
-   "entity": "E-062",
-   "table": "support_access_grants",
-   "policy": "support_access_grants_ops_read_with_grant",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "select",
-   "case": "同じ会社・見える範囲",
-   "expected": "OK",
-   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = support_access_grants.tenant_id AND g.expires_at",
-   "source": [
-    "D-074.5",
-    "D-125.128",
     "D-128.68",
-    "D-128.108",
-    "D-077.7"
-   ]
-  },
-  {
-   "entity": "E-062",
-   "table": "support_access_grants",
-   "policy": "support_access_grants_ops_read_with_grant",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "select",
-   "case": "同じ会社・見えない層",
-   "expected": "NG（0 行）",
-   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = support_access_grants.tenant_id AND g.expires_at",
-   "source": [
-    "D-074.5",
-    "D-125.128",
-    "D-128.68",
-    "D-128.108",
-    "D-077.7"
-   ]
-  },
-  {
-   "entity": "E-062",
-   "table": "support_access_grants",
-   "policy": "support_access_grants_ops_read_with_grant",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "select",
-   "case": "他の会社（SET LOCAL を別テナントに）",
-   "expected": "NG（顧客が許可した範囲・期限の中だけ OK）",
-   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = support_access_grants.tenant_id AND g.expires_at",
-   "source": [
-    "D-074.5",
-    "D-125.128",
-    "D-128.68",
-    "D-128.108",
-    "D-077.7"
-   ]
-  },
-  {
-   "entity": "E-062",
-   "table": "support_access_grants",
-   "policy": "support_access_grants_ops_read_with_grant",
-   "role": "ops",
-   "role_ja": "運営（R6）",
-   "operation": "select",
-   "case": "SET LOCAL を飛ばす",
-   "expected": "NG（0 行・エラー）",
-   "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = support_access_grants.tenant_id AND g.expires_at",
-   "source": [
-    "D-074.5",
-    "D-125.128",
-    "D-128.68",
-    "D-128.108",
-    "D-077.7"
+    "D-128.70"
    ]
   },
   {

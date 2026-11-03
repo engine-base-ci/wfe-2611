@@ -123,10 +123,9 @@ KN-44,前からある表に足す列：承認と分身,タスク,KN-2,確認中,
 - [x] 承認する人を「関わっている人」（app.ticket_involved）に足した（KN-38・KN-39 の申し送り）
 - [x] 場合表が全部通る（1553/1553）・DB の試験が全部通る（141 件）
 - [ ] CI が緑のまま"
-KN-45,前からある表に足す列：人・会社・運営,タスク,KN-2,未着手,未定,,基盤・DB,前からある表に足す列：人・会社・運営。契約の API がこの表を読み書きできるようにし、行の守りで範囲の外を見せない。,"- [ ] migration（packages/db/migrations）で表と列ができる
-- [ ] 表ごとに RLS の決まり（packages/db/policies）がある
-- [ ] repository の表の一覧（packages/db/src/repository.ts の TABLES）に入っている
-- [ ] 場合表（access-matrix.json）にこの表の行があり、全部通る
+KN-45,前からある表に足す列：人・会社・運営,タスク,KN-2,確認中,Claude（このセッション）,,基盤・DB,前からある表（人・ワークスペース・預けたログイン情報・権限の言葉・中を見るの許可・運営の人・お知らせ・障害・問い合わせ）に、第1フェーズの列を足す。運営が中を見るのを、開いた本人だけに絞る。,"- [x] migration（`packages/db/migrations/0078_people_tenant_ops.sql`）で列が足され、まっさらな DB に全部入る（78/78）
+- [x] 中を見るの許可の RLS（`packages/db/policies/0078_people_tenant_ops.sql`）を「運営の人が理由を書いて開く・会社は誰が見たかを見られる」にした
+- [x] 場合表が全部通る（1548/1548）・DB の試験が全部通る
 - [ ] CI が緑のまま"
 KN-46,既にある表を契約から使えるようにする,タスク,KN-2,未着手,未定,,基盤・DB,migration には既にあるのに、repository の表の一覧に入っていないため契約の API から使えない表（`bridge_jobs` `bridge_job_events` `agent_usage_snapshots` `artifact_versions` `pending_signup`）と、パスキーの表を、契約から使えるようにする。,"- [ ] repository の表の一覧に入り、起動時の存在確認（表が無ければ起動しない）が通る
 - [ ] パスキーの表の置き場所（Better Auth の kaname_auth 側か public か）を決め、ER 図に書いた
