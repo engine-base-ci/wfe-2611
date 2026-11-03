@@ -116,7 +116,12 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
   const e = (env["NODE_ENV"] ?? "development") as Config["env"];
   if (!["development", "staging", "production", "test"].includes(e)) throw new Error(`NODE_ENV が不明: ${e}`);
   // Infisical は全部そろっているか、全部無いか。半端は設定の間違い（黙ってメモリに落とさない）
-  const INF = ["INFISICAL_CLIENT_ID", "INFISICAL_CLIENT_SECRET", "INFISICAL_PROJECT_ID", "INFISICAL_ENVIRONMENT"] as const;
+  const INF = [
+    "INFISICAL_CLIENT_ID",
+    "INFISICAL_CLIENT_SECRET",
+    "INFISICAL_PROJECT_ID",
+    "INFISICAL_ENVIRONMENT",
+  ] as const;
   const infHave = INF.filter((k) => env[k]);
   if (infHave.length && infHave.length < INF.length)
     throw new Error(`Infisical の設定が半端: ${INF.filter((k) => !env[k]).join(", ")} が無い`);

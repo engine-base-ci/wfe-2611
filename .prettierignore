@@ -15,3 +15,14 @@ spec-dependencies.yaml
 
 .next-prod/
 pw-reports/
+# 生成物（手で直さない・生成のたびに上書きされる）
+apps/api/test/generated/
+apps/api/src/routes/
+packages/contracts/src/registry.ts
+packages/contracts/src/schemas.ts
+packages/contracts/src/types.ts
+packages/errors/src/catalog.ts
+.github/workflows/v3-gate.yml
+.github/workflows/release-gate.yml
+apps/web/lib/nav.ts
+apps/web/lib/routes.ts

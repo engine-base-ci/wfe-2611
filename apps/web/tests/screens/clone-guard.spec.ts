@@ -9,7 +9,10 @@ let bridge: AgentBridge | null = null;
 let domain = "";
 test.beforeEach(async () => {
   domain = `qa-bank-${Date.now().toString(36)}.example.jp`;
-  await admin("insert into service_registry (tenant_id, name, domain, automation_verdict_id) values (app.ops_tenant_id(), 'QA銀行', $1, 'bank')", [`https://www.${domain}/`]);
+  await admin(
+    "insert into service_registry (tenant_id, name, domain, automation_verdict_id) values (app.ops_tenant_id(), 'QA銀行', $1, 'bank')",
+    [`https://www.${domain}/`],
+  );
 });
 test.afterEach(async () => {
   bridge?.stop();
@@ -34,7 +37,9 @@ const say = async (page: Page, text: string) => {
 };
 const lastAi = (page: Page) => page.locator('.msg[data-who="ai"]:not([data-streaming])').last();
 
-test("CHT-24-001 CHT-24-002 CHT-24-003 CHT-24-004 CHT-24-005 CHT-19-006 E-GATE-011-A E-GATE-011-B E-GATE-011-C 全部許可でも台帳で銀行の宛先は PC の上で止まり、作業の行に理由が出て、人への案内を返し、証跡に残る。台帳を変えると次の仕事から効く", async ({ page }) => {
+test("CHT-24-001 CHT-24-002 CHT-24-003 CHT-24-004 CHT-24-005 CHT-19-006 E-GATE-011-A E-GATE-011-B E-GATE-011-C 全部許可でも台帳で銀行の宛先は PC の上で止まり、作業の行に理由が出て、人への案内を返し、証跡に残る。台帳を変えると次の仕事から効く", async ({
+  page,
+}) => {
   const u = await ready(page);
   // 全部許可にする
   await page.getByRole("button", { name: /毎回聞く/ }).click();
@@ -44,11 +49,17 @@ test("CHT-24-001 CHT-24-002 CHT-24-003 CHT-24-004 CHT-24-005 CHT-19-006 E-GATE-0
   // 使わない道具として渡っている（全部許可でも）
   await say(page, "禁止を見せて");
   await expect(lastAi(page)).toContainText(`WebFetch(domain:${domain})`, { timeout: 20_000 });
-  const modes = await admin<{ permission_mode: string }>("select permission_mode from bridge_jobs where member_id = $1 order by created_at", [u.memberId]);
+  const modes = await admin<{ permission_mode: string }>(
+    "select permission_mode from bridge_jobs where member_id = $1 order by created_at",
+    [u.memberId],
+  );
   expect(modes.map((m) => m.permission_mode)).toEqual(["bypassPermissions"]);
   // 直前のフックが止め、作業の行に理由と宛先
   await say(page, "銀行の入出金を取ってきて");
-  await expect(page.locator("[data-working]")).toContainText(`QA銀行（${domain}）は規約で自動操作が禁止のため止めました。正規の連携か、手で操作してください`, { timeout: 20_000 });
+  await expect(page.locator("[data-working]")).toContainText(
+    `QA銀行（${domain}）は規約で自動操作が禁止のため止めました。正規の連携か、手で操作してください`,
+    { timeout: 20_000 },
+  );
   await expect(lastAi(page)).toContainText("規約で自動操作が禁止のため、操作を止めました", { timeout: 20_000 });
   await expect(lastAi(page)).toContainText("口座連携");
   // 証跡：仕事の出来事と監査の記録（誰の仕事・どのサービス・どの道具）
@@ -61,13 +72,24 @@ test("CHT-24-001 CHT-24-002 CHT-24-003 CHT-24-004 CHT-24-005 CHT-19-006 E-GATE-0
     "select actor_member_id, payload from audit_events where action = 'agent.blocked' and payload->>'domain' = $1",
     [domain],
   );
-  expect(au).toEqual([expect.objectContaining({ actor_member_id: u.memberId, payload: expect.objectContaining({ service: "QA銀行", tool: "Bash" }) })]);
+  expect(au).toEqual([
+    expect.objectContaining({
+      actor_member_id: u.memberId,
+      payload: expect.objectContaining({ service: "QA銀行", tool: "Bash" }),
+    }),
+  ]);
   // 台帳を変えると次の仕事から効く（銀行でなくなったら渡らない）
   await admin("update service_registry set automation_verdict_id = 'api' where domain like $1", [`%${domain}%`]);
   await say(page, "もう一度、禁止を見せて");
   await expect(lastAi(page)).toContainText("使わない道具：", { timeout: 20_000 });
   await expect(lastAi(page)).not.toContainText(domain);
   await say(page, "もう一度、銀行の入出金を取ってきて");
-  await expect(lastAi(page), "台帳で禁止でなくなった宛先は止めない").toContainText("銀行のサイトから取ってきました", { timeout: 20_000 });
-  expect((await admin("select 1 from audit_events where action = 'agent.blocked' and payload->>'domain' = $1", [domain])).length, "止めた記録は 1 件のまま").toBe(1);
+  await expect(lastAi(page), "台帳で禁止でなくなった宛先は止めない").toContainText("銀行のサイトから取ってきました", {
+    timeout: 20_000,
+  });
+  expect(
+    (await admin("select 1 from audit_events where action = 'agent.blocked' and payload->>'domain' = $1", [domain]))
+      .length,
+    "止めた記録は 1 件のまま",
+  ).toBe(1);
 });

@@ -6,7 +6,14 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { Button } from "@/components/ui";
 import { Check, Info, LogIn, Mail, Plug, Repeat, TriangleAlert } from "lucide-react";
-import { AuthFoot, AuthHead, AuthIcon, AuthNote, OutsideLayout, SETUP_STEPS } from "@/components/outside/outside-layout";
+import {
+  AuthFoot,
+  AuthHead,
+  AuthIcon,
+  AuthNote,
+  OutsideLayout,
+  SETUP_STEPS,
+} from "@/components/outside/outside-layout";
 import { AuthExtError, resendSignup, signupStatus, verifySignup } from "@/lib/auth/ext";
 import { navRoute } from "@/lib/pending-route";
 import { OPS_EMAIL } from "@/lib/ops";
@@ -111,7 +118,9 @@ function VerifyEmailInner() {
 
   const undelivered = (
     <>
-      <AuthHead title={kind === "recipient" ? "このメールアドレスに届けられませんでした" : "確認のメールを出せませんでした"}>
+      <AuthHead
+        title={kind === "recipient" ? "このメールアドレスに届けられませんでした" : "確認のメールを出せませんでした"}
+      >
         {kind === "recipient" ? (
           <>
             このメールアドレスは受け取れませんでした。<b>受信箱がいっぱいか、アドレスが違うかもしれません。</b>
@@ -130,7 +139,9 @@ function VerifyEmailInner() {
         ) : null}
       </AuthHead>
       <AuthNote icon={<Info />}>
-        {kind === "recipient" ? "受信箱を空けてから「もう一度送る」を押してください。" : "少し時間をおいて「もう一度送る」を押してください。"}
+        {kind === "recipient"
+          ? "受信箱を空けてから「もう一度送る」を押してください。"
+          : "少し時間をおいて「もう一度送る」を押してください。"}
         急ぐときは別のメールアドレスで{" "}
         <Link className="font-semibold text-[var(--primary)]" href="/signup">
           はじめから登録し直す
@@ -187,7 +198,8 @@ function VerifyEmailInner() {
             <Check />
           </AuthIcon>
           <AuthHead title="登録は確認まで終わっています">
-            <b className="num">{email || "このメールアドレス"}</b> の登録は、メールの確認まで済んでいます。確認メールを送り直す必要はありません。
+            <b className="num">{email || "このメールアドレス"}</b>{" "}
+            の登録は、メールの確認まで済んでいます。確認メールを送り直す必要はありません。
             <b>ログインしてください。</b>
           </AuthHead>
           <Link href={navRoute("/login?done=1")} className="block">
@@ -224,7 +236,8 @@ function VerifyEmailInner() {
                 <TriangleAlert />
               </AuthIcon>
               <AuthHead title="このリンクは使えません">
-                30 分を過ぎたか、もう使われたリンクです。<b>登録はまだ終わっていません。</b>はじめから登録し直すと、新しいリンクを送ります。
+                30 分を過ぎたか、もう使われたリンクです。<b>登録はまだ終わっていません。</b>
+                はじめから登録し直すと、新しいリンクを送ります。
               </AuthHead>
               <Link href="/signup" className="block">
                 <Button className="w-full" icon={<Mail />}>

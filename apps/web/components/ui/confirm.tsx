@@ -90,7 +90,12 @@ export function ConfirmHost() {
             <button type="button" ref={cancelRef} className="cdlg-no" onClick={() => close(false)} data-confirm-cancel>
               {cur.cancel ?? "やめる"}
             </button>
-            <button type="button" className={cur.danger ? "cdlg-ok danger" : "cdlg-ok"} onClick={() => close(true)} data-confirm-ok>
+            <button
+              type="button"
+              className={cur.danger ? "cdlg-ok danger" : "cdlg-ok"}
+              onClick={() => close(true)}
+              data-confirm-ok
+            >
               {cur.ok ?? "はい"}
             </button>
           </div>

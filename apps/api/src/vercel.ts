@@ -31,7 +31,11 @@ export function vercelFetch(booted: () => Promise<Booted>): (req: Request) => Pr
       // 理由は落ちた確認の名前だけ（"secrets:vault=error"）。値や接続先は出さない（D-101.4：黙って落ちない・何が無いかは分かる）
       const reason = e instanceof StartupFailed ? e.failed : ["startup"];
       return Response.json(
-        { code: "STARTUP_FAILED", message: "いまサービスを始められません。少し待ってからもう一度試してください", reason },
+        {
+          code: "STARTUP_FAILED",
+          message: "いまサービスを始められません。少し待ってからもう一度試してください",
+          reason,
+        },
         { status: 503 },
       );
     }

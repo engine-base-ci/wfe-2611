@@ -74,7 +74,12 @@ export function browserCheck(
   seen: { status: string; at: number } | null,
   hasPlaywright: boolean,
 ): BrowserCheck {
-  if (choice === "off") return { name: "AI はブラウザを使わない設定です", ok: true, detail: "Bridge の窓の「AI が使うブラウザ」で変えられます" };
+  if (choice === "off")
+    return {
+      name: "AI はブラウザを使わない設定です",
+      ok: true,
+      detail: "Bridge の窓の「AI が使うブラウザ」で変えられます",
+    };
   if (choice === "dedicated") {
     const ready = hasChrome && hasPlaywright;
     return {
@@ -88,7 +93,12 @@ export function browserCheck(
     };
   }
   const name = "AI が Chrome を使える（Claude in Chrome）";
-  if (!hasChrome) return { name, ok: false, detail: "Chrome が見つかりません。Chrome を入れるか、Bridge の窓で「Bridge 専用のブラウザ」に変えてください" };
+  if (!hasChrome)
+    return {
+      name,
+      ok: false,
+      detail: "Chrome が見つかりません。Chrome を入れるか、Bridge の窓で「Bridge 専用のブラウザ」に変えてください",
+    };
   if (!seen) return { name, ok: true, detail: "まだ使っていません（AI が初めてブラウザを使うときに確かめます）" };
   const when = new Date(seen.at).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" });
   return seen.status === "connected"

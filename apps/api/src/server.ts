@@ -40,7 +40,9 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
   const repo = await createRepository(appPool);
   // メールの送出（関門 C6）：Resend の鍵があれば送る。無ければ URL をログに出す（開発）
   // 署名（会社名・代表者名・問い合わせ）と返信先（info@）は、ここで全部のメールに付ける（D-096・関門 C6）
-  const mail = config.resendApiKey ? signedMail(resendMail(config.resendApiKey), config.operator, config.mailReplyTo) : null;
+  const mail = config.resendApiKey
+    ? signedMail(resendMail(config.resendApiKey), config.operator, config.mailReplyTo)
+    : null;
   // 送出は 1 か所。認証（再設定）と保留の申し込み（確認）の両方がこれを通る
   const mailer = mail
     ? async (m: { to: string; subject: string; text: string }) => {
@@ -53,7 +55,7 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
             return;
           }
           // send は投げずに { error } を返す。見ないと拒否されても「送った」になる（G-15）
-          const r = await mail.send({ from: config.mailFrom, to: m.to, subject: m.subject, text: m.text });   // 署名と返信先は signedMail が付ける
+          const r = await mail.send({ from: config.mailFrom, to: m.to, subject: m.subject, text: m.text }); // 署名と返信先は signedMail が付ける
           if (r.error) throw new Error(r.error.message);
           console.log(`[mail] 送った → ${m.to}（${m.subject}）`);
         } catch (e) {
@@ -75,7 +77,8 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
   // staging／本番で Infisical が無い・入れないなら起動時の確認で落とす（startup.ts の secrets:vault）
   // 上限の 8 割に来たら運営に知らせる（D-102.5）。メールは 1 つの実体につき 1 時間に 1 回まで（ops-alert.ts）
   const onNearLimit = nearLimitNotifier({ ...(mailer ? { mailer } : {}), opsEmail: config.opsEmail });
-  const vault = o.vault ?? (config.infisical ? new InfisicalVault({ ...config.infisical, onNearLimit }) : new MemoryVault());
+  const vault =
+    o.vault ?? (config.infisical ? new InfisicalVault({ ...config.infisical, onNearLimit }) : new MemoryVault());
   const secrets = new SecretsGateway(repo, vault, Buffer.from(config.secretsMasterKey, "base64"));
   const s3 = s3Driver(s3Client(config.storage), config.storage.bucket);
   const bucketExists = o.bucketExists ?? s3.exists;

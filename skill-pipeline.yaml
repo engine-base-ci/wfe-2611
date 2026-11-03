@@ -28,7 +28,13 @@ stages:
   - id: S03
     skill: architecture-design
     title: アーキ設計（staging の定義・関門・境界）
-    produces: [02_tech_stack/selected-stack.json, 03_architecture/choke-points.json, 03_architecture/dependency-boundaries.json, 03_architecture/foundation_gates.json]
+    produces:
+      [
+        02_tech_stack/selected-stack.json,
+        03_architecture/choke-points.json,
+        03_architecture/dependency-boundaries.json,
+        03_architecture/foundation_gates.json,
+      ]
     done_when: python3 scripts/ci/pipeline-next.py check-staging && python3 scripts/ci/layer_audit.py --run
   - id: S04
     skill: design-md
@@ -49,7 +55,8 @@ stages:
   - id: S06
     skill: functional-breakdown
     title: 機能・画面・エンティティ分解（build_functional.py）
-    produces: [07_functional/features.json, 07_functional/screens.json, 07_functional/entities.json, 07_functional/roles.json]
+    produces:
+      [07_functional/features.json, 07_functional/screens.json, 07_functional/entities.json, 07_functional/roles.json]
     done_when: python3 scripts/ci/fb_gate.py --flow 05_flow/flow.json --er 03_architecture/ER図.md --dir 07_functional
   - id: S07
     skill: api-design

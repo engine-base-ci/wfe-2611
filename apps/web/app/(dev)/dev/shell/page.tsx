@@ -49,7 +49,12 @@ function useEchoChat(hasAi: boolean): AgentChatModel {
       setMsgs((m) => [
         ...m,
         { id: `u${m.length}`, who: "me", text, at: at() },
-        { id: `a${m.length}`, who: "ai", text: `（見本）「${text}」を受け取りました。いま見ている画面は ${ctx?.screen ?? "—"} です。`, at: at() },
+        {
+          id: `a${m.length}`,
+          who: "ai",
+          text: `（見本）「${text}」を受け取りました。いま見ている画面は ${ctx?.screen ?? "—"} です。`,
+          at: at(),
+        },
       ]);
       return true;
     },
@@ -62,7 +67,13 @@ function useEchoChat(hasAi: boolean): AgentChatModel {
     startNew: async () => setMsgs([]),
     attach: async (f) => ({ key: f.name, name: f.name, size: f.size, id: null, error: "見本では付けられません" }),
   };
-  const b = { bridge: hasAi ? { connected: true, live: true } : { connected: false, live: false }, loading: false, usable: hasAi, asleep: false, refetch: () => undefined };
+  const b = {
+    bridge: hasAi ? { connected: true, live: true } : { connected: false, live: false },
+    loading: false,
+    usable: hasAi,
+    asleep: false,
+    refetch: () => undefined,
+  };
   return { ...b, agent, state: chatState(b, agent) };
 }
 

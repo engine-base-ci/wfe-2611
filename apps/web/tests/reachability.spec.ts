@@ -86,10 +86,9 @@ test("USH-00-016 その権限で見えない画面は「この権限では見え
 test("USH-00-028 もうある画面の一覧（built-routes）が実ファイルと一致する", async () => {
   const { BUILT_ROUTES } = await import("../lib/built-routes");
   const real = existingPageRoutes();
-  expect(
-    [...BUILT_ROUTES].sort(),
-    "差分があれば python3 scripts/ci/gen_built_routes.py で作り直す",
-  ).toEqual(real.sort());
+  expect([...BUILT_ROUTES].sort(), "差分があれば python3 scripts/ci/gen_built_routes.py で作り直す").toEqual(
+    real.sort(),
+  );
 });
 
 test("USH-00-027 アプリの枠のナビに、まだ作っていない画面へのリンクが 1 本も無い（準備中で出る）", async ({ page }) => {
@@ -99,9 +98,9 @@ test("USH-00-027 アプリの枠のナビに、まだ作っていない画面へ
   await page.goto("/ai/chat");
   await page.waitForSelector("aside.side");
   // 折り畳みの中も DOM にはある（hidden）。開かずに全部読む（開く操作は USH-00-005 で押している）
-  const hrefs = (await page.locator("aside.side a[href^='/']").evaluateAll((as) =>
-    as.map((a) => (a as HTMLAnchorElement).getAttribute("href") ?? ""),
-  )) as string[];
+  const hrefs = (await page
+    .locator("aside.side a[href^='/']")
+    .evaluateAll((as) => as.map((a) => (a as HTMLAnchorElement).getAttribute("href") ?? ""))) as string[];
   expect(hrefViolations(hrefs, existingPageRoutes()), "ナビから押せる先は全部実在する").toEqual([]);
   expect(await page.locator("aside.side [data-soon]").count(), "まだ無い画面は準備中として出る").toBeGreaterThan(0);
 });

@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。125 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。134 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -2272,6 +2272,168 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "clone-chat",
       "state": "x"
+    }
+  },
+  "E-SIG-003": {
+    "id": "E-SIG-003",
+    "cls": "no_signal",
+    "message": "ここで止まりました。あなたが止めました。「{対象}」は途中だったので、その結末は分かりません。先方の画面で確かめてください",
+    "action": "先方の画面（送った先・書いた先）で結末を確かめる／続けるなら「続けて」と書いて送る",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-SIG-003",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "Bridge"
+    ],
+    "where": {
+      "screen": "clone-chat",
+      "state": "stp"
+    }
+  },
+  "E-NF-003": {
+    "id": "E-NF-003",
+    "cls": "not_found",
+    "message": "前の会話の記録がこの PC に無かったので、新しい会話として続けます。これまでの内容は Kaname の写しに残っています",
+    "action": "そのまま続ける（何もしなくてよい）",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-NF-003",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "Bridge"
+    ],
+    "where": {
+      "screen": "clone-chat",
+      "state": "n"
+    }
+  },
+  "E-VAL-005": {
+    "id": "E-VAL-005",
+    "cls": "validation",
+    "message": "パスワードは 12 文字以上にしてください",
+    "action": "入力し直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-VAL-005",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "signup",
+      "state": "a"
+    }
+  },
+  "E-VAL-006": {
+    "id": "E-VAL-006",
+    "cls": "validation",
+    "message": "会社名（または屋号）を入れてください",
+    "action": "入力し直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-VAL-006",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "signup",
+      "state": "a"
+    }
+  },
+  "E-VAL-007": {
+    "id": "E-VAL-007",
+    "cls": "validation",
+    "message": "お名前を入れてください",
+    "action": "入力し直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-VAL-007",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "invite-accept",
+      "state": "a"
+    }
+  },
+  "E-VAL-008": {
+    "id": "E-VAL-008",
+    "cls": "validation",
+    "message": "ログイン名とパスワードを入れてください",
+    "action": "入力し直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-VAL-008",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "login",
+      "state": "a"
+    }
+  },
+  "E-VAL-009": {
+    "id": "E-VAL-009",
+    "cls": "validation",
+    "message": "コードを入れてください",
+    "action": "入力し直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-VAL-009",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "login",
+      "state": "a"
+    }
+  },
+  "E-INV-001": {
+    "id": "E-INV-001",
+    "cls": "not_found",
+    "message": "この招待は見つかりません。もう一度招待してもらってください",
+    "action": "招待した人にもう一度招待してもらう",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-INV-001",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "invite-accept",
+      "state": "a"
+    }
+  },
+  "E-INV-002": {
+    "id": "E-INV-002",
+    "cls": "not_found",
+    "message": "この招待は取り消されています。招待した人が取り消したか、7 日の期限を過ぎました。もう一度招待してもらってください",
+    "action": "招待した人にもう一度招待してもらう",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-INV-002",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "invite-accept",
+      "state": "a"
     }
   }
 };

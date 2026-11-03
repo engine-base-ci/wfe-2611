@@ -40,8 +40,8 @@ win:
       arch: [x64]
 nsis:
   artifactName: "Kaname-Bridge-Setup-${version}.${ext}"
-  oneClick: true          # 人に選ばせない（次へ→次へ を作らない）
-  perMachine: false       # 管理者権限を要求しない
+  oneClick: true # 人に選ばせない（次へ→次へ を作らない）
+  perMachine: false # 管理者権限を要求しない
   allowToChangeInstallationDirectory: false
 # 自動更新は Bridge が Kaname に聞いて自分で入れ替える（src/update.ts・D-109）。
 # 配るときは pnpm --filter @kaname/bridge release（版の番号を付け、置き場に目録 kaname-bridge.json を書く）

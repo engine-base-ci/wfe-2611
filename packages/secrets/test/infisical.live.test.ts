@@ -31,7 +31,14 @@ describe.skipIf(!live)("本物の Infisical（dev の環境・KANAME_INFISICAL_L
       projectId: env["INFISICAL_PROJECT_ID"]!,
       environment: env["INFISICAL_ENVIRONMENT"]!,
     });
-  const sec = (tenantId: string, data: string): StoredSecret => ({ tenantId, iv: "aXYxMjM0NTY3OA==", tag: "dGFndGFndGFndGFndGFn", data, kind: "basic", revokedAt: null });
+  const sec = (tenantId: string, data: string): StoredSecret => ({
+    tenantId,
+    iv: "aXYxMjM0NTY3OA==",
+    tag: "dGFndGFndGFndGFndGFn",
+    data,
+    kind: "basic",
+    revokedAt: null,
+  });
 
   it("入れる（Machine Identity）。初めての会社でもフォルダを作って預け、同じ会社で読める。別の会社の置き場からは読めない", async () => {
     const v = vault();

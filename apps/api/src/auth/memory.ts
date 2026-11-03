@@ -29,12 +29,24 @@ const MAX_PROMPT = 60_000;
 /** 毎朝のまとめに渡す文（D-105.3・D-105.4）。会話と承認・差し戻し、いまの個人の記憶、上げ先の層。答えは JSON 1 つ */
 export function digestPrompt(src: DigestSource, from: string, to: string): string {
   const conv = src.conversations
-    .map((c) => `## 会話「${c.title ?? "名前なし"}」\n${(c.messages ?? []).map((m) => `${m.who === "me" ? "本人" : "あなた"}：${m.text.replace(/\s+/g, " ")}`).join("\n")}`)
+    .map(
+      (c) =>
+        `## 会話「${c.title ?? "名前なし"}」\n${(c.messages ?? []).map((m) => `${m.who === "me" ? "本人" : "あなた"}：${m.text.replace(/\s+/g, " ")}`).join("\n")}`,
+    )
     .join("\n\n");
   const appr = src.approvals.length
-    ? src.approvals.map((a) => `- ${a.status === "approved" ? "OK にした" : a.status === "rejected" || a.status === "returned" ? "差し戻した" : (a.status ?? "")}${a.note ? `：${a.note}` : ""}`).join("\n")
+    ? src.approvals
+        .map(
+          (a) =>
+            `- ${a.status === "approved" ? "OK にした" : a.status === "rejected" || a.status === "returned" ? "差し戻した" : (a.status ?? "")}${a.note ? `：${a.note}` : ""}`,
+        )
+        .join("\n")
     : "（なし）";
-  const mem = src.memories.length ? src.memories.map((m) => `- [${m.id}] (${m.kind ?? "preference"}) ${m.title ?? ""}：${(m.body ?? "").replace(/\s+/g, " ")}`).join("\n") : "（まだありません）";
+  const mem = src.memories.length
+    ? src.memories
+        .map((m) => `- [${m.id}] (${m.kind ?? "preference"}) ${m.title ?? ""}：${(m.body ?? "").replace(/\s+/g, " ")}`)
+        .join("\n")
+    : "（まだありません）";
   const scopes = src.scopes.map((s) => `- [${s.id}] ${s.name}`).join("\n");
   const head = `あなたは本人の自分のAI です。${from} から ${to} までの本人との会話と、本人が承認・差し戻ししたものを読んで、本人の記憶を整理してください。
 道具は使わず、最後に次の形の JSON を 1 つだけ、\`\`\`json で囲んで返してください（前後に説明を書いてもよい）。
@@ -53,12 +65,13 @@ export function digestPrompt(src: DigestSource, from: string, to: string): strin
   return `${head}\n\n${body}`.slice(0, MAX_PROMPT);
 }
 
-const arr = (v: unknown): Record<string, unknown>[] => (Array.isArray(v) ? (v.filter((x) => x && typeof x === "object") as Record<string, unknown>[]) : []);
+const arr = (v: unknown): Record<string, unknown>[] =>
+  Array.isArray(v) ? (v.filter((x) => x && typeof x === "object") as Record<string, unknown>[]) : [];
 const str = (v: unknown, n: number): string => (typeof v === "string" ? v.trim().slice(0, n) : "");
 /** まとめの答えから JSON を読む。形が違えば null（まとめは「うまくいかなかった」にする。黙って空にしない） */
 export function parseDigest(text: string): DigestResult | null {
   const fenced = /```json\s*([\s\S]*?)```/i.exec(text)?.[1];
-  const raw = fenced ?? (/\{[\s\S]*\}/.exec(text)?.[0] ?? "");
+  const raw = fenced ?? /\{[\s\S]*\}/.exec(text)?.[0] ?? "";
   let j: Record<string, unknown>;
   try {
     j = JSON.parse(raw) as Record<string, unknown>;
@@ -67,13 +80,36 @@ export function parseDigest(text: string): DigestResult | null {
   }
   if (!j || typeof j !== "object" || !["remembered", "merged", "propose", "discarded"].some((k) => k in j)) return null;
   return {
-    remembered: arr(j["remembered"]).map((x) => ({ title: str(x["title"], 80), body: str(x["body"], 2000), kind: str(x["kind"], 20), source: str(x["source"], 120) })).filter((x) => x.body),
+    remembered: arr(j["remembered"])
+      .map((x) => ({
+        title: str(x["title"], 80),
+        body: str(x["body"], 2000),
+        kind: str(x["kind"], 20),
+        source: str(x["source"], 120),
+      }))
+      .filter((x) => x.body),
     merged: arr(j["merged"])
-      .map((x) => ({ memory_ids: (Array.isArray(x["memory_ids"]) ? x["memory_ids"] : []).filter((i): i is string => typeof i === "string" && /^[0-9a-f-]{36}$/i.test(i)), title: str(x["title"], 80), body: str(x["body"], 2000), kind: str(x["kind"], 20) }))
+      .map((x) => ({
+        memory_ids: (Array.isArray(x["memory_ids"]) ? x["memory_ids"] : []).filter(
+          (i): i is string => typeof i === "string" && /^[0-9a-f-]{36}$/i.test(i),
+        ),
+        title: str(x["title"], 80),
+        body: str(x["body"], 2000),
+        kind: str(x["kind"], 20),
+      }))
       .filter((x) => x.body && x.memory_ids.length),
     propose: arr(j["propose"])
-      .map((x) => ({ title: str(x["title"], 80), body: str(x["body"], 2000), kind: str(x["kind"], 20), target_scope_id: str(x["target_scope_id"], 40), why: str(x["why"], 500), source: str(x["source"], 120) }))
+      .map((x) => ({
+        title: str(x["title"], 80),
+        body: str(x["body"], 2000),
+        kind: str(x["kind"], 20),
+        target_scope_id: str(x["target_scope_id"], 40),
+        why: str(x["why"], 500),
+        source: str(x["source"], 120),
+      }))
       .filter((x) => x.body),
-    discarded: arr(j["discarded"]).map((x) => ({ text: str(x["text"], 500), why: str(x["why"], 300) })).filter((x) => x.text),
+    discarded: arr(j["discarded"])
+      .map((x) => ({ text: str(x["text"], 500), why: str(x["why"], 300) }))
+      .filter((x) => x.text),
   };
 }

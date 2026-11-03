@@ -44,7 +44,9 @@ afterAll(async () => {
 const specIds = new Map<string, string[]>(); // table → 行 ID
 {
   let gone = false;
-  for (const line of readFileSync(join(here, "..", "..", "..", "07_qa", "test-specs", "rls-matrix.md"), "utf8").split("\n")) {
+  for (const line of readFileSync(join(here, "..", "..", "..", "07_qa", "test-specs", "rls-matrix.md"), "utf8").split(
+    "\n",
+  )) {
     if (line.startsWith("#")) gone = line.includes("もう無い行");
     const m = /^\|\s*(RLS-[A-Z0-9]+-\d+)\s*\|\s*(\w+)\s*\|\s*本人のもの\s*\|/.exec(line);
     if (m && !gone) specIds.set(m[2]!, [...(specIds.get(m[2]!) ?? []), m[1]!]);
@@ -64,34 +66,37 @@ describe("本人のもの（self_only_write）", () => {
     expect([...specIds.keys()].filter((t) => !selfOnly.has(t))).toEqual([]);
   });
   for (const [table, ownerCol] of selfOnly) {
-    it(`${(specIds.get(table) ?? []).join(" ")} ${table}: 担当者は自分の行を作れて直せる。他人（代表）の行は 0 行`.trim(), async () => {
-      if (!existing.has(table)) return; // 未 migration は担当の T-D-* で
-      const seed = S.rows[table];
-      expect(seed?.insert, `${table} の種が無い`).toBeTruthy();
-      const staff: TenantContext = { tenantId: S.tenantA, userId: S.staffA, role: "member" };
-      const boss: TenantContext = { tenantId: S.tenantA, userId: S.bossA, role: "member" };
-      const ins = async (ctx: TenantContext, row: Record<string, unknown>) => {
-        const keys = Object.keys(row).filter((k) => row[k] !== null && row[k] !== undefined);
-        return withTenant(app, ctx, async (c) => {
-          const r = await c.query<{ id: string }>(
-            `insert into "${table}" (${keys.map((k) => `"${k}"`).join(", ")}) values (${keys.map((_, i) => `$${i + 1}`).join(", ")}) returning id`,
-            keys.map((k) => row[k]),
+    it(
+      `${(specIds.get(table) ?? []).join(" ")} ${table}: 担当者は自分の行を作れて直せる。他人（代表）の行は 0 行`.trim(),
+      async () => {
+        if (!existing.has(table)) return; // 未 migration は担当の T-D-* で
+        const seed = S.rows[table];
+        expect(seed?.insert, `${table} の種が無い`).toBeTruthy();
+        const staff: TenantContext = { tenantId: S.tenantA, userId: S.staffA, role: "member" };
+        const boss: TenantContext = { tenantId: S.tenantA, userId: S.bossA, role: "member" };
+        const ins = async (ctx: TenantContext, row: Record<string, unknown>) => {
+          const keys = Object.keys(row).filter((k) => row[k] !== null && row[k] !== undefined);
+          return withTenant(app, ctx, async (c) => {
+            const r = await c.query<{ id: string }>(
+              `insert into "${table}" (${keys.map((k) => `"${k}"`).join(", ")}) values (${keys.map((_, i) => `$${i + 1}`).join(", ")}) returning id`,
+              keys.map((k) => row[k]),
+            );
+            return r.rows[0]!.id;
+          });
+        };
+        const base = seed!.insert!(S.tenantA);
+        const scoped = "scope_id" in base; // 層を持つ表：自分の行は自分の層（RETURNING は読める行だけ）
+        const mine = await ins(staff, { ...base, [ownerCol]: S.staffA, ...(scoped ? { scope_id: S.scopeDeptA } : {}) });
+        const others = await ins(boss, { ...seed!.insert!(S.tenantA), [ownerCol]: S.bossA });
+        const upd = (ctx: TenantContext, id: string) =>
+          withTenant(app, ctx, (c) =>
+            c.query(`update "${table}" set updated_at = now() where id = $1`, [id]).then((r) => r.rowCount ?? 0),
           );
-          return r.rows[0]!.id;
-        });
-      };
-      const base = seed!.insert!(S.tenantA);
-      const scoped = "scope_id" in base; // 層を持つ表：自分の行は自分の層（RETURNING は読める行だけ）
-      const mine = await ins(staff, { ...base, [ownerCol]: S.staffA, ...(scoped ? { scope_id: S.scopeDeptA } : {}) });
-      const others = await ins(boss, { ...seed!.insert!(S.tenantA), [ownerCol]: S.bossA });
-      const upd = (ctx: TenantContext, id: string) =>
-        withTenant(app, ctx, (c) =>
-          c.query(`update "${table}" set updated_at = now() where id = $1`, [id]).then((r) => r.rowCount ?? 0),
-        );
-      const updMine = await upd(staff, mine);
-      const updOther = await upd(staff, others);
-      expect(updMine).toBe(1);
-      expect(updOther).toBe(0);
-    });
+        const updMine = await upd(staff, mine);
+        const updOther = await upd(staff, others);
+        expect(updMine).toBe(1);
+        expect(updOther).toBe(0);
+      },
+    );
   }
 });

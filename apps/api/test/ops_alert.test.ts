@@ -58,7 +58,11 @@ describe("BRG-14-007 上限の 8 割で運営に知らせる（1 時間に 1 回
         url.includes("/auth/")
           ? Response.json({ accessToken: "tok", expiresIn: 7200 })
           : Response.json({ message: "not found" }, { status: 404 }),
-      onNearLimit: nearLimitNotifier({ mailer: async (m) => void sent.push(m.subject), opsEmail: "info@example.com", log: () => undefined }),
+      onNearLimit: nearLimitNotifier({
+        mailer: async (m) => void sent.push(m.subject),
+        opsEmail: "info@example.com",
+        log: () => undefined,
+      }),
     });
     const T = "11111111-1111-4111-8111-111111111111";
     for (let i = 0; i < 95; i++) await v.get(`sec_${i}`, T);

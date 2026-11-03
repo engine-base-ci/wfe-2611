@@ -63,7 +63,16 @@ afterAll(() => server.close());
 
 const publish = (version: string, name: string, body: Buffer, over: Partial<{ sha256: string; size: number }> = {}) => {
   files = { [name]: body };
-  latest = { released: true, version, update: { name, url: `/api/auth-ext/bridge/file/${encodeURIComponent(name)}`, sha256: over.sha256 ?? sha(body), size: over.size ?? body.length } };
+  latest = {
+    released: true,
+    version,
+    update: {
+      name,
+      url: `/api/auth-ext/bridge/file/${encodeURIComponent(name)}`,
+      sha256: over.sha256 ?? sha(body),
+      size: over.size ?? body.length,
+    },
+  };
 };
 
 describe("版を比べる", () => {
@@ -96,9 +105,17 @@ describe("BRG-06-018 受け取って指紋を確かめる（D-109.4）", () => {
     const dir = mkdtempSync(join(tmpdir(), "kaname-up-"));
     const name = "x.zip";
     files = { [name]: body };
-    const base: UpdateInfo = { version: "9.9.9", name, url: `${api}/api/auth-ext/bridge/file/${name}`, sha256: sha(Buffer.from("other")), size: body.length };
+    const base: UpdateInfo = {
+      version: "9.9.9",
+      name,
+      url: `${api}/api/auth-ext/bridge/file/${name}`,
+      sha256: sha(Buffer.from("other")),
+      size: body.length,
+    };
     await expect(download(base, dir)).rejects.toThrow("指紋が目録と合いません");
-    await expect(download({ ...base, sha256: sha(body), size: body.length + 5 }, dir)).rejects.toThrow("大きさが目録と合いません");
+    await expect(download({ ...base, sha256: sha(body), size: body.length + 5 }, dir)).rejects.toThrow(
+      "大きさが目録と合いません",
+    );
     await expect(download({ ...base, sha256: sha(body), size: 3 }, dir)).rejects.toThrow("大きさが目録と合いません");
     expect(existsSync(join(dir, name))).toBe(false);
     expect(existsSync(join(dir, `${name}.part`))).toBe(false);
@@ -113,7 +130,16 @@ describe.runIf(mac)("BRG-06-019 入れ替えの手順（sh）", () => {
     const waitFor = spawn("/bin/sleep", ["0.6"]);
     const relaunched = join(dir, "relaunched");
     const script = join(dir, "r.sh");
-    writeFileSync(script, replaceScript({ pid: waitFor.pid!, target, source, backup: join(dir, "bak.app"), relaunch: ["/usr/bin/touch", relaunched] }));
+    writeFileSync(
+      script,
+      replaceScript({
+        pid: waitFor.pid!,
+        target,
+        source,
+        backup: join(dir, "bak.app"),
+        relaunch: ["/usr/bin/touch", relaunched],
+      }),
+    );
     const t0 = Date.now();
     await new Promise((r) => spawn("/bin/sh", [script]).on("close", r));
     expect(Date.now() - t0, "終わるまで待った").toBeGreaterThanOrEqual(400);
@@ -126,13 +152,28 @@ describe.runIf(mac)("BRG-06-019 入れ替えの手順（sh）", () => {
     const target = fakeApp(join(dir, "Applications"), "0.1.0", "old");
     const relaunched = join(dir, "relaunched");
     const script = join(dir, "r.sh");
-    writeFileSync(script, replaceScript({ pid: 999_999, target, source: join(dir, "無い.app"), backup: join(dir, "bak.app"), relaunch: ["/usr/bin/touch", relaunched] }));
+    writeFileSync(
+      script,
+      replaceScript({
+        pid: 999_999,
+        target,
+        source: join(dir, "無い.app"),
+        backup: join(dir, "bak.app"),
+        relaunch: ["/usr/bin/touch", relaunched],
+      }),
+    );
     spawnSync("/bin/sh", [script]);
     expect(readFileSync(join(target, "Contents", "mark.txt"), "utf8")).toBe("old");
     expect(existsSync(relaunched)).toBe(true);
   });
   it("場所にクォートが入っていても壊れない", () => {
-    const s = replaceScript({ pid: 1, target: "/A/it's.app", source: "/B/x.app", backup: "/C/b.app", relaunch: ["/usr/bin/open", "-n", "/A/it's.app"] });
+    const s = replaceScript({
+      pid: 1,
+      target: "/A/it's.app",
+      source: "/B/x.app",
+      backup: "/C/b.app",
+      relaunch: ["/usr/bin/open", "-n", "/A/it's.app"],
+    });
     expect(s).toContain(`OLD='/A/it'\\''s.app'`);
   });
 });
@@ -156,9 +197,19 @@ describe.runIf(mac)("自分で受け取って入れ替える（起動から立�
     let quits = 0;
     const waitFor = spawn("/bin/sleep", ["0.3"]);
     const u = startUpdater({
-      apiBase: api, currentVersion: "0.1.0", platform: "darwin", arch: "arm64", execPath: i.execPath, isPackaged: true,
-      dir: join(i.dir, "updates"), isBusy: () => false, onNote: (t) => notes.push(t), quit: () => quits++,
-      relaunch: () => ["/usr/bin/touch", i.relaunched], pid: waitFor.pid!, ...over,
+      apiBase: api,
+      currentVersion: "0.1.0",
+      platform: "darwin",
+      arch: "arm64",
+      execPath: i.execPath,
+      isPackaged: true,
+      dir: join(i.dir, "updates"),
+      isBusy: () => false,
+      onNote: (t) => notes.push(t),
+      quit: () => quits++,
+      relaunch: () => ["/usr/bin/touch", i.relaunched],
+      pid: waitFor.pid!,
+      ...over,
     });
     return { u, notes, quits: () => quits };
   };
@@ -194,7 +245,9 @@ describe.runIf(mac)("自分で受け取って入れ替える（起動から立�
     await until(() => r.notes.length > 0);
     await r.u.checkNow();
     r.u.stop();
-    expect(r.notes).toEqual(["新しい版を受け取りましたが、確かめられなかったので使いませんでした（指紋が目録と合いません）"]);
+    expect(r.notes).toEqual([
+      "新しい版を受け取りましたが、確かめられなかったので使いませんでした（指紋が目録と合いません）",
+    ]);
     expect(r.quits()).toBe(0);
     expect(readFileSync(join(i.app, "Contents", "mark.txt"), "utf8")).toBe("v0.1.0");
   });
@@ -239,7 +292,9 @@ describe.runIf(mac)("自分で受け取って入れ替える（起動から立�
       const r = deps(i);
       await until(() => r.notes.length > 0);
       r.u.stop();
-      expect(r.notes[0]).toBe("新しい版（0.260928.1535）があります。この場所には書けないので、Kaname の画面から入れ直してください");
+      expect(r.notes[0]).toBe(
+        "新しい版（0.260928.1535）があります。この場所には書けないので、Kaname の画面から入れ直してください",
+      );
       expect(fileHits).toBe(0);
       expect(r.quits()).toBe(0);
     } finally {

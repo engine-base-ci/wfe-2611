@@ -44,7 +44,8 @@ test("BRG-13-001 BRG-13-002 BRG-13-004 ファイルを読ませる → 作業の
   await expect(page.locator("[data-work-done] summary").last()).toContainText("1 つの操作");
   const conv = await page.locator(".kc").innerText();
   // 返事の表には金額（120000 等）があるので、記録にしか無い語で見る
-  for (const leak of ["Read", "/w/請求台帳.csv", "input_tokens", "cost_usd", "tokens", "0.02", "4200"]) expect(conv, `会話に ${leak} は出ない`).not.toContain(leak);
+  for (const leak of ["Read", "/w/請求台帳.csv", "input_tokens", "cost_usd", "tokens", "0.02", "4200"])
+    expect(conv, `会話に ${leak} は出ない`).not.toContain(leak);
   // 記録：道具の行（名前・対象・成否・時間）と使った量（往復数・時間・量・費用）。使った量は結末より先
   const jobs = await admin<{ id: string; finished_at: string; state_id: string }>(
     "select id, finished_at, state_id from bridge_jobs where member_id = $1 order by created_at desc limit 1",
@@ -63,8 +64,16 @@ test("BRG-13-001 BRG-13-002 BRG-13-004 ファイルを読ませる → 作業の
   expect(Object.keys(tool.payload).sort(), "決めた欄だけ").toEqual(["ms", "name", "ok", "target"]);
   const usage = ev.find((e) => e.kind === "usage")!;
   expect(usage, "使った量の行").toBeTruthy();
-  expect(usage.payload).toMatchObject({ turns: 3, duration_ms: 4200, input_tokens: 1200, output_tokens: 340, cost_usd: 0.02 });
-  expect(new Date(usage.created_at).getTime(), "使った量は結末より先に残る").toBeLessThanOrEqual(new Date(jobs[0]!.finished_at).getTime());
+  expect(usage.payload).toMatchObject({
+    turns: 3,
+    duration_ms: 4200,
+    input_tokens: 1200,
+    output_tokens: 340,
+    cost_usd: 0.02,
+  });
+  expect(new Date(usage.created_at).getTime(), "使った量は結末より先に残る").toBeLessThanOrEqual(
+    new Date(jobs[0]!.finished_at).getTime(),
+  );
   // 会話（messages）には道具の記録も使った量も入らない。返事の行が持つのは操作の数と時間だけ
   const msgs = await admin<{ kind: string; body: string; work: Record<string, unknown> | null }>(
     "select kind, body, work from messages where job_id = $1 order by created_at",

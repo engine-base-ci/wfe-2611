@@ -15,10 +15,15 @@ const ID = s("直す・外すときの id（draft_read か、置いたときの�
 
 /** 道具の一覧（名前・説明・入力の形）。説明は自分のAI が読む */
 export const TOOL_DEFS: ToolDef[] = [
-  { name: "draft_read", description: "いまのたたき台（会社の目標・台帳・担当業務とAI社員）を読む。置く前・直す前に見る", inputSchema: { type: "object", properties: {} } },
+  {
+    name: "draft_read",
+    description: "いまのたたき台（会社の目標・台帳・担当業務とAI社員）を読む。置く前・直す前に見る",
+    inputSchema: { type: "object", properties: {} },
+  },
   {
     name: "goal_set",
-    description: "会社の目標を 1 つ置く・直す。聞き取った目標は必ずこれで置く（置かないと Kaname に残らない）。id を付けると直す",
+    description:
+      "会社の目標を 1 つ置く・直す。聞き取った目標は必ずこれで置く（置かないと Kaname に残らない）。id を付けると直す",
     inputSchema: {
       type: "object",
       properties: {
@@ -31,31 +36,72 @@ export const TOOL_DEFS: ToolDef[] = [
       },
     },
   },
-  { name: "goal_remove", description: "置いた目標を外す", inputSchema: { type: "object", properties: { id: ID }, required: ["id"] } },
+  {
+    name: "goal_remove",
+    description: "置いた目標を外す",
+    inputSchema: { type: "object", properties: { id: ID }, required: ["id"] },
+  },
   {
     name: "ledger_set",
-    description: "台帳（仕事の流れを記録する表。例：案件台帳）を 1 つ置く・直す。段階（流れ）と項目（列）を持つ。id を付けると直す",
+    description:
+      "台帳（仕事の流れを記録する表。例：案件台帳）を 1 つ置く・直す。段階（流れ）と項目（列）を持つ。id を付けると直す",
     inputSchema: {
       type: "object",
-      properties: { id: ID, name: s("台帳の名前（例：案件台帳）"), stages: arr("段階を流れの順に（例：引き合い・見積・受注・納品）"), fields: arr("項目（例：取引先・金額・納期）") },
+      properties: {
+        id: ID,
+        name: s("台帳の名前（例：案件台帳）"),
+        stages: arr("段階を流れの順に（例：引き合い・見積・受注・納品）"),
+        fields: arr("項目（例：取引先・金額・納期）"),
+      },
     },
   },
-  { name: "ledger_remove", description: "置いた台帳を外す", inputSchema: { type: "object", properties: { id: ID }, required: ["id"] } },
+  {
+    name: "ledger_remove",
+    description: "置いた台帳を外す",
+    inputSchema: { type: "object", properties: { id: ID }, required: ["id"] },
+  },
   {
     name: "duty_set",
-    description: "担当業務（AI社員に任せる仕事）を 1 つ置く・直す。staff に AI社員の名前を書くと、その AI社員（いなければ作る）に持たせる。id を付けると直す",
+    description:
+      "担当業務（AI社員に任せる仕事）を 1 つ置く・直す。staff に AI社員の名前を書くと、その AI社員（いなければ作る）に持たせる。id を付けると直す",
     inputSchema: {
       type: "object",
-      properties: { id: ID, name: s("担当業務の名前（例：見積の下書き）"), definition: s("何をするか。1 行目が要約として出る"), staff: s("持たせる AI社員の名前（例：見積さん）") },
+      properties: {
+        id: ID,
+        name: s("担当業務の名前（例：見積の下書き）"),
+        definition: s("何をするか。1 行目が要約として出る"),
+        staff: s("持たせる AI社員の名前（例：見積さん）"),
+      },
     },
   },
-  { name: "duty_remove", description: "置いた担当業務を外す", inputSchema: { type: "object", properties: { id: ID }, required: ["id"] } },
+  {
+    name: "duty_remove",
+    description: "置いた担当業務を外す",
+    inputSchema: { type: "object", properties: { id: ID }, required: ["id"] },
+  },
   {
     name: "artifact_put",
-    description: "作ったファイル（PDF・画像・表計算・文書）や調べた結果（文書にして）を、本人が会話の横で開ける成果物として Kaname に渡す。本人に渡すものは必ずこれで渡す（渡さないと本人の画面に出ない）。path はあなたの PC のファイルの絶対パス（ホームの中・20 MB まで）",
-    inputSchema: { type: "object", properties: { path: s("ファイルの絶対パス（例：/Users/me/work/請求まとめ.pdf）"), title: s("成果物の名前（無ければファイル名）") }, required: ["path"] },
+    description:
+      "作ったファイル（PDF・画像・表計算・文書）や調べた結果（文書にして）を、本人が会話の横で開ける成果物として Kaname に渡す。本人に渡すものは必ずこれで渡す（渡さないと本人の画面に出ない）。path はあなたの PC のファイルの絶対パス（ホームの中・20 MB まで）",
+    inputSchema: {
+      type: "object",
+      properties: {
+        path: s("ファイルの絶対パス（例：/Users/me/work/請求まとめ.pdf）"),
+        title: s("成果物の名前（無ければファイル名）"),
+      },
+      required: ["path"],
+    },
   },
-  { name: "remember", description: "本人から聞いた会社のこと（事業・顧客・体制・困りごと 等）を記憶に残す。1 件＝事実 1 つで、形は「項目：内容」（例：案件の入口：紹介と営業会社からの商談確約）。画面の「分かったこと」に項目と内容に分けて並ぶ", inputSchema: { type: "object", properties: { items: arr("覚えること（1 件 1 つ。「項目：内容」の形。例：社員数：3 人）") }, required: ["items"] } },
+  {
+    name: "remember",
+    description:
+      "本人から聞いた会社のこと（事業・顧客・体制・困りごと 等）を記憶に残す。1 件＝事実 1 つで、形は「項目：内容」（例：案件の入口：紹介と営業会社からの商談確約）。画面の「分かったこと」に項目と内容に分けて並ぶ",
+    inputSchema: {
+      type: "object",
+      properties: { items: arr("覚えること（1 件 1 つ。「項目：内容」の形。例：社員数：3 人）") },
+      required: ["items"],
+    },
+  },
 ];
 /** 許可のモードに関わらず聞かずに使える道具（本人の会社のたたき台に書くだけ・外に出ない・D-110.4） */
 export const KANAME_TOOL_RULE = "mcp__kaname";
@@ -162,12 +208,19 @@ export interface KanameTools {
 }
 
 /** Kaname の道具のサーバー 1 台分。鍵が無い仕事（会話でない）には無い */
-export function kanameServer(k: KanameTools | null | undefined, token: string | null | undefined): Record<string, unknown> | null {
+export function kanameServer(
+  k: KanameTools | null | undefined,
+  token: string | null | undefined,
+): Record<string, unknown> | null {
   if (!k || !token) return null;
   return {
     command: k.nodeBin,
     args: [k.serverPath],
-    env: { KANAME_API_BASE: k.apiBase, KANAME_TOOL_TOKEN: token, ...(process.versions["electron"] ? { ELECTRON_RUN_AS_NODE: "1" } : {}) },
+    env: {
+      KANAME_API_BASE: k.apiBase,
+      KANAME_TOOL_TOKEN: token,
+      ...(process.versions["electron"] ? { ELECTRON_RUN_AS_NODE: "1" } : {}),
+    },
   };
 }
 

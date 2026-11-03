@@ -8,7 +8,17 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { runLoginCheck } from "../src/login-check";
 import { totpCode } from "../src/two-factor";
 
-const HAS_CHROME = process.platform === "darwin" ? existsSync("/Applications/Google Chrome.app") : true;
+// Bridge は本人の Google Chrome を使う（channel: "chrome"）。Chrome の無い手元の PC では飛ばし、CI（Chrome が入っている）では必ず流す
+const HAS_CHROME =
+  process.platform === "darwin"
+    ? existsSync("/Applications/Google Chrome.app")
+    : process.platform === "linux"
+      ? ["/opt/google/chrome/chrome", "/usr/bin/google-chrome", "/usr/bin/google-chrome-stable"].some((p) =>
+          existsSync(p),
+        )
+      : true;
+if (process.env["CI"] && !HAS_CHROME)
+  throw new Error("CI には Google Chrome が要る（Bridge のログインの確認は本人の Chrome で動く）");
 const LOGIN = "me@example.com";
 const PASSWORD = "S3cret-Plain!";
 const SECRET = "JBSWY3DPEHPK3PXP";

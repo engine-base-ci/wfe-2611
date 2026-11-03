@@ -23,7 +23,8 @@ afterAll(async () => {
   await admin?.end();
   await h?.close();
 });
-const row = async (table: string, id: string) => (await admin.query(`select * from ${table} where id = $1`, [id])).rows[0];
+const row = async (table: string, id: string) =>
+  (await admin.query(`select * from ${table} where id = $1`, [id])).rows[0];
 
 describe("会話の契約の口は画面の口と同じ本体を通る", () => {
   it("作る → 名前を変える → ほかの人は変えられない → 消す。ログインなしは 401", async () => {

@@ -159,7 +159,9 @@ function LoginInner() {
           </div>
           <AuthFoot>
             <Link href="/password-reset">パスワードをお忘れの方</Link>
-            <span aria-hidden="true" className="mx-3">·</span>
+            <span aria-hidden="true" className="mx-3">
+              ·
+            </span>
             <Link href="/signup">アカウントを作る</Link>
           </AuthFoot>
         </form>

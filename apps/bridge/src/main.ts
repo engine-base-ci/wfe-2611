@@ -72,13 +72,17 @@ async function stillConnected(sessionId: string): Promise<boolean> {
 /** 1 つなぐ：接続コードを Kaname に渡して、この PC を端末として登録する。
  *  すでに別のアカウントでつながっている（前の鍵がまだ通る）なら、本人が「切り替える」を押したときだけつなぎ直す。
  *  黙って切り替えると、同じ PC のブラウザでログインした別のアカウントに Bridge が乗っ取られる（2026-09-28 実例） */
-async function claim(code: string, allowSwitch = false): Promise<{ ok: true } | { ok: false; message: string; reason?: "other_account" }> {
+async function claim(
+  code: string,
+  allowSwitch = false,
+): Promise<{ ok: true } | { ok: false; message: string; reason?: "other_account" }> {
   const st = readState();
   if (!allowSwitch && st.connected && st.sessionId && (await stillConnected(st.sessionId)))
     return {
       ok: false,
       reason: "other_account",
-      message: "この PC の Bridge は、すでに別のアカウントでつながっています。このアカウントに切り替えるなら「このアカウントに切り替える」を押してください",
+      message:
+        "この PC の Bridge は、すでに別のアカウントでつながっています。このアカウントに切り替えるなら「このアカウントに切り替える」を押してください",
     };
   const res = await fetch(`${API_BASE}/api/auth-ext/bridge/claim`, {
     method: "POST",
@@ -326,7 +330,8 @@ void app.whenReady().then(() => {
     dir: join(app.getPath("userData"), "updates"),
     isBusy: isRunning,
     onNote: (t) => {
-      for (const w of BrowserWindow.getAllWindows()) w.webContents.send("bridge:install-step", { text: t, state: "done" });
+      for (const w of BrowserWindow.getAllWindows())
+        w.webContents.send("bridge:install-step", { text: t, state: "done" });
     },
     quit: () => app.quit(),
   });

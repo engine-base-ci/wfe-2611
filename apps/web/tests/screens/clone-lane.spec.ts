@@ -36,17 +36,23 @@ async function branched(page: Page) {
   return { u, first: convs[0]!.id, branch: convs[1]!.id };
 }
 
-test("CHT-26-001 前の会話を読んだ印が付いても、開き直すと答えを待っている会話が出る（古い会話に戻らない）", async ({ page }) => {
+test("CHT-26-001 前の会話を読んだ印が付いても、開き直すと答えを待っている会話が出る（古い会話に戻らない）", async ({
+  page,
+}) => {
   const { u, first } = await branched(page);
   // 前の会話を「読んだ」にする（読んだ印で更新時刻が新しくなる）
   const r = await api(`/api/auth-ext/agent/conversations/${first}/read`, {}, u.token);
   expect(r.status).toBeLessThan(300);
   await page.reload();
-  await expect(page.locator('[data-part="question"]'), "答えを待っている問い合わせが出る").toBeVisible({ timeout: 15_000 });
+  await expect(page.locator('[data-part="question"]'), "答えを待っている問い合わせが出る").toBeVisible({
+    timeout: 15_000,
+  });
   await expect(page.locator('.msg[data-who="me"]').last()).toContainText("請求書のこと聞いて");
 });
 
-test("CHT-26-002 別の会話で自分のAI が答えを待っている間に送った文は、黙って止まらず「別の会話が終わったら動く」と出て、その会話へ移れる", async ({ page }) => {
+test("CHT-26-002 別の会話で自分のAI が答えを待っている間に送った文は、黙って止まらず「別の会話が終わったら動く」と出て、その会話へ移れる", async ({
+  page,
+}) => {
   const { u, first } = await branched(page);
   await setupStep(u.memberId, 6); // 会話の画面（/ai/chat）で前の会話を開く
   await page.goto(`/ai/chat?c=${first}`);

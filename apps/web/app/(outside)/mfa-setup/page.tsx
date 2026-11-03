@@ -127,7 +127,9 @@ export default function MfaSetupPage() {
             </form>
           ) : (
             <form onSubmit={verify} noValidate>
-              <AuthHead title="2段階認証を設定する">認証アプリ（Google Authenticator 等）で読み取ってください。</AuthHead>
+              <AuthHead title="2段階認証を設定する">
+                認証アプリ（Google Authenticator 等）で読み取ってください。
+              </AuthHead>
               <div className="mt-4 flex flex-wrap items-start gap-5">
                 {qr ? (
                   <img

@@ -37,11 +37,22 @@ export function parseManifest(raw: unknown): ReleaseManifest | null {
       (x["platform"] === "mac" || x["platform"] === "win") &&
       (x["arch"] === "arm64" || x["arch"] === "x64") &&
       (x["kind"] === "app" || x["kind"] === "installer") &&
-      typeof x["name"] === "string" && NAME.test(x["name"]) && !x["name"].includes("..") &&
-      typeof x["sha256"] === "string" && /^[0-9a-f]{64}$/.test(x["sha256"]) &&
-      Number.isInteger(x["size"]) && (x["size"] as number) > 0;
+      typeof x["name"] === "string" &&
+      NAME.test(x["name"]) &&
+      !x["name"].includes("..") &&
+      typeof x["sha256"] === "string" &&
+      /^[0-9a-f]{64}$/.test(x["sha256"]) &&
+      Number.isInteger(x["size"]) &&
+      (x["size"] as number) > 0;
     if (!ok) return null;
-    files.push({ platform: x["platform"], arch: x["arch"], kind: x["kind"], name: x["name"], sha256: x["sha256"], size: x["size"] } as ReleaseFile);
+    files.push({
+      platform: x["platform"],
+      arch: x["arch"],
+      kind: x["kind"],
+      name: x["name"],
+      sha256: x["sha256"],
+      size: x["size"],
+    } as ReleaseFile);
   }
   return { version: r["version"], released_at: typeof r["released_at"] === "string" ? r["released_at"] : "", files };
 }
@@ -50,7 +61,10 @@ let cached: { base: string; at: number; m: ReleaseManifest | null } | null = nul
 const CACHE_MS = 60_000;
 
 /** 目録を読む。手元のフォルダ（開発）が先、無ければ置き場の URL（staging／本番・1 分だけ覚える） */
-export async function readManifest(cfg: { dir?: string; base?: string }): Promise<{ m: ReleaseManifest; from: "dir" | "base" } | null> {
+export async function readManifest(cfg: {
+  dir?: string;
+  base?: string;
+}): Promise<{ m: ReleaseManifest; from: "dir" | "base" } | null> {
   if (cfg.dir) {
     try {
       const m = parseManifest(JSON.parse(readFileSync(join(cfg.dir, MANIFEST), "utf8")));

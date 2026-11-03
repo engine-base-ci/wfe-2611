@@ -1,6 +1,6 @@
 // T-U-08 たたき台を確かめる。テストの名前に正本の行 ID を持つ（op_gate.py）。会話で直す・直接編集は T-I-01／T-U-24／T-U-30
 import { expect, test } from "@playwright/test";
-import { ensureGoalKind, admin, loginAs, noOverflow, signupViaApi , setupStep } from "../_lib/api";
+import { ensureGoalKind, admin, loginAs, noOverflow, signupViaApi, setupStep } from "../_lib/api";
 
 test("SCR-ONBOARD-DRAFT-013 SCR-ONBOARD-DRAFT-012 SCR-ONBOARD-DRAFT-014 SCR-ONBOARD-DRAFT-015 SCR-ONBOARD-DRAFT-016 SCR-ONBOARD-DRAFT-017 SCR-ONBOARD-DRAFT-018 空：データが無ければ空の状態（入力欄は無い＝表記ゆらぎは該当なし）・4 幅で横溢れ 0・「自分のAIと話す」→ /onboard/interview", async ({
   page,
@@ -25,7 +25,10 @@ test("SCR-ONBOARD-DRAFT-001 SCR-ONBOARD-DRAFT-002 SCR-ONBOARD-DRAFT-006 SCR-ONBO
     "insert into goals (tenant_id, scope_id, kind_id, period_start, period_end, target_value, created_by) values ($1, $2, 'seed', '2026-10-01', '2026-12-31', 12000000, $3) returning id",
     [u.tenantId, u.scopeId, u.memberId],
   );
-  await admin("insert into goal_versions (tenant_id, goal_id, version, name, snapshot, changed_at, changed_by) values ($1, $2, 1, '今期の売上', '{}', now(), $3)", [u.tenantId, g[0]!.id, u.memberId]);
+  await admin(
+    "insert into goal_versions (tenant_id, goal_id, version, name, snapshot, changed_at, changed_by) values ($1, $2, 1, '今期の売上', '{}', now(), $3)",
+    [u.tenantId, g[0]!.id, u.memberId],
+  );
   await admin(
     "insert into goals (tenant_id, scope_id, kind_id, period_start, period_end, target_value, created_by) values ($1, $2, 'seed', '2026-10-01', '2026-12-31', 8, $3)",
     [u.tenantId, u.scopeId, u.memberId],

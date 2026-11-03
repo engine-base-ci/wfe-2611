@@ -87,7 +87,8 @@ function PasswordResetInner() {
             登録があれば、<b>{email}</b> に届きます（登録の有無はここでは表示しません）。リンクは30分で失効します。
           </AuthHead>
           <AuthNote icon={<Info />}>
-            再設定すると、<b>今ログイン中の端末と Bridge の接続はすべて切れます</b>。入り直してからつなぎ直してください。
+            再設定すると、<b>今ログイン中の端末と Bridge の接続はすべて切れます</b>
+            。入り直してからつなぎ直してください。
           </AuthNote>
           <Link href="/login" className="block">
             <Button variant="ghost" className="w-full">

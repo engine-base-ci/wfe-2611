@@ -8,7 +8,15 @@ import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { AuthExtError, artifactDownload, artifactGet, artifactRename, artifactRevert, artifactSave, type Artifact } from "@/lib/auth/ext";
+import {
+  AuthExtError,
+  artifactDownload,
+  artifactGet,
+  artifactRename,
+  artifactRevert,
+  artifactSave,
+  type Artifact,
+} from "@/lib/auth/ext";
 import { Markdown } from "./markdown";
 
 const IMAGE = /^(png|jpe?g|gif|webp|svg)$/i;
@@ -16,7 +24,9 @@ const VIDEO = /^(mp4|webm|mov)$/i;
 const AUDIO = /^(mp3|m4a|wav|ogg)$/i;
 const hhmm = (iso: string) => {
   const d = new Date(iso);
-  return Number.isNaN(d.getTime()) ? "" : `${d.getMonth() + 1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2, "0")}`;
+  return Number.isNaN(d.getTime())
+    ? ""
+    : `${d.getMonth() + 1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2, "0")}`;
 };
 const why = (e: unknown, fallback: string) => (e instanceof AuthExtError || e instanceof Error ? e.message : fallback);
 
@@ -77,9 +87,14 @@ function CsvTable({ text }: { text: string }) {
             <tr>
               {head.map((h, i) => (
                 <th key={`${h}-${i}`} aria-sort={sort?.col === i ? (sort.asc ? "ascending" : "descending") : "none"}>
-                  <button type="button" onClick={() => setSort((s) => (s?.col === i ? { col: i, asc: !s.asc } : { col: i, asc: true }))}>
+                  <button
+                    type="button"
+                    onClick={() => setSort((s) => (s?.col === i ? { col: i, asc: !s.asc } : { col: i, asc: true }))}
+                  >
                     {h}
-                    {sort?.col === i ? <ChevronDown style={sort.asc ? undefined : { transform: "rotate(180deg)" }} /> : null}
+                    {sort?.col === i ? (
+                      <ChevronDown style={sort.asc ? undefined : { transform: "rotate(180deg)" }} />
+                    ) : null}
                   </button>
                 </th>
               ))}
@@ -151,8 +166,18 @@ export function ArtifactPanel({ id, onClose }: { id: string; onClose: () => void
       setBusy(false);
     }
   };
-  const save = () => void run(() => artifactSave(id, draft ?? a?.text ?? ""), (n) => `版 ${n.current_version} として残しました`, "保存できませんでした");
-  const revert = (v: number) => void run(() => artifactRevert(id, v), (n) => `版 ${v} の中身で版 ${n.current_version} を作りました`, "戻せませんでした");
+  const save = () =>
+    void run(
+      () => artifactSave(id, draft ?? a?.text ?? ""),
+      (n) => `版 ${n.current_version} として残しました`,
+      "保存できませんでした",
+    );
+  const revert = (v: number) =>
+    void run(
+      () => artifactRevert(id, v),
+      (n) => `版 ${v} の中身で版 ${n.current_version} を作りました`,
+      "戻せませんでした",
+    );
   const rename = async () => {
     const t = naming?.trim();
     setNaming(null);
@@ -196,12 +221,25 @@ export function ArtifactPanel({ id, onClose }: { id: string; onClose: () => void
             onKeyDown={(e) => (e.key === "Enter" ? void rename() : e.key === "Escape" ? setNaming(null) : undefined)}
           />
         ) : (
-          <button type="button" className="atitle" title="名前を直す" onClick={() => a && setNaming(a.title)} data-art-title>
+          <button
+            type="button"
+            className="atitle"
+            title="名前を直す"
+            onClick={() => a && setNaming(a.title)}
+            data-art-title
+          >
             {a?.title ?? "成果物"}
           </button>
         )}
         {a ? <span className="v">版 {a.current_version}</span> : null}
-        <button type="button" className="aclose" title="閉じる" aria-label="成果物を閉じる" onClick={onClose} data-art-close>
+        <button
+          type="button"
+          className="aclose"
+          title="閉じる"
+          aria-label="成果物を閉じる"
+          onClick={onClose}
+          data-art-close
+        >
           <X />
         </button>
       </div>
@@ -226,16 +264,35 @@ export function ArtifactPanel({ id, onClose }: { id: string; onClose: () => void
           ) : null}
           {a.editable && !old ? (
             <div className="atabs" role="tablist" aria-label="見る・直す">
-              <button type="button" role="tab" aria-selected={!editing} className={!editing ? "on" : undefined} onClick={() => setMode("view")}>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={!editing}
+                className={!editing ? "on" : undefined}
+                onClick={() => setMode("view")}
+              >
                 見る
               </button>
-              <button type="button" role="tab" aria-selected={editing} className={editing ? "on" : undefined} onClick={() => setMode("edit")} data-art-edit>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={editing}
+                className={editing ? "on" : undefined}
+                onClick={() => setMode("edit")}
+                data-art-edit
+              >
                 直す
               </button>
             </div>
           ) : null}
           {editing ? (
-            <textarea className="aedit" aria-label="成果物の中身" value={draft ?? a.text ?? ""} onChange={(e) => setDraft(e.target.value)} data-art-text />
+            <textarea
+              className="aedit"
+              aria-label="成果物の中身"
+              value={draft ?? a.text ?? ""}
+              onChange={(e) => setDraft(e.target.value)}
+              data-art-text
+            />
           ) : (
             <div className="ab">
               {!a.editable ? (
@@ -251,8 +308,17 @@ export function ArtifactPanel({ id, onClose }: { id: string; onClose: () => void
             <summary>版の一覧（{a.versions.length}）</summary>
             <ol>
               {a.versions.map((v) => (
-                <li key={v.version} className={v.version === a.current_version ? "on" : undefined} data-art-version={v.version}>
-                  <button type="button" className="vopen" title="この版を開く" onClick={() => setViewing(v.version === a.current_version ? null : v.version)}>
+                <li
+                  key={v.version}
+                  className={v.version === a.current_version ? "on" : undefined}
+                  data-art-version={v.version}
+                >
+                  <button
+                    type="button"
+                    className="vopen"
+                    title="この版を開く"
+                    onClick={() => setViewing(v.version === a.current_version ? null : v.version)}
+                  >
                     版 {v.version}
                   </button>
                   <span className="muted">
@@ -262,7 +328,13 @@ export function ArtifactPanel({ id, onClose }: { id: string; onClose: () => void
                   {v.version === a.current_version ? (
                     <span className="now">いまの版</span>
                   ) : a.editable ? (
-                    <Button size="sm" variant="ghost" disabled={busy} onClick={() => revert(v.version)} data-art-revert={v.version}>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      disabled={busy}
+                      onClick={() => revert(v.version)}
+                      data-art-revert={v.version}
+                    >
                       この版に戻す
                     </Button>
                   ) : null}
@@ -272,7 +344,13 @@ export function ArtifactPanel({ id, onClose }: { id: string; onClose: () => void
           </details>
           <div className="af">
             {editing ? (
-              <Button size="sm" icon={<Check />} onClick={save} disabled={busy || draft === null || draft === a.text} data-art-save>
+              <Button
+                size="sm"
+                icon={<Check />}
+                onClick={save}
+                disabled={busy || draft === null || draft === a.text}
+                data-art-save
+              >
                 保存（新しい版にする）
               </Button>
             ) : null}

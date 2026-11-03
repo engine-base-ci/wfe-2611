@@ -7,8 +7,16 @@ import "@/components/ai/chat.css";
 import { agentSetBrowser, AuthExtError, type AgentBrowser } from "@/lib/auth/ext";
 
 const OPTIONS: { value: AgentBrowser; label: string; desc: string }[] = [
-  { value: "chrome", label: "自分の Chrome（Claude in Chrome）", desc: "いつもの Chrome とそのログインの状態をそのまま使います。拡張機能「Claude in Chrome」が要ります" },
-  { value: "dedicated", label: "Bridge 専用のブラウザ", desc: "いつもの Chrome とは別のログインの状態で動きます。Chrome を閉じていても使えます" },
+  {
+    value: "chrome",
+    label: "自分の Chrome（Claude in Chrome）",
+    desc: "いつもの Chrome とそのログインの状態をそのまま使います。拡張機能「Claude in Chrome」が要ります",
+  },
+  {
+    value: "dedicated",
+    label: "Bridge 専用のブラウザ",
+    desc: "いつもの Chrome とは別のログインの状態で動きます。Chrome を閉じていても使えます",
+  },
   { value: "off", label: "使わない", desc: "AI はブラウザを開きません" },
 ];
 
@@ -56,4 +64,3 @@ export function BrowserPick({ value, disabled }: { value: AgentBrowser; disabled
     </div>
   );
 }
-

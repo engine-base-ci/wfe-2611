@@ -10,7 +10,9 @@ test.afterEach(() => {
   bridge = null;
 });
 
-test("CHT-25-002 CHT-25-004 CHT-25-005 はじめの設定で話すと、自分のAI が道具で目標・台帳・担当業務とAI社員を置き（毎回聞くでも許可の問いは出ない）、たたき台の画面にそのまま出る", async ({ page }) => {
+test("CHT-25-002 CHT-25-004 CHT-25-005 はじめの設定で話すと、自分のAI が道具で目標・台帳・担当業務とAI社員を置き（毎回聞くでも許可の問いは出ない）、たたき台の画面にそのまま出る", async ({
+  page,
+}) => {
   const u = await signupViaApi();
   bridge = await startAgentBridge(u.token);
   await setupStep(u.memberId, 2);
@@ -23,7 +25,9 @@ test("CHT-25-002 CHT-25-004 CHT-25-005 はじめの設定で話すと、自分�
   await box.fill("たたき台を置いて");
   await box.press("Enter");
   // 作業の行に人が読む言葉で出る
-  await expect(page.locator("[data-working]")).toContainText(/たたき台に(目標|台帳|担当業務)を置いています/, { timeout: 15_000 });
+  await expect(page.locator("[data-working]")).toContainText(/たたき台に(目標|台帳|担当業務)を置いています/, {
+    timeout: 15_000,
+  });
   const last = page.locator('.msg[data-who="ai"]:not([data-streaming])').last();
   await expect(last).toContainText("たたき台に置きました：今期の売上・案件台帳・見積の下書き", { timeout: 20_000 });
   await expect(page.locator('[data-part="ask"]'), "許可の問いは出ない").toHaveCount(0);
@@ -36,11 +40,21 @@ test("CHT-25-002 CHT-25-004 CHT-25-005 はじめの設定で話すと、自分�
   await expect(n).toContainText("引き合い → 見積 → 受注 → 納品");
   await expect(n).toContainText("見積さん");
   // 証跡に 1 件ずつ
-  const au = await admin<{ action: string }>("select action from audit_events where actor_member_id = $1 and action like 'agent.%' order by action", [u.memberId]);
-  expect(au.map((a) => a.action)).toEqual(["agent.ai_employee_created", "agent.duty_created", "agent.goal_created", "agent.ledger_created"]);
+  const au = await admin<{ action: string }>(
+    "select action from audit_events where actor_member_id = $1 and action like 'agent.%' order by action",
+    [u.memberId],
+  );
+  expect(au.map((a) => a.action)).toEqual([
+    "agent.ai_employee_created",
+    "agent.duty_created",
+    "agent.goal_created",
+    "agent.ledger_created",
+  ]);
 });
 
-test("CHT-30-001 CHT-30-002 作業中は 1 行が切り替わり、道具の行は並ばない。内部の名前（mcp__）は作業の行にも画面のどこにも出ない", async ({ page }) => {
+test("CHT-30-001 CHT-30-002 作業中は 1 行が切り替わり、道具の行は並ばない。内部の名前（mcp__）は作業の行にも画面のどこにも出ない", async ({
+  page,
+}) => {
   const u = await signupViaApi();
   bridge = await startAgentBridge(u.token);
   await setupStep(u.memberId, 2);
@@ -55,7 +69,10 @@ test("CHT-30-001 CHT-30-002 作業中は 1 行が切り替わり、道具の行�
   const w = page.locator("[data-working]");
   await expect(w).toBeVisible({ timeout: 15_000 });
   for (let i = 0; i < 40 && (await w.count()); i++) {
-    const t = await w.locator(".ws").textContent().catch(() => null);
+    const t = await w
+      .locator(".ws")
+      .textContent()
+      .catch(() => null);
     if (t) seen.add(t);
     expect(await page.locator(".wtool").count(), "道具の行は並ばない").toBe(0);
     expect(await w.locator(".wl").count(), "作業の行は 1 行").toBeLessThanOrEqual(1);
@@ -64,7 +81,9 @@ test("CHT-30-001 CHT-30-002 作業中は 1 行が切り替わり、道具の行�
   const all = [...seen].join(" / ");
   expect(all).toMatch(/たたき台に(目標|台帳|担当業務)を置いています：/);
   expect(all).not.toContain("mcp__");
-  await expect(page.locator('.msg[data-who="ai"]:not([data-streaming])').last()).toContainText("たたき台に置きました", { timeout: 20_000 });
+  await expect(page.locator('.msg[data-who="ai"]:not([data-streaming])').last()).toContainText("たたき台に置きました", {
+    timeout: 20_000,
+  });
   expect(await page.locator("body").innerText()).not.toContain("mcp__");
 });
 

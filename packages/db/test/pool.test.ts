@@ -37,7 +37,9 @@ describe("接続プールの待機列（G-16）", () => {
   it("同時 50 要求でも全部返り、同時に持つ接続は上限（3）を超えない", async () => {
     const pool = createPool({ databaseUrl: DB_URL, max: 3, connectTimeoutMs: 200 });
     try {
-      const rs = await Promise.all(Array.from({ length: 50 }, (_, i) => pool.query("select pg_sleep(0.02), $1::int as i", [i])));
+      const rs = await Promise.all(
+        Array.from({ length: 50 }, (_, i) => pool.query("select pg_sleep(0.02), $1::int as i", [i])),
+      );
       expect(rs.map((r) => r.rows[0].i)).toEqual(Array.from({ length: 50 }, (_, i) => i));
       expect(pool.totalCount).toBeLessThanOrEqual(3);
     } finally {

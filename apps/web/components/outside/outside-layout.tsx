@@ -31,10 +31,17 @@ export function OutsideLayout({
         <h2 className="mb-4 text-[22px] leading-[1.5] font-bold tracking-[-0.01em] md:text-[28px]">{pitch}</h2>
         <p className="max-w-[420px] text-[14px] leading-[1.9] opacity-[.82]">{lead}</p>
         {steps?.length ? (
-          <ol className="mt-7 hidden flex-col gap-[9px] text-[13px] opacity-[.85] md:flex" aria-label="はじめるまでの手順">
+          <ol
+            className="mt-7 hidden flex-col gap-[9px] text-[13px] opacity-[.85] md:flex"
+            aria-label="はじめるまでの手順"
+          >
             {steps.map((s, i) => (
               <li key={s} className="flex items-center gap-[9px]">
-                {i < stepsDone ? <Check className="size-4" aria-label="済" /> : <Clock className="size-4" aria-hidden />}
+                {i < stepsDone ? (
+                  <Check className="size-4" aria-label="済" />
+                ) : (
+                  <Clock className="size-4" aria-hidden />
+                )}
                 <span className={i < stepsDone ? undefined : "opacity-[.78]"}>{s}</span>
               </li>
             ))}
@@ -66,7 +73,9 @@ export function AuthIcon({ tone = "info", children }: { tone?: "info" | "ok" | "
     ng: "bg-[var(--st-danger-c)] text-[var(--error)]",
     muted: "bg-[var(--sv)] text-[var(--on-sv)]",
   }[tone];
-  return <div className={`mb-[18px] grid size-[52px] place-items-center rounded-full [&>svg]:size-5 ${c}`}>{children}</div>;
+  return (
+    <div className={`mb-[18px] grid size-[52px] place-items-center rounded-full [&>svg]:size-5 ${c}`}>{children}</div>
+  );
 }
 /** 箱の中の補足（.pz：淡い面・左に印） */
 export function AuthNote({ icon, children }: { icon: ReactNode; children: ReactNode }) {
@@ -79,14 +88,22 @@ export function AuthNote({ icon, children }: { icon: ReactNode; children: ReactN
 }
 /** 箱の下の 1 行（真ん中寄せ・小さく） */
 export function AuthFoot({ children }: { children: ReactNode }) {
-  return <p className="mt-[18px] text-center text-[12.5px] text-[var(--on-sv)] [&_a]:font-semibold [&_a]:text-[var(--primary)]">{children}</p>;
+  return (
+    <p className="mt-[18px] text-center text-[12.5px] text-[var(--on-sv)] [&_a]:font-semibold [&_a]:text-[var(--primary)]">
+      {children}
+    </p>
+  );
 }
 /** 箱の見出しと説明（h1 24px・説明 13.5px） */
 export function AuthHead({ title, children }: { title: ReactNode; children?: ReactNode }) {
   return (
     <>
       <h1 className="mb-[5px] text-[24px] font-bold">{title}</h1>
-      {children ? <div className="mb-[26px] text-[13.5px] leading-[1.8] text-[var(--on-sv)] [&_b]:text-[var(--on-surface)]">{children}</div> : null}
+      {children ? (
+        <div className="mb-[26px] text-[13.5px] leading-[1.8] text-[var(--on-sv)] [&_b]:text-[var(--on-surface)]">
+          {children}
+        </div>
+      ) : null}
     </>
   );
 }

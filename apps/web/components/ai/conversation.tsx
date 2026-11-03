@@ -8,7 +8,21 @@
 //   会話は読み上げソフトが順に読める記録（role=log）、作業中は aria-busy（D-104.20）
 import Link from "next/link";
 import type { Route } from "next";
-import { ArrowDown, Bot, Brain, Copy, Download, FileText, Globe, ListChecks, MessageSquareQuote, Paperclip, Pencil, RefreshCw, TriangleAlert } from "lucide-react";
+import {
+  ArrowDown,
+  Bot,
+  Brain,
+  Copy,
+  Download,
+  FileText,
+  Globe,
+  ListChecks,
+  MessageSquareQuote,
+  Paperclip,
+  Pencil,
+  RefreshCw,
+  TriangleAlert,
+} from "lucide-react";
 import { BrowserFix, isBrowserOffNotice } from "./browser-fix";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -66,9 +80,15 @@ export function Conversation({
   askOnly?: boolean;
 }) {
   const s = agent.state;
-  const queuedIds = useMemo(() => new Set((s?.queued ?? []).filter((q) => q.kind === "job").map((q) => q.job_id)), [s?.queued]);
+  const queuedIds = useMemo(
+    () => new Set((s?.queued ?? []).filter((q) => q.kind === "job").map((q) => q.job_id)),
+    [s?.queued],
+  );
   // 順番待ちの文は入力欄の上に出す（会話の流れにはまだ入れない）
-  const msgs = useMemo(() => (s?.messages ?? []).filter((m) => !(m.who === "me" && m.job_id && queuedIds.has(m.job_id))), [s?.messages, queuedIds]);
+  const msgs = useMemo(
+    () => (s?.messages ?? []).filter((m) => !(m.who === "me" && m.job_id && queuedIds.has(m.job_id))),
+    [s?.messages, queuedIds],
+  );
   const work = s?.work ?? null;
   const asking = s?.asking ?? null;
   const questions = asking ? questionsOf(asking) : null;
@@ -77,7 +97,11 @@ export function Conversation({
   // ---- 成果物（D-106）：返事から書き出すと横に開く。閉じても会話の中のカードから開き直せる
   const qc = useQueryClient();
   const convId = agent.conversationId;
-  const arts = useQuery({ queryKey: ["agent-artifacts", convId], queryFn: () => artifactList(convId), enabled: !!convId });
+  const arts = useQuery({
+    queryKey: ["agent-artifacts", convId],
+    queryFn: () => artifactList(convId),
+    enabled: !!convId,
+  });
   // 自分のAI が仕事の中で道具で渡した成果物（D-121）は、返事が届いた時点で読み直してカードに出す（返事に結ばれるのは結末のとき）
   // 返事の文は書きながら先に出る（D-112）ので、返事が出た時だけでなく、仕事が終わった時（結末で返事に結ばれる）にも読み直す
   const aiCount = (s?.messages ?? []).filter((m) => m.who === "ai").length;
@@ -225,8 +249,21 @@ export function Conversation({
   }, []);
 
   return (
-    <div className="kc" data-part="conversation" data-compact={compact ? "" : undefined} data-art={openArt && !compact ? "" : undefined}>
-      <div ref={chat} className="chat" role="log" aria-label="会話" aria-busy={!!work} onMouseUp={onSelect} onKeyUp={onSelect}>
+    <div
+      className="kc"
+      data-part="conversation"
+      data-compact={compact ? "" : undefined}
+      data-art={openArt && !compact ? "" : undefined}
+    >
+      <div
+        ref={chat}
+        className="chat"
+        role="log"
+        aria-label="会話"
+        aria-busy={!!work}
+        onMouseUp={onSelect}
+        onKeyUp={onSelect}
+      >
         {agent.hasOlder ? (
           <div ref={top} className="muted" style={{ textAlign: "center", fontSize: 12 }} data-older>
             {agent.olderFailed ? (
@@ -263,7 +300,12 @@ export function Conversation({
                       <button
                         type="button"
                         className="alt"
-                        onClick={(e) => e.currentTarget.closest(".kc")?.querySelector<HTMLTextAreaElement>(".composer textarea")?.focus()}
+                        onClick={(e) =>
+                          e.currentTarget
+                            .closest(".kc")
+                            ?.querySelector<HTMLTextAreaElement>(".composer textarea")
+                            ?.focus()
+                        }
                       >
                         その他（自分で書く）
                       </button>
@@ -338,7 +380,13 @@ export function Conversation({
               <div className="sendfail" role="status">
                 <TriangleAlert />
                 送れませんでした（{f.reason}）。書いた文は残っています
-                <Button size="sm" variant="outline" icon={<RefreshCw />} onClick={() => void agent.retry(f.key)} data-retry>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  icon={<RefreshCw />}
+                  onClick={() => void agent.retry(f.key)}
+                  data-retry
+                >
                   もう一度送る
                 </Button>
                 <Button size="sm" variant="ghost" onClick={() => agent.dismissFailed(f.key)}>
@@ -348,7 +396,13 @@ export function Conversation({
             </div>
           </div>
         ))}
-        {work ? <WorkLive work={work} waiting={asking ? (questions ? "answer" : "permission") : null} offlineSec={offlineSec} /> : null}
+        {work ? (
+          <WorkLive
+            work={work}
+            waiting={asking ? (questions ? "answer" : "permission") : null}
+            offlineSec={offlineSec}
+          />
+        ) : null}
         {work?.partial ? (
           <div className="msg c" data-who="ai" data-streaming>
             <div className="av">
@@ -364,7 +418,12 @@ export function Conversation({
         ) : null}
         {asking ? (
           questions ? (
-            <QCard who={asking.by ?? aiName} questions={questions} busy={agent.sending} onSend={(answers) => void agent.answer({ allow: true, answers })} />
+            <QCard
+              who={asking.by ?? aiName}
+              questions={questions}
+              busy={agent.sending}
+              onSend={(answers) => void agent.answer({ allow: true, answers })}
+            />
           ) : (
             <PermCard asking={asking} busy={agent.sending} onAnswer={(a) => void agent.answer(a)} />
           )
@@ -374,7 +433,11 @@ export function Conversation({
         <div ref={end} aria-hidden="true" style={{ scrollMarginBottom: compact ? 24 : 176 }} />
       </div>
       {sel ? (
-        <span className="selpop" style={{ position: "fixed", left: sel.x, top: sel.y - 36, transform: "translateX(-50%)", zIndex: 30 }} data-quote-pop>
+        <span
+          className="selpop"
+          style={{ position: "fixed", left: sel.x, top: sel.y - 36, transform: "translateX(-50%)", zIndex: 30 }}
+          data-quote-pop
+        >
           <button
             type="button"
             onMouseDown={(e) => e.preventDefault()}
@@ -387,7 +450,11 @@ export function Conversation({
             <MessageSquareQuote />
             引用して続ける
           </button>
-          <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => (void copyText(sel.text), setSel(null))}>
+          <button
+            type="button"
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={() => (void copyText(sel.text), setSel(null))}
+          >
             <Copy />
             コピー
           </button>
@@ -489,10 +556,16 @@ function Atts({ list }: { list: AgentMsg["attachments"] }) {
 
 /** 返事の 1 行目をタスクの名前にする（見出し・箇条書きの印は外す） */
 const titleOf = (md: string) =>
-  (md
-    .split("\n")
-    .map((l) => l.replace(/^\s*(#{1,6}\s+|>\s*|[-*+]\s+(\[[ xX]\]\s+)?|\d+[.)]\s+)/, "").replace(/[*_`~]/g, "").trim())
-    .find(Boolean) ?? "自分のAIの返事から"
+  (
+    md
+      .split("\n")
+      .map((l) =>
+        l
+          .replace(/^\s*(#{1,6}\s+|>\s*|[-*+]\s+(\[[ xX]\]\s+)?|\d+[.)]\s+)/, "")
+          .replace(/[*_`~]/g, "")
+          .trim(),
+      )
+      .find(Boolean) ?? "自分のAIの返事から"
   ).slice(0, 80);
 
 function ArtifactCard({ a, onOpen }: { a: ArtifactItem; onOpen: (id: string) => void }) {
@@ -529,13 +602,28 @@ function ArtifactCard({ a, onOpen }: { a: ArtifactItem; onOpen: (id: string) => 
   );
 }
 
-function Theirs({ m, name, onExport, arts, onOpen }: { m: AgentMsg; name: string; onExport: ExportFn; arts: ArtifactItem[]; onOpen: (id: string) => void }) {
+function Theirs({
+  m,
+  name,
+  onExport,
+  arts,
+  onOpen,
+}: {
+  m: AgentMsg;
+  name: string;
+  onExport: ExportFn;
+  arts: ArtifactItem[];
+  onOpen: (id: string) => void;
+}) {
   const [busy, setBusy] = useState(false);
   const toTask = async () => {
     setBusy(true);
     try {
       await api.create("tasks", { title: titleOf(m.text), next_action: m.text.slice(0, 2000) }, "clone-chat");
-      toast("タスクにしました", isBuilt("/tasks") ? { action: { label: "開く", onClick: () => window.location.assign("/tasks") } } : {});
+      toast(
+        "タスクにしました",
+        isBuilt("/tasks") ? { action: { label: "開く", onClick: () => window.location.assign("/tasks") } } : {},
+      );
     } catch (e) {
       toast(`タスクにできませんでした（${e instanceof Error ? e.message : "理由は分かりません"}）`);
     } finally {

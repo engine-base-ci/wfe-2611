@@ -58,10 +58,16 @@ test("USH-01-011 サイドバーの「高本AIと話す」を押すと会話モ�
   await open(page);
   const link = page.locator('.side-nav a[href="/ai/chat"]').first();
   if (!(await link.isVisible()))
-    await page.locator(".side-group", { has: page.locator('a[href="/ai/chat"]') }).first().locator("button.side-grp").click();
+    await page
+      .locator(".side-group", { has: page.locator('a[href="/ai/chat"]') })
+      .first()
+      .locator("button.side-grp")
+      .click();
   await link.click();
   await expect(page).toHaveURL(/\/ai\/chat$/);
-  await expect(page.getByRole("heading", { level: 1, name: "自分のAIと話す" }).first()).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByRole("heading", { level: 1, name: "自分のAIと話す" }).first()).toBeVisible({
+    timeout: 15_000,
+  });
 });
 test("USH-01-050 スマホの下タブの「高本AIと話す」を押すと会話モード（/ai/chat）が開く", async ({ page }) => {
   const u = await signupViaApi();
@@ -71,11 +77,15 @@ test("USH-01-050 スマホの下タブの「高本AIと話す」を押すと会�
   await page.goto("/dev/shell?screen=today&role=R1&ps=PS3");
   await page.locator('.tabbar a[href="/ai/chat"]').first().click();
   await expect(page).toHaveURL(/\/ai\/chat$/);
-  await expect(page.getByRole("heading", { level: 1, name: "自分のAIと話す" }).first()).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByRole("heading", { level: 1, name: "自分のAIと話す" }).first()).toBeVisible({
+    timeout: 15_000,
+  });
 });
 
 // 押した群だけ開け閉めし、ほかの群は開いていればそのまま（2026-09-30 user「トグルで開閉・他を開いても開いたまま」）。画面を移っても開いたまま
-test("USH-01-015 USH-01-020 開いている群は、ほかの群を開いても閉じない。押した群だけ閉じ、画面を開き直しても開いたまま", async ({ page }) => {
+test("USH-01-015 USH-01-020 開いている群は、ほかの群を開いても閉じない。押した群だけ閉じ、画面を開き直しても開いたまま", async ({
+  page,
+}) => {
   const u = await signupViaApi();
   await setupStep(u.memberId, 6);
   await loginAs(page, u.token);

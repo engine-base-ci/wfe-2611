@@ -5,15 +5,25 @@ import type { Hook, HookArgs, HookReply } from "../contract/deps.js";
 import { deleteConversation, editMemory, newConversation, setConversation } from "../auth/agent-ops.js";
 import { unwritable } from "../contract/op.js";
 
-const notFound = (code: string, message: string): HookReply => ({ status: 404, body: { error: "not_found", code, message } });
+const notFound = (code: string, message: string): HookReply => ({
+  status: 404,
+  body: { error: "not_found", code, message },
+});
 const invalid = (field: string, message: string): HookReply => ({
   status: 422,
   body: { error: "validation_failed", code: "VALIDATION_ERROR", details: [{ field, message }] },
 });
 /** 契約では文字で来る（"true"／"false"）。それ以外は「変えない」 */
-const flag = (v: unknown): boolean | null => (v === "true" || v === true ? true : v === "false" || v === false ? false : null);
+const flag = (v: unknown): boolean | null =>
+  v === "true" || v === true ? true : v === "false" || v === false ? false : null;
 const text = (v: unknown, n: number): string | null => {
-  const s = typeof v === "string" ? v.replace(/[\r\n]+/g, " ").trim().slice(0, n) : "";
+  const s =
+    typeof v === "string"
+      ? v
+          .replace(/[\r\n]+/g, " ")
+          .trim()
+          .slice(0, n)
+      : "";
   return s || null;
 };
 
@@ -36,7 +46,9 @@ export function agentHooks(pool: pg.Pool): Record<string, Hook> {
           starred: a.input["starred_at"] === undefined ? null : Boolean(a.input["starred_at"]),
           incognito: flag(a.input["incognito"]),
         });
-        return ok ? { status: 200, body: { data: { id: a.id, ok: true } } } : unwritable(a, notFound("CONVERSATION_NOT_FOUND", "この会話はありません"));
+        return ok
+          ? { status: 200, body: { data: { id: a.id, ok: true } } }
+          : unwritable(a, notFound("CONVERSATION_NOT_FOUND", "この会話はありません"));
       },
     },
     deleteConversation: {

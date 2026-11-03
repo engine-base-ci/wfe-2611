@@ -12,11 +12,17 @@ export function modeArgs(mode: string | null | undefined): string[] {
 }
 
 /** モデル・考える強さ・いつも許可のルールを CLI の引数に。形が怪しい値は渡さない */
-export function optionArgs(o: { model?: string | null; effort?: string | null; allowed_tools?: string[] | null }): string[] {
+export function optionArgs(o: {
+  model?: string | null;
+  effort?: string | null;
+  allowed_tools?: string[] | null;
+}): string[] {
   const a: string[] = [];
   if (o.model && /^[a-z0-9.-]{1,40}$/i.test(o.model)) a.push("--model", o.model);
   if (o.effort && (EFFORTS as readonly string[]).includes(o.effort)) a.push("--effort", o.effort);
-  const rules = (o.allowed_tools ?? []).filter((r) => /^[A-Za-z][\w-]{0,40}(\(.{0,300}\))?$/s.test(r) && !/[\r\n]/.test(r)).slice(0, 100);
+  const rules = (o.allowed_tools ?? [])
+    .filter((r) => /^[A-Za-z][\w-]{0,40}(\(.{0,300}\))?$/s.test(r) && !/[\r\n]/.test(r))
+    .slice(0, 100);
   if (rules.length) a.push("--allowedTools", ...rules);
   return a;
 }

@@ -9,14 +9,19 @@ const REL = join(__dirname, "..", "release");
 const MANIFEST = join(REL, "kaname-bridge.json");
 
 describe.runIf(existsSync(MANIFEST))("BRG-06-015 配布のコマンドが書いた目録", () => {
-  const m = JSON.parse(readFileSync(MANIFEST, "utf8")) as {
+  // 目録は試験の中で読む（集める時に読むと、目録の無い環境で runIf より先に落ちる）
+  type Manifest = {
     version: string;
     files: { platform: string; arch: string; kind: string; name: string; sha256: string; size: number }[];
   };
+  let cache: Manifest | null = null;
+  const manifest = (): Manifest => (cache ??= JSON.parse(readFileSync(MANIFEST, "utf8")) as Manifest);
   it("版は日時から付いた 0.YYMMDD.HHMM で、0.1.0 より新しい", () => {
+    const m = manifest();
     expect(m.version).toMatch(/^0\.\d{6}\.\d{1,4}$/);
   });
   it("入れ替え用の中身（zip）と人が受け取るもの（dmg）が同じ版で載り、指紋と大きさが実物と合う", () => {
+    const m = manifest();
     const kinds = new Set(m.files.map((f) => `${f.platform}/${f.kind}`));
     expect(kinds.has("mac/app")).toBe(true);
     expect(kinds.has("mac/installer")).toBe(true);
@@ -29,8 +34,11 @@ describe.runIf(existsSync(MANIFEST))("BRG-06-015 配布のコマンドが書い�
   });
   it("zip の中の Bridge は目録と同じ版（配る前に版がずれていない）", async () => {
     const { spawnSync } = await import("node:child_process");
+    const m = manifest();
     const zip = m.files.find((f) => f.platform === "mac" && f.kind === "app")!;
-    const r = spawnSync("/usr/bin/unzip", ["-p", join(REL, zip.name), "Kaname Bridge.app/Contents/Info.plist"], { maxBuffer: 1 << 20 });
+    const r = spawnSync("/usr/bin/unzip", ["-p", join(REL, zip.name), "Kaname Bridge.app/Contents/Info.plist"], {
+      maxBuffer: 1 << 20,
+    });
     expect(r.stdout.toString()).toContain(`<string>${m.version}</string>`);
   });
 });

@@ -1,8 +1,6 @@
 {
   "_doc": "design_gate.py（D1〜D6）のプロジェクト固有の設定。例外は必ず理由を書く",
   "ignore_files": ["_viewer.html", "DESIGN-kaname-preview.html", "font-compare.html"],
-  "allow_colors": [
-    {"value": "#2A3444", "reason": "状態タブの帯はモック専用の治具。実装の画面には出ない"}
-  ],
+  "allow_colors": [{ "value": "#2A3444", "reason": "状態タブの帯はモック専用の治具。実装の画面には出ない" }],
   "allow_sizes": []
 }

@@ -219,15 +219,19 @@ const asBridge = async <T>(sid: string, path: string, body: unknown) => {
 };
 /** Bridge が仕事を 1 件もらう */
 export const bridgeTake = (sid: string) =>
-  asBridge<{ data: { job_id: string; prompt: string; agent_session_id: string | null } | null }>(
-    sid,
-    "/bridge/take",
-    { protocol: 4 },
-  );
+  asBridge<{ data: { job_id: string; prompt: string; agent_session_id: string | null } | null }>(sid, "/bridge/take", {
+    protocol: 4,
+  });
 /** Bridge が結末を返す（done／stopped／cancelled）。止まったものは止まったまま置かれる */
 export const bridgeFinish = (
   sid: string,
-  b: { job_id: string; state: "done" | "stopped" | "cancelled"; result?: string; reason?: string; agent_session_id?: string },
+  b: {
+    job_id: string;
+    state: "done" | "stopped" | "cancelled";
+    result?: string;
+    reason?: string;
+    agent_session_id?: string;
+  },
 ) => asBridge<{ data: { ok: boolean } }>(sid, "/bridge/finish", b);
 /** 生きていると知らせる（自己診断の報告も一緒に返す） */
 export const bridgeBeat = (sid: string, health?: { name: string; ok: boolean; detail?: string }[]) =>
@@ -255,10 +259,12 @@ export async function realBridge(on: boolean): Promise<void> {
   const { execSync } = await import("node:child_process");
   const up = async (): Promise<boolean> => {
     try {
-      return (await fetch("http://127.0.0.1:38617/ping", {
-        headers: { origin: "http://127.0.0.1:3124" },
-        signal: AbortSignal.timeout(2000),
-      })).ok;
+      return (
+        await fetch("http://127.0.0.1:38617/ping", {
+          headers: { origin: "http://127.0.0.1:3124" },
+          signal: AbortSignal.timeout(2000),
+        })
+      ).ok;
     } catch {
       return false;
     }
@@ -269,7 +275,10 @@ export async function realBridge(on: boolean): Promise<void> {
     // 本人の本物の Bridge が動いているなら、黙って止めない。止めると本人の仕事（答え待ちを含む）が途中で死ぬ
     // （2026-09-28 実例：回帰テストが本人の Bridge を 2 回止め、答えが届かなくなった）。止めてよいと明示したときだけ止める
     if ((await up()) && process.env["QA_STOP_REAL_BRIDGE"] !== "1") {
-      test.skip(true, "この PC で本人の Bridge が動いている。止めると本人の仕事が止まるので流さない（BLOCKED：QA_STOP_REAL_BRIDGE=1 で止めて流す）");
+      test.skip(
+        true,
+        "この PC で本人の Bridge が動いている。止めると本人の仕事が止まるので流さない（BLOCKED：QA_STOP_REAL_BRIDGE=1 で止めて流す）",
+      );
       return;
     }
     // 途中で「起こす」が押されて立ち上がることがあるので、毎回必ず止める（最初の状態に関わらず）
@@ -295,11 +304,15 @@ export async function hideRealBridge(page: Page): Promise<void> {
 
 // ---- 1 行 1 イベント（D-093）：Bridge が流す途中経過・確認 と、本人の答え を本物の口で作る
 /** 途中経過（何をしているか）／init（会話の id） */
-export const bridgeProgress = (sid: string, b: { job_id: string; seq: number; kind: "init" | "progress" | "status"; text?: string; agent_session_id?: string }) =>
-  asBridge<{ data: { ok: boolean } }>(sid, "/bridge/progress", b);
+export const bridgeProgress = (
+  sid: string,
+  b: { job_id: string; seq: number; kind: "init" | "progress" | "status"; text?: string; agent_session_id?: string },
+) => asBridge<{ data: { ok: boolean } }>(sid, "/bridge/progress", b);
 /** 確認：「これを実行していいか」 */
-export const bridgeAsk = (sid: string, b: { job_id: string; request_id: string; tool: string; input?: unknown; summary: string }) =>
-  asBridge<{ data: { ok: boolean } }>(sid, "/bridge/ask", b);
+export const bridgeAsk = (
+  sid: string,
+  b: { job_id: string; request_id: string; tool: string; input?: unknown; summary: string },
+) => asBridge<{ data: { ok: boolean } }>(sid, "/bridge/ask", b);
 /** Bridge が答えを取りに来る（無ければ null） */
 export const bridgeAnswer = (sid: string, b: { job_id: string; request_id: string }) =>
   asBridge<{ data: { answer: "allow" | "deny" | null } }>(sid, "/bridge/answer", b);

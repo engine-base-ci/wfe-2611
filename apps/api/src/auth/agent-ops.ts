@@ -7,7 +7,10 @@ const one = async <T>(pool: pg.Pool, sql: string, args: unknown[]): Promise<T | 
 
 /** 新しく話す（D-104.1）。本人でなければ null */
 export async function newConversation(pool: pg.Pool, userId: string, incognito: boolean): Promise<string | null> {
-  return (await one<{ id: string | null }>(pool, "select app.agent_new_conversation($1, $2) as id", [userId, incognito]))?.id ?? null;
+  return (
+    (await one<{ id: string | null }>(pool, "select app.agent_new_conversation($1, $2) as id", [userId, incognito]))
+      ?.id ?? null
+  );
 }
 
 /** 名前・星・記憶に使わない を変える。null は「変えない」。自分の会話でなければ false */
@@ -18,17 +21,32 @@ export async function setConversation(
   v: { title: string | null; starred: boolean | null; incognito: boolean | null },
 ): Promise<boolean> {
   const r = await one<{ ok: boolean }>(pool, "select app.agent_conversation_set($1, $2, $3, $4, $5) as ok", [
-    userId, id, v.title, v.starred, v.incognito,
+    userId,
+    id,
+    v.title,
+    v.starred,
+    v.incognito,
   ]);
   return r?.ok === true;
 }
 
 /** 会話を消す。自分の会話でなければ false */
 export async function deleteConversation(pool: pg.Pool, userId: string, id: string): Promise<boolean> {
-  return (await one<{ ok: boolean }>(pool, "select app.agent_conversation_delete($1, $2) as ok", [userId, id]))?.ok === true;
+  return (
+    (await one<{ ok: boolean }>(pool, "select app.agent_conversation_delete($1, $2) as ok", [userId, id]))?.ok === true
+  );
 }
 
 /** 記憶を直す（自分の記憶だけ）。直せなければ false */
-export async function editMemory(pool: pg.Pool, userId: string, id: string, title: string | null, body: string): Promise<boolean> {
-  return (await one<{ ok: boolean }>(pool, "select app.agent_memory_edit($1, $2, $3, $4) as ok", [userId, id, title, body]))?.ok === true;
+export async function editMemory(
+  pool: pg.Pool,
+  userId: string,
+  id: string,
+  title: string | null,
+  body: string,
+): Promise<boolean> {
+  return (
+    (await one<{ ok: boolean }>(pool, "select app.agent_memory_edit($1, $2, $3, $4) as ok", [userId, id, title, body]))
+      ?.ok === true
+  );
 }

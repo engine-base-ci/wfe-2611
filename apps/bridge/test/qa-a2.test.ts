@@ -5,7 +5,16 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createHash } from "node:crypto";
 import { spawn } from "node:child_process";
 import { createServer, type Server } from "node:http";
-import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import {
+  chmodSync,
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  readdirSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { forgetClaude, findClaude, runClaude } from "../src/runner";
@@ -35,7 +44,13 @@ describe("BRG-06-013 G-11 自己診断：触る外部リソース（Claude Code�
     process.env["KANAME_CLAUDE_BIN"] = join(tmpdir(), `kaname-qa-a2-無い-${Date.now()}`);
     forgetClaude();
     expect(await findClaude()).toBeNull();
-    const f = await runClaude({ job_id: "j-qa", prompt: "請求書", agent_session_id: null, conversation_id: "c-qa", permission_mode: "manual" });
+    const f = await runClaude({
+      job_id: "j-qa",
+      prompt: "請求書",
+      agent_session_id: null,
+      conversation_id: "c-qa",
+      permission_mode: "manual",
+    });
     expect(f.state).toBe("stopped");
     expect(f).toMatchObject({ reason: "このPCに Claude Code が見つかりません。入れてログインしてください" });
   });
@@ -138,7 +153,13 @@ describe("BRG-06-014 G-15 配布の外のプロセスが完了の合図を出さ
     body = Buffer.alloc(200_000, 7);
     cutAt = 50_000;
     const dir = mkdtempSync(join(tmpdir(), "kaname-qa-a2-dl-"));
-    const u: UpdateInfo = { version: "0.261001.1200", name: "Kaname-Bridge-0.261001.1200-arm64.zip", url: `${api}/f`, sha256: sha(body), size: body.length };
+    const u: UpdateInfo = {
+      version: "0.261001.1200",
+      name: "Kaname-Bridge-0.261001.1200-arm64.zip",
+      url: `${api}/f`,
+      sha256: sha(body),
+      size: body.length,
+    };
     await expect(download(u, dir)).rejects.toThrow();
     expect(readdirSync(dir), "途中のファイルを残さない").toEqual([]);
     cutAt = -1;
@@ -150,16 +171,30 @@ describe("BRG-06-014 G-15 配布の外のプロセスが完了の合図を出さ
     latest = {
       released: true,
       version: "0.261001.1201",
-      update: { name: "Kaname-Bridge-0.261001.1201-arm64.zip", url: "/api/auth-ext/bridge/file/x", sha256: sha(body), size: body.length },
+      update: {
+        name: "Kaname-Bridge-0.261001.1201-arm64.zip",
+        url: "/api/auth-ext/bridge/file/x",
+        sha256: sha(body),
+        size: body.length,
+      },
     };
     const root = mkdtempSync(join(tmpdir(), "kaname-qa-a2-up-"));
     const app = fakeApp(join(root, "Applications"), "0.1.0", "old");
     const notes: string[] = [];
     let quits = 0;
     const u = startUpdater({
-      apiBase: api, currentVersion: "0.1.0", platform: "darwin", arch: "arm64", execPath: join(app, "Contents", "MacOS", "Kaname Bridge"),
-      isPackaged: true, dir: join(root, "updates"), isBusy: () => false, onNote: (t) => notes.push(t), quit: () => quits++,
-      relaunch: () => ["/usr/bin/true"], pid: 999_999,
+      apiBase: api,
+      currentVersion: "0.1.0",
+      platform: "darwin",
+      arch: "arm64",
+      execPath: join(app, "Contents", "MacOS", "Kaname Bridge"),
+      isPackaged: true,
+      dir: join(root, "updates"),
+      isBusy: () => false,
+      onNote: (t) => notes.push(t),
+      quit: () => quits++,
+      relaunch: () => ["/usr/bin/true"],
+      pid: 999_999,
     });
     await u.checkNow();
     await new Promise((r) => setTimeout(r, 300));
@@ -171,24 +206,40 @@ describe("BRG-06-014 G-15 配布の外のプロセスが完了の合図を出さ
     expect(notes.length, "止まったことを知らせる（黙って次の機会を待たない）").toBeGreaterThan(0);
   });
 
-  it.runIf(mac)("入れ替えの手順が途中で殺されても、Bridge を無くさない（元の版か新しい版の、どちらかの完全な .app が残る）", async () => {
-    const FILES = 3000;
-    const root = mkdtempSync(join(tmpdir(), "kaname-qa-a2-rep-"));
-    const target = fakeApp(join(root, "Applications"), "0.1.0", "old");
-    const source = fakeApp(join(root, "stage"), "0.261001.1202", "new", FILES);
-    const backup = join(root, "previous.app");
-    const script = join(root, "replace.sh");
-    writeFileSync(script, replaceScript({ pid: 999_999, target, source, backup, relaunch: ["/usr/bin/touch", join(root, "relaunched")] }), { mode: 0o755 });
-    const p = spawn("/bin/sh", [script], { detached: true, stdio: "ignore" });
-    // 新しい版を写している最中に殺す（電源が落ちた・強制終了された）。写す先が元の版の場所か隣かは問わない：写し始めたら殺す
-    await until(() => (existsSync(backup) && existsSync(join(target, "Contents"))) || existsSync(join(`${target}.incoming`, "Contents")), 10_000);
-    process.kill(-p.pid!, "SIGKILL");
-    await new Promise((r) => setTimeout(r, 300));
-    const left = whole(target, FILES);
-    try {
-      expect(left, `入れ替え先が欠けた .app のまま残った（退けた元の版は ${existsSync(backup) ? backup : "無い"}）`).not.toBeNull();
-    } finally {
-      rmSync(root, { recursive: true, force: true });
-    }
-  }, 30_000);
+  it.runIf(mac)(
+    "入れ替えの手順が途中で殺されても、Bridge を無くさない（元の版か新しい版の、どちらかの完全な .app が残る）",
+    async () => {
+      const FILES = 3000;
+      const root = mkdtempSync(join(tmpdir(), "kaname-qa-a2-rep-"));
+      const target = fakeApp(join(root, "Applications"), "0.1.0", "old");
+      const source = fakeApp(join(root, "stage"), "0.261001.1202", "new", FILES);
+      const backup = join(root, "previous.app");
+      const script = join(root, "replace.sh");
+      writeFileSync(
+        script,
+        replaceScript({ pid: 999_999, target, source, backup, relaunch: ["/usr/bin/touch", join(root, "relaunched")] }),
+        { mode: 0o755 },
+      );
+      const p = spawn("/bin/sh", [script], { detached: true, stdio: "ignore" });
+      // 新しい版を写している最中に殺す（電源が落ちた・強制終了された）。写す先が元の版の場所か隣かは問わない：写し始めたら殺す
+      await until(
+        () =>
+          (existsSync(backup) && existsSync(join(target, "Contents"))) ||
+          existsSync(join(`${target}.incoming`, "Contents")),
+        10_000,
+      );
+      process.kill(-p.pid!, "SIGKILL");
+      await new Promise((r) => setTimeout(r, 300));
+      const left = whole(target, FILES);
+      try {
+        expect(
+          left,
+          `入れ替え先が欠けた .app のまま残った（退けた元の版は ${existsSync(backup) ? backup : "無い"}）`,
+        ).not.toBeNull();
+      } finally {
+        rmSync(root, { recursive: true, force: true });
+      }
+    },
+    30_000,
+  );
 });

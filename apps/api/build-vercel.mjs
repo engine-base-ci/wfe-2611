@@ -2,6 +2,7 @@
 // そのまま渡すと workspace の .ts が実行時に読めない。ここで全部を 1 本の JS にまとめ、
 // Vercel の Build Output API の形（.vercel/output）で置く：関数 1 本（api.func）＋全部の道をそこへ回す。
 // 使う人：Vercel の Build Command（apps/api/vercel.json）。手元でも `node apps/api/build-vercel.mjs` で同じものができる。
+/* global console */
 import { build } from "esbuild";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
@@ -31,9 +32,24 @@ const r = await build({
 });
 writeFileSync(
   join(fn, ".vc-config.json"),
-  JSON.stringify({ runtime: "nodejs22.x", handler: "index.mjs", launcherType: "Nodejs", shouldAddHelpers: false, maxDuration: MAX_DURATION_SEC }, null, 2),
+  JSON.stringify(
+    {
+      runtime: "nodejs22.x",
+      handler: "index.mjs",
+      launcherType: "Nodejs",
+      shouldAddHelpers: false,
+      maxDuration: MAX_DURATION_SEC,
+    },
+    null,
+    2,
+  ),
 );
 // 全部の道（/health・/api/…）を関数 1 本へ。関数の中の Hono が道を見分ける
-writeFileSync(join(out, "config.json"), JSON.stringify({ version: 3, routes: [{ src: "/(.*)", dest: "/api" }] }, null, 2));
+writeFileSync(
+  join(out, "config.json"),
+  JSON.stringify({ version: 3, routes: [{ src: "/(.*)", dest: "/api" }] }, null, 2),
+);
 const bytes = Object.values(r.metafile.outputs).reduce((n, o) => n + o.bytes, 0);
-console.log(`[build-vercel] .vercel/output/functions/api.func（${(bytes / 1024 / 1024).toFixed(1)} MB・警告 ${r.warnings.length}）`);
+console.log(
+  `[build-vercel] .vercel/output/functions/api.func（${(bytes / 1024 / 1024).toFixed(1)} MB・警告 ${r.warnings.length}）`,
+);

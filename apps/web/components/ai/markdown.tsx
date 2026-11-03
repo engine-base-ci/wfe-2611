@@ -21,7 +21,21 @@ import {
   Inbox,
   Brain,
 } from "lucide-react";
-import { Children, createContext, isValidElement, useContext, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type ReactElement, type ReactNode, type RefObject } from "react";
+import {
+  Children,
+  createContext,
+  isValidElement,
+  useContext,
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactElement,
+  type ReactNode,
+  type RefObject,
+} from "react";
 import ReactMarkdown, { defaultUrlTransform, type Components } from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
@@ -36,7 +50,8 @@ import { copyText } from "./copy";
 export type ExportFn = (text: string, format: "md" | "csv") => void;
 export const ExportContext = createContext<ExportFn | null>(null);
 /** 表を CSV の文字にする（成果物は BOM を付けない。落とすときの CSV とは別） */
-export const csvText = (rows: string[][]) => rows.map((r) => r.map((v) => (/[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v)).join(",")).join("\n");
+export const csvText = (rows: string[][]) =>
+  rows.map((r) => r.map((v) => (/[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v)).join(",")).join("\n");
 
 // ---- 木（hast）の最小の形。型の包みを増やさないため、ここで使う分だけ書く
 interface HText {
@@ -92,20 +107,33 @@ function rehypeKaname() {
         if (!isEl(n)) continue;
         if (/^h[1-4]$/.test(n.tagName)) n.properties["id"] = `mh-${++h}`;
         // 出典の番号と戻り先：id は安全のため user-content- が前に付くので、リンクもそれに合わせる
-        if (n.tagName === "a" && typeof n.properties["href"] === "string" && /^#(fn|fnref)/.test(n.properties["href"] as string))
+        if (
+          n.tagName === "a" &&
+          typeof n.properties["href"] === "string" &&
+          /^#(fn|fnref)/.test(n.properties["href"] as string)
+        )
           n.properties["href"] = `#user-content-${(n.properties["href"] as string).slice(1)}`;
         if (n.tagName === "blockquote") {
           const p = n.children.find(isEl);
           const first = p?.children[0];
-          const m = first && first.type === "text" ? /^\s*\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]\s*/.exec((first as HText).value) : null;
+          const m =
+            first && first.type === "text"
+              ? /^\s*\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]\s*/.exec((first as HText).value)
+              : null;
           if (p && m) {
             (first as HText).value = (first as HText).value.slice(m[0].length);
             const a = ALERT[m[1] ?? "NOTE"] ?? ALERT["NOTE"]!;
-            nodes[i] = { type: "element", tagName: "div", properties: { className: ["callout", a.kind], dataTitle: a.title }, children: n.children };
+            nodes[i] = {
+              type: "element",
+              tagName: "div",
+              properties: { className: ["callout", a.kind], dataTitle: a.title },
+              children: n.children,
+            };
             continue;
           }
         }
-        if (n.tagName === "sup" && n.children.some((c) => isEl(c) && c.properties["dataFootnoteRef"] !== undefined)) n.properties["className"] = ["cn"];
+        if (n.tagName === "sup" && n.children.some((c) => isEl(c) && c.properties["dataFootnoteRef"] !== undefined))
+          n.properties["className"] = ["cn"];
         if (n.tagName === "section" && n.properties["dataFootnotes"] !== undefined) {
           for (const c of n.children) {
             if (isEl(c) && c.tagName === "ol") c.properties["className"] = ["srcs"];
@@ -173,7 +201,9 @@ function CodeBlock({ lang, code, streaming }: { lang: string; code: string; stre
     void import("shiki")
       .then(async ({ codeToHtml, createCssVariablesTheme }) => {
         const theme = createCssVariablesTheme({ name: "kaname", variablePrefix: "--shiki-" });
-        return codeToHtml(shown, { lang: lang || "text", theme }).catch(() => codeToHtml(shown, { lang: "text", theme }));
+        return codeToHtml(shown, { lang: lang || "text", theme }).catch(() =>
+          codeToHtml(shown, { lang: "text", theme }),
+        );
       })
       .then((h) => alive && setHtml(h))
       .catch(() => alive && setHtml(null));
@@ -246,14 +276,23 @@ function TerminalBlock({ code }: { code: string }) {
     <div className="term" data-block="terminal">
       <div className="cbar">
         <span>打ったコマンド</span>
-        <button type="button" onClick={() => void copyText(lines.filter((l) => l.startsWith("$ ")).map((l) => l.slice(2)).join("\n"), "コマンドをコピーしました")}>
+        <button
+          type="button"
+          onClick={() =>
+            void copyText(
+              lines
+                .filter((l) => l.startsWith("$ "))
+                .map((l) => l.slice(2))
+                .join("\n"),
+              "コマンドをコピーしました",
+            )
+          }
+        >
           <Copy />
           コピー
         </button>
       </div>
-      <pre>
-        {lines.map((l, i) => (l.startsWith("$ ") ? <b key={i}>{`${l}\n`}</b> : `${l}\n`))}
-      </pre>
+      <pre>{lines.map((l, i) => (l.startsWith("$ ") ? <b key={i}>{`${l}\n`}</b> : `${l}\n`))}</pre>
     </div>
   );
 }
@@ -303,7 +342,10 @@ function MathML({ tex, display }: { tex: string; display: boolean }) {
   useEffect(() => {
     let alive = true;
     void import("temml")
-      .then(({ default: temml }) => alive && setHtml(temml.renderToString(tex, { displayMode: display, throwOnError: false })))
+      .then(
+        ({ default: temml }) =>
+          alive && setHtml(temml.renderToString(tex, { displayMode: display, throwOnError: false })),
+      )
       .catch(() => alive && setHtml(null));
     return () => {
       alive = false;
@@ -311,7 +353,11 @@ function MathML({ tex, display }: { tex: string; display: boolean }) {
   }, [tex, display]);
   if (!html) return <code className="ic">{tex}</code>;
   // temml が作った MathML（trust は既定の false。\href などは作らない）
-  return display ? <div dangerouslySetInnerHTML={{ __html: html }} /> : <span dangerouslySetInnerHTML={{ __html: html }} />;
+  return display ? (
+    <div dangerouslySetInnerHTML={{ __html: html }} />
+  ) : (
+    <span dangerouslySetInnerHTML={{ __html: html }} />
+  );
 }
 
 // ---- 表（横に長いときは表だけ動く・表ごとコピー・列で並べ替え）
@@ -374,9 +420,14 @@ function MdTable({ node, children }: { node?: HElement; children?: ReactNode }) 
             <tr>
               {head.map((h, i) => (
                 <th key={`${h}-${i}`} aria-sort={sort?.col === i ? (sort.asc ? "ascending" : "descending") : "none"}>
-                  <button type="button" onClick={() => setSort((s) => (s?.col === i ? { col: i, asc: !s.asc } : { col: i, asc: true }))}>
+                  <button
+                    type="button"
+                    onClick={() => setSort((s) => (s?.col === i ? { col: i, asc: !s.asc } : { col: i, asc: true }))}
+                  >
                     {h}
-                    {sort?.col === i ? <ChevronDown style={sort.asc ? undefined : { transform: "rotate(180deg)" }} /> : null}
+                    {sort?.col === i ? (
+                      <ChevronDown style={sort.asc ? undefined : { transform: "rotate(180deg)" }} />
+                    ) : null}
                   </button>
                 </th>
               ))}
@@ -408,7 +459,10 @@ function useToc(ref: RefObject<HTMLDivElement | null>, text: string): { id: stri
   useLayoutEffect(() => {
     const el = ref.current;
     if (!el || text.length < TOC_MIN_CHARS) return setToc([]);
-    const hs = [...el.querySelectorAll<HTMLElement>("h2.mh[id],h3.mh[id]")].map((h) => ({ id: h.id, t: h.textContent ?? "" }));
+    const hs = [...el.querySelectorAll<HTMLElement>("h2.mh[id],h3.mh[id]")].map((h) => ({
+      id: h.id,
+      t: h.textContent ?? "",
+    }));
     setToc(hs.length >= 3 ? hs : []);
   }, [ref, text]);
   return toc;
@@ -438,7 +492,10 @@ function makeComponents(streaming: boolean): Components {
       const lang = cls.find((c) => c.startsWith("language-"))?.slice(9) ?? "";
       if (lang === "mermaid") return <Mermaid code={text} streaming={streaming} />;
       if (lang === "diff" || lang.startsWith("diff:")) return <DiffBlock code={text} name={lang.slice(5)} />;
-      if (["console", "shell-session", "terminal"].includes(lang) || (["sh", "bash", "shell", "zsh"].includes(lang) && /^\$ /m.test(text)))
+      if (
+        ["console", "shell-session", "terminal"].includes(lang) ||
+        (["sh", "bash", "shell", "zsh"].includes(lang) && /^\$ /m.test(text))
+      )
         return <TerminalBlock code={text} />;
       if (lang === "tree")
         return (
@@ -457,7 +514,12 @@ function makeComponents(streaming: boolean): Components {
     a: ({ href = "", children }) => {
       const k = kanameLink(href);
       // まだ無い画面へは押させない（押すと 404 の行き止まり・G-04）
-      if (k) return isBuilt(k.to) ? <Link href={k.to as Route}>{children}</Link> : <span title={`${k.label}の画面は準備中です`}>{children}</span>;
+      if (k)
+        return isBuilt(k.to) ? (
+          <Link href={k.to as Route}>{children}</Link>
+        ) : (
+          <span title={`${k.label}の画面は準備中です`}>{children}</span>
+        );
       if (href.startsWith("#")) return <a href={href}>{children}</a>;
       return (
         <a href={href} target="_blank" rel="noopener noreferrer">
@@ -467,7 +529,9 @@ function makeComponents(streaming: boolean): Components {
     },
     // 段落にリンクが 1 つだけ（Kaname の実物）なら、押すと開くカードにする（D-104.5）
     p: ({ node, children }) => {
-      const kids = ((node as unknown as HElement).children ?? []).filter((c) => !(c.type === "text" && !(c as HText).value.trim()));
+      const kids = ((node as unknown as HElement).children ?? []).filter(
+        (c) => !(c.type === "text" && !(c as HText).value.trim()),
+      );
       const only = kids.length === 1 && isEl(kids[0]) && kids[0].tagName === "a" ? kids[0] : null;
       const k = only ? kanameLink(String(only.properties["href"] ?? "")) : null;
       if (only && k) {
@@ -510,10 +574,13 @@ function makeComponents(streaming: boolean): Components {
       }
       return <div className={cls || undefined}>{children}</div>;
     },
-    ul: ({ className, children }) => <ul className={String(className ?? "").includes("contains-task-list") ? "chk" : undefined}>{children}</ul>,
+    ul: ({ className, children }) => (
+      <ul className={String(className ?? "").includes("contains-task-list") ? "chk" : undefined}>{children}</ul>
+    ),
     li: ({ node, className, children }) => {
       if (!String(className ?? "").includes("task-list-item")) return <li>{children}</li>;
-      const box = (node as unknown as HElement).children.find((c) => isEl(c) && c.tagName === "input") as HElement | undefined;
+      const box = (node as unknown as HElement).children.find((c) => isEl(c) && c.tagName === "input") as
+        HElement | undefined;
       const on = box?.properties["checked"] === true;
       return (
         <li className={on ? "on" : undefined}>

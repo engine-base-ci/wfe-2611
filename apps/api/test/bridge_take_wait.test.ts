@@ -26,7 +26,11 @@ const sent: { to: string; url: string; kind: string }[] = [];
 let app: ReturnType<typeof createApp>;
 let admin: pg.Pool;
 const post = (path: string, body: unknown, headers: Record<string, string> = {}) =>
-  app.request(`http://localhost${path}`, { method: "POST", headers: { "content-type": "application/json", ...headers }, body: JSON.stringify(body) });
+  app.request(`http://localhost${path}`, {
+    method: "POST",
+    headers: { "content-type": "application/json", ...headers },
+    body: JSON.stringify(body),
+  });
 const uniq = () => `qa-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
 type Take = { data: { job_id: string } | null; next_ms: number };
 
@@ -36,9 +40,35 @@ beforeAll(async () => {
   admin = new pg.Pool({ connectionString: ADMIN, max: 2 });
   const appPool = createPool({ databaseUrl: APP_URL, max: 3 });
   const repo = await createRepository(appPool);
-  const { auth } = createAuth({ authDatabaseUrl: AUTH_URL, appPool, secret: "test-secret-0123456789-abcdefghijklmnop", baseURL: "http://localhost:3001", webBaseURL: "http://localhost:3123", mailer: async () => undefined });
+  const { auth } = createAuth({
+    authDatabaseUrl: AUTH_URL,
+    appPool,
+    secret: "test-secret-0123456789-abcdefghijklmnop",
+    baseURL: "http://localhost:3001",
+    webBaseURL: "http://localhost:3123",
+    mailer: async () => undefined,
+  });
   const secrets = new SecretsGateway(repo, new MemoryVault(), Buffer.alloc(32, 9));
-  app = createApp({ repo, auth, resolve: createSessionResolver(auth, appPool), authExt: authExt({ auth, appPool, authPool: new pg.Pool({ connectionString: AUTH_URL, max: 2 }), repo, secrets, mailer: async (m) => void sent.push({ to: m.to, url: m.url, kind: m.kind }), config: { secretsMasterKey: "test-master", baseUrl: "http://localhost:3001", webBaseUrl: "http://localhost:3123", opsEmail: "ops@example.com", env: "test" as const } }) });
+  app = createApp({
+    repo,
+    auth,
+    resolve: createSessionResolver(auth, appPool),
+    authExt: authExt({
+      auth,
+      appPool,
+      authPool: new pg.Pool({ connectionString: AUTH_URL, max: 2 }),
+      repo,
+      secrets,
+      mailer: async (m) => void sent.push({ to: m.to, url: m.url, kind: m.kind }),
+      config: {
+        secretsMasterKey: "test-master",
+        baseUrl: "http://localhost:3001",
+        webBaseUrl: "http://localhost:3123",
+        opsEmail: "ops@example.com",
+        env: "test" as const,
+      },
+    }),
+  });
 }, 60_000);
 
 /** 登録 → 端末の登録（Bridge の鍵）。仕事はまだ並べない */
@@ -50,7 +80,9 @@ async function paired() {
   const ver = await post("/api/auth-ext/verify-signup", { token: new URL(mail.url).searchParams.get("token") ?? "" });
   const H = { authorization: `Bearer ${((await ver.json()) as { data: { token: string } }).data.token}` };
   const pair = (await (await post("/api/auth-ext/bridge/pair", {}, H)).json()) as { data: { code: string } };
-  const claim = (await (await post("/api/auth-ext/bridge/claim", { code: pair.data.code, device_label: "QA の PC" })).json()) as { data: { session_id: string } };
+  const claim = (await (
+    await post("/api/auth-ext/bridge/claim", { code: pair.data.code, device_label: "QA の PC" })
+  ).json()) as { data: { session_id: string } };
   return { H, B: { "x-bridge-session": claim.data.session_id }, sid: claim.data.session_id };
 }
 const take = async (B: Record<string, string>, body: unknown) => {
@@ -68,7 +100,10 @@ describe("仕事が動いていないとき（D-097）", () => {
     expect(r.body.data).toBeNull();
     expect(r.body.next_ms).toBe(5_000);
     expect(r.ms, "動いていないのに 20 秒待ち受けない（関数の時間がそのまま費用）").toBeLessThan(1_500);
-    const seen = await admin.query("select now() - last_seen_at < interval '5 seconds' as fresh from sessions where id = $1", [sid]);
+    const seen = await admin.query(
+      "select now() - last_seen_at < interval '5 seconds' as fresh from sessions where id = $1",
+      [sid],
+    );
     expect(seen.rows[0].fresh, "問い合わせが「生きている」を兼ねる").toBe(true);
   });
   it("wait_sec を送らない古い Bridge・負の値は、これまでどおりすぐ返る", async () => {
@@ -85,12 +120,16 @@ describe("仕事が動いていないとき（D-097）", () => {
 describe("仕事が動いている最中（D-097）", () => {
   it("待ち受けている間に言われたら、すぐ返す（1 秒ごとに見る）", async () => {
     const { H, B } = await paired();
-    const first = (await (await post("/api/auth-ext/agent/say", { text: "1 つめ" }, H)).json()) as { data: { job_id: string } };
+    const first = (await (await post("/api/auth-ext/agent/say", { text: "1 つめ" }, H)).json()) as {
+      data: { job_id: string };
+    };
     expect((await take(B, { wait_sec: 20 })).body.data?.job_id).toBe(first.data.job_id);
     await post("/api/auth-ext/bridge/finish", { job_id: first.data.job_id, state: "done", result: "済" }, B);
     const waiting = take(B, { wait_sec: 20 });
     await new Promise((r) => setTimeout(r, 1_500));
-    const second = (await (await post("/api/auth-ext/agent/say", { text: "2 つめ" }, H)).json()) as { data: { job_id: string } };
+    const second = (await (await post("/api/auth-ext/agent/say", { text: "2 つめ" }, H)).json()) as {
+      data: { job_id: string };
+    };
     const r = await waiting;
     expect(r.body.data?.job_id).toBe(second.data.job_id);
     expect(r.ms, "言ってから 1 秒ちょっとで返る（20 秒を待ち切らない）").toBeLessThan(4_500);
@@ -98,7 +137,9 @@ describe("仕事が動いている最中（D-097）", () => {
   }, 30_000);
   it("何も来なければ wait_sec だけ待って返し、間をあけずに聞き直してもらう", async () => {
     const { H, B } = await paired();
-    const j = (await (await post("/api/auth-ext/agent/say", { text: "1 つめ" }, H)).json()) as { data: { job_id: string } };
+    const j = (await (await post("/api/auth-ext/agent/say", { text: "1 つめ" }, H)).json()) as {
+      data: { job_id: string };
+    };
     await take(B, {});
     await post("/api/auth-ext/bridge/finish", { job_id: j.data.job_id, state: "done", result: "済" }, B);
     const r = await take(B, { wait_sec: 2 });

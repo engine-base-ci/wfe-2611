@@ -48,7 +48,6 @@ async function npmRoot(): Promise<string | null> {
   return v && existsSync(v) ? v : null;
 }
 
-
 /** 使える node のうち、いちばん新しいものを選ぶ。
  *  PATH の先頭に古い node がある人は珍しくない。古い node で npm を動かすと
  *  「npm はこの Node に対応していません」で必ず落ちる。版を実際に聞いて選ぶ */
@@ -74,13 +73,18 @@ function ownNode(): { bin: string; env: NodeJS.ProcessEnv } {
  *  これが残っていると npm が ENOTEMPTY で入れ直せない（postinstall が落ちた人は全員ここで詰まる） */
 function sweep(root: string, onStep: OnStep): void {
   const scope = join(root, PKG.split("/")[0]!);
-  const targets = [join(root, PKG), ...(() => {
-    try {
-      return readdirSync(scope).filter((n) => n.startsWith(".claude-code-")).map((n) => join(scope, n));
-    } catch {
-      return [];
-    }
-  })()];
+  const targets = [
+    join(root, PKG),
+    ...(() => {
+      try {
+        return readdirSync(scope)
+          .filter((n) => n.startsWith(".claude-code-"))
+          .map((n) => join(scope, n));
+      } catch {
+        return [];
+      }
+    })(),
+  ];
   for (const t of targets) {
     if (!existsSync(t)) continue;
     try {
@@ -115,7 +119,12 @@ export async function brokenInstall(): Promise<string | null> {
   return null;
 }
 
-function run(bin: string, args: string[], onStep: OnStep, env?: NodeJS.ProcessEnv): Promise<{ ok: boolean; out: string }> {
+function run(
+  bin: string,
+  args: string[],
+  onStep: OnStep,
+  env?: NodeJS.ProcessEnv,
+): Promise<{ ok: boolean; out: string }> {
   return new Promise((resolve) => {
     const p = spawn(bin, args, { stdio: ["ignore", "pipe", "pipe"], env: env ?? childEnv(shellPath()) });
     let out = "";
@@ -159,7 +168,9 @@ export async function installClaude(onStep: OnStep = () => {}): Promise<{ ok: bo
   const node = await bestNode();
   onStep({ text: "Claude Code を入れています（1〜2 分）", state: "doing" });
   // npm は自分を動かしている node の版を見る。古い node に当たらないよう、選んだ node を先頭に置く
-  const env = childEnv(node ? `${dirname(node)}${process.platform === "win32" ? ";" : ":"}${shellPath()}` : shellPath());
+  const env = childEnv(
+    node ? `${dirname(node)}${process.platform === "win32" ? ";" : ":"}${shellPath()}` : shellPath(),
+  );
   // --include=optional：本体は optional dependency。省く設定を持っている人はここで落ちる（今回の故障の原因）
   const r = await run(npm, ["install", "-g", "--include=optional", PKG], onStep, env);
   forgetClaude();

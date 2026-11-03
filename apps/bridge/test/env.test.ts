@@ -30,24 +30,49 @@ const PARENT: NodeJS.ProcessEnv = {
 describe("子に渡す環境（許可リスト）", () => {
   it("家・利用者・言語・プロキシは渡り、PATH は渡した値になる", () => {
     const e = childEnv("/opt/homebrew/bin:/usr/bin", {}, PARENT);
-    expect(e).toMatchObject({ HOME: "/Users/q", USER: "q", LOGNAME: "q", LANG: "ja_JP.UTF-8", LC_ALL: "ja_JP.UTF-8", HTTPS_PROXY: "http://proxy:8080", PATH: "/opt/homebrew/bin:/usr/bin" });
+    expect(e).toMatchObject({
+      HOME: "/Users/q",
+      USER: "q",
+      LOGNAME: "q",
+      LANG: "ja_JP.UTF-8",
+      LC_ALL: "ja_JP.UTF-8",
+      HTTPS_PROXY: "http://proxy:8080",
+      PATH: "/opt/homebrew/bin:/usr/bin",
+    });
   });
   it("モデルの鍵・別の請求先への切り替え・その他の秘密は渡らない", () => {
     const e = childEnv("/usr/bin", {}, PARENT);
-    for (const k of ["ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN", "ANTHROPIC_BASE_URL", "CLAUDE_CODE_USE_BEDROCK", "AWS_ACCESS_KEY_ID", "OPENAI_API_KEY", "GITHUB_TOKEN", "DATABASE_URL"])
+    for (const k of [
+      "ANTHROPIC_API_KEY",
+      "ANTHROPIC_AUTH_TOKEN",
+      "ANTHROPIC_BASE_URL",
+      "CLAUDE_CODE_USE_BEDROCK",
+      "AWS_ACCESS_KEY_ID",
+      "OPENAI_API_KEY",
+      "GITHUB_TOKEN",
+      "DATABASE_URL",
+    ])
       expect(e[k], k).toBeUndefined();
   });
   it("Bridge が足す値は渡るが、足す値に鍵が紛れても落とす", () => {
-    const e = childEnv("/usr/bin", { KANAME_BLOCKED: "[]", ELECTRON_RUN_AS_NODE: "1", ANTHROPIC_API_KEY: "sk" }, PARENT);
+    const e = childEnv(
+      "/usr/bin",
+      { KANAME_BLOCKED: "[]", ELECTRON_RUN_AS_NODE: "1", ANTHROPIC_API_KEY: "sk" },
+      PARENT,
+    );
     expect(e["KANAME_BLOCKED"]).toBe("[]");
     expect(e["ELECTRON_RUN_AS_NODE"]).toBe("1");
     expect(e["ANTHROPIC_API_KEY"]).toBeUndefined();
   });
   it("実際に子プロセスから見えない（本物の node で確かめる）", async () => {
-    const r = await ask(process.execPath, ["-e", "console.log(JSON.stringify({k: process.env.ANTHROPIC_API_KEY ?? null, u: process.env.USER ?? null}))"], {
-      timeoutMs: 10_000,
-      env: childEnv(process.env["PATH"] ?? "", {}, { ...PARENT, PATH: process.env["PATH"] }),
-    });
+    const r = await ask(
+      process.execPath,
+      ["-e", "console.log(JSON.stringify({k: process.env.ANTHROPIC_API_KEY ?? null, u: process.env.USER ?? null}))"],
+      {
+        timeoutMs: 10_000,
+        env: childEnv(process.env["PATH"] ?? "", {}, { ...PARENT, PATH: process.env["PATH"] }),
+      },
+    );
     expect(JSON.parse(r.stdout)).toEqual({ k: null, u: "q" });
   });
 });

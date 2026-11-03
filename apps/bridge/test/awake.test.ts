@@ -31,7 +31,17 @@ describe("createAwake", () => {
     expect(f.calls).toEqual(["start:prevent-app-suspension", "stop:1"]);
   });
   it("CHT-42-001 頼めなくても落ちない。次に空になっても解こうとしない（持っていない）", () => {
-    const awake = createAwake({ start: () => { throw new Error("no power api"); }, stop: () => { throw new Error("never"); } });
-    expect(() => { awake("j-1"); awake(null); }).not.toThrow();
+    const awake = createAwake({
+      start: () => {
+        throw new Error("no power api");
+      },
+      stop: () => {
+        throw new Error("never");
+      },
+    });
+    expect(() => {
+      awake("j-1");
+      awake(null);
+    }).not.toThrow();
   });
 });

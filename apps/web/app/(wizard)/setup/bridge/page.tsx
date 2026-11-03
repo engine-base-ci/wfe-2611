@@ -13,7 +13,18 @@ import { RequireSession } from "@/lib/auth/session";
 import { apiBase, useList } from "@/lib/api";
 import { agentRevokeBridge, AuthExtError, bridgePair } from "@/lib/auth/ext";
 import { useMarkStep } from "@/lib/onboarding";
-import { download, everSeen, installClaude, localChecks, loginClaude, loginCode, pairViaLocal, useWhere, wake, type Check } from "@/lib/bridge-presence";
+import {
+  download,
+  everSeen,
+  installClaude,
+  localChecks,
+  loginClaude,
+  loginCode,
+  pairViaLocal,
+  useWhere,
+  wake,
+  type Check,
+} from "@/lib/bridge-presence";
 import { Download, Globe, Power, TriangleAlert, X } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { confirmDialog } from "@/components/ui/confirm";
@@ -204,7 +215,13 @@ function Devices({ rows, st }: { rows: Sessions[]; st: ReturnType<typeof useBrid
                   <Pill tone={live ? "success" : "neutral"}>{live ? "仕事を渡せる" : "止まっています"}</Pill>
                 </Td>
                 <Td>
-                  <Button variant="ghost" size="sm" icon={<X />} onClick={() => void revoke(b)} data-bridge-revoke={b.id}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    icon={<X />}
+                    onClick={() => void revoke(b)}
+                    data-bridge-revoke={b.id}
+                  >
                     この端末を外す
                   </Button>
                 </Td>
@@ -300,30 +317,30 @@ function Bridge() {
   // ダウンロードの口（未インストールの手順と、Bridge が古いときの入れ直しで同じものを使う）
   const downloads = (
     <>
-    <div className="mt-1 flex flex-wrap gap-2">
-                              {(
-                                [
-                                  ["mac", "macOS 版", "Apple Silicon / Intel"],
-                                  ["win", "Windows 版", "10 以降"],
-                                ] as const
-                              ).map(([os, label, note]) => (
-                                <Button
-                                  key={os}
-                                  variant={os === "mac" ? "primary" : "outline"}
-                                  onClick={() => void getInstaller(os)}
-                                  data-download={os}
-                                >
-                                  <Download className="size-4" />
-                                  {label}
-                                  <span className="ml-1 text-[11.5px] opacity-70">{note}</span>
-                                </Button>
-                              ))}
-                            </div>
-                            {dlMsg ? (
-                              <p className="mt-2 text-[12.5px] text-[var(--st-warning)]" role="status" data-download-msg>
-                                {dlMsg}
-                              </p>
-                            ) : null}
+      <div className="mt-1 flex flex-wrap gap-2">
+        {(
+          [
+            ["mac", "macOS 版", "Apple Silicon / Intel"],
+            ["win", "Windows 版", "10 以降"],
+          ] as const
+        ).map(([os, label, note]) => (
+          <Button
+            key={os}
+            variant={os === "mac" ? "primary" : "outline"}
+            onClick={() => void getInstaller(os)}
+            data-download={os}
+          >
+            <Download className="size-4" />
+            {label}
+            <span className="ml-1 text-[11.5px] opacity-70">{note}</span>
+          </Button>
+        ))}
+      </div>
+      {dlMsg ? (
+        <p className="mt-2 text-[12.5px] text-[var(--st-warning)]" role="status" data-download-msg>
+          {dlMsg}
+        </p>
+      ) : null}
     </>
   );
   const state =
@@ -351,7 +368,11 @@ function Bridge() {
     setDevMsg(null);
     setOtherAccount(false);
     // 番号がまだ出ていないうちに押されても動くようにする（出てから押す、を人に強いない）
-    const c = code ?? (await bridgePair().then((r) => r.code).catch(() => null));
+    const c =
+      code ??
+      (await bridgePair()
+        .then((r) => r.code)
+        .catch(() => null));
     if (!c) return setDevMsg("接続の番号を出せませんでした。もう一度押してください");
     if (!code) setCode(c);
     const r = await pairViaLocal(c, allowSwitch);
@@ -396,66 +417,70 @@ function Bridge() {
   // 以前は「まだつながっていない」画面にしか置いておらず、つながった後にログインが必要でも何も出なかった
   const needBlock = (
     <>
-              {/* 足りないものだけを出す。入れる／取り直す と ログイン は別の用事（D-091） */}
-    {needInstall || needLogin ? (
-      <div
-        className="mt-5 rounded-[var(--r-md)] border border-[var(--st-warning)] bg-[var(--st-warning-container)] px-3.5 py-3 text-[13px]"
-        data-need-claude
-        role="status"
-      >
-        <b className="text-[var(--st-warning)]">
-          {needInstall
-            ? needInstall.fix === "repair"
-              ? "Claude Code の本体が落ちてきていません。"
-              : "この PC に Claude Code がありません。"
-            : "Claude Code にまだログインしていません。"}
-        </b>
-        <p className="mt-1 leading-[1.8]">
-          自分のAIもAI社員も、<b>あなたのサブスクの Claude Code</b> で動きます。
-          {needInstall
-            ? "これが無いと 1 件も動きません。下のボタンで入れられます（ターミナルは触りません）。"
-            : "ブラウザで 1 回だけ承認すると動き出します（ターミナルは開きません）。"}
-        </p>
-        <div className="mt-2 flex flex-wrap gap-2">
-          {needInstall ? (
-            <Button onClick={doInstall} disabled={ccBusy} data-install-claude>
-              {ccBusy ? "入れています" : needInstall.fix === "repair" ? "Claude Code を取り直す" : "Claude Code を入れる"}
-            </Button>
-          ) : null}
-          {needLogin ? (
-            <Button variant={needInstall ? "outline" : "primary"} onClick={doLogin} data-login-claude>
-              ログインする
-            </Button>
+      {/* 足りないものだけを出す。入れる／取り直す と ログイン は別の用事（D-091） */}
+      {needInstall || needLogin ? (
+        <div
+          className="mt-5 rounded-[var(--r-md)] border border-[var(--st-warning)] bg-[var(--st-warning-container)] px-3.5 py-3 text-[13px]"
+          data-need-claude
+          role="status"
+        >
+          <b className="text-[var(--st-warning)]">
+            {needInstall
+              ? needInstall.fix === "repair"
+                ? "Claude Code の本体が落ちてきていません。"
+                : "この PC に Claude Code がありません。"
+              : "Claude Code にまだログインしていません。"}
+          </b>
+          <p className="mt-1 leading-[1.8]">
+            自分のAIもAI社員も、<b>あなたのサブスクの Claude Code</b> で動きます。
+            {needInstall
+              ? "これが無いと 1 件も動きません。下のボタンで入れられます（ターミナルは触りません）。"
+              : "ブラウザで 1 回だけ承認すると動き出します（ターミナルは開きません）。"}
+          </p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {needInstall ? (
+              <Button onClick={doInstall} disabled={ccBusy} data-install-claude>
+                {ccBusy
+                  ? "入れています"
+                  : needInstall.fix === "repair"
+                    ? "Claude Code を取り直す"
+                    : "Claude Code を入れる"}
+              </Button>
+            ) : null}
+            {needLogin ? (
+              <Button variant={needInstall ? "outline" : "primary"} onClick={doLogin} data-login-claude>
+                ログインする
+              </Button>
+            ) : null}
+          </div>
+          {loginUrl ? (
+            <div className="mt-3 border-t border-[var(--line)] pt-3" data-login-step>
+              <ol className="ml-4 list-decimal text-[12.5px] leading-[1.9] text-[var(--on-sv)]">
+                <li>
+                  ブラウザが開きます。開かないときは{" "}
+                  <a className="font-semibold text-[var(--primary)]" href={loginUrl} target="_blank" rel="noreferrer">
+                    この入口
+                  </a>{" "}
+                  を押してください
+                </li>
+                <li>承認すると画面にコードが出ます。それを下に貼って「決定」</li>
+              </ol>
+              <div className="mt-2 flex gap-2">
+                <input
+                  className="h-10 flex-1 rounded-[var(--r-md)] border border-[var(--line)] bg-[var(--card)] px-3 text-[15px]"
+                  placeholder="コードを貼る"
+                  aria-label="ブラウザに出たコード"
+                  value={loginCodeText}
+                  onChange={(e) => setLoginCodeText(e.target.value)}
+                />
+                <Button onClick={doLoginCode} disabled={ccBusy || !loginCodeText.trim()}>
+                  決定
+                </Button>
+              </div>
+            </div>
           ) : null}
         </div>
-        {loginUrl ? (
-          <div className="mt-3 border-t border-[var(--line)] pt-3" data-login-step>
-            <ol className="ml-4 list-decimal text-[12.5px] leading-[1.9] text-[var(--on-sv)]">
-              <li>
-                ブラウザが開きます。開かないときは{" "}
-                <a className="font-semibold text-[var(--primary)]" href={loginUrl} target="_blank" rel="noreferrer">
-                  この入口
-                </a>{" "}
-                を押してください
-              </li>
-              <li>承認すると画面にコードが出ます。それを下に貼って「決定」</li>
-            </ol>
-            <div className="mt-2 flex gap-2">
-              <input
-                className="h-10 flex-1 rounded-[var(--r-md)] border border-[var(--line)] bg-[var(--card)] px-3 text-[15px]"
-                placeholder="コードを貼る"
-                aria-label="ブラウザに出たコード"
-                value={loginCodeText}
-                onChange={(e) => setLoginCodeText(e.target.value)}
-              />
-              <Button onClick={doLoginCode} disabled={ccBusy || !loginCodeText.trim()}>
-                決定
-              </Button>
-            </div>
-          </div>
-        ) : null}
-      </div>
-    ) : null}
+      ) : null}
     </>
   );
   return (
@@ -474,10 +499,15 @@ function Bridge() {
         <div data-state="ok" data-requires="bridge">
           {/* 古い Bridge には仕事を渡さない（D-109）。つながっていても「渡せます」とは言わない */}
           <p
-            className={cn("text-[15px] font-semibold", outdated ? "text-[var(--st-danger)]" : "text-[var(--st-success)]")}
+            className={cn(
+              "text-[15px] font-semibold",
+              outdated ? "text-[var(--st-danger)]" : "text-[var(--st-success)]",
+            )}
             data-connected
           >
-            {outdated ? "つながっていますが、Bridge が古いので仕事を渡せません。" : "つながりました。いま仕事を渡せます"}
+            {outdated
+              ? "つながっていますが、Bridge が古いので仕事を渡せません。"
+              : "つながりました。いま仕事を渡せます"}
           </p>
           <Devices rows={bridges} st={st} />
           {needBlock}
@@ -513,7 +543,8 @@ function Bridge() {
                 <div className="stopline" role="status">
                   <TriangleAlert />
                   <div>
-                    <b>この PC の Bridge が古いので、自分のAI に仕事を渡せません。</b>入れ直してください。書いたことは溜めておき、入れ直した後に順に片づけます。
+                    <b>この PC の Bridge が古いので、自分のAI に仕事を渡せません。</b>
+                    入れ直してください。書いたことは溜めておき、入れ直した後に順に片づけます。
                     <div className="mt-2">{downloads}</div>
                   </div>
                 </div>
@@ -525,7 +556,8 @@ function Bridge() {
                 <div className="stopline" role="status">
                   <Globe />
                   <div>
-                    <b>AI が Chrome を使えません。</b>拡張機能「Claude in Chrome」とつながっていません。ブラウザを使わない仕事はそのまま動きます。
+                    <b>AI が Chrome を使えません。</b>拡張機能「Claude in
+                    Chrome」とつながっていません。ブラウザを使わない仕事はそのまま動きます。
                     <BrowserFix open />
                   </div>
                 </div>
@@ -533,7 +565,9 @@ function Bridge() {
             ) : null}
           </Section>
           <Section title="AI が使うブラウザ">
-            <p className="mb-2 text-[12px] text-[var(--on-sv)]">この PC の分。変えると次の仕事から使います（Bridge の窓でも同じ値を変えられます）</p>
+            <p className="mb-2 text-[12px] text-[var(--on-sv)]">
+              この PC の分。変えると次の仕事から使います（Bridge の窓でも同じ値を変えられます）
+            </p>
             <BrowserPick value={st?.browser ?? "chrome"} />
           </Section>
           <div className="mt-6">
@@ -630,8 +664,8 @@ function Bridge() {
                       <div>
                         <div className="text-[14px] font-semibold">開く</div>
                         <p className="mt-1 text-[13px] leading-[1.9] text-[var(--on-sv)]">
-                          ダウンロードフォルダの <b>Kaname Bridge</b> をダブルクリックします。
-                          Mac は出てきた窓で Kaname Bridge を「アプリケーション」へドラッグしてから開きます。
+                          ダウンロードフォルダの <b>Kaname Bridge</b> をダブルクリックします。 Mac は出てきた窓で Kaname
+                          Bridge を「アプリケーション」へドラッグしてから開きます。
                         </p>
                         {/* 署名（Apple の公証・Windows のコード署名）が済むまでは OS が止める。越え方だけ案内し、手順は変えない（D-015.7・T-B-06）。
                             いまの macOS では「右クリック → 開く」では越えられない */}
@@ -647,8 +681,10 @@ function Bridge() {
                             <p data-os-warning="mac">
                               <b>Mac（「"Kaname Bridge" は開いていません」）</b>
                               <br />① <b>「完了」</b>を押す（「ゴミ箱に入れる」は押さない）
-                              <br />② 画面左上のアップルメニュー → <b>システム設定</b> → <b>プライバシーとセキュリティ</b>
-                              <br />③ 下の方の「"Kaname Bridge" は…ブロックされました」の横の <b>「このまま開く」</b>を押し、パスワードか Touch ID
+                              <br />② 画面左上のアップルメニュー → <b>システム設定</b> →{" "}
+                              <b>プライバシーとセキュリティ</b>
+                              <br />③ 下の方の「"Kaname Bridge" は…ブロックされました」の横の <b>「このまま開く」</b>
+                              を押し、パスワードか Touch ID
                               <br />④ もう一度 Kaname Bridge を開き、出てきた確認で <b>「開く」</b>
                             </p>
                             <p data-os-warning="win">

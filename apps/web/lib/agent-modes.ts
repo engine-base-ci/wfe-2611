@@ -10,5 +10,9 @@ export const MODES: readonly { id: PermissionMode; label: string; desc: string }
   { id: "acceptEdits", label: "編集は自動", desc: "ファイルの編集は聞かずに進め、それ以外は聞きます" },
   { id: "auto", label: "自動で判断", desc: "Claude が危なさを見て、危ないものだけ聞きます" },
   { id: "plan", label: "計画だけ", desc: "動かずに、進め方だけ出します" },
-  { id: ALL_ALLOWED, label: "全部許可", desc: "何も聞かずに進めます。外への送信・削除も確かめません。自分で選んだときだけ・この会話だけ" },
+  {
+    id: ALL_ALLOWED,
+    label: "全部許可",
+    desc: "何も聞かずに進めます。外への送信・削除も確かめません。自分で選んだときだけ・この会話だけ",
+  },
 ];

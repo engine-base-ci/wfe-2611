@@ -51,7 +51,9 @@ test("SCR-ONBOARD-INTERVIEW-003 SCR-ONBOARD-INTERVIEW-049 SCR-ONBOARD-INTERVIEW-
     await expect(page.locator("[data-state='n']")).toContainText(n);
   }
 });
-test("SCR-ONBOARD-INTERVIEW-081 手順バー：済んだ段と今の段だけ押せる。まだ届かない段は押せない形で出る（押しても戻されるだけ、を作らない）", async ({ page }) => {
+test("SCR-ONBOARD-INTERVIEW-081 手順バー：済んだ段と今の段だけ押せる。まだ届かない段は押せない形で出る（押しても戻されるだけ、を作らない）", async ({
+  page,
+}) => {
   const u = await signupViaApi();
   await loginAs(page, u.token);
   await bridgeRow(u);
@@ -68,7 +70,9 @@ test("SCR-ONBOARD-INTERVIEW-081 手順バー：済んだ段と今の段だけ押
   }
   await bar.getByText("4. ログイン情報").click();
   await expect(page, "押しても移らない（理由が出るだけ）").toHaveURL(/\/onboard\/interview$/);
-  await expect(page.locator("[data-step-note]")).toContainText("「4. ログイン情報」は、いまの段「2. 話す」で自分のAI に 1 つ答えると開きます");
+  await expect(page.locator("[data-step-note]")).toContainText(
+    "「4. ログイン情報」は、いまの段「2. 話す」で自分のAI に 1 つ答えると開きます",
+  );
   // 次の段まで進むと押せるようになる
   await setupStep(u.memberId, 2);
   await page.reload();
@@ -125,14 +129,21 @@ test("SCR-ONBOARD-INTERVIEW-054 止まりました：理由だけが出て、ボ
   const box = page.getByRole("textbox", { name: "自分のAIに書く" });
   const takeNext = async () => {
     let job: { job_id: string; agent_session_id: string | null } | null = null;
-    await expect.poll(async () => ((job = (await bridgeTake(sid)).json.data), job !== null), { timeout: 15_000 }).toBe(true);
+    await expect
+      .poll(async () => ((job = (await bridgeTake(sid)).json.data), job !== null), { timeout: 15_000 })
+      .toBe(true);
     return job!;
   };
   await expect(box).toBeVisible({ timeout: 15_000 });
   await box.fill("うちは受託の会社です");
   await page.getByRole("button", { name: "送る" }).click();
   const first = await takeNext();
-  await bridgeFinish(sid, { job_id: first.job_id, state: "stopped", reason: "本人のサブスクの上限に当たりました", agent_session_id: "s-int" });
+  await bridgeFinish(sid, {
+    job_id: first.job_id,
+    state: "stopped",
+    reason: "本人のサブスクの上限に当たりました",
+    agent_session_id: "s-int",
+  });
   await expect(page.locator("[data-state='stp']")).toBeVisible({ timeout: 15_000 });
   await expect(page.locator("[data-stopped-reason]")).toContainText("本人のサブスクの上限に当たりました");
   await expect(page.locator("[data-choose]"), "選ぶボタンは置かない").toHaveCount(0);

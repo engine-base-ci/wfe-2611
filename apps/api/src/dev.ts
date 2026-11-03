@@ -10,7 +10,15 @@ if (fake)
   console.warn(
     "[api:dev] バケットの存在確認を差し替え、資料は手元のフォルダ（.dev-storage）に置く（KANAME_DEV_FAKE_BUCKET=1）。本番では無効",
   );
-startServer(cfg, fake ? { bucketExists: async () => true, storageDriver: localDriver(process.env["KANAME_DEV_STORAGE_DIR"] ?? ".dev-storage") } : {}).then(
+startServer(
+  cfg,
+  fake
+    ? {
+        bucketExists: async () => true,
+        storageDriver: localDriver(process.env["KANAME_DEV_STORAGE_DIR"] ?? ".dev-storage"),
+      }
+    : {},
+).then(
   (s) => console.log(`[api:dev] 起動 port ${s.port}（存在確認 ${fake ? "バケットは差し替え" : "OK"}）`),
   (e: unknown) => {
     console.error("[api:dev] 起動しない:", (e as Error).message);

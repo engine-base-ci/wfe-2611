@@ -16,7 +16,8 @@ export const CHROME_EXTENSION_URL = "https://chromewebstore.google.com/detail/cl
 export const CHROME_CHECK = "AI が Chrome を使える（Claude in Chrome）";
 /** Bridge が会話に残す「ブラウザを使えなかった」の 1 行か（apps/bridge/src/loop.ts の BROWSER_OFF_NOTICE の書き出し） */
 export const isBrowserOffNotice = (text: string): boolean =>
-  text.startsWith("AI が Chrome を使えませんでした") || text.startsWith("AI が Bridge 専用のブラウザを開けませんでした");
+  text.startsWith("AI が Chrome を使えませんでした") ||
+  text.startsWith("AI が Bridge 専用のブラウザを開けませんでした");
 
 /** 確かめる仕事の結果を待つ上限（Claude Code の起動と Chrome への接続で 10〜40 秒） */
 const CHECK_WAIT_MS = 90_000;
@@ -34,7 +35,12 @@ const subscribeFix = (f: () => void) => {
   fixSubs.add(f);
   return () => void fixSubs.delete(f);
 };
-const useFix = () => useSyncExternalStore(subscribeFix, () => fixState, () => fixState);
+const useFix = () =>
+  useSyncExternalStore(
+    subscribeFix,
+    () => fixState,
+    () => fixState,
+  );
 
 export function BrowserFix({ open = false }: { open?: boolean }) {
   const qc = useQueryClient();
@@ -55,7 +61,11 @@ export function BrowserFix({ open = false }: { open?: boolean }) {
         const row = st.health?.find((h) => h.name === CHROME_CHECK);
         if (!row || /まだ使っていません/.test(row.detail ?? "")) continue;
         qc.setQueryData(["bridge-state"], st);
-        setMsg(row.ok ? "つながりました。AI は Chrome を使えます" : "まだつながっていません。上の手順を見直してから、もう一度押してください");
+        setMsg(
+          row.ok
+            ? "つながりました。AI は Chrome を使えます"
+            : "まだつながっていません。上の手順を見直してから、もう一度押してください",
+        );
         return;
       }
       setMsg("結果が返ってきませんでした。PC の Bridge が動いているか確かめてください");
@@ -92,7 +102,14 @@ export function BrowserFix({ open = false }: { open?: boolean }) {
         </ol>
       </details>
       <div className="bact">
-        <Button variant="outline" size="sm" icon={<Repeat />} onClick={() => void check()} disabled={checking} data-browser-check>
+        <Button
+          variant="outline"
+          size="sm"
+          icon={<Repeat />}
+          onClick={() => void check()}
+          disabled={checking}
+          data-browser-check
+        >
           {checking ? "確かめています…" : "もう一度確かめる"}
         </Button>
         <Button variant="ghost" size="sm" icon={<Globe />} onClick={() => void toDedicated()} data-browser-dedicated>

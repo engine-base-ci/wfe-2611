@@ -46,13 +46,19 @@ const measure = (page: Page) =>
       vh: window.innerHeight,
     };
   });
-const topOf = (page: Page, sel: string) => page.locator(sel).first().evaluate((el) => Math.round(el.getBoundingClientRect().top));
+const topOf = (page: Page, sel: string) =>
+  page
+    .locator(sel)
+    .first()
+    .evaluate((el) => Math.round(el.getBoundingClientRect().top));
 
 for (const [w, h] of [
   [1440, 900],
   [1024, 768],
 ] as const) {
-  test(`CHT-33-001 はじめの設定の「話す」（幅 ${w}）：ページは動かず、会話の中だけがスクロールし、段の帯・分かったこと・入力欄は動かない`, async ({ page }) => {
+  test(`CHT-33-001 はじめの設定の「話す」（幅 ${w}）：ページは動かず、会話の中だけがスクロールし、段の帯・分かったこと・入力欄は動かない`, async ({
+    page,
+  }) => {
     const u = await longTalk(2);
     await loginAs(page, u.token);
     await page.setViewportSize({ width: w, height: h });
@@ -75,7 +81,9 @@ for (const [w, h] of [
   });
 }
 
-test("CHT-33-002 会話モード（/ai/chat・幅 1440）：会話の名前と入力欄は動かず、会話の中だけがスクロールする", async ({ page }) => {
+test("CHT-33-002 会話モード（/ai/chat・幅 1440）：会話の名前と入力欄は動かず、会話の中だけがスクロールする", async ({
+  page,
+}) => {
   const u = await longTalk(6);
   await loginAs(page, u.token);
   await page.setViewportSize({ width: 1440, height: 900 });
@@ -102,7 +110,9 @@ test("CHT-33-003 767 以下（幅 375）は今までどおりページごとに�
   const m = await measure(page);
   expect(m.chatOverflowY, "会話の中に別のスクロールを作らない").not.toBe("auto");
   expect(m.pageOverflow, "ページごと流れる").toBeGreaterThan(200);
-  const hScroll = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  const hScroll = await page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  );
   expect(hScroll, "横に溢れない").toBeLessThanOrEqual(0);
 });
 
@@ -118,10 +128,15 @@ async function talkWith(memos: string[]) {
   });
   const conv = ((await r.json()) as { data: { conversation_id: string } }).data.conversation_id;
   for (const t of memos)
-    await admin("insert into messages (tenant_id, conversation_id, body, kind) select c.tenant_id, c.id, $2, 'memo' from conversations c where c.id = $1", [conv, t]);
+    await admin(
+      "insert into messages (tenant_id, conversation_id, body, kind) select c.tenant_id, c.id, $2, 'memo' from conversations c where c.id = $1",
+      [conv, t],
+    );
   return u;
 }
-test("CHT-34-001 分かったことには、自分のAI が覚えた事実だけが「項目：内容」で並び、送った文（続けて 等）は並ばない", async ({ page }) => {
+test("CHT-34-001 分かったことには、自分のAI が覚えた事実だけが「項目：内容」で並び、送った文（続けて 等）は並ばない", async ({
+  page,
+}) => {
   const u = await talkWith(["何をしている会社か：受託開発（Web・アプリ）", "案件の入口：紹介と既存客のリピート"]);
   await loginAs(page, u.token);
   await page.setViewportSize({ width: 1440, height: 900 });
@@ -140,7 +155,9 @@ test("CHT-34-002 まだ何も覚えていなければ「まだ何もありませ
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/onboard/interview");
   // 会話が読み込まれて、送った文が会話に出てから見る（読み込む前の空の欄を見て通らない）
-  await expect(page.locator('[data-part="conversation"] [data-who="me"]').first()).toContainText("続けて", { timeout: 20_000 });
+  await expect(page.locator('[data-part="conversation"] [data-who="me"]').first()).toContainText("続けて", {
+    timeout: 20_000,
+  });
   const side = page.locator("[data-chat-side]");
   await expect(side).toContainText("まだ何もありません");
   await expect(side.locator("[data-fact]")).toHaveCount(0);
@@ -165,7 +182,9 @@ async function talkLong() {
   return u;
 }
 const chatH = (page: Page) => page.locator('[data-part="conversation"] .chat').evaluate((el) => el.clientHeight);
-test("CHT-40-001 画面が低くても（1512×640）、見出しと説明は 1 行に詰まり、会話に 260px 以上が渡る。「Shift+Enter」の行は書いている間だけ出る", async ({ page }) => {
+test("CHT-40-001 画面が低くても（1512×640）、見出しと説明は 1 行に詰まり、会話に 260px 以上が渡る。「Shift+Enter」の行は書いている間だけ出る", async ({
+  page,
+}) => {
   const u = await talkLong();
   await loginAs(page, u.token);
   await page.setViewportSize({ width: 1512, height: 640 });
@@ -183,14 +202,19 @@ test("CHT-40-001 画面が低くても（1512×640）、見出しと説明は 1 
   await box.focus();
   await expect(hint).toBeHidden();
   await page.getByRole("button", { name: /毎回聞く/ }).click();
-  await expect(page.getByRole("listbox", { name: "許可のモード" }), "入力欄にいたまま許可のしかたを押しても開く").toBeVisible();
+  await expect(
+    page.getByRole("listbox", { name: "許可のモード" }),
+    "入力欄にいたまま許可のしかたを押しても開く",
+  ).toBeVisible();
   await page.keyboard.press("Escape");
   await box.fill("あ");
   await expect(hint, "書いている間だけ案内が出る").toBeVisible();
   await box.fill("");
   await expect(hint).toBeHidden();
 });
-test("CHT-40-002 「会話を広げる」を押すと段の帯・説明・分かったことを閉じて会話だけになり、「元に戻す」か Esc で戻る", async ({ page }) => {
+test("CHT-40-002 「会話を広げる」を押すと段の帯・説明・分かったことを閉じて会話だけになり、「元に戻す」か Esc で戻る", async ({
+  page,
+}) => {
   const u = await talkLong();
   await loginAs(page, u.token);
   await page.setViewportSize({ width: 1512, height: 640 });
@@ -205,10 +229,18 @@ test("CHT-40-002 「会話を広げる」を押すと段の帯・説明・分か
   await expect(page.locator("[data-chat-wide-toggle]")).toHaveText(/元に戻す/);
   await page.waitForTimeout(400);
   expect(await chatH(page), "縦に広がる").toBeGreaterThan(before + 80);
-  const fromBottom = await page.locator('[data-part="conversation"] .chat').evaluate((el) => el.scrollHeight - el.scrollTop - el.clientHeight);
+  const fromBottom = await page
+    .locator('[data-part="conversation"] .chat')
+    .evaluate((el) => el.scrollHeight - el.scrollTop - el.clientHeight);
   expect(fromBottom, "広げても読んでいた所（いちばん下）のまま。先頭へ飛ばない").toBeLessThanOrEqual(2);
-  expect(await page.locator('[data-part="conversation"] .chat').evaluate((el) => el.clientWidth), "横にも広がる").toBeGreaterThan(w0 + 200);
-  expect(await page.evaluate(() => document.documentElement.scrollHeight - innerHeight), "ページは動かない").toBeLessThanOrEqual(1);
+  expect(
+    await page.locator('[data-part="conversation"] .chat').evaluate((el) => el.clientWidth),
+    "横にも広がる",
+  ).toBeGreaterThan(w0 + 200);
+  expect(
+    await page.evaluate(() => document.documentElement.scrollHeight - innerHeight),
+    "ページは動かない",
+  ).toBeLessThanOrEqual(1);
   await page.keyboard.press("Escape");
   await expect(page.getByRole("list", { name: "手順" })).toBeVisible();
   await expect(page.locator("[data-chat-side]")).toBeVisible();

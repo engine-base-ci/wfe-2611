@@ -44,22 +44,32 @@ export function humanStatus(t: string): string {
   }
   return t.replace(/mcp__[a-z0-9-]+__([a-zA-Z0-9_-]+)/g, "$1");
 }
-const agoText = (sec: number) => (sec < 60 ? `${sec} 秒前` : sec < 3600 ? `${Math.floor(sec / 60)} 分前` : `${Math.floor(sec / 3600)} 時間前`);
+const agoText = (sec: number) =>
+  sec < 60 ? `${sec} 秒前` : sec < 3600 ? `${Math.floor(sec / 60)} 分前` : `${Math.floor(sec / 3600)} 時間前`;
 
-export function WorkLive({ work, waiting, offlineSec = null }: { work: Work; waiting?: "answer" | "permission" | null; offlineSec?: number | null }) {
+export function WorkLive({
+  work,
+  waiting,
+  offlineSec = null,
+}: {
+  work: Work;
+  waiting?: "answer" | "permission" | null;
+  offlineSec?: number | null;
+}) {
   const elapsed = useElapsed(work.elapsed_ms, `${work.job_id}-${work.elapsed_ms}`);
   // PC の Bridge が応答していない間は「書いています」と言い続けない（2026-09-28 実例：Bridge が止まった後も 38 分そのままだった）
-  const status = offlineSec !== null
-    ? `PC の Bridge から応答がありません（最後の知らせは ${agoText(offlineSec)}）。PC を開くと、止まったところから確かめます`
-    : work.stopping
-    ? "止めています…"
-    : waiting === "answer"
-      ? "あなたの答えを待っています"
-      : waiting === "permission" || work.state === "asking"
-        ? "許可を待っています"
-        : work.partial
-          ? "返事を書いています…"
-          : dots(humanStatus(work.status ?? "考えています"));
+  const status =
+    offlineSec !== null
+      ? `PC の Bridge から応答がありません（最後の知らせは ${agoText(offlineSec)}）。PC を開くと、止まったところから確かめます`
+      : work.stopping
+        ? "止めています…"
+        : waiting === "answer"
+          ? "あなたの答えを待っています"
+          : waiting === "permission" || work.state === "asking"
+            ? "許可を待っています"
+            : work.partial
+              ? "返事を書いています…"
+              : dots(humanStatus(work.status ?? "考えています"));
   return (
     <div className="work live" role="status" aria-busy="true" aria-label="自分のAIの作業" data-working>
       <div className="wl">
@@ -173,8 +183,13 @@ export function LaneWait({ on, onOpen }: { on: AgentState["waiting_on"]; onOpen:
     <div className="usage" role="status" data-lane-wait>
       <Hourglass />
       <div>
-        <b>{on.asking ? "別の会話で、自分のAI があなたの答えを待っています。" : "別の会話で、自分のAI が動いています。"}</b>
-        {on.asking ? "そちらに答えると、ここに書いたことが順に動きます" : "それが終わると、ここに書いたことが順に動きます"}（{on.title}）
+        <b>
+          {on.asking ? "別の会話で、自分のAI があなたの答えを待っています。" : "別の会話で、自分のAI が動いています。"}
+        </b>
+        {on.asking
+          ? "そちらに答えると、ここに書いたことが順に動きます"
+          : "それが終わると、ここに書いたことが順に動きます"}
+        （{on.title}）
         <button type="button" className="lk" onClick={() => onOpen(on.conversation_id)}>
           その会話を開く
         </button>
@@ -184,7 +199,15 @@ export function LaneWait({ on, onOpen }: { on: AgentState["waiting_on"]; onOpen:
 }
 
 /** 順番待ち（取り消せる・D-104.9）。入力欄の上に出す。一言は次の区切りで渡し、仕事は今の作業が終わったら順に */
-export function QueueBox({ items, onCancel, elsewhere = false }: { items: QueuedItem[]; onCancel: (item: QueuedItem) => void; elsewhere?: boolean }) {
+export function QueueBox({
+  items,
+  onCancel,
+  elsewhere = false,
+}: {
+  items: QueuedItem[];
+  onCancel: (item: QueuedItem) => void;
+  elsewhere?: boolean;
+}) {
   if (!items.length) return null;
   return (
     <div className="cqueue" aria-label="順番待ち" data-queue>
@@ -193,9 +216,20 @@ export function QueueBox({ items, onCancel, elsewhere = false }: { items: Queued
           <CircleDot />
           <span>
             {q.text ?? "（文なし）"}
-            <span className="muted">{q.kind === "steer" ? " · 次の区切りで伝えます" : elsewhere ? " · 別の会話の作業が終わったら" : " · 今の作業が終わったら"}</span>
+            <span className="muted">
+              {q.kind === "steer"
+                ? " · 次の区切りで伝えます"
+                : elsewhere
+                  ? " · 別の会話の作業が終わったら"
+                  : " · 今の作業が終わったら"}
+            </span>
           </span>
-          <button type="button" title="取り消す" aria-label={`「${q.text ?? ""}」を取り消す`} onClick={() => onCancel(q)}>
+          <button
+            type="button"
+            title="取り消す"
+            aria-label={`「${q.text ?? ""}」を取り消す`}
+            onClick={() => onCancel(q)}
+          >
             ×
           </button>
         </div>

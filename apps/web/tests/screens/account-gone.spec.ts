@@ -13,12 +13,17 @@ test("USH-00-031 ログインは生きているが会社の人が無い人は、
   await gone(u.memberId);
   for (const path of ["/settings/credentials", "/onboard/interview"]) {
     await page.goto(path);
-    await expect(page, `${path} は空白で止まらない`).toHaveURL(new RegExp(`/login\\?next=${encodeURIComponent(path).replace(/%/g, "%")}`), { timeout: 15_000 });
+    await expect(page, `${path} は空白で止まらない`).toHaveURL(
+      new RegExp(`/login\\?next=${encodeURIComponent(path).replace(/%/g, "%")}`),
+      { timeout: 15_000 },
+    );
     await expect(page.getByRole("button", { name: "ログイン" })).toBeVisible();
   }
 });
 
-test("E-AUTH-007-A E-AUTH-007-C 会社の人が無いアカウントでログインすると、理由と次の一手が出て、入ったことにならない", async ({ page }) => {
+test("E-AUTH-007-A E-AUTH-007-C 会社の人が無いアカウントでログインすると、理由と次の一手が出て、入ったことにならない", async ({
+  page,
+}) => {
   const u = await signupViaApi();
   await gone(u.memberId);
   await page.goto("/login");

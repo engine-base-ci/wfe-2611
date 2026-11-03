@@ -22,7 +22,8 @@ export interface Hit {
 /** 文の中の宛先らしいもの（ホスト名）を小文字で抜き出す。URL・user@host・素のドメインのどれでも */
 export function hostsIn(text: string): string[] {
   const out: string[] = [];
-  const re = /(?:[a-z][a-z0-9+.-]*:\/\/)?(?:[^\s/@'"`]+@)?((?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63})(?![a-z0-9-])/gi;
+  const re =
+    /(?:[a-z][a-z0-9+.-]*:\/\/)?(?:[^\s/@'"`]+@)?((?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63})(?![a-z0-9-])/gi;
   for (const m of String(text ?? "").matchAll(re)) out.push(m[1]!.toLowerCase());
   return out;
 }
@@ -55,7 +56,8 @@ export function blockedHit(toolName: string, input: unknown, list: Blocked[]): H
     walk(inp, 0);
   } else return null;
   for (const t of texts) {
-    const re = /(?:[a-z][a-z0-9+.-]*:\/\/)?(?:[^\s/@'"`]+@)?((?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63})(?![a-z0-9-])/gi;
+    const re =
+      /(?:[a-z][a-z0-9+.-]*:\/\/)?(?:[^\s/@'"`]+@)?((?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63})(?![a-z0-9-])/gi;
     for (const m of t.matchAll(re)) {
       const host = m[1]!.toLowerCase();
       const b = list.find((x) => host === x.domain || host.endsWith(`.${x.domain}`));
@@ -79,7 +81,13 @@ export interface Pages {
  */
 export function pagesIn(toolName: string, response: unknown): Pages | null {
   const text = (Array.isArray(response) ? response : [response])
-    .map((x) => (typeof x === "string" ? x : x && typeof x === "object" && typeof (x as Record<string, unknown>)["text"] === "string" ? String((x as Record<string, unknown>)["text"]) : ""))
+    .map((x) =>
+      typeof x === "string"
+        ? x
+        : x && typeof x === "object" && typeof (x as Record<string, unknown>)["text"] === "string"
+          ? String((x as Record<string, unknown>)["text"])
+          : "",
+    )
     .join("\n");
   const name = String(toolName ?? "");
   if (name.startsWith("mcp__claude-in-chrome__")) {
@@ -100,7 +108,8 @@ export function pagesIn(toolName: string, response: unknown): Pages | null {
 }
 
 /** 禁止の宛先のページに居ても使ってよい道具（閉じる・タブを見る・別の宛先へ移る。移る先は開く前の見張りが調べる） */
-const ESCAPE = /__(tabs_close_mcp|tabs_context_mcp|tabs_create_mcp|navigate|list_connected_browsers|select_browser|switch_browser|browser_close|browser_tabs|browser_navigate|browser_navigate_back)$/;
+const ESCAPE =
+  /__(tabs_close_mcp|tabs_context_mcp|tabs_create_mcp|navigate|list_connected_browsers|select_browser|switch_browser|browser_close|browser_tabs|browser_navigate|browser_navigate_back)$/;
 
 /**
  * 開いた後の見張り（D-119.5）。
@@ -232,8 +241,15 @@ export function guardArgs(list: Blocked[], hookPath: string, nodeBin: string): s
   if (!list.length) return [];
   const hook = { type: "command", command: `"${nodeBin}" "${hookPath}"`, timeout: 10 };
   // 開く前は全部の道具、開いた後はブラウザの道具（MCP）だけ（D-119.5）
-  const settings = { hooks: { PreToolUse: [{ matcher: "*", hooks: [hook] }], PostToolUse: [{ matcher: "mcp__.*", hooks: [hook] }] } };
-  return ["--disallowedTools", ...list.map((b) => `WebFetch(domain:${b.domain})`), "--settings", JSON.stringify(settings)];
+  const settings = {
+    hooks: { PreToolUse: [{ matcher: "*", hooks: [hook] }], PostToolUse: [{ matcher: "mcp__.*", hooks: [hook] }] },
+  };
+  return [
+    "--disallowedTools",
+    ...list.map((b) => `WebFetch(domain:${b.domain})`),
+    "--settings",
+    JSON.stringify(settings),
+  ];
 }
 
 /** フックに渡す環境（一覧・書き残す場所。Electron の中の node で動かすときは node として動かす） */

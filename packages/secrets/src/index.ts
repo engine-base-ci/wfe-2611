@@ -33,10 +33,10 @@ export class MemoryVault implements Vault {
   async put(ref: string, s: StoredSecret) {
     this.m.set(ref, s);
   }
-  async get(ref: string, _tenantId?: string) {
+  async get(ref: string) {
     return this.m.get(ref) ?? null;
   }
-  async revoke(ref: string, _tenantId?: string) {
+  async revoke(ref: string) {
     const s = this.m.get(ref);
     if (!s || s.revokedAt) return false;
     s.revokedAt = new Date().toISOString();
@@ -102,10 +102,22 @@ export class SecretsGateway {
       });
     } catch (e) {
       // 預かり先に書けなかった（届かない・認証が切れた・上限）。預かったことにしない（E-SEC-001／上限は E-SEC-003）
-      await this.repo.audit(ctx, "secret.store_failed", "secret", ref, "C8", { kind, error: (e as Error).message.slice(0, 120) });
+      await this.repo.audit(ctx, "secret.store_failed", "secret", ref, "C8", {
+        kind,
+        error: (e as Error).message.slice(0, 120),
+      });
       if (e instanceof RateLimited)
-        return { status: "failed", reason: "預かり先が混み合っています", handoff: "少し待ってからもう一度保存する", retryAfterSec: e.retryAfterSec };
-      return { status: "failed", reason: "預かり先に保管できませんでした", handoff: "もう一度保存する。続くときは運営に連絡する" };
+        return {
+          status: "failed",
+          reason: "預かり先が混み合っています",
+          handoff: "少し待ってからもう一度保存する",
+          retryAfterSec: e.retryAfterSec,
+        };
+      return {
+        status: "failed",
+        reason: "預かり先に保管できませんでした",
+        handoff: "もう一度保存する。続くときは運営に連絡する",
+      };
     }
     const auditId = await this.repo.audit(ctx, "secret.store", "secret", ref, "C8", { kind, length: plaintext.length }); // 値は書かない
     return { status: "done", value: { ref }, auditId };
@@ -124,8 +136,17 @@ export class SecretsGateway {
       s = await this.vault.get(ref, ctx.tenantId);
     } catch (e) {
       if (e instanceof RateLimited)
-        return this.finish(ctx, ref, { status: "failed", reason: "預かり先が混み合っています", handoff: "少し待ってからもう一度", retryAfterSec: e.retryAfterSec });
-      return this.finish(ctx, ref, { status: "failed", reason: "預かり先に届きません", handoff: "少し待ってからもう一度" });
+        return this.finish(ctx, ref, {
+          status: "failed",
+          reason: "預かり先が混み合っています",
+          handoff: "少し待ってからもう一度",
+          retryAfterSec: e.retryAfterSec,
+        });
+      return this.finish(ctx, ref, {
+        status: "failed",
+        reason: "預かり先に届きません",
+        handoff: "少し待ってからもう一度",
+      });
     }
     if (!s || s.tenantId !== ctx.tenantId)
       return this.finish(ctx, ref, { status: "denied", reason: "この参照は見られない", handoff: "預け直す" });
@@ -175,4 +196,10 @@ export class SecretsGateway {
     return o;
   }
 }
-export { InfisicalVault, RateLimited, INFISICAL_FREE_SECRET_PER_MIN, INFISICAL_ALERT_RATIO, type InfisicalOptions } from "./infisical.js";
+export {
+  InfisicalVault,
+  RateLimited,
+  INFISICAL_FREE_SECRET_PER_MIN,
+  INFISICAL_ALERT_RATIO,
+  type InfisicalOptions,
+} from "./infisical.js";

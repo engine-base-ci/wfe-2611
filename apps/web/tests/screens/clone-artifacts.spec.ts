@@ -44,7 +44,9 @@ async function exported(page: Page) {
   return u;
 }
 
-test("CHT-23-001 CHT-23-002 返事の「書き出す」で成果物ができて横に開く。名前は返事の見出し。閉じても会話のカードから開き直せる", async ({ page }) => {
+test("CHT-23-001 CHT-23-002 返事の「書き出す」で成果物ができて横に開く。名前は返事の見出し。閉じても会話のカードから開き直せる", async ({
+  page,
+}) => {
   const u = await exported(page);
   await expect(panel(page).locator("[data-art-title]")).toHaveText("9 月の請求のまとめ");
   await expect(panel(page).locator(".ah .v")).toHaveText("版 1");
@@ -69,7 +71,9 @@ test("CHT-23-001 CHT-23-002 返事の「書き出す」で成果物ができて�
   await expect(panel(page)).toHaveCount(0);
 });
 
-test("CHT-23-003 CHT-23-004 CHT-23-007 直して保存すると新しい版。前の版を開いて戻すと、その中身で新しい版になり、どの版も残る。落とすのは今の版", async ({ page }) => {
+test("CHT-23-003 CHT-23-004 CHT-23-007 直して保存すると新しい版。前の版を開いて戻すと、その中身で新しい版になり、どの版も残る。落とすのは今の版", async ({
+  page,
+}) => {
   const u = await exported(page);
   await panel(page).locator("[data-art-edit]").click();
   const ed = panel(page).locator("[data-art-text]");
@@ -80,7 +84,10 @@ test("CHT-23-003 CHT-23-004 CHT-23-007 直して保存すると新しい版。�
   await panel(page).locator("[data-art-save]").click();
   await expect(panel(page).locator(".ah .v")).toHaveText("版 2", { timeout: 10_000 });
   await expect(panel(page)).toContainText("追記：京蟻は 10/5 に入金予定");
-  expect(await versions(u.memberId)).toEqual([{ version: 1, reverted_from: null }, { version: 2, reverted_from: null }]);
+  expect(await versions(u.memberId)).toEqual([
+    { version: 1, reverted_from: null },
+    { version: 2, reverted_from: null },
+  ]);
   // 版 1 を開く → 前の中身が見え、その版に戻す
   await panel(page).locator("[data-art-version='1'] .vopen").click();
   await expect(panel(page).locator("[data-art-old]")).toContainText("版 1 を見ています（いまは版 2）");
@@ -130,26 +137,39 @@ test("表は表として書き出せ、横で並べ替えて見られ、直す�
   await panel(page).locator("[data-art-save]").click();
   await expect(panel(page).locator(".ah .v")).toHaveText("版 2", { timeout: 10_000 });
   expect(await firstCol()).toEqual(["セイコー", "京蟻"]);
-  const a = await admin<{ format_id: string; title: string }>("select format_id, title from artifacts where owner_member_id = $1", [u.memberId]);
+  const a = await admin<{ format_id: string; title: string }>(
+    "select format_id, title from artifacts where owner_member_id = $1",
+    [u.memberId],
+  );
   expect(a).toEqual([{ format_id: "csv", title: "9 月の請求の表" }]);
 });
 
-test("CHT-23-006 E-ART-001-A E-ART-001-B E-ART-001-C E-ART-002-A E-ART-002-B E-ART-002-C 大きすぎる中身は保存せず理由を出し（E-ART-001）、置き場に置けなければ直した中身を残す（E-ART-002）", async ({ page }) => {
+test("CHT-23-006 E-ART-001-A E-ART-001-B E-ART-001-C E-ART-002-A E-ART-002-B E-ART-002-C 大きすぎる中身は保存せず理由を出し（E-ART-001）、置き場に置けなければ直した中身を残す（E-ART-002）", async ({
+  page,
+}) => {
   const u = await exported(page);
   await panel(page).locator("[data-art-edit]").click();
   const ed = panel(page).locator("[data-art-text]");
   await ed.fill("あ".repeat(360_000)); // 1 MB を超える
   await panel(page).locator("[data-art-save]").click();
-  await expect(page.getByText("大きすぎて成果物にできません（1 MB まで）。分けて書き出してください")).toBeVisible({ timeout: 10_000 });
+  await expect(page.getByText("大きすぎて成果物にできません（1 MB まで）。分けて書き出してください")).toBeVisible({
+    timeout: 10_000,
+  });
   await expect(panel(page).locator(".ah .v")).toHaveText("版 1");
   // 置き場に書けない
-  const tenant = (await admin<{ tenant_id: string }>("select tenant_id from artifacts where owner_member_id = $1", [u.memberId]))[0]!.tenant_id;
+  const tenant = (
+    await admin<{ tenant_id: string }>("select tenant_id from artifacts where owner_member_id = $1", [u.memberId])
+  )[0]!.tenant_id;
   const dir = join(process.cwd(), "..", "..", ".dev-storage", "tenants", tenant);
   chmodSync(dir, 0o555);
   try {
     await ed.fill("# 直した中身");
     await panel(page).locator("[data-art-save]").click();
-    await expect(page.getByText("成果物を保存できませんでした（保存先が応答しません）。直した中身は残っているので、もう一度保存してください")).toBeVisible({ timeout: 10_000 });
+    await expect(
+      page.getByText(
+        "成果物を保存できませんでした（保存先が応答しません）。直した中身は残っているので、もう一度保存してください",
+      ),
+    ).toBeVisible({ timeout: 10_000 });
     await expect(ed, "直した中身は消えない").toHaveValue("# 直した中身");
     await expect(panel(page).locator(".ah .v")).toHaveText("版 1");
   } finally {
@@ -168,7 +188,9 @@ test("CHT-23-002 狭い画面では成果物が全面に開き、横にはみ出
   await expect(panel(page)).toBeVisible({ timeout: 10_000 });
   const dock = await page.locator(".artdock").boundingBox();
   expect(Math.round(dock!.width)).toBe(375);
-  expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth),
+  ).toBeLessThanOrEqual(0);
   await panel(page).locator("[data-art-close]").click();
   await expect(panel(page)).toHaveCount(0);
 });

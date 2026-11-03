@@ -2,11 +2,26 @@
 import { chmodSync } from "node:fs";
 import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { forgetClaude, isResumeLost, isRunning, RESUME_LOST_NOTICE, runClaude, steerCurrent, stopCurrent, type Answer } from "../src/runner";
+import {
+  forgetClaude,
+  isResumeLost,
+  isRunning,
+  RESUME_LOST_NOTICE,
+  runClaude,
+  steerCurrent,
+  stopCurrent,
+  type Answer,
+} from "../src/runner";
 import type { Ev } from "../src/stream";
 
 const FAKE = join(__dirname, "fake-claude.mjs");
-const job = (prompt: string) => ({ job_id: "j-1", prompt, agent_session_id: null, conversation_id: "c-1", permission_mode: "manual" });
+const job = (prompt: string) => ({
+  job_id: "j-1",
+  prompt,
+  agent_session_id: null,
+  conversation_id: "c-1",
+  permission_mode: "manual",
+});
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 beforeAll(() => {
@@ -24,11 +39,22 @@ describe("runClaude（偽の CLI）", () => {
     const partials: string[] = [];
     const events: Ev[] = [];
     const tools: string[] = [];
-    const f = await runClaude(job("請求書"), { onPartial: (t) => partials.push(t), onEvent: (e) => events.push(e), onTool: (t) => tools.push(`${t.name}:${t.ok}`) });
+    const f = await runClaude(job("請求書"), {
+      onPartial: (t) => partials.push(t),
+      onEvent: (e) => events.push(e),
+      onTool: (t) => tools.push(`${t.name}:${t.ok}`),
+    });
     expect(f).toMatchObject({ state: "done", result: "答え:請求書", agent_session_id: "sess-fake" });
     expect(partials).toEqual(["答え", "答え:請求書"]);
-    expect(events.find((e) => e.type === "progress" && e.todos)).toMatchObject({ todos: [{ content: "読む", status: "completed" }, { content: "書く", status: "in_progress" }] });
-    expect(events.find((e) => e.type === "limit")).toMatchObject({ windows: [{ window: "five_hour", utilization: 0.3 }, { window: "week" }] });
+    expect(events.find((e) => e.type === "progress" && e.todos)).toMatchObject({
+      todos: [
+        { content: "読む", status: "completed" },
+        { content: "書く", status: "in_progress" },
+      ],
+    });
+    expect(events.find((e) => e.type === "limit")).toMatchObject({
+      windows: [{ window: "five_hour", utilization: 0.3 }, { window: "week" }],
+    });
     expect(tools).toEqual(["Read:true"]);
     expect(f.usage).toMatchObject({ turns: 1, cost_usd: 0.01 });
     expect(isRunning()).toBe(false);
@@ -98,7 +124,12 @@ describe("runClaude（偽の CLI）", () => {
     const inits: (string | null)[] = [];
     const f = await runClaude(
       { ...job("請求書"), agent_session_id: "sess-lost" },
-      { onNotice: (t) => notices.push(t), onEvent: (e) => { if (e.type === "init") inits.push(e.session); } },
+      {
+        onNotice: (t) => notices.push(t),
+        onEvent: (e) => {
+          if (e.type === "init") inits.push(e.session);
+        },
+      },
     );
     expect(f).toMatchObject({ state: "done", result: "答え:請求書", agent_session_id: "sess-fake" });
     expect(notices).toEqual([RESUME_LOST_NOTICE]);
@@ -109,18 +140,35 @@ describe("runClaude（偽の CLI）", () => {
     const inits: (string | null)[] = [];
     const f = await runClaude(
       { ...job("請求書"), agent_session_id: "sess-fake" },
-      { onNotice: (t) => notices.push(t), onEvent: (e) => { if (e.type === "init") inits.push(e.session); } },
+      {
+        onNotice: (t) => notices.push(t),
+        onEvent: (e) => {
+          if (e.type === "init") inits.push(e.session);
+        },
+      },
     );
     expect(f).toMatchObject({ state: "done", result: "答え:請求書", agent_session_id: "sess-fake" });
     expect(notices).toEqual([]);
     expect(inits).toEqual(["sess-fake"]);
   });
   it("CHT-42-004 本物の形の判定：記録が無い（stderr／API を呼ばず本文なし）は当たり、上限（API は呼んだ）や本文のある失敗は当たらない", () => {
-    const lost = { type: "result", subtype: "error_during_execution", duration_ms: 0, duration_api_ms: 0, is_error: true, num_turns: 0, result: "" };
+    const lost = {
+      type: "result",
+      subtype: "error_during_execution",
+      duration_ms: 0,
+      duration_api_ms: 0,
+      is_error: true,
+      num_turns: 0,
+      result: "",
+    };
     expect(isResumeLost(lost, "", "")).toBe(true);
     expect(isResumeLost({ subtype: "success" }, "No conversation found with session ID: x\n", "")).toBe(true);
-    expect(isResumeLost({ subtype: "error_during_execution", num_turns: 0, duration_api_ms: 812, is_error: true }, "", "")).toBe(false);
-    expect(isResumeLost({ subtype: "error_during_execution", num_turns: 0, duration_api_ms: 0 }, "", "途中まで")).toBe(false);
+    expect(
+      isResumeLost({ subtype: "error_during_execution", num_turns: 0, duration_api_ms: 812, is_error: true }, "", ""),
+    ).toBe(false);
+    expect(isResumeLost({ subtype: "error_during_execution", num_turns: 0, duration_api_ms: 0 }, "", "途中まで")).toBe(
+      false,
+    );
     expect(isResumeLost({ subtype: "error_during_execution", num_turns: 2, duration_api_ms: 0 }, "", "")).toBe(false);
   });
 

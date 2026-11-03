@@ -28,11 +28,19 @@ let app: ReturnType<typeof createApp>;
 let admin: pg.Pool;
 const X = "/api/auth-ext";
 const req = (method: string, path: string, body?: unknown, headers: Record<string, string> = {}) =>
-  app.request(`http://localhost${X}${path}`, { method, headers: { "content-type": "application/json", ...headers }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
+  app.request(`http://localhost${X}${path}`, {
+    method,
+    headers: { "content-type": "application/json", ...headers },
+    ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+  });
 const post = (path: string, body: unknown, h: Record<string, string> = {}) => req("POST", path, body, h);
 const json = async <T>(r: Response | Promise<Response>) => ((await (await r).json()) as { data: T }).data;
 const uniq = () => `qa-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
-type Cred = { id: string; service_name: string; login_check: { state: string; detail: string | null; at: string | null } | null };
+type Cred = {
+  id: string;
+  service_name: string;
+  login_check: { state: string; detail: string | null; at: string | null } | null;
+};
 
 beforeAll(async () => {
   await migrate(ADMIN, DB_PKG);
@@ -41,17 +49,37 @@ beforeAll(async () => {
   const appPool = createPool({ databaseUrl: APP_URL, max: 3 });
   const repo = await createRepository(appPool);
   const { auth } = createAuth({
-    authDatabaseUrl: AUTH_URL, appPool, secret: "test-secret-0123456789-abcdefghijklmnop",
-    baseURL: "http://localhost:3001", webBaseURL: "http://localhost:3123", mailer: async () => undefined,
+    authDatabaseUrl: AUTH_URL,
+    appPool,
+    secret: "test-secret-0123456789-abcdefghijklmnop",
+    baseURL: "http://localhost:3001",
+    webBaseURL: "http://localhost:3123",
+    mailer: async () => undefined,
   });
   const secrets = new SecretsGateway(repo, new MemoryVault(), Buffer.alloc(32, 9));
-  const objects = new ObjectStore(repo, localDriver(mkdtempSync(join(tmpdir(), "kaname-obj-"))), { signingSecret: "test-files", maxBytes: 1024 * 1024 });
+  const objects = new ObjectStore(repo, localDriver(mkdtempSync(join(tmpdir(), "kaname-obj-"))), {
+    signingSecret: "test-files",
+    maxBytes: 1024 * 1024,
+  });
   app = createApp({
-    repo, auth, resolve: createSessionResolver(auth, appPool),
+    repo,
+    auth,
+    resolve: createSessionResolver(auth, appPool),
     authExt: authExt({
-      auth, appPool, authPool: new pg.Pool({ connectionString: AUTH_URL, max: 2 }), repo, secrets, objects,
+      auth,
+      appPool,
+      authPool: new pg.Pool({ connectionString: AUTH_URL, max: 2 }),
+      repo,
+      secrets,
+      objects,
       mailer: async (m) => void sent.push({ to: m.to, url: m.url, kind: m.kind }),
-      config: { secretsMasterKey: "test-master", baseUrl: "http://localhost:3001", webBaseUrl: "http://localhost:3123", opsEmail: "ops@example.com", env: "test" as const },
+      config: {
+        secretsMasterKey: "test-master",
+        baseUrl: "http://localhost:3001",
+        webBaseUrl: "http://localhost:3123",
+        opsEmail: "ops@example.com",
+        env: "test" as const,
+      },
     }),
   });
 }, 60_000);
@@ -61,18 +89,29 @@ async function ready(opts: { bridge?: boolean } = { bridge: true }) {
   const email = `${uniq()}@example.com`;
   expect((await post("/sign-up", { email, password: PW, company_name: "K" })).status).toBe(201);
   const mail = sent.filter((m) => m.to === email && m.kind === "verify").at(-1)!;
-  const ver = await json<{ token: string }>(post("/verify-signup", { token: new URL(mail.url).searchParams.get("token") }));
+  const ver = await json<{ token: string }>(
+    post("/verify-signup", { token: new URL(mail.url).searchParams.get("token") }),
+  );
   const H = { authorization: `Bearer ${ver.token}` };
   let B: Record<string, string> = {};
   if (opts.bridge) {
     const pair = await json<{ code: string }>(post("/bridge/pair", {}, H));
-    const claim = await json<{ session_id: string }>(post("/bridge/claim", { code: pair.code, device_label: "QA の PC" }));
+    const claim = await json<{ session_id: string }>(
+      post("/bridge/claim", { code: pair.code, device_label: "QA の PC" }),
+    );
     B = { "x-bridge-session": claim.session_id };
   }
   const store = (service_name = "http://127.0.0.1:3124/dev/fake-login") =>
     post("/vault/credentials", { service_name, login: "me@example.com", password: "S3cret-Plain!" }, H);
   const list = async () => json<Cred[]>(req("GET", "/vault/credentials", undefined, H));
-  const take = () => json<{ job_id: string; kind: string; credential_id: string | null; browser: string; tool_token: string | null } | null>(post("/bridge/take", { protocol: 4 }, B));
+  const take = () =>
+    json<{
+      job_id: string;
+      kind: string;
+      credential_id: string | null;
+      browser: string;
+      tool_token: string | null;
+    } | null>(post("/bridge/take", { protocol: 4 }, B));
   const result = (body: unknown, h = B) => post("/bridge/credentials/check-result", body, h);
   return { H, B, store, list, take, result };
 }
@@ -85,23 +124,49 @@ describe("CHT-38-001 預けたら 1 回ログインし、入れたらそのま�
     const stored = ((await s.json()) as { data: { id: string; login_check_job_id: string | null } }).data;
     expect(stored.login_check_job_id).toMatch(/^[0-9a-f-]{36}$/);
     expect((await r.list())[0]!.login_check).toMatchObject({ state: "pending" });
-    const job = (await admin.query("select kind, credential_id, browser, conversation_id, state_id from bridge_jobs where id = $1", [stored.login_check_job_id])).rows[0];
-    expect(job).toMatchObject({ kind: "login_check", credential_id: stored.id, browser: "dedicated", conversation_id: null, state_id: "queued" });
+    const job = (
+      await admin.query(
+        "select kind, credential_id, browser, conversation_id, state_id from bridge_jobs where id = $1",
+        [stored.login_check_job_id],
+      )
+    ).rows[0];
+    expect(job).toMatchObject({
+      kind: "login_check",
+      credential_id: stored.id,
+      browser: "dedicated",
+      conversation_id: null,
+      state_id: "queued",
+    });
     // Bridge が取る：種類と資格情報の id が付く。AI の道具の鍵は付かない（会話ではない）
     const took = await r.take();
-    expect(took).toMatchObject({ job_id: stored.login_check_job_id, kind: "login_check", credential_id: stored.id, browser: "dedicated", tool_token: null });
+    expect(took).toMatchObject({
+      job_id: stored.login_check_job_id,
+      kind: "login_check",
+      credential_id: stored.id,
+      browser: "dedicated",
+      tool_token: null,
+    });
     expect((await r.list())[0]!.login_check).toMatchObject({ state: "running" });
     // その仕事で鍵を受け取れる（T-B-05 の口がそのまま使える）。宛先も付く
     const got = await post("/bridge/credentials/resolve", { job_id: took!.job_id, credential_id: stored.id }, r.B);
     expect(got.status).toBe(200);
-    expect(((await got.json()) as { data: Record<string, unknown> }).data).toMatchObject({ login: "me@example.com", service_name: "http://127.0.0.1:3124/dev/fake-login", service_domain: null }); // IP の宛先は domain を持たない（URL のまま開く）
+    expect(((await got.json()) as { data: Record<string, unknown> }).data).toMatchObject({
+      login: "me@example.com",
+      service_name: "http://127.0.0.1:3124/dev/fake-login",
+      service_domain: null,
+    }); // IP の宛先は domain を持たない（URL のまま開く）
     // 結果
     expect((await r.result({ job_id: took!.job_id, state: "ok", detail: "ログインできました" })).status).toBe(200);
     const row = (await r.list())[0]!;
     expect(row.login_check).toMatchObject({ state: "ok", detail: "ログインできました" });
     expect(row.login_check!.at).toBeTruthy();
-    expect((await admin.query("select state_id, result from bridge_jobs where id = $1", [took!.job_id])).rows[0]).toMatchObject({ state_id: "done", result: "ok" });
-    const a = await admin.query("select choke_point_id, payload from audit_events where action = 'credential.login_check' and target_id = $1", [stored.id]);
+    expect(
+      (await admin.query("select state_id, result from bridge_jobs where id = $1", [took!.job_id])).rows[0],
+    ).toMatchObject({ state_id: "done", result: "ok" });
+    const a = await admin.query(
+      "select choke_point_id, payload from audit_events where action = 'credential.login_check' and target_id = $1",
+      [stored.id],
+    );
     expect(a.rows).toHaveLength(1);
     expect(a.rows[0]).toMatchObject({ choke_point_id: "C1", payload: { state: "ok", job_id: took!.job_id } });
     expect(JSON.stringify(a.rows)).not.toContain("S3cret");
@@ -146,14 +211,23 @@ describe("CHT-38-002 入れなければ理由を出す（パスワードが違�
   it("CHT-38-002 規約で禁止のサービスは試さない：仕事を積まず、行に理由が出る", async () => {
     const r = await ready();
     const name = `禁止サービス-${uniq()}`;
-    await admin.query("insert into service_registry (tenant_id, name, domain, automation_verdict_id) values (app.ops_tenant_id(), $1, $2, 'forbidden')", [name, `${uniq()}.example`]);
+    await admin.query(
+      "insert into service_registry (tenant_id, name, domain, automation_verdict_id) values (app.ops_tenant_id(), $1, $2, 'forbidden')",
+      [name, `${uniq()}.example`],
+    );
     try {
       const s = ((await (await r.store(name)).json()) as { data: { login_check_job_id: string | null } }).data;
       expect(s.login_check_job_id).toBeNull();
-      expect((await r.list())[0]!.login_check).toMatchObject({ state: "forbidden", detail: expect.stringContaining("禁止") });
+      expect((await r.list())[0]!.login_check).toMatchObject({
+        state: "forbidden",
+        detail: expect.stringContaining("禁止"),
+      });
       expect(await r.take()).toBeNull();
     } finally {
-      await admin.query("update credentials set service_id = null where service_id in (select id from service_registry where name = $1)", [name]);
+      await admin.query(
+        "update credentials set service_id = null where service_id in (select id from service_registry where name = $1)",
+        [name],
+      );
       await admin.query("delete from service_registry where name = $1", [name]);
     }
   });
@@ -172,8 +246,13 @@ describe("CHT-38-002 入れなければ理由を出す（パスワードが違�
     expect((await r.list())[0]!.login_check).toMatchObject({ state: "running" });
     // Bridge が「いま何も動かしていない」と言って来た＝途中で死んでいた
     await post("/bridge/take", { protocol: 4, idle: true }, r.B);
-    expect((await admin.query("select state_id from bridge_jobs where id = $1", [took!.job_id])).rows[0]).toMatchObject({ state_id: "stopped" });
-    expect((await r.list())[0]!.login_check).toMatchObject({ state: "stopped", detail: expect.stringContaining("途中で止まった") });
+    expect((await admin.query("select state_id from bridge_jobs where id = $1", [took!.job_id])).rows[0]).toMatchObject(
+      { state_id: "stopped" },
+    );
+    expect((await r.list())[0]!.login_check).toMatchObject({
+      state: "stopped",
+      detail: expect.stringContaining("途中で止まった"),
+    });
   });
 });
 
@@ -190,6 +269,8 @@ describe("CHT-38-003 鍵は実行の間だけ受け取り、ディスクにも A
       await r.list(),
     ]);
     expect(dump).not.toContain("S3cret-Plain!");
-    expect((await post("/bridge/credentials/resolve", { job_id: took!.job_id, credential_id: stored.id }, r.B)).status).toBe(403);
+    expect(
+      (await post("/bridge/credentials/resolve", { job_id: took!.job_id, credential_id: stored.id }, r.B)).status,
+    ).toBe(403);
   });
 });

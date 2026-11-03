@@ -19,9 +19,14 @@ const app = (cmd: "stop" | "start") =>
 test.describe("この PC の Bridge の生き死に", () => {
   test.skip(process.platform !== "darwin", "この PC の Bridge を起動・終了して確かめるので macOS だけ");
   // 本人の Bridge を実際に止めるテスト。止めてよいと明示したときだけ流す（止めると本人の仕事が途中で死ぬ・2026-09-28 実例）
-  test.skip(process.env["QA_STOP_REAL_BRIDGE"] !== "1", "本人の Bridge を止めるので、QA_STOP_REAL_BRIDGE=1 のときだけ流す（BLOCKED）");
+  test.skip(
+    process.env["QA_STOP_REAL_BRIDGE"] !== "1",
+    "本人の Bridge を止めるので、QA_STOP_REAL_BRIDGE=1 のときだけ流す（BLOCKED）",
+  );
 
-  test("SCR-BRIDGE-SETUP-083 SCR-BRIDGE-SETUP-084 端末は 1 台 1 行で、いま応答があるものだけ「仕事を渡せる」", async ({ page }) => {
+  test("SCR-BRIDGE-SETUP-083 SCR-BRIDGE-SETUP-084 端末は 1 台 1 行で、いま応答があるものだけ「仕事を渡せる」", async ({
+    page,
+  }) => {
     test.skip(!(await alive()), "この PC で Bridge が動いていないので確かめられない（BLOCKED）");
     const u = await signupViaApi();
     await claimBridge(u.token, "事務所の Mac");

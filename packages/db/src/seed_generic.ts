@@ -66,7 +66,8 @@ export async function seedGenericRows(
     );
     // 行き詰まったら（輪がある）、輪の上にある表から 1 つ崩す。名前順の先頭を選ぶと、輪の外で順番待ちの表
     // （例：bridge_job_events は bridge_jobs の後）を先に出してしまい、親の種が無く FK が null になる
-    const deps = (t: string) => fks.filter((f) => f.table === t && f.refTable !== t && pending.has(f.refTable)).map((f) => f.refTable);
+    const deps = (t: string) =>
+      fks.filter((f) => f.table === t && f.refTable !== t && pending.has(f.refTable)).map((f) => f.refTable);
     const onCycle = (t: string): boolean => {
       const seen = new Set<string>();
       const stack = deps(t);
@@ -112,7 +113,9 @@ export async function seedGenericRows(
       if (x.col === pks.get(t) && x.col === "id") continue;
       // 自然な主キー（setup_steps の n 等）：新しく足す行は既存と重ならない値にする
       if (x.col === pks.get(t) && fresh) {
-        row[x.col] = ["smallint", "integer", "bigint", "numeric"].includes(x.type) ? 1000 + Math.floor(Math.random() * 30000) : `k9-${rnd()}`;
+        row[x.col] = ["smallint", "integer", "bigint", "numeric"].includes(x.type)
+          ? 1000 + Math.floor(Math.random() * 30000)
+          : `k9-${rnd()}`;
         continue;
       }
       if (["created_at", "updated_at", "deleted_at", "created_by", "updated_by"].includes(x.col)) continue;
@@ -159,7 +162,8 @@ export async function seedGenericRows(
       // 自然な主キー（id 以外）で migration が既に中身を入れている表（例：setup_steps の n）は、その 1 行を種にする
       const pkCol = pks.get(t) ?? "id";
       if (pkCol !== "id") {
-        const have = (await c.query<Record<string, string>>(`select "${pkCol}" from "${t}" order by 1 limit 1`)).rows[0]?.[pkCol];
+        const have = (await c.query<Record<string, string>>(`select "${pkCol}" from "${t}" order by 1 limit 1`))
+          .rows[0]?.[pkCol];
         if (have !== undefined) {
           const id = String(have);
           seeded.set(`${t}:${b.opsTenant}`, id);

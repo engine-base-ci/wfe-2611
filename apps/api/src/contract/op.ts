@@ -128,7 +128,11 @@ export function op(deps: ContractDeps, operationId: string) {
     }
     const args: HookArgs = { e: def, ctx, repo, input, id, c };
     const run = execute(deps.hooks[operationId], args, list).then((r) => ({ hash: inputHash, ...r }));
-    if (idemKey) INFLIGHT.set(idemKey, run.catch(() => undefined));
+    if (idemKey)
+      INFLIGHT.set(
+        idemKey,
+        run.catch(() => undefined),
+      );
     try {
       const r = await run;
       if (idemKey && r.status < 300) deps.idempotency.set(idemKey, r);
@@ -196,7 +200,8 @@ async function execute(
     if (isRlsError(ex) || /追記専用/.test(String(ex))) return fail(403, "forbidden", "FORBIDDEN"); // RLS が弾いた＝権限なし／追記専用は直接書けない。副作用は起きていない
     const code = pgCode(ex);
     if (code === "23505") return fail(409, "conflict", "CONFLICT", { message: "既に登録済み" });
-    if (/決まった承認は変えられません/.test(String(ex))) return fail(409, "conflict", "CONFLICT", { message: "この承認はもう決まっています" });
+    if (/決まった承認は変えられません/.test(String(ex)))
+      return fail(409, "conflict", "CONFLICT", { message: "この承認はもう決まっています" });
     if (code === "23503" || code === "22P02" || code === "23502" || /許可されていない識別子/.test(String(ex)))
       return fail(422, "validation_failed", "VALIDATION_ERROR", {
         details: [{ field: "body", message: String((ex as Error).message).slice(0, 200) }],
@@ -213,7 +218,10 @@ async function execute(
   return { status: def.success, body };
 }
 /** 書けなかった行：見えるのに書けない＝権限なし（403）／見えない＝無い（404。ほかの会社の行があるかどうかは教えない） */
-export async function unwritable(a: Pick<HookArgs, "e" | "ctx" | "repo" | "id">, notFound: Reply = fail(404, "not_found", "NOT_FOUND")): Promise<Reply> {
+export async function unwritable(
+  a: Pick<HookArgs, "e" | "ctx" | "repo" | "id">,
+  notFound: Reply = fail(404, "not_found", "NOT_FOUND"),
+): Promise<Reply> {
   const visible = a.id ? await a.repo.table(a.e.table as TableName).get(a.ctx, a.id) : null;
   return visible ? fail(403, "forbidden", "FORBIDDEN") : notFound;
 }

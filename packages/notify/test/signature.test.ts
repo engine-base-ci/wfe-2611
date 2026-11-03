@@ -39,8 +39,18 @@ describe("送り出す 1 か所で付ける（関門 C6）", () => {
     const got: Parameters<MailLike["send"]>[0][] = [];
     const inner: MailLike = { send: async (m) => (got.push(m), { error: null }) };
     const mail = signedMail(inner, OP, "info@engine-base.com");
-    await mail.send({ from: "Kaname <noreply@engine-base.com>", to: "a@example.com", subject: "確認", text: "リンクを押してください" });
-    await mail.send({ from: "Kaname <noreply@engine-base.com>", to: "b@example.com", subject: "再設定", text: "再設定のリンク" });
+    await mail.send({
+      from: "Kaname <noreply@engine-base.com>",
+      to: "a@example.com",
+      subject: "確認",
+      text: "リンクを押してください",
+    });
+    await mail.send({
+      from: "Kaname <noreply@engine-base.com>",
+      to: "b@example.com",
+      subject: "再設定",
+      text: "再設定のリンク",
+    });
     expect(got).toHaveLength(2);
     for (const m of got) {
       expect(m.from).toBe("Kaname <noreply@engine-base.com>");

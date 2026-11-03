@@ -1,7 +1,18 @@
 // 窓の中。node は触らない（preload の口だけ）
-interface Check { name: string; ok: boolean; detail: string; fix?: "install" | "repair" | "login" | null }
+interface Check {
+  name: string;
+  ok: boolean;
+  detail: string;
+  fix?: "install" | "repair" | "login" | null;
+}
 interface BridgeApi {
-  state(): Promise<{ connected: boolean; deviceLabel: string; connectedAt?: string; apiBase: string; browser?: string }>;
+  state(): Promise<{
+    connected: boolean;
+    deviceLabel: string;
+    connectedAt?: string;
+    apiBase: string;
+    browser?: string;
+  }>;
   setBrowser(b: string): Promise<{ ok: boolean; message?: string }>;
   onBrowser(fn: (b: string) => void): void;
   claim(code: string): Promise<{ ok: true } | { ok: false; message: string }>;
@@ -29,7 +40,9 @@ async function paint(): Promise<void> {
 $("browser").addEventListener("change", async (e) => {
   const v = (e.target as HTMLInputElement).value;
   const r = await bridge.setBrowser(v);
-  $("browser-msg").textContent = r.ok ? "変えました。次の作業から使います（Kaname の画面にも出ます）" : (r.message ?? "変えられませんでした");
+  $("browser-msg").textContent = r.ok
+    ? "変えました。次の作業から使います（Kaname の画面にも出ます）"
+    : (r.message ?? "変えられませんでした");
   if (!r.ok) await paint(); // 変えられなかったら元の選択に戻す
   await checks();
 });
@@ -48,7 +61,10 @@ async function checks(): Promise<void> {
     ng: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.7 18-8-14a2 2 0 0 0-3.4 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>',
   };
   $("checks").innerHTML = rows
-    .map((c) => `<li class="${c.ok ? "ok" : "ng"}">${c.ok ? ICON.ok : ICON.ng}<span>${c.name}<span class="d">${c.detail}</span></span></li>`)
+    .map(
+      (c) =>
+        `<li class="${c.ok ? "ok" : "ng"}">${c.ok ? ICON.ok : ICON.ng}<span>${c.name}<span class="d">${c.detail}</span></span></li>`,
+    )
     .join("");
   // 何が足りないかで出し分ける。2 つの検査はどちらも名前に「Claude Code」が入るので、名前で選ばない
   const needInstall = rows.find((c) => c.fix === "install" || c.fix === "repair");

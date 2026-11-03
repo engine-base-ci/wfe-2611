@@ -64,7 +64,21 @@ beforeAll(async () => {
     repo,
     auth,
     resolve: createSessionResolver(auth, appPool),
-    authExt: authExt({ auth, appPool, authPool: new pg.Pool({ connectionString: AUTH_URL, max: 2 }), repo, secrets, mailer: async (m) => void mails.push(m), config: { secretsMasterKey: "test-master", baseUrl: "http://localhost:3001", webBaseUrl: "http://localhost:3123", opsEmail: "ops@example.com", env: "test" as const } }),
+    authExt: authExt({
+      auth,
+      appPool,
+      authPool: new pg.Pool({ connectionString: AUTH_URL, max: 2 }),
+      repo,
+      secrets,
+      mailer: async (m) => void mails.push(m),
+      config: {
+        secretsMasterKey: "test-master",
+        baseUrl: "http://localhost:3001",
+        webBaseUrl: "http://localhost:3123",
+        opsEmail: "ops@example.com",
+        env: "test" as const,
+      },
+    }),
   });
 }, 60_000);
 

@@ -74,7 +74,11 @@ describe("RLS 越境：会社の行を持つ表", () => {
       const before = await rowJson(table, "id", other);
       const boss: TenantContext = { tenantId: S.tenantA, userId: S.bossA, role: "member" };
       const wrong: TenantContext = { tenantId: S.tenantB, userId: S.bossA, role: "member" }; // 別テナントに SET LOCAL を向ける
-      for (const [label, ctx] of [["正しい文脈", boss], ["別テナントに向けた文脈", wrong], ["文脈なし", null]] as const) {
+      for (const [label, ctx] of [
+        ["正しい文脈", boss],
+        ["別テナントに向けた文脈", wrong],
+        ["文脈なし", null],
+      ] as const) {
         expect(await run(ctx, `select id from ${table} where id = $1`, [other]), `${label} SELECT`).toBe(0);
         const u = await run(ctx, `update ${table} set updated_at = now() where id = $1`, [other]);
         expect([0, "denied"], `${label} UPDATE`).toContain(u);
@@ -93,15 +97,24 @@ const MASTER_TABLES: [string, string, string][] = [
 describe("RLS 越境：全社共通のマスタ", () => {
   for (const [rowId, table, key] of MASTER_TABLES) {
     it(`${rowId} ${table}：tenant_id を持たない（他社の行が存在しない）。会社の人の UPDATE は弾かれ、文脈なしは SELECT 0 行・UPDATE も弾く。副作用なし`, async () => {
-      const cols = (await admin.query("select column_name from information_schema.columns where table_schema='public' and table_name=$1", [table])).rows.map((r) => r.column_name);
+      const cols = (
+        await admin.query(
+          "select column_name from information_schema.columns where table_schema='public' and table_name=$1",
+          [table],
+        )
+      ).rows.map((r) => r.column_name);
       expect(cols).not.toContain("tenant_id");
       const first = String((await admin.query(`select ${key} as k from ${table} order by 1 limit 1`)).rows[0].k);
       const before = await rowJson(table, key, first);
       const boss: TenantContext = { tenantId: S.tenantA, userId: S.bossA, role: "member" };
-      expect(await run(boss, `select ${key} from ${table}`, []) as number).toBeGreaterThan(0); // 会社の人は読める（全社共通）
-      expect([0, "denied"]).toContain(await run(boss, `update ${table} set label = label || 'x' where ${key}::text = $1`, [first]));
+      expect((await run(boss, `select ${key} from ${table}`, [])) as number).toBeGreaterThan(0); // 会社の人は読める（全社共通）
+      expect([0, "denied"]).toContain(
+        await run(boss, `update ${table} set label = label || 'x' where ${key}::text = $1`, [first]),
+      );
       expect(await run(null, `select ${key} from ${table}`, [])).toBe(0);
-      expect([0, "denied"]).toContain(await run(null, `update ${table} set label = label || 'x' where ${key}::text = $1`, [first]));
+      expect([0, "denied"]).toContain(
+        await run(null, `update ${table} set label = label || 'x' where ${key}::text = $1`, [first]),
+      );
       expect(await rowJson(table, key, first)).toEqual(before);
     });
   }
@@ -118,7 +131,9 @@ describe("RLS 越境：認証の側にしか無い表", () => {
     const boss: TenantContext = { tenantId: S.tenantA, userId: S.bossA, role: "member" };
     for (const ctx of [boss, null]) {
       expect(await run(ctx, "select email from kaname_auth.pending_signup where email = $1", [email])).toBe("denied");
-      expect(await run(ctx, "update kaname_auth.pending_signup set name = 'y' where email = $1", [email])).toBe("denied");
+      expect(await run(ctx, "update kaname_auth.pending_signup set name = 'y' where email = $1", [email])).toBe(
+        "denied",
+      );
     }
     expect(await rowJson("kaname_auth.pending_signup", "email", email)).toEqual(before);
     await admin.query("delete from kaname_auth.pending_signup where email = $1", [email]);

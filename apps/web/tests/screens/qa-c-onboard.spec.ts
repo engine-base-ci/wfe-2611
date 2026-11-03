@@ -73,7 +73,9 @@ async function midway(page: Page, text = "うちは受託の会社です") {
   await say(page, text);
   await expect(page.locator("[data-state='n']")).toBeVisible({ timeout: 15_000 });
   await expect(lastAi(page)).toBeVisible({ timeout: 30_000 });
-  await expect(page.locator("[data-working]"), "作業の行が畳まれる（返事が終わった）").toHaveCount(0, { timeout: 30_000 });
+  await expect(page.locator("[data-working]"), "作業の行が畳まれる（返事が終わった）").toHaveCount(0, {
+    timeout: 30_000,
+  });
   await expect(page.locator("[data-stop]"), "動いていない").toHaveCount(0);
 }
 /** たたき台がある人（自分のAI が道具で置く）で、たたき台の画面を開く */
@@ -88,13 +90,19 @@ async function draft(page: Page) {
   });
   expect(r.ok, `agent/say ${r.status}`).toBe(true);
   await expect
-    .poll(async () => count("select count(*)::int as n from duties where tenant_id = $1", [u.tenantId]), { timeout: 60_000 })
+    .poll(async () => count("select count(*)::int as n from duties where tenant_id = $1", [u.tenantId]), {
+      timeout: 60_000,
+    })
     .toBeGreaterThan(0);
   // 置き終わりの返事まで待つ（その仕事が動いている間は次の文が順番待ちになる）
   await expect
-    .poll(async () => count("select count(*)::int as n from bridge_jobs where member_id = $1 and state_id = 'done'", [u.memberId]), {
-      timeout: 60_000,
-    })
+    .poll(
+      async () =>
+        count("select count(*)::int as n from bridge_jobs where member_id = $1 and state_id = 'done'", [u.memberId]),
+      {
+        timeout: 60_000,
+      },
+    )
     .toBeGreaterThan(0);
   await loginAs(page, u.token);
   await page.setViewportSize({ width: 1440, height: 900 });
@@ -135,10 +143,15 @@ test("SCR-SIGNUP-030 ボタン「はじめる」：通常は保留の申し込�
   await page.getByRole("button", { name: "はじめる" }).click();
   await expect(page).toHaveURL(/\/verify-email\?sent=1/);
   await expect(page.locator("[data-state='n']")).toContainText(email);
-  expect(await count("select count(*)::int as n from kaname_auth.pending_signup where email = $1", [email]), "保留の申し込みができる").toBe(1);
+  expect(
+    await count("select count(*)::int as n from kaname_auth.pending_signup where email = $1", [email]),
+    "保留の申し込みができる",
+  ).toBe(1);
   // 既に登録済み（確認まで済んだ人のメール）
   const done = await signupViaApi("先に登録した社");
-  const pendBefore = await count("select count(*)::int as n from kaname_auth.pending_signup where email = $1", [done.email]);
+  const pendBefore = await count("select count(*)::int as n from kaname_auth.pending_signup where email = $1", [
+    done.email,
+  ]);
   await page.goto("/signup");
   await page.getByLabel("メールアドレス").fill(done.email);
   await page.getByLabel("パスワード", { exact: true }).fill(PW);
@@ -151,8 +164,16 @@ test("SCR-SIGNUP-030 ボタン「はじめる」：通常は保留の申し込�
   await page.getByRole("button", { name: "はじめる" }).click();
   await expect(page.locator("form[data-state='e']")).toBeVisible();
   await expect(page).toHaveURL(/\/signup$/);
-  expect(await count("select count(*)::int as n from kaname_auth.pending_signup where email = $1", [done.email]), "申し込みは増えない").toBe(pendBefore);
-  expect(await count("select count(*)::int as n from tenants where name = '後から来た社' and created_at > now() - interval '5 minutes'", [])).toBe(0);
+  expect(
+    await count("select count(*)::int as n from kaname_auth.pending_signup where email = $1", [done.email]),
+    "申し込みは増えない",
+  ).toBe(pendBefore);
+  expect(
+    await count(
+      "select count(*)::int as n from tenants where name = '後から来た社' and created_at > now() - interval '5 minutes'",
+      [],
+    ),
+  ).toBe(0);
 });
 
 test("SCR-VERIFY-EMAIL-028 送れなかった確認のメールを「送った」にしない：送出先が拒む宛先で申し込むと、ログに「[mail] 送れなかった → 宛先: 理由」が出て「送った」は出ない。画面も「送りました」と言わない", async ({
@@ -172,11 +193,20 @@ test("SCR-VERIFY-EMAIL-028 送れなかった確認のメールを「送った�
   await expect.poll(() => mailLines(email, subject).join("\n"), { timeout: 15_000 }).toContain("[mail] 送れなかった →");
   const lines = mailLines(email, subject);
   const failed = lines.find((l) => l.startsWith("[mail] 送れなかった"))!;
-  expect(failed, "宛先と理由が書かれる").toMatch(new RegExp(`^\\[mail\\] 送れなかった → ${email.replace(/[.+]/g, "\\$&")}（.+）: .+`));
-  expect(lines.filter((l) => l.startsWith("[mail] 送った")), "「送った」は出ない").toHaveLength(0);
+  expect(failed, "宛先と理由が書かれる").toMatch(
+    new RegExp(`^\\[mail\\] 送れなかった → ${email.replace(/[.+]/g, "\\$&")}（.+）: .+`),
+  );
+  expect(
+    lines.filter((l) => l.startsWith("[mail] 送った")),
+    "「送った」は出ない",
+  ).toHaveLength(0);
   // 「もう一度送る」でも同じ（送れなかったものを送ったにしない）
   await page.locator("[data-state='f']").getByRole("button", { name: "もう一度送る" }).click();
-  await expect.poll(() => mailLines(email, subject).filter((l) => l.startsWith("[mail] 送れなかった")).length, { timeout: 15_000 }).toBe(2);
+  await expect
+    .poll(() => mailLines(email, subject).filter((l) => l.startsWith("[mail] 送れなかった")).length, {
+      timeout: 15_000,
+    })
+    .toBe(2);
   await expect(page.locator("body")).not.toContainText("もう一度送りました");
   expect(mailLines(email, subject).filter((l) => l.startsWith("[mail] 送った"))).toHaveLength(0);
 });
@@ -202,8 +232,14 @@ test("SCR-PASSWORD-RESET-037 SCR-PASSWORD-RESET-035 ボタン「再設定メー�
   await page.getByRole("button", { name: "再設定メールを送る" }).click();
   await expect.poll(() => mailLines(email, subject).join("\n"), { timeout: 15_000 }).toContain("[mail] 送れなかった →");
   const lines = mailLines(email, subject);
-  expect(lines.find((l) => l.startsWith("[mail] 送れなかった")), "宛先と理由が書かれる").toMatch(/送れなかった → .+（.+）: .+/);
-  expect(lines.filter((l) => l.startsWith("[mail] 送った")), "「送った」は出ない").toHaveLength(0);
+  expect(
+    lines.find((l) => l.startsWith("[mail] 送れなかった")),
+    "宛先と理由が書かれる",
+  ).toMatch(/送れなかった → .+（.+）: .+/);
+  expect(
+    lines.filter((l) => l.startsWith("[mail] 送った")),
+    "「送った」は出ない",
+  ).toHaveLength(0);
 });
 
 test("SCR-LOGIN-037 ボタン「ログイン」：通常は正しい組み合わせで入る。状態「失敗」から正しく入れ直して押すと入れる（失敗のままにならない）", async ({
@@ -245,8 +281,17 @@ test("SCR-INVITE-ACCEPT-026 ボタン「参加する」：担当者として・�
     await page.getByLabel("パスワード", { exact: true }).fill(PW);
     await page.getByRole("button", { name: "参加する" }).click();
     await expect(page).toHaveURL(/\/setup\/bridge/, { timeout: 20_000 });
-    expect(await count("select count(*)::int as n from members where tenant_id = $1 and role_id = $2", [boss.tenantId, role]), `${role} が 1 人`).toBe(1);
-    const inv = await admin<{ m: string | null }>("select accepted_member_id as m from invitations where token_hash = $1", [sha256(token)]);
+    expect(
+      await count("select count(*)::int as n from members where tenant_id = $1 and role_id = $2", [
+        boss.tenantId,
+        role,
+      ]),
+      `${role} が 1 人`,
+    ).toBe(1);
+    const inv = await admin<{ m: string | null }>(
+      "select accepted_member_id as m from invitations where token_hash = $1",
+      [sha256(token)],
+    );
     expect(inv[0]!.m, "招待は受けた印（参加した会員）が付く").not.toBeNull();
     await page.evaluate(() => window.localStorage.clear());
   }
@@ -261,12 +306,18 @@ test("SCR-MFA-SETUP-032 ボタン「登録する」（状態 登録）：今の 
   await page.getByLabel("パスワード", { exact: true }).fill(PW);
   await page.getByRole("button", { name: "認証アプリを登録する" }).click();
   const secret = (await page.locator("[data-totp-secret]").textContent({ timeout: 15_000 }))!.replace(/\s+/g, "");
-  const before = await admin<{ on: boolean | null }>('select "twoFactorEnabled" as on from kaname_auth."user" where id = $1', [u.userId]);
+  const before = await admin<{ on: boolean | null }>(
+    'select "twoFactorEnabled" as on from kaname_auth."user" where id = $1',
+    [u.userId],
+  );
   expect(before[0]!.on ?? false, "押す前は無効").toBe(false);
   await page.getByLabel("アプリに出た6桁").fill(totp(secret));
   await page.getByRole("button", { name: "登録する" }).click();
   await expect(page.locator("[data-state='rc'] h1")).toHaveText("回復コードを保管してください", { timeout: 15_000 });
-  const after = await admin<{ on: boolean | null }>('select "twoFactorEnabled" as on from kaname_auth."user" where id = $1', [u.userId]);
+  const after = await admin<{ on: boolean | null }>(
+    'select "twoFactorEnabled" as on from kaname_auth."user" where id = $1',
+    [u.userId],
+  );
   expect(after[0]!.on, "押すと有効になる").toBe(true);
 });
 
@@ -280,10 +331,14 @@ test("SCR-ONBOARD-INTERVIEW-075 入力欄「自分のAIに書く」（途中）�
   const u = await interview(page);
   await midway(page);
   await say(page, "取引先は 12 社あります");
-  await expect.poll(async () => (await lastJob(u.memberId))?.prompt ?? "", { timeout: 15_000 }).toContain("取引先は 12 社あります");
+  await expect
+    .poll(async () => (await lastJob(u.memberId))?.prompt ?? "", { timeout: 15_000 })
+    .toContain("取引先は 12 社あります");
   await expect(lastAi(page)).toBeVisible({ timeout: 30_000 });
   await page.reload();
-  await expect(page.locator("[data-state='n'] [data-who='me']").last()).toContainText("取引先は 12 社あります", { timeout: 20_000 });
+  await expect(page.locator("[data-state='n'] [data-who='me']").last()).toContainText("取引先は 12 社あります", {
+    timeout: 20_000,
+  });
 });
 
 test("SCR-ONBOARD-INTERVIEW-071 ボタン「タスクにする」（途中）：自分のAI の返事から押すと「タスクにしました」が出て、タスクが 1 件できる", async ({
@@ -297,7 +352,9 @@ test("SCR-ONBOARD-INTERVIEW-071 ボタン「タスクにする」（途中）：
   expect(await count("select count(*)::int as n from tasks where tenant_id = $1", [u.tenantId])).toBe(1);
 });
 
-test("SCR-ONBOARD-INTERVIEW-072 ボタン「書き出す」（途中）：自分のAI の返事から押すと成果物が横に開き、版 1 が残る", async ({ page }) => {
+test("SCR-ONBOARD-INTERVIEW-072 ボタン「書き出す」（途中）：自分のAI の返事から押すと成果物が横に開き、版 1 が残る", async ({
+  page,
+}) => {
   const u = await interview(page);
   await midway(page);
   await lastAi(page).locator("[data-export]").click();
@@ -305,9 +362,16 @@ test("SCR-ONBOARD-INTERVIEW-072 ボタン「書き出す」（途中）：自分
   await expect(panel).toBeVisible({ timeout: 15_000 });
   await expect(panel.locator(".ah .v")).toHaveText("版 1");
   await expect
-    .poll(async () => count("select count(*)::int as n from artifact_versions v join artifacts a on a.id = v.artifact_id where a.owner_member_id = $1", [u.memberId]), {
-      timeout: 15_000,
-    })
+    .poll(
+      async () =>
+        count(
+          "select count(*)::int as n from artifact_versions v join artifacts a on a.id = v.artifact_id where a.owner_member_id = $1",
+          [u.memberId],
+        ),
+      {
+        timeout: 15_000,
+      },
+    )
     .toBe(1);
 });
 
@@ -317,14 +381,22 @@ test("SCR-ONBOARD-INTERVIEW-073 ボタン「直して送り直す」（途中）
   const u = await interview(page);
   await midway(page);
   const before = await count("select count(*)::int as n from conversations where owner_member_id = $1", [u.memberId]);
-  await page.locator('[data-state="n"] .msg[data-who="me"]').last().getByRole("button", { name: "直して送り直す" }).click();
+  await page
+    .locator('[data-state="n"] .msg[data-who="me"]')
+    .last()
+    .getByRole("button", { name: "直して送り直す" })
+    .click();
   await expect(page.locator(".cchip[title='直して送り直す']")).toContainText("直して送り直す");
   await box(page).fill("うちは制作の会社です");
   await box(page).press("Enter");
   await expect
-    .poll(async () => count("select count(*)::int as n from conversations where owner_member_id = $1", [u.memberId]), { timeout: 15_000 })
+    .poll(async () => count("select count(*)::int as n from conversations where owner_member_id = $1", [u.memberId]), {
+      timeout: 15_000,
+    })
     .toBe(before + 1);
-  await expect.poll(async () => (await lastJob(u.memberId))?.prompt ?? "", { timeout: 15_000 }).toContain("うちは制作の会社です");
+  await expect
+    .poll(async () => (await lastJob(u.memberId))?.prompt ?? "", { timeout: 15_000 })
+    .toContain("うちは制作の会社です");
 });
 
 test("SCR-ONBOARD-INTERVIEW-076 ボタン「資料・画像を付ける」（途中）：押すとファイルを選べ、選んだ資料が入力欄の上に並び、送ると自分のAI が受け取る", async ({
@@ -334,7 +406,9 @@ test("SCR-ONBOARD-INTERVIEW-076 ボタン「資料・画像を付ける」（途
   await midway(page);
   const chooser = page.waitForEvent("filechooser");
   await page.getByRole("button", { name: "資料・画像を付ける" }).click();
-  await (await chooser).setFiles([{ name: "会社案内.txt", mimeType: "text/plain", buffer: Buffer.from("受託開発の会社です\n") }]);
+  await (
+    await chooser
+  ).setFiles([{ name: "会社案内.txt", mimeType: "text/plain", buffer: Buffer.from("受託開発の会社です\n") }]);
   await expect(page.locator("[data-att-state='ok']")).toContainText("会社案内.txt", { timeout: 15_000 });
   await say(page, "この資料を読んで");
   await expect(lastAi(page)).toContainText("会社案内.txt", { timeout: 30_000 });
@@ -352,7 +426,10 @@ test("SCR-ONBOARD-INTERVIEW-077 ボタン「声で入力」（途中）：押す
       onend: (() => void) | null = null;
       onerror: ((e: unknown) => void) | null = null;
       start() {
-        setTimeout(() => this.onresult?.({ results: [Object.assign([{ transcript: "社員は三人です" }], { isFinal: true })] }), 200);
+        setTimeout(
+          () => this.onresult?.({ results: [Object.assign([{ transcript: "社員は三人です" }], { isFinal: true })] }),
+          200,
+        );
       }
       stop() {
         setTimeout(() => this.onend?.(), 50);
@@ -372,7 +449,9 @@ test("SCR-ONBOARD-INTERVIEW-077 ボタン「声で入力」（途中）：押す
   await expect(page.locator('[data-state="n"] .msg[data-who="me"]').last()).toContainText("私を入れて");
 });
 
-test("SCR-ONBOARD-INTERVIEW-080 ボタン「毎回聞く」（途中）：押すと許可のモードを選べ、選んだモードが次の仕事に載る", async ({ page }) => {
+test("SCR-ONBOARD-INTERVIEW-080 ボタン「毎回聞く」（途中）：押すと許可のモードを選べ、選んだモードが次の仕事に載る", async ({
+  page,
+}) => {
   const u = await interview(page);
   await midway(page);
   await page.getByRole("button", { name: /毎回聞く/ }).click();
@@ -381,7 +460,9 @@ test("SCR-ONBOARD-INTERVIEW-080 ボタン「毎回聞く」（途中）：押す
   await list.getByRole("option", { name: /計画だけ/ }).click();
   await expect(page.getByRole("button", { name: /計画だけ/ })).toBeVisible();
   await say(page, "進め方だけ教えて");
-  await expect.poll(async () => (await lastJob(u.memberId))?.prompt ?? "", { timeout: 15_000 }).toContain("進め方だけ教えて");
+  await expect
+    .poll(async () => (await lastJob(u.memberId))?.prompt ?? "", { timeout: 15_000 })
+    .toContain("進め方だけ教えて");
   expect((await lastJob(u.memberId))!.permission_mode).toBe("plan");
 });
 
@@ -391,7 +472,10 @@ test("SCR-ONBOARD-INTERVIEW-083 SCR-ONBOARD-INTERVIEW-084 ボタン「Opus 5.5�
   const u = await interview(page);
   await midway(page);
   await page.locator("[data-model]").click();
-  await page.getByRole("listbox", { name: "モデル" }).getByRole("option", { name: /^Opus 5\.5/ }).click();
+  await page
+    .getByRole("listbox", { name: "モデル" })
+    .getByRole("option", { name: /^Opus 5\.5/ })
+    .click();
   await expect(page.locator("[data-model]")).toHaveText("Opus 5.5");
   await page.locator("[data-effort]").click();
   await page.getByRole("listbox", { name: "考える強さ" }).getByRole("option", { name: "中", exact: true }).click();
@@ -414,7 +498,9 @@ test("SCR-ONBOARD-INTERVIEW-082 「次へ：3. たたき台」（途中）：自
   await go.click();
   await expect(page).toHaveURL(/\/onboard\/draft$/);
   await expect(page.locator("h1")).toHaveText("たたき台を確かめる");
-  expect((await admin<{ s: number }>("select setup_step as s from members where id = $1", [u.memberId]))[0]!.s).toBeGreaterThanOrEqual(2);
+  expect(
+    (await admin<{ s: number }>("select setup_step as s from members where id = $1", [u.memberId]))[0]!.s,
+  ).toBeGreaterThanOrEqual(2);
 });
 
 // =====================================================================================
@@ -449,7 +535,9 @@ test("SCR-ONBOARD-DRAFT-056 入力欄「自分のAIに書く」（会話で直�
   expect(j.prompt, "確かめているたたき台が添えられる").toContain("たたき台");
   await page.reload();
   await page.locator("[data-card='goals']").getByRole("button", { name: "会話で直す" }).click();
-  await expect(page.locator('[data-state="f"] .msg[data-who="me"]').last()).toContainText("目標を 10 件にしたい", { timeout: 20_000 });
+  await expect(page.locator('[data-state="f"] .msg[data-who="me"]').last()).toContainText("目標を 10 件にしたい", {
+    timeout: 20_000,
+  });
 });
 
 test("SCR-ONBOARD-DRAFT-052 ボタン「タスクにする」（会話で直す）：自分のAI の返事から押すと「タスクにしました」が出て、タスクが 1 件できる", async ({
@@ -463,7 +551,9 @@ test("SCR-ONBOARD-DRAFT-052 ボタン「タスクにする」（会話で直す�
   expect(await count("select count(*)::int as n from tasks where tenant_id = $1", [u.tenantId])).toBe(before + 1);
 });
 
-test("SCR-ONBOARD-DRAFT-053 ボタン「書き出す」（会話で直す）：自分のAI の返事から押すと成果物が横に開き、版 1 が残る", async ({ page }) => {
+test("SCR-ONBOARD-DRAFT-053 ボタン「書き出す」（会話で直す）：自分のAI の返事から押すと成果物が横に開き、版 1 が残る", async ({
+  page,
+}) => {
   const u = await fixing(page);
   await fixingMidway(page);
   await lastAi(page).locator("[data-export]").click();
@@ -471,24 +561,41 @@ test("SCR-ONBOARD-DRAFT-053 ボタン「書き出す」（会話で直す）：�
   await expect(panel).toBeVisible({ timeout: 15_000 });
   await expect(panel.locator(".ah .v")).toHaveText("版 1");
   await expect
-    .poll(async () => count("select count(*)::int as n from artifact_versions v join artifacts a on a.id = v.artifact_id where a.owner_member_id = $1", [u.memberId]), {
-      timeout: 15_000,
-    })
+    .poll(
+      async () =>
+        count(
+          "select count(*)::int as n from artifact_versions v join artifacts a on a.id = v.artifact_id where a.owner_member_id = $1",
+          [u.memberId],
+        ),
+      {
+        timeout: 15_000,
+      },
+    )
     .toBe(1);
 });
 
-test("SCR-ONBOARD-DRAFT-054 ボタン「直して送り直す」（会話で直す）：自分の文から押して直して送ると、その時点から新しい会話になる", async ({ page }) => {
+test("SCR-ONBOARD-DRAFT-054 ボタン「直して送り直す」（会話で直す）：自分の文から押して直して送ると、その時点から新しい会話になる", async ({
+  page,
+}) => {
   const u = await fixing(page);
   await fixingMidway(page, "目標の数字を見直したい");
   const before = await count("select count(*)::int as n from conversations where owner_member_id = $1", [u.memberId]);
-  await page.locator('[data-state="f"] .msg[data-who="me"]').last().getByRole("button", { name: "直して送り直す" }).click();
+  await page
+    .locator('[data-state="f"] .msg[data-who="me"]')
+    .last()
+    .getByRole("button", { name: "直して送り直す" })
+    .click();
   await expect(page.locator(".cchip[title='直して送り直す']")).toContainText("直して送り直す");
   await box(page).fill("台帳の段を見直したい");
   await box(page).press("Enter");
   await expect
-    .poll(async () => count("select count(*)::int as n from conversations where owner_member_id = $1", [u.memberId]), { timeout: 15_000 })
+    .poll(async () => count("select count(*)::int as n from conversations where owner_member_id = $1", [u.memberId]), {
+      timeout: 15_000,
+    })
     .toBe(before + 1);
-  await expect.poll(async () => (await lastJob(u.memberId))?.prompt ?? "", { timeout: 15_000 }).toContain("台帳の段を見直したい");
+  await expect
+    .poll(async () => (await lastJob(u.memberId))?.prompt ?? "", { timeout: 15_000 })
+    .toContain("台帳の段を見直したい");
 });
 
 test("SCR-ONBOARD-DRAFT-055 「その他（自分で書く）」（会話で直す）：自分のAI が選択肢で訊いてきたとき、選択肢に無い答えを自分で書いて送ると、その答えで続きが動く", async ({
@@ -507,17 +614,23 @@ test("SCR-ONBOARD-DRAFT-055 「その他（自分で書く）」（会話で直�
   await expect(lastAi(page)).toContainText("請求書だけ");
 });
 
-test("SCR-ONBOARD-DRAFT-057 ボタン「資料・画像を付ける」（会話で直す）：押すとファイルを選べ、選んだ資料が並び、送ると自分のAI が受け取る", async ({ page }) => {
+test("SCR-ONBOARD-DRAFT-057 ボタン「資料・画像を付ける」（会話で直す）：押すとファイルを選べ、選んだ資料が並び、送ると自分のAI が受け取る", async ({
+  page,
+}) => {
   await fixing(page);
   const chooser = page.waitForEvent("filechooser");
   await page.getByRole("button", { name: "資料・画像を付ける" }).click();
-  await (await chooser).setFiles([{ name: "去年の売上.csv", mimeType: "text/csv", buffer: Buffer.from("月,売上\n9,100\n") }]);
+  await (
+    await chooser
+  ).setFiles([{ name: "去年の売上.csv", mimeType: "text/csv", buffer: Buffer.from("月,売上\n9,100\n") }]);
   await expect(page.locator("[data-att-state='ok']")).toContainText("去年の売上.csv", { timeout: 15_000 });
   await say(page, "この数字で目標を見て");
   await expect(lastAi(page)).toContainText("去年の売上.csv", { timeout: 30_000 });
 });
 
-test("SCR-ONBOARD-DRAFT-058 ボタン「声で入力」（会話で直す）：押すと聞いている帯が出て、話したことが入力欄の文字になり、送れる", async ({ page }) => {
+test("SCR-ONBOARD-DRAFT-058 ボタン「声で入力」（会話で直す）：押すと聞いている帯が出て、話したことが入力欄の文字になり、送れる", async ({
+  page,
+}) => {
   await page.addInitScript(() => {
     class FakeRec {
       lang = "";
@@ -527,7 +640,10 @@ test("SCR-ONBOARD-DRAFT-058 ボタン「声で入力」（会話で直す）：�
       onend: (() => void) | null = null;
       onerror: ((e: unknown) => void) | null = null;
       start() {
-        setTimeout(() => this.onresult?.({ results: [Object.assign([{ transcript: "成約を十件にして" }], { isFinal: true })] }), 200);
+        setTimeout(
+          () => this.onresult?.({ results: [Object.assign([{ transcript: "成約を十件にして" }], { isFinal: true })] }),
+          200,
+        );
       }
       stop() {
         setTimeout(() => this.onend?.(), 50);
@@ -542,16 +658,25 @@ test("SCR-ONBOARD-DRAFT-058 ボタン「声で入力」（会話で直す）：�
   await page.locator(".rec").getByRole("button", { name: "止める" }).click();
   await expect(page.locator(".rec")).toHaveCount(0);
   await box(page).press("Enter");
-  await expect(page.locator('[data-state="f"] .msg[data-who="me"]').last()).toContainText("成約を十件にして", { timeout: 15_000 });
+  await expect(page.locator('[data-state="f"] .msg[data-who="me"]').last()).toContainText("成約を十件にして", {
+    timeout: 15_000,
+  });
 });
 
-test("SCR-ONBOARD-DRAFT-061 ボタン「毎回聞く」（会話で直す）：押すと許可のモードを選べ、選んだモードが次の仕事に載る", async ({ page }) => {
+test("SCR-ONBOARD-DRAFT-061 ボタン「毎回聞く」（会話で直す）：押すと許可のモードを選べ、選んだモードが次の仕事に載る", async ({
+  page,
+}) => {
   const u = await fixing(page);
   await page.getByRole("button", { name: /毎回聞く/ }).click();
-  await page.getByRole("listbox", { name: "許可のモード" }).getByRole("option", { name: /計画だけ/ }).click();
+  await page
+    .getByRole("listbox", { name: "許可のモード" })
+    .getByRole("option", { name: /計画だけ/ })
+    .click();
   await expect(page.getByRole("button", { name: /計画だけ/ })).toBeVisible();
   await say(page, "直し方だけ教えて");
-  await expect.poll(async () => (await lastJob(u.memberId))?.prompt ?? "", { timeout: 15_000 }).toContain("直し方だけ教えて");
+  await expect
+    .poll(async () => (await lastJob(u.memberId))?.prompt ?? "", { timeout: 15_000 })
+    .toContain("直し方だけ教えて");
   expect((await lastJob(u.memberId))!.permission_mode).toBe("plan");
 });
 
@@ -560,7 +685,10 @@ test("SCR-ONBOARD-DRAFT-063 SCR-ONBOARD-DRAFT-064 ボタン「Opus 5.5」「中�
 }) => {
   const u = await fixing(page);
   await page.locator("[data-model]").click();
-  await page.getByRole("listbox", { name: "モデル" }).getByRole("option", { name: /^Opus 5\.5/ }).click();
+  await page
+    .getByRole("listbox", { name: "モデル" })
+    .getByRole("option", { name: /^Opus 5\.5/ })
+    .click();
   await expect(page.locator("[data-model]")).toHaveText("Opus 5.5");
   await page.locator("[data-effort]").click();
   await page.getByRole("listbox", { name: "考える強さ" }).getByRole("option", { name: "中", exact: true }).click();
@@ -596,7 +724,11 @@ test("SCR-CREDENTIALS-051 ボタン「保存する」（入力・空）：空の
   await expect(page.locator("[data-state='ge']")).toBeVisible({ timeout: 15_000 });
   await page.locator("[data-state='ge']").getByRole("button", { name: "追加する" }).click();
   await addCredential(page, "保存テスト社");
-  expect(await count("select count(*)::int as n from credentials where tenant_id = $1 and vault_ref like 'sec_%'", [u.tenantId])).toBe(1);
+  expect(
+    await count("select count(*)::int as n from credentials where tenant_id = $1 and vault_ref like 'sec_%'", [
+      u.tenantId,
+    ]),
+  ).toBe(1);
   await page.locator("[data-state='n']").getByRole("button", { name: "追加する" }).click();
   await addCredential(page, "二件目社");
   expect(await count("select count(*)::int as n from credentials where tenant_id = $1", [u.tenantId])).toBe(2);
@@ -635,4 +767,3 @@ test("SCR-CREDENTIALS-056 SCR-CREDENTIALS-050 「次へ：5. テスト」（預�
     await expect(page.locator("h1")).toHaveText("テストで動かす");
   }
 });
-

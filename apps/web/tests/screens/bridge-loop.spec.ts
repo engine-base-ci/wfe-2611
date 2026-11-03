@@ -3,7 +3,24 @@
 // 止まったものは自動で再開しない。止まったら理由だけを出し、次に送る文で決まる（D-104.15 で D-090.5 を改めた）。
 import { existsSync } from "node:fs";
 import { expect, test, type Page } from "@playwright/test";
-import { API, admin, bridgeAnswer, bridgeAsk, bridgeAsleep, bridgeBeat, bridgeFinish, bridgeProgress, bridgeTake, claimBridge, jobStates, loginAs, hideRealBridge, setupStep, signupViaApi, toolAudit } from "../_lib/api";
+import {
+  API,
+  admin,
+  bridgeAnswer,
+  bridgeAsk,
+  bridgeAsleep,
+  bridgeBeat,
+  bridgeFinish,
+  bridgeProgress,
+  bridgeTake,
+  claimBridge,
+  jobStates,
+  loginAs,
+  hideRealBridge,
+  setupStep,
+  signupViaApi,
+  toolAudit,
+} from "../_lib/api";
 
 // 偽の Bridge で演じるので、この PC の本物は止めておく（港と「入っている」判定がぶつかる）
 // 「起こす」を試すと kaname-bridge:// で本物が立ち上がる。次のテストに持ち越さない（G-10）
@@ -22,7 +39,10 @@ const needsNoRelease = async (): Promise<void> => {
   } catch {
     served = false;
   }
-  test.skip(served, "この環境には配布物が置いてあるので「まだ配布していない」を作れない（BLOCKED：BRIDGE_RELEASE_DIR を外した環境か staging で流す）");
+  test.skip(
+    served,
+    "この環境には配布物が置いてあるので「まだ配布していない」を作れない（BLOCKED：BRIDGE_RELEASE_DIR を外した環境か staging で流す）",
+  );
 };
 
 const needsNoBridge = (): void => {
@@ -31,7 +51,6 @@ const needsNoBridge = (): void => {
     "この PC には Bridge が入っているので「入っていない人」を作れない（BLOCKED：入っていない PC か staging で流す）",
   );
 };
-
 
 /** はじめの設定を通した人が、この PC をつないだ状態で会話モードを開く */
 async function connected(page: Page) {
@@ -82,7 +101,9 @@ test("BRG-03-006 返事が会話に出て、2 回目からは同じ続き（sess
   expect(convs.length).toBe(2);
 });
 
-test("BRG-03-007 BRG-03-008 止まったら理由がそのまま会話に出る。ボタンは置かず、入力欄は開いたまま（D-104.15）", async ({ page }) => {
+test("BRG-03-007 BRG-03-008 止まったら理由がそのまま会話に出る。ボタンは置かず、入力欄は開いたまま（D-104.15）", async ({
+  page,
+}) => {
   const { sid } = await connected(page);
   await page.goto("/ai/chat");
   await say(page, "請求書を作っておいて");
@@ -94,12 +115,19 @@ test("BRG-03-007 BRG-03-008 止まったら理由がそのまま会話に出る�
   await expect(page.locator("[data-working]")).toHaveCount(0); // 止まったものを「動いています」と言わない
 });
 
-test("BRG-03-009 BRG-03-012 止まった後に「続けて」と送ると同じ続きで動き、止まった記録は履歴として残る（D-104.15）", async ({ page }) => {
+test("BRG-03-009 BRG-03-012 止まった後に「続けて」と送ると同じ続きで動き、止まった記録は履歴として残る（D-104.15）", async ({
+  page,
+}) => {
   const { u, sid } = await connected(page);
   await page.goto("/ai/chat");
   await say(page, "追いメールの下書きを作って");
   const j = await bridgeTake(sid);
-  await bridgeFinish(sid, { job_id: j.json.data!.job_id, state: "stopped", reason: STOP, agent_session_id: "qa-session-0002" });
+  await bridgeFinish(sid, {
+    job_id: j.json.data!.job_id,
+    state: "stopped",
+    reason: STOP,
+    agent_session_id: "qa-session-0002",
+  });
   await expect(page.locator("[data-stopped-reason]")).toContainText("上限");
   await say(page, "続けて");
   await expect(page.locator("[data-stopped-reason]"), "止まった記録は履歴として残る").toContainText("上限");
@@ -114,7 +142,12 @@ test("BRG-03-010 最初からやり直すときは「新しく話す」。続き
   await page.goto("/ai/chat");
   await say(page, "見積を作って");
   const j = await bridgeTake(sid);
-  await bridgeFinish(sid, { job_id: j.json.data!.job_id, state: "stopped", reason: STOP, agent_session_id: "qa-session-0003" });
+  await bridgeFinish(sid, {
+    job_id: j.json.data!.job_id,
+    state: "stopped",
+    reason: STOP,
+    agent_session_id: "qa-session-0003",
+  });
   await page.locator("[data-new-conversation]").click();
   await expect(page.locator('[data-who="me"]'), "新しい会話は空から").toHaveCount(0);
   await say(page, "見積をもう一度");
@@ -131,7 +164,10 @@ test("BRG-03-011 何も送らなければ止まったまま。勝手に動き出
   await bridgeFinish(sid, { job_id: j.json.data!.job_id, state: "stopped", reason: STOP });
   await expect(page.locator("[data-stopped-reason]")).toBeVisible();
   await page.waitForTimeout(3000);
-  expect((await jobStates(u.memberId)).map((x) => x.state_id), "並びは増えない").toEqual(["stopped"]);
+  expect(
+    (await jobStates(u.memberId)).map((x) => x.state_id),
+    "並びは増えない",
+  ).toEqual(["stopped"]);
   expect((await bridgeTake(sid)).json.data, "Bridge に渡る仕事も無い").toBeNull();
 });
 
@@ -145,7 +181,10 @@ test("BRG-03-013 BRG-03-015 知らせが来なくなったら「切れていま�
   await expect(page.locator("[data-asleep]")).toContainText("溜めておいて");
   await say(page, "起きたらこれをやって");
   await expect(page.locator('[data-who="me"]')).toContainText("起きたら");
-  expect((await jobStates(u.memberId)).map((x) => x.state_id), "溜まって待つ").toEqual(["queued"]);
+  expect(
+    (await jobStates(u.memberId)).map((x) => x.state_id),
+    "溜まって待つ",
+  ).toEqual(["queued"]);
   await bridgeBeat(sid); // 起きた
   const j = await bridgeTake(sid);
   expect(j.json.data?.prompt, "起きたら溜まった分から動く").toBe("起きたらこれをやって");
@@ -169,9 +208,7 @@ test("BRG-03-019 BRG-03-023 切れている間：経過は人の言葉で出し�
   ).toHaveCount(0);
 });
 
-test("BRG-03-026 「接続を確かめる」は、この PC の Bridge を見に行って、見つからなければそう言う", async ({
-  page,
-}) => {
+test("BRG-03-026 「接続を確かめる」は、この PC の Bridge を見に行って、見つからなければそう言う", async ({ page }) => {
   const { sid } = await connected(page);
   await bridgeAsleep(sid);
   await page.goto("/setup/bridge");
@@ -181,9 +218,7 @@ test("BRG-03-026 「接続を確かめる」は、この PC の Bridge を見に
   const before = await watching.innerText();
   await page.getByRole("button", { name: /接続を確かめる|確かめています/ }).click();
   // 押した結果が変わる（時刻が進む）＝押しても何も起きない、にならない
-  await expect
-    .poll(async () => (await watching.innerText()) !== before, { timeout: 15_000 })
-    .toBe(true);
+  await expect.poll(async () => (await watching.innerText()) !== before, { timeout: 15_000 }).toBe(true);
 });
 
 test("BRG-03-014 起きたら渡せる状態に戻り、Bridge が返した自己診断がそのまま出る", async ({ page }) => {
@@ -309,7 +344,10 @@ test("BRG-03-021 確かめ終わる前に手順やダウンロードを出さな
   const seen = (await page.evaluate(() => (window as unknown as { __seen: string[] }).__seen)) as string[];
   const states = [...new Set(seen.map((x) => x.split("|")[0]!))].filter((x) => x !== "-");
   // 出てよいのは「確かめています」と、その次の 1 回だけ。手順（n）を挟まない
-  expect(states.filter((x) => x !== "loading" && x !== "slp"), `出た状態の並び: ${states.join(" → ")}`).toEqual([]);
+  expect(
+    states.filter((x) => x !== "loading" && x !== "slp"),
+    `出た状態の並び: ${states.join(" → ")}`,
+  ).toEqual([]);
   expect(states[0], "まず確かめる").toBe("loading");
   expect(seen.filter((x) => x.endsWith("|手順")).length, "切れている人に接続コードを一瞬でも出さない").toBe(0);
 });
@@ -393,8 +431,14 @@ test("BRG-06-004 ダウンロードは Kaname の口を通る（外のサービ�
   page.on("request", (r) => hits.push(r.url()));
   await page.locator('[data-download="win"]').click();
   await expect(page.locator("[data-download-msg]")).toBeVisible({ timeout: 15_000 });
-  expect(hits.some((h) => /\/api\/auth-ext\/bridge\/download\?os=win/.test(h)), "Kaname の口を叩く").toBe(true);
-  expect(hits.some((h) => /github\.com|githubusercontent/.test(h)), "外のサービスへは行かない").toBe(false);
+  expect(
+    hits.some((h) => /\/api\/auth-ext\/bridge\/download\?os=win/.test(h)),
+    "Kaname の口を叩く",
+  ).toBe(true);
+  expect(
+    hits.some((h) => /github\.com|githubusercontent/.test(h)),
+    "外のサービスへは行かない",
+  ).toBe(false);
   const r = await request.get(`${API}/api/auth-ext/bridge/download?os=win`);
   expect([302, 404]).toContain(r.status()); // 置いてあれば実物へ、無ければ理由
 });
@@ -424,27 +468,55 @@ test("BRG-03-027 動いている間、何をしているかが会話に出る（
   await page.goto("/ai/chat");
   await say(page, "請求書を作っておいて");
   const j = await bridgeTake(sid);
-  await bridgeProgress(sid, { job_id: j.json.data!.job_id, seq: 1, kind: "progress", text: "「Read」を使っています：台帳/請求.csv" });
-  await bridgeProgress(sid, { job_id: j.json.data!.job_id, seq: 2, kind: "progress", text: "請求書の下書きを作っています" });
+  await bridgeProgress(sid, {
+    job_id: j.json.data!.job_id,
+    seq: 1,
+    kind: "progress",
+    text: "「Read」を使っています：台帳/請求.csv",
+  });
+  await bridgeProgress(sid, {
+    job_id: j.json.data!.job_id,
+    seq: 2,
+    kind: "progress",
+    text: "請求書の下書きを作っています",
+  });
   // 作業中は吹き出しの外に「いま何をしているか」の 1 行（D-104.8 で数行の経過を 1 行と道具の行に改めた）
   await expect(page.locator("[data-working] .ws")).toHaveText("請求書の下書きを作っています…");
-  await bridgeProgress(sid, { job_id: j.json.data!.job_id, seq: 3, kind: "status", text: "読んでいます：台帳/請求.csv" });
+  await bridgeProgress(sid, {
+    job_id: j.json.data!.job_id,
+    seq: 3,
+    kind: "status",
+    text: "読んでいます：台帳/請求.csv",
+  });
   await expect(page.locator("[data-working] .ws")).toHaveText("読んでいます：台帳/請求.csv");
 });
 
-test("BRG-03-028 SCR-CLONE-CHAT-119 BRG-03-029 確認カードが出て、「許可する」で Bridge に allow が渡り、記録と証跡が残る", async ({ page }) => {
+test("BRG-03-028 SCR-CLONE-CHAT-119 BRG-03-029 確認カードが出て、「許可する」で Bridge に allow が渡り、記録と証跡が残る", async ({
+  page,
+}) => {
   const { u, sid } = await connected(page);
   await page.goto("/ai/chat");
   await say(page, "請求書を送っておいて");
   const j = await bridgeTake(sid);
   const job = j.json.data!.job_id;
-  await bridgeAsk(sid, { job_id: job, request_id: "req-1", tool: "Bash", input: { command: "freee-cli invoice send --id 42" }, summary: "Bash: freee-cli invoice send --id 42" });
+  await bridgeAsk(sid, {
+    job_id: job,
+    request_id: "req-1",
+    tool: "Bash",
+    input: { command: "freee-cli invoice send --id 42" },
+    summary: "Bash: freee-cli invoice send --id 42",
+  });
   const card = page.locator('[data-part="ask"]');
   await expect(card).toBeVisible();
   await expect(card).toContainText("freee-cli invoice send");
-  expect((await bridgeAnswer(sid, { job_id: job, request_id: "req-1" })).json.data.answer, "答える前は null（勝手に許可しない）").toBeNull();
+  expect(
+    (await bridgeAnswer(sid, { job_id: job, request_id: "req-1" })).json.data.answer,
+    "答える前は null（勝手に許可しない）",
+  ).toBeNull();
   await page.locator('[data-answer="allow"]').click();
-  await expect.poll(async () => (await bridgeAnswer(sid, { job_id: job, request_id: "req-1" })).json.data.answer).toBe("allow");
+  await expect
+    .poll(async () => (await bridgeAnswer(sid, { job_id: job, request_id: "req-1" })).json.data.answer)
+    .toBe("allow");
   await expect(page.locator('[data-who="note"]').last()).toContainText("許可しました");
   await expect(card, "答えたら確認カードは消える").toHaveCount(0);
   const audit = await toolAudit(job);
@@ -458,9 +530,17 @@ test("BRG-03-030 SCR-CLONE-CHAT-120 「許可しない」で Bridge に deny が
   await say(page, "古いファイルを消して");
   const j = await bridgeTake(sid);
   const job = j.json.data!.job_id;
-  await bridgeAsk(sid, { job_id: job, request_id: "req-2", tool: "Bash", input: { command: "rm -rf build" }, summary: "Bash: rm -rf build" });
+  await bridgeAsk(sid, {
+    job_id: job,
+    request_id: "req-2",
+    tool: "Bash",
+    input: { command: "rm -rf build" },
+    summary: "Bash: rm -rf build",
+  });
   await page.locator('[data-answer="deny"]').click();
-  await expect.poll(async () => (await bridgeAnswer(sid, { job_id: job, request_id: "req-2" })).json.data.answer).toBe("deny");
+  await expect
+    .poll(async () => (await bridgeAnswer(sid, { job_id: job, request_id: "req-2" })).json.data.answer)
+    .toBe("deny");
   await expect(page.locator('[data-who="note"]').last()).toContainText("許可しませんでした");
   expect((await toolAudit(job)).map((a) => a.action)).toEqual(["bridge.tool_denied"]);
 });
@@ -472,7 +552,11 @@ test("BRG-03-031 init で会話の id を先に覚えるので、途中で落ち
   const j = await bridgeTake(sid);
   await bridgeProgress(sid, { job_id: j.json.data!.job_id, seq: 1, kind: "init", agent_session_id: "qa-session-init" });
   // 落ちた：result も session も無いまま止まる
-  await bridgeFinish(sid, { job_id: j.json.data!.job_id, state: "stopped", reason: "Claude Code が途中で終わりました（終了コード 137）" });
+  await bridgeFinish(sid, {
+    job_id: j.json.data!.job_id,
+    state: "stopped",
+    reason: "Claude Code が途中で終わりました（終了コード 137）",
+  });
   await say(page, "続けて");
   const j2 = await bridgeTake(sid);
   expect(j2.json.data?.agent_session_id, "init で覚えた id を「続けて」が引き継ぐ").toBe("qa-session-init");
@@ -484,7 +568,11 @@ test("BRG-03-032 result の is_error は失敗。終了コード 0 でも「終�
   await say(page, "今日の予定を教えて");
   const j = await bridgeTake(sid);
   // Bridge は result.is_error を読んで理由に言い換える（stream.test.ts）。画面はその理由をそのまま出す
-  await bridgeFinish(sid, { job_id: j.json.data!.job_id, state: "stopped", reason: "Claude Code にログインできていません。Bridge の「ログインする」を押して、ブラウザで 1 回許可してください" });
+  await bridgeFinish(sid, {
+    job_id: j.json.data!.job_id,
+    state: "stopped",
+    reason: "Claude Code にログインできていません。Bridge の「ログインする」を押して、ブラウザで 1 回許可してください",
+  });
   await expect(page.locator("[data-stopped-reason]")).toContainText("ログインできていません");
   await expect(page.locator('[data-who="ai"]'), "失敗を返事として出さない").toHaveCount(0);
 });

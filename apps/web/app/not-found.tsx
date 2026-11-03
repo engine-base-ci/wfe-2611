@@ -30,9 +30,7 @@ export default function NotFound() {
       </h1>
       <p className="mt-2 text-[14px] leading-[1.8]">
         {soon ? (
-          <>
-            この画面はこれから作ります（{soon.purpose.slice(0, 60)}）。できるまでは開けません。下から戻れます。
-          </>
+          <>この画面はこれから作ります（{soon.purpose.slice(0, 60)}）。できるまでは開けません。下から戻れます。</>
         ) : (
           <>URL が違うか、その画面はまだありません。下から戻れます。</>
         )}

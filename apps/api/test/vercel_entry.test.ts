@@ -25,11 +25,14 @@ describe("組み立ては 1 回・失敗は覚えない", () => {
   });
   it("落ちたら次の要求でやり直す。落ちている間は 503 と理由", async () => {
     let n = 0;
-    const handler = vercelFetch(lazyBoot(async () => {
-      n++;
-      if (n === 1) throw new StartupFailed({ ok: false, results: { "storage:bucket": "missing", "db:tables": "ok" } });
-      return fake();
-    }));
+    const handler = vercelFetch(
+      lazyBoot(async () => {
+        n++;
+        if (n === 1)
+          throw new StartupFailed({ ok: false, results: { "storage:bucket": "missing", "db:tables": "ok" } });
+        return fake();
+      }),
+    );
     const r1 = await handler(new Request("http://x/health"));
     expect(r1.status).toBe(503);
     const j1 = (await r1.json()) as { code: string; reason: string[] };

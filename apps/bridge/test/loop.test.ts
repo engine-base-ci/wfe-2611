@@ -39,7 +39,10 @@ beforeAll(async () => {
         return send({ steers: s });
       }
       if (path === "/bridge/answer2") return send({ answer });
-      if (path === "/bridge/attachment") return body["attachment_id"] === "a1" ? send({ url: `${base}/api/auth-ext/files/a1`, name: "../../台帳.csv" }) : res.writeHead(404).end("{}");
+      if (path === "/bridge/attachment")
+        return body["attachment_id"] === "a1"
+          ? send({ url: `${base}/api/auth-ext/files/a1`, name: "../../台帳.csv" })
+          : res.writeHead(404).end("{}");
       return send({ ok: true });
     });
   });
@@ -56,7 +59,13 @@ afterAll(() => {
 const runOne = async (job: Record<string, unknown>, until: (p: Posted[]) => boolean) => {
   posted = [];
   jobs = [job];
-  const stop = startLoop({ apiBase: base, sessionId: () => "00000000-0000-0000-0000-000000000001", health: async () => ({}), onChange: () => undefined, onGone: () => undefined });
+  const stop = startLoop({
+    apiBase: base,
+    sessionId: () => "00000000-0000-0000-0000-000000000001",
+    health: async () => ({}),
+    onChange: () => undefined,
+    onGone: () => undefined,
+  });
   const t0 = Date.now();
   while (!until(posted) && Date.now() - t0 < 8000) await new Promise((r) => setTimeout(r, 50));
   stop();
@@ -67,40 +76,83 @@ const finished = (p: Posted[]) => p.some((x) => x.path === "/bridge/finish");
 
 describe("startLoop", () => {
   it("BRG-13-002 書きながらの返事・手順・何をしているか・使用量・使った量を送り、結末を返す（使った量は結末より先）。資料は置き場に取って文に添える", async () => {
-    const p = await runOne({ job_id: "11111111-1111-1111-1111-111111111111", prompt: "請求書 ゆっくり", agent_session_id: null, conversation_id: "c", attachments: [{ id: "a1", name: "台帳.csv", mime: "text/csv", size: 20 }, { id: "a2", name: "無い.pdf", mime: "application/pdf", size: 5 }] }, finished);
+    const p = await runOne(
+      {
+        job_id: "11111111-1111-1111-1111-111111111111",
+        prompt: "請求書 ゆっくり",
+        agent_session_id: null,
+        conversation_id: "c",
+        attachments: [
+          { id: "a1", name: "台帳.csv", mime: "text/csv", size: 20 },
+          { id: "a2", name: "無い.pdf", mime: "application/pdf", size: 5 },
+        ],
+      },
+      finished,
+    );
     expect(kinds(p)).toEqual(expect.arrayContaining(["init", "plan", "status", "limit", "tool", "usage"]));
-    expect(p.find((x) => x.path === "/bridge/progress" && x.body["kind"] === "status")?.body["text"]).toBe("読んでいます：/w/a.csv");
+    expect(p.find((x) => x.path === "/bridge/progress" && x.body["kind"] === "status")?.body["text"]).toBe(
+      "読んでいます：/w/a.csv",
+    );
     expect(p.some((x) => x.path === "/bridge/partial")).toBe(true);
     // 使った量（D-100.1）は結末より先に届く（結末の後は仕事が閉じて受け取られない）。道具の行は名前・対象・成否・時間だけ（D-100.2・D-100.3）
     const iUsage = p.findIndex((x) => x.path === "/bridge/progress" && x.body["kind"] === "usage");
     const iFinish = p.findIndex((x) => x.path === "/bridge/finish");
     expect(iUsage, "使った量が届く").toBeGreaterThanOrEqual(0);
     expect(iUsage, "結末より先").toBeLessThan(iFinish);
-    const tool = p.find((x) => x.path === "/bridge/progress" && x.body["kind"] === "tool")!.body["tool"] as Record<string, unknown>;
+    const tool = p.find((x) => x.path === "/bridge/progress" && x.body["kind"] === "tool")!.body["tool"] as Record<
+      string,
+      unknown
+    >;
     expect(Object.keys(tool).sort()).toEqual(["ms", "name", "ok", "target"]);
     expect(tool).toMatchObject({ name: "Read", target: "/w/a.csv", ok: true });
     const fin = p.find((x) => x.path === "/bridge/finish")!.body;
     expect(fin["state"]).toBe("done");
     // 置き場の外に出る名前は潰し、取れなかったものは理由つきで添える
     const dir = join(tmpdir(), "kaname-11111111-1111-1111-1111-111111111111");
-    expect(String(fin["result"])).toBe(`答え:請求書 ゆっくり [${join(dir, "a1-台帳.csv")}|無い.pdf（取りに行けませんでした）]`);
+    expect(String(fin["result"])).toBe(
+      `答え:請求書 ゆっくり [${join(dir, "a1-台帳.csv")}|無い.pdf（取りに行けませんでした）]`,
+    );
     expect(existsSync(dir)).toBe(false); // 終わったら片付ける
   });
 
   it("CHT-42-003 記録が無い会話の仕事は、新しいセッションでやり直して知らせ（notice）を 1 行流し、新しい id の init と結末を返す（D-124.3・E-NF-003）", async () => {
-    const p = await runOne({ job_id: "44444444-4444-4444-4444-444444444444", prompt: "請求書", agent_session_id: "sess-lost", conversation_id: "c" }, finished);
-    const notices = p.filter((x) => x.path === "/bridge/progress" && x.body["kind"] === "notice").map((x) => x.body["text"]);
-    expect(notices).toEqual(["前の会話の記録がこの PC に無かったので、新しい会話として続けます。これまでの内容は Kaname の写しに残っています"]);
-    const inits = p.filter((x) => x.path === "/bridge/progress" && x.body["kind"] === "init").map((x) => x.body["agent_session_id"]);
+    const p = await runOne(
+      {
+        job_id: "44444444-4444-4444-4444-444444444444",
+        prompt: "請求書",
+        agent_session_id: "sess-lost",
+        conversation_id: "c",
+      },
+      finished,
+    );
+    const notices = p
+      .filter((x) => x.path === "/bridge/progress" && x.body["kind"] === "notice")
+      .map((x) => x.body["text"]);
+    expect(notices).toEqual([
+      "前の会話の記録がこの PC に無かったので、新しい会話として続けます。これまでの内容は Kaname の写しに残っています",
+    ]);
+    const inits = p
+      .filter((x) => x.path === "/bridge/progress" && x.body["kind"] === "init")
+      .map((x) => x.body["agent_session_id"]);
     expect(inits, "新しい id が Kaname に入る（D-093.4）").toEqual(["sess-fake"]);
-    expect(p.find((x) => x.path === "/bridge/finish")!.body).toMatchObject({ state: "done", result: "答え:請求書", agent_session_id: "sess-fake" });
+    expect(p.find((x) => x.path === "/bridge/finish")!.body).toMatchObject({
+      state: "done",
+      result: "答え:請求書",
+      agent_session_id: "sess-fake",
+    });
   });
 
   it("止めるの合図で、理由「あなたが止めました」を返す（D-104.9）", async () => {
     control = { stop: false, steer: [] };
     setTimeout(() => (control = { stop: true, steer: [] }), 400);
-    const p = await runOne({ job_id: "22222222-2222-2222-2222-222222222222", prompt: "SLOW", agent_session_id: null, conversation_id: "c" }, finished);
-    expect(p.find((x) => x.path === "/bridge/finish")!.body).toMatchObject({ state: "stopped", reason: "あなたが止めました" });
+    const p = await runOne(
+      { job_id: "22222222-2222-2222-2222-222222222222", prompt: "SLOW", agent_session_id: null, conversation_id: "c" },
+      finished,
+    );
+    expect(p.find((x) => x.path === "/bridge/finish")!.body).toMatchObject({
+      state: "stopped",
+      reason: "あなたが止めました",
+    });
     control = { stop: false, steer: [] };
   });
 
@@ -109,7 +161,10 @@ describe("startLoop", () => {
     answer = null;
     setTimeout(() => (steers = [{ id: "s1", text: "9 月で" }]), 100);
     setTimeout(() => (answer = { allow: true, scope: "once", note: null, answers: { "どの月？": "9 月" } }), 2200);
-    const p = await runOne({ job_id: "33333333-3333-3333-3333-333333333333", prompt: "ASK", agent_session_id: null, conversation_id: "c" }, finished);
+    const p = await runOne(
+      { job_id: "33333333-3333-3333-3333-333333333333", prompt: "ASK", agent_session_id: null, conversation_id: "c" },
+      finished,
+    );
     expect(p.some((x) => x.path === "/bridge/ask" && x.body["summary"] === "どの月？")).toBe(true);
     // 区切りの答えは、一言を取りに行く口に一緒に渡す（Kaname が 答え→一言 の順に吹き出しにする）
     const took = p.filter((x) => x.path === "/bridge/steers").map((x) => x.body["reply"]);
@@ -124,6 +179,10 @@ describe("toAnswer", () => {
   it("知らない形は許可しない。一言と答えは文字だけ拾う", () => {
     expect(toAnswer({})).toEqual({ allow: false, note: null, answers: null });
     expect(toAnswer({ allow: "true", note: "  ", answers: [] })).toEqual({ allow: false, note: null, answers: null });
-    expect(toAnswer({ allow: true, note: " 本番はだめ ", answers: { a: "b", c: 1 } })).toEqual({ allow: true, note: "本番はだめ", answers: { a: "b" } });
+    expect(toAnswer({ allow: true, note: " 本番はだめ ", answers: { a: "b", c: 1 } })).toEqual({
+      allow: true,
+      note: "本番はだめ",
+      answers: { a: "b" },
+    });
   });
 });

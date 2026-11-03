@@ -6,7 +6,9 @@ import { createServer, type IncomingMessage, type ServerResponse } from "node:ht
 
 export const LOCAL_PORT = 38617;
 /** この出どころの画面からだけ受ける。増やすときは配布の設定で渡す（既定は dev の 2 つ） */
-const ORIGINS = (process.env["KANAME_WEB_ORIGINS"] ?? "http://127.0.0.1:3124,http://localhost:3124,http://127.0.0.1:3123")
+const ORIGINS = (
+  process.env["KANAME_WEB_ORIGINS"] ?? "http://127.0.0.1:3124,http://localhost:3124,http://127.0.0.1:3123"
+)
   .split(",")
   .map((s) => s.trim())
   .filter(Boolean);
@@ -24,7 +26,10 @@ interface Deps {
   version: string;
   deviceLabel: () => string;
   connected: () => boolean;
-  claim: (code: string, allowSwitch?: boolean) => Promise<{ ok: true } | { ok: false; message: string; reason?: "other_account" }>;
+  claim: (
+    code: string,
+    allowSwitch?: boolean,
+  ) => Promise<{ ok: true } | { ok: false; message: string; reason?: "other_account" }>;
   /** 自己診断（Claude Code がある・Chrome がある・Kaname に届く）。画面が「何が足りないか」を出すのに使う */
   check: () => Promise<{ name: string; ok: boolean; detail: string }[]>;
   /** Claude Code を入れる（D-091.1）。押すのはこの PC で開いた画面からだけ */
@@ -51,9 +56,13 @@ export function startLocalServer(d: Deps): void {
     if (!allowed) return send(403, { error: "forbidden" }); // 知らない画面には「居る」ことすら教えない
     if (req.method === "OPTIONS") return send(204, {});
     if (req.method === "GET" && req.url === "/ping")
-      return send(200, { app: "kaname-bridge", version: d.version, device_label: d.deviceLabel(), connected: d.connected() });
-    if (req.method === "GET" && req.url === "/check")
-      return void d.check().then((c) => send(200, { checks: c }));
+      return send(200, {
+        app: "kaname-bridge",
+        version: d.version,
+        device_label: d.deviceLabel(),
+        connected: d.connected(),
+      });
+    if (req.method === "GET" && req.url === "/check") return void d.check().then((c) => send(200, { checks: c }));
     // Claude Code を入れる・ログインの窓を開く（D-091）。この PC の中だけの口なので、他所の画面からは押せない
     if (req.method === "POST" && req.url === "/install-claude")
       return void d.installClaude().then((r) => send(r.ok ? 200 : 409, r));
@@ -80,10 +89,17 @@ export function startLocalServer(d: Deps): void {
       req.on("data", (c) => (raw += c));
       req.on("end", () => {
         const b = JSON.parse(raw || "{}") as { code?: string; switch?: boolean };
-        const code = String(b.code ?? "").trim().toUpperCase();
+        const code = String(b.code ?? "")
+          .trim()
+          .toUpperCase();
         // 別のアカウントでつながっているときは 409（画面が「切り替える」を出し、本人が押したら switch: true で来る）
         void d.claim(code, b.switch === true).then((r) =>
-          r.ok ? send(201, { connected: true }) : send(r.reason === "other_account" ? 409 : 400, { message: r.message, ...(r.reason ? { reason: r.reason } : {}) }),
+          r.ok
+            ? send(201, { connected: true })
+            : send(r.reason === "other_account" ? 409 : 400, {
+                message: r.message,
+                ...(r.reason ? { reason: r.reason } : {}),
+              }),
         );
       });
       return;

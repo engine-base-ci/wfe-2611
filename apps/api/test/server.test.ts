@@ -71,16 +71,19 @@ describe("apps/api の起動口（server.ts）", () => {
 
   it("BRG-14-003 staging／本番で Infisical に入れない設定なら起動しない（メモリのまま＝secrets:vault=missing・入れない＝secrets:vault=error）。Vercel の口は 503 と理由（D-101.4）", async () => {
     const ok = { bucketExists: async () => true };
-    await expect(bootApi({ ...config, env: "staging" }, ok), "設定が無くメモリの預かり先のまま").rejects.toThrow(/secrets:vault=missing/);
+    await expect(bootApi({ ...config, env: "staging" }, ok), "設定が無くメモリの預かり先のまま").rejects.toThrow(
+      /secrets:vault=missing/,
+    );
     const cannotLogin = Object.assign(new MemoryVault(), {
       durable: true,
       ping: async (): Promise<true> => {
         throw new Error("Infisical で入ることができない（401）");
       },
     });
-    await expect(bootApi({ ...config, env: "production" }, { ...ok, vault: cannotLogin }), "Infisical に入れない").rejects.toThrow(
-      /secrets:vault=error/,
-    );
+    await expect(
+      bootApi({ ...config, env: "production" }, { ...ok, vault: cannotLogin }),
+      "Infisical に入れない",
+    ).rejects.toThrow(/secrets:vault=error/);
     // 落ちている間、Vercel の口は 503 と「どの確認が落ちたか」。値や接続先は出さない
     const handler = vercelFetch(lazyBoot(() => bootApi({ ...config, env: "staging" }, { ...ok, vault: cannotLogin })));
     const r = await handler(new Request("http://x/health"));

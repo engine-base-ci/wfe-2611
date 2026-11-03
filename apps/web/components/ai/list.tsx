@@ -7,7 +7,12 @@ import { MoreHorizontal, Pencil, Search, SquarePen, Star, Trash2 } from "lucide-
 import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { agentConversationDelete, agentConversationSet, agentConversations, type ConversationItem } from "@/lib/auth/ext";
+import {
+  agentConversationDelete,
+  agentConversationSet,
+  agentConversations,
+  type ConversationItem,
+} from "@/lib/auth/ext";
 import type { Agent } from "@/lib/agent";
 import { cn } from "@/lib/cn";
 import { confirmDialog } from "@/components/ui/confirm";
@@ -18,7 +23,7 @@ export function searchNorm(s: string): string {
   return s
     .normalize("NFKC")
     .replace(/[\u2010-\u2015\u2212]/g, "-")
-    .replace(/([0-9A-Za-z])ー(?=[0-9A-Za-z])/g, "$1-")   // 英数字にはさまれた長音はハイフン（カタカナの長音は変えない）
+    .replace(/([0-9A-Za-z])ー(?=[0-9A-Za-z])/g, "$1-") // 英数字にはさまれた長音はハイフン（カタカナの長音は変えない）
     .replace(/\s+/g, " ")
     .toLowerCase();
 }
@@ -66,7 +71,8 @@ export function ConversationList({ agent }: { agent: Agent }) {
   useEffect(() => {
     if (!menu) return;
     const close = (e: Event) => {
-      if (e instanceof KeyboardEvent ? e.key === "Escape" : !(e.target as HTMLElement).closest("[data-conv-menu]")) setMenu(null);
+      if (e instanceof KeyboardEvent ? e.key === "Escape" : !(e.target as HTMLElement).closest("[data-conv-menu]"))
+        setMenu(null);
     };
     document.addEventListener("mousedown", close);
     document.addEventListener("keydown", close);
@@ -159,11 +165,23 @@ export function ConversationList({ agent }: { agent: Agent }) {
         </button>
         {menu === c.id ? (
           <div className="tl-menu" role="menu" data-conv-menu ref={menuRef}>
-            <button type="button" role="menuitem" aria-label={c.starred ? "星を外す" : "星を付ける"} onClick={() => void act(() => agentConversationSet(c.id, { starred: !c.starred }), "星を付けられませんでした")}>
+            <button
+              type="button"
+              role="menuitem"
+              aria-label={c.starred ? "星を外す" : "星を付ける"}
+              onClick={() =>
+                void act(() => agentConversationSet(c.id, { starred: !c.starred }), "星を付けられませんでした")
+              }
+            >
               <Star />
               {c.starred ? "星を外す" : "星を付けて上に置く"}
             </button>
-            <button type="button" role="menuitem" aria-label="名前を直す" onClick={() => (setMenu(null), setRenaming(c.id), setName(c.title))}>
+            <button
+              type="button"
+              role="menuitem"
+              aria-label="名前を直す"
+              onClick={() => (setMenu(null), setRenaming(c.id), setName(c.title))}
+            >
               <Pencil />
               名前を直す
             </button>
@@ -174,7 +192,12 @@ export function ConversationList({ agent }: { agent: Agent }) {
               aria-label="消す"
               onClick={async () => {
                 setMenu(null);
-                const ok = await confirmDialog({ title: `「${c.title}」を消しますか`, body: "消すと一覧から無くなり、この会話の続きは話せません。", ok: "消す", danger: true });
+                const ok = await confirmDialog({
+                  title: `「${c.title}」を消しますか`,
+                  body: "消すと一覧から無くなり、この会話の続きは話せません。",
+                  ok: "消す",
+                  danger: true,
+                });
                 if (!ok) return;
                 void act(async () => {
                   await agentConversationDelete(c.id);
@@ -193,16 +216,31 @@ export function ConversationList({ agent }: { agent: Agent }) {
   // 見出しごとに並べる（探しているときは当たった順のまま 1 つ）
   const groups = searching
     ? [{ label: null as string | null, rows: items }]
-    : GROUP_ORDER.map((label) => ({ label: label as string | null, rows: items.filter((c) => groupOf(c) === label) })).filter((g) => g.rows.length);
+    : GROUP_ORDER.map((label) => ({
+        label: label as string | null,
+        rows: items.filter((c) => groupOf(c) === label),
+      })).filter((g) => g.rows.length);
   return (
     <nav aria-label="会話の一覧" className="tlist" data-part="conversation-list">
       {/* 探す欄と「新しく話す」（アイコンだけ・乗せると名前が出る・2026-09-30 user「文章なくてもアイコンでわかる」） */}
       <div className="tl-top">
         <label className="tl-search">
           <Search />
-          <input placeholder="会話を探す（中身も）" aria-label="会話を探す" value={q} onChange={(e) => setQ(e.target.value)} />
+          <input
+            placeholder="会話を探す（中身も）"
+            aria-label="会話を探す"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+          />
         </label>
-        <button type="button" className="tl-new" title="新しく話す" aria-label="新しく話す" onClick={() => void agent.startNew()} data-new-conversation>
+        <button
+          type="button"
+          className="tl-new"
+          title="新しく話す"
+          aria-label="新しく話す"
+          onClick={() => void agent.startNew()}
+          data-new-conversation
+        >
           <SquarePen />
         </button>
       </div>

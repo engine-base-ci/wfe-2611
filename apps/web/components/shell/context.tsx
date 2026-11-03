@@ -81,7 +81,21 @@ export function ShellProvider({
     }
   };
   const value = useMemo<ShellState>(
-    () => ({ role, caps, psId, screenId, counts, frame, layout, subMode, panelOpen, setPanelOpen, subOpen, setSubOpen, aiName }),
+    () => ({
+      role,
+      caps,
+      psId,
+      screenId,
+      counts,
+      frame,
+      layout,
+      subMode,
+      panelOpen,
+      setPanelOpen,
+      subOpen,
+      setSubOpen,
+      aiName,
+    }),
     [role, caps, psId, screenId, counts, frame, layout, subMode, panelOpen, subOpen, aiName],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

@@ -68,7 +68,9 @@ export function QCard({
     onSend(answers);
   };
   const last = at === questions.length - 1;
-  const preview = q.options.find((o, i) => (sel[at] ?? []).includes(o.label) || (i === 0 && !(sel[at] ?? []).length))?.preview;
+  const preview = q.options.find(
+    (o, i) => (sel[at] ?? []).includes(o.label) || (i === 0 && !(sel[at] ?? []).length),
+  )?.preview;
   return (
     <div className="qcard" role="group" aria-label={`${who}からの問い合わせ`} data-part="question">
       <div className="qhd">
@@ -144,14 +146,25 @@ export function QCard({
         ) : null}
       </div>
       <div className="qfoot">
-        <input className="memo" placeholder="一言添える（なくてもよい）" aria-label="一言添える" value={memo} onChange={(e) => setMemo(e.target.value)} />
+        <input
+          className="memo"
+          placeholder="一言添える（なくてもよい）"
+          aria-label="一言添える"
+          value={memo}
+          onChange={(e) => setMemo(e.target.value)}
+        />
         {at > 0 ? (
           <Button size="sm" variant="ghost" onClick={() => setAt(at - 1)}>
             戻る
           </Button>
         ) : null}
         {last ? (
-          <Button size="sm" disabled={busy || !questions.every((_, i) => answered(i))} onClick={send} data-answer="send">
+          <Button
+            size="sm"
+            disabled={busy || !questions.every((_, i) => answered(i))}
+            onClick={send}
+            data-answer="send"
+          >
             送る
           </Button>
         ) : (
@@ -166,7 +179,11 @@ export function QCard({
 
 /** 「いつも許可」の対象の言い方（Bash はそのコマンド、ファイル系はそのファイル） */
 const alwaysLabel = (tool: string | null) =>
-  /^bash$/i.test(tool ?? "") ? "このコマンド" : /^(read|write|edit|multiedit|notebookedit)$/i.test(tool ?? "") ? "このファイル" : "この道具";
+  /^bash$/i.test(tool ?? "")
+    ? "このコマンド"
+    : /^(read|write|edit|multiedit|notebookedit)$/i.test(tool ?? "")
+      ? "このファイル"
+      : "この道具";
 function detailOf(input: unknown): string {
   if (input === null || input === undefined) return "";
   const i = input as Record<string, unknown>;
@@ -207,13 +224,30 @@ export function PermCard({
       </div>
       {detail ? <pre className="pcode">{detail}</pre> : null}
       <div className="pbtn">
-        <Button size="sm" disabled={busy} onClick={() => onAnswer({ allow: true, scope: "once", note })} data-answer="allow">
+        <Button
+          size="sm"
+          disabled={busy}
+          onClick={() => onAnswer({ allow: true, scope: "once", note })}
+          data-answer="allow"
+        >
           今回だけ許可
         </Button>
-        <Button size="sm" variant="outline" disabled={busy} onClick={() => onAnswer({ allow: true, scope: "always", note })} data-answer="always">
+        <Button
+          size="sm"
+          variant="outline"
+          disabled={busy}
+          onClick={() => onAnswer({ allow: true, scope: "always", note })}
+          data-answer="always"
+        >
           いつも許可（{alwaysLabel(asking.tool)}）
         </Button>
-        <Button size="sm" variant="ghost" disabled={busy} onClick={() => onAnswer({ allow: false, scope: "once", note })} data-answer="deny">
+        <Button
+          size="sm"
+          variant="ghost"
+          disabled={busy}
+          onClick={() => onAnswer({ allow: false, scope: "once", note })}
+          data-answer="deny"
+        >
           許可しない
         </Button>
         <input
@@ -223,7 +257,9 @@ export function PermCard({
           onChange={(e) => setNote(e.target.value)}
         />
       </div>
-      <div className="muted pnote">答えるまで待っています。答えは証跡に残ります。「いつも」にしたものは ルール › 個人 で取り消せます</div>
+      <div className="muted pnote">
+        答えるまで待っています。答えは証跡に残ります。「いつも」にしたものは ルール › 個人 で取り消せます
+      </div>
     </div>
   );
 }

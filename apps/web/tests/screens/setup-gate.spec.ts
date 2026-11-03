@@ -24,8 +24,7 @@ const step = (memberId: string) =>
   admin<{ setup_step: number }>("select setup_step from members where id = $1", [memberId]).then(
     (r) => r[0]!.setup_step,
   );
-const markStep = (memberId: string, n: number) =>
-  admin("select app.setup_step_done($1, $2::smallint)", [memberId, n]);
+const markStep = (memberId: string, n: number) => admin("select app.setup_step_done($1, $2::smallint)", [memberId, n]);
 
 test("USH-00-017 はじめの設定を 1 つも通していない人は、ログインすると 自分のPCをつなぐ（段 1）へ送られる", async ({
   page,
@@ -152,7 +151,9 @@ test("USH-00-026 Bridge のこの PC の口は、許可した出どころ以外�
 }) => {
   const srv = await fakeBridge(async () => true);
   try {
-    const ng = await request.get(`http://127.0.0.1:${LOCAL_PORT}/ping`, { headers: { Origin: "https://evil.example" } });
+    const ng = await request.get(`http://127.0.0.1:${LOCAL_PORT}/ping`, {
+      headers: { Origin: "https://evil.example" },
+    });
     expect(ng.status(), "知らない出どころには 403").toBe(403);
     const ok = await request.get(`http://127.0.0.1:${LOCAL_PORT}/ping`, { headers: { Origin: ORIGIN } });
     expect(ok.status()).toBe(200);
@@ -267,11 +268,14 @@ test("E-CONN-011-A E-CONN-011-B E-CONN-011-C 入ってはいるが本体が落�
 
 test("E-CONN-011-B 入っていれば、取り直しも入れるも出さない（正しい状態で出さない）", async ({ page }) => {
   const u = await signupViaApi();
-  const srv = await fakeBridge(async () => {
-    await bridgeRow(u); // 画面が自分でつなぐ（D-089.10）。サーバー側にも端末の行を作る
-    await markStep(u.memberId, 1);
-    return true;
-  }, { claudeOk: true, loggedIn: true });
+  const srv = await fakeBridge(
+    async () => {
+      await bridgeRow(u); // 画面が自分でつなぐ（D-089.10）。サーバー側にも端末の行を作る
+      await markStep(u.memberId, 1);
+      return true;
+    },
+    { claudeOk: true, loggedIn: true },
+  );
   try {
     await loginAs(page, u.token);
     await page.goto("/setup/bridge");
@@ -282,7 +286,9 @@ test("E-CONN-011-B 入っていれば、取り直しも入れるも出さない�
   }
 });
 
-test("CHT-28-001 CHT-28-002 この PC の Bridge が別のアカウントでつながっていたら、黙って切り替えず理由を出し、「このアカウントに切り替える」を押したときだけつなぐ", async ({ page }) => {
+test("CHT-28-001 CHT-28-002 この PC の Bridge が別のアカウントでつながっていたら、黙って切り替えず理由を出し、「このアカウントに切り替える」を押したときだけつなぐ", async ({
+  page,
+}) => {
   const u = await signupViaApi();
   let paired = 0;
   const srv = await fakeBridge(
@@ -297,7 +303,10 @@ test("CHT-28-001 CHT-28-002 この PC の Bridge が別のアカウントでつ�
   try {
     await loginAs(page, u.token);
     await page.goto("/setup/bridge");
-    await expect(page.locator("[data-pair-msg]")).toContainText("この PC の Bridge は、すでに別のアカウントでつながっています", { timeout: 20_000 });
+    await expect(page.locator("[data-pair-msg]")).toContainText(
+      "この PC の Bridge は、すでに別のアカウントでつながっています",
+      { timeout: 20_000 },
+    );
     expect(paired, "押すまで切り替えない").toBe(0);
     await page.locator("[data-switch-account]").click();
     await expect(page.locator("[data-state='ok']")).toBeVisible({ timeout: 20_000 });

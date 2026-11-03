@@ -73,7 +73,8 @@ const str = (v: unknown): string => (typeof v === "string" ? v : "");
 const cut = (s: string, n: number): string => (s.length > n ? `${s.slice(0, n)}…` : s);
 
 /** ブラウザの道具か（Claude in Chrome・Bridge 専用のブラウザ＝Playwright MCP・D-119） */
-export const isBrowserTool = (tool: string): boolean => tool.startsWith("mcp__claude-in-chrome__") || tool.startsWith("mcp__playwright__");
+export const isBrowserTool = (tool: string): boolean =>
+  tool.startsWith("mcp__claude-in-chrome__") || tool.startsWith("mcp__playwright__");
 const BROWSER_LABEL: Record<string, string> = {
   navigate: "ブラウザで開いています",
   browser_navigate: "ブラウザで開いています",
@@ -97,9 +98,14 @@ const BROWSER_LABEL: Record<string, string> = {
   browser_evaluate: "ページを調べています",
 };
 /** 「拡張機能とつながっていない」の印（公式の説明の文言・2026-09-30） */
-const BROWSER_OFF = /Browser extension is not connected|Receiving end does not exist|extension (?:is )?not (?:connected|detected)/i;
+const BROWSER_OFF =
+  /Browser extension is not connected|Receiving end does not exist|extension (?:is )?not (?:connected|detected)/i;
 const resultText = (v: unknown): string =>
-  typeof v === "string" ? v : Array.isArray(v) ? (v as J[]).map((x) => (typeof x === "string" ? x : str(x?.["text"]))).join("\n") : "";
+  typeof v === "string"
+    ? v
+    : Array.isArray(v)
+      ? (v as J[]).map((x) => (typeof x === "string" ? x : str(x?.["text"]))).join("\n")
+      : "";
 
 /** 道具の入力を、人が読める 1 行にする（Bash はコマンド、ファイル系はパス、他は JSON の先頭） */
 export function brief(tool: string, input: unknown): string {
@@ -199,7 +205,13 @@ export function parseLine(line: string): Ev | null {
         return s ? str(s["status"]) || null : null;
       };
       // model：いまこの Claude Code が使うモデル（例 claude-opus-4-8）。何も選んでいないときに画面へ実際のモデル名を出す（2026-09-30）
-      return { type: "init", session: str(j["session_id"]), chrome: status("claude-in-chrome"), dedicated: status("playwright"), model: str(j["model"]) || null };
+      return {
+        type: "init",
+        session: str(j["session_id"]),
+        chrome: status("claude-in-chrome"),
+        dedicated: status("playwright"),
+        model: str(j["model"]) || null,
+      };
     }
     return { type: "other", raw: j };
   }
@@ -289,7 +301,9 @@ export function parseLine(line: string): Ev | null {
       .map((c) => ({ id: str(c["tool_use_id"]), ok: c["is_error"] !== true }));
     // 中身は読まない・送らない（D-100.3）。見るのは「拡張機能とつながっていない」の失敗の印だけ
     const off = content.some((c) => str(c["type"]) === "tool_result" && BROWSER_OFF.test(resultText(c["content"])));
-    return results.length ? { type: "tool_end", results, ...(off ? { browser: "disconnected" as const } : {}) } : { type: "other", raw: j };
+    return results.length
+      ? { type: "tool_end", results, ...(off ? { browser: "disconnected" as const } : {}) }
+      : { type: "other", raw: j };
   }
   if (type === "control_request") {
     const r = (j["request"] ?? {}) as J;

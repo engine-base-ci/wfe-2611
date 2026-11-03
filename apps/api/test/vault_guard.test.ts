@@ -28,14 +28,45 @@ beforeAll(async () => {
   await migrateAuth(ADMIN);
   const appPool = createPool({ databaseUrl: APP_URL, max: 3 });
   const repo = await createRepository(appPool);
-  const { auth } = createAuth({ authDatabaseUrl: AUTH_URL, appPool, secret: "test-secret-0123456789-abcdefghijklmnop", baseURL: "http://localhost:3001", webBaseURL: "http://localhost:3123", mailer: async () => undefined });
+  const { auth } = createAuth({
+    authDatabaseUrl: AUTH_URL,
+    appPool,
+    secret: "test-secret-0123456789-abcdefghijklmnop",
+    baseURL: "http://localhost:3001",
+    webBaseURL: "http://localhost:3123",
+    mailer: async () => undefined,
+  });
   const authPool = new pg.Pool({ connectionString: AUTH_URL, max: 2 });
   build = (env, vault) =>
-    createApp({ repo, auth, resolve: createSessionResolver(auth, appPool), authExt: authExt({ auth, appPool, authPool, repo, secrets: new SecretsGateway(repo, vault, Buffer.alloc(32, 9)), mailer: async (m) => void sent.push({ to: m.to, url: m.url, kind: m.kind }), config: { secretsMasterKey: "test-master", baseUrl: "http://localhost:3001", webBaseUrl: "http://localhost:3123", opsEmail: "ops@example.com", env } }) });
+    createApp({
+      repo,
+      auth,
+      resolve: createSessionResolver(auth, appPool),
+      authExt: authExt({
+        auth,
+        appPool,
+        authPool,
+        repo,
+        secrets: new SecretsGateway(repo, vault, Buffer.alloc(32, 9)),
+        mailer: async (m) => void sent.push({ to: m.to, url: m.url, kind: m.kind }),
+        config: {
+          secretsMasterKey: "test-master",
+          baseUrl: "http://localhost:3001",
+          webBaseUrl: "http://localhost:3123",
+          opsEmail: "ops@example.com",
+          env,
+        },
+      }),
+    });
 }, 60_000);
 
 async function signedIn(app: ReturnType<typeof createApp>) {
-  const post = (p: string, b: unknown, h: Record<string, string> = {}) => app.request(`http://localhost${p}`, { method: "POST", headers: { "content-type": "application/json", ...h }, body: JSON.stringify(b) });
+  const post = (p: string, b: unknown, h: Record<string, string> = {}) =>
+    app.request(`http://localhost${p}`, {
+      method: "POST",
+      headers: { "content-type": "application/json", ...h },
+      body: JSON.stringify(b),
+    });
   const email = `qa-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}@example.com`;
   expect((await post("/api/auth-ext/sign-up", { email, password: PW, company_name: "K" })).status).toBe(201);
   const mail = sent.filter((m) => m.to === email && m.kind === "verify").at(-1)!;
@@ -76,25 +107,42 @@ describe("預かり先が消える保管先のとき（D-097.8）", () => {
 // 起動時の確認（D-101・G-11）：staging／本番は消えない預かり先に入れないと起動しない
 import { startupChecks } from "../src/startup.js";
 describe("起動時の確認 secrets:vault（D-101）", () => {
-  const cfg = (env: Env) => ({ env, secretsMasterKey: Buffer.alloc(32).toString("base64"), resendApiKey: "x" }) as never;
+  const cfg = (env: Env) =>
+    ({ env, secretsMasterKey: Buffer.alloc(32).toString("base64"), resendApiKey: "x" }) as never;
   const base = { repo: {} as never, bucketExists: async () => true };
   it("staging でメモリの預かり先なら落ちる", async () => {
-    expect(await startupChecks({ ...base, config: cfg("staging"), vault: new MemoryVault() })["secrets:vault"]!()).toBe(false);
+    expect(await startupChecks({ ...base, config: cfg("staging"), vault: new MemoryVault() })["secrets:vault"]!()).toBe(
+      false,
+    );
   });
   it("staging で入れる預かり先なら通る。入れなければ例外", async () => {
     const ok = Object.assign(new MemoryVault(), { durable: true, ping: async () => true as const });
     expect(await startupChecks({ ...base, config: cfg("staging"), vault: ok })["secrets:vault"]!()).toBe(true);
-    const ng = Object.assign(new MemoryVault(), { durable: true, ping: async (): Promise<true> => { throw new Error("Infisical で入ることができない（401）"); } });
-    await expect(startupChecks({ ...base, config: cfg("production"), vault: ng })["secrets:vault"]!()).rejects.toThrow(/401/);
+    const ng = Object.assign(new MemoryVault(), {
+      durable: true,
+      ping: async (): Promise<true> => {
+        throw new Error("Infisical で入ることができない（401）");
+      },
+    });
+    await expect(startupChecks({ ...base, config: cfg("production"), vault: ng })["secrets:vault"]!()).rejects.toThrow(
+      /401/,
+    );
   });
   it("開発はメモリでよい", async () => {
-    expect(await startupChecks({ ...base, config: cfg("development"), vault: new MemoryVault() })["secrets:vault"]!()).toBe(true);
+    expect(
+      await startupChecks({ ...base, config: cfg("development"), vault: new MemoryVault() })["secrets:vault"]!(),
+    ).toBe(true);
   });
 });
 
 describe("上限に当たったとき（D-102.5・E-SEC-003）", () => {
   it("BRG-14-008 E-SEC-003-A 預かり先が 429 なら、待つ秒数つきで断り、表に行を作らない", async () => {
-    const busy = Object.assign(new MemoryVault(), { durable: true, put: async () => { throw new RateLimited(42); } });
+    const busy = Object.assign(new MemoryVault(), {
+      durable: true,
+      put: async () => {
+        throw new RateLimited(42);
+      },
+    });
     const store = await signedIn(build("development", busy));
     const r = await store(cred);
     expect(r.status).toBe(503);

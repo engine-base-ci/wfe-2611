@@ -18,19 +18,46 @@ describe("modeArgs", () => {
 
 describe("optionArgs", () => {
   it("形が怪しいモデル・強さ・ルールは渡さない", () => {
-    expect(optionArgs({ model: "opus; rm -rf", effort: "ultra", allowed_tools: ["Bash(git status)", "Bash(x\ny)", "--bad"] })).toEqual(["--allowedTools", "Bash(git status)"]);
+    expect(
+      optionArgs({
+        model: "opus; rm -rf",
+        effort: "ultra",
+        allowed_tools: ["Bash(git status)", "Bash(x\ny)", "--bad"],
+      }),
+    ).toEqual(["--allowedTools", "Bash(git status)"]);
   });
   it("モデル・強さ・いつも許可のルールを渡す", () => {
-    expect(optionArgs({ model: "sonnet", effort: "high", allowed_tools: ["Edit", "Bash(npm test)"] })).toEqual(["--model", "sonnet", "--effort", "high", "--allowedTools", "Edit", "Bash(npm test)"]);
+    expect(optionArgs({ model: "sonnet", effort: "high", allowed_tools: ["Edit", "Bash(npm test)"] })).toEqual([
+      "--model",
+      "sonnet",
+      "--effort",
+      "high",
+      "--allowedTools",
+      "Edit",
+      "Bash(npm test)",
+    ]);
   });
 });
 
 describe("buildArgs", () => {
   it("書きながらの返事を受け、続きから再開し、可変長のルールは最後に置く", () => {
-    const a = buildArgs({ job_id: "j", prompt: "p", agent_session_id: "s-1", conversation_id: null, permission_mode: "plan", allowed_tools: ["Edit"] }, ["/tmp/k"]);
+    const a = buildArgs(
+      {
+        job_id: "j",
+        prompt: "p",
+        agent_session_id: "s-1",
+        conversation_id: null,
+        permission_mode: "plan",
+        allowed_tools: ["Edit"],
+      },
+      ["/tmp/k"],
+    );
     expect(a).toContain("--include-partial-messages");
     expect(a.slice(a.indexOf("--resume"), a.indexOf("--resume") + 2)).toEqual(["--resume", "s-1"]);
-    expect(a.slice(a.indexOf("--permission-mode"), a.indexOf("--permission-mode") + 2)).toEqual(["--permission-mode", "plan"]);
+    expect(a.slice(a.indexOf("--permission-mode"), a.indexOf("--permission-mode") + 2)).toEqual([
+      "--permission-mode",
+      "plan",
+    ]);
     expect(a.slice(a.indexOf("--add-dir"), a.indexOf("--add-dir") + 2)).toEqual(["--add-dir", "/tmp/k"]);
     expect(a.slice(-2)).toEqual(["--allowedTools", "Edit"]);
     expect(a).not.toContain("--dangerously-skip-permissions");
@@ -38,7 +65,9 @@ describe("buildArgs", () => {
   it("会話の仕事にだけ Kaname の書き方を渡す（会話の無い仕事＝記憶のまとめには渡さない）", () => {
     const chat = buildArgs({ job_id: "j", prompt: "p", agent_session_id: null, conversation_id: "c" });
     expect(chat[chat.indexOf("--append-system-prompt") + 1]).toContain("[[覚える:");
-    expect(buildArgs({ job_id: "j", prompt: "p", agent_session_id: null, conversation_id: null })).not.toContain("--append-system-prompt");
+    expect(buildArgs({ job_id: "j", prompt: "p", agent_session_id: null, conversation_id: null })).not.toContain(
+      "--append-system-prompt",
+    );
   });
 });
 
@@ -48,9 +77,15 @@ describe("limitReason（E-LIM-010）", () => {
     expect(limitReason([{ window: "five_hour", utilization: 1, resets_at: at }])).toBe(
       "サブスクの 5 時間の枠に達しました。18:40 に戻ります。それまで自分のAI は動けません。ここで書いたことは送れます（戻ったら順に）",
     );
-    expect(limitReason([{ window: "week", utilization: 1.2, resets_at: at }])).toContain("サブスクの週の枠に達しました");
+    expect(limitReason([{ window: "week", utilization: 1.2, resets_at: at }])).toContain(
+      "サブスクの週の枠に達しました",
+    );
     expect(limitReason([])).toContain("上限に当たりました");
-    expect(whyStopped('{"subtype":"error","error":"rate_limit"}', "", 1, [{ window: "five_hour", utilization: 1, resets_at: at }])).toContain("18:40 に戻ります");
+    expect(
+      whyStopped('{"subtype":"error","error":"rate_limit"}', "", 1, [
+        { window: "five_hour", utilization: 1, resets_at: at },
+      ]),
+    ).toContain("18:40 に戻ります");
   });
 });
 
@@ -66,7 +101,13 @@ describe("memoryPrompt（D-105.8）", () => {
     expect(p.indexOf("宛名は御中")).toBeLessThan(p.indexOf("敬語は丁寧に"));
     expect(p).toContain("決まりとぶつかったら");
     expect(memoryPrompt([])).toBe("");
-    const args = buildArgs({ job_id: "j", prompt: "p", agent_session_id: null, conversation_id: "c", memories: [{ kind: "rule", scope: "会社", personal: false, body: "値引き禁止" }] });
+    const args = buildArgs({
+      job_id: "j",
+      prompt: "p",
+      agent_session_id: null,
+      conversation_id: "c",
+      memories: [{ kind: "rule", scope: "会社", personal: false, body: "値引き禁止" }],
+    });
     expect(args[args.indexOf("--append-system-prompt") + 1]).toContain("[会社] 値引き禁止");
   });
 });

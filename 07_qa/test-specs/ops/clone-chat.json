@@ -1944,10 +1944,10 @@
    ]
   },
   {
-   "key": "link:覚えました：初回は紹介でも値引きしない（個人）直す→clone-memory",
+   "key": "link:覚えました：初回は紹介でも値引きしない（個人）直す",
    "kind": "link",
    "label": "覚えました：初回は紹介でも値引きしない（個人）直す",
-   "target": "clone-memory",
+   "target": null,
    "states": [
     "覚えました"
    ],

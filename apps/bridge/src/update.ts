@@ -6,7 +6,16 @@
 //   Apple の署名が入ったら electron-updater の正式な方式に戻す（D-109.7）
 import { createHash } from "node:crypto";
 import { spawn } from "node:child_process";
-import { accessSync, constants, createWriteStream, mkdirSync, readdirSync, renameSync, rmSync, writeFileSync } from "node:fs";
+import {
+  accessSync,
+  constants,
+  createWriteStream,
+  mkdirSync,
+  readdirSync,
+  renameSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { basename, dirname, join } from "node:path";
 import { ask } from "./proc";
 
@@ -37,15 +46,36 @@ export function newer(a: string, b: string): boolean {
 }
 
 /** Kaname に聞く。新しい版が無い・配布していない・その OS の中身が無いなら null */
-export async function fetchLatest(apiBase: string, os: "mac" | "win", arch: "arm64" | "x64", current: string): Promise<UpdateInfo | null> {
-  const r = await fetch(`${apiBase}/api/auth-ext/bridge/latest?os=${os}&arch=${arch}`, { signal: AbortSignal.timeout(15_000) });
+export async function fetchLatest(
+  apiBase: string,
+  os: "mac" | "win",
+  arch: "arm64" | "x64",
+  current: string,
+): Promise<UpdateInfo | null> {
+  const r = await fetch(`${apiBase}/api/auth-ext/bridge/latest?os=${os}&arch=${arch}`, {
+    signal: AbortSignal.timeout(15_000),
+  });
   if (!r.ok) throw new Error(`Kaname が ${r.status}`);
-  const j = (await r.json()) as { data?: { released?: boolean; version?: string; update?: Omit<UpdateInfo, "version"> | null } };
+  const j = (await r.json()) as {
+    data?: { released?: boolean; version?: string; update?: Omit<UpdateInfo, "version"> | null };
+  };
   const d = j.data;
   if (!d?.released || !d.version || !d.update || !newer(d.version, current)) return null;
   const u = d.update;
-  if (!/^[0-9a-f]{64}$/.test(u.sha256) || !Number.isInteger(u.size) || u.size <= 0 || !/^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(u.name)) return null;
-  return { version: d.version, name: u.name, url: new URL(u.url, `${apiBase}/`).toString(), sha256: u.sha256, size: u.size };
+  if (
+    !/^[0-9a-f]{64}$/.test(u.sha256) ||
+    !Number.isInteger(u.size) ||
+    u.size <= 0 ||
+    !/^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(u.name)
+  )
+    return null;
+  return {
+    version: d.version,
+    name: u.name,
+    url: new URL(u.url, `${apiBase}/`).toString(),
+    sha256: u.sha256,
+    size: u.size,
+  };
 }
 
 /**
@@ -109,8 +139,10 @@ export async function unpackMac(zip: string, version: string, into: string): Pro
   if (!app) throw new Error("受け取った中身に Bridge がありません");
   const path = join(into, app);
   const plist = join(path, "Contents", "Info.plist");
-  const read = async (key: string) => (await ask("/usr/bin/plutil", ["-extract", key, "raw", "-o", "-", plist], { timeoutMs: 10_000 })).stdout.trim();
-  if ((await read("CFBundleIdentifier")) !== BUNDLE_ID) throw new Error("受け取った中身が Kaname Bridge ではありません");
+  const read = async (key: string) =>
+    (await ask("/usr/bin/plutil", ["-extract", key, "raw", "-o", "-", plist], { timeoutMs: 10_000 })).stdout.trim();
+  if ((await read("CFBundleIdentifier")) !== BUNDLE_ID)
+    throw new Error("受け取った中身が Kaname Bridge ではありません");
   if ((await read("CFBundleShortVersionString")) !== version) throw new Error("受け取った中身の版が目録と合いません");
   return path;
 }
@@ -121,7 +153,13 @@ const q = (s: string): string => `'${s.replace(/'/g, `'\\''`)}'`;
  * いまの Bridge が終わるのを待って .app を入れ替え、立ち上げ直す手順（sh）。
  * 入れ替えに失敗したら元に戻して元の版を立ち上げる（Bridge が無くなる状態を作らない）
  */
-export function replaceScript(o: { pid: number; target: string; source: string; backup: string; relaunch: string[] }): string {
+export function replaceScript(o: {
+  pid: number;
+  target: string;
+  source: string;
+  backup: string;
+  relaunch: string[];
+}): string {
   const relaunch = o.relaunch.map(q).join(" ");
   return [
     "#!/bin/sh",
@@ -188,7 +226,8 @@ export function startUpdater(d: UpdaterDeps): Updater {
     if (os !== "mac") return null;
     const bundle = appBundleOf(d.execPath);
     if (!bundle) return `新しい版（${u.version}）があります。開発中の起動なので入れ替えません`;
-    if (!canReplace(bundle)) return `新しい版（${u.version}）があります。この場所には書けないので、Kaname の画面から入れ直してください`;
+    if (!canReplace(bundle))
+      return `新しい版（${u.version}）があります。この場所には書けないので、Kaname の画面から入れ直してください`;
     return null;
   };
 
@@ -204,7 +243,11 @@ export function startUpdater(d: UpdaterDeps): Updater {
       const script = join(d.dir, "replace.sh");
       const relaunch = (d.relaunch ?? ((b) => ["/usr/bin/open", "-n", b]))(bundle);
       // 退ける先は元の版の隣（同じディスク＝名前の付け替えで済む。受け取りの置き場は起動のたびに消すので使わない）
-      writeFileSync(script, replaceScript({ pid: d.pid ?? process.pid, target: bundle, source, backup: `${bundle}.previous`, relaunch }), { mode: 0o755 });
+      writeFileSync(
+        script,
+        replaceScript({ pid: d.pid ?? process.pid, target: bundle, source, backup: `${bundle}.previous`, relaunch }),
+        { mode: 0o755 },
+      );
       spawn("/bin/sh", [script], { detached: true, stdio: "ignore" }).unref();
     } else {
       // 1 クリックのインストーラ（人に選ばせない・管理者権限なし）を黙って走らせ、終わったら立ち上げさせる
@@ -227,13 +270,17 @@ export function startUpdater(d: UpdaterDeps): Updater {
         const m = e instanceof Error ? e.message : "不明";
         if (/指紋|大きさ|Kaname Bridge ではありません|版が目録|開けません/.test(m)) throw e;
         // 新しい版があると分かってから受け取りが途中で切れた。黙って次の機会を待たず、1 回知らせる（G-15）
-        return note(`cut-${u.version}`, `新しい版（${u.version}）の受け取りが途中で止まりました。いまの版のまま動き、次の機会にもう一度受け取ります（${m}）`);
+        return note(
+          `cut-${u.version}`,
+          `新しい版（${u.version}）の受け取りが途中で止まりました。いまの版のまま動き、次の機会にもう一度受け取ります（${m}）`,
+        );
       }
       await apply(u, file);
     } catch (e) {
       // つながらないだけなら黙って次の機会に（起動も仕事も止めない）。確かめられなかったことは 1 回知らせる
       const m = e instanceof Error ? e.message : "不明";
-      if (/指紋|大きさ|Kaname Bridge ではありません|版が目録|開けません/.test(m)) note(`bad-${m}`, `新しい版を受け取りましたが、確かめられなかったので使いませんでした（${m}）`);
+      if (/指紋|大きさ|Kaname Bridge ではありません|版が目録|開けません/.test(m))
+        note(`bad-${m}`, `新しい版を受け取りましたが、確かめられなかったので使いませんでした（${m}）`);
     }
   };
   const checkNow = (): Promise<void> => {
@@ -244,7 +291,8 @@ export function startUpdater(d: UpdaterDeps): Updater {
   rmSync(d.dir, { recursive: true, force: true });
   // 前の入れ替えの途中で止まった残り（写しかけの .incoming・退けた .previous）も片づける。いま動いている版が正
   const running = os === "mac" ? appBundleOf(d.execPath) : null;
-  if (running && d.isPackaged) for (const x of [`${running}.incoming`, `${running}.previous`]) rmSync(x, { recursive: true, force: true });
+  if (running && d.isPackaged)
+    for (const x of [`${running}.incoming`, `${running}.previous`]) rmSync(x, { recursive: true, force: true });
   void checkNow();
   const t = setInterval(() => void checkNow(), HOUR_MS);
   return {

@@ -1,7 +1,19 @@
 // T-U-02 メールを確認する。テストの名前に正本の行 ID を持つ（op_gate.py）
 // D-088：登録が終わるのはリンクを押した時点。押すまで利用者も会社も作られない
 import { expect, test } from "@playwright/test";
-import { PW, admin, api, lastMailUrl, mailLog, noOverflow, pendingToken, realMailEmail, signupPending, signupViaApi, uniqEmail } from "../_lib/api";
+import {
+  PW,
+  admin,
+  api,
+  lastMailUrl,
+  mailLog,
+  noOverflow,
+  pendingToken,
+  realMailEmail,
+  signupPending,
+  signupViaApi,
+  uniqEmail,
+} from "../_lib/api";
 
 const userCount = async (email: string) =>
   (await admin<{ n: string }>('select count(*)::text as n from kaname_auth."user" where email = $1', [email]))[0]!.n;
@@ -212,7 +224,9 @@ test("待つ画面に居続けさせない：もう登録が済んでいたら�
   // await expect(page).toHaveURL(/\/login/, { timeout: 15_000 });
 });
 
-test("SCR-VERIFY-EMAIL-039 E-CONF-011-A E-CONF-011-C 確認まで終わった人が戻って「もう一度送る」を押しても、送り直さず「終わっています」と言う", async ({ page }) => {
+test("SCR-VERIFY-EMAIL-039 E-CONF-011-A E-CONF-011-C 確認まで終わった人が戻って「もう一度送る」を押しても、送り直さず「終わっています」と言う", async ({
+  page,
+}) => {
   const { email } = await signupPending();
   await page.goto(`/verify-email?email=${encodeURIComponent(email)}`);
   await expect(page.locator("[data-state='n'] h1")).toHaveText("メールを確認してください");

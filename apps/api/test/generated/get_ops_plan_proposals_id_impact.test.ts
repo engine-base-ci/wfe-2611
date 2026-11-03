@@ -1,7 +1,6 @@
 // 生成物（scripts/ci/gen_ears_tests.mjs ← 07_qa/test-plan/ears-test-mapping.json）。手で直さない。GET /api/v1/ops/plan_proposals/:id/impact
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { makeHarness, endpointOf, type Harness } from "../harness.js";
-import { args } from "../args.js";
 
 const e = endpointOf("getPlanProposalImpact");
 let h: Harness;

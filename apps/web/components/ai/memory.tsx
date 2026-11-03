@@ -5,7 +5,18 @@
 //   上の層に上げる候補（上げ先を変えて送る）／捨てた（拾い直す）／上の層で変わったこと
 //   記憶の画面の「確認待ち」：上がってきた記憶と、メンバー同士の食い違い（並べて片方を選ぶ）
 import "./chat.css";
-import { AlertTriangle, Brain, Check, Layers, Pencil, Play, Route as RouteIcon, Send, Trash2, Undo2 } from "lucide-react";
+import {
+  AlertTriangle,
+  Brain,
+  Check,
+  Layers,
+  Pencil,
+  Play,
+  Route as RouteIcon,
+  Send,
+  Trash2,
+  Undo2,
+} from "lucide-react";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -91,7 +102,15 @@ export function MemoryDigest() {
   );
 }
 
-function Item({ title, meta, children }: { title: React.ReactNode; meta: React.ReactNode; children?: React.ReactNode }) {
+function Item({
+  title,
+  meta,
+  children,
+}: {
+  title: React.ReactNode;
+  meta: React.ReactNode;
+  children?: React.ReactNode;
+}) {
   return (
     <div className="it">
       <div className="body">
@@ -112,7 +131,12 @@ function Editable({ id, body, reload }: { id: string; body: string; reload: () =
         onSubmit={(e) => {
           e.preventDefault();
           if (!edit.trim()) return;
-          void act(() => memoryEdit(id, edit.trim()), "直しました", "直せませんでした", () => (setEdit(null), reload()));
+          void act(
+            () => memoryEdit(id, edit.trim()),
+            "直しました",
+            "直せませんでした",
+            () => (setEdit(null), reload()),
+          );
         }}
       >
         <input
@@ -135,7 +159,12 @@ function Editable({ id, body, reload }: { id: string; body: string; reload: () =
       <Button size="sm" variant="ghost" icon={<Pencil />} onClick={() => setEdit(body)}>
         直す
       </Button>
-      <Button size="sm" variant="ghost" icon={<Trash2 />} onClick={() => void act(() => memoryDelete(id), "消しました", "消せませんでした", reload)}>
+      <Button
+        size="sm"
+        variant="ghost"
+        icon={<Trash2 />}
+        onClick={() => void act(() => memoryDelete(id), "消しました", "消せませんでした", reload)}
+      >
         消す
       </Button>
     </>
@@ -175,7 +204,11 @@ function DigestResultView({ s, reload }: { s: DigestStatus; reload: () => void }
         "覚えた（あなたの記憶）",
         r.remembered.length,
         r.remembered.map((x) => (
-          <Item key={x.memory_id} title={<b>{x.body}</b>} meta={`${KIND[x.kind ?? ""] ?? "好み・やり方"}${x.source ? ` · ${x.source === "拾い直した" ? "捨てたものから拾い直した" : `${x.source} から`}` : ""}`}>
+          <Item
+            key={x.memory_id}
+            title={<b>{x.body}</b>}
+            meta={`${KIND[x.kind ?? ""] ?? "好み・やり方"}${x.source ? ` · ${x.source === "拾い直した" ? "捨てたものから拾い直した" : `${x.source} から`}` : ""}`}
+          >
             <Editable id={x.memory_id} body={x.body} reload={reload} />
           </Item>
         )),
@@ -194,7 +227,14 @@ function DigestResultView({ s, reload }: { s: DigestStatus; reload: () => void }
               </div>
             </div>
             <div className="acts">
-              <Button size="sm" variant="ghost" icon={<Undo2 />} onClick={() => void act(() => memoryDigestUndo(last.id, x.memory_id), "前に戻しました", "戻せませんでした", reload)}>
+              <Button
+                size="sm"
+                variant="ghost"
+                icon={<Undo2 />}
+                onClick={() =>
+                  void act(() => memoryDigestUndo(last.id, x.memory_id), "前に戻しました", "戻せませんでした", reload)
+                }
+              >
                 戻す
               </Button>
             </div>
@@ -240,7 +280,14 @@ function DigestResultView({ s, reload }: { s: DigestStatus; reload: () => void }
                 <Button
                   size="sm"
                   icon={<Send />}
-                  onClick={() => void act(() => proposalSend(x.proposal_id, to), `「${scopeName(to)}」の確認者に送りました`, "送れませんでした", reload)}
+                  onClick={() =>
+                    void act(
+                      () => proposalSend(x.proposal_id, to),
+                      `「${scopeName(to)}」の確認者に送りました`,
+                      "送れませんでした",
+                      reload,
+                    )
+                  }
                   data-propose-send
                 >
                   送る
@@ -256,7 +303,14 @@ function DigestResultView({ s, reload }: { s: DigestStatus; reload: () => void }
         r.discarded.length,
         r.discarded.map((x, i) => (
           <Item key={`${i}-${x.text}`} title={<span>{x.text}</span>} meta={x.why}>
-            <Button size="sm" variant="ghost" icon={<Undo2 />} onClick={() => void act(() => memoryDigestPick(last.id, i), "記憶に入れました", "拾い直せませんでした", reload)}>
+            <Button
+              size="sm"
+              variant="ghost"
+              icon={<Undo2 />}
+              onClick={() =>
+                void act(() => memoryDigestPick(last.id, i), "記憶に入れました", "拾い直せませんでした", reload)
+              }
+            >
               拾い直す
             </Button>
           </Item>
@@ -314,7 +368,9 @@ export function MemoryReviews() {
   };
   const list = q.data ?? [];
   const single = list.filter((r) => !r.conflict_group_id);
-  const groups = [...new Set(list.filter((r) => r.conflict_group_id).map((r) => r.conflict_group_id!))].map((g) => list.filter((r) => r.conflict_group_id === g));
+  const groups = [...new Set(list.filter((r) => r.conflict_group_id).map((r) => r.conflict_group_id!))].map((g) =>
+    list.filter((r) => r.conflict_group_id === g),
+  );
   if (!list.length)
     return (
       <div className="kc" data-part="memory-reviews">
@@ -368,7 +424,14 @@ export function MemoryReviews() {
                     key={r.proposal_id}
                     size="sm"
                     variant="outline"
-                    onClick={() => void act(() => proposalDecide(r.proposal_id, true), `「${r.body}」にしました`, "決められませんでした", reload)}
+                    onClick={() =>
+                      void act(
+                        () => proposalDecide(r.proposal_id, true),
+                        `「${r.body}」にしました`,
+                        "決められませんでした",
+                        reload,
+                      )
+                    }
                   >
                     {r.body}にする
                   </Button>
@@ -388,10 +451,29 @@ function ReviewRow({ r, reload }: { r: Review; reload: () => void }) {
       title={<b>{r.body}</b>}
       meta={`${r.proposer} から · 上げ先 ${r.target_scope}${r.evidence?.why ? ` · ${r.evidence.why}` : ""} · OK までは${r.proposer}の記憶として効いています`}
     >
-      <Button size="sm" icon={<Check />} onClick={() => void act(() => proposalDecide(r.proposal_id, true), `${r.target_scope}に効くようにしました`, "OK にできませんでした", reload)} data-review-ok>
+      <Button
+        size="sm"
+        icon={<Check />}
+        onClick={() =>
+          void act(
+            () => proposalDecide(r.proposal_id, true),
+            `${r.target_scope}に効くようにしました`,
+            "OK にできませんでした",
+            reload,
+          )
+        }
+        data-review-ok
+      >
         OK（{r.target_scope}に効く）
       </Button>
-      <Button size="sm" variant="ghost" icon={<Undo2 />} onClick={() => void act(() => proposalDecide(r.proposal_id, false), "差し戻しました", "差し戻せませんでした", reload)}>
+      <Button
+        size="sm"
+        variant="ghost"
+        icon={<Undo2 />}
+        onClick={() =>
+          void act(() => proposalDecide(r.proposal_id, false), "差し戻しました", "差し戻せませんでした", reload)
+        }
+      >
         差し戻す
       </Button>
     </Item>

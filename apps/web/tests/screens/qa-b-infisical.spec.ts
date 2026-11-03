@@ -81,18 +81,30 @@ test("BRG-14-001 BRG-14-002 画面で預ける → Infisical の会社の置き�
   await page.getByRole("button", { name: "保存する" }).click();
   await expect(page.locator("[data-state='n']")).toContainText("預かり先の番号", { timeout: 15_000 });
   // 表には参照 ID だけ（平文の列そのものが無い）
-  const rows = await admin<{ vault_ref: string }>("select vault_ref from credentials where tenant_id = $1", [u.tenantId]);
+  const rows = await admin<{ vault_ref: string }>("select vault_ref from credentials where tenant_id = $1", [
+    u.tenantId,
+  ]);
   expect(rows).toHaveLength(1);
   const ref = rows[0]!.vault_ref;
   expect(ref).toMatch(/^sec_/);
   const cols = (
-    await admin<{ column_name: string }>("select column_name from information_schema.columns where table_name = 'credentials'")
+    await admin<{ column_name: string }>(
+      "select column_name from information_schema.columns where table_name = 'credentials'",
+    )
   ).map((c) => c.column_name);
-  for (const plain of ["login", "password", "totp_secret", "secret"]) expect(cols, "平文の列は無い").not.toContain(plain);
+  for (const plain of ["login", "password", "totp_secret", "secret"])
+    expect(cols, "平文の列は無い").not.toContain(plain);
   // Infisical の会社の置き場には、Kaname が会社ごとの鍵で暗号化した中身（JSON）だけ。平文は base64 を開いても無い
   const raw = await readFromInfisical(ref, u.tenantId);
   expect(raw, "Infisical の /tenants/<会社> にある").not.toBeNull();
-  const s = JSON.parse(raw!) as { tenantId: string; iv: string; tag: string; data: string; kind: string; revokedAt: null };
+  const s = JSON.parse(raw!) as {
+    tenantId: string;
+    iv: string;
+    tag: string;
+    data: string;
+    kind: string;
+    revokedAt: null;
+  };
   expect(s.tenantId).toBe(u.tenantId);
   expect(s.kind).toBe("basic");
   expect(s.revokedAt).toBeNull();
@@ -129,11 +141,15 @@ test("BRG-14-005 E-SEC-001-C 置き場に届かない（API の返し 502 E-SEC-
   );
   await fill(page, "発注ナビ");
   await page.getByRole("button", { name: "保存する" }).click();
-  await expect(page.locator("[data-state='i'] p[role=alert]")).toHaveText("預かり先に保管できませんでした。もう一度試してください");
+  await expect(page.locator("[data-state='i'] p[role=alert]")).toHaveText(
+    "預かり先に保管できませんでした。もう一度試してください",
+  );
   // 一手「もう一度保存する」が成り立つ：入れたものは消えず、保存できる状態のまま
   expect(await page.getByLabel("パスワード", { exact: true }).inputValue()).toBe(PASSWORD);
   await expect(page.getByRole("button", { name: "保存する" })).toBeEnabled();
-  expect(await admin("select 1 from credentials where tenant_id = $1", [u.tenantId]), "表に行はできない").toHaveLength(0);
+  expect(await admin("select 1 from credentials where tenant_id = $1", [u.tenantId]), "表に行はできない").toHaveLength(
+    0,
+  );
   await page.unroute(STORE_URL);
   await page.getByRole("button", { name: "保存する" }).click();
   await expect(page.locator("[data-state='n']")).toContainText("預かり先の番号", { timeout: 15_000 });
@@ -160,8 +176,12 @@ test("BRG-14-008 E-SEC-003-C 上限に当たった（API の返し 503 E-SEC-003
   );
   await fill(page, "発注ナビ");
   await page.getByRole("button", { name: "保存する" }).click();
-  await expect(page.locator("[data-state='i'] p[role=alert]")).toHaveText("いま混み合っています。42 秒ほど待ってからもう一度保存してください");
+  await expect(page.locator("[data-state='i'] p[role=alert]")).toHaveText(
+    "いま混み合っています。42 秒ほど待ってからもう一度保存してください",
+  );
   expect(await page.getByLabel("パスワード", { exact: true }).inputValue(), "待ってから押し直せる").toBe(PASSWORD);
-  expect(await admin("select 1 from credentials where tenant_id = $1", [u.tenantId]), "表に行はできない").toHaveLength(0);
+  expect(await admin("select 1 from credentials where tenant_id = $1", [u.tenantId]), "表に行はできない").toHaveLength(
+    0,
+  );
   await expect(page.locator("[data-state='n']")).toHaveCount(0);
 });

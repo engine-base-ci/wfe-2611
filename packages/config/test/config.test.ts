@@ -33,13 +33,26 @@ describe("起動設定（X-002）", () => {
 });
 
 describe("資格情報の預かり先 Infisical（D-101）", () => {
-  const inf = { INFISICAL_CLIENT_ID: "cid", INFISICAL_CLIENT_SECRET: "cs", INFISICAL_PROJECT_ID: "p", INFISICAL_ENVIRONMENT: "staging" };
+  const inf = {
+    INFISICAL_CLIENT_ID: "cid",
+    INFISICAL_CLIENT_SECRET: "cs",
+    INFISICAL_PROJECT_ID: "p",
+    INFISICAL_ENVIRONMENT: "staging",
+  };
   it("無ければ null（開発はメモリ）", () => {
     expect(loadConfig(ok).infisical).toBeNull();
   });
   it("そろえば使う。地域の既定は us、末尾の / は落とす", () => {
-    expect(loadConfig({ ...ok, ...inf }).infisical).toEqual({ siteUrl: "https://us.infisical.com", clientId: "cid", clientSecret: "cs", projectId: "p", environment: "staging" });
-    expect(loadConfig({ ...ok, ...inf, INFISICAL_SITE_URL: "https://eu.infisical.com/" }).infisical?.siteUrl).toBe("https://eu.infisical.com");
+    expect(loadConfig({ ...ok, ...inf }).infisical).toEqual({
+      siteUrl: "https://us.infisical.com",
+      clientId: "cid",
+      clientSecret: "cs",
+      projectId: "p",
+      environment: "staging",
+    });
+    expect(loadConfig({ ...ok, ...inf, INFISICAL_SITE_URL: "https://eu.infisical.com/" }).infisical?.siteUrl).toBe(
+      "https://eu.infisical.com",
+    );
   });
   it("半端なら起動しない（黙ってメモリに落とさない）", () => {
     expect(() => loadConfig({ ...ok, INFISICAL_CLIENT_ID: "cid" })).toThrow(/INFISICAL_CLIENT_SECRET/);

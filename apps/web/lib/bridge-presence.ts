@@ -144,7 +144,10 @@ export async function loginCode(code: string): Promise<{ ok: boolean; message: s
 
 /** Bridge に「この接続コードでつないで」と頼む。人がコードを打ち直さなくて済む */
 /** この PC の Bridge につなぐ。別のアカウントでつながっている Bridge は、switch（本人が「切り替える」を押した）のときだけ切り替わる */
-export async function pairViaLocal(code: string, allowSwitch = false): Promise<{ ok: true } | { ok: false; message: string; otherAccount?: boolean }> {
+export async function pairViaLocal(
+  code: string,
+  allowSwitch = false,
+): Promise<{ ok: true } | { ok: false; message: string; otherAccount?: boolean }> {
   try {
     const r = await fetch(`${LOCAL}/pair`, {
       method: "POST",
@@ -153,7 +156,11 @@ export async function pairViaLocal(code: string, allowSwitch = false): Promise<{
     });
     const j = (await r.json().catch(() => ({}))) as { message?: string; reason?: string };
     if (r.ok) return { ok: true };
-    return { ok: false, message: j.message ?? `うまくいきませんでした（${r.status}）`, ...(j.reason === "other_account" ? { otherAccount: true } : {}) };
+    return {
+      ok: false,
+      message: j.message ?? `うまくいきませんでした（${r.status}）`,
+      ...(j.reason === "other_account" ? { otherAccount: true } : {}),
+    };
   } catch (e) {
     return { ok: false, message: e instanceof Error ? e.message : "Bridge に届きません" };
   }

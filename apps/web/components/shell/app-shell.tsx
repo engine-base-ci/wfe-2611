@@ -28,7 +28,17 @@ export interface AppShellProps {
   /** 第2ナビの項目の代わりに出す中身（会話モードの会話の一覧） */
   subBody?: ReactNode;
 }
-export function AppShell({ children, panel: panelProp, selected, primary, subActive, onSubSelect, who, banner, subBody }: AppShellProps) {
+export function AppShell({
+  children,
+  panel: panelProp,
+  selected,
+  primary,
+  subActive,
+  onSubSelect,
+  who,
+  banner,
+  subBody,
+}: AppShellProps) {
   const panel = panelProp === false ? null : (panelProp ?? <AssistantPanel selected={selected ?? null} />);
   const { frame, layout, subMode, panelOpen, screenId, role } = useShell();
   const hasPanel = !!panel;
@@ -105,7 +115,11 @@ export function AppShell({ children, panel: panelProp, selected, primary, subAct
             {head ? null : (
               <>
                 {banner}
-                <TopBar {...(primary && layout !== "threepane" ? { primary } : {})} hasPanel={hasPanel} subToggle={!!subBody} />
+                <TopBar
+                  {...(primary && layout !== "threepane" ? { primary } : {})}
+                  hasPanel={hasPanel}
+                  subToggle={!!subBody}
+                />
               </>
             )}
             <div className={cn("content", layout === "threepane" && "content-tp")}>{children}</div>

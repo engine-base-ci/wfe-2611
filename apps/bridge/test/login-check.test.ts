@@ -7,7 +7,17 @@ import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { playwright, runLoginCheck, targetUrl } from "../src/login-check";
 
-const HAS_CHROME = process.platform === "darwin" ? existsSync("/Applications/Google Chrome.app") : true;
+// Bridge は本人の Google Chrome を使う（channel: "chrome"）。Chrome の無い手元の PC では飛ばし、CI（Chrome が入っている）では必ず流す
+const HAS_CHROME =
+  process.platform === "darwin"
+    ? existsSync("/Applications/Google Chrome.app")
+    : process.platform === "linux"
+      ? ["/opt/google/chrome/chrome", "/usr/bin/google-chrome", "/usr/bin/google-chrome-stable"].some((p) =>
+          existsSync(p),
+        )
+      : true;
+if (process.env["CI"] && !HAS_CHROME)
+  throw new Error("CI には Google Chrome が要る（Bridge のログインの確認は本人の Chrome で動く）");
 const LOGIN = "me@example.com";
 const PASSWORD = "S3cret-Plain!";
 const JOB = "11111111-1111-4111-8111-111111111111";
@@ -22,7 +32,10 @@ let dataDir = "";
 
 /** 偽のサービス：ブラウザの中で動く小さなログイン画面（JS で判定する・本物のサービスと同じく画面が変わる） */
 const page = (mode: string): string => {
-  const captcha = mode === "captcha" ? '<div class="g-recaptcha" style="border:1px solid #999;padding:8px">私はロボットではありません</div>' : "";
+  const captcha =
+    mode === "captcha"
+      ? '<div class="g-recaptcha" style="border:1px solid #999;padding:8px">私はロボットではありません</div>'
+      : "";
   if (mode === "noform") return "<h1>テスト用サービス</h1><p>ログインの欄はありません</p>";
   const twostep = mode === "twostep";
   return `<h1>ログイン</h1>
@@ -64,7 +77,17 @@ beforeAll(async () => {
       const body = raw ? (JSON.parse(raw) as Record<string, unknown>) : {};
       resolves.push({ path: req.url, ...body, session: req.headers["x-bridge-session"] });
       res.writeHead(200, { "content-type": "application/json" });
-      res.end(JSON.stringify({ data: { login: LOGIN, password: PASSWORD, totp_secret: null, service_name: serviceName, service_domain: "127.0.0.1" } }));
+      res.end(
+        JSON.stringify({
+          data: {
+            login: LOGIN,
+            password: PASSWORD,
+            totp_secret: null,
+            service_name: serviceName,
+            service_domain: "127.0.0.1",
+          },
+        }),
+      );
     });
   });
   await new Promise<void>((r) => kaname.listen(0, "127.0.0.1", r));
@@ -75,7 +98,14 @@ afterAll(async () => {
   await new Promise<void>((r) => site.close(() => r()));
   await new Promise<void>((r) => kaname.close(() => r()));
 });
-const deps = (over: Partial<{ apiBase: string; timeoutMs: number }> = {}) => ({ apiBase: kanameBase, sessionId: () => "sess-1", dataDir, headless: true, timeoutMs: 60_000, ...over });
+const deps = (over: Partial<{ apiBase: string; timeoutMs: number }> = {}) => ({
+  apiBase: kanameBase,
+  sessionId: () => "sess-1",
+  dataDir,
+  headless: true,
+  timeoutMs: 60_000,
+  ...over,
+});
 const run = async (mode: string) => {
   serviceName = `${siteBase}/?mode=${mode}`;
   resolves = [];
@@ -109,56 +139,95 @@ describe("CHT-38-001 預けたら 1 回ログインし、入れたらそのま�
   it("playwright-core を @playwright/mcp から借りられる（Bridge 専用のブラウザと同じ部品）", () => {
     expect(playwright()).not.toBeNull();
   });
-  it.skipIf(!HAS_CHROME)("CHT-38-001 正しい値 → ok。Kaname には Bridge の鍵と仕事の id で 1 回だけ頼む。開いたブラウザは閉じる", async () => {
-    const r = await run("ok");
-    expect(r).toEqual({ state: "ok", detail: "ログインできました（入れたらそのまま出ました）" });
-    expect(resolves).toHaveLength(1);
-    expect(resolves[0]).toMatchObject({ path: "/api/auth-ext/bridge/credentials/resolve", job_id: JOB, credential_id: CRED, session: "sess-1" });
-  }, 60_000);
-  it.skipIf(!HAS_CHROME)("CHT-38-001 2 段の画面（先にログイン名 → 次へ → パスワード）でも入れる", async () => {
-    expect((await run("twostep")).state).toBe("ok");
-  }, 60_000);
+  it.skipIf(!HAS_CHROME)(
+    "CHT-38-001 正しい値 → ok。Kaname には Bridge の鍵と仕事の id で 1 回だけ頼む。開いたブラウザは閉じる",
+    async () => {
+      const r = await run("ok");
+      expect(r).toEqual({ state: "ok", detail: "ログインできました（入れたらそのまま出ました）" });
+      expect(resolves).toHaveLength(1);
+      expect(resolves[0]).toMatchObject({
+        path: "/api/auth-ext/bridge/credentials/resolve",
+        job_id: JOB,
+        credential_id: CRED,
+        session: "sess-1",
+      });
+    },
+    60_000,
+  );
+  it.skipIf(!HAS_CHROME)(
+    "CHT-38-001 2 段の画面（先にログイン名 → 次へ → パスワード）でも入れる",
+    async () => {
+      expect((await run("twostep")).state).toBe("ok");
+    },
+    60_000,
+  );
 });
 
 describe("CHT-38-002 入れなければ理由を出す（パスワードが違う／2 段階が要る／CAPTCHA／開けない／欄が無い）。何度も試さない", () => {
-  it.skipIf(!HAS_CHROME)("CHT-38-002 サービスが受け付けない（偽の Kaname が違うパスワードを返す）→ bad_password と預け直しの一手。1 回で止める", async () => {
-    // 偽の Kaname が返す値を「違うパスワード」にする（偽サービスは me@example.com / S3cret-Plain! しか通さない）
-    const wrong = createServer((req, res) => {
-      let raw = "";
-      req.on("data", (c) => (raw += c));
-      req.on("end", () => {
-        res.writeHead(200, { "content-type": "application/json" });
-        res.end(JSON.stringify({ data: { login: LOGIN, password: "wrong-pass-1234", totp_secret: null, service_name: `${siteBase}/?mode=ok`, service_domain: "127.0.0.1" } }));
+  it.skipIf(!HAS_CHROME)(
+    "CHT-38-002 サービスが受け付けない（偽の Kaname が違うパスワードを返す）→ bad_password と預け直しの一手。1 回で止める",
+    async () => {
+      // 偽の Kaname が返す値を「違うパスワード」にする（偽サービスは me@example.com / S3cret-Plain! しか通さない）
+      const wrong = createServer((req, res) => {
+        let raw = "";
+        req.on("data", (c) => (raw += c));
+        req.on("end", () => {
+          res.writeHead(200, { "content-type": "application/json" });
+          res.end(
+            JSON.stringify({
+              data: {
+                login: LOGIN,
+                password: "wrong-pass-1234",
+                totp_secret: null,
+                service_name: `${siteBase}/?mode=ok`,
+                service_domain: "127.0.0.1",
+              },
+            }),
+          );
+        });
       });
-    });
-    await new Promise<void>((r) => wrong.listen(0, "127.0.0.1", r));
-    const a = wrong.address();
-    try {
-      const r = await runLoginCheck(deps({ apiBase: `http://127.0.0.1:${(a as { port: number }).port}` }), JOB, CRED);
-      expect(r.state).toBe("bad_password");
-      expect(r.detail).toContain("預け直して");
-      expect(r.detail).not.toContain("wrong-pass");
-    } finally {
-      await new Promise<void>((r) => wrong.close(() => r()));
-    }
-  }, 60_000);
-  it.skipIf(!HAS_CHROME)("CHT-38-002 2 段階認証のコードを求められた → needs_2fa（コードは入れない）", async () => {
-    const r = await run("2fa");
-    expect(r.state).toBe("needs_2fa");
-    expect(r.detail).toContain("2 段階");
-  }, 60_000);
-  it.skipIf(!HAS_CHROME)("CHT-38-002 CAPTCHA がある → captcha。入力せずに止める（Kaname には頼んでいるが、欄には入れない）", async () => {
-    const r = await run("captcha");
-    expect(r.state).toBe("captcha");
-    expect(r.detail).toContain("CAPTCHA");
-  }, 60_000);
-  it.skipIf(!HAS_CHROME)("CHT-38-002 ログインの欄が無い → no_form。開けない → unreachable", async () => {
-    expect((await run("noform")).state).toBe("no_form");
-    serviceName = "http://127.0.0.1:9/";
-    const r = await runLoginCheck(deps(), JOB, CRED);
-    expect(r.state).toBe("unreachable");
-    expect(r.detail).toContain("開けません");
-  }, 90_000);
+      await new Promise<void>((r) => wrong.listen(0, "127.0.0.1", r));
+      const a = wrong.address();
+      try {
+        const r = await runLoginCheck(deps({ apiBase: `http://127.0.0.1:${(a as { port: number }).port}` }), JOB, CRED);
+        expect(r.state).toBe("bad_password");
+        expect(r.detail).toContain("預け直して");
+        expect(r.detail).not.toContain("wrong-pass");
+      } finally {
+        await new Promise<void>((r) => wrong.close(() => r()));
+      }
+    },
+    60_000,
+  );
+  it.skipIf(!HAS_CHROME)(
+    "CHT-38-002 2 段階認証のコードを求められた → needs_2fa（コードは入れない）",
+    async () => {
+      const r = await run("2fa");
+      expect(r.state).toBe("needs_2fa");
+      expect(r.detail).toContain("2 段階");
+    },
+    60_000,
+  );
+  it.skipIf(!HAS_CHROME)(
+    "CHT-38-002 CAPTCHA がある → captcha。入力せずに止める（Kaname には頼んでいるが、欄には入れない）",
+    async () => {
+      const r = await run("captcha");
+      expect(r.state).toBe("captcha");
+      expect(r.detail).toContain("CAPTCHA");
+    },
+    60_000,
+  );
+  it.skipIf(!HAS_CHROME)(
+    "CHT-38-002 ログインの欄が無い → no_form。開けない → unreachable",
+    async () => {
+      expect((await run("noform")).state).toBe("no_form");
+      serviceName = "http://127.0.0.1:9/";
+      const r = await runLoginCheck(deps(), JOB, CRED);
+      expect(r.state).toBe("unreachable");
+      expect(r.detail).toContain("開けません");
+    },
+    90_000,
+  );
   it("CHT-38-002 Kaname に届かない（鍵を受け取れない）→ stopped と理由。ブラウザは開かない", async () => {
     const r = await runLoginCheck(deps({ apiBase: "http://127.0.0.1:9", timeoutMs: 5_000 }), JOB, CRED);
     expect(r.state).toBe("stopped");
@@ -167,16 +236,20 @@ describe("CHT-38-002 入れなければ理由を出す（パスワードが違�
 });
 
 describe("CHT-38-003 鍵は実行の間だけ受け取り、入力したら捨てる。ディスクにも AI にも渡らない", () => {
-  it.skipIf(!HAS_CHROME)("CHT-38-003 結果の文・Bridge の置き場（ログインの状態）のどこにも、パスワードが残っていない。AI（Claude Code）は起こしていない", async () => {
-    const r = await run("ok");
-    expect(JSON.stringify(r)).not.toContain(PASSWORD);
-    const hits = filesContain(dataDir, PASSWORD).map((x) => x.replace(dataDir, ""));
-    expect(hits, `値が残っている: ${hits.join(", ")}`).toEqual([]);
-    // 鍵を扱うのは vault.ts と login-check.ts だけ。AI を起こす runner には渡らない
-    const src = readFileSync(join(__dirname, "..", "src", "login-check.ts"), "utf8");
-    expect(src).not.toMatch(/runClaude|console\.|appendFile/);
-    // ディスクに書くのは Chrome の設定（パスワードの保存を切る）1 か所だけ。値は書かない
-    expect(src.match(/writeFileSync\(/g)).toHaveLength(1);
-    expect(src).toContain("writeFileSync(file, JSON.stringify(next))");
-  }, 60_000);
+  it.skipIf(!HAS_CHROME)(
+    "CHT-38-003 結果の文・Bridge の置き場（ログインの状態）のどこにも、パスワードが残っていない。AI（Claude Code）は起こしていない",
+    async () => {
+      const r = await run("ok");
+      expect(JSON.stringify(r)).not.toContain(PASSWORD);
+      const hits = filesContain(dataDir, PASSWORD).map((x) => x.replace(dataDir, ""));
+      expect(hits, `値が残っている: ${hits.join(", ")}`).toEqual([]);
+      // 鍵を扱うのは vault.ts と login-check.ts だけ。AI を起こす runner には渡らない
+      const src = readFileSync(join(__dirname, "..", "src", "login-check.ts"), "utf8");
+      expect(src).not.toMatch(/runClaude|console\.|appendFile/);
+      // ディスクに書くのは Chrome の設定（パスワードの保存を切る）1 か所だけ。値は書かない
+      expect(src.match(/writeFileSync\(/g)).toHaveLength(1);
+      expect(src).toContain("writeFileSync(file, JSON.stringify(next))");
+    },
+    60_000,
+  );
 });

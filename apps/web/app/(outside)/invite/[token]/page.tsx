@@ -64,7 +64,8 @@ export default function InviteAcceptPage() {
           <div className="mb-[22px] flex gap-[9px] rounded-[var(--r-md)] bg-[var(--primary-c)] px-3.5 py-[11px] text-[12.5px] leading-[1.75] text-[var(--on-primary-c)]">
             <Users className="mt-[3px] size-4 shrink-0" aria-hidden />
             <span>
-              <b>{pv!.tenant_name}</b> があなたを <b>{viewer ? "閲覧のみ" : "担当者"}</b> {viewer ? "で" : "として"}招待しています
+              <b>{pv!.tenant_name}</b> があなたを <b>{viewer ? "閲覧のみ" : "担当者"}</b> {viewer ? "で" : "として"}
+              招待しています
             </span>
           </div>
           <AuthHead title="参加する">
@@ -113,7 +114,9 @@ export default function InviteAcceptPage() {
               ))}
             </ul>
             {!viewer ? (
-              <p className="mt-2.5 text-[12px] text-[var(--on-sv)]">見えないもの：会社の目標の全体・売上・他の人の担当・ルールの編集</p>
+              <p className="mt-2.5 text-[12px] text-[var(--on-sv)]">
+                見えないもの：会社の目標の全体・売上・他の人の担当・ルールの編集
+              </p>
             ) : null}
           </section>
           <Button type="submit" className="w-full" icon={<LogIn />} disabled={busy}>

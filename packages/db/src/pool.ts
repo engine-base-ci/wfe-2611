@@ -41,7 +41,8 @@ function slots(size: number) {
     },
     give(): void {
       const next = waiting.shift();
-      if (next) next.go(); // 枠はそのまま次の人へ渡す
+      if (next)
+        next.go(); // 枠はそのまま次の人へ渡す
       else free += 1;
     },
   };
@@ -85,7 +86,9 @@ export function createPool(o: PoolOptions): pg.Pool {
     return client;
   };
   // pool.query も内部でこの connect（コールバック形）を呼ぶので、両方の形を受ける
-  (pool as unknown as { connect: (cb?: ConnectCb) => Promise<pg.PoolClient> | undefined }).connect = (cb?: ConnectCb) => {
+  (pool as unknown as { connect: (cb?: ConnectCb) => Promise<pg.PoolClient> | undefined }).connect = (
+    cb?: ConnectCb,
+  ) => {
     if (!cb) return acquire();
     acquire().then(
       (client) => cb(undefined, client, (r) => client.release(r as Error | undefined)),

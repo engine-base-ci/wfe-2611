@@ -44,7 +44,8 @@ const routeOf = (id) => flow.screens.find((s) => s.id === id)?.route ?? "/" + id
 const fallbacks = {
   entry: {
     anonymous: routeOf(fb.entry.anonymous),
-    noBridge: routeOf(fb.entry.signed_in.find((x) => x.when === "no_bridge").screen),
+    // PC をつなぐ前でも使える（D-127.8）。flow に「PC が無いとき」の行き先が無ければ、ふだんの入口と同じ
+    noBridge: routeOf((fb.entry.signed_in.find((x) => x.when === "no_bridge") ?? fb.entry.signed_in.find((x) => x.when === "default")).screen),
     signedIn: routeOf(fb.entry.signed_in.find((x) => x.when === "default").screen),
   },
   notFound: { title: fb.not_found.title },

@@ -4,7 +4,7 @@
 import { writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 import { admin, loginAs, setupStep, signupViaApi } from "../_lib/api";
 import { startAgentBridge, type AgentBridge } from "../_lib/agent-bridge";
 
@@ -33,7 +33,14 @@ const say = async (page: Page, text: string) => {
 /** 書き終わった返事（書きかけの吹き出しは含めない） */
 const lastAi = (page: Page) => page.locator('.msg[data-who="ai"]:not([data-streaming])').last();
 const jobs = (memberId: string) =>
-  admin<{ id: string; state_id: string; permission_mode: string; agent_session_id: string | null; conversation_id: string | null; prompt: string }>(
+  admin<{
+    id: string;
+    state_id: string;
+    permission_mode: string;
+    agent_session_id: string | null;
+    conversation_id: string | null;
+    prompt: string;
+  }>(
     "select id, state_id, permission_mode, agent_session_id, conversation_id, prompt from bridge_jobs where member_id = $1 order by created_at",
     [memberId],
   );
@@ -75,7 +82,10 @@ test("USH-08-014 USH-08-001 USH-08-002 CHT-16-002 CHT-16-003 CHT-16-004 CHT-16-0
   await expect(ai.locator(".mtable td")).toContainText(["セイコー"]);
   await expect(ai.locator(".chk li.on")).toContainText("台帳を読む");
   await expect(ai.locator(".codeblk[data-lang='ts']")).toBeVisible();
-  await expect(ai.locator(".codeblk [style*='--shiki-token']").first(), "コードは syntax のトークンで色分け").toBeVisible({ timeout: 10_000 });
+  await expect(
+    ai.locator(".codeblk [style*='--shiki-token']").first(),
+    "コードは syntax のトークンで色分け",
+  ).toBeVisible({ timeout: 10_000 });
   await expect(ai.locator("math").first(), "数式はブラウザの MathML").toBeVisible();
   await expect(ai.locator(".fchart svg"), "流れ図は使うときだけ読む mermaid").toBeVisible({ timeout: 15_000 });
   await expect(ai.locator("details.mdet")).toBeVisible();
@@ -110,10 +120,25 @@ test("CHT-17-001 CHT-17-002 CHT-17-003 CHT-17-005 動いている間に送った
   // 区切りで渡る：答え → 自分の一言 → 次の答え の順（読む順＝起きた順）
   await expect(page.locator('.msg[data-who="me"]').last()).toContainText("税込で", { timeout: 30_000 });
   await expect(page.locator("[data-work-done]").last()).toBeVisible({ timeout: 30_000 });
-  const order = await page.locator(".chat > .msg").evaluateAll((els) => els.map((e) => `${e.getAttribute("data-who")}:${(e.querySelector(".bub") as HTMLElement | null)?.innerText.slice(0, 8) ?? ""}`));
-  expect(order.slice(-4)).toEqual(["me:長く書いて", expect.stringMatching(/^ai:長い作業/), "me:税込で", expect.stringMatching(/^ai:/)]);
+  const order = await page
+    .locator(".chat > .msg")
+    .evaluateAll((els) =>
+      els.map(
+        (e) =>
+          `${e.getAttribute("data-who")}:${(e.querySelector(".bub") as HTMLElement | null)?.innerText.slice(0, 8) ?? ""}`,
+      ),
+    );
+  expect(order.slice(-4)).toEqual([
+    "me:長く書いて",
+    expect.stringMatching(/^ai:長い作業/),
+    "me:税込で",
+    expect.stringMatching(/^ai:/),
+  ]);
   expect(order.join(" "), "取り消した一言は渡らない").not.toContain("今のは無し");
-  expect((await jobs(u.memberId)).map((j) => j.state_id), "同じ仕事の続きとして動いた").toEqual(["done"]);
+  expect(
+    (await jobs(u.memberId)).map((j) => j.state_id),
+    "同じ仕事の続きとして動いた",
+  ).toEqual(["done"]);
   // 止める
   await say(page, "もう一度長く");
   await expect(page.locator("[data-working]")).toBeVisible({ timeout: 15_000 });
@@ -121,7 +146,10 @@ test("CHT-17-001 CHT-17-002 CHT-17-003 CHT-17-005 動いている間に送った
   await page.locator("[data-stop]").click();
   await expect(page.locator("[data-stopped-reason]").last()).toContainText("あなたが止めました", { timeout: 15_000 });
   await page.waitForTimeout(3000);
-  await expect(page.locator(".chat > .msg, .chat > [data-part='stopped']").last(), "止まりました が最後。後から答えは出ない").toHaveAttribute("data-part", "stopped");
+  await expect(
+    page.locator(".chat > .msg, .chat > [data-part='stopped']").last(),
+    "止まりました が最後。後から答えは出ない",
+  ).toHaveAttribute("data-part", "stopped");
   await expect(box(page), "入力欄は開いたまま").toBeEnabled();
 });
 
@@ -152,18 +180,29 @@ test("CHT-19-005 CHT-19-001 CHT-19-002 自分のAI からの問い合わせに�
   await expect(perm).toBeVisible({ timeout: 15_000 });
   await perm.getByRole("button", { name: /いつも許可/ }).click();
   await expect(lastAi(page)).toContainText("消しました", { timeout: 15_000 });
-  const audit = await admin<{ action: string }>("select action from audit_events where actor_member_id = $1 and action like 'bridge.tool_%' and payload->>'tool' = 'Bash' order by created_at", [u.memberId]);
-  expect(audit.map((a) => a.action), "答えは証跡に残る").toEqual(["bridge.tool_denied", "bridge.tool_allowed"]);
+  const audit = await admin<{ action: string }>(
+    "select action from audit_events where actor_member_id = $1 and action like 'bridge.tool_%' and payload->>'tool' = 'Bash' order by created_at",
+    [u.memberId],
+  );
+  expect(
+    audit.map((a) => a.action),
+    "答えは証跡に残る",
+  ).toEqual(["bridge.tool_denied", "bridge.tool_allowed"]);
   await page.goto("/dev/memory");
   const list = page.locator('[data-part="always-allow"]');
   await expect(list).toContainText("rm -rf 請求書/下書き", { timeout: 15_000 });
   await list.locator("[data-revoke]").click();
   await expect(list).toContainText("まだありません");
-  const next = await admin<{ allowed: string[] }>("select coalesce(array_agg(tool), '{}') as allowed from permission_rules where member_id = $1 and revoked_at is null", [u.memberId]);
+  const next = await admin<{ allowed: string[] }>(
+    "select coalesce(array_agg(tool), '{}') as allowed from permission_rules where member_id = $1 and revoked_at is null",
+    [u.memberId],
+  );
   expect(next[0]!.allowed, "取り消すと次から聞かれる").toEqual([]);
 });
 
-test("USH-08-005 USH-08-016 モデルと考える強さは入力欄の右下の別々の小さなボタンで選べ、次に送った仕事の起動の引数（--model・--effort）になる。モデルは版まで入った名前を 1 行ずつ（Claude のデスクトップと同じ）", async ({ page }) => {
+test("USH-08-005 USH-08-016 モデルと考える強さは入力欄の右下の別々の小さなボタンで選べ、次に送った仕事の起動の引数（--model・--effort）になる。モデルは版まで入った名前を 1 行ずつ（Claude のデスクトップと同じ）", async ({
+  page,
+}) => {
   const u = await ready(page);
   const modelBtn = page.locator("[data-model]");
   const effortBtn = page.locator("[data-effort]");
@@ -175,7 +214,13 @@ test("USH-08-005 USH-08-016 モデルと考える強さは入力欄の右下の�
   expect(box!.width, "入力欄の幅いっぱいに広げない（320px まで）").toBeLessThanOrEqual(321);
   expect(box!.width).toBeLessThan(comp!.width);
   // 版まで入った名前が 1 行ずつ。説明の 2 行目は出さない。いちばん上は PC の設定（何も選ばない）でチェック、ほかは数字
-  await expect(pop.getByRole("option")).toHaveText([/^PC の設定/, /^Opus 5\.5\s*1$/, /^Fable 5\.1\s*2$/, /^Sonnet 5\.5\s*3$/, /^Haiku 4\.5\s*4$/]);
+  await expect(pop.getByRole("option")).toHaveText([
+    /^PC の設定/,
+    /^Opus 5\.5\s*1$/,
+    /^Fable 5\.1\s*2$/,
+    /^Sonnet 5\.5\s*3$/,
+    /^Haiku 4\.5\s*4$/,
+  ]);
   const first = pop.getByRole("option").first();
   expect(await first.locator("b").evaluate((e) => getComputedStyle(e).fontSize)).toBe("13px");
   await expect(first.locator("svg"), "いま選んでいる（PC の設定）にチェック").toHaveCount(1);
@@ -215,12 +260,17 @@ test("USH-08-005 USH-08-016 モデルと考える強さは入力欄の右下の�
   expect(perm!.x, "許可のしかたはモデルより左").toBeLessThan(mb!.x);
   await say(page, "引数を見せて");
   await expect(lastAi(page)).toContainText("モデル=claude-sonnet-5-5 強さ=high", { timeout: 20_000 });
-  const j = (await admin<{ model: string | null; effort: string | null }>("select model, effort from bridge_jobs where member_id = $1 order by created_at desc limit 1", [u.memberId]))[0]!;
+  const j = (
+    await admin<{ model: string | null; effort: string | null }>(
+      "select model, effort from bridge_jobs where member_id = $1 order by created_at desc limit 1",
+      [u.memberId],
+    )
+  )[0]!;
   expect(j).toEqual({ model: "claude-sonnet-5-5", effort: "high" });
 });
 
 /** 箱の項目が、スクロールせずにその場で押せるか：項目の真ん中でいちばん上にあるのが項目そのもの（枠に切られていない・画面の外に出ていない） */
-async function allHittable(page: Page, items: import("@playwright/test").Locator) {
+async function allHittable(page: Page, items: Locator) {
   const n = await items.count();
   expect(n).toBeGreaterThan(0);
   for (let i = 0; i < n; i++) {
@@ -236,7 +286,9 @@ async function allHittable(page: Page, items: import("@playwright/test").Locator
   }
 }
 
-test("USH-08-017 一覧の最後の行の「…」の箱も、入力欄の選ぶ箱も、枠に切られずその場で全部押せる（低い画面でも）", async ({ page }) => {
+test("USH-08-017 一覧の最後の行の「…」の箱も、入力欄の選ぶ箱も、枠に切られずその場で全部押せる（低い画面でも）", async ({
+  page,
+}) => {
   await ready(page);
   await say(page, "こんにちは");
   await expect(lastAi(page)).toBeVisible({ timeout: 20_000 });
@@ -252,7 +304,11 @@ test("USH-08-017 一覧の最後の行の「…」の箱も、入力欄の選ぶ
   await expect(menu).toBeHidden();
   // 低い画面でも、入力欄の選ぶ箱は切られずに全部押せる（上に入らなければ下へ・画面の端から内に収める）
   await page.setViewportSize({ width: 1280, height: 520 });
-  for (const [btn, name] of [[page.locator("[data-model]"), "モデル"], [page.locator("[data-effort]"), "考える強さ"], [page.getByRole("button", { name: /毎回聞く/ }), "許可のモード"]] as const) {
+  for (const [btn, name] of [
+    [page.locator("[data-model]"), "モデル"],
+    [page.locator("[data-effort]"), "考える強さ"],
+    [page.getByRole("button", { name: /毎回聞く/ }), "許可のモード"],
+  ] as const) {
     await btn.click();
     const pop = page.getByRole("listbox", { name });
     await expect(pop).toBeVisible();
@@ -262,7 +318,9 @@ test("USH-08-017 一覧の最後の行の「…」の箱も、入力欄の選ぶ
   }
 });
 
-test("CHT-19-003 CHT-19-004 許可のモードは会話ごとに選べて仕事に乗る。全部許可は選ぶときに何が起きるかを出し、新しい会話には持ち越さない", async ({ page }) => {
+test("CHT-19-003 CHT-19-004 許可のモードは会話ごとに選べて仕事に乗る。全部許可は選ぶときに何が起きるかを出し、新しい会話には持ち越さない", async ({
+  page,
+}) => {
   const u = await ready(page);
   await page.getByRole("button", { name: /毎回聞く/ }).click();
   await page.getByRole("option", { name: /計画だけ/ }).click();
@@ -306,10 +364,16 @@ test("CHT-15-001 CHT-15-002 CHT-15-003 CHT-15-004 CHT-15-006 新しく話す＝�
   await expect(page.locator('.msg[data-who="me"]').first()).toContainText("着手金の請求書を作って");
   await say(page, "続きをお願い");
   await expect.poll(async () => (await jobs(u.memberId)).length, { timeout: 15_000 }).toBe(3);
-  await expect.poll(async () => (await jobs(u.memberId))[2]!.agent_session_id, { timeout: 15_000 }).toBe(convs[0]!.agent_session_id);
+  await expect
+    .poll(async () => (await jobs(u.memberId))[2]!.agent_session_id, { timeout: 15_000 })
+    .toBe(convs[0]!.agent_session_id);
   // 名前を直す → 次に話しても自動で上書きしない
   // 操作は「…」のメニューにまとめてある（2026-09-30）。開いている会話の行には「…」が出たまま
-  await list.locator('[data-conversation] [aria-current="page"]').locator("..").getByRole("button", { name: "この会話の操作" }).click();
+  await list
+    .locator('[data-conversation] [aria-current="page"]')
+    .locator("..")
+    .getByRole("button", { name: "この会話の操作" })
+    .click();
   await list.getByRole("menuitem", { name: "名前を直す" }).click();
   await list.getByRole("textbox", { name: "会話の名前" }).fill("着手金の相談");
   await list.getByRole("textbox", { name: "会話の名前" }).press("Enter");
@@ -369,7 +433,9 @@ test("CHT-18-001 CHT-18-002 CHT-18-003 CHT-18-006 付けた資料は入力欄の
   await page.evaluate(() => {
     const dt = new DataTransfer();
     dt.setData("text/plain", "長".repeat(5000));
-    document.querySelector("textarea")!.dispatchEvent(new ClipboardEvent("paste", { clipboardData: dt, bubbles: true, cancelable: true }));
+    document
+      .querySelector("textarea")!
+      .dispatchEvent(new ClipboardEvent("paste", { clipboardData: dt, bubbles: true, cancelable: true }));
   });
   await expect(page.locator("[data-att-state='ok']")).toContainText("貼り付けた文", { timeout: 15_000 });
   await expect(box(page)).toHaveValue("");
@@ -378,12 +444,16 @@ test("CHT-18-001 CHT-18-002 CHT-18-003 CHT-18-006 付けた資料は入力欄の
   writeFileSync(big, Buffer.alloc(51 * 1024 * 1024));
   await file.setInputFiles(big);
   // 札は赤く「（置けませんでした）」、理由は札の下の 1 行（返ってきた理由そのまま）。大きすぎるものは置き直しても同じなので「もう一度送る」は出さない
-  await expect(page.locator("[data-att-state='error']")).toContainText("でかい.bin（置けませんでした）", { timeout: 30_000 });
+  await expect(page.locator("[data-att-state='error']")).toContainText("でかい.bin（置けませんでした）", {
+    timeout: 30_000,
+  });
   await expect(page.locator("[data-att-failed]")).toContainText("大きすぎます");
   await expect(page.locator("[data-att-retry]")).toHaveCount(0);
 });
 
-test("CHT-20-002 CHT-20-003 使用量は 5 時間の枠と週の枠の割合と戻る時刻が出る。8 割を越えると会話に案内が出る", async ({ page }) => {
+test("CHT-20-002 CHT-20-003 使用量は 5 時間の枠と週の枠の割合と戻る時刻が出る。8 割を越えると会話に案内が出る", async ({
+  page,
+}) => {
   await ready(page);
   await say(page, "上限の近い仕事");
   await expect(page.locator("[data-usage='near']")).toContainText("5 時間の枠が 92%", { timeout: 20_000 });
@@ -395,12 +465,17 @@ test("CHT-20-002 CHT-20-003 使用量は 5 時間の枠と週の枠の割合と�
   await expect(usage).toContainText("に戻ります");
 });
 
-test("CHT-21-005 「覚えて」と言うと、朝を待たずその場で個人の記憶に入り、会話に「覚えました」が出る", async ({ page }) => {
+test("CHT-21-005 「覚えて」と言うと、朝を待たずその場で個人の記憶に入り、会話に「覚えました」が出る", async ({
+  page,
+}) => {
   const u = await ready(page);
   await say(page, "見積は税抜で出すって覚えて");
   await expect(page.locator('[data-who="memo"]')).toContainText("覚えました：見積は税抜で出す", { timeout: 20_000 });
   await expect(lastAi(page), "印は返事から消える").not.toContainText("[[覚える");
-  const m = await admin<{ body: string }>("select body from memories where owner_member_id = $1 and deleted_at is null", [u.memberId]);
+  const m = await admin<{ body: string }>(
+    "select body from memories where owner_member_id = $1 and deleted_at is null",
+    [u.memberId],
+  );
   expect(m.map((x) => x.body)).toEqual(["見積は税抜で出す"]);
 });
 
@@ -417,22 +492,38 @@ test("CHT-21-001 CHT-21-002 CHT-21-003 CHT-21-004 CHT-15-005 CHT-22-006 まと�
   await expect(page.locator('[data-part="conversation-list"] [data-incognito]')).toHaveCount(0);
   await page.locator('[data-part="composer"] [data-incognito]').check();
   await expect(page.locator("[data-incognito]")).toBeChecked();
-  await expect(page.locator('[data-part="composer"] .cmem-note')).toHaveText("この会話は、自分のAIが毎朝まとめる記憶に入れません");
+  await expect(page.locator('[data-part="composer"] .cmem-note')).toHaveText(
+    "この会話は、自分のAIが毎朝まとめる記憶に入れません",
+  );
   await say(page, "社外秘の話");
   await expect(lastAi(page)).toBeVisible({ timeout: 20_000 });
-  await admin("update messages set created_at = created_at - interval '1 day' where conversation_id in (select id from conversations where owner_member_id = $1)", [u.memberId]);
+  await admin(
+    "update messages set created_at = created_at - interval '1 day' where conversation_id in (select id from conversations where owner_member_id = $1)",
+    [u.memberId],
+  );
   await admin(
     "insert into approvals (tenant_id, scope_id, approver_member_id, status_id, resolved_at, note) values ($1, $2, $3, 'approved', now() - interval '1 day', '税込で OK')",
     [u.tenantId, u.scopeId, u.memberId],
   );
-  await admin("insert into memories (tenant_id, scope_id, kind_id, owner_member_id, title, body) values ($1, $2, 'preference', $3, '請求書', '請求書は税込を先に書く')", [u.tenantId, u.scopeId, u.memberId]);
-  expect((await admin("select 1 from memory_digests where member_id = $1", [u.memberId])).length, "時間では動かない").toBe(0);
+  await admin(
+    "insert into memories (tenant_id, scope_id, kind_id, owner_member_id, title, body) values ($1, $2, 'preference', $3, '請求書', '請求書は税込を先に書く')",
+    [u.tenantId, u.scopeId, u.memberId],
+  );
+  expect(
+    (await admin("select 1 from memory_digests where member_id = $1", [u.memberId])).length,
+    "時間では動かない",
+  ).toBe(0);
   await page.goto("/dev/memory");
   const bar = page.locator("[data-digest='pending']");
   await expect(bar).toContainText("1 日分・会話 1", { timeout: 15_000 });
   await page.locator("[data-digest-start]").click();
   await expect(page.locator("[data-digest='result']")).toBeVisible({ timeout: 30_000 });
-  const prompt = (await admin<{ prompt: string }>("select j.prompt from memory_digests d join bridge_jobs j on j.id = d.bridge_job_id where d.member_id = $1", [u.memberId]))[0]!.prompt;
+  const prompt = (
+    await admin<{ prompt: string }>(
+      "select j.prompt from memory_digests d join bridge_jobs j on j.id = d.bridge_job_id where d.member_id = $1",
+      [u.memberId],
+    )
+  )[0]!.prompt;
   expect(prompt).toContain("京蟻の窓口は鈴木さん");
   expect(prompt, "記憶に残さない会話は読まない").not.toContain("社外秘の話");
   expect(prompt, "承認・差し戻しを読む").toContain("OK にした：税込で OK");
@@ -442,7 +533,14 @@ test("CHT-21-001 CHT-21-002 CHT-21-003 CHT-21-004 CHT-15-005 CHT-22-006 まと�
   await expect(res, "一人の会社には上げる候補を出さない").not.toContainText("上の層に上げる候補");
   await res.getByRole("button", { name: "戻す" }).click();
   await expect(res).not.toContainText("まとめた（前と後");
-  expect((await admin<{ s: string | null }>("select superseded_by as s from memories where owner_member_id = $1 and title = '請求書'", [u.memberId]))[0]!.s).toBeNull();
+  expect(
+    (
+      await admin<{ s: string | null }>(
+        "select superseded_by as s from memories where owner_member_id = $1 and title = '請求書'",
+        [u.memberId],
+      )
+    )[0]!.s,
+  ).toBeNull();
   await res.getByRole("button", { name: "拾い直す" }).click();
   await expect(res).toContainText("捨てたものから拾い直した");
 });
@@ -453,34 +551,70 @@ test("CHT-21-006 PC が閉じていたら始めたことにせず、溜まって
   await expect(lastAi(page)).toBeVisible({ timeout: 20_000 });
   bridge!.stop();
   bridge = null;
-  await admin("update messages set created_at = created_at - interval '1 day' where conversation_id in (select id from conversations where owner_member_id = $1)", [u.memberId]);
-  await admin("update sessions set last_seen_at = now() - interval '10 minutes' where member_id = $1 and kind_id = 'bridge'", [u.memberId]);
+  await admin(
+    "update messages set created_at = created_at - interval '1 day' where conversation_id in (select id from conversations where owner_member_id = $1)",
+    [u.memberId],
+  );
+  await admin(
+    "update sessions set last_seen_at = now() - interval '10 minutes' where member_id = $1 and kind_id = 'bridge'",
+    [u.memberId],
+  );
   await page.goto("/dev/memory");
   await page.locator("[data-digest-start]").click();
   await expect(page.getByText("PC が閉じているので、まとめを始められません")).toBeVisible({ timeout: 15_000 });
   await expect(page.locator("[data-digest='pending']")).toContainText("1 日分・会話 1");
 });
 
-test("CHT-22-001 CHT-22-002 CHT-22-003 CHT-22-005 上げる候補は本人が送るまで上がらず、送ると確認者の確認待ちに出る。食い違いは並べて片方を選び、選んだものが上の層に効く", async ({ page }) => {
+test("CHT-22-001 CHT-22-002 CHT-22-003 CHT-22-005 上げる候補は本人が送るまで上がらず、送ると確認者の確認待ちに出る。食い違いは並べて片方を選び、選んだものが上の層に効く", async ({
+  page,
+}) => {
   const u = await ready(page);
   // 担当者 2 人と、それぞれの候補（同じ名前で違う中身）を代表（この人）に送ってある状態
   const [a, b] = await Promise.all(
-    ["田中", "佐藤"].map(async (n) => (await admin<{ id: string }>("insert into members (tenant_id, scope_id, kind_id, display_name, role_id) values ($1, $2, 'human', $3, 'staff') returning id", [u.tenantId, u.scopeId, n]))[0]!.id),
+    ["田中", "佐藤"].map(
+      async (n) =>
+        (
+          await admin<{ id: string }>(
+            "insert into members (tenant_id, scope_id, kind_id, display_name, role_id) values ($1, $2, 'human', $3, 'staff') returning id",
+            [u.tenantId, u.scopeId, n],
+          )
+        )[0]!.id,
+    ),
   );
-  for (const [who, body] of [[a, "月末締め"], [b, "20 日締め"]] as const) {
-    const m = (await admin<{ id: string }>("insert into memories (tenant_id, scope_id, kind_id, owner_member_id, title, body) values ($1, $2, 'rule', $3, '請求の締め日', $4) returning id", [u.tenantId, u.scopeId, who, body]))[0]!.id;
-    const p = (await admin<{ id: string }>("insert into memory_proposals (tenant_id, scope_id, memory_id, target_scope_id, proposer_member_id, state_id) values ($1, $2, $3, $2, $4, 'draft') returning id", [u.tenantId, u.scopeId, m, who]))[0]!.id;
+  for (const [who, body] of [
+    [a, "月末締め"],
+    [b, "20 日締め"],
+  ] as const) {
+    const m = (
+      await admin<{ id: string }>(
+        "insert into memories (tenant_id, scope_id, kind_id, owner_member_id, title, body) values ($1, $2, 'rule', $3, '請求の締め日', $4) returning id",
+        [u.tenantId, u.scopeId, who, body],
+      )
+    )[0]!.id;
+    const p = (
+      await admin<{ id: string }>(
+        "insert into memory_proposals (tenant_id, scope_id, memory_id, target_scope_id, proposer_member_id, state_id) values ($1, $2, $3, $2, $4, 'draft') returning id",
+        [u.tenantId, u.scopeId, m, who],
+      )
+    )[0]!.id;
     await admin("select app.agent_proposal_send($1, $2, null)", [who, p]);
   }
   // 自分の候補：まとめの結果から上げ先を選んで送る（送るまで上がらない）
   await say(page, "着手金は契約時に 3 割");
   await expect(lastAi(page)).toBeVisible({ timeout: 20_000 });
-  await admin("update messages set created_at = created_at - interval '1 day' where conversation_id in (select id from conversations where owner_member_id = $1)", [u.memberId]);
+  await admin(
+    "update messages set created_at = created_at - interval '1 day' where conversation_id in (select id from conversations where owner_member_id = $1)",
+    [u.memberId],
+  );
   await page.goto("/dev/memory");
   await page.locator("[data-digest-start]").click();
   const res = page.locator("[data-digest='result']");
   await expect(res).toContainText("上の層に上げる候補", { timeout: 30_000 });
-  expect((await admin("select 1 from memory_proposals where proposer_member_id = $1 and state_id = 'sent'", [u.memberId])).length, "送るまで上がらない").toBe(0);
+  expect(
+    (await admin("select 1 from memory_proposals where proposer_member_id = $1 and state_id = 'sent'", [u.memberId]))
+      .length,
+    "送るまで上がらない",
+  ).toBe(0);
   await res.locator("[data-propose-send]").click();
   await expect(res).toContainText("送りました");
   // 確認待ち：代表に回ってくる（層に承認できる人がいなければ代表）
@@ -490,9 +624,18 @@ test("CHT-22-001 CHT-22-002 CHT-22-003 CHT-22-005 上げる候補は本人が送
   await expect(rv).toContainText("食い違い");
   await rv.getByRole("button", { name: "月末締めにする" }).click();
   await expect(rv).not.toContainText("食い違い", { timeout: 15_000 });
-  const st = await admin<{ body: string; state_id: string }>("select m.body, p.state_id from memory_proposals p join memories m on m.id = p.memory_id where m.title = '請求の締め日' and p.tenant_id = $1 order by m.body", [u.tenantId]);
-  expect(st).toEqual([{ body: "20 日締め", state_id: "returned" }, { body: "月末締め", state_id: "accepted" }]);
-  const up = await admin<{ owner: string | null }>("select owner_member_id as owner from memories where tenant_id = $1 and source_type_id = 'proposal' and body = '月末締め'", [u.tenantId]);
+  const st = await admin<{ body: string; state_id: string }>(
+    "select m.body, p.state_id from memory_proposals p join memories m on m.id = p.memory_id where m.title = '請求の締め日' and p.tenant_id = $1 order by m.body",
+    [u.tenantId],
+  );
+  expect(st).toEqual([
+    { body: "20 日締め", state_id: "returned" },
+    { body: "月末締め", state_id: "accepted" },
+  ]);
+  const up = await admin<{ owner: string | null }>(
+    "select owner_member_id as owner from memories where tenant_id = $1 and source_type_id = 'proposal' and body = '月末締め'",
+    [u.tenantId],
+  );
   expect(up[0]!.owner, "上の層の記憶（持ち主なし＝層の全員に効く）").toBeNull();
   await expect(page.locator("[data-digest='upper']")).toContainText("月末締め");
 });
@@ -534,47 +677,72 @@ test("USH-08-005 USH-08-006 USH-08-013 Shift+Enter は改行、変換を確定�
   await expect(page.locator("[data-send]")).toBeDisabled();
 });
 
-test("USH-08-009 文脈はチップで見え、外すと自分のAI に渡らない。よく頼むことは押すとそのまま送る。引用して続ける・直して送り直す（新しい会話）・タスクにする", async ({ page }) => {
+test("USH-08-009 文脈はチップで見え、外すと自分のAI に渡らない。よく頼むことは押すとそのまま送る。引用して続ける・直して送り直す（新しい会話）・タスクにする", async ({
+  page,
+}) => {
   const u = await ready(page);
   await page.getByRole("button", { name: "今日やることを 3 つに絞って" }).click();
   await expect(page.locator('.msg[data-who="me"]')).toContainText("今日やることを 3 つに絞って");
   await expect(lastAi(page)).toBeVisible({ timeout: 20_000 });
   // 引用して続ける
   await lastAi(page).locator("p.mp").first().scrollIntoViewIfNeeded();
-  await lastAi(page).locator("p.mp").first().evaluate((p) => {
-    p.scrollIntoView({ block: "center" });
-    const r = document.createRange();
-    const t = [...p.childNodes].find((n) => n.nodeType === 3 && (n.textContent ?? "").trim().length > 3)!;
-    r.setStart(t, 0);
-    r.setEnd(t, 4);
-    const s = getSelection()!;
-    s.removeAllRanges();
-    s.addRange(r);
-    p.closest(".chat")!.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
-  });
+  await lastAi(page)
+    .locator("p.mp")
+    .first()
+    .evaluate((p) => {
+      p.scrollIntoView({ block: "center" });
+      const r = document.createRange();
+      const t = [...p.childNodes].find((n) => n.nodeType === 3 && (n.textContent ?? "").trim().length > 3)!;
+      r.setStart(t, 0);
+      r.setEnd(t, 4);
+      const s = getSelection()!;
+      s.removeAllRanges();
+      s.addRange(r);
+      p.closest(".chat")!.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
+    });
   await page.locator("[data-quote-pop]").getByRole("button", { name: "引用して続ける" }).click();
   await expect(page.locator(".cchip").first()).toContainText("「");
   await say(page, "ここを詳しく");
-  await expect.poll(async () => (await jobs(u.memberId)).at(-1)?.prompt ?? "", { timeout: 15_000 }).toContain("あなたの返事のこの部分について");
+  await expect
+    .poll(async () => (await jobs(u.memberId)).at(-1)?.prompt ?? "", { timeout: 15_000 })
+    .toContain("あなたの返事のこの部分について");
   await expect(page.locator('.msg[data-who="me"]').last().locator(".qt")).toBeVisible();
   // タスクにする
   await lastAi(page).locator("[data-to-task]").click();
   await expect(page.getByText("タスクにしました")).toBeVisible({ timeout: 15_000 });
-  expect((await admin<{ n: number }>("select count(*)::int as n from tasks where tenant_id = $1", [u.tenantId]))[0]!.n).toBe(1);
+  expect(
+    (await admin<{ n: number }>("select count(*)::int as n from tasks where tenant_id = $1", [u.tenantId]))[0]!.n,
+  ).toBe(1);
   // 直して送り直す：その時点から新しい会話。元の会話は残る
-  const before = (await admin<{ n: number }>("select count(*)::int as n from conversations where owner_member_id = $1", [u.memberId]))[0]!.n;
+  const before = (
+    await admin<{ n: number }>("select count(*)::int as n from conversations where owner_member_id = $1", [u.memberId])
+  )[0]!.n;
   await page.locator('.msg[data-who="me"]').first().getByRole("button", { name: "直して送り直す" }).click();
   await expect(page.locator(".cchip")).toContainText("直して送り直す");
   await box(page).fill("今日やることを 1 つに絞って");
   await box(page).press("Enter");
-  await expect.poll(async () => (await admin<{ n: number }>("select count(*)::int as n from conversations where owner_member_id = $1", [u.memberId]))[0]!.n, { timeout: 15_000 }).toBe(before + 1);
+  await expect
+    .poll(
+      async () =>
+        (
+          await admin<{ n: number }>("select count(*)::int as n from conversations where owner_member_id = $1", [
+            u.memberId,
+          ])
+        )[0]!.n,
+      { timeout: 15_000 },
+    )
+    .toBe(before + 1);
 });
 
-test("USH-08-011 長い会話は上へ戻ると古い分を読み込み、読んでいる位置は動かない。上を読んでいる間に来た返事は勝手に下へ飛ばず「いちばん下へ」と件数。見ていない会話には印と件数", async ({ page }) => {
+test("USH-08-011 長い会話は上へ戻ると古い分を読み込み、読んでいる位置は動かない。上を読んでいる間に来た返事は勝手に下へ飛ばず「いちばん下へ」と件数。見ていない会話には印と件数", async ({
+  page,
+}) => {
   const u = await ready(page);
   await say(page, "はじめ");
   await expect(lastAi(page)).toBeVisible({ timeout: 20_000 });
-  const conv = (await admin<{ id: string }>("select id from conversations where owner_member_id = $1", [u.memberId]))[0]!.id;
+  const conv = (
+    await admin<{ id: string }>("select id from conversations where owner_member_id = $1", [u.memberId])
+  )[0]!.id;
   await admin(
     "insert into messages (tenant_id, conversation_id, body, kind, created_at) select $1, $2, '古い ' || g, 'ai', now() - interval '1 day' + g * interval '1 second' from generate_series(1, 250) g",
     [u.tenantId, conv],
@@ -599,8 +767,16 @@ test("USH-08-011 長い会話は上へ戻ると古い分を読み込み、読ん
   expect(box0!.y, "読んでいた所は画面の中に残る（上へ飛ばない）").toBeGreaterThan(-50);
   // 上を読んでいる間に返事が来ても下へ飛ばない
   // 幅 1024 以上は会話の固定枠の中の欄だけが動く（D-072.19）。その欄を上へ戻す（狭い幅はページごと）
-  const top = () => page.evaluate(() => { const c = document.querySelector("[data-chat-frame] .chat"); return c ? c.scrollTop : window.scrollY; });
-  await page.evaluate(() => { const c = document.querySelector("[data-chat-frame] .chat"); if (c) c.scrollTop = 0; else window.scrollTo(0, 0); });
+  const top = () =>
+    page.evaluate(() => {
+      const c = document.querySelector("[data-chat-frame] .chat");
+      return c ? c.scrollTop : window.scrollY;
+    });
+  await page.evaluate(() => {
+    const c = document.querySelector("[data-chat-frame] .chat");
+    if (c) c.scrollTop = 0;
+    else window.scrollTo(0, 0);
+  });
   // 過去を見ている間は、新しい返事が無くても「いちばん下へ」の矢印が出る（2026-09-30 user）
   await expect(page.locator("[data-to-bottom]")).toBeVisible();
   await expect(page.locator("[data-to-bottom]")).toHaveAttribute("aria-label", "いちばん下へ");
@@ -613,7 +789,10 @@ test("USH-08-011 長い会話は上へ戻ると古い分を読み込み、読ん
   // 見ていない会話には印と件数
   await page.locator("[data-new-conversation]").click();
   await expect(page.locator("[data-greet]")).toBeVisible();
-  await admin("insert into messages (tenant_id, conversation_id, body, kind) values ($1, $2, '見ていない間の返事', 'ai')", [u.tenantId, conv]);
+  await admin(
+    "insert into messages (tenant_id, conversation_id, body, kind) values ($1, $2, '見ていない間の返事', 'ai')",
+    [u.tenantId, conv],
+  );
   await expect(page.locator(`[data-conversation="${conv}"]`)).toContainText("1", { timeout: 15_000 });
   await expect(page.locator(`[data-conversation="${conv}"] [aria-label="新しい返事 1"]`)).toBeVisible();
 });
@@ -628,7 +807,10 @@ test("USH-08-007 マイクで話すと文字になり、直してから送れる
       onend: (() => void) | null = null;
       onerror: ((e: unknown) => void) | null = null;
       start() {
-        setTimeout(() => this.onresult?.({ results: [Object.assign([{ transcript: "声で書いた文" }], { isFinal: true })] }), 200);
+        setTimeout(
+          () => this.onresult?.({ results: [Object.assign([{ transcript: "声で書いた文" }], { isFinal: true })] }),
+          200,
+        );
       }
       stop() {
         setTimeout(() => this.onend?.(), 50);
@@ -648,7 +830,9 @@ test("USH-08-007 マイクで話すと文字になり、直してから送れる
   await expect(page.locator('.msg[data-who="me"]').last()).toContainText("直した");
 });
 
-test("USH-08-012 「終わった」と「許可が要る」は別々にオン・オフでき、見ていない間だけブラウザに知らせる", async ({ page }) => {
+test("USH-08-012 「終わった」と「許可が要る」は別々にオン・オフでき、見ていない間だけブラウザに知らせる", async ({
+  page,
+}) => {
   await page.addInitScript(() => {
     const w = window as unknown as { __notes: string[]; __hidden: boolean; Notification: unknown };
     w.__notes = [];
@@ -681,11 +865,15 @@ test("USH-08-012 「終わった」と「許可が要る」は別々にオン・
   await page.evaluate(() => ((window as unknown as { __hidden: boolean }).__hidden = true));
   await expect.poll(async () => page.locator('[data-part="ask"]').count(), { timeout: 20_000 }).toBe(1);
   await page.waitForTimeout(1500);
-  expect(await page.evaluate(() => (window as unknown as { __notes: string[] }).__notes), "許可が要る はオフ").toEqual([]);
+  expect(await page.evaluate(() => (window as unknown as { __notes: string[] }).__notes), "許可が要る はオフ").toEqual(
+    [],
+  );
   await page.evaluate(() => ((window as unknown as { __hidden: boolean }).__hidden = false));
   await page.locator('[data-part="ask"]').getByRole("button", { name: "今回だけ許可" }).click();
   await page.evaluate(() => ((window as unknown as { __hidden: boolean }).__hidden = true));
-  await expect.poll(async () => page.evaluate(() => (window as unknown as { __notes: string[] }).__notes), { timeout: 20_000 }).toEqual(["自分のAI が終わりました"]);
+  await expect
+    .poll(async () => page.evaluate(() => (window as unknown as { __notes: string[] }).__notes), { timeout: 20_000 })
+    .toEqual(["自分のAI が終わりました"]);
 });
 
 test("CHT-17-004 止まった会話に「続けて」と送ると、同じ続き（同じセッション）で動き出す", async ({ page }) => {
@@ -705,11 +893,15 @@ test("CHT-17-004 止まった会話に「続けて」と送ると、同じ続き
   expect(js[1]!.conversation_id).toBe(js[0]!.conversation_id);
 });
 
-test("CHT-16-005 途中まで書いていても、完了の知らせが無いまま終わったら「止まりました」。途中の文は答えにしない", async ({ page }) => {
+test("CHT-16-005 途中まで書いていても、完了の知らせが無いまま終わったら「止まりました」。途中の文は答えにしない", async ({
+  page,
+}) => {
   const u = await ready(page);
   await say(page, "途中で落ちてみて");
   await expect(page.locator("[data-streaming]")).toContainText("途中まで書いた文です", { timeout: 15_000 });
-  await expect(page.locator("[data-stopped-reason]").last()).toContainText("Claude Code が途中で終わりました", { timeout: 20_000 });
+  await expect(page.locator("[data-stopped-reason]").last()).toContainText("Claude Code が途中で終わりました", {
+    timeout: 20_000,
+  });
   await expect(page.locator("[data-streaming]")).toHaveCount(0);
   await expect(page.locator('.msg[data-who="ai"]'), "途中の文は答えとして残らない").toHaveCount(0);
   const ai = await admin<{ n: number }>(
@@ -726,10 +918,15 @@ test("CHT-17-006 PC が応答しないときは止めたことにしない（E-C
   await expect(page.locator("[data-working]")).toBeVisible({ timeout: 15_000 });
   bridge!.stop();
   bridge = null;
-  await admin("update sessions set last_seen_at = now() - interval '10 minutes' where member_id = $1 and kind_id = 'bridge'", [u.memberId]);
+  await admin(
+    "update sessions set last_seen_at = now() - interval '10 minutes' where member_id = $1 and kind_id = 'bridge'",
+    [u.memberId],
+  );
   await expect(page.locator("[data-asleep]")).toBeVisible({ timeout: 30_000 });
   await page.locator("[data-stop]").click();
-  await expect(page.locator("[data-say-error]")).toContainText("止める合図を PC に届けられませんでした（PC が応答しません）。PC が起きたらすぐ止めます");
+  await expect(page.locator("[data-say-error]")).toContainText(
+    "止める合図を PC に届けられませんでした（PC が応答しません）。PC が起きたらすぐ止めます",
+  );
   expect((await jobs(u.memberId)).at(-1)!.state_id, "止めたことにしない（止まった とは言わない）").toBe("running");
 });
 
@@ -740,8 +937,12 @@ test("CHT-18-005 置き場に置けなかったら送ったことにせず、付
   mkdirSync(root, { recursive: true });
   chmodSync(root, 0o555); // 置き場が書けない（会社ごとの置き場を作れない）
   try {
-    await page.locator('input[type="file"]').setInputFiles({ name: "台帳.csv", mimeType: "text/csv", buffer: Buffer.from("a,b\n") });
-    await expect(page.locator("[data-att-state='error']")).toContainText("台帳.csv（置けませんでした）", { timeout: 15_000 });
+    await page
+      .locator('input[type="file"]')
+      .setInputFiles({ name: "台帳.csv", mimeType: "text/csv", buffer: Buffer.from("a,b\n") });
+    await expect(page.locator("[data-att-state='error']")).toContainText("台帳.csv（置けませんでした）", {
+      timeout: 15_000,
+    });
     await expect(page.locator("[data-att-failed]")).toContainText("資料を置けませんでした（保存先が応答しません）");
     await box(page).fill("これを見て");
     await expect(page.locator("[data-att-state='error']"), "付けた一覧は残る").toBeVisible();
@@ -751,10 +952,14 @@ test("CHT-18-005 置き場に置けなかったら送ったことにせず、付
   }
 });
 
-test("CHT-20-004 上限に当たった仕事は、止まりました の理由にどの枠がいつ戻るかが出る（E-LIM-010）", async ({ page }) => {
+test("CHT-20-004 上限に当たった仕事は、止まりました の理由にどの枠がいつ戻るかが出る（E-LIM-010）", async ({
+  page,
+}) => {
   await ready(page);
   await say(page, "枠切れの仕事");
-  await expect(page.locator("[data-stopped-reason]")).toContainText("サブスクの 5 時間の枠に達しました", { timeout: 20_000 });
+  await expect(page.locator("[data-stopped-reason]")).toContainText("サブスクの 5 時間の枠に達しました", {
+    timeout: 20_000,
+  });
   await expect(page.locator("[data-stopped-reason]")).toContainText("に戻ります。それまで自分のAI は動けません");
   await expect(page.locator("[data-usage='limit']")).toContainText("5 時間の枠に達しました");
 });

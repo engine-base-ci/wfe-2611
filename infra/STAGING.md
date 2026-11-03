@@ -9,12 +9,12 @@
 
 ## 0. いま無いもの
 
-| 無いもの | 何が困るか | 誰が |
-| --- | --- | --- |
-| GitHub のリモート | Vercel は GitHub から読む | 高本さんが private リポジトリを作り `git remote add origin …`。私は push しない（確認してから） |
-| Supabase のプロジェクト（staging） | DB・添付の置き場が無い | 高本さん（S1） |
-| Vercel のプロジェクト 2 つ（画面・API） | 置き場が無い | 高本さん（S2・S4） |
-| Infisical のアカウントと機械の身元（資格情報の預かり先・D-101） | 無いと staging／本番の API が起動時の確認（secrets:vault）で止まる | 高本さん（S1b） |
+| 無いもの                                                        | 何が困るか                                                         | 誰が                                                                                            |
+| --------------------------------------------------------------- | ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------- |
+| GitHub のリモート                                               | Vercel は GitHub から読む                                          | 高本さんが private リポジトリを作り `git remote add origin …`。私は push しない（確認してから） |
+| Supabase のプロジェクト（staging）                              | DB・添付の置き場が無い                                             | 高本さん（S1）                                                                                  |
+| Vercel のプロジェクト 2 つ（画面・API）                         | 置き場が無い                                                       | 高本さん（S2・S4）                                                                              |
+| Infisical のアカウントと機械の身元（資格情報の預かり先・D-101） | 無いと staging／本番の API が起動時の確認（secrets:vault）で止まる | 高本さん（S1b）                                                                                 |
 
 コード側（API を Vercel の関数 1 本にする入口・組み立て・Bridge の問い合わせ）は済み（`apps/api/src/vercel.ts`・`apps/api/build-vercel.mjs`・`apps/api/vercel.json`）。
 
@@ -77,20 +77,20 @@
 
 ## 3. 秘密の名前（`.env.example` が正本。G13 ci:env-audit が突き合わせる）
 
-| 名前 | 誰が | どこから | 使う所 |
-| --- | --- | --- | --- |
-| DATABASE_ADMIN_URL | 高本さん | Supabase Session pooler（`postgres.<ref>`） | API の Build Command（migration・役割のパスワード）だけ |
-| DATABASE_URL | 高本さん | Transaction pooler・ユーザー `kaname_app.<ref>` | API |
-| AUTH_DATABASE_URL | 高本さん | Transaction pooler・ユーザー `kaname_auth.<ref>` | API（認証） |
-| KANAME_APP_DB_PASSWORD／KANAME_AUTH_DB_PASSWORD | 高本さん（乱数） | 自分で生成 | migrate が役割に入れる |
-| AUTH_SECRET | 高本さん（乱数） | — | API（認証） |
-| SECRETS_MASTER_KEY | 高本さん（乱数・base64 32 バイト以上） | — | API（関門 C8） |
-| STORAGE_ENDPOINT／STORAGE_REGION／STORAGE_BUCKET／STORAGE_ACCESS_KEY_ID／STORAGE_SECRET_ACCESS_KEY／STORAGE_FORCE_PATH_STYLE | 高本さん | Supabase S3 Connection | API・provision:bucket |
-| RESEND_API_KEY | 高本さん | Resend | API（関門 C6） |
-| INFISICAL_SITE_URL／INFISICAL_CLIENT_ID／INFISICAL_CLIENT_SECRET／INFISICAL_PROJECT_ID／INFISICAL_ENVIRONMENT | 高本さん | Infisical（S1b） | API（関門 C8・顧客の資格情報の預かり先） |
-| MAIL_FROM／MAIL_REPLY_TO／OPS_EMAIL／OPERATOR_* | Claude（値は秘密でない） | D-096 | API |
-| NODE_ENV／BASE_URL／WEB_BASE_URL | Claude（値は秘密でない） | Vercel の URL | API |
-| NEXT_PUBLIC_API_BASE | Claude（値は秘密でない） | kaname-api の URL | 画面 |
+| 名前                                                                                                                         | 誰が                                   | どこから                                         | 使う所                                                  |
+| ---------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- | ------------------------------------------------ | ------------------------------------------------------- |
+| DATABASE_ADMIN_URL                                                                                                           | 高本さん                               | Supabase Session pooler（`postgres.<ref>`）      | API の Build Command（migration・役割のパスワード）だけ |
+| DATABASE_URL                                                                                                                 | 高本さん                               | Transaction pooler・ユーザー `kaname_app.<ref>`  | API                                                     |
+| AUTH_DATABASE_URL                                                                                                            | 高本さん                               | Transaction pooler・ユーザー `kaname_auth.<ref>` | API（認証）                                             |
+| KANAME_APP_DB_PASSWORD／KANAME_AUTH_DB_PASSWORD                                                                              | 高本さん（乱数）                       | 自分で生成                                       | migrate が役割に入れる                                  |
+| AUTH_SECRET                                                                                                                  | 高本さん（乱数）                       | —                                                | API（認証）                                             |
+| SECRETS_MASTER_KEY                                                                                                           | 高本さん（乱数・base64 32 バイト以上） | —                                                | API（関門 C8）                                          |
+| STORAGE_ENDPOINT／STORAGE_REGION／STORAGE_BUCKET／STORAGE_ACCESS_KEY_ID／STORAGE_SECRET_ACCESS_KEY／STORAGE_FORCE_PATH_STYLE | 高本さん                               | Supabase S3 Connection                           | API・provision:bucket                                   |
+| RESEND_API_KEY                                                                                                               | 高本さん                               | Resend                                           | API（関門 C6）                                          |
+| INFISICAL_SITE_URL／INFISICAL_CLIENT_ID／INFISICAL_CLIENT_SECRET／INFISICAL_PROJECT_ID／INFISICAL_ENVIRONMENT                | 高本さん                               | Infisical（S1b）                                 | API（関門 C8・顧客の資格情報の預かり先）                |
+| MAIL_FROM／MAIL_REPLY_TO／OPS_EMAIL／OPERATOR_*                                                                              | Claude（値は秘密でない）               | D-096                                            | API                                                     |
+| NODE_ENV／BASE_URL／WEB_BASE_URL                                                                                             | Claude（値は秘密でない）               | Vercel の URL                                    | API                                                     |
+| NEXT_PUBLIC_API_BASE                                                                                                         | Claude（値は秘密でない）               | kaname-api の URL                                | 画面                                                    |
 
 ## 4. 触らないもの
 

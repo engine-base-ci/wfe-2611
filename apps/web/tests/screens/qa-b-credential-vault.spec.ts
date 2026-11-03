@@ -1,7 +1,7 @@
 // T-B-05 鍵を受け取る（D-102.2・D-017.1）を、画面 → API → 本物の Bridge の受け取り口（apps/bridge/dist/vault.js）で通す。
 //   画面で預けたログイン情報を、本人の Bridge が「動いている仕事」のためにだけ受け取り、使った後は消える。画面・DB・証跡に値は出ない。
 //   テストの名前に正本の行 ID を持つ（op_gate.py）。本人の Bridge は使わない（claimBridge で QA の端末をつなぐ）
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -23,7 +23,7 @@ const PASSWORD = "S3cret-Plain!";
 const TOTP = "JBSWY3DPEHPK3PXP";
 
 /** 画面でログイン情報を 1 件預け、Bridge をつなぎ、会話の仕事を 1 件渡して running にする */
-async function stored(page: import("@playwright/test").Page) {
+async function stored(page: Page) {
   const u = await signupViaApi();
   await setupDone(u);
   await loginAs(page, u.token);
@@ -57,7 +57,7 @@ async function stored(page: import("@playwright/test").Page) {
   return { u, cred, sid, jobId: say.json.data.job_id, deps, audits };
 }
 /** 画面と DB に値が出ていない（関門 C8 の外に値を置かない） */
-async function noLeak(page: import("@playwright/test").Page, tenantId: string) {
+async function noLeak(page: Page, tenantId: string) {
   await page.reload();
   await expect(page.locator("[data-state='n']")).toContainText("預かり先の番号", { timeout: 15_000 });
   const text = await page.locator("body").innerText();

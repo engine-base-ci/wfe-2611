@@ -55,7 +55,9 @@ export function AlwaysAllowList() {
             {d.rules.map((r) => (
               <li key={r.id} className="flex items-center gap-3 px-3 py-2 text-[14px]">
                 <b className="shrink-0">{r.tool}</b>
-                <code className="min-w-0 flex-1 truncate font-[var(--font-code)] text-[12px] text-[var(--on-sv)]">{r.target ?? "（すべて）"}</code>
+                <code className="min-w-0 flex-1 truncate font-[var(--font-code)] text-[12px] text-[var(--on-sv)]">
+                  {r.target ?? "（すべて）"}
+                </code>
                 <Button
                   size="sm"
                   variant="ghost"
@@ -78,7 +80,9 @@ export function AlwaysAllowList() {
             ))}
           </ul>
         ) : (
-          <p className="text-[13px] text-[var(--on-sv)]">まだありません。許可を聞かれたときに「いつも許可」を選ぶと、ここに並びます。</p>
+          <p className="text-[13px] text-[var(--on-sv)]">
+            まだありません。許可を聞かれたときに「いつも許可」を選ぶと、ここに並びます。
+          </p>
         )}
       </div>
     </section>
@@ -87,7 +91,9 @@ export function AlwaysAllowList() {
 
 const hm = (iso: string) => {
   const d = new Date(iso);
-  return Number.isNaN(d.getTime()) ? "" : `${d.getMonth() + 1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2, "0")}`;
+  return Number.isNaN(d.getTime())
+    ? ""
+    : `${d.getMonth() + 1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2, "0")}`;
 };
 /** 使用量（D-104.16）：Claude・ChatGPT と同じく、枠の埋まり方といつ戻るか。本人のサブスクの枠 */
 export function UsagePanel() {
@@ -116,8 +122,21 @@ export function UsagePanel() {
                 <span>{label}</span>
                 <b className="num">{pct}%</b>
               </div>
-              <div className="h-1.5 overflow-hidden rounded-full bg-[var(--sv)]" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} aria-label={label}>
-                <i className="block h-full" style={{ width: `${Math.min(100, pct)}%`, background: pct >= 100 ? "var(--st-danger)" : pct >= 80 ? "var(--st-warning)" : "var(--primary)" }} />
+              <div
+                className="h-1.5 overflow-hidden rounded-full bg-[var(--sv)]"
+                role="progressbar"
+                aria-valuenow={pct}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-label={label}
+              >
+                <i
+                  className="block h-full"
+                  style={{
+                    width: `${Math.min(100, pct)}%`,
+                    background: pct >= 100 ? "var(--st-danger)" : pct >= 80 ? "var(--st-warning)" : "var(--primary)",
+                  }}
+                />
               </div>
               <span className="text-[12px] text-[var(--on-sv)]">
                 {hm(w.resets_at)} に戻ります · {hm(w.observed_at)} 時点
@@ -126,9 +145,13 @@ export function UsagePanel() {
           );
         })
       ) : (
-        <p className="text-[13px] text-[var(--on-sv)]">まだ分かりません。自分のAI が一度動くと、あなたの PC から届きます。</p>
+        <p className="text-[13px] text-[var(--on-sv)]">
+          まだ分かりません。自分のAI が一度動くと、あなたの PC から届きます。
+        </p>
       )}
-      <p className="text-[12px] text-[var(--on-sv)]">あなたのサブスクの枠です。上限が近づくと、会話の中でもお知らせします。</p>
+      <p className="text-[12px] text-[var(--on-sv)]">
+        あなたのサブスクの枠です。上限が近づくと、会話の中でもお知らせします。
+      </p>
     </section>
   );
 }

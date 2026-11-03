@@ -217,13 +217,19 @@ export interface RunHooks {
 }
 
 /** 記録が無いときに、新しいセッションで続けたことの知らせ（D-124.3） */ // E-NF-003
-export const RESUME_LOST_NOTICE = "前の会話の記録がこの PC に無かったので、新しい会話として続けます。これまでの内容は Kaname の写しに残っています";
+export const RESUME_LOST_NOTICE =
+  "前の会話の記録がこの PC に無かったので、新しい会話として続けます。これまでの内容は Kaname の写しに残っています";
 
 /** 記録が無い --resume（本物の claude 2.1.283 で 2026-10-20 に実測）：stderr に「No conversation found with session ID」、
  *  または API を 1 度も呼ばずに（duration_api_ms 0・num_turns 0）本文なしで error_during_execution。上限（rate limit）は API を呼んでいるので当たらない */
 export function isResumeLost(raw: Record<string, unknown>, err: string, text: string): boolean {
   if (/No conversation found with session ID/i.test(err)) return true;
-  return raw["subtype"] === "error_during_execution" && raw["num_turns"] === 0 && raw["duration_api_ms"] === 0 && !text.trim();
+  return (
+    raw["subtype"] === "error_during_execution" &&
+    raw["num_turns"] === 0 &&
+    raw["duration_api_ms"] === 0 &&
+    !text.trim()
+  );
 }
 
 /** 止めたとき道具が動いている最中なら、その結末は分からないと添える（D-124.2）。文を書いている最中なら添えない */ // E-SIG-003
@@ -247,11 +253,16 @@ export const isRunning = (): boolean => current !== null;
 function addUsage(a: Usage | null, b: Usage | null): Usage | null {
   if (!a) return b;
   if (!b) return a;
-  const s = (x: number | null, y: number | null): number | null => (x === null && y === null ? null : (x ?? 0) + (y ?? 0));
+  const s = (x: number | null, y: number | null): number | null =>
+    x === null && y === null ? null : (x ?? 0) + (y ?? 0);
   return {
-    turns: s(a.turns, b.turns), duration_ms: s(a.duration_ms, b.duration_ms), api_ms: s(a.api_ms, b.api_ms),
-    input_tokens: s(a.input_tokens, b.input_tokens), output_tokens: s(a.output_tokens, b.output_tokens),
-    cache_read_tokens: s(a.cache_read_tokens, b.cache_read_tokens), cache_write_tokens: s(a.cache_write_tokens, b.cache_write_tokens),
+    turns: s(a.turns, b.turns),
+    duration_ms: s(a.duration_ms, b.duration_ms),
+    api_ms: s(a.api_ms, b.api_ms),
+    input_tokens: s(a.input_tokens, b.input_tokens),
+    output_tokens: s(a.output_tokens, b.output_tokens),
+    cache_read_tokens: s(a.cache_read_tokens, b.cache_read_tokens),
+    cache_write_tokens: s(a.cache_write_tokens, b.cache_write_tokens),
     cost_usd: s(a.cost_usd, b.cost_usd),
   };
 }
@@ -264,7 +275,17 @@ export function buildArgs(
   tools?: KanameTools | null,
   dedicated?: DedicatedBrowser | null,
 ): string[] {
-  const args = ["-p", "--input-format", "stream-json", "--output-format", "stream-json", "--verbose", "--include-partial-messages", "--permission-prompt-tool", "stdio"];
+  const args = [
+    "-p",
+    "--input-format",
+    "stream-json",
+    "--output-format",
+    "stream-json",
+    "--verbose",
+    "--include-partial-messages",
+    "--permission-prompt-tool",
+    "stdio",
+  ];
   if (job.agent_session_id) args.push("--resume", job.agent_session_id);
   args.push(...modeArgs(job.permission_mode));
   // 本人の Chrome を使う（Claude in Chrome・D-119）。可変長の引数より前に置く
@@ -286,7 +307,11 @@ export function buildArgs(
   if (guard && job.blocked?.length) args.push(...guardArgs(job.blocked, guard.hookPath, guard.nodeBin));
   // 可変長の引数（--allowedTools）は最後に置く（後ろの引数を飲み込ませない）
   // Kaname の道具は聞かずに使える（本人の会社のたたき台に書くだけ・外に出ない・D-110.4）
-  const extra = [...(kaname ? [KANAME_TOOL_RULE] : []), ...(chrome ? [CHROME_TOOL_RULE] : []), ...(own ? [DEDICATED_TOOL_RULE] : [])];
+  const extra = [
+    ...(kaname ? [KANAME_TOOL_RULE] : []),
+    ...(chrome ? [CHROME_TOOL_RULE] : []),
+    ...(own ? [DEDICATED_TOOL_RULE] : []),
+  ];
   const allowed = extra.length ? [...(job.allowed_tools ?? []), ...extra] : (job.allowed_tools ?? null);
   args.push(...optionArgs({ model: job.model ?? null, effort: job.effort ?? null, allowed_tools: allowed }));
   return args;
@@ -330,7 +355,9 @@ export async function runClaude(
   // 記録が無い（D-124.3）：同じ仕事を --resume 無しで 1 回だけやり直し、会話に 1 行知らせる。新しい id は init で Kaname に入る。
   // やり直しても失敗なら、いままでどおり理由を出して止める（やり直しは 1 回だけ）
   hooks.onNotice?.(RESUME_LOST_NOTICE);
-  return strip(await runOnce(bin, { ...job, agent_session_id: null }, hooks, timeoutMs, extraDirs, guard, tools, dedicated));
+  return strip(
+    await runOnce(bin, { ...job, agent_session_id: null }, hooks, timeoutMs, extraDirs, guard, tools, dedicated),
+  );
 }
 
 function runOnce(
@@ -384,14 +411,22 @@ function runOnce(
       if (settled || waitingHuman > 0) return;
       timer = setTimeout(() => {
         p.kill("SIGTERM");
-        done({ state: "stopped", reason: `${Math.round(timeoutMs / 60_000)} 分のあいだ何も進まなかったので止めました${inflightNote(started)}`, agent_session_id: session });
+        done({
+          state: "stopped",
+          reason: `${Math.round(timeoutMs / 60_000)} 分のあいだ何も進まなかったので止めました${inflightNote(started)}`,
+          agent_session_id: session,
+        });
       }, timeoutMs);
     };
     arm();
     current = {
       kill: (reason) => {
         p.kill("SIGTERM");
-        done({ state: "stopped", reason: `${reason ?? "あなたが止めました"}${inflightNote(started)}`, agent_session_id: session });
+        done({
+          state: "stopped",
+          reason: `${reason ?? "あなたが止めました"}${inflightNote(started)}`,
+          agent_session_id: session,
+        });
       },
       steer: (text) => {
         if (settled || !text.trim()) return false;
@@ -427,7 +462,8 @@ function runOnce(
         hooks.onPartial?.(partial);
       } else if (e.type === "progress" || e.type === "limit") {
         if (e.type === "limit") limits = e.windows;
-        if (e.type === "progress") for (const t of e.tools) started.set(t.id, { name: t.name, target: t.target, at: Date.now() });
+        if (e.type === "progress")
+          for (const t of e.tools) started.set(t.id, { name: t.name, target: t.target, at: Date.now() });
         if (e.type === "progress" && e.entry) hooks.onEntry?.(e.entry);
         hooks.onEvent?.(e);
       } else if (e.type === "tool_end") {
@@ -448,13 +484,16 @@ function runOnce(
         asking = asking.then(async () => {
           let a: Answer = { allow: false };
           try {
-            a = hooks.ask ? await hooks.ask({ requestId: e.requestId, tool: e.tool, input: e.input, summary: e.summary }) : { allow: false };
+            a = hooks.ask
+              ? await hooks.ask({ requestId: e.requestId, tool: e.tool, input: e.input, summary: e.summary })
+              : { allow: false };
           } catch {
             a = { allow: false };
           }
           waitingHuman -= 1;
           arm();
-          if (!settled) p.stdin.write(controlResponse(e.requestId, a.allow, e.input, a.note ?? null, a.answers ?? null));
+          if (!settled)
+            p.stdin.write(controlResponse(e.requestId, a.allow, e.input, a.note ?? null, a.answers ?? null));
         });
       } else if (e.type === "result") {
         if (e.session) session = e.session;
@@ -475,7 +514,8 @@ function runOnce(
             .then((texts) => {
               if (settled) return;
               const ts = texts.filter((x) => x.trim());
-              if (!ts.length) return done({ state: "done", result: ev.text, agent_session_id: session, usage: ev.usage });
+              if (!ts.length)
+                return done({ state: "done", result: ev.text, agent_session_id: session, usage: ev.usage });
               // この区切りの答えは Kaname が一言の前に吹き出しにした（onReply は呼ばない）
               usage = addUsage(usage, ev.usage);
               for (const x of ts) {
@@ -488,10 +528,19 @@ function runOnce(
         if (e.ok) return done({ state: "done", result: e.text, agent_session_id: session, usage: e.usage });
         // 記録が無い（D-124.3）：外の runClaude が --resume 無しでやり直す。会話の id はまだ書き換えない
         if (job.agent_session_id && isResumeLost(e.raw, err, e.text))
-          return done({ state: "stopped", reason: "前の会話の記録がこの PC に無かったので止まりました", agent_session_id: job.agent_session_id, usage: e.usage, resumeLost: true });
+          return done({
+            state: "stopped",
+            reason: "前の会話の記録がこの PC に無かったので止まりました",
+            agent_session_id: job.agent_session_id,
+            usage: e.usage,
+            resumeLost: true,
+          });
         done({
           state: "stopped",
-          reason: e.reason === "empty" ? "Claude Code が何も返さずに終わりました" : whyStopped(JSON.stringify(e.raw), err, null, limits),
+          reason:
+            e.reason === "empty"
+              ? "Claude Code が何も返さずに終わりました"
+              : whyStopped(JSON.stringify(e.raw), err, null, limits),
           agent_session_id: session,
           usage: e.usage,
         });
@@ -545,7 +594,12 @@ export function limitReason(limits: { window: string; utilization: number; reset
   return `サブスクの${hit.window === "week" ? "週" : " 5 時間"}の枠に達しました。${at} に戻ります。それまで自分のAI は動けません。ここで書いたことは送れます（戻ったら順に）`;
 }
 
-export function whyStopped(out: string, err: string, code: number | null, limits: { window: string; utilization: number; resets_at: number }[] = []): string {
+export function whyStopped(
+  out: string,
+  err: string,
+  code: number | null,
+  limits: { window: string; utilization: number; resets_at: number }[] = [],
+): string {
   const j = (() => {
     try {
       return JSON.parse(out.trim()) as Record<string, unknown>;
@@ -566,8 +620,7 @@ export function parse(out: string): { text: string; session: string | null } {
   try {
     const j = JSON.parse(t) as Record<string, unknown>;
     const text = [j["result"], j["text"], j["content"]].find((x) => typeof x === "string" && x.trim()) as
-      | string
-      | undefined;
+      string | undefined;
     const session = [j["session_id"], j["sessionId"]].find((x) => typeof x === "string") as string | undefined;
     return { text: (text ?? "").trim(), session: session ?? null };
   } catch {

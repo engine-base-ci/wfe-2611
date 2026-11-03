@@ -29,25 +29,38 @@ async function overlapping(page: Page): Promise<string[]> {
     for (const el of document.querySelectorAll<HTMLElement>("body *")) {
       const cs = getComputedStyle(el);
       // 見えない・触れないもの（閉じた引き出し・消えた幕）は重なっていない
-      if (cs.position !== "fixed" || cs.display === "none" || cs.visibility === "hidden" || cs.opacity === "0" || cs.pointerEvents === "none") continue;
+      if (
+        cs.position !== "fixed" ||
+        cs.display === "none" ||
+        cs.visibility === "hidden" ||
+        cs.opacity === "0" ||
+        cs.pointerEvents === "none"
+      )
+        continue;
       if (el.closest(".tabbar") || el.closest("[popover]") || el.closest(".kc")) continue; // 下タブ・入力欄の箱・会話の中は除く
       const b = el.getBoundingClientRect();
       if (b.width < 8 || b.height < 8) continue;
       const over = Math.min(b.right, chat.right) - Math.max(b.left, chat.left);
       if (over > 2 && Math.min(b.bottom, chat.bottom) - Math.max(b.top, chat.top) > 2)
-        hits.push(`${el.tagName.toLowerCase()}.${[...el.classList].join(".")} x${Math.round(b.left)} w${Math.round(b.width)}`);
+        hits.push(
+          `${el.tagName.toLowerCase()}.${[...el.classList].join(".")} x${Math.round(b.left)} w${Math.round(b.width)}`,
+        );
     }
     return hits;
   });
 }
 
 for (const w of [375, 768, 955, 1024, 1100]) {
-  test(`SCR-CLONE-CHAT-295 幅 ${w}：会話の一覧は「会話の一覧」で開く引き出し。既定は閉じていて本文に重なる箱が無い。選ぶ・外を押す・Esc で閉じる`, async ({ page }) => {
+  test(`SCR-CLONE-CHAT-295 幅 ${w}：会話の一覧は「会話の一覧」で開く引き出し。既定は閉じていて本文に重なる箱が無い。選ぶ・外を押す・Esc で閉じる`, async ({
+    page,
+  }) => {
     await ready(page, w);
     expect(await overlapping(page), "何も開いていないのに本文に重なる固定の箱").toEqual([]);
     const chat = page.locator(".kc");
     // 会話の箱は最大 920（中央寄せ）。それより狭い幅では、レールと余白を引いた分がそのまま会話（引き出しの分だけ狭くなっていない）
-    expect((await chat.boundingBox())!.width, "会話が幅いっぱい（引き出しの分だけ狭くなっていない）").toBeGreaterThan(Math.min(w - (w >= 768 ? 72 : 0) - 120, 880));
+    expect((await chat.boundingBox())!.width, "会話が幅いっぱい（引き出しの分だけ狭くなっていない）").toBeGreaterThan(
+      Math.min(w - (w >= 768 ? 72 : 0) - 120, 880),
+    );
     const toggle = page.getByRole("button", { name: "会話の一覧" });
     await expect(toggle).toBeVisible();
     await expect(toggle).toHaveAttribute("aria-expanded", "false");
@@ -80,7 +93,9 @@ for (const w of [375, 768, 955, 1024, 1100]) {
   });
 }
 
-test("SCR-CLONE-CHAT-295 幅 1180 以上：一覧は左の列。「会話の一覧」のボタンは出ない（押しても何も起きないボタンを作らない）", async ({ page }) => {
+test("SCR-CLONE-CHAT-295 幅 1180 以上：一覧は左の列。「会話の一覧」のボタンは出ない（押しても何も起きないボタンを作らない）", async ({
+  page,
+}) => {
   await ready(page, 1180);
   await expect(page.locator('[data-part="conversation-list"]')).toBeVisible();
   await expect(page.getByRole("button", { name: "会話の一覧" })).toBeHidden();
@@ -90,7 +105,9 @@ test("SCR-CLONE-CHAT-295 幅 1180 以上：一覧は左の列。「会話の一�
   expect(await overlapping(page)).toEqual([]);
 });
 
-test("D-064.7 幅 955：レールの分類の引き出しは既定で閉じ、押すと 1 つ出て、外を押す・Esc で閉じる", async ({ page }) => {
+test("D-064.7 幅 955：レールの分類の引き出しは既定で閉じ、押すと 1 つ出て、外を押す・Esc で閉じる", async ({
+  page,
+}) => {
   await ready(page, 955);
   const drawer = page.locator(".side-sub[data-last]");
   await expect(drawer).toHaveCount(0); // 一度も押していなければ無い

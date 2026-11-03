@@ -4116,6 +4116,217 @@
    "source": [
     "D-124.3"
    ]
+  },
+  {
+   "id": "E-VAL-005",
+   "class": "validation",
+   "where": {
+    "screen": "signup",
+    "state": "a"
+   },
+   "when": "パスワードが 12 文字より短い",
+   "false_when": "12 文字以上",
+   "message": "パスワードは 12 文字以上にしてください",
+   "action": "入力し直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "signup の画面",
+    "steps": [
+     "11 文字のパスワードで登録する",
+     "招待を受けて 11 文字のパスワードで入る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.62",
+    "D-128.91"
+   ]
+  },
+  {
+   "id": "E-VAL-006",
+   "class": "validation",
+   "where": {
+    "screen": "signup",
+    "state": "a"
+   },
+   "when": "会社名（または屋号）が空",
+   "false_when": "1 文字以上（空なら個人のワークスペースにする画面の流れで別に扱う）",
+   "message": "会社名（または屋号）を入れてください",
+   "action": "入力し直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "signup の画面",
+    "steps": [
+     "会社名を空のまま登録する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.62",
+    "D-125.135"
+   ]
+  },
+  {
+   "id": "E-VAL-007",
+   "class": "validation",
+   "where": {
+    "screen": "invite-accept",
+    "state": "a"
+   },
+   "when": "招待を受けるときに名前が空",
+   "false_when": "1 文字以上・100 文字まで",
+   "message": "お名前を入れてください",
+   "action": "入力し直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "invite-accept の画面",
+    "steps": [
+     "名前を空のまま招待を受ける"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.62",
+    "D-128.58"
+   ]
+  },
+  {
+   "id": "E-VAL-008",
+   "class": "validation",
+   "where": {
+    "screen": "login",
+    "state": "a"
+   },
+   "when": "ログイン名かパスワードが空",
+   "false_when": "両方ある",
+   "message": "ログイン名とパスワードを入れてください",
+   "action": "入力し直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "login の画面",
+    "steps": [
+     "パスワードを空のままログインする"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.91"
+   ]
+  },
+  {
+   "id": "E-VAL-009",
+   "class": "validation",
+   "where": {
+    "screen": "login",
+    "state": "a"
+   },
+   "when": "確認のコードが空か 64 文字を超える",
+   "false_when": "1〜64 文字",
+   "message": "コードを入れてください",
+   "action": "入力し直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "login の画面",
+    "steps": [
+     "コードを空のまま送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.61",
+    "D-128.91"
+   ]
+  },
+  {
+   "id": "E-INV-001",
+   "class": "not_found",
+   "where": {
+    "screen": "invite-accept",
+    "state": "a"
+   },
+   "when": "招待のリンクの印が見つからない",
+   "false_when": "有効な招待のリンク",
+   "message": "この招待は見つかりません。もう一度招待してもらってください",
+   "action": "招待した人にもう一度招待してもらう",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "invite-accept の画面",
+    "steps": [
+     "でたらめな招待のリンクを開く"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-128.62",
+    "D-128.63"
+   ]
+  },
+  {
+   "id": "E-INV-002",
+   "class": "not_found",
+   "where": {
+    "screen": "invite-accept",
+    "state": "a"
+   },
+   "when": "招待が取り消された・受けた後・7 日の期限を過ぎた",
+   "false_when": "取り消されておらず 7 日以内でまだ受けていない",
+   "message": "この招待は取り消されています。招待した人が取り消したか、7 日の期限を過ぎました。もう一度招待してもらってください",
+   "action": "招待した人にもう一度招待してもらう",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "invite-accept の画面",
+    "steps": [
+     "取り消された招待のリンクを開く",
+     "8 日目に招待のリンクを開く"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-128.62",
+    "D-128.63"
+   ]
   }
  ],
  "meta": {

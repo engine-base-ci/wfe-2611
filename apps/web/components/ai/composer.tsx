@@ -6,7 +6,17 @@
 //   動いている間は送るが「止める」に変わり、書いたことは次の区切りで伝える（D-104.9）
 //   / のコマンドは作らない（D-066.8 を改めた）。@ で タスク・人・AI社員 を指す
 import { Check, ChevronDown, Eye, Mic, Paperclip, Plus, RefreshCw, Send, Shield, Square, X } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState, type ClipboardEvent, type DragEvent, type KeyboardEvent, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ClipboardEvent,
+  type DragEvent,
+  type KeyboardEvent,
+  type ReactNode,
+} from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { MAX_SAY, useBridge, type Agent, type Att } from "@/lib/agent";
@@ -77,7 +87,16 @@ const writeDraft = (c: string | null, v: string) => {
 };
 
 /** ブラウザの音声認識（D-104.22）。使えないブラウザでは null（マイクを出さない） */
-type Rec = { start: () => void; stop: () => void; onresult: ((e: { results: ArrayLike<ArrayLike<{ transcript: string }> & { isFinal: boolean }> }) => void) | null; onend: (() => void) | null; onerror: ((e: { error: string }) => void) | null; lang: string; interimResults: boolean; continuous: boolean };
+type Rec = {
+  start: () => void;
+  stop: () => void;
+  onresult: ((e: { results: ArrayLike<ArrayLike<{ transcript: string }> & { isFinal: boolean }> }) => void) | null;
+  onend: (() => void) | null;
+  onerror: ((e: { error: string }) => void) | null;
+  lang: string;
+  interimResults: boolean;
+  continuous: boolean;
+};
 function speechCtor(): (new () => Rec) | null {
   if (typeof window === "undefined") return null;
   const w = window as unknown as { SpeechRecognition?: new () => Rec; webkitSpeechRecognition?: new () => Rec };
@@ -102,7 +121,19 @@ export interface ComposerProps {
   askOnly?: boolean;
 }
 
-export function Composer({ agent, above, placeholder, compact = false, context, onSaid, quote, onClearQuote, edit, onClearEdit, askOnly = false }: ComposerProps) {
+export function Composer({
+  agent,
+  above,
+  placeholder,
+  compact = false,
+  context,
+  onSaid,
+  quote,
+  onClearQuote,
+  edit,
+  onClearEdit,
+  askOnly = false,
+}: ComposerProps) {
   const conv = agent.conversationId;
   // この会話を記憶に使わない（D-104.1）：その会話だけに効くので入力欄の側に置く（2026-09-30 user「セッションの入力あたりに」）。
   // はじめの設定（聞き取り・たたき台）は会社を覚える場なので出さない。押したらすぐ印を変え、変えられなかったら戻す
@@ -207,7 +238,10 @@ export function Composer({ agent, above, placeholder, compact = false, context, 
     return () => clearInterval(t);
   }, [recOn]);
 
-  const mine = useMemo(() => (agent.state?.messages ?? []).filter((m) => m.who === "me").map((m) => m.text), [agent.state?.messages]);
+  const mine = useMemo(
+    () => (agent.state?.messages ?? []).filter((m) => m.who === "me").map((m) => m.text),
+    [agent.state?.messages],
+  );
   const uploading = atts.some((a) => !a.id && !a.error);
   // 置き場に置けなかった資料が残っている間は送らない（E-CHAT-002）。前は置けた分だけを添えて送り、置けなかった資料は一覧ごと消していた
   const attFailed = atts.some((a) => a.error);
@@ -279,10 +313,16 @@ export function Composer({ agent, above, placeholder, compact = false, context, 
     if (mentionQ === null) return [];
     const q = mentionQ.toLowerCase();
     const all: Mention[] = [
-      ...(tasks.data?.data ?? []).filter((t) => t.title).map((t) => ({ kind: "task" as const, label: "タスク", name: t.title! })),
+      ...(tasks.data?.data ?? [])
+        .filter((t) => t.title)
+        .map((t) => ({ kind: "task" as const, label: "タスク", name: t.title! })),
       ...(members.data?.data ?? [])
         .filter((m) => m.display_name)
-        .map((m) => ({ kind: m.kind_id === "ai" ? ("staff" as const) : ("person" as const), label: m.kind_id === "ai" ? "AI社員" : "人", name: m.display_name! })),
+        .map((m) => ({
+          kind: m.kind_id === "ai" ? ("staff" as const) : ("person" as const),
+          label: m.kind_id === "ai" ? "AI社員" : "人",
+          name: m.display_name!,
+        })),
     ];
     return all.filter((m) => !q || m.name.toLowerCase().includes(q)).slice(0, 8);
   }, [mentionQ, tasks.data, members.data]);
@@ -354,7 +394,11 @@ export function Composer({ agent, above, placeholder, compact = false, context, 
     if (t.length > PASTE_AS_FILE) {
       // 長い文を貼ったら添付にする（入力欄を埋めない）
       e.preventDefault();
-      void addFiles([new File([t], `貼り付けた文_${new Date().toISOString().slice(0, 16).replace(/[-:T]/g, "")}.txt`, { type: "text/plain" })]);
+      void addFiles([
+        new File([t], `貼り付けた文_${new Date().toISOString().slice(0, 16).replace(/[-:T]/g, "")}.txt`, {
+          type: "text/plain",
+        }),
+      ]);
     }
   };
   const onDrop = (e: DragEvent<HTMLDivElement>) => {
@@ -400,15 +444,25 @@ export function Composer({ agent, above, placeholder, compact = false, context, 
   const ph = running ? "動いている間に書いたことは、次の区切りで伝えます" : placeholder;
 
   return (
-    <div className={`composer${compact ? " compact" : ""}`} data-part="composer" onDragOver={(e) => e.preventDefault()} onDrop={onDrop}>
+    <div
+      className={`composer${compact ? " compact" : ""}`}
+      data-part="composer"
+      onDragOver={(e) => e.preventDefault()}
+      onDrop={onDrop}
+    >
       {above ? <div className="cabove">{above}</div> : null}
       <LaneWait on={agent.state?.waiting_on ?? null} onOpen={(c) => agent.select(c)} />
-      <QueueBox items={agent.state?.queued ?? []} onCancel={(q) => void agent.cancelQueued(q)} elsewhere={!!agent.state?.waiting_on} />
+      <QueueBox
+        items={agent.state?.queued ?? []}
+        onCancel={(q) => void agent.cancelQueued(q)}
+        elsewhere={!!agent.state?.waiting_on}
+      />
       {recOn ? (
         <div className="rec" role="status">
           <Mic />
           <span>
-            聞いています {Math.floor(recSec / 60)}:{String(recSec % 60).padStart(2, "0")} · 話し終えたら止めると文字になります（直してから送れます）
+            聞いています {Math.floor(recSec / 60)}:{String(recSec % 60).padStart(2, "0")} ·
+            話し終えたら止めると文字になります（直してから送れます）
           </span>
           <Button size="sm" variant="outline" icon={<Square />} onClick={toggleVoice}>
             止める
@@ -439,14 +493,25 @@ export function Composer({ agent, above, placeholder, compact = false, context, 
           // Claude のデスクトップのモデルの箱と同じ：版まで入ったモデルの名前を 1 行で。選んでいるものにチェック、ほかは数字（押しても選べる）。
           // 何も選んでいなければ「PC の設定」の行（いま PC の Claude Code が使うモデル）にチェック
           <div className="cpop cmenu cmodel" role="listbox" aria-label="モデル" ref={popEnd}>
-            {[{ id: null as string | null, label: `PC の設定${cliModel ? `（${modelName(cliModel)}）` : ""}` }, ...MODELS].map((m, i) => {
+            {[
+              { id: null as string | null, label: `PC の設定${cliModel ? `（${modelName(cliModel)}）` : ""}` },
+              ...MODELS,
+            ].map((m, i) => {
               const on = m.id === (agent.prefs.model ?? null);
               const pick = () => {
                 agent.setPrefs({ model: m.id });
                 setPicker(null);
               };
               return (
-                <div key={m.label} role="option" tabIndex={0} aria-selected={on} className={on ? "on" : ""} onClick={pick} onKeyDown={(e) => e.key === "Enter" && pick()}>
+                <div
+                  key={m.label}
+                  role="option"
+                  tabIndex={0}
+                  aria-selected={on}
+                  className={on ? "on" : ""}
+                  onClick={pick}
+                  onKeyDown={(e) => e.key === "Enter" && pick()}
+                >
                   <b>{m.label}</b>
                   {on ? <Check aria-hidden="true" /> : i > 0 ? <kbd aria-hidden="true">{i}</kbd> : <i />}
                 </div>
@@ -463,7 +528,15 @@ export function Composer({ agent, above, placeholder, compact = false, context, 
                 setPicker(null);
               };
               return (
-                <div key={x.short} role="option" tabIndex={0} aria-selected={on} className={on ? "on" : ""} onClick={pick} onKeyDown={(e) => e.key === "Enter" && pick()}>
+                <div
+                  key={x.short}
+                  role="option"
+                  tabIndex={0}
+                  aria-selected={on}
+                  className={on ? "on" : ""}
+                  onClick={pick}
+                  onKeyDown={(e) => e.key === "Enter" && pick()}
+                >
                   <b>{x.label}</b>
                   {on ? <Check aria-hidden="true" /> : <i />}
                 </div>
@@ -476,7 +549,10 @@ export function Composer({ agent, above, placeholder, compact = false, context, 
             {confirmAll ? (
               <div className="danger" role="alert" style={{ flexDirection: "column", alignItems: "flex-start" }}>
                 <b>全部許可にしますか</b>
-                <span>この会話だけ、自分のAI は何も聞かずに進めます。外への送信・ファイルの削除も確かめません。銀行など自動操作が禁止のサービスは、これを選んでも止めます。</span>
+                <span>
+                  この会話だけ、自分のAI
+                  は何も聞かずに進めます。外への送信・ファイルの削除も確かめません。銀行など自動操作が禁止のサービスは、これを選んでも止めます。
+                </span>
                 <span style={{ display: "flex", gap: 8 }}>
                   <Button
                     size="sm"
@@ -503,9 +579,12 @@ export function Composer({ agent, above, placeholder, compact = false, context, 
                   tabIndex={0}
                   aria-selected={m.id === agent.prefs.mode}
                   className={`${m.id === agent.prefs.mode ? "on" : ""}${m.id === ALL_ALLOWED ? " danger" : ""}`}
-                  onClick={() => (m.id === ALL_ALLOWED ? setConfirmAll(true) : (agent.setPrefs({ mode: m.id }), setPicker(null)))}
+                  onClick={() =>
+                    m.id === ALL_ALLOWED ? setConfirmAll(true) : (agent.setPrefs({ mode: m.id }), setPicker(null))
+                  }
                   onKeyDown={(e) =>
-                    e.key === "Enter" && (m.id === ALL_ALLOWED ? setConfirmAll(true) : (agent.setPrefs({ mode: m.id }), setPicker(null)))
+                    e.key === "Enter" &&
+                    (m.id === ALL_ALLOWED ? setConfirmAll(true) : (agent.setPrefs({ mode: m.id }), setPicker(null)))
                   }
                 >
                   <b>{m.label}</b>
@@ -539,18 +618,34 @@ export function Composer({ agent, above, placeholder, compact = false, context, 
             {edit ? (
               <span className="cchip" title="直して送り直す">
                 直して送り直す（ここから新しい会話になります）
-                <button type="button" title="やめる" aria-label="直して送り直すのをやめる" onClick={() => (onClearEdit?.(), setText(""))}>
+                <button
+                  type="button"
+                  title="やめる"
+                  aria-label="直して送り直すのをやめる"
+                  onClick={() => (onClearEdit?.(), setText(""))}
+                >
                   <X />
                 </button>
               </span>
             ) : null}
             {atts.map((a) => (
-              <span className={cn("cchip att", a.error && "err")} key={a.key} data-att-state={a.error ? "error" : a.id ? "ok" : "up"} title={a.error ?? a.name}>
+              <span
+                className={cn("cchip att", a.error && "err")}
+                key={a.key}
+                data-att-state={a.error ? "error" : a.id ? "ok" : "up"}
+                title={a.error ?? a.name}
+              >
                 <Paperclip />
                 {a.name}
                 {a.error ? "（置けませんでした）" : a.id ? "" : "（置いています…）"}
                 {a.error && files.current.has(a.key) && !TOO_BIG.test(a.error) ? (
-                  <button type="button" title="もう一度送る" aria-label={`${a.name}をもう一度送る`} onClick={() => void place(a.key, files.current.get(a.key)!)} data-att-retry>
+                  <button
+                    type="button"
+                    title="もう一度送る"
+                    aria-label={`${a.name}をもう一度送る`}
+                    onClick={() => void place(a.key, files.current.get(a.key)!)}
+                    data-att-retry
+                  >
                     <RefreshCw />
                   </button>
                 ) : null}
@@ -578,7 +673,13 @@ export function Composer({ agent, above, placeholder, compact = false, context, 
           onPaste={onPaste}
         />
         <div className="cbar2">
-          <button type="button" className="cbtn" title="資料・画像を付ける" aria-label="資料・画像を付ける" onClick={() => file.current?.click()}>
+          <button
+            type="button"
+            className="cbtn"
+            title="資料・画像を付ける"
+            aria-label="資料・画像を付ける"
+            onClick={() => file.current?.click()}
+          >
             <Plus />
           </button>
           <input
@@ -620,30 +721,72 @@ export function Composer({ agent, above, placeholder, compact = false, context, 
             </button>
           )}
           {memShown ? (
-            <label className={`cmem${incognito ? " on" : ""}`} title="オンにすると、自分のAIが毎朝まとめる記憶にこの会話を入れません">
-              <input type="checkbox" role="switch" aria-label="この会話を記憶に使わない" checked={incognito} onChange={(e) => void setIncognito(e.target.checked)} data-incognito />
+            <label
+              className={`cmem${incognito ? " on" : ""}`}
+              title="オンにすると、自分のAIが毎朝まとめる記憶にこの会話を入れません"
+            >
+              <input
+                type="checkbox"
+                role="switch"
+                aria-label="この会話を記憶に使わない"
+                checked={incognito}
+                onChange={(e) => void setIncognito(e.target.checked)}
+                data-incognito
+              />
               記憶に使わない
             </label>
           ) : null}
           <span className="csp" />
           {len > COUNT_FROM ? (
             <span className="ccount" role="status">
-              {len > MAX_SAY ? `${(len - MAX_SAY).toLocaleString()} 字多い（分けるか資料で）` : `残り ${(MAX_SAY - len).toLocaleString()} 字`}
+              {len > MAX_SAY
+                ? `${(len - MAX_SAY).toLocaleString()} 字多い（分けるか資料で）`
+                : `残り ${(MAX_SAY - len).toLocaleString()} 字`}
             </span>
           ) : null}
           {/* モデルと考える強さは右に別々の小さなボタン（Claude のデスクトップと同じ：Opus 5.5 ／ 中） */}
-          <button type="button" className={`cpick${picker === "model" ? " open" : ""}`} aria-expanded={picker === "model"} aria-label={`モデル：${modelLabel}`} onClick={() => setPicker(picker === "model" ? null : "model")} data-model>
+          <button
+            type="button"
+            className={`cpick${picker === "model" ? " open" : ""}`}
+            aria-expanded={picker === "model"}
+            aria-label={`モデル：${modelLabel}`}
+            onClick={() => setPicker(picker === "model" ? null : "model")}
+            data-model
+          >
             {modelLabel}
           </button>
-          <button type="button" className={`cpick${picker === "effort" ? " open" : ""}`} aria-expanded={picker === "effort"} aria-label={`考える強さ：${effort.label}`} title="考える強さ" onClick={() => setPicker(picker === "effort" ? null : "effort")} data-effort>
+          <button
+            type="button"
+            className={`cpick${picker === "effort" ? " open" : ""}`}
+            aria-expanded={picker === "effort"}
+            aria-label={`考える強さ：${effort.label}`}
+            title="考える強さ"
+            onClick={() => setPicker(picker === "effort" ? null : "effort")}
+            data-effort
+          >
             {effort.short}
           </button>
           {running && !text.trim() ? (
-            <button type="button" className="csend stop" title="止める" aria-label="止める" onClick={() => void agent.stop()} data-stop>
+            <button
+              type="button"
+              className="csend stop"
+              title="止める"
+              aria-label="止める"
+              onClick={() => void agent.stop()}
+              data-stop
+            >
               <Square />
             </button>
           ) : (
-            <button type="button" className="csend" title="送る（Enter）" aria-label="送る" disabled={!sendable} onClick={() => void submit()} data-send>
+            <button
+              type="button"
+              className="csend"
+              title="送る（Enter）"
+              aria-label="送る"
+              disabled={!sendable}
+              onClick={() => void submit()}
+              data-send
+            >
               <Send />
             </button>
           )}

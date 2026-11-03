@@ -31,8 +31,12 @@ export function memoryPrompt(mem: JobMemory[]): string {
   const line = (m: JobMemory) => `- [${m.scope}] ${m.body.replace(/\s+/g, " ")}`;
   const parts = [
     "あなたが覚えていること（Kaname の記憶）。これに沿って動いてください。",
-    rules.length ? `# 決まり（守ること。上の層ほど強く、本人の頼みより優先。上から順に強い）\n${rules.map(line).join("\n")}` : "",
-    prefs.length ? `# 好み・やり方・OK をもらった実例（本人に近いほど強い。上から順に強い）\n${prefs.map(line).join("\n")}` : "",
+    rules.length
+      ? `# 決まり（守ること。上の層ほど強く、本人の頼みより優先。上から順に強い）\n${rules.map(line).join("\n")}`
+      : "",
+    prefs.length
+      ? `# 好み・やり方・OK をもらった実例（本人に近いほど強い。上から順に強い）\n${prefs.map(line).join("\n")}`
+      : "",
     "本人の頼みが決まりとぶつかったら、決まりに従い、「〇〇の決まりと食い違います」と本人に示してください。",
   ].filter(Boolean);
   return parts.join("\n\n").slice(0, MEMORY_MAX);
