@@ -32,7 +32,7 @@
     "ci:choke": "node scripts/ci/choke.mjs",
     "ci:no-dynamic-call": "node scripts/ci/choke.mjs --no-dynamic",
     "ci:choke-exceptions": "node scripts/ci/choke.mjs --exceptions",
-    "ci:task-choke-declared": "node scripts/ci/gate_pending.mjs G26 T-F-09",
+    "ci:task-choke-declared": "python3 scripts/tickets/coverage_gate.py --only KC4 --only KC5",
     "ci:access-matrix": "tsx packages/db/src/cli.ts access-matrix",
     "ci:ears-mapping": "node scripts/ci/ears_mapping.mjs",
     "ci:resource-static": "node scripts/ci/sql_guard.mjs --resource-static",

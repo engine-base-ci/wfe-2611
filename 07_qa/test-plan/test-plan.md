@@ -113,7 +113,7 @@
 | G23 | 関門C8 秘密の迂回検出 | `pnpm ci:choke -- --id C8` | static | ★ |
 | G24 | 動的呼び出し禁止 | `pnpm ci:no-dynamic-call` | static | ★ |
 | G25 | 関門例外台帳の整合 | `pnpm ci:choke-exceptions` | static |  |
-| G26 | タスクのchoke_points宣言 | `pnpm ci:task-choke-declared` | static |  |
+| G26 | チケットの触る関門の宣言 | `pnpm ci:task-choke-declared` | static |  |
 | G27 | 画面の route の生成物が最新（flow.json → apps/web/lib/routes.ts） | `pnpm ci:routes` | static |  |
 | G28 | 実ブラウザで押した証拠（操作要素 1 つ＝1 行。行 ID を名前に持つ Playwright が通っている） | `pnpm ci:op-gate` | static |  |
 | G39 | 外へ出る口の宛先（apps/bridge・apps/web の fetch は Kaname か Bridge の口だけ・関門 C1 の例外 X-009／X-010 の代替統制） | `pnpm ci:net-boundary && pnpm ci:net-boundary:selftest && pnpm ci:choke:selftest` | static | ★ |

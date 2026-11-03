@@ -10,6 +10,7 @@ assignee: 未定
 due: 
 decisions: [D-128.55, D-128.57, D-128.92, D-128.93]
 split: これから
+screens: [account, bridge-setup, credentials]
 depends_on: [KN-4, KN-5]
 ---
 

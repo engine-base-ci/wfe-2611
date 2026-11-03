@@ -82,7 +82,7 @@ jobs:
       - name: "G25 関門例外台帳の整合"
         if: ${{ !cancelled() }}
         run: pnpm ci:choke-exceptions
-      - name: "G26 タスクのchoke_points宣言"
+      - name: "G26 チケットの触る関門の宣言"
         if: ${{ !cancelled() }}
         run: pnpm ci:task-choke-declared
       - name: "G27 画面の route の生成物が最新（flow.json → apps/web/lib/routes.ts）"

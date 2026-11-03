@@ -10,6 +10,7 @@ assignee: 未定
 due: 
 decisions: [D-128.62, D-128.91]
 split: これから
+screens: [signup, verify-email, mfa-setup, login, password-reset]
 depends_on: [KN-4, KN-5]
 ---
 

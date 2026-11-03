@@ -1056,10 +1056,11 @@
    "script": "pnpm ci:ac-validate",
    "blocking": true,
    "detects": [
-    "Tier1-3の不備",
-    "Tier4（発注者確認）の欠落"
+    "チケット（11_tickets）の無い画面・API・行為",
+    "後回しの決定を持つチケットが無い",
+    "正本 ↔ テスト仕様の参照の不整合"
    ],
-   "owner_task": "T-F-09",
+   "owner_task": "KN-6",
    "job": "static"
   },
   {
@@ -1196,13 +1197,15 @@
   },
   {
    "id": 26,
-   "name": "タスクのchoke_points宣言",
+   "name": "チケットの触る関門の宣言",
    "script": "pnpm ci:task-choke-declared",
    "blocking": true,
    "detects": [
-    "choke_points未設定のタスク"
+    "1 作業のチケットに choke_points も choke_none も無い",
+    "API の関門をチケットが書いていない",
+    "無い画面・API・関門を書いている"
    ],
-   "owner_task": "T-F-09",
+   "owner_task": "KN-6",
    "job": "static"
   },
   {

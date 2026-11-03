@@ -94,7 +94,8 @@ def check(ts: list[dict]) -> list[str]:
                 if not sec.get(s):
                     bad.append(f"[K3] {t['id']}（子の無いチケット）の「{s}」が空")
         for d in t.get("decisions", []):
-            if f"| {d} |" not in log and f"decision: {d}" not in log:
+            # D-069.8 のように、決定の節（decision: D-069）の「決めたこと」の何行目かで指すものもある
+            if f"| {d} |" not in log and f"decision: {d}" not in log and not (re.fullmatch(r"D-\d{3}\.\d+", d) and f"decision: {d.split('.')[0]}\n" in log.replace(" -->", "")):
                 bad.append(f"[K4] {t['id']} の決定 {d} が決定ログに無い")
         if t.get("stage") not in STAGES:
             bad.append(f"[K5] {t['id']} の作業の段 {t.get('stage')!r} は決まった値でない")

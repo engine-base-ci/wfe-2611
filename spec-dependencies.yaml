@@ -3441,7 +3441,7 @@ layer_checks:
 - file: 09_features/DAG.md
   manual: JSON からの機械生成の写し（05_flow/build_features.py）。手で直さない
 - file: 07_tasks/tickets.json
-  manual: しまった（D-128.114）。前の作業の分解は記録として残し、Kaname を作る仕事は 11_tickets で一から切り直した。機械の検査は 11_tickets の G45 が持つ。CI の読む先を替えるのは KN-6
+  manual: しまった（D-128.114）。前の作業の分解は記録として残し、Kaname を作る仕事は 11_tickets で一から切り直した。機械の検査は 11_tickets の G45・G14（coverage_gate）・G26・G31 TV4 が持つ（D-128.117 で読む先を替えた）
 - file: 08_schedule/wave-schedule.json
   check: python3 scripts/ci/sp_gate.py
 - file: 08_schedule/sprint.md
@@ -3467,7 +3467,7 @@ layer_checks:
 - file: 10_skills/catalog.json
   check: python3 scripts/ci/skill_pkg_gate.py 10_skills
 - file: 07_tasks/tickets_plan.json
-  manual: しまった（D-128.114）。前の作業の分解は記録として残し、Kaname を作る仕事は 11_tickets で一から切り直した。機械の検査は 11_tickets の G45 が持つ。CI の読む先を替えるのは KN-6
+  manual: しまった（D-128.114）。前の作業の分解は記録として残し、Kaname を作る仕事は 11_tickets で一から切り直した。機械の検査は 11_tickets の G45・G14（coverage_gate）・G26・G31 TV4 が持つ（D-128.117 で読む先を替えた）
 - file: 07_qa/test-specs/screens/*.md
   check: python3 scripts/ci/qa-ladder.py validate --spec 07_qa/test-specs --tickets 07_tasks/tickets.json
 - file: 07_qa/test-specs/journeys/plan.json
@@ -3477,7 +3477,7 @@ layer_checks:
 - file: 07_qa/test-specs/screens/*.md#操作
   check: python3 scripts/ci/op_gate.py --spec 07_qa/test-specs --tickets 07_tasks/tickets.json --all
 - file: 07_tasks/handoff/*.md
-  manual: しまった（D-128.114）。前の作業の分解は記録として残し、Kaname を作る仕事は 11_tickets で一から切り直した。機械の検査は 11_tickets の G45 が持つ。CI の読む先を替えるのは KN-6
+  manual: しまった（D-128.114）。前の作業の分解は記録として残し、Kaname を作る仕事は 11_tickets で一から切り直した。機械の検査は 11_tickets の G45・G14（coverage_gate）・G26・G31 TV4 が持つ（D-128.117 で読む先を替えた）
 - file: 07_tasks/TASK-CARDS.md
   manual: tickets.json からの機械生成の写し（05_flow/build_tasks.py）。手で直さない
 
@@ -3509,17 +3509,17 @@ layer_checks:
 - file: apps/bridge/src/renderer/index.html
   check: (cd apps/bridge && pnpm -s build)
 - file: apps/web/public/_plan/schedule.html
-  manual: しまった（D-128.114）。前の作業の分解は記録として残し、Kaname を作る仕事は 11_tickets で一から切り直した。機械の検査は 11_tickets の G45 が持つ。CI の読む先を替えるのは KN-6
+  manual: しまった（D-128.114）。前の作業の分解は記録として残し、Kaname を作る仕事は 11_tickets で一から切り直した。機械の検査は 11_tickets の G45・G14（coverage_gate）・G26・G31 TV4 が持つ（D-128.117 で読む先を替えた）
 - file: 07_tasks/schedule.html
-  manual: しまった（D-128.114）。前の作業の分解は記録として残し、Kaname を作る仕事は 11_tickets で一から切り直した。機械の検査は 11_tickets の G45 が持つ。CI の読む先を替えるのは KN-6
+  manual: しまった（D-128.114）。前の作業の分解は記録として残し、Kaname を作る仕事は 11_tickets で一から切り直した。機械の検査は 11_tickets の G45・G14（coverage_gate）・G26・G31 TV4 が持つ（D-128.117 で読む先を替えた）
 - file: 07_tasks/schedule.md
-  manual: しまった（D-128.114）。前の作業の分解は記録として残し、Kaname を作る仕事は 11_tickets で一から切り直した。機械の検査は 11_tickets の G45 が持つ。CI の読む先を替えるのは KN-6
+  manual: しまった（D-128.114）。前の作業の分解は記録として残し、Kaname を作る仕事は 11_tickets で一から切り直した。機械の検査は 11_tickets の G45・G14（coverage_gate）・G26・G31 TV4 が持つ（D-128.117 で読む先を替えた）
 - file: 07_tasks/board.md
-  manual: しまった（D-128.114）。前の作業の分解は記録として残し、Kaname を作る仕事は 11_tickets で一から切り直した。機械の検査は 11_tickets の G45 が持つ。CI の読む先を替えるのは KN-6
+  manual: しまった（D-128.114）。前の作業の分解は記録として残し、Kaname を作る仕事は 11_tickets で一から切り直した。機械の検査は 11_tickets の G45・G14（coverage_gate）・G26・G31 TV4 が持つ（D-128.117 で読む先を替えた）
 - file: 07_tasks/assign.md
-  manual: しまった（D-128.114）。前の作業の分解は記録として残し、Kaname を作る仕事は 11_tickets で一から切り直した。機械の検査は 11_tickets の G45 が持つ。CI の読む先を替えるのは KN-6
+  manual: しまった（D-128.114）。前の作業の分解は記録として残し、Kaname を作る仕事は 11_tickets で一から切り直した。機械の検査は 11_tickets の G45・G14（coverage_gate）・G26・G31 TV4 が持つ（D-128.117 で読む先を替えた）
 - file: 07_tasks/td-decisions.json
-  manual: しまった（D-128.114）。前の作業の分解は記録として残し、Kaname を作る仕事は 11_tickets で一から切り直した。機械の検査は 11_tickets の G45 が持つ。CI の読む先を替えるのは KN-6
+  manual: しまった（D-128.114）。前の作業の分解は記録として残し、Kaname を作る仕事は 11_tickets で一から切り直した。機械の検査は 11_tickets の G45・G14（coverage_gate）・G26・G31 TV4 が持つ（D-128.117 で読む先を替えた）
 - file: 07_tasks/DEPENDENCIES.md
   manual: tickets.json からの機械生成の写し（05_flow/build_tasks.py）。手で直さない
 - file: 07_tasks/TASK-CARDS.html
@@ -3529,7 +3529,7 @@ layer_checks:
 - file: 08_schedule/milestones.json
   manual: 節目。PM が埋める入力。sp_gate が節目をはみ出す Wave を赤で出す
 - file: 07_tasks/audit/*.md
-  manual: しまった（D-128.114）。前の作業の分解は記録として残し、Kaname を作る仕事は 11_tickets で一から切り直した。機械の検査は 11_tickets の G45 が持つ。CI の読む先を替えるのは KN-6
+  manual: しまった（D-128.114）。前の作業の分解は記録として残し、Kaname を作る仕事は 11_tickets で一から切り直した。機械の検査は 11_tickets の G45・G14（coverage_gate）・G26・G31 TV4 が持つ（D-128.117 で読む先を替えた）
 - file: 07_tasks/handoff/csv/*.csv
   manual: 確認シート（Google・ID 1WrPB6f9f8o5Y4dWPo5FDPz5o5xXn5EzDk_SDVe99aHE）が手で触る確認の正本。csv・xlsx は取り込み用の書き出し（build_qa_xlsx.py）で、シートを入れ替えた後に作り直す
 - file: 07_tasks/handoff/確認.xlsx
@@ -3595,7 +3595,7 @@ layer_checks:
 - file: 11_tickets/README.md
   manual: 11_tickets の一覧と親子の木（scripts/tickets/build_index.py が作る）。手で直さない。形は G45 が見る
 - file: 11_tickets/tickets.json
-  check: python3 scripts/tickets/build_index.py --check
+  check: python3 scripts/tickets/build_index.py --check && python3 scripts/tickets/coverage_gate.py
 - file: 11_tickets/tickets.csv
   manual: Kaname の汎用 CSV の取り込みに渡す形（build_index.py が作る）。手で直さない
 project_audit:
