@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:8a30bc2c4e7d238b
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:390176d14f6a5190
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -23,6 +23,8 @@ export const Scopes = z.strictObject({
   parent_id: z.uuid().optional(),
   layer_id: z.uuid().optional(),
   name: z.string().max(10000).optional(),
+  ticket_prefix: z.string().max(10000).optional(),
+  next_ticket_no: z.string().max(10000).optional(),
   id: z.uuid(),
   tenant_id: z.uuid().optional(),
   created_at: z.iso.datetime({ offset: true }).optional(),
@@ -32,6 +34,8 @@ export const ScopesInput = z.strictObject({
   parent_id: z.uuid().optional(),
   layer_id: z.uuid().optional(),
   name: z.string().max(10000).optional(),
+  ticket_prefix: z.string().max(10000).optional(),
+  next_ticket_no: z.string().max(10000).optional(),
 });
 export const MemberKinds = z.strictObject({
   key: z.string().max(10000).optional(),
@@ -2096,6 +2100,8 @@ export const Tickets = z.strictObject({
   work_type_version: z.number().int().optional(),
   hold_reason: z.string().max(10000).optional(),
   resume_condition: z.string().max(10000).optional(),
+  priority_reason: z.string().max(10000).optional(),
+  deleted_by: z.string().max(10000).optional(),
   created_by: z.string().max(10000).optional(),
   id: z.uuid(),
   tenant_id: z.uuid().optional(),
@@ -2121,6 +2127,8 @@ export const TicketsInput = z.strictObject({
   work_type_version: z.number().int().optional(),
   hold_reason: z.string().max(10000).optional(),
   resume_condition: z.string().max(10000).optional(),
+  priority_reason: z.string().max(10000).optional(),
+  deleted_by: z.string().max(10000).optional(),
 });
 export const TicketSections = z.strictObject({
   ticket_id: z.uuid().optional(),
@@ -2140,6 +2148,7 @@ export const TicketSectionsInput = z.strictObject({
   body: z.record(z.string(), z.unknown()).optional(),
 });
 export const TicketSectionVersions = z.strictObject({
+  ticket_id: z.uuid().optional(),
   section_id: z.uuid().optional(),
   version: z.number().int().optional(),
   body: z.record(z.string(), z.unknown()).optional(),
@@ -2152,6 +2161,7 @@ export const TicketSectionVersions = z.strictObject({
   updated_at: z.iso.datetime({ offset: true }).optional(),
 });
 export const TicketSectionVersionsInput = z.strictObject({
+  ticket_id: z.uuid().optional(),
   section_id: z.uuid().optional(),
   body: z.record(z.string(), z.unknown()).optional(),
   edited_by: z.string().max(10000).optional(),
@@ -2254,6 +2264,7 @@ export const TicketClassValuesInput = z.strictObject({
 });
 export const HandoverRules = z.strictObject({
   target: z.string().max(10000).optional(),
+  axis_id: z.uuid().optional(),
   mode: z.string().max(10000).optional(),
   id: z.uuid(),
   tenant_id: z.uuid().optional(),
@@ -2262,6 +2273,7 @@ export const HandoverRules = z.strictObject({
 });
 export const HandoverRulesInput = z.strictObject({
   target: z.string().max(10000).optional(),
+  axis_id: z.uuid().optional(),
   mode: z.string().max(10000).optional(),
 });
 export const TestSpecs = z.strictObject({

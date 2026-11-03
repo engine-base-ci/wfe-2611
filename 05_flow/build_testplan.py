@@ -10,7 +10,9 @@ J = lambda p: json.load(open(p, encoding="utf-8"))
 T = J("07_tasks/tickets.json"); TASKS = T["tasks"]; EARS = J("08_api/ears-ac-seed.json")["ac_seeds"]; EN = J("07_functional/entities.json"); EN = EN.get("entities") or EN["items"]
 FG = J("03_architecture/foundation_gates.json"); CP = J("03_architecture/choke-points.json")["choke_points"]; ST = J("02_tech_stack/selected-stack.json")["stack"]
 ERR = J("07_qa/test-specs/errors.json")["errors"]; JR = J("07_qa/test-specs/journeys/plan.json")["rows"]
-SRC = sorted({s for t in TASKS for s in t["source"] if s.startswith("D-")} | {s for c in CP for s in c.get("source", []) if str(s).startswith("D-")})
+# 根拠の決定は作る仕事のチケット（11_tickets）と関門から。しまった 07_tasks の source は使わない（D-128.117）
+KN = J("11_tickets/tickets.json")["tickets"]
+SRC = sorted({s for t in KN for s in t.get("decisions", []) if s.startswith("D-")} | {s for c in CP for s in c.get("source", []) if str(s).startswith("D-")})
 # ---------------------------------------------------------------- 3-tier AC ↔ テスト段
 TIER_MAP = [
     {"tier": "structural（モック・契約と一致）", "level": "mock-impl drift lint／OpenAPI 契約", "tool": "pnpm ci:mock-impl-diff（h1・状態・第2ナビ・列の値）／pnpm ci:openapi-diff", "gate": "ui-mock-impl-diff・G11", "ladder": "L1"},

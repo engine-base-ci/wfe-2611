@@ -70,7 +70,7 @@ for line in ER.split("\n"):
     else:
         pol = [{"name": f"{name}_tenant_read", "operation": "select", "role": "member", "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid" + (" AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))" if iso == "scope_layered" else ""), "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）", "source": ["D-026.1", "D-058.5", "D-073.1"]},
                {"name": f"{name}_permission_write", "operation": "insert,update,delete", "role": "member", "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, '" + name + "', scope_id, 'edit')" if iso == "scope_layered" else "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, '" + name + "', NULL, 'edit')", "rationale": "権限＝誰に×何に×どの層で×できること", "source": ["D-073.1", "D-073.2", "D-073.3"]},
-               {"name": f"{name}_ops_read_with_grant", "operation": "select", "role": "ops", "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = " + name + ".tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)", "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ", "source": ["D-074.5", "D-077.7"]}]
+               {"name": f"{name}_ops_read_with_grant", "operation": "select", "role": "ops", "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = " + name + ".tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)", "rationale": "運営は既定で読めない。規約で先に許可をもらい、中を見るを持つ運営の人が理由を書いて開いた 1 時間だけ（見るだけ）。したことは両側の証跡へ", "source": ["D-074.5", "D-125.128", "D-128.68", "D-128.108", "D-077.7"]}]
         # 権限そのもの・運営への許可・セッションは「本人のもの」でも自分で書けない（自分に権限を付与できてしまう。T-F-02 の RLS テストで発覚・2026-09-15）
         # 本人だけが読む表（ER の備考に「本人だけが読む」）：同じ会社の人にも見せない（自分のAI の使用量・記憶のまとめ・許可の決まり。D-104.14・D-104.16・D-105.2）
         if owner and "本人だけが読む" in note:
@@ -224,7 +224,7 @@ for r in F["roles"]:
           {"object": "それ以外（会社・層のもの）", "constraint": "権限＝誰に×何に×どの層で×できること", "access_predicate_expr": PRED["tenant"] + " AND " + PRED["permission"], "source": ["D-073.2", "D-073.3"]}]
     if r["id"] == "R4": oc = [oc[1] | {"constraint": "共有された範囲を見るだけ（書き込まない）"}]
     if r["id"] == "R6": oc = [{"object": "運営テナントのマスタ・証跡", "constraint": "運営の権限（support / billing / catalog / admin）", "access_predicate_expr": "current_setting('app.role', true) = 'ops'", "source": ["D-073.7", "D-077.4"]},
-                             {"object": "顧客テナントの行", "constraint": "既定で読めない。許可の範囲と期限のときだけ。両側の証跡へ", "access_predicate_expr": PRED["ops_grant"], "source": ["D-074.5", "D-077.7"]}]
+                             {"object": "顧客テナントの行", "constraint": "既定で読めない。理由つき・1 時間の中を見るの許可のときだけ。両側の証跡へ", "access_predicate_expr": PRED["ops_grant"], "source": ["D-074.5", "D-125.128", "D-128.68", "D-077.7"]}]
     roles.append({"id": r["id"], "name": r["name"], "desc": r["desc"], "frequency": r["frequency"], "screens": scr, "nav": NAV.get("by_role", {}).get(r["id"], []), "object_constraints": oc, "status": "decided", "decided_at": TODAY, "source": r["source"]})
 matrix_roles = {s["id"]: {r["id"]: ("edit" if r["id"] in s["edit_roles"] else ("view" if r["id"] in s["access_roles"] else "-")) for r in roles} for s in screens}
 

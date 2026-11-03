@@ -421,10 +421,12 @@
     },
     {
      "object": "顧客テナントの行",
-     "constraint": "既定で読めない。許可の範囲と期限のときだけ。両側の証跡へ",
+     "constraint": "既定で読めない。理由つき・1 時間の中を見るの許可のときだけ。両側の証跡へ",
      "access_predicate_expr": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = row.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
      "source": [
       "D-074.5",
+      "D-125.128",
+      "D-128.68",
       "D-077.7"
      ]
     }

@@ -189,6 +189,50 @@
    "reason": null
   },
   {
+   "entity": "scopes",
+   "field": "ticket_prefix",
+   "consumed_by_screens": [
+    "invite-accept",
+    "onboard-draft",
+    "onboard-golive",
+    "company-model",
+    "members",
+    "export",
+    "member-detail",
+    "tickets",
+    "masters",
+    "layers",
+    "rules",
+    "knowledge",
+    "clients",
+    "requests"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "scopes",
+   "field": "next_ticket_no",
+   "consumed_by_screens": [
+    "invite-accept",
+    "onboard-draft",
+    "onboard-golive",
+    "company-model",
+    "members",
+    "export",
+    "member-detail",
+    "tickets",
+    "masters",
+    "layers",
+    "rules",
+    "knowledge",
+    "clients",
+    "requests"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
    "entity": "member_kinds",
    "field": "key",
    "consumed_by_screens": [],
@@ -9795,6 +9839,50 @@
   },
   {
    "entity": "tickets",
+   "field": "priority_reason",
+   "consumed_by_screens": [
+    "bridge-setup",
+    "approvals",
+    "clone-chat",
+    "ai-activity",
+    "audit",
+    "account",
+    "member-detail",
+    "tickets",
+    "masters",
+    "work-types",
+    "knowledge",
+    "clients",
+    "requests",
+    "portal"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "tickets",
+   "field": "deleted_by",
+   "consumed_by_screens": [
+    "bridge-setup",
+    "approvals",
+    "clone-chat",
+    "ai-activity",
+    "audit",
+    "account",
+    "member-detail",
+    "tickets",
+    "masters",
+    "work-types",
+    "knowledge",
+    "clients",
+    "requests",
+    "portal"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "tickets",
    "field": "created_by",
    "consumed_by_screens": [],
    "internal": true,
@@ -9856,45 +9944,77 @@
   },
   {
    "entity": "ticket_section_versions",
-   "field": "section_id",
+   "field": "<common>",
    "consumed_by_screens": [],
    "internal": true,
-   "reason": "マスタ。label は各画面の札・選択肢として出る"
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "ticket_section_versions",
+   "field": "ticket_id",
+   "consumed_by_screens": [
+    "ai-activity",
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "ticket_section_versions",
+   "field": "section_id",
+   "consumed_by_screens": [
+    "ai-activity",
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
   },
   {
    "entity": "ticket_section_versions",
    "field": "version",
    "consumed_by_screens": [],
    "internal": true,
-   "reason": "マスタ。label は各画面の札・選択肢として出る"
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
   },
   {
    "entity": "ticket_section_versions",
    "field": "body",
-   "consumed_by_screens": [],
-   "internal": true,
-   "reason": "マスタ。label は各画面の札・選択肢として出る"
+   "consumed_by_screens": [
+    "ai-activity",
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
   },
   {
    "entity": "ticket_section_versions",
    "field": "edited_by",
-   "consumed_by_screens": [],
-   "internal": true,
-   "reason": "マスタ。label は各画面の札・選択肢として出る"
+   "consumed_by_screens": [
+    "ai-activity",
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
   },
   {
    "entity": "ticket_section_versions",
    "field": "edited_at",
-   "consumed_by_screens": [],
-   "internal": true,
-   "reason": "マスタ。label は各画面の札・選択肢として出る"
+   "consumed_by_screens": [
+    "ai-activity",
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
   },
   {
    "entity": "ticket_section_versions",
    "field": "edited_by_clone",
-   "consumed_by_screens": [],
-   "internal": true,
-   "reason": "マスタ。label は各画面の札・選択肢として出る"
+   "consumed_by_screens": [
+    "ai-activity",
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
   },
   {
    "entity": "ticket_kinds",
@@ -10147,17 +10267,40 @@
   },
   {
    "entity": "ticket_class_values",
-   "field": "ticket_id",
+   "field": "<common>",
    "consumed_by_screens": [],
    "internal": true,
-   "reason": "マスタ。label は各画面の札・選択肢として出る"
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "ticket_class_values",
+   "field": "ticket_id",
+   "consumed_by_screens": [
+    "approvals",
+    "clone-chat",
+    "ai-activity",
+    "member-detail",
+    "tickets",
+    "masters",
+    "requests"
+   ],
+   "internal": false,
+   "reason": null
   },
   {
    "entity": "ticket_class_values",
    "field": "value_id",
-   "consumed_by_screens": [],
-   "internal": true,
-   "reason": "マスタ。label は各画面の札・選択肢として出る"
+   "consumed_by_screens": [
+    "approvals",
+    "clone-chat",
+    "ai-activity",
+    "member-detail",
+    "tickets",
+    "masters",
+    "requests"
+   ],
+   "internal": false,
+   "reason": null
   },
   {
    "entity": "handover_rules",
@@ -10169,6 +10312,16 @@
   {
    "entity": "handover_rules",
    "field": "target",
+   "consumed_by_screens": [
+    "tickets",
+    "masters"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "handover_rules",
+   "field": "axis_id",
    "consumed_by_screens": [
     "tickets",
     "masters"

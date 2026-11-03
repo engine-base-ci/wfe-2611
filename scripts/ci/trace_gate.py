@@ -127,6 +127,7 @@ def load_products(cfg):
         hits = sorted(glob.glob(pr["file"])) if any(ch in pr["file"] for ch in "*?[") else [pr["file"]]
         if not hits: missing.append(pr["file"])
         for h in hits: flat.append({**pr, "file": h})
+        if pr.get("archived"): run.archived.update(hits)
     for pr in flat:
         p = pr["file"]
         if not os.path.exists(p):
@@ -148,6 +149,7 @@ def load_products(cfg):
 
 # ---------------------------------------------------------------- 検査
 def run(cfg, snapshot):
+    run.archived = set()
     D = load_decisions(cfg)
     missing_src = D.pop("_missing", [])
     elems, missing_prod = load_products(cfg)
@@ -247,8 +249,10 @@ def run(cfg, snapshot):
     for e in elems:
         if e["path"] == "(text)":
             by_file.setdefault(e["file"], set()).update(str(x) for x in e["source"] or [])
-    units = [(f'{e["file"]}#{e["id"]}', {str(x) for x in e["source"] or []}) for e in elems if e["path"] != "(text)"]
-    units += [(f, srcs) for f, srcs in by_file.items()]
+    # しまった導出物（products の archived: 理由）は記録として残すだけなので、改められた文が残っていても直さない（D-128.117）
+    arch = run.archived
+    units = [(f'{e["file"]}#{e["id"]}', {str(x) for x in e["source"] or []}) for e in elems if e["path"] != "(text)" and e["file"] not in arch]
+    units += [(f, srcs) for f, srcs in by_file.items() if f not in arch]
     for d in D.values():
         if d["status"] != "confirmed" or not d["amends"]: continue
         for x in d["amends"]:

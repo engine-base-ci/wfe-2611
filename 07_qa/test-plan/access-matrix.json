@@ -148,6 +148,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = tenants.tenant_id AND g.expires_at > now() AND g",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -163,6 +166,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = tenants.tenant_id AND g.expires_at > now() AND g",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -178,6 +184,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = tenants.tenant_id AND g.expires_at > now() AND g",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -193,6 +202,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = tenants.tenant_id AND g.expires_at > now() AND g",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -336,6 +348,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = scopes.tenant_id AND g.expires_at > now() AND g.",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -351,6 +366,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = scopes.tenant_id AND g.expires_at > now() AND g.",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -366,6 +384,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = scopes.tenant_id AND g.expires_at > now() AND g.",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -381,6 +402,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = scopes.tenant_id AND g.expires_at > now() AND g.",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -597,6 +621,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = members.tenant_id AND g.expires_at > now() AND g",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -612,6 +639,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = members.tenant_id AND g.expires_at > now() AND g",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -627,6 +657,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = members.tenant_id AND g.expires_at > now() AND g",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -642,6 +675,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = members.tenant_id AND g.expires_at > now() AND g",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -914,6 +950,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = clones.tenant_id AND g.expires_at > now() AND g.",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -929,6 +968,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = clones.tenant_id AND g.expires_at > now() AND g.",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -944,6 +986,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = clones.tenant_id AND g.expires_at > now() AND g.",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -959,6 +1004,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = clones.tenant_id AND g.expires_at > now() AND g.",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -1158,6 +1206,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ai_employees.tenant_id AND g.expires_at > now() ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -1173,6 +1224,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ai_employees.tenant_id AND g.expires_at > now() ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -1188,6 +1242,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ai_employees.tenant_id AND g.expires_at > now() ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -1203,6 +1260,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ai_employees.tenant_id AND g.expires_at > now() ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -1419,6 +1479,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = units.tenant_id AND g.expires_at > now() AND g.r",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -1434,6 +1497,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = units.tenant_id AND g.expires_at > now() AND g.r",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -1449,6 +1515,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = units.tenant_id AND g.expires_at > now() AND g.r",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -1464,6 +1533,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = units.tenant_id AND g.expires_at > now() AND g.r",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -1680,6 +1752,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = goals.tenant_id AND g.expires_at > now() AND g.r",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -1695,6 +1770,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = goals.tenant_id AND g.expires_at > now() AND g.r",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -1710,6 +1788,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = goals.tenant_id AND g.expires_at > now() AND g.r",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -1725,6 +1806,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = goals.tenant_id AND g.expires_at > now() AND g.r",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -1868,6 +1952,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = goal_allocations.tenant_id AND g.expires_at > no",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -1883,6 +1970,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = goal_allocations.tenant_id AND g.expires_at > no",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -1898,6 +1988,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = goal_allocations.tenant_id AND g.expires_at > no",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -1913,6 +2006,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = goal_allocations.tenant_id AND g.expires_at > no",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -2056,6 +2152,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = goal_contributions.tenant_id AND g.expires_at > ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -2071,6 +2170,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = goal_contributions.tenant_id AND g.expires_at > ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -2086,6 +2188,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = goal_contributions.tenant_id AND g.expires_at > ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -2101,6 +2206,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = goal_contributions.tenant_id AND g.expires_at > ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -2244,6 +2352,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = goal_versions.tenant_id AND g.expires_at > now()",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -2259,6 +2370,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = goal_versions.tenant_id AND g.expires_at > now()",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -2274,6 +2388,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = goal_versions.tenant_id AND g.expires_at > now()",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -2289,6 +2406,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = goal_versions.tenant_id AND g.expires_at > now()",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -2432,6 +2552,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = hypotheses.tenant_id AND g.expires_at > now() AN",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -2447,6 +2570,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = hypotheses.tenant_id AND g.expires_at > now() AN",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -2462,6 +2588,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = hypotheses.tenant_id AND g.expires_at > now() AN",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -2477,6 +2606,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = hypotheses.tenant_id AND g.expires_at > now() AN",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -2620,6 +2752,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = measures.tenant_id AND g.expires_at > now() AND ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -2635,6 +2770,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = measures.tenant_id AND g.expires_at > now() AND ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -2650,6 +2788,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = measures.tenant_id AND g.expires_at > now() AND ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -2665,6 +2806,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = measures.tenant_id AND g.expires_at > now() AND ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -2808,6 +2952,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = validations.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -2823,6 +2970,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = validations.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -2838,6 +2988,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = validations.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -2853,6 +3006,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = validations.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -2996,6 +3152,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ledger_definitions.tenant_id AND g.expires_at > ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -3011,6 +3170,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ledger_definitions.tenant_id AND g.expires_at > ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -3026,6 +3188,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ledger_definitions.tenant_id AND g.expires_at > ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -3041,6 +3206,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ledger_definitions.tenant_id AND g.expires_at > ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -3184,6 +3352,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ledger_fields.tenant_id AND g.expires_at > now()",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -3199,6 +3370,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ledger_fields.tenant_id AND g.expires_at > now()",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -3214,6 +3388,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ledger_fields.tenant_id AND g.expires_at > now()",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -3229,6 +3406,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ledger_fields.tenant_id AND g.expires_at > now()",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -3372,6 +3552,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ledger_stages.tenant_id AND g.expires_at > now()",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -3387,6 +3570,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ledger_stages.tenant_id AND g.expires_at > now()",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -3402,6 +3588,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ledger_stages.tenant_id AND g.expires_at > now()",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -3417,6 +3606,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ledger_stages.tenant_id AND g.expires_at > now()",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -3560,6 +3752,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ledger_views.tenant_id AND g.expires_at > now() ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -3575,6 +3770,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ledger_views.tenant_id AND g.expires_at > now() ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -3590,6 +3788,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ledger_views.tenant_id AND g.expires_at > now() ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -3605,6 +3806,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ledger_views.tenant_id AND g.expires_at > now() ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -3748,6 +3952,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ledger_records.tenant_id AND g.expires_at > now(",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -3763,6 +3970,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ledger_records.tenant_id AND g.expires_at > now(",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -3778,6 +3988,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ledger_records.tenant_id AND g.expires_at > now(",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -3793,6 +4006,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ledger_records.tenant_id AND g.expires_at > now(",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -3936,6 +4152,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = duties.tenant_id AND g.expires_at > now() AND g.",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -3951,6 +4170,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = duties.tenant_id AND g.expires_at > now() AND g.",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -3966,6 +4188,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = duties.tenant_id AND g.expires_at > now() AND g.",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -3981,6 +4206,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = duties.tenant_id AND g.expires_at > now() AND g.",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -4124,6 +4352,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = duty_versions.tenant_id AND g.expires_at > now()",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -4139,6 +4370,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = duty_versions.tenant_id AND g.expires_at > now()",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -4154,6 +4388,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = duty_versions.tenant_id AND g.expires_at > now()",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -4169,6 +4406,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = duty_versions.tenant_id AND g.expires_at > now()",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -4312,6 +4552,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = learned_procedures.tenant_id AND g.expires_at > ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -4327,6 +4570,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = learned_procedures.tenant_id AND g.expires_at > ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -4342,6 +4588,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = learned_procedures.tenant_id AND g.expires_at > ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -4357,6 +4606,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = learned_procedures.tenant_id AND g.expires_at > ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -4500,6 +4752,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = procedure_steps.tenant_id AND g.expires_at > now",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -4515,6 +4770,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = procedure_steps.tenant_id AND g.expires_at > now",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -4530,6 +4788,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = procedure_steps.tenant_id AND g.expires_at > now",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -4545,6 +4806,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = procedure_steps.tenant_id AND g.expires_at > now",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -4817,6 +5081,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = memories.tenant_id AND g.expires_at > now() AND ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -4832,6 +5099,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = memories.tenant_id AND g.expires_at > now() AND ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -4847,6 +5117,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = memories.tenant_id AND g.expires_at > now() AND ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -4862,6 +5135,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = memories.tenant_id AND g.expires_at > now() AND ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -5129,6 +5405,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = memory_proposals.tenant_id AND g.expires_at > no",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -5144,6 +5423,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = memory_proposals.tenant_id AND g.expires_at > no",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -5159,6 +5441,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = memory_proposals.tenant_id AND g.expires_at > no",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -5174,6 +5459,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = memory_proposals.tenant_id AND g.expires_at > no",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -5390,6 +5678,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = search_embeddings.tenant_id AND g.expires_at > n",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -5405,6 +5696,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = search_embeddings.tenant_id AND g.expires_at > n",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -5420,6 +5714,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = search_embeddings.tenant_id AND g.expires_at > n",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -5435,6 +5732,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = search_embeddings.tenant_id AND g.expires_at > n",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -5578,6 +5878,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = tasks.tenant_id AND g.expires_at > now() AND g.r",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -5593,6 +5896,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = tasks.tenant_id AND g.expires_at > now() AND g.r",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -5608,6 +5914,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = tasks.tenant_id AND g.expires_at > now() AND g.r",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -5623,6 +5932,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = tasks.tenant_id AND g.expires_at > now() AND g.r",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -5766,6 +6078,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = task_handovers.tenant_id AND g.expires_at > now(",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -5781,6 +6096,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = task_handovers.tenant_id AND g.expires_at > now(",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -5796,6 +6114,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = task_handovers.tenant_id AND g.expires_at > now(",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -5811,6 +6132,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = task_handovers.tenant_id AND g.expires_at > now(",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -6010,6 +6334,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = daily_plans.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -6025,6 +6352,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = daily_plans.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -6040,6 +6370,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = daily_plans.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -6055,6 +6388,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = daily_plans.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -6198,6 +6534,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = triggers.tenant_id AND g.expires_at > now() AND ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -6213,6 +6552,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = triggers.tenant_id AND g.expires_at > now() AND ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -6228,6 +6570,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = triggers.tenant_id AND g.expires_at > now() AND ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -6243,6 +6588,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = triggers.tenant_id AND g.expires_at > now() AND ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -6386,6 +6734,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = policies.tenant_id AND g.expires_at > now() AND ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -6401,6 +6752,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = policies.tenant_id AND g.expires_at > now() AND ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -6416,6 +6770,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = policies.tenant_id AND g.expires_at > now() AND ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -6431,6 +6788,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = policies.tenant_id AND g.expires_at > now() AND ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -6630,6 +6990,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = approvals.tenant_id AND g.expires_at > now() AND",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -6645,6 +7008,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = approvals.tenant_id AND g.expires_at > now() AND",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -6660,6 +7026,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = approvals.tenant_id AND g.expires_at > now() AND",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -6675,6 +7044,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = approvals.tenant_id AND g.expires_at > now() AND",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -6818,6 +7190,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = action_runs.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -6833,6 +7208,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = action_runs.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -6848,6 +7226,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = action_runs.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -6863,6 +7244,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = action_runs.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -7006,6 +7390,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = service_registry.tenant_id AND g.expires_at > no",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -7021,6 +7408,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = service_registry.tenant_id AND g.expires_at > no",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -7036,6 +7426,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = service_registry.tenant_id AND g.expires_at > no",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -7051,6 +7444,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = service_registry.tenant_id AND g.expires_at > no",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -7323,6 +7719,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = credentials.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -7338,6 +7737,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = credentials.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -7353,6 +7755,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = credentials.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -7368,6 +7773,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = credentials.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -7567,6 +7975,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = conversations.tenant_id AND g.expires_at > now()",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -7582,6 +7993,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = conversations.tenant_id AND g.expires_at > now()",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -7597,6 +8011,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = conversations.tenant_id AND g.expires_at > now()",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -7612,6 +8029,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = conversations.tenant_id AND g.expires_at > now()",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -7811,6 +8231,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = bridge_jobs.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -7826,6 +8249,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = bridge_jobs.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -7841,6 +8267,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = bridge_jobs.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -7856,6 +8285,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = bridge_jobs.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -8128,6 +8560,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = bridge_job_events.tenant_id AND g.expires_at > n",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -8143,6 +8578,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = bridge_job_events.tenant_id AND g.expires_at > n",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -8158,6 +8596,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = bridge_job_events.tenant_id AND g.expires_at > n",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -8173,6 +8614,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = bridge_job_events.tenant_id AND g.expires_at > n",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -8564,6 +9008,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = messages.tenant_id AND g.expires_at > now() AND ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -8579,6 +9026,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = messages.tenant_id AND g.expires_at > now() AND ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -8594,6 +9044,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = messages.tenant_id AND g.expires_at > now() AND ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -8609,6 +9062,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = messages.tenant_id AND g.expires_at > now() AND ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -8808,6 +9264,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = artifacts.tenant_id AND g.expires_at > now() AND",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -8823,6 +9282,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = artifacts.tenant_id AND g.expires_at > now() AND",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -8838,6 +9300,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = artifacts.tenant_id AND g.expires_at > now() AND",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -8853,6 +9318,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = artifacts.tenant_id AND g.expires_at > now() AND",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -9052,6 +9520,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = artifact_versions.tenant_id AND g.expires_at > n",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -9067,6 +9538,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = artifact_versions.tenant_id AND g.expires_at > n",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -9082,6 +9556,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = artifact_versions.tenant_id AND g.expires_at > n",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -9097,6 +9574,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = artifact_versions.tenant_id AND g.expires_at > n",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -9176,6 +9656,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = audit_events.tenant_id AND g.expires_at > now() ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -9191,6 +9674,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = audit_events.tenant_id AND g.expires_at > now() ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -9206,6 +9692,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = audit_events.tenant_id AND g.expires_at > now() ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -9221,6 +9710,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = audit_events.tenant_id AND g.expires_at > now() ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -9555,6 +10047,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = layers.tenant_id AND g.expires_at > now() AND g.",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -9570,6 +10065,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = layers.tenant_id AND g.expires_at > now() AND g.",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -9585,6 +10083,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = layers.tenant_id AND g.expires_at > now() AND g.",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -9600,6 +10101,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = layers.tenant_id AND g.expires_at > now() AND g.",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -9889,6 +10393,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = permissions.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -9904,6 +10411,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = permissions.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -9919,6 +10429,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = permissions.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -9934,6 +10447,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = permissions.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -10133,6 +10649,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = account_events.tenant_id AND g.expires_at > now(",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -10148,6 +10667,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = account_events.tenant_id AND g.expires_at > now(",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -10163,6 +10685,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = account_events.tenant_id AND g.expires_at > now(",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -10178,6 +10703,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = account_events.tenant_id AND g.expires_at > now(",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -10321,6 +10849,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = account_event_items.tenant_id AND g.expires_at >",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -10336,6 +10867,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = account_event_items.tenant_id AND g.expires_at >",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -10351,6 +10885,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = account_event_items.tenant_id AND g.expires_at >",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -10366,6 +10903,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = account_event_items.tenant_id AND g.expires_at >",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -10509,6 +11049,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = sessions.tenant_id AND g.expires_at > now() AND ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -10524,6 +11067,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = sessions.tenant_id AND g.expires_at > now() AND ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -10539,6 +11085,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = sessions.tenant_id AND g.expires_at > now() AND ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -10554,6 +11103,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = sessions.tenant_id AND g.expires_at > now() AND ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -10697,6 +11249,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = support_access_grants.tenant_id AND g.expires_at",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -10712,6 +11267,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = support_access_grants.tenant_id AND g.expires_at",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -10727,6 +11285,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = support_access_grants.tenant_id AND g.expires_at",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -10742,6 +11303,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = support_access_grants.tenant_id AND g.expires_at",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -10885,6 +11449,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = retention_holds.tenant_id AND g.expires_at > now",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -10900,6 +11467,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = retention_holds.tenant_id AND g.expires_at > now",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -10915,6 +11485,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = retention_holds.tenant_id AND g.expires_at > now",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -10930,6 +11503,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = retention_holds.tenant_id AND g.expires_at > now",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -11073,6 +11649,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = erasure_certificates.tenant_id AND g.expires_at ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -11088,6 +11667,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = erasure_certificates.tenant_id AND g.expires_at ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -11103,6 +11685,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = erasure_certificates.tenant_id AND g.expires_at ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -11118,6 +11703,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = erasure_certificates.tenant_id AND g.expires_at ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -11379,6 +11967,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = tenant_distributions.tenant_id AND g.expires_at ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -11394,6 +11985,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = tenant_distributions.tenant_id AND g.expires_at ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -11409,6 +12003,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = tenant_distributions.tenant_id AND g.expires_at ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -11424,6 +12021,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = tenant_distributions.tenant_id AND g.expires_at ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -11668,6 +12268,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = service_requests.tenant_id AND g.expires_at > no",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -11683,6 +12286,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = service_requests.tenant_id AND g.expires_at > no",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -11698,6 +12304,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = service_requests.tenant_id AND g.expires_at > no",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -11713,6 +12322,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = service_requests.tenant_id AND g.expires_at > no",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -11856,6 +12468,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = review_requests.tenant_id AND g.expires_at > now",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -11871,6 +12486,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = review_requests.tenant_id AND g.expires_at > now",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -11886,6 +12504,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = review_requests.tenant_id AND g.expires_at > now",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -11901,6 +12522,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = review_requests.tenant_id AND g.expires_at > now",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -12160,6 +12784,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = security_events.tenant_id AND g.expires_at > now",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -12175,6 +12802,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = security_events.tenant_id AND g.expires_at > now",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -12190,6 +12820,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = security_events.tenant_id AND g.expires_at > now",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -12205,6 +12838,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = security_events.tenant_id AND g.expires_at > now",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -12449,6 +13085,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = inquiries.tenant_id AND g.expires_at > now() AND",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -12464,6 +13103,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = inquiries.tenant_id AND g.expires_at > now() AND",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -12479,6 +13121,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = inquiries.tenant_id AND g.expires_at > now() AND",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -12494,6 +13139,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = inquiries.tenant_id AND g.expires_at > now() AND",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -12783,6 +13431,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = notice_deliveries.tenant_id AND g.expires_at > n",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -12798,6 +13449,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = notice_deliveries.tenant_id AND g.expires_at > n",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -12813,6 +13467,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = notice_deliveries.tenant_id AND g.expires_at > n",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -12828,6 +13485,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = notice_deliveries.tenant_id AND g.expires_at > n",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -13072,6 +13732,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = notification_preferences.tenant_id AND g.expires",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -13087,6 +13750,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = notification_preferences.tenant_id AND g.expires",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -13102,6 +13768,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = notification_preferences.tenant_id AND g.expires",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -13117,6 +13786,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = notification_preferences.tenant_id AND g.expires",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -13316,6 +13988,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = notifications.tenant_id AND g.expires_at > now()",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -13331,6 +14006,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = notifications.tenant_id AND g.expires_at > now()",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -13346,6 +14024,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = notifications.tenant_id AND g.expires_at > now()",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -13361,6 +14042,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = notifications.tenant_id AND g.expires_at > now()",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -13622,6 +14306,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = subscriptions.tenant_id AND g.expires_at > now()",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -13637,6 +14324,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = subscriptions.tenant_id AND g.expires_at > now()",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -13652,6 +14342,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = subscriptions.tenant_id AND g.expires_at > now()",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -13667,6 +14360,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = subscriptions.tenant_id AND g.expires_at > now()",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -13866,6 +14562,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = plan_change_requests.tenant_id AND g.expires_at ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -13881,6 +14580,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = plan_change_requests.tenant_id AND g.expires_at ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -13896,6 +14598,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = plan_change_requests.tenant_id AND g.expires_at ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -13911,6 +14616,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = plan_change_requests.tenant_id AND g.expires_at ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -14099,6 +14807,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = usage_meters.tenant_id AND g.expires_at > now() ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -14114,6 +14825,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = usage_meters.tenant_id AND g.expires_at > now() ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -14129,6 +14843,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = usage_meters.tenant_id AND g.expires_at > now() ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -14144,6 +14861,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = usage_meters.tenant_id AND g.expires_at > now() ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -14287,6 +15007,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = invoices.tenant_id AND g.expires_at > now() AND ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -14302,6 +15025,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = invoices.tenant_id AND g.expires_at > now() AND ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -14317,6 +15043,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = invoices.tenant_id AND g.expires_at > now() AND ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -14332,6 +15061,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = invoices.tenant_id AND g.expires_at > now() AND ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -14475,6 +15207,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = payments.tenant_id AND g.expires_at > now() AND ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -14490,6 +15225,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = payments.tenant_id AND g.expires_at > now() AND ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -14505,6 +15243,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = payments.tenant_id AND g.expires_at > now() AND ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -14520,6 +15261,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = payments.tenant_id AND g.expires_at > now() AND ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -14764,6 +15508,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = error_events.tenant_id AND g.expires_at > now() ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -14779,6 +15526,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = error_events.tenant_id AND g.expires_at > now() ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -14794,6 +15544,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = error_events.tenant_id AND g.expires_at > now() ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -14809,6 +15562,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = error_events.tenant_id AND g.expires_at > now() ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -14952,6 +15708,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = imports.tenant_id AND g.expires_at > now() AND g",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -14967,6 +15726,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = imports.tenant_id AND g.expires_at > now() AND g",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -14982,6 +15744,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = imports.tenant_id AND g.expires_at > now() AND g",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -14997,6 +15762,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = imports.tenant_id AND g.expires_at > now() AND g",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -15140,6 +15908,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = integrations.tenant_id AND g.expires_at > now() ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -15155,6 +15926,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = integrations.tenant_id AND g.expires_at > now() ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -15170,6 +15944,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = integrations.tenant_id AND g.expires_at > now() ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -15185,6 +15962,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = integrations.tenant_id AND g.expires_at > now() ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -15328,6 +16108,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = invitations.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -15343,6 +16126,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = invitations.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -15358,6 +16144,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = invitations.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -15373,6 +16162,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = invitations.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -15632,6 +16424,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = export_jobs.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -15647,6 +16442,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = export_jobs.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -15662,6 +16460,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = export_jobs.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -15677,6 +16478,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = export_jobs.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -15820,6 +16624,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = attachments.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -15835,6 +16642,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = attachments.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -15850,6 +16660,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = attachments.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -15865,6 +16678,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = attachments.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -16171,6 +16987,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = skill_attachments.tenant_id AND g.expires_at > n",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -16186,6 +17005,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = skill_attachments.tenant_id AND g.expires_at > n",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -16201,6 +17023,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = skill_attachments.tenant_id AND g.expires_at > n",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -16216,6 +17041,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = skill_attachments.tenant_id AND g.expires_at > n",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -16359,6 +17187,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = payment_methods.tenant_id AND g.expires_at > now",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -16374,6 +17205,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = payment_methods.tenant_id AND g.expires_at > now",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -16389,6 +17223,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = payment_methods.tenant_id AND g.expires_at > now",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -16404,6 +17241,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = payment_methods.tenant_id AND g.expires_at > now",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -16547,6 +17387,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = billing_events.tenant_id AND g.expires_at > now(",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -16562,6 +17405,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = billing_events.tenant_id AND g.expires_at > now(",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -16577,6 +17423,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = billing_events.tenant_id AND g.expires_at > now(",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -16592,6 +17441,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = billing_events.tenant_id AND g.expires_at > now(",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -16735,6 +17587,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = llm_routes.tenant_id AND g.expires_at > now() AN",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -16750,6 +17605,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = llm_routes.tenant_id AND g.expires_at > now() AN",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -16765,6 +17623,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = llm_routes.tenant_id AND g.expires_at > now() AN",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -16780,6 +17641,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = llm_routes.tenant_id AND g.expires_at > now() AN",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -17097,6 +17961,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = push_devices.tenant_id AND g.expires_at > now() ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -17112,6 +17979,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = push_devices.tenant_id AND g.expires_at > now() ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -17127,6 +17997,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = push_devices.tenant_id AND g.expires_at > now() ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -17142,6 +18015,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = push_devices.tenant_id AND g.expires_at > now() ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -19211,6 +20087,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = test_specs.tenant_id AND g.expires_at > now() AN",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -19226,6 +20105,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = test_specs.tenant_id AND g.expires_at > now() AN",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -19241,6 +20123,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = test_specs.tenant_id AND g.expires_at > now() AN",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -19256,6 +20141,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = test_specs.tenant_id AND g.expires_at > now() AN",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -19399,6 +20287,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = checks.tenant_id AND g.expires_at > now() AND g.",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -19414,6 +20305,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = checks.tenant_id AND g.expires_at > now() AND g.",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -19429,6 +20323,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = checks.tenant_id AND g.expires_at > now() AND g.",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -19444,6 +20341,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = checks.tenant_id AND g.expires_at > now() AND g.",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -19587,6 +20487,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ticket_decisions.tenant_id AND g.expires_at > no",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -19602,6 +20505,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ticket_decisions.tenant_id AND g.expires_at > no",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -19617,6 +20523,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ticket_decisions.tenant_id AND g.expires_at > no",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -19632,6 +20541,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ticket_decisions.tenant_id AND g.expires_at > no",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -19775,6 +20687,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ticket_messages.tenant_id AND g.expires_at > now",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -19790,6 +20705,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ticket_messages.tenant_id AND g.expires_at > now",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -19805,6 +20723,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ticket_messages.tenant_id AND g.expires_at > now",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -19820,6 +20741,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ticket_messages.tenant_id AND g.expires_at > now",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -19963,6 +20887,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = reference_logs.tenant_id AND g.expires_at > now(",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -19978,6 +20905,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = reference_logs.tenant_id AND g.expires_at > now(",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -19993,6 +20923,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = reference_logs.tenant_id AND g.expires_at > now(",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -20008,6 +20941,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = reference_logs.tenant_id AND g.expires_at > now(",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -20207,6 +21143,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = knowledge_pages.tenant_id AND g.expires_at > now",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -20222,6 +21161,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = knowledge_pages.tenant_id AND g.expires_at > now",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -20237,6 +21179,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = knowledge_pages.tenant_id AND g.expires_at > now",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -20252,6 +21197,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = knowledge_pages.tenant_id AND g.expires_at > now",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -20468,6 +21416,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = knowledge_links.tenant_id AND g.expires_at > now",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -20483,6 +21434,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = knowledge_links.tenant_id AND g.expires_at > now",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -20498,6 +21452,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = knowledge_links.tenant_id AND g.expires_at > now",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -20513,6 +21470,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = knowledge_links.tenant_id AND g.expires_at > now",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -20712,6 +21672,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = clients.tenant_id AND g.expires_at > now() AND g",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -20727,6 +21690,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = clients.tenant_id AND g.expires_at > now() AND g",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -20742,6 +21708,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = clients.tenant_id AND g.expires_at > now() AND g",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -20757,6 +21726,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = clients.tenant_id AND g.expires_at > now() AND g",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -21029,6 +22001,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = client_contacts.tenant_id AND g.expires_at > now",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -21044,6 +22019,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = client_contacts.tenant_id AND g.expires_at > now",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -21059,6 +22037,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = client_contacts.tenant_id AND g.expires_at > now",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -21074,6 +22055,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = client_contacts.tenant_id AND g.expires_at > now",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -21217,6 +22201,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = client_requests.tenant_id AND g.expires_at > now",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -21232,6 +22219,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = client_requests.tenant_id AND g.expires_at > now",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -21247,6 +22237,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = client_requests.tenant_id AND g.expires_at > now",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -21262,6 +22255,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = client_requests.tenant_id AND g.expires_at > now",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -21405,6 +22401,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = acceptances.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -21420,6 +22419,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = acceptances.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -21435,6 +22437,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = acceptances.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -21450,6 +22455,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = acceptances.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -21649,6 +22657,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = tenant_memberships.tenant_id AND g.expires_at > ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -21664,6 +22675,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = tenant_memberships.tenant_id AND g.expires_at > ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -21679,6 +22693,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = tenant_memberships.tenant_id AND g.expires_at > ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -21694,6 +22711,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = tenant_memberships.tenant_id AND g.expires_at > ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -22073,6 +23093,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ticket_links.tenant_id AND g.expires_at > now() ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -22088,6 +23111,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ticket_links.tenant_id AND g.expires_at > now() ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -22103,6 +23129,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ticket_links.tenant_id AND g.expires_at > now() ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -22118,6 +23147,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ticket_links.tenant_id AND g.expires_at > now() ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -22261,6 +23293,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ticket_handovers.tenant_id AND g.expires_at > no",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -22276,6 +23311,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ticket_handovers.tenant_id AND g.expires_at > no",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -22291,6 +23329,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ticket_handovers.tenant_id AND g.expires_at > no",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -22306,6 +23347,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ticket_handovers.tenant_id AND g.expires_at > no",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -22505,6 +23549,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = saved_views.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -22520,6 +23567,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = saved_views.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -22535,6 +23585,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = saved_views.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -22550,6 +23603,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = saved_views.tenant_id AND g.expires_at > now() A",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -22693,6 +23749,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ticket_imports.tenant_id AND g.expires_at > now(",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -22708,6 +23767,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ticket_imports.tenant_id AND g.expires_at > now(",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -22723,6 +23785,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ticket_imports.tenant_id AND g.expires_at > now(",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -22738,6 +23803,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ticket_imports.tenant_id AND g.expires_at > now(",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -22937,6 +24005,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = learning_candidates.tenant_id AND g.expires_at >",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -22952,6 +24023,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = learning_candidates.tenant_id AND g.expires_at >",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -22967,6 +24041,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = learning_candidates.tenant_id AND g.expires_at >",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -22982,6 +24059,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = learning_candidates.tenant_id AND g.expires_at >",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -23181,6 +24261,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = bridge_pairing_codes.tenant_id AND g.expires_at ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -23196,6 +24279,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = bridge_pairing_codes.tenant_id AND g.expires_at ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -23211,6 +24297,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = bridge_pairing_codes.tenant_id AND g.expires_at ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -23226,6 +24315,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = bridge_pairing_codes.tenant_id AND g.expires_at ",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -23425,6 +24517,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = notification_settings.tenant_id AND g.expires_at",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -23440,6 +24535,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = notification_settings.tenant_id AND g.expires_at",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -23455,6 +24553,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = notification_settings.tenant_id AND g.expires_at",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -23470,6 +24571,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = notification_settings.tenant_id AND g.expires_at",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -23714,6 +24818,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = scope_memberships.tenant_id AND g.expires_at > n",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -23729,6 +24836,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = scope_memberships.tenant_id AND g.expires_at > n",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -23744,6 +24854,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = scope_memberships.tenant_id AND g.expires_at > n",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   },
@@ -23759,6 +24872,9 @@
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = scope_memberships.tenant_id AND g.expires_at > n",
    "source": [
     "D-074.5",
+    "D-125.128",
+    "D-128.68",
+    "D-128.108",
     "D-077.7"
    ]
   }

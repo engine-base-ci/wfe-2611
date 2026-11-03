@@ -1,11 +1,11 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:8a30bc2c4e7d238b
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:390176d14f6a5190
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
 export type Tenants = { name?: string; plan_id?: string; status_id?: string; live_at?: string; live_by?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type TenantsInput = { name?: string; plan_id?: string; status_id?: string; live_at?: string; live_by?: string };
-export type Scopes = { parent_id?: string; layer_id?: string; name?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
-export type ScopesInput = { parent_id?: string; layer_id?: string; name?: string };
+export type Scopes = { parent_id?: string; layer_id?: string; name?: string; ticket_prefix?: string; next_ticket_no?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
+export type ScopesInput = { parent_id?: string; layer_id?: string; name?: string; ticket_prefix?: string; next_ticket_no?: string };
 export type MemberKinds = { key?: string; label?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type MemberKindsInput = { key?: string; label?: string };
 export type Members = { kind_id?: string; display_name?: string; role_id?: string; manager_member_id?: string; auth_user_id?: string; setup_step?: string; agent_permission_mode?: string; agent_model?: string; agent_effort?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
@@ -210,12 +210,12 @@ export type DisclosureVersions = { version?: number; generated_at?: string; cont
 export type DisclosureVersionsInput = { generated_at?: string; pdf_ref?: string; dpa_ref?: string; released_by?: string; notice_id?: string };
 export type Subprocessors = { name?: string; purpose?: string; region?: string; data_kinds?: string[]; effective_from?: string; announced_at?: string; retired_at?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type SubprocessorsInput = { name?: string; purpose?: string; region?: string; data_kinds?: string[]; effective_from?: string; announced_at?: string; retired_at?: string };
-export type Tickets = { number?: string; kind_id?: string; stage_id?: string; title?: string; assignee_member_id?: string; delegated_to_clone?: string; client_id?: string; parent_ticket_id?: string; derived_from_ticket_id?: string; start_on?: string; due_on?: string; priority?: string; estimate_minutes?: number; actual_minutes?: number; work_type_id?: string; work_type_version?: number; hold_reason?: string; resume_condition?: string; created_by?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
-export type TicketsInput = { number?: string; kind_id?: string; stage_id?: string; title?: string; assignee_member_id?: string; delegated_to_clone?: string; client_id?: string; parent_ticket_id?: string; derived_from_ticket_id?: string; start_on?: string; due_on?: string; priority?: string; estimate_minutes?: number; actual_minutes?: number; work_type_id?: string; work_type_version?: number; hold_reason?: string; resume_condition?: string };
+export type Tickets = { number?: string; kind_id?: string; stage_id?: string; title?: string; assignee_member_id?: string; delegated_to_clone?: string; client_id?: string; parent_ticket_id?: string; derived_from_ticket_id?: string; start_on?: string; due_on?: string; priority?: string; estimate_minutes?: number; actual_minutes?: number; work_type_id?: string; work_type_version?: number; hold_reason?: string; resume_condition?: string; priority_reason?: string; deleted_by?: string; created_by?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
+export type TicketsInput = { number?: string; kind_id?: string; stage_id?: string; title?: string; assignee_member_id?: string; delegated_to_clone?: string; client_id?: string; parent_ticket_id?: string; derived_from_ticket_id?: string; start_on?: string; due_on?: string; priority?: string; estimate_minutes?: number; actual_minutes?: number; work_type_id?: string; work_type_version?: number; hold_reason?: string; resume_condition?: string; priority_reason?: string; deleted_by?: string };
 export type TicketSections = { ticket_id?: string; section_key?: string; position?: string; body?: Record<string, unknown>; version?: number; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type TicketSectionsInput = { ticket_id?: string; section_key?: string; position?: string; body?: Record<string, unknown> };
-export type TicketSectionVersions = { section_id?: string; version?: number; body?: Record<string, unknown>; edited_by?: string; edited_at?: string; edited_by_clone?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
-export type TicketSectionVersionsInput = { section_id?: string; body?: Record<string, unknown>; edited_by?: string; edited_at?: string; edited_by_clone?: string };
+export type TicketSectionVersions = { ticket_id?: string; section_id?: string; version?: number; body?: Record<string, unknown>; edited_by?: string; edited_at?: string; edited_by_clone?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
+export type TicketSectionVersionsInput = { ticket_id?: string; section_id?: string; body?: Record<string, unknown>; edited_by?: string; edited_at?: string; edited_by_clone?: string };
 export type TicketKinds = { name?: string; color?: string; position?: string; is_builtin?: boolean; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type TicketKindsInput = { name?: string; color?: string; position?: string; is_builtin?: boolean };
 export type KindSections = { kind_id?: string; section_key?: string; label?: string; mode?: string; position?: string; default_test_specs?: Record<string, unknown>; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
@@ -228,8 +228,8 @@ export type ClassValues = { axis_id?: string; label?: string; color?: string; po
 export type ClassValuesInput = { axis_id?: string; label?: string; color?: string; position?: string };
 export type TicketClassValues = { ticket_id?: string; value_id?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type TicketClassValuesInput = { ticket_id?: string; value_id?: string };
-export type HandoverRules = { target?: string; mode?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
-export type HandoverRulesInput = { target?: string; mode?: string };
+export type HandoverRules = { target?: string; axis_id?: string; mode?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
+export type HandoverRulesInput = { target?: string; axis_id?: string; mode?: string };
 export type TestSpecs = { ticket_id?: string; check_kind?: string; title?: string; judge_type?: string; params?: Record<string, unknown>; version?: number; off_reason?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type TestSpecsInput = { ticket_id?: string; check_kind?: string; title?: string; judge_type?: string; params?: Record<string, unknown>; off_reason?: string };
 export type Checks = { test_spec_id?: string; spec_version?: number; artifact_version_id?: string; attempt?: string; result?: string; evidence?: Record<string, unknown>; runner?: string; checked_by_member_id?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };

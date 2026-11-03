@@ -210,7 +210,7 @@ erDiagram
 | 6c | **`rollup_kind` は「足す／変換して足す／足さない」の3つで論理的に尽きている**（列挙ではなく導出）。増えるのは `rollup_spec` の中身であって、型ではない |
 | 7 | ~~段階 2 以降で追加：plans / plan_limits / usage_meters / invoices / notifications / subscriptions / error_events~~ → **D-069・D-075・D-076 で段階 1 に繰り上げ（§12）。**段階 2 に残るのはカード決済（`payments.method` の追加と関門 C7 の決済プロバイダ）だけ |
 | 8 | `scopes` は自己参照の木。**一人社長なら 2 層（運営 ＋ 個人）で成立**する。層の名前は `layers`（会社ごと）から引き、「部署」を固定しない（D-073.4） |
-| 9 | **運営は既定で顧客のデータを読めない。**運営ロールの RLS は `support_access_grants` の有効な行（範囲・期限）があるときだけ許可し、読んだ行は両側の証跡に書く（D-074.5） |
+| 9 | **運営は既定で顧客のデータを読めない。**運営ロールの RLS は `support_access_grants` の有効な行（中を見るの許可：理由つき・1 時間・見るだけ）があるときだけ許可し、したことは運営の証跡と相手のワークスペースの証跡の両方に書く（D-074.5 を D-125.128 で改め、D-128.68・D-128.108 で詰めた） |
 | 10 | **口座状態の出来事（退会・停止・権限変更・パスワード変更・招待取消）は `sessions` を全行 revoked にする。**API・Bridge・共有リンク・Webhook はトークンの期限ではなく `sessions` を見る（G-14） |
 | 11 | **`flow.json` の objects[] とこの文書のテーブルは機械で突き合わせる**（`scripts/ci/er_gate.py`）。オブジェクトに実体が無い＝決めたのに DB に無い |
 
@@ -254,7 +254,7 @@ erDiagram
 | **`account_events`** | `<common>` / `kind_id`（member_leave / company_close / suspend / permission_change / plan_change / layer_delete / staff_delete）/ `subject_type` / `subject_id` / `requested_by` / `status_id`（pending / resolving / done）/ `resolved_at` | **★新設（D-074.1・D-076.13）。**出来事 7 つの実体。画面の依存表（G16）はここから |
 | **`account_event_items`** | `<common>` / `event_id` / `object_kind`（flow.json の objects 名）/ `disposition_id`（消える／残る／移る・戻る／止まる／即失効）/ `target_ref` / `decided_by` / `done_at` | **★新設。**オブジェクトごとの「何が起きるか」と引き継ぎ先の決定。全部 done になるまで出来事は終わらない（引き継ぎ先を決めるまで消せない） |
 | **`sessions`** | `<common>` / `member_id` / `kind_id`（web / bridge / api）/ `auth_session_id`（Better Auth のセッション。失効の判定はこの表が正） / `device_label` / `ip_region` / `issued_at` / `last_seen_at` / `revoked_at` / `revoke_reason_id` | **★新設（D-076.1・G-14）。**端末の一覧。退会・停止・権限変更・パスワード変更で **全行を即 revoked** にし、API と Bridge はこの表を見て拒否する（発行済みトークンの有効期限に頼らない） / **`health`** / **`health_at`**（Bridge が返した自己診断。Bridge の中で完結させない ← D-090.7）。`last_seen_at` は生存の知らせで動き、75 秒来なければ画面は「切れています」← D-090.8 / **`browser`**（chrome／dedicated／off。この端末で AI が使うブラウザ。Kaname が正本で、PC の画面か Bridge の窓で変える ← D-120.1） |
-| **`support_access_grants`** | `<common>` / `granted_by_member_id` / `scope jsonb`（構成／手順／証跡 …）/ `expires_at` / `revoked_at` / `ops_member_id` | **★新設（D-074.5）。**運営は既定で顧客データを見られない。会社が範囲と期限つきで許可したときだけ、この行を根拠に読める。閲覧は会社側 `audit_events` と運営側 `ops_audit_events` の両方に残る |
+| **`support_access_grants`** | `<common>` / `granted_by_member_id` / `scope jsonb`（構成／手順／証跡 …）/ `expires_at` / `revoked_at` / `ops_member_id` | **★新設（D-074.5・D-125.128 で改めた）。**運営は既定で顧客データを見られない。規約で先に許可をもらい（D-125.128）、「中を見る」を持つ運営の人が理由を書いて開いたときだけ、この行（1 時間・見るだけ・D-128.68）を根拠に読める。したことは運営側 `ops_audit_events` と会社側 `audit_events` の両方に残る（D-128.108） |
 | **`retention_holds`** | `<common>` / `record_type` / `record_ref` / `retain_until` / `legal_basis` | **★新設（D-074.3）。**退会後も法令で残す記録（請求の記録 7 年 等）。消去バッチはこの表の行を除外する |
 | **`erasure_certificates`** | `<common>` / `issued_at` / `content_hash` / `sent_to` / `storage_ref` | **★新設（D-074.3）。**猶予（30 日・復元可）の後の完全消去で自動生成し、会社の代表に送る |
 
@@ -611,7 +611,8 @@ erDiagram
 
 | 決定 | 何を決めたか | 効いているテーブル |
 |---|---|---|
-| D-125 | 第1フェーズをチケット中心に決め直した（区画・テスト仕様・検査・決定・スレッド・参照の記録・分類・種別・作業の段・切り替えの決まり・ナレッジのページ・取引先・依頼・検収・所属・規約と同意・パスキー） | §16 の表 |
+| D-125 | 第1フェーズをチケット中心に決め直した（区画・テスト仕様・検査・決定・スレッド・参照の記録・分類・種別・作業の段・切り替えの決まり・ナレッジのページ・取引先・依頼・検収・所属・規約と同意・パスキー） | §16 の表・AI社員を役割に（D-125.152） `members` `distributions` `invitations` |
+| D-126 | 業務の型と AI の動き方を決め直した（AI社員・役割はなくし、AI はチケットの責任者の権限で動く。配るのは業務の型。装着はやめ、型はチケットを作るときに選ぶ） | `members` `distributions` `skill_attachments` |
 | D-128 | 担当者（実行者の列なし）・ワークスペースの管理の決まりとチケットの形・ナレッジのつながり・取引先と部署・プランの値段を変える案 | `tickets.assignee_member_id` `tickets.delegated_to_clone` `kind_sections` `knowledge_links` `client_groups` `ops_plan_proposals` |
 | D-072 | タスクは親子で開ける（親の行に ▸ と終わった数／全部・親の中身に子の一覧・足す／自分のAIに分けてもらう・ガントで親の下に子） | `tasks.parent_task_id`（自己参照。子の goal_id は親と同じにするかは実装時に決める：既定は親から継ぐ）。表の追加は画面タスク T-U-16 の migration で行う |
 | D-116 | 6 本番へは、切り替える前の確認に赤が無ければ切り替えられる（黄は承知のうえで）。押したら通し、翌朝から動く | `tenants.live_at` `tenants.live_by` `ai_employees.paused_at`（止めたまま本番へ） `action_runs.ai_employee_id/duty_id/mode_id`。判定は `app.onboard_golive`、切り替えは `app.onboard_golive_switch`（段 6 を通した記録・証跡 golive.switched）、止めるは `app.golive_pause`（0070） |

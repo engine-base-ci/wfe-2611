@@ -12,8 +12,6 @@ counters:
     json_path: $.roles
   expected_value: 5
   mirrors:
-  - file: 01_hearing/決定ログ_進行中.md
-    regex: \| 役割 \| (\d+)（R1
   - file: 05_flow/使ってもらい方.md
     regex: 役割 (\d+) ／ 用事
 - id: job_count
@@ -22,10 +20,8 @@ counters:
     type: json_array_length
     file: 05_flow/flow.json
     json_path: $.jobs
-  expected_value: 20
+  expected_value: 24
   mirrors:
-  - file: 01_hearing/決定ログ_進行中.md
-    regex: \| 用事（JTBD） \| (\d+) \|
   - file: 05_flow/使ってもらい方.md
     regex: 用事 (\d+) ／ 行為
 - id: act_count
@@ -34,10 +30,8 @@ counters:
     type: json_nested_array_length
     file: 05_flow/flow.json
     json_path: $.backbone[*].acts
-  expected_value: 95
+  expected_value: 133
   mirrors:
-  - file: 01_hearing/決定ログ_進行中.md
-    regex: \| 行為 \| (\d+)（段階1
   - file: 05_flow/使ってもらい方.md
     regex: 行為 (\d+) ／ オブジェクト
 - id: object_count
@@ -46,10 +40,8 @@ counters:
     type: json_array_length
     file: 05_flow/flow.json
     json_path: $.objects
-  expected_value: 76
+  expected_value: 94
   mirrors:
-  - file: 01_hearing/決定ログ_進行中.md
-    regex: \| オブジェクト \| (\d+) \|
   - file: 05_flow/使ってもらい方.md
     regex: オブジェクト (\d+) ／ 画面
 - id: screen_count_all
@@ -58,26 +50,20 @@ counters:
     type: json_array_length
     file: 05_flow/flow.json
     json_path: $.screens
-  expected_value: 64
+  expected_value: 72
   mirrors:
-  - file: 01_hearing/決定ログ_進行中.md
-    regex: \| 画面（導出） \| (\d+)（段階1
   - file: 05_flow/使ってもらい方.md
     regex: 画面 (\d+) ／ 最初の一周
 - id: screen_count_v1
-  description: 段階1（v1）の画面数。モックのファイル数と一致すること
+  description: 段階1（v1）の画面数
   source_of_truth:
     type: json_filtered_count
     file: 05_flow/flow.json
     json_path: $.screens
     filter:
       release: v1
-  expected_value: 58
-  mirrors:
-  - file: 01_hearing/決定ログ_進行中.md
-    regex: 画面（導出） \| \d+（段階1が(\d+)
-  - file: 06_mockup/v1/v1-index.html
-    regex: <b>(\d+) 画面。</b>
+  expected_value: 35
+  mirrors: []
 - id: choke_point_count
   description: 関門の数（C1〜C8）
   source_of_truth:
@@ -94,10 +80,8 @@ counters:
     type: json_array_length
     file: 05_flow/flow.json
     json_path: $.walking_skeleton
-  expected_value: 12
+  expected_value: 14
   mirrors:
-  - file: 01_hearing/決定ログ_進行中.md
-    regex: \| 最初の一周 \| (\d+) 手 \|
   - file: 05_flow/使ってもらい方.md
     regex: 最初の一周 (\d+) 手
 references:
@@ -173,6 +157,8 @@ deprecated_terms:
   - spec-dependencies.yaml
   - 06_mockup/_old/
   - _icons.py
+  # 2026-11-02 の記録。user の一言（J21）をそのまま引いている。製品の文書（flow）は「自分の分身（自分の AI）」に直した（D-128.117）
+  - 01_hearing/分身の逆算_20261102.md
 versions:
 - id: flow_version
   source_of_truth:
@@ -3264,6 +3250,7 @@ decision_traceability:
     ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
   - file: 06_mockup/v1/v1-*.html
     ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+    archived: しまった（D-128.114・D-128.117）。前の決定を反映した記録として残す。改められた文が残っていても直さない
   - file: 04_design/DESIGN-kaname.md
     ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
   - file: 02_tech_stack/selected-stack.json
@@ -3293,6 +3280,20 @@ decision_traceability:
     elements:
     - tasks[*]
     source_field: source
+    archived: しまった（D-128.114・D-128.117）。前の決定を反映した記録として残す。改められた文が残っていても直さない
+  - file: 09_features/features.json
+    elements:
+    - meta
+    - items[*]
+    source_field: source
+    archived: しまった（D-128.114・D-128.117）。前の決定を反映した記録として残す。改められた文が残っていても直さない
+  # しまった 07_tasks・09_features・06_mockup v1 の代わりに、作る仕事のチケットとキャンバスを導出物として見る
+  - file: 11_tickets/tickets.json
+    elements:
+    - tickets[*]
+    source_field: decisions
+  - file: 04_design/canvas/*.dc.html
+    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
   - file: 08_schedule/sprint.md
     ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
   - file: 07_qa/test-plan/test-plan.md
@@ -3303,11 +3304,6 @@ decision_traceability:
     source_field: source
   - file: 10_skills/*/SKILL.md
     ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
-  - file: 09_features/features.json
-    elements:
-    - meta
-    - items[*]
-    source_field: source
   - file: 08_api/endpoints.json
     elements:
     - meta
@@ -3369,8 +3365,9 @@ decision_traceability:
 
 # G21 層の棚卸し（layer_audit.py）：全成果物に「機械の検査」か「手で見る理由」を持たせる。検査の無い層は赤。
 layer_checks:
+# G9（モック ↔ flow）は前の画面の見本をしまったので流さない。キャンバスは画面 ID を持たない（D-128.117）
 - file: 05_flow/flow.json
-  check: python3 scripts/ci/flow_gate.py --mocks 06_mockup/v1 --choke 03_architecture/choke-points.json && python3 scripts/ci/trace_gate.py && python3 scripts/ci/flow_fresh.py
+  check: python3 scripts/ci/flow_gate.py --choke 03_architecture/choke-points.json && python3 scripts/ci/trace_gate.py && python3 scripts/ci/flow_fresh.py
 - file: 03_architecture/choke-points.json
   check: python3 scripts/ci/flow_gate.py --choke 03_architecture/choke-points.json
 - file: 02_tech_stack/selected-stack.json
@@ -3403,6 +3400,10 @@ layer_checks:
 - file: 02_tech_stack/selected-stack.json
   manual: 技術選定は決め打ち禁止（user 合意で確定）。決定で新しい基盤が要るときだけ AskUserQuestion で確認してから更新
 - file: 01_hearing/ヒアリングサマリー.md
+  check: python3 scripts/ci/trace_gate.py
+- file: 01_hearing/第1フェーズ_要件定義書_v1.md
+  check: python3 scripts/ci/trace_gate.py
+- file: 01_hearing/第1フェーズ_画面と面_20261101.md
   check: python3 scripts/ci/trace_gate.py
 - file: 01_hearing/要件一覧.md
   check: python3 scripts/ci/trace_gate.py
@@ -3512,8 +3513,6 @@ layer_checks:
   check: (cd apps/bridge && pnpm -s build) && python3 -c "import yaml; yaml.safe_load(open('apps/bridge/electron-builder.yml'))"
 - file: apps/bridge/src/renderer/index.html
   check: (cd apps/bridge && pnpm -s build)
-- file: apps/web/public/_plan/schedule.html
-  manual: しまった（D-128.114）。前の作業の分解は記録として残し、Kaname を作る仕事は 11_tickets で一から切り直した。機械の検査は 11_tickets の G45・G14（coverage_gate）・G26・G31 TV4 が持つ（D-128.117 で読む先を替えた）
 - file: 07_tasks/schedule.html
   manual: しまった（D-128.114）。前の作業の分解は記録として残し、Kaname を作る仕事は 11_tickets で一から切り直した。機械の検査は 11_tickets の G45・G14（coverage_gate）・G26・G31 TV4 が持つ（D-128.117 で読む先を替えた）
 - file: 07_tasks/schedule.md
@@ -3581,9 +3580,10 @@ layer_checks:
 - file: infra/provision/README.md
   manual: 外部リソースのコード化（T-F-16）の説明。実在は G-11 の行で確かめる
 - file: apps/bridge/release/builder-debug.yml
-  manual: electron-builder の出力（ビルドのデバッグ記録）。成果物ではない
+  manual: electron-builder の出力（ビルドのデバッグ記録）。成果物ではない。Bridge の配布物はまだ作っていない（作ると出る）
 - file: apps/bridge/release/kaname-bridge.json
   check: node scripts/ci/bridge_release_check.mjs
+  note: Bridge の配布物の目録。配布物はまだ作っていない（作るまで bridge_release_check は確かめずに通す）
 
 - file: packages/db/policies/*.sql
   check: bash -c 'DATABASE_URL=${DATABASE_URL:-postgres://kaname_app:kaname_app@127.0.0.1:55433/kaname_dev} AUTH_DATABASE_URL=${AUTH_DATABASE_URL:-postgres://kaname_auth:kaname_auth@127.0.0.1:55433/kaname_dev} pnpm -s ci:rls-enabled'
@@ -3602,6 +3602,40 @@ layer_checks:
   check: python3 scripts/tickets/build_index.py --check && python3 scripts/tickets/coverage_gate.py
 - file: 11_tickets/tickets.csv
   manual: Kaname の汎用 CSV の取り込みに渡す形（build_index.py が作る）。手で直さない
+- file: 01_hearing/T12_取り残し_20261101.md
+  manual: 日付つきの記録（その日の逆算・見直しの経過）。決めたことは決定ログに落としてあり、決定ログが正本。記録は書き換えない
+- file: 01_hearing/ナレッジの逆算_20261102.md
+  manual: 日付つきの記録（その日の逆算・見直しの経過）。決めたことは決定ログに落としてあり、決定ログが正本。記録は書き換えない
+- file: 01_hearing/ワークスペースの逆算_20261102.md
+  manual: 日付つきの記録（その日の逆算・見直しの経過）。決めたことは決定ログに落としてあり、決定ログが正本。記録は書き換えない
+- file: 01_hearing/分身の逆算_20261102.md
+  manual: 日付つきの記録（その日の逆算・見直しの経過）。決めたことは決定ログに落としてあり、決定ログが正本。記録は書き換えない
+- file: 01_hearing/取引先の逆算_20261102.md
+  manual: 日付つきの記録（その日の逆算・見直しの経過）。決めたことは決定ログに落としてあり、決定ログが正本。記録は書き換えない
+- file: 01_hearing/段階の見直し_20261101.md
+  manual: 日付つきの記録（その日の逆算・見直しの経過）。決めたことは決定ログに落としてあり、決定ログが正本。記録は書き換えない
+- file: 01_hearing/自分の設定の逆算_20261102.md
+  manual: 日付つきの記録（その日の逆算・見直しの経過）。決めたことは決定ログに落としてあり、決定ログが正本。記録は書き換えない
+- file: 01_hearing/運営の逆算_20261102.md
+  manual: 日付つきの記録（その日の逆算・見直しの経過）。決めたことは決定ログに落としてあり、決定ログが正本。記録は書き換えない
+- file: 01_hearing/requirements-v1.html
+  manual: 第1フェーズの要件定義書の HTML の写し（requirements-definition が作る）。正は 01_hearing/第1フェーズ_要件定義書_v1.md（trace_gate が見る）
+- file: 01_hearing/第1フェーズ_判断ログ_v1.json
+  manual: 要件定義の対話の判断ログ（requirements-definition の出力）。決定は決定ログに落とした
+- file: 01_hearing/第1フェーズ_要件_v1.json
+  manual: 要件定義の内部 JSON（requirements-definition の出力）。正は要件定義書の md と決定ログ
+- file: 03_architecture/ゼロトラストの決まり.md
+  manual: ゼロトラストの決まりの説明。機械の検査は scripts/ci/zt_gate.py（G40）が持つ
+- file: 06_mockup/しまった.md
+  manual: 前の画面の見本をしまった理由と、記録（ui_baseline.json）の説明（D-128.117）
+- file: 07_tasks/しまった.md
+  manual: 前の作業の分解をしまった理由（D-128.114）
+- file: README.md
+  manual: リポジトリの入口の説明。手で直す
+- file: scripts/ci/references/saas-surfaces.yaml
+  manual: coverage_review.py が読む SaaS の面の参照（入力）。成果物ではない
+- file: scripts/ci/zt_baseline.json
+  check: python3 scripts/ci/zt_gate.py
 project_audit:
   ignore:
   - path: apps/web/pw-reports/
@@ -3621,6 +3655,10 @@ project_audit:
   - path: apps/bridge/release/mac-arm64/
     reason: 同上
   stale_ok:
+  - path: 11_tickets/README.md
+    reason: build_index.py が作る一覧。決定は各チケットの decisions が持ち、G45 が決定ログにあるかを見る
+  - path: packages/db/policies/0071_tickets.sql
+    reason: gen_rls.py が entities.json（← 05_flow/rls_policies.py）から作る。根拠の決定は生成元が持つ
   - path: 06_mockup/_old/
     reason: 置き換え前のモックの保管。正は 06_mockup/v1。決定を追随させない
   - path: 06_mockup/_variants/
