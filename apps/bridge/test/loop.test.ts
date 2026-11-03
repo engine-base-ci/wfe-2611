@@ -12,9 +12,13 @@ let server: Server;
 let base = "";
 let posted: Posted[] = [];
 let jobs: Record<string, unknown>[] = [];
+// 仕事は、その回の輪の鍵（x-bridge-session）にだけ渡す。止めた古い輪の切れた問い合わせが、次の回の仕事を持っていかない
+let sid = "";
 let control: { stop: boolean; steer: { id: string; text: string }[] } = { stop: false, steer: [] };
 let steers: { id: string; text: string }[] = [];
 let answer: Record<string, unknown> | null = null;
+// その口に最初に届いたら呼ぶ（時刻ではなく出来事を合図にする。重いときに順番がずれない）
+let onPath: Record<string, () => void> = {};
 
 beforeAll(async () => {
   process.env["KANAME_CLAUDE_BIN"] = join(__dirname, "fake-claude.mjs");
@@ -31,7 +35,12 @@ beforeAll(async () => {
       if (path === "/files/a1") return res.end("日付,金額\n9/1,1000\n");
       const body = raw ? (JSON.parse(raw) as Record<string, unknown>) : {};
       posted.push({ path, body });
-      if (path === "/bridge/take") return send(jobs.shift() ?? null);
+      const hook = onPath[path];
+      if (hook) {
+        delete onPath[path];
+        hook();
+      }
+      if (path === "/bridge/take") return send(req.headers["x-bridge-session"] === sid ? (jobs.shift() ?? null) : null);
       if (path === "/bridge/control") return send({ stop: control.stop });
       if (path === "/bridge/steers") {
         const s = steers;
@@ -59,9 +68,11 @@ afterAll(() => {
 const runOne = async (job: Record<string, unknown>, until: (p: Posted[]) => boolean) => {
   posted = [];
   jobs = [job];
+  sid = crypto.randomUUID();
+  const mine = sid;
   const stop = startLoop({
     apiBase: base,
-    sessionId: () => "00000000-0000-0000-0000-000000000001",
+    sessionId: () => mine,
     health: async () => ({}),
     onChange: () => undefined,
     onGone: () => undefined,
@@ -69,12 +80,14 @@ const runOne = async (job: Record<string, unknown>, until: (p: Posted[]) => bool
   const t0 = Date.now();
   while (!until(posted) && Date.now() - t0 < 8000) await new Promise((r) => setTimeout(r, 50));
   stop();
+  onPath = {};
   return posted;
 };
 const kinds = (p: Posted[]) => p.filter((x) => x.path === "/bridge/progress").map((x) => x.body["kind"]);
 const finished = (p: Posted[]) => p.some((x) => x.path === "/bridge/finish");
 
-describe("startLoop", () => {
+// 実時間で待つ試験（輪の見回りの間隔ぶん・runOne は最大 8 秒待つ）。重い CI でも既定の 5 秒で切られないように上限を伸ばす
+describe("startLoop", { timeout: 20_000 }, () => {
   it("BRG-13-002 書きながらの返事・手順・何をしているか・使用量・使った量を送り、結末を返す（使った量は結末より先）。資料は置き場に取って文に添える", async () => {
     const p = await runOne(
       {
@@ -144,7 +157,8 @@ describe("startLoop", () => {
 
   it("止めるの合図で、理由「あなたが止めました」を返す（D-104.9）", async () => {
     control = { stop: false, steer: [] };
-    setTimeout(() => (control = { stop: true, steer: [] }), 400);
+    // 仕事が始まった（最初の進み具合が届いた）あとに止める合図を出す
+    onPath["/bridge/progress"] = () => (control = { stop: true, steer: [] });
     const p = await runOne(
       { job_id: "22222222-2222-2222-2222-222222222222", prompt: "SLOW", agent_session_id: null, conversation_id: "c" },
       finished,
@@ -156,23 +170,29 @@ describe("startLoop", () => {
     control = { stop: false, steer: [] };
   });
 
-  it("問い合わせの答えを取りに行き、順番待ちの一言は区切り（答えの後）で取りに行って渡す", async () => {
-    // 答える前に一言が順番待ちに入り、答えの後の区切りで Bridge が取りに行く
-    answer = null;
-    setTimeout(() => (steers = [{ id: "s1", text: "9 月で" }]), 100);
-    setTimeout(() => (answer = { allow: true, scope: "once", note: null, answers: { "どの月？": "9 月" } }), 2200);
-    const p = await runOne(
-      { job_id: "33333333-3333-3333-3333-333333333333", prompt: "ASK", agent_session_id: null, conversation_id: "c" },
-      finished,
-    );
-    expect(p.some((x) => x.path === "/bridge/ask" && x.body["summary"] === "どの月？")).toBe(true);
-    // 区切りの答えは、一言を取りに行く口に一緒に渡す（Kaname が 答え→一言 の順に吹き出しにする）
-    const took = p.filter((x) => x.path === "/bridge/steers").map((x) => x.body["reply"]);
-    expect(took[0]).toBe('選んだ:{"どの月？":"9 月"}');
-    expect(p.find((x) => x.path === "/bridge/finish")!.body).toMatchObject({ state: "done", result: "答え:9 月で" });
-    expect(p.filter((x) => x.path === "/bridge/steers").length, "区切りごとに 1 回ずつ見に行く").toBe(2);
-    answer = null;
-  });
+  it(
+    "問い合わせの答えを取りに行き、順番待ちの一言は区切り（答えの後）で取りに行って渡す",
+    { timeout: 20_000 },
+    async () => {
+      // 答える前に一言が順番待ちに入り、答えの後の区切りで Bridge が取りに行く
+      answer = null;
+      setTimeout(() => (steers = [{ id: "s1", text: "9 月で" }]), 100);
+      // 答えは、Bridge が問い合わせを出したあとに入れる（一言は先に順番待ちに入っている）
+      onPath["/bridge/ask"] = () =>
+        setTimeout(() => (answer = { allow: true, scope: "once", note: null, answers: { "どの月？": "9 月" } }), 300);
+      const p = await runOne(
+        { job_id: "33333333-3333-3333-3333-333333333333", prompt: "ASK", agent_session_id: null, conversation_id: "c" },
+        finished,
+      );
+      expect(p.some((x) => x.path === "/bridge/ask" && x.body["summary"] === "どの月？")).toBe(true);
+      // 区切りの答えは、一言を取りに行く口に一緒に渡す（Kaname が 答え→一言 の順に吹き出しにする）
+      const took = p.filter((x) => x.path === "/bridge/steers").map((x) => x.body["reply"]);
+      expect(took[0]).toBe('選んだ:{"どの月？":"9 月"}');
+      expect(p.find((x) => x.path === "/bridge/finish")!.body).toMatchObject({ state: "done", result: "答え:9 月で" });
+      expect(p.filter((x) => x.path === "/bridge/steers").length, "区切りごとに 1 回ずつ見に行く").toBe(2);
+      answer = null;
+    },
+  );
 });
 
 describe("toAnswer", () => {

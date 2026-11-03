@@ -37,6 +37,11 @@ export function gen(root = ROOT) {
   const genericOk = new Set(existsSync(okPath) ? JSON.parse(readFileSync(okPath, "utf8")).ok.map((x) => x.op) : []);
   const built = (e) => hooked.has(e.implementation_path.split("::")[1]) || (tables.has(e.table) && genericOk.has(`${e.method} ${e.path}`));
   const epOf = new Map(eps.map((e) => [`${e.method} ${e.path}`, e]));
+  // 本物の試験が別のファイルにある口（本物のログインの部品が要る など）。理由が空の行は使わない
+  const elsePath = join(root, "07_qa/test-plan/ears-elsewhere.json");
+  const elsewhere = new Map(
+    Object.entries(existsSync(elsePath) ? JSON.parse(readFileSync(elsePath, "utf8")).ops : {}).filter(([, v]) => String(v.reason ?? "").trim() && v.file),
+  );
   const byFile = new Map();
   for (const x of m) byFile.set(x.test_file, [...(byFile.get(x.test_file) ?? []), x]);
   mkdirSync(join(root, OUTDIR), { recursive: true });
@@ -46,6 +51,25 @@ export function gen(root = ROOT) {
     const op = opOf.get(rows[0].endpoint);
     if (!op) continue;
     const isBuilt = built(epOf.get(rows[0].endpoint));
+    const away = elsewhere.get(op);
+    if (away) {
+      const body = rows.map((x) => {
+        n++;
+        const mark = away.covers?.[x.test_function];
+        if (!mark) return `  // 本物の試験はまだ無い（${away.file}）：${x.ears_text.replace(/\n/g, " ")}\n  it.todo(${q(x.test_function)});`;
+        return `  it(${q(x.test_function)}, () => {\n    // ${x.ears_text.replace(/\n/g, " ")}\n    // 本物の試験：${away.file} の「${mark}」（同じ CI の G3 で流れる）\n    expect(readFileSync(${q(away.file)}, "utf8")).toContain(${q(mark)});\n  });`;
+      });
+      writeFileSync(join(root, file), `// 生成物（scripts/ci/gen_ears_tests.mjs ← 07_qa/test-plan/ears-test-mapping.json・ears-elsewhere.json）。手で直さない。${rows[0].endpoint}
+// ${away.reason}
+import { readFileSync } from "node:fs";
+import { describe, expect, it } from "vitest";
+
+describe(${q(rows[0].endpoint)}, () => {
+${body.join("\n")}
+});
+`);
+      continue;
+    }
     const tests = isBuilt ? [] : [`  it("not_implemented_501", async () => {\n    // まだ作っていない口は、正しい役の人が呼んでも 501 で止まり、何も書かない（fail-closed・D-128.113）\n    const who = e.auth === "ops" ? "ops" : "boss";\n    if (e.auth === "public" || e.auth === "client" || e.auth === "device") return;\n    const before = await h.count("audit_events");\n    const r = await h.call(e, who, { ...(e.path.includes(":id") ? { id: "0193c5a0-0000-7000-8000-000000000000" } : {}), ...(e.method === "POST" || e.method === "PATCH" ? { body: {} } : {}) });\n    expect(r.status).toBe(501);\n    expect(await h.count("audit_events")).toBe(before);\n  });`];
     tests.push(...rows.map((x) => {
       n++;

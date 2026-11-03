@@ -1,6 +1,10 @@
 // Vercel の関数の入口（D-097）：組み立ては関数の実体ごとに 1 回・失敗は覚えない・落ちている間は 503（黙って 502 にしない・G-11）。
 // 最後に、本物の組み立て（bootApi・関数用の本数）を Node の HTTP で立て、/health と Bridge の口が通ることを見る。
-import { afterAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+import { migrate } from "@kaname/db/migrate";
+import { migrateAuth } from "@kaname/auth/migrate";
 import http from "node:http";
 import type { AddressInfo } from "node:net";
 import { getRequestListener } from "@hono/node-server";
@@ -46,6 +50,11 @@ describe("組み立ては 1 回・失敗は覚えない", () => {
 
 describe("本物の組み立てを Node の HTTP で", () => {
   let close: (() => Promise<void>) | null = null;
+  // 起動時の存在確認（表がそろっているか）を通すため、自分で migration を当てる（ほかの試験が先に当てている前提にしない）
+  beforeAll(async () => {
+    await migrate(ADMIN, join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "packages", "db"));
+    await migrateAuth(ADMIN);
+  }, 60_000);
   afterAll(async () => close?.());
   it("/health は 200、死んだ Bridge の鍵は 410", async () => {
     const config = loadConfig({
