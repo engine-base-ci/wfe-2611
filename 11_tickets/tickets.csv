@@ -99,25 +99,24 @@ KN-39,チケットのまわりの表,タスク,KN-2,確認中,Claude（このセ
 - [x] 渡された相手は、答えるまでグループの外でも読める（`app.ticket_involved`・D-128.115）
 - [x] CSV の取り込みの下書きは、確定するまで取り込んだ人だけ（D-128.119）
 - [ ] CI が緑のまま"
-KN-40,ナレッジの表,タスク,KN-2,未着手,未定,,基盤・DB,ナレッジの表。契約の API がこの表を読み書きできるようにし、行の守りで範囲の外を見せない。,"- [ ] migration（packages/db/migrations）で表と列ができる
-- [ ] 表ごとに RLS の決まり（packages/db/policies）がある
-- [ ] repository の表の一覧（packages/db/src/repository.ts の TABLES）に入っている
-- [ ] 場合表（access-matrix.json）にこの表の行があり、全部通る
+KN-40,ナレッジの表,タスク,KN-2,確認中,Claude（このセッション）,,基盤・DB,ナレッジの表（ページ・版・つながり）を作り、契約の API が読み書きできるようにする。置き場が見えない人・下書きを知らされない人には見せない。,"- [x] migration（`packages/db/migrations/0073_knowledge.sql`）と RLS（`packages/db/policies/0073_knowledge.sql`）
+- [x] repository の TABLES に入っている・場合表が全部通る
+- [x] 置き場（ワークスペース全体・層・グループ・自分）ごとに見える。自分の置き場は持ち主だけ
+- [x] 下書きは持ち主とその置き場で書ける人だけ（下書きは知らせない）
 - [ ] CI が緑のまま"
-KN-41,取引先の表,タスク,KN-2,未着手,未定,,基盤・DB,取引先の表。契約の API がこの表を読み書きできるようにし、行の守りで範囲の外を見せない。,"- [ ] migration（packages/db/migrations）で表と列ができる
-- [ ] 表ごとに RLS の決まり（packages/db/policies）がある
-- [ ] repository の表の一覧（packages/db/src/repository.ts の TABLES）に入っている
-- [ ] 場合表（access-matrix.json）にこの表の行があり、全部通る
+KN-41,取引先の表,タスク,KN-2,確認中,Claude（このセッション）,,基盤・DB,取引先の表（取引先・担当グループ・先方の人・届いた依頼・検収）を作り、社内の人と取引先の人（クライアントの場所）の見え方を行の守りで分ける。,"- [x] migration（`packages/db/migrations/0074_clients.sql`）と RLS（`packages/db/policies/0074_clients.sql`）
+- [x] repository の TABLES に入っている・場合表が全部通る
+- [x] `tickets.client_id` に外部キーを付けた（KN-38 の申し送り）
+- [x] 取引先の人は、自分の取引先の中だけ・会社が見せると決めたチケットだけ読める（D-125.122）
+- [x] ★柵の穴を塞いだ：取引先の人・PC の文脈で会社の人の守りを通れない
 - [ ] CI が緑のまま"
-KN-42,ワークスペースと人の表,タスク,KN-2,未着手,未定,,基盤・DB,ワークスペースと人の表。契約の API がこの表を読み書きできるようにし、行の守りで範囲の外を見せない。,"- [ ] migration（packages/db/migrations）で表と列ができる
-- [ ] 表ごとに RLS の決まり（packages/db/policies）がある
-- [ ] repository の表の一覧（packages/db/src/repository.ts の TABLES）に入っている
-- [ ] 場合表（access-matrix.json）にこの表の行があり、全部通る
+KN-42,ワークスペースと人の表,タスク,KN-2,確認中,Claude（このセッション）,,基盤・DB,ワークスペースと人の表（ワークスペースへの所属・グループへの所属と兼務・規約の版と同意・知らせの設定・PC の接続コード）を作る。兼務を見える範囲に入れる。,"- [x] migration（`packages/db/migrations/0075_workspace_people.sql`）と RLS（`packages/db/policies/0075_workspace_people.sql`）
+- [x] repository の TABLES に入っている・場合表が全部通る
+- [x] 兼務（scope_memberships）を visible_scopes に入れた（KN-38 の申し送り）
 - [ ] CI が緑のまま"
-KN-43,分身と運営の新しい表,タスク,KN-2,未着手,未定,,基盤・DB,分身と運営の新しい表。契約の API がこの表を読み書きできるようにし、行の守りで範囲の外を見せない。,"- [ ] migration（packages/db/migrations）で表と列ができる
-- [ ] 表ごとに RLS の決まり（packages/db/policies）がある
-- [ ] repository の表の一覧（packages/db/src/repository.ts の TABLES）に入っている
-- [ ] 場合表（access-matrix.json）にこの表の行があり、全部通る
+KN-43,分身と運営の新しい表,タスク,KN-2,確認中,Claude（このセッション）,,基盤・DB,分身の「覚えたいこと」と、運営の新しい表（操作・値段の案）を作る。覚えたいことは本人だけ、値段の案は作った人と決める人を分ける。,"- [x] migration（`packages/db/migrations/0076_clone_ops.sql`）と RLS（`packages/db/policies/0076_clone_ops.sql`）
+- [x] repository の TABLES に入っている・場合表が全部通る
+- [x] 自分の案は自分で決められない（決められる人が 1 人のときだけ例外）を DB で守る
 - [ ] CI が緑のまま"
 KN-44,前からある表に足す列：承認と分身,タスク,KN-2,未着手,未定,,基盤・DB,前からある表に足す列：承認と分身。契約の API がこの表を読み書きできるようにし、行の守りで範囲の外を見せない。,"- [ ] migration（packages/db/migrations）で表と列ができる
 - [ ] 表ごとに RLS の決まり（packages/db/policies）がある

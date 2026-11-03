@@ -142,9 +142,9 @@
 | E-126 | `client_contacts` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 |
 | E-127 | `client_requests` | 16. 第1フェーズの表 | account_scoped | 6 | D-125 D-125.123 D-128 |
 | E-128 | `acceptances` | 16. 第1フェーズの表 | account_scoped | 5 | D-125 D-125.124 D-128 |
-| E-129 | `tenant_memberships` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-125.150 D-128 D-128.46 |
-| E-130 | `terms_versions` | 16. 第1フェーズの表 | ops_scoped | 1 | D-125 D-125.162 D-128 |
-| E-131 | `terms_consents` | 16. 第1フェーズの表 | none | 2 | D-125 D-128 |
+| E-129 | `tenant_memberships` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-125.150 D-128 D-128.46 |
+| E-130 | `terms_versions` | 16. 第1フェーズの表 | ops_scoped | 2 | D-125 D-125.162 D-128 |
+| E-131 | `terms_consents` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-125.162 D-128 |
 | E-132 | `passkeys` | 16. 第1フェーズの表 | none | 2 | D-125 D-125.137 D-128 D-128.59 |
 | E-133 | `operations` | 16. 第1フェーズの表 | ops_scoped | 1 | D-125 D-126.19 D-126.2 D-128 |
 | E-135 | `ticket_links` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-125.50 D-128 D-128.80 |
@@ -152,10 +152,10 @@
 | E-137 | `saved_views` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 D-128.83 |
 | E-138 | `ticket_imports` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 D-128.119 D-128.83 |
 | E-139 | `learning_candidates` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 D-128.41 D-128.43 |
-| E-140 | `bridge_pairing_codes` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 D-128.93 |
-| E-141 | `notification_settings` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 D-128.92 |
+| E-140 | `bridge_pairing_codes` | 16. 第1フェーズの表 | account_scoped | 1 | D-125 D-128 D-128.93 |
+| E-141 | `notification_settings` | 16. 第1フェーズの表 | account_scoped | 2 | D-125 D-128 D-128.92 |
 | E-134 | `ops_plan_proposals` | 16. 第1フェーズの表 | ops_scoped | 1 | D-125 D-128 D-128.72 |
-| E-142 | `scope_memberships` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-125.115 D-128 D-128.95 |
+| E-142 | `scope_memberships` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-125.115 D-128 D-128.95 |
 
 ## 機能
 

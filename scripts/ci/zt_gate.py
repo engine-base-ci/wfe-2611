@@ -63,7 +63,7 @@ def design_fails(sa) -> list[str]:
     import json, importlib.util as _u
     ents = os.path.join(ROOT, "07_functional", "entities.json")
     _sp = _u.spec_from_file_location("rls_policies", os.path.join(ROOT, "05_flow", "rls_policies.py")); _r = _u.module_from_spec(_sp); _sp.loader.exec_module(_r)
-    CATALOG = {"distribution_versions", "plan_versions"}   # 運営が全社に配る版（どの会社にも同じものを見せる）
+    CATALOG = {"distribution_versions", "plan_versions", "terms_versions"}   # 運営が全社に配る版（どの会社にも同じものを見せる）
     if os.path.exists(ents):
         for e in json.load(open(ents, encoding="utf-8"))["entities"]:
             open_read = any(p["role"] == "authenticated" and p["operation"] in ("select", "all") and p["predicate"].strip() == "true" for p in e["access_control_policies"])

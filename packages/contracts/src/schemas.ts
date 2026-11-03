@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:cc0d84b9c051134c
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:0ef8639c57a91a93
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -2574,12 +2574,12 @@ export const AcceptancesInput = z.strictObject({
 });
 export const TenantMemberships = z.strictObject({
   auth_user_id: z.uuid().optional(),
-  tenant_id: z.uuid().optional(),
   member_id: z.uuid().optional(),
   role: z.string().max(10000).optional(),
   status: z.string().max(10000).optional(),
   joined_at: z.iso.datetime({ offset: true }).optional(),
   id: z.uuid(),
+  tenant_id: z.uuid().optional(),
   created_at: z.iso.datetime({ offset: true }).optional(),
   updated_at: z.iso.datetime({ offset: true }).optional(),
 });
@@ -2606,6 +2606,7 @@ export const TermsVersionsInput = z.strictObject({
   published_at: z.iso.datetime({ offset: true }).optional(),
 });
 export const TermsConsents = z.strictObject({
+  member_id: z.uuid().optional(),
   auth_user_id: z.uuid().optional(),
   terms_version_id: z.uuid().optional(),
   agreed_at: z.iso.datetime({ offset: true }).optional(),
@@ -2616,6 +2617,7 @@ export const TermsConsents = z.strictObject({
   updated_at: z.iso.datetime({ offset: true }).optional(),
 });
 export const TermsConsentsInput = z.strictObject({
+  member_id: z.uuid().optional(),
   auth_user_id: z.uuid().optional(),
   terms_version_id: z.uuid().optional(),
   agreed_at: z.iso.datetime({ offset: true }).optional(),
@@ -2755,7 +2757,8 @@ export const LearningCandidates = z.strictObject({
   proposed_as: z.string().max(10000).optional(),
   text: z.string().max(10000).optional(),
   evidence: z.record(z.string(), z.unknown()).optional(),
-  check: z.record(z.string(), z.unknown()).optional(),
+  check_result: z.record(z.string(), z.unknown()).optional(),
+  decided_by: z.uuid().optional(),
   state: z.string().max(10000).optional(),
   decided_at: z.iso.datetime({ offset: true }).optional(),
   result_type: z.string().max(10000).optional(),
@@ -2771,7 +2774,8 @@ export const LearningCandidatesInput = z.strictObject({
   proposed_as: z.string().max(10000).optional(),
   text: z.string().max(10000).optional(),
   evidence: z.record(z.string(), z.unknown()).optional(),
-  check: z.record(z.string(), z.unknown()).optional(),
+  check_result: z.record(z.string(), z.unknown()).optional(),
+  decided_by: z.uuid().optional(),
   state: z.string().max(10000).optional(),
   decided_at: z.iso.datetime({ offset: true }).optional(),
   result_type: z.string().max(10000).optional(),

@@ -12863,11 +12863,11 @@
    "section": "16. 第1フェーズの表",
    "fields": [
     {
-     "name": "auth_user_id",
+     "name": "<common>",
      "note": null
     },
     {
-     "name": "tenant_id",
+     "name": "auth_user_id",
      "note": null
     },
     {
@@ -12888,7 +12888,7 @@
     }
    ],
    "relations": [],
-   "soft_delete": false,
+   "soft_delete": true,
    "timestamps": true,
    "tenant_field": "tenant_id",
    "indexes": [],
@@ -12900,37 +12900,24 @@
    },
    "access_control_policies": [
     {
-     "name": "tenant_memberships_tenant_read",
+     "name": "tenant_memberships_read",
      "operation": "select",
      "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
-     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND (member_id = current_setting('app.user_id', true)::uuid OR has_permission(current_setting('app.user_id', true)::uuid, 'members', NULL, 'edit'))",
+     "rationale": "本人と、その会社のメンバーを直せる人（既定は管理者）だけ。ほかのワークスペースへの所属はログインの部品の口が本人にだけ返す",
      "source": [
-      "D-026.1",
-      "D-058.5",
-      "D-073.1"
+      "D-125.150",
+      "D-128.46"
      ]
     },
     {
-     "name": "tenant_memberships_self_only_write",
-     "operation": "insert,update,delete",
+     "name": "tenant_memberships_admin_write",
+     "operation": "insert,update",
      "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND member_id = current_setting('app.user_id', true)::uuid",
-     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'members', NULL, 'edit')",
+     "rationale": "招く・役割を変える・止めるのは管理者と、その権限を個別に付けた人だけ（本人確認の取り直しは API で）",
      "source": [
-      "D-073.1"
-     ]
-    },
-    {
-     "name": "tenant_memberships_permission_write",
-     "operation": "insert,update,delete",
-     "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'tenant_memberships', NULL, 'edit')",
-     "rationale": "権限＝誰に×何に×どの層で×できること",
-     "source": [
-      "D-073.1",
-      "D-073.2",
-      "D-073.3"
+      "D-128.97"
      ]
     },
     {
@@ -12938,13 +12925,9 @@
      "operation": "select",
      "role": "ops",
      "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = tenant_memberships.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
-     "rationale": "運営は既定で読めない。規約で先に許可をもらい、中を見るを持つ運営の人が理由を書いて開いた 1 時間だけ（見るだけ）。したことは両側の証跡へ",
+     "rationale": "運営は理由つき・1 時間・見るだけの許可があるときだけ（D-128.68）",
      "source": [
-      "D-074.5",
-      "D-125.128",
-      "D-128.68",
-      "D-128.108",
-      "D-077.7"
+      "D-128.68"
      ]
     }
    ],
@@ -12966,8 +12949,12 @@
    "section": "16. 第1フェーズの表",
    "fields": [
     {
+     "name": "<common>",
+     "note": "tenant_id＝運営"
+    },
+    {
      "name": "kind",
-     "note": "利用規約・プライバシー"
+     "note": "利用規約・プライバシー・特商法の表示"
     },
     {
      "name": "version",
@@ -12983,7 +12970,7 @@
     }
    ],
    "relations": [],
-   "soft_delete": false,
+   "soft_delete": true,
    "timestamps": true,
    "tenant_field": "tenant_id",
    "indexes": [],
@@ -12995,14 +12982,23 @@
    },
    "access_control_policies": [
     {
-     "name": "terms_versions_ops_all",
-     "operation": "all",
-     "role": "ops",
-     "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
-     "rationale": "運営テナントの行。顧客は読めない",
+     "name": "terms_versions_all_read",
+     "operation": "select",
+     "role": "authenticated",
+     "predicate": "true",
+     "rationale": "運営が全員に出す規約の版。今の版を同意し直しの画面に出す",
      "source": [
-      "D-073.7",
-      "D-077.4"
+      "D-125.162"
+     ]
+    },
+    {
+     "name": "terms_versions_ops_write",
+     "operation": "insert,update",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops'",
+     "rationale": "規約の版を出すのは運営だけ（消さない）",
+     "source": [
+      "D-125.162"
      ]
     }
    ],
@@ -13023,6 +13019,14 @@
    "section": "16. 第1フェーズの表",
    "fields": [
     {
+     "name": "<common>",
+     "note": "同意したときのワークスペース"
+    },
+    {
+     "name": "member_id",
+     "note": null
+    },
+    {
      "name": "auth_user_id",
      "note": null
     },
@@ -13040,45 +13044,55 @@
     }
    ],
    "relations": [],
-   "soft_delete": false,
+   "soft_delete": true,
    "timestamps": true,
-   "tenant_field": null,
+   "tenant_field": "tenant_id",
    "indexes": [],
    "computed": [],
    "tenant_isolation": {
-    "type": "none",
-    "column": null,
-    "fk_table": null
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
    },
    "access_control_policies": [
     {
-     "name": "terms_consents_all_read",
+     "name": "terms_consents_self_read",
      "operation": "select",
-     "role": "authenticated",
-     "predicate": "true",
-     "rationale": "マスタ。全員が読む",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND member_id = current_setting('app.user_id', true)::uuid",
+     "rationale": "本人だけ",
      "source": [
-      "D-026"
+      "D-125.162"
      ]
     },
     {
-     "name": "terms_consents_ops_write",
-     "operation": "insert,update,delete",
-     "role": "ops",
-     "predicate": "current_setting('app.role', true) = 'ops'",
-     "rationale": "マスタは運営だけが変える",
+     "name": "terms_consents_self_add",
+     "operation": "insert",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND member_id = current_setting('app.user_id', true)::uuid",
+     "rationale": "本人として同意する（追記だけ・直さない・消さない）",
      "source": [
-      "D-037",
-      "D-077.4"
+      "D-125.162"
+     ]
+    },
+    {
+     "name": "terms_consents_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = terms_consents.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は理由つき・1 時間・見るだけの許可があるときだけ（D-128.68）",
+     "source": [
+      "D-128.68"
      ]
     }
    ],
    "legacy_drift_notes": null,
-   "note": "誰がどの版に同意したか",
+   "note": "誰がどの版に同意したか。追記だけ（D-125.162）",
    "status": "decided",
    "decided_at": "2026-11-03",
    "source": [
     "D-125",
+    "D-125.162",
     "D-128"
    ]
   },
@@ -13676,8 +13690,12 @@
      "note": "jsonb（どのチケット・どの話から"
     },
     {
-     "name": "check",
-     "note": "jsonb（分身の点検：ぶつかる決まり・似ているもの・要る OK"
+     "name": "check_result",
+     "note": "jsonb（分身の点検：ぶつかる決まり・似ているもの・要る OK。check は SQL の言葉と重なるので名前を変えた"
+    },
+    {
+     "name": "decided_by",
+     "note": null
     },
     {
      "name": "state",
@@ -13709,37 +13727,35 @@
    },
    "access_control_policies": [
     {
-     "name": "learning_candidates_tenant_read",
+     "name": "learning_candidates_read",
      "operation": "select",
      "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
-     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND (owner_member_id = current_setting('app.user_id', true)::uuid OR ((state = 'needs_ok' OR decided_by = current_setting('app.user_id', true)::uuid) AND has_permission(current_setting('app.user_id', true)::uuid, 'learning_candidates', NULL, 'edit')))",
+     "rationale": "本人（その人の分身の候補）だけ。会社のルールとぶつかって OK を待つもの・自分が決めたものは、OK を出せる人（既定は管理者）にも見える",
      "source": [
-      "D-026.1",
-      "D-058.5",
-      "D-073.1"
+      "D-128.41",
+      "D-128.43"
      ]
     },
     {
-     "name": "learning_candidates_self_only_write",
-     "operation": "insert,update,delete",
+     "name": "learning_candidates_self_write",
+     "operation": "insert,update",
      "role": "member",
      "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND owner_member_id = current_setting('app.user_id', true)::uuid",
-     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "rationale": "本人が 覚える／覚えない／あとで を決める",
      "source": [
-      "D-073.1"
+      "D-128.41",
+      "D-128.90"
      ]
     },
     {
-     "name": "learning_candidates_permission_write",
-     "operation": "insert,update,delete",
+     "name": "learning_candidates_ok",
+     "operation": "update",
      "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'learning_candidates', NULL, 'edit')",
-     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND state IN ('needs_ok', 'learned', 'rejected') AND has_permission(current_setting('app.user_id', true)::uuid, 'learning_candidates', NULL, 'edit')",
+     "rationale": "会社のルールとぶつかるものに OK を出すのは管理者（OK を待つ間か、その決め直しだけ）",
      "source": [
-      "D-073.1",
-      "D-073.2",
-      "D-073.3"
+      "D-128.43"
      ]
     },
     {
@@ -13747,13 +13763,9 @@
      "operation": "select",
      "role": "ops",
      "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = learning_candidates.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
-     "rationale": "運営は既定で読めない。規約で先に許可をもらい、中を見るを持つ運営の人が理由を書いて開いた 1 時間だけ（見るだけ）。したことは両側の証跡へ",
+     "rationale": "運営は理由つき・1 時間・見るだけの許可があるときだけ（D-128.68）",
      "source": [
-      "D-074.5",
-      "D-125.128",
-      "D-128.68",
-      "D-128.108",
-      "D-077.7"
+      "D-128.68"
      ]
     }
    ],
@@ -13814,51 +13826,13 @@
    },
    "access_control_policies": [
     {
-     "name": "bridge_pairing_codes_tenant_read",
-     "operation": "select",
-     "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
-     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
-     "source": [
-      "D-026.1",
-      "D-058.5",
-      "D-073.1"
-     ]
-    },
-    {
-     "name": "bridge_pairing_codes_self_only_write",
-     "operation": "insert,update,delete",
+     "name": "bridge_pairing_codes_self",
+     "operation": "select,insert",
      "role": "member",
      "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND member_id = current_setting('app.user_id', true)::uuid",
-     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "rationale": "接続コードは本人だけが作る・見る（コードそのものは持たない）。使うのは関門の関数",
      "source": [
-      "D-073.1"
-     ]
-    },
-    {
-     "name": "bridge_pairing_codes_permission_write",
-     "operation": "insert,update,delete",
-     "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'bridge_pairing_codes', NULL, 'edit')",
-     "rationale": "権限＝誰に×何に×どの層で×できること",
-     "source": [
-      "D-073.1",
-      "D-073.2",
-      "D-073.3"
-     ]
-    },
-    {
-     "name": "bridge_pairing_codes_ops_read_with_grant",
-     "operation": "select",
-     "role": "ops",
-     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = bridge_pairing_codes.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
-     "rationale": "運営は既定で読めない。規約で先に許可をもらい、中を見るを持つ運営の人が理由を書いて開いた 1 時間だけ（見るだけ）。したことは両側の証跡へ",
-     "source": [
-      "D-074.5",
-      "D-125.128",
-      "D-128.68",
-      "D-128.108",
-      "D-077.7"
+      "D-128.93"
      ]
     }
    ],
@@ -13916,37 +13890,13 @@
    },
    "access_control_policies": [
     {
-     "name": "notification_settings_tenant_read",
-     "operation": "select",
-     "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
-     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
-     "source": [
-      "D-026.1",
-      "D-058.5",
-      "D-073.1"
-     ]
-    },
-    {
-     "name": "notification_settings_self_only_write",
-     "operation": "insert,update,delete",
+     "name": "notification_settings_self",
+     "operation": "select,insert,update",
      "role": "member",
      "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND member_id = current_setting('app.user_id', true)::uuid",
-     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "rationale": "知らせの設定は本人だけ（ワークスペースごと）",
      "source": [
-      "D-073.1"
-     ]
-    },
-    {
-     "name": "notification_settings_permission_write",
-     "operation": "insert,update,delete",
-     "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'notification_settings', NULL, 'edit')",
-     "rationale": "権限＝誰に×何に×どの層で×できること",
-     "source": [
-      "D-073.1",
-      "D-073.2",
-      "D-073.3"
+      "D-128.92"
      ]
     },
     {
@@ -13954,13 +13904,9 @@
      "operation": "select",
      "role": "ops",
      "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = notification_settings.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
-     "rationale": "運営は既定で読めない。規約で先に許可をもらい、中を見るを持つ運営の人が理由を書いて開いた 1 時間だけ（見るだけ）。したことは両側の証跡へ",
+     "rationale": "運営は理由つき・1 時間・見るだけの許可があるときだけ（D-128.68）",
      "source": [
-      "D-074.5",
-      "D-125.128",
-      "D-128.68",
-      "D-128.108",
-      "D-077.7"
+      "D-128.68"
      ]
     }
    ],
@@ -14124,37 +14070,23 @@
    },
    "access_control_policies": [
     {
-     "name": "scope_memberships_tenant_read",
+     "name": "scope_memberships_read",
      "operation": "select",
      "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
-     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND (member_id = current_setting('app.user_id', true)::uuid OR scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid)))",
+     "rationale": "本人と、そのグループが見える人",
      "source": [
-      "D-026.1",
-      "D-058.5",
-      "D-073.1"
+      "D-125.115"
      ]
     },
     {
-     "name": "scope_memberships_self_only_write",
+     "name": "scope_memberships_admin_write",
      "operation": "insert,update,delete",
      "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND member_id = current_setting('app.user_id', true)::uuid",
-     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'members', NULL, 'edit')",
+     "rationale": "グループを移す・兼ねる・役割を変えるのは管理者と、その権限を個別に付けた人だけ（マネージャーの束には入れない）",
      "source": [
-      "D-073.1"
-     ]
-    },
-    {
-     "name": "scope_memberships_permission_write",
-     "operation": "insert,update,delete",
-     "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'scope_memberships', NULL, 'edit')",
-     "rationale": "権限＝誰に×何に×どの層で×できること",
-     "source": [
-      "D-073.1",
-      "D-073.2",
-      "D-073.3"
+      "D-128.97"
      ]
     },
     {
@@ -14162,13 +14094,9 @@
      "operation": "select",
      "role": "ops",
      "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = scope_memberships.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
-     "rationale": "運営は既定で読めない。規約で先に許可をもらい、中を見るを持つ運営の人が理由を書いて開いた 1 時間だけ（見るだけ）。したことは両側の証跡へ",
+     "rationale": "運営は理由つき・1 時間・見るだけの許可があるときだけ（D-128.68）",
      "source": [
-      "D-074.5",
-      "D-125.128",
-      "D-128.68",
-      "D-128.108",
-      "D-077.7"
+      "D-128.68"
      ]
     }
    ],

@@ -11539,6 +11539,13 @@
   },
   {
    "entity": "tenant_memberships",
+   "field": "<common>",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "tenant_memberships",
    "field": "auth_user_id",
    "consumed_by_screens": [
     "verify-email",
@@ -11551,13 +11558,6 @@
    ],
    "internal": false,
    "reason": null
-  },
-  {
-   "entity": "tenant_memberships",
-   "field": "tenant_id",
-   "consumed_by_screens": [],
-   "internal": true,
-   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
   },
   {
    "entity": "tenant_memberships",
@@ -11621,6 +11621,13 @@
   },
   {
    "entity": "terms_versions",
+   "field": "<common>",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "terms_versions",
    "field": "kind",
    "consumed_by_screens": [
     "signup"
@@ -11655,31 +11662,70 @@
   },
   {
    "entity": "terms_consents",
-   "field": "auth_user_id",
+   "field": "<common>",
    "consumed_by_screens": [],
    "internal": true,
-   "reason": "マスタ。label は各画面の札・選択肢として出る"
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "terms_consents",
+   "field": "member_id",
+   "consumed_by_screens": [
+    "signup",
+    "verify-email",
+    "invite-accept",
+    "login"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "terms_consents",
+   "field": "auth_user_id",
+   "consumed_by_screens": [
+    "signup",
+    "verify-email",
+    "invite-accept",
+    "login"
+   ],
+   "internal": false,
+   "reason": null
   },
   {
    "entity": "terms_consents",
    "field": "terms_version_id",
-   "consumed_by_screens": [],
-   "internal": true,
-   "reason": "マスタ。label は各画面の札・選択肢として出る"
+   "consumed_by_screens": [
+    "signup",
+    "verify-email",
+    "invite-accept",
+    "login"
+   ],
+   "internal": false,
+   "reason": null
   },
   {
    "entity": "terms_consents",
    "field": "agreed_at",
-   "consumed_by_screens": [],
-   "internal": true,
-   "reason": "マスタ。label は各画面の札・選択肢として出る"
+   "consumed_by_screens": [
+    "signup",
+    "verify-email",
+    "invite-accept",
+    "login"
+   ],
+   "internal": false,
+   "reason": null
   },
   {
    "entity": "terms_consents",
    "field": "ip",
-   "consumed_by_screens": [],
-   "internal": true,
-   "reason": "マスタ。label は各画面の札・選択肢として出る"
+   "consumed_by_screens": [
+    "signup",
+    "verify-email",
+    "invite-accept",
+    "login"
+   ],
+   "internal": false,
+   "reason": null
   },
   {
    "entity": "passkeys",
@@ -12295,7 +12341,22 @@
   },
   {
    "entity": "learning_candidates",
-   "field": "check",
+   "field": "check_result",
+   "consumed_by_screens": [
+    "onboard-interview",
+    "onboard-draft",
+    "today",
+    "clone-thread",
+    "clone-chat",
+    "ai-activity",
+    "import"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "learning_candidates",
+   "field": "decided_by",
    "consumed_by_screens": [
     "onboard-interview",
     "onboard-draft",

@@ -2684,9 +2684,7 @@
    "access_control_policies": [
     "members_permission_write",
     "invitations_permission_write",
-    "tenant_memberships_self_only_write",
-    "tenant_memberships_permission_write",
-    "terms_consents_ops_write"
+    "tenant_memberships_admin_write"
    ],
    "outputs_4xx": [
     {
@@ -3371,7 +3369,9 @@
     "scheme": "none"
    },
    "rate_limit": "10/min/ip",
-   "access_control_policies": [],
+   "access_control_policies": [
+    "terms_versions_ops_write"
+   ],
    "outputs_4xx": [
     {
      "status": 409,
@@ -3644,9 +3644,7 @@
     "tenants_permission_write",
     "members_permission_write",
     "sessions_permission_write",
-    "tenant_memberships_self_only_write",
-    "tenant_memberships_permission_write",
-    "terms_consents_ops_write"
+    "tenant_memberships_admin_write"
    ],
    "outputs_4xx": [
     {
@@ -3857,9 +3855,7 @@
     "scheme": "session（Better Auth・sessions 表を見る。app.tenant_id / app.user_id / app.role を SET LOCAL）"
    },
    "rate_limit": "60/min/user",
-   "access_control_policies": [
-    "terms_consents_ops_write"
-   ],
+   "access_control_policies": [],
    "outputs_4xx": [
     {
      "status": 401,
@@ -3968,7 +3964,9 @@
     "scheme": "none"
    },
    "rate_limit": "10/min/ip",
-   "access_control_policies": [],
+   "access_control_policies": [
+    "terms_versions_all_read"
+   ],
    "outputs_4xx": [
     {
      "status": 429,
@@ -4165,9 +4163,7 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "sessions_permission_write",
-    "bridge_pairing_codes_self_only_write",
-    "bridge_pairing_codes_permission_write"
+    "sessions_permission_write"
    ],
    "outputs_4xx": [
     {
@@ -6724,10 +6720,7 @@
     "scheme": "session（Better Auth・sessions 表を見る。app.tenant_id / app.user_id / app.role を SET LOCAL）"
    },
    "rate_limit": "60/min/user",
-   "access_control_policies": [
-    "bridge_pairing_codes_self_only_write",
-    "bridge_pairing_codes_permission_write"
-   ],
+   "access_control_policies": [],
    "outputs_4xx": [
     {
      "status": 401,
@@ -7596,8 +7589,7 @@
     "sessions_permission_write",
     "invitations_permission_write",
     "client_contacts_write",
-    "tenant_memberships_self_only_write",
-    "tenant_memberships_permission_write"
+    "tenant_memberships_admin_write"
    ],
    "outputs_4xx": [
     {
@@ -10045,7 +10037,7 @@
     "memories_ops_read_with_grant",
     "action_runs_tenant_read",
     "action_runs_ops_read_with_grant",
-    "learning_candidates_tenant_read",
+    "learning_candidates_read",
     "learning_candidates_ops_read_with_grant"
    ],
    "outputs_4xx": [
@@ -10389,7 +10381,7 @@
     "memories_ops_read_with_grant",
     "policies_tenant_read",
     "policies_ops_read_with_grant",
-    "learning_candidates_tenant_read",
+    "learning_candidates_read",
     "learning_candidates_ops_read_with_grant"
    ],
    "outputs_4xx": [
@@ -10929,8 +10921,7 @@
    "access_control_policies": [
     "conversations_self_only_write",
     "conversations_permission_write",
-    "learning_candidates_self_only_write",
-    "learning_candidates_permission_write"
+    "learning_candidates_self_write"
    ],
    "outputs_4xx": [
     {
@@ -18328,7 +18319,7 @@
    },
    "rate_limit": "120/min/user",
    "access_control_policies": [
-    "learning_candidates_tenant_read",
+    "learning_candidates_read",
     "learning_candidates_ops_read_with_grant"
    ],
    "outputs_4xx": [
@@ -18450,8 +18441,7 @@
     "memories_self_only_write",
     "memories_permission_write",
     "policies_permission_write",
-    "learning_candidates_self_only_write",
-    "learning_candidates_permission_write"
+    "learning_candidates_self_write"
    ],
    "outputs_4xx": [
     {
@@ -18596,8 +18586,7 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "learning_candidates_self_only_write",
-    "learning_candidates_permission_write"
+    "learning_candidates_self_write"
    ],
    "outputs_4xx": [
     {
@@ -18735,8 +18724,7 @@
     "approvals_permission_write",
     "notifications_self_only_write",
     "notifications_permission_write",
-    "learning_candidates_self_only_write",
-    "learning_candidates_permission_write"
+    "learning_candidates_self_write"
    ],
    "outputs_4xx": [
     {
@@ -18874,8 +18862,7 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "learning_candidates_self_only_write",
-    "learning_candidates_permission_write"
+    "learning_candidates_self_write"
    ],
    "outputs_4xx": [
     {
@@ -19011,7 +18998,7 @@
     "tenants_ops_read_with_grant",
     "members_tenant_read",
     "members_ops_read_with_grant",
-    "tenant_memberships_tenant_read",
+    "tenant_memberships_read",
     "tenant_memberships_ops_read_with_grant"
    ],
    "outputs_4xx": [
@@ -19696,7 +19683,6 @@
    "access_control_policies": [
     "notification_preferences_tenant_read",
     "notification_preferences_ops_read_with_grant",
-    "notification_settings_tenant_read",
     "notification_settings_ops_read_with_grant"
    ],
    "outputs_4xx": [
@@ -19802,9 +19788,7 @@
    "rate_limit": "60/min/user",
    "access_control_policies": [
     "notification_preferences_self_only_write",
-    "notification_preferences_permission_write",
-    "notification_settings_self_only_write",
-    "notification_settings_permission_write"
+    "notification_preferences_permission_write"
    ],
    "outputs_4xx": [
     {
@@ -19915,9 +19899,7 @@
    "rate_limit": "60/min/user",
    "access_control_policies": [
     "notification_preferences_self_only_write",
-    "notification_preferences_permission_write",
-    "notification_settings_self_only_write",
-    "notification_settings_permission_write"
+    "notification_preferences_permission_write"
    ],
    "outputs_4xx": [
     {
@@ -21475,8 +21457,7 @@
     "memories_permission_write",
     "approvals_self_only_write",
     "approvals_permission_write",
-    "tenant_memberships_self_only_write",
-    "tenant_memberships_permission_write"
+    "tenant_memberships_admin_write"
    ],
    "outputs_4xx": [
     {
@@ -21713,7 +21694,7 @@
     "clients_own_read",
     "clients_ops_read_with_grant",
     "passkeys_all_read",
-    "scope_memberships_tenant_read",
+    "scope_memberships_read",
     "scope_memberships_ops_read_with_grant"
    ],
    "outputs_4xx": [
@@ -21969,8 +21950,7 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "scope_memberships_self_only_write",
-    "scope_memberships_permission_write"
+    "scope_memberships_admin_write"
    ],
    "outputs_4xx": [
     {
@@ -22500,8 +22480,7 @@
    "rate_limit": "60/min/user",
    "access_control_policies": [
     "members_permission_write",
-    "tenant_memberships_self_only_write",
-    "tenant_memberships_permission_write"
+    "tenant_memberships_admin_write"
    ],
    "outputs_4xx": [
     {
@@ -22644,10 +22623,8 @@
    "rate_limit": "60/min/user",
    "access_control_policies": [
     "members_permission_write",
-    "tenant_memberships_self_only_write",
-    "tenant_memberships_permission_write",
-    "scope_memberships_self_only_write",
-    "scope_memberships_permission_write"
+    "tenant_memberships_admin_write",
+    "scope_memberships_admin_write"
    ],
    "outputs_4xx": [
     {
@@ -22780,8 +22757,7 @@
     "bridge_jobs_self_only_write",
     "bridge_jobs_permission_write",
     "sessions_permission_write",
-    "tenant_memberships_self_only_write",
-    "tenant_memberships_permission_write"
+    "tenant_memberships_admin_write"
    ],
    "outputs_4xx": [
     {
@@ -23165,8 +23141,7 @@
    "access_control_policies": [
     "memories_self_only_write",
     "memories_permission_write",
-    "learning_candidates_self_only_write",
-    "learning_candidates_permission_write"
+    "learning_candidates_self_write"
    ],
    "outputs_4xx": [
     {
@@ -29826,7 +29801,7 @@
     "members_ops_read_with_grant",
     "sessions_tenant_read",
     "sessions_ops_read_with_grant",
-    "tenant_memberships_tenant_read",
+    "tenant_memberships_read",
     "tenant_memberships_ops_read_with_grant",
     "passkeys_all_read"
    ],
@@ -33212,7 +33187,7 @@
     "scopes_ops_read_with_grant",
     "layers_tenant_read",
     "layers_ops_read_with_grant",
-    "scope_memberships_tenant_read",
+    "scope_memberships_read",
     "scope_memberships_ops_read_with_grant"
    ],
    "outputs_4xx": [
@@ -33316,8 +33291,7 @@
    "access_control_policies": [
     "scopes_permission_write",
     "layers_permission_write",
-    "scope_memberships_self_only_write",
-    "scope_memberships_permission_write"
+    "scope_memberships_admin_write"
    ],
    "outputs_4xx": [
     {
@@ -33434,8 +33408,7 @@
    "rate_limit": "60/min/user",
    "access_control_policies": [
     "scopes_permission_write",
-    "scope_memberships_self_only_write",
-    "scope_memberships_permission_write"
+    "scope_memberships_admin_write"
    ],
    "outputs_4xx": [
     {
@@ -43056,9 +43029,9 @@
     "sessions_ops_read_with_grant",
     "invitations_tenant_read",
     "invitations_ops_read_with_grant",
-    "tenant_memberships_tenant_read",
+    "tenant_memberships_read",
     "tenant_memberships_ops_read_with_grant",
-    "scope_memberships_tenant_read",
+    "scope_memberships_read",
     "scope_memberships_ops_read_with_grant"
    ],
    "outputs_4xx": [

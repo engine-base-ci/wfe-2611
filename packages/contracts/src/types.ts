@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:cc0d84b9c051134c
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:0ef8639c57a91a93
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -256,12 +256,12 @@ export type ClientRequests = { client_id?: string; contact_id?: string; title?: 
 export type ClientRequestsInput = { client_id?: string; contact_id?: string; title?: string; body?: string; due_on?: string; state?: string; ticket_id?: string; routed_scope_id?: string; questions?: Record<string, unknown>; decline_reason?: string };
 export type Acceptances = { ticket_id?: string; artifact_version_id?: string; contact_id?: string; due_on?: string; message?: string; result?: string; comment?: string; decided_at?: string; reminded_at?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type AcceptancesInput = { ticket_id?: string; artifact_version_id?: string; contact_id?: string; due_on?: string; message?: string; result?: string; comment?: string; decided_at?: string; reminded_at?: string };
-export type TenantMemberships = { auth_user_id?: string; tenant_id?: string; member_id?: string; role?: string; status?: string; joined_at?: string; id: string; created_at?: string; updated_at?: string };
+export type TenantMemberships = { auth_user_id?: string; member_id?: string; role?: string; status?: string; joined_at?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type TenantMembershipsInput = { auth_user_id?: string; member_id?: string; role?: string; status?: string; joined_at?: string };
 export type TermsVersions = { kind?: string; version?: number; url?: string; published_at?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type TermsVersionsInput = { kind?: string; url?: string; published_at?: string };
-export type TermsConsents = { auth_user_id?: string; terms_version_id?: string; agreed_at?: string; ip?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
-export type TermsConsentsInput = { auth_user_id?: string; terms_version_id?: string; agreed_at?: string; ip?: string };
+export type TermsConsents = { member_id?: string; auth_user_id?: string; terms_version_id?: string; agreed_at?: string; ip?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
+export type TermsConsentsInput = { member_id?: string; auth_user_id?: string; terms_version_id?: string; agreed_at?: string; ip?: string };
 export type Passkeys = { auth_user_id?: string; credential_id?: string; public_key?: string; name?: string; transports?: string; last_used_at?: string; revoked_at?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type PasskeysInput = { auth_user_id?: string; credential_id?: string; public_key?: string; name?: string; transports?: string; last_used_at?: string; revoked_at?: string };
 export type Operations = { key?: string; name?: string; kind?: string; current_version?: number; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
@@ -274,8 +274,8 @@ export type SavedViews = { member_id?: string; name?: string; share?: string; sc
 export type SavedViewsInput = { member_id?: string; name?: string; share?: string; filters?: Record<string, unknown>; columns?: Record<string, unknown>; density?: string };
 export type TicketImports = { uploaded_by?: string; scope_id?: string; source?: string; mapping?: Record<string, unknown>; rows?: number; errors?: Record<string, unknown>; state?: string; committed_at?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type TicketImportsInput = { uploaded_by?: string; source?: string; mapping?: Record<string, unknown>; rows?: number; errors?: Record<string, unknown>; state?: string; committed_at?: string };
-export type LearningCandidates = { owner_member_id?: string; trigger?: string; proposed_as?: string; text?: string; evidence?: Record<string, unknown>; check?: Record<string, unknown>; state?: string; decided_at?: string; result_type?: string; result_id?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
-export type LearningCandidatesInput = { owner_member_id?: string; trigger?: string; proposed_as?: string; text?: string; evidence?: Record<string, unknown>; check?: Record<string, unknown>; state?: string; decided_at?: string; result_type?: string; result_id?: string };
+export type LearningCandidates = { owner_member_id?: string; trigger?: string; proposed_as?: string; text?: string; evidence?: Record<string, unknown>; check_result?: Record<string, unknown>; decided_by?: string; state?: string; decided_at?: string; result_type?: string; result_id?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
+export type LearningCandidatesInput = { owner_member_id?: string; trigger?: string; proposed_as?: string; text?: string; evidence?: Record<string, unknown>; check_result?: Record<string, unknown>; decided_by?: string; state?: string; decided_at?: string; result_type?: string; result_id?: string };
 export type BridgePairingCodes = { member_id?: string; code_hash?: string; expires_at?: string; used_at?: string; used_session_id?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type BridgePairingCodesInput = { member_id?: string; code_hash?: string; expires_at?: string; used_at?: string; used_session_id?: string };
 export type NotificationSettings = { email_digest?: boolean; quiet_hours?: Record<string, unknown>; paused_until?: string; urgent_override?: string[]; events?: string[] };

@@ -220,6 +220,57 @@ POLICIES: dict[str, list[dict]] = {
          "rationale": "頼まれた本人が OK／直してほしい を返す", "source": ["D-125.124"]},
         ops_read("acceptances"),
     ],
+    # ---- ワークスペースと人（KN-42・D-125.115・D-125.150・D-125.162・D-128.92・D-128.93・D-128.97）
+    "tenant_memberships": [
+        {"name": "tenant_memberships_read", "operation": "select", "role": "member",
+         "predicate": f"tenant_id = {T} AND (member_id = {U} OR has_permission({U}, 'members', NULL, 'edit'))",
+         "rationale": "本人と、その会社のメンバーを直せる人（既定は管理者）だけ。ほかのワークスペースへの所属はログインの部品の口が本人にだけ返す", "source": ["D-125.150", "D-128.46"]},
+        {"name": "tenant_memberships_admin_write", "operation": "insert,update", "role": "member", "predicate": f"tenant_id = {T} AND has_permission({U}, 'members', NULL, 'edit')",
+         "rationale": "招く・役割を変える・止めるのは管理者と、その権限を個別に付けた人だけ（本人確認の取り直しは API で）", "source": ["D-128.97"]},
+        ops_read("tenant_memberships"),
+    ],
+    "scope_memberships": [
+        {"name": "scope_memberships_read", "operation": "select", "role": "member",
+         "predicate": f"tenant_id = {T} AND (member_id = {U} OR scope_id = ANY(visible_scopes({U})))",
+         "rationale": "本人と、そのグループが見える人", "source": ["D-125.115"]},
+        {"name": "scope_memberships_admin_write", "operation": "insert,update,delete", "role": "member", "predicate": f"tenant_id = {T} AND has_permission({U}, 'members', NULL, 'edit')",
+         "rationale": "グループを移す・兼ねる・役割を変えるのは管理者と、その権限を個別に付けた人だけ（マネージャーの束には入れない）", "source": ["D-128.97"]},
+        ops_read("scope_memberships"),
+    ],
+    "terms_versions": [
+        {"name": "terms_versions_all_read", "operation": "select", "role": "authenticated", "predicate": "true",
+         "rationale": "運営が全員に出す規約の版。今の版を同意し直しの画面に出す", "source": ["D-125.162"]},
+        {"name": "terms_versions_ops_write", "operation": "insert,update", "role": "ops", "predicate": "current_setting('app.role', true) = 'ops'",
+         "rationale": "規約の版を出すのは運営だけ（消さない）", "source": ["D-125.162"]},
+    ],
+    "terms_consents": [
+        {"name": "terms_consents_self_read", "operation": "select", "role": "member", "predicate": f"tenant_id = {T} AND member_id = {U}",
+         "rationale": "本人だけ", "source": ["D-125.162"]},
+        {"name": "terms_consents_self_add", "operation": "insert", "role": "member", "predicate": f"tenant_id = {T} AND member_id = {U}",
+         "rationale": "本人として同意する（追記だけ・直さない・消さない）", "source": ["D-125.162"]},
+        ops_read("terms_consents"),
+    ],
+    "notification_settings": [
+        {"name": "notification_settings_self", "operation": "select,insert,update", "role": "member", "predicate": f"tenant_id = {T} AND member_id = {U}",
+         "rationale": "知らせの設定は本人だけ（ワークスペースごと）", "source": ["D-128.92"]},
+        ops_read("notification_settings"),
+    ],
+    "bridge_pairing_codes": [
+        {"name": "bridge_pairing_codes_self", "operation": "select,insert", "role": "member", "predicate": f"tenant_id = {T} AND member_id = {U}",
+         "rationale": "接続コードは本人だけが作る・見る（コードそのものは持たない）。使うのは関門の関数", "source": ["D-128.93"]},
+    ],
+    # ---- 分身の「覚えたいこと」（KN-43・D-128.41〜.43）。運営の表（operations・ops_plan_proposals）は形からの当てはめ（運営だけ）のまま
+    "learning_candidates": [
+        {"name": "learning_candidates_read", "operation": "select", "role": "member",
+         "predicate": f"tenant_id = {T} AND (owner_member_id = {U} OR ((state = 'needs_ok' OR decided_by = {U}) AND has_permission({U}, 'learning_candidates', NULL, 'edit')))",
+         "rationale": "本人（その人の分身の候補）だけ。会社のルールとぶつかって OK を待つもの・自分が決めたものは、OK を出せる人（既定は管理者）にも見える", "source": ["D-128.41", "D-128.43"]},
+        {"name": "learning_candidates_self_write", "operation": "insert,update", "role": "member", "predicate": f"tenant_id = {T} AND owner_member_id = {U}",
+         "rationale": "本人が 覚える／覚えない／あとで を決める", "source": ["D-128.41", "D-128.90"]},
+        {"name": "learning_candidates_ok", "operation": "update", "role": "member",
+         "predicate": f"tenant_id = {T} AND state IN ('needs_ok', 'learned', 'rejected') AND has_permission({U}, 'learning_candidates', NULL, 'edit')",
+         "rationale": "会社のルールとぶつかるものに OK を出すのは管理者（OK を待つ間か、その決め直しだけ）", "source": ["D-128.43"]},
+        ops_read("learning_candidates"),
+    ],
     # 登録の保留（ログインの前）。表は kaname_auth の側にあり、登録の口（auth-ext）だけが読み書きする。アプリの役からは誰も読めない
     "pending_signup": [{"name": "pending_signup_no_app_access", "operation": "select", "role": "member", "predicate": "false",
                         "rationale": "ログインの前の保留。アプリの役からは読めない（登録の口だけが kaname_auth の側で扱う・D-088.2）", "source": ["D-088.2", "D-128.115"]}],
@@ -227,7 +278,6 @@ POLICIES: dict[str, list[dict]] = {
 
 # 誰でも（ログイン済みなら）読める・書けるのは本当のマスタだけ。それ以外でまだ直していない表と、直すチケット（zt_gate.py の ZT3 が見る）
 PENDING_CHILD_TABLES = {
-    "terms_consents": "KN-42（本人だけ）",
     "passkeys": "KN-46（置き場所を決める：Better Auth の側なら API からは触らない）",
     "skill_versions": "KN-44（会社ごとの業務の型を入れる前に、元の型を見られる人だけにする）",
 }

@@ -157,7 +157,9 @@ export async function seedGenericRows(
           seeded.get(`${fk.refTable}:${b.opsTenant}`) ??
           seeded.get(`${fk.refTable}:${b.tenantA}`) ??
           null;
-        if (v && used.has(`${fk.refTable}:${v}`)) v = seeded2.get(`${fk.refTable}:${tenant}`) ?? v;
+        // 同じ行を 2 回指さない：2 行目の種があればそれを、無ければ空でよい列は空にする（例：案を作った人と決めた人）
+        if (v && used.has(`${fk.refTable}:${v}`))
+          v = seeded2.get(`${fk.refTable}:${tenant}`) ?? (x.nullable ? null : v);
         if (v) used.add(`${fk.refTable}:${v}`);
         row[x.col] = v;
       } else if (x.col === "key") row[x.col] = fresh ? `k9-${rnd()}` : "seed";
@@ -216,9 +218,11 @@ export async function seedGenericRows(
         // 列どうしの決まりが「この種類なら本文が要る」（例：書き込みは本文が必須）なら、空でよい文字の列も埋めてもう一度
         if ((e2 as { code?: string }).code !== "23514") throw e2;
         const filled = { ...row };
-        for (const x of colsOf(t))
-          if (x.nullable && x.type === "text" && !fkOf(t, x.col) && filled[x.col] == null)
-            filled[x.col] = `seed-${rnd()}`;
+        for (const x of colsOf(t)) {
+          if (x.type !== "text" || fkOf(t, x.col) || allowed.has(`${t}.${x.col}`)) continue;
+          // 空でよい文字の列を埋め、決まりの長さ（例：ハッシュは 32 文字以上）にも当たらないよう長めの値にする
+          if (filled[x.col] == null || filled[x.col] === "seed") filled[x.col] = `seed-${rnd()}-${"0".repeat(40)}`;
+        }
         return await orExisting(filled);
       }
     }
@@ -256,6 +260,7 @@ export async function seedGenericRows(
     if (isOps(t)) {
       const id = await insertRow(t, build(t, "ops", false));
       seeded.set(`${t}:${b.opsTenant}`, id);
+      if (twice.has(t)) seeded2.set(`${t}:${b.opsTenant}`, await insertRow(t, build(t, "ops", true)));
       out[t] = { visible: id, hiddenLayer: null, other: id, insert: () => build(t, "ops", true) };
       continue;
     }

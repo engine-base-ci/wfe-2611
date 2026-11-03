@@ -129,6 +129,17 @@ export const TABLES = [
   "client_contacts",
   "client_requests",
   "acceptances",
+  // ワークスペースと人（KN-42・0075）
+  "tenant_memberships",
+  "scope_memberships",
+  "terms_versions",
+  "terms_consents",
+  "notification_settings",
+  "bridge_pairing_codes",
+  // 分身と運営（KN-43・0076）
+  "learning_candidates",
+  "operations",
+  "ops_plan_proposals",
 ] as const;
 /** 追記専用（関門の関数 app.record_* だけが書く。repository の create/update/softDelete は拒否） */
 export const APPEND_ONLY: ReadonlySet<string> = new Set(["audit_events", "ops_audit_events", "security_events"]);
