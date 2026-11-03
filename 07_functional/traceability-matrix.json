@@ -25,8 +25,11 @@
     "E-131 terms_consents"
    ],
    "related_apis": [
-    "POST /api/members",
-    "GET /api/members",
+    "POST /api/auth/sign-up",
+    "POST /api/auth/sign-up",
+    "GET /api/auth/sign-up/status",
+    "POST /api/auth/sign-up/resend",
+    "GET /api/auth/terms/current",
     "navigate /login"
    ],
    "access_roles": [
@@ -50,7 +53,7 @@
     "E-055 layers"
    ],
    "related_apis": [
-    "GET /api/members",
+    "POST /api/auth/sign-up/verify",
     "navigate /setup/bridge",
     "navigate /login",
     "navigate /signup"
@@ -77,7 +80,9 @@
     "E-002 scopes"
    ],
    "related_apis": [
-    "GET /api/invitations"
+    "GET /api/auth/invitations/:token",
+    "POST /api/auth/invitations/:token/accept",
+    "POST /api/auth/invitations/:token/accept"
    ],
    "access_roles": [
     "R3",
@@ -102,8 +107,19 @@
     "E-073 security_events"
    ],
    "related_apis": [
-    "GET /api/members",
-    "GET /api/members",
+    "GET /api/me/security",
+    "GET /api/me/security",
+    "PATCH /api/me/passkeys/:id",
+    "DELETE /api/me/passkeys/:id",
+    "POST /api/me/two-factor/enable",
+    "POST /api/me/two-factor/confirm",
+    "DELETE /api/me/two-factor",
+    "POST /api/me/backup-codes",
+    "PATCH /api/me/password",
+    "GET /api/me/sessions",
+    "DELETE /api/me/sessions/:id",
+    "POST /api/me/sessions/revoke-others",
+    "POST /api/members/:id/two-factor/reset",
     "navigate /setup/bridge"
    ],
    "access_roles": [
@@ -155,7 +171,12 @@
     "E-061 sessions"
    ],
    "related_apis": [
-    "GET /api/members",
+    "POST /api/auth/sign-in",
+    "POST /api/auth/two-factor/verify",
+    "POST /api/auth/recovery/admin-request",
+    "POST /api/auth/terms/consent",
+    "POST /api/auth/step-up",
+    "POST /api/auth/sign-out",
     "navigate /password-reset",
     "navigate /signup",
     "navigate /today"
@@ -184,7 +205,8 @@
     "E-073 security_events"
    ],
    "related_apis": [
-    "GET /api/members",
+    "POST /api/auth/password/forgot",
+    "POST /api/auth/password/reset",
     "navigate /login"
    ],
    "access_roles": [
@@ -2903,13 +2925,31 @@
      "act": "A01",
      "role": "action",
      "method": "POST",
-     "path_draft": "/api/members"
+     "path_draft": "/api/auth/sign-up"
+    },
+    {
+     "act": "A96",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/sign-up"
+    },
+    {
+     "act": "A01",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/auth/sign-up/status"
+    },
+    {
+     "act": "A01",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/sign-up/resend"
     },
     {
      "act": "A96",
      "role": "data_fetch",
      "method": "GET",
-     "path_draft": "/api/members"
+     "path_draft": "/api/auth/terms/current"
     },
     {
      "role": "transition",
@@ -2925,9 +2965,9 @@
    "required_apis": [
     {
      "act": "A02",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/members"
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/sign-up/verify"
     },
     {
      "role": "transition",
@@ -2957,7 +2997,19 @@
      "act": "A03",
      "role": "data_fetch",
      "method": "GET",
-     "path_draft": "/api/invitations"
+     "path_draft": "/api/auth/invitations/:token"
+    },
+    {
+     "act": "A03",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/invitations/:token/accept"
+    },
+    {
+     "act": "A96",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/invitations/:token/accept"
     }
    ]
   },
@@ -2966,16 +3018,82 @@
    "screen_name": "安全の設定",
    "required_apis": [
     {
-     "act": "A04",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/members"
-    },
-    {
      "act": "A97",
      "role": "data_fetch",
      "method": "GET",
-     "path_draft": "/api/members"
+     "path_draft": "/api/me/security"
+    },
+    {
+     "act": "A04",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/me/security"
+    },
+    {
+     "act": "A97",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/me/passkeys/:id"
+    },
+    {
+     "act": "A97",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/me/passkeys/:id"
+    },
+    {
+     "act": "A04",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/me/two-factor/enable"
+    },
+    {
+     "act": "A04",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/me/two-factor/confirm"
+    },
+    {
+     "act": "A04",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/me/two-factor"
+    },
+    {
+     "act": "A04",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/me/backup-codes"
+    },
+    {
+     "act": "A97",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/me/password"
+    },
+    {
+     "act": "A74",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/me/sessions"
+    },
+    {
+     "act": "A74",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/me/sessions/:id"
+    },
+    {
+     "act": "A74",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/me/sessions/revoke-others"
+    },
+    {
+     "act": "A04",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/members/:id/two-factor/reset"
     },
     {
      "role": "transition",
@@ -3003,9 +3121,39 @@
    "required_apis": [
     {
      "act": "A13",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/members"
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/sign-in"
+    },
+    {
+     "act": "A13",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/two-factor/verify"
+    },
+    {
+     "act": "A13",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/recovery/admin-request"
+    },
+    {
+     "act": "A96",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/terms/consent"
+    },
+    {
+     "act": "A13",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/step-up"
+    },
+    {
+     "act": "A13",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/sign-out"
     },
     {
      "role": "transition",
@@ -3033,9 +3181,15 @@
    "required_apis": [
     {
      "act": "A31",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/members"
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/password/forgot"
+    },
+    {
+     "act": "A31",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/password/reset"
     },
     {
      "role": "transition",

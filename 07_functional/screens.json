@@ -64,13 +64,77 @@
      "act": "A01",
      "role": "action",
      "method": "POST",
-     "path_draft": "/api/members",
+     "path_draft": "/api/auth/sign-up",
+     "table": "pending_signup",
+     "operation_id": "createSignup",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-004",
-      "E-058",
-      "E-055",
+      "E-092",
       "E-130"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.135",
+      "D-001",
+      "D-125.167",
+      "D-002",
+      "D-001.5"
+     ]
+    },
+    {
+     "act": "A96",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/sign-up",
+     "table": "pending_signup",
+     "operation_id": "createSignup",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-092",
+      "E-130"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.162",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A01",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/auth/sign-up/status",
+     "table": "pending_signup",
+     "operation_id": "getSignupStatus",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-092"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.135",
+      "D-001",
+      "D-125.167",
+      "D-002",
+      "D-001.5"
+     ]
+    },
+    {
+     "act": "A01",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/sign-up/resend",
+     "table": "pending_signup",
+     "operation_id": "resendSignupEmail",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-092"
      ],
      "choke_points": [
       "C2"
@@ -87,12 +151,11 @@
      "act": "A96",
      "role": "data_fetch",
      "method": "GET",
-     "path_draft": "/api/members",
+     "path_draft": "/api/auth/terms/current",
+     "table": "terms_versions",
+     "operation_id": "getCurrentTerms",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-004",
-      "E-058",
-      "E-055",
       "E-130"
      ],
      "choke_points": [
@@ -118,13 +181,77 @@
      "act": "A01",
      "role": "action",
      "method": "POST",
-     "path_draft": "/api/members",
+     "path_draft": "/api/auth/sign-up",
+     "table": "pending_signup",
+     "operation_id": "createSignup",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-004",
-      "E-058",
-      "E-055",
+      "E-092",
       "E-130"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.135",
+      "D-001",
+      "D-125.167",
+      "D-002",
+      "D-001.5"
+     ]
+    },
+    {
+     "act": "A96",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/sign-up",
+     "table": "pending_signup",
+     "operation_id": "createSignup",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-092",
+      "E-130"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.162",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A01",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/auth/sign-up/status",
+     "table": "pending_signup",
+     "operation_id": "getSignupStatus",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-092"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.135",
+      "D-001",
+      "D-125.167",
+      "D-002",
+      "D-001.5"
+     ]
+    },
+    {
+     "act": "A01",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/sign-up/resend",
+     "table": "pending_signup",
+     "operation_id": "resendSignupEmail",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-092"
      ],
      "choke_points": [
       "C2"
@@ -141,12 +268,11 @@
      "act": "A96",
      "role": "data_fetch",
      "method": "GET",
-     "path_draft": "/api/members",
+     "path_draft": "/api/auth/terms/current",
+     "table": "terms_versions",
+     "operation_id": "getCurrentTerms",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-004",
-      "E-058",
-      "E-055",
       "E-130"
      ],
      "choke_points": [
@@ -269,18 +395,23 @@
    "related_apis": [
     {
      "act": "A02",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/members",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/sign-up/verify",
+     "table": "pending_signup",
+     "operation_id": "verifySignup",
      "auth": "session（会社・層・権限）",
      "related_entities": [
+      "E-092",
+      "E-001",
       "E-004",
-      "E-058",
-      "E-055"
+      "E-129",
+      "E-131",
+      "E-061"
      ],
      "choke_points": [
-      "C6",
-      "C2"
+      "C2",
+      "C6"
      ],
      "source": [
       "D-042",
@@ -319,18 +450,23 @@
    "required_apis": [
     {
      "act": "A02",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/members",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/sign-up/verify",
+     "table": "pending_signup",
+     "operation_id": "verifySignup",
      "auth": "session（会社・層・権限）",
      "related_entities": [
+      "E-092",
+      "E-001",
       "E-004",
-      "E-058",
-      "E-055"
+      "E-129",
+      "E-131",
+      "E-061"
      ],
      "choke_points": [
-      "C6",
-      "C2"
+      "C2",
+      "C6"
      ],
      "source": [
       "D-042",
@@ -454,13 +590,14 @@
      "act": "A03",
      "role": "data_fetch",
      "method": "GET",
-     "path_draft": "/api/invitations",
+     "path_draft": "/api/auth/invitations/:token",
+     "table": "invitations",
+     "operation_id": "getInvitation",
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-091",
-      "E-004",
-      "E-058",
-      "E-055"
+      "E-001",
+      "E-002"
      ],
      "choke_points": [
       "C2"
@@ -474,20 +611,20 @@
       "D-125.152",
       "D-126.18"
      ]
-    }
-   ],
-   "required_apis": [
+    },
     {
      "act": "A03",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/invitations",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/invitations/:token/accept",
+     "table": "invitations",
+     "operation_id": "acceptInvitation",
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-091",
       "E-004",
-      "E-058",
-      "E-055"
+      "E-129",
+      "E-131"
      ],
      "choke_points": [
       "C2"
@@ -500,6 +637,105 @@
       "D-037",
       "D-125.152",
       "D-126.18"
+     ]
+    },
+    {
+     "act": "A96",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/invitations/:token/accept",
+     "table": "invitations",
+     "operation_id": "acceptInvitation",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-091",
+      "E-004",
+      "E-129",
+      "E-131"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.162",
+      "D-125.167"
+     ]
+    }
+   ],
+   "required_apis": [
+    {
+     "act": "A03",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/auth/invitations/:token",
+     "table": "invitations",
+     "operation_id": "getInvitation",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-091",
+      "E-001",
+      "E-002"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.150",
+      "D-125.121",
+      "D-026",
+      "D-125.167",
+      "D-037",
+      "D-125.152",
+      "D-126.18"
+     ]
+    },
+    {
+     "act": "A03",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/invitations/:token/accept",
+     "table": "invitations",
+     "operation_id": "acceptInvitation",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-091",
+      "E-004",
+      "E-129",
+      "E-131"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.150",
+      "D-125.121",
+      "D-026",
+      "D-125.167",
+      "D-037",
+      "D-125.152",
+      "D-126.18"
+     ]
+    },
+    {
+     "act": "A96",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/invitations/:token/accept",
+     "table": "invitations",
+     "operation_id": "acceptInvitation",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-091",
+      "E-004",
+      "E-129",
+      "E-131"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.162",
+      "D-125.167"
      ]
     }
    ],
@@ -597,16 +833,41 @@
    ],
    "related_apis": [
     {
+     "act": "A97",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/me/security",
+     "table": "passkeys",
+     "operation_id": "getMySecurity",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-132",
+      "E-061",
+      "E-073"
+     ],
+     "choke_points": [
+      "C2",
+      "C8"
+     ],
+     "source": [
+      "D-125.137",
+      "D-125.138",
+      "D-125.146",
+      "D-125.167"
+     ]
+    },
+    {
      "act": "A04",
      "role": "data_fetch",
      "method": "GET",
-     "path_draft": "/api/members",
+     "path_draft": "/api/me/security",
+     "table": "passkeys",
+     "operation_id": "getMySecurity",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-004",
-      "E-058",
-      "E-055",
-      "E-132"
+      "E-132",
+      "E-061",
+      "E-073"
      ],
      "choke_points": [
       "C2",
@@ -618,14 +879,13 @@
     },
     {
      "act": "A97",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/members",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/me/passkeys/:id",
+     "table": "passkeys",
+     "operation_id": "renamePasskey",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-004",
-      "E-058",
-      "E-055",
       "E-132"
      ],
      "choke_points": [
@@ -637,6 +897,224 @@
       "D-125.138",
       "D-125.146",
       "D-125.167"
+     ]
+    },
+    {
+     "act": "A97",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/me/passkeys/:id",
+     "table": "passkeys",
+     "operation_id": "deletePasskey",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-132",
+      "E-073"
+     ],
+     "choke_points": [
+      "C2",
+      "C8"
+     ],
+     "source": [
+      "D-125.137",
+      "D-125.138",
+      "D-125.146",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A04",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/me/two-factor/enable",
+     "table": "security_events",
+     "operation_id": "startTwoFactor",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-073"
+     ],
+     "choke_points": [
+      "C2",
+      "C8"
+     ],
+     "source": [
+      "D-042"
+     ]
+    },
+    {
+     "act": "A04",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/me/two-factor/confirm",
+     "table": "security_events",
+     "operation_id": "confirmTwoFactor",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-073"
+     ],
+     "choke_points": [
+      "C2",
+      "C8"
+     ],
+     "source": [
+      "D-042"
+     ]
+    },
+    {
+     "act": "A04",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/me/two-factor",
+     "table": "security_events",
+     "operation_id": "disableTwoFactor",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-073"
+     ],
+     "choke_points": [
+      "C2",
+      "C8"
+     ],
+     "source": [
+      "D-042"
+     ]
+    },
+    {
+     "act": "A04",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/me/backup-codes",
+     "table": "security_events",
+     "operation_id": "regenerateBackupCodes",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-073"
+     ],
+     "choke_points": [
+      "C2",
+      "C8"
+     ],
+     "source": [
+      "D-042"
+     ]
+    },
+    {
+     "act": "A97",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/me/password",
+     "table": "security_events",
+     "operation_id": "changePassword",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-073",
+      "E-061"
+     ],
+     "choke_points": [
+      "C2",
+      "C8"
+     ],
+     "source": [
+      "D-125.137",
+      "D-125.138",
+      "D-125.146",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A74",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/me/sessions",
+     "table": "sessions",
+     "operation_id": "listMySessions",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-061"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.140",
+      "D-125.150",
+      "D-125.158",
+      "D-125.167",
+      "D-076.1",
+      "D-042",
+      "D-042.8"
+     ]
+    },
+    {
+     "act": "A74",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/me/sessions/:id",
+     "table": "sessions",
+     "operation_id": "revokeMySession",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-061",
+      "E-073"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.140",
+      "D-125.150",
+      "D-125.158",
+      "D-125.167",
+      "D-076.1",
+      "D-042",
+      "D-042.8"
+     ]
+    },
+    {
+     "act": "A74",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/me/sessions/revoke-others",
+     "table": "sessions",
+     "operation_id": "revokeOtherSessions",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-061",
+      "E-073"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.140",
+      "D-125.150",
+      "D-125.158",
+      "D-125.167",
+      "D-076.1",
+      "D-042",
+      "D-042.8"
+     ]
+    },
+    {
+     "act": "A04",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/members/:id/two-factor/reset",
+     "table": "security_events",
+     "operation_id": "resetMemberTwoFactor",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-073",
+      "E-004",
+      "E-052",
+      "E-080"
+     ],
+     "choke_points": [
+      "C2",
+      "C8"
+     ],
+     "source": [
+      "D-042"
      ]
     },
     {
@@ -651,16 +1129,41 @@
    ],
    "required_apis": [
     {
+     "act": "A97",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/me/security",
+     "table": "passkeys",
+     "operation_id": "getMySecurity",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-132",
+      "E-061",
+      "E-073"
+     ],
+     "choke_points": [
+      "C2",
+      "C8"
+     ],
+     "source": [
+      "D-125.137",
+      "D-125.138",
+      "D-125.146",
+      "D-125.167"
+     ]
+    },
+    {
      "act": "A04",
      "role": "data_fetch",
      "method": "GET",
-     "path_draft": "/api/members",
+     "path_draft": "/api/me/security",
+     "table": "passkeys",
+     "operation_id": "getMySecurity",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-004",
-      "E-058",
-      "E-055",
-      "E-132"
+      "E-132",
+      "E-061",
+      "E-073"
      ],
      "choke_points": [
       "C2",
@@ -672,14 +1175,13 @@
     },
     {
      "act": "A97",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/members",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/me/passkeys/:id",
+     "table": "passkeys",
+     "operation_id": "renamePasskey",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-004",
-      "E-058",
-      "E-055",
       "E-132"
      ],
      "choke_points": [
@@ -691,6 +1193,224 @@
       "D-125.138",
       "D-125.146",
       "D-125.167"
+     ]
+    },
+    {
+     "act": "A97",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/me/passkeys/:id",
+     "table": "passkeys",
+     "operation_id": "deletePasskey",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-132",
+      "E-073"
+     ],
+     "choke_points": [
+      "C2",
+      "C8"
+     ],
+     "source": [
+      "D-125.137",
+      "D-125.138",
+      "D-125.146",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A04",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/me/two-factor/enable",
+     "table": "security_events",
+     "operation_id": "startTwoFactor",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-073"
+     ],
+     "choke_points": [
+      "C2",
+      "C8"
+     ],
+     "source": [
+      "D-042"
+     ]
+    },
+    {
+     "act": "A04",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/me/two-factor/confirm",
+     "table": "security_events",
+     "operation_id": "confirmTwoFactor",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-073"
+     ],
+     "choke_points": [
+      "C2",
+      "C8"
+     ],
+     "source": [
+      "D-042"
+     ]
+    },
+    {
+     "act": "A04",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/me/two-factor",
+     "table": "security_events",
+     "operation_id": "disableTwoFactor",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-073"
+     ],
+     "choke_points": [
+      "C2",
+      "C8"
+     ],
+     "source": [
+      "D-042"
+     ]
+    },
+    {
+     "act": "A04",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/me/backup-codes",
+     "table": "security_events",
+     "operation_id": "regenerateBackupCodes",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-073"
+     ],
+     "choke_points": [
+      "C2",
+      "C8"
+     ],
+     "source": [
+      "D-042"
+     ]
+    },
+    {
+     "act": "A97",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/me/password",
+     "table": "security_events",
+     "operation_id": "changePassword",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-073",
+      "E-061"
+     ],
+     "choke_points": [
+      "C2",
+      "C8"
+     ],
+     "source": [
+      "D-125.137",
+      "D-125.138",
+      "D-125.146",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A74",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/me/sessions",
+     "table": "sessions",
+     "operation_id": "listMySessions",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-061"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.140",
+      "D-125.150",
+      "D-125.158",
+      "D-125.167",
+      "D-076.1",
+      "D-042",
+      "D-042.8"
+     ]
+    },
+    {
+     "act": "A74",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/me/sessions/:id",
+     "table": "sessions",
+     "operation_id": "revokeMySession",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-061",
+      "E-073"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.140",
+      "D-125.150",
+      "D-125.158",
+      "D-125.167",
+      "D-076.1",
+      "D-042",
+      "D-042.8"
+     ]
+    },
+    {
+     "act": "A74",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/me/sessions/revoke-others",
+     "table": "sessions",
+     "operation_id": "revokeOtherSessions",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-061",
+      "E-073"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.140",
+      "D-125.150",
+      "D-125.158",
+      "D-125.167",
+      "D-076.1",
+      "D-042",
+      "D-042.8"
+     ]
+    },
+    {
+     "act": "A04",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/members/:id/two-factor/reset",
+     "table": "security_events",
+     "operation_id": "resetMemberTwoFactor",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-073",
+      "E-004",
+      "E-052",
+      "E-080"
+     ],
+     "choke_points": [
+      "C2",
+      "C8"
+     ],
+     "source": [
+      "D-042"
      ]
     },
     {
@@ -937,15 +1657,125 @@
    "related_apis": [
     {
      "act": "A13",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/members",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/sign-in",
+     "table": "sessions",
+     "operation_id": "signInWithPassword",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-004",
-      "E-058",
-      "E-055",
-      "E-132"
+      "E-061",
+      "E-073"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.137",
+      "D-125.140",
+      "D-042",
+      "D-125.167",
+      "D-053.4"
+     ]
+    },
+    {
+     "act": "A13",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/two-factor/verify",
+     "table": "sessions",
+     "operation_id": "verifySignInCode",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-061",
+      "E-073"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.137",
+      "D-125.140",
+      "D-042",
+      "D-125.167",
+      "D-053.4"
+     ]
+    },
+    {
+     "act": "A13",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/recovery/admin-request",
+     "table": "security_events",
+     "operation_id": "requestAdminRecovery",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-073",
+      "E-080"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.137",
+      "D-125.140",
+      "D-042",
+      "D-125.167",
+      "D-053.4"
+     ]
+    },
+    {
+     "act": "A96",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/terms/consent",
+     "table": "terms_consents",
+     "operation_id": "consentToTerms",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-131"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.162",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A13",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/step-up",
+     "table": "sessions",
+     "operation_id": "stepUp",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-061",
+      "E-073"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.137",
+      "D-125.140",
+      "D-042",
+      "D-125.167",
+      "D-053.4"
+     ]
+    },
+    {
+     "act": "A13",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/sign-out",
+     "table": "sessions",
+     "operation_id": "signOut",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-061"
      ],
      "choke_points": [
       "C2"
@@ -989,15 +1819,125 @@
    "required_apis": [
     {
      "act": "A13",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/members",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/sign-in",
+     "table": "sessions",
+     "operation_id": "signInWithPassword",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-004",
-      "E-058",
-      "E-055",
-      "E-132"
+      "E-061",
+      "E-073"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.137",
+      "D-125.140",
+      "D-042",
+      "D-125.167",
+      "D-053.4"
+     ]
+    },
+    {
+     "act": "A13",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/two-factor/verify",
+     "table": "sessions",
+     "operation_id": "verifySignInCode",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-061",
+      "E-073"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.137",
+      "D-125.140",
+      "D-042",
+      "D-125.167",
+      "D-053.4"
+     ]
+    },
+    {
+     "act": "A13",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/recovery/admin-request",
+     "table": "security_events",
+     "operation_id": "requestAdminRecovery",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-073",
+      "E-080"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.137",
+      "D-125.140",
+      "D-042",
+      "D-125.167",
+      "D-053.4"
+     ]
+    },
+    {
+     "act": "A96",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/terms/consent",
+     "table": "terms_consents",
+     "operation_id": "consentToTerms",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-131"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.162",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A13",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/step-up",
+     "table": "sessions",
+     "operation_id": "stepUp",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-061",
+      "E-073"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.137",
+      "D-125.140",
+      "D-042",
+      "D-125.167",
+      "D-053.4"
+     ]
+    },
+    {
+     "act": "A13",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/sign-out",
+     "table": "sessions",
+     "operation_id": "signOut",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-061"
      ],
      "choke_points": [
       "C2"
@@ -1133,19 +2073,40 @@
    "related_apis": [
     {
      "act": "A31",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/members",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/password/forgot",
+     "table": "security_events",
+     "operation_id": "requestPasswordReset",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-004",
-      "E-058",
-      "E-055",
-      "E-052"
+      "E-073"
      ],
      "choke_points": [
-      "C6",
-      "C2"
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-042",
+      "D-125.140",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A31",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/password/reset",
+     "table": "sessions",
+     "operation_id": "resetPassword",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-061",
+      "E-073"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
      ],
      "source": [
       "D-042",
@@ -1166,19 +2127,40 @@
    "required_apis": [
     {
      "act": "A31",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/members",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/password/forgot",
+     "table": "security_events",
+     "operation_id": "requestPasswordReset",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-004",
-      "E-058",
-      "E-055",
-      "E-052"
+      "E-073"
      ],
      "choke_points": [
-      "C6",
-      "C2"
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-042",
+      "D-125.140",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A31",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/password/reset",
+     "table": "sessions",
+     "operation_id": "resetPassword",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-061",
+      "E-073"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
      ],
      "source": [
       "D-042",

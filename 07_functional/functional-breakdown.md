@@ -205,13 +205,13 @@
 
 | ID | 画面 | 行為 | 状態 | 遷移 | 必要 API | エンティティ | 役割 |
 |---|---|---|---|---|---|---|---|
-| signup | アカウントを作る | A01 A96 | 2 | 1 | 3 | 5 | R1 R2 R3 R4 |
+| signup | アカウントを作る | A01 A96 | 2 | 1 | 6 | 5 | R1 R2 R3 R4 |
 | verify-email | メールを確認する | A02 | 5 | 3 | 4 | 3 | R1 R2 |
-| invite-accept | 招待を受けて参加する | A03 | 3 | 0 | 1 | 6 | R3 R4 |
-| mfa-setup | 安全の設定 | A04 A97 | 3 | 1 | 3 | 7 | R1 R2 R3 R4 |
+| invite-accept | 招待を受けて参加する | A03 | 3 | 0 | 3 | 6 | R3 R4 |
+| mfa-setup | 安全の設定 | A04 A97 | 3 | 1 | 14 | 7 | R1 R2 R3 R4 |
 | billing-setup | 支払い方法を登録する | A05 | 4 | 0 | 1 | 9 | R1 R2 |
-| login | ログインする | A13 | 3 | 3 | 4 | 5 | R1 R2 R3 R4 |
-| password-reset | パスワードの再設定 | A31 | 3 | 1 | 2 | 6 | R1 R2 R3 R4 |
+| login | ログインする | A13 | 3 | 3 | 9 | 5 | R1 R2 R3 R4 |
+| password-reset | パスワードの再設定 | A31 | 3 | 1 | 3 | 6 | R1 R2 R3 R4 |
 | onboard-interview | 自分のAIと話す | A06 | 1 | 0 | 1 | 6 | R1 R2 |
 | onboard-draft | たたき台を確かめる | A07 A08 | 1 | 0 | 2 | 15 | R1 R2 |
 | bridge-setup | PC をつなぐ | A09 | 11 | 48 | 49 | 1 | R1 R2 R3 |

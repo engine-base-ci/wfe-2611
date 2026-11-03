@@ -157,6 +157,48 @@ SCREEN_API = {
         ("POST", "/action_runs/:id/retry", "A57", "action_runs", "retryActionRun", []),
         ("POST", "/action_runs/:id/takeover", "A57", "action_runs", "takeoverActionRun", ["tickets"]),
     ],
+    # ---------------------------------------------------------------- ログイン・登録・2 段階・パスキー（08_api/phase1/04_ログイン.md）
+    # 暗号の中身（パスワードの照合・パスキーの署名・TOTP の計算・セッションの発行）は Better Auth（/api/auth/*）に任せ、
+    # ここはその前後（登録の保留・ロック・規約・招待・本人確認の取り直し・自分の安全の設定）を受け持つ
+    "signup": [
+        ("POST", "/auth/sign-up", "A01|A96", "pending_signup", "createSignup", ["terms_versions"]),
+        ("GET", "/auth/sign-up/status", "A01", "pending_signup", "getSignupStatus", []),
+        ("POST", "/auth/sign-up/resend", "A01", "pending_signup", "resendSignupEmail", []),
+        ("GET", "/auth/terms/current", "A96", "terms_versions", "getCurrentTerms", []),
+    ],
+    "verify-email": [
+        ("POST", "/auth/sign-up/verify", "A02", "pending_signup", "verifySignup", ["tenants", "members", "tenant_memberships", "terms_consents", "sessions"]),
+    ],
+    "login": [
+        ("POST", "/auth/sign-in", "A13", "sessions", "signInWithPassword", ["security_events"]),
+        ("POST", "/auth/two-factor/verify", "A13", "sessions", "verifySignInCode", ["security_events"]),
+        ("POST", "/auth/recovery/admin-request", "A13", "security_events", "requestAdminRecovery", ["notifications"]),
+        ("POST", "/auth/terms/consent", "A96", "terms_consents", "consentToTerms", []),
+        ("POST", "/auth/step-up", "A13", "sessions", "stepUp", ["security_events"]),
+        ("POST", "/auth/sign-out", "A13", "sessions", "signOut", []),
+    ],
+    "password-reset": [
+        ("POST", "/auth/password/forgot", "A31", "security_events", "requestPasswordReset", []),
+        ("POST", "/auth/password/reset", "A31", "sessions", "resetPassword", ["security_events"]),
+    ],
+    "invite-accept": [
+        ("GET", "/auth/invitations/:token", "A03", "invitations", "getInvitation", ["tenants", "scopes"]),
+        ("POST", "/auth/invitations/:token/accept", "A03|A96", "invitations", "acceptInvitation", ["members", "tenant_memberships", "terms_consents"]),
+    ],
+    "mfa-setup": [
+        ("GET", "/me/security", "A97|A04", "passkeys", "getMySecurity", ["sessions", "security_events"]),
+        ("PATCH", "/me/passkeys/:id", "A97", "passkeys", "renamePasskey", []),
+        ("DELETE", "/me/passkeys/:id", "A97", "passkeys", "deletePasskey", ["security_events"]),
+        ("POST", "/me/two-factor/enable", "A04", "security_events", "startTwoFactor", []),
+        ("POST", "/me/two-factor/confirm", "A04", "security_events", "confirmTwoFactor", []),
+        ("DELETE", "/me/two-factor", "A04", "security_events", "disableTwoFactor", []),
+        ("POST", "/me/backup-codes", "A04", "security_events", "regenerateBackupCodes", []),
+        ("PATCH", "/me/password", "A97", "security_events", "changePassword", ["sessions"]),
+        ("GET", "/me/sessions", "A74", "sessions", "listMySessions", []),
+        ("DELETE", "/me/sessions/:id", "A74", "sessions", "revokeMySession", ["security_events"]),
+        ("POST", "/me/sessions/revoke-others", "A74", "sessions", "revokeOtherSessions", ["security_events"]),
+        ("POST", "/members/:id/two-factor/reset", "A04", "security_events", "resetMemberTwoFactor", ["members", "audit_events", "notifications"]),
+    ],
 }
 
 
@@ -180,6 +222,12 @@ RESPONSES = {
     "getCloneGrowth": ("CloneGrowth", {"delegated": "integer", "passed_without_edit_rate": "number", "saved_hours": "number", "trend": "array", "often_fixed": "array"}),
     "countKnows": ("KnowsCounts", {"rules": "integer", "work_types": "integer", "memories": "integer", "candidates": "integer"}),
     "listCloneActivity": ("ActivityItem", {"kind": "string", "at": "string", "title": "string", "ticket_id": "string", "used": "array", "result": "string"}),
+    "getSignupStatus": ("SignupStatus", {"state": "string", "email": "string", "expires_at": "string"}),
+    "getMySecurity": ("MySecurity", {"passkeys": "array", "has_password": "boolean", "two_factor": "boolean", "two_factor_required": "boolean", "backup_codes_left": "integer", "sessions": "array", "recent_events": "array"}),
+    "startTwoFactor": ("TwoFactorSetup", {"otpauth_uri": "string", "secret_masked": "string", "expires_at": "string"}),
+    "confirmTwoFactor": ("BackupCodes", {"codes": "array"}),
+    "regenerateBackupCodes": ("BackupCodes", {"codes": "array"}),
+    "stepUp": ("StepUp", {"step_up_at": "string", "valid_until": "string"}),
     "checkRule": ("RuleCheck", {"conflicts": "array", "similar": "array", "needs_approval_from": "string", "warnings": "array"}),
 }
 # 一覧の絞り込み（operationId → query の名前）。cursor・limit・sort はいつも付く
@@ -336,4 +384,33 @@ PERMS = {
     "exportCloneActivity": ("self", "自分の分身がやったことだけ", False),
     "retryActionRun": ("assignee", "そのチケットの担当者", False),
     "takeoverActionRun": ("assignee", "そのチケットの担当者（自分でやるに切り替える）", False),
+    # ログイン・登録（ログイン前は public。どれも IP ごとの上限が厳しい・同じ答えを返して有る無しを漏らさない）
+    "createSignup": ("public", "誰でも。確認のメールを押すまで会社も利用者も作らない（D-088.2）。漏れたパスワードは弾く（D-125.137）", False),
+    "getSignupStatus": ("public", "申し込んだ本人の画面（申し込みの印で）。メールの有る無しは漏らさない", False),
+    "resendSignupEmail": ("public", "同上。送る回数に上限", False),
+    "getCurrentTerms": ("public", "誰でも", False),
+    "verifySignup": ("public", "確認のメールのリンクを持つ人（1 回だけ・期限つき）", False),
+    "signInWithPassword": ("public", "誰でも。失敗が続くと鍵をかける。会社が止められていれば入れない（D-125.126）", False),
+    "verifySignInCode": ("public", "パスワードを通った直後の人だけ（その途中の印で・5 分）", False),
+    "requestAdminRecovery": ("public", "パスワードを通った直後の人だけ。管理者に知らせが届き、管理者が本人を確かめて戻す", False),
+    "consentToTerms": ("self", "本人。規約が変わったら次のログインで同意し直す（D-125.162）", False),
+    "stepUp": ("self", "本人。パスキーなら指 1 本、パスワードの人は 2 段階のコードも。15 分効く（D-125.139）", False),
+    "signOut": ("self", "本人", False),
+    "requestPasswordReset": ("public", "誰でも。メールの有る無しにかかわらず同じ答え", False),
+    "resetPassword": ("public", "再設定のリンクを持つ人（1 回だけ・期限つき）。済んだら全部の端末と Bridge を切る（D-125.140）", False),
+    "getInvitation": ("public", "招待のリンクを持つ人（期限つき）。見せるのはワークスペースの名前・役割・招いた人だけ", False),
+    "acceptInvitation": ("public", "招待のリンクを持つ人。ログイン中なら今のアカウントで入り、無ければ作る（D-125.150）", False),
+    # 自分の安全の設定
+    "getMySecurity": ("self", "自分のものだけ", False),
+    "renamePasskey": ("self", "自分のパスキーだけ", False),
+    "deletePasskey": ("self", "自分のパスキーだけ。最後の入り方は消せない", True),
+    "startTwoFactor": ("self", "本人", True),
+    "confirmTwoFactor": ("self", "本人（コードがそろったら付く。バックアップコードは 1 回だけ見せる）", False),
+    "disableTwoFactor": ("self", "本人。パスキーを持たずパスワードだけで入る人は外せない（D-128.61）", True),
+    "regenerateBackupCodes": ("self", "本人（前のコードは使えなくなる）", True),
+    "changePassword": ("self", "本人。変えたら全部の端末と Bridge を切る", True),
+    "listMySessions": ("self", "自分の端末だけ", False),
+    "revokeMySession": ("self", "自分の端末だけ", False),
+    "revokeOtherSessions": ("self", "自分の端末だけ（この端末以外）", False),
+    "resetMemberTwoFactor": ("admin", "ワークスペースの管理者が、本人を確かめてから戻す。記録に残り、本人に知らせる（D-125.138）", True),
 }
