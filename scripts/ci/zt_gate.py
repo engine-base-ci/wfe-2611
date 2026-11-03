@@ -17,12 +17,13 @@ from __future__ import annotations
 import glob, importlib.util, os, re, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-WORDS = {"public", "read", "write", "assignee", "approver", "recipient", "self", "manager", "admin", "client"}
+WORDS = {"public", "read", "write", "assignee", "approver", "recipient", "self", "manager", "admin", "client", "device"}
 OPS_CAPS = {"inquiry", "peek", "money", "stop", "notice", "distribute", "plan_propose", "plan_decide", "ops_people"}
 # 本人確認を取り直す操作（D-125.139・D-128.68・D-128.70）。表に出てきたら step_up が要る
 STEP_UP_REQUIRED = {"approveApproval", "createCredential", "updateCredential", "updateMemberRole", "updateMemberPermissions",
                     "createExport", "openPeek", "stopWorkspace", "recordPayment", "decidePlanProposal",
-                    "startTwoFactor", "disableTwoFactor", "regenerateBackupCodes", "changePassword", "deletePasskey", "resetMemberTwoFactor"}
+                    "startTwoFactor", "disableTwoFactor", "regenerateBackupCodes", "changePassword", "deletePasskey", "resetMemberTwoFactor",
+                    "requestEmailChange", "revokeMyDevice"}
 PUBLIC_OK = {"signup", "verify-email", "login", "password-reset", "invite-accept"}   # ログイン前の画面だけが public を使える
 
 
@@ -46,6 +47,8 @@ def design_fails(sa) -> list[str]:
             if opid in STEP_UP_REQUIRED and not step: fails.append(f"[ZT5] {opid} は本人確認の取り直しが要る操作なのに step_up が無い")
             if sid.startswith("ops-") and not who.startswith("ops:"): fails.append(f"[ZT9] 運営の画面 {sid} の {opid} が ops: でない（{who}）")
             if not sid.startswith("ops-") and who.startswith("ops:"): fails.append(f"[ZT9] 顧客の画面 {sid} の {opid} が ops: を使っている")
+            if who == "device" and not path.startswith("/bridge/"): fails.append(f"[ZT10] {opid} は PC の印（device）で呼ぶのに /bridge/ の下に無い")
+            if path.startswith("/bridge/") and who not in ("device", "self"): fails.append(f"[ZT10] {opid}（/bridge/）は device か self でなければならない")
             if who == "public" and sid not in PUBLIC_OK: fails.append(f"[ZT1] ログイン前ではない画面 {sid} の {opid} が public になっている")
     # ZT2：契約（08_api/endpoints.json）で、権限が public でない API がログイン不要になっていないか
     ep = os.path.join(ROOT, "08_api", "endpoints.json")

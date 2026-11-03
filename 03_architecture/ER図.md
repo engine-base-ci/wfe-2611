@@ -1,7 +1,7 @@
 # Kaname ER 図 v1.1（段階 1 の範囲）
 
 作成 2026-09-08 ／ 更新 2026-09-27（D-098：検索用のベクトルと、それを作るモデル）／ 2026-09-15（D-069〜D-077：層と権限・出来事と失効・運営・往復するもの・取り込みと連携を追加）/ DB: PostgreSQL 16+ (pgvector) / ORM: Drizzle
-推定テーブル数: **77**（＋ §16 第1フェーズの表 35・2026-11-03）（段階 1。§1〜§6 の 37 ＋ §7 マスタ 8 ＋ §9〜§13 の 38。カード決済（段階 2・D-002）と BYOK／運営マネージド（段階 2・D-055）だけが後）
+推定テーブル数: **77**（＋ §16 第1フェーズの表 37・2026-11-03）（段階 1。§1〜§6 の 37 ＋ §7 マスタ 8 ＋ §9〜§13 の 38。カード決済（段階 2・D-002）と BYOK／運営マネージド（段階 2・D-055）だけが後）
 
 ---
 
@@ -383,7 +383,7 @@ erDiagram
 
 ---
 
-## 16. 第1フェーズの表（D-125〜D-128）（35）
+## 16. 第1フェーズの表（D-125〜D-128）（37）
 
 D-125〜D-128 で第1フェーズを「チケット」中心に決め直した分の表。前の段の表（`tasks` `duties` `goals` など）は後のフェーズのものとして残し、第1フェーズの画面と API はこの節の表を読む（D-127.1・D-126.26）。
 
@@ -450,6 +450,8 @@ erDiagram
 | **`saved_views`** | `<common>` / `member_id` / `name` / `share`（自分だけ・グループの全員）/ `scope_id` / `filters jsonb` / `columns jsonb` / `density` | **★新設（D-128.83）。**検索条件と列の表示設定 |
 | **`ticket_imports`** | `<common>` / `uploaded_by` / `source`（Backlog の CSV・汎用）/ `mapping jsonb` / `rows int` / `errors jsonb` / `state`（確かめ中・確定・やめた）/ `committed_at` | **★新設（D-128.83・D-128.85）。**取り込んだものは下書きで入り、確かめてから確定 |
 | **`learning_candidates`** | `<common>` / `owner_member_id`（その人の分身）/ `trigger`（覚えて・直したところ・差し戻し・話の中で・同じ流れ・完了）/ `proposed_as`（守ること・やり方・覚えていること）/ `text` / `evidence jsonb`（どのチケット・どの話から）/ `check jsonb`（分身の点検：ぶつかる決まり・似ているもの・要る OK）/ `state`（待っている・覚えた・覚えない・あとで・例外の OK 待ち）/ `decided_at` / `result_type` / `result_id` | **★新設（D-128.41・D-128.43・D-128.90）。**「覚えたいこと」。決めるまで使わない。例外の OK が要るものは承認待ちへ（D-128.89） |
+| **`bridge_pairing_codes`** | `<common>` / `member_id` / `code_hash`（コードそのものは持たない）/ `expires_at`（10 分）/ `used_at` / `used_session_id` | **★新設（D-128.93）。**PC をつなぐ接続コード。1 回だけ。使うと `sessions(kind=bridge)` ができ、本人のセッションに結ばれる |
+| **`notification_settings`** | `<common>` / `member_id` / `email_digest`（読んでいないものを 30 分ごとにまとめて送る）/ `quiet_hours jsonb`（平日 20:00〜8:00・土日 など）/ `paused_until` / `urgent_override jsonb`（止めていても知らせる出来事） | **★新設（D-128.92）。**ワークスペースごと（tenant_id）。出来事ごとの届け先は `notification_preferences`（受け箱・メール。push は後のフェーズ） |
 | **`ops_plan_proposals`** | `<common>`（tenant_id＝運営）/ `plan_id` / `from_version` / `to_version` / `changes jsonb` / `existing_policy`（N 日後から・ずっと今の値段）/ `notice_days` / `new_from` / `reason` / `proposed_by` / `decided_by` / `state`（下書き・決める人を待っている・決めた・差し戻した）/ `decided_at` / `return_reason` | **★新設（D-128.72）。**作った人と決めた人は同じにできない（決められる人が 1 人のときだけ例外・本人確認） |
 
 `approvals` に足す列（第1フェーズ・D-128.86・D-128.87・D-128.89）：`ticket_id` / `kind`（AI の成果物・上位の承認・決まりの例外・やり方を広げる）/ `subject_type` / `subject_id`（決まりの例外は守ることの案、やり方を広げるはやり方の版を指す）/ `level` / `parent_approval_id` / `escalated_by_policy_id`（どの決まりで上位へ回ったか）/ `decision`（承認・自分で直す・差し戻し・止める）/ `decided_at` / `return_targets jsonb` / `return_reason` / `next_actor`（分身・自分）/ `memory_candidate` / `human_checks jsonb` / `irreversible` / `step_up_at`（直前の本人確認）/ `withdrawn_at`（取り下げ）/ `bulk_batch_id`。まとめて承認は ① がすべて確実・人が見る項目なし・取り消せる操作だけ（サーバーがもう一度確かめる）。
@@ -459,6 +461,10 @@ erDiagram
 - `memories`（覚えていること）：`kind_id`（好み・事実・実例）/ `auto`（自動で覚えた）/ `source_type_id`・`source_ref_id`（どの話・どのチケットから）/ `use_count` / `last_used_at` / `visibility`（自分だけ・勧めた）
 - `skills`（やり方＝業務の型）：`<scoped>` にする（運営・ワークスペース・層・自分）。`skill_versions` に `fields jsonb`（いつ使う・確かめること・書式と手本・注意と禁止・使う操作）/ `state`（下書き・使っている）/ `checked jsonb`（機械の検査の結果）を足す。試すは `skill_test_runs`（外に出ない）。広げる申請は承認待ち（D-128.89）
 - `clones`：`auto_memory`（自動で覚える。既定 入・D-128.90）。許可のモードは `members.agent_permission_mode` のまま
+
+自分の設定で足す列（D-128.55・D-128.57・D-128.58）：
+- `credentials`（預けたログイン情報）：`scope_id`（自分・層・ワークスペース）/ `destinations text[]`（使える場所：ドメイン・API の宛先。ここ以外では実行器が入れない・送らない）/ `read_only`（見るだけ）/ `client_id` / `purpose` / `expires_at` / `use_count` / `last_used_at`。取り出せるのは、持ち主（自分のものは本人の分身の実行・層やワークスペースのものはその範囲の人の実行）の PC の実行器だけで、宛先が合うときだけ（D-128.57）
+- `members`：`call_name`（呼ばれ方・20 文字）/ `avatar_ref` / `language` / `theme` / `week_start` / `timezone` / `setup_dismissed_at`（はじめにやることを閉じた）。名前は 100 文字まで（D-128.58）
 
 前の表の扱い：`tasks` `task_handovers` `daily_plans` は後のフェーズ（チケットに置き換え）。`skills` 系は「業務の型」として使い続ける（`skills.kind_id` に work_type を足す・D-126.26）。`learned_procedures` は「記録した動かし方」として使い続け、入力した値を空欄に置き換えた形だけを持つ（D-126.25）。`support_access_grants` は「運営の閲覧」の記録として使い、許可の範囲と期限は契約で先に持つ（D-125.128・D-128.68）。
 
@@ -512,7 +518,7 @@ erDiagram
 | ひな形 | `distributions` | 運営が配る層とマスタのひな形（kind=template）。会社は取り込んだら独立して使う（D-125.72） |
 | テストモード実行 | `action_runs` | `mode_id = test`（外に出ない・台帳は仮想） |
 | 添付 | `attachments` | |
-| 通知 | `notifications` `notification_preferences` `notice_deliveries` | |
+| 通知 | `notifications` `notification_preferences` `notification_settings` `notice_deliveries` | 第1フェーズは受け箱とメールのまとめ（D-128.92） |
 | プラン | `plans` `plan_versions` `subscriptions` `usage_meters` `plan_change_requests` `ops_plan_proposals` | 値段を変える案と決めた記録は `ops_plan_proposals`（D-128.72） |
 | 問い合わせ | `inquiries` `conversations` | |
 | お知らせ | `notices` `notice_deliveries` `status_incidents` | |
@@ -537,7 +543,7 @@ erDiagram
 | 成果物 | `artifacts` |  |
 | 成果物の版 | `artifact_versions` | 直す・戻すごとに 1 行（D-106.3・D-106.4） |
 | セキュリティ開示資料 | — | 段階 2〜4 の運営の文書。`distributions(kind=document)` で持てる。段階 1 では作らない |
-| 端末 | `sessions` | web / bridge / push の宛先 |
+| 端末 | `sessions` `bridge_pairing_codes` | web / bridge / push の宛先。PC は接続コードでつなぐ（D-128.93） |
 | 支払い方法 | `payment_methods` | 段階 2（D-082）。カードは Stripe の参照だけ |
 | 決済の出来事 | `billing_events` | 段階 2（D-082.3）。webhook の写し |
 | LLM の経路 | `llm_routes` | 段階 2（D-083）。運営の許可を含む |

@@ -13339,6 +13339,204 @@
    ]
   },
   {
+   "id": "E-140",
+   "name": "bridge_pairing_codes",
+   "table_name": "bridge_pairing_codes",
+   "section": "16. 第1フェーズの表",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "member_id",
+     "note": null
+    },
+    {
+     "name": "code_hash",
+     "note": "コードそのものは持たない"
+    },
+    {
+     "name": "expires_at",
+     "note": "10 分"
+    },
+    {
+     "name": "used_at",
+     "note": null
+    },
+    {
+     "name": "used_session_id",
+     "note": null
+    }
+   ],
+   "relations": [],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "bridge_pairing_codes_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "bridge_pairing_codes_self_only_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND member_id = current_setting('app.user_id', true)::uuid",
+     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "source": [
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "bridge_pairing_codes_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'bridge_pairing_codes', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "bridge_pairing_codes_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = bridge_pairing_codes.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-128.93）。**PC をつなぐ接続コード。1 回だけ。使うと `sessions(kind=bridge)` ができ、本人のセッションに結ばれる",
+   "status": "decided",
+   "decided_at": "2026-11-03",
+   "source": [
+    "D-125",
+    "D-128",
+    "D-128.93"
+   ]
+  },
+  {
+   "id": "E-141",
+   "name": "notification_settings",
+   "table_name": "notification_settings",
+   "section": "16. 第1フェーズの表",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "member_id",
+     "note": null
+    },
+    {
+     "name": "email_digest",
+     "note": "読んでいないものを 30 分ごとにまとめて送る"
+    },
+    {
+     "name": "quiet_hours",
+     "note": "jsonb（平日 20:00〜8:00・土日 など"
+    },
+    {
+     "name": "paused_until",
+     "note": null
+    },
+    {
+     "name": "urgent_override",
+     "note": "jsonb（止めていても知らせる出来事"
+    }
+   ],
+   "relations": [],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "notification_settings_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "notification_settings_self_only_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND member_id = current_setting('app.user_id', true)::uuid",
+     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "source": [
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "notification_settings_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'notification_settings', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "notification_settings_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = notification_settings.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-128.92）。**ワークスペースごと（tenant_id）。出来事ごとの届け先は `notification_preferences`（受け箱・メール。push は後のフェーズ）",
+   "status": "decided",
+   "decided_at": "2026-11-03",
+   "source": [
+    "D-125",
+    "D-128",
+    "D-128.92"
+   ]
+  },
+  {
    "id": "E-134",
    "name": "ops_plan_proposals",
    "table_name": "ops_plan_proposals",

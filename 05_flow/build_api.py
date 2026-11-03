@@ -59,8 +59,8 @@ for (m, p), e in sorted(eps.items(), key=lambda kv: (kv[0][1], ["GET", "POST", "
     e["acts"], e["screens"], e["related_entities"], e["choke_points"], e["source"], e["features"] = sorted(e["acts"]), sorted(e["screens"]), sorted(e["related_entities"]), set(e["choke_points"]), sorted(e["source"]), sorted(e["features"])
     role = "public" if set(e["screens"]) <= PUBLIC else ("ops" if set(e["screens"]) <= OPS_SCREENS else "member")
     if e.get("operation_id") in getattr(_sa, "PERMS", {}):   # ログインの要否は画面ではなく API ごとの権限で決める（ZT1・ZT2）
-        _who = _sa.PERMS[e["operation_id"]][0]; role = "public" if _who == "public" else ("ops" if _who.startswith("ops:") else "member")
-    e["auth"] = {"role": role, "scheme": "none" if role == "public" else "session（Better Auth・sessions 表を見る。app.tenant_id / app.user_id / app.role を SET LOCAL）"}
+        _who = _sa.PERMS[e["operation_id"]][0]; role = "public" if _who == "public" else ("ops" if _who.startswith("ops:") else ("device" if _who == "device" else "member"))
+    e["auth"] = {"role": role, "scheme": "none" if role == "public" else ("device（PC の印。本人の sessions に結ばれ、本人が切られたら止まる）" if role == "device" else "session（Better Auth・sessions 表を見る。app.tenant_id / app.user_id / app.role を SET LOCAL）")}
     e["rate_limit"] = "10/min/ip" if role == "public" else ("120/min/user" if m == "GET" else "60/min/user")
     tname = e.get("table") or (p.split("/")[3] if len(p.split("/")) > 3 else "")
     params = re.findall(r":(\w+)", p)

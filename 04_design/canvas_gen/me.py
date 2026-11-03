@@ -120,7 +120,7 @@ s = modal(SP, mhead("ログイン情報を預ける", "MeSecrets.dc.html", icon(
   + mfoot(btn("やめる", "", "MeSecrets.dc.html"), btn("本人確認して保存", "p", "MeSecrets.dc.html"), left='<span style="font-size: 12px; color: %s">保存の前にパスキーで本人確認を取り直す</span>' % MUTED), 560, "ログイン情報を預ける")
 save("MeSecretAdd.dc.html", "ログイン情報を預ける", s)
 # ---------- 知らせ ----------
-CH = ["受け箱（ベル）", "メール", "デスクトップ", "スマホ"]
+CH = ["受け箱（ベル）", "メール（まとめて）"]   # デスクトップ・スマホは後のフェーズ（D-128.92）
 def nrow(ev, note, on, lock0=True):
     cells = ""
     for i, v in enumerate(on):
@@ -128,14 +128,14 @@ def nrow(ev, note, on, lock0=True):
         else: cells += '<td style="text-align: center; padding: 10px 0; border-top: 1px solid #EDF0F4">%s</td>' % check("", v).replace("padding: 4px 0", "padding: 0; justify-content: center")
     return '<tr><td style="padding: 10px 0; border-top: 1px solid #EDF0F4">%s<span style="display: block; font-size: 11px; color: %s">%s</span></td>%s</tr>' % (ev, MUTED, note, cells)
 tbl = ('<div style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 10px; padding: 4px 18px 10px"><table style="border-collapse: collapse; width: 100%"><thead><tr><th style="text-align: left; font-size: 12px; color: #4A5563; font-weight: 500; padding: 10px 0">出来事</th>' + "".join('<th style="font-size: 12px; color: #4A5563; font-weight: 500; width: 96px">%s</th>' % c for c in CH) + '</tr></thead><tbody>'
-  + nrow("承認を待っている", "自分が承認する人のとき", [1, 1, 1, 1]) + nrow("@ で呼ばれた・やり取りで知らせる人にされた", "", [1, 1, 1, 1]) + nrow("渡された・配られた", "返事の期限つき", [1, 1, 1, 0])
-  + nrow("分身が止まった・落ちて直せない", "PC が切れた・ログイン情報が切れた など", [1, 1, 1, 1]) + nrow("分身が実行を終えた", "やったことは分身の部屋でも見られる", [1, 0, 0, 0])
-  + nrow("ウォッチしているチケットが動いた", "状態・期限の変化", [1, 0, 0, 0]) + nrow("覚えたいこと・直す案が出た", "分身の部屋・ナレッジ", [1, 0, 0, 0]) + nrow("新しい端末で入った", "安全のため止められない", [1, 1, 0, 0])
-  + '</tbody></table><div style="font-size: 11px; color: %s; padding-top: 8px">メールは、受け箱で読んでいないものだけを 30 分ごとにまとめて送る</div></div>' % MUTED)
+  + nrow("承認を待っている", "自分が承認する人のとき", [1, 1]) + nrow("@ で呼ばれた・やり取りで知らせる人にされた", "", [1, 1]) + nrow("渡された・配られた", "返事の期限つき", [1, 1])
+  + nrow("分身が止まった・落ちて直せない", "PC が切れた・ログイン情報が切れた など", [1, 1]) + nrow("分身が実行を終えた", "やったことは分身の部屋でも見られる", [1, 0])
+  + nrow("自分が担当・承認するチケットが動いた", "状態・期限の変化", [1, 0]) + nrow("覚えたいこと・直す案が出た", "分身の部屋・ナレッジ", [1, 0]) + nrow("新しい端末で入った", "安全のため止められない", [1, 1])
+  + '</tbody></table><div style="font-size: 11px; color: %s; padding-top: 8px">メールは、受け箱で読んでいないものだけを 30 分ごとにまとめて送る。デスクトップとスマホへの知らせは後のフェーズ</div></div>' % MUTED)
 body = (ttl("知らせ", "ワークスペースごとに決める")
   + '<div style="display: flex; gap: 6px; align-items: center">' + chip("株式会社ENGINE BASE", True) + chip("高本 聖斗（個人）") + chip("京蟻システム") + '<a href="#" style="margin-left: auto; font-size: 12px">この設定をほかのワークスペースにも写す</a></div>'
   + tbl
-  + blk("静かにする時間", [("夜と休みの日", "このあいだはメール・デスクトップ・スマホに出さない（受け箱にはたまる）", sel("平日 20:00〜8:00 ・ 土日")), ("いま止める", "", chip("1 時間") + chip("今日いっぱい") + chip("明日の朝まで")), ("止めていても知らせる", "急ぎのものだけ", check("承認を待っている（期限が今日）", True) + check("分身が止まった", True))]))
+  + blk("静かにする時間", [("夜と休みの日", "このあいだはメールを送らない（受け箱にはたまる）", sel("平日 20:00〜8:00 ・ 土日")), ("いま止める", "", chip("1 時間") + chip("今日いっぱい") + chip("明日の朝まで")), ("止めていても知らせる", "急ぎのものだけ", check("承認を待っている（期限が今日）", True) + check("分身が止まった", True))]))
 page("MeNotify.dc.html", "自分の設定 知らせ", "知らせ", body)
 
 s2 = modal(SP, mhead("FREEE_API_KEY を上書きする", "MeSecrets.dc.html", icon("鍵", NAVY, 28), "前の値は消え、戻せない。見ることもできない")

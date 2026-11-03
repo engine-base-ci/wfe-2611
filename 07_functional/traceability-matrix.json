@@ -4,7 +4,7 @@
  "summary": {
   "screens_count": 72,
   "features_count": 32,
-  "entities_count": 138,
+  "entities_count": 140,
   "uncovered_screens": [],
   "uncovered_features": []
  },
@@ -22,7 +22,8 @@
     "E-058 permissions",
     "E-055 layers",
     "E-130 terms_versions",
-    "E-131 terms_consents"
+    "E-131 terms_consents",
+    "E-092 pending_signup"
    ],
    "related_apis": [
     "POST /api/auth/sign-up",
@@ -50,7 +51,12 @@
    "entities": [
     "E-004 members",
     "E-058 permissions",
-    "E-055 layers"
+    "E-055 layers",
+    "E-092 pending_signup",
+    "E-001 tenants",
+    "E-129 tenant_memberships",
+    "E-131 terms_consents",
+    "E-061 sessions"
    ],
    "related_apis": [
     "POST /api/auth/sign-up/verify",
@@ -77,7 +83,9 @@
     "E-058 permissions",
     "E-055 layers",
     "E-129 tenant_memberships",
-    "E-002 scopes"
+    "E-002 scopes",
+    "E-001 tenants",
+    "E-131 terms_consents"
    ],
    "related_apis": [
     "GET /api/auth/invitations/:token",
@@ -104,7 +112,9 @@
     "E-132 passkeys",
     "E-052 audit_events",
     "E-072 ops_audit_events",
-    "E-073 security_events"
+    "E-073 security_events",
+    "E-061 sessions",
+    "E-080 notifications"
    ],
    "related_apis": [
     "GET /api/me/security",
@@ -168,7 +178,11 @@
     "E-058 permissions",
     "E-055 layers",
     "E-132 passkeys",
-    "E-061 sessions"
+    "E-061 sessions",
+    "E-140 bridge_pairing_codes",
+    "E-073 security_events",
+    "E-080 notifications",
+    "E-131 terms_consents"
    ],
    "related_apis": [
     "POST /api/auth/sign-in",
@@ -202,7 +216,8 @@
     "E-055 layers",
     "E-052 audit_events",
     "E-072 ops_audit_events",
-    "E-073 security_events"
+    "E-073 security_events",
+    "E-061 sessions"
    ],
    "related_apis": [
     "POST /api/auth/password/forgot",
@@ -285,10 +300,48 @@
     "F-026"
    ],
    "entities": [
-    "E-061 sessions"
+    "E-061 sessions",
+    "E-140 bridge_pairing_codes",
+    "E-048 agent_usage_snapshots",
+    "E-073 security_events",
+    "E-044 bridge_jobs",
+    "E-039 action_runs",
+    "E-046 bridge_job_events",
+    "E-049 messages",
+    "E-117 checks",
+    "E-080 notifications",
+    "E-094 attachments",
+    "E-043 conversations",
+    "E-050 artifacts",
+    "E-051 artifact_versions",
+    "E-106 tickets",
+    "E-120 reference_logs",
+    "E-042 credentials",
+    "E-052 audit_events"
    ],
    "related_apis": [
-    "POST /api/sessions",
+    "POST /api/bridge/pairing-codes",
+    "GET /api/bridge/devices",
+    "PATCH /api/bridge/devices/:id",
+    "DELETE /api/bridge/devices/:id",
+    "GET /api/bridge/releases/latest",
+    "GET /api/bridge/releases/:name/file",
+    "POST /api/bridge/claim",
+    "POST /api/bridge/heartbeat",
+    "POST /api/bridge/usage",
+    "POST /api/bridge/jobs/take",
+    "POST /api/bridge/jobs/:id/progress",
+    "POST /api/bridge/jobs/:id/finish",
+    "POST /api/bridge/jobs/:id/questions",
+    "GET /api/bridge/jobs/:id/questions/:qid",
+    "GET /api/bridge/jobs/:id/control",
+    "POST /api/bridge/jobs/:id/browser",
+    "POST /api/bridge/jobs/:id/conversation-entries",
+    "POST /api/bridge/jobs/:id/artifacts",
+    "POST /api/bridge/jobs/:id/tools/:name",
+    "POST /api/bridge/credentials/resolve",
+    "POST /api/bridge/credentials/:id/check-result",
+    "GET /api/bridge/files/:ref",
     "navigate /account",
     "navigate /settings/close",
     "navigate /ai-staff/activity",
@@ -356,10 +409,18 @@
     "E-042 credentials",
     "E-052 audit_events",
     "E-072 ops_audit_events",
-    "E-073 security_events"
+    "E-073 security_events",
+    "E-095 skills",
+    "E-039 action_runs",
+    "E-044 bridge_jobs"
    ],
    "related_apis": [
+    "GET /api/credentials",
+    "POST /api/credentials",
     "PATCH /api/credentials/:id",
+    "DELETE /api/credentials/:id",
+    "POST /api/credentials/:id/login-check",
+    "POST /api/credentials/:id/login-check/answer",
     "navigate /account",
     "navigate /settings/close",
     "navigate /ai-staff/activity",
@@ -515,7 +576,13 @@
     "E-137 saved_views",
     "E-138 ticket_imports",
     "E-117 checks",
-    "E-050 artifacts"
+    "E-050 artifacts",
+    "E-039 action_runs",
+    "E-051 artifact_versions",
+    "E-119 ticket_messages",
+    "E-037 policies",
+    "E-052 audit_events",
+    "E-030 memory_proposals"
    ],
    "related_apis": [
     "GET /api/approvals/queue",
@@ -664,7 +731,15 @@
     "E-138 ticket_imports",
     "E-094 attachments",
     "E-050 artifacts",
-    "E-051 artifact_versions"
+    "E-051 artifact_versions",
+    "E-061 sessions",
+    "E-039 action_runs",
+    "E-120 reference_logs",
+    "E-028 memories",
+    "E-037 policies",
+    "E-095 skills",
+    "E-038 approvals",
+    "E-080 notifications"
    ],
    "related_apis": [
     "GET /api/clones/me",
@@ -771,7 +846,12 @@
     "E-095 skills",
     "E-096 skill_versions",
     "E-097 skill_test_runs",
-    "E-098 skill_attachments"
+    "E-098 skill_attachments",
+    "E-038 approvals",
+    "E-108 ticket_section_versions",
+    "E-028 memories",
+    "E-139 learning_candidates",
+    "E-093 export_jobs"
    ],
    "related_apis": [
     "GET /api/clones/me/now",
@@ -1652,11 +1732,33 @@
     "E-055 layers",
     "E-132 passkeys",
     "E-061 sessions",
-    "E-129 tenant_memberships"
+    "E-140 bridge_pairing_codes",
+    "E-129 tenant_memberships",
+    "E-001 tenants",
+    "E-094 attachments",
+    "E-073 security_events",
+    "E-106 tickets",
+    "E-038 approvals",
+    "E-028 memories",
+    "E-048 agent_usage_snapshots",
+    "E-039 action_runs",
+    "E-042 credentials",
+    "E-141 notification_settings",
+    "E-079 notification_preferences"
    ],
    "related_apis": [
-    "PATCH /api/members/:id",
-    "GET /api/members",
+    "GET /api/me",
+    "PATCH /api/me",
+    "POST /api/me/avatar",
+    "POST /api/me/email-change",
+    "POST /api/me/email-change/verify",
+    "DELETE /api/me/workspaces/:id",
+    "GET /api/me/usage",
+    "GET /api/me/setup-tasks",
+    "POST /api/me/setup-tasks/dismiss",
+    "GET /api/me/notification-settings",
+    "PATCH /api/me/notification-settings",
+    "POST /api/me/notification-settings/copy",
     "navigate /settings/close",
     "navigate /ai-staff/activity",
     "navigate /ai-staff",
@@ -1812,8 +1914,10 @@
    "entities": [
     "E-103 push_devices",
     "E-061 sessions",
+    "E-140 bridge_pairing_codes",
     "E-080 notifications",
     "E-079 notification_preferences",
+    "E-141 notification_settings",
     "E-076 notice_deliveries"
    ],
    "related_apis": [
@@ -2596,7 +2700,26 @@
     "E-096 skill_versions",
     "E-097 skill_test_runs",
     "E-098 skill_attachments",
-    "E-039 action_runs"
+    "E-039 action_runs",
+    "E-109 ticket_kinds",
+    "E-111 ticket_stages",
+    "E-004 members",
+    "E-124 clients",
+    "E-002 scopes",
+    "E-121 knowledge_pages",
+    "E-043 conversations",
+    "E-094 attachments",
+    "E-050 artifacts",
+    "E-052 audit_events",
+    "E-051 artifact_versions",
+    "E-038 approvals",
+    "E-049 messages",
+    "E-080 notifications",
+    "E-037 policies",
+    "E-128 acceptances",
+    "E-126 client_contacts",
+    "E-112 class_axes",
+    "E-113 class_values"
    ],
    "related_apis": [
     "GET /api/tickets",
@@ -2745,7 +2868,10 @@
     "E-002 scopes",
     "E-124 clients",
     "E-125 client_groups",
-    "E-126 client_contacts"
+    "E-126 client_contacts",
+    "E-039 action_runs",
+    "E-028 memories",
+    "E-038 approvals"
    ],
    "related_apis": [
     "GET /api/rules",
@@ -2776,7 +2902,11 @@
     "E-097 skill_test_runs",
     "E-098 skill_attachments",
     "E-133 operations",
-    "E-037 policies"
+    "E-037 policies",
+    "E-106 tickets",
+    "E-117 checks",
+    "E-038 approvals",
+    "E-080 notifications"
    ],
    "related_apis": [
     "GET /api/work_types",
@@ -3237,7 +3367,133 @@
      "act": "A09",
      "role": "action",
      "method": "POST",
-     "path_draft": "/api/sessions"
+     "path_draft": "/api/bridge/pairing-codes"
+    },
+    {
+     "act": "A09",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/bridge/devices"
+    },
+    {
+     "act": "A09",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/bridge/devices/:id"
+    },
+    {
+     "act": "A09",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/bridge/devices/:id"
+    },
+    {
+     "act": "A09",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/bridge/releases/latest"
+    },
+    {
+     "act": "A09",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/bridge/releases/:name/file"
+    },
+    {
+     "act": "A09",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/claim"
+    },
+    {
+     "act": "A09",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/heartbeat"
+    },
+    {
+     "act": "A94",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/usage"
+    },
+    {
+     "act": "A104",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/jobs/take"
+    },
+    {
+     "act": "A104",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/jobs/:id/progress"
+    },
+    {
+     "act": "A104",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/jobs/:id/finish"
+    },
+    {
+     "act": "A91",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/jobs/:id/questions"
+    },
+    {
+     "act": "A91",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/bridge/jobs/:id/questions/:qid"
+    },
+    {
+     "act": "A104",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/bridge/jobs/:id/control"
+    },
+    {
+     "act": "A104",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/jobs/:id/browser"
+    },
+    {
+     "act": "A20",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/jobs/:id/conversation-entries"
+    },
+    {
+     "act": "A95",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/jobs/:id/artifacts"
+    },
+    {
+     "act": "A104",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/jobs/:id/tools/:name"
+    },
+    {
+     "act": "A10",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/credentials/resolve"
+    },
+    {
+     "act": "A10",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/credentials/:id/check-result"
+    },
+    {
+     "act": "A104",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/bridge/files/:ref"
     },
     {
      "role": "transition",
@@ -3535,9 +3791,39 @@
    "required_apis": [
     {
      "act": "A10",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/credentials"
+    },
+    {
+     "act": "A10",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/credentials"
+    },
+    {
+     "act": "A10",
      "role": "action",
      "method": "PATCH",
      "path_draft": "/api/credentials/:id"
+    },
+    {
+     "act": "A10",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/credentials/:id"
+    },
+    {
+     "act": "A10",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/credentials/:id/login-check"
+    },
+    {
+     "act": "A10",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/credentials/:id/login-check/answer"
     },
     {
      "role": "transition",
@@ -6493,15 +6779,75 @@
    "required_apis": [
     {
      "act": "A74",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/me"
+    },
+    {
+     "act": "A74",
      "role": "action",
      "method": "PATCH",
-     "path_draft": "/api/members/:id"
+     "path_draft": "/api/me"
+    },
+    {
+     "act": "A74",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/me/avatar"
+    },
+    {
+     "act": "A74",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/me/email-change"
+    },
+    {
+     "act": "A74",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/me/email-change/verify"
+    },
+    {
+     "act": "A74",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/me/workspaces/:id"
     },
     {
      "act": "A94",
      "role": "data_fetch",
      "method": "GET",
-     "path_draft": "/api/members"
+     "path_draft": "/api/me/usage"
+    },
+    {
+     "act": "A74",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/me/setup-tasks"
+    },
+    {
+     "act": "A74",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/me/setup-tasks/dismiss"
+    },
+    {
+     "act": "A74",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/me/notification-settings"
+    },
+    {
+     "act": "A74",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/me/notification-settings"
+    },
+    {
+     "act": "A74",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/me/notification-settings/copy"
     },
     {
      "role": "transition",
@@ -10153,18 +10499,24 @@
    "entity_id": "E-001",
    "entity_name": "tenants",
    "used_by_screens": [
+    "verify-email",
+    "invite-accept",
     "onboard-draft",
     "onboard-golive",
     "company-model",
-    "export"
+    "export",
+    "account"
    ],
    "used_by_features": [
     "F-001",
+    "F-002",
+    "F-004",
     "F-005",
     "F-008",
     "F-011",
     "F-012",
-    "F-013"
+    "F-013",
+    "F-017"
    ]
   },
   {
@@ -10178,6 +10530,7 @@
     "members",
     "export",
     "member-detail",
+    "tickets",
     "layers",
     "rules",
     "knowledge"
@@ -10185,12 +10538,17 @@
    "used_by_features": [
     "F-001",
     "F-002",
+    "F-004",
     "F-005",
+    "F-006",
     "F-008",
     "F-010",
     "F-011",
     "F-012",
-    "F-013"
+    "F-013",
+    "F-021",
+    "F-023",
+    "F-024"
    ]
   },
   {
@@ -10233,6 +10591,7 @@
     "ops-tenant",
     "ops-audit",
     "member-detail",
+    "tickets",
     "layers"
    ],
    "used_by_features": [
@@ -10252,6 +10611,7 @@
     "F-018",
     "F-019",
     "F-020",
+    "F-021",
     "F-023",
     "F-024"
    ]
@@ -10635,17 +10995,26 @@
     "onboard-interview",
     "onboard-draft",
     "onboard-golive",
+    "clone-chat",
+    "ai-activity",
     "company-model",
     "export",
+    "account",
+    "rules",
     "knowledge"
    ],
    "used_by_features": [
     "F-001",
+    "F-004",
     "F-005",
+    "F-006",
     "F-008",
     "F-011",
     "F-012",
-    "F-013"
+    "F-013",
+    "F-017",
+    "F-023",
+    "F-024"
    ]
   },
   {
@@ -10662,8 +11031,12 @@
   {
    "entity_id": "E-030",
    "entity_name": "memory_proposals",
-   "used_by_screens": [],
-   "used_by_features": []
+   "used_by_screens": [
+    "approvals"
+   ],
+   "used_by_features": [
+    "F-006"
+   ]
   },
   {
    "entity_id": "E-031",
@@ -10722,6 +11095,8 @@
    "used_by_screens": [
     "onboard-draft",
     "onboard-golive",
+    "approvals",
+    "clone-chat",
     "company-model",
     "policies",
     "ai-staff-detail",
@@ -10729,12 +11104,14 @@
     "export",
     "ops-catalog",
     "ops-services",
+    "tickets",
     "rules",
     "work-types",
     "clients"
    ],
    "used_by_features": [
     "F-001",
+    "F-004",
     "F-005",
     "F-006",
     "F-008",
@@ -10744,7 +11121,9 @@
     "F-013",
     "F-018",
     "F-020",
-    "F-021"
+    "F-021",
+    "F-023",
+    "F-024"
    ]
   },
   {
@@ -10752,21 +11131,13 @@
    "entity_name": "approvals",
    "used_by_screens": [
     "approvals",
-    "clone-thread"
-   ],
-   "used_by_features": [
-    "F-006",
-    "F-010"
-   ]
-  },
-  {
-   "entity_id": "E-039",
-   "entity_name": "action_runs",
-   "used_by_screens": [
-    "onboard-testrun",
+    "clone-thread",
+    "clone-chat",
     "ai-activity",
-    "services",
-    "tickets"
+    "account",
+    "tickets",
+    "rules",
+    "work-types"
    ],
    "used_by_features": [
     "F-001",
@@ -10774,6 +11145,36 @@
     "F-005",
     "F-006",
     "F-010",
+    "F-011",
+    "F-013",
+    "F-017",
+    "F-021",
+    "F-023",
+    "F-024"
+   ]
+  },
+  {
+   "entity_id": "E-039",
+   "entity_name": "action_runs",
+   "used_by_screens": [
+    "bridge-setup",
+    "credentials",
+    "onboard-testrun",
+    "approvals",
+    "clone-chat",
+    "ai-activity",
+    "account",
+    "services",
+    "tickets",
+    "rules"
+   ],
+   "used_by_features": [
+    "F-001",
+    "F-004",
+    "F-005",
+    "F-006",
+    "F-010",
+    "F-011",
     "F-013",
     "F-017",
     "F-021",
@@ -10805,9 +11206,13 @@
    "entity_id": "E-042",
    "entity_name": "credentials",
    "used_by_screens": [
-    "credentials"
+    "bridge-setup",
+    "credentials",
+    "account"
    ],
    "used_by_features": [
+    "F-004",
+    "F-005",
     "F-017"
    ]
   },
@@ -10816,30 +11221,41 @@
    "entity_name": "conversations",
    "used_by_screens": [
     "onboard-interview",
+    "bridge-setup",
     "clone-chat",
     "ops-support",
     "inquiry",
+    "tickets",
     "requests",
     "portal"
    ],
    "used_by_features": [
     "F-001",
     "F-004",
+    "F-005",
     "F-006",
+    "F-010",
     "F-013",
     "F-014",
     "F-015",
     "F-016",
     "F-021",
     "F-022",
+    "F-023",
     "F-024"
    ]
   },
   {
    "entity_id": "E-044",
    "entity_name": "bridge_jobs",
-   "used_by_screens": [],
-   "used_by_features": []
+   "used_by_screens": [
+    "bridge-setup",
+    "credentials"
+   ],
+   "used_by_features": [
+    "F-005",
+    "F-017"
+   ]
   },
   {
    "entity_id": "E-045",
@@ -10850,8 +11266,12 @@
   {
    "entity_id": "E-046",
    "entity_name": "bridge_job_events",
-   "used_by_screens": [],
-   "used_by_features": []
+   "used_by_screens": [
+    "bridge-setup"
+   ],
+   "used_by_features": [
+    "F-005"
+   ]
   },
   {
    "entity_id": "E-047",
@@ -10866,24 +11286,36 @@
   {
    "entity_id": "E-048",
    "entity_name": "agent_usage_snapshots",
-   "used_by_screens": [],
-   "used_by_features": []
+   "used_by_screens": [
+    "bridge-setup",
+    "account"
+   ],
+   "used_by_features": [
+    "F-004",
+    "F-005",
+    "F-017"
+   ]
   },
   {
    "entity_id": "E-049",
    "entity_name": "messages",
    "used_by_screens": [
     "onboard-interview",
+    "bridge-setup",
     "today",
     "clone-thread",
-    "clone-chat"
+    "clone-chat",
+    "tickets"
    ],
    "used_by_features": [
     "F-001",
     "F-004",
+    "F-005",
     "F-006",
     "F-010",
     "F-013",
+    "F-021",
+    "F-023",
     "F-024"
    ]
   },
@@ -10891,19 +11323,25 @@
    "entity_id": "E-050",
    "entity_name": "artifacts",
    "used_by_screens": [
+    "bridge-setup",
     "approvals",
     "tasks",
     "clone-chat",
     "record-detail",
+    "tickets",
     "portal"
    ],
    "used_by_features": [
+    "F-001",
     "F-004",
+    "F-005",
     "F-006",
     "F-007",
     "F-010",
     "F-013",
+    "F-021",
     "F-022",
+    "F-023",
     "F-024"
    ]
   },
@@ -10911,12 +11349,20 @@
    "entity_id": "E-051",
    "entity_name": "artifact_versions",
    "used_by_screens": [
-    "clone-chat"
+    "bridge-setup",
+    "approvals",
+    "clone-chat",
+    "tickets"
    ],
    "used_by_features": [
+    "F-001",
     "F-004",
+    "F-005",
     "F-006",
+    "F-010",
     "F-013",
+    "F-021",
+    "F-023",
     "F-024"
    ]
   },
@@ -10926,8 +11372,10 @@
    "used_by_screens": [
     "mfa-setup",
     "password-reset",
+    "bridge-setup",
     "credentials",
     "onboard-testrun",
+    "approvals",
     "record-detail",
     "goals",
     "company-model",
@@ -10938,10 +11386,14 @@
     "account-close",
     "ops-tenant",
     "ops-review",
-    "ops-audit"
+    "ops-audit",
+    "tickets"
    ],
    "used_by_features": [
+    "F-001",
     "F-003",
+    "F-004",
+    "F-005",
     "F-006",
     "F-007",
     "F-008",
@@ -10949,10 +11401,13 @@
     "F-010",
     "F-011",
     "F-012",
+    "F-013",
     "F-016",
     "F-017",
     "F-019",
-    "F-023"
+    "F-021",
+    "F-023",
+    "F-024"
    ]
   },
   {
@@ -11090,9 +11545,13 @@
    "entity_id": "E-061",
    "entity_name": "sessions",
    "used_by_screens": [
+    "verify-email",
+    "mfa-setup",
     "login",
+    "password-reset",
     "bridge-setup",
     "onboard-golive",
+    "clone-chat",
     "automation-repair",
     "security-brief",
     "account",
@@ -11100,10 +11559,15 @@
     "services"
    ],
    "used_by_features": [
+    "F-001",
+    "F-003",
     "F-004",
     "F-005",
+    "F-006",
     "F-012",
-    "F-017"
+    "F-013",
+    "F-017",
+    "F-024"
    ]
   },
   {
@@ -11266,7 +11730,9 @@
    "entity_name": "security_events",
    "used_by_screens": [
     "mfa-setup",
+    "login",
     "password-reset",
+    "bridge-setup",
     "credentials",
     "onboard-testrun",
     "record-detail",
@@ -11275,12 +11741,15 @@
     "security-brief",
     "disclosure",
     "account-close",
+    "account",
     "ops-tenant",
     "ops-review",
     "ops-audit"
    ],
    "used_by_features": [
     "F-003",
+    "F-004",
+    "F-005",
     "F-006",
     "F-007",
     "F-010",
@@ -11349,9 +11818,11 @@
    "entity_id": "E-079",
    "entity_name": "notification_preferences",
    "used_by_screens": [
+    "account",
     "app-setup"
    ],
    "used_by_features": [
+    "F-004",
     "F-017"
    ]
   },
@@ -11359,10 +11830,27 @@
    "entity_id": "E-080",
    "entity_name": "notifications",
    "used_by_screens": [
-    "app-setup"
+    "mfa-setup",
+    "login",
+    "bridge-setup",
+    "clone-chat",
+    "app-setup",
+    "tickets",
+    "work-types"
    ],
    "used_by_features": [
-    "F-017"
+    "F-001",
+    "F-004",
+    "F-005",
+    "F-006",
+    "F-010",
+    "F-011",
+    "F-012",
+    "F-013",
+    "F-017",
+    "F-021",
+    "F-023",
+    "F-024"
    ]
   },
   {
@@ -11585,34 +12073,51 @@
   {
    "entity_id": "E-092",
    "entity_name": "pending_signup",
-   "used_by_screens": [],
-   "used_by_features": []
+   "used_by_screens": [
+    "signup",
+    "verify-email"
+   ],
+   "used_by_features": [
+    "F-001",
+    "F-012"
+   ]
   },
   {
    "entity_id": "E-093",
    "entity_name": "export_jobs",
    "used_by_screens": [
+    "ai-activity",
     "export",
     "account-close"
    ],
    "used_by_features": [
-    "F-012"
+    "F-005",
+    "F-012",
+    "F-023"
    ]
   },
   {
    "entity_id": "E-094",
    "entity_name": "attachments",
    "used_by_screens": [
+    "bridge-setup",
     "clone-chat",
     "record-detail",
-    "import"
+    "account",
+    "import",
+    "tickets"
    ],
    "used_by_features": [
+    "F-001",
     "F-004",
+    "F-005",
     "F-006",
     "F-007",
+    "F-010",
     "F-013",
     "F-017",
+    "F-021",
+    "F-023",
     "F-024"
    ]
   },
@@ -11620,6 +12125,8 @@
    "entity_id": "E-095",
    "entity_name": "skills",
    "used_by_screens": [
+    "credentials",
+    "clone-chat",
     "ai-activity",
     "ops-skills",
     "tickets",
@@ -11634,6 +12141,7 @@
     "F-011",
     "F-013",
     "F-016",
+    "F-017",
     "F-020",
     "F-021",
     "F-023",
@@ -11788,11 +12296,14 @@
    "entity_id": "E-106",
    "entity_name": "tickets",
    "used_by_screens": [
+    "bridge-setup",
     "approvals",
     "clone-chat",
     "ai-activity",
+    "account",
     "member-detail",
     "tickets",
+    "work-types",
     "requests"
    ],
    "used_by_features": [
@@ -11801,7 +12312,9 @@
     "F-005",
     "F-006",
     "F-010",
+    "F-011",
     "F-013",
+    "F-017",
     "F-021",
     "F-023",
     "F-024"
@@ -11829,6 +12342,7 @@
    "entity_id": "E-108",
    "entity_name": "ticket_section_versions",
    "used_by_screens": [
+    "ai-activity",
     "tickets"
    ],
    "used_by_features": [
@@ -11847,10 +12361,20 @@
    "entity_id": "E-109",
    "entity_name": "ticket_kinds",
    "used_by_screens": [
+    "tickets",
     "masters"
    ],
    "used_by_features": [
-    "F-011"
+    "F-001",
+    "F-004",
+    "F-005",
+    "F-006",
+    "F-010",
+    "F-011",
+    "F-013",
+    "F-021",
+    "F-023",
+    "F-024"
    ]
   },
   {
@@ -11877,30 +12401,60 @@
    "entity_id": "E-111",
    "entity_name": "ticket_stages",
    "used_by_screens": [
+    "tickets",
     "masters"
    ],
    "used_by_features": [
-    "F-011"
+    "F-001",
+    "F-004",
+    "F-005",
+    "F-006",
+    "F-010",
+    "F-011",
+    "F-013",
+    "F-021",
+    "F-023",
+    "F-024"
    ]
   },
   {
    "entity_id": "E-112",
    "entity_name": "class_axes",
    "used_by_screens": [
+    "tickets",
     "masters"
    ],
    "used_by_features": [
-    "F-011"
+    "F-001",
+    "F-004",
+    "F-005",
+    "F-006",
+    "F-010",
+    "F-011",
+    "F-013",
+    "F-021",
+    "F-023",
+    "F-024"
    ]
   },
   {
    "entity_id": "E-113",
    "entity_name": "class_values",
    "used_by_screens": [
+    "tickets",
     "masters"
    ],
    "used_by_features": [
-    "F-011"
+    "F-001",
+    "F-004",
+    "F-005",
+    "F-006",
+    "F-010",
+    "F-011",
+    "F-013",
+    "F-021",
+    "F-023",
+    "F-024"
    ]
   },
   {
@@ -11958,8 +12512,10 @@
    "entity_id": "E-117",
    "entity_name": "checks",
    "used_by_screens": [
+    "bridge-setup",
     "approvals",
-    "tickets"
+    "tickets",
+    "work-types"
    ],
    "used_by_features": [
     "F-001",
@@ -11967,6 +12523,7 @@
     "F-005",
     "F-006",
     "F-010",
+    "F-011",
     "F-013",
     "F-021",
     "F-023",
@@ -11995,6 +12552,7 @@
    "entity_id": "E-119",
    "entity_name": "ticket_messages",
    "used_by_screens": [
+    "approvals",
     "tickets"
    ],
    "used_by_features": [
@@ -12013,6 +12571,8 @@
    "entity_id": "E-120",
    "entity_name": "reference_logs",
    "used_by_screens": [
+    "bridge-setup",
+    "clone-chat",
     "tickets"
    ],
    "used_by_features": [
@@ -12031,11 +12591,20 @@
    "entity_id": "E-121",
    "entity_name": "knowledge_pages",
    "used_by_screens": [
+    "tickets",
     "knowledge"
    ],
    "used_by_features": [
+    "F-001",
+    "F-004",
+    "F-005",
+    "F-006",
+    "F-010",
     "F-011",
-    "F-013"
+    "F-013",
+    "F-021",
+    "F-023",
+    "F-024"
    ]
   },
   {
@@ -12064,14 +12633,22 @@
    "entity_id": "E-124",
    "entity_name": "clients",
    "used_by_screens": [
+    "tickets",
     "rules",
     "clients",
     "requests"
    ],
    "used_by_features": [
+    "F-001",
+    "F-004",
+    "F-005",
+    "F-006",
+    "F-010",
     "F-011",
     "F-013",
-    "F-021"
+    "F-021",
+    "F-023",
+    "F-024"
    ]
   },
   {
@@ -12092,14 +12669,22 @@
    "entity_id": "E-126",
    "entity_name": "client_contacts",
    "used_by_screens": [
+    "tickets",
     "rules",
     "clients",
     "requests"
    ],
    "used_by_features": [
+    "F-001",
+    "F-004",
+    "F-005",
+    "F-006",
+    "F-010",
     "F-011",
     "F-013",
-    "F-021"
+    "F-021",
+    "F-023",
+    "F-024"
    ]
   },
   {
@@ -12118,16 +12703,27 @@
    "entity_id": "E-128",
    "entity_name": "acceptances",
    "used_by_screens": [
+    "tickets",
     "portal"
    ],
    "used_by_features": [
-    "F-022"
+    "F-001",
+    "F-004",
+    "F-005",
+    "F-006",
+    "F-010",
+    "F-013",
+    "F-021",
+    "F-022",
+    "F-023",
+    "F-024"
    ]
   },
   {
    "entity_id": "E-129",
    "entity_name": "tenant_memberships",
    "used_by_screens": [
+    "verify-email",
     "invite-accept",
     "account"
    ],
@@ -12153,10 +12749,15 @@
    "entity_id": "E-131",
    "entity_name": "terms_consents",
    "used_by_screens": [
-    "signup"
+    "signup",
+    "verify-email",
+    "invite-accept",
+    "login"
    ],
    "used_by_features": [
     "F-001",
+    "F-002",
+    "F-004",
     "F-012"
    ]
   },
@@ -12289,16 +12890,46 @@
     "today",
     "clone-thread",
     "clone-chat",
+    "ai-activity",
     "import"
    ],
    "used_by_features": [
     "F-001",
     "F-004",
+    "F-005",
     "F-006",
     "F-010",
     "F-013",
     "F-017",
+    "F-023",
     "F-024"
+   ]
+  },
+  {
+   "entity_id": "E-140",
+   "entity_name": "bridge_pairing_codes",
+   "used_by_screens": [
+    "login",
+    "bridge-setup",
+    "account",
+    "app-setup"
+   ],
+   "used_by_features": [
+    "F-004",
+    "F-005",
+    "F-017"
+   ]
+  },
+  {
+   "entity_id": "E-141",
+   "entity_name": "notification_settings",
+   "used_by_screens": [
+    "account",
+    "app-setup"
+   ],
+   "used_by_features": [
+    "F-004",
+    "F-017"
    ]
   },
   {
@@ -12355,11 +12986,17 @@
     "E-024",
     "E-028",
     "E-037",
+    "E-038",
     "E-039",
     "E-043",
     "E-049",
+    "E-050",
+    "E-051",
+    "E-052",
     "E-055",
     "E-058",
+    "E-061",
+    "E-080",
     "E-081",
     "E-082",
     "E-083",
@@ -12368,6 +13005,8 @@
     "E-086",
     "E-087",
     "E-091",
+    "E-092",
+    "E-094",
     "E-095",
     "E-096",
     "E-097",
@@ -12376,13 +13015,21 @@
     "E-106",
     "E-107",
     "E-108",
+    "E-109",
     "E-110",
+    "E-111",
+    "E-112",
+    "E-113",
     "E-114",
     "E-116",
     "E-117",
     "E-118",
     "E-119",
     "E-120",
+    "E-121",
+    "E-124",
+    "E-126",
+    "E-128",
     "E-129",
     "E-130",
     "E-131",
@@ -12410,12 +13057,14 @@
     "invite-accept"
    ],
    "entities": [
+    "E-001",
     "E-002",
     "E-004",
     "E-055",
     "E-058",
     "E-091",
-    "E-129"
+    "E-129",
+    "E-131"
    ],
    "api_endpoints_draft": [
     "GET /api/invitations"
@@ -12432,6 +13081,7 @@
     "E-052",
     "E-055",
     "E-058",
+    "E-061",
     "E-072",
     "E-073"
    ],
@@ -12452,6 +13102,8 @@
     "today"
    ],
    "entities": [
+    "E-001",
+    "E-002",
     "E-004",
     "E-006",
     "E-007",
@@ -12460,16 +13112,25 @@
     "E-013",
     "E-014",
     "E-016",
+    "E-028",
     "E-029",
     "E-035",
+    "E-037",
+    "E-038",
     "E-039",
+    "E-042",
     "E-043",
+    "E-048",
     "E-049",
     "E-050",
     "E-051",
+    "E-052",
     "E-055",
     "E-058",
     "E-061",
+    "E-073",
+    "E-079",
+    "E-080",
     "E-094",
     "E-095",
     "E-096",
@@ -12478,20 +13139,31 @@
     "E-106",
     "E-107",
     "E-108",
+    "E-109",
     "E-110",
+    "E-111",
+    "E-112",
+    "E-113",
     "E-114",
     "E-116",
     "E-117",
     "E-118",
     "E-119",
     "E-120",
+    "E-121",
+    "E-124",
+    "E-126",
+    "E-128",
     "E-129",
+    "E-131",
     "E-132",
     "E-135",
     "E-136",
     "E-137",
     "E-138",
-    "E-139"
+    "E-139",
+    "E-140",
+    "E-141"
    ],
    "api_endpoints_draft": [
     "DELETE /api/messages/:id",
@@ -12532,14 +13204,28 @@
     "E-024",
     "E-028",
     "E-037",
+    "E-038",
     "E-039",
+    "E-042",
+    "E-043",
+    "E-044",
+    "E-046",
+    "E-048",
+    "E-049",
+    "E-050",
+    "E-051",
+    "E-052",
     "E-061",
+    "E-073",
+    "E-080",
     "E-081",
     "E-082",
     "E-083",
     "E-084",
     "E-085",
     "E-088",
+    "E-093",
+    "E-094",
     "E-095",
     "E-096",
     "E-097",
@@ -12547,18 +13233,28 @@
     "E-106",
     "E-107",
     "E-108",
+    "E-109",
     "E-110",
+    "E-111",
+    "E-112",
+    "E-113",
     "E-114",
     "E-116",
     "E-117",
     "E-118",
     "E-119",
     "E-120",
+    "E-121",
+    "E-124",
+    "E-126",
+    "E-128",
     "E-134",
     "E-135",
     "E-136",
     "E-137",
-    "E-138"
+    "E-138",
+    "E-139",
+    "E-140"
    ],
    "api_endpoints_draft": [
     "GET /api/action_runs",
@@ -12583,11 +13279,14 @@
     "tickets"
    ],
    "entities": [
+    "E-002",
     "E-004",
     "E-006",
     "E-007",
     "E-023",
     "E-024",
+    "E-028",
+    "E-030",
     "E-037",
     "E-038",
     "E-039",
@@ -12602,12 +13301,14 @@
     "E-058",
     "E-059",
     "E-060",
+    "E-061",
     "E-063",
     "E-064",
     "E-068",
     "E-069",
     "E-072",
     "E-073",
+    "E-080",
     "E-094",
     "E-095",
     "E-096",
@@ -12616,13 +13317,21 @@
     "E-106",
     "E-107",
     "E-108",
+    "E-109",
     "E-110",
+    "E-111",
+    "E-112",
+    "E-113",
     "E-114",
     "E-116",
     "E-117",
     "E-118",
     "E-119",
     "E-120",
+    "E-121",
+    "E-124",
+    "E-126",
+    "E-128",
     "E-135",
     "E-136",
     "E-137",
@@ -12768,8 +13477,10 @@
     "E-037",
     "E-038",
     "E-039",
+    "E-043",
     "E-049",
     "E-050",
+    "E-051",
     "E-052",
     "E-055",
     "E-058",
@@ -12779,12 +13490,14 @@
     "E-064",
     "E-072",
     "E-073",
+    "E-080",
     "E-081",
     "E-082",
     "E-083",
     "E-084",
     "E-085",
     "E-091",
+    "E-094",
     "E-095",
     "E-096",
     "E-097",
@@ -12792,13 +13505,21 @@
     "E-106",
     "E-107",
     "E-108",
+    "E-109",
     "E-110",
+    "E-111",
+    "E-112",
+    "E-113",
     "E-114",
     "E-116",
     "E-117",
     "E-118",
     "E-119",
     "E-120",
+    "E-121",
+    "E-124",
+    "E-126",
+    "E-128",
     "E-134",
     "E-135",
     "E-136",
@@ -12849,12 +13570,15 @@
     "E-028",
     "E-036",
     "E-037",
+    "E-038",
+    "E-039",
     "E-052",
     "E-055",
     "E-058",
     "E-065",
     "E-066",
     "E-068",
+    "E-080",
     "E-081",
     "E-082",
     "E-083",
@@ -12866,12 +13590,14 @@
     "E-096",
     "E-097",
     "E-098",
+    "E-106",
     "E-109",
     "E-110",
     "E-111",
     "E-112",
     "E-113",
     "E-115",
+    "E-117",
     "E-121",
     "E-122",
     "E-123",
@@ -12927,6 +13653,8 @@
     "E-064",
     "E-072",
     "E-073",
+    "E-080",
+    "E-092",
     "E-093",
     "E-104",
     "E-105",
@@ -12973,12 +13701,16 @@
     "E-029",
     "E-035",
     "E-037",
+    "E-038",
     "E-039",
     "E-043",
     "E-049",
     "E-050",
     "E-051",
+    "E-052",
     "E-055",
+    "E-061",
+    "E-080",
     "E-094",
     "E-095",
     "E-096",
@@ -12987,7 +13719,11 @@
     "E-106",
     "E-107",
     "E-108",
+    "E-109",
     "E-110",
+    "E-111",
+    "E-112",
+    "E-113",
     "E-114",
     "E-116",
     "E-117",
@@ -13000,6 +13736,7 @@
     "E-124",
     "E-125",
     "E-126",
+    "E-128",
     "E-133",
     "E-135",
     "E-136",
@@ -13141,14 +13878,19 @@
     "services"
    ],
    "entities": [
+    "E-001",
     "E-004",
     "E-006",
     "E-018",
     "E-021",
     "E-022",
+    "E-028",
+    "E-038",
     "E-039",
     "E-040",
     "E-042",
+    "E-044",
+    "E-048",
     "E-052",
     "E-055",
     "E-058",
@@ -13163,12 +13905,16 @@
     "E-089",
     "E-090",
     "E-094",
+    "E-095",
     "E-101",
     "E-102",
     "E-103",
+    "E-106",
     "E-129",
     "E-132",
-    "E-139"
+    "E-139",
+    "E-140",
+    "E-141"
    ],
    "api_endpoints_draft": [
     "PATCH /api/credentials/:id",
@@ -13274,10 +14020,19 @@
     "tickets"
    ],
    "entities": [
+    "E-002",
+    "E-004",
     "E-037",
+    "E-038",
     "E-039",
     "E-043",
+    "E-049",
+    "E-050",
+    "E-051",
+    "E-052",
+    "E-080",
     "E-091",
+    "E-094",
     "E-095",
     "E-096",
     "E-097",
@@ -13285,17 +14040,23 @@
     "E-106",
     "E-107",
     "E-108",
+    "E-109",
     "E-110",
+    "E-111",
+    "E-112",
+    "E-113",
     "E-114",
     "E-116",
     "E-117",
     "E-118",
     "E-119",
     "E-120",
+    "E-121",
     "E-124",
     "E-125",
     "E-126",
     "E-127",
+    "E-128",
     "E-135",
     "E-136",
     "E-137",
@@ -13333,14 +14094,25 @@
     "tickets"
    ],
    "entities": [
+    "E-002",
     "E-004",
+    "E-028",
+    "E-037",
+    "E-038",
     "E-039",
+    "E-043",
+    "E-049",
+    "E-050",
+    "E-051",
     "E-052",
     "E-055",
     "E-058",
     "E-072",
     "E-073",
+    "E-080",
     "E-088",
+    "E-093",
+    "E-094",
     "E-095",
     "E-096",
     "E-097",
@@ -13348,17 +14120,26 @@
     "E-106",
     "E-107",
     "E-108",
+    "E-109",
     "E-110",
+    "E-111",
+    "E-112",
+    "E-113",
     "E-114",
     "E-116",
     "E-117",
     "E-118",
     "E-119",
     "E-120",
+    "E-121",
+    "E-124",
+    "E-126",
+    "E-128",
     "E-135",
     "E-136",
     "E-137",
-    "E-138"
+    "E-138",
+    "E-139"
    ],
    "api_endpoints_draft": [
     "GET /api/action_runs",
@@ -13375,13 +14156,20 @@
     "tickets"
    ],
    "entities": [
+    "E-002",
     "E-004",
     "E-006",
+    "E-028",
+    "E-037",
+    "E-038",
     "E-039",
     "E-043",
     "E-049",
     "E-050",
     "E-051",
+    "E-052",
+    "E-061",
+    "E-080",
     "E-094",
     "E-095",
     "E-096",
@@ -13390,13 +14178,21 @@
     "E-106",
     "E-107",
     "E-108",
+    "E-109",
     "E-110",
+    "E-111",
+    "E-112",
+    "E-113",
     "E-114",
     "E-116",
     "E-117",
     "E-118",
     "E-119",
     "E-120",
+    "E-121",
+    "E-124",
+    "E-126",
+    "E-128",
     "E-135",
     "E-136",
     "E-137",

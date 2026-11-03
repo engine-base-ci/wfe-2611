@@ -163,7 +163,7 @@ for s in F["screens"]:
                     "fields": [], "layout": NAV.get("layout", {}).get("by_screen", {}).get(sid, "single"), "actions": [s.get("primary_action")] if s.get("primary_action") else [],
                     "states": states, "transitions": trans, "responsive": "375/768/1024/1440（横溢れ 0・本文 720 以上）", "responsive_breakpoints": ["375", "768", "1024", "1440"],
                     "access_roles": s["roles"], "edit_roles": [r for r in s["roles"] if r != "R4"], "related_apis": apis, "required_apis": apis,
-                    "related_entities": [ent_by_tbl[x] for x in dict.fromkeys(tb)], "mock_path": mp_ if html else None, "route": s.get("route"),
+                    "related_entities": list(dict.fromkeys([ent_by_tbl[x] for x in tb] + [r for a in apis if a.get("operation_id") for r in a["related_entities"]])), "mock_path": mp_ if html else None, "route": s.get("route"),
                     "meta_tags": {"screen_id": sid, "screen_name": s["name"], "category": sec_of.get(sid, "outside"), "status": "decided", "version": s.get("release", "v1")},
                     "h1_text": h1, "kpi_labels": subs if sid in ("today", "ops-home", "billing", "ops-billing") else [], "section_h2_texts": subs,
                     "checklist": [], "release": s.get("release"), "has_shell": s.get("has_shell"), "legacy_drift_notes": None, "status": "decided", "decided_at": TODAY, "source": s["source"]})

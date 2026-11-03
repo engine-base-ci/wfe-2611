@@ -298,7 +298,8 @@
     "E-058",
     "E-055",
     "E-130",
-    "E-131"
+    "E-131",
+    "E-092"
    ],
    "mock_path": "06_mockup/v1/v1-signup.html",
    "route": "/signup",
@@ -505,7 +506,12 @@
    "related_entities": [
     "E-004",
     "E-058",
-    "E-055"
+    "E-055",
+    "E-092",
+    "E-001",
+    "E-129",
+    "E-131",
+    "E-061"
    ],
    "mock_path": "06_mockup/v1/v1-verify-email.html",
    "route": "/verify-email",
@@ -745,7 +751,9 @@
     "E-058",
     "E-055",
     "E-129",
-    "E-002"
+    "E-002",
+    "E-001",
+    "E-131"
    ],
    "mock_path": "06_mockup/v1/v1-invite-accept.html",
    "route": "/invite/:token",
@@ -1430,7 +1438,9 @@
     "E-132",
     "E-052",
     "E-072",
-    "E-073"
+    "E-073",
+    "E-061",
+    "E-080"
    ],
    "mock_path": "06_mockup/v1/v1-mfa-setup.html",
    "route": "/mfa-setup",
@@ -1983,7 +1993,11 @@
     "E-058",
     "E-055",
     "E-132",
-    "E-061"
+    "E-061",
+    "E-140",
+    "E-073",
+    "E-080",
+    "E-131"
    ],
    "mock_path": "06_mockup/v1/v1-login.html",
    "route": "/login",
@@ -2184,7 +2198,8 @@
     "E-055",
     "E-052",
     "E-072",
-    "E-073"
+    "E-073",
+    "E-061"
    ],
    "mock_path": "06_mockup/v1/v1-password-reset.html",
    "route": "/password-reset",
@@ -2744,7 +2759,92 @@
      "act": "A09",
      "role": "action",
      "method": "POST",
-     "path_draft": "/api/sessions",
+     "path_draft": "/api/bridge/pairing-codes",
+     "table": "bridge_pairing_codes",
+     "operation_id": "createPairingCode",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-140"
+     ],
+     "choke_points": [
+      "C1",
+      "C2"
+     ],
+     "source": [
+      "D-125.143",
+      "D-125.146",
+      "D-055",
+      "D-125.167",
+      "D-015",
+      "D-004",
+      "D-004.1",
+      "D-015.1",
+      "D-015.6",
+      "D-019.1",
+      "D-040.4",
+      "D-055.1",
+      "D-055.2",
+      "D-055.3",
+      "D-109.3",
+      "D-119.1",
+      "D-119.2",
+      "D-119.4",
+      "D-120.1",
+      "D-120.2",
+      "D-120.3",
+      "D-120.4",
+      "D-125.142"
+     ]
+    },
+    {
+     "act": "A09",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/bridge/devices",
+     "table": "sessions",
+     "operation_id": "listMyDevices",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-061",
+      "E-048"
+     ],
+     "choke_points": [
+      "C1",
+      "C2"
+     ],
+     "source": [
+      "D-125.143",
+      "D-125.146",
+      "D-055",
+      "D-125.167",
+      "D-015",
+      "D-004",
+      "D-004.1",
+      "D-015.1",
+      "D-015.6",
+      "D-019.1",
+      "D-040.4",
+      "D-055.1",
+      "D-055.2",
+      "D-055.3",
+      "D-109.3",
+      "D-119.1",
+      "D-119.2",
+      "D-119.4",
+      "D-120.1",
+      "D-120.2",
+      "D-120.3",
+      "D-120.4",
+      "D-125.142"
+     ]
+    },
+    {
+     "act": "A09",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/bridge/devices/:id",
+     "table": "sessions",
+     "operation_id": "updateMyDevice",
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-061"
@@ -2777,6 +2877,612 @@
       "D-120.3",
       "D-120.4",
       "D-125.142"
+     ]
+    },
+    {
+     "act": "A09",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/bridge/devices/:id",
+     "table": "sessions",
+     "operation_id": "revokeMyDevice",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-061",
+      "E-073",
+      "E-044"
+     ],
+     "choke_points": [
+      "C1",
+      "C2"
+     ],
+     "source": [
+      "D-125.143",
+      "D-125.146",
+      "D-055",
+      "D-125.167",
+      "D-015",
+      "D-004",
+      "D-004.1",
+      "D-015.1",
+      "D-015.6",
+      "D-019.1",
+      "D-040.4",
+      "D-055.1",
+      "D-055.2",
+      "D-055.3",
+      "D-109.3",
+      "D-119.1",
+      "D-119.2",
+      "D-119.4",
+      "D-120.1",
+      "D-120.2",
+      "D-120.3",
+      "D-120.4",
+      "D-125.142"
+     ]
+    },
+    {
+     "act": "A09",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/bridge/releases/latest",
+     "table": "sessions",
+     "operation_id": "getLatestBridgeRelease",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-061"
+     ],
+     "choke_points": [
+      "C1",
+      "C2"
+     ],
+     "source": [
+      "D-125.143",
+      "D-125.146",
+      "D-055",
+      "D-125.167",
+      "D-015",
+      "D-004",
+      "D-004.1",
+      "D-015.1",
+      "D-015.6",
+      "D-019.1",
+      "D-040.4",
+      "D-055.1",
+      "D-055.2",
+      "D-055.3",
+      "D-109.3",
+      "D-119.1",
+      "D-119.2",
+      "D-119.4",
+      "D-120.1",
+      "D-120.2",
+      "D-120.3",
+      "D-120.4",
+      "D-125.142"
+     ]
+    },
+    {
+     "act": "A09",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/bridge/releases/:name/file",
+     "table": "sessions",
+     "operation_id": "downloadBridgeRelease",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-061"
+     ],
+     "choke_points": [
+      "C1",
+      "C2"
+     ],
+     "source": [
+      "D-125.143",
+      "D-125.146",
+      "D-055",
+      "D-125.167",
+      "D-015",
+      "D-004",
+      "D-004.1",
+      "D-015.1",
+      "D-015.6",
+      "D-019.1",
+      "D-040.4",
+      "D-055.1",
+      "D-055.2",
+      "D-055.3",
+      "D-109.3",
+      "D-119.1",
+      "D-119.2",
+      "D-119.4",
+      "D-120.1",
+      "D-120.2",
+      "D-120.3",
+      "D-120.4",
+      "D-125.142"
+     ]
+    },
+    {
+     "act": "A09",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/claim",
+     "table": "sessions",
+     "operation_id": "claimPairingCode",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-061",
+      "E-140",
+      "E-073"
+     ],
+     "choke_points": [
+      "C1",
+      "C2"
+     ],
+     "source": [
+      "D-125.143",
+      "D-125.146",
+      "D-055",
+      "D-125.167",
+      "D-015",
+      "D-004",
+      "D-004.1",
+      "D-015.1",
+      "D-015.6",
+      "D-019.1",
+      "D-040.4",
+      "D-055.1",
+      "D-055.2",
+      "D-055.3",
+      "D-109.3",
+      "D-119.1",
+      "D-119.2",
+      "D-119.4",
+      "D-120.1",
+      "D-120.2",
+      "D-120.3",
+      "D-120.4",
+      "D-125.142"
+     ]
+    },
+    {
+     "act": "A09",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/heartbeat",
+     "table": "sessions",
+     "operation_id": "sendHeartbeat",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-061"
+     ],
+     "choke_points": [
+      "C1",
+      "C2"
+     ],
+     "source": [
+      "D-125.143",
+      "D-125.146",
+      "D-055",
+      "D-125.167",
+      "D-015",
+      "D-004",
+      "D-004.1",
+      "D-015.1",
+      "D-015.6",
+      "D-019.1",
+      "D-040.4",
+      "D-055.1",
+      "D-055.2",
+      "D-055.3",
+      "D-109.3",
+      "D-119.1",
+      "D-119.2",
+      "D-119.4",
+      "D-120.1",
+      "D-120.2",
+      "D-120.3",
+      "D-120.4",
+      "D-125.142"
+     ]
+    },
+    {
+     "act": "A94",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/usage",
+     "table": "agent_usage_snapshots",
+     "operation_id": "reportUsage",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-048"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-104.16"
+     ]
+    },
+    {
+     "act": "A104",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/jobs/take",
+     "table": "bridge_jobs",
+     "operation_id": "takeBridgeJob",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-044",
+      "E-039"
+     ],
+     "choke_points": [
+      "C2",
+      "C3",
+      "C5"
+     ],
+     "source": [
+      "D-125.42",
+      "D-125.156",
+      "D-125.157",
+      "D-126.15",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A104",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/jobs/:id/progress",
+     "table": "bridge_job_events",
+     "operation_id": "reportJobProgress",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-046",
+      "E-039",
+      "E-049"
+     ],
+     "choke_points": [
+      "C2",
+      "C3",
+      "C5"
+     ],
+     "source": [
+      "D-125.42",
+      "D-125.156",
+      "D-125.157",
+      "D-126.15",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A104",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/jobs/:id/finish",
+     "table": "bridge_jobs",
+     "operation_id": "finishBridgeJob",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-044",
+      "E-039",
+      "E-049",
+      "E-117"
+     ],
+     "choke_points": [
+      "C2",
+      "C3",
+      "C5"
+     ],
+     "source": [
+      "D-125.42",
+      "D-125.156",
+      "D-125.157",
+      "D-126.15",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A91",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/jobs/:id/questions",
+     "table": "messages",
+     "operation_id": "askFromBridge",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-049",
+      "E-080"
+     ],
+     "choke_points": [
+      "C2",
+      "C5"
+     ],
+     "source": [
+      "D-104.14",
+      "D-107.2"
+     ]
+    },
+    {
+     "act": "A91",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/bridge/jobs/:id/questions/:qid",
+     "table": "messages",
+     "operation_id": "getBridgeQuestionAnswer",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-049"
+     ],
+     "choke_points": [
+      "C2",
+      "C5"
+     ],
+     "source": [
+      "D-104.14",
+      "D-107.2"
+     ]
+    },
+    {
+     "act": "A104",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/bridge/jobs/:id/control",
+     "table": "bridge_jobs",
+     "operation_id": "getJobControl",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-044"
+     ],
+     "choke_points": [
+      "C2",
+      "C3",
+      "C5"
+     ],
+     "source": [
+      "D-125.42",
+      "D-125.156",
+      "D-125.157",
+      "D-126.15",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A104",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/jobs/:id/browser",
+     "table": "bridge_job_events",
+     "operation_id": "reportBrowserState",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-046",
+      "E-094"
+     ],
+     "choke_points": [
+      "C2",
+      "C3",
+      "C5"
+     ],
+     "source": [
+      "D-125.42",
+      "D-125.156",
+      "D-125.157",
+      "D-126.15",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A20",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/jobs/:id/conversation-entries",
+     "table": "messages",
+     "operation_id": "mirrorConversationEntries",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-049",
+      "E-043"
+     ],
+     "choke_points": [
+      "C2",
+      "C3",
+      "C4"
+     ],
+     "source": [
+      "D-125.147",
+      "D-125.154",
+      "D-125.167",
+      "D-024",
+      "D-037",
+      "D-007",
+      "D-003.9",
+      "D-007.2",
+      "D-024.7",
+      "D-037.5",
+      "D-060.3",
+      "D-104.2",
+      "D-104.3",
+      "D-104.4",
+      "D-104.5",
+      "D-104.6",
+      "D-104.7",
+      "D-104.10",
+      "D-104.12",
+      "D-104.13",
+      "D-104.17",
+      "D-104.18",
+      "D-104.20",
+      "D-111.1",
+      "D-111.2",
+      "D-111.3",
+      "D-111.4",
+      "D-111.5",
+      "D-112.1",
+      "D-112.2",
+      "D-112.3",
+      "D-112.4",
+      "D-112.5",
+      "D-112.6",
+      "D-113.1",
+      "D-113.3",
+      "D-113.4",
+      "D-113.7",
+      "D-114.2",
+      "D-114.3",
+      "D-115.1",
+      "D-115.2",
+      "D-115.3",
+      "D-125.152",
+      "D-126.18"
+     ]
+    },
+    {
+     "act": "A95",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/jobs/:id/artifacts",
+     "table": "artifacts",
+     "operation_id": "putArtifactFromBridge",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-050",
+      "E-051"
+     ],
+     "choke_points": [
+      "C2",
+      "C4"
+     ],
+     "source": [
+      "D-106.1",
+      "D-106.2",
+      "D-106.3",
+      "D-106.4",
+      "D-106.5",
+      "D-106.6",
+      "D-106.7",
+      "D-106.8"
+     ]
+    },
+    {
+     "act": "A104",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/jobs/:id/tools/:name",
+     "table": "action_runs",
+     "operation_id": "callKanameTool",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-039",
+      "E-106",
+      "E-120"
+     ],
+     "choke_points": [
+      "C2",
+      "C3",
+      "C5"
+     ],
+     "source": [
+      "D-125.42",
+      "D-125.156",
+      "D-125.157",
+      "D-126.15",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A10",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/credentials/resolve",
+     "table": "credentials",
+     "operation_id": "resolveCredential",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-042",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2",
+      "C8"
+     ],
+     "source": [
+      "D-125.148",
+      "D-125.149",
+      "D-125.151",
+      "D-125.167",
+      "D-017",
+      "D-041",
+      "D-013.3",
+      "D-017.1",
+      "D-042.8",
+      "D-117.1",
+      "D-117.2",
+      "D-117.3",
+      "D-117.4",
+      "D-117.5",
+      "D-117.6",
+      "D-119.5"
+     ]
+    },
+    {
+     "act": "A10",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/credentials/:id/check-result",
+     "table": "credentials",
+     "operation_id": "reportCredentialCheck",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-042"
+     ],
+     "choke_points": [
+      "C2",
+      "C8"
+     ],
+     "source": [
+      "D-125.148",
+      "D-125.149",
+      "D-125.151",
+      "D-125.167",
+      "D-017",
+      "D-041",
+      "D-013.3",
+      "D-017.1",
+      "D-042.8",
+      "D-117.1",
+      "D-117.2",
+      "D-117.3",
+      "D-117.4",
+      "D-117.5",
+      "D-117.6",
+      "D-119.5"
+     ]
+    },
+    {
+     "act": "A104",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/bridge/files/:ref",
+     "table": "attachments",
+     "operation_id": "getFileForBridge",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-094"
+     ],
+     "choke_points": [
+      "C2",
+      "C3",
+      "C5"
+     ],
+     "source": [
+      "D-125.42",
+      "D-125.156",
+      "D-125.157",
+      "D-126.15",
+      "D-125.167"
      ]
     },
     {
@@ -3217,7 +3923,92 @@
      "act": "A09",
      "role": "action",
      "method": "POST",
-     "path_draft": "/api/sessions",
+     "path_draft": "/api/bridge/pairing-codes",
+     "table": "bridge_pairing_codes",
+     "operation_id": "createPairingCode",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-140"
+     ],
+     "choke_points": [
+      "C1",
+      "C2"
+     ],
+     "source": [
+      "D-125.143",
+      "D-125.146",
+      "D-055",
+      "D-125.167",
+      "D-015",
+      "D-004",
+      "D-004.1",
+      "D-015.1",
+      "D-015.6",
+      "D-019.1",
+      "D-040.4",
+      "D-055.1",
+      "D-055.2",
+      "D-055.3",
+      "D-109.3",
+      "D-119.1",
+      "D-119.2",
+      "D-119.4",
+      "D-120.1",
+      "D-120.2",
+      "D-120.3",
+      "D-120.4",
+      "D-125.142"
+     ]
+    },
+    {
+     "act": "A09",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/bridge/devices",
+     "table": "sessions",
+     "operation_id": "listMyDevices",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-061",
+      "E-048"
+     ],
+     "choke_points": [
+      "C1",
+      "C2"
+     ],
+     "source": [
+      "D-125.143",
+      "D-125.146",
+      "D-055",
+      "D-125.167",
+      "D-015",
+      "D-004",
+      "D-004.1",
+      "D-015.1",
+      "D-015.6",
+      "D-019.1",
+      "D-040.4",
+      "D-055.1",
+      "D-055.2",
+      "D-055.3",
+      "D-109.3",
+      "D-119.1",
+      "D-119.2",
+      "D-119.4",
+      "D-120.1",
+      "D-120.2",
+      "D-120.3",
+      "D-120.4",
+      "D-125.142"
+     ]
+    },
+    {
+     "act": "A09",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/bridge/devices/:id",
+     "table": "sessions",
+     "operation_id": "updateMyDevice",
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-061"
@@ -3250,6 +4041,612 @@
       "D-120.3",
       "D-120.4",
       "D-125.142"
+     ]
+    },
+    {
+     "act": "A09",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/bridge/devices/:id",
+     "table": "sessions",
+     "operation_id": "revokeMyDevice",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-061",
+      "E-073",
+      "E-044"
+     ],
+     "choke_points": [
+      "C1",
+      "C2"
+     ],
+     "source": [
+      "D-125.143",
+      "D-125.146",
+      "D-055",
+      "D-125.167",
+      "D-015",
+      "D-004",
+      "D-004.1",
+      "D-015.1",
+      "D-015.6",
+      "D-019.1",
+      "D-040.4",
+      "D-055.1",
+      "D-055.2",
+      "D-055.3",
+      "D-109.3",
+      "D-119.1",
+      "D-119.2",
+      "D-119.4",
+      "D-120.1",
+      "D-120.2",
+      "D-120.3",
+      "D-120.4",
+      "D-125.142"
+     ]
+    },
+    {
+     "act": "A09",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/bridge/releases/latest",
+     "table": "sessions",
+     "operation_id": "getLatestBridgeRelease",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-061"
+     ],
+     "choke_points": [
+      "C1",
+      "C2"
+     ],
+     "source": [
+      "D-125.143",
+      "D-125.146",
+      "D-055",
+      "D-125.167",
+      "D-015",
+      "D-004",
+      "D-004.1",
+      "D-015.1",
+      "D-015.6",
+      "D-019.1",
+      "D-040.4",
+      "D-055.1",
+      "D-055.2",
+      "D-055.3",
+      "D-109.3",
+      "D-119.1",
+      "D-119.2",
+      "D-119.4",
+      "D-120.1",
+      "D-120.2",
+      "D-120.3",
+      "D-120.4",
+      "D-125.142"
+     ]
+    },
+    {
+     "act": "A09",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/bridge/releases/:name/file",
+     "table": "sessions",
+     "operation_id": "downloadBridgeRelease",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-061"
+     ],
+     "choke_points": [
+      "C1",
+      "C2"
+     ],
+     "source": [
+      "D-125.143",
+      "D-125.146",
+      "D-055",
+      "D-125.167",
+      "D-015",
+      "D-004",
+      "D-004.1",
+      "D-015.1",
+      "D-015.6",
+      "D-019.1",
+      "D-040.4",
+      "D-055.1",
+      "D-055.2",
+      "D-055.3",
+      "D-109.3",
+      "D-119.1",
+      "D-119.2",
+      "D-119.4",
+      "D-120.1",
+      "D-120.2",
+      "D-120.3",
+      "D-120.4",
+      "D-125.142"
+     ]
+    },
+    {
+     "act": "A09",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/claim",
+     "table": "sessions",
+     "operation_id": "claimPairingCode",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-061",
+      "E-140",
+      "E-073"
+     ],
+     "choke_points": [
+      "C1",
+      "C2"
+     ],
+     "source": [
+      "D-125.143",
+      "D-125.146",
+      "D-055",
+      "D-125.167",
+      "D-015",
+      "D-004",
+      "D-004.1",
+      "D-015.1",
+      "D-015.6",
+      "D-019.1",
+      "D-040.4",
+      "D-055.1",
+      "D-055.2",
+      "D-055.3",
+      "D-109.3",
+      "D-119.1",
+      "D-119.2",
+      "D-119.4",
+      "D-120.1",
+      "D-120.2",
+      "D-120.3",
+      "D-120.4",
+      "D-125.142"
+     ]
+    },
+    {
+     "act": "A09",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/heartbeat",
+     "table": "sessions",
+     "operation_id": "sendHeartbeat",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-061"
+     ],
+     "choke_points": [
+      "C1",
+      "C2"
+     ],
+     "source": [
+      "D-125.143",
+      "D-125.146",
+      "D-055",
+      "D-125.167",
+      "D-015",
+      "D-004",
+      "D-004.1",
+      "D-015.1",
+      "D-015.6",
+      "D-019.1",
+      "D-040.4",
+      "D-055.1",
+      "D-055.2",
+      "D-055.3",
+      "D-109.3",
+      "D-119.1",
+      "D-119.2",
+      "D-119.4",
+      "D-120.1",
+      "D-120.2",
+      "D-120.3",
+      "D-120.4",
+      "D-125.142"
+     ]
+    },
+    {
+     "act": "A94",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/usage",
+     "table": "agent_usage_snapshots",
+     "operation_id": "reportUsage",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-048"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-104.16"
+     ]
+    },
+    {
+     "act": "A104",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/jobs/take",
+     "table": "bridge_jobs",
+     "operation_id": "takeBridgeJob",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-044",
+      "E-039"
+     ],
+     "choke_points": [
+      "C2",
+      "C3",
+      "C5"
+     ],
+     "source": [
+      "D-125.42",
+      "D-125.156",
+      "D-125.157",
+      "D-126.15",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A104",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/jobs/:id/progress",
+     "table": "bridge_job_events",
+     "operation_id": "reportJobProgress",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-046",
+      "E-039",
+      "E-049"
+     ],
+     "choke_points": [
+      "C2",
+      "C3",
+      "C5"
+     ],
+     "source": [
+      "D-125.42",
+      "D-125.156",
+      "D-125.157",
+      "D-126.15",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A104",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/jobs/:id/finish",
+     "table": "bridge_jobs",
+     "operation_id": "finishBridgeJob",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-044",
+      "E-039",
+      "E-049",
+      "E-117"
+     ],
+     "choke_points": [
+      "C2",
+      "C3",
+      "C5"
+     ],
+     "source": [
+      "D-125.42",
+      "D-125.156",
+      "D-125.157",
+      "D-126.15",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A91",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/jobs/:id/questions",
+     "table": "messages",
+     "operation_id": "askFromBridge",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-049",
+      "E-080"
+     ],
+     "choke_points": [
+      "C2",
+      "C5"
+     ],
+     "source": [
+      "D-104.14",
+      "D-107.2"
+     ]
+    },
+    {
+     "act": "A91",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/bridge/jobs/:id/questions/:qid",
+     "table": "messages",
+     "operation_id": "getBridgeQuestionAnswer",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-049"
+     ],
+     "choke_points": [
+      "C2",
+      "C5"
+     ],
+     "source": [
+      "D-104.14",
+      "D-107.2"
+     ]
+    },
+    {
+     "act": "A104",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/bridge/jobs/:id/control",
+     "table": "bridge_jobs",
+     "operation_id": "getJobControl",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-044"
+     ],
+     "choke_points": [
+      "C2",
+      "C3",
+      "C5"
+     ],
+     "source": [
+      "D-125.42",
+      "D-125.156",
+      "D-125.157",
+      "D-126.15",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A104",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/jobs/:id/browser",
+     "table": "bridge_job_events",
+     "operation_id": "reportBrowserState",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-046",
+      "E-094"
+     ],
+     "choke_points": [
+      "C2",
+      "C3",
+      "C5"
+     ],
+     "source": [
+      "D-125.42",
+      "D-125.156",
+      "D-125.157",
+      "D-126.15",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A20",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/jobs/:id/conversation-entries",
+     "table": "messages",
+     "operation_id": "mirrorConversationEntries",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-049",
+      "E-043"
+     ],
+     "choke_points": [
+      "C2",
+      "C3",
+      "C4"
+     ],
+     "source": [
+      "D-125.147",
+      "D-125.154",
+      "D-125.167",
+      "D-024",
+      "D-037",
+      "D-007",
+      "D-003.9",
+      "D-007.2",
+      "D-024.7",
+      "D-037.5",
+      "D-060.3",
+      "D-104.2",
+      "D-104.3",
+      "D-104.4",
+      "D-104.5",
+      "D-104.6",
+      "D-104.7",
+      "D-104.10",
+      "D-104.12",
+      "D-104.13",
+      "D-104.17",
+      "D-104.18",
+      "D-104.20",
+      "D-111.1",
+      "D-111.2",
+      "D-111.3",
+      "D-111.4",
+      "D-111.5",
+      "D-112.1",
+      "D-112.2",
+      "D-112.3",
+      "D-112.4",
+      "D-112.5",
+      "D-112.6",
+      "D-113.1",
+      "D-113.3",
+      "D-113.4",
+      "D-113.7",
+      "D-114.2",
+      "D-114.3",
+      "D-115.1",
+      "D-115.2",
+      "D-115.3",
+      "D-125.152",
+      "D-126.18"
+     ]
+    },
+    {
+     "act": "A95",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/jobs/:id/artifacts",
+     "table": "artifacts",
+     "operation_id": "putArtifactFromBridge",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-050",
+      "E-051"
+     ],
+     "choke_points": [
+      "C2",
+      "C4"
+     ],
+     "source": [
+      "D-106.1",
+      "D-106.2",
+      "D-106.3",
+      "D-106.4",
+      "D-106.5",
+      "D-106.6",
+      "D-106.7",
+      "D-106.8"
+     ]
+    },
+    {
+     "act": "A104",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/jobs/:id/tools/:name",
+     "table": "action_runs",
+     "operation_id": "callKanameTool",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-039",
+      "E-106",
+      "E-120"
+     ],
+     "choke_points": [
+      "C2",
+      "C3",
+      "C5"
+     ],
+     "source": [
+      "D-125.42",
+      "D-125.156",
+      "D-125.157",
+      "D-126.15",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A10",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/credentials/resolve",
+     "table": "credentials",
+     "operation_id": "resolveCredential",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-042",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2",
+      "C8"
+     ],
+     "source": [
+      "D-125.148",
+      "D-125.149",
+      "D-125.151",
+      "D-125.167",
+      "D-017",
+      "D-041",
+      "D-013.3",
+      "D-017.1",
+      "D-042.8",
+      "D-117.1",
+      "D-117.2",
+      "D-117.3",
+      "D-117.4",
+      "D-117.5",
+      "D-117.6",
+      "D-119.5"
+     ]
+    },
+    {
+     "act": "A10",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/credentials/:id/check-result",
+     "table": "credentials",
+     "operation_id": "reportCredentialCheck",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-042"
+     ],
+     "choke_points": [
+      "C2",
+      "C8"
+     ],
+     "source": [
+      "D-125.148",
+      "D-125.149",
+      "D-125.151",
+      "D-125.167",
+      "D-017",
+      "D-041",
+      "D-013.3",
+      "D-017.1",
+      "D-042.8",
+      "D-117.1",
+      "D-117.2",
+      "D-117.3",
+      "D-117.4",
+      "D-117.5",
+      "D-117.6",
+      "D-119.5"
+     ]
+    },
+    {
+     "act": "A104",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/bridge/files/:ref",
+     "table": "attachments",
+     "operation_id": "getFileForBridge",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-094"
+     ],
+     "choke_points": [
+      "C2",
+      "C3",
+      "C5"
+     ],
+     "source": [
+      "D-125.42",
+      "D-125.156",
+      "D-125.157",
+      "D-126.15",
+      "D-125.167"
      ]
     },
     {
@@ -3686,7 +5083,24 @@
     }
    ],
    "related_entities": [
-    "E-061"
+    "E-061",
+    "E-140",
+    "E-048",
+    "E-073",
+    "E-044",
+    "E-039",
+    "E-046",
+    "E-049",
+    "E-117",
+    "E-080",
+    "E-094",
+    "E-043",
+    "E-050",
+    "E-051",
+    "E-106",
+    "E-120",
+    "E-042",
+    "E-052"
    ],
    "mock_path": "06_mockup/v1/v1-bridge-setup.html",
    "route": "/setup/bridge",
@@ -3856,19 +5270,195 @@
    "related_apis": [
     {
      "act": "A10",
-     "role": "action",
-     "method": "PATCH",
-     "path_draft": "/api/credentials/:id",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/credentials",
+     "table": "credentials",
+     "operation_id": "listCredentials",
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-042",
-      "E-052",
-      "E-072",
-      "E-073"
+      "E-095",
+      "E-039"
      ],
      "choke_points": [
-      "C8",
-      "C2"
+      "C2",
+      "C8"
+     ],
+     "source": [
+      "D-125.148",
+      "D-125.149",
+      "D-125.151",
+      "D-125.167",
+      "D-017",
+      "D-041",
+      "D-013.3",
+      "D-017.1",
+      "D-042.8",
+      "D-117.1",
+      "D-117.2",
+      "D-117.3",
+      "D-117.4",
+      "D-117.5",
+      "D-117.6",
+      "D-119.5"
+     ]
+    },
+    {
+     "act": "A10",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/credentials",
+     "table": "credentials",
+     "operation_id": "createCredential",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-042",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2",
+      "C8"
+     ],
+     "source": [
+      "D-125.148",
+      "D-125.149",
+      "D-125.151",
+      "D-125.167",
+      "D-017",
+      "D-041",
+      "D-013.3",
+      "D-017.1",
+      "D-042.8",
+      "D-117.1",
+      "D-117.2",
+      "D-117.3",
+      "D-117.4",
+      "D-117.5",
+      "D-117.6",
+      "D-119.5"
+     ]
+    },
+    {
+     "act": "A10",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/credentials/:id",
+     "table": "credentials",
+     "operation_id": "updateCredential",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-042",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2",
+      "C8"
+     ],
+     "source": [
+      "D-125.148",
+      "D-125.149",
+      "D-125.151",
+      "D-125.167",
+      "D-017",
+      "D-041",
+      "D-013.3",
+      "D-017.1",
+      "D-042.8",
+      "D-117.1",
+      "D-117.2",
+      "D-117.3",
+      "D-117.4",
+      "D-117.5",
+      "D-117.6",
+      "D-119.5"
+     ]
+    },
+    {
+     "act": "A10",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/credentials/:id",
+     "table": "credentials",
+     "operation_id": "deleteCredential",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-042",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2",
+      "C8"
+     ],
+     "source": [
+      "D-125.148",
+      "D-125.149",
+      "D-125.151",
+      "D-125.167",
+      "D-017",
+      "D-041",
+      "D-013.3",
+      "D-017.1",
+      "D-042.8",
+      "D-117.1",
+      "D-117.2",
+      "D-117.3",
+      "D-117.4",
+      "D-117.5",
+      "D-117.6",
+      "D-119.5"
+     ]
+    },
+    {
+     "act": "A10",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/credentials/:id/login-check",
+     "table": "credentials",
+     "operation_id": "checkCredentialLogin",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-042",
+      "E-044"
+     ],
+     "choke_points": [
+      "C2",
+      "C8"
+     ],
+     "source": [
+      "D-125.148",
+      "D-125.149",
+      "D-125.151",
+      "D-125.167",
+      "D-017",
+      "D-041",
+      "D-013.3",
+      "D-017.1",
+      "D-042.8",
+      "D-117.1",
+      "D-117.2",
+      "D-117.3",
+      "D-117.4",
+      "D-117.5",
+      "D-117.6",
+      "D-119.5"
+     ]
+    },
+    {
+     "act": "A10",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/credentials/:id/login-check/answer",
+     "table": "credentials",
+     "operation_id": "answerCredentialLoginCheck",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-042",
+      "E-044"
+     ],
+     "choke_points": [
+      "C2",
+      "C8"
      ],
      "source": [
       "D-125.148",
@@ -4325,19 +5915,195 @@
    "required_apis": [
     {
      "act": "A10",
-     "role": "action",
-     "method": "PATCH",
-     "path_draft": "/api/credentials/:id",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/credentials",
+     "table": "credentials",
+     "operation_id": "listCredentials",
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-042",
-      "E-052",
-      "E-072",
-      "E-073"
+      "E-095",
+      "E-039"
      ],
      "choke_points": [
-      "C8",
-      "C2"
+      "C2",
+      "C8"
+     ],
+     "source": [
+      "D-125.148",
+      "D-125.149",
+      "D-125.151",
+      "D-125.167",
+      "D-017",
+      "D-041",
+      "D-013.3",
+      "D-017.1",
+      "D-042.8",
+      "D-117.1",
+      "D-117.2",
+      "D-117.3",
+      "D-117.4",
+      "D-117.5",
+      "D-117.6",
+      "D-119.5"
+     ]
+    },
+    {
+     "act": "A10",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/credentials",
+     "table": "credentials",
+     "operation_id": "createCredential",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-042",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2",
+      "C8"
+     ],
+     "source": [
+      "D-125.148",
+      "D-125.149",
+      "D-125.151",
+      "D-125.167",
+      "D-017",
+      "D-041",
+      "D-013.3",
+      "D-017.1",
+      "D-042.8",
+      "D-117.1",
+      "D-117.2",
+      "D-117.3",
+      "D-117.4",
+      "D-117.5",
+      "D-117.6",
+      "D-119.5"
+     ]
+    },
+    {
+     "act": "A10",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/credentials/:id",
+     "table": "credentials",
+     "operation_id": "updateCredential",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-042",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2",
+      "C8"
+     ],
+     "source": [
+      "D-125.148",
+      "D-125.149",
+      "D-125.151",
+      "D-125.167",
+      "D-017",
+      "D-041",
+      "D-013.3",
+      "D-017.1",
+      "D-042.8",
+      "D-117.1",
+      "D-117.2",
+      "D-117.3",
+      "D-117.4",
+      "D-117.5",
+      "D-117.6",
+      "D-119.5"
+     ]
+    },
+    {
+     "act": "A10",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/credentials/:id",
+     "table": "credentials",
+     "operation_id": "deleteCredential",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-042",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2",
+      "C8"
+     ],
+     "source": [
+      "D-125.148",
+      "D-125.149",
+      "D-125.151",
+      "D-125.167",
+      "D-017",
+      "D-041",
+      "D-013.3",
+      "D-017.1",
+      "D-042.8",
+      "D-117.1",
+      "D-117.2",
+      "D-117.3",
+      "D-117.4",
+      "D-117.5",
+      "D-117.6",
+      "D-119.5"
+     ]
+    },
+    {
+     "act": "A10",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/credentials/:id/login-check",
+     "table": "credentials",
+     "operation_id": "checkCredentialLogin",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-042",
+      "E-044"
+     ],
+     "choke_points": [
+      "C2",
+      "C8"
+     ],
+     "source": [
+      "D-125.148",
+      "D-125.149",
+      "D-125.151",
+      "D-125.167",
+      "D-017",
+      "D-041",
+      "D-013.3",
+      "D-017.1",
+      "D-042.8",
+      "D-117.1",
+      "D-117.2",
+      "D-117.3",
+      "D-117.4",
+      "D-117.5",
+      "D-117.6",
+      "D-119.5"
+     ]
+    },
+    {
+     "act": "A10",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/credentials/:id/login-check/answer",
+     "table": "credentials",
+     "operation_id": "answerCredentialLoginCheck",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-042",
+      "E-044"
+     ],
+     "choke_points": [
+      "C2",
+      "C8"
      ],
      "source": [
       "D-125.148",
@@ -4795,7 +6561,10 @@
     "E-042",
     "E-052",
     "E-072",
-    "E-073"
+    "E-073",
+    "E-095",
+    "E-039",
+    "E-044"
    ],
    "mock_path": "06_mockup/v1/v1-credentials.html",
    "route": "/settings/credentials",
@@ -7197,7 +8966,13 @@
     "E-137",
     "E-138",
     "E-117",
-    "E-050"
+    "E-050",
+    "E-039",
+    "E-051",
+    "E-119",
+    "E-037",
+    "E-052",
+    "E-030"
    ],
    "mock_path": "06_mockup/v1/v1-approvals.html",
    "route": "/approvals",
@@ -10483,7 +12258,15 @@
     "E-138",
     "E-094",
     "E-050",
-    "E-051"
+    "E-051",
+    "E-061",
+    "E-039",
+    "E-120",
+    "E-028",
+    "E-037",
+    "E-095",
+    "E-038",
+    "E-080"
    ],
    "mock_path": "06_mockup/v1/v1-clone-chat.html",
    "route": "/ai/chat",
@@ -11841,7 +13624,12 @@
     "E-095",
     "E-096",
     "E-097",
-    "E-098"
+    "E-098",
+    "E-038",
+    "E-108",
+    "E-028",
+    "E-139",
+    "E-093"
    ],
    "mock_path": "06_mockup/v1/v1-ai-activity.html",
    "route": "/ai-staff/activity",
@@ -19416,15 +21204,141 @@
    "related_apis": [
     {
      "act": "A74",
-     "role": "action",
-     "method": "PATCH",
-     "path_draft": "/api/members/:id",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/me",
+     "table": "members",
+     "operation_id": "getMe",
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-004",
-      "E-058",
-      "E-055",
-      "E-132"
+      "E-129",
+      "E-001"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.140",
+      "D-125.150",
+      "D-125.158",
+      "D-125.167",
+      "D-076.1",
+      "D-042",
+      "D-042.8"
+     ]
+    },
+    {
+     "act": "A74",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/me",
+     "table": "members",
+     "operation_id": "updateMe",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-004"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.140",
+      "D-125.150",
+      "D-125.158",
+      "D-125.167",
+      "D-076.1",
+      "D-042",
+      "D-042.8"
+     ]
+    },
+    {
+     "act": "A74",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/me/avatar",
+     "table": "members",
+     "operation_id": "uploadAvatar",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-004",
+      "E-094"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.140",
+      "D-125.150",
+      "D-125.158",
+      "D-125.167",
+      "D-076.1",
+      "D-042",
+      "D-042.8"
+     ]
+    },
+    {
+     "act": "A74",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/me/email-change",
+     "table": "security_events",
+     "operation_id": "requestEmailChange",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-073"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.140",
+      "D-125.150",
+      "D-125.158",
+      "D-125.167",
+      "D-076.1",
+      "D-042",
+      "D-042.8"
+     ]
+    },
+    {
+     "act": "A74",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/me/email-change/verify",
+     "table": "security_events",
+     "operation_id": "verifyEmailChange",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-073",
+      "E-004"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.140",
+      "D-125.150",
+      "D-125.158",
+      "D-125.167",
+      "D-076.1",
+      "D-042",
+      "D-042.8"
+     ]
+    },
+    {
+     "act": "A74",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/me/workspaces/:id",
+     "table": "tenant_memberships",
+     "operation_id": "leaveWorkspace",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-129",
+      "E-106",
+      "E-038",
+      "E-028"
      ],
      "choke_points": [
       "C2"
@@ -19443,19 +21357,145 @@
      "act": "A94",
      "role": "data_fetch",
      "method": "GET",
-     "path_draft": "/api/members",
+     "path_draft": "/api/me/usage",
+     "table": "agent_usage_snapshots",
+     "operation_id": "getMyUsage",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-004",
-      "E-058",
-      "E-055",
-      "E-132"
+      "E-048",
+      "E-039"
      ],
      "choke_points": [
       "C2"
      ],
      "source": [
       "D-104.16"
+     ]
+    },
+    {
+     "act": "A74",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/me/setup-tasks",
+     "table": "members",
+     "operation_id": "listSetupTasks",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-004",
+      "E-132",
+      "E-061",
+      "E-042"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.140",
+      "D-125.150",
+      "D-125.158",
+      "D-125.167",
+      "D-076.1",
+      "D-042",
+      "D-042.8"
+     ]
+    },
+    {
+     "act": "A74",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/me/setup-tasks/dismiss",
+     "table": "members",
+     "operation_id": "dismissSetupTasks",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-004"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.140",
+      "D-125.150",
+      "D-125.158",
+      "D-125.167",
+      "D-076.1",
+      "D-042",
+      "D-042.8"
+     ]
+    },
+    {
+     "act": "A74",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/me/notification-settings",
+     "table": "notification_settings",
+     "operation_id": "getNotificationSettings",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-141",
+      "E-079"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.140",
+      "D-125.150",
+      "D-125.158",
+      "D-125.167",
+      "D-076.1",
+      "D-042",
+      "D-042.8"
+     ]
+    },
+    {
+     "act": "A74",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/me/notification-settings",
+     "table": "notification_settings",
+     "operation_id": "updateNotificationSettings",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-141",
+      "E-079"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.140",
+      "D-125.150",
+      "D-125.158",
+      "D-125.167",
+      "D-076.1",
+      "D-042",
+      "D-042.8"
+     ]
+    },
+    {
+     "act": "A74",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/me/notification-settings/copy",
+     "table": "notification_settings",
+     "operation_id": "copyNotificationSettings",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-141",
+      "E-079"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.140",
+      "D-125.150",
+      "D-125.158",
+      "D-125.167",
+      "D-076.1",
+      "D-042",
+      "D-042.8"
      ]
     },
     {
@@ -19867,15 +21907,141 @@
    "required_apis": [
     {
      "act": "A74",
-     "role": "action",
-     "method": "PATCH",
-     "path_draft": "/api/members/:id",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/me",
+     "table": "members",
+     "operation_id": "getMe",
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-004",
-      "E-058",
-      "E-055",
-      "E-132"
+      "E-129",
+      "E-001"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.140",
+      "D-125.150",
+      "D-125.158",
+      "D-125.167",
+      "D-076.1",
+      "D-042",
+      "D-042.8"
+     ]
+    },
+    {
+     "act": "A74",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/me",
+     "table": "members",
+     "operation_id": "updateMe",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-004"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.140",
+      "D-125.150",
+      "D-125.158",
+      "D-125.167",
+      "D-076.1",
+      "D-042",
+      "D-042.8"
+     ]
+    },
+    {
+     "act": "A74",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/me/avatar",
+     "table": "members",
+     "operation_id": "uploadAvatar",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-004",
+      "E-094"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.140",
+      "D-125.150",
+      "D-125.158",
+      "D-125.167",
+      "D-076.1",
+      "D-042",
+      "D-042.8"
+     ]
+    },
+    {
+     "act": "A74",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/me/email-change",
+     "table": "security_events",
+     "operation_id": "requestEmailChange",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-073"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.140",
+      "D-125.150",
+      "D-125.158",
+      "D-125.167",
+      "D-076.1",
+      "D-042",
+      "D-042.8"
+     ]
+    },
+    {
+     "act": "A74",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/me/email-change/verify",
+     "table": "security_events",
+     "operation_id": "verifyEmailChange",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-073",
+      "E-004"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.140",
+      "D-125.150",
+      "D-125.158",
+      "D-125.167",
+      "D-076.1",
+      "D-042",
+      "D-042.8"
+     ]
+    },
+    {
+     "act": "A74",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/me/workspaces/:id",
+     "table": "tenant_memberships",
+     "operation_id": "leaveWorkspace",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-129",
+      "E-106",
+      "E-038",
+      "E-028"
      ],
      "choke_points": [
       "C2"
@@ -19894,19 +22060,145 @@
      "act": "A94",
      "role": "data_fetch",
      "method": "GET",
-     "path_draft": "/api/members",
+     "path_draft": "/api/me/usage",
+     "table": "agent_usage_snapshots",
+     "operation_id": "getMyUsage",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-004",
-      "E-058",
-      "E-055",
-      "E-132"
+      "E-048",
+      "E-039"
      ],
      "choke_points": [
       "C2"
      ],
      "source": [
       "D-104.16"
+     ]
+    },
+    {
+     "act": "A74",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/me/setup-tasks",
+     "table": "members",
+     "operation_id": "listSetupTasks",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-004",
+      "E-132",
+      "E-061",
+      "E-042"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.140",
+      "D-125.150",
+      "D-125.158",
+      "D-125.167",
+      "D-076.1",
+      "D-042",
+      "D-042.8"
+     ]
+    },
+    {
+     "act": "A74",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/me/setup-tasks/dismiss",
+     "table": "members",
+     "operation_id": "dismissSetupTasks",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-004"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.140",
+      "D-125.150",
+      "D-125.158",
+      "D-125.167",
+      "D-076.1",
+      "D-042",
+      "D-042.8"
+     ]
+    },
+    {
+     "act": "A74",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/me/notification-settings",
+     "table": "notification_settings",
+     "operation_id": "getNotificationSettings",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-141",
+      "E-079"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.140",
+      "D-125.150",
+      "D-125.158",
+      "D-125.167",
+      "D-076.1",
+      "D-042",
+      "D-042.8"
+     ]
+    },
+    {
+     "act": "A74",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/me/notification-settings",
+     "table": "notification_settings",
+     "operation_id": "updateNotificationSettings",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-141",
+      "E-079"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.140",
+      "D-125.150",
+      "D-125.158",
+      "D-125.167",
+      "D-076.1",
+      "D-042",
+      "D-042.8"
+     ]
+    },
+    {
+     "act": "A74",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/me/notification-settings/copy",
+     "table": "notification_settings",
+     "operation_id": "copyNotificationSettings",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-141",
+      "E-079"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.140",
+      "D-125.150",
+      "D-125.158",
+      "D-125.167",
+      "D-076.1",
+      "D-042",
+      "D-042.8"
      ]
     },
     {
@@ -20321,7 +22613,19 @@
     "E-055",
     "E-132",
     "E-061",
-    "E-129"
+    "E-140",
+    "E-129",
+    "E-001",
+    "E-094",
+    "E-073",
+    "E-106",
+    "E-038",
+    "E-028",
+    "E-048",
+    "E-039",
+    "E-042",
+    "E-141",
+    "E-079"
    ],
    "mock_path": "06_mockup/v1/v1-account.html",
    "route": "/account",
@@ -21548,8 +23852,8 @@
      "related_entities": [
       "E-103",
       "E-061",
-      "E-080",
-      "E-079"
+      "E-140",
+      "E-080"
      ],
      "choke_points": [
       "C2",
@@ -21573,8 +23877,8 @@
      "related_entities": [
       "E-103",
       "E-061",
-      "E-080",
-      "E-079"
+      "E-140",
+      "E-080"
      ],
      "choke_points": [
       "C2",
@@ -21591,8 +23895,10 @@
    "related_entities": [
     "E-103",
     "E-061",
+    "E-140",
     "E-080",
     "E-079",
+    "E-141",
     "E-076"
    ],
    "mock_path": "06_mockup/v2/v2-app-setup.html",
@@ -34604,7 +36910,26 @@
     "E-096",
     "E-097",
     "E-098",
-    "E-039"
+    "E-039",
+    "E-109",
+    "E-111",
+    "E-004",
+    "E-124",
+    "E-002",
+    "E-121",
+    "E-043",
+    "E-094",
+    "E-050",
+    "E-052",
+    "E-051",
+    "E-038",
+    "E-049",
+    "E-080",
+    "E-037",
+    "E-128",
+    "E-126",
+    "E-112",
+    "E-113"
    ],
    "mock_path": null,
    "route": "/tickets",
@@ -35240,7 +37565,10 @@
     "E-002",
     "E-124",
     "E-125",
-    "E-126"
+    "E-126",
+    "E-039",
+    "E-028",
+    "E-038"
    ],
    "mock_path": null,
    "route": "/ai/rules",
@@ -35772,7 +38100,11 @@
     "E-097",
     "E-098",
     "E-133",
-    "E-037"
+    "E-037",
+    "E-106",
+    "E-117",
+    "E-038",
+    "E-080"
    ],
    "mock_path": null,
    "route": "/ai/work-types",
