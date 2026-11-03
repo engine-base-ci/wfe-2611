@@ -92,6 +92,11 @@ export async function runMatrix(
       return n > 0 ? "ok" : "zero";
     } catch (e) {
       if (/row-level security|permission denied/.test(String(e))) return "denied";
+      // INSERT の行の守り（WITH CHECK）は、ほかの決まり（一意など）より先に確かめられる（PostgreSQL の決まり）。
+      // 一意に当たった＝行の守りは通した。つなぐ表（チケット × 分類の値 など）は種と同じ組で重なるので、ここで「通した」と数える
+      // 表の決まり（CHECK）も同じ（ExecConstraints から出たものだけ。BEFORE の trigger が出す 23514 は行の守りより先なので数えない）
+      const pe = e as { code?: string; routine?: string };
+      if (pe.code === "23505" || (pe.code === "23514" && pe.routine === "ExecConstraints")) return "ok";
       throw e;
     }
   };

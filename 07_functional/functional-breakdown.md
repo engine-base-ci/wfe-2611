@@ -105,7 +105,7 @@
 | E-089 | `imports` | 13. 取り込み・正規連携・招待・持ち出し・添付 | scope_layered | 3 | D-025 D-026 D-042 D-076 |
 | E-090 | `integrations` | 13. 取り込み・正規連携・招待・持ち出し・添付 | scope_layered | 3 | D-026 D-041 D-042 D-076 |
 | E-091 | `invitations` | 13. 取り込み・正規連携・招待・持ち出し・添付 | account_scoped | 3 | D-026 D-037 D-042 D-076.3 |
-| E-092 | `pending_signup` | 13. 取り込み・正規連携・招待・持ち出し・添付 | none | 2 | D-026 D-042 D-076.3 D-076.4 |
+| E-092 | `pending_signup` | 13. 取り込み・正規連携・招待・持ち出し・添付 | none | 1 | D-026 D-042 D-076.3 D-076.4 |
 | E-093 | `export_jobs` | 13. 取り込み・正規連携・招待・持ち出し・添付 | account_scoped | 4 | D-026 D-042 D-076.3 D-076.4 |
 | E-094 | `attachments` | 13. 取り込み・正規連携・招待・持ち出し・添付 | scope_layered | 3 | D-026 D-042 D-076.3 D-076.4 |
 | E-095 | `skills` | 14. スキル | ops_scoped | 1 | D-078 D-078.1 |
@@ -119,15 +119,15 @@
 | E-103 | `push_devices` | 15. 段階 2 で足す表 | account_scoped | 4 | D-082 D-084 D-084.3 D-085 |
 | E-104 | `disclosure_versions` | 15. 段階 2 で足す表 | ops_scoped | 1 | D-082 D-085 D-085.1 D-085.2 |
 | E-105 | `subprocessors` | 15. 段階 2 で足す表 | ops_scoped | 1 | D-042 D-082 D-085 D-085.2 |
-| E-106 | `tickets` | 16. 第1フェーズの表 | scope_layered | 3 | D-125 D-125.27 D-127.1 D-128 |
+| E-106 | `tickets` | 16. 第1フェーズの表 | scope_layered | 4 | D-125 D-125.27 D-127.1 D-128 |
 | E-107 | `ticket_sections` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-125.27 D-125.53 D-128 |
-| E-108 | `ticket_section_versions` | 16. 第1フェーズの表 | none | 2 | D-125 D-128 |
+| E-108 | `ticket_section_versions` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-128 D-128.115 |
 | E-109 | `ticket_kinds` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-125.30 D-128 |
 | E-110 | `kind_sections` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-125.52 D-128 D-128.48 |
 | E-111 | `ticket_stages` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-125.38 D-128 |
 | E-112 | `class_axes` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-125.67 D-128 |
 | E-113 | `class_values` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-128 |
-| E-114 | `ticket_class_values` | 16. 第1フェーズの表 | none | 2 | D-125 D-128 |
+| E-114 | `ticket_class_values` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-128 D-128.115 |
 | E-115 | `handover_rules` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-125.70 D-125.71 D-128 |
 | E-116 | `test_specs` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-125.17 D-125.79 D-128 |
 | E-117 | `checks` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-125.18 D-126.24 D-128 |

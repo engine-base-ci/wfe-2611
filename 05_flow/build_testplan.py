@@ -63,7 +63,7 @@ CASES_OPS_WRITE = [("運営の文脈", "OK"), ("会社の人（運営でない�
 am = []
 for en in EN:
     for p in en["access_control_policies"]:
-        cases = CASES_OPS_OWN if p["name"].endswith(("_ops_own", "_ops_all")) else CASES_SYSTEM if p["role"] == "system" else CASES_AUTH if p["role"] == "authenticated" else (CASES_OPS_WRITE if p["role"] == "ops" and p["operation"] != "select" else CASES.get(p["operation"], CASES["select"]))
+        cases = CASES_OPS_OWN if p["name"].endswith(("_ops_own", "_ops_all")) else CASES_SYSTEM if p["role"] == "system" else CASES_AUTH if p["role"] == "authenticated" else (CASES_OPS_WRITE if p["role"] == "ops" and p["operation"] != "select" else CASES.get(p["operation"], CASES["select"] if p["operation"] == "select" else CASES["insert,update,delete"]))
         for case, exp in cases:
             if p["role"] == "ops" and "他の会社" in case: exp = "NG（顧客が許可した範囲・期限の中だけ OK）"
             if p["name"].endswith("self_only_write") and "権限なし" in case: exp = "OK（自分の行だけ）・他人の行は NG"

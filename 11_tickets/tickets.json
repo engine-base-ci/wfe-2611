@@ -80,7 +80,7 @@
    "sections": {
     "目的": "API ごとの「誰が呼べるか」（read・write・self・assignee・approver・recipient・manager・admin・client・device・ops:<できること>）と本人確認の取り直しを、入口で確かめる。",
     "完了の条件": "- [ ] 子のチケットが全部「完了」になっている\n- [ ] `apps/api/src/contract/authz.test.ts` の it.todo が 0（全部本物の試験）\n- [ ] `zt_gate.py` の perm_words_missing と step_up_missing が 0",
-    "前提と制約": "- 権限の判定は RLS と二重（API で 403・DB でも 0 行）",
+    "前提と制約": "- 権限の判定は RLS と二重（API で 403・DB でも 0 行）\n- `has_permission` は、会社全体の権限を確かめるとき（層＝なし）に、1 つのグループだけに付けた権限でも通してしまう（KN-38 で見つけた）。ここで直し、グループの edit だけの人が会社全体の決まりを直せないことを試験で確かめる",
     "実施事項": "子のチケット（このあと切る）",
     "テスト仕様と確認の結果": "",
     "成果物": "",
@@ -1137,31 +1137,33 @@
    "id": "KN-38",
    "title": "チケットの本体の表",
    "kind": "タスク",
-   "stage": "未着手",
+   "stage": "確認中",
    "parent": "KN-2",
    "milestone": "基盤",
    "area": "DB",
-   "assignee": "未定",
+   "assignee": "Claude（このセッション）",
    "due": "",
    "decisions": [
     "D-125.38",
+    "D-125.60",
     "D-125.67",
     "D-125.68",
     "D-128.95",
-    "D-128.100"
+    "D-128.100",
+    "D-128.115"
    ],
    "split": "",
    "depends_on": [],
    "sections": {
-    "目的": "チケットの本体の表。契約の API がこの表を読み書きできるようにし、行の守りで範囲の外を見せない。",
-    "完了の条件": "- [ ] migration（packages/db/migrations）で表と列ができる\n- [ ] 表ごとに RLS の決まり（packages/db/policies）がある\n- [ ] repository の表の一覧（packages/db/src/repository.ts の TABLES）に入っている\n- [ ] 場合表（access-matrix.json）にこの表の行があり、全部通る\n- [ ] CI が緑のまま",
-    "前提と制約": "- 表は ER 図 §16 と「足す列」が正。足すだけで、消す・名前を変える migration は作らない\n- 全部の表に `tenant_id` と RLS。RLS を飛ばす鍵はサーバーで使わない（ZT3）\n- 範囲（グループ・本人・担当・承認する人・取引先の人・運営の 1 時間の許可）は RLS の条件と API の権限の両方で見る（ZT4・D-073）",
-    "実施事項": "- [ ] 表：`tickets` `ticket_sections` `ticket_section_versions` `ticket_kinds` `kind_sections` `ticket_stages` `class_axes` `class_values` `ticket_class_values` `handover_rules`\n- [ ] 列：`tickets.client_share`・`kind_sections` の並び・必須／出す／外す・中身の形・手がかり・先方に見せる・完了の確かめに使う\n- [ ] RLS の範囲：グループ（チケットの scope）・担当者・承認する人・取引先の人（見せると決めた項目だけ）。種別・段・軸はワークスペースで共通（D-125.67）\n- [ ] 種（seeds）に見本の行を足す（試験と画面の見本用）\n- [ ] `zt_gate.py --lower-baseline` で記録を下げる",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた |\n|---|---|---|\n| migration が新しい DB に全部入る | ① 機械 | `pnpm ci:migration-integration` |\n| 表の RLS が有効 | ① 機械 | `pnpm ci:rls-enabled` |\n| 範囲の外の行が取れない（場合表の全行） | ① 機械 | `pnpm ci:access-matrix`（この表の行を access-matrix.json に足す） |\n| 会社をまたいで読めない | ① 機械 | 別の会社の文脈で SELECT して 0 行（わざと壊す試験） |\n| 段の上限 8・足す軸 5・種別 10・区画 20 が DB でも守られる | ① 機械 | 上限を超える INSERT が失敗する |",
-    "成果物": "- migration・policies・seeds・repository の表の一覧・access-matrix.json の行",
-    "決定ログ": "- D-125.38・D-125.67・D-125.68・D-128.95・D-128.100",
-    "リスクと懸念": "- 前からある表と名前が近いもの（tasks と tickets など）を取り違えない。前の表は後のフェーズのものとして残す（D-127.1）",
-    "申し送り": ""
+    "目的": "チケットの本体の表（チケット・本文の区画と版・種別と区画の並び・作業の段・分類の軸と値・渡すときの決まり）を作り、契約の API が読み書きできるようにする。行の守りで、他の会社・グループの外の人には見せない（関わっている人は除く）。",
+    "完了の条件": "- [x] migration（`packages/db/migrations/0071_tickets.sql`）で表と列ができ、まっさらな DB に全部入る（71/71）\n- [x] 表ごとに RLS の決まり（`packages/db/policies/0071_tickets.sql`・gen_rls.py ← `05_flow/rls_policies.py`）がある\n- [x] repository の表の一覧（`packages/db/src/repository.ts` の TABLES）に入っている\n- [x] 場合表（access-matrix.json）にこの表の行があり、全部通る（全体で 1220 件 PASS・FAIL 0）\n- [x] チケットの子の表（本文・版・分類）は元のチケットの見え方に従う（D-128.115）\n- [x] 番号はグループの頭＋連番で、横渡し・頭の変更で変わらない（D-128.115）\n- [x] 上限（種別 10・作業の段 8・足す軸 5・区画 20）と親子 3 段が DB でも守られる\n- [ ] CI が緑のまま（全部の試験を流して確かめる）",
+    "前提と制約": "- 表は ER 図 §16 と「足す列」が正。足すだけで、消す・名前を変える migration は作らない\n- 全部の表に `tenant_id` と RLS。RLS を飛ばす鍵はサーバーで使わない（ZT3）\n- 範囲（グループ・本人・担当・承認する人・取引先の人・運営の 1 時間の許可）は RLS の条件と API の権限の両方で見る（ZT4・D-073）\n- 前の `tasks` は後のフェーズのものとして残す（D-127.1）",
+    "実施事項": "- [x] 表：`tickets` `ticket_sections` `ticket_section_versions` `ticket_kinds` `kind_sections` `ticket_stages` `class_axes` `class_values` `ticket_class_values` `handover_rules`\n- [x] 列：`tickets.client_share`・`priority_reason`・`deleted_by`／`kind_sections` の並び・必須／出す／外す・中身の形・手がかり・先方に見せる・完了の確かめに使う／`scopes.ticket_prefix`・`next_ticket_no`\n- [x] RLS の範囲：チケットは そのグループを見られる人＋担当者＋関わっている人（`app.ticket_involved`）。作るのはそのグループの edit、直すのは edit か担当者、行は消さない（論理削除だけ）。本文・版・分類は元のチケットに従う（`app.ticket_visible`・`app.ticket_writable`）。種別・段・軸・渡すときはワークスペース全体の edit。運営は 1 時間の許可があるときだけ読む\n- [x] 番号：作るときにサーバーが付ける（入れた値は使わない）。直せない・会社を変えられない\n- [x] 上限・親子 3 段・輪の禁止・仕組みの段（確認中・承認待ち・実行中）は変えられない、を DB の関数で守る\n- [x] 版は追記だけ（アプリの役から直す・消すの権限を外す）。子の行は元のチケットと同じ会社だけ\n- [x] ワークスペースの初めの行（仕組みの段 3・作業の段 4・優先度の軸・渡すときの決まり 3・種別「タスク」と区画 10）を、会社を作ったときと前からある会社に入れる\n- [x] RLS の当てはめを直した：子の表が「ログイン済みなら誰でも読める」になっていた穴を、表の形からではなく `05_flow/rls_policies.py` で決めるようにした。設計の検査（zt_gate ZT3）で、マスタでない表がそうなっていたら赤\n- [x] 種（seeds）と場合表の道具を、列どうしの決まり・初めの行・つなぐ表でも流れるようにした\n- [x] `zt_gate.py --lower-baseline` で記録を下げた（rls_missing 37 → 27）",
+    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| migration が新しい DB に全部入る | ① 機械 | `pnpm ci:migration-integration` | 通過（71/71） |\n| 範囲の外の行が取れない（場合表の全行） | ① 機械 | `pnpm ci:access-matrix` | 通過（1220/1220） |\n| 会社をまたいで読めない（チケット・本文・版・分類） | ① 機械 | `packages/db/test/tickets.test.ts` | 通過 |\n| グループの外の人は本文・版・分類も読めない／担当者になれば読めて書ける／外れれば読めない | ① 機械 | 同上 | 通過 |\n| 書けないグループには、自分を担当者にしても作れない | ① 機械 | 同上 | 通過 |\n| 番号はサーバーが付け、直せず、横渡し・頭の変更で変わらない | ① 機械 | 同上 | 通過 |\n| 親子 3 段・輪・上限 4 つ・仕組みの段・優先度「高」の理由 | ① 機械 | 同上 | 通過 |\n| 試験が穴を捕まえる | ① 機械 | 本文の守りを「同じ会社なら読める」に戻すと赤になる | 赤になることを確かめた |\n| 全部の試験 | ① 機械 | `pnpm test`（CI と同じ形） | 流している |",
+    "成果物": "- `packages/db/migrations/0071_tickets.sql`・`packages/db/policies/0071_tickets.sql`\n- `05_flow/rls_policies.py`（形からは決まらない行の守り）・`scripts/ci/zt_gate.py` の ZT3（設計）\n- `packages/db/test/tickets.test.ts`（21 件）\n- `packages/db/src/seed_generic.ts`・`packages/db/src/matrix.ts`・`05_flow/build_testplan.py`（種と場合表の道具）\n- ER 図の列・決定 D-128.115・キャンバスの 2 か所（横渡しの小窓・見つからない画面）",
+    "決定ログ": "- 番号は横渡しで変えない。頭を変えても作った番号は変わらない。「前の番号なら新しい番号へ案内」はやめる（D-128.115・2026-11-03 高本さん）\n- グループの外でも関わっている人は、関わっている間そのチケットを読める。担当者は書ける（D-128.115・2026-11-03 高本さん）\n- 種別は「タスク」だけを製品が初めから持つ。課題・QA・会議などは運営のひな形から入れる（KN-16）",
+    "リスクと懸念": "- 場合表は「層を持たない表は会社全体が見える」として扱うので、子の表が親に従うことは確かめきれない。ここでは専用の試験で確かめた。場合表そのものを直すのは KN-47\n- `has_permission` は、会社全体の権限を確かめるとき（層＝なし）に、1 つのグループだけに付けた権限でも通してしまう。グループの edit を持つ人が、会社全体の決まり（種別など）を直せる恐れがある。KN-3 で直す",
+    "申し送り": "- KN-39（ticket_handovers）と KN-44（approvals.ticket_id）で `app.ticket_involved` を作り直し、渡された相手・承認する人を入れる（今は担当者だけ）\n- KN-41 で `tickets.client_id` に外部キーを付け、取引先の人（client）が見せると決めたチケットだけ読める決まりを足す\n- KN-42 で兼務（scope_memberships）を `visible_scopes` に入れる"
    },
    "file": "11_tickets/KN-38.md"
   },
@@ -1187,7 +1189,7 @@
    "sections": {
     "目的": "チケットのまわりの表。契約の API がこの表を読み書きできるようにし、行の守りで範囲の外を見せない。",
     "完了の条件": "- [ ] migration（packages/db/migrations）で表と列ができる\n- [ ] 表ごとに RLS の決まり（packages/db/policies）がある\n- [ ] repository の表の一覧（packages/db/src/repository.ts の TABLES）に入っている\n- [ ] 場合表（access-matrix.json）にこの表の行があり、全部通る\n- [ ] CI が緑のまま",
-    "前提と制約": "- 表は ER 図 §16 と「足す列」が正。足すだけで、消す・名前を変える migration は作らない\n- 全部の表に `tenant_id` と RLS。RLS を飛ばす鍵はサーバーで使わない（ZT3）\n- 範囲（グループ・本人・担当・承認する人・取引先の人・運営の 1 時間の許可）は RLS の条件と API の権限の両方で見る（ZT4・D-073）",
+    "前提と制約": "- 表は ER 図 §16 と「足す列」が正。足すだけで、消す・名前を変える migration は作らない\n- 全部の表に `tenant_id` と RLS。RLS を飛ばす鍵はサーバーで使わない（ZT3）\n- 範囲（グループ・本人・担当・承認する人・取引先の人・運営の 1 時間の許可）は RLS の条件と API の権限の両方で見る（ZT4・D-073）\n- `ticket_handovers` ができたら `app.ticket_involved` を作り直し、渡された／判断を仰がれた相手が答えるまでそのチケットを読めるようにする（D-128.115・KN-38 の申し送り）",
     "実施事項": "- [ ] 表：`test_specs` `checks` `ticket_decisions` `ticket_messages` `reference_logs` `ticket_links` `ticket_handovers` `saved_views` `ticket_imports`\n- [ ] 列：`ticket_links` は 関連・派生元 の 2 つだけ（D-128.80）\n- [ ] RLS の範囲：チケットと同じ範囲。保存した検索条件は本人（グループに見せたものはグループ）。渡すは渡した人・受ける人・そのグループのマネージャー\n- [ ] 種（seeds）に見本の行を足す（試験と画面の見本用）\n- [ ] `zt_gate.py --lower-baseline` で記録を下げる",
     "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた |\n|---|---|---|\n| migration が新しい DB に全部入る | ① 機械 | `pnpm ci:migration-integration` |\n| 表の RLS が有効 | ① 機械 | `pnpm ci:rls-enabled` |\n| 範囲の外の行が取れない（場合表の全行） | ① 機械 | `pnpm ci:access-matrix`（この表の行を access-matrix.json に足す） |\n| 会社をまたいで読めない | ① 機械 | 別の会社の文脈で SELECT して 0 行（わざと壊す試験） |",
     "成果物": "- migration・policies・seeds・repository の表の一覧・access-matrix.json の行",
@@ -1251,7 +1253,7 @@
    "sections": {
     "目的": "取引先の表。契約の API がこの表を読み書きできるようにし、行の守りで範囲の外を見せない。",
     "完了の条件": "- [ ] migration（packages/db/migrations）で表と列ができる\n- [ ] 表ごとに RLS の決まり（packages/db/policies）がある\n- [ ] repository の表の一覧（packages/db/src/repository.ts の TABLES）に入っている\n- [ ] 場合表（access-matrix.json）にこの表の行があり、全部通る\n- [ ] CI が緑のまま",
-    "前提と制約": "- 表は ER 図 §16 と「足す列」が正。足すだけで、消す・名前を変える migration は作らない\n- 全部の表に `tenant_id` と RLS。RLS を飛ばす鍵はサーバーで使わない（ZT3）\n- 範囲（グループ・本人・担当・承認する人・取引先の人・運営の 1 時間の許可）は RLS の条件と API の権限の両方で見る（ZT4・D-073）",
+    "前提と制約": "- 表は ER 図 §16 と「足す列」が正。足すだけで、消す・名前を変える migration は作らない\n- 全部の表に `tenant_id` と RLS。RLS を飛ばす鍵はサーバーで使わない（ZT3）\n- 範囲（グループ・本人・担当・承認する人・取引先の人・運営の 1 時間の許可）は RLS の条件と API の権限の両方で見る（ZT4・D-073）\n- `tickets.client_id` に外部キーを付け、取引先の人（client）は見せると決めたチケット（client_share）だけ読める決まりを足す（D-128.100・KN-38 の申し送り）",
     "実施事項": "- [ ] 表：`clients` `client_groups` `client_contacts` `client_requests` `acceptances`\n- [ ] 列：`clients.email_domain`・`client_requests.questions`・`acceptances.reminded_at`\n- [ ] RLS の範囲：社内：取引先の見える人（全員／担当グループだけ）。取引先の人：自分の取引先の中だけ・見せると決めた項目だけ\n- [ ] 種（seeds）に見本の行を足す（試験と画面の見本用）\n- [ ] `zt_gate.py --lower-baseline` で記録を下げる",
     "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた |\n|---|---|---|\n| migration が新しい DB に全部入る | ① 機械 | `pnpm ci:migration-integration` |\n| 表の RLS が有効 | ① 機械 | `pnpm ci:rls-enabled` |\n| 範囲の外の行が取れない（場合表の全行） | ① 機械 | `pnpm ci:access-matrix`（この表の行を access-matrix.json に足す） |\n| 会社をまたいで読めない | ① 機械 | 別の会社の文脈で SELECT して 0 行（わざと壊す試験） |",
     "成果物": "- migration・policies・seeds・repository の表の一覧・access-matrix.json の行",
@@ -1283,7 +1285,7 @@
    "sections": {
     "目的": "ワークスペースと人の表。契約の API がこの表を読み書きできるようにし、行の守りで範囲の外を見せない。",
     "完了の条件": "- [ ] migration（packages/db/migrations）で表と列ができる\n- [ ] 表ごとに RLS の決まり（packages/db/policies）がある\n- [ ] repository の表の一覧（packages/db/src/repository.ts の TABLES）に入っている\n- [ ] 場合表（access-matrix.json）にこの表の行があり、全部通る\n- [ ] CI が緑のまま",
-    "前提と制約": "- 表は ER 図 §16 と「足す列」が正。足すだけで、消す・名前を変える migration は作らない\n- 全部の表に `tenant_id` と RLS。RLS を飛ばす鍵はサーバーで使わない（ZT3）\n- 範囲（グループ・本人・担当・承認する人・取引先の人・運営の 1 時間の許可）は RLS の条件と API の権限の両方で見る（ZT4・D-073）",
+    "前提と制約": "- 表は ER 図 §16 と「足す列」が正。足すだけで、消す・名前を変える migration は作らない\n- 全部の表に `tenant_id` と RLS。RLS を飛ばす鍵はサーバーで使わない（ZT3）\n- 範囲（グループ・本人・担当・承認する人・取引先の人・運営の 1 時間の許可）は RLS の条件と API の権限の両方で見る（ZT4・D-073）\n- 兼務（scope_memberships）を `visible_scopes` に入れ、兼ねるグループのチケットも見えるようにする（D-125.115・KN-38 の申し送り）",
     "実施事項": "- [ ] 表：`tenant_memberships` `scope_memberships` `terms_versions` `terms_consents` `notification_settings` `bridge_pairing_codes`\n- [ ] 列：`tenant_memberships.role`・`scope_memberships` の主の所属と兼務・グループごとの役割\n- [ ] RLS の範囲：本人・そのワークスペースの管理者。接続コードは本人だけ（コードそのものは持たない）\n- [ ] 種（seeds）に見本の行を足す（試験と画面の見本用）\n- [ ] `zt_gate.py --lower-baseline` で記録を下げる",
     "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた |\n|---|---|---|\n| migration が新しい DB に全部入る | ① 機械 | `pnpm ci:migration-integration` |\n| 表の RLS が有効 | ① 機械 | `pnpm ci:rls-enabled` |\n| 範囲の外の行が取れない（場合表の全行） | ① 機械 | `pnpm ci:access-matrix`（この表の行を access-matrix.json に足す） |\n| 会社をまたいで読めない | ① 機械 | 別の会社の文脈で SELECT して 0 行（わざと壊す試験） |",
     "成果物": "- migration・policies・seeds・repository の表の一覧・access-matrix.json の行",
@@ -1345,7 +1347,7 @@
    "sections": {
     "目的": "前からある表に足す列：承認と分身。契約の API がこの表を読み書きできるようにし、行の守りで範囲の外を見せない。",
     "完了の条件": "- [ ] migration（packages/db/migrations）で表と列ができる\n- [ ] 表ごとに RLS の決まり（packages/db/policies）がある\n- [ ] repository の表の一覧（packages/db/src/repository.ts の TABLES）に入っている\n- [ ] 場合表（access-matrix.json）にこの表の行があり、全部通る\n- [ ] CI が緑のまま",
-    "前提と制約": "- 表は ER 図 §16 と「足す列」が正。足すだけで、消す・名前を変える migration は作らない\n- 全部の表に `tenant_id` と RLS。RLS を飛ばす鍵はサーバーで使わない（ZT3）\n- 範囲（グループ・本人・担当・承認する人・取引先の人・運営の 1 時間の許可）は RLS の条件と API の権限の両方で見る（ZT4・D-073）",
+    "前提と制約": "- 表は ER 図 §16 と「足す列」が正。足すだけで、消す・名前を変える migration は作らない\n- 全部の表に `tenant_id` と RLS。RLS を飛ばす鍵はサーバーで使わない（ZT3）\n- 範囲（グループ・本人・担当・承認する人・取引先の人・運営の 1 時間の許可）は RLS の条件と API の権限の両方で見る（ZT4・D-073）\n- `approvals.ticket_id` ができたら `app.ticket_involved` を作り直し、承認する人が承認するまでそのチケットを読めるようにする（D-128.115・KN-38 の申し送り）",
     "実施事項": "- [ ] 表：\n- [ ] 列：`approvals`（ticket_id・kind・level・parent_approval_id・escalated_by_policy_id・decision・human_checks・irreversible・step_up_at・withdrawn_at・bulk_batch_id など）・`policies`（text・applies_to・kind・escalate_when・escalate_to・paused_at など）・`memories`（kind_id・auto など）・`skills`（scoped にする）・`clones.auto_memory`\n- [ ] RLS の範囲：前のまま（列を足すだけ）。承認は承認する人・担当者・マネージャー\n- [ ] 種（seeds）に見本の行を足す（試験と画面の見本用）\n- [ ] `zt_gate.py --lower-baseline` で記録を下げる",
     "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた |\n|---|---|---|\n| migration が新しい DB に全部入る | ① 機械 | `pnpm ci:migration-integration` |\n| 表の RLS が有効 | ① 機械 | `pnpm ci:rls-enabled` |\n| 範囲の外の行が取れない（場合表の全行） | ① 機械 | `pnpm ci:access-matrix`（この表の行を access-matrix.json に足す） |\n| 会社をまたいで読めない | ① 機械 | 別の会社の文脈で SELECT して 0 行（わざと壊す試験） |",
     "成果物": "- migration・policies・seeds・repository の表の一覧・access-matrix.json の行",
@@ -1445,7 +1447,7 @@
    "sections": {
     "目的": "場合表（access-matrix.json）を新しい表と足した列に広げ、「範囲の外の行が取れない」を全部の表で確かめる。G33 と zt_gate の rls_missing を 0 にする。",
     "完了の条件": "- [ ] `pnpm ci:access-matrix` が緑（未 migration の表 0）\n- [ ] `zt_gate.py` の rls_missing が 0 で、記録（zt_baseline.json）も 0 に下げた\n- [ ] CI の G33 が緑",
-    "前提と制約": "- 場合表は役（管理者・マネージャー・メンバー・閲覧のみ・取引先の人・運営〔許可あり／期限切れ〕・PC の印）× 表 × 操作で作る",
+    "前提と制約": "- 場合表は役（管理者・マネージャー・メンバー・閲覧のみ・取引先の人・運営〔許可あり／期限切れ〕・PC の印）× 表 × 操作で作る\n- 場合表は今「層を持たない表は会社全体が見える」として扱う。親に従う子の表（チケットの本文・版・分類など・05_flow/rls_policies.py）は、親の見えない行で確かめるようにする（KN-38 の申し送り）",
     "実施事項": "- [ ] access-matrix.json に新しい表の行を足す（07_qa/test-plan の生成元を直す）\n- [ ] わざと壊す試験（RLS を外すと赤になる）を 1 本足す\n- [ ] 記録を下げる",
     "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた |\n|---|---|---|\n| 場合表の全行が通る | ① 機械 | `pnpm ci:access-matrix` |\n| RLS を外すと赤になる | ① 機械 | わざと壊す試験 |\n| 守りの残りが減った | ① 機械 | `python3 scripts/ci/zt_gate.py` |",
     "成果物": "- access-matrix.json の行・わざと壊す試験・下げた記録",

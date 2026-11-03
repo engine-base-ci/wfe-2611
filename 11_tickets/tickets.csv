@@ -84,11 +84,14 @@ KN-36,本番のデプロイを関門に結ぶ,タスク,KN-33,未着手,未定,,
 - [ ] release-gate が赤のときに本番に出ないことを確かめた記録がある"
 KN-37,前の画面を外す,タスク,KN-33,未着手,未定,,本番・画面,新しい画面がそろったら前の画面と前の API を外し、画面の道すじの生成物（G27）を新しい flow にする。,"- [ ] 子のチケットが全部「完了」になっている
 - [ ] CI の G27（画面の道すじ）・G28（実ブラウザの証拠）が緑"
-KN-38,チケットの本体の表,タスク,KN-2,未着手,未定,,基盤・DB,チケットの本体の表。契約の API がこの表を読み書きできるようにし、行の守りで範囲の外を見せない。,"- [ ] migration（packages/db/migrations）で表と列ができる
-- [ ] 表ごとに RLS の決まり（packages/db/policies）がある
-- [ ] repository の表の一覧（packages/db/src/repository.ts の TABLES）に入っている
-- [ ] 場合表（access-matrix.json）にこの表の行があり、全部通る
-- [ ] CI が緑のまま"
+KN-38,チケットの本体の表,タスク,KN-2,確認中,Claude（このセッション）,,基盤・DB,チケットの本体の表（チケット・本文の区画と版・種別と区画の並び・作業の段・分類の軸と値・渡すときの決まり）を作り、契約の API が読み書きできるようにする。行の守りで、他の会社・グループの外の人には見せない（関わっている人は除く）。,"- [x] migration（`packages/db/migrations/0071_tickets.sql`）で表と列ができ、まっさらな DB に全部入る（71/71）
+- [x] 表ごとに RLS の決まり（`packages/db/policies/0071_tickets.sql`・gen_rls.py ← `05_flow/rls_policies.py`）がある
+- [x] repository の表の一覧（`packages/db/src/repository.ts` の TABLES）に入っている
+- [x] 場合表（access-matrix.json）にこの表の行があり、全部通る（全体で 1220 件 PASS・FAIL 0）
+- [x] チケットの子の表（本文・版・分類）は元のチケットの見え方に従う（D-128.115）
+- [x] 番号はグループの頭＋連番で、横渡し・頭の変更で変わらない（D-128.115）
+- [x] 上限（種別 10・作業の段 8・足す軸 5・区画 20）と親子 3 段が DB でも守られる
+- [ ] CI が緑のまま（全部の試験を流して確かめる）"
 KN-39,チケットのまわりの表,タスク,KN-2,未着手,未定,,基盤・DB,チケットのまわりの表。契約の API がこの表を読み書きできるようにし、行の守りで範囲の外を見せない。,"- [ ] migration（packages/db/migrations）で表と列ができる
 - [ ] 表ごとに RLS の決まり（packages/db/policies）がある
 - [ ] repository の表の一覧（packages/db/src/repository.ts の TABLES）に入っている

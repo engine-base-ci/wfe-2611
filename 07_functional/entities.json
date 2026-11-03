@@ -175,6 +175,14 @@
     {
      "name": "name",
      "note": null
+    },
+    {
+     "name": "ticket_prefix",
+     "note": "番号の頭・例 EG。後から変えても、作ったチケットの番号は変わらない ← D-128.115"
+    },
+    {
+     "name": "next_ticket_no",
+     "note": null
     }
    ],
    "relations": [
@@ -8872,24 +8880,14 @@
    },
    "access_control_policies": [
     {
-     "name": "pending_signup_all_read",
+     "name": "pending_signup_no_app_access",
      "operation": "select",
-     "role": "authenticated",
-     "predicate": "true",
-     "rationale": "マスタ。全員が読む",
+     "role": "member",
+     "predicate": "false",
+     "rationale": "ログインの前の保留。アプリの役からは読めない（登録の口だけが kaname_auth の側で扱う・D-088.2）",
      "source": [
-      "D-026"
-     ]
-    },
-    {
-     "name": "pending_signup_ops_write",
-     "operation": "insert,update,delete",
-     "role": "ops",
-     "predicate": "current_setting('app.role', true) = 'ops'",
-     "rationale": "マスタは運営だけが変える",
-     "source": [
-      "D-037",
-      "D-077.4"
+      "D-088.2",
+      "D-128.115"
      ]
     }
    ],
@@ -10207,6 +10205,14 @@
      "note": null
     },
     {
+     "name": "priority_reason",
+     "note": "高のときの理由"
+    },
+    {
+     "name": "deleted_by",
+     "note": "消した人。戻せるのは消した本人とマネージャー・管理者 ← D-128.84"
+    },
+    {
      "name": "created_by",
      "note": "を「作成」で出す（D-128.27"
     }
@@ -10285,27 +10291,40 @@
    },
    "access_control_policies": [
     {
-     "name": "tickets_tenant_read",
+     "name": "tickets_read",
      "operation": "select",
      "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
-     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND (scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid)) OR assignee_member_id = current_setting('app.user_id', true)::uuid OR app.ticket_involved(id, current_setting('app.user_id', true)::uuid))",
+     "rationale": "そのグループを見られる人と、グループの外でも関わっている人（担当者・承認する人・渡された相手）",
      "source": [
-      "D-026.1",
-      "D-058.5",
-      "D-073.1"
+      "D-128.115",
+      "D-073.1",
+      "D-128.88"
      ]
     },
     {
-     "name": "tickets_permission_write",
-     "operation": "insert,update,delete",
+     "name": "tickets_create",
+     "operation": "insert",
      "role": "member",
      "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'tickets', scope_id, 'edit')",
-     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "rationale": "そのグループで書ける人だけが作る（自分を担当者にしても、書けないグループには作れない）",
      "source": [
+      "D-128.115",
       "D-073.1",
-      "D-073.2",
-      "D-073.3"
+      "D-128.88"
+     ]
+    },
+    {
+     "name": "tickets_update",
+     "operation": "update",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND (has_permission(current_setting('app.user_id', true)::uuid, 'tickets', scope_id, 'edit') OR assignee_member_id = current_setting('app.user_id', true)::uuid)",
+     "rationale": "そのグループで書ける人と担当者（消す・戻すは論理削除で、ここを通る）",
+     "source": [
+      "D-128.115",
+      "D-073.1",
+      "D-128.88",
+      "D-128.84"
      ]
     },
     {
@@ -10313,10 +10332,9 @@
      "operation": "select",
      "role": "ops",
      "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = tickets.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
-     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "rationale": "運営は理由つき・1 時間・見るだけの許可があるときだけ（D-128.68）",
      "source": [
-      "D-074.5",
-      "D-077.7"
+      "D-128.68"
      ]
     }
    ],
@@ -10384,27 +10402,27 @@
    },
    "access_control_policies": [
     {
-     "name": "ticket_sections_tenant_read",
+     "name": "ticket_sections_ticket_read",
      "operation": "select",
      "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
-     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.ticket_visible(ticket_id)",
+     "rationale": "元のチケットを読める人だけ（グループの外の人・他の会社には見せない）",
      "source": [
-      "D-026.1",
-      "D-058.5",
-      "D-073.1"
+      "D-128.115",
+      "D-073.1",
+      "D-128.88"
      ]
     },
     {
-     "name": "ticket_sections_permission_write",
+     "name": "ticket_sections_ticket_write",
      "operation": "insert,update,delete",
      "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'ticket_sections', NULL, 'edit')",
-     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.ticket_writable(ticket_id)",
+     "rationale": "元のチケットに書ける人だけ",
      "source": [
+      "D-128.115",
       "D-073.1",
-      "D-073.2",
-      "D-073.3"
+      "D-128.88"
      ]
     },
     {
@@ -10412,10 +10430,9 @@
      "operation": "select",
      "role": "ops",
      "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ticket_sections.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
-     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "rationale": "運営は理由つき・1 時間・見るだけの許可があるときだけ（D-128.68）",
      "source": [
-      "D-074.5",
-      "D-077.7"
+      "D-128.68"
      ]
     }
    ],
@@ -10436,6 +10453,14 @@
    "table_name": "ticket_section_versions",
    "section": "16. 第1フェーズの表",
    "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "ticket_id",
+     "note": null
+    },
     {
      "name": "section_id",
      "note": null
@@ -10467,46 +10492,60 @@
      "label": "版"
     }
    ],
-   "soft_delete": false,
+   "soft_delete": true,
    "timestamps": true,
-   "tenant_field": null,
+   "tenant_field": "tenant_id",
    "indexes": [],
    "computed": [],
    "tenant_isolation": {
-    "type": "none",
-    "column": null,
-    "fk_table": null
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
    },
    "access_control_policies": [
     {
-     "name": "ticket_section_versions_all_read",
+     "name": "ticket_section_versions_ticket_read",
      "operation": "select",
-     "role": "authenticated",
-     "predicate": "true",
-     "rationale": "マスタ。全員が読む",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.ticket_visible(ticket_id)",
+     "rationale": "元のチケットを読める人だけ（グループの外の人・他の会社には見せない）",
      "source": [
-      "D-026"
+      "D-128.115",
+      "D-073.1",
+      "D-128.88"
      ]
     },
     {
-     "name": "ticket_section_versions_ops_write",
-     "operation": "insert,update,delete",
-     "role": "ops",
-     "predicate": "current_setting('app.role', true) = 'ops'",
-     "rationale": "マスタは運営だけが変える",
+     "name": "ticket_section_versions_ticket_write",
+     "operation": "insert",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.ticket_writable(ticket_id)",
+     "rationale": "元のチケットに書ける人だけ",
      "source": [
-      "D-037",
-      "D-077.4"
+      "D-128.115",
+      "D-073.1",
+      "D-128.88"
+     ]
+    },
+    {
+     "name": "ticket_section_versions_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ticket_section_versions.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は理由つき・1 時間・見るだけの許可があるときだけ（D-128.68）",
+     "source": [
+      "D-128.68"
      ]
     }
    ],
    "legacy_drift_notes": null,
-   "note": "版と差分（TdVersions）・戻す",
+   "note": "版と差分（TdVersions）・戻す。追記だけ（直さない・消さない）。読めるのは元のチケットを読める人（D-128.115）",
    "status": "decided",
    "decided_at": "2026-11-03",
    "source": [
     "D-125",
-    "D-128"
+    "D-128",
+    "D-128.115"
    ]
   },
   {
@@ -10562,11 +10601,9 @@
      "operation": "select",
      "role": "member",
      "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
-     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "rationale": "ワークスペースのメンバーは読む（チケットを作る・絞る・渡すときに使う）",
      "source": [
-      "D-026.1",
-      "D-058.5",
-      "D-073.1"
+      "D-125.67"
      ]
     },
     {
@@ -10574,11 +10611,10 @@
      "operation": "insert,update,delete",
      "role": "member",
      "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'ticket_kinds', NULL, 'edit')",
-     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "rationale": "決まりを直せる人（ワークスペース全体の edit・既定は管理者）",
      "source": [
-      "D-073.1",
-      "D-073.2",
-      "D-073.3"
+      "D-125.66",
+      "D-128.97"
      ]
     },
     {
@@ -10586,10 +10622,9 @@
      "operation": "select",
      "role": "ops",
      "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ticket_kinds.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
-     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "rationale": "運営は理由つき・1 時間・見るだけの許可があるときだけ（D-128.68）",
      "source": [
-      "D-074.5",
-      "D-077.7"
+      "D-128.68"
      ]
     }
    ],
@@ -10660,11 +10695,9 @@
      "operation": "select",
      "role": "member",
      "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
-     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "rationale": "ワークスペースのメンバーは読む（チケットを作る・絞る・渡すときに使う）",
      "source": [
-      "D-026.1",
-      "D-058.5",
-      "D-073.1"
+      "D-125.67"
      ]
     },
     {
@@ -10672,11 +10705,10 @@
      "operation": "insert,update,delete",
      "role": "member",
      "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'kind_sections', NULL, 'edit')",
-     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "rationale": "決まりを直せる人（ワークスペース全体の edit・既定は管理者）",
      "source": [
-      "D-073.1",
-      "D-073.2",
-      "D-073.3"
+      "D-125.66",
+      "D-128.97"
      ]
     },
     {
@@ -10684,10 +10716,9 @@
      "operation": "select",
      "role": "ops",
      "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = kind_sections.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
-     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "rationale": "運営は理由つき・1 時間・見るだけの許可があるときだけ（D-128.68）",
      "source": [
-      "D-074.5",
-      "D-077.7"
+      "D-128.68"
      ]
     }
    ],
@@ -10747,11 +10778,9 @@
      "operation": "select",
      "role": "member",
      "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
-     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "rationale": "ワークスペースのメンバーは読む（チケットを作る・絞る・渡すときに使う）",
      "source": [
-      "D-026.1",
-      "D-058.5",
-      "D-073.1"
+      "D-125.67"
      ]
     },
     {
@@ -10759,11 +10788,10 @@
      "operation": "insert,update,delete",
      "role": "member",
      "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'ticket_stages', NULL, 'edit')",
-     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "rationale": "決まりを直せる人（ワークスペース全体の edit・既定は管理者）",
      "source": [
-      "D-073.1",
-      "D-073.2",
-      "D-073.3"
+      "D-125.66",
+      "D-128.97"
      ]
     },
     {
@@ -10771,10 +10799,9 @@
      "operation": "select",
      "role": "ops",
      "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ticket_stages.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
-     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "rationale": "運営は理由つき・1 時間・見るだけの許可があるときだけ（D-128.68）",
      "source": [
-      "D-074.5",
-      "D-077.7"
+      "D-128.68"
      ]
     }
    ],
@@ -10837,11 +10864,9 @@
      "operation": "select",
      "role": "member",
      "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
-     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "rationale": "ワークスペースのメンバーは読む（チケットを作る・絞る・渡すときに使う）",
      "source": [
-      "D-026.1",
-      "D-058.5",
-      "D-073.1"
+      "D-125.67"
      ]
     },
     {
@@ -10849,11 +10874,10 @@
      "operation": "insert,update,delete",
      "role": "member",
      "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'class_axes', NULL, 'edit')",
-     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "rationale": "決まりを直せる人（ワークスペース全体の edit・既定は管理者）",
      "source": [
-      "D-073.1",
-      "D-073.2",
-      "D-073.3"
+      "D-125.66",
+      "D-128.97"
      ]
     },
     {
@@ -10861,10 +10885,9 @@
      "operation": "select",
      "role": "ops",
      "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = class_axes.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
-     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "rationale": "運営は理由つき・1 時間・見るだけの許可があるときだけ（D-128.68）",
      "source": [
-      "D-074.5",
-      "D-077.7"
+      "D-128.68"
      ]
     }
    ],
@@ -10927,11 +10950,9 @@
      "operation": "select",
      "role": "member",
      "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
-     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "rationale": "ワークスペースのメンバーは読む（チケットを作る・絞る・渡すときに使う）",
      "source": [
-      "D-026.1",
-      "D-058.5",
-      "D-073.1"
+      "D-125.67"
      ]
     },
     {
@@ -10939,11 +10960,10 @@
      "operation": "insert,update,delete",
      "role": "member",
      "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'class_values', NULL, 'edit')",
-     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "rationale": "決まりを直せる人（ワークスペース全体の edit・既定は管理者）",
      "source": [
-      "D-073.1",
-      "D-073.2",
-      "D-073.3"
+      "D-125.66",
+      "D-128.97"
      ]
     },
     {
@@ -10951,10 +10971,9 @@
      "operation": "select",
      "role": "ops",
      "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = class_values.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
-     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "rationale": "運営は理由つき・1 時間・見るだけの許可があるときだけ（D-128.68）",
      "source": [
-      "D-074.5",
-      "D-077.7"
+      "D-128.68"
      ]
     }
    ],
@@ -10974,6 +10993,10 @@
    "section": "16. 第1フェーズの表",
    "fields": [
     {
+     "name": "<common>",
+     "note": null
+    },
+    {
      "name": "ticket_id",
      "note": null
     },
@@ -10988,46 +11011,60 @@
      "label": "分類"
     }
    ],
-   "soft_delete": false,
+   "soft_delete": true,
    "timestamps": true,
-   "tenant_field": null,
+   "tenant_field": "tenant_id",
    "indexes": [],
    "computed": [],
    "tenant_isolation": {
-    "type": "none",
-    "column": null,
-    "fk_table": null
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
    },
    "access_control_policies": [
     {
-     "name": "ticket_class_values_all_read",
+     "name": "ticket_class_values_ticket_read",
      "operation": "select",
-     "role": "authenticated",
-     "predicate": "true",
-     "rationale": "マスタ。全員が読む",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.ticket_visible(ticket_id)",
+     "rationale": "元のチケットを読める人だけ（グループの外の人・他の会社には見せない）",
      "source": [
-      "D-026"
+      "D-128.115",
+      "D-073.1",
+      "D-128.88"
      ]
     },
     {
-     "name": "ticket_class_values_ops_write",
+     "name": "ticket_class_values_ticket_write",
      "operation": "insert,update,delete",
-     "role": "ops",
-     "predicate": "current_setting('app.role', true) = 'ops'",
-     "rationale": "マスタは運営だけが変える",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.ticket_writable(ticket_id)",
+     "rationale": "元のチケットに書ける人だけ",
      "source": [
-      "D-037",
-      "D-077.4"
+      "D-128.115",
+      "D-073.1",
+      "D-128.88"
+     ]
+    },
+    {
+     "name": "ticket_class_values_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ticket_class_values.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は理由つき・1 時間・見るだけの許可があるときだけ（D-128.68）",
+     "source": [
+      "D-128.68"
      ]
     }
    ],
    "legacy_drift_notes": null,
-   "note": "チケットに付けた分類",
+   "note": "チケットに付けた分類。読めるのは元のチケットを読める人（D-128.115）",
    "status": "decided",
    "decided_at": "2026-11-03",
    "source": [
     "D-125",
-    "D-128"
+    "D-128",
+    "D-128.115"
    ]
   },
   {
@@ -11042,7 +11079,11 @@
     },
     {
      "name": "target",
-     "note": "担当者・期限・子 など"
+     "note": "子・孫のチケット／派生・関連のチケット／所属グループ／会社が足した軸の値 ← D-125.70"
+    },
+    {
+     "name": "axis_id",
+     "note": "target が軸のとき"
     },
     {
      "name": "mode",
@@ -11066,11 +11107,9 @@
      "operation": "select",
      "role": "member",
      "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
-     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "rationale": "ワークスペースのメンバーは読む（チケットを作る・絞る・渡すときに使う）",
      "source": [
-      "D-026.1",
-      "D-058.5",
-      "D-073.1"
+      "D-125.67"
      ]
     },
     {
@@ -11078,11 +11117,10 @@
      "operation": "insert,update,delete",
      "role": "member",
      "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'handover_rules', NULL, 'edit')",
-     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "rationale": "決まりを直せる人（ワークスペース全体の edit・既定は管理者）",
      "source": [
-      "D-073.1",
-      "D-073.2",
-      "D-073.3"
+      "D-125.66",
+      "D-128.97"
      ]
     },
     {
@@ -11090,10 +11128,9 @@
      "operation": "select",
      "role": "ops",
      "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = handover_rules.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
-     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "rationale": "運営は理由つき・1 時間・見るだけの許可があるときだけ（D-128.68）",
      "source": [
-      "D-074.5",
-      "D-077.7"
+      "D-128.68"
      ]
     }
    ],

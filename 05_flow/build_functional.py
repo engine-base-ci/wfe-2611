@@ -5,6 +5,8 @@
    出力: 07_functional/{entities,features,roles,screens,traceability-matrix}.json ＋ functional-breakdown.md/.html
 """
 import json, re, os, glob, datetime
+import importlib.util as _ilu_rls, os as _os_rls
+_spec_rls = _ilu_rls.spec_from_file_location("rls_policies", _os_rls.path.join(_os_rls.path.dirname(_os_rls.path.abspath(__file__)), "rls_policies.py")); _RLS = _ilu_rls.module_from_spec(_spec_rls); _spec_rls.loader.exec_module(_RLS)
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 F = json.load(open("05_flow/flow.json", encoding="utf-8"))
@@ -83,6 +85,8 @@ for line in ER.split("\n"):
         pol.append({"name": f"{name}_ops_write", "operation": ops_ops, "role": "ops", "predicate": "current_setting('app.role', true) = 'ops' AND tenant_id = current_setting('app.tenant_id', true)::uuid", "rationale": "運営が対応して書く行（" + "・".join(ops_cols) + "）。会社の 1 社の中で・証跡に残す", "source": ["D-075", "D-077.1"]})
     if "追記専用" in note:   # 証跡は関門の関数（app.record_*・security definer）だけが書く。直接の INSERT/UPDATE/DELETE は無い（ER 注記 3）
         pol = [p if p["operation"] == "select" else {**p, "operation": "select"} for p in pol if p["operation"] in ("select", "all")] + [{"name": f"{name}_append_only", "operation": "insert,update,delete", "role": "system", "predicate": "false", "rationale": "追記専用。書き込みは関門の関数 app.record_*（security definer）だけ。UPDATE/DELETE は誰にも無い", "source": ["D-042.3", "D-074.4"]}]
+    if name in _RLS.POLICIES:   # 形からは決まらない守り（子の表は親に従う・関わる人）は 05_flow/rls_policies.py が正（D-128.115）
+        pol = _RLS.POLICIES[name]
     src = sorted(set(D(note)) | tbl_dec.get(name, set()) | set(sec_dec))
     if not src: src = ["D-010"]   # 会社モデル＝1 つの定義（§1〜§6 の表は D-010 の背骨）
     entities.append({"id": _eid(name), "name": name, "table_name": name, "section": sec.strip("# ").split("（")[0], "fields": fields, "relations": rels.get(name, []),

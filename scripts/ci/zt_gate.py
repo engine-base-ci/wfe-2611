@@ -58,6 +58,18 @@ def design_fails(sa) -> list[str]:
             if path.startswith("/portal") and who != "client": fails.append(f"[ZT4] {opid}（/portal/）は client でなければならない")
             if sid == "portal" and who != "client": fails.append(f"[ZT4] クライアントの場所の {opid} が client でない（{who}）")
             if who == "public" and sid not in PUBLIC_OK: fails.append(f"[ZT1] ログイン前ではない画面 {sid} の {opid} が public になっている")
+    # ZT3（設計）：ログイン済みなら誰でも読める（authenticated・true）のは、本当のマスタ（全社で共通の一覧・運営が配る版）だけ。
+    #   それ以外の表がそうなっていると、別の会社の行が読める（子の表は親の見え方に従わせる・D-128.115）。直すチケットが決まっているものだけ残りとして許す
+    import json, importlib.util as _u
+    ents = os.path.join(ROOT, "07_functional", "entities.json")
+    _sp = _u.spec_from_file_location("rls_policies", os.path.join(ROOT, "05_flow", "rls_policies.py")); _r = _u.module_from_spec(_sp); _sp.loader.exec_module(_r)
+    CATALOG = {"distribution_versions", "plan_versions"}   # 運営が全社に配る版（どの会社にも同じものを見せる）
+    if os.path.exists(ents):
+        for e in json.load(open(ents, encoding="utf-8"))["entities"]:
+            open_read = any(p["role"] == "authenticated" and p["operation"] in ("select", "all") and p["predicate"].strip() == "true" for p in e["access_control_policies"])
+            master = "マスタ" in (e.get("note") or "") or e["table_name"] in CATALOG
+            if open_read and not master and e["table_name"] not in _r.PENDING_CHILD_TABLES:
+                fails.append(f"[ZT3] {e['table_name']} はマスタでないのに、ログイン済みなら誰でも読める（別の会社の行が見える）。05_flow/rls_policies.py で親の見え方に従わせる")
     # ZT2：契約（08_api/endpoints.json）で、権限が public でない API がログイン不要になっていないか
     ep = os.path.join(ROOT, "08_api", "endpoints.json")
     if os.path.exists(ep):
@@ -84,6 +96,10 @@ def impl_todo() -> tuple[list[str], dict]:
     for t in tables:
         if not re.search(rf"\bon\s+(?:public\.)?{t}\b", pol, flags=re.I): todo.append(f"[ZT3] {t} に RLS の決まりが無い")
     metrics["rls_missing"] = sum(1 for x in todo if x.startswith("[ZT3]"))
+    import importlib.util as _u2
+    _sp2 = _u2.spec_from_file_location("rls_policies", os.path.join(ROOT, "05_flow", "rls_policies.py")); _r2 = _u2.module_from_spec(_sp2); _sp2.loader.exec_module(_r2)
+    for t, k in _r2.PENDING_CHILD_TABLES.items(): todo.append(f"[ZT3] {t} はまだ「ログイン済みなら誰でも読める」。{k} で直す")
+    metrics["open_read_child"] = len(_r2.PENDING_CHILD_TABLES)
     auth = "".join(open(f, encoding="utf-8").read() for f in glob.glob(os.path.join(ROOT, "packages", "auth", "src", "**", "*.ts"), recursive=True))
     if not re.search(r"idle|IDLE_", auth): todo.append("[ZT6] 操作が無いときの期限（12 時間）が packages/auth に無い")
     if not re.search(r"country|geo|ip_change|ipChange", auth): todo.append("[ZT6] IP・国の急な変化で入り直させる仕組みが packages/auth に無い")

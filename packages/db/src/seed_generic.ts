@@ -136,18 +136,49 @@ export async function seedGenericRows(
           null;
       else if (x.col === "key") row[x.col] = fresh ? `k9-${rnd()}` : "seed";
       else if (x.col === "version") row[x.col] = fresh ? Math.floor(Math.random() * 1e6) + 2 : 1;
-      else if (!x.nullable && x.def === null) row[x.col] = allowed.get(`${t}.${x.col}`) ?? defaultOf(x);
+      else if (!x.nullable && x.def === null)
+        // 新しく足す行の文字の列は重ならない値にする（例：チケットごとに区画の名前は 1 つ）
+        row[x.col] = allowed.get(`${t}.${x.col}`) ?? (fresh && x.type === "text" ? `seed-${rnd()}` : defaultOf(x));
     }
     return row;
   };
   const insertRow = async (t: string, row: Record<string, unknown>): Promise<string> => {
-    const keys = Object.keys(row).filter((k) => row[k] !== null && row[k] !== undefined);
     const pk = pks.get(t) ?? "id";
-    const r = await c.query<Record<string, string>>(
-      `insert into "${t}" (${keys.map((k) => `"${k}"`).join(", ")}) values (${keys.map((_, i) => `$${i + 1}`).join(", ")}) returning "${pk}"`,
-      keys.map((k) => row[k]),
-    );
-    return r.rows[0]![pk]!;
+    const run = async (r0: Record<string, unknown>) => {
+      const keys = Object.keys(r0).filter((k) => r0[k] !== null && r0[k] !== undefined);
+      const r = await c.query<Record<string, string>>(
+        `insert into "${t}" (${keys.map((k) => `"${k}"`).join(", ")}) values (${keys.map((_, i) => `$${i + 1}`).join(", ")}) returning "${pk}"`,
+        keys.map((k) => r0[k]),
+      );
+      return r.rows[0]![pk]!;
+    };
+    // 会社を作ったときに入る初めの行（例：渡すときの決まり）と重なったら、その会社の行を種にする
+    const orExisting = async (r0: Record<string, unknown>) => {
+      try {
+        return await run(r0);
+      } catch (e) {
+        if ((e as { code?: string }).code !== "23505" || !r0["tenant_id"]) throw e;
+        const have = await c.query<Record<string, string>>(
+          `select "${pk}" from "${t}" where tenant_id = $1 order by created_at limit 1`,
+          [r0["tenant_id"]],
+        );
+        if (!have.rows[0]) throw e;
+        return have.rows[0][pk]!;
+      }
+    };
+    // 種は 1 文ずつ確定する（トランザクションの外）ので、失敗した文は何も残さない
+    try {
+      return await orExisting(row);
+    } catch (e) {
+      // 列どうしの決まり（例：target が axis のときだけ axis_id）に当たったら、空でよい外部キーを空にしてもう一度
+      if ((e as { code?: string }).code !== "23514") throw e;
+      const optional = new Set(
+        colsOf(t)
+          .filter((x) => x.nullable && fkOf(t, x.col) && x.col !== "tenant_id" && x.col !== "scope_id")
+          .map((x) => x.col),
+      );
+      return await orExisting(Object.fromEntries(Object.entries(row).filter(([k]) => !optional.has(k))));
+    }
   };
   for (const t of order) {
     if (isMaster(t)) {

@@ -98,6 +98,17 @@ export const TABLES = [
   "push_devices",
   "disclosure_versions",
   "subprocessors",
+  // チケットの本体（KN-38・0071）
+  "ticket_kinds",
+  "kind_sections",
+  "ticket_stages",
+  "class_axes",
+  "class_values",
+  "tickets",
+  "ticket_sections",
+  "ticket_section_versions",
+  "ticket_class_values",
+  "handover_rules",
 ] as const;
 /** 追記専用（関門の関数 app.record_* だけが書く。repository の create/update/softDelete は拒否） */
 export const APPEND_ONLY: ReadonlySet<string> = new Set(["audit_events", "ops_audit_events", "security_events"]);

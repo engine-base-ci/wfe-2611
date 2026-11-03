@@ -110,7 +110,7 @@ def main():
 
     # 10 ほかのグループへ移す
     s = modal(L("TicketDetail"), mhead("ほかのグループへ移す", "TdMore.dc.html", "", "EG-128 セイコー様へ 11月分の請求書を送る")
-      + mbody('<div>' + lab("移す先") + field('<span style="width: 18px; height: 18px; border-radius: 4px; background: #B45309; color: #FFFFFF; font-size: 9px; display: inline-grid; place-items: center; margin-right: 6px">KR</span>経理 ▾') + '<div style="font-size: 11px; color: %s; margin-top: 4px">番号が KR-037 に変わる。前の番号（EG-128）で開いても、新しい番号に案内する</div></div>' % MUTED
+      + mbody('<div>' + lab("移す先") + field('<span style="width: 18px; height: 18px; border-radius: 4px; background: #B45309; color: #FFFFFF; font-size: 9px; display: inline-grid; place-items: center; margin-right: 6px">KR</span>経理 ▾') + '<div style="font-size: 11px; color: %s; margin-top: 4px">番号は EG-128 のまま変わらない（生まれたグループの番号）</div></div>' % MUTED
       + '<div>' + lab("一緒に切り替えるもの", "（ワークスペースの決まり：毎回聞く）") + check("子チケット（0 件）", False) + check("派生・関連のチケット（EG-097・KR-031）", False, "関連のまま残り、移さない") + check("担当を経理の人にする", True, "田中 美咲 さんに渡す（受けてもらって成り立つ）") + '</div>'
       + WARNB("経理のチケットになると、営業の人は「見るだけ」になる。いまの承認待ちは取り消され、経理の承認する人に回る")
       + '<div>' + lab("ひとこと", "（やり取りに残る）") + field("請求は経理で持つことになったため", True) + '</div>')

@@ -37,7 +37,7 @@ erDiagram
 | テーブル | 主な列 | 備考 |
 |---|---|---|
 | `tenants` | `<common>` / `name` / `plan_id` / `status_id` / **`live_at`** / **`live_by`**（本番に切り替えた日時と人。切り替える前の確認に赤が無いときだけ `app.onboard_golive_switch` が書く ← D-116.5・D-028.4） | 契約の単位。切り替える前の確認は `app.onboard_golive`（会社モデル・Bridge・承認のルール・AI社員ごとのログイン情報と目標を本物の記録から） |
-| `scopes` | `<common>` / `parent_id` / `layer_id` / `name` | **4 層の実体**（運営／会社／部署／個人）。層は省略可 |
+| `scopes` | `<common>` / `parent_id` / `layer_id` / `name` / `ticket_prefix`（番号の頭・例 EG。後から変えても、作ったチケットの番号は変わらない ← D-128.115）/ `next_ticket_no` | **4 層の実体**（運営／会社／部署／個人）。層は省略可 |
 | `member_kinds` | `key` / `label` | **マスタ**（human / ai_employee / clone / 将来 guest） ← E20 |
 | `members` | `<scoped>` / `kind_id` / `display_name` / `role_id` / `manager_member_id` / `auth_user_id`（認証の利用者。Better Auth の user。AI社員・自分のAI は null） / `setup_step`（はじめの設定をどこまで通したか 0〜6・D-089）/ **`agent_permission_mode`**（自分のAI の許可のモード。既定 default。全部許可は本人が選んだときだけ・D-104.14）/ **`agent_model`** / **`agent_effort`**（本人が選んだモデルと考える強さ・D-104.13） | **人間と AI が同じ席に座る**。はじめの設定の進み具合は人ごと（Bridge はその人の PC・ログイン情報はその人が預ける） |
 | `setup_steps` | `n`（1〜6・PK） / `label` | **マスタ**（`<common>`）。はじめの設定の段の名前。1 PCをつなぐ／2 話す／3 たたき台／4 ログイン情報／5 テスト／6 本番へ（D-089） |
@@ -418,16 +418,16 @@ erDiagram
 
 | テーブル | 主な列 | 備考 |
 |---|---|---|
-| **`tickets`** | `<scoped>`（scope＝グループ）/ `number`（グループの頭文字＋連番・例 EG-128）/ `kind_id` / `stage_id` / `title` / `assignee_member_id`（担当者 ← D-128.25）/ `delegated_to_clone`（分身に任せている。実行者の列は持たない ← D-128.26）/ `client_id` / `parent_ticket_id`（3 段まで ← D-125.51）/ `derived_from_ticket_id` / `start_on` / `due_on` / `priority`（中・高。高は理由が必須 ← D-125.33）/ `estimate_minutes` / `actual_minutes` / `work_type_id` / `work_type_version` / `hold_reason` / `resume_condition` / `created_by` を「作成」で出す（D-128.27） | **★新設（D-125.27・D-127.1）。**`tasks` を置き換える。本文は区画（`ticket_sections`）に分けて持つ |
+| **`tickets`** | `<scoped>`（scope＝グループ）/ `number`（グループの頭文字＋連番・例 EG-128）/ `kind_id` / `stage_id` / `title` / `assignee_member_id`（担当者 ← D-128.25）/ `delegated_to_clone`（分身に任せている。実行者の列は持たない ← D-128.26）/ `client_id` / `parent_ticket_id`（3 段まで ← D-125.51）/ `derived_from_ticket_id` / `start_on` / `due_on` / `priority`（中・高。高は理由が必須 ← D-125.33）/ `estimate_minutes` / `actual_minutes` / `work_type_id` / `work_type_version` / `hold_reason` / `resume_condition` / `priority_reason`（高のときの理由）/ `deleted_by`（消した人。戻せるのは消した本人とマネージャー・管理者 ← D-128.84）/ `created_by` を「作成」で出す（D-128.27） | **★新設（D-125.27・D-127.1）。**`tasks` を置き換える。本文は区画（`ticket_sections`）に分けて持つ |
 | **`ticket_sections`** | `<common>` / `ticket_id` / `section_key`（目的・完了の条件・決定ログ・自由欄 など）/ `position` / `body jsonb`（1 枚の文書の一部。見たまま編集の部品 ← D-128.28〜.30）/ `version` | **★新設（D-125.27・D-125.53）。**区画ごとに版を持つ |
-| **`ticket_section_versions`** | `section_id` / `version` / `body jsonb` / `edited_by` / `edited_at` / `edited_by_clone` | 版と差分（TdVersions）・戻す |
+| **`ticket_section_versions`** | `<common>` / `ticket_id` / `section_id` / `version` / `body jsonb` / `edited_by` / `edited_at` / `edited_by_clone` | 版と差分（TdVersions）・戻す。追記だけ（直さない・消さない）。読めるのは元のチケットを読める人（D-128.115） |
 | **`ticket_kinds`** | `<common>` / `name` / `color` / `position` / `is_builtin` | **★新設（D-125.30）。**タスク・QA・課題・会議。会社が足す（上限 10） |
 | **`kind_sections`** | `<common>` / `kind_id` / `section_key` / `label` / `mode`（必須・出す・外す）/ `position` / `default_test_specs jsonb` | **★新設（D-125.52・D-128.48）。**ワークスペースの管理 › 決まり › チケットの形 |
 | **`ticket_stages`** | `<common>` / `name` / `position` / `is_fixed`（確認中・承認待ち・実行中は製品が固定） | **★新設（D-125.38）。**会社が直せる段は上限 8 |
 | **`class_axes`** | `<common>` / `key` / `name` / `is_builtin` / `position` | **★新設（D-125.67）。**会社が足す軸は上限 5 |
 | **`class_values`** | `<common>` / `axis_id` / `label` / `color` / `position` | 値の並び・色 |
-| **`ticket_class_values`** | `ticket_id` / `value_id` | チケットに付けた分類 |
-| **`handover_rules`** | `<common>` / `target`（担当者・期限・子 など）/ `mode`（毎回聞く・いつも・しない） | **★新設（D-125.70・D-125.71）。**渡すときに一緒に切り替えるもの |
+| **`ticket_class_values`** | `<common>` / `ticket_id` / `value_id` | チケットに付けた分類。読めるのは元のチケットを読める人（D-128.115） |
+| **`handover_rules`** | `<common>` / `target`（子・孫のチケット／派生・関連のチケット／所属グループ／会社が足した軸の値 ← D-125.70）/ `axis_id`（target が軸のとき）/ `mode`（毎回聞く・いつも・しない） | **★新設（D-125.70・D-125.71）。**渡すときに一緒に切り替えるもの |
 | **`test_specs`** | `<common>` / `ticket_id` / `check_kind`（① 機械・② AI・③ 人）/ `title` / `judge_type` / `params jsonb` / `version` / `off_reason`（OFF にした理由） | **★新設（D-125.17・D-125.79）** |
 | **`checks`** | `<common>` / `test_spec_id` / `spec_version` / `artifact_version_id` / `attempt` / `result`（通過・落ちた・不確か）/ `evidence jsonb`（根拠の引用）/ `runner`（server・bridge・human）/ `checked_by_member_id` | **★新設（D-125.18・D-126.24）。**① はサーバー、② は本人の PC（Bridge）、③ は人 |
 | **`ticket_decisions`** | `<common>` / `ticket_id` / `text` / `reason` / `decided_by` / `decided_at` / `source_message_id` / `superseded_by_id` / `promoted_to`（このチケットだけ・取引先のルール） | **★新設（D-125.40・D-125.63）** |
