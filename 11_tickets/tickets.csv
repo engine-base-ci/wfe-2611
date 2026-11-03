@@ -92,10 +92,12 @@ KN-38,チケットの本体の表,タスク,KN-2,確認中,Claude（このセッ
 - [x] 番号はグループの頭＋連番で、横渡し・頭の変更で変わらない（D-128.115）
 - [x] 上限（種別 10・作業の段 8・足す軸 5・区画 20）と親子 3 段が DB でも守られる
 - [ ] CI が緑のまま（全部の試験を流して確かめる）"
-KN-39,チケットのまわりの表,タスク,KN-2,未着手,未定,,基盤・DB,チケットのまわりの表。契約の API がこの表を読み書きできるようにし、行の守りで範囲の外を見せない。,"- [ ] migration（packages/db/migrations）で表と列ができる
-- [ ] 表ごとに RLS の決まり（packages/db/policies）がある
-- [ ] repository の表の一覧（packages/db/src/repository.ts の TABLES）に入っている
-- [ ] 場合表（access-matrix.json）にこの表の行があり、全部通る
+KN-39,チケットのまわりの表,タスク,KN-2,確認中,Claude（このセッション）,,基盤・DB,チケットのまわりの表（テスト仕様・検査・決定・スレッド・参照の記録・つながり・渡す・保存した検索条件・CSV の取り込み）を作り、契約の API が読み書きできるようにする。行の守りで、元のチケットを読めない人には見せない。,"- [x] migration（`packages/db/migrations/0072_ticket_around.sql`）で表と列ができ、まっさらな DB に全部入る（72/72）
+- [x] 表ごとに RLS の決まり（`packages/db/policies/0072_ticket_around.sql`・gen_rls.py ← `05_flow/rls_policies.py`）がある
+- [x] repository の表の一覧（`packages/db/src/repository.ts` の TABLES）に入っている
+- [x] 場合表（access-matrix.json）にこの表の行があり、全部通る（全体で 1344 件 PASS・FAIL 0）
+- [x] 渡された相手は、答えるまでグループの外でも読める（`app.ticket_involved`・D-128.115）
+- [x] CSV の取り込みの下書きは、確定するまで取り込んだ人だけ（D-128.119）
 - [ ] CI が緑のまま"
 KN-40,ナレッジの表,タスク,KN-2,未着手,未定,,基盤・DB,ナレッジの表。契約の API がこの表を読み書きできるようにし、行の守りで範囲の外を見せない。,"- [ ] migration（packages/db/migrations）で表と列ができる
 - [ ] 表ごとに RLS の決まり（packages/db/policies）がある

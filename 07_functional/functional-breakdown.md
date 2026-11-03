@@ -132,7 +132,7 @@
 | E-116 | `test_specs` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-125.17 D-125.79 D-128 |
 | E-117 | `checks` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-125.18 D-126.24 D-128 |
 | E-118 | `ticket_decisions` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-125.40 D-125.63 D-128 |
-| E-119 | `ticket_messages` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-125.131 D-125.29 D-128 |
+| E-119 | `ticket_messages` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-125.131 D-125.29 D-128 |
 | E-120 | `reference_logs` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-125.28 D-125.35 D-128 |
 | E-121 | `knowledge_pages` | 16. 第1フェーズの表 | scope_layered | 4 | D-125 D-125.108 D-128 D-128.50 |
 | E-122 | `knowledge_page_versions` | 16. 第1フェーズの表 | none | 2 | D-125 D-128 |
@@ -148,9 +148,9 @@
 | E-132 | `passkeys` | 16. 第1フェーズの表 | none | 2 | D-125 D-125.137 D-128 D-128.59 |
 | E-133 | `operations` | 16. 第1フェーズの表 | ops_scoped | 1 | D-125 D-126.19 D-126.2 D-128 |
 | E-135 | `ticket_links` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-125.50 D-128 D-128.80 |
-| E-136 | `ticket_handovers` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-125.70 D-128 |
+| E-136 | `ticket_handovers` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-125.70 D-128 |
 | E-137 | `saved_views` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 D-128.83 |
-| E-138 | `ticket_imports` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-128 D-128.83 D-128.85 |
+| E-138 | `ticket_imports` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 D-128.119 D-128.83 |
 | E-139 | `learning_candidates` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 D-128.41 D-128.43 |
 | E-140 | `bridge_pairing_codes` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 D-128.93 |
 | E-141 | `notification_settings` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 D-128.92 |

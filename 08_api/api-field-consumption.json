@@ -9889,6 +9889,28 @@
    "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
   },
   {
+   "entity": "tickets",
+   "field": "draft_import_id",
+   "consumed_by_screens": [
+    "bridge-setup",
+    "approvals",
+    "clone-chat",
+    "ai-activity",
+    "audit",
+    "account",
+    "member-detail",
+    "tickets",
+    "masters",
+    "work-types",
+    "knowledge",
+    "clients",
+    "requests",
+    "portal"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
    "entity": "ticket_sections",
    "field": "<common>",
    "consumed_by_screens": [],
@@ -10413,6 +10435,18 @@
    "consumed_by_screens": [],
    "internal": true,
    "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "checks",
+   "field": "ticket_id",
+   "consumed_by_screens": [
+    "bridge-setup",
+    "approvals",
+    "tickets",
+    "work-types"
+   ],
+   "internal": false,
+   "reason": null
   },
   {
    "entity": "checks",
@@ -11951,6 +11985,13 @@
    ],
    "internal": false,
    "reason": null
+  },
+  {
+   "entity": "ticket_imports",
+   "field": "scope_id",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
   },
   {
    "entity": "ticket_imports",

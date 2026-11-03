@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:390176d14f6a5190
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:96c63f0ca3600103
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -2103,6 +2103,7 @@ export const Tickets = z.strictObject({
   priority_reason: z.string().max(10000).optional(),
   deleted_by: z.string().max(10000).optional(),
   created_by: z.string().max(10000).optional(),
+  draft_import_id: z.uuid().optional(),
   id: z.uuid(),
   tenant_id: z.uuid().optional(),
   created_at: z.iso.datetime({ offset: true }).optional(),
@@ -2129,6 +2130,7 @@ export const TicketsInput = z.strictObject({
   resume_condition: z.string().max(10000).optional(),
   priority_reason: z.string().max(10000).optional(),
   deleted_by: z.string().max(10000).optional(),
+  draft_import_id: z.uuid().optional(),
 });
 export const TicketSections = z.strictObject({
   ticket_id: z.uuid().optional(),
@@ -2298,6 +2300,7 @@ export const TestSpecsInput = z.strictObject({
   off_reason: z.string().max(10000).optional(),
 });
 export const Checks = z.strictObject({
+  ticket_id: z.uuid().optional(),
   test_spec_id: z.uuid().optional(),
   spec_version: z.number().int().optional(),
   artifact_version_id: z.uuid().optional(),
@@ -2312,6 +2315,7 @@ export const Checks = z.strictObject({
   updated_at: z.iso.datetime({ offset: true }).optional(),
 });
 export const ChecksInput = z.strictObject({
+  ticket_id: z.uuid().optional(),
   test_spec_id: z.uuid().optional(),
   spec_version: z.number().int().optional(),
   artifact_version_id: z.uuid().optional(),
@@ -2704,6 +2708,7 @@ export const SavedViewsInput = z.strictObject({
 });
 export const TicketImports = z.strictObject({
   uploaded_by: z.string().max(10000).optional(),
+  scope_id: z.uuid().optional(),
   source: z.string().max(10000).optional(),
   mapping: z.record(z.string(), z.unknown()).optional(),
   rows: z.number().int().optional(),

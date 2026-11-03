@@ -364,7 +364,7 @@ end $$;
 grant execute on function app.ticket_visible(uuid), app.ticket_writable(uuid), app.ticket_involved(uuid, uuid) to kaname_app;
 
 -- ---------------------------------------------------------------- ワークスペースの初めの行（仕組みの段・初めの作業の段・優先度の軸・渡すときの決まり・種別「タスク」と区画）
---   課題・QA・会議などほかの種別は、運営のひな形から入れる（KN-16）。ここは製品が必ず持つものだけ
+--   種別は タスク・課題・QA・会議 の 4 つ（D-128.117）。ほかの種別は運営のひな形から入れる（KN-16）
 create or replace function app.ticket_basics(t uuid) returns void language plpgsql security definer set search_path = public, app as $$
 declare k uuid; ax uuid;
 begin

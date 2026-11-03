@@ -76,6 +76,7 @@ export const MIGRATIONS = [
   "0069_testrun.sql",
   "0070_golive.sql",
   "0071_tickets.sql",
+  "0072_ticket_around.sql",
 ] as const;
 
 /** migration 名の並びを検査する。重複・順序違い・4 桁でない名前があれば理由を返す。 */

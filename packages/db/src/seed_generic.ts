@@ -87,6 +87,15 @@ export async function seedGenericRows(
   }
   // 種の行（表 × 会社）
   const seeded = new Map<string, string>(); // `${table}:${tenant}` → pk
+  // 1 つの表が同じ表を 2 回以上指す（例：つながりの元と先のチケット）なら、指される表の種を 2 行目まで作り、別の行を入れる
+  const twice = new Set<string>();
+  {
+    const n = new Map<string, number>();
+    for (const f of fks)
+      if (f.refTable !== f.table) n.set(`${f.table}>${f.refTable}`, (n.get(`${f.table}>${f.refTable}`) ?? 0) + 1);
+    for (const [k, v] of n) if (v >= 2) twice.add(k.split(">")[1]!);
+  }
+  const seeded2 = new Map<string, string>(); // 2 行目の種
   const masterKey = new Map<string, string>();
   const out: Record<string, SeedRow> = {};
   const tenantOf = (t: string, which: "A" | "B" | "ops") =>
@@ -108,6 +117,7 @@ export async function seedGenericRows(
   };
   const build = (t: string, which: "A" | "B" | "ops", fresh: boolean): Record<string, unknown> => {
     const row: Record<string, unknown> = {};
+    const used = new Set<string>();
     const tenant = tenantOf(t, which);
     for (const x of colsOf(t)) {
       if (x.col === pks.get(t) && x.col === "id") continue;
@@ -128,13 +138,16 @@ export async function seedGenericRows(
       else if (fk && fk.refTable === t)
         row[x.col] = null; // 自己参照は根
       else if (fk && isMaster(fk.refTable)) row[x.col] = masterKey.get(fk.refTable) ?? "seed";
-      else if (fk)
-        row[x.col] =
+      else if (fk) {
+        let v =
           seeded.get(`${fk.refTable}:${tenant}`) ??
           seeded.get(`${fk.refTable}:${b.opsTenant}`) ??
           seeded.get(`${fk.refTable}:${b.tenantA}`) ??
           null;
-      else if (x.col === "key") row[x.col] = fresh ? `k9-${rnd()}` : "seed";
+        if (v && used.has(`${fk.refTable}:${v}`)) v = seeded2.get(`${fk.refTable}:${tenant}`) ?? v;
+        if (v) used.add(`${fk.refTable}:${v}`);
+        row[x.col] = v;
+      } else if (x.col === "key") row[x.col] = fresh ? `k9-${rnd()}` : "seed";
       else if (x.col === "version") row[x.col] = fresh ? Math.floor(Math.random() * 1e6) + 2 : 1;
       else if (!x.nullable && x.def === null)
         // 新しく足す行の文字の列は重ならない値にする（例：チケットごとに区画の名前は 1 つ）
@@ -177,7 +190,17 @@ export async function seedGenericRows(
           .filter((x) => x.nullable && fkOf(t, x.col) && x.col !== "tenant_id" && x.col !== "scope_id")
           .map((x) => x.col),
       );
-      return await orExisting(Object.fromEntries(Object.entries(row).filter(([k]) => !optional.has(k))));
+      try {
+        return await orExisting(Object.fromEntries(Object.entries(row).filter(([k]) => !optional.has(k))));
+      } catch (e2) {
+        // 列どうしの決まりが「この種類なら本文が要る」（例：書き込みは本文が必須）なら、空でよい文字の列も埋めてもう一度
+        if ((e2 as { code?: string }).code !== "23514") throw e2;
+        const filled = { ...row };
+        for (const x of colsOf(t))
+          if (x.nullable && x.type === "text" && !fkOf(t, x.col) && filled[x.col] == null)
+            filled[x.col] = `seed-${rnd()}`;
+        return await orExisting(filled);
+      }
     }
   };
   for (const t of order) {
@@ -220,6 +243,10 @@ export async function seedGenericRows(
     const idB = await insertRow(t, build(t, "B", false));
     seeded.set(`${t}:${b.tenantA}`, idA);
     seeded.set(`${t}:${b.tenantB}`, idB);
+    if (twice.has(t)) {
+      seeded2.set(`${t}:${b.tenantA}`, await insertRow(t, build(t, "A", true)));
+      seeded2.set(`${t}:${b.tenantB}`, await insertRow(t, build(t, "B", true)));
+    }
     out[t] = { visible: idA, hiddenLayer: null, other: idB, insert: (tenant) => build(t, whichOf(tenant), true) };
   }
   return out;
