@@ -4,10 +4,7 @@ import type { Vars } from "../middleware/tenant.js";
 import { op, type ContractDeps } from "../contract/op.js";
 
 export function register(app: Hono<Vars>, deps: ContractDeps): void {
-  app.get("/api/v1/clients/:id/activity", op(deps, "listClientActivity"));
   app.patch("/api/v1/ticket_messages/:id", op(deps, "updateTicketMessage"));
   app.delete("/api/v1/ticket_messages/:id", op(deps, "deleteTicketMessage"));
   app.post("/api/v1/ticket_messages/:id/star", op(deps, "starTicketMessage"));
-  app.post("/api/v1/tickets/:id/messages", op(deps, "createTicketMessage"));
-  app.get("/api/v1/tickets/:id/timeline", op(deps, "listTicketTimeline"));
 }

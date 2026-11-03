@@ -114,6 +114,7 @@ export function gen(root = ROOT) {
   const paths = parsePaths(yaml);
   const meta = new Map(JSON.parse(epJson).endpoints.map((e) => [`${e.method} ${e.path}`, e]));
   const eps = [];
+  const GENERIC_OK = new Set(existsSync(join(root, "08_api/generic-ok.json")) ? JSON.parse(readFileSync(join(root, "08_api/generic-ok.json"), "utf8")).ok.filter((x) => String(x.reason ?? "").trim()).map((x) => x.op) : []);
   for (const [p, ms] of Object.entries(paths)) for (const [m, d] of Object.entries(ms)) {
     const hono = p.replace(/\{(\w+)\}/g, ":$1");
     const e = meta.get(`${m} ${hono}`) ?? {};
@@ -121,7 +122,7 @@ export function gen(root = ROOT) {
     eps.push({
       method: m, path: hono, operationId: d.operationId, table: d.tag || slug(p).split("_")[0], kind: kindOf(m, p), input: d.input, success: d.success,
       // 表の素の読み書き（/表 と /表/:id）だけが共通の処理で動いてよい。それ以外（/表/:id/approve など）は hooks に振る舞いを書くまで 501（D-128.113）
-      generic: hono === `/api/v1/${d.tag}` || hono === `/api/v1/${d.tag}/:id`,
+      generic: GENERIC_OK.has(`${m} ${hono}`),
       auth: e.auth?.role ?? "member", rateLimit: { perMinute: Number(rl?.[1] ?? 60), key: rl?.[2] ?? "user" },
       chokePoints: e.choke_points ?? [], errors: (e.outputs_4xx ?? []).map((x) => x.status), acts: e.acts ?? [], screens: e.screens ?? [],
     });
@@ -162,7 +163,19 @@ export const OPENAPI_HASH = "${h}";
   // routes（登録だけ。振る舞いは contract/op.ts・個別は hooks）
   mkdirSync(join(root, ROUTES), { recursive: true });
   const byTable = new Map();
-  for (const e of eps) byTable.set(e.table, [...(byTable.get(e.table) ?? []), e]);
+  const segCmp = (a, b) => {
+    const x = a.path.split("/"), y = b.path.split("/");
+    for (let i = 0; i < Math.min(x.length, y.length); i++) {
+      const px = x[i].startsWith(":"), py = y[i].startsWith(":");
+      if (px !== py) return px ? 1 : -1;
+      if (x[i] !== y[i]) return 0;
+    }
+    return 0;
+  };
+  const ordered = [...eps];
+  for (let i = 1; i < ordered.length; i++) for (let j = i; j > 0 && segCmp(ordered[j - 1], ordered[j]) > 0; j--) [ordered[j - 1], ordered[j]] = [ordered[j], ordered[j - 1]];
+  // ファイルは道すじの最初の段（/api/v1/<ここ>）ごと。表ごとに分けると、別の表のファイルの /clients/:id が /clients/link-candidates を先に取ってしまう
+  for (const e of ordered) { const k = e.path.split("/")[3].replace(/[^a-z0-9_]/g, "_"); byTable.set(k, [...(byTable.get(k) ?? []), e]); }
   for (const [t, list] of byTable) {
     const lines = [
       `// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。個別の振る舞いは apps/api/src/hooks/<operationId>.ts に書く（op が呼ぶ）`,

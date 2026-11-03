@@ -8,11 +8,4 @@ export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.post("/api/v1/action_runs/:id/retry", op(deps, "retryActionRun"));
   app.post("/api/v1/action_runs/:id/stop", op(deps, "stopActionRun"));
   app.post("/api/v1/action_runs/:id/takeover", op(deps, "takeoverActionRun"));
-  app.post("/api/v1/bridge/jobs/:id/tools/:name", op(deps, "callKanameTool"));
-  app.get("/api/v1/clones/me/activity", op(deps, "listCloneActivity"));
-  app.get("/api/v1/clones/me/growth", op(deps, "getCloneGrowth"));
-  app.get("/api/v1/clones/me/now", op(deps, "getCloneNow"));
-  app.post("/api/v1/tickets/:id/delegate", op(deps, "delegateTicket"));
-  app.post("/api/v1/tickets/:id/dry-run", op(deps, "dryRunTicket"));
-  app.get("/api/v1/tickets/:id/runs", op(deps, "listTicketRuns"));
 }

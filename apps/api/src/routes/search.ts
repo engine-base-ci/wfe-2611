@@ -4,5 +4,5 @@ import type { Vars } from "../middleware/tenant.js";
 import { op, type ContractDeps } from "../contract/op.js";
 
 export function register(app: Hono<Vars>, deps: ContractDeps): void {
-  app.post("/api/v1/bridge/pairing-codes", op(deps, "createPairingCode"));
+  app.get("/api/v1/search", op(deps, "search"));
 }

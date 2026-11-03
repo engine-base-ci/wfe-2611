@@ -5,8 +5,4 @@ import { op, type ContractDeps } from "../contract/op.js";
 
 export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.get("/api/v1/invoices/:id/pdf", op(deps, "downloadInvoicePdf"));
-  app.get("/api/v1/ops/invoices", op(deps, "listOpsInvoices"));
-  app.post("/api/v1/ops/invoices/issue", op(deps, "issueOpsInvoices"));
-  app.get("/api/v1/ops/workspaces/:id/billing", op(deps, "getOpsWorkspaceBilling"));
-  app.get("/api/v1/workspace/billing", op(deps, "getBilling"));
 }

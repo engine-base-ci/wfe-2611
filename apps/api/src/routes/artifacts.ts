@@ -5,7 +5,4 @@ import { op, type ContractDeps } from "../contract/op.js";
 
 export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.patch("/api/v1/artifacts/:id", op(deps, "updateArtifact"));
-  app.post("/api/v1/bridge/jobs/:id/artifacts", op(deps, "putArtifactFromBridge"));
-  app.post("/api/v1/messages/:id/artifacts", op(deps, "createArtifactFromMessage"));
-  app.get("/api/v1/tickets/:id/artifacts", op(deps, "listTicketArtifacts"));
 }

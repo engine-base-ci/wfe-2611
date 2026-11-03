@@ -9,8 +9,5 @@ export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.patch("/api/v1/client_requests/:id", op(deps, "updateClientRequest"));
   app.post("/api/v1/client_requests/:id/accept", op(deps, "acceptClientRequest"));
   app.post("/api/v1/client_requests/:id/decline", op(deps, "declineClientRequest"));
-  app.get("/api/v1/portal", op(deps, "getPortalHome"));
-  app.post("/api/v1/portal/requests", op(deps, "createPortalRequest"));
-  app.get("/api/v1/portal/requests/:id", op(deps, "getPortalRequest"));
-  app.post("/api/v1/portal/requests/questions", op(deps, "askPortalRequestQuestions"));
+  app.post("/api/v1/client_requests/:id/reply", op(deps, "replyToClientRequest"));
 }

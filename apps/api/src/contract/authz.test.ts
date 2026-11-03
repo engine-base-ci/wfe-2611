@@ -14,6 +14,7 @@ import type { Repository } from "@kaname/db/repository";
 import type { Vars } from "../middleware/tenant.js";
 import type { ContractDeps } from "./deps.js";
 import { op } from "./op.js";
+import { registerAll } from "../routes/index.js";
 
 type Role = TenantContext["role"];
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "..");
@@ -150,4 +151,49 @@ describe("権限の試験：権限の言葉の段と本人確認（作る段で 
         `${e.method} ${e.path}：直前（15 分以内）の本人確認が無ければ 403（${p.step_up === true ? "いつも" : p.step_up}）`,
       );
   }
+});
+
+describe("道すじが別の口に吸われない（本物の登録の順・D-128.113）", () => {
+  it("契約の全 API が、本物の登録の順で、自分の振る舞いに届く（/approvals/history が /approvals/:id に吸われない など）", async () => {
+    const RIGHT: Record<EndpointDef["auth"], Role> = {
+      public: "anonymous",
+      member: "member",
+      ops: "ops",
+      client: "client",
+      device: "device",
+    };
+    const wrong: string[] = [];
+    for (const target of ENDPOINTS) {
+      let got = "";
+      const hooks = Object.fromEntries(
+        ENDPOINTS.map((x) => [
+          x.operationId,
+          {
+            before: async () => {
+              got = x.operationId;
+              return { status: 418, body: {} };
+            },
+          },
+        ]),
+      );
+      const deps: ContractDeps = {
+        hooks,
+        limiter: () => ({ take: () => true }),
+        idempotency: { get: () => undefined, set: () => undefined },
+      };
+      const repo = { opsAllowed: async () => true, hasColumn: () => true } as unknown as Repository;
+      const app = new Hono<Vars>();
+      app.use("*", async (c, next) => {
+        c.set("ctx", ctxOf(RIGHT[target.auth]));
+        c.set("repo", repo);
+        await next();
+      });
+      registerAll(app, deps);
+      const init: RequestInit = { method: target.method, headers: { "content-type": "application/json" } };
+      if (target.method === "POST" || target.method === "PATCH" || target.method === "PUT") init.body = "{}";
+      await app.request(urlOf(target), init);
+      if (got !== target.operationId) wrong.push(`${target.method} ${target.path} → ${got || "どこにも届かない"}`);
+    }
+    expect(wrong).toEqual([]);
+  });
 });

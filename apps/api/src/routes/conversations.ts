@@ -9,5 +9,9 @@ export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.get("/api/v1/conversations/:id", op(deps, "getConversation"));
   app.patch("/api/v1/conversations/:id", op(deps, "updateConversation"));
   app.delete("/api/v1/conversations/:id", op(deps, "deleteConversation"));
-  app.get("/api/v1/tickets/:id/agent-session", op(deps, "getTicketAgentSession"));
+  app.post("/api/v1/conversations/:id/attachments", op(deps, "createConversationAttachment"));
+  app.get("/api/v1/conversations/:id/messages", op(deps, "listConversationMessages"));
+  app.post("/api/v1/conversations/:id/messages", op(deps, "sendConversationMessage"));
+  app.post("/api/v1/conversations/:id/permissions/:pid", op(deps, "answerAgentPermission"));
+  app.post("/api/v1/conversations/:id/stop", op(deps, "stopConversation"));
 }

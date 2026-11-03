@@ -4,8 +4,6 @@ import type { Vars } from "../middleware/tenant.js";
 import { op, type ContractDeps } from "../contract/op.js";
 
 export function register(app: Hono<Vars>, deps: ContractDeps): void {
-  app.post("/api/v1/bridge/credentials/:id/check-result", op(deps, "reportCredentialCheck"));
-  app.post("/api/v1/bridge/credentials/resolve", op(deps, "resolveCredential"));
   app.get("/api/v1/credentials", op(deps, "listCredentials"));
   app.post("/api/v1/credentials", op(deps, "createCredential"));
   app.patch("/api/v1/credentials/:id", op(deps, "updateCredential"));

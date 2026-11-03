@@ -687,6 +687,8 @@ describe("G-15 信号なし終了（外部が合図なしに終わる）", () =>
   for (const [task, rows] of Object.entries(MAP.g["G-15"] ?? {})) {
     if (retiredTask(task)) { describe.skip(`${task}（口が全部、決定 ${retiredTask(task)} で契約から外れた。作業の分解から作り直す）`, () => it(ids(rows), () => undefined)); continue; }
     const eps = taskEps(task).filter((e) => e.errors.includes(502));
+    const gone = (MAP.tasks[task] ?? []).filter((k) => !ep(k) && retiredOf(k));
+    if (!eps.length && gone.length) { describe.skip(`${task}（外へ出る口が決定 ${[...new Set(gone.map(retiredOf))].join("・")} で契約から外れた：${gone.join("・")}。作業の分解から作り直す）`, () => it(ids(rows), () => undefined)); continue; }
     it(`${ids(rows)} ${task}：外部・モデル・プロセスが合図なしに終わる／空を返すと、成功扱いにせず 502 と次の一手（人へのハンドオフ）。記録しない`, async () => {
       expect(eps.length, `${task} に外へ出る口（502 を持つ endpoint）が無い`).toBeGreaterThan(0);
       for (const e of eps) {

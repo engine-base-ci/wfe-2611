@@ -6,8 +6,11 @@ import { op, type ContractDeps } from "../contract/op.js";
 export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.get("/api/v1/clients", op(deps, "listClients"));
   app.post("/api/v1/clients", op(deps, "createClient"));
+  app.get("/api/v1/clients/link-candidates", op(deps, "listClientLinkCandidates"));
   app.get("/api/v1/clients/:id", op(deps, "getClient"));
   app.patch("/api/v1/clients/:id", op(deps, "updateClient"));
+  app.get("/api/v1/clients/:id/activity", op(deps, "listClientActivity"));
+  app.post("/api/v1/clients/:id/contacts", op(deps, "createClientContact"));
   app.get("/api/v1/clients/:id/portal-preview", op(deps, "getClientPortalPreview"));
   app.patch("/api/v1/clients/:id/share", op(deps, "updateClientShare"));
 }

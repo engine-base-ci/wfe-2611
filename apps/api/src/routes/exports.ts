@@ -4,7 +4,6 @@ import type { Vars } from "../middleware/tenant.js";
 import { op, type ContractDeps } from "../contract/op.js";
 
 export function register(app: Hono<Vars>, deps: ContractDeps): void {
-  app.get("/api/v1/me/notification-settings", op(deps, "getNotificationSettings"));
-  app.patch("/api/v1/me/notification-settings", op(deps, "updateNotificationSettings"));
-  app.post("/api/v1/me/notification-settings/copy", op(deps, "copyNotificationSettings"));
+  app.post("/api/v1/exports", op(deps, "createExport"));
+  app.get("/api/v1/exports/:id", op(deps, "getExport"));
 }

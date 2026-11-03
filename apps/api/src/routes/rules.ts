@@ -4,6 +4,10 @@ import type { Vars } from "../middleware/tenant.js";
 import { op, type ContractDeps } from "../contract/op.js";
 
 export function register(app: Hono<Vars>, deps: ContractDeps): void {
-  app.post("/api/v1/bridge/jobs/:id/browser", op(deps, "reportBrowserState"));
-  app.post("/api/v1/bridge/jobs/:id/progress", op(deps, "reportJobProgress"));
+  app.get("/api/v1/rules", op(deps, "listRules"));
+  app.post("/api/v1/rules", op(deps, "createRule"));
+  app.post("/api/v1/rules/check", op(deps, "checkRule"));
+  app.get("/api/v1/rules/:id", op(deps, "getRule"));
+  app.patch("/api/v1/rules/:id", op(deps, "updateRule"));
+  app.delete("/api/v1/rules/:id", op(deps, "deleteRule"));
 }

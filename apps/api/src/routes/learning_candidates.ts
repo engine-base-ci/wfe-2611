@@ -7,5 +7,6 @@ export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.get("/api/v1/learning_candidates", op(deps, "listLearningCandidates"));
   app.post("/api/v1/learning_candidates/:id/accept", op(deps, "acceptLearningCandidate"));
   app.post("/api/v1/learning_candidates/:id/dismiss", op(deps, "dismissLearningCandidate"));
+  app.post("/api/v1/learning_candidates/:id/exception-request", op(deps, "requestRuleException"));
   app.post("/api/v1/learning_candidates/:id/later", op(deps, "postponeLearningCandidate"));
 }

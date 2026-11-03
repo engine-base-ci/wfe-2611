@@ -1,0 +1,10 @@
+{
+ "_doc": "表の素の読み書き（contract/op.ts の共通の処理）で動かしてよい口の一覧（D-128.113）。ここに無い口は、振る舞い（apps/api/src/hooks）を書くまで 501。1 本ずつ、素の読み書きで画面の意味どおりになる理由を書く。足すときは権限（08_api/endpoints.json の permission）と RLS で範囲が守られることを確かめる",
+ "ok": [
+  {"op": "GET /api/v1/audit_events", "reason": "記録の一覧。読むだけで、範囲は RLS（自分の操作と関わるチケット・全体は権限のある人）"},
+  {"op": "GET /api/v1/conversations", "reason": "自分の会話の一覧。読むだけで、本人だけ（RLS）"},
+  {"op": "GET /api/v1/inquiries", "reason": "自分の問い合わせの一覧。読むだけで、本人だけ（RLS）"},
+  {"op": "GET /api/v1/members", "reason": "メンバーの一覧（担当を選ぶ）。読むだけで、ワークスペースの中だけ（RLS）"},
+  {"op": "POST /api/v1/memories", "reason": "自分の記憶を 1 つ足す。本人の行だけ（RLS・self）で、ほかの副作用が無い"}
+ ]
+}

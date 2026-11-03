@@ -6,11 +6,8 @@ import { op, type ContractDeps } from "../contract/op.js";
 export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.get("/api/v1/inquiries", op(deps, "listMyInquiries"));
   app.post("/api/v1/inquiries", op(deps, "createInquiry"));
+  app.post("/api/v1/inquiries/attachments", op(deps, "uploadInquiryAttachment"));
   app.get("/api/v1/inquiries/:id", op(deps, "getMyInquiry"));
+  app.post("/api/v1/inquiries/:id/messages", op(deps, "postInquiryMessage"));
   app.post("/api/v1/inquiries/:id/resolve", op(deps, "resolveMyInquiry"));
-  app.get("/api/v1/ops/inquiries", op(deps, "listOpsInquiries"));
-  app.get("/api/v1/ops/inquiries/:id", op(deps, "getOpsInquiry"));
-  app.patch("/api/v1/ops/inquiries/:id", op(deps, "updateOpsInquiry"));
-  app.get("/api/v1/ops/shell", op(deps, "getOpsShell"));
-  app.get("/api/v1/ops/workspaces/:id/inquiries", op(deps, "listOpsWorkspaceInquiries"));
 }

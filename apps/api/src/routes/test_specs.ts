@@ -6,8 +6,4 @@ import { op, type ContractDeps } from "../contract/op.js";
 export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.patch("/api/v1/test_specs/:id", op(deps, "updateTestSpec"));
   app.delete("/api/v1/test_specs/:id", op(deps, "deleteTestSpec"));
-  app.get("/api/v1/tickets/:id/test-specs", op(deps, "listTestSpecs"));
-  app.post("/api/v1/tickets/:id/test-specs", op(deps, "createTestSpec"));
-  app.post("/api/v1/tickets/:id/test-specs/lint", op(deps, "lintTestSpecs"));
-  app.post("/api/v1/tickets/:id/test-specs/suggest", op(deps, "suggestTestSpecs"));
 }

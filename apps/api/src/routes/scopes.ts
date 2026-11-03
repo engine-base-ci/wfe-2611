@@ -7,4 +7,5 @@ export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.get("/api/v1/scopes", op(deps, "listScopes"));
   app.post("/api/v1/scopes", op(deps, "createScope"));
   app.patch("/api/v1/scopes/:id", op(deps, "updateScope"));
+  app.get("/api/v1/scopes/:id/overview", op(deps, "getScopeOverview"));
 }

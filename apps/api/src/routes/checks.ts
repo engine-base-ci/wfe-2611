@@ -5,5 +5,4 @@ import { op, type ContractDeps } from "../contract/op.js";
 
 export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.post("/api/v1/checks/:id/human", op(deps, "markHumanCheck"));
-  app.get("/api/v1/tickets/:id/checks", op(deps, "listChecks"));
 }

@@ -5,7 +5,7 @@ import { op, type ContractDeps } from "../contract/op.js";
 
 export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.get("/api/v1/ticket_kinds", op(deps, "listTicketKinds"));
-  app.get("/api/v1/workspace/ticket-shape", op(deps, "getTicketShape"));
-  app.patch("/api/v1/workspace/ticket-shape", op(deps, "saveTicketShape"));
-  app.post("/api/v1/workspace/ticket-shape/preview", op(deps, "previewTicketShapeChange"));
+  app.get("/api/v1/ticket_kinds/template-updates", op(deps, "listKindTemplateUpdates"));
+  app.post("/api/v1/ticket_kinds/template-updates/:id/apply", op(deps, "applyKindTemplateUpdate"));
+  app.post("/api/v1/ticket_kinds/:id/template-from-ticket", op(deps, "makeKindTemplateFromTicket"));
 }

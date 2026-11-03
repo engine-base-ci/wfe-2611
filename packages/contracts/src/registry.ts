@@ -59,7 +59,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 120,
@@ -186,7 +186,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 120,
@@ -495,7 +495,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 120,
@@ -556,7 +556,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "ArtifactsInput",
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -1812,7 +1812,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 120,
@@ -1839,7 +1839,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "ClientContactsInput",
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -1871,7 +1871,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -1935,7 +1935,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 120,
@@ -1963,7 +1963,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 120,
@@ -1992,7 +1992,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "ClientRequestsInput",
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -2127,7 +2127,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 120,
@@ -2156,7 +2156,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "ClientsInput",
     "success": 201,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -2188,7 +2188,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 120,
@@ -2216,7 +2216,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "ClientsInput",
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -2624,7 +2624,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "ConversationsInput",
     "success": 201,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -2658,7 +2658,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 120,
@@ -2686,7 +2686,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "ConversationsInput",
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -2717,7 +2717,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -2918,7 +2918,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 120,
@@ -2947,7 +2947,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "CredentialsInput",
     "success": 201,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -2979,7 +2979,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "CredentialsInput",
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -3011,7 +3011,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -3171,7 +3171,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 120,
@@ -3225,7 +3225,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "InquiriesInput",
     "success": 201,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -3257,7 +3257,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 120,
@@ -3383,7 +3383,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "InvitationsInput",
     "success": 201,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -3415,7 +3415,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -3891,7 +3891,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 120,
@@ -3918,7 +3918,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "KnowledgePagesInput",
     "success": 201,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -3949,7 +3949,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 120,
@@ -3977,7 +3977,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "KnowledgePagesInput",
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -4465,7 +4465,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "LayersInput",
     "success": 201,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -4496,7 +4496,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "LayersInput",
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -4527,7 +4527,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 120,
@@ -5403,7 +5403,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 120,
@@ -5431,7 +5431,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -5713,7 +5713,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 120,
@@ -5771,7 +5771,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "MemoriesInput",
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -5802,7 +5802,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -5898,7 +5898,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 120,
@@ -5957,7 +5957,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 120,
@@ -5984,7 +5984,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "NotificationsInput",
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -8150,7 +8150,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 120,
@@ -8177,7 +8177,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "SavedViewsInput",
     "success": 201,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -8208,7 +8208,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "SavedViewsInput",
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -8239,7 +8239,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -8269,7 +8269,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 120,
@@ -8296,7 +8296,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "ScopesInput",
     "success": 201,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -8327,7 +8327,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "ScopesInput",
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -8467,7 +8467,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "TestSpecsInput",
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -8500,7 +8500,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -8532,7 +8532,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "TicketDecisionsInput",
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -8563,7 +8563,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "TicketHandoversInput",
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -8596,7 +8596,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "TicketImportsInput",
     "success": 201,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -8628,7 +8628,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 120,
@@ -8688,7 +8688,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 120,
@@ -8806,7 +8806,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -8836,7 +8836,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "TicketMessagesInput",
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -8868,7 +8868,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -8932,7 +8932,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 120,
@@ -8959,7 +8959,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 120,
@@ -8987,7 +8987,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "TicketsInput",
     "success": 201,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -9020,7 +9020,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 120,
@@ -9048,7 +9048,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "TicketsInput",
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -9082,7 +9082,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,

@@ -5,6 +5,4 @@ import { op, type ContractDeps } from "../contract/op.js";
 
 export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.patch("/api/v1/ticket_decisions/:id", op(deps, "updateTicketDecision"));
-  app.get("/api/v1/tickets/:id/decisions", op(deps, "listTicketDecisions"));
-  app.post("/api/v1/tickets/:id/decisions", op(deps, "createTicketDecision"));
 }

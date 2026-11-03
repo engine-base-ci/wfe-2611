@@ -1,6 +1,6 @@
 // EARS の対応表（07_qa/test-plan/ears-test-mapping.json）→ apps/api/test/generated/<slug>.test.ts。1 文 = 1 test（名前は対応表の test_function）。
 // 検査は種類ごとに固定：ok（2xx）／shape（応答の形）／rejected_401／rejected_403（副作用なし）／conflict（冪等）／rejected_422（正規化してから判定）／rate_limited（retry_after_sec）／upstream_failed（副作用は記録の前・502 で記録しない）／not_found
-import { mkdirSync, readFileSync, writeFileSync, readdirSync, unlinkSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync, unlinkSync } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 const ROOT = process.cwd();
@@ -33,7 +33,9 @@ export function gen(root = ROOT) {
   const tables = new Set([...repoSrc.slice(repoSrc.indexOf("export const TABLES"), repoSrc.indexOf("] as const")).matchAll(/"([a-z_]+)"/g)].map((x) => x[1]));
   const hookDir = join(root, "apps/api/src/hooks");
   const hooked = new Set(readdirSync(hookDir).filter((f) => f.endsWith(".ts")).flatMap((f) => [...readFileSync(join(hookDir, f), "utf8").matchAll(/^\s{2,6}([a-z][A-Za-z]+): \{/gm)].map((x) => x[1])));
-  const built = (e) => hooked.has(e.implementation_path.split("::")[1]) || (tables.has(e.table) && (e.path === `/api/v1/${e.table}` || e.path === `/api/v1/${e.table}/:id`));
+  const okPath = join(root, "08_api/generic-ok.json");
+  const genericOk = new Set(existsSync(okPath) ? JSON.parse(readFileSync(okPath, "utf8")).ok.map((x) => x.op) : []);
+  const built = (e) => hooked.has(e.implementation_path.split("::")[1]) || (tables.has(e.table) && genericOk.has(`${e.method} ${e.path}`));
   const epOf = new Map(eps.map((e) => [`${e.method} ${e.path}`, e]));
   const byFile = new Map();
   for (const x of m) byFile.set(x.test_file, [...(byFile.get(x.test_file) ?? []), x]);
@@ -47,7 +49,7 @@ export function gen(root = ROOT) {
     const tests = isBuilt ? [] : [`  it("not_implemented_501", async () => {\n    // まだ作っていない口は、正しい役の人が呼んでも 501 で止まり、何も書かない（fail-closed・D-128.113）\n    const who = e.auth === "ops" ? "ops" : "boss";\n    if (e.auth === "public" || e.auth === "client" || e.auth === "device") return;\n    const before = await h.count("audit_events");\n    const r = await h.call(e, who, { ...(e.path.includes(":id") ? { id: "0193c5a0-0000-7000-8000-000000000000" } : {}), ...(e.method === "POST" || e.method === "PATCH" ? { body: {} } : {}) });\n    expect(r.status).toBe(501);\n    expect(await h.count("audit_events")).toBe(before);\n  });`];
     tests.push(...rows.map((x) => {
       n++;
-      if (!isBuilt) return `  it.todo(${q(x.test_function + "（まだ作っていない口。作ったら本物の試験になる）")});`;
+      if (!isBuilt) return `  // まだ作っていない口。作ったら本物の試験になる：${x.ears_text.replace(/\n/g, " ")}\n  it.todo(${q(x.test_function)});`;
       const kind = kindOf(x.test_function);
       const skip = (kind === "rate_limited" && false) ? ".skip" : "";
       return `  it${skip}(${q(x.test_function)}, async () => {\n    // ${x.ears_text.replace(/\n/g, " ")}\n    ${CASE[kind](op)}\n  });`;
