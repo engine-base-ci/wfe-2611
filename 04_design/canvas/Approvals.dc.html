@@ -86,8 +86,8 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
   <header style="background: #FFFFFF; border-bottom: 1px solid #DDE2E9">
    <div style="display: flex; align-items: center; gap: 10px; padding: 12px 24px; flex-wrap: wrap">
     <h1 style="font-size: 18px; margin: 0">承認待ち</h1>
-    <span style="color: #4A5563">あなたが決めるもの 7 件</span>
-    <a href="ApprovalsFocus.dc.html" style="height: 30px; display: inline-flex; align-items: center; gap: 6px; border-radius: 6px; background: #22345C; color: #FFFFFF; padding: 0 12px; font-size: 12px; font-weight: 500; text-decoration: none; margin-left: 8px">続けて裁く（7 件）</a>
+    <span style="color: #4A5563">あなたが決めるもの 9 件</span>
+    <a href="ApprovalsFocus.dc.html" style="height: 30px; display: inline-flex; align-items: center; gap: 6px; border-radius: 6px; background: #22345C; color: #FFFFFF; padding: 0 12px; font-size: 12px; font-weight: 500; text-decoration: none; margin-left: 8px">続けて裁く（9 件）</a>
    </div>
   </header>
 
@@ -135,8 +135,8 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1100}}'>
 class Component extends DCLogic {
   renderVals() {
-    var K = { "AI の成果物": "#22345C", "上位の承認": "#6D4AA6", "渡された": "#7E570D", "判断を仰がれた": "#B91C1C" };
-    var T = { "タスク": "#186F69", "QA": "#B91C1C", "課題": "#B45309" };
+    var K = { "AI の成果物": "#22345C", "上位の承認": "#6D4AA6", "渡された": "#7E570D", "判断を仰がれた": "#B91C1C", "決まりの例外": "#186F69", "やり方を広げる": "#2F4B7C" };
+    var T = { "タスク": "#186F69", "QA": "#B91C1C", "課題": "#B45309", "決まり": "#4A5563", "やり方": "#4A5563" };
     var pill = function (c) { return "display:inline-block;font-size:11px;font-weight:500;border-radius:9999px;padding:1px 8px;color:#FFFFFF;background:" + c; };
     var outline = function (c) { return "display:inline-block;font-size:11px;font-weight:500;border-radius:9999px;padding:0 8px;border:1.5px solid " + c + ";color:" + c; };
     var avc = { "高本のAI": "#4A5563", "佐藤": "#186F69", "田中": "#7E570D", "鈴木": "#2F4B7C" };
@@ -148,14 +148,16 @@ class Component extends DCLogic {
     };
     var f = function (l, on) { return { label: l, style: on ? "height:26px;border:1px solid #22345C;background:#22345C;color:#FFFFFF;border-radius:9999px;padding:0 10px;font-size:12px" : "height:26px;border:1px solid #DDE2E9;background:#FFFFFF;color:#4A5563;border-radius:9999px;padding:0 10px;font-size:12px" }; };
     return {
-      filters: [f("すべて 7", true), f("AI の成果物 3"), f("上位の承認 1"), f("渡された 2"), f("判断を仰がれた 1")],
+      filters: [f("すべて 9", true), f("AI の成果物 3"), f("上位の承認 1"), f("渡された 2"), f("判断を仰がれた 1"), f("決まりの例外 1"), f("やり方を広げる 1")],
       sections: [
         { label: "期限切れ・今日", color: "#B91C1C", n: 3, rows: [
           row("AI の成果物", "タスク", "EG-128", "セイコー様へ 11月分の請求書を送る", "承認するとメールを送る（取り消せない）", "高本のAI", "確実 2 ・ AI 1 ・ 人 1", "11/01", true, "中身を見る", "差し戻す", false),
-          row("上位の承認", "タスク", "JD-204", "京蟻 追加開発の見積を出す（1,826,000 円）", "150 万円以上はマネージャーの承認（ワークスペースのルール）", "佐藤", "確実 2 ・ AI 1", "今日 18:00", false, "承認する", "差し戻す", false),
+          row("上位の承認", "タスク", "JD-204", "京蟻 追加開発の見積を出す（1,826,000 円）", "見積が 100 万円を超えたため上位へ（ワークスペースの決まり）", "佐藤", "確実 2 ・ AI 1", "今日 18:00", false, "承認する", "差し戻す", false),
           row("渡された", "タスク", "EG-119", "問い合わせ（山田様）に一次返信する", "理由：先方と面識がある ・ 返事の期限 11/03", "佐藤", "—", "11/03", false, "受ける", "断る", false) ] },
-        { label: "今週", color: "#131B27", n: 3, rows: [
-          row("AI の成果物", "タスク", "EG-127", "発注ナビ 応募文を出す", "承認すると応募する（取り下げ可）", "高本のAI", "確実 2", "11/04", false, "承認する", "差し戻す", true),
+        { label: "今週", color: "#131B27", n: 5, rows: [
+          row("決まりの例外", "決まり", "—", "ミナト様だけ月末締めにしたい", "ワークスペースの決まり「請求は 25 日締め」と反対 ・ 田中の分身が点検", "田中", "—", "11/05", false, "OK する", "断る", false),
+          row("やり方を広げる", "やり方", "—", "やり方「問い合わせに返す」を営業の全員に", "鈴木の自分のやり方 v1 ・ 使った 6 回・そのまま通った 4", "鈴木", "—", "11/07", false, "中身を見る", "断る", false),
+          row("AI の成果物", "タスク", "EG-127", "発注ナビ 応募文を出す", "承認すると 3 社に応募する（外に出る）", "高本のAI", "確実 2", "11/04", false, "中身を見る", "差し戻す", false),
           row("判断を仰がれた", "QA", "JD-207", "保守の範囲にログの保管は入るか", "京蟻様から 1 年保管を頼まれた", "田中", "—", "11/05", false, "答える", "もっと聞く", false),
           row("AI の成果物", "タスク", "KR-031", "入金の照合（10月分）を記録する", "承認すると会計に記録する（戻せる）", "高本のAI", "確実 3", "11/06", false, "承認する", "差し戻す", true) ] },
         { label: "来週以降", color: "#4A5563", n: 1, rows: [

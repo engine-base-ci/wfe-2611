@@ -4,7 +4,7 @@
  "summary": {
   "screens_count": 72,
   "features_count": 32,
-  "entities_count": 137,
+  "entities_count": 138,
   "uncovered_screens": [],
   "uncovered_features": []
  },
@@ -206,6 +206,7 @@
    "entities": [
     "E-006 clones",
     "E-004 members",
+    "E-139 learning_candidates",
     "E-043 conversations",
     "E-049 messages",
     "E-028 memories"
@@ -241,7 +242,8 @@
     "E-024 duty_versions",
     "E-007 ai_employees",
     "E-004 members",
-    "E-006 clones"
+    "E-006 clones",
+    "E-139 learning_candidates"
    ],
    "related_apis": [
     "GET /api/tenants",
@@ -458,6 +460,7 @@
     "E-035 daily_plans",
     "E-006 clones",
     "E-004 members",
+    "E-139 learning_candidates",
     "E-029 memory_digests"
    ],
    "related_apis": [
@@ -571,6 +574,7 @@
     "E-049 messages",
     "E-006 clones",
     "E-004 members",
+    "E-139 learning_candidates",
     "E-007 ai_employees"
    ],
    "related_apis": [
@@ -629,6 +633,7 @@
     "E-049 messages",
     "E-006 clones",
     "E-004 members",
+    "E-139 learning_candidates",
     "E-106 tickets",
     "E-114 ticket_class_values",
     "E-135 ticket_links",
@@ -640,12 +645,38 @@
     "E-051 artifact_versions"
    ],
    "related_apis": [
-    "POST /api/conversations",
-    "POST /api/conversations",
-    "POST /api/conversations",
+    "GET /api/clones/me",
+    "PATCH /api/clones/me",
     "GET /api/conversations",
     "POST /api/conversations",
+    "POST /api/conversations",
+    "GET /api/conversations/:id",
     "PATCH /api/conversations/:id",
+    "DELETE /api/conversations/:id",
+    "GET /api/conversations/:id/messages",
+    "POST /api/conversations/:id/messages",
+    "POST /api/conversations/:id/messages",
+    "POST /api/conversations/:id/stop",
+    "POST /api/conversations/:id/attachments",
+    "POST /api/conversations/:id/permissions/:pid",
+    "POST /api/messages/:id/artifacts",
+    "PATCH /api/artifacts/:id",
+    "POST /api/artifact_versions/:id/restore",
+    "GET /api/clones/me/knows/counts",
+    "GET /api/memories",
+    "POST /api/memories",
+    "PATCH /api/memories/:id",
+    "DELETE /api/memories/:id",
+    "POST /api/memories/:id/promote",
+    "POST /api/memories/:id/promote",
+    "GET /api/learning_candidates",
+    "GET /api/learning_candidates",
+    "POST /api/learning_candidates/:id/accept",
+    "POST /api/learning_candidates/:id/accept",
+    "POST /api/learning_candidates/:id/dismiss",
+    "POST /api/learning_candidates/:id/dismiss",
+    "POST /api/learning_candidates/:id/later",
+    "POST /api/learning_candidates/:id/exception-request",
     "navigate /account",
     "navigate /settings/close",
     "navigate /ai-staff/activity",
@@ -721,8 +752,12 @@
     "E-098 skill_attachments"
    ],
    "related_apis": [
-    "GET /api/action_runs",
-    "GET /api/action_runs",
+    "GET /api/clones/me/now",
+    "GET /api/clones/me/growth",
+    "GET /api/clones/me/activity",
+    "POST /api/clones/me/activity/export",
+    "POST /api/action_runs/:id/retry",
+    "POST /api/action_runs/:id/takeover",
     "navigate /account",
     "navigate /settings/close",
     "navigate /ai-staff",
@@ -1785,6 +1820,7 @@
     "E-022 ledger_records",
     "E-006 clones",
     "E-004 members",
+    "E-139 learning_candidates",
     "E-089 imports"
    ],
    "related_apis": [
@@ -2583,6 +2619,10 @@
     "GET /api/action_runs/:id",
     "POST /api/action_runs/:id/stop",
     "GET /api/tickets/:id/references",
+    "GET /api/tickets/:id/agent-session",
+    "POST /api/tickets/:id/agent-session/messages",
+    "POST /api/tickets/:id/agent-session/messages",
+    "POST /api/tickets/:id/agent-session/apply",
     "GET /api/tickets/:id/timeline",
     "POST /api/tickets/:id/messages",
     "PATCH /api/ticket_messages/:id",
@@ -2686,7 +2726,12 @@
     "E-126 client_contacts"
    ],
    "related_apis": [
-    "GET /api/policies"
+    "GET /api/rules",
+    "GET /api/rules/:id",
+    "POST /api/rules/check",
+    "POST /api/rules",
+    "PATCH /api/rules/:id",
+    "DELETE /api/rules/:id"
    ],
    "access_roles": [
     "R1",
@@ -2712,7 +2757,15 @@
     "E-037 policies"
    ],
    "related_apis": [
-    "POST /api/skill_attachments"
+    "GET /api/work_types",
+    "GET /api/work_types/:id",
+    "POST /api/work_types",
+    "POST /api/work_types/:id/copy",
+    "PATCH /api/work_types/:id/draft",
+    "GET /api/work_types/:id/versions",
+    "POST /api/work_types/:id/try",
+    "POST /api/work_types/:id/release",
+    "POST /api/work_types/:id/spread-requests"
    ],
    "access_roles": [
     "R1",
@@ -4059,15 +4112,21 @@
    "screen_name": "分身の部屋：会話と知っていること",
    "required_apis": [
     {
-     "act": "A100",
-     "role": "action",
-     "method": "POST",
-     "path_draft": "/api/conversations"
+     "act": "A20",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/clones/me"
     },
     {
-     "act": "A20",
+     "act": "A91",
      "role": "action",
-     "method": "POST",
+     "method": "PATCH",
+     "path_draft": "/api/clones/me"
+    },
+    {
+     "act": "A88",
+     "role": "data_fetch",
+     "method": "GET",
      "path_draft": "/api/conversations"
     },
     {
@@ -4077,22 +4136,172 @@
      "path_draft": "/api/conversations"
     },
     {
-     "act": "A90",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/conversations"
-    },
-    {
-     "act": "A91",
+     "act": "A100",
      "role": "action",
      "method": "POST",
      "path_draft": "/api/conversations"
     },
     {
-     "act": "A95",
+     "act": "A88",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/conversations/:id"
+    },
+    {
+     "act": "A88",
      "role": "action",
      "method": "PATCH",
      "path_draft": "/api/conversations/:id"
+    },
+    {
+     "act": "A88",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/conversations/:id"
+    },
+    {
+     "act": "A20",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/conversations/:id/messages"
+    },
+    {
+     "act": "A20",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/conversations/:id/messages"
+    },
+    {
+     "act": "A100",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/conversations/:id/messages"
+    },
+    {
+     "act": "A20",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/conversations/:id/stop"
+    },
+    {
+     "act": "A90",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/conversations/:id/attachments"
+    },
+    {
+     "act": "A91",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/conversations/:id/permissions/:pid"
+    },
+    {
+     "act": "A95",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/messages/:id/artifacts"
+    },
+    {
+     "act": "A95",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/artifacts/:id"
+    },
+    {
+     "act": "A95",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/artifact_versions/:id/restore"
+    },
+    {
+     "act": "A30",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/clones/me/knows/counts"
+    },
+    {
+     "act": "A30",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/memories"
+    },
+    {
+     "act": "A30",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/memories"
+    },
+    {
+     "act": "A30",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/memories/:id"
+    },
+    {
+     "act": "A30",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/memories/:id"
+    },
+    {
+     "act": "A30",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/memories/:id/promote"
+    },
+    {
+     "act": "A131",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/memories/:id/promote"
+    },
+    {
+     "act": "A30",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/learning_candidates"
+    },
+    {
+     "act": "A93",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/learning_candidates"
+    },
+    {
+     "act": "A30",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/learning_candidates/:id/accept"
+    },
+    {
+     "act": "A93",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/learning_candidates/:id/accept"
+    },
+    {
+     "act": "A30",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/learning_candidates/:id/dismiss"
+    },
+    {
+     "act": "A93",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/learning_candidates/:id/dismiss"
+    },
+    {
+     "act": "A30",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/learning_candidates/:id/later"
+    },
+    {
+     "act": "A131",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/learning_candidates/:id/exception-request"
     },
     {
      "role": "transition",
@@ -4374,13 +4583,37 @@
      "act": "A53",
      "role": "data_fetch",
      "method": "GET",
-     "path_draft": "/api/action_runs"
+     "path_draft": "/api/clones/me/now"
+    },
+    {
+     "act": "A53",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/clones/me/growth"
+    },
+    {
+     "act": "A53",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/clones/me/activity"
+    },
+    {
+     "act": "A53",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/clones/me/activity/export"
     },
     {
      "act": "A57",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/action_runs"
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/action_runs/:id/retry"
+    },
+    {
+     "act": "A57",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/action_runs/:id/takeover"
     },
     {
      "role": "transition",
@@ -9327,6 +9560,30 @@
      "path_draft": "/api/tickets/:id/references"
     },
     {
+     "act": "A20",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets/:id/agent-session"
+    },
+    {
+     "act": "A20",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/tickets/:id/agent-session/messages"
+    },
+    {
+     "act": "A91",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/tickets/:id/agent-session/messages"
+    },
+    {
+     "act": "A101",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/tickets/:id/agent-session/apply"
+    },
+    {
      "act": "A107",
      "role": "data_fetch",
      "method": "GET",
@@ -9558,7 +9815,37 @@
      "act": "A131",
      "role": "data_fetch",
      "method": "GET",
-     "path_draft": "/api/policies"
+     "path_draft": "/api/rules"
+    },
+    {
+     "act": "A131",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/rules/:id"
+    },
+    {
+     "act": "A131",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/rules/check"
+    },
+    {
+     "act": "A131",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/rules"
+    },
+    {
+     "act": "A131",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/rules/:id"
+    },
+    {
+     "act": "A131",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/rules/:id"
     }
    ]
   },
@@ -9568,9 +9855,57 @@
    "required_apis": [
     {
      "act": "A119",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/work_types"
+    },
+    {
+     "act": "A119",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/work_types/:id"
+    },
+    {
+     "act": "A119",
      "role": "action",
      "method": "POST",
-     "path_draft": "/api/skill_attachments"
+     "path_draft": "/api/work_types"
+    },
+    {
+     "act": "A119",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/work_types/:id/copy"
+    },
+    {
+     "act": "A119",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/work_types/:id/draft"
+    },
+    {
+     "act": "A119",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/work_types/:id/versions"
+    },
+    {
+     "act": "A119",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/work_types/:id/try"
+    },
+    {
+     "act": "A119",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/work_types/:id/release"
+    },
+    {
+     "act": "A119",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/work_types/:id/spread-requests"
     }
    ]
   },
@@ -11792,6 +12127,27 @@
    ]
   },
   {
+   "entity_id": "E-139",
+   "entity_name": "learning_candidates",
+   "used_by_screens": [
+    "onboard-interview",
+    "onboard-draft",
+    "today",
+    "clone-thread",
+    "clone-chat",
+    "import"
+   ],
+   "used_by_features": [
+    "F-001",
+    "F-004",
+    "F-006",
+    "F-010",
+    "F-013",
+    "F-017",
+    "F-024"
+   ]
+  },
+  {
    "entity_id": "E-134",
    "entity_name": "ops_plan_proposals",
    "used_by_screens": [
@@ -11880,7 +12236,8 @@
     "E-135",
     "E-136",
     "E-137",
-    "E-138"
+    "E-138",
+    "E-139"
    ],
    "api_endpoints_draft": [
     "GET /api/invitations",
@@ -11979,7 +12336,8 @@
     "E-135",
     "E-136",
     "E-137",
-    "E-138"
+    "E-138",
+    "E-139"
    ],
    "api_endpoints_draft": [
     "DELETE /api/messages/:id",
@@ -12114,7 +12472,8 @@
     "E-135",
     "E-136",
     "E-137",
-    "E-138"
+    "E-138",
+    "E-139"
    ],
    "api_endpoints_draft": [
     "DELETE /api/members/:id",
@@ -12290,7 +12649,8 @@
     "E-135",
     "E-136",
     "E-137",
-    "E-138"
+    "E-138",
+    "E-139"
    ],
    "api_endpoints_draft": [
     "DELETE /api/members/:id",
@@ -12490,7 +12850,8 @@
     "E-135",
     "E-136",
     "E-137",
-    "E-138"
+    "E-138",
+    "E-139"
    ],
    "api_endpoints_draft": [
     "GET /api/conversations",
@@ -12652,7 +13013,8 @@
     "E-102",
     "E-103",
     "E-129",
-    "E-132"
+    "E-132",
+    "E-139"
    ],
    "api_endpoints_draft": [
     "PATCH /api/credentials/:id",
@@ -12884,7 +13246,8 @@
     "E-135",
     "E-136",
     "E-137",
-    "E-138"
+    "E-138",
+    "E-139"
    ],
    "api_endpoints_draft": [
     "GET /api/tickets",

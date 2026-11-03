@@ -1,7 +1,7 @@
 # Kaname ER 図 v1.1（段階 1 の範囲）
 
 作成 2026-09-08 ／ 更新 2026-09-27（D-098：検索用のベクトルと、それを作るモデル）／ 2026-09-15（D-069〜D-077：層と権限・出来事と失効・運営・往復するもの・取り込みと連携を追加）/ DB: PostgreSQL 16+ (pgvector) / ORM: Drizzle
-推定テーブル数: **77**（＋ §16 第1フェーズの表 34・2026-11-03）（段階 1。§1〜§6 の 37 ＋ §7 マスタ 8 ＋ §9〜§13 の 38。カード決済（段階 2・D-002）と BYOK／運営マネージド（段階 2・D-055）だけが後）
+推定テーブル数: **77**（＋ §16 第1フェーズの表 35・2026-11-03）（段階 1。§1〜§6 の 37 ＋ §7 マスタ 8 ＋ §9〜§13 の 38。カード決済（段階 2・D-002）と BYOK／運営マネージド（段階 2・D-055）だけが後）
 
 ---
 
@@ -383,7 +383,7 @@ erDiagram
 
 ---
 
-## 16. 第1フェーズの表（D-125〜D-128）（34）
+## 16. 第1フェーズの表（D-125〜D-128）（35）
 
 D-125〜D-128 で第1フェーズを「チケット」中心に決め直した分の表。前の段の表（`tasks` `duties` `goals` など）は後のフェーズのものとして残し、第1フェーズの画面と API はこの節の表を読む（D-127.1・D-126.26）。
 
@@ -449,9 +449,16 @@ erDiagram
 | **`ticket_handovers`** | `<common>` / `ticket_id` / `kind`（渡す・引き取りの申し出・配る・上へ上げる）/ `from_member_id` / `to_member_id` / `to_scope_id` / `reason` / `ask` / `reply_due` / `switch jsonb`（一緒に切り替えるもの）/ `state`（返事待ち・受けた・断った）/ `decline_reason` / `decided_at` | **★新設（D-125.70）。**`task_handovers` を置き換える |
 | **`saved_views`** | `<common>` / `member_id` / `name` / `share`（自分だけ・グループの全員）/ `scope_id` / `filters jsonb` / `columns jsonb` / `density` | **★新設（D-128.83）。**検索条件と列の表示設定 |
 | **`ticket_imports`** | `<common>` / `uploaded_by` / `source`（Backlog の CSV・汎用）/ `mapping jsonb` / `rows int` / `errors jsonb` / `state`（確かめ中・確定・やめた）/ `committed_at` | **★新設（D-128.83・D-128.85）。**取り込んだものは下書きで入り、確かめてから確定 |
+| **`learning_candidates`** | `<common>` / `owner_member_id`（その人の分身）/ `trigger`（覚えて・直したところ・差し戻し・話の中で・同じ流れ・完了）/ `proposed_as`（守ること・やり方・覚えていること）/ `text` / `evidence jsonb`（どのチケット・どの話から）/ `check jsonb`（分身の点検：ぶつかる決まり・似ているもの・要る OK）/ `state`（待っている・覚えた・覚えない・あとで・例外の OK 待ち）/ `decided_at` / `result_type` / `result_id` | **★新設（D-128.41・D-128.43・D-128.90）。**「覚えたいこと」。決めるまで使わない。例外の OK が要るものは承認待ちへ（D-128.89） |
 | **`ops_plan_proposals`** | `<common>`（tenant_id＝運営）/ `plan_id` / `from_version` / `to_version` / `changes jsonb` / `existing_policy`（N 日後から・ずっと今の値段）/ `notice_days` / `new_from` / `reason` / `proposed_by` / `decided_by` / `state`（下書き・決める人を待っている・決めた・差し戻した）/ `decided_at` / `return_reason` | **★新設（D-128.72）。**作った人と決めた人は同じにできない（決められる人が 1 人のときだけ例外・本人確認） |
 
-`approvals` に足す列（第1フェーズ・D-128.86・D-128.87）：`ticket_id` / `kind`（AI の成果物・上位の承認）/ `level` / `parent_approval_id` / `escalated_by_policy_id`（どの決まりで上位へ回ったか）/ `decision`（承認・自分で直す・差し戻し・止める）/ `decided_at` / `return_targets jsonb` / `return_reason` / `next_actor`（分身・自分）/ `memory_candidate` / `human_checks jsonb` / `irreversible` / `step_up_at`（直前の本人確認）/ `withdrawn_at`（取り下げ）/ `bulk_batch_id`。まとめて承認は ① がすべて確実・人が見る項目なし・取り消せる操作だけ（サーバーがもう一度確かめる）。
+`approvals` に足す列（第1フェーズ・D-128.86・D-128.87・D-128.89）：`ticket_id` / `kind`（AI の成果物・上位の承認・決まりの例外・やり方を広げる）/ `subject_type` / `subject_id`（決まりの例外は守ることの案、やり方を広げるはやり方の版を指す）/ `level` / `parent_approval_id` / `escalated_by_policy_id`（どの決まりで上位へ回ったか）/ `decision`（承認・自分で直す・差し戻し・止める）/ `decided_at` / `return_targets jsonb` / `return_reason` / `next_actor`（分身・自分）/ `memory_candidate` / `human_checks jsonb` / `irreversible` / `step_up_at`（直前の本人確認）/ `withdrawn_at`（取り下げ）/ `bulk_batch_id`。まとめて承認は ① がすべて確実・人が見る項目なし・取り消せる操作だけ（サーバーがもう一度確かめる）。
+
+分身の部屋で足す列（D-128.40〜.44・D-128.90）：
+- `policies`（守ること）：`text`（一文）/ `applies_to`（自分の仕事すべて・取引先・種別）/ `client_id` / `kind_id` / `source_ref`（元のチケット・話）/ `version` / `paused_at`（一時的に効かせない）/ `use_count` / `last_used_at` / `exception_of_policy_id`（どの決まりの例外か）/ `exception_approval_id`。範囲は `scope_id`（自分・取引先・層・ワークスペース）
+- `memories`（覚えていること）：`kind_id`（好み・事実・実例）/ `auto`（自動で覚えた）/ `source_type_id`・`source_ref_id`（どの話・どのチケットから）/ `use_count` / `last_used_at` / `visibility`（自分だけ・勧めた）
+- `skills`（やり方＝業務の型）：`<scoped>` にする（運営・ワークスペース・層・自分）。`skill_versions` に `fields jsonb`（いつ使う・確かめること・書式と手本・注意と禁止・使う操作）/ `state`（下書き・使っている）/ `checked jsonb`（機械の検査の結果）を足す。試すは `skill_test_runs`（外に出ない）。広げる申請は承認待ち（D-128.89）
+- `clones`：`auto_memory`（自動で覚える。既定 入・D-128.90）。許可のモードは `members.agent_permission_mode` のまま
 
 前の表の扱い：`tasks` `task_handovers` `daily_plans` は後のフェーズ（チケットに置き換え）。`skills` 系は「業務の型」として使い続ける（`skills.kind_id` に work_type を足す・D-126.26）。`learned_procedures` は「記録した動かし方」として使い続け、入力した値を空欄に置き換えた形だけを持つ（D-126.25）。`support_access_grants` は「運営の閲覧」の記録として使い、許可の範囲と期限は契約で先に持つ（D-125.128・D-128.68）。
 
@@ -466,7 +473,7 @@ erDiagram
 |---|---|---|
 | はじめの設定の進み具合 | `members` | 列 `setup_step`（0〜6）。独立した表にしない（1 人 1 値・戻らない）。段の名前は `setup_steps`（マスタ）。上げるのは `app.setup_step_done`（D-089） |
 | 会社モデル | `tenants` `goals` `ledger_definitions` `duties` `scopes` `policies` `memories` | 1 つの定義＝これらの版の集合（D-010）。`company_model_versions` は持たず各表の `version` で表す |
-| 自分のAI | `clones` `members` | 1 人 1 体（D-060） |
+| 自分のAI | `clones` `members` `learning_candidates` | 1 人 1 体（D-060）。覚えたいことは `learning_candidates`（D-128.41） |
 | AI社員 | `ai_employees` `members` | 出どころは `distributions`（D-037） |
 | 担当業務 | `duties` `duty_versions` | |
 | 記録した動かし方 | `learned_procedures` `procedure_steps` | 入力した値は空欄に置き換えて持つ。消せたものだけ全社で共有（D-126.25） |

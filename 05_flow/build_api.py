@@ -85,7 +85,12 @@ for s in S:
     have = {f'{e["method"]} {e["path"]}' for e in endpoints}; miss = [r["endpoint"] for r in req if r["endpoint"] not in have]
     cov.append({"screen_id": s["id"], "screen_name": s["name"], "mock_path": s.get("mock_path"), "required_apis": req, "transitions": s.get("transitions", []), "coverage_status": "OK" if not miss and req else ("NG" if miss else "NONE"), "missing": miss})
 # ---------------------------------------------------------------- 逆カバレッジ（フィールド → 消費画面）
-INTERNAL_TABLES = {"search_embeddings": "検索用の内部の索引（段階 1 は作らない・D-099.2）。画面には元の行（記憶・台帳・証跡）が出る"}
+INTERNAL_TABLES = {"search_embeddings": "検索用の内部の索引（段階 1 は作らない・D-099.2）。画面には元の行（記憶・台帳・証跡）が出る",
+                   "bridge_jobs": "PC（Bridge）に仕事を渡す内部の順番待ち。画面には実行（action_runs）として出る（D-121.2）",
+                   "bridge_job_events": "同上の出来事。画面には実行の段・手順として出る",
+                   "memory_proposals": "第1フェーズは「覚えたいこと」（learning_candidates）に置き換えた（D-128.41・D-128.79）",
+                   "task_handovers": "第1フェーズは「渡す」（ticket_handovers）に置き換えた（D-128.79）",
+                   "billing_events": "カード払い（段階 2・D-082.3）の webhook の写し。第1フェーズは請求書払い"}
 INTERNAL = {"id", "tenant_id", "created_at", "updated_at", "created_by", "updated_by", "deleted_at", "scope_id", "version", "token_hash", "package_ref", "storage_ref", "vault_ref", "content_hash", "locator", "embedding", "dedupe_key"}
 consumption = []
 for e in E:

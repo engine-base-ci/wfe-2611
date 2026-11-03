@@ -13,7 +13,7 @@ def tabbar(cur):
             out += '<a href="%s" aria-label="チケットを作る" style="flex: 1; display: flex; align-items: center; justify-content: center; text-decoration: none"><span style="width: 44px; height: 44px; border-radius: 99px; background: #22345C; color: #FFFFFF; display: grid; place-items: center; font-size: 22px">＋</span></a>' % h
         else:
             on = k == cur
-            badge = '<b style="position: absolute; top: 4px; margin-left: 18px; min-width: 16px; height: 16px; border-radius: 99px; background: #B45309; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">7</b>' if k == "ap" else ""
+            badge = '<b style="position: absolute; top: 4px; margin-left: 18px; min-width: 16px; height: 16px; border-radius: 99px; background: #B45309; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">9</b>' if k == "ap" else ""
             out += '<a href="%s"%s style="position: relative; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 11px; color: %s; text-decoration: none; %s">%s%s%s</a>' % (h, ' aria-current="page"' if on else "", NAVY if on else MUTED, "font-weight: 600" if on else "", SVG % ic, t, badge)
     return out + '</nav>'
 BELL = '<a href="MbNotify.dc.html" aria-label="知らせ（3 件）" style="margin-left: auto; width: 44px; height: 44px; display: grid; place-items: center; color: #131B27; position: relative">' + SVG % '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path>' + '<span style="position: absolute; top: 6px; right: 6px; min-width: 16px; height: 16px; border-radius: 99px; background: #B45309; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">3</span></a>'
@@ -28,14 +28,14 @@ BACK = lambda href, t: '<a href="%s" style="font-size: 22px; color: #131B27; tex
 # 1 承認
 def apc(key, t, why, chk, hum=True):
     return card('<div style="display: flex; gap: 6px; align-items: center; font-size: 11px; color: %s">%s<span>%s</span></div><b style="display: block; font-weight: 600; margin: 4px 0 2px">%s</b><div style="font-size: 12px; color: %s">%s</div>%s<div style="display: flex; gap: 8px; margin-top: 10px">%s%s</div>' % (MUTED, pill(key), why, t, MUTED, chk, ('<div style="margin-top: 6px; font-size: 12px; color: #7A4A05">□ 人が見る項目 1 つ</div>' if hum else ""), '<a href="MbApproveOne.dc.html" style="flex: 1; height: 40px; border: 1px solid #DDE2E9; border-radius: 8px; display: grid; place-items: center; text-decoration: none; color: #131B27; font-size: 13px">中身を見る</a>', '<a href="MbApproveOne.dc.html" style="flex: 1; height: 40px; border-radius: 8px; display: grid; place-items: center; text-decoration: none; background: #22345C; color: #FFFFFF; font-size: 13px">承認する</a>' if not hum else '<span style="flex: 1; height: 40px; border-radius: 8px; display: grid; place-items: center; background: #EEF0F4; color: #8A94A3; font-size: 13px">見てから承認</span>'))
-phone("MbApprovals.dc.html", "スマホ 承認", H1("承認", "7 件") + BELL,
-  '<div style="display: flex; gap: 6px; overflow-x: auto">' + chip("すべて 7", True) + chip("期限が今日 2") + chip("外に出す 3") + '</div>'
+phone("MbApprovals.dc.html", "スマホ 承認", H1("承認", "9 件") + BELL,
+  '<div style="display: flex; gap: 6px; overflow-x: auto">' + chip("すべて 9", True) + chip("期限が今日 2") + chip("外に出す 3") + '</div>'
   + apc("EG-128", "セイコー様へ 11月分の請求書を送る", "高本のAI が作成 ・ 確認 ①② 通過", "1,716,000 円 ・ 送り先 山田様（CC 鈴木様）")
   + apc("KR-031", "入金の照合（10月分）", "田中のAI ・ 確認 すべて通過", "社内だけ ・ 差異 0 件", False)
   + apc("EG-127", "発注ナビ 応募文 3 本", "高本のAI ・ 確認 すべて通過", "3 社に送る（外に出ると取り消せない）", True)
   + '<a href="MbApproveOne.dc.html" style="height: 44px; border-radius: 10px; display: grid; place-items: center; text-decoration: none; border: 1px solid #22345C; color: #22345C; font-size: 14px; font-weight: 500; background: #FFFFFF">続けて裁く（1 件ずつ）</a>', "ap")
 # 2 1件ずつ裁く
-phone("MbApproveOne.dc.html", "スマホ 続けて裁く", BACK("MbApprovals.dc.html", "1 ／ 7") + '<span style="margin-left: auto; font-size: 12px; color: %s">期限 今日</span>' % MUTED,
+phone("MbApproveOne.dc.html", "スマホ 続けて裁く", BACK("MbApprovals.dc.html", "1 ／ 9") + '<span style="margin-left: auto; font-size: 12px; color: %s">期限 今日</span>' % MUTED,
   '<div style="font-size: 11px; color: %s">EG-128 ・ 営業 ・ 高本のAI が作成</div><b style="font-size: 17px">セイコー様へ 11月分の請求書を送る</b>' % MUTED
   + card('<div style="display: flex; gap: 10px; align-items: center">' + icon("P", "#B91C1C", 36) + '<span style="flex: 1"><b style="font-weight: 500; display: block">請求書 No.2026-1101.pdf</b><span style="font-size: 12px; color: %s">1,716,000 円 ・ 1 ページ</span></span><a href="#" style="font-size: 12px">開く</a></div>' % MUTED)
   + card('<b style="font-size: 13px; font-weight: 600">確認の結果</b><div style="font-size: 12px; line-height: 1.9; margin-top: 4px"><span style="color: #166534">✓ 金額が見積の月額と一致（機械）</span><br><span style="color: #166534">✓ インボイスの必須項目（機械）</span><br><span style="color: #166534">✓ 宛名と CC（AI 判定）</span></div>')
