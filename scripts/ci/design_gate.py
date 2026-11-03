@@ -117,7 +117,13 @@ def main() -> int:
 
     src = load_source(Path(a.design))
     colors, fonts, sizes, radii = set(), set(), set(), set()
+    # 暗いテーマ（正本の dark:・D-128.55）の色は「正本にある色」として認める（D1）が、
+    # 画面の絵（キャンバス・モック）は明るいテーマで描くので、使っていない色（D6）には数えない
+    dark_src = src.pop("dark", None) if isinstance(src, dict) else None
     walk(src, colors, fonts, sizes, radii)
+    dark_colors: set = set()
+    if dark_src:
+        walk(dark_src, dark_colors, set(), set(), set())
 
     files: list[Path] = []
     for pat in [*a.mocks, *a.css]:
@@ -147,7 +153,7 @@ def main() -> int:
             v = norm_hex(m.group(0))
             if v in colors:
                 used_c.add(v)
-            elif not is_neutral(v) and v not in allow_c:
+            elif not is_neutral(v) and v not in allow_c and v not in dark_colors:
                 bad_c.setdefault(v, set()).add(f.name)
         for m in re.finditer(r"font-size\s*:\s*([^;}]+)", css):
             val = resolve(m.group(1), vars_)
