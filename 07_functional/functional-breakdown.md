@@ -6,7 +6,7 @@
 
 | 種別 | 件数 | 根拠（source）| 備考 |
 |---|---|---|---|
-| エンティティ | 141 | 全件 | ER図 §1〜§14 の表から。table_name・tenant_isolation・access_control_policies |
+| エンティティ | 142 | 全件 | ER図 §1〜§14 の表から。table_name・tenant_isolation・access_control_policies |
 | 機能 | 32 | 全件 | 用事 24 ＋ 関門 8。api_endpoints（下書き）・ears_ac_seed |
 | ロール | 5 | 全件 | 権限の型（誰に×何に×どの層で×できること）を access_predicate_expr で |
 | 画面 | 72 | 全件 | flow.json と 1 対 1。states はモックの状態タブ、transitions はモックのリンクから |
@@ -156,6 +156,7 @@
 | E-141 | `notification_settings` | 16. 第1フェーズの表 | account_scoped | 2 | D-125 D-128 D-128.92 |
 | E-134 | `ops_plan_proposals` | 16. 第1フェーズの表 | ops_scoped | 1 | D-125 D-128 D-128.72 |
 | E-142 | `scope_memberships` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-125.115 D-128 D-128.95 |
+| E-143 | `role_bundle_defaults` | 16. 第1フェーズの表 | none | 1 | D-125 D-125.117 D-128 D-128.97 |
 
 ## 機能
 

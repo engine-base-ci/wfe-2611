@@ -4,7 +4,7 @@
  "summary": {
   "screens_count": 72,
   "features_count": 32,
-  "entities_count": 141,
+  "entities_count": 142,
   "uncovered_screens": [],
   "uncovered_features": []
  },
@@ -14358,6 +14358,12 @@
     "F-019",
     "F-023"
    ]
+  },
+  {
+   "entity_id": "E-143",
+   "entity_name": "role_bundle_defaults",
+   "used_by_screens": [],
+   "used_by_features": []
   }
  ],
  "feature_to_dependencies": [

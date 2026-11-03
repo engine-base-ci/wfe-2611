@@ -319,6 +319,9 @@ POLICIES: dict[str, list[dict]] = {
     # パスキーはログインの部品（Better Auth）の側に置き、業務の表からは読めない（D-128.119）。public に表を作らない。作っても誰も読めない
     "passkeys": [{"name": "passkeys_no_app_access", "operation": "select", "role": "member", "predicate": "false",
                   "rationale": "パスキーはログインの部品の側（kaname_auth）。アプリの役からは読めない。自分の設定の一覧はログインの部品の口が出す（D-128.119）", "source": ["D-128.119"]}],
+    # 役割の束の既定（KN-53・D-125.117）：製品のマスタ。ログイン済みなら読める（自分の役割で何ができるかを画面に出す）。書くのは migration だけ
+    "role_bundle_defaults": [{"name": "role_bundle_defaults_all_read", "operation": "select", "role": "authenticated", "predicate": "true",
+                              "rationale": "製品の既定の束。どの会社の人にも同じものを見せる", "source": ["D-125.117"]}],
     # 登録の保留（ログインの前）。表は kaname_auth の側にあり、登録の口（auth-ext）だけが読み書きする。アプリの役からは誰も読めない
     "pending_signup": [{"name": "pending_signup_no_app_access", "operation": "select", "role": "member", "predicate": "false",
                         "rationale": "ログインの前の保留。アプリの役からは読めない（登録の口だけが kaname_auth の側で扱う・D-088.2）", "source": ["D-088.2", "D-128.115"]}],

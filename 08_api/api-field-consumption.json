@@ -12956,6 +12956,34 @@
    ],
    "internal": false,
    "reason": null
+  },
+  {
+   "entity": "role_bundle_defaults",
+   "field": "role",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "マスタ。label は各画面の札・選択肢として出る"
+  },
+  {
+   "entity": "role_bundle_defaults",
+   "field": "target_kind_id",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "マスタ。label は各画面の札・選択肢として出る"
+  },
+  {
+   "entity": "role_bundle_defaults",
+   "field": "ability_id",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "マスタ。label は各画面の札・選択肢として出る"
+  },
+  {
+   "entity": "role_bundle_defaults",
+   "field": "scope_kind",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "マスタ。label は各画面の札・選択肢として出る"
   }
  ],
  "unconsumed": []

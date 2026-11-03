@@ -14067,6 +14067,63 @@
     "D-128",
     "D-128.95"
    ]
+  },
+  {
+   "id": "E-143",
+   "name": "role_bundle_defaults",
+   "table_name": "role_bundle_defaults",
+   "section": "16. 第1フェーズの表",
+   "fields": [
+    {
+     "name": "role",
+     "note": "管理者・マネージャー・メンバー・閲覧のみ"
+    },
+    {
+     "name": "target_kind_id",
+     "note": null
+    },
+    {
+     "name": "ability_id",
+     "note": null
+    },
+    {
+     "name": "scope_kind",
+     "note": "会社全体・その人のグループ"
+    }
+   ],
+   "relations": [],
+   "soft_delete": false,
+   "timestamps": true,
+   "tenant_field": null,
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "none",
+    "column": null,
+    "fk_table": null
+   },
+   "access_control_policies": [
+    {
+     "name": "role_bundle_defaults_all_read",
+     "operation": "select",
+     "role": "authenticated",
+     "predicate": "true",
+     "rationale": "製品の既定の束。どの会社の人にも同じものを見せる",
+     "source": [
+      "D-125.117"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-125.117・D-128.97）。マスタ（製品の既定）。**役割の束の中身。ワークスペースとグループの役割から権限の行（`permissions.bundle_role`）を作る。会社が足す役割は後のフェーズ",
+   "status": "decided",
+   "decided_at": "2026-11-03",
+   "source": [
+    "D-125",
+    "D-125.117",
+    "D-128",
+    "D-128.97"
+   ]
   }
  ]
 }

@@ -6674,6 +6674,44 @@ components:
         role: *id847
         since: *id848
         changed_by: *id849
+    RoleBundleDefaults:
+      type: object
+      properties:
+        role: &id850
+          type: string
+        target_kind_id: &id851
+          type: string
+        ability_id: &id852
+          type: string
+        scope_kind: &id853
+          type: string
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: role_bundle_defaults
+      x-source:
+      - D-125
+      - D-125.117
+      - D-128
+      - D-128.97
+    RoleBundleDefaultsInput:
+      type: object
+      properties:
+        role: *id850
+        target_kind_id: *id851
+        ability_id: *id852
+        scope_kind: *id853
     ScopeOverview:
       type: object
       properties:
