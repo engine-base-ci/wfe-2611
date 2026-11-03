@@ -56,7 +56,7 @@ describe("apps/api の起動口（server.ts）", () => {
   it("文脈の無い要求は 401（本物の認証の resolver が配線されている）・認証の口は 200", async () => {
     const s = await startServer(config, { bucketExists: async () => true });
     try {
-      const r = await fetch(`http://127.0.0.1:${s.port}/api/v1/goals`);
+      const r = await fetch(`http://127.0.0.1:${s.port}/api/v1/tickets`); // 契約にある社内の口（どれでもよい：文脈の無い要求は 401）
       expect(r.status).toBe(401);
       const ok = await fetch(`http://127.0.0.1:${s.port}/api/auth/ok`);
       expect(ok.status).toBe(200);

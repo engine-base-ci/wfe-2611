@@ -4,7 +4,7 @@
 //              意図して消す API は 08_api/retired-endpoints.json に 1 本ずつ根拠の決定（決定ログにある ID）と理由を書いたものだけ通す（D-128.77）
 //   endpoints  endpoint 実在性：apps/api/src/routes/*.ts の登録が契約に無い → 赤。契約の endpoint のうち担当（backend 層）が done なのに未登録 → 赤
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync, unlinkSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { execSync } from "node:child_process";
 import { pathToFileURL } from "node:url";
@@ -120,6 +120,8 @@ export function gen(root = ROOT) {
     const rl = /^(\d+)\/min\/(user|ip)$/.exec(e.rate_limit ?? "60/min/user");
     eps.push({
       method: m, path: hono, operationId: d.operationId, table: d.tag || slug(p).split("_")[0], kind: kindOf(m, p), input: d.input, success: d.success,
+      // 表の素の読み書き（/表 と /表/:id）だけが共通の処理で動いてよい。それ以外（/表/:id/approve など）は hooks に振る舞いを書くまで 501（D-128.113）
+      generic: hono === `/api/v1/${d.tag}` || hono === `/api/v1/${d.tag}/:id`,
       auth: e.auth?.role ?? "member", rateLimit: { perMinute: Number(rl?.[1] ?? 60), key: rl?.[2] ?? "user" },
       chokePoints: e.choke_points ?? [], errors: (e.outputs_4xx ?? []).map((x) => x.status), acts: e.acts ?? [], screens: e.screens ?? [],
     });
@@ -132,9 +134,11 @@ export interface EndpointDef {
   operationId: string;
   table: string;
   kind: EndpointKind;
+  /** true：表の素の読み書き（共通の処理で動く）。false：hooks に振る舞いを書くまで 501 */
+  generic: boolean;
   input: string | null;
   success: number;
-  auth: "member" | "ops" | "public";
+  auth: "member" | "ops" | "client" | "device" | "public";
   rateLimit: { perMinute: number; key: "user" | "ip" };
   chokePoints: string[];
   errors: number[];
@@ -173,6 +177,12 @@ export const OPENAPI_HASH = "${h}";
     ...[...byTable.keys()].map((t) => `import { register as ${t} } from "./${t}.js";`), "",
     `export function registerAll(app: Hono<Vars>, deps: ContractDeps): void {`, ...[...byTable.keys()].map((t) => `  ${t}(app, deps);`), `}`, ""];
   writeFileSync(join(root, ROUTES, "index.ts"), idx.join("\n"));
+  // 契約から外れた表の道すじ（生成物の印があるものだけ）は消す。手で書いたファイルには触れない（D-128.112）
+  for (const f of readdirSync(join(root, ROUTES)).filter((x) => x.endsWith(".ts") && x !== "index.ts" && !x.endsWith(".test.ts"))) {
+    if (byTable.has(f.replace(/\.ts$/, ""))) continue;
+    const body = readFileSync(join(root, ROUTES, f), "utf8");
+    if (body.startsWith("// 生成物（scripts/ci/contract.mjs gen")) unlinkSync(join(root, ROUTES, f));
+  }
   return { hash: h, endpoints: eps.length, tables: byTable.size, schemas: Object.keys(comps).length - 1 };
 }
 export function check(root = ROOT, base = "main") {
@@ -192,7 +202,7 @@ export function check(root = ROOT, base = "main") {
   if (prev) {
     const a = parsePaths(prev), b = parsePaths(yaml);
     for (const [p, ms] of Object.entries(a)) {
-      if (!b[p]) { if (retiredHit(retired, p)) allowed++; else bad.push(`破壊的変更: ${p} が消えた`); continue; }
+      if (!b[p]) { const gone = Object.keys(ms).filter((m) => !retiredHit(retired, p, m)); if (!gone.length) allowed++; else bad.push(`破壊的変更: ${p} が消えた（${gone.join("・")}）`); continue; }
       for (const [m, d] of Object.entries(ms)) {
         const n = b[p][m];
         if (!n) { if (retiredHit(retired, p, m)) allowed++; else bad.push(`破壊的変更: ${m} ${p} が消えた`); continue; }

@@ -28,6 +28,13 @@ export function gen(root = ROOT) {
   const m = JSON.parse(readFileSync(join(root, "07_qa/test-plan/ears-test-mapping.json"), "utf8")).mappings;
   const eps = JSON.parse(readFileSync(join(root, "08_api/endpoints.json"), "utf8")).endpoints;
   const opOf = new Map(eps.map((e) => [`${e.method} ${e.path}`, e.implementation_path.split("::")[1]]));
+  // まだ作っていない口（D-128.113）：表の素の読み書きで表が DB にあるもの、または hooks に振る舞いがあるものだけが「作った口」
+  const repoSrc = readFileSync(join(root, "packages/db/src/repository.ts"), "utf8");
+  const tables = new Set([...repoSrc.slice(repoSrc.indexOf("export const TABLES"), repoSrc.indexOf("] as const")).matchAll(/"([a-z_]+)"/g)].map((x) => x[1]));
+  const hookDir = join(root, "apps/api/src/hooks");
+  const hooked = new Set(readdirSync(hookDir).filter((f) => f.endsWith(".ts")).flatMap((f) => [...readFileSync(join(hookDir, f), "utf8").matchAll(/^\s{2,6}([a-z][A-Za-z]+): \{/gm)].map((x) => x[1])));
+  const built = (e) => hooked.has(e.implementation_path.split("::")[1]) || (tables.has(e.table) && (e.path === `/api/v1/${e.table}` || e.path === `/api/v1/${e.table}/:id`));
+  const epOf = new Map(eps.map((e) => [`${e.method} ${e.path}`, e]));
   const byFile = new Map();
   for (const x of m) byFile.set(x.test_file, [...(byFile.get(x.test_file) ?? []), x]);
   mkdirSync(join(root, OUTDIR), { recursive: true });
@@ -36,12 +43,15 @@ export function gen(root = ROOT) {
   for (const [file, rows] of byFile) {
     const op = opOf.get(rows[0].endpoint);
     if (!op) continue;
-    const tests = rows.map((x) => {
+    const isBuilt = built(epOf.get(rows[0].endpoint));
+    const tests = isBuilt ? [] : [`  it("not_implemented_501", async () => {\n    // まだ作っていない口は、正しい役の人が呼んでも 501 で止まり、何も書かない（fail-closed・D-128.113）\n    const who = e.auth === "ops" ? "ops" : "boss";\n    if (e.auth === "public" || e.auth === "client" || e.auth === "device") return;\n    const before = await h.count("audit_events");\n    const r = await h.call(e, who, { ...(e.path.includes(":id") ? { id: "0193c5a0-0000-7000-8000-000000000000" } : {}), ...(e.method === "POST" || e.method === "PATCH" ? { body: {} } : {}) });\n    expect(r.status).toBe(501);\n    expect(await h.count("audit_events")).toBe(before);\n  });`];
+    tests.push(...rows.map((x) => {
       n++;
+      if (!isBuilt) return `  it.todo(${q(x.test_function + "（まだ作っていない口。作ったら本物の試験になる）")});`;
       const kind = kindOf(x.test_function);
       const skip = (kind === "rate_limited" && false) ? ".skip" : "";
       return `  it${skip}(${q(x.test_function)}, async () => {\n    // ${x.ears_text.replace(/\n/g, " ")}\n    ${CASE[kind](op)}\n  });`;
-    });
+    }));
     const src = `// 生成物（scripts/ci/gen_ears_tests.mjs ← 07_qa/test-plan/ears-test-mapping.json）。手で直さない。${rows[0].endpoint}
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { makeHarness, endpointOf, type Harness } from "../harness.js";

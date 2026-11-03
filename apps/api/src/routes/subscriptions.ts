@@ -4,6 +4,7 @@ import type { Vars } from "../middleware/tenant.js";
 import { op, type ContractDeps } from "../contract/op.js";
 
 export function register(app: Hono<Vars>, deps: ContractDeps): void {
-  app.post("/api/v1/subscriptions", op(deps, "postSubscriptions"));
-  app.patch("/api/v1/subscriptions/:id", op(deps, "patchSubscriptionsById"));
+  app.post("/api/v1/ops/workspaces/:id/plan", op(deps, "changeOpsWorkspacePlan"));
+  app.patch("/api/v1/workspace/billing-contact", op(deps, "updateBillingContact"));
+  app.post("/api/v1/workspace/plan", op(deps, "changePlan"));
 }

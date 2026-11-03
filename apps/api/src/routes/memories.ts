@@ -4,6 +4,9 @@ import type { Vars } from "../middleware/tenant.js";
 import { op, type ContractDeps } from "../contract/op.js";
 
 export function register(app: Hono<Vars>, deps: ContractDeps): void {
-  app.post("/api/v1/memories", op(deps, "postMemories"));
-  app.patch("/api/v1/memories/:id", op(deps, "patchMemoriesById"));
+  app.get("/api/v1/clones/me/knows/counts", op(deps, "countKnows"));
+  app.get("/api/v1/memories", op(deps, "listMemories"));
+  app.post("/api/v1/memories", op(deps, "createMemory"));
+  app.patch("/api/v1/memories/:id", op(deps, "updateMemory"));
+  app.delete("/api/v1/memories/:id", op(deps, "deleteMemory"));
 }

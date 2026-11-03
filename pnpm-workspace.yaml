@@ -1,3 +1,12 @@
 packages:
   - "apps/*"
   - "packages/*"
+
+# 部品の弱点の検査（pnpm audit・D-128.113）で見つかった、ほかの部品の中にある古い版を、同じ大きな版の中で直った版に上げる
+overrides:
+  lodash-es: "^4.18.0"
+  postcss: "^8.5.18"
+  source-map-js: "^1.2.2"
+  tinypool: "^2.1.2"
+  "vite@7": "^7.3.7"
+  dompurify: "^3.4.17"

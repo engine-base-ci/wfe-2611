@@ -1,0 +1,323 @@
+{
+ "_doc": "意図して消した API（D-128.77）。1 行ずつ根拠の決定（決定ログにある ID）と理由。contract.mjs check がこれだけを破壊的変更として許す",
+ "retired": [
+  {
+   "method": "GET",
+   "path": "/api/v1/action_runs",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（onboard-testrun）の推測の API。第1フェーズの契約には入れない（作るときに画面から出し直す）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/ai_employees",
+   "decision": "D-128.78",
+   "reason": "行為の言葉からの推測で出ていた汎用の API。画面（ai-activity）から逆に出した API に置き換えた。後のフェーズの画面（ai-staff・ai-staff-detail・ops-catalog）の分は D-128.112"
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/ai_employees/{id}",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（ai-staff-detail）の推測の API。第1フェーズの契約には入れない（作るときに画面から出し直す）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/approvals",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（clone-thread）の推測の API。第1フェーズの契約には入れない（作るときに画面から出し直す）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/approvals",
+   "decision": "D-128.78",
+   "reason": "行為の言葉からの推測で出ていた汎用の API。画面（audit）から逆に出した API に置き換えた"
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/approvals/{id}",
+   "decision": "D-128.78",
+   "reason": "行為の言葉からの推測で出ていた汎用の API。画面（approvals）から逆に出した API に置き換えた"
+  },
+  {
+   "method": "DELETE",
+   "path": "/api/v1/approvals/{id}",
+   "decision": "D-128.78",
+   "reason": "行為の言葉からの推測で出ていた汎用の API。画面（audit）から逆に出した API に置き換えた"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/attachments",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（import）の推測の API。第1フェーズの契約には入れない（作るときに画面から出し直す）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/clones",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（onboard-interview）の推測の API。第1フェーズの契約には入れない（作るときに画面から出し直す）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/disclosure_versions",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（disclosure）の推測の API。第1フェーズの契約には入れない（作るときに画面から出し直す）"
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/disclosure_versions/{id}",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（ops-disclosure）の推測の API。第1フェーズの契約には入れない（作るときに画面から出し直す）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/distributions",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（ops-review）の推測の API。第1フェーズの契約には入れない（作るときに画面から出し直す）"
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/duties/{id}",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（duties）の推測の API。第1フェーズの契約には入れない（作るときに画面から出し直す）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/export_jobs",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（export）の推測の API。第1フェーズの契約には入れない（作るときに画面から出し直す）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/goal_allocations",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（my-progress）の推測の API。第1フェーズの契約には入れない（作るときに画面から出し直す）"
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/goal_allocations/{id}",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（goal-allocation・my-progress）の推測の API。第1フェーズの契約には入れない（作るときに画面から出し直す）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/goals",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（goal-edit・goals）の推測の API。第1フェーズの契約には入れない（作るときに画面から出し直す）"
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/goals/{id}",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（goal-edit）の推測の API。第1フェーズの契約には入れない（作るときに画面から出し直す）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/hypotheses",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（review）の推測の API。第1フェーズの契約には入れない（作るときに画面から出し直す）"
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/hypotheses/{id}",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（hypotheses）の推測の API。第1フェーズの契約には入れない（作るときに画面から出し直す）"
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/inquiries/{id}",
+   "decision": "D-128.78",
+   "reason": "行為の言葉からの推測で出ていた汎用の API。画面（ops-support）から逆に出した API に置き換えた"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/invitations",
+   "decision": "D-128.78",
+   "reason": "行為の言葉からの推測で出ていた汎用の API。画面（invite-accept）から逆に出した API に置き換えた"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/invoices",
+   "decision": "D-128.78",
+   "reason": "行為の言葉からの推測で出ていた汎用の API。画面（ops-billing）から逆に出した API に置き換えた"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/learned_procedures",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（automation-repair）の推測の API。第1フェーズの契約には入れない（作るときに画面から出し直す）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/ledger_definitions",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（records・search）の推測の API。第1フェーズの契約には入れない（作るときに画面から出し直す）"
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/ledger_definitions/{id}",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（ledger-def・records）の推測の API。第1フェーズの契約には入れない（作るときに画面から出し直す）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/ledger_records",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（record-detail）の推測の API。第1フェーズの契約には入れない（作るときに画面から出し直す）"
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/ledger_records/{id}",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（record-detail）の推測の API。第1フェーズの契約には入れない（作るときに画面から出し直す）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/llm_routes",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（llm-routes）の推測の API。第1フェーズの契約には入れない（作るときに画面から出し直す）"
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/llm_routes/{id}",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（ops-llm）の推測の API。第1フェーズの契約には入れない（作るときに画面から出し直す）"
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/members/{id}",
+   "decision": "D-128.78",
+   "reason": "行為の言葉からの推測で出ていた汎用の API。画面（account・member-detail・members）から逆に出した API に置き換えた"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/messages",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（today）の推測の API。第1フェーズの契約には入れない（作るときに画面から出し直す）"
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/messages/{id}",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（today）の推測の API。第1フェーズの契約には入れない（作るときに画面から出し直す）"
+  },
+  {
+   "method": "DELETE",
+   "path": "/api/v1/messages/{id}",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（today）の推測の API。第1フェーズの契約には入れない（作るときに画面から出し直す）"
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/notice_deliveries/{id}",
+   "decision": "D-128.78",
+   "reason": "行為の言葉からの推測で出ていた汎用の API。画面（notices）から逆に出した API に置き換えた"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/notices",
+   "decision": "D-128.78",
+   "reason": "行為の言葉からの推測で出ていた汎用の API。画面（ops-notices）から逆に出した API に置き換えた"
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/ops_members/{id}",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（ops-audit）の推測の API。第1フェーズの契約には入れない（作るときに画面から出し直す）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/plans",
+   "decision": "D-128.78",
+   "reason": "行為の言葉からの推測で出ていた汎用の API。画面（ops-home）から逆に出した API に置き換えた"
+  },
+  {
+   "method": "DELETE",
+   "path": "/api/v1/plans/{id}",
+   "decision": "D-128.78",
+   "reason": "行為の言葉からの推測で出ていた汎用の API。画面（ops-tenant）から逆に出した API に置き換えた"
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/policies/{id}",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（policies）の推測の API。第1フェーズの契約には入れない（作るときに画面から出し直す）"
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/push_devices/{id}",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（app-setup）の推測の API。第1フェーズの契約には入れない（作るときに画面から出し直す）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/service_registry",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（services）の推測の API。第1フェーズの契約には入れない（作るときに画面から出し直す）"
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/service_registry_versions/{id}",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（ops-services）の推測の API。第1フェーズの契約には入れない（作るときに画面から出し直す）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/sessions",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（security-brief）の推測の API。第1フェーズの契約には入れない（作るときに画面から出し直す）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/sessions",
+   "decision": "D-128.78",
+   "reason": "行為の言葉からの推測で出ていた汎用の API。画面（bridge-setup）から逆に出した API に置き換えた"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/skills",
+   "decision": "D-128.78",
+   "reason": "行為の言葉からの推測で出ていた汎用の API。画面（ops-skills）から逆に出した API に置き換えた"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/subscriptions",
+   "decision": "D-128.78",
+   "reason": "行為の言葉からの推測で出ていた汎用の API。画面（signup）から逆に出した API に置き換えた。後のフェーズの画面（billing-setup）の分は D-128.112"
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/subscriptions/{id}",
+   "decision": "D-128.78",
+   "reason": "行為の言葉からの推測で出ていた汎用の API。画面（billing）から逆に出した API に置き換えた"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/tasks",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（tasks）の推測の API。第1フェーズの契約には入れない（作るときに画面から出し直す）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/tasks",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（tasks）の推測の API。第1フェーズの契約には入れない（作るときに画面から出し直す）"
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/tasks/{id}",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（tasks）の推測の API。第1フェーズの契約には入れない（作るときに画面から出し直す）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/tenants",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（company-model・onboard-draft・onboard-golive）の推測の API。第1フェーズの契約には入れない（作るときに画面から出し直す）"
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/tenants/{id}",
+   "decision": "D-128.78",
+   "reason": "行為の言葉からの推測で出ていた汎用の API。画面（company-settings）から逆に出した API に置き換えた"
+  }
+ ]
+}

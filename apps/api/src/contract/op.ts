@@ -59,10 +59,21 @@ export function op(deps: ContractDeps, operationId: string) {
     // 2) 認証・3) 認可（役）
     if (def.auth !== "public") {
       if (ctx.role === "anonymous" || !ctx.userId) return err(c, 401, "unauthenticated", "UNAUTHENTICATED");
+      // 役は契約の auth と合うものだけ通す（合わなければ止める・ZT2・ZT4・ZT10）
+      //   ops：運営の人だけ ／ client：取引先の人だけ（/portal/ の API）／ device：PC の印だけ（/bridge/ の API）
+      //   member：社内の人。取引先の人と PC の印は通さない。運営は「中を見る」の許可がある間だけ
       if (def.auth === "ops" && ctx.role !== "ops") return err(c, 403, "forbidden", "FORBIDDEN");
-      if (def.auth === "member" && ctx.role === "ops" && !(await repo.opsAllowed(ctx)))
-        return err(c, 403, "forbidden", "FORBIDDEN");
+      if (def.auth === "client" && ctx.role !== "client") return err(c, 403, "forbidden", "FORBIDDEN");
+      if (def.auth === "device" && ctx.role !== "device") return err(c, 403, "forbidden", "FORBIDDEN");
+      if (def.auth === "member") {
+        if (ctx.role === "client" || ctx.role === "device") return err(c, 403, "forbidden", "FORBIDDEN");
+        if (ctx.role === "ops" && !(await repo.opsAllowed(ctx))) return err(c, 403, "forbidden", "FORBIDDEN");
+      }
     }
+    // 3.5) まだ作っていない口は止める（fail-closed・D-128.113）。表の素の読み書きでない口は hooks に振る舞いが無ければ 501。
+    //      素の読み書きでも、表がまだ DB に無ければ 501。共通の処理が「承認する」を「承認の行を作る」に取り違えることを防ぐ
+    if (!deps.hooks[operationId] && (!def.generic || !repo.hasColumn(def.table as TableName, "id")))
+      return err(c, 501, "not_implemented", "NOT_IMPLEMENTED", { message: "契約にある口だが、まだ作っていない" });
     // 4) 入力
     const id = def.path.includes(":id") ? (c.req.param("id") ?? "") : null;
     if (id !== null && !/^[0-9a-f-]{36}$/i.test(id))

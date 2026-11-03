@@ -156,6 +156,35 @@ jobs:
           GH_TOKEN: ${{{{ secrets.GITHUB_TOKEN }}}}
 """
 open(".github/workflows/v3-gate.yml", "w", encoding="utf-8").write(yml)
+# 本番に出す前の関門（D-128.113）。ふだんの CI はゼロトラストの残りが「増えない」ことだけ見る。本番の前は残りが 0・秘密なし・弱点なし を求める
+release_yml = f"""# .github/workflows/release-gate.yml — 本番に出す前の関門（05_flow/build_testplan.py が生成。手で直さない・D-128.113）
+# 本番へのデプロイは、この関門が緑のときだけにする（Vercel の本番デプロイを、このワークフローの成功に結び付ける）
+name: release-gate
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+  release:
+    types: [published]
+env:
+  NODE_VERSION: '22'
+  PNPM_VERSION: '10'
+jobs:
+  release-gate:
+    runs-on: ubuntu-latest
+    steps:
+{NODE}      - name: "ゼロトラストの実装の残りが 0（--strict）"
+        run: pnpm ci:zt:strict
+      - name: "権限の試験（契約の全 API）"
+        run: pnpm ci:authz
+      - name: "契約の外の道すじが無い"
+        run: pnpm ci:endpoints
+      - name: "秘密の混入が無い"
+        run: pnpm ci:secret-scan
+      - name: "本番で使う部品に moderate 以上の弱点が無い"
+        run: pnpm audit --prod --audit-level=moderate
+"""
+open(".github/workflows/release-gate.yml", "w", encoding="utf-8").write(release_yml)
 # ---------------------------------------------------------------- リスク・対象外・枠組み
 crit_tasks = [t for t in TASKS if t["critical"]]
 RISK = [

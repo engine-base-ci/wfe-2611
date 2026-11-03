@@ -97,7 +97,7 @@ describe("登録（T-U-01）", () => {
     expect(Number(n.rows[0].perms)).toBeGreaterThan(10);
     expect(Number(n.rows[0].clones)).toBe(1);
     // 別 GET：発行された token で自分の会社が読める（別 GET 再取得）
-    const me = await app.request("http://localhost/api/v1/tenants?limit=5", {
+    const me = await app.request("http://localhost/api/v1/members?limit=5", {
       headers: { authorization: `Bearer ${j.data.token}` },
     });
     expect(me.status).toBe(200);

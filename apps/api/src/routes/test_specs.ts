@@ -1,0 +1,13 @@
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。個別の振る舞いは apps/api/src/hooks/<operationId>.ts に書く（op が呼ぶ）
+import type { Hono } from "hono";
+import type { Vars } from "../middleware/tenant.js";
+import { op, type ContractDeps } from "../contract/op.js";
+
+export function register(app: Hono<Vars>, deps: ContractDeps): void {
+  app.patch("/api/v1/test_specs/:id", op(deps, "updateTestSpec"));
+  app.delete("/api/v1/test_specs/:id", op(deps, "deleteTestSpec"));
+  app.get("/api/v1/tickets/:id/test-specs", op(deps, "listTestSpecs"));
+  app.post("/api/v1/tickets/:id/test-specs", op(deps, "createTestSpec"));
+  app.post("/api/v1/tickets/:id/test-specs/lint", op(deps, "lintTestSpecs"));
+  app.post("/api/v1/tickets/:id/test-specs/suggest", op(deps, "suggestTestSpecs"));
+}

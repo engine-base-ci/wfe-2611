@@ -67,7 +67,11 @@
     "ci:flow-fresh": "python3 scripts/ci/flow_fresh.py",
     "ci:net-boundary": "node scripts/ci/net_boundary.mjs",
     "ci:net-boundary:selftest": "node scripts/ci/net_boundary.test.mjs",
-    "ci:zt": "python3 scripts/ci/zt_gate.py"
+    "ci:zt": "python3 scripts/ci/zt_gate.py",
+    "ci:zt:strict": "python3 scripts/ci/zt_gate.py --strict",
+    "ci:authz": "vitest run apps/api/src/contract/authz.test.ts --coverage.enabled=false",
+    "ci:secret-scan": "node scripts/ci/secret_scan.mjs --selftest && node scripts/ci/secret_scan.mjs",
+    "ci:deps-audit": "pnpm audit --prod --audit-level=high"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",

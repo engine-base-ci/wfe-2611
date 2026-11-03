@@ -1,0 +1,13 @@
+{
+ "_doc": "ゼロトラストの実装の残りの記録（zt_gate.py）。ふだんの CI はこれより増えたら止める。減ったら --lower-baseline で下げる（上げられない）。本番の前は --strict で全部 0 が要る。はじめの記録は 2026-11-03（D-128.113）",
+ "metrics": {
+  "rls_missing": 37,
+  "outside_routes": 87,
+  "session_idle": 1,
+  "session_geo": 1,
+  "csp": 1,
+  "client_gate": 0,
+  "perm_words_missing": 348,
+  "step_up_missing": 37
+ }
+}

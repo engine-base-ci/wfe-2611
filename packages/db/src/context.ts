@@ -5,7 +5,7 @@ import type pg from "pg";
 export interface TenantContext {
   tenantId: string | null; // null = 運営（会社をまたぐ）
   userId: string | null; // members.id
-  role: "member" | "ops" | "anonymous";
+  role: "member" | "ops" | "client" | "device" | "anonymous";
 }
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;

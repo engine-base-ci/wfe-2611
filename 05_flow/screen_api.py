@@ -12,7 +12,6 @@ SCREEN_API = {
     "tickets": [
         # 一覧・数・探す
         ("GET", "/tickets", "A58|A113", T, "listTickets", ["ticket_kinds", "ticket_stages", "members", "clients"]),
-        ("GET", "/tickets/counts", "A58", T, "countTickets", []),
         ("GET", "/scopes/:id/overview", "A58", T, "getScopeOverview", ["scopes", "ticket_stages"]),
         ("GET", "/search", "A21", T, "search", ["knowledge_pages", "ticket_decisions", "conversations"]),
         # 1 件を開く・作る・直す・消す
@@ -79,18 +78,19 @@ SCREEN_API = {
         ("PATCH", "/saved_views/:id", "A58", "saved_views", "updateSavedView", []),
         ("DELETE", "/saved_views/:id", "A58", "saved_views", "deleteSavedView", []),
         ("GET", "/notifications", "A109", "notifications", "listNotifications", []),
+        ("GET", "/shell", "A58", "notifications", "getShell", ["approvals", "ticket_handovers", "scopes", "sessions", "notices"]),
         ("PATCH", "/notifications/:id", "A109", "notifications", "readNotification", []),
         ("POST", "/notifications/read-all", "A109", "notifications", "readAllNotifications", []),
         ("GET", "/ticket_kinds", "A103", "ticket_kinds", "listTicketKinds", ["kind_sections"]),
         ("GET", "/ticket_stages", "A103", "ticket_stages", "listTicketStages", []),
         ("GET", "/class_axes", "A103", "class_axes", "listClassAxes", ["class_values"]),
+        ("GET", "/handover_rules", "A110", "handover_rules", "listHandoverRules", []),
         ("GET", "/members", "A103", "members", "listMembers", []),
         ("GET", "/clients", "A103", "clients", "listClients", []),
     ],
     # ---------------------------------------------------------------- 承認待ち（08_api/phase1/02_承認待ち.md）
     "approvals": [
         ("GET", "/approvals/queue", "A15", "approvals", "listApprovalQueue", ["tickets", "ticket_handovers", "checks"]),
-        ("GET", "/approvals/counts", "A15", "approvals", "countApprovalQueue", ["ticket_handovers"]),
         ("GET", "/approvals/:id", "A15", "approvals", "getApproval", ["tickets", "action_runs", "artifact_versions", "checks", "ticket_messages", "policies"]),
         ("POST", "/approvals/:id/approve", "A15", "approvals", "approveApproval", ["action_runs", "audit_events"]),
         ("POST", "/approvals/:id/edit", "A15", "approvals", "editApproval", ["tickets"]),
@@ -314,24 +314,11 @@ SCREEN_API = {
         ("PATCH", "/workspace/escalation-rules/:id", "A118", "policies", "updateEscalationRule", ["audit_events"]),
         ("DELETE", "/workspace/escalation-rules/:id", "A118", "policies", "deleteEscalationRule", ["audit_events"]),
         # チケットの形（種別と区画・作業の段・分類の軸・担当を渡すとき・D-128.95）
-        ("GET", "/ticket_kinds", "A118", "ticket_kinds", "listTicketKinds", ["kind_sections"]),
-        ("POST", "/ticket_kinds", "A118", "ticket_kinds", "createTicketKind", ["kind_sections", "distributions"]),
-        ("PATCH", "/ticket_kinds/:id", "A118", "ticket_kinds", "updateTicketKind", []),
-        ("DELETE", "/ticket_kinds/:id", "A118", "ticket_kinds", "deleteTicketKind", ["tickets", "ticket_messages"]),
-        ("PATCH", "/ticket_kinds/:id/sections", "A118", "kind_sections", "saveKindSections", []),
+        ("GET", "/workspace/ticket-shape", "A118", "ticket_kinds", "getTicketShape", ["kind_sections", "ticket_stages", "class_axes", "class_values", "handover_rules"]),
+        ("POST", "/workspace/ticket-shape/preview", "A118", "ticket_kinds", "previewTicketShapeChange", ["tickets", "ticket_class_values"]),
+        ("PATCH", "/workspace/ticket-shape", "A118", "ticket_kinds", "saveTicketShape", ["kind_sections", "ticket_stages", "class_axes", "class_values", "handover_rules", "tickets", "ticket_class_values", "ticket_messages", "distributions", "audit_events"]),
         ("GET", "/ticket_kinds/template-updates", "A120", "tenant_distributions", "listKindTemplateUpdates", ["distributions"]),
         ("POST", "/ticket_kinds/template-updates/:id/apply", "A120", "kind_sections", "applyKindTemplateUpdate", ["tenant_distributions", "ticket_kinds"]),
-        ("GET", "/ticket_stages", "A118", "ticket_stages", "listTicketStages", []),
-        ("POST", "/ticket_stages", "A118", "ticket_stages", "createTicketStage", []),
-        ("PATCH", "/ticket_stages/:id", "A118", "ticket_stages", "updateTicketStage", []),
-        ("DELETE", "/ticket_stages/:id", "A118", "ticket_stages", "deleteTicketStage", ["tickets", "ticket_messages"]),
-        ("GET", "/class_axes", "A118", "class_axes", "listClassAxes", ["class_values"]),
-        ("POST", "/class_axes", "A118", "class_axes", "createClassAxis", ["class_values"]),
-        ("PATCH", "/class_axes/:id", "A118", "class_axes", "updateClassAxis", ["class_values"]),
-        ("DELETE", "/class_axes/:id", "A118", "class_axes", "deleteClassAxis", ["class_values", "ticket_class_values"]),
-        ("DELETE", "/class_values/:id", "A118", "class_values", "deleteClassValue", ["ticket_class_values", "ticket_messages"]),
-        ("GET", "/handover_rules", "A118", "handover_rules", "listHandoverRules", []),
-        ("PATCH", "/handover_rules/:id", "A118", "handover_rules", "updateHandoverRule", []),
     ],
     "audit": [
         ("GET", "/audit_events", "A33", "audit_events", "listAuditEvents", ["members", "tickets"]),
@@ -358,7 +345,6 @@ SCREEN_API = {
     # ---------------------------------------------------------------- 取引先とクライアントの場所（08_api/phase1/08_取引先とクライアントの場所.md）
     "clients": [
         ("GET", "/clients", "A121", "clients", "listClients", ["client_groups", "client_contacts", "client_requests", "acceptances", "tickets"]),
-        ("GET", "/clients/counts", "A121", "clients", "countClientInbox", ["client_requests", "acceptances"]),
         ("GET", "/clients/link-candidates", "A121", T, "listClientLinkCandidates", ["clients"]),
         ("POST", "/clients", "A121", "clients", "createClient", ["client_groups", T, "audit_events"]),
         ("GET", "/clients/:id", "A121", "clients", "getClient", ["client_groups", "client_contacts", "client_requests", "acceptances", T, "policies", "knowledge_pages"]),
@@ -436,8 +422,8 @@ SCREEN_API = {
     ],
     # ---------------------------------------------------------------- 運営の残り（08_api/phase1/10_運営と困ったとき.md）
     "ops-home": [
-        ("GET", "/ops/workspaces", "A60", "tenants", "listOpsWorkspaces", ["subscriptions", "usage_meters", "invoices", "sessions"]),
-        ("GET", "/ops/workspaces/summary", "A60", "tenants", "getOpsWorkspaceSummary", ["invoices", "action_runs"]),
+        ("GET", "/ops/shell", "A60", "inquiries", "getOpsShell", ["invoices"]),
+        ("GET", "/ops/workspaces", "A60", "tenants", "listOpsWorkspaces", ["subscriptions", "usage_meters", "invoices", "sessions", "action_runs"]),
         ("POST", "/ops/workspaces/export", "A60", "export_jobs", "exportOpsWorkspaces", ["ops_audit_events"]),
     ],
     "ops-tenant": [
@@ -456,7 +442,6 @@ SCREEN_API = {
     ],
     "ops-support": [
         ("GET", "/ops/inquiries", "A70", "inquiries", "listOpsInquiries", ["tenants", "members"]),
-        ("GET", "/ops/inquiries/counts", "A70", "inquiries", "countOpsInquiries", []),
         ("GET", "/ops/inquiries/:id", "A70", "inquiries", "getOpsInquiry", ["messages", "attachments", "tenants", "action_runs", "invoices"]),
         ("PATCH", "/ops/inquiries/:id", "A70", "inquiries", "updateOpsInquiry", ["ops_audit_events"]),
         ("POST", "/ops/inquiries/:id/replies", "A70", "messages", "replyOpsInquiry", ["inquiries", "notifications", "ops_audit_events"]),
@@ -472,7 +457,6 @@ SCREEN_API = {
     ],
     "ops-billing": [
         ("GET", "/ops/invoices", "A72", "invoices", "listOpsInvoices", ["tenants", "subscriptions", "payments"]),
-        ("GET", "/ops/invoices/summary", "A72", "invoices", "getOpsInvoiceSummary", ["payments"]),
         ("POST", "/ops/invoices/issue", "A72", "invoices", "issueOpsInvoices", ["subscriptions", "plan_versions", "notifications", "ops_audit_events", "audit_events"]),
         ("POST", "/ops/invoices/:id/payments", "A72", "payments", "recordPayment", ["invoices", "ops_audit_events", "audit_events"]),
         ("POST", "/ops/invoices/export", "A72", "export_jobs", "exportOpsInvoices", ["ops_audit_events"]),
@@ -502,7 +486,6 @@ SCREEN_API = {
 
 # 表の行ではない答えの形（operationId → 名前と項目）。項目の型は string／integer／boolean／object／array
 RESPONSES = {
-    "countTickets": ("TicketCounts", {"overdue": "integer", "due_today": "integer", "awaiting_my_approval": "integer", "ai_running": "integer", "assigned_to_me": "integer", "delegated_to_me": "integer", "handed_to_me": "integer"}),
     "getScopeOverview": ("ScopeOverview", {"by_stage": "array", "milestones": "array", "recent": "array", "total": "integer"}),
     "previewTicketKindChange": ("TicketKindChangePreview", {"added_sections": "array", "removed_sections": "array", "moved_to_body": "array", "checks_reset": "boolean"}),
     "previewTicketDelete": ("TicketDeletePreview", {"children": "integer", "attachments": "integer", "artifacts": "integer", "restorable_until": "string"}),
@@ -512,7 +495,6 @@ RESPONSES = {
     "completeTicket": ("TicketCompletion", {"ticket": "object", "knowledge_candidates": "array", "skipped_reason": "string"}),
     "bulkUpdateTickets": ("BulkResult", {"updated": "array", "skipped": "array"}),
     "listApprovalQueue": ("ApprovalQueueItem", {"kind": "string", "id": "string", "ticket_id": "string", "ticket_number": "string", "title": "string", "from_member_id": "string", "check_summary": "string", "due_on": "string", "decide_inline": "boolean", "primary_action": "string", "secondary_action": "string"}),
-    "countApprovalQueue": ("ApprovalCounts", {"ai_output": "integer", "upper": "integer", "handed": "integer", "asked": "integer", "total": "integer"}),
     "getApproval": ("ApprovalDetail", {"approval": "object", "ticket": "object", "operation": "object", "message_text": "string", "artifact_version": "object", "checks": "array", "cautions": "array", "irreversible": "boolean", "chain": "array"}),
     "previewBulkApproval": ("BulkApprovalPreview", {"eligible": "array", "excluded": "array"}),
     "bulkApprove": ("BulkResult", {"updated": "array", "skipped": "array"}),
@@ -551,7 +533,6 @@ RESPONSES = {
     "getBilling": ("Billing", {"payee": "object", "billing_contact": "object", "terms": "string", "invoices": "array"}),
     "downloadInvoicePdf": ("SignedUrl", {"url": "string", "expires_at": "string"}),
     "listClients": ("ClientRow", {"id": "string", "name": "string", "summary": "string", "groups": "array", "owner_member_id": "string", "visibility": "string", "active_tickets": "integer", "open_requests": "integer", "waiting_acceptances": "integer", "last_activity_at": "string"}),
-    "countClientInbox": ("ClientInboxCounts", {"clients": "integer", "requests": "integer", "acceptances": "integer"}),
     "listClientLinkCandidates": ("ClientLinkCandidate", {"ticket_id": "string", "number": "string", "title": "string", "reason": "string"}),
     "getClient": ("ClientDetail", {"client": "object", "groups": "array", "contacts": "array", "todo": "array", "rules": "array", "knowledge": "array", "counts": "object"}),
     "listClientActivity": ("ClientActivityItem", {"at": "string", "actor": "object", "kind": "string", "text": "string", "ticket_id": "string", "client_visible": "boolean"}),
@@ -573,21 +554,30 @@ RESPONSES = {
     "exportKnowledgeMarkdown": ("SignedUrl", {"url": "string", "expires_at": "string"}),
     "getKnowledgeImport": ("KnowledgeImportPreview", {"source": "string", "pages": "integer", "folders": "integer", "links": "integer", "topics": "integer", "images": "integer", "mapping": "object", "warnings": "array"}),
     "listOpsWorkspaces": ("OpsWorkspaceRow", {"id": "string", "name": "string", "admin": "object", "plan": "string", "members": "string", "pc_connected": "string", "runs_month": "integer", "attention": "array", "billing": "string", "state": "string"}),
-    "getOpsWorkspaceSummary": ("OpsWorkspaceSummary", {"total": "integer", "by_state": "object", "by_plan": "object", "attention": "integer", "runs_month": "integer", "runs_trend": "number", "overdue": "object"}),
     "getOpsWorkspace": ("OpsWorkspace", {"workspace": "object", "pc": "object", "runs": "object", "stopped": "object", "files": "object", "stop_reasons": "array", "recent": "array", "info": "object"}),
     "listOpsWorkspaceMembers": ("OpsWorkspaceMember", {"name": "string", "email": "string", "role": "string", "last_seen_at": "string", "pc": "string", "login": "string"}),
     "getOpsWorkspaceBilling": ("OpsWorkspaceBilling", {"plan": "object", "usage": "object", "payment_terms": "string", "invoices": "array"}),
-    "countOpsInquiries": ("OpsInquiryCounts", {"unassigned": "integer", "mine": "integer", "waiting": "integer", "later": "integer"}),
+    "getShell": ("Shell", {"approvals_waiting": "integer", "notifications_unread": "integer", "groups": "array", "pc": "object", "setup_left": "integer", "banner": "object", "workspace": "object"}),
+    "getOpsShell": ("OpsShell", {"inquiries_unassigned": "integer", "inquiries_mine": "integer", "invoices_overdue": "integer", "banner": "object"}),
+    "getTicketShape": ("TicketShape", {"kinds": "array", "stages": "array", "axes": "array", "handover_rules": "array", "limits": "object", "template_updates": "integer"}),
+    "previewTicketShapeChange": ("TicketShapeChangePreview", {"removed": "array", "needs_move_to": "array", "affected_tickets": "integer", "over_limits": "array"}),
     "getOpsInquiry": ("OpsInquiryDetail", {"inquiry": "object", "messages": "array", "context": "object", "workspace": "object"}),
     "getOpsNotice": ("OpsNoticeDetail", {"notice": "object", "updates": "array", "affects": "object", "placements": "array"}),
-    "getOpsInvoiceSummary": ("OpsInvoiceSummary", {"month": "string", "total": "integer", "count": "integer", "waiting": "integer", "paid": "integer", "overdue": "object", "drafts": "integer"}),
     "getServiceStatus": ("ServiceStatus", {"components": "array", "banner": "object", "maintenance": "object"}),
     "getServiceStatusForMember": ("ServiceStatus", {"components": "array", "banner": "object", "maintenance": "object"}),
+}
+# 一覧の答えの meta に足す数（数だけの API を作らず、一覧の 1 回目で返す・D-128.111）
+META = {
+    "listTickets": {"counts": "object"},
+    "listApprovalQueue": {"counts": "object"},
+    "listClients": {"counts": "object"},
+    "listOpsWorkspaces": {"summary": "object"},
+    "listOpsInquiries": {"counts": "object"},
+    "listOpsInvoices": {"summary": "object"},
 }
 # 一覧の絞り込み（operationId → query の名前）。cursor・limit・sort はいつも付く
 QUERIES = {
     "listTickets": ["view", "scope_id", "q", "kind_id", "stage_id", "assignee_id", "client_id", "due_from", "due_to", "start_from", "start_to", "overdue", "fire", "parent", "fields"],
-    "countTickets": ["view", "scope_id"],
     "search": ["q", "kinds"],
     "listNotifications": ["unread", "actor_member_id"],
     "listMembers": ["scope_id", "q"],
@@ -628,7 +618,6 @@ QUERIES = {
 PERMS = {
     # チケット
     "listTickets": ("read", "見られるグループのチケットだけ（RLS）", False),
-    "countTickets": ("read", "同上", False),
     "getScopeOverview": ("read", "そのグループを見られる人", False),
     "search": ("read", "見られるチケット・ページ・決定・自分の会話だけ", False),
     "getTicket": ("read", "そのチケットのグループを見られる人", False),
@@ -693,7 +682,6 @@ PERMS = {
     "listClients": ("read", "見られる取引先だけ（担当グループだけの取引先・D-128.54）", False),
     # 承認待ち
     "listApprovalQueue": ("self", "自分が決めるものだけ", False),
-    "countApprovalQueue": ("self", "同上", False),
     "getApproval": ("approver", "承認する人。担当者とマネージャーは読むだけ", False),
     "approveApproval": ("approver", "承認する人だけ。取り消せない操作は直前の本人確認", "irreversible"),
     "editApproval": ("approver", "承認する人", False),
@@ -723,6 +711,7 @@ PERMS = {
     "createArtifactFromMessage": ("self", "自分の会話の返事だけ", False),
     "updateArtifact": ("self", "書き出した本人。チケットに付いた成果物はそのチケットに書ける人", False),
     "restoreArtifactVersion": ("self", "同上", False),
+    "getShell": ("self", "本人の数だけ（承認待ち・知らせ・星を付けたグループの件数・PC のつながり・はじめにやることの残り・帯）", False),
     "countKnows": ("self", "自分の分身が知っていること（自分・使える取引先・層・ワークスペースの決まりを含む）", False),
     "listMemories": ("self", "自分の記憶だけ", False),
     "createMemory": ("self", "自分の記憶だけ", False),
@@ -879,21 +868,12 @@ PERMS = {
     "createEscalationRule": ("admin", "同上（D-128.87）", False),
     "updateEscalationRule": ("admin", "同上", False),
     "deleteEscalationRule": ("admin", "同上", False),
-    "createTicketKind": ("admin", "決まりを直せる人。種別・段・軸はワークスペースで共通（D-125.67）。上限は種別 10", False),
-    "updateTicketKind": ("admin", "同上", False),
-    "deleteTicketKind": ("admin", "同上。使っているチケットの移し先を選ぶ（D-125.69）", False),
-    "saveKindSections": ("admin", "同上。これから作るチケットから効く。区画は種別ごとに 20 まで", False),
+    "getTicketShape": ("read", "ワークスペースのメンバー（種別と区画・作業の段・分類の軸・渡すときの決まりと上限）", False),
+    "previewTicketShapeChange": ("admin", "決まりを直せる人（消すもの・移し先が要るもの・当たるチケットの数を見るだけ）", False),
+    "saveTicketShape": ("admin", "決まりを直せる人（既定は管理者・D-125.66）。「この形にする」で種別・区画・段・軸・渡すときをまとめて保存。消すものは移し先が必須（D-125.69）。上限 種別 10・段 8・足す軸 5・区画 20。仕組みの段は変えられない。これから作るチケットから効く（D-128.111）", False),
     "listKindTemplateUpdates": ("admin", "同上", False),
     "applyKindTemplateUpdate": ("admin", "同上（取り込むかは管理者が選ぶ・D-125.72）", False),
-    "createTicketStage": ("admin", "同上。上限 8。仕組みの段（確認中・承認待ち・実行中）は変えられない（D-125.38）", False),
-    "updateTicketStage": ("admin", "同上", False),
-    "deleteTicketStage": ("admin", "同上。使っている段の移し先を選ぶ", False),
-    "createClassAxis": ("admin", "同上。会社が足す軸は 5 まで（D-125.68）", False),
-    "updateClassAxis": ("admin", "同上", False),
-    "deleteClassAxis": ("admin", "同上", False),
-    "deleteClassValue": ("admin", "同上。使っている値の移し先を選ぶ（D-125.69）", False),
     "listHandoverRules": ("read", "ワークスペースのメンバー（渡すときに読む）", False),
-    "updateHandoverRule": ("admin", "決まりを直せる人（毎回聞く・いつも・しない・D-125.71）", False),
     "listAuditEvents": ("read", "自分の操作と、自分が関わるチケットの記録は誰でも。ワークスペース全体は管理者と権限を付けた人（D-125.132）", False),
     "createExport": ("admin", "書き出す権限のある人（既定は管理者とマネージャー。マネージャーは自分のグループの分だけ）。本人確認を取り直す", True),
     "getExport": ("self", "頼んだ本人だけ。受け取りは期限つきの署名 URL", False),
@@ -910,7 +890,6 @@ PERMS = {
     "updateBillingContact": ("admin", "同上", False),
     # 取引先（社内・D-128.53・D-128.54）
     "updateTicketClientShare": ("assignee", "担当者とマネージャー。テスト仕様・決定ログ・分身の記録は見せられない（D-128.53）", False),
-    "countClientInbox": ("read", "見られる取引先の分だけ", False),
     "listClientLinkCandidates": ("write", "取引先を足す人。見られるチケットの中だけ", False),
     "createClient": ("write", "メンバー以上（閲覧のみは不可）", False),
     "getClient": ("read", "見られる取引先だけ（担当グループだけの取引先はそのグループの人と管理者）。チケットはグループの権限で見える", False),
@@ -972,8 +951,8 @@ PERMS = {
     "getKnowledgeImport": ("write", "取り込んだ本人", False),
     "commitKnowledgeImport": ("write", "取り込んだ本人。既定は下書きで入れる（持ち主が公開するまで分身は読まない）", False),
     # 運営の残り（運営の人で、そのできることを持つ人だけ・D-128.70。ops:any は運営の人なら誰でも）
+    "getOpsShell": ("ops:any", "運営の人なら誰でも（左のメニューの数だけ。お金の数はお金を持つ人にだけ出す）", False),
     "listOpsWorkspaces": ("ops:any", "運営の人なら誰でも。数と種類だけで中身（チケット・会話）は出さない", False),
-    "getOpsWorkspaceSummary": ("ops:any", "同上", False),
     "exportOpsWorkspaces": ("ops:any", "同上（名前・プラン・数だけ。管理者のメールは入れない）。書き出したことは運営の記録に残る", False),
     "getOpsWorkspace": ("ops:any", "同上。止まった理由は種類と数だけ", False),
     "listOpsWorkspaceMembers": ("ops:inquiry", "問い合わせを持つ運営の人（名前・役割・最後に入った・PC・入り方だけ）。運営は役割も中身も変えない", False),
@@ -988,7 +967,6 @@ PERMS = {
     "resumeWorkspace": ("ops:stop", "同上", True),
     "sendWorkspaceNotice": ("ops:notice", "お知らせを持つ運営の人（その 1 社にだけ出す）", False),
     "listOpsInquiries": ("ops:inquiry", "問い合わせを持つ運営の人", False),
-    "countOpsInquiries": ("ops:inquiry", "同上", False),
     "getOpsInquiry": ("ops:inquiry", "同上。付いてきた情報は画面の場所・時刻・ブラウザ・PC のつながりだけ（チケットの中身や会話は付かない・D-128.71）", False),
     "updateOpsInquiry": ("ops:inquiry", "同上（担当・状態・後で）", False),
     "replyOpsInquiry": ("ops:inquiry", "同上。返事は顧客の困ったとき・お知らせ と画面の知らせに届く", False),
@@ -1000,7 +978,6 @@ PERMS = {
     "publishOpsNotice": ("ops:notice", "同上。メンテだけ各ワークスペースの管理者にメールでも届ける（D-128.109）", False),
     "addIncidentUpdate": ("ops:notice", "同上（調べている → 原因が分かった → 様子を見ている → 直った）", False),
     "listOpsInvoices": ("ops:money", "お金を持つ運営の人", False),
-    "getOpsInvoiceSummary": ("ops:money", "同上", False),
     "issueOpsInvoices": ("ops:money", "同上。下書きを確かめてまとめて出す。全部のワークスペースに届くので本人確認を取り直す", True),
     "recordPayment": ("ops:money", "同上。差があれば未入金のまま残す。顧客の請求書の画面と記録にも出る（D-128.69）", True),
     "exportOpsInvoices": ("ops:money", "同上", False),

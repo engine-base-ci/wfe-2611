@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:2fd2afdde63e44ad
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:8a30bc2c4e7d238b
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -926,7 +926,7 @@ export const PermissionRules = z.strictObject({
   member_id: z.uuid().optional(),
   tool: z.string().max(10000).optional(),
   target_pattern: z.string().max(10000).optional(),
-  decision_id: z.string().max(10000).optional(),
+  decision_id: z.uuid().optional(),
   bridge_job_event_id: z.uuid().optional(),
   revoked_at: z.iso.datetime({ offset: true }).optional(),
   id: z.uuid(),
@@ -938,7 +938,7 @@ export const PermissionRulesInput = z.strictObject({
   member_id: z.uuid().optional(),
   tool: z.string().max(10000).optional(),
   target_pattern: z.string().max(10000).optional(),
-  decision_id: z.string().max(10000).optional(),
+  decision_id: z.uuid().optional(),
   bridge_job_event_id: z.uuid().optional(),
   revoked_at: z.iso.datetime({ offset: true }).optional(),
 });
@@ -2077,5 +2077,1236 @@ export const SubprocessorsInput = z.strictObject({
   announced_at: z.iso.datetime({ offset: true }).optional(),
   retired_at: z.iso.datetime({ offset: true }).optional(),
 });
+export const Tickets = z.strictObject({
+  number: z.string().max(10000).optional(),
+  kind_id: z.string().max(10000).optional(),
+  stage_id: z.uuid().optional(),
+  title: z.string().max(10000).optional(),
+  assignee_member_id: z.uuid().optional(),
+  delegated_to_clone: z.string().max(10000).optional(),
+  client_id: z.uuid().optional(),
+  parent_ticket_id: z.uuid().optional(),
+  derived_from_ticket_id: z.uuid().optional(),
+  start_on: z.iso.date().optional(),
+  due_on: z.iso.date().optional(),
+  priority: z.string().max(10000).optional(),
+  estimate_minutes: z.number().int().optional(),
+  actual_minutes: z.number().int().optional(),
+  work_type_id: z.string().max(10000).optional(),
+  work_type_version: z.number().int().optional(),
+  hold_reason: z.string().max(10000).optional(),
+  resume_condition: z.string().max(10000).optional(),
+  created_by: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const TicketsInput = z.strictObject({
+  number: z.string().max(10000).optional(),
+  kind_id: z.string().max(10000).optional(),
+  stage_id: z.uuid().optional(),
+  title: z.string().max(10000).optional(),
+  assignee_member_id: z.uuid().optional(),
+  delegated_to_clone: z.string().max(10000).optional(),
+  client_id: z.uuid().optional(),
+  parent_ticket_id: z.uuid().optional(),
+  derived_from_ticket_id: z.uuid().optional(),
+  start_on: z.iso.date().optional(),
+  due_on: z.iso.date().optional(),
+  priority: z.string().max(10000).optional(),
+  estimate_minutes: z.number().int().optional(),
+  actual_minutes: z.number().int().optional(),
+  work_type_id: z.string().max(10000).optional(),
+  work_type_version: z.number().int().optional(),
+  hold_reason: z.string().max(10000).optional(),
+  resume_condition: z.string().max(10000).optional(),
+});
+export const TicketSections = z.strictObject({
+  ticket_id: z.uuid().optional(),
+  section_key: z.string().max(10000).optional(),
+  position: z.string().max(10000).optional(),
+  body: z.record(z.string(), z.unknown()).optional(),
+  version: z.number().int().optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const TicketSectionsInput = z.strictObject({
+  ticket_id: z.uuid().optional(),
+  section_key: z.string().max(10000).optional(),
+  position: z.string().max(10000).optional(),
+  body: z.record(z.string(), z.unknown()).optional(),
+});
+export const TicketSectionVersions = z.strictObject({
+  section_id: z.uuid().optional(),
+  version: z.number().int().optional(),
+  body: z.record(z.string(), z.unknown()).optional(),
+  edited_by: z.string().max(10000).optional(),
+  edited_at: z.iso.datetime({ offset: true }).optional(),
+  edited_by_clone: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const TicketSectionVersionsInput = z.strictObject({
+  section_id: z.uuid().optional(),
+  body: z.record(z.string(), z.unknown()).optional(),
+  edited_by: z.string().max(10000).optional(),
+  edited_at: z.iso.datetime({ offset: true }).optional(),
+  edited_by_clone: z.string().max(10000).optional(),
+});
+export const TicketKinds = z.strictObject({
+  name: z.string().max(10000).optional(),
+  color: z.string().max(10000).optional(),
+  position: z.string().max(10000).optional(),
+  is_builtin: z.boolean().optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const TicketKindsInput = z.strictObject({
+  name: z.string().max(10000).optional(),
+  color: z.string().max(10000).optional(),
+  position: z.string().max(10000).optional(),
+  is_builtin: z.boolean().optional(),
+});
+export const KindSections = z.strictObject({
+  kind_id: z.string().max(10000).optional(),
+  section_key: z.string().max(10000).optional(),
+  label: z.string().max(10000).optional(),
+  mode: z.string().max(10000).optional(),
+  position: z.string().max(10000).optional(),
+  default_test_specs: z.record(z.string(), z.unknown()).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const KindSectionsInput = z.strictObject({
+  kind_id: z.string().max(10000).optional(),
+  section_key: z.string().max(10000).optional(),
+  label: z.string().max(10000).optional(),
+  mode: z.string().max(10000).optional(),
+  position: z.string().max(10000).optional(),
+  default_test_specs: z.record(z.string(), z.unknown()).optional(),
+});
+export const TicketStages = z.strictObject({
+  name: z.string().max(10000).optional(),
+  position: z.string().max(10000).optional(),
+  is_fixed: z.boolean().optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const TicketStagesInput = z.strictObject({
+  name: z.string().max(10000).optional(),
+  position: z.string().max(10000).optional(),
+  is_fixed: z.boolean().optional(),
+});
+export const ClassAxes = z.strictObject({
+  key: z.string().max(10000).optional(),
+  name: z.string().max(10000).optional(),
+  is_builtin: z.boolean().optional(),
+  position: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const ClassAxesInput = z.strictObject({
+  key: z.string().max(10000).optional(),
+  name: z.string().max(10000).optional(),
+  is_builtin: z.boolean().optional(),
+  position: z.string().max(10000).optional(),
+});
+export const ClassValues = z.strictObject({
+  axis_id: z.uuid().optional(),
+  label: z.string().max(10000).optional(),
+  color: z.string().max(10000).optional(),
+  position: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const ClassValuesInput = z.strictObject({
+  axis_id: z.uuid().optional(),
+  label: z.string().max(10000).optional(),
+  color: z.string().max(10000).optional(),
+  position: z.string().max(10000).optional(),
+});
+export const TicketClassValues = z.strictObject({
+  ticket_id: z.uuid().optional(),
+  value_id: z.uuid().optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const TicketClassValuesInput = z.strictObject({
+  ticket_id: z.uuid().optional(),
+  value_id: z.uuid().optional(),
+});
+export const HandoverRules = z.strictObject({
+  target: z.string().max(10000).optional(),
+  mode: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const HandoverRulesInput = z.strictObject({
+  target: z.string().max(10000).optional(),
+  mode: z.string().max(10000).optional(),
+});
+export const TestSpecs = z.strictObject({
+  ticket_id: z.uuid().optional(),
+  check_kind: z.string().max(10000).optional(),
+  title: z.string().max(10000).optional(),
+  judge_type: z.string().max(10000).optional(),
+  params: z.record(z.string(), z.unknown()).optional(),
+  version: z.number().int().optional(),
+  off_reason: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const TestSpecsInput = z.strictObject({
+  ticket_id: z.uuid().optional(),
+  check_kind: z.string().max(10000).optional(),
+  title: z.string().max(10000).optional(),
+  judge_type: z.string().max(10000).optional(),
+  params: z.record(z.string(), z.unknown()).optional(),
+  off_reason: z.string().max(10000).optional(),
+});
+export const Checks = z.strictObject({
+  test_spec_id: z.uuid().optional(),
+  spec_version: z.number().int().optional(),
+  artifact_version_id: z.uuid().optional(),
+  attempt: z.string().max(10000).optional(),
+  result: z.string().max(10000).optional(),
+  evidence: z.record(z.string(), z.unknown()).optional(),
+  runner: z.string().max(10000).optional(),
+  checked_by_member_id: z.uuid().optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const ChecksInput = z.strictObject({
+  test_spec_id: z.uuid().optional(),
+  spec_version: z.number().int().optional(),
+  artifact_version_id: z.uuid().optional(),
+  attempt: z.string().max(10000).optional(),
+  result: z.string().max(10000).optional(),
+  evidence: z.record(z.string(), z.unknown()).optional(),
+  runner: z.string().max(10000).optional(),
+  checked_by_member_id: z.uuid().optional(),
+});
+export const TicketDecisions = z.strictObject({
+  ticket_id: z.uuid().optional(),
+  text: z.string().max(10000).optional(),
+  reason: z.string().max(10000).optional(),
+  decided_by: z.uuid().optional(),
+  decided_at: z.iso.datetime({ offset: true }).optional(),
+  source_message_id: z.uuid().optional(),
+  superseded_by_id: z.uuid().optional(),
+  promoted_to: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const TicketDecisionsInput = z.strictObject({
+  ticket_id: z.uuid().optional(),
+  text: z.string().max(10000).optional(),
+  reason: z.string().max(10000).optional(),
+  decided_by: z.uuid().optional(),
+  decided_at: z.iso.datetime({ offset: true }).optional(),
+  source_message_id: z.uuid().optional(),
+  superseded_by_id: z.uuid().optional(),
+  promoted_to: z.string().max(10000).optional(),
+});
+export const TicketMessages = z.strictObject({
+  ticket_id: z.uuid().optional(),
+  author_member_id: z.uuid().optional(),
+  kind: z.string().max(10000).optional(),
+  body: z.string().max(10000).optional(),
+  mentions: z.array(z.string()).optional(),
+  changes: z.record(z.string(), z.unknown()).optional(),
+  quote_of_id: z.uuid().optional(),
+  reactions: z.record(z.string(), z.unknown()).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const TicketMessagesInput = z.strictObject({
+  ticket_id: z.uuid().optional(),
+  author_member_id: z.uuid().optional(),
+  kind: z.string().max(10000).optional(),
+  body: z.string().max(10000).optional(),
+  mentions: z.array(z.string()).optional(),
+  changes: z.record(z.string(), z.unknown()).optional(),
+  quote_of_id: z.uuid().optional(),
+  reactions: z.record(z.string(), z.unknown()).optional(),
+});
+export const ReferenceLogs = z.strictObject({
+  ticket_id: z.uuid().optional(),
+  action_run_id: z.uuid().optional(),
+  ref_type: z.string().max(10000).optional(),
+  ref_id: z.uuid().optional(),
+  url: z.string().max(10000).optional(),
+  title: z.string().max(10000).optional(),
+  seen_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const ReferenceLogsInput = z.strictObject({
+  ticket_id: z.uuid().optional(),
+  action_run_id: z.uuid().optional(),
+  ref_type: z.string().max(10000).optional(),
+  ref_id: z.uuid().optional(),
+  url: z.string().max(10000).optional(),
+  title: z.string().max(10000).optional(),
+  seen_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const KnowledgePages = z.strictObject({
+  parent_page_id: z.uuid().optional(),
+  title: z.string().max(10000).optional(),
+  owner_member_id: z.uuid().optional(),
+  state: z.string().max(10000).optional(),
+  verify_interval_days: z.string().max(10000).optional(),
+  verified_at: z.iso.datetime({ offset: true }).optional(),
+  verify_due_on: z.iso.date().optional(),
+  topics: z.array(z.string()).optional(),
+  current_version: z.number().int().optional(),
+  form: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const KnowledgePagesInput = z.strictObject({
+  parent_page_id: z.uuid().optional(),
+  title: z.string().max(10000).optional(),
+  owner_member_id: z.uuid().optional(),
+  state: z.string().max(10000).optional(),
+  verify_interval_days: z.string().max(10000).optional(),
+  verified_at: z.iso.datetime({ offset: true }).optional(),
+  verify_due_on: z.iso.date().optional(),
+  topics: z.array(z.string()).optional(),
+  current_version: z.number().int().optional(),
+  form: z.string().max(10000).optional(),
+});
+export const KnowledgePageVersions = z.strictObject({
+  page_id: z.uuid().optional(),
+  version: z.number().int().optional(),
+  body: z.record(z.string(), z.unknown()).optional(),
+  note: z.string().max(10000).optional(),
+  published_by: z.uuid().optional(),
+  published_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const KnowledgePageVersionsInput = z.strictObject({
+  page_id: z.uuid().optional(),
+  body: z.record(z.string(), z.unknown()).optional(),
+  note: z.string().max(10000).optional(),
+  published_by: z.uuid().optional(),
+  published_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const KnowledgeLinks = z.strictObject({
+  nodes: z.array(z.unknown()).optional(),
+  edges: z.array(z.unknown()).optional(),
+  unlinked_mentions: z.array(z.unknown()).optional(),
+});
+export const KnowledgeLinksInput = z.strictObject({
+  from_page_id: z.uuid().optional(),
+  to_type: z.string().max(10000).optional(),
+  to_id: z.uuid().optional(),
+  anchor: z.string().max(10000).optional(),
+});
+export const Clients = z.strictObject({
+  name: z.string().max(10000).optional(),
+  owner_member_id: z.uuid().optional(),
+  visibility: z.string().max(10000).optional(),
+  default_share: z.record(z.string(), z.unknown()).optional(),
+  routing: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const ClientsInput = z.strictObject({
+  name: z.string().max(10000).optional(),
+  owner_member_id: z.uuid().optional(),
+  visibility: z.string().max(10000).optional(),
+  default_share: z.record(z.string(), z.unknown()).optional(),
+  routing: z.string().max(10000).optional(),
+});
+export const ClientGroups = z.strictObject({
+  client_id: z.uuid().optional(),
+  scope_id: z.uuid().optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const ClientGroupsInput = z.strictObject({
+  client_id: z.uuid().optional(),
+});
+export const ClientContacts = z.strictObject({
+  client_id: z.uuid().optional(),
+  name: z.string().max(10000).optional(),
+  email: z.string().max(10000).optional(),
+  role: z.string().max(10000).optional(),
+  member_id: z.uuid().optional(),
+  cc_role: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const ClientContactsInput = z.strictObject({
+  client_id: z.uuid().optional(),
+  name: z.string().max(10000).optional(),
+  email: z.string().max(10000).optional(),
+  role: z.string().max(10000).optional(),
+  member_id: z.uuid().optional(),
+  cc_role: z.string().max(10000).optional(),
+});
+export const ClientRequests = z.strictObject({
+  client_id: z.uuid().optional(),
+  contact_id: z.uuid().optional(),
+  title: z.string().max(10000).optional(),
+  body: z.string().max(10000).optional(),
+  due_on: z.iso.date().optional(),
+  state: z.string().max(10000).optional(),
+  ticket_id: z.uuid().optional(),
+  routed_scope_id: z.uuid().optional(),
+  decline_reason: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const ClientRequestsInput = z.strictObject({
+  client_id: z.uuid().optional(),
+  contact_id: z.uuid().optional(),
+  title: z.string().max(10000).optional(),
+  body: z.string().max(10000).optional(),
+  due_on: z.iso.date().optional(),
+  state: z.string().max(10000).optional(),
+  ticket_id: z.uuid().optional(),
+  routed_scope_id: z.uuid().optional(),
+  decline_reason: z.string().max(10000).optional(),
+});
+export const Acceptances = z.strictObject({
+  ticket_id: z.uuid().optional(),
+  artifact_version_id: z.uuid().optional(),
+  contact_id: z.uuid().optional(),
+  due_on: z.iso.date().optional(),
+  message: z.string().max(10000).optional(),
+  result: z.string().max(10000).optional(),
+  comment: z.string().max(10000).optional(),
+  decided_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const AcceptancesInput = z.strictObject({
+  ticket_id: z.uuid().optional(),
+  artifact_version_id: z.uuid().optional(),
+  contact_id: z.uuid().optional(),
+  due_on: z.iso.date().optional(),
+  message: z.string().max(10000).optional(),
+  result: z.string().max(10000).optional(),
+  comment: z.string().max(10000).optional(),
+  decided_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const TenantMemberships = z.strictObject({
+  auth_user_id: z.uuid().optional(),
+  tenant_id: z.uuid().optional(),
+  member_id: z.uuid().optional(),
+  role: z.string().max(10000).optional(),
+  status: z.string().max(10000).optional(),
+  joined_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const TenantMembershipsInput = z.strictObject({
+  auth_user_id: z.uuid().optional(),
+  member_id: z.uuid().optional(),
+  role: z.string().max(10000).optional(),
+  status: z.string().max(10000).optional(),
+  joined_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const TermsVersions = z.strictObject({
+  kind: z.string().max(10000).optional(),
+  version: z.number().int().optional(),
+  url: z.string().max(10000).optional(),
+  published_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const TermsVersionsInput = z.strictObject({
+  kind: z.string().max(10000).optional(),
+  url: z.string().max(10000).optional(),
+  published_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const TermsConsents = z.strictObject({
+  auth_user_id: z.uuid().optional(),
+  terms_version_id: z.uuid().optional(),
+  agreed_at: z.iso.datetime({ offset: true }).optional(),
+  ip: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const TermsConsentsInput = z.strictObject({
+  auth_user_id: z.uuid().optional(),
+  terms_version_id: z.uuid().optional(),
+  agreed_at: z.iso.datetime({ offset: true }).optional(),
+  ip: z.string().max(10000).optional(),
+});
+export const Passkeys = z.strictObject({
+  auth_user_id: z.uuid().optional(),
+  credential_id: z.uuid().optional(),
+  public_key: z.string().max(10000).optional(),
+  name: z.string().max(10000).optional(),
+  transports: z.string().max(10000).optional(),
+  last_used_at: z.iso.datetime({ offset: true }).optional(),
+  revoked_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const PasskeysInput = z.strictObject({
+  auth_user_id: z.uuid().optional(),
+  credential_id: z.uuid().optional(),
+  public_key: z.string().max(10000).optional(),
+  name: z.string().max(10000).optional(),
+  transports: z.string().max(10000).optional(),
+  last_used_at: z.iso.datetime({ offset: true }).optional(),
+  revoked_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const Operations = z.strictObject({
+  key: z.string().max(10000).optional(),
+  name: z.string().max(10000).optional(),
+  kind: z.string().max(10000).optional(),
+  current_version: z.number().int().optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const OperationsInput = z.strictObject({
+  key: z.string().max(10000).optional(),
+  name: z.string().max(10000).optional(),
+  kind: z.string().max(10000).optional(),
+  current_version: z.number().int().optional(),
+});
+export const TicketLinks = z.strictObject({
+  from_ticket_id: z.uuid().optional(),
+  to_ticket_id: z.uuid().optional(),
+  kind: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const TicketLinksInput = z.strictObject({
+  from_ticket_id: z.uuid().optional(),
+  to_ticket_id: z.uuid().optional(),
+  kind: z.string().max(10000).optional(),
+});
+export const TicketHandovers = z.strictObject({
+  ticket_id: z.uuid().optional(),
+  kind: z.string().max(10000).optional(),
+  from_member_id: z.uuid().optional(),
+  to_member_id: z.uuid().optional(),
+  to_scope_id: z.uuid().optional(),
+  reason: z.string().max(10000).optional(),
+  ask: z.string().max(10000).optional(),
+  reply_due: z.string().max(10000).optional(),
+  switch: z.record(z.string(), z.unknown()).optional(),
+  state: z.string().max(10000).optional(),
+  decline_reason: z.string().max(10000).optional(),
+  decided_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const TicketHandoversInput = z.strictObject({
+  ticket_id: z.uuid().optional(),
+  kind: z.string().max(10000).optional(),
+  from_member_id: z.uuid().optional(),
+  to_member_id: z.uuid().optional(),
+  to_scope_id: z.uuid().optional(),
+  reason: z.string().max(10000).optional(),
+  ask: z.string().max(10000).optional(),
+  reply_due: z.string().max(10000).optional(),
+  switch: z.record(z.string(), z.unknown()).optional(),
+  state: z.string().max(10000).optional(),
+  decline_reason: z.string().max(10000).optional(),
+  decided_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const SavedViews = z.strictObject({
+  member_id: z.uuid().optional(),
+  name: z.string().max(10000).optional(),
+  share: z.string().max(10000).optional(),
+  scope_id: z.uuid().optional(),
+  filters: z.record(z.string(), z.unknown()).optional(),
+  columns: z.record(z.string(), z.unknown()).optional(),
+  density: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const SavedViewsInput = z.strictObject({
+  member_id: z.uuid().optional(),
+  name: z.string().max(10000).optional(),
+  share: z.string().max(10000).optional(),
+  filters: z.record(z.string(), z.unknown()).optional(),
+  columns: z.record(z.string(), z.unknown()).optional(),
+  density: z.string().max(10000).optional(),
+});
+export const TicketImports = z.strictObject({
+  uploaded_by: z.string().max(10000).optional(),
+  source: z.string().max(10000).optional(),
+  mapping: z.record(z.string(), z.unknown()).optional(),
+  rows: z.number().int().optional(),
+  errors: z.record(z.string(), z.unknown()).optional(),
+  state: z.string().max(10000).optional(),
+  committed_at: z.iso.datetime({ offset: true }).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const TicketImportsInput = z.strictObject({
+  uploaded_by: z.string().max(10000).optional(),
+  source: z.string().max(10000).optional(),
+  mapping: z.record(z.string(), z.unknown()).optional(),
+  rows: z.number().int().optional(),
+  errors: z.record(z.string(), z.unknown()).optional(),
+  state: z.string().max(10000).optional(),
+  committed_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const LearningCandidates = z.strictObject({
+  owner_member_id: z.uuid().optional(),
+  trigger: z.string().max(10000).optional(),
+  proposed_as: z.string().max(10000).optional(),
+  text: z.string().max(10000).optional(),
+  evidence: z.record(z.string(), z.unknown()).optional(),
+  check: z.record(z.string(), z.unknown()).optional(),
+  state: z.string().max(10000).optional(),
+  decided_at: z.iso.datetime({ offset: true }).optional(),
+  result_type: z.string().max(10000).optional(),
+  result_id: z.uuid().optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const LearningCandidatesInput = z.strictObject({
+  owner_member_id: z.uuid().optional(),
+  trigger: z.string().max(10000).optional(),
+  proposed_as: z.string().max(10000).optional(),
+  text: z.string().max(10000).optional(),
+  evidence: z.record(z.string(), z.unknown()).optional(),
+  check: z.record(z.string(), z.unknown()).optional(),
+  state: z.string().max(10000).optional(),
+  decided_at: z.iso.datetime({ offset: true }).optional(),
+  result_type: z.string().max(10000).optional(),
+  result_id: z.uuid().optional(),
+});
+export const BridgePairingCodes = z.strictObject({
+  member_id: z.uuid().optional(),
+  code_hash: z.string().max(10000).optional(),
+  expires_at: z.iso.datetime({ offset: true }).optional(),
+  used_at: z.iso.datetime({ offset: true }).optional(),
+  used_session_id: z.uuid().optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const BridgePairingCodesInput = z.strictObject({
+  member_id: z.uuid().optional(),
+  code_hash: z.string().max(10000).optional(),
+  expires_at: z.iso.datetime({ offset: true }).optional(),
+  used_at: z.iso.datetime({ offset: true }).optional(),
+  used_session_id: z.uuid().optional(),
+});
+export const NotificationSettings = z.strictObject({
+  email_digest: z.boolean().optional(),
+  quiet_hours: z.record(z.string(), z.unknown()).optional(),
+  paused_until: z.string().max(10000).optional(),
+  urgent_override: z.array(z.unknown()).optional(),
+  events: z.array(z.unknown()).optional(),
+});
+export const NotificationSettingsInput = z.strictObject({
+  member_id: z.uuid().optional(),
+  email_digest: z.string().max(10000).optional(),
+  quiet_hours: z.record(z.string(), z.unknown()).optional(),
+  paused_until: z.string().max(10000).optional(),
+  urgent_override: z.record(z.string(), z.unknown()).optional(),
+});
+export const OpsPlanProposals = z.strictObject({
+  plan_id: z.uuid().optional(),
+  from_version: z.number().int().optional(),
+  to_version: z.number().int().optional(),
+  changes: z.record(z.string(), z.unknown()).optional(),
+  existing_policy: z.string().max(10000).optional(),
+  notice_days: z.string().max(10000).optional(),
+  new_from: z.string().max(10000).optional(),
+  reason: z.string().max(10000).optional(),
+  proposed_by: z.string().max(10000).optional(),
+  decided_by: z.uuid().optional(),
+  state: z.string().max(10000).optional(),
+  decided_at: z.iso.datetime({ offset: true }).optional(),
+  return_reason: z.string().max(10000).optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const OpsPlanProposalsInput = z.strictObject({
+  plan_id: z.uuid().optional(),
+  from_version: z.number().int().optional(),
+  to_version: z.number().int().optional(),
+  changes: z.record(z.string(), z.unknown()).optional(),
+  existing_policy: z.string().max(10000).optional(),
+  notice_days: z.string().max(10000).optional(),
+  new_from: z.string().max(10000).optional(),
+  reason: z.string().max(10000).optional(),
+  proposed_by: z.string().max(10000).optional(),
+  decided_by: z.uuid().optional(),
+  state: z.string().max(10000).optional(),
+  decided_at: z.iso.datetime({ offset: true }).optional(),
+  return_reason: z.string().max(10000).optional(),
+});
+export const ScopeMemberships = z.strictObject({
+  member_id: z.uuid().optional(),
+  scope_id: z.uuid().optional(),
+  is_primary: z.boolean().optional(),
+  role: z.string().max(10000).optional(),
+  since: z.string().max(10000).optional(),
+  changed_by: z.uuid().optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const ScopeMembershipsInput = z.strictObject({
+  member_id: z.uuid().optional(),
+  is_primary: z.boolean().optional(),
+  role: z.string().max(10000).optional(),
+  since: z.string().max(10000).optional(),
+  changed_by: z.uuid().optional(),
+});
+export const ScopeOverview = z.strictObject({
+  by_stage: z.array(z.unknown()).optional(),
+  milestones: z.array(z.unknown()).optional(),
+  recent: z.array(z.unknown()).optional(),
+  total: z.number().int().optional(),
+});
+export const TicketKindChangePreview = z.strictObject({
+  added_sections: z.array(z.unknown()).optional(),
+  removed_sections: z.array(z.unknown()).optional(),
+  moved_to_body: z.array(z.unknown()).optional(),
+  checks_reset: z.boolean().optional(),
+});
+export const TicketDeletePreview = z.strictObject({
+  children: z.number().int().optional(),
+  attachments: z.number().int().optional(),
+  artifacts: z.number().int().optional(),
+  restorable_until: z.string().max(10000).optional(),
+});
+export const SearchHit = z.strictObject({
+  kind: z.string().max(10000).optional(),
+  id: z.string().max(10000).optional(),
+  title: z.string().max(10000).optional(),
+  snippet: z.string().max(10000).optional(),
+  url: z.string().max(10000).optional(),
+});
+export const TimelineItem = z.strictObject({
+  kind: z.string().max(10000).optional(),
+  at: z.string().max(10000).optional(),
+  actor_member_id: z.string().max(10000).optional(),
+  message: z.record(z.string(), z.unknown()).optional(),
+  changes: z.array(z.unknown()).optional(),
+  run: z.record(z.string(), z.unknown()).optional(),
+});
+export const TestSpecLint = z.strictObject({
+  missing: z.array(z.unknown()).optional(),
+  warnings: z.array(z.unknown()).optional(),
+});
+export const TicketCompletion = z.strictObject({
+  ticket: z.record(z.string(), z.unknown()).optional(),
+  knowledge_candidates: z.array(z.unknown()).optional(),
+  skipped_reason: z.string().max(10000).optional(),
+});
+export const BulkResult = z.strictObject({
+  updated: z.array(z.unknown()).optional(),
+  skipped: z.array(z.unknown()).optional(),
+});
+export const ApprovalQueueItem = z.strictObject({
+  kind: z.string().max(10000).optional(),
+  id: z.string().max(10000).optional(),
+  ticket_id: z.string().max(10000).optional(),
+  ticket_number: z.string().max(10000).optional(),
+  title: z.string().max(10000).optional(),
+  from_member_id: z.string().max(10000).optional(),
+  check_summary: z.string().max(10000).optional(),
+  due_on: z.string().max(10000).optional(),
+  decide_inline: z.boolean().optional(),
+  primary_action: z.string().max(10000).optional(),
+  secondary_action: z.string().max(10000).optional(),
+});
+export const ApprovalDetail = z.strictObject({
+  approval: z.record(z.string(), z.unknown()).optional(),
+  ticket: z.record(z.string(), z.unknown()).optional(),
+  operation: z.record(z.string(), z.unknown()).optional(),
+  message_text: z.string().max(10000).optional(),
+  artifact_version: z.record(z.string(), z.unknown()).optional(),
+  checks: z.array(z.unknown()).optional(),
+  cautions: z.array(z.unknown()).optional(),
+  irreversible: z.boolean().optional(),
+  chain: z.array(z.unknown()).optional(),
+});
+export const BulkApprovalPreview = z.strictObject({
+  eligible: z.array(z.unknown()).optional(),
+  excluded: z.array(z.unknown()).optional(),
+});
+export const CloneNow = z.strictObject({
+  current: z.record(z.string(), z.unknown()).optional(),
+  next: z.array(z.unknown()).optional(),
+  waiting_approvals: z.number().int().optional(),
+  stopped: z.number().int().optional(),
+});
+export const CloneGrowth = z.strictObject({
+  delegated: z.number().int().optional(),
+  passed_without_edit_rate: z.number().optional(),
+  saved_hours: z.number().optional(),
+  trend: z.array(z.unknown()).optional(),
+  often_fixed: z.array(z.unknown()).optional(),
+});
+export const KnowsCounts = z.strictObject({
+  rules: z.number().int().optional(),
+  work_types: z.number().int().optional(),
+  memories: z.number().int().optional(),
+  candidates: z.number().int().optional(),
+});
+export const ActivityItem = z.strictObject({
+  kind: z.string().max(10000).optional(),
+  at: z.string().max(10000).optional(),
+  title: z.string().max(10000).optional(),
+  ticket_id: z.string().max(10000).optional(),
+  used: z.array(z.unknown()).optional(),
+  result: z.string().max(10000).optional(),
+});
+export const SignupStatus = z.strictObject({
+  state: z.string().max(10000).optional(),
+  email: z.string().max(10000).optional(),
+  expires_at: z.string().max(10000).optional(),
+});
+export const MySecurity = z.strictObject({
+  passkeys: z.array(z.unknown()).optional(),
+  has_password: z.boolean().optional(),
+  two_factor: z.boolean().optional(),
+  two_factor_required: z.boolean().optional(),
+  backup_codes_left: z.number().int().optional(),
+  sessions: z.array(z.unknown()).optional(),
+  recent_events: z.array(z.unknown()).optional(),
+});
+export const TwoFactorSetup = z.strictObject({
+  otpauth_uri: z.string().max(10000).optional(),
+  secret_masked: z.string().max(10000).optional(),
+  expires_at: z.string().max(10000).optional(),
+});
+export const BackupCodes = z.strictObject({
+  codes: z.array(z.unknown()).optional(),
+});
+export const StepUp = z.strictObject({
+  step_up_at: z.string().max(10000).optional(),
+  valid_until: z.string().max(10000).optional(),
+});
+export const Me = z.strictObject({
+  member: z.record(z.string(), z.unknown()).optional(),
+  workspaces: z.array(z.unknown()).optional(),
+});
+export const MyUsage = z.strictObject({
+  five_hour: z.record(z.string(), z.unknown()).optional(),
+  month: z.record(z.string(), z.unknown()).optional(),
+  by_workspace: z.array(z.unknown()).optional(),
+  notify_at_percent: z.number().int().optional(),
+  on_exhausted: z.string().max(10000).optional(),
+});
+export const SetupTask = z.strictObject({
+  key: z.string().max(10000).optional(),
+  label: z.string().max(10000).optional(),
+  done: z.boolean().optional(),
+  href: z.string().max(10000).optional(),
+});
+export const PairingCode = z.strictObject({
+  code: z.string().max(10000).optional(),
+  expires_at: z.string().max(10000).optional(),
+});
+export const BridgeRelease = z.strictObject({
+  version: z.string().max(10000).optional(),
+  files: z.array(z.unknown()).optional(),
+  sha256: z.record(z.string(), z.unknown()).optional(),
+  released_at: z.string().max(10000).optional(),
+});
+export const BridgeClaim = z.strictObject({
+  device_token: z.string().max(10000).optional(),
+  device_id: z.string().max(10000).optional(),
+  member_id: z.string().max(10000).optional(),
+});
+export const BridgeJob = z.strictObject({
+  job: z.record(z.string(), z.unknown()).optional(),
+  allowed_tools: z.array(z.unknown()).optional(),
+  forbidden_domains: z.array(z.unknown()).optional(),
+  rules: z.array(z.unknown()).optional(),
+});
+export const JobControl = z.strictObject({
+  stop: z.boolean().optional(),
+  steers: z.array(z.unknown()).optional(),
+});
+export const ResolvedCredential = z.strictObject({
+  ref: z.string().max(10000).optional(),
+  ciphertext_for_executor: z.string().max(10000).optional(),
+  destinations: z.array(z.unknown()).optional(),
+  expires_at: z.string().max(10000).optional(),
+});
+export const WorkTypeUploadCheck = z.strictObject({
+  package: z.record(z.string(), z.unknown()).optional(),
+  checks: z.array(z.unknown()).optional(),
+  passed: z.boolean().optional(),
+  test_scenarios: z.number().int().optional(),
+  changelog: z.string().max(10000).optional(),
+});
+export const PlanProposalImpact = z.strictObject({
+  tenants: z.number().int().optional(),
+  monthly_revenue_diff: z.number().int().optional(),
+  existing_from: z.string().max(10000).optional(),
+  new_from: z.string().max(10000).optional(),
+  by_workspace: z.array(z.unknown()).optional(),
+});
+export const RuleCheck = z.strictObject({
+  conflicts: z.array(z.unknown()).optional(),
+  similar: z.array(z.unknown()).optional(),
+  needs_approval_from: z.string().max(10000).optional(),
+  warnings: z.array(z.unknown()).optional(),
+});
+export const WorkspaceMembers = z.strictObject({
+  groups: z.array(z.unknown()).optional(),
+  invitations: z.array(z.unknown()).optional(),
+  alerts: z.array(z.unknown()).optional(),
+  count: z.number().int().optional(),
+});
+export const InvitationLink = z.strictObject({
+  url: z.string().max(10000).optional(),
+  expires_at: z.string().max(10000).optional(),
+});
+export const MemberDetail = z.strictObject({
+  member: z.record(z.string(), z.unknown()).optional(),
+  groups: z.array(z.unknown()).optional(),
+  role_bundle: z.record(z.string(), z.unknown()).optional(),
+  granted: z.array(z.unknown()).optional(),
+  revoked: z.array(z.unknown()).optional(),
+  assigned: z.record(z.string(), z.unknown()).optional(),
+  clone: z.record(z.string(), z.unknown()).optional(),
+  login: z.record(z.string(), z.unknown()).optional(),
+  recent_events: z.array(z.unknown()).optional(),
+});
+export const MemberRemovalPreview = z.strictObject({
+  tickets: z.array(z.unknown()).optional(),
+  handovers_cancelled: z.array(z.unknown()).optional(),
+  approvals_reassigned: z.array(z.unknown()).optional(),
+  sole_approver: z.array(z.unknown()).optional(),
+  deleted: z.array(z.unknown()).optional(),
+  kept: z.array(z.unknown()).optional(),
+  restorable_until: z.string().max(10000).optional(),
+});
+export const WorkspaceRules = z.strictObject({
+  rules: z.array(z.unknown()).optional(),
+  rules_by_layer: z.array(z.unknown()).optional(),
+  escalations: z.array(z.unknown()).optional(),
+  work_types: z.array(z.unknown()).optional(),
+});
+export const EscalationPreview = z.strictObject({
+  matched_last_month: z.number().int().optional(),
+  examples: z.array(z.unknown()).optional(),
+});
+export const ExportStatus = z.strictObject({
+  status: z.string().max(10000).optional(),
+  url: z.string().max(10000).optional(),
+  expires_at: z.string().max(10000).optional(),
+});
+export const WorkspaceSettings = z.strictObject({
+  workspace: z.record(z.string(), z.unknown()).optional(),
+  plan: z.record(z.string(), z.unknown()).optional(),
+  subscription: z.record(z.string(), z.unknown()).optional(),
+  price_change: z.record(z.string(), z.unknown()).optional(),
+  permissions: z.array(z.unknown()).optional(),
+  fixed_rules: z.array(z.unknown()).optional(),
+  deletion: z.record(z.string(), z.unknown()).optional(),
+});
+export const PlanChoice = z.strictObject({
+  plan_id: z.string().max(10000).optional(),
+  name: z.string().max(10000).optional(),
+  price_monthly: z.number().int().optional(),
+  limits: z.record(z.string(), z.unknown()).optional(),
+  current: z.boolean().optional(),
+  can_choose: z.boolean().optional(),
+  reason: z.string().max(10000).optional(),
+  effective_from: z.string().max(10000).optional(),
+});
+export const Billing = z.strictObject({
+  payee: z.record(z.string(), z.unknown()).optional(),
+  billing_contact: z.record(z.string(), z.unknown()).optional(),
+  terms: z.string().max(10000).optional(),
+  invoices: z.array(z.unknown()).optional(),
+});
+export const SignedUrl = z.strictObject({
+  url: z.string().max(10000).optional(),
+  expires_at: z.string().max(10000).optional(),
+});
+export const ClientRow = z.strictObject({
+  id: z.string().max(10000).optional(),
+  name: z.string().max(10000).optional(),
+  summary: z.string().max(10000).optional(),
+  groups: z.array(z.unknown()).optional(),
+  owner_member_id: z.string().max(10000).optional(),
+  visibility: z.string().max(10000).optional(),
+  active_tickets: z.number().int().optional(),
+  open_requests: z.number().int().optional(),
+  waiting_acceptances: z.number().int().optional(),
+  last_activity_at: z.string().max(10000).optional(),
+});
+export const ClientLinkCandidate = z.strictObject({
+  ticket_id: z.string().max(10000).optional(),
+  number: z.string().max(10000).optional(),
+  title: z.string().max(10000).optional(),
+  reason: z.string().max(10000).optional(),
+});
+export const ClientDetail = z.strictObject({
+  client: z.record(z.string(), z.unknown()).optional(),
+  groups: z.array(z.unknown()).optional(),
+  contacts: z.array(z.unknown()).optional(),
+  todo: z.array(z.unknown()).optional(),
+  rules: z.array(z.unknown()).optional(),
+  knowledge: z.array(z.unknown()).optional(),
+  counts: z.record(z.string(), z.unknown()).optional(),
+});
+export const ClientActivityItem = z.strictObject({
+  at: z.string().max(10000).optional(),
+  actor: z.record(z.string(), z.unknown()).optional(),
+  kind: z.string().max(10000).optional(),
+  text: z.string().max(10000).optional(),
+  ticket_id: z.string().max(10000).optional(),
+  client_visible: z.boolean().optional(),
+});
+export const PortalHome = z.strictObject({
+  to_review: z.array(z.unknown()).optional(),
+  requests: z.array(z.unknown()).optional(),
+  tickets: z.array(z.unknown()).optional(),
+});
+export const ClientRequestDetail = z.strictObject({
+  request: z.record(z.string(), z.unknown()).optional(),
+  messages: z.array(z.unknown()).optional(),
+  ticket_draft: z.record(z.string(), z.unknown()).optional(),
+  questions: z.array(z.unknown()).optional(),
+  reply_draft: z.string().max(10000).optional(),
+  route_suggestion: z.record(z.string(), z.unknown()).optional(),
+});
+export const PortalQuestions = z.strictObject({
+  available: z.boolean().optional(),
+  questions: z.array(z.unknown()).optional(),
+});
+export const PortalRequest = z.strictObject({
+  request: z.record(z.string(), z.unknown()).optional(),
+  messages: z.array(z.unknown()).optional(),
+});
+export const PortalTicket = z.strictObject({
+  title: z.string().max(10000).optional(),
+  stage: z.string().max(10000).optional(),
+  due_on: z.string().max(10000).optional(),
+  artifacts: z.array(z.unknown()).optional(),
+  messages: z.array(z.unknown()).optional(),
+  sections: z.array(z.unknown()).optional(),
+});
+export const PortalAcceptance = z.strictObject({
+  acceptance: z.record(z.string(), z.unknown()).optional(),
+  artifact: z.record(z.string(), z.unknown()).optional(),
+  preview_url: z.string().max(10000).optional(),
+  message: z.string().max(10000).optional(),
+  due_on: z.string().max(10000).optional(),
+});
+export const KnowledgeHome = z.strictObject({
+  to_verify: z.array(z.unknown()).optional(),
+  proposals: z.array(z.unknown()).optional(),
+  recent: z.array(z.unknown()).optional(),
+  popular: z.array(z.unknown()).optional(),
+  count: z.number().int().optional(),
+});
+export const KnowledgeTree = z.strictObject({
+  places: z.array(z.unknown()).optional(),
+  topics: z.array(z.unknown()).optional(),
+  archived: z.number().int().optional(),
+});
+export const KnowledgeAnswer = z.strictObject({
+  mode: z.string().max(10000).optional(),
+  answer: z.string().max(10000).optional(),
+  citations: z.array(z.unknown()).optional(),
+  hits: z.array(z.unknown()).optional(),
+});
+export const KnowledgePageDetail = z.strictObject({
+  page: z.record(z.string(), z.unknown()).optional(),
+  body: z.record(z.string(), z.unknown()).optional(),
+  toc: z.array(z.unknown()).optional(),
+  children: z.array(z.unknown()).optional(),
+  backlinks: z.array(z.unknown()).optional(),
+  related_rules: z.array(z.unknown()).optional(),
+  proposal_marks: z.array(z.unknown()).optional(),
+  draft: z.record(z.string(), z.unknown()).optional(),
+});
+export const KnowledgeUsage = z.strictObject({
+  reads_3m: z.number().int().optional(),
+  returns: z.number().int().optional(),
+  recent_tickets: z.array(z.unknown()).optional(),
+  hot_sections: z.array(z.unknown()).optional(),
+});
+export const KnowledgeLinkTarget = z.strictObject({
+  kind: z.string().max(10000).optional(),
+  id: z.string().max(10000).optional(),
+  title: z.string().max(10000).optional(),
+  place: z.string().max(10000).optional(),
+});
+export const KnowledgeVerification = z.strictObject({
+  page_id: z.string().max(10000).optional(),
+  title: z.string().max(10000).optional(),
+  place: z.string().max(10000).optional(),
+  owner_member_id: z.string().max(10000).optional(),
+  due_on: z.string().max(10000).optional(),
+  interval: z.string().max(10000).optional(),
+  ai_check: z.string().max(10000).optional(),
+  suggested_action: z.string().max(10000).optional(),
+  newer_page_id: z.string().max(10000).optional(),
+});
+export const KnowledgeImportPreview = z.strictObject({
+  source: z.string().max(10000).optional(),
+  pages: z.number().int().optional(),
+  folders: z.number().int().optional(),
+  links: z.number().int().optional(),
+  topics: z.number().int().optional(),
+  images: z.number().int().optional(),
+  mapping: z.record(z.string(), z.unknown()).optional(),
+  warnings: z.array(z.unknown()).optional(),
+});
+export const OpsWorkspaceRow = z.strictObject({
+  id: z.string().max(10000).optional(),
+  name: z.string().max(10000).optional(),
+  admin: z.record(z.string(), z.unknown()).optional(),
+  plan: z.string().max(10000).optional(),
+  members: z.string().max(10000).optional(),
+  pc_connected: z.string().max(10000).optional(),
+  runs_month: z.number().int().optional(),
+  attention: z.array(z.unknown()).optional(),
+  billing: z.string().max(10000).optional(),
+  state: z.string().max(10000).optional(),
+});
+export const OpsWorkspace = z.strictObject({
+  workspace: z.record(z.string(), z.unknown()).optional(),
+  pc: z.record(z.string(), z.unknown()).optional(),
+  runs: z.record(z.string(), z.unknown()).optional(),
+  stopped: z.record(z.string(), z.unknown()).optional(),
+  files: z.record(z.string(), z.unknown()).optional(),
+  stop_reasons: z.array(z.unknown()).optional(),
+  recent: z.array(z.unknown()).optional(),
+  info: z.record(z.string(), z.unknown()).optional(),
+});
+export const OpsWorkspaceMember = z.strictObject({
+  name: z.string().max(10000).optional(),
+  email: z.string().max(10000).optional(),
+  role: z.string().max(10000).optional(),
+  last_seen_at: z.string().max(10000).optional(),
+  pc: z.string().max(10000).optional(),
+  login: z.string().max(10000).optional(),
+});
+export const OpsWorkspaceBilling = z.strictObject({
+  plan: z.record(z.string(), z.unknown()).optional(),
+  usage: z.record(z.string(), z.unknown()).optional(),
+  payment_terms: z.string().max(10000).optional(),
+  invoices: z.array(z.unknown()).optional(),
+});
+export const Shell = z.strictObject({
+  approvals_waiting: z.number().int().optional(),
+  notifications_unread: z.number().int().optional(),
+  groups: z.array(z.unknown()).optional(),
+  pc: z.record(z.string(), z.unknown()).optional(),
+  setup_left: z.number().int().optional(),
+  banner: z.record(z.string(), z.unknown()).optional(),
+  workspace: z.record(z.string(), z.unknown()).optional(),
+});
+export const OpsShell = z.strictObject({
+  inquiries_unassigned: z.number().int().optional(),
+  inquiries_mine: z.number().int().optional(),
+  invoices_overdue: z.number().int().optional(),
+  banner: z.record(z.string(), z.unknown()).optional(),
+});
+export const TicketShape = z.strictObject({
+  kinds: z.array(z.unknown()).optional(),
+  stages: z.array(z.unknown()).optional(),
+  axes: z.array(z.unknown()).optional(),
+  handover_rules: z.array(z.unknown()).optional(),
+  limits: z.record(z.string(), z.unknown()).optional(),
+  template_updates: z.number().int().optional(),
+});
+export const TicketShapeChangePreview = z.strictObject({
+  removed: z.array(z.unknown()).optional(),
+  needs_move_to: z.array(z.unknown()).optional(),
+  affected_tickets: z.number().int().optional(),
+  over_limits: z.array(z.unknown()).optional(),
+});
+export const OpsInquiryDetail = z.strictObject({
+  inquiry: z.record(z.string(), z.unknown()).optional(),
+  messages: z.array(z.unknown()).optional(),
+  context: z.record(z.string(), z.unknown()).optional(),
+  workspace: z.record(z.string(), z.unknown()).optional(),
+});
+export const OpsNoticeDetail = z.strictObject({
+  notice: z.record(z.string(), z.unknown()).optional(),
+  updates: z.array(z.unknown()).optional(),
+  affects: z.record(z.string(), z.unknown()).optional(),
+  placements: z.array(z.unknown()).optional(),
+});
+export const ServiceStatus = z.strictObject({
+  components: z.array(z.unknown()).optional(),
+  banner: z.record(z.string(), z.unknown()).optional(),
+  maintenance: z.record(z.string(), z.unknown()).optional(),
+});
 
-export const SCHEMAS: Record<string, z.ZodType> = { Tenants, TenantsInput, Scopes, ScopesInput, MemberKinds, MemberKindsInput, Members, MembersInput, SetupSteps, SetupStepsInput, Clones, ClonesInput, AiEmployees, AiEmployeesInput, GoalKinds, GoalKindsInput, Units, UnitsInput, RollupKinds, RollupKindsInput, Goals, GoalsInput, GoalAllocations, GoalAllocationsInput, GoalContributions, GoalContributionsInput, GoalVersions, GoalVersionsInput, Hypotheses, HypothesesInput, Measures, MeasuresInput, Validations, ValidationsInput, LedgerDefinitions, LedgerDefinitionsInput, LedgerFields, LedgerFieldsInput, LedgerStages, LedgerStagesInput, LedgerViews, LedgerViewsInput, LedgerRecords, LedgerRecordsInput, Duties, DutiesInput, DutyVersions, DutyVersionsInput, LearnedProcedures, LearnedProceduresInput, ProcedureSteps, ProcedureStepsInput, MemoryKinds, MemoryKindsInput, Memories, MemoriesInput, MemoryDigests, MemoryDigestsInput, MemoryProposals, MemoryProposalsInput, EmbeddingModels, EmbeddingModelsInput, SearchEmbeddings, SearchEmbeddingsInput, Tasks, TasksInput, TaskHandovers, TaskHandoversInput, DailyPlans, DailyPlansInput, Triggers, TriggersInput, Policies, PoliciesInput, Approvals, ApprovalsInput, ActionRuns, ActionRunsInput, ServiceRegistry, ServiceRegistryInput, CredentialKinds, CredentialKindsInput, Credentials, CredentialsInput, Conversations, ConversationsInput, BridgeJobs, BridgeJobsInput, BridgeJobStates, BridgeJobStatesInput, BridgeJobEvents, BridgeJobEventsInput, PermissionRules, PermissionRulesInput, AgentUsageSnapshots, AgentUsageSnapshotsInput, Messages, MessagesInput, Artifacts, ArtifactsInput, ArtifactVersions, ArtifactVersionsInput, AuditEvents, AuditEventsInput, SessionKinds, SessionKindsInput, RevokeReasons, RevokeReasonsInput, Layers, LayersInput, TargetKinds, TargetKindsInput, Abilities, AbilitiesInput, Permissions, PermissionsInput, AccountEvents, AccountEventsInput, AccountEventItems, AccountEventItemsInput, Sessions, SessionsInput, SupportAccessGrants, SupportAccessGrantsInput, RetentionHolds, RetentionHoldsInput, ErasureCertificates, ErasureCertificatesInput, Distributions, DistributionsInput, DistributionVersions, DistributionVersionsInput, TenantDistributions, TenantDistributionsInput, ServiceRegistryVersions, ServiceRegistryVersionsInput, ServiceRequests, ServiceRequestsInput, ReviewRequests, ReviewRequestsInput, OpsMembers, OpsMembersInput, OpsAuditEvents, OpsAuditEventsInput, SecurityEvents, SecurityEventsInput, Inquiries, InquiriesInput, Notices, NoticesInput, NoticeDeliveries, NoticeDeliveriesInput, StatusIncidents, StatusIncidentsInput, NotificationPreferences, NotificationPreferencesInput, Notifications, NotificationsInput, Plans, PlansInput, PlanVersions, PlanVersionsInput, Subscriptions, SubscriptionsInput, PlanChangeRequests, PlanChangeRequestsInput, UsageMeters, UsageMetersInput, Invoices, InvoicesInput, Payments, PaymentsInput, ErrorEvents, ErrorEventsInput, Imports, ImportsInput, Integrations, IntegrationsInput, Invitations, InvitationsInput, PendingSignup, PendingSignupInput, ExportJobs, ExportJobsInput, Attachments, AttachmentsInput, Skills, SkillsInput, SkillVersions, SkillVersionsInput, SkillTestRuns, SkillTestRunsInput, SkillAttachments, SkillAttachmentsInput, PaymentMethods, PaymentMethodsInput, BillingEvents, BillingEventsInput, LlmRoutes, LlmRoutesInput, LlmCapabilities, LlmCapabilitiesInput, PushDevices, PushDevicesInput, DisclosureVersions, DisclosureVersionsInput, Subprocessors, SubprocessorsInput };
+export const SCHEMAS: Record<string, z.ZodType> = { Tenants, TenantsInput, Scopes, ScopesInput, MemberKinds, MemberKindsInput, Members, MembersInput, SetupSteps, SetupStepsInput, Clones, ClonesInput, AiEmployees, AiEmployeesInput, GoalKinds, GoalKindsInput, Units, UnitsInput, RollupKinds, RollupKindsInput, Goals, GoalsInput, GoalAllocations, GoalAllocationsInput, GoalContributions, GoalContributionsInput, GoalVersions, GoalVersionsInput, Hypotheses, HypothesesInput, Measures, MeasuresInput, Validations, ValidationsInput, LedgerDefinitions, LedgerDefinitionsInput, LedgerFields, LedgerFieldsInput, LedgerStages, LedgerStagesInput, LedgerViews, LedgerViewsInput, LedgerRecords, LedgerRecordsInput, Duties, DutiesInput, DutyVersions, DutyVersionsInput, LearnedProcedures, LearnedProceduresInput, ProcedureSteps, ProcedureStepsInput, MemoryKinds, MemoryKindsInput, Memories, MemoriesInput, MemoryDigests, MemoryDigestsInput, MemoryProposals, MemoryProposalsInput, EmbeddingModels, EmbeddingModelsInput, SearchEmbeddings, SearchEmbeddingsInput, Tasks, TasksInput, TaskHandovers, TaskHandoversInput, DailyPlans, DailyPlansInput, Triggers, TriggersInput, Policies, PoliciesInput, Approvals, ApprovalsInput, ActionRuns, ActionRunsInput, ServiceRegistry, ServiceRegistryInput, CredentialKinds, CredentialKindsInput, Credentials, CredentialsInput, Conversations, ConversationsInput, BridgeJobs, BridgeJobsInput, BridgeJobStates, BridgeJobStatesInput, BridgeJobEvents, BridgeJobEventsInput, PermissionRules, PermissionRulesInput, AgentUsageSnapshots, AgentUsageSnapshotsInput, Messages, MessagesInput, Artifacts, ArtifactsInput, ArtifactVersions, ArtifactVersionsInput, AuditEvents, AuditEventsInput, SessionKinds, SessionKindsInput, RevokeReasons, RevokeReasonsInput, Layers, LayersInput, TargetKinds, TargetKindsInput, Abilities, AbilitiesInput, Permissions, PermissionsInput, AccountEvents, AccountEventsInput, AccountEventItems, AccountEventItemsInput, Sessions, SessionsInput, SupportAccessGrants, SupportAccessGrantsInput, RetentionHolds, RetentionHoldsInput, ErasureCertificates, ErasureCertificatesInput, Distributions, DistributionsInput, DistributionVersions, DistributionVersionsInput, TenantDistributions, TenantDistributionsInput, ServiceRegistryVersions, ServiceRegistryVersionsInput, ServiceRequests, ServiceRequestsInput, ReviewRequests, ReviewRequestsInput, OpsMembers, OpsMembersInput, OpsAuditEvents, OpsAuditEventsInput, SecurityEvents, SecurityEventsInput, Inquiries, InquiriesInput, Notices, NoticesInput, NoticeDeliveries, NoticeDeliveriesInput, StatusIncidents, StatusIncidentsInput, NotificationPreferences, NotificationPreferencesInput, Notifications, NotificationsInput, Plans, PlansInput, PlanVersions, PlanVersionsInput, Subscriptions, SubscriptionsInput, PlanChangeRequests, PlanChangeRequestsInput, UsageMeters, UsageMetersInput, Invoices, InvoicesInput, Payments, PaymentsInput, ErrorEvents, ErrorEventsInput, Imports, ImportsInput, Integrations, IntegrationsInput, Invitations, InvitationsInput, PendingSignup, PendingSignupInput, ExportJobs, ExportJobsInput, Attachments, AttachmentsInput, Skills, SkillsInput, SkillVersions, SkillVersionsInput, SkillTestRuns, SkillTestRunsInput, SkillAttachments, SkillAttachmentsInput, PaymentMethods, PaymentMethodsInput, BillingEvents, BillingEventsInput, LlmRoutes, LlmRoutesInput, LlmCapabilities, LlmCapabilitiesInput, PushDevices, PushDevicesInput, DisclosureVersions, DisclosureVersionsInput, Subprocessors, SubprocessorsInput, Tickets, TicketsInput, TicketSections, TicketSectionsInput, TicketSectionVersions, TicketSectionVersionsInput, TicketKinds, TicketKindsInput, KindSections, KindSectionsInput, TicketStages, TicketStagesInput, ClassAxes, ClassAxesInput, ClassValues, ClassValuesInput, TicketClassValues, TicketClassValuesInput, HandoverRules, HandoverRulesInput, TestSpecs, TestSpecsInput, Checks, ChecksInput, TicketDecisions, TicketDecisionsInput, TicketMessages, TicketMessagesInput, ReferenceLogs, ReferenceLogsInput, KnowledgePages, KnowledgePagesInput, KnowledgePageVersions, KnowledgePageVersionsInput, KnowledgeLinks, KnowledgeLinksInput, Clients, ClientsInput, ClientGroups, ClientGroupsInput, ClientContacts, ClientContactsInput, ClientRequests, ClientRequestsInput, Acceptances, AcceptancesInput, TenantMemberships, TenantMembershipsInput, TermsVersions, TermsVersionsInput, TermsConsents, TermsConsentsInput, Passkeys, PasskeysInput, Operations, OperationsInput, TicketLinks, TicketLinksInput, TicketHandovers, TicketHandoversInput, SavedViews, SavedViewsInput, TicketImports, TicketImportsInput, LearningCandidates, LearningCandidatesInput, BridgePairingCodes, BridgePairingCodesInput, NotificationSettings, NotificationSettingsInput, OpsPlanProposals, OpsPlanProposalsInput, ScopeMemberships, ScopeMembershipsInput, ScopeOverview, TicketKindChangePreview, TicketDeletePreview, SearchHit, TimelineItem, TestSpecLint, TicketCompletion, BulkResult, ApprovalQueueItem, ApprovalDetail, BulkApprovalPreview, CloneNow, CloneGrowth, KnowsCounts, ActivityItem, SignupStatus, MySecurity, TwoFactorSetup, BackupCodes, StepUp, Me, MyUsage, SetupTask, PairingCode, BridgeRelease, BridgeClaim, BridgeJob, JobControl, ResolvedCredential, WorkTypeUploadCheck, PlanProposalImpact, RuleCheck, WorkspaceMembers, InvitationLink, MemberDetail, MemberRemovalPreview, WorkspaceRules, EscalationPreview, ExportStatus, WorkspaceSettings, PlanChoice, Billing, SignedUrl, ClientRow, ClientLinkCandidate, ClientDetail, ClientActivityItem, PortalHome, ClientRequestDetail, PortalQuestions, PortalRequest, PortalTicket, PortalAcceptance, KnowledgeHome, KnowledgeTree, KnowledgeAnswer, KnowledgePageDetail, KnowledgeUsage, KnowledgeLinkTarget, KnowledgeVerification, KnowledgeImportPreview, OpsWorkspaceRow, OpsWorkspace, OpsWorkspaceMember, OpsWorkspaceBilling, Shell, OpsShell, TicketShape, TicketShapeChangePreview, OpsInquiryDetail, OpsNoticeDetail, ServiceStatus };

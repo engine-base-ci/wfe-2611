@@ -24,7 +24,9 @@ import importlib.util as _ilu
 _spec = _ilu.spec_from_file_location("screen_api", os.path.join(os.path.dirname(os.path.abspath(__file__)), "screen_api.py")); _sa = _ilu.module_from_spec(_spec); _spec.loader.exec_module(_sa)
 # ---------------------------------------------------------------- endpoints（画面の下書きを (method, path) で束ねる）
 eps = {}
+V1 = {x["id"] for x in F["screens"] if x.get("release") == "v1"}   # 第1フェーズの画面だけ API にする。後のフェーズの画面の API は 08_api/retired-endpoints.json に決定 ID つきで外す（D-128.112）
 for s in S:
+    if s["id"] not in V1: continue
     for a in s["required_apis"]:
         if a["role"] == "transition": continue
         path = a["path_draft"].replace("/api/", BASE + "/"); key = (a["method"], path)
@@ -82,8 +84,9 @@ for (m, p), e in sorted(eps.items(), key=lambda kv: (kv[0][1], ["GET", "POST", "
 # 行為 → endpoint の逆被覆
 acts_without = sorted(a for a in acts if not any(a in e["acts"] for e in endpoints) and acts[a].get("release") == "v1")
 # ---------------------------------------------------------------- 画面カバレッジ
-cov = []
+cov = []; deferred_screens = sorted(x["id"] for x in S if x["id"] not in V1)
 for s in S:
+    if s["id"] not in V1: continue
     req = [{"role": a["role"], "endpoint": f'{a["method"]} {a["path_draft"].replace("/api/", BASE + "/")}', "act": a.get("act")} for a in s["required_apis"] if a["role"] != "transition"]
     have = {f'{e["method"]} {e["path"]}' for e in endpoints}; miss = [r["endpoint"] for r in req if r["endpoint"] not in have]
     cov.append({"screen_id": s["id"], "screen_name": s["name"], "mock_path": s.get("mock_path"), "required_apis": req, "transitions": s.get("transitions", []), "coverage_status": "OK" if not miss and req else ("NG" if miss else "NONE"), "missing": miss})
@@ -132,7 +135,7 @@ for e in endpoints:
     if not op["parameters"]: del op["parameters"]
     tbl = "".join(w.capitalize() for w in tname.split("_"))
     if e["method"] in ("POST", "PATCH"): op["requestBody"] = {"required": True, "content": {"application/json": {"schema": {"$ref": f"#/components/schemas/{tbl}Input"}}}}
-    ok = {"description": "成功", "content": {"application/json": {"schema": {"type": "object", "properties": {"data": {"type": "array", "items": {"$ref": f"#/components/schemas/{name}"}} if e["returns_list"] else {"$ref": f"#/components/schemas/{name}"}, "meta": {"type": "object"}}}}}}
+    ok = {"description": "成功", "content": {"application/json": {"schema": {"type": "object", "properties": {"data": {"type": "array", "items": {"$ref": f"#/components/schemas/{name}"}} if e["returns_list"] else {"$ref": f"#/components/schemas/{name}"}, "meta": {"type": "object", **({"properties": {k: {"type": v} for k, v in getattr(_sa, "META", {}).get(e.get("operation_id"), {}).items()}} if e.get("operation_id") in getattr(_sa, "META", {}) else {})}}}}}}
     op["responses"] = {str(e["outputs_2xx"]["status"]): ok, **{str(x["status"]): {"description": x["code"], "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}} for x in e["outputs_4xx"]}}
     paths.setdefault(re.sub(r":(\w+)", r"{\1}", e["path"]), {})[e["method"].lower()] = op
 openapi = {"openapi": "3.0.3", "info": {"title": "Kaname API", "version": "1.0.0", "description": f"Mock-Driven Contract Generation。{TODAY} 凍結。信頼源は 08_api/endpoints.json。x-acts / x-screens / x-choke-points / x-source で行為・画面・関門・決定に辿れる"},
@@ -146,7 +149,7 @@ ts.append(""); ts.append("export const ENDPOINTS = " + json.dumps([{"id": e["id"
 # ---------------------------------------------------------------- 書き出し
 os.makedirs(OUT, exist_ok=True)
 meta = {"version": "v3.1", "created_at": TODAY, "frozen_at": TODAY, "base_url": BASE, "_doc": "05_flow/build_api.py が機械生成。手で直さない。凍結後の変更は決定（ADR）＋影響解析", "source": ["D-043.2", "D-051.1", "D-051.2", "D-053.1"]}
-json.dump({"meta": meta, "endpoints": endpoints, "acts_without_endpoint": acts_without}, open(f"{OUT}/endpoints.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+json.dump({"meta": meta, "endpoints": endpoints, "acts_without_endpoint": acts_without, "deferred_screens": deferred_screens}, open(f"{OUT}/endpoints.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 yaml.safe_dump(openapi, open(f"{OUT}/openapi.yaml", "w", encoding="utf-8"), allow_unicode=True, sort_keys=False, width=200)
 open(f"{OUT}/types.ts", "w", encoding="utf-8").write("\n".join(ts) + "\n")
 json.dump({"meta": {"project": "Kaname", "created_at": TODAY, "skill_version": "v3.1", "total_endpoints": len(endpoints)}, "context": {"api_style": "REST（独立 API 層・Hono・OpenAPI が契約）", "auth_method": "セッション（Better Auth・トークンベース・sessions 表で失効）", "versioning": "url（/api/v1）", "contract_test_framework": "OpenAPI-driven（schemathesis 系）＋ 型生成同期 check（未確定：段階 1 凍結時に確認）"},
@@ -177,4 +180,5 @@ html = f"""<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>Kan
 <h2>画面 ↔ API</h2>{rows(["画面","必要 API","状態"], [[c['screen_id'], '<br>'.join(f"{r['role']}: {r['endpoint']}" for r in c['required_apis']), c['coverage_status']] for c in cov])}
 </body></html>"""
 open(f"{OUT}/api-spec.html", "w", encoding="utf-8").write(html)
+print(f"後のフェーズの画面 {len(deferred_screens)}（API は作らない・D-128.112）")
 print(f"endpoints {len(endpoints)} / 画面 OK {sum(1 for c in cov if c['coverage_status']=='OK')}/{len(cov)} / endpoint の無い行為 {len(acts_without)} {acts_without[:12]} / どの画面にも出ないフィールド {len(unconsumed)}")

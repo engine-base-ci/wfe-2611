@@ -595,7 +595,6 @@
    ],
    "related_apis": [
     "GET /api/approvals/queue",
-    "GET /api/approvals/counts",
     "GET /api/approvals/:id",
     "POST /api/approvals/:id/approve",
     "POST /api/approvals/:id/edit",
@@ -1604,7 +1603,6 @@
    ],
    "related_apis": [
     "GET /api/ops/inquiries",
-    "GET /api/ops/inquiries/counts",
     "GET /api/ops/inquiries/:id",
     "PATCH /api/ops/inquiries/:id",
     "POST /api/ops/inquiries/:id/replies",
@@ -1674,6 +1672,7 @@
     "E-134 ops_plan_proposals",
     "E-086 invoices",
     "E-087 payments",
+    "E-074 inquiries",
     "E-001 tenants",
     "E-061 sessions",
     "E-039 action_runs",
@@ -1681,8 +1680,8 @@
     "E-072 ops_audit_events"
    ],
    "related_apis": [
+    "GET /api/ops/shell",
     "GET /api/ops/workspaces",
-    "GET /api/ops/workspaces/summary",
     "POST /api/ops/workspaces/export",
     "navigate /account",
     "navigate /settings/close",
@@ -2477,7 +2476,6 @@
    ],
    "related_apis": [
     "GET /api/ops/invoices",
-    "GET /api/ops/invoices/summary",
     "POST /api/ops/invoices/issue",
     "POST /api/ops/invoices/:id/payments",
     "POST /api/ops/invoices/export",
@@ -2875,13 +2873,15 @@
     "E-037 policies",
     "E-128 acceptances",
     "E-126 client_contacts",
+    "E-061 sessions",
+    "E-075 notices",
     "E-112 class_axes",
-    "E-113 class_values"
+    "E-113 class_values",
+    "E-115 handover_rules"
    ],
    "related_apis": [
     "GET /api/tickets",
     "GET /api/tickets",
-    "GET /api/tickets/counts",
     "GET /api/scopes/:id/overview",
     "GET /api/search",
     "GET /api/tickets/:id",
@@ -2951,11 +2951,13 @@
     "PATCH /api/saved_views/:id",
     "DELETE /api/saved_views/:id",
     "GET /api/notifications",
+    "GET /api/shell",
     "PATCH /api/notifications/:id",
     "POST /api/notifications/read-all",
     "GET /api/ticket_kinds",
     "GET /api/ticket_stages",
     "GET /api/class_axes",
+    "GET /api/handover_rules",
     "GET /api/members",
     "GET /api/clients"
    ],
@@ -2989,9 +2991,9 @@
     "E-052 audit_events",
     "E-038 approvals",
     "E-106 tickets",
+    "E-114 ticket_class_values",
     "E-119 ticket_messages",
-    "E-067 tenant_distributions",
-    "E-114 ticket_class_values"
+    "E-067 tenant_distributions"
    ],
    "related_apis": [
     "GET /api/workspace/rules",
@@ -3003,24 +3005,11 @@
     "POST /api/workspace/escalation-rules",
     "PATCH /api/workspace/escalation-rules/:id",
     "DELETE /api/workspace/escalation-rules/:id",
-    "GET /api/ticket_kinds",
-    "POST /api/ticket_kinds",
-    "PATCH /api/ticket_kinds/:id",
-    "DELETE /api/ticket_kinds/:id",
-    "PATCH /api/ticket_kinds/:id/sections",
+    "GET /api/workspace/ticket-shape",
+    "POST /api/workspace/ticket-shape/preview",
+    "PATCH /api/workspace/ticket-shape",
     "GET /api/ticket_kinds/template-updates",
-    "POST /api/ticket_kinds/template-updates/:id/apply",
-    "GET /api/ticket_stages",
-    "POST /api/ticket_stages",
-    "PATCH /api/ticket_stages/:id",
-    "DELETE /api/ticket_stages/:id",
-    "GET /api/class_axes",
-    "POST /api/class_axes",
-    "PATCH /api/class_axes/:id",
-    "DELETE /api/class_axes/:id",
-    "DELETE /api/class_values/:id",
-    "GET /api/handover_rules",
-    "PATCH /api/handover_rules/:id"
+    "POST /api/ticket_kinds/template-updates/:id/apply"
    ],
    "access_roles": [
     "R1",
@@ -3224,7 +3213,6 @@
    ],
    "related_apis": [
     "GET /api/clients",
-    "GET /api/clients/counts",
     "GET /api/clients/link-candidates",
     "POST /api/clients",
     "GET /api/clients/:id",
@@ -4488,12 +4476,6 @@
      "role": "data_fetch",
      "method": "GET",
      "path_draft": "/api/approvals/queue"
-    },
-    {
-     "act": "A15",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/approvals/counts"
     },
     {
      "act": "A15",
@@ -6539,12 +6521,6 @@
      "act": "A70",
      "role": "data_fetch",
      "method": "GET",
-     "path_draft": "/api/ops/inquiries/counts"
-    },
-    {
-     "act": "A70",
-     "role": "data_fetch",
-     "method": "GET",
      "path_draft": "/api/ops/inquiries/:id"
     },
     {
@@ -6845,13 +6821,13 @@
      "act": "A60",
      "role": "data_fetch",
      "method": "GET",
-     "path_draft": "/api/ops/workspaces"
+     "path_draft": "/api/ops/shell"
     },
     {
      "act": "A60",
      "role": "data_fetch",
      "method": "GET",
-     "path_draft": "/api/ops/workspaces/summary"
+     "path_draft": "/api/ops/workspaces"
     },
     {
      "act": "A60",
@@ -9501,12 +9477,6 @@
     },
     {
      "act": "A72",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/ops/invoices/summary"
-    },
-    {
-     "act": "A72",
      "role": "action",
      "method": "POST",
      "path_draft": "/api/ops/invoices/issue"
@@ -10541,12 +10511,6 @@
      "act": "A58",
      "role": "data_fetch",
      "method": "GET",
-     "path_draft": "/api/tickets/counts"
-    },
-    {
-     "act": "A58",
-     "role": "data_fetch",
-     "method": "GET",
      "path_draft": "/api/scopes/:id/overview"
     },
     {
@@ -10958,6 +10922,12 @@
      "path_draft": "/api/notifications"
     },
     {
+     "act": "A58",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/shell"
+    },
+    {
      "act": "A109",
      "role": "action",
      "method": "PATCH",
@@ -10986,6 +10956,12 @@
      "role": "data_fetch",
      "method": "GET",
      "path_draft": "/api/class_axes"
+    },
+    {
+     "act": "A110",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/handover_rules"
     },
     {
      "act": "A103",
@@ -11063,31 +11039,19 @@
      "act": "A118",
      "role": "data_fetch",
      "method": "GET",
-     "path_draft": "/api/ticket_kinds"
+     "path_draft": "/api/workspace/ticket-shape"
     },
     {
      "act": "A118",
      "role": "action",
      "method": "POST",
-     "path_draft": "/api/ticket_kinds"
+     "path_draft": "/api/workspace/ticket-shape/preview"
     },
     {
      "act": "A118",
      "role": "action",
      "method": "PATCH",
-     "path_draft": "/api/ticket_kinds/:id"
-    },
-    {
-     "act": "A118",
-     "role": "action",
-     "method": "DELETE",
-     "path_draft": "/api/ticket_kinds/:id"
-    },
-    {
-     "act": "A118",
-     "role": "action",
-     "method": "PATCH",
-     "path_draft": "/api/ticket_kinds/:id/sections"
+     "path_draft": "/api/workspace/ticket-shape"
     },
     {
      "act": "A120",
@@ -11100,72 +11064,6 @@
      "role": "action",
      "method": "POST",
      "path_draft": "/api/ticket_kinds/template-updates/:id/apply"
-    },
-    {
-     "act": "A118",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/ticket_stages"
-    },
-    {
-     "act": "A118",
-     "role": "action",
-     "method": "POST",
-     "path_draft": "/api/ticket_stages"
-    },
-    {
-     "act": "A118",
-     "role": "action",
-     "method": "PATCH",
-     "path_draft": "/api/ticket_stages/:id"
-    },
-    {
-     "act": "A118",
-     "role": "action",
-     "method": "DELETE",
-     "path_draft": "/api/ticket_stages/:id"
-    },
-    {
-     "act": "A118",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/class_axes"
-    },
-    {
-     "act": "A118",
-     "role": "action",
-     "method": "POST",
-     "path_draft": "/api/class_axes"
-    },
-    {
-     "act": "A118",
-     "role": "action",
-     "method": "PATCH",
-     "path_draft": "/api/class_axes/:id"
-    },
-    {
-     "act": "A118",
-     "role": "action",
-     "method": "DELETE",
-     "path_draft": "/api/class_axes/:id"
-    },
-    {
-     "act": "A118",
-     "role": "action",
-     "method": "DELETE",
-     "path_draft": "/api/class_values/:id"
-    },
-    {
-     "act": "A118",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/handover_rules"
-    },
-    {
-     "act": "A118",
-     "role": "action",
-     "method": "PATCH",
-     "path_draft": "/api/handover_rules/:id"
     }
    ]
   },
@@ -11508,12 +11406,6 @@
      "role": "data_fetch",
      "method": "GET",
      "path_draft": "/api/clients"
-    },
-    {
-     "act": "A121",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/clients/counts"
     },
     {
      "act": "A121",
@@ -12884,6 +12776,7 @@
     "services",
     "ops-tenant",
     "member-detail",
+    "tickets",
     "clients",
     "ops-team"
    ],
@@ -12899,6 +12792,7 @@
     "F-016",
     "F-017",
     "F-021",
+    "F-023",
     "F-024"
    ]
   },
@@ -13113,6 +13007,7 @@
    "entity_name": "inquiries",
    "used_by_screens": [
     "ops-support",
+    "ops-home",
     "inquiry",
     "ops-tenant"
    ],
@@ -13133,15 +13028,24 @@
     "ops-notices",
     "ops-disclosure",
     "ops-tenant",
+    "tickets",
     "portal"
    ],
    "used_by_features": [
+    "F-001",
     "F-004",
+    "F-005",
+    "F-006",
+    "F-010",
     "F-011",
+    "F-013",
     "F-015",
     "F-016",
     "F-020",
-    "F-022"
+    "F-021",
+    "F-022",
+    "F-023",
+    "F-024"
    ]
   },
   {
@@ -13905,10 +13809,20 @@
    "entity_id": "E-115",
    "entity_name": "handover_rules",
    "used_by_screens": [
+    "tickets",
     "masters"
    ],
    "used_by_features": [
-    "F-011"
+    "F-001",
+    "F-004",
+    "F-005",
+    "F-006",
+    "F-010",
+    "F-011",
+    "F-013",
+    "F-021",
+    "F-023",
+    "F-024"
    ]
   },
   {
@@ -14484,6 +14398,7 @@
     "E-055",
     "E-058",
     "E-061",
+    "E-075",
     "E-080",
     "E-081",
     "E-082",
@@ -14509,6 +14424,7 @@
     "E-112",
     "E-113",
     "E-114",
+    "E-115",
     "E-116",
     "E-117",
     "E-118",
@@ -14638,6 +14554,7 @@
     "E-112",
     "E-113",
     "E-114",
+    "E-115",
     "E-116",
     "E-117",
     "E-118",
@@ -14711,6 +14628,7 @@
     "E-052",
     "E-061",
     "E-073",
+    "E-075",
     "E-080",
     "E-081",
     "E-082",
@@ -14733,6 +14651,7 @@
     "E-112",
     "E-113",
     "E-114",
+    "E-115",
     "E-116",
     "E-117",
     "E-118",
@@ -14802,6 +14721,7 @@
     "E-069",
     "E-072",
     "E-073",
+    "E-075",
     "E-080",
     "E-093",
     "E-094",
@@ -14818,6 +14738,7 @@
     "E-112",
     "E-113",
     "E-114",
+    "E-115",
     "E-116",
     "E-117",
     "E-118",
@@ -14993,6 +14914,7 @@
     "E-064",
     "E-072",
     "E-073",
+    "E-075",
     "E-080",
     "E-081",
     "E-082",
@@ -15015,6 +14937,7 @@
     "E-112",
     "E-113",
     "E-114",
+    "E-115",
     "E-116",
     "E-117",
     "E-118",
@@ -15233,6 +15156,7 @@
     "E-052",
     "E-055",
     "E-061",
+    "E-075",
     "E-080",
     "E-089",
     "E-094",
@@ -15249,6 +15173,7 @@
     "E-112",
     "E-113",
     "E-114",
+    "E-115",
     "E-116",
     "E-117",
     "E-118",
@@ -15589,6 +15514,7 @@
     "E-051",
     "E-052",
     "E-061",
+    "E-075",
     "E-080",
     "E-091",
     "E-094",
@@ -15605,6 +15531,7 @@
     "E-112",
     "E-113",
     "E-114",
+    "E-115",
     "E-116",
     "E-117",
     "E-118",
@@ -15677,8 +15604,10 @@
     "E-052",
     "E-055",
     "E-058",
+    "E-061",
     "E-072",
     "E-073",
+    "E-075",
     "E-080",
     "E-088",
     "E-093",
@@ -15696,6 +15625,7 @@
     "E-112",
     "E-113",
     "E-114",
+    "E-115",
     "E-116",
     "E-117",
     "E-118",
@@ -15740,6 +15670,7 @@
     "E-051",
     "E-052",
     "E-061",
+    "E-075",
     "E-080",
     "E-094",
     "E-095",
@@ -15755,6 +15686,7 @@
     "E-112",
     "E-113",
     "E-114",
+    "E-115",
     "E-116",
     "E-117",
     "E-118",

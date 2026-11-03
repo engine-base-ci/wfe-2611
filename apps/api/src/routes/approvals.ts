@@ -4,8 +4,16 @@ import type { Vars } from "../middleware/tenant.js";
 import { op, type ContractDeps } from "../contract/op.js";
 
 export function register(app: Hono<Vars>, deps: ContractDeps): void {
-  app.get("/api/v1/approvals", op(deps, "getApprovals"));
-  app.post("/api/v1/approvals", op(deps, "postApprovals"));
-  app.patch("/api/v1/approvals/:id", op(deps, "patchApprovalsById"));
-  app.delete("/api/v1/approvals/:id", op(deps, "deleteApprovalsById"));
+  app.get("/api/v1/approvals/:id", op(deps, "getApproval"));
+  app.post("/api/v1/approvals/:id/approve", op(deps, "approveApproval"));
+  app.post("/api/v1/approvals/:id/edit", op(deps, "editApproval"));
+  app.post("/api/v1/approvals/:id/return", op(deps, "returnApproval"));
+  app.post("/api/v1/approvals/:id/stop", op(deps, "stopApproval"));
+  app.post("/api/v1/approvals/:id/withdraw", op(deps, "withdrawApproval"));
+  app.post("/api/v1/approvals/bulk", op(deps, "bulkApprove"));
+  app.post("/api/v1/approvals/bulk/preview", op(deps, "previewBulkApproval"));
+  app.get("/api/v1/approvals/history", op(deps, "listApprovalHistory"));
+  app.get("/api/v1/approvals/queue", op(deps, "listApprovalQueue"));
+  app.post("/api/v1/learning_candidates/:id/exception-request", op(deps, "requestRuleException"));
+  app.post("/api/v1/work_types/:id/spread-requests", op(deps, "requestWorkTypeSpread"));
 }

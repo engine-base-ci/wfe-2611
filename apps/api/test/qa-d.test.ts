@@ -3,6 +3,9 @@
 // テスト名の先頭は行 ID。DB は kaname_test（harness と同じ）。本物の Bridge・kaname_dev には触れない。
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import pg from "pg";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
 import { ENDPOINTS, type EndpointDef } from "@kaname/contracts";
 import { SCHEMAS } from "@kaname/contracts/schemas";
 import { withTenant, type TenantContext } from "@kaname/db/context";
@@ -77,6 +80,19 @@ function call(app: ReturnType<typeof makeApp>["app"], t: Target | EndpointDef, w
 const ep = (key: string) => {
   const [m, p] = key.split(" ");
   return ENDPOINTS.find((e) => e.method === m && e.path === p) ?? null;
+};
+// 決定で契約から外した口（08_api/retired-endpoints.json・D-128.78・D-128.112）。その行は仕様ごと作り直す（新しい画面のテスト仕様で書き直す）ので、ここでは飛ばして理由を名前に残す
+const RETIRED = new Map<string, string>(
+  (JSON.parse(readFileSync(join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "08_api", "retired-endpoints.json"), "utf8")) as { retired: { method: string; path: string; decision: string }[] }).retired.map(
+    (r) => [`${r.method} ${r.path.replace(/\{(\w+)\}/g, ":$1")}`, r.decision],
+  ),
+);
+const retiredOf = (key: string) => RETIRED.get(key) ?? null;
+/** タスクの口が全部、決定で外した口なら、その決定の ID（タスクごとの G-xx は新しい作業の分解で作り直す） */
+const retiredTask = (task: string) => {
+  const ks = MAP.tasks[task] ?? [];
+  const ds = ks.map((k) => (ep(k) ? null : retiredOf(k)));
+  return ks.length && ds.every(Boolean) ? [...new Set(ds)].join("・") : null;
 };
 const actor = (e: EndpointDef): W => (e.auth === "ops" ? "ops" : "boss");
 const count = async (table: string) => Number((await admin.query(`select count(*)::int as n from "${table}"`)).rows[0].n);
@@ -172,6 +188,12 @@ const MISSING: Record<string, number> = {
 };
 for (const [key, aspects] of Object.entries(MAP.ep)) {
   const e = ep(key);
+  if (!e && retiredOf(key)) {
+    describe.skip(`${key}（決定 ${retiredOf(key)} で契約から外した口。テスト仕様は新しい画面から作り直す）`, () => {
+      for (const rows of Object.values(aspects)) it(`${ids(rows)}`, () => undefined);
+    });
+    continue;
+  }
   if (!e) {
     // 仕様（openapi.yaml）には在るが、契約の route が無い endpoint：仕様どおりの状態を期待して呼ぶ
     describe(`${key}（仕様に在る endpoint）`, () => {
@@ -551,6 +573,7 @@ describe("G-11 外部リソースの実在（起動時の存在確認）", () =>
 
 describe("G-13 機能の組み合わせ（同時に起きる）", () => {
   for (const [task, rows] of Object.entries(MAP.g["G-13"] ?? {})) {
+    if (retiredTask(task)) { describe.skip(`${task}（口が全部、決定 ${retiredTask(task)} で契約から外れた。作業の分解から作り直す）`, () => it(ids(rows), () => undefined)); continue; }
     const eps = taskEps(task);
     it(`${ids(rows)} ${task}：同時に送っても規則どおり（同じ冪等キーの作成は 1 回だけ記録・承認は 1 回で決まる・同じ行の同時更新は全部記録され壊れない）`, async () => {
       for (const e of eps) {
@@ -613,6 +636,7 @@ describe("G-14 口座状態の波及（本物の認証のセッション）", ()
   const triggers = ["権限の変更", "パスワードの変更", "退会（人が抜ける）"] as const;
   let n = 0;
   for (const [task, rows] of Object.entries(MAP.g["G-14"] ?? {})) {
+    if (retiredTask(task)) { describe.skip(`${task}（口が全部、決定 ${retiredTask(task)} で契約から外れた。作業の分解から作り直す）`, () => it(ids(rows), () => undefined)); continue; }
     const trig = triggers[n++ % triggers.length]!;
     it(`${ids(rows)} ${task}：${trig}の直後、別端末（画面）と Bridge のセッションが 0 秒で 401。sessions が revoked`, async () => {
       const eps = taskEps(task);
@@ -661,6 +685,7 @@ describe("G-14 口座状態の波及（本物の認証のセッション）", ()
 
 describe("G-15 信号なし終了（外部が合図なしに終わる）", () => {
   for (const [task, rows] of Object.entries(MAP.g["G-15"] ?? {})) {
+    if (retiredTask(task)) { describe.skip(`${task}（口が全部、決定 ${retiredTask(task)} で契約から外れた。作業の分解から作り直す）`, () => it(ids(rows), () => undefined)); continue; }
     const eps = taskEps(task).filter((e) => e.errors.includes(502));
     it(`${ids(rows)} ${task}：外部・モデル・プロセスが合図なしに終わる／空を返すと、成功扱いにせず 502 と次の一手（人へのハンドオフ）。記録しない`, async () => {
       expect(eps.length, `${task} に外へ出る口（502 を持つ endpoint）が無い`).toBeGreaterThan(0);
@@ -684,6 +709,7 @@ describe("G-15 信号なし終了（外部が合図なしに終わる）", () =>
 
 describe("G-16 有限資源（DB 接続はプール経由・上限で待つ）", () => {
   for (const [task, rows] of Object.entries(MAP.g["G-16"] ?? {})) {
+    if (retiredTask(task)) { describe.skip(`${task}（口が全部、決定 ${retiredTask(task)} で契約から外れた。作業の分解から作り直す）`, () => it(ids(rows), () => undefined)); continue; }
     it(`${ids(rows)} ${task}：同時 50 要求でも全部返り、DB 接続はプールの上限（3）を超えない。同時にログイン相当の要求も落ちない`, async () => {
       const eps = taskEps(task);
       expect(eps.length).toBeGreaterThan(0);
@@ -708,7 +734,7 @@ describe("G-16 有限資源（DB 接続はプール経由・上限で待つ）",
         const base = Number((await admin.query("select count(*)::int as n from pg_stat_activity where usename = 'kaname_app' and datname = current_database()")).rows[0].n);
         const [rs, login] = await Promise.all([
           Promise.all(plan.map(({ e, o }) => call(a.app, e, actor(e), o))),
-          call(a.app, ep("GET /api/v1/tenants")!, "staff", { query: { limit: "1" } }),
+          call(a.app, ep("GET /api/v1/members")!, "staff", { query: { limit: "1" } }),
         ]);
         done = true;
         await watch;

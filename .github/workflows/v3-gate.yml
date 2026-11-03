@@ -1,4 +1,4 @@
-# .github/workflows/v3-gate.yml — Kaname CI ゲート 39 本（05_flow/build_testplan.py が生成。手で直さない）
+# .github/workflows/v3-gate.yml — Kaname CI ゲート 44 本（05_flow/build_testplan.py が生成。手で直さない）
 # 方針: ゲートが緑を維持できないなら次のスライスに進まない。旧jobrainはCIが全ゲート赤のまま進み、それが死因の一つ。
 # 段: static（静的・関門）→ database（実 Postgres・RLS・契約）／ spec（仕様の層・Python）／ task-gate（そのタスクの L1 行）→ e2e（has-ui）→ auto-merge
 name: v3-gate
@@ -39,8 +39,6 @@ jobs:
         run: pnpm ci:no-sql-concat
       - name: "G11 OpenAPI 破壊的変更検出"
         run: pnpm ci:openapi-diff
-      - name: "G-ZT ゼロトラストの設計の決まり（誰が呼べるか・本人確認・運営と顧客）"
-        run: pnpm ci:zt
       - name: "G13 env 整合"
         run: pnpm ci:env-audit
       - name: "G14 AC validator（4-tier）"
@@ -73,6 +71,16 @@ jobs:
         run: pnpm ci:op-gate
       - name: "G39 外へ出る口の宛先（apps/bridge・apps/web の fetch は Kaname か Bridge の口だけ・関門 C1 の例外 X-009／X-010 の代替統制） [CRITICAL]"
         run: pnpm ci:net-boundary && pnpm ci:net-boundary:selftest && pnpm ci:choke:selftest
+      - name: "G40 ゼロトラストの決まり（設計の赤 0・実装の残りが記録より増えない） [CRITICAL]"
+        run: pnpm ci:zt
+      - name: "G41 権限の試験（契約の全 API で、役が合わない人・ログインしていない人を止め、副作用に届かせない） [CRITICAL]"
+        run: pnpm ci:authz
+      - name: "G42 契約の外の道すじが無い（登録した道すじ＝契約） [CRITICAL]"
+        run: pnpm ci:endpoints
+      - name: "G43 秘密の混入（鍵・トークン・秘密鍵・パスワード入りの DB の URL・.env） [CRITICAL]"
+        run: pnpm ci:secret-scan
+      - name: "G44 部品の弱点（本番で使う部品に high 以上の弱点が無い）"
+        run: pnpm ci:deps-audit
       - name: "G35 有限資源の静的検査（G-16：関門外の生クライアント・タイムアウト無し・冪等キー無しの書込）"
         run: pnpm ci:resource-static
 

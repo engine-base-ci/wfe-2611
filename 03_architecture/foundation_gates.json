@@ -338,6 +338,68 @@
    "owner_task": "T-B-07",
    "kaname_critical": true,
    "job": "static"
+  },
+  {
+   "id": 40,
+   "name": "ゼロトラストの決まり（設計の赤 0・実装の残りが記録より増えない）",
+   "script": "pnpm ci:zt",
+   "blocking": true,
+   "detects": [
+    "誰が呼べるかの無い API",
+    "本人確認の付け忘れ",
+    "取引先の人・PC の口の外",
+    "守りの残りが増えた（ラチェット）"
+   ],
+   "source": "03_architecture/ゼロトラストの決まり.md・scripts/ci/zt_baseline.json",
+   "owner_task": "D-128.113"
+  },
+  {
+   "id": 41,
+   "name": "権限の試験（契約の全 API で、役が合わない人・ログインしていない人を止め、副作用に届かせない）",
+   "script": "pnpm ci:authz",
+   "blocking": true,
+   "detects": [
+    "取引先の人・PC の印が社内の API を通る",
+    "運営が許可なしに中を読む",
+    "権限と契約の役の食い違い"
+   ],
+   "source": "apps/api/src/contract/authz.test.ts",
+   "owner_task": "D-128.113"
+  },
+  {
+   "id": 42,
+   "name": "契約の外の道すじが無い（登録した道すじ＝契約）",
+   "script": "pnpm ci:endpoints",
+   "blocking": true,
+   "detects": [
+    "契約に無い道すじの登録",
+    "契約にあるのに登録されていない道すじ"
+   ],
+   "source": "scripts/ci/contract.mjs endpoints",
+   "owner_task": "D-128.113"
+  },
+  {
+   "id": 43,
+   "name": "秘密の混入（鍵・トークン・秘密鍵・パスワード入りの DB の URL・.env）",
+   "script": "pnpm ci:secret-scan",
+   "blocking": true,
+   "detects": [
+    "git に入った鍵やトークン",
+    "git に入った .env"
+   ],
+   "source": "scripts/ci/secret_scan.mjs・secret_scan_allow.json",
+   "owner_task": "D-128.113"
+  },
+  {
+   "id": 44,
+   "name": "部品の弱点（本番で使う部品に high 以上の弱点が無い）",
+   "script": "pnpm ci:deps-audit",
+   "blocking": true,
+   "detects": [
+    "既知の弱点のある部品の版"
+   ],
+   "source": "pnpm audit --prod --audit-level=high",
+   "owner_task": "D-128.113"
   }
  ],
  "kaname_critical_gates": [
@@ -352,7 +414,11 @@
   22,
   23,
   24,
-  39
+  39,
+  40,
+  41,
+  42,
+  43
  ],
  "kaname_critical_reason": "これらが緑でないと、テナント越え・SQLインジェクション・二重課金・資格情報漏洩・移行不能のいずれかが起きる",
  "retry_protocol": {

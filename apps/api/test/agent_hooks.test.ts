@@ -27,32 +27,32 @@ const row = async (table: string, id: string) => (await admin.query(`select * fr
 
 describe("会話の契約の口は画面の口と同じ本体を通る", () => {
   it("作る → 名前を変える → ほかの人は変えられない → 消す。ログインなしは 401", async () => {
-    const created = await h.call(endpointOf("postConversations"), "boss", { body: { incognito: "true" } });
+    const created = await h.call(endpointOf("createConversation"), "boss", { body: { incognito: "true" } });
     expect(created.status, await created.clone().text()).toBe(201);
     const id = ((await created.json()) as { data: { id: string } }).data.id;
     const r0 = await row("conversations", id);
     expect(r0["owner_member_id"]).toBe(h.S.bossA); // 本人の会話として DB の関数が作った
     expect(r0["incognito"]).toBe(true);
 
-    const renamed = await h.call(endpointOf("patchConversationsById"), "boss", { id, body: { title: "見積の相談" } });
+    const renamed = await h.call(endpointOf("updateConversation"), "boss", { id, body: { title: "見積の相談" } });
     expect(renamed.status, await renamed.clone().text()).toBe(200);
     expect((await row("conversations", id))["title"]).toBe("見積の相談");
 
-    const other = await h.call(endpointOf("patchConversationsById"), "staff", { id, body: { title: "書き換え" } });
+    const other = await h.call(endpointOf("updateConversation"), "staff", { id, body: { title: "書き換え" } });
     expect([403, 404]).toContain(other.status);
     expect((await row("conversations", id))["title"]).toBe("見積の相談");
 
-    const anon = await h.call(endpointOf("deleteConversationsById"), "anon", { id });
+    const anon = await h.call(endpointOf("deleteConversation"), "anon", { id });
     expect(anon.status).toBe(401);
-    const del = await h.call(endpointOf("deleteConversationsById"), "boss", { id });
+    const del = await h.call(endpointOf("deleteConversation"), "boss", { id });
     expect(del.status, await del.clone().text()).toBe(200);
     expect((await row("conversations", id))["deleted_at"]).not.toBeNull();
   });
 
   it("名前を空にすると 422。行は変わらない", async () => {
-    const created = await h.call(endpointOf("postConversations"), "boss", { body: {} });
+    const created = await h.call(endpointOf("createConversation"), "boss", { body: {} });
     const id = ((await created.json()) as { data: { id: string } }).data.id;
-    const r = await h.call(endpointOf("patchConversationsById"), "boss", { id, body: { title: "   " } });
+    const r = await h.call(endpointOf("updateConversation"), "boss", { id, body: { title: "   " } });
     expect(r.status).toBe(422);
     expect((await row("conversations", id))["title"]).toBeNull();
   });
@@ -65,15 +65,15 @@ describe("記憶の契約の口は自分の記憶だけ直せる", () => {
       [h.S.bossA],
     );
     const id = m.rows[0].id as string;
-    const mine = await h.call(endpointOf("patchMemoriesById"), "boss", { id, body: { body: "新しい中身" } });
+    const mine = await h.call(endpointOf("updateMemory"), "boss", { id, body: { body: "新しい中身" } });
     expect(mine.status, await mine.clone().text()).toBe(200);
     expect((await row("memories", id))["body"]).toBe("新しい中身");
 
-    const other = await h.call(endpointOf("patchMemoriesById"), "staff", { id, body: { body: "書き換え" } });
+    const other = await h.call(endpointOf("updateMemory"), "staff", { id, body: { body: "書き換え" } });
     expect([403, 404]).toContain(other.status);
     expect((await row("memories", id))["body"]).toBe("新しい中身");
 
-    const empty = await h.call(endpointOf("patchMemoriesById"), "boss", { id, body: { body: "" } });
+    const empty = await h.call(endpointOf("updateMemory"), "boss", { id, body: { body: "" } });
     expect(empty.status).toBe(422);
   });
 });

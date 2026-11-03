@@ -20,14 +20,14 @@ const text = (v: unknown, n: number): string | null => {
 export function agentHooks(pool: pg.Pool): Record<string, Hook> {
   const user = (a: HookArgs) => a.ctx.userId as string; // 認証（401）は op が先に済ませている
   return {
-    postConversations: {
+    createConversation: {
       before: async (a) => {
         const id = await newConversation(pool, user(a), flag(a.input["incognito"]) === true);
         if (!id) return { status: 403, body: { error: "forbidden", code: "FORBIDDEN" } };
         return { status: 201, body: { data: { id, conversation_id: id } } };
       },
     },
-    patchConversationsById: {
+    updateConversation: {
       before: async (a) => {
         const title = a.input["title"] === undefined ? null : text(a.input["title"], 80);
         if (a.input["title"] !== undefined && !title) return invalid("title", "名前が空です");
@@ -39,13 +39,13 @@ export function agentHooks(pool: pg.Pool): Record<string, Hook> {
         return ok ? { status: 200, body: { data: { id: a.id, ok: true } } } : unwritable(a, notFound("CONVERSATION_NOT_FOUND", "この会話はありません"));
       },
     },
-    deleteConversationsById: {
+    deleteConversation: {
       before: async (a) =>
         (await deleteConversation(pool, user(a), a.id!))
           ? { status: 200, body: { data: { id: a.id } } }
           : unwritable(a, notFound("CONVERSATION_NOT_FOUND", "この会話はありません")),
     },
-    patchMemoriesById: {
+    updateMemory: {
       before: async (a) => {
         const body = typeof a.input["body"] === "string" ? a.input["body"].trim().slice(0, 2000) : "";
         if (!body) return invalid("body", "覚えることが空です");
