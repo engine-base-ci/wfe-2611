@@ -4,6 +4,11 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 const DIR = "apps/bridge/release";
+if (!existsSync(join(DIR, "kaname-bridge.json"))) {
+  // まだ配布していない（目録が無い・CI の手元など）。配布のコマンド（scripts/release.mjs）が目録を置いたら確かめる
+  console.log("[bridge-release] まだ配布していない（目録なし）");
+  process.exit(0);
+}
 const M = JSON.parse(readFileSync(join(DIR, "kaname-bridge.json"), "utf8"));
 const fails = [];
 for (const f of M.files ?? []) {

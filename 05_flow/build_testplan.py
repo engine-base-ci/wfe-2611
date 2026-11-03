@@ -85,7 +85,7 @@ SPEC_GATES = [
 ]
 ALL_GATES = [{**g, "job": "database" if g["id"] in (3, 4, 6, 12) else ("e2e" if g["id"] == 15 else "static")} for g in FG["merge_gates"]] + SPEC_GATES
 def step(g): return f'      - name: "G{g["id"]} {g["name"]}{" [CRITICAL]" if g["id"] in FG.get("kaname_critical_gates", []) else ""}"\n        run: {g["script"]}\n'
-NODE = "      - uses: actions/checkout@v4\n      - uses: pnpm/action-setup@v4\n        with: { version: '${{ env.PNPM_VERSION }}' }\n      - uses: actions/setup-node@v4\n        with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }\n      - run: pnpm install --frozen-lockfile\n"
+NODE = "      - uses: actions/checkout@v4\n      - uses: pnpm/action-setup@v4\n      - uses: actions/setup-node@v4\n        with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }\n      - run: pnpm install --frozen-lockfile\n"
 PYS = "      - uses: actions/checkout@v4\n      - uses: actions/setup-python@v5\n        with: { python-version: '3.12' }\n      - run: pip install pyyaml\n"
 yml = f"""# .github/workflows/v3-gate.yml — Kaname CI ゲート {len(ALL_GATES)} 本（05_flow/build_testplan.py が生成。手で直さない）
 # 方針: {FG['policy']}
@@ -123,8 +123,21 @@ jobs:
 {NODE}{''.join(step(g) for g in ALL_GATES if g['job'] == 'database')}
   spec:
     runs-on: ubuntu-latest
+    # 仕様の層の検査は Python だけでなく pnpm の検査と DB の検査も呼ぶ（層の棚卸し G21）。database と同じ Postgres を付ける
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env: {{ POSTGRES_PASSWORD: postgres, POSTGRES_DB: kaname_test }}
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    env:
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/kaname_test
     steps:
-{PYS}{''.join(step(g) for g in ALL_GATES if g['job'] == 'spec')}
+{NODE}      - uses: actions/setup-python@v5
+        with: {{ python-version: '3.12' }}
+      - run: pip install pyyaml
+{''.join(step(g) for g in ALL_GATES if g['job'] == 'spec')}
   task-gate:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' && startsWith(github.head_ref, 'task/')
