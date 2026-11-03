@@ -31,7 +31,7 @@ def main():
       + mbody('<div>' + lab("取引先の名前") + field("株式会社ハルカ") + '</div>'
       + '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px"><div>' + lab("担当") + field(av("高", "#6B5B99", 20) + " 高本（自分） ▾") + '</div><div>' + lab("担当グループ", "（いくつでも）") + '<div style="border: 1px solid #DDE2E9; border-radius: 6px; min-height: 34px; padding: 4px 8px; display: flex; gap: 4px; align-items: center; flex-wrap: wrap">' + pill("営業 ×", "#E3F1EF", "#186F69") + '<span style="font-size: 12px; color: #4A5563">＋</span></div></div></div>'
       + '<div>' + lab("社内で見える人") + '<div style="display: flex; gap: 6px; flex-wrap: wrap">' + radio("ワークスペースの全員", "ワークスペースの既定", True) + radio("担当グループの人だけ", "鍵のしるしが付く") + '</div></div>'
-      + '<div>' + lab("先方のメールのドメイン", "（任意）") + field("haruka.example") + '<div style="font-size: 11px; color: %s; margin-top: 4px">このドメインからのメール・依頼を、この取引先のものとしてまとめる</div></div>' % MUTED
+      + '<div>' + lab("先方のメールのドメイン", "（任意）") + field("haruka.example") + '<div style="font-size: 11px; color: %s; margin-top: 4px">先方の人を足すとき、このドメインのメールならこの取引先に当てる。分身がチケットやメールを読むときも取引先の案を出す（Kaname がメールを受け取るわけではない）</div></div>' % MUTED
       + '<div style="display: flex; gap: 8px; align-items: center; background: #F3F6FC; border: 1px solid #C9D6EE; border-radius: 8px; padding: 8px 10px; font-size: 12px">' + icon("AI", NAVY, 22) + '<span>分身の案：これまでのチケットに「ハルカ」が 2 件ある（EG-088・EG-101）。この取引先につなぐ</span>' + check("", True).replace("padding: 4px 0", "padding: 0") + '</div>')
       + mfoot(btn("やめる", "", "CuList.dc.html"), btn("足して先方の人を招く", "", "EdContact.dc.html"), btn("足す", "p", "CuPage.dc.html")), 600, "取引先を足す")
     save("EdClient.dc.html", "取引先を足す", s)

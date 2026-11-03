@@ -36957,6 +36957,27 @@
      ]
     },
     {
+     "act": "A123",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/tickets/:id/client-share",
+     "table": "tickets",
+     "operation_id": "updateTicketClientShare",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-106",
+      "E-124"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.124",
+      "D-125.167"
+     ]
+    },
+    {
      "act": "A58",
      "role": "data_fetch",
      "method": "GET",
@@ -38772,6 +38793,27 @@
       "E-128",
       "E-126",
       "E-080"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.124",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A123",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/tickets/:id/client-share",
+     "table": "tickets",
+     "operation_id": "updateTicketClientShare",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-106",
+      "E-124"
      ],
      "choke_points": [
       "C2",
@@ -41902,16 +41944,357 @@
      "role": "data_fetch",
      "method": "GET",
      "path_draft": "/api/clients",
+     "table": "clients",
+     "operation_id": "listClients",
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-124",
       "E-125",
       "E-126",
-      "E-091"
+      "E-127",
+      "E-128",
+      "E-106"
      ],
      "choke_points": [
-      "C6",
-      "C2"
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.121",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A121",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/clients/counts",
+     "table": "clients",
+     "operation_id": "countClientInbox",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-124",
+      "E-127",
+      "E-128"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.121",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A121",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/clients/link-candidates",
+     "table": "tickets",
+     "operation_id": "listClientLinkCandidates",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-106",
+      "E-124"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.121",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A121",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/clients",
+     "table": "clients",
+     "operation_id": "createClient",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-124",
+      "E-125",
+      "E-106",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.121",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A121",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/clients/:id",
+     "table": "clients",
+     "operation_id": "getClient",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-124",
+      "E-125",
+      "E-126",
+      "E-127",
+      "E-128",
+      "E-106",
+      "E-037",
+      "E-121"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.121",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A121",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/clients/:id",
+     "table": "clients",
+     "operation_id": "updateClient",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-124",
+      "E-125",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.121",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A121",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/clients/:id/activity",
+     "table": "ticket_messages",
+     "operation_id": "listClientActivity",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-119",
+      "E-127",
+      "E-128",
+      "E-039"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.121",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A121",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/clients/:id/share",
+     "table": "clients",
+     "operation_id": "updateClientShare",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-124",
+      "E-109",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.121",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A121",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/clients/:id/portal-preview",
+     "table": "clients",
+     "operation_id": "getClientPortalPreview",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-124",
+      "E-106",
+      "E-128",
+      "E-127"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.121",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A121",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/clients/:id/contacts",
+     "table": "client_contacts",
+     "operation_id": "createClientContact",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-126",
+      "E-091",
+      "E-080",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.121",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A121",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/client_contacts/:id",
+     "table": "client_contacts",
+     "operation_id": "updateClientContact",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-126",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.121",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A121",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/client_contacts/:id",
+     "table": "client_contacts",
+     "operation_id": "removeClientContact",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-126",
+      "E-129",
+      "E-061",
+      "E-091",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.121",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A121",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/client_contacts/:id/invitation",
+     "table": "invitations",
+     "operation_id": "inviteClientContact",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-091",
+      "E-080",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.121",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A123",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/acceptances/:id/remind",
+     "table": "acceptances",
+     "operation_id": "remindAcceptance",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-128",
+      "E-080"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.124",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A121",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/rules",
+     "table": "policies",
+     "operation_id": "listRules",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-037",
+      "E-124",
+      "E-002"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.121",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A121",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/rules",
+     "table": "policies",
+     "operation_id": "createRule",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-037",
+      "E-038"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
      ],
      "source": [
       "D-125.121",
@@ -41925,16 +42308,357 @@
      "role": "data_fetch",
      "method": "GET",
      "path_draft": "/api/clients",
+     "table": "clients",
+     "operation_id": "listClients",
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-124",
       "E-125",
       "E-126",
-      "E-091"
+      "E-127",
+      "E-128",
+      "E-106"
      ],
      "choke_points": [
-      "C6",
-      "C2"
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.121",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A121",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/clients/counts",
+     "table": "clients",
+     "operation_id": "countClientInbox",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-124",
+      "E-127",
+      "E-128"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.121",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A121",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/clients/link-candidates",
+     "table": "tickets",
+     "operation_id": "listClientLinkCandidates",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-106",
+      "E-124"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.121",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A121",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/clients",
+     "table": "clients",
+     "operation_id": "createClient",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-124",
+      "E-125",
+      "E-106",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.121",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A121",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/clients/:id",
+     "table": "clients",
+     "operation_id": "getClient",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-124",
+      "E-125",
+      "E-126",
+      "E-127",
+      "E-128",
+      "E-106",
+      "E-037",
+      "E-121"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.121",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A121",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/clients/:id",
+     "table": "clients",
+     "operation_id": "updateClient",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-124",
+      "E-125",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.121",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A121",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/clients/:id/activity",
+     "table": "ticket_messages",
+     "operation_id": "listClientActivity",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-119",
+      "E-127",
+      "E-128",
+      "E-039"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.121",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A121",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/clients/:id/share",
+     "table": "clients",
+     "operation_id": "updateClientShare",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-124",
+      "E-109",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.121",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A121",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/clients/:id/portal-preview",
+     "table": "clients",
+     "operation_id": "getClientPortalPreview",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-124",
+      "E-106",
+      "E-128",
+      "E-127"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.121",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A121",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/clients/:id/contacts",
+     "table": "client_contacts",
+     "operation_id": "createClientContact",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-126",
+      "E-091",
+      "E-080",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.121",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A121",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/client_contacts/:id",
+     "table": "client_contacts",
+     "operation_id": "updateClientContact",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-126",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.121",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A121",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/client_contacts/:id",
+     "table": "client_contacts",
+     "operation_id": "removeClientContact",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-126",
+      "E-129",
+      "E-061",
+      "E-091",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.121",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A121",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/client_contacts/:id/invitation",
+     "table": "invitations",
+     "operation_id": "inviteClientContact",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-091",
+      "E-080",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.121",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A123",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/acceptances/:id/remind",
+     "table": "acceptances",
+     "operation_id": "remindAcceptance",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-128",
+      "E-080"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.124",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A121",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/rules",
+     "table": "policies",
+     "operation_id": "listRules",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-037",
+      "E-124",
+      "E-002"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.121",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A121",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/rules",
+     "table": "policies",
+     "operation_id": "createRule",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-037",
+      "E-038"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
      ],
      "source": [
       "D-125.121",
@@ -41947,7 +42671,20 @@
     "E-125",
     "E-126",
     "E-091",
-    "E-037"
+    "E-037",
+    "E-127",
+    "E-128",
+    "E-106",
+    "E-052",
+    "E-121",
+    "E-119",
+    "E-039",
+    "E-109",
+    "E-080",
+    "E-129",
+    "E-061",
+    "E-002",
+    "E-038"
    ],
    "mock_path": null,
    "route": "/clients",
@@ -42022,16 +42759,135 @@
      "role": "data_fetch",
      "method": "GET",
      "path_draft": "/api/client_requests",
+     "table": "client_requests",
+     "operation_id": "listClientRequests",
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-127",
-      "E-043",
       "E-124",
-      "E-125"
+      "E-126"
      ],
      "choke_points": [
-      "C3",
-      "C2"
+      "C2",
+      "C3"
+     ],
+     "source": [
+      "D-125.123",
+      "D-125.47",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A122",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/client_requests/:id",
+     "table": "client_requests",
+     "operation_id": "getClientRequest",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-127",
+      "E-049",
+      "E-043",
+      "E-126",
+      "E-095"
+     ],
+     "choke_points": [
+      "C2",
+      "C3"
+     ],
+     "source": [
+      "D-125.123",
+      "D-125.47",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A122",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/client_requests/:id",
+     "table": "client_requests",
+     "operation_id": "updateClientRequest",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-127",
+      "E-002"
+     ],
+     "choke_points": [
+      "C2",
+      "C3"
+     ],
+     "source": [
+      "D-125.123",
+      "D-125.47",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A122",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/client_requests/:id/reply",
+     "table": "messages",
+     "operation_id": "replyToClientRequest",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-049",
+      "E-127",
+      "E-080"
+     ],
+     "choke_points": [
+      "C2",
+      "C3"
+     ],
+     "source": [
+      "D-125.123",
+      "D-125.47",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A122",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/client_requests/:id/accept",
+     "table": "client_requests",
+     "operation_id": "acceptClientRequest",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-127",
+      "E-106",
+      "E-107",
+      "E-049",
+      "E-080"
+     ],
+     "choke_points": [
+      "C2",
+      "C3"
+     ],
+     "source": [
+      "D-125.123",
+      "D-125.47",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A122",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/client_requests/:id/decline",
+     "table": "client_requests",
+     "operation_id": "declineClientRequest",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-127",
+      "E-049",
+      "E-080"
+     ],
+     "choke_points": [
+      "C2",
+      "C3"
      ],
      "source": [
       "D-125.123",
@@ -42046,16 +42902,135 @@
      "role": "data_fetch",
      "method": "GET",
      "path_draft": "/api/client_requests",
+     "table": "client_requests",
+     "operation_id": "listClientRequests",
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-127",
-      "E-043",
       "E-124",
-      "E-125"
+      "E-126"
      ],
      "choke_points": [
-      "C3",
-      "C2"
+      "C2",
+      "C3"
+     ],
+     "source": [
+      "D-125.123",
+      "D-125.47",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A122",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/client_requests/:id",
+     "table": "client_requests",
+     "operation_id": "getClientRequest",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-127",
+      "E-049",
+      "E-043",
+      "E-126",
+      "E-095"
+     ],
+     "choke_points": [
+      "C2",
+      "C3"
+     ],
+     "source": [
+      "D-125.123",
+      "D-125.47",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A122",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/client_requests/:id",
+     "table": "client_requests",
+     "operation_id": "updateClientRequest",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-127",
+      "E-002"
+     ],
+     "choke_points": [
+      "C2",
+      "C3"
+     ],
+     "source": [
+      "D-125.123",
+      "D-125.47",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A122",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/client_requests/:id/reply",
+     "table": "messages",
+     "operation_id": "replyToClientRequest",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-049",
+      "E-127",
+      "E-080"
+     ],
+     "choke_points": [
+      "C2",
+      "C3"
+     ],
+     "source": [
+      "D-125.123",
+      "D-125.47",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A122",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/client_requests/:id/accept",
+     "table": "client_requests",
+     "operation_id": "acceptClientRequest",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-127",
+      "E-106",
+      "E-107",
+      "E-049",
+      "E-080"
+     ],
+     "choke_points": [
+      "C2",
+      "C3"
+     ],
+     "source": [
+      "D-125.123",
+      "D-125.47",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A122",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/client_requests/:id/decline",
+     "table": "client_requests",
+     "operation_id": "declineClientRequest",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-127",
+      "E-049",
+      "E-080"
+     ],
+     "choke_points": [
+      "C2",
+      "C3"
      ],
      "source": [
       "D-125.123",
@@ -42075,7 +43050,12 @@
     "E-135",
     "E-136",
     "E-137",
-    "E-138"
+    "E-138",
+    "E-049",
+    "E-095",
+    "E-002",
+    "E-080",
+    "E-107"
    ],
    "mock_path": null,
    "route": "/requests",
@@ -42241,16 +43221,127 @@
    "edit_roles": [],
    "related_apis": [
     {
+     "act": "A125",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/portal",
+     "table": "client_requests",
+     "operation_id": "getPortalHome",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-127",
+      "E-128",
+      "E-106",
+      "E-124"
+     ],
+     "choke_points": [],
+     "source": [
+      "D-125.122",
+      "D-125.167"
+     ]
+    },
+    {
      "act": "A124",
      "role": "action",
      "method": "POST",
-     "path_draft": "/api/client_requests",
+     "path_draft": "/api/portal/requests/questions",
+     "table": "client_requests",
+     "operation_id": "askPortalRequestQuestions",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-127",
+      "E-044"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.46",
+      "D-125.121",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A124",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/portal/requests",
+     "table": "client_requests",
+     "operation_id": "createPortalRequest",
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-127",
       "E-043",
-      "E-128",
-      "E-050"
+      "E-094",
+      "E-080",
+      "E-044"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.46",
+      "D-125.121",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A124",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/portal/requests/:id",
+     "table": "client_requests",
+     "operation_id": "getPortalRequest",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-127",
+      "E-049"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.46",
+      "D-125.121",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A124",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/portal/requests/:id/messages",
+     "table": "messages",
+     "operation_id": "postPortalRequestMessage",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-049",
+      "E-127",
+      "E-080"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.46",
+      "D-125.121",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A124",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/portal/attachments",
+     "table": "attachments",
+     "operation_id": "uploadPortalAttachment",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-094"
      ],
      "choke_points": [
       "C2",
@@ -42266,13 +43357,14 @@
      "act": "A125",
      "role": "data_fetch",
      "method": "GET",
-     "path_draft": "/api/client_requests",
+     "path_draft": "/api/portal/tickets/:id",
+     "table": "tickets",
+     "operation_id": "getPortalTicket",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-127",
-      "E-043",
-      "E-128",
-      "E-050"
+      "E-106",
+      "E-050",
+      "E-119"
      ],
      "choke_points": [],
      "source": [
@@ -42284,13 +43376,36 @@
      "act": "A126",
      "role": "data_fetch",
      "method": "GET",
-     "path_draft": "/api/client_requests",
+     "path_draft": "/api/portal/acceptances/:id",
+     "table": "acceptances",
+     "operation_id": "getPortalAcceptance",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-127",
-      "E-043",
       "E-128",
-      "E-050"
+      "E-051"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.124",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A126",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/portal/acceptances/:id/answer",
+     "table": "acceptances",
+     "operation_id": "answerAcceptance",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-128",
+      "E-106",
+      "E-119",
+      "E-080"
      ],
      "choke_points": [
       "C2",
@@ -42304,16 +43419,127 @@
    ],
    "required_apis": [
     {
+     "act": "A125",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/portal",
+     "table": "client_requests",
+     "operation_id": "getPortalHome",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-127",
+      "E-128",
+      "E-106",
+      "E-124"
+     ],
+     "choke_points": [],
+     "source": [
+      "D-125.122",
+      "D-125.167"
+     ]
+    },
+    {
      "act": "A124",
      "role": "action",
      "method": "POST",
-     "path_draft": "/api/client_requests",
+     "path_draft": "/api/portal/requests/questions",
+     "table": "client_requests",
+     "operation_id": "askPortalRequestQuestions",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-127",
+      "E-044"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.46",
+      "D-125.121",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A124",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/portal/requests",
+     "table": "client_requests",
+     "operation_id": "createPortalRequest",
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-127",
       "E-043",
-      "E-128",
-      "E-050"
+      "E-094",
+      "E-080",
+      "E-044"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.46",
+      "D-125.121",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A124",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/portal/requests/:id",
+     "table": "client_requests",
+     "operation_id": "getPortalRequest",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-127",
+      "E-049"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.46",
+      "D-125.121",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A124",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/portal/requests/:id/messages",
+     "table": "messages",
+     "operation_id": "postPortalRequestMessage",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-049",
+      "E-127",
+      "E-080"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.46",
+      "D-125.121",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A124",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/portal/attachments",
+     "table": "attachments",
+     "operation_id": "uploadPortalAttachment",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-094"
      ],
      "choke_points": [
       "C2",
@@ -42329,13 +43555,14 @@
      "act": "A125",
      "role": "data_fetch",
      "method": "GET",
-     "path_draft": "/api/client_requests",
+     "path_draft": "/api/portal/tickets/:id",
+     "table": "tickets",
+     "operation_id": "getPortalTicket",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-127",
-      "E-043",
-      "E-128",
-      "E-050"
+      "E-106",
+      "E-050",
+      "E-119"
      ],
      "choke_points": [],
      "source": [
@@ -42347,13 +43574,36 @@
      "act": "A126",
      "role": "data_fetch",
      "method": "GET",
-     "path_draft": "/api/client_requests",
+     "path_draft": "/api/portal/acceptances/:id",
+     "table": "acceptances",
+     "operation_id": "getPortalAcceptance",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-127",
-      "E-043",
       "E-128",
-      "E-050"
+      "E-051"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.124",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A126",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/portal/acceptances/:id/answer",
+     "table": "acceptances",
+     "operation_id": "answerAcceptance",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-128",
+      "E-106",
+      "E-119",
+      "E-080"
      ],
      "choke_points": [
       "C2",
@@ -42369,7 +43619,15 @@
     "E-127",
     "E-043",
     "E-128",
-    "E-050"
+    "E-050",
+    "E-106",
+    "E-124",
+    "E-044",
+    "E-094",
+    "E-080",
+    "E-049",
+    "E-119",
+    "E-051"
    ],
    "mock_path": null,
    "route": "/portal",

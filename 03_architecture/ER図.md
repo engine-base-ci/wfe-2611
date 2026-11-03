@@ -476,6 +476,13 @@ erDiagram
 - `policies`：`kind`（守ること・上に回す）/ `escalate_when jsonb`（何のとき・条件）/ `escalate_to`（そのグループのマネージャー・決まった人・取引先の担当）。上に回す決まりも同じ表（D-128.87）
 - `kind_sections`：`position` / `mode`（必須・出す・外す）/ `content_type`（文章・箇条書き・表・チェックリスト・日付）/ `hint` / `client_visible` / `used_for_acceptance`。種別ごとに 20 まで
 
+取引先とクライアントの場所で足す列（D-128.100〜.104）：
+- `clients`：`email_domain`（先方の人を足すときに取引先を当てる・分身が取引先の案を出す。Kaname はメールを受け取らない・D-128.102）
+- `tickets`：`client_share jsonb`（このチケットで先方に見せるもの。取引先の種別ごとの既定 `clients.default_share` から始まり、チケットごとに変えられる。テスト仕様・決定ログ・分身の記録は入れられない）。先方に出るのは、取引先が付いたチケットのうち「題名と進み」を見せるもの（依頼から作ったかは問わない・D-128.100）
+- `client_requests`：`questions jsonb`（担当の分身が聞いたこと。担当の PC が閉じていたら、あとでやり取りの中で聞く・D-128.101）
+- `acceptances`：`reminded_at`（催促した日。期限の前日に自動でも 1 回）
+- 先方の人への知らせは `notifications` の `channel_id = email` で出来事ごとに送る（確認してほしいもの・依頼への返事・催促）。メールにはリンクだけ載せ、本文・成果物は載せない（D-128.103）
+
 前の表の扱い：`tasks` `task_handovers` `daily_plans` は後のフェーズ（チケットに置き換え）。`skills` 系は「業務の型」として使い続ける（`skills.kind_id` に work_type を足す・D-126.26）。`learned_procedures` は「記録した動かし方」として使い続け、入力した値を空欄に置き換えた形だけを持つ（D-126.25）。`support_access_grants` は「運営の閲覧」の記録として使い、許可の範囲と期限は契約で先に持つ（D-125.128・D-128.68）。
 
 ---

@@ -5,7 +5,8 @@
   ZT1  画面の表（05_flow/screen_api.py）から作る API は全部「誰が呼べるか」を持つ。言葉は決まりの §2 のものだけ
   ZT5  本人確認を取り直す操作（決まりの ZT5）に step_up が付いている
   ZT9  運営の画面の API は ops:<できること> だけ。顧客の画面の API は ops: を使わない
-  ZT2  契約で、権限が public でない API がログイン不要になっていない（その逆も）
+  ZT2  契約で、権限が public でない API がログイン不要になっていない（その逆も）・client の API は契約でも client
+  ZT4  取引先の人（client）の API は /portal/ の下だけ。/portal/ の API は client だけ
 実装の残り（数を出す。--strict のときだけ赤）：
   ZT3  ER 図 §16 の表で、packages/db/policies に RLS の決まりが無いもの
   ZT6  セッションの期限と見張り（操作が無いと 12 時間・IP や国の急な変化）
@@ -51,6 +52,9 @@ def design_fails(sa) -> list[str]:
             if not sid.startswith("ops-") and who.startswith("ops:"): fails.append(f"[ZT9] 顧客の画面 {sid} の {opid} が ops: を使っている")
             if who == "device" and not path.startswith("/bridge/"): fails.append(f"[ZT10] {opid} は PC の印（device）で呼ぶのに /bridge/ の下に無い")
             if path.startswith("/bridge/") and who not in ("device", "self"): fails.append(f"[ZT10] {opid}（/bridge/）は device か self でなければならない")
+            if who == "client" and not path.startswith("/portal"): fails.append(f"[ZT4] {opid} は取引先の人（client）が呼ぶのに /portal/ の下に無い")
+            if path.startswith("/portal") and who != "client": fails.append(f"[ZT4] {opid}（/portal/）は client でなければならない")
+            if sid == "portal" and who != "client": fails.append(f"[ZT4] クライアントの場所の {opid} が client でない（{who}）")
             if who == "public" and sid not in PUBLIC_OK: fails.append(f"[ZT1] ログイン前ではない画面 {sid} の {opid} が public になっている")
     # ZT2：契約（08_api/endpoints.json）で、権限が public でない API がログイン不要になっていないか
     ep = os.path.join(ROOT, "08_api", "endpoints.json")
@@ -60,6 +64,8 @@ def design_fails(sa) -> list[str]:
             pm = e.get("permission")
             if pm and pm["who"] != "public" and e.get("auth", {}).get("role") == "public":
                 fails.append(f"[ZT2] {e['method']} {e['path']} は権限 {pm['who']} なのに契約ではログイン不要（public）になっている")
+            if pm and pm["who"] == "client" and e.get("auth", {}).get("role") != "client":
+                fails.append(f"[ZT2] {e['method']} {e['path']} は権限 client なのに契約の役割が client でない")
             if pm and pm["who"] == "public" and e.get("auth", {}).get("role") != "public":
                 fails.append(f"[ZT2] {e['method']} {e['path']} は権限 public なのに契約ではログインが要る")
     return fails
@@ -77,6 +83,8 @@ def impl_todo() -> list[str]:
     if not re.search(r"idle|IDLE_", auth): todo.append("[ZT6] 操作が無いときの期限（12 時間）が packages/auth に無い")
     if not re.search(r"country|geo|ip_change|ipChange", auth): todo.append("[ZT6] IP・国の急な変化で入り直させる仕組みが packages/auth に無い")
     web = "".join(open(f, encoding="utf-8").read() for f in glob.glob(os.path.join(ROOT, "apps", "web", "next.config.*")) + glob.glob(os.path.join(ROOT, "apps", "web", "middleware.*")))
+    op = open(os.path.join(ROOT, "apps", "api", "src", "contract", "op.ts"), encoding="utf-8").read() if os.path.exists(os.path.join(ROOT, "apps", "api", "src", "contract", "op.ts")) else ""
+    if '"client"' not in op: todo.append("[ZT4] 契約の入口（apps/api/src/contract/op.ts）が取引先の人（client）を分けていない。client は /portal/ の API だけ通す")
     if "Content-Security-Policy" not in web: todo.append("[ZT11] Content-Security-Policy が apps/web に無い")
     # ZT1（実装）：契約の外で登録されている道すじ（手で書いた /api/auth-ext・Bridge・預けたログイン情報 など）
     #   Better Auth そのものの /api/auth/* は部品の中身なので数えない。全部を契約に入れるか、理由つきで除外するまで残りに出す
