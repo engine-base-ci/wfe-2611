@@ -224,7 +224,7 @@ async function execute(
       if (!row) return fail(404, "not_found", "NOT_FOUND");
       body = { data: row };
     } else if (def.kind === "create") {
-      body = { data: await table.create(ctx, await withScope(args, input)) };
+      body = { data: await table.create(ctx, withOwner(args, await withScope(args, input))) };
     } else if (def.kind === "update") {
       const row = await table.update(ctx, id!, input);
       if (!row) return await unwritable(args);
@@ -261,6 +261,13 @@ export async function unwritable(
 ): Promise<Reply> {
   const visible = a.id ? await a.repo.table(a.e.table as TableName).get(a.ctx, a.id) : null;
   return visible ? fail(403, "forbidden", "FORBIDDEN") : notFound;
+}
+/** 本人の口（self）の作成：持ち主の列は呼んだ人に決める（入力の値は使わない。他人を持ち主にして作らせない・KN-54） */
+const OWNER_COLS = ["owner_member_id", "opened_by_member_id", "member_id", "requested_by", "uploaded_by"] as const;
+function withOwner(a: HookArgs, input: Row): Row {
+  if (a.e.perm.word !== "self" || !a.ctx.userId) return input;
+  const col = OWNER_COLS.find((c) => a.repo.hasColumn(a.e.table as TableName, c));
+  return col ? { ...input, [col]: a.ctx.userId } : input;
 }
 /** 層を持つ表の作成：契約の入力に scope_id は無い（自分の範囲＝本人の層）。tenant_id は関門が入れる */
 async function withScope(a: HookArgs, input: Row): Promise<Row> {

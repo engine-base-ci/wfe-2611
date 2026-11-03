@@ -1043,8 +1043,21 @@ for (const [key, aspects] of Object.entries(MAP.ep)) {
         };
         const r = await call(A.app, e, w, o);
         const b = await json(r);
-        expect(r.status, `${w}（担当者がその行を読める＝${readable} 行）→ ${JSON.stringify(b)}`).toBe(403);
-        expect(b["code"]).toBe("FORBIDDEN");
+        // 本人の口（self）の作成は、誰でも自分の分は作れる。403 の場面は「他人を持ち主にして作れない」：作れても持ち主は呼んだ人（KN-54）
+        if (e.kind === "create" && e.perm.word === "self") {
+          if (r.status === 201) {
+            const d = b["data"] as Record<string, unknown>;
+            for (const c of ["owner_member_id", "opened_by_member_id", "member_id", "requested_by", "uploaded_by"])
+              if (c in d) expect(d[c], "持ち主は呼んだ人（入力の値は使わない）").toBe(h.S.staffA);
+            return;
+          }
+        }
+        // 本人のものの表（会話・記憶など）は、他人の行が見えない（読める＝0 行）。見えない行は 404（存在を漏らさない・KN-54）
+        const hidden = readable === "0";
+        expect(r.status, `${w}（担当者がその行を読める＝${readable} 行）→ ${JSON.stringify(b)}`).toBe(
+          hidden ? 404 : 403,
+        );
+        expect(b["code"]).toBe(hidden ? "NOT_FOUND" : "FORBIDDEN");
         expect(await snap(e.table)).toEqual(before);
         if (id) expect(await rowOf(e.table, id)).toEqual(rowBefore);
       });
