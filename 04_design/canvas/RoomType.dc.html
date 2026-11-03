@@ -13,7 +13,7 @@
 body{margin:0;font-family:"Noto Sans JP",system-ui,sans-serif;color:#131B27;background:#F2F4F7;font-size:13px;line-height:1.6}
 a{color:#22345C}a:hover{color:#1A2848}
 button,input,select{font-family:inherit;white-space:nowrap}
-span[style*="border-radius: 99px"],b[style*="border-radius: 99px"]{white-space:nowrap}
+span[style*="border-radius: 9999px"],b[style*="border-radius: 9999px"]{white-space:nowrap}
 @media (max-width:1023px){[data-split]{flex-direction:column}}
 
 /* kn-shell: bars and panels run edge to edge; menu and side panel open/close */
@@ -44,16 +44,16 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
 .kn-sub{width:232px;flex:none;background:#EDF0F4;border-right:1px solid #DDE2E9;padding:10px 10px 14px;display:flex;flex-direction:column;gap:2px;box-sizing:border-box}
 .kn-sub-h{font-size:11px;color:#6B7585;padding:12px 10px 4px;letter-spacing:.02em}
 .kn-sub-h:first-child{padding-top:4px}
-.kn-sub-i{display:flex;align-items:center;gap:10px;height:36px;padding:0 10px;border-radius:8px;color:#3A4453;text-decoration:none;transition:background .12s}
+.kn-sub-i{display:flex;align-items:center;gap:10px;height:36px;padding:0 10px;border-radius:8px;color:#4a5563;text-decoration:none;transition:background .12s}
 .kn-sub-i:hover{background:rgba(255,255,255,.55);color:#131B27}
 .kn-sub-i[aria-current="page"]{background:#FFFFFF;color:#131B27;font-weight:600;box-shadow:0 1px 2px rgba(19,27,39,.08),0 0 0 1px rgba(19,27,39,.06)}
 .kn-sub-ic{display:grid;place-items:center;width:20px;color:#6B7585}
 .kn-sub-i[aria-current="page"] .kn-sub-ic{color:#22345C}
 .kn-sub-t{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .kn-sub-n{font-size:12px;color:#6B7585;font-weight:400}
-.kn-sub-badge{font-size:11px;background:#B45309;color:#FFFFFF;border-radius:99px;padding:0 7px;font-weight:500}
+.kn-sub-badge{font-size:11px;background:#B45309;color:#FFFFFF;border-radius:9999px;padding:0 7px;font-weight:500}
 .kn-sub-note{margin-top:auto;font-size:11px;color:#6B7585;padding:10px}
-@media (max-width:1023px){.kn-sub{width:64px;padding:10px 8px}.kn-sub-h,.kn-sub-t,.kn-sub-n,.kn-sub-note{display:none}.kn-sub-i{justify-content:center;padding:0}.kn-sub-badge{position:absolute;margin:-18px 0 0 18px;font-size:9px;padding:0 4px}}
+@media (max-width:1023px){.kn-sub{width:64px;padding:10px 8px}.kn-sub-h,.kn-sub-t,.kn-sub-n,.kn-sub-note{display:none}.kn-sub-i{justify-content:center;padding:0}.kn-sub-badge{position:absolute;margin:-18px 0 0 18px;font-size:10px;padding:0 4px}}
 @media (max-width:767px){.kn-sub{width:auto;flex:none;flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid #DDE2E9;padding:6px 8px}.kn-sub-t{display:inline}.kn-sub-i{padding:0 10px;flex:none}}
 @media (max-width:1023px){.kn-nav{flex-basis:56px !important;padding:10px 6px !important}.kn-lbl{display:none !important}.kn-top{flex-direction:column;padding:4px 0 !important}.kn-tg{margin-left:0 !important}.kn-item{justify-content:center;padding:0 !important}}
 </style>
@@ -62,7 +62,7 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
  <input type="checkbox" id="kn-tg-nav" class="kn-tgc" aria-label="メニューを閉じる"><input type="checkbox" id="kn-tg-side" class="kn-tgc" aria-label="パネルを閉じる">
  <header style="background: #FFFFFF; border-bottom: 1px solid #DDE2E9; padding: 10px 24px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap">
   <a href="RoomKnows.dc.html" style="height: 30px; display: inline-flex; align-items: center; border: 1px solid #DDE2E9; border-radius: 6px; padding: 0 10px; font-size: 12px; color: #131B27; text-decoration: none">← 知っていること</a>
-  <span style="width: 32px; height: 32px; border-radius: 9px; background: #22345C; color: #FFFFFF; display: grid; place-items: center; font-weight: 700">請</span>
+  <span style="width: 32px; height: 32px; border-radius: 8px; background: #22345C; color: #FFFFFF; display: grid; place-items: center; font-weight: 700">請</span>
   <div><b style="font-size: 16px">請求書を作る</b><div style="font-size: 12px; color: #4A5563">やり方 ・ ワークスペース ・ v3 を直している（下書き v4）</div></div>
   <span style="margin-left: auto; display: flex; gap: 8px; align-items: center">
    <span style="font-size: 12px; color: #166534">✓ 検査 通過（必須の欄・鍵やパスワードの書き込みなし）</span>
@@ -75,38 +75,38 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
    <div style="display: flex; gap: 8px; align-items: center"><b style="font-size: 14px">組む</b><span style="display: inline-flex; border: 1px solid #DDE2E9; border-radius: 6px; overflow: hidden; margin-left: 8px"><button type="button" aria-pressed="true" style="height: 28px; border: 0; background: #22345C; color: #FFFFFF; padding: 0 12px; font-size: 12px">欄で直す</button><button type="button" style="height: 28px; border: 0; background: #FFFFFF; color: #4A5563; padding: 0 12px; font-size: 12px">分身と話して直す</button></span><span style="margin-left: auto; font-size: 12px; color: #4A5563">直すと右で試せる</span></div>
 
    <article style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 10px; padding: 12px 14px">
-    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px"><span style="width: 26px; height: 26px; border-radius: 7px; background: #EEF3FD; color: #22345C; display: grid; place-items: center; font-weight: 700; font-size: 12px">時</span><b>いつ使う</b><span style="font-size: 12px; color: #4A5563">この条件のチケットで候補に出る</span></div>
-    <div style="display: flex; gap: 6px; flex-wrap: wrap"><span style="border: 1px solid #DDE2E9; border-radius: 99px; padding: 2px 10px; font-size: 12px">種別 = タスク</span><span style="border: 1px solid #DDE2E9; border-radius: 99px; padding: 2px 10px; font-size: 12px">分類 = 請求</span><span style="border: 1px solid #DDE2E9; border-radius: 99px; padding: 2px 10px; font-size: 12px">つながりに見積がある</span><button type="button" style="height: 26px; border: 1.5px dashed #CBD2DC; border-radius: 99px; background: #FFFFFF; padding: 0 10px; font-size: 12px; color: #4A5563">＋ 条件</button></div>
+    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px"><span style="width: 26px; height: 26px; border-radius: 6px; background: #EEF3FD; color: #22345C; display: grid; place-items: center; font-weight: 700; font-size: 12px">時</span><b>いつ使う</b><span style="font-size: 12px; color: #4A5563">この条件のチケットで候補に出る</span></div>
+    <div style="display: flex; gap: 6px; flex-wrap: wrap"><span style="border: 1px solid #DDE2E9; border-radius: 9999px; padding: 2px 10px; font-size: 12px">種別 = タスク</span><span style="border: 1px solid #DDE2E9; border-radius: 9999px; padding: 2px 10px; font-size: 12px">分類 = 請求</span><span style="border: 1px solid #DDE2E9; border-radius: 9999px; padding: 2px 10px; font-size: 12px">つながりに見積がある</span><button type="button" style="height: 26px; border: 1.5px dashed #b8c0cc; border-radius: 9999px; background: #FFFFFF; padding: 0 10px; font-size: 12px; color: #4A5563">＋ 条件</button></div>
    </article>
 
    <article style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 10px; padding: 12px 14px">
-    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px"><span style="width: 26px; height: 26px; border-radius: 7px; background: #EEFBF2; color: #166534; display: grid; place-items: center; font-weight: 700; font-size: 12px">✓</span><b>確かめること</b><span style="font-size: 12px; color: #4A5563">チケットのテスト仕様の案になる</span></div>
+    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px"><span style="width: 26px; height: 26px; border-radius: 6px; background: #e8f5ec; color: #166534; display: grid; place-items: center; font-weight: 700; font-size: 12px">✓</span><b>確かめること</b><span style="font-size: 12px; color: #4A5563">チケットのテスト仕様の案になる</span></div>
     <sc-for list="{{checks}}" as="c" hint-placeholder-count="3"><div style="display: flex; gap: 8px; align-items: center; padding: 6px 0; border-top: 1px solid #EDF0F4"><span style="color: #8A94A3" aria-hidden="true">⋮⋮</span><span style="flex: 1">{{c.text}}</span><span style="font-size: 11px; border: 1px solid #DDE2E9; border-radius: 4px; padding: 0 6px; white-space: nowrap">{{c.kind}}</span></div></sc-for>
-    <button type="button" style="margin-top: 6px; height: 26px; border: 1.5px dashed #CBD2DC; border-radius: 6px; background: #FFFFFF; padding: 0 10px; font-size: 12px; color: #4A5563">＋ 確かめること</button>
+    <button type="button" style="margin-top: 6px; height: 26px; border: 1.5px dashed #b8c0cc; border-radius: 6px; background: #FFFFFF; padding: 0 10px; font-size: 12px; color: #4A5563">＋ 確かめること</button>
    </article>
 
    <article style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 10px; padding: 12px 14px">
-    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px"><span style="width: 26px; height: 26px; border-radius: 7px; background: #F5F1FB; color: #6D4AA6; display: grid; place-items: center; font-weight: 700; font-size: 12px">書</span><b>書式と手本</b></div>
-    <div style="display: flex; gap: 8px; flex-wrap: wrap"><span style="display: inline-flex; gap: 6px; align-items: center; border: 1px solid #DDE2E9; border-radius: 8px; padding: 6px 10px; font-size: 12px"><span style="width: 18px; height: 22px; border: 1px solid #DDE2E9; border-radius: 2px"></span>請求書の書式（ナレッジ 版 2）</span><span style="display: inline-flex; gap: 6px; align-items: center; border: 1px solid #DDE2E9; border-radius: 8px; padding: 6px 10px; font-size: 12px">件名「【請求書】{月}月分 ご請求のご案内」</span><span style="display: inline-flex; gap: 6px; align-items: center; border: 1px solid #DDE2E9; border-radius: 8px; padding: 6px 10px; font-size: 12px">手本：EG-112（10月分）</span></div>
+    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px"><span style="width: 26px; height: 26px; border-radius: 6px; background: #edeaf6; color: #6D4AA6; display: grid; place-items: center; font-weight: 700; font-size: 12px">書</span><b>書式と手本</b></div>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap"><span style="display: inline-flex; gap: 6px; align-items: center; border: 1px solid #DDE2E9; border-radius: 8px; padding: 6px 10px; font-size: 12px"><span style="width: 18px; height: 22px; border: 1px solid #DDE2E9; border-radius: 4px"></span>請求書の書式（ナレッジ 版 2）</span><span style="display: inline-flex; gap: 6px; align-items: center; border: 1px solid #DDE2E9; border-radius: 8px; padding: 6px 10px; font-size: 12px">件名「【請求書】{月}月分 ご請求のご案内」</span><span style="display: inline-flex; gap: 6px; align-items: center; border: 1px solid #DDE2E9; border-radius: 8px; padding: 6px 10px; font-size: 12px">手本：EG-112（10月分）</span></div>
    </article>
 
    <article style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 10px; padding: 12px 14px">
-    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px"><span style="width: 26px; height: 26px; border-radius: 7px; background: #FDECEC; color: #B91C1C; display: grid; place-items: center; font-weight: 700; font-size: 12px">!</span><b>注意と禁止</b></div>
-    <ul style="margin: 0; padding-left: 18px"><li>値引きは決定ログに無ければ入れない</li><li>口座番号は設定の値から入れる（本文に書かない）</li><li style="background: #EEFBF2; border-radius: 4px">無償にした追加対応は入れない <span style="font-size: 11px; color: #166534">← v4 で足した</span></li></ul>
+    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px"><span style="width: 26px; height: 26px; border-radius: 6px; background: #FDECEC; color: #B91C1C; display: grid; place-items: center; font-weight: 700; font-size: 12px">!</span><b>注意と禁止</b></div>
+    <ul style="margin: 0; padding-left: 18px"><li>値引きは決定ログに無ければ入れない</li><li>口座番号は設定の値から入れる（本文に書かない）</li><li style="background: #e8f5ec; border-radius: 4px">無償にした追加対応は入れない <span style="font-size: 11px; color: #166534">← v4 で足した</span></li></ul>
    </article>
 
    <article style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 10px; padding: 12px 14px">
-    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px"><span style="width: 26px; height: 26px; border-radius: 7px; background: #F2F4F7; color: #4A5563; display: grid; place-items: center; font-weight: 700; font-size: 12px">手</span><b>使う操作</b><span style="font-size: 12px; color: #4A5563">運営が用意した手足から選ぶ</span></div>
-    <div style="display: flex; gap: 8px; flex-wrap: wrap"><span style="display: inline-flex; gap: 6px; align-items: center; border: 1px solid #DDE2E9; border-radius: 8px; padding: 6px 10px; font-size: 12px"><b style="width: 18px; height: 18px; border-radius: 4px; background: #B91C1C; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">P</b>PDF を作る</span><span style="display: inline-flex; gap: 6px; align-items: center; border: 1px solid #DDE2E9; border-radius: 8px; padding: 6px 10px; font-size: 12px"><b style="width: 18px; height: 18px; border-radius: 4px; background: #1D4ED8; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">B</b>ブラウザでメールを送る</span><button type="button" style="height: 32px; border: 1.5px dashed #CBD2DC; border-radius: 8px; background: #FFFFFF; padding: 0 10px; font-size: 12px; color: #4A5563">＋ 操作</button></div>
+    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px"><span style="width: 26px; height: 26px; border-radius: 6px; background: #F2F4F7; color: #4A5563; display: grid; place-items: center; font-weight: 700; font-size: 12px">手</span><b>使う操作</b><span style="font-size: 12px; color: #4A5563">運営が用意した手足から選ぶ</span></div>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap"><span style="display: inline-flex; gap: 6px; align-items: center; border: 1px solid #DDE2E9; border-radius: 8px; padding: 6px 10px; font-size: 12px"><b style="width: 18px; height: 18px; border-radius: 4px; background: #B91C1C; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">P</b>PDF を作る</span><span style="display: inline-flex; gap: 6px; align-items: center; border: 1px solid #DDE2E9; border-radius: 8px; padding: 6px 10px; font-size: 12px"><b style="width: 18px; height: 18px; border-radius: 4px; background: #1D4ED8; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">B</b>ブラウザでメールを送る</span><button type="button" style="height: 32px; border: 1.5px dashed #b8c0cc; border-radius: 8px; background: #FFFFFF; padding: 0 10px; font-size: 12px; color: #4A5563">＋ 操作</button></div>
    </article>
 
-   <div style="font-size: 12px; color: #4A5563; background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 10px; padding: 10px 14px">上に重なるルール（ここでは直せない）：<span style="border: 1px solid #DDE2E9; border-radius: 99px; padding: 0 8px; margin-left: 4px">ワークスペース：請求は 25 日締め</span><span style="border: 1px solid #DDE2E9; border-radius: 99px; padding: 0 8px; margin-left: 4px">取引先ごとの宛名</span></div>
+   <div style="font-size: 12px; color: #4A5563; background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 10px; padding: 10px 14px">上に重なるルール（ここでは直せない）：<span style="border: 1px solid #DDE2E9; border-radius: 9999px; padding: 0 8px; margin-left: 4px">ワークスペース：請求は 25 日締め</span><span style="border: 1px solid #DDE2E9; border-radius: 9999px; padding: 0 8px; margin-left: 4px">取引先ごとの宛名</span></div>
   </section>
 
   <section aria-label="試す" style="flex: 0 1 520px; min-width: 0; padding: 16px 24px; background: #FAFBFC; display: flex; flex-direction: column; gap: 12px">
    <div style="display: flex; gap: 8px; align-items: center"><b style="font-size: 14px">試す</b><span style="font-size: 12px; color: #4A5563">外には何も出ない</span></div>
    <div style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 10px; padding: 12px 14px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap">
-    <label style="font-size: 12px; color: #4A5563; display: flex; gap: 6px; align-items: center; flex: 1">試すチケット<select style="flex: 1; height: 32px; border: 1px solid #CBD2DC; border-radius: 6px; font-size: 13px"><option>EG-128 セイコー様 11月分（いまの状態で）</option></select></label>
+    <label style="font-size: 12px; color: #4A5563; display: flex; gap: 6px; align-items: center; flex: 1">試すチケット<select style="flex: 1; height: 32px; border: 1px solid #b8c0cc; border-radius: 6px; font-size: 13px"><option>EG-128 セイコー様 11月分（いまの状態で）</option></select></label>
     <button type="button" style="height: 32px; border-radius: 6px; border: 1px solid #22345C; background: #22345C; color: #FFFFFF; padding: 0 14px; font-size: 12px; font-weight: 500">v4 で試す</button>
    </div>
    <div style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 10px; padding: 12px 14px">

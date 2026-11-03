@@ -13,7 +13,7 @@
 body{margin:0;font-family:"Noto Sans JP",system-ui,sans-serif;color:#131B27;background:#F2F4F7;font-size:13px;line-height:1.6}
 a{color:#22345C}a:hover{color:#1A2848}
 button,input,select,textarea{font-family:inherit}
-input[type=text],select,textarea{border:1px solid #CBD2DC;border-radius:6px;background:#FFFFFF;padding:6px 10px;font-size:13px;color:#131B27;box-sizing:border-box;width:100%}
+input[type=text],select,textarea{border:1px solid #b8c0cc;border-radius:6px;background:#FFFFFF;padding:6px 10px;font-size:13px;color:#131B27;box-sizing:border-box;width:100%}
 button{white-space:nowrap}
 
 /* kn-shell: bars and panels run edge to edge; menu and side panel open/close */
@@ -44,16 +44,16 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
 .kn-sub{width:232px;flex:none;background:#EDF0F4;border-right:1px solid #DDE2E9;padding:10px 10px 14px;display:flex;flex-direction:column;gap:2px;box-sizing:border-box}
 .kn-sub-h{font-size:11px;color:#6B7585;padding:12px 10px 4px;letter-spacing:.02em}
 .kn-sub-h:first-child{padding-top:4px}
-.kn-sub-i{display:flex;align-items:center;gap:10px;height:36px;padding:0 10px;border-radius:8px;color:#3A4453;text-decoration:none;transition:background .12s}
+.kn-sub-i{display:flex;align-items:center;gap:10px;height:36px;padding:0 10px;border-radius:8px;color:#4a5563;text-decoration:none;transition:background .12s}
 .kn-sub-i:hover{background:rgba(255,255,255,.55);color:#131B27}
 .kn-sub-i[aria-current="page"]{background:#FFFFFF;color:#131B27;font-weight:600;box-shadow:0 1px 2px rgba(19,27,39,.08),0 0 0 1px rgba(19,27,39,.06)}
 .kn-sub-ic{display:grid;place-items:center;width:20px;color:#6B7585}
 .kn-sub-i[aria-current="page"] .kn-sub-ic{color:#22345C}
 .kn-sub-t{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .kn-sub-n{font-size:12px;color:#6B7585;font-weight:400}
-.kn-sub-badge{font-size:11px;background:#B45309;color:#FFFFFF;border-radius:99px;padding:0 7px;font-weight:500}
+.kn-sub-badge{font-size:11px;background:#B45309;color:#FFFFFF;border-radius:9999px;padding:0 7px;font-weight:500}
 .kn-sub-note{margin-top:auto;font-size:11px;color:#6B7585;padding:10px}
-@media (max-width:1023px){.kn-sub{width:64px;padding:10px 8px}.kn-sub-h,.kn-sub-t,.kn-sub-n,.kn-sub-note{display:none}.kn-sub-i{justify-content:center;padding:0}.kn-sub-badge{position:absolute;margin:-18px 0 0 18px;font-size:9px;padding:0 4px}}
+@media (max-width:1023px){.kn-sub{width:64px;padding:10px 8px}.kn-sub-h,.kn-sub-t,.kn-sub-n,.kn-sub-note{display:none}.kn-sub-i{justify-content:center;padding:0}.kn-sub-badge{position:absolute;margin:-18px 0 0 18px;font-size:10px;padding:0 4px}}
 @media (max-width:767px){.kn-sub{width:auto;flex:none;flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid #DDE2E9;padding:6px 8px}.kn-sub-t{display:inline}.kn-sub-i{padding:0 10px;flex:none}}
 @media (max-width:1023px){.kn-nav{flex-basis:56px !important;padding:10px 6px !important}.kn-lbl{display:none !important}.kn-top{flex-direction:column;padding:4px 0 !important}.kn-tg{margin-left:0 !important}.kn-item{justify-content:center;padding:0 !important}}
 </style>
@@ -99,7 +99,7 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
   <section role="alertdialog" aria-label="取り消せない操作の確認" style="width: 380px; background: #FFFFFF; border-radius: 12px; box-shadow: 0 24px 60px rgba(19,27,39,0.3); overflow: hidden">
    <div style="padding: 14px 18px; border-bottom: 1px solid #DDE2E9"><b style="font-size: 15px">承認して送ります</b></div>
    <div style="padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; font-size: 13px">
-    <div style="border: 1px solid #F1C4C4; background: #FDECEC; border-radius: 8px; padding: 8px 10px; color: #991B1B"><b>メールの送信は取り消せません</b><div style="font-size: 12px">宛先：経理部 山田様（CC 鈴木様）・添付 1</div></div>
+    <div style="border: 1px solid #f3c7c7; background: #FDECEC; border-radius: 8px; padding: 8px 10px; color: #991B1B"><b>メールの送信は取り消せません</b><div style="font-size: 12px">宛先：経理部 山田様（CC 鈴木様）・添付 1</div></div>
     <label style="display: flex; gap: 6px; font-size: 12px"><input type="checkbox" checked>③ 送る前に PDF を目で見た</label>
     <div style="font-size: 12px; color: #4A5563">大事な操作なので、もう一度本人確認をします（パスキー）</div>
    </div>
