@@ -39,7 +39,7 @@ type Opts = {
   opsAllowed?: boolean;
   withHook?: boolean;
   perms?: boolean;
-  caps?: string[] | "all";
+  caps?: string[] | "all" | null;
   stepUpAt?: Date | null;
 };
 
