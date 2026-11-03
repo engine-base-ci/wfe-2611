@@ -1434,6 +1434,40 @@
    "title": "顧客の側：値段が変わる知らせ（決めたあと）← ワークスペースの管理 › 設定",
    "expand": "fill",
    "page": "ops"
+  },
+  "WsMember.dc.html": {
+   "x": 3040,
+   "y": 2480,
+   "w": 1440,
+   "h": 1000,
+   "title": "メンバーの 1 人 ← メンバーの名前を押す",
+   "expand": "fill",
+   "page": "ws"
+  },
+  "MeInquiry.dc.html": {
+   "x": 1520,
+   "y": 10280,
+   "w": 1440,
+   "h": 1000,
+   "title": "自分の問い合わせ（やり取り）← 困ったとき・お知らせ「自分の問い合わせ」",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "MbKnowledge.dc.html": {
+   "x": 5390,
+   "y": 2500,
+   "w": 390,
+   "h": 844,
+   "title": "スマホ｜ナレッジ ← メニュー",
+   "page": "tickets"
+  },
+  "MbClients.dc.html": {
+   "x": 5860,
+   "y": 2500,
+   "w": 390,
+   "h": 844,
+   "title": "スマホ｜取引先 ← メニュー",
+   "page": "tickets"
   }
  },
  "createdOnFiles": {
@@ -1905,7 +1939,11 @@
   "OpPlanEdit.dc.html",
   "OpPlanReview.dc.html",
   "OpPlanLog.dc.html",
-  "WsPriceChange.dc.html"
+  "WsPriceChange.dc.html",
+  "WsMember.dc.html",
+  "MeInquiry.dc.html",
+  "MbKnowledge.dc.html",
+  "MbClients.dc.html"
  ],
  "pages": [
   {
