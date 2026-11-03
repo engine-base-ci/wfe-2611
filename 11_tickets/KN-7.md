@@ -7,8 +7,8 @@ parent:
 milestone: 節目①
 area: 
 assignee: 未定
-due: 
-decisions: [D-125.167, D-126.23]
+due: 2026-11-20
+decisions: [D-125.167, D-126.23, D-128.118]
 split: 
 depends_on: [KN-1]
 ---
@@ -42,6 +42,7 @@ depends_on: [KN-1]
 
 ## 決定ログ
 
+- 目標の日は 11/20（D-128.118・2026-11-03 高本さん）
 - 節目①の範囲（D-125.167・D-126.23）
 
 ## リスクと懸念

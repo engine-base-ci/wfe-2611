@@ -169,7 +169,7 @@ header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:spac
         <li>節目の子が全部完了したら、その節目が終わる</li>
       </ol>
     </div>
-    <div class="panel note" style="margin-top:18px">期限はまだ決めていません（どのチケットも「期限」が空）。節目ごとの目標の日を決めたら、ここに入ります。</div>
+    <div class="panel note" style="margin-top:18px">目標の日：基盤 11/13・節目① 11/20。節目②・③・本番の 11/30 は仮で、節目①のあとに速さを見て確かめます（D-128.118）。</div>
   </section>
 </div>
 <script id="data" type="application/json">__DATA__</script>
@@ -181,6 +181,7 @@ const isLeaf = t => t.split !== 'これから' && !(kids[t.id] || []).length;
 const roots = kids[''] || [];
 const STAGES = ['未着手','作業中','保留','確認中','承認待ち','実行中','完了'];
 document.getElementById('built').textContent = D.built;
+const left = d => { if (!d) return '未定'; const n = Math.round((new Date(d) - new Date(D.built)) / 864e5); const md = d.slice(5).replace('-', '/'); return n >= 0 ? `${md}（あと ${n} 日）` : `${md}（${-n} 日過ぎ）`; };
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const leaves = T.filter(isLeaf), uncut = T.filter(t => t.split === 'これから');
 const desc = id => (kids[id] || []).flatMap(k => [by[k], ...desc(k)]);
@@ -226,13 +227,14 @@ function rowHTML(id, lv) {
     t.area ? `<span class="pill area">${esc(t.area)}</span>` : '',
     r ? `<span class="muted num" title="下の 1 作業の完了／全部">${r.n ? `${r.done}/${r.n} 完了` : '1 作業はまだ無い'}${r.uncut ? `・まだ切っていない ${r.uncut}` : ''}</span>` : '',
     !k.length && t.total ? `<span class="bar" title="完了の条件 ${t.done}/${t.total}"><i style="width:${prog}%"></i></span>` : '',
+    lv === 0 && t.due ? `<span class="muted num">目標 ${left(t.due)}</span>` : '',
     `<span class="pill st-${esc(t.stage)}">${esc(t.stage)}</span>`,
   ].join('');
   const det = open.has(id) ? `<div class="detail">
       <div class="full"><h3>目的</h3><div class="txt">${esc(t.purpose) || '<span class="muted">（書いていない）</span>'}</div></div>
       <div><h3>完了の条件（${t.done}/${t.total}）</h3>${ckList(t.conditions)}</div>
       <div><h3>実施事項</h3>${/^- \[/m.test(t.todo) ? ckList(t.todo) : `<div class="txt">${esc(t.todo) || '<span class="muted">（書いていない）</span>'}</div>`}</div>
-      <div><h3>属性</h3><div class="txt">節目：${esc(t.milestone)}\n担当：${esc(t.assignee) || '未定'}\n期限：${esc(t.due) || '未定'}\n先に要るもの：${t.depends.length ? esc(t.depends.join('、')) : 'なし'}\n画面：${t.screens.length ? esc(t.screens.join('、')) : '—'}\n決定：${esc(t.decisions.join('、'))}</div></div>
+      <div><h3>属性</h3><div class="txt">節目：${esc(t.milestone)}\n担当：${esc(t.assignee) || '未定'}\n目標の日：${left(t.due)}\n先に要るもの：${t.depends.length ? esc(t.depends.join('、')) : 'なし'}\n画面：${t.screens.length ? esc(t.screens.join('、')) : '—'}\n決定：${esc(t.decisions.join('、'))}</div></div>
       ${t.handoff ? `<div><h3>申し送り</h3><div class="txt">${esc(t.handoff)}</div></div>` : ''}
       ${t.risks ? `<div><h3>リスクと懸念</h3><div class="txt">${esc(t.risks)}</div></div>` : ''}
       <div class="full muted mono">${esc(t.file)}</div>
@@ -262,7 +264,7 @@ document.getElementById('lanes').innerHTML = ORDER.map((ms, i) => {
   return `<div class="lane ${ms === curMs ? 'cur' : ''}">
     <div class="lane-h"><span class="step">${i + 1} / ${ORDER.length}</span><h2>${esc(r.title)}</h2>
       <span class="muted num">${rr.n ? `1 作業 ${rr.done}/${rr.n} 完了` : 'まだ 1 作業に切っていない'}${rr.uncut ? `・まだ切っていないまとまり ${rr.uncut}` : ''}</span>
-      <span class="due">期限：${esc(r.due) || '未定'}</span></div>
+      <span class="due">目標の日：${left(r.due)}</span></div>
     ${groups.map(g => { const gk = (kids[g.id] || []).map(x => by[x]); const gr = roll(g.id);
       return `<div class="grp ${g.split === 'これから' ? 'uncut-g' : ''}">
         <div class="gt"><span class="mono muted">${g.id}</span> ${esc(g.title)}</div>
