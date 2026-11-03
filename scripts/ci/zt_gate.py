@@ -121,7 +121,6 @@ def impl_todo() -> tuple[list[str], dict]:
     web = "".join(open(f, encoding="utf-8").read() for f in glob.glob(os.path.join(ROOT, "apps", "web", "next.config.*")) + glob.glob(os.path.join(ROOT, "apps", "web", "middleware.*")))
     op = open(os.path.join(ROOT, "apps", "api", "src", "contract", "op.ts"), encoding="utf-8").read() if os.path.exists(os.path.join(ROOT, "apps", "api", "src", "contract", "op.ts")) else ""
     if '"client"' not in op: todo.append("[ZT4] 契約の入口（apps/api/src/contract/op.ts）が取引先の人（client）を分けていない。client は /portal/ の API だけ通す")
-    if "Content-Security-Policy" not in web: todo.append("[ZT11] Content-Security-Policy が apps/web に無い")
     # ZT1（実装）：契約の外で登録されている道すじ（手で書いた /api/auth-ext・Bridge・預けたログイン情報 など）
     #   Better Auth そのものの /api/auth/* は部品の中身なので数えない。全部を契約に入れるか、理由つきで除外するまで残りに出す
     outside = []
@@ -139,7 +138,13 @@ def impl_todo() -> tuple[list[str], dict]:
     metrics["session_geo"] = int(not (calls and "'country_changed'" in body and "'device_changed'" in body))
     if metrics["session_idle"]: todo.append("[ZT6] 操作が無いときの期限（12 時間）・最長（7 日）で閉じる仕組み（app.session_check）が無いか、解決が呼んでいない")
     if metrics["session_geo"]: todo.append("[ZT6] 国・端末の急な変化で閉じる仕組み（app.session_check）が無いか、解決が呼んでいない")
-    metrics["csp"] = int("Content-Security-Policy" not in web)
+    # 画面の守り（KN-103）：middleware が全部の画面の応答に lib/security-headers.ts の見出しを付け、その中に 4 つの守りがある
+    sec_p = os.path.join(ROOT, "apps", "web", "lib", "security-headers.ts")
+    sec = open(sec_p, encoding="utf-8").read() if os.path.exists(sec_p) else ""
+    wired = "securityHeaders(" in web and "matcher" in web
+    need = ["Content-Security-Policy", "frame-ancestors", "Referrer-Policy", "Strict-Transport-Security", "'nonce-"]
+    metrics["csp"] = int(not (wired and all(x in sec for x in need)))
+    if metrics["csp"]: todo.append("[ZT11] 画面の守りの見出し（CSP・frame-ancestors・Referrer-Policy・HSTS・nonce）を全部の画面に付ける仕組みが apps/web に無い")
     metrics["client_gate"] = int('"client"' not in op)
     # ZT1・ZT5（実装）：権限の言葉の段と本人確認の取り直しが入口にあるか。
     #   言葉ごとの確かめは apps/api/src/contract/permissions.ts の CHECKS に置く（キーが言葉）。無い言葉を使う API の数を残りに出す

@@ -11086,7 +11086,16 @@
   },
   {
    "entity": "knowledge_page_versions",
-   "field": "proposed_from_ticket_id・proposed_by_clone",
+   "field": "proposed_from_ticket_id",
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_page_versions",
+   "field": "proposed_by_clone",
    "consumed_by_screens": [
     "knowledge"
    ],

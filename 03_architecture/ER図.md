@@ -434,7 +434,7 @@ erDiagram
 | **`ticket_messages`** | `<common>` / `ticket_id` / `author_member_id` / `kind`（書き込み・変更・仕組み）/ `body` / `mentions uuid[]` / `changes jsonb`（期限 11/01 → 11/02 など）/ `quote_of_id` / `reactions jsonb` | **★新設（D-125.29・D-125.131・D-128.45）。**チケットのスレッド |
 | **`reference_logs`** | `<common>` / `ticket_id` / `action_run_id` / `ref_type`（ページ・記憶・添付・外の URL）/ `ref_id` / `url` / `title` / `seen_at` | **★新設（D-125.28・D-125.35）。**外は URL・題名・時刻だけ |
 | **`knowledge_pages`** | `<scoped>`（scope＝置き場：ワークスペース全体・層・グループ・自分）/ `is_personal`（自分の置き場：持ち主だけ）/ `parent_page_id` / `title` / `owner_member_id` / `state`（下書き・公開・しまった）/ `verify_interval_days` / `verified_at` / `verify_due_on` / `topics text[]` / `current_version` / `form`（手順・決まり・まとめ・白紙）/ `archived_at` / `archived_to_page_id`（しまって新しいページへつなぐ） | **★新設（D-125.108・D-128.50〜.52）** |
-| **`knowledge_page_versions`** | `<common>` / `page_id` / `version` / `kind`（下書き・直す案・公開）/ `body jsonb` / `note` / `author_member_id` / `proposed_from_ticket_id`・`proposed_by_clone`（チケットの完了で分身が出した直す案）/ `decision`（入れた・直して入れた・入れない）/ `decline_reason` / `decided_by` / `decided_at` / `published_by` / `published_at` | 公開するたびに増える |
+| **`knowledge_page_versions`** | `<common>` / `page_id` / `version` / `kind`（下書き・直す案・公開）/ `body jsonb` / `note` / `author_member_id` / `proposed_from_ticket_id` / `proposed_by_clone`（チケットの完了で分身が出した直す案）/ `decision`（入れた・直して入れた・入れない）/ `decline_reason` / `decided_by` / `decided_at` / `published_by` / `published_at` | 公開するたびに増える |
 | **`knowledge_links`** | `<common>` / `from_page_id` / `to_type`（ページ・チケット・決まり・取引先）/ `to_id` / `anchor` | つながり・被リンク（D-128.52） |
 | **`clients`** | `<common>` / `name` / `owner_member_id`（取引先の担当）/ `visibility`（全員・担当グループだけ）/ `default_share jsonb`（種別ごとの既定の見せ方）/ `routing`（分身が振り分ける）/ `email_domain`（招待はドメインが合う人だけ） | **★新設（D-125.121・D-128.53・D-128.54）** |
 | **`client_groups`** | `<common>` / `client_id` / `scope_id` | 担当グループ（いくつでも ← D-128.54） |
@@ -485,7 +485,7 @@ erDiagram
 - 先方の人への知らせは `notifications` の `channel_id = email` で出来事ごとに送る（確認してほしいもの・依頼への返事・催促）。メールにはリンクだけ載せ、本文・成果物は載せない（D-128.103）
 
 ナレッジで足す列（D-128.105・D-128.106）：
-- `knowledge_page_versions`：`kind`（下書き・案・公開）/ `author_member_id` / `proposed_from_ticket_id`・`proposed_by_clone`（チケットの完了で分身が出した直す案）/ `decision`（入れた・直して入れた・入れない）/ `decline_reason` / `decided_by` / `decided_at`。下書きと直す案も同じ表で持ち、公開したときだけ `version` が増える
+- `knowledge_page_versions`：`kind`（下書き・案・公開）/ `author_member_id` / `proposed_from_ticket_id` / `proposed_by_clone`（チケットの完了で分身が出した直す案）/ `decision`（入れた・直して入れた・入れない）/ `decline_reason` / `decided_by` / `decided_at`。下書きと直す案も同じ表で持ち、公開したときだけ `version` が増える
 - `knowledge_pages`：`archived_at` / `archived_to_page_id`（しまって新しいページへつなぐ）
 - ページのやり取りは `messages`（`owner_type = knowledge_page`）に置く
 

@@ -12018,7 +12018,11 @@
      "note": null
     },
     {
-     "name": "proposed_from_ticket_id・proposed_by_clone",
+     "name": "proposed_from_ticket_id",
+     "note": null
+    },
+    {
+     "name": "proposed_by_clone",
      "note": "チケットの完了で分身が出した直す案"
     },
     {

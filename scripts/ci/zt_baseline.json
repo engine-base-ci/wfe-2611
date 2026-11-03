@@ -6,7 +6,7 @@
   "outside_routes": 87,
   "session_idle": 0,
   "session_geo": 0,
-  "csp": 1,
+  "csp": 0,
   "client_gate": 0,
   "perm_words_missing": 0,
   "step_up_missing": 0

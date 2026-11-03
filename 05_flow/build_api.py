@@ -150,6 +150,9 @@ for _op, (_n, _props) in getattr(_sa, "INPUTS", {}).items():   # 表の行では
     schemas[_n] = {"type": "object", "properties": {k: {"type": v} for k, v in _props.items()}, "x-operation": _op}
 for _op, (_n, _props) in _sa.RESPONSES.items():   # 表の行ではない答えの形（D-128.78）
     schemas[_n] = {"type": "object", "properties": {k: ({"type": "array", "items": {"type": "object"}} if v == "array" else {"type": v}) for k, v in _props.items()}, "x-operation": _op}
+# 列の名前は英小文字と _ だけ（ER 図で 2 つの列を「・」でつないだまま 1 つの名前になり、型のファイルが画面の組み立て（SWC）で読めなくなった・2026-11-03）
+_badnames = [f"{n}.{k}" for n, sc in schemas.items() for k in sc["properties"] if not re.match(r"^[a-z_][a-z0-9_]*$", k)]
+if _badnames: raise SystemExit(f"列の名前が英小文字と _ だけでない（03_architecture/ER図.md を直す）: {_badnames[:8]}")
 schemas["Error"] = {"type": "object", "properties": {"error": {"type": "string"}, "code": {"type": "string"}, "message": {"type": "string"}, "details": {"type": "array", "items": {"type": "object"}}, "retry_after_sec": {"type": "integer"}}, "required": ["error"]}
 # 問い合わせの値の形（入口 op.ts が確かめるのと同じ。KN-55）
 #   sort は表の列の名前だけ。scope_id は表に scope_id があるときだけ出す。空の値（?limit=）は指定なしと同じ（allowEmptyValue）

@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:8a696fe0db2c1b7b
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:a7fbc178bd8f3f7c
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -2864,6 +2864,8 @@ export const KnowledgePageVersions = z.strictObject({
   kind: z.string().max(10000).optional(),
   note: z.string().max(10000).nullable().optional(),
   author_member_id: z.uuid().nullable().optional(),
+  proposed_from_ticket_id: z.uuid().nullable().optional(),
+  proposed_by_clone: z.boolean().optional(),
   decision: z.string().max(10000).nullable().optional(),
   decline_reason: z.string().max(10000).nullable().optional(),
   decided_by: z.uuid().nullable().optional(),
@@ -2876,8 +2878,6 @@ export const KnowledgePageVersions = z.strictObject({
   updated_at: z.iso.datetime({ offset: true }).optional(),
   created_by: z.uuid().nullable().optional(),
   deleted_at: z.iso.datetime({ offset: true }).nullable().optional(),
-  proposed_by_clone: z.boolean().optional(),
-  proposed_from_ticket_id: z.uuid().nullable().optional(),
   updated_by: z.uuid().nullable().optional(),
 });
 export const KnowledgePageVersionsInput = z.strictObject({
@@ -2886,6 +2886,8 @@ export const KnowledgePageVersionsInput = z.strictObject({
   body: z.unknown().optional(),
   note: z.string().max(10000).nullable().optional(),
   author_member_id: z.uuid().nullable().optional(),
+  proposed_from_ticket_id: z.uuid().nullable().optional(),
+  proposed_by_clone: z.boolean().optional(),
   decision: z.string().max(10000).nullable().optional(),
   decline_reason: z.string().max(10000).nullable().optional(),
   decided_by: z.uuid().nullable().optional(),
