@@ -43,6 +43,9 @@ def main() -> int:
                 cmd = re.sub(r"(^|&& |\| )python3 ", lambda m: m.group(1) + sys.executable + " ", c["check"])   # 検査は同じ Python で回す（system python3 だと構文で落ちる）
                 r = subprocess.run(cmd, shell=True, capture_output=True, text=True, cwd=os.getcwd())
                 row["result"] = "OK" if r.returncode == 0 else "★ FAIL"; row["note"] = (r.stdout + r.stderr).strip().splitlines()[-1][:120] if (r.stdout + r.stderr).strip() else ""
+                if r.returncode:   # 落ちた検査は、何が落ちたかを読めるように要点を残す（CI のログで最後の 1 行しか見えないと原因が追えない）
+                    keep = [l for l in (r.stdout + r.stderr).splitlines() if re.search(r"FAIL|×|✗|Error|expected|AssertionError|★", l) and "UTC [" not in l]
+                    row["detail"] = keep[:40]
                 if r.returncode: bad += 1
             else: row["result"] = "（--run で実行）"
         else:
@@ -54,7 +57,9 @@ def main() -> int:
     if a.json: print(json.dumps({"pass": not bad, "latest": latest, "rows": rows}, ensure_ascii=False, indent=1))
     else:
         print(f"層の棚卸し {len(rows)} ファイル（正本の最新 confirmed: D-{latest:03d}）")
-        for r in rows: print(f'  {r["kind"]:2s} {r["result"]:<44s} {r["newest_ref"]:>6s}  {r["file"]}' + (f'  ← {r["note"]}' if r["note"] else ""))
+        for r in rows:
+            print(f'  {r["kind"]:2s} {r["result"]:<44s} {r["newest_ref"]:>6s}  {r["file"]}' + (f'  ← {r["note"]}' if r["note"] else ""))
+            for d in r.get("detail", []): print(f"      │ {d[:300]}")
         print("PASS — G21 全部の層に検査（機械か理由つきの手）がある" if not bad else f"FAIL — G21 検査の無い層 {bad}")
     return 0 if not bad else 2
 
