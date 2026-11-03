@@ -26,6 +26,9 @@ for t in T:
         "done": d, "total": n,
         "purpose": s.get("目的", ""), "conditions": s.get("完了の条件", ""), "todo": s.get("実施事項", ""),
         "handoff": s.get("申し送り", ""), "risks": s.get("リスクと懸念", ""), "file": t.get("file", ""),
+        "tests": [[c.strip() for c in l.strip().strip("|").split("|")] for l in s.get("テスト仕様と確認の結果", "").split("\n")
+                  if l.startswith("|") and not l.startswith("|---") and not l.startswith("| 確認項目")],
+        "apis": t.get("apis", []),
     })
 data = json.dumps({"tickets": rows, "built": datetime.date.today().isoformat()}, ensure_ascii=False)
 
@@ -71,7 +74,7 @@ header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:spac
 .tabs a[aria-current="page"]{background:var(--navy);color:var(--card)}
 .tabs a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
 .panel{background:var(--card);border:1px solid var(--line);border-radius:12px}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
 .stat{padding:14px 18px;border-right:1px solid var(--line-soft)}
 .stat:last-child{border-right:0}
 .stat b{display:block;font-size:24px;font-variant-numeric:tabular-nums;line-height:1.2}
@@ -136,7 +139,30 @@ header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:spac
 .flow{padding:14px 18px;display:flex;flex-direction:column;gap:6px}
 .flow ol{margin:0;padding-left:1.4em;display:flex;flex-direction:column;gap:4px}
 .note{padding:12px 18px;border-top:1px solid var(--line-soft);font-size:13px;color:var(--sub)}
-@media (max-width:640px){.detail,.lv1 .detail{padding-left:18px}.lv1>.row{padding-left:22px}.lv2>.row{padding-left:30px}.row{grid-template-columns:auto minmax(0,1fr)}.row .meta{grid-column:1/-1;justify-content:flex-start}}
+.msbar{display:flex;gap:6px;padding:10px 14px;border-bottom:1px solid var(--line-soft);overflow-x:auto;scrollbar-width:none}
+.msbar::-webkit-scrollbar{display:none}
+.msbar .chip{flex:0 0 auto;padding:6px 13px;font-size:13px}
+.fold{border:0;background:transparent;color:var(--mute);font:inherit;width:28px;height:28px;margin:-4px 0;border-radius:6px;cursor:pointer;display:inline-grid;place-items:center}
+.fold:hover{background:var(--line-soft);color:var(--ink)}
+.fold svg{width:12px;height:12px;transition:transform .15s}
+.fold[aria-expanded="true"] svg{transform:rotate(90deg)}
+.lead{display:flex;align-items:center;gap:2px}
+.tests{width:100%;border-collapse:collapse;font-size:12.5px}
+.tests td{border-top:1px solid var(--line-soft);padding:5px 8px 5px 0;vertical-align:top;overflow-wrap:anywhere}
+.tests td.kind{white-space:nowrap;color:var(--sub)}
+.tests td.res{white-space:nowrap}
+.res-ok{color:var(--ok)} .res-no{color:var(--mute)}
+.apis{display:flex;flex-wrap:wrap;gap:4px}
+.apis code{font-family:var(--f-mono);font-size:11.5px;background:var(--select);border-radius:5px;padding:1px 6px}
+details.now summary{cursor:pointer;list-style:none;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+details.now summary::-webkit-details-marker{display:none}
+details.now summary .more{color:var(--navy);font-size:12px}
+details.now[open] summary .more{display:none}
+details.now .body{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+@media (max-width:760px){.lanes{overflow-x:visible}.lanes-in{grid-template-columns:1fr;min-width:0}.lane{border-right:0;border-bottom:1px solid var(--line-soft)}.lane:last-child{border-bottom:0}}
+@media (max-width:640px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.stat:nth-child(2n){border-right:0}.stat:nth-child(-n+2){border-bottom:1px solid var(--line-soft)}
+  .tests td.kind{display:none}.row{padding-block:11px}
+  .detail,.lv1 .detail{padding-left:18px}.lv1>.row{padding-left:22px}.lv2>.row{padding-left:30px}.row{grid-template-columns:auto minmax(0,1fr)}.row .meta{grid-column:1/-1;justify-content:flex-start}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 <div class="wrap">
@@ -151,8 +177,9 @@ header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:spac
     </nav>
   </header>
   <section class="panel stats" id="stats" aria-label="数"></section>
-  <section class="panel now" id="now" aria-label="いま"></section>
+  <details class="panel now" id="now" aria-label="いま"></details>
   <section class="panel" id="view-list">
+    <div class="msbar" id="msbar" role="group" aria-label="節目"></div>
     <div class="filters">
       <input id="q" type="search" placeholder="番号・題名・中身で探す" aria-label="探す">
       <span id="stage-chips"></span>
@@ -164,8 +191,8 @@ header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:spac
     <div class="panel flow" style="margin-top:18px">
       <h2>進め方</h2>
       <ol>
-        <li>まとまり（点線の枠）を、1 作業のチケットに切る。切る前に中身を高本さんと 1 枚ずつ決める</li>
-        <li>決めた 1 作業を作り、確認中にする。CI が緑で、高本さんが見て完了</li>
+        <li>節目に入る前に、その節目のまとまり（点線の枠）を全部 1 作業のチケットに切る。画面と API は全部どれか 1 枚に入り、テスト仕様の行もこのとき書く。決定ログで決まっていないことだけ、まとめて聞く</li>
+        <li>1 作業を作り、テスト仕様の行を緑にして確認中にする。CI が緑で、高本さんが見て完了</li>
         <li>節目の子が全部完了したら、その節目が終わる</li>
       </ol>
     </div>
@@ -190,19 +217,32 @@ const roll = id => { const ls = desc(id).filter(isLeaf); return { done: ls.filte
 // 数
 const stat = (v, l) => `<div class="stat"><b>${v}</b><span>${l}</span></div>`;
 document.getElementById('stats').innerHTML = [
-  stat(T.length, 'チケット 全部'),
-  stat(leaves.length, '1 作業に切ったもの'),
+  stat(leaves.length, `1 作業のチケット（全部で ${T.length} 枚）`),
   stat(uncut.length, 'まだ切っていないまとまり'),
   stat(T.filter(t => t.stage === '確認中').length, '確認中（高本さんが見る）'),
   stat(T.filter(t => t.stage === '完了').length, '完了'),
 ].join('');
 const checking = T.filter(t => t.stage === '確認中' || t.stage === '作業中');
 const next = leaves.filter(t => t.stage === '未着手' && t.depends.every(d => by[d] && (by[d].stage === '完了' || by[d].stage === '確認中')));
+const jl = t => `<a href="#list" data-open="${t.id}" class="jump"><span class="mono">${t.id}</span>${esc(t.title)}</a>`;
 document.getElementById('now').innerHTML =
-  `<span class="lbl">いま見てほしい</span><span class="items">` + (checking.map(t => `<a href="#list" data-open="${t.id}" class="jump"><span class="mono">${t.id}</span>${esc(t.title)}</a>`).join('') || '<span class="muted">無し</span>') + `</span>` +
-  `<span class="lbl">次に決める</span><span class="items">` + (next.slice(0, 3).map(t => `<a href="#list" data-open="${t.id}" class="jump"><span class="mono">${t.id}</span>${esc(t.title)}</a>`).join('') || '<span class="muted">無し</span>') + `</span>`;
+  `<summary><span class="lbl">いま見てほしい ${checking.length} 件・次に作る ${next.length} 件</span><span class="more">開く</span></summary><div class="body">` +
+  `<span class="lbl">いま見てほしい（確認中・作業中）</span><span class="items">` + (checking.map(jl).join('') || '<span class="muted">無し</span>') + `</span>` +
+  `<span class="lbl">次に作る（先に要るものが済んでいる）</span><span class="items">` + (next.slice(0, 6).map(jl).join('') || '<span class="muted">無し</span>') + `</span></div>`;
+try { if (matchMedia('(min-width: 900px)').matches) document.getElementById('now').open = true; } catch (e) {}
 
 // 一覧
+const MSO = ['基盤', '節目①', '節目②', '節目③', '本番', '後のフェーズ'];
+const curMs0 = ((T.find(t => t.stage === '作業中') || leaves.find(t => t.stage === '未着手') || {}).milestone) || '基盤';
+let msOn = curMs0;
+try { const v = localStorage.getItem('kn-ms'); if (v && (v === '全部' || MSO.includes(v))) msOn = v; } catch (e) {}
+const msbar = document.getElementById('msbar');
+const drawMs = () => { msbar.innerHTML = ['全部', ...MSO.filter(m => T.some(t => t.milestone === m))].map(m => {
+  const n = m === '全部' ? leaves.length : leaves.filter(t => t.milestone === m).length;
+  return `<button class="chip" type="button" data-ms="${m}" aria-pressed="${m === msOn}">${m}${n ? ` <span class="num">${n}</span>` : ''}</button>`; }).join(''); };
+drawMs();
+msbar.addEventListener('click', e => { const b = e.target.closest('[data-ms]'); if (!b) return; msOn = b.dataset.ms; try { localStorage.setItem('kn-ms', msOn); } catch (e) {} drawMs(); draw(); });
+const folded = new Set(T.filter(t => t.parent && (kids[t.id] || []).length).map(t => t.id));
 let q = '', stageOn = new Set();
 const chips = document.getElementById('stage-chips');
 chips.innerHTML = STAGES.filter(s => T.some(t => t.stage === s)).map(s => `<button class="chip" type="button" aria-pressed="false" data-st="${s}">${s} ${T.filter(t => t.stage === s).length}</button>`).join(' ') +
@@ -214,7 +254,9 @@ const hit = t => {
   const hay = [t.id, t.title, t.purpose, t.conditions, t.todo, t.area, t.screens.join(' ')].join(' ');
   return okS && (!q || hay.includes(q));
 };
-const visible = id => hit(by[id]) || desc(id).some(hit);
+const inMs = t => msOn === '全部' || t.milestone === msOn;
+const visible = id => inMs(by[id]) && (hit(by[id]) || desc(id).some(hit));
+const filtering = () => q || stageOn.size;
 const ckList = txt => { const ls = (txt || '').split('\n').filter(l => /^- \[[ x]\]/.test(l)); return ls.length ? `<ul class="ck">${ls.map(l => { const on = l.startsWith('- [x]'); return `<li><span class="${on ? 'on' : 'off'}">${on ? '✓' : '○'}</span><span>${esc(l.replace(/^- \[[ x]\] /, ''))}</span></li>`; }).join('')}</ul>` : `<div class="txt muted">（書いていない）</div>`; };
 const open = new Set();
 function rowHTML(id, lv) {
@@ -235,22 +277,28 @@ function rowHTML(id, lv) {
       <div><h3>完了の条件（${t.done}/${t.total}）</h3>${ckList(t.conditions)}</div>
       <div><h3>実施事項</h3>${/^- \[/m.test(t.todo) ? ckList(t.todo) : `<div class="txt">${esc(t.todo) || '<span class="muted">（書いていない）</span>'}</div>`}</div>
       <div><h3>属性</h3><div class="txt">節目：${esc(t.milestone)}\n担当：${esc(t.assignee) || '未定'}\n目標の日：${left(t.due)}\n先に要るもの：${t.depends.length ? esc(t.depends.join('、')) : 'なし'}\n画面：${t.screens.length ? esc(t.screens.join('、')) : '—'}\n決定：${esc(t.decisions.join('、'))}</div></div>
+      ${t.tests.length ? `<div class="full"><h3>テスト仕様と確認の結果（${t.tests.filter(r => /緑|PASS/.test(r[3] || '')).length}/${t.tests.length} 済み）</h3><div style="overflow-x:auto"><table class="tests">${t.tests.map(r => `<tr><td>${esc(r[0])}</td><td class="kind">${esc(r[1])}</td><td class="res ${/緑|PASS/.test(r[3] || '') ? 'res-ok' : 'res-no'}">${esc(r[3] || 'まだ')}</td></tr>`).join('')}</table></div></div>` : ''}
+      ${t.apis.length ? `<div class="full"><h3>作る API（${t.apis.length} 本）</h3><div class="apis">${t.apis.map(a => `<code>${esc(a)}</code>`).join('')}</div></div>` : ''}
       ${t.handoff ? `<div><h3>申し送り</h3><div class="txt">${esc(t.handoff)}</div></div>` : ''}
       ${t.risks ? `<div><h3>リスクと懸念</h3><div class="txt">${esc(t.risks)}</div></div>` : ''}
       <div class="full muted mono">${esc(t.file)}</div>
     </div>` : '';
+  const canFold = lv > 0 && k.length, isFolded = canFold && folded.has(id) && !filtering();
+  const fold = canFold ? `<button class="fold" type="button" data-fold="${id}" aria-expanded="${!isFolded}" aria-label="${isFolded ? '子を出す' : '子を畳む'}"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M4 2l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>` : '';
   return `<li class="lv${lv} ${lv === 0 ? 'ms' : ''}" id="t-${id}"><div class="row" role="button" tabindex="0" aria-expanded="${open.has(id)}" data-id="${id}">
-      <span class="id">${id}</span><span class="t">${esc(t.title)}</span><span class="meta">${meta}</span></div>${det}
-      ${k.length ? `<ul class="tree">${k.map(c => rowHTML(c, lv + 1)).join('')}</ul>` : ''}</li>`;
+      <span class="lead">${fold}<span class="id">${id}</span></span><span class="t">${esc(t.title)}</span><span class="meta">${meta}</span></div>${det}
+      ${k.length && !isFolded ? `<ul class="tree">${k.map(c => rowHTML(c, lv + 1)).join('')}</ul>` : ''}</li>`;
 }
 function draw() {
   const h = roots.map(r => rowHTML(r, 0)).join('');
   document.getElementById('tree').innerHTML = h || `<li class="empty">当てはまるチケットはありません。条件を外してください</li>`;
 }
 const toggle = id => { open.has(id) ? open.delete(id) : open.add(id); draw(); };
-document.getElementById('tree').addEventListener('click', e => { const r = e.target.closest('.row'); if (r) toggle(r.dataset.id); });
+document.getElementById('tree').addEventListener('click', e => {
+  const f = e.target.closest('[data-fold]'); if (f) { e.stopPropagation(); const id = f.dataset.fold; folded.has(id) ? folded.delete(id) : folded.add(id); draw(); return; }
+  const r = e.target.closest('.row'); if (r) toggle(r.dataset.id); });
 document.getElementById('tree').addEventListener('keydown', e => { const r = e.target.closest('.row'); if (r && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); toggle(r.dataset.id); } });
-document.addEventListener('click', e => { const j = e.target.closest('.jump'); if (!j) return; open.add(j.dataset.open); show('list'); draw(); setTimeout(() => document.getElementById('t-' + j.dataset.open)?.scrollIntoView({ block: 'center' }), 0); });
+document.addEventListener('click', e => { const j = e.target.closest('.jump'); if (!j) return; const tt = by[j.dataset.open]; open.add(tt.id); if (tt.parent) folded.delete(tt.parent); if (!inMs(tt)) { msOn = tt.milestone; drawMs(); } show('list'); draw(); setTimeout(() => document.getElementById('t-' + j.dataset.open)?.scrollIntoView({ block: 'center' }), 0); });
 draw();
 
 // スケジュール

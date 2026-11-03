@@ -9,7 +9,7 @@ area: 試験
 assignee: 未定
 due: 
 decisions: [D-128.113, D-125.167]
-split: KN-55（G36）・ほかはこれから切る
+split: KN-55・KN-109・KN-110
 depends_on: []
 ---
 
@@ -29,7 +29,7 @@ depends_on: []
 
 ## 実施事項
 
-子のチケット（このあと切る）
+子のチケット：KN-55・KN-109・KN-110
 
 ## テスト仕様と確認の結果
 

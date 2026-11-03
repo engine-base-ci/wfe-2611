@@ -8,6 +8,8 @@
  KC4 1 作業のチケットは choke_points（触る関門 C1〜C8）か choke_none（触らない理由）を持つ。apis を持つなら、その API の関門を全部書いている
  KC5 チケットの screens・apis・choke_points が実在する（無い画面・API・関門を書かない）
  KC6 後回しの決定（flow.json の deferred・決定ログの「段階 2：」の行）が、どれかのチケットの decisions にある（後回しは日程から消えない）
+ KC7 1 本の API は、apis に書くなら 1 枚のチケットだけ。画面を複数のまとまりで分けている API（tickets など）は、どれか 1 枚の apis に明示する（二重・宙ぶらりんを作らない）
+ KC8 1 作業まで切ったまとまりの画面の API は、全部どれかの 1 作業のチケットの apis にある（か、別のまとまりの apis に明示してある）。切ったのに子に入っていない API を作らない
 
 まだ 1 作業に切っていないまとまり（split: これから）が持つ画面・API は「まだ切っていない」と数える（赤にしない）。
 使い方: python3 scripts/tickets/coverage_gate.py [--only KC4]
@@ -98,6 +100,32 @@ def main() -> int:
     if m:
         fails.append(("KC6", f"後回しの決定を持つチケットが無い {m}"))
 
+    # KC7・KC8：まとまり（節目の下の段）ごとに数える
+    byid = {t["id"]: t for t in ts}
+    def unit(t):  # そのチケットが属するまとまり（親が節目のチケット）。節目そのものは自分
+        cur = t
+        while cur.get("parent") and byid.get(cur["parent"], {}).get("parent"):
+            cur = byid[cur["parent"]]
+        return cur["id"]
+    m7, m8 = [], []
+    for e in E:
+        o = e["operation_id"]
+        exp = owner_o.get(o, [])
+        if len(exp) > 1:
+            m7.append(f"{o}（{'・'.join(t['id'] for t in exp)}）")
+            continue
+        units = {unit(t) for s in e.get("screens", []) for t in owner_s.get(s, [])}
+        if not exp and len(units) > 1:
+            m7.append(f"{o}（画面を {'・'.join(sorted(units))} で分けているのに、どこにも明示していない）")
+        if not exp:
+            split_units = [u for u in units if byid[u].get("split") != "これから"]
+            if split_units and len(units) == 1:
+                m8.append(f"{o}（{split_units[0]} は切ってあるのに子の apis に無い）")
+    if m7:
+        fails.append(("KC7", f"API の割り当てが二重か宙ぶらりん {len(m7)} {m7[:4]}"))
+    if m8:
+        fails.append(("KC8", f"切ったまとまりの子に入っていない API {len(m8)} {m8[:4]}"))
+
     if a.only:
         fails = [f for f in fails if f[0] in a.only]
     pend_s = sorted(s for s in v1s if s in owner_s and not any(leaf(t) for t in owner_s[s]))
@@ -105,7 +133,7 @@ def main() -> int:
     print(f"画面 {len(v1s)}（まだ切っていない {len(pend_s)}）／ API {len(E)}（まだ切っていない {pend_o}）／ 行為 {len(v1a)} ／ 1 作業のチケット {sum(1 for t in ts if leaf(t))}")
     for k, x in fails:
         print(f"  ★ [{k}] {x}")
-    sel = "・".join(a.only) if a.only else "KC1〜KC6"
+    sel = "・".join(a.only) if a.only else "KC1〜KC8"
     print(f"PASS — {sel} すべて緑" if not fails else f"FAIL — {len(fails)} 件")
     return 0 if not fails else 2
 

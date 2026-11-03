@@ -9,7 +9,7 @@ area: 自分
 assignee: 未定
 due: 
 decisions: [D-128.55, D-128.57, D-128.92, D-128.93]
-split: これから
+split: KN-65・KN-66・KN-67・KN-68・KN-69・KN-70
 screens: [account, bridge-setup, credentials]
 depends_on: [KN-4, KN-5]
 ---
@@ -30,7 +30,13 @@ depends_on: [KN-4, KN-5]
 
 ## 実施事項
 
-子のチケット（このあと切る）
+子のチケット：
+- KN-65（自分の設定の口）
+- KN-66（PC（Bridge）をつなぐ口）
+- KN-67（預けたログイン情報の口）
+- KN-68（画面：自分の設定）
+- KN-69（画面：PC をつなぐ）
+- KN-70（画面：預けたログイン情報）
 
 ## テスト仕様と確認の結果
 
