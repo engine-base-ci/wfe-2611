@@ -97,6 +97,9 @@ def main() -> int:
     ap.add_argument("--waves", default="")
     ap.add_argument("--all", action="store_true")
     ap.add_argument("--json", action="store_true")
+    # 本物の画面ができるまでは、前の画面の正本の不合格を記録にして、記録に無い不合格が出たら赤（D-128.117・緑にするのは KN-37）
+    ap.add_argument("--baseline", default="")
+    ap.add_argument("--record", action="store_true")
     a = ap.parse_args()
     cfg = {}
     cp = os.path.join(a.spec, "op-gate.json")
@@ -175,6 +178,23 @@ def main() -> int:
                     stats["evidenced"] += 1
                 continue
             fails.append(f"{tid} {rid} [{v}]: 結果の形が読めない「{res[:30]}」（PASS／BLOCKED（理由）／N/A（理由））")
+    key = lambda f: "O4 報告" if f.startswith("O4 ") else f
+    if a.baseline:
+        B = json.load(open(a.baseline, encoding="utf-8")) if os.path.exists(a.baseline) else {}
+        if a.record:
+            B["op_gate"] = {"ticket": "KN-37", "reason": "前の画面（06_mockup v1・v2）の正本。本物の画面とその押した証拠ができるまで記録にする（D-128.117）", "fails": sorted({key(f) for f in fails})}
+            open(a.baseline, "w", encoding="utf-8").write(json.dumps(B, ensure_ascii=False, indent=1) + "\n")
+            print(f"不合格 {len(B['op_gate']['fails'])} を記録した（{a.baseline}）"); return 0
+        known = set(B.get("op_gate", {}).get("fails", []))
+        new_f = [f for f in fails if key(f) not in known]
+        gone = len(known - {key(f) for f in fails})
+        print(f"検査 {stats['checked']} 行：実ブラウザの証拠あり {stats['evidenced']}・BLOCKED {stats['blocked']}・N/A {stats['na']}・不合格 {len(fails)}（記録 {len(known)}）")
+        for f in new_f[:40]:
+            print("  ✗ 記録に無い不合格：" + f)
+        if gone:
+            print(f"  直った不合格 {gone} → --record で記録を下げる")
+        print("PASS — 記録に無い不合格は無い（前の画面の分は KN-37 で緑にする）" if not new_f else f"不合格 — 記録に無いもの {len(new_f)} 件")
+        return 0 if not new_f else 1
     if a.json:
         print(json.dumps({"status": "PASS" if not fails else "FAIL", "fails": fails, "stats": stats}, ensure_ascii=False, indent=1))
     else:

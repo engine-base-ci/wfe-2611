@@ -69,12 +69,68 @@ export const NAV: NavData = ${JSON.stringify(navData, null, 2)};
 /** 指定が無い・無い・見えない のときの行き先（D-086・flow.json navigation.fallbacks） */
 export const FALLBACKS = ${JSON.stringify(fallbacks, null, 2)} as const;
 `;
-if (process.argv[2] === "check") {
+// 生成物と flow のずれ（画面ごと・ナビの項目ごと）。本物の画面ができるまでは前の生成物を残すので、
+// ずれを scripts/ci/ui_baseline.json に記録し、記録に無いずれが出たら赤にする（D-128.117・緑にするのは KN-37）
+const BASE = process.env.UI_BASELINE ?? "scripts/ci/ui_baseline.json";
+const grab = (text, start, end) => {
+  const i = text.indexOf(start);
+  if (i < 0) return null;
+  const j = text.indexOf(end, i + start.length);
+  try {
+    return JSON.parse(text.slice(i + start.length, j < 0 ? undefined : j));
+  } catch {
+    return null;
+  }
+};
+const h8 = (v) => createHash("sha256").update(JSON.stringify(v ?? null)).digest("hex").slice(0, 8);
+// ずれの印は「どこが」＋「flow 側の値」。記録したあとで flow 側を変えたら、別の印になって赤になる
+const drift = (cur, curNav) => {
+  const out = [];
+  const oldRows = grab(cur, "export const ROUTES: readonly RouteDef[] = ", ";\n") ?? [];
+  const key = (r) => JSON.stringify(r);
+  const oldSet = new Set(oldRows.map(key));
+  const newSet = new Set(rows.map(key));
+  for (const r of rows) if (!oldSet.has(key(r))) out.push(`route:${r.id}@${h8(r)}`);
+  for (const r of oldRows) if (!newSet.has(key(r)) && !rows.some((x) => x.id === r.id)) out.push(`route:${r.id}（flow に無い）`);
+  const oldNav = grab(curNav, "export const NAV: NavData = ", ";\n\n/**") ?? {};
+  const oldFb = grab(curNav, "export const FALLBACKS = ", " as const;") ?? {};
+  for (const k of Object.keys(navData)) {
+    if (k === "screens") {
+      const o = oldNav.screens ?? {};
+      for (const id of new Set([...Object.keys(navData.screens), ...Object.keys(o)]))
+        if (JSON.stringify(navData.screens[id]) !== JSON.stringify(o[id])) out.push(`nav.screens:${id}@${h8(navData.screens[id])}`);
+    } else if (JSON.stringify(navData[k]) !== JSON.stringify(oldNav[k])) out.push(`nav:${k}@${h8(navData[k])}`);
+  }
+  for (const k of new Set([...Object.keys(fallbacks), ...Object.keys(oldFb)]))
+    if (JSON.stringify(fallbacks[k]) !== JSON.stringify(oldFb[k])) out.push(`fallbacks:${k}@${h8(fallbacks[k])}`);
+  return [...new Set(out)].sort();
+};
+if (process.argv[2] === "check" || process.argv[2] === "record") {
   const cur = existsSync(OUT) ? readFileSync(OUT, "utf8") : "";
   const curNav = existsSync(NAV_OUT) ? readFileSync(NAV_OUT, "utf8") : "";
-  const ok = cur.includes(`flow:${hash}`) && curNav.includes(`flow:${navHash}`);
-  console.log(ok ? `[routes] 最新（${rows.length} route）` : `[routes] 古い：node scripts/ci/gen_routes.mjs で再生成`);
-  process.exit(ok ? 0 : 1);
+  const fresh = cur.includes(`flow:${hash}`) && curNav.includes(`flow:${navHash}`);
+  const d = fresh ? [] : drift(cur, curNav);
+  const base = existsSync(BASE) ? JSON.parse(readFileSync(BASE, "utf8")) : {};
+  if (process.argv[2] === "record") {
+    base.routes = { ticket: "KN-37", reason: "本物の画面ができるまで前の生成物を残す（D-128.117）", drift: d };
+    writeFileSync(BASE, JSON.stringify(base, null, 1) + "\n");
+    console.log(`[routes] ずれ ${d.length} を記録した（${BASE}）`);
+    process.exit(0);
+  }
+  if (fresh) {
+    console.log(`[routes] 最新（${rows.length} route）`);
+    process.exit(0);
+  }
+  const known = new Set(base.routes?.drift ?? []);
+  const added = d.filter((x) => !known.has(x));
+  const gone = [...known].filter((x) => !d.includes(x));
+  if (added.length) {
+    console.error(`[routes] 記録に無いずれ ${added.length}：${added.slice(0, 8).join("、")}`);
+    console.error("  flow を直したら生成し直す（node scripts/ci/gen_routes.mjs）。前の画面を残すために生成できないなら、理由を決めて record する");
+    process.exit(1);
+  }
+  console.log(`[routes] 前の生成物を残している：ずれ ${d.length}（記録どおり・緑にするのは ${base.routes?.ticket ?? "KN-37"}）` + (gone.length ? `。直ったずれ ${gone.length} → record で記録を下げる` : ""));
+  process.exit(0);
 }
 writeFileSync(OUT, body);
 writeFileSync(NAV_OUT, navBody);

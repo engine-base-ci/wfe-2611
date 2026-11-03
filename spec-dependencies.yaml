@@ -3391,9 +3391,13 @@ layer_checks:
 - file: 03_architecture/extension-points.json
   manual: 増えるものの見通し文書。決定でオブジェクトが増えたら source を足す（防御は関門と G20）
 - file: 06_mockup/v1/v1-*.html
-  check: python3 scripts/ci/mock_state_gate.py --flow 05_flow/flow.json --mocks 06_mockup/v1 && python3 scripts/ci/role_gate.py --flow 05_flow/flow.json --mocks 06_mockup/v1 && python3 scripts/ci/ui_lint.py 06_mockup/v1 --config 06_mockup/ui-lint.json && python3 scripts/ci/coverage_review.py --flow 05_flow/flow.json --mocks 06_mockup/v1 --surfaces scripts/ci/references/saas-surfaces.yaml --er 03_architecture/ER図.md --gate && node scripts/ci/chat_one.mjs
+  manual: しまった（D-128.117）。前の画面の見本は記録として残し、画面の正はキャンバス（04_design/canvas・D-128.23）。機械の検査は canvas_gate.py が持つ。本物の画面ができるまでの route（G27）・押した証拠（G28）は scripts/ci/ui_baseline.json の記録で、増えたら赤（KN-37）
 - file: 06_mockup/v2/v2-*.html
-  check: python3 scripts/ci/mock_state_gate.py --flow 05_flow/flow.json --mocks 06_mockup/v2 && python3 scripts/ci/role_gate.py --flow 05_flow/flow.json --mocks 06_mockup/v2 --prefix v2- --release v2 && python3 scripts/ci/ui_lint.py 06_mockup/v2 --config 06_mockup/ui-lint.json
+  manual: しまった（D-128.117）。前の画面の見本は記録として残し、画面の正はキャンバス（04_design/canvas・D-128.23）。機械の検査は canvas_gate.py が持つ。本物の画面ができるまでの route（G27）・押した証拠（G28）は scripts/ci/ui_baseline.json の記録で、増えたら赤（KN-37）
+- file: 04_design/canvas/*.dc.html
+  check: python3 scripts/ci/canvas_gate.py
+- file: 04_design/canvas/canvas.json
+  check: python3 scripts/ci/canvas_gate.py
 - file: 04_design/DESIGN-kaname.md
   manual: 色・書体・部品のトークン。D-067（部品の土台）・D-072（三画面）が最新で、D-073 以降はトークンを増やしていない。トークンが増える決定が出たら手で更新
 - file: 02_tech_stack/selected-stack.json
@@ -3475,7 +3479,7 @@ layer_checks:
 - file: 07_qa/test-specs/ops/*.json
   check: python3 scripts/ci/derive_ops.py --screens 07_functional/screens.json --out 07_qa/test-specs/ops --flow 05_flow/flow.json --shell-from today
 - file: 07_qa/test-specs/screens/*.md#操作
-  check: python3 scripts/ci/op_gate.py --spec 07_qa/test-specs --tickets 07_tasks/tickets.json --all
+  check: python3 scripts/ci/op_gate.py --spec 07_qa/test-specs --tickets 07_tasks/tickets.json --all --baseline scripts/ci/ui_baseline.json
 - file: 07_tasks/handoff/*.md
   manual: しまった（D-128.114）。前の作業の分解は記録として残し、Kaname を作る仕事は 11_tickets で一から切り直した。機械の検査は 11_tickets の G45・G14（coverage_gate）・G26・G31 TV4 が持つ（D-128.117 で読む先を替えた）
 - file: 07_tasks/TASK-CARDS.md
