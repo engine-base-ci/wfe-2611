@@ -21,6 +21,7 @@ apps/api/src/routes/
 packages/contracts/src/registry.ts
 packages/contracts/src/schemas.ts
 packages/contracts/src/types.ts
+packages/contracts/src/ops.ts
 packages/errors/src/catalog.ts
 .github/workflows/v3-gate.yml
 .github/workflows/release-gate.yml

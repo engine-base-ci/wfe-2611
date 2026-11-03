@@ -11683,44 +11683,6 @@ paths:
           type: integer
           minimum: 1
           maximum: 200
-      - name: sort
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-          enum:
-          - action_run_id
-          - approver_member_id
-          - bulk_batch_id
-          - created_at
-          - created_by
-          - decided_at
-          - decision
-          - deleted_at
-          - escalated_by_policy_id
-          - human_checks
-          - id
-          - irreversible
-          - kind
-          - level
-          - memory_candidate
-          - next_actor
-          - note
-          - parent_approval_id
-          - requested_by
-          - resolved_at
-          - return_reason
-          - return_targets
-          - scope_id
-          - status_id
-          - step_up_at
-          - subject_id
-          - subject_type
-          - tenant_id
-          - ticket_id
-          - updated_at
-          - updated_by
-          - withdrawn_at
       responses:
         '200':
           description: 成功
@@ -21345,33 +21307,6 @@ paths:
           type: integer
           minimum: 1
           maximum: 200
-      - name: sort
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-          enum:
-          - archived_at
-          - archived_to_page_id
-          - created_at
-          - created_by
-          - current_version
-          - deleted_at
-          - form
-          - id
-          - is_personal
-          - owner_member_id
-          - parent_page_id
-          - scope_id
-          - state
-          - tenant_id
-          - title
-          - topics
-          - updated_at
-          - updated_by
-          - verified_at
-          - verify_due_on
-          - verify_interval_days
       responses:
         '200':
           description: 成功
@@ -27162,27 +27097,6 @@ paths:
           type: integer
           minimum: 1
           maximum: 200
-      - name: sort
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-          enum:
-          - ai_first_answered_at
-          - assignee_ops_member_id
-          - context
-          - conversation_id
-          - created_at
-          - created_by
-          - deleted_at
-          - id
-          - kind_id
-          - later_until
-          - opened_by_member_id
-          - status_id
-          - tenant_id
-          - updated_at
-          - updated_by
       responses:
         '200':
           description: 成功
@@ -30563,30 +30477,6 @@ paths:
           type: integer
           minimum: 1
           maximum: 200
-      - name: sort
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-          enum:
-          - client_visibility_default
-          - created_at
-          - created_by
-          - deleted_at
-          - deletion_requested_at
-          - id
-          - live_at
-          - live_by
-          - logo_ref
-          - name
-          - plan_id
-          - request_routing
-          - session_idle_hours
-          - session_max_days
-          - status_id
-          - tenant_id
-          - updated_at
-          - updated_by
       responses:
         '200':
           description: 成功
@@ -38703,28 +38593,6 @@ paths:
           type: integer
           minimum: 1
           maximum: 200
-      - name: sort
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-          enum:
-          - created_at
-          - created_by
-          - current_version
-          - deleted_at
-          - id
-          - key
-          - kind_id
-          - name
-          - owner_member_id
-          - plan_ids
-          - purpose
-          - scope_id
-          - tenant_id
-          - updated_at
-          - updated_by
-          - visibility_id
       responses:
         '200':
           description: 成功

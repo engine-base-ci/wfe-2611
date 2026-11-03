@@ -1,7 +1,10 @@
+import { fileURLToPath } from "node:url";
 import { defineConfig } from "vitest/config";
 
 // G3 unit test + coverage。閾値は 03_architecture/foundation_gates.json（lines 80 / branches 70）。
 export default defineConfig({
+  // 画面（apps/web）の「@/〜」は apps/web の中を指す（tsconfig の paths と同じ）。@kaname/〜 は workspace のまま
+  resolve: { alias: [{ find: /^@\//, replacement: fileURLToPath(new URL("./apps/web/", import.meta.url)) }] },
   test: {
     include: [
       "packages/*/src/**/*.test.ts",

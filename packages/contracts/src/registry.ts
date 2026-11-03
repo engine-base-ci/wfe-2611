@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:a7fbc178bd8f3f7c
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:6f45a9081120edcf
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -10,6 +10,9 @@ export interface EndpointDef {
   generic: boolean;
   input: string | null;
   success: number;
+  /** 成功の答えの data の形（components の名前）。outputList なら配列 */
+  output: string | null;
+  outputList: boolean;
   auth: "member" | "ops" | "client" | "device" | "public";
   rateLimit: { perMinute: number; key: "user" | "ip" };
   chokePoints: string[];
@@ -38,6 +41,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "AcceptancesInput",
     "success": 201,
+    "output": "Acceptances",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -84,6 +89,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "ActionRuns",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -127,6 +134,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "ActionRunsInput",
     "success": 201,
+    "output": "ActionRuns",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -172,6 +181,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "ActionRunsInput",
     "success": 201,
+    "output": "ActionRuns",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -219,6 +230,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "ActionRunsInput",
     "success": 201,
+    "output": "ActionRuns",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -264,6 +277,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "ApprovalDetail",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -306,6 +321,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "ApprovalsInput",
     "success": 201,
+    "output": "Approvals",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -351,6 +368,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "ApprovalsInput",
     "success": 201,
+    "output": "Approvals",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -396,6 +415,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "ApprovalsInput",
     "success": 201,
+    "output": "Approvals",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -441,6 +462,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "ApprovalsInput",
     "success": 201,
+    "output": "Approvals",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -489,6 +512,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "ApprovalsInput",
     "success": 201,
+    "output": "Approvals",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -536,6 +561,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "ApprovalsInput",
     "success": 201,
+    "output": "BulkResult",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -577,6 +604,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "ApprovalsInput",
     "success": 201,
+    "output": "BulkApprovalPreview",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -618,6 +647,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "Approvals",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -656,6 +687,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "ApprovalQueueItem",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -694,6 +727,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "ArtifactVersions",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -736,6 +771,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "ArtifactVersionsInput",
     "success": 201,
+    "output": "ArtifactVersions",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -782,6 +819,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "ArtifactsInput",
     "success": 200,
+    "output": "Artifacts",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -827,6 +866,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "AuditEvents",
+    "outputList": true,
     "generic": true,
     "auth": "member",
     "rateLimit": {
@@ -865,6 +906,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "Invitations",
+    "outputList": false,
     "generic": false,
     "auth": "public",
     "rateLimit": {
@@ -901,6 +944,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "InvitationsInput",
     "success": 201,
+    "output": "Invitations",
+    "outputList": false,
     "generic": false,
     "auth": "public",
     "rateLimit": {
@@ -941,6 +986,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "SecurityEventsInput",
     "success": 201,
+    "output": "SecurityEvents",
+    "outputList": false,
     "generic": false,
     "auth": "public",
     "rateLimit": {
@@ -981,6 +1028,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "SessionsInput",
     "success": 201,
+    "output": "Sessions",
+    "outputList": false,
     "generic": false,
     "auth": "public",
     "rateLimit": {
@@ -1021,6 +1070,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "SecurityEventsInput",
     "success": 201,
+    "output": "SecurityEvents",
+    "outputList": false,
     "generic": false,
     "auth": "public",
     "rateLimit": {
@@ -1060,6 +1111,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "ServiceStatus",
+    "outputList": false,
     "generic": false,
     "auth": "public",
     "rateLimit": {
@@ -1096,6 +1149,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "SessionsInput",
     "success": 201,
+    "output": "Sessions",
+    "outputList": false,
     "generic": false,
     "auth": "public",
     "rateLimit": {
@@ -1135,6 +1190,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "SessionsInput",
     "success": 201,
+    "output": "Sessions",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -1176,6 +1233,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "PendingSignupInput",
     "success": 201,
+    "output": "PendingSignup",
+    "outputList": false,
     "generic": false,
     "auth": "public",
     "rateLimit": {
@@ -1216,6 +1275,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "PendingSignupInput",
     "success": 201,
+    "output": "PendingSignup",
+    "outputList": false,
     "generic": false,
     "auth": "public",
     "rateLimit": {
@@ -1255,6 +1316,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "SignupStatus",
+    "outputList": false,
     "generic": false,
     "auth": "public",
     "rateLimit": {
@@ -1291,6 +1354,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "PendingSignupInput",
     "success": 201,
+    "output": "PendingSignup",
+    "outputList": false,
     "generic": false,
     "auth": "public",
     "rateLimit": {
@@ -1331,6 +1396,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "StepUpInput",
     "success": 201,
+    "output": "StepUp",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -1372,6 +1439,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "TermsConsentsInput",
     "success": 201,
+    "output": "TermsConsents",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -1413,6 +1482,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "TermsVersions",
+    "outputList": false,
     "generic": false,
     "auth": "public",
     "rateLimit": {
@@ -1449,6 +1520,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "SessionsInput",
     "success": 201,
+    "output": "Sessions",
+    "outputList": false,
     "generic": false,
     "auth": "public",
     "rateLimit": {
@@ -1488,6 +1561,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "SessionsInput",
     "success": 201,
+    "output": "BridgeClaim",
+    "outputList": false,
     "generic": false,
     "auth": "device",
     "rateLimit": {
@@ -1531,6 +1606,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "CredentialsInput",
     "success": 201,
+    "output": "Credentials",
+    "outputList": false,
     "generic": false,
     "auth": "device",
     "rateLimit": {
@@ -1574,6 +1651,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "CredentialsInput",
     "success": 201,
+    "output": "ResolvedCredential",
+    "outputList": false,
     "generic": false,
     "auth": "device",
     "rateLimit": {
@@ -1616,6 +1695,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "Sessions",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -1655,6 +1736,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "SessionsInput",
     "success": 200,
+    "output": "Sessions",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -1701,6 +1784,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
+    "output": "Sessions",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -1747,6 +1832,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "Attachments",
+    "outputList": false,
     "generic": false,
     "auth": "device",
     "rateLimit": {
@@ -1786,6 +1873,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "SessionsInput",
     "success": 201,
+    "output": "Sessions",
+    "outputList": false,
     "generic": false,
     "auth": "device",
     "rateLimit": {
@@ -1829,6 +1918,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "ArtifactsInput",
     "success": 201,
+    "output": "Artifacts",
+    "outputList": false,
     "generic": false,
     "auth": "device",
     "rateLimit": {
@@ -1872,6 +1963,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "BridgeJobEventsInput",
     "success": 201,
+    "output": "BridgeJobEvents",
+    "outputList": false,
     "generic": false,
     "auth": "device",
     "rateLimit": {
@@ -1917,6 +2010,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "JobControl",
+    "outputList": false,
     "generic": false,
     "auth": "device",
     "rateLimit": {
@@ -1957,6 +2052,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "MessagesInput",
     "success": 201,
+    "output": "Messages",
+    "outputList": false,
     "generic": false,
     "auth": "device",
     "rateLimit": {
@@ -2002,6 +2099,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "BridgeJobsInput",
     "success": 201,
+    "output": "BridgeJobs",
+    "outputList": false,
     "generic": false,
     "auth": "device",
     "rateLimit": {
@@ -2047,6 +2146,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "BridgeJobEventsInput",
     "success": 201,
+    "output": "BridgeJobEvents",
+    "outputList": false,
     "generic": false,
     "auth": "device",
     "rateLimit": {
@@ -2092,6 +2193,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "MessagesInput",
     "success": 201,
+    "output": "Messages",
+    "outputList": false,
     "generic": false,
     "auth": "device",
     "rateLimit": {
@@ -2136,6 +2239,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "Messages",
+    "outputList": false,
     "generic": false,
     "auth": "device",
     "rateLimit": {
@@ -2176,6 +2281,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "ActionRunsInput",
     "success": 201,
+    "output": "ActionRuns",
+    "outputList": false,
     "generic": false,
     "auth": "device",
     "rateLimit": {
@@ -2221,6 +2328,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "BridgeJobsInput",
     "success": 201,
+    "output": "BridgeJob",
+    "outputList": false,
     "generic": false,
     "auth": "device",
     "rateLimit": {
@@ -2265,6 +2374,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "Conversations",
+    "outputList": true,
     "generic": false,
     "auth": "device",
     "rateLimit": {
@@ -2306,6 +2417,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "BridgePairingCodesInput",
     "success": 201,
+    "output": "PairingCode",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -2349,6 +2462,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "Sessions",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -2388,6 +2503,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "BridgeRelease",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -2427,6 +2544,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "AgentUsageSnapshotsInput",
     "success": 201,
+    "output": "AgentUsageSnapshots",
+    "outputList": false,
     "generic": false,
     "auth": "device",
     "rateLimit": {
@@ -2468,6 +2587,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "ChecksInput",
     "success": 201,
+    "output": "Checks",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -2513,6 +2634,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "ClassAxes",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -2551,6 +2674,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "ClientContactsInput",
     "success": 200,
+    "output": "ClientContacts",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -2596,6 +2721,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
+    "output": "ClientContacts",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -2641,6 +2768,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "InvitationsInput",
     "success": 201,
+    "output": "Invitations",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -2687,6 +2816,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "ClientRequests",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -2726,6 +2857,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "ClientRequestDetail",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -2769,6 +2902,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "ClientRequestsInput",
     "success": 200,
+    "output": "ClientRequests",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -2815,6 +2950,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "ClientRequestsInput",
     "success": 201,
+    "output": "ClientRequests",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -2862,6 +2999,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "ClientRequestsInput",
     "success": 201,
+    "output": "ClientRequests",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -2909,6 +3048,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "MessagesInput",
     "success": 201,
+    "output": "Messages",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -2956,6 +3097,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "ClientRow",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -2996,6 +3139,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "ClientsInput",
     "success": 201,
+    "output": "Clients",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -3038,6 +3183,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "ClientDetail",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -3080,6 +3227,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "ClientsInput",
     "success": 200,
+    "output": "Clients",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -3125,6 +3274,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "ClientActivityItem",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -3167,6 +3318,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "ClientContactsInput",
     "success": 201,
+    "output": "ClientContacts",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -3213,6 +3366,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "PortalHome",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -3255,6 +3410,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "ClientsInput",
     "success": 200,
+    "output": "Clients",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -3300,6 +3457,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "ClientLinkCandidate",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -3338,6 +3497,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "Clones",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -3379,6 +3540,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "ClonesInput",
     "success": 200,
+    "output": "Clones",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -3421,6 +3584,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "ActivityItem",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -3459,6 +3624,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "ExportJobsInput",
     "success": 201,
+    "output": "ExportJobs",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -3500,6 +3667,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "CloneGrowth",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -3538,6 +3707,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "KnowsCounts",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -3576,6 +3747,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "CloneNow",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -3614,6 +3787,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "Conversations",
+    "outputList": true,
     "generic": true,
     "auth": "member",
     "rateLimit": {
@@ -3652,6 +3827,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "ConversationsInput",
     "success": 201,
+    "output": "Conversations",
+    "outputList": false,
     "generic": true,
     "auth": "member",
     "rateLimit": {
@@ -3696,6 +3873,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "Conversations",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -3738,6 +3917,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "ConversationsInput",
     "success": 200,
+    "output": "Conversations",
+    "outputList": false,
     "generic": true,
     "auth": "member",
     "rateLimit": {
@@ -3782,6 +3963,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
+    "output": "Conversations",
+    "outputList": false,
     "generic": true,
     "auth": "member",
     "rateLimit": {
@@ -3826,6 +4009,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "AttachmentsInput",
     "success": 201,
+    "output": "Attachments",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -3874,6 +4059,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "Messages",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -3919,6 +4106,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "MessagesInput",
     "success": 201,
+    "output": "Messages",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -3968,6 +4157,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "MessagesInput",
     "success": 201,
+    "output": "Messages",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -4015,6 +4206,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "MessagesInput",
     "success": 201,
+    "output": "Messages",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -4063,6 +4256,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "Messages",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -4108,6 +4303,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "Credentials",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -4148,6 +4345,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "CredentialsInput",
     "success": 201,
+    "output": "Credentials",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -4190,6 +4389,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "CredentialsInput",
     "success": 200,
+    "output": "Credentials",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -4235,6 +4436,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
+    "output": "Credentials",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -4280,6 +4483,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "CredentialsInput",
     "success": 201,
+    "output": "Credentials",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -4326,6 +4531,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "CredentialsInput",
     "success": 201,
+    "output": "Credentials",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -4372,6 +4579,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "ExportJobsInput",
     "success": 201,
+    "output": "ExportJobs",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -4415,6 +4624,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "ExportStatus",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -4459,6 +4670,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "HandoverRules",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -4497,6 +4710,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "Inquiries",
+    "outputList": true,
     "generic": true,
     "auth": "member",
     "rateLimit": {
@@ -4535,6 +4750,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "InquiriesInput",
     "success": 201,
+    "output": "Inquiries",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -4577,6 +4794,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "Inquiries",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -4619,6 +4838,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "MessagesInput",
     "success": 201,
+    "output": "Messages",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -4665,6 +4886,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "InquiriesInput",
     "success": 201,
+    "output": "Inquiries",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -4711,6 +4934,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "AttachmentsInput",
     "success": 201,
+    "output": "Attachments",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -4753,6 +4978,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "InvitationsInput",
     "success": 201,
+    "output": "Invitations",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -4795,6 +5022,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
+    "output": "Invitations",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -4837,6 +5066,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "InvitationsInput",
     "success": 201,
+    "output": "Invitations",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -4880,6 +5111,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "InvitationsInput",
     "success": 201,
+    "output": "InvitationLink",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -4922,6 +5155,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "SignedUrl",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -4961,6 +5196,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "KnowledgePagesInput",
     "success": 201,
+    "output": "KnowledgeAnswer",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -5002,6 +5239,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "KnowledgePageVersionsInput",
     "success": 201,
+    "output": "KnowledgePageVersions",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -5043,6 +5282,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "KnowledgeHome",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -5081,6 +5322,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "KnowledgeLinkTarget",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -5119,6 +5362,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "KnowledgePageVersions",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -5157,6 +5402,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "KnowledgePageVersionsInput",
     "success": 201,
+    "output": "KnowledgePageVersions",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -5202,6 +5449,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "KnowledgePageVersionsInput",
     "success": 201,
+    "output": "KnowledgePageVersions",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -5247,6 +5496,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "KnowledgeTree",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -5285,6 +5536,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "KnowledgeVerification",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -5323,6 +5576,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "ImportsInput",
     "success": 201,
+    "output": "Imports",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -5364,6 +5619,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "KnowledgeImportPreview",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -5406,6 +5663,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "ImportsInput",
     "success": 201,
+    "output": "Imports",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -5451,6 +5710,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "KnowledgePages",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -5489,6 +5750,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "KnowledgePagesInput",
     "success": 201,
+    "output": "KnowledgePages",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -5530,6 +5793,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "KnowledgePageDetail",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -5572,6 +5837,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "KnowledgePagesInput",
     "success": 200,
+    "output": "KnowledgePages",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -5616,6 +5883,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "KnowledgePagesInput",
     "success": 201,
+    "output": "KnowledgePages",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -5661,6 +5930,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "AttachmentsInput",
     "success": 201,
+    "output": "Attachments",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -5706,6 +5977,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "KnowledgePageVersionsInput",
     "success": 200,
+    "output": "KnowledgePageVersions",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -5750,6 +6023,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
+    "output": "KnowledgePageVersions",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -5794,6 +6069,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "KnowledgeLinks",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -5836,6 +6113,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "KnowledgeLinksInput",
     "success": 201,
+    "output": "KnowledgeLinks",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -5881,6 +6160,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "SignedUrl",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -5923,6 +6204,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "Messages",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -5965,6 +6248,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "MessagesInput",
     "success": 201,
+    "output": "Messages",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -6010,6 +6295,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "KnowledgePageVersionsInput",
     "success": 201,
+    "output": "KnowledgePageVersions",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -6055,6 +6342,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "KnowledgePagesInput",
     "success": 201,
+    "output": "KnowledgePages",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -6100,6 +6389,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "KnowledgeUsage",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -6142,6 +6433,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "KnowledgePagesInput",
     "success": 201,
+    "output": "KnowledgePages",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -6187,6 +6480,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "KnowledgePageVersions",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -6229,6 +6524,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "KnowledgePageVersionsInput",
     "success": 201,
+    "output": "KnowledgePageVersions",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -6274,6 +6571,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "LayersInput",
     "success": 201,
+    "output": "Layers",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -6315,6 +6614,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "LayersInput",
     "success": 200,
+    "output": "Layers",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -6356,6 +6657,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "LearningCandidates",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -6395,6 +6698,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "LearningCandidatesInput",
     "success": 201,
+    "output": "LearningCandidates",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -6441,6 +6746,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "LearningCandidatesInput",
     "success": 201,
+    "output": "LearningCandidates",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -6487,6 +6794,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "ApprovalsInput",
     "success": 201,
+    "output": "Approvals",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -6532,6 +6841,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "LearningCandidatesInput",
     "success": 201,
+    "output": "LearningCandidates",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -6577,6 +6888,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "Me",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -6615,6 +6928,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "MembersInput",
     "success": 200,
+    "output": "Members",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -6655,6 +6970,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "MembersInput",
     "success": 201,
+    "output": "Members",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -6696,6 +7013,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "SecurityEventsInput",
     "success": 201,
+    "output": "BackupCodes",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -6738,6 +7057,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "SecurityEventsInput",
     "success": 201,
+    "output": "SecurityEvents",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -6779,6 +7100,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "SecurityEventsInput",
     "success": 201,
+    "output": "SecurityEvents",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -6820,6 +7143,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "NotificationSettings",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -6858,6 +7183,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "NotificationSettingsInput",
     "success": 200,
+    "output": "NotificationSettings",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -6898,6 +7225,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "NotificationSettingsInput",
     "success": 201,
+    "output": "NotificationSettings",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -6939,6 +7268,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "PasskeysInput",
     "success": 200,
+    "output": "Passkeys",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -6981,6 +7312,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
+    "output": "Passkeys",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -7023,6 +7356,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "SecurityEventsInput",
     "success": 200,
+    "output": "SecurityEvents",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -7064,6 +7399,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "MySecurity",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -7105,6 +7442,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "Sessions",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -7143,6 +7482,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
+    "output": "Sessions",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -7187,6 +7528,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "SessionsInput",
     "success": 201,
+    "output": "Sessions",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -7228,6 +7571,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "SetupTask",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -7266,6 +7611,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "MembersInput",
     "success": 201,
+    "output": "Members",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -7307,6 +7654,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
+    "output": "SecurityEvents",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -7347,6 +7696,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "SecurityEventsInput",
     "success": 201,
+    "output": "BackupCodes",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -7389,6 +7740,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "SecurityEventsInput",
     "success": 201,
+    "output": "TwoFactorSetup",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -7431,6 +7784,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "MyUsage",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -7469,6 +7824,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
+    "output": "TenantMemberships",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -7513,6 +7870,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "Members",
+    "outputList": true,
     "generic": true,
     "auth": "member",
     "rateLimit": {
@@ -7551,6 +7910,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "MemberDetail",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -7590,6 +7951,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
+    "output": "Members",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -7631,6 +7994,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "ScopeMembershipsInput",
     "success": 200,
+    "output": "ScopeMemberships",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -7672,6 +8037,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "NotificationsInput",
     "success": 201,
+    "output": "Notifications",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -7715,6 +8082,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "PermissionsInput",
     "success": 200,
+    "output": "Permissions",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -7756,6 +8125,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "MemberRemovalPreview",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -7795,6 +8166,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "MembersInput",
     "success": 201,
+    "output": "Members",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -7837,6 +8210,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "MembersInput",
     "success": 200,
+    "output": "Members",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -7878,6 +8253,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "MembersInput",
     "success": 201,
+    "output": "Members",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -7920,6 +8297,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "SecurityEventsInput",
     "success": 201,
+    "output": "SecurityEvents",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -7964,6 +8343,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "Memories",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -8002,6 +8383,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "MemoriesInput",
     "success": 201,
+    "output": "Memories",
+    "outputList": false,
     "generic": true,
     "auth": "member",
     "rateLimit": {
@@ -8043,6 +8426,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "MemoriesInput",
     "success": 200,
+    "output": "Memories",
+    "outputList": false,
     "generic": true,
     "auth": "member",
     "rateLimit": {
@@ -8087,6 +8472,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
+    "output": "Memories",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -8131,6 +8518,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "PoliciesInput",
     "success": 201,
+    "output": "Policies",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -8177,6 +8566,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "ArtifactsInput",
     "success": 201,
+    "output": "Artifacts",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -8223,6 +8614,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "Notices",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -8261,6 +8654,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "NoticeDeliveriesInput",
     "success": 201,
+    "output": "NoticeDeliveries",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -8306,6 +8701,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "Notifications",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -8344,6 +8741,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "NotificationsInput",
     "success": 200,
+    "output": "Notifications",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -8388,6 +8787,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "NotificationsInput",
     "success": 201,
+    "output": "Notifications",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -8429,6 +8830,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "Inquiries",
+    "outputList": true,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -8467,6 +8870,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "OpsInquiryDetail",
+    "outputList": false,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -8506,6 +8911,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "InquiriesInput",
     "success": 200,
+    "output": "Inquiries",
+    "outputList": false,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -8548,6 +8955,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "MessagesInput",
     "success": 201,
+    "output": "Messages",
+    "outputList": false,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -8591,6 +9000,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "MessagesInput",
     "success": 201,
+    "output": "Messages",
+    "outputList": false,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -8634,6 +9045,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "Invoices",
+    "outputList": true,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -8672,6 +9085,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "PaymentsInput",
     "success": 201,
+    "output": "Payments",
+    "outputList": false,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -8714,6 +9129,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "ExportJobsInput",
     "success": 201,
+    "output": "ExportJobs",
+    "outputList": false,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -8755,6 +9172,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "InvoicesInput",
     "success": 201,
+    "output": "Invoices",
+    "outputList": false,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -8796,6 +9215,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "OpsMembers",
+    "outputList": true,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -8836,6 +9257,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "OpsMembersInput",
     "success": 201,
+    "output": "OpsMembers",
+    "outputList": false,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -8878,6 +9301,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "OpsMembersInput",
     "success": 200,
+    "output": "OpsMembers",
+    "outputList": false,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -8920,6 +9345,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
+    "output": "OpsMembers",
+    "outputList": false,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -8962,6 +9389,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "Notices",
+    "outputList": true,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -9000,6 +9429,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "NoticesInput",
     "success": 201,
+    "output": "Notices",
+    "outputList": false,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -9042,6 +9473,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "OpsNoticeDetail",
+    "outputList": false,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -9081,6 +9514,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "NoticesInput",
     "success": 200,
+    "output": "Notices",
+    "outputList": false,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -9123,6 +9558,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "NoticesInput",
     "success": 201,
+    "output": "Notices",
+    "outputList": false,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -9166,6 +9603,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "StatusIncidentsInput",
     "success": 201,
+    "output": "StatusIncidents",
+    "outputList": false,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -9209,6 +9648,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "Operations",
+    "outputList": true,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -9249,6 +9690,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
+    "output": "SupportAccessGrants",
+    "outputList": false,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -9290,6 +9733,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "OpsAuditEvents",
+    "outputList": true,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -9330,6 +9775,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "OpsPlanProposals",
+    "outputList": true,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -9370,6 +9817,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "OpsPlanProposalsInput",
     "success": 201,
+    "output": "OpsPlanProposals",
+    "outputList": false,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -9413,6 +9862,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "OpsPlanProposalsInput",
     "success": 200,
+    "output": "OpsPlanProposals",
+    "outputList": false,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -9456,6 +9907,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "OpsPlanProposalsInput",
     "success": 201,
+    "output": "OpsPlanProposals",
+    "outputList": false,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -9500,6 +9953,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "PlanProposalImpact",
+    "outputList": false,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -9541,6 +9996,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "OpsPlanProposalsInput",
     "success": 201,
+    "output": "OpsPlanProposals",
+    "outputList": false,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -9585,6 +10042,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "OpsPlanProposalsInput",
     "success": 201,
+    "output": "OpsPlanProposals",
+    "outputList": false,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -9629,6 +10088,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "Plans",
+    "outputList": true,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -9669,6 +10130,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "OpsShell",
+    "outputList": false,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -9707,6 +10170,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "Distributions",
+    "outputList": true,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -9745,6 +10210,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "Distributions",
+    "outputList": false,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -9784,6 +10251,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "DistributionsInput",
     "success": 201,
+    "output": "Distributions",
+    "outputList": false,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -9827,6 +10296,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "SkillVersionsInput",
     "success": 201,
+    "output": "SkillVersions",
+    "outputList": false,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -9869,6 +10340,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "WorkTypeUploadCheck",
+    "outputList": false,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -9910,6 +10383,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "Skills",
+    "outputList": true,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -9950,6 +10425,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "Skills",
+    "outputList": false,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -9991,6 +10468,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "SkillVersionsInput",
     "success": 201,
+    "output": "SkillVersions",
+    "outputList": false,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -10034,6 +10513,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "SkillVersionsInput",
     "success": 201,
+    "output": "SkillVersions",
+    "outputList": false,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -10077,6 +10558,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "OpsWorkspaceRow",
+    "outputList": true,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -10115,6 +10598,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "OpsWorkspace",
+    "outputList": false,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -10154,6 +10639,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "OpsAuditEvents",
+    "outputList": true,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -10193,6 +10680,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "OpsWorkspaceBilling",
+    "outputList": false,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -10232,6 +10721,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "Inquiries",
+    "outputList": true,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -10271,6 +10762,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "OpsWorkspaceMember",
+    "outputList": true,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -10310,6 +10803,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "SecurityEventsInput",
     "success": 201,
+    "output": "SecurityEvents",
+    "outputList": false,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -10352,6 +10847,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "NoticesInput",
     "success": 201,
+    "output": "Notices",
+    "outputList": false,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -10394,6 +10891,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "SupportAccessGrantsInput",
     "success": 201,
+    "output": "SupportAccessGrants",
+    "outputList": false,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -10436,6 +10935,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "SubscriptionsInput",
     "success": 201,
+    "output": "Subscriptions",
+    "outputList": false,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -10478,6 +10979,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "AccountEventsInput",
     "success": 201,
+    "output": "AccountEvents",
+    "outputList": false,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -10520,6 +11023,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "AccountEventsInput",
     "success": 201,
+    "output": "AccountEvents",
+    "outputList": false,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -10562,6 +11067,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "ExportJobsInput",
     "success": 201,
+    "output": "ExportJobs",
+    "outputList": false,
     "generic": false,
     "auth": "ops",
     "rateLimit": {
@@ -10603,6 +11110,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "PortalHome",
+    "outputList": false,
     "generic": false,
     "auth": "client",
     "rateLimit": {
@@ -10641,6 +11150,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "PortalAcceptance",
+    "outputList": false,
     "generic": false,
     "auth": "client",
     "rateLimit": {
@@ -10680,6 +11191,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "AcceptancesInput",
     "success": 201,
+    "output": "Acceptances",
+    "outputList": false,
     "generic": false,
     "auth": "client",
     "rateLimit": {
@@ -10723,6 +11236,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "AttachmentsInput",
     "success": 201,
+    "output": "Attachments",
+    "outputList": false,
     "generic": false,
     "auth": "client",
     "rateLimit": {
@@ -10765,6 +11280,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "Notices",
+    "outputList": true,
     "generic": false,
     "auth": "client",
     "rateLimit": {
@@ -10803,6 +11320,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "ClientRequestsInput",
     "success": 201,
+    "output": "ClientRequests",
+    "outputList": false,
     "generic": false,
     "auth": "client",
     "rateLimit": {
@@ -10845,6 +11364,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "PortalRequest",
+    "outputList": false,
     "generic": false,
     "auth": "client",
     "rateLimit": {
@@ -10884,6 +11405,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "MessagesInput",
     "success": 201,
+    "output": "Messages",
+    "outputList": false,
     "generic": false,
     "auth": "client",
     "rateLimit": {
@@ -10927,6 +11450,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "ClientRequestsInput",
     "success": 201,
+    "output": "PortalQuestions",
+    "outputList": false,
     "generic": false,
     "auth": "client",
     "rateLimit": {
@@ -10969,6 +11494,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "PortalTicket",
+    "outputList": false,
     "generic": false,
     "auth": "client",
     "rateLimit": {
@@ -11008,6 +11535,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "Policies",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -11048,6 +11577,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "PoliciesInput",
     "success": 201,
+    "output": "Policies",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -11092,6 +11623,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "Policies",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -11134,6 +11667,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "PoliciesInput",
     "success": 200,
+    "output": "Policies",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -11178,6 +11713,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
+    "output": "Policies",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -11222,6 +11759,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "PoliciesInput",
     "success": 201,
+    "output": "RuleCheck",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -11265,6 +11804,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "SavedViews",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -11303,6 +11844,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "SavedViewsInput",
     "success": 201,
+    "output": "SavedViews",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -11344,6 +11887,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "SavedViewsInput",
     "success": 200,
+    "output": "SavedViews",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -11388,6 +11933,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
+    "output": "SavedViews",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -11432,6 +11979,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "Scopes",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -11470,6 +12019,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "ScopesInput",
     "success": 201,
+    "output": "Scopes",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -11511,6 +12062,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "ScopesInput",
     "success": 200,
+    "output": "Scopes",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -11552,6 +12105,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "ScopeOverview",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -11594,6 +12149,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "SearchHit",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -11632,6 +12189,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "ServiceStatus",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -11670,6 +12229,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "Shell",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -11708,6 +12269,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "TestSpecsInput",
     "success": 200,
+    "output": "TestSpecs",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -11754,6 +12317,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
+    "output": "TestSpecs",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -11800,6 +12365,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "TicketDecisionsInput",
     "success": 200,
+    "output": "TicketDecisions",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -11844,6 +12411,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "TicketHandoversInput",
     "success": 200,
+    "output": "TicketHandovers",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -11890,6 +12459,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "TicketImportsInput",
     "success": 201,
+    "output": "TicketImports",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -11932,6 +12503,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "TicketImports",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -11974,6 +12547,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "TicketImportsInput",
     "success": 201,
+    "output": "TicketImports",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -12019,6 +12594,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "TicketKinds",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -12057,6 +12634,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "KindSectionsInput",
     "success": 201,
+    "output": "KindSections",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -12099,6 +12678,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "TenantDistributions",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -12137,6 +12718,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "KindSectionsInput",
     "success": 201,
+    "output": "KindSections",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -12179,6 +12762,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
+    "output": "TicketLinks",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -12223,6 +12808,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "TicketMessagesInput",
     "success": 200,
+    "output": "TicketMessages",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -12268,6 +12855,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
+    "output": "TicketMessages",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -12313,6 +12902,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "TicketMessagesInput",
     "success": 201,
+    "output": "TicketMessages",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -12359,6 +12950,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "TicketStages",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -12397,6 +12990,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "Tickets",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -12436,6 +13031,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "TicketsInput",
     "success": 201,
+    "output": "Tickets",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -12479,6 +13076,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "Tickets",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -12521,6 +13120,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "TicketsInput",
     "success": 200,
+    "output": "Tickets",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -12568,6 +13169,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
+    "output": "Tickets",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -12612,6 +13215,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "AcceptancesInput",
     "success": 201,
+    "output": "Acceptances",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -12658,6 +13263,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "Conversations",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -12703,6 +13310,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "TicketSectionsInput",
     "success": 201,
+    "output": "TicketSections",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -12748,6 +13357,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "MessagesInput",
     "success": 201,
+    "output": "Messages",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -12798,6 +13409,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "Artifacts",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -12840,6 +13453,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "AttachmentsInput",
     "success": 201,
+    "output": "Attachments",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -12886,6 +13501,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "Checks",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -12929,6 +13546,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "TicketsInput",
     "success": 200,
+    "output": "Tickets",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -12974,6 +13593,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "TicketsInput",
     "success": 201,
+    "output": "TicketCompletion",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -13020,6 +13641,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "TicketDecisions",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -13062,6 +13685,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "TicketDecisionsInput",
     "success": 201,
+    "output": "TicketDecisions",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -13107,6 +13732,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "ActionRunsInput",
     "success": 201,
+    "output": "ActionRuns",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -13155,6 +13782,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "TicketDeletePreview",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -13197,6 +13826,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "ActionRunsInput",
     "success": 201,
+    "output": "ActionRuns",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -13245,6 +13876,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "TicketHandoversInput",
     "success": 201,
+    "output": "TicketHandovers",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -13294,6 +13927,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "TicketKindChangePreview",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -13336,6 +13971,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "TicketLinks",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -13378,6 +14015,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "TicketLinksInput",
     "success": 201,
+    "output": "TicketLinks",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -13423,6 +14062,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "TicketMessagesInput",
     "success": 201,
+    "output": "TicketMessages",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -13469,6 +14110,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "ReferenceLogs",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -13511,6 +14154,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "TicketsInput",
     "success": 201,
+    "output": "Tickets",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -13557,6 +14202,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "ActionRuns",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -13600,6 +14247,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "TicketSectionsInput",
     "success": 200,
+    "output": "TicketSections",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -13644,6 +14293,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "TestSpecs",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -13687,6 +14338,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "TestSpecsInput",
     "success": 201,
+    "output": "TestSpecs",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -13734,6 +14387,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "TestSpecsInput",
     "success": 201,
+    "output": "TestSpecLint",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -13781,6 +14436,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "TestSpecsInput",
     "success": 201,
+    "output": "TestSpecs",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -13828,6 +14485,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "TimelineItem",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -13870,6 +14529,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "TicketSectionVersions",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -13912,6 +14573,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "TicketSectionVersionsInput",
     "success": 201,
+    "output": "TicketSectionVersions",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -13957,6 +14620,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "Skills",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -13999,6 +14664,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "TicketsInput",
     "success": 201,
+    "output": "BulkResult",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -14041,6 +14708,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "Skills",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -14080,6 +14749,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "SkillsInput",
     "success": 201,
+    "output": "Skills",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -14123,6 +14794,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "Skills",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -14166,6 +14839,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "SkillsInput",
     "success": 201,
+    "output": "Skills",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -14213,6 +14888,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "SkillVersionsInput",
     "success": 200,
+    "output": "SkillVersions",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -14259,6 +14936,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "SkillVersionsInput",
     "success": 201,
+    "output": "SkillVersions",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -14306,6 +14985,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "ApprovalsInput",
     "success": 201,
+    "output": "Approvals",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -14353,6 +15034,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "SkillTestRunsInput",
     "success": 201,
+    "output": "SkillTestRuns",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -14400,6 +15083,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
+    "output": "SkillVersions",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -14443,6 +15128,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "WorkspaceSettings",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -14481,6 +15168,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "TenantsInput",
     "success": 200,
+    "output": "Tenants",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -14521,6 +15210,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "Billing",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -14559,6 +15250,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "SubscriptionsInput",
     "success": 200,
+    "output": "Subscriptions",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -14599,6 +15292,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "AccountEventsInput",
     "success": 201,
+    "output": "AccountEvents",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -14640,6 +15335,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
+    "output": "AccountEvents",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -14679,6 +15376,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "PoliciesInput",
     "success": 201,
+    "output": "Policies",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -14720,6 +15419,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "PoliciesInput",
     "success": 200,
+    "output": "Policies",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -14761,6 +15462,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
+    "output": "Policies",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -14802,6 +15505,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "PoliciesInput",
     "success": 201,
+    "output": "EscalationPreview",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -14843,6 +15548,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "TenantsInput",
     "success": 201,
+    "output": "Tenants",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -14884,6 +15591,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "WorkspaceMembers",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -14922,6 +15631,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "PermissionsInput",
     "success": 200,
+    "output": "Permissions",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -14962,6 +15673,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "SubscriptionsInput",
     "success": 201,
+    "output": "Subscriptions",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -15003,6 +15716,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "PlanChoice",
+    "outputList": true,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -15041,6 +15756,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "WorkspaceRules",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -15079,6 +15796,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "PoliciesInput",
     "success": 201,
+    "output": "Policies",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -15120,6 +15839,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "PoliciesInput",
     "success": 200,
+    "output": "Policies",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -15161,6 +15882,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
+    "output": "Policies",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -15202,6 +15925,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
+    "output": "TicketShape",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -15240,6 +15965,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "TicketKindsInput",
     "success": 200,
+    "output": "TicketKinds",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -15280,6 +16007,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "TicketKindsInput",
     "success": 201,
+    "output": "TicketShapeChangePreview",
+    "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
@@ -15314,4 +16043,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     }
   }
 ];
-export const OPENAPI_HASH = "a7fbc178bd8f3f7c";
+export const OPENAPI_HASH = "6f45a9081120edcf";

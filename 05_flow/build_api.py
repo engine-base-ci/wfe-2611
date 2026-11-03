@@ -165,6 +165,7 @@ def qtype(q, table):
     return {"type": "string"}
 def qparams(names, table):
     has = _DBC.get(table)
+    names = list(dict.fromkeys(names))   # 同じ名前を二度出さない（画面の問い合わせに sort が入っていると、一覧の共通の分と重なっていた）
     return [{"name": q, "in": "query", "allowEmptyValue": True, "schema": qtype(q, table)} for q in names if not (q == "scope_id" and has is not None and "scope_id" not in has)]
 paths = {}
 for e in endpoints:

@@ -41,13 +41,13 @@ export function parsePaths(yaml) {
   const out = {}; // path → { method: { required, responseFields, operationId, tag, input, success } }
   const lines = yaml.split("\n");
   let i = lines.findIndex((l) => l === "paths:");
-  let path = null, method = null, section = null;
+  let path = null, method = null, section = null, resCode = 0, lastParam = null;
   for (i = i + 1; i < lines.length; i++) {
     const l = lines[i];
     if (/^\S/.test(l)) break;
     let m;
     if ((m = /^  (\/[^:]+):$/.exec(l))) { path = m[1]; out[path] = {}; continue; }
-    if ((m = /^    (get|post|put|patch|delete):$/.exec(l))) { method = m[1].toUpperCase(); out[path][method] = { required: [], responseFields: [], operationId: "", tag: "", input: null, success: 200 }; section = null; continue; }
+    if ((m = /^    (get|post|put|patch|delete):$/.exec(l))) { method = m[1].toUpperCase(); out[path][method] = { required: [], responseFields: [], operationId: "", tag: "", input: null, success: 200, output: null, outputList: false, query: [] }; section = null; resCode = 0; continue; }
     if (!path || !method) continue;
     const cur = out[path][method];
     if ((m = /^      operationId: (\S+)/.exec(l))) cur.operationId = m[1];
@@ -55,11 +55,20 @@ export function parsePaths(yaml) {
     if (/^      tags:/.test(l)) section = "tags";
     if (/^      requestBody:/.test(l)) section = "req";
     if (/^      responses:/.test(l)) section = "res";
-    if (/^      (parameters|security|x-)/.test(l)) section = null;
+    if (/^      parameters:/.test(l)) { section = "params"; continue; }
+    if (/^      (security|x-)/.test(l)) section = null;
+    // 問い合わせの名前（in: query のもの）。口ごとの型（ops.ts）の query に出す
+    if (section === "params" && (m = /^      - name: (\S+)/.exec(l))) lastParam = m[1];
+    if (section === "params" && /^        in: query/.test(l) && lastParam) cur.query.push(lastParam);
     if (section === "req" && (m = /\$ref: '#\/components\/schemas\/(\w+)'/.exec(l))) cur.input = m[1];
     if ((m = /^\s+required: \[(.*)\]/.exec(l)) && section === "req") cur.required.push(...m[1].split(",").map((s) => s.trim().replace(/['"]/g, "")).filter(Boolean));
     if ((m = /^\s+- (\w+)$/.exec(l)) && section === "req" && lines[i - 1] && /required:$/.test(lines[i - 1].trim())) cur.required.push(m[1]);
-    if (section === "res" && (m = /^        '(2\d\d)':/.exec(l))) cur.success = Number(m[1]);
+    if (section === "res" && (m = /^        '(\d\d\d)':/.exec(l))) { resCode = Number(m[1]); if (resCode >= 200 && resCode < 300) cur.success = resCode; }
+    // 成功の答えの data の形（名前と、配列か）。口ごとの型（ops.ts）の data に出す
+    if (section === "res" && resCode >= 200 && resCode < 300 && !cur.output) {
+      if (/^                    type: array$/.test(l)) cur.outputList = true;
+      if ((m = /\$ref: '#\/components\/schemas\/(\w+)'/.exec(l))) cur.output = m[1];
+    }
     if (section === "res" && (m = /^\s{16,}(\w+):$/.exec(l))) cur.responseFields.push(m[1]);
   }
   return out;
@@ -148,7 +157,7 @@ export function gen(root = ROOT) {
     const e = meta.get(`${m} ${hono}`) ?? {};
     const rl = /^(\d+)\/min\/(user|ip)$/.exec(e.rate_limit ?? "60/min/user");
     eps.push({
-      method: m, path: hono, operationId: d.operationId, table: d.tag || slug(p).split("_")[0], kind: kindOf(m, p), input: d.input, success: d.success,
+      method: m, path: hono, operationId: d.operationId, table: d.tag || slug(p).split("_")[0], kind: kindOf(m, p), input: d.input, success: d.success, output: d.output, outputList: d.outputList,
       // 表の素の読み書き（/表 と /表/:id）だけが共通の処理で動いてよい。それ以外（/表/:id/approve など）は hooks に振る舞いを書くまで 501（D-128.113）
       generic: GENERIC_OK.has(`${m} ${hono}`),
       auth: e.auth?.role ?? "member", rateLimit: { perMinute: Number(rl?.[1] ?? 60), key: rl?.[2] ?? "user" },
@@ -174,6 +183,9 @@ export interface EndpointDef {
   generic: boolean;
   input: string | null;
   success: number;
+  /** 成功の答えの data の形（components の名前）。outputList なら配列 */
+  output: string | null;
+  outputList: boolean;
   auth: "member" | "ops" | "client" | "device" | "public";
   rateLimit: { perMinute: number; key: "user" | "ip" };
   chokePoints: string[];
@@ -197,6 +209,21 @@ export const ENDPOINTS: readonly EndpointDef[] = ${JSON.stringify(eps, null, 2)}
 export const OPENAPI_HASH = "${h}";
 `;
   writeFileSync(join(root, OUT, "registry.ts"), body);
+  // 口ごとの型（画面の呼び手 apps/web/lib/api/call.ts が使う・KN-107）。手で書かない
+  const typeNames = new Set([...types.matchAll(/^export type (\w+) =/gm)].map((x) => x[1]));
+  const ty = (n) => (n && typeNames.has(n) ? `T.${n}` : "unknown");
+  const opsSrc = [`// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:${h}`, `import type * as T from "./types.js";`, "",
+    "/** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */", "export interface Ops {"];
+  for (const p of Object.keys(paths)) for (const [m, d] of Object.entries(paths[p])) {
+    const params = [...p.matchAll(/\{(\w+)\}/g)].map((x) => x[1]);
+    const q = (d.query ?? []).map((n) => `${JSON.stringify(n)}?: string | number`).join("; ");
+    // 値が無いものは never（{} にしない：何でも通ってしまう）
+    const pt = params.length ? `{ ${params.map((n) => `${n}: string`).join("; ")} }` : "never";
+    const qt = q ? `{ ${q} }` : "never";
+    opsSrc.push(`  ${d.operationId}: { params: ${pt}; query: ${qt}; body: ${d.input ? ty(d.input) : "never"}; data: ${ty(d.output)}${d.outputList ? "[]" : ""} };`);
+  }
+  opsSrc.push("}", "export type OpName = keyof Ops;", "");
+  writeFileSync(join(root, OUT, "ops.ts"), opsSrc.join("\n"));
   // zod（入力の検証・表記ゆらぎの正規化は apps/api/src/contract/op.ts）
   const comps = parseComponents(yaml);
   const zl = [`// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:${h}`, `import { z } from "zod";`, ""];
@@ -250,7 +277,7 @@ export function check(root = ROOT, base = "main") {
   const epJson = existsSync(join(root, ENDPOINTS_JSON)) ? readFileSync(join(root, ENDPOINTS_JSON), "utf8") : "";
   const h = hashOf(yaml + epJson + rowSources(root));
   const bad = [];
-  for (const f of ["types.ts", "registry.ts", "schemas.ts"]) {
+  for (const f of ["types.ts", "registry.ts", "schemas.ts", "ops.ts"]) {
     const p = join(root, OUT, f);
     if (!existsSync(p) || !readFileSync(p, "utf8").includes(`openapi:${h}`)) bad.push(`${OUT}/${f} が openapi.yaml と合っていない（pnpm ci:contract:gen）`);
   }

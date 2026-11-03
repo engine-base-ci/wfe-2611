@@ -265,7 +265,11 @@
  },
  "framework": {
   "unit_contract": "Vitest",
-  "contract_fuzz": "Schemathesis（openapi.yaml）",
+  "contract_fuzz": {
+   "library": "Schemathesis 4.33.0",
+   "license": "MIT",
+   "rationale": "G36 の契約 fuzz。CI の database で pip から入れる（KN-55）"
+  },
   "consumer_contract": "なし（段階 1。OpenAPI 生成型＋openapi-diff で代替）",
   "e2e": "Playwright",
   "access": "実 Postgres（pgvector/pg16）で SET LOCAL を切り替えて流す（pnpm ci:access-matrix）",
