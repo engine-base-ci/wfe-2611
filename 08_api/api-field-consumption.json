@@ -10966,7 +10966,7 @@
   },
   {
    "entity": "knowledge_pages",
-   "field": "moved_to_page_id",
+   "field": "archived_to_page_id",
    "consumed_by_screens": [
     "tickets",
     "knowledge",
@@ -11027,7 +11027,16 @@
   },
   {
    "entity": "knowledge_page_versions",
-   "field": "source_ticket_id",
+   "field": "author_member_id",
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_page_versions",
+   "field": "proposed_from_ticket_id・proposed_by_clone",
    "consumed_by_screens": [
     "knowledge"
    ],
@@ -11045,7 +11054,25 @@
   },
   {
    "entity": "knowledge_page_versions",
-   "field": "reject_reason",
+   "field": "decline_reason",
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_page_versions",
+   "field": "decided_by",
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_page_versions",
+   "field": "decided_at",
    "consumed_by_screens": [
     "knowledge"
    ],

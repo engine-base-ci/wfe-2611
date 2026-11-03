@@ -19,7 +19,7 @@ create table if not exists knowledge_pages (
   topics text[] not null default '{}',
   current_version int not null default 0 check (current_version >= 0),
   archived_at timestamptz,
-  moved_to_page_id uuid references knowledge_pages(id),     -- しまったときの移し先（あれば案内する）
+  archived_to_page_id uuid references knowledge_pages(id),  -- しまって新しいページへつなぐ（あれば案内する）
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   created_by uuid,
@@ -40,9 +40,13 @@ create table if not exists knowledge_page_versions (
   kind text not null default 'published' check (kind in ('draft', 'proposal', 'published')),   -- 下書き・直す案・公開
   body jsonb not null default '{}'::jsonb,
   note text,                                                -- 公開のたびにひとこと
-  source_ticket_id uuid references tickets(id),             -- 直す案の出どころ（チケットの完了）
+  author_member_id uuid references members(id),
+  proposed_from_ticket_id uuid references tickets(id),      -- 直す案の出どころ（チケットの完了）
+  proposed_by_clone boolean not null default false,         -- チケットの完了で分身が出した直す案
   decision text check (decision in ('accepted', 'edited', 'rejected')),   -- 入れた・直して入れた・入れない
-  reject_reason text,
+  decline_reason text,
+  decided_by uuid references members(id),
+  decided_at timestamptz,
   published_by uuid references members(id),
   published_at timestamptz,
   created_at timestamptz not null default now(),
@@ -50,7 +54,8 @@ create table if not exists knowledge_page_versions (
   created_by uuid,
   updated_by uuid,
   deleted_at timestamptz,
-  check (decision is distinct from 'rejected' or coalesce(length(trim(reject_reason)), 0) > 0),   -- 入れないなら理由
+  check (decision is distinct from 'rejected' or coalesce(length(trim(decline_reason)), 0) > 0),   -- 入れないなら理由
+  check ((decision is null) = (decided_at is null)),
   check ((kind = 'published') = (published_at is not null)),
   unique (page_id, kind, version)
 );
@@ -106,7 +111,7 @@ begin
     if (j->>'parent_page_id') is not null and not exists (select 1 from knowledge_pages where id = (j->>'parent_page_id')::uuid and tenant_id = new.tenant_id) then
       raise exception '親ページは同じ会社のページ' using errcode = '22023';
     end if;
-    if (j->>'moved_to_page_id') is not null and not exists (select 1 from knowledge_pages where id = (j->>'moved_to_page_id')::uuid and tenant_id = new.tenant_id) then
+    if (j->>'archived_to_page_id') is not null and not exists (select 1 from knowledge_pages where id = (j->>'archived_to_page_id')::uuid and tenant_id = new.tenant_id) then
       raise exception '移し先は同じ会社のページ' using errcode = '22023';
     end if;
     return new;
@@ -114,8 +119,8 @@ begin
   if not exists (select 1 from knowledge_pages where id = coalesce((j->>'page_id')::uuid, (j->>'from_page_id')::uuid) and tenant_id = new.tenant_id) then
     raise exception '元のページと同じ会社の行だけ' using errcode = '22023';
   end if;
-  if tg_table_name = 'knowledge_page_versions' and (j->>'source_ticket_id') is not null
-     and not exists (select 1 from tickets where id = (j->>'source_ticket_id')::uuid and tenant_id = new.tenant_id) then
+  if tg_table_name = 'knowledge_page_versions' and (j->>'proposed_from_ticket_id') is not null
+     and not exists (select 1 from tickets where id = (j->>'proposed_from_ticket_id')::uuid and tenant_id = new.tenant_id) then
     raise exception '直す案の出どころは同じ会社のチケット' using errcode = '22023';
   end if;
   return new;

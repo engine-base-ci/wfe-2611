@@ -734,7 +734,7 @@
    "access_control_policies": [
     "policies_tenant_read",
     "policies_ops_read_with_grant",
-    "approvals_tenant_read",
+    "approvals_read",
     "approvals_ops_read_with_grant",
     "action_runs_tenant_read",
     "action_runs_ops_read_with_grant",
@@ -869,8 +869,6 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "approvals_self_only_write",
-    "approvals_permission_write",
     "action_runs_permission_write"
    ],
    "outputs_4xx": [
@@ -1013,10 +1011,7 @@
     "scheme": "session（Better Auth・sessions 表を見る。app.tenant_id / app.user_id / app.role を SET LOCAL）"
    },
    "rate_limit": "60/min/user",
-   "access_control_policies": [
-    "approvals_self_only_write",
-    "approvals_permission_write"
-   ],
+   "access_control_policies": [],
    "outputs_4xx": [
     {
      "status": 401,
@@ -1159,9 +1154,7 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "memory_proposals_permission_write",
-    "approvals_self_only_write",
-    "approvals_permission_write"
+    "memory_proposals_permission_write"
    ],
    "outputs_4xx": [
     {
@@ -1310,8 +1303,6 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "approvals_self_only_write",
-    "approvals_permission_write",
     "action_runs_permission_write"
    ],
    "outputs_4xx": [
@@ -1457,8 +1448,6 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "approvals_self_only_write",
-    "approvals_permission_write",
     "action_runs_permission_write"
    ],
    "outputs_4xx": [
@@ -1615,8 +1604,6 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "approvals_self_only_write",
-    "approvals_permission_write",
     "action_runs_permission_write"
    ],
    "outputs_4xx": [
@@ -1746,8 +1733,6 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "approvals_self_only_write",
-    "approvals_permission_write",
     "checks_ticket_write"
    ],
    "outputs_4xx": [
@@ -1875,7 +1860,7 @@
    },
    "rate_limit": "120/min/user",
    "access_control_policies": [
-    "approvals_tenant_read",
+    "approvals_read",
     "approvals_ops_read_with_grant",
     "tickets_read",
     "tickets_client_read",
@@ -1992,7 +1977,7 @@
    },
    "rate_limit": "120/min/user",
    "access_control_policies": [
-    "approvals_tenant_read",
+    "approvals_read",
     "approvals_ops_read_with_grant",
     "tickets_read",
     "tickets_client_read",
@@ -7956,6 +7941,7 @@
     "conversations_ops_read_with_grant",
     "messages_tenant_read",
     "messages_ops_read_with_grant",
+    "skills_catalog_read",
     "client_contacts_read",
     "client_contacts_same_client_read",
     "client_contacts_ops_read_with_grant",
@@ -10264,7 +10250,7 @@
    },
    "rate_limit": "120/min/user",
    "access_control_policies": [
-    "approvals_tenant_read",
+    "approvals_read",
     "approvals_ops_read_with_grant",
     "action_runs_tenant_read",
     "action_runs_ops_read_with_grant",
@@ -10381,6 +10367,7 @@
     "memories_ops_read_with_grant",
     "policies_tenant_read",
     "policies_ops_read_with_grant",
+    "skills_catalog_read",
     "learning_candidates_read",
     "learning_candidates_ops_read_with_grant"
    ],
@@ -10487,7 +10474,7 @@
    },
    "rate_limit": "120/min/user",
    "access_control_policies": [
-    "approvals_tenant_read",
+    "approvals_read",
     "approvals_ops_read_with_grant",
     "action_runs_tenant_read",
     "action_runs_ops_read_with_grant",
@@ -11989,7 +11976,8 @@
     "action_runs_tenant_read",
     "action_runs_ops_read_with_grant",
     "credentials_tenant_read",
-    "credentials_ops_read_with_grant"
+    "credentials_ops_read_with_grant",
+    "skills_catalog_read"
    ],
    "outputs_4xx": [
     {
@@ -16040,6 +16028,7 @@
    "access_control_policies": [
     "policies_tenant_read",
     "policies_ops_read_with_grant",
+    "skills_catalog_read",
     "knowledge_pages_read",
     "knowledge_pages_ops_read_with_grant",
     "knowledge_page_versions_read",
@@ -18720,8 +18709,6 @@
    "rate_limit": "60/min/user",
    "access_control_policies": [
     "policies_permission_write",
-    "approvals_self_only_write",
-    "approvals_permission_write",
     "notifications_self_only_write",
     "notifications_permission_write",
     "learning_candidates_self_write"
@@ -21455,8 +21442,6 @@
    "access_control_policies": [
     "memories_self_only_write",
     "memories_permission_write",
-    "approvals_self_only_write",
-    "approvals_permission_write",
     "tenant_memberships_admin_write"
    ],
    "outputs_4xx": [
@@ -21822,8 +21807,6 @@
     "members_permission_write",
     "memories_self_only_write",
     "memories_permission_write",
-    "approvals_self_only_write",
-    "approvals_permission_write",
     "credentials_self_only_write",
     "credentials_permission_write",
     "conversations_self_only_write",
@@ -22354,7 +22337,7 @@
     "members_ops_read_with_grant",
     "memories_tenant_read",
     "memories_ops_read_with_grant",
-    "approvals_tenant_read",
+    "approvals_read",
     "approvals_ops_read_with_grant",
     "credentials_tenant_read",
     "credentials_ops_read_with_grant",
@@ -28667,6 +28650,7 @@
    "access_control_policies": [
     "tenant_distributions_tenant_read",
     "tenant_distributions_ops_read_with_grant",
+    "skills_catalog_read",
     "skill_versions_all_read"
    ],
    "outputs_4xx": [
@@ -28785,6 +28769,7 @@
    "access_control_policies": [
     "tenant_distributions_tenant_read",
     "tenant_distributions_ops_read_with_grant",
+    "skills_catalog_read",
     "skill_versions_all_read"
    ],
    "outputs_4xx": [
@@ -32157,9 +32142,7 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "policies_permission_write",
-    "approvals_self_only_write",
-    "approvals_permission_write"
+    "policies_permission_write"
    ],
    "outputs_4xx": [
     {
@@ -33859,7 +33842,7 @@
    "access_control_policies": [
     "scopes_tenant_read",
     "scopes_ops_read_with_grant",
-    "approvals_tenant_read",
+    "approvals_read",
     "approvals_ops_read_with_grant",
     "sessions_tenant_read",
     "sessions_ops_read_with_grant",
@@ -37920,8 +37903,6 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "approvals_self_only_write",
-    "approvals_permission_write",
     "action_runs_permission_write"
    ],
    "outputs_4xx": [
@@ -40332,6 +40313,7 @@
    },
    "rate_limit": "120/min/user",
    "access_control_policies": [
+    "skills_catalog_read",
     "skill_versions_all_read"
    ],
    "outputs_4xx": [
@@ -40558,6 +40540,7 @@
    },
    "rate_limit": "120/min/user",
    "access_control_policies": [
+    "skills_catalog_read",
     "skill_versions_all_read"
    ],
    "outputs_4xx": [
@@ -40804,6 +40787,7 @@
    "access_control_policies": [
     "policies_tenant_read",
     "policies_ops_read_with_grant",
+    "skills_catalog_read",
     "skill_versions_all_read"
    ],
    "outputs_4xx": [
@@ -41352,8 +41336,6 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "approvals_self_only_write",
-    "approvals_permission_write",
     "notifications_self_only_write",
     "notifications_permission_write"
    ],
@@ -42776,9 +42758,7 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "policies_permission_write",
-    "approvals_self_only_write",
-    "approvals_permission_write"
+    "policies_permission_write"
    ],
    "outputs_4xx": [
     {
@@ -43485,7 +43465,8 @@
     "policies_tenant_read",
     "policies_ops_read_with_grant",
     "action_runs_tenant_read",
-    "action_runs_ops_read_with_grant"
+    "action_runs_ops_read_with_grant",
+    "skills_catalog_read"
    ],
    "outputs_4xx": [
     {

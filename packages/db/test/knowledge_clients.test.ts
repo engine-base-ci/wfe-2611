@@ -115,9 +115,11 @@ describe("ナレッジ（D-128.50〜.52）", () => {
     ).rows[0]!.id;
     expect(await rows(staff, "knowledge_page_versions", pid)).toBe(0);
     expect(await rows(boss, "knowledge_page_versions", pid)).toBe(1);
-    expect(await fails(boss, "update knowledge_page_versions set decision = 'rejected' where id = $1", [pid])).toMatch(
-      /check/,
-    ); // 入れないなら理由
+    expect(
+      await fails(boss, "update knowledge_page_versions set decision = 'rejected', decided_at = now() where id = $1", [
+        pid,
+      ]),
+    ).toMatch(/check/); // 入れないなら理由
     expect(await fails(boss, "delete from knowledge_page_versions where id = $1", [pub])).toMatch(/permission denied/);
   });
 });

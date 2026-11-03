@@ -108,7 +108,7 @@
 | E-092 | `pending_signup` | 13. 取り込み・正規連携・招待・持ち出し・添付 | none | 1 | D-026 D-042 D-076.3 D-076.4 |
 | E-093 | `export_jobs` | 13. 取り込み・正規連携・招待・持ち出し・添付 | account_scoped | 4 | D-026 D-042 D-076.3 D-076.4 |
 | E-094 | `attachments` | 13. 取り込み・正規連携・招待・持ち出し・添付 | scope_layered | 3 | D-026 D-042 D-076.3 D-076.4 |
-| E-095 | `skills` | 14. スキル | ops_scoped | 1 | D-078 D-078.1 |
+| E-095 | `skills` | 14. スキル | ops_scoped | 2 | D-078 D-078.1 |
 | E-096 | `skill_versions` | 14. スキル | none | 2 | D-078 D-078.2 |
 | E-097 | `skill_test_runs` | 14. スキル | ops_scoped | 1 | D-078 |
 | E-098 | `skill_attachments` | 14. スキル | account_scoped | 3 | D-078 D-078.3 D-078.4 D-078.7 |

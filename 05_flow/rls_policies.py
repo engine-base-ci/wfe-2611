@@ -271,6 +271,26 @@ POLICIES: dict[str, list[dict]] = {
          "rationale": "会社のルールとぶつかるものに OK を出すのは管理者（OK を待つ間か、その決め直しだけ）", "source": ["D-128.43"]},
         ops_read("learning_candidates"),
     ],
+    # ---- 承認（KN-44・D-128.86・D-128.87・D-128.89）：承認する人・頼んだ人・担当者（チケットを読める人）・マネージャー
+    "approvals": [
+        {"name": "approvals_read", "operation": "select", "role": "member",
+         "predicate": f"tenant_id = {T} AND (scope_id = ANY(visible_scopes({U})) OR approver_member_id = {U} OR requested_by = {U} OR (ticket_id IS NOT NULL AND app.ticket_visible(ticket_id)))",
+         "rationale": "見えるグループの人・承認する人（グループの外でも）・頼んだ人・元のチケットを読める人", "source": ["D-128.86", "D-128.115"]},
+        {"name": "approvals_request", "operation": "insert", "role": "member",
+         "predicate": f"tenant_id = {T} AND requested_by = {U} AND (ticket_id IS NULL OR app.ticket_writable(ticket_id))",
+         "rationale": "自分として頼む。チケットの承認は、そのチケットに書ける人が頼む", "source": ["D-128.86"]},
+        {"name": "approvals_decide", "operation": "update", "role": "member",
+         "predicate": f"tenant_id = {T} AND (approver_member_id = {U} OR requested_by = {U} OR has_permission({U}, 'approvals', scope_id, 'edit'))",
+         "rationale": "承認する人が決める・頼んだ人が取り下げる・そのグループで承認を扱える人（マネージャー）が上へ回す。行は消さない", "source": ["D-128.86", "D-128.87"]},
+        ops_read("approvals"),
+    ],
+    # 業務の型（KN-44・D-126.2）：第1フェーズは運営の全社向けだけ。会社の人は全社向けを読んでチケットで選ぶ（D-126.13）
+    "skills": [
+        {"name": "skills_catalog_read", "operation": "select", "role": "authenticated", "predicate": "tenant_id = app.ops_tenant_id() AND scope_id IS NULL",
+         "rationale": "運営が全社向けに出す業務の型。どの会社の人も同じものを読んで選ぶ（中の作りは見せない・D-126.21 は API で絞る）", "source": ["D-126.2", "D-126.13", "D-126.23"]},
+        {"name": "skills_ops_all", "operation": "all", "role": "ops", "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
+         "rationale": "運営の業務の型は運営が作る（会社・層・個人の型は節目②・KN-21）", "source": ["D-126.4", "D-126.23"]},
+    ],
     # 登録の保留（ログインの前）。表は kaname_auth の側にあり、登録の口（auth-ext）だけが読み書きする。アプリの役からは誰も読めない
     "pending_signup": [{"name": "pending_signup_no_app_access", "operation": "select", "role": "member", "predicate": "false",
                         "rationale": "ログインの前の保留。アプリの役からは読めない（登録の口だけが kaname_auth の側で扱う・D-088.2）", "source": ["D-088.2", "D-128.115"]}],
@@ -279,5 +299,5 @@ POLICIES: dict[str, list[dict]] = {
 # 誰でも（ログイン済みなら）読める・書けるのは本当のマスタだけ。それ以外でまだ直していない表と、直すチケット（zt_gate.py の ZT3 が見る）
 PENDING_CHILD_TABLES = {
     "passkeys": "KN-46（置き場所を決める：Better Auth の側なら API からは触らない）",
-    "skill_versions": "KN-44（会社ごとの業務の型を入れる前に、元の型を見られる人だけにする）",
+    "skill_versions": "KN-21（会社・層・個人の業務の型を入れる前に、元の型を見られる人だけにする。節目①は運営の全社向けだけ）",
 }

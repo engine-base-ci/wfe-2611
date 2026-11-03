@@ -33,7 +33,7 @@ ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_SPEC = ROOT / "07_qa/test-specs"
 DEFAULT_TICKETS = ROOT / "07_tasks/tickets.json"
 
-TASK_ID = re.compile(r"\bT-[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)?-\d+[a-z]?\b")
+TASK_ID = re.compile(r"\bT-[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)?-\d+[a-z]?\b|\bKN-\d+\b")   # KN-…＝11_tickets のチケット（D-128.117）
 ROW_ID = re.compile(r"^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*-\d{2,3}(?:-[A-C])?$")   # errors.md（E-…-A/B/C＝出る／出ない／文言と一手）も行
 PASS = re.compile(r"\b(PASS|FIXED)\b|完了")
 BLOCKED = re.compile(r"\bBLOCKED\b")
@@ -172,7 +172,13 @@ def load_tasks(tickets: Path) -> dict[str, dict]:
     tasks = data.get("tasks") or []
     if isinstance(tasks, dict):
         tasks = list(tasks.values())
-    return {t["id"]: t for t in tasks if "id" in t}
+    out = {t["id"]: t for t in tasks if "id" in t}
+    # Kaname を作る仕事のチケット（11_tickets・D-128.117）も、行の担当として実在を確かめる
+    kn = ROOT / "11_tickets/tickets.json"
+    if kn.exists():
+        for t in json.loads(kn.read_text(encoding="utf-8")).get("tickets", []):
+            out.setdefault(t["id"], {"id": t["id"], "status": "done" if t.get("stage") == "完了" else "todo", "qa_rows": {}})
+    return out
 
 
 def done_tasks(tasks: dict[str, dict], extra: list[str]) -> set[str]:

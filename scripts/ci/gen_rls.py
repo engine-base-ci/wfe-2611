@@ -9,6 +9,10 @@ EN = json.load(open(a.entities, encoding="utf-8")); EN = EN.get("entities") or E
 out = ["-- RLS（機械生成：scripts/ci/gen_rls.py ← 07_functional/entities.json の access_control_policies。手で直さない）", ""]
 for tb in a.tables:
     e = by[tb]; out += [f"alter table {tb} enable row level security;", f"alter table {tb} force row level security;"]
+    # 今の一覧に無い守りは外す（守りは「どれかが通れば通る」ので、作り方を変えた表に古い守りが残ると黙って穴になる）
+    keep = sorted({(f"{p['name']}_{op.strip()}" if len(p["operation"].split(",")) > 1 else p["name"]) for p in e["access_control_policies"] if p["role"] != "system" for op in p["operation"].split(",")})
+    arr = ", ".join("'" + k + "'" for k in keep) or "''"
+    out.append(f"do $$ declare r record; begin for r in select policyname from pg_policies where schemaname = 'public' and tablename = '{tb}' and policyname <> all (array[{arr}]::name[]) loop execute format('drop policy %I on {tb}', r.policyname); end loop; end $$;")
     for p in e["access_control_policies"]:
         pred = p["predicate"]; ops = [x.strip() for x in p["operation"].split(",")]
         if p["role"] == "system":   # 追記専用：直接の書き込み policy は出さない（＝弾く）。update/delete は権限ごと剥がす

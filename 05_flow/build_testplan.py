@@ -70,6 +70,9 @@ for en in EN:
         cases = CASES_OPS_OWN if p["name"].endswith(("_ops_own", "_ops_all")) else CASES_SYSTEM if p["role"] == "system" else CASES_CLIENT if p["role"] == "client" else CASES_AUTH if p["role"] == "authenticated" else (CASES_OPS_WRITE if p["role"] == "ops" and p["operation"] != "select" else CASES.get(p["operation"], CASES["select"] if p["operation"] == "select" else CASES["insert,update,delete"]))
         for case, exp in cases:
             if p["role"] == "ops" and "他の会社" in case: exp = "NG（顧客が許可した範囲・期限の中だけ OK）"
+            # 同じ表に「ログイン済みなら読める」（運営が全社に出す版・型）があれば、会社の人が読めるのはそちらの守り
+            if p["name"].endswith(("_ops_own", "_ops_all")) and "会社の人" in case and any(x["role"] == "authenticated" and x["operation"] == "select" for x in en["access_control_policies"]):
+                exp = "OK（全社向けの読みの policy で読める）"
             if p["name"].endswith("self_only_write") and "権限なし" in case: exp = "OK（自分の行だけ）・他人の行は NG"
             am.append({"entity": en["id"], "table": en["table_name"], "policy": p["name"], "role": p["role"], "role_ja": ROLE_JA.get(p["role"], p["role"]), "operation": p["operation"], "case": case, "expected": exp, "predicate": p["predicate"][:160], "source": p.get("source", [])})
 json.dump({"version": "v3", "created_at": TODAY, "_doc": "entities.json の access_control_policies × 場合（見える範囲／見えない層／他の会社／SET LOCAL 無し／権限なし）。1 行 1 test。pnpm ci:access-matrix が全行を実 Postgres で流す",

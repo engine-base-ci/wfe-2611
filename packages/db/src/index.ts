@@ -81,6 +81,7 @@ export const MIGRATIONS = [
   "0074_clients.sql",
   "0075_workspace_people.sql",
   "0076_clone_ops.sql",
+  "0077_approvals_clone.sql",
 ] as const;
 
 /** migration 名の並びを検査する。重複・順序違い・4 桁でない名前があれば理由を返す。 */

@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:0ef8639c57a91a93
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:4437f21c0f62008a
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -2408,7 +2408,7 @@ export const KnowledgePages = z.strictObject({
   current_version: z.number().int().optional(),
   form: z.string().max(10000).optional(),
   archived_at: z.iso.datetime({ offset: true }).optional(),
-  moved_to_page_id: z.uuid().optional(),
+  archived_to_page_id: z.uuid().optional(),
   id: z.uuid(),
   tenant_id: z.uuid().optional(),
   created_at: z.iso.datetime({ offset: true }).optional(),
@@ -2427,7 +2427,7 @@ export const KnowledgePagesInput = z.strictObject({
   current_version: z.number().int().optional(),
   form: z.string().max(10000).optional(),
   archived_at: z.iso.datetime({ offset: true }).optional(),
-  moved_to_page_id: z.uuid().optional(),
+  archived_to_page_id: z.uuid().optional(),
 });
 export const KnowledgePageVersions = z.strictObject({
   page_id: z.uuid().optional(),
@@ -2435,9 +2435,11 @@ export const KnowledgePageVersions = z.strictObject({
   kind: z.string().max(10000).optional(),
   body: z.record(z.string(), z.unknown()).optional(),
   note: z.string().max(10000).optional(),
-  source_ticket_id: z.uuid().optional(),
+  author_member_id: z.uuid().optional(),
   decision: z.string().max(10000).optional(),
-  reject_reason: z.string().max(10000).optional(),
+  decline_reason: z.string().max(10000).optional(),
+  decided_by: z.uuid().optional(),
+  decided_at: z.iso.datetime({ offset: true }).optional(),
   published_by: z.uuid().optional(),
   published_at: z.iso.datetime({ offset: true }).optional(),
   id: z.uuid(),
@@ -2450,9 +2452,11 @@ export const KnowledgePageVersionsInput = z.strictObject({
   kind: z.string().max(10000).optional(),
   body: z.record(z.string(), z.unknown()).optional(),
   note: z.string().max(10000).optional(),
-  source_ticket_id: z.uuid().optional(),
+  author_member_id: z.uuid().optional(),
   decision: z.string().max(10000).optional(),
-  reject_reason: z.string().max(10000).optional(),
+  decline_reason: z.string().max(10000).optional(),
+  decided_by: z.uuid().optional(),
+  decided_at: z.iso.datetime({ offset: true }).optional(),
   published_by: z.uuid().optional(),
   published_at: z.iso.datetime({ offset: true }).optional(),
 });

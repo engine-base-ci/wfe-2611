@@ -142,6 +142,8 @@ export async function seedGenericRows(
       if (["created_at", "updated_at", "deleted_at", "created_by", "updated_by"].includes(x.col)) continue;
       const fk = fkOf(t, x.col);
       if (x.col === "tenant_id") row[x.col] = tenant;
+      // 業務の型の種は運営の全社向け（グループなし・D-126.23）。グループを入れると会社の人が読む全社向けにならない
+      else if (t === "skills" && x.col === "scope_id") row[x.col] = null;
       else if (x.col === "scope_id" && fk) row[x.col] = scopeOf(which);
       // 先方の人を会社の人に結ぶと、その人は「取引先の人」になり会社の人の守りを通れなくなる（app.member_ok・KN-41）。種では結ばない
       else if (t === "client_contacts" && x.col === "member_id") row[x.col] = null;
