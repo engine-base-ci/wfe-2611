@@ -4532,15 +4532,234 @@
    "related_apis": [
     {
      "act": "A15",
-     "role": "action",
-     "method": "PATCH",
-     "path_draft": "/api/approvals/:id",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/approvals/queue",
+     "table": "approvals",
+     "operation_id": "listApprovalQueue",
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-038",
       "E-106",
-      "E-114",
-      "E-135"
+      "E-136",
+      "E-117"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.19",
+      "D-125.103",
+      "D-125.85",
+      "D-125.167",
+      "D-012",
+      "D-037",
+      "D-040",
+      "D-008.2",
+      "D-012.1",
+      "D-013.8",
+      "D-013.10",
+      "D-037.5",
+      "D-042.9",
+      "D-060.3",
+      "D-066.3",
+      "D-125.152",
+      "D-126.18"
+     ]
+    },
+    {
+     "act": "A15",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/approvals/counts",
+     "table": "approvals",
+     "operation_id": "countApprovalQueue",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-038",
+      "E-136"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.19",
+      "D-125.103",
+      "D-125.85",
+      "D-125.167",
+      "D-012",
+      "D-037",
+      "D-040",
+      "D-008.2",
+      "D-012.1",
+      "D-013.8",
+      "D-013.10",
+      "D-037.5",
+      "D-042.9",
+      "D-060.3",
+      "D-066.3",
+      "D-125.152",
+      "D-126.18"
+     ]
+    },
+    {
+     "act": "A15",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/approvals/:id",
+     "table": "approvals",
+     "operation_id": "getApproval",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-038",
+      "E-106",
+      "E-039",
+      "E-051",
+      "E-117",
+      "E-119",
+      "E-037"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.19",
+      "D-125.103",
+      "D-125.85",
+      "D-125.167",
+      "D-012",
+      "D-037",
+      "D-040",
+      "D-008.2",
+      "D-012.1",
+      "D-013.8",
+      "D-013.10",
+      "D-037.5",
+      "D-042.9",
+      "D-060.3",
+      "D-066.3",
+      "D-125.152",
+      "D-126.18"
+     ]
+    },
+    {
+     "act": "A15",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/approvals/:id/approve",
+     "table": "approvals",
+     "operation_id": "approveApproval",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-038",
+      "E-039",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.19",
+      "D-125.103",
+      "D-125.85",
+      "D-125.167",
+      "D-012",
+      "D-037",
+      "D-040",
+      "D-008.2",
+      "D-012.1",
+      "D-013.8",
+      "D-013.10",
+      "D-037.5",
+      "D-042.9",
+      "D-060.3",
+      "D-066.3",
+      "D-125.152",
+      "D-126.18"
+     ]
+    },
+    {
+     "act": "A15",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/approvals/:id/edit",
+     "table": "approvals",
+     "operation_id": "editApproval",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-038",
+      "E-106"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.19",
+      "D-125.103",
+      "D-125.85",
+      "D-125.167",
+      "D-012",
+      "D-037",
+      "D-040",
+      "D-008.2",
+      "D-012.1",
+      "D-013.8",
+      "D-013.10",
+      "D-037.5",
+      "D-042.9",
+      "D-060.3",
+      "D-066.3",
+      "D-125.152",
+      "D-126.18"
+     ]
+    },
+    {
+     "act": "A15",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/approvals/:id/return",
+     "table": "approvals",
+     "operation_id": "returnApproval",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-038",
+      "E-119",
+      "E-030"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.19",
+      "D-125.103",
+      "D-125.85",
+      "D-125.167",
+      "D-012",
+      "D-037",
+      "D-040",
+      "D-008.2",
+      "D-012.1",
+      "D-013.8",
+      "D-013.10",
+      "D-037.5",
+      "D-042.9",
+      "D-060.3",
+      "D-066.3",
+      "D-125.152",
+      "D-126.18"
+     ]
+    },
+    {
+     "act": "A15",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/approvals/:id/stop",
+     "table": "approvals",
+     "operation_id": "stopApproval",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-038",
+      "E-039"
      ],
      "choke_points": [
       "C2"
@@ -4568,14 +4787,14 @@
     {
      "act": "A89",
      "role": "action",
-     "method": "PATCH",
-     "path_draft": "/api/approvals/:id",
+     "method": "POST",
+     "path_draft": "/api/approvals/:id/stop",
+     "table": "approvals",
+     "operation_id": "stopApproval",
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-038",
-      "E-106",
-      "E-114",
-      "E-135"
+      "E-039"
      ],
      "choke_points": [
       "C2",
@@ -4587,6 +4806,158 @@
       "D-104.8",
       "D-104.9",
       "D-104.15"
+     ]
+    },
+    {
+     "act": "A89",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/approvals/:id/withdraw",
+     "table": "approvals",
+     "operation_id": "withdrawApproval",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-038",
+      "E-039"
+     ],
+     "choke_points": [
+      "C2",
+      "C5"
+     ],
+     "source": [
+      "D-125.105",
+      "D-125.167",
+      "D-104.8",
+      "D-104.9",
+      "D-104.15"
+     ]
+    },
+    {
+     "act": "A15",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/approvals/bulk/preview",
+     "table": "approvals",
+     "operation_id": "previewBulkApproval",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-038",
+      "E-117"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.19",
+      "D-125.103",
+      "D-125.85",
+      "D-125.167",
+      "D-012",
+      "D-037",
+      "D-040",
+      "D-008.2",
+      "D-012.1",
+      "D-013.8",
+      "D-013.10",
+      "D-037.5",
+      "D-042.9",
+      "D-060.3",
+      "D-066.3",
+      "D-125.152",
+      "D-126.18"
+     ]
+    },
+    {
+     "act": "A15",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/approvals/bulk",
+     "table": "approvals",
+     "operation_id": "bulkApprove",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-038",
+      "E-039",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.19",
+      "D-125.103",
+      "D-125.85",
+      "D-125.167",
+      "D-012",
+      "D-037",
+      "D-040",
+      "D-008.2",
+      "D-012.1",
+      "D-013.8",
+      "D-013.10",
+      "D-037.5",
+      "D-042.9",
+      "D-060.3",
+      "D-066.3",
+      "D-125.152",
+      "D-126.18"
+     ]
+    },
+    {
+     "act": "A15",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/approvals/history",
+     "table": "approvals",
+     "operation_id": "listApprovalHistory",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-038",
+      "E-106"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.19",
+      "D-125.103",
+      "D-125.85",
+      "D-125.167",
+      "D-012",
+      "D-037",
+      "D-040",
+      "D-008.2",
+      "D-012.1",
+      "D-013.8",
+      "D-013.10",
+      "D-037.5",
+      "D-042.9",
+      "D-060.3",
+      "D-066.3",
+      "D-125.152",
+      "D-126.18"
+     ]
+    },
+    {
+     "act": "A110",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/ticket_handovers/:id",
+     "table": "ticket_handovers",
+     "operation_id": "answerTicketHandover",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-136",
+      "E-106"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.88",
+      "D-125.90",
+      "D-125.167"
      ]
     },
     {
@@ -4998,15 +5369,234 @@
    "required_apis": [
     {
      "act": "A15",
-     "role": "action",
-     "method": "PATCH",
-     "path_draft": "/api/approvals/:id",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/approvals/queue",
+     "table": "approvals",
+     "operation_id": "listApprovalQueue",
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-038",
       "E-106",
-      "E-114",
-      "E-135"
+      "E-136",
+      "E-117"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.19",
+      "D-125.103",
+      "D-125.85",
+      "D-125.167",
+      "D-012",
+      "D-037",
+      "D-040",
+      "D-008.2",
+      "D-012.1",
+      "D-013.8",
+      "D-013.10",
+      "D-037.5",
+      "D-042.9",
+      "D-060.3",
+      "D-066.3",
+      "D-125.152",
+      "D-126.18"
+     ]
+    },
+    {
+     "act": "A15",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/approvals/counts",
+     "table": "approvals",
+     "operation_id": "countApprovalQueue",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-038",
+      "E-136"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.19",
+      "D-125.103",
+      "D-125.85",
+      "D-125.167",
+      "D-012",
+      "D-037",
+      "D-040",
+      "D-008.2",
+      "D-012.1",
+      "D-013.8",
+      "D-013.10",
+      "D-037.5",
+      "D-042.9",
+      "D-060.3",
+      "D-066.3",
+      "D-125.152",
+      "D-126.18"
+     ]
+    },
+    {
+     "act": "A15",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/approvals/:id",
+     "table": "approvals",
+     "operation_id": "getApproval",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-038",
+      "E-106",
+      "E-039",
+      "E-051",
+      "E-117",
+      "E-119",
+      "E-037"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.19",
+      "D-125.103",
+      "D-125.85",
+      "D-125.167",
+      "D-012",
+      "D-037",
+      "D-040",
+      "D-008.2",
+      "D-012.1",
+      "D-013.8",
+      "D-013.10",
+      "D-037.5",
+      "D-042.9",
+      "D-060.3",
+      "D-066.3",
+      "D-125.152",
+      "D-126.18"
+     ]
+    },
+    {
+     "act": "A15",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/approvals/:id/approve",
+     "table": "approvals",
+     "operation_id": "approveApproval",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-038",
+      "E-039",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.19",
+      "D-125.103",
+      "D-125.85",
+      "D-125.167",
+      "D-012",
+      "D-037",
+      "D-040",
+      "D-008.2",
+      "D-012.1",
+      "D-013.8",
+      "D-013.10",
+      "D-037.5",
+      "D-042.9",
+      "D-060.3",
+      "D-066.3",
+      "D-125.152",
+      "D-126.18"
+     ]
+    },
+    {
+     "act": "A15",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/approvals/:id/edit",
+     "table": "approvals",
+     "operation_id": "editApproval",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-038",
+      "E-106"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.19",
+      "D-125.103",
+      "D-125.85",
+      "D-125.167",
+      "D-012",
+      "D-037",
+      "D-040",
+      "D-008.2",
+      "D-012.1",
+      "D-013.8",
+      "D-013.10",
+      "D-037.5",
+      "D-042.9",
+      "D-060.3",
+      "D-066.3",
+      "D-125.152",
+      "D-126.18"
+     ]
+    },
+    {
+     "act": "A15",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/approvals/:id/return",
+     "table": "approvals",
+     "operation_id": "returnApproval",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-038",
+      "E-119",
+      "E-030"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.19",
+      "D-125.103",
+      "D-125.85",
+      "D-125.167",
+      "D-012",
+      "D-037",
+      "D-040",
+      "D-008.2",
+      "D-012.1",
+      "D-013.8",
+      "D-013.10",
+      "D-037.5",
+      "D-042.9",
+      "D-060.3",
+      "D-066.3",
+      "D-125.152",
+      "D-126.18"
+     ]
+    },
+    {
+     "act": "A15",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/approvals/:id/stop",
+     "table": "approvals",
+     "operation_id": "stopApproval",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-038",
+      "E-039"
      ],
      "choke_points": [
       "C2"
@@ -5034,14 +5624,14 @@
     {
      "act": "A89",
      "role": "action",
-     "method": "PATCH",
-     "path_draft": "/api/approvals/:id",
+     "method": "POST",
+     "path_draft": "/api/approvals/:id/stop",
+     "table": "approvals",
+     "operation_id": "stopApproval",
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-038",
-      "E-106",
-      "E-114",
-      "E-135"
+      "E-039"
      ],
      "choke_points": [
       "C2",
@@ -5053,6 +5643,158 @@
       "D-104.8",
       "D-104.9",
       "D-104.15"
+     ]
+    },
+    {
+     "act": "A89",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/approvals/:id/withdraw",
+     "table": "approvals",
+     "operation_id": "withdrawApproval",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-038",
+      "E-039"
+     ],
+     "choke_points": [
+      "C2",
+      "C5"
+     ],
+     "source": [
+      "D-125.105",
+      "D-125.167",
+      "D-104.8",
+      "D-104.9",
+      "D-104.15"
+     ]
+    },
+    {
+     "act": "A15",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/approvals/bulk/preview",
+     "table": "approvals",
+     "operation_id": "previewBulkApproval",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-038",
+      "E-117"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.19",
+      "D-125.103",
+      "D-125.85",
+      "D-125.167",
+      "D-012",
+      "D-037",
+      "D-040",
+      "D-008.2",
+      "D-012.1",
+      "D-013.8",
+      "D-013.10",
+      "D-037.5",
+      "D-042.9",
+      "D-060.3",
+      "D-066.3",
+      "D-125.152",
+      "D-126.18"
+     ]
+    },
+    {
+     "act": "A15",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/approvals/bulk",
+     "table": "approvals",
+     "operation_id": "bulkApprove",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-038",
+      "E-039",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.19",
+      "D-125.103",
+      "D-125.85",
+      "D-125.167",
+      "D-012",
+      "D-037",
+      "D-040",
+      "D-008.2",
+      "D-012.1",
+      "D-013.8",
+      "D-013.10",
+      "D-037.5",
+      "D-042.9",
+      "D-060.3",
+      "D-066.3",
+      "D-125.152",
+      "D-126.18"
+     ]
+    },
+    {
+     "act": "A15",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/approvals/history",
+     "table": "approvals",
+     "operation_id": "listApprovalHistory",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-038",
+      "E-106"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.19",
+      "D-125.103",
+      "D-125.85",
+      "D-125.167",
+      "D-012",
+      "D-037",
+      "D-040",
+      "D-008.2",
+      "D-012.1",
+      "D-013.8",
+      "D-013.10",
+      "D-037.5",
+      "D-042.9",
+      "D-060.3",
+      "D-066.3",
+      "D-125.152",
+      "D-126.18"
+     ]
+    },
+    {
+     "act": "A110",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/ticket_handovers/:id",
+     "table": "ticket_handovers",
+     "operation_id": "answerTicketHandover",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-136",
+      "E-106"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.88",
+      "D-125.90",
+      "D-125.167"
      ]
     },
     {

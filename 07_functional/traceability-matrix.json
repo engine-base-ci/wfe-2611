@@ -493,8 +493,19 @@
     "E-050 artifacts"
    ],
    "related_apis": [
-    "PATCH /api/approvals/:id",
-    "PATCH /api/approvals/:id",
+    "GET /api/approvals/queue",
+    "GET /api/approvals/counts",
+    "GET /api/approvals/:id",
+    "POST /api/approvals/:id/approve",
+    "POST /api/approvals/:id/edit",
+    "POST /api/approvals/:id/return",
+    "POST /api/approvals/:id/stop",
+    "POST /api/approvals/:id/stop",
+    "POST /api/approvals/:id/withdraw",
+    "POST /api/approvals/bulk/preview",
+    "POST /api/approvals/bulk",
+    "GET /api/approvals/history",
+    "PATCH /api/ticket_handovers/:id",
     "navigate /account",
     "navigate /settings/close",
     "navigate /ai-staff/activity",
@@ -3671,15 +3682,81 @@
    "required_apis": [
     {
      "act": "A15",
-     "role": "action",
-     "method": "PATCH",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/approvals/queue"
+    },
+    {
+     "act": "A15",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/approvals/counts"
+    },
+    {
+     "act": "A15",
+     "role": "data_fetch",
+     "method": "GET",
      "path_draft": "/api/approvals/:id"
+    },
+    {
+     "act": "A15",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/approvals/:id/approve"
+    },
+    {
+     "act": "A15",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/approvals/:id/edit"
+    },
+    {
+     "act": "A15",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/approvals/:id/return"
+    },
+    {
+     "act": "A15",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/approvals/:id/stop"
     },
     {
      "act": "A89",
      "role": "action",
+     "method": "POST",
+     "path_draft": "/api/approvals/:id/stop"
+    },
+    {
+     "act": "A89",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/approvals/:id/withdraw"
+    },
+    {
+     "act": "A15",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/approvals/bulk/preview"
+    },
+    {
+     "act": "A15",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/approvals/bulk"
+    },
+    {
+     "act": "A15",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/approvals/history"
+    },
+    {
+     "act": "A110",
+     "role": "action",
      "method": "PATCH",
-     "path_draft": "/api/approvals/:id"
+     "path_draft": "/api/ticket_handovers/:id"
     },
     {
      "role": "transition",

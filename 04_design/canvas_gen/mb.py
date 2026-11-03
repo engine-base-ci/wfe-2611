@@ -32,7 +32,7 @@ phone("MbApprovals.dc.html", "スマホ 承認", H1("承認", "7 件") + BELL,
   '<div style="display: flex; gap: 6px; overflow-x: auto">' + chip("すべて 7", True) + chip("期限が今日 2") + chip("外に出す 3") + '</div>'
   + apc("EG-128", "セイコー様へ 11月分の請求書を送る", "高本のAI が作成 ・ 確認 ①② 通過", "1,716,000 円 ・ 送り先 山田様（CC 鈴木様）")
   + apc("KR-031", "入金の照合（10月分）", "田中のAI ・ 確認 すべて通過", "社内だけ ・ 差異 0 件", False)
-  + apc("EG-127", "発注ナビ 応募文 3 本", "高本のAI ・ 確認 すべて通過", "送り先は前と同じ 3 社", False)
+  + apc("EG-127", "発注ナビ 応募文 3 本", "高本のAI ・ 確認 すべて通過", "3 社に送る（外に出ると取り消せない）", True)
   + '<a href="MbApproveOne.dc.html" style="height: 44px; border-radius: 10px; display: grid; place-items: center; text-decoration: none; border: 1px solid #22345C; color: #22345C; font-size: 14px; font-weight: 500; background: #FFFFFF">続けて裁く（1 件ずつ）</a>', "ap")
 # 2 1件ずつ裁く
 phone("MbApproveOne.dc.html", "スマホ 続けて裁く", BACK("MbApprovals.dc.html", "1 ／ 7") + '<span style="margin-left: auto; font-size: 12px; color: %s">期限 今日</span>' % MUTED,

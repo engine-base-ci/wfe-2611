@@ -83,6 +83,21 @@ SCREEN_API = {
         ("GET", "/members", "A103", "members", "listMembers", []),
         ("GET", "/clients", "A103", "clients", "listClients", []),
     ],
+    # ---------------------------------------------------------------- 承認待ち（08_api/phase1/02_承認待ち.md）
+    "approvals": [
+        ("GET", "/approvals/queue", "A15", "approvals", "listApprovalQueue", ["tickets", "ticket_handovers", "checks"]),
+        ("GET", "/approvals/counts", "A15", "approvals", "countApprovalQueue", ["ticket_handovers"]),
+        ("GET", "/approvals/:id", "A15", "approvals", "getApproval", ["tickets", "action_runs", "artifact_versions", "checks", "ticket_messages", "policies"]),
+        ("POST", "/approvals/:id/approve", "A15", "approvals", "approveApproval", ["action_runs", "audit_events"]),
+        ("POST", "/approvals/:id/edit", "A15", "approvals", "editApproval", ["tickets"]),
+        ("POST", "/approvals/:id/return", "A15", "approvals", "returnApproval", ["ticket_messages", "memory_proposals"]),
+        ("POST", "/approvals/:id/stop", "A15|A89", "approvals", "stopApproval", ["action_runs"]),
+        ("POST", "/approvals/:id/withdraw", "A89", "approvals", "withdrawApproval", ["action_runs"]),
+        ("POST", "/approvals/bulk/preview", "A15", "approvals", "previewBulkApproval", ["checks"]),
+        ("POST", "/approvals/bulk", "A15", "approvals", "bulkApprove", ["action_runs", "audit_events"]),
+        ("GET", "/approvals/history", "A15", "approvals", "listApprovalHistory", ["tickets"]),
+        ("PATCH", "/ticket_handovers/:id", "A110", "ticket_handovers", "answerTicketHandover", ["tickets"]),
+    ],
 }
 
 
@@ -97,6 +112,11 @@ RESPONSES = {
     "lintTestSpecs": ("TestSpecLint", {"missing": "array", "warnings": "array"}),
     "completeTicket": ("TicketCompletion", {"ticket": "object", "knowledge_candidates": "array", "skipped_reason": "string"}),
     "bulkUpdateTickets": ("BulkResult", {"updated": "array", "skipped": "array"}),
+    "listApprovalQueue": ("ApprovalQueueItem", {"kind": "string", "id": "string", "ticket_id": "string", "ticket_number": "string", "title": "string", "from_member_id": "string", "check_summary": "string", "due_on": "string", "decide_inline": "boolean", "primary_action": "string", "secondary_action": "string"}),
+    "countApprovalQueue": ("ApprovalCounts", {"ai_output": "integer", "upper": "integer", "handed": "integer", "asked": "integer", "total": "integer"}),
+    "getApproval": ("ApprovalDetail", {"approval": "object", "ticket": "object", "operation": "object", "message_text": "string", "artifact_version": "object", "checks": "array", "cautions": "array", "irreversible": "boolean", "chain": "array"}),
+    "previewBulkApproval": ("BulkApprovalPreview", {"eligible": "array", "excluded": "array"}),
+    "bulkApprove": ("BulkResult", {"updated": "array", "skipped": "array"}),
 }
 # 一覧の絞り込み（operationId → query の名前）。cursor・limit・sort はいつも付く
 QUERIES = {
@@ -107,4 +127,6 @@ QUERIES = {
     "listMembers": ["scope_id", "q"],
     "listClients": ["q"],
     "listSavedViews": ["share"],
+    "listApprovalQueue": ["kind", "sort"],
+    "listApprovalHistory": ["decision", "from", "to"],
 }

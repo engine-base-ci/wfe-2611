@@ -57,8 +57,8 @@ dr = ('<div style="display: flex; align-items: center; gap: 10px; padding: 14px 
   + '<div style="display: flex; gap: 6px; padding: 10px 18px; border-bottom: 1px solid #EDF0F4; flex-wrap: wrap">' + chip("すべて", True) + chip("承認 14") + chip("差し戻し 3") + chip("人に回した 1") + '<span style="margin-left: auto; font-size: 12px; color: %s">この 1 週間 ▾</span></div>' % MUTED
   + '<div style="flex: 1; overflow: auto; padding: 4px 18px 14px">'
   + '<div style="font-size: 12px; font-weight: 500; padding: 8px 0">今日</div>'
-  + hist("10:52", "承認", OK, "KR-031", "入金の照合（10月分）", "まとめて承認（3 件）の 1 つ ・ 送るのは 11:00 の予定", True)
-  + hist("10:52", "承認", OK, "EG-127", "発注ナビ 応募文 3 本", "まとめて承認（3 件）の 1 つ ・ 送った", False)
+  + hist("10:52", "承認", OK, "KR-031", "入金の照合（10月分）", "まとめて承認（2 件）の 1 つ ・ 実行は 11:00 の予定", True)
+  + hist("10:48", "承認", OK, "EG-127", "発注ナビ 応募文 3 本", "1 件ずつ中身を見て承認（外に送る） ・ 送った", False)
   + hist("09:40", "差し戻し", NG, "EG-098", "提案書の骨組み", "理由：結論が先に見えない ・ 分身の覚えたいことに出た")
   + '<div style="font-size: 12px; font-weight: 500; padding: 12px 0 8px">10/31（金）</div>'
   + hist("17:20", "人に回した", PS, "JD-204", "京蟻 追加開発の見積", "上位の承認へ：佐藤 ・ 金額が 100 万円を超えたため")
@@ -68,15 +68,15 @@ save("ApHistory.dc.html", "決めた履歴", drawer(A, dr, 520, "決めた履歴
 # 6 まとめて承認
 it = lambda key, t, why, ok: '<div style="display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border: 1px solid %s; background: %s; border-radius: 8px">%s<div style="flex: 1; min-width: 0"><div><a href="TicketDetail.dc.html" style="font-size: 12px">%s</a> %s</div><div style="font-size: 11px; color: %s">%s</div></div></div>' % ((("#DDE2E9", "#FFFFFF") if ok else ("#F1D9A8", "#FFF8EE")) + (check("", ok).replace("padding: 4px 0", "padding: 0"), key, t, "#4A5563" if ok else "#7A4A05", why))
 s = modal(A, mhead("選んだものをまとめて承認", "Approvals.dc.html", "", "4 件を選んでいる ・ 承認すると分身が送る・実行する")
-  + mbody('<div>' + lab("まとめて承認してよい条件", "（ワークスペースの決まり）") + '<div style="display: flex; gap: 4px; flex-wrap: wrap">' + pill("確認がすべて通っている", "#E8F5EC", "#166534") + pill("③ 人の確認が済んでいる", "#E8F5EC", "#166534") + pill("金額が 50 万円以下", "#E8F5EC", "#166534") + pill("外に送る先が前と同じ", "#E8F5EC", "#166534") + '</div></div>'
+  + mbody('<div>' + lab("まとめて承認してよい条件", "（決まっていて変えられない・D-128.35）") + '<div style="display: flex; gap: 4px; flex-wrap: wrap">' + pill("確認がすべて ① 機械で通過・確実", "#E8F5EC", "#166534") + pill("人が見る項目が無い", "#E8F5EC", "#166534") + pill("取り消せる操作だけ（外に送らない）", "#E8F5EC", "#166534") + '</div></div>'
   + '<div style="display: flex; flex-direction: column; gap: 6px">'
-  + it("KR-031", "入金の照合（10月分）", "条件をすべて満たす ・ 社内だけ", True)
-  + it("EG-127", "発注ナビ 応募文 3 本", "条件をすべて満たす ・ 送る先は前と同じ 3 社", True)
+  + it("KR-031", "入金の照合（10月分）", "条件をすべて満たす ・ 社内だけ・取り消せる", True)
+  + it("EG-127", "発注ナビ 応募文 3 本", "外した：3 社に送る（外に出ると取り消せない） → 1 件ずつ見る", False)
   + it("EG-133", "打ち合わせのまとめを共有", "条件をすべて満たす", True)
-  + it("EG-128", "セイコー様へ 11月分の請求書を送る", "外した：③「送る前に PDF を目で見る」がまだ ・ 金額 1,716,000 円は上限を超える → 1 件ずつ見る", False)
+  + it("EG-128", "セイコー様へ 11月分の請求書を送る", "外した：メールを送る（取り消せない）・ ③「送る前に PDF を目で見る」がある → 1 件ずつ見る", False)
   + '</div>'
-  + '<div style="font-size: 12px; color: %s">外したものは「続けて裁く」で 1 件ずつ見られる。条件は ワークスペース › ワークスペースの設定 で管理者が決める</div>' % MUTED)
-  + mfoot(btn("やめる", "", "Approvals.dc.html"), btn("外したものを 1 件ずつ見る", "", "ApprovalsFocus.dc.html"), btn("3 件を承認する", "p", "ApHistory.dc.html")), 640, "まとめて承認")
+  + '<div style="font-size: 12px; color: %s">外したものは「続けて裁く」で 1 件ずつ見られる。条件は安全のため決まっていて、管理者も広げられない</div>' % MUTED)
+  + mfoot(btn("やめる", "", "Approvals.dc.html"), btn("外したものを 1 件ずつ見る", "", "ApprovalsFocus.dc.html"), btn("2 件を承認する", "p", "ApHistory.dc.html")), 640, "まとめて承認")
 save("ApBulk.dc.html", "まとめて承認", s)
 
 C = base("Calendar")

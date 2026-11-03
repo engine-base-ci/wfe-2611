@@ -451,6 +451,8 @@ erDiagram
 | **`ticket_imports`** | `<common>` / `uploaded_by` / `source`（Backlog の CSV・汎用）/ `mapping jsonb` / `rows int` / `errors jsonb` / `state`（確かめ中・確定・やめた）/ `committed_at` | **★新設（D-128.83・D-128.85）。**取り込んだものは下書きで入り、確かめてから確定 |
 | **`ops_plan_proposals`** | `<common>`（tenant_id＝運営）/ `plan_id` / `from_version` / `to_version` / `changes jsonb` / `existing_policy`（N 日後から・ずっと今の値段）/ `notice_days` / `new_from` / `reason` / `proposed_by` / `decided_by` / `state`（下書き・決める人を待っている・決めた・差し戻した）/ `decided_at` / `return_reason` | **★新設（D-128.72）。**作った人と決めた人は同じにできない（決められる人が 1 人のときだけ例外・本人確認） |
 
+`approvals` に足す列（第1フェーズ・D-128.86・D-128.87）：`ticket_id` / `kind`（AI の成果物・上位の承認）/ `level` / `parent_approval_id` / `escalated_by_policy_id`（どの決まりで上位へ回ったか）/ `decision`（承認・自分で直す・差し戻し・止める）/ `decided_at` / `return_targets jsonb` / `return_reason` / `next_actor`（分身・自分）/ `memory_candidate` / `human_checks jsonb` / `irreversible` / `step_up_at`（直前の本人確認）/ `withdrawn_at`（取り下げ）/ `bulk_batch_id`。まとめて承認は ① がすべて確実・人が見る項目なし・取り消せる操作だけ（サーバーがもう一度確かめる）。
+
 前の表の扱い：`tasks` `task_handovers` `daily_plans` は後のフェーズ（チケットに置き換え）。`skills` 系は「業務の型」として使い続ける（`skills.kind_id` に work_type を足す・D-126.26）。`learned_procedures` は「記録した動かし方」として使い続け、入力した値を空欄に置き換えた形だけを持つ（D-126.25）。`support_access_grants` は「運営の閲覧」の記録として使い、許可の範囲と期限は契約で先に持つ（D-125.128・D-128.68）。
 
 ---
@@ -481,7 +483,7 @@ erDiagram
 | 段階 | `ledger_stages` | |
 | チケット | `tickets` `ticket_class_values` `ticket_links` `ticket_handovers` `saved_views` `ticket_imports` | 本文は `ticket_sections`（D-125.27・D-127.1）。つながり・渡す・保存した検索条件・CSV の取り込み（D-128.80・D-128.83） |
 | 一日の計画 | `daily_plans` | |
-| 承認 | `approvals` | 4 つのボタン・差し戻しの理由・本人確認（D-125.103） |
+| 承認 | `approvals` | 4 つのボタン・差し戻しの理由・本人確認（D-125.103）。第1フェーズで足す列は §16 の注記 |
 | 差し戻し | `approvals` `messages` | 差し戻し＝`approvals.status_id = returned` ＋ 理由の `messages` |
 | 申し送り | `messages` `daily_plans` | 自分のAIの朝の申し送り＝`messages.kind = status`、夕方の持ち越しは `daily_plans.carry_over` |
 | 記憶 | `memories` | 4 層は `scope_id`（D-072.22）。決まり＝rule は上の層ほど強い（D-105.8） |
