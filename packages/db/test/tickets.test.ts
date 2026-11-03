@@ -86,7 +86,7 @@ afterAll(async () => {
 });
 
 describe("ワークスペースの初めの行", () => {
-  it("会社を作ると、仕組みの段 3・初めの作業の段 4・優先度の軸・渡すときの決まり 3・種別「タスク」と区画 10 が入る", async () => {
+  it("会社を作ると、仕組みの段 3・初めの作業の段 4・優先度の軸・渡すときの決まり 3・種別 4 つ（タスク・課題・QA・会議）と区画が入る", async () => {
     // 場合表の種が足す行と混ざらないように、新しい会社を作って見る（会社を作ると初めの行が入る）
     const t = await one(
       "insert into tenants (id, tenant_id, name) select u, u, '会社 c' from gen_random_uuid() u returning id",
@@ -116,6 +116,16 @@ describe("ワークスペースの初めの行", () => {
     );
     expect(secs.length).toBe(10);
     expect(secs.filter((x) => x.mode === "required").map((x) => x.section_key)).toEqual(["purpose", "done", "todo"]);
+    // 初めの種別は 4 つ（D-128.117）。区画の数・必須の数はキャンバス（ワークスペースの管理 › チケットの形）と同じ
+    const kinds = await read<{ name: string; n: string; req: string; acc: string }>(
+      "select k.name, count(s.id) n, count(s.id) filter (where s.mode = 'required') req, count(s.id) filter (where s.used_for_acceptance) acc from ticket_kinds k join kind_sections s on s.kind_id = k.id where k.tenant_id = $1 and k.is_builtin group by k.name, k.position order by k.position",
+    );
+    expect(kinds.map((x) => `${x.name}:${x.n}/${x.req}/${x.acc}`)).toEqual([
+      "タスク:10/3/1",
+      "課題:9/3/1",
+      "QA:8/4/1",
+      "会議:6/2/0",
+    ]);
   });
 });
 

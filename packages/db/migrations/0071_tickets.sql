@@ -392,6 +392,42 @@ begin
       (t, k, 'risks', 'リスクと懸念', 'show', 90, 'bullets', '気になること', false),
       (t, k, 'free', '自由欄', 'hidden', 100, 'text', null, false);
   end if;
+  -- 初めの種別は 4 つ（タスク・課題・QA・会議・D-128.117）。区画の中身は D-128.117 の案
+  if not exists (select 1 from ticket_kinds where tenant_id = t and is_builtin and name = '課題') then
+    insert into ticket_kinds (tenant_id, name, color, position, is_builtin) values (t, '課題', '#B45309', 10, true) returning id into k;
+    insert into kind_sections (tenant_id, kind_id, section_key, label, mode, position, content_type, hint, used_for_acceptance) values
+      (t, k, 'happening', '起きていること', 'required', 10, 'text', 'いつ・どこで・何が起きているか', false),
+      (t, k, 'impact', '影響', 'required', 20, 'bullets', '誰が・何に困っているか', false),
+      (t, k, 'done', '完了の条件', 'required', 30, 'checklist', '直ったと言える条件。ここからテスト仕様の案ができる', true),
+      (t, k, 'cause', '原因の見立て', 'show', 40, 'text', '分かっていること・まだ分からないこと', false),
+      (t, k, 'fix_plan', '直し方の案', 'show', 50, 'bullets', '案と選んだ理由', false),
+      (t, k, 'todo', '実施事項', 'show', 60, 'checklist', 'やることの一覧（チェックつき）', false),
+      (t, k, 'tests', 'テスト仕様と確認の結果', 'show', 70, 'table', '① 機械 ② AI ③ 人 の確認', false),
+      (t, k, 'decisions', '決定ログ', 'show', 80, 'bullets', '決まったこと', false),
+      (t, k, 'handoff', '申し送り', 'show', 90, 'bullets', '次の人に伝えること', false);
+  end if;
+  if not exists (select 1 from ticket_kinds where tenant_id = t and is_builtin and name = 'QA') then
+    insert into ticket_kinds (tenant_id, name, color, position, is_builtin) values (t, 'QA', '#6B5B99', 20, true) returning id into k;
+    insert into kind_sections (tenant_id, kind_id, section_key, label, mode, position, content_type, hint, used_for_acceptance) values
+      (t, k, 'target', '確かめるもの', 'required', 10, 'text', '確かめる成果物・画面・数字', false),
+      (t, k, 'viewpoints', '確かめる観点', 'required', 20, 'checklist', '何を見れば正しいと言えるか', true),
+      (t, k, 'method', '判定のしかた', 'required', 30, 'table', '① 機械 ② AI ③ 人 のどれで、何と比べるか', false),
+      (t, k, 'result', '結果', 'required', 40, 'table', '観点ごとの 通過・不通過', false),
+      (t, k, 'findings', '見つかったこと', 'show', 50, 'bullets', 'ずれ・気になる点', false),
+      (t, k, 'evidence', '証拠', 'show', 60, 'text', '確かめた画面・記録・数字', false),
+      (t, k, 'fix_tickets', '直すチケット', 'show', 70, 'bullets', '見つかったことを直すチケット', false),
+      (t, k, 'handoff', '申し送り', 'show', 80, 'bullets', '次の人に伝えること', false);
+  end if;
+  if not exists (select 1 from ticket_kinds where tenant_id = t and is_builtin and name = '会議') then
+    insert into ticket_kinds (tenant_id, name, color, position, is_builtin) values (t, '会議', '#22345C', 30, true) returning id into k;
+    insert into kind_sections (tenant_id, kind_id, section_key, label, mode, position, content_type, hint, used_for_acceptance) values
+      (t, k, 'purpose', '目的', 'required', 10, 'text', 'この会議で決めること・分かりたいこと', false),
+      (t, k, 'agenda', '議題', 'required', 20, 'checklist', '話すことの一覧', false),
+      (t, k, 'attendees', '出る人', 'show', 30, 'bullets', '社内・先方', false),
+      (t, k, 'minutes', '議事', 'show', 40, 'text', '話したこと', false),
+      (t, k, 'decisions', '決まったこと', 'show', 50, 'bullets', '決定ログに入れること', false),
+      (t, k, 'homework', '宿題', 'show', 60, 'checklist', '誰が・何を・いつまでに（チケットにする）', false);
+  end if;
 end $$;
 -- 会社を作ったら初めの行を入れる。前からある会社にも入れる
 create or replace function app.ticket_basics_on_tenant() returns trigger language plpgsql security definer set search_path = public, app as $$
