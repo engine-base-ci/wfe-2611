@@ -31,13 +31,31 @@ const PERMS = new Map<string, Perm>(
 
 const A = "0193c5a0-0000-7000-8000-00000000000a";
 const U = "0193c5a0-0000-7000-8000-000000000001";
-const ctxOf = (role: Role): TenantContext =>
-  role === "anonymous" ? { tenantId: null, userId: null, role } : { tenantId: A, userId: U, role };
+const FRESH = () => new Date(); // 本人確認は今した
+const ctxOf = (role: Role, stepUpAt: Date | null = FRESH()): TenantContext =>
+  role === "anonymous" ? { tenantId: null, userId: null, role } : { tenantId: A, userId: U, role, stepUpAt };
+/** 入口の確かめの答えを選ぶ（既定は全部通す＝役の段の試験に影響しない） */
+type Opts = {
+  opsAllowed?: boolean;
+  withHook?: boolean;
+  perms?: boolean;
+  caps?: string[] | "all";
+  stepUpAt?: Date | null;
+};
 
 /** 入口だけを試す小さなアプリ。副作用に届いたら印を付ける（届いてはいけない） */
-function appFor(e: EndpointDef, role: Role, opsAllowed = false, withHook = true) {
+function appFor(e: EndpointDef, role: Role, opsAllowed = false, withHook = true, o: Opts = {}) {
   let reached = false;
-  const repo = { opsAllowed: async () => opsAllowed, hasColumn: () => false } as unknown as Repository;
+  const perms = o.perms ?? true;
+  const caps = o.caps === undefined ? "all" : o.caps;
+  const repo = {
+    opsAllowed: async () => opsAllowed,
+    hasColumn: () => false,
+    can: async () => perms,
+    canAny: async () => perms,
+    isAdmin: async () => perms,
+    opsCaps: async () => (caps === "all" ? [e.perm.cap ?? ""] : caps),
+  } as unknown as Repository;
   const deps: ContractDeps = {
     hooks: withHook
       ? {
@@ -54,7 +72,7 @@ function appFor(e: EndpointDef, role: Role, opsAllowed = false, withHook = true)
   };
   const app = new Hono<Vars>();
   app.use("*", async (c, next) => {
-    c.set("ctx", ctxOf(role));
+    c.set("ctx", ctxOf(role, o.stepUpAt === undefined ? FRESH() : o.stepUpAt));
     c.set("repo", repo);
     await next();
   });
@@ -63,8 +81,8 @@ function appFor(e: EndpointDef, role: Role, opsAllowed = false, withHook = true)
   return { app, reached: () => reached };
 }
 const urlOf = (e: EndpointDef) => e.path.replace(/:(\w+)/g, (_, n: string) => (n === "id" ? A : `x-${n}`));
-async function hit(e: EndpointDef, role: Role, opsAllowed = false, withHook = true) {
-  const { app, reached } = appFor(e, role, opsAllowed, withHook);
+async function hit(e: EndpointDef, role: Role, opsAllowed = false, withHook = true, o: Opts = {}) {
+  const { app, reached } = appFor(e, role, opsAllowed, withHook, o);
   const init: RequestInit = { method: e.method, headers: { "content-type": "application/json" } };
   if (e.method === "POST" || e.method === "PATCH" || e.method === "PUT") init.body = "{}";
   const r = await app.request(urlOf(e), init);
@@ -141,16 +159,67 @@ describe("まだ作っていない口は止まる（fail-closed・D-128.113）",
   );
 });
 
-describe("権限の試験：権限の言葉の段と本人確認（作る段で 1 本ずつ実装する）", () => {
+// 会社の段の言葉（KN-51）：入口で確かめる。行に結ぶ言葉は KN-52（それまでは it.todo）
+const RIGHT_ROLE: Record<EndpointDef["auth"], Role> = {
+  public: "anonymous",
+  member: "member",
+  ops: "ops",
+  client: "client",
+  device: "device",
+};
+const ENTRANCE_WORDS = new Set(["admin", "public", "client", "device"]);
+const atEntrance = (w: string) => ENTRANCE_WORDS.has(w) || w.startsWith("ops:");
+const OLD = () => new Date(Date.now() - 16 * 60 * 1000); // 16 分前
+
+describe("権限の試験：会社の段の言葉（admin・運営のできること）と、いつも要る本人確認（KN-51）", () => {
+  const admins = ENDPOINTS.filter((e) => e.perm.word === "admin");
+  it.each(admins.map((e) => [`${e.method} ${e.path}`, e] as const))(
+    "%s：能力（%s）の無い人は 403 で、副作用に届かない。ある人は通る",
+    async (_n, e) => {
+      const no = await hit(e, "member", false, true, { perms: false });
+      expect([no.status, no.reached]).toEqual([403, false]);
+      const yes = await hit(e, "member", false, true, { perms: true });
+      expect(yes.reached).toBe(true);
+    },
+  );
+  it("admin の口は全部、能力（表と能力）か「管理者だけ」を持つ", () => {
+    expect(admins.filter((e) => !e.perm.adminOnly && !(e.perm.target && e.perm.ability)).map((e) => e.path)).toEqual(
+      [],
+    );
+  });
+  const opsEps = ENDPOINTS.filter((e) => e.perm.word.startsWith("ops:"));
+  it.each(opsEps.map((e) => [`${e.method} ${e.path}`, e] as const))(
+    "%s：そのできることの無い運営の人は 403。ある人は通る",
+    async (_n, e) => {
+      // ops:any は運営の人なら誰でも：止まるのは運営の人の行が無い人。ほかは、そのできることの無い人
+      const no = await hit(e, "ops", false, true, { caps: e.perm.cap === "any" ? null : ["something_else"] });
+      expect([no.status, no.reached]).toEqual([403, false]);
+      const yes = await hit(e, "ops", false, true, { caps: [e.perm.cap!] });
+      expect(yes.reached).toBe(true);
+    },
+  );
+  const always = ENDPOINTS.filter((e) => e.perm.stepUp === "always");
+  it.each(always.map((e) => [`${e.method} ${e.path}`, e] as const))(
+    "%s：直前 15 分以内の本人確認が無ければ 403（STEP_UP_REQUIRED）。あれば通る",
+    async (_n, e) => {
+      for (const at of [null, OLD()]) {
+        const no = await hit(e, RIGHT_ROLE[e.auth], true, true, { stepUpAt: at });
+        expect([no.status, no.reached]).toEqual([403, false]);
+      }
+      const yes = await hit(e, RIGHT_ROLE[e.auth], true, true, { stepUpAt: FRESH() });
+      expect(yes.reached).toBe(true);
+    },
+  );
+});
+
+describe("権限の試験：行に結ぶ言葉と、条件つきの本人確認（KN-52・KN-54 で 1 本ずつ実装する）", () => {
   for (const e of ENDPOINTS) {
     const p = PERMS.get(e.operationId);
-    if (!p || p.who === "public") continue;
+    if (!p || atEntrance(p.who)) continue;
     it.todo(`${e.method} ${e.path}：権限 ${p.who} の外の人は止まる（${p.scope}）`);
-    if (p.step_up)
-      it.todo(
-        `${e.method} ${e.path}：直前（15 分以内）の本人確認が無ければ 403（${p.step_up === true ? "いつも" : p.step_up}）`,
-      );
   }
+  for (const e of ENDPOINTS.filter((x) => x.perm.stepUp && x.perm.stepUp !== "always"))
+    it.todo(`${e.method} ${e.path}：条件（${e.perm.stepUp}）のときは直前 15 分以内の本人確認が無ければ 403`);
 });
 
 describe("道すじが別の口に吸われない（本物の登録の順・D-128.113）", () => {
@@ -181,7 +250,14 @@ describe("道すじが別の口に吸われない（本物の登録の順・D-12
         limiter: () => ({ take: () => true }),
         idempotency: { get: () => undefined, set: () => undefined },
       };
-      const repo = { opsAllowed: async () => true, hasColumn: () => true } as unknown as Repository;
+      const repo = {
+        opsAllowed: async () => true,
+        hasColumn: () => true,
+        can: async () => true,
+        canAny: async () => true,
+        isAdmin: async () => true,
+        opsCaps: async () => [target.perm.cap ?? ""],
+      } as unknown as Repository;
       const app = new Hono<Vars>();
       app.use("*", async (c, next) => {
         c.set("ctx", ctxOf(RIGHT[target.auth]));

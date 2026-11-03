@@ -208,8 +208,56 @@ export class Repository {
   /** 運営が会社の表を読んでよいか（顧客の許可・範囲・期限。RLS の関数と同じ判定を API 層でも先に返す＝403） */
   async opsAllowed(ctx: TenantContext): Promise<boolean> {
     if (ctx.role !== "ops" || !ctx.tenantId) return false;
-    const r = await this.pool.query<{ ok: boolean }>("select app.ops_grant_ok($1::uuid) as ok", [ctx.tenantId]);
-    return r.rows[0]?.ok === true;
+    // 中を見るの許可は開いた運営の人に結ぶ（KN-45）ので、その人の文脈（app.user_id）で確かめる
+    return withTenant(this.pool, ctx, async (c) => {
+      const r = await c.query<{ ok: boolean }>("select app.ops_grant_ok($1::uuid) as ok", [ctx.tenantId]);
+      return r.rows[0]?.ok === true;
+    });
+  }
+
+  /** 権限の言葉 admin などの確かめ（KN-51）：その人が、その表（target）の能力（ability）を、そのグループ（null＝会社全体）で持つか */
+  async can(ctx: TenantContext, target: string, scope: string | null, ability: string): Promise<boolean> {
+    if (ctx.role !== "member" || !ctx.userId || !ctx.tenantId) return false;
+    return withTenant(this.pool, ctx, async (c) => {
+      const r = await c.query<{ ok: boolean }>("select has_permission(app.user_id(), $1, $2::uuid, $3) as ok", [
+        target,
+        scope,
+        ability,
+      ]);
+      return r.rows[0]?.ok === true;
+    });
+  }
+
+  /** どこかのグループでその能力を持つか（入口の scope: any・口の中でグループに絞る） */
+  async canAny(ctx: TenantContext, target: string, ability: string): Promise<boolean> {
+    if (ctx.role !== "member" || !ctx.userId || !ctx.tenantId) return false;
+    return withTenant(this.pool, ctx, async (c) => {
+      const r = await c.query<{ ok: boolean }>("select app.has_any_permission(app.user_id(), $1, $2) as ok", [
+        target,
+        ability,
+      ]);
+      return r.rows[0]?.ok === true;
+    });
+  }
+
+  /** 管理者の役割か（権限を個別に付けた人は含まない） */
+  async isAdmin(ctx: TenantContext): Promise<boolean> {
+    if (ctx.role !== "member" || !ctx.userId || !ctx.tenantId) return false;
+    return withTenant(this.pool, ctx, async (c) => {
+      const r = await c.query<{ ok: boolean }>("select app.is_admin(app.user_id()) as ok");
+      return r.rows[0]?.ok === true;
+    });
+  }
+
+  /** 運営の人のできること（ops_members.caps・KN-51）。運営の文脈でだけ。運営の人の行が無ければ null */
+  async opsCaps(ctx: TenantContext): Promise<string[] | null> {
+    if (ctx.role !== "ops" || !ctx.userId) return null;
+    return withTenant(this.pool, ctx, async (c) => {
+      const r = await c.query<{ caps: string[] }>(
+        "select caps from ops_members where member_id = app.user_id() and revoked_at is null and deleted_at is null limit 1",
+      );
+      return r.rows[0] ? (r.rows[0].caps ?? []) : null;
+    });
   }
 
   table(name: TableName): TableRepository {

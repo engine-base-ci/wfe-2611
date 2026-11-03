@@ -6,6 +6,7 @@ import { SCHEMAS } from "@kaname/contracts/schemas";
 import type { Row, TableName } from "@kaname/db/repository";
 import type { Vars } from "../middleware/tenant.js";
 import type { ContractDeps, Hook, HookArgs } from "./deps.js";
+import { checkFor, stepUpFresh } from "./permissions.js";
 export type { ContractDeps } from "./deps.js";
 
 const LIMIT_DEFAULT = 50;
@@ -70,6 +71,15 @@ export function op(deps: ContractDeps, operationId: string) {
         if (ctx.role === "ops" && !(await repo.opsAllowed(ctx))) return err(c, 403, "forbidden", "FORBIDDEN");
       }
     }
+    // 3.1) 権限の言葉の段（KN-51）：admin の能力・運営のできること など。言葉の確かめが無い言葉は行の守り（RLS）に任せる（KN-52 で入口にも足す）
+    if (def.auth !== "public") {
+      const check = checkFor(def.perm.word);
+      const pid = def.path.includes(":id") ? (c.req.param("id") ?? null) : null;
+      if (check && !(await check({ e: def, ctx, repo, id: pid }))) return err(c, 403, "forbidden", "FORBIDDEN");
+      // 3.2) 本人確認の取り直し（いつも要る口）：直前 15 分以内でなければ止める（D-125.139）。条件つきの口は hooks が requireStepUp で確かめる
+      if (def.perm.stepUp === "always" && !stepUpFresh(ctx))
+        return err(c, 403, "step_up_required", "STEP_UP_REQUIRED", { message: "本人確認を取り直してから" });
+    }
     // 3.5) まだ作っていない口は止める（fail-closed・D-128.113）。表の素の読み書きでない口は hooks に振る舞いが無ければ 501。
     //      素の読み書きでも、表がまだ DB に無ければ 501。共通の処理が「承認する」を「承認の行を作る」に取り違えることを防ぐ
     if (!deps.hooks[operationId] && (!def.generic || !repo.hasColumn(def.table as TableName, "id")))
@@ -126,7 +136,21 @@ export function op(deps: ContractDeps, operationId: string) {
         return c.json(seen.body, seen.status as 200); // 最初の結果を返し、副作用を繰り返さない
       }
     }
-    const args: HookArgs = { e: def, ctx, repo, input, id, c };
+    const args: HookArgs = {
+      e: def,
+      ctx,
+      repo,
+      input,
+      id,
+      c,
+      requireStepUp: () =>
+        stepUpFresh(ctx)
+          ? undefined
+          : {
+              status: 403,
+              body: { error: "step_up_required", code: "STEP_UP_REQUIRED", message: "本人確認を取り直してから" },
+            },
+    };
     const run = execute(deps.hooks[operationId], args, list).then((r) => ({ hash: inputHash, ...r }));
     if (idemKey)
       INFLIGHT.set(

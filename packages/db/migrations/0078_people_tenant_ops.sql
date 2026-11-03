@@ -61,7 +61,8 @@ end $$;
 -- ---------------------------------------------------------------- 運営の人ができること（D-128.70）
 alter table ops_members add column if not exists caps text[] not null default '{}';
 do $$ begin
-  alter table ops_members add constraint ops_members_caps_ck check (caps <@ array['inquiries', 'peek', 'money', 'suspend', 'notices', 'distribute', 'pricing_propose', 'pricing_decide', 'ops_people']::text[]);
+  -- 言葉は契約の ops:〜 と同じ（問い合わせ・中を見る・お金・止める・お知らせ・配るもの・値段の案・値段を決める・運営の人）
+  alter table ops_members add constraint ops_members_caps_ck check (caps <@ array['inquiry', 'peek', 'money', 'stop', 'notice', 'distribute', 'plan_propose', 'plan_decide', 'ops_people']::text[]);
 exception when duplicate_object then null;
 end $$;
 

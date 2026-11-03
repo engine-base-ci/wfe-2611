@@ -16,6 +16,16 @@ export interface EndpointDef {
   errors: number[];
   acts: string[];
   screens: string[];
+  /** 誰が呼べるか（08_api の permission・KN-51）。入口が言葉ごとに確かめる（apps/api/src/contract/permissions.ts） */
+  perm: {
+    word: string;
+    target: string | null;
+    ability: string | null;
+    scope: "workspace" | "any";
+    adminOnly: boolean;
+    cap: string | null;
+    stepUp: string | null;
+  };
 }
 export const ENDPOINTS: readonly EndpointDef[] = [
   {
@@ -49,7 +59,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "clients"
-    ]
+    ],
+    "perm": {
+      "word": "assignee",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -78,7 +97,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -110,7 +138,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ai-activity"
-    ]
+    ],
+    "perm": {
+      "word": "assignee",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -144,7 +181,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "assignee",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -176,7 +222,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ai-activity"
-    ]
+    ],
+    "perm": {
+      "word": "assignee",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -204,7 +259,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "approvals"
-    ]
+    ],
+    "perm": {
+      "word": "approver",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -236,7 +300,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "approvals"
-    ]
+    ],
+    "perm": {
+      "word": "approver",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": "irreversible"
+    }
   },
   {
     "method": "POST",
@@ -268,7 +341,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "approvals"
-    ]
+    ],
+    "perm": {
+      "word": "approver",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -300,7 +382,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "approvals"
-    ]
+    ],
+    "perm": {
+      "word": "approver",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -335,7 +426,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "approvals"
-    ]
+    ],
+    "perm": {
+      "word": "approver",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -369,7 +469,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "approvals"
-    ]
+    ],
+    "perm": {
+      "word": "approver",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -400,7 +509,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "approvals"
-    ]
+    ],
+    "perm": {
+      "word": "approver",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -431,7 +549,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "approvals"
-    ]
+    ],
+    "perm": {
+      "word": "approver",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -458,7 +585,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "approvals"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -485,7 +621,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "approvals"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -513,7 +658,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -546,7 +700,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "clone-chat"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "PATCH",
@@ -578,7 +741,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "clone-chat"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -605,7 +777,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "audit"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -630,7 +811,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "invite-accept"
-    ]
+    ],
+    "perm": {
+      "word": "public",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -660,7 +850,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "invite-accept"
-    ]
+    ],
+    "perm": {
+      "word": "public",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -690,7 +889,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "password-reset"
-    ]
+    ],
+    "perm": {
+      "word": "public",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -720,7 +928,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "password-reset"
-    ]
+    ],
+    "perm": {
+      "word": "public",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -749,7 +966,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "login"
-    ]
+    ],
+    "perm": {
+      "word": "public",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -774,7 +1000,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "login"
-    ]
+    ],
+    "perm": {
+      "word": "public",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -803,7 +1038,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "login"
-    ]
+    ],
+    "perm": {
+      "word": "public",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -834,7 +1078,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "login"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -864,7 +1117,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "signup"
-    ]
+    ],
+    "perm": {
+      "word": "public",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -893,7 +1155,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "signup"
-    ]
+    ],
+    "perm": {
+      "word": "public",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -918,7 +1189,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "signup"
-    ]
+    ],
+    "perm": {
+      "word": "public",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -948,7 +1228,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "verify-email"
-    ]
+    ],
+    "perm": {
+      "word": "public",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -979,7 +1268,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "login"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -1010,7 +1308,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "login"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -1035,7 +1342,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "signup"
-    ]
+    ],
+    "perm": {
+      "word": "public",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -1064,7 +1380,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "login"
-    ]
+    ],
+    "perm": {
+      "word": "public",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -1097,7 +1422,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "bridge-setup"
-    ]
+    ],
+    "perm": {
+      "word": "device",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -1130,7 +1464,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "bridge-setup"
-    ]
+    ],
+    "perm": {
+      "word": "device",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -1162,7 +1505,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "bridge-setup"
-    ]
+    ],
+    "perm": {
+      "word": "device",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -1190,7 +1542,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "bridge-setup"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "PATCH",
@@ -1223,7 +1584,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "bridge-setup"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "DELETE",
@@ -1255,7 +1625,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "bridge-setup"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": "always"
+    }
   },
   {
     "method": "GET",
@@ -1283,7 +1662,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "bridge-setup"
-    ]
+    ],
+    "perm": {
+      "word": "device",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -1316,7 +1704,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "bridge-setup"
-    ]
+    ],
+    "perm": {
+      "word": "device",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -1349,7 +1746,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "bridge-setup"
-    ]
+    ],
+    "perm": {
+      "word": "device",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -1384,7 +1790,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "bridge-setup"
-    ]
+    ],
+    "perm": {
+      "word": "device",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -1413,7 +1828,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "bridge-setup"
-    ]
+    ],
+    "perm": {
+      "word": "device",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -1448,7 +1872,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "bridge-setup"
-    ]
+    ],
+    "perm": {
+      "word": "device",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -1483,7 +1916,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "bridge-setup"
-    ]
+    ],
+    "perm": {
+      "word": "device",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -1518,7 +1960,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "bridge-setup"
-    ]
+    ],
+    "perm": {
+      "word": "device",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -1552,7 +2003,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "bridge-setup"
-    ]
+    ],
+    "perm": {
+      "word": "device",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -1581,7 +2041,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "bridge-setup"
-    ]
+    ],
+    "perm": {
+      "word": "device",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -1616,7 +2085,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "bridge-setup"
-    ]
+    ],
+    "perm": {
+      "word": "device",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -1650,7 +2128,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "bridge-setup"
-    ]
+    ],
+    "perm": {
+      "word": "device",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -1683,7 +2170,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "bridge-setup"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -1711,7 +2207,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "bridge-setup"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -1739,7 +2244,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "bridge-setup"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -1770,7 +2284,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "bridge-setup"
-    ]
+    ],
+    "perm": {
+      "word": "device",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -1802,7 +2325,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "approver",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -1829,7 +2361,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "PATCH",
@@ -1861,7 +2402,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "clients"
-    ]
+    ],
+    "perm": {
+      "word": "manager",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "DELETE",
@@ -1892,7 +2442,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "clients"
-    ]
+    ],
+    "perm": {
+      "word": "manager",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -1925,7 +2484,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "clients"
-    ]
+    ],
+    "perm": {
+      "word": "manager",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -1953,7 +2521,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "requests"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -1982,7 +2559,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "requests"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "PATCH",
@@ -2015,7 +2601,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "requests"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -2049,7 +2644,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "requests"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -2083,7 +2687,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "requests"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -2117,7 +2730,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "requests"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -2146,7 +2768,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "screens": [
       "clients",
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -2178,7 +2809,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "clients"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -2206,7 +2846,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "clients"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "PATCH",
@@ -2238,7 +2887,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "clients"
-    ]
+    ],
+    "perm": {
+      "word": "manager",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -2266,7 +2924,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "clients"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -2299,7 +2966,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "clients"
-    ]
+    ],
+    "perm": {
+      "word": "manager",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -2327,7 +3003,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "clients"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "PATCH",
@@ -2359,7 +3044,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "clients"
-    ]
+    ],
+    "perm": {
+      "word": "manager",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -2386,7 +3080,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "clients"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -2416,7 +3119,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "clone-chat"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "PATCH",
@@ -2448,7 +3160,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "clone-chat"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -2475,7 +3196,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ai-activity"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -2506,7 +3236,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ai-activity"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -2533,7 +3272,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ai-activity"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -2560,7 +3308,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "clone-chat"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -2587,7 +3344,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ai-activity"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -2614,7 +3380,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "clone-chat"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -2648,7 +3423,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "clone-chat"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -2676,7 +3460,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "clone-chat"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "PATCH",
@@ -2707,7 +3500,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "clone-chat"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "DELETE",
@@ -2737,7 +3539,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "clone-chat"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -2772,7 +3583,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "clone-chat"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -2803,7 +3623,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "clone-chat"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -2839,7 +3668,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "clone-chat"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -2873,7 +3711,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "clone-chat"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -2908,7 +3755,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "clone-chat"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -2937,7 +3793,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "credentials"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -2969,7 +3834,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "credentials"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": "always"
+    }
   },
   {
     "method": "PATCH",
@@ -3001,7 +3875,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "credentials"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": "always"
+    }
   },
   {
     "method": "DELETE",
@@ -3032,7 +3915,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "credentials"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -3065,7 +3957,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "credentials"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -3098,7 +3999,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "credentials"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -3131,7 +4041,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "screens": [
       "audit",
       "company-settings"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "tenants",
+      "ability": "export",
+      "scope": "any",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": "always"
+    }
   },
   {
     "method": "GET",
@@ -3161,7 +4080,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "audit"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -3188,7 +4116,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -3215,7 +4152,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "inquiry"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -3247,7 +4193,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "inquiry"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -3275,7 +4230,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "inquiry"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -3308,7 +4272,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "inquiry"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -3341,7 +4314,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "inquiry"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -3373,7 +4355,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "inquiry"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -3405,7 +4396,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "members"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "members",
+      "ability": "invite",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": "admin_role"
+    }
   },
   {
     "method": "DELETE",
@@ -3436,7 +4436,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "members"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "members",
+      "ability": "invite",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -3469,7 +4478,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "members"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "members",
+      "ability": "invite",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -3501,7 +4519,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "members"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "members",
+      "ability": "invite",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": "admin_role"
+    }
   },
   {
     "method": "GET",
@@ -3529,7 +4556,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "billing"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "tenants",
+      "ability": "billing",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -3560,7 +4596,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "knowledge"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -3591,7 +4636,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "knowledge"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -3618,7 +4672,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "knowledge"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -3645,7 +4708,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "knowledge"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -3672,7 +4744,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "knowledge"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -3704,7 +4785,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "knowledge"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -3736,7 +4826,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "knowledge"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -3763,7 +4862,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "knowledge"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -3790,7 +4898,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "knowledge"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -3821,7 +4938,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "knowledge"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -3849,7 +4975,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "knowledge"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -3881,7 +5016,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "knowledge"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -3908,7 +5052,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "knowledge"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -3939,7 +5092,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "knowledge"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -3967,7 +5129,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "knowledge"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "PATCH",
@@ -3998,7 +5169,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "knowledge"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -4030,7 +5210,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "knowledge"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -4062,7 +5251,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "knowledge"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "PATCH",
@@ -4093,7 +5291,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "knowledge"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "DELETE",
@@ -4123,7 +5330,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "knowledge"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -4151,7 +5367,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "knowledge"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -4183,7 +5408,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "knowledge"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -4211,7 +5445,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "knowledge"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -4239,7 +5482,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "knowledge"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -4271,7 +5523,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "knowledge"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -4303,7 +5564,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "knowledge"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -4335,7 +5605,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "knowledge"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -4363,7 +5642,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "knowledge"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -4395,7 +5683,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "knowledge"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -4423,7 +5720,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "knowledge"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -4455,7 +5761,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "knowledge"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -4486,7 +5801,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "layers"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "layers",
+      "ability": "edit",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "PATCH",
@@ -4517,7 +5841,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "layers"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "layers",
+      "ability": "edit",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -4545,7 +5878,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "clone-chat"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -4578,7 +5920,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "clone-chat"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -4611,7 +5962,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "clone-chat"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -4643,7 +6003,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "clone-chat"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -4675,7 +6044,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "clone-chat"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -4702,7 +6080,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "account"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "PATCH",
@@ -4732,7 +6119,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "account"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -4763,7 +6159,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "account"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -4795,7 +6200,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "mfa-setup"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": "always"
+    }
   },
   {
     "method": "POST",
@@ -4826,7 +6240,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "account"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": "always"
+    }
   },
   {
     "method": "POST",
@@ -4857,7 +6280,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "account"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -4884,7 +6316,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "account"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "PATCH",
@@ -4914,7 +6355,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "account"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -4945,7 +6395,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "account"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "PATCH",
@@ -4977,7 +6436,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "mfa-setup"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "DELETE",
@@ -5008,7 +6476,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "mfa-setup"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": "always"
+    }
   },
   {
     "method": "PATCH",
@@ -5039,7 +6516,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "mfa-setup"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": "always"
+    }
   },
   {
     "method": "GET",
@@ -5069,7 +6555,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "mfa-setup"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -5096,7 +6591,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "mfa-setup"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "DELETE",
@@ -5126,7 +6630,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "mfa-setup"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -5157,7 +6670,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "mfa-setup"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -5184,7 +6706,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "account"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -5215,7 +6746,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "account"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "DELETE",
@@ -5245,7 +6785,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "mfa-setup"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": "always"
+    }
   },
   {
     "method": "POST",
@@ -5277,7 +6826,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "mfa-setup"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -5309,7 +6867,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "mfa-setup"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": "always"
+    }
   },
   {
     "method": "GET",
@@ -5336,7 +6903,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "account"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "DELETE",
@@ -5366,7 +6942,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "account"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": "always"
+    }
   },
   {
     "method": "GET",
@@ -5393,7 +6978,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -5421,7 +7015,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "member-detail"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "members",
+      "ability": "view",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "DELETE",
@@ -5451,7 +7054,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "member-detail"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "members",
+      "ability": "edit",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": "always"
+    }
   },
   {
     "method": "PATCH",
@@ -5482,7 +7094,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "member-detail"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "scope_memberships",
+      "ability": "edit",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": "always"
+    }
   },
   {
     "method": "POST",
@@ -5515,7 +7136,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "members"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "notifications",
+      "ability": "edit",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "PATCH",
@@ -5546,7 +7176,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "member-detail"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "permissions",
+      "ability": "edit",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": "always"
+    }
   },
   {
     "method": "GET",
@@ -5574,7 +7213,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "member-detail"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "members",
+      "ability": "view",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -5606,7 +7254,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "member-detail"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "members",
+      "ability": "edit",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": "always"
+    }
   },
   {
     "method": "PATCH",
@@ -5637,7 +7294,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "members"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "members",
+      "ability": "edit",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": "always"
+    }
   },
   {
     "method": "POST",
@@ -5669,7 +7335,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "member-detail"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "members",
+      "ability": "edit",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": "always"
+    }
   },
   {
     "method": "POST",
@@ -5703,7 +7378,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "screens": [
       "member-detail",
       "mfa-setup"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "security_events",
+      "ability": "edit",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": "always"
+    }
   },
   {
     "method": "GET",
@@ -5730,7 +7414,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "clone-chat"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -5761,7 +7454,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "clone-chat"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "PATCH",
@@ -5792,7 +7494,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "clone-chat"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "DELETE",
@@ -5822,7 +7533,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "clone-chat"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -5855,7 +7575,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "clone-chat"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -5888,7 +7617,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "clone-chat"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -5915,7 +7653,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "notices"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -5947,7 +7694,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "notices"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -5974,7 +7730,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "PATCH",
@@ -6005,7 +7770,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -6036,7 +7810,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -6063,7 +7846,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-support"
-    ]
+    ],
+    "perm": {
+      "word": "ops:inquiry",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "inquiry",
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -6091,7 +7883,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-support"
-    ]
+    ],
+    "perm": {
+      "word": "ops:inquiry",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "inquiry",
+      "stepUp": null
+    }
   },
   {
     "method": "PATCH",
@@ -6123,7 +7924,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-support"
-    ]
+    ],
+    "perm": {
+      "word": "ops:inquiry",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "inquiry",
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -6156,7 +7966,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-support"
-    ]
+    ],
+    "perm": {
+      "word": "ops:inquiry",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "inquiry",
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -6189,7 +8008,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-support"
-    ]
+    ],
+    "perm": {
+      "word": "ops:inquiry",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "inquiry",
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -6216,7 +8044,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-billing"
-    ]
+    ],
+    "perm": {
+      "word": "ops:money",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "money",
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -6248,7 +8085,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-billing"
-    ]
+    ],
+    "perm": {
+      "word": "ops:money",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "money",
+      "stepUp": "always"
+    }
   },
   {
     "method": "POST",
@@ -6279,7 +8125,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-billing"
-    ]
+    ],
+    "perm": {
+      "word": "ops:money",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "money",
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -6310,7 +8165,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-billing"
-    ]
+    ],
+    "perm": {
+      "word": "ops:money",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "money",
+      "stepUp": "always"
+    }
   },
   {
     "method": "GET",
@@ -6339,7 +8203,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-team"
-    ]
+    ],
+    "perm": {
+      "word": "ops:ops_people",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "ops_people",
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -6371,7 +8244,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-team"
-    ]
+    ],
+    "perm": {
+      "word": "ops:ops_people",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "ops_people",
+      "stepUp": "always"
+    }
   },
   {
     "method": "PATCH",
@@ -6403,7 +8285,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-team"
-    ]
+    ],
+    "perm": {
+      "word": "ops:ops_people",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "ops_people",
+      "stepUp": "always"
+    }
   },
   {
     "method": "DELETE",
@@ -6434,7 +8325,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-team"
-    ]
+    ],
+    "perm": {
+      "word": "ops:ops_people",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "ops_people",
+      "stepUp": "always"
+    }
   },
   {
     "method": "GET",
@@ -6461,7 +8361,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-notices"
-    ]
+    ],
+    "perm": {
+      "word": "ops:notice",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "notice",
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -6493,7 +8402,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-notices"
-    ]
+    ],
+    "perm": {
+      "word": "ops:notice",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "notice",
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -6521,7 +8439,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-notices"
-    ]
+    ],
+    "perm": {
+      "word": "ops:notice",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "notice",
+      "stepUp": null
+    }
   },
   {
     "method": "PATCH",
@@ -6553,7 +8480,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-notices"
-    ]
+    ],
+    "perm": {
+      "word": "ops:notice",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "notice",
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -6586,7 +8522,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-notices"
-    ]
+    ],
+    "perm": {
+      "word": "ops:notice",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "notice",
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -6619,7 +8564,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-notices"
-    ]
+    ],
+    "perm": {
+      "word": "ops:notice",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "notice",
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -6648,7 +8602,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-skills"
-    ]
+    ],
+    "perm": {
+      "word": "ops:distribute",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "distribute",
+      "stepUp": null
+    }
   },
   {
     "method": "DELETE",
@@ -6678,7 +8641,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-tenant"
-    ]
+    ],
+    "perm": {
+      "word": "ops:peek",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "peek",
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -6707,7 +8679,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-skills"
-    ]
+    ],
+    "perm": {
+      "word": "ops:plan_propose",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "plan_propose",
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -6736,7 +8717,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-skills"
-    ]
+    ],
+    "perm": {
+      "word": "ops:plan_propose",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "plan_propose",
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -6769,7 +8759,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-skills"
-    ]
+    ],
+    "perm": {
+      "word": "ops:plan_propose",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "plan_propose",
+      "stepUp": null
+    }
   },
   {
     "method": "PATCH",
@@ -6802,7 +8801,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-skills"
-    ]
+    ],
+    "perm": {
+      "word": "ops:plan_propose",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "plan_propose",
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -6836,7 +8844,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-skills"
-    ]
+    ],
+    "perm": {
+      "word": "ops:plan_decide",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "plan_decide",
+      "stepUp": "always"
+    }
   },
   {
     "method": "GET",
@@ -6866,7 +8883,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-skills"
-    ]
+    ],
+    "perm": {
+      "word": "ops:plan_propose",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "plan_propose",
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -6900,7 +8926,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-skills"
-    ]
+    ],
+    "perm": {
+      "word": "ops:plan_decide",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "plan_decide",
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -6934,7 +8969,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-skills"
-    ]
+    ],
+    "perm": {
+      "word": "ops:plan_propose",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "plan_propose",
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -6963,7 +9007,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-skills"
-    ]
+    ],
+    "perm": {
+      "word": "ops:plan_propose",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "plan_propose",
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -6990,7 +9043,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-home"
-    ]
+    ],
+    "perm": {
+      "word": "ops:any",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "any",
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -7017,7 +9079,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-skills"
-    ]
+    ],
+    "perm": {
+      "word": "ops:distribute",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "distribute",
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -7045,7 +9116,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-skills"
-    ]
+    ],
+    "perm": {
+      "word": "ops:distribute",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "distribute",
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -7078,7 +9158,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-skills"
-    ]
+    ],
+    "perm": {
+      "word": "ops:distribute",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "distribute",
+      "stepUp": "always"
+    }
   },
   {
     "method": "POST",
@@ -7110,7 +9199,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-skills"
-    ]
+    ],
+    "perm": {
+      "word": "ops:distribute",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "distribute",
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -7140,7 +9238,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-skills"
-    ]
+    ],
+    "perm": {
+      "word": "ops:distribute",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "distribute",
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -7169,7 +9276,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-skills"
-    ]
+    ],
+    "perm": {
+      "word": "ops:distribute",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "distribute",
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -7199,7 +9315,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-skills"
-    ]
+    ],
+    "perm": {
+      "word": "ops:distribute",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "distribute",
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -7232,7 +9357,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-skills"
-    ]
+    ],
+    "perm": {
+      "word": "ops:distribute",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "distribute",
+      "stepUp": "always"
+    }
   },
   {
     "method": "POST",
@@ -7265,7 +9399,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-skills"
-    ]
+    ],
+    "perm": {
+      "word": "ops:distribute",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "distribute",
+      "stepUp": "always"
+    }
   },
   {
     "method": "GET",
@@ -7292,7 +9435,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-home"
-    ]
+    ],
+    "perm": {
+      "word": "ops:any",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "any",
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -7320,7 +9472,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-tenant"
-    ]
+    ],
+    "perm": {
+      "word": "ops:any",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "any",
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -7348,7 +9509,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-tenant"
-    ]
+    ],
+    "perm": {
+      "word": "ops:any",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "any",
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -7376,7 +9546,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-tenant"
-    ]
+    ],
+    "perm": {
+      "word": "ops:money",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "money",
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -7404,7 +9583,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-tenant"
-    ]
+    ],
+    "perm": {
+      "word": "ops:inquiry",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "inquiry",
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -7432,7 +9620,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-tenant"
-    ]
+    ],
+    "perm": {
+      "word": "ops:inquiry",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "inquiry",
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -7464,7 +9661,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-tenant"
-    ]
+    ],
+    "perm": {
+      "word": "ops:inquiry",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "inquiry",
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -7496,7 +9702,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-tenant"
-    ]
+    ],
+    "perm": {
+      "word": "ops:notice",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "notice",
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -7528,7 +9743,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-tenant"
-    ]
+    ],
+    "perm": {
+      "word": "ops:peek",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "peek",
+      "stepUp": "always"
+    }
   },
   {
     "method": "POST",
@@ -7560,7 +9784,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-tenant"
-    ]
+    ],
+    "perm": {
+      "word": "ops:money",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "money",
+      "stepUp": "always"
+    }
   },
   {
     "method": "POST",
@@ -7592,7 +9825,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-tenant"
-    ]
+    ],
+    "perm": {
+      "word": "ops:stop",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "stop",
+      "stepUp": "always"
+    }
   },
   {
     "method": "POST",
@@ -7624,7 +9866,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-tenant"
-    ]
+    ],
+    "perm": {
+      "word": "ops:stop",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "stop",
+      "stepUp": "always"
+    }
   },
   {
     "method": "POST",
@@ -7655,7 +9906,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "ops-home"
-    ]
+    ],
+    "perm": {
+      "word": "ops:any",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": "any",
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -7682,7 +9942,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "portal"
-    ]
+    ],
+    "perm": {
+      "word": "client",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -7710,7 +9979,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "portal"
-    ]
+    ],
+    "perm": {
+      "word": "client",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -7743,7 +10021,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "portal"
-    ]
+    ],
+    "perm": {
+      "word": "client",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -7775,7 +10062,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "portal"
-    ]
+    ],
+    "perm": {
+      "word": "client",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -7802,7 +10098,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "portal"
-    ]
+    ],
+    "perm": {
+      "word": "client",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -7834,7 +10139,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "portal"
-    ]
+    ],
+    "perm": {
+      "word": "client",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -7862,7 +10176,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "portal"
-    ]
+    ],
+    "perm": {
+      "word": "client",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -7895,7 +10218,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "portal"
-    ]
+    ],
+    "perm": {
+      "word": "client",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -7927,7 +10259,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "portal"
-    ]
+    ],
+    "perm": {
+      "word": "client",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -7955,7 +10296,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "portal"
-    ]
+    ],
+    "perm": {
+      "word": "client",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -7984,7 +10334,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "screens": [
       "clients",
       "rules"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -8018,7 +10377,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "screens": [
       "clients",
       "rules"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -8046,7 +10414,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "rules"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "PATCH",
@@ -8077,7 +10454,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "rules"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "DELETE",
@@ -8107,7 +10493,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "rules"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -8140,7 +10535,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "screens": [
       "masters",
       "rules"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -8167,7 +10571,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -8198,7 +10611,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "PATCH",
@@ -8229,7 +10651,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "DELETE",
@@ -8259,7 +10690,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -8286,7 +10726,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "layers"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -8317,7 +10766,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "layers"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "scopes",
+      "ability": "edit",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "PATCH",
@@ -8348,7 +10806,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "layers"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "scopes",
+      "ability": "edit",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -8376,7 +10843,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -8403,7 +10879,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -8430,7 +10915,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "notices"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -8457,7 +10951,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "PATCH",
@@ -8490,7 +10993,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "DELETE",
@@ -8522,7 +11034,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "PATCH",
@@ -8553,7 +11074,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "PATCH",
@@ -8586,7 +11116,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "screens": [
       "approvals",
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "recipient",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -8618,7 +11157,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -8646,7 +11194,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -8678,7 +11235,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -8705,7 +11271,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -8737,7 +11312,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "kind_sections",
+      "ability": "edit",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -8764,7 +11348,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "masters"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "tenant_distributions",
+      "ability": "view",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -8796,7 +11389,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "masters"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "kind_sections",
+      "ability": "edit",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "DELETE",
@@ -8826,7 +11428,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "PATCH",
@@ -8858,7 +11469,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "DELETE",
@@ -8889,7 +11509,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -8922,7 +11551,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -8949,7 +11587,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -8977,7 +11624,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -9010,7 +11666,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -9038,7 +11703,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "PATCH",
@@ -9072,7 +11746,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "DELETE",
@@ -9102,7 +11785,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "assignee",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -9135,7 +11827,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "assignee",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -9166,7 +11867,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -9198,7 +11908,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -9235,7 +11954,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -9263,7 +11991,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -9296,7 +12033,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -9325,7 +12071,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "PATCH",
@@ -9357,7 +12112,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "assignee",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -9390,7 +12154,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "assignee",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -9418,7 +12191,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -9450,7 +12232,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -9485,7 +12276,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "assignee",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -9513,7 +12313,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "assignee",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -9548,7 +12357,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "assignee",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -9584,7 +12402,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -9612,7 +12439,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -9640,7 +12476,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -9672,7 +12517,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -9705,7 +12559,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -9733,7 +12596,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -9766,7 +12638,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "screens": [
       "audit",
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "assignee",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -9795,7 +12676,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "PATCH",
@@ -9826,7 +12716,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -9855,7 +12754,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -9889,7 +12797,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -9923,7 +12840,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -9957,7 +12883,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -9985,7 +12920,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -10013,7 +12957,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -10045,7 +12998,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -10073,7 +13035,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -10105,7 +13076,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "tickets"
-    ]
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -10133,7 +13113,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "work-types"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -10166,7 +13155,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "work-types"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -10195,7 +13193,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "work-types"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -10229,7 +13236,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "work-types"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "PATCH",
@@ -10262,7 +13278,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "work-types"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -10296,7 +13321,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "work-types"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -10330,7 +13364,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "work-types"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -10364,7 +13407,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "work-types"
-    ]
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -10393,7 +13445,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "work-types"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -10420,7 +13481,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "company-settings"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "tenants",
+      "ability": "view",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "PATCH",
@@ -10450,7 +13520,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "company-settings"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "tenants",
+      "ability": "edit",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -10477,7 +13556,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "billing"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "tenants",
+      "ability": "billing",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "PATCH",
@@ -10507,7 +13595,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "billing"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "tenants",
+      "ability": "billing",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -10538,7 +13635,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "company-settings"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "tenants",
+      "ability": "delete_workspace",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": "always"
+    }
   },
   {
     "method": "DELETE",
@@ -10567,7 +13673,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "company-settings"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "tenants",
+      "ability": "delete_workspace",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -10598,7 +13713,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "masters"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "policies",
+      "ability": "edit",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "PATCH",
@@ -10629,7 +13753,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "masters"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "policies",
+      "ability": "edit",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "DELETE",
@@ -10659,7 +13792,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "masters"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "policies",
+      "ability": "edit",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -10690,7 +13832,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "masters"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "policies",
+      "ability": "edit",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -10721,7 +13872,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "company-settings"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "tenants",
+      "ability": "edit",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -10748,7 +13908,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "members"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "members",
+      "ability": "view",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "PATCH",
@@ -10778,7 +13947,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "company-settings"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "permissions",
+      "ability": "edit",
+      "scope": "workspace",
+      "adminOnly": true,
+      "cap": null,
+      "stepUp": "always"
+    }
   },
   {
     "method": "POST",
@@ -10809,7 +13987,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "company-settings"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "tenants",
+      "ability": "billing",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": "always"
+    }
   },
   {
     "method": "GET",
@@ -10836,7 +14023,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "company-settings"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "tenants",
+      "ability": "billing",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -10863,7 +14059,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "masters"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -10894,7 +14099,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "masters"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "policies",
+      "ability": "edit",
+      "scope": "any",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "PATCH",
@@ -10925,7 +14139,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "masters"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "policies",
+      "ability": "edit",
+      "scope": "any",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "DELETE",
@@ -10955,7 +14178,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "masters"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "policies",
+      "ability": "edit",
+      "scope": "any",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "GET",
@@ -10982,7 +14214,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "masters"
-    ]
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "PATCH",
@@ -11012,7 +14253,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "masters"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "ticket_kinds",
+      "ability": "edit",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   },
   {
     "method": "POST",
@@ -11043,7 +14293,16 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "screens": [
       "masters"
-    ]
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "ticket_kinds",
+      "ability": "edit",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null
+    }
   }
 ];
 export const OPENAPI_HASH = "97208711802d3bba";

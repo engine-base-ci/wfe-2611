@@ -128,7 +128,7 @@ def impl_todo() -> tuple[list[str], dict]:
     #   言葉ごとの確かめは apps/api/src/contract/permissions.ts の CHECKS に置く（キーが言葉）。無い言葉を使う API の数を残りに出す
     import json
     perm_src = os.path.join(ROOT, "apps", "api", "src", "contract", "permissions.ts")
-    have = set(re.findall(r'^\s*"?([a-z:_]+)"?\s*:', open(perm_src, encoding="utf-8").read(), flags=re.M)) if os.path.exists(perm_src) else set()
+    have = set(re.findall(r'^\s*"?([a-z:_*]+)"?\s*:', open(perm_src, encoding="utf-8").read(), flags=re.M)) if os.path.exists(perm_src) else set()
     eps = json.load(open(os.path.join(ROOT, "08_api", "endpoints.json"), encoding="utf-8"))["endpoints"]
     need = [e for e in eps if (e.get("permission") or {}).get("who", "public") != "public"]
     miss_word = [e for e in need if e["permission"]["who"] not in have and not (e["permission"]["who"].startswith("ops:") and "ops:*" in have)]

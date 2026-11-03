@@ -104,6 +104,26 @@ function zodOf(p) {
   return "z.unknown()";
 }
 
+// 「誰が呼べるか」（08_api の permission）を、入口で確かめる形にする（KN-51）。
+//   word：言葉（admin・ops:<できること>・self など）／ target・ability：admin の能力（表と能力）／ scope：workspace（会社全体の権限）か any（どこかのグループで持てばよい）
+//   adminOnly：管理者の役割だけ（権限を個別に付けた人でも通さない）／ stepUp：always（いつも）・それ以外は条件つき（hooks が requireStepUp で確かめる）
+export function permOf(e, table, method) {
+  const p = e.permission ?? {};
+  const word = String(p.who ?? (e.auth?.role === "public" ? "public" : "read"));
+  const path = e.path ?? "";
+  const out = { word, target: null, ability: null, scope: "workspace", adminOnly: false, cap: null, stepUp: p.step_up === true ? "always" : p.step_up ? String(p.step_up) : null };
+  if (word.startsWith("ops:")) out.cap = word.slice(4);
+  if (word !== "admin") return out;
+  if (/\/exports\b/.test(path)) Object.assign(out, { target: "tenants", ability: "export", scope: "any" });
+  else if (/\/invitations\b/.test(path)) Object.assign(out, { target: "members", ability: "invite" });
+  else if (/\/workspace\/deletion\b/.test(path)) Object.assign(out, { target: "tenants", ability: "delete_workspace" });
+  else if (/\/workspace\/(billing|plan|plans|billing-contact)\b|\/invoices\b/.test(path)) Object.assign(out, { target: "tenants", ability: "billing" });
+  else if (/\/workspace\/permissions\b/.test(path)) Object.assign(out, { target: "permissions", ability: "edit", adminOnly: true });
+  else if (/\/workspace\/rules\b/.test(path)) Object.assign(out, { target: table, ability: method === "GET" ? "view" : "edit", scope: "any" });
+  else Object.assign(out, { target: table, ability: method === "GET" ? "view" : "edit" });
+  return out;
+}
+
 export function gen(root = ROOT) {
   const yaml = readFileSync(join(root, OPENAPI), "utf8");
   const epJson = readFileSync(join(root, ENDPOINTS_JSON), "utf8");
@@ -125,6 +145,7 @@ export function gen(root = ROOT) {
       generic: GENERIC_OK.has(`${m} ${hono}`),
       auth: e.auth?.role ?? "member", rateLimit: { perMinute: Number(rl?.[1] ?? 60), key: rl?.[2] ?? "user" },
       chokePoints: e.choke_points ?? [], errors: (e.outputs_4xx ?? []).map((x) => x.status), acts: e.acts ?? [], screens: e.screens ?? [],
+      perm: permOf({ ...e, path: hono }, d.tag || slug(p).split("_")[0], m),
     });
   }
   const body = `// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:${h}
@@ -145,6 +166,16 @@ export interface EndpointDef {
   errors: number[];
   acts: string[];
   screens: string[];
+  /** 誰が呼べるか（08_api の permission・KN-51）。入口が言葉ごとに確かめる（apps/api/src/contract/permissions.ts） */
+  perm: {
+    word: string;
+    target: string | null;
+    ability: string | null;
+    scope: "workspace" | "any";
+    adminOnly: boolean;
+    cap: string | null;
+    stepUp: string | null;
+  };
 }
 export const ENDPOINTS: readonly EndpointDef[] = ${JSON.stringify(eps, null, 2)};
 export const OPENAPI_HASH = "${h}";

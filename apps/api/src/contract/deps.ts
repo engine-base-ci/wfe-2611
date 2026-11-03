@@ -11,6 +11,8 @@ export interface HookArgs {
   input: Row; // 検証・正規化済みの入力（create／update）
   id: string | null; // path の :id
   c: Context;
+  /** 条件つきの本人確認（取り消せない承認・管理者として招く など・D-125.139）。直前 15 分以内でなければ 403 の応答を返す */
+  requireStepUp?: () => HookReply | void;
 }
 export type HookReply = { status: number; body: unknown };
 export type EffectResult =

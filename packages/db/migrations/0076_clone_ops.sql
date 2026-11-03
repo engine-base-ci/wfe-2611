@@ -74,7 +74,7 @@ declare deciders int;
 begin
   if new.decided_by is not null and new.decided_by = new.proposed_by then
     select count(*) into deciders from ops_members m
-      where m.deleted_at is null and coalesce(to_jsonb(m)->'caps', '[]'::jsonb) ? 'pricing_decide';
+      where m.deleted_at is null and coalesce(to_jsonb(m)->'caps', '[]'::jsonb) ? 'plan_decide';
     if deciders <> 1 then
       raise exception '自分の案は自分で決められない（値段を決められる人が 1 人のときだけ例外）' using errcode = '42501';
     end if;

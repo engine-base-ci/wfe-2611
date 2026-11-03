@@ -70,7 +70,11 @@ async function main(): Promise<number> {
     // この検査は種を入れ替えるために会社・層・メンバー・権限を truncate する。
     // 触っている DB でそれをやると、人が手で作った会社だけが消えて利用者は残り、
     // 「登録済みなのに会社が無い」使えない口座になる。だから毎回 捨てる DB を作ってそこで回す。
-    const file = process.argv[3] ?? join(pkg, "..", "..", "07_qa", "test-plan", "access-matrix.json");
+    // 引数は「cli.ts access-matrix [file]」か「--matrix file」。pnpm の渡す "--" は読み飛ばす（G33 が "--" をファイルと読んでいた）
+    const rest = process.argv.slice(3).filter((x) => x !== "--");
+    const at = rest.indexOf("--matrix");
+    const file =
+      (at >= 0 ? rest[at + 1] : rest[0]) ?? join(pkg, "..", "..", "07_qa", "test-plan", "access-matrix.json");
     const cases = JSON.parse(readFileSync(file, "utf8")).cases;
     const name = `kaname_matrix_${Date.now().toString(36)}`;
     const adminUrl = new URL(url);

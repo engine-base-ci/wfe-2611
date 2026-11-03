@@ -49,10 +49,10 @@ beforeAll(async () => {
     "insert into members (tenant_id, scope_id, kind_id, display_name) values ($1, $2, 'human', '運営 2') returning id",
     [S.opsTenant, scope],
   );
-  other2 = await one(
-    "insert into ops_members (tenant_id, member_id, caps) values ($1, $2, '{inquiries}') returning id",
-    [S.opsTenant, m2],
-  );
+  other2 = await one("insert into ops_members (tenant_id, member_id, caps) values ($1, $2, '{inquiry}') returning id", [
+    S.opsTenant,
+    m2,
+  ]);
   ops2 = { tenantId: S.tenantA, userId: m2, role: "ops" };
 });
 afterAll(async () => {

@@ -49,6 +49,9 @@ begin
     select 'manager', t, 'edit', 'group' from unnest(array['tickets', 'ticket_handovers', 'approvals', 'memories', 'learning_candidates', 'saved_views', 'client_requests', 'knowledge_pages', 'test_specs']) t
     where exists (select 1 from target_kinds where key = t)
   on conflict do nothing;
+  -- マネージャーは自分のグループの分を書き出せる（既定は管理者とマネージャー・書き出す口が自分のグループに絞る）
+  insert into role_bundle_defaults (role, target_kind_id, ability_id, scope_kind) values ('manager', 'tenants', 'export', 'group')
+  on conflict do nothing;
   insert into role_bundle_defaults (role, target_kind_id, ability_id, scope_kind)
     select 'member', t, 'edit', 'group' from unnest(array['tickets', 'knowledge_pages', 'client_requests', 'test_specs']) t
     where exists (select 1 from target_kinds where key = t)
