@@ -1640,9 +1640,9 @@
    ],
    "sections": {
     "目的": "GitHub の CI で、前からあった赤（G14・G26・G27・G28・G31・層の棚卸し 15 件）を、記録で隠さずに直す。新しく壊したものが赤に埋もれないようにする。",
-    "完了の条件": "- [x] G14・G26・G31 TV4 が、しまった 07_tasks ではなく 11_tickets を読む（`scripts/tickets/coverage_gate.py` KC1〜KC6）\n- [x] 前の画面の見本（06_mockup v1・v2）をしまい、キャンバスを正にする（`scripts/ci/canvas_gate.py`）\n- [x] 本物の画面が無い間の G27（route）・G28（押した証拠）だけは、今のずれ・不合格を記録し、記録に無いものが出たら赤（`scripts/ci/ui_baseline.json`・空にするのは KN-37）\n- [x] 層の棚卸し（G21）の赤が、spec-sync を除いて 0\n- [ ] spec-sync の結果（`.qa/spec-sync/2026-11-03/result.json`）を残す\n- [ ] GitHub の CI で static・spec が緑、database が流れる",
+    "完了の条件": "- [x] G14・G26・G31 TV4 が、しまった 07_tasks ではなく 11_tickets を読む（`scripts/tickets/coverage_gate.py` KC1〜KC6）\n- [x] 前の画面の見本（06_mockup v1・v2）をしまい、キャンバスを正にする（`scripts/ci/canvas_gate.py`）\n- [x] 本物の画面が無い間の G27（route）・G28（押した証拠）だけは、今のずれ・不合格を記録し、記録に無いものが出たら赤（`scripts/ci/ui_baseline.json`・空にするのは KN-37）\n- [x] 層の棚卸し（G21）の赤が、spec-sync を除いて 0\n- [x] spec-sync の結果（`.qa/spec-sync/2026-11-03/result.json`）を残す（D・F・G・H はスキルの版のずれで blocked・直すのは KN-50）\n- [ ] GitHub の CI で static・spec が緑、database が流れる",
     "前提と制約": "- 赤を「記録」にして黙らせない（D-128.117）。記録にするのは、本物の画面が無いと直せない G27・G28 だけ\n- 過去の決定の記録（決定ログの古い節・日付つきの記録）は書き換えない",
-    "実施事項": "- [x] チケットに screens・apis・choke_points（無いときは choke_none）の欄を足し、まとまりに画面 35 を割り当てた\n- [x] 後回しの決定 22 を持つ KN-48 を足した\n- [x] trace_gate：しまった導出物は `archived:` で記録として残し、改められた文の検査（T12）から外す。11_tickets とキャンバスを導出物に足した\n- [x] T12 の残り 31 件：運営が中を見る（D-074.5 → D-125.128・D-128.68）、AI社員と装着（D-037・D-078 → D-125.152・D-126.15・D-126.18）、はじめの設定（D-028・D-019 → D-125.142）に合わせて、ER 図・関門・拡張点・エラー一覧・スキルの台帳の言葉と根拠を直した\n- [x] テスト計画の「根拠の決定」を 11_tickets から作る\n- [x] 画面の流れの用事 J21 の「クローン」を「分身」に（記録の文書は user の一言のまま残す）\n- [x] 数の写し：古い決定の節とモックの索引を写しから外し、数を今の flow に合わせた",
+    "実施事項": "- [x] チケットに screens・apis・choke_points（無いときは choke_none）の欄を足し、まとまりに画面 35 を割り当てた\n- [x] 後回しの決定 22 を持つ KN-48 を足した\n- [x] trace_gate：しまった導出物は `archived:` で記録として残し、改められた文の検査（T12）から外す。11_tickets とキャンバスを導出物に足した\n- [x] T12 の残り 31 件：運営が中を見る（D-074.5 → D-125.128・D-128.68）、AI社員と装着（D-037・D-078 → D-125.152・D-126.15・D-126.18）、はじめの設定（D-028・D-019 → D-125.142）に合わせて、ER 図・関門・拡張点・エラー一覧・スキルの台帳の言葉と根拠を直した\n- [x] テスト計画の「根拠の決定」を 11_tickets から作る\n- [x] 画面の流れの用事 J21 の旧称を「分身（自分の AI）」に直した（日付つきの記録は user の一言のまま残す）\n- [x] 数の写し：古い決定の節とモックの索引を写しから外し、数を今の flow に合わせた",
     "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 画面・API・行為・後回しにチケットがある | ① 機械 | `python3 scripts/tickets/coverage_gate.py` | 通過 |\n| 穴を入れると赤になる | ① 機械 | 画面を外す・関門を消す・無い API を書く・後回しの決定を消す | KC1〜KC6 がそれぞれ赤 |\n| G27 の記録に無いずれで赤 | ① 機械 | flow の route を 1 つ変える | 赤 |\n| G28 の記録に無い不合格で赤 | ① 機械 | BLOCKED の行を PASS に書き換える | 赤 |\n| 層の棚卸し | ① 機械 | `python3 scripts/ci/layer_audit.py --run` | spec-sync の 1 件だけ赤 |\n| 決定のトレーサビリティ | ① 機械 | `python3 scripts/ci/trace_gate.py` | T1〜T12 緑 |",
     "成果物": "- `scripts/tickets/coverage_gate.py`・`scripts/ci/canvas_gate.py`・`scripts/ci/ui_baseline.json`\n- `scripts/ci/gen_routes.mjs`（check／record）・`scripts/ci/op_gate.py`（--baseline／--record）・`scripts/ci/tv_gate.py`（TV4）・`scripts/ci/trace_gate.py`（archived）\n- `06_mockup/しまった.md`・`11_tickets/KN-48.md`",
     "決定ログ": "- 赤は記録にせず先に直す。G27・G28 だけは本物の画面ができるまで記録にする（D-128.117・2026-11-03 高本さん）",
@@ -1650,6 +1650,38 @@
     "申し送り": "- KN-37：`scripts/ci/ui_baseline.json` の routes・op_gate を空にして緑にする\n- 契約の型で `scopes.next_ticket_no` が書ける入力になっている（generic-ok に無いので今は 501）。scopes を書ける口を作るとき（KN-42・KN-46）に入力から外す"
    },
    "file": "11_tickets/KN-49.md"
+  },
+  {
+   "id": "KN-50",
+   "title": "spec-sync のスキルを Kaname の書き方に合わせる（D・F・G・H を走らせる）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "KN-6",
+   "milestone": "基盤",
+   "area": "試験",
+   "assignee": "未定",
+   "due": "",
+   "decisions": [
+    "D-128.117"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "開発の道具（スキルの検査）を直すだけ。製品の外への経路は通らない",
+   "depends_on": [
+    "KN-49"
+   ],
+   "sections": {
+    "目的": "spec-sync の横断監査の 4 段（D 振る舞い波及・F 下流分解・G 基盤依存の境界・H 関門）を、走らせられない（blocked）から、実際に走って緑にする。今はスキルの版がプロジェクトの書き方に追いついていない。",
+    "完了の条件": "- [ ] spec-sync の D・F・G・H が blocked でなく pass になる（`.qa/spec-sync/<日付>/result.json`）\n- [ ] 直したスキルが組織のスキルに入り、次のセッションでも同じ版が使われる",
+    "前提と制約": "- プロジェクト側をスキルの古い読み方に合わせて書き換えない（例外台帳・地図はプロジェクトの検査 G25 などが読む形のまま）\n- 2026-10-20 の spec-sync ではスキル側を直して PASS にしていた。その直しが今のスキルに入っていない",
+    "実施事項": "- [ ] tier_d.py：alignment_decisions の trace の file が .html（しまったモック）のとき、画面の導出物（flow.json）を読む\n- [ ] spec-validator.py：downstream_coverage の command の形を読む（id_source.file が無いときは command を走らせる）\n- [ ] tier_g.py：dependency_boundaries.checks の command を走らせ、終わりのコードで判定する\n- [ ] tier_h.py：例外台帳の backtick で囲んだフォルダ（`packages/auth/` など）を越境の許しとして読む",
+    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| D・F・G・H が走って緑 | ① 機械 | `spec-validator.py --project-root .` | |\n| 台帳に無い越境は赤のまま | ① 機械 | 台帳から X-003 を消すと H が赤 | |",
+    "成果物": "",
+    "決定ログ": "- D・F・G・H は、直すまで理由つきの blocked として記録する（D-128.117・2026-11-03 高本さん）",
+    "リスクと懸念": "- スキルは組織から配られるので、このリポジトリの中では直せない。直す場所を高本さんと決める",
+    "申し送り": ""
+   },
+   "file": "11_tickets/KN-50.md"
   }
  ]
 }
