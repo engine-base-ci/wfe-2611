@@ -14,7 +14,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 const matrix = JSON.parse(
   readFileSync(join(here, "..", "..", "..", "07_qa", "test-plan", "access-matrix.json"), "utf8"),
 ) as {
-  cases: { table: string; policy: string; predicate: string }[];
+  cases: { table: string; policy: string; predicate: string; operation: string }[];
 };
 const admin = new pg.Pool({ connectionString: DB_URL, max: 2 });
 let app: pg.Pool;
@@ -53,9 +53,11 @@ const specIds = new Map<string, string[]>(); // table → 行 ID
   }
 }
 const selfOnly = new Map<string, string>(); // table → 本人の列
+const appendOnly = new Set<string>(); // 本人の行を足すだけで、直す守りが無い表（例：PC の仕事の出来事）
 for (const cs of matrix.cases) {
   const m = /AND (\w+) = current_setting\('app\.user_id'/.exec(cs.predicate);
   if (cs.policy.endsWith("_self_only_write") && m) selfOnly.set(cs.table, m[1]!);
+  if (cs.policy.endsWith("_self_only_write") && !cs.operation.includes("update")) appendOnly.add(cs.table);
 }
 
 describe("本人のもの（self_only_write）", () => {
@@ -94,7 +96,7 @@ describe("本人のもの（self_only_write）", () => {
           );
         const updMine = await upd(staff, mine);
         const updOther = await upd(staff, others);
-        expect(updMine).toBe(1);
+        expect(updMine).toBe(appendOnly.has(table) ? 0 : 1); // 足すだけの表は、自分の行も直せない
         expect(updOther).toBe(0);
       },
     );

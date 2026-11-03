@@ -127,11 +127,14 @@ KN-45,前からある表に足す列：人・会社・運営,タスク,KN-2,確�
 - [x] 中を見るの許可の RLS（`packages/db/policies/0078_people_tenant_ops.sql`）を「運営の人が理由を書いて開く・会社は誰が見たかを見られる」にした
 - [x] 場合表が全部通る（1548/1548）・DB の試験が全部通る
 - [ ] CI が緑のまま"
-KN-46,既にある表を契約から使えるようにする,タスク,KN-2,未着手,未定,,基盤・DB,migration には既にあるのに、repository の表の一覧に入っていないため契約の API から使えない表（`bridge_jobs` `bridge_job_events` `agent_usage_snapshots` `artifact_versions` `pending_signup`）と、パスキーの表を、契約から使えるようにする。,"- [ ] repository の表の一覧に入り、起動時の存在確認（表が無ければ起動しない）が通る
-- [ ] パスキーの表の置き場所（Better Auth の kaname_auth 側か public か）を決め、ER 図に書いた
-- [ ] CI が緑のまま"
-KN-47,行の守りの場合表を新しい表に広げ、G33 を緑にする,タスク,KN-2,未着手,未定,,基盤・DB,場合表（access-matrix.json）を新しい表と足した列に広げ、「範囲の外の行が取れない」を全部の表で確かめる。G33 と zt_gate の rls_missing を 0 にする。,"- [ ] `pnpm ci:access-matrix` が緑（未 migration の表 0）
-- [ ] `zt_gate.py` の rls_missing が 0 で、記録（zt_baseline.json）も 0 に下げた
+KN-46,既にある表を契約から使えるようにする,タスク,KN-2,確認中,Claude（このセッション）,,基盤・DB,migration には既にあるのに、repository の表の一覧に入っていないため契約の API から使えない表を使えるようにする。パスキーと登録の保留はログインの部品の側に置き、業務の表からは触らせない。,"- [x] repository の表の一覧に `bridge_jobs` `bridge_job_events` `agent_usage_snapshots` `artifact_versions` を足した
+- [x] パスキーの表の置き場所を決め（ログインの部品の側・kaname_auth・D-128.119）、ER 図に書いた。`pending_signup` も kaname_auth にあるので一覧に入れない
+- [x] 足した表の RLS を見直した（PC の仕事と出来事は本人だけ）
+- [ ] CI が緑のまま（起動時の存在確認：`apps/api/test/vercel_entry.test.ts`・`apps/api/test/server.test.ts`）"
+KN-47,行の守りの場合表を新しい表に広げ、G33 を緑にする,タスク,KN-2,確認中,Claude（このセッション）,,基盤・DB,場合表（access-matrix.json）を新しい表と足した列に広げ、「範囲の外の行が取れない」を全部の表で確かめる。G33 と zt_gate の rls_missing を 0 にする。,"- [x] `pnpm ci:access-matrix` が緑（1540/1540・未 migration の表 0）
+- [x] `zt_gate.py` の rls_missing が 0 で、記録（zt_baseline.json）も 0 に下げた（open_read_child も 2 → 1）
+- [x] 親に従う子の表を、親が見えない行で確かめる（KN-38 の申し送り）
+- [x] わざと守りを壊すと場合表が赤になる試験がある
 - [ ] CI の G33 が緑"
 KN-48,後のフェーズ（第1フェーズの後に作るもの）,タスク,,未着手,未定,,後のフェーズ・仕様,後回しにした決定（flow.json の deferred・決定ログの「段階 2：」）を、日程から消さずに持っておく。第1フェーズが本番に出たら、ここから仕様づくりのチケットを切る。,"- [ ] 後回しの決定ごとに、仕様づくりのチケット（子）を切っている
 - [ ] 後のフェーズに回した API（`08_api/retired-endpoints.json` の D-128.112）を、どの子が作り直すか決めている"

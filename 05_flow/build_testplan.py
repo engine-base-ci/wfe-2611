@@ -65,7 +65,12 @@ CASES_SYSTEM = [("関門の関数（app.record_*）から", "OK"), ("会社の�
 CASES_OPS_OWN = [("運営の文脈", "OK"), ("会社の人（自社の文脈）", "NG（0 行）"), ("SET LOCAL を飛ばす", "NG（0 行）")]
 CASES_OPS_WRITE = [("運営の文脈", "OK"), ("会社の人（運営でない）", "NG（弾く・副作用なし）"), ("SET LOCAL を飛ばす", "NG（弾く）")]
 am = []
+# 業務の表（public）として作らない表は場合表に入れない（KN-47）：ログインの部品の側（kaname_auth）と、ER 図で「段階 1 は作らない」と決めた表
+NOT_PUBLIC = {"passkeys": "ログインの部品の側（kaname_auth・D-128.119）", "pending_signup": "ログインの部品の側（kaname_auth・D-088.2）"}
+NOT_BUILT = {e["table_name"]: "段階 1 は作らない（D-099.2）" for e in EN if "段階 1 は作らない" in (e.get("note") or "")}
 for en in EN:
+    if en["table_name"] in NOT_PUBLIC or en["table_name"] in NOT_BUILT:
+        continue
     for p in en["access_control_policies"]:
         cases = CASES_OPS_OWN if p["name"].endswith(("_ops_own", "_ops_all")) else CASES_SYSTEM if p["role"] == "system" else CASES_CLIENT if p["role"] == "client" else CASES_AUTH if p["role"] == "authenticated" else (CASES_OPS_WRITE if p["role"] == "ops" and p["operation"] != "select" else CASES.get(p["operation"], CASES["select"] if p["operation"] == "select" else CASES["insert,update,delete"]))
         for case, exp in cases:

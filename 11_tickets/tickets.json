@@ -1535,14 +1535,16 @@
    "id": "KN-46",
    "title": "既にある表を契約から使えるようにする",
    "kind": "タスク",
-   "stage": "未着手",
+   "stage": "確認中",
    "parent": "KN-2",
    "milestone": "基盤",
    "area": "DB",
-   "assignee": "未定",
+   "assignee": "Claude（このセッション）",
    "due": "",
    "decisions": [
-    "D-128.112"
+    "D-128.112",
+    "D-128.93",
+    "D-128.119"
    ],
    "split": "",
    "choke_points": [
@@ -1550,15 +1552,15 @@
    ],
    "depends_on": [],
    "sections": {
-    "目的": "migration には既にあるのに、repository の表の一覧に入っていないため契約の API から使えない表（`bridge_jobs` `bridge_job_events` `agent_usage_snapshots` `artifact_versions` `pending_signup`）と、パスキーの表を、契約から使えるようにする。",
-    "完了の条件": "- [ ] repository の表の一覧に入り、起動時の存在確認（表が無ければ起動しない）が通る\n- [ ] パスキーの表の置き場所（Better Auth の kaname_auth 側か public か）を決め、ER 図に書いた\n- [ ] CI が緑のまま",
-    "前提と制約": "- 表の中身は変えない（一覧に足すだけ）。PC の印（device）の口は /bridge/ の下だけ（ZT10）",
-    "実施事項": "- [ ] `packages/db/src/repository.ts` の TABLES に足す\n- [ ] パスキーの表の置き場所を決める（決定を足す）\n- [ ] 足した表の RLS を見直す（本人だけ・PC の印は本人のセッションに結ぶ）",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた |\n|---|---|---|\n| 起動時の存在確認が通る | ① 機械 | `apps/api/test/vercel_entry.test.ts`・`apps/api/test/server.test.ts` |\n| 本人以外の行が取れない | ① 機械 | `pnpm ci:access-matrix` |",
-    "成果物": "- repository の表の一覧・（要るなら）ER 図とパスキーの決定",
-    "決定ログ": "- 契約は第1フェーズの画面の API だけ（D-128.112）",
-    "リスクと懸念": "- パスキーの表を Better Auth と二重に持たない",
-    "申し送り": ""
+    "目的": "migration には既にあるのに、repository の表の一覧に入っていないため契約の API から使えない表を使えるようにする。パスキーと登録の保留はログインの部品の側に置き、業務の表からは触らせない。",
+    "完了の条件": "- [x] repository の表の一覧に `bridge_jobs` `bridge_job_events` `agent_usage_snapshots` `artifact_versions` を足した\n- [x] パスキーの表の置き場所を決め（ログインの部品の側・kaname_auth・D-128.119）、ER 図に書いた。`pending_signup` も kaname_auth にあるので一覧に入れない\n- [x] 足した表の RLS を見直した（PC の仕事と出来事は本人だけ）\n- [ ] CI が緑のまま（起動時の存在確認：`apps/api/test/vercel_entry.test.ts`・`apps/api/test/server.test.ts`）",
+    "前提と制約": "- 表の中身は変えない（一覧に足すだけ）。PC の印（device）の口は /bridge/ の下だけ（ZT10）で、表は直接読まず関門の関数（app.bridge_*）だけを通る",
+    "実施事項": "- [x] `packages/db/src/repository.ts` の TABLES に足した\n- [x] パスキーの置き場所を決めた（D-128.119）。仕様にあった passkeys の守りが「ログイン済みなら誰でも読める」になっていたので、業務の表からは誰も読めない守りにした（public に表は作らない）\n- [x] ★PC の仕事（bridge_jobs）と出来事（bridge_job_events）は、同じグループの人に他人の PC の仕事が見えていた。本人だけにした。出来事は足すだけ（直せない）\n- [x] テスト仕様書の行（RLS-D06-013・016）を新しい守りに書き直し、本人の行の試験が「足すだけの表」を扱えるようにした",
+    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 範囲の外の行が取れない（場合表の全行） | ① 機械 | `pnpm ci:access-matrix` | 通過（1540/1540） |\n| PC の仕事は本人だけ・出来事は足すだけで直せない・他人の行は 0 行 | ① 機械 | `packages/db/test/self_only.test.ts` | 通過 |\n| DB の守りが仕様と同じ | ① 機械 | `packages/db/test/rls_drift.test.ts` | 通過 |\n| 起動時の存在確認が通る | ① 機械 | `apps/api/test/vercel_entry.test.ts`・`apps/api/test/server.test.ts` | 流している |\n| 全部の試験 | ① 機械 | CI | 流している |",
+    "成果物": "- `packages/db/src/repository.ts`・`packages/db/migrations/0079_contract_tables.sql`・`packages/db/policies/0079_contract_tables.sql`\n- `05_flow/rls_policies.py`（PC の仕事・出来事・パスキー）・`03_architecture/ER図.md`（パスキーの置き場）・`07_qa/test-specs/rls-matrix.md`",
+    "決定ログ": "- パスキーはログインの部品の側に置き、業務の表からは読めない。自分の設定の一覧はログインの部品の口から出す（D-128.119・2026-11-03 高本さん）\n- 契約は第1フェーズの画面の API だけ（D-128.112）。PC の口は本人のセッションに結ぶ（D-128.93）",
+    "リスクと懸念": "- パスキーの表は、ログインの部品でパスキーを有効にするとき（KN-4・KN-8）に kaname_auth に作る。それまで自分の設定のパスキーの口は 501\n- パスキーの表を Better Auth と二重に持たない",
+    "申し送り": "- KN-4・KN-8：Better Auth の passkey を有効にし、パスキーの一覧・名前を変える・外すの口（renamePasskey・deletePasskey・getMySecurity）をログインの部品の口にする"
    },
    "file": "11_tickets/KN-46.md"
   },
@@ -1566,15 +1568,17 @@
    "id": "KN-47",
    "title": "行の守りの場合表を新しい表に広げ、G33 を緑にする",
    "kind": "タスク",
-   "stage": "未着手",
+   "stage": "確認中",
    "parent": "KN-2",
    "milestone": "基盤",
    "area": "DB",
-   "assignee": "未定",
+   "assignee": "Claude（このセッション）",
    "due": "",
    "decisions": [
     "D-128.88",
-    "D-128.113"
+    "D-128.113",
+    "D-128.115",
+    "D-128.119"
    ],
    "split": "",
    "choke_points": [
@@ -1593,14 +1597,14 @@
    ],
    "sections": {
     "目的": "場合表（access-matrix.json）を新しい表と足した列に広げ、「範囲の外の行が取れない」を全部の表で確かめる。G33 と zt_gate の rls_missing を 0 にする。",
-    "完了の条件": "- [ ] `pnpm ci:access-matrix` が緑（未 migration の表 0）\n- [ ] `zt_gate.py` の rls_missing が 0 で、記録（zt_baseline.json）も 0 に下げた\n- [ ] CI の G33 が緑",
-    "前提と制約": "- 場合表は役（管理者・マネージャー・メンバー・閲覧のみ・取引先の人・運営〔許可あり／期限切れ〕・PC の印）× 表 × 操作で作る\n- 場合表は今「層を持たない表は会社全体が見える」として扱う。親に従う子の表（チケットの本文・版・分類など・05_flow/rls_policies.py）は、親の見えない行で確かめるようにする（KN-38 の申し送り）",
-    "実施事項": "- [ ] access-matrix.json に新しい表の行を足す（07_qa/test-plan の生成元を直す）\n- [ ] わざと壊す試験（RLS を外すと赤になる）を 1 本足す\n- [ ] 記録を下げる",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた |\n|---|---|---|\n| 場合表の全行が通る | ① 機械 | `pnpm ci:access-matrix` |\n| RLS を外すと赤になる | ① 機械 | わざと壊す試験 |\n| 守りの残りが減った | ① 機械 | `python3 scripts/ci/zt_gate.py` |",
-    "成果物": "- access-matrix.json の行・わざと壊す試験・下げた記録",
-    "決定ログ": "- ゼロトラストの決まり ZT3・ZT4（D-128.88）・CI のラチェット（D-128.113）",
-    "リスクと懸念": "- 場合表が大きくなり CI が遅くなる。遅ければ表ごとに分けて並べて流す",
-    "申し送り": ""
+    "完了の条件": "- [x] `pnpm ci:access-matrix` が緑（1540/1540・未 migration の表 0）\n- [x] `zt_gate.py` の rls_missing が 0 で、記録（zt_baseline.json）も 0 に下げた（open_read_child も 2 → 1）\n- [x] 親に従う子の表を、親が見えない行で確かめる（KN-38 の申し送り）\n- [x] わざと守りを壊すと場合表が赤になる試験がある\n- [ ] CI の G33 が緑",
+    "前提と制約": "- 場合表は役 × 表 × 操作で作る（会社の人・取引先の人・運営〔許可あり／期限切れ〕・ログイン済み・追記だけ）\n- 業務の表として作らない表（ログインの部品の側の passkeys・pending_signup、ER 図で「段階 1 は作らない」の embedding_models・search_embeddings）は、理由を持たせて場合表と ZT の検査から外す（黙って数えないのではない）",
+    "実施事項": "- [x] 生成元（`05_flow/build_testplan.py`）：取引先の人の場合、全社向けの読みがある運営の表の場合、作らない表の外し方を足した。テスト計画の検査（tv_gate TV5）も同じ表を外す\n- [x] 場合表の道具（`packages/db/src/matrix.ts`）：親に従う子の表（読む守りが app.ticket_visible・app.kpage_visible・app.client_visible を通る）は、「見えない層」の場合に親が見えない種の行で 0 行を確かめる（今までは「層を持たない表は会社全体が見える」として素通りしていた）\n- [x] 種：取引先は「担当グループだけ」にする（担当グループの無い担当者から見えない＝子の表を確かめられる）\n- [x] わざと壊す試験（`packages/db/test/matrix_breaks.test.ts`）：使い捨ての DB で ①チケットを誰でも読める ②チケットの本文を同じ会社なら読める ③取引先の人の柵を外す、をすると場合表が赤になる\n- [x] 記録を下げた（rls_missing 1 → 0・open_read_child 2 → 1）",
+    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 範囲の外の行が取れない（全部の表） | ① 機械 | `pnpm ci:access-matrix` | 通過（1540/1540・未 migration 0） |\n| 親に従う子の表は、親が見えないと 0 行 | ① 機械 | 同上（「見えない層」の場合） | 通過 |\n| 壊した守りで場合表が赤になる | ① 機械 | `packages/db/test/matrix_breaks.test.ts` | 通過（壊す前は緑・3 つの壊し方でそれぞれ赤） |\n| テスト計画の整合 | ① 機械 | `python3 scripts/ci/tv_gate.py` | 通過 |\n| ゼロトラストの記録 | ① 機械 | `python3 scripts/ci/zt_gate.py` | 通過（rls_missing 0） |\n| 全部の試験 | ① 機械 | CI | 流している |",
+    "成果物": "- `05_flow/build_testplan.py`・`packages/db/src/matrix.ts`・`packages/db/src/seed_generic.ts`・`scripts/ci/tv_gate.py`・`scripts/ci/zt_gate.py`\n- `packages/db/test/matrix_breaks.test.ts`・`scripts/ci/zt_baseline.json`",
+    "決定ログ": "- 決定に従った：子の表は親に従う（D-128.115）、パスキーはログインの部品の側（D-128.119）、検索のベクトルは段階 1 は作らない（D-099.2）",
+    "リスクと懸念": "- 取引先の人・運営の「見える」場合（自分の取引先が読める・許可があれば読める）は、場合表では否定の場合だけを流し、肯定の場合は専用の試験（knowledge_clients.test.ts・ops_grants.test.ts）で見ている\n- open_read_child の残り 1（skill_versions）は、会社・層・個人の業務の型を入れるとき（KN-21）に直す",
+    "申し送り": "- KN-21：skill_versions を元の型を見られる人だけにする（open_read_child を 0 に）"
    },
    "file": "11_tickets/KN-47.md"
   },

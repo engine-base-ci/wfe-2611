@@ -26,7 +26,9 @@ m = [(t["id"], l[:40]) for t in leaves for ep in sorted(mine(t)) for l in seed.g
 if m: fails.append(("TV4", f"1 作業のチケットの API の EARS で test の無いもの {len(m)} {m[:2]}"))
 cnt = {}
 for c in A["cases"]: cnt[(c["entity"], c["policy"])] = cnt.get((c["entity"], c["policy"]), 0) + 1
-m = [f"{e['table_name']}.{p['name']}" for e in EN for p in e["access_control_policies"] if cnt.get((e["id"], p["name"]), 0) < 2]
+# 業務の表として作らない表（ログインの部品の側・段階 1 は作らない）は場合表に入れない（build_testplan.py と同じ・KN-47）
+skip_t = {"passkeys", "pending_signup"} | {e["table_name"] for e in EN if "段階 1 は作らない" in (e.get("note") or "")}
+m = [f"{e['table_name']}.{p['name']}" for e in EN if e["table_name"] not in skip_t for p in e["access_control_policies"] if cnt.get((e["id"], p["name"]), 0) < 2]
 if m: fails.append(("TV5", f"場合が 2 未満の policy {len(m)} {m[:3]}"))
 tj = os.path.getmtime(f"{OUT}/test-plan.json"); m = [f for f in ("test-plan.md", "test-plan.html") if not os.path.exists(f"{OUT}/{f}") or os.path.getmtime(f"{OUT}/{f}") + 1 < tj]
 if m: fails.append(("TV6", f"三層の欠け／古い {m}"))

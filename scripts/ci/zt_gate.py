@@ -93,7 +93,12 @@ def impl_todo() -> tuple[list[str], dict]:
     sec = er.split("## 16.")[1].split("\n## ")[0] if "## 16." in er else ""
     tables = sorted(set(re.findall(r"^\| \*\*`([a-z_]+)`\*\*", sec, flags=re.M)))
     pol = "".join(open(f, encoding="utf-8").read() for f in glob.glob(os.path.join(ROOT, "packages", "db", "policies", "*.sql")))
+    # ログインの部品の側（kaname_auth）の表は業務の表の RLS を持たない（その側の口だけが触る・D-088.2・D-128.119）。段階 1 は作らない表も数えない
+    auth_side = {"passkeys", "pending_signup"}
+    not_built = set(re.findall(r"^\| `([a-z_]+)` \|[^\n]*段階 1 は作らない", er, flags=re.M))
     for t in tables:
+        if t in auth_side or t in not_built:
+            continue
         if not re.search(rf"\bon\s+(?:public\.)?{t}\b", pol, flags=re.I): todo.append(f"[ZT3] {t} に RLS の決まりが無い")
     metrics["rls_missing"] = sum(1 for x in todo if x.startswith("[ZT3]"))
     import importlib.util as _u2

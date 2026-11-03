@@ -444,7 +444,7 @@ erDiagram
 | **`tenant_memberships`** | `<common>` / `auth_user_id` / `member_id` / `role`（管理者・マネージャー・メンバー・閲覧のみ・依頼する側）/ `status` / `joined_at` | **★新設（D-125.150・D-128.46）。**1 人のアカウントが複数のワークスペースに入る。行は本人と、その tenant の管理者だけが読める |
 | **`terms_versions`** | `<common>`（tenant_id＝運営）/ `kind`（利用規約・プライバシー・特商法の表示）/ `version` / `url` / `published_at` | **★新設（D-125.162）。**運営の表（tenant_id＝運営） |
 | **`terms_consents`** | `<common>`（同意したときのワークスペース）/ `member_id` / `auth_user_id` / `terms_version_id` / `agreed_at` / `ip` | 誰がどの版に同意したか。追記だけ（D-125.162） |
-| **`passkeys`** | `auth_user_id` / `credential_id` / `public_key` / `name`（この PC・iPhone など）/ `transports` / `last_used_at` / `revoked_at` | **★新設（D-125.137・D-128.59〜.61）。**Better Auth の passkey の表を使う |
+| **`passkeys`** | `auth_user_id` / `credential_id` / `public_key` / `name`（この PC・iPhone など）/ `transports` / `last_used_at` / `revoked_at` | **★新設（D-125.137・D-128.59〜.61）。**Better Auth の passkey の表を使う。置き場はログインの部品の側（kaname_auth）で、業務の表からは読めない（D-128.119） |
 | **`operations`** | `<common>`（tenant_id＝運営）/ `key`（browser）/ `name` / `kind`（ブラウザ・MCP・API）/ `current_version` | **★新設（D-126.2・D-126.19）。**第1フェーズは汎用のブラウザ操作 1 つ |
 | **`ticket_links`** | `<common>` / `from_ticket_id` / `to_ticket_id` / `kind`（関連・派生元） | **★新設（D-125.50・D-128.80）。**前後（依存）と重複は持たない |
 | **`ticket_handovers`** | `<common>` / `ticket_id` / `kind`（渡す・引き取りの申し出・配る・上へ上げる）/ `from_member_id` / `to_member_id` / `to_scope_id` / `reason` / `ask` / `reply_due` / `switch jsonb`（一緒に切り替えるもの）/ `state`（返事待ち・受けた・断った・取り下げた）/ `decline_reason` / `decided_at` | **★新設（D-125.70）。**`task_handovers` を置き換える |

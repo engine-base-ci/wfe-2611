@@ -4857,7 +4857,6 @@
    "rate_limit": "60/min/user",
    "access_control_policies": [
     "bridge_jobs_self_only_write",
-    "bridge_jobs_permission_write",
     "sessions_permission_write"
    ],
    "outputs_4xx": [
@@ -5386,7 +5385,6 @@
    "rate_limit": "60/min/user",
    "access_control_policies": [
     "bridge_job_events_self_only_write",
-    "bridge_job_events_permission_write",
     "attachments_permission_write"
    ],
    "outputs_4xx": [
@@ -5528,7 +5526,7 @@
    },
    "rate_limit": "120/min/user",
    "access_control_policies": [
-    "bridge_jobs_tenant_read",
+    "bridge_jobs_self_read",
     "bridge_jobs_ops_read_with_grant"
    ],
    "outputs_4xx": [
@@ -5846,7 +5844,6 @@
    "access_control_policies": [
     "action_runs_permission_write",
     "bridge_jobs_self_only_write",
-    "bridge_jobs_permission_write",
     "messages_permission_write",
     "checks_ticket_write"
    ],
@@ -5997,7 +5994,6 @@
    "access_control_policies": [
     "action_runs_permission_write",
     "bridge_job_events_self_only_write",
-    "bridge_job_events_permission_write",
     "messages_permission_write"
    ],
    "outputs_4xx": [
@@ -6557,8 +6553,7 @@
    "rate_limit": "60/min/user",
    "access_control_policies": [
     "action_runs_permission_write",
-    "bridge_jobs_self_only_write",
-    "bridge_jobs_permission_write"
+    "bridge_jobs_self_only_write"
    ],
    "outputs_4xx": [
     {
@@ -12487,8 +12482,7 @@
    "access_control_policies": [
     "credentials_self_only_write",
     "credentials_permission_write",
-    "bridge_jobs_self_only_write",
-    "bridge_jobs_permission_write"
+    "bridge_jobs_self_only_write"
    ],
    "outputs_4xx": [
     {
@@ -12635,8 +12629,7 @@
    "access_control_policies": [
     "credentials_self_only_write",
     "credentials_permission_write",
-    "bridge_jobs_self_only_write",
-    "bridge_jobs_permission_write"
+    "bridge_jobs_self_only_write"
    ],
    "outputs_4xx": [
     {
@@ -14455,8 +14448,7 @@
    "rate_limit": "60/min/user",
    "access_control_policies": [
     "policies_permission_write",
-    "bridge_jobs_self_only_write",
-    "bridge_jobs_permission_write"
+    "bridge_jobs_self_only_write"
    ],
    "outputs_4xx": [
     {
@@ -15347,7 +15339,7 @@
    },
    "rate_limit": "120/min/user",
    "access_control_policies": [
-    "bridge_jobs_tenant_read",
+    "bridge_jobs_self_read",
     "bridge_jobs_ops_read_with_grant",
     "reference_logs_ticket_read",
     "reference_logs_ops_read_with_grant",
@@ -15909,8 +15901,7 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "bridge_jobs_self_only_write",
-    "bridge_jobs_permission_write"
+    "bridge_jobs_self_only_write"
    ],
    "outputs_4xx": [
     {
@@ -20002,9 +19993,7 @@
     "scheme": "session（Better Auth・sessions 表を見る。app.tenant_id / app.user_id / app.role を SET LOCAL）"
    },
    "rate_limit": "60/min/user",
-   "access_control_policies": [
-    "passkeys_ops_write"
-   ],
+   "access_control_policies": [],
    "outputs_4xx": [
     {
      "status": 401,
@@ -20125,9 +20114,7 @@
     "scheme": "session（Better Auth・sessions 表を見る。app.tenant_id / app.user_id / app.role を SET LOCAL）"
    },
    "rate_limit": "60/min/user",
-   "access_control_policies": [
-    "passkeys_ops_write"
-   ],
+   "access_control_policies": [],
    "outputs_4xx": [
     {
      "status": 401,
@@ -20352,8 +20339,7 @@
     "sessions_tenant_read",
     "sessions_ops_read_with_grant",
     "security_events_tenant_read",
-    "security_events_ops_read_with_grant",
-    "passkeys_all_read"
+    "security_events_ops_read_with_grant"
    ],
    "outputs_4xx": [
     {
@@ -20799,8 +20785,7 @@
     "credentials_tenant_read",
     "credentials_ops_read_with_grant",
     "sessions_tenant_read",
-    "sessions_ops_read_with_grant",
-    "passkeys_all_read"
+    "sessions_ops_read_with_grant"
    ],
    "outputs_4xx": [
     {
@@ -21678,7 +21663,6 @@
     "clients_read",
     "clients_own_read",
     "clients_ops_read_with_grant",
-    "passkeys_all_read",
     "scope_memberships_read",
     "scope_memberships_ops_read_with_grant"
    ],
@@ -22738,7 +22722,6 @@
    "access_control_policies": [
     "members_permission_write",
     "bridge_jobs_self_only_write",
-    "bridge_jobs_permission_write",
     "sessions_permission_write",
     "tenant_memberships_admin_write"
    ],
@@ -25474,9 +25457,7 @@
     "scheme": "session（Better Auth・sessions 表を見る。app.tenant_id / app.user_id / app.role を SET LOCAL）"
    },
    "rate_limit": "120/min/user",
-   "access_control_policies": [
-    "passkeys_all_read"
-   ],
+   "access_control_policies": [],
    "outputs_4xx": [
     {
      "status": 401,
@@ -29785,8 +29766,7 @@
     "sessions_tenant_read",
     "sessions_ops_read_with_grant",
     "tenant_memberships_read",
-    "tenant_memberships_ops_read_with_grant",
-    "passkeys_all_read"
+    "tenant_memberships_ops_read_with_grant"
    ],
    "outputs_4xx": [
     {
@@ -31424,7 +31404,6 @@
     "conversations_self_only_write",
     "conversations_permission_write",
     "bridge_jobs_self_only_write",
-    "bridge_jobs_permission_write",
     "notifications_self_only_write",
     "notifications_permission_write",
     "attachments_permission_write"
@@ -31792,8 +31771,7 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "bridge_jobs_self_only_write",
-    "bridge_jobs_permission_write"
+    "bridge_jobs_self_only_write"
    ],
    "outputs_4xx": [
     {

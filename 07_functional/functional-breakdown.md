@@ -58,9 +58,9 @@
 | E-041 | `credential_kinds` | 5. 実行・統制 | none | 2 | D-010 |
 | E-042 | `credentials` | 5. 実行・統制 | scope_layered | 4 | D-004 D-017 D-108.3 |
 | E-043 | `conversations` | 6. 会話・成果物・証跡 | scope_layered | 4 | D-062.5 D-090.1 D-104 D-104.1 |
-| E-044 | `bridge_jobs` | 6. 会話・成果物・証跡 | scope_layered | 4 | D-090 D-090.2 D-090.4 D-090.5 |
+| E-044 | `bridge_jobs` | 6. 会話・成果物・証跡 | scope_layered | 3 | D-090 D-090.2 D-090.4 D-090.5 |
 | E-045 | `bridge_job_states` | 6. 会話・成果物・証跡 | none | 2 | D-090 D-090.4 D-093.3 |
-| E-046 | `bridge_job_events` | 6. 会話・成果物・証跡 | scope_layered | 4 | D-093.2 D-093.3 D-093.4 D-093.7 |
+| E-046 | `bridge_job_events` | 6. 会話・成果物・証跡 | scope_layered | 3 | D-093.2 D-093.3 D-093.4 D-093.7 |
 | E-047 | `permission_rules` | 6. 会話・成果物・証跡 | scope_layered | 2 | D-104 D-104.14 D-107.2 |
 | E-048 | `agent_usage_snapshots` | 6. 会話・成果物・証跡 | account_scoped | 2 | D-104 D-104.16 |
 | E-049 | `messages` | 6. 会話・成果物・証跡 | account_scoped | 3 | D-066 D-104 |
@@ -145,7 +145,7 @@
 | E-129 | `tenant_memberships` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-125.150 D-128 D-128.46 |
 | E-130 | `terms_versions` | 16. 第1フェーズの表 | ops_scoped | 2 | D-125 D-125.162 D-128 |
 | E-131 | `terms_consents` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-125.162 D-128 |
-| E-132 | `passkeys` | 16. 第1フェーズの表 | none | 2 | D-125 D-125.137 D-128 D-128.59 |
+| E-132 | `passkeys` | 16. 第1フェーズの表 | none | 1 | D-125 D-125.137 D-128 D-128.119 |
 | E-133 | `operations` | 16. 第1フェーズの表 | ops_scoped | 1 | D-125 D-126.19 D-126.2 D-128 |
 | E-135 | `ticket_links` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-125.50 D-128 D-128.80 |
 | E-136 | `ticket_handovers` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-125.70 D-128 |

@@ -140,6 +140,11 @@ export const TABLES = [
   "learning_candidates",
   "operations",
   "ops_plan_proposals",
+  // 既にある表を契約から使う（KN-46）。pending_signup とパスキーはログインの部品の側（kaname_auth）なので入れない（D-128.119）
+  "bridge_jobs",
+  "bridge_job_events",
+  "agent_usage_snapshots",
+  "artifact_versions",
 ] as const;
 /** 追記専用（関門の関数 app.record_* だけが書く。repository の create/update/softDelete は拒否） */
 export const APPEND_ONLY: ReadonlySet<string> = new Set(["audit_events", "ops_audit_events", "security_events"]);

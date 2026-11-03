@@ -300,6 +300,25 @@ POLICIES: dict[str, list[dict]] = {
          "predicate": f"current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM ops_members om WHERE om.id = support_access_grants.ops_member_id AND om.member_id = {U} AND 'peek' = ANY(om.caps) AND om.revoked_at IS NULL AND om.deleted_at IS NULL)",
          "rationale": "「中を見る」ができる運営の人が、自分の許可だけを開く・見る・閉じる（理由・1 時間は行の決まりで守る）", "source": ["D-128.68", "D-128.70"]},
     ],
+    # ---- 既にある表を契約から使う（KN-46・D-128.93・D-128.119）
+    # PC の仕事と出来事は本人だけ（同じグループの人にも他人の PC の仕事を見せない）。PC の印（device）は表を直接読まず、関門の関数（app.bridge_*）だけを通る
+    "bridge_jobs": [
+        {"name": "bridge_jobs_self_read", "operation": "select", "role": "member", "predicate": f"tenant_id = {T} AND member_id = {U}",
+         "rationale": "本人の分身の PC の仕事だけ（グループの人・管理者にも中身は見せない）", "source": ["D-128.93", "D-128.40"]},
+        {"name": "bridge_jobs_self_only_write", "operation": "insert,update", "role": "member", "predicate": f"tenant_id = {T} AND member_id = {U}",
+         "rationale": "本人として頼む・止める（PC の側の書き込みは関門の関数）", "source": ["D-128.93"]},
+        ops_read("bridge_jobs"),
+    ],
+    "bridge_job_events": [
+        {"name": "bridge_job_events_self_read", "operation": "select", "role": "member", "predicate": f"tenant_id = {T} AND member_id = {U}",
+         "rationale": "本人の PC の仕事の出来事だけ", "source": ["D-128.93"]},
+        {"name": "bridge_job_events_self_only_write", "operation": "insert", "role": "member", "predicate": f"tenant_id = {T} AND member_id = {U}",
+         "rationale": "本人の仕事の出来事を足すだけ（直さない・消さない）", "source": ["D-128.93"]},
+        ops_read("bridge_job_events"),
+    ],
+    # パスキーはログインの部品（Better Auth）の側に置き、業務の表からは読めない（D-128.119）。public に表を作らない。作っても誰も読めない
+    "passkeys": [{"name": "passkeys_no_app_access", "operation": "select", "role": "member", "predicate": "false",
+                  "rationale": "パスキーはログインの部品の側（kaname_auth）。アプリの役からは読めない。自分の設定の一覧はログインの部品の口が出す（D-128.119）", "source": ["D-128.119"]}],
     # 登録の保留（ログインの前）。表は kaname_auth の側にあり、登録の口（auth-ext）だけが読み書きする。アプリの役からは誰も読めない
     "pending_signup": [{"name": "pending_signup_no_app_access", "operation": "select", "role": "member", "predicate": "false",
                         "rationale": "ログインの前の保留。アプリの役からは読めない（登録の口だけが kaname_auth の側で扱う・D-088.2）", "source": ["D-088.2", "D-128.115"]}],
@@ -307,6 +326,5 @@ POLICIES: dict[str, list[dict]] = {
 
 # 誰でも（ログイン済みなら）読める・書けるのは本当のマスタだけ。それ以外でまだ直していない表と、直すチケット（zt_gate.py の ZT3 が見る）
 PENDING_CHILD_TABLES = {
-    "passkeys": "KN-46（置き場所を決める：Better Auth の側なら API からは触らない）",
     "skill_versions": "KN-21（会社・層・個人の業務の型を入れる前に、元の型を見られる人だけにする。節目①は運営の全社向けだけ）",
 }

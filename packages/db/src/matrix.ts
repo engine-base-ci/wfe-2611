@@ -11,7 +11,10 @@ export interface MatrixCase {
   operation: string; // "select" | "insert,update,delete"
   case: string;
   expected: string; // "OK" | "NG（…）" | "OK（自分の行だけ）…"
+  predicate?: string;
 }
+// 親に従う子の表（チケットの本文・ナレッジの版・取引先の人 など）：読む守りが親の見え方の関数を通る（05_flow/rls_policies.py）
+const FOLLOWS_PARENT = /app\.(ticket_visible|kpage_visible|client_visible|client_in_my_groups)\(/;
 export interface Seeded {
   tenantA: string;
   tenantB: string;
@@ -205,6 +208,15 @@ export async function runMatrix(
       if (cs.case.includes("見えない層")) {
         ctx = ctxStaff;
         target = seedRow.hiddenLayer ?? seedRow.visible;
+        if (seedRow.hiddenLayer === null && cs.role === "member" && FOLLOWS_PARENT.test(cs.predicate ?? "")) {
+          // 親に従う子の表：種の親は会社の根のグループ（下の層の担当者には見えない）。子の行も 0 行でなければならない（KN-47）
+          const n0 = await count(ctxStaff, `select ${pk} from "${cs.table}" where ${pk} = $1`, [seedRow.visible]);
+          got = `rows=${n0}（親が見えない子の表）`;
+          ok = n0 === 0;
+          res.passed += ok ? 1 : 0;
+          if (!ok) res.failed.push({ case: cs, got });
+          continue;
+        }
         if (seedRow.hiddenLayer === null && cs.role === "member") {
           // 層を持たない表は「見えない層」が無い＝会社全体が見える。読めることで OK
           const n0 = await count(ctxStaff, `select ${pk} from "${cs.table}" where ${pk} = $1`, [target]);

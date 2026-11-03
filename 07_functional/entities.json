@@ -4509,37 +4509,24 @@
    },
    "access_control_policies": [
     {
-     "name": "bridge_jobs_tenant_read",
+     "name": "bridge_jobs_self_read",
      "operation": "select",
      "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
-     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND member_id = current_setting('app.user_id', true)::uuid",
+     "rationale": "本人の分身の PC の仕事だけ（グループの人・管理者にも中身は見せない）",
      "source": [
-      "D-026.1",
-      "D-058.5",
-      "D-073.1"
+      "D-128.93",
+      "D-128.40"
      ]
     },
     {
      "name": "bridge_jobs_self_only_write",
-     "operation": "insert,update,delete",
+     "operation": "insert,update",
      "role": "member",
      "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND member_id = current_setting('app.user_id', true)::uuid",
-     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "rationale": "本人として頼む・止める（PC の側の書き込みは関門の関数）",
      "source": [
-      "D-073.1"
-     ]
-    },
-    {
-     "name": "bridge_jobs_permission_write",
-     "operation": "insert,update,delete",
-     "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'bridge_jobs', scope_id, 'edit')",
-     "rationale": "権限＝誰に×何に×どの層で×できること",
-     "source": [
-      "D-073.1",
-      "D-073.2",
-      "D-073.3"
+      "D-128.93"
      ]
     },
     {
@@ -4547,13 +4534,9 @@
      "operation": "select",
      "role": "ops",
      "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = bridge_jobs.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
-     "rationale": "運営は既定で読めない。規約で先に許可をもらい、中を見るを持つ運営の人が理由を書いて開いた 1 時間だけ（見るだけ）。したことは両側の証跡へ",
+     "rationale": "運営は理由つき・1 時間・見るだけの許可があるときだけ（D-128.68）",
      "source": [
-      "D-074.5",
-      "D-125.128",
-      "D-128.68",
-      "D-128.108",
-      "D-077.7"
+      "D-128.68"
      ]
     }
    ],
@@ -4678,37 +4661,23 @@
    },
    "access_control_policies": [
     {
-     "name": "bridge_job_events_tenant_read",
+     "name": "bridge_job_events_self_read",
      "operation": "select",
      "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
-     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND member_id = current_setting('app.user_id', true)::uuid",
+     "rationale": "本人の PC の仕事の出来事だけ",
      "source": [
-      "D-026.1",
-      "D-058.5",
-      "D-073.1"
+      "D-128.93"
      ]
     },
     {
      "name": "bridge_job_events_self_only_write",
-     "operation": "insert,update,delete",
+     "operation": "insert",
      "role": "member",
      "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND member_id = current_setting('app.user_id', true)::uuid",
-     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "rationale": "本人の仕事の出来事を足すだけ（直さない・消さない）",
      "source": [
-      "D-073.1"
-     ]
-    },
-    {
-     "name": "bridge_job_events_permission_write",
-     "operation": "insert,update,delete",
-     "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'bridge_job_events', scope_id, 'edit')",
-     "rationale": "権限＝誰に×何に×どの層で×できること",
-     "source": [
-      "D-073.1",
-      "D-073.2",
-      "D-073.3"
+      "D-128.93"
      ]
     },
     {
@@ -4716,13 +4685,9 @@
      "operation": "select",
      "role": "ops",
      "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = bridge_job_events.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
-     "rationale": "運営は既定で読めない。規約で先に許可をもらい、中を見るを持つ運営の人が理由を書いて開いた 1 時間だけ（見るだけ）。したことは両側の証跡へ",
+     "rationale": "運営は理由つき・1 時間・見るだけの許可があるときだけ（D-128.68）",
      "source": [
-      "D-074.5",
-      "D-125.128",
-      "D-128.68",
-      "D-128.108",
-      "D-077.7"
+      "D-128.68"
      ]
     }
    ],
@@ -13146,35 +13111,25 @@
    },
    "access_control_policies": [
     {
-     "name": "passkeys_all_read",
+     "name": "passkeys_no_app_access",
      "operation": "select",
-     "role": "authenticated",
-     "predicate": "true",
-     "rationale": "マスタ。全員が読む",
+     "role": "member",
+     "predicate": "false",
+     "rationale": "パスキーはログインの部品の側（kaname_auth）。アプリの役からは読めない。自分の設定の一覧はログインの部品の口が出す（D-128.119）",
      "source": [
-      "D-026"
-     ]
-    },
-    {
-     "name": "passkeys_ops_write",
-     "operation": "insert,update,delete",
-     "role": "ops",
-     "predicate": "current_setting('app.role', true) = 'ops'",
-     "rationale": "マスタは運営だけが変える",
-     "source": [
-      "D-037",
-      "D-077.4"
+      "D-128.119"
      ]
     }
    ],
    "legacy_drift_notes": null,
-   "note": "**★新設（D-125.137・D-128.59〜.61）。**Better Auth の passkey の表を使う",
+   "note": "**★新設（D-125.137・D-128.59〜.61）。**Better Auth の passkey の表を使う。置き場はログインの部品の側（kaname_auth）で、業務の表からは読めない（D-128.119）",
    "status": "decided",
    "decided_at": "2026-11-03",
    "source": [
     "D-125",
     "D-125.137",
     "D-128",
+    "D-128.119",
     "D-128.59"
    ]
   },
