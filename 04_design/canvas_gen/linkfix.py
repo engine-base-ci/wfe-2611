@@ -38,7 +38,7 @@ B = [  # ボタン → 行き先（文字が同じとき）
  ("＋ グループ", "EdGroup.dc.html", None), ("表示設定", "LsView.dc.html", None), ("表示設定（列）", "LsView.dc.html", None), ("検索条件を保存", "LsSave.dc.html", None), ("まとめて操作", "LsBulk.dc.html", None),
  ("開始・期限が無い 4 件", "GtNoDate.dc.html", None), ("決めた履歴", "ApHistory.dc.html", None), ("AI と話して作る", "StCreateAi.dc.html", None), ("自分で書く", "Create.dc.html", None), ("過去のチケットから複製", "TdDuplicate.dc.html", None),
  ("＋ プランを足す", "OpPlanEdit.dc.html", None), ("書き直す", "OpNoticeNew.dc.html", None), ("PDF を大きく見る", "TdPreview.dc.html", None), ("＋ 覚えさせる", "EdTeach.dc.html", None), ("覚えさせる", "EdTeach.dc.html", None),
- ("ウォッチ 3", "TdWatch.dc.html", None), ("いまの様子を見る", "https://status.kaname.example", None), ("いまの様子（運営の知らせ）", "https://status.kaname.example", None), ("ほかの項目（7）を開く", "TicketDetail.dc.html", None),
+ ("いまの様子を見る", "https://status.kaname.example", None), ("いまの様子（運営の知らせ）", "https://status.kaname.example", None), ("ほかの項目（7）を開く", "TicketDetail.dc.html", None),
 ]
 BF = {("MobileList", "カレンダー"): "Calendar.dc.html", ("MobileList", "概要"): "Overview.dc.html", ("MobileList", "一覧"): "List.dc.html", ("MeProfile", "変える"): "MeProfileEdit.dc.html", ("TicketDetail", "期限"): "TdDue.dc.html"}
 
@@ -53,7 +53,17 @@ PATCH = [  # 入口を付ける・古い言い方を直す（何度流しても�
 ]
 TEXT = [  # 古い呼び方をそろえる（全部の画面）
  ("自分の AI", "高本のAI"), ("証跡（いつ誰が消したか）", "記録（いつ誰が消したか）"), ("証跡に残る", "記録に残る"),
- ("ワークスペース › ワークスペースの設定", "ワークスペースの管理 › 設定"), ("「ワークスペース › 消したもの」から戻せる", "ワークスペースの管理 › 記録 の「消した」から戻せる"),
+ ("ワークスペース › ワークスペースの設定", "ワークスペースの管理 › 設定"),
+ ("期限を延ばすと、承認する人（高本）とウォッチしている 2 人に知らせが出る", "期限を延ばすと、承認する人（高本）に知らせが出る"),
+ ("ウォッチしている 3 人に知らせる", "持ち主と、直す案を出した人に知らせる"),
+ ("ウォッチしているチケットが動いた", "自分が担当・承認するチケットが動いた"),
+ ("（担当者とウォッチする人には自動で届く）", "（担当者と承認する人には自動で届く）"),
+ ("ウォッチしているものの動き", "自分が担当・承認するものの動き"), ("ウォッチしているもの", "自分が担当・承認するもの"), ("「ワークスペース › 消したもの」から戻せる", "ワークスペースの管理 › 記録 の「消した」から戻せる"),
+]
+RX = [  # 決まりに合わせて外すもの（D-128.80〜.82）
+ (r'<(a|button)\b[^>]*>ウォッチ(?: \d+)?</\1>', ''),   # ウォッチは持たない
+ (r'<div style="display: flex; gap: 8px; align-items: center; background: #F7F8FA; border-radius: 8px; padding: 8px 10px; font-size: 12px"><span[^>]*>型</span><span>毎月くり返すなら .*?</span></div>', ''),   # くり返しは後のフェーズ
+ (r'<button type="button"[^>]*>(?:これを先に終える（前提）|これが終わったら始める|重複)</button>', ''),   # つながりは関連・派生元だけ（D-125.50）
 ]
 def hit(t, k):
     if not t.startswith(k) or t == k: return False
@@ -98,6 +108,7 @@ def run():
             return m.group(0).replace('style="', 'style="text-decoration: none; ', 1) if 'style="' in m.group(1) else m.group(0).replace("<a ", '<a style="text-decoration: none" ', 1)
         s = re.sub(r'(<a href="[^"#][^"]*\.dc\.html"[^>]*>)(.*?)</a>', nodeco, s, flags=re.S)
         for a, b in TEXT: s = s.replace(a, b)
+        for a, b in RX: s = re.sub(a, b, s, flags=re.S)
         for pf, a, b in PATCH:
             if pf == f: s = s.replace(a, b)
         if s != o: open(path, "w", encoding="utf-8").write(s)

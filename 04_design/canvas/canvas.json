@@ -740,15 +740,6 @@
    "x": 0,
    "y": 2480
   },
-  "TdWatch.dc.html": {
-   "expand": "fill",
-   "h": 1000,
-   "page": "tdopen",
-   "title": "ウォッチ ← 題名の右「ウォッチ 3」",
-   "w": 1440,
-   "x": 0,
-   "y": 1240
-  },
   "TicketDetail.dc.html": {
    "expand": "fill",
    "h": 3000,
@@ -1813,7 +1804,6 @@
   "TdMore.dc.html",
   "TdDelete.dc.html",
   "TdDuplicate.dc.html",
-  "TdWatch.dc.html",
   "TdAssignee.dc.html",
   "TdDue.dc.html",
   "TdVersions.dc.html",

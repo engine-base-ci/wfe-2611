@@ -126,6 +126,30 @@ def api_for_act(aid, scr):
     path = f"/api/{t}" + ("/:id" if m in ("PATCH", "DELETE") else "")
     return {"act": aid, "role": "data_fetch" if m == "GET" else "action", "method": m, "path_draft": path, "auth": "session（会社・層・権限）", "related_entities": [ent_by_tbl[x] for x in tb[:4]], "choke_points": BP.get(aid, {}).get("choke_points", []), "source": a["source"]}
 ROUTE_OF = {s["id"]: s.get("route") for s in F["screens"]}
+# 第1フェーズの画面 → API（D-128.78）。ここに書いた画面は推測ではなくこの表を使う
+import importlib.util as _ilu
+_spec = _ilu.spec_from_file_location("screen_api", os.path.join(ROOT, "05_flow", "screen_api.py")); _sa = _ilu.module_from_spec(_spec); _spec.loader.exec_module(_sa)
+def apis_from_table(sid):
+    out = []
+    for m, path, aid, table, opid, more in _sa.SCREEN_API[sid]:
+        tb = [t for t in [table] + list(more) if t in ent_by_tbl]
+        missing = [t for t in [table] + list(more) if t not in ent_by_tbl]
+        if missing: raise SystemExit(f"screen_api.py の {sid} {m} {path}：ER 図に無い表 {missing}")
+        for one in aid.split("|"):
+            out.append(_api_row(one, m, path, table, opid, tb))
+    return out
+def _api_row(aid, m, path, table, opid, tb):
+        src = acts[aid]["source"] if aid in acts else []
+        return ({"act": aid, "role": "data_fetch" if m == "GET" else "action", "method": m, "path_draft": "/api" + path, "table": table, "operation_id": opid,
+                    "auth": "session（会社・層・権限）", "related_entities": [ent_by_tbl[x] for x in tb], "choke_points": _chokes(aid, m, opid), "source": src})
+_FILE_OPS = {"createTicketAttachment", "createTicketImport"}
+_NOTIFY_OPS = {"createTicketMessage", "createTicketHandover", "answerTicketHandover", "requestAcceptance"}
+def _chokes(aid, m, opid):
+    c = set(BP.get(aid, {}).get("choke_points", []))
+    if m != "GET": c.add("C2")              # DB に書く API は全部 C2（永続化）を通る
+    if opid in _FILE_OPS: c.add("C4")       # ファイルを受け取る
+    if opid in _NOTIFY_OPS: c.add("C6")     # 知らせを送る
+    return sorted(c)
 screens = []
 for s in F["screens"]:
     sid = s["id"]; mp_ = f"06_mockup/{s.get('release', 'v1')}/{s.get('release', 'v1')}-{sid}.html"; html = open(mp_, encoding="utf-8").read() if os.path.exists(mp_) else ""
@@ -134,7 +158,7 @@ for s in F["screens"]:
     h1 = re.search(r"<h1[^>]*>([^<]*)</h1>", html); h1 = h1.group(1).strip() if h1 else s["name"]
     subs = [x["label"] for x in sub.get(sid, [])]
     tb = tables_of(s["objects"])
-    apis = [api_for_act(a, s) for a in s["acts"] if a in acts] + [{"role": "transition", "method": "navigate", "path_draft": ROUTE_OF.get(t, f"/{t}"), "to_screen": t, "source": s["source"][:1]} for t in trans]
+    apis = (apis_from_table(sid) if sid in _sa.SCREEN_API else [api_for_act(a, s) for a in s["acts"] if a in acts]) + [{"role": "transition", "method": "navigate", "path_draft": ROUTE_OF.get(t, f"/{t}"), "to_screen": t, "source": s["source"][:1]} for t in trans]
     screens.append({"id": sid, "name": s["name"], "purpose": s["purpose"], "acts": s["acts"], "objects": s["objects"], "primary_action": s.get("primary_action"),
                     "fields": [], "layout": NAV.get("layout", {}).get("by_screen", {}).get(sid, "single"), "actions": [s.get("primary_action")] if s.get("primary_action") else [],
                     "states": states, "transitions": trans, "responsive": "375/768/1024/1440（横溢れ 0・本文 720 以上）", "responsive_breakpoints": ["375", "768", "1024", "1440"],

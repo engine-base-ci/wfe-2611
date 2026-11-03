@@ -4,7 +4,7 @@
  "summary": {
   "screens_count": 72,
   "features_count": 32,
-  "entities_count": 133,
+  "entities_count": 137,
   "uncovered_screens": [],
   "uncovered_features": []
  },
@@ -485,6 +485,10 @@
     "E-038 approvals",
     "E-106 tickets",
     "E-114 ticket_class_values",
+    "E-135 ticket_links",
+    "E-136 ticket_handovers",
+    "E-137 saved_views",
+    "E-138 ticket_imports",
     "E-117 checks",
     "E-050 artifacts"
    ],
@@ -616,6 +620,10 @@
     "E-004 members",
     "E-106 tickets",
     "E-114 ticket_class_values",
+    "E-135 ticket_links",
+    "E-136 ticket_handovers",
+    "E-137 saved_views",
+    "E-138 ticket_imports",
     "E-094 attachments",
     "E-050 artifacts",
     "E-051 artifact_versions"
@@ -691,6 +699,10 @@
     "E-039 action_runs",
     "E-106 tickets",
     "E-114 ticket_class_values",
+    "E-135 ticket_links",
+    "E-136 ticket_handovers",
+    "E-137 saved_views",
+    "E-138 ticket_imports",
     "E-088 error_events",
     "E-095 skills",
     "E-096 skill_versions",
@@ -2415,6 +2427,10 @@
     "E-002 scopes",
     "E-106 tickets",
     "E-114 ticket_class_values",
+    "E-135 ticket_links",
+    "E-136 ticket_handovers",
+    "E-137 saved_views",
+    "E-138 ticket_imports",
     "E-059 account_events",
     "E-060 account_event_items",
     "E-063 retention_holds",
@@ -2495,6 +2511,10 @@
    "entities": [
     "E-106 tickets",
     "E-114 ticket_class_values",
+    "E-135 ticket_links",
+    "E-136 ticket_handovers",
+    "E-137 saved_views",
+    "E-138 ticket_imports",
     "E-107 ticket_sections",
     "E-108 ticket_section_versions",
     "E-110 kind_sections",
@@ -2510,31 +2530,80 @@
     "E-039 action_runs"
    ],
    "related_apis": [
+    "GET /api/tickets",
+    "GET /api/tickets",
+    "GET /api/tickets/counts",
+    "GET /api/scopes/:id/overview",
+    "GET /api/search",
+    "GET /api/tickets/:id",
+    "POST /api/tickets",
+    "POST /api/tickets",
+    "POST /api/tickets",
     "PATCH /api/tickets/:id",
-    "POST /api/tickets",
-    "GET /api/tickets",
-    "GET /api/tickets",
-    "GET /api/tickets",
     "PATCH /api/tickets/:id",
-    "POST /api/tickets",
     "PATCH /api/tickets/:id",
-    "GET /api/tickets",
-    "GET /api/tickets",
-    "POST /api/tickets",
-    "POST /api/tickets",
-    "GET /api/tickets",
-    "GET /api/tickets",
+    "PATCH /api/tickets/:id",
+    "GET /api/tickets/:id/kind-change-preview",
+    "GET /api/tickets/:id/work-type-candidates",
+    "GET /api/tickets/:id/delete-preview",
     "DELETE /api/tickets/:id",
-    "GET /api/tickets",
-    "POST /api/tickets",
-    "GET /api/tickets",
-    "GET /api/tickets",
-    "GET /api/tickets",
-    "GET /api/tickets",
-    "GET /api/tickets",
-    "GET /api/tickets",
-    "GET /api/tickets",
-    "POST /api/tickets"
+    "POST /api/tickets/:id/restore",
+    "POST /api/tickets/:id/complete",
+    "POST /api/tickets/bulk",
+    "POST /api/tickets/bulk",
+    "POST /api/ticket_imports",
+    "GET /api/ticket_imports/:id",
+    "POST /api/ticket_imports/:id/commit",
+    "PATCH /api/tickets/:id/sections/:key",
+    "GET /api/tickets/:id/versions",
+    "POST /api/tickets/:id/versions/:v/restore",
+    "POST /api/ticket_kinds/:id/template-from-ticket",
+    "GET /api/tickets/:id/test-specs",
+    "POST /api/tickets/:id/test-specs",
+    "PATCH /api/test_specs/:id",
+    "DELETE /api/test_specs/:id",
+    "POST /api/tickets/:id/test-specs/suggest",
+    "POST /api/tickets/:id/test-specs/lint",
+    "GET /api/tickets/:id/checks",
+    "POST /api/checks/:id/human",
+    "POST /api/tickets/:id/delegate",
+    "POST /api/tickets/:id/dry-run",
+    "GET /api/tickets/:id/runs",
+    "GET /api/action_runs/:id",
+    "POST /api/action_runs/:id/stop",
+    "GET /api/tickets/:id/references",
+    "GET /api/tickets/:id/timeline",
+    "POST /api/tickets/:id/messages",
+    "PATCH /api/ticket_messages/:id",
+    "DELETE /api/ticket_messages/:id",
+    "POST /api/ticket_messages/:id/star",
+    "GET /api/tickets/:id/decisions",
+    "POST /api/tickets/:id/decisions",
+    "PATCH /api/ticket_decisions/:id",
+    "POST /api/tickets/:id/handovers",
+    "POST /api/tickets/:id/handovers",
+    "POST /api/tickets/:id/handovers",
+    "POST /api/tickets/:id/handovers",
+    "PATCH /api/ticket_handovers/:id",
+    "GET /api/tickets/:id/links",
+    "POST /api/tickets/:id/links",
+    "DELETE /api/ticket_links/:id",
+    "GET /api/tickets/:id/artifacts",
+    "GET /api/artifact_versions/:id",
+    "POST /api/tickets/:id/attachments",
+    "POST /api/tickets/:id/acceptances",
+    "GET /api/saved_views",
+    "POST /api/saved_views",
+    "PATCH /api/saved_views/:id",
+    "DELETE /api/saved_views/:id",
+    "GET /api/notifications",
+    "PATCH /api/notifications/:id",
+    "POST /api/notifications/read-all",
+    "GET /api/ticket_kinds",
+    "GET /api/ticket_stages",
+    "GET /api/class_axes",
+    "GET /api/members",
+    "GET /api/clients"
    ],
    "access_roles": [
     "R1",
@@ -2705,7 +2774,11 @@
     "E-125 client_groups",
     "E-126 client_contacts",
     "E-106 tickets",
-    "E-114 ticket_class_values"
+    "E-114 ticket_class_values",
+    "E-135 ticket_links",
+    "E-136 ticket_handovers",
+    "E-137 saved_views",
+    "E-138 ticket_imports"
    ],
    "related_apis": [
     "GET /api/client_requests"
@@ -8925,75 +8998,9 @@
    "screen_name": "チケット",
    "required_apis": [
     {
-     "act": "A101",
-     "role": "action",
-     "method": "PATCH",
-     "path_draft": "/api/tickets/:id"
-    },
-    {
-     "act": "A102",
-     "role": "action",
-     "method": "POST",
-     "path_draft": "/api/tickets"
-    },
-    {
-     "act": "A103",
+     "act": "A58",
      "role": "data_fetch",
      "method": "GET",
-     "path_draft": "/api/tickets"
-    },
-    {
-     "act": "A104",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/tickets"
-    },
-    {
-     "act": "A105",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/tickets"
-    },
-    {
-     "act": "A106",
-     "role": "action",
-     "method": "PATCH",
-     "path_draft": "/api/tickets/:id"
-    },
-    {
-     "act": "A107",
-     "role": "action",
-     "method": "POST",
-     "path_draft": "/api/tickets"
-    },
-    {
-     "act": "A108",
-     "role": "action",
-     "method": "PATCH",
-     "path_draft": "/api/tickets/:id"
-    },
-    {
-     "act": "A109",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/tickets"
-    },
-    {
-     "act": "A110",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/tickets"
-    },
-    {
-     "act": "A111",
-     "role": "action",
-     "method": "POST",
-     "path_draft": "/api/tickets"
-    },
-    {
-     "act": "A112",
-     "role": "action",
-     "method": "POST",
      "path_draft": "/api/tickets"
     },
     {
@@ -9003,21 +9010,39 @@
      "path_draft": "/api/tickets"
     },
     {
-     "act": "A115",
+     "act": "A58",
      "role": "data_fetch",
      "method": "GET",
-     "path_draft": "/api/tickets"
+     "path_draft": "/api/tickets/counts"
     },
     {
-     "act": "A116",
-     "role": "action",
-     "method": "DELETE",
+     "act": "A58",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/scopes/:id/overview"
+    },
+    {
+     "act": "A21",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/search"
+    },
+    {
+     "act": "A101",
+     "role": "data_fetch",
+     "method": "GET",
      "path_draft": "/api/tickets/:id"
     },
     {
-     "act": "A123",
-     "role": "data_fetch",
-     "method": "GET",
+     "act": "A99",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/tickets"
+    },
+    {
+     "act": "A98",
+     "role": "action",
+     "method": "POST",
      "path_draft": "/api/tickets"
     },
     {
@@ -9027,52 +9052,394 @@
      "path_draft": "/api/tickets"
     },
     {
-     "act": "A130",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/tickets"
+     "act": "A103",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/tickets/:id"
     },
     {
      "act": "A17",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/tickets"
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/tickets/:id"
     },
     {
-     "act": "A21",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/tickets"
+     "act": "A115",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/tickets/:id"
     },
     {
-     "act": "A48",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/tickets"
+     "act": "A113",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/tickets/:id"
     },
     {
-     "act": "A51",
+     "act": "A103",
      "role": "data_fetch",
      "method": "GET",
-     "path_draft": "/api/tickets"
+     "path_draft": "/api/tickets/:id/kind-change-preview"
     },
     {
-     "act": "A58",
+     "act": "A130",
      "role": "data_fetch",
      "method": "GET",
-     "path_draft": "/api/tickets"
+     "path_draft": "/api/tickets/:id/work-type-candidates"
     },
     {
-     "act": "A98",
+     "act": "A116",
      "role": "data_fetch",
      "method": "GET",
-     "path_draft": "/api/tickets"
+     "path_draft": "/api/tickets/:id/delete-preview"
+    },
+    {
+     "act": "A116",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/tickets/:id"
+    },
+    {
+     "act": "A116",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/tickets/:id/restore"
+    },
+    {
+     "act": "A106",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/tickets/:id/complete"
+    },
+    {
+     "act": "A103",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/tickets/bulk"
+    },
+    {
+     "act": "A113",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/tickets/bulk"
     },
     {
      "act": "A99",
      "role": "action",
      "method": "POST",
-     "path_draft": "/api/tickets"
+     "path_draft": "/api/ticket_imports"
+    },
+    {
+     "act": "A99",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ticket_imports/:id"
+    },
+    {
+     "act": "A99",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_imports/:id/commit"
+    },
+    {
+     "act": "A101",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/tickets/:id/sections/:key"
+    },
+    {
+     "act": "A101",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets/:id/versions"
+    },
+    {
+     "act": "A101",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/tickets/:id/versions/:v/restore"
+    },
+    {
+     "act": "A101",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_kinds/:id/template-from-ticket"
+    },
+    {
+     "act": "A102",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets/:id/test-specs"
+    },
+    {
+     "act": "A102",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/tickets/:id/test-specs"
+    },
+    {
+     "act": "A102",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/test_specs/:id"
+    },
+    {
+     "act": "A102",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/test_specs/:id"
+    },
+    {
+     "act": "A102",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/tickets/:id/test-specs/suggest"
+    },
+    {
+     "act": "A102",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/tickets/:id/test-specs/lint"
+    },
+    {
+     "act": "A102",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets/:id/checks"
+    },
+    {
+     "act": "A15",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/checks/:id/human"
+    },
+    {
+     "act": "A104",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/tickets/:id/delegate"
+    },
+    {
+     "act": "A105",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/tickets/:id/dry-run"
+    },
+    {
+     "act": "A104",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets/:id/runs"
+    },
+    {
+     "act": "A104",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/action_runs/:id"
+    },
+    {
+     "act": "A89",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/action_runs/:id/stop"
+    },
+    {
+     "act": "A101",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets/:id/references"
+    },
+    {
+     "act": "A107",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets/:id/timeline"
+    },
+    {
+     "act": "A107",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/tickets/:id/messages"
+    },
+    {
+     "act": "A107",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/ticket_messages/:id"
+    },
+    {
+     "act": "A107",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/ticket_messages/:id"
+    },
+    {
+     "act": "A107",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_messages/:id/star"
+    },
+    {
+     "act": "A108",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets/:id/decisions"
+    },
+    {
+     "act": "A108",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/tickets/:id/decisions"
+    },
+    {
+     "act": "A108",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/ticket_decisions/:id"
+    },
+    {
+     "act": "A51",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/tickets/:id/handovers"
+    },
+    {
+     "act": "A48",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/tickets/:id/handovers"
+    },
+    {
+     "act": "A111",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/tickets/:id/handovers"
+    },
+    {
+     "act": "A112",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/tickets/:id/handovers"
+    },
+    {
+     "act": "A110",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/ticket_handovers/:id"
+    },
+    {
+     "act": "A103",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets/:id/links"
+    },
+    {
+     "act": "A103",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/tickets/:id/links"
+    },
+    {
+     "act": "A103",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/ticket_links/:id"
+    },
+    {
+     "act": "A101",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets/:id/artifacts"
+    },
+    {
+     "act": "A101",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/artifact_versions/:id"
+    },
+    {
+     "act": "A101",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/tickets/:id/attachments"
+    },
+    {
+     "act": "A123",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/tickets/:id/acceptances"
+    },
+    {
+     "act": "A58",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/saved_views"
+    },
+    {
+     "act": "A58",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/saved_views"
+    },
+    {
+     "act": "A58",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/saved_views/:id"
+    },
+    {
+     "act": "A58",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/saved_views/:id"
+    },
+    {
+     "act": "A109",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/notifications"
+    },
+    {
+     "act": "A109",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/notifications/:id"
+    },
+    {
+     "act": "A109",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/notifications/read-all"
+    },
+    {
+     "act": "A103",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ticket_kinds"
+    },
+    {
+     "act": "A103",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ticket_stages"
+    },
+    {
+     "act": "A103",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/class_axes"
+    },
+    {
+     "act": "A103",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/members"
+    },
+    {
+     "act": "A103",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/clients"
     }
    ]
   },
@@ -11256,6 +11623,98 @@
    ]
   },
   {
+   "entity_id": "E-135",
+   "entity_name": "ticket_links",
+   "used_by_screens": [
+    "approvals",
+    "clone-chat",
+    "ai-activity",
+    "member-detail",
+    "tickets",
+    "requests"
+   ],
+   "used_by_features": [
+    "F-001",
+    "F-004",
+    "F-005",
+    "F-006",
+    "F-010",
+    "F-013",
+    "F-021",
+    "F-023",
+    "F-024"
+   ]
+  },
+  {
+   "entity_id": "E-136",
+   "entity_name": "ticket_handovers",
+   "used_by_screens": [
+    "approvals",
+    "clone-chat",
+    "ai-activity",
+    "member-detail",
+    "tickets",
+    "requests"
+   ],
+   "used_by_features": [
+    "F-001",
+    "F-004",
+    "F-005",
+    "F-006",
+    "F-010",
+    "F-013",
+    "F-021",
+    "F-023",
+    "F-024"
+   ]
+  },
+  {
+   "entity_id": "E-137",
+   "entity_name": "saved_views",
+   "used_by_screens": [
+    "approvals",
+    "clone-chat",
+    "ai-activity",
+    "member-detail",
+    "tickets",
+    "requests"
+   ],
+   "used_by_features": [
+    "F-001",
+    "F-004",
+    "F-005",
+    "F-006",
+    "F-010",
+    "F-013",
+    "F-021",
+    "F-023",
+    "F-024"
+   ]
+  },
+  {
+   "entity_id": "E-138",
+   "entity_name": "ticket_imports",
+   "used_by_screens": [
+    "approvals",
+    "clone-chat",
+    "ai-activity",
+    "member-detail",
+    "tickets",
+    "requests"
+   ],
+   "used_by_features": [
+    "F-001",
+    "F-004",
+    "F-005",
+    "F-006",
+    "F-010",
+    "F-013",
+    "F-021",
+    "F-023",
+    "F-024"
+   ]
+  },
+  {
    "entity_id": "E-134",
    "entity_name": "ops_plan_proposals",
    "used_by_screens": [
@@ -11340,7 +11799,11 @@
     "E-129",
     "E-130",
     "E-131",
-    "E-134"
+    "E-134",
+    "E-135",
+    "E-136",
+    "E-137",
+    "E-138"
    ],
    "api_endpoints_draft": [
     "GET /api/invitations",
@@ -11435,7 +11898,11 @@
     "E-119",
     "E-120",
     "E-129",
-    "E-132"
+    "E-132",
+    "E-135",
+    "E-136",
+    "E-137",
+    "E-138"
    ],
    "api_endpoints_draft": [
     "DELETE /api/messages/:id",
@@ -11498,7 +11965,11 @@
     "E-118",
     "E-119",
     "E-120",
-    "E-134"
+    "E-134",
+    "E-135",
+    "E-136",
+    "E-137",
+    "E-138"
    ],
    "api_endpoints_draft": [
     "GET /api/action_runs",
@@ -11562,7 +12033,11 @@
     "E-117",
     "E-118",
     "E-119",
-    "E-120"
+    "E-120",
+    "E-135",
+    "E-136",
+    "E-137",
+    "E-138"
    ],
    "api_endpoints_draft": [
     "DELETE /api/members/:id",
@@ -11734,7 +12209,11 @@
     "E-118",
     "E-119",
     "E-120",
-    "E-134"
+    "E-134",
+    "E-135",
+    "E-136",
+    "E-137",
+    "E-138"
    ],
    "api_endpoints_draft": [
     "DELETE /api/members/:id",
@@ -11930,7 +12409,11 @@
     "E-124",
     "E-125",
     "E-126",
-    "E-133"
+    "E-133",
+    "E-135",
+    "E-136",
+    "E-137",
+    "E-138"
    ],
    "api_endpoints_draft": [
     "GET /api/conversations",
@@ -12219,7 +12702,11 @@
     "E-124",
     "E-125",
     "E-126",
-    "E-127"
+    "E-127",
+    "E-135",
+    "E-136",
+    "E-137",
+    "E-138"
    ],
    "api_endpoints_draft": [
     "GET /api/client_requests",
@@ -12274,7 +12761,11 @@
     "E-117",
     "E-118",
     "E-119",
-    "E-120"
+    "E-120",
+    "E-135",
+    "E-136",
+    "E-137",
+    "E-138"
    ],
    "api_endpoints_draft": [
     "GET /api/action_runs",
@@ -12312,7 +12803,11 @@
     "E-117",
     "E-118",
     "E-119",
-    "E-120"
+    "E-120",
+    "E-135",
+    "E-136",
+    "E-137",
+    "E-138"
    ],
    "api_endpoints_draft": [
     "GET /api/tickets",

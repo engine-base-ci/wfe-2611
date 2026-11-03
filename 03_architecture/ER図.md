@@ -1,7 +1,7 @@
 # Kaname ER 図 v1.1（段階 1 の範囲）
 
 作成 2026-09-08 ／ 更新 2026-09-27（D-098：検索用のベクトルと、それを作るモデル）／ 2026-09-15（D-069〜D-077：層と権限・出来事と失効・運営・往復するもの・取り込みと連携を追加）/ DB: PostgreSQL 16+ (pgvector) / ORM: Drizzle
-推定テーブル数: **77**（＋ §16 第1フェーズの表 30・2026-11-03）（段階 1。§1〜§6 の 37 ＋ §7 マスタ 8 ＋ §9〜§13 の 38。カード決済（段階 2・D-002）と BYOK／運営マネージド（段階 2・D-055）だけが後）
+推定テーブル数: **77**（＋ §16 第1フェーズの表 34・2026-11-03）（段階 1。§1〜§6 の 37 ＋ §7 マスタ 8 ＋ §9〜§13 の 38。カード決済（段階 2・D-002）と BYOK／運営マネージド（段階 2・D-055）だけが後）
 
 ---
 
@@ -383,7 +383,7 @@ erDiagram
 
 ---
 
-## 16. 第1フェーズの表（D-125〜D-128）（30）
+## 16. 第1フェーズの表（D-125〜D-128）（34）
 
 D-125〜D-128 で第1フェーズを「チケット」中心に決め直した分の表。前の段の表（`tasks` `duties` `goals` など）は後のフェーズのものとして残し、第1フェーズの画面と API はこの節の表を読む（D-127.1・D-126.26）。
 
@@ -445,6 +445,10 @@ erDiagram
 | **`terms_consents`** | `auth_user_id` / `terms_version_id` / `agreed_at` / `ip` | 誰がどの版に同意したか |
 | **`passkeys`** | `auth_user_id` / `credential_id` / `public_key` / `name`（この PC・iPhone など）/ `transports` / `last_used_at` / `revoked_at` | **★新設（D-125.137・D-128.59〜.61）。**Better Auth の passkey の表を使う |
 | **`operations`** | `<common>`（tenant_id＝運営）/ `key`（browser）/ `name` / `kind`（ブラウザ・MCP・API）/ `current_version` | **★新設（D-126.2・D-126.19）。**第1フェーズは汎用のブラウザ操作 1 つ |
+| **`ticket_links`** | `<common>` / `from_ticket_id` / `to_ticket_id` / `kind`（関連・派生元） | **★新設（D-125.50・D-128.80）。**前後（依存）と重複は持たない |
+| **`ticket_handovers`** | `<common>` / `ticket_id` / `kind`（渡す・引き取りの申し出・配る・上へ上げる）/ `from_member_id` / `to_member_id` / `to_scope_id` / `reason` / `ask` / `reply_due` / `switch jsonb`（一緒に切り替えるもの）/ `state`（返事待ち・受けた・断った）/ `decline_reason` / `decided_at` | **★新設（D-125.70）。**`task_handovers` を置き換える |
+| **`saved_views`** | `<common>` / `member_id` / `name` / `share`（自分だけ・グループの全員）/ `scope_id` / `filters jsonb` / `columns jsonb` / `density` | **★新設（D-128.83）。**検索条件と列の表示設定 |
+| **`ticket_imports`** | `<common>` / `uploaded_by` / `source`（Backlog の CSV・汎用）/ `mapping jsonb` / `rows int` / `errors jsonb` / `state`（確かめ中・確定・やめた）/ `committed_at` | **★新設（D-128.83・D-128.85）。**取り込んだものは下書きで入り、確かめてから確定 |
 | **`ops_plan_proposals`** | `<common>`（tenant_id＝運営）/ `plan_id` / `from_version` / `to_version` / `changes jsonb` / `existing_policy`（N 日後から・ずっと今の値段）/ `notice_days` / `new_from` / `reason` / `proposed_by` / `decided_by` / `state`（下書き・決める人を待っている・決めた・差し戻した）/ `decided_at` / `return_reason` | **★新設（D-128.72）。**作った人と決めた人は同じにできない（決められる人が 1 人のときだけ例外・本人確認） |
 
 前の表の扱い：`tasks` `task_handovers` `daily_plans` は後のフェーズ（チケットに置き換え）。`skills` 系は「業務の型」として使い続ける（`skills.kind_id` に work_type を足す・D-126.26）。`learned_procedures` は「記録した動かし方」として使い続け、入力した値を空欄に置き換えた形だけを持つ（D-126.25）。`support_access_grants` は「運営の閲覧」の記録として使い、許可の範囲と期限は契約で先に持つ（D-125.128・D-128.68）。
@@ -475,7 +479,7 @@ erDiagram
 | 台帳の定義 | `ledger_definitions` `ledger_fields` `ledger_stages` | |
 | レコード | `ledger_records` | |
 | 段階 | `ledger_stages` | |
-| チケット | `tickets` `ticket_class_values` | 本文は `ticket_sections`（D-125.27・D-127.1） |
+| チケット | `tickets` `ticket_class_values` `ticket_links` `ticket_handovers` `saved_views` `ticket_imports` | 本文は `ticket_sections`（D-125.27・D-127.1）。つながり・渡す・保存した検索条件・CSV の取り込み（D-128.80・D-128.83） |
 | 一日の計画 | `daily_plans` | |
 | 承認 | `approvals` | 4 つのボタン・差し戻しの理由・本人確認（D-125.103） |
 | 差し戻し | `approvals` `messages` | 差し戻し＝`approvals.status_id = returned` ＋ 理由の `messages` |

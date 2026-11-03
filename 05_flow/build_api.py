@@ -26,7 +26,7 @@ for s in S:
     for a in s["required_apis"]:
         if a["role"] == "transition": continue
         path = a["path_draft"].replace("/api/", BASE + "/"); key = (a["method"], path)
-        e = eps.setdefault(key, {"method": a["method"], "path": path, "acts": set(), "screens": set(), "related_entities": set(), "choke_points": set(), "source": set(), "features": set()})
+        e = eps.setdefault(key, {"method": a["method"], "path": path, "acts": set(), "screens": set(), "related_entities": set(), "choke_points": set(), "source": set(), "features": set(), "table": a.get("table"), "operation_id": a.get("operation_id")})
         e["acts"].add(a["act"]); e["screens"].add(s["id"]); e["related_entities"].update(a.get("related_entities", [])); e["choke_points"].update(a.get("choke_points", [])); e["source"].update(a.get("source", []) or s["source"]); 
         if feat_of_act.get(a["act"]): e["features"].add(feat_of_act[a["act"]])
 def desc(e):
@@ -58,16 +58,18 @@ for (m, p), e in sorted(eps.items(), key=lambda kv: (kv[0][1], ["GET", "POST", "
     role = "public" if set(e["screens"]) <= PUBLIC else ("ops" if set(e["screens"]) <= OPS_SCREENS else "member")
     e["auth"] = {"role": role, "scheme": "none" if role == "public" else "session（Better Auth・sessions 表を見る。app.tenant_id / app.user_id / app.role を SET LOCAL）"}
     e["rate_limit"] = "10/min/ip" if role == "public" else ("120/min/user" if m == "GET" else "60/min/user")
-    tname = p.split("/")[3] if len(p.split("/")) > 3 else ""
+    tname = e.get("table") or (p.split("/")[3] if len(p.split("/")) > 3 else "")
+    params = re.findall(r":(\w+)", p)
     e["access_control_policies"] = [pol["name"] for x in e["related_entities"] for pol in ent[x]["access_control_policies"] if (m == "GET" and "read" in pol["name"]) or (m != "GET" and "write" in pol["name"])]
     e["outputs_4xx"] = four(e); e["ears_ac_seed"] = ears(e)
     e["outward_side_effects"] = [chk[c]["name"] for c in sorted(e["choke_points"]) if c in chk and c != "C2"]
     e["side_effect_ordering"] = "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録" if m != "GET" else None
     e["choke_points"] = sorted(e["choke_points"]) if m != "GET" else sorted(e["choke_points"] & {"C4", "C8"})
     e["description"] = desc(e)
-    e["implementation_path"] = f"apps/api/src/routes/{tname}.ts::{m.lower()}{''.join(w.capitalize() for w in tname.split('_'))}{'ById' if ':id' in p else ''}"
-    e["inputs"] = {"path": ["id"] if ":id" in p else [], "body": f"{tname} の入力（types.ts の {''.join(w.capitalize() for w in tname.split('_'))}Input）" if m in ("POST", "PATCH") else None, "query": ["scope_id", "cursor", "limit", "sort"] if m == "GET" and ":id" not in p else []}
-    e["outputs_2xx"] = {"status": 201 if m == "POST" else 200, "body": f"{{ data: {''.join(w.capitalize() for w in tname.split('_'))}{'[]' if m == 'GET' and ':id' not in p else ''}, meta?: {{ cursor, limit, total }} }}"}
+    e["implementation_path"] = f"apps/api/src/routes/{tname}.ts::" + (e["operation_id"] if e.get("operation_id") else f"{m.lower()}{''.join(w.capitalize() for w in tname.split('_'))}{'ById' if ':id' in p else ''}")
+    e["path_params"] = params; e["returns_list"] = (m == "GET" and e["operation_id"].startswith(("list", "search"))) if e.get("operation_id") else (m == "GET" and ":id" not in p)
+    e["inputs"] = {"path": params, "body": f"{tname} の入力（types.ts の {''.join(w.capitalize() for w in tname.split('_'))}Input）" if m in ("POST", "PATCH") else None, "query": ["scope_id", "cursor", "limit", "sort"] if m == "GET" and ":id" not in p else []}
+    e["outputs_2xx"] = {"status": 201 if m == "POST" else 200, "body": f"{{ data: {''.join(w.capitalize() for w in tname.split('_'))}{'[]' if e['returns_list'] else ''}, meta?: {{ cursor, limit, total }} }}"}
     e["id"] = f"EP-{len(endpoints)+1:03d}"; e["feature_id"] = e["features"][0] if e["features"] else None
     endpoints.append(e)
 # 行為 → endpoint の逆被覆
@@ -93,6 +95,8 @@ import sys as _sys, os as _os
 _sys.path.insert(0, _os.path.join(_os.path.dirname(__file__), "..", "scripts", "ci"))
 from colrules import Rules, load_rules, openapi_of  # noqa: E402  DB（gen_ddl）と同じ規則で契約の型を決める
 _cr = load_rules(); _R = Rules(E, _cr.get("aliases", {}), _cr.get("vector_dim", 1536))
+import importlib.util as _ilu
+_spec = _ilu.spec_from_file_location("screen_api", os.path.join(os.path.dirname(os.path.abspath(__file__)), "screen_api.py")); _sa = _ilu.module_from_spec(_spec); _spec.loader.exec_module(_sa)
 def ptype(n, note, e=None):
     if n == "id" or n == "tenant_id": return {"type": "string", "format": "uuid"}
     if n in ("created_at", "updated_at"): return {"type": "string", "format": "date-time"}
@@ -105,16 +109,21 @@ for e in E:
     for c in ("id", "tenant_id", "created_at", "updated_at"): props.setdefault(c, ptype(c, ""))
     schemas[name] = {"type": "object", "properties": props, "required": ["id"], "x-table": e["table_name"], "x-source": e["source"]}
     schemas[name + "Input"] = {"type": "object", "properties": {k: v for k, v in props.items() if k not in INTERNAL}}
+for _op, (_n, _props) in _sa.RESPONSES.items():   # 表の行ではない答えの形（D-128.78）
+    schemas[_n] = {"type": "object", "properties": {k: ({"type": "array", "items": {"type": "object"}} if v == "array" else {"type": v}) for k, v in _props.items()}, "x-operation": _op}
 schemas["Error"] = {"type": "object", "properties": {"error": {"type": "string"}, "code": {"type": "string"}, "message": {"type": "string"}, "details": {"type": "array", "items": {"type": "object"}}, "retry_after_sec": {"type": "integer"}}, "required": ["error"]}
 paths = {}
 for e in endpoints:
-    tname = e["path"].split("/")[3]; name = "".join(w.capitalize() for w in tname.split("_")); op = {"operationId": e["implementation_path"].split("::")[1], "summary": e["description"], "tags": [tname], "x-acts": e["acts"], "x-screens": e["screens"], "x-choke-points": e["choke_points"], "x-source": e["source"], "security": [] if e["auth"]["role"] == "public" else [{"session": []}]}
-    if ":id" in e["path"]: op["parameters"] = [{"name": "id", "in": "path", "required": True, "schema": {"type": "string", "format": "uuid"}}]
-    if e["method"] == "GET" and ":id" not in e["path"]: op["parameters"] = [{"name": q, "in": "query", "schema": {"type": "string"}} for q in ("scope_id", "cursor", "limit", "sort")]
-    if e["method"] in ("POST", "PATCH"): op["requestBody"] = {"required": True, "content": {"application/json": {"schema": {"$ref": f"#/components/schemas/{name}Input"}}}}
-    ok = {"description": "成功", "content": {"application/json": {"schema": {"type": "object", "properties": {"data": {"type": "array", "items": {"$ref": f"#/components/schemas/{name}"}} if (e["method"] == "GET" and ":id" not in e["path"]) else {"$ref": f"#/components/schemas/{name}"}, "meta": {"type": "object"}}}}}}
+    tname = e.get("table") or e["path"].split("/")[3]; name = _sa.RESPONSES[e["operation_id"]][0] if e.get("operation_id") in _sa.RESPONSES else "".join(w.capitalize() for w in tname.split("_")); op = {"operationId": e["implementation_path"].split("::")[1], "summary": e["description"], "tags": [tname], "x-acts": e["acts"], "x-screens": e["screens"], "x-choke-points": e["choke_points"], "x-source": e["source"], "security": [] if e["auth"]["role"] == "public" else [{"session": []}]}
+    op["parameters"] = [{"name": n, "in": "path", "required": True, "schema": {"type": "string", "format": "uuid"} if n == "id" else {"type": "string"}} for n in e["path_params"]]
+    if e.get("operation_id") in _sa.QUERIES: op["parameters"] += [{"name": q, "in": "query", "schema": {"type": "string"}} for q in _sa.QUERIES[e["operation_id"]] + (["cursor", "limit", "sort"] if e["returns_list"] else [])]
+    elif e["returns_list"]: op["parameters"] += [{"name": q, "in": "query", "schema": {"type": "string"}} for q in ("scope_id", "cursor", "limit", "sort")]
+    if not op["parameters"]: del op["parameters"]
+    tbl = "".join(w.capitalize() for w in tname.split("_"))
+    if e["method"] in ("POST", "PATCH"): op["requestBody"] = {"required": True, "content": {"application/json": {"schema": {"$ref": f"#/components/schemas/{tbl}Input"}}}}
+    ok = {"description": "成功", "content": {"application/json": {"schema": {"type": "object", "properties": {"data": {"type": "array", "items": {"$ref": f"#/components/schemas/{name}"}} if e["returns_list"] else {"$ref": f"#/components/schemas/{name}"}, "meta": {"type": "object"}}}}}}
     op["responses"] = {str(e["outputs_2xx"]["status"]): ok, **{str(x["status"]): {"description": x["code"], "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}} for x in e["outputs_4xx"]}}
-    paths.setdefault(e["path"].replace(":id", "{id}"), {})[e["method"].lower()] = op
+    paths.setdefault(re.sub(r":(\w+)", r"{\1}", e["path"]), {})[e["method"].lower()] = op
 openapi = {"openapi": "3.0.3", "info": {"title": "Kaname API", "version": "1.0.0", "description": f"Mock-Driven Contract Generation。{TODAY} 凍結。信頼源は 08_api/endpoints.json。x-acts / x-screens / x-choke-points / x-source で行為・画面・関門・決定に辿れる"},
            "servers": [{"url": BASE}], "components": {"securitySchemes": {"session": {"type": "http", "scheme": "bearer", "description": "Better Auth のセッション。sessions 表を見て失効を判定"}}, "schemas": schemas}, "paths": paths}
 ts = ["// 生成物（05_flow/build_api.py）。手で直さない。OpenAPI 3.0.3 と同じ内容。", "export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };", "export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };", ""]

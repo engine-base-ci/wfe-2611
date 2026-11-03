@@ -12813,6 +12813,410 @@
    ]
   },
   {
+   "id": "E-135",
+   "name": "ticket_links",
+   "table_name": "ticket_links",
+   "section": "16. 第1フェーズの表",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "from_ticket_id",
+     "note": null
+    },
+    {
+     "name": "to_ticket_id",
+     "note": null
+    },
+    {
+     "name": "kind",
+     "note": "関連・派生元"
+    }
+   ],
+   "relations": [],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "ticket_links_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "ticket_links_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'ticket_links', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "ticket_links_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ticket_links.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-125.50・D-128.80）。**前後（依存）と重複は持たない",
+   "status": "decided",
+   "decided_at": "2026-11-03",
+   "source": [
+    "D-125",
+    "D-125.50",
+    "D-128",
+    "D-128.80"
+   ]
+  },
+  {
+   "id": "E-136",
+   "name": "ticket_handovers",
+   "table_name": "ticket_handovers",
+   "section": "16. 第1フェーズの表",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "ticket_id",
+     "note": null
+    },
+    {
+     "name": "kind",
+     "note": "渡す・引き取りの申し出・配る・上へ上げる"
+    },
+    {
+     "name": "from_member_id",
+     "note": null
+    },
+    {
+     "name": "to_member_id",
+     "note": null
+    },
+    {
+     "name": "to_scope_id",
+     "note": null
+    },
+    {
+     "name": "reason",
+     "note": null
+    },
+    {
+     "name": "ask",
+     "note": null
+    },
+    {
+     "name": "reply_due",
+     "note": null
+    },
+    {
+     "name": "switch",
+     "note": "jsonb（一緒に切り替えるもの"
+    },
+    {
+     "name": "state",
+     "note": "返事待ち・受けた・断った"
+    },
+    {
+     "name": "decline_reason",
+     "note": null
+    },
+    {
+     "name": "decided_at",
+     "note": null
+    }
+   ],
+   "relations": [],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "ticket_handovers_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "ticket_handovers_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'ticket_handovers', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "ticket_handovers_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ticket_handovers.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-125.70）。**`task_handovers` を置き換える",
+   "status": "decided",
+   "decided_at": "2026-11-03",
+   "source": [
+    "D-125",
+    "D-125.70",
+    "D-128"
+   ]
+  },
+  {
+   "id": "E-137",
+   "name": "saved_views",
+   "table_name": "saved_views",
+   "section": "16. 第1フェーズの表",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "member_id",
+     "note": null
+    },
+    {
+     "name": "name",
+     "note": null
+    },
+    {
+     "name": "share",
+     "note": "自分だけ・グループの全員"
+    },
+    {
+     "name": "scope_id",
+     "note": null
+    },
+    {
+     "name": "filters",
+     "note": "jsonb"
+    },
+    {
+     "name": "columns",
+     "note": "jsonb"
+    },
+    {
+     "name": "density",
+     "note": null
+    }
+   ],
+   "relations": [],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "saved_views_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "saved_views_self_only_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND member_id = current_setting('app.user_id', true)::uuid",
+     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "source": [
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "saved_views_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'saved_views', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "saved_views_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = saved_views.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-128.83）。**検索条件と列の表示設定",
+   "status": "decided",
+   "decided_at": "2026-11-03",
+   "source": [
+    "D-125",
+    "D-128",
+    "D-128.83"
+   ]
+  },
+  {
+   "id": "E-138",
+   "name": "ticket_imports",
+   "table_name": "ticket_imports",
+   "section": "16. 第1フェーズの表",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "uploaded_by",
+     "note": null
+    },
+    {
+     "name": "source",
+     "note": "Backlog の CSV・汎用"
+    },
+    {
+     "name": "mapping",
+     "note": "jsonb"
+    },
+    {
+     "name": "rows",
+     "note": "int"
+    },
+    {
+     "name": "errors",
+     "note": "jsonb"
+    },
+    {
+     "name": "state",
+     "note": "確かめ中・確定・やめた"
+    },
+    {
+     "name": "committed_at",
+     "note": null
+    }
+   ],
+   "relations": [],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "ticket_imports_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "ticket_imports_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'ticket_imports', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "ticket_imports_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ticket_imports.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-128.83・D-128.85）。**取り込んだものは下書きで入り、確かめてから確定",
+   "status": "decided",
+   "decided_at": "2026-11-03",
+   "source": [
+    "D-125",
+    "D-128",
+    "D-128.83",
+    "D-128.85"
+   ]
+  },
+  {
    "id": "E-134",
    "name": "ops_plan_proposals",
    "table_name": "ops_plan_proposals",

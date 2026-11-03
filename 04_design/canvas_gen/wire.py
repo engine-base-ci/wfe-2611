@@ -1,5 +1,5 @@
 import re
-MAP = {"ウォッチ 3": "TdWatch.dc.html", "複製": "TdDuplicate.dc.html", "…": "TdMore.dc.html", "自分の AI と話す": "StAiPanel.dc.html",
+MAP = {"複製": "TdDuplicate.dc.html", "…": "TdMore.dc.html", "自分の AI と話す": "StAiPanel.dc.html",
  "承認して送る": "StModal.dc.html", "差し戻す": "StModal.dc.html", "自分で直す": "StEdit.dc.html", "版と差分": "TdVersions.dc.html",
  "抜けを点検する": "TdCheck.dc.html", "項目を足す": "TdCheck.dc.html", "大きく見る": "TdPreview.dc.html", "データを見る": "TdPreview.dc.html",
  "試し打ち（自分宛）": "TdPreview.dc.html", "全文": "TdPreview.dc.html", "子を足す": "TdLink.dc.html", "つながりを足す": "TdLink.dc.html",
