@@ -14,4 +14,5 @@ export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.post("/api/v1/conversations/:id/messages", op(deps, "sendConversationMessage"));
   app.post("/api/v1/conversations/:id/permissions/:pid", op(deps, "answerAgentPermission"));
   app.post("/api/v1/conversations/:id/stop", op(deps, "stopConversation"));
+  app.get("/api/v1/conversations/:id/stream", op(deps, "streamConversation"));
 }

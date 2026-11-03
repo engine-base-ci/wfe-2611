@@ -1,0 +1,575 @@
+{
+ "_doc": "手で書いた /api/auth-ext の道すじの行き先（KN-58・D-128.88）。to＝移す先の契約の口（その口を作るチケットで中身を移し、道すじを消す）／to が null＝前の画面と一緒に外す（retire_with のチケット・根拠の決定と理由が必須）。zt_gate.py の ZT1 が、登録されている道すじが全部この表にあるか、移す先が契約にあるかを確かめる",
+ "routes": [
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/agent/answer",
+   "to": "answerAgentPermission"
+  },
+  {
+   "file": "apps/api/src/auth/agent.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/agent/answer2",
+   "to": "answerAgentPermission"
+  },
+  {
+   "file": "apps/api/src/auth/artifacts.ts",
+   "method": "GET",
+   "route": "/api/auth-ext/agent/artifacts",
+   "to": null,
+   "retire_with": "KN-37",
+   "decision": "D-128.122",
+   "reason": "作ったものの一覧（D-106.1）は後のフェーズ。作ったものは会話の中とチケットの作ったものに出る"
+  },
+  {
+   "file": "apps/api/src/auth/artifacts.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/agent/artifacts",
+   "to": "createArtifactFromMessage"
+  },
+  {
+   "file": "apps/api/src/auth/artifacts.ts",
+   "method": "GET",
+   "route": "/api/auth-ext/agent/artifacts/:id",
+   "to": "getArtifactVersion"
+  },
+  {
+   "file": "apps/api/src/auth/artifacts.ts",
+   "method": "PATCH",
+   "route": "/api/auth-ext/agent/artifacts/:id",
+   "to": "updateArtifact"
+  },
+  {
+   "file": "apps/api/src/auth/artifacts.ts",
+   "method": "GET",
+   "route": "/api/auth-ext/agent/artifacts/:id/download",
+   "to": null,
+   "retire_with": "KN-37",
+   "decision": "D-128.122",
+   "reason": "作ったものの書き出し（D-106.1）は後のフェーズ"
+  },
+  {
+   "file": "apps/api/src/auth/artifacts.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/agent/artifacts/:id/revert",
+   "to": "restoreArtifactVersion"
+  },
+  {
+   "file": "apps/api/src/auth/artifacts.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/agent/artifacts/:id/versions",
+   "to": "updateArtifact"
+  },
+  {
+   "file": "apps/api/src/auth/agent.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/agent/attachments",
+   "to": "createConversationAttachment"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/agent/bridge-revoke",
+   "to": "revokeMyDevice"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/agent/browser",
+   "to": null,
+   "retire_with": "KN-37",
+   "decision": "D-128.122",
+   "reason": "PC で AI が使うブラウザを選ぶ（D-120.1）は後のフェーズ"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/agent/browser-check",
+   "to": null,
+   "retire_with": "KN-37",
+   "decision": "D-128.122",
+   "reason": "Chrome をもう一度確かめる（D-120.3）は後のフェーズ"
+  },
+  {
+   "file": "apps/api/src/auth/agent.ts",
+   "method": "GET",
+   "route": "/api/auth-ext/agent/conversations",
+   "to": "listConversations"
+  },
+  {
+   "file": "apps/api/src/auth/agent.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/agent/conversations",
+   "to": "createConversation"
+  },
+  {
+   "file": "apps/api/src/auth/agent.ts",
+   "method": "DELETE",
+   "route": "/api/auth-ext/agent/conversations/:id",
+   "to": "deleteConversation"
+  },
+  {
+   "file": "apps/api/src/auth/agent.ts",
+   "method": "PATCH",
+   "route": "/api/auth-ext/agent/conversations/:id",
+   "to": "updateConversation"
+  },
+  {
+   "file": "apps/api/src/auth/agent.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/agent/conversations/:id/read",
+   "to": "updateConversation"
+  },
+  {
+   "file": "apps/api/src/auth/agent.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/agent/default-mode",
+   "to": "updateMyClone"
+  },
+  {
+   "file": "apps/api/src/auth/agent.ts",
+   "method": "DELETE",
+   "route": "/api/auth-ext/agent/memory/:id",
+   "to": "deleteMemory"
+  },
+  {
+   "file": "apps/api/src/auth/agent.ts",
+   "method": "PATCH",
+   "route": "/api/auth-ext/agent/memory/:id",
+   "to": "updateMemory"
+  },
+  {
+   "file": "apps/api/src/auth/agent.ts",
+   "method": "GET",
+   "route": "/api/auth-ext/agent/memory/digest",
+   "to": "listLearningCandidates"
+  },
+  {
+   "file": "apps/api/src/auth/agent.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/agent/memory/digest",
+   "to": null,
+   "retire_with": "KN-37",
+   "decision": "D-128.79",
+   "reason": "記憶の毎朝のまとめは「覚えたいこと」（learning_candidates）に置き換えた"
+  },
+  {
+   "file": "apps/api/src/auth/agent.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/agent/memory/digest/:id/pick",
+   "to": "acceptLearningCandidate"
+  },
+  {
+   "file": "apps/api/src/auth/agent.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/agent/memory/digest/:id/undo",
+   "to": "dismissLearningCandidate"
+  },
+  {
+   "file": "apps/api/src/auth/agent.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/agent/memory/proposals/:id/decide",
+   "to": "approveApproval"
+  },
+  {
+   "file": "apps/api/src/auth/agent.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/agent/memory/proposals/:id/send",
+   "to": "promoteMemoryToRule"
+  },
+  {
+   "file": "apps/api/src/auth/agent.ts",
+   "method": "GET",
+   "route": "/api/auth-ext/agent/memory/reviews",
+   "to": "listApprovalQueue"
+  },
+  {
+   "file": "apps/api/src/auth/agent.ts",
+   "method": "GET",
+   "route": "/api/auth-ext/agent/messages",
+   "to": "listConversationMessages"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/agent/new",
+   "to": "createConversation"
+  },
+  {
+   "file": "apps/api/src/auth/agent.ts",
+   "method": "GET",
+   "route": "/api/auth-ext/agent/permission-rules",
+   "to": null,
+   "retire_with": "KN-37",
+   "decision": "D-128.122",
+   "reason": "「いつも許可」の決まりの一覧（D-104.14）は後のフェーズ"
+  },
+  {
+   "file": "apps/api/src/auth/agent.ts",
+   "method": "DELETE",
+   "route": "/api/auth-ext/agent/permission-rules/:id",
+   "to": null,
+   "retire_with": "KN-37",
+   "decision": "D-128.122",
+   "reason": "「いつも許可」の決まりの取り消し（D-104.14）は後のフェーズ"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/agent/resume",
+   "to": "retryActionRun"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/agent/say",
+   "to": "sendConversationMessage"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "GET",
+   "route": "/api/auth-ext/agent/state",
+   "to": "listConversationMessages"
+  },
+  {
+   "file": "apps/api/src/auth/agent.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/agent/steer",
+   "to": "sendConversationMessage"
+  },
+  {
+   "file": "apps/api/src/auth/agent.ts",
+   "method": "DELETE",
+   "route": "/api/auth-ext/agent/steer/:id",
+   "to": null,
+   "retire_with": "KN-37",
+   "decision": "D-128.122",
+   "reason": "順番待ちの一言を取り消す（D-104.9）は後のフェーズ"
+  },
+  {
+   "file": "apps/api/src/auth/agent.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/agent/stop",
+   "to": "stopConversation"
+  },
+  {
+   "file": "apps/api/src/auth/agent-stream.ts",
+   "method": "GET",
+   "route": "/api/auth-ext/agent/stream",
+   "to": "streamConversation"
+  },
+  {
+   "file": "apps/api/src/auth/agent.ts",
+   "method": "GET",
+   "route": "/api/auth-ext/agent/usage",
+   "to": "getMyUsage"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/bridge/answer",
+   "to": "getBridgeQuestionAnswer"
+  },
+  {
+   "file": "apps/api/src/auth/agent.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/bridge/answer2",
+   "to": "getBridgeQuestionAnswer"
+  },
+  {
+   "file": "apps/api/src/auth/agent-tools.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/bridge/artifact",
+   "to": "putArtifactFromBridge"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/bridge/ask",
+   "to": "askFromBridge"
+  },
+  {
+   "file": "apps/api/src/auth/agent.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/bridge/attachment",
+   "to": "getFileForBridge"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/bridge/browser",
+   "to": null,
+   "retire_with": "KN-37",
+   "decision": "D-128.122",
+   "reason": "Bridge の窓からブラウザを選ぶ（D-120.1）は後のフェーズ"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/bridge/claim",
+   "to": "claimPairingCode"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/bridge/code",
+   "to": "getBridgeQuestionAnswer"
+  },
+  {
+   "file": "apps/api/src/auth/agent.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/bridge/control",
+   "to": "getJobControl"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/bridge/credentials/check-result",
+   "to": "reportCredentialCheck"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/bridge/credentials/resolve",
+   "to": "resolveCredential"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "GET",
+   "route": "/api/auth-ext/bridge/download",
+   "to": "downloadBridgeRelease"
+  },
+  {
+   "file": "apps/api/src/auth/agent.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/bridge/entries",
+   "to": "mirrorConversationEntries"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "GET",
+   "route": "/api/auth-ext/bridge/file/:name",
+   "to": "downloadBridgeRelease"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/bridge/finish",
+   "to": "finishBridgeJob"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/bridge/heartbeat",
+   "to": "sendHeartbeat"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "GET",
+   "route": "/api/auth-ext/bridge/latest",
+   "to": "getLatestBridgeRelease"
+  },
+  {
+   "file": "apps/api/src/auth/agent.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/bridge/mirror-targets",
+   "to": "listMirrorTargets"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/bridge/pair",
+   "to": "createPairingCode"
+  },
+  {
+   "file": "apps/api/src/auth/agent.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/bridge/partial",
+   "to": "reportJobProgress"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/bridge/progress",
+   "to": "reportJobProgress"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "GET",
+   "route": "/api/auth-ext/bridge/state",
+   "to": "listMyDevices"
+  },
+  {
+   "file": "apps/api/src/auth/agent.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/bridge/steers",
+   "to": "getJobControl"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/bridge/take",
+   "to": "takeBridgeJob"
+  },
+  {
+   "file": "apps/api/src/auth/agent-tools.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/bridge/tool",
+   "to": "callKanameTool"
+  },
+  {
+   "file": "apps/api/src/auth/agent.ts",
+   "method": "GET",
+   "route": "/api/auth-ext/files/:ref{.+}",
+   "to": "getFileForBridge"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "GET",
+   "route": "/api/auth-ext/invitations/:token",
+   "to": "getInvitation"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/invitations/:token/accept",
+   "to": "acceptInvitation"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "GET",
+   "route": "/api/auth-ext/me",
+   "to": "getMe"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "GET",
+   "route": "/api/auth-ext/onboard/draft",
+   "to": null,
+   "retire_with": "KN-37",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（onboard-*）"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "GET",
+   "route": "/api/auth-ext/onboard/golive",
+   "to": null,
+   "retire_with": "KN-37",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（onboard-*）"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/onboard/golive",
+   "to": null,
+   "retire_with": "KN-37",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（onboard-*）"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/onboard/golive/pause",
+   "to": null,
+   "retire_with": "KN-37",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（onboard-*）"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "GET",
+   "route": "/api/auth-ext/onboard/testrun",
+   "to": null,
+   "retire_with": "KN-37",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（onboard-*）"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/onboard/testrun/cancel",
+   "to": null,
+   "retire_with": "KN-37",
+   "decision": "D-128.112",
+   "reason": "後のフェーズの画面（onboard-*）"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/resend-signup",
+   "to": "resendSignupEmail"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "GET",
+   "route": "/api/auth-ext/setup-state",
+   "to": "listSetupTasks"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/setup-step",
+   "to": null,
+   "retire_with": "KN-37",
+   "decision": "D-128.58",
+   "reason": "はじめの設定の段（D-089）は前の画面の流れ。新しい「はじめにやること」は listSetupTasks・dismissSetupTasks で、段を手で進める口は無い"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/sign-in",
+   "to": "signInWithPassword"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/sign-up",
+   "to": "createSignup"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "GET",
+   "route": "/api/auth-ext/signup-status",
+   "to": "getSignupStatus"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/two-factor/verify",
+   "to": "verifySignInCode"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "GET",
+   "route": "/api/auth-ext/vault/credentials",
+   "to": "listCredentials"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/vault/credentials",
+   "to": "createCredential"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/vault/credentials/:id/answer",
+   "to": "answerCredentialLoginCheck"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/vault/credentials/:id/login-check",
+   "to": "checkCredentialLogin"
+  },
+  {
+   "file": "apps/api/src/auth/ext.ts",
+   "method": "POST",
+   "route": "/api/auth-ext/verify-signup",
+   "to": "verifySignup"
+  }
+ ]
+}

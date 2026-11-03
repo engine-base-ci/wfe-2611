@@ -346,6 +346,7 @@
     "GET /api/bridge/jobs/:id/control",
     "POST /api/bridge/jobs/:id/browser",
     "POST /api/bridge/jobs/:id/conversation-entries",
+    "GET /api/bridge/mirror-targets",
     "POST /api/bridge/jobs/:id/artifacts",
     "POST /api/bridge/jobs/:id/tools/:name",
     "POST /api/bridge/credentials/resolve",
@@ -760,6 +761,7 @@
     "PATCH /api/conversations/:id",
     "DELETE /api/conversations/:id",
     "GET /api/conversations/:id/messages",
+    "GET /api/conversations/:id/stream",
     "POST /api/conversations/:id/messages",
     "POST /api/conversations/:id/messages",
     "POST /api/conversations/:id/stop",
@@ -3764,6 +3766,12 @@
      "path_draft": "/api/bridge/jobs/:id/conversation-entries"
     },
     {
+     "act": "A20",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/bridge/mirror-targets"
+    },
+    {
      "act": "A95",
      "role": "action",
      "method": "POST",
@@ -4896,6 +4904,12 @@
      "role": "data_fetch",
      "method": "GET",
      "path_draft": "/api/conversations/:id/messages"
+    },
+    {
+     "act": "A20",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/conversations/:id/stream"
     },
     {
      "act": "A20",

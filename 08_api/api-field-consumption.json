@@ -6604,6 +6604,56 @@
   },
   {
    "entity": "security_events",
+   "field": "step_up",
+   "consumed_by_screens": [
+    "mfa-setup",
+    "login",
+    "password-reset",
+    "bridge-setup",
+    "credentials",
+    "onboard-testrun",
+    "record-detail",
+    "audit",
+    "ai-staff-detail",
+    "security-brief",
+    "disclosure",
+    "account-close",
+    "account",
+    "ops-tenant",
+    "ops-review",
+    "ops-audit",
+    "member-detail"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "security_events",
+   "field": "step_up_failed",
+   "consumed_by_screens": [
+    "mfa-setup",
+    "login",
+    "password-reset",
+    "bridge-setup",
+    "credentials",
+    "onboard-testrun",
+    "record-detail",
+    "audit",
+    "ai-staff-detail",
+    "security-brief",
+    "disclosure",
+    "account-close",
+    "account",
+    "ops-tenant",
+    "ops-review",
+    "ops-audit",
+    "member-detail"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "security_events",
    "field": "member_id",
    "consumed_by_screens": [
     "mfa-setup",

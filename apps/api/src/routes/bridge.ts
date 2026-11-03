@@ -22,6 +22,7 @@ export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.post("/api/v1/bridge/jobs/:id/questions", op(deps, "askFromBridge"));
   app.get("/api/v1/bridge/jobs/:id/questions/:qid", op(deps, "getBridgeQuestionAnswer"));
   app.post("/api/v1/bridge/jobs/:id/tools/:name", op(deps, "callKanameTool"));
+  app.get("/api/v1/bridge/mirror-targets", op(deps, "listMirrorTargets"));
   app.post("/api/v1/bridge/pairing-codes", op(deps, "createPairingCode"));
   app.get("/api/v1/bridge/releases/latest", op(deps, "getLatestBridgeRelease"));
   app.get("/api/v1/bridge/releases/:name/file", op(deps, "downloadBridgeRelease"));

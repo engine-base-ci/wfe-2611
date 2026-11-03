@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:edc7708bc148a022
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:6022174fe4d3b61b
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -1704,6 +1704,8 @@ export const OpsAuditEventsInput = z.strictObject({
 });
 export const SecurityEvents = z.strictObject({
   kind_id: z.string().max(10000).optional(),
+  step_up: z.string().max(10000).optional(),
+  step_up_failed: z.string().max(10000).optional(),
   member_id: z.uuid().nullable().optional(),
   ip_region: z.string().max(10000).nullable().optional(),
   occurred_at: z.iso.datetime({ offset: true }).optional(),
@@ -1717,6 +1719,8 @@ export const SecurityEvents = z.strictObject({
 });
 export const SecurityEventsInput = z.strictObject({
   kind_id: z.string().max(10000).optional(),
+  step_up: z.string().max(10000).optional(),
+  step_up_failed: z.string().max(10000).optional(),
   member_id: z.uuid().nullable().optional(),
   ip_region: z.string().max(10000).nullable().optional(),
   detail: z.unknown().optional(),

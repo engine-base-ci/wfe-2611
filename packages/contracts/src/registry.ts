@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:edc7708bc148a022
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:6022174fe4d3b61b
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -2258,6 +2258,47 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     }
   },
   {
+    "method": "GET",
+    "path": "/api/v1/bridge/mirror-targets",
+    "operationId": "listMirrorTargets",
+    "table": "conversations",
+    "kind": "list",
+    "input": null,
+    "success": 200,
+    "generic": false,
+    "auth": "device",
+    "rateLimit": {
+      "perMinute": 120,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C4"
+    ],
+    "errors": [
+      401,
+      403,
+      422,
+      429,
+      502
+    ],
+    "acts": [
+      "A20"
+    ],
+    "screens": [
+      "bridge-setup"
+    ],
+    "perm": {
+      "word": "device",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
+    }
+  },
+  {
     "method": "POST",
     "path": "/api/v1/bridge/pairing-codes",
     "operationId": "createPairingCode",
@@ -3990,6 +4031,51 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       409,
+      422,
+      429,
+      502
+    ],
+    "acts": [
+      "A20"
+    ],
+    "screens": [
+      "clone-chat"
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": {
+        "table": "conversations",
+        "sql": "owner_member_id = app.user_id()"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/conversations/:id/stream",
+    "operationId": "streamConversation",
+    "table": "messages",
+    "kind": "get",
+    "input": null,
+    "success": 200,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 120,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C4"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
       422,
       429,
       502
@@ -15228,4 +15314,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     }
   }
 ];
-export const OPENAPI_HASH = "edc7708bc148a022";
+export const OPENAPI_HASH = "6022174fe4d3b61b";

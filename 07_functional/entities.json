@@ -6110,7 +6110,7 @@
     }
    ],
    "legacy_drift_notes": null,
-   "note": "**★新設（D-076.1・G-14）。**端末の一覧。退会・停止・権限変更・パスワード変更で **全行を即 revoked** にし、API と Bridge はこの表を見て拒否する（発行済みトークンの有効期限に頼らない） / **`health`** / **`health_at`**（Bridge が返した自己診断。Bridge の中で完結させない ← D-090.7）。`last_seen_at` は生存の知らせで動き、75 秒来なければ画面は「切れています」← D-090.8 / **`browser`**（chrome／dedicated／off。この端末で AI が使うブラウザ。Kaname が正本で、PC の画面か Bridge の窓で変える ← D-120.1）",
+   "note": "**★新設（D-076.1・G-14）。**端末の一覧。退会・停止・権限変更・パスワード変更で **全行を即 revoked** にし、API と Bridge はこの表を見て拒否する（発行済みトークンの有効期限に頼らない） / **`health`** / **`health_at`**（Bridge が返した自己診断。Bridge の中で完結させない ← D-090.7）。`last_seen_at` は生存の知らせで動き、75 秒来なければ画面は「切れています」← D-090.8 / **`browser`**（chrome／dedicated／off。この端末で AI が使うブラウザ。Kaname が正本で、PC の画面か Bridge の窓で変える ← D-120.1） / **`country`**（国。配布先の印 x-vercel-ip-country）・**`device`**（ブラウザの種類／OS）・**`last_ip`**（記録だけ）。国か端末が変わったら閉じる・同じ国の中の IP の変化は security_events に記録だけ。操作が無い 12 時間・最長 7 日は画面のセッションだけ（Bridge は時間では切らない）← D-128.120・D-128.121",
    "status": "decided",
    "decided_at": "2026-11-03",
    "source": [
@@ -6120,7 +6120,9 @@
     "D-076.13",
     "D-090.7",
     "D-090.8",
-    "D-120.1"
+    "D-120.1",
+    "D-128.120",
+    "D-128.121"
    ]
   },
   {
@@ -7141,7 +7143,15 @@
     },
     {
      "name": "kind_id",
-     "note": "login_failed ／ key_revoked ／ suspicious_connection ／ mfa_reset"
+     "note": "login_failed ／ key_revoked ／ suspicious_connection ／ mfa_reset ／ ip_changed（同じ国の中で IP だけ変わった・記録だけ"
+    },
+    {
+     "name": "step_up",
+     "note": null
+    },
+    {
+     "name": "step_up_failed",
+     "note": "本人確認の取り直し）← D-128.120・KN-56・KN-57"
     },
     {
      "name": "member_id",

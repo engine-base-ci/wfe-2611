@@ -589,6 +589,17 @@
    ]
   },
   {
+   "method": "GET",
+   "path": "/api/v1/bridge/mirror-targets",
+   "implementation_path": "apps/api/src/routes/conversations.ts::listMirrorTargets",
+   "screen_ids_referencing": [
+    "bridge-setup"
+   ],
+   "acts": [
+    "A20"
+   ]
+  },
+  {
    "method": "POST",
    "path": "/api/v1/bridge/pairing-codes",
    "implementation_path": "apps/api/src/routes/bridge_pairing_codes.ts::createPairingCode",
@@ -1036,6 +1047,17 @@
    "method": "POST",
    "path": "/api/v1/conversations/:id/stop",
    "implementation_path": "apps/api/src/routes/messages.ts::stopConversation",
+   "screen_ids_referencing": [
+    "clone-chat"
+   ],
+   "acts": [
+    "A20"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/conversations/:id/stream",
+   "implementation_path": "apps/api/src/routes/messages.ts::streamConversation",
    "screen_ids_referencing": [
     "clone-chat"
    ],

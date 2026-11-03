@@ -84,6 +84,18 @@ def design_fails(sa) -> list[str]:
                 fails.append(f"[ZT2] {e['method']} {e['path']} は権限 device なのに契約の役割が device でない")
             if pm and pm["who"] == "public" and e.get("auth", {}).get("role") != "public":
                 fails.append(f"[ZT2] {e['method']} {e['path']} は権限 public なのに契約ではログインが要る")
+    # 契約の外の道すじの行き先（KN-58・08_api/auth-ext-routes.json）：登録されている道すじは全部表にあり、移す先は契約の口、外すものは決定と理由を持つ
+    rp = os.path.join(ROOT, "08_api", "auth-ext-routes.json")
+    table = json.load(open(rp, encoding="utf-8"))["routes"] if os.path.exists(rp) else []
+    known = {(r["method"], r["route"]): r for r in table}
+    ops = {e["operation_id"] for e in json.load(open(os.path.join(ROOT, "08_api", "endpoints.json"), encoding="utf-8"))["endpoints"]}
+    log = open(os.path.join(ROOT, "01_hearing", "決定ログ_進行中.md"), encoding="utf-8").read()
+    for f in glob.glob(os.path.join(ROOT, "apps", "api", "src", "auth", "*.ts")):
+        for m, pth in re.findall(r'app\.(get|post|patch|put|delete)\("([^"]+)"', open(f, encoding="utf-8").read()):
+            r = known.get((m.upper(), "/api/auth-ext" + pth))
+            if not r: fails.append(f"[ZT1] 契約の外の道すじ {m.upper()} /api/auth-ext{pth} の行き先が 08_api/auth-ext-routes.json に無い（移す先の口か、外す決定を書く）"); continue
+            if r.get("to") and r["to"] not in ops: fails.append(f"[ZT1] {m.upper()} /api/auth-ext{pth} の移す先 {r['to']} が契約に無い")
+            if not r.get("to") and not (str(r.get("reason", "")).strip() and f"| {r.get('decision')} |" in log): fails.append(f"[ZT1] {m.upper()} /api/auth-ext{pth} を外す根拠（決定ログにある決定と理由）が無い")
     return fails
 
 

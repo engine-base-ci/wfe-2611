@@ -4,7 +4,7 @@
  "frozen_at": "2026-11-03",
  "summary": {
   "total_screens": 35,
-  "total_apis": 361,
+  "total_apis": 363,
   "coverage_rate": 1.0,
   "uncovered_screens": [],
   "acts_without_endpoint": []
@@ -327,6 +327,11 @@
     {
      "role": "action",
      "endpoint": "POST /api/v1/bridge/jobs/:id/conversation-entries",
+     "act": "A20"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/bridge/mirror-targets",
      "act": "A20"
     },
     {
@@ -661,6 +666,11 @@
     {
      "role": "data_fetch",
      "endpoint": "GET /api/v1/conversations/:id/messages",
+     "act": "A20"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/conversations/:id/stream",
      "act": "A20"
     },
     {

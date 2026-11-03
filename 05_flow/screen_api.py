@@ -112,6 +112,7 @@ SCREEN_API = {
         ("PATCH", "/conversations/:id", "A88", "conversations", "updateConversation", ["learning_candidates"]),
         ("DELETE", "/conversations/:id", "A88", "conversations", "deleteConversation", []),
         ("GET", "/conversations/:id/messages", "A20", "messages", "listConversationMessages", []),
+        ("GET", "/conversations/:id/stream", "A20", "messages", "streamConversation", []),   # 書きながらの返事の流れ（D-104.8・D-128.122）
         ("POST", "/conversations/:id/messages", "A20|A100", "messages", "sendConversationMessage", ["action_runs", "reference_logs"]),
         ("POST", "/conversations/:id/stop", "A20", "messages", "stopConversation", ["action_runs"]),
         ("POST", "/conversations/:id/attachments", "A90", "attachments", "createConversationAttachment", []),
@@ -244,6 +245,7 @@ SCREEN_API = {
         ("GET", "/bridge/jobs/:id/control", "A104", "bridge_jobs", "getJobControl", []),
         ("POST", "/bridge/jobs/:id/browser", "A104", "bridge_job_events", "reportBrowserState", ["attachments"]),
         ("POST", "/bridge/jobs/:id/conversation-entries", "A20", "messages", "mirrorConversationEntries", ["conversations"]),
+        ("GET", "/bridge/mirror-targets", "A20", "conversations", "listMirrorTargets", ["messages"]),   # 写しを取り戻す先（D-112・D-128.122）
         ("POST", "/bridge/jobs/:id/artifacts", "A95", "artifacts", "putArtifactFromBridge", ["artifact_versions"]),
         ("POST", "/bridge/jobs/:id/tools/:name", "A104", "action_runs", "callKanameTool", ["tickets", "reference_logs"]),
         ("POST", "/bridge/credentials/resolve", "A10", "credentials", "resolveCredential", ["audit_events"]),
@@ -708,6 +710,7 @@ PERMS = {
     "updateConversation": ("self", "自分の会話だけ（名前・星・記憶に使わない・閉じる）", False),
     "deleteConversation": ("self", "自分の会話だけ", False),
     "listConversationMessages": ("self", "自分の会話だけ", False),
+    "streamConversation": ("self", "自分の会話だけ。書きながらの返事・何をしているか・手順を流す（D-104.8）", False),
     "sendConversationMessage": ("self", "自分の会話だけ。分身は本人の権限の中でだけ読む・動く", False),
     "stopConversation": ("self", "自分の会話だけ", False),
     "createConversationAttachment": ("self", "自分の会話だけ（大きさ・種類の上限）", False),
@@ -819,6 +822,7 @@ PERMS = {
     "getJobControl": ("device", "同上（止める・割り込みの指示を受け取る）", False),
     "reportBrowserState": ("device", "同上。写しに預けたログイン情報が写り込んだら隠してから送る（D-128.57）", False),
     "mirrorConversationEntries": ("device", "同上（会話の記録の写し。正は本人の PC・D-112）", False),
+    "listMirrorTargets": ("device", "同上（取り戻す先：直近の本人の会話と、そこで使った Claude Code の session・D-112）", False),
     "putArtifactFromBridge": ("device", "同上", False),
     "callKanameTool": ("device", "同上。分身は本人の権限の中でだけ Kaname の道具を呼べる", False),
     "resolveCredential": ("device", "その人の PC の実行器だけ。持ち主と使える場所が合うときだけ・その仕事の間だけ。AI と画面には返さない（D-128.57）", False),
