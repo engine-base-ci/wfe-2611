@@ -26,3 +26,5 @@ packages/errors/src/catalog.ts
 .github/workflows/release-gate.yml
 apps/web/lib/nav.ts
 apps/web/lib/routes.ts
+# チケットの置き場（Kaname の形・文書の置き場と同じく書式の検査はしない）
+11_tickets/

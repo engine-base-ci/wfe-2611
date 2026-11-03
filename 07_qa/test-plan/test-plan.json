@@ -674,7 +674,7 @@
   "entities": 141,
   "policies": 405,
   "access_cases": 1529,
-  "errors": 127,
+  "errors": 134,
   "journey_rows": 88,
   "critical_tasks": 88
  },
@@ -1308,6 +1308,22 @@
    ],
    "source": "pnpm audit --prod --audit-level=high",
    "owner_task": "D-128.113",
+   "job": "static"
+  },
+  {
+   "id": 45,
+   "name": "Kaname を作るためのチケットの形（番号・親子 3 段・区画・決定 ID・先に要るもの）",
+   "script": "pnpm ci:tickets",
+   "blocking": true,
+   "detects": [
+    "親の無いチケット",
+    "4 段以上の親子",
+    "目的・完了の条件・テスト仕様の空",
+    "決定ログに無い決定 ID",
+    "先に要るものの輪"
+   ],
+   "source": "11_tickets・scripts/tickets/build_index.py",
+   "owner_task": "D-128.114",
    "job": "static"
   },
   {

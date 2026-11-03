@@ -13,7 +13,7 @@
 | entities | 141 |
 | policies | 405 |
 | access_cases | 1529 |
-| errors | 127 |
+| errors | 134 |
 | journey_rows | 88 |
 | critical_tasks | 88 |
 
@@ -84,7 +84,7 @@
 | L4 | 正本 full ＋ 本番スモーク（prod-smoke.md）＋ 負荷実測 | staging ＋ 本番（スモークのみ） | リリース前 | qa-coverage.py STATUS 完了 |
 | L5 | full ＋ 正本の鮮度監査 | staging | 年次・大改修 | 同上 |
 
-## CI ゲート 44 本（.github/workflows/v3-gate.yml）
+## CI ゲート 45 本（.github/workflows/v3-gate.yml）
 
 | # | 名前 | script | job | 致命 |
 |---|---|---|---|---|
@@ -122,6 +122,7 @@
 | G42 | 契約の外の道すじが無い（登録した道すじ＝契約） | `pnpm ci:endpoints` | static | ★ |
 | G43 | 秘密の混入（鍵・トークン・秘密鍵・パスワード入りの DB の URL・.env） | `pnpm ci:secret-scan` | static | ★ |
 | G44 | 部品の弱点（本番で使う部品に high 以上の弱点が無い） | `pnpm ci:deps-audit` | static |  |
+| G45 | Kaname を作るためのチケットの形（番号・親子 3 段・区画・決定 ID・先に要るもの） | `pnpm ci:tickets` | static |  |
 | G27 | 層の棚卸し（G21） | `python3 scripts/ci/layer_audit.py --run` | spec |  |
 | G28 | 正本 ↔ tickets の参照整合（qa-ladder validate） | `python3 scripts/ci/qa-ladder.py validate --spec 07_qa/test-specs --tickets 07_tasks/tickets.json` | spec |  |
 | G29 | エラー一覧 E1〜E9（引数を省かない） | `python3 scripts/ci/error_catalog.py gate --catalog 07_qa/test-specs/errors.json --mocks 06_mockup/v1 --spec 07_qa/test-specs --choke 03_architecture/choke-points.json` | spec |  |
