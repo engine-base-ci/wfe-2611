@@ -14,6 +14,7 @@ import { InfisicalVault, MemoryVault, SecretsGateway, type Vault } from "@kaname
 import { resendMail, signedMail } from "@kaname/notify";
 import { assertApiStartup } from "./startup.js";
 import { agentHooks } from "./hooks/agent.js";
+import { authHooks } from "./hooks/auth.js";
 import { nearLimitNotifier } from "./ops-alert.js";
 
 export interface BootOptions {
@@ -105,7 +106,7 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
     resolve: createSessionResolver(auth, appPool),
     authExt: authExt({ auth, appPool, authPool, repo, secrets, objects, config, hub, ...(mailer ? { mailer } : {}) }),
     corsOrigin: config.webOrigins.join(","),
-    contract: { hooks: agentHooks(appPool) }, // 会話・記憶の契約の口は画面の口と同じ本体を通す
+    contract: { hooks: { ...agentHooks(appPool), ...authHooks(auth, appPool) } }, // 会話・記憶の契約の口は画面の口と同じ本体を通す。本人確認の取り直しはログインの部品に頼る（KN-56）
   });
   return { app, report, close };
 }

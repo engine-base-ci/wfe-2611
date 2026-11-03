@@ -65,6 +65,10 @@ components:
         request_routing:
           type: string
           nullable: true
+        session_idle_hours:
+          type: integer
+        session_max_days:
+          type: integer
         updated_by:
           type: string
           format: uuid
@@ -3863,6 +3867,9 @@ components:
         cli_model:
           type: string
           nullable: true
+        country:
+          type: string
+          nullable: true
         created_by:
           type: string
           format: uuid
@@ -3871,11 +3878,17 @@ components:
           type: string
           format: date-time
           nullable: true
+        device:
+          type: string
+          nullable: true
         health:
           nullable: true
         health_at:
           type: string
           format: date-time
+          nullable: true
+        last_ip:
+          type: string
           nullable: true
         step_up_at:
           type: string
@@ -9063,6 +9076,14 @@ components:
         target_kind_id: *id851
         ability_id: *id852
         scope_kind: *id853
+    StepUpInput:
+      type: object
+      properties:
+        password:
+          type: string
+        code:
+          type: string
+      x-operation: stepUp
     ScopeOverview:
       type: object
       properties:
@@ -12815,7 +12836,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SessionsInput'
+              $ref: '#/components/schemas/StepUpInput'
       responses:
         '201':
           description: 成功
@@ -13364,9 +13385,11 @@ paths:
           - auth_session_id
           - browser
           - cli_model
+          - country
           - created_at
           - created_by
           - deleted_at
+          - device
           - device_label
           - health
           - health_at
@@ -13374,6 +13397,7 @@ paths:
           - ip_region
           - issued_at
           - kind_id
+          - last_ip
           - last_seen_at
           - member_id
           - revoke_reason_id
@@ -24132,9 +24156,11 @@ paths:
           - auth_session_id
           - browser
           - cli_model
+          - country
           - created_at
           - created_by
           - deleted_at
+          - device
           - device_label
           - health
           - health_at
@@ -24142,6 +24168,7 @@ paths:
           - ip_region
           - issued_at
           - kind_id
+          - last_ip
           - last_seen_at
           - member_id
           - revoke_reason_id
@@ -30238,6 +30265,8 @@ paths:
           - name
           - plan_id
           - request_routing
+          - session_idle_hours
+          - session_max_days
           - status_id
           - tenant_id
           - updated_at
@@ -30273,6 +30302,8 @@ paths:
           - name
           - plan_id
           - request_routing
+          - session_idle_hours
+          - session_max_days
           - status_id
           - tenant_id
           - updated_at

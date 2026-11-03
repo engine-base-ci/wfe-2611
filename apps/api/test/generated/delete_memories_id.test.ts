@@ -28,6 +28,8 @@ describe("DELETE /api/v1/memories/:id", () => {
   it.todo("test_delete_memories_id_rejected_403");
   // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）
   it.todo("test_delete_memories_id_not_found");
+  // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
+  it.todo("test_delete_memories_id_rejected_422");
   // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
   it.todo("test_delete_memories_id_rate_limited");
   // まだ作っていない口。作ったら本物の試験になる：UBIQUITOUS: DELETE /api/v1/memories/:id の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う

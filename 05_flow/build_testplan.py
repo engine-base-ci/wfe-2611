@@ -93,7 +93,7 @@ SPEC_GATES = [
     {"id": 33, "name": "RLS の場合表（access-matrix.json 全行）", "script": "pnpm ci:access-matrix -- --matrix 07_qa/test-plan/access-matrix.json", "job": "database", "blocking": True},
     {"id": 34, "name": "EARS → test の対応（mapping の test が全部存在）", "script": "pnpm ci:ears-mapping -- --mapping 07_qa/test-plan/ears-test-mapping.json", "job": "database", "blocking": True},
     {"id": 35, "name": "有限資源の静的検査（G-16：関門外の生クライアント・タイムアウト無し・冪等キー無しの書込）", "script": "pnpm ci:resource-static", "job": "static", "blocking": True},
-    {"id": 36, "name": "契約 fuzz（Schemathesis・openapi.yaml）", "script": "pnpm ci:schemathesis -- 08_api/openapi.yaml", "job": "database", "blocking": True},
+    {"id": 36, "name": "契約 fuzz（Schemathesis・openapi.yaml・作った口を本物の DB の上で叩く。答えの形の元の DB の列の書き出しも確かめる）", "script": "pip install -q schemathesis==4.33.0 && pnpm ci:schemathesis", "job": "database", "blocking": True},
 ]
 ALL_GATES = [{**g, "job": "database" if g["id"] in (3, 4, 6, 12) else ("e2e" if g["id"] == 15 else "static")} for g in FG["merge_gates"]] + SPEC_GATES
 def step(g): return f'      - name: "G{g["id"]} {g["name"]}{" [CRITICAL]" if g["id"] in FG.get("kaname_critical_gates", []) else ""}"\n        if: ${{{{ !cancelled() }}}}\n        run: {g["script"]}\n'   # 前の検査が赤でも次の検査を流す（赤を全部いっぺんに見る。job は赤のまま）

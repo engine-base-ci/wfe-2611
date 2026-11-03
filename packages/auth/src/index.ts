@@ -1,5 +1,6 @@
 // 認証（Better Auth 1.7）。境界 B2：better-auth を import してよいのはこのパッケージだけ（CI G7）。
 // 表は Postgres の schema "kaname_auth"（RLS の対象の public とは分ける。Supabase は schema auth を自社の認証に使うので同じ名前にしない：T-F-18）。失効の正は public.sessions（app.session_alive）。トークンの期限には頼らない。
+import { deviceOf } from "./device.js";
 import { betterAuth, type BetterAuthOptions } from "better-auth";
 import { bearer, twoFactor } from "better-auth/plugins";
 import { PostgresDialect } from "kysely";
@@ -26,7 +27,7 @@ export interface Mail {
   subject: string;
   text: string;
   url: string;
-  kind: "verify" | "reset";
+  kind: "verify" | "reset" | "new_device";
 }
 export type Mailer = (m: Mail) => Promise<void>;
 
@@ -117,6 +118,28 @@ export function createAuth(o: AuthOptions): { auth: Auth; pool: pg.Pool } {
               ua.slice(0, 200) || null,
               null,
             ]);
+            // 新しい端末でのログインは本人に知らせる（画面の知らせは DB の関数が作る・メールはここ・D-125.140）
+            const nd = await o.appPool.query<{ is_new: boolean }>(
+              "select is_new from app.session_first_on_device($1, null, $2, $3)",
+              [session.id, deviceOf(ua), (session as { ipAddress?: string | null }).ipAddress ?? null],
+            );
+            if (nd.rows[0]?.is_new && o.mailer) {
+              const u = await pool.query<{ email: string }>('select email from kaname_auth."user" where id = $1', [
+                session.userId,
+              ]);
+              const to = u.rows[0]?.email;
+              const url = `${o.webBaseURL ?? o.baseURL}/settings/security`;
+              if (to)
+                await o
+                  .mailer({
+                    to,
+                    subject: "Kaname に新しい端末からログインしました",
+                    text: `新しい端末（${deviceOf(ua) ?? "不明"}）から Kaname にログインしました。心当たりが無ければ、すぐにパスワードを変えて、端末の一覧からこの端末を外してください。`,
+                    url,
+                    kind: "new_device",
+                  })
+                  .catch(() => undefined); // 知らせのメールが送れなくてもログインは止めない（画面の知らせは残る）
+            }
           },
         },
       },

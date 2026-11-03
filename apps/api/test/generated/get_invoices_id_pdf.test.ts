@@ -28,6 +28,8 @@ describe("GET /api/v1/invoices/:id/pdf", () => {
   it.todo("test_get_invoices_id_pdf_rejected_403");
   // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）
   it.todo("test_get_invoices_id_pdf_not_found");
+  // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
+  it.todo("test_get_invoices_id_pdf_rejected_422");
   // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
   it.todo("test_get_invoices_id_pdf_rate_limited");
 });

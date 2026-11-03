@@ -129,6 +129,8 @@
   "D-128.117",
   "D-128.118",
   "D-128.119",
+  "D-128.120",
+  "D-128.121",
   "D-128.20",
   "D-128.32",
   "D-128.33",
@@ -180,7 +182,7 @@
   "tickets": 218,
   "l1_rows": 5160,
   "ears_endpoints": 361,
-  "ears_tests": 2459,
+  "ears_tests": 2608,
   "entities": 142,
   "policies": 413,
   "access_cases": 1542,
@@ -904,8 +906,8 @@
   },
   {
    "id": 36,
-   "name": "契約 fuzz（Schemathesis・openapi.yaml）",
-   "script": "pnpm ci:schemathesis -- 08_api/openapi.yaml",
+   "name": "契約 fuzz（Schemathesis・openapi.yaml・作った口を本物の DB の上で叩く。答えの形の元の DB の列の書き出しも確かめる）",
+   "script": "pip install -q schemathesis==4.33.0 && pnpm ci:schemathesis",
    "job": "database",
    "blocking": true
   }

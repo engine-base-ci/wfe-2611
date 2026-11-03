@@ -28,10 +28,12 @@ describe("GET /api/v1/members/:id/remove-preview", () => {
   it.todo("test_get_members_id_remove_preview_rejected_403");
   // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）
   it.todo("test_get_members_id_remove_preview_not_found");
+  // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
+  it.todo("test_get_members_id_remove_preview_rejected_422");
   // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
   it.todo("test_get_members_id_remove_preview_rate_limited");
   // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 抜ける人の依存（タスク・承認待ち・AI社員・層の長）に自分のAIが引き継ぎ先の案を出せない、または引き継ぎ先が未決のまま「無効にする」を押した THEN Kaname は「引き継ぎ先が決まっていないものがあります。決めるまで無効にできません」を返し、自分のAIの案を全部採る／1 件ずつ決める（E-ACT-035）
-  it.todo("test_get_members_id_remove_preview_rejected_422");
+  it.todo("test_get_members_id_remove_preview_rejected_422_2");
   // まだ作っていない口。作ったら本物の試験になる：UBIQUITOUS: GET /api/v1/members/:id/remove-preview の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
   it.todo("test_get_members_id_remove_preview_shape");
 });

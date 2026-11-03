@@ -253,7 +253,7 @@ erDiagram
 |---|---|---|
 | **`account_events`** | `<common>` / `kind_id`（member_leave / company_close / suspend / permission_change / plan_change / layer_delete / staff_delete）/ `subject_type` / `subject_id` / `requested_by` / `status_id`（pending / resolving / done）/ `resolved_at` | **★新設（D-074.1・D-076.13）。**出来事 7 つの実体。画面の依存表（G16）はここから |
 | **`account_event_items`** | `<common>` / `event_id` / `object_kind`（flow.json の objects 名）/ `disposition_id`（消える／残る／移る・戻る／止まる／即失効）/ `target_ref` / `decided_by` / `done_at` | **★新設。**オブジェクトごとの「何が起きるか」と引き継ぎ先の決定。全部 done になるまで出来事は終わらない（引き継ぎ先を決めるまで消せない） |
-| **`sessions`** | `<common>` / `member_id` / `kind_id`（web / bridge / api）/ `auth_session_id`（Better Auth のセッション。失効の判定はこの表が正） / `device_label` / `ip_region` / `issued_at` / `last_seen_at` / `revoked_at` / `revoke_reason_id` | **★新設（D-076.1・G-14）。**端末の一覧。退会・停止・権限変更・パスワード変更で **全行を即 revoked** にし、API と Bridge はこの表を見て拒否する（発行済みトークンの有効期限に頼らない） / **`health`** / **`health_at`**（Bridge が返した自己診断。Bridge の中で完結させない ← D-090.7）。`last_seen_at` は生存の知らせで動き、75 秒来なければ画面は「切れています」← D-090.8 / **`browser`**（chrome／dedicated／off。この端末で AI が使うブラウザ。Kaname が正本で、PC の画面か Bridge の窓で変える ← D-120.1） |
+| **`sessions`** | `<common>` / `member_id` / `kind_id`（web / bridge / api）/ `auth_session_id`（Better Auth のセッション。失効の判定はこの表が正） / `device_label` / `ip_region` / `issued_at` / `last_seen_at` / `revoked_at` / `revoke_reason_id` | **★新設（D-076.1・G-14）。**端末の一覧。退会・停止・権限変更・パスワード変更で **全行を即 revoked** にし、API と Bridge はこの表を見て拒否する（発行済みトークンの有効期限に頼らない） / **`health`** / **`health_at`**（Bridge が返した自己診断。Bridge の中で完結させない ← D-090.7）。`last_seen_at` は生存の知らせで動き、75 秒来なければ画面は「切れています」← D-090.8 / **`browser`**（chrome／dedicated／off。この端末で AI が使うブラウザ。Kaname が正本で、PC の画面か Bridge の窓で変える ← D-120.1） / **`country`**（国。配布先の印 x-vercel-ip-country）・**`device`**（ブラウザの種類／OS）・**`last_ip`**（記録だけ）。国か端末が変わったら閉じる・同じ国の中の IP の変化は security_events に記録だけ。操作が無い 12 時間・最長 7 日は画面のセッションだけ（Bridge は時間では切らない）← D-128.120・D-128.121 |
 | **`support_access_grants`** | `<common>` / `granted_by_member_id` / `scope jsonb`（構成／手順／証跡 …）/ `expires_at` / `revoked_at` / `ops_member_id` | **★新設（D-074.5・D-125.128 で改めた）。**運営は既定で顧客データを見られない。規約で先に許可をもらい（D-125.128）、「中を見る」を持つ運営の人が理由を書いて開いたときだけ、この行（1 時間・見るだけ・D-128.68）を根拠に読める。したことは運営側 `ops_audit_events` と会社側 `audit_events` の両方に残る（D-128.108） |
 | **`retention_holds`** | `<common>` / `record_type` / `record_ref` / `retain_until` / `legal_basis` | **★新設（D-074.3）。**退会後も法令で残す記録（請求の記録 7 年 等）。消去バッチはこの表の行を除外する |
 | **`erasure_certificates`** | `<common>` / `issued_at` / `content_hash` / `sent_to` / `storage_ref` | **★新設（D-074.3）。**猶予（30 日・復元可）の後の完全消去で自動生成し、会社の代表に送る |
@@ -283,7 +283,7 @@ erDiagram
 | **`review_requests`** | `<common>` / `subject_type`（template / duty）/ `subject_id` / `anonymization_check jsonb` / `status_id`（pending / approved / rejected / returned）/ `reviewer_ops_member_id` / `decided_at` / `reason` | **★新設（D-027・D-074.4・D-077.3）。**会社が明示的に公開したものの審査。承認・却下は会社の詳細の「審査」で行う。公開時の出どころは業種名だけ |
 | **`ops_members`** | `<common>`（tenant_id＝運営）/ `member_id` / `ops_role_id`（support / billing / catalog / admin）/ `revoked_at` | **★新設（D-073.7・D-074.4）。**運営メンバーと権限。運営の権限も 誰に×何に×できること |
 | **`ops_audit_events`** | `<common>`（tenant_id＝運営）/ `ops_member_id` / `target_tenant_id` / `action` / `target_type` / `target_id` / `grant_id` / `payload jsonb` / `occurred_at` | **★新設（D-074.4・D-077.7）。追記専用。**運営が「どの会社に何をしたか」。同じ行を対象会社の `audit_events` にも書く（顧客が自分の証跡で見られる） |
-| **`security_events`** | `<common>` / `kind_id`（login_failed / key_revoked / suspicious_connection / mfa_reset）/ `member_id` / `ip_region` / `detail jsonb` / `occurred_at` | **★新設（D-075.6）。追記専用。**セキュリティの出来事。会社側「できること・できないこと」と運営側「運営の証跡」の両方から読む |
+| **`security_events`** | `<common>` / `kind_id`（login_failed / key_revoked / suspicious_connection / mfa_reset / ip_changed（同じ国の中で IP だけ変わった・記録だけ）/ step_up / step_up_failed（本人確認の取り直し）← D-128.120・KN-56・KN-57）/ `member_id` / `ip_region` / `detail jsonb` / `occurred_at` | **★新設（D-075.6）。追記専用。**セキュリティの出来事。会社側「できること・できないこと」と運営側「運営の証跡」の両方から読む |
 
 ---
 
@@ -471,7 +471,7 @@ erDiagram
 
 
 ワークスペースの管理で足す列（D-128.95〜.98）：
-- `tenants`：`logo_ref` / `client_visibility_default`（取引先を見られる人の既定）/ `request_routing`（依頼の届け先：分身が振り分ける）/ `deletion_requested_at`（消す手続き。14 日は取り消せる・`account_events(kind=company_close)` と対）
+- `tenants`：`logo_ref` / `client_visibility_default`（取引先を見られる人の既定）/ `request_routing`（依頼の届け先：分身が振り分ける）/ `deletion_requested_at`（消す手続き。14 日は取り消せる・`account_events(kind=company_close)` と対） / `session_idle_hours`（操作が無いと切る時間・既定 12・1〜12）/ `session_max_days`（最長・既定 7・1〜7。管理者は短くできるが長くはできない ← D-125.140・KN-57）
 - `permissions`：「誰ができるか」の 3 つ（プランと支払い・書き出す・ワークスペースを消す）は `abilities` に `billing` / `export` / `delete_workspace` を足して同じ表で持つ。個別に足す・外すも同じ表（`revoked_at`）
 - `members`：`suspended_at` / `suspended_by`（一時的に止める。入れなくなり分身も止まる。担当はそのまま）
 - `policies`：`kind`（守ること・上に回す）/ `escalate_when jsonb`（何のとき・条件）/ `escalate_to`（そのグループのマネージャー・決まった人・取引先の担当）。上に回す決まりも同じ表（D-128.87）

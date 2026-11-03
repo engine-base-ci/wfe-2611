@@ -104,7 +104,9 @@
    "decisions": [
     "D-128.91",
     "D-128.93",
-    "D-125.140"
+    "D-125.140",
+    "D-128.120",
+    "D-128.121"
    ],
    "split": "KN-56（本人確認の取り直し）・KN-57（セッションの見張り）・KN-58（契約の外の 87 本）",
    "depends_on": [
@@ -1897,7 +1899,7 @@
    "id": "KN-56",
    "title": "本人確認の取り直しの口（POST /auth/step-up）を作る",
    "kind": "タスク",
-   "stage": "未着手",
+   "stage": "確認中",
    "parent": "KN-4",
    "milestone": "基盤",
    "area": "認証",
@@ -1916,14 +1918,14 @@
    ],
    "sections": {
     "目的": "パスキーか、パスワード＋2 段階のコードで本人を確かめ直し、セッションに時刻を付ける（15 分効く）。いつも要る口・条件つきの口はこの時刻を見る（KN-51）。",
-    "完了の条件": "- [ ] パスワード（＋2 段階を使う人はコード）で確かめ直せ、セッションの step_up_at が付く\n- [ ] 間違えたら 401 で時刻は付かない。回数の上限で止まる\n- [ ] 契約の入力の形がパスワード・コードになっている（SessionsInput ではない）\n- [ ] CI が緑",
+    "完了の条件": "- [x] パスワード（＋2 段階を使う人はコード）で確かめ直せ、セッションの step_up_at が付く\n- [x] 間違えたら 401 で時刻は付かない。回数の上限（契約の 60 回／分／人）で止まる\n- [x] 契約の入力の形がパスワード・コードになっている（StepUpInput。SessionsInput ではない）\n- [ ] CI が緑（手元で確かめた。GitHub の結果は push 後に見る）",
     "前提と制約": "- 暗号の中身は Better Auth に任せる（D-128.91）",
-    "実施事項": "- [ ] 契約の入力（StepUpInput：password・code）\n- [ ] hooks：Better Auth でパスワードを確かめ、2 段階を使う人はコードも。通ったら app.mark_step_up\n- [ ] パスキーの確かめ直しは画面の土台（KN-5）と一緒に（ブラウザの WebAuthn が要る）",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 正しいパスワードで step_up_at が付き、15 分の口が通る | ① 機械 | `apps/api/test/step_up.test.ts` | |\n| 間違ったパスワード・コードは 401 で付かない | ① 機械 | 同上 | |",
-    "成果物": "",
+    "実施事項": "- [x] 契約の入力（StepUpInput：password・code）。表の行ではない入力の形を 05_flow/screen_api.py の INPUTS に書けるようにした\n- [x] hooks（apps/api/src/hooks/auth.ts）：Better Auth の verifyPassword、2 段階を使う人は verifyTOTP。結果は app.record_step_up（0083）で security_events に残し、通ったらセッションに時刻\n- [ ] パスキーの確かめ直しは画面の土台（KN-5）と一緒に（ブラウザの WebAuthn が要る）",
+    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 正しいパスワードで step_up_at が付き、いつも要る口が STEP_UP_REQUIRED で止まらなくなる | ① 機械 | `apps/api/test/step_up.test.ts` | 緑（2026-11-03） |\n| 間違ったパスワードは 401 で付かない・失敗も記録・空なら 422・ログインなしは 401 | ① 機械 | 同上 | 緑（2026-11-03） |",
+    "成果物": "- `apps/api/src/hooks/auth.ts`・`apps/api/src/server.ts`（hooks を差す）\n- `05_flow/screen_api.py`（INPUTS）・`05_flow/build_api.py`\n- `packages/db/migrations/0083_session_watch.sql`（app.record_step_up）・`apps/api/test/step_up.test.ts`",
     "決定ログ": "- 決定に従った：D-125.139・D-125.140",
     "リスクと懸念": "",
-    "申し送り": ""
+    "申し送り": "- パスキーでの取り直しは KN-5（画面の土台）で足す\n- 2 段階のコードを使う人の取り直しは、2 段階を有効にした利用者での試験をまだ書いていない（ログインの部品の verifyTOTP に任せた）。KN-54 で足す\n- ほかの「表の行ではない」入力（承認する・戻す など）も、口を作る番で INPUTS に書く"
    },
    "file": "11_tickets/KN-56.md"
   },
@@ -1931,7 +1933,7 @@
    "id": "KN-57",
    "title": "セッションの見張り（12 時間・7 日・国と端末の変化・新しい端末の知らせ）",
    "kind": "タスク",
-   "stage": "未着手",
+   "stage": "確認中",
    "parent": "KN-4",
    "milestone": "基盤",
    "area": "認証",
@@ -1939,7 +1941,8 @@
    "due": "2026-11-13",
    "decisions": [
     "D-125.140",
-    "D-128.120"
+    "D-128.120",
+    "D-128.121"
    ],
    "split": "",
    "choke_points": [
@@ -1950,14 +1953,14 @@
    ],
    "sections": {
     "目的": "操作が無いと 12 時間・最長 7 日で切る。国か端末が変わったら切って入り直させ、同じ国の中で IP だけ変わったら記録だけ残す。新しい端末でのログインは本人に知らせる。管理者はもっと短くできる。",
-    "完了の条件": "- [ ] 12 時間操作が無い・7 日たったセッションは 401\n- [ ] 国（x-vercel-ip-country）か端末（ブラウザの種類・OS）が変わると 401 で、セッションは閉じる\n- [ ] 同じ国の中で IP だけ変わったら切らず、security_events に残る\n- [ ] 新しい端末でログインすると、本人に知らせが届く\n- [ ] 管理者が会社の長さを短くできる（長くはできない）\n- [ ] zt_gate の session_idle・session_geo が 0\n- [ ] CI が緑",
+    "完了の条件": "- [x] 12 時間操作が無い・7 日たったセッションは 401\n- [x] 国（x-vercel-ip-country）か端末（ブラウザの種類・OS）が変わると 401 で、セッションは閉じる\n- [x] 同じ国の中で IP だけ変わったら切らず、security_events に残る\n- [x] 新しい端末でログインすると、本人に知らせが届く\n- [x] 管理者が会社の長さを短くできる（長くはできない）\n- [x] zt_gate の session_idle・session_geo が 0\n- [ ] CI が緑（手元で変えたところの試験を確かめた。GitHub の結果は push 後に見る）",
     "前提と制約": "- 暗号の中身は Better Auth に任せる（D-128.91）",
-    "実施事項": "- [ ] sessions に国・端末・IP の列。tenants に操作が無いときの長さ・最長の長さ\n- [ ] app.session_check：要求ごとに確かめ、切るときは理由（idle・max_age・country_changed・device_changed）を付けて閉じる\n- [ ] 解決（resolver）が国・IP・端末を渡す\n- [ ] 新しい端末：知らせ（画面・メール）",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 12 時間・7 日で 401 | ① 機械 | `packages/auth/test/session_watch.test.ts` | |\n| 国・端末の変化で 401・IP だけなら記録 | ① 機械 | 同上 | |\n| 新しい端末の知らせ | ① 機械 | 同上 | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-125.140・D-128.120",
+    "実施事項": "- [x] sessions に国・端末・IP の列。tenants に操作が無いときの長さ・最長の長さ（0083）\n- [x] app.session_check：要求ごとに確かめ、切るときは理由（idle・max_age・country_changed・device_changed）を付けて閉じる。国・端末で閉じたときは security_events に suspicious_connection\n- [x] 解決（resolver）が国（x-vercel-ip-country）・IP・端末（ブラウザの種類／OS・版の数字は見ない）を渡す\n- [x] 新しい端末：画面の知らせ（notifications・security.new_device）とメール（送れなくてもログインは止めない）\n- [x] PC に常駐する Bridge は時間では切らない（D-128.121。確かめた）\n- [x] zt_gate の ZT6 の確かめを、言葉が書いてあるかではなく、解決が app.session_check を呼び、その関数が 4 つの理由で閉じるかにした",
+    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 12 時間・7 日で 401・管理者は短くできる | ① 機械 | `packages/auth/test/session_watch.test.ts` | 緑（2026-11-03） |\n| 国・端末の変化で 401・IP だけなら記録・印が無ければ国で切らない | ① 機械 | 同上 | 緑（2026-11-03） |\n| 新しい端末の知らせ（2 回目は知らせない） | ① 機械 | 同上 | 緑（2026-11-03） |\n| Bridge は 25 時間・8 日でも切れない | ① 機械 | 同上 | 緑（2026-11-03） |",
+    "成果物": "- `packages/db/migrations/0083_session_watch.sql`（app.session_check・app.session_first_on_device）\n- `packages/auth/src/device.ts`・`resolver.ts`・`index.ts`\n- `packages/auth/test/session_watch.test.ts`・`scripts/ci/zt_gate.py`（ZT6）",
+    "決定ログ": "- 決定に従った：D-125.140・D-128.120・D-128.121（入り直しの条件・国の判定・Bridge は 2026-11-03 に確かめた）",
     "リスクと懸念": "",
-    "申し送り": ""
+    "申し送り": "- 管理者が長さを変える画面と口は、会社の設定の画面（節目②・KN-24）で作る。いまは列と決まり（1〜12 時間・1〜7 日）だけ"
    },
    "file": "11_tickets/KN-57.md"
   },

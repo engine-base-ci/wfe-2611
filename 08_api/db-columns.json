@@ -5834,6 +5834,10 @@
     "type": "text",
     "nullable": true
    },
+   "country": {
+    "type": "text",
+    "nullable": true
+   },
    "created_at": {
     "type": "timestamp with time zone",
     "nullable": false
@@ -5844,6 +5848,10 @@
    },
    "deleted_at": {
     "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "device": {
+    "type": "text",
     "nullable": true
    },
    "device_label": {
@@ -5873,6 +5881,10 @@
    "kind_id": {
     "type": "text",
     "nullable": false
+   },
+   "last_ip": {
+    "type": "text",
+    "nullable": true
    },
    "last_seen_at": {
     "type": "timestamp with time zone",
@@ -6695,6 +6707,14 @@
    "request_routing": {
     "type": "text",
     "nullable": true
+   },
+   "session_idle_hours": {
+    "type": "integer",
+    "nullable": false
+   },
+   "session_max_days": {
+    "type": "integer",
+    "nullable": false
    },
    "status_id": {
     "type": "uuid",

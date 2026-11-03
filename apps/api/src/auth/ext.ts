@@ -59,7 +59,7 @@ export interface AuthExtDeps {
     subject: string;
     text: string;
     url: string;
-    kind: "verify" | "reset" | "code";
+    kind: "verify" | "reset" | "code" | "new_device";
   }) => Promise<void>;
   /** 会話が変わった知らせ（D-113）。無ければ /agent/stream は 503 で、画面は見に行く形のまま */
   hub?: MemberHub | null;

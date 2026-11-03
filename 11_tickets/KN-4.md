@@ -8,7 +8,7 @@ milestone: 基盤
 area: 認証
 assignee: 未定
 due: 
-decisions: [D-128.91, D-128.93, D-125.140]
+decisions: [D-128.91, D-128.93, D-125.140, D-128.120, D-128.121]
 split: KN-56（本人確認の取り直し）・KN-57（セッションの見張り）・KN-58（契約の外の 87 本）
 depends_on: [KN-3]
 ---

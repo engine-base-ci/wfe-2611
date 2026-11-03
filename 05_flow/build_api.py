@@ -146,6 +146,8 @@ for e in E:
     resp = {**props, **{k: dbtype(v) for k, v in sorted(dbc.items()) if k not in props}}   # 答えは DB の列を全部持つ（ER に無い列も）
     schemas[name] = {"type": "object", "properties": resp, "required": ["id"], "x-table": e["table_name"], "x-source": e["source"]}
     schemas[name + "Input"] = {"type": "object", "properties": {k: v for k, v in props.items() if k not in INTERNAL}}
+for _op, (_n, _props) in getattr(_sa, "INPUTS", {}).items():   # 表の行ではない入力の形（KN-56）
+    schemas[_n] = {"type": "object", "properties": {k: {"type": v} for k, v in _props.items()}, "x-operation": _op}
 for _op, (_n, _props) in _sa.RESPONSES.items():   # 表の行ではない答えの形（D-128.78）
     schemas[_n] = {"type": "object", "properties": {k: ({"type": "array", "items": {"type": "object"}} if v == "array" else {"type": v}) for k, v in _props.items()}, "x-operation": _op}
 schemas["Error"] = {"type": "object", "properties": {"error": {"type": "string"}, "code": {"type": "string"}, "message": {"type": "string"}, "details": {"type": "array", "items": {"type": "object"}}, "retry_after_sec": {"type": "integer"}}, "required": ["error"]}
@@ -169,7 +171,8 @@ for e in endpoints:
     elif e["returns_list"]: op["parameters"] += qparams(("scope_id", "cursor", "limit", "sort"), tname)
     if not op["parameters"]: del op["parameters"]
     tbl = "".join(w.capitalize() for w in tname.split("_"))
-    if e["method"] in ("POST", "PATCH"): op["requestBody"] = {"required": True, "content": {"application/json": {"schema": {"$ref": f"#/components/schemas/{tbl}Input"}}}}
+    _in = getattr(_sa, "INPUTS", {}).get(e.get("operation_id"), (f"{tbl}Input",))[0]
+    if e["method"] in ("POST", "PATCH"): op["requestBody"] = {"required": True, "content": {"application/json": {"schema": {"$ref": f"#/components/schemas/{_in}"}}}}
     ok = {"description": "成功", "content": {"application/json": {"schema": {"type": "object", "properties": {"data": {"type": "array", "items": {"$ref": f"#/components/schemas/{name}"}} if e["returns_list"] else {"$ref": f"#/components/schemas/{name}"}, "meta": {"type": "object", **({"properties": {k: {"type": v} for k, v in getattr(_sa, "META", {}).get(e.get("operation_id"), {}).items()}} if e.get("operation_id") in getattr(_sa, "META", {}) else {})}}}}}}
     op["responses"] = {str(e["outputs_2xx"]["status"]): ok, **{str(x["status"]): {"description": x["code"], "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}} for x in e["outputs_4xx"]}}
     paths.setdefault(re.sub(r":(\w+)", r"{\1}", e["path"]), {})[e["method"].lower()] = op

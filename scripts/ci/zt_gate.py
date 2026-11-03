@@ -106,8 +106,6 @@ def impl_todo() -> tuple[list[str], dict]:
     for t, k in _r2.PENDING_CHILD_TABLES.items(): todo.append(f"[ZT3] {t} はまだ「ログイン済みなら誰でも読める」。{k} で直す")
     metrics["open_read_child"] = len(_r2.PENDING_CHILD_TABLES)
     auth = "".join(open(f, encoding="utf-8").read() for f in glob.glob(os.path.join(ROOT, "packages", "auth", "src", "**", "*.ts"), recursive=True))
-    if not re.search(r"idle|IDLE_", auth): todo.append("[ZT6] 操作が無いときの期限（12 時間）が packages/auth に無い")
-    if not re.search(r"country|geo|ip_change|ipChange", auth): todo.append("[ZT6] IP・国の急な変化で入り直させる仕組みが packages/auth に無い")
     web = "".join(open(f, encoding="utf-8").read() for f in glob.glob(os.path.join(ROOT, "apps", "web", "next.config.*")) + glob.glob(os.path.join(ROOT, "apps", "web", "middleware.*")))
     op = open(os.path.join(ROOT, "apps", "api", "src", "contract", "op.ts"), encoding="utf-8").read() if os.path.exists(os.path.join(ROOT, "apps", "api", "src", "contract", "op.ts")) else ""
     if '"client"' not in op: todo.append("[ZT4] 契約の入口（apps/api/src/contract/op.ts）が取引先の人（client）を分けていない。client は /portal/ の API だけ通す")
@@ -120,8 +118,15 @@ def impl_todo() -> tuple[list[str], dict]:
             outside.append(f"{m.upper()} /api/auth-ext{pth}")
     if outside: todo.append(f"[ZT1] 契約の外で登録されている道すじ {len(outside)} 本（apps/api/src/auth/*.ts）。契約に入れて誰が呼べるかを書く")
     metrics["outside_routes"] = len(outside)
-    metrics["session_idle"] = int(not re.search(r"idle|IDLE_", auth))
-    metrics["session_geo"] = int(not re.search(r"country|geo|ip_change|ipChange", auth))
+    # セッションの見張り（KN-57）：解決が要求ごとに app.session_check を呼び、その関数が時間（idle・max_age）と国・端末（country_changed・device_changed）で閉じる
+    mig = "".join(open(f, encoding="utf-8").read() for f in glob.glob(os.path.join(ROOT, "packages", "db", "migrations", "*.sql")))
+    check_fn = re.search(r"function app\.session_check\b.*?\$\$;", mig, re.S)
+    body = check_fn.group(0) if check_fn else ""
+    calls = "app.session_check(" in auth
+    metrics["session_idle"] = int(not (calls and "'idle'" in body and "'max_age'" in body))
+    metrics["session_geo"] = int(not (calls and "'country_changed'" in body and "'device_changed'" in body))
+    if metrics["session_idle"]: todo.append("[ZT6] 操作が無いときの期限（12 時間）・最長（7 日）で閉じる仕組み（app.session_check）が無いか、解決が呼んでいない")
+    if metrics["session_geo"]: todo.append("[ZT6] 国・端末の急な変化で閉じる仕組み（app.session_check）が無いか、解決が呼んでいない")
     metrics["csp"] = int("Content-Security-Policy" not in web)
     metrics["client_gate"] = int('"client"' not in op)
     # ZT1・ZT5（実装）：権限の言葉の段と本人確認の取り直しが入口にあるか。

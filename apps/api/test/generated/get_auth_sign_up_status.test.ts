@@ -22,6 +22,8 @@ describe("GET /api/v1/auth/sign-up/status", () => {
   });
   // まだ作っていない口。作ったら本物の試験になる：EVENT-DRIVEN: WHEN GET /api/v1/auth/sign-up/status が「名前・メール・パスワード・会社名（空でもよい）を入れる」として呼ばれたとき THEN Kaname は「テナント（会社／個人）と本人を作る。保留の申し込みを暗号化して 30 分」を行い 2xx を返す
   it.todo("test_get_auth_sign_up_status_ok");
+  // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
+  it.todo("test_get_auth_sign_up_status_rejected_422");
   // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 10/min/ip を超えたら、Kaname は 429 と retry_after_sec を返す
   it.todo("test_get_auth_sign_up_status_rate_limited");
   // まだ作っていない口。作ったら本物の試験になる：UBIQUITOUS: GET /api/v1/auth/sign-up/status の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う

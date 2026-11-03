@@ -485,6 +485,10 @@ SCREEN_API = {
 
 
 # 表の行ではない答えの形（operationId → 名前と項目）。項目の型は string／integer／boolean／object／array
+# 表の行ではない入力の形（KN-56）。無い口は「表の名前＋Input」
+INPUTS = {
+    "stepUp": ("StepUpInput", {"password": "string", "code": "string"}),
+}
 RESPONSES = {
     "getScopeOverview": ("ScopeOverview", {"by_stage": "array", "milestones": "array", "recent": "array", "total": "integer"}),
     "previewTicketKindChange": ("TicketKindChangePreview", {"added_sections": "array", "removed_sections": "array", "moved_to_body": "array", "checks_reset": "boolean"}),

@@ -28,10 +28,12 @@ describe("GET /api/v1/ops/notices/:id", () => {
   it.todo("test_get_ops_notices_id_rejected_403");
   // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）
   it.todo("test_get_ops_notices_id_not_found");
+  // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
+  it.todo("test_get_ops_notices_id_rejected_422");
   // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
   it.todo("test_get_ops_notices_id_rate_limited");
   // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF お知らせの公開で対象の会社が 0 件（プラン未選択・該当なし）、公開日時が過去、または全社通知の送出が一部失敗した THEN Kaname は「対象の会社がありません。プランか会社を選んでください」を返し、対象を選び直す／失敗した分を再送する（E-ACT-038）
-  it.todo("test_get_ops_notices_id_rejected_422");
+  it.todo("test_get_ops_notices_id_rejected_422_2");
   // まだ作っていない口。作ったら本物の試験になる：UBIQUITOUS: GET /api/v1/ops/notices/:id の副作用は関門 C2・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
   it.todo("test_get_ops_notices_id_shape");
 });

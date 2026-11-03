@@ -22,6 +22,8 @@ describe("GET /api/v1/auth/invitations/:token", () => {
   });
   // まだ作っていない口。作ったら本物の試験になる：EVENT-DRIVEN: WHEN GET /api/v1/auth/invitations/:token が「招待の中身（会社・層・役割）を見て参加する」として呼ばれたとき THEN Kaname は「テナントへの所属を作り、層と権限の束を結ぶ」を行い 2xx を返す
   it.todo("test_get_auth_invitations_token_ok");
+  // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
+  it.todo("test_get_auth_invitations_token_rejected_422");
   // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 10/min/ip を超えたら、Kaname は 429 と retry_after_sec を返す
   it.todo("test_get_auth_invitations_token_rate_limited");
   // まだ作っていない口。作ったら本物の試験になる：UBIQUITOUS: GET /api/v1/auth/invitations/:token の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
