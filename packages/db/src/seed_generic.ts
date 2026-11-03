@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 // access-matrix の種を information_schema から機械的に作る（表を足すたびに seeds.ts へ手で足さない＝漏れない）。
 // 規則：tenant_id → その会社／scope_id → 会社の根の層／members への FK → その会社の代表／他表への FK → その表の同じ会社の種／マスタ（key）→ 'seed'／NOT NULL は型の既定値
 import type pg from "pg";
@@ -50,6 +51,16 @@ export async function seedGenericRows(
   ).rows) {
     const m = /\(?(\w+) = ANY \(ARRAY\['([^']*)'/.exec(r.def);
     if (m) allowed.set(`${r.t}.${m[1]}`, m[2]!);
+  }
+  // 「この値のときだけ この列が要る」（例：(kind = 'published') = (published_at IS NOT NULL)）：種の値がそうなら、その列も埋める
+  const pairs: { t: string; col: string; val: string; other: string }[] = [];
+  for (const r of (
+    await c.query<{ t: string; def: string }>(
+      "select conrelid::regclass::text as t, pg_get_constraintdef(oid) as def from pg_constraint where contype = 'c' and connamespace = 'public'::regnamespace",
+    )
+  ).rows) {
+    const m = /\(\((\w+) = '([^']*)'::text\) = \((\w+) IS NOT NULL\)\)/.exec(r.def);
+    if (m) pairs.push({ t: r.t, col: m[1]!, val: m[2]!, other: m[3]! });
   }
   const tables = [...new Set(cols.map((x) => x.table))].filter((t) => !explicit.has(t));
   const colsOf = (t: string) => cols.filter((x) => x.table === t);
@@ -112,7 +123,7 @@ export async function seedGenericRows(
     if (x.type.startsWith("timestamp")) return new Date();
     if (x.type === "jsonb" || x.type === "json") return "{}";
     if (x.type === "ARRAY") return "{}";
-    if (x.udt === "uuid") return null;
+    if (x.udt === "uuid") return randomUUID(); // 外部キーでない uuid（つながりの先の id など）は空にできないので、値を作る
     return "seed";
   };
   const build = (t: string, which: "A" | "B" | "ops", fresh: boolean): Record<string, unknown> => {
@@ -132,6 +143,8 @@ export async function seedGenericRows(
       const fk = fkOf(t, x.col);
       if (x.col === "tenant_id") row[x.col] = tenant;
       else if (x.col === "scope_id" && fk) row[x.col] = scopeOf(which);
+      // 先方の人を会社の人に結ぶと、その人は「取引先の人」になり会社の人の守りを通れなくなる（app.member_ok・KN-41）。種では結ばない
+      else if (t === "client_contacts" && x.col === "member_id") row[x.col] = null;
       else if (fk && fk.refTable === "members") row[x.col] = bossOf(which);
       else if (fk && fk.refTable === "tenants") row[x.col] = tenant;
       else if (fk && fk.refTable === "scopes") row[x.col] = scopeOf(which);
@@ -152,6 +165,13 @@ export async function seedGenericRows(
       else if (!x.nullable && x.def === null)
         // 新しく足す行の文字の列は重ならない値にする（例：チケットごとに区画の名前は 1 つ）
         row[x.col] = allowed.get(`${t}.${x.col}`) ?? (fresh && x.type === "text" ? `seed-${rnd()}` : defaultOf(x));
+    }
+    for (const pr of pairs.filter((x) => x.t === t)) {
+      const dflt = colsOf(t).find((x) => x.col === pr.col)?.def ?? "";
+      const v = row[pr.col] ?? /^'([^']*)'/.exec(String(dflt))?.[1] ?? null;
+      const o = colsOf(t).find((x) => x.col === pr.other);
+      if (v === pr.val && o && row[pr.other] == null)
+        row[pr.other] = o.type.startsWith("timestamp") ? new Date() : o.udt === "uuid" ? null : "seed";
     }
     return row;
   };

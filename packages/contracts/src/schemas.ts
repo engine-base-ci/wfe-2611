@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:96c63f0ca3600103
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:cc0d84b9c051134c
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -2396,6 +2396,7 @@ export const ReferenceLogsInput = z.strictObject({
   seen_at: z.iso.datetime({ offset: true }).optional(),
 });
 export const KnowledgePages = z.strictObject({
+  is_personal: z.boolean().optional(),
   parent_page_id: z.uuid().optional(),
   title: z.string().max(10000).optional(),
   owner_member_id: z.uuid().optional(),
@@ -2406,12 +2407,15 @@ export const KnowledgePages = z.strictObject({
   topics: z.array(z.string()).optional(),
   current_version: z.number().int().optional(),
   form: z.string().max(10000).optional(),
+  archived_at: z.iso.datetime({ offset: true }).optional(),
+  moved_to_page_id: z.uuid().optional(),
   id: z.uuid(),
   tenant_id: z.uuid().optional(),
   created_at: z.iso.datetime({ offset: true }).optional(),
   updated_at: z.iso.datetime({ offset: true }).optional(),
 });
 export const KnowledgePagesInput = z.strictObject({
+  is_personal: z.boolean().optional(),
   parent_page_id: z.uuid().optional(),
   title: z.string().max(10000).optional(),
   owner_member_id: z.uuid().optional(),
@@ -2422,12 +2426,18 @@ export const KnowledgePagesInput = z.strictObject({
   topics: z.array(z.string()).optional(),
   current_version: z.number().int().optional(),
   form: z.string().max(10000).optional(),
+  archived_at: z.iso.datetime({ offset: true }).optional(),
+  moved_to_page_id: z.uuid().optional(),
 });
 export const KnowledgePageVersions = z.strictObject({
   page_id: z.uuid().optional(),
   version: z.number().int().optional(),
+  kind: z.string().max(10000).optional(),
   body: z.record(z.string(), z.unknown()).optional(),
   note: z.string().max(10000).optional(),
+  source_ticket_id: z.uuid().optional(),
+  decision: z.string().max(10000).optional(),
+  reject_reason: z.string().max(10000).optional(),
   published_by: z.uuid().optional(),
   published_at: z.iso.datetime({ offset: true }).optional(),
   id: z.uuid(),
@@ -2437,8 +2447,12 @@ export const KnowledgePageVersions = z.strictObject({
 });
 export const KnowledgePageVersionsInput = z.strictObject({
   page_id: z.uuid().optional(),
+  kind: z.string().max(10000).optional(),
   body: z.record(z.string(), z.unknown()).optional(),
   note: z.string().max(10000).optional(),
+  source_ticket_id: z.uuid().optional(),
+  decision: z.string().max(10000).optional(),
+  reject_reason: z.string().max(10000).optional(),
   published_by: z.uuid().optional(),
   published_at: z.iso.datetime({ offset: true }).optional(),
 });
@@ -2459,6 +2473,7 @@ export const Clients = z.strictObject({
   visibility: z.string().max(10000).optional(),
   default_share: z.record(z.string(), z.unknown()).optional(),
   routing: z.string().max(10000).optional(),
+  email_domain: z.string().max(10000).optional(),
   id: z.uuid(),
   tenant_id: z.uuid().optional(),
   created_at: z.iso.datetime({ offset: true }).optional(),
@@ -2470,6 +2485,7 @@ export const ClientsInput = z.strictObject({
   visibility: z.string().max(10000).optional(),
   default_share: z.record(z.string(), z.unknown()).optional(),
   routing: z.string().max(10000).optional(),
+  email_domain: z.string().max(10000).optional(),
 });
 export const ClientGroups = z.strictObject({
   client_id: z.uuid().optional(),
@@ -2511,6 +2527,7 @@ export const ClientRequests = z.strictObject({
   state: z.string().max(10000).optional(),
   ticket_id: z.uuid().optional(),
   routed_scope_id: z.uuid().optional(),
+  questions: z.record(z.string(), z.unknown()).optional(),
   decline_reason: z.string().max(10000).optional(),
   id: z.uuid(),
   tenant_id: z.uuid().optional(),
@@ -2526,6 +2543,7 @@ export const ClientRequestsInput = z.strictObject({
   state: z.string().max(10000).optional(),
   ticket_id: z.uuid().optional(),
   routed_scope_id: z.uuid().optional(),
+  questions: z.record(z.string(), z.unknown()).optional(),
   decline_reason: z.string().max(10000).optional(),
 });
 export const Acceptances = z.strictObject({
@@ -2537,6 +2555,7 @@ export const Acceptances = z.strictObject({
   result: z.string().max(10000).optional(),
   comment: z.string().max(10000).optional(),
   decided_at: z.iso.datetime({ offset: true }).optional(),
+  reminded_at: z.iso.datetime({ offset: true }).optional(),
   id: z.uuid(),
   tenant_id: z.uuid().optional(),
   created_at: z.iso.datetime({ offset: true }).optional(),
@@ -2551,6 +2570,7 @@ export const AcceptancesInput = z.strictObject({
   result: z.string().max(10000).optional(),
   comment: z.string().max(10000).optional(),
   decided_at: z.iso.datetime({ offset: true }).optional(),
+  reminded_at: z.iso.datetime({ offset: true }).optional(),
 });
 export const TenantMemberships = z.strictObject({
   auth_user_id: z.uuid().optional(),

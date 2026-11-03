@@ -163,6 +163,27 @@ export async function runMatrix(
       else res.failed.push({ case: cs, got });
       continue;
     }
+    if (cs.role === "client") {
+      // 取引先の人の守り：先方の人として登録されていない人の client の文脈・他の会社・文脈なし では、読めず書けない
+      const ctx: TenantContext | null = cs.case.includes("SET LOCAL を飛ばす")
+        ? null
+        : cs.case.includes("他の会社")
+          ? { tenantId: S.tenantB, userId: S.bossA, role: "client" }
+          : { tenantId: S.tenantA, userId: S.bossA, role: "client" };
+      const target = cs.case.includes("他の会社") ? seedRow.other : seedRow.visible;
+      if (cs.operation === "select") {
+        const n = await count(ctx, `select ${pk} from "${cs.table}" where ${pk} = $1`, [target]);
+        got = `rows=${n}`;
+        ok = n === 0;
+      } else {
+        const r = await tryWrite(ctx, `update "${cs.table}" set updated_at = now() where ${pk} = $1`, [target]);
+        got = r;
+        ok = r !== "ok";
+      }
+      if (ok) res.passed++;
+      else res.failed.push({ case: cs, got });
+      continue;
+    }
     if (cs.policy.endsWith("_ops_own") || cs.policy.endsWith("_ops_all")) {
       // 運営の表：運営の文脈で見える／会社の人は 0 行／文脈なしは 0 行
       const ctx: TenantContext | null = cs.case.includes("運営の文脈")

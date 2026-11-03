@@ -119,6 +119,16 @@ export const TABLES = [
   "ticket_handovers",
   "saved_views",
   "ticket_imports",
+  // ナレッジ（KN-40・0073）
+  "knowledge_pages",
+  "knowledge_page_versions",
+  "knowledge_links",
+  // 取引先（KN-41・0074）
+  "clients",
+  "client_groups",
+  "client_contacts",
+  "client_requests",
+  "acceptances",
 ] as const;
 /** 追記専用（関門の関数 app.record_* だけが書く。repository の create/update/softDelete は拒否） */
 export const APPEND_ONLY: ReadonlySet<string> = new Set(["audit_events", "ops_audit_events", "security_events"]);

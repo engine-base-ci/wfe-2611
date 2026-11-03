@@ -1,8 +1,8 @@
 {
  "_doc": "ゼロトラストの実装の残りの記録（zt_gate.py）。ふだんの CI はこれより増えたら止める。減ったら --lower-baseline で下げる。本番の前は --strict で 0 が要る",
  "metrics": {
-  "rls_missing": 18,
-  "open_read_child": 5,
+  "rls_missing": 10,
+  "open_read_child": 3,
   "outside_routes": 87,
   "session_idle": 1,
   "session_geo": 1,

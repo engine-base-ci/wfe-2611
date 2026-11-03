@@ -8,6 +8,8 @@ build_functional.py は ER 図の列の印（<scoped>・<common>・本人の列�
 述語の中の関数は migration で作る：
   app.ticket_visible(ticket_id)  … そのチケットを読めるか（会社の中・見える層か関わっている人）
   app.ticket_writable(ticket_id) … そのチケットに書けるか（その層の edit の権限か担当者）
+★自分の表の読む守りに「id でその表を引く関数」を使わない。作ったその行は文の中でまだ見えないので、INSERT … RETURNING が弾かれる。
+  自分の表は列で直接書き、関数は子の表（元の行を引く）に使う
 """
 
 T = "current_setting('app.tenant_id', true)::uuid"
@@ -53,6 +55,9 @@ POLICIES: dict[str, list[dict]] = {
         {"name": "tickets_update", "operation": "update", "role": "member",
          "predicate": f"tenant_id = {T} AND app.ticket_draft_ok(draft_import_id, {U}) AND (has_permission({U}, 'tickets', scope_id, 'edit') OR assignee_member_id = {U})",
          "rationale": "そのグループで書ける人と担当者（消す・戻すは論理削除で、ここを通る）", "source": SRC_T + ["D-128.84"]},
+        {"name": "tickets_client_read", "operation": "select", "role": "client",
+         "predicate": f"tenant_id = {T} AND client_id = app.my_client() AND draft_import_id IS NULL AND client_share <> '{{}}'::jsonb",
+         "rationale": "取引先の人は、自分の取引先のチケットのうち会社が見せると決めたものだけ（どの項目を見せるかは API が client_share で絞る・D-125.122・D-128.100）", "source": ["D-125.122", "D-128.100"]},
         ops_read("tickets"),
     ],
     "ticket_sections": child_of_ticket("ticket_sections"),
@@ -125,6 +130,96 @@ POLICIES: dict[str, list[dict]] = {
          "rationale": "確定・やめるは取り込んだ人だけ", "source": ["D-128.85", "D-128.119"]},
         ops_read("ticket_imports"),
     ],
+    # ---- ナレッジ（KN-40・D-128.50〜.52）
+    "knowledge_pages": [
+        {"name": "knowledge_pages_read", "operation": "select", "role": "member",
+         "predicate": f"tenant_id = {T} AND (owner_member_id = {U} OR (NOT is_personal AND scope_id = ANY(visible_scopes({U})) AND (state <> 'draft' OR has_permission({U}, 'knowledge_pages', scope_id, 'edit'))))",
+         "rationale": "置き場が見える人（自分の置き場は持ち主だけ）。下書きは持ち主とその置き場で書ける人だけ（下書きは知らせない）", "source": ["D-128.50", "D-128.51"]},
+        {"name": "knowledge_pages_create", "operation": "insert", "role": "member",
+         "predicate": f"tenant_id = {T} AND owner_member_id = {U} AND (is_personal OR has_permission({U}, 'knowledge_pages', scope_id, 'edit'))",
+         "rationale": "自分を持ち主にして作る。自分の置き場か、その置き場で書ける人", "source": ["D-128.51"]},
+        {"name": "knowledge_pages_update", "operation": "update", "role": "member",
+         "predicate": f"tenant_id = {T} AND (owner_member_id = {U} OR (NOT is_personal AND has_permission({U}, 'knowledge_pages', scope_id, 'edit')))",
+         "rationale": "持ち主か、その置き場で書ける人（しまう・戻すも同じ。行は消さない）", "source": ["D-128.51"]},
+        ops_read("knowledge_pages"),
+    ],
+    "knowledge_page_versions": [
+        {"name": "knowledge_page_versions_read", "operation": "select", "role": "member",
+         "predicate": f"tenant_id = {T} AND ((kind = 'published' AND app.kpage_visible(page_id)) OR app.kpage_writable(page_id))",
+         "rationale": "公開した版はページを読める人。下書きと直す案は書ける人だけ", "source": ["D-128.50", "D-128.51"]},
+        {"name": "knowledge_page_versions_add", "operation": "insert", "role": "member",
+         "predicate": f"tenant_id = {T} AND ((kind = 'proposal' AND app.kpage_visible(page_id)) OR app.kpage_writable(page_id))",
+         "rationale": "直す案はページを読める人が出せる（チケットの完了から）。下書き・公開は書ける人", "source": ["D-128.50"]},
+        {"name": "knowledge_page_versions_decide", "operation": "update", "role": "member", "predicate": f"tenant_id = {T} AND app.kpage_writable(page_id)",
+         "rationale": "直す案を 入れる／直して入れる／入れない（理由）は書ける人", "source": ["D-128.50"]},
+        ops_read("knowledge_page_versions"),
+    ],
+    "knowledge_links": [
+        {"name": "knowledge_links_read", "operation": "select", "role": "member", "predicate": f"tenant_id = {T} AND app.kpage_visible(from_page_id)",
+         "rationale": "元のページを読める人（つないだ先の中身はその先の守りで見る）", "source": ["D-128.52"]},
+        {"name": "knowledge_links_write", "operation": "insert,update,delete", "role": "member", "predicate": f"tenant_id = {T} AND app.kpage_writable(from_page_id)",
+         "rationale": "元のページに書ける人", "source": ["D-128.52"]},
+        ops_read("knowledge_links"),
+    ],
+    # ---- 取引先（KN-41・D-125.121〜.124・D-128.53・D-128.54）。社内の人（member）と取引先の人（client）で分ける
+    "clients": [
+        {"name": "clients_read", "operation": "select", "role": "member",
+         "predicate": f"tenant_id = {T} AND (visibility = 'all' OR owner_member_id = {U} OR app.client_in_my_groups(id) OR has_permission({U}, 'clients', NULL, 'edit'))",
+         "rationale": "全員に見える取引先か、取引先の担当か、担当グループが見える人（ワークスペースの既定は全員・取引先ごとに担当グループだけに絞れる）。取引先を直せる人（既定は管理者）は全部見える", "source": ["D-128.54"]},
+        {"name": "clients_create", "operation": "insert", "role": "member", "predicate": f"tenant_id = {T} AND has_permission({U}, 'clients', NULL, 'edit')",
+         "rationale": "取引先を作れる人（既定は管理者）", "source": ["D-125.121", "D-128.53"]},
+        {"name": "clients_update", "operation": "update", "role": "member",
+         "predicate": f"tenant_id = {T} AND (owner_member_id = {U} OR has_permission({U}, 'clients', NULL, 'edit'))",
+         "rationale": "取引先の担当か、取引先を直せる人", "source": ["D-128.53"]},
+        {"name": "clients_own_read", "operation": "select", "role": "client", "predicate": f"tenant_id = {T} AND id = app.my_client()",
+         "rationale": "取引先の人は自分の取引先だけ", "source": ["D-125.122"]},
+        ops_read("clients"),
+    ],
+    "client_groups": [
+        {"name": "client_groups_read", "operation": "select", "role": "member", "predicate": f"tenant_id = {T} AND app.client_visible(client_id)",
+         "rationale": "元の取引先が見える人", "source": ["D-128.54"]},
+        {"name": "client_groups_write", "operation": "insert,update,delete", "role": "member", "predicate": f"tenant_id = {T} AND app.client_editable(client_id)",
+         "rationale": "取引先を直せる人が担当グループを付け外しする", "source": ["D-128.54"]},
+        ops_read("client_groups"),
+    ],
+    "client_contacts": [
+        {"name": "client_contacts_read", "operation": "select", "role": "member", "predicate": f"tenant_id = {T} AND app.client_visible(client_id)",
+         "rationale": "元の取引先が見える人", "source": ["D-128.53"]},
+        {"name": "client_contacts_write", "operation": "insert,update,delete", "role": "member", "predicate": f"tenant_id = {T} AND app.client_editable(client_id)",
+         "rationale": "取引先を直せる人が先方の人を足す・直す", "source": ["D-125.121"]},
+        {"name": "client_contacts_same_client_read", "operation": "select", "role": "client", "predicate": f"tenant_id = {T} AND client_id = app.my_client()",
+         "rationale": "同じ取引先の人どうしは見える", "source": ["D-125.121"]},
+        ops_read("client_contacts"),
+    ],
+    "client_requests": [
+        {"name": "client_requests_read", "operation": "select", "role": "member", "predicate": f"tenant_id = {T} AND app.client_visible(client_id)",
+         "rationale": "元の取引先が見える人", "source": ["D-128.53"]},
+        {"name": "client_requests_handle", "operation": "insert,update", "role": "member",
+         "predicate": f"tenant_id = {T} AND app.client_visible(client_id) AND (app.client_editable(client_id) OR has_permission({U}, 'client_requests', routed_scope_id, 'edit'))",
+         "rationale": "取引先の担当・取引先を直せる人・届け先のグループで依頼を受けられる人が、受ける／詳しく聞く／断る", "source": ["D-125.123", "D-128.54"]},
+        {"name": "client_requests_same_client_read", "operation": "select", "role": "client", "predicate": f"tenant_id = {T} AND client_id = app.my_client()",
+         "rationale": "同じ取引先の人は互いの依頼が見える（やり取りは全部）", "source": ["D-125.121", "D-125.122"]},
+        {"name": "client_requests_submit", "operation": "insert", "role": "client",
+         "predicate": f"tenant_id = {T} AND client_id = app.my_client() AND contact_id = app.my_contact() AND state = 'new' AND EXISTS (SELECT 1 FROM client_contacts k WHERE k.id = contact_id AND k.role = 'requester')",
+         "rationale": "依頼できる人が、自分として新しい依頼を出す（見るだけの人は出せない）", "source": ["D-125.123", "D-128.53"]},
+        {"name": "client_requests_own_edit", "operation": "update", "role": "client",
+         "predicate": f"tenant_id = {T} AND client_id = app.my_client() AND contact_id = app.my_contact() AND state IN ('new', 'asking')",
+         "rationale": "自分の依頼を、受けてもらう前（新しい・聞いている）のあいだ直せる", "source": ["D-125.123"]},
+        ops_read("client_requests"),
+    ],
+    "acceptances": [
+        {"name": "acceptances_ticket_read", "operation": "select", "role": "member", "predicate": f"tenant_id = {T} AND app.ticket_visible(ticket_id)",
+         "rationale": "元のチケットを読める人", "source": ["D-125.124"]},
+        {"name": "acceptances_ask", "operation": "insert,update", "role": "member", "predicate": f"tenant_id = {T} AND app.ticket_writable(ticket_id)",
+         "rationale": "元のチケットに書ける人が検収を頼む・催促する", "source": ["D-125.124"]},
+        {"name": "acceptances_client_read", "operation": "select", "role": "client",
+         "predicate": f"tenant_id = {T} AND EXISTS (SELECT 1 FROM client_contacts k WHERE k.id = contact_id AND k.client_id = app.my_client())",
+         "rationale": "自分の取引先に頼まれた検収", "source": ["D-125.124"]},
+        {"name": "acceptances_client_answer", "operation": "update", "role": "client",
+         "predicate": f"tenant_id = {T} AND contact_id = app.my_contact()",
+         "rationale": "頼まれた本人が OK／直してほしい を返す", "source": ["D-125.124"]},
+        ops_read("acceptances"),
+    ],
     # 登録の保留（ログインの前）。表は kaname_auth の側にあり、登録の口（auth-ext）だけが読み書きする。アプリの役からは誰も読めない
     "pending_signup": [{"name": "pending_signup_no_app_access", "operation": "select", "role": "member", "predicate": "false",
                         "rationale": "ログインの前の保留。アプリの役からは読めない（登録の口だけが kaname_auth の側で扱う・D-088.2）", "source": ["D-088.2", "D-128.115"]}],
@@ -132,8 +227,6 @@ POLICIES: dict[str, list[dict]] = {
 
 # 誰でも（ログイン済みなら）読める・書けるのは本当のマスタだけ。それ以外でまだ直していない表と、直すチケット（zt_gate.py の ZT3 が見る）
 PENDING_CHILD_TABLES = {
-    "knowledge_page_versions": "KN-40（元のページを読める人だけ）",
-    "client_groups": "KN-41（元の取引先を見られる人だけ）",
     "terms_consents": "KN-42（本人だけ）",
     "passkeys": "KN-46（置き場所を決める：Better Auth の側なら API からは触らない）",
     "skill_versions": "KN-44（会社ごとの業務の型を入れる前に、元の型を見られる人だけにする）",

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """gen_rls.py — 07_functional/entities.json の access_control_policies から RLS の SQL を機械生成する（手で書かない＝仕様と実装のずれを作らない）。
 使い方: python3 scripts/ci/gen_rls.py --tables tenants scopes ... -o packages/db/policies/0002_access_control.sql
- role: member → app.role() in ('member', 'owner') 相当（= 会社の人。権限の差は predicate の has_permission が持つ）／ ops → app.role() = 'ops'／ authenticated → 誰でも（ログイン済み）
+ role: member → app.member_ok()（app.role='member' の会社の人・取引先の人は除く。権限の差は predicate の has_permission が持つ）／ ops → app.role() = 'ops'／ client → app.client_ok()（取引先の人）／ authenticated → 誰でも（ログイン済み）
  operation 'insert,update,delete' → INSERT(WITH CHECK)・UPDATE(USING+WITH CHECK)・DELETE(USING) の 3 本。select → SELECT(USING)"""
 import argparse, json, re
 ap = argparse.ArgumentParser(); ap.add_argument("--entities", default="07_functional/entities.json"); ap.add_argument("--tables", nargs="+", required=True); ap.add_argument("-o", required=True); ap.add_argument("--app-role", default="kaname_app"); ap.add_argument("--grant-table", default="support_access_grants", help="運営への許可の表（policy から直接引くと再帰するので関数に寄せる）"); ap.add_argument("--grant-fn", default="app.ops_grant_ok"); ap.add_argument("--member-fn", default="app.member_ok"); ap.add_argument("--tenant-fn", default="app.tenant_id()"); ap.add_argument("--user-fn", default="app.user_id()"); a = ap.parse_args()
@@ -21,6 +21,7 @@ for tb in a.tables:
             # 運営の grant 検査は policy の中で support_access_grants を直接引くと自分の policy に再帰する → security definer の関数に寄せる（意味は entities.json と同じ）
             pred = re.sub(r"current_setting\('app\.role', true\) = 'ops' AND EXISTS \(SELECT 1 FROM " + re.escape(a.grant_table) + r" g WHERE g\.tenant_id = (\w+)\.tenant_id AND g\.expires_at > now\(\) AND g\.revoked_at IS NULL\)", r"app.ops_grant_ok(\1.tenant_id)", pred)
         elif p["role"] == "authenticated": pred = f"coalesce(current_setting('app.user_id', true), '') <> '' AND ({pred})"
+        elif p["role"] == "client": pred = f"app.client_ok() AND ({pred})"   # 取引先の人（クライアントの場所）：app.role='client' で、その会社の先方の人として登録されていること（KN-41）
         for op in ops:
             name = f"{p['name']}_{op}" if len(ops) > 1 else p["name"]; out.append(f"drop policy if exists {name} on {tb};")
             if op == "all": out.append(f"create policy {name} on {tb} for all using ({pred}) with check ({pred});")

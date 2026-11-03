@@ -10834,6 +10834,17 @@
   },
   {
    "entity": "knowledge_pages",
+   "field": "is_personal",
+   "consumed_by_screens": [
+    "tickets",
+    "knowledge",
+    "clients"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_pages",
    "field": "parent_page_id",
    "consumed_by_screens": [
     "tickets",
@@ -10943,46 +10954,121 @@
    "reason": null
   },
   {
+   "entity": "knowledge_pages",
+   "field": "archived_at",
+   "consumed_by_screens": [
+    "tickets",
+    "knowledge",
+    "clients"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_pages",
+   "field": "moved_to_page_id",
+   "consumed_by_screens": [
+    "tickets",
+    "knowledge",
+    "clients"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
    "entity": "knowledge_page_versions",
-   "field": "page_id",
+   "field": "<common>",
    "consumed_by_screens": [],
    "internal": true,
-   "reason": "マスタ。label は各画面の札・選択肢として出る"
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "knowledge_page_versions",
+   "field": "page_id",
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
   },
   {
    "entity": "knowledge_page_versions",
    "field": "version",
    "consumed_by_screens": [],
    "internal": true,
-   "reason": "マスタ。label は各画面の札・選択肢として出る"
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "knowledge_page_versions",
+   "field": "kind",
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
   },
   {
    "entity": "knowledge_page_versions",
    "field": "body",
-   "consumed_by_screens": [],
-   "internal": true,
-   "reason": "マスタ。label は各画面の札・選択肢として出る"
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
   },
   {
    "entity": "knowledge_page_versions",
    "field": "note",
-   "consumed_by_screens": [],
-   "internal": true,
-   "reason": "マスタ。label は各画面の札・選択肢として出る"
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_page_versions",
+   "field": "source_ticket_id",
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_page_versions",
+   "field": "decision",
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_page_versions",
+   "field": "reject_reason",
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
   },
   {
    "entity": "knowledge_page_versions",
    "field": "published_by",
-   "consumed_by_screens": [],
-   "internal": true,
-   "reason": "マスタ。label は各画面の札・選択肢として出る"
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
   },
   {
    "entity": "knowledge_page_versions",
    "field": "published_at",
-   "consumed_by_screens": [],
-   "internal": true,
-   "reason": "マスタ。label は各画面の札・選択肢として出る"
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
   },
   {
    "entity": "knowledge_links",
@@ -11110,18 +11196,44 @@
    "reason": null
   },
   {
+   "entity": "clients",
+   "field": "email_domain",
+   "consumed_by_screens": [
+    "member-detail",
+    "tickets",
+    "rules",
+    "knowledge",
+    "clients",
+    "requests",
+    "portal"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
    "entity": "client_groups",
-   "field": "client_id",
+   "field": "<common>",
    "consumed_by_screens": [],
    "internal": true,
-   "reason": "マスタ。label は各画面の札・選択肢として出る"
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "client_groups",
+   "field": "client_id",
+   "consumed_by_screens": [
+    "rules",
+    "clients",
+    "requests"
+   ],
+   "internal": false,
+   "reason": null
   },
   {
    "entity": "client_groups",
    "field": "scope_id",
    "consumed_by_screens": [],
    "internal": true,
-   "reason": "マスタ。label は各画面の札・選択肢として出る"
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
   },
   {
    "entity": "client_contacts",
@@ -11299,6 +11411,17 @@
   },
   {
    "entity": "client_requests",
+   "field": "questions",
+   "consumed_by_screens": [
+    "clients",
+    "requests",
+    "portal"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "client_requests",
    "field": "decline_reason",
    "consumed_by_screens": [
     "clients",
@@ -11395,6 +11518,17 @@
   {
    "entity": "acceptances",
    "field": "decided_at",
+   "consumed_by_screens": [
+    "tickets",
+    "clients",
+    "portal"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "acceptances",
+   "field": "reminded_at",
    "consumed_by_screens": [
     "tickets",
     "clients",

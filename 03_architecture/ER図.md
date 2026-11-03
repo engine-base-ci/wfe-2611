@@ -433,14 +433,14 @@ erDiagram
 | **`ticket_decisions`** | `<common>` / `ticket_id` / `text` / `reason` / `decided_by` / `decided_at` / `source_message_id` / `superseded_by_id` / `promoted_to`（このチケットだけ・取引先のルール） | **★新設（D-125.40・D-125.63）** |
 | **`ticket_messages`** | `<common>` / `ticket_id` / `author_member_id` / `kind`（書き込み・変更・仕組み）/ `body` / `mentions uuid[]` / `changes jsonb`（期限 11/01 → 11/02 など）/ `quote_of_id` / `reactions jsonb` | **★新設（D-125.29・D-125.131・D-128.45）。**チケットのスレッド |
 | **`reference_logs`** | `<common>` / `ticket_id` / `action_run_id` / `ref_type`（ページ・記憶・添付・外の URL）/ `ref_id` / `url` / `title` / `seen_at` | **★新設（D-125.28・D-125.35）。**外は URL・題名・時刻だけ |
-| **`knowledge_pages`** | `<scoped>`（scope＝置き場：ワークスペース全体・層・グループ・自分）/ `parent_page_id` / `title` / `owner_member_id` / `state`（下書き・公開・しまった）/ `verify_interval_days` / `verified_at` / `verify_due_on` / `topics text[]` / `current_version` / `form`（手順・決まり・まとめ・白紙） | **★新設（D-125.108・D-128.50〜.52）** |
-| **`knowledge_page_versions`** | `page_id` / `version` / `body jsonb` / `note` / `published_by` / `published_at` | 公開するたびに増える |
+| **`knowledge_pages`** | `<scoped>`（scope＝置き場：ワークスペース全体・層・グループ・自分）/ `is_personal`（自分の置き場：持ち主だけ）/ `parent_page_id` / `title` / `owner_member_id` / `state`（下書き・公開・しまった）/ `verify_interval_days` / `verified_at` / `verify_due_on` / `topics text[]` / `current_version` / `form`（手順・決まり・まとめ・白紙）/ `archived_at` / `moved_to_page_id`（しまったときの移し先） | **★新設（D-125.108・D-128.50〜.52）** |
+| **`knowledge_page_versions`** | `<common>` / `page_id` / `version` / `kind`（下書き・直す案・公開）/ `body jsonb` / `note` / `source_ticket_id`（直す案の出どころ）/ `decision`（入れた・直して入れた・入れない）/ `reject_reason` / `published_by` / `published_at` | 公開するたびに増える |
 | **`knowledge_links`** | `<common>` / `from_page_id` / `to_type`（ページ・チケット・決まり・取引先）/ `to_id` / `anchor` | つながり・被リンク（D-128.52） |
-| **`clients`** | `<common>` / `name` / `owner_member_id`（取引先の担当）/ `visibility`（全員・担当グループだけ）/ `default_share jsonb`（種別ごとの既定の見せ方）/ `routing`（分身が振り分ける） | **★新設（D-125.121・D-128.53・D-128.54）** |
-| **`client_groups`** | `client_id` / `scope_id` | 担当グループ（いくつでも ← D-128.54） |
+| **`clients`** | `<common>` / `name` / `owner_member_id`（取引先の担当）/ `visibility`（全員・担当グループだけ）/ `default_share jsonb`（種別ごとの既定の見せ方）/ `routing`（分身が振り分ける）/ `email_domain`（招待はドメインが合う人だけ） | **★新設（D-125.121・D-128.53・D-128.54）** |
+| **`client_groups`** | `<common>` / `client_id` / `scope_id` | 担当グループ（いくつでも ← D-128.54） |
 | **`client_contacts`** | `<common>` / `client_id` / `name` / `email` / `role`（依頼できる・見るだけ）/ `member_id`（クライアントの場所に入るとき）/ `cc_role`（請求の宛先・CC・使わない） | 先方の人 |
-| **`client_requests`** | `<common>` / `client_id` / `contact_id` / `title` / `body` / `due_on` / `state`（新しい・聞いている・チケットに・断った）/ `ticket_id` / `routed_scope_id` / `decline_reason` | **★新設（D-125.123）。**やり取りは `conversations` に置く |
-| **`acceptances`** | `<common>` / `ticket_id` / `artifact_version_id` / `contact_id` / `due_on` / `message` / `result`（OK・直してほしい）/ `comment` / `decided_at` | **★新設（D-125.124）。**OK がそのチケットの完了の条件 |
+| **`client_requests`** | `<common>` / `client_id` / `contact_id` / `title` / `body` / `due_on` / `state`（新しい・聞いている・チケットに・断った）/ `ticket_id` / `routed_scope_id` / `questions jsonb`（詳しく聞くこと）/ `decline_reason` | **★新設（D-125.123）。**やり取りは `conversations` に置く |
+| **`acceptances`** | `<common>` / `ticket_id` / `artifact_version_id` / `contact_id` / `due_on` / `message` / `result`（OK・直してほしい）/ `comment` / `decided_at` / `reminded_at`（催促した日） | **★新設（D-125.124）。**OK がそのチケットの完了の条件 |
 | **`tenant_memberships`** | `auth_user_id` / `tenant_id` / `member_id` / `role`（管理者・マネージャー・メンバー・閲覧のみ・依頼する側）/ `status` / `joined_at` | **★新設（D-125.150・D-128.46）。**1 人のアカウントが複数のワークスペースに入る。行は本人と、その tenant の管理者だけが読める |
 | **`terms_versions`** | `kind`（利用規約・プライバシー）/ `version` / `url` / `published_at` | **★新設（D-125.162）。**運営の表（tenant_id＝運営） |
 | **`terms_consents`** | `auth_user_id` / `terms_version_id` / `agreed_at` / `ip` | 誰がどの版に同意したか |

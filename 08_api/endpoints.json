@@ -46,8 +46,7 @@
    "rate_limit": "60/min/user",
    "access_control_policies": [
     "notifications_self_only_write",
-    "notifications_permission_write",
-    "acceptances_permission_write"
+    "notifications_permission_write"
    ],
    "outputs_4xx": [
     {
@@ -742,6 +741,7 @@
     "artifact_versions_tenant_read",
     "artifact_versions_ops_read_with_grant",
     "tickets_read",
+    "tickets_client_read",
     "tickets_ops_read_with_grant",
     "checks_ticket_read",
     "checks_ops_read_with_grant",
@@ -1878,6 +1878,7 @@
     "approvals_tenant_read",
     "approvals_ops_read_with_grant",
     "tickets_read",
+    "tickets_client_read",
     "tickets_ops_read_with_grant"
    ],
    "outputs_4xx": [
@@ -1994,6 +1995,7 @@
     "approvals_tenant_read",
     "approvals_ops_read_with_grant",
     "tickets_read",
+    "tickets_client_read",
     "tickets_ops_read_with_grant",
     "checks_ticket_read",
     "checks_ops_read_with_grant",
@@ -2481,6 +2483,7 @@
     "audit_events_tenant_read",
     "audit_events_ops_read_with_grant",
     "tickets_read",
+    "tickets_client_read",
     "tickets_ops_read_with_grant"
    ],
    "outputs_4xx": [
@@ -7466,8 +7469,7 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "client_contacts_self_only_write",
-    "client_contacts_permission_write"
+    "client_contacts_write"
    ],
    "outputs_4xx": [
     {
@@ -7593,8 +7595,7 @@
    "access_control_policies": [
     "sessions_permission_write",
     "invitations_permission_write",
-    "client_contacts_self_only_write",
-    "client_contacts_permission_write",
+    "client_contacts_write",
     "tenant_memberships_self_only_write",
     "tenant_memberships_permission_write"
    ],
@@ -7839,11 +7840,14 @@
    },
    "rate_limit": "120/min/user",
    "access_control_policies": [
-    "clients_tenant_read",
+    "clients_read",
+    "clients_own_read",
     "clients_ops_read_with_grant",
-    "client_contacts_tenant_read",
+    "client_contacts_read",
+    "client_contacts_same_client_read",
     "client_contacts_ops_read_with_grant",
-    "client_requests_tenant_read",
+    "client_requests_read",
+    "client_requests_same_client_read",
     "client_requests_ops_read_with_grant"
    ],
    "outputs_4xx": [
@@ -7960,9 +7964,11 @@
     "conversations_ops_read_with_grant",
     "messages_tenant_read",
     "messages_ops_read_with_grant",
-    "client_contacts_tenant_read",
+    "client_contacts_read",
+    "client_contacts_same_client_read",
     "client_contacts_ops_read_with_grant",
-    "client_requests_tenant_read",
+    "client_requests_read",
+    "client_requests_same_client_read",
     "client_requests_ops_read_with_grant"
    ],
    "outputs_4xx": [
@@ -8084,8 +8090,7 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "scopes_permission_write",
-    "client_requests_permission_write"
+    "scopes_permission_write"
    ],
    "outputs_4xx": [
     {
@@ -8223,8 +8228,7 @@
     "messages_permission_write",
     "notifications_self_only_write",
     "notifications_permission_write",
-    "ticket_sections_ticket_write",
-    "client_requests_permission_write"
+    "ticket_sections_ticket_write"
    ],
    "outputs_4xx": [
     {
@@ -8369,8 +8373,7 @@
    "access_control_policies": [
     "messages_permission_write",
     "notifications_self_only_write",
-    "notifications_permission_write",
-    "client_requests_permission_write"
+    "notifications_permission_write"
    ],
    "outputs_4xx": [
     {
@@ -8515,8 +8518,7 @@
    "access_control_policies": [
     "messages_permission_write",
     "notifications_self_only_write",
-    "notifications_permission_write",
-    "client_requests_permission_write"
+    "notifications_permission_write"
    ],
    "outputs_4xx": [
     {
@@ -8664,15 +8666,21 @@
    "rate_limit": "120/min/user",
    "access_control_policies": [
     "tickets_read",
+    "tickets_client_read",
     "tickets_ops_read_with_grant",
-    "clients_tenant_read",
+    "clients_read",
+    "clients_own_read",
     "clients_ops_read_with_grant",
-    "client_groups_all_read",
-    "client_contacts_tenant_read",
+    "client_groups_read",
+    "client_groups_ops_read_with_grant",
+    "client_contacts_read",
+    "client_contacts_same_client_read",
     "client_contacts_ops_read_with_grant",
-    "client_requests_tenant_read",
+    "client_requests_read",
+    "client_requests_same_client_read",
     "client_requests_ops_read_with_grant",
-    "acceptances_tenant_read",
+    "acceptances_ticket_read",
+    "acceptances_client_read",
     "acceptances_ops_read_with_grant"
    ],
    "outputs_4xx": [
@@ -8777,9 +8785,7 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "clients_self_only_write",
-    "clients_permission_write",
-    "client_groups_ops_write"
+    "client_groups_write"
    ],
    "outputs_4xx": [
     {
@@ -8902,17 +8908,23 @@
     "policies_tenant_read",
     "policies_ops_read_with_grant",
     "tickets_read",
+    "tickets_client_read",
     "tickets_ops_read_with_grant",
-    "knowledge_pages_tenant_read",
+    "knowledge_pages_read",
     "knowledge_pages_ops_read_with_grant",
-    "clients_tenant_read",
+    "clients_read",
+    "clients_own_read",
     "clients_ops_read_with_grant",
-    "client_groups_all_read",
-    "client_contacts_tenant_read",
+    "client_groups_read",
+    "client_groups_ops_read_with_grant",
+    "client_contacts_read",
+    "client_contacts_same_client_read",
     "client_contacts_ops_read_with_grant",
-    "client_requests_tenant_read",
+    "client_requests_read",
+    "client_requests_same_client_read",
     "client_requests_ops_read_with_grant",
-    "acceptances_tenant_read",
+    "acceptances_ticket_read",
+    "acceptances_client_read",
     "acceptances_ops_read_with_grant"
    ],
    "outputs_4xx": [
@@ -9024,9 +9036,7 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "clients_self_only_write",
-    "clients_permission_write",
-    "client_groups_ops_write"
+    "client_groups_write"
    ],
    "outputs_4xx": [
     {
@@ -9150,9 +9160,11 @@
     "action_runs_ops_read_with_grant",
     "ticket_messages_ticket_read",
     "ticket_messages_ops_read_with_grant",
-    "client_requests_tenant_read",
+    "client_requests_read",
+    "client_requests_same_client_read",
     "client_requests_ops_read_with_grant",
-    "acceptances_tenant_read",
+    "acceptances_ticket_read",
+    "acceptances_client_read",
     "acceptances_ops_read_with_grant"
    ],
    "outputs_4xx": [
@@ -9268,8 +9280,7 @@
     "notifications_self_only_write",
     "notifications_permission_write",
     "invitations_permission_write",
-    "client_contacts_self_only_write",
-    "client_contacts_permission_write"
+    "client_contacts_write"
    ],
    "outputs_4xx": [
     {
@@ -9400,12 +9411,16 @@
    "rate_limit": "120/min/user",
    "access_control_policies": [
     "tickets_read",
+    "tickets_client_read",
     "tickets_ops_read_with_grant",
-    "clients_tenant_read",
+    "clients_read",
+    "clients_own_read",
     "clients_ops_read_with_grant",
-    "client_requests_tenant_read",
+    "client_requests_read",
+    "client_requests_same_client_read",
     "client_requests_ops_read_with_grant",
-    "acceptances_tenant_read",
+    "acceptances_ticket_read",
+    "acceptances_client_read",
     "acceptances_ops_read_with_grant"
    ],
    "outputs_4xx": [
@@ -9517,9 +9532,7 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "ticket_kinds_permission_write",
-    "clients_self_only_write",
-    "clients_permission_write"
+    "ticket_kinds_permission_write"
    ],
    "outputs_4xx": [
     {
@@ -9638,8 +9651,10 @@
    "rate_limit": "120/min/user",
    "access_control_policies": [
     "tickets_read",
+    "tickets_client_read",
     "tickets_ops_read_with_grant",
-    "clients_tenant_read",
+    "clients_read",
+    "clients_own_read",
     "clients_ops_read_with_grant"
    ],
    "outputs_4xx": [
@@ -10485,6 +10500,7 @@
     "action_runs_tenant_read",
     "action_runs_ops_read_with_grant",
     "tickets_read",
+    "tickets_client_read",
     "tickets_ops_read_with_grant"
    ],
    "outputs_4xx": [
@@ -14461,11 +14477,7 @@
    "access_control_policies": [
     "policies_permission_write",
     "bridge_jobs_self_only_write",
-    "bridge_jobs_permission_write",
-    "knowledge_pages_self_only_write",
-    "knowledge_pages_permission_write",
-    "clients_self_only_write",
-    "clients_permission_write"
+    "bridge_jobs_permission_write"
    ],
    "outputs_4xx": [
     {
@@ -14578,9 +14590,7 @@
     "scheme": "session（Better Auth・sessions 表を見る。app.tenant_id / app.user_id / app.role を SET LOCAL）"
    },
    "rate_limit": "60/min/user",
-   "access_control_policies": [
-    "knowledge_page_versions_ops_write"
-   ],
+   "access_control_policies": [],
    "outputs_4xx": [
     {
      "status": 401,
@@ -14695,9 +14705,10 @@
    "access_control_policies": [
     "reference_logs_ticket_read",
     "reference_logs_ops_read_with_grant",
-    "knowledge_pages_tenant_read",
+    "knowledge_pages_read",
     "knowledge_pages_ops_read_with_grant",
-    "knowledge_page_versions_all_read"
+    "knowledge_page_versions_read",
+    "knowledge_page_versions_ops_read_with_grant"
    ],
    "outputs_4xx": [
     {
@@ -14797,9 +14808,10 @@
    "access_control_policies": [
     "policies_tenant_read",
     "policies_ops_read_with_grant",
-    "knowledge_pages_tenant_read",
+    "knowledge_pages_read",
     "knowledge_pages_ops_read_with_grant",
-    "clients_tenant_read",
+    "clients_read",
+    "clients_own_read",
     "clients_ops_read_with_grant"
    ],
    "outputs_4xx": [
@@ -14898,8 +14910,10 @@
    "rate_limit": "120/min/user",
    "access_control_policies": [
     "tickets_read",
+    "tickets_client_read",
     "tickets_ops_read_with_grant",
-    "knowledge_page_versions_all_read"
+    "knowledge_page_versions_read",
+    "knowledge_page_versions_ops_read_with_grant"
    ],
    "outputs_4xx": [
     {
@@ -15000,10 +15014,7 @@
    "rate_limit": "60/min/user",
    "access_control_policies": [
     "notifications_self_only_write",
-    "notifications_permission_write",
-    "knowledge_pages_self_only_write",
-    "knowledge_pages_permission_write",
-    "knowledge_page_versions_ops_write"
+    "notifications_permission_write"
    ],
    "outputs_4xx": [
     {
@@ -15130,9 +15141,7 @@
     "scheme": "session（Better Auth・sessions 表を見る。app.tenant_id / app.user_id / app.role を SET LOCAL）"
    },
    "rate_limit": "60/min/user",
-   "access_control_policies": [
-    "knowledge_page_versions_ops_write"
-   ],
+   "access_control_policies": [],
    "outputs_4xx": [
     {
      "status": 401,
@@ -15260,7 +15269,7 @@
    "access_control_policies": [
     "scopes_tenant_read",
     "scopes_ops_read_with_grant",
-    "knowledge_pages_tenant_read",
+    "knowledge_pages_read",
     "knowledge_pages_ops_read_with_grant"
    ],
    "outputs_4xx": [
@@ -15363,7 +15372,7 @@
     "bridge_jobs_ops_read_with_grant",
     "reference_logs_ticket_read",
     "reference_logs_ops_read_with_grant",
-    "knowledge_pages_tenant_read",
+    "knowledge_pages_read",
     "knowledge_pages_ops_read_with_grant"
    ],
    "outputs_4xx": [
@@ -15688,10 +15697,7 @@
    "rate_limit": "60/min/user",
    "access_control_policies": [
     "imports_permission_write",
-    "knowledge_pages_self_only_write",
-    "knowledge_pages_permission_write",
-    "knowledge_page_versions_ops_write",
-    "knowledge_links_permission_write"
+    "knowledge_links_write"
    ],
    "outputs_4xx": [
     {
@@ -15823,7 +15829,7 @@
     "members_ops_read_with_grant",
     "reference_logs_ticket_read",
     "reference_logs_ops_read_with_grant",
-    "knowledge_pages_tenant_read",
+    "knowledge_pages_read",
     "knowledge_pages_ops_read_with_grant"
    ],
    "outputs_4xx": [
@@ -15925,10 +15931,7 @@
    "rate_limit": "60/min/user",
    "access_control_policies": [
     "bridge_jobs_self_only_write",
-    "bridge_jobs_permission_write",
-    "knowledge_pages_self_only_write",
-    "knowledge_pages_permission_write",
-    "knowledge_page_versions_ops_write"
+    "bridge_jobs_permission_write"
    ],
    "outputs_4xx": [
     {
@@ -16046,10 +16049,11 @@
    "access_control_policies": [
     "policies_tenant_read",
     "policies_ops_read_with_grant",
-    "knowledge_pages_tenant_read",
+    "knowledge_pages_read",
     "knowledge_pages_ops_read_with_grant",
-    "knowledge_page_versions_all_read",
-    "knowledge_links_tenant_read",
+    "knowledge_page_versions_read",
+    "knowledge_page_versions_ops_read_with_grant",
+    "knowledge_links_read",
     "knowledge_links_ops_read_with_grant"
    ],
    "outputs_4xx": [
@@ -16156,10 +16160,7 @@
     "scheme": "session（Better Auth・sessions 表を見る。app.tenant_id / app.user_id / app.role を SET LOCAL）"
    },
    "rate_limit": "60/min/user",
-   "access_control_policies": [
-    "knowledge_pages_self_only_write",
-    "knowledge_pages_permission_write"
-   ],
+   "access_control_policies": [],
    "outputs_4xx": [
     {
      "status": 401,
@@ -16277,9 +16278,7 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "knowledge_pages_self_only_write",
-    "knowledge_pages_permission_write",
-    "knowledge_links_permission_write"
+    "knowledge_links_write"
    ],
    "outputs_4xx": [
     {
@@ -16536,8 +16535,7 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "knowledge_page_versions_ops_write",
-    "knowledge_links_permission_write"
+    "knowledge_links_write"
    ],
    "outputs_4xx": [
     {
@@ -16654,9 +16652,7 @@
     "scheme": "session（Better Auth・sessions 表を見る。app.tenant_id / app.user_id / app.role を SET LOCAL）"
    },
    "rate_limit": "60/min/user",
-   "access_control_policies": [
-    "knowledge_page_versions_ops_write"
-   ],
+   "access_control_policies": [],
    "outputs_4xx": [
     {
      "status": 401,
@@ -16766,10 +16762,12 @@
     "policies_tenant_read",
     "policies_ops_read_with_grant",
     "tickets_read",
+    "tickets_client_read",
     "tickets_ops_read_with_grant",
-    "knowledge_links_tenant_read",
+    "knowledge_links_read",
     "knowledge_links_ops_read_with_grant",
-    "clients_tenant_read",
+    "clients_read",
+    "clients_own_read",
     "clients_ops_read_with_grant"
    ],
    "outputs_4xx": [
@@ -16878,8 +16876,7 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "knowledge_page_versions_ops_write",
-    "knowledge_links_permission_write"
+    "knowledge_links_write"
    ],
    "outputs_4xx": [
     {
@@ -17005,7 +17002,7 @@
    },
    "rate_limit": "120/min/user",
    "access_control_policies": [
-    "knowledge_pages_tenant_read",
+    "knowledge_pages_read",
     "knowledge_pages_ops_read_with_grant"
    ],
    "outputs_4xx": [
@@ -17355,10 +17352,7 @@
    "access_control_policies": [
     "notifications_self_only_write",
     "notifications_permission_write",
-    "knowledge_pages_self_only_write",
-    "knowledge_pages_permission_write",
-    "knowledge_page_versions_ops_write",
-    "knowledge_links_permission_write"
+    "knowledge_links_write"
    ],
    "outputs_4xx": [
     {
@@ -17485,10 +17479,7 @@
     "scheme": "session（Better Auth・sessions 表を見る。app.tenant_id / app.user_id / app.role を SET LOCAL）"
    },
    "rate_limit": "60/min/user",
-   "access_control_policies": [
-    "knowledge_pages_self_only_write",
-    "knowledge_pages_permission_write"
-   ],
+   "access_control_policies": [],
    "outputs_4xx": [
     {
      "status": 401,
@@ -17618,6 +17609,7 @@
     "action_runs_tenant_read",
     "action_runs_ops_read_with_grant",
     "tickets_read",
+    "tickets_client_read",
     "tickets_ops_read_with_grant",
     "reference_logs_ticket_read",
     "reference_logs_ops_read_with_grant"
@@ -17726,10 +17718,7 @@
     "scheme": "session（Better Auth・sessions 表を見る。app.tenant_id / app.user_id / app.role を SET LOCAL）"
    },
    "rate_limit": "60/min/user",
-   "access_control_policies": [
-    "knowledge_pages_self_only_write",
-    "knowledge_pages_permission_write"
-   ],
+   "access_control_policies": [],
    "outputs_4xx": [
     {
      "status": 401,
@@ -17854,7 +17843,8 @@
    },
    "rate_limit": "120/min/user",
    "access_control_policies": [
-    "knowledge_page_versions_all_read"
+    "knowledge_page_versions_read",
+    "knowledge_page_versions_ops_read_with_grant"
    ],
    "outputs_4xx": [
     {
@@ -17961,11 +17951,7 @@
     "scheme": "session（Better Auth・sessions 表を見る。app.tenant_id / app.user_id / app.role を SET LOCAL）"
    },
    "rate_limit": "60/min/user",
-   "access_control_policies": [
-    "knowledge_pages_self_only_write",
-    "knowledge_pages_permission_write",
-    "knowledge_page_versions_ops_write"
-   ],
+   "access_control_policies": [],
    "outputs_4xx": [
     {
      "status": 401,
@@ -21721,8 +21707,10 @@
     "sessions_tenant_read",
     "sessions_ops_read_with_grant",
     "tickets_read",
+    "tickets_client_read",
     "tickets_ops_read_with_grant",
-    "clients_tenant_read",
+    "clients_read",
+    "clients_own_read",
     "clients_ops_read_with_grant",
     "passkeys_all_read",
     "scope_memberships_tenant_read",
@@ -22391,6 +22379,7 @@
     "credentials_tenant_read",
     "credentials_ops_read_with_grant",
     "tickets_read",
+    "tickets_client_read",
     "tickets_ops_read_with_grant",
     "ticket_handovers_read",
     "ticket_handovers_ops_read_with_grant"
@@ -30908,12 +30897,16 @@
    "rate_limit": "120/min/user",
    "access_control_policies": [
     "tickets_read",
+    "tickets_client_read",
     "tickets_ops_read_with_grant",
-    "clients_tenant_read",
+    "clients_read",
+    "clients_own_read",
     "clients_ops_read_with_grant",
-    "client_requests_tenant_read",
+    "client_requests_read",
+    "client_requests_same_client_read",
     "client_requests_ops_read_with_grant",
-    "acceptances_tenant_read",
+    "acceptances_ticket_read",
+    "acceptances_client_read",
     "acceptances_ops_read_with_grant"
    ],
    "outputs_4xx": [
@@ -31011,7 +31004,8 @@
    "access_control_policies": [
     "artifact_versions_tenant_read",
     "artifact_versions_ops_read_with_grant",
-    "acceptances_tenant_read",
+    "acceptances_ticket_read",
+    "acceptances_client_read",
     "acceptances_ops_read_with_grant"
    ],
    "outputs_4xx": [
@@ -31125,8 +31119,7 @@
    "rate_limit": "60/min/user",
    "access_control_policies": [
     "notifications_self_only_write",
-    "notifications_permission_write",
-    "acceptances_permission_write"
+    "notifications_permission_write"
    ],
    "outputs_4xx": [
     {
@@ -31477,8 +31470,7 @@
     "bridge_jobs_permission_write",
     "notifications_self_only_write",
     "notifications_permission_write",
-    "attachments_permission_write",
-    "client_requests_permission_write"
+    "attachments_permission_write"
    ],
    "outputs_4xx": [
     {
@@ -31595,7 +31587,8 @@
    "access_control_policies": [
     "messages_tenant_read",
     "messages_ops_read_with_grant",
-    "client_requests_tenant_read",
+    "client_requests_read",
+    "client_requests_same_client_read",
     "client_requests_ops_read_with_grant"
    ],
    "outputs_4xx": [
@@ -31710,8 +31703,7 @@
    "access_control_policies": [
     "messages_permission_write",
     "notifications_self_only_write",
-    "notifications_permission_write",
-    "client_requests_permission_write"
+    "notifications_permission_write"
    ],
    "outputs_4xx": [
     {
@@ -31844,8 +31836,7 @@
    "rate_limit": "60/min/user",
    "access_control_policies": [
     "bridge_jobs_self_only_write",
-    "bridge_jobs_permission_write",
-    "client_requests_permission_write"
+    "bridge_jobs_permission_write"
    ],
    "outputs_4xx": [
     {
@@ -31963,6 +31954,7 @@
     "artifacts_tenant_read",
     "artifacts_ops_read_with_grant",
     "tickets_read",
+    "tickets_client_read",
     "tickets_ops_read_with_grant",
     "ticket_messages_ticket_read",
     "ticket_messages_ops_read_with_grant"
@@ -32080,7 +32072,8 @@
     "scopes_ops_read_with_grant",
     "policies_tenant_read",
     "policies_ops_read_with_grant",
-    "clients_tenant_read",
+    "clients_read",
+    "clients_own_read",
     "clients_ops_read_with_grant"
    ],
    "outputs_4xx": [
@@ -33567,6 +33560,7 @@
     "scopes_tenant_read",
     "scopes_ops_read_with_grant",
     "tickets_read",
+    "tickets_client_read",
     "tickets_ops_read_with_grant",
     "ticket_stages_tenant_read",
     "ticket_stages_ops_read_with_grant"
@@ -33681,10 +33675,11 @@
     "conversations_tenant_read",
     "conversations_ops_read_with_grant",
     "tickets_read",
+    "tickets_client_read",
     "tickets_ops_read_with_grant",
     "ticket_decisions_ticket_read",
     "ticket_decisions_ops_read_with_grant",
-    "knowledge_pages_tenant_read",
+    "knowledge_pages_read",
     "knowledge_pages_ops_read_with_grant"
    ],
    "outputs_4xx": [
@@ -35871,12 +35866,14 @@
     "members_tenant_read",
     "members_ops_read_with_grant",
     "tickets_read",
+    "tickets_client_read",
     "tickets_ops_read_with_grant",
     "ticket_kinds_tenant_read",
     "ticket_kinds_ops_read_with_grant",
     "ticket_stages_tenant_read",
     "ticket_stages_ops_read_with_grant",
-    "clients_tenant_read",
+    "clients_read",
+    "clients_own_read",
     "clients_ops_read_with_grant"
    ],
    "outputs_4xx": [
@@ -36106,12 +36103,14 @@
    "rate_limit": "120/min/user",
    "access_control_policies": [
     "tickets_read",
+    "tickets_client_read",
     "tickets_ops_read_with_grant",
     "ticket_sections_ticket_read",
     "ticket_sections_ops_read_with_grant",
     "test_specs_ticket_read",
     "test_specs_ops_read_with_grant",
-    "clients_tenant_read",
+    "clients_read",
+    "clients_own_read",
     "clients_ops_read_with_grant",
     "ticket_links_both_read",
     "ticket_links_ops_read_with_grant"
@@ -36465,9 +36464,7 @@
    "access_control_policies": [
     "notifications_self_only_write",
     "notifications_permission_write",
-    "client_contacts_self_only_write",
-    "client_contacts_permission_write",
-    "acceptances_permission_write"
+    "client_contacts_write"
    ],
    "outputs_4xx": [
     {
@@ -37458,10 +37455,7 @@
     "scheme": "session（Better Auth・sessions 表を見る。app.tenant_id / app.user_id / app.role を SET LOCAL）"
    },
    "rate_limit": "60/min/user",
-   "access_control_policies": [
-    "clients_self_only_write",
-    "clients_permission_write"
-   ],
+   "access_control_policies": [],
    "outputs_4xx": [
     {
      "status": 401,
@@ -37584,9 +37578,7 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "ticket_decisions_ticket_write",
-    "knowledge_pages_self_only_write",
-    "knowledge_pages_permission_write"
+    "ticket_decisions_ticket_write"
    ],
    "outputs_4xx": [
     {
@@ -38102,6 +38094,7 @@
     "attachments_tenant_read",
     "attachments_ops_read_with_grant",
     "tickets_read",
+    "tickets_client_read",
     "tickets_ops_read_with_grant"
    ],
    "outputs_4xx": [
@@ -38512,6 +38505,7 @@
    "rate_limit": "120/min/user",
    "access_control_policies": [
     "tickets_read",
+    "tickets_client_read",
     "tickets_ops_read_with_grant",
     "ticket_sections_ticket_read",
     "ticket_sections_ops_read_with_grant",

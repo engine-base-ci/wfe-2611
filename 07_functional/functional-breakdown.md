@@ -119,7 +119,7 @@
 | E-103 | `push_devices` | 15. 段階 2 で足す表 | account_scoped | 4 | D-082 D-084 D-084.3 D-085 |
 | E-104 | `disclosure_versions` | 15. 段階 2 で足す表 | ops_scoped | 1 | D-082 D-085 D-085.1 D-085.2 |
 | E-105 | `subprocessors` | 15. 段階 2 で足す表 | ops_scoped | 1 | D-042 D-082 D-085 D-085.2 |
-| E-106 | `tickets` | 16. 第1フェーズの表 | scope_layered | 4 | D-125 D-125.27 D-127.1 D-128 |
+| E-106 | `tickets` | 16. 第1フェーズの表 | scope_layered | 5 | D-125 D-125.27 D-127.1 D-128 |
 | E-107 | `ticket_sections` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-125.27 D-125.53 D-128 |
 | E-108 | `ticket_section_versions` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-128 D-128.115 |
 | E-109 | `ticket_kinds` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-125.30 D-128 |
@@ -135,13 +135,13 @@
 | E-119 | `ticket_messages` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-125.131 D-125.29 D-128 |
 | E-120 | `reference_logs` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-125.28 D-125.35 D-128 |
 | E-121 | `knowledge_pages` | 16. 第1フェーズの表 | scope_layered | 4 | D-125 D-125.108 D-128 D-128.50 |
-| E-122 | `knowledge_page_versions` | 16. 第1フェーズの表 | none | 2 | D-125 D-128 |
+| E-122 | `knowledge_page_versions` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 |
 | E-123 | `knowledge_links` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-128 D-128.52 |
-| E-124 | `clients` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-125.121 D-128 D-128.53 |
-| E-125 | `client_groups` | 16. 第1フェーズの表 | none | 2 | D-125 D-128 D-128.54 |
+| E-124 | `clients` | 16. 第1フェーズの表 | account_scoped | 5 | D-125 D-125.121 D-128 D-128.53 |
+| E-125 | `client_groups` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-128 D-128.54 |
 | E-126 | `client_contacts` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 |
-| E-127 | `client_requests` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-125.123 D-128 |
-| E-128 | `acceptances` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-125.124 D-128 |
+| E-127 | `client_requests` | 16. 第1フェーズの表 | account_scoped | 6 | D-125 D-125.123 D-128 |
+| E-128 | `acceptances` | 16. 第1フェーズの表 | account_scoped | 5 | D-125 D-125.124 D-128 |
 | E-129 | `tenant_memberships` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-125.150 D-128 D-128.46 |
 | E-130 | `terms_versions` | 16. 第1フェーズの表 | ops_scoped | 1 | D-125 D-125.162 D-128 |
 | E-131 | `terms_consents` | 16. 第1フェーズの表 | none | 2 | D-125 D-128 |
