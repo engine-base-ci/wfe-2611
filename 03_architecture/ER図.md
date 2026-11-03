@@ -1,7 +1,7 @@
 # Kaname ER 図 v1.1（段階 1 の範囲）
 
 作成 2026-09-08 ／ 更新 2026-09-27（D-098：検索用のベクトルと、それを作るモデル）／ 2026-09-15（D-069〜D-077：層と権限・出来事と失効・運営・往復するもの・取り込みと連携を追加）/ DB: PostgreSQL 16+ (pgvector) / ORM: Drizzle
-推定テーブル数: **77**（段階 1。§1〜§6 の 37 ＋ §7 マスタ 8 ＋ §9〜§13 の 38。カード決済（段階 2・D-002）と BYOK／運営マネージド（段階 2・D-055）だけが後）
+推定テーブル数: **77**（＋ §16 第1フェーズの表 30・2026-11-03）（段階 1。§1〜§6 の 37 ＋ §7 マスタ 8 ＋ §9〜§13 の 38。カード決済（段階 2・D-002）と BYOK／運営マネージド（段階 2・D-055）だけが後）
 
 ---
 
@@ -383,6 +383,74 @@ erDiagram
 
 ---
 
+## 16. 第1フェーズの表（D-125〜D-128）（30）
+
+D-125〜D-128 で第1フェーズを「チケット」中心に決め直した分の表。前の段の表（`tasks` `duties` `goals` など）は後のフェーズのものとして残し、第1フェーズの画面と API はこの節の表を読む（D-127.1・D-126.26）。
+
+```mermaid
+erDiagram
+  scopes ||--o{ tickets : "グループ"
+  tickets ||--o{ tickets : "親子（3 段まで）"
+  tickets }o--|| ticket_kinds : "種別"
+  tickets }o--|| ticket_stages : "作業の段"
+  tickets ||--o{ ticket_sections : "区画"
+  ticket_sections ||--o{ ticket_section_versions : "版"
+  ticket_kinds ||--o{ kind_sections : "欄の並び"
+  tickets ||--o{ test_specs : "テスト仕様"
+  test_specs ||--o{ checks : "検査"
+  tickets ||--o{ ticket_decisions : "決定"
+  tickets ||--o{ ticket_messages : "スレッド"
+  tickets ||--o{ reference_logs : "参照の記録"
+  tickets ||--o{ action_runs : "実行"
+  tickets }o--o| clients : "取引先"
+  clients ||--o{ client_groups : "担当グループ"
+  clients ||--o{ client_contacts : "先方の人"
+  clients ||--o{ client_requests : "依頼"
+  client_requests }o--o| tickets : "受けたら"
+  tickets ||--o{ acceptances : "検収"
+  scopes ||--o{ knowledge_pages : "置き場"
+  knowledge_pages ||--o{ knowledge_page_versions : "版"
+  knowledge_pages ||--o{ knowledge_links : "つながり"
+  class_axes ||--o{ class_values : "値"
+  tickets ||--o{ ticket_class_values : "分類"
+```
+
+| テーブル | 主な列 | 備考 |
+|---|---|---|
+| **`tickets`** | `<scoped>`（scope＝グループ）/ `number`（グループの頭文字＋連番・例 EG-128）/ `kind_id` / `stage_id` / `title` / `assignee_member_id`（担当者 ← D-128.25）/ `delegated_to_clone`（分身に任せている。実行者の列は持たない ← D-128.26）/ `client_id` / `parent_ticket_id`（3 段まで ← D-125.51）/ `derived_from_ticket_id` / `start_on` / `due_on` / `priority`（中・高。高は理由が必須 ← D-125.33）/ `estimate_minutes` / `actual_minutes` / `work_type_id` / `work_type_version` / `hold_reason` / `resume_condition` / `created_by` を「作成」で出す（D-128.27） | **★新設（D-125.27・D-127.1）。**`tasks` を置き換える。本文は区画（`ticket_sections`）に分けて持つ |
+| **`ticket_sections`** | `<common>` / `ticket_id` / `section_key`（目的・完了の条件・決定ログ・自由欄 など）/ `position` / `body jsonb`（1 枚の文書の一部。見たまま編集の部品 ← D-128.28〜.30）/ `version` | **★新設（D-125.27・D-125.53）。**区画ごとに版を持つ |
+| **`ticket_section_versions`** | `section_id` / `version` / `body jsonb` / `edited_by` / `edited_at` / `edited_by_clone` | 版と差分（TdVersions）・戻す |
+| **`ticket_kinds`** | `<common>` / `name` / `color` / `position` / `is_builtin` | **★新設（D-125.30）。**タスク・QA・課題・会議。会社が足す（上限 10） |
+| **`kind_sections`** | `<common>` / `kind_id` / `section_key` / `label` / `mode`（必須・出す・外す）/ `position` / `default_test_specs jsonb` | **★新設（D-125.52・D-128.48）。**ワークスペースの管理 › 決まり › チケットの形 |
+| **`ticket_stages`** | `<common>` / `name` / `position` / `is_fixed`（確認中・承認待ち・実行中は製品が固定） | **★新設（D-125.38）。**会社が直せる段は上限 8 |
+| **`class_axes`** | `<common>` / `key` / `name` / `is_builtin` / `position` | **★新設（D-125.67）。**会社が足す軸は上限 5 |
+| **`class_values`** | `<common>` / `axis_id` / `label` / `color` / `position` | 値の並び・色 |
+| **`ticket_class_values`** | `ticket_id` / `value_id` | チケットに付けた分類 |
+| **`handover_rules`** | `<common>` / `target`（担当者・期限・子 など）/ `mode`（毎回聞く・いつも・しない） | **★新設（D-125.70・D-125.71）。**渡すときに一緒に切り替えるもの |
+| **`test_specs`** | `<common>` / `ticket_id` / `check_kind`（① 機械・② AI・③ 人）/ `title` / `judge_type` / `params jsonb` / `version` / `off_reason`（OFF にした理由） | **★新設（D-125.17・D-125.79）** |
+| **`checks`** | `<common>` / `test_spec_id` / `spec_version` / `artifact_version_id` / `attempt` / `result`（通過・落ちた・不確か）/ `evidence jsonb`（根拠の引用）/ `runner`（server・bridge・human）/ `checked_by_member_id` | **★新設（D-125.18・D-126.24）。**① はサーバー、② は本人の PC（Bridge）、③ は人 |
+| **`ticket_decisions`** | `<common>` / `ticket_id` / `text` / `reason` / `decided_by` / `decided_at` / `source_message_id` / `superseded_by_id` / `promoted_to`（このチケットだけ・取引先のルール） | **★新設（D-125.40・D-125.63）** |
+| **`ticket_messages`** | `<common>` / `ticket_id` / `author_member_id` / `kind`（書き込み・変更・仕組み）/ `body` / `mentions uuid[]` / `changes jsonb`（期限 11/01 → 11/02 など）/ `quote_of_id` / `reactions jsonb` | **★新設（D-125.29・D-125.131・D-128.45）。**チケットのスレッド |
+| **`reference_logs`** | `<common>` / `ticket_id` / `action_run_id` / `ref_type`（ページ・記憶・添付・外の URL）/ `ref_id` / `url` / `title` / `seen_at` | **★新設（D-125.28・D-125.35）。**外は URL・題名・時刻だけ |
+| **`knowledge_pages`** | `<scoped>`（scope＝置き場：ワークスペース全体・層・グループ・自分）/ `parent_page_id` / `title` / `owner_member_id` / `state`（下書き・公開・しまった）/ `verify_interval_days` / `verified_at` / `verify_due_on` / `topics text[]` / `current_version` / `form`（手順・決まり・まとめ・白紙） | **★新設（D-125.108・D-128.50〜.52）** |
+| **`knowledge_page_versions`** | `page_id` / `version` / `body jsonb` / `note` / `published_by` / `published_at` | 公開するたびに増える |
+| **`knowledge_links`** | `<common>` / `from_page_id` / `to_type`（ページ・チケット・決まり・取引先）/ `to_id` / `anchor` | つながり・被リンク（D-128.52） |
+| **`clients`** | `<common>` / `name` / `owner_member_id`（取引先の担当）/ `visibility`（全員・担当グループだけ）/ `default_share jsonb`（種別ごとの既定の見せ方）/ `routing`（分身が振り分ける） | **★新設（D-125.121・D-128.53・D-128.54）** |
+| **`client_groups`** | `client_id` / `scope_id` | 担当グループ（いくつでも ← D-128.54） |
+| **`client_contacts`** | `<common>` / `client_id` / `name` / `email` / `role`（依頼できる・見るだけ）/ `member_id`（クライアントの場所に入るとき）/ `cc_role`（請求の宛先・CC・使わない） | 先方の人 |
+| **`client_requests`** | `<common>` / `client_id` / `contact_id` / `title` / `body` / `due_on` / `state`（新しい・聞いている・チケットに・断った）/ `ticket_id` / `routed_scope_id` / `decline_reason` | **★新設（D-125.123）。**やり取りは `conversations` に置く |
+| **`acceptances`** | `<common>` / `ticket_id` / `artifact_version_id` / `contact_id` / `due_on` / `message` / `result`（OK・直してほしい）/ `comment` / `decided_at` | **★新設（D-125.124）。**OK がそのチケットの完了の条件 |
+| **`tenant_memberships`** | `auth_user_id` / `tenant_id` / `member_id` / `role`（管理者・マネージャー・メンバー・閲覧のみ・依頼する側）/ `status` / `joined_at` | **★新設（D-125.150・D-128.46）。**1 人のアカウントが複数のワークスペースに入る。行は本人と、その tenant の管理者だけが読める |
+| **`terms_versions`** | `kind`（利用規約・プライバシー）/ `version` / `url` / `published_at` | **★新設（D-125.162）。**運営の表（tenant_id＝運営） |
+| **`terms_consents`** | `auth_user_id` / `terms_version_id` / `agreed_at` / `ip` | 誰がどの版に同意したか |
+| **`passkeys`** | `auth_user_id` / `credential_id` / `public_key` / `name`（この PC・iPhone など）/ `transports` / `last_used_at` / `revoked_at` | **★新設（D-125.137・D-128.59〜.61）。**Better Auth の passkey の表を使う |
+| **`operations`** | `<common>`（tenant_id＝運営）/ `key`（browser）/ `name` / `kind`（ブラウザ・MCP・API）/ `current_version` | **★新設（D-126.2・D-126.19）。**第1フェーズは汎用のブラウザ操作 1 つ |
+| **`ops_plan_proposals`** | `<common>`（tenant_id＝運営）/ `plan_id` / `from_version` / `to_version` / `changes jsonb` / `existing_policy`（N 日後から・ずっと今の値段）/ `notice_days` / `new_from` / `reason` / `proposed_by` / `decided_by` / `state`（下書き・決める人を待っている・決めた・差し戻した）/ `decided_at` / `return_reason` | **★新設（D-128.72）。**作った人と決めた人は同じにできない（決められる人が 1 人のときだけ例外・本人確認） |
+
+前の表の扱い：`tasks` `task_handovers` `daily_plans` は後のフェーズ（チケットに置き換え）。`skills` 系は「業務の型」として使い続ける（`skills.kind_id` に work_type を足す・D-126.26）。`learned_procedures` は「記録した動かし方」として使い続け、入力した値を空欄に置き換えた形だけを持つ（D-126.25）。`support_access_grants` は「運営の閲覧」の記録として使い、許可の範囲と期限は契約で先に持つ（D-125.128・D-128.68）。
+
+---
+
 ## オブジェクト ↔ テーブル（機械照合：`scripts/ci/er_gate.py`）
 
 > `05_flow/flow.json` の `objects[]` 全部について、実体となるテーブルを書く。テーブルが無いものは `—` と理由。
@@ -395,8 +463,8 @@ erDiagram
 | 自分のAI | `clones` `members` | 1 人 1 体（D-060） |
 | AI社員 | `ai_employees` `members` | 出どころは `distributions`（D-037） |
 | 担当業務 | `duties` `duty_versions` | |
-| 覚えた操作 | `learned_procedures` `procedure_steps` | |
-| アクション | `action_runs` | 5 方式は `action_kinds`。テストモードは `action_runs.mode_id`（D-028・D-076.7） |
+| 記録した動かし方 | `learned_procedures` `procedure_steps` | 入力した値は空欄に置き換えて持つ。消せたものだけ全社で共有（D-126.25） |
+| 実行 | `action_runs` | `ticket_id` と使った業務の型の版を持つ。テストモードは `action_runs.mode_id`（D-028・D-076.7・D-126.14） |
 | 目標 | `goals` `goal_versions` | |
 | 単位 | `units` | 顧客が作れる |
 | 配分 | `goal_allocations` `goal_contributions` | 配り方（合意／指示）は `goal_allocations.agreement_status_id`（D-076.12） |
@@ -407,9 +475,9 @@ erDiagram
 | 台帳の定義 | `ledger_definitions` `ledger_fields` `ledger_stages` | |
 | レコード | `ledger_records` | |
 | 段階 | `ledger_stages` | |
-| タスク | `tasks` `task_handovers` | |
+| チケット | `tickets` `ticket_class_values` | 本文は `ticket_sections`（D-125.27・D-127.1） |
 | 一日の計画 | `daily_plans` | |
-| 承認待ち | `approvals` | |
+| 承認 | `approvals` | 4 つのボタン・差し戻しの理由・本人確認（D-125.103） |
 | 差し戻し | `approvals` `messages` | 差し戻し＝`approvals.status_id = returned` ＋ 理由の `messages` |
 | 申し送り | `messages` `daily_plans` | 自分のAIの朝の申し送り＝`messages.kind = status`、夕方の持ち越しは `daily_plans.carry_over` |
 | 記憶 | `memories` | 4 層は `scope_id`（D-072.22）。決まり＝rule は上の層ほど強い（D-105.8） |
@@ -420,7 +488,7 @@ erDiagram
 | 検索の索引 | `search_embeddings` `embedding_models` | 台帳・記憶・証跡を意味で探すためのベクトルと、それを作るモデル（D-098） |
 | ルール | `policies` | 範囲の札＝`scope_id`（D-072.26） |
 | サービス台帳 | `service_registry` `service_registry_versions` `service_requests` | |
-| 資格情報 | `credentials` | vault の参照 ID のみ |
+| 設定 | `credentials` | 画面では「預けたログイン情報」。vault の参照 ID のみ（D-128.57） |
 | Bridge | `sessions` | `kind = bridge` の行。接続状態と失効 |
 | サーバー実行経路 | `action_runs` | `route_id`（bridge / server）。段階 2 で本格化（D-045・D-055） |
 | 証跡 | `audit_events` `ops_audit_events` `security_events` | 会社側・運営側・セキュリティの出来事 |
@@ -428,11 +496,11 @@ erDiagram
 | 招待 | `invitations` | |
 | 保留の申し込み | `pending_signup` | 確認するまで会社も利用者も作らない（D-088.2） |
 | 効く範囲 | `scopes` `layers` | 層は会社ごと |
-| テンプレ | `distributions` `artifacts` | 運営配布のテンプレは配布物、会社のテンプレは `artifacts.template_id` の先（`templates` は `distributions(kind=template)` と会社作成の `duties.constraints` で表す） |
+| ひな形 | `distributions` | 運営が配る層とマスタのひな形（kind=template）。会社は取り込んだら独立して使う（D-125.72） |
 | テストモード実行 | `action_runs` | `mode_id = test`（外に出ない・台帳は仮想） |
 | 添付 | `attachments` | |
 | 通知 | `notifications` `notification_preferences` `notice_deliveries` | |
-| プラン | `plans` `plan_versions` `subscriptions` `usage_meters` `plan_change_requests` | |
+| プラン | `plans` `plan_versions` `subscriptions` `usage_meters` `plan_change_requests` `ops_plan_proposals` | 値段を変える案と決めた記録は `ops_plan_proposals`（D-128.72） |
 | 問い合わせ | `inquiries` `conversations` | |
 | お知らせ | `notices` `notice_deliveries` `status_incidents` | |
 | 請求 | `invoices` `payments` | 段階 1 は請求書払い |
@@ -442,7 +510,7 @@ erDiagram
 | AIの途中経過と確認 | `bridge_job_events` | 何をしているか・会話の id・「これを実行していいか」と本人の答え（D-093）。答えは `audit_events` にも。道具の呼び出しと使った量も（D-100） |
 | 持ち出し | `export_jobs` | |
 | 出来事 | `account_events` `account_event_items` `retention_holds` `erasure_certificates` | 7 つの出来事と依存の処理・法令保管・消去の証明 |
-| サポートアクセス | `support_access_grants` | 閲覧の記録は `audit_events` と `ops_audit_events` |
+| 運営の閲覧 | `support_access_grants` `ops_audit_events` | 理由・1 時間・見るだけ（D-128.68） |
 | 公開申請 | `review_requests` |  |
 | 取り込み | `imports` |  |
 | 正規連携 | `integrations` | 資格情報は `credentials` 経由 |
@@ -450,7 +518,7 @@ erDiagram
 | 配布物 | `distributions` `distribution_versions` `tenant_distributions` | マスタ・版・会社ごとの状態 |
 | 運営メンバー | `ops_members` |  |
 | 定期実行 | `triggers` | 取りこぼしの扱いは `on_missed_id` |
-| スキル | `skills` `skill_versions` `skill_test_runs` `skill_attachments` | kind=meta / goal / duty。装着は `skill_attachments`（D-078） |
+| 業務の型 | `skills` `skill_versions` `skill_test_runs` `skill_attachments` | kind に work_type を足す。顧客には欄と説明だけ（D-126.21） |
 | 変更履歴 | `goal_versions` `duty_versions` `plan_versions` `distribution_versions` `service_registry_versions` `audit_events` | 版の表の総称 |
 | 能力表 | — | 段階 2（D-055）。経路ごとの能力は `distributions(kind=capability)` か固定表で持つ。段階 1 は Bridge だけなので表が無い |
 | 成果物 | `artifacts` |  |
@@ -464,6 +532,24 @@ erDiagram
 | 通知の端末 | `push_devices` | 段階 2（D-084.3） |
 | 開示資料 | `disclosure_versions` | 段階 2（D-085）。運営の版 |
 | サブプロセッサ | `subprocessors` | 段階 2（D-085.2）。事前通知 |
+| 操作 | `operations` | 第1フェーズは汎用のブラウザ操作だけ（D-126.19） |
+| 区画 | `ticket_sections` `ticket_section_versions` `kind_sections` | |
+| テスト仕様 | `test_specs` | |
+| 検査 | `checks` | |
+| 決定 | `ticket_decisions` | |
+| 参照の記録 | `reference_logs` | |
+| スレッド | `ticket_messages` | |
+| 分類の軸と値 | `class_axes` `class_values` | |
+| 種別 | `ticket_kinds` `kind_sections` | |
+| 作業の段 | `ticket_stages` | |
+| 切り替えの決まり | `handover_rules` | |
+| ナレッジのページ | `knowledge_pages` `knowledge_page_versions` `knowledge_links` | |
+| 取引先 | `clients` `client_groups` `client_contacts` | |
+| 依頼 | `client_requests` `conversations` | |
+| 検収 | `acceptances` | |
+| テナントへの所属 | `tenant_memberships` | |
+| 規約と同意 | `terms_versions` `terms_consents` | |
+| パスキー | `passkeys` | |
 | 層 | `layers` `scopes` |  |
 | かけたもの | `measures` `tasks` `ledger_records` | `measures.budget_amount`・`tasks.actual_minutes`・`ledger_records.goal_id / measure_id`（D-063） |
 
@@ -476,6 +562,8 @@ erDiagram
 
 | 決定 | 何を決めたか | 効いているテーブル |
 |---|---|---|
+| D-125 | 第1フェーズをチケット中心に決め直した（区画・テスト仕様・検査・決定・スレッド・参照の記録・分類・種別・作業の段・切り替えの決まり・ナレッジのページ・取引先・依頼・検収・所属・規約と同意・パスキー） | §16 の表 |
+| D-128 | 担当者（実行者の列なし）・ワークスペースの管理の決まりとチケットの形・ナレッジのつながり・取引先と部署・プランの値段を変える案 | `tickets.assignee_member_id` `tickets.delegated_to_clone` `kind_sections` `knowledge_links` `client_groups` `ops_plan_proposals` |
 | D-072 | タスクは親子で開ける（親の行に ▸ と終わった数／全部・親の中身に子の一覧・足す／自分のAIに分けてもらう・ガントで親の下に子） | `tasks.parent_task_id`（自己参照。子の goal_id は親と同じにするかは実装時に決める：既定は親から継ぐ）。表の追加は画面タスク T-U-16 の migration で行う |
 | D-116 | 6 本番へは、切り替える前の確認に赤が無ければ切り替えられる（黄は承知のうえで）。押したら通し、翌朝から動く | `tenants.live_at` `tenants.live_by` `ai_employees.paused_at`（止めたまま本番へ） `action_runs.ai_employee_id/duty_id/mode_id`。判定は `app.onboard_golive`、切り替えは `app.onboard_golive_switch`（段 6 を通した記録・証跡 golive.switched）、止めるは `app.golive_pause`（0070） |
 | D-112 | 自分のAI の会話は本人の PC の Claude Code の記録が正本（文を記録と同じ id で写す） | `messages.transcript_uuid`（会話の中で一意）。書くのは `app.bridge_entries`、取り戻す先は `app.bridge_mirror_targets`、結末は `app.bridge_finish_job`（写した文があれば答えを重ねない） |

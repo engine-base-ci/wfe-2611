@@ -1,7 +1,7 @@
 {
  "meta": {
   "version": "v3.1",
-  "created_at": "2026-10-20",
+  "created_at": "2026-11-03",
   "_doc": "05_flow/build_functional.py が flow.json・ER図・モック・errors.json から生成。手で直さない。",
   "source": [
    "D-053.1",
@@ -13,8 +13,8 @@
   {
    "id": "R1",
    "name": "自分で全部回している人",
-   "desc": "一人社長・個人事業。営業も制作も経理も自分。契約する人であり毎日使う人でもある",
-   "frequency": "毎日（朝10分＋随時）",
+   "desc": "受託の営業・見積・請求・問い合わせを 1 人で回す。個人のテナント（会社名を空で登録）もここ",
+   "frequency": "毎日・何度も",
    "screens": [
     "signup",
     "verify-email",
@@ -34,7 +34,6 @@
     "tasks",
     "clone-chat",
     "ai-activity",
-    "search",
     "records",
     "record-detail",
     "goals",
@@ -44,13 +43,11 @@
     "review",
     "hypotheses",
     "duties",
-    "clone-memory",
     "ledger-def",
     "company-model",
     "automation-repair",
     "audit",
     "policies",
-    "members",
     "ai-staff",
     "ai-staff-detail",
     "security-brief",
@@ -66,47 +63,35 @@
     "inquiry",
     "notices",
     "billing",
-    "member-detail"
+    "tickets",
+    "masters",
+    "layers",
+    "rules",
+    "work-types",
+    "knowledge",
+    "clients",
+    "requests"
    ],
    "nav": [
-    "today",
+    "tickets",
+    "approvals",
     "clone-chat",
     "ai-activity",
-    "clone-thread",
-    "clone-memory",
-    "approvals",
-    "tasks",
-    "records",
-    "my-progress",
-    "goals",
-    "goal-allocation",
-    "goal-edit",
-    "review",
-    "hypotheses",
-    "company-model",
-    "duties",
-    "ai-staff",
-    "ledger-def",
-    "members",
-    "member-detail",
-    "policies",
-    "account",
-    "company-settings",
-    "notices",
-    "inquiry",
-    "billing",
-    "import",
-    "services",
-    "bridge-setup",
-    "credentials",
-    "automation-repair",
+    "work-types",
+    "rules",
+    "knowledge",
+    "layers",
+    "masters",
     "audit",
-    "security-brief",
-    "disclosure",
-    "llm-routes",
-    "app-setup",
-    "export",
-    "account-close"
+    "company-settings",
+    "billing",
+    "clients",
+    "requests",
+    "account",
+    "credentials",
+    "bridge-setup",
+    "inquiry",
+    "notices"
    ],
    "object_constraints": [
     {
@@ -137,21 +122,16 @@
     }
    ],
    "status": "decided",
-   "decided_at": "2026-10-20",
+   "decided_at": "2026-11-03",
    "source": [
-    "D-002",
-    "D-008",
-    "D-036",
-    "D-002.2",
-    "D-008.1",
-    "D-036.1",
-    "D-036.3"
+    "D-125.1",
+    "D-125.135"
    ]
   },
   {
    "id": "R2",
-   "name": "代表と、その下に数人がいる会社の代表",
-   "desc": "中小・ベンチャーの社長。自分も現場を持ちつつ社員・外注に配っている",
+   "name": "数人の会社の代表",
+   "desc": "自分と数人に仕事を配り、渡し・受け取り・結果を見る。マネージャー（配る・承認する）の権限を持つ",
    "frequency": "毎日",
    "screens": [
     "signup",
@@ -172,7 +152,6 @@
     "tasks",
     "clone-chat",
     "ai-activity",
-    "search",
     "records",
     "record-detail",
     "goals",
@@ -182,7 +161,6 @@
     "review",
     "hypotheses",
     "duties",
-    "clone-memory",
     "ledger-def",
     "company-model",
     "automation-repair",
@@ -204,47 +182,38 @@
     "inquiry",
     "notices",
     "billing",
-    "member-detail"
+    "member-detail",
+    "tickets",
+    "masters",
+    "layers",
+    "rules",
+    "work-types",
+    "knowledge",
+    "clients",
+    "requests"
    ],
    "nav": [
-    "today",
+    "tickets",
+    "approvals",
     "clone-chat",
     "ai-activity",
-    "clone-thread",
-    "clone-memory",
-    "approvals",
-    "tasks",
-    "records",
-    "my-progress",
-    "goals",
-    "goal-allocation",
-    "goal-edit",
-    "review",
-    "hypotheses",
-    "company-model",
-    "duties",
-    "ai-staff",
-    "ledger-def",
+    "work-types",
+    "rules",
+    "knowledge",
     "members",
     "member-detail",
-    "policies",
-    "account",
-    "company-settings",
-    "notices",
-    "inquiry",
-    "billing",
-    "import",
-    "services",
-    "bridge-setup",
-    "credentials",
-    "automation-repair",
+    "layers",
+    "masters",
     "audit",
-    "security-brief",
-    "disclosure",
-    "llm-routes",
-    "app-setup",
-    "export",
-    "account-close"
+    "company-settings",
+    "billing",
+    "clients",
+    "requests",
+    "account",
+    "credentials",
+    "bridge-setup",
+    "inquiry",
+    "notices"
    ],
    "object_constraints": [
     {
@@ -275,127 +244,121 @@
     }
    ],
    "status": "decided",
-   "decided_at": "2026-10-20",
+   "decided_at": "2026-11-03",
    "source": [
-    "D-002",
-    "D-026",
-    "D-002.2"
+    "D-125.16",
+    "D-125.117"
    ]
   },
   {
    "id": "R3",
-   "name": "配られた仕事だけをする人",
-   "desc": "社員・外注。自分の担当分だけ見る。会社全体の数字も統制も見ない・見せない",
-   "frequency": "毎日〜週数回",
+   "name": "配られた仕事をする人",
+   "desc": "上や横から受け取ってこなす。兼務もある。自分の AI に任せる",
+   "frequency": "毎日",
    "screens": [
+    "signup",
+    "invite-accept",
+    "mfa-setup",
+    "login",
+    "password-reset",
+    "bridge-setup",
+    "credentials",
+    "today",
+    "approvals",
+    "clone-thread",
+    "tasks",
+    "clone-chat",
+    "ai-activity",
+    "records",
+    "record-detail",
+    "goals",
+    "my-progress",
+    "policies",
+    "account",
+    "app-setup",
+    "inquiry",
+    "notices",
+    "tickets",
+    "rules",
+    "work-types",
+    "knowledge"
+   ],
+   "nav": [
+    "tickets",
+    "approvals",
+    "clone-chat",
+    "ai-activity",
+    "work-types",
+    "rules",
+    "knowledge",
+    "account",
+    "credentials",
+    "bridge-setup",
+    "inquiry",
+    "notices"
+   ],
+   "object_constraints": [
+    {
+     "object": "本人のもの（記憶・目標・ルール・タスク・自分のAI）",
+     "constraint": "権限なしで自由",
+     "access_predicate_expr": "owner_member_id = current_setting('app.user_id', true)::uuid",
+     "source": [
+      "D-073.1"
+     ]
+    },
+    {
+     "object": "会社の中の見える範囲",
+     "constraint": "見える層だけ",
+     "access_predicate_expr": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
+     "source": [
+      "D-026.1",
+      "D-058.5"
+     ]
+    },
+    {
+     "object": "それ以外（会社・層のもの）",
+     "constraint": "権限＝誰に×何に×どの層で×できること",
+     "access_predicate_expr": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, <target_kind>, scope_id, <ability>)",
+     "source": [
+      "D-073.2",
+      "D-073.3"
+     ]
+    }
+   ],
+   "status": "decided",
+   "decided_at": "2026-11-03",
+   "source": [
+    "D-125.14",
+    "D-125.115"
+   ]
+  },
+  {
+   "id": "R4",
+   "name": "依頼を出す取引先の人",
+   "desc": "会社に招待され、依頼を出し、やり取りし、成果物を検収する。クライアントの場所だけを使う",
+   "frequency": "依頼のたび",
+   "screens": [
+    "signup",
     "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
     "today",
-    "approvals",
-    "clone-thread",
-    "tasks",
     "clone-chat",
-    "ai-activity",
-    "search",
-    "records",
-    "record-detail",
-    "goals",
-    "my-progress",
-    "clone-memory",
-    "policies",
-    "account",
-    "app-setup",
-    "inquiry",
-    "notices"
-   ],
-   "nav": [
-    "today",
-    "clone-chat",
-    "ai-activity",
-    "clone-thread",
-    "clone-memory",
-    "approvals",
-    "tasks",
-    "records",
-    "my-progress",
-    "goals",
-    "policies",
-    "account",
-    "notices",
-    "inquiry",
-    "app-setup"
-   ],
-   "object_constraints": [
-    {
-     "object": "本人のもの（記憶・目標・ルール・タスク・自分のAI）",
-     "constraint": "権限なしで自由",
-     "access_predicate_expr": "owner_member_id = current_setting('app.user_id', true)::uuid",
-     "source": [
-      "D-073.1"
-     ]
-    },
-    {
-     "object": "会社の中の見える範囲",
-     "constraint": "見える層だけ",
-     "access_predicate_expr": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
-     "source": [
-      "D-026.1",
-      "D-058.5"
-     ]
-    },
-    {
-     "object": "それ以外（会社・層のもの）",
-     "constraint": "権限＝誰に×何に×どの層で×できること",
-     "access_predicate_expr": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, <target_kind>, scope_id, <ability>)",
-     "source": [
-      "D-073.2",
-      "D-073.3"
-     ]
-    }
-   ],
-   "status": "decided",
-   "decided_at": "2026-10-20",
-   "source": [
-    "D-002",
-    "D-026",
-    "D-058.6"
-   ]
-  },
-  {
-   "id": "R4",
-   "name": "進捗だけ見る外部の人",
-   "desc": "業務委託先・パートナー。書き込まない。見える範囲を絞って渡す",
-   "frequency": "週数回",
-   "screens": [
-    "invite-accept",
-    "login",
-    "today",
-    "tasks",
-    "clone-chat",
-    "search",
     "records",
     "record-detail",
     "my-progress",
-    "clone-memory",
     "policies",
     "account",
     "app-setup",
-    "inquiry",
-    "notices"
+    "notices",
+    "tickets",
+    "portal"
    ],
    "nav": [
-    "clone-chat",
-    "clone-memory",
-    "tasks",
-    "records",
-    "my-progress",
-    "policies",
+    "portal",
     "account",
-    "notices",
-    "inquiry",
-    "app-setup"
+    "notices"
    ],
    "object_constraints": [
     {
@@ -409,17 +372,19 @@
     }
    ],
    "status": "decided",
-   "decided_at": "2026-10-20",
+   "decided_at": "2026-11-03",
    "source": [
-    "D-002",
-    "D-026"
+    "D-125.43",
+    "D-125.121",
+    "D-125.122",
+    "D-125.124"
    ]
   },
   {
    "id": "R6",
-   "name": "Kaname 運営（ENGINE BASE 側）",
-   "desc": "配布するもの（AI社員・担当業務・ルール・テンプレ）とプランを管理し、導入を支援し、詰まったら直す。顧客のデータは見られない設計が原則",
-   "frequency": "毎日（配布と支援）",
+   "name": "Kaname 運営",
+   "desc": "自分＋身近な数社を支える。問い合わせ・請求と入金・お知らせ・会社を止める／再開・操作と業務の型とひな形。契約で事前に許可を得て会社のデータを見られる",
+   "frequency": "毎日",
    "screens": [
     "ops-support",
     "ops-home",
@@ -432,7 +397,8 @@
     "ops-disclosure",
     "ops-tenant",
     "ops-review",
-    "ops-audit"
+    "ops-audit",
+    "ops-team"
    ],
    "nav": [
     "ops-home",
@@ -440,13 +406,8 @@
     "ops-support",
     "ops-notices",
     "ops-billing",
-    "ops-catalog",
     "ops-skills",
-    "ops-services",
-    "ops-review",
-    "ops-audit",
-    "ops-llm",
-    "ops-disclosure"
+    "ops-team"
    ],
    "object_constraints": [
     {
@@ -469,16 +430,11 @@
     }
    ],
    "status": "decided",
-   "decided_at": "2026-10-20",
+   "decided_at": "2026-11-03",
    "source": [
-    "D-030",
-    "D-042",
-    "D-073.7",
-    "D-011.1",
-    "D-027.2",
-    "D-030.1",
-    "D-030.10",
-    "D-042.6"
+    "D-125.23",
+    "D-125.24",
+    "D-125.128"
    ]
   }
  ],
@@ -486,8 +442,8 @@
   "signup": {
    "R1": "edit",
    "R2": "edit",
-   "R3": "-",
-   "R4": "-",
+   "R3": "edit",
+   "R4": "view",
    "R6": "-"
   },
   "verify-email": {
@@ -508,7 +464,7 @@
    "R1": "edit",
    "R2": "edit",
    "R3": "edit",
-   "R4": "-",
+   "R4": "view",
    "R6": "-"
   },
   "billing-setup": {
@@ -529,7 +485,7 @@
    "R1": "edit",
    "R2": "edit",
    "R3": "edit",
-   "R4": "-",
+   "R4": "view",
    "R6": "-"
   },
   "onboard-interview": {
@@ -549,14 +505,14 @@
   "bridge-setup": {
    "R1": "edit",
    "R2": "edit",
-   "R3": "-",
+   "R3": "edit",
    "R4": "-",
    "R6": "-"
   },
   "credentials": {
    "R1": "edit",
    "R2": "edit",
-   "R3": "-",
+   "R3": "edit",
    "R4": "-",
    "R6": "-"
   },
@@ -599,7 +555,7 @@
    "R1": "edit",
    "R2": "edit",
    "R3": "edit",
-   "R4": "view",
+   "R4": "-",
    "R6": "-"
   },
   "clone-chat": {
@@ -614,13 +570,6 @@
    "R2": "edit",
    "R3": "edit",
    "R4": "-",
-   "R6": "-"
-  },
-  "search": {
-   "R1": "edit",
-   "R2": "edit",
-   "R3": "edit",
-   "R4": "view",
    "R6": "-"
   },
   "records": {
@@ -686,13 +635,6 @@
    "R4": "-",
    "R6": "-"
   },
-  "clone-memory": {
-   "R1": "edit",
-   "R2": "edit",
-   "R3": "edit",
-   "R4": "view",
-   "R6": "-"
-  },
   "ledger-def": {
    "R1": "edit",
    "R2": "edit",
@@ -729,7 +671,7 @@
    "R6": "-"
   },
   "members": {
-   "R1": "edit",
+   "R1": "-",
    "R2": "edit",
    "R3": "-",
    "R4": "-",
@@ -858,7 +800,7 @@
    "R1": "edit",
    "R2": "edit",
    "R3": "edit",
-   "R4": "view",
+   "R4": "-",
    "R6": "-"
   },
   "notices": {
@@ -925,10 +867,80 @@
    "R6": "edit"
   },
   "member-detail": {
+   "R1": "-",
+   "R2": "edit",
+   "R3": "-",
+   "R4": "-",
+   "R6": "-"
+  },
+  "tickets": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "edit",
+   "R4": "view",
+   "R6": "-"
+  },
+  "masters": {
    "R1": "edit",
    "R2": "edit",
    "R3": "-",
    "R4": "-",
+   "R6": "-"
+  },
+  "layers": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "-",
+   "R4": "-",
+   "R6": "-"
+  },
+  "rules": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "edit",
+   "R4": "-",
+   "R6": "-"
+  },
+  "work-types": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "edit",
+   "R4": "-",
+   "R6": "-"
+  },
+  "knowledge": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "edit",
+   "R4": "-",
+   "R6": "-"
+  },
+  "clients": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "-",
+   "R4": "-",
+   "R6": "-"
+  },
+  "requests": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "-",
+   "R4": "-",
+   "R6": "-"
+  },
+  "ops-team": {
+   "R1": "-",
+   "R2": "-",
+   "R3": "-",
+   "R4": "-",
+   "R6": "edit"
+  },
+  "portal": {
+   "R1": "-",
+   "R2": "-",
+   "R3": "-",
+   "R4": "view",
    "R6": "-"
   }
  }

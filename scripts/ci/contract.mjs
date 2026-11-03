@@ -1,6 +1,7 @@
 // 契約（OpenAPI）と実装の整合。API ↦ UI の依存方向を固定する（T-F-15／T-A-*）。
 //   gen        08_api/openapi.yaml＋endpoints.json → packages/contracts/src/{types,registry,schemas}.ts ＋ apps/api/src/routes/<table>.ts（route の登録だけ・振る舞いは contract/op.ts と hooks）
 //   check      G11：生成物が最新か（hash）／main の openapi.yaml と比べて破壊的変更（path・method の削除、必須の追加、レスポンス項目の削除）が無いか
+//              意図して消す API は 08_api/retired-endpoints.json に 1 本ずつ根拠の決定（決定ログにある ID）と理由を書いたものだけ通す（D-128.77）
 //   endpoints  endpoint 実在性：apps/api/src/routes/*.ts の登録が契約に無い → 赤。契約の endpoint のうち担当（backend 層）が done なのに未登録 → 赤
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
@@ -13,6 +14,26 @@ const OPENAPI = "08_api/openapi.yaml";
 const ENDPOINTS_JSON = "08_api/endpoints.json";
 const OUT = "packages/contracts/src";
 const ROUTES = "apps/api/src/routes";
+const RETIRED = "08_api/retired-endpoints.json";
+const DECISION_LOG = "01_hearing/決定ログ_進行中.md";
+
+/** 意図して消す API の一覧。根拠の決定が決定ログに無い行・理由が空の行は使わない（返すのは使える行と、使えない理由） */
+export function loadRetired(root = ROOT) {
+  const p = join(root, RETIRED);
+  if (!existsSync(p)) return { rows: [], invalid: [] };
+  const log = existsSync(join(root, DECISION_LOG)) ? readFileSync(join(root, DECISION_LOG), "utf8") : "";
+  const rows = [], invalid = [];
+  for (const r of JSON.parse(readFileSync(p, "utf8")).retired ?? []) {
+    const id = String(r.decision ?? "");
+    const known = /^D-\d{3}(\.\d+)?$/.test(id) && log.includes(`| ${id} |`) || /^D-\d{3}$/.test(id) && log.includes(`decision: ${id}`);
+    if (!r.path || !known || !String(r.reason ?? "").trim()) invalid.push(`${RETIRED}: ${r.method ?? "*"} ${r.path ?? "?"} は根拠の決定（${id || "なし"}）が決定ログに無いか、理由が空`);
+    else rows.push({ path: r.path, method: (r.method ?? "*").toUpperCase(), field: r.field ?? null });
+  }
+  return { rows, invalid };
+}
+function retiredHit(rows, path, method = "*", field = null) {
+  return rows.some((r) => r.path === path && (r.method === "*" || r.method === method) && (r.field === null || r.field === field));
+}
 
 /** 最小の YAML 読み（openapi.yaml は build_api.py が固定の形で出す：2 スペース・引用文字列） */
 export function parsePaths(yaml) {
@@ -165,19 +186,22 @@ export function check(root = ROOT, base = "main") {
   }
   let prev = "";
   try { prev = execSync(`git show ${base}:${OPENAPI}`, { cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }); } catch { prev = ""; }
+  const { rows: retired, invalid } = loadRetired(root);
+  bad.push(...invalid);
+  let allowed = 0;
   if (prev) {
     const a = parsePaths(prev), b = parsePaths(yaml);
     for (const [p, ms] of Object.entries(a)) {
-      if (!b[p]) { bad.push(`破壊的変更: ${p} が消えた`); continue; }
+      if (!b[p]) { if (retiredHit(retired, p)) allowed++; else bad.push(`破壊的変更: ${p} が消えた`); continue; }
       for (const [m, d] of Object.entries(ms)) {
         const n = b[p][m];
-        if (!n) { bad.push(`破壊的変更: ${m} ${p} が消えた`); continue; }
+        if (!n) { if (retiredHit(retired, p, m)) allowed++; else bad.push(`破壊的変更: ${m} ${p} が消えた`); continue; }
         for (const r of n.required) if (!d.required.includes(r)) bad.push(`破壊的変更: ${m} ${p} に必須の入力 ${r} が増えた`);
-        for (const f of d.responseFields) if (!n.responseFields.includes(f)) bad.push(`破壊的変更: ${m} ${p} の応答から ${f} が消えた`);
+        for (const f of d.responseFields) if (!n.responseFields.includes(f)) { if (retiredHit(retired, p, m, f)) allowed++; else bad.push(`破壊的変更: ${m} ${p} の応答から ${f} が消えた`); }
       }
     }
   }
-  return { hash: h, base: prev ? base : "(比較元なし)", bad };
+  return { hash: h, base: prev ? base : "(比較元なし)", bad, allowed };
 }
 export function endpoints(root = ROOT) {
   const contract = parsePaths(readFileSync(join(root, OPENAPI), "utf8"));
@@ -204,7 +228,7 @@ export function endpoints(root = ROOT) {
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const cmd = process.argv[2];
   if (cmd === "gen") { const r = gen(); console.log(`[contract gen] endpoints ${r.endpoints}・routes ${r.tables} 表・schemas ${r.schemas}・openapi:${r.hash} → ${OUT}／${ROUTES}`); process.exit(0); }
-  if (cmd === "check") { const r = check(undefined, process.argv[3] ?? "main"); console.log(r.bad.length ? `[G11 openapi-diff] NG（比較元 ${r.base}）:\n  ${r.bad.join("\n  ")}` : `[G11 openapi-diff] OK（openapi:${r.hash}・比較元 ${r.base}・破壊的変更なし・生成物は最新）`); process.exit(r.bad.length ? 1 : 0); }
+  if (cmd === "check") { const r = check(undefined, process.argv[3] ?? "main"); console.log(r.bad.length ? `[G11 openapi-diff] NG（比較元 ${r.base}）:\n  ${r.bad.join("\n  ")}` : `[G11 openapi-diff] OK（openapi:${r.hash}・比較元 ${r.base}・破壊的変更なし${r.allowed ? `（決定にもとづいて消した ${r.allowed} 件は ${RETIRED}）` : ""}・生成物は最新）`); process.exit(r.bad.length ? 1 : 0); }
   if (cmd === "endpoints") { const r = endpoints(); const bad = [...r.extra.map((x) => `契約に無い登録: ${x}`), ...r.missingDone]; console.log(bad.length ? `[endpoint 実在性] NG:\n  ${bad.join("\n  ")}` : `[endpoint 実在性] OK（契約 ${r.contract}・登録 ${r.registered}・done なのに未登録 0）`); process.exit(bad.length ? 1 : 0); }
   console.error("usage: contract.mjs gen | check [base] | endpoints"); process.exit(1);
 }
