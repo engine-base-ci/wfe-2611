@@ -19,14 +19,15 @@ import glob, importlib.util, os, re, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 WORDS = {"public", "read", "write", "assignee", "approver", "recipient", "self", "manager", "admin", "client", "device"}
-OPS_CAPS = {"inquiry", "peek", "money", "stop", "notice", "distribute", "plan_propose", "plan_decide", "ops_people"}
+OPS_CAPS = {"any", "inquiry", "peek", "money", "stop", "notice", "distribute", "plan_propose", "plan_decide", "ops_people"}
 # 本人確認を取り直す操作（D-125.139・D-128.68・D-128.70）。表に出てきたら step_up が要る
 STEP_UP_REQUIRED = {"approveApproval", "createCredential", "updateCredential", "updateMemberRole", "updateMemberPermissions",
                     "createExport", "openPeek", "stopWorkspace", "recordPayment", "decidePlanProposal",
                     "startTwoFactor", "disableTwoFactor", "regenerateBackupCodes", "changePassword", "deletePasskey", "resetMemberTwoFactor",
                     "requestEmailChange", "revokeMyDevice", "releaseOpsWorkType", "rollbackOpsWorkType", "releaseOpsTemplate",
                     "updateMemberGroups", "suspendMember", "resumeMember", "removeMember", "updateWorkspacePermissions",
-                    "changePlan", "requestWorkspaceDeletion", "createInvitations", "createInvitationLink"}
+                    "changePlan", "requestWorkspaceDeletion", "createInvitations", "createInvitationLink",
+                    "changeOpsWorkspacePlan", "resumeWorkspace", "issueOpsInvoices", "addOpsMember", "updateOpsMemberCaps", "removeOpsMember"}
 PUBLIC_OK = {"signup", "verify-email", "login", "password-reset", "invite-accept"}   # ログイン前の画面だけが public を使える
 
 

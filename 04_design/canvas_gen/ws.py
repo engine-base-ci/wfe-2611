@@ -63,7 +63,7 @@ row = lambda when, who, what, where: '<div style="display: flex; gap: 12px; alig
 W = lambda c, bg, n: '<b style="font-weight: 500">%s</b>' % n
 body = (ttl("記録", "ワークスペースで起きた大事なこと。消せない・直せない", btn("書き出す"))
   + '<div style="display: flex; gap: 8px; align-items: center; background: #FFFFFF; border: 1px solid #22345C; box-shadow: 0 0 0 2px #DCE4F2; border-radius: 10px; padding: 0 14px; height: 46px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4A5563" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><span style="flex: 1; font-size: 14px">鈴木さんの役割を変えたのは誰？</span><span style="font-size: 11px; color: %s">ことばで探せる</span></div>' % MUTED
-  + '<div style="display: flex; gap: 6px; flex-wrap: wrap">' + chip("権限が変わった") + chip("持ち出し") + chip("外に出した") + chip("新しい端末で入った") + chip("分身に許可した") + chip("消した（30 日は戻せる）") + '</div>'
+  + '<div style="display: flex; gap: 6px; flex-wrap: wrap">' + chip("権限が変わった") + chip("持ち出し") + chip("外に出した") + chip("新しい端末で入った") + chip("分身に許可した") + chip("消した（30 日は戻せる）") + chip("運営がしたこと") + '</div>'
   + '<div style="font-size: 12px; color: %s">2 件見つかりました</div>' % MUTED
   + '<div style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 10px; overflow: hidden">'
   + row("11/02 09:58", W("高", "#6B5B99", "高本 聖斗"), "が 鈴木 一郎 を 営業 の マネージャー → メンバー にした", "理由：兼務が終わったため ・ iPhone から ・ 本人確認を取り直した")

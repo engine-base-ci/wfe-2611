@@ -71,7 +71,7 @@ def whdr(cur):
 INFO = ('<aside aria-label="ワークスペースの情報" style="width: 300px; flex: none; background: #FFFFFF; border-left: 1px solid #DDE2E9; padding: 16px 18px; display: flex; flex-direction: column; gap: 12px; box-sizing: border-box">'
   + '<b style="font-size: 13px">ワークスペースの情報</b>'
   + "".join('<div><div style="font-size: 11px; color: %s">%s</div><div>%s</div></div>' % (MUTED, a, b) for a, b in [("名前", "合同会社ミナト企画"), ("管理者", "湊 さくら<br><span style=\"font-size: 12px; color: #4A5563\">minato@minato-kikaku.example</span>"), ("始めた日", "2026-04-01（登録）・ 04-03 から チーム"), ("払い方", "請求書払い ・ 月末締め 翌月末払い"), ("請求先", "合同会社ミナト企画 経理 ご担当<br><span style=\"font-size: 12px; color: #4A5563\">keiri@minato-kikaku.example</span>"), ("次の請求", "12/01 ・ ¥16,500（税込・仮）"), ("運営の担当", "佐野（サポート）")])
-  + '<div style="font-size: 11px; color: %s; border-top: 1px solid #EDF0F4; padding-top: 10px">このワークスペースへの運営の操作はすべて「記録」に残る。顧客の画面には出ない（規約で先に許可をもらっている）</div></aside>' % MUTED)
+  + '<div style="font-size: 11px; color: %s; border-top: 1px solid #EDF0F4; padding-top: 10px">このワークスペースへの運営の操作はすべて「記録」に残り、顧客の「ワークスペースの管理 › 記録」にも出る（許可は規約で先にもらっている）</div></aside>' % MUTED)
 def ws_page(name, title, cur, body, crumb):
     return page(name, title, [("ワークスペース", "OpList.dc.html"), ("合同会社ミナト企画", "OpWs.dc.html" if crumb else ""), ] + ([(crumb, "")] if crumb else []), body, hdr=whdr(cur), side=INFO)
 evt = lambda w, t, s_="": '<div style="display: flex; gap: 12px; padding: 9px 0; border-top: 1px solid #EDF0F4"><span style="width: 86px; flex: none; font-size: 12px; color: %s">%s</span><span style="flex: 1">%s%s</span></div>' % (MUTED, w, t, '<span style="display: block; font-size: 11px; color: %s">%s</span>' % (MUTED, s_) if s_ else "")
@@ -125,7 +125,7 @@ ws_page("OpWsLog.dc.html", "運営 1 社 記録", "log", body, "記録")
 s = modal(WP, mhead("中を見る", "OpWs.dc.html", icon("目", NAVY, 28), "合同会社ミナト企画")
   + mbody('<div>' + lab("理由") + field("問い合わせ「承認したのに動かない」（湊 さくら・11/02） ▾") + '<div style="font-size: 11px; color: %s; margin-top: 4px">問い合わせを選ぶか、書く（障害の調べ・請求の確認 など）</div></div>' % MUTED
     + '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px"><div>' + lab("見る時間") + field("1 時間 ▾") + '</div><div>' + lab("できること") + field("見るだけ（何も変えられない）") + '</div></div>'
-    + '<div style="background: #F7F8FA; border-radius: 8px; padding: 10px 12px; font-size: 12px; color: %s">・ 規約で先に許可をもらっているので、顧客に聞かずに開ける<br>・ 誰が・いつ・何を見たかは運営の記録に残る（顧客の画面には出ない）<br>・ 預けたログイン情報の値は運営にも見えない<br>・ 見ている間は画面のいちばん上に帯が出る</div>' % MUTED)
+    + '<div style="background: #F7F8FA; border-radius: 8px; padding: 10px 12px; font-size: 12px; color: %s">・ 規約で先に許可をもらっているので、顧客に聞かずに開ける<br>・ 誰が・いつ・何を見たか・理由は、運営の記録と顧客のワークスペースの記録の両方に残る<br>・ 預けたログイン情報の値は運営にも見えない<br>・ 見ている間は画面のいちばん上に帯が出る</div>' % MUTED)
   + mfoot(btn("やめる", "", "OpWs.dc.html"), btn("見るだけで開く", "p", "PeekMain.dc.html"), left='<span style="font-size: 12px; color: %s">開く前に本人確認を取り直す（パスキー）</span>' % MUTED), 560, "中を見る")
 save("OpPeek.dc.html", "運営 中を見る", s)
 
@@ -183,7 +183,7 @@ body = (ttl("お知らせ", "全部のワークスペースか、選んだワー
       [KIND["リリース"], "チケットにスレッドができました", "全部", dot("出した 10/28"), "高本"],
       [KIND["リリース"], "取引先の場所を足しました", "チーム・ビジネス（仮）", dot("出した 10/14"), "佐野"],
       [KIND["リリース"], "ナレッジの取り込み（Obsidian・Notion）", "全部", '<span style="color: #8A94A3">下書き</span>', "佐野"]])
-  + '<div style="font-size: 12px; color: %s">顧客には「困ったとき・お知らせ」の一覧に出る。障害とメンテは上の帯にも出て、メンテ中はメンテナンス中の画面になる。メールは送らない（第1フェーズ）</div>' % MUTED)
+  + '<div style="font-size: 12px; color: %s">顧客には「困ったとき・お知らせ」の一覧に出る。障害とメンテは上の帯にも出て、メンテ中はメンテナンス中の画面になる。メールは、使えなくなるメンテのときだけ各ワークスペースの管理者に届く</div>' % MUTED)
 NL = page("OpNotices.dc.html", "運営 お知らせ", [("お知らせ", "")], body)
 
 seg = lambda items, cur: '<div style="display: inline-flex; border: 1px solid #DDE2E9; border-radius: 8px; overflow: hidden">' + "".join('<span style="padding: 6px 14px; font-size: 12px; %s">%s</span>' % ("background: %s; color: #FFFFFF" % NAVY if t == cur else "background: #FFFFFF; color: %s" % MUTED, t) for t in items) + '</div>'
@@ -193,7 +193,7 @@ form = ('<div style="flex: 1 1 520px; min-width: 0; display: flex; flex-directio
     + '<div>' + lab("本文") + '<div style="border: 1px solid #DDE2E9; border-radius: 6px; padding: 10px 12px; min-height: 110px">データベースの入れ替えのため、11/10（月）2:00〜3:00 の間 Kaname を使えません。<br>・ 実行中の分身の仕事は、始まる前に区切りまで進めて止めます<br>・ この間に承認したものは「実行待ち」になり、終わってから動きます</div></div>'
     + '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px"><div>' + lab("メンテの時間") + field("11/10 2:00 〜 3:00") + '</div><div>' + lab("影響する部分") + field("画面・分身の実行・PC とのつながり ▾") + '</div></div></div>')
   + card('<div style="display: flex; flex-direction: column; gap: 12px"><div>' + lab("誰に") + '<div style="display: flex; gap: 6px; flex-wrap: wrap">' + chip("全部のワークスペース", True) + chip("プランで選ぶ") + chip("ワークスペースを選ぶ") + '</div></div>'
-    + '<div>' + lab("出す場所") + check("お知らせの一覧", True) + check("上の帯（3 日前から・閉じられる）", True) + check("メンテ中はメンテナンス中の画面・ログインの画面にも", True) + '</div>'
+    + '<div>' + lab("出す場所") + check("お知らせの一覧", True) + check("上の帯（3 日前から・閉じられる）", True) + check("メンテ中はメンテナンス中の画面・ログインの画面にも", True) + check("各ワークスペースの管理者にメールでも届ける（メンテのとき）", True) + '</div>'
     + '<div>' + lab("いつ出すか") + '<div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap">' + chip("すぐ") + chip("日を決める", True) + field("11/03 10:00") + '</div></div></div>')
   + '</div>')
 prev = ('<div style="flex: 1 1 360px; min-width: 0; display: flex; flex-direction: column; gap: 10px"><div style="font-size: 12px; color: %s">顧客にはこう見える</div>' % MUTED
@@ -377,5 +377,5 @@ body = (ttl("PC をつけているのに実行待ちのまま", "うまく動か
   + msg("Kaname 運営（佐野）", "#131B27", "運", "11/02 10:15", "お問い合わせありがとうございます。実行の記録を確かめたところ、預けている Gmail のログイン情報（GMAIL_WORK）の期限が切れて止まっていました。右上の顔 › 自分の設定 › 預けたログイン情報 から「預け直す」をお願いします。預け直すと、実行待ちのものがすぐ動きます。")
   + '</div><div style="border-top: 1px solid #EDF0F4; padding: 12px 16px; display: flex; flex-direction: column; gap: 8px"><div style="border: 1px solid #DDE2E9; border-radius: 8px; padding: 10px 12px; min-height: 56px; color: %s">返事を書く</div><div style="display: flex; gap: 8px; align-items: center"><span style="font-size: 12px; color: %s">返事は運営の受信箱に届く</span><span style="margin-left: auto; display: flex; gap: 6px">%s%s</span></div></div></div>' % (MUTED, MUTED, btn("＋ ファイル"), btn("送る", "p"))
   + '<div style="flex: 1 1 280px; min-width: 0; display: flex; flex-direction: column; gap: 12px">' + card('<b>すぐできること</b><div style="margin-top: 8px">%s</div>' % btn("預けたログイン情報を開く", "", "MeSecrets.dc.html"))
-  + card('<b>この問い合わせ</b><div style="font-size: 12px; color: %s; margin-top: 6px">運営は支援のためにワークスペースの中を見ることがあります（利用規約）。社内メモは運営の中だけで、ここには出ません</div>' % MUTED) + '</div></div>')
+  + card('<b>この問い合わせ</b><div style="font-size: 12px; color: %s; margin-top: 6px">運営は支援のためにワークスペースの中を見ることがあります（利用規約）。見たときは、誰が・いつ・なぜ見たかがワークスペースの記録に残ります。社内メモは運営の中だけで、ここには出ません</div>' % MUTED) + '</div></div>')
 CB("MeInquiry.dc.html", "自分の問い合わせ", [("困ったとき・お知らせ", "MeHelp.dc.html"), ("PC をつけているのに実行待ちのまま", "")], body)

@@ -488,6 +488,14 @@ erDiagram
 - `knowledge_pages`：`archived_at` / `archived_to_page_id`（しまって新しいページへつなぐ）
 - ページのやり取りは `messages`（`owner_type = knowledge_page`）に置く
 
+運営の残りと困ったとき・お知らせで足す列（D-128.108〜.110）：
+- `support_access_grants`：「中を見る」の許可として使う。`reason`（必須）/ `inquiry_id`（理由に選んだ問い合わせ）/ `expires_at`（1 時間）/ `closed_at`。顧客が許可する形（D-074.5）はやめ、規約での先の許可にした（D-125.128）
+- `audit_events`：運営がしたこと（中を見た・止めた・再開した・入金を記録した・代わりにプランを変えた・本人確認のメールを送り直した）は `ops_audit_events` に加えて、相手のワークスペースの `audit_events` にも `actor_role = ops` で書く（D-128.108）
+- `ops_members`：`caps text[]`（問い合わせ・中を見る・お金・止める・お知らせ・配るもの・値段の案・値段を決める・運営の人）。`ops_role_id` は見出し（運営の管理者・サポート・お金）だけに使う
+- `notices`：`state`（下書き・予定・出した）/ `affects jsonb`（画面・分身の実行・PC とのつながり）/ `placements text[]`（一覧・上の帯・メンテ中の画面）/ `maintenance_from` / `maintenance_to` / `emailed_admins_at`（メンテだけ管理者にメール・D-128.109）
+- `status_incidents`：`notice_id` / `state`（調べている・原因が分かった・様子を見ている・直った）/ `body`。お知らせ 1 件に状態を足していく
+- `inquiries`：`context jsonb`（いま見ている画面の情報：画面の場所・時刻・ブラウザ・PC のつながり）/ `later_until`。運営の社内メモは `messages` の `visibility = ops_only`
+
 前の表の扱い：`tasks` `task_handovers` `daily_plans` は後のフェーズ（チケットに置き換え）。`skills` 系は「業務の型」として使い続ける（`skills.kind_id` に work_type を足す・D-126.26）。`learned_procedures` は「記録した動かし方」として使い続け、入力した値を空欄に置き換えた形だけを持つ（D-126.25）。`support_access_grants` は「運営の閲覧」の記録として使い、許可の範囲と期限は契約で先に持つ（D-125.128・D-128.68）。
 
 ---

@@ -187,7 +187,9 @@
     "E-140 bridge_pairing_codes",
     "E-073 security_events",
     "E-080 notifications",
-    "E-131 terms_consents"
+    "E-131 terms_consents",
+    "E-077 status_incidents",
+    "E-075 notices"
    ],
    "related_apis": [
     "POST /api/auth/sign-in",
@@ -196,6 +198,7 @@
     "POST /api/auth/terms/consent",
     "POST /api/auth/step-up",
     "POST /api/auth/sign-out",
+    "GET /api/auth/service-status",
     "navigate /password-reset",
     "navigate /signup",
     "navigate /today"
@@ -1589,11 +1592,23 @@
    ],
    "entities": [
     "E-074 inquiries",
-    "E-043 conversations"
+    "E-043 conversations",
+    "E-001 tenants",
+    "E-004 members",
+    "E-049 messages",
+    "E-094 attachments",
+    "E-039 action_runs",
+    "E-086 invoices",
+    "E-072 ops_audit_events",
+    "E-080 notifications"
    ],
    "related_apis": [
-    "PATCH /api/inquiries/:id",
-    "PATCH /api/inquiries/:id",
+    "GET /api/ops/inquiries",
+    "GET /api/ops/inquiries/counts",
+    "GET /api/ops/inquiries/:id",
+    "PATCH /api/ops/inquiries/:id",
+    "POST /api/ops/inquiries/:id/replies",
+    "POST /api/ops/inquiries/:id/notes",
     "navigate /account",
     "navigate /settings/close",
     "navigate /ai-staff/activity",
@@ -1658,10 +1673,17 @@
     "E-084 plan_change_requests",
     "E-134 ops_plan_proposals",
     "E-086 invoices",
-    "E-087 payments"
+    "E-087 payments",
+    "E-001 tenants",
+    "E-061 sessions",
+    "E-039 action_runs",
+    "E-093 export_jobs",
+    "E-072 ops_audit_events"
    ],
    "related_apis": [
-    "GET /api/plans",
+    "GET /api/ops/workspaces",
+    "GET /api/ops/workspaces/summary",
+    "POST /api/ops/workspaces/export",
     "navigate /account",
     "navigate /settings/close",
     "navigate /ai-staff/activity",
@@ -2154,10 +2176,18 @@
    ],
    "entities": [
     "E-074 inquiries",
-    "E-043 conversations"
+    "E-043 conversations",
+    "E-049 messages",
+    "E-094 attachments",
+    "E-080 notifications"
    ],
    "related_apis": [
     "GET /api/inquiries",
+    "POST /api/inquiries",
+    "GET /api/inquiries/:id",
+    "POST /api/inquiries/:id/messages",
+    "POST /api/inquiries/:id/resolve",
+    "POST /api/inquiries/attachments",
     "navigate /account",
     "navigate /settings/close",
     "navigate /ai-staff/activity",
@@ -2223,6 +2253,8 @@
    ],
    "related_apis": [
     "GET /api/notices",
+    "POST /api/notices/:id/read",
+    "GET /api/service-status",
     "navigate /account",
     "navigate /settings/close",
     "navigate /ai-staff/activity",
@@ -2359,10 +2391,17 @@
    "entities": [
     "E-075 notices",
     "E-076 notice_deliveries",
-    "E-077 status_incidents"
+    "E-077 status_incidents",
+    "E-080 notifications",
+    "E-072 ops_audit_events"
    ],
    "related_apis": [
-    "POST /api/notices",
+    "GET /api/ops/notices",
+    "POST /api/ops/notices",
+    "GET /api/ops/notices/:id",
+    "PATCH /api/ops/notices/:id",
+    "POST /api/ops/notices/:id/publish",
+    "POST /api/ops/notices/:id/updates",
     "navigate /account",
     "navigate /settings/close",
     "navigate /ai-staff/activity",
@@ -2429,11 +2468,19 @@
     "E-083 subscriptions",
     "E-085 usage_meters",
     "E-084 plan_change_requests",
-    "E-134 ops_plan_proposals"
+    "E-134 ops_plan_proposals",
+    "E-001 tenants",
+    "E-080 notifications",
+    "E-072 ops_audit_events",
+    "E-052 audit_events",
+    "E-093 export_jobs"
    ],
    "related_apis": [
-    "POST /api/payments",
-    "GET /api/invoices",
+    "GET /api/ops/invoices",
+    "GET /api/ops/invoices/summary",
+    "POST /api/ops/invoices/issue",
+    "POST /api/ops/invoices/:id/payments",
+    "POST /api/ops/invoices/export",
     "navigate /account",
     "navigate /settings/close",
     "navigate /ai-staff/activity",
@@ -2549,11 +2596,32 @@
     "E-052 audit_events",
     "E-072 ops_audit_events",
     "E-073 security_events",
-    "E-062 support_access_grants"
+    "E-062 support_access_grants",
+    "E-001 tenants",
+    "E-039 action_runs",
+    "E-042 credentials",
+    "E-129 tenant_memberships",
+    "E-061 sessions",
+    "E-132 passkeys",
+    "E-080 notifications",
+    "E-074 inquiries",
+    "E-059 account_events",
+    "E-075 notices",
+    "E-076 notice_deliveries"
    ],
    "related_apis": [
-    "PATCH /api/plans/:id",
-    "POST /api/plans",
+    "GET /api/ops/workspaces/:id",
+    "GET /api/ops/workspaces/:id/members",
+    "POST /api/ops/workspaces/:id/members/:mid/resend-verification",
+    "GET /api/ops/workspaces/:id/billing",
+    "POST /api/ops/workspaces/:id/plan",
+    "GET /api/ops/workspaces/:id/inquiries",
+    "GET /api/ops/workspaces/:id/audit",
+    "POST /api/ops/workspaces/:id/peeks",
+    "DELETE /api/ops/peeks/:id",
+    "POST /api/ops/workspaces/:id/stop",
+    "POST /api/ops/workspaces/:id/resume",
+    "POST /api/ops/workspaces/:id/notices",
     "navigate /account",
     "navigate /settings/close",
     "navigate /ai-staff/activity",
@@ -3225,10 +3293,17 @@
     "F-028"
    ],
    "entities": [
-    "E-071 ops_members"
+    "E-071 ops_members",
+    "E-132 passkeys",
+    "E-091 invitations",
+    "E-072 ops_audit_events",
+    "E-061 sessions"
    ],
    "related_apis": [
-    "PATCH /api/ops_members/:id"
+    "GET /api/ops/members",
+    "POST /api/ops/members",
+    "PATCH /api/ops/members/:id",
+    "DELETE /api/ops/members/:id"
    ],
    "access_roles": [
     "R6"
@@ -3254,7 +3329,9 @@
     "E-080 notifications",
     "E-049 messages",
     "E-119 ticket_messages",
-    "E-051 artifact_versions"
+    "E-051 artifact_versions",
+    "E-075 notices",
+    "E-077 status_incidents"
    ],
    "related_apis": [
     "GET /api/portal",
@@ -3265,7 +3342,8 @@
     "POST /api/portal/attachments",
     "GET /api/portal/tickets/:id",
     "GET /api/portal/acceptances/:id",
-    "POST /api/portal/acceptances/:id/answer"
+    "POST /api/portal/acceptances/:id/answer",
+    "GET /api/portal/notices"
    ],
    "access_roles": [
     "R4"
@@ -3510,6 +3588,12 @@
      "role": "action",
      "method": "POST",
      "path_draft": "/api/auth/sign-out"
+    },
+    {
+     "act": "A13",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/auth/service-status"
     },
     {
      "role": "transition",
@@ -6446,16 +6530,40 @@
    "screen_name": "運営：問い合わせ",
    "required_apis": [
     {
-     "act": "A43",
-     "role": "action",
-     "method": "PATCH",
-     "path_draft": "/api/inquiries/:id"
+     "act": "A70",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/inquiries"
+    },
+    {
+     "act": "A70",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/inquiries/counts"
+    },
+    {
+     "act": "A70",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/inquiries/:id"
     },
     {
      "act": "A70",
      "role": "action",
      "method": "PATCH",
-     "path_draft": "/api/inquiries/:id"
+     "path_draft": "/api/ops/inquiries/:id"
+    },
+    {
+     "act": "A70",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ops/inquiries/:id/replies"
+    },
+    {
+     "act": "A70",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ops/inquiries/:id/notes"
     },
     {
      "role": "transition",
@@ -6737,7 +6845,19 @@
      "act": "A60",
      "role": "data_fetch",
      "method": "GET",
-     "path_draft": "/api/plans"
+     "path_draft": "/api/ops/workspaces"
+    },
+    {
+     "act": "A60",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/workspaces/summary"
+    },
+    {
+     "act": "A60",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ops/workspaces/export"
     },
     {
      "role": "transition",
@@ -8168,6 +8288,36 @@
      "path_draft": "/api/inquiries"
     },
     {
+     "act": "A67",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/inquiries"
+    },
+    {
+     "act": "A67",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/inquiries/:id"
+    },
+    {
+     "act": "A67",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/inquiries/:id/messages"
+    },
+    {
+     "act": "A67",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/inquiries/:id/resolve"
+    },
+    {
+     "act": "A67",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/inquiries/attachments"
+    },
+    {
      "role": "transition",
      "method": "navigate",
      "path_draft": "/account",
@@ -8448,6 +8598,18 @@
      "role": "data_fetch",
      "method": "GET",
      "path_draft": "/api/notices"
+    },
+    {
+     "act": "A68",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/notices/:id/read"
+    },
+    {
+     "act": "A68",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/service-status"
     },
     {
      "role": "transition",
@@ -9021,9 +9183,39 @@
    "required_apis": [
     {
      "act": "A71",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/notices"
+    },
+    {
+     "act": "A71",
      "role": "action",
      "method": "POST",
-     "path_draft": "/api/notices"
+     "path_draft": "/api/ops/notices"
+    },
+    {
+     "act": "A71",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/notices/:id"
+    },
+    {
+     "act": "A71",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/ops/notices/:id"
+    },
+    {
+     "act": "A71",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ops/notices/:id/publish"
+    },
+    {
+     "act": "A71",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ops/notices/:id/updates"
     },
     {
      "role": "transition",
@@ -9303,15 +9495,33 @@
    "required_apis": [
     {
      "act": "A72",
-     "role": "action",
-     "method": "POST",
-     "path_draft": "/api/payments"
-    },
-    {
-     "act": "A87",
      "role": "data_fetch",
      "method": "GET",
-     "path_draft": "/api/invoices"
+     "path_draft": "/api/ops/invoices"
+    },
+    {
+     "act": "A72",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/invoices/summary"
+    },
+    {
+     "act": "A72",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ops/invoices/issue"
+    },
+    {
+     "act": "A72",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ops/invoices/:id/payments"
+    },
+    {
+     "act": "A72",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ops/invoices/export"
     },
     {
      "role": "transition",
@@ -9614,16 +9824,76 @@
    "screen_name": "運営：ワークスペースの 1 社",
    "required_apis": [
     {
-     "act": "A127",
-     "role": "action",
-     "method": "PATCH",
-     "path_draft": "/api/plans/:id"
+     "act": "A64",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/workspaces/:id"
+    },
+    {
+     "act": "A64",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/workspaces/:id/members"
     },
     {
      "act": "A64",
      "role": "action",
      "method": "POST",
-     "path_draft": "/api/plans"
+     "path_draft": "/api/ops/workspaces/:id/members/:mid/resend-verification"
+    },
+    {
+     "act": "A64",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/workspaces/:id/billing"
+    },
+    {
+     "act": "A64",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ops/workspaces/:id/plan"
+    },
+    {
+     "act": "A64",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/workspaces/:id/inquiries"
+    },
+    {
+     "act": "A64",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/workspaces/:id/audit"
+    },
+    {
+     "act": "A64",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ops/workspaces/:id/peeks"
+    },
+    {
+     "act": "A64",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/ops/peeks/:id"
+    },
+    {
+     "act": "A127",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ops/workspaces/:id/stop"
+    },
+    {
+     "act": "A127",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ops/workspaces/:id/resume"
+    },
+    {
+     "act": "A64",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ops/workspaces/:id/notices"
     },
     {
      "role": "transition",
@@ -11379,9 +11649,27 @@
    "required_apis": [
     {
      "act": "A134",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ops/members"
+    },
+    {
+     "act": "A134",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ops/members"
+    },
+    {
+     "act": "A134",
      "role": "action",
      "method": "PATCH",
-     "path_draft": "/api/ops_members/:id"
+     "path_draft": "/api/ops/members/:id"
+    },
+    {
+     "act": "A134",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/ops/members/:id"
     }
    ]
   },
@@ -11442,6 +11730,12 @@
      "role": "action",
      "method": "POST",
      "path_draft": "/api/portal/acceptances/:id/answer"
+    },
+    {
+     "act": "A125",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/portal/notices"
     }
    ]
   }
@@ -11457,9 +11751,13 @@
     "onboard-golive",
     "company-model",
     "export",
+    "ops-support",
+    "ops-home",
     "account",
     "company-settings",
-    "ops-skills"
+    "ops-skills",
+    "ops-billing",
+    "ops-tenant"
    ],
    "used_by_features": [
     "F-001",
@@ -11470,6 +11768,7 @@
     "F-011",
     "F-012",
     "F-013",
+    "F-014",
     "F-016",
     "F-017",
     "F-020"
@@ -11544,6 +11843,7 @@
     "ai-staff",
     "ai-staff-detail",
     "account-close",
+    "ops-support",
     "ops-catalog",
     "account",
     "import",
@@ -11566,6 +11866,7 @@
     "F-011",
     "F-012",
     "F-013",
+    "F-014",
     "F-016",
     "F-017",
     "F-018",
@@ -12131,8 +12432,11 @@
     "approvals",
     "clone-chat",
     "ai-activity",
+    "ops-support",
+    "ops-home",
     "account",
     "services",
+    "ops-tenant",
     "tickets",
     "masters",
     "rules",
@@ -12147,6 +12451,8 @@
     "F-010",
     "F-011",
     "F-013",
+    "F-014",
+    "F-016",
     "F-017",
     "F-021",
     "F-023",
@@ -12180,12 +12486,14 @@
     "bridge-setup",
     "credentials",
     "account",
+    "ops-tenant",
     "member-detail"
    ],
    "used_by_features": [
     "F-004",
     "F-005",
     "F-010",
+    "F-016",
     "F-017"
    ]
   },
@@ -12288,6 +12596,8 @@
     "today",
     "clone-thread",
     "clone-chat",
+    "ops-support",
+    "inquiry",
     "tickets",
     "knowledge",
     "requests",
@@ -12301,6 +12611,9 @@
     "F-010",
     "F-011",
     "F-013",
+    "F-014",
+    "F-015",
+    "F-016",
     "F-021",
     "F-022",
     "F-023",
@@ -12377,6 +12690,7 @@
     "account-close",
     "company-settings",
     "billing",
+    "ops-billing",
     "ops-tenant",
     "ops-review",
     "ops-audit",
@@ -12525,13 +12839,15 @@
     "ai-staff-detail",
     "account-close",
     "company-settings",
+    "ops-tenant",
     "member-detail"
    ],
    "used_by_features": [
     "F-006",
     "F-010",
     "F-011",
-    "F-012"
+    "F-012",
+    "F-016"
    ]
   },
   {
@@ -12562,11 +12878,14 @@
     "automation-repair",
     "members",
     "security-brief",
+    "ops-home",
     "account",
     "app-setup",
     "services",
+    "ops-tenant",
     "member-detail",
-    "clients"
+    "clients",
+    "ops-team"
    ],
    "used_by_features": [
     "F-001",
@@ -12577,6 +12896,7 @@
     "F-010",
     "F-012",
     "F-013",
+    "F-016",
     "F-017",
     "F-021",
     "F-024"
@@ -12728,10 +13048,15 @@
     "security-brief",
     "disclosure",
     "account-close",
+    "ops-support",
+    "ops-home",
     "ops-skills",
+    "ops-notices",
+    "ops-billing",
     "ops-tenant",
     "ops-review",
-    "ops-audit"
+    "ops-audit",
+    "ops-team"
    ],
    "used_by_features": [
     "F-003",
@@ -12739,6 +13064,7 @@
     "F-007",
     "F-010",
     "F-012",
+    "F-014",
     "F-016",
     "F-017",
     "F-019",
@@ -12787,7 +13113,8 @@
    "entity_name": "inquiries",
    "used_by_screens": [
     "ops-support",
-    "inquiry"
+    "inquiry",
+    "ops-tenant"
    ],
    "used_by_features": [
     "F-014",
@@ -12799,17 +13126,22 @@
    "entity_id": "E-075",
    "entity_name": "notices",
    "used_by_screens": [
+    "login",
     "company-settings",
     "ops-skills",
     "notices",
     "ops-notices",
-    "ops-disclosure"
+    "ops-disclosure",
+    "ops-tenant",
+    "portal"
    ],
    "used_by_features": [
+    "F-004",
     "F-011",
     "F-015",
     "F-016",
-    "F-020"
+    "F-020",
+    "F-022"
    ]
   },
   {
@@ -12819,7 +13151,8 @@
     "app-setup",
     "notices",
     "ops-notices",
-    "ops-disclosure"
+    "ops-disclosure",
+    "ops-tenant"
    ],
    "used_by_features": [
     "F-015",
@@ -12831,13 +13164,17 @@
    "entity_id": "E-077",
    "entity_name": "status_incidents",
    "used_by_screens": [
+    "login",
     "notices",
     "ops-notices",
-    "ops-disclosure"
+    "ops-disclosure",
+    "portal"
    ],
    "used_by_features": [
+    "F-004",
     "F-015",
-    "F-016"
+    "F-016",
+    "F-022"
    ]
   },
   {
@@ -12861,9 +13198,14 @@
     "bridge-setup",
     "clone-chat",
     "members",
+    "ops-support",
     "company-settings",
     "app-setup",
     "ops-skills",
+    "inquiry",
+    "ops-notices",
+    "ops-billing",
+    "ops-tenant",
     "member-detail",
     "tickets",
     "work-types",
@@ -12881,6 +13223,8 @@
     "F-011",
     "F-012",
     "F-013",
+    "F-014",
+    "F-015",
     "F-016",
     "F-017",
     "F-020",
@@ -13024,6 +13368,7 @@
    "entity_name": "invoices",
    "used_by_screens": [
     "billing-setup",
+    "ops-support",
     "ops-home",
     "company-settings",
     "billing",
@@ -13034,6 +13379,7 @@
    "used_by_features": [
     "F-001",
     "F-011",
+    "F-014",
     "F-015",
     "F-016"
    ]
@@ -13102,12 +13448,14 @@
     "invite-accept",
     "members",
     "member-detail",
-    "clients"
+    "clients",
+    "ops-team"
    ],
    "used_by_features": [
     "F-001",
     "F-002",
     "F-010",
+    "F-016",
     "F-021"
    ]
   },
@@ -13131,7 +13479,9 @@
     "audit",
     "export",
     "account-close",
-    "company-settings"
+    "ops-home",
+    "company-settings",
+    "ops-billing"
    ],
    "used_by_features": [
     "F-005",
@@ -13139,6 +13489,7 @@
     "F-010",
     "F-011",
     "F-012",
+    "F-016",
     "F-023"
    ]
   },
@@ -13149,9 +13500,11 @@
     "bridge-setup",
     "clone-chat",
     "record-detail",
+    "ops-support",
     "account",
     "company-settings",
     "import",
+    "inquiry",
     "tickets",
     "knowledge",
     "portal"
@@ -13165,6 +13518,9 @@
     "F-010",
     "F-011",
     "F-013",
+    "F-014",
+    "F-015",
+    "F-016",
     "F-017",
     "F-021",
     "F-022",
@@ -13806,6 +14162,7 @@
     "invite-accept",
     "members",
     "account",
+    "ops-tenant",
     "member-detail",
     "clients"
    ],
@@ -13814,6 +14171,7 @@
     "F-002",
     "F-004",
     "F-010",
+    "F-016",
     "F-017",
     "F-021"
    ]
@@ -13852,12 +14210,15 @@
     "mfa-setup",
     "login",
     "account",
-    "member-detail"
+    "ops-tenant",
+    "member-detail",
+    "ops-team"
    ],
    "used_by_features": [
     "F-004",
     "F-010",
     "F-012",
+    "F-016",
     "F-017"
    ]
   },
@@ -14259,6 +14620,8 @@
     "E-058",
     "E-061",
     "E-073",
+    "E-075",
+    "E-077",
     "E-079",
     "E-080",
     "E-094",
@@ -14927,8 +15290,16 @@
     "ops-support"
    ],
    "entities": [
+    "E-001",
+    "E-004",
+    "E-039",
     "E-043",
-    "E-074"
+    "E-049",
+    "E-072",
+    "E-074",
+    "E-080",
+    "E-086",
+    "E-094"
    ],
    "api_endpoints_draft": [
     "PATCH /api/inquiries/:id"
@@ -14944,11 +15315,13 @@
    ],
    "entities": [
     "E-043",
+    "E-049",
     "E-052",
     "E-074",
     "E-075",
     "E-076",
     "E-077",
+    "E-080",
     "E-081",
     "E-082",
     "E-083",
@@ -14956,6 +15329,7 @@
     "E-085",
     "E-086",
     "E-087",
+    "E-094",
     "E-134"
    ],
    "api_endpoints_draft": [
@@ -14984,10 +15358,15 @@
     "E-004",
     "E-025",
     "E-026",
+    "E-039",
+    "E-042",
     "E-043",
+    "E-049",
     "E-052",
     "E-055",
     "E-058",
+    "E-059",
+    "E-061",
     "E-062",
     "E-065",
     "E-067",
@@ -15007,6 +15386,9 @@
     "E-086",
     "E-087",
     "E-088",
+    "E-091",
+    "E-093",
+    "E-094",
     "E-095",
     "E-096",
     "E-097",
@@ -15014,6 +15396,8 @@
     "E-101",
     "E-104",
     "E-105",
+    "E-129",
+    "E-132",
     "E-133",
     "E-134",
     "E-142"
@@ -15256,6 +15640,8 @@
     "E-049",
     "E-050",
     "E-051",
+    "E-075",
+    "E-077",
     "E-080",
     "E-094",
     "E-106",
