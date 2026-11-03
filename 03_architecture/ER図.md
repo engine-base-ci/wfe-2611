@@ -383,7 +383,7 @@ erDiagram
 
 ---
 
-## 16. 第1フェーズの表（D-125〜D-128）（37）
+## 16. 第1フェーズの表（D-125〜D-128）（38）
 
 D-125〜D-128 で第1フェーズを「チケット」中心に決め直した分の表。前の段の表（`tasks` `duties` `goals` など）は後のフェーズのものとして残し、第1フェーズの画面と API はこの節の表を読む（D-127.1・D-126.26）。
 
@@ -412,6 +412,7 @@ erDiagram
   knowledge_pages ||--o{ knowledge_page_versions : "版"
   knowledge_pages ||--o{ knowledge_links : "つながり"
   class_axes ||--o{ class_values : "値"
+  scopes ||--o{ scope_memberships : "入っている人（兼ねる）"
   tickets ||--o{ ticket_class_values : "分類"
 ```
 
@@ -453,6 +454,7 @@ erDiagram
 | **`bridge_pairing_codes`** | `<common>` / `member_id` / `code_hash`（コードそのものは持たない）/ `expires_at`（10 分）/ `used_at` / `used_session_id` | **★新設（D-128.93）。**PC をつなぐ接続コード。1 回だけ。使うと `sessions(kind=bridge)` ができ、本人のセッションに結ばれる |
 | **`notification_settings`** | `<common>` / `member_id` / `email_digest`（読んでいないものを 30 分ごとにまとめて送る）/ `quiet_hours jsonb`（平日 20:00〜8:00・土日 など）/ `paused_until` / `urgent_override jsonb`（止めていても知らせる出来事） | **★新設（D-128.92）。**ワークスペースごと（tenant_id）。出来事ごとの届け先は `notification_preferences`（受け箱・メール。push は後のフェーズ） |
 | **`ops_plan_proposals`** | `<common>`（tenant_id＝運営）/ `plan_id` / `from_version` / `to_version` / `changes jsonb` / `existing_policy`（N 日後から・ずっと今の値段）/ `notice_days` / `new_from` / `reason` / `proposed_by` / `decided_by` / `state`（下書き・決める人を待っている・決めた・差し戻した）/ `decided_at` / `return_reason` | **★新設（D-128.72）。**作った人と決めた人は同じにできない（決められる人が 1 人のときだけ例外・本人確認） |
+| **`scope_memberships`** | `<common>` / `member_id` / `scope_id` / `is_primary`（主の所属か兼ねるか）/ `role`（そのグループでの役割：マネージャー・メンバー・閲覧のみ）/ `since` / `changed_by` | **★新設（D-125.115・D-128.95〜.97）。**1 人が複数のグループに入る（兼ねる）。グループごとに役割を分ける。ワークスペースの役割は `tenant_memberships.role` |
 
 `approvals` に足す列（第1フェーズ・D-128.86・D-128.87・D-128.89）：`ticket_id` / `kind`（AI の成果物・上位の承認・決まりの例外・やり方を広げる）/ `subject_type` / `subject_id`（決まりの例外は守ることの案、やり方を広げるはやり方の版を指す）/ `level` / `parent_approval_id` / `escalated_by_policy_id`（どの決まりで上位へ回ったか）/ `decision`（承認・自分で直す・差し戻し・止める）/ `decided_at` / `return_targets jsonb` / `return_reason` / `next_actor`（分身・自分）/ `memory_candidate` / `human_checks jsonb` / `irreversible` / `step_up_at`（直前の本人確認）/ `withdrawn_at`（取り下げ）/ `bulk_batch_id`。まとめて承認は ① がすべて確実・人が見る項目なし・取り消せる操作だけ（サーバーがもう一度確かめる）。
 
@@ -465,6 +467,14 @@ erDiagram
 自分の設定で足す列（D-128.55・D-128.57・D-128.58）：
 - `credentials`（預けたログイン情報）：`scope_id`（自分・層・ワークスペース）/ `destinations text[]`（使える場所：ドメイン・API の宛先。ここ以外では実行器が入れない・送らない）/ `read_only`（見るだけ）/ `client_id` / `purpose` / `expires_at` / `use_count` / `last_used_at`。取り出せるのは、持ち主（自分のものは本人の分身の実行・層やワークスペースのものはその範囲の人の実行）の PC の実行器だけで、宛先が合うときだけ（D-128.57）
 - `members`：`call_name`（呼ばれ方・20 文字）/ `avatar_ref` / `language` / `theme` / `week_start` / `timezone` / `setup_dismissed_at`（はじめにやることを閉じた）。名前は 100 文字まで（D-128.58）
+
+
+ワークスペースの管理で足す列（D-128.95〜.98）：
+- `tenants`：`logo_ref` / `client_visibility_default`（取引先を見られる人の既定）/ `request_routing`（依頼の届け先：分身が振り分ける）/ `deletion_requested_at`（消す手続き。14 日は取り消せる・`account_events(kind=company_close)` と対）
+- `permissions`：「誰ができるか」の 3 つ（プランと支払い・書き出す・ワークスペースを消す）は `abilities` に `billing` / `export` / `delete_workspace` を足して同じ表で持つ。個別に足す・外すも同じ表（`revoked_at`）
+- `members`：`suspended_at` / `suspended_by`（一時的に止める。入れなくなり分身も止まる。担当はそのまま）
+- `policies`：`kind`（守ること・上に回す）/ `escalate_when jsonb`（何のとき・条件）/ `escalate_to`（そのグループのマネージャー・決まった人・取引先の担当）。上に回す決まりも同じ表（D-128.87）
+- `kind_sections`：`position` / `mode`（必須・出す・外す）/ `content_type`（文章・箇条書き・表・チェックリスト・日付）/ `hint` / `client_visible` / `used_for_acceptance`。種別ごとに 20 まで
 
 前の表の扱い：`tasks` `task_handovers` `daily_plans` は後のフェーズ（チケットに置き換え）。`skills` 系は「業務の型」として使い続ける（`skills.kind_id` に work_type を足す・D-126.26）。`learned_procedures` は「記録した動かし方」として使い続け、入力した値を空欄に置き換えた形だけを持つ（D-126.25）。`support_access_grants` は「運営の閲覧」の記録として使い、許可の範囲と期限は契約で先に持つ（D-125.128・D-128.68）。
 
@@ -511,7 +521,7 @@ erDiagram
 | Bridge | `sessions` | `kind = bridge` の行。接続状態と失効 |
 | サーバー実行経路 | `action_runs` | `route_id`（bridge / server）。段階 2 で本格化（D-045・D-055） |
 | 証跡 | `audit_events` `ops_audit_events` `security_events` | 会社側・運営側・セキュリティの出来事 |
-| メンバー | `members` `permissions` `layers` | 権限＝誰に×何に×どの層で×できること |
+| メンバー | `members` `permissions` `layers` `scope_memberships` | 権限＝誰に×何に×どの層で×できること |
 | 招待 | `invitations` | |
 | 保留の申し込み | `pending_signup` | 確認するまで会社も利用者も作らない（D-088.2） |
 | 効く範囲 | `scopes` `layers` | 層は会社ごと |
@@ -569,7 +579,7 @@ erDiagram
 | テナントへの所属 | `tenant_memberships` | |
 | 規約と同意 | `terms_versions` `terms_consents` | |
 | パスキー | `passkeys` | |
-| 層 | `layers` `scopes` |  |
+| 層 | `layers` `scopes` `scope_memberships` | 兼ねる（D-125.115） |
 | かけたもの | `measures` `tasks` `ledger_records` | `measures.budget_amount`・`tasks.actual_minutes`・`ledger_records.goal_id / measure_id`（D-063） |
 
 ---

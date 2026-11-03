@@ -6,7 +6,7 @@
 
 | 種別 | 件数 | 根拠（source）| 備考 |
 |---|---|---|---|
-| エンティティ | 140 | 全件 | ER図 §1〜§14 の表から。table_name・tenant_isolation・access_control_policies |
+| エンティティ | 141 | 全件 | ER図 §1〜§14 の表から。table_name・tenant_isolation・access_control_policies |
 | 機能 | 32 | 全件 | 用事 24 ＋ 関門 8。api_endpoints（下書き）・ears_ac_seed |
 | ロール | 5 | 全件 | 権限の型（誰に×何に×どの層で×できること）を access_predicate_expr で |
 | 画面 | 72 | 全件 | flow.json と 1 対 1。states はモックの状態タブ、transitions はモックのリンクから |
@@ -155,6 +155,7 @@
 | E-140 | `bridge_pairing_codes` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 D-128.93 |
 | E-141 | `notification_settings` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 D-128.92 |
 | E-134 | `ops_plan_proposals` | 16. 第1フェーズの表 | ops_scoped | 1 | D-125 D-128 D-128.72 |
+| E-142 | `scope_memberships` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-125.115 D-128 D-128.95 |
 
 ## 機能
 
@@ -207,13 +208,13 @@
 
 | ID | 画面 | 行為 | 状態 | 遷移 | 必要 API | エンティティ | 役割 |
 |---|---|---|---|---|---|---|---|
-| signup | アカウントを作る | A01 A96 | 2 | 1 | 6 | 6 | R1 R2 R3 R4 |
-| verify-email | メールを確認する | A02 | 5 | 3 | 4 | 8 | R1 R2 |
-| invite-accept | 招待を受けて参加する | A03 | 3 | 0 | 3 | 8 | R3 R4 |
-| mfa-setup | 安全の設定 | A04 A97 | 3 | 1 | 14 | 9 | R1 R2 R3 R4 |
+| signup | アカウントを作る | A01 A96 | 2 | 1 | 6 | 7 | R1 R2 R3 R4 |
+| verify-email | メールを確認する | A02 | 5 | 3 | 4 | 9 | R1 R2 |
+| invite-accept | 招待を受けて参加する | A03 | 3 | 0 | 3 | 9 | R3 R4 |
+| mfa-setup | 安全の設定 | A04 A97 | 3 | 1 | 14 | 10 | R1 R2 R3 R4 |
 | billing-setup | 支払い方法を登録する | A05 | 4 | 0 | 1 | 9 | R1 R2 |
-| login | ログインする | A13 | 3 | 3 | 9 | 9 | R1 R2 R3 R4 |
-| password-reset | パスワードの再設定 | A31 | 3 | 1 | 3 | 7 | R1 R2 R3 R4 |
+| login | ログインする | A13 | 3 | 3 | 9 | 10 | R1 R2 R3 R4 |
+| password-reset | パスワードの再設定 | A31 | 3 | 1 | 3 | 8 | R1 R2 R3 R4 |
 | onboard-interview | 自分のAIと話す | A06 | 1 | 0 | 1 | 6 | R1 R2 |
 | onboard-draft | たたき台を確かめる | A07 A08 | 1 | 0 | 2 | 15 | R1 R2 |
 | bridge-setup | PC をつなぐ | A09 | 11 | 48 | 70 | 18 | R1 R2 R3 |
@@ -223,35 +224,35 @@
 | today | 今日 | A14 A55 A56 A92 | 1 | 0 | 4 | 6 | R1 R2 R3 R4 |
 | approvals | 承認待ち | A15 A89 | 4 | 45 | 58 | 15 | R1 R2 R3 |
 | clone-thread | 自分のAIとAI社員のやりとり | A16 | 1 | 0 | 1 | 6 | R1 R2 R3 |
-| tasks | タスク | A50 | 1 | 0 | 1 | 9 | R1 R2 R3 |
+| tasks | タスク | A50 | 1 | 0 | 1 | 10 | R1 R2 R3 |
 | clone-chat | 分身の部屋：会話と知っていること | A100 A20 A88 A90 A91 A95 | 21 | 45 | 77 | 22 | R1 R2 R3 R4 |
 | ai-activity | 分身の部屋：やったこと | A53 A57 | 4 | 45 | 51 | 17 | R1 R2 R3 |
 | records | 台帳 | A24 A47 | 1 | 0 | 2 | 4 | R1 R2 R3 R4 |
 | record-detail | 台帳の1件 | A18 A19 | 1 | 0 | 2 | 7 | R1 R2 R3 R4 |
 | goals | 目標 | A22 A54 | 1 | 0 | 2 | 10 | R1 R2 R3 |
-| goal-allocation | 目標の配分 | A23 | 1 | 0 | 1 | 9 | R1 R2 |
+| goal-allocation | 目標の配分 | A23 | 1 | 0 | 1 | 10 | R1 R2 |
 | goal-edit | 目標を改訂する | A29 A52 | 1 | 0 | 2 | 6 | R1 R2 |
 | my-progress | 自分の目標 | A25 A49 | 1 | 0 | 2 | 6 | R1 R2 R3 R4 |
 | review | ふりかえり | A26 | 1 | 0 | 1 | 4 | R1 R2 |
 | hypotheses | 仮説と施策 | A27 | 1 | 0 | 1 | 5 | R1 R2 |
 | duties | 担当業務 | A28 | 1 | 0 | 1 | 5 | R1 R2 |
 | ledger-def | 台帳の形 | A44 | 1 | 0 | 1 | 4 | R1 R2 |
-| company-model | 会社モデル | A45 | 1 | 0 | 1 | 18 | R1 R2 |
+| company-model | 会社モデル | A45 | 1 | 0 | 1 | 19 | R1 R2 |
 | automation-repair | 覚え直させる | A32 | 1 | 0 | 1 | 2 | R1 R2 |
-| audit | 記録 | A33 A34 A38 A40 A66 | 6 | 45 | 50 | 6 | R1 R2 |
+| audit | 記録 | A33 A34 A38 A40 A66 | 6 | 45 | 49 | 9 | R1 R2 |
 | policies | ルール | A35 | 1 | 0 | 1 | 7 | R1 R2 R3 R4 |
-| members | メンバー | A36 | 7 | 46 | 47 | 5 | R2 |
+| members | メンバー | A36 | 7 | 46 | 53 | 10 | R2 |
 | ai-staff | AI社員 | A37 | 1 | 0 | 1 | 10 | R1 R2 |
 | ai-staff-detail | AI社員の1体 | A46 A81 | 1 | 0 | 2 | 12 | R1 R2 |
 | security-brief | この製品でできること・できないこと | A39 | 1 | 0 | 1 | 5 | R1 R2 |
 | disclosure | 開示資料 | A84 | 4 | 0 | 1 | 5 | R1 R2 |
 | export | 持ち出す | A41 | 1 | 0 | 1 | 9 | R1 R2 |
-| account-close | 退会する | A42 | 1 | 0 | 1 | 12 | R1 R2 |
+| account-close | 退会する | A42 | 1 | 0 | 1 | 13 | R1 R2 |
 | ops-support | 運営：問い合わせ | A43 A70 | 2 | 45 | 47 | 2 | R6 |
 | ops-home | 運営：ワークスペースの一覧 | A60 | 4 | 45 | 46 | 8 | R6 |
 | ops-catalog | 運営：配るもの | A59 A79 | 1 | 0 | 2 | 11 | R6 |
-| account | 自分の設定 | A74 A94 | 2 | 45 | 57 | 18 | R1 R2 R3 R4 |
-| company-settings | ワークスペースの設定 | A75 | 2 | 45 | 46 | 8 | R1 R2 |
+| account | 自分の設定 | A74 A94 | 2 | 45 | 57 | 19 | R1 R2 R3 R4 |
+| company-settings | ワークスペースの設定 | A75 | 2 | 45 | 54 | 17 | R1 R2 |
 | llm-routes | AI の経路 | A82 | 4 | 0 | 1 | 2 | R1 R2 |
 | app-setup | アプリと通知 | A83 | 3 | 0 | 1 | 7 | R1 R2 R3 R4 |
 | import | 取り込み | A76 | 1 | 0 | 1 | 8 | R1 R2 |
@@ -260,21 +261,21 @@
 | ops-skills | 運営：配るもの | A128 A133 A80 | 4 | 45 | 64 | 19 | R6 |
 | inquiry | 問い合わせ | A67 | 5 | 45 | 46 | 2 | R1 R2 R3 |
 | notices | お知らせ | A68 | 3 | 45 | 46 | 3 | R1 R2 R3 R4 |
-| billing | 請求書 | A69 | 3 | 45 | 46 | 8 | R1 R2 |
+| billing | 請求書 | A69 | 3 | 45 | 48 | 9 | R1 R2 |
 | ops-notices | 運営：お知らせ | A71 | 2 | 45 | 46 | 3 | R6 |
 | ops-billing | 運営：請求 | A72 A87 | 2 | 45 | 47 | 8 | R6 |
 | ops-llm | 運営：AI の経路と使用量 | A85 | 3 | 0 | 1 | 3 | R6 |
 | ops-disclosure | 運営：開示資料 | A86 | 3 | 0 | 1 | 5 | R6 |
-| ops-tenant | 運営：ワークスペースの 1 社 | A127 A64 | 1 | 45 | 47 | 15 | R6 |
+| ops-tenant | 運営：ワークスペースの 1 社 | A127 A64 | 1 | 45 | 47 | 16 | R6 |
 | ops-review | 運営：公開の審査 | A63 | 1 | 0 | 1 | 6 | R6 |
-| ops-audit | 運営：運営の証跡 | A65 A73 | 1 | 0 | 2 | 8 | R6 |
-| member-detail | メンバーの 1 人 | A61 A62 | 4 | 45 | 47 | 14 | R2 |
+| ops-audit | 運営：運営の証跡 | A65 A73 | 1 | 0 | 2 | 9 | R6 |
+| member-detail | メンバーの 1 人 | A61 A62 | 4 | 45 | 53 | 30 | R2 |
 | tickets | チケット | A101 A102 A103 A104 A105 A106 A107 A108 A109 A110 A111 A112 A113 A115 A116 A123 A129 A130 A17 A21 A48 A51 A58 A98 A99 | 1 | 0 | 78 | 38 | R1 R2 R3 R4 |
-| masters | 決まり | A118 A120 | 1 | 0 | 2 | 7 | R1 R2 |
-| layers | グループ（メンバーの中） | A117 | 1 | 0 | 1 | 4 | R1 R2 |
-| rules | ルール | A131 | 1 | 0 | 6 | 9 | R1 R2 R3 |
+| masters | 決まり | A118 A120 | 1 | 0 | 27 | 18 | R1 R2 |
+| layers | グループ（メンバーの中） | A117 | 1 | 0 | 5 | 6 | R1 R2 |
+| rules | ルール | A131 | 1 | 0 | 6 | 10 | R1 R2 R3 |
 | work-types | 業務の型 | A119 | 1 | 0 | 9 | 10 | R1 R2 R3 |
-| knowledge | ナレッジ | A114 A30 A93 | 1 | 0 | 3 | 6 | R1 R2 R3 |
+| knowledge | ナレッジ | A114 A30 A93 | 1 | 0 | 3 | 7 | R1 R2 R3 |
 | clients | 取引先 | A121 | 1 | 0 | 1 | 5 | R1 R2 |
 | requests | 届いた依頼 | A122 | 1 | 0 | 1 | 11 | R1 R2 |
 | ops-team | 運営：運営の人 | A134 | 1 | 0 | 1 | 1 | R6 |

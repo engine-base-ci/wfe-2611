@@ -209,6 +209,10 @@
     {
      "to": "knowledge_pages",
      "label": "置き場"
+    },
+    {
+     "to": "scope_memberships",
+     "label": "入っている人（兼ねる）"
     }
    ],
    "soft_delete": true,
@@ -13631,6 +13635,115 @@
     "D-125",
     "D-128",
     "D-128.72"
+   ]
+  },
+  {
+   "id": "E-142",
+   "name": "scope_memberships",
+   "table_name": "scope_memberships",
+   "section": "16. 第1フェーズの表",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "member_id",
+     "note": null
+    },
+    {
+     "name": "scope_id",
+     "note": null
+    },
+    {
+     "name": "is_primary",
+     "note": "主の所属か兼ねるか"
+    },
+    {
+     "name": "role",
+     "note": "そのグループでの役割：マネージャー・メンバー・閲覧のみ"
+    },
+    {
+     "name": "since",
+     "note": null
+    },
+    {
+     "name": "changed_by",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "scopes",
+     "label": "入っている人（兼ねる）"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "scope_memberships_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "会社の中・見える層だけ（担当者・閲覧のみも自分の範囲は見える）",
+     "source": [
+      "D-026.1",
+      "D-058.5",
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "scope_memberships_self_only_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND member_id = current_setting('app.user_id', true)::uuid",
+     "rationale": "本人のもの（個人の範囲）は権限なしで自由",
+     "source": [
+      "D-073.1"
+     ]
+    },
+    {
+     "name": "scope_memberships_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'scope_memberships', NULL, 'edit')",
+     "rationale": "権限＝誰に×何に×どの層で×できること",
+     "source": [
+      "D-073.1",
+      "D-073.2",
+      "D-073.3"
+     ]
+    },
+    {
+     "name": "scope_memberships_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = scope_memberships.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は既定で読めない。会社が範囲と期限つきで許可したときだけ。閲覧は両側の証跡へ",
+     "source": [
+      "D-074.5",
+      "D-077.7"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-125.115・D-128.95〜.97）。**1 人が複数のグループに入る（兼ねる）。グループごとに役割を分ける。ワークスペースの役割は `tenant_memberships.role`",
+   "status": "decided",
+   "decided_at": "2026-11-03",
+   "source": [
+    "D-125",
+    "D-125.115",
+    "D-128",
+    "D-128.95"
    ]
   }
  ]

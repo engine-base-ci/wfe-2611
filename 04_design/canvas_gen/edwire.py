@@ -26,8 +26,8 @@ def run():
         s = re.sub(r'<a href="#"([^>]*)>(.*?)</a>', lambda m: ('<a href="%s"%s>%s</a>' % (mp[txt(m.group(2))], m.group(1), m.group(2))) if txt(m.group(2)) in mp else m.group(0), s, flags=re.S)
         if name == "WsPeople":
             dots = [m.start() for m in re.finditer(r'<span style="color: #8A94A3; width: 16px; text-align: center">⋯</span>', s)]
-            if len(dots) >= 3:
-                i = dots[2]; L = len('<span style="color: #8A94A3; width: 16px; text-align: center">⋯</span>')
+            L = len('<span style="color: #8A94A3; width: 16px; text-align: center">⋯</span>')
+            for i in reversed(dots[2:]):   # 3 人目から（はじめの 2 行は見本のまま）
                 s = s[:i] + '<a href="EdMemberMenu.dc.html" style="color: #8A94A3; width: 16px; text-align: center; text-decoration: none">⋯</a>' + s[i + L:]
         if s != o: open(f, "w", encoding="utf-8").write(s)
     for n in ("OnHome", "OnRoom", "OnKnowledge", "OnClients"):

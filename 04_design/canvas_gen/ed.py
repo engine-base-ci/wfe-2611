@@ -62,8 +62,8 @@ def main():
       + mbody('<div>' + lab("担当しているチケット 4 件の引き継ぎ先") + '<div style="display: flex; gap: 6px; margin-bottom: 6px">' + chip("全部を同じ人に", True) + chip("1 件ずつ決める") + '</div>'
       + tk("EG-126", "セイコー様 更新の見積", "確認中") + tk("EG-129", "契約書の更新版を送る", "未着手") + tk("EG-131", "セイコー様 来期の提案", "作業中") + tk("EG-119", "問い合わせ（山田様）に一次返信", "渡し中") + '</div>'
       + WARNB("渡し中の EG-119 は、外す前に取り消される（佐藤 さんへの渡しは成り立っていない）")
-      + '<div style="display: flex; flex-direction: column">' + check("鈴木 さんの個人の記憶と預けたログイン情報を消す", True, "ワークスペースのものは残る") + check("書いたやり取り・決定ログは残す（名前は「抜けた人」と出る）", True) + '</div>'
-      + NOTE("外したことは記録に残る。30 日のあいだは同じメールで招き直すと元に戻せる"))
+      + NOTE("<b>すぐ消える（戻せない）</b>：鈴木 さんの個人の記憶・会話・預けたログイン情報・PC の接続・出した招待<br><b>残る</b>：書いたやり取り・決定ログ・作った成果物・ワークスペースや層の記憶（名前はそのまま出る）")
+      + NOTE("外したことは記録に残る。30 日のあいだは同じメールで招き直すと、グループと役割だけ戻る"))
       + mfoot(btn("やめる", "", "WsPeople.dc.html"), '<a href="WsPeople.dc.html" style="height: 30px; border-radius: 6px; padding: 0 14px; font-size: 12px; display: inline-flex; align-items: center; text-decoration: none; background: #B91C1C; color: #FFFFFF">本人確認して外す</a>'), 620, "メンバーを外す")
     save("EdMemberRemove.dc.html", "メンバーを外す", s)
 

@@ -66,7 +66,7 @@ body = (ttl("記録", "ワークスペースで起きた大事なこと。消せ
   + '<div style="display: flex; gap: 6px; flex-wrap: wrap">' + chip("権限が変わった") + chip("持ち出し") + chip("外に出した") + chip("新しい端末で入った") + chip("分身に許可した") + chip("消した（30 日は戻せる）") + '</div>'
   + '<div style="font-size: 12px; color: %s">2 件見つかりました</div>' % MUTED
   + '<div style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 10px; overflow: hidden">'
-  + row("11/02 09:58", W("佐", "#186F69", "佐藤 花子"), "が 鈴木 一郎 を 営業 の マネージャー → メンバー にした", "理由：兼務が終わったため ・ iPhone から ・ 本人確認を取り直した")
+  + row("11/02 09:58", W("高", "#6B5B99", "高本 聖斗"), "が 鈴木 一郎 を 営業 の マネージャー → メンバー にした", "理由：兼務が終わったため ・ iPhone から ・ 本人確認を取り直した")
   + row("10/12 14:20", W("高", "#6B5B99", "高本 聖斗"), "が 鈴木 一郎 を 営業 の マネージャー にした", "MacBook から")
   + '</div><div style="font-size: 12px; color: %s">自分の操作と、自分が関わるチケットの記録は誰でも見られる。ワークスペース全体は管理者と権限を付けた人だけ。契約中はずっと残る</div>' % MUTED)
 page("WsLog.dc.html", "ワークスペース 記録", "記録", body)
@@ -79,13 +79,19 @@ body = (ttl("設定", "変えることがあるものだけ")
   + blk("プランと支払い", [("チーム", "10 人まで ・ いま 5 人 ・ 次の請求 12/01 ¥15,000", btn("プランを変える", "", "EdPlan.dc.html") + btn("請求書", "", "WsBills.dc.html"))])
   + blk("取引先", [("社内で見える人", "取引先（先方の人・決まり・いま）を見られる人の既定。取引先ごとに絞れる", sel("ワークスペースの全員")), ("依頼の届け先", "担当グループが 2 つ以上の取引先は、分身が中身を見て振り分け、取引先の担当者が確かめる", pill("分身が振り分ける"))])
   + blk("誰ができるか", [("プランと支払い", "", sel("管理者")), ("チケット・記録を書き出す", "", sel("管理者とマネージャー")), ("ワークスペースを消す", "", sel("管理者"))])
-  + '<div style="font-size: 12px; color: %s; padding: 0 4px">ログインはパスキーを勧めます。2 段階認証はそれぞれが自分の設定で付けられ、パスキーを持たずパスワードだけで入る人は必須です。操作がないと 12 時間で切れます（決まっていて、変えられません）</div>' % MUTED
+  + '<div style="font-size: 12px; color: %s; padding: 0 4px">ログインはパスキーを勧めます。2 段階認証はそれぞれが自分の設定で付けられ、パスキーを持たずパスワードだけで入る人は必須です。操作がないと 12 時間で切れます。PC が閉じている間に承認した仕事は、承認から 24 時間を過ぎると実行の前にもう一度聞きます（どちらも決まっていて、変えられません）</div>' % MUTED
   + '<div style="display: flex; align-items: center; gap: 12px; border: 1px solid #F3C7C7; border-radius: 10px; padding: 12px 18px; background: #FFFFFF"><span style="flex: 1">ワークスペースを消す<span style="display: block; font-size: 11px; color: %s">チケット・記録・分身の記憶をすべて消す。消す前に書き出せる</span></span>%s</div></div>' % (MUTED, btn("消す手続き", "d")))
 page("WsSettings.dc.html", "ワークスペース 設定", "設定", body)
 
 # ---------- チケットの形（決まりの中） ----------
 kinds = [("タスク", "#186F69", "区画 10 ・ 必須 3", True), ("課題", "#B45309", "区画 9 ・ 必須 3", False), ("QA", "#B91C1C", "区画 8 ・ 必須 4", False), ("会議", "#6D4AA6", "区画 6 ・ 必須 2", False)]
 klist = "".join('<a href="#" style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; text-decoration: none; color: #131B27; %s"><span style="display: inline-block; min-width: 44px; text-align: center; font-size: 11px; font-weight: 500; border-radius: 99px; padding: 1px 8px; color: #FFFFFF; background: %s">%s</span><span style="flex: 1; font-size: 12px; color: %s">%s</span></a>' % ("background: #F1F3F6; font-weight: 600" if on else "", c, n, MUTED, d) for n, c, d, on in kinds)
+def card(t, cnt, rows, add, note):
+    return ('<div style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 10px; padding: 8px 12px"><div style="display: flex; align-items: center; padding: 4px 0 6px"><b style="flex: 1">%s</b><span style="font-size: 11px; color: %s">%s</span></div>%s<a href="#" style="display: block; padding: 8px 0 4px; font-size: 12px">%s</a><div style="font-size: 11px; color: %s; padding-bottom: 4px">%s</div></div>' % (t, MUTED, cnt, rows, add, MUTED, note))
+crow = lambda a, b="": '<div style="display: flex; align-items: center; gap: 8px; padding: 6px 0; border-top: 1px solid #EDF0F4; font-size: 12px"><span style="color: #B8C0CC">⋮⋮</span><span style="flex: 1">%s</span><span style="font-size: 11px; color: %s">%s</span></div>' % (a, MUTED, b)
+SIDECARDS = (card("作業の段", "4 ／ 8", crow("未着手") + crow("作業中") + crow("保留") + crow("完了"), "＋ 段を足す", "名前を変えられる。確認中・承認待ち・実行中は仕組みの段で変えられない。使っている段を消すときは移し先を選ぶ")
+  + card("分類の軸", "1 ／ 5", crow("優先度", "製品の軸") + crow("部門", "営業・開発・経理"), "＋ 軸を足す", "一覧で絞る・並べるときに使う。値を消すときは移し先を選ぶ")
+  + card("担当を渡すとき", "", crow("子・孫のチケット", "毎回聞く ▾") + crow("派生・関連のチケット", "毎回聞く ▾") + crow("グループ", "いつも ▾") + crow("部門（軸）", "毎回聞く ▾"), "", "渡すときに一緒に切り替えるか。毎回聞く・いつも・しない"))
 seg = lambda cur: '<span style="display: inline-flex; border: 1px solid #DDE2E9; border-radius: 6px; overflow: hidden; font-size: 11px">' + "".join('<span style="padding: 3px 9px; %s">%s</span>' % ("background: #22345C; color: #FFFFFF" if x == cur else "background: #FFFFFF; color: #4A5563", x) for x in ["必須", "出す", "外す"]) + '</span>'
 def sec(name, cur, sample, note=""):
     off = cur == "外す"
@@ -105,7 +111,9 @@ form = ('<div style="display: flex; flex-direction: column; gap: 8px">'
   + '<a href="#" style="display: block; text-align: center; border: 1px dashed #B8C0CC; border-radius: 8px; padding: 10px; color: #4A5563; text-decoration: none; font-size: 12px">＋ 区画を足す</a></div>')
 body = (ttl("決まり", "全員の分身とチケットに効く。足すとき、ぶつかりを分身が点検する") + RTABS("shape")
   + '<div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-start">'
-  + '<div style="flex: 0 1 260px; min-width: 220px; background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 10px; padding: 8px"><div style="display: flex; align-items: center; padding: 4px 6px 8px"><b style="flex: 1">種別</b><span style="font-size: 11px; color: %s">4 ／ 10</span></div>%s<a href="#" style="display: block; padding: 10px 12px; font-size: 12px">＋ 種別を足す</a></div>' % (MUTED, klist)
+  + '<div style="flex: 0 1 280px; min-width: 220px; display: flex; flex-direction: column; gap: 12px">'
+  + '<div style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 10px; padding: 8px"><div style="display: flex; align-items: center; padding: 4px 6px 8px"><b style="flex: 1">種別</b><span style="font-size: 11px; color: %s">4 ／ 10</span></div>%s<a href="#" style="display: block; padding: 10px 12px; font-size: 12px">＋ 種別を足す</a></div>' % (MUTED, klist)
+  + SIDECARDS + '</div>'
   + '<div style="flex: 1 1 460px; min-width: 0"><div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap"><b style="font-size: 15px">タスク の形</b><span style="font-size: 12px; color: %s">チケットを作るとき、この順で欄が並ぶ。つかんで並べ替え</span><span style="margin-left: auto; display: flex; gap: 6px">%s%s</span></div>' % (MUTED, btn("元に戻す"), btn("この形にする", "p"))
   + form + '<div style="font-size: 12px; color: %s; margin-top: 10px">直した形は、これから作るチケットから効く。もう作ったチケットはそのまま。運営のひな形に新しい版が出たら、ここに知らせが出る</div></div></div>' % MUTED)
 page("WsShape.dc.html", "ワークスペースの管理 チケットの形", "決まり", body)
@@ -127,12 +135,12 @@ box = lambda t, inner, act="": '<div style="background: #FFFFFF; border: 1px sol
 body = ('<div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap">' + av("鈴", "#2F4B7C", 44) + '<div style="min-width: 0"><h2 style="font-size: 18px; margin: 0">鈴木 一郎</h2><div style="font-size: 12px; color: %s">suzuki@engine-base.example ・ 2026-04-10 から</div></div>' % MUTED
   + '<span style="margin-left: auto; display: flex; gap: 6px">' + btn("一時的に止める") + btn("ワークスペースから外す", "d", "EdMemberRemove.dc.html") + '</span></div>'
   + '<div style="display: flex; gap: 14px; flex-wrap: wrap; align-items: flex-start"><div style="flex: 1 1 460px; min-width: 0; display: flex; flex-direction: column; gap: 12px">'
-  + box("グループと役割", kv("営業", rolesel("メンバー") + ' <span style="font-size: 11px; color: %s">11/02 にマネージャーから（佐藤）</span>' % MUTED) + kv("兼ねるグループ", '<a href="EdMemberMenu.dc.html" style="font-size: 12px">＋ 兼ねるグループを足す</a>'), btn("グループを移す", "", "EdMemberMenu.dc.html"))
+  + box("グループと役割", kv("営業", rolesel("メンバー") + ' <span style="font-size: 11px; color: %s">11/02 にマネージャーから（高本）</span>' % MUTED) + kv("兼ねるグループ", '<a href="EdMemberMenu.dc.html" style="font-size: 12px">＋ 兼ねるグループを足す</a>'), btn("グループを移す", "", "EdMemberMenu.dc.html"))
   + box("できること", kv("役割の束", "メンバー（チケットを作る・自分の担当を進める・承認待ちに答える）") + kv("個別に足したもの", pill("見積を承認（100 万円まで）") + ' <span style="font-size: 11px; color: %s">高本が 10/12 に足した</span>' % MUTED) + kv("個別に外したもの", '<span style="color: #8A94A3">なし</span>'), btn("足す・外す"))
   + box("担当しているもの", kv("チケット", '<a href="List.dc.html">担当 6 件</a> ・ 承認する人 2 件 ・ 期限切れ 0') + kv("取引先", '<a href="CuPage.dc.html">株式会社ソラ</a>（取引先の担当）'))
   + '</div><div style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 12px">'
   + box("分身", kv("PC", dot(True, "つながっている（MacBook Air）")) + kv("今月の実行", "212 回 ・ 人ごとの枠の 41%") + kv("止まった（7 日）", "0"))
   + box("ログイン", kv("入り方", "パスキー 2 つ") + kv("2 段階認証", "付けていない（パスキーで入るので要らない）") + kv("最後に入った", "11/02 09:12 ・ iPhone") + '<div style="font-size: 11px; color: %s; padding-top: 6px">パスワードで入る人が認証アプリをなくしたときは、ここから 2 段階認証を戻せる（記録に残る）</div>' % MUTED)
-  + box("最近の記録", kv("11/02 09:58", "役割が マネージャー → メンバー（佐藤）") + kv("10/12 14:20", "見積の承認を足した（高本）"), '<a href="WsLog.dc.html" style="font-size: 12px">記録をすべて見る</a>')
+  + box("最近の記録", kv("11/02 09:58", "役割が マネージャー → メンバー（高本）") + kv("10/12 14:20", "見積の承認を足した（高本）"), '<a href="WsLog.dc.html" style="font-size: 12px">記録をすべて見る</a>')
   + '</div></div>')
 page("WsMember.dc.html", "ワークスペース メンバーの 1 人", "メンバー › 鈴木 一郎", body)

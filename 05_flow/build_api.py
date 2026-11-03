@@ -29,6 +29,7 @@ for s in S:
         if a["role"] == "transition": continue
         path = a["path_draft"].replace("/api/", BASE + "/"); key = (a["method"], path)
         e = eps.setdefault(key, {"method": a["method"], "path": path, "acts": set(), "screens": set(), "related_entities": set(), "choke_points": set(), "source": set(), "features": set(), "table": a.get("table"), "operation_id": a.get("operation_id")})
+        if a.get("operation_id") and not e.get("operation_id"): e["operation_id"], e["table"] = a["operation_id"], a.get("table")   # 画面の表の名前を、推測の行より先に使う
         e["acts"].add(a["act"]); e["screens"].add(s["id"]); e["related_entities"].update(a.get("related_entities", [])); e["choke_points"].update(a.get("choke_points", [])); e["source"].update(a.get("source", []) or s["source"]); 
         if feat_of_act.get(a["act"]): e["features"].add(feat_of_act[a["act"]])
 def desc(e):
