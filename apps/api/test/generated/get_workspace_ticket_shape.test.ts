@@ -21,9 +21,14 @@ describe("GET /api/v1/workspace/ticket-shape", () => {
     expect(r.status).toBe(501);
     expect(await h.count("audit_events")).toBe(before);
   });
-  it.todo("test_get_workspace_ticket_shape_ok（まだ作っていない口。作ったら本物の試験になる）");
-  it.todo("test_get_workspace_ticket_shape_rejected_401（まだ作っていない口。作ったら本物の試験になる）");
-  it.todo("test_get_workspace_ticket_shape_rejected_403（まだ作っていない口。作ったら本物の試験になる）");
-  it.todo("test_get_workspace_ticket_shape_rate_limited（まだ作っていない口。作ったら本物の試験になる）");
-  it.todo("test_get_workspace_ticket_shape_shape（まだ作っていない口。作ったら本物の試験になる）");
+  // まだ作っていない口。作ったら本物の試験になる：EVENT-DRIVEN: WHEN GET /api/v1/workspace/ticket-shape が「タブごとに値を足す・直す」として呼ばれたとき THEN Kaname は「使われている値を消すときは置き換え先を決める」を行い 2xx を返す
+  it.todo("test_get_workspace_ticket_shape_ok");
+  // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）
+  it.todo("test_get_workspace_ticket_shape_rejected_401");
+  // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）
+  it.todo("test_get_workspace_ticket_shape_rejected_403");
+  // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
+  it.todo("test_get_workspace_ticket_shape_rate_limited");
+  // まだ作っていない口。作ったら本物の試験になる：UBIQUITOUS: GET /api/v1/workspace/ticket-shape の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
+  it.todo("test_get_workspace_ticket_shape_shape");
 });

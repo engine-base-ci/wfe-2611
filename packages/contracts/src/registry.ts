@@ -2624,7 +2624,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "ConversationsInput",
     "success": 201,
-    "generic": false,
+    "generic": true,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -2686,7 +2686,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "ConversationsInput",
     "success": 200,
-    "generic": false,
+    "generic": true,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -2717,7 +2717,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
-    "generic": false,
+    "generic": true,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,
@@ -5771,7 +5771,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "update",
     "input": "MemoriesInput",
     "success": 200,
-    "generic": false,
+    "generic": true,
     "auth": "member",
     "rateLimit": {
       "perMinute": 60,

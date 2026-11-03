@@ -21,7 +21,10 @@ describe("GET /api/v1/auth/terms/current", () => {
     expect(r.status).toBe(501);
     expect(await h.count("audit_events")).toBe(before);
   });
-  it.todo("test_get_auth_terms_current_ok（まだ作っていない口。作ったら本物の試験になる）");
-  it.todo("test_get_auth_terms_current_rate_limited（まだ作っていない口。作ったら本物の試験になる）");
-  it.todo("test_get_auth_terms_current_shape（まだ作っていない口。作ったら本物の試験になる）");
+  // まだ作っていない口。作ったら本物の試験になる：EVENT-DRIVEN: WHEN GET /api/v1/auth/terms/current が「規約とプライバシーポリシーを読んで同意する」として呼ばれたとき THEN Kaname は「同意した版と時刻を残す。版が上がったら次のログインで同意を取り直す」を行い 2xx を返す
+  it.todo("test_get_auth_terms_current_ok");
+  // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 10/min/ip を超えたら、Kaname は 429 と retry_after_sec を返す
+  it.todo("test_get_auth_terms_current_rate_limited");
+  // まだ作っていない口。作ったら本物の試験になる：UBIQUITOUS: GET /api/v1/auth/terms/current の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
+  it.todo("test_get_auth_terms_current_shape");
 });

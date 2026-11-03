@@ -21,7 +21,10 @@ describe("GET /api/v1/auth/service-status", () => {
     expect(r.status).toBe(501);
     expect(await h.count("audit_events")).toBe(before);
   });
-  it.todo("test_get_auth_service_status_ok（まだ作っていない口。作ったら本物の試験になる）");
-  it.todo("test_get_auth_service_status_rate_limited（まだ作っていない口。作ったら本物の試験になる）");
-  it.todo("test_get_auth_service_status_shape（まだ作っていない口。作ったら本物の試験になる）");
+  // まだ作っていない口。作ったら本物の試験になる：EVENT-DRIVEN: WHEN GET /api/v1/auth/service-status が「パスキーで入る／メールとパスワードと 6 桁で入る」として呼ばれたとき THEN Kaname は「セッション（操作が無ければ 12 時間・長くて 7 日）。5 回失敗で 15 分止める」を行い 2xx を返す
+  it.todo("test_get_auth_service_status_ok");
+  // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 10/min/ip を超えたら、Kaname は 429 と retry_after_sec を返す
+  it.todo("test_get_auth_service_status_rate_limited");
+  // まだ作っていない口。作ったら本物の試験になる：UBIQUITOUS: GET /api/v1/auth/service-status の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
+  it.todo("test_get_auth_service_status_shape");
 });

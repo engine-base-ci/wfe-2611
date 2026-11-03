@@ -87,11 +87,16 @@ const RETIRED = new Map<string, string>(
     (r) => [`${r.method} ${r.path.replace(/\{(\w+)\}/g, ":$1")}`, r.decision],
   ),
 );
-const retiredOf = (key: string) => RETIRED.get(key) ?? null;
+// 道すじは同じだが、決定で意味が変わった口（素の読み書き → 振る舞いのある口）。古い行の期待（行の挿入・削除）はもう仕様でない
+const CHANGED: Record<string, string> = {
+  "POST /api/v1/credentials": "D-128.93（預ける：暗号化・本人確認の取り直し）",
+  "DELETE /api/v1/members/:id": "D-128.96（外す：引き継ぎ・個人の記憶と預けた情報を消す）",
+};
+const retiredOf = (key: string) => RETIRED.get(key) ?? CHANGED[key] ?? null;
 /** タスクの口が全部、決定で外した口なら、その決定の ID（タスクごとの G-xx は新しい作業の分解で作り直す） */
 const retiredTask = (task: string) => {
   const ks = MAP.tasks[task] ?? [];
-  const ds = ks.map((k) => (ep(k) ? null : retiredOf(k)));
+  const ds = ks.map((k) => (ep(k) && !CHANGED[k] ? null : retiredOf(k)));
   return ks.length && ds.every(Boolean) ? [...new Set(ds)].join("・") : null;
 };
 const actor = (e: EndpointDef): W => (e.auth === "ops" ? "ops" : "boss");
@@ -187,7 +192,7 @@ const MISSING: Record<string, number> = {
   "PATCH /api/v1/memories/:id": 200,
 };
 for (const [key, aspects] of Object.entries(MAP.ep)) {
-  const e = ep(key);
+  const e = CHANGED[key] ? null : ep(key);
   if (!e && retiredOf(key)) {
     describe.skip(`${key}（決定 ${retiredOf(key)} で契約から外した口。テスト仕様は新しい画面から作り直す）`, () => {
       for (const rows of Object.values(aspects)) it(`${ids(rows)}`, () => undefined);
@@ -544,7 +549,7 @@ for (const [key, aspects] of Object.entries(MAP.ep)) {
 }
 
 // ============ G-11〜G-16（タスクごと）
-const taskEps = (task: string) => (MAP.tasks[task] ?? []).map(ep).filter((x): x is EndpointDef => !!x);
+const taskEps = (task: string) => (MAP.tasks[task] ?? []).filter((k) => !CHANGED[k]).map(ep).filter((x): x is EndpointDef => !!x);
 async function argsFor(e: EndpointDef, w: W): Promise<Opts> {
   if (e.kind === "list") return { query: { limit: "5" } };
   if (e.kind === "create") return { body: bodyOf(e, w) };
@@ -687,7 +692,7 @@ describe("G-15 信号なし終了（外部が合図なしに終わる）", () =>
   for (const [task, rows] of Object.entries(MAP.g["G-15"] ?? {})) {
     if (retiredTask(task)) { describe.skip(`${task}（口が全部、決定 ${retiredTask(task)} で契約から外れた。作業の分解から作り直す）`, () => it(ids(rows), () => undefined)); continue; }
     const eps = taskEps(task).filter((e) => e.errors.includes(502));
-    const gone = (MAP.tasks[task] ?? []).filter((k) => !ep(k) && retiredOf(k));
+    const gone = (MAP.tasks[task] ?? []).filter((k) => (!ep(k) || CHANGED[k]) && retiredOf(k));
     if (!eps.length && gone.length) { describe.skip(`${task}（外へ出る口が決定 ${[...new Set(gone.map(retiredOf))].join("・")} で契約から外れた：${gone.join("・")}。作業の分解から作り直す）`, () => it(ids(rows), () => undefined)); continue; }
     it(`${ids(rows)} ${task}：外部・モデル・プロセスが合図なしに終わる／空を返すと、成功扱いにせず 502 と次の一手（人へのハンドオフ）。記録しない`, async () => {
       expect(eps.length, `${task} に外へ出る口（502 を持つ endpoint）が無い`).toBeGreaterThan(0);

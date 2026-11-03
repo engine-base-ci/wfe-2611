@@ -21,10 +21,16 @@ describe("GET /api/v1/tickets/:id/work-type-candidates", () => {
     expect(r.status).toBe(501);
     expect(await h.count("audit_events")).toBe(before);
   });
-  it.todo("test_get_tickets_id_work_type_candidates_ok（まだ作っていない口。作ったら本物の試験になる）");
-  it.todo("test_get_tickets_id_work_type_candidates_rejected_401（まだ作っていない口。作ったら本物の試験になる）");
-  it.todo("test_get_tickets_id_work_type_candidates_rejected_403（まだ作っていない口。作ったら本物の試験になる）");
-  it.todo("test_get_tickets_id_work_type_candidates_not_found（まだ作っていない口。作ったら本物の試験になる）");
-  it.todo("test_get_tickets_id_work_type_candidates_rate_limited（まだ作っていない口。作ったら本物の試験になる）");
-  it.todo("test_get_tickets_id_work_type_candidates_shape（まだ作っていない口。作ったら本物の試験になる）");
+  // まだ作っていない口。作ったら本物の試験になる：EVENT-DRIVEN: WHEN GET /api/v1/tickets/:id/work-type-candidates が「候補が複数のときだけ選ぶ。承認までは変えられる」として呼ばれたとき THEN Kaname は「選んだ型と版をチケットに残す」を行い 2xx を返す（自動側：本文から業務の型の候補を出す）
+  it.todo("test_get_tickets_id_work_type_candidates_ok");
+  // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）
+  it.todo("test_get_tickets_id_work_type_candidates_rejected_401");
+  // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）
+  it.todo("test_get_tickets_id_work_type_candidates_rejected_403");
+  // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）
+  it.todo("test_get_tickets_id_work_type_candidates_not_found");
+  // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
+  it.todo("test_get_tickets_id_work_type_candidates_rate_limited");
+  // まだ作っていない口。作ったら本物の試験になる：UBIQUITOUS: GET /api/v1/tickets/:id/work-type-candidates の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
+  it.todo("test_get_tickets_id_work_type_candidates_shape");
 });

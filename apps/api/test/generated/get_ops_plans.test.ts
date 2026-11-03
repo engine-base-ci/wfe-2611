@@ -21,9 +21,14 @@ describe("GET /api/v1/ops/plans", () => {
     expect(r.status).toBe(501);
     expect(await h.count("audit_events")).toBe(before);
   });
-  it.todo("test_get_ops_plans_ok（まだ作っていない口。作ったら本物の試験になる）");
-  it.todo("test_get_ops_plans_rejected_401（まだ作っていない口。作ったら本物の試験になる）");
-  it.todo("test_get_ops_plans_rejected_403（まだ作っていない口。作ったら本物の試験になる）");
-  it.todo("test_get_ops_plans_rate_limited（まだ作っていない口。作ったら本物の試験になる）");
-  it.todo("test_get_ops_plans_shape（まだ作っていない口。作ったら本物の試験になる）");
+  // まだ作っていない口。作ったら本物の試験になる：EVENT-DRIVEN: WHEN GET /api/v1/ops/plans が「新しい版の案（前後の差・いまの顧客の扱い・理由）を作り、値段を決められる別の人が影響を見て決めるか差し戻す」として呼ばれたとき THEN Kaname は「決めるといまの顧客にお知らせを出し、記録に残す（消せない）」を行い 2xx を返す
+  it.todo("test_get_ops_plans_ok");
+  // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）
+  it.todo("test_get_ops_plans_rejected_401");
+  // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）
+  it.todo("test_get_ops_plans_rejected_403");
+  // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
+  it.todo("test_get_ops_plans_rate_limited");
+  // まだ作っていない口。作ったら本物の試験になる：UBIQUITOUS: GET /api/v1/ops/plans の副作用は関門 C2・C4・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
+  it.todo("test_get_ops_plans_shape");
 });

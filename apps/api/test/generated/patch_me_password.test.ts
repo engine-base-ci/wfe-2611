@@ -21,10 +21,16 @@ describe("PATCH /api/v1/me/password", () => {
     expect(r.status).toBe(501);
     expect(await h.count("audit_events")).toBe(before);
   });
-  it.todo("test_patch_me_password_ok（まだ作っていない口。作ったら本物の試験になる）");
-  it.todo("test_patch_me_password_rejected_401（まだ作っていない口。作ったら本物の試験になる）");
-  it.todo("test_patch_me_password_rejected_403（まだ作っていない口。作ったら本物の試験になる）");
-  it.todo("test_patch_me_password_rejected_422（まだ作っていない口。作ったら本物の試験になる）");
-  it.todo("test_patch_me_password_rate_limited（まだ作っていない口。作ったら本物の試験になる）");
-  it.todo("test_patch_me_password_shape（まだ作っていない口。作ったら本物の試験になる）");
+  // まだ作っていない口。作ったら本物の試験になる：EVENT-DRIVEN: WHEN PATCH /api/v1/me/password が「端末でパスキーを登録する／認証アプリを登録してバックアップコードを保管する」として呼ばれたとき THEN Kaname は「パスキーの公開鍵・TOTP の鍵を暗号化して保管」を行い 2xx を返す
+  it.todo("test_patch_me_password_ok");
+  // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）
+  it.todo("test_patch_me_password_rejected_401");
+  // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）
+  it.todo("test_patch_me_password_rejected_403");
+  // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
+  it.todo("test_patch_me_password_rejected_422");
+  // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
+  it.todo("test_patch_me_password_rate_limited");
+  // まだ作っていない口。作ったら本物の試験になる：UBIQUITOUS: PATCH /api/v1/me/password の副作用は関門 C2・C8 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
+  it.todo("test_patch_me_password_shape");
 });

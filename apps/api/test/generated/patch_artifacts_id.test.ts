@@ -21,11 +21,18 @@ describe("PATCH /api/v1/artifacts/:id", () => {
     expect(r.status).toBe(501);
     expect(await h.count("audit_events")).toBe(before);
   });
-  it.todo("test_patch_artifacts_id_ok（まだ作っていない口。作ったら本物の試験になる）");
-  it.todo("test_patch_artifacts_id_rejected_401（まだ作っていない口。作ったら本物の試験になる）");
-  it.todo("test_patch_artifacts_id_rejected_403（まだ作っていない口。作ったら本物の試験になる）");
-  it.todo("test_patch_artifacts_id_not_found（まだ作っていない口。作ったら本物の試験になる）");
-  it.todo("test_patch_artifacts_id_rejected_422（まだ作っていない口。作ったら本物の試験になる）");
-  it.todo("test_patch_artifacts_id_rate_limited（まだ作っていない口。作ったら本物の試験になる）");
-  it.todo("test_patch_artifacts_id_shape（まだ作っていない口。作ったら本物の試験になる）");
+  // まだ作っていない口。作ったら本物の試験になる：EVENT-DRIVEN: WHEN PATCH /api/v1/artifacts/:id が「成果物に書き出して横で直す」として呼ばれたとき THEN Kaname は「artifacts に 1 行・artifact_versions に版ごとに 1 行。中身は会社の置き場（関門 C4）。自分のAI に置き場の鍵を見せない」を行い 2xx を返す（自動側：返事の本文から成果物を作って会話の横に開く。文書と表は直すと新しい版、版の一覧から戻せる（戻すのも新しい版））
+  it.todo("test_patch_artifacts_id_ok");
+  // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）
+  it.todo("test_patch_artifacts_id_rejected_401");
+  // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）
+  it.todo("test_patch_artifacts_id_rejected_403");
+  // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）
+  it.todo("test_patch_artifacts_id_not_found");
+  // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
+  it.todo("test_patch_artifacts_id_rejected_422");
+  // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
+  it.todo("test_patch_artifacts_id_rate_limited");
+  // まだ作っていない口。作ったら本物の試験になる：UBIQUITOUS: PATCH /api/v1/artifacts/:id の副作用は関門 C2・C4 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
+  it.todo("test_patch_artifacts_id_shape");
 });
