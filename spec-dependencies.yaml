@@ -3457,6 +3457,8 @@ layer_checks:
   check: python3 scripts/ci/tv_gate.py
 - file: 07_qa/test-plan/ears-test-mapping.json
   check: python3 scripts/ci/tv_gate.py
+- file: 07_qa/test-plan/ears-elsewhere.json
+  check: bash -c 'node scripts/ci/gen_ears_tests.mjs >/dev/null && git diff --quiet -- apps/api/test/generated && pnpm -s ci:ears-mapping -- --mapping 07_qa/test-plan/ears-test-mapping.json'   # 本物の試験が別のファイルにある口。生成の試験が最新で、全部の文に試験がある
 - file: 07_qa/test-plan/access-matrix.json
   check: python3 scripts/ci/tv_gate.py
 - file: .github/workflows/v3-gate.yml
