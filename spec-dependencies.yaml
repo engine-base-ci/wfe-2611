@@ -3376,6 +3376,11 @@ decision_traceability:
     source_field: decisions
   - file: 04_design/canvas/*.dc.html
     ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+  # 開発の進め方の正本に替えたあとの、利用者の流れと DB の表の目録（D-128.125〜D-128.127）
+  - file: 05_flow/flows.json
+    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+  - file: 03_architecture/db-catalog.json
+    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
   - file: 08_schedule/sprint.md
     ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
   - file: 07_qa/test-plan/test-plan.md
@@ -3477,6 +3482,10 @@ layer_checks:
   check: python3 scripts/ci/canvas_gate.py
 - file: 04_design/canvas/canvas.json
   check: python3 scripts/ci/canvas_gate.py
+- file: 05_flow/flows.json
+  check: python3 scripts/ci/flow_db_gate.py
+- file: 03_architecture/db-catalog.json
+  check: python3 scripts/ci/flow_db_gate.py
 - file: 04_design/canvas-screens.json
   check: python3 scripts/ci/canvas_gate.py
 - file: 04_design/DESIGN-kaname.md
