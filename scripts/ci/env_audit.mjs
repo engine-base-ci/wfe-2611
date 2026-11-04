@@ -4,6 +4,9 @@ import { join, relative } from "node:path";
 import { pathToFileURL } from "node:url";
 const ROOT = process.cwd();
 function* walk(dir) { if (!existsSync(dir)) return; for (const f of readdirSync(dir)) { if (f === "node_modules" || f === "dist") continue; const p = join(dir, f); if (statSync(p).isDirectory()) yield* walk(p); else if (/\.(ts|tsx|mts)$/.test(f)) yield p; } }
+/** 子のプログラムの中身を文字列で持つファイル → その定数の名前（例外 X-014・X-015）。子は別のプロセスで、Bridge の入口を読み込めない。
+ *  渡す環境は Bridge が childEnv で絞る。範囲の外で process.env を読めば赤 */
+const CHILD_SOURCES = { "apps/bridge/src/guard.ts": "HOOK_SOURCE", "apps/bridge/src/kaname-tools.ts": "MCP_SERVER_SOURCE" };
 export function audit(root = ROOT) {
   const cfg = readFileSync(join(root, "packages/config/src/index.ts"), "utf8");
   const used = new Set([...cfg.matchAll(/env\["([A-Z0-9_]+)"\]/g)].map((m) => m[1]));
@@ -13,10 +16,18 @@ export function audit(root = ROOT) {
   for (const k of example) if (!used.has(k)) bad.push(`packages/config が読まない: ${k}`);
   for (const d of ["apps", "packages"]) for (const p of walk(join(root, d))) {
     const rel = relative(root, p);
-    if (/node_modules|\/dist\/|\.test\.ts$|\/test\/|\/tests\/|\.spec\.ts$/.test(rel) || rel.startsWith("packages/config/") || rel === "packages/runtime/src/index.ts" || rel === "apps/web/lib/env.ts" ||
+    if (/node_modules|\/dist\/|\.test\.ts$|\/test\/|\/tests\/|\.spec\.ts$/.test(rel) || rel.startsWith("packages/config/") || rel === "packages/runtime/src/index.ts" || rel === "apps/web/lib/env.ts" || rel === "apps/bridge/src/env.ts" ||
       rel === "apps/web/next.config.ts" || rel === "apps/api/src/dev.ts" || /playwright\.config\.ts$/.test(rel)) continue; // apps/web/lib/env.ts は画面側の起動設定（NEXT_PUBLIC_* は build 時に埋まる）・playwright.config はテストの設定 // runtime は PATH/HOME を子に渡すために読む（遮断の実装）
     const s = readFileSync(p, "utf8");
-    s.split("\n").forEach((l, i) => { if (/process\.env\b/.test(l) && !l.trimStart().startsWith("//")) bad.push(`${rel}:${i + 1} process.env を関門の外で読んでいる（packages/config を通す）`); });
+    // 子のプログラムの中身（Bridge が書き出して、Claude Code が別のプロセスで起こすもの・例外 X-014）は、その文字列の範囲だけ見ない
+    const child = CHILD_SOURCES[rel];
+    let inChild = false;
+    s.split("\n").forEach((l, i) => {
+      if (child && new RegExp(`^export const ${child} = \``).test(l)) inChild = true;
+      else if (inChild && l === "`;") { inChild = false; return; }
+      if (inChild) return;
+      if (/process\.env\b/.test(l) && !l.trimStart().startsWith("//")) bad.push(`${rel}:${i + 1} process.env を関門の外で読んでいる（packages/config を通す）`);
+    });
   }
   return { used: used.size, example: example.size, bad };
 }
@@ -48,6 +59,11 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   const j = judge(r, base);
   for (const n of j.notes) console.log(`  note ${n}`);
   if (j.fails.length) console.log(`[G13 env] NG:\n  ${j.fails.join("\n  ")}`);
-  else console.log(`[G13 env] OK（config が読む ${r.used}・.env.example ${r.example}・関門の外の process.env は記録どおり ${j.recorded} か所（${base.ticket ?? "-"} で片付ける））`);
+  else
+    console.log(
+      j.recorded
+        ? `[G13 env] OK（config が読む ${r.used}・.env.example ${r.example}・関門の外の process.env は記録どおり ${j.recorded} か所（${base.ticket ?? "-"} で片付ける））`
+        : `[G13 env] OK（config が読む ${r.used}・.env.example ${r.example}・関門の外の process.env なし）`,
+    );
   process.exit(j.fails.length || j.notes.length ? 1 : 0);
 }

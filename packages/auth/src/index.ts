@@ -6,6 +6,7 @@ import { bearer, twoFactor } from "better-auth/plugins";
 import { PostgresDialect } from "kysely";
 import pg from "pg";
 import { uuidv7 } from "@kaname/db/id";
+import { optionalEnv } from "@kaname/config";
 
 export interface AuthOptions {
   /** 認証ロール（kaname_auth）で接続する URL。schema auth に読み書きする */
@@ -38,7 +39,7 @@ export function createAuth(o: AuthOptions): { auth: Auth; pool: pg.Pool } {
   const pool = new pg.Pool({ connectionString: o.authDatabaseUrl, max: o.poolMax ?? 5 });
   // 送出先が無ければリンクをログに出す（開発）。送出先があっても、本番以外はリンクを残す
   // （実際に送っていても、確かめる人が受信箱を開かずに先へ進めるように）
-  const dev = process.env["NODE_ENV"] !== "production";
+  const dev = optionalEnv("NODE_ENV") !== "production";
   const mail: Mailer = o.mailer
     ? async (m) => {
         if (dev) console.warn(`[auth] リンク（${m.kind} → ${m.to}）: ${m.url}`);
@@ -155,7 +156,7 @@ export async function sendPendingVerification(
   p: { email: string; token: string },
 ): Promise<{ sent: boolean; error: string | null; url: string }> {
   const url = `${o.webBaseURL ?? o.baseURL}/verify-email?token=${encodeURIComponent(p.token)}`;
-  if (process.env["NODE_ENV"] !== "production") console.warn(`[auth] リンク（verify → ${p.email}）: ${url}`);
+  if (optionalEnv("NODE_ENV") !== "production") console.warn(`[auth] リンク（verify → ${p.email}）: ${url}`);
   if (!o.mailer) return { sent: false, error: "メールの送出先が設定されていない", url };
   try {
     await o.mailer({

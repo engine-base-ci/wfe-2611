@@ -15,7 +15,7 @@ type Row = {
   why: string;
 };
 
-const LOG = process.env["KANAME_API_LOG"] ?? "../../.dev-logs/api.log";
+const LOG = WEB_ENV.apiLog;
 
 function read(): { rows: Row[]; error: string } {
   let text = "";

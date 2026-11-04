@@ -6,9 +6,9 @@ import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import type { Entry } from "./stream";
+import { bridgeEnv } from "./env";
 
-export const projectsDir = (): string =>
-  process.env["KANAME_CLAUDE_PROJECTS"] || join(homedir(), ".claude", "projects");
+export const projectsDir = (): string => bridgeEnv("KANAME_CLAUDE_PROJECTS") || join(homedir(), ".claude", "projects");
 const ID = /^[0-9a-f-]{8,64}$/i;
 
 /** その session の記録のファイル。無ければ null（別の PC の記録・消された記録） */

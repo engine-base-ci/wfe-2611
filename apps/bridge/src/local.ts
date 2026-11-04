@@ -3,12 +3,11 @@
 // 外からは開けない：ループバックにだけ bind し、許可した画面の出どころ（origin）以外は CORS で断る。
 // 接続コードは 4 桁なので総当たりを防ぐ：1 分に 5 回まで。
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
+import { bridgeEnv } from "./env";
 
 export const LOCAL_PORT = 38617;
 /** この出どころの画面からだけ受ける。増やすときは配布の設定で渡す（既定は dev の 2 つ） */
-const ORIGINS = (
-  process.env["KANAME_WEB_ORIGINS"] ?? "http://127.0.0.1:3124,http://localhost:3124,http://127.0.0.1:3123"
-)
+const ORIGINS = (bridgeEnv("KANAME_WEB_ORIGINS") ?? "http://127.0.0.1:3124,http://localhost:3124,http://127.0.0.1:3123")
   .split(",")
   .map((s) => s.trim())
   .filter(Boolean);

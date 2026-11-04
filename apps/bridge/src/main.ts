@@ -18,13 +18,14 @@ import { authStatus, cancelLogin, startLogin, submitCode } from "./login";
 import { startUpdater, type Updater } from "./update";
 import { browserCheck, findPlaywrightMcp } from "./browser";
 import { version as VERSION } from "../package.json";
+import { bridgeEnv } from "./env";
 
 const run = promisify(execFile);
 /** つなぎ先。既定はローカルの dev。配布版は環境変数か設定ファイルで差す */
-const API_BASE = (process.env["KANAME_API_BASE"] ?? "http://127.0.0.1:3011").replace(/\/$/, "");
+const API_BASE = (bridgeEnv("KANAME_API_BASE") ?? "http://127.0.0.1:3011").replace(/\/$/, "");
 const STATE_PATH = join(app.getPath("userData"), "bridge.json");
 /** Kaname の画面。PC 版はこの窓に画面を出す（D-084.1）。段階 2 の本番の姿の最小形 */
-const WEB_BASE = (process.env["KANAME_WEB_BASE"] ?? "http://127.0.0.1:3124").replace(/\/$/, "");
+const WEB_BASE = (bridgeEnv("KANAME_WEB_BASE") ?? "http://127.0.0.1:3124").replace(/\/$/, "");
 
 interface State {
   connected: boolean;

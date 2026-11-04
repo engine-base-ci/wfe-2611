@@ -117,6 +117,15 @@ export function checkExceptions(root = ROOT) {
   const ids = new Set(loadChoke(root).choke_points.map((c) => c.id));
   const bad = [];
   const today = new Date().toISOString().slice(0, 10);
+  // 「| X-」で始まるのに形に合わない行は、黙って読み飛ばさず赤（迂回箇所はパス 1 つ・KN-117・D-128.123）
+  const md = existsSync(join(root, "03_architecture/choke-point-exceptions.md"))
+    ? readFileSync(join(root, "03_architecture/choke-point-exceptions.md"), "utf8")
+    : "";
+  const parsed = new Set(loadExceptions(root).map((x) => x.id));
+  for (const line of md.split("\n")) {
+    const m = /^\| (X-\d+) \|/.exec(line);
+    if (m && !parsed.has(m[1])) bad.push(`${m[1]}: 行の形が違う（| ID | 関門 | \`パス 1 つ\` | 理由 | 代替統制 | 期限 | 状態 |）`);
+  }
   for (const x of loadExceptions(root)) {
     if (!ids.has(x.choke)) bad.push(`${x.id}: 関門 ${x.choke} が無い`);
     if (!x.control) bad.push(`${x.id}: 代替統制が無い`);

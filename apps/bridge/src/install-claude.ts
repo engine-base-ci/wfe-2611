@@ -3,7 +3,7 @@
 //                  ③どちらも無ければ npm で入れる ④npm も無ければ理由を出して止める（勝手に別のものを入れない）
 // ログイン（本人のサブスクに紐づける）は自動にしない。本人がブラウザで 1 回承認する（D-091.3・関門 C8 と同じ線）。
 import { spawn } from "node:child_process";
-import { childEnv } from "./env";
+import { childEnv, bridgeEnv } from "./env";
 import { ask } from "./proc";
 import { existsSync, readdirSync, rmSync } from "node:fs";
 import { homedir } from "node:os";
@@ -104,7 +104,7 @@ export async function brokenInstall(): Promise<string | null> {
     await npmRoot(),
     "/opt/homebrew/lib/node_modules",
     "/usr/local/lib/node_modules",
-    join(process.env["APPDATA"] ?? "", "npm", "node_modules"),
+    join(bridgeEnv("APPDATA") ?? "", "npm", "node_modules"),
     join(h, ".npm-global", "lib", "node_modules"),
     join(h, "Library", "pnpm", "global", "5", "node_modules"),
     join(h, ".bun", "install", "global", "node_modules"),

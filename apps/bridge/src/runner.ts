@@ -3,7 +3,7 @@
 // 文脈（会話の続き）は Claude Code が持つ。Kaname は session の id を覚えているだけ（二重に持たない）。
 // 止まったら自動で再開しない。「止まりました」と理由を返し、人が 続きから／やり直す／やめる を選ぶまでそのまま。
 import { spawn } from "node:child_process";
-import { childEnv } from "./env";
+import { childEnv, bridgeEnv } from "./env";
 import { ask } from "./proc";
 import { existsSync, readdirSync, statSync } from "node:fs";
 import { homedir } from "node:os";
@@ -27,21 +27,21 @@ let pathCache: string | null = null;
  *  ★聞くのは必ず非同期。同期で聞くと、返事が来ない環境で **起動そのものが止まる**
  *    （実際、Finder から起動したときだけ 38617 が開かなくなった）。 */
 export function shellPath(): string {
-  return pathCache ?? process.env["PATH"] ?? "";
+  return pathCache ?? bridgeEnv("PATH") ?? "";
 }
 /** 起動直後に 1 回だけ、本人のシェルに PATH を聞いておく。待たない・止まらない */
 export function warmShellPath(): Promise<void> {
   if (WIN || pathCache !== null) {
-    pathCache ??= process.env["PATH"] ?? "";
+    pathCache ??= bridgeEnv("PATH") ?? "";
     return Promise.resolve();
   }
   return new Promise((done) => {
     const finish = (v: string | null): void => {
-      pathCache = v ? `${v}${SEP}${process.env["PATH"] ?? ""}` : (process.env["PATH"] ?? "");
+      pathCache = v ? `${v}${SEP}${bridgeEnv("PATH") ?? ""}` : (bridgeEnv("PATH") ?? "");
       done();
     };
     try {
-      const sh = process.env["SHELL"] || "/bin/zsh";
+      const sh = bridgeEnv("SHELL") || "/bin/zsh";
       // -l（ログイン）だけにする。-i（対話）を付けると、端末が無いときに返事をせず居座ることがある
       const p = spawn(sh, ["-lc", 'printf "\n<<%s>>" "$PATH"'], { stdio: ["ignore", "pipe", "pipe"] });
       let out = "";
@@ -103,7 +103,7 @@ export function forgetClaude(): void {
 export async function findClaude(): Promise<string | null> {
   if (claudeCache !== undefined) return claudeCache;
   finding ??= (async () => {
-    const fixed = process.env["KANAME_CLAUDE_BIN"]; // 置き場が違う人・配布時に差すため
+    const fixed = bridgeEnv("KANAME_CLAUDE_BIN"); // 置き場が違う人・配布時に差すため
     const cands = fixed ? [fixed] : [...new Set(binDirs().map((d) => join(d, EXE)))];
     let hit: string | null = null;
     for (const c of cands) {

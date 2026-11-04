@@ -454,6 +454,6 @@ KN-115,Next.js の決まったファイルの足りないもの（global-error�
 KN-116,pnpm が付け替える Better Auth の部品の版をそろえるか決める,課題,KN-6,未着手,Claude（このセッション）,2026-11-13,基盤・試験,部品を足すたびに pnpm が @better-auth/utils を 0.4.2 → 0.5.1 に付け替える（lockfile の Better Auth の中の版がそろっていない）。いまは足した部品の分だけを lockfile に入れて付け替えを止めている。そろえるなら、ログインの試験を全部流してから入れる。,"- [ ] そろえるかを決める（高本さん）
 - [ ] そろえるなら、ログイン（packages/auth）の試験と API の試験が全部緑で入れる
 - [ ] CI が緑"
-KN-117,関門の外で process.env を読んでいる 21 か所を片付ける,課題,KN-6,未着手,Claude（このセッション）,2026-11-13,基盤・試験,G13（env の検査）が書き間違いで何も見ていなかった（KN-114 で直した）。直したら、関門（packages/config・例外 X-002）の外で process.env を読んでいる所が 21 か所出た（Bridge 16・画面 3・ログイン 2）。1 か所ずつ、config を通すか、正しい理由があれば例外台帳に書いて、記録（scripts/ci/env_baseline.json）を 0 にする。,"- [ ] 21 か所が、config を通すか、例外台帳（理由つき）に入る
-- [ ] scripts/ci/env_baseline.json の files が空（G13 が記録なしで緑）
-- [ ] CI が緑"
+KN-117,関門の外で process.env を読んでいる 21 か所を片付ける,課題,KN-6,確認中,Claude（このセッション）,2026-11-13,基盤・試験,G13（env の検査）が書き間違いで何も見ていなかった（KN-114 で直した）。直したら、関門（packages/config・例外 X-002）の外で process.env を読んでいる所が 21 か所出た（Bridge 16・画面 3・ログイン 2）。1 か所ずつ、config を通すか、正しい理由があれば例外台帳に書いて、記録（scripts/ci/env_baseline.json）を 0 にする。,"- [x] 21 か所が、入口を通すか、例外台帳（理由つき）に入る
+- [x] scripts/ci/env_baseline.json の files が空（G13 が記録なしで緑：「関門の外の process.env なし」）
+- [ ] CI が緑（手元で確かめた）"

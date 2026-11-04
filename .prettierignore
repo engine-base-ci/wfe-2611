@@ -32,3 +32,4 @@ apps/web/lib/routes.ts
 apps/web/styles/k-tokens.css
 apps/web/lib/nav.legacy.ts
 apps/web/lib/routes.legacy.ts
+apps/bridge/src/renderer/tokens.css

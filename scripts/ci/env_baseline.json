@@ -1,18 +1,5 @@
 {
- "_doc": "G13：関門（packages/config）の外で process.env を読んでいる所の記録（KN-114 で検査の書き間違い〔カンマで条件が常に真〕を直したら出た 21 か所）。増えたら赤・減ったら記録を下げる。片付けるのは KN-117（config に移すか、例外台帳に理由を書く）",
+ "_doc": "G13：関門（packages/config）の外で process.env を読んでいる所の記録（KN-114 で検査の書き間違い〔カンマで条件が常に真〕を直したら出た 21 か所）。増えたら赤・減ったら記録を下げる。片付けるのは KN-117（config に移すか、例外台帳に理由を書く）。KN-117 で 0 にした（2026-11-04）。いまは空：関門の外で読む所が 1 つでも出たら赤",
  "ticket": "KN-117",
- "files": {
-  "apps/bridge/src/env.ts": 1,
-  "apps/bridge/src/guard.ts": 3,
-  "apps/bridge/src/install-claude.ts": 1,
-  "apps/bridge/src/kaname-tools.ts": 2,
-  "apps/bridge/src/local.ts": 1,
-  "apps/bridge/src/main.ts": 2,
-  "apps/bridge/src/runner.ts": 5,
-  "apps/bridge/src/transcript.ts": 1,
-  "apps/web/app/(dev)/dev/mail/page.tsx": 1,
-  "apps/web/lib/ops.ts": 1,
-  "apps/web/lib/pending-route.ts": 1,
-  "packages/auth/src/index.ts": 2
- }
+ "files": {}
 }
