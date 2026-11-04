@@ -14,6 +14,7 @@ include:
 
 toolbox:
   from: node:22-bookworm
+  # SSL_CERT_FILE：uv が入れた Python も OS の証明書を読まない（G46 が registry に聞けずに赤だった・2026-11-04）
   # NODE_EXTRA_CA_CERTS：Node は OS の証明書を読まない。会社の網・中継の内側でも npm・pnpm が通るよう、
   #   OS の証明書（Dagger のエンジンが足した証明書を含む）も読ませる
   env:
@@ -26,6 +27,7 @@ toolbox:
       VIRTUAL_ENV: /opt/py,
       PATH: "/opt/py/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
       NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt,
+      SSL_CERT_FILE: /etc/ssl/certs/ca-certificates.crt,
     }
   steps:
     - apt-get update -qq && apt-get install -y -qq --no-install-recommends python3 python3-pip git curl ca-certificates gnupg postgresql-client >/dev/null
