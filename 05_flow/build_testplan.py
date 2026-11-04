@@ -65,7 +65,7 @@ CASES_SYSTEM = [("関門の関数（app.record_*）から", "OK"), ("会社の�
 CASES_OPS_OWN = [("運営の文脈", "OK"), ("会社の人（自社の文脈）", "NG（0 行）"), ("SET LOCAL を飛ばす", "NG（0 行）")]
 CASES_OPS_WRITE = [("運営の文脈", "OK"), ("会社の人（運営でない）", "NG（弾く・副作用なし）"), ("SET LOCAL を飛ばす", "NG（弾く）")]
 am = []
-# 業務の表（public）として作らない表は場合表に入れない（KN-47）：ログインの部品の側（kaname_auth）と、ER 図で「段階 1 は作らない」と決めた表
+# 業務の表（public）として作らない表は場合表に入れない（K-12）：ログインの部品の側（kaname_auth）と、ER 図で「段階 1 は作らない」と決めた表
 NOT_PUBLIC = {"passkeys": "ログインの部品の側（kaname_auth・D-128.119）", "pending_signup": "ログインの部品の側（kaname_auth・D-088.2）"}
 NOT_BUILT = {e["table_name"]: "段階 1 は作らない（D-099.2）" for e in EN if "段階 1 は作らない" in (e.get("note") or "")}
 for en in EN:
@@ -99,8 +99,8 @@ SPEC_GATES = [
     {"id": 46, "name": "使っている部品が技術の選定の記録と合う（package.json と selected-stack.json の packages を 1 対 1・D-128.123）", "script": "python3 scripts/ci/stack_gate.py --selftest && python3 scripts/ci/stack_gate.py", "job": "spec", "blocking": True},
     {"id": 47, "name": "書いた検査が CI から回る・検査の自己試験（ci_wiring_gate・エラーの参照・自己試験 6 本・D-128.123）", "script": "python3 scripts/ci/ci_wiring_gate.py --selftest && python3 scripts/ci/ci_wiring_gate.py && pnpm -s ci:errors-used && pnpm -s ci:errors-used:selftest && pnpm -s ci:sql-guard:selftest && pnpm -s ci:chat-one:selftest && pnpm -s ci:contract:selftest && pnpm -s ci:env-audit:selftest && python3 scripts/ci/qa_delta.py --selftest", "job": "spec", "blocking": True},
     {"id": 51, "name": "利用者の流れと DB の表の目録（行為はどれも 1 つの流れ・表はどれも目録に・凍結の表をコードが使わない・D-128.126・D-128.127）", "script": "python3 scripts/ci/flow_db_gate.py --selftest && python3 scripts/ci/flow_db_gate.py", "job": "spec", "blocking": True},
-    {"id": 52, "name": "ローカルの CI（dagci）の段が GitHub の検査と 1 対 1（ci.yaml の段は v3-gate.yml から導く・外す job は理由つき・KN-124）", "script": "python3 scripts/ci/ci_stages.py --check", "job": "spec", "blocking": True},
-    {"id": 48, "name": "新しい画面の実ブラウザの試験と、押した証拠（本番の形で組み立てた画面の上・行 ID の試験が全部の行で通る・記録なし・KN-109）", "script": "BASE_URL=http://127.0.0.1:3124 pnpm --filter @kaname/web e2e:k && python3 scripts/ci/op_gate.py --spec 07_qa/test-specs/k --tickets 11_tickets/tickets.json --all", "job": "web", "blocking": True},
+    {"id": 52, "name": "ローカルの CI（dagci）の段が GitHub の検査と 1 対 1（ci.yaml の段は v3-gate.yml から導く・外す job は理由つき・K-47）", "script": "python3 scripts/ci/ci_stages.py --check", "job": "spec", "blocking": True},
+    {"id": 48, "name": "新しい画面の実ブラウザの試験と、押した証拠（本番の形で組み立てた画面の上・行 ID の試験が全部の行で通る・記録なし・K-36）", "script": "BASE_URL=http://127.0.0.1:3124 pnpm --filter @kaname/web e2e:k && python3 scripts/ci/op_gate.py --spec 07_qa/test-specs/k --tickets 11_tickets/tickets.json --all", "job": "web", "blocking": True},
 ]
 ALL_GATES = [{**g, "job": "database" if g["id"] in (3, 4, 6, 12) else ("e2e" if g["id"] == 15 else "static")} for g in FG["merge_gates"]] + SPEC_GATES
 def step(g): return f'      - name: "G{g["id"]} {g["name"]}{" [CRITICAL]" if g["id"] in FG.get("kaname_critical_gates", []) else ""}"\n        if: ${{{{ !cancelled() }}}}\n        run: {g["script"]}\n'   # 前の検査が赤でも次の検査を流す（赤を全部いっぺんに見る。job は赤のまま）
@@ -165,7 +165,7 @@ jobs:
 {''.join(step(g) for g in ALL_GATES if g['job'] == 'task-gate')}
   web:
     runs-on: ubuntu-latest
-    # 新しい画面（apps/web/components/k の上）の実ブラウザの試験。staging も札も要らない：CI の中で本番の形に組み立てて立ち上げる（KN-109）
+    # 新しい画面（apps/web/components/k の上）の実ブラウザの試験。staging も札も要らない：CI の中で本番の形に組み立てて立ち上げる（K-36）
     needs: [static]
     env:
       KANAME_DEV_PAGES: '1'

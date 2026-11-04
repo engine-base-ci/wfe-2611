@@ -1,6 +1,6 @@
-// 権限の言葉の段（ZT1・ZT5・KN-51）。契約の perm（08_api の permission から生成）を、入口（op.ts）で言葉ごとに確かめる。
+// 権限の言葉の段（ZT1・ZT5・K-14）。契約の perm（08_api の permission から生成）を、入口（op.ts）で言葉ごとに確かめる。
 //   役の段（member／ops／client／device）は op.ts が先に見る。ここはその上の「誰が呼べるか」。
-//   行に結ぶ言葉（self・assignee・approver・recipient・manager・read・write）は、:id の行を読む段（op.ts の 4.1・契約の perm.row）で確かめる（KN-52）。
+//   行に結ぶ言葉（self・assignee・approver・recipient・manager・read・write）は、:id の行を読む段（op.ts の 4.1・契約の perm.row）で確かめる（K-15）。
 import type { EndpointDef } from "@kaname/contracts";
 import type { TenantContext } from "@kaname/db/context";
 import type { Repository } from "@kaname/db/repository";

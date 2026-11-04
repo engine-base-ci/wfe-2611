@@ -1,4 +1,4 @@
-// どのエラーを出すか（KN-106・D-069）。文言は正本（07_qa/test-specs/errors.json → @kaname/errors/catalog）の 1 件だけ。画面で文言を作らない
+// どのエラーを出すか（K-26・D-069）。文言は正本（07_qa/test-specs/errors.json → @kaname/errors/catalog）の 1 件だけ。画面で文言を作らない
 //   API の答え（call() の CallErr）→ 正本の ID。サーバーが正本の ID を返したらそれ、無ければ答えの種類で共通の 1 件
 import { CATALOG, type CatalogEntry } from "@kaname/errors/catalog";
 import type { CallErr } from "@/lib/api/call";

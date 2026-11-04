@@ -1,4 +1,4 @@
-// Next.js の決まったファイル（KN-115・D-128.123）：落ちたとき・無いときの受け皿がそろっている
+// Next.js の決まったファイル（K-30・D-128.123）：落ちたとき・無いときの受け皿がそろっている
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 
 const APP = join(dirname(fileURLToPath(import.meta.url)), "..", "app");
 
-describe("落ちたとき・無いときの受け皿（KN-115）", () => {
+describe("落ちたとき・無いときの受け皿（K-30）", () => {
   it.each(["error.tsx", "global-error.tsx", "not-found.tsx"])("app/%s がある", (f) => {
     expect(existsSync(join(APP, f))).toBe(true);
   });

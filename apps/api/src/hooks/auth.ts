@@ -1,6 +1,6 @@
-// ログインの部品（Better Auth）に頼る契約の口の振る舞い（KN-56）。暗号の中身はログインの部品に任せる（D-128.91）
+// ログインの部品（Better Auth）に頼る契約の口の振る舞い（K-19）。暗号の中身はログインの部品に任せる（D-128.91）
 //   stepUp：本人確認の取り直し（D-125.139）。パスワードで確かめ直し、2 段階を使う人はコードも。通ったらセッションに時刻を付ける（15 分効く）。
-//   パスキーで取り直すのは画面の土台（KN-5・ブラウザの WebAuthn）と一緒に足す
+//   パスキーで取り直すのは画面の土台（K-22・ブラウザの WebAuthn）と一緒に足す
 import type pg from "pg";
 import type { Auth } from "@kaname/auth";
 import type { Hook } from "../contract/deps.js";

@@ -6,7 +6,7 @@ export interface TenantContext {
   tenantId: string | null; // null = 運営（会社をまたぐ）
   userId: string | null; // members.id
   role: "member" | "ops" | "client" | "device" | "anonymous";
-  /** 直前の本人確認の時刻（sessions.step_up_at・KN-51）。無ければ未確認 */
+  /** 直前の本人確認の時刻（sessions.step_up_at・K-14）。無ければ未確認 */
   stepUpAt?: Date | null;
 }
 

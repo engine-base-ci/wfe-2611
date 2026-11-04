@@ -289,7 +289,7 @@ def main() -> int:
     SOURCES_CACHE["files"] = SOURCES
     PRODUCT, SCREENS = resolve_screens_product(root, M)
     MOCKDIR, MOCKPRE, MOCKS = resolve_mocks(root, M, SCREENS)
-    # 画面とモック（Kaname ではキャンバスの絵）の対応表を地図が名指ししていれば、ファイル名で探さずにそれを読む（KN-121）
+    # 画面とモック（Kaname ではキャンバスの絵）の対応表を地図が名指ししていれば、ファイル名で探さずにそれを読む（K-45）
     smi = M.get("screen_mock_index") or {}
     if smi.get("file") and os.path.exists(os.path.join(root, smi["file"])):
         idx = json.load(open(os.path.join(root, smi["file"]), encoding="utf-8"))
@@ -458,7 +458,7 @@ def main() -> int:
             did, want = mm.group(1), [x.strip() for x in mm.group(2).split(",") if x.strip()]
             if want and want[0] in ("all", "*", "全画面"):
                 want = sorted(MOCKS)   # 「全画面」は作ってある画面すべて
-            # しまった画面の見本（.html）を指す行は、画面の導出物（PRODUCT・flow.json）を読む（Kaname・KN-50）
+            # しまった画面の見本（.html）を指す行は、画面の導出物（PRODUCT・flow.json）を読む（Kaname・K-34）
             rf = str(r.get("file") or "")
             fl = os.path.join(root, rf if rf.endswith(".json") else str(PRODUCT or rf))
             if not os.path.exists(fl):
@@ -643,7 +643,7 @@ def main() -> int:
             mm = re.search(r"summary:\s*(.+?)(?:\n|-->)", SRC.get(did, ""), re.S)
             if mm:
                 summ = " ".join(mm.group(1).split())[:70]
-            # 反映先は (層, 対象) の組（reflect_targets）。層ごとに、その実物に決定の印があるかを確かめる行を作る（KN-121）。
+            # 反映先は (層, 対象) の組（reflect_targets）。層ごとに、その実物に決定の印があるかを確かめる行を作る（K-45）。
             # 画面の層（mockup・screens）だけ trace にする。以前は画面だけと思い込み、組をつなごうとして落ちていた
             items = []
             lcache: dict = {}

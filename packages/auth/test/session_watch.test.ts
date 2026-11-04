@@ -1,4 +1,4 @@
-// セッションの見張り（KN-57・D-125.140・D-128.120・ZT6）。実 Postgres・schema auth。
+// セッションの見張り（K-20・D-125.140・D-128.120・ZT6）。実 Postgres・schema auth。
 //   操作が無い 12 時間・最長 7 日で 401 ／ 国か端末が変わったら 401（閉じる）／ 同じ国の中の IP の変化は記録だけ ／
 //   新しい端末でのログインは本人に知らせる ／ 管理者は会社の長さを短くできる（長くはできない）
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
@@ -102,7 +102,7 @@ describe("端末の読み方", () => {
   });
 });
 
-describe("セッションの見張り（KN-57）", () => {
+describe("セッションの見張り（K-20）", () => {
   it("新しい端末でログインすると本人に知らせる（画面とメール）。同じ端末の 2 回目は知らせない", async () => {
     const before = mails.length;
     await signIn();

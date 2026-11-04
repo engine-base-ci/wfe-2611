@@ -1,7 +1,7 @@
--- 0075 ワークスペースと人の表（KN-42・D-125.115・D-125.150・D-125.162・D-128.46・D-128.92・D-128.93・D-128.95〜.97）
+-- 0075 ワークスペースと人の表（K-7・D-125.115・D-125.150・D-125.162・D-128.46・D-128.92・D-128.93・D-128.95〜.97）
 --   ワークスペースへの所属（tenant_memberships：管理者・マネージャー・メンバー・閲覧のみ・依頼する側）・グループへの所属（scope_memberships：主の所属と兼務・グループごとの役割）・
 --   規約の版（terms_versions：運営の表）と同意（terms_consents）・知らせの設定（notification_settings）・PC の接続コード（bridge_pairing_codes：コードそのものは持たない）。
---   兼務を見える範囲（visible_scopes）に入れる（KN-38 の申し送り）。行の守りは policies/0075_workspace_people.sql。
+--   兼務を見える範囲（visible_scopes）に入れる（K-3 の申し送り）。行の守りは policies/0075_workspace_people.sql。
 
 create table if not exists tenant_memberships (
   id uuid primary key default gen_random_uuid(),
@@ -109,7 +109,7 @@ create table if not exists bridge_pairing_codes (
 create index if not exists bridge_pairing_codes_member_idx on bridge_pairing_codes (tenant_id, member_id);
 revoke update, delete on bridge_pairing_codes from kaname_app;
 
--- ---------------------------------------------------------------- 見える範囲に兼務を入れる（D-125.115・KN-38 の申し送り）
+-- ---------------------------------------------------------------- 見える範囲に兼務を入れる（D-125.115・K-3 の申し送り）
 create or replace function visible_scopes(uid uuid) returns uuid[] language sql stable security definer set search_path = public, app as $$
   select coalesce(array_agg(distinct x), '{}'::uuid[]) from (
     select app.scope_tree(m.scope_id) as x from members m where m.id = uid and m.tenant_id = app.tenant_id()

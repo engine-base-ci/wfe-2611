@@ -8,10 +8,10 @@
 import glob, json, re, os, math, datetime, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__))); os.chdir(ROOT)
 F = json.load(open("05_flow/flow.json", encoding="utf-8")); BP = F["blueprint"]
-# しまった作り手（KN-113・2026-11-04）：しまった機能の分解（09_features）を読む前の作業の仕組み（07_tasks）の作り手。
-#   作業は 11_tickets（D-128.114）、新しい画面の試験の仕様は 07_qa/test-specs/k に KN-109 の型で書く。回すと前の仕様を上書きするので止める
+# しまった作り手（K-39・2026-11-04）：しまった機能の分解（09_features）を読む前の作業の仕組み（07_tasks）の作り手。
+#   作業は 11_tickets（D-128.114）、新しい画面の試験の仕様は 07_qa/test-specs/k に K-36 の型で書く。回すと前の仕様を上書きするので止める
 if "--force-retired" not in sys.argv:
-    sys.exit("05_flow/build_tasks.py はしまった作り手です（KN-113）。作業は 11_tickets、新しい画面の試験の仕様は 07_qa/test-specs/k に書きます")
+    sys.exit("05_flow/build_tasks.py はしまった作り手です（K-39）。作業は 11_tickets、新しい画面の試験の仕様は 07_qa/test-specs/k に書きます")
 FD = json.load(open("09_features/features.json", encoding="utf-8")); FEAT = {f["id"]: f for f in FD["items"]}
 S = {s["id"]: s for s in json.load(open("07_functional/screens.json", encoding="utf-8"))["items"]}
 E = {e["id"]: e for e in json.load(open("07_functional/entities.json", encoding="utf-8"))["entities"]}

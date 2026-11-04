@@ -62,7 +62,7 @@ export async function seedAccessMatrix(c: pg.PoolClient): Promise<Seeded> {
     "insert into members (tenant_id, scope_id, kind_id, display_name) values ($1, $2, 'human', '運営') returning id",
     [opsTenant, opsScope],
   );
-  // 中を見るの許可は、開いた運営の人に結ぶ（KN-45・D-128.68）。会社 a は有効、会社 b は期限切れ
+  // 中を見るの許可は、開いた運営の人に結ぶ（K-10・D-128.68）。会社 a は有効、会社 b は期限切れ
   const opsMemberRow = await one(
     "insert into ops_members (tenant_id, member_id, caps) values ($1, $2, '{peek,inquiry}') returning id",
     [opsTenant, opsId],

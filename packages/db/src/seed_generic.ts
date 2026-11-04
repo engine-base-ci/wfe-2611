@@ -144,10 +144,10 @@ export async function seedGenericRows(
       if (x.col === "tenant_id") row[x.col] = tenant;
       // 業務の型の種は運営の全社向け（グループなし・D-126.23）。グループを入れると会社の人が読む全社向けにならない
       else if (t === "skills" && x.col === "scope_id") row[x.col] = null;
-      // 取引先の種は「担当グループだけ」にする（担当グループの無い会社 a の担当者からは見えない＝子の表の「親が見えない」を確かめられる・KN-47）
+      // 取引先の種は「担当グループだけ」にする（担当グループの無い会社 a の担当者からは見えない＝子の表の「親が見えない」を確かめられる・K-12）
       else if (t === "clients" && x.col === "visibility") row[x.col] = "groups";
       else if (x.col === "scope_id" && fk) row[x.col] = scopeOf(which);
-      // 先方の人を会社の人に結ぶと、その人は「取引先の人」になり会社の人の守りを通れなくなる（app.member_ok・KN-41）。種では結ばない
+      // 先方の人を会社の人に結ぶと、その人は「取引先の人」になり会社の人の守りを通れなくなる（app.member_ok・K-6）。種では結ばない
       else if (t === "client_contacts" && x.col === "member_id") row[x.col] = null;
       else if (fk && fk.refTable === "members") row[x.col] = bossOf(which);
       else if (fk && fk.refTable === "tenants") row[x.col] = tenant;

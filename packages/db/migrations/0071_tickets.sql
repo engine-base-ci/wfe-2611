@@ -1,4 +1,4 @@
--- 0071 チケットの本体の表（KN-38・D-125.27・D-125.38・D-125.53・D-125.67・D-125.68・D-128.95・D-128.115）
+-- 0071 チケットの本体の表（K-3・D-125.27・D-125.38・D-125.53・D-125.67・D-125.68・D-128.95・D-128.115）
 --   tickets（本文は区画 ticket_sections に分け、区画ごとに版 ticket_section_versions）・種別と区画の並び（ticket_kinds・kind_sections）・
 --   作業の段（ticket_stages）・分類の軸と値（class_axes・class_values・ticket_class_values）・渡すときに一緒に切り替えるもの（handover_rules）。
 --   行の守りは policies/0071_tickets.sql（gen_rls.py ← 05_flow/rls_policies.py）。ここは表・番号・上限・読める／書けるの関数・ワークスペースの初めの行。
@@ -108,7 +108,7 @@ create table if not exists tickets (
   title text not null check (length(title) between 1 and 200),
   assignee_member_id uuid references members(id),            -- 担当者（D-128.25）
   delegated_to_clone boolean not null default false,          -- 分身に任せている（実行者の列は持たない・D-128.26）
-  client_id uuid,                                             -- 取引先（clients は KN-41 で作り、そこで外部キーを付ける）
+  client_id uuid,                                             -- 取引先（clients は K-6 で作り、そこで外部キーを付ける）
   parent_ticket_id uuid references tickets(id),               -- 3 段まで（下の関数で守る）
   derived_from_ticket_id uuid references tickets(id),
   start_on date,
@@ -320,7 +320,7 @@ drop trigger if exists ticket_stages_insert on ticket_stages;
 create trigger ticket_stages_insert before insert on ticket_stages for each row execute function app.ticket_stage_insert();
 
 -- ---------------------------------------------------------------- 読める・書ける（行の守りの述語から呼ぶ。policy から tickets を直接引くと自分に再帰するので security definer に寄せる）
--- 関わっている人：承認する人（KN-44 で approvals.ticket_id）・渡された／判断を仰がれた相手（KN-39 で ticket_handovers）。表ができたらこの関数を作り直す
+-- 関わっている人：承認する人（K-9 で approvals.ticket_id）・渡された／判断を仰がれた相手（K-4 で ticket_handovers）。表ができたらこの関数を作り直す
 create or replace function app.ticket_involved(tid uuid, uid uuid) returns boolean language sql stable security definer set search_path = public, app as $$
   select false
 $$;

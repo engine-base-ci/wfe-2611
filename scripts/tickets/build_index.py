@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""build_index.py — Kaname を作るためのチケット（11_tickets/KN-*.md）から、一覧・親子の木・機械用の写しを作り、形を検査する。
+"""build_index.py — Kaname を作るためのチケット（11_tickets/K-*.md）から、一覧・親子の木・機械用の写しを作り、形を検査する。
 
 チケット 1 枚 = 1 ファイル。上の --- で囲んだ所が属性（Kaname のチケットの属性と同じ）、下が本文の区画（Kaname の種別「タスク」の区画）。
   出力: 11_tickets/README.md（親子の木と数）・11_tickets/tickets.json（機械用）・11_tickets/tickets.csv（Kaname の汎用 CSV の取り込みに渡す形・D-128.85）
@@ -53,7 +53,7 @@ def parse(path: str) -> dict:
 
 
 def load() -> list[dict]:
-    return sorted((parse(p) for p in glob.glob(os.path.join(DIR, "KN-*.md"))), key=lambda t: int(t["id"].split("-")[1]))
+    return sorted((parse(p) for p in glob.glob(os.path.join(DIR, "K-*.md"))), key=lambda t: int(t["id"].split("-")[1]))
 
 
 def check(ts: list[dict]) -> list[str]:
@@ -147,7 +147,7 @@ def main() -> int:
     if "--check" not in sys.argv:
         md = ["# Kaname を作るためのチケット（11_tickets）", "",
               "Kaname のチケットと同じ形（属性と区画）で、Kaname 自体を作る仕事を切ったもの。親子は 3 段まで（節目 → まとまり → 1 作業）。",
-              "1 枚 = 1 ファイル（`KN-番号.md`）。この一覧・`tickets.json`・`tickets.csv` は `python3 scripts/tickets/build_index.py` が作る（手で直さない）。", "",
+              "1 枚 = 1 ファイル（`K-番号.md`（番号は D-128.139 で振り直した。古い KN- との対応は renumber-map.json））。この一覧・`tickets.json`・`tickets.csv` は `python3 scripts/tickets/build_index.py` が作る（手で直さない）。", "",
               f"チケット {len(ts)} 枚（1 作業 {len(leaves)}・完了 {done}・まだ切っていないまとまり {len(pending)}）", "",
               "印：✓ 完了 ／ ・ これから ／ … まだ 1 作業に切っていないまとまり", "", tree(ts), ""]
         open(os.path.join(DIR, "README.md"), "w", encoding="utf-8").write("\n".join(md))

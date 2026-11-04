@@ -19,7 +19,7 @@ DUE = "2026-11-20"
 PLAN = {
     "KN-8": [
         ("登録とメールの確認の口", "API", ["createSignup", "resendSignupEmail", "getSignupStatus", "getCurrentTerms", "verifySignup", "consentToTerms"], [],
-         "登録（保留の申し込み）・確認のメール・確認・規約の同意を契約の口で作る（今の /api/auth-ext の登録の道すじを移す・KN-58 と一緒に）。"),
+         "登録（保留の申し込み）・確認のメール・確認・規約の同意を契約の口で作る（今の /api/auth-ext の登録の道すじを移す・K-21 と一緒に）。"),
         ("ログインと 2 段階のコードの口", "API", ["signInWithPassword", "signOut", "verifySignInCode", "getServiceStatus", "requestAdminRecovery"], [],
          "パスワード＋2 段階のコードのログイン・ログアウト・止まっているときの知らせ・管理者に戻してもらう申し出を契約の口で作る。"),
         ("パスワードの再設定の口", "API", ["requestPasswordReset", "resetPassword"], [],
@@ -27,15 +27,15 @@ PLAN = {
         ("安全の設定の口（パスキー・2 段階・パスワード・端末）", "API", ["getMySecurity", "renamePasskey", "deletePasskey", "changePassword", "listMySessions", "revokeMySession", "revokeOtherSessions", "startTwoFactor", "confirmTwoFactor", "disableTwoFactor", "regenerateBackupCodes"], [],
          "自分のパスキー・2 段階・予備のコード・パスワード・ログインしている端末を見て直せる口を作る。"),
         ("画面：登録・メールの確認・ログイン・パスワードの再設定", "画面", [], ["signup", "verify-email", "login", "password-reset"],
-         "キャンバスの土台（KN-5）の上に、登録からログインまでの 4 つの画面を作る。"),
+         "キャンバスの土台（K-22）の上に、登録からログインまでの 4 つの画面を作る。"),
         ("画面：安全の設定", "画面", [], ["mfa-setup"],
-         "パスキー・2 段階・予備のコード・端末の一覧の画面を作る（本人確認の取り直しのパスキーもここで・KN-56 の申し送り）。"),
+         "パスキー・2 段階・予備のコード・端末の一覧の画面を作る（本人確認の取り直しのパスキーもここで・K-19 の申し送り）。"),
     ],
     "KN-9": [
         ("自分の設定の口", "API", ["getMe", "updateMe", "uploadAvatar", "requestEmailChange", "verifyEmailChange", "getNotificationSettings", "updateNotificationSettings", "copyNotificationSettings", "listSetupTasks", "dismissSetupTasks", "getMyUsage", "leaveWorkspace"], [],
          "名前・顔・メールの変更・知らせの設定・はじめにやること・使用量・ワークスペースを抜ける、の口を作る。"),
         ("PC（Bridge）をつなぐ口", "API", ["createPairingCode", "claimPairingCode", "listMyDevices", "updateMyDevice", "revokeMyDevice", "sendHeartbeat", "getLatestBridgeRelease", "downloadBridgeRelease", "reportUsage"], [],
-         "つなぐ番号・つないだ端末の一覧と外す・生存の知らせ・配布物・使用量の報告を契約の口で作る（今の /api/auth-ext/bridge の道すじを移す・KN-58 と一緒に）。"),
+         "つなぐ番号・つないだ端末の一覧と外す・生存の知らせ・配布物・使用量の報告を契約の口で作る（今の /api/auth-ext/bridge の道すじを移す・K-21 と一緒に）。"),
         ("預けたログイン情報の口", "API", ["listCredentials", "createCredential", "updateCredential", "deleteCredential", "checkCredentialLogin", "answerCredentialLoginCheck", "resolveCredential", "reportCredentialCheck"], [],
          "ログイン情報を預ける・確かめる・PC の実行器だけが宛先の合うときに取り出す（D-128.57 の 4 つの守り）口を作る。"),
         ("画面：自分の設定", "画面", [], ["account"], "自分の設定（プロフィール・ログインと安全・端末・所属するワークスペース）の画面を作る。"),
@@ -50,7 +50,7 @@ PLAN = {
         ("CSV の取り込みの口", "API", ["createTicketImport", "getTicketImport", "commitTicketImport"], [],
          "Backlog と汎用の CSV を取り込み、下書きを確定するまで取り込んだ人だけが見て直せる（D-128.119）口を作る。"),
         ("知らせの口", "API", ["listNotifications", "readNotification", "readAllNotifications"], [],
-         "上の帯の知らせ（一覧・読んだ・全部読んだ）を作る。新しい端末の知らせ（KN-57）もここに出る。"),
+         "上の帯の知らせ（一覧・読んだ・全部読んだ）を作る。新しい端末の知らせ（K-20）もここに出る。"),
         ("画面：チケットの一覧・探す・取り込み", "画面", [], ["tickets"], "チケットの一覧の画面（表示の切り替え・絞り込み・保存した検索条件・CSV の取り込み）を作る。"),
     ],
     "KN-11": [
@@ -78,7 +78,7 @@ PLAN = {
     ],
     "KN-14": [
         ("会話の口", "API", ["listConversations", "createConversation", "getConversation", "updateConversation", "deleteConversation", "listConversationMessages", "sendConversationMessage", "answerAgentPermission", "stopConversation", "createConversationAttachment"], [],
-         "分身との会話（分ける・名前・星・記憶に残さない・消す・書きながらの返事・許可の 3 択・止める・資料）を契約の口で作る（今の /api/auth-ext/agent の道すじを移す・KN-58 と一緒に）。"),
+         "分身との会話（分ける・名前・星・記憶に残さない・消す・書きながらの返事・許可の 3 択・止める・資料）を契約の口で作る（今の /api/auth-ext/agent の道すじを移す・K-21 と一緒に）。"),
         ("知っていること（記憶と覚えたいこと）の口", "API", ["getMyClone", "updateMyClone", "countKnows", "listMemories", "createMemory", "updateMemory", "deleteMemory", "promoteMemoryToRule", "listLearningCandidates", "acceptLearningCandidate", "dismissLearningCandidate", "postponeLearningCandidate", "requestRuleException"], [],
          "分身の設定・記憶・覚えたいことの候補（受ける・外す・あとで・決まりの例外を頼む）を作る。"),
         ("作ったものの口", "API", ["createArtifactFromMessage", "updateArtifact", "restoreArtifactVersion"], [],
@@ -119,7 +119,7 @@ EXPLICIT = {
     "KN-26": ["listClients"],
     "KN-30": ["listOpsPlans", "listPlanHistory", "listPlanProposals", "createPlanProposal", "updatePlanProposal", "getPlanProposalImpact", "submitPlanProposal", "decidePlanProposal", "returnPlanProposal"],
     "KN-19": ["resetMemberTwoFactor"],
-    "KN-56": ["stepUp"],
+    "K-19": ["stepUp"],
     "KN-21": ["listRules", "createRule", "checkRule"],   # 最初に作るのはルールの画面（節目②）。取引先（節目③）・決まり（節目②）は同じ口を使う
 }
 FLOW_CHOKE = {"承認から実行・外に出すまで（実行待ちは 24 時間で聞き直す）": ["C1", "C2", "C5", "C6"]}
@@ -155,7 +155,7 @@ def ticket_md(tid, parent, title, area, apis, screens, goal, decs, depends):
         tests.append("| 行の守り（他の会社・範囲の外の行が取れない） | ① 機械 | `pnpm ci:access-matrix`（G33） | |")
         tests.append("| 契約の外の入力でも 500 を返さない・答えの形が契約どおり | ① 機械 | `pnpm ci:schemathesis`（G36） | |")
     elif area == "画面":
-        done = ["- [ ] 画面がキャンバス（04_design/canvas）と DESIGN-kaname.md のとおり（部品は画面の土台 KN-5 のもの）",
+        done = ["- [ ] 画面がキャンバス（04_design/canvas）と DESIGN-kaname.md のとおり（部品は画面の土台 K-22 のもの）",
                 "- [ ] 画面の仕様書（07_qa/test-specs/screens/<画面>.md）を新しい画面で書き直し、行が全部 PASS",
                 "- [ ] 操作要素 1 つ＝1 行の実ブラウザの試験（行 ID を名前に持つ Playwright・G28）が通る",
                 "- [ ] 空・読み込み中・失敗・権限が無い の 4 つの状態がある",
@@ -183,7 +183,7 @@ def ticket_md(tid, parent, title, area, apis, screens, goal, decs, depends):
     fm.append("---")
     body = ["", "## 目的", "", goal, "", "## 完了の条件", "", *done, "", "## 前提と制約", "",
             "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）",
-            "- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く", "",
+            "- 権限の言葉・本人確認・行の確かめは入口（K-14・K-15）が見る。hooks の中でも行の守り（RLS）が効く", "",
             "## 実施事項", "", *steps, "", "## テスト仕様と確認の結果", "", "| 確認項目 | 種類 | 判定のしかた | 結果 |", "|---|---|---|---|", *tests, "",
             "## 成果物", "", "", "", "## 決定ログ", "", "- 決定に従った：" + "・".join(decs), "", "## リスクと懸念", "", "", "", "## 申し送り", "", ""]
     return "\n".join(fm + body)
@@ -212,7 +212,7 @@ def main():
                 if d and d not in decs and known(d):
                     decs.append(d)
             tid = f"KN-{nxt}"; nxt += 1
-            dep = ["KN-5"] + api_ids if area == "画面" else (["KN-51", "KN-52"] if area == "API" else api_ids or ["KN-15"])
+            dep = ["K-22"] + api_ids if area == "画面" else (["K-14", "K-15"] if area == "API" else api_ids or ["KN-15"])
             if area == "API":
                 api_ids.append(tid)
             out.append((tid, parent, title, area, apis, screens, goal, decs, dep))

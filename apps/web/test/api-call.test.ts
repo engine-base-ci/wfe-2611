@@ -1,4 +1,4 @@
-// 新しい画面の API の呼び手（KN-107）：口の名前で呼び、答えの扱いをそろえる
+// 新しい画面の API の呼び手（K-27）：口の名前で呼び、答えの扱いをそろえる
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { call, pathOf } from "../lib/api/call";
 
@@ -17,7 +17,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe("口の名前で呼ぶ（KN-107）", () => {
+describe("口の名前で呼ぶ（K-27）", () => {
   it("道すじとメソッドは契約から引き、:id は値で埋める", async () => {
     vi.stubGlobal("fetch", reply(200, { data: { id: "t1" } }));
     const r = await call("getTicket", { params: { id: "a/b" } });

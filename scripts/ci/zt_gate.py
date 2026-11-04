@@ -84,7 +84,7 @@ def design_fails(sa) -> list[str]:
                 fails.append(f"[ZT2] {e['method']} {e['path']} は権限 device なのに契約の役割が device でない")
             if pm and pm["who"] == "public" and e.get("auth", {}).get("role") != "public":
                 fails.append(f"[ZT2] {e['method']} {e['path']} は権限 public なのに契約ではログインが要る")
-    # 契約の外の道すじの行き先（KN-58・08_api/auth-ext-routes.json）：登録されている道すじは全部表にあり、移す先は契約の口、外すものは決定と理由を持つ
+    # 契約の外の道すじの行き先（K-21・08_api/auth-ext-routes.json）：登録されている道すじは全部表にあり、移す先は契約の口、外すものは決定と理由を持つ
     rp = os.path.join(ROOT, "08_api", "auth-ext-routes.json")
     table = json.load(open(rp, encoding="utf-8"))["routes"] if os.path.exists(rp) else []
     known = {(r["method"], r["route"]): r for r in table}
@@ -129,7 +129,7 @@ def impl_todo() -> tuple[list[str], dict]:
             outside.append(f"{m.upper()} /api/auth-ext{pth}")
     if outside: todo.append(f"[ZT1] 契約の外で登録されている道すじ {len(outside)} 本（apps/api/src/auth/*.ts）。契約に入れて誰が呼べるかを書く")
     metrics["outside_routes"] = len(outside)
-    # セッションの見張り（KN-57）：解決が要求ごとに app.session_check を呼び、その関数が時間（idle・max_age）と国・端末（country_changed・device_changed）で閉じる
+    # セッションの見張り（K-20）：解決が要求ごとに app.session_check を呼び、その関数が時間（idle・max_age）と国・端末（country_changed・device_changed）で閉じる
     mig = "".join(open(f, encoding="utf-8").read() for f in glob.glob(os.path.join(ROOT, "packages", "db", "migrations", "*.sql")))
     check_fn = re.search(r"function app\.session_check\b.*?\$\$;", mig, re.S)
     body = check_fn.group(0) if check_fn else ""
@@ -138,7 +138,7 @@ def impl_todo() -> tuple[list[str], dict]:
     metrics["session_geo"] = int(not (calls and "'country_changed'" in body and "'device_changed'" in body))
     if metrics["session_idle"]: todo.append("[ZT6] 操作が無いときの期限（12 時間）・最長（7 日）で閉じる仕組み（app.session_check）が無いか、解決が呼んでいない")
     if metrics["session_geo"]: todo.append("[ZT6] 国・端末の急な変化で閉じる仕組み（app.session_check）が無いか、解決が呼んでいない")
-    # 画面の守り（KN-103）：middleware が全部の画面の応答に lib/security-headers.ts の見出しを付け、その中に 4 つの守りがある
+    # 画面の守り（K-23）：middleware が全部の画面の応答に lib/security-headers.ts の見出しを付け、その中に 4 つの守りがある
     sec_p = os.path.join(ROOT, "apps", "web", "lib", "security-headers.ts")
     sec = open(sec_p, encoding="utf-8").read() if os.path.exists(sec_p) else ""
     wired = "securityHeaders(" in web and "matcher" in web

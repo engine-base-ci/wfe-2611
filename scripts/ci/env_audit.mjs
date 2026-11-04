@@ -31,7 +31,7 @@ export function audit(root = ROOT) {
   }
   return { used: used.size, example: example.size, bad };
 }
-// 関門の外の process.env は、記録（scripts/ci/env_baseline.json）のファイルと数までは赤にしない（KN-114 で検査が働くようにしたとき既にあった分・KN-117 で片付ける）。
+// 関門の外の process.env は、記録（scripts/ci/env_baseline.json）のファイルと数までは赤にしない（K-40 で検査が働くようにしたとき既にあった分・K-42 で片付ける）。
 //   記録に無いファイル・記録より増えたら赤。減ったら記録を下げるよう言う（D-128.117・D-128.123）
 export function judge(r, base) {
   const per = {};

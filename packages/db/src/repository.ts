@@ -98,7 +98,7 @@ export const TABLES = [
   "push_devices",
   "disclosure_versions",
   "subprocessors",
-  // チケットの本体（KN-38・0071）
+  // チケットの本体（K-3・0071）
   "ticket_kinds",
   "kind_sections",
   "ticket_stages",
@@ -109,7 +109,7 @@ export const TABLES = [
   "ticket_section_versions",
   "ticket_class_values",
   "handover_rules",
-  // チケットのまわり（KN-39・0072）
+  // チケットのまわり（K-4・0072）
   "test_specs",
   "checks",
   "ticket_decisions",
@@ -119,28 +119,28 @@ export const TABLES = [
   "ticket_handovers",
   "saved_views",
   "ticket_imports",
-  // ナレッジ（KN-40・0073）
+  // ナレッジ（K-5・0073）
   "knowledge_pages",
   "knowledge_page_versions",
   "knowledge_links",
-  // 取引先（KN-41・0074）
+  // 取引先（K-6・0074）
   "clients",
   "client_groups",
   "client_contacts",
   "client_requests",
   "acceptances",
-  // ワークスペースと人（KN-42・0075）
+  // ワークスペースと人（K-7・0075）
   "tenant_memberships",
   "scope_memberships",
   "terms_versions",
   "terms_consents",
   "notification_settings",
   "bridge_pairing_codes",
-  // 分身と運営（KN-43・0076）
+  // 分身と運営（K-8・0076）
   "learning_candidates",
   "operations",
   "ops_plan_proposals",
-  // 既にある表を契約から使う（KN-46）。pending_signup とパスキーはログインの部品の側（kaname_auth）なので入れない（D-128.119）
+  // 既にある表を契約から使う（K-11）。pending_signup とパスキーはログインの部品の側（kaname_auth）なので入れない（D-128.119）
   "bridge_jobs",
   "bridge_job_events",
   "agent_usage_snapshots",
@@ -208,14 +208,14 @@ export class Repository {
   /** 運営が会社の表を読んでよいか（顧客の許可・範囲・期限。RLS の関数と同じ判定を API 層でも先に返す＝403） */
   async opsAllowed(ctx: TenantContext): Promise<boolean> {
     if (ctx.role !== "ops" || !ctx.tenantId) return false;
-    // 中を見るの許可は開いた運営の人に結ぶ（KN-45）ので、その人の文脈（app.user_id）で確かめる
+    // 中を見るの許可は開いた運営の人に結ぶ（K-10）ので、その人の文脈（app.user_id）で確かめる
     return withTenant(this.pool, ctx, async (c) => {
       const r = await c.query<{ ok: boolean }>("select app.ops_grant_ok($1::uuid) as ok", [ctx.tenantId]);
       return r.rows[0]?.ok === true;
     });
   }
 
-  /** 権限の言葉 admin などの確かめ（KN-51）：その人が、その表（target）の能力（ability）を、そのグループ（null＝会社全体）で持つか */
+  /** 権限の言葉 admin などの確かめ（K-14）：その人が、その表（target）の能力（ability）を、そのグループ（null＝会社全体）で持つか */
   async can(ctx: TenantContext, target: string, scope: string | null, ability: string): Promise<boolean> {
     if (ctx.role !== "member" || !ctx.userId || !ctx.tenantId) return false;
     return withTenant(this.pool, ctx, async (c) => {
@@ -249,7 +249,7 @@ export class Repository {
     });
   }
 
-  /** 行に結ぶ言葉の確かめ（KN-52）。:id の行を行の守り（RLS）の中で読む。見えなければ missing、条件（契約の perm.row.sql）が偽なら denied。
+  /** 行に結ぶ言葉の確かめ（K-15）。:id の行を行の守り（RLS）の中で読む。見えなければ missing、条件（契約の perm.row.sql）が偽なら denied。
    *  条件は契約の生成（scripts/ci/row_rules.mjs）が出した式だけ（利用者の入力は $1 の id だけ） */
   async rowAllowed(ctx: TenantContext, table: string, id: string, sql: string): Promise<"ok" | "missing" | "denied"> {
     if (!this.columns.has(table as TableName)) return "missing";
@@ -263,7 +263,7 @@ export class Repository {
     });
   }
 
-  /** 運営の人のできること（ops_members.caps・KN-51）。運営の文脈でだけ。運営の人の行が無ければ null */
+  /** 運営の人のできること（ops_members.caps・K-14）。運営の文脈でだけ。運営の人の行が無ければ null */
   async opsCaps(ctx: TenantContext): Promise<string[] | null> {
     if (ctx.role !== "ops" || !ctx.userId) return null;
     return withTenant(this.pool, ctx, async (c) => {

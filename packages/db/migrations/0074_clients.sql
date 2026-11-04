@@ -1,6 +1,6 @@
--- 0074 取引先の表（KN-41・D-125.43・D-125.121〜.124・D-128.53・D-128.54・D-128.100）
+-- 0074 取引先の表（K-6・D-125.43・D-125.121〜.124・D-128.53・D-128.54・D-128.100）
 --   取引先（clients：見え方は 全員／担当グループだけ・既定は全員）・担当グループ（client_groups：いくつでも）・先方の人（client_contacts）・
---   届いた依頼（client_requests）・検収（acceptances：OK がそのチケットの完了の条件）。tickets.client_id に外部キーを付ける（KN-38 の申し送り）。
+--   届いた依頼（client_requests）・検収（acceptances：OK がそのチケットの完了の条件）。tickets.client_id に外部キーを付ける（K-3 の申し送り）。
 --   取引先の人（クライアントの場所）は app.role='client' の文脈で入り、自分の取引先の中だけ・会社が見せると決めたチケットだけ読める（D-125.122）。
 --   ★柵の穴を塞ぐ：app.member_ok() は「運営でなく、その会社のメンバー」なら通していたので、取引先の人・PC の文脈でも会社の人の守りを通れた。
 --     会社の人の守りは app.role='member' で、取引先の人として登録されていない人だけにする（ZT2）。
@@ -101,7 +101,7 @@ create table if not exists acceptances (
 );
 create index if not exists acceptances_ticket_idx on acceptances (tenant_id, ticket_id);
 
--- チケットの取引先（KN-38 で列だけ作った）
+-- チケットの取引先（K-3 で列だけ作った）
 do $$ begin
   if not exists (select 1 from pg_constraint where conname = 'tickets_client_id_fkey') then
     alter table tickets add constraint tickets_client_id_fkey foreign key (client_id) references clients(id);

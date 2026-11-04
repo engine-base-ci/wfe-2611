@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:e14b08ce0b008013
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:2ad5fc3e6e32ac27
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -19,7 +19,7 @@ export interface EndpointDef {
   errors: number[];
   acts: string[];
   screens: string[];
-  /** 誰が呼べるか（08_api の permission・KN-51）。入口が言葉ごとに確かめる（apps/api/src/contract/permissions.ts） */
+  /** 誰が呼べるか（08_api の permission・K-14）。入口が言葉ごとに確かめる（apps/api/src/contract/permissions.ts） */
   perm: {
     word: string;
     target: string | null;
@@ -28,7 +28,7 @@ export interface EndpointDef {
     adminOnly: boolean;
     cap: string | null;
     stepUp: string | null;
-    /** 行に結ぶ言葉の確かめ（KN-52・scripts/ci/row_rules.mjs）。:id の行を RLS の中で読み、見えなければ 404・sql が偽なら 403 */
+    /** 行に結ぶ言葉の確かめ（K-15・scripts/ci/row_rules.mjs）。:id の行を RLS の中で読み、見えなければ 404・sql が偽なら 403 */
     row: { table: string; sql: string } | null;
   };
 }
@@ -16043,4 +16043,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     }
   }
 ];
-export const OPENAPI_HASH = "e14b08ce0b008013";
+export const OPENAPI_HASH = "2ad5fc3e6e32ac27";

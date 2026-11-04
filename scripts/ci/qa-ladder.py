@@ -33,7 +33,7 @@ ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_SPEC = ROOT / "07_qa/test-specs"
 DEFAULT_TICKETS = ROOT / "07_tasks/tickets.json"
 
-TASK_ID = re.compile(r"\bT-[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)?-\d+[a-z]?\b|\bKN-\d+\b")   # KN-…＝11_tickets のチケット（D-128.117）
+TASK_ID = re.compile(r"\bT-[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)?-\d+[a-z]?\b|\bK-\d+\b")   # KN-…＝11_tickets のチケット（D-128.117）
 ROW_ID = re.compile(r"^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*-\d{2,3}(?:-[A-C])?$")   # errors.md（E-…-A/B/C＝出る／出ない／文言と一手）も行
 PASS = re.compile(r"\b(PASS|FIXED)\b|完了")
 BLOCKED = re.compile(r"\bBLOCKED\b")

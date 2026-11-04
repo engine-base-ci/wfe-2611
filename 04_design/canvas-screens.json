@@ -1,5 +1,5 @@
 {
- "_doc": "第1フェーズの画面（flow.json の release v1）→ キャンバスの絵（04_design/canvas/*.dc.html の名前）。画面の正はキャンバス（D-128.23）。canvas_gate.py の CV4 と spec-sync の D6 が読む（KN-121）。画面か絵を足したら、ここに足す",
+ "_doc": "第1フェーズの画面（flow.json の release v1）→ キャンバスの絵（04_design/canvas/*.dc.html の名前）。画面の正はキャンバス（D-128.23）。canvas_gate.py の CV4 と spec-sync の D6 が読む（K-45）。画面か絵を足したら、ここに足す",
  "screens": {
   "account": [
    "MeProfile",

@@ -1,4 +1,4 @@
-// Bridge の画面（renderer）の見た目の土台（KN-112・D-128.123）
+// Bridge の画面（renderer）の見た目の土台（K-29・D-128.123）
 //   ・読んでいる var(--…) が全部トークン（tokens.css・正本から生成）にある（名前が変わって指定が黙って消えるのを止める）
 //   ・画面に生の色を書かない
 //   ・書体（Noto Sans JP）を同梱して読む（利用者の PC に無くても同じ字で出す）
@@ -16,7 +16,7 @@ const pkg = JSON.parse(readFileSync(join(BRIDGE, "package.json"), "utf8")) as {
   dependencies: Record<string, string>;
 };
 
-describe("Bridge の画面の土台（KN-112）", () => {
+describe("Bridge の画面の土台（K-29）", () => {
   it("読んでいる var(--…) は全部 tokens.css にある", () => {
     const used = new Set([...html.matchAll(/var\((--[a-z0-9-]+)\)/g)].map((m) => m[1]!));
     const defined = new Set([...tokens.matchAll(/(--[a-z0-9-]+):/g)].map((m) => m[1]!));

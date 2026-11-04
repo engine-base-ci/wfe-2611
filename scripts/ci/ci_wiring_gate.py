@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""書いた検査が CI から回っているか（D-128.123・KN-111）。
+"""書いた検査が CI から回っているか（D-128.123・K-38）。
 
   python3 scripts/ci/ci_wiring_gate.py            package.json の ci:* と、自己試験（scripts/ci/*.test.mjs・--selftest を持つ検査）が、
                                                   CI（.github/workflows/*.yml）か層の棚卸し（spec-dependencies.yaml・G27 が回す）から回るか

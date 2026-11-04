@@ -1,5 +1,5 @@
 "use client";
-// 知らせ（KN-104）。2 つ：
+// 知らせ（K-24）。2 つ：
 //   Callout … 画面の中の帯（正本 components.callout-*）。危ない知らせは role="alert"、ほかは role="status"
 //   Toaster / useNotify … 小さな知らせ（コピーした・保存した）。sonner（技術の選定 D-067）。読み上げに伝わる。Alt+T で知らせの束に移れ、閉じるボタンはいつも出す
 import { Toaster as Sonner, toast } from "sonner";

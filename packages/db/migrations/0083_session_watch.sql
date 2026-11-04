@@ -1,4 +1,4 @@
--- 0083 セッションの見張りと本人確認の取り直しの記録（KN-57・KN-56・D-125.140・D-128.120・D-128.121・ZT6）
+-- 0083 セッションの見張りと本人確認の取り直しの記録（K-20・K-19・D-125.140・D-128.120・D-128.121・ZT6）
 --   操作が無いと 12 時間・最長 7 日で切る（管理者は会社ごとに短くできる。長くはできない）。PC に常駐する Bridge は時間では切らない（D-128.121）。
 --   国（配布先 Vercel が付ける x-vercel-ip-country）か端末（ブラウザの種類・OS）が変わったら切って入り直させる。
 --   同じ国の中で IP だけ変わったら切らず、セキュリティの出来事（security_events）に記録だけ残す。国の印が無い所（ローカル・Docker）では国では判定しない。
@@ -86,7 +86,7 @@ begin
 end $$;
 grant execute on function app.session_first_on_device(text, text, text, text) to kaname_app;
 
--- 本人確認の取り直しの結果を残す（KN-56）。通ったらセッションに時刻を付ける（app.mark_step_up と同じ）。成功も失敗も security_events に
+-- 本人確認の取り直しの結果を残す（K-19）。通ったらセッションに時刻を付ける（app.mark_step_up と同じ）。成功も失敗も security_events に
 create or replace function app.record_step_up(p_auth_session_id text, p_ok boolean, p_detail jsonb) returns boolean
 language plpgsql security definer set search_path = public, app as $$
 #variable_conflict use_column

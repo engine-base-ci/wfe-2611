@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# G36 契約 fuzz（KN-55・Schemathesis・MIT）。
+# G36 契約 fuzz（K-35・Schemathesis・MIT）。
 #   1) 本物の DB の列の書き出し（08_api/db-columns.json）が DB と合っている（契約の答えの形の元）
 #   2) 実 Postgres＋場合表の種の上に API を立てる（apps/api/test/fuzz/server.ts・偽のセッション Bearer boss）
 #   3) 作った口（入口が 501 で止めない口）を、契約から作った入力・契約の外の入力で叩き、

@@ -1,4 +1,4 @@
-// 端末・国・IP を要求から読む（KN-57・D-128.120）。端末は「ブラウザの種類／OS」まで（版の数字は見ない：更新のたびに入り直しにしない）
+// 端末・国・IP を要求から読む（K-20・D-128.120）。端末は「ブラウザの種類／OS」まで（版の数字は見ない：更新のたびに入り直しにしない）
 import { UAParser } from "ua-parser-js";
 
 const BROWSERS: Record<string, string> = {

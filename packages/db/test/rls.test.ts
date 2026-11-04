@@ -183,7 +183,7 @@ describe("書く（権限＝誰に×何に×どの層で×できること）", (
 });
 
 describe("運営（既定で読めない）", () => {
-  // 中を見るの許可は、開いた運営の人に結ぶ（KN-45・D-128.68）。運営の人の行を用意する
+  // 中を見るの許可は、開いた運営の人に結ぶ（K-10・D-128.68）。運営の人の行を用意する
   const ops = { tenantId: T.a, userId: null as string | null, role: "ops" as const };
   let opsMember = "";
   const grant = (tenant: string, extra = "") =>

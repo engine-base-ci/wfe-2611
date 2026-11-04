@@ -76,7 +76,7 @@ export function createApp(o: AppOptions | string = {}): Hono<Vars> {
     : opts.resolveSession;
   if (opts.repo) app.use("/api/*", tenantContext(opts.repo, resolver));
   if (opts.repo && opts.contract !== false) registerAll(app, defaultDeps(opts.contract ?? {}));
-  // 契約にある道すじに、契約に無いメソッド（TRACE など）で来たら 405 と使えるメソッド（Allow）を返す（404 にしない・KN-55）
+  // 契約にある道すじに、契約に無いメソッド（TRACE など）で来たら 405 と使えるメソッド（Allow）を返す（404 にしない・K-35）
   app.notFound((c) => {
     const allow = [...new Set(CONTRACT_PATHS.filter((p) => p.re.test(c.req.path)).map((p) => p.method))];
     if (allow.length)

@@ -1,4 +1,4 @@
-// 札（KN-104・D-052）。状態は淡い面と濃い文字の対。色だけで意味を伝えない（文字を必ず持つ）
+// 札（K-24・D-052）。状態は淡い面と濃い文字の対。色だけで意味を伝えない（文字を必ず持つ）
 import type { ReactNode } from "react";
 
 export type BadgeTone = "neutral" | "success" | "warning" | "danger" | "progress" | "ai";

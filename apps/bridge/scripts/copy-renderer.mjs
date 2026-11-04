@@ -1,5 +1,5 @@
 /* global process */
-// Bridge の画面（renderer）を dist に写す（KN-112）：画面・トークン・書体（@fontsource-variable/noto-sans-jp を同梱）
+// Bridge の画面（renderer）を dist に写す（K-29）：画面・トークン・書体（@fontsource-variable/noto-sans-jp を同梱）
 //   利用者の PC に書体が無くても、正本の書体（Noto Sans JP・D-128.3）で出す。CSP は default-src 'self' のまま（同じ所から読む）
 import { cpSync, mkdirSync } from "node:fs";
 import { createRequire } from "node:module";

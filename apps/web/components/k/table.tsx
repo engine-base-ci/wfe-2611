@@ -1,4 +1,4 @@
-// 表（KN-104）。1 行 36px（D-128.13）。見出しの行は th（scope 付き）、表の名前は caption（読み上げが表の中身を言える）
+// 表（K-24）。1 行 36px（D-128.13）。見出しの行は th（scope 付き）、表の名前は caption（読み上げが表の中身を言える）
 import type { ReactNode } from "react";
 
 export interface Column<R> {

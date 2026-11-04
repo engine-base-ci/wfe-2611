@@ -1,4 +1,4 @@
-// エラーの出し方（KN-106・D-069）：文言は正本（errors.json）の 1 件だけ。API の答え → 正本の ID
+// エラーの出し方（K-26・D-069）：文言は正本（errors.json）の 1 件だけ。API の答え → 正本の ID
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -10,7 +10,7 @@ const SRC = JSON.parse(readFileSync(join(ROOT, "07_qa/test-specs/errors.json"), 
   errors: { id: string; message?: string; action?: string }[];
 };
 
-describe("エラーの出し方（KN-106）", () => {
+describe("エラーの出し方（K-26）", () => {
   it("共通のエラー 8 件は全部正本にあり、文言と一手が正本と同じ", () => {
     for (const code of Object.values(PAGE_ERROR)) {
       const src = SRC.errors.find((e) => e.id === code);

@@ -242,6 +242,7 @@
   "D-128.136",
   "D-128.137",
   "D-128.138",
+  "D-128.139",
   "D-128.20",
   "D-128.25",
   "D-128.26",
@@ -311,7 +312,7 @@
   "contract_fuzz": {
    "library": "Schemathesis 4.33.0",
    "license": "MIT",
-   "rationale": "G36 の契約 fuzz。CI の database で pip から入れる（KN-55）"
+   "rationale": "G36 の契約 fuzz。CI の database で pip から入れる（K-35）"
   },
   "consumer_contract": "なし（段階 1。OpenAPI 生成型＋openapi-diff で代替）",
   "e2e": "Playwright",
@@ -692,7 +693,7 @@
     "後回しの決定を持つチケットが無い",
     "正本 ↔ テスト仕様の参照の不整合"
    ],
-   "owner_task": "KN-6",
+   "owner_task": "K-32",
    "job": "static"
   },
   {
@@ -837,7 +838,7 @@
     "API の関門をチケットが書いていない",
     "無い画面・API・関門を書いている"
    ],
-   "owner_task": "KN-6",
+   "owner_task": "K-32",
    "job": "static"
   },
   {
@@ -1068,14 +1069,14 @@
   },
   {
    "id": 52,
-   "name": "ローカルの CI（dagci）の段が GitHub の検査と 1 対 1（ci.yaml の段は v3-gate.yml から導く・外す job は理由つき・KN-124）",
+   "name": "ローカルの CI（dagci）の段が GitHub の検査と 1 対 1（ci.yaml の段は v3-gate.yml から導く・外す job は理由つき・K-47）",
    "script": "python3 scripts/ci/ci_stages.py --check",
    "job": "spec",
    "blocking": true
   },
   {
    "id": 48,
-   "name": "新しい画面の実ブラウザの試験と、押した証拠（本番の形で組み立てた画面の上・行 ID の試験が全部の行で通る・記録なし・KN-109）",
+   "name": "新しい画面の実ブラウザの試験と、押した証拠（本番の形で組み立てた画面の上・行 ID の試験が全部の行で通る・記録なし・K-36）",
    "script": "BASE_URL=http://127.0.0.1:3124 pnpm --filter @kaname/web e2e:k && python3 scripts/ci/op_gate.py --spec 07_qa/test-specs/k --tickets 11_tickets/tickets.json --all",
    "job": "web",
    "blocking": true

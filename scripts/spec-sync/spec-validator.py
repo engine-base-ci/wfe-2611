@@ -625,7 +625,7 @@ def tier_f_downstream_coverage(
     import subprocess as _sp
 
     for spec in specs:
-        # command で書いた行（Kaname の書き方・KN-50）：その検査を走らせ、終わりのコードで判定する
+        # command で書いた行（Kaname の書き方・K-34）：その検査を走らせ、終わりのコードで判定する
         if spec.get("command") and not spec.get("id_source"):
             r = _sp.run(spec["command"], shell=True, cwd=project_root, capture_output=True, text=True)
             ok = r.returncode == 0

@@ -69,7 +69,7 @@ POLICIES: dict[str, list[dict]] = {
     "class_axes": workspace_master("class_axes"),
     "class_values": workspace_master("class_values"),
     "handover_rules": workspace_master("handover_rules"),
-    # ---- チケットのまわり（KN-39）
+    # ---- チケットのまわり（K-4）
     "test_specs": child_of_ticket("test_specs"),
     "checks": child_of_ticket("checks", "insert"),                       # 検査の結果は追記だけ
     "ticket_decisions": child_of_ticket("ticket_decisions", "insert,update"),   # 決定は消さない（改めるだけ・D-125.63）
@@ -130,7 +130,7 @@ POLICIES: dict[str, list[dict]] = {
          "rationale": "確定・やめるは取り込んだ人だけ", "source": ["D-128.85", "D-128.119"]},
         ops_read("ticket_imports"),
     ],
-    # ---- ナレッジ（KN-40・D-128.50〜.52）
+    # ---- ナレッジ（K-5・D-128.50〜.52）
     "knowledge_pages": [
         {"name": "knowledge_pages_read", "operation": "select", "role": "member",
          "predicate": f"tenant_id = {T} AND (owner_member_id = {U} OR (NOT is_personal AND scope_id = ANY(visible_scopes({U})) AND (state <> 'draft' OR has_permission({U}, 'knowledge_pages', scope_id, 'edit'))))",
@@ -161,7 +161,7 @@ POLICIES: dict[str, list[dict]] = {
          "rationale": "元のページに書ける人", "source": ["D-128.52"]},
         ops_read("knowledge_links"),
     ],
-    # ---- 取引先（KN-41・D-125.121〜.124・D-128.53・D-128.54）。社内の人（member）と取引先の人（client）で分ける
+    # ---- 取引先（K-6・D-125.121〜.124・D-128.53・D-128.54）。社内の人（member）と取引先の人（client）で分ける
     "clients": [
         {"name": "clients_read", "operation": "select", "role": "member",
          "predicate": f"tenant_id = {T} AND (visibility = 'all' OR owner_member_id = {U} OR app.client_in_my_groups(id) OR has_permission({U}, 'clients', NULL, 'edit'))",
@@ -220,7 +220,7 @@ POLICIES: dict[str, list[dict]] = {
          "rationale": "頼まれた本人が OK／直してほしい を返す", "source": ["D-125.124"]},
         ops_read("acceptances"),
     ],
-    # ---- ワークスペースと人（KN-42・D-125.115・D-125.150・D-125.162・D-128.92・D-128.93・D-128.97）
+    # ---- ワークスペースと人（K-7・D-125.115・D-125.150・D-125.162・D-128.92・D-128.93・D-128.97）
     "tenant_memberships": [
         {"name": "tenant_memberships_read", "operation": "select", "role": "member",
          "predicate": f"tenant_id = {T} AND (member_id = {U} OR has_permission({U}, 'members', NULL, 'edit'))",
@@ -259,7 +259,7 @@ POLICIES: dict[str, list[dict]] = {
         {"name": "bridge_pairing_codes_self", "operation": "select,insert", "role": "member", "predicate": f"tenant_id = {T} AND member_id = {U}",
          "rationale": "接続コードは本人だけが作る・見る（コードそのものは持たない）。使うのは関門の関数", "source": ["D-128.93"]},
     ],
-    # ---- 分身の「覚えたいこと」（KN-43・D-128.41〜.43）。運営の表（operations・ops_plan_proposals）は形からの当てはめ（運営だけ）のまま
+    # ---- 分身の「覚えたいこと」（K-8・D-128.41〜.43）。運営の表（operations・ops_plan_proposals）は形からの当てはめ（運営だけ）のまま
     "learning_candidates": [
         {"name": "learning_candidates_read", "operation": "select", "role": "member",
          "predicate": f"tenant_id = {T} AND (owner_member_id = {U} OR ((state = 'needs_ok' OR decided_by = {U}) AND has_permission({U}, 'learning_candidates', NULL, 'edit')))",
@@ -271,7 +271,7 @@ POLICIES: dict[str, list[dict]] = {
          "rationale": "会社のルールとぶつかるものに OK を出すのは管理者（OK を待つ間か、その決め直しだけ）", "source": ["D-128.43"]},
         ops_read("learning_candidates"),
     ],
-    # ---- 分身との会話・記憶・問い合わせ（KN-54 で見つけた穴・2026-11-03）：本人のものは本人だけ。管理者・マネージャーでも中身は見ない
+    # ---- 分身との会話・記憶・問い合わせ（K-17 で見つけた穴・2026-11-03）：本人のものは本人だけ。管理者・マネージャーでも中身は見ない
     #      前の形（ER の印からの当てはめ）は「同じグループなら読める・グループの権限があれば他人のものも書ける」になっていた
     "conversations": [
         {"name": "conversations_self_read", "operation": "select", "role": "member",
@@ -304,7 +304,7 @@ POLICIES: dict[str, list[dict]] = {
         {"name": "inquiries_ops_write", "operation": "update", "role": "ops", "predicate": f"current_setting('app.role', true) = 'ops' AND tenant_id = {T}",
          "rationale": "運営が対応して書く行（assignee_ops_member_id）。会社の 1 社の中で・証跡に残す", "source": ["D-075", "D-077.1"]},
     ],
-    # ---- 承認（KN-44・D-128.86・D-128.87・D-128.89）：承認する人・頼んだ人・担当者（チケットを読める人）・マネージャー
+    # ---- 承認（K-9・D-128.86・D-128.87・D-128.89）：承認する人・頼んだ人・担当者（チケットを読める人）・マネージャー
     "approvals": [
         {"name": "approvals_read", "operation": "select", "role": "member",
          "predicate": f"tenant_id = {T} AND (scope_id = ANY(visible_scopes({U})) OR approver_member_id = {U} OR requested_by = {U} OR (ticket_id IS NOT NULL AND app.ticket_visible(ticket_id)))",
@@ -317,14 +317,14 @@ POLICIES: dict[str, list[dict]] = {
          "rationale": "承認する人が決める・頼んだ人が取り下げる・そのグループで承認を扱える人（マネージャー）が上へ回す。行は消さない", "source": ["D-128.86", "D-128.87"]},
         ops_read("approvals"),
     ],
-    # 業務の型（KN-44・D-126.2）：第1フェーズは運営の全社向けだけ。会社の人は全社向けを読んでチケットで選ぶ（D-126.13）
+    # 業務の型（K-9・D-126.2）：第1フェーズは運営の全社向けだけ。会社の人は全社向けを読んでチケットで選ぶ（D-126.13）
     "skills": [
         {"name": "skills_catalog_read", "operation": "select", "role": "authenticated", "predicate": "tenant_id = app.ops_tenant_id() AND scope_id IS NULL",
          "rationale": "運営が全社向けに出す業務の型。どの会社の人も同じものを読んで選ぶ（中の作りは見せない・D-126.21 は API で絞る）", "source": ["D-126.2", "D-126.13", "D-126.23"]},
         {"name": "skills_ops_all", "operation": "all", "role": "ops", "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
          "rationale": "運営の業務の型は運営が作る（会社・層・個人の型は節目②・KN-21）", "source": ["D-126.4", "D-126.23"]},
     ],
-    # ---- 中を見るの許可（KN-45・D-125.128・D-128.68・D-128.108）：運営の人が理由を書いて開く。会社は誰がいつ見たかを見られる
+    # ---- 中を見るの許可（K-10・D-125.128・D-128.68・D-128.108）：運営の人が理由を書いて開く。会社は誰がいつ見たかを見られる
     "support_access_grants": [
         {"name": "support_access_grants_tenant_view", "operation": "select", "role": "member",
          "predicate": f"tenant_id = {T} AND has_permission({U}, 'support_access_grants', NULL, 'view')",
@@ -333,7 +333,7 @@ POLICIES: dict[str, list[dict]] = {
          "predicate": f"current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM ops_members om WHERE om.id = support_access_grants.ops_member_id AND om.member_id = {U} AND 'peek' = ANY(om.caps) AND om.revoked_at IS NULL AND om.deleted_at IS NULL)",
          "rationale": "「中を見る」ができる運営の人が、自分の許可だけを開く・見る・閉じる（理由・1 時間は行の決まりで守る）", "source": ["D-128.68", "D-128.70"]},
     ],
-    # ---- 既にある表を契約から使う（KN-46・D-128.93・D-128.119）
+    # ---- 既にある表を契約から使う（K-11・D-128.93・D-128.119）
     # PC の仕事と出来事は本人だけ（同じグループの人にも他人の PC の仕事を見せない）。PC の印（device）は表を直接読まず、関門の関数（app.bridge_*）だけを通る
     "bridge_jobs": [
         {"name": "bridge_jobs_self_read", "operation": "select", "role": "member", "predicate": f"tenant_id = {T} AND member_id = {U}",
@@ -352,7 +352,7 @@ POLICIES: dict[str, list[dict]] = {
     # パスキーはログインの部品（Better Auth）の側に置き、業務の表からは読めない（D-128.119）。public に表を作らない。作っても誰も読めない
     "passkeys": [{"name": "passkeys_no_app_access", "operation": "select", "role": "member", "predicate": "false",
                   "rationale": "パスキーはログインの部品の側（kaname_auth）。アプリの役からは読めない。自分の設定の一覧はログインの部品の口が出す（D-128.119）", "source": ["D-128.119"]}],
-    # 役割の束の既定（KN-53・D-125.117）：製品のマスタ。ログイン済みなら読める（自分の役割で何ができるかを画面に出す）。書くのは migration だけ
+    # 役割の束の既定（K-16・D-125.117）：製品のマスタ。ログイン済みなら読める（自分の役割で何ができるかを画面に出す）。書くのは migration だけ
     "role_bundle_defaults": [{"name": "role_bundle_defaults_all_read", "operation": "select", "role": "authenticated", "predicate": "true",
                               "rationale": "製品の既定の束。どの会社の人にも同じものを見せる", "source": ["D-125.117"]}],
     # 登録の保留（ログインの前）。表は kaname_auth の側にあり、登録の口（auth-ext）だけが読み書きする。アプリの役からは誰も読めない

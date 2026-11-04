@@ -1,4 +1,4 @@
-/* 新しい画面の部品の見た目（KN-104・D-128.78）。値は全部 --k-*（04_design/gen_tokens.py --web が正本から作る）。
+/* 新しい画面の部品の見た目（K-24・D-128.78）。値は全部 --k-*（04_design/gen_tokens.py --web が正本から作る）。
    ここに生の色・文字の大きさ・角丸を書かない（apps/web/test/k-raw-values.test.ts が見張る）。
    操作の状態（hover / focus / active / disabled）は部品ごとに同じ書き方をする */
 
@@ -449,7 +449,7 @@ textarea.k-input {
   }
 }
 
-/* ---- 4 つの状態とエラーの 1 件（KN-106）---- */
+/* ---- 4 つの状態とエラーの 1 件（K-26）---- */
 .k-state {
   display: flex;
   flex-direction: column;

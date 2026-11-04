@@ -1043,7 +1043,7 @@ for (const [key, aspects] of Object.entries(MAP.ep)) {
         };
         const r = await call(A.app, e, w, o);
         const b = await json(r);
-        // 本人の口（self）の作成は、誰でも自分の分は作れる。403 の場面は「他人を持ち主にして作れない」：作れても持ち主は呼んだ人（KN-54）
+        // 本人の口（self）の作成は、誰でも自分の分は作れる。403 の場面は「他人を持ち主にして作れない」：作れても持ち主は呼んだ人（K-17）
         if (e.kind === "create" && e.perm.word === "self") {
           if (r.status === 201) {
             const d = b["data"] as Record<string, unknown>;
@@ -1052,7 +1052,7 @@ for (const [key, aspects] of Object.entries(MAP.ep)) {
             return;
           }
         }
-        // 本人のものの表（会話・記憶など）は、他人の行が見えない（読める＝0 行）。見えない行は 404（存在を漏らさない・KN-54）
+        // 本人のものの表（会話・記憶など）は、他人の行が見えない（読める＝0 行）。見えない行は 404（存在を漏らさない・K-17）
         const hidden = readable === "0";
         expect(r.status, `${w}（担当者がその行を読める＝${readable} 行）→ ${JSON.stringify(b)}`).toBe(
           hidden ? 404 : 403,

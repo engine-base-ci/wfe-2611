@@ -1,5 +1,5 @@
 // AWS SDK の中の @smithy/core（3.33〜3.38.0）に、独自のログの出し方を差し込んだときの機密の伏せ方の不具合がある（aws-sdk-js-v3 #8393）。
-//   直った版（3.38.1）が出て 21 日を過ぎて上げられるまで（D-128.124）（KN-119・2026-11-20 以降）、S3 の部品にログの出し方を差し込まない。差し込んだら赤
+//   直った版（3.38.1）が出て 21 日を過ぎて上げられるまで（D-128.124）（K-43・2026-11-20 以降）、S3 の部品にログの出し方を差し込まない。差し込んだら赤
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -8,7 +8,7 @@ import { s3Client } from "../src/s3.js";
 
 const SRC = readFileSync(join(dirname(fileURLToPath(import.meta.url)), "..", "src", "s3.ts"), "utf8");
 
-describe("S3 の部品にログの出し方を差し込まない（KN-119）", () => {
+describe("S3 の部品にログの出し方を差し込まない（K-43）", () => {
   it("s3.ts は logger を渡さない", () => {
     expect(SRC).not.toMatch(/\blogger\s*:/);
   });

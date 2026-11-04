@@ -1,4 +1,4 @@
-// 新しい部品の操作（KN-104）：キーボードだけで使える・読み上げに名前と状態が出る・暗いテーマで色が替わる。/dev/k が的
+// 新しい部品の操作（K-24）：キーボードだけで使える・読み上げに名前と状態が出る・暗いテーマで色が替わる。/dev/k が的
 import { expect, test, type Page } from "@playwright/test";
 
 const open = async (page: Page, width = 1024) => {

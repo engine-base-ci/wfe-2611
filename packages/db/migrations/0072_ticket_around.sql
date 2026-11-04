@@ -1,8 +1,8 @@
--- 0072 チケットのまわりの表（KN-39・D-125.17・D-125.29・D-125.40・D-125.63・D-125.70・D-125.79・D-128.80・D-128.83・D-128.85・D-128.115・D-128.119）
+-- 0072 チケットのまわりの表（K-4・D-125.17・D-125.29・D-125.40・D-125.63・D-125.70・D-125.79・D-128.80・D-128.83・D-128.85・D-128.115・D-128.119）
 --   テスト仕様（test_specs）と検査の結果（checks）・決定（ticket_decisions）・スレッド（ticket_messages）・参照の記録（reference_logs）・
 --   つながり（ticket_links：関連・派生元の 2 つだけ）・渡す（ticket_handovers）・保存した検索条件（saved_views）・CSV の取り込み（ticket_imports）。
 --   行の守りは policies/0072_ticket_around.sql（gen_rls.py ← 05_flow/rls_policies.py）。
---   渡された相手が答えるまでそのチケットを読めるよう、app.ticket_involved を作り直す（KN-38 の申し送り）。
+--   渡された相手が答えるまでそのチケットを読めるよう、app.ticket_involved を作り直す（K-3 の申し送り）。
 --   取り込んだ下書きのチケットは、確定するまで取り込んだ人だけが見て直せる（D-128.119）。
 
 -- ---------------------------------------------------------------- テスト仕様と検査（D-125.17・D-125.79）
@@ -242,7 +242,7 @@ do $$ declare t text; begin
 end $$;
 
 -- ---------------------------------------------------------------- 読める・書けるの関数を作り直す
--- 関わっている人：担当者に加え、渡された相手が答えるまで（D-128.115）。承認する人は KN-44 で足す
+-- 関わっている人：担当者に加え、渡された相手が答えるまで（D-128.115）。承認する人は K-9 で足す
 create or replace function app.ticket_involved(tid uuid, uid uuid) returns boolean language sql stable security definer set search_path = public, app as $$
   select exists (
     select 1 from ticket_handovers h

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""生成物が最新か（D-128.123・KN-111）。目録は scripts/ci/generated.json。
+"""生成物が最新か（D-128.123・K-38）。目録は scripts/ci/generated.json。
 
   python3 scripts/ci/generated_gate.py            作り手を順に全部回し、作る前と後で中身が変わった生成物を赤にする
   python3 scripts/ci/generated_gate.py --selftest わざと古くした生成物を見つけられるか（検査が働いているか）
@@ -18,7 +18,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 CFG = json.load(open(os.path.join(ROOT, "scripts/ci/generated.json"), encoding="utf-8"))
 DATE = re.compile(rb"\d{4}-\d{2}-\d{2}(T[\d:.]+Z?)?")
 MARK = re.compile(r"生成物|機械生成|手で直さない|手で書かない|自動生成|が生成|から生成")
-SKIP_PREFIX = ("scripts/", ".qa/", ".spec-sync/", "11_tickets/KN-", ".claude/")
+SKIP_PREFIX = ("scripts/", ".qa/", ".spec-sync/", "11_tickets/K-", ".claude/")
 CODE_EXT = (".py", ".mjs", ".js")
 
 
@@ -86,7 +86,7 @@ def run_all(files: list[str]) -> tuple[dict[str, list[str]], list[str]]:
 
 
 def coverage(files: list[str]) -> list[str]:
-    # まだ git に入れていないファイルも見る（入れる前に回して漏れた・KN-112）
+    # まだ git に入れていないファイルも見る（入れる前に回して漏れた・K-29）
     files = sorted(set(files) | untracked())
     outs = [o for g in CFG["generators"] for o in g["outputs"]]
     outs += [o for c in CFG.get("checked_elsewhere", []) for o in c["outputs"]]

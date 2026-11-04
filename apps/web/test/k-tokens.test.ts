@@ -1,4 +1,4 @@
-// 新しい画面のトークンと部品（KN-104）
+// 新しい画面のトークンと部品（K-24）
 //   ・トークン（styles/k-tokens.css）は正本 DESIGN-kaname.md から作ったものと同じ（手で直していない）。明るい・暗いともコントラスト AA 以上
 //   ・部品（components/k）に生の色・文字の大きさ・角丸・書体が無い。読んでいる --k-* は全部ある（打ち間違いで色が消えない）
 //   ・暗いテーマは明るいテーマと同じ色の名前を全部持つ
@@ -45,7 +45,7 @@ function rawValues(src: string): string[] {
   return out;
 }
 
-describe("トークン（KN-104）", () => {
+describe("トークン（K-24）", () => {
   // 正本どおりか・コントラストは CI の G37（python3 04_design/gen_tokens.py --web --check）が見る。ここは手で直していない印だけ
   it("styles/k-tokens.css は生成物（手で書かない）", () => {
     expect(tokens.startsWith("/* DESIGN-kaname.md から機械生成。手で書かない（04_design/gen_tokens.py --web")).toBe(
@@ -64,7 +64,7 @@ describe("トークン（KN-104）", () => {
   });
 });
 
-describe("部品に生の値が無い（KN-104・design_gate の D1〜D4 と同じ考え）", () => {
+describe("部品に生の値が無い（K-24・design_gate の D1〜D4 と同じ考え）", () => {
   for (const { f, src } of parts) {
     it(`${f}：生の色・文字の大きさ・角丸・書体が無い`, () => {
       expect(rawValues(src)).toEqual([]);
@@ -96,7 +96,7 @@ describe("見た目の切り替え（D-128.55）", () => {
   });
 });
 
-describe("書体が本当に読み込まれる（D-128.123・KN-111：名前の指定だけで通さない）", () => {
+describe("書体が本当に読み込まれる（D-128.123・K-38：名前の指定だけで通さない）", () => {
   const layout = readFileSync(join(WEB, "app/layout.tsx"), "utf8");
   const fam = /--k-font:\s*"([^"]+)"/.exec(tokens)?.[1] ?? "";
   it("画面の根（layout.tsx）が書体の部品を読み込み、その部品の書体の名前が --k-font に入っている", () => {

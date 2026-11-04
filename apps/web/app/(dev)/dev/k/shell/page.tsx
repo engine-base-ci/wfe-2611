@@ -3,7 +3,7 @@ import { THEME_COOKIE, parseTheme } from "@/lib/theme";
 import type { RoleId } from "@/lib/nav";
 import { ShellDemo } from "./demo";
 
-// 新しい外枠の見本（KN-105）。?role=R1〜R6 で役割を替える。?built=all で全部の画面を「作った」として見る
+// 新しい外枠の見本（K-25）。?role=R1〜R6 で役割を替える。?built=all で全部の画面を「作った」として見る
 export default async function KShellPage({
   searchParams,
 }: {

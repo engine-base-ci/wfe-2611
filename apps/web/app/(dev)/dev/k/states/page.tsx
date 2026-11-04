@@ -1,6 +1,6 @@
 import { States } from "./states";
 
-// 4 つの状態とエラーの画面の見本（KN-106）。?page=E-PAGE-001 で画面いっぱいのエラー、?boom=1 で描いている途中で落とす
+// 4 つの状態とエラーの画面の見本（K-26）。?page=E-PAGE-001 で画面いっぱいのエラー、?boom=1 で描いている途中で落とす
 export default async function KStatesPage({
   searchParams,
 }: {

@@ -14,7 +14,7 @@ export function createSessionResolver(auth: Auth, appPool: pg.Pool) {
   return async (headers: Headers): Promise<Resolved | null> => {
     const s = await auth.api.getSession({ headers });
     if (!s) return null;
-    // セッションの見張り（KN-57・D-125.140・D-128.120）：操作が無い 12 時間・最長 7 日・国か端末が変わったら閉じて 401。
+    // セッションの見張り（K-20・D-125.140・D-128.120）：操作が無い 12 時間・最長 7 日・国か端末が変わったら閉じて 401。
     //   同じ国の中で IP だけ変わったら記録だけ（security_events）。生きていれば最後に見た時刻を進める
     const alive = await appPool.query<{ session_id: string; member_id: string; tenant_id: string }>(
       "select * from app.session_check($1, $2, $3, $4)",
@@ -22,7 +22,7 @@ export function createSessionResolver(auth: Auth, appPool: pg.Pool) {
     );
     const row = alive.rows[0];
     if (!row) return null; // 失効済み・会社に属していない・人が抜けた・見張りで閉じた
-    // 直前の本人確認の時刻（KN-51）。入口が 15 分以内かを見る
+    // 直前の本人確認の時刻（K-14）。入口が 15 分以内かを見る
     const su = await appPool.query<{ at: Date | null }>("select app.session_step_up_at($1) as at", [s.session.id]);
     return {
       ctx: { tenantId: row.tenant_id, userId: row.member_id, role: "member", stepUpAt: su.rows[0]?.at ?? null },

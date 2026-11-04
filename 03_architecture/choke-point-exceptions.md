@@ -28,9 +28,9 @@
 | X-011 | **C5 プロセス起動** | `apps/bridge/src/` | 本人のサブスクの公式 CLI（claude）・専用ブラウザ（playwright-mcp を node で）・配布物の入れ替え（sh／ditto）を起こすのが Bridge の機能そのもの（D-055・D-119） | 起こす実体は `proc.ts`／`runner.ts`／`install-claude.ts`／`update.ts` に閉じ、引数は設定と目録から組む（利用者由来の文字列をコマンドにしない）。完了信号（result）を出さずに終わった CLI は成功にしない（G-15・runner.test）。関門 C5 の中で守るべき「隔離・完了信号・タイムアウト・証跡」は Bridge の中で同じことをする | 恒久 | 有効 |
 | X-012 | **C4 ファイル** | `apps/web/app/(dev)/dev/mail/page.tsx` | 開発の受信箱（API のログからメールのリンクを拾う画面）。本番には出ない（(dev) の枠は `WEB_ENV.isProduction && !devPages` で 404） | 読むのは `KANAME_API_LOG` の 1 ファイルだけ・書かない・利用者由来のパスを受け取らない | 恒久 | 有効 |
 | X-002 | **C8 秘密** | `packages/config/` | 起動時のブート設定（DB 接続文字列等）は業務文脈が無く、vault より前に必要 | 起動時に 1 回だけ読み、型付きオブジェクトとして配る。**顧客の資格情報は絶対に扱わない**（CI で検査） | 恒久 | 有効 |
-| X-013 | **C8 秘密** | `apps/bridge/src/env.ts` | Bridge は利用者の PC で動く別のアプリで、サーバーの起動設定（packages/config）を持たない。Bridge が自分で読む環境（基点の URL・PATH・SHELL など）はこのファイルの `bridgeEnv()` からだけ読む（KN-117） | 読む名前は `BRIDGE_ENV_KEYS` に型で並べる。子に渡す環境は `childEnv` が許可リストに絞り、モデルの鍵（ANTHROPIC_ 等）は落とす（env.test.ts）。ほかのファイルで process.env を読めば G13 が赤 | 恒久 | 有効 |
-| X-014 | **C8 秘密** | `apps/bridge/src/guard.ts#HOOK_SOURCE` | 定数 HOOK_SOURCE の中身は、Bridge が書き出して Claude Code が別のプロセスで起こす子のプログラム（直前のフック）。子は Bridge の入口を読み込めず、渡された環境を読むのが機能そのもの（KN-117） | 渡す環境は Bridge が `childEnv` で絞り、Bridge が決めた KANAME_* だけを足す。G13 はこの定数の文字列の範囲だけを見ず、範囲の外で読めば赤（env_audit の自己試験）。ファイル全体は除かない | 恒久 | 有効 |
-| X-015 | **C8 秘密** | `apps/bridge/src/kaname-tools.ts#MCP_SERVER_SOURCE` | 定数 MCP_SERVER_SOURCE の中身は、Bridge が書き出して Claude Code が別のプロセスで起こす子のプログラム（Kaname の道具のサーバー）。理由は X-014 と同じ（KN-117） | X-014 と同じ | 恒久 | 有効 |
+| X-013 | **C8 秘密** | `apps/bridge/src/env.ts` | Bridge は利用者の PC で動く別のアプリで、サーバーの起動設定（packages/config）を持たない。Bridge が自分で読む環境（基点の URL・PATH・SHELL など）はこのファイルの `bridgeEnv()` からだけ読む（K-42） | 読む名前は `BRIDGE_ENV_KEYS` に型で並べる。子に渡す環境は `childEnv` が許可リストに絞り、モデルの鍵（ANTHROPIC_ 等）は落とす（env.test.ts）。ほかのファイルで process.env を読めば G13 が赤 | 恒久 | 有効 |
+| X-014 | **C8 秘密** | `apps/bridge/src/guard.ts#HOOK_SOURCE` | 定数 HOOK_SOURCE の中身は、Bridge が書き出して Claude Code が別のプロセスで起こす子のプログラム（直前のフック）。子は Bridge の入口を読み込めず、渡された環境を読むのが機能そのもの（K-42） | 渡す環境は Bridge が `childEnv` で絞り、Bridge が決めた KANAME_* だけを足す。G13 はこの定数の文字列の範囲だけを見ず、範囲の外で読めば赤（env_audit の自己試験）。ファイル全体は除かない | 恒久 | 有効 |
+| X-015 | **C8 秘密** | `apps/bridge/src/kaname-tools.ts#MCP_SERVER_SOURCE` | 定数 MCP_SERVER_SOURCE の中身は、Bridge が書き出して Claude Code が別のプロセスで起こす子のプログラム（Kaname の道具のサーバー）。理由は X-014 と同じ（K-42） | X-014 と同じ | 恒久 | 有効 |
 
 **例外件数：15（恒久 15 / 期限付き 0）**
 

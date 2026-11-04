@@ -1,4 +1,4 @@
-// 契約 fuzz（G36・KN-55）の的：実 Postgres（migration＋場合表の種）＋偽のセッション解決（Bearer boss／staff／ops）を HTTP で立てる。
+// 契約 fuzz（G36・K-35）の的：実 Postgres（migration＋場合表の種）＋偽のセッション解決（Bearer boss／staff／ops）を HTTP で立てる。
 //   認証そのものは packages/auth の試験が持つ。ここは「契約どおりの入力でも、契約の外の入力でも、サーバーが落ちない（500 を返さない）・返す形が契約どおり」を見る
 import { serve } from "@hono/node-server";
 import { writeFileSync } from "node:fs";

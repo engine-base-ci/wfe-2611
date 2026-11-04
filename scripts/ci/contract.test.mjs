@@ -8,7 +8,7 @@ import { gen, check, endpoints } from "./contract.mjs";
 
 const root = mkdtempSync(join(tmpdir(), "kaname-contract-"));
 for (const d of ["08_api", "09_features", "07_tasks", "apps/api/src/routes", "scripts/ci"]) mkdirSync(join(root, d), { recursive: true });
-// 行の決まり（KN-52）は置き場の scripts/ci/row_rules.mjs から読む（契約の hash の元にも入る）。本物を写す
+// 行の決まり（K-15）は置き場の scripts/ci/row_rules.mjs から読む（契約の hash の元にも入る）。本物を写す
 cpSync(join(dirname(fileURLToPath(import.meta.url)), "row_rules.mjs"), join(root, "scripts/ci/row_rules.mjs"));
 const yamlV1 = `openapi: 3.1.0\npaths:\n  /api/v1/things:\n    get:\n      operationId: listThings\n      responses:\n        "200":\n          content:\n            application/json:\n              schema:\n                properties:\n                  id:\n                  name:\n    post:\n      operationId: createThing\n      requestBody:\n        content:\n          application/json:\n            schema:\n              required: [name]\n`;
 writeFileSync(join(root, "08_api/openapi.yaml"), yamlV1);

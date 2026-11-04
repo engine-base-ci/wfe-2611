@@ -1,4 +1,4 @@
-// 4 つの状態とエラーの画面（KN-106）：/dev/k/states が的。文言は正本（errors.json）の 1 件
+// 4 つの状態とエラーの画面（K-26）：/dev/k/states が的。文言は正本（errors.json）の 1 件
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";

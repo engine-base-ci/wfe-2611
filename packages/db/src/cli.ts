@@ -67,7 +67,7 @@ async function main(): Promise<number> {
     }
   }
   if (cmd === "columns") {
-    // 本物の DB の列（型・null を許すか）を書き出す／書き出しと合っているか確かめる（KN-55・G36）。
+    // 本物の DB の列（型・null を許すか）を書き出す／書き出しと合っているか確かめる（K-35・G36）。
     //   契約（05_flow/build_api.py）は、表の行の答えの形をこの書き出しから作る（ER の名前の規則と migration がずれても、契約は DB に合う）
     const [mode, file] = process.argv.slice(3).filter((x) => x !== "--");
     if ((mode !== "--out" && mode !== "--check") || !file) {

@@ -3,7 +3,7 @@
  "ops": {
   "stepUp": {
    "file": "apps/api/test/step_up.test.ts",
-   "reason": "本人確認の取り直しは、ログインの部品（Better Auth）の本物のセッションでパスワードを確かめる。偽のセッションでは確かめられない（KN-56）",
+   "reason": "本人確認の取り直しは、ログインの部品（Better Auth）の本物のセッションでパスワードを確かめる。偽のセッションでは確かめられない（K-19）",
    "covers": {
     "test_post_auth_step_up_ok": "正しいパスワードで時刻が付き",
     "test_post_auth_step_up_rejected_401": "パスワードが空なら 422・ログインしていなければ 401",

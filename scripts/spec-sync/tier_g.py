@@ -207,7 +207,7 @@ def main() -> int:
                              "status": "ok" if not bad else "ng"})
                 fails += [f"G4 {kind}: {x}" for x in bad]
             elif ck.get("command"):
-                # command で書いた検査（Kaname の書き方・KN-50）：走らせ、終わりのコードで判定する
+                # command で書いた検査（Kaname の書き方・K-34）：走らせ、終わりのコードで判定する
                 import subprocess as _sp
                 r = _sp.run(ck["command"], shell=True, cwd=root, capture_output=True, text=True)
                 rows.append({"check": "G4", "target": kind, "status": "ok" if r.returncode == 0 else "ng"})

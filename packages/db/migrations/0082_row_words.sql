@@ -1,4 +1,4 @@
--- 0082 行に結ぶ言葉の確かめ（KN-52・ZT4・D-128.88）
+-- 0082 行に結ぶ言葉の確かめ（K-15・ZT4・D-128.88）
 --   app.manages_scope(グループ)：呼んだ人が、そのグループ（か上のグループ）のマネージャーか、会社の管理者か。
 --   マネージャーは、グループの役割（scope_memberships.role = 'manager'）と、主の所属に行が無いときのワークスペースの役割（tenant_memberships.role）の両方を見る（役割の束 0080 と同じ決め方）。
 --   入口（apps/api/src/contract/op.ts の 4.1）が scripts/ci/row_rules.mjs の条件の中で使う。

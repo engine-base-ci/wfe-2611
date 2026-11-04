@@ -25,7 +25,7 @@ for tb in a.tables:
             # 運営の grant 検査は policy の中で support_access_grants を直接引くと自分の policy に再帰する → security definer の関数に寄せる（意味は entities.json と同じ）
             pred = re.sub(r"current_setting\('app\.role', true\) = 'ops' AND EXISTS \(SELECT 1 FROM " + re.escape(a.grant_table) + r" g WHERE g\.tenant_id = (\w+)\.tenant_id AND g\.expires_at > now\(\) AND g\.revoked_at IS NULL\)", r"app.ops_grant_ok(\1.tenant_id)", pred)
         elif p["role"] == "authenticated": pred = f"coalesce(current_setting('app.user_id', true), '') <> '' AND ({pred})"
-        elif p["role"] == "client": pred = f"app.client_ok() AND ({pred})"   # 取引先の人（クライアントの場所）：app.role='client' で、その会社の先方の人として登録されていること（KN-41）
+        elif p["role"] == "client": pred = f"app.client_ok() AND ({pred})"   # 取引先の人（クライアントの場所）：app.role='client' で、その会社の先方の人として登録されていること（K-6）
         for op in ops:
             name = f"{p['name']}_{op}" if len(ops) > 1 else p["name"]; out.append(f"drop policy if exists {name} on {tb};")
             if op == "all": out.append(f"create policy {name} on {tb} for all using ({pred}) with check ({pred});")

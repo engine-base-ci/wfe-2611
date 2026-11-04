@@ -1,8 +1,8 @@
 // 権限の試験（ゼロトラストの決まり ZT1・ZT2・ZT4・ZT10・D-128.112）。
 // 契約（@kaname/contracts の ENDPOINTS）と「誰が呼べるか」（08_api/endpoints.json の permission）を毎回読んで回すので、API が増えても古くならない。
 //   1) 役の段（いま実装済み）：ログインしていない・役が合わない人は、どの API も 401／403 で止まり、hooks（副作用）まで届かない
-//   2) 権限の言葉の段：admin・ops:<できること>・いつも要る本人確認は入口で（KN-51）。行に結ぶ言葉は :id の行を読む段で（KN-52）
-//   3) 一覧・作る口の行の絞り込み（RLS）と条件つきの本人確認は apps/api/test/authz_rows.test.ts（本物の DB・KN-54）
+//   2) 権限の言葉の段：admin・ops:<できること>・いつも要る本人確認は入口で（K-14）。行に結ぶ言葉は :id の行を読む段で（K-15）
+//   3) 一覧・作る口の行の絞り込み（RLS）と条件つきの本人確認は apps/api/test/authz_rows.test.ts（本物の DB・K-17）
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
@@ -161,7 +161,7 @@ describe("まだ作っていない口は止まる（fail-closed・D-128.113）",
   );
 });
 
-// 会社の段の言葉（KN-51）：入口で確かめる。行に結ぶ言葉は KN-52（:id の行を読む段）
+// 会社の段の言葉（K-14）：入口で確かめる。行に結ぶ言葉は K-15（:id の行を読む段）
 const RIGHT_ROLE: Record<EndpointDef["auth"], Role> = {
   public: "anonymous",
   member: "member",
@@ -171,7 +171,7 @@ const RIGHT_ROLE: Record<EndpointDef["auth"], Role> = {
 };
 const OLD = () => new Date(Date.now() - 16 * 60 * 1000); // 16 分前
 
-describe("権限の試験：会社の段の言葉（admin・運営のできること）と、いつも要る本人確認（KN-51）", () => {
+describe("権限の試験：会社の段の言葉（admin・運営のできること）と、いつも要る本人確認（K-14）", () => {
   const admins = ENDPOINTS.filter((e) => e.perm.word === "admin");
   it.each(admins.map((e) => [`${e.method} ${e.path}`, e] as const))(
     "%s：能力（%s）の無い人は 403 で、副作用に届かない。ある人は通る",
@@ -213,7 +213,7 @@ describe("権限の試験：会社の段の言葉（admin・運営のできる�
 });
 
 const ROW_WORDS = new Set(["self", "read", "write", "assignee", "approver", "recipient", "manager"]);
-describe("権限の試験：行に結ぶ言葉（KN-52・ZT4）", () => {
+describe("権限の試験：行に結ぶ言葉（K-15・ZT4）", () => {
   const withId = ENDPOINTS.filter((e) => ROW_WORDS.has(e.perm.word) && e.path.includes(":id"));
   it("行に結ぶ口で :id があるものは全部、どの表のどの条件で確かめるかを持つ（除外はパスキーだけ）", () => {
     expect(withId.filter((e) => !e.perm.row && !e.path.startsWith("/api/v1/me/passkeys")).map((e) => e.path)).toEqual(
@@ -236,7 +236,7 @@ describe("権限の試験：行に結ぶ言葉（KN-52・ZT4）", () => {
   );
 });
 
-// 一覧・作る口の行の絞り込みと条件つきの本人確認は、本物の DB の試験 apps/api/test/authz_rows.test.ts（KN-54）。まだの口は作るチケットの番号つきの it.todo
+// 一覧・作る口の行の絞り込みと条件つきの本人確認は、本物の DB の試験 apps/api/test/authz_rows.test.ts（K-17）。まだの口は作るチケットの番号つきの it.todo
 
 describe("道すじが別の口に吸われない（本物の登録の順・D-128.113）", () => {
   it("契約の全 API が、本物の登録の順で、自分の振る舞いに届く（/approvals/history が /approvals/:id に吸われない など）", async () => {

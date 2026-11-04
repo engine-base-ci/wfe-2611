@@ -40,7 +40,7 @@ function Inner({ theme }: { theme: Theme }) {
       }
     >
       <div style={{ padding: "var(--k-s-lg) var(--k-s-lg) 0" }}>
-        <Callout title="見本の画面">新しい画面は、この外枠と部品の上に作る（KN-108）</Callout>
+        <Callout title="見本の画面">新しい画面は、この外枠と部品の上に作る（K-28）</Callout>
         {q ? <p role="status">「{q}」を探す</p> : null}
       </div>
       <div style={{ padding: "var(--k-s-md) var(--k-s-lg) 0" }}>

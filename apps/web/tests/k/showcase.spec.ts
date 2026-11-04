@@ -1,4 +1,4 @@
-// 見本の画面（/dev/k/showcase）の操作：操作要素 1 つ＝仕様の 1 行（07_qa/test-specs/k/showcase.md）＝試験 1 本（KN-109）
+// 見本の画面（/dev/k/showcase）の操作：操作要素 1 つ＝仕様の 1 行（07_qa/test-specs/k/showcase.md）＝試験 1 本（K-36）
 //   新しい画面の試験はこの書き方（row(R["行 ID"], async (page) => …)）で書く
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";

@@ -1,4 +1,4 @@
-// 新しい外枠の操作（KN-105）：/dev/k/shell が的。?built=all で全部の画面を「作った」として見る
+// 新しい外枠の操作（K-25）：/dev/k/shell が的。?built=all で全部の画面を「作った」として見る
 import { expect, test, type Page } from "@playwright/test";
 
 const open = async (page: Page, width: number, q = "?built=all") => {

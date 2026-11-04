@@ -283,7 +283,7 @@ erDiagram
 | **`review_requests`** | `<common>` / `subject_type`（template / duty）/ `subject_id` / `anonymization_check jsonb` / `status_id`（pending / approved / rejected / returned）/ `reviewer_ops_member_id` / `decided_at` / `reason` | **★新設（D-027・D-074.4・D-077.3）。**会社が明示的に公開したものの審査。承認・却下は会社の詳細の「審査」で行う。公開時の出どころは業種名だけ |
 | **`ops_members`** | `<common>`（tenant_id＝運営）/ `member_id` / `ops_role_id`（support / billing / catalog / admin）/ `revoked_at` | **★新設（D-073.7・D-074.4）。**運営メンバーと権限。運営の権限も 誰に×何に×できること |
 | **`ops_audit_events`** | `<common>`（tenant_id＝運営）/ `ops_member_id` / `target_tenant_id` / `action` / `target_type` / `target_id` / `grant_id` / `payload jsonb` / `occurred_at` | **★新設（D-074.4・D-077.7）。追記専用。**運営が「どの会社に何をしたか」。同じ行を対象会社の `audit_events` にも書く（顧客が自分の証跡で見られる） |
-| **`security_events`** | `<common>` / `kind_id`（login_failed / key_revoked / suspicious_connection / mfa_reset / ip_changed（同じ国の中で IP だけ変わった・記録だけ）/ step_up / step_up_failed（本人確認の取り直し）← D-128.120・KN-56・KN-57）/ `member_id` / `ip_region` / `detail jsonb` / `occurred_at` | **★新設（D-075.6）。追記専用。**セキュリティの出来事。会社側「できること・できないこと」と運営側「運営の証跡」の両方から読む |
+| **`security_events`** | `<common>` / `kind_id`（login_failed / key_revoked / suspicious_connection / mfa_reset / ip_changed（同じ国の中で IP だけ変わった・記録だけ）/ step_up / step_up_failed（本人確認の取り直し）← D-128.120・K-19・K-20）/ `member_id` / `ip_region` / `detail jsonb` / `occurred_at` | **★新設（D-075.6）。追記専用。**セキュリティの出来事。会社側「できること・できないこと」と運営側「運営の証跡」の両方から読む |
 
 ---
 
@@ -471,7 +471,7 @@ erDiagram
 
 
 ワークスペースの管理で足す列（D-128.95〜.98）：
-- `tenants`：`logo_ref` / `client_visibility_default`（取引先を見られる人の既定）/ `request_routing`（依頼の届け先：分身が振り分ける）/ `deletion_requested_at`（消す手続き。14 日は取り消せる・`account_events(kind=company_close)` と対） / `session_idle_hours`（操作が無いと切る時間・既定 12・1〜12）/ `session_max_days`（最長・既定 7・1〜7。管理者は短くできるが長くはできない ← D-125.140・KN-57）
+- `tenants`：`logo_ref` / `client_visibility_default`（取引先を見られる人の既定）/ `request_routing`（依頼の届け先：分身が振り分ける）/ `deletion_requested_at`（消す手続き。14 日は取り消せる・`account_events(kind=company_close)` と対） / `session_idle_hours`（操作が無いと切る時間・既定 12・1〜12）/ `session_max_days`（最長・既定 7・1〜7。管理者は短くできるが長くはできない ← D-125.140・K-20）
 - `permissions`：「誰ができるか」の 3 つ（プランと支払い・書き出す・ワークスペースを消す）は `abilities` に `billing` / `export` / `delete_workspace` を足して同じ表で持つ。個別に足す・外すも同じ表（`revoked_at`）
 - `members`：`suspended_at` / `suspended_by`（一時的に止める。入れなくなり分身も止まる。担当はそのまま）
 - `policies`：`kind`（守ること・上に回す）/ `escalate_when jsonb`（何のとき・条件）/ `escalate_to`（そのグループのマネージャー・決まった人・取引先の担当）。上に回す決まりも同じ表（D-128.87）

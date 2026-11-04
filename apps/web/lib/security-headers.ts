@@ -1,4 +1,4 @@
-// 画面の守りの見出し（ゼロトラストの決まり ZT11・KN-103・D-128.88）。全部の画面の応答に付ける（apps/web/middleware.ts）。
+// 画面の守りの見出し（ゼロトラストの決まり ZT11・K-23・D-128.88）。全部の画面の応答に付ける（apps/web/middleware.ts）。
 //   Content-Security-Policy：読み込んでよい先を Kaname の画面と API だけにする。スクリプトは要求ごとの nonce が付いたものだけ（Next.js が自分のスクリプトに付ける）
 //   frame-ancestors 'none'：ほかのサイトの中に Kaname の画面を埋め込ませない（クリックの横取りを防ぐ）
 //   Referrer-Policy：ほかのサイトへ移るとき、どの画面にいたか（チケットの番号など）を渡さない

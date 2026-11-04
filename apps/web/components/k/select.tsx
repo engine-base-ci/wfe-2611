@@ -1,5 +1,5 @@
 "use client";
-// 選ぶ（KN-104・Base UI Select）。キーボード（↑↓・Enter・文字で飛ぶ）と読み上げは Base UI に任せる
+// 選ぶ（K-24・Base UI Select）。キーボード（↑↓・Enter・文字で飛ぶ）と読み上げは Base UI に任せる
 import { Field } from "@base-ui/react/field";
 import { Select as S } from "@base-ui/react/select";
 import type { ReactNode } from "react";

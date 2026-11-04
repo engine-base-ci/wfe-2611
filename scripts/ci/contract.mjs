@@ -100,7 +100,7 @@ export function parseComponents(yaml) {
 }
 /** 行の確かめの元（row_rules.mjs と、write の条件に使う entities.json）。変われば生成物も作り直す */
 const rowSources = (root) => rulesSource(root) + (existsSync(join(root, "07_functional/entities.json")) ? readFileSync(join(root, "07_functional/entities.json"), "utf8") : "");
-// 元の中身の hash。作った日付（created_at・decided_at など）は伏せる：日付だけ変わっても生成物を作り直さない（D-128.123・KN-111）
+// 元の中身の hash。作った日付（created_at・decided_at など）は伏せる：日付だけ変わっても生成物を作り直さない（D-128.123・K-38）
 const hashOf = (s) =>
   createHash("sha256")
     .update(s.replace(/\d{4}-\d{2}-\d{2}(T[\d:.]+Z?)?/g, "D"))
@@ -110,7 +110,7 @@ const slug = (s) => s.replace(/^\/api\/v1\//, "").replace(/[{}:]/g, "").replace(
 const kindOf = (method, path) => (method === "GET" ? (path.includes("{") ? "get" : "list") : method === "POST" ? "create" : method === "DELETE" ? "delete" : "update");
 
 function zodOf(p) {
-  // null を許す列（DB で null 可・KN-55）は、入力でも null を受ける（PATCH で空に戻す）
+  // null を許す列（DB で null 可・K-35）は、入力でも null を受ける（PATCH で空に戻す）
   if (p.nullable) return `${zodOf({ ...p, nullable: false })}.nullable()`;
   if (p.type === "string" && p.format === "uuid") return "z.uuid()";
   if (p.type === "string" && p.format === "date-time") return "z.iso.datetime({ offset: true })";
@@ -124,7 +124,7 @@ function zodOf(p) {
   return "z.unknown()";
 }
 
-// 「誰が呼べるか」（08_api の permission）を、入口で確かめる形にする（KN-51）。
+// 「誰が呼べるか」（08_api の permission）を、入口で確かめる形にする（K-14）。
 //   word：言葉（admin・ops:<できること>・self など）／ target・ability：admin の能力（表と能力）／ scope：workspace（会社全体の権限）か any（どこかのグループで持てばよい）
 //   adminOnly：管理者の役割だけ（権限を個別に付けた人でも通さない）／ stepUp：always（いつも）・それ以外は条件つき（hooks が requireStepUp で確かめる）
 export function permOf(e, table, method) {
@@ -174,7 +174,7 @@ export function gen(root = ROOT) {
     if (row?.error) rowErrors.push(row.error);
     last.perm.row = row && !row.error ? row : null;
   }
-  // 行に結ぶ口は全部、どの表のどの列で確かめるかを持つ（KN-52）。無ければ生成を止める
+  // 行に結ぶ口は全部、どの表のどの列で確かめるかを持つ（K-15）。無ければ生成を止める
   if (rowErrors.length) throw new Error(`行の確かめが無い口 ${rowErrors.length} 本:\n  ${rowErrors.join("\n  ")}`);
   const body = `// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:${h}
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
@@ -197,7 +197,7 @@ export interface EndpointDef {
   errors: number[];
   acts: string[];
   screens: string[];
-  /** 誰が呼べるか（08_api の permission・KN-51）。入口が言葉ごとに確かめる（apps/api/src/contract/permissions.ts） */
+  /** 誰が呼べるか（08_api の permission・K-14）。入口が言葉ごとに確かめる（apps/api/src/contract/permissions.ts） */
   perm: {
     word: string;
     target: string | null;
@@ -206,7 +206,7 @@ export interface EndpointDef {
     adminOnly: boolean;
     cap: string | null;
     stepUp: string | null;
-    /** 行に結ぶ言葉の確かめ（KN-52・scripts/ci/row_rules.mjs）。:id の行を RLS の中で読み、見えなければ 404・sql が偽なら 403 */
+    /** 行に結ぶ言葉の確かめ（K-15・scripts/ci/row_rules.mjs）。:id の行を RLS の中で読み、見えなければ 404・sql が偽なら 403 */
     row: { table: string; sql: string } | null;
   };
 }
@@ -214,7 +214,7 @@ export const ENDPOINTS: readonly EndpointDef[] = ${JSON.stringify(eps, null, 2)}
 export const OPENAPI_HASH = "${h}";
 `;
   writeFileSync(join(root, OUT, "registry.ts"), body);
-  // 口ごとの型（画面の呼び手 apps/web/lib/api/call.ts が使う・KN-107）。手で書かない
+  // 口ごとの型（画面の呼び手 apps/web/lib/api/call.ts が使う・K-27）。手で書かない
   const typeNames = new Set([...types.matchAll(/^export type (\w+) =/gm)].map((x) => x[1]));
   const ty = (n) => (n && typeNames.has(n) ? `T.${n}` : "unknown");
   const opsSrc = [`// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:${h}`, `import type * as T from "./types.js";`, "",

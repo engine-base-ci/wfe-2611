@@ -1,5 +1,5 @@
 "use client";
-// ボタン（KN-104・正本 components.button-*）。1 画面に主ボタン（primary）は 1 つ。danger は取り消せない操作
+// ボタン（K-24・正本 components.button-*）。1 画面に主ボタン（primary）は 1 つ。danger は取り消せない操作
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 export type ButtonVariant = "primary" | "secondary" | "outlined" | "inverted" | "ghost" | "danger";

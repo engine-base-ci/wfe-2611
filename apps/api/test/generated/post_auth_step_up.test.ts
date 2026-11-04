@@ -1,5 +1,5 @@
 // 生成物（scripts/ci/gen_ears_tests.mjs ← 07_qa/test-plan/ears-test-mapping.json・ears-elsewhere.json）。手で直さない。POST /api/v1/auth/step-up
-// 本人確認の取り直しは、ログインの部品（Better Auth）の本物のセッションでパスワードを確かめる。偽のセッションでは確かめられない（KN-56）
+// 本人確認の取り直しは、ログインの部品（Better Auth）の本物のセッションでパスワードを確かめる。偽のセッションでは確かめられない（K-19）
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 

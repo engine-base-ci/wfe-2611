@@ -1,4 +1,4 @@
-// KN-42 ワークスペースと人（0075）と KN-43 分身と運営（0076）の行の守り。
+// K-7 ワークスペースと人（0075）と K-8 分身と運営（0076）の行の守り。
 //   兼務は見える範囲に入る・所属は本人と管理者だけ・規約の同意は本人の追記だけ・接続コードは本人だけで平文を入れない
 //   覚えたいことは本人だけ（会社の OK 待ちは管理者にも）・値段の案は自分で決められない（決められる人が 1 人のときだけ例外）
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
@@ -230,7 +230,7 @@ describe("値段の案（D-128.72）", () => {
       "insert into ops_plan_proposals (tenant_id, plan_id, reason, proposed_by) values ($1, $2, '原価が上がった', $3) returning id",
       [S.opsTenant, plan, m1],
     );
-    // 決められる人の数で変わる：caps の列（KN-45）が無い間は 0 人 → 例外にならない
+    // 決められる人の数で変わる：caps の列（K-10）が無い間は 0 人 → 例外にならない
     await expect(
       admin.query(
         "update ops_plan_proposals set state = 'decided', decided_at = now(), decided_by = proposed_by where id = $1",

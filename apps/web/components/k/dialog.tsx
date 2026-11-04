@@ -1,5 +1,5 @@
 "use client";
-// ダイアログ（KN-104・Base UI Dialog）。開くと中に動き、Esc で閉じ、閉じると押した所に戻る（Base UI が持つ）
+// ダイアログ（K-24・Base UI Dialog）。開くと中に動き、Esc で閉じ、閉じると押した所に戻る（Base UI が持つ）
 //   取り消せない操作の確かめは Confirm（主ボタンは danger・既定は「やめる」に動く）
 import { AlertDialog } from "@base-ui/react/alert-dialog";
 import { Dialog as D } from "@base-ui/react/dialog";

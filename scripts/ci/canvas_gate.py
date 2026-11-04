@@ -4,7 +4,7 @@
  CV2 boards の page が pages にある
  CV3 製品名は半角の Kaname だけ（「かなめ」「製品名：要」を使わない・AD-011 と同じ）
  CV4 第1フェーズの画面（flow.json の release v1）に、どれもキャンバスの絵がある。絵はどれも、どれか 1 つの画面か共通に入る
-     （対応表 04_design/canvas-screens.json・KN-121。ここが無いと、画面に絵があるかを誰も見ていなかった）"""
+     （対応表 04_design/canvas-screens.json・K-45。ここが無いと、画面に絵があるかを誰も見ていなかった）"""
 import glob, json, os, re, sys
 D = "04_design/canvas"
 C = json.load(open(f"{D}/canvas.json", encoding="utf-8"))

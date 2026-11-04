@@ -1,5 +1,5 @@
-// 権限の試験の残り（KN-54・ZT4）：一覧・作る口の「行の絞り込み」を、本物の Postgres（RLS あり）で確かめる。
-//   :id のある口は入口が行を読んで確かめる（KN-52・authz.test.ts）。:id の無い一覧・作る口は、RLS が絞る。ここはその絞り込みを口ごとに見る。
+// 権限の試験の残り（K-17・ZT4）：一覧・作る口の「行の絞り込み」を、本物の Postgres（RLS あり）で確かめる。
+//   :id のある口は入口が行を読んで確かめる（K-15・authz.test.ts）。:id の無い一覧・作る口は、RLS が絞る。ここはその絞り込みを口ごとに見る。
 //   ・作った口（入口が 501 で止めない口）：ほかの会社の行が返らない。本人の口（self）は、ほかの人の行も返らない。作った行は呼んだ人のもの
 //   ・まだの口：it.todo に、その口を作るチケットの番号を付けて残す（口を作ると、この試験が自動で本物になる）
 //   条件つきの本人確認（取り消せない承認・管理者として招く）も、口を作るチケットで本物になる
@@ -82,7 +82,7 @@ const listRows = async (e: EndpointDef) => {
   return ((await r.json()) as { data: { id: string; tenant_id?: string }[] }).data;
 };
 
-describe("権限の試験：一覧・作る口の行の絞り込み（KN-54・本物の DB）", () => {
+describe("権限の試験：一覧・作る口の行の絞り込み（K-17・本物の DB）", () => {
   it("一覧・作る口は全部、本物の試験か、作るチケットの付いた it.todo のどちらか", () => {
     expect(builtRest.length + todoRest.length + rest.filter((e) => ELSEWHERE.has(e.operationId)).length).toBe(
       rest.length,

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""dagci の段の一覧を、GitHub の v3-gate.yml（05_flow/build_testplan.py が作る）から導く（KN-124）。手で写さない。
+"""dagci の段の一覧を、GitHub の v3-gate.yml（05_flow/build_testplan.py が作る）から導く（K-47）。手で写さない。
 
   python3 scripts/ci/ci_stages.py        段の一覧を YAML で出す（ci.yaml の include から呼ぶ）
   python3 scripts/ci/ci_stages.py --check v3-gate.yml の検査の手順が、段にどれも 1 対 1 で入っているか（外す job は理由つき）
@@ -11,7 +11,7 @@ GitHub の job ごとの違いは、段の services・env・needs に写す:
   web      → 画面を本番の形で組み立てて立ち上げ、実ブラウザの試験を流す（組み立て・立ち上げ・試験を 1 つの段にまとめる）
 外す job（理由）:
   task-gate  task/ の枝の PR のときだけ動く（07_tasks のしまった仕組み）
-  e2e        staging の本物の環境が要る（D-128.119 の KN-110 で staging ができてから）
+  e2e        staging の本物の環境が要る（D-128.119 の K-37 で staging ができてから）
   auto-merge GitHub の取り込みの道具（dagci では pm_merge.sh が CI の緑を確かめて取り込む）
 """
 from __future__ import annotations
@@ -22,7 +22,7 @@ import yaml
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 WF = os.path.join(ROOT, ".github/workflows/v3-gate.yml")
 SKIP = {"task-gate": "task/ の枝の PR のときだけ動く（07_tasks のしまった仕組み）",
-        "e2e": "staging の本物の環境が要る（KN-110 で staging ができてから）",
+        "e2e": "staging の本物の環境が要る（K-37 で staging ができてから）",
         "auto-merge": "GitHub の取り込みの道具（dagci では pm_merge.sh が CI の緑を確かめて取り込む）"}
 SETUP = re.compile(r"^(pnpm install|pip install pyyaml$|pnpm --filter @kaname/web exec playwright install|pnpm --filter @kaname/web build:test$)")
 DB_URL = "postgres://postgres:postgres@{svc}:5432/kaname_test"

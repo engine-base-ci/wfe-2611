@@ -209,7 +209,7 @@ export async function runMatrix(
         ctx = ctxStaff;
         target = seedRow.hiddenLayer ?? seedRow.visible;
         if (seedRow.hiddenLayer === null && cs.role === "member" && FOLLOWS_PARENT.test(cs.predicate ?? "")) {
-          // 親に従う子の表：種の親は会社の根のグループ（下の層の担当者には見えない）。子の行も 0 行でなければならない（KN-47）
+          // 親に従う子の表：種の親は会社の根のグループ（下の層の担当者には見えない）。子の行も 0 行でなければならない（K-12）
           const n0 = await count(ctxStaff, `select ${pk} from "${cs.table}" where ${pk} = $1`, [seedRow.visible]);
           got = `rows=${n0}（親が見えない子の表）`;
           ok = n0 === 0;

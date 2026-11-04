@@ -1,4 +1,4 @@
-// KN-53 権限の確かめの穴と役割の束（0080・D-125.117・D-128.97）。
+// K-16 権限の確かめの穴と役割の束（0080・D-125.117・D-128.97）。
 //   会社全体の確かめ（グループ＝なし）は、会社全体に付けた権限だけで通る（グループだけの権限では通らない）
 //   役割を付けると束の権限の行ができ、外すと消える。個別に足した行は残る。マネージャーの束はそのグループの中だけ
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
@@ -52,7 +52,7 @@ afterAll(async () => {
   await admin.end();
 });
 
-describe("★会社全体の確かめは、会社全体の権限だけ（KN-38 の申し送り）", () => {
+describe("★会社全体の確かめは、会社全体の権限だけ（K-3 の申し送り）", () => {
   it("グループだけに付けた権限では、会社全体の決まり（種別）を直せない", async () => {
     await admin.query(
       "insert into permissions (tenant_id, grantee_member_id, target_kind_id, ability_id, scope_id) values ($1, $2, 'ticket_kinds', 'edit', $3)",

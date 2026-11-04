@@ -117,7 +117,7 @@ export function checkExceptions(root = ROOT) {
   const ids = new Set(loadChoke(root).choke_points.map((c) => c.id));
   const bad = [];
   const today = new Date().toISOString().slice(0, 10);
-  // 「| X-」で始まるのに形に合わない行は、黙って読み飛ばさず赤（迂回箇所はパス 1 つ・KN-117・D-128.123）
+  // 「| X-」で始まるのに形に合わない行は、黙って読み飛ばさず赤（迂回箇所はパス 1 つ・K-42・D-128.123）
   const md = existsSync(join(root, "03_architecture/choke-point-exceptions.md"))
     ? readFileSync(join(root, "03_architecture/choke-point-exceptions.md"), "utf8")
     : "";

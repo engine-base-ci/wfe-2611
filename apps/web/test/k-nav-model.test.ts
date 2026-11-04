@@ -1,4 +1,4 @@
-// 外枠の並べ方（KN-105）：flow.json の生成物（lib/nav.ts）から、役割ごとに左のバー・自分のメニュー・下のタブを決める
+// 外枠の並べ方（K-25）：flow.json の生成物（lib/nav.ts）から、役割ごとに左のバー・自分のメニュー・下のタブを決める
 import { describe, expect, it } from "vitest";
 import { navFor } from "../components/k/nav-model";
 import { NAV } from "../lib/nav";
@@ -6,7 +6,7 @@ import { NAV } from "../lib/nav";
 const ALL = Object.values(NAV.screens).map((s) => s.route);
 const keys = (xs: { key: string }[]) => xs.map((x) => x.key);
 
-describe("外枠の並べ方（KN-105）", () => {
+describe("外枠の並べ方（K-25）", () => {
   it("代表（R1）：主ナビはチケット・承認待ち・AI・ナレッジ・取引先。ワークスペースの管理は下、自分のメニューは右上", () => {
     const n = navFor("R1", { memberName: "高本", built: ALL, screen: "tickets" });
     expect(keys(n.main)).toEqual(["tickets", "approvals", "ai", "knowledge", "clients"]);

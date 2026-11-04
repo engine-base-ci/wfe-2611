@@ -53,7 +53,7 @@ const ALLOW_PREFIX = ["LC_"] as const;
 /** 何があっても渡さないもの（許可リストに誤って足されても落とす）。モデルの鍵・別の請求先の切り替え */
 const DENY = /^(ANTHROPIC_|CLAUDE_CODE_USE_(BEDROCK|VERTEX|FOUNDRY)|AWS_|GOOGLE_|GCLOUD_|AZURE_|OPENAI_|VERTEX_)/;
 
-/** Bridge が自分で読む環境の名前（KN-117）。process.env を読むのは、このファイル（bridgeEnv と childEnv）だけ（例外 X-013）。
+/** Bridge が自分で読む環境の名前（K-42）。process.env を読むのは、このファイル（bridgeEnv と childEnv）だけ（例外 X-013）。
  *  Bridge は利用者の PC で動く別のアプリで、サーバーの起動設定（packages/config）を持たない。名前を足すときはここに足す */
 export const BRIDGE_ENV_KEYS = [
   "KANAME_API_BASE",

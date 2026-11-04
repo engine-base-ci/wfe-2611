@@ -83,7 +83,7 @@ def read_ledger(root: str, rel) -> tuple[set, list]:
         if ln.lstrip().startswith(("#", ">")):
             continue
         # 表の行（| ID | 関門 | 迂回箇所 | 理由 | 代替統制 | 期限 | 状態 |）は、迂回箇所の欄のパスと期限の欄の日付だけを読む。
-        # 理由の欄の経緯の日付やフォルダ名を、期限や許しの場所と読み違えない（Kaname・KN-50）
+        # 理由の欄の経緯の日付やフォルダ名を、期限や許しの場所と読み違えない（Kaname・K-34）
         cols = [c.strip() for c in ln.strip().strip("|").split("|")]
         if re.match(r"^X-\d+$", cols[0] if cols else "") and len(cols) >= 7:
             hits = re.findall(r"`([^`#]+)`", cols[2])
@@ -93,7 +93,7 @@ def read_ledger(root: str, rel) -> tuple[set, list]:
                 if d and d.group(1) < today and "有効" in cols[6]:
                     expired.append(f"{h}（期限 {d.group(1)} を過ぎている）")
             continue
-        # `packages/auth/` のように backtick で囲んだフォルダも許しとして読む（Kaname・KN-50）。
+        # `packages/auth/` のように backtick で囲んだフォルダも許しとして読む（Kaname・K-34）。
         # `ファイル#定数` は、ファイルの一部だけの例外なので、ファイル全体を許さない
         hits = re.findall(r"[\w./-]+/[\w./-]+\.[a-z]{2,4}(?![\w#])|[\w.-]+(?:/[\w.-]+)*/(?=[`\s|])", ln)
         if not hits:

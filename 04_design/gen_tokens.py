@@ -3,7 +3,7 @@
 画面側に生の色・生の寸法を書かせないための唯一の出どころ（規約 design-system.md）。
 
   python3 04_design/gen_tokens.py [正本] [出力]           … Bridge 用（apps/bridge/src/renderer/tokens.css）
-  python3 04_design/gen_tokens.py --web [正本] [出力]     … 新しい画面用（apps/web/styles/k-tokens.css・KN-104）
+  python3 04_design/gen_tokens.py --web [正本] [出力]     … 新しい画面用（apps/web/styles/k-tokens.css・K-24）
   python3 04_design/gen_tokens.py --web --check           … 生成物が正本どおりか（CI）
 
 新しい画面用は、明るいテーマ（正本の colors 他）と暗いテーマ（正本の dark・D-128.55）の両方を出す。
@@ -79,7 +79,7 @@ def bridge() -> list[str]:
     for k, v in (d.get("spacing") or {}).items():
         L.append(f"  --s-{k}: {v};")
     fam = (d.get("typography") or {}).get("body", {}).get("fontFamily", "system-ui")
-    # 書体は Bridge に同梱して配る（@fontsource-variable・名前は「<名前> Variable」・KN-112）。PC に入っていれば先に使う
+    # 書体は Bridge に同梱して配る（@fontsource-variable・名前は「<名前> Variable」・K-29）。PC に入っていれば先に使う
     L.append(f'  --font-sans: "{fam}", "{fam} Variable", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", system-ui, sans-serif;')
     L.append("}")
     return L
@@ -122,7 +122,7 @@ def web() -> list[str]:
 
     T = d.get("typography") or {}
     fam = T.get("body", {}).get("fontFamily", "system-ui")
-    L = [f"/* {src.name} から機械生成。手で書かない（04_design/gen_tokens.py --web・KN-104）。",
+    L = [f"/* {src.name} から機械生成。手で書かない（04_design/gen_tokens.py --web・K-24）。",
          "   新しい画面の部品は --k-* だけを読む。見た目は <html data-theme> で固定、無ければシステムに合わせる（D-128.55）*/",
          ":root {", "  --k-scheme: light;"]
     L += palette(d, "  ")

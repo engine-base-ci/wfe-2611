@@ -1,6 +1,6 @@
 // 見た目の突き合わせ（visual-fidelity の段 2）：キャンバスの画面と新しい画面を同じ幅で実ブラウザに描き、
 //   同じ役割の要素の見た目の値（大きさ・色・角丸・書体）を比べる。両方のスクリーンショットも残す
-//   node scripts/ci/visual_fidelity.mjs .qa/visual-fidelity/KN-108/pairs.json [BASE_URL]
+//   node scripts/ci/visual_fidelity.mjs .qa/visual-fidelity/K-28/pairs.json [BASE_URL]
 //   出力：同じフォルダの result.json・canvas.png・app.png。値が違う組を数える（色・角丸・書体は完全一致、大きさは ±2px）
 import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";

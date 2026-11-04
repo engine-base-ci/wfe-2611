@@ -239,7 +239,7 @@ alignment_decisions:
     gate: bash -c "grep -q 'D-123.1' 03_architecture/アーキテクチャ設計書.md && grep -q 'D-123.2' 03_architecture/アーキテクチャ設計書.md"
   - file: apps/bridge/src/modes.ts
     check: allowed_tools は完全一致の規則（正規表現の全体一致）だけ。部分一致・接頭辞の判定が無い
-    # 1 行で見ると、書式の道具が行を分けたとき黙って落ちる。allowed_tools を絞る式の範囲（?? [] から .slice( まで）で見る（KN-121）
+    # 1 行で見ると、書式の道具が行を分けたとき黙って落ちる。allowed_tools を絞る式の範囲（?? [] から .slice( まで）で見る（K-45）
     gate: python3 -c "import sys,re; s=open('apps/bridge/src/modes.ts',encoding='utf-8').read(); m=re.search(r'allowed_tools \\?\\? \\[\\]\\)(.*?)\\.slice\\(', s, re.S); b=m.group(1) if m else ''; sys.exit(0 if m and '/^[A-Za-z]' in b and '$/s.test(' in b and 'startsWith' not in b and 'includes(' not in b else 1)"
 - id: AD-124
   decision: Bridge は仕事の間だけ PC を寝かせず（powerSaveBlocker）、止めたとき途中の道具の結末は不明と言い（E-SIG-003）、--resume の記録が無ければ新しいセッションで 1 回やり直して知らせる（E-NF-003）
@@ -326,7 +326,7 @@ alignment_decisions:
     count: all
   - file: 06_mockup/v1/v1-*.html
     check: 全画面が閉じたループの行為（目標→逆算→配布→実行→測定→再計画）から導出されている。画面と行為の双方向の照合（G1〜G10）
-    # 画面の正はキャンバス（前の見本 06_mockup/v1 はしまった・D-128.117・KN-121）。行為と画面の照合は flow_gate、画面と絵は canvas_gate の CV4
+    # 画面の正はキャンバス（前の見本 06_mockup/v1 はしまった・D-128.117・K-45）。行為と画面の照合は flow_gate、画面と絵は canvas_gate の CV4
     gate: bash -c "python3 scripts/ci/flow_gate.py --choke 03_architecture/choke-points.json && python3 scripts/ci/canvas_gate.py"
 - id: AD-004-2
   decision: LLMは顧客のサブスク内(Bridge)が既定。APIは顧客負担。運営マネージドは既定OFFの管理者トグル
@@ -369,7 +369,7 @@ alignment_decisions:
   - file: 06_mockup/v1/v1-search.html
     check: mockup/search に D-007 の反映がある
     marker: ['D-007']
-    # trace を外した：画面 search は後のフェーズ（flow.json の deferred）（KN-121）。中身の印の確かめ（marker）は残す
+    # trace を外した：画面 search は後のフェーズ（flow.json の deferred）（K-45）。中身の印の確かめ（marker）は残す
     trace_retired: "D-007 -> screens: [search]"
 - id: AD-008
   decision: ペルソナ1=高本本人。一人で受託・キャパ限界・人に任せたい・目標は決めているだけで実行が回らない
@@ -569,7 +569,7 @@ alignment_decisions:
   - file: 06_mockup/v1/v1-clone-memory.html
     check: mockup/clone-memory に D-025 の反映がある（編集の 3 経路：画面で直す・AI に頼む・ファイル一括）
     marker: ['D-025']
-    # trace を外した：画面 clone-memory は後のフェーズ（flow.json の deferred）。記憶はナレッジに引き上げた（D-125.109）（KN-121）。中身の印の確かめ（marker）は残す
+    # trace を外した：画面 clone-memory は後のフェーズ（flow.json の deferred）。記憶はナレッジに引き上げた（D-125.109）（K-45）。中身の印の確かめ（marker）は残す
     trace_retired: "D-025 -> screens: [clone-memory]"
   - file: 06_mockup/v1/v1-credentials.html
     check: mockup/credentials に D-025 の反映がある（編集の 3 経路：画面で直す・AI に頼む・ファイル一括）
@@ -1522,7 +1522,7 @@ alignment_decisions:
   - file: 06_mockup/v1/v1-clone-memory.html
     check: mockup/clone-memory に D-073 の反映がある
     marker: ['D-073']
-    # trace を外した：画面 clone-memory は後のフェーズ（flow.json の deferred）。記憶はナレッジに引き上げた（D-125.109）（KN-121）。中身の印の確かめ（marker）は残す
+    # trace を外した：画面 clone-memory は後のフェーズ（flow.json の deferred）。記憶はナレッジに引き上げた（D-125.109）（K-45）。中身の印の確かめ（marker）は残す
     trace_retired: "D-073 -> screens: [clone-memory]"
   - file: 06_mockup/v1/v1-members.html
     check: mockup/members に D-073 の反映がある
@@ -2688,7 +2688,7 @@ alignment_decisions:
   - file: 06_mockup/v1/v1-clone-memory.html
     check: mockup/clone-memory に D-105 の反映がある
     marker: ['D-105']
-    # trace を外した：画面 clone-memory は後のフェーズ（flow.json の deferred）。記憶はナレッジに引き上げた（D-125.109）（KN-121）。中身の印の確かめ（marker）は残す
+    # trace を外した：画面 clone-memory は後のフェーズ（flow.json の deferred）。記憶はナレッジに引き上げた（D-125.109）（K-45）。中身の印の確かめ（marker）は残す
     trace_retired: "D-105 -> screens: [clone-memory]"
   - file: 03_architecture/ER図.md
     check: ER図/memories に D-105 の反映がある
@@ -3165,14 +3165,14 @@ alignment_decisions:
     check: 要件一覧 に D-128 の反映がある
     marker: ['D-128']
     count: all
-  # 画面の線（KN-121）：全画面を 4 幅で確かめるのは、新しい画面の外枠の実ブラウザの試験（KN105-001・CI の G48）。外枠は全部の新しい画面が使う
+  # 画面の線（K-45）：全画面を 4 幅で確かめるのは、新しい画面の外枠の実ブラウザの試験（KN105-001・CI の G48）。外枠は全部の新しい画面が使う
   - file: 04_design/canvas/*.dc.html
     check: 全画面を 375・768・1024・1440 で確かめる（外枠の試験が 4 幅で横のはみ出し 0・押せるもの 24px 以上）
     gate: grep -q "for (const w of \\[375, 768, 1024, 1440\\])" apps/web/tests/k-shell.spec.ts
 
 downstream_coverage:
 - id: screen_to_mock
-  description: 画面の正はキャンバス（04_design/canvas・D-128.23）。キャンバスの画面とページがそろい、行き先が切れていない（前の見本 06_mockup/v1 はしまった・D-128.117・KN-121）
+  description: 画面の正はキャンバス（04_design/canvas・D-128.23）。キャンバスの画面とページがそろい、行き先が切れていない（前の見本 06_mockup/v1 はしまった・D-128.117・K-45）
   upstream:
     file: 05_flow/flow.json
     json_path: $.screens[?(@.release=='v1')].id
@@ -3222,7 +3222,7 @@ downstream_coverage:
   severity: error
   command: python3 scripts/ci/api_gate.py --flow 05_flow/flow.json --dir 08_api
 - id: act_to_feature_v3
-  description: 第1フェーズの行為が、どれかの Kaname を作るチケット（11_tickets）の画面にある（前の機能の分解 09_features はしまった・D-128.114・KN-121）
+  description: 第1フェーズの行為が、どれかの Kaname を作るチケット（11_tickets）の画面にある（前の機能の分解 09_features はしまった・D-128.114・K-45）
   upstream:
     file: 05_flow/flow.json
     json_path: $.backbone[*].acts[*].id
@@ -3232,7 +3232,7 @@ downstream_coverage:
   severity: error
   command: python3 scripts/tickets/coverage_gate.py --only KC3
 - id: feature_to_ticket
-  description: 第1フェーズの画面・契約の API・行為・関門が、Kaname を作るチケット（11_tickets）に漏れなく入る（KC1〜KC8。前の作業カード 07_tasks はしまった・D-128.114・KN-121）
+  description: 第1フェーズの画面・契約の API・行為・関門が、Kaname を作るチケット（11_tickets）に漏れなく入る（KC1〜KC8。前の作業カード 07_tasks はしまった・D-128.114・K-45）
   upstream:
     file: 08_api/endpoints.json
     json_path: $.endpoints[*].operationId
@@ -3505,7 +3505,7 @@ layer_checks:
 - file: .qa/skill-patches/README.md
   manual: スキルへの差分の一覧と当て方
 - file: apps/web/content/legal/*.md
-  manual: 利用規約とプライバシーポリシーのひな形（D-128.137）。KN-140 で画面に出し terms_versions に入れる。公開の前に専門家が確かめる
+  manual: 利用規約とプライバシーポリシーのひな形（D-128.137）。K-53 で画面に出し terms_versions に入れる。公開の前に専門家が確かめる
 - file: ci.yaml
   check: python3 scripts/ci/ci_stages.py --check
 - file: 03_architecture/共通の決まり.md
@@ -3565,13 +3565,13 @@ layer_checks:
 - file: 08_api/API-SPEC.md
   manual: JSON からの機械生成の写し（05_flow/build_api.py）。手で直さない
 - file: 09_features/features.json
-  manual: 前の作業の分解（目標・台帳の形）から作った機能の分解。D-128.114 で作業の分解を 11_tickets に切り直しているので、ここも 11_tickets から作り直すまで機械の検査はしない（KN-6）
+  manual: 前の作業の分解（目標・台帳の形）から作った機能の分解。D-128.114 で作業の分解を 11_tickets に切り直しているので、ここも 11_tickets から作り直すまで機械の検査はしない（K-32）
 - file: 09_features/fd-decisions.json
-  manual: しまった（D-128.114）。前の機能の分解の判断の記録として残す。機能からチケットへの漏れの検査は 11_tickets の coverage_gate（KC1〜KC8）が持つ（KN-121 で地図の下流の検査を替えた）
+  manual: しまった（D-128.114）。前の機能の分解の判断の記録として残す。機能からチケットへの漏れの検査は 11_tickets の coverage_gate（KC1〜KC8）が持つ（K-45 で地図の下流の検査を替えた）
 - file: 09_features/feature-decomposition.md
-  manual: しまった（D-128.114）。前の機能の分解の説明として残す。機械の検査は 11_tickets の coverage_gate が持つ（KN-121）
+  manual: しまった（D-128.114）。前の機能の分解の説明として残す。機械の検査は 11_tickets の coverage_gate が持つ（K-45）
 - file: 09_features/feature-decomposition.html
-  manual: しまった（D-128.114）。feature-decomposition.md の見せる版。機械の検査は 11_tickets の coverage_gate が持つ（KN-121）
+  manual: しまった（D-128.114）。feature-decomposition.md の見せる版。機械の検査は 11_tickets の coverage_gate が持つ（K-45）
 - file: 09_features/DAG.md
   manual: JSON からの機械生成の写し（05_flow/build_features.py）。手で直さない
 - file: 07_tasks/tickets.json
@@ -3725,8 +3725,10 @@ layer_checks:
 - file: skill-pipeline.yaml
   check: python3 scripts/ci/pipeline-next.py check-staging && python3 scripts/ci/pipeline-next.py check-spec-sync
 # ---- Tier P（project_audit.py）：見ない層と、追いつかなくてよい層。理由の無い除外は書けない ----
-- file: 11_tickets/KN-*.md
+- file: 11_tickets/K-*.md
   check: python3 scripts/tickets/build_index.py --check
+- file: 11_tickets/renumber-map.json
+  manual: 古い番号 KN- と新しい番号 K- の対応（D-128.139）。振り直した時に 1 回だけ作る。古い記録を読むときに引く
 - file: 11_tickets/README.md
   manual: 11_tickets の一覧と親子の木（scripts/tickets/build_index.py が作る）。手で直さない。形は G45 が見る
 - file: 11_tickets/tickets.json
@@ -3778,9 +3780,9 @@ layer_checks:
 - file: scripts/spec-sync/*.py
   check: python3 scripts/spec-sync/spec-validator.py --project-root . --tier g --pre-commit && python3 scripts/spec-sync/spec-validator.py --project-root . --tier h --pre-commit
 - file: scripts/spec-sync/audit-manifest.yaml
-  manual: 組織のスキル spec-sync-orchestrator の台帳をそのまま写したもの（spec-validator.py が同じフォルダから読む・KN-50）
+  manual: 組織のスキル spec-sync-orchestrator の台帳をそのまま写したもの（spec-validator.py が同じフォルダから読む・K-34）
 - file: scripts/spec-sync/README.md
-  manual: 直した版の説明と、組織のスキルへの差分の当て方（KN-50）
+  manual: 直した版の説明と、組織のスキルへの差分の当て方（K-34）
 project_audit:
   ignore:
   - path: apps/web/pw-reports/
@@ -3855,13 +3857,13 @@ project_audit:
   - path: 10_skills/skill-lint.json
     reason: skill_pkg_gate の設定。決定を参照しない
 
-# 画面とキャンバスの絵の対応表（spec-sync の D6 が読む・KN-121）
+# 画面とキャンバスの絵の対応表（spec-sync の D6 が読む・K-45）
 screen_mock_index:
   file: 04_design/canvas-screens.json
   dir: 04_design/canvas
   ext: .dc.html
 
-# spec-sync の D（振る舞いの波及）が「画面の線」と読む言葉。Kaname の画面の正はキャンバス（D-128.23・KN-121）
+# spec-sync の D（振る舞いの波及）が「画面の線」と読む言葉。Kaname の画面の正はキャンバス（D-128.23・K-45）
 tier_d:
   screen_hints: [canvas]
   screen_example: キャンバスの絵（04_design/canvas/*.dc.html）か、全画面に効かせる gate

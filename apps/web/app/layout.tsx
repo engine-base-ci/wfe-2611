@@ -14,7 +14,7 @@ export const metadata: Metadata = { title: "Kaname", description: "Kaname ──
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const jar = await cookies();
-  // 根で落ちたときの受け皿（global-error）を実ブラウザで確かめる仕掛け（KN-115）。開発用の見本が開けるときだけ効く（本番は devPages が false）
+  // 根で落ちたときの受け皿（global-error）を実ブラウザで確かめる仕掛け（K-30）。開発用の見本が開けるときだけ効く（本番は devPages が false）
   if (WEB_ENV.devPages && jar.get("k-boom-root")?.value === "1") throw new Error("見本：根の layout で落とす");
   const theme = themeAttr(parseTheme(jar.get(THEME_COOKIE)?.value));
   return (

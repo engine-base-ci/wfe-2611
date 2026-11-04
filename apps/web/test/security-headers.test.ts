@@ -1,4 +1,4 @@
-// 画面の守りの見出し（ZT11・KN-103）
+// 画面の守りの見出し（ZT11・K-23）
 import { describe, expect, it } from "vitest";
 import { contentSecurityPolicy, newNonce, securityHeaders } from "../lib/security-headers";
 

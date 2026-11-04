@@ -1,4 +1,4 @@
-// DB の行の守りは仕様（07_functional/entities.json の access_control_policies）と同じで、余分も不足も無い（KN-44）。
+// DB の行の守りは仕様（07_functional/entities.json の access_control_policies）と同じで、余分も不足も無い（K-9）。
 //   守りは「どれかが通れば通る」ので、作り方を変えた表に古い守りが残ると、黙って穴になる（0014 の守りが運営の表に残っていた）。
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import pg from "pg";

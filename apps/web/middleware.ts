@@ -1,4 +1,4 @@
-// 全部の画面の応答に、画面の守りの見出しを付ける（ZT11・KN-103）。中身は lib/security-headers.ts
+// 全部の画面の応答に、画面の守りの見出しを付ける（ZT11・K-23）。中身は lib/security-headers.ts
 //   nonce は要求の見出しにも載せる（Next.js が自分のスクリプトにこの nonce を付ける）
 import { NextResponse, type NextRequest } from "next/server";
 import { WEB_ENV } from "@/lib/env";

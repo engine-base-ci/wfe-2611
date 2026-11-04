@@ -34,7 +34,7 @@ export function normalize(v: unknown): unknown {
     return Object.fromEntries(Object.entries(v as Record<string, unknown>).map(([k, x]) => [k, normalize(x)]));
   return v;
 }
-// 続きの印は、何件目から読むかの数（10 進の文字列・最大 9 桁）。画面はもらったものを返すだけ（契約は pattern で書ける形にした・KN-55）
+// 続きの印は、何件目から読むかの数（10 進の文字列・最大 9 桁）。画面はもらったものを返すだけ（契約は pattern で書ける形にした・K-35）
 const encodeCursor = (n: number) => String(n);
 const decodeCursor = (s: string | undefined): number | null => {
   if (!s) return 0;
@@ -71,7 +71,7 @@ export function op(deps: ContractDeps, operationId: string) {
         if (ctx.role === "ops" && !(await repo.opsAllowed(ctx))) return err(c, 403, "forbidden", "FORBIDDEN");
       }
     }
-    // 3.1) 権限の言葉の段（KN-51）：admin の能力・運営のできること など。行に結ぶ言葉は 4.1 で :id の行を読んで確かめる（KN-52）
+    // 3.1) 権限の言葉の段（K-14）：admin の能力・運営のできること など。行に結ぶ言葉は 4.1 で :id の行を読んで確かめる（K-15）
     if (def.auth !== "public") {
       const check = checkFor(def.perm.word);
       const pid = def.path.includes(":id") ? (c.req.param("id") ?? null) : null;
@@ -88,7 +88,7 @@ export function op(deps: ContractDeps, operationId: string) {
     const id = def.path.includes(":id") ? (c.req.param("id") ?? "") : null;
     if (id !== null && !/^[0-9a-f-]{36}$/i.test(id))
       return err(c, 422, "validation_failed", "VALIDATION_ERROR", { details: [{ field: "id", message: "uuid" }] });
-    // 4.1) 行に結ぶ言葉（KN-52・ZT4）：:id の行を行の守りの中で読み、見えなければ 404（無いのと同じ）・言葉の中の人でなければ 403
+    // 4.1) 行に結ぶ言葉（K-15・ZT4）：:id の行を行の守りの中で読み、見えなければ 404（無いのと同じ）・言葉の中の人でなければ 403
     //      本人・担当者・承認する人・受ける人・マネージャー・書ける人。条件は契約の perm.row（scripts/ci/row_rules.mjs）
     if (id !== null && def.perm.row && def.auth === "member") {
       const r = await repo.rowAllowed(ctx, def.perm.row.table, id, def.perm.row.sql);
@@ -112,7 +112,7 @@ export function op(deps: ContractDeps, operationId: string) {
     }
     let list: { where: Row; limit: number; offset: number; orderBy?: string } | null = null;
     if (def.kind === "list") {
-      // 空の値（?limit=）は「指定なし」と同じ（画面の検索欄が空のまま送っても 422 にしない・KN-55）
+      // 空の値（?limit=）は「指定なし」と同じ（画面の検索欄が空のまま送っても 422 にしない・K-35）
       const q = Object.fromEntries(Object.entries(c.req.query()).filter(([, v]) => v !== ""));
       const limit = q["limit"] === undefined ? LIMIT_DEFAULT : Number(q["limit"]);
       const offset = decodeCursor(q["cursor"]);
@@ -262,7 +262,7 @@ export async function unwritable(
   const visible = a.id ? await a.repo.table(a.e.table as TableName).get(a.ctx, a.id) : null;
   return visible ? fail(403, "forbidden", "FORBIDDEN") : notFound;
 }
-/** 本人の口（self）の作成：持ち主の列は呼んだ人に決める（入力の値は使わない。他人を持ち主にして作らせない・KN-54） */
+/** 本人の口（self）の作成：持ち主の列は呼んだ人に決める（入力の値は使わない。他人を持ち主にして作らせない・K-17） */
 const OWNER_COLS = ["owner_member_id", "opened_by_member_id", "member_id", "requested_by", "uploaded_by"] as const;
 function withOwner(a: HookArgs, input: Row): Row {
   if (a.e.perm.word !== "self" || !a.ctx.userId) return input;

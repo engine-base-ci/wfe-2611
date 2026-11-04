@@ -116,7 +116,7 @@ def ptype(n, note, e=None):
     if n in ("created_at", "updated_at"): return {"type": "string", "format": "date-time"}
     if e is None: return {"type": "string"}
     return openapi_of(_R.col_type(e, {"name": n, "note": note})[0])
-# 本物の DB の列（08_api/db-columns.json・pnpm db:columns が書き出す）。表の行の答えの形は DB に合わせる（KN-55・G36 の契約 fuzz が答えを確かめる）
+# 本物の DB の列（08_api/db-columns.json・pnpm db:columns が書き出す）。表の行の答えの形は DB に合わせる（K-35・G36 の契約 fuzz が答えを確かめる）
 #   ER の名前の規則（colrules）と migration がずれた列（例：incognito は真偽）も、契約は DB のとおりになる。null を許す列は nullable
 _DBC = json.load(open(f"{OUT}/db-columns.json", encoding="utf-8"))["tables"] if os.path.exists(f"{OUT}/db-columns.json") else {}
 def dbtype(c):
@@ -146,7 +146,7 @@ for e in E:
     resp = {**props, **{k: dbtype(v) for k, v in sorted(dbc.items()) if k not in props}}   # 答えは DB の列を全部持つ（ER に無い列も）
     schemas[name] = {"type": "object", "properties": resp, "required": ["id"], "x-table": e["table_name"], "x-source": e["source"]}
     schemas[name + "Input"] = {"type": "object", "properties": {k: v for k, v in props.items() if k not in INTERNAL}}
-for _op, (_n, _props) in getattr(_sa, "INPUTS", {}).items():   # 表の行ではない入力の形（KN-56）
+for _op, (_n, _props) in getattr(_sa, "INPUTS", {}).items():   # 表の行ではない入力の形（K-19）
     schemas[_n] = {"type": "object", "properties": {k: {"type": v} for k, v in _props.items()}, "x-operation": _op}
 for _op, (_n, _props) in _sa.RESPONSES.items():   # 表の行ではない答えの形（D-128.78）
     schemas[_n] = {"type": "object", "properties": {k: ({"type": "array", "items": {"type": "object"}} if v == "array" else {"type": v}) for k, v in _props.items()}, "x-operation": _op}
@@ -154,7 +154,7 @@ for _op, (_n, _props) in _sa.RESPONSES.items():   # 表の行ではない答え�
 _badnames = [f"{n}.{k}" for n, sc in schemas.items() for k in sc["properties"] if not re.match(r"^[a-z_][a-z0-9_]*$", k)]
 if _badnames: raise SystemExit(f"列の名前が英小文字と _ だけでない（03_architecture/ER図.md を直す）: {_badnames[:8]}")
 schemas["Error"] = {"type": "object", "properties": {"error": {"type": "string"}, "code": {"type": "string"}, "message": {"type": "string"}, "details": {"type": "array", "items": {"type": "object"}}, "retry_after_sec": {"type": "integer"}}, "required": ["error"]}
-# 問い合わせの値の形（入口 op.ts が確かめるのと同じ。KN-55）
+# 問い合わせの値の形（入口 op.ts が確かめるのと同じ。K-35）
 #   sort は表の列の名前だけ。scope_id は表に scope_id があるときだけ出す。空の値（?limit=）は指定なしと同じ（allowEmptyValue）
 def qtype(q, table):
     cols = sorted(_DBC.get(table, {}))

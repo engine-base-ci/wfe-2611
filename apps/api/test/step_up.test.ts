@@ -1,4 +1,4 @@
-// 本人確認の取り直しの口（KN-56・D-125.139）を本物の Postgres とログインの部品で通す。
+// 本人確認の取り直しの口（K-19・D-125.139）を本物の Postgres とログインの部品で通す。
 //   正しいパスワードで、セッションに時刻が付き（15 分効く）、いつも本人確認が要る口が STEP_UP_REQUIRED で止まらなくなる
 //   間違えたら 401 で時刻は付かない。成功も失敗もセキュリティの出来事に残る
 import { beforeAll, describe, expect, it } from "vitest";
@@ -108,7 +108,7 @@ const stepUpAt = async (member: string) =>
 // いつも本人確認が要る社内の口（中身は作っていなくても、本人確認の段は 501 より前に止める）
 const ALWAYS = ENDPOINTS.find((e) => e.perm.stepUp === "always" && e.auth === "member" && !e.path.includes(":"))!;
 
-describe("本人確認の取り直し（KN-56）", () => {
+describe("本人確認の取り直し（K-19）", () => {
   it("正しいパスワードで時刻が付き、いつも要る口が STEP_UP_REQUIRED で止まらなくなる", async () => {
     const { H, member } = await signedIn();
     const before = await call(ALWAYS.method, ALWAYS.path, ALWAYS.method === "GET" ? undefined : {}, H);
@@ -158,7 +158,7 @@ function totp(secretB32: string, at = Date.now()): string {
   return String((h.readUInt32BE(o) & 0x7fffffff) % 1_000_000).padStart(6, "0");
 }
 
-describe("2 段階を使う人の取り直し（KN-56）", () => {
+describe("2 段階を使う人の取り直し（K-19）", () => {
   it("パスワードとコードの両方で取り直す。コードが無ければ 422・違えば 401 で時刻は付かない", async () => {
     const { H, member, email } = await signedIn();
     const headers = new Headers(H);

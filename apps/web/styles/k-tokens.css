@@ -1,4 +1,4 @@
-/* DESIGN-kaname.md から機械生成。手で書かない（04_design/gen_tokens.py --web・KN-104）。
+/* DESIGN-kaname.md から機械生成。手で書かない（04_design/gen_tokens.py --web・K-24）。
    新しい画面の部品は --k-* だけを読む。見た目は <html data-theme> で固定、無ければシステムに合わせる（D-128.55）*/
 :root {
   --k-scheme: light;

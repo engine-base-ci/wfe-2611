@@ -1,5 +1,5 @@
 {
- "_doc": "CI から回らない検査・道具の目録（D-128.123・KN-111）。scripts/ci/ci_wiring_gate.py が、package.json の ci:* と自己試験（*.test.mjs・--selftest）が CI（v3-gate.yml・release-gate.yml）か層の棚卸し（spec-dependencies.yaml の検査）から回っているかを見る。回らないものはここに理由を書く",
+ "_doc": "CI から回らない検査・道具の目録（D-128.123・K-38）。scripts/ci/ci_wiring_gate.py が、package.json の ci:* と自己試験（*.test.mjs・--selftest）が CI（v3-gate.yml・release-gate.yml）か層の棚卸し（spec-dependencies.yaml の検査）から回っているかを見る。回らないものはここに理由を書く",
  "generator": {
   "ci:contract:gen": "作り手。G38（generated_gate.py）が回して最新かを見る",
   "ci:errors:gen": "作り手。G38 が回す",

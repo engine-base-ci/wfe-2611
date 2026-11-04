@@ -1,4 +1,4 @@
--- 0081 本人確認の取り直し（KN-51・D-125.139・D-128.97）
+-- 0081 本人確認の取り直し（K-14・D-125.139・D-128.97）
 --   直前の本人確認の時刻をセッション（sessions.step_up_at）に持つ。取り直しの口（POST /auth/step-up）が確かめたら app.mark_step_up で付け、
 --   入口（apps/api/src/contract/op.ts）が 15 分以内かを見る。ログインし直しや失効で消える（新しいセッションは空から）。
 alter table sessions add column if not exists step_up_at timestamptz;
@@ -15,7 +15,7 @@ end $$;
 create or replace function app.session_step_up_at(p_auth_session_id text) returns timestamptz language sql stable security definer set search_path = public, app as $$
   select step_up_at from sessions where auth_session_id = p_auth_session_id and revoked_at is null
 $$;
--- 入口の確かめ（KN-51）：どこかのグループでその能力を持つか（書き出す・層の決まり など、口の中でグループに絞るもの）
+-- 入口の確かめ（K-14）：どこかのグループでその能力を持つか（書き出す・層の決まり など、口の中でグループに絞るもの）
 create or replace function app.has_any_permission(uid uuid, target_kind text, ability text) returns boolean language sql stable security definer set search_path = public, app as $$
   select exists (
     select 1 from permissions p

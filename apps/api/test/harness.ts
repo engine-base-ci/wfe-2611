@@ -54,7 +54,7 @@ export async function makeHarness(): Promise<Harness> {
   let S: Harness["S"];
   try {
     S = await seedAccessMatrix(c);
-    // 入口の権限の言葉（KN-51）：「正しい役の人」は、社長＝管理者、運営の人＝全部のできること を持つ
+    // 入口の権限の言葉（K-14）：「正しい役の人」は、社長＝管理者、運営の人＝全部のできること を持つ
     await c.query(
       "insert into tenant_memberships (tenant_id, member_id, role) values ($1, $2, 'admin') on conflict (tenant_id, member_id) do update set role = 'admin', status = 'active', deleted_at = null",
       [S.tenantA, S.bossA],

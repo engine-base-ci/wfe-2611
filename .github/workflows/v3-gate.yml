@@ -205,7 +205,7 @@ jobs:
       - name: "G51 利用者の流れと DB の表の目録（行為はどれも 1 つの流れ・表はどれも目録に・凍結の表をコードが使わない・D-128.126・D-128.127）"
         if: ${{ !cancelled() }}
         run: python3 scripts/ci/flow_db_gate.py --selftest && python3 scripts/ci/flow_db_gate.py
-      - name: "G52 ローカルの CI（dagci）の段が GitHub の検査と 1 対 1（ci.yaml の段は v3-gate.yml から導く・外す job は理由つき・KN-124）"
+      - name: "G52 ローカルの CI（dagci）の段が GitHub の検査と 1 対 1（ci.yaml の段は v3-gate.yml から導く・外す job は理由つき・K-47）"
         if: ${{ !cancelled() }}
         run: python3 scripts/ci/ci_stages.py --check
 
@@ -226,7 +226,7 @@ jobs:
 
   web:
     runs-on: ubuntu-latest
-    # 新しい画面（apps/web/components/k の上）の実ブラウザの試験。staging も札も要らない：CI の中で本番の形に組み立てて立ち上げる（KN-109）
+    # 新しい画面（apps/web/components/k の上）の実ブラウザの試験。staging も札も要らない：CI の中で本番の形に組み立てて立ち上げる（K-36）
     needs: [static]
     env:
       KANAME_DEV_PAGES: '1'
@@ -244,7 +244,7 @@ jobs:
           (pnpm --filter @kaname/web start:test > /tmp/web.log 2>&1 &)
           for i in $(seq 1 60); do curl -sf -o /dev/null http://127.0.0.1:3124/dev/k/showcase && exit 0; sleep 2; done
           cat /tmp/web.log; exit 1
-      - name: "G48 新しい画面の実ブラウザの試験と、押した証拠（本番の形で組み立てた画面の上・行 ID の試験が全部の行で通る・記録なし・KN-109）"
+      - name: "G48 新しい画面の実ブラウザの試験と、押した証拠（本番の形で組み立てた画面の上・行 ID の試験が全部の行で通る・記録なし・K-36）"
         if: ${{ !cancelled() }}
         run: BASE_URL=http://127.0.0.1:3124 pnpm --filter @kaname/web e2e:k && python3 scripts/ci/op_gate.py --spec 07_qa/test-specs/k --tickets 11_tickets/tickets.json --all
       - uses: actions/upload-artifact@v4

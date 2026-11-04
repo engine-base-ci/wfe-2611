@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""使っている部品が技術の選定の記録と合っているか（D-128.123・KN-111）。
+"""使っている部品が技術の選定の記録と合っているか（D-128.123・K-38）。
 
   python3 scripts/ci/stack_gate.py             記録（02_tech_stack/selected-stack.json の packages）と package.json を 1 対 1 で突き合わせる
   python3 scripts/ci/stack_gate.py --selftest  記録に無い部品を足すと赤になるか
@@ -10,9 +10,9 @@
   S3 記録の「どの選定か」が記録の中に無い（register の道すじが違う・「(本文)」なのに本文に名前が無い）
   S5 部品は出てから 21 日を過ぎた版だけ（D-128.124）：pnpm-workspace.yaml に minimumReleaseAge（30240 分以上）がある。
      例外（minimumReleaseAgeExclude）の行は「名前@版」で、出た日（YYYY-MM-DD に出た）を書く。21 日を過ぎた例外は外すよう知らせる（害は無いので赤にしない）
-  S6 lockfile の版が、どれも出てから 21 日を過ぎている（例外に書いた「名前@版」を除く）。出た日は npm の registry に聞く（KN-120）。
+  S6 lockfile の版が、どれも出てから 21 日を過ぎている（例外に書いた「名前@版」を除く）。出た日は npm の registry に聞く（K-44）。
      CI の pnpm install --frozen-lockfile は版を解き直さないので、pnpm の minimumReleaseAge だけでは lockfile に入った若い版を止められない
-  S4 lockfile で上流が「非推奨」にした部品が、記録（scripts/ci/deprecated_baseline.json）に無い。記録の物が lockfile から消えたら記録から外す（KN-116）
+  S4 lockfile で上流が「非推奨」にした部品が、記録（scripts/ci/deprecated_baseline.json）に無い。記録の物が lockfile から消えたら記録から外す（K-41）
 @types/* は、元の部品が記録にあれば要らない。workspace の部品（@kaname/*）は見ない。
 """
 from __future__ import annotations

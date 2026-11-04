@@ -1,4 +1,4 @@
-// 行に結ぶ言葉の確かめ（KN-52・ZT4・D-128.88・D-128.115）。契約の生成（contract.mjs）が読み、ENDPOINTS の perm.row に出す。
+// 行に結ぶ言葉の確かめ（K-15・ZT4・D-128.88・D-128.115）。契約の生成（contract.mjs）が読み、ENDPOINTS の perm.row に出す。
 //   入口（apps/api/src/contract/op.ts の 4.1）は、:id の行を行の守り（RLS）の中で読み、
 //     見えなければ 404（無いのと同じ）・見えても下の条件に合わなければ 403。
 //   条件は SQL の式で、:id の表の行の列をそのまま書く（`select (式) from 表 where id = $1` で確かめる）。

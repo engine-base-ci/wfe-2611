@@ -1,4 +1,4 @@
-// 行に結ぶ言葉の条件（KN-52・scripts/ci/row_rules.mjs → 契約の perm.row）を実 Postgres で確かめる。
+// 行に結ぶ言葉の条件（K-15・scripts/ci/row_rules.mjs → 契約の perm.row）を実 Postgres で確かめる。
 //   1) 契約に出た条件は全部、本物の表で SQL として動く（列の名前の間違い・関数の無いものが無い）
 //   2) 無い行は missing（入口は 404）
 //   3) 言葉の中の人は通り、外の人は止まる（承認する人・受ける人・担当者・マネージャー・本人の代表の行で）
@@ -32,7 +32,7 @@ const rules = [
 ];
 const sqlOf = (op: string) => ENDPOINTS.find((e) => e.operationId === op)!.perm.row!;
 
-describe("行に結ぶ言葉の条件（KN-52）", () => {
+describe("行に結ぶ言葉の条件（K-15）", () => {
   it.each(rules.map((r) => [`${r.table}：${r.sql.slice(0, 60)}`, r] as const))(
     "%s が本物の表で動き、無い行は missing",
     async (_n, r) => {
