@@ -153,6 +153,42 @@
   {
    "glob": "apps/web/lib/*.legacy.ts",
    "reason": "前の画面だけが読む、生成物の写し（KN-105・2026-11-04 時点）。前の画面を外すとき（KN-37）に消す"
+  },
+  {
+   "glob": "07_qa/test-specs/screens/*",
+   "reason": "前の画面の試験の仕様（05_flow/build_tasks.py が作った）。作り手はしまった（KN-113・D-128.114・D-128.117）。新しい画面の仕様は 07_qa/test-specs/k に KN-109 の型で書く。前の画面と一緒に外す（KN-37）"
+  },
+  {
+   "glob": "07_qa/test-specs/bridge.md",
+   "reason": "05_flow/build_tasks.py（しまった作り手・KN-113）が作った試験の仕様。記録として残す。中身は qa-ladder（G28）・op_gate の記録が読む"
+  },
+  {
+   "glob": "07_qa/test-specs/journeys/plan.json",
+   "reason": "05_flow/build_tasks.py（しまった作り手・KN-113）が作った試験の仕様。記録として残す。中身は qa-ladder（G28）・op_gate の記録が読む"
+  },
+  {
+   "glob": "07_qa/test-specs/prod-smoke.md",
+   "reason": "05_flow/build_tasks.py（しまった作り手・KN-113）が作った試験の仕様。記録として残す。中身は qa-ladder（G28）・op_gate の記録が読む"
+  },
+  {
+   "glob": "07_qa/test-specs/rls-matrix.md",
+   "reason": "05_flow/build_tasks.py（しまった作り手・KN-113）が作った試験の仕様。記録として残す。中身は qa-ladder（G28）・op_gate の記録が読む"
+  },
+  {
+   "glob": "07_qa/test-specs/skills.md",
+   "reason": "05_flow/build_tasks.py（しまった作り手・KN-113）が作った試験の仕様。記録として残す。中身は qa-ladder（G28）・op_gate の記録が読む"
+  },
+  {
+   "glob": "07_qa/test-specs/spec-work.md",
+   "reason": "05_flow/build_tasks.py（しまった作り手・KN-113）が作った試験の仕様。記録として残す。中身は qa-ladder（G28）・op_gate の記録が読む"
+  },
+  {
+   "glob": "07_qa/test-specs/visual-fidelity-audit.md",
+   "reason": "05_flow/build_tasks.py（しまった作り手・KN-113）が作った試験の仕様。記録として残す。中身は qa-ladder（G28）・op_gate の記録が読む"
+  },
+  {
+   "glob": "07_qa/test-specs/zero-state.md",
+   "reason": "05_flow/build_tasks.py（しまった作り手・KN-113）が作った試験の仕様。記録として残す。中身は qa-ladder（G28）・op_gate の記録が読む"
   }
  ],
  "not_generated": [
@@ -179,61 +215,11 @@
   {
    "path": "packages/db/migrations/0018_ops_write.sql",
    "reason": "手で書いたマイグレーション（history に入る）"
+  },
+  {
+   "path": "apps/bridge/test/renderer.test.ts",
+   "reason": "試験（「正本から生成した tokens.css を読む」の説明）"
   }
  ],
- "known_stale": [
-  {
-   "glob": "07_qa/test-specs/screens/*",
-   "ticket": "KN-113",
-   "reason": "作り手（05_flow/build_tasks.py）が落ちる（KeyError: 'search'）。作り手を直すまで作り直せない"
-  },
-  {
-   "path": "07_qa/test-specs/bridge.md",
-   "ticket": "KN-113",
-   "reason": "作り手（05_flow/build_tasks.py）が落ちるので作り直せない（screens/* と同じ）",
-   "broken_generator": true
-  },
-  {
-   "path": "07_qa/test-specs/journeys/plan.json",
-   "ticket": "KN-113",
-   "reason": "作り手（05_flow/build_tasks.py）が落ちるので作り直せない（screens/* と同じ）",
-   "broken_generator": true
-  },
-  {
-   "path": "07_qa/test-specs/prod-smoke.md",
-   "ticket": "KN-113",
-   "reason": "作り手（05_flow/build_tasks.py）が落ちるので作り直せない（screens/* と同じ）",
-   "broken_generator": true
-  },
-  {
-   "path": "07_qa/test-specs/rls-matrix.md",
-   "ticket": "KN-113",
-   "reason": "作り手（05_flow/build_tasks.py）が落ちるので作り直せない（screens/* と同じ）",
-   "broken_generator": true
-  },
-  {
-   "path": "07_qa/test-specs/skills.md",
-   "ticket": "KN-113",
-   "reason": "作り手（05_flow/build_tasks.py）が落ちるので作り直せない（screens/* と同じ）",
-   "broken_generator": true
-  },
-  {
-   "path": "07_qa/test-specs/spec-work.md",
-   "ticket": "KN-113",
-   "reason": "作り手（05_flow/build_tasks.py）が落ちるので作り直せない（screens/* と同じ）",
-   "broken_generator": true
-  },
-  {
-   "path": "07_qa/test-specs/visual-fidelity-audit.md",
-   "ticket": "KN-113",
-   "reason": "作り手（05_flow/build_tasks.py）が落ちるので作り直せない（screens/* と同じ）",
-   "broken_generator": true
-  },
-  {
-   "path": "07_qa/test-specs/zero-state.md",
-   "ticket": "KN-113",
-   "reason": "作り手（05_flow/build_tasks.py）が落ちるので作り直せない（screens/* と同じ）",
-   "broken_generator": true
-  }
- ]
+ "known_stale": []
 }

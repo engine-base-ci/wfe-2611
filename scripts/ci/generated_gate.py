@@ -85,6 +85,8 @@ def run_all(files: list[str]) -> tuple[dict[str, list[str]], list[str]]:
 
 
 def coverage(files: list[str]) -> list[str]:
+    # まだ git に入れていないファイルも見る（入れる前に回して漏れた・KN-112）
+    files = sorted(set(files) | untracked())
     outs = [o for g in CFG["generators"] for o in g["outputs"]]
     outs += [o for c in CFG.get("checked_elsewhere", []) for o in c["outputs"]]
     outs += [h["glob"] for h in CFG.get("history", [])] + [h["glob"] for h in CFG.get("frozen", [])]
