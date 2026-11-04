@@ -9,7 +9,7 @@ area: 画面
 assignee: 未定
 due: 
 decisions: [D-128.78, D-128.9, D-128.37]
-split: KN-103・KN-104・KN-105・KN-106・KN-107・KN-108・KN-112・KN-115
+split: KN-103・KN-104・KN-105・KN-106・KN-107・KN-108・KN-112・KN-115・KN-118
 depends_on: []
 ---
 

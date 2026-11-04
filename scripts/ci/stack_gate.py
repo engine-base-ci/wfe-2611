@@ -8,6 +8,7 @@
   S1 package.json にあるのに記録に無い部品（足すなら、何に使うか・記録のどの選定かを書く）
   S2 記録にあるのにどこでも使っていない部品（外したら記録からも外す）
   S3 記録の「どの選定か」が記録の中に無い（register の道すじが違う・「(本文)」なのに本文に名前が無い）
+  S4 lockfile で上流が「非推奨」にした部品が、記録（scripts/ci/deprecated_baseline.json）に無い。記録の物が lockfile から消えたら記録から外す（KN-116）
 @types/* は、元の部品が記録にあれば要らない。workspace の部品（@kaname/*）は見ない。
 """
 from __future__ import annotations
@@ -71,17 +72,41 @@ def check(extra: dict[str, list[str]] | None = None) -> list[str]:
     return fails
 
 
+def deprecated(lock_text: str) -> dict[str, str]:
+    """lockfile の packages の節で deprecated の印がある部品（名前@版 → 理由）"""
+    import re
+    i, j = lock_text.find("\npackages:\n"), lock_text.find("\nsnapshots:\n")
+    sec = lock_text[i:j] if i >= 0 and j > i else ""
+    out = {}
+    for m in re.finditer(r"\n  '?([^\s']+)'?:\n((?:    .*\n)+)", sec):
+        d = re.search(r"    deprecated: (.*)", m.group(2))
+        if d:
+            out[m.group(1)] = d.group(1)
+    return out
+
+
+def check_deprecated(lock_text: str | None = None) -> list[str]:
+    lock_text = lock_text if lock_text is not None else open(os.path.join(ROOT, "pnpm-lock.yaml"), encoding="utf-8").read()
+    base = json.load(open(os.path.join(ROOT, "scripts/ci/deprecated_baseline.json"), encoding="utf-8"))["entries"]
+    now = deprecated(lock_text)
+    fails = [f"S4 上流が非推奨にした部品 {k}（{v[:80]}）。直すか、deprecated_baseline.json にチケットつきで書く" for k, v in sorted(now.items()) if k not in base]
+    fails += [f"S4 記録の {k} はもう lockfile に無い（deprecated_baseline.json から外す）" for k in sorted(base) if k not in now]
+    return fails
+
+
 def main() -> int:
     if "--selftest" in sys.argv:
-        hit = any("わざと足した部品" in f or "kaname-selftest-pkg" in f for f in check({"kaname-selftest-pkg": ["(試験)"]}))
-        print("PASS — 記録に無い部品を見つけた" if hit else "FAIL — 記録に無い部品を見つけられない")
-        return 0 if hit else 1
-    fails = check()
+        hit = any("kaname-selftest-pkg" in f for f in check({"kaname-selftest-pkg": ["(試験)"]}))
+        fake = "\npackages:\n\n  kaname-old@1.0.0:\n    resolution: {integrity: x}\n    deprecated: 試験\n\nsnapshots:\n"
+        hit4 = any("kaname-old@1.0.0" in f for f in check_deprecated(fake))
+        print("PASS — 記録に無い部品と、記録に無い非推奨の部品を見つけた" if hit and hit4 else "FAIL — 見つけられない")
+        return 0 if hit and hit4 else 1
+    fails = check() + check_deprecated()
     for f in fails:
         print("  ★", f)
     n = len(deps())
     print(f"部品 {n} 個（型の部品を含む）")
-    print("FAIL — 部品と技術の選定の記録が合わない" if fails else "PASS — 使っている部品は全部、技術の選定の記録にある")
+    print("FAIL — 部品と技術の選定の記録が合わない" if fails else "PASS — 使っている部品は全部、技術の選定の記録にある（非推奨は記録どおり）")
     return 1 if fails else 0
 
 

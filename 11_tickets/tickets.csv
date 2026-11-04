@@ -144,8 +144,8 @@ KN-49,CI の今ある赤を片付ける（しまった前の分解・前の画�
 - [x] 層の棚卸し（G21）の赤が、spec-sync を除いて 0
 - [x] spec-sync の結果（`.qa/spec-sync/2026-11-03/result.json`）を残す（D・F・G・H はスキルの版のずれで blocked・直すのは KN-50）
 - [ ] GitHub の CI で static・spec が緑、database が流れる"
-KN-50,spec-sync のスキルを Kaname の書き方に合わせる（D・F・G・H を走らせる）,タスク,KN-6,未着手,未定,,基盤・試験,spec-sync の横断監査の 4 段（D 振る舞い波及・F 下流分解・G 基盤依存の境界・H 関門）を、走らせられない（blocked）から、実際に走って緑にする。今はスキルの版がプロジェクトの書き方に追いついていない。,"- [ ] spec-sync の D・F・G・H が blocked でなく pass になる（`.qa/spec-sync/<日付>/result.json`）
-- [ ] 直したスキルが組織のスキルに入り、次のセッションでも同じ版が使われる"
+KN-50,spec-sync のスキルを Kaname の書き方に合わせる（D・F・G・H を走らせる）,タスク,KN-6,確認中,Claude（このセッション）,2026-11-13,基盤・試験,spec-sync の横断監査の 4 段（D 振る舞い波及・F 下流分解・G 基盤依存の境界・H 関門）を、走らせられない（blocked）から、実際に走って緑にする。今はスキルの版がプロジェクトの書き方に追いついていない。,"- [x] D・F・G・H が blocked でなく走る。**G・H は pass**。D・F は走るようになったが、地図（spec-dependencies.yaml）の古い所で赤 → **KN-121** に切った（スキルの読み違いではない）
+- [ ] 直したスキルが組織のスキルに入り、次のセッションでも同じ版が使われる → 差分を用意した（`.qa/spec-sync/KN-50/spec-sync-orchestrator.patch`）。**組織のスキルへの反映は高本さん**。それまではリポジトリの版（scripts/spec-sync/）を使う（2026-11-04 高本さん：リポジトリに置き、組織へも）"
 KN-51,契約に権限の言葉と本人確認を載せ、入口で会社の段を確かめる,タスク,KN-3,確認中,Claude（このセッション）,2026-11-13,基盤・API,API ごとの「誰が呼べるか」（08_api の permission）を契約に載せ、入口（op.ts）で会社の段の言葉（admin の能力・運営のできること ops:〜）と本人確認の取り直し（15 分）を確かめる。,"- [x] 契約（@kaname/contracts の ENDPOINTS）に perm（言葉・能力）と stepUp が出る
 - [x] admin の口は、その能力（招く・書き出す・プランと支払い・ワークスペースを消す・表ごとの edit）を持つ人だけ
 - [x] ops:〜 の口は、そのできること（caps）を持つ運営の人だけ
@@ -452,9 +452,26 @@ KN-114,壊れていた自己試験 2 本を直す（contract・env_audit）,課�
 KN-115,Next.js の決まったファイルの足りないもの（global-error）,課題,KN-5,確認中,Claude（このセッション）,2026-11-13,基盤・画面,根の layout で落ちたときの受け皿（app/global-error.tsx）が無い（KN-106 で app/error.tsx は足した）。足して、決まったファイルがそろっているかを機械で見る。,"- [x] app/global-error.tsx（正本の E-PAGE-007 の文言・根の layout が読まれないので見た目と書体を自分で読む）
 - [x] 決まったファイル（error・global-error・not-found）がそろっているかの単体試験（`apps/web/test/k-app-files.test.ts`）
 - [ ] CI が緑（手元で本番の形に組み立てて確かめた）"
-KN-116,pnpm が付け替える Better Auth の部品の版をそろえるか決める,課題,KN-6,未着手,Claude（このセッション）,2026-11-13,基盤・試験,部品を足すたびに pnpm が @better-auth/utils を 0.4.2 → 0.5.1 に付け替える（lockfile の Better Auth の中の版がそろっていない）。いまは足した部品の分だけを lockfile に入れて付け替えを止めている。そろえるなら、ログインの試験を全部流してから入れる。,"- [ ] そろえるかを決める（高本さん）
+KN-116,pnpm が付け替える Better Auth の部品の版をそろえるか決める,課題,KN-6,作業中,Claude（このセッション）,2026-11-13,基盤・試験,部品を足すたびに pnpm が @better-auth/utils を 0.4.2 → 0.5.1 に付け替える（lockfile の Better Auth の中の版がそろっていない）。いまは足した部品の分だけを lockfile に入れて付け替えを止めている。そろえるなら、ログインの試験を全部流してから入れる。,"- [x] そろえるかを決める（高本さん）→ そろえる（2026-11-04）
 - [ ] そろえるなら、ログイン（packages/auth）の試験と API の試験が全部緑で入れる
 - [ ] CI が緑"
 KN-117,関門の外で process.env を読んでいる 21 か所を片付ける,課題,KN-6,確認中,Claude（このセッション）,2026-11-13,基盤・試験,G13（env の検査）が書き間違いで何も見ていなかった（KN-114 で直した）。直したら、関門（packages/config・例外 X-002）の外で process.env を読んでいる所が 21 か所出た（Bridge 16・画面 3・ログイン 2）。1 か所ずつ、config を通すか、正しい理由があれば例外台帳に書いて、記録（scripts/ci/env_baseline.json）を 0 にする。,"- [x] 21 か所が、入口を通すか、例外台帳（理由つき）に入る
 - [x] scripts/ci/env_baseline.json の files が空（G13 が記録なしで緑：「関門の外の process.env なし」）
 - [ ] CI が緑（手元で確かめた）"
+KN-118,画面の部品の土台を新しい名前の Base UI（@base-ui/react 1.9）に替える,課題,KN-5,未着手,Claude（このセッション）,2026-11-13,基盤・画面,新しい画面の部品（apps/web/components/k）の土台 @base-ui-components/react は、名前が @base-ui/react に変わり、古い名前の 1.0.0-rc.0（正式版の前）のまま非推奨になっていた。新しい名前の安定版（1.9.0・MIT）に替え、部品の動きが変わらないことを実ブラウザの試験で確かめる。,"- [ ] @base-ui/react（安定版）に替え、@base-ui-components/* を外す
+- [ ] 新しい画面の実ブラウザの試験（G48・84 本）と単体試験が緑
+- [ ] deprecated_baseline.json から 2 件を外す（G46 の S4）
+- [ ] 技術の選定の記録（packages）を新しい名前に
+- [ ] CI が緑"
+KN-119,ファイルの置き場の部品（AWS SDK）を、非推奨の部品を含まない版に上げる,課題,KN-6,未着手,Claude（このセッション）,2026-11-13,基盤・試験,@aws-sdk/client-s3 3.1132.0 が中で使う @smithy/core 3.34.1 が、ログの機密の伏せ方の不具合で非推奨になっていた（aws-sdk-js-v3 #8393）。直った版を含む client-s3 に上げ、ファイルの置き場の試験で確かめる。,"- [ ] client-s3 を、直った @smithy/core を含む版に上げる
+- [ ] ファイルの置き場（packages/storage）の試験が緑
+- [ ] deprecated_baseline.json から外す（G46 の S4）
+- [ ] CI が緑"
+KN-120,書式の検査（eslint 9）と道具の奥の非推奨の部品を片付ける,課題,KN-6,未着手,Claude（このセッション）,2026-11-13,基盤・試験,eslint 9.39.5 は面倒を見てもらえない版になっていた。道具（Electron の組み立てなど）の奥の部品 12 件も非推奨。本番の画面と API には入らないが、eslint は新しい版に上げ、奥の部品は上の道具を上げて消えるものを消す。,"- [ ] eslint を面倒を見てもらえる版に上げ、G1 が緑
+- [ ] 道具の奥の部品のうち、上の道具を上げて消えるものを消す。残るものは理由を記録に書く
+- [ ] CI が緑"
+KN-121,spec-sync の地図（spec-dependencies.yaml）の古い所を直し、D・F を緑にする,課題,KN-6,未着手,Claude（このセッション）,2026-11-13,基盤・試験,KN-50 で spec-sync の D（振る舞いの波及）と F（下流の分解）が走るようになったら、これまで「走らせられない」の陰に隠れていた、地図の古い所が見えた。地図を今の正本（キャンバス・11_tickets・flow.json）に合わせ、D と F を緑にする。,"- [ ] F：下流の検査が、しまった画面の見本（06_mockup/v1）としまった機能の分解（09_features）を指さない（キャンバスの検査・11_tickets の検査を指す）
+- [ ] D：決定の照らし合わせ（alignment_decisions）に D-125〜D-128 の決定がある（D0）。確かめる手段の決まっていない 9 組（D8）を決める
+- [ ] D：今の flow に無い画面（search・clone-memory）を指す行（AD-007・AD-025）を直す。AD-123（apps/bridge/src/modes.ts の検査）と AD-003-2（06_mockup/v1）の検査を今の形に直す
+- [ ] `python3 scripts/spec-sync/spec-validator.py --project-root . --tier d` と `--tier f` が緑
+- [ ] spec-sync の結果（.qa/spec-sync/<日付>/result.json）で D・F・G・H が pass"

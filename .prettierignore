@@ -33,3 +33,4 @@ apps/web/styles/k-tokens.css
 apps/web/lib/nav.legacy.ts
 apps/web/lib/routes.legacy.ts
 apps/bridge/src/renderer/tokens.css
+scripts/spec-sync/audit-manifest.yaml

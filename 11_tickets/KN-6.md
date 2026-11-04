@@ -9,7 +9,7 @@ area: 試験
 assignee: 未定
 due: 
 decisions: [D-128.113, D-125.167]
-split: KN-55・KN-109・KN-110・KN-111・KN-113・KN-114・KN-116・KN-117
+split: KN-55・KN-109・KN-110・KN-111・KN-113・KN-114・KN-116・KN-117・KN-119・KN-120・KN-121
 depends_on: []
 ---
 

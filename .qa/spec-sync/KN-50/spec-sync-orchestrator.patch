@@ -1,0 +1,79 @@
+--- a/assets/scripts/spec-validator.py
++++ b/assets/scripts/spec-validator.py
+@@ -622,7 +622,22 @@
+     warnings: list[dict[str, Any]] = []
+     overall_pass = True
+ 
++    import subprocess as _sp
++
+     for spec in specs:
++        # command で書いた行（Kaname の書き方・KN-50）：その検査を走らせ、終わりのコードで判定する
++        if spec.get("command") and not spec.get("id_source"):
++            r = _sp.run(spec["command"], shell=True, cwd=project_root, capture_output=True, text=True)
++            ok = r.returncode == 0
++            last = ((r.stdout or "") + (r.stderr or "")).strip().splitlines()[-1:] or [""]
++            checks.append({"coverage": spec.get("id"), "command": spec["command"], "status": "pass" if ok else "fail", "last": last[0][:160]})
++            if not ok:
++                (failures if spec.get("severity", "error") == "error" else warnings).append(
++                    {"coverage": spec.get("id"), "error": f"検査が赤: {spec['command']}（{last[0][:120]}）"}
++                )
++                if spec.get("severity", "error") == "error":
++                    overall_pass = False
++            continue
+         src_ids, err = _extract_source_ids(project_root, spec.get("id_source", {}))
+         if err:
+             failures.append({"coverage": spec.get("id"), "error": err})
+--- a/assets/scripts/tier_d.py
++++ b/assets/scripts/tier_d.py
+@@ -450,7 +450,9 @@
+             did, want = mm.group(1), [x.strip() for x in mm.group(2).split(",") if x.strip()]
+             if want and want[0] in ("all", "*", "全画面"):
+                 want = sorted(MOCKS)   # 「全画面」は作ってある画面すべて
+-            fl = os.path.join(root, str(r.get("file") or PRODUCT or ""))
++            # しまった画面の見本（.html）を指す行は、画面の導出物（PRODUCT・flow.json）を読む（Kaname・KN-50）
++            rf = str(r.get("file") or "")
++            fl = os.path.join(root, rf if rf.endswith(".json") else str(PRODUCT or rf))
+             if not os.path.exists(fl):
+                 fails.append(f'{aid}: 導出物 {r.get("file")} が無い'); continue
+             F = json.load(open(fl, encoding="utf-8"))
+--- a/assets/scripts/tier_g.py
++++ b/assets/scripts/tier_g.py
+@@ -206,6 +206,14 @@
+                                        f"{'' if a.with_tests else '・テスト除く'}）",
+                              "status": "ok" if not bad else "ng"})
+                 fails += [f"G4 {kind}: {x}" for x in bad]
++            elif ck.get("command"):
++                # command で書いた検査（Kaname の書き方・KN-50）：走らせ、終わりのコードで判定する
++                import subprocess as _sp
++                r = _sp.run(ck["command"], shell=True, cwd=root, capture_output=True, text=True)
++                rows.append({"check": "G4", "target": kind, "status": "ok" if r.returncode == 0 else "ng"})
++                if r.returncode:
++                    last = ((r.stdout or "") + (r.stderr or "")).strip().splitlines()[-1:] or [""]
++                    fails.append(f"G4 {kind}: 検査が赤（{ck['command']}・{last[0][:120]}）")
+             else:
+                 # 実装があるのに検査の中身が無いものを緑にしない
+                 if any(w in note for w in defer):
+--- a/assets/scripts/tier_h.py
++++ b/assets/scripts/tier_h.py
+@@ -82,7 +82,20 @@
+     for ln in open(p, encoding="utf-8", errors="ignore").read().splitlines():
+         if ln.lstrip().startswith(("#", ">")):
+             continue
+-        hits = re.findall(r"[\w./-]+/[\w./-]+\.[a-z]{2,4}|[\w-]+/(?=[\s|])", ln)
++        # 表の行（| ID | 関門 | 迂回箇所 | 理由 | 代替統制 | 期限 | 状態 |）は、迂回箇所の欄のパスと期限の欄の日付だけを読む。
++        # 理由の欄の経緯の日付やフォルダ名を、期限や許しの場所と読み違えない（Kaname・KN-50）
++        cols = [c.strip() for c in ln.strip().strip("|").split("|")]
++        if re.match(r"^X-\d+$", cols[0] if cols else "") and len(cols) >= 7:
++            hits = re.findall(r"`([^`#]+)`", cols[2])
++            d = re.search(r"(\d{4}-\d{2}-\d{2})", cols[5])
++            for h in hits:
++                paths.add(h.rstrip("/"))
++                if d and d.group(1) < today and "有効" in cols[6]:
++                    expired.append(f"{h}（期限 {d.group(1)} を過ぎている）")
++            continue
++        # `packages/auth/` のように backtick で囲んだフォルダも許しとして読む（Kaname・KN-50）。
++        # `ファイル#定数` は、ファイルの一部だけの例外なので、ファイル全体を許さない
++        hits = re.findall(r"[\w./-]+/[\w./-]+\.[a-z]{2,4}(?![\w#])|[\w.-]+(?:/[\w.-]+)*/(?=[`\s|])", ln)
+         if not hits:
+             continue
+         d = re.search(r"(\d{4}-\d{2}-\d{2})", ln)

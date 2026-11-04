@@ -140,7 +140,7 @@
     "D-128.9",
     "D-128.37"
    ],
-   "split": "KN-103・KN-104・KN-105・KN-106・KN-107・KN-108・KN-112・KN-115",
+   "split": "KN-103・KN-104・KN-105・KN-106・KN-107・KN-108・KN-112・KN-115・KN-118",
    "depends_on": [],
    "sections": {
     "目的": "DESIGN-kaname.md から部品・左のバー・上の帯・右のパネル・空／失敗／エラーの画面を作り、画面の守り（CSP など）を付ける。新しい画面はこの上に作る。",
@@ -169,7 +169,7 @@
     "D-128.113",
     "D-125.167"
    ],
-   "split": "KN-55・KN-109・KN-110・KN-111・KN-113・KN-114・KN-116・KN-117",
+   "split": "KN-55・KN-109・KN-110・KN-111・KN-113・KN-114・KN-116・KN-117・KN-119・KN-120・KN-121",
    "depends_on": [],
    "sections": {
     "目的": "基盤の検査（G26・G36）を作り、行 ID を名前に持つ実ブラウザの試験の型とステージングをそろえる。",
@@ -1732,12 +1732,12 @@
    "id": "KN-50",
    "title": "spec-sync のスキルを Kaname の書き方に合わせる（D・F・G・H を走らせる）",
    "kind": "タスク",
-   "stage": "未着手",
+   "stage": "確認中",
    "parent": "KN-6",
    "milestone": "基盤",
    "area": "試験",
-   "assignee": "未定",
-   "due": "",
+   "assignee": "Claude（このセッション）",
+   "due": "2026-11-13",
    "decisions": [
     "D-128.117"
    ],
@@ -1749,14 +1749,14 @@
    ],
    "sections": {
     "目的": "spec-sync の横断監査の 4 段（D 振る舞い波及・F 下流分解・G 基盤依存の境界・H 関門）を、走らせられない（blocked）から、実際に走って緑にする。今はスキルの版がプロジェクトの書き方に追いついていない。",
-    "完了の条件": "- [ ] spec-sync の D・F・G・H が blocked でなく pass になる（`.qa/spec-sync/<日付>/result.json`）\n- [ ] 直したスキルが組織のスキルに入り、次のセッションでも同じ版が使われる",
-    "前提と制約": "- プロジェクト側をスキルの古い読み方に合わせて書き換えない（例外台帳・地図はプロジェクトの検査 G25 などが読む形のまま）\n- 2026-10-20 の spec-sync ではスキル側を直して PASS にしていた。その直しが今のスキルに入っていない",
-    "実施事項": "- [ ] tier_d.py：alignment_decisions の trace の file が .html（しまったモック）のとき、画面の導出物（flow.json）を読む\n- [ ] spec-validator.py：downstream_coverage の command の形を読む（id_source.file が無いときは command を走らせる）\n- [ ] tier_g.py：dependency_boundaries.checks の command を走らせ、終わりのコードで判定する\n- [ ] tier_h.py：例外台帳の backtick で囲んだフォルダ（`packages/auth/` など）を越境の許しとして読む",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| D・F・G・H が走って緑 | ① 機械 | `spec-validator.py --project-root .` | |\n| 台帳に無い越境は赤のまま | ① 機械 | 台帳から X-003 を消すと H が赤 | |",
-    "成果物": "",
-    "決定ログ": "- D・F・G・H は、直すまで理由つきの blocked として記録する（D-128.117・2026-11-03 高本さん）",
-    "リスクと懸念": "- スキルは組織から配られるので、このリポジトリの中では直せない。直す場所を高本さんと決める",
-    "申し送り": ""
+    "完了の条件": "- [x] D・F・G・H が blocked でなく走る。**G・H は pass**。D・F は走るようになったが、地図（spec-dependencies.yaml）の古い所で赤 → **KN-121** に切った（スキルの読み違いではない）\n- [ ] 直したスキルが組織のスキルに入り、次のセッションでも同じ版が使われる → 差分を用意した（`.qa/spec-sync/KN-50/spec-sync-orchestrator.patch`）。**組織のスキルへの反映は高本さん**。それまではリポジトリの版（scripts/spec-sync/）を使う（2026-11-04 高本さん：リポジトリに置き、組織へも）",
+    "前提と制約": "- プロジェクト側をスキルの古い読み方に合わせて書き換えない（例外台帳・地図はプロジェクトの検査 G25 などが読む形のまま）→ 守った。直したのはスキルの側だけ",
+    "実施事項": "- [x] tier_d.py：alignment_decisions の trace の file が .html（しまったモック）のとき、画面の導出物（flow.json）を読む\n- [x] spec-validator.py（F）：downstream_coverage の command の形を読む（id_source が無いときは command を走らせ、終わりのコードで判定）\n- [x] tier_g.py：dependency_boundaries.checks の command を走らせ、終わりのコードで判定する\n- [x] tier_h.py：例外台帳の backtick で囲んだフォルダ（`packages/auth/` など）を越境の許しとして読む。★あわせて、表の行は迂回箇所の欄と期限の欄だけを読むようにした（理由の欄の経緯の日付「2026-10-03」を期限と読み、期限切れと誤って赤にしていた）。`ファイル#定数` はファイル全体を許さない\n- [x] 直した版を scripts/spec-sync/ に置き、地図に載せた（G・H は層の棚卸し G27 から毎回回る）",
+    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| G・H が走って緑 | ① 機械 | `scripts/spec-sync/spec-validator.py --tier g／h` | 緑（2026-11-04） |\n| D・F が走る（blocked でない） | ① 機械 | 同 `--tier d／f` | 走る。赤は地図の古い所（KN-121） |\n| 台帳に無い越境は赤のまま | ① 機械 | 台帳から X-003 を消すと H が赤 | 赤になるのを確かめた（戻すと緑） |",
+    "成果物": "- `scripts/spec-sync/`（spec-validator.py・tier_d.py・tier_g.py・tier_h.py・audit-manifest.yaml・README.md）\n- `.qa/spec-sync/KN-50/spec-sync-orchestrator.patch`（組織のスキルへの差分）・`spec-dependencies.yaml`（地図）",
+    "決定ログ": "- D・F・G・H は、直すまで理由つきの blocked として記録する（D-128.117・2026-11-03 高本さん）\n- 直す場所：リポジトリに置き、組織へも（2026-11-04 高本さん）",
+    "リスクと懸念": "- 組織のスキルに差分が入るまで、別のリポジトリやセッションでスキルを使うと古い版が走る",
+    "申し送り": "- 高本さんにお願い：`.qa/spec-sync/KN-50/spec-sync-orchestrator.patch` を組織のスキル spec-sync-orchestrator の assets/scripts に当てる"
    },
    "file": "11_tickets/KN-50.md"
   },
@@ -4598,7 +4598,7 @@
    "id": "KN-116",
    "title": "pnpm が付け替える Better Auth の部品の版をそろえるか決める",
    "kind": "課題",
-   "stage": "未着手",
+   "stage": "作業中",
    "parent": "KN-6",
    "milestone": "基盤",
    "area": "試験",
@@ -4613,9 +4613,9 @@
    "depends_on": [],
    "sections": {
     "目的": "部品を足すたびに pnpm が @better-auth/utils を 0.4.2 → 0.5.1 に付け替える（lockfile の Better Auth の中の版がそろっていない）。いまは足した部品の分だけを lockfile に入れて付け替えを止めている。そろえるなら、ログインの試験を全部流してから入れる。",
-    "完了の条件": "- [ ] そろえるかを決める（高本さん）\n- [ ] そろえるなら、ログイン（packages/auth）の試験と API の試験が全部緑で入れる\n- [ ] CI が緑",
+    "完了の条件": "- [x] そろえるかを決める（高本さん）→ そろえる（2026-11-04）\n- [ ] そろえるなら、ログイン（packages/auth）の試験と API の試験が全部緑で入れる\n- [ ] CI が緑",
     "前提と制約": "- 見つけたもの（D-128.123）：前からあったもの（道具の癖）。KN-106・KN-108 で見つけた",
-    "実施事項": "- [ ] 決めてもらう\n- [ ] そろえる場合は lockfile を作り直し、試験を全部流す",
+    "実施事項": "- [x] 決めてもらう\n- [x] pnpm dedupe で lockfile を作り直した（Better Auth の中の @better-auth/utils を 0.5.1 にそろえた。同じ解き直しで semver・tslib の重なりも整理された）\n- [ ] 試験を全部流す（手元で流している・CI でも流れる）\n- [x] ★見つけたもの：解き直しで、lockfile に上流の「非推奨」の印が 16 件出た（Base UI の名前の変更・AWS SDK の中の部品・eslint 9 など）。非推奨を見る検査を G46 に足し（S4・記録で増えたら赤）、直すほうは KN-118〜KN-120 に切った",
     "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| ログインが壊れない | ① 機械 | `pnpm test`（packages/auth・apps/api） | |",
     "成果物": "",
     "決定ログ": "- 決定に従った：D-128.123",
@@ -4655,6 +4655,129 @@
     "申し送り": "- ★見つけたもの（前からあったもの）：G25 は例外台帳の行を決まった形で読み、形に合わない行を**黙って読み飛ばしていた**（私が足した X-014 を 2 つのパスで書いたら、赤にもならず無いことになった）。形の違う行を赤にした（わざと足すと赤になるのを確かめた）\n- ★自分のミス：書式の道具（prettier --write）を Bridge のフォルダごとかけ、生成物の tokens.css と index.html まで書き換えた。G38 が赤にして気づいた（検査が働いた）。戻し、Bridge の tokens.css を書式の道具の対象から外した"
    },
    "file": "11_tickets/KN-117.md"
+  },
+  {
+   "id": "KN-118",
+   "title": "画面の部品の土台を新しい名前の Base UI（@base-ui/react 1.9）に替える",
+   "kind": "課題",
+   "stage": "未着手",
+   "parent": "KN-5",
+   "milestone": "基盤",
+   "area": "画面",
+   "assignee": "Claude（このセッション）",
+   "due": "2026-11-13",
+   "decisions": [
+    "D-128.123"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "部品の版を替えるだけ。関門に触らない",
+   "depends_on": [],
+   "sections": {
+    "目的": "新しい画面の部品（apps/web/components/k）の土台 @base-ui-components/react は、名前が @base-ui/react に変わり、古い名前の 1.0.0-rc.0（正式版の前）のまま非推奨になっていた。新しい名前の安定版（1.9.0・MIT）に替え、部品の動きが変わらないことを実ブラウザの試験で確かめる。",
+    "完了の条件": "- [ ] @base-ui/react（安定版）に替え、@base-ui-components/* を外す\n- [ ] 新しい画面の実ブラウザの試験（G48・84 本）と単体試験が緑\n- [ ] deprecated_baseline.json から 2 件を外す（G46 の S4）\n- [ ] 技術の選定の記録（packages）を新しい名前に\n- [ ] CI が緑",
+    "前提と制約": "- 見つけたもの（D-128.123）：前からあったもの。KN-116 で pnpm に解き直させたとき、lockfile に上流の「非推奨」の印が出て見つけた。記録（scripts/ci/deprecated_baseline.json）にして、増えたら赤（G46 の S4）\n- 部品の版は 3 週間以上前に出たものにする",
+    "実施事項": "- [ ] 版の違いで変わった部品の書き方を直す（Select・Tabs・Dialog・Menu・Field）\n- [ ] 記録と lockfile を直す",
+    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 部品の動きが変わらない | ① 機械 | G48（新しい画面の実ブラウザの試験） | |\n| 非推奨が記録から消える | ① 機械 | G46 S4 | |",
+    "成果物": "",
+    "決定ログ": "- 決定に従った：D-128.123",
+    "リスクと懸念": "",
+    "申し送り": ""
+   },
+   "file": "11_tickets/KN-118.md"
+  },
+  {
+   "id": "KN-119",
+   "title": "ファイルの置き場の部品（AWS SDK）を、非推奨の部品を含まない版に上げる",
+   "kind": "課題",
+   "stage": "未着手",
+   "parent": "KN-6",
+   "milestone": "基盤",
+   "area": "試験",
+   "assignee": "Claude（このセッション）",
+   "due": "2026-11-13",
+   "decisions": [
+    "D-128.123"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "部品の版を替えるだけ。関門に触らない",
+   "depends_on": [],
+   "sections": {
+    "目的": "@aws-sdk/client-s3 3.1132.0 が中で使う @smithy/core 3.34.1 が、ログの機密の伏せ方の不具合で非推奨になっていた（aws-sdk-js-v3 #8393）。直った版を含む client-s3 に上げ、ファイルの置き場の試験で確かめる。",
+    "完了の条件": "- [ ] client-s3 を、直った @smithy/core を含む版に上げる\n- [ ] ファイルの置き場（packages/storage）の試験が緑\n- [ ] deprecated_baseline.json から外す（G46 の S4）\n- [ ] CI が緑",
+    "前提と制約": "- 見つけたもの（D-128.123）：前からあったもの。KN-116 で pnpm に解き直させたとき、lockfile に上流の「非推奨」の印が出て見つけた。記録（scripts/ci/deprecated_baseline.json）にして、増えたら赤（G46 の S4）\n- 部品の版は 3 週間以上前に出たものにする",
+    "実施事項": "- [ ] 上げる版を決める（3 週間以上前に出た版）\n- [ ] 試験を流す",
+    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| ファイルの置き場が動く | ① 機械 | packages/storage の試験（G3） | |\n| 非推奨が記録から消える | ① 機械 | G46 S4 | |",
+    "成果物": "",
+    "決定ログ": "- 決定に従った：D-128.123",
+    "リスクと懸念": "",
+    "申し送り": ""
+   },
+   "file": "11_tickets/KN-119.md"
+  },
+  {
+   "id": "KN-120",
+   "title": "書式の検査（eslint 9）と道具の奥の非推奨の部品を片付ける",
+   "kind": "課題",
+   "stage": "未着手",
+   "parent": "KN-6",
+   "milestone": "基盤",
+   "area": "試験",
+   "assignee": "Claude（このセッション）",
+   "due": "2026-11-13",
+   "decisions": [
+    "D-128.123"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "部品の版を替えるだけ。関門に触らない",
+   "depends_on": [],
+   "sections": {
+    "目的": "eslint 9.39.5 は面倒を見てもらえない版になっていた。道具（Electron の組み立てなど）の奥の部品 12 件も非推奨。本番の画面と API には入らないが、eslint は新しい版に上げ、奥の部品は上の道具を上げて消えるものを消す。",
+    "完了の条件": "- [ ] eslint を面倒を見てもらえる版に上げ、G1 が緑\n- [ ] 道具の奥の部品のうち、上の道具を上げて消えるものを消す。残るものは理由を記録に書く\n- [ ] CI が緑",
+    "前提と制約": "- 見つけたもの（D-128.123）：前からあったもの。KN-116 で pnpm に解き直させたとき、lockfile に上流の「非推奨」の印が出て見つけた。記録（scripts/ci/deprecated_baseline.json）にして、増えたら赤（G46 の S4）\n- 部品の版は 3 週間以上前に出たものにする",
+    "実施事項": "- [ ] eslint の版を上げる（設定の書き方の変化を直す）\n- [ ] 奥の部品の出どころを調べる（electron-builder・node-gyp など）",
+    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 書式の検査が通る | ① 機械 | G1 | |\n| 非推奨が記録どおりか減る | ① 機械 | G46 S4 | |",
+    "成果物": "",
+    "決定ログ": "- 決定に従った：D-128.123",
+    "リスクと懸念": "",
+    "申し送り": ""
+   },
+   "file": "11_tickets/KN-120.md"
+  },
+  {
+   "id": "KN-121",
+   "title": "spec-sync の地図（spec-dependencies.yaml）の古い所を直し、D・F を緑にする",
+   "kind": "課題",
+   "stage": "未着手",
+   "parent": "KN-6",
+   "milestone": "基盤",
+   "area": "試験",
+   "assignee": "Claude（このセッション）",
+   "due": "2026-11-13",
+   "decisions": [
+    "D-128.123",
+    "D-128.117"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "地図（検査の指し先）を直すだけ。関門に触らない",
+   "depends_on": [
+    "KN-50"
+   ],
+   "sections": {
+    "目的": "KN-50 で spec-sync の D（振る舞いの波及）と F（下流の分解）が走るようになったら、これまで「走らせられない」の陰に隠れていた、地図の古い所が見えた。地図を今の正本（キャンバス・11_tickets・flow.json）に合わせ、D と F を緑にする。",
+    "完了の条件": "- [ ] F：下流の検査が、しまった画面の見本（06_mockup/v1）としまった機能の分解（09_features）を指さない（キャンバスの検査・11_tickets の検査を指す）\n- [ ] D：決定の照らし合わせ（alignment_decisions）に D-125〜D-128 の決定がある（D0）。確かめる手段の決まっていない 9 組（D8）を決める\n- [ ] D：今の flow に無い画面（search・clone-memory）を指す行（AD-007・AD-025）を直す。AD-123（apps/bridge/src/modes.ts の検査）と AD-003-2（06_mockup/v1）の検査を今の形に直す\n- [ ] `python3 scripts/spec-sync/spec-validator.py --project-root . --tier d` と `--tier f` が緑\n- [ ] spec-sync の結果（.qa/spec-sync/<日付>/result.json）で D・F・G・H が pass",
+    "前提と制約": "- 見つけたもの（D-128.123）：前からあったもの。KN-50 で検査が走るようになって見えた\n- 地図を直すとき、検査そのものを緩めない（指し先を今の正本に替える）",
+    "実施事項": "- [ ] F の 7 行（screen_to_mock ほか）の指し先を直す\n- [ ] D の alignment_decisions に D-125〜D-128 を足す・D8 の 9 組を決める・古い画面の名前を直す",
+    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| D・F が緑 | ① 機械 | `scripts/spec-sync/spec-validator.py --tier d／f` | |",
+    "成果物": "",
+    "決定ログ": "- 決定に従った：D-128.123・D-128.117",
+    "リスクと懸念": "",
+    "申し送り": ""
+   },
+   "file": "11_tickets/KN-121.md"
   }
  ]
 }

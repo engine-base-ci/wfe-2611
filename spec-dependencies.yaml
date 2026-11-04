@@ -3644,6 +3644,14 @@ layer_checks:
   check: python3 scripts/ci/ci_wiring_gate.py
 - file: scripts/ci/env_baseline.json
   check: node scripts/ci/env_audit.mjs
+- file: scripts/ci/deprecated_baseline.json
+  check: python3 scripts/ci/stack_gate.py
+- file: scripts/spec-sync/*.py
+  check: python3 scripts/spec-sync/spec-validator.py --project-root . --tier g --pre-commit && python3 scripts/spec-sync/spec-validator.py --project-root . --tier h --pre-commit
+- file: scripts/spec-sync/audit-manifest.yaml
+  manual: 組織のスキル spec-sync-orchestrator の台帳をそのまま写したもの（spec-validator.py が同じフォルダから読む・KN-50）
+- file: scripts/spec-sync/README.md
+  manual: 直した版の説明と、組織のスキルへの差分の当て方（KN-50）
 project_audit:
   ignore:
   - path: apps/web/pw-reports/
