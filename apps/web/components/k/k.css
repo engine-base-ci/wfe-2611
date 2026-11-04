@@ -459,3 +459,60 @@ textarea.k-input {
     animation-duration: 2.4s;
   }
 }
+
+/* ---- 4 つの状態とエラーの 1 件（KN-106）---- */
+.k-state {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--k-s-sm);
+  padding: var(--k-s-lg) 0;
+  max-width: 560px;
+}
+.k-state[data-state="loading"] {
+  flex-direction: row;
+  align-items: center;
+  min-height: 24px;
+  color: var(--k-on-surface-variant);
+}
+.k-state-title {
+  margin: 0;
+  font-size: var(--k-text-h2);
+  line-height: var(--k-lh-h2);
+  font-weight: var(--k-fw-h2);
+}
+.k-state-body {
+  margin: 0;
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-md);
+  line-height: var(--k-lh-body-md);
+}
+.k-state-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-s-sm);
+  margin-top: var(--k-s-sm);
+}
+.k-state-actions a.k-btn {
+  text-decoration: none;
+}
+.k-state-code {
+  margin: var(--k-s-sm) 0 0;
+  font-size: var(--k-text-label-md);
+  color: var(--k-on-surface-variant);
+}
+.k-error-page {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: var(--k-s-lg) var(--k-s-md);
+  box-sizing: border-box;
+}
+.k-error-card {
+  width: min(560px, 100%);
+  padding: var(--k-s-lg);
+  background: var(--k-card);
+  border: 1px solid var(--k-line);
+  border-radius: var(--k-r-lg);
+  box-sizing: border-box;
+}

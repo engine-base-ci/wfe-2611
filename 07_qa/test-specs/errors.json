@@ -4332,6 +4332,256 @@
     "D-128.62",
     "D-128.63"
    ]
+  },
+  {
+   "id": "E-PAGE-001",
+   "class": "not_found",
+   "where": {
+    "screen": "*",
+    "state": "not_found"
+   },
+   "when": "開いた URL の画面か、その中の 1 件が無い（消された・番号の打ち間違い・見る範囲の外）",
+   "false_when": "ある画面・見える 1 件を開いた",
+   "message": "見つかりませんでした。消されたか、見る権限が無いかもしれません",
+   "action": "自分に関わるものへ戻る／探す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ログイン済み",
+    "steps": [
+     "無い番号の URL を開く"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-069",
+    "D-128.78"
+   ],
+   "support_code": "PAGE-001"
+  },
+  {
+   "id": "E-PAGE-002",
+   "class": "permission",
+   "where": {
+    "screen": "*",
+    "state": "forbidden"
+   },
+   "when": "画面か 1 件はあるが、自分の役割・見える範囲では見られない",
+   "false_when": "見る権限がある人が開いた",
+   "message": "この画面を見る権限がありません。見る必要があれば、マネージャーに頼めます。頼んだことは相手に知らせ、記録に残ります",
+   "action": "マネージャーに頼む／戻る",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "ログイン済み",
+    "steps": [
+     "担当者で、ほかのグループのチケットの URL を開く"
+    ],
+    "needs": "なし"
+   },
+   "severity": "high",
+   "source": [
+    "D-069",
+    "D-128.78"
+   ],
+   "support_code": "PAGE-002"
+  },
+  {
+   "id": "E-PAGE-003",
+   "class": "dependency",
+   "where": {
+    "screen": "*",
+    "state": "down"
+   },
+   "when": "Kaname の側が落ちている・応答しない（5 分以上続く）",
+   "false_when": "ふだんどおり答える。一度だけの通信の切れは「読み込めない」で出す",
+   "message": "Kaname の調子が悪くなっています。運営が直しています。あなたの操作や PC の問題ではありません",
+   "action": "もう一度／いまの様子を見る",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ログイン済み",
+    "steps": [
+     "API を止めて画面を開く"
+    ],
+    "needs": "API を止められる環境"
+   },
+   "severity": "critical",
+   "source": [
+    "D-069",
+    "D-128.78"
+   ],
+   "support_code": "PAGE-003"
+  },
+  {
+   "id": "E-PAGE-004",
+   "class": "dependency",
+   "where": {
+    "screen": "*",
+    "state": "maintenance"
+   },
+   "when": "前もって知らせたメンテナンスの時間に入っている",
+   "false_when": "メンテナンスの時間の外",
+   "message": "いまメンテナンス中です。終わると自動でこの画面が切り替わります。書きかけはこの PC に残っています",
+   "action": "いまの様子を見る",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ログイン済み",
+    "steps": [
+     "メンテナンス中の印を立てて画面を開く"
+    ],
+    "needs": "メンテナンスの印を立てられる環境"
+   },
+   "severity": "high",
+   "source": [
+    "D-069",
+    "D-128.78"
+   ],
+   "support_code": "PAGE-004"
+  },
+  {
+   "id": "E-PAGE-005",
+   "class": "auth",
+   "where": {
+    "screen": "*",
+    "state": "session_expired"
+   },
+   "when": "しばらく操作が無い・最長の長さを過ぎた・場所か端末が急に変わったので、ログインを閉じた",
+   "false_when": "ログインが生きている",
+   "message": "ログインが切れました。書きかけのものはこの PC に残っています。入り直すと続きから書けます",
+   "action": "入り直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ログイン済み",
+    "steps": [
+     "ログインの最後の操作を 12 時間前にして画面を開く"
+    ],
+    "needs": "時刻の操作か DB 直接更新"
+   },
+   "severity": "high",
+   "source": [
+    "D-069",
+    "D-128.78"
+   ],
+   "support_code": "PAGE-005"
+  },
+  {
+   "id": "E-PAGE-006",
+   "class": "not_found",
+   "where": {
+    "screen": "*",
+    "state": "link_expired"
+   },
+   "when": "招待・パスワードの作り直しのリンクが期限切れか、もう使われた",
+   "false_when": "期限内で一度も使っていないリンク",
+   "message": "このリンクは使えなくなりました。期限が切れたか、もう使われています",
+   "action": "送り直してもらう／もう一度はじめから",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "招待かパスワードの作り直しを一度使った",
+    "steps": [
+     "使い終わったリンクをもう一度開く"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-069",
+    "D-128.78"
+   ],
+   "support_code": "PAGE-006"
+  },
+  {
+   "id": "E-PAGE-007",
+   "class": "connectivity",
+   "where": {
+    "screen": "*",
+    "state": "load_failed"
+   },
+   "when": "画面の中身を読み込めなかった（ネットが切れた・混み合って答えが返らない）",
+   "false_when": "答えが返った",
+   "message": "読み込めませんでした。ネットにつながっていないか、Kaname が混み合っています。書きかけのものはこの PC に残っています",
+   "action": "もう一度／いまの様子を見る",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ログイン済み",
+    "steps": [
+     "読み込みの途中でネットを切る"
+    ],
+    "needs": "ネットを切れる環境"
+   },
+   "severity": "medium",
+   "source": [
+    "D-069",
+    "D-128.78"
+   ],
+   "support_code": "PAGE-007"
+  },
+  {
+   "id": "E-PAGE-008",
+   "class": "connectivity",
+   "where": {
+    "screen": "*",
+    "state": "offline"
+   },
+   "when": "端末がネットにつながっていない",
+   "false_when": "つながっている",
+   "message": "オフラインです。読むことはできます。書いたものはつながったら送ります",
+   "action": "そのまま続ける（つながったら自動で送る）",
+   "undo": false,
+   "layers": [
+    "UI"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ログイン済み",
+    "steps": [
+     "端末のネットを切る"
+    ],
+    "needs": "ネットを切れる環境"
+   },
+   "severity": "medium",
+   "source": [
+    "D-069",
+    "D-128.78"
+   ],
+   "support_code": "PAGE-008"
   }
  ],
  "meta": {

@@ -19,6 +19,7 @@
     "@base-ui-components/react": "1.0.0-rc.0",
     "@hookform/resolvers": "^5.9.1",
     "@kaname/contracts": "workspace:*",
+    "@kaname/errors": "workspace:*",
     "@svar-ui/react-gantt": "^2.7.3",
     "@tanstack/react-query": "^5.102.8",
     "better-auth": "^1.7.15",

@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。134 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。142 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -2434,6 +2434,152 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "invite-accept",
       "state": "a"
+    }
+  },
+  "E-PAGE-001": {
+    "id": "E-PAGE-001",
+    "cls": "not_found",
+    "message": "見つかりませんでした。消されたか、見る権限が無いかもしれません",
+    "action": "自分に関わるものへ戻る／探す",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "PAGE-001",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "*",
+      "state": "not_found"
+    }
+  },
+  "E-PAGE-002": {
+    "id": "E-PAGE-002",
+    "cls": "permission",
+    "message": "この画面を見る権限がありません。見る必要があれば、マネージャーに頼めます。頼んだことは相手に知らせ、記録に残ります",
+    "action": "マネージャーに頼む／戻る",
+    "undo": false,
+    "severity": "high",
+    "support_code": "PAGE-002",
+    "must_not": true,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "*",
+      "state": "forbidden"
+    }
+  },
+  "E-PAGE-003": {
+    "id": "E-PAGE-003",
+    "cls": "dependency",
+    "message": "Kaname の調子が悪くなっています。運営が直しています。あなたの操作や PC の問題ではありません",
+    "action": "もう一度／いまの様子を見る",
+    "undo": false,
+    "severity": "critical",
+    "support_code": "PAGE-003",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "*",
+      "state": "down"
+    }
+  },
+  "E-PAGE-004": {
+    "id": "E-PAGE-004",
+    "cls": "dependency",
+    "message": "いまメンテナンス中です。終わると自動でこの画面が切り替わります。書きかけはこの PC に残っています",
+    "action": "いまの様子を見る",
+    "undo": false,
+    "severity": "high",
+    "support_code": "PAGE-004",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "*",
+      "state": "maintenance"
+    }
+  },
+  "E-PAGE-005": {
+    "id": "E-PAGE-005",
+    "cls": "auth",
+    "message": "ログインが切れました。書きかけのものはこの PC に残っています。入り直すと続きから書けます",
+    "action": "入り直す",
+    "undo": false,
+    "severity": "high",
+    "support_code": "PAGE-005",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "*",
+      "state": "session_expired"
+    }
+  },
+  "E-PAGE-006": {
+    "id": "E-PAGE-006",
+    "cls": "not_found",
+    "message": "このリンクは使えなくなりました。期限が切れたか、もう使われています",
+    "action": "送り直してもらう／もう一度はじめから",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "PAGE-006",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "*",
+      "state": "link_expired"
+    }
+  },
+  "E-PAGE-007": {
+    "id": "E-PAGE-007",
+    "cls": "connectivity",
+    "message": "読み込めませんでした。ネットにつながっていないか、Kaname が混み合っています。書きかけのものはこの PC に残っています",
+    "action": "もう一度／いまの様子を見る",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "PAGE-007",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "*",
+      "state": "load_failed"
+    }
+  },
+  "E-PAGE-008": {
+    "id": "E-PAGE-008",
+    "cls": "connectivity",
+    "message": "オフラインです。読むことはできます。書いたものはつながったら送ります",
+    "action": "そのまま続ける（つながったら自動で送る）",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "PAGE-008",
+    "must_not": false,
+    "layers": [
+      "UI"
+    ],
+    "where": {
+      "screen": "*",
+      "state": "offline"
     }
   }
 };
