@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { cookies } from "next/headers";
 import { Providers } from "@/components/providers";
+import { WEB_ENV } from "@/lib/env";
 import { THEME_COOKIE, parseTheme, themeAttr } from "@/lib/theme";
 // 新しい画面の書体（Noto Sans JP・D-128.3）。画面と同じ所から配る（CSP の font-src は self のまま）。使う画面だけが字の分を読む
 import "@fontsource-variable/noto-sans-jp";
@@ -12,7 +13,10 @@ import "./globals.css";
 export const metadata: Metadata = { title: "Kaname", description: "Kaname ── 目標を配り、自分のAIと回す" };
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
-  const theme = themeAttr(parseTheme((await cookies()).get(THEME_COOKIE)?.value));
+  const jar = await cookies();
+  // 根で落ちたときの受け皿（global-error）を実ブラウザで確かめる仕掛け（KN-115）。開発用の見本が開けるときだけ効く（本番は devPages が false）
+  if (WEB_ENV.devPages && jar.get("k-boom-root")?.value === "1") throw new Error("見本：根の layout で落とす");
+  const theme = themeAttr(parseTheme(jar.get(THEME_COOKIE)?.value));
   return (
     <html lang="ja" {...(theme ? { "data-theme": theme } : {})}>
       <body className="min-h-dvh antialiased">

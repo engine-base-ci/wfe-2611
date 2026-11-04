@@ -448,9 +448,9 @@ KN-114,壊れていた自己試験 2 本を直す（contract・env_audit）,課�
 - [ ] `pnpm ci:env-audit:selftest` が緑
 - [ ] ci_scripts.json の known_broken から外し、G47 に入れる
 - [ ] CI が緑"
-KN-115,Next.js の決まったファイルの足りないもの（global-error）,課題,KN-5,未着手,Claude（このセッション）,2026-11-13,基盤・画面,根の layout で落ちたときの受け皿（app/global-error.tsx）が無い（KN-106 で app/error.tsx は足した）。足して、決まったファイルがそろっているかを機械で見る。,"- [ ] app/global-error.tsx（正本の E-PAGE-007 の文言）
-- [ ] 決まったファイル（error・global-error・not-found）がそろっているかの単体試験
-- [ ] CI が緑"
+KN-115,Next.js の決まったファイルの足りないもの（global-error）,課題,KN-5,確認中,Claude（このセッション）,2026-11-13,基盤・画面,根の layout で落ちたときの受け皿（app/global-error.tsx）が無い（KN-106 で app/error.tsx は足した）。足して、決まったファイルがそろっているかを機械で見る。,"- [x] app/global-error.tsx（正本の E-PAGE-007 の文言・根の layout が読まれないので見た目と書体を自分で読む）
+- [x] 決まったファイル（error・global-error・not-found）がそろっているかの単体試験（`apps/web/test/k-app-files.test.ts`）
+- [ ] CI が緑（手元で本番の形に組み立てて確かめた）"
 KN-116,pnpm が付け替える Better Auth の部品の版をそろえるか決める,課題,KN-6,未着手,Claude（このセッション）,2026-11-13,基盤・試験,部品を足すたびに pnpm が @better-auth/utils を 0.4.2 → 0.5.1 に付け替える（lockfile の Better Auth の中の版がそろっていない）。いまは足した部品の分だけを lockfile に入れて付け替えを止めている。そろえるなら、ログインの試験を全部流してから入れる。,"- [ ] そろえるかを決める（高本さん）
 - [ ] そろえるなら、ログイン（packages/auth）の試験と API の試験が全部緑で入れる
 - [ ] CI が緑"

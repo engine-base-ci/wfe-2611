@@ -76,3 +76,18 @@ test("KN106-004 描いている途中で落ちても真っ白にしない（正�
   await expect(page.getByRole("heading", { level: 1, name: "読み込めませんでした。" })).toBeVisible();
   await expect(page.getByRole("button", { name: "もう一度" })).toBeVisible();
 });
+
+test("KN115-001 根の layout で落ちても真っ白にしない（正本の「読み込めない」・見た目と書体も効いている）", async ({
+  page,
+  context,
+  baseURL,
+}) => {
+  await context.addCookies([{ name: "k-boom-root", value: "1", url: baseURL ?? "http://127.0.0.1:3123" }]);
+  await page.goto("/dev/k");
+  await expect(page.getByRole("heading", { level: 1, name: "読み込めませんでした。" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "もう一度" })).toBeVisible();
+  // 見た目（k-root の地の色）が当たっている
+  expect(await page.locator(".k-error-page").evaluate((e) => getComputedStyle(e).backgroundColor)).not.toBe(
+    "rgba(0, 0, 0, 0)",
+  );
+});
