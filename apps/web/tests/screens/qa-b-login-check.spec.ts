@@ -48,7 +48,7 @@ async function settled(page: Page) {
 function filesContain(dir: string, needle: string): string[] {
   const hits: string[] = [];
   const walk = (p: string): void => {
-    let names: string[] = [];
+    let names: string[];
     try {
       names = readdirSync(p);
     } catch {

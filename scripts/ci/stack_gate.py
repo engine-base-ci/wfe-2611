@@ -10,6 +10,8 @@
   S3 記録の「どの選定か」が記録の中に無い（register の道すじが違う・「(本文)」なのに本文に名前が無い）
   S5 部品は出てから 21 日を過ぎた版だけ（D-128.124）：pnpm-workspace.yaml に minimumReleaseAge（30240 分以上）がある。
      例外（minimumReleaseAgeExclude）の行は「名前@版」で、出た日（YYYY-MM-DD に出た）を書く。21 日を過ぎた例外は外すよう知らせる（害は無いので赤にしない）
+  S6 lockfile の版が、どれも出てから 21 日を過ぎている（例外に書いた「名前@版」を除く）。出た日は npm の registry に聞く（KN-120）。
+     CI の pnpm install --frozen-lockfile は版を解き直さないので、pnpm の minimumReleaseAge だけでは lockfile に入った若い版を止められない
   S4 lockfile で上流が「非推奨」にした部品が、記録（scripts/ci/deprecated_baseline.json）に無い。記録の物が lockfile から消えたら記録から外す（KN-116）
 @types/* は、元の部品が記録にあれば要らない。workspace の部品（@kaname/*）は見ない。
 """
@@ -118,9 +120,66 @@ def check_release_age(ws_text: str | None = None, today: str | None = None) -> l
         d = re.search(r"(\d{4}-\d{2}-\d{2}) に出た", note)
         if not d:
             fails.append(f"S5 例外 {name} に出た日（YYYY-MM-DD に出た）が無い")
-        elif datetime.date.fromisoformat(d.group(1)) + datetime.timedelta(days=21) <= today_d:
+        elif datetime.date.fromisoformat(d.group(1)) + datetime.timedelta(days=21) < today_d:  # 出た日の時刻がわからないので、21 日目の翌日から知らせる
             # 過ぎた例外は、もう決まりの内側の版なので害は無い。日付だけで CI を赤にしない（知らせるだけ）
             NOTES.append(f"S5 例外 {name} は出て 21 日を過ぎた（{d.group(1)}）。minimumReleaseAgeExclude から外す")
+    return fails
+
+
+def lock_packages(lock: str) -> set[tuple[str, str]]:
+    import re
+    sec = lock[lock.index("\npackages:\n"):lock.index("\nsnapshots:\n")]
+    return {(m.group(1), m.group(2)) for m in re.finditer(r"\n  '?(@?[^@\s']+)@([^\s'(:]+)", sec)}
+
+
+def registry_times(names: list[str]) -> dict[str, dict]:
+    import concurrent.futures, ssl, urllib.parse, urllib.request
+    ca = os.environ.get("SSL_CERT_FILE") or ("/root/.ccr/ca-bundle.crt" if os.path.exists("/root/.ccr/ca-bundle.crt") else None)
+    ctx = ssl.create_default_context(cafile=ca)
+
+    def one(name: str) -> tuple[str, dict]:
+        u = "https://registry.npmjs.org/" + urllib.parse.quote(name, safe="@")
+        err = ""
+        for _ in range(3):
+            try:
+                with urllib.request.urlopen(urllib.request.Request(u, headers={"accept": "application/json"}), context=ctx, timeout=60) as r:
+                    return name, json.load(r).get("time", {})
+            except Exception as e:  # 引けなければ赤にする（黙って通さない）
+                err = str(e)
+        return name, {"_err": err}
+
+    with concurrent.futures.ThreadPoolExecutor(16) as ex:
+        return dict(ex.map(one, names))
+
+
+def excluded(ws_text: str) -> set[str]:
+    import re
+    blk = re.search(r"^minimumReleaseAgeExclude:(.*?)(?=^\S|\Z)", ws_text, re.M | re.S)
+    return {m.group(1) for ln in (blk.group(1).splitlines() if blk else []) if (m := re.match(r'^\s*-\s*"?([^"\s#]+)"?', ln))}
+
+
+def check_lock_age(lock: str | None = None, ws_text: str | None = None, times: dict | None = None, now: str | None = None) -> list[str]:
+    import datetime
+    lock = lock if lock is not None else open(os.path.join(ROOT, "pnpm-lock.yaml"), encoding="utf-8").read()
+    ws_text = ws_text if ws_text is not None else open(os.path.join(ROOT, "pnpm-workspace.yaml"), encoding="utf-8").read()
+    pk = lock_packages(lock)
+    times = times if times is not None else registry_times(sorted({n for n, _ in pk}))
+    t_now = datetime.datetime.fromisoformat(now) if now else datetime.datetime.now(datetime.timezone.utc)
+    cut = t_now - datetime.timedelta(days=21)
+    ex = excluded(ws_text)
+    fails = []
+    for n, v in sorted(pk):
+        tm = times.get(n, {})
+        if "_err" in tm:
+            fails.append(f"S6 {n} の出た日を registry に聞けない（{tm['_err'][:80]}）")
+            continue
+        ts = tm.get(v)
+        if not ts:
+            fails.append(f"S6 {n}@{v} の出た日が registry に無い")
+            continue
+        d = datetime.datetime.fromisoformat(ts.replace("Z", "+00:00"))
+        if d > cut and f"{n}@{v}" not in ex:
+            fails.append(f"S6 {n}@{v} は {ts[:10]} に出て 21 日を過ぎていない（21 日を過ぎた版に解き直すか、例外に「名前@版」と出た日を書く）")
     return fails
 
 
@@ -132,10 +191,15 @@ def main() -> int:
         ws = 'minimumReleaseAge: 30240\nminimumReleaseAgeExclude:\n  - "a@1.0.0"  # 2026-01-01 に出た\n  - "b"\n'
         r5 = check_release_age(ws, "2026-02-01")
         hit5 = any("a@1.0.0" in n and "過ぎた" in n for n in NOTES) and any("「名前@版」" in f for f in r5) and bool(check_release_age("x: 1\n"))
-        ok = hit and hit4 and hit5
-        print("PASS — 記録に無い部品・記録に無い非推奨・21 日の決まりの外れを見つけた" if ok else "FAIL — 見つけられない")
+        lk = "\npackages:\n\n  young@1.0.0:\n    resolution: {integrity: x}\n\n  '@s/old@2.0.0':\n    resolution: {integrity: x}\n\nsnapshots:\n"
+        tm = {"young": {"1.0.0": "2026-01-25T00:00:00Z"}, "@s/old": {"2.0.0": "2025-12-01T00:00:00Z"}}
+        r6 = check_lock_age(lk, "x: 1\n", tm, "2026-02-01T00:00:00+00:00")
+        r6x = check_lock_age(lk, 'minimumReleaseAgeExclude:\n  - "young@1.0.0" # 2026-01-25 に出た\n', tm, "2026-02-01T00:00:00+00:00")
+        hit6 = len(r6) == 1 and "young@1.0.0" in r6[0] and r6x == []
+        ok = hit and hit4 and hit5 and hit6
+        print("PASS — 記録に無い部品・記録に無い非推奨・21 日の決まりの外れ・lockfile の若い版を見つけた" if ok else "FAIL — 見つけられない")
         return 0 if ok else 1
-    fails = check() + check_deprecated() + check_release_age()
+    fails = check() + check_deprecated() + check_release_age() + check_lock_age()
     for n in NOTES:
         print("  note", n)
     for f in fails:

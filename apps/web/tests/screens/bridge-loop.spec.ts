@@ -32,7 +32,7 @@ test.beforeEach(({ page }) => hideRealBridge(page));
 const BRIDGE_APP = "/Applications/Kaname Bridge.app";
 /** 「まだ配布していない」を演じるテストは、配布物を置いてある環境では作れない（BRIDGE_RELEASE_DIR に .dmg がある）。黙って通さず理由つきで止める */
 const needsNoRelease = async (): Promise<void> => {
-  let served = false;
+  let served: boolean;
   try {
     const r = await fetch(`${API}/api/auth-ext/bridge/download?os=mac`, { redirect: "manual" });
     served = r.status !== 404;

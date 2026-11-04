@@ -14,7 +14,7 @@ const ID = /^[0-9a-f-]{8,64}$/i;
 /** その session の記録のファイル。無ければ null（別の PC の記録・消された記録） */
 export function sessionFile(sessionId: string, root = projectsDir()): string | null {
   if (!ID.test(sessionId)) return null;
-  let dirs: string[] = [];
+  let dirs: string[];
   try {
     dirs = readdirSync(root);
   } catch {
@@ -29,7 +29,7 @@ export function sessionFile(sessionId: string, root = projectsDir()): string | n
 
 /** 記録から自分のAI の文を並びどおりに取り出す（壊れた行は飛ばす） */
 export function aiEntries(file: string): Entry[] {
-  let raw = "";
+  let raw: string;
   try {
     raw = readFileSync(file, "utf8");
   } catch {

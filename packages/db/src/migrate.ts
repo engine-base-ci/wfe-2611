@@ -47,7 +47,7 @@ export async function migrate(
   await client.connect();
   const applied: string[] = [];
   const skipped: string[] = [];
-  let passwords: string[] = [];
+  let passwords: string[];
   try {
     await client.query("create schema if not exists app");
     await client.query(

@@ -116,8 +116,8 @@ export async function runMatrix(
     res.executed++;
     const pk = pkOf.get(cs.table) ?? "id";
     const wantNG = isNG(cs.expected);
-    let got = "";
-    let ok = false;
+    let got: string;
+    let ok: boolean;
     if (cs.role === "system") {
       // 追記専用：関門の関数からは書ける／直接 INSERT は弾く／UPDATE・DELETE は誰でも弾く
       if (cs.case.includes("関門の関数")) {

@@ -125,7 +125,7 @@ export function releaseFileResponse(dir: string, name: string): Response | null 
 export function legacyInstaller(dir: string, os: BridgeOs): string | null {
   if (!dir) return null;
   const want = os === "mac" ? /(arm64)?\.dmg$/ : /\.exe$/;
-  let files: string[] = [];
+  let files: string[];
   try {
     files = readdirSync(dir).filter((f) => want.test(f));
   } catch {

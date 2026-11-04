@@ -814,7 +814,7 @@
  "notes_20260927": "2026-09-27：D-104 で書式の描画（react-markdown ほか）と声（ブラウザの音声認識）を user が選んだ。D-105（記憶の毎朝のまとめ）は新しい基盤を使わない（Postgres・Bridge・本人の Claude Code のまま）",
  "supply_chain": {
   "min_release_age_days": 21,
-  "how": "pnpm-workspace.yaml の minimumReleaseAge（30240 分）。pnpm が解くとき、出て 21 日未満の版を選ばない（中の部品も）。CI の G46（stack_gate.py の S5）が、設定が外れていないか・例外の書き方を見る",
+  "how": "pnpm-workspace.yaml の minimumReleaseAge（30240 分）。pnpm が解くとき、出て 21 日未満の版を選ばない（中の部品も）。CI の G46（stack_gate.py の S5）が、設定が外れていないか・例外の書き方を見る。CI の install は lockfile のまま解き直さないので、lockfile の全部の版の出た日も npm の registry に聞いて確かめる（S6・KN-120）",
   "exceptions": "弱点の直しで急ぐときだけ minimumReleaseAgeExclude に「名前@版」と出た日を書く。決める前から入っていた 21 日未満の版も、出て 21 日を過ぎるまで例外に書いて外す",
   "deprecated": "上流が非推奨にした部品は scripts/ci/deprecated_baseline.json に記録し、記録に無い非推奨を赤（G46 の S4）",
   "source": [

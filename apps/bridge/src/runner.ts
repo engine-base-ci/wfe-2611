@@ -482,7 +482,7 @@ function runOnce(
         waitingHuman += 1;
         clearTimeout(timer);
         asking = asking.then(async () => {
-          let a: Answer = { allow: false };
+          let a: Answer;
           try {
             a = hooks.ask
               ? await hooks.ask({ requestId: e.requestId, tool: e.tool, input: e.input, summary: e.summary })
