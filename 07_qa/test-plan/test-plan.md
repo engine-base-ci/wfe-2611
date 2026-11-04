@@ -84,7 +84,7 @@
 | L4 | 正本 full ＋ 本番スモーク（prod-smoke.md）＋ 負荷実測 | staging ＋ 本番（スモークのみ） | リリース前 | qa-coverage.py STATUS 完了 |
 | L5 | full ＋ 正本の鮮度監査 | staging | 年次・大改修 | 同上 |
 
-## CI ゲート 49 本（.github/workflows/v3-gate.yml）
+## CI ゲート 50 本（.github/workflows/v3-gate.yml）
 
 | # | 名前 | script | job | 致命 |
 |---|---|---|---|---|
@@ -137,6 +137,7 @@
 | G38 | 生成物が全部最新（作り手を全部回して、中身が変わる生成物・落ちる作り手・目録に無い生成物を赤にする・D-128.123） | `python3 scripts/ci/generated_gate.py --selftest && python3 scripts/ci/generated_gate.py` | spec |  |
 | G46 | 使っている部品が技術の選定の記録と合う（package.json と selected-stack.json の packages を 1 対 1・D-128.123） | `python3 scripts/ci/stack_gate.py --selftest && python3 scripts/ci/stack_gate.py` | spec |  |
 | G47 | 書いた検査が CI から回る・検査の自己試験（ci_wiring_gate・エラーの参照・自己試験 4 本・D-128.123） | `python3 scripts/ci/ci_wiring_gate.py --selftest && python3 scripts/ci/ci_wiring_gate.py && pnpm -s ci:errors-used && pnpm -s ci:errors-used:selftest && pnpm -s ci:sql-guard:selftest && pnpm -s ci:chat-one:selftest && python3 scripts/ci/qa_delta.py --selftest` | spec |  |
+| G48 | 新しい画面の実ブラウザの試験と、押した証拠（本番の形で組み立てた画面の上・行 ID の試験が全部の行で通る・記録なし・KN-109） | `BASE_URL=http://127.0.0.1:3124 pnpm --filter @kaname/web e2e:k && python3 scripts/ci/op_gate.py --spec 07_qa/test-specs/k --tickets 11_tickets/tickets.json --all` | web |  |
 
 ## マージ可能の判断
 

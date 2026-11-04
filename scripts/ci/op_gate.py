@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """操作の実証ゲート（説明文の PASS を赤にする）。
 
-  python3 scripts/ci/op_gate.py --spec 07_qa/test-specs --tickets 07_tasks/tickets.json --report apps/web/test-results/report.json [--report apps/e2e/test-results/report.json] --task T-U-05 [--task …] | --wave W11 --waves 08_schedule/wave-schedule.json | --all
+  python3 scripts/ci/op_gate.py --spec 07_qa/test-specs --tickets 07_tasks/tickets.json（11_tickets/tickets.json も読める・行のタスクの列が KN-…） --report apps/web/test-results/report.json [--report apps/e2e/test-results/report.json] --task T-U-05 [--task …] | --wave W11 --waves 08_schedule/wave-schedule.json | --all
 
 規則（test-ladder §6・L-003 Rule 10 を機械にしたもの）:
   O1 実ブラウザで確かめる観点（既定：操作・状態・主アクション・到達性・横溢れ・空・止まっている・表記ゆらぎ・共通シェル・部品・エラー A/B/C）の行は、
@@ -107,7 +107,17 @@ def main() -> int:
         cfg = json.load(open(cp, encoding="utf-8"))
     views = set(cfg.get("evidence_views", DEFAULT_VIEWS))
     layers = set(cfg.get("layers", ["ui"]))   # 実ブラウザの証拠を要る層（既定 ui）。backend の行は契約の生成テスト（EARS）が証拠＝別ゲート
-    tasks = {t["id"]: t for t in json.load(open(a.tickets, encoding="utf-8"))["tasks"]}
+    tj = json.load(open(a.tickets, encoding="utf-8"))
+    if "tickets" in tj:
+        # Kaname を作るチケット（11_tickets・D-128.114）：行の「タスク」の列がチケットの番号。--all は、行を持つチケット全部
+        #   （作業の段に関わらず、PASS と書いた行は証拠が要る）
+        spec_rows = load_rows(a.spec)
+        tasks = {}
+        for t in tj["tickets"]:
+            l1 = [rid for rid, r in spec_rows.items() if r["task"] == t["id"]]
+            tasks[t["id"]] = {"id": t["id"], "deliverable_layer": "ui", "status": "done" if l1 else "", "qa_rows": {"l1": l1}}
+    else:
+        tasks = {t["id"]: t for t in tj["tasks"]}
     targets = list(a.task)
     if a.wave:
         ws = json.load(open(a.waves, encoding="utf-8"))

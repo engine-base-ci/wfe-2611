@@ -98,6 +98,7 @@ SPEC_GATES = [
     {"id": 38, "name": "生成物が全部最新（作り手を全部回して、中身が変わる生成物・落ちる作り手・目録に無い生成物を赤にする・D-128.123）", "script": "python3 scripts/ci/generated_gate.py --selftest && python3 scripts/ci/generated_gate.py", "job": "spec", "blocking": True},
     {"id": 46, "name": "使っている部品が技術の選定の記録と合う（package.json と selected-stack.json の packages を 1 対 1・D-128.123）", "script": "python3 scripts/ci/stack_gate.py --selftest && python3 scripts/ci/stack_gate.py", "job": "spec", "blocking": True},
     {"id": 47, "name": "書いた検査が CI から回る・検査の自己試験（ci_wiring_gate・エラーの参照・自己試験 4 本・D-128.123）", "script": "python3 scripts/ci/ci_wiring_gate.py --selftest && python3 scripts/ci/ci_wiring_gate.py && pnpm -s ci:errors-used && pnpm -s ci:errors-used:selftest && pnpm -s ci:sql-guard:selftest && pnpm -s ci:chat-one:selftest && python3 scripts/ci/qa_delta.py --selftest", "job": "spec", "blocking": True},
+    {"id": 48, "name": "新しい画面の実ブラウザの試験と、押した証拠（本番の形で組み立てた画面の上・行 ID の試験が全部の行で通る・記録なし・KN-109）", "script": "BASE_URL=http://127.0.0.1:3124 pnpm --filter @kaname/web e2e:k && python3 scripts/ci/op_gate.py --spec 07_qa/test-specs/k --tickets 11_tickets/tickets.json --all", "job": "web", "blocking": True},
 ]
 ALL_GATES = [{**g, "job": "database" if g["id"] in (3, 4, 6, 12) else ("e2e" if g["id"] == 15 else "static")} for g in FG["merge_gates"]] + SPEC_GATES
 def step(g): return f'      - name: "G{g["id"]} {g["name"]}{" [CRITICAL]" if g["id"] in FG.get("kaname_critical_gates", []) else ""}"\n        if: ${{{{ !cancelled() }}}}\n        run: {g["script"]}\n'   # 前の検査が赤でも次の検査を流す（赤を全部いっぺんに見る。job は赤のまま）
@@ -162,6 +163,24 @@ jobs:
 {PYS}      - name: "ブランチ名からタスク ID を取る（task/T-A-01 → T-A-01）"
         run: echo "TASK_ID=${{{{ github.head_ref }}}}" | sed 's#task/##' >> "$GITHUB_ENV"
 {''.join(step(g) for g in ALL_GATES if g['job'] == 'task-gate')}
+  web:
+    runs-on: ubuntu-latest
+    # 新しい画面（apps/web/components/k の上）の実ブラウザの試験。staging も札も要らない：CI の中で本番の形に組み立てて立ち上げる（KN-109）
+    needs: [static]
+    env:
+      KANAME_DEV_PAGES: '1'
+      NEXT_PUBLIC_KANAME_DEV_PAGES: '1'
+    steps:
+{NODE}      - run: pnpm --filter @kaname/web exec playwright install --with-deps chromium
+      - run: pnpm --filter @kaname/web build:test
+      - name: 画面を立ち上げる
+        run: |
+          (pnpm --filter @kaname/web start:test > /tmp/web.log 2>&1 &)
+          for i in $(seq 1 60); do curl -sf -o /dev/null http://127.0.0.1:3124/dev/k/showcase && exit 0; sleep 2; done
+          cat /tmp/web.log; exit 1
+{''.join(step(g) for g in ALL_GATES if g['job'] == 'web')}      - uses: actions/upload-artifact@v4
+        if: failure()
+        with: {{ name: playwright-report-web, path: apps/web/playwright-report/ }}
   e2e:
     runs-on: ubuntu-latest
     if: contains(github.event.pull_request.labels.*.name, 'has-ui')

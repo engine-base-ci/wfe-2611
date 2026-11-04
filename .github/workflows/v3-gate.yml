@@ -1,4 +1,4 @@
-# .github/workflows/v3-gate.yml — Kaname CI ゲート 49 本（05_flow/build_testplan.py が生成。手で直さない）
+# .github/workflows/v3-gate.yml — Kaname CI ゲート 50 本（05_flow/build_testplan.py が生成。手で直さない）
 # 方針: ゲートが緑を維持できないなら次のスライスに進まない。旧jobrainはCIが全ゲート赤のまま進み、それが死因の一つ。
 # 段: static（静的・関門）→ database（実 Postgres・RLS・契約）／ spec（仕様の層・Python）／ task-gate（そのタスクの L1 行）→ e2e（has-ui）→ auto-merge
 name: v3-gate
@@ -220,6 +220,32 @@ jobs:
         if: ${{ !cancelled() }}
         run: python3 scripts/ci/qa-ladder.py gate --spec 07_qa/test-specs --tickets 07_tasks/tickets.json --task "$TASK_ID"
 
+  web:
+    runs-on: ubuntu-latest
+    # 新しい画面（apps/web/components/k の上）の実ブラウザの試験。staging も札も要らない：CI の中で本番の形に組み立てて立ち上げる（KN-109）
+    needs: [static]
+    env:
+      KANAME_DEV_PAGES: '1'
+      NEXT_PUBLIC_KANAME_DEV_PAGES: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @kaname/web exec playwright install --with-deps chromium
+      - run: pnpm --filter @kaname/web build:test
+      - name: 画面を立ち上げる
+        run: |
+          (pnpm --filter @kaname/web start:test > /tmp/web.log 2>&1 &)
+          for i in $(seq 1 60); do curl -sf -o /dev/null http://127.0.0.1:3124/dev/k/showcase && exit 0; sleep 2; done
+          cat /tmp/web.log; exit 1
+      - name: "G48 新しい画面の実ブラウザの試験と、押した証拠（本番の形で組み立てた画面の上・行 ID の試験が全部の行で通る・記録なし・KN-109）"
+        if: ${{ !cancelled() }}
+        run: BASE_URL=http://127.0.0.1:3124 pnpm --filter @kaname/web e2e:k && python3 scripts/ci/op_gate.py --spec 07_qa/test-specs/k --tickets 11_tickets/tickets.json --all
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with: { name: playwright-report-web, path: apps/web/playwright-report/ }
   e2e:
     runs-on: ubuntu-latest
     if: contains(github.event.pull_request.labels.*.name, 'has-ui')
