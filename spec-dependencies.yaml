@@ -3383,6 +3383,8 @@ decision_traceability:
     ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
   - file: 03_architecture/flow-lines.json
     ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+  - file: 03_architecture/catalog.json
+    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
   - file: 08_schedule/sprint.md
     ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
   - file: 07_qa/test-plan/test-plan.md
@@ -3488,6 +3490,10 @@ layer_checks:
   check: python3 scripts/ci/flow_db_gate.py
 - file: 03_architecture/db-catalog.json
   check: python3 scripts/ci/flow_db_gate.py
+- file: 03_architecture/catalog.json
+  manual: JSON からの機械生成の写し（scripts/ci/build_catalog.py）。手で直さない。最新かは G38 が見る
+- file: 03_architecture/catalog.md
+  manual: catalog.json と同じ作り手の読む版。手で直さない。最新かは G38 が見る
 - file: 03_architecture/flow-lines.json
   manual: JSON からの機械生成の写し（scripts/ci/flow_db_gate.py --lines ← 08_api/endpoints.json・05_flow/flows.json）。手で直さない。最新かは G38 が見る
 - file: 04_design/canvas-screens.json

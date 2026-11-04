@@ -110,6 +110,14 @@
    "outputs": [
     "03_architecture/flow-lines.json"
    ]
+  },
+  {
+   "name": "目録（API と DB・画面の部品・共通の処理・外とのつなぎと設定 → 03_architecture/catalog・D-128.129）",
+   "run": "python3 scripts/ci/build_catalog.py",
+   "outputs": [
+    "03_architecture/catalog.json",
+    "03_architecture/catalog.md"
+   ]
   }
  ],
  "checked_elsewhere": [
