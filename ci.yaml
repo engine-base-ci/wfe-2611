@@ -1,0 +1,51 @@
+# dagci の設定（KN-124）。GitHub の v3-gate.yml と同じ検査を、この台の容れ物の中で流す。
+#   段は手で写さず scripts/ci/ci_stages.py が v3-gate.yml から導く（ci_stages.py --check が 1 対 1 を確かめる・G52・KN-124）
+#   使い方は ai-team-delivery のスキルの references/ci.md。入口は <スキル>/scripts/ci/dagci/dagci
+version: 1
+project: kaname
+workdir: /src
+git:
+  base: main
+  history: true
+
+include:
+  - cmd: python3 scripts/ci/ci_stages.py
+    from: [scripts/ci/ci_stages.py, .github/workflows/v3-gate.yml, 05_flow/build_testplan.py]
+
+toolbox:
+  from: node:22-bookworm
+  # NODE_EXTRA_CA_CERTS：Node は OS の証明書を読まない。会社の網・中継の内側でも npm・pnpm が通るよう、
+  #   OS の証明書（Dagger のエンジンが足した証明書を含む）も読ませる
+  env:
+    {
+      TZ: UTC,
+      LANG: C.UTF-8,
+      CI: "true",
+      PNPM_HOME: /pnpm,
+      PIP_BREAK_SYSTEM_PACKAGES: "1",
+      NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt,
+    }
+  steps:
+    - apt-get update -qq && apt-get install -y -qq --no-install-recommends python3 python3-pip git curl ca-certificates postgresql-client >/dev/null
+    - pip3 install -q pyyaml==6.0.2 schemathesis==4.33.0
+    - npm install -g --silent pnpm@10.28.2
+
+prepare:
+  - name: deps
+    inputs:
+      [package.json, pnpm-lock.yaml, pnpm-workspace.yaml, .npmrc, "apps/*/package.json", "packages/*/package.json"]
+    caches: { pnpm-store: /pnpm-store, playwright: /ms-playwright }
+    run: >-
+      npm_config_store_dir=/pnpm-store pnpm install --frozen-lockfile --prefer-offline &&
+      PLAYWRIGHT_BROWSERS_PATH=/ms-playwright pnpm --filter @kaname/web exec playwright install --with-deps chromium
+
+env: { PLAYWRIGHT_BROWSERS_PATH: /ms-playwright }
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    env: { POSTGRES_PASSWORD: postgres, POSTGRES_DB: kaname_test }
+    ports: [5432]
+
+defaults: { timeout: 1800 }
+red_patterns: ["FAIL", "★", "Error:", "✗"]
