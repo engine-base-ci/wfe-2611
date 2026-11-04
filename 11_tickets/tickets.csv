@@ -433,3 +433,24 @@ KN-110,ステージングをそろえる,タスク,KN-6,未着手,Claude（こ�
 - [ ] ステージングで API・画面・DB が動く
 - [ ] 秘密は預け先にだけ置く（コードに書かない）
 - [ ] CI が緑"
+KN-111,検査の無い所の棚卸しと、すでに分かった 3 つの検査,タスク,KN-6,確認中,Claude（このセッション）,2026-11-05,基盤・試験,「ついでに見つけた」が続くのを止める（D-128.123）。すでに分かっている検査の穴 3 つを埋め、ほかに検査の無い所を一度に洗い出す。見つかったものはここで直さず、別のチケットに切る。,"- [x] 生成物がどれも最新か、を CI で見る（**G38**・作り手 13 個を全部回す・目録に無い生成物も赤）
+- [x] 使っている部品（package.json）が技術の選定の記録と合っているか、を CI で見る（**G46**）
+- [x] 書体が本当に読み込まれるか、を検査で見る（単体試験＋実ブラウザの試験 KN104-011）
+- [x] 検査の無い所の棚卸しの結果が残り、見つかったものが全部チケットになっている（`.qa/inventory/2026-11-04.md`・KN-112〜KN-116・KN-109 に追記）
+- [ ] CI が緑（手元で確かめた。GitHub の結果は push 後に見る）"
+KN-112,Bridge の画面のトークンを正本に合わせる,課題,KN-5,未着手,Claude（このセッション）,2026-11-13,基盤・画面,Bridge の画面のトークン（apps/bridge/src/renderer/tokens.css）が正本（DESIGN-kaname.md）より古い（書体が M PLUS 2・文字の段が前の値）。作り直して、Bridge の画面が崩れないことを確かめる。,"- [ ] `python3 04_design/gen_tokens.py` で作り直し、G38 の記録（generated.json の known_stale）から外す
+- [ ] Bridge の画面が崩れない（スクリーンショットで前と比べる）
+- [ ] CI が緑"
+KN-113,画面の試験の仕様の作り手（build_tasks.py）を直す,課題,KN-6,未着手,Claude（このセッション）,2026-11-13,基盤・試験,07_qa/test-specs/screens/*（64）と 07_qa/test-specs の 8 ファイルの作り手 05_flow/build_tasks.py が落ちる（KeyError: 'search'）。作り直せないので、正本（flow・機能）が変わっても試験の仕様が追いつかない。直すか、作り手を新しい仕組み（11_tickets・キャンバス）に置き換えるかを決めて直す。,"- [ ] 作り手が落ちない（か、置き換えて前の作り手を外す）
+- [ ] G38 の記録（known_stale の KN-113 の行）を外せる
+- [ ] CI が緑"
+KN-114,壊れていた自己試験 2 本を直す（contract・env_audit）,課題,KN-6,未着手,Claude（このセッション）,2026-11-13,基盤・試験,契約の検査（contract.mjs）と env の検査（env_audit.mjs）の自己試験が赤のまま、CI から回っていなかった。直して CI（G47）に入れる。,"- [ ] `pnpm ci:contract:selftest` が緑（自己試験の写しに row_rules.mjs を入れる）
+- [ ] `pnpm ci:env-audit:selftest` が緑
+- [ ] ci_scripts.json の known_broken から外し、G47 に入れる
+- [ ] CI が緑"
+KN-115,Next.js の決まったファイルの足りないもの（global-error）,課題,KN-5,未着手,Claude（このセッション）,2026-11-13,基盤・画面,根の layout で落ちたときの受け皿（app/global-error.tsx）が無い（KN-106 で app/error.tsx は足した）。足して、決まったファイルがそろっているかを機械で見る。,"- [ ] app/global-error.tsx（正本の E-PAGE-007 の文言）
+- [ ] 決まったファイル（error・global-error・not-found）がそろっているかの単体試験
+- [ ] CI が緑"
+KN-116,pnpm が付け替える Better Auth の部品の版をそろえるか決める,課題,KN-6,未着手,Claude（このセッション）,2026-11-13,基盤・試験,部品を足すたびに pnpm が @better-auth/utils を 0.4.2 → 0.5.1 に付け替える（lockfile の Better Auth の中の版がそろっていない）。いまは足した部品の分だけを lockfile に入れて付け替えを止めている。そろえるなら、ログインの試験を全部流してから入れる。,"- [ ] そろえるかを決める（高本さん）
+- [ ] そろえるなら、ログイン（packages/auth）の試験と API の試験が全部緑で入れる
+- [ ] CI が緑"

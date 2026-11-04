@@ -3638,6 +3638,10 @@ layer_checks:
   manual: coverage_review.py が読む SaaS の面の参照（入力）。成果物ではない
 - file: scripts/ci/zt_baseline.json
   check: python3 scripts/ci/zt_gate.py
+- file: scripts/ci/generated.json
+  check: python3 scripts/ci/generated_gate.py
+- file: scripts/ci/ci_scripts.json
+  check: python3 scripts/ci/ci_wiring_gate.py
 project_audit:
   ignore:
   - path: apps/web/pw-reports/

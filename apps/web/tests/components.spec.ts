@@ -157,3 +157,12 @@ test("KN104-010 375・768・1440 で横にはみ出さない。押せるもの�
     expect(small, `幅 ${w} の 24px 未満の的`).toEqual([]);
   }
 });
+
+test("KN104-011 書体が本当に読み込まれる（名前の指定だけでなく、実際に Noto Sans JP で描く）", async ({ page }) => {
+  await open(page);
+  const loaded = await page.evaluate(async () => {
+    await document.fonts.ready;
+    return [...document.fonts].filter((f) => f.status === "loaded").map((f) => f.family.replace(/["']/g, ""));
+  });
+  expect(loaded).toContain("Noto Sans JP Variable");
+});

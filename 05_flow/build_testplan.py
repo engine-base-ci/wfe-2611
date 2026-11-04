@@ -95,6 +95,9 @@ SPEC_GATES = [
     {"id": 35, "name": "有限資源の静的検査（G-16：関門外の生クライアント・タイムアウト無し・冪等キー無しの書込）", "script": "pnpm ci:resource-static", "job": "static", "blocking": True},
     {"id": 36, "name": "契約 fuzz（Schemathesis・openapi.yaml・作った口を本物の DB の上で叩く。答えの形の元の DB の列の書き出しも確かめる）", "script": "pip install -q schemathesis==4.33.0 && pnpm ci:schemathesis", "job": "database", "blocking": True},
     {"id": 37, "name": "デザインのトークンと新しい部品（正本どおり・明るい／暗いのコントラスト AA・生の値 D1〜D4）", "script": "python3 04_design/gen_tokens.py --web --check && python3 scripts/ci/design_gate.py --design 04_design/DESIGN-kaname.md --mocks apps/web/components/k --css apps/web/styles/k-tokens.css --part", "job": "spec", "blocking": True},
+    {"id": 38, "name": "生成物が全部最新（作り手を全部回して、中身が変わる生成物・落ちる作り手・目録に無い生成物を赤にする・D-128.123）", "script": "python3 scripts/ci/generated_gate.py --selftest && python3 scripts/ci/generated_gate.py", "job": "spec", "blocking": True},
+    {"id": 46, "name": "使っている部品が技術の選定の記録と合う（package.json と selected-stack.json の packages を 1 対 1・D-128.123）", "script": "python3 scripts/ci/stack_gate.py --selftest && python3 scripts/ci/stack_gate.py", "job": "spec", "blocking": True},
+    {"id": 47, "name": "書いた検査が CI から回る・検査の自己試験（ci_wiring_gate・エラーの参照・自己試験 4 本・D-128.123）", "script": "python3 scripts/ci/ci_wiring_gate.py --selftest && python3 scripts/ci/ci_wiring_gate.py && pnpm -s ci:errors-used && pnpm -s ci:errors-used:selftest && pnpm -s ci:sql-guard:selftest && pnpm -s ci:chat-one:selftest && python3 scripts/ci/qa_delta.py --selftest", "job": "spec", "blocking": True},
 ]
 ALL_GATES = [{**g, "job": "database" if g["id"] in (3, 4, 6, 12) else ("e2e" if g["id"] == 15 else "static")} for g in FG["merge_gates"]] + SPEC_GATES
 def step(g): return f'      - name: "G{g["id"]} {g["name"]}{" [CRITICAL]" if g["id"] in FG.get("kaname_critical_gates", []) else ""}"\n        if: ${{{{ !cancelled() }}}}\n        run: {g["script"]}\n'   # 前の検査が赤でも次の検査を流す（赤を全部いっぺんに見る。job は赤のまま）

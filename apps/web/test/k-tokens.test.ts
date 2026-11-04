@@ -95,3 +95,22 @@ describe("見た目の切り替え（D-128.55）", () => {
     expect(themeCookie("dark")).toMatch(/^k-theme=dark; Path=\/; Max-Age=31536000; SameSite=Lax$/);
   });
 });
+
+describe("書体が本当に読み込まれる（D-128.123・KN-111：名前の指定だけで通さない）", () => {
+  const layout = readFileSync(join(WEB, "app/layout.tsx"), "utf8");
+  const fam = /--k-font:\s*"([^"]+)"/.exec(tokens)?.[1] ?? "";
+  it("画面の根（layout.tsx）が書体の部品を読み込み、その部品の書体の名前が --k-font に入っている", () => {
+    const pkg = /import\s+"(@fontsource(?:-variable)?\/[\w-]+)"/.exec(layout)?.[1];
+    expect(pkg, "layout.tsx が書体の部品（@fontsource）を import していない").toBeTruthy();
+    const css = readFileSync(join(WEB, "node_modules", pkg!, "index.css"), "utf8");
+    const loaded = /font-family:\s*'([^']+)'/.exec(css)?.[1];
+    expect(loaded, "書体の部品に font-family が無い").toBeTruthy();
+    expect(tokens).toContain(`"${loaded}"`);
+    // 読み込む書体は、正本の書体と同じもの（「Noto Sans JP」と「Noto Sans JP Variable」）
+    expect(loaded!.replace(/ Variable$/, "")).toBe(fam);
+  });
+  it("書体は画面と同じ所から配る（CSP の font-src は self と data: だけ）", () => {
+    const sh = readFileSync(join(WEB, "lib/security-headers.ts"), "utf8");
+    expect(sh).toMatch(/"font-src":\s*\["'self'",\s*"data:"\]/);
+  });
+});

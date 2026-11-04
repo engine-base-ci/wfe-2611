@@ -1,0 +1,244 @@
+{
+ "_doc": "生成物の目録（D-128.123・KN-111）。scripts/ci/generated_gate.py が、作り手を順に全部回して、作る前と後で中身が変わった生成物を赤にする（日付だけの違いは見ない）。目録に無い生成物（先頭 3 行に「生成物」「手で直さない」などと書いたファイル）も赤。作り手を足したら、ここに 1 行足す",
+ "generators": [
+  {
+   "name": "画面の部品のトークン",
+   "run": "python3 04_design/gen_tokens.py --web",
+   "outputs": [
+    "apps/web/styles/k-tokens.css"
+   ]
+  },
+  {
+   "name": "Bridge の画面のトークン",
+   "run": "python3 04_design/gen_tokens.py",
+   "outputs": [
+    "apps/bridge/src/renderer/tokens.css"
+   ]
+  },
+  {
+   "name": "機能の分解（flow → 07_functional）",
+   "run": "python3 05_flow/build_functional.py",
+   "outputs": [
+    "07_functional/*"
+   ]
+  },
+  {
+   "name": "API の契約（07_functional → 08_api）",
+   "run": "python3 05_flow/build_api.py",
+   "outputs": [
+    "08_api/API-SPEC.md",
+    "08_api/api-decisions.json",
+    "08_api/api-spec.html",
+    "08_api/endpoints.json",
+    "08_api/openapi.yaml",
+    "08_api/screen-api-coverage.json",
+    "08_api/types.ts"
+   ]
+  },
+  {
+   "name": "契約から作るコード（型・入口）",
+   "run": "node scripts/ci/contract.mjs gen",
+   "outputs": [
+    "packages/contracts/src/*",
+    "apps/api/src/routes/*"
+   ]
+  },
+  {
+   "name": "テスト計画と CI の定義",
+   "run": "python3 05_flow/build_testplan.py",
+   "outputs": [
+    "07_qa/test-plan/*",
+    ".github/workflows/v3-gate.yml",
+    ".github/workflows/release-gate.yml"
+   ]
+  },
+  {
+   "name": "契約から作る試験",
+   "run": "node scripts/ci/gen_ears_tests.mjs",
+   "outputs": [
+    "apps/api/test/generated/*"
+   ]
+  },
+  {
+   "name": "エラーの写し（画面と API 用）",
+   "run": "node scripts/ci/errors_used.mjs gen",
+   "outputs": [
+    "packages/errors/src/catalog.ts"
+   ]
+  },
+  {
+   "name": "エラーの試験の行",
+   "run": "python3 scripts/ci/error_catalog.py rows --catalog 07_qa/test-specs/errors.json --spec 07_qa/test-specs",
+   "outputs": [
+    "07_qa/test-specs/errors.md"
+   ]
+  },
+  {
+   "name": "画面の行き先",
+   "run": "node scripts/ci/gen_routes.mjs",
+   "outputs": [
+    "apps/web/lib/routes.ts",
+    "apps/web/lib/nav.ts"
+   ]
+  },
+  {
+   "name": "作った画面の一覧",
+   "run": "python3 scripts/ci/gen_built_routes.py --app apps/web/app --out apps/web/lib/built-routes.ts",
+   "outputs": [
+    "apps/web/lib/built-routes.ts"
+   ]
+  },
+  {
+   "name": "Kaname を作るチケットの一覧",
+   "run": "python3 scripts/tickets/build_index.py",
+   "outputs": [
+    "11_tickets/README.md",
+    "11_tickets/tickets.json",
+    "11_tickets/tickets.csv"
+   ]
+  },
+  {
+   "name": "要件一覧（決定ログから）",
+   "run": "python3 scripts/ci/trace_gate.py --index",
+   "outputs": [
+    "01_hearing/要件一覧.md"
+   ]
+  }
+ ],
+ "checked_elsewhere": [
+  {
+   "outputs": [
+    "08_api/db-columns.json"
+   ],
+   "by": "G36（本物の DB の列を書き出して比べる。DB が要るので database の段）"
+  },
+  {
+   "outputs": [
+    "apps/web/components/ai/chat.css"
+   ],
+   "by": "chat_one.mjs（06_mockup/export_web_css.py --check）。前の画面の見た目"
+  }
+ ],
+ "history": [
+  {
+   "glob": "packages/db/migrations/*.sql",
+   "reason": "DB の変更の履歴。作った時点の ER 図から作り、あとで作り直さない（作り直すと履歴が変わる）。正しさは G4・G12・G33 が本物の DB で見る"
+  },
+  {
+   "glob": "packages/db/policies/*.sql",
+   "reason": "RLS の方針の履歴（マイグレーションと同じ名前）。正しさは G4・G33 と RLS の試験が見る"
+  }
+ ],
+ "frozen": [
+  {
+   "glob": "09_features/*",
+   "reason": "前の作業の分け方（機能の分解）。作業は 11_tickets に移った（D-128.114）。作り直さない"
+  },
+  {
+   "glob": "08_schedule/*",
+   "reason": "前の Wave の計画。日程は 11_tickets と D-128.118 に移った。作り直さない"
+  },
+  {
+   "glob": "07_tasks/*",
+   "reason": "前の作業カード。作業は 11_tickets に移った（D-128.114）"
+  },
+  {
+   "glob": "06_mockup/*",
+   "reason": "前の画面の見本。しまった（D-128.117）。画面の正はキャンバス"
+  },
+  {
+   "glob": "05_flow/flow.html",
+   "reason": "flow.json の読みやすい写し（前の見本の道具 flow.js が作る）。flow.json そのものは G27・trace_gate が見る"
+  },
+  {
+   "glob": "apps/web/lib/*.legacy.ts",
+   "reason": "前の画面だけが読む、生成物の写し（KN-105・2026-11-04 時点）。前の画面を外すとき（KN-37）に消す"
+  }
+ ],
+ "not_generated": [
+  {
+   "path": "apps/api/src/contract/permissions.ts",
+   "reason": "手で書く（先頭の言葉は「契約の口から言葉を取る」の説明）"
+  },
+  {
+   "path": "apps/web/components/k/nav-model.ts",
+   "reason": "手で書く（先頭は「生成物を読む」の説明）"
+  },
+  {
+   "path": "apps/web/components/k/shell.tsx",
+   "reason": "手で書く（同上）"
+  },
+  {
+   "path": "apps/web/lib/api/call.ts",
+   "reason": "手で書く（型は生成物の Ops を読む、の説明）"
+  },
+  {
+   "path": "apps/web/test/k-nav-model.test.ts",
+   "reason": "試験（生成物を読む、の説明）"
+  },
+  {
+   "path": "packages/db/migrations/0018_ops_write.sql",
+   "reason": "手で書いたマイグレーション（history に入る）"
+  }
+ ],
+ "known_stale": [
+  {
+   "path": "apps/bridge/src/renderer/tokens.css",
+   "ticket": "KN-112",
+   "reason": "正本より古い（書体・文字の段）。作り直すと Bridge の見た目が変わるので、Bridge の画面で確かめて入れる"
+  },
+  {
+   "glob": "07_qa/test-specs/screens/*",
+   "ticket": "KN-113",
+   "reason": "作り手（05_flow/build_tasks.py）が落ちる（KeyError: 'search'）。作り手を直すまで作り直せない"
+  },
+  {
+   "path": "07_qa/test-specs/bridge.md",
+   "ticket": "KN-113",
+   "reason": "作り手（05_flow/build_tasks.py）が落ちるので作り直せない（screens/* と同じ）",
+   "broken_generator": true
+  },
+  {
+   "path": "07_qa/test-specs/journeys/plan.json",
+   "ticket": "KN-113",
+   "reason": "作り手（05_flow/build_tasks.py）が落ちるので作り直せない（screens/* と同じ）",
+   "broken_generator": true
+  },
+  {
+   "path": "07_qa/test-specs/prod-smoke.md",
+   "ticket": "KN-113",
+   "reason": "作り手（05_flow/build_tasks.py）が落ちるので作り直せない（screens/* と同じ）",
+   "broken_generator": true
+  },
+  {
+   "path": "07_qa/test-specs/rls-matrix.md",
+   "ticket": "KN-113",
+   "reason": "作り手（05_flow/build_tasks.py）が落ちるので作り直せない（screens/* と同じ）",
+   "broken_generator": true
+  },
+  {
+   "path": "07_qa/test-specs/skills.md",
+   "ticket": "KN-113",
+   "reason": "作り手（05_flow/build_tasks.py）が落ちるので作り直せない（screens/* と同じ）",
+   "broken_generator": true
+  },
+  {
+   "path": "07_qa/test-specs/spec-work.md",
+   "ticket": "KN-113",
+   "reason": "作り手（05_flow/build_tasks.py）が落ちるので作り直せない（screens/* と同じ）",
+   "broken_generator": true
+  },
+  {
+   "path": "07_qa/test-specs/visual-fidelity-audit.md",
+   "ticket": "KN-113",
+   "reason": "作り手（05_flow/build_tasks.py）が落ちるので作り直せない（screens/* と同じ）",
+   "broken_generator": true
+  },
+  {
+   "path": "07_qa/test-specs/zero-state.md",
+   "ticket": "KN-113",
+   "reason": "作り手（05_flow/build_tasks.py）が落ちるので作り直せない（screens/* と同じ）",
+   "broken_generator": true
+  }
+ ]
+}

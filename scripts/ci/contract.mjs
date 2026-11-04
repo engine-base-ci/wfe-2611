@@ -100,7 +100,12 @@ export function parseComponents(yaml) {
 }
 /** 行の確かめの元（row_rules.mjs と、write の条件に使う entities.json）。変われば生成物も作り直す */
 const rowSources = (root) => rulesSource(root) + (existsSync(join(root, "07_functional/entities.json")) ? readFileSync(join(root, "07_functional/entities.json"), "utf8") : "");
-const hashOf = (s) => createHash("sha256").update(s).digest("hex").slice(0, 16);
+// 元の中身の hash。作った日付（created_at・decided_at など）は伏せる：日付だけ変わっても生成物を作り直さない（D-128.123・KN-111）
+const hashOf = (s) =>
+  createHash("sha256")
+    .update(s.replace(/\d{4}-\d{2}-\d{2}(T[\d:.]+Z?)?/g, "D"))
+    .digest("hex")
+    .slice(0, 16);
 const slug = (s) => s.replace(/^\/api\/v1\//, "").replace(/[{}:]/g, "").replace(/[^a-z0-9]+/gi, "_").replace(/_+$/, "");
 const kindOf = (method, path) => (method === "GET" ? (path.includes("{") ? "get" : "list") : method === "POST" ? "create" : method === "DELETE" ? "delete" : "update");
 

@@ -811,5 +811,213 @@
   },
   "partial_and_usage": "2026-09-27 実測：--include-partial-messages で stream_event の content_block_delta（text_delta）が届く。rate_limit_event.rate_limit_info.unifiedWindows に five_hour／seven_day の utilization と resetsAt が届く（D-104.8・D-104.16 の実現性を確認）"
  },
- "notes_20260927": "2026-09-27：D-104 で書式の描画（react-markdown ほか）と声（ブラウザの音声認識）を user が選んだ。D-105（記憶の毎朝のまとめ）は新しい基盤を使わない（Postgres・Bridge・本人の Claude Code のまま）"
+ "notes_20260927": "2026-09-27：D-104 で書式の描画（react-markdown ほか）と声（ブラウザの音声認識）を user が選んだ。D-105（記憶の毎朝のまとめ）は新しい基盤を使わない（Postgres・Bridge・本人の Claude Code のまま）",
+ "packages": {
+  "_doc": "使っている部品（package.json）と技術の選定の対応（D-128.123・KN-111）。scripts/ci/stack_gate.py が 1 対 1 で突き合わせる。部品を足したら 1 行足す。@types/* は元の部品がここにあれば要らない",
+  "@types/*": "元の部品の型（元の部品の行に従う）",
+  "@aws-sdk/client-s3": {
+   "for": "ファイルの置き場（S3 互換）",
+   "register": "stack.storage.access_method"
+  },
+  "@base-ui-components/react": {
+   "for": "画面の部品の土台（動き・読み上げ）",
+   "register": "stack.frontend.ui_primitives"
+  },
+  "@better-auth/utils": {
+   "for": "ログインの部品の中の道具",
+   "register": "stack.auth.service"
+  },
+  "@eslint/js": {
+   "for": "書き方の検査（G1）",
+   "register": "dev_tools"
+  },
+  "@fontsource-variable/noto-sans-jp": {
+   "for": "記録にある名前のまま",
+   "register": "(本文)"
+  },
+  "@hono/node-server": {
+   "for": "API を Node で動かす",
+   "register": "stack.api.framework"
+  },
+  "@hookform/resolvers": {
+   "for": "入力の形を Zod で確かめる",
+   "register": "stack.frontend.forms"
+  },
+  "@playwright/mcp": {
+   "for": "記録にある名前のまま",
+   "register": "(本文)"
+  },
+  "@playwright/test": {
+   "for": "実ブラウザの試験",
+   "register": "stack.testing.e2e"
+  },
+  "@svar-ui/react-gantt": {
+   "for": "記録にある名前のまま",
+   "register": "(本文)"
+  },
+  "@tailwindcss/postcss": {
+   "for": "Tailwind を Next.js に入れる",
+   "register": "stack.frontend.styling"
+  },
+  "@tanstack/react-query": {
+   "for": "画面が API から読んだ物の置き場",
+   "register": "stack.frontend.state_management"
+  },
+  "@vitest/coverage-v8": {
+   "for": "単体試験の網羅率",
+   "register": "stack.testing.unit_contract"
+  },
+  "better-auth": {
+   "for": "ログイン",
+   "register": "stack.auth.service"
+  },
+  "class-variance-authority": {
+   "for": "部品の見せ方の組み合わせ（shadcn の土台）",
+   "register": "stack.frontend.ui_primitives"
+  },
+  "clsx": {
+   "for": "クラス名をつなぐ（shadcn の土台）",
+   "register": "stack.frontend.ui_primitives"
+  },
+  "cmdk": {
+   "for": "記録にある名前のまま",
+   "register": "(本文)"
+  },
+  "electron": {
+   "for": "記録にある名前のまま",
+   "register": "(本文)"
+  },
+  "electron-builder": {
+   "for": "Bridge の配布物を作る",
+   "register": "stack.desktop.framework"
+  },
+  "electron-updater": {
+   "for": "Bridge の自動更新",
+   "register": "stack.desktop.framework"
+  },
+  "esbuild": {
+   "for": "API を 1 つにまとめる（Vercel に置く）",
+   "register": "dev_tools"
+  },
+  "eslint": {
+   "for": "書き方の検査（G1）",
+   "register": "dev_tools"
+  },
+  "hono": {
+   "for": "記録にある名前のまま",
+   "register": "(本文)"
+  },
+  "kysely": {
+   "for": "ログインの部品が DB を読む（Better Auth の決まり）",
+   "register": "stack.auth.service"
+  },
+  "lucide-react": {
+   "for": "記録にある名前のまま",
+   "register": "(本文)"
+  },
+  "mermaid": {
+   "for": "記録にある名前のまま",
+   "register": "(本文)"
+  },
+  "next": {
+   "for": "記録にある名前のまま",
+   "register": "(本文)"
+  },
+  "pg": {
+   "for": "記録にある名前のまま",
+   "register": "(本文)"
+  },
+  "prettier": {
+   "for": "書式をそろえる（G1）",
+   "register": "dev_tools"
+  },
+  "qrcode": {
+   "for": "2 段階の確かめの QR コード",
+   "register": "stack.auth"
+  },
+  "react": {
+   "for": "記録にある名前のまま",
+   "register": "(本文)"
+  },
+  "react-dom": {
+   "for": "画面の土台（React）",
+   "register": "stack.frontend.framework"
+  },
+  "react-hook-form": {
+   "for": "入力の形",
+   "register": "stack.frontend.forms"
+  },
+  "react-markdown": {
+   "for": "記録にある名前のまま",
+   "register": "(本文)"
+  },
+  "rehype-raw": {
+   "for": "会話の書式（HTML を読む）",
+   "register": "stack.frontend.chat_rendering"
+  },
+  "rehype-sanitize": {
+   "for": "会話の書式（危ない HTML を消す）",
+   "register": "stack.frontend.chat_rendering"
+  },
+  "remark-cjk-friendly": {
+   "for": "会話の書式（日本語の強調）",
+   "register": "stack.frontend.chat_rendering"
+  },
+  "remark-gfm": {
+   "for": "記録にある名前のまま",
+   "register": "(本文)"
+  },
+  "remark-math": {
+   "for": "会話の書式（数式）",
+   "register": "stack.frontend.chat_rendering"
+  },
+  "resend": {
+   "for": "記録にある名前のまま",
+   "register": "(本文)"
+  },
+  "shiki": {
+   "for": "記録にある名前のまま",
+   "register": "(本文)"
+  },
+  "sonner": {
+   "for": "記録にある名前のまま",
+   "register": "(本文)"
+  },
+  "tailwind-merge": {
+   "for": "Tailwind のクラスの重なりを解く（shadcn の土台）",
+   "register": "stack.frontend.ui_primitives"
+  },
+  "tailwindcss": {
+   "for": "見た目（CSS）",
+   "register": "stack.frontend.styling"
+  },
+  "temml": {
+   "for": "数式を MathML にする",
+   "register": "stack.frontend.chat_rendering"
+  },
+  "tsx": {
+   "for": "TypeScript をそのまま動かす（CLI・試験）",
+   "register": "dev_tools"
+  },
+  "typescript": {
+   "for": "記録にある名前のまま",
+   "register": "(本文)"
+  },
+  "typescript-eslint": {
+   "for": "書き方の検査（G1）",
+   "register": "dev_tools"
+  },
+  "ua-parser-js": {
+   "for": "記録にある名前のまま",
+   "register": "(本文)"
+  },
+  "vitest": {
+   "for": "記録にある名前のまま",
+   "register": "(本文)"
+  },
+  "zod": {
+   "for": "記録にある名前のまま",
+   "register": "(本文)"
+  }
+ }
 }
