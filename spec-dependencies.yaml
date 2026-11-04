@@ -3389,6 +3389,8 @@ decision_traceability:
     ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
   - file: ci.yaml
     ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+  - file: 07_qa/test-patterns.local.json
+    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
   - file: 08_schedule/sprint.md
     ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
   - file: 07_qa/test-plan/test-plan.md
@@ -3494,6 +3496,10 @@ layer_checks:
   check: python3 scripts/ci/flow_db_gate.py
 - file: 03_architecture/db-catalog.json
   check: python3 scripts/ci/flow_db_gate.py
+- file: 07_qa/test-patterns.local.json
+  manual: テストの型の Kaname の足し分（D-128.134）。形の検査は test-verification のスキルの pattern_gate.py が、新しい形のチケットを切るときに読む。今は空
+- file: .qa/skill-patches/test-verification-test-patterns.patch
+  manual: 組織の test-verification のスキルに当てる差分（テストの型のナレッジ・D-128.134）。当てた後は消してよい
 - file: ci.yaml
   check: python3 scripts/ci/ci_stages.py --check
 - file: 03_architecture/共通の決まり.md

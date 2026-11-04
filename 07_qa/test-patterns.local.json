@@ -1,0 +1,6 @@
+{
+ "_doc": "Kaname の、テストの型の足し分（D-128.134）。正は test-verification のスキルの references/test-patterns/patterns.json。Kaname で型に無い抜けが見つかったら、ここに 1 行足す（ID は TP-<分類>-L01 の形）。他のプロジェクトでも効く型は、スキルの patterns.json に戻す（差分は .qa/skill-patches/）",
+ "source": ["D-128.134"],
+ "categories": {},
+ "patterns": []
+}
