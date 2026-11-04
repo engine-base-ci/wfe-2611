@@ -23,6 +23,8 @@ toolbox:
       CI: "true",
       PNPM_HOME: /pnpm,
       PIP_BREAK_SYSTEM_PACKAGES: "1",
+      VIRTUAL_ENV: /opt/py,
+      PATH: "/opt/py/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
       NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt,
     }
   steps:
@@ -31,10 +33,11 @@ toolbox:
     - install -m 0755 -d /etc/apt/keyrings && curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc &&
       echo "deb [signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian bookworm stable" > /etc/apt/sources.list.d/docker.list &&
       apt-get update -qq && apt-get install -y -qq --no-install-recommends docker-ce-cli docker-compose-plugin >/dev/null
+    # 入れた Python を使わせるのは PATH の先頭（/opt/py/bin）で。別の場所へ links を張ると venv と見なされず、入れた部品（yaml）が見えない（G27・G37・G52 が赤だった・2026-11-04）
     # Python は GitHub の実行機（ubuntu-latest）と同じ 3.12 にそろえる（3.11 では schemathesis が AST の不具合で落ちた・2026-11-04）
     # UV_NATIVE_TLS：uv も OS の証明書を読まない（中継の内側で Python を取りに行けずに落ちた）。OS の証明書を使わせる
     - pip3 install -q uv==0.9.5 && export UV_NATIVE_TLS=1 && uv venv -q --python 3.12 /opt/py && uv pip install -q --python /opt/py/bin/python pyyaml==6.0.2 schemathesis==4.33.0 pip &&
-      ln -sf /opt/py/bin/python /usr/local/bin/python3 && ln -sf /opt/py/bin/pip /usr/local/bin/pip && ln -sf /opt/py/bin/pip /usr/local/bin/pip3
+      python3 -c 'import sys, yaml, schemathesis; assert sys.prefix == "/opt/py", sys.prefix'
     - npm install -g --silent pnpm@10.28.2
 
 prepare:

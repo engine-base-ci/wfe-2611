@@ -325,19 +325,20 @@ diff -ruN orig/ai-team-delivery/references/adapter.md new/ai-team-delivery/refer
  `state.py items <チケット>` が、設定 `ticket_fields` に従ってチケットの正本から項目を引く。
 diff -ruN orig/ai-team-delivery/references/ci.md new/ai-team-delivery/references/ci.md
 --- orig/ai-team-delivery/references/ci.md	2026-11-04 13:26:40.980158762 +0000
-+++ new/ai-team-delivery/references/ci.md	2026-11-04 13:26:49.040339027 +0000
-@@ -43,6 +43,10 @@
++++ new/ai-team-delivery/references/ci.md	2026-11-04 14:48:32.262286874 +0000
+@@ -43,6 +43,11 @@
  2. 初回の準備：`<スキル>/scripts/ci/dagci/dagci setup`（容れ物の道具・Dagger の CLI と SDK・エンジン。版は固定）
     会社の網が TLS を差し替える PC は `DAGCI_EXTRA_CA=auto`（macOS）か `DAGCI_EXTRA_CA=<PEM>` を付ける
     （エンジンが image を取れずに `x509: certificate signed by unknown authority` で落ちるのがこの場合）
 +   ★エンジンに証明書を渡すと、容れ物の中の apt・pip・curl は通るが、**Node（npm・pnpm）だけは OS の証明書を読まず** `SELF_SIGNED_CERT_IN_CHAIN` で落ちる。
 +   ci.yaml の toolbox.env に `NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt` を書く（雛形に入れてある・2026-11-04 Kaname）
 +   uv（Python を取りに行く道具）も同じで、`UV_NATIVE_TLS=1` を付けないと `error sending request` で落ちる
++   ★Python を venv（例 `/opt/py`）に入れたら、toolbox.env の `PATH` の先頭に `/opt/py/bin` を置く。`ln -s /opt/py/bin/python /usr/local/bin/python3` のように別の場所へ links を張ると venv と見なされず、入れた部品（yaml など）が `No module named` で見えない。道具箱の最後に `python3 -c 'import sys; assert sys.prefix == "/opt/py"'` を置いて、ずれたら道具箱の時点で落とす（Kaname の G27・G37・G52 が赤だった・2026-11-04）
 +   ★容れ物の中では git の設定が既定になる。日本語の名前は `git ls-files` で `"\343..."` と化けるので、台本は `-z` で読む（Kaname の G38・G43 が 68 本を黙って飛ばしていた）
  3. 確かめ方：リポジトリの根で `dagci run --all` が「緑：<段の数> 段」になること
  
  **新しいプロジェクトに入れる**
-@@ -310,3 +314,42 @@
+@@ -310,3 +315,42 @@
  - `dagci selftest`（約 30 分・場面 12 は記録を読むだけ）／`dagci selftest --parity`（重い。段の導出・流し方を変えたら流し直す）／`--only 1,2`
  - 記録：`$DAGCI_HOME/selftest/<project>.json`・`parity/<project>.json`。doctor がこれの古さを見る
  - **PM は見回りのたびに `dagci doctor`**（赤があれば終わり方 1）
