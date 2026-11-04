@@ -3,7 +3,7 @@
 //   中身（どのまとまりを出すか・行き先）は nav-model.ts（flow.json の生成物）。数・名前・グループは呼ぶ側が API から渡す
 //   幅：1024 以上は左のバー 216（畳むと 56）／768〜1023 は 56 のレール／767 以下は左のバーを出さず下のタブ（D-072）
 //   右のパネル（自分の AI）は 1180 以上で既定で開く（本文 720 を保てるときだけ・D-070）。開閉は自分で替えられ、次も同じ
-import { Menu as M } from "@base-ui-components/react/menu";
+import { Menu as M } from "@base-ui/react/menu";
 import {
   Bell,
   BookOpen,

@@ -1,7 +1,7 @@
 "use client";
 // 入力（KN-104・正本 components.input）。見出し・説明・理由（422 の項目ごとの理由）を 1 つの組にする（Base UI Field）
 //   理由は error に渡す（call() の fields[name] をそのまま）。読み上げは aria-describedby で Base UI がつなぐ
-import { Field } from "@base-ui-components/react/field";
+import { Field } from "@base-ui/react/field";
 import type { InputHTMLAttributes, ReactNode, TextareaHTMLAttributes } from "react";
 
 interface Common {

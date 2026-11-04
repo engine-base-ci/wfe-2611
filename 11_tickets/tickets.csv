@@ -458,10 +458,10 @@ KN-116,pnpm が付け替える Better Auth の部品の版をそろえるか決�
 KN-117,関門の外で process.env を読んでいる 21 か所を片付ける,課題,KN-6,確認中,Claude（このセッション）,2026-11-13,基盤・試験,G13（env の検査）が書き間違いで何も見ていなかった（KN-114 で直した）。直したら、関門（packages/config・例外 X-002）の外で process.env を読んでいる所が 21 か所出た（Bridge 16・画面 3・ログイン 2）。1 か所ずつ、config を通すか、正しい理由があれば例外台帳に書いて、記録（scripts/ci/env_baseline.json）を 0 にする。,"- [x] 21 か所が、入口を通すか、例外台帳（理由つき）に入る
 - [x] scripts/ci/env_baseline.json の files が空（G13 が記録なしで緑：「関門の外の process.env なし」）
 - [ ] CI が緑（手元で確かめた）"
-KN-118,画面の部品の土台を新しい名前の Base UI（@base-ui/react 1.9）に替える,課題,KN-5,未着手,Claude（このセッション）,2026-11-13,基盤・画面,新しい画面の部品（apps/web/components/k）の土台 @base-ui-components/react は、名前が @base-ui/react に変わり、古い名前の 1.0.0-rc.0（正式版の前）のまま非推奨になっていた。新しい名前の安定版（1.9.0・MIT）に替え、部品の動きが変わらないことを実ブラウザの試験で確かめる。,"- [ ] @base-ui/react（安定版）に替え、@base-ui-components/* を外す
-- [ ] 新しい画面の実ブラウザの試験（G48・84 本）と単体試験が緑
-- [ ] deprecated_baseline.json から 2 件を外す（G46 の S4）
-- [ ] 技術の選定の記録（packages）を新しい名前に
+KN-118,画面の部品の土台を新しい名前の Base UI（@base-ui/react 1.9）に替える,課題,KN-5,確認中,Claude（このセッション）,2026-11-13,基盤・画面,新しい画面の部品（apps/web/components/k）の土台 @base-ui-components/react は、名前が @base-ui/react に変わり、古い名前の 1.0.0-rc.0（正式版の前）のまま非推奨になっていた。新しい名前の安定版（1.9.0・MIT）に替え、部品の動きが変わらないことを実ブラウザの試験で確かめる。,"- [x] @base-ui/react 1.9.0（安定版・MIT）に替え、@base-ui-components/* を外した
+- [x] 新しい画面の実ブラウザの試験（G48・本番の形で 85 本）と単体試験（68 本）が緑。押した証拠 53/53。キャンバスとの比べも違う値 0/40
+- [x] deprecated_baseline.json から 2 件を外した（G46 の S4）
+- [x] 技術の選定の記録（packages）を新しい名前にした
 - [ ] CI が緑"
 KN-119,ファイルの置き場の部品（AWS SDK）を、非推奨の部品を含まない版に上げる,課題,KN-6,保留,Claude（このセッション）,2026-11-20,基盤・試験,@aws-sdk/client-s3 3.1132.0 が中で使う @smithy/core 3.34.1 が、ログの機密の伏せ方の不具合で非推奨になっていた（aws-sdk-js-v3 #8393）。直った版を含む client-s3 に上げ、ファイルの置き場の試験で確かめる。,"- [ ] client-s3 を、直った @smithy/core を含む版に上げる
 - [ ] ファイルの置き場（packages/storage）の試験が緑

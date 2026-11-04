@@ -17,7 +17,7 @@
     "e2e:k": "PW_REPORT=pw-reports/k.json playwright test tests/components.spec.ts tests/k-shell.spec.ts tests/states.spec.ts tests/k"
   },
   "dependencies": {
-    "@base-ui-components/react": "1.0.0-rc.0",
+    "@base-ui/react": "1.9.0",
     "@fontsource-variable/noto-sans-jp": "5.3.1",
     "@hookform/resolvers": "^5.9.1",
     "@kaname/contracts": "workspace:*",

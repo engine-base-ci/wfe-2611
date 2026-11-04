@@ -1,6 +1,6 @@
 "use client";
 // タブ（KN-104・Base UI Tabs）。←→ で移り、選んだタブの中身だけを出す（読み上げは tablist / tab / tabpanel）
-import { Tabs as T } from "@base-ui-components/react/tabs";
+import { Tabs as T } from "@base-ui/react/tabs";
 import type { ReactNode } from "react";
 
 export interface TabItem {

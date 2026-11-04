@@ -812,16 +812,26 @@
   "partial_and_usage": "2026-09-27 実測：--include-partial-messages で stream_event の content_block_delta（text_delta）が届く。rate_limit_event.rate_limit_info.unifiedWindows に five_hour／seven_day の utilization と resetsAt が届く（D-104.8・D-104.16 の実現性を確認）"
  },
  "notes_20260927": "2026-09-27：D-104 で書式の描画（react-markdown ほか）と声（ブラウザの音声認識）を user が選んだ。D-105（記憶の毎朝のまとめ）は新しい基盤を使わない（Postgres・Bridge・本人の Claude Code のまま）",
+ "supply_chain": {
+  "min_release_age_days": 21,
+  "how": "pnpm-workspace.yaml の minimumReleaseAge（30240 分）。pnpm が解くとき、出て 21 日未満の版を選ばない（中の部品も）。CI の G46（stack_gate.py の S5）が、設定が外れていないか・例外の書き方を見る",
+  "exceptions": "弱点の直しで急ぐときだけ minimumReleaseAgeExclude に「名前@版」と出た日を書く。決める前から入っていた 21 日未満の版も、出て 21 日を過ぎるまで例外に書いて外す",
+  "deprecated": "上流が非推奨にした部品は scripts/ci/deprecated_baseline.json に記録し、記録に無い非推奨を赤（G46 の S4）",
+  "source": [
+   "D-128.124",
+   "D-128.123"
+  ]
+ },
  "packages": {
   "_doc": "使っている部品（package.json）と技術の選定の対応（D-128.123・KN-111）。scripts/ci/stack_gate.py が 1 対 1 で突き合わせる。部品を足したら 1 行足す。@types/* は元の部品がここにあれば要らない",
+  "@base-ui/react": {
+   "for": "画面の部品の土台（動き・読み上げ）",
+   "register": "stack.frontend.ui_primitives"
+  },
   "@types/*": "元の部品の型（元の部品の行に従う）",
   "@aws-sdk/client-s3": {
    "for": "ファイルの置き場（S3 互換）",
    "register": "stack.storage.access_method"
-  },
-  "@base-ui-components/react": {
-   "for": "画面の部品の土台（動き・読み上げ）",
-   "register": "stack.frontend.ui_primitives"
   },
   "@better-auth/utils": {
    "for": "ログインの部品の中の道具",

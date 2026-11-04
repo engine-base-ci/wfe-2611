@@ -1,16 +1,6 @@
 {
  "_doc": "lockfile で上流が「非推奨」にした部品の記録（D-128.123・KN-116 で見つけた 16 件）。stack_gate.py（G46）の S4 が、記録に無い非推奨を赤・記録の物が消えたら外すよう言う",
  "entries": {
-  "@base-ui-components/react@1.0.0-rc.0": {
-   "ticket": "KN-118",
-   "message": "Package was renamed to @base-ui/react",
-   "why": "直接使う部品"
-  },
-  "@base-ui-components/utils@0.2.2": {
-   "ticket": "KN-118",
-   "message": "Package was renamed to @base-ui/utils",
-   "why": "直接使う部品"
-  },
   "@npmcli/move-file@2.0.1": {
    "ticket": "KN-120",
    "message": "This functionality has been moved to @npmcli/fs",

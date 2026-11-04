@@ -8,6 +8,8 @@
   S1 package.json にあるのに記録に無い部品（足すなら、何に使うか・記録のどの選定かを書く）
   S2 記録にあるのにどこでも使っていない部品（外したら記録からも外す）
   S3 記録の「どの選定か」が記録の中に無い（register の道すじが違う・「(本文)」なのに本文に名前が無い）
+  S5 部品は出てから 21 日を過ぎた版だけ（D-128.124）：pnpm-workspace.yaml に minimumReleaseAge（30240 分以上）がある。
+     例外（minimumReleaseAgeExclude）の行は「名前@版」で、出た日（YYYY-MM-DD に出た）を書く。21 日を過ぎた例外は外すよう知らせる（害は無いので赤にしない）
   S4 lockfile で上流が「非推奨」にした部品が、記録（scripts/ci/deprecated_baseline.json）に無い。記録の物が lockfile から消えたら記録から外す（KN-116）
 @types/* は、元の部品が記録にあれば要らない。workspace の部品（@kaname/*）は見ない。
 """
@@ -94,14 +96,48 @@ def check_deprecated(lock_text: str | None = None) -> list[str]:
     return fails
 
 
+NOTES: list[str] = []
+
+
+def check_release_age(ws_text: str | None = None, today: str | None = None) -> list[str]:
+    import datetime, re
+    ws_text = ws_text if ws_text is not None else open(os.path.join(ROOT, "pnpm-workspace.yaml"), encoding="utf-8").read()
+    today_d = datetime.date.fromisoformat(today) if today else datetime.date.today()
+    fails = []
+    m = re.search(r"^minimumReleaseAge:\s*(\d+)", ws_text, re.M)
+    if not m or int(m.group(1)) < 30240:
+        fails.append("S5 pnpm-workspace.yaml に minimumReleaseAge（30240 分＝21 日以上）が無い（D-128.124）")
+    blk = re.search(r"^minimumReleaseAgeExclude:(.*?)(?=^\S|\Z)", ws_text, re.M | re.S)
+    for ln in (blk.group(1).splitlines() if blk else []):
+        mm = re.match(r'^\s*-\s*"?([^"\s#]+)"?\s*(#.*)?$', ln)
+        if not mm:
+            continue
+        name, note = mm.group(1), mm.group(2) or ""
+        if not re.search(r".+@\d", name):
+            fails.append(f"S5 例外 {name} は「名前@版」で書く（名前だけだと、どの版でも通ってしまう）")
+        d = re.search(r"(\d{4}-\d{2}-\d{2}) に出た", note)
+        if not d:
+            fails.append(f"S5 例外 {name} に出た日（YYYY-MM-DD に出た）が無い")
+        elif datetime.date.fromisoformat(d.group(1)) + datetime.timedelta(days=21) <= today_d:
+            # 過ぎた例外は、もう決まりの内側の版なので害は無い。日付だけで CI を赤にしない（知らせるだけ）
+            NOTES.append(f"S5 例外 {name} は出て 21 日を過ぎた（{d.group(1)}）。minimumReleaseAgeExclude から外す")
+    return fails
+
+
 def main() -> int:
     if "--selftest" in sys.argv:
         hit = any("kaname-selftest-pkg" in f for f in check({"kaname-selftest-pkg": ["(試験)"]}))
         fake = "\npackages:\n\n  kaname-old@1.0.0:\n    resolution: {integrity: x}\n    deprecated: 試験\n\nsnapshots:\n"
         hit4 = any("kaname-old@1.0.0" in f for f in check_deprecated(fake))
-        print("PASS — 記録に無い部品と、記録に無い非推奨の部品を見つけた" if hit and hit4 else "FAIL — 見つけられない")
-        return 0 if hit and hit4 else 1
-    fails = check() + check_deprecated()
+        ws = 'minimumReleaseAge: 30240\nminimumReleaseAgeExclude:\n  - "a@1.0.0"  # 2026-01-01 に出た\n  - "b"\n'
+        r5 = check_release_age(ws, "2026-02-01")
+        hit5 = any("a@1.0.0" in n and "過ぎた" in n for n in NOTES) and any("「名前@版」" in f for f in r5) and bool(check_release_age("x: 1\n"))
+        ok = hit and hit4 and hit5
+        print("PASS — 記録に無い部品・記録に無い非推奨・21 日の決まりの外れを見つけた" if ok else "FAIL — 見つけられない")
+        return 0 if ok else 1
+    fails = check() + check_deprecated() + check_release_age()
+    for n in NOTES:
+        print("  note", n)
     for f in fails:
         print("  ★", f)
     n = len(deps())
