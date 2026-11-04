@@ -470,8 +470,8 @@ KN-119,ファイルの置き場の部品（AWS SDK）を、非推奨の部品を
 KN-120,書式の検査（eslint 9）と道具の奥の非推奨の部品を片付ける,課題,KN-6,未着手,Claude（このセッション）,2026-11-13,基盤・試験,eslint 9.39.5 は面倒を見てもらえない版になっていた。道具（Electron の組み立てなど）の奥の部品 12 件も非推奨。本番の画面と API には入らないが、eslint は新しい版に上げ、奥の部品は上の道具を上げて消えるものを消す。,"- [ ] eslint を面倒を見てもらえる版に上げ、G1 が緑
 - [ ] 道具の奥の部品のうち、上の道具を上げて消えるものを消す。残るものは理由を記録に書く
 - [ ] CI が緑"
-KN-121,spec-sync の地図（spec-dependencies.yaml）の古い所を直し、D・F を緑にする,課題,KN-6,未着手,Claude（このセッション）,2026-11-13,基盤・試験,KN-50 で spec-sync の D（振る舞いの波及）と F（下流の分解）が走るようになったら、これまで「走らせられない」の陰に隠れていた、地図の古い所が見えた。地図を今の正本（キャンバス・11_tickets・flow.json）に合わせ、D と F を緑にする。,"- [ ] F：下流の検査が、しまった画面の見本（06_mockup/v1）としまった機能の分解（09_features）を指さない（キャンバスの検査・11_tickets の検査を指す）
-- [ ] D：決定の照らし合わせ（alignment_decisions）に D-125〜D-128 の決定がある（D0）。確かめる手段の決まっていない 9 組（D8）を決める
-- [ ] D：今の flow に無い画面（search・clone-memory）を指す行（AD-007・AD-025）を直す。AD-123（apps/bridge/src/modes.ts の検査）と AD-003-2（06_mockup/v1）の検査を今の形に直す
-- [ ] `python3 scripts/spec-sync/spec-validator.py --project-root . --tier d` と `--tier f` が緑
-- [ ] spec-sync の結果（.qa/spec-sync/<日付>/result.json）で D・F・G・H が pass"
+KN-121,spec-sync の地図（spec-dependencies.yaml）の古い所を直し、D・F を緑にする,課題,KN-6,確認中,Claude（このセッション）,2026-11-13,基盤・試験,KN-50 で spec-sync の D（振る舞いの波及）と F（下流の分解）が走るようになったら、これまで「走らせられない」の陰に隠れていた、地図の古い所が見えた。地図を今の正本（キャンバス・11_tickets・flow.json）に合わせ、D と F を緑にする。,"- [x] F：下流の検査が、しまった画面の見本（06_mockup/v1）としまった機能の分解（09_features）を指さない（キャンバスの検査・11_tickets の検査を指す）
+- [x] D：決定の照らし合わせ（alignment_decisions）に D-125〜D-128 の決定がある（D0）。確かめる手段の決まっていない 9 組（D8）を決める
+- [x] D：今の flow に無い画面（search・clone-memory）を指す行（AD-007・AD-025）を直す。AD-123（apps/bridge/src/modes.ts の検査）と AD-003-2（06_mockup/v1）の検査を今の形に直す
+- [x] `python3 scripts/spec-sync/spec-validator.py --project-root . --tier d` と `--tier f` が緑
+- [x] spec-sync の結果（.qa/spec-sync/<日付>/result.json）で D・F・G・H が pass"
