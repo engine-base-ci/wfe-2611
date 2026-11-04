@@ -463,7 +463,7 @@ KN-118,画面の部品の土台を新しい名前の Base UI（@base-ui/react 1.
 - [ ] deprecated_baseline.json から 2 件を外す（G46 の S4）
 - [ ] 技術の選定の記録（packages）を新しい名前に
 - [ ] CI が緑"
-KN-119,ファイルの置き場の部品（AWS SDK）を、非推奨の部品を含まない版に上げる,課題,KN-6,未着手,Claude（このセッション）,2026-11-13,基盤・試験,@aws-sdk/client-s3 3.1132.0 が中で使う @smithy/core 3.34.1 が、ログの機密の伏せ方の不具合で非推奨になっていた（aws-sdk-js-v3 #8393）。直った版を含む client-s3 に上げ、ファイルの置き場の試験で確かめる。,"- [ ] client-s3 を、直った @smithy/core を含む版に上げる
+KN-119,ファイルの置き場の部品（AWS SDK）を、非推奨の部品を含まない版に上げる,課題,KN-6,保留,Claude（このセッション）,2026-11-20,基盤・試験,@aws-sdk/client-s3 3.1132.0 が中で使う @smithy/core 3.34.1 が、ログの機密の伏せ方の不具合で非推奨になっていた（aws-sdk-js-v3 #8393）。直った版を含む client-s3 に上げ、ファイルの置き場の試験で確かめる。,"- [ ] client-s3 を、直った @smithy/core を含む版に上げる
 - [ ] ファイルの置き場（packages/storage）の試験が緑
 - [ ] deprecated_baseline.json から外す（G46 の S4）
 - [ ] CI が緑"
