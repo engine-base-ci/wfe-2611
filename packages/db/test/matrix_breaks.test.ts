@@ -9,7 +9,7 @@ import { migrate } from "../src/migrate.js";
 import { seedAccessMatrix } from "../src/seeds.js";
 import { runMatrix, type MatrixCase } from "../src/matrix.js";
 
-const DB_URL = process.env["DATABASE_URL"] ?? "postgres://postgres:postgres@127.0.0.1:55433/kaname_test";
+const DB_URL = process.env["DATABASE_URL"]!;
 const here = dirname(fileURLToPath(import.meta.url));
 const name = `kaname_mut_${Math.random().toString(36).slice(2, 8)}`;
 const MUT_URL = DB_URL.replace(/\/[^/?]+(\?|$)/, `/${name}$1`);

@@ -6,7 +6,7 @@ import { createPool } from "@kaname/db/pool";
 import { agentHooks } from "../src/hooks/agent.js";
 import { endpointOf, makeHarness, type Harness } from "./harness.js";
 
-const DB_URL = process.env["DATABASE_URL"] ?? "postgres://postgres:postgres@127.0.0.1:55433/kaname_test";
+const DB_URL = process.env["DATABASE_URL"]!;
 const APP_URL = DB_URL.replace(/\/\/[^@]*@/, "//kaname_app:kaname_app@");
 let h: Harness;
 let admin: pg.Pool;

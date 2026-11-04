@@ -23,7 +23,7 @@ import { authExt } from "../src/auth/ext.js";
 import { authHooks } from "../src/hooks/auth.js";
 
 const DB_PKG = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "packages", "db");
-const ADMIN = process.env["DATABASE_URL"] ?? "postgres://postgres:postgres@127.0.0.1:55433/kaname_test";
+const ADMIN = process.env["DATABASE_URL"]!;
 const APP_URL = ADMIN.replace(/\/\/[^@]*@/, "//kaname_app:kaname_app@");
 const AUTH_URL = ADMIN.replace(/\/\/[^@]*@/, "//kaname_auth:kaname_auth@");
 const PW = "Str0ng-Passw0rd!";

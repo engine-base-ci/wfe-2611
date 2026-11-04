@@ -8,7 +8,7 @@ import { createPool } from "@kaname/db/pool";
 import { createRepository, type Repository } from "@kaname/db/repository";
 import { CATALOG, KanameError, isKnown, kanameError, markNextActionTaken, recordErrorEvent } from "../src/index.js";
 
-const DB_URL = process.env["DATABASE_URL"] ?? "postgres://postgres:postgres@127.0.0.1:55433/kaname_test";
+const DB_URL = process.env["DATABASE_URL"]!;
 const APP_URL = DB_URL.replace(/\/\/[^@]*@/, "//kaname_app:kaname_app@");
 const dbPkg = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "db");
 const admin = new pg.Pool({ connectionString: DB_URL, max: 2 });

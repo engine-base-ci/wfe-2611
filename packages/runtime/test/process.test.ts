@@ -9,7 +9,7 @@ import { createRepository, type Repository } from "@kaname/db/repository";
 import { DEFAULT_MARKER, ProcessGateway, stripEnv } from "../src/index.js";
 import { localIsolation } from "../src/local.js";
 
-const DB_URL = process.env["DATABASE_URL"] ?? "postgres://postgres:postgres@127.0.0.1:55433/kaname_test";
+const DB_URL = process.env["DATABASE_URL"]!;
 const APP_URL = DB_URL.replace(/\/\/[^@]*@/, "//kaname_app:kaname_app@");
 const dbPkg = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "db");
 const admin = new pg.Pool({ connectionString: DB_URL, max: 2 });

@@ -8,7 +8,7 @@ import { ENDPOINTS } from "@kaname/contracts";
 import type { TenantContext } from "@kaname/db/context";
 import { makeHarness, type Harness } from "./harness.js";
 
-const DB_URL = process.env["DATABASE_URL"] ?? "postgres://postgres:postgres@127.0.0.1:55433/kaname_test";
+const DB_URL = process.env["DATABASE_URL"]!;
 let h: Harness;
 let admin: pg.Pool;
 let boss: TenantContext, staff: TenantContext;

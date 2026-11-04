@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { migrate, ROLE_PASSWORD_ENV } from "../src/migrate.js";
 
-const ADMIN = process.env["DATABASE_URL"] ?? "postgres://postgres:postgres@127.0.0.1:55433/kaname_test";
+const ADMIN = process.env["DATABASE_URL"]!;
 const PKG = join(dirname(fileURLToPath(import.meta.url)), "..");
 const asApp = (pw: string) => ADMIN.replace(/\/\/[^@]*@/, `//kaname_app:${encodeURIComponent(pw)}@`);
 async function canConnect(url: string): Promise<boolean> {

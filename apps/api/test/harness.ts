@@ -13,7 +13,12 @@ import { createApp } from "../src/app.js";
 import type { ContractDeps, Hook } from "../src/contract/deps.js";
 
 export type Who = "boss" | "staff" | "ops" | "opsB" | "anon";
-const DB_URL = process.env["DATABASE_URL"] ?? "postgres://postgres:postgres@127.0.0.1:55433/kaname_test";
+// 接続先は DATABASE_URL だけ（vitest は vitest.config.ts が決める・契約 fuzz は fuzz.sh を呼ぶ人が渡す）。手元の DB に黙って当てない
+const DB_URL =
+  process.env["DATABASE_URL"] ??
+  (() => {
+    throw new Error("DATABASE_URL が要る（試験の DB の接続先）");
+  })();
 const APP_URL = DB_URL.replace(/\/\/[^@]*@/, "//kaname_app:kaname_app@");
 const dbPkg = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "packages", "db");
 type CallOpts = { body?: unknown; id?: string; query?: Record<string, string>; headers?: Record<string, string> };

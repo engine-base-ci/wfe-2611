@@ -420,6 +420,20 @@ diff -ruN orig/ai-team-delivery/scripts/ci/dagci/parity.py new/ai-team-delivery/
                             env={**os.environ, "CI": "true"}, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
          if broken:
              subprocess.run(shlex.split(adapter) + ["break", wt, json.dumps(broken, ensure_ascii=False)], cwd=wt,
+diff -ruN orig/ai-team-delivery/scripts/ci/dagci/runner.py new/ai-team-delivery/scripts/ci/dagci/runner.py
+--- orig/ai-team-delivery/scripts/ci/dagci/runner.py	2026-11-04 13:26:40.986349016 +0000
++++ new/ai-team-delivery/scripts/ci/dagci/runner.py	2026-11-04 16:53:37.942542957 +0000
+@@ -164,7 +164,9 @@
+     def services(self, c: dagger.Client) -> dict[str, dagger.Service]:
+         out = {}
+         for name, sv in (self.cfg.raw.get("services") or {}).items():
+-            ctr = c.container().from_(sv["image"])
++            # 名前を容れ物に入れる。Dagger は定義（image・env・ports）が同じ service を 1 つの実体にまとめるので、これが無いと
++            #   同じ書き方の相手（例：job ごとの Postgres）が 1 つになり、別の段が同じ DB を同時に入れ替えて偽の赤になる（Kaname の G3 と G27・2026-11-04）
++            ctr = c.container().from_(sv["image"]).with_env_variable("DAGCI_SERVICE", name)
+             for k, v in (sv.get("env") or {}).items():
+                 ctr = ctr.with_env_variable(k, str(v))
+             for port in sv.get("ports") or []:
 diff -ruN orig/ai-team-delivery/scripts/ci/dagci/selftest.py new/ai-team-delivery/scripts/ci/dagci/selftest.py
 --- orig/ai-team-delivery/scripts/ci/dagci/selftest.py	2026-11-04 13:26:40.987078994 +0000
 +++ new/ai-team-delivery/scripts/ci/dagci/selftest.py	2026-11-04 13:26:49.042427047 +0000

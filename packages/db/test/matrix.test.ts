@@ -7,7 +7,7 @@ import { migrate } from "../src/migrate.js";
 import { runMatrix, type MatrixCase } from "../src/matrix.js";
 import { seedAccessMatrix } from "../src/seeds.js";
 
-const URL = process.env["DATABASE_URL"] ?? "postgres://postgres:postgres@127.0.0.1:55433/kaname_test";
+const URL = process.env["DATABASE_URL"]!;
 const APP_URL = URL.replace(/\/\/[^@]*@/, "//kaname_app:kaname_app@");
 const pkg = join(dirname(fileURLToPath(import.meta.url)), "..");
 const root = join(pkg, "..", "..");

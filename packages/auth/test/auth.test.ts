@@ -9,7 +9,7 @@ import { createAuth, type Auth } from "../src/index.js";
 import { migrateAuth } from "../src/migrate.js";
 import { changePassword, createSessionResolver, signOut } from "../src/resolver.js";
 
-const URL = process.env["DATABASE_URL"] ?? "postgres://postgres:postgres@127.0.0.1:55433/kaname_test";
+const URL = process.env["DATABASE_URL"]!;
 const APP_URL = URL.replace(/\/\/[^@]*@/, "//kaname_app:kaname_app@");
 const AUTH_URL = URL.replace(/\/\/[^@]*@/, "//kaname_auth:kaname_auth@");
 const dbPkg = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "db");

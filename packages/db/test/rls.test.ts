@@ -8,7 +8,7 @@ import { migrate } from "../src/migrate.js";
 import { withTenant } from "../src/context.js";
 import { noVendorSql, rlsEnabled } from "../src/ci.js";
 
-const URL = process.env["DATABASE_URL"] ?? "postgres://postgres:postgres@127.0.0.1:55433/kaname_test";
+const URL = process.env["DATABASE_URL"]!;
 const APP_URL = URL.replace(/\/\/[^@]*@/, "//kaname_app:kaname_app@");
 const pkg = join(dirname(fileURLToPath(import.meta.url)), "..");
 const admin = new pg.Pool({ connectionString: URL, max: 2 });

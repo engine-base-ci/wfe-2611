@@ -21,7 +21,7 @@ import { authExt } from "../src/auth/ext.js";
 import { agentStreamRoutes } from "../src/auth/agent-stream.js";
 
 const DB_PKG = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "packages", "db");
-const ADMIN = process.env["DATABASE_URL"] ?? "postgres://postgres:postgres@127.0.0.1:55433/kaname_test";
+const ADMIN = process.env["DATABASE_URL"]!;
 const APP_URL = ADMIN.replace(/\/\/[^@]*@/, "//kaname_app:kaname_app@");
 const AUTH_URL = ADMIN.replace(/\/\/[^@]*@/, "//kaname_auth:kaname_auth@");
 const PW = "Str0ng-Passw0rd!";
@@ -211,7 +211,11 @@ describe("知らせの接続（packages/db/listen・D-113）", () => {
     });
     await new Promise<void>((r) => proxy.listen(0, "127.0.0.1", r));
     const port = (proxy.address() as net.AddressInfo).port;
-    const h = createMemberHub({ url: APP_URL.replace(`:${u.port}/`, `:${port}/`), pingMs: 100, pongMs: 200 });
+    // 中継は 127.0.0.1 で待つので、宛先も 127.0.0.1:<中継の番号> にする（DB が別の機械の名前（CI の pg-database など）でも中継を通す）
+    const via = new URL(APP_URL);
+    via.hostname = "127.0.0.1";
+    via.port = String(port);
+    const h = createMemberHub({ url: via.toString(), pingMs: 100, pongMs: 200 });
     const got: string[] = [];
     await h.subscribe(crypto.randomUUID(), { change: () => undefined, down: () => got.push("down") });
     await sleep(250); // 詰まる前は確かめが通る（落ちない）

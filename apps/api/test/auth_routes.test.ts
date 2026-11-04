@@ -8,7 +8,7 @@ import { migrateAuth } from "@kaname/auth/migrate";
 import { createApp } from "../src/app.js";
 
 const DB_PKG = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "packages", "db");
-const URL = process.env["DATABASE_URL"] ?? "postgres://postgres:postgres@127.0.0.1:55433/kaname_test";
+const URL = process.env["DATABASE_URL"]!;
 const AUTH_URL = URL.replace(/\/\/[^@]*@/, "//kaname_auth:kaname_auth@");
 
 describe("/api/auth/*（Better Auth の handler に渡す）", () => {

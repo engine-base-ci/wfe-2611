@@ -26,7 +26,7 @@ const ELSEWHERE = new Set(
     ).ops,
   ),
 );
-const DB_URL = process.env["DATABASE_URL"] ?? "postgres://postgres:postgres@127.0.0.1:55433/kaname_test";
+const DB_URL = process.env["DATABASE_URL"]!;
 const ENTRANCE = new Set(["admin", "public", "client", "device"]);
 const rest = ENDPOINTS.filter(
   (e) => !ENTRANCE.has(e.perm.word) && !e.perm.word.startsWith("ops:") && !e.perm.row && e.auth === "member",

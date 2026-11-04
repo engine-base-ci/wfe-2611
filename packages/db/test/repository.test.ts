@@ -8,7 +8,7 @@ import { createRepository, type Repository } from "../src/repository.js";
 import { seedAccessMatrix } from "../src/seeds.js";
 import { UUID_RE, uuidv7 } from "../src/id.js";
 
-const URL = process.env["DATABASE_URL"] ?? "postgres://postgres:postgres@127.0.0.1:55433/kaname_test";
+const URL = process.env["DATABASE_URL"]!;
 const APP_URL = URL.replace(/\/\/[^@]*@/, "//kaname_app:kaname_app@");
 const pkg = join(dirname(fileURLToPath(import.meta.url)), "..");
 const admin = new pg.Pool({ connectionString: URL, max: 2 });

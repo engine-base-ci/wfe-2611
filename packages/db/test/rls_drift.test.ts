@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { migrate } from "../src/migrate.js";
 
-const DB_URL = process.env["DATABASE_URL"] ?? "postgres://postgres:postgres@127.0.0.1:55433/kaname_test";
+const DB_URL = process.env["DATABASE_URL"]!;
 const here = dirname(fileURLToPath(import.meta.url));
 const admin = new pg.Pool({ connectionString: DB_URL, max: 1 });
 const E = JSON.parse(readFileSync(join(here, "..", "..", "..", "07_functional", "entities.json"), "utf8")) as {

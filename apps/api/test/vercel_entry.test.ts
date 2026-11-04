@@ -13,7 +13,7 @@ import { loadConfig, StartupFailed } from "@kaname/config";
 import { bootApi, type Booted } from "../src/server.js";
 import { lazyBoot, vercelFetch, VERCEL_POOL } from "../src/vercel.js";
 
-const ADMIN = process.env["DATABASE_URL"] ?? "postgres://postgres:postgres@127.0.0.1:55433/kaname_test";
+const ADMIN = process.env["DATABASE_URL"]!;
 const fake = (): Booted => {
   const app = new Hono().get("/health", (c) => c.json({ ok: true }));
   return { app: app as unknown as Booted["app"], report: {} as Booted["report"], close: async () => undefined };

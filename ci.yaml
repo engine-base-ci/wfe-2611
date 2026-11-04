@@ -58,14 +58,17 @@ prepare:
 env: { PLAYWRIGHT_BROWSERS_PATH: /ms-playwright }
 
 # GitHub と同じく job ごとに Postgres を分ける（database と spec が同じ DB を取り合わない）
+#   DAGCI_SERVICE は名前を変えるためだけの値（Postgres は読まない）。Dagger は定義（image・env・ports）が同じ service を
+#   1 つの実体にまとめるので、これが無いと pg-database と pg-spec が同じ Postgres になり、G3 と G27 が同じ kaname_test を
+#   同時に種で入れ替えて偽の赤になった（tickets・self_only の重複キー、qa-d の FK 違反・2026-11-04）
 services:
   pg-database:
     image: pgvector/pgvector:pg16
-    env: { POSTGRES_PASSWORD: postgres, POSTGRES_DB: kaname_test }
+    env: { POSTGRES_PASSWORD: postgres, POSTGRES_DB: kaname_test, DAGCI_SERVICE: pg-database }
     ports: [5432]
   pg-spec:
     image: pgvector/pgvector:pg16
-    env: { POSTGRES_PASSWORD: postgres, POSTGRES_DB: kaname_test }
+    env: { POSTGRES_PASSWORD: postgres, POSTGRES_DB: kaname_test, DAGCI_SERVICE: pg-spec }
     ports: [5432]
 
 defaults: { timeout: 1800 }

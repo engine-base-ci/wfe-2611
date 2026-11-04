@@ -2,7 +2,7 @@
 import { describe, expect, it } from "vitest";
 import { createPool } from "../src/pool.js";
 
-const DB_URL = process.env["DATABASE_URL"] ?? "postgres://postgres:postgres@127.0.0.1:55433/kaname_test";
+const DB_URL = process.env["DATABASE_URL"]!;
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 describe("接続プールの待機列（G-16）", () => {

@@ -1,6 +1,13 @@
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "vitest/config";
 
+// 単体試験の DB（実 Postgres・RLS はモックしない）。接続先はここだけで決める（試験のファイルは DATABASE_URL を読むだけ）。
+//   CI は段の env の DATABASE_URL だけを使う（手元の開発 DB に黙ってつなぎに行かない）。
+//   手元で DATABASE_URL が無ければ、開発の Postgres（infra/docker-compose.dev.yml・scripts/dev/up.sh が作る 127.0.0.1:55433 の kaname_test）
+const DEV_TEST_DATABASE_URL = "postgres://postgres:postgres@127.0.0.1:55433/kaname_test";
+const databaseUrl = process.env["DATABASE_URL"] || (process.env["CI"] ? undefined : DEV_TEST_DATABASE_URL);
+if (databaseUrl) process.env["DATABASE_URL"] = databaseUrl; // globalSetup（DB の排他）も同じ接続先を見る
+
 // G3 unit test + coverage。閾値は 03_architecture/foundation_gates.json（lines 80 / branches 70）。
 export default defineConfig({
   // 画面（apps/web）の「@/〜」は apps/web の中を指す（tsconfig の paths と同じ）。@kaname/〜 は workspace のまま
@@ -13,6 +20,9 @@ export default defineConfig({
       "apps/*/test/**/*.test.ts",
     ],
     fileParallelism: false, // DB のテストは同じ表を種で入れ替えるので直列（RLS は実表・モックしない）
+    env: databaseUrl ? { DATABASE_URL: databaseUrl } : {},
+    // 別の vitest（別の段・別の端末）が同じ DB を同時に使わないよう、試験の間は DB に勧告ロックを持つ（取れるまで待つ）
+    globalSetup: ["packages/db/test/global-lock.ts"],
     coverage: {
       provider: "v8",
       include: ["packages/*/src/**/*.ts", "apps/*/src/**/*.ts"],

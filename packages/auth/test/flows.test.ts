@@ -16,7 +16,7 @@ import { enableTotp, signIn, verifyTotp } from "../src/two_factor.js";
 import { acceptInvitation, createInvitation, revokeInvitation } from "../src/invitations.js";
 import { listOwnDevices, revokeOwnDevice } from "../src/devices.js";
 
-const DB_URL = process.env["DATABASE_URL"] ?? "postgres://postgres:postgres@127.0.0.1:55433/kaname_test";
+const DB_URL = process.env["DATABASE_URL"]!;
 const APP_URL = DB_URL.replace(/\/\/[^@]*@/, "//kaname_app:kaname_app@");
 const AUTH_URL = DB_URL.replace(/\/\/[^@]*@/, "//kaname_auth:kaname_auth@");
 const dbPkg = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "db");

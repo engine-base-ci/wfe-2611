@@ -9,7 +9,7 @@ import { migrate } from "../src/migrate.js";
 import { seedAccessMatrix } from "../src/seeds.js";
 import { withTenant, type TenantContext } from "../src/context.js";
 
-const DB_URL = process.env["DATABASE_URL"] ?? "postgres://postgres:postgres@127.0.0.1:55433/kaname_test";
+const DB_URL = process.env["DATABASE_URL"]!;
 const APP_URL = DB_URL.replace(/\/\/[^@]*@/, "//kaname_app:kaname_app@");
 const here = dirname(fileURLToPath(import.meta.url));
 const admin = new pg.Pool({ connectionString: DB_URL, max: 2 });
