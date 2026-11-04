@@ -3387,6 +3387,8 @@ decision_traceability:
     ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
   - file: 03_architecture/共通の決まり.md
     ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+  - file: ci.yaml
+    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
   - file: 08_schedule/sprint.md
     ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
   - file: 07_qa/test-plan/test-plan.md
