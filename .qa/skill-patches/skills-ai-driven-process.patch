@@ -280,8 +280,8 @@ diff -ruN orig/ai-team-delivery/assets/ci/ci-gates.example.yaml new/ai-team-deli
 +  # - {path: vitest.config.ts, contains: DEV_TEST_DATABASE_URL, why: CI（CI=true）では使わない手元だけの既定}
 diff -ruN orig/ai-team-delivery/assets/ci/ci.example.yaml new/ai-team-delivery/assets/ci/ci.example.yaml
 --- orig/ai-team-delivery/assets/ci/ci.example.yaml	2026-11-04 13:26:40.978609155 +0000
-+++ new/ai-team-delivery/assets/ci/ci.example.yaml	2026-11-04 18:18:37.401288597 +0000
-@@ -6,19 +6,39 @@
++++ new/ai-team-delivery/assets/ci/ci.example.yaml	2026-11-04 22:52:56.039903721 +0000
+@@ -6,19 +6,42 @@
    base: main                    # 変わったファイルを数える起点（分岐点からの差）
    history: true                 # 容れ物の中に最小の git（base の木＋作業場の木）を作る
  
@@ -304,6 +304,9 @@ diff -ruN orig/ai-team-delivery/assets/ci/ci.example.yaml new/ai-team-delivery/a
 +  # 元の image は言語の公式（node・python）。GitHub の実行機の image は容れ物として配られておらず、似せた image は大きく版も固まらないので使わない。
 +  #   版は GitHub の setup-node・setup-python と同じに（init-ci が「22」をその時点の 22.x.y に固定する）
 +  from: node:22.19.0-bookworm         # ★python3 が要る（段の包み stage.py が使う。下の apt で入れる）
++  # platform: linux/amd64             # 台の形。Apple シリコンの Mac で amd64 だけの道具（Linux 版 Chrome など）が要るときに書く。
++  #                                   #   Mac では amd64 を速く動かす設定が要る（colima：--vm-type vz --vz-rosetta／Docker Desktop：Rosetta を使う）。
++  #                                   #   台ごとに替えるなら環境の DAGCI_PLATFORM（ci.yaml より勝つ）
 +  env:
 +    TZ: UTC                     # GitHub の実行機と同じ
 +    LANG: C.UTF-8
@@ -328,7 +331,7 @@ diff -ruN orig/ai-team-delivery/assets/ci/ci.example.yaml new/ai-team-delivery/a
  
  env: {}                         # 全部の段に渡す環境（秘密は書かない。秘密は runner の側で渡す）
  
-@@ -29,11 +49,16 @@
+@@ -29,11 +52,16 @@
      run: npm_config_store_dir=/pnpm-store pnpm install --frozen-lockfile --prefer-offline
  
  services:                       # 段が使う相手（容れ物で起こし、段から名前で引ける）
@@ -345,7 +348,7 @@ diff -ruN orig/ai-team-delivery/assets/ci/ci.example.yaml new/ai-team-delivery/a
  defaults: {timeout: 1800}
  
  stages:
-@@ -63,3 +88,19 @@
+@@ -63,3 +91,19 @@
      name: 仕様の検査
      run: python3 scripts/ci/spec_gate.py   # Python 1 本の段は、読んだファイルが同じなら結果を使い回す
      when: ["docs/**", "scripts/ci/**"]
@@ -394,8 +397,8 @@ diff -ruN orig/ai-team-delivery/references/adapter.md new/ai-team-delivery/refer
  `state.py items <チケット>` が、設定 `ticket_fields` に従ってチケットの正本から項目を引く。
 diff -ruN orig/ai-team-delivery/references/ci.md new/ai-team-delivery/references/ci.md
 --- orig/ai-team-delivery/references/ci.md	2026-11-04 13:26:40.980158762 +0000
-+++ new/ai-team-delivery/references/ci.md	2026-11-04 18:20:00.062054649 +0000
-@@ -43,14 +43,77 @@
++++ new/ai-team-delivery/references/ci.md	2026-11-04 22:52:56.041000557 +0000
+@@ -43,14 +43,78 @@
  2. 初回の準備：`<スキル>/scripts/ci/dagci/dagci setup`（容れ物の道具・Dagger の CLI と SDK・エンジン。版は固定）
     会社の網が TLS を差し替える PC は `DAGCI_EXTRA_CA=auto`（macOS）か `DAGCI_EXTRA_CA=<PEM>` を付ける
     （エンジンが image を取れずに `x509: certificate signed by unknown authority` で落ちるのがこの場合）
@@ -471,12 +474,13 @@ diff -ruN orig/ai-team-delivery/references/ci.md new/ai-team-delivery/references
 +| `PATH` の先頭に `/opt/py/bin`・`VIRTUAL_ENV`・道具箱の最後に `sys.prefix` の確かめ | 別の場所へ links を張ると venv と見なされず、入れた部品が見えない |
 +| Python・Node の版は workflow と同じに固定 | 3.11 で schemathesis が落ちた（GitHub は 3.12） |
 +| Chrome は workflow・テストが使うときだけ足す（amd64 だけ） | GitHub の実行機には最初からあり、容れ物には無い |
++| Apple シリコンの Mac で amd64 だけの道具が要るなら `toolbox.platform: linux/amd64` | Linux 版 Chrome は amd64 だけ。Mac は Rosetta で amd64 を動かす（colima は `colima start --vm-type vz --vz-rosetta`、Docker Desktop は設定の「Use Rosetta for x86/amd64 emulation」）。台ごとに替えるなら `DAGCI_PLATFORM`。相手（DB など）は台の形のまま |
 +| 相手は job ごとに別の名前（dagci が `DAGCI_SERVICE=<名前>` を入れる） | Dagger は定義が同じ相手を 1 つにまとめ、2 つの段が同じ DB を同時に作り直した |
 +| 標準の検査 `devhost_gate.py`（§14） | テストが `DATABASE_URL ?? "…127.0.0.1:55433…"` の開発者の DB に落ち、別のテストは URL の口だけを替えていた |
  
  ## 3. ci.yaml の形
  
-@@ -65,7 +128,9 @@
+@@ -65,7 +129,9 @@
  | `toolbox` | `from`（元の image。**python3 が要る**）・`env`・`steps`（image を作る命令） |
  | `env` | 全部の段に渡す環境。**秘密は書かない**（秘密は runner 側の環境で渡す） |
  | `prepare` | `[{name, inputs: [glob], run, caches: {名前: 置き場}}]`。inputs のファイルだけを入れて流すので、入力が同じなら使い回す（依存の部品） |
@@ -487,7 +491,7 @@ diff -ruN orig/ai-team-delivery/references/ci.md new/ai-team-delivery/references
  | `caches` | `{名前: 置き場}`。全部の段に付ける、回をまたいで残す置き場（例 turbo の `.turbo`）。中身は使い回しの鍵に入らない |
  | `defaults` | 段の既定（例 `timeout: 1800`） |
  | `overrides` | `{段の id: {項目: 値}}`。include で導いた段の一部だけを変える |
-@@ -289,6 +354,8 @@
+@@ -289,6 +355,8 @@
  | 24 | 重い段（`heavy: true`・記録の時間の中央値が `ci.heavy_seconds`＝既定 30 秒以上）が 2 本 | 同時に 1 本だけ（台を取り合って時間切れにしない） |
  | 25 | 同時に流れる段が回をまたぐ置き場（caches）に書く | 置き場は段ごとに別（turbo の置き場の取り合いをしない） |
  | 26 | `dagci audit` | 揺れうる所（A1 同じ命令を同時に・A2 書き換えの後に作業場を数える・A3 短い時間の上限・A4 vitest に testTimeout が無い・A5 段の時間が上限に近い）を数える |
@@ -496,7 +500,7 @@ diff -ruN orig/ai-team-delivery/references/ci.md new/ai-team-delivery/references
  
  **偽の赤の類と、その止め方**（2026-10-29 に止まった 5 種類から）
  | 類 | 止め方 |
-@@ -303,6 +370,7 @@
+@@ -303,6 +371,7 @@
  - エンジンの使い回しに上限：`engine.json` の gc（`DAGCI_ENGINE_MAX_CACHE`・既定 20GB）。VM は Mac の本当の空きを知らないので上限が要る。
    設定を変えたら `dagci engine restart`（この台の列の枠を全部取ってから入れ直す＝流れている回を壊さない）
  - doctor が「Mac の空き」「エンジンの使い回しの大きさ（上限が効いているか）」も出す
@@ -504,7 +508,7 @@ diff -ruN orig/ai-team-delivery/references/ci.md new/ai-team-delivery/references
  
  - 場面 12 で回が違ったら、同じ回をもう 1 度流す。2 度とも違えば赤。2 度目に同じなら「揺れ」として段の名前と、どちらの側が赤だったかを記録に残し、
    selftest の出力と doctor（黄）に出す（隠さない。揺れた段はプロジェクトの検査の直し）。回ごとに書き足すので、途中で落ちても終わった回は残る
-@@ -310,3 +378,47 @@
+@@ -310,3 +379,47 @@
  - `dagci selftest`（約 30 分・場面 12 は記録を読むだけ）／`dagci selftest --parity`（重い。段の導出・流し方を変えたら流し直す）／`--only 1,2`
  - 記録：`$DAGCI_HOME/selftest/<project>.json`・`parity/<project>.json`。doctor がこれの古さを見る
  - **PM は見回りのたびに `dagci doctor`**（赤があれば終わり方 1）
@@ -554,7 +558,7 @@ diff -ruN orig/ai-team-delivery/references/ci.md new/ai-team-delivery/references
 +
 diff -ruN orig/ai-team-delivery/scripts/ci/dagci/config.py new/ai-team-delivery/scripts/ci/dagci/config.py
 --- orig/ai-team-delivery/scripts/ci/dagci/config.py	2026-11-04 13:26:40.984267868 +0000
-+++ new/ai-team-delivery/scripts/ci/dagci/config.py	2026-11-04 17:57:36.280851610 +0000
++++ new/ai-team-delivery/scripts/ci/dagci/config.py	2026-11-04 22:52:34.805520728 +0000
 @@ -17,7 +17,8 @@
  STAGE_KEYS = {"id", "name", "run", "needs", "when", "mutates", "group", "timeout", "env", "services",
                "trace", "export", "imports", "warn_only", "always", "shell", "heavy"}
@@ -565,7 +569,15 @@ diff -ruN orig/ai-team-delivery/scripts/ci/dagci/config.py new/ai-team-delivery/
  
  
  class ConfigError(Exception):
-@@ -157,6 +158,12 @@
+@@ -72,6 +73,7 @@
+ 
+     def toolbox_digest(self) -> str:
+         keep = {k: self.raw.get(k) for k in ("toolbox", "prepare", "workdir", "env", "services", "git")}
++        keep["platform"] = os.environ.get("DAGCI_PLATFORM") or ""   # 台の形を替えたら道具箱を作り直す
+         return hashlib.sha256(json.dumps(keep, sort_keys=True, ensure_ascii=False).encode()).hexdigest()[:24]
+ 
+ 
+@@ -157,6 +159,12 @@
      for name, sv in (cfg.raw.get("services") or {}).items():
          if "image" not in sv:
              raise ConfigError(f"services.{name} に image が要る")
@@ -1411,7 +1423,7 @@ diff -ruN orig/ai-team-delivery/scripts/ci/dagci/parity.py new/ai-team-delivery/
              subprocess.run(shlex.split(adapter) + ["break", wt, json.dumps(broken, ensure_ascii=False)], cwd=wt,
 diff -ruN orig/ai-team-delivery/scripts/ci/dagci/runner.py new/ai-team-delivery/scripts/ci/dagci/runner.py
 --- orig/ai-team-delivery/scripts/ci/dagci/runner.py	2026-11-04 13:26:40.986349016 +0000
-+++ new/ai-team-delivery/scripts/ci/dagci/runner.py	2026-11-04 18:07:22.505047102 +0000
++++ new/ai-team-delivery/scripts/ci/dagci/runner.py	2026-11-04 22:52:34.804787747 +0000
 @@ -54,6 +54,7 @@
      files: list[str] = field(default_factory=list)
      rerun: set = field(default_factory=set)   # 同じ木の前の回で赤だった段（Dagger の使い回しを使わず、本当に流し直す）
@@ -1420,7 +1432,19 @@ diff -ruN orig/ai-team-delivery/scripts/ci/dagci/runner.py new/ai-team-delivery/
  
  
  def sync_stage_dir(root: str, files: list[str], dest: str) -> None:
-@@ -164,7 +165,9 @@
+@@ -118,7 +119,10 @@
+         tb = self.cfg.raw.get("toolbox") or {}
+         if "from" not in tb:
+             raise ValueError("toolbox.from（容れ物の元の image）が要る")
+-        ctr = c.container().from_(tb["from"])
++        # 台の形（例 linux/amd64）。Apple シリコンの Mac で amd64 だけの道具（Linux 版 Chrome など）が要るとき。
++        #   DAGCI_PLATFORM が ci.yaml の toolbox.platform に勝つ（台ごとに替えたいとき）。空なら台の形のまま
++        plat = os.environ.get("DAGCI_PLATFORM") or tb.get("platform")
++        ctr = (c.container(platform=dagger.Platform(plat)) if plat else c.container()).from_(tb["from"])
+         for k, v in {**(tb.get("env") or {}), **(self.cfg.raw.get("env") or {})}.items():
+             ctr = ctr.with_env_variable(k, str(v))
+         for step in tb.get("steps") or []:
+@@ -164,7 +168,9 @@
      def services(self, c: dagger.Client) -> dict[str, dagger.Service]:
          out = {}
          for name, sv in (self.cfg.raw.get("services") or {}).items():
@@ -1431,7 +1455,7 @@ diff -ruN orig/ai-team-delivery/scripts/ci/dagci/runner.py new/ai-team-delivery/
              for k, v in (sv.get("env") or {}).items():
                  ctr = ctr.with_env_variable(k, str(v))
              for port in sv.get("ports") or []:
-@@ -322,6 +325,23 @@
+@@ -322,6 +328,23 @@
              if not self.o.quiet:
                  print(f"  準備 道具箱 {timings['toolbox']:.1f}s・準備 {timings['prepare']:.1f}s・"
                        f"作業場 {timings['workspace']:.1f}s", flush=True)

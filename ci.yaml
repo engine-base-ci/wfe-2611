@@ -14,6 +14,8 @@ include:
 
 toolbox:
   from: node:22-bookworm
+  # 台の形を amd64 に固定する（Linux 版 Chrome は amd64 だけ。Apple シリコンの Mac でも Rosetta で同じ容れ物になる・2026-11-04）
+  platform: linux/amd64
   # SSL_CERT_FILE：uv が入れた Python も OS の証明書を読まない（G46 が registry に聞けずに赤だった・2026-11-04）
   # NODE_EXTRA_CA_CERTS：Node は OS の証明書を読まない。会社の網・中継の内側でも npm・pnpm が通るよう、
   #   OS の証明書（Dagger のエンジンが足した証明書を含む）も読ませる
