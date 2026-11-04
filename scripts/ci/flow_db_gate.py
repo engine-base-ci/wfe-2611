@@ -4,6 +4,7 @@
   python3 scripts/ci/flow_db_gate.py              検査する
   python3 scripts/ci/flow_db_gate.py --init       目録が無いときだけ、今の migration と契約から最初の目録を書く（以後は記録として持つ）
   python3 scripts/ci/flow_db_gate.py --selftest   わざと壊した形を赤にできるか
+  python3 scripts/ci/flow_db_gate.py --lines      流れをまたぐ表の線（03_architecture/flow-lines.json・生成物）を契約から作り直す
 
 赤になるもの:
   FD1 第1フェーズの行為（flow.json の release v1）が、どの流れにも入っていない・2 つの流れに入っている・流れに知らない行為がある
@@ -11,6 +12,7 @@
   FD3 凍結した表（後のフェーズ・D-128.127）を、コード（apps/*/src・packages/*/src。試験・migration は除く）が使い始めた。
       使うなら、その流れで形を確かめ直し、決めてもらってから目録で「骨格」か「中で使う」に移す
   FD4 目録の区分が決まりの外（skeleton・internal・frozen の 3 つだけ）・理由が無い
+  FD5 流れの記録の「効き方の影響」（effects）が形の外：変える側・効く先が知らない流れ・確かめることが空・ID の重なり（D-128.128）
 知らせるだけ（赤にしない）:
   骨格の表を、第1フェーズの口がもう使っていない（凍結に移すか確かめる）
 """
@@ -74,6 +76,47 @@ def api_tables(root: str, acts: set[str]) -> set[str]:
     return out
 
 
+def lines(root: str, flows: dict) -> dict:
+    """契約から、表ごとに書く流れ・読む流れを出す。2 つ以上の流れが使う表＝境目"""
+    a2f = {a: f["id"] for f in flows["flows"] for a in f["acts"]}
+    W: dict[str, set[str]] = {}
+    R: dict[str, set[str]] = {}
+    for e in json.load(open(os.path.join(root, "08_api/endpoints.json"), encoding="utf-8"))["endpoints"]:
+        t = e.get("table")
+        fs = {a2f[a] for a in e.get("acts") or [] if a in a2f}
+        for tb in (t if isinstance(t, list) else ([t] if t else [])):
+            (R if e["method"] == "GET" else W).setdefault(tb, set()).update(fs)
+    T = {}
+    for tb in sorted(set(W) | set(R)):
+        w, r = sorted(W.get(tb, set())), sorted(R.get(tb, set()) - W.get(tb, set()))
+        if not w and not r:
+            continue
+        T[tb] = {"writes": w, "reads": r, "boundary": len(set(w) | set(r)) >= 2,
+                 "lines": [f"{a}→{b}" for a in w for b in sorted(set(w) | set(r)) if a != b]}
+    return {"_doc": "生成物（scripts/ci/flow_db_gate.py --lines ← 08_api/endpoints.json・05_flow/flows.json）。手で直さない。"
+                    "表ごとに、書く流れ・読む流れ・流れをまたぐ線。2 つ以上の流れが使う表は境目（D-128.126・D-128.128）",
+            "source": ["D-128.126", "D-128.128"],
+            "boundary_tables": [k for k, v in T.items() if v["boundary"]],
+            "tables": T}
+
+
+def check_effects(flows: dict) -> list[str]:
+    ids = {f["id"] for f in flows["flows"]} | {"all"}
+    fails, seen = [], set()
+    for e in flows.get("effects") or []:
+        if e.get("id") in seen:
+            fails.append(f"FD5 効き方の影響の ID {e.get('id')} が 2 つある")
+        seen.add(e.get("id"))
+        if e.get("from") not in ids - {"all"}:
+            fails.append(f"FD5 効き方の影響 {e.get('id')} の変える側 {e.get('from')} が知らない流れ")
+        bad = [t for t in e.get("to") or [] if t not in ids]
+        if bad or not e.get("to"):
+            fails.append(f"FD5 効き方の影響 {e.get('id')} の効く先が空か知らない流れ（{bad}）")
+        if not str(e.get("check") or "").strip() or not str(e.get("change") or "").strip():
+            fails.append(f"FD5 効き方の影響 {e.get('id')} に、変えることか確かめることが無い")
+    return fails
+
+
 def check_flows(flows: dict, acts: set[str]) -> list[str]:
     seen: dict[str, str] = {}
     fails = []
@@ -129,9 +172,17 @@ def main() -> int:
         cat = {"tables": {"a": {"class": "frozen", "why": "x"}, "b": {"class": "skeleton", "why": "y"}, "gone": {"class": "frozen", "why": "z"}, "c": {"class": "odd"}}}
         r2 = check_catalog(cat, {"a", "b", "c", "newt"}, {"a": {"apps/api/src/x.ts"}}, {"b"})
         ok2 = all(any(k in f for f in r2) for k in ("FD3 凍結した表 a", "newt", "gone", "FD4 目録の表 c"))
-        ok = ok1 and ok2
-        print("PASS — 流れの漏れ・重なり・知らない行為、目録に無い表・消えた表・凍結の表を使うコード・区分の誤りを見つけた" if ok else f"FAIL — 見つけられない（流れ {ok1}・目録 {ok2}）")
+        r5 = check_effects({"flows": [{"id": "F1"}], "effects": [{"id": "E1", "from": "F9", "to": [], "change": "x", "check": ""}, {"id": "E1", "from": "F1", "to": ["F1"], "change": "y", "check": "z"}]})
+        ok5 = all(any(k in f for f in r5) for k in ("2 つある", "変える側 F9", "効く先", "確かめること"))
+        ok = ok1 and ok2 and ok5
+        print("PASS — 流れの漏れ・重なり・知らない行為、目録に無い表・消えた表・凍結の表を使うコード・区分の誤り・効き方の影響の形の誤りを見つけた" if ok else f"FAIL — 見つけられない（流れ {ok1}・目録 {ok2}・影響 {ok5}）")
         return 0 if ok else 1
+    if "--lines" in sys.argv:
+        out = p("03_architecture/flow-lines.json")
+        json.dump(lines(ROOT, json.load(open(p("05_flow/flows.json"), encoding="utf-8"))), open(out, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+        open(out, "a").write("\n")
+        print(f"書いた: {out}")
+        return 0
     cpath = p("03_architecture/db-catalog.json")
     if "--init" in sys.argv:
         if os.path.exists(cpath):
@@ -145,13 +196,13 @@ def main() -> int:
     flows = json.load(open(p("05_flow/flows.json"), encoding="utf-8"))
     cat = json.load(open(cpath, encoding="utf-8"))
     tables, refs = migration_tables(ROOT), src_refs(ROOT)
-    fails = check_flows(flows, acts) + check_catalog(cat, tables, refs, api_tables(ROOT, acts))
+    fails = check_flows(flows, acts) + check_catalog(cat, tables, refs, api_tables(ROOT, acts)) + check_effects(flows)
     c = {k: sum(1 for v in cat["tables"].values() if v.get("class") == k) for k in CLASSES}
     for n in NOTES:
         print("  note", n)
     for f in fails:
         print("  ★", f)
-    print(f"流れ {len(flows['flows'])}・第1フェーズの行為 {len(acts)} ／ 表 {len(tables)}（骨格 {c['skeleton']}・中で使う {c['internal']}・凍結 {c['frozen']}）")
+    print(f"流れ {len(flows['flows'])}・第1フェーズの行為 {len(acts)}・効き方の影響 {len(flows.get('effects') or [])} ／ 表 {len(tables)}（骨格 {c['skeleton']}・中で使う {c['internal']}・凍結 {c['frozen']}）")
     print("FAIL — 流れか DB の目録が合わない" if fails else "PASS — 行為はどれも 1 つの流れに入り、表はどれも目録にあり、凍結の表をコードが使っていない")
     return 1 if fails else 0
 

@@ -103,6 +103,13 @@
    "outputs": [
     "01_hearing/要件一覧.md"
    ]
+  },
+  {
+   "name": "流れをまたぐ表の線（契約 → 03_architecture/flow-lines.json・D-128.128）",
+   "run": "python3 scripts/ci/flow_db_gate.py --lines",
+   "outputs": [
+    "03_architecture/flow-lines.json"
+   ]
   }
  ],
  "checked_elsewhere": [
