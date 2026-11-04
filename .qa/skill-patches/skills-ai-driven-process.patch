@@ -1,0 +1,3114 @@
+diff -ruN orig/acceptance-criteria/SKILL.md new/acceptance-criteria/SKILL.md
+--- orig/acceptance-criteria/SKILL.md	2026-11-04 13:26:40.924305793 +0000
++++ new/acceptance-criteria/SKILL.md	2026-11-04 13:29:30.133337967 +0000
+@@ -5,6 +5,20 @@
+ builtin: true
+ ---
+ 
++## 🧭 AI 駆動の開発の進め方（ai-driven-process）— このスキルの責務（2026-11-04 追加・必須・省略不可）
++
++> 進め方の正本: `~/.claude/rules/common/ai-driven-process.md`（無ければ `engineering-rules` の `scripts/install.sh` で入れる）。
++> チケット＝利用者の 1 つの操作を画面・API・DB まで縦に通す 1 つの実装／分岐は 8 観点（入力・対象の状態・時間の流れ・入口・利用者の状態・失敗・操作の揺れ・守り）から出し、**書いていない＝漏れ**／
++> テストは入れ子の 5 段（単体＝L1・中間／統合／流れをまたぐ＝L2・回帰＝L3〜L5）／設計は 3 段（はじめに 1 回・流れに入るとき・チケットを切るとき）／
++> 目録をまず探す（同じものを 2 つ作らない）／役は 4 つ（作る・精査・実装・テスター）。**このスキルの記述と矛盾したら正本が勝つ。**
++
++- AC は 8 観点から出す（入力・対象の状態・時間の流れ・入口・利用者の状態・失敗・操作の揺れ・守り）。G-11〜G-16 はその中で判定する
++- 状態を持つものは **状態 × 入口 × 利用者の状態の表** を AC の分母にし、空いたマスは漏れ（書いていない＝漏れ）。**どの時点で確定するか**を必ず書く
++- AC は 1 つのチケット（1 つの実装）に閉じる。他のチケットが受け持つマスはその名前を書く
++- チケットの分類（`分類:`）の型（test-verification の `references/test-patterns/`）を全部受けるか、要らない理由を書く
++
++---
++
+ ## 🎨 デザインシステム（design-system）— このスキルの責務（2026-09-16 追加）
+ 
+ > 規約の正本: `~/.claude/rules/common/design-system.md` ／ 由来: lessons-learned **L-017**
+diff -ruN orig/ai-team-delivery/SKILL.md new/ai-team-delivery/SKILL.md
+--- orig/ai-team-delivery/SKILL.md	2026-11-04 13:26:40.976913479 +0000
++++ new/ai-team-delivery/SKILL.md	2026-11-04 13:29:43.795656662 +0000
+@@ -1,6 +1,6 @@
+ ---
+ name: ai-team-delivery
+-description: "AI の固定メンバー（14 人のセッション）でチームを組み、チケット単位の開発を『精査 → テスト先行 → 実装 → 漏れ確認・細部レビュー・セキュリティ・テスト判定 → 完成確認 → PM が再検査してマージ』の順で、ほぼ自動で最後まで回すオーケストレーター（PM の手順書）。メンバーの起動・疎通の検査・名簿・状態の管理（決められた順番以外に進めない）・差し戻しの振り分け・止まったときの立て直し・Wave の区切りの片付け・人の実機テスト用の検収・テスト表（Google スプレッドシート）までを持つ。既存のスキル（spec-sync-orchestrator・distributed-dev・jit-task-execution・test-verification・human-grade-qa・visual-fidelity・e2e-journey-walkthrough・code-review・security-review）は作り直さず、役割から呼ぶ。ユーザーが「チームで進めて」「セッションを分けて開発して」「PM として回して」「チケットを自動で最後まで進めて」「開発セッションとテストセッションを作って」「漏れなく実装とテストを回して」「差し戻しまで自動で」「検収・テスト表を作って」「並列で開発を進めて」と言ったら、明示されなくても必ず使う。1 チケットだけ自分で実装する場面は jit-task-execution、テスト仕様を 1 本書くだけなら human-grade-qa を使う。検査は自前の CI（dagci：Dagger の上の OSS の実行器・ci.yaml 1 枚・GitHub Actions の self-hosted runner／Forgejo Actions・変わった所だけ・結果の使い回し・手元と CI で同じ動き）で流し、CI が緑のときだけ取り込む。「CI を自前で」「self-hosted runner で検査を」「検査が遅い・待ちが長い」でも使う。汎用（プロジェクトごとの違いは ai-team.yaml と ci.yaml）。"
++description: "AI の固定メンバー（14 人のセッション）でチームを組み、チケット単位の開発を『精査 → テスト先行 → 実装 → 漏れ確認・細部レビュー・セキュリティ・テスト判定 → 完成確認 → PM が再検査してマージ』の順で、ほぼ自動で最後まで回すオーケストレーター（PM の手順書）。メンバーの起動・疎通の検査・名簿・状態の管理（決められた順番以外に進めない）・差し戻しの振り分け・止まったときの立て直し・Wave の区切りの片付け・人の実機テスト用の検収・テスト表（Google スプレッドシート）までを持つ。既存のスキル（spec-sync-orchestrator・distributed-dev・jit-task-execution・test-verification・human-grade-qa・visual-fidelity・e2e-journey-walkthrough・code-review・security-review）は作り直さず、役割から呼ぶ。ユーザーが「チームで進めて」「セッションを分けて開発して」「PM として回して」「チケットを自動で最後まで進めて」「開発セッションとテストセッションを作って」「漏れなく実装とテストを回して」「差し戻しまで自動で」「検収・テスト表を作って」「並列で開発を進めて」と言ったら、明示されなくても必ず使う。1 チケットだけ自分で実装する場面は jit-task-execution、テスト仕様を 1 本書くだけなら human-grade-qa を使う。検査は自前の CI（dagci：Dagger の上の OSS の実行器・ci.yaml 1 枚・GitHub Actions の self-hosted runner／Forgejo Actions・変わった所だけ・結果の使い回し・手元と CI で同じ動き）で流し、CI が緑のときだけ取り込む。「CI を自前で」「self-hosted runner で検査を」「検査が遅い・待ちが長い」でも使う。標準の検査（生成物が最新か・書いた検査が CI から回るか・部品の非推奨と出てからの日数）も持つ。汎用（言語・枝・道具・プロジェクトごとの違いは ai-team.yaml・ci.yaml・ci-gates.yaml）。"
+ metadata:
+   tab: 品質・運用
+   prev_skill: task-decomposition（チケットの正本ができていること）
+@@ -15,6 +15,20 @@
+ 
+ 設計の根拠と user との合意は `references/design.md`。迷ったらそこに戻る。
+ 
++## 🧭 AI 駆動の開発の進め方（ai-driven-process）— このスキルの責務（2026-11-04 追加・必須・省略不可）
++
++> 進め方の正本: `~/.claude/rules/common/ai-driven-process.md`（無ければ `engineering-rules` の `scripts/install.sh` で入れる）。
++> チケット＝利用者の 1 つの操作を画面・API・DB まで縦に通す 1 つの実装／分岐は 8 観点（入力・対象の状態・時間の流れ・入口・利用者の状態・失敗・操作の揺れ・守り）から出し、**書いていない＝漏れ**／
++> テストは入れ子の 5 段（単体＝L1・中間／統合／流れをまたぐ＝L2・回帰＝L3〜L5）／設計は 3 段（はじめに 1 回・流れに入るとき・チケットを切るとき）／
++> 目録をまず探す（同じものを 2 つ作らない）／役は 4 つ（作る・精査・実装・テスター）。**このスキルの記述と矛盾したら正本が勝つ。**
++
++- 役は 4 つ（**作る・精査・実装・テスター**）。人数は固定せず、詰まった役に寄せる
++- 実装の前に **OK（機械の検査＋別の人 1 回の精査）**。テスターは CI を含めて全部を流し、**落ちたものを 1 回でまとめて**原因の役に戻す
++- 作る役は **1 つ先の流れを並行で**切る（待ちを作らない）。検査は手元の dagci で GitHub と同等以上に回し、緑のときだけ取り込む
++- 既存のコードは、いま全部をテストし直さず、使うチケットで確かめる
++
++---
++
+ ## なぜこの形なのか（最初に読む）
+ 
+ 1 つのセッションに全部をやらせると、重くなって注意が落ち、テストや確認を飛ばす。
+@@ -50,6 +64,17 @@
+ | Q5 | 完成確認 | `roles/q5-acceptance.md` | human-grade-qa・visual-fidelity |
+ | W1 | Wave 監査 | `roles/w1-wave-audit.md` | e2e-journey-walkthrough |
+ 
++**4 つの役との対応（正本 ai-driven-process.md §8）**：メンバーは 4 つの役のどれかに属する。
++
++| 役 | メンバー | 詰まったとき |
++|---|---|---|
++| 作る（チケットとテストのコードを書く・1 つ先の流れを並行で切る） | S1・S2・T1 | 作るの列が伸びたら、作るに人を寄せる |
++| 精査（実装の前の OK。機械の検査が緑のうえで 1 回） | R1 | 精査の待ちが伸びたら、精査に寄せる |
++| 実装（テストを変えずに作る） | D1〜D3 | レーンの数で増減 |
++| テスター（CI を含めて全部流し、落ちたものを 1 回でまとめて戻す） | Q1〜Q5・W1 | テスターの待ちが伸びたら、テスターに寄せる |
++
++- 人数は固定しない。`state.py` の列の長さを見て、**詰まった役に寄せる**（作る役が空いているのに実装が待つ、を作らない）
++- テスターは 1 件ずつ戻さない。Q1〜Q5 の結果をまとめて 1 回で、原因の役（テストの誤り→作る・実装の誤り→実装・チケットの漏れ→作る＋精査に検査を足す）に戻す
+ - 実装の人数＝レーンの数（設定 `lanes`）。レーンは**共有ファイルの持ち主**で分ける。同じレーンの中は 1 本ずつ
+ - 3 レーンなら PM を除いて 13 人＋PM＝14 人。**当てるチケットが無いレーンの実装は起動しない**（遊ばせない）。それ以外の 10 人は省かない
+ - レビュー系（Q1〜Q5）は全レーンで共有し、**自分の列から 1 本ずつ**取る
+@@ -69,7 +94,7 @@
+    **使えない環境では、このスキルは動かせない。** 1 つのセッションで役割を切り替えて代わりにすることはしない（それをやると原則が全部崩れる）。user にそう伝えて止まる
+ 5. 状態の置き場（`state_dir`）が `.gitignore` に入っている
+ 6. ★**メンバーの作業場はリポジトリの中（`.claude/worktrees/`）に作られる**。リポジトリの写しがメンバーの数だけ入るので、
+-   lint（ESLint 9 はドットのフォルダも見る）・全文走査・棚卸しの除外に `.claude/`・`.ai-team/`・`.ai-team-out/` を入れる。
++   lint（ESLint 9 以降はドットのフォルダも見る。ruff・grep の走査も同じ）・全文走査・棚卸しの除外に `.claude/`・`.ai-team/`・`.ai-team-out/` を入れる。
+    入れないと検査が数倍〜10 倍遅くなり、他人の途中の状態で赤になる（moon-shot-saas の試験運用で実際に 10 分以上止まった）
+ 7. ★**いまの段階（`scope`）が決まっている**。最初に user と「第一段階はどこまでか（どのチケットか）」を擦り合わせ、
+    `ai-team.yaml` の `scope`（チケットの段階の印の欄・値・名前）に書く。**PM が勝手に決めない・勝手に広げない**。
+@@ -162,7 +187,7 @@
+ 
+ ### マージの前に PM がやること（報告を鵜呑みにしない）
+ 
+-**main に入れる道は `scripts/pm_merge.sh` の 1 本だけ。** 台本が守ること：
++**取り込む先の枝（`base_branch`・既定 main）に入れる道は `scripts/pm_merge.sh` の 1 本だけ。** main 以外の枝なら `--base <枝>` を付ける。 台本が守ること：
+ 1. 生成物を数え、生成物の衝突は片方を取って作り直す（作り直せば両方の更新が入る）
+ 2. 手で持つファイル（正本・決定の記録・台帳）の衝突は PM が選ばない。止まり、書いた人に main を取り込ませて返す
+ 3. 取り込みが本当に入ったか（MERGE_HEAD・親）を確かめてから、取り込みの版を CI（dagci）で**全部の段**流す
+@@ -176,7 +201,7 @@
+ 5. **取り込みを流している間は、main の作業ツリーで何も直さない**。PM の直しも枝の作業場で行い、列に並べる
+ 6. 全工程の報告が `verdict_check.py` を通っていることを `state.py show` で確かめ、報告を `evidence_dir` に入れ、`project_status` を done に
+ 7. **done のチケットの行の文を変える仕様の直しは、その行の結果（l1-results.json）を取り込みの中で外す**（行の指紋が合わなくなる）。外した行は次の回で流し直す
+-8. **PM が正本（status.json など生成器が読むファイル）を直接直すときは、`REGEN_ONLY=1 verify_all` の生成物も同じコミットに入れる**
++8. **PM が正本（status.json など生成器が読むファイル）を直接直すときは、生成器を回した生成物も同じコミットに入れる**（`pm_merge.sh --regen` に渡す命令と同じもの）
+ 9. 仕様を書く人を増やすときは、生成器を区画に分けて鍵（`state.py lock <区画>`）を渡す。仕様の枝（S1・S2）は送る前に main を取り込む
+ 
+ マージを PM の判断でしてよいかは **user が決める**。許可が無ければ聞く。
+@@ -187,7 +212,7 @@
+ 
+ | 誰が・いつ | すること |
+ |---|---|
+-| メンバー：出す前 | コミット → `dagci check` を後ろで流す → 次の仕事へ。緑の要約（1 行）を報告に貼る。手元で verify_all を直に流さない |
++| メンバー：出す前 | コミット → `dagci check` を後ろで流す → 次の仕事へ。緑の要約（1 行）を報告に貼る。手元で `verify`（ai-team.yaml の全部の検査）を直に流さない |
+ | T（テストの書き手）| テストだけの枝で全部の段を流さない（実装が無いので必ず赤・列を埋める）。実装の枝に積んだ手元の木で自分のテスト・lint・型を確かめて D に渡す。全部の段は D が実装の枝で 1 回 |
+ | メンバー：試すとき | 自分のテスト・1 つの段だけ（`dagci run --only <段>`）。**列を通さない `--no-queue` は、ほかの回と重なって偽の赤を出す** |
+ | PM：取り込み | `pm_merge.sh`（main への取り込みは列の先頭に割り込む・流れている回は止めない）→ `--deploy interim` |
+@@ -198,7 +223,13 @@
+ 
+ - 赤が出たら、まず「中身の赤」か「CI の赤（I/O error・同時に流した・使い回した赤）」かを分ける。CI の赤はメンバーに直させず、CI の持ち主に類で直させる
+ - 取り込みの直前は必ず全部の段（`--affected` は既定にしない）
+-- ★**「全部の段」が本当に全部かを、正本の検査の一覧と照らす**（2026-11-03・D3 が見つけた）。dagci の段は verify_all.sh と pre-push から作るので、そこに無い検査（GitHub の workflow にだけある test:db・test:storage・coverage・playwright・関門の Python の検査など）は誰も流していなかった。判定の同等（parity）は「dagci と verify_all が同じ」しか示さない。workflow・ci.yaml・テストの命令の全部 ⊆ dagci の段 を機械で照らし、流せないものは理由つきの例外台帳に載せる（載っていなければ赤）。DB・保管庫・ブラウザが要る段は dagci の services で流す
++- ★**「全部の段」が本当に全部かを、正本の検査の一覧と照らす**（2026-11-03・D3 が見つけた）。dagci の段をプロジェクトの検査の台本（例 verify_all.sh）と pre-push から作ると、そこに無い検査（GitHub の workflow にだけある test:db・test:storage・coverage・playwright・関門の Python の検査など）は誰も流していなかった。判定の同等（parity）は「dagci と元の台本が同じ」しか示さない。workflow・ci.yaml・テストの命令の全部 ⊆ dagci の段 を機械で照らし、流せないものは理由つきの例外台帳に載せる（載っていなければ赤）。この照らし合わせは標準の検査 `wiring_gate.py`（下の「標準の検査」）でできる。DB・保管庫・ブラウザが要る段は dagci の services で流す
++
++### 標準の検査（scripts/gates/・どのプロジェクトにも入れる）
++
++プロジェクトの検査とは別に、**「検査が回っているか・生成物が最新か・部品の版が決まりどおりか」**を見る 3 本を CI の段に入れる
++（`generated_gate.py`・`wiring_gate.py`・`deps_gate.py`。設定は根の `ci-gates.yaml`、雛形は `assets/ci/ci-gates.example.yaml`、入れ方は `references/ci.md` §14）。
++どれも `--selftest` で「壊すと赤になる」を自分で確かめる。PM は導入のとき、この 3 本の段が ci.yaml にあることを確かめる。
+ 
+ ## 待ちを作らない（丁寧さと速さを両立する）
+ 
+@@ -298,10 +329,11 @@
+ | `references/protocol.md` | 起動・報告の形式・状態の移り方・立て直しの詳細 |
+ | `references/roles/*.md` | メンバーに渡す（PM 自身は `pm.md`） |
+ | `references/acceptance-sheet.md` | 検収・テスト表を作るとき |
+-| `references/adapter.md` | 新しいプロジェクトに入れるとき（チケットの正本の読み方） |
++| `references/adapter.md` | 新しいプロジェクトに入れるとき（設定の既定値・言語や枝の違いの吸収・チケットの正本の読み方） |
+ | `references/lessons.md` | 決まりを変える・整理するとき（各決まりの由来の出来事） |
+ | `references/ci.md` | 自前の CI（dagci）を入れる・ci.yaml を書く・runner を増やす・Forgejo に移るとき |
+-| `assets/ci/` | ci.yaml と workflow の雛形 |
++| `assets/ci/` | ci.yaml・ci-gates.yaml（標準の検査）・workflow の雛形 |
++| `scripts/gates/` | 標準の検査 3 本（生成物・CI の配線・部品の版。`references/ci.md` §14） |
+ | `assets/ai-team.example.yaml` | 設定の雛形 |
+ | `assets/member-brief.md` / `assets/handoff-message.md` | メンバーに送る文の雛形 |
+ | `assets/report-templates/` | 工程ごとの報告の雛形 |
+diff -ruN orig/ai-team-delivery/assets/ai-team.example.yaml new/ai-team-delivery/assets/ai-team.example.yaml
+--- orig/ai-team-delivery/assets/ai-team.example.yaml	2026-11-04 13:26:40.977516254 +0000
++++ new/ai-team-delivery/assets/ai-team.example.yaml	2026-11-04 13:26:49.039470418 +0000
+@@ -3,50 +3,67 @@
+ 
+ project: my-project
+ state_dir: .ai-team              # PM の作業ツリーの中。.gitignore に入れる
++base_branch: main                # 取り込む先の枝（master・develop のプロジェクトは書き換える。pm_merge.sh には --base で渡す）
+ 
+-tickets: docs/10-tasks/tickets.json
++# ↓ ここから下のパス・命令は「例」。プロジェクトのものに書き換える（doctor が実在を確かめる）
++tickets: docs/tasks/tickets.json
+ # いまの段階（必須・2026-10-28）。最初に user と「第一段階はどこまでか」を決めて書く。
+ # PM の渡す仕事・start はこの範囲のチケットだけ。範囲の外は精査・仕様の直し・テストも始めない。
+ # この段階が全部 done になったら、user と次の段階を擦り合わせてから value を進める
+ scope:
+-  field: demo_stage      # チケットの段階の印の欄
++  field: stage           # チケットの段階の印の欄（チケットの正本にある欄の名前）
+   value: 1
+   label: 第一段階
+-project_status: docs/10-tasks/status.json    # done を書くプロジェクト側の状態（無ければ空）
+-evidence_dir: docs/11-test/evidence          # マージのとき報告を入れる場所
+-dispatch: docs/12-dispatch/scripts/dispatch.sh   # 作業指示（CLAUDE.md）を作るコマンド（{ticket} を置き換える）
++project_status: docs/tasks/status.json      # done を書くプロジェクト側の状態（無ければ消す）
++evidence_dir: docs/test/evidence             # マージのとき報告を入れる場所
++# dispatch: scripts/dispatch.sh {ticket}     # 作業指示（CLAUDE.md）を作るコマンドがあれば（{ticket} を置き換える）
+ 
+ # 検査は dagci（ci.yaml）がこの台の待ちの列で全部の段を 1 本ずつ流す。メンバーは dagci check を後ろで流して要約だけ受け取る（references/ci.md）
+ ci:
+   dagci: ~/.claude/skills/ai-team-delivery/scripts/ci/dagci/dagci   # 入口（各台の置き場）
+   config: ci.yaml
+ # ↓ CI がまだ無いプロジェクトのときだけ使う（手元で流す検査）
+-verify: bash scripts/ci/verify_all.sh
+-impl_checks:
+-  - pnpm -s lint
+-  - pnpm -s typecheck
+-  - pnpm -s test
+-boundary_check: python3 scripts/ci/boundary_lint.py
++verify: make check               # 全部の検査を流す 1 本の命令（例：bash scripts/ci/verify_all.sh・npm run check・make check・pytest）
++impl_checks:                      # 実装の人が出す前に流す速い検査（言語に合わせる）
++  - npm run -s lint               # Python なら ruff check . ／ Go なら go vet ./...
++  - npm run -s typecheck          # Python なら mypy . ／ Go なら go build ./...
++  - npm test                      # Python なら pytest ／ Go なら go test ./...
++# boundary_check: python3 scripts/ci/boundary_lint.py   # 作業境界の検査があれば
+ 
+-test_tools: [vitest, playwright]
++test_tools: [vitest, playwright]  # 例（pytest・go test など）
+ environments:
+   run_l1_l3: interim        # L1〜L3 を流す環境
+   provisional: true         # 暫定の環境なら true（Q4 の結果を「暫定」と書く）
+ 
+-lanes:                      # 実装のメンバー＝レーン。共有ファイルの持ち主で分ける
++lanes:                      # 実装のメンバー＝レーン。共有ファイルの持ち主で分ける（例。プロジェクトのフォルダに合わせる）
+   - id: D1
+-    name: 関門
+-    owns: [scripts/ci/choke_point_gate.cjs, packages/gateway/src/infrastructure/]
++    name: 画面
++    owns: [src/ui/]
+   - id: D2
+     name: DB
+-    owns: [packages/db/, packages/gateway/src/infrastructure/db/repository.ts]
++    owns: [src/db/, migrations/]
+   - id: D3
+     name: テスト基盤
+-    owns: [tests/, playwright.config.ts]
++    owns: [tests/]
++
++# 取り合いにしない（鍵を掛けない）共有の台帳。全チケットが 1 行ずつ足すだけのファイル。重なりは pm_merge.sh が止めて返す
++#   依存の一覧と lockfile（package.json・pnpm-lock.yaml・pyproject.toml・go.sum など）は既定で入っている（lock_exempt_defaults で替えられる）
++lock_exempt: []             # 例：[src/env.ts, infra/local/compose.yaml]
++
++# 置いてあるはずの規約（~/.claude/rules/common/ の中）。既定は engineering-rules の 2 枚。関門の作りなら choke-points.md を足す
++required_rules: [test-ladder.md, lessons-learned.md]
++# メンバーの作業場（.claude/worktrees/）を除外しているかを見るファイル。既定は ESLint の設定。Python なら [pyproject.toml] など
++# scan_ignore_files: [eslint.config.mjs]
++
++coverage_required: true     # D の報告に「カバレッジ:」を要るにする
++coverage_min: 80            # 変えた行のカバレッジの下限（%）
++
++# 実装に入ったら固定する仕様の欄（post_review_delta.py が見る）。プロジェクトの欄を足す（例 api_endpoints・access_control_policies）
++spec_fields: [acceptance_criteria, l1_rows, depends_on]
+ 
+ security_review_for:        # Q3 を挟むチケットの条件（層・キーワード）
+   groups: [A]
+-  keywords: [auth, db, rls, partner, permission, 権限, 認証, 外部]
++  keywords: [auth, db, rls, permission, payment, secret, 権限, 認証, 決済, 外部]
+ 
+ limits:
+   l1_rows_per_session: 25
+diff -ruN orig/ai-team-delivery/assets/ci/ci-gates.example.yaml new/ai-team-delivery/assets/ci/ci-gates.example.yaml
+--- orig/ai-team-delivery/assets/ci/ci-gates.example.yaml	1970-01-01 00:00:00.000000000 +0000
++++ new/ai-team-delivery/assets/ci/ci-gates.example.yaml	2026-11-04 13:26:49.039617961 +0000
+@@ -0,0 +1,30 @@
++# ci-gates.yaml — 標準の検査（<skill>/scripts/gates/）の設定。プロジェクトの根に置く。使わない検査は節ごと消す（消した検査は「使っていない」で緑）。
++# どれも「わざと壊すと赤になる」自己試験（--selftest）を持つ。CI の段に、自己試験と本体の両方を入れる（references/ci.md §「標準の検査」）。
++# ↓ のパス・命令は例。プロジェクトのものに書き換える
++
++# 生成物が最新か：作り手を全部回し、コミットされている生成物が変わったら赤。目録に無い生成物（先頭 3 行に印）も赤
++generated:
++  generators:                       # 上から順に回す（前の出力を次が読むなら、その順）
++    - name: API の型
++      run: npm run -s codegen
++      outputs: [src/api/types.ts]
++  known_stale: []                   # [{path: ..., ticket: ...}] 古いのを知っていて後で直すもの（直ったら外す）
++  not_generated: []                 # [{path: ..., why: ...}] 印が付いているが生成物ではない
++  elsewhere: []                     # [{outputs: [glob], by: 別の検査}] 別の検査が最新かを見ている生成物
++
++# 書いた検査が CI から回っているか：検査の台本・package.json の ci:*・自己試験が CI の設定に出てこなければ赤
++wiring:
++  ci_files: [.github/workflows/*.yml, ci.yaml]
++  stage_cmds: []                    # ci.yaml の include のように、段の一覧を命令で出しているなら、その命令
++  checks: [scripts/ci/*.py, scripts/ci/*.mjs, scripts/ci/*.sh]
++  package_scripts: "ci:"
++  selftest_flag: "--selftest"
++  exceptions: {}                    # {名前: 回さない理由}（作り手・手元で回す道具）
++  known_broken: {}                  # {名前: チケット}（直ったら赤で知らせる）
++
++# 部品の版：上流の非推奨は記録どおりか・lockfile のどの版も出て N 日を過ぎたか（npm の部品・pnpm と npm の lockfile）
++deps:
++  min_age_days: 21                  # 0 にすると出た日を見ない
++  baseline: ci/deprecated_baseline.json   # {"entries": {"名前@版": {"ticket": "...", "why": "..."}}}
++  age_exclude: []                   # ["名前@版 # 2026-11-01 に出た・弱点の直しで急ぐ"]（pnpm の minimumReleaseAgeExclude も読む）
++  require_pm_setting: true          # pnpm なら minimumReleaseAge を必須にする
+diff -ruN orig/ai-team-delivery/assets/ci/ci.example.yaml new/ai-team-delivery/assets/ci/ci.example.yaml
+--- orig/ai-team-delivery/assets/ci/ci.example.yaml	2026-11-04 13:26:40.978609155 +0000
++++ new/ai-team-delivery/assets/ci/ci.example.yaml	2026-11-04 13:26:49.039794587 +0000
+@@ -14,11 +14,13 @@
+ 
+ toolbox:                        # 全部の段が流れる容れ物（Dagger が作り、同じ書き方なら使い回す）
+   from: python:3.12-slim-bookworm      # ★python3 が要る（段の包み stage.py が使う）
+-  env: {TZ: Asia/Tokyo, LANG: C.UTF-8, CI: "true"}
++  # NODE_EXTRA_CA_CERTS：Node は OS の証明書を読まない。会社の網・中継が TLS を差し替える所では、DAGCI_EXTRA_CA を渡しても
++  #   apt・pip・curl は通るのに npm・pnpm だけが SELF_SIGNED_CERT_IN_CHAIN で落ちる（2026-11-04 Kaname）。OS の証明書も読ませる
++  env: {TZ: Asia/Tokyo, LANG: C.UTF-8, CI: "true", NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt}
+   steps:
+     - apt-get update -qq && apt-get install -y -qq --no-install-recommends git curl ca-certificates xz-utils >/dev/null
+     - curl -fsSL https://nodejs.org/dist/v22.19.0/node-v22.19.0-linux-$(dpkg --print-architecture | sed 's/amd64/x64/').tar.xz | tar -xJ -C /usr/local --strip-components=1
+-    - npm install -g -s pnpm@9.12.3
++    - npm install -g -s pnpm@9.12.3   # corepack prepare は Node 22 の古い corepack が pnpm 10 の署名の鍵を知らずに落ちることがある。npm で入れる
+ 
+ env: {}                         # 全部の段に渡す環境（秘密は書かない。秘密は runner の側で渡す）
+ 
+@@ -63,3 +65,16 @@
+     name: 仕様の検査
+     run: python3 scripts/ci/spec_gate.py   # Python 1 本の段は、読んだファイルが同じなら結果を使い回す
+     when: ["docs/**", "scripts/ci/**"]
++  # 標準の検査（references/ci.md §14）。スキルの scripts/gates/ を scripts/ci/gates/ に写して版に入れる。設定は根の ci-gates.yaml
++  - id: gates-selftest
++    name: 標準の検査の自己試験
++    run: python3 scripts/ci/gates/generated_gate.py --selftest && python3 scripts/ci/gates/wiring_gate.py --selftest && python3 scripts/ci/gates/deps_gate.py --selftest
++  - id: generated
++    name: 生成物が最新
++    run: python3 scripts/ci/gates/generated_gate.py   # ★作業場を書き換える段（codegen など）の後ろに置かない。作り直した後では古さが見えない
++  - id: wiring
++    name: 書いた検査が CI から回る
++    run: python3 scripts/ci/gates/wiring_gate.py
++  - id: deps-age
++    name: 部品の版（非推奨・出てからの日数）
++    run: python3 scripts/ci/gates/deps_gate.py    # registry に聞くので網が要る
+diff -ruN orig/ai-team-delivery/references/adapter.md new/ai-team-delivery/references/adapter.md
+--- orig/ai-team-delivery/references/adapter.md	2026-11-04 13:26:40.980015309 +0000
++++ new/ai-team-delivery/references/adapter.md	2026-11-04 13:26:49.040196488 +0000
+@@ -7,6 +7,23 @@
+ 最低限：チケットの正本・状態・検査のコマンド・作業境界・レーン・上限・証拠の置き場。
+ **置く前に user に見せて合意する**（レーンの切り方は衝突を決めるので、PM の思い込みで決めない）。
+ 
++雛形のパス・命令（`docs/tasks/...`・`npm run ...`）は例。そのままにすると doctor が赤になる。
++言語・道具・枝の名前の違いは、次の設定で吸収する（スクリプトの中にプロジェクトのファイル名を書かない）：
++
++| 設定 | 既定 | 意味 |
++|---|---|---|
++| `base_branch` | `main` | 取り込む先の枝。`pm_merge.sh --base` にも同じ値を渡す（`PM_MERGE_BASE` でもよい） |
++| `verify`・`impl_checks` | （必須・例は npm） | 全部の検査・速い検査の命令。言語に合わせる（pytest・go test・cargo test など） |
++| `lock_exempt_defaults` | 依存の一覧と lockfile（package.json・pnpm-lock.yaml・package-lock.json・yarn.lock・bun.lock・pyproject.toml・poetry.lock・uv.lock・requirements.txt・go.mod・go.sum・Cargo.toml・Cargo.lock・Gemfile(.lock)・composer.json(.lock)） | 鍵を掛けない根の台帳 |
++| `lock_exempt` | `[]` | プロジェクトの、全チケットが 1 行ずつ足すだけの共有の台帳（環境変数の一覧・手元の compose など） |
++| `required_rules` | `[test-ladder.md, lessons-learned.md]` | `~/.claude/rules/common/` に置いてあるはずの規約。関門の作りなら `choke-points.md` を足す |
++| `scan_ignore_files` | ESLint の設定ファイル | メンバーの作業場（`.claude/worktrees/`）を除外しているかを doctor が見るファイル（Python なら `pyproject.toml` など） |
++| `coverage_required`・`coverage_min` | `true`・`80` | D の報告の「カバレッジ:」の要否と下限（%） |
++| `spec_fields` | `[acceptance_criteria, l1_rows, depends_on]` | 実装に入ったら固定する欄（`post_review_delta.py`）。プロジェクトの欄を足す |
++
++依存を入れる命令（`pm_merge.sh --push` の手前・`dagci parity` の写し）は lockfile から選ぶ
++（pnpm・npm・yarn・bun・uv・poetry）。違う命令なら `pm_merge.sh --install '<命令>'`・ci.yaml の `selftest.parity.install` に書く。
++
+ ## 2. チケットの項目一覧（verdict_check.py の --items）
+ 
+ `state.py items <チケット>` が、設定 `ticket_fields` に従ってチケットの正本から項目を引く。
+diff -ruN orig/ai-team-delivery/references/ci.md new/ai-team-delivery/references/ci.md
+--- orig/ai-team-delivery/references/ci.md	2026-11-04 13:26:40.980158762 +0000
++++ new/ai-team-delivery/references/ci.md	2026-11-04 13:26:49.040339027 +0000
+@@ -43,6 +43,10 @@
+ 2. 初回の準備：`<スキル>/scripts/ci/dagci/dagci setup`（容れ物の道具・Dagger の CLI と SDK・エンジン。版は固定）
+    会社の網が TLS を差し替える PC は `DAGCI_EXTRA_CA=auto`（macOS）か `DAGCI_EXTRA_CA=<PEM>` を付ける
+    （エンジンが image を取れずに `x509: certificate signed by unknown authority` で落ちるのがこの場合）
++   ★エンジンに証明書を渡すと、容れ物の中の apt・pip・curl は通るが、**Node（npm・pnpm）だけは OS の証明書を読まず** `SELF_SIGNED_CERT_IN_CHAIN` で落ちる。
++   ci.yaml の toolbox.env に `NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt` を書く（雛形に入れてある・2026-11-04 Kaname）
++   uv（Python を取りに行く道具）も同じで、`UV_NATIVE_TLS=1` を付けないと `error sending request` で落ちる
++   ★容れ物の中では git の設定が既定になる。日本語の名前は `git ls-files` で `"\343..."` と化けるので、台本は `-z` で読む（Kaname の G38・G43 が 68 本を黙って飛ばしていた）
+ 3. 確かめ方：リポジトリの根で `dagci run --all` が「緑：<段の数> 段」になること
+ 
+ **新しいプロジェクトに入れる**
+@@ -310,3 +314,42 @@
+ - `dagci selftest`（約 30 分・場面 12 は記録を読むだけ）／`dagci selftest --parity`（重い。段の導出・流し方を変えたら流し直す）／`--only 1,2`
+ - 記録：`$DAGCI_HOME/selftest/<project>.json`・`parity/<project>.json`。doctor がこれの古さを見る
+ - **PM は見回りのたびに `dagci doctor`**（赤があれば終わり方 1）
++
++## 14. 標準の検査（scripts/gates/）── どのプロジェクトにも入れる「検査の検査」
++
++プロジェクトの中身の検査（lint・型・テスト・仕様）は、プロジェクトごとに違う。ここにあるのは、**どのプロジェクトでも同じ形で起きる穴**を止める 3 本。
++Kaname（Kaname の CI の G38・G46・G47）で実際に穴を見つけて作り、プロジェクトの名前を外して汎用にした。設定は根の `ci-gates.yaml`（雛形 `assets/ci/ci-gates.example.yaml`）。
++
++| 検査 | 止める穴 | 由来（見つけた穴） |
++|---|---|---|
++| `generated_gate.py` | 生成物が古い・手で直した生成物・落ちる生成器・目録に無い生成物 | 生成器を足したのに誰も回しておらず、テスト計画の数・契約の hash・画面のトークンが古いまま残った |
++| `wiring_gate.py` | 書いた検査が CI のどこからも回っていない・壊れたと記録した検査が直っている | 検査の自己試験が赤のまま CI で回っていなかった。本体の条件の誤りで、ある検査が何も見ていなかった |
++| `deps_gate.py` | 上流の非推奨が記録に無い・lockfile に出て N 日未満の版が例外なしに入っている | `install --frozen-lockfile` は解き直さないので、「若い版を選ばない」設定が lockfile の若い版を止めていなかった |
++
++入れ方（ci.yaml の段の例。GitHub Actions なら同じ命令を step に書く）：
++
++```yaml
++stages:
++  - id: gates-selftest
++    name: 標準の検査の自己試験（壊すと赤になるか）
++    run: >-
++      python3 scripts/ci/gates/generated_gate.py --selftest &&
++      python3 scripts/ci/gates/wiring_gate.py --selftest &&
++      python3 scripts/ci/gates/deps_gate.py --selftest
++  - id: generated
++    name: 生成物が最新
++    run: python3 scripts/ci/gates/generated_gate.py   # ★作業場を書き換える段（codegen など）の後ろに置かない。作り直した後では古さが見えない
++  - id: wiring
++    name: 書いた検査が CI から回る
++    run: python3 scripts/ci/gates/wiring_gate.py
++  - id: deps-age
++    name: 部品の版（非推奨・出てからの日数）
++    run: python3 scripts/ci/gates/deps_gate.py   # registry に聞くので網が要る
++```
++
++- **スキルの `scripts/gates/` を、プロジェクトの `scripts/ci/gates/` に写して版に入れる**（dagci の容れ物・GitHub の runner にはスキルが無い。4 ファイルだけで動く・PyYAML が要る）。
++  スキルの側を直したら写し直す（写しの先頭の行に元の版を書いておく）
++- `ci-gates.yaml` に節が無い検査は「使っていない」で緑になる。入れたら節を書く
++- 入れるときは、わざと壊した形で 1 回赤を見る（生成物の正本だけを変える・CI に無い台本を 1 つ置く）。自己試験だけで済ませない
++- 中身の検査（関門・行の守り・契約など）はプロジェクトの検査。標準の検査は、それらが**回っているか・最新か**を見る側
++
+diff -ruN orig/ai-team-delivery/scripts/ci/dagci/parity.py new/ai-team-delivery/scripts/ci/dagci/parity.py
+--- orig/ai-team-delivery/scripts/ci/dagci/parity.py	2026-11-04 13:26:40.986144349 +0000
++++ new/ai-team-delivery/scripts/ci/dagci/parity.py	2026-11-04 13:26:49.041894402 +0000
+@@ -22,6 +22,22 @@
+ HERE = os.path.dirname(os.path.abspath(__file__))
+ 
+ 
++
++def install_cmd(cfg, wt):
++    """写しに依存を入れる命令。ci.yaml の selftest.parity.install が先。無ければ、手元に依存が入っているときだけ lockfile から選ぶ"""
++    par = ((cfg.raw.get("selftest") or {}).get("parity") or {})
++    if par.get("install"):
++        return par["install"]
++    if not os.path.exists(os.path.join(cfg.root, "node_modules")):
++        return None
++    for lock, cmd in (("pnpm-lock.yaml", "pnpm install --frozen-lockfile --prefer-offline --reporter=silent"),
++                      ("package-lock.json", "npm ci --prefer-offline --no-audit --no-fund"),
++                      ("yarn.lock", "yarn install --frozen-lockfile"),
++                      ("bun.lock", "bun install --frozen-lockfile")):
++        if os.path.exists(os.path.join(wt, lock)):
++            return cmd
++    return None
++
+ def fingerprint(cfg) -> str:
+     """段の導出と dagci の中身が同じかの指紋（変われば同等の確かめをやり直す）"""
+     h = hashlib.sha256()
+@@ -72,8 +88,9 @@
+             if f:
+                 os.makedirs(os.path.dirname(os.path.join(wt, f)) or wt, exist_ok=True)
+                 shutil.copy2(os.path.join(cfg.root, f), os.path.join(wt, f))
+-        if os.path.exists(os.path.join(cfg.root, "node_modules")) and os.path.exists(os.path.join(wt, "pnpm-lock.yaml")):
+-            subprocess.run(["pnpm", "install", "--frozen-lockfile", "--prefer-offline", "--reporter=silent"], cwd=wt,
++        inst = install_cmd(cfg, wt)
++        if inst:
++            subprocess.run(inst, cwd=wt, shell=True,
+                            env={**os.environ, "CI": "true"}, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+         if broken:
+             subprocess.run(shlex.split(adapter) + ["break", wt, json.dumps(broken, ensure_ascii=False)], cwd=wt,
+diff -ruN orig/ai-team-delivery/scripts/ci/dagci/selftest.py new/ai-team-delivery/scripts/ci/dagci/selftest.py
+--- orig/ai-team-delivery/scripts/ci/dagci/selftest.py	2026-11-04 13:26:40.987078994 +0000
++++ new/ai-team-delivery/scripts/ci/dagci/selftest.py	2026-11-04 13:26:49.042427047 +0000
+@@ -49,7 +49,7 @@
+   environments:
+     interim: {run: "sh ./deploy.sh", secrets: {TOKEN: DAGCI_SELFTEST_TOKEN}}
+     staging: {run: "true", when_missing: infra/staging.bicep}
+-    production: {run: "true", requires: [interim], approval: {approvers: [masato214]}}
++    production: {run: "true", requires: [interim], approval: {approvers: [approver-a]}}
+ """
+ 
+ 
+diff -ruN orig/ai-team-delivery/scripts/gates/_common.py new/ai-team-delivery/scripts/gates/_common.py
+--- orig/ai-team-delivery/scripts/gates/_common.py	1970-01-01 00:00:00.000000000 +0000
++++ new/ai-team-delivery/scripts/gates/_common.py	2026-11-04 13:26:49.045015028 +0000
+@@ -0,0 +1,36 @@
++"""標準の検査（scripts/gates/）の共通部分。設定はプロジェクトの根の ci-gates.yaml（雛形 assets/ci/ci-gates.example.yaml）。
++
++どの検査も:
++  - プロジェクトの根（git の根・無ければ今の場所）で流す。--root で替えられる
++  - 設定の自分の節（generated・wiring・deps）だけを読む。節が無ければ「使っていない」と言って緑で終わる（入れる前のプロジェクトを赤にしない）
++  - --selftest で「わざと壊した形を赤にできるか」を確かめる（検査が働いていることの証拠）
++"""
++from __future__ import annotations
++import os, subprocess, sys
++
++
++def root_from_args() -> str:
++    if "--root" in sys.argv:
++        return os.path.abspath(sys.argv[sys.argv.index("--root") + 1])
++    r = subprocess.run(["git", "rev-parse", "--show-toplevel"], capture_output=True, text=True)
++    return r.stdout.strip() if r.returncode == 0 and r.stdout.strip() else os.getcwd()
++
++
++def config(root: str, section: str) -> dict | None:
++    path = os.environ.get("CI_GATES_CONFIG") or os.path.join(root, "ci-gates.yaml")
++    if "--config" in sys.argv:
++        path = sys.argv[sys.argv.index("--config") + 1]
++    if not os.path.exists(path):
++        return None
++    try:
++        import yaml
++    except ImportError:
++        sys.exit("PyYAML が要る（pip install pyyaml）")
++    with open(path, encoding="utf-8") as f:
++        data = yaml.safe_load(f) or {}
++    return data.get(section)
++
++
++def not_used(section: str) -> int:
++    print(f"PASS — ci-gates.yaml に {section}: が無い（この検査は使っていない）")
++    return 0
+diff -ruN orig/ai-team-delivery/scripts/gates/deps_gate.py new/ai-team-delivery/scripts/gates/deps_gate.py
+--- orig/ai-team-delivery/scripts/gates/deps_gate.py	1970-01-01 00:00:00.000000000 +0000
++++ new/ai-team-delivery/scripts/gates/deps_gate.py	2026-11-04 13:26:49.044910405 +0000
+@@ -0,0 +1,222 @@
++#!/usr/bin/env python3
++"""部品（依存）の版の検査（標準の検査・Kaname の G46 の S4〜S6 から汎用にした）。設定は ci-gates.yaml の deps:。
++
++  python3 <skill>/scripts/gates/deps_gate.py [--root <根>] [--config <ci-gates.yaml>]
++  python3 <skill>/scripts/gates/deps_gate.py --selftest    手で作った lockfile と出た日で、赤にすべき物を赤にできるか
++
++読む lockfile：pnpm-lock.yaml（pnpm）・package-lock.json（npm v2/v3）。今は npm の部品（Node）だけを見る。
++赤になるもの:
++  D1 上流が「非推奨」にした部品が、記録（baseline）に無い（直すか、記録にチケットと理由つきで書く）
++  D2 記録の部品が、もう lockfile に無い（記録から外す）
++  D3 lockfile の版が、出てから min_age_days 日を過ぎていない（例外に「名前@版」と出た日が無い）。出た日は registry に聞く
++     ★CI の install は lockfile のまま解き直さない（pnpm install --frozen-lockfile・npm ci）ので、パッケージマネージャの
++       「出て N 日未満の版を選ばない」設定は、lockfile にすでに入った若い版を止めない。ここで止める
++  D4 pnpm なのに pnpm-workspace.yaml に minimumReleaseAge（min_age_days 日以上）が無い（require_pm_setting: true のとき）
++  D5 例外の書き方が違う（「名前@版」でない・出た日（YYYY-MM-DD）が無い）。過ぎた例外は知らせるだけ（外してよい）
++registry に聞けない部品は赤にする（黙って通さない）。手元で網が無いときだけ --offline（D3 を飛ばすと出す）。
++
++設定（ci-gates.yaml）:
++  deps:
++    min_age_days: 21               # 出てから何日を過ぎた版だけを使うか（0 で D3・D4 を見ない）
++    baseline: ci/deprecated_baseline.json   # {"entries": {"名前@版": {"ticket": ..., "why": ...}}}
++    age_exclude: []                # 例外 ["名前@版 # 2026-11-01 に出た・理由"]。pnpm の minimumReleaseAgeExclude も読む
++    require_pm_setting: true       # pnpm のとき minimumReleaseAge を必須にする
++    registry: https://registry.npmjs.org
++"""
++from __future__ import annotations
++import concurrent.futures, datetime, json, os, re, shutil, ssl, sys, tempfile, urllib.parse, urllib.request
++
++sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
++from _common import config, not_used, root_from_args  # noqa: E402
++
++NOTES: list[str] = []
++
++
++# ---- lockfile を読む（名前@版 → 非推奨の文 or None）
++def read_pnpm(text: str) -> dict[str, str | None]:
++    if "\npackages:\n" not in text:
++        return {}
++    sec = text[text.index("\npackages:\n"):]
++    sec = sec[:sec.index("\nsnapshots:\n")] if "\nsnapshots:\n" in sec else sec
++    out: dict[str, str | None] = {}
++    for blk in re.split(r"\n(?=  \S)", sec):
++        m = re.match(r"  '?(@?[^@\s']+)@([^\s'(:]+)", blk)
++        if m:
++            d = re.search(r"\n    deprecated: (.*)", blk)
++            out[f"{m.group(1)}@{m.group(2)}"] = d.group(1).strip().strip("'\"") if d else None
++    return out
++
++
++def read_npm(text: str) -> dict[str, str | None]:
++    j = json.loads(text)
++    out: dict[str, str | None] = {}
++    for k, v in (j.get("packages") or {}).items():
++        if not k or v.get("link") or "version" not in v or "node_modules/" not in k:
++            continue
++        name = v.get("name") or k.rsplit("node_modules/", 1)[1]
++        out[f"{name}@{v['version']}"] = v.get("deprecated")
++    return out
++
++
++def lock(root: str) -> tuple[str, dict[str, str | None]]:
++    for f, fn in (("pnpm-lock.yaml", read_pnpm), ("package-lock.json", read_npm)):
++        p = os.path.join(root, f)
++        if os.path.exists(p):
++            return f, fn(open(p, encoding="utf-8").read())
++    return "", {}
++
++
++def split(nv: str) -> tuple[str, str]:
++    i = nv.rindex("@")
++    return nv[:i], nv[i + 1:]
++
++
++# ---- 例外（名前@版・出た日）
++def excludes(root: str, cfg: dict) -> list[tuple[str, str]]:
++    lines = [str(x) for x in cfg.get("age_exclude") or []]
++    ws = os.path.join(root, "pnpm-workspace.yaml")
++    if os.path.exists(ws):
++        blk = re.search(r"^minimumReleaseAgeExclude:(.*?)(?=^\S|\Z)", open(ws, encoding="utf-8").read(), re.M | re.S)
++        lines += [ln.strip()[1:].strip() for ln in (blk.group(1).splitlines() if blk else []) if ln.strip().startswith("-")]
++    out = []
++    for ln in lines:
++        m = re.match(r'^"?([^"\s#]+)"?\s*(#.*)?$', ln)
++        if m:
++            out.append((m.group(1), m.group(2) or ""))
++    return out
++
++
++def check_excludes(ex: list[tuple[str, str]], days: int, today: datetime.date) -> list[str]:
++    fails = []
++    for name, note in ex:
++        if not re.search(r".+@\d", name):
++            fails.append(f"D5 例外 {name} は「名前@版」で書く（名前だけだと、どの版でも通ってしまう）")
++        d = re.search(r"(\d{4}-\d{2}-\d{2})", note)
++        if not d:
++            fails.append(f"D5 例外 {name} に出た日（YYYY-MM-DD）が無い（いつ外せるかわからない）")
++        elif datetime.date.fromisoformat(d.group(1)) + datetime.timedelta(days=days) < today:
++            NOTES.append(f"例外 {name} は出て {days} 日を過ぎた（{d.group(1)}）。外してよい")
++    return fails
++
++
++def check_pm_setting(root: str, days: int) -> list[str]:
++    ws = os.path.join(root, "pnpm-workspace.yaml")
++    t = open(ws, encoding="utf-8").read() if os.path.exists(ws) else ""
++    m = re.search(r"^minimumReleaseAge:\s*(\d+)", t, re.M)
++    if not m or int(m.group(1)) < days * 1440:
++        return [f"D4 pnpm-workspace.yaml に minimumReleaseAge（{days * 1440} 分＝{days} 日以上）が無い（解き直すとき若い版を選ばせない）"]
++    return []
++
++
++# ---- 非推奨
++def check_deprecated(pk: dict[str, str | None], base: dict) -> list[str]:
++    now = {k: v for k, v in pk.items() if v}
++    fails = [f"D1 上流が非推奨にした部品 {k}（{v[:120]}）。直すか、記録にチケットと理由つきで書く" for k, v in sorted(now.items()) if k not in base]
++    fails += [f"D2 記録の {k} はもう lockfile に無い（記録から外す）" for k in sorted(base) if k not in pk]
++    return fails
++
++
++# ---- 出た日
++def registry_times(names: list[str], registry: str) -> dict[str, dict]:
++    ca = os.environ.get("SSL_CERT_FILE") or os.environ.get("REQUESTS_CA_BUNDLE") or os.environ.get("NODE_EXTRA_CA_CERTS")
++    ctx = ssl.create_default_context(cafile=ca) if ca else ssl.create_default_context()
++
++    def one(name: str) -> tuple[str, dict]:
++        u = registry.rstrip("/") + "/" + urllib.parse.quote(name, safe="@")
++        err = ""
++        for _ in range(3):
++            try:
++                with urllib.request.urlopen(urllib.request.Request(u, headers={"accept": "application/json"}), context=ctx, timeout=60) as r:
++                    return name, json.load(r).get("time", {})
++            except Exception as e:  # noqa: BLE001 — 聞けなければ赤にする
++                err = str(e)
++        return name, {"_err": err}
++
++    with concurrent.futures.ThreadPoolExecutor(16) as ex:
++        return dict(ex.map(one, names))
++
++
++def check_age(pk: dict, times: dict, ex_names: set[str], days: int, now: datetime.datetime) -> list[str]:
++    cut = now - datetime.timedelta(days=days)
++    fails = []
++    for nv in sorted(pk):
++        n, v = split(nv)
++        tm = times.get(n, {})
++        if "_err" in tm:
++            fails.append(f"D3 {n} の出た日を registry に聞けない（{tm['_err'][:80]}）")
++            continue
++        ts = tm.get(v)
++        if not ts:
++            fails.append(f"D3 {nv} の出た日が registry に無い")
++            continue
++        if datetime.datetime.fromisoformat(ts.replace("Z", "+00:00")) > cut and nv not in ex_names:
++            fails.append(f"D3 {nv} は {ts[:10]} に出て {days} 日を過ぎていない（過ぎた版に解き直すか、例外に「名前@版」と出た日を書く）")
++    return fails
++
++
++def run(root: str, cfg: dict, offline: bool) -> int:
++    days = int(cfg.get("min_age_days", 21))
++    kind, pk = lock(root)
++    if not kind:
++        print("PASS — npm の lockfile（pnpm-lock.yaml・package-lock.json）が無い（見る物が無い）")
++        return 0
++    bp = os.path.join(root, cfg.get("baseline") or "ci/deprecated_baseline.json")
++    base = (json.load(open(bp, encoding="utf-8")).get("entries") or {}) if os.path.exists(bp) else {}
++    fails = check_deprecated(pk, base)
++    if days > 0:
++        ex = excludes(root, cfg)
++        fails += check_excludes(ex, days, datetime.date.today())
++        if kind == "pnpm-lock.yaml" and cfg.get("require_pm_setting", True):
++            fails += check_pm_setting(root, days)
++        if offline:
++            NOTES.append("--offline：D3（出た日）を飛ばした。CI では必ず網つきで流す")
++        else:
++            names = sorted({split(nv)[0] for nv in pk})
++            times = registry_times(names, cfg.get("registry") or "https://registry.npmjs.org")
++            fails += check_age(pk, times, {n for n, _ in ex}, days, datetime.datetime.now(datetime.timezone.utc))
++    for n in NOTES:
++        print("  note", n)
++    for f in fails:
++        print("  ★", f)
++    print(f"{kind}：部品 {len(pk)} 個（非推奨 {sum(1 for v in pk.values() if v)}・記録 {len(base)}）")
++    print("FAIL — 部品の版に直す所がある" if fails else f"PASS — 非推奨は記録どおり・どの版も出て {days} 日を過ぎている（例外を除く）")
++    return 1 if fails else 0
++
++
++def selftest() -> int:
++    pn = ("lockfileVersion: '9.0'\n\npackages:\n\n  young@1.0.0:\n    resolution: {integrity: x}\n\n"
++          "  '@s/old@2.0.0':\n    resolution: {integrity: x}\n    deprecated: no longer supported\n\nsnapshots:\n\n  young@1.0.0: {}\n")
++    pk = read_pnpm(pn)
++    npm = read_npm(json.dumps({"lockfileVersion": 3, "packages": {"": {"name": "app"},
++                   "node_modules/a": {"version": "1.0.0"}, "node_modules/b/node_modules/@c/d": {"version": "2.0.0", "deprecated": "x"}}}))
++    times = {"young": {"1.0.0": "2026-01-25T00:00:00Z"}, "@s/old": {"2.0.0": "2025-01-01T00:00:00Z"}}
++    now = datetime.datetime(2026, 2, 1, tzinfo=datetime.timezone.utc)
++    r_read = pk == {"young@1.0.0": None, "@s/old@2.0.0": "no longer supported"} and npm == {"a@1.0.0": None, "@c/d@2.0.0": "x"}
++    r1 = any(f.startswith("D1") and "@s/old@2.0.0" in f for f in check_deprecated(pk, {}))
++    r1ok = not check_deprecated(pk, {"@s/old@2.0.0": {}})
++    r2 = any(f.startswith("D2") for f in check_deprecated(pk, {"@s/old@2.0.0": {}, "gone@1.0.0": {}}))
++    a = check_age(pk, times, set(), 21, now)
++    r3 = len(a) == 1 and "young@1.0.0" in a[0] and not check_age(pk, times, {"young@1.0.0"}, 21, now)
++    r3err = any("聞けない" in f for f in check_age(pk, {"young": {"_err": "x"}, "@s/old": times["@s/old"]}, set(), 21, now))
++    r5 = any("「名前@版」" in f for f in check_excludes([("young", "# 2026-01-25")], 21, now.date())) and \
++        any("出た日" in f for f in check_excludes([("young@1.0.0", "")], 21, now.date()))
++    d = tempfile.mkdtemp(prefix="deps-gate-selftest-")
++    try:
++        open(os.path.join(d, "pnpm-workspace.yaml"), "w").write("minimumReleaseAge: 1440\n")
++        r4 = bool(check_pm_setting(d, 21))
++        open(os.path.join(d, "pnpm-workspace.yaml"), "w").write("minimumReleaseAge: 30240\n")
++        r4ok = not check_pm_setting(d, 21)
++    finally:
++        shutil.rmtree(d, ignore_errors=True)
++    ok = all([r_read, r1, r1ok, r2, r3, r3err, r4, r4ok, r5])
++    print("PASS — 読み取り・記録に無い非推奨・消えた記録・若い版・聞けない部品・設定の外れ・例外の書き方を見つけた" if ok else
++          f"FAIL — 見つけられない（読む {r_read}・D1 {r1}/{r1ok}・D2 {r2}・D3 {r3}/{r3err}・D4 {r4}/{r4ok}・D5 {r5}）")
++    return 0 if ok else 1
++
++
++if __name__ == "__main__":
++    if "--selftest" in sys.argv:
++        sys.exit(selftest())
++    root = root_from_args()
++    c = config(root, "deps")
++    sys.exit(not_used("deps") if c is None else run(root, c, "--offline" in sys.argv))
+diff -ruN orig/ai-team-delivery/scripts/gates/generated_gate.py new/ai-team-delivery/scripts/gates/generated_gate.py
+--- orig/ai-team-delivery/scripts/gates/generated_gate.py	1970-01-01 00:00:00.000000000 +0000
++++ new/ai-team-delivery/scripts/gates/generated_gate.py	2026-11-04 13:26:49.044765787 +0000
+@@ -0,0 +1,175 @@
++#!/usr/bin/env python3
++"""生成物が最新か（標準の検査・Kaname の G38 から汎用にした）。設定は ci-gates.yaml の generated:。
++
++  python3 <skill>/scripts/gates/generated_gate.py [--root <根>] [--config <ci-gates.yaml>]
++  python3 <skill>/scripts/gates/generated_gate.py --selftest    一時のリポジトリで、古い生成物・目録に無い生成物を赤にできるか
++
++作り手（生成器）を順に全部回し、作る前と後で中身が変わった生成物を赤にする。回し終えたら作業中のファイルは全部元に戻す。
++赤になるもの:
++  F1 作り手を回したら中身が変わった（＝コミットされている生成物が古い）。日付（2026-11-04 など）だけの違いは見ない
++  F2 作り手が落ちた
++  F3 目録に無い生成物（先頭 3 行に「生成物」「DO NOT EDIT」などと書いたファイルが、どの作り手の outputs にも入っていない）
++  F4 古いと記録した物（known_stale）が、もう古くない（記録を外す）
++由来：生成器を足したのに CI で回しておらず、手で直した生成物や古い生成物が気づかれずに残った。
++
++設定（ci-gates.yaml）:
++  generated:
++    generators:                       # 作り手。上から順に回す（前の作り手の出力を次が読むなら、その順に並べる）
++      - {name: API の型, run: "npm run -s codegen", outputs: ["src/api/types.ts"]}
++    known_stale: []                   # 古いのを知っていて後で直すもの [{path|glob, ticket}]。増えたら赤・直ったら外す
++    not_generated: []                 # 印が付いているが生成物ではない [{path, why}]
++    elsewhere: []                     # 別の検査が最新かを見ている生成物 [{outputs: [glob], by}]
++    skip_prefix: [".git/", "node_modules/"]
++    marker: '生成物|機械生成|手で直さない|自動生成|DO NOT EDIT|Do not edit|auto-generated|@generated|Code generated'
++"""
++from __future__ import annotations
++import fnmatch, json, os, re, shutil, subprocess, sys, tempfile
++
++sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
++from _common import config, not_used, root_from_args  # noqa: E402
++
++DATE = re.compile(rb"\d{4}-\d{2}-\d{2}(T[\d:.]+Z?)?")
++DEFAULT_MARK = r"生成物|機械生成|手で直さない|手で書かない|自動生成|DO NOT EDIT|Do not edit|auto-generated|@generated|Code generated"
++CODE_EXT = (".py", ".mjs", ".js", ".cjs", ".ts", ".sh", ".go", ".rb")
++
++
++class Gate:
++    def __init__(self, root: str, cfg: dict):
++        self.root, self.cfg = root, cfg
++        self.mark = re.compile(cfg.get("marker") or DEFAULT_MARK)
++        self.skip = tuple(cfg.get("skip_prefix") or [".git/", "node_modules/", ".claude/", ".ai-team/", ".ai-team-out/"])
++
++    def git(self, *a: str) -> list[str]:
++        out = subprocess.run(["git", *a], cwd=self.root, capture_output=True, text=True).stdout
++        return [f for f in out.split("\n") if f]
++
++    def read(self, f: str) -> bytes | None:
++        try:
++            with open(os.path.join(self.root, f), "rb") as h:
++                return h.read()
++        except (FileNotFoundError, IsADirectoryError):
++            return None
++
++    def known(self, path: str) -> dict | None:
++        for k in self.cfg.get("known_stale") or []:
++            if k.get("path") == path or ("glob" in k and fnmatch.fnmatch(path, k["glob"])):
++                return k
++        return None
++
++    def run_all(self) -> tuple[dict[str, list[str]], list[str]]:
++        files = self.git("ls-files")
++        before = {f: self.read(f) for f in files}
++        extra_before = set(self.git("ls-files", "--others", "--exclude-standard"))
++        seen = dict(before)
++        changed: dict[str, list[str]] = {}
++        broken: list[str] = []
++        try:
++            for g in self.cfg.get("generators") or []:
++                r = subprocess.run(g["run"], cwd=self.root, shell=True, capture_output=True, text=True)
++                if r.returncode != 0:
++                    broken.append(f'{g["name"]}（{g["run"]}）: {(r.stderr or r.stdout).strip().splitlines()[-1:]}')
++                hit = []
++                for f in files:
++                    now = self.read(f)
++                    if now != seen[f]:
++                        seen[f] = now
++                        if now is None or before[f] is None or DATE.sub(b"D", now) != DATE.sub(b"D", before[f]):
++                            hit.append(f)
++                for f in sorted(set(self.git("ls-files", "--others", "--exclude-standard")) - extra_before):
++                    if f not in seen:
++                        seen[f] = None
++                        hit.append(f + "（新しくできた）")
++                if hit:
++                    changed[g["name"]] = hit
++        finally:  # 元に戻す（落ちても手元を汚さない）
++            for f, b in before.items():
++                if b is not None and self.read(f) != b:
++                    with open(os.path.join(self.root, f), "wb") as h:
++                        h.write(b)
++            for f in set(self.git("ls-files", "--others", "--exclude-standard")) - extra_before:
++                p = os.path.join(self.root, f)
++                if os.path.isfile(p):
++                    os.remove(p)
++        return changed, broken
++
++    def unlisted(self) -> list[str]:
++        files = sorted(set(self.git("ls-files")) | set(self.git("ls-files", "--others", "--exclude-standard")))
++        outs = [o for g in self.cfg.get("generators") or [] for o in g.get("outputs") or []]
++        outs += [o for e in self.cfg.get("elsewhere") or [] for o in e.get("outputs") or []]
++        nogen = {n["path"] for n in self.cfg.get("not_generated") or []}
++        bad = []
++        for f in files:
++            if f.startswith(self.skip) or f.endswith(CODE_EXT) or f in nogen or f == "ci-gates.yaml" \
++                    or any(fnmatch.fnmatch(f, o) for o in outs) or self.known(f):
++                continue
++            try:
++                with open(os.path.join(self.root, f), encoding="utf-8") as h:
++                    head = "".join([h.readline() for _ in range(3)])
++            except (UnicodeDecodeError, FileNotFoundError, IsADirectoryError):
++                continue
++            if self.mark.search(head):
++                bad.append(f)
++        return bad
++
++    def check(self) -> tuple[list[str], list[str], int]:
++        changed, broken = self.run_all()
++        fails, warns, still = [], [], set()
++        for name, fs in changed.items():
++            for f in fs:
++                k = self.known(f.replace("（新しくできた）", ""))
++                if k:
++                    still.add(json.dumps(k, ensure_ascii=False, sort_keys=True))
++                    warns.append(f"記録どおり古い（{k.get('ticket', '理由なし')}）: {f}")
++                else:
++                    fails.append(f"F1 {name} を回すと変わる（コミットされている生成物が古い）: {f}")
++        for k in self.cfg.get("known_stale") or []:
++            if "path" in k and json.dumps(k, ensure_ascii=False, sort_keys=True) not in still:
++                fails.append(f"F4 古いと記録した物が、もう古くない（known_stale から外す）: {k['path']}")
++        fails += [f"F2 作り手が落ちた: {b}" for b in broken]
++        fails += [f"F3 目録に無い生成物（generators に作り手を足すか、not_generated に理由を書く）: {f}" for f in self.unlisted()]
++        return fails, warns, sum(len(v) for v in changed.values())
++
++
++def report(g: Gate) -> int:
++    fails, warns, n = g.check()
++    for w in warns[:20]:
++        print("  warn", w)
++    for f in fails:
++        print("  ★", f)
++    print(f"作り手 {len(g.cfg.get('generators') or [])} ／ 変わった生成物 {n}（記録どおり {len(warns)}）")
++    print("FAIL — 生成物が古い" if fails else "PASS — 生成物は全部最新（記録したものを除く）")
++    return 1 if fails else 0
++
++
++def selftest() -> int:
++    d = tempfile.mkdtemp(prefix="gen-gate-selftest-")
++    try:
++        sh = lambda *a: subprocess.run(list(a), cwd=d, check=True, capture_output=True)
++        sh("git", "init", "-q")
++        open(os.path.join(d, "src.txt"), "w").write("hello\n")
++        gen = f"{sys.executable} -c \"open('out.txt','w').write('# 生成物。手で直さない\\n'+open('src.txt').read())\""
++        cfg = {"generators": [{"name": "写し", "run": gen, "outputs": ["out.txt"]}]}
++        subprocess.run(gen, cwd=d, shell=True, check=True)
++        sh("git", "add", "-A")
++        ok_fresh = not Gate(d, cfg).check()[0]                        # 最新なら緑
++        open(os.path.join(d, "src.txt"), "w").write("changed\n")
++        f1 = any(x.startswith("F1") for x in Gate(d, cfg).check()[0])  # 正本だけ変えて生成物が古い → 赤
++        same = open(os.path.join(d, "out.txt")).read().endswith("hello\n")  # 回し終えたら元に戻している
++        open(os.path.join(d, "other.md"), "w").write("<!-- DO NOT EDIT: generated -->\n")
++        f3 = any("other.md" in x and x.startswith("F3") for x in Gate(d, cfg).check()[0])  # 目録に無い生成物 → 赤
++        bad = {"generators": [{"name": "落ちる", "run": "exit 3", "outputs": []}]}
++        f2 = any(x.startswith("F2") for x in Gate(d, bad).check()[0])
++    finally:
++        shutil.rmtree(d, ignore_errors=True)
++    ok = ok_fresh and f1 and same and f3 and f2
++    print("PASS — 最新は緑・古い生成物・落ちる作り手・目録に無い生成物は赤・手元は元に戻した" if ok else
++          f"FAIL — 見つけられない（最新 {ok_fresh}・F1 {f1}・戻した {same}・F3 {f3}・F2 {f2}）")
++    return 0 if ok else 1
++
++
++if __name__ == "__main__":
++    if "--selftest" in sys.argv:
++        sys.exit(selftest())
++    root = root_from_args()
++    c = config(root, "generated")
++    sys.exit(not_used("generated") if c is None else report(Gate(root, c)))
+diff -ruN orig/ai-team-delivery/scripts/gates/wiring_gate.py new/ai-team-delivery/scripts/gates/wiring_gate.py
+--- orig/ai-team-delivery/scripts/gates/wiring_gate.py	1970-01-01 00:00:00.000000000 +0000
++++ new/ai-team-delivery/scripts/gates/wiring_gate.py	2026-11-04 13:26:49.044371618 +0000
+@@ -0,0 +1,146 @@
++#!/usr/bin/env python3
++"""書いた検査が CI から回っているか（標準の検査・Kaname の G47 から汎用にした）。設定は ci-gates.yaml の wiring:。
++
++  python3 <skill>/scripts/gates/wiring_gate.py [--root <根>] [--config <ci-gates.yaml>]
++  python3 <skill>/scripts/gates/wiring_gate.py --selftest    一時のリポジトリで、どこからも回らない検査を赤にできるか
++
++検査の候補（checks の glob に当たる台本・package.json の scripts で prefix に当たるもの・自己試験の旗を持つ台本）が、
++CI の設定（ci_files：GitHub Actions・dagci の ci.yaml など）の文面か、段の一覧を出す命令（stage_cmds）の出力に出てくるかを見る。
++赤になるもの:
++  W1 どこからも回らない検査（CI に足すか、exceptions に理由を書く）
++  W2 壊れていると記録した検査（known_broken）が、もう緑（記録を外して CI に入れる）
++  W3 例外・壊れていると記録したのに、もう無い検査（記録から外す）
++由来：検査を書いたのに CI で回しておらず、壊れたまま気づかなかった（自己試験が赤のまま・本体の条件の誤りで何も見ていなかった）。
++
++設定（ci-gates.yaml）:
++  wiring:
++    ci_files: [".github/workflows/*.yml", "ci.yaml"]   # 検査を流す設定。文面に命令かファイル名が出てくれば「回っている」
++    stage_cmds: []                 # 段の一覧を出す命令（ci.yaml の include から導く段など。出力も文面に足す）
++    checks: ["scripts/ci/*.py", "scripts/ci/*.mjs", "scripts/ci/*.sh"]
++    package_scripts: "ci:"         # package.json の scripts で、この頭のもの（無ければ空にする）
++    selftest_flag: "--selftest"    # この文字を含む台本は「<台本> --selftest」も 1 つの検査として数える
++    exceptions: {}                 # {名前: 回さない理由}（作り手・手元用の道具など）
++    known_broken: {}               # {名前: チケット}。直ったら W2
++"""
++from __future__ import annotations
++import glob, json, os, re, shutil, subprocess, sys, tempfile
++
++sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
++from _common import config, not_used, root_from_args  # noqa: E402
++
++SELF = "wiring_gate.py"
++
++
++def runner(rel: str) -> str:
++    return {".py": "python3", ".mjs": "node", ".js": "node", ".cjs": "node", ".sh": "bash"}.get(os.path.splitext(rel)[1], "")
++
++
++class Gate:
++    def __init__(self, root: str, cfg: dict):
++        self.root, self.cfg = root, cfg
++
++    def text(self) -> str:
++        t = ""
++        for g in self.cfg.get("ci_files") or [".github/workflows/*.yml", ".github/workflows/*.yaml", "ci.yaml"]:
++            for f in sorted(glob.glob(os.path.join(self.root, g))):
++                t += open(f, encoding="utf-8").read() + "\n"
++        for c in self.cfg.get("stage_cmds") or []:
++            r = subprocess.run(c, cwd=self.root, shell=True, capture_output=True, text=True)
++            if r.returncode != 0:
++                sys.exit(f"段の一覧を出す命令が落ちた: {c}\n{r.stderr[-400:]}")
++            t += r.stdout + "\n"
++        return t
++
++    def items(self) -> dict[str, str]:
++        out: dict[str, str] = {}
++        pre = self.cfg.get("package_scripts", "ci:")
++        pj = os.path.join(self.root, "package.json")
++        if pre and os.path.exists(pj):
++            for k, v in (json.load(open(pj, encoding="utf-8")).get("scripts") or {}).items():
++                if k.startswith(pre):
++                    out[k] = v
++        flag = self.cfg.get("selftest_flag", "--selftest")
++        for g in self.cfg.get("checks") or ["scripts/ci/*.py", "scripts/ci/*.mjs", "scripts/ci/*.sh"]:
++            for f in sorted(glob.glob(os.path.join(self.root, g))):
++                rel = os.path.relpath(f, self.root)
++                if os.path.basename(rel) == SELF or os.path.basename(rel).startswith("_"):
++                    continue
++                if not any(rel in v for v in out.values()):
++                    out[rel] = f"{runner(rel)} {rel}".strip()
++                if flag and flag in open(f, encoding="utf-8", errors="ignore").read():
++                    out[f"{rel} {flag}"] = f"{runner(rel)} {rel} {flag}".strip()
++        return out
++
++    def wired(self, name: str, cmd: str, text: str, items: dict[str, str]) -> bool:
++        pre = self.cfg.get("package_scripts", "ci:")
++        if pre and name.startswith(pre) and re.search(rf"(?:run|pnpm|yarn|bun)(?: -s)? {re.escape(name)}\b", text):
++            return True
++        if " " in name:   # 「台本 --selftest」は、その形で書かれていること
++            return name in text or cmd in text
++        if name in text:
++            return True
++        for k, v in items.items():  # 回っている package.json の scripts から呼ばれている
++            if k != name and pre and k.startswith(pre) and name in v and self.wired(k, v, text, {}):
++                return True
++        return False
++
++    def check(self) -> list[str]:
++        ex = self.cfg.get("exceptions") or {}
++        broken = self.cfg.get("known_broken") or {}
++        text, it, fails = self.text(), self.items(), []
++        for name, cmd in sorted(it.items()):
++            if name in ex:
++                continue
++            if name in broken:
++                if subprocess.run(cmd, cwd=self.root, shell=True, capture_output=True).returncode == 0:
++                    fails.append(f"W2 壊れていると記録した {name} が、もう緑（known_broken から外して CI に入れる）")
++                continue
++            if not self.wired(name, cmd, text, it):
++                fails.append(f"W1 どこからも回らない検査 {name}（{cmd[:80]}）")
++        for name in [*ex, *broken]:
++            if name not in it and not os.path.exists(os.path.join(self.root, name.split(" ")[0])):
++                fails.append(f"W3 記録したのに、もう無い {name}")
++        return fails
++
++
++def report(g: Gate) -> int:
++    fails = g.check()
++    for f in fails:
++        print("  ★", f)
++    print(f"検査と道具 {len(g.items())} 個")
++    print("FAIL — 回っていない検査がある" if fails else "PASS — 書いた検査は全部 CI から回る（理由つきの例外を除く）")
++    return 1 if fails else 0
++
++
++def selftest() -> int:
++    d = tempfile.mkdtemp(prefix="wiring-gate-selftest-")
++    try:
++        os.makedirs(os.path.join(d, "scripts/ci"))
++        os.makedirs(os.path.join(d, ".github/workflows"))
++        w = lambda p, s: open(os.path.join(d, p), "w").write(s)
++        w("scripts/ci/a.py", "print('a')  # --selftest\n")
++        w("scripts/ci/b.py", "print('b')\n")
++        w("package.json", json.dumps({"scripts": {"ci:x": "node scripts/ci/x.mjs", "ci:y": "pnpm -s ci:x"}}))
++        w("scripts/ci/x.mjs", "")
++        w(".github/workflows/ci.yml", "steps:\n  - run: python3 scripts/ci/a.py --selftest && python3 scripts/ci/a.py\n  - run: pnpm -s ci:y\n")
++        cfg = {"ci_files": [".github/workflows/*.yml"]}
++        fails = Gate(d, cfg).check()
++        w1 = any("scripts/ci/b.py" in f and f.startswith("W1") for f in fails)       # 回っていない台本 → 赤
++        quiet = not any(("a.py" in f) or ("ci:x" in f) or ("ci:y" in f) for f in fails)  # 回っている物（間接も）は黙る
++        ok_ex = not Gate(d, {**cfg, "exceptions": {"scripts/ci/b.py": "手元用"}}).check()
++        w3 = any(f.startswith("W3") for f in Gate(d, {**cfg, "exceptions": {"scripts/ci/b.py": "x", "scripts/ci/gone.py": "x"}}).check())
++        w2 = any(f.startswith("W2") for f in Gate(d, {**cfg, "known_broken": {"scripts/ci/b.py": "T-1"}}).check())
++    finally:
++        shutil.rmtree(d, ignore_errors=True)
++    ok = w1 and quiet and ok_ex and w3 and w2
++    print("PASS — 回っていない検査・直った壊れ・消えた記録は赤、回っている物と理由つきの例外は緑" if ok else
++          f"FAIL — 見つけられない（W1 {w1}・黙る {quiet}・例外 {ok_ex}・W3 {w3}・W2 {w2}）")
++    return 0 if ok else 1
++
++
++if __name__ == "__main__":
++    if "--selftest" in sys.argv:
++        sys.exit(selftest())
++    root = root_from_args()
++    c = config(root, "wiring")
++    sys.exit(not_used("wiring") if c is None else report(Gate(root, c)))
+diff -ruN orig/ai-team-delivery/scripts/pm_merge.sh new/ai-team-delivery/scripts/pm_merge.sh
+--- orig/ai-team-delivery/scripts/pm_merge.sh	2026-11-04 13:26:40.988215897 +0000
++++ new/ai-team-delivery/scripts/pm_merge.sh	2026-11-04 13:26:49.043809091 +0000
+@@ -15,7 +15,9 @@
+ # 使い方:
+ #   pm_merge.sh --repo <リポジトリ> --branch <ブランチ> --msg <コミットの文のファイル> \
+ #               --regen '<生成物だけを作り直す命令>' [--verify '<全部の検査の命令>'] \
+-#               [--ci '<CI の緑を確かめる命令>'] [--push]
++#               [--ci '<CI の緑を確かめる命令>'] [--push] [--base <取り込む先の枝・既定 main>] [--install '<依存を入れる命令>']
++#   --base：取り込む先の枝（既定は環境 PM_MERGE_BASE か main）。master・develop のプロジェクトはここで指定する
++#   --install：push の手前の検査の前に依存を入れる命令。既定は lockfile から選ぶ（pnpm・npm・yarn・bun・uv・poetry。無ければ入れない）
+ #   既定は --ci '"$DAGCI" run --all'（この台の待ちの列に並んで全部の段・user-40/A 2026-10-29）。--verify は付けない（二重に流さない）。
+ #   DAGCI はスキルの dagci の入口（無ければこの台本の隣の ci/dagci/dagci）。
+ #   --ci-timeout <秒>（既定 10800＝3 時間）：CI がこれを越えたら時間切れで止める（main は進めない）
+@@ -35,11 +37,11 @@
+ # pnpm が「Proceed? (Y/n)」で入力を待って永久に止まらないようにする（2026-10-22 S2 が見つけた）
+ export CI=true
+ 
+-repo='' branch='' msg='' regen='' verify='' ci='' push=0 ids='' deploy='' ci_timeout=10800
++repo='' branch='' msg='' regen='' verify='' ci='' push=0 ids='' deploy='' ci_timeout=10800 base_branch=${PM_MERGE_BASE:-main} install=''
+ while [ $# -gt 0 ]; do
+   case "$1" in
+     --repo) repo=$2; shift 2 ;; --branch) branch=$2; shift 2 ;; --msg) msg=$2; shift 2 ;;
+-    --regen) regen=$2; shift 2 ;; --ids) ids=$2; shift 2 ;; --verify) verify=$2; shift 2 ;; --ci) ci=$2; shift 2 ;; --deploy) deploy=$2; shift 2 ;; --ci-timeout) ci_timeout=$2; shift 2 ;; --push) push=1; shift ;;
++    --regen) regen=$2; shift 2 ;; --ids) ids=$2; shift 2 ;; --verify) verify=$2; shift 2 ;; --ci) ci=$2; shift 2 ;; --deploy) deploy=$2; shift 2 ;; --ci-timeout) ci_timeout=$2; shift 2 ;; --push) push=1; shift ;; --base) base_branch=$2; shift 2 ;; --install) install=$2; shift 2 ;;
+     *) echo "知らない引数: $1" >&2; exit 1 ;;
+   esac
+ done
+@@ -73,11 +75,13 @@
+   trap 'rm -rf "$LOCKDIR" 2>/dev/null' EXIT
+ fi
+ git rev-parse --verify -q "refs/heads/$branch" >/dev/null || { echo "ブランチが無い: $branch" >&2; exit 1; }
+-if [ -n "$(git status --porcelain)" ]; then echo "main の作業ツリーが空でない。先に片付ける" >&2; exit 1; fi
++if [ -n "$(git status --porcelain)" ]; then echo "$base_branch の作業ツリーが空でない。先に片付ける" >&2; exit 1; fi
+ 
+-base=$(git rev-parse main)
++# 取り込む先の枝が checkout されていること（最後の ff-only はいまの枝を進めるので、違う枝だとそこを進めてしまう）
++[ "$(git symbolic-ref --short -q HEAD)" = "$base_branch" ] || { echo "いまの枝が $base_branch でない（$(git symbolic-ref --short -q HEAD || echo 'detached')）。$base_branch を checkout してから流す" >&2; exit 1; }
++base=$(git rev-parse "$base_branch")
+ tip=$(git rev-parse "refs/heads/$branch")
+-if git merge-base --is-ancestor "$tip" "$base"; then echo "もう main に入っている: $branch"; exit 0; fi
++if git merge-base --is-ancestor "$tip" "$base"; then echo "もう $base_branch に入っている: $branch"; exit 0; fi
+ 
+ tmp=$(mktemp -d "${TMPDIR:-/tmp}/pm-merge.XXXXXX")
+ cleanup() { git -C "$repo" worktree remove --force "$tmp/w" >/dev/null 2>&1; rm -rf "$tmp"; [ -n "${LOCKDIR:-}" ] && rm -rf "$LOCKDIR" 2>/dev/null; }
+@@ -87,7 +91,7 @@
+ 
+ # 1. どれが生成物かを数える（main で作り直して、書かれた追跡中のファイル）
+ touch "$tmp/marker"; sleep 1
+-bash -c "$regen" >"$tmp/regen0.log" 2>&1 || { echo "main で生成物を作り直せない（$tmp/regen0.log）" >&2; tail -5 "$tmp/regen0.log" >&2; exit 1; }
++bash -c "$regen" >"$tmp/regen0.log" 2>&1 || { echo "$base_branch で生成物を作り直せない（$tmp/regen0.log）" >&2; tail -5 "$tmp/regen0.log" >&2; exit 1; }
+ git ls-files -z | xargs -0 -I{} find {} -maxdepth 0 -newer "$tmp/marker" -print 2>/dev/null >"$tmp/generated0.txt"
+ # 作り直しても数が変わらない回は書かれないので、生成物と数えられない（2026-10-27：role-overview.html・api-spec.html が毎回「手で持つ」で止まった）。
+ #   repo が宣言した生成物の一覧（scripts/generated-files.txt・1 行 1 パス・# は注記）も生成物に足す
+@@ -104,11 +108,11 @@
+     else hand+=("$f"); fi
+   done < <(git -c core.quotePath=false diff --name-only --diff-filter=U)   # 日本語名を引用させない（2026-10-22：経営向けサマリー.html が引用されて生成物と突き合わず「手で持つ」と誤って止まった）
+   if [ ${#hand[@]} -gt 0 ]; then
+-    echo "★止めた：手で持つファイルが衝突した（PM は片方を選ばない。$branch を書いた人に main を取り込ませる）:"
++    echo "★止めた：手で持つファイルが衝突した（PM は片方を選ばない。$branch を書いた人に $base_branch を取り込ませる）:"
+     printf '  %s\n' "${hand[@]}"
+     git merge --abort; exit 2
+   fi
+-  echo "生成物の衝突だけだったので、main の側を取って作り直す"
++  echo "生成物の衝突だけだったので、$base_branch の側を取って作り直す"
+ fi
+ 
+ # 2d. ★手で持つファイルで、ブランチが main の行を消していないか（2026-10-22：S3 が自分のブランチに main を取り込むとき
+@@ -122,7 +126,7 @@
+ done >"$tmp/dels.txt"
+ if [ -s "$tmp/dels.txt" ]; then
+   echo "手で持つファイルで、ブランチが消している行（意図した削除かを見る。git diff $mbd $tip -- <ファイル>）:"; sed 's/^/  /' "$tmp/dels.txt"
+-  echo "  → PM は main に入ったあと、この一覧の各ファイルの差分を読む。誤って消していたら書いた人に戻させる（止めないのは、行の書き換えも削除に数えられるため）"
++  echo "  → PM は $base_branch に入ったあと、この一覧の各ファイルの差分を読む。誤って消していたら書いた人に戻させる（止めないのは、行の書き換えも削除に数えられるため）"
+ fi
+ 
+ # 3. 取り込みが本当に入っているか（親が main とブランチの 2 つになる前の段階：MERGE_HEAD がブランチの先頭）
+@@ -167,10 +171,12 @@
+ git commit -q -F "$msg" || { echo "コミットできない" >&2; exit 1; }
+ merged=$(git rev-parse HEAD)
+ # 2e. ★実装に入ったチケットの仕様は固定（2026-10-23・user）。reopen なしに変えていたら main に入れない
+-python3 "${PM_MERGE_DIR:-$(dirname "$0")}/post_review_delta.py" --repo "$repo" --rev "$merged" --freeze; fz=$?
++python3 "${PM_MERGE_DIR:-$(dirname "$0")}/post_review_delta.py" --repo "$repo" --rev "$merged" --freeze ${PM_MERGE_CONFIG:+--config "$PM_MERGE_CONFIG"}; fz=$?
+ [ $fz -eq 4 ] && exit 2
++# 正本が読めない（設定の tickets が違う）は黙って通さない
++[ $fz -eq 5 ] && exit 1
+ [ "$(git rev-parse HEAD^1)" = "$base" ] && [ "$(git rev-parse HEAD^2)" = "$tip" ] \
+-  || { echo "merge のコミットの親が main とブランチになっていない" >&2; exit 1; }
++  || { echo "merge のコミットの親が $base_branch とブランチになっていない" >&2; exit 1; }
+ # 作り直しが決まった形か（もう一度作り直しても何も変わらない）
+ bash -c "$regen" >/dev/null 2>&1
+ [ -z "$(git status --porcelain)" ] || { echo "作り直すたびに生成物が変わる（決まった形でない）:"; git status --porcelain | head; exit 1; }
+@@ -182,7 +188,7 @@
+     tail -40 "$tmp/ci.log"
+     _vl="$(git -C "$repo" rev-parse --path-format=absolute --git-common-dir)/../.ai-team-out/pm"; mkdir -p "$_vl" 2>/dev/null
+     cp "$tmp/ci.log" "$_vl/ci-$(basename "$branch")-$(date +%H%M%S).log" 2>/dev/null && echo "CI の記録: $_vl/ci-$(basename "$branch")-*.log"
+-    echo "★CI が緑でない。main は進めていない" >&2; exit 1
++    echo "★CI が緑でない。$base_branch は進めていない" >&2; exit 1
+   fi
+   tail -3 "$tmp/ci.log"
+ fi
+@@ -192,32 +198,47 @@
+ echo "$(git rev-parse "$merged^{tree}")" >>"$(cd "$repo" && cd "$(git rev-parse --git-common-dir)" && pwd)/pm-verified-trees"
+ 
+ # 5. main を進める（ほかの人が先に進めていたら止める＝並べて入れない）
+-[ "$(git -C "$repo" rev-parse main)" = "$base" ] || { echo "検査の間に main が進んだ。もう一度流す" >&2; exit 1; }
++[ "$(git -C "$repo" rev-parse "$base_branch")" = "$base" ] || { echo "検査の間に $base_branch が進んだ。もう一度流す" >&2; exit 1; }
+ if [ $push -eq 1 ]; then
+   # push の手前の検査は、この台本の作業場（検査済みの版）で流す。main の作業ツリーは触らない
+   # 検査の Python も main の作業場の .venv を使う（新しい作業場には .venv が無く、yaml が無くて 20 件赤・2026-10-22）
+   [ -z "${GATE_PY:-}" ] && [ -x "$repo/.venv/bin/python" ] && export GATE_PY="$repo/.venv/bin/python"
+   # 新しい作業場には node_modules が無いので、push の手前の検査（lint・型・test）の前に入れる（2026-10-22：turbo が無くて 4 件赤）
+-  if [ -f package.json ] && [ ! -d node_modules ]; then
+-    (pnpm install --frozen-lockfile --prefer-offline >"$tmp/install.log" 2>&1) || { echo "依存を入れられない（$tmp/install.log）" >&2; tail -5 "$tmp/install.log" >&2; exit 1; }
++  if [ -z "$install" ]; then
++    # lockfile から選ぶ（どれも無ければ入れない）。Node は node_modules がまだ無いときだけ
++    if [ ! -d node_modules ]; then
++      if [ -f pnpm-lock.yaml ]; then install='pnpm install --frozen-lockfile --prefer-offline'
++      elif [ -f package-lock.json ]; then install='npm ci --prefer-offline --no-audit --no-fund'
++      elif [ -f yarn.lock ]; then install='yarn install --frozen-lockfile'
++      elif [ -f bun.lock ] || [ -f bun.lockb ]; then install='bun install --frozen-lockfile'
++      fi
++    fi
++    if [ -z "$install" ] && [ ! -d .venv ]; then
++      if [ -f uv.lock ]; then install='uv sync --frozen'
++      elif [ -f poetry.lock ]; then install='poetry install --no-interaction'
++      fi
++    fi
+   fi
+-  if git push -q origin "$merged:refs/heads/main"; then echo "push した: $(git rev-parse --short "$merged")"
+-  else echo "★push が止まった（push の手前の検査が赤など）。main は進めていない" >&2; exit 1; fi
++  if [ -n "$install" ]; then
++    (bash -c "$install" >"$tmp/install.log" 2>&1) || { echo "依存を入れられない（$install・$tmp/install.log）" >&2; tail -5 "$tmp/install.log" >&2; exit 1; }
++  fi
++  if git push -q origin "$merged:refs/heads/$base_branch"; then echo "push した: $(git rev-parse --short "$merged")"
++  else echo "★push が止まった（push の手前の検査が赤など）。$base_branch は進めていない" >&2; exit 1; fi
+ fi
+ cd "$repo" || exit 1
+ git merge -q --ff-only "$merged" || exit 1
+-echo "main に入った: $(git log --oneline -1)"
++echo "$base_branch に入った: $(git log --oneline -1)"
+ # main に入った版を、頼まれた環境へ反映する（例 interim）。検査の緑・作業ツリーがきれい・HEAD がその版、は dagci が確かめる
+ if [ -n "$deploy" ]; then
+   if (cd "$repo" && "$DAGCI" deploy "$deploy" --sha "$merged"); then echo "反映した: $deploy ← $(git rev-parse --short "$merged")"
+-  else echo "★main には入ったが、$deploy への反映が失敗した（上の理由を見る。dagci deploy $deploy で流し直せる）" >&2; exit 3; fi
++  else echo "★$base_branch には入ったが、$deploy への反映が失敗した（上の理由を見る。dagci deploy $deploy で流し直せる）" >&2; exit 3; fi
+ fi
+ # 精査を過ぎたチケットの中身が変わっていないかを出す（止めない・2026-10-22：S3 の束で tests の 42 本と checks の T-A-C2 が黙って変わった）
+ _d="$(git -C "$repo" rev-parse --git-common-dir)/../.ai-team-out/pm"; mkdir -p "$_d" 2>/dev/null
+-python3 "${PM_MERGE_DIR:-$(dirname "$0")}/post_review_delta.py" --repo "$repo" --rev "$(git rev-parse HEAD)" --out "$_d/delta-$(git rev-parse --short HEAD).md" || true
++python3 "${PM_MERGE_DIR:-$(dirname "$0")}/post_review_delta.py" --repo "$repo" --rev "$(git rev-parse HEAD)" --out "$_d/delta-$(git rev-parse --short HEAD).md" ${PM_MERGE_CONFIG:+--config "$PM_MERGE_CONFIG"} || true
+ if false; then
+   # push の手前の検査が赤なら push は止まる。そのときは exit 1 で知らせる（2026-10-22：exit 0 のまま気づきにくかった）
+-  if git push -q origin main; then echo "push した: $(git rev-parse --short HEAD)"
+-  else echo "★push が止まった（push の手前の検査が赤など）。main はローカルだけ進んでいる。原因を直すまで次を入れない" >&2; exit 1; fi
++  if git push -q origin "$base_branch"; then echo "push した: $(git rev-parse --short HEAD)"
++  else echo "★push が止まった（push の手前の検査が赤など）。$base_branch はローカルだけ進んでいる。原因を直すまで次を入れない" >&2; exit 1; fi
+ fi
+ exit 0
+diff -ruN orig/ai-team-delivery/scripts/post_review_delta.py new/ai-team-delivery/scripts/post_review_delta.py
+--- orig/ai-team-delivery/scripts/post_review_delta.py	2026-11-04 13:26:40.988432325 +0000
++++ new/ai-team-delivery/scripts/post_review_delta.py	2026-11-04 13:26:49.042581408 +0000
+@@ -4,41 +4,79 @@
+ 由来：S3 の束（S1 の b-fix-4〜6 を含む）を入れたら、tests にいる 42 本と checks の T-A-C2 の受け入れ基準が
+ 黙って変わっていた。精査の合格もテストも古い要件のまま進むところだった。
+ 
+-使い方: post_review_delta.py --repo <repo> --rev <マージのコミット> [--state .ai-team/state.json] [--out <md>]
++使い方: post_review_delta.py --repo <repo> --rev <マージのコミット> [--config ai-team.yaml] [--out <md>]
++  チケットの正本・欄の名前・状態の置き場は ai-team.yaml（既定は <repo>/ai-team.yaml）から読む。--tickets・--state で上書きできる。
++  見る欄は ai-team.yaml の spec_fields（既定は受け入れ基準・行・依存。プロジェクトの欄は足す）
++  ★正本が読めないときは黙って通さず止める（exit 5。以前は既定のパスに無いと「何も変わっていない」で通っていた）
+ 出力: 変わったチケットと欄の一覧（見積もり・予測ファイルは除く）。1 本でもあれば exit 3（止めない合図）。
+ """
+ import argparse, difflib, json, pathlib, subprocess, sys
+ 
+-KEYS = ['acceptance_criteria', 'l1_rows', 'api_endpoints', 'depends_on', 'access_control_policies',
+-        'choke_points', 'entity_ids']
++DEFAULT_KEYS = ['acceptance_criteria', 'l1_rows', 'depends_on']
+ PAST = {'tests', 'impl', 'checks', 'acceptance', 'waiting_human', 'pm_verify'}
+ # ★実装に入ったチケットは仕様を固定する（2026-10-23・user「変えない方が良くないか？…漏れがある場合にのみ更新する」）。
+ #   変えてよいのは、PM が state.py reopen で理由（誤り・漏れ）を書いて開け直したチケットだけ
+ FROZEN = {'impl', 'checks', 'acceptance', 'waiting_human', 'pm_verify', 'merged', 'done'}
+ 
+ 
+-def load(repo, rev, path):
++def get(d, dotted):
++    for k in str(dotted).split('.'):
++        if not isinstance(d, dict):
++            return None
++        d = d.get(k)
++    return d
++
++
++def load(repo, rev, path, list_key='tasks', id_key='id'):
++    """rev の時点のチケット。ファイルがその rev に無ければ None（「無い」と「空」を分ける）"""
+     try:
+         raw = subprocess.check_output(['git', '-C', repo, 'show', f'{rev}:{path}'], stderr=subprocess.DEVNULL)
+     except subprocess.CalledProcessError:
++        return None
++    data = json.loads(raw)
++    lst = get(data, list_key) if isinstance(data, dict) else data
++    return {get(t, id_key): t for t in (lst or [])}
++
++
++def config(repo, path):
++    p = pathlib.Path(path) if path else pathlib.Path(repo) / 'ai-team.yaml'
++    if not p.exists():
+         return {}
+-    return {t['id']: t for t in json.loads(raw).get('tasks', [])}
++    try:
++        import yaml
++    except ImportError:
++        sys.exit('PyYAML が要る（pip install pyyaml）')
++    return yaml.safe_load(p.read_text(encoding='utf-8')) or {}
+ 
+ 
+ def main():
+     ap = argparse.ArgumentParser()
+     ap.add_argument('--repo', required=True)
+     ap.add_argument('--rev', required=True)
+-    ap.add_argument('--tickets', default='docs/10-tasks/tickets.json')
+-    ap.add_argument('--state', default='.ai-team/state.json')
++    ap.add_argument('--config', help='ai-team.yaml（既定は <repo>/ai-team.yaml）')
++    ap.add_argument('--tickets', help='チケットの正本（既定は ai-team.yaml の tickets）')
++    ap.add_argument('--state', help='状態（既定は ai-team.yaml の state_dir/state.json）')
+     ap.add_argument('--out')
+     ap.add_argument('--freeze', action='store_true', help='取り込みの前の検査：固定されたチケットが reopen なしに変わっていたら exit 4')
+     a = ap.parse_args()
+-    sp = pathlib.Path(a.repo) / a.state
++    cfg = config(a.repo, a.config)
++    tf = {'list': 'tasks', 'id': 'id', **(cfg.get('ticket_fields') or {})}
++    tickets = a.tickets or cfg.get('tickets')
++    if not tickets:
++        print('★止めた：チケットの正本がわからない（ai-team.yaml の tickets か --tickets）', file=sys.stderr)
++        return 5
++    KEYS = list(dict.fromkeys(cfg.get('spec_fields') or DEFAULT_KEYS))
++    sp = pathlib.Path(a.repo) / (a.state or f"{cfg.get('state_dir', '.ai-team').strip('/')}/state.json")
++    # 正本が読めるかを先に見る（状態がまだ無いプロジェクトでも、設定の誤りは最初の取り込みで止める）
++    old = load(a.repo, a.rev + '^1', tickets, tf['list'], tf['id'])
++    new = load(a.repo, a.rev, tickets, tf['list'], tf['id'])
++    if new is None:
++        print(f'★止めた：{a.rev} にチケットの正本 {tickets} が無い（ai-team.yaml の tickets が合っているか）', file=sys.stderr)
++        return 5
++    old = old or {}
+     if not sp.exists():
+         return 0
+     st = json.loads(sp.read_text()).get('tickets', {})
+-    old, new = load(a.repo, a.rev + '^1', a.tickets), load(a.repo, a.rev, a.tickets)
+     if a.freeze:
+         bad = []
+         for k in sorted(new):
+diff -ruN orig/ai-team-delivery/scripts/state.py new/ai-team-delivery/scripts/state.py
+--- orig/ai-team-delivery/scripts/state.py	2026-11-04 13:26:40.989076946 +0000
++++ new/ai-team-delivery/scripts/state.py	2026-11-04 13:26:49.042765756 +0000
+@@ -94,6 +94,8 @@
+         self.tf.update(self.cfg.get('ticket_fields') or {})
+         self.limits = {'l1_rows_per_session': 25, 'screens_per_session': 1, 'max_loops': 3}
+         self.limits.update(self.cfg.get('limits') or {})
++        # 取り込む先の枝（既定 main）。master・develop のプロジェクトは base_branch に書く
++        self.base = self.cfg.get('base_branch', 'main')
+ 
+     # ── 状態
+     def load(self):
+@@ -158,6 +160,12 @@
+ 
+ 
+ COPY_RATIO = 0.8
++# どのプロジェクトにもある既定（ai-team.yaml で上書きできる）
++DEFAULT_RULES = ['test-ladder.md', 'lessons-learned.md']
++DEFAULT_SCAN_IGNORE_FILES = ['eslint.config.js', 'eslint.config.mjs', 'eslint.config.cjs', 'eslint.config.ts', '.eslintignore']
++DEFAULT_LOCK_EXEMPT = ['package.json', 'pnpm-lock.yaml', 'package-lock.json', 'yarn.lock', 'bun.lock', 'bun.lockb',
++                       'pyproject.toml', 'poetry.lock', 'uv.lock', 'requirements.txt', 'go.mod', 'go.sum',
++                       'Cargo.toml', 'Cargo.lock', 'Gemfile', 'Gemfile.lock', 'composer.json', 'composer.lock']
+ 
+ 
+ def copied_from(x, who, summary):
+@@ -198,7 +206,8 @@
+     if c.cfg.get('tickets') and not (c.root / c.cfg['tickets']).exists():
+         bad.append(f'チケットの正本が無い: {c.cfg["tickets"]}')
+     rules = pathlib.Path.home() / '.claude/rules/common'
+-    for f in ('test-ladder.md', 'lessons-learned.md', 'choke-points.md'):
++    # 置いてあるはずの規約（設定 required_rules。既定は engineering-rules の 2 枚。関門の作りのプロジェクトは choke-points.md を足す）
++    for f in c.cfg.get('required_rules', DEFAULT_RULES):
+         (ok if (rules / f).exists() else bad).append(f'規約 {f}' + ('' if (rules / f).exists() else ' が無い（engineering-rules の install.sh）'))
+     if not c.cfg.get('lanes'):
+         bad.append('lanes が無い（実装のメンバー＝レーン）')
+@@ -209,11 +218,12 @@
+     if shutil.which('git') is None:
+         bad.append('git が無い')
+     # ★メンバーの作業場（.claude/worktrees/）を lint・走査から外しているか（外さないと検査が写しの数だけ重くなる）
+-    for f in ('eslint.config.js', 'eslint.config.mjs', 'packages/config/eslint.config.js', '.eslintignore'):
++    #   見るファイルは設定 scan_ignore_files（既定は ESLint の設定。Python なら ruff の pyproject.toml など、走査の除外を書く所を挙げる）
++    for f in c.cfg.get('scan_ignore_files', DEFAULT_SCAN_IGNORE_FILES):
+         fp = c.root / f
+-        if fp.exists() and 'eslint' in f and '.claude' not in fp.read_text(encoding='utf-8', errors='ignore') \
++        if fp.exists() and '.claude' not in fp.read_text(encoding='utf-8', errors='ignore') \
+                 and 'export { default }' not in fp.read_text(encoding='utf-8', errors='ignore'):
+-            bad.append(f'{f} の ignores に .claude/** が無い（メンバーの作業場の写しまで lint する）')
++            bad.append(f'{f} の除外に .claude/** が無い（メンバーの作業場の写しまで lint・走査する）')
+     for x in ok:
+         print('  OK  ' + x)
+     for x in bad:
+@@ -561,7 +571,8 @@
+         # 手元の compose.yaml も各関門が自分の模造のサービスを 1 節ずつ足すだけ（2026-10-23：C6 が checks の間、102 本が待つ C4 が止まった）
+         # 設定の lock_exempt：全チケットが 1 行ずつ足すだけの台帳（環境変数の一覧など）。重なりは pm_merge.sh が止めて返す
+         #   （2026-10-28：env.ts の 1 行の重なりで、23 本が待つ土台 T-A-04 が C4 の merged まで止まった）
+-        exempt = {'package.json', 'pnpm-lock.yaml', 'scripts/ci/choke_point_gate.cjs', 'infra/local/compose.yaml'} | set(c.cfg.get('lock_exempt') or [])
++        #   既定は、どのプロジェクトにもある根の台帳（依存の一覧と lockfile）だけ。プロジェクトの共有の台帳は設定 lock_exempt に書く
++        exempt = set(c.cfg.get('lock_exempt_defaults', DEFAULT_LOCK_EXEMPT)) | set(c.cfg.get('lock_exempt') or [])
+         both = sorted((mine & c.files(T[k])) - exempt)
+         if both and v.get('lane') == x.get('lane'):
+             # 同じレーン（同じ D）なら、前の 1 本のブランチの上に積めば衝突しない（2026-10-23：C8 が checks の間、
+@@ -673,8 +684,9 @@
+         nums = [float(n) for n in re.findall(r'(\d+(?:\.\d+)?)\s*%', cm.group(1))] if cm else []
+         # 測る範囲（apps/・packages/ のコード）の変更が 0 なら分母が無い。diff_coverage の PASS とその旨を書けば通す
+         no_scope = bool(cm) and re.search(r'分母\s*0|対象\s*0', cm.group(1))
+-        if not no_scope and (not nums or min(nums) < 80):
+-            die('D の報告に「カバレッジ: 文 N% 分岐 N% 関数 N% 行 N%」が要る（このチケットが変えた行（main との差分）の分岐を含むカバレッジ・どれも 80 以上。少し触っただけの既存のファイルは変えた行だけ、テストの準備（seed）は数えない。積んだ下のチケットの分も数えない）')
++        cmin = float(c.cfg.get('coverage_min', 80))
++        if not no_scope and (not nums or min(nums) < cmin):
++            die(f'D の報告に「カバレッジ: 文 N% 分岐 N% 関数 N% 行 N%」が要る（このチケットが変えた行（{c.base} との差分）の分岐を含むカバレッジ・どれも {cmin:g} 以上（設定 coverage_min）。少し触っただけの既存のファイルは変えた行だけ、テストの準備（seed）は数えない。積んだ下のチケットの分も数えない）')
+     # ★差し戻しの後の出し直しは、前の回の指摘を全部まとめて直してから（user 2026-10-29）。D の報告に
+     #   「前の回の指摘: 全 N 件を直した」（N は前の回の Q の NG の合計）が要る。一部だけ直して出すと、また 1 周増える
+     _prev_st = (x.get('round_stats') or {}).get(str(x['round'] - 1))
+@@ -1033,7 +1045,10 @@
+     c = Ctx(a.config)
+     # 何人もが同時に記録しても壊れないように、1 回の呼び出しの間 state.json を鍵で守る（2026-10-22・メンバーが自分で記録するようにした）
+     import fcntl
+-    _lk = open(str(pathlib.Path(a.config).resolve().parent / '.ai-team' / '.state.lock'), 'a')
++    #   置き場は設定の state_dir（以前は .ai-team の決め打ちで、state_dir を替えたプロジェクトでは別の所を鍵にしていた）。
++    #   初めて流すプロジェクトでは置き場がまだ無いので作る（以前は doctor も落ちた）
++    c.sdir.mkdir(parents=True, exist_ok=True)
++    _lk = open(str(c.sdir / '.state.lock'), 'a')
+     fcntl.flock(_lk, fcntl.LOCK_EX)
+     cmds = {'doctor': cmd_doctor, 'show': cmd_show, 'next': cmd_next, 'start': cmd_start,
+             'advance': cmd_advance, 'record': cmd_record, 'block': cmd_block, 'unblock': cmd_unblock,
+diff -ruN orig/ai-team-delivery/scripts/verdict_check.py new/ai-team-delivery/scripts/verdict_check.py
+--- orig/ai-team-delivery/scripts/verdict_check.py	2026-11-04 13:26:40.990272062 +0000
++++ new/ai-team-delivery/scripts/verdict_check.py	2026-11-04 13:26:49.043688802 +0000
+@@ -16,7 +16,7 @@
+ ORIGINS = {'見落とし', '直しで入った', '仕様の変更'}
+ # 証拠らしさ：ファイル:行 ／ バッククォートのコマンド ／ 矢印つきの結果 ／ URL ／ 報告 JSON の場所
+ EVIDENCE = re.compile(r'[\w./\-]+\.[A-Za-z0-9]+:\d+|`[^`]+`|→|->|https?://|\.json\b|\.png\b|exit\s*=?\s*\d')
+-# Next.js の道の名前（(public)・[id]）を含むパスも読む（2026-11-03：T-C-005 の 27 か所が落ちた）
++# 括弧を含むパス（Next.js などの道の名前 (public)・[id]）も読む（2026-11-03：27 か所が読めずに落ちた）
+ FILE_LINE = re.compile(r'(?<![\w:/.()\[\]-])([\w./\-()\[\]]+\.[A-Za-z0-9]+):(\d+)')   # URL（http://127.0.0.1:3000）はファイルとして読まない
+ COMMENT_ONLY = re.compile(r'^(//|#|--|/\*|\*|<!--|;)')
+ EMPTY_EVIDENCE = re.compile(r'^\s*(確認した|確認済み?|問題なし|OK|済|-|ー|なし)?\s*$')
+diff -ruN orig/api-design/SKILL.md new/api-design/SKILL.md
+--- orig/api-design/SKILL.md	2026-11-04 13:26:40.942490817 +0000
++++ new/api-design/SKILL.md	2026-11-04 13:29:30.134757874 +0000
+@@ -7,6 +7,19 @@
+ 
+ ---
+ 
++## 🧭 AI 駆動の開発の進め方（ai-driven-process）— このスキルの責務（2026-11-04 追加・必須・省略不可）
++
++> 進め方の正本: `~/.claude/rules/common/ai-driven-process.md`（無ければ `engineering-rules` の `scripts/install.sh` で入れる）。
++> チケット＝利用者の 1 つの操作を画面・API・DB まで縦に通す 1 つの実装／分岐は 8 観点（入力・対象の状態・時間の流れ・入口・利用者の状態・失敗・操作の揺れ・守り）から出し、**書いていない＝漏れ**／
++> テストは入れ子の 5 段（単体＝L1・中間／統合／流れをまたぐ＝L2・回帰＝L3〜L5）／設計は 3 段（はじめに 1 回・流れに入るとき・チケットを切るとき）／
++> 目録をまず探す（同じものを 2 つ作らない）／役は 4 つ（作る・精査・実装・テスター）。**このスキルの記述と矛盾したら正本が勝つ。**
++
++- 契約（口と型とエラー）は先に持ってよいが、**振る舞いはチケットで作る**。全部の API を先に作らない（正本 §6）
++- 口ごとに **持ち主のチケット・作ったか契約だけか・流れ・使う表** を目録に出せる形にする（例 `scripts/ci/build_catalog.py`）
++- 新しい口を足す前に目録を探す。同じ口を 2 つ作らない。足すときは探したが無かったことと似た口との違いを書く
++
++---
++
+ ## 🔗 決定のトレーサビリティ（decision-traceability）— このスキルの責務（2026-09-09 追加・必須・省略不可）
+ 
+ > 規約の正本: `.claude/rules/common/decision-traceability.md`（ここと矛盾したら正本が勝つ）。
+diff -ruN orig/architecture-design/SKILL.md new/architecture-design/SKILL.md
+--- orig/architecture-design/SKILL.md	2026-11-04 13:26:40.947407527 +0000
++++ new/architecture-design/SKILL.md	2026-11-04 13:29:30.136269663 +0000
+@@ -11,6 +11,20 @@
+ 
+ ---
+ 
++## 🧭 AI 駆動の開発の進め方（ai-driven-process）— このスキルの責務（2026-11-04 追加・必須・省略不可）
++
++> 進め方の正本: `~/.claude/rules/common/ai-driven-process.md`（無ければ `engineering-rules` の `scripts/install.sh` で入れる）。
++> チケット＝利用者の 1 つの操作を画面・API・DB まで縦に通す 1 つの実装／分岐は 8 観点（入力・対象の状態・時間の流れ・入口・利用者の状態・失敗・操作の揺れ・守り）から出し、**書いていない＝漏れ**／
++> テストは入れ子の 5 段（単体＝L1・中間／統合／流れをまたぐ＝L2・回帰＝L3〜L5）／設計は 3 段（はじめに 1 回・流れに入るとき・チケットを切るとき）／
++> 目録をまず探す（同じものを 2 つ作らない）／役は 4 つ（作る・精査・実装・テスター）。**このスキルの記述と矛盾したら正本が勝つ。**
++
++- ここは設計の 3 段の **「はじめに 1 回」**：アーキテクチャ・技術の選定・**共通の決まり**（日付と時刻・お金・ログ・エラー・フォルダ・命名・関門）を 1 枚に・**DB の骨格**（境目の表と形）・歩く骨格の道すじ・CI
++- 使わない表は **凍結**（消さずに印・使い始めたら CI で赤）。DB は骨格を先に決め、migration で育てる
++- **目録の作り手**（API と DB・画面の部品・共通の処理・外とのつなぎと設定）を実物から機械で作る仕組みと、それが最新かを見る検査を CI に入れる
++- CI は手元の実行器（ai-team-delivery の dagci）で GitHub と同等以上に回せるよう、段を workflow から機械で導く形にする
++
++---
++
+ ## 🔗 決定のトレーサビリティ（decision-traceability）— このスキルの責務（2026-09-09 追加・必須・省略不可）
+ 
+ > 規約の正本: `.claude/rules/common/decision-traceability.md`（ここと矛盾したら正本が勝つ）。
+diff -ruN orig/distributed-dev/SKILL.md new/distributed-dev/SKILL.md
+--- orig/distributed-dev/SKILL.md	2026-11-04 13:26:40.961764523 +0000
++++ new/distributed-dev/SKILL.md	2026-11-04 13:29:30.140914590 +0000
+@@ -5,6 +5,19 @@
+ builtin: true
+ ---
+ 
++## 🧭 AI 駆動の開発の進め方（ai-driven-process）— このスキルの責務（2026-11-04 追加・必須・省略不可）
++
++> 進め方の正本: `~/.claude/rules/common/ai-driven-process.md`（無ければ `engineering-rules` の `scripts/install.sh` で入れる）。
++> チケット＝利用者の 1 つの操作を画面・API・DB まで縦に通す 1 つの実装／分岐は 8 観点（入力・対象の状態・時間の流れ・入口・利用者の状態・失敗・操作の揺れ・守り）から出し、**書いていない＝漏れ**／
++> テストは入れ子の 5 段（単体＝L1・中間／統合／流れをまたぐ＝L2・回帰＝L3〜L5）／設計は 3 段（はじめに 1 回・流れに入るとき・チケットを切るとき）／
++> 目録をまず探す（同じものを 2 つ作らない）／役は 4 つ（作る・精査・実装・テスター）。**このスキルの記述と矛盾したら正本が勝つ。**
++
++- 実装パッケージ（CLAUDE.md）に、チケットの全欄を **逐語で** 埋める：何を作るか・目録で使うもの・実装の詳細（DB・API・部品と版・ファイルと関数）・決定・分岐とテスト（状態の表ごと）・テストのコードの場所・解禁される中間／統合
++- 実装の人はテストを変えない、と明記する
++- 1 つのパッケージ＝1 つのチケット（1 つの実装）。段で横に割ったパッケージは作らない
++
++---
++
+ ## 🎨 デザインシステム（design-system）— このスキルの責務（2026-09-16 追加）
+ 
+ > 規約の正本: `~/.claude/rules/common/design-system.md` ／ 由来: lessons-learned **L-017**
+diff -ruN orig/e2e-journey-walkthrough/SKILL.md new/e2e-journey-walkthrough/SKILL.md
+--- orig/e2e-journey-walkthrough/SKILL.md	2026-11-04 13:26:40.966744079 +0000
++++ new/e2e-journey-walkthrough/SKILL.md	2026-11-04 13:29:30.139478453 +0000
+@@ -19,6 +19,19 @@
+   v3.2 (2026-09-02): テスト・ラダー L1〜L5 (.claude/rules/common/test-ladder.md) 対応 — テストはタスク分解時に作り、staging で流す。
+ ---
+ 
++## 🧭 AI 駆動の開発の進め方（ai-driven-process）— このスキルの責務（2026-11-04 追加・必須・省略不可）
++
++> 進め方の正本: `~/.claude/rules/common/ai-driven-process.md`（無ければ `engineering-rules` の `scripts/install.sh` で入れる）。
++> チケット＝利用者の 1 つの操作を画面・API・DB まで縦に通す 1 つの実装／分岐は 8 観点（入力・対象の状態・時間の流れ・入口・利用者の状態・失敗・操作の揺れ・守り）から出し、**書いていない＝漏れ**／
++> テストは入れ子の 5 段（単体＝L1・中間／統合／流れをまたぐ＝L2・回帰＝L3〜L5）／設計は 3 段（はじめに 1 回・流れに入るとき・チケットを切るとき）／
++> 目録をまず探す（同じものを 2 つ作らない）／役は 4 つ（作る・精査・実装・テスター）。**このスキルの記述と矛盾したら正本が勝つ。**
++
++- ジャーニーは **統合**（流れの端から端）と **流れをまたぐ**（ある流れの変更が別の流れに効くか。変える前と後・別の組織に効かない）。中間（いくつかのチケットの組）も同じ形で通す
++- 分母は `runnable_after` が揃ったものから。歩く骨格の道すじを最初に通す
++- 落ちたものは「製品のバグ」と「通しの設計の誤り」に分け、テスターの役として 1 回でまとめて戻す
++
++---
++
+ ## 🎨 デザインシステム（design-system）— このスキルの責務（2026-09-16 追加）
+ 
+ > 規約の正本: `~/.claude/rules/common/design-system.md` ／ 由来: lessons-learned **L-017**
+diff -ruN orig/engineering-rules/SKILL.md new/engineering-rules/SKILL.md
+--- orig/engineering-rules/SKILL.md	2026-11-04 13:26:40.882412554 +0000
++++ new/engineering-rules/SKILL.md	2026-11-04 13:28:51.271454692 +0000
+@@ -2,10 +2,11 @@
+ name: engineering-rules
+ description: |
+   全プロジェクト共通のエンジニアリング規約（rules）を配布・インストール・参照するスキル。
++  AI 駆動の開発の進め方（ai-driven-process.md：チケット・テストの 5 段・分岐の 8 観点・目録）・
+   検証ギャップ図鑑（G-01〜G-16）・テストラダー（L1〜L5）・関門（choke points）・
+   画面の導出・決定のトレーサビリティ・言語別のコーディング/テスト/セキュリティ規約を含む。
+   ユーザーが「規約を入れたい」「ルールを配布したい」「新しい環境にルールを持っていきたい」
+-  「lessons-learned を見たい」「G-16 とは」「テストラダーを確認したい」「関門の定義」
++  「lessons-learned を見たい」「G-16 とは」「テストラダーを確認したい」「関門の定義」「進め方の正本」「チケットの形」「テストの段」
+   「この環境にルールが入っているか確認して」「ルールを最新にして」と言ったら必ず使う。
+   新しいマシン・新しいリポジトリでのセットアップ時にも使う。
+   **重要**: rules は skill ではなく `~/.claude/rules/` に置く参照文書。
+@@ -58,6 +59,7 @@
+ 
+ | ファイル | 何の正本か |
+ |---|---|
++| `ai-driven-process.md` | **AI 駆動の開発の進め方**（2026-11-04）。チケット＝1 つの実装・分岐の 8 観点と書いていない＝漏れ・テストの入れ子の 5 段（単体・中間・統合・流れをまたぐ・回帰）・設計の 3 段・役割 4 つ・目録・手元の CI。進め方はここが勝つ |
+ | `lessons-learned.md` | **事故の記録と検証ギャップ図鑑 G-01〜G-16**。新しい事故が出たらここに足す |
+ | `test-ladder.md` | **テストラダー L1〜L5**。いつ・誰が・どの粒度でテストを作り流すか |
+ | `choke-points.md` | **関門 C1〜C6**。外界に影響する経路を数本に絞り、迂回を CI で検出する |
+diff -ruN orig/engineering-rules/rules/common/ai-driven-process.md new/engineering-rules/rules/common/ai-driven-process.md
+--- orig/engineering-rules/rules/common/ai-driven-process.md	1970-01-01 00:00:00.000000000 +0000
++++ new/engineering-rules/rules/common/ai-driven-process.md	2026-11-04 13:27:56.079659126 +0000
+@@ -0,0 +1,153 @@
++# AI 駆動の開発の進め方 — チケット・テスト・設計・役割・目録・CI の正本
++
++> 2026-11-04 に作った。それまでの進め方（段ごとにタスクを割り、テストを一覧で持つ）では
++> 「進まない・待ちが出る・同じ API を 2〜3 個作る・書いていない分岐が漏れる」が続いた。
++> このファイルは、それを構造で止めるための **全スキル共通の進め方**。
++> `test-ladder.md`（L1〜L5）・`development-workflow.md`・`screen-derivation.md`・`decision-traceability.md` と一緒に読む。
++> **進め方（チケットの形・テストの段・分岐の型・設計の時点・役割・目録）は、ここが勝つ。**
++> `test-ladder.md` の G-11〜G-16・表記ゆらぎ・staging・完了ゲートはそのまま生きる（§5 で対応を書く）。
++>
++> どのプロジェクトでも同じ形で使う。プロジェクトごとに違うのは「流れの数と中身」「分類」「道具」だけで、
++> それは各プロジェクトの設定（flows.json・ai-team.yaml・ci.yaml・test-patterns.local.json）に書く。
++
++## 1. 原則（7 行）
++
++1. **チケットは 1 つの実装。** 利用者の 1 つの操作を、画面・API・DB まで縦に通す。テストの一覧ではない。
++2. **書いていない＝漏れ。** 分岐は 8 つの観点（§4）から出し、書いていないことは漏れとみなす。テストの数に上限は付けない。
++3. **テストは入れ子の 5 段。** 単体 ⊂ 中間 ⊂ 統合 ⊂ 流れをまたぐ ⊂ 回帰（§5）。歩く骨格は最初の中間・統合の道すじ。
++4. **同じものを 2 つ作らない。** 目録（§7）を実物から機械で作り、チケットを切るときはまず探す。
++5. **設計は 3 段で決める。** はじめに 1 回・流れに入るとき・チケットを切るとき（§6）。全部を先に作らない。
++6. **役は 4 つ。** 作る・精査・実装・テスター（§8）。人数だけ、詰まった役に寄せる。
++7. **検査は手元の CI。** 実行器（dagci など）で GitHub と同等以上の検査を回し、緑のときだけ取り込む（§9）。
++
++## 2. 流れ（大分類）とチケットの分類
++
++- **流れ**は、利用者が頭から最後まで通す一続きの用事（例：「登録してログインできる」「チケットを作って中身を決める」）。
++  行為（ux-flow-design の行為の背骨）を流れに並べ直して作る。**数はプロジェクトごとに違う**（決め打ちしない）。正本は `05_flow/flows.json` などのプロジェクトの 1 ファイル。
++- 流れの中は **操作**（利用者の 1 つの操作）に割る。**操作 1 つ = チケット 1 本**。裏側だけのチケットは作らない（裏側はその操作のチケットの実装の詳細に書く）。
++  ただし、どの流れにも属さない土台（関門・共通の処理・CI）は「共通」のチケットにしてよい。
++- チケットは **分類**（REG 登録・AUTH ログイン・RESET 再設定・INV 招待・PERM 権限・CRUD・LIST・FILE・MAIL・PAY・EXT 外とのつなぎ・JOB 時間で動く処理・AI・TOOL など）を持つ。
++  分類ごとのテストの型は test-verification の `references/test-patterns/`（§4.3）。
++- 分類（流れ）のチケットは **1 つ先を並行で切る**。今の流れを実装している間に、次の流れのチケットを作る人が切る（待ちを作らない）。一気に全部は切らない。
++- 流れをまたぐ影響は 2 つで持つ。
++  1. **表の線**：契約から表ごとに書く流れ・読む流れを機械で出す（2 つ以上の流れが使う表＝境目の表）。
++  2. **効き方の影響**：表の線に出ない、管理側の変更が全体の効き方を変えるもの（権限・所属を変える／人が抜ける／会社の決まり・プラン・上限を変える／止める・再開する／お知らせ／ひな形の新しい版）を流れの記録に書く。
++  どちらも「変える前と後・別の組織に効かない」を確かめる **流れをまたぐテスト** を、後から作る方の流れが持つ。
++
++## 3. チケットの形（どれも必須。空欄は漏れ）
++
++| 欄 | 書くこと |
++|---|---|
++| 何を作るか | 利用者の操作 1 つ。流れ・行為の ID・画面（screen-derivation の導出元）|
++| 分類 | `分類: REG, MAIL` の形（§4.3 の型の分母になる）|
++| 目録で探した結果 | 使うもの（API・表・画面の部品・共通の処理・外とのつなぎ）は依存として書く。作るものは「探したが無かった」ことと似たものとの違いを書く |
++| 実装の詳細 | 使う DB（表・列・migration）／API（口・型・エラー ID）／OSS・SDK・ライブラリと**版**／作るファイルと関数／既存のコードを使うなら「この実装を使う」|
++| 決定 | このチケットが従う決定（決定ログの ID）。チケットを切るときに決めたことは決定ログに足す |
++| 分岐とテスト | §4 の 8 観点の分岐・状態 × 入口 × 利用者の状態の表・分類の型の受け方。各分岐に期待結果とテスト（単体・中間・統合のどれで受けるか）|
++| 依存 | 先に要るチケット（depends_on）と、このチケットで揃う中間・統合テスト（runnable_after の逆引き）|
++| 完了の条件 | 単体の全行が緑・解禁された中間／統合が緑・CI 緑 |
++
++- **テストはチケットを作る人がコードまで作る**（テスト先行）。実装する人はテストを変えない。テストが間違っていると思ったら作る人に戻す。
++- **実装の前に OK を出す**：機械の検査（形・型の網羅・目録の参照・pattern_gate など）＋別の人 1 回（精査）。この 2 つが緑でないと実装に入らない。
++- **既存のコードは、使うチケットで確かめる**。いま全部をテストし直さない。チケットを切るときに目録で見つけ、実装の詳細に「この実装を使う」と書き、そのチケットのテストで一緒に確かめる。
++- 見本の形は test-verification の `references/ticket-example.md`。
++
++## 4. 分岐の型（8 つの観点）と、書いていない＝漏れ
++
++### 4.1 8 つの観点
++
++| 観点 | 出すもの（例）|
++|---|---|
++| 入力 | 正常・空・境界・形式違い・表記ゆらぎ（全角半角・空白・大小・記号・Unicode 正規化）・重複・長すぎる |
++| 対象の状態 | 対象が取りうる状態ごと（未確定・確定・止まっている・消した…）。**どの時点で確定するかを必ず書く** |
++| 時間の流れ | 期限切れ・期限の直前と直後（G-12）・使い終わった・取り消し・やり直し・送り直しで前のものが使えなくなる |
++| 入口 | 画面から・メールのリンク・ブックマーク・戻る・再読み込み・別の端末や別のブラウザ・古いリンク・直に API |
++| 利用者の状態 | ログインしていない・ログイン中・セッション切れ・長く入っていない・別のアカウントでログイン中・権限が無い・退会／停止の後（G-14）|
++| 失敗 | 外のサービスが落ちる・遅い・空を返す・信号なしで終わる（G-15）・資源が尽きる（G-16）・外部リソースが無い（G-11）・途中で切れる |
++| 操作の揺れ | 二度押し・同時に 2 つ・途中でやめて戻る・別のタブで同じ操作・既存の機能との組み合わせ（G-13）|
++| 守り | 権限（ロール × 操作）・別の組織のものに触れない・回数の制限・秘密を出さない・関門を通る（choke-points）|
++
++### 4.2 状態 × 入口 × 利用者の状態の表
++
++- 状態を持つもの（期限・使い終わった時刻・状態の列を持つ表）を扱うチケットは、**「対象の状態 × 入口 × 利用者の状態」の表**を書く。
++- どのマスにも **結果・受け持ちのチケット・テスト** を書く。他のチケットが受け持つマスはその ID を書く（空けない）。
++- 状態の候補は **DB の列から機械で出す**（status・expires_at・used_at・revoked_at・deleted_at など）。表に無い状態・空いたマスは機械の検査で赤にする。
++
++### 4.3 テストの型のナレッジ（分類ごと）
++
++- 分類ごとのテストの型は test-verification の `references/test-patterns/patterns.json`（ID `TP-<分類>-NN`）。
++- チケットは分類を書き、**その分類の型を全部、テストで受けるか、要らない理由を書く**。どちらも無ければ赤（`pattern_gate.py`）。
++- プロジェクトで新しく出た型はプロジェクトの足し分（`07_qa/test-patterns.local.json` など）に書き、他でも効く型はスキルに戻す。
++
++## 5. テストの段（入れ子の 5 段）と L1〜L5 の対応
++
++| 段 | 何を見るか | 作る人・時点 | 流す時点 | test-ladder.md |
++|---|---|---|---|---|
++| **単体** | そのチケットの中身。§4 の分岐を全部・**本物の DB での口**・その画面の動作（ブラウザでの入力・バリデーション・エラーの表示まで）| チケットを作る人が、チケットと同時に | 実装した人が取り込む前に | **L1** |
++| **中間** | いくつかのチケットを合わせ、一続きの操作として動くか（例：登録 → メールの確認 → 規約）| 流れに入るとき（どの組をつなぐかを決める）| 揃えた最後のチケットが取り込む前に | **L2**（runnable_after = 組のチケット）|
++| **統合** | 流れの端から端まで | 流れに入るとき | 流れの最後のチケットが取り込む前に | **L2**（runnable_after = 流れの全チケット）|
++| **流れをまたぐ** | ある流れの変更が別の流れに効くか（§2 の表の線・効き方の影響。変える前と後・別の組織に効かない）| 後から作る方の流れが | 両方の流れが揃ったとき | **L2**（runnable_after = 両方の流れ）|
++| **回帰** | 上の全部を毎回（CI）| — | 取り込むたび・Wave／リリースの締め | **L3〜L5** |
++
++- **歩く骨格**はテストと別の仕組みではない。**最初につなぐ中間テストと統合テストの道すじ**として決める（はじめに 1 回）。
++  道すじの操作もどれも 1 本のチケットで、分岐と単体のテストを省かない。
++- ブラウザでの動作テスト（正常・バリデーション・エラー時・権限が無いとき）は単体に入る。API だけ緑で画面が動かないのは未完了。
++- `test-ladder.md` の G-11〜G-16 と表記ゆらぎは、§4.1 の観点の中で必ず判定する（G-11→失敗、G-12→時間の流れ、G-13→操作の揺れ、G-14→利用者の状態、G-15・G-16→失敗）。
++- `qa_rows`・`runnable_after`・11 列・staging・完了ゲートは `test-ladder.md` のまま使う。L1 の「タスク」は、ここでいうチケット。
++
++## 6. 設計の 3 段（いつ何を決めるか）
++
++| 時点 | 決めること |
++|---|---|
++| **はじめに 1 回** | アーキテクチャ・技術の選定・共通の決まり（日付と時刻・お金・ログ・エラー・フォルダ・命名・関門）・**DB の骨格**（境目の表と形）・歩く骨格の道すじ・CI |
++| **流れに入るとき** | その流れの画面の導線・中間と統合の組・流れをまたぐ影響・その流れで使う表の形の確かめ直し |
++| **チケットを切るとき** | そのチケットの口・型・列・エラー ID・使う部品と版・ファイルと関数 |
++
++- **全部の API・全部の表を先に作らない。** DB は骨格を先に決め、migration で育てる。API は契約（口と型）があってよいが、振る舞いはチケットで作る。
++- 使わない表は消さずに**凍結**と印を付け、コードが使い始めたら CI で赤にする。使うときはその流れで形を確かめ直し、決めてもらってから骨格に移す。
++- 共通の決まりは 1 枚（`03_architecture/共通の決まり.md` など）にまとめ、チケットはそれを参照する（チケットごとに決め直さない）。
++
++## 7. 目録（同じものを 2 つ作らない）
++
++- 目録は 4 区分＋設定：**API と DB**（口：作ったか契約だけか・流れ・表・持ち主のチケット／表：区分・書く流れと読む流れ・境目）・**画面の部品**・**共通の決まりと処理**（関門・入口の前の処理・エラーの正本）・**外とのつなぎと設定**（技術の選定の部品・設定の項目の名前と説明。値は載せない）。
++- **手で書かない。実物から機械で作る**（例：`scripts/ci/build_catalog.py` → `03_architecture/catalog.json`・`catalog.md`）。生成物が最新かを CI で見る。
++- チケットを切るときは **まず目録を探す**。使えるなら依存として書き、無いときだけ作る。作るときは探したが無かったことと似たものとの違いを書く。
++
++## 8. 役割（4 つ）と流れ
++
++| 役 | すること |
++|---|---|
++| **作る** | チケットを切る（§3 の全欄・§4 の分岐・テストのコードまで）。1 つ先の流れを並行で切る |
++| **精査** | 実装の前の OK（機械の検査が緑のうえで、別の人 1 回）。漏れ・目録の見落とし・決定とのずれを見る |
++| **実装** | テストを変えずに、テストが緑になるまで作る。単体と解禁された中間／統合を流してから渡す |
++| **テスター** | CI を含めて全部を流し、**落ちたものを 1 回でまとめて**戻す（1 件ずつ戻さない）。人の目でしか見られないもの（画面の見た目・使い勝手）もここ |
++
++- 人数は固定しない。**詰まった役に寄せる**（作るが詰まれば作るを増やす）。
++- 戻すときは原因の役に戻す（テストの誤り→作る、実装の誤り→実装、チケットの漏れ→作る＋精査に検査を足す）。
++- 見つけた漏れは **検査を足して**二度と出ないようにする。範囲の外の見つけものは別のチケットにする。報告は「前からあったもの」と「自分のミス」を分ける。
++
++## 9. CI（手元で GitHub と同等以上）
++
++- 検査は手元の実行器（ai-team-delivery の dagci など）で回す。段は GitHub の workflow から**機械で導き**（手で写さない）、ずれたら赤。
++- 普段は変わった所に関係する段だけ流し、締めで全部を流す。緑のときだけ取り込む。
++- 標準の検査：生成物が最新か・書いた検査が CI から回るか・部品の非推奨と出てからの日数・凍結の表を使っていないか・目録が最新か・テストの型を受けているか。
++- 検査の繋ぎは `&&` で（前が落ちたら止まる）。`;` で繋がない。
++
++## 10. スキルごとの責務
++
++| スキル | 責務 |
++|---|---|
++| ux-flow-design | 行為を **流れ**に並べ直す（数は決め打ちしない）。流れごとの導線と、流れをまたぐ効き方の影響の候補 |
++| functional-breakdown | 行為・表・口から **目録の元**（どの流れがどの表を書く／読むか）を機械で出す |
++| feature-decomposition | 機能を流れ × 操作に割る（操作 1 つ = チケット 1 本の候補）。歩く骨格の道すじと中間の組の案 |
++| architecture-design | はじめに 1 回の設計（共通の決まり・DB の骨格・凍結・目録の作り手・CI の段の導き）|
++| api-design | 契約は先に持ってよいが、振る舞いはチケットで。口ごとに持ち主のチケット・作ったか契約だけかを目録に出す |
++| acceptance-criteria | AC を §4 の 8 観点と状態 × 入口 × 利用者の状態の表から出す。書いていないマスは漏れ |
++| task-decomposition | チケット（§3）を切る。目録を探す・実装の詳細・分岐とテスト・依存・分類。テストのコードまで |
++| ticket-planning | チケットを流れ（親）→ 操作（子）で持ち、中間・統合・流れをまたぐテストの解禁（runnable_after）と 1 つ先の切り出しを盤に出す |
++| test-verification | テストの型のナレッジ（分類ごと）と pattern_gate・5 段と L1〜L5 の対応・チケットの見本 |
++| human-grade-qa | 単体の画面の行（ブラウザでの入力・バリデーション・エラー時）を 11 列で。回帰（L3〜L5）の実行者 |
++| e2e-journey-walkthrough | 統合と流れをまたぐテストを、揃った流れから順に通す |
++| jit-task-execution | 実装の役。テストを変えず、単体＋解禁された中間／統合を流してから渡す |
++| distributed-dev | 実装パッケージにチケットの全欄（実装の詳細・分岐とテスト・目録で使うもの）を逐語で埋める |
++| ai-team-delivery | 4 つの役・実装の前の OK・テスターの 1 回でまとめた差し戻し・手元の CI・1 つ先の並行の切り出し |
+diff -ruN orig/engineering-rules/rules/common/development-workflow.md new/engineering-rules/rules/common/development-workflow.md
+--- orig/engineering-rules/rules/common/development-workflow.md	2026-11-04 13:26:40.884391348 +0000
++++ new/engineering-rules/rules/common/development-workflow.md	2026-11-04 13:28:51.266488116 +0000
+@@ -6,7 +6,12 @@
+ 
+ ## Feature Implementation Workflow
+ 
++> **進め方の正本は [ai-driven-process.md](./ai-driven-process.md)（2026-11-04）。** チケットは利用者の 1 つの操作を画面・API・DB まで縦に通す 1 つの実装。
++> チケットを切る人がテストのコードまで作り（テスト先行）、機械の検査＋別の人 1 回の OK のあとで実装に入る。
++> 下の 0〜5 はその中の実装の手順。0 の「探す」は、外を探す前に **プロジェクトの目録**（ai-driven-process.md §7）を探す。
++
+ 0. **Research & Reuse** _(mandatory before any new implementation)_
++   - **Project catalog first:** 目録（API と DB・画面の部品・共通の処理・外とのつなぎ）を探し、使えるならチケットの依存として書く。無いときだけ作る（ai-driven-process.md §7）。
+    - **GitHub code search first:** Run `gh search repos` and `gh search code` to find existing implementations, templates, and patterns before writing anything new.
+    - **Library docs second:** Use Context7 or primary vendor docs to confirm API behavior, package usage, and version-specific details before implementing.
+    - **Exa only when the first two are insufficient:** Use Exa for broader web research or discovery after GitHub search and primary docs.
+diff -ruN orig/engineering-rules/rules/common/lessons-learned.md new/engineering-rules/rules/common/lessons-learned.md
+--- orig/engineering-rules/rules/common/lessons-learned.md	2026-11-04 13:26:40.884948621 +0000
++++ new/engineering-rules/rules/common/lessons-learned.md	2026-11-04 13:28:51.267269099 +0000
+@@ -5,6 +5,7 @@
+ > Detailed, topical guidance lives in the sibling rule files; this file is the index + the "why" so the lesson is not lost. Linked here:
+ > - Auth middleware / server-data performance → [../web/performance.md](../web/performance.md)
+ > - Ledger dual-write integrity → [patterns.md](./patterns.md)
++> - チケット・テストの 5 段・分岐の 8 観点・設計の 3 段・役割・目録 → [ai-driven-process.md](./ai-driven-process.md)
+ > - テスト・ラダー（L1〜L5）と段別の実行時点 → [test-ladder.md](./test-ladder.md)
+ > - スキルの起動順（機械判定） → [skill-pipeline.yaml](./skill-pipeline.yaml)
+ > - 検証ギャップ（描画≠動作・UI断線・単一防御層 等15類型）→ 本ファイル L-003（G-01〜G-15）
+diff -ruN orig/engineering-rules/rules/common/test-ladder.md new/engineering-rules/rules/common/test-ladder.md
+--- orig/engineering-rules/rules/common/test-ladder.md	2026-11-04 13:26:40.886284092 +0000
++++ new/engineering-rules/rules/common/test-ladder.md	2026-11-04 13:28:51.265527100 +0000
+@@ -8,6 +8,12 @@
+ > e2e-journey-walkthrough / architecture-design / feature-decomposition / sprint-planning /
+ > release-planning が参照する。**ここと矛盾する記述は、ここが勝つ。**
+ 
++> **2026-11-04 追記**：チケット（1 つの実装）・テストの入れ子の 5 段（単体・中間・統合・流れをまたぐ・回帰）・分岐の 8 観点・
++> 「書いていない＝漏れ」は [ai-driven-process.md](./ai-driven-process.md) が正本。この L1〜L5 はその段の **流す時点と完了ゲート** を決める。
++> 対応：**単体＝L1**／**中間・統合・流れをまたぐ＝L2**（runnable_after に組・流れ・両方の流れのチケットを書く）／**回帰＝L3〜L5**。
++> ここでいう「タスク」は、ai-driven-process.md の「チケット」（利用者の 1 つの操作を画面・API・DB まで縦に通す単位）と読む。
++> G-11〜G-16 は ai-driven-process.md §4.1 の 8 観点の中で判定する。
++
+ ## 1. 原則（3 行）
+ 
+ 1. **テストはタスク分解の時点で作る。** 実装が終わってから書かない。1 タスク = その場で観点を出し切る。
+@@ -19,7 +25,7 @@
+ | 段 | 単位（比喩） | 何を見るか | 正本の置き場 | 作る時点 | 流す時点 / 誰が |
+ |---|---|---|---|---|---|
+ | **L1 タスク** | 1 日 | そのタスクが触った画面・API・データの **全要素・全分岐・全エラー・全境界** | `screens/*.md`（画面）/ `sweeps`・技術行（API/DB）/ `ai-runtime-matrix.md`（AI） | task-decomposition（タスクカードと同時） | **実装した本人が merge 前に**、staging で全行 |
+-| **L2 流れ** | 1 週 | 複数タスクをまたぐ 1 本の業務の流れ（ジャーニー）が最後まで成立するか | `journeys/`（plan.json + README） | task-decomposition（機能の流れごとに、`runnable_after` = 依存タスク ID 群） | **揃えた最後のタスクが merge 前に**（`qa-ladder.py runnable` が自動で示す） |
++| **L2 流れ** | 1 週 | 複数タスクをまたぐ 1 本の業務の流れ（ジャーニー）が最後まで成立するか。ai-driven-process.md の **中間**（いくつかのチケットの組）・**統合**（流れの端から端）・**流れをまたぐ**（ある流れの変更が別の流れに効くか）がここ | `journeys/`（plan.json + README） | task-decomposition（機能の流れごとに、`runnable_after` = 依存タスク ID 群） | **揃えた最後のタスクが merge 前に**（`qa-ladder.py runnable` が自動で示す） |
+ | **L3 Wave** | 1 か月 | その Wave の L1+L2 を全部 + 前 Wave 以前の回帰（diff） | 同上（Wave タグで抽出） | sprint-planning（Wave 編成時に対象 ID を確定） | Wave 締めで、Wave 責任者 |
+ | **L4 リリース** | 四半期 | 正本 full（画面別・ジャーニー・RLS・AI 実動・負荷）+ 本番スモーク | 同上 + `prod-smoke.md` | release-planning | リリース前に、リリース責任者。本番はスモークのみ |
+ | **L5 製品全体** | 1 年 / 大改修 | 全正本の full + 正本自体の鮮度監査（画面取りこぼし・古い期待結果） | 全部 | human-grade-qa test-plan の全面改訂 | 年次 / 大改修前 |
+@@ -83,7 +89,7 @@
+ - 突合できない行（技術行・横断行）は `T-I-*`（Integration）へ寄せるか、L3 以上として扱う。
+ - 適用の進み具合は `qa-coverage.py` の「段別」集計に出る（タスク列が空の L1 行数 = 未適用）。
+ 
+-## 8. スキルごとの責務（要約。詳細は各 SKILL.md の「テスト・ラダー」節）
++## 8. スキルごとの責務（要約。詳細は各 SKILL.md の「テスト・ラダー」節。進め方の責務は ai-driven-process.md §10）
+ 
+ | スキル | 責務 |
+ |---|---|
+diff -ruN orig/engineering-rules/scripts/install.sh new/engineering-rules/scripts/install.sh
+--- orig/engineering-rules/scripts/install.sh	2026-11-04 13:26:40.897651231 +0000
++++ new/engineering-rules/scripts/install.sh	2026-11-04 13:28:51.274159758 +0000
+@@ -18,7 +18,7 @@
+ check() {
+   local ng=0
+   echo "== 配置の確認 =="
+-  for f in lessons-learned.md test-ladder.md choke-points.md screen-derivation.md \
++  for f in ai-driven-process.md lessons-learned.md test-ladder.md choke-points.md screen-derivation.md \
+            decision-traceability.md code-review.md testing.md security.md; do
+     if [ -f "$DEST/common/$f" ]; then
+       printf "  OK  common/%s\n" "$f"
+@@ -49,6 +49,8 @@
+     && echo "  OK  lessons-learned.md に G-16" || { echo "  NG  G-16 が無い"; ng=1; }
+   grep -q "表記ゆらぎ" "$DEST/common/test-ladder.md" 2>/dev/null \
+     && echo "  OK  test-ladder.md に表記ゆらぎ" || { echo "  NG  表記ゆらぎが無い"; ng=1; }
++  grep -q "ai-driven-process.md" "$DEST/common/test-ladder.md" 2>/dev/null \
++    && echo "  OK  test-ladder.md が進め方の正本を指す" || { echo "  NG  test-ladder.md が ai-driven-process.md を指していない"; ng=1; }
+ 
+   echo
+   [ "$ng" -eq 0 ] && echo "STATUS: OK" || echo "STATUS: NG（install.sh を実行して配置する）"
+diff -ruN orig/feature-decomposition/SKILL.md new/feature-decomposition/SKILL.md
+--- orig/feature-decomposition/SKILL.md	2026-11-04 13:26:40.911953674 +0000
++++ new/feature-decomposition/SKILL.md	2026-11-04 13:29:30.131421995 +0000
+@@ -11,6 +11,20 @@
+ 
+ ---
+ 
++## 🧭 AI 駆動の開発の進め方（ai-driven-process）— このスキルの責務（2026-11-04 追加・必須・省略不可）
++
++> 進め方の正本: `~/.claude/rules/common/ai-driven-process.md`（無ければ `engineering-rules` の `scripts/install.sh` で入れる）。
++> チケット＝利用者の 1 つの操作を画面・API・DB まで縦に通す 1 つの実装／分岐は 8 観点（入力・対象の状態・時間の流れ・入口・利用者の状態・失敗・操作の揺れ・守り）から出し、**書いていない＝漏れ**／
++> テストは入れ子の 5 段（単体＝L1・中間／統合／流れをまたぐ＝L2・回帰＝L3〜L5）／設計は 3 段（はじめに 1 回・流れに入るとき・チケットを切るとき）／
++> 目録をまず探す（同じものを 2 つ作らない）／役は 4 つ（作る・精査・実装・テスター）。**このスキルの記述と矛盾したら正本が勝つ。**
++
++- 機能は **流れ × 操作** で割る（操作 1 つ＝チケット 1 本の候補）。Group A-E・Foundation→Backend→UI は「どの順に作るか」の目安に留め、チケットを横に割らない
++- 流れの数はプロジェクトごとに導く（決め打ちしない）。行為を流れに並べ直した正本（例 `05_flow/flows.json`）を出す
++- **歩く骨格の道すじ**（最初の中間・統合テストの道すじ）と **中間の組**（どのチケットを合わせて一続きの操作として確かめるか）の案を出す
++- 流れをまたぐ効き方の影響（権限・所属・人が抜ける・決まり・プラン・止める／再開・お知らせ・ひな形の版）の候補を出す
++
++---
++
+ ## 🔗 決定のトレーサビリティ（decision-traceability）— このスキルの責務（2026-09-09 追加・必須・省略不可）
+ 
+ > 規約の正本: `.claude/rules/common/decision-traceability.md`（ここと矛盾したら正本が勝つ）。
+diff -ruN orig/functional-breakdown/SKILL.md new/functional-breakdown/SKILL.md
+--- orig/functional-breakdown/SKILL.md	2026-11-04 13:26:40.917991718 +0000
++++ new/functional-breakdown/SKILL.md	2026-11-04 13:29:30.132460928 +0000
+@@ -9,6 +9,19 @@
+ handoff_flow: "requirements-definition → architecture-design → design-md → ux-flow-design → ui-mockup → functional-breakdown → feature-decomposition → task-decomposition → human-grade-qa(test-plan) → 実装 → human-grade-qa(実走)"
+ ---
+ 
++## 🧭 AI 駆動の開発の進め方（ai-driven-process）— このスキルの責務（2026-11-04 追加・必須・省略不可）
++
++> 進め方の正本: `~/.claude/rules/common/ai-driven-process.md`（無ければ `engineering-rules` の `scripts/install.sh` で入れる）。
++> チケット＝利用者の 1 つの操作を画面・API・DB まで縦に通す 1 つの実装／分岐は 8 観点（入力・対象の状態・時間の流れ・入口・利用者の状態・失敗・操作の揺れ・守り）から出し、**書いていない＝漏れ**／
++> テストは入れ子の 5 段（単体＝L1・中間／統合／流れをまたぐ＝L2・回帰＝L3〜L5）／設計は 3 段（はじめに 1 回・流れに入るとき・チケットを切るとき）／
++> 目録をまず探す（同じものを 2 つ作らない）／役は 4 つ（作る・精査・実装・テスター）。**このスキルの記述と矛盾したら正本が勝つ。**
++
++- 行為・表・口の対応から、**目録の元**（表ごとに書く流れ・読む流れ、2 つ以上の流れが使う境目の表）を機械で出す
++- 使わない表は消さずに **凍結**の印を付ける候補として出す（使い始めたら CI で赤・正本 §6）
++- 表の状態の列（status・expires_at・used_at・revoked_at・deleted_at など）を、チケットの **状態 × 入口 × 利用者の状態の表** の候補として出す
++
++---
++
+ ## 🎨 デザインシステム（design-system）— このスキルの責務（2026-09-16 追加）
+ 
+ > 規約の正本: `~/.claude/rules/common/design-system.md` ／ 由来: lessons-learned **L-017**
+diff -ruN orig/human-grade-qa/SKILL.md new/human-grade-qa/SKILL.md
+--- orig/human-grade-qa/SKILL.md	2026-11-04 13:26:40.928540699 +0000
++++ new/human-grade-qa/SKILL.md	2026-11-04 13:29:30.138715351 +0000
+@@ -25,6 +25,19 @@
+ handoff_flow: "requirements-definition → architecture-design → design-md → ux-flow-design → ui-mockup → functional-breakdown → feature-decomposition → task-decomposition → human-grade-qa(test-plan) → 実装 → human-grade-qa(実走)"
+ ---
+ 
++## 🧭 AI 駆動の開発の進め方（ai-driven-process）— このスキルの責務（2026-11-04 追加・必須・省略不可）
++
++> 進め方の正本: `~/.claude/rules/common/ai-driven-process.md`（無ければ `engineering-rules` の `scripts/install.sh` で入れる）。
++> チケット＝利用者の 1 つの操作を画面・API・DB まで縦に通す 1 つの実装／分岐は 8 観点（入力・対象の状態・時間の流れ・入口・利用者の状態・失敗・操作の揺れ・守り）から出し、**書いていない＝漏れ**／
++> テストは入れ子の 5 段（単体＝L1・中間／統合／流れをまたぐ＝L2・回帰＝L3〜L5）／設計は 3 段（はじめに 1 回・流れに入るとき・チケットを切るとき）／
++> 目録をまず探す（同じものを 2 つ作らない）／役は 4 つ（作る・精査・実装・テスター）。**このスキルの記述と矛盾したら正本が勝つ。**
++
++- 単体（L1）の画面の行は、チケットの分岐の表から作る：ブラウザでの入力・バリデーション・エラー時・権限が無いとき・入口と利用者の状態ごと。API だけ緑で画面が動かないのは未完了
++- 行の「タスク」列はチケットの ID。チケットに書いていない分岐を見つけたら、行を足すだけでなくチケットを作った役に戻す（書いていない＝漏れ・検査を足す）
++- 回帰（L3〜L5）の実行者。テスターの役として、落ちたものは **1 回でまとめて**戻す
++
++---
++
+ ## 🎨 デザインシステム（design-system）— このスキルの責務（2026-09-16 追加）
+ 
+ > 規約の正本: `~/.claude/rules/common/design-system.md` ／ 由来: lessons-learned **L-017**
+diff -ruN orig/jit-task-execution/SKILL.md new/jit-task-execution/SKILL.md
+--- orig/jit-task-execution/SKILL.md	2026-11-04 13:26:40.958060834 +0000
++++ new/jit-task-execution/SKILL.md	2026-11-04 13:29:30.140180344 +0000
+@@ -22,6 +22,20 @@
+ handoff_flow: "requirements-definition → architecture-design → design-md → ux-flow-design → ui-mockup → functional-breakdown → feature-decomposition → task-decomposition → human-grade-qa(test-plan) → jit-task-execution(実装) → human-grade-qa(実走)"
+ ---
+ 
++## 🧭 AI 駆動の開発の進め方（ai-driven-process）— このスキルの責務（2026-11-04 追加・必須・省略不可）
++
++> 進め方の正本: `~/.claude/rules/common/ai-driven-process.md`（無ければ `engineering-rules` の `scripts/install.sh` で入れる）。
++> チケット＝利用者の 1 つの操作を画面・API・DB まで縦に通す 1 つの実装／分岐は 8 観点（入力・対象の状態・時間の流れ・入口・利用者の状態・失敗・操作の揺れ・守り）から出し、**書いていない＝漏れ**／
++> テストは入れ子の 5 段（単体＝L1・中間／統合／流れをまたぐ＝L2・回帰＝L3〜L5）／設計は 3 段（はじめに 1 回・流れに入るとき・チケットを切るとき）／
++> 目録をまず探す（同じものを 2 つ作らない）／役は 4 つ（作る・精査・実装・テスター）。**このスキルの記述と矛盾したら正本が勝つ。**
++
++- この役は **実装**。チケット（作る役が書いた実装の詳細・分岐とテスト・テストのコード）どおりに作り、**テストを変えない**。テストが違うと思ったら作る役に戻す
++- 実装の前に **OK（機械の検査＋別の人 1 回の精査）** が出ていることを確かめる。出ていなければ着手しない
++- 目録で「使う」と書かれた既存の実装は、作り直さずに使う。そのチケットのテストで一緒に確かめる
++- 渡す前に単体の全部＋解禁された中間／統合を流す（手元の CI）。検査は `&&` で繋ぐ
++
++---
++
+ ## 🎨 デザインシステム（design-system）— このスキルの責務（2026-09-16 追加）
+ 
+ > 規約の正本: `~/.claude/rules/common/design-system.md` ／ 由来: lessons-learned **L-017**
+diff -ruN orig/task-decomposition/SKILL.md new/task-decomposition/SKILL.md
+--- orig/task-decomposition/SKILL.md	2026-11-04 13:26:40.900380515 +0000
++++ new/task-decomposition/SKILL.md	2026-11-04 13:29:30.128212555 +0000
+@@ -9,6 +9,21 @@
+ handoff_flow: "requirements-definition → architecture-design → design-md → ux-flow-design → ui-mockup → functional-breakdown → feature-decomposition → task-decomposition → human-grade-qa(test-plan) → 実装 → human-grade-qa(実走)"
+ ---
+ 
++## 🧭 AI 駆動の開発の進め方（ai-driven-process）— このスキルの責務（2026-11-04 追加・必須・省略不可）
++
++> 進め方の正本: `~/.claude/rules/common/ai-driven-process.md`（無ければ `engineering-rules` の `scripts/install.sh` で入れる）。
++> チケット＝利用者の 1 つの操作を画面・API・DB まで縦に通す 1 つの実装／分岐は 8 観点（入力・対象の状態・時間の流れ・入口・利用者の状態・失敗・操作の揺れ・守り）から出し、**書いていない＝漏れ**／
++> テストは入れ子の 5 段（単体＝L1・中間／統合／流れをまたぐ＝L2・回帰＝L3〜L5）／設計は 3 段（はじめに 1 回・流れに入るとき・チケットを切るとき）／
++> 目録をまず探す（同じものを 2 つ作らない）／役は 4 つ（作る・精査・実装・テスター）。**このスキルの記述と矛盾したら正本が勝つ。**
++
++- **タスク＝チケット＝1 つの実装**（利用者の 1 つの操作を縦に通す）。Foundation→Backend→UI の段で横に割らない。裏側だけのタスクは作らず、その操作のチケットの実装の詳細に書く（どの流れにも属さない関門・共通の処理・CI だけは「共通」のチケット）
++- 1 枚に正本 §3 の欄を全部書く：何を作るか・`分類:`・**目録で探した結果**・実装の詳細（DB の表と列と migration／API の口と型とエラー ID／OSS・SDK・ライブラリと**版**／作るファイルと関数／既存のコードを使うなら「この実装を使う」）・決定・分岐とテスト・依存・完了の条件
++- 分岐は 8 観点から出し、状態を持つものは **状態 × 入口 × 利用者の状態の表**（状態の候補は DB の列から）。どのマスにも結果・受け持ち・テスト
++- **テストのコードまでこのスキル（作る役）が書く**。`qa_rows.l1` は単体、`runnable_after` で中間・統合・流れをまたぐテストの解禁を書く
++- 一気に全部は切らない。**流れ（分類）ごとに、1 つ先を並行で**切る。見本は test-verification の `references/ticket-example.md`、型の受けは `scripts/pattern_gate.py` で緑にする
++
++---
++
+ ## 🎨 デザインシステム（design-system）— このスキルの責務（2026-09-16 追加）
+ 
+ > 規約の正本: `~/.claude/rules/common/design-system.md` ／ 由来: lessons-learned **L-017**
+diff -ruN orig/test-verification/SKILL.md new/test-verification/SKILL.md
+--- orig/test-verification/SKILL.md	2026-11-04 13:26:40.971992544 +0000
++++ new/test-verification/SKILL.md	2026-11-04 13:29:30.141891517 +0000
+@@ -5,6 +5,19 @@
+ builtin: true
+ ---
+ 
++## 🧭 AI 駆動の開発の進め方（ai-driven-process）— このスキルの責務（2026-11-04 追加・必須・省略不可）
++
++> 進め方の正本: `~/.claude/rules/common/ai-driven-process.md`（無ければ `engineering-rules` の `scripts/install.sh` で入れる）。
++> チケット＝利用者の 1 つの操作を画面・API・DB まで縦に通す 1 つの実装／分岐は 8 観点（入力・対象の状態・時間の流れ・入口・利用者の状態・失敗・操作の揺れ・守り）から出し、**書いていない＝漏れ**／
++> テストは入れ子の 5 段（単体＝L1・中間／統合／流れをまたぐ＝L2・回帰＝L3〜L5）／設計は 3 段（はじめに 1 回・流れに入るとき・チケットを切るとき）／
++> 目録をまず探す（同じものを 2 つ作らない）／役は 4 つ（作る・精査・実装・テスター）。**このスキルの記述と矛盾したら正本が勝つ。**
++
++- テストの段は入れ子の 5 段（単体・中間・統合・流れをまたぐ・回帰）で設計し、L1〜L5 と対応させる（正本 §5）
++- 分類ごとのテストの型のナレッジ（`references/test-patterns/`）と `scripts/pattern_gate.py` を持つ。チケットの見本は `references/ticket-example.md`
++- ブラウザでの動作テスト（正常・バリデーション・エラー時・権限が無いとき）は単体に入れる
++
++---
++
+ ## 🎨 デザインシステム（design-system）— このスキルの責務（2026-09-16 追加）
+ 
+ > 規約の正本: `~/.claude/rules/common/design-system.md` ／ 由来: lessons-learned **L-017**
+@@ -24,6 +37,24 @@
+ ---
+ 
+ 
++## 🧩 テストの型のナレッジ（分類ごと・どのプロジェクトでも使う・2026-11-04 追加・必須）
++
++テストを作るときは、まず**テストの型のナレッジ**を読む。私が覚えていることに頼らず、型で漏れを止める（書いていない＝漏れ）。
++
++- 置き場：`references/test-patterns/patterns.json`（機械が読むシート）と、分類ごとの表 `references/test-patterns/<分類>.md`（`scripts/build_test_patterns.py` が作る。手で直さない）
++- 分類：登録・本人確認（REG）・ログイン・セッション（AUTH）・パスワードの再設定（RESET）・招待・参加（INV）・権限・役割（PERM）・作る・直す・消す（CRUD）・一覧・検索（LIST）・ファイル（FILE）・メール・通知（MAIL）・支払い・請求（PAY）・外とのつなぎ（EXT）・時間で動く処理・待ち行列（JOB）・AI の実行（AI）・CI の台本（TOOL）
++- 観点は 8 つ：入力・対象の状態（どの時点で確定するかを必ず書く）・時間の流れ（期限切れ・使い終わった・取り消し・やり直し・送り直し）・入口（メールのリンク・ブックマーク・戻る・再読み込み・別の端末・古いリンク）・利用者の状態（ログインしていない・ログイン中・セッション切れ・長く入っていない・別のアカウント・権限が無い）・失敗・操作の揺れ・守り
++- 状態を持つもの（期限・使い終わった時刻・状態の列を持つ表）は「対象の状態 × 入口 × 利用者の状態」の表を書き、どのマスにも結果・受け持ちのチケット・テストを書く
++
++使い方（チケットごと）：
++1. チケットに `分類: REG, MAIL` のように分類を書く
++2. その分類の型を全部、テストの行に ID（例 TP-REG-02）で書くか、`要らない: TP-REG-05 理由` と書く
++3. `python3 <skill>/scripts/pattern_gate.py <チケット.md> --local <プロジェクトの test-patterns.local.json>` が緑になるまで直す（CI にも入れる）
++
++型を育てる：
++- プロジェクトで、型に無い抜けが見つかったら（テスター・統合テスト・人の確認で）、まずプロジェクトの足し分 `test-patterns.local.json` に 1 行足す（`patterns.json` と同じ形・ID は `TP-<分類>-L01` のようにスキルと重ならない形）
++- 他のプロジェクトでも効く型は、このスキルの `patterns.json` に戻す（スキルの更新の差分にする）。出典に、どのプロジェクトのどんな抜けから生まれたかを書く
++
+ ## 表記ゆらぎ・負荷を戦略に組み込む
+ 
+ - **表記ゆらぎ**は unit で網羅する（正規化関数の入出力表）。E2E で全軸を回すと高い。
+diff -ruN orig/test-verification/references/test-patterns/AI.md new/test-verification/references/test-patterns/AI.md
+--- orig/test-verification/references/test-patterns/AI.md	1970-01-01 00:00:00.000000000 +0000
++++ new/test-verification/references/test-patterns/AI.md	2026-11-04 13:26:49.035431323 +0000
+@@ -0,0 +1,10 @@
++# AI の実行（AI）
++
++> 生成物。手で直さない。
++
++| ID | 観点 | 分岐 | 期待する結果 | 段 | 出典 |
++|---|---|---|---|---|---|
++| TP-AI-01 | 守り | 外に出す前 | 人の承認が無ければ出さない | 単体・中間 | Kaname 2026-11-04 |
++| TP-AI-02 | 利用者の状態 | 止める・取り下げ・PC が閉じている | 止まった理由と次の一手を出す | 単体・中間 | Kaname 2026-11-04 |
++| TP-AI-03 | 守り | 利用量の上限を越えた | 止めて、いつ戻るかを出す | 単体 | Kaname 2026-11-04 |
++| TP-AI-04 | 失敗 | 予期しない出力（とても長い・空・形が違う） | 落ちずに失敗として扱う | 単体 | Kaname 2026-11-04 |
+diff -ruN orig/test-verification/references/test-patterns/AUTH.md new/test-verification/references/test-patterns/AUTH.md
+--- orig/test-verification/references/test-patterns/AUTH.md	1970-01-01 00:00:00.000000000 +0000
++++ new/test-verification/references/test-patterns/AUTH.md	2026-11-04 13:26:49.034443491 +0000
+@@ -0,0 +1,15 @@
++# ログイン・セッション（AUTH）
++
++> 生成物。手で直さない。
++
++| ID | 観点 | 分岐 | 期待する結果 | 段 | 出典 |
++|---|---|---|---|---|---|
++| TP-AUTH-01 | 守り | 誤ったパスワードと、無いメール | 同じ返事・同じくらいの時間（登録の有無を見せない） | 単体 | OWASP ASVS（認証・セッション） |
++| TP-AUTH-02 | 守り | 続けて失敗する | 回数の上限・待ち時間。本人は再設定で戻れる | 単体 | OWASP ASVS（認証・セッション） |
++| TP-AUTH-03 | 時間の流れ | 2 段階のコードの期限切れ・使い回し・誤り | どれも通さない。使い回しは 1 回目だけ | 単体 | OWASP ASVS（認証・セッション） |
++| TP-AUTH-04 | 利用者の状態 | セッションが切れた・長く入っていない状態で操作する・戻ってくる | ログインへ案内し、入り直したら元の画面へ。書きかけは失わない | 単体・中間 | Kaname 2026-11-04 |
++| TP-AUTH-05 | 入口 | ログアウトした後に、戻る・ブックマークで中の画面を開く | 中は見えず、ログインへ | 単体 | OWASP ASVS（認証・セッション） |
++| TP-AUTH-06 | 時間の流れ | パスワードを変えた・端末を外した | ほかのセッションが切れる | 単体・中間 | OWASP ASVS（認証・セッション） |
++| TP-AUTH-07 | 時間の流れ | 本人確認の取り直し（大事な操作の前）の期限 | 期限を過ぎたらもう一度確かめる | 単体 | OWASP ASVS（認証・セッション） |
++| TP-AUTH-08 | 守り | ログインの後に戻す先が外の道 | 外へは飛ばさず、中の道だけに戻す | 単体 | OWASP Testing Guide |
++| TP-AUTH-09 | 利用者の状態 | 国・端末が変わった | 決めたとおりに切る／記録する | 単体 | Kaname 2026-11-04 |
+diff -ruN orig/test-verification/references/test-patterns/CRUD.md new/test-verification/references/test-patterns/CRUD.md
+--- orig/test-verification/references/test-patterns/CRUD.md	1970-01-01 00:00:00.000000000 +0000
++++ new/test-verification/references/test-patterns/CRUD.md	2026-11-04 13:26:49.034791803 +0000
+@@ -0,0 +1,12 @@
++# 作る・直す・消す（CRUD）
++
++> 生成物。手で直さない。
++
++| ID | 観点 | 分岐 | 期待する結果 | 段 | 出典 |
++|---|---|---|---|---|---|
++| TP-CRUD-01 | 操作の揺れ | 2 人が同時に直す | 後の人の保存は版のずれとして止め、どちらも失わない | 単体 | OWASP Testing Guide |
++| TP-CRUD-02 | 時間の流れ | 消したものを古いリンクで開く・直す | 見つからない（消された・移された）の画面 | 単体 | Kaname 2026-11-04 |
++| TP-CRUD-03 | 時間の流れ | 消す → 戻す、子のあるものを消す | 子の扱いを決めて書き、そのとおり | 単体 | Kaname 2026-11-04 |
++| TP-CRUD-04 | 操作の揺れ | 2 回押し | 1 つしかできない（冪等キー） | 単体 | OWASP Testing Guide |
++| TP-CRUD-05 | 失敗 | 保存の途中で失敗 | 途中まで残らない（全部戻る） | 単体 | OWASP Testing Guide |
++| TP-CRUD-06 | 入口 | 書きかけで戻る・再読み込み・セッション切れ | 書きかけが失われない | 単体 | Kaname 2026-11-04 |
+diff -ruN orig/test-verification/references/test-patterns/EXT.md new/test-verification/references/test-patterns/EXT.md
+--- orig/test-verification/references/test-patterns/EXT.md	1970-01-01 00:00:00.000000000 +0000
++++ new/test-verification/references/test-patterns/EXT.md	2026-11-04 13:26:49.035226669 +0000
+@@ -0,0 +1,9 @@
++# 外とのつなぎ（EXT）
++
++> 生成物。手で直さない。
++
++| ID | 観点 | 分岐 | 期待する結果 | 段 | 出典 |
++|---|---|---|---|---|---|
++| TP-EXT-01 | 失敗 | 外のサービスが落ちた・遅い・時間切れ | 止めるか通すかを決めて書き、そのとおり。通すなら記録して知らせる | 単体 | Kaname 2026-11-04 |
++| TP-EXT-02 | 失敗 | 外が想定外の形を返す | 落ちずに失敗として扱う | 単体 | OWASP Testing Guide |
++| TP-EXT-03 | 操作の揺れ | 同じ通知が 2 回届く | 1 回分だけ反映 | 単体 | OWASP Testing Guide |
+diff -ruN orig/test-verification/references/test-patterns/FILE.md new/test-verification/references/test-patterns/FILE.md
+--- orig/test-verification/references/test-patterns/FILE.md	1970-01-01 00:00:00.000000000 +0000
++++ new/test-verification/references/test-patterns/FILE.md	2026-11-04 13:26:49.034945704 +0000
+@@ -0,0 +1,11 @@
++# ファイル（FILE）
++
++> 生成物。手で直さない。
++
++| ID | 観点 | 分岐 | 期待する結果 | 段 | 出典 |
++|---|---|---|---|---|---|
++| TP-FILE-01 | 入力 | 大きさの上限・0 バイト | 上限で止め、理由を出す | 単体 | OWASP Testing Guide |
++| TP-FILE-02 | 守り | 拡張子と中身の種類が違う | 中身で見分けて止める | 単体 | OWASP Testing Guide |
++| TP-FILE-03 | 入力 | 名前（日本語・記号・とても長い・同じ名前） | 化けず、上書きの扱いを決めて書く | 単体 | Kaname 2026-11-04 |
++| TP-FILE-04 | 失敗 | 上げる途中で切れた・同時に上げる | 半端なファイルが残らない | 単体 | OWASP Testing Guide |
++| TP-FILE-05 | 守り | 他の人のファイルの URL を直接開く | 見えない（期限つきの URL・権限の確認） | 単体 | OWASP ASVS（認証・セッション） |
+diff -ruN orig/test-verification/references/test-patterns/INV.md new/test-verification/references/test-patterns/INV.md
+--- orig/test-verification/references/test-patterns/INV.md	1970-01-01 00:00:00.000000000 +0000
++++ new/test-verification/references/test-patterns/INV.md	2026-11-04 13:26:49.034646357 +0000
+@@ -0,0 +1,11 @@
++# 招待・参加（INV）
++
++> 生成物。手で直さない。
++
++| ID | 観点 | 分岐 | 期待する結果 | 段 | 出典 |
++|---|---|---|---|---|---|
++| TP-INV-01 | 時間の流れ | 招待の期限切れ・取り消し・使い終わった招待を開く | 参加できず、理由と次の一手 | 単体・中間 | Kaname 2026-11-04 |
++| TP-INV-02 | 利用者の状態 | 招待されたメールと違うアカウントでログイン中に開く | 勝手に参加させない。どちらのアカウントで入るかの案内 | 単体・中間 | Kaname 2026-11-04 |
++| TP-INV-03 | 対象の状態 | 既にメンバーの人が開く | 二重に参加させず、その会社へ案内 | 単体 | Kaname 2026-11-04 |
++| TP-INV-04 | 時間の流れ | 招待した人が権限を失った・抜けた後に開く | 決めたとおり（使える／使えない） | 単体 | Kaname 2026-11-04 |
++| TP-INV-05 | 操作の揺れ | 同じ人を 2 回招待する | 招待は 1 つ（前のものの扱いを決めて書く） | 単体 | Kaname 2026-11-04 |
+diff -ruN orig/test-verification/references/test-patterns/JOB.md new/test-verification/references/test-patterns/JOB.md
+--- orig/test-verification/references/test-patterns/JOB.md	1970-01-01 00:00:00.000000000 +0000
++++ new/test-verification/references/test-patterns/JOB.md	2026-11-04 13:26:49.035315737 +0000
+@@ -0,0 +1,9 @@
++# 時間で動く処理・待ち行列（JOB）
++
++> 生成物。手で直さない。
++
++| ID | 観点 | 分岐 | 期待する結果 | 段 | 出典 |
++|---|---|---|---|---|---|
++| TP-JOB-01 | 失敗 | 途中で止まった・再起動・やり直し | 二重にならず、続きから | 単体 | OWASP Testing Guide |
++| TP-JOB-02 | 時間の流れ | 日付の変わり目・月末・タイムゾーン | 決めた時刻の扱い（保存は世界標準時・表示は現地）どおり | 単体 | Kaname 2026-11-04 |
++| TP-JOB-03 | 時間の流れ | 処理の途中で対象が消えた | 落ちずに飛ばして記録 | 単体 | OWASP Testing Guide |
+diff -ruN orig/test-verification/references/test-patterns/LIST.md new/test-verification/references/test-patterns/LIST.md
+--- orig/test-verification/references/test-patterns/LIST.md	1970-01-01 00:00:00.000000000 +0000
++++ new/test-verification/references/test-patterns/LIST.md	2026-11-04 13:26:49.034872932 +0000
+@@ -0,0 +1,10 @@
++# 一覧・検索（LIST）
++
++> 生成物。手で直さない。
++
++| ID | 観点 | 分岐 | 期待する結果 | 段 | 出典 |
++|---|---|---|---|---|---|
++| TP-LIST-01 | 対象の状態 | 0 件・1 件・ページの境目の件数 | 空の画面・境目で抜けも重なりも無い | 単体 | OWASP Testing Guide |
++| TP-LIST-02 | 対象の状態 | 並び替えの値が同じものが多い | ページをまたいでも並びが揺れない | 単体 | OWASP Testing Guide |
++| TP-LIST-03 | 入口 | 絞り込みの組み合わせを URL で開き直す・共有する | 同じ結果が出る | 単体 | Kaname 2026-11-04 |
++| TP-LIST-04 | 入力 | 表記ゆれ・記号・とても長い語で探す | 正規化して探し、落ちない | 単体 | OWASP Testing Guide |
+diff -ruN orig/test-verification/references/test-patterns/MAIL.md new/test-verification/references/test-patterns/MAIL.md
+--- orig/test-verification/references/test-patterns/MAIL.md	1970-01-01 00:00:00.000000000 +0000
++++ new/test-verification/references/test-patterns/MAIL.md	2026-11-04 13:26:49.035028170 +0000
+@@ -0,0 +1,9 @@
++# メール・通知（MAIL）
++
++> 生成物。手で直さない。
++
++| ID | 観点 | 分岐 | 期待する結果 | 段 | 出典 |
++|---|---|---|---|---|---|
++| TP-MAIL-01 | 失敗 | 送れなかった | 送れたと嘘をつかず、送り直せる | 単体 | Kaname 2026-11-04 |
++| TP-MAIL-02 | 操作の揺れ | 同じ知らせが二重に出る | 1 通だけ | 単体 | Kaname 2026-11-04 |
++| TP-MAIL-03 | 守り | 本文 | 秘密や他人の情報を入れない。リンクは期限つき | 単体 | OWASP ASVS（認証・セッション） |
+diff -ruN orig/test-verification/references/test-patterns/PAY.md new/test-verification/references/test-patterns/PAY.md
+--- orig/test-verification/references/test-patterns/PAY.md	1970-01-01 00:00:00.000000000 +0000
++++ new/test-verification/references/test-patterns/PAY.md	2026-11-04 13:26:49.035142629 +0000
+@@ -0,0 +1,10 @@
++# 支払い・請求（PAY）
++
++> 生成物。手で直さない。
++
++| ID | 観点 | 分岐 | 期待する結果 | 段 | 出典 |
++|---|---|---|---|---|---|
++| TP-PAY-01 | 入力 | 金額の端数 | 決めた丸め方（例：税は請求書ごと・税率ごとに 1 回） | 単体 | Kaname 2026-11-04 |
++| TP-PAY-02 | 操作の揺れ | 二重の請求・入金の二重記録 | 1 回だけ | 単体 | OWASP Testing Guide |
++| TP-PAY-03 | 時間の流れ | プランを月の途中で変える | 決めた計算どおり | 単体 | Kaname 2026-11-04 |
++| TP-PAY-04 | 守り | 外の決済の通知 | 署名を確かめ、順番が逆に届いても壊れない | 単体 | OWASP Testing Guide |
+diff -ruN orig/test-verification/references/test-patterns/PERM.md new/test-verification/references/test-patterns/PERM.md
+--- orig/test-verification/references/test-patterns/PERM.md	1970-01-01 00:00:00.000000000 +0000
++++ new/test-verification/references/test-patterns/PERM.md	2026-11-04 13:26:49.034720638 +0000
+@@ -0,0 +1,11 @@
++# 権限・役割（PERM）
++
++> 生成物。手で直さない。
++
++| ID | 観点 | 分岐 | 期待する結果 | 段 | 出典 |
++|---|---|---|---|---|---|
++| TP-PERM-01 | 利用者の状態 | 役が合わない人 | 画面に見えない・押せない。口は 403 で、副作用は起きない | 単体 | OWASP ASVS（認証・セッション） |
++| TP-PERM-02 | 時間の流れ | 権限を外した直後に、開いていた画面で押す | 口で止まる（画面の表示に頼らない） | 単体・中間 | Kaname 2026-11-04 |
++| TP-PERM-03 | 守り | 他の会社の ID を直接指定する | 見つからない扱い（403／404）で、中身は返らない | 単体 | OWASP ASVS（認証・セッション） |
++| TP-PERM-04 | 守り | 一覧・数・検索 | 他の会社や見えないものが件数にも混ざらない | 単体 | OWASP ASVS（認証・セッション） |
++| TP-PERM-05 | 時間の流れ | 権限を付けた直後 | 入り直さなくても効く（または効く時点を書く） | 単体・中間 | Kaname 2026-11-04 |
+diff -ruN orig/test-verification/references/test-patterns/README.md new/test-verification/references/test-patterns/README.md
+--- orig/test-verification/references/test-patterns/README.md	1970-01-01 00:00:00.000000000 +0000
++++ new/test-verification/references/test-patterns/README.md	2026-11-04 13:26:49.035612073 +0000
+@@ -0,0 +1,20 @@
++# テストの型（分類ごと）
++
++> 生成物（scripts/build_test_patterns.py ← patterns.json）。手で直さない。型を足すときは patterns.json（プロジェクトなら test-patterns.local.json）に足す。
++
++| 分類 | 型の数 | 表 |
++|---|---|---|
++| 登録・本人確認（REG） | 14 | [REG.md](REG.md) |
++| ログイン・セッション（AUTH） | 9 | [AUTH.md](AUTH.md) |
++| パスワードの再設定（RESET） | 3 | [RESET.md](RESET.md) |
++| 招待・参加（INV） | 5 | [INV.md](INV.md) |
++| 権限・役割（PERM） | 5 | [PERM.md](PERM.md) |
++| 作る・直す・消す（CRUD） | 6 | [CRUD.md](CRUD.md) |
++| 一覧・検索（LIST） | 4 | [LIST.md](LIST.md) |
++| ファイル（FILE） | 5 | [FILE.md](FILE.md) |
++| メール・通知（MAIL） | 3 | [MAIL.md](MAIL.md) |
++| 支払い・請求（PAY） | 4 | [PAY.md](PAY.md) |
++| 外とのつなぎ（EXT） | 3 | [EXT.md](EXT.md) |
++| 時間で動く処理・待ち行列（JOB） | 3 | [JOB.md](JOB.md) |
++| AI の実行（AI） | 4 | [AI.md](AI.md) |
++| CI の台本（検査そのもの）（TOOL） | 3 | [TOOL.md](TOOL.md) |
+diff -ruN orig/test-verification/references/test-patterns/REG.md new/test-verification/references/test-patterns/REG.md
+--- orig/test-verification/references/test-patterns/REG.md	1970-01-01 00:00:00.000000000 +0000
++++ new/test-verification/references/test-patterns/REG.md	2026-11-04 13:26:49.034308282 +0000
+@@ -0,0 +1,20 @@
++# 登録・本人確認（REG）
++
++> 生成物。手で直さない。
++
++| ID | 観点 | 分岐 | 期待する結果 | 段 | 出典 |
++|---|---|---|---|---|---|
++| TP-REG-01 | 対象の状態 | 登録が確定する時点（保留 → 確定） | どの操作で確定するかを書き、確定する前と後で何ができるかを分ける | 単体・中間 | Kaname 2026-11-04 |
++| TP-REG-02 | 時間の流れ | 確認のリンクの期限が切れてから開く | 期限切れの画面と、やり直しの案内。申し込みは使えない | 単体・中間 | Kaname 2026-11-04 |
++| TP-REG-03 | 時間の流れ | 確定した後に、同じ確認のリンクをもう一度開く | 「登録は済んでいます」とログインへの案内。二重に作らない | 単体・中間 | Kaname 2026-11-04 |
++| TP-REG-04 | 時間の流れ | 送り直した後に、前のリンクを開く | 前のリンクは使えず、新しいメールのリンクへ案内 | 単体・中間 | Kaname 2026-11-04 |
++| TP-REG-05 | 入口 | 確認のリンクを別の端末・別のブラウザで開く | 決めたとおり（確定できる／できない）に動く | 中間 | Kaname 2026-11-04 |
++| TP-REG-06 | 利用者の状態 | ログイン中・別のアカウントでログイン中に、登録の画面や確認のリンクを開く | 勝手にアカウントを切り替えない。今のアカウントへの案内か、ログアウトの案内 | 単体・中間 | Kaname 2026-11-04 |
++| TP-REG-07 | 守り | 登録済みのメールで登録する | 登録の有無を余計に見せない文言（ログインか再設定の案内だけ） | 単体 | OWASP ASVS（認証・セッション） |
++| TP-REG-08 | 入力 | メールの大文字小文字・前後の空白・全角 | 正規化して同じ人として扱う | 単体 | Kaname 2026-11-04 |
++| TP-REG-09 | 入力 | 漏れたことのあるパスワード | 弾く。照合先が落ちたときの扱い（止める／通して記録）を決めて書く | 単体 | OWASP ASVS（認証・セッション） |
++| TP-REG-10 | 入力 | パスワードの長さの境目の両側 | 短い側は弾き、境目は通す | 単体 | OWASP ASVS（認証・セッション） |
++| TP-REG-11 | 守り | 同じ所から短い時間に何度も登録する | 回数の上限で止め、待つ時間を出す | 単体 | OWASP ASVS（認証・セッション） |
++| TP-REG-12 | 操作の揺れ | 同じメールで同時に 2 回・2 回押し | 申し込みは 1 つ・メールは 1 通 | 単体 | Kaname 2026-11-04 |
++| TP-REG-13 | 対象の状態 | 同意した規約の版と時刻 | 残る。規約が変わったら次のログインで同意し直す | 単体 | Kaname 2026-11-04 |
++| TP-REG-14 | 守り | DB とログにパスワード・リンクの手がかりが平文で残らない | パスワードは包む・手がかりはハッシュだけ・ログに出さない | 単体 | OWASP ASVS（認証・セッション） |
+diff -ruN orig/test-verification/references/test-patterns/RESET.md new/test-verification/references/test-patterns/RESET.md
+--- orig/test-verification/references/test-patterns/RESET.md	1970-01-01 00:00:00.000000000 +0000
++++ new/test-verification/references/test-patterns/RESET.md	2026-11-04 13:26:49.034552251 +0000
+@@ -0,0 +1,9 @@
++# パスワードの再設定（RESET）
++
++> 生成物。手で直さない。
++
++| ID | 観点 | 分岐 | 期待する結果 | 段 | 出典 |
++|---|---|---|---|---|---|
++| TP-RESET-01 | 守り | 無いメールで再設定を頼む | 同じ返事（登録の有無を見せない） | 単体 | OWASP ASVS（認証・セッション） |
++| TP-RESET-02 | 時間の流れ | 再設定のリンクの期限切れ・使い終わった・新しく頼んだ後の前のリンク | どれも使えず、頼み直しの案内 | 単体・中間 | OWASP ASVS（認証・セッション） |
++| TP-RESET-03 | 時間の流れ | 再設定した | ほかのセッションが切れる | 単体 | OWASP ASVS（認証・セッション） |
+diff -ruN orig/test-verification/references/test-patterns/TOOL.md new/test-verification/references/test-patterns/TOOL.md
+--- orig/test-verification/references/test-patterns/TOOL.md	1970-01-01 00:00:00.000000000 +0000
++++ new/test-verification/references/test-patterns/TOOL.md	2026-11-04 13:26:49.035530264 +0000
+@@ -0,0 +1,9 @@
++# CI の台本（検査そのもの）（TOOL）
++
++> 生成物。手で直さない。
++
++| ID | 観点 | 分岐 | 期待する結果 | 段 | 出典 |
++|---|---|---|---|---|---|
++| TP-TOOL-01 | 入力 | 日本語の名前のファイル | 検査の台本が読み落とさない（git ls-files は -z で読む） | 単体 | Kaname 2026-11-04 |
++| TP-TOOL-02 | 守り | 検査が何も見ていないのに緑 | 自己試験でわざと壊し、赤になるのを見る | 単体 | Kaname 2026-11-04 |
++| TP-TOOL-03 | 失敗 | 容れ物の中と手元で設定・証明書・版が違う | 同じ結果になる（違いは設定で吸収して書く） | 単体 | Kaname 2026-11-04 |
+diff -ruN orig/test-verification/references/test-patterns/patterns.json new/test-verification/references/test-patterns/patterns.json
+--- orig/test-verification/references/test-patterns/patterns.json	1970-01-01 00:00:00.000000000 +0000
++++ new/test-verification/references/test-patterns/patterns.json	2026-11-04 13:26:49.034152176 +0000
+@@ -0,0 +1,670 @@
++{
++ "_doc": "テストの型のナレッジ（機械が読むシート）。チケットは分類（categories）を書き、その分類の型を全部「テストにある」か「要らない理由」で受ける。どちらも無ければ scripts/pattern_gate.py が赤。プロジェクトで新しく出た型は、プロジェクトの足し分（test-patterns.local.json）に書き、他でも効くものはここに戻す",
++ "axes": [
++  "入力",
++  "対象の状態",
++  "時間の流れ",
++  "入口",
++  "利用者の状態",
++  "失敗",
++  "操作の揺れ",
++  "守り"
++ ],
++ "categories": {
++  "REG": "登録・本人確認",
++  "AUTH": "ログイン・セッション",
++  "RESET": "パスワードの再設定",
++  "INV": "招待・参加",
++  "PERM": "権限・役割",
++  "CRUD": "作る・直す・消す",
++  "LIST": "一覧・検索",
++  "FILE": "ファイル",
++  "MAIL": "メール・通知",
++  "PAY": "支払い・請求",
++  "EXT": "外とのつなぎ",
++  "JOB": "時間で動く処理・待ち行列",
++  "AI": "AI の実行",
++  "TOOL": "CI の台本（検査そのもの）"
++ },
++ "patterns": [
++  {
++   "id": "TP-REG-01",
++   "category": "REG",
++   "axis": "対象の状態",
++   "branch": "登録が確定する時点（保留 → 確定）",
++   "expect": "どの操作で確定するかを書き、確定する前と後で何ができるかを分ける",
++   "levels": "単体・中間",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-REG-02",
++   "category": "REG",
++   "axis": "時間の流れ",
++   "branch": "確認のリンクの期限が切れてから開く",
++   "expect": "期限切れの画面と、やり直しの案内。申し込みは使えない",
++   "levels": "単体・中間",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-REG-03",
++   "category": "REG",
++   "axis": "時間の流れ",
++   "branch": "確定した後に、同じ確認のリンクをもう一度開く",
++   "expect": "「登録は済んでいます」とログインへの案内。二重に作らない",
++   "levels": "単体・中間",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-REG-04",
++   "category": "REG",
++   "axis": "時間の流れ",
++   "branch": "送り直した後に、前のリンクを開く",
++   "expect": "前のリンクは使えず、新しいメールのリンクへ案内",
++   "levels": "単体・中間",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-REG-05",
++   "category": "REG",
++   "axis": "入口",
++   "branch": "確認のリンクを別の端末・別のブラウザで開く",
++   "expect": "決めたとおり（確定できる／できない）に動く",
++   "levels": "中間",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-REG-06",
++   "category": "REG",
++   "axis": "利用者の状態",
++   "branch": "ログイン中・別のアカウントでログイン中に、登録の画面や確認のリンクを開く",
++   "expect": "勝手にアカウントを切り替えない。今のアカウントへの案内か、ログアウトの案内",
++   "levels": "単体・中間",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-REG-07",
++   "category": "REG",
++   "axis": "守り",
++   "branch": "登録済みのメールで登録する",
++   "expect": "登録の有無を余計に見せない文言（ログインか再設定の案内だけ）",
++   "levels": "単体",
++   "source": "OWASP ASVS（認証・セッション）"
++  },
++  {
++   "id": "TP-REG-08",
++   "category": "REG",
++   "axis": "入力",
++   "branch": "メールの大文字小文字・前後の空白・全角",
++   "expect": "正規化して同じ人として扱う",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-REG-09",
++   "category": "REG",
++   "axis": "入力",
++   "branch": "漏れたことのあるパスワード",
++   "expect": "弾く。照合先が落ちたときの扱い（止める／通して記録）を決めて書く",
++   "levels": "単体",
++   "source": "OWASP ASVS（認証・セッション）"
++  },
++  {
++   "id": "TP-REG-10",
++   "category": "REG",
++   "axis": "入力",
++   "branch": "パスワードの長さの境目の両側",
++   "expect": "短い側は弾き、境目は通す",
++   "levels": "単体",
++   "source": "OWASP ASVS（認証・セッション）"
++  },
++  {
++   "id": "TP-REG-11",
++   "category": "REG",
++   "axis": "守り",
++   "branch": "同じ所から短い時間に何度も登録する",
++   "expect": "回数の上限で止め、待つ時間を出す",
++   "levels": "単体",
++   "source": "OWASP ASVS（認証・セッション）"
++  },
++  {
++   "id": "TP-REG-12",
++   "category": "REG",
++   "axis": "操作の揺れ",
++   "branch": "同じメールで同時に 2 回・2 回押し",
++   "expect": "申し込みは 1 つ・メールは 1 通",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-REG-13",
++   "category": "REG",
++   "axis": "対象の状態",
++   "branch": "同意した規約の版と時刻",
++   "expect": "残る。規約が変わったら次のログインで同意し直す",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-REG-14",
++   "category": "REG",
++   "axis": "守り",
++   "branch": "DB とログにパスワード・リンクの手がかりが平文で残らない",
++   "expect": "パスワードは包む・手がかりはハッシュだけ・ログに出さない",
++   "levels": "単体",
++   "source": "OWASP ASVS（認証・セッション）"
++  },
++  {
++   "id": "TP-AUTH-01",
++   "category": "AUTH",
++   "axis": "守り",
++   "branch": "誤ったパスワードと、無いメール",
++   "expect": "同じ返事・同じくらいの時間（登録の有無を見せない）",
++   "levels": "単体",
++   "source": "OWASP ASVS（認証・セッション）"
++  },
++  {
++   "id": "TP-AUTH-02",
++   "category": "AUTH",
++   "axis": "守り",
++   "branch": "続けて失敗する",
++   "expect": "回数の上限・待ち時間。本人は再設定で戻れる",
++   "levels": "単体",
++   "source": "OWASP ASVS（認証・セッション）"
++  },
++  {
++   "id": "TP-AUTH-03",
++   "category": "AUTH",
++   "axis": "時間の流れ",
++   "branch": "2 段階のコードの期限切れ・使い回し・誤り",
++   "expect": "どれも通さない。使い回しは 1 回目だけ",
++   "levels": "単体",
++   "source": "OWASP ASVS（認証・セッション）"
++  },
++  {
++   "id": "TP-AUTH-04",
++   "category": "AUTH",
++   "axis": "利用者の状態",
++   "branch": "セッションが切れた・長く入っていない状態で操作する・戻ってくる",
++   "expect": "ログインへ案内し、入り直したら元の画面へ。書きかけは失わない",
++   "levels": "単体・中間",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-AUTH-05",
++   "category": "AUTH",
++   "axis": "入口",
++   "branch": "ログアウトした後に、戻る・ブックマークで中の画面を開く",
++   "expect": "中は見えず、ログインへ",
++   "levels": "単体",
++   "source": "OWASP ASVS（認証・セッション）"
++  },
++  {
++   "id": "TP-AUTH-06",
++   "category": "AUTH",
++   "axis": "時間の流れ",
++   "branch": "パスワードを変えた・端末を外した",
++   "expect": "ほかのセッションが切れる",
++   "levels": "単体・中間",
++   "source": "OWASP ASVS（認証・セッション）"
++  },
++  {
++   "id": "TP-AUTH-07",
++   "category": "AUTH",
++   "axis": "時間の流れ",
++   "branch": "本人確認の取り直し（大事な操作の前）の期限",
++   "expect": "期限を過ぎたらもう一度確かめる",
++   "levels": "単体",
++   "source": "OWASP ASVS（認証・セッション）"
++  },
++  {
++   "id": "TP-AUTH-08",
++   "category": "AUTH",
++   "axis": "守り",
++   "branch": "ログインの後に戻す先が外の道",
++   "expect": "外へは飛ばさず、中の道だけに戻す",
++   "levels": "単体",
++   "source": "OWASP Testing Guide"
++  },
++  {
++   "id": "TP-AUTH-09",
++   "category": "AUTH",
++   "axis": "利用者の状態",
++   "branch": "国・端末が変わった",
++   "expect": "決めたとおりに切る／記録する",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-RESET-01",
++   "category": "RESET",
++   "axis": "守り",
++   "branch": "無いメールで再設定を頼む",
++   "expect": "同じ返事（登録の有無を見せない）",
++   "levels": "単体",
++   "source": "OWASP ASVS（認証・セッション）"
++  },
++  {
++   "id": "TP-RESET-02",
++   "category": "RESET",
++   "axis": "時間の流れ",
++   "branch": "再設定のリンクの期限切れ・使い終わった・新しく頼んだ後の前のリンク",
++   "expect": "どれも使えず、頼み直しの案内",
++   "levels": "単体・中間",
++   "source": "OWASP ASVS（認証・セッション）"
++  },
++  {
++   "id": "TP-RESET-03",
++   "category": "RESET",
++   "axis": "時間の流れ",
++   "branch": "再設定した",
++   "expect": "ほかのセッションが切れる",
++   "levels": "単体",
++   "source": "OWASP ASVS（認証・セッション）"
++  },
++  {
++   "id": "TP-INV-01",
++   "category": "INV",
++   "axis": "時間の流れ",
++   "branch": "招待の期限切れ・取り消し・使い終わった招待を開く",
++   "expect": "参加できず、理由と次の一手",
++   "levels": "単体・中間",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-INV-02",
++   "category": "INV",
++   "axis": "利用者の状態",
++   "branch": "招待されたメールと違うアカウントでログイン中に開く",
++   "expect": "勝手に参加させない。どちらのアカウントで入るかの案内",
++   "levels": "単体・中間",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-INV-03",
++   "category": "INV",
++   "axis": "対象の状態",
++   "branch": "既にメンバーの人が開く",
++   "expect": "二重に参加させず、その会社へ案内",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-INV-04",
++   "category": "INV",
++   "axis": "時間の流れ",
++   "branch": "招待した人が権限を失った・抜けた後に開く",
++   "expect": "決めたとおり（使える／使えない）",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-INV-05",
++   "category": "INV",
++   "axis": "操作の揺れ",
++   "branch": "同じ人を 2 回招待する",
++   "expect": "招待は 1 つ（前のものの扱いを決めて書く）",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-PERM-01",
++   "category": "PERM",
++   "axis": "利用者の状態",
++   "branch": "役が合わない人",
++   "expect": "画面に見えない・押せない。口は 403 で、副作用は起きない",
++   "levels": "単体",
++   "source": "OWASP ASVS（認証・セッション）"
++  },
++  {
++   "id": "TP-PERM-02",
++   "category": "PERM",
++   "axis": "時間の流れ",
++   "branch": "権限を外した直後に、開いていた画面で押す",
++   "expect": "口で止まる（画面の表示に頼らない）",
++   "levels": "単体・中間",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-PERM-03",
++   "category": "PERM",
++   "axis": "守り",
++   "branch": "他の会社の ID を直接指定する",
++   "expect": "見つからない扱い（403／404）で、中身は返らない",
++   "levels": "単体",
++   "source": "OWASP ASVS（認証・セッション）"
++  },
++  {
++   "id": "TP-PERM-04",
++   "category": "PERM",
++   "axis": "守り",
++   "branch": "一覧・数・検索",
++   "expect": "他の会社や見えないものが件数にも混ざらない",
++   "levels": "単体",
++   "source": "OWASP ASVS（認証・セッション）"
++  },
++  {
++   "id": "TP-PERM-05",
++   "category": "PERM",
++   "axis": "時間の流れ",
++   "branch": "権限を付けた直後",
++   "expect": "入り直さなくても効く（または効く時点を書く）",
++   "levels": "単体・中間",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-CRUD-01",
++   "category": "CRUD",
++   "axis": "操作の揺れ",
++   "branch": "2 人が同時に直す",
++   "expect": "後の人の保存は版のずれとして止め、どちらも失わない",
++   "levels": "単体",
++   "source": "OWASP Testing Guide"
++  },
++  {
++   "id": "TP-CRUD-02",
++   "category": "CRUD",
++   "axis": "時間の流れ",
++   "branch": "消したものを古いリンクで開く・直す",
++   "expect": "見つからない（消された・移された）の画面",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-CRUD-03",
++   "category": "CRUD",
++   "axis": "時間の流れ",
++   "branch": "消す → 戻す、子のあるものを消す",
++   "expect": "子の扱いを決めて書き、そのとおり",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-CRUD-04",
++   "category": "CRUD",
++   "axis": "操作の揺れ",
++   "branch": "2 回押し",
++   "expect": "1 つしかできない（冪等キー）",
++   "levels": "単体",
++   "source": "OWASP Testing Guide"
++  },
++  {
++   "id": "TP-CRUD-05",
++   "category": "CRUD",
++   "axis": "失敗",
++   "branch": "保存の途中で失敗",
++   "expect": "途中まで残らない（全部戻る）",
++   "levels": "単体",
++   "source": "OWASP Testing Guide"
++  },
++  {
++   "id": "TP-CRUD-06",
++   "category": "CRUD",
++   "axis": "入口",
++   "branch": "書きかけで戻る・再読み込み・セッション切れ",
++   "expect": "書きかけが失われない",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-LIST-01",
++   "category": "LIST",
++   "axis": "対象の状態",
++   "branch": "0 件・1 件・ページの境目の件数",
++   "expect": "空の画面・境目で抜けも重なりも無い",
++   "levels": "単体",
++   "source": "OWASP Testing Guide"
++  },
++  {
++   "id": "TP-LIST-02",
++   "category": "LIST",
++   "axis": "対象の状態",
++   "branch": "並び替えの値が同じものが多い",
++   "expect": "ページをまたいでも並びが揺れない",
++   "levels": "単体",
++   "source": "OWASP Testing Guide"
++  },
++  {
++   "id": "TP-LIST-03",
++   "category": "LIST",
++   "axis": "入口",
++   "branch": "絞り込みの組み合わせを URL で開き直す・共有する",
++   "expect": "同じ結果が出る",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-LIST-04",
++   "category": "LIST",
++   "axis": "入力",
++   "branch": "表記ゆれ・記号・とても長い語で探す",
++   "expect": "正規化して探し、落ちない",
++   "levels": "単体",
++   "source": "OWASP Testing Guide"
++  },
++  {
++   "id": "TP-FILE-01",
++   "category": "FILE",
++   "axis": "入力",
++   "branch": "大きさの上限・0 バイト",
++   "expect": "上限で止め、理由を出す",
++   "levels": "単体",
++   "source": "OWASP Testing Guide"
++  },
++  {
++   "id": "TP-FILE-02",
++   "category": "FILE",
++   "axis": "守り",
++   "branch": "拡張子と中身の種類が違う",
++   "expect": "中身で見分けて止める",
++   "levels": "単体",
++   "source": "OWASP Testing Guide"
++  },
++  {
++   "id": "TP-FILE-03",
++   "category": "FILE",
++   "axis": "入力",
++   "branch": "名前（日本語・記号・とても長い・同じ名前）",
++   "expect": "化けず、上書きの扱いを決めて書く",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-FILE-04",
++   "category": "FILE",
++   "axis": "失敗",
++   "branch": "上げる途中で切れた・同時に上げる",
++   "expect": "半端なファイルが残らない",
++   "levels": "単体",
++   "source": "OWASP Testing Guide"
++  },
++  {
++   "id": "TP-FILE-05",
++   "category": "FILE",
++   "axis": "守り",
++   "branch": "他の人のファイルの URL を直接開く",
++   "expect": "見えない（期限つきの URL・権限の確認）",
++   "levels": "単体",
++   "source": "OWASP ASVS（認証・セッション）"
++  },
++  {
++   "id": "TP-MAIL-01",
++   "category": "MAIL",
++   "axis": "失敗",
++   "branch": "送れなかった",
++   "expect": "送れたと嘘をつかず、送り直せる",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-MAIL-02",
++   "category": "MAIL",
++   "axis": "操作の揺れ",
++   "branch": "同じ知らせが二重に出る",
++   "expect": "1 通だけ",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-MAIL-03",
++   "category": "MAIL",
++   "axis": "守り",
++   "branch": "本文",
++   "expect": "秘密や他人の情報を入れない。リンクは期限つき",
++   "levels": "単体",
++   "source": "OWASP ASVS（認証・セッション）"
++  },
++  {
++   "id": "TP-PAY-01",
++   "category": "PAY",
++   "axis": "入力",
++   "branch": "金額の端数",
++   "expect": "決めた丸め方（例：税は請求書ごと・税率ごとに 1 回）",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-PAY-02",
++   "category": "PAY",
++   "axis": "操作の揺れ",
++   "branch": "二重の請求・入金の二重記録",
++   "expect": "1 回だけ",
++   "levels": "単体",
++   "source": "OWASP Testing Guide"
++  },
++  {
++   "id": "TP-PAY-03",
++   "category": "PAY",
++   "axis": "時間の流れ",
++   "branch": "プランを月の途中で変える",
++   "expect": "決めた計算どおり",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-PAY-04",
++   "category": "PAY",
++   "axis": "守り",
++   "branch": "外の決済の通知",
++   "expect": "署名を確かめ、順番が逆に届いても壊れない",
++   "levels": "単体",
++   "source": "OWASP Testing Guide"
++  },
++  {
++   "id": "TP-EXT-01",
++   "category": "EXT",
++   "axis": "失敗",
++   "branch": "外のサービスが落ちた・遅い・時間切れ",
++   "expect": "止めるか通すかを決めて書き、そのとおり。通すなら記録して知らせる",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-EXT-02",
++   "category": "EXT",
++   "axis": "失敗",
++   "branch": "外が想定外の形を返す",
++   "expect": "落ちずに失敗として扱う",
++   "levels": "単体",
++   "source": "OWASP Testing Guide"
++  },
++  {
++   "id": "TP-EXT-03",
++   "category": "EXT",
++   "axis": "操作の揺れ",
++   "branch": "同じ通知が 2 回届く",
++   "expect": "1 回分だけ反映",
++   "levels": "単体",
++   "source": "OWASP Testing Guide"
++  },
++  {
++   "id": "TP-JOB-01",
++   "category": "JOB",
++   "axis": "失敗",
++   "branch": "途中で止まった・再起動・やり直し",
++   "expect": "二重にならず、続きから",
++   "levels": "単体",
++   "source": "OWASP Testing Guide"
++  },
++  {
++   "id": "TP-JOB-02",
++   "category": "JOB",
++   "axis": "時間の流れ",
++   "branch": "日付の変わり目・月末・タイムゾーン",
++   "expect": "決めた時刻の扱い（保存は世界標準時・表示は現地）どおり",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-JOB-03",
++   "category": "JOB",
++   "axis": "時間の流れ",
++   "branch": "処理の途中で対象が消えた",
++   "expect": "落ちずに飛ばして記録",
++   "levels": "単体",
++   "source": "OWASP Testing Guide"
++  },
++  {
++   "id": "TP-AI-01",
++   "category": "AI",
++   "axis": "守り",
++   "branch": "外に出す前",
++   "expect": "人の承認が無ければ出さない",
++   "levels": "単体・中間",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-AI-02",
++   "category": "AI",
++   "axis": "利用者の状態",
++   "branch": "止める・取り下げ・PC が閉じている",
++   "expect": "止まった理由と次の一手を出す",
++   "levels": "単体・中間",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-AI-03",
++   "category": "AI",
++   "axis": "守り",
++   "branch": "利用量の上限を越えた",
++   "expect": "止めて、いつ戻るかを出す",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-AI-04",
++   "category": "AI",
++   "axis": "失敗",
++   "branch": "予期しない出力（とても長い・空・形が違う）",
++   "expect": "落ちずに失敗として扱う",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-TOOL-01",
++   "category": "TOOL",
++   "axis": "入力",
++   "branch": "日本語の名前のファイル",
++   "expect": "検査の台本が読み落とさない（git ls-files は -z で読む）",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-TOOL-02",
++   "category": "TOOL",
++   "axis": "守り",
++   "branch": "検査が何も見ていないのに緑",
++   "expect": "自己試験でわざと壊し、赤になるのを見る",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-TOOL-03",
++   "category": "TOOL",
++   "axis": "失敗",
++   "branch": "容れ物の中と手元で設定・証明書・版が違う",
++   "expect": "同じ結果になる（違いは設定で吸収して書く）",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  }
++ ]
++}
+\ No newline at end of file
+diff -ruN orig/test-verification/references/test-patterns/test-patterns.local.example.json new/test-verification/references/test-patterns/test-patterns.local.example.json
+--- orig/test-verification/references/test-patterns/test-patterns.local.example.json	1970-01-01 00:00:00.000000000 +0000
++++ new/test-verification/references/test-patterns/test-patterns.local.example.json	2026-11-04 13:26:49.035692085 +0000
+@@ -0,0 +1,7 @@
++{
++ "_doc": "プロジェクトの足し分の見本。プロジェクトの根（例 07_qa/test-patterns.local.json）に写して使う。他のプロジェクトでも効く型は、スキルの patterns.json に戻す",
++ "categories": {},
++ "patterns": [
++  {"id": "TP-REG-L01", "category": "REG", "axis": "入口", "branch": "（例）QR コードから登録の画面を開く", "expect": "（例）紹介元が残る", "levels": "単体", "source": "プロジェクト名 日付・どんな抜けから"}
++ ]
++}
+diff -ruN orig/test-verification/references/ticket-example.md new/test-verification/references/ticket-example.md
+--- orig/test-verification/references/ticket-example.md	1970-01-01 00:00:00.000000000 +0000
++++ new/test-verification/references/ticket-example.md	2026-11-04 13:28:24.476652984 +0000
+@@ -0,0 +1,121 @@
++# チケットの見本：登録する（汎用・ai-driven-process.md §3 の形）
++
++> どのプロジェクトでも同じ形で書く見本。ID・道・部品の名前はプロジェクトのものに置き換える。
++> 「書いていない＝漏れ」なので、表のマスは全部埋める。受け持ちが他のチケットのマスはその名前を書く。
++> `python3 scripts/pattern_gate.py <このファイル>` が緑になること（分類の型を全部受けているか）。
++
++| 項目 | 中身 |
++|---|---|
++| 流れ（大分類） | 例：F1 登録してログインできる |
++| 分類: REG, MAIL, EXT | テストの型の分類（references/test-patterns/）。登録・メール・外とのつなぎ |
++| 歩く骨格 | 1 本目（中間テスト「登録 → メールの確認 → 規約」の 1 つ目） |
++| 行為 | 例：A01 アカウントを作る |
++| 依存 | なし。次のチケット「メールを確かめる」とは、下の表のマスで受け持ちを分ける |
++| 決定 | このチケットが従う決定ログの ID（例：個人の登録・パスワードの長さ・規約の同意と版・確かめていない人はやり直せる・共通の決まり） |
++
++## 何を実装するか
++
++初めての人が、メール・名前・会社名（空でもよい）・パスワードを入れて「次へ」を押すと、**保留の申し込み**が作られ、確認のメールが 1 通届く。画面は「メールを確かめてください」に進む。
++
++**登録が確定するのは、このチケットではない。** 確認のメールのリンクを押した時点で確定する（次のチケット「メールを確かめる」）。このチケットが作るのは、30 分で切れる保留の申し込みまで。
++
++## 作り方（実装の詳細）
++
++| 欄 | 中身 |
++|---|---|
++| 画面 | `apps/web/features/<流れ>/sign-up/`（画面の部品は目録の部品で組む）。道は `/signup` |
++| API | 契約の口 `createSignup`（POST /api/v1/auth/sign-up・誰でも呼べる・10 回／分／IP）。振る舞いを `apps/api/src/features/<流れ>/sign-up/` に書く |
++| DB | `pending_signup`（既存の表）。列：メール・名前・会社名・包んだパスワード・リンクの手がかり（ハッシュ）・期限（expires_at・30 分）・送った時刻・送れなかった理由・使い終わった時刻（consumed_at）。足りない列（同意した規約の版）は migration を 1 本足す |
++| 使う部品と版 | 認証のライブラリ（名前と版・関門のパッケージの中だけ）・メールは通知の関門・漏れたパスワードの照合は範囲の問い合わせ（ハッシュの頭 5 文字だけを送る・外への口の関門） |
++| 使う既存の実装（目録で探した） | 例：`normalizeEmail`・`putPending`・`sendPendingVerification`。前の道すじにある中身を契約の口に移し、前の道すじは消す |
++| 新しく作るもの | 漏れたパスワードの照合（目録に無い。似たものも無い）・同意した規約の版の列 |
++| 共通の決まり | エラーの文言はエラーの正本から引く・ログにパスワードとメールを出さない・時刻は timestamptz |
++
++## 決めた判断
++
++- 会社名は空でもよい。空なら本人の名前で個人の申し込みになる
++- 規約の同意は登録の画面の中。同意した版と時刻は保留の申し込みに残し、確定のときに本人に移す
++- 同じメールで確かめていない申し込みが既にあれば上書きし、前のリンクは使えなくする
++- ログイン中の人が登録の画面を開いたら、登録させずに今のアカウントの画面へ移す
++- 照合の外のサービスが落ちているときは、登録を止めずに通し、セキュリティの記録に残して運営に知らせる
++
++## 状態 × 入口 × 利用者の状態
++
++保留の申し込みの状態（DB の列から出した候補：期限 expires_at → 期限切れ、使い終わった時刻 consumed_at → 確定済み、リンクの手がかりの上書き → 前のリンク）
++
++| 申し込みの状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |
++|---|---|---|---|---|---|
++| 無し | 登録の画面から送る | ログインしていない | 保留の申し込みを作り、メールを 1 通。「メールを確かめてください」へ | このチケット | 単体（口・本物の DB）・単体（画面） |
++| 無し | 登録の画面を開く | ログイン中 | 登録させず、今のアカウントの画面へ移す | このチケット | 単体（画面） |
++| 無し | 登録の画面を開く | セッションが切れた | ログインしていないのと同じ（登録の画面を出す） | このチケット | 単体（画面） |
++| 保留中（期限内） | 登録の画面から同じメールで送る | ログインしていない | 上書きして新しいメールを送る。前のリンクは使えなくなる | このチケット | 単体（口・本物の DB） |
++| 保留中（期限内） | 確認のメールのリンク | どれでも | 確定する | メールを確かめる | — |
++| 保留中（期限切れ・30 分を過ぎた） | 登録の画面から同じメールで送る | ログインしていない | 新しく作り直す（期限切れは無いのと同じ） | このチケット | 単体（口・本物の DB の時刻を進める） |
++| 保留中（期限切れ） | 確認のメールのリンク | どれでも | 「リンクの期限が切れました。もう一度登録してください」と送り直しの案内 | メールを確かめる | — |
++| 前のリンク（送り直した） | 確認のメールのリンク（前の方） | どれでも | 「このリンクは使えません。新しく届いたメールのリンクを開いてください」 | メールを確かめる | — |
++| 確定済み | 登録の画面から同じメールで送る | ログインしていない | 409・「既に登録されています。ログインするか、パスワードを再設定してください」 | このチケット | 単体（口）・単体（画面） |
++| 確定済み | 確認のメールのリンクをもう一度 | ログインしていない | 「登録は済んでいます。ログインへ」 | メールを確かめる | — |
++| 確定済み | 確認のメールのリンクをもう一度 | ログイン中（同じ人） | 今のアカウントの画面へ | メールを確かめる | — |
++| 確定済み | 確認のメールのリンクをもう一度 | 別のアカウントでログイン中 | 今のアカウントのまま。「別のアカウントの登録のリンクです」と出し、勝手に切り替えない | メールを確かめる | — |
++| 保留中 | 確認のメールのリンクを別の端末・別のブラウザで | ログインしていない | 確定する（同じ端末でなくてよい） | メールを確かめる | — |
++| 保留中 | 「メールを確かめてください」の画面で再読み込み・戻る | ログインしていない | 画面は残り、送り直しのボタンが使える。申し込みは二重にならない | このチケット | 単体（画面） |
++| 保留中 | 長く放っておいてから「メールを確かめてください」の画面に戻る | ログインしていない | 期限切れなら「期限が切れました。もう一度登録してください」を出す | このチケット | 単体（画面・時刻を進める） |
++
++「—」は受け持ちのチケットでテストを書く。中間テスト（登録 → メールの確認 → 規約）は、このうち 確定する・期限切れ・前のリンク・確定済みでもう一度 を本物のブラウザでつなぐ。
++
++## 入力・失敗・操作の揺れ・守り
++
++| 観点 | 分岐 | 結果 | テスト |
++|---|---|---|---|
++| 入力 | メールが空・形が違う | 422・欄の下に理由 | 単体（口・画面） |
++| 入力 | メールの大文字小文字・前後の空白・全角 | 正規化して同じ人として扱う | 単体 |
++| 入力 | 名前が空・長さの上限 | 422・欄の下に理由 | 単体（口・画面） |
++| 入力 | 会社名が空 | 個人のテナントの申し込み | 単体（口） |
++| 入力 | 会社名の長さの上限・表記ゆれ | 上限で 422、表記ゆれは正規化 | 単体 |
++| 入力 | パスワード 11 文字／12 文字 | 11 は 422、12 は通る | 単体 |
++| 入力 | 漏れたパスワード | 422・「漏れたことのあるパスワードです」 | 単体（照合を差し替え） |
++| 入力 | パスワードを見る・隠す | 押すと見え、もう一度押すと隠れる | 単体（画面） |
++| 失敗 | 照合のサービスが落ちている | 通す・記録に残す | 単体（照合を失敗させる） |
++| 失敗 | メールが送れない | 申し込みは残し、送れなかったことを返す。画面は「送り直す」を出す | 単体（送る部品を失敗させる）・単体（画面） |
++| 失敗 | DB が落ちた | 500 の画面・申し込みは途中まで残らない | 単体（口） |
++| 操作の揺れ | 2 回押し | 申し込みは 1 つ・メールは 1 通 | 単体（画面） |
++| 操作の揺れ | 送信中に戻る・再読み込み | 入れた内容が消えない／二重にならない | 単体（画面） |
++| 操作の揺れ | 同じメールで同時に 2 回 | 申し込みは 1 つ | 単体（口・本物の DB） |
++| 守り | 1 分に 11 回 | 429・待つ秒数。画面に待ち時間 | 単体（口・画面） |
++| 守り | 登録済みかを探られる | 409 の文言は「ログインかパスワードの再設定」だけで、他の情報を出さない | 単体 |
++| 守り | 入力に HTML や制御文字 | 画面で動かない・保存は無害化 | 単体 |
++| 守り | ログ | パスワード・メールが出ない | 単体（ログを見る） |
++| 守り | DB の中 | パスワードが平文で無い・リンクの手がかりはハッシュだけ | 単体（本物の DB） |
++| 守り | 規約の版 | 同意した版と時刻が残る | 単体（本物の DB） |
++
++## テストの型の受け（分類 REG・MAIL・EXT の型を全部受ける。書いていない＝漏れ）
++
++| 型 | どこで受けるか |
++|---|---|
++| TP-REG-01 確定の時点 | 「何を実装するか」に書いた（確定はメールのリンク・次のチケット） |
++| TP-REG-02 期限切れのリンク | 状態の表「保留中（期限切れ）× 確認のメールのリンク」（受け持ち：メールを確かめる） |
++| TP-REG-03 確定後に同じリンク | 状態の表「確定済み × もう一度」（受け持ち：メールを確かめる） |
++| TP-REG-04 送り直しで前のリンク | 状態の表「前のリンク」（受け持ち：メールを確かめる）・このチケットは上書きで前を使えなくする |
++| TP-REG-05 別の端末・別のブラウザ | 状態の表「保留中 × 別の端末」（受け持ち：メールを確かめる） |
++| TP-REG-06 ログイン中・別のアカウント | 状態の表「無し × ログイン中」（このチケット）・「確定済み × 別のアカウント」（メールを確かめる） |
++| TP-REG-07 登録の有無を見せない | 守り「登録済みかを探られる」 |
++| TP-REG-08 メールの正規化 | 入力「メールの大文字小文字・前後の空白・全角」 |
++| TP-REG-09 漏れたパスワード | 入力「漏れたパスワード」・失敗「照合のサービスが落ちている」 |
++| TP-REG-10 長さの境目 | 入力「パスワード 11 文字／12 文字」 |
++| TP-REG-11 回数の上限 | 守り「1 分に 11 回」 |
++| TP-REG-12 同時に 2 回・2 回押し | 操作の揺れ「2 回押し」「同じメールで同時に 2 回」 |
++| TP-REG-13 規約の版と時刻 | 守り「規約の版」。同意し直しは「規約に同意する」のチケット |
++| TP-REG-14 平文で残さない | 守り「DB の中」「ログ」 |
++| TP-MAIL-01 送れなかったとき | 失敗「メールが送れない」 |
++| TP-MAIL-02 二重に出ない | 操作の揺れ「2 回押し」（メールは 1 通） |
++| TP-MAIL-03 本文に秘密を入れない | 守り：メールの本文にパスワードを入れない・リンクは期限つき（単体でメールの本文を見る） |
++| TP-EXT-01 外が落ちた・遅い | 失敗「照合のサービスが落ちている」（通して記録・運営に知らせる） |
++| TP-EXT-02 想定外の形 | 失敗：照合の答えの形が違う → 落ちている扱い（単体で答えを差し替え） |
++
++要らない: TP-EXT-03 照合は問い合わせの答えを待つだけで、外から知らせが届く口ではないため
++
++## 完了の条件（このチケットだけのもの。共通の決まりは CI が見る）
++
++- 上の 2 つの表の「このチケット」のマスと、全部の分岐のテストが緑
++- 前の道すじと前の画面が消えている（あれば）
++- 契約の口 `createSignup` が契約だけ（501）でない
+diff -ruN orig/test-verification/scripts/build_test_patterns.py new/test-verification/scripts/build_test_patterns.py
+--- orig/test-verification/scripts/build_test_patterns.py	1970-01-01 00:00:00.000000000 +0000
++++ new/test-verification/scripts/build_test_patterns.py	2026-11-04 13:26:49.035892930 +0000
+@@ -0,0 +1,48 @@
++#!/usr/bin/env python3
++"""テストの型のナレッジ（references/test-patterns/patterns.json）から、分類ごとの表（人が読む版）を作る。手で表を直さない。
++
++  python3 <skill>/scripts/build_test_patterns.py [--local <プロジェクトの test-patterns.local.json>] [--out <置き場>]
++既定はスキルの references/test-patterns/ に書く。--local を付けると、プロジェクトの足し分も合わせた表を --out に書く。
++"""
++from __future__ import annotations
++import json, os, sys
++
++HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
++BASE = os.path.join(HERE, "references/test-patterns/patterns.json")
++
++
++def load(local: str | None) -> dict:
++    d = json.load(open(BASE, encoding="utf-8"))
++    if local and os.path.exists(local):
++        L = json.load(open(local, encoding="utf-8"))
++        d["categories"].update(L.get("categories") or {})
++        ids = {p["id"] for p in d["patterns"]}
++        for p in L.get("patterns") or []:
++            if p["id"] in ids:
++                sys.exit(f"足し分の型 {p['id']} がスキルの型と同じ ID（別の ID にする）")
++            d["patterns"].append({**p, "local": True})
++    return d
++
++
++def main() -> int:
++    local = sys.argv[sys.argv.index("--local") + 1] if "--local" in sys.argv else None
++    out = sys.argv[sys.argv.index("--out") + 1] if "--out" in sys.argv else os.path.dirname(BASE)
++    d = load(local)
++    os.makedirs(out, exist_ok=True)
++    idx = ["# テストの型（分類ごと）", "", "> 生成物（scripts/build_test_patterns.py ← patterns.json）。手で直さない。型を足すときは patterns.json（プロジェクトなら test-patterns.local.json）に足す。", "",
++           "| 分類 | 型の数 | 表 |", "|---|---|---|"]
++    for c, name in d["categories"].items():
++        ps = [p for p in d["patterns"] if p["category"] == c]
++        if not ps:
++            continue
++        L = [f"# {name}（{c}）", "", "> 生成物。手で直さない。", "", "| ID | 観点 | 分岐 | 期待する結果 | 段 | 出典 |", "|---|---|---|---|---|---|"]
++        L += [f"| {p['id']}{'（足し分）' if p.get('local') else ''} | {p['axis']} | {p['branch']} | {p['expect']} | {p['levels']} | {p['source']} |" for p in ps]
++        open(os.path.join(out, f"{c}.md"), "w", encoding="utf-8").write("\n".join(L) + "\n")
++        idx.append(f"| {name}（{c}） | {len(ps)} | [{c}.md]({c}.md) |")
++    open(os.path.join(out, "README.md"), "w", encoding="utf-8").write("\n".join(idx) + "\n")
++    print(f"型 {len(d['patterns'])}・分類 {len(d['categories'])} → {out}")
++    return 0
++
++
++if __name__ == "__main__":
++    sys.exit(main())
+diff -ruN orig/test-verification/scripts/pattern_gate.py new/test-verification/scripts/pattern_gate.py
+--- orig/test-verification/scripts/pattern_gate.py	1970-01-01 00:00:00.000000000 +0000
++++ new/test-verification/scripts/pattern_gate.py	2026-11-04 13:26:49.036127380 +0000
+@@ -0,0 +1,67 @@
++#!/usr/bin/env python3
++"""チケットが、自分の分類のテストの型を全部受けているか（書いていない＝漏れ）。
++
++  python3 <skill>/scripts/pattern_gate.py <チケットの .md ...> [--local <test-patterns.local.json>]
++  python3 <skill>/scripts/pattern_gate.py --selftest
++
++チケットの書き方:
++  - 「分類:」の行に分類の ID を書く（例 `分類: REG, MAIL`）。分類の ID は patterns.json の categories
++  - その分類の型の ID（例 TP-REG-02）を、テストの表の行に書くか、「要らない: TP-REG-05 理由」と書く
++赤になるもの:
++  P1 分類の行が無い・知らない分類
++  P2 その分類の型の ID が、テストにも「要らない」にも無い（書いていない＝漏れ）
++  P3 「要らない」に理由が無い
++"""
++from __future__ import annotations
++import json, os, re, sys
++
++sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
++from build_test_patterns import load  # noqa: E402
++
++
++def check(text: str, d: dict) -> list[str]:
++    m = re.search(r"^[\s|*-]*分類[\s*|]*[:：|]\s*([A-Z0-9_ ,、・]+)", text, re.M)
++    if not m:
++        return ["P1 「分類:」の行が無い（例 `分類: REG, MAIL`）"]
++    cats = [c for c in re.split(r"[ ,、・]+", m.group(1).strip()) if c]
++    fails = [f"P1 知らない分類 {c}" for c in cats if c not in d["categories"]]
++    for p in d["patterns"]:
++        if p["category"] not in cats:
++            continue
++        lines = [ln for ln in text.splitlines() if p["id"] in ln]
++        if not lines:
++            fails.append(f"P2 {p['id']}（{p['branch']}）が、テストにも「要らない」にも無い")
++            continue
++        for ln in lines:
++            r = re.search(r"要らない\s*[:：]\s*" + re.escape(p["id"]) + r"\s*(.*)", ln)
++            if r and len(r.group(1).strip(" |。")) < 4:
++                fails.append(f"P3 {p['id']} を要らないとした理由が無い")
++    return fails
++
++
++def main() -> int:
++    local = sys.argv[sys.argv.index("--local") + 1] if "--local" in sys.argv else None
++    d = load(local)
++    if "--selftest" in sys.argv:
++        t = {"categories": {"X": "x"}, "patterns": [{"id": "TP-X-01", "category": "X", "branch": "a"}, {"id": "TP-X-02", "category": "X", "branch": "b"}, {"id": "TP-X-03", "category": "X", "branch": "c"}]}
++        ok = (any(f.startswith("P1") for f in check("本文", t))
++              and any("TP-X-02" in f and f.startswith("P2") for f in check("分類: X\n| TP-X-01 | テスト |\n要らない: TP-X-03 外の会社に無い機能のため", t))
++              and any(f.startswith("P3") for f in check("分類: X\n| TP-X-01 |\n| TP-X-02 |\n要らない: TP-X-03", t))
++              and not check("分類: X\n| TP-X-01 |\n| TP-X-02 |\n要らない: TP-X-03 この画面は一覧を持たない", t)
++              and any("知らない分類" in f for f in check("分類: Y", t)))
++        print("PASS — 分類の行が無い・型の書き漏れ・理由の無い要らない・知らない分類を赤にした" if ok else "FAIL — 見つけられない")
++        return 0 if ok else 1
++    files = [a for a in sys.argv[1:] if not a.startswith("--") and a != local]
++    bad = 0
++    for f in files:
++        fs = check(open(f, encoding="utf-8").read(), d)
++        for x in fs:
++            print(f"  ★ {f}: {x}")
++        bad += bool(fs)
++    print(f"チケット {len(files)}・型 {len(d['patterns'])}")
++    print("FAIL — 型を受けていないチケットがある" if bad else "PASS — どのチケットも、自分の分類の型を全部受けている")
++    return 1 if bad else 0
++
++
++if __name__ == "__main__":
++    sys.exit(main())
+diff -ruN orig/ticket-planning/SKILL.md new/ticket-planning/SKILL.md
+--- orig/ticket-planning/SKILL.md	2026-11-04 13:26:40.906282207 +0000
++++ new/ticket-planning/SKILL.md	2026-11-04 13:29:30.130197165 +0000
+@@ -11,6 +11,20 @@
+ 
+ # ticket-planning ── タスクを、人と AI が拾えるチケットにする
+ 
++## 🧭 AI 駆動の開発の進め方（ai-driven-process）— このスキルの責務（2026-11-04 追加・必須・省略不可）
++
++> 進め方の正本: `~/.claude/rules/common/ai-driven-process.md`（無ければ `engineering-rules` の `scripts/install.sh` で入れる）。
++> チケット＝利用者の 1 つの操作を画面・API・DB まで縦に通す 1 つの実装／分岐は 8 観点（入力・対象の状態・時間の流れ・入口・利用者の状態・失敗・操作の揺れ・守り）から出し、**書いていない＝漏れ**／
++> テストは入れ子の 5 段（単体＝L1・中間／統合／流れをまたぐ＝L2・回帰＝L3〜L5）／設計は 3 段（はじめに 1 回・流れに入るとき・チケットを切るとき）／
++> 目録をまず探す（同じものを 2 つ作らない）／役は 4 つ（作る・精査・実装・テスター）。**このスキルの記述と矛盾したら正本が勝つ。**
++
++- 親子は **流れ（大分類・プロジェクトごとに数が違う）→ チケット（操作 1 つ＝1 つの実装）→ テスト行**。流れをまたぐテストは、後から作る方の流れの子に置く
++- 盤に、中間・統合・流れをまたぐテストの **解禁（runnable_after が全部揃ったか）** と、歩く骨格の道すじを出す
++- 盤に **1 つ先の流れの切り出し**（作る役の進み）を出し、詰まった役（作る・精査・実装・テスター）が分かるようにする
++- チケットの欄（目録で探した結果・実装の詳細・分岐とテスト・分類）が空のチケットは赤（書いていない＝漏れ）
++
++---
++
+ ## このスキルの役割
+ 
+ task-decomposition は「何を作るか」を T-xx に割る。ここは、それを **拾える形**にする。
+diff -ruN orig/ux-flow-design/SKILL.md new/ux-flow-design/SKILL.md
+--- orig/ux-flow-design/SKILL.md	2026-11-04 13:26:40.953204352 +0000
++++ new/ux-flow-design/SKILL.md	2026-11-04 13:29:30.137030667 +0000
+@@ -9,6 +9,19 @@
+ handoff_flow: "requirements-definition → architecture-design → design-md → **ux-flow-design** → ui-mockup → functional-breakdown → feature-decomposition → task-decomposition → human-grade-qa(test-plan) → 実装 → human-grade-qa(実走)"
+ ---
+ 
++## 🧭 AI 駆動の開発の進め方（ai-driven-process）— このスキルの責務（2026-11-04 追加・必須・省略不可）
++
++> 進め方の正本: `~/.claude/rules/common/ai-driven-process.md`（無ければ `engineering-rules` の `scripts/install.sh` で入れる）。
++> チケット＝利用者の 1 つの操作を画面・API・DB まで縦に通す 1 つの実装／分岐は 8 観点（入力・対象の状態・時間の流れ・入口・利用者の状態・失敗・操作の揺れ・守り）から出し、**書いていない＝漏れ**／
++> テストは入れ子の 5 段（単体＝L1・中間／統合／流れをまたぐ＝L2・回帰＝L3〜L5）／設計は 3 段（はじめに 1 回・流れに入るとき・チケットを切るとき）／
++> 目録をまず探す（同じものを 2 つ作らない）／役は 4 つ（作る・精査・実装・テスター）。**このスキルの記述と矛盾したら正本が勝つ。**
++
++- 行為の背骨を、利用者が頭から最後まで通す **流れ（大分類）** に並べ直す。数はプロジェクトごとに違う（決め打ちしない）
++- 流れごとに、**入口**（メールのリンク・ブックマーク・戻る・再読み込み・別の端末・古いリンク）と **利用者の状態**（ログインしていない・ログイン中・セッション切れ・別のアカウント・権限が無い）ごとの行き先を導線に書く。これがチケットの状態の表の元になる
++- 管理側の変更が利用者側に出る **流れをまたぐ効き方の影響** の候補を出す
++
++---
++
+ ## 🎨 デザインシステム（design-system）— このスキルの責務（2026-09-16 追加）
+ 
+ > 規約の正本: `~/.claude/rules/common/design-system.md` ／ 由来: lessons-learned **L-017**
