@@ -3504,6 +3504,8 @@ layer_checks:
   manual: 組織のスキル 15 に当てる差分（進め方の正本 ai-driven-process.md と各スキルの責務の節・D-128.125〜D-128.134）。当てた後は消してよい
 - file: .qa/skill-patches/README.md
   manual: スキルへの差分の一覧と当て方
+- file: apps/web/content/legal/*.md
+  manual: 利用規約とプライバシーポリシーのひな形（D-128.137）。KN-140 で画面に出し terms_versions に入れる。公開の前に専門家が確かめる
 - file: ci.yaml
   check: python3 scripts/ci/ci_stages.py --check
 - file: 03_architecture/共通の決まり.md
