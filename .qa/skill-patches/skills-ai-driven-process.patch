@@ -24,12 +24,12 @@ diff -ruN orig/acceptance-criteria/SKILL.md new/acceptance-criteria/SKILL.md
  > 規約の正本: `~/.claude/rules/common/design-system.md` ／ 由来: lessons-learned **L-017**
 diff -ruN orig/ai-team-delivery/SKILL.md new/ai-team-delivery/SKILL.md
 --- orig/ai-team-delivery/SKILL.md	2026-11-04 13:26:40.976913479 +0000
-+++ new/ai-team-delivery/SKILL.md	2026-11-04 13:29:43.795656662 +0000
++++ new/ai-team-delivery/SKILL.md	2026-11-04 18:26:08.672398100 +0000
 @@ -1,6 +1,6 @@
  ---
  name: ai-team-delivery
 -description: "AI の固定メンバー（14 人のセッション）でチームを組み、チケット単位の開発を『精査 → テスト先行 → 実装 → 漏れ確認・細部レビュー・セキュリティ・テスト判定 → 完成確認 → PM が再検査してマージ』の順で、ほぼ自動で最後まで回すオーケストレーター（PM の手順書）。メンバーの起動・疎通の検査・名簿・状態の管理（決められた順番以外に進めない）・差し戻しの振り分け・止まったときの立て直し・Wave の区切りの片付け・人の実機テスト用の検収・テスト表（Google スプレッドシート）までを持つ。既存のスキル（spec-sync-orchestrator・distributed-dev・jit-task-execution・test-verification・human-grade-qa・visual-fidelity・e2e-journey-walkthrough・code-review・security-review）は作り直さず、役割から呼ぶ。ユーザーが「チームで進めて」「セッションを分けて開発して」「PM として回して」「チケットを自動で最後まで進めて」「開発セッションとテストセッションを作って」「漏れなく実装とテストを回して」「差し戻しまで自動で」「検収・テスト表を作って」「並列で開発を進めて」と言ったら、明示されなくても必ず使う。1 チケットだけ自分で実装する場面は jit-task-execution、テスト仕様を 1 本書くだけなら human-grade-qa を使う。検査は自前の CI（dagci：Dagger の上の OSS の実行器・ci.yaml 1 枚・GitHub Actions の self-hosted runner／Forgejo Actions・変わった所だけ・結果の使い回し・手元と CI で同じ動き）で流し、CI が緑のときだけ取り込む。「CI を自前で」「self-hosted runner で検査を」「検査が遅い・待ちが長い」でも使う。汎用（プロジェクトごとの違いは ai-team.yaml と ci.yaml）。"
-+description: "AI の固定メンバー（14 人のセッション）でチームを組み、チケット単位の開発を『精査 → テスト先行 → 実装 → 漏れ確認・細部レビュー・セキュリティ・テスト判定 → 完成確認 → PM が再検査してマージ』の順で、ほぼ自動で最後まで回すオーケストレーター（PM の手順書）。メンバーの起動・疎通の検査・名簿・状態の管理（決められた順番以外に進めない）・差し戻しの振り分け・止まったときの立て直し・Wave の区切りの片付け・人の実機テスト用の検収・テスト表（Google スプレッドシート）までを持つ。既存のスキル（spec-sync-orchestrator・distributed-dev・jit-task-execution・test-verification・human-grade-qa・visual-fidelity・e2e-journey-walkthrough・code-review・security-review）は作り直さず、役割から呼ぶ。ユーザーが「チームで進めて」「セッションを分けて開発して」「PM として回して」「チケットを自動で最後まで進めて」「開発セッションとテストセッションを作って」「漏れなく実装とテストを回して」「差し戻しまで自動で」「検収・テスト表を作って」「並列で開発を進めて」と言ったら、明示されなくても必ず使う。1 チケットだけ自分で実装する場面は jit-task-execution、テスト仕様を 1 本書くだけなら human-grade-qa を使う。検査は自前の CI（dagci：Dagger の上の OSS の実行器・ci.yaml 1 枚・GitHub Actions の self-hosted runner／Forgejo Actions・変わった所だけ・結果の使い回し・手元と CI で同じ動き）で流し、CI が緑のときだけ取り込む。「CI を自前で」「self-hosted runner で検査を」「検査が遅い・待ちが長い」でも使う。標準の検査（生成物が最新か・書いた検査が CI から回るか・部品の非推奨と出てからの日数）も持つ。汎用（言語・枝・道具・プロジェクトごとの違いは ai-team.yaml・ci.yaml・ci-gates.yaml）。"
++description: "AI の固定メンバー（14 人のセッション）でチームを組み、チケット単位の開発を『精査 → テスト先行 → 実装 → 漏れ確認・細部レビュー・セキュリティ・テスト判定 → 完成確認 → PM が再検査してマージ』の順で、ほぼ自動で最後まで回すオーケストレーター（PM の手順書）。メンバーの起動・疎通の検査・名簿・状態の管理（決められた順番以外に進めない）・差し戻しの振り分け・止まったときの立て直し・Wave の区切りの片付け・人の実機テスト用の検収・テスト表（Google スプレッドシート）までを持つ。既存のスキル（spec-sync-orchestrator・distributed-dev・jit-task-execution・test-verification・human-grade-qa・visual-fidelity・e2e-journey-walkthrough・code-review・security-review）は作り直さず、役割から呼ぶ。ユーザーが「チームで進めて」「セッションを分けて開発して」「PM として回して」「チケットを自動で最後まで進めて」「開発セッションとテストセッションを作って」「漏れなく実装とテストを回して」「差し戻しまで自動で」「検収・テスト表を作って」「並列で開発を進めて」と言ったら、明示されなくても必ず使う。1 チケットだけ自分で実装する場面は jit-task-execution、テスト仕様を 1 本書くだけなら human-grade-qa を使う。検査は自前の CI（dagci：Dagger の上の OSS の実行器・ci.yaml 1 枚・GitHub Actions の self-hosted runner／Forgejo Actions・変わった所だけ・結果の使い回し・手元と CI で同じ動き）で流し、CI が緑のときだけ取り込む。「CI を自前で」「self-hosted runner で検査を」「検査が遅い・待ちが長い」でも使う。標準の検査（生成物が最新か・書いた検査が CI から回るか・部品の非推奨と出てからの日数・テストが開発者の台の DB を決め打ちしていないか）も持つ。汎用（言語・枝・道具・プロジェクトごとの違いは ai-team.yaml・ci.yaml・ci-gates.yaml）。"
  metadata:
    tab: 品質・運用
    prev_skill: task-decomposition（チケットの正本ができていること）
@@ -99,7 +99,7 @@ diff -ruN orig/ai-team-delivery/SKILL.md new/ai-team-delivery/SKILL.md
  9. 仕様を書く人を増やすときは、生成器を区画に分けて鍵（`state.py lock <区画>`）を渡す。仕様の枝（S1・S2）は送る前に main を取り込む
  
  マージを PM の判断でしてよいかは **user が決める**。許可が無ければ聞く。
-@@ -187,7 +212,7 @@
+@@ -187,18 +212,25 @@
  
  | 誰が・いつ | すること |
  |---|---|
@@ -108,7 +108,12 @@ diff -ruN orig/ai-team-delivery/SKILL.md new/ai-team-delivery/SKILL.md
  | T（テストの書き手）| テストだけの枝で全部の段を流さない（実装が無いので必ず赤・列を埋める）。実装の枝に積んだ手元の木で自分のテスト・lint・型を確かめて D に渡す。全部の段は D が実装の枝で 1 回 |
  | メンバー：試すとき | 自分のテスト・1 つの段だけ（`dagci run --only <段>`）。**列を通さない `--no-queue` は、ほかの回と重なって偽の赤を出す** |
  | PM：取り込み | `pm_merge.sh`（main への取り込みは列の先頭に割り込む・流れている回は止めない）→ `--deploy interim` |
-@@ -198,7 +223,13 @@
+ | PM：見回りのたび | `dagci queue`・`dagci doctor`（空き・キャッシュ・反映漏れ・古い札・selftest と判定の同等の古さ） |
+ | dagci を直したとき | `dagci selftest` が緑（壊して確かめる場面）。段の並び・流し方を変えたら `--parity` も。**見つけた偽の赤は、場面を selftest に足して赤→緑を貼る** |
+ | 本番 | `dagci deploy production`：approvers の人の確認だけ・interim を通った版だけ。IaC ができるまで「未整備」で止まる |
+-| 新しい PC | `references/ci.md` §2（リポジトリ・スキル・Docker → `dagci setup` → `dagci run --all` が緑）。秘密は鍵束に入れ直す |
++| 新しい PC | `references/ci.md` §2（リポジトリ・スキル・Docker → `dagci setup` → `dagci smoke` → `dagci run --all` が緑）。秘密は鍵束に入れ直す |
++| 新しいプロジェクト | 根で `dagci init-ci`（GitHub の workflow と package.json などから ci.yaml の下書き・段は workflow から毎回導く）→ `dagci smoke`（2 分の健康診断：道具箱・部品・網・相手）が緑 → `dagci run --all`（`references/ci.md` §2.1〜2.3）。外側の誤りを 30 分の全部の段で 1 つずつ見つけない |
  
  - 赤が出たら、まず「中身の赤」か「CI の赤（I/O error・同時に流した・使い回した赤）」かを分ける。CI の赤はメンバーに直させず、CI の持ち主に類で直させる
  - 取り込みの直前は必ず全部の段（`--affected` は既定にしない）
@@ -117,13 +122,13 @@ diff -ruN orig/ai-team-delivery/SKILL.md new/ai-team-delivery/SKILL.md
 +
 +### 標準の検査（scripts/gates/・どのプロジェクトにも入れる）
 +
-+プロジェクトの検査とは別に、**「検査が回っているか・生成物が最新か・部品の版が決まりどおりか」**を見る 3 本を CI の段に入れる
-+（`generated_gate.py`・`wiring_gate.py`・`deps_gate.py`。設定は根の `ci-gates.yaml`、雛形は `assets/ci/ci-gates.example.yaml`、入れ方は `references/ci.md` §14）。
-+どれも `--selftest` で「壊すと赤になる」を自分で確かめる。PM は導入のとき、この 3 本の段が ci.yaml にあることを確かめる。
++プロジェクトの検査とは別に、**「検査が回っているか・生成物が最新か・部品の版が決まりどおりか・テストが開発者の台を決め打ちしていないか」**を見る 4 本を CI の段に入れる
++（`generated_gate.py`・`wiring_gate.py`・`deps_gate.py`・`devhost_gate.py`。設定は根の `ci-gates.yaml`、雛形は `assets/ci/ci-gates.example.yaml`、入れ方は `references/ci.md` §14）。
++どれも `--selftest` で「壊すと赤になる」を自分で確かめる。PM は導入のとき、この 4 本の段が ci.yaml にあることを確かめる。
  
  ## 待ちを作らない（丁寧さと速さを両立する）
  
-@@ -298,10 +329,11 @@
+@@ -298,10 +330,11 @@
  | `references/protocol.md` | 起動・報告の形式・状態の移り方・立て直しの詳細 |
  | `references/roles/*.md` | メンバーに渡す（PM 自身は `pm.md`） |
  | `references/acceptance-sheet.md` | 検収・テスト表を作るとき |
@@ -133,7 +138,7 @@ diff -ruN orig/ai-team-delivery/SKILL.md new/ai-team-delivery/SKILL.md
  | `references/ci.md` | 自前の CI（dagci）を入れる・ci.yaml を書く・runner を増やす・Forgejo に移るとき |
 -| `assets/ci/` | ci.yaml と workflow の雛形 |
 +| `assets/ci/` | ci.yaml・ci-gates.yaml（標準の検査）・workflow の雛形 |
-+| `scripts/gates/` | 標準の検査 3 本（生成物・CI の配線・部品の版。`references/ci.md` §14） |
++| `scripts/gates/` | 標準の検査 4 本（生成物・CI の配線・部品の版・開発者の台の決め打ち。`references/ci.md` §14） |
  | `assets/ai-team.example.yaml` | 設定の雛形 |
  | `assets/member-brief.md` / `assets/handoff-message.md` | メンバーに送る文の雛形 |
  | `assets/report-templates/` | 工程ごとの報告の雛形 |
@@ -228,8 +233,8 @@ diff -ruN orig/ai-team-delivery/assets/ai-team.example.yaml new/ai-team-delivery
    l1_rows_per_session: 25
 diff -ruN orig/ai-team-delivery/assets/ci/ci-gates.example.yaml new/ai-team-delivery/assets/ci/ci-gates.example.yaml
 --- orig/ai-team-delivery/assets/ci/ci-gates.example.yaml	1970-01-01 00:00:00.000000000 +0000
-+++ new/ai-team-delivery/assets/ci/ci-gates.example.yaml	2026-11-04 13:26:49.039617961 +0000
-@@ -0,0 +1,30 @@
++++ new/ai-team-delivery/assets/ci/ci-gates.example.yaml	2026-11-04 18:18:59.828226036 +0000
+@@ -0,0 +1,43 @@
 +# ci-gates.yaml — 標準の検査（<skill>/scripts/gates/）の設定。プロジェクトの根に置く。使わない検査は節ごと消す（消した検査は「使っていない」で緑）。
 +# どれも「わざと壊すと赤になる」自己試験（--selftest）を持つ。CI の段に、自己試験と本体の両方を入れる（references/ci.md §「標準の検査」）。
 +# ↓ のパス・命令は例。プロジェクトのものに書き換える
@@ -260,33 +265,94 @@ diff -ruN orig/ai-team-delivery/assets/ci/ci-gates.example.yaml new/ai-team-deli
 +  baseline: ci/deprecated_baseline.json   # {"entries": {"名前@版": {"ticket": "...", "why": "..."}}}
 +  age_exclude: []                   # ["名前@版 # 2026-11-01 に出た・弱点の直しで急ぐ"]（pnpm の minimumReleaseAgeExclude も読む）
 +  require_pm_setting: true          # pnpm なら minimumReleaseAge を必須にする
++
++# テストが開発者の台を決め打ちしていないか：テストとテストの手伝いのファイルで、環境の値が無いときに手元の接続先へ落ちる形
++#   （process.env.DATABASE_URL ?? "postgres://…127.0.0.1:55433/…"・|| 'localhost:5432'・os.environ.get("X", "redis://localhost:6379")・${X:-localhost:5432}）、
++#   環境から来た URL の口だけを書き換える形（u.port = …・.replace(":5432", …)）、決め打ちの手元の DB の URL を ファイル:行 で赤にする。
++#   CI の相手は 127.0.0.1 ではない（容れ物の名前）。値が無ければ止める（throw・os.environ["X"]・${X:?}）（Kaname・2026-11-04）
++devhost:
++  tests: ["**/*.test.*", "**/*.spec.*", "**/test/**", "**/tests/**", "**/__tests__/**", "**/test_*.py", "**/*_test.py",
++          "**/conftest.py", "**/vitest.config.*", "**/jest.config.*", "**/playwright.config.*", "**/test-utils/**", "**/testing/**"]
++  exclude: []                       # 足して外す glob（node_modules・dist・build は最初から外す）
++  allow_file: ci/devhost_allow.yaml # [{path: glob, contains: 行の一部, why: 理由}]。理由の無いもの・もう当たらないものは赤
++  # 例（ci/devhost_allow.yaml）:
++  # - {path: apps/web/tests/_lib/fake-bridge.ts, contains: "127.0.0.1:3124", why: 試験の中で自分が立てる画面の口（相手ではない）}
++  # - {path: vitest.config.ts, contains: DEV_TEST_DATABASE_URL, why: CI（CI=true）では使わない手元だけの既定}
 diff -ruN orig/ai-team-delivery/assets/ci/ci.example.yaml new/ai-team-delivery/assets/ci/ci.example.yaml
 --- orig/ai-team-delivery/assets/ci/ci.example.yaml	2026-11-04 13:26:40.978609155 +0000
-+++ new/ai-team-delivery/assets/ci/ci.example.yaml	2026-11-04 13:26:49.039794587 +0000
-@@ -14,11 +14,13 @@
++++ new/ai-team-delivery/assets/ci/ci.example.yaml	2026-11-04 18:18:37.401288597 +0000
+@@ -6,19 +6,39 @@
+   base: main                    # 変わったファイルを数える起点（分岐点からの差）
+   history: true                 # 容れ物の中に最小の git（base の木＋作業場の木）を作る
+ 
+-# 段の一覧を、既存の台本から導く（手で写すとずれる）。命令は段の一覧を YAML か JSON で出す。
++# 段の一覧を、既存の台本・workflow から導く（手で写すとずれる）。命令は段の一覧を YAML か JSON で出す。
+ # from に挙げたファイルが変わったら「設定が変わった」として全部の段を流す
++#   GitHub の workflow があるなら、dagci init-ci がこの ci.yaml の下書きごと作る（include は dagci の stages_from_github.py・
++#   外す job は github.skip_jobs に理由つき・dagci stages --check で 1 対 1 を見る）
+ # include:
+-#   - cmd: python3 scripts/ci/ci_stages.py
++#   - cmd: '"$DAGCI_PY" "$DAGCI_LIB/stages_from_github.py"'
++#     from: [.github/workflows/ci.yml]
++#   - cmd: python3 scripts/ci/ci_stages.py          # 台本（verify_all.sh など）から導く形
+ #     from: [scripts/ci/ci_stages.py, scripts/ci/verify_all.sh]
++# github: {workflows: [.github/workflows/ci.yml], skip_jobs: {e2e: "staging の本物の環境が要る"}, skip_steps: {}, ignore_uses: {}}
  
  toolbox:                        # 全部の段が流れる容れ物（Dagger が作り、同じ書き方なら使い回す）
-   from: python:3.12-slim-bookworm      # ★python3 が要る（段の包み stage.py が使う）
+-  from: python:3.12-slim-bookworm      # ★python3 が要る（段の包み stage.py が使う）
 -  env: {TZ: Asia/Tokyo, LANG: C.UTF-8, CI: "true"}
-+  # NODE_EXTRA_CA_CERTS：Node は OS の証明書を読まない。会社の網・中継が TLS を差し替える所では、DAGCI_EXTRA_CA を渡しても
-+  #   apt・pip・curl は通るのに npm・pnpm だけが SELF_SIGNED_CERT_IN_CHAIN で落ちる（2026-11-04 Kaname）。OS の証明書も読ませる
-+  env: {TZ: Asia/Tokyo, LANG: C.UTF-8, CI: "true", NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt}
++  # 元の image は言語の公式（node・python）。GitHub の実行機の image は容れ物として配られておらず、似せた image は大きく版も固まらないので使わない。
++  #   版は GitHub の setup-node・setup-python と同じに（init-ci が「22」をその時点の 22.x.y に固定する）
++  from: node:22.19.0-bookworm         # ★python3 が要る（段の包み stage.py が使う。下の apt で入れる）
++  env:
++    TZ: UTC                     # GitHub の実行機と同じ
++    LANG: C.UTF-8
++    CI: "true"
++    NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt   # Node は OS の証明書を読まない。中継が TLS を差し替える所で npm・pnpm だけ SELF_SIGNED_CERT_IN_CHAIN（2026-11-04 Kaname）
++    SSL_CERT_FILE: /etc/ssl/certs/ca-certificates.crt         # uv が入れた Python も OS の証明書を読まない（CERTIFICATE_VERIFY_FAILED・Kaname の G46）
++    REQUESTS_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt    # requests・pip は自分の証明書の束を使う
++    UV_NATIVE_TLS: "1"          # uv も OS の証明書を使う（Python を取りに行けずに error sending request）
++    PIP_BREAK_SYSTEM_PACKAGES: "1"   # Debian の python3 に uv を入れるため
++    VIRTUAL_ENV: /opt/py
++    PATH: /opt/py/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin   # venv は PATH の先頭で使う。links を張ると venv と見なされず部品が見えない（Kaname の G27・G37・G52）
    steps:
-     - apt-get update -qq && apt-get install -y -qq --no-install-recommends git curl ca-certificates xz-utils >/dev/null
-     - curl -fsSL https://nodejs.org/dist/v22.19.0/node-v22.19.0-linux-$(dpkg --print-architecture | sed 's/amd64/x64/').tar.xz | tar -xJ -C /usr/local --strip-components=1
+-    - apt-get update -qq && apt-get install -y -qq --no-install-recommends git curl ca-certificates xz-utils >/dev/null
+-    - curl -fsSL https://nodejs.org/dist/v22.19.0/node-v22.19.0-linux-$(dpkg --print-architecture | sed 's/amd64/x64/').tar.xz | tar -xJ -C /usr/local --strip-components=1
 -    - npm install -g -s pnpm@9.12.3
++    - apt-get update -qq && apt-get install -y -qq --no-install-recommends git curl ca-certificates python3 python3-pip postgresql-client >/dev/null   # postgresql-client：smoke の select 1・段の psql
++    - pip3 install -q uv==0.9.5 && uv venv -q --python 3.12 /opt/py && uv pip install -q --python /opt/py/bin/python pip pyyaml==6.0.3   # Python は GitHub と同じ版（uv の版を固定すれば入る版も決まる）・段の pip install のため pip も入れる
++    - python3 -c 'import sys; assert sys.prefix == "/opt/py", sys.prefix'   # venv がずれたら道具箱の時点で落とす（30 分後の段で No module named を見ない）
 +    - npm install -g -s pnpm@9.12.3   # corepack prepare は Node 22 の古い corepack が pnpm 10 の署名の鍵を知らずに落ちることがある。npm で入れる
++    # GitHub の実行機には Google Chrome が最初からある。テストが channel: chrome を使うなら入れる（Linux の Chrome は amd64 だけ・arm64 の台では入らない）
++    # - if [ "$(dpkg --print-architecture)" = amd64 ]; then curl -fsSL https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o /tmp/c.deb && apt-get install -y -qq /tmp/c.deb >/dev/null; fi
  
  env: {}                         # 全部の段に渡す環境（秘密は書かない。秘密は runner の側で渡す）
  
-@@ -63,3 +65,16 @@
+@@ -29,11 +49,16 @@
+     run: npm_config_store_dir=/pnpm-store pnpm install --frozen-lockfile --prefer-offline
+ 
+ services:                       # 段が使う相手（容れ物で起こし、段から名前で引ける）
++  # GitHub の job ごとに別にする（同じ定義の相手は Dagger が 1 つにまとめる。dagci が DAGCI_SERVICE=<名前> を入れて分ける・Kaname の G3 と G27）
+   postgres:
+     image: postgres:16-alpine
+     env: {POSTGRES_PASSWORD: ci, POSTGRES_DB: app}
+     ports: [5432]
+ 
++# dagci smoke（と dagci run --all の最初）が流す、プロジェクトの短い確かめ。道具・部品・網（npm・PyPI）・相手（TCP・select 1）は dagci が自分で見る
++smoke:
++  - {name: 移行が当たる, run: "pnpm -s db:migrate", services: [postgres], env: {DATABASE_URL: "postgres://postgres:ci@postgres:5432/app"}}
++
+ defaults: {timeout: 1800}
+ 
+ stages:
+@@ -63,3 +88,19 @@
      name: 仕様の検査
      run: python3 scripts/ci/spec_gate.py   # Python 1 本の段は、読んだファイルが同じなら結果を使い回す
      when: ["docs/**", "scripts/ci/**"]
 +  # 標準の検査（references/ci.md §14）。スキルの scripts/gates/ を scripts/ci/gates/ に写して版に入れる。設定は根の ci-gates.yaml
 +  - id: gates-selftest
 +    name: 標準の検査の自己試験
-+    run: python3 scripts/ci/gates/generated_gate.py --selftest && python3 scripts/ci/gates/wiring_gate.py --selftest && python3 scripts/ci/gates/deps_gate.py --selftest
++    run: python3 scripts/ci/gates/generated_gate.py --selftest && python3 scripts/ci/gates/wiring_gate.py --selftest && python3 scripts/ci/gates/deps_gate.py --selftest && python3 scripts/ci/gates/devhost_gate.py --selftest
 +  - id: generated
 +    name: 生成物が最新
 +    run: python3 scripts/ci/gates/generated_gate.py   # ★作業場を書き換える段（codegen など）の後ろに置かない。作り直した後では古さが見えない
@@ -296,6 +362,9 @@ diff -ruN orig/ai-team-delivery/assets/ci/ci.example.yaml new/ai-team-delivery/a
 +  - id: deps-age
 +    name: 部品の版（非推奨・出てからの日数）
 +    run: python3 scripts/ci/gates/deps_gate.py    # registry に聞くので網が要る
++  - id: devhost
++    name: テストが開発者の台を決め打ちしない（DB・相手の接続先は環境から）
++    run: python3 scripts/ci/gates/devhost_gate.py
 diff -ruN orig/ai-team-delivery/references/adapter.md new/ai-team-delivery/references/adapter.md
 --- orig/ai-team-delivery/references/adapter.md	2026-11-04 13:26:40.980015309 +0000
 +++ new/ai-team-delivery/references/adapter.md	2026-11-04 13:26:49.040196488 +0000
@@ -325,8 +394,8 @@ diff -ruN orig/ai-team-delivery/references/adapter.md new/ai-team-delivery/refer
  `state.py items <チケット>` が、設定 `ticket_fields` に従ってチケットの正本から項目を引く。
 diff -ruN orig/ai-team-delivery/references/ci.md new/ai-team-delivery/references/ci.md
 --- orig/ai-team-delivery/references/ci.md	2026-11-04 13:26:40.980158762 +0000
-+++ new/ai-team-delivery/references/ci.md	2026-11-04 15:11:34.426118837 +0000
-@@ -43,6 +43,12 @@
++++ new/ai-team-delivery/references/ci.md	2026-11-04 18:20:00.062054649 +0000
+@@ -43,14 +43,77 @@
  2. 初回の準備：`<スキル>/scripts/ci/dagci/dagci setup`（容れ物の道具・Dagger の CLI と SDK・エンジン。版は固定）
     会社の網が TLS を差し替える PC は `DAGCI_EXTRA_CA=auto`（macOS）か `DAGCI_EXTRA_CA=<PEM>` を付ける
     （エンジンが image を取れずに `x509: certificate signed by unknown authority` で落ちるのがこの場合）
@@ -339,20 +408,117 @@ diff -ruN orig/ai-team-delivery/references/ci.md new/ai-team-delivery/references
  3. 確かめ方：リポジトリの根で `dagci run --all` が「緑：<段の数> 段」になること
  
  **新しいプロジェクトに入れる**
-@@ -310,3 +316,42 @@
+ 1. 上の 1・2
+-2. **ci.yaml を書く**：`assets/ci/ci.example.yaml` を根に写して書き換える（形は §3）。段の一覧がすでに台本（verify_all.sh など）にあるなら、
++2. **ci.yaml を作る**：GitHub の workflow があるなら、根で `dagci init-ci`（§2.1）。下書きの ci.yaml を読み、注（`# 注:`）と外した job の理由を確かめる。
++   workflow が無ければ `assets/ci/ci.example.yaml` を根に写して書き換える（形は §3）。段の一覧がすでに台本（verify_all.sh など）にあるなら、
+    **写さずに** `include: [{cmd: ...}]` で台本から導く（moon-shot-saas の `scripts/ci/ci_stages.py` が例）
+-3. `dagci plan` → `dagci run --all` が全部緑になるまで ci.yaml を直す。**わざと壊した写しで赤になる**ことも 1 回は見る（§6）
+-4. メンバーは `dagci check`、PM は `pm_merge.sh`（既定で `dagci run --all`）。hook は `git config dagci.enabled true` で切り替える（§12）
++3. **`dagci smoke`（2 分）が全部緑になるまで、道具箱・相手を直す**（§2.2）。30 分の全部の段を流して、外側の誤りを 1 つずつ見つけない
++4. `dagci plan` → `dagci run --all` が全部緑になるまで ci.yaml を直す。**わざと壊した写しで赤になる**ことも 1 回は見る（§6）
++5. メンバーは `dagci check`、PM は `pm_merge.sh`（既定で `dagci run --all`）。hook は `git config dagci.enabled true` で切り替える（§12）
++
++### 2.1 ci.yaml の下書きを workflow から作る（dagci init-ci）と、段を workflow から導く（dagci stages）
++
++`dagci init-ci [--workflow <パス>] [--force] [--offline]` は、`.github/workflows/*.yml`（リリース・タグだけの workflow は外す）と
++package.json・pnpm-workspace.yaml・lockfile・.nvmrc・.node-version・.python-version を読み、ci.yaml を書く（すでにあれば ci.init.yaml に書き、上書きしない）。
++
++| workflow・ファイルの中身 | ci.yaml に書くもの |
++|---|---|
++| `actions/setup-node` の node-version（`${{ env.X }}` もほどく）・.nvmrc・engines | `toolbox.from: node:<版>-bookworm`。「22」はその時点の 22.x.y に固定（網が無ければ書いてあるまま） |
++| `pnpm/action-setup` の version・package.json の `packageManager` | `npm install -g pnpm@<版>`（packageManager の版を優先） |
++| `actions/setup-python` の python-version・.python-version | uv（版を固定）で venv `/opt/py` を作る。PATH の先頭・`sys.prefix` の確かめつき |
++| `pip install ...`（版が無ければ PyPI のその時点の最新に固定）・`-r requirements.txt` | 道具箱の `uv pip install`・準備の `python-deps` |
++| `apt-get install ...` | 道具箱の apt に足す |
++| `playwright install ...` | 準備の後ろで流す（`PLAYWRIGHT_BROWSERS_PATH=/ms-playwright`・置き場つき） |
++| テスト・workflow の `channel: chrome`・`google-chrome` | Google Chrome（GitHub の実行機には最初からある・amd64 だけ） |
++| job の `services:`（image・env・ports） | `services: <job>-<名前>`。postgres があれば postgresql-client も入れる |
++| 段 | `include` に `dagci stages`（下）。`if:` で GitHub の出来事に依る job・Linux 以外の job は `github.skip_jobs` に理由つきで外す |
++
++元の image は言語の公式（node・python）にする。GitHub の実行機の image は容れ物として配られておらず、似せた image（act 用など）は数 GB〜数十 GB で、
++版も入っている物の約束も固まらない。GitHub の実行機に最初からある物（Chrome・psql など）は、workflow とテストから見つけて足す。
++
++`dagci stages`（include から呼ぶ。中身は `scripts/ci/dagci/stages_from_github.py`・Kaname の `ci_stages.py` を汎用にした）は、毎回 workflow から段を導く：
++- 手順のうち install の類（`pnpm install`・`pip install`・`playwright install`・apt）は道具箱・準備で済ませた物、
++  組み立て（`build`）と後ろで立ち上げる手順は「後ろの段の前に毎回流す」、それ以外の `run:` が 1 段（id は `<job>-<名前>`・`G12 …` は `<job>-g12`）
++- 相手のある job は手順を順に（前の段を needs に）。env の `localhost:<口>` は相手の名前に向ける（`DATABASE_URL=…@localhost:5432/…` → `…@<job>-postgres:5432/…`）
++- **1 対 1 が崩れたら段を出さずに止まる**（設定の誤り）：知らない action・外す理由の無い job・`${{ secrets.X }}` が残る手順・もう無い物を指す記録。
++  `dagci stages --check` で、workflow のどの手順がどう扱われたか（段・済ませた・外した＋理由）を一覧で出す
++- 設定は ci.yaml の `github:`（workflows・skip_jobs・skip_steps・ignore_uses・setup・job_setup）。ファイルの先頭に説明
++
++### 2.2 2 分の健康診断（dagci smoke）
++
++`dagci smoke` は道具箱と準備を作り、容れ物の中で次を 1 項目 1 行の 緑／赤 で出す（赤があれば終わり方 1。記録は `$DAGCI_HOME/smoke/<project>.json`・doctor が見る）。
++**`dagci run --all` も最初にこれを流し、赤なら段を流さずに「流せない（健康診断が赤：…）」で止まる**（`--no-smoke`・`ci.smoke: false` で外す）。
++
++| 項目 | 見ること | 由来（Kaname・2026-11-04。どれも 30 分流してから見つかった） |
++|---|---|---|
++| 道具箱・準備 | 作れるか。落ちたら命令の最後の行 | |
++| Python | `python3` が venv と見なされているか（`sys.prefix`）・venv に入れた部品が全部 import できるか | links を張った venv の Python で yaml が見えなかった |
++| Node | node・packageManager の道具の版・package.json の依存が node_modules にあるか | |
++| https | 使う registry（npm・`.npmrc` の registry・PyPI）に curl・node・python3 のそれぞれでつながるか | 道具ごとに証明書の読み方が違い、npm と uv の Python だけが落ちた |
++| 相手 | services のどれもが起き、口（TCP）につながるか。postgres は pg_isready と select 1・redis は PING | 同じ定義の 2 つの Postgres が 1 つにまとめられていた |
++| smoke | ci.yaml の `smoke:`（`[{name, run, services, env, timeout}]` か命令の文字列）。例：移行が当たる | |
++
++### 2.3 既定に入れた教訓（ci.example.yaml・init-ci の下書き）
++
++| 既定 | 1 行の理由 |
++|---|---|
++| `NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt` | Node は OS の証明書を読まない。中継の内側で npm・pnpm だけが SELF_SIGNED_CERT_IN_CHAIN |
++| `SSL_CERT_FILE`・`REQUESTS_CA_BUNDLE`（同じ束） | uv が入れた Python・requests は OS の証明書を読まない（CERTIFICATE_VERIFY_FAILED） |
++| `UV_NATIVE_TLS: "1"` | uv が Python を取りに行けない（error sending request） |
++| `PATH` の先頭に `/opt/py/bin`・`VIRTUAL_ENV`・道具箱の最後に `sys.prefix` の確かめ | 別の場所へ links を張ると venv と見なされず、入れた部品が見えない |
++| Python・Node の版は workflow と同じに固定 | 3.11 で schemathesis が落ちた（GitHub は 3.12） |
++| Chrome は workflow・テストが使うときだけ足す（amd64 だけ） | GitHub の実行機には最初からあり、容れ物には無い |
++| 相手は job ごとに別の名前（dagci が `DAGCI_SERVICE=<名前>` を入れる） | Dagger は定義が同じ相手を 1 つにまとめ、2 つの段が同じ DB を同時に作り直した |
++| 標準の検査 `devhost_gate.py`（§14） | テストが `DATABASE_URL ?? "…127.0.0.1:55433…"` の開発者の DB に落ち、別のテストは URL の口だけを替えていた |
+ 
+ ## 3. ci.yaml の形
+ 
+@@ -65,7 +128,9 @@
+ | `toolbox` | `from`（元の image。**python3 が要る**）・`env`・`steps`（image を作る命令） |
+ | `env` | 全部の段に渡す環境。**秘密は書かない**（秘密は runner 側の環境で渡す） |
+ | `prepare` | `[{name, inputs: [glob], run, caches: {名前: 置き場}}]`。inputs のファイルだけを入れて流すので、入力が同じなら使い回す（依存の部品） |
+-| `services` | `{名前: {image, env, ports, args}}`。段から名前で引ける（例 `postgres:5432`） |
++| `services` | `{名前: {image, env, ports, args}}`。段から名前で引ける（例 `postgres:5432`）。dagci が `DAGCI_SERVICE=<名前>` を入れる（同じ定義の相手を 1 つにしない） |
++| `smoke` | `dagci smoke`・`run --all` の最初に流す短い確かめ。`[{name, run, services, env, timeout}]` か命令の文字列（§2.2） |
++| `github` | `dagci stages` が workflow から段を導く設定（§2.1） |
+ | `caches` | `{名前: 置き場}`。全部の段に付ける、回をまたいで残す置き場（例 turbo の `.turbo`）。中身は使い回しの鍵に入らない |
+ | `defaults` | 段の既定（例 `timeout: 1800`） |
+ | `overrides` | `{段の id: {項目: 値}}`。include で導いた段の一部だけを変える |
+@@ -289,6 +354,8 @@
+ | 24 | 重い段（`heavy: true`・記録の時間の中央値が `ci.heavy_seconds`＝既定 30 秒以上）が 2 本 | 同時に 1 本だけ（台を取り合って時間切れにしない） |
+ | 25 | 同時に流れる段が回をまたぐ置き場（caches）に書く | 置き場は段ごとに別（turbo の置き場の取り合いをしない） |
+ | 26 | `dagci audit` | 揺れうる所（A1 同じ命令を同時に・A2 書き換えの後に作業場を数える・A3 短い時間の上限・A4 vitest に testTimeout が無い・A5 段の時間が上限に近い）を数える |
++| 27 | 健康診断（`dagci smoke`）：起きない相手・落ちる smoke の確かめ・`run --all` | smoke が赤（相手・確かめの名前つき）・`run --all` は段を流さず「流せない（健康診断が赤）」で終わり方 3・起きる相手と通る確かめは緑 |
++| 28 | workflow から段を導く（`dagci init-ci`・`dagci stages`） | 下書きが読める・段が workflow の手順と 1 対 1・相手は job ごと・localhost が相手の名前に・知らない action と理由の無い外しは赤 |
+ 
+ **偽の赤の類と、その止め方**（2026-10-29 に止まった 5 種類から）
+ | 類 | 止め方 |
+@@ -303,6 +370,7 @@
+ - エンジンの使い回しに上限：`engine.json` の gc（`DAGCI_ENGINE_MAX_CACHE`・既定 20GB）。VM は Mac の本当の空きを知らないので上限が要る。
+   設定を変えたら `dagci engine restart`（この台の列の枠を全部取ってから入れ直す＝流れている回を壊さない）
+ - doctor が「Mac の空き」「エンジンの使い回しの大きさ（上限が効いているか）」も出す
++- ★エンジンは置き場の空きの割合が `minFreeSpace`（既定 20%）を切ると、使い回しを残さない（毎回道具箱から作り直す・2026-11-04 に空き 8% の Linux の台で見た）。doctor が「エンジンの置き場の空き」で黄にする
+ 
+ - 場面 12 で回が違ったら、同じ回をもう 1 度流す。2 度とも違えば赤。2 度目に同じなら「揺れ」として段の名前と、どちらの側が赤だったかを記録に残し、
+   selftest の出力と doctor（黄）に出す（隠さない。揺れた段はプロジェクトの検査の直し）。回ごとに書き足すので、途中で落ちても終わった回は残る
+@@ -310,3 +378,47 @@
  - `dagci selftest`（約 30 分・場面 12 は記録を読むだけ）／`dagci selftest --parity`（重い。段の導出・流し方を変えたら流し直す）／`--only 1,2`
  - 記録：`$DAGCI_HOME/selftest/<project>.json`・`parity/<project>.json`。doctor がこれの古さを見る
  - **PM は見回りのたびに `dagci doctor`**（赤があれば終わり方 1）
 +
 +## 14. 標準の検査（scripts/gates/）── どのプロジェクトにも入れる「検査の検査」
 +
-+プロジェクトの中身の検査（lint・型・テスト・仕様）は、プロジェクトごとに違う。ここにあるのは、**どのプロジェクトでも同じ形で起きる穴**を止める 3 本。
-+Kaname（Kaname の CI の G38・G46・G47）で実際に穴を見つけて作り、プロジェクトの名前を外して汎用にした。設定は根の `ci-gates.yaml`（雛形 `assets/ci/ci-gates.example.yaml`）。
++プロジェクトの中身の検査（lint・型・テスト・仕様）は、プロジェクトごとに違う。ここにあるのは、**どのプロジェクトでも同じ形で起きる穴**を止める 4 本。
++Kaname（Kaname の CI の G38・G46・G47・2026-11-04 の DB の赤）で実際に穴を見つけて作り、プロジェクトの名前を外して汎用にした。設定は根の `ci-gates.yaml`（雛形 `assets/ci/ci-gates.example.yaml`）。
 +
 +| 検査 | 止める穴 | 由来（見つけた穴） |
 +|---|---|---|
 +| `generated_gate.py` | 生成物が古い・手で直した生成物・落ちる生成器・目録に無い生成物 | 生成器を足したのに誰も回しておらず、テスト計画の数・契約の hash・画面のトークンが古いまま残った |
 +| `wiring_gate.py` | 書いた検査が CI のどこからも回っていない・壊れたと記録した検査が直っている | 検査の自己試験が赤のまま CI で回っていなかった。本体の条件の誤りで、ある検査が何も見ていなかった |
++| `devhost_gate.py` | テストが開発者の台を決め打ちしている：環境の値が無いと手元の接続先に落ちる（`?? "postgres://…127.0.0.1:…"`・`|| 'localhost:5432'`・`os.environ.get("X", "…localhost…")`・`${X:-…}`）・環境の URL の口だけを書き換える・決め打ちの手元の DB の URL。ファイル:行で赤。例外は理由つきの記録（`allow_file`） | テストが `DATABASE_URL ?? "…127.0.0.1:55433…"` の開発者の DB に落ち、別のテストは 127.0.0.1 でない URL の口だけを替えていた。手元で緑・容れ物の CI でだけ赤（Kaname・2026-11-04） |
 +| `deps_gate.py` | 上流の非推奨が記録に無い・lockfile に出て N 日未満の版が例外なしに入っている | `install --frozen-lockfile` は解き直さないので、「若い版を選ばない」設定が lockfile の若い版を止めていなかった |
 +
 +入れ方（ci.yaml の段の例。GitHub Actions なら同じ命令を step に書く）：
@@ -364,7 +530,8 @@ diff -ruN orig/ai-team-delivery/references/ci.md new/ai-team-delivery/references
 +    run: >-
 +      python3 scripts/ci/gates/generated_gate.py --selftest &&
 +      python3 scripts/ci/gates/wiring_gate.py --selftest &&
-+      python3 scripts/ci/gates/deps_gate.py --selftest
++      python3 scripts/ci/gates/deps_gate.py --selftest &&
++      python3 scripts/ci/gates/devhost_gate.py --selftest
 +  - id: generated
 +    name: 生成物が最新
 +    run: python3 scripts/ci/gates/generated_gate.py   # ★作業場を書き換える段（codegen など）の後ろに置かない。作り直した後では古さが見えない
@@ -374,14 +541,836 @@ diff -ruN orig/ai-team-delivery/references/ci.md new/ai-team-delivery/references
 +  - id: deps-age
 +    name: 部品の版（非推奨・出てからの日数）
 +    run: python3 scripts/ci/gates/deps_gate.py   # registry に聞くので網が要る
++  - id: devhost
++    name: テストが開発者の台を決め打ちしない
++    run: python3 scripts/ci/gates/devhost_gate.py
 +```
 +
-+- **スキルの `scripts/gates/` を、プロジェクトの `scripts/ci/gates/` に写して版に入れる**（dagci の容れ物・GitHub の runner にはスキルが無い。4 ファイルだけで動く・PyYAML が要る）。
++- **スキルの `scripts/gates/` を、プロジェクトの `scripts/ci/gates/` に写して版に入れる**（dagci の容れ物・GitHub の runner にはスキルが無い。5 ファイルだけで動く・PyYAML が要る）。
 +  スキルの側を直したら写し直す（写しの先頭の行に元の版を書いておく）
 +- `ci-gates.yaml` に節が無い検査は「使っていない」で緑になる。入れたら節を書く
 +- 入れるときは、わざと壊した形で 1 回赤を見る（生成物の正本だけを変える・CI に無い台本を 1 つ置く）。自己試験だけで済ませない
 +- 中身の検査（関門・行の守り・契約など）はプロジェクトの検査。標準の検査は、それらが**回っているか・最新か**を見る側
 +
+diff -ruN orig/ai-team-delivery/scripts/ci/dagci/config.py new/ai-team-delivery/scripts/ci/dagci/config.py
+--- orig/ai-team-delivery/scripts/ci/dagci/config.py	2026-11-04 13:26:40.984267868 +0000
++++ new/ai-team-delivery/scripts/ci/dagci/config.py	2026-11-04 17:57:36.280851610 +0000
+@@ -17,7 +17,8 @@
+ STAGE_KEYS = {"id", "name", "run", "needs", "when", "mutates", "group", "timeout", "env", "services",
+               "trace", "export", "imports", "warn_only", "always", "shell", "heavy"}
+ TOP_KEYS = {"version", "project", "include", "toolbox", "prepare", "workdir", "source", "git", "services",
+-            "env", "defaults", "caches", "stages", "red_patterns", "overrides", "jobs", "ci", "deploy", "selftest", "audit"}
++            "env", "defaults", "caches", "stages", "red_patterns", "overrides", "jobs", "ci", "deploy", "selftest", "audit",
++            "github", "smoke"}
+ 
+ 
+ class ConfigError(Exception):
+@@ -157,6 +158,12 @@
+     for name, sv in (cfg.raw.get("services") or {}).items():
+         if "image" not in sv:
+             raise ConfigError(f"services.{name} に image が要る")
++    for i, c in enumerate(cfg.raw.get("smoke") or []):
++        if not isinstance(c, (str, dict)) or (isinstance(c, dict) and "run" not in c):
++            raise ConfigError(f"smoke の {i + 1} 番目には run が要る（文字列か {{name, run, services, env}}）")
++        for sv in (c.get("services") or []) if isinstance(c, dict) else []:
++            if sv not in services:
++                raise ConfigError(f"smoke の {i + 1} 番目の services が services: に無い: {sv}")
+ 
+ 
+ def toposort(stages: list[Stage]) -> list[Stage]:
+diff -ruN orig/ai-team-delivery/scripts/ci/dagci/doctor.py new/ai-team-delivery/scripts/ci/dagci/doctor.py
+--- orig/ai-team-delivery/scripts/ci/dagci/doctor.py	2026-11-04 13:26:40.984689594 +0000
++++ new/ai-team-delivery/scripts/ci/dagci/doctor.py	2026-11-04 18:20:00.060929975 +0000
+@@ -7,6 +7,7 @@
+     最後の CI      この台で最後に全部の段を流してからの経過・その結果                    記録なし＝赤／24 時間超・最後が赤＝黄
+     selftest       dagci selftest の記録が緑で、今の dagci の中身で取られたものか         無い・赤＝赤／中身が変わった・24 時間超＝黄
+     判定の同等     dagci selftest --parity の記録が緑で、段の導出・流し方が変わっていないか 無い・赤＝赤／古い＝黄
++    健康診断       dagci smoke の最後の記録（道具箱・部品・網・相手）                       赤があれば 赤／無い・24 時間超＝黄
+ """
+ from __future__ import annotations
+ 
+@@ -57,6 +58,20 @@
+     else:
+         lv = "赤" if size > cap * 1.2 else ("黄" if size > cap * 0.8 or not label else "緑")
+         add(lv, "エンジンの使い回し", f"{size:.1f} GB（上限 {cap_s}）" + ("" if label else "・★上限がまだ効いていない（dagci engine restart）"))
++    # エンジンの置き場の空きの割合が engine.json の minFreeSpace（既定 20%）を切ると、エンジンは使い回しを残さない（毎回道具箱を作り直す）
++    #   2026-11-04：空き 8% の台で、毎回道具箱に 40〜90 秒かかっていた（使い回しの量は 31MB のまま）
++    dfo = subprocess.run(["docker", "exec", f"dagci-engine-v{ver}", "df", "-P", "/var/lib/dagger"], capture_output=True, text=True,
++                         timeout=60).stdout.split("\n")
++    try:
++        cols = dfo[1].split()
++        pct = 100.0 * int(cols[3]) / int(cols[1])
++        engine_cfg = json.load(open(os.path.join(memo.home(), "engine.json")))
++        need_pct = float(str((engine_cfg.get("gc") or {}).get("minFreeSpace", "20%")).rstrip("%"))
++        add("黄" if pct < need_pct else "緑", "エンジンの置き場の空き",
++            f"{pct:.0f}%（{need_pct:g}% を切ると使い回しを残さず、毎回道具箱から作り直す。空けるか DAGCI_ENGINE_MAX_CACHE と engine.json の minFreeSpace を見直す）"
++            if pct < need_pct else f"{pct:.0f}%（使い回しを残せる）")
++    except (IndexError, ValueError, OSError, ZeroDivisionError):
++        pass
+     from plan import resolve_base
+     main_sha = resolve_base(cfg.root, cfg.base_ref) or ""
+     envs = ((cfg.raw.get("deploy") or {}).get("environments") or {})
+@@ -90,6 +105,15 @@
+         lv = "黄" if time.time() - last["at"] > DAY or not last["green"] else "緑"
+         add(lv, "最後の CI", f"{ago(last['at'])}・{'緑' if last['green'] else '赤'}（木 {last['tree'][:10]}）")
+ 
++    kp = os.path.join(memo.home(), "smoke", f"{cfg.project}.json")   # smoke.record_path と同じ（dagger を読まずに済ます）
++    if not os.path.exists(kp):
++        add("黄", "健康診断", "記録が無い（dagci smoke。dagci run --all も最初に流す）")
++    else:
++        k = json.load(open(kp))
++        bad = [r for r in k["rows"] if not r["ok"]]
++        add("赤" if bad else ("黄" if time.time() - k["at"] > DAY else "緑"), "健康診断",
++            f"{ago(k['at'])}・" + (f"赤 {len(bad)}（{bad[0]['what']}：{bad[0]['msg'][:80]}）" if bad else f"緑 {len(k['rows'])} 項目"))
++
+     import selftest
+     sp = os.path.join(memo.home(), "selftest", f"{cfg.project}.json")
+     if not os.path.exists(sp):
+diff -ruN orig/ai-team-delivery/scripts/ci/dagci/incontainer/smoke_probe.py new/ai-team-delivery/scripts/ci/dagci/incontainer/smoke_probe.py
+--- orig/ai-team-delivery/scripts/ci/dagci/incontainer/smoke_probe.py	1970-01-01 00:00:00.000000000 +0000
++++ new/ai-team-delivery/scripts/ci/dagci/incontainer/smoke_probe.py	2026-11-04 17:59:50.444746100 +0000
+@@ -0,0 +1,225 @@
++#!/usr/bin/env python3
++"""dagci smoke の容れ物の中の確かめ（dagci が呼ぶ）。1 項目ずつ JSON の 1 行で出す: {"ok": 真偽, "what": 項目, "msg": 中身}
++
++  python3 smoke_probe.py <spec.json>
++  spec: {"runtime": true, "registries": [{"name","url"}], "services": [{"name","ports","kind","user","password","db"}],
++         "commands": [{"name","run","timeout"}], "workdir": "/src"}
++この台本は必ず 0 で終わる（赤は出力で返す）。
++"""
++import json
++import os
++import shutil
++import socket
++import subprocess
++import sys
++import time
++
++spec = json.load(open(sys.argv[1], encoding="utf-8"))
++WD = spec.get("workdir", "/src")
++
++
++def say(ok, what, msg):
++    print(json.dumps({"ok": bool(ok), "what": what, "msg": " ".join(str(msg).split())[:400]}, ensure_ascii=False), flush=True)
++
++
++def sh(cmd, timeout=60, cwd=None):
++    try:
++        r = subprocess.run(cmd, shell=isinstance(cmd, str), capture_output=True, text=True, timeout=timeout, cwd=cwd or WD)
++        return r.returncode, (r.stdout + r.stderr).strip()
++    except subprocess.TimeoutExpired:
++        return 124, f"{timeout} 秒で返らない"
++    except OSError as ex:
++        return 127, str(ex)
++
++
++PY_IMPORTS = r'''
++import importlib, importlib.metadata as md, json, os, site, sys
++venv = os.environ.get("VIRTUAL_ENV")
++res = {"prefix": sys.prefix, "exe": sys.executable, "ver": sys.version.split()[0], "venv": venv, "mods": [], "bad": []}
++if venv:
++    paths = [p for p in site.getsitepackages() if p.startswith(sys.prefix)]
++    skip = {"pip", "setuptools", "pkg_resources", "wheel", "_distutils_hack", "distutils-precedence"}
++    for d in md.distributions(path=paths):
++        tops = (d.read_text("top_level.txt") or "").split()
++        if not tops:
++            for f in d.files or []:
++                p = str(f).split("/")
++                if p[0].endswith((".dist-info", ".data")) or p[0] in ("..", "__pycache__", "bin"):
++                    continue
++                if len(p) > 1 and p[1] == "__init__.py":
++                    tops.append(p[0])
++                elif len(p) == 1 and p[0].endswith(".py"):
++                    tops.append(p[0][:-3])
++        for t in sorted(set(tops)):
++            if not (t.startswith("_") or t in skip or not t.isidentifier()) and t not in res["mods"]:
++                res["mods"].append(t)
++    # 2 回まで試す（psycopg_binary のように、ほかの部品を先に読む決まりの物がある）
++    left = list(res["mods"])
++    for last in (False, True):
++        again = []
++        for t in left:
++            try:
++                importlib.import_module(t)
++            except BaseException as ex:
++                again.append(t)
++                if last:
++                    res["bad"].append(f"{t}: {type(ex).__name__}: {str(ex)[:80]}")
++        left = again
++print(json.dumps(res))
++'''
++
++
++def runtime():
++    # Python（段の包みも python3 で流れる）
++    rc, out = sh(["python3", "-c", PY_IMPORTS], timeout=180)
++    try:
++        r = json.loads(out.splitlines()[-1])
++    except (ValueError, IndexError):
++        say(False, "Python", f"python3 が動かない: {out[-200:]}")
++        r = None
++    if r:
++        venv_ok = not r["venv"] or os.path.realpath(r["prefix"]) == os.path.realpath(r["venv"])
++        if not venv_ok:
++            say(False, "Python", f"python3（{r['exe']}）が venv {r['venv']} と見なされていない（sys.prefix={r['prefix']}）。"
++                "PATH の先頭に venv の bin を置く（links を張らない）")
++        elif r["bad"]:
++            say(False, "Python の部品", f"import できない {len(r['bad'])} 個: {'; '.join(r['bad'][:4])}")
++        else:
++            say(True, "Python", f"{r['exe']} {r['ver']}・sys.prefix={r['prefix']}" +
++                (f"・部品 {len(r['mods'])} 個を import できた" if r["venv"] else "（venv なし）"))
++    # Node と部品の道具
++    pj_path = os.path.join(WD, "package.json")
++    if shutil.which("node") or os.path.exists(pj_path):
++        rc, v = sh(["node", "--version"])
++        if rc != 0:
++            say(False, "Node", f"node が無い・動かない（package.json がある）: {v[-200:]}")
++            return
++        msg = f"node {v}"
++        pj = json.load(open(pj_path, encoding="utf-8")) if os.path.exists(pj_path) else {}
++        pm = str(pj.get("packageManager") or "")
++        if pm:
++            tool, _, want = pm.partition("@")
++            want = want.split("+")[0]
++            rc, got = sh([tool, "--version"])
++            if rc != 0:
++                say(False, "Node", f"{msg}・{tool} が無い（packageManager: {pm}）")
++                return
++            if want and got.strip() != want:
++                say(False, "Node", f"{msg}・{tool} {got.strip()} が packageManager の {want} と違う")
++                return
++            msg += f"・{tool} {got.strip()}（packageManager と同じ）"
++        say(True, "Node", msg)
++        # 部品の入り：package.json の依存が node_modules にあるか（root と workspace）
++        miss, n, files = [], 0, []
++        for d, dirs, fs in os.walk(WD):
++            dirs[:] = [x for x in dirs if x not in ("node_modules", ".git") and not x.startswith(".")]
++            if d.count(os.sep) - WD.count(os.sep) > 3:
++                dirs[:] = []
++            if "package.json" in fs:
++                files.append(os.path.join(d, "package.json"))
++        for f in files:
++            try:
++                p = json.load(open(f, encoding="utf-8"))
++            except ValueError:
++                continue
++            for k in list((p.get("dependencies") or {})) + list((p.get("devDependencies") or {})):
++                n += 1
++                d, found = os.path.dirname(f), False
++                while True:
++                    if os.path.exists(os.path.join(d, "node_modules", k)):
++                        found = True
++                        break
++                    if d == WD or d == "/":
++                        break
++                    d = os.path.dirname(d)
++                if not found:
++                    miss.append(f"{os.path.relpath(f, WD)}:{k}")
++        if miss:
++            say(False, "Node の部品", f"node_modules に無い {len(miss)} 個（準備の install が足りない）: {', '.join(miss[:5])}")
++        elif files:
++            say(True, "Node の部品", f"package.json {len(files)} 本の依存 {n} 個が node_modules にある")
++
++
++NODE_GET = ("const u=process.argv[1];require('https').get(u,r=>{console.log(r.statusCode);process.exit(r.statusCode<400?0:1)})"
++            ".on('error',e=>{console.log(e.code||e.message);process.exit(1)}).setTimeout(20000,function(){this.destroy(new Error('timeout'))})")
++PY_GET = ("import sys,urllib.request\ntry:\n r=urllib.request.urlopen(sys.argv[1],timeout=20);print(r.status)\n"
++          "except Exception as e:\n print(type(e).__name__, str(e)[:160]);sys.exit(1)")
++
++
++def registries():
++    for reg in spec.get("registries") or []:
++        url = reg["url"]
++        tools = []
++        if shutil.which("curl"):
++            tools.append(("curl", ["curl", "-sS", "-o", "/dev/null", "-w", "%{http_code}", "--max-time", "20", url]))
++        if shutil.which("node"):
++            tools.append(("node", ["node", "-e", NODE_GET, url]))
++        tools.append(("python3", ["python3", "-c", PY_GET, url]))
++        for name, cmd in tools:
++            rc, out = sh(cmd, timeout=40)
++            code = out.strip().splitlines()[-1] if out.strip() else ""
++            ok = rc == 0 and (name != "curl" or (code.isdigit() and int(code) < 400))
++            hint = ""
++            if not ok and ("CERT" in out.upper() or "certificate" in out):
++                hint = {"node": "（NODE_EXTRA_CA_CERTS を toolbox.env に）", "python3": "（SSL_CERT_FILE を toolbox.env に）"}.get(name, "")
++            say(ok, f"https（{reg['name']}・{name}）", f"{url} {code}{hint}")
++
++
++def services():
++    for s in spec.get("services") or []:
++        host = s["name"]
++        for port in s.get("ports") or []:
++            t0, err = time.time(), ""
++            ok = False
++            while time.time() - t0 < 60:
++                try:
++                    with socket.create_connection((host, int(port)), timeout=5):
++                        ok = True
++                        break
++                except OSError as ex:
++                    err = str(ex)
++                    time.sleep(1)
++            if not ok:
++                say(False, f"相手 {host}", f"TCP {port} につながらない: {err}")
++                continue
++            if s.get("kind") == "postgres":
++                user, pw, db = s.get("user") or "postgres", s.get("password") or "", s.get("db") or s.get("user") or "postgres"
++                if not shutil.which("psql"):
++                    say(True, f"相手 {host}", f"TCP {port}（psql が道具箱に無いので select 1 は見ていない。postgresql-client を入れる）")
++                    continue
++                env = {**os.environ, "PGPASSWORD": pw, "PGCONNECT_TIMEOUT": "10"}
++                for _ in range(30):
++                    r = subprocess.run(["pg_isready", "-h", host, "-p", str(port), "-U", user], capture_output=True, text=True, env=env)
++                    if r.returncode == 0:
++                        break
++                    time.sleep(1)
++                r = subprocess.run(["psql", "-h", host, "-p", str(port), "-U", user, "-d", db, "-tAc", "select 1"],
++                                   capture_output=True, text=True, env=env, timeout=60)
++                say(r.returncode == 0 and r.stdout.strip() == "1", f"相手 {host}",
++                    f"TCP {port}・pg_isready・select 1" if r.returncode == 0 else f"select 1 が通らない: {(r.stderr or r.stdout)[-200:]}")
++            elif s.get("kind") == "redis":
++                try:
++                    with socket.create_connection((host, int(port)), timeout=5) as c:
++                        c.sendall(b"PING\r\n")
++                        got = c.recv(64)
++                    say(b"PONG" in got, f"相手 {host}", f"TCP {port}・PING → {got[:20]!r}")
++                except OSError as ex:
++                    say(False, f"相手 {host}", f"PING が通らない: {ex}")
++            else:
++                say(True, f"相手 {host}", f"TCP {port}")
++
++
++def commands():
++    for c in spec.get("commands") or []:
++        t = time.time()
++        rc, out = sh(["bash", "-c", c["run"]], timeout=int(c.get("timeout") or 300))
++        tail = " / ".join(out.splitlines()[-3:])
++        say(rc == 0, f"smoke「{c['name']}」", f"{time.time() - t:.0f} 秒" + ("" if rc == 0 else f"・終わり方 {rc}: {tail}"))
++
++
++for part in (runtime if spec.get("runtime") else None, registries, services, commands):
++    if part:
++        try:
++            part()
++        except Exception as ex:   # 確かめの途中の例外も赤で返す（素通りさせない）
++            say(False, part.__name__, f"確かめが落ちた: {type(ex).__name__}: {ex}")
+diff -ruN orig/ai-team-delivery/scripts/ci/dagci/init_ci.py new/ai-team-delivery/scripts/ci/dagci/init_ci.py
+--- orig/ai-team-delivery/scripts/ci/dagci/init_ci.py	1970-01-01 00:00:00.000000000 +0000
++++ new/ai-team-delivery/scripts/ci/dagci/init_ci.py	2026-11-04 18:25:51.900218590 +0000
+@@ -0,0 +1,413 @@
++"""dagci init-ci — プロジェクトの GitHub の workflow と package.json などから、ci.yaml の下書きを作る。
++
++  dagci init-ci [--root <根>] [--workflow <パス> ...] [--out <書く先>] [--force] [--offline]
++
++読むもの:
++  workflow   actions/setup-node の node-version（node-version-file）・pnpm/action-setup の version・actions/setup-python の
++             python-version・pip install の部品・apt-get install の部品・playwright install・services（image・env・ports）
++  ファイル   package.json（packageManager・engines・workspaces）・pnpm-workspace.yaml・lockfile・.nvmrc・.node-version・.python-version
++書くもの（ci.yaml。すでにあれば ci.init.yaml に書き、上書きしない。--force で上書き）:
++  toolbox    元の image（Node があれば node の公式・無ければ python の公式）と、版を固定した道具（GitHub の実行機と同じ版）
++             証明書の環境（NODE_EXTRA_CA_CERTS・SSL_CERT_FILE・REQUESTS_CA_BUNDLE・UV_NATIVE_TLS）と PATH・venv の決まりを既定で入れる
++  prepare    依存の部品（lockfile が同じなら使い回す）・playwright のブラウザ
++  services   job ごとの相手（<job>-<名前>）
++  include    段は workflow から毎回導く（dagci stages・手で写さない）
++  github     段の導き方の設定（外す job は理由つき）
++  smoke      dagci smoke が流す、プロジェクトの短い確かめ（空で書く）
++版の決め方: workflow に「22」としか書いていなければ、その時点の 22 の最新（nodejs.org の一覧）に固定する。網が無ければ（--offline）
++  書いてあるまま（node:22-bookworm）にする。Python の部品は版が書いていなければ PyPI の最新に固定する（下書きの注に出す）。
++"""
++from __future__ import annotations
++
++import glob
++import json
++import os
++import re
++import shlex
++import ssl
++import sys
++import urllib.request
++
++import yaml
++
++sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
++import stages_from_github as sg  # noqa: E402
++
++UV_VERSION = "0.9.5"
++CERT = "/etc/ssl/certs/ca-certificates.crt"
++PG_IMAGE = re.compile(r"postgres|pgvector|postgis|timescale", re.I)
++
++
++def _get_json(url: str, offline: bool):
++    if offline:
++        return None
++    ctx = ssl.create_default_context()
++    for ca in (os.environ.get("SSL_CERT_FILE"), os.environ.get("DAGCI_EXTRA_CA"), CERT):
++        if ca and os.path.exists(ca):
++            try:
++                ctx.load_verify_locations(ca)
++            except ssl.SSLError:
++                pass
++    try:
++        with urllib.request.urlopen(url, timeout=20, context=ctx) as r:
++            return json.load(r)
++    except Exception:   # 網が無い・遅い → 書いてあるままにする
++        return None
++
++
++def exact_node(spec: str, offline: bool) -> str:
++    """'22'・'22.x'・'>=22'・'lts/*' → その時点の最新の 22.x.y（分からなければ書いてあるまま）"""
++    s = spec.strip().lstrip("v")
++    if re.fullmatch(r"\d+\.\d+\.\d+", s):
++        return s
++    idx = _get_json("https://nodejs.org/dist/index.json", offline)
++    m = re.search(r"\d+", s)
++    if idx:
++        for e in idx:   # 新しい順
++            v = e["version"].lstrip("v")
++            if s.startswith("lts") and e.get("lts"):
++                return v
++            if m and v.split(".")[0] == m.group(0) and (not re.fullmatch(r"\d+\.\d+(\.x)?", s) or v.startswith(s.replace(".x", "") + ".")):
++                return v
++    return m.group(0) if m else "22"
++
++
++def pin_pypi(req: str, offline: bool) -> tuple[str, bool]:
++    """版の無い部品を PyPI の最新に固定する（固定したら True）"""
++    if re.search(r"[=<>~!@]", req) or req.startswith((".", "/", "git+", "http")):
++        return req, False
++    name = re.sub(r"\[.*\]$", "", req)
++    d = _get_json(f"https://pypi.org/pypi/{name}/json", offline)
++    if d and d.get("info", {}).get("version"):
++        return f"{req}=={d['info']['version']}", True
++    return req, False
++
++
++def read(root: str, rel: str) -> str:
++    p = os.path.join(root, rel)
++    return open(p, encoding="utf-8").read().strip() if os.path.exists(p) else ""
++
++
++class Facts:
++    def __init__(self):
++        self.node: list[str] = []
++        self.pnpm: list[str] = []
++        self.python: list[str] = []
++        self.pip: list[str] = []
++        self.pip_req_files: list[str] = []
++        self.apt: list[str] = []
++        self.playwright: list[str] = []
++        self.chrome = False
++        self.notes: list[str] = []
++
++
++def scan(root: str, wfs: list[str], g: dict) -> Facts:
++    f = Facts()
++    skip_jobs = set(g.get("skip_jobs") or {})
++    for wf in wfs:
++        w = sg.load_yaml(os.path.join(root, wf))
++        wenv = {k: str(v) for k, v in (w.get("env") or {}).items()}
++        for job, j in (w.get("jobs") or {}).items():
++            if not isinstance(j, dict) or job in skip_jobs:
++                continue
++            ctx = {"env": {**wenv, **{k: str(v) for k, v in (j.get("env") or {}).items()}}, "matrix": sg.first_matrix(j)}
++            for st in j.get("steps") or []:
++                u = sg.uses_name(str(st.get("uses") or ""))
++                wi = {k: sg.subst(str(v), ctx) for k, v in (st.get("with") or {}).items()}
++                if u == "actions/setup-node":
++                    if wi.get("node-version"):
++                        f.node.append(wi["node-version"])
++                    elif wi.get("node-version-file"):
++                        f.node.append(read(root, wi["node-version-file"]))
++                elif u == "pnpm/action-setup" and wi.get("version"):
++                    f.pnpm.append(wi["version"])
++                elif u == "actions/setup-python":
++                    if wi.get("python-version"):
++                        f.python.append(wi["python-version"])
++                    elif wi.get("python-version-file"):
++                        f.python.append(read(root, wi["python-version-file"]))
++                elif u == "browser-actions/setup-chrome":
++                    f.chrome = True
++                run = sg.subst(str(st.get("run") or ""), ctx)
++                for part in re.split(r"&&|;|\n", run):
++                    t = part.strip()
++                    m = re.match(r"(?:sudo )?(?:python3? -m )?pip3? install (.*)", t)
++                    if m:
++                        toks = shlex.split(m.group(1))
++                        i = 0
++                        while i < len(toks):
++                            x = toks[i]
++                            if x in ("-r", "--requirement"):
++                                f.pip_req_files.append(toks[i + 1])
++                                i += 2
++                                continue
++                            if x in ("-e", "--editable", "-c", "--constraint", "-i", "--index-url"):
++                                f.notes.append(f"pip install {x} {toks[i + 1] if i + 1 < len(toks) else ''} は写していない（段の中で流す）")
++                                i += 2
++                                continue
++                            if not x.startswith("-") and x not in f.pip:
++                                f.pip.append(x)
++                            i += 1
++                    m = re.match(r"(?:sudo )?apt(?:-get)? (?:-\S+ )*install (.*)", t)
++                    if m:
++                        f.apt += [x for x in shlex.split(m.group(1)) if not x.startswith("-") and x not in f.apt]
++                    if re.search(r"\bplaywright install\b", t) and t not in f.playwright:
++                        f.playwright.append(t)
++                    if re.search(r"google-chrome|channel[\"']?\s*[:=]\s*[\"']chrome", t):
++                        f.chrome = True
++    return f
++
++
++def chrome_in_repo(root: str) -> bool:
++    """GitHub の実行機には Google Chrome が最初からある。テストが channel: chrome を使うなら道具箱に要る"""
++    pat = re.compile(r"channel[\"']?\s*[:=]\s*[\"']chrome[\"']|PW_CHANNEL\s*[:=]\s*[\"']?chrome\b|google-chrome")
++    for p in glob.glob(os.path.join(root, "**", "playwright.config.*"), recursive=True) + \
++            glob.glob(os.path.join(root, "**", "*.spec.ts"), recursive=True)[:400]:
++        if "node_modules" in p:
++            continue
++        try:
++            if pat.search(open(p, encoding="utf-8", errors="ignore").read()):
++                return True
++        except OSError:
++            pass
++    return False
++
++
++def q(s) -> str:
++    """YAML に安全に書く（JSON の文字列は YAML として読める）"""
++    return json.dumps(str(s), ensure_ascii=False)
++
++
++def build(root: str, wfs: list[str], offline: bool) -> tuple[str, list[str]]:
++    notes: list[str] = []
++    # 外す job（理由は機械で決めたもの。読んで直す）
++    skip_jobs, skip_steps = {}, {}
++    for wf in wfs:
++        w = sg.load_yaml(os.path.join(root, wf))
++        for job, j in (w.get("jobs") or {}).items():
++            if not isinstance(j, dict):
++                continue
++            why = sg.unsupported_job(j)
++            if why:
++                skip_jobs[job] = f"{why}。dagci では流さない（init-ci が書いた理由・読んで直す）"
++                continue
++            for i, st in enumerate(j.get("steps") or []):
++                if st.get("run") and "secrets." in json.dumps(st, ensure_ascii=False):
++                    label = str(st.get("name") or st.get("run") or f"#{i}").strip().splitlines()[0][:80]
++                    skip_steps[f"{job}/{label}"] = "秘密（secrets）が要る手順。dagci の段には秘密を渡さない（init-ci が書いた理由・読んで直す）"
++    g = {"workflows": wfs, "skip_jobs": skip_jobs, "skip_steps": skip_steps}
++    f = scan(root, wfs, g)
++    pj = json.loads(read(root, "package.json") or "{}")
++    pm = str(pj.get("packageManager") or "")
++    has_node = bool(pj) or bool(f.node)
++    # Node の版：workflow → .nvmrc・.node-version → package.json の engines
++    node_spec = (f.node or [read(root, ".nvmrc") or read(root, ".node-version")] or [""])[0] or \
++        str((pj.get("engines") or {}).get("node") or "") or "22"
++    if len(set(f.node)) > 1:
++        notes.append(f"workflow の node-version が 1 つでない {sorted(set(f.node))}。最初の {f.node[0]} にした")
++    node_v = exact_node(node_spec, offline) if has_node else ""
++    # 部品の道具：packageManager（版まで）→ pnpm/action-setup の version → lockfile
++    tool, tool_v = "", ""
++    m = re.match(r"(pnpm|yarn|npm|bun)@([\w.\-]+)", pm)
++    if m:
++        tool, tool_v = m.group(1), m.group(2).split("+")[0]
++    elif f.pnpm or os.path.exists(os.path.join(root, "pnpm-lock.yaml")):
++        tool, tool_v = "pnpm", (f.pnpm or ["9"])[0]
++    elif os.path.exists(os.path.join(root, "yarn.lock")):
++        tool = "yarn"
++    elif has_node:
++        tool = "npm"
++    # Python の版：workflow → .python-version
++    py_spec = (f.python or [read(root, ".python-version")])[0]
++    use_py = bool(py_spec or f.pip or f.pip_req_files)
++    py_spec = py_spec or "3.12"
++    pins = []
++    pip_pkgs = []
++    for p in f.pip:
++        r, pinned = pin_pypi(p, offline)
++        pip_pkgs.append(r)
++        if pinned:
++            pins.append(r)
++    if pins:
++        notes.append(f"版の書いていない Python の部品を、今の最新に固定した: {', '.join(pins)}")
++    d = sg.derive(root, g)
++    services = d.services
++    needs_pg = any(PG_IMAGE.search(s["image"]) for s in services.values())
++    chrome = f.chrome or chrome_in_repo(root)
++    apt = ["git", "curl", "ca-certificates", "python3", "python3-pip", "python3-venv"] + \
++        (["postgresql-client"] if needs_pg else []) + [x for x in f.apt if x not in ("git", "curl")]
++    apt = list(dict.fromkeys(apt))
++
++    L: list[str] = []
++    w = L.append
++    w("# dagci の設定（dagci init-ci が作った下書き。形の説明は <スキル>/references/ci.md）")
++    w(f"#   読んだ workflow: {', '.join(wfs)}")
++    w("#   段は手で写さず、workflow から毎回導く（include の dagci stages）。workflow を直せば段も変わる")
++    note_at = len(L)   # 注は最後に差し込む（準備を書くときに見つかる注もある）
++    w("version: 1")
++    w(f"project: {q(os.path.basename(os.path.abspath(root)).lower())}")
++    w("workdir: /src")
++    w("git: {base: main, history: true}")
++    w("")
++    w("include:")
++    w("  - cmd: '\"$DAGCI_PY\" \"$DAGCI_LIB/stages_from_github.py\"'   # dagci が渡す（dagci stages --check で 1 対 1 を見る）")
++    w(f"    from: {json.dumps(wfs, ensure_ascii=False)}")
++    w("")
++    w("github:                          # 段の導き方（stages_from_github.py の先頭に説明）")
++    w(f"  workflows: {json.dumps(wfs, ensure_ascii=False)}")
++    w("  skip_jobs:" + ("" if skip_jobs else " {}"))
++    for k, v in skip_jobs.items():
++        w(f"    {q(k)}: {q(v)}")
++    w("  skip_steps:" + ("" if skip_steps else " {}"))
++    for k, v in skip_steps.items():
++        w(f"    {q(k)}: {q(v)}")
++    w("  ignore_uses: {}                # 知らない action を写さないと決めたら {\"owner/action\": 理由}")
++    w("")
++    w("toolbox:")
++    if has_node:
++        image = f"node:{node_v}-bookworm"
++        w(f"  from: {image}            # Node の公式（{node_spec} → {node_v}）。GitHub の実行機の image は配られていない・大きいので使わない")
++    elif use_py:
++        w(f"  from: python:{py_spec}-slim-bookworm   # Python の公式")
++    else:
++        w("  from: debian:bookworm-slim")
++    w("  env:")
++    w("    TZ: UTC                       # GitHub の実行機と同じ")
++    w("    LANG: C.UTF-8")
++    w('    CI: "true"')
++    w(f"    NODE_EXTRA_CA_CERTS: {CERT}   # Node は OS の証明書を読まない（中継の内側で npm・pnpm が SELF_SIGNED_CERT_IN_CHAIN）")
++    w(f"    SSL_CERT_FILE: {CERT}         # uv が入れた Python も OS の証明書を読まない（CERTIFICATE_VERIFY_FAILED）")
++    w(f"    REQUESTS_CA_BUNDLE: {CERT}    # requests・pip は自分の証明書の束を使う")
++    w('    UV_NATIVE_TLS: "1"            # uv も OS の証明書を使う（error sending request）')
++    w('    PIP_BREAK_SYSTEM_PACKAGES: "1"   # Debian の python3 に uv を入れるため')
++    if use_py:
++        w("    VIRTUAL_ENV: /opt/py")
++        w("    PATH: /opt/py/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin   # venv は PATH の先頭で使う（links を張ると venv と見なされず部品が見えない）")
++    w("  steps:")
++    w(f"    - apt-get update -qq && apt-get install -y -qq --no-install-recommends {' '.join(apt)} >/dev/null")
++    if use_py:
++        pkgs = " ".join(shlex.quote(p) for p in ["pip"] + pip_pkgs)
++        w(f"    # Python {py_spec}（GitHub の setup-python と同じ版）を venv /opt/py に。uv の版を固定するので、入る Python の版も決まる")
++        w(f"    - pip3 install -q uv=={UV_VERSION} && uv venv -q --python {py_spec} /opt/py && uv pip install -q --python /opt/py/bin/python {pkgs}")
++        w("    - python3 -c 'import sys; assert sys.prefix == \"/opt/py\", sys.prefix'   # venv がずれたら道具箱の時点で落とす")
++    if tool == "pnpm":
++        w(f"    - npm install -g --silent pnpm@{tool_v}   # corepack は古い署名の鍵で落ちることがあるので npm で入れる")
++    elif tool == "yarn":
++        w(f"    - npm install -g --silent yarn{'@' + tool_v if tool_v else ''}")
++    elif tool == "bun":
++        w(f"    - npm install -g --silent bun@{tool_v}")
++    if chrome:
++        w("    # Google Chrome（GitHub の実行機には最初からある。テストが channel: chrome を使う）。Linux の Chrome は amd64 だけ")
++        w("    - if [ \"$(dpkg --print-architecture)\" = amd64 ]; then curl -fsSL https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o /tmp/chrome.deb && apt-get install -y -qq /tmp/chrome.deb >/dev/null && rm /tmp/chrome.deb && google-chrome --version; else echo \"Chrome は $(dpkg --print-architecture) の Linux に無い（amd64 の台で流す）\"; fi")
++    w("")
++    if f.playwright:
++        w("env: {PLAYWRIGHT_BROWSERS_PATH: /ms-playwright}")
++    else:
++        w("env: {}")
++    w("")
++    w("prepare:" + ("" if (tool or f.pip_req_files) else " []"))
++    if tool:
++        inputs = ["package.json"] + [x for x in ("pnpm-lock.yaml", "pnpm-workspace.yaml", "package-lock.json", "yarn.lock",
++                                                  ".npmrc", ".yarnrc.yml", "bun.lockb") if os.path.exists(os.path.join(root, x))]
++        ws = pj.get("workspaces") or []
++        if isinstance(ws, dict):
++            ws = ws.get("packages") or []
++        pw = yaml.safe_load(read(root, "pnpm-workspace.yaml") or "{}") or {}
++        for pat in list(ws) + list(pw.get("packages") or []):
++            gl = pat.rstrip("/") + "/package.json"
++            if gl not in inputs:
++                inputs.append(gl)
++        lock = {"pnpm": "pnpm-lock.yaml", "npm": "package-lock.json", "yarn": "yarn.lock", "bun": "bun.lockb"}[tool]
++        has_lock = os.path.exists(os.path.join(root, lock))
++        install = {"pnpm": "npm_config_store_dir=/pnpm-store pnpm install " + ("--frozen-lockfile --prefer-offline" if has_lock else "--no-frozen-lockfile"),
++                   "npm": "npm ci --no-audit --no-fund" if has_lock else "npm install --no-audit --no-fund",
++                   "yarn": "yarn install --frozen-lockfile" if has_lock else "yarn install",
++                   "bun": "bun install --frozen-lockfile" if has_lock else "bun install"}[tool]
++        if not has_lock:
++            notes.append(f"{lock} が無い。lockfile を版に入れると、部品の版が回ごとに変わらない")
++        caches = {"pnpm": "{pnpm-store: /pnpm-store", "npm": "{npm: /root/.npm", "yarn": "{yarn: /usr/local/share/.cache/yarn",
++                  "bun": "{bun: /root/.bun/install/cache"}[tool]
++        run = install
++        if f.playwright:
++            caches += ", playwright: /ms-playwright"
++            run += " && " + " && ".join(f"PLAYWRIGHT_BROWSERS_PATH=/ms-playwright {x}" for x in f.playwright)
++        w("  - name: deps                 # 入力のファイル（lockfile など）が同じなら使い回す")
++        w(f"    inputs: {json.dumps(inputs, ensure_ascii=False)}")
++        w(f"    caches: {caches}}}")
++        w(f"    run: {q(run)}")
++    if f.pip_req_files:
++        w("  - name: python-deps")
++        w(f"    inputs: {json.dumps(sorted(set(f.pip_req_files)), ensure_ascii=False)}")
++        w("    caches: {uv: /root/.cache/uv}")
++        w(f"    run: {q(' && '.join(f'uv pip install -q --python /opt/py/bin/python -r {shlex.quote(x)}' for x in dict.fromkeys(f.pip_req_files)))}")
++    w("")
++    w("# 段が使う相手。GitHub と同じく job ごとに別にする（同じ定義の相手は Dagger が 1 つにまとめるので、dagci が名前を入れて分ける）")
++    w("services:" + ("" if services else " {}"))
++    for k, sv in services.items():
++        w(f"  {k}:")
++        w(f"    image: {q(sv['image'])}")
++        if sv["env"]:
++            w("    env: {" + ", ".join(f"{kk}: {q(v)}" for kk, v in sv["env"].items()) + "}")
++        if sv["ports"]:
++            w(f"    ports: {json.dumps(sv['ports'])}")
++    w("")
++    w("# dagci smoke（と dagci run --all の最初）が流す、短い確かめ。道具・部品・網・相手は dagci が自分で見る。")
++    w("#   プロジェクトの短い確かめを足す（例：{name: 移行が当たる, run: \"pnpm -s db:migrate\", services: [<相手>], env: {DATABASE_URL: ...}}）")
++    w("smoke: []")
++    w("")
++    w("defaults: {timeout: 1800}")
++    all_notes = notes + f.notes + d.notes
++    L[note_at:note_at] = [f"#   注: {n}" for n in all_notes]
++    return "\n".join(L) + "\n", all_notes
++
++
++def choose_workflows(root: str) -> tuple[list[str], list[str]]:
++    """検査の workflow を選ぶ（push の枝・pull_request・手で押す）。リリース・タグだけ・予定だけのものは外す"""
++    keep, drop = [], []
++    for p in sorted(glob.glob(os.path.join(root, ".github", "workflows", "*.y*ml"))):
++        rel = os.path.relpath(p, root)
++        try:
++            on = sg.load_yaml(p).get("on")
++        except yaml.YAMLError as ex:
++            drop.append(f"{rel}（読めない: {ex}）")
++            continue
++        ev = {on: None} if isinstance(on, str) else ({e: None for e in on} if isinstance(on, list) else (on or {}))
++        push = ev.get("push") if isinstance(ev.get("push"), dict) else {}
++        tags_only = "push" in ev and push and ("tags" in push and "branches" not in push)
++        if "release" in ev or "deployment" in ev:
++            drop.append(f"{rel}（リリース・反映の workflow）")
++        elif any(e in ev for e in ("pull_request", "pull_request_target", "merge_group")) or ("push" in ev and not tags_only):
++            keep.append(rel)
++        elif "workflow_dispatch" in ev and not tags_only:
++            keep.append(rel)
++        else:
++            drop.append(f"{rel}（検査の出来事で動かない: {sorted(ev)}）")
++    return keep, drop
++
++
++def run(a) -> int:
++    root = os.path.abspath(getattr(a, "root", None) or os.getcwd())
++    wfs = list(getattr(a, "workflow", None) or [])
++    if not wfs:
++        wfs, drop = choose_workflows(root)
++        for d in drop:
++            print(f"  外した workflow: {d}")
++    if not wfs:
++        print("dagci init-ci：検査の workflow が無い（.github/workflows/*.yml か --workflow）", file=sys.stderr)
++        return 2
++    text, notes = build(root, wfs, bool(getattr(a, "offline", False)))
++    out = getattr(a, "out", None) or os.path.join(root, "ci.yaml")
++    if os.path.exists(out) and not getattr(a, "force", False) and not getattr(a, "out", None):
++        out = os.path.join(root, "ci.init.yaml")
++        print(f"  ci.yaml がすでにあるので {os.path.basename(out)} に書いた（比べて写す。上書きは --force）")
++    open(out, "w", encoding="utf-8").write(text)
++    print(f"dagci init-ci：{out} を書いた（workflow {', '.join(wfs)}）")
++    for n in notes:
++        print(f"  注: {n}")
++    g = (yaml.safe_load(text) or {}).get("github") or {}
++    d = sg.derive(root, g)
++    print(f"  段 {len(d.stages)}・相手 {len(d.services)}" + ("" if not d.fails else "・★1 対 1 にならない所がある（dagci stages --check）"))
++    for x in d.fails:
++        print("  ★", x)
++    print("  次：dagci smoke（2 分の健康診断）→ dagci run --all")
++    return 1 if d.fails else 0
+diff -ruN orig/ai-team-delivery/scripts/ci/dagci/main.py new/ai-team-delivery/scripts/ci/dagci/main.py
+--- orig/ai-team-delivery/scripts/ci/dagci/main.py	2026-11-04 13:26:40.985795860 +0000
++++ new/ai-team-delivery/scripts/ci/dagci/main.py	2026-11-04 18:07:22.505897612 +0000
+@@ -5,6 +5,9 @@
+   dagci plan  [--all] [--base REF]           流す段と理由を出すだけ（容れ物は動かさない）
+   dagci verdict [--tree T] [--mode all]       その木が（この台で）緑で通ったかを終わり方で返す
+   dagci timings [--last N]                    段ごとの所要時間（記録の平均・最大）
++  dagci init-ci [--workflow P] [--force]      GitHub の workflow と package.json などから ci.yaml の下書きを作る
++  dagci stages [--check]                      段の一覧を GitHub の workflow から導く（ci.yaml の include から呼ぶ）
++  dagci smoke                                 2 分の健康診断（道具箱・部品・網・相手）。run --all も最初に流す
+ 
+   終わり方: 0＝全部緑（飛ばした段・注意の段は数えない）／1＝赤がある／2＝設定の誤り
+   使い方の全体は references/ci.md。
+@@ -21,6 +24,9 @@
+ import time
+ 
+ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
++# ci.yaml の include の命令が、dagci と同じ Python（PyYAML 入り）とこの置き場を使えるように（"$DAGCI_PY" "$DAGCI_LIB/stages_from_github.py"）
++os.environ.setdefault("DAGCI_PY", sys.executable)
++os.environ.setdefault("DAGCI_LIB", os.path.dirname(os.path.abspath(__file__)))
+ 
+ import config as cfgmod  # noqa: E402
+ import memo  # noqa: E402
+@@ -43,6 +49,14 @@
+         d = os.path.dirname(d)
+ 
+ 
++def _has_config() -> bool:
++    try:
++        find_config(None)
++        return True
++    except SystemExit:
++        return False
++
++
+ def workspace_tree(root: str) -> str:
+     """送る作業場（git が数えるファイルの今の中身）の木のハッシュ。未コミットの変更も入る"""
+     import tempfile
+@@ -189,6 +203,8 @@
+                       no_cache=a.no_cache, memo=not (a.no_memo or sel.mode.startswith("all")), branch=branch_name(cfg.root), base_sha=mb,
+                       run_dir=run_dir, files=files)
+     opts.quiet = a.summary_only
++    # 全部の段（30 分）の前に 2 分の健康診断。道具箱・網・相手の誤りを、段を流してから 1 つずつ見つけない（Kaname・2026-11-04）
++    opts.smoke = bool(a.all and not a.no_smoke and (cfg.raw.get("ci") or {}).get("smoke", True) is not False)
+     # 同じ木の前の回で赤だった段は、本当に流し直す（赤を使い回さない）
+     prev = localq.load_result(cfg.project, tree)
+     if prev and not prev.get("green") and prev.get("run"):
+@@ -366,7 +382,7 @@
+ def main(argv=None) -> int:
+     ap = argparse.ArgumentParser(prog="dagci", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+     ap.add_argument("command", choices=["run", "plan", "verdict", "timings", "queue", "await", "deploy", "shards",
+-                                        "submit", "check", "selftest", "doctor", "audit"])
++                                        "submit", "check", "selftest", "doctor", "audit", "smoke", "init-ci", "stages"])
+     ap.add_argument("target", nargs="?", help="deploy の環境の名前")
+     ap.add_argument("--config")
+     ap.add_argument("--all", action="store_true", help="全部の段を流す（既定。昔の書き方のため残す）")
+@@ -392,7 +408,22 @@
+     ap.add_argument("--tree")
+     ap.add_argument("--mode", default="")
+     ap.add_argument("--last", type=int, default=5)
++    ap.add_argument("--no-smoke", action="store_true", help="run --all：最初の健康診断（dagci smoke）を流さない")
++    ap.add_argument("--check", action="store_true", help="stages：workflow の手順と段が 1 対 1 かを出す")
++    ap.add_argument("--workflow", action="append", help="init-ci：読む workflow（既定は検査の出来事で動く全部）")
++    ap.add_argument("--root", help="init-ci・stages：プロジェクトの根（既定は今の場所か ci.yaml のある所）")
++    ap.add_argument("--out", help="init-ci：書く先（既定 ci.yaml。すでにあれば ci.init.yaml）")
++    ap.add_argument("--force", action="store_true", help="init-ci：ci.yaml を上書きする")
++    ap.add_argument("--offline", action="store_true", help="init-ci：網に聞かない（版は書いてあるまま）")
+     a = ap.parse_args(argv)
++    # ci.yaml を読む前に動く命令（ci.yaml を作る・段を導く）
++    if a.command == "init-ci":
++        import init_ci
++        return init_ci.run(a)
++    if a.command == "stages":
++        import stages_from_github
++        root = a.root or (os.path.dirname(os.path.abspath(find_config(a.config))) if (a.config or _has_config()) else os.getcwd())
++        return stages_from_github.main(["--root", root] + (["--check"] if a.check else []))
+     try:
+         cfg = cfgmod.load(find_config(a.config))
+     except cfgmod.ConfigError as ex:
+@@ -411,13 +442,18 @@
+         import audit
+         return audit.run(cfg, a)
+ 
++    def cmd_smoke(cfg, a):
++        import smoke
++        return smoke.run(cfg, a)
++
+     def cmd_doctor(cfg, a):
+         import doctor
+         return doctor.run(cfg, a)
+     try:
+         return {"run": cmd_run, "plan": cmd_plan, "verdict": cmd_verdict, "timings": cmd_timings, "queue": cmd_queue,
+                 "await": cmd_await, "deploy": cmd_deploy, "shards": cmd_shards, "submit": cmd_submit,
+-                "check": cmd_check, "selftest": cmd_selftest, "doctor": cmd_doctor, "audit": cmd_audit}[a.command](cfg, a)
++                "check": cmd_check, "selftest": cmd_selftest, "doctor": cmd_doctor, "audit": cmd_audit,
++                "smoke": cmd_smoke}[a.command](cfg, a)
+     except RuntimeError as ex:   # gh・git の失敗は 1 行で（長い traceback を読ませない）
+         print(f"dagci {a.command}: {ex}", file=sys.stderr)
+         return 2
 diff -ruN orig/ai-team-delivery/scripts/ci/dagci/parity.py new/ai-team-delivery/scripts/ci/dagci/parity.py
 --- orig/ai-team-delivery/scripts/ci/dagci/parity.py	2026-11-04 13:26:40.986144349 +0000
 +++ new/ai-team-delivery/scripts/ci/dagci/parity.py	2026-11-04 13:26:49.041894402 +0000
@@ -422,8 +1411,16 @@ diff -ruN orig/ai-team-delivery/scripts/ci/dagci/parity.py new/ai-team-delivery/
              subprocess.run(shlex.split(adapter) + ["break", wt, json.dumps(broken, ensure_ascii=False)], cwd=wt,
 diff -ruN orig/ai-team-delivery/scripts/ci/dagci/runner.py new/ai-team-delivery/scripts/ci/dagci/runner.py
 --- orig/ai-team-delivery/scripts/ci/dagci/runner.py	2026-11-04 13:26:40.986349016 +0000
-+++ new/ai-team-delivery/scripts/ci/dagci/runner.py	2026-11-04 16:53:37.942542957 +0000
-@@ -164,7 +164,9 @@
++++ new/ai-team-delivery/scripts/ci/dagci/runner.py	2026-11-04 18:07:22.505047102 +0000
+@@ -54,6 +54,7 @@
+     files: list[str] = field(default_factory=list)
+     rerun: set = field(default_factory=set)   # 同じ木の前の回で赤だった段（Dagger の使い回しを使わず、本当に流し直す）
+     heavy: set = field(default_factory=set)   # 重い段（同時に 1 本だけ）
++    smoke: bool = False      # 段の前に健康診断（dagci smoke の確かめ）を流す（run --all の既定）
+ 
+ 
+ def sync_stage_dir(root: str, files: list[str], dest: str) -> None:
+@@ -164,7 +165,9 @@
      def services(self, c: dagger.Client) -> dict[str, dagger.Service]:
          out = {}
          for name, sv in (self.cfg.raw.get("services") or {}).items():
@@ -434,9 +1431,33 @@ diff -ruN orig/ai-team-delivery/scripts/ci/dagci/runner.py new/ai-team-delivery/
              for k, v in (sv.get("env") or {}).items():
                  ctr = ctr.with_env_variable(k, str(v))
              for port in sv.get("ports") or []:
+@@ -322,6 +325,23 @@
+             if not self.o.quiet:
+                 print(f"  準備 道具箱 {timings['toolbox']:.1f}s・準備 {timings['prepare']:.1f}s・"
+                       f"作業場 {timings['workspace']:.1f}s", flush=True)
++            if self.o.smoke:
++                # 健康診断（dagci smoke）を、作った道具箱・作業場の上で先に流す。赤なら段を流さない（smoke.SmokeRed）
++                import smoke
++                t = time.monotonic()
++                rows: list = []
++
++                def add(x):
++                    rows.append(x)
++                    if not self.o.quiet:
++                        print(f"  {'緑' if x['ok'] else '赤'}  {x['what']}：{x['msg']}", flush=True)
++                if not self.o.quiet:
++                    print("  健康診断（dagci smoke）", flush=True)
++                await smoke.probes(c, self, w0, True, add)
++                timings["smoke"] = time.monotonic() - t
++                if not smoke.save(self.cfg.project, rows, timings["smoke"]):
++                    bad = [x for x in rows if not x["ok"]]
++                    raise smoke.SmokeRed("健康診断（dagci smoke）が赤：" + "／".join(f"{x['what']}：{x['msg'][:120]}" for x in bad[:3]))
+             svcs = self.services(c)
+             ws: dict = {None: w0}
+             outs: dict = {}
 diff -ruN orig/ai-team-delivery/scripts/ci/dagci/selftest.py new/ai-team-delivery/scripts/ci/dagci/selftest.py
 --- orig/ai-team-delivery/scripts/ci/dagci/selftest.py	2026-11-04 13:26:40.987078994 +0000
-+++ new/ai-team-delivery/scripts/ci/dagci/selftest.py	2026-11-04 13:26:49.042427047 +0000
++++ new/ai-team-delivery/scripts/ci/dagci/selftest.py	2026-11-04 18:22:10.736219940 +0000
 @@ -49,7 +49,7 @@
    environments:
      interim: {run: "sh ./deploy.sh", secrets: {TOKEN: DAGCI_SELFTEST_TOKEN}}
@@ -446,6 +1467,782 @@ diff -ruN orig/ai-team-delivery/scripts/ci/dagci/selftest.py new/ai-team-deliver
  """
  
  
+@@ -453,6 +453,76 @@
+     return ok, "audit が 同じ命令の 2 段・書き換えの後に作業場を数える段・3 秒の上限 を数えた" if ok else f"rc={rc} {out[-300:]}"
+ 
+ 
++def s27(c):
++    """健康診断（dagci smoke）：起きない相手・落ちる確かめは赤、起きる相手・通る確かめは緑。run --all は段を流さずに止まる"""
++    d = c.repo("echo 段が流れた-X27\n")
++    y = open(os.path.join(d, "ci.yaml")).read().replace("defaults:", textwrap.dedent("""\
++        services:
++          up: {image: "python:3.12-slim-bookworm", args: [python3, -m, http.server, "8000"], ports: [8000]}
++          down: {image: "python:3.12-slim-bookworm", args: [sh, -c, "exit 1"], ports: [8001]}
++        smoke:
++          - {name: 通る, run: "true", services: [up]}
++          - {name: 落ちる, run: "echo 移行の誤り-X27; exit 3", services: [up]}
++        defaults:"""))
++    open(os.path.join(d, "ci.yaml"), "w").write(y)
++    subprocess.run(["git", "-c", "user.email=t@e.invalid", "-c", "user.name=t", "commit", "-qam", "smoke"], cwd=d)
++    rc, out = c.dagci(d, "smoke", timeout=900)
++    lines = {ln.strip() for ln in out.splitlines()}
++    want = [("緑", "相手 up"), ("赤", "相手 down"), ("緑", "smoke「通る」"), ("赤", "smoke「落ちる」")]
++    got = [any(ln.startswith(f"{m}  {w}") for ln in lines) for m, w in want]
++    if rc != 1 or not all(got) or "移行の誤り-X27" not in out:
++        return False, f"smoke rc={rc} {dict(zip([w for _, w in want], got))} {out[-400:]}"
++    rc2, out2 = c.dagci(d, "run", "--all", "--summary-only", timeout=900)
++    ok = rc2 == 3 and "健康診断" in out2 and "流せない" in out2 and "段が流れた-X27" not in out2
++    return ok, ("smoke が 相手 down・確かめ「落ちる」を赤、相手 up・「通る」を緑にした。run --all は段を流さずに「流せない（健康診断が赤）」で 3"
++                if ok else f"run --all rc={rc2} {out2[-300:]}")
++
++
++def s28(c):
++    """workflow から ci.yaml の下書きを作り（init-ci）、段を導く（stages）。相手は job ごと・知らない action は赤"""
++    d = c.repo("true\n")
++    os.remove(os.path.join(d, "ci.yaml"))
++    os.makedirs(os.path.join(d, ".github", "workflows"))
++    open(os.path.join(d, ".github", "workflows", "ci.yml"), "w").write(textwrap.dedent("""\
++        on: {pull_request: {}}
++        jobs:
++          a:
++            runs-on: ubuntu-latest
++            services: {db: {image: "postgres:16-alpine", ports: ["5432:5432"]}}
++            env: {DATABASE_URL: "postgres://postgres@localhost:5432/x"}
++            steps:
++              - uses: actions/setup-python@v5
++                with: {python-version: "3.12"}
++              - name: T1 one
++                run: echo one
++          b:
++            runs-on: ubuntu-latest
++            services: {db: {image: "postgres:16-alpine", ports: ["5432:5432"]}}
++            steps:
++              - name: T2 two
++                run: echo two
++        """))
++    rc, out = c.dagci(d, "init-ci", "--offline")
++    rc2, out2 = c.dagci(d, "stages")
++    st = (yaml_load(out2) or {}).get("stages") or []
++    by = {s["id"]: s for s in st}
++    ok = (rc == 0 and rc2 == 0 and sorted(by) == ["a-t01", "b-t02"] and by["a-t01"]["services"] == ["a-db"]
++          and by["b-t02"]["services"] == ["b-db"] and "a-db:5432" in by["a-t01"]["env"]["DATABASE_URL"])
++    if not ok:
++        return False, f"init-ci rc={rc} stages rc={rc2} {out[-200:]} {out2[-300:]}"
++    wf = os.path.join(d, ".github", "workflows", "ci.yml")
++    open(wf, "a").write("      - uses: someone/unknown-action@v1\n")
++    rc3, out3 = c.dagci(d, "plan")
++    ok = rc3 == 2 and "CS1" in out3
++    return ok, ("下書きが読め、段は job ごとの相手・localhost を相手の名前に。知らない action を足すと設定の誤り（CS1）で止まる"
++                if ok else f"plan rc={rc3} {out3[-300:]}")
++
++
++def yaml_load(text: str):
++    import yaml
++    return yaml.safe_load(text)
++
++
+ def s00():
+     r = subprocess.run([sys.executable, "-W", "ignore", "-m", "unittest", "discover", "-s", os.path.join(HERE, "tests")],
+                        capture_output=True, text=True)
+@@ -487,6 +557,8 @@
+     ("24", "重い段は同時に流さない", lambda c, real: s24(c)),
+     ("25", "置き場（caches）は段ごとに別", lambda c, real: s25(c)),
+     ("26", "dagci audit が揺れうる所を数える", lambda c, real: s26(c)),
++    ("27", "健康診断（dagci smoke）が外側の誤りを赤にし、run --all は段の前に止まる", lambda c, real: s27(c)),
++    ("28", "workflow から ci.yaml の下書きと段を導く（init-ci・stages）", lambda c, real: s28(c)),
+ ]
+ 
+ 
+diff -ruN orig/ai-team-delivery/scripts/ci/dagci/smoke.py new/ai-team-delivery/scripts/ci/dagci/smoke.py
+--- orig/ai-team-delivery/scripts/ci/dagci/smoke.py	1970-01-01 00:00:00.000000000 +0000
++++ new/ai-team-delivery/scripts/ci/dagci/smoke.py	2026-11-04 18:07:22.504176414 +0000
+@@ -0,0 +1,200 @@
++"""dagci smoke — 2 分の健康診断。全部の段（30 分）を流す前に、プロジェクトの外側（道具箱・網・相手）の誤りを見つける。
++
++  dagci smoke            道具箱を作り、容れ物の中で次を 1 項目 1 行の 緑／赤 で出す。赤があれば終わり方 1
++  dagci run --all        最初にこれを流し、赤なら段を流さずに「流せない（健康診断が赤）」で止まる（--no-smoke で外す）
++
++見るもの:
++  道具箱・準備   作れるか（作れなければ、どの命令の何で落ちたか）
++  Python        python3 が venv と見なされているか（sys.prefix）・venv に入れた部品が全部 import できるか
++  Node          node・packageManager の道具と版・package.json の依存が node_modules にあるか
++  https         使う registry（npm・PyPI）に、容れ物の中の curl・node・python3 のそれぞれでつながるか（証明書の読み方が道具ごとに違う）
++  相手          services のどれもが起き、口（TCP）につながるか。postgres の image は pg_isready と select 1、redis は PING
++  smoke         ci.yaml の smoke: に書いたプロジェクトの短い確かめ（例：移行が当たる）
++由来（Kaname・2026-11-04）：venv の Python・TLS の中継・Chrome・同じ定義の相手・決め打ちの DB は、どれも 30 分流してから 1 つずつ見つかった。
++"""
++from __future__ import annotations
++
++import json
++import os
++import re
++import time
++
++import anyio
++import dagger
++
++import memo
++import plan as planmod
++
++PG = re.compile(r"postgres|pgvector|postgis|timescale", re.I)
++REDIS = re.compile(r"redis|valkey|keydb", re.I)
++
++
++def record_path(project: str) -> str:
++    return os.path.join(memo.home(), "smoke", f"{project}.json")
++
++
++def _commands(cfg) -> list[dict]:
++    out = []
++    for i, c in enumerate(cfg.raw.get("smoke") or []):
++        if isinstance(c, str):
++            c = {"name": c, "run": c}
++        out.append({"name": str(c.get("name") or c["run"])[:60], "run": str(c["run"]), "services": list(c.get("services") or []),
++                    "env": {k: str(v) for k, v in (c.get("env") or {}).items()}, "timeout": int(c.get("timeout") or 300)})
++    return out
++
++
++def _registries(cfg, files: list[str]) -> list[dict]:
++    regs = []
++    root = cfg.root
++    if "package.json" in files:
++        url = "https://registry.npmjs.org/"
++        npmrc = os.path.join(root, ".npmrc")
++        if os.path.exists(npmrc):
++            m = re.search(r"^\s*registry\s*=\s*(\S+)", open(npmrc, encoding="utf-8").read(), re.M)
++            if m:
++                url = m.group(1)
++        regs.append({"name": "npm", "url": url})
++    env = {**((cfg.raw.get("toolbox") or {}).get("env") or {}), **(cfg.raw.get("env") or {})}
++    py = env.get("VIRTUAL_ENV") or any(re.search(r"(^|/)(requirements[^/]*\.txt|pyproject\.toml)$", f) for f in files)
++    if py:
++        regs.append({"name": "PyPI", "url": str(env.get("PIP_INDEX_URL") or env.get("UV_INDEX_URL") or "https://pypi.org/simple/pip/")})
++    for u in (cfg.raw.get("ci") or {}).get("smoke_urls") or []:
++        regs.append({"name": u.split("/")[2] if "://" in u else u, "url": u})
++    return regs
++
++
++def _service_spec(name: str, sv: dict) -> dict:
++    env = sv.get("env") or {}
++    kind = "postgres" if PG.search(sv["image"]) else ("redis" if REDIS.search(sv["image"]) else "")
++    return {"name": name, "ports": [int(p) for p in sv.get("ports") or []], "kind": kind,
++            "user": env.get("POSTGRES_USER", "postgres"), "password": env.get("POSTGRES_PASSWORD", ""),
++            "db": env.get("POSTGRES_DB") or env.get("POSTGRES_USER") or "postgres"}
++
++
++async def _probe(ctr: dagger.Container, spec: dict, what: str) -> list[dict]:
++    try:
++        done = (ctr.with_env_variable("DAGCI_SMOKE_AT", str(time.time()))   # 毎回本当に確かめる（Dagger に使い回させない）
++                .with_new_file("/ci/smoke.json", json.dumps(spec, ensure_ascii=False))
++                .with_exec(["python3", "/ci/bin/smoke_probe.py", "/ci/smoke.json"], expect=dagger.ReturnType.ANY))
++        out = await done.stdout()
++        rc = await done.exit_code()
++    except dagger.DaggerError as ex:
++        err = (getattr(ex, "stderr", "") or str(ex)).strip().splitlines()
++        return [{"ok": False, "what": what, "msg": f"起こせない: {' / '.join(err[-3:])[:300]}"}]
++    rows = []
++    for line in out.splitlines():
++        try:
++            rows.append(json.loads(line))
++        except ValueError:
++            continue
++    if rc != 0 or not rows:
++        rows.append({"ok": False, "what": what, "msg": f"確かめが終わらない（終わり方 {rc}）: {out[-200:]}"})
++    return rows
++
++
++class SmokeRed(RuntimeError):
++    """run --all の最初の健康診断が赤（段を流さずに「流せない」で止める）"""
++
++
++def save(project: str, rows: list[dict], secs: float) -> bool:
++    ok = bool(rows) and all(r["ok"] for r in rows)
++    os.makedirs(os.path.dirname(record_path(project)), exist_ok=True)
++    json.dump({"at": time.time(), "ok": ok, "rows": rows, "seconds": round(secs)},
++              open(record_path(project), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
++    return ok
++
++
++async def probes(c, r, ws, ready: bool, add) -> None:
++    """作った作業場（ws）の上で、道具・網・相手・smoke の確かめを同時に流す（r は runner.Runner。相手の作り方を同じにする）"""
++    cfg = r.cfg
++    svcs = r.services(c)
++    regs = _registries(cfg, r.o.files)
++    wd = cfg.workdir
++    results: dict[int, list[dict]] = {}
++
++    async def job(i, coro):
++        results[i] = await coro
++
++    async with anyio.create_task_group() as tg:
++        tg.start_soon(job, 0, _probe(ws, {"runtime": True, "registries": regs, "workdir": wd}, "道具"))
++        for i, (name, sv) in enumerate((cfg.raw.get("services") or {}).items(), 1):
++            ctr = ws.with_service_binding(name, svcs[name])
++            tg.start_soon(job, i, _probe(ctr, {"services": [_service_spec(name, sv)], "workdir": wd}, f"相手 {name}"))
++        if ready:
++            for k, cmd in enumerate(_commands(cfg), 100):
++                ctr = ws
++                for n in cmd["services"] or list(svcs):
++                    ctr = ctr.with_service_binding(n, svcs[n])
++                for ek, ev in cmd["env"].items():
++                    ctr = ctr.with_env_variable(ek, ev)
++                tg.start_soon(job, k, _probe(ctr, {"commands": [cmd], "workdir": wd}, f"smoke「{cmd['name']}」"))
++        elif _commands(cfg):
++            results[100] = [{"ok": False, "what": "smoke", "msg": "準備が落ちたので、プロジェクトの確かめは流していない"}]
++    for i in sorted(results):
++        for row in results[i]:
++            add(row)
++
++
++async def _main(cfg, files: list[str], run_dir: str, say) -> list[dict]:
++    from runner import Runner, RunOptions
++    rows: list[dict] = []
++
++    def add(x):
++        rows.append(x)
++        say(x)
++
++    sel = planmod.Selection([], [], {}, [], "smoke")
++    r = Runner(cfg, sel, RunOptions(run_dir=run_dir, files=files, quiet=True))
++    log = open(os.path.join(run_dir, "smoke-engine.log"), "w")
++    async with dagger.Connection(dagger.Config(log_output=log, timeout=120)) as c:
++        t = time.monotonic()
++        try:
++            base = r.toolbox(c)
++            await base.sync()
++            add({"ok": True, "what": "道具箱", "msg": f"作れた（{time.monotonic() - t:.0f} 秒・{(cfg.raw.get('toolbox') or {}).get('from')}）"})
++        except (dagger.DaggerError, ValueError) as ex:
++            err = (getattr(ex, "stderr", "") or str(ex)).strip().splitlines()
++            add({"ok": False, "what": "道具箱", "msg": f"作れない: {' / '.join(err[-3:])[:300]}"})
++            return rows
++        t = time.monotonic()
++        try:
++            ws = r.workspace(c, r.prepare(c, base))
++            await ws.sync()
++            add({"ok": True, "what": "準備・作業場", "msg": f"作れた（{time.monotonic() - t:.0f} 秒・準備 {len(cfg.raw.get('prepare') or [])} 本）"})
++            ready = True
++        except dagger.DaggerError as ex:
++            err = (getattr(ex, "stderr", "") or str(ex)).strip().splitlines()
++            add({"ok": False, "what": "準備・作業場", "msg": f"作れない: {' / '.join(err[-3:])[:300]}"})
++            ws, ready = base, False
++        await probes(c, r, ws, ready, add)
++    log.close()
++    return rows
++
++
++def check(cfg, files: list[str], run_dir: str, quiet: bool = False) -> tuple[bool, list[dict], float]:
++    os.makedirs(run_dir, exist_ok=True)
++
++    def say(r):
++        if not quiet:
++            print(f"  {'緑' if r['ok'] else '赤'}  {r['what']}：{r['msg']}", flush=True)
++    t = time.monotonic()
++    rows = anyio.run(_main, cfg, files, run_dir, say)
++    secs = time.monotonic() - t
++    return save(cfg.project, rows, secs), rows, secs
++
++
++def run(cfg, a) -> int:
++    from main import disk_ready, engine_ready
++    files = planmod.workspace_files(cfg.root)
++    run_dir = os.path.join(memo.home(), "runs", cfg.project, time.strftime("%Y%m%d-%H%M%S") + f"-{os.getpid()}-smoke")
++    print(f"dagci smoke：{cfg.project}（道具箱・部品・網・相手・smoke の確かめ）", flush=True)
++    try:
++        disk_ready(cfg)
++        engine_ready()
++    except RuntimeError as ex:
++        print(f"  赤  流せない：{ex}")
++        return 3
++    ok, rows, secs = check(cfg, files, run_dir)
++    reds = sum(1 for r in rows if not r["ok"])
++    print(f"dagci smoke：{'緑' if ok else '赤'}（緑 {len(rows) - reds}・赤 {reds}・{secs:.0f} 秒）")
++    return 0 if ok else 1
+diff -ruN orig/ai-team-delivery/scripts/ci/dagci/stages_from_github.py new/ai-team-delivery/scripts/ci/dagci/stages_from_github.py
+--- orig/ai-team-delivery/scripts/ci/dagci/stages_from_github.py	1970-01-01 00:00:00.000000000 +0000
++++ new/ai-team-delivery/scripts/ci/dagci/stages_from_github.py	2026-11-04 17:58:22.330443923 +0000
+@@ -0,0 +1,341 @@
++#!/usr/bin/env python3
++"""dagci の段の一覧を、プロジェクトの GitHub の workflow から導く（手で写さない）。Kaname の scripts/ci/ci_stages.py を汎用にした。
++
++  dagci stages            段の一覧を YAML で出す（ci.yaml の include から呼ぶ）。1 対 1 が崩れていれば赤で止まる（設定の誤り）
++  dagci stages --check    workflow の手順が、どれも「段」「道具箱・準備で済ませた手順」「理由つきで外した物」の 1 つに入っているかを出す
++  （直に流すなら python3 stages_from_github.py [--root <根>] [--check]。PyYAML が要る）
++
++設定は ci.yaml の github: 節（dagci init-ci が書く。足りなければ手で足す）:
++  github:
++    workflows: [.github/workflows/ci.yml]     # 段を導く workflow
++    skip_jobs: {e2e: 理由}                     # 流さない job（理由が要る）
++    skip_steps: {"<job>/<手順の名前か命令>": 理由}
++    ignore_uses: {"<owner/action>": 理由}      # 知らない action を、写さなくてよいと決めたもの
++    setup: [正規表現]                          # 道具箱・準備で済ませる手順（足す。既定は install の類）
++    job_setup: [正規表現]                      # job の中で、後ろの段の前に毎回流す手順（足す。既定は build と、後ろで立ち上げる手順）
++
++GitHub の job の写し方:
++  services   → job ごとに別の相手 <job>-<名前>（同じ定義の相手を 1 つにまとめない・Kaname の G3 と G27・2026-11-04）
++               env と命令の localhost:<口>・127.0.0.1:<口> を相手の名前に向ける
++  相手のある job → 手順を順に流す（前の段を needs に。同じ DB を同時に作り直さない）
++  env        → workflow・job・手順の env を段の env に。${{ env.X }}・${{ matrix.X }}（最初の組）は値に置き換える
++  working-directory → cd してから流す。複数行の手順は GitHub と同じく set -eo pipefail で流す
++赤になるもの（--check と、段を出すとき）:
++  CS1 知らない action（uses:）を写していない（道具箱で入れるか、ignore_uses に理由を書く）
++  CS2 段の id が英数と ._- にならない（名前から作れない）
++  CS3 dagci で同じには流せない job（if: で GitHub の出来事に依る・Linux 以外・container:・別の workflow を呼ぶ）が skip_jobs に無い
++  CS4 外す記録（skip_jobs・skip_steps・ignore_uses）に理由が無い・もう無い物を指している
++  CS5 段に ${{ ... }} が残る（secrets など、dagci が値を知らない式）。skip_steps に理由を書くか、命令を変える
++  CS6 workflow が無い・段が 0 本
++"""
++from __future__ import annotations
++
++import os
++import re
++import shlex
++import sys
++
++import yaml
++
++# 写さなくてよい action（理由）。ここに無い action は CS1
++KNOWN_USES = {
++    "actions/checkout": "作業場は dagci が送る",
++    "actions/setup-node": "道具箱で入れる（init-ci が版を写す）",
++    "actions/setup-python": "道具箱で入れる（init-ci が版を写す）",
++    "pnpm/action-setup": "道具箱で入れる（init-ci が版を写す）",
++    "astral-sh/setup-uv": "道具箱で入れる",
++    "actions/cache": "Dagger が入力の中身で使い回す",
++    "actions/upload-artifact": "段の出力の全文は $DAGCI_HOME/runs に残る",
++    "actions/download-artifact": "段の出力の全文は $DAGCI_HOME/runs に残る",
++    "browser-actions/setup-chrome": "道具箱で入れる（init-ci が Chrome の手順を足す）",
++}
++DEFAULT_SETUP = [
++    r"^(sudo )?corepack (enable|prepare)(\s|$)",
++    r"^(pnpm|npm|yarn|bun) (install|ci|i)(\s|$)",
++    r"^(python3? -m )?pip3? install\b",
++    r"^uv (sync|pip install)\b",
++    r"\bplaywright install\b",
++    r"^(sudo )?apt(-get)? (-\S+ )*(update|install)\b",
++]
++DEFAULT_JOB_SETUP = [
++    r"^(pnpm|npm|yarn|bun)( run)?( -s)?( --filter \S+)? build(:\S+)?$",
++]
++BACKGROUND = re.compile(r"&\s*\)|&\s*$", re.M)   # 後ろで立ち上げる手順（画面・API を起こして待つ）
++EXPR = re.compile(r"\$\{\{\s*(.*?)\s*\}\}")
++LOCAL = r"(?:localhost|127\.0\.0\.1)"
++
++
++def gh_config(root: str) -> dict:
++    p = os.path.join(root, "ci.yaml")
++    if not os.path.exists(p):
++        return {}
++    with open(p, encoding="utf-8") as f:
++        return (yaml.safe_load(f) or {}).get("github") or {}
++
++
++def load_yaml(path: str) -> dict:
++    with open(path, encoding="utf-8") as f:
++        d = yaml.safe_load(f) or {}
++    if True in d and "on" not in d:   # YAML 1.1 は on: を真偽の True と読む
++        d["on"] = d.pop(True)
++    return d
++
++
++def subst(s: str, ctx: dict) -> str:
++    """${{ env.X }}・${{ matrix.X }}・${{ github.workspace }} を値に。分からない式はそのまま残す（CS5）"""
++    def one(m):
++        e = m.group(1)
++        k = re.fullmatch(r"(env|matrix)\.([A-Za-z_][A-Za-z0-9_-]*)", e)
++        if k and k.group(2) in ctx.get(k.group(1), {}):
++            return str(ctx[k.group(1)][k.group(2)])
++        if e == "github.workspace":
++            return ctx.get("workdir", "/src")
++        return m.group(0)
++    for _ in range(3):   # env の中の ${{ env.X }} もほどく
++        s2 = EXPR.sub(one, s)
++        if s2 == s:
++            break
++        s = s2
++    return s
++
++
++def first_matrix(j: dict) -> dict:
++    m = ((j.get("strategy") or {}).get("matrix")) or {}
++    if not isinstance(m, dict):
++        return {}
++    out = {}
++    for k, v in m.items():
++        if k in ("include", "exclude"):
++            continue
++        if isinstance(v, list) and v:
++            out[k] = v[0]
++    return out
++
++
++def service_key(job: str, name: str) -> str:
++    return re.sub(r"[^a-z0-9-]+", "-", f"{job}-{name}".lower()).strip("-")
++
++
++def job_services(job: str, j: dict, ctx: dict) -> dict[str, dict]:
++    """job の services を、dagci の相手（名前 <job>-<名前>）に。hostports は 手元の口 → 容れ物の口"""
++    out = {}
++    for name, sv in (j.get("services") or {}).items():
++        if not isinstance(sv, dict) or "image" not in sv:
++            continue
++        ports, hostports = [], {}
++        for p in sv.get("ports") or []:
++            s = str(p).split("/")[0]
++            parts = s.split(":")
++            cp = int(parts[-1])
++            hp = int(parts[-2]) if len(parts) >= 2 and parts[-2] else cp
++            ports.append(cp)
++            hostports[hp] = cp
++        out[service_key(job, name)] = {
++            "image": subst(str(sv["image"]), ctx),
++            "env": {k: subst(str(v), ctx) for k, v in (sv.get("env") or {}).items()},
++            "ports": ports, "hostports": hostports, "orig": name}
++    return out
++
++
++def to_service(s: str, svcs: dict) -> str:
++    for key, sv in svcs.items():
++        for hp, cp in sv["hostports"].items():
++            s = re.sub(rf"\b{LOCAL}:{hp}\b", f"{key}:{cp}", s)
++    return s
++
++
++def chosen_workflows(root: str, g: dict) -> list[str]:
++    wfs = g.get("workflows")
++    if wfs:
++        return list(wfs)
++    d = os.path.join(root, ".github", "workflows")
++    return sorted(os.path.join(".github/workflows", f) for f in os.listdir(d) if f.endswith((".yml", ".yaml"))) \
++        if os.path.isdir(d) else []
++
++
++def unsupported_job(j: dict) -> str:
++    """dagci で同じには流せない job の理由（無ければ空）"""
++    if j.get("uses"):
++        return f"別の workflow を呼ぶ job（uses: {j['uses']}）"
++    ro = j.get("runs-on")
++    ro_s = " ".join(map(str, ro)) if isinstance(ro, list) else str(ro or "")
++    if ro_s and not re.search(r"ubuntu|linux|self-hosted|\$\{\{", ro_s):
++        return f"Linux 以外の台（runs-on: {ro_s}）"
++    if j.get("container"):
++        return "job ごとの容れ物（container:）。道具箱に写すまで流さない"
++    cond = str(j.get("if") or "")
++    if re.search(r"github\.(event\w*|head_ref|base_ref|ref\w*)\b", cond):
++        return f"GitHub の出来事で決まる job（if: {cond.strip()}）"
++    return ""
++
++
++def uses_name(u: str) -> str:
++    return re.sub(r"@.*$", "", u.strip())
++
++
++class Derived:
++    def __init__(self):
++        self.stages: list[dict] = []
++        self.services: dict[str, dict] = {}
++        self.ledger: list[tuple[str, str, str]] = []   # （job/手順, 扱い, 中身）
++        self.fails: list[str] = []
++        self.notes: list[str] = []
++        self.used_skips: set[str] = set()
++
++
++def _slug(text: str) -> str:
++    return re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")[:40]
++
++
++def derive(root: str, g: dict | None = None) -> Derived:
++    g = gh_config(root) if g is None else g
++    out = Derived()
++    skip_jobs = g.get("skip_jobs") or {}
++    skip_steps = g.get("skip_steps") or {}
++    ignore_uses = g.get("ignore_uses") or {}
++    setup = [re.compile(p) for p in DEFAULT_SETUP + list(g.get("setup") or [])]
++    job_setup = [re.compile(p) for p in DEFAULT_JOB_SETUP + list(g.get("job_setup") or [])]
++    wfs = chosen_workflows(root, g)
++    if not wfs:
++        out.fails.append("CS6 workflow が無い（.github/workflows/*.yml か github.workflows）")
++    ids: dict[str, int] = {}
++    for wf in wfs:
++        p = os.path.join(root, wf)
++        if not os.path.exists(p):
++            out.fails.append(f"CS6 workflow が無い: {wf}")
++            continue
++        w = load_yaml(p)
++        wenv = {k: str(v) for k, v in (w.get("env") or {}).items()}
++        wdefault = ((w.get("defaults") or {}).get("run") or {})
++        for job, j in (w.get("jobs") or {}).items():
++            if not isinstance(j, dict):
++                continue
++            if job in skip_jobs:
++                out.used_skips.add(f"job:{job}")
++                out.ledger.append((job, "外した job", str(skip_jobs[job])))
++                continue
++            why = unsupported_job(j)
++            if why:
++                out.fails.append(f"CS3 {wf} の job {job}：{why}。段に写せないので skip_jobs に理由を書く")
++                continue
++            mx = first_matrix(j)
++            if mx:
++                out.notes.append(f"{job}：matrix は最初の組だけ（{mx}）")
++            ctx = {"env": dict(wenv), "matrix": mx}
++            ctx["env"].update({k: subst(str(v), ctx) for k, v in (j.get("env") or {}).items()})
++            svcs = job_services(job, j, ctx)
++            out.services.update(svcs)
++            jdefault = {**wdefault, **(((j.get("defaults") or {}).get("run")) or {})}
++            prefix: list[str] = []
++            prev = None
++            steps = j.get("steps") or []
++            for i, st in enumerate(steps):
++                label = str(st.get("name") or st.get("run") or st.get("uses") or f"#{i}").strip().splitlines()[0][:80]
++                key = f"{job}/{label}"
++                if key in skip_steps:
++                    out.used_skips.add(f"step:{key}")
++                    out.ledger.append((key, "外した手順", str(skip_steps[key])))
++                    continue
++                if st.get("uses"):
++                    u = uses_name(str(st["uses"]))
++                    if u in KNOWN_USES:
++                        out.ledger.append((key, "写さない action", KNOWN_USES[u]))
++                    elif u in ignore_uses:
++                        out.used_skips.add(f"uses:{u}")
++                        out.ledger.append((key, "写さない action", str(ignore_uses[u])))
++                    else:
++                        out.fails.append(f"CS1 {job} の手順「{label}」の action {u} を写していない"
++                                         "（道具箱で入れるか、github.ignore_uses に理由を書く）")
++                    continue
++                run = str(st.get("run") or "").strip()
++                if not run:
++                    continue
++                parts = [x.strip() for x in run.split("&&")]
++                if "\n" not in run and ";" not in run and all(any(p.search(x) for p in setup) for x in parts):
++                    out.ledger.append((key, "道具箱・準備で済ませた", run[:100]))
++                    continue
++                sctx = {**ctx, "env": {**ctx["env"], **{k: subst(str(v), ctx) for k, v in (st.get("env") or {}).items()}}}
++                body = to_service(subst(run, sctx), svcs)
++                wd = st.get("working-directory") or jdefault.get("working-directory")
++                multi = "\n" in body
++                if wd:
++                    body = f"cd {shlex.quote(subst(str(wd), sctx))}\n{body}"
++                    multi = True
++                later = any((s.get("run") and not s.get("uses")) for s in steps[i + 1:])
++                if later and (BACKGROUND.search(run) or any(p.search(run) for p in job_setup)):
++                    # 組み立て・立ち上げ：後ろの段の前に毎回流す（段は別の容れ物なので、GitHub の job のように前の手順の結果が残らない）
++                    prefix.append(body if not multi else "bash -eo pipefail -c " + shlex.quote(body))
++                    out.ledger.append((key, "後ろの段の前に流す", run.splitlines()[0][:100]))
++                    continue
++                if prefix:
++                    cmd = " && ".join(prefix + [body if not multi else "bash -eo pipefail -c " + shlex.quote(body)])
++                else:
++                    cmd = "set -eo pipefail\n" + body if multi else body
++                env = {k: to_service(v, svcs) for k, v in sctx["env"].items()}
++                left = sorted({m.group(0) for m in EXPR.finditer(cmd + " ".join(env.values()))})
++                if left:
++                    out.fails.append(f"CS5 {job} の手順「{label}」に dagci が値を知らない式 {left[:3]}"
++                                     f"（skip_steps の \"{key}\" に理由を書くか、命令を変える）")
++                    continue
++                name = str(st.get("name") or run.splitlines()[0])[:120]
++                m = re.match(r"([A-Za-z]{1,3})(\d+)\b", name)
++                sid = f"{job}-{m.group(1).lower()}{int(m.group(2)):02d}" if m else f"{job}-" + (_slug(name) or f"step{i + 1}")
++                if not re.fullmatch(r"[A-Za-z0-9._-]+", sid):
++                    out.fails.append(f"CS2 段の id を作れない: {sid!r}")
++                    continue
++                if sid in ids:   # 同じ名前の手順（別の job の同じ番号は job の名前で分かれる）
++                    ids[sid] += 1
++                    sid = f"{sid}-{ids[sid]}"
++                ids.setdefault(sid, 1)
++                stage = {"id": sid, "name": name, "group": job, "run": cmd}
++                if svcs:
++                    stage["services"] = list(svcs)
++                if env:
++                    stage["env"] = env
++                if svcs and prev:
++                    stage["needs"] = [prev]
++                tm = st.get("timeout-minutes") or j.get("timeout-minutes")
++                if tm:
++                    stage["timeout"] = int(float(tm) * 60)
++                out.stages.append(stage)
++                out.ledger.append((key, "段", sid))
++                prev = sid
++    for kind, table in (("job", skip_jobs), ("step", skip_steps), ("uses", ignore_uses)):
++        for k, why in table.items():
++            if not str(why or "").strip() or "理由を書く" in str(why):
++                out.fails.append(f"CS4 外す記録 {kind} {k} に理由が無い")
++            if f"{kind}:{k}" not in out.used_skips:
++                out.fails.append(f"CS4 外す記録 {kind} {k} が、もう無い物を指している（記録から外す）")
++    if wfs and not out.stages:
++        out.fails.append("CS6 段が 0 本（0 段は緑にしない）")
++    return out
++
++
++def main(argv: list[str] | None = None) -> int:
++    argv = sys.argv[1:] if argv is None else argv
++    root = os.path.abspath(argv[argv.index("--root") + 1]) if "--root" in argv else os.getcwd()
++    d = derive(root)
++    if "--check" in argv:
++        for who, kind, what in d.ledger:
++            print(f"  {kind:<12} {who[:70]:<70} {what[:60]}")
++        for n in d.notes:
++            print("  注:", n)
++        for f in d.fails:
++            print("  ★", f)
++        n_stage = sum(1 for x in d.ledger if x[1] == "段")
++        print(f"段 {n_stage}・相手 {len(d.services)}・済ませた手順 {sum(1 for x in d.ledger if x[1] == '道具箱・準備で済ませた')}・"
++              f"外した物 {sum(1 for x in d.ledger if x[1].startswith('外した'))}")
++        print("FAIL — workflow の手順と dagci の段が 1 対 1 にならない" if d.fails else
++              "PASS — workflow の手順は、どれも段・済ませた手順・理由つきで外した物のどれか 1 つに入っている")
++        return 1 if d.fails else 0
++    if d.fails:
++        for f in d.fails:
++            print("★", f, file=sys.stderr)
++        print("段を導けない（dagci stages --check で一覧を見る）", file=sys.stderr)
++        return 1
++    print(yaml.safe_dump({"stages": d.stages}, allow_unicode=True, sort_keys=False, width=1000))
++    return 0
++
++
++if __name__ == "__main__":
++    sys.exit(main())
+diff -ruN orig/ai-team-delivery/scripts/ci/dagci/tests/test_github_stages.py new/ai-team-delivery/scripts/ci/dagci/tests/test_github_stages.py
+--- orig/ai-team-delivery/scripts/ci/dagci/tests/test_github_stages.py	1970-01-01 00:00:00.000000000 +0000
++++ new/ai-team-delivery/scripts/ci/dagci/tests/test_github_stages.py	2026-11-04 18:20:39.640641463 +0000
+@@ -0,0 +1,137 @@
++"""workflow から段を導く（stages_from_github）と、ci.yaml の下書き（init_ci）の検査。容れ物も網も使わない。
++   流し方: python3 -m unittest discover -s scripts/ci/dagci/tests   （PyYAML が要る）
++"""
++import json
++import os
++import subprocess
++import sys
++import tempfile
++import textwrap
++import types
++import unittest
++
++HERE = os.path.dirname(os.path.abspath(__file__))
++sys.path.insert(0, os.path.dirname(HERE))
++
++import yaml  # noqa: E402
++
++import config  # noqa: E402
++import init_ci  # noqa: E402
++import stages_from_github as sg  # noqa: E402
++
++WF = """
++name: ci
++on: {push: {branches: [main]}, pull_request: {}}
++env: {NODE_VERSION: '22'}
++jobs:
++  static:
++    runs-on: ubuntu-latest
++    steps:
++      - uses: actions/checkout@v4
++      - uses: actions/setup-python@v5
++        with: {python-version: '3.12'}
++      - run: pip install pyyaml
++      - name: G1 config check
++        run: python3 check.py
++  test:
++    runs-on: ubuntu-latest
++    services:
++      postgres:
++        image: postgres:16-alpine
++        env: {POSTGRES_PASSWORD: pw, POSTGRES_DB: app}
++        ports: ['5432:5432']
++    env:
++      DATABASE_URL: postgres://postgres:pw@localhost:5432/app
++    steps:
++      - uses: actions/checkout@v4
++      - uses: actions/setup-node@v4
++        with: {node-version: '${{ env.NODE_VERSION }}'}
++      - run: npm ci
++      - run: npm run build
++      - name: G2 unit
++        run: npm test
++      - name: G3 db
++        run: |
++          echo one
++          npm run test:db
++  other:
++    runs-on: ubuntu-latest
++    if: github.event_name == 'pull_request'
++    steps:
++      - run: echo "${{ github.head_ref }}"
++"""
++RELEASE = "name: r\non: {release: {types: [published]}}\njobs:\n  p: {runs-on: ubuntu-latest, steps: [{run: echo}]}\n"
++
++
++def project(d: str, wf: str = WF) -> None:
++    os.makedirs(os.path.join(d, ".github/workflows"))
++    open(os.path.join(d, ".github/workflows/ci.yml"), "w").write(textwrap.dedent(wf))
++    open(os.path.join(d, ".github/workflows/release.yml"), "w").write(RELEASE)
++    open(os.path.join(d, "package.json"), "w").write(json.dumps({"name": "x", "dependencies": {"pg": "8.13.1"}}))
++    open(os.path.join(d, "package-lock.json"), "w").write("{}")
++
++
++class StagesTest(unittest.TestCase):
++    def test_derive(self):
++        with tempfile.TemporaryDirectory() as d:
++            project(d)
++            g = {"workflows": [".github/workflows/ci.yml"], "skip_jobs": {"other": "PR だけ"}}
++            r = sg.derive(d, g)
++            self.assertEqual(r.fails, [])
++            by = {s["id"]: s for s in r.stages}
++            self.assertEqual(list(by), ["static-g01", "test-g02", "test-g03"])
++            self.assertEqual(list(r.services), ["test-postgres"])                  # job ごとの名前
++            self.assertEqual(by["test-g02"]["env"]["DATABASE_URL"], "postgres://postgres:pw@test-postgres:5432/app")
++            self.assertTrue(by["test-g02"]["run"].startswith("npm run build && "))  # 組み立ては後ろの段の前に
++            self.assertEqual(by["test-g03"]["needs"], ["test-g02"])                 # 相手のある job は順に
++            self.assertIn("-eo pipefail", by["test-g03"]["run"])                 # 複数行は GitHub と同じく
++            self.assertNotIn("services", by["static-g01"])
++
++    def test_reds(self):
++        with tempfile.TemporaryDirectory() as d:
++            project(d, WF.replace("      - run: npm ci\n", "      - run: npm ci\n      - uses: docker/build-push-action@v6\n"))
++            r = sg.derive(d, {"workflows": [".github/workflows/ci.yml"], "skip_jobs": {"gone": "x", "nobody": ""}})
++            codes = sorted(f.split()[0] for f in r.fails)
++            self.assertIn("CS1", codes)   # 知らない action
++            self.assertIn("CS3", codes)   # if: の job が skip_jobs に無い
++            self.assertGreaterEqual(codes.count("CS4"), 3)   # もう無い物を指す・理由が無い
++            r = sg.derive(d, {"workflows": [".github/workflows/ci.yml"], "skip_jobs": {"other": "x"},
++                              "skip_steps": {}, "ignore_uses": {"docker/build-push-action": "image は作らない"}})
++            self.assertEqual(r.fails, [])
++
++    def test_secrets_left(self):
++        with tempfile.TemporaryDirectory() as d:
++            project(d, WF.replace("run: npm test", "run: TOKEN=${{ secrets.T }} npm test"))
++            r = sg.derive(d, {"workflows": [".github/workflows/ci.yml"], "skip_jobs": {"other": "x"}})
++            self.assertTrue(any(f.startswith("CS5") for f in r.fails))
++
++
++class InitTest(unittest.TestCase):
++    def test_init_writes_loadable_config(self):
++        with tempfile.TemporaryDirectory() as d:
++            project(d)
++            subprocess.run(["git", "init", "-q"], cwd=d)
++            rc = init_ci.run(types.SimpleNamespace(root=d, workflow=None, out=None, force=False, offline=True))
++            self.assertEqual(rc, 0)
++            raw = yaml.safe_load(open(os.path.join(d, "ci.yaml")))
++            self.assertEqual(raw["github"]["workflows"], [".github/workflows/ci.yml"])   # release は外す
++            self.assertIn("other", raw["github"]["skip_jobs"])
++            self.assertEqual(raw["toolbox"]["from"], "node:22-bookworm")                # 網なし：書いてあるまま
++            env = raw["toolbox"]["env"]
++            for k in ("NODE_EXTRA_CA_CERTS", "SSL_CERT_FILE", "UV_NATIVE_TLS"):
++                self.assertIn(k, env)
++            self.assertTrue(env["PATH"].startswith("/opt/py/bin:"))
++            self.assertTrue(any("sys.prefix" in x for x in raw["toolbox"]["steps"]))
++            self.assertTrue(any("postgresql-client" in x for x in raw["toolbox"]["steps"]))
++            self.assertIn("test-postgres", raw["services"])
++            self.assertIn("npm ci", raw["prepare"][0]["run"])
++            os.environ["DAGCI_PY"], os.environ["DAGCI_LIB"] = sys.executable, os.path.dirname(HERE)
++            cfg = config.load(os.path.join(d, "ci.yaml"))                               # include の命令で段が出る
++            self.assertEqual([s.id for s in cfg.stages], ["static-g01", "test-g02", "test-g03"])
++            # 2 回目は上書きしない
++            init_ci.run(types.SimpleNamespace(root=d, workflow=None, out=None, force=False, offline=True))
++            self.assertTrue(os.path.exists(os.path.join(d, "ci.init.yaml")))
++
++
++if __name__ == "__main__":
++    unittest.main()
 diff -ruN orig/ai-team-delivery/scripts/gates/_common.py new/ai-team-delivery/scripts/gates/_common.py
 --- orig/ai-team-delivery/scripts/gates/_common.py	1970-01-01 00:00:00.000000000 +0000
 +++ new/ai-team-delivery/scripts/gates/_common.py	2026-11-04 13:26:49.045015028 +0000
@@ -712,6 +2509,225 @@ diff -ruN orig/ai-team-delivery/scripts/gates/deps_gate.py new/ai-team-delivery/
 +    root = root_from_args()
 +    c = config(root, "deps")
 +    sys.exit(not_used("deps") if c is None else run(root, c, "--offline" in sys.argv))
+diff -ruN orig/ai-team-delivery/scripts/gates/devhost_gate.py new/ai-team-delivery/scripts/gates/devhost_gate.py
+--- orig/ai-team-delivery/scripts/gates/devhost_gate.py	1970-01-01 00:00:00.000000000 +0000
++++ new/ai-team-delivery/scripts/gates/devhost_gate.py	2026-11-04 18:18:11.456816726 +0000
+@@ -0,0 +1,215 @@
++#!/usr/bin/env python3
++"""テストが開発者の台を決め打ちしていないか（標準の検査・Kaname の 2026-11-04 の赤から作った）。設定は ci-gates.yaml の devhost:。
++
++  python3 <skill>/scripts/gates/devhost_gate.py [--root <根>] [--config <ci-gates.yaml>]
++  python3 <skill>/scripts/gates/devhost_gate.py --selftest    一時のリポジトリで、決め打ちの接続先・口だけの書き換えを赤にできるか
++
++テストのファイルとテストの手伝いのファイル（tests の glob）を読み、次を「ファイル:行」で赤にする:
++  H1 環境の値が無いときに、決まった手元の接続先へ落ちる
++       process.env.DATABASE_URL ?? "postgres://...@127.0.0.1:55433/..."・|| 'localhost:5432'・os.environ.get("X", "redis://localhost:6379")・
++       os.getenv("X") or "..."・${X:-localhost:5432}・ENV.fetch("X", "...")
++     （CI では環境の値が無い・違う所を見て、偽の緑か、どこかの開発者の DB に繋がる。値が無ければ止める：throw・KeyError・${X:?}）
++  H2 環境から来た URL の口（port）だけを書き換える（ホストは環境のまま。CI の相手は 127.0.0.1 ではないので、別の口に繋がらない）
++       u.port = "5433"・url.replace(/:\\d+\\//, ":5434/")・.replace(":5432", ...)・_replace(netloc=...)・re.sub(r":\\d+", ...)
++  H3 テストの中の決め打ちの DB・相手の URL（postgres・mysql・redis・mongodb・amqp の localhost・127.0.0.1）を、環境から読まずに使う
++  H4 例外の記録（allow）に理由が無い・もう何にも当たらない（記録から外す）
++由来：Kaname の CI の赤（2026-11-04）。テストが process.env.DATABASE_URL ?? "postgres://…127.0.0.1:55433/…"（開発者の台の DB）に落ち、
++  別のテストは 127.0.0.1 でない URL の口だけを替えていた。どちらも手元では緑、容れ物の CI でだけ赤。
++
++設定（ci-gates.yaml）:
++  devhost:
++    tests: ["**/*.test.*", "**/*.spec.*", "**/test/**", "**/tests/**", "**/__tests__/**", "**/test_*.py", "**/*_test.py",
++            "**/conftest.py", "**/vitest.config.*", "**/jest.config.*", "**/playwright.config.*", "**/test-utils/**", "**/testing/**"]
++    exclude: ["**/node_modules/**", "**/dist/**", "**/build/**"]
++    allow_file: ci/devhost_allow.yaml   # [{path: glob, contains: 行の一部, why: 理由}]。理由の無いもの・当たらないものは赤（H4）
++"""
++from __future__ import annotations
++
++import fnmatch
++import os
++import re
++import shutil
++import subprocess
++import sys
++import tempfile
++
++sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
++from _common import config, not_used, root_from_args  # noqa: E402
++
++TESTS = ["**/*.test.*", "**/*.spec.*", "**/test/**", "**/tests/**", "**/__tests__/**", "**/test_*.py", "**/*_test.py",
++         "**/*_test.go", "**/conftest.py", "**/vitest.config.*", "**/vitest.setup.*", "**/jest.config.*", "**/jest.setup.*",
++         "**/playwright.config.*", "**/test-utils/**", "**/testing/**", "**/test-helpers/**", "**/spec/**"]
++EXCLUDE = ["**/node_modules/**", "**/dist/**", "**/build/**", "**/.next/**", "**/coverage/**", "**/vendor/**", ".git/**"]
++CODE = (".ts", ".tsx", ".mts", ".cts", ".js", ".jsx", ".mjs", ".cjs", ".py", ".sh", ".bash", ".rb", ".go", ".env", ".yml", ".yaml", ".json")
++
++HOST = r"(?:localhost|127\.\d+\.\d+\.\d+|0\.0\.0\.0|\[::1\]|host\.docker\.internal)"
++SVC_PORT = r"(?:5432|543\d\d|3306|33060|6379|27017|5672|9200|11211|1433|1521|9092|8123|4566|9000|55\d\d\d)"
++# 手元を指す文字列：手元の名前を含む・口つきの URL・よく使う相手の口
++LOCAL_LIT = rf"""(?P<q>["'`])(?P<lit>[^"'`\n]*(?:{HOST}|://[^"'`\n/]*:\d{{2,5}}|(?<![\w.]){SVC_PORT}\b)[^"'`\n]*)(?P=q)"""
++ENV_READ = (r"(?:process\.env(?:\.[A-Za-z_]\w*|\[\s*[\"'][^\"']+[\"']\s*\])!?|import\.meta\.env\.[A-Za-z_]\w*|"
++            r"Deno\.env\.get\([^)]*\)|Bun\.env\.[A-Za-z_]\w*|os\.environ\.get\([^,)]*\)|os\.getenv\([^,)]*\)|ENV\[[^\]]+\])")
++H1 = [
++    re.compile(rf"{ENV_READ}\s*(?:\?\?|\|\||\bor\b)\s*{LOCAL_LIT}", re.S),
++    re.compile(rf"(?:os\.environ\.get|os\.getenv|ENV\.fetch)\(\s*[^,()]+,\s*{LOCAL_LIT}", re.S),
++]
++# H1 の shell の形は、引用符なしの ${X:-localhost:5432} も拾う
++H1_SH = re.compile(rf"\$\{{[A-Za-z_]\w*:?-[^}}]*(?:{HOST}|:{SVC_PORT}\b)[^}}]*\}}")
++H2 = [
++    re.compile(r"\.port\s*=(?!=)\s*[^;\n]+"),
++    re.compile(r"\.replace\(\s*(?:/(?:[^/\n\\]|\\.)*:\\d(?:[^/\n\\]|\\.)*/[gimsuy]*|[\"'`]:\d{2,5}/?[\"'`])\s*,"),   # 口だけ（":5432"）か、:\d を含む正規表現
++    re.compile(r"_replace\(\s*(?:netloc|port)\s*="),
++    re.compile(r"re\.sub\(\s*r?[\"'][^\"'\n]*:\\d\+?[^\"'\n]*[\"']"),
++]
++H2_HOST_TOO = re.compile(r"\.(?:hostname|host)\s*=(?!=)")
++H3 = re.compile(rf"""["'`](?:postgres(?:ql)?|mysql|mariadb|redis|rediss|mongodb(?:\+srv)?|amqp)://[^"'`\n]*{HOST}[^"'`\n]*["'`]""")
++
++
++def line_of(text: str, pos: int) -> int:
++    return text.count("\n", 0, pos) + 1
++
++
++def glob_match(path: str, pats: list[str]) -> bool:
++    for p in pats:
++        if fnmatch.fnmatch(path, p) or (p.startswith("**/") and fnmatch.fnmatch(path, p[3:])):
++            return True
++    return False
++
++
++class Gate:
++    def __init__(self, root: str, cfg: dict):
++        self.root, self.cfg = root, cfg
++        self.allow: list[dict] = []
++        af = cfg.get("allow_file")
++        if af and os.path.exists(os.path.join(root, af)):
++            import yaml
++            self.allow = yaml.safe_load(open(os.path.join(root, af), encoding="utf-8")) or []
++        self.allow += list(cfg.get("allow") or [])
++        self.used: set[int] = set()
++
++    def files(self) -> list[str]:
++        r = subprocess.run(["git", "ls-files", "-z", "-co", "--exclude-standard"], cwd=self.root, capture_output=True, text=True)
++        if r.returncode == 0:
++            fs = [f for f in r.stdout.split("\0") if f]
++        else:
++            fs = []
++            for d, dirs, names in os.walk(self.root):
++                dirs[:] = [x for x in dirs if x not in ("node_modules", ".git")]
++                fs += [os.path.relpath(os.path.join(d, n), self.root) for n in names]
++        tests, ex = self.cfg.get("tests") or TESTS, EXCLUDE + list(self.cfg.get("exclude") or [])
++        return sorted(f for f in fs if f.endswith(CODE) and glob_match(f, tests) and not glob_match(f, ex)
++                      and os.path.isfile(os.path.join(self.root, f)))
++
++    def allowed(self, path: str, text: str) -> bool:
++        for i, a in enumerate(self.allow):
++            if glob_match(path, [str(a.get("path", "**"))]) and str(a.get("contains", "")) in text:
++                self.used.add(i)
++                return True
++        return False
++
++    def check(self) -> list[str]:
++        fails: list[str] = []
++        for f in self.files():
++            try:
++                text = open(os.path.join(self.root, f), encoding="utf-8").read()
++            except (UnicodeDecodeError, OSError):
++                continue
++            lines = text.splitlines()
++            seen: set[int] = set()
++
++            def hit(code: str, pos: int, why: str):
++                ln = line_of(text, pos)
++                src = lines[ln - 1].strip() if ln - 1 < len(lines) else ""
++                if (code, ln) in seen or self.allowed(f, src):
++                    return
++                seen.add((code, ln))
++                fails.append(f"{code} {f}:{ln} {why}：{src[:120]}")
++            for rx in H1:
++                for m in rx.finditer(text):
++                    hit("H1", m.start(), "環境の値が無いと手元の決まった接続先に落ちる（無ければ止める）")
++            for m in H1_SH.finditer(text):
++                hit("H1", m.start(), "環境の値が無いと手元の決まった接続先に落ちる（${X:?} で止める）")
++            for rx in H2:
++                for m in rx.finditer(text):
++                    ln = line_of(text, m.start())
++                    near = "\n".join(lines[max(0, ln - 6):ln + 5])
++                    if rx is H2[0] and H2_HOST_TOO.search(near):
++                        continue   # ホストも一緒に決めている（口だけの書き換えではない）
++                    hit("H2", m.start(), "URL の口だけを書き換えている（ホストは環境のまま。相手ごと環境から受け取る）")
++            for m in H3.finditer(text):
++                ln = line_of(text, m.start())
++                if any(c == "H1" and l == ln for c, l in seen):
++                    continue
++                hit("H3", m.start(), "決め打ちの手元の相手の URL（環境から読む）")
++        for i, a in enumerate(self.allow):
++            if not str(a.get("why", "")).strip():
++                fails.append(f"H4 例外の記録 {a.get('path')}「{a.get('contains', '')}」に理由（why）が無い")
++            elif i not in self.used:
++                fails.append(f"H4 例外の記録 {a.get('path')}「{a.get('contains', '')}」が、もう何にも当たらない（記録から外す）")
++        return fails
++
++
++def report(g: Gate) -> int:
++    fails = g.check()
++    for f in fails:
++        print("  ★", f)
++    print(f"テストのファイル {len(g.files())} 本・例外の記録 {len(g.allow)} 件")
++    print("FAIL — テストが開発者の台を決め打ちしている" if fails else "PASS — テストは接続先を環境から受け取る（理由つきの例外を除く）")
++    return 1 if fails else 0
++
++
++def selftest() -> int:
++    d = tempfile.mkdtemp(prefix="devhost-gate-selftest-")
++    try:
++        def w(p, s):
++            os.makedirs(os.path.dirname(os.path.join(d, p)) or d, exist_ok=True)
++            open(os.path.join(d, p), "w", encoding="utf-8").write(s)
++        w("apps/api/test/db.test.ts", 'const url = process.env.DATABASE_URL ?? "postgres://dev:dev@127.0.0.1:55433/app";\n')
++        w("apps/api/test/redis.test.ts", "const r = process.env['REDIS_URL'] ||\n  'localhost:6379';\n")
++        w("tests/conftest.py", 'import os\nURL = os.environ.get("DATABASE_URL", "postgresql://localhost:5432/x")\n')
++        w("tests/test_or.py", 'import os\nURL = os.getenv("DATABASE_URL") or "postgresql://u@127.0.0.1/x"\n')
++        w("tests/run.sh", 'psql "${DATABASE_URL:-postgres://localhost:5432/app}" -c "select 1"\n')
++        w("apps/api/test/port.test.ts", "const u = new URL(process.env.DATABASE_URL!);\nu.port = '5434';\nconnect(u.toString());\n")
++        w("apps/api/test/port2.test.ts", "const other = process.env.DATABASE_URL!.replace(/:\\d+\\//, ':5434/');\n"
++                                         "const b = process.env.X!.replace(':5432', ':5434');\n"
++                                         "const ok = u.replace('http://localhost:3001', 'http://localhost');\n")
++        w("tests/test_port.py", 'import os\nu = urlparse(os.environ["DATABASE_URL"])._replace(netloc="x:1")\n')
++        w("tests/test_lit.py", 'c = connect("postgres://postgres:pw@localhost:5432/app")\n')
++        # 緑のもの：値が無ければ止める・ホストも決める・テストでないファイル・相手の名前の URL
++        w("apps/api/test/ok.test.ts", 'const url = process.env.DATABASE_URL ?? (() => { throw new Error("DATABASE_URL が無い") })();\n'
++                                      "const u = new URL(url);\nu.hostname = 'db2';\nu.port = '5434';\n"
++                                      "const label = process.env.NAME ?? 'テスト';\n")
++        w("tests/test_ok.py", 'import os\nURL = os.environ["DATABASE_URL"]\nN = os.environ.get("N", "3")\n')
++        w("src/config.ts", 'export const url = process.env.DATABASE_URL ?? "postgres://127.0.0.1:5432/app";\n')
++        w("tests/allowed.test.ts", 'const local = process.env.MOCK_URL ?? "http://127.0.0.1:4010"; // 試験の中で立てる口\n')
++        subprocess.run(["git", "init", "-q"], cwd=d)
++        g = Gate(d, {})
++        fails = g.check()
++        want = {("H1", "apps/api/test/db.test.ts"), ("H1", "apps/api/test/redis.test.ts"), ("H1", "tests/conftest.py"),
++                ("H1", "tests/test_or.py"), ("H1", "tests/run.sh"), ("H2", "apps/api/test/port.test.ts"),
++                ("H2", "apps/api/test/port2.test.ts"), ("H2", "tests/test_port.py"), ("H3", "tests/test_lit.py"),
++                ("H1", "tests/allowed.test.ts")}
++        got = {(f.split()[0], f.split()[1].rsplit(":", 1)[0]) for f in fails}
++        found = want <= got
++        quiet = not any(x in f for f in fails for x in ("ok.test.ts", "test_ok.py", "src/config.ts"))
++        line_ok = any(f.startswith("H1 apps/api/test/redis.test.ts:1 ") for f in fails)
++        p2 = sorted(f.split()[1] for f in fails if "port2.test.ts" in f)
++        line_ok = line_ok and p2 == ["apps/api/test/port2.test.ts:1", "apps/api/test/port2.test.ts:2"]   # ホストごと替える 3 行目は黙る
++        w("ci/devhost_allow.yaml", "- {path: tests/allowed.test.ts, contains: MOCK_URL, why: 試験の中で立てる口（127.0.0.1 が正しい）}\n")
++        allow_ok = not any("allowed.test.ts" in f for f in Gate(d, {"allow_file": "ci/devhost_allow.yaml"}).check())
++        w("ci/devhost_allow.yaml", "- {path: tests/allowed.test.ts, contains: MOCK_URL}\n- {path: tests/gone.test.ts, contains: x, why: 消えた}\n")
++        f2 = Gate(d, {"allow_file": "ci/devhost_allow.yaml"}).check()
++        h4 = sum(1 for f in f2 if f.startswith("H4")) == 2
++    finally:
++        shutil.rmtree(d, ignore_errors=True)
++    ok = found and quiet and line_ok and allow_ok and h4
++    print("PASS — 手元の接続先への逃げ・口だけの書き換え・決め打ちの URL・理由の無い例外は赤、環境から受け取る形と理由つきの例外は緑" if ok else
++          f"FAIL — 見つけられない（見つけた {found}：足りない {sorted(want - got)}・黙る {quiet}・行 {line_ok}・例外 {allow_ok}・H4 {h4}）")
++    return 0 if ok else 1
++
++
++if __name__ == "__main__":
++    if "--selftest" in sys.argv:
++        sys.exit(selftest())
++    root = root_from_args()
++    c = config(root, "devhost")
++    sys.exit(not_used("devhost") if c is None else report(Gate(root, c)))
 diff -ruN orig/ai-team-delivery/scripts/gates/generated_gate.py new/ai-team-delivery/scripts/gates/generated_gate.py
 --- orig/ai-team-delivery/scripts/gates/generated_gate.py	1970-01-01 00:00:00.000000000 +0000
 +++ new/ai-team-delivery/scripts/gates/generated_gate.py	2026-11-04 13:26:49.044765787 +0000
@@ -1202,8 +3218,8 @@ diff -ruN orig/ai-team-delivery/scripts/pm_merge.sh new/ai-team-delivery/scripts
  exit 0
 diff -ruN orig/ai-team-delivery/scripts/post_review_delta.py new/ai-team-delivery/scripts/post_review_delta.py
 --- orig/ai-team-delivery/scripts/post_review_delta.py	2026-11-04 13:26:40.988432325 +0000
-+++ new/ai-team-delivery/scripts/post_review_delta.py	2026-11-04 13:26:49.042581408 +0000
-@@ -4,41 +4,79 @@
++++ new/ai-team-delivery/scripts/post_review_delta.py	2026-11-04 18:38:44.665277050 +0000
+@@ -4,41 +4,84 @@
  由来：S3 の束（S1 の b-fix-4〜6 を含む）を入れたら、tests にいる 42 本と checks の T-A-C2 の受け入れ基準が
  黙って変わっていた。精査の合格もテストも古い要件のまま進むところだった。
  
@@ -1273,6 +3289,11 @@ diff -ruN orig/ai-team-delivery/scripts/post_review_delta.py new/ai-team-deliver
 +    cfg = config(a.repo, a.config)
 +    tf = {'list': 'tasks', 'id': 'id', **(cfg.get('ticket_fields') or {})}
 +    tickets = a.tickets or cfg.get('tickets')
++    has_cfg = (pathlib.Path(a.config) if a.config else pathlib.Path(a.repo) / 'ai-team.yaml').exists()
++    if not tickets and not has_cfg:
++        # チームを使わず CI と取り込みだけを使うプロジェクト（ai-team.yaml が無い）。固定するチケットが無いので見ない
++        print('ai-team.yaml が無い：チケットの固定は見ない（チームで回すなら ai-team.yaml の tickets を書く）', file=sys.stderr)
++        return 0
 +    if not tickets:
 +        print('★止めた：チケットの正本がわからない（ai-team.yaml の tickets か --tickets）', file=sys.stderr)
 +        return 5
