@@ -1,0 +1,566 @@
+/* 外枠の見た目（KN-105・キャンバスの左のバー・上の帯・右のパネル・スマホの下のタブ）。値は全部 --k-*。
+   データ色の印（グループの札）は、字を --k-card にする：データ色は card の上の文字として AA を確かめているので、
+   逆（データ色の上の card 色の字）も同じ比になる（明るい・暗いとも） */
+.k-shell {
+  display: flex;
+  min-height: 100dvh;
+}
+.k-skip {
+  position: absolute;
+  left: var(--k-s-sm);
+  top: -100px;
+  z-index: 90;
+  padding: var(--k-s-sm) var(--k-s-md);
+  background: var(--k-card);
+  color: var(--k-primary);
+  border-radius: var(--k-r-md);
+}
+.k-skip:focus {
+  top: var(--k-s-sm);
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---- 左のバー ---- */
+.k-nav,
+.k-sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 10px var(--k-s-sm);
+  background: var(--k-side-bg);
+}
+.k-nav {
+  flex: 0 0 216px;
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  overflow-y: auto;
+  border-right: 1px solid var(--k-line);
+  box-sizing: border-box;
+}
+.k-nav-top {
+  display: flex;
+  align-items: center;
+  gap: var(--k-s-sm);
+  padding: var(--k-s-xs) var(--k-s-xs) var(--k-s-xs) var(--k-s-sm);
+}
+.k-ws-mark,
+.k-group-mark {
+  flex: none;
+  display: grid;
+  place-items: center;
+  font-weight: var(--k-fw-h1);
+}
+.k-ws-mark {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--k-r-md);
+  background: var(--k-primary);
+  color: var(--k-on-primary);
+  font-size: var(--k-text-body-sm);
+}
+.k-ws-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-icon-btn {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  flex: none;
+  padding: 0;
+  border: 0;
+  border-radius: var(--k-r-md);
+  background: transparent;
+  color: var(--k-on-surface-variant);
+  cursor: pointer;
+}
+.k-icon-btn:hover {
+  background: var(--k-surface-variant);
+  color: var(--k-on-surface);
+}
+.k-nav-toggle {
+  margin-left: auto;
+  width: 28px;
+  height: 28px;
+}
+.k-nav-create {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--k-s-xs);
+  height: 34px;
+  margin: 6px 0;
+  border: 0;
+  border-radius: var(--k-r-md);
+  background: var(--k-primary);
+  color: var(--k-on-primary);
+  font: inherit;
+  font-weight: var(--k-fw-label-md);
+  cursor: pointer;
+}
+.k-nav-create:hover {
+  background: var(--k-primary-hover);
+}
+.k-nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--k-s-sm);
+  min-height: 32px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: var(--k-r-md);
+  background: transparent;
+  color: var(--k-on-surface);
+  font: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+.k-nav-item:hover {
+  background: var(--k-surface-variant);
+  text-decoration: none;
+}
+.k-nav-item[aria-current="page"] {
+  background: var(--k-primary);
+  color: var(--k-on-primary);
+  font-weight: var(--k-fw-label-md);
+}
+.k-nav-item[aria-disabled="true"] {
+  color: var(--k-on-surface-variant);
+  cursor: not-allowed;
+}
+.k-nav-item[aria-disabled="true"]:hover {
+  background: transparent;
+}
+.k-nav-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-nav-badge {
+  margin-left: auto;
+  min-width: 18px;
+  padding: 0 7px;
+  border-radius: var(--k-r-full);
+  background: var(--k-st-warning);
+  color: var(--k-card);
+  font-size: var(--k-text-label-md);
+  text-align: center;
+}
+.k-nav-pending {
+  margin-left: auto;
+  font-size: var(--k-text-label-xs);
+  color: var(--k-on-surface-variant);
+}
+.k-nav-sec {
+  padding: 12px 10px var(--k-s-xs);
+  font-size: var(--k-text-body-sm);
+  color: var(--k-on-surface-variant);
+}
+.k-group-mark {
+  width: 18px;
+  height: 18px;
+  border-radius: var(--k-r-sm);
+  color: var(--k-card);
+  font-size: var(--k-text-label-xs);
+}
+.k-group-mark[data-tone="indigo"] {
+  background: var(--k-d-indigo);
+}
+.k-group-mark[data-tone="teal"] {
+  background: var(--k-d-teal);
+}
+.k-group-mark[data-tone="amber"] {
+  background: var(--k-d-amber);
+}
+.k-group-mark[data-tone="coral"] {
+  background: var(--k-d-coral);
+}
+.k-group-mark[data-tone="sage"] {
+  background: var(--k-d-sage);
+}
+.k-group-mark[data-tone="plum"] {
+  background: var(--k-d-plum);
+}
+.k-group-mark[data-tone="lavender"] {
+  background: var(--k-d-lavender);
+}
+.k-group-mark[data-tone="teal-light"] {
+  background: var(--k-d-teal-light);
+}
+.k-nav-count {
+  margin-left: auto;
+  font-size: var(--k-text-body-sm);
+  color: var(--k-on-surface-variant);
+}
+.k-nav-fill {
+  flex: 1;
+}
+.k-pc {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  font-size: var(--k-text-body-sm);
+  color: var(--k-on-surface-variant);
+}
+.k-pc[data-on] {
+  color: var(--k-st-success);
+}
+.k-pc-dot {
+  width: 8px;
+  height: 8px;
+  flex: none;
+  border-radius: var(--k-r-full);
+  background: currentColor;
+}
+
+/* 畳む（自分で）・レール（768〜1023） */
+.k-shell[data-railed] .k-nav {
+  flex-basis: 56px;
+  padding: 10px 6px;
+}
+.k-shell[data-railed] .k-nav .k-nav-label,
+.k-shell[data-railed] .k-nav .k-nav-pending,
+.k-shell[data-railed] .k-nav .k-nav-badge {
+  display: none;
+}
+.k-shell[data-railed] .k-nav .k-nav-top {
+  flex-direction: column;
+  padding: var(--k-s-xs) 0;
+}
+.k-shell[data-railed] .k-nav .k-nav-toggle {
+  margin-left: 0;
+}
+.k-shell[data-railed] .k-nav .k-nav-item,
+.k-shell[data-railed] .k-nav .k-pc {
+  justify-content: center;
+  padding: 0;
+}
+@media (max-width: 1023px) {
+  .k-nav {
+    flex-basis: 56px;
+    padding: 10px 6px;
+  }
+  .k-nav .k-nav-label,
+  .k-nav .k-nav-pending,
+  .k-nav .k-nav-badge,
+  .k-nav .k-nav-toggle {
+    display: none;
+  }
+  .k-nav .k-nav-top {
+    flex-direction: column;
+    padding: var(--k-s-xs) 0;
+  }
+  .k-nav .k-nav-item,
+  .k-nav .k-pc {
+    justify-content: center;
+    padding: 0;
+  }
+}
+
+/* ---- 上の帯 ---- */
+.k-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.k-bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 48px;
+  flex: none;
+  padding: 0 var(--k-s-md) 0 var(--k-s-lg);
+  background: var(--k-card);
+  border-bottom: 1px solid var(--k-line);
+  box-sizing: border-box;
+}
+.k-crumbs {
+  min-width: 0;
+  overflow: hidden;
+  font-size: var(--k-text-body-sm);
+}
+.k-crumbs ol {
+  display: flex;
+  align-items: center;
+  gap: var(--k-s-sm);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  white-space: nowrap;
+}
+.k-crumbs li + li::before {
+  content: "›";
+  margin-right: var(--k-s-sm);
+  color: var(--k-line-strong);
+}
+.k-crumbs a {
+  /* 押せる的は 24px 以上（WCAG 2.2 2.5.8） */
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  color: var(--k-on-surface-variant);
+  text-decoration: none;
+}
+.k-crumbs a:hover {
+  color: var(--k-on-surface);
+  text-decoration: underline;
+}
+.k-crumbs [aria-current="page"] {
+  color: var(--k-on-surface);
+  font-weight: var(--k-fw-label-md);
+}
+.k-bar-title {
+  /* 見出しは読み上げのために置く。広い画面では「いまの場所」が同じことを見せる */
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  margin: 0;
+}
+.k-bar-tools {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--k-s-sm);
+}
+.k-search label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 280px;
+  max-width: 34vw;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--k-line);
+  border-radius: var(--k-r-full);
+  background: var(--k-surface);
+  color: var(--k-on-surface-variant);
+  box-sizing: border-box;
+}
+.k-search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: var(--k-on-surface);
+  font: inherit;
+  /* 16px 未満だと iPhone が拡大する */
+  font-size: var(--k-text-input);
+  outline: 0;
+}
+.k-search label:focus-within {
+  outline: 2px solid var(--k-primary);
+  outline-offset: 1px;
+}
+.k-bell {
+  position: relative;
+  border-radius: var(--k-r-full);
+}
+.k-bell b {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 var(--k-s-xs);
+  border-radius: var(--k-r-full);
+  background: var(--k-st-warning);
+  color: var(--k-card);
+  font-size: var(--k-text-label-xs);
+  line-height: var(--k-lh-body-sm);
+  box-sizing: border-box;
+}
+.k-me {
+  display: flex;
+  align-items: center;
+  gap: var(--k-s-xs);
+  height: 36px;
+  padding: 0 var(--k-s-xs);
+  border: 0;
+  border-radius: var(--k-r-full);
+  background: transparent;
+  color: var(--k-on-surface-variant);
+  cursor: pointer;
+}
+.k-avatar {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--k-r-full);
+  background: var(--k-d-lavender);
+  color: var(--k-card);
+  font-size: var(--k-text-body-sm);
+}
+.k-menu {
+  min-width: 220px;
+}
+.k-menu-head {
+  padding: var(--k-s-sm);
+  font-size: var(--k-text-body-sm);
+  color: var(--k-on-surface-variant);
+}
+.k-menu-theme {
+  padding: var(--k-s-sm);
+  border-top: 1px solid var(--k-line-soft);
+  border-bottom: 1px solid var(--k-line-soft);
+  margin: var(--k-s-xs) 0;
+}
+
+/* ---- 本文と右のパネル ---- */
+.k-work {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+.k-main {
+  flex: 1;
+  min-width: 0;
+  outline: 0;
+}
+.k-panel {
+  flex: 0 0 360px;
+  position: sticky;
+  top: 48px;
+  height: calc(100dvh - 48px);
+  overflow-y: auto;
+  background: var(--k-card);
+  border-left: 1px solid var(--k-line);
+  box-sizing: border-box;
+}
+.k-panel[hidden] {
+  display: none;
+}
+@media (min-width: 1440px) {
+  .k-panel {
+    flex-basis: 400px;
+  }
+}
+/* 1023 以下はパネルを横に並べない（本文が狭くなる）。スマホでは下のタブの AI から開く */
+@media (max-width: 1023px) {
+  .k-panel {
+    position: fixed;
+    inset: auto 0 0 auto;
+    top: 48px;
+    width: min(400px, 100vw);
+    z-index: 30;
+    box-shadow: 0 8px 24px color-mix(in srgb, var(--k-on-surface) 20%, transparent);
+  }
+}
+
+/* ---- スマホの下のタブ（767 以下） ---- */
+.k-tabs,
+.k-sheet {
+  display: none;
+}
+@media (max-width: 767px) {
+  .k-nav,
+  .k-search,
+  .k-crumbs {
+    display: none;
+  }
+  .k-bar {
+    padding: 0 var(--k-s-sm) 0 var(--k-s-md);
+  }
+  .k-bar-title {
+    position: static;
+    width: auto;
+    height: auto;
+    clip: auto;
+    font-size: var(--k-text-h2);
+    line-height: var(--k-lh-h2);
+    font-weight: var(--k-fw-h2);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .k-body {
+    padding-bottom: 60px;
+  }
+  .k-tabs {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 40;
+    display: flex;
+    height: 60px;
+    background: var(--k-card);
+    border-top: 1px solid var(--k-line);
+  }
+  .k-tabs .k-nav-item {
+    position: relative;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    padding: 0;
+    border-radius: 0;
+    font-size: var(--k-text-label-md);
+    color: var(--k-on-surface-variant);
+  }
+  .k-tabs .k-nav-item[aria-current="page"] {
+    background: transparent;
+    color: var(--k-primary);
+    font-weight: var(--k-fw-h3);
+  }
+  .k-tabs .k-nav-badge {
+    position: absolute;
+    top: var(--k-s-xs);
+    margin-left: 18px;
+  }
+  .k-tabs .k-nav-pending {
+    display: none;
+  }
+  .k-tab-create {
+    flex: 1;
+    display: grid;
+    place-items: center;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+  .k-tab-create svg {
+    width: 44px;
+    height: 44px;
+    padding: 11px;
+    box-sizing: border-box;
+    border-radius: var(--k-r-full);
+    background: var(--k-primary);
+    color: var(--k-on-primary);
+  }
+  .k-sheet {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 60px;
+    z-index: 45;
+    display: flex;
+    max-height: 70dvh;
+    overflow-y: auto;
+    border-top: 1px solid var(--k-line);
+    border-radius: var(--k-r-lg) var(--k-r-lg) 0 0;
+    box-shadow: 0 -8px 24px color-mix(in srgb, var(--k-on-surface) 14%, transparent);
+  }
+  .k-sheet .k-nav-item {
+    min-height: 44px;
+  }
+}

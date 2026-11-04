@@ -2,7 +2,7 @@
 // 共通シェル（T-US-01）。枠は導出（外／はじめの設定／アプリ）。全画面がこれを通る（画面ごとにナビを手書きしない）
 import type { ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
-import { NAV } from "@/lib/nav";
+import { NAV } from "@/lib/nav.legacy";
 import { cn } from "@/lib/cn";
 import { useShell } from "./context";
 import { Sidebar } from "./sidebar";

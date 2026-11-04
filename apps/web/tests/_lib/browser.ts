@@ -3,7 +3,7 @@ import { readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { Page } from "@playwright/test";
-import { ROUTE_PATTERNS } from "../../lib/routes";
+import { ROUTE_PATTERNS } from "../../lib/routes.legacy";
 
 /** 測る幅（規約 web/testing.md：320〜1920 のうち共通シェルが折れる 4 点） */
 export const WIDTHS = [375, 768, 1024, 1440] as const;

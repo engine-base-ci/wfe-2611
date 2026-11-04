@@ -6,7 +6,7 @@ import { useEffect, type ReactNode } from "react";
 import { useSession } from "@/lib/auth/session";
 import { resumeHref, SETUP_STEPS, useSetupStep } from "@/lib/onboarding";
 import { useMyRoles } from "@/lib/auth/role";
-import { NAV } from "@/lib/nav";
+import { NAV } from "@/lib/nav.legacy";
 
 export function RequireSetup({ children, fallback }: { children: ReactNode; fallback?: ReactNode }) {
   const { session } = useSession();

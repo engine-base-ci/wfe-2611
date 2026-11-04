@@ -38,7 +38,8 @@ function rawValues(src: string): string[] {
         .trim()
         .replace(/[",]+$/g, "")
         .replace(/^"/, "");
-      if (!/^var\(--k-[\w-]+\)$/.test(v) && v !== "inherit" && v !== "0") out.push(`${prop}: ${v}`);
+      const ok = (x: string) => /^var\(--k-[\w-]+\)$/.test(x) || x === "inherit" || x === "0";
+      if (!v.split(/\s+/).every(ok)) out.push(`${prop}: ${v}`);
     }
   }
   return out;
@@ -77,6 +78,8 @@ describe("部品に生の値が無い（KN-104・design_gate の D1〜D4 と同�
     expect(rawValues(".a{color:#22345C;font-size:13px;border-radius:4px}")).toHaveLength(3);
     expect(rawValues('<i style={{ fontSize: "12px", color: "rgb(0,0,0)" }} />')).toHaveLength(2);
     expect(rawValues(".a{font-size:var(--k-text-body);border-radius:var(--k-r-md)}")).toEqual([]);
+    expect(rawValues(".a{border-radius:var(--k-r-lg) var(--k-r-lg) 0 0}")).toEqual([]);
+    expect(rawValues(".a{border-radius:var(--k-r-lg) 3px}")).toHaveLength(1);
   });
 });
 

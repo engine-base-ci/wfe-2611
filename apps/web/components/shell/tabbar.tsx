@@ -2,7 +2,7 @@
 import { navRoute } from "@/lib/pending-route";
 import { Menu } from "lucide-react";
 import Link from "next/link";
-import { NAV } from "@/lib/nav";
+import { NAV } from "@/lib/nav.legacy";
 import { cn } from "@/lib/cn";
 import { useShell } from "./context";
 

@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/gen_routes.mjs ← 05_flow/flow.json）。手で直さない。flow:2ba66fefa4fa1720
+// 生成物（scripts/ci/gen_routes.mjs ← 05_flow/flow.json）。手で直さない。flow:58237182664fa3dc
 export interface RouteDef {
   id: string;
   route: string;
@@ -16,13 +16,13 @@ export const ROUTES: readonly RouteDef[] = [
     "id": "ai-staff",
     "route": "/ai-staff",
     "needsLogin": true,
-    "release": "v1"
+    "release": "v2"
   },
   {
     "id": "ai-staff-detail",
     "route": "/ai-staff/:id",
     "needsLogin": true,
-    "release": "v1"
+    "release": "v2"
   },
   {
     "id": "ai-activity",
@@ -37,14 +37,20 @@ export const ROUTES: readonly RouteDef[] = [
     "release": "v1"
   },
   {
-    "id": "clone-memory",
-    "route": "/ai/memory",
+    "id": "rules",
+    "route": "/ai/rules",
     "needsLogin": true,
     "release": "v1"
   },
   {
     "id": "clone-thread",
     "route": "/ai/thread",
+    "needsLogin": true,
+    "release": "v2"
+  },
+  {
+    "id": "work-types",
+    "route": "/ai/work-types",
     "needsLogin": true,
     "release": "v1"
   },
@@ -64,7 +70,7 @@ export const ROUTES: readonly RouteDef[] = [
     "id": "automation-repair",
     "route": "/automations/:id/repair",
     "needsLogin": true,
-    "release": "v1"
+    "release": "v2"
   },
   {
     "id": "billing",
@@ -79,52 +85,58 @@ export const ROUTES: readonly RouteDef[] = [
     "release": "v2"
   },
   {
+    "id": "clients",
+    "route": "/clients",
+    "needsLogin": true,
+    "release": "v1"
+  },
+  {
     "id": "company-model",
     "route": "/company-model",
     "needsLogin": true,
-    "release": "v1"
+    "release": "v2"
   },
   {
     "id": "duties",
     "route": "/duties",
     "needsLogin": true,
-    "release": "v1"
+    "release": "v2"
   },
   {
     "id": "export",
     "route": "/export",
     "needsLogin": true,
-    "release": "v1"
+    "release": "v2"
   },
   {
     "id": "goals",
     "route": "/goals",
     "needsLogin": true,
-    "release": "v1"
+    "release": "v2"
   },
   {
     "id": "goal-allocation",
     "route": "/goals/:id/allocation",
     "needsLogin": true,
-    "release": "v1"
+    "release": "v2"
   },
   {
     "id": "goal-edit",
     "route": "/goals/:id/edit",
     "needsLogin": true,
-    "release": "v1"
+    "release": "v2"
   },
   {
     "id": "hypotheses",
     "route": "/hypotheses",
     "needsLogin": true,
-    "release": "v1"
+    "release": "v2"
   },
   {
     "id": "import",
     "route": "/import",
     "needsLogin": true,
-    "release": "v1"
+    "release": "v2"
   },
   {
     "id": "inquiry",
@@ -136,6 +148,12 @@ export const ROUTES: readonly RouteDef[] = [
     "id": "invite-accept",
     "route": "/invite/:token",
     "needsLogin": false,
+    "release": "v1"
+  },
+  {
+    "id": "knowledge",
+    "route": "/knowledge",
+    "needsLogin": true,
     "release": "v1"
   },
   {
@@ -166,7 +184,7 @@ export const ROUTES: readonly RouteDef[] = [
     "id": "my-progress",
     "route": "/my-progress",
     "needsLogin": true,
-    "release": "v1"
+    "release": "v2"
   },
   {
     "id": "notices",
@@ -178,25 +196,25 @@ export const ROUTES: readonly RouteDef[] = [
     "id": "onboard-draft",
     "route": "/onboard/draft",
     "needsLogin": false,
-    "release": "v1"
+    "release": "v2"
   },
   {
     "id": "onboard-golive",
     "route": "/onboard/golive",
     "needsLogin": false,
-    "release": "v1"
+    "release": "v2"
   },
   {
     "id": "onboard-interview",
     "route": "/onboard/interview",
     "needsLogin": false,
-    "release": "v1"
+    "release": "v2"
   },
   {
     "id": "onboard-testrun",
     "route": "/onboard/testrun",
     "needsLogin": false,
-    "release": "v1"
+    "release": "v2"
   },
   {
     "id": "ops-home",
@@ -208,7 +226,7 @@ export const ROUTES: readonly RouteDef[] = [
     "id": "ops-audit",
     "route": "/ops/audit",
     "needsLogin": true,
-    "release": "v1"
+    "release": "v2"
   },
   {
     "id": "ops-billing",
@@ -220,7 +238,7 @@ export const ROUTES: readonly RouteDef[] = [
     "id": "ops-catalog",
     "route": "/ops/catalog",
     "needsLogin": true,
-    "release": "v1"
+    "release": "v2"
   },
   {
     "id": "ops-disclosure",
@@ -244,13 +262,13 @@ export const ROUTES: readonly RouteDef[] = [
     "id": "ops-review",
     "route": "/ops/review",
     "needsLogin": true,
-    "release": "v1"
+    "release": "v2"
   },
   {
     "id": "ops-services",
     "route": "/ops/services",
     "needsLogin": true,
-    "release": "v1"
+    "release": "v2"
   },
   {
     "id": "ops-skills",
@@ -261,6 +279,12 @@ export const ROUTES: readonly RouteDef[] = [
   {
     "id": "ops-support",
     "route": "/ops/support",
+    "needsLogin": true,
+    "release": "v1"
+  },
+  {
+    "id": "ops-team",
+    "route": "/ops/team",
     "needsLogin": true,
     "release": "v1"
   },
@@ -280,17 +304,29 @@ export const ROUTES: readonly RouteDef[] = [
     "id": "policies",
     "route": "/policies",
     "needsLogin": true,
+    "release": "v2"
+  },
+  {
+    "id": "portal",
+    "route": "/portal",
+    "needsLogin": true,
     "release": "v1"
   },
   {
     "id": "records",
     "route": "/records",
     "needsLogin": true,
-    "release": "v1"
+    "release": "v2"
   },
   {
     "id": "record-detail",
     "route": "/records/:id",
+    "needsLogin": true,
+    "release": "v2"
+  },
+  {
+    "id": "requests",
+    "route": "/requests",
     "needsLogin": true,
     "release": "v1"
   },
@@ -298,19 +334,13 @@ export const ROUTES: readonly RouteDef[] = [
     "id": "review",
     "route": "/review",
     "needsLogin": true,
-    "release": "v1"
-  },
-  {
-    "id": "search",
-    "route": "/search",
-    "needsLogin": true,
-    "release": "v1"
+    "release": "v2"
   },
   {
     "id": "security-brief",
     "route": "/security",
     "needsLogin": true,
-    "release": "v1"
+    "release": "v2"
   },
   {
     "id": "disclosure",
@@ -322,7 +352,7 @@ export const ROUTES: readonly RouteDef[] = [
     "id": "services",
     "route": "/services",
     "needsLogin": true,
-    "release": "v1"
+    "release": "v2"
   },
   {
     "id": "app-setup",
@@ -334,7 +364,7 @@ export const ROUTES: readonly RouteDef[] = [
     "id": "account-close",
     "route": "/settings/close",
     "needsLogin": true,
-    "release": "v1"
+    "release": "v2"
   },
   {
     "id": "company-settings",
@@ -352,7 +382,7 @@ export const ROUTES: readonly RouteDef[] = [
     "id": "ledger-def",
     "route": "/settings/ledgers",
     "needsLogin": true,
-    "release": "v1"
+    "release": "v2"
   },
   {
     "id": "llm-routes",
@@ -376,18 +406,36 @@ export const ROUTES: readonly RouteDef[] = [
     "id": "tasks",
     "route": "/tasks",
     "needsLogin": true,
+    "release": "v2"
+  },
+  {
+    "id": "tickets",
+    "route": "/tickets",
+    "needsLogin": true,
     "release": "v1"
   },
   {
     "id": "today",
     "route": "/today",
     "needsLogin": true,
-    "release": "v1"
+    "release": "v2"
   },
   {
     "id": "verify-email",
     "route": "/verify-email",
     "needsLogin": false,
+    "release": "v1"
+  },
+  {
+    "id": "layers",
+    "route": "/workspace/members/groups",
+    "needsLogin": true,
+    "release": "v1"
+  },
+  {
+    "id": "masters",
+    "route": "/workspace/rules",
+    "needsLogin": true,
     "release": "v1"
   }
 ];

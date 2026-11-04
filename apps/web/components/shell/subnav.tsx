@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/cn";
-import { NAV } from "@/lib/nav";
+import { NAV } from "@/lib/nav.legacy";
 import { useShell } from "./context";
 
 /** 第2ナビ＝画面ごとに変える。既定は左の列（絞り込み）。入口画面は anchors（上の帯・押すと段へ送る・隠さない）。三画面と本文が痩せる幅は横チップ（D-070） */

@@ -11,7 +11,7 @@ import { AppShell, ShellProvider } from "@/components/shell";
 import { RequireSession } from "@/lib/auth/session";
 import { RequireRole, useMyRoles } from "@/lib/auth/role";
 import { useAgentChat } from "@/lib/agent";
-import type { RoleId } from "@/lib/nav";
+import type { RoleId } from "@/lib/nav.legacy";
 
 /** 画面ごとの「よく頼むこと」（押すとそのまま送る・D-104.12） */
 const PROMPTS = ["今月の売上、どのくらい行きそう？", "いま止まっているものを教えて", "今日やることを 3 つに絞って"];

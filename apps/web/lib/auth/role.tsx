@@ -7,7 +7,7 @@ import { Button } from "@/components/ui";
 import { useQuery } from "@tanstack/react-query";
 import { me } from "@/lib/auth/ext";
 import { useSession } from "@/lib/auth/session";
-import { FALLBACKS, NAV, type ScreenId } from "@/lib/nav";
+import { FALLBACKS, NAV, type ScreenId } from "@/lib/nav.legacy";
 import { pendingRoute } from "@/lib/pending-route";
 
 /** members.role_id（owner／staff／viewer／ops）→ 画面の役割（R1〜R6） */

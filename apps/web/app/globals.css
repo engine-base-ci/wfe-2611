@@ -2,6 +2,7 @@
 @import "../styles/tokens.css";
 @import "../styles/k-tokens.css";
 @import "../components/k/k.css";
+@import "../components/k/shell.css";
 
 html {
   background: var(--surface);

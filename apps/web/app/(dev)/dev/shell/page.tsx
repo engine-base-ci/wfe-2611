@@ -5,7 +5,7 @@ import { Suspense, useState } from "react";
 import { AppShell, ShellProvider, ThreePane, PsGate, RoleGate } from "@/components/shell";
 import { AssistantPanelView, ApprovalCard, ChoiceChips, Confidence, Citation, ReceiptCard } from "@/components/ai";
 import { Button, Section, Table, Th, Td, Pill, Empty, StoppedBanner } from "@/components/ui";
-import { NAV, type RoleId, type ScreenId } from "@/lib/nav";
+import { NAV, type RoleId, type ScreenId } from "@/lib/nav.legacy";
 import { chatState, type Agent, type AgentChatModel, type Prefs } from "@/lib/agent";
 import type { AgentMsg, AgentState } from "@/lib/auth/ext";
 import { Inbox } from "lucide-react";

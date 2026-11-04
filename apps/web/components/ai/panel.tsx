@@ -7,7 +7,7 @@ import Link from "next/link";
 import { Bot, MessageSquare, X } from "lucide-react";
 import { useShell } from "@/components/shell/context";
 import { useAgentChat, type AgentChatModel } from "@/lib/agent";
-import { NAV } from "@/lib/nav";
+import { NAV } from "@/lib/nav.legacy";
 import { AgentChat } from "./agent-chat";
 
 /** 本物の会話につながった右パネル（AppShell が出す） */

@@ -4,7 +4,7 @@ import { KanameMark } from "@/components/brand/kaname-mark";
 import { ChevronDown, FileText } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { NAV } from "@/lib/nav";
+import { NAV } from "@/lib/nav.legacy";
 import { cn } from "@/lib/cn";
 import { useShell } from "./context";
 import { SECTION_ICON } from "./icons";

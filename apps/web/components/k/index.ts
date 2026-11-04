@@ -8,3 +8,5 @@ export { Tabs, type TabItem, type TabsProps } from "./tabs";
 export { Callout, Toaster, useNotify, type CalloutTone } from "./notice";
 export { Dialog, Confirm, type DialogProps, type ConfirmProps } from "./dialog";
 export { ThemeSwitch, applyTheme } from "./theme";
+export { Shell, type ShellProps, type Crumb, type Group } from "./shell";
+export { navFor, type NavItem, type ShellNav } from "./nav-model";

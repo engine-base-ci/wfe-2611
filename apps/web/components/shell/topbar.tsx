@@ -4,7 +4,7 @@ import { Bot, PanelLeft, PauseCircle } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Info } from "lucide-react";
-import { NAV } from "@/lib/nav";
+import { NAV } from "@/lib/nav.legacy";
 import { useShell } from "./context";
 
 /** 見出しの行：くくり・h1・自分のAIのトグル・主アクション 1 つ（D-071・D-072。三画面では第2ナビの行に寄せる） */

@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useSession } from "@/lib/auth/session";
 import { resumeHref, useSetupStep } from "@/lib/onboarding";
-import { FALLBACKS } from "@/lib/nav";
+import { FALLBACKS } from "@/lib/nav.legacy";
 import { isBuilt } from "@/lib/built-routes";
 import type { Route } from "next";
 

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui";
 import { useSession } from "@/lib/auth/session";
-import { FALLBACKS, NAV } from "@/lib/nav";
+import { FALLBACKS, NAV } from "@/lib/nav.legacy";
 
 /** その道筋に当たる画面（:id は実際の値でも合う）。見つかれば「まだありません」と名前を出せる */
 function screenOf(path: string): { name: string; purpose: string } | null {

@@ -1,7 +1,7 @@
 "use client";
 // シェルの文脈（T-US-01）：役割（R1〜R6）・時点の caps・いま見ている画面・件数。枠（外／はじめの設定／アプリ）はここから機械で導く（D-065.5）
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { NAV, type RoleId, type ScreenId } from "@/lib/nav";
+import { NAV, type RoleId, type ScreenId } from "@/lib/nav.legacy";
 
 export type Frame = "outside" | "wizard" | "app";
 export type Layout = "page" | "threepane";
