@@ -4,6 +4,7 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import pg from "pg";
 import { mkdtempSync } from "node:fs";
+import { createHmac } from "node:crypto";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
@@ -28,6 +29,7 @@ const AUTH_URL = ADMIN.replace(/\/\/[^@]*@/, "//kaname_auth:kaname_auth@");
 const PW = "Str0ng-Passw0rd!";
 const sent: { to: string; url: string; kind: string }[] = [];
 let app: ReturnType<typeof createApp>;
+let authApi: ReturnType<typeof createAuth>["auth"]["api"];
 let admin: pg.Pool;
 const call = (method: string, path: string, body?: unknown, headers: Record<string, string> = {}) =>
   app.request(`http://localhost${path}`, {
@@ -51,6 +53,7 @@ beforeAll(async () => {
     webBaseURL: "http://localhost:3123",
     mailer: async () => undefined,
   });
+  authApi = auth.api;
   app = createApp({
     repo,
     auth,
@@ -93,7 +96,7 @@ async function signedIn() {
       [ver.data.token.split(".")[0]],
     )
   ).rows[0]!.member_id;
-  return { H, member };
+  return { H, member, email };
 }
 const stepUpAt = async (member: string) =>
   (
@@ -139,5 +142,66 @@ describe("本人確認の取り直し（KN-56）", () => {
     const { H } = await signedIn();
     expect((await call("POST", "/api/v1/auth/step-up", {}, H)).status).toBe(422);
     expect((await call("POST", "/api/v1/auth/step-up", { password: PW })).status).toBe(401);
+  });
+});
+
+/** 2 段階のコード（RFC 6238・30 秒・6 桁・SHA-1。認証アプリと同じ作り方） */
+function totp(secretB32: string, at = Date.now()): string {
+  const A = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+  let bits = "";
+  for (const c of secretB32.replace(/=+$/, "").toUpperCase()) bits += A.indexOf(c).toString(2).padStart(5, "0");
+  const key = Buffer.from(bits.match(/.{8}/g)!.map((b) => parseInt(b, 2)));
+  const msg = Buffer.alloc(8);
+  msg.writeBigUInt64BE(BigInt(Math.floor(at / 1000 / 30)));
+  const h = createHmac("sha1", key).update(msg).digest();
+  const o = h[h.length - 1]! & 0xf;
+  return String((h.readUInt32BE(o) & 0x7fffffff) % 1_000_000).padStart(6, "0");
+}
+
+describe("2 段階を使う人の取り直し（KN-56）", () => {
+  it("パスワードとコードの両方で取り直す。コードが無ければ 422・違えば 401 で時刻は付かない", async () => {
+    const { H, member, email } = await signedIn();
+    const headers = new Headers(H);
+    // 2 段階を有効にする（ログインの部品の手順どおり：有効にする → 最初のコードで確かめる）
+    const en = (await authApi.enableTwoFactor({ body: { password: PW }, headers })) as { totpURI: string };
+    const secret = new URL(en.totpURI).searchParams.get("secret")!;
+    // 2 段階を有効にするとき、ログインの部品はセッションを作り直す（新しいトークンを返す）
+    const v = (await authApi.verifyTOTP({ body: { code: totp(secret) }, headers, returnHeaders: true })) as unknown as {
+      headers: Headers;
+    };
+    const fresh = v.headers.get("set-auth-token");
+    expect(fresh, "新しいトークン").toBeTruthy();
+    H.authorization = `Bearer ${fresh}`;
+    const on = await admin.query<{ on: boolean }>(
+      'select "twoFactorEnabled" as on from kaname_auth."user" where email = $1',
+      [email],
+    );
+    expect(on.rows[0]?.on, "2 段階が有効になった").toBe(true);
+    // 2 段階を確かめても、いまのセッションはそのまま使える（取り直しでログインが切れない）
+    expect((await call("GET", "/api/v1/me", undefined, H)).status, "セッションが生きている").not.toBe(401);
+
+    const noCode = await call("POST", "/api/v1/auth/step-up", { password: PW }, H);
+    expect(noCode.status).toBe(422);
+    const wrong = await call(
+      "POST",
+      "/api/v1/auth/step-up",
+      { password: PW, code: "000000" === totp(secret) ? "111111" : "000000" },
+      H,
+    );
+    expect(wrong.status).toBe(401);
+    expect(await stepUpAt(member)).toBeNull();
+
+    const ok = await call("POST", "/api/v1/auth/step-up", { password: PW, code: totp(secret) }, H);
+    expect(ok.status).toBe(201);
+    // 取り直したあとも、いまのセッションで続けられる（取り直しでログインが切れない）
+    expect((await call("GET", "/api/v1/me", undefined, H)).status, "取り直しの後もセッションが生きている").not.toBe(
+      401,
+    );
+    expect(await stepUpAt(member)).not.toBeNull();
+    const ev = await admin.query<{ detail: { two_factor: boolean } }>(
+      "select detail from security_events where member_id = $1 and kind_id = 'step_up' order by created_at desc limit 1",
+      [member],
+    );
+    expect(ev.rows[0]?.detail.two_factor, "記録に 2 段階で確かめたことが残る").toBe(true);
   });
 });
