@@ -2,7 +2,8 @@
 // 見つけた値は出さない（先頭 4 文字と長さだけ）。わざと置いた偽物（試験の見本など）は secret_scan_allow.json に「どのファイルの・どの種類か・理由」を書いたものだけ通す。
 // 使い方: node scripts/ci/secret_scan.mjs   （自己テスト: node scripts/ci/secret_scan.mjs --selftest）
 import { execSync } from "node:child_process";
-import { existsSync, readFileSync, statSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 
@@ -38,7 +39,8 @@ export function scan(root = process.cwd()) {
   const allowPath = join(root, "scripts/ci/secret_scan_allow.json");
   const allow = existsSync(allowPath) ? JSON.parse(readFileSync(allowPath, "utf8")).allow : [];
   const bad = allow.filter((a) => !a.path || !a.rule || !String(a.reason ?? "").trim());
-  const files = execSync("git ls-files", { cwd: root, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 }).split("\n").filter(Boolean);
+  // -z：日本語の名前を "\343..." と化けさせない（化けると開けずに黙って飛ばしていた。68 本を見ていなかった・2026-11-04）
+  const files = execSync("git ls-files -z", { cwd: root, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 }).split("\0").filter(Boolean);
   const hits = [];
   const envFiles = files.filter((f) => /(^|\/)\.env(\.[^/]*)?$/.test(f) && !/\.env\.(example|sample|template)$/.test(f));
   for (const f of files) {
@@ -55,8 +57,19 @@ function selftest() {
   const ok = fake.every((v) => scanText("t.ts", `const a = "${v}";`).length === 1);
   const quiet = scanText("t.ts", 'const url = "postgres://postgres:postgres@127.0.0.1:5432/kaname_test"; const d = "postgres://kaname_app:kaname_app_dev@127.0.0.1:55433/kaname_dev"; const k = process.env.ANTHROPIC_API_KEY;').length === 0;
   const allowed = scanText("t.ts", `"${fake[0]}"`, [{ path: "t.ts", rule: "aws-access-key", reason: "見本" }]).length === 0;
-  console.log(ok && quiet && allowed ? "[secret scan selftest] OK" : "[secret scan selftest] NG");
-  process.exit(ok && quiet && allowed ? 0 : 1);
+  // 日本語の名前のファイルも開いて見る（git ls-files が名前を化けさせて、黙って飛ばしていた・2026-11-04）
+  const d = mkdtempSync(join(tmpdir(), "secret-scan-selftest-"));
+  let jp = false;
+  try {
+    execSync("git init -q", { cwd: d });
+    writeFileSync(join(d, "日本語の名前.ts"), `const a = "${fake[0]}";\n`);
+    execSync("git add -A", { cwd: d });
+    jp = scan(d).hits.length === 1;
+  } finally {
+    rmSync(d, { recursive: true, force: true });
+  }
+  console.log(ok && quiet && allowed && jp ? "[secret scan selftest] OK" : `[secret scan selftest] NG（日本語の名前 ${jp}）`);
+  process.exit(ok && quiet && allowed && jp ? 0 : 1);
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

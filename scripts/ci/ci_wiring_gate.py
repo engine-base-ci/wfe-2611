@@ -9,6 +9,7 @@
   W1 どこからも回らない検査（CI に足すか、scripts/ci/ci_scripts.json に理由を書く）
   W2 壊れていると記録した検査（known_broken）が、もう緑（記録を外して CI に入れる）
   W3 目録に書いたのに、もう無い検査（目録から外す）
+  W4 台本が git ls-files を -z 無しで読む（日本語の名前が "\343..." と化けて開けず、黙って飛ばす。G38・G43 で 68 本を見ていなかった・2026-11-04）
 由来：検査を書いたのに CI で回しておらず、壊れたまま気づかなかった（contract・env_audit の自己試験）。
 """
 from __future__ import annotations
@@ -54,6 +55,26 @@ def is_wired(name: str, cmd: str, text: str, all_items: dict[str, str]) -> bool:
     return False
 
 
+LS_FILES = re.compile(r'''(["']git["'],\s*["']ls-files["'](?![^\]\)]*["']-z["']))|(git ls-files(?![^"'`\n]*-z))''')
+
+
+def ls_files_without_z(texts: dict[str, str]) -> list[str]:
+    return [f"W4 {name} が git ls-files を -z 無しで読む（日本語の名前が化けて黙って飛ばす。-z で読み、\\0 で分ける）"
+            for name, t in sorted(texts.items()) if LS_FILES.search(t)]
+
+
+def script_texts() -> dict[str, str]:
+    out = {}
+    for g in ("scripts/**/*.py", "scripts/**/*.mjs", "scripts/**/*.sh", "apps/*/scripts/**/*.mjs", "05_flow/*.py"):
+        for f in glob.glob(os.path.join(ROOT, g), recursive=True):
+            rel = os.path.relpath(f, ROOT)
+            if rel != "scripts/ci/ci_wiring_gate.py" and "/__pycache__/" not in rel:
+                # 説明の行（# や // で始まる行）は見ない
+                out[rel] = "\n".join(ln for ln in open(f, encoding="utf-8", errors="ignore").read().splitlines()
+                                     if not ln.lstrip().startswith(("#", "//")))
+    return out
+
+
 def check(extra: dict[str, str] | None = None) -> list[str]:
     cfg = J("scripts/ci/ci_scripts.json")
     listed = {**cfg.get("generator", {}), **cfg.get("manual", {})}
@@ -74,12 +95,15 @@ def check(extra: dict[str, str] | None = None) -> list[str]:
     for name in [*listed, *broken]:
         if name not in it and not os.path.exists(os.path.join(ROOT, name)):
             fails.append(f"W3 目録に書いたのに、もう無い {name}")
-    return fails
+    return fails + ls_files_without_z(script_texts())
 
 
 def main() -> int:
     if "--selftest" in sys.argv:
         hit = any("kaname-selftest-unwired" in f for f in check({"ci:kaname-selftest-unwired": "node scripts/ci/nothing.mjs"}))
+        w4 = ls_files_without_z({"a.py": 'subprocess.run(["git", "ls-files"])', "b.mjs": 'execSync("git ls-files")',
+                                 "ok.py": 'subprocess.run(["git", "ls-files", "-z"])', "ok.mjs": 'execSync("git ls-files -z --others")'})
+        hit = hit and [x.split()[1] for x in w4] == ["a.py", "b.mjs"]
         print("PASS — どこからも回らない検査を見つけた" if hit else "FAIL — どこからも回らない検査を見つけられない")
         return 0 if hit else 1
     fails = check()

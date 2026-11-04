@@ -25,7 +25,11 @@ SKIP = {"task-gate": "task/ の枝の PR のときだけ動く（07_tasks のし
         "e2e": "staging の本物の環境が要る（KN-110 で staging ができてから）",
         "auto-merge": "GitHub の取り込みの道具（dagci では pm_merge.sh が CI の緑を確かめて取り込む）"}
 SETUP = re.compile(r"^(pnpm install|pip install pyyaml$|pnpm --filter @kaname/web exec playwright install|pnpm --filter @kaname/web build:test$)")
-DB_URL = "postgres://postgres:postgres@postgres:5432/kaname_test"
+DB_URL = "postgres://postgres:postgres@{svc}:5432/kaname_test"
+# 画面を本番の形で立ち上げて待つ（GitHub の「画面を立ち上げる」と同じ。立ち上がらなければ記録を出して赤）
+WEB_START = ("(pnpm --filter @kaname/web start:test > /tmp/web.log 2>&1 &); ok=0; "
+             "for i in $(seq 1 60); do curl -sf -o /dev/null http://127.0.0.1:3124/dev/k/showcase && { ok=1; break; }; sleep 2; done; "
+             "[ $ok = 1 ] || { cat /tmp/web.log; exit 1; }")
 
 
 def steps() -> list[dict]:
@@ -35,9 +39,12 @@ def steps() -> list[dict]:
         if job in SKIP:
             continue
         env = {k: str(v) for k, v in (j.get("env") or {}).items()}
-        if "DATABASE_URL" in env:
-            env["DATABASE_URL"] = DB_URL
-        svc = ["postgres"] if j.get("services") else []
+        # GitHub は job ごとに Postgres を 1 つ持ち、job の中の検査は順に流れる。dagci も job ごとに Postgres を分け（pg-<job>）、
+        #   その job の中は前の段を needs にして順に流す（同時に流すと、同じ DB を同時に作り直して偽の赤になる・2026-11-04）
+        svc = [f"pg-{job}"] if j.get("services") else []
+        if "DATABASE_URL" in env and svc:
+            env["DATABASE_URL"] = DB_URL.format(svc=svc[0])
+        prev = None
         start = None
         for st in j.get("steps") or []:
             run = (st.get("run") or "").strip()
@@ -45,7 +52,7 @@ def steps() -> list[dict]:
                 continue
             name = st.get("name") or run
             if job == "web" and name == "画面を立ち上げる":
-                start = run
+                start = WEB_START
                 continue
             m = re.match(r"G(\d+)\b", name)
             # job の名前を頭に付ける（v3-gate.yml には static と spec で同じ番号 G27・G28 が 2 回ずつある・2026-11-04 に見つけた）
@@ -53,9 +60,11 @@ def steps() -> list[dict]:
             cmd = run
             if job == "web":
                 # 組み立て → 立ち上げ → 試験 を 1 つの段で（GitHub の web job と同じ順）
-                cmd = "pnpm --filter @kaname/web build:test && " + (start or "true").replace("exit 0", "true; break") + " && " + run
+                cmd = "pnpm --filter @kaname/web build:test && " + (start or "true") + " && " + run
             out.append({"id": sid, "name": name, "group": job, "run": cmd, "services": svc, "env": env,
+                        "needs": [prev] if (svc and prev) else [],
                         "timeout": 3600 if job in ("database", "web") else 1800})
+            prev = sid
     return out
 
 

@@ -23,12 +23,13 @@ CODE_EXT = (".py", ".mjs", ".js")
 
 
 def tracked() -> list[str]:
-    return [f for f in subprocess.run(["git", "ls-files"], cwd=ROOT, capture_output=True, text=True).stdout.split("\n") if f]
+    # -z：日本語の名前を "\343..." と化けさせない（化けると開けずに黙って飛ばしていた・2026-11-04 dagci で見つけた）
+    return [f for f in subprocess.run(["git", "ls-files", "-z"], cwd=ROOT, capture_output=True, text=True).stdout.split("\0") if f]
 
 
 def untracked() -> set[str]:
-    out = subprocess.run(["git", "ls-files", "--others", "--exclude-standard"], cwd=ROOT, capture_output=True, text=True).stdout
-    return {f for f in out.split("\n") if f}
+    out = subprocess.run(["git", "ls-files", "-z", "--others", "--exclude-standard"], cwd=ROOT, capture_output=True, text=True).stdout
+    return {f for f in out.split("\0") if f}
 
 
 def read(f: str) -> bytes | None:

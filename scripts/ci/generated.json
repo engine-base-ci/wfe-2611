@@ -118,6 +118,13 @@
     "03_architecture/catalog.json",
     "03_architecture/catalog.md"
    ]
+  },
+  {
+   "name": "使ってもらい方（flow.json → 05_flow/使ってもらい方.md）",
+   "run": "cd 05_flow && python3 build_md.py",
+   "outputs": [
+    "05_flow/使ってもらい方.md"
+   ]
   }
  ],
  "checked_elsewhere": [
@@ -234,6 +241,10 @@
   {
    "path": "apps/bridge/test/renderer.test.ts",
    "reason": "試験（「正本から生成した tokens.css を読む」の説明）"
+  },
+  {
+   "path": "01_hearing/ヒアリングサマリー.md",
+   "why": "手で書くヒアリングの要約。先頭の「要件一覧.md＝機械生成」は別のファイルのことを言っているだけ"
   }
  ],
  "known_stale": []
