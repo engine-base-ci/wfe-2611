@@ -475,3 +475,8 @@ KN-121,spec-sync の地図（spec-dependencies.yaml）の古い所を直し、D�
 - [x] D：今の flow に無い画面（search・clone-memory）を指す行（AD-007・AD-025）を直す。AD-123（apps/bridge/src/modes.ts の検査）と AD-003-2（06_mockup/v1）の検査を今の形に直す
 - [x] `python3 scripts/spec-sync/spec-validator.py --project-root . --tier d` と `--tier f` が緑
 - [x] spec-sync の結果（.qa/spec-sync/<日付>/result.json）で D・F・G・H が pass"
+KN-122,CI の配線の検査（G47）が、自己試験を持たない検査の台本を見ていない穴を塞ぐ,課題,KN-6,未着手,Claude（このセッション）,2026-11-13,基盤・試験,"G47（scripts/ci/ci_wiring_gate.py）は、package.json の ci:*・*.test.mjs・--selftest を持つ台本だけを「検査」として数える。自己試験を持たない検査の台本が CI のどこからも回っていなくても赤にならない。
+ai-team-delivery のスキルに入れた汎用の検査（wiring_gate.py・scripts/ci/*.py を全部数える）を Kaname に当てたら、`scripts/ci/visual_fidelity.mjs` と `scripts/ci/wave_gate.py` がどこからも回っていなかった。","- [ ] G47 が scripts/ci/ の検査の台本を全部数える（自己試験の有無によらない）
+- [ ] visual_fidelity.mjs・wave_gate.py は、CI に入れるか、ci_scripts.json に回さない理由を書く（visual_fidelity は外の書体を読むので手で回す・KN-108。wave_gate は前の作業の仕組み 07_tasks の Wave の締め）
+- [ ] G47 の自己試験に「自己試験を持たない、回っていない台本」を足し、赤になるのを確かめる
+- [ ] CI が緑"
