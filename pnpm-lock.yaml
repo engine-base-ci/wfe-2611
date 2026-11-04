@@ -95,6 +95,9 @@ importers:
 
   apps/bridge:
     dependencies:
+      '@fontsource-variable/noto-sans-jp':
+        specifier: 5.3.1
+        version: 5.3.1
       '@playwright/mcp':
         specifier: 0.0.83
         version: 0.0.83

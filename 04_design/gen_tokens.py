@@ -79,7 +79,8 @@ def bridge() -> list[str]:
     for k, v in (d.get("spacing") or {}).items():
         L.append(f"  --s-{k}: {v};")
     fam = (d.get("typography") or {}).get("body", {}).get("fontFamily", "system-ui")
-    L.append(f'  --font-sans: "{fam}", "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;')
+    # 書体は Bridge に同梱して配る（@fontsource-variable・名前は「<名前> Variable」・KN-112）。PC に入っていれば先に使う
+    L.append(f'  --font-sans: "{fam}", "{fam} Variable", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", system-ui, sans-serif;')
     L.append("}")
     return L
 

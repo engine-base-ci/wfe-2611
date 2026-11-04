@@ -438,9 +438,9 @@ KN-111,検査の無い所の棚卸しと、すでに分かった 3 つの検査,
 - [x] 書体が本当に読み込まれるか、を検査で見る（単体試験＋実ブラウザの試験 KN104-011）
 - [x] 検査の無い所の棚卸しの結果が残り、見つかったものが全部チケットになっている（`.qa/inventory/2026-11-04.md`・KN-112〜KN-116・KN-109 に追記）
 - [ ] CI が緑（手元で確かめた。GitHub の結果は push 後に見る）"
-KN-112,Bridge の画面のトークンを正本に合わせる,課題,KN-5,未着手,Claude（このセッション）,2026-11-13,基盤・画面,Bridge の画面のトークン（apps/bridge/src/renderer/tokens.css）が正本（DESIGN-kaname.md）より古い（書体が M PLUS 2・文字の段が前の値）。作り直して、Bridge の画面が崩れないことを確かめる。,"- [ ] `python3 04_design/gen_tokens.py` で作り直し、G38 の記録（generated.json の known_stale）から外す
-- [ ] Bridge の画面が崩れない（スクリーンショットで前と比べる）
-- [ ] CI が緑"
+KN-112,Bridge の画面のトークンを正本に合わせる,課題,KN-5,確認中,Claude（このセッション）,2026-11-13,基盤・画面,Bridge の画面のトークン（apps/bridge/src/renderer/tokens.css）が正本（DESIGN-kaname.md）より古い（書体が M PLUS 2・文字の段が前の値）。作り直して、Bridge の画面が崩れないことを確かめる。,"- [x] `python3 04_design/gen_tokens.py` で作り直し、G38 の記録（generated.json の known_stale）から外した
+- [x] Bridge の画面が崩れない（前と後のスクリーンショット：`.qa/visual-fidelity/KN-112-bridge-before-after.png`。横のはみ出し 0）
+- [ ] CI が緑（手元で確かめた）"
 KN-113,画面の試験の仕様の作り手（build_tasks.py）を直す,課題,KN-6,未着手,Claude（このセッション）,2026-11-13,基盤・試験,07_qa/test-specs/screens/*（64）と 07_qa/test-specs の 8 ファイルの作り手 05_flow/build_tasks.py が落ちる（KeyError: 'search'）。作り直せないので、正本（flow・機能）が変わっても試験の仕様が追いつかない。直すか、作り手を新しい仕組み（11_tickets・キャンバス）に置き換えるかを決めて直す。,"- [ ] 作り手が落ちない（か、置き換えて前の作り手を外す）
 - [ ] G38 の記録（known_stale の KN-113 の行）を外せる
 - [ ] CI が緑"

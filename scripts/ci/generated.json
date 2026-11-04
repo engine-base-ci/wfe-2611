@@ -183,11 +183,6 @@
  ],
  "known_stale": [
   {
-   "path": "apps/bridge/src/renderer/tokens.css",
-   "ticket": "KN-112",
-   "reason": "正本より古い（書体・文字の段）。作り直すと Bridge の見た目が変わるので、Bridge の画面で確かめて入れる"
-  },
-  {
    "glob": "07_qa/test-specs/screens/*",
    "ticket": "KN-113",
    "reason": "作り手（05_flow/build_tasks.py）が落ちる（KeyError: 'search'）。作り手を直すまで作り直せない"
