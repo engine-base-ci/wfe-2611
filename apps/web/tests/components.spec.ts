@@ -79,18 +79,16 @@ test("KN104-006 知らせ：帯は role=status／alert。小さな知らせは�
   await page.getByRole("button", { name: "失敗の知らせ" }).click();
   const err = page.locator(".k-toast").filter({ hasText: "保存できませんでした" });
   await expect(err).toBeVisible();
-  await expect(page.getByRole("region", { name: "知らせ", exact: true })).toBeVisible();
-  // 束に乗せると広がり、閉じるが読み上げにも出る
-  await err.hover();
+  const region = page.getByRole("region", { name: /^知らせ alt\+T$/ });
+  await expect(region).toBeAttached();
+  // 閉じるはいつも出ている（マウスでもキーボードでも閉じられる）
   await err.getByRole("button", { name: "閉じる" }).click();
   await expect(err).toBeHidden();
-  // キーボード：F6 で知らせの束に移り、Tab で閉じるへ、Enter で閉じる
+  // キーボード：Alt+T で知らせの束に移り、Tab で閉じるへ、Enter で閉じる
   await page.getByRole("button", { name: "失敗の知らせ" }).click();
   await expect(err).toBeVisible();
-  await page.mouse.move(0, 0);
-  await page.keyboard.press("F6");
+  await page.keyboard.press("Alt+T");
   const close = err.getByRole("button", { name: "閉じる" });
-  // 束 → 知らせ → 閉じる の順に Tab で進む（知らせの中は 3 回以内に届く）
   for (let i = 0; i < 3 && !(await close.evaluate((e) => e === document.activeElement)); i++)
     await page.keyboard.press("Tab");
   await expect(close).toBeFocused();

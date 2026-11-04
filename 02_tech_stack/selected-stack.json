@@ -55,6 +55,7 @@
     "date": "react-day-picker（日本語ロケール）",
     "virtual_list": "TanStack Virtual（会話の履歴・証跡・台帳）",
     "goal_tree": "自前（details + roving tabindex。層が可変で可視範囲・配分・かけたものを行に持つ）",
+    "web_font": "@fontsource-variable/noto-sans-jp 5.3.1（OFL-1.1）。書体（Noto Sans JP・D-128.3）を画面と同じ所から配る。外の宛先を CSP に足さない。使う字の分だけ読む（unicode-range）",
     "source": [
      "D-067"
     ]

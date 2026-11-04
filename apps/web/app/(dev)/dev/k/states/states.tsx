@@ -12,14 +12,23 @@ import {
   errorCodeOf,
 } from "@/components/k";
 
-export function States({ page }: { page: string | null }) {
+function Wrap({ bare, children }: { bare: boolean; children: React.ReactNode }) {
+  if (bare) return <div style={{ padding: "var(--k-s-lg) var(--k-s-md)" }}>{children}</div>;
+  return (
+    <main className="k-root" style={{ minHeight: "100dvh", padding: "var(--k-s-lg) var(--k-s-md)" }}>
+      {children}
+    </main>
+  );
+}
+
+export function States({ page, bare = false }: { page: string | null; bare?: boolean }) {
   const [asked, setAsked] = useState(false);
   const [n, setN] = useState(0);
   if (page) return <ErrorPage code={page} acts={["/dev/k/states", "/dev/k/states"]} />;
   return (
-    <main className="k-root" style={{ minHeight: "100dvh", padding: "var(--k-s-lg) var(--k-s-md)" }}>
+    <Wrap bare={bare}>
       <div style={{ maxWidth: 880, margin: "0 auto", display: "grid", gap: "var(--k-s-md)" }}>
-        <h1 style={{ margin: 0, fontSize: "var(--k-text-h1)" }}>4 つの状態</h1>
+        {bare ? null : <h1 style={{ margin: 0, fontSize: "var(--k-text-h1)" }}>4 つの状態</h1>}
         <OfflineBanner />
         <section aria-label="空の見本" data-sample="empty">
           <Empty
@@ -55,6 +64,6 @@ export function States({ page }: { page: string | null }) {
           ))}
         </nav>
       </div>
-    </main>
+    </Wrap>
   );
 }

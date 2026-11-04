@@ -25,7 +25,17 @@ const ROWS: Row[] = [
 ];
 const STATE = { success: "済み", warning: "待ち", danger: "止まっている" } as const;
 
-function Inner({ theme }: { theme: Theme }) {
+/** 見本だけのときは自分で k-root の main を持つ。外枠の中に置くときは外枠の main の中身になる */
+function Wrap({ bare, children }: { bare: boolean; children: React.ReactNode }) {
+  if (bare) return <div style={{ padding: "var(--k-s-lg) var(--k-s-md)" }}>{children}</div>;
+  return (
+    <main className="k-root" style={{ minHeight: "100dvh", padding: "var(--k-s-lg) var(--k-s-md)" }}>
+      {children}
+    </main>
+  );
+}
+
+export function PartsBody({ theme, bare = false }: { theme: Theme; bare?: boolean }) {
   const notify = useNotify();
   const [busy, setBusy] = useState(false);
   const [confirm, setConfirm] = useState(false);
@@ -34,10 +44,12 @@ function Inner({ theme }: { theme: Theme }) {
   const [err, setErr] = useState<string | null>(null);
   const [kind, setKind] = useState<string | null>(null);
   return (
-    <main className="k-root" style={{ minHeight: "100dvh", padding: "var(--k-s-lg) var(--k-s-md)" }}>
+    <Wrap bare={bare}>
       <div style={{ display: "flex", flexDirection: "column", gap: "var(--k-s-lg)", maxWidth: 880, margin: "0 auto" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "var(--k-s-md)", flexWrap: "wrap" }}>
-          <h1 style={{ margin: 0, fontSize: "var(--k-text-h1)", lineHeight: "var(--k-lh-h1)" }}>部品の見本</h1>
+          {bare ? null : (
+            <h1 style={{ margin: 0, fontSize: "var(--k-text-h1)", lineHeight: "var(--k-lh-h1)" }}>部品の見本</h1>
+          )}
           <ThemeSwitch initial={theme} />
         </div>
 
@@ -185,14 +197,14 @@ function Inner({ theme }: { theme: Theme }) {
           setDone("消しました");
         }}
       />
-    </main>
+    </Wrap>
   );
 }
 
 export function Parts({ theme }: { theme: Theme }) {
   return (
     <Toaster>
-      <Inner theme={theme} />
+      <PartsBody theme={theme} />
     </Toaster>
   );
 }

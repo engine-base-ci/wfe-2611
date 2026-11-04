@@ -341,18 +341,7 @@ textarea.k-input {
   font-weight: var(--k-fw-h3);
 }
 
-/* ---- 知らせ（小さな知らせ：Base UI Toast）---- */
-.k-toast-viewport {
-  position: fixed;
-  z-index: 70;
-  bottom: var(--k-s-md);
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  gap: var(--k-s-sm);
-  width: min(420px, calc(100vw - 2 * var(--k-s-md)));
-}
+/* ---- 知らせ（小さな知らせ：sonner・D-067）---- */
 .k-toast {
   display: flex;
   gap: var(--k-s-sm);
@@ -364,7 +353,7 @@ textarea.k-input {
   box-shadow: 0 8px 24px color-mix(in srgb, var(--k-on-surface) 20%, transparent);
   font-size: var(--k-text-body);
 }
-.k-toast[data-type="error"] {
+.k-toast-error {
   background: var(--k-st-danger-container);
   color: var(--k-st-on-danger-container);
 }

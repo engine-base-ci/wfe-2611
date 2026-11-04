@@ -116,7 +116,7 @@
   --k-s-lg: 24px;
   --k-s-xl: 48px;
   --k-s-2xl: 96px;
-  --k-font: "Noto Sans JP", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", system-ui, sans-serif;
+  --k-font: "Noto Sans JP", "Noto Sans JP Variable", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", system-ui, sans-serif;
   --k-font-code: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   --k-c-button-primary-bg: var(--k-primary);
   --k-c-button-primary-fg: var(--k-on-primary);

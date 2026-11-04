@@ -3,6 +3,8 @@ import type { ReactNode } from "react";
 import { cookies } from "next/headers";
 import { Providers } from "@/components/providers";
 import { THEME_COOKIE, parseTheme, themeAttr } from "@/lib/theme";
+// 新しい画面の書体（Noto Sans JP・D-128.3）。画面と同じ所から配る（CSP の font-src は self のまま）。使う画面だけが字の分を読む
+import "@fontsource-variable/noto-sans-jp";
 import "./globals.css";
 
 // html／body の土台と Provider（API・認証）。枠（サイドバー・第2ナビ・下タブ）は各画面が AppShell で組む（枠は導出：D-065）

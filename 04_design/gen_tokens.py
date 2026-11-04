@@ -136,7 +136,8 @@ def web() -> list[str]:
         L.append(f"  --k-r-{k}: {v};")
     for k, v in (d.get("spacing") or {}).items():
         L.append(f"  --k-s-{k}: {v};")
-    L.append(f'  --k-font: "{fam}", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", system-ui, sans-serif;')
+    # 書体は画面と同じ所から配る（@fontsource-variable・OFL。外の宛先を CSP に足さない）。その書体の名前は「<名前> Variable」
+    L.append(f'  --k-font: "{fam}", "{fam} Variable", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", system-ui, sans-serif;')
     L.append("  --k-font-code: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;")
     # 部品の値（正本の components）。色は --k-* を参照するので、テーマを替えると部品も替わる
     for name, spec in (d.get("components") or {}).items():

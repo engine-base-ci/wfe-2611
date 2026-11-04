@@ -1,9 +1,8 @@
 "use client";
 // 知らせ（KN-104）。2 つ：
 //   Callout … 画面の中の帯（正本 components.callout-*）。危ない知らせは role="alert"、ほかは role="status"
-//   Toaster / useNotify … 小さな知らせ（コピーした・保存した）。Base UI Toast。読み上げに伝わる。
-//     束にマウスを乗せるか F6 で移ると広がり、「閉じる」が押せる（広がる前は読み上げから隠す：Base UI の作り）
-import { Toast } from "@base-ui-components/react/toast";
+//   Toaster / useNotify … 小さな知らせ（コピーした・保存した）。sonner（技術の選定 D-067）。読み上げに伝わる。Alt+T で知らせの束に移れ、閉じるボタンはいつも出す
+import { Toaster as Sonner, toast } from "sonner";
 import type { ReactNode } from "react";
 
 export type CalloutTone = "info" | "warn" | "danger";
@@ -26,38 +25,40 @@ export function Callout({
   );
 }
 
-function ToastList() {
-  const { toasts } = Toast.useToastManager();
-  return toasts.map((t) => (
-    <Toast.Root key={t.id} toast={t} className="k-toast">
-      <div>
-        <Toast.Title />
-        <Toast.Description />
-      </div>
-      <Toast.Close className="k-toast-close" aria-label="閉じる">
-        ×
-      </Toast.Close>
-    </Toast.Root>
-  ));
-}
+const TOASTER_ID = "k";
 
-/** 小さな知らせの置き場。画面の木の上に 1 つ */
+/** 小さな知らせの置き場。画面の木の上に 1 つ。前の画面の置き場（components/providers）とは名前で分ける */
 export function Toaster({ children }: { children: ReactNode }) {
   return (
-    <Toast.Provider timeout={5000}>
+    <>
       {children}
-      <Toast.Portal>
-        <Toast.Viewport className="k-toast-viewport" aria-label="知らせ">
-          <ToastList />
-        </Toast.Viewport>
-      </Toast.Portal>
-    </Toast.Provider>
+      <Sonner
+        id={TOASTER_ID}
+        position="bottom-center"
+        closeButton
+        containerAriaLabel="知らせ"
+        toastOptions={{
+          unstyled: true,
+          closeButtonAriaLabel: "閉じる",
+          classNames: {
+            toast: "k-toast",
+            title: "k-toast-title",
+            description: "k-toast-desc",
+            closeButton: "k-toast-close",
+          },
+        }}
+      />
+    </>
   );
 }
 
 /** 知らせを出す。失敗の知らせ（error）は自分で閉じるまで残す */
 export function useNotify() {
-  const m = Toast.useToastManager();
   return (title: string, o: { description?: string; type?: "info" | "error" } = {}) =>
-    m.add({ title, description: o.description, type: o.type ?? "info", timeout: o.type === "error" ? 0 : 5000 });
+    (o.type === "error" ? toast.error : toast)(title, {
+      toasterId: TOASTER_ID,
+      ...(o.description ? { description: o.description } : {}),
+      duration: o.type === "error" ? Infinity : 5000,
+      className: o.type === "error" ? "k-toast k-toast-error" : "k-toast",
+    });
 }

@@ -4228,7 +4228,7 @@
     "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| トークンが正本どおり・明るい／暗いのコントラスト AA | ① 機械 | `python3 04_design/gen_tokens.py --web --check`（CI の G37） | 緑（2026-11-03・明るい 4.53〜・暗い 6.36〜） |\n| 生の色・文字サイズ・角丸が無い | ① 機械 | `python3 scripts/ci/design_gate.py … --part`（G37）＋ `apps/web/test/k-tokens.test.ts` | 緑（D1〜D4 とも 0・単体 27 本） |\n| 部品の操作（キーボード・読み上げ） | ① 機械 | `apps/web/tests/components.spec.ts`（実ブラウザ 10 本） | 緑（2026-11-03・10/10） |\n| 375・768・1440 で崩れない・押せるものは 24px 以上 | ① 機械 | 同上 KN104-010 | 緑 |\n| 部品の見た目がキャンバスと合う | ② 半分 | visual-fidelity | KN-108（見本の画面でキャンバスと並べて比べる）で見る |",
     "成果物": "- `04_design/gen_tokens.py`（--web・--check・コントラストの確かめ）・`04_design/DESIGN-kaname.md`（暗いテーマの節）\n- `apps/web/styles/k-tokens.css`（生成物）・`apps/web/components/k/*`・`apps/web/lib/theme.ts`・`apps/web/app/layout.tsx`（見た目を cookie から付ける）\n- `apps/web/app/(dev)/dev/k`（部品の見本）・`apps/web/test/k-tokens.test.ts`・`apps/web/tests/components.spec.ts`\n- CI：G37（05_flow/build_testplan.py → v3-gate.yml の spec の段）",
     "決定ログ": "- 決定に従った：D-128.78・D-128.9・D-128.37・D-128.55",
-    "リスクと懸念": "- 小さな知らせ（Base UI Toast）の「閉じる」は、束が広がる前は読み上げから隠れる（Base UI の作り）。マウスを乗せるか F6 で束に移ると出る。試験はその使い方で確かめた",
+    "リスクと懸念": "- 小さな知らせは、はじめ Base UI の Toast で作ったが、技術の選定（D-067）が sonner なので KN-108 で sonner に替えた（前の画面の置き場とは名前で分ける）。閉じるはいつも出て、Alt+T で知らせの束に移れる",
     "申し送り": "- ★ついでに見つけた：明るいテーマの「人の顔・層の札」の色 teal-light（#5E8F8B）が白い字で 3.63:1 しかなく AA に届かなかった。色味を変えずに少し暗い #537E7B（4.53:1）に直し、キャンバス（EdRule・RoomKnows・WsRules・EdApproval・RoomAddRule と canvas_gen/ws.py）もそろえた\n- ★ついでに見つけた：Bridge の画面のトークン（apps/bridge/src/renderer/tokens.css）が正本より古い（書体が M PLUS 2 のまま・文字の段が前の値）。gen_tokens.py で作り直せるが、Bridge の見た目が変わるので、Bridge の画面のチケットで作り直す（今回は触っていない）\n- 影は正本に段が無いので、ポップアップ・ダイアログの影は文字の色を薄めたもの（color-mix）にした。段が要るなら正本に足す\n- 書体（Noto Sans JP）はまだ読み込んでいない（入っていなければ Hiragino・Yu Gothic・システムの書体になる）。外枠（KN-105）で読み込み方を決める"
    },
    "file": "11_tickets/KN-104.md"
@@ -4341,7 +4341,7 @@
    "id": "KN-108",
    "title": "見本の画面（部品を並べて、キャンバスと比べる）",
    "kind": "タスク",
-   "stage": "未着手",
+   "stage": "確認中",
    "parent": "KN-5",
    "milestone": "基盤",
    "area": "画面",
@@ -4362,14 +4362,14 @@
    ],
    "sections": {
     "目的": "部品・外枠・4 つの状態を並べた見本の画面を作り、キャンバスと並べて比べられるようにする（新しい画面はこの上に作る）。",
-    "完了の条件": "- [ ] 見本の画面に、部品・外枠・4 つの状態が全部出る\n- [ ] キャンバスとの比べ（visual-fidelity）の結果が残る\n- [ ] CI が緑",
+    "完了の条件": "- [x] 見本の画面に、部品・外枠・4 つの状態が全部出る（`/dev/k/showcase`：新しい外枠の中に、部品と 4 つの状態・エラーをタブで並べる）\n- [x] キャンバスとの比べ（visual-fidelity）の結果が残る（`.qa/visual-fidelity/KN-108/report.md`・`result.json`・絵 5 枚）\n- [ ] CI が緑（手元で確かめた。GitHub の結果は push 後に見る）",
     "前提と制約": "- 前の画面は少しずつ直さず、新しく作ってから外す（D-128.78）",
-    "実施事項": "- [ ] 見本の画面（開発用の置き場）\n- [ ] 比べた結果を残す",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 見本がキャンバスと合う | ② 半分 | visual-fidelity（結果を .qa に残す） | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-128.78・D-128.9・D-128.37",
-    "リスクと懸念": "",
-    "申し送り": ""
+    "実施事項": "- [x] 見本の画面（開発用の置き場 `/dev/k/showcase`）。部品の見本・状態の見本は、外枠の中にも置ける形に分けた\n- [x] 比べる仕組み：`scripts/ci/visual_fidelity.mjs`。キャンバスの画面と新しい画面を同じ幅で実ブラウザに描き、同じ役割の要素の値（大きさ・色・角丸・書体・実際に読み込んだ書体）を比べる。組は `.qa/visual-fidelity/KN-108/pairs.json`\n- [x] 比べた結果を残す：段 1（トークン）・段 2（描いた画面）とも合格。違う値 0 / 40",
+    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 見本がキャンバスと合う | ② 半分 | visual-fidelity（`node scripts/ci/visual_fidelity.mjs .qa/visual-fidelity/KN-108/pairs.json`・結果は .qa に残す） | 合格（2026-11-04・BLOCK 0・HIGH 0・違う値 0/40。トークンは明るい・暗いとも 66 色が値まで一致） |\n| 見本の画面が崩れない・部品が動く | ① 機械 | `apps/web/tests/components.spec.ts`・`k-shell.spec.ts`・`states.spec.ts`・`ui.spec.ts` | 緑（33/33） |",
+    "成果物": "- `apps/web/app/(dev)/dev/k/showcase`・`scripts/ci/visual_fidelity.mjs`・`.qa/visual-fidelity/KN-108/`（report.md・result.json・pairs.json・canvas.png・app.png・app-dark.png・app-375.png・app-375-dark.png）\n- 書体：`@fontsource-variable/noto-sans-jp`（apps/web・layout.tsx で読む）・`04_design/gen_tokens.py`（書体の名前に Variable を足す）・`02_tech_stack/selected-stack.json`（web_font）\n- 小さな知らせを sonner に替えた（`apps/web/components/k/notice.tsx`）",
+    "決定ログ": "- 決定に従った：D-128.78・D-128.9・D-128.37・D-067（小さな知らせは sonner）・D-128.3（書体は Noto Sans JP）",
+    "リスクと懸念": "- 比べる仕組みは next dev を立てて手で回す（キャンバスが外の書体を読むので CI では回さない）。新しい画面のチケットで、その画面の組を pairs.json に足して回す",
+    "申し送り": "- ★ついでに見つけた：新しい画面は書体の名前を指定しているだけで、書体を 1 つも読み込んでいなかった（端末の別の書体で描いていた。名前を比べる検査では見つからない）。Fontsource（OFL）で画面と同じ所から配るようにした（CSP は font-src 'self' のまま）。比べる仕組みに「実際に読み込んだ書体」の行を足した\n- ★ついでに見つけた：KN-104 で小さな知らせを Base UI で作ったが、技術の選定は sonner（D-067）だった。sonner に替えた\n- ★ついでに見つけた：pnpm add でも Better Auth の中の部品の版が付け替わった。今回も書体の分（lockfile 8 行）だけを入れた。版をそろえるかは決めてもらう必要がある\n- キャンバスとの違いで残したもの（LOW）：会社の名前の「▾」（会社の切り替え）・探す欄の「⌘K」（画面全体の検索）は、その仕組みのチケットで足す。キャンバスの Main には右のパネルが無いが、決まり（全部の作業画面に出す）のとおり出している"
    },
    "file": "11_tickets/KN-108.md"
   },
