@@ -136,7 +136,7 @@
 | G37 | デザインのトークンと新しい部品（正本どおり・明るい／暗いのコントラスト AA・生の値 D1〜D4） | `python3 04_design/gen_tokens.py --web --check && python3 scripts/ci/design_gate.py --design 04_design/DESIGN-kaname.md --mocks apps/web/components/k --css apps/web/styles/k-tokens.css --part` | spec |  |
 | G38 | 生成物が全部最新（作り手を全部回して、中身が変わる生成物・落ちる作り手・目録に無い生成物を赤にする・D-128.123） | `python3 scripts/ci/generated_gate.py --selftest && python3 scripts/ci/generated_gate.py` | spec |  |
 | G46 | 使っている部品が技術の選定の記録と合う（package.json と selected-stack.json の packages を 1 対 1・D-128.123） | `python3 scripts/ci/stack_gate.py --selftest && python3 scripts/ci/stack_gate.py` | spec |  |
-| G47 | 書いた検査が CI から回る・検査の自己試験（ci_wiring_gate・エラーの参照・自己試験 4 本・D-128.123） | `python3 scripts/ci/ci_wiring_gate.py --selftest && python3 scripts/ci/ci_wiring_gate.py && pnpm -s ci:errors-used && pnpm -s ci:errors-used:selftest && pnpm -s ci:sql-guard:selftest && pnpm -s ci:chat-one:selftest && python3 scripts/ci/qa_delta.py --selftest` | spec |  |
+| G47 | 書いた検査が CI から回る・検査の自己試験（ci_wiring_gate・エラーの参照・自己試験 6 本・D-128.123） | `python3 scripts/ci/ci_wiring_gate.py --selftest && python3 scripts/ci/ci_wiring_gate.py && pnpm -s ci:errors-used && pnpm -s ci:errors-used:selftest && pnpm -s ci:sql-guard:selftest && pnpm -s ci:chat-one:selftest && pnpm -s ci:contract:selftest && pnpm -s ci:env-audit:selftest && python3 scripts/ci/qa_delta.py --selftest` | spec |  |
 | G48 | 新しい画面の実ブラウザの試験と、押した証拠（本番の形で組み立てた画面の上・行 ID の試験が全部の行で通る・記録なし・KN-109） | `BASE_URL=http://127.0.0.1:3124 pnpm --filter @kaname/web e2e:k && python3 scripts/ci/op_gate.py --spec 07_qa/test-specs/k --tickets 11_tickets/tickets.json --all` | web |  |
 
 ## マージ可能の判断

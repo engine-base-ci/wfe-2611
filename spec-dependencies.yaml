@@ -3642,6 +3642,8 @@ layer_checks:
   check: python3 scripts/ci/generated_gate.py
 - file: scripts/ci/ci_scripts.json
   check: python3 scripts/ci/ci_wiring_gate.py
+- file: scripts/ci/env_baseline.json
+  check: node scripts/ci/env_audit.mjs
 project_audit:
   ignore:
   - path: apps/web/pw-reports/

@@ -169,7 +169,7 @@
     "D-128.113",
     "D-125.167"
    ],
-   "split": "KN-55・KN-109・KN-110・KN-111・KN-113・KN-114・KN-116",
+   "split": "KN-55・KN-109・KN-110・KN-111・KN-113・KN-114・KN-116・KN-117",
    "depends_on": [],
    "sections": {
     "目的": "基盤の検査（G26・G36）を作り、行 ID を名前に持つ実ブラウザの試験の型とステージングをそろえる。",
@@ -4535,7 +4535,7 @@
    "id": "KN-114",
    "title": "壊れていた自己試験 2 本を直す（contract・env_audit）",
    "kind": "課題",
-   "stage": "未着手",
+   "stage": "確認中",
    "parent": "KN-6",
    "milestone": "基盤",
    "area": "試験",
@@ -4550,14 +4550,14 @@
    "depends_on": [],
    "sections": {
     "目的": "契約の検査（contract.mjs）と env の検査（env_audit.mjs）の自己試験が赤のまま、CI から回っていなかった。直して CI（G47）に入れる。",
-    "完了の条件": "- [ ] `pnpm ci:contract:selftest` が緑（自己試験の写しに row_rules.mjs を入れる）\n- [ ] `pnpm ci:env-audit:selftest` が緑\n- [ ] ci_scripts.json の known_broken から外し、G47 に入れる\n- [ ] CI が緑",
+    "完了の条件": "- [x] `pnpm ci:contract:selftest` が緑（自己試験の写しに row_rules.mjs を入れた）\n- [x] `pnpm ci:env-audit:selftest` が緑（★自己試験ではなく検査の本体が壊れていた。下の申し送り）\n- [x] ci_scripts.json の known_broken から外し、G47 に入れた\n- [ ] CI が緑（手元で確かめた）",
     "前提と制約": "- 見つけたもの（D-128.123）：contract は自分のミス（KN-52 で行の決まりを足したとき、自己試験の写しに足し忘れた）。env_audit は前からあったもの",
-    "実施事項": "- [ ] contract の自己試験を直す\n- [ ] env_audit の自己試験を直す\n- [ ] G47 に入れる",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 自己試験が緑・CI から回る | ① 機械 | G47（ci_wiring_gate.py） | |",
-    "成果物": "",
+    "実施事項": "- [x] contract の自己試験を直す\n- [x] env_audit の検査の本体を直す（自己試験に記録の増減の判定も足した）\n- [x] G47 に入れる",
+    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 自己試験が緑・CI から回る | ① 機械 | G47（ci_wiring_gate.py・自己試験 6 本） | 緑（2026-11-04） |\n| G13 が本物を見る | ① 機械 | `pnpm ci:env-audit` | 緑（記録どおり 21 か所・KN-117） |",
+    "成果物": "- `scripts/ci/contract.test.mjs`・`scripts/ci/env_audit.mjs`（本体の直し・記録の扱い）・`scripts/ci/env_audit.test.mjs`・`scripts/ci/env_baseline.json`・`scripts/ci/ci_scripts.json`・G47",
     "決定ログ": "- 決定に従った：D-128.123",
     "リスクと懸念": "",
-    "申し送り": ""
+    "申し送り": "- ★見つけたもの（前からあったもの）：G13 の本体の条件に「,」（カンマ）が入っていて、条件がいつも真になり、**どのファイルも飛ばしていた**（関門の外の process.env を 1 ファイルも見ていなかった）。直したら 21 か所出たので、記録にして増えたら赤にし、片付けは **KN-117** に切った。自己試験はこれを見つけていたが、CI で回していなかった（G47 が止める種類）"
    },
    "file": "11_tickets/KN-114.md"
   },
@@ -4620,6 +4620,38 @@
     "申し送り": ""
    },
    "file": "11_tickets/KN-116.md"
+  },
+  {
+   "id": "KN-117",
+   "title": "関門の外で process.env を読んでいる 21 か所を片付ける",
+   "kind": "課題",
+   "stage": "未着手",
+   "parent": "KN-6",
+   "milestone": "基盤",
+   "area": "試験",
+   "assignee": "Claude（このセッション）",
+   "due": "2026-11-13",
+   "decisions": [
+    "D-128.123"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "設定の読み方だけ。関門（C1〜C8）に触らない",
+   "depends_on": [
+    "KN-114"
+   ],
+   "sections": {
+    "目的": "G13（env の検査）が書き間違いで何も見ていなかった（KN-114 で直した）。直したら、関門（packages/config・例外 X-002）の外で process.env を読んでいる所が 21 か所出た（Bridge 16・画面 3・ログイン 2）。1 か所ずつ、config を通すか、正しい理由があれば例外台帳に書いて、記録（scripts/ci/env_baseline.json）を 0 にする。",
+    "完了の条件": "- [ ] 21 か所が、config を通すか、例外台帳（理由つき）に入る\n- [ ] scripts/ci/env_baseline.json の files が空（G13 が記録なしで緑）\n- [ ] CI が緑",
+    "前提と制約": "- 見つけたもの（D-128.123）：前からあったもの。検査が働いていなかったので、書いた時点で止められなかった\n- Bridge は利用者の PC で動く別のアプリで、自分の設定の置き場（apps/bridge/src/env.ts）を持つ。Bridge の分は、その置き場を関門として認めるか（例外台帳）を先に決める",
+    "実施事項": "- [ ] Bridge（apps/bridge/src・16 か所）\n- [ ] 画面（apps/web/lib/ops.ts・pending-route.ts・(dev)/dev/mail・3 か所）\n- [ ] ログイン（packages/auth/src/index.ts・2 か所）\n- [ ] 記録を外す",
+    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 関門の外の process.env が 0 | ① 機械 | G13（`pnpm ci:env-audit`・記録なし） | |\n| 例外台帳と食い違わない | ① 機械 | G25 | |",
+    "成果物": "",
+    "決定ログ": "- 決定に従った：D-128.123",
+    "リスクと懸念": "",
+    "申し送り": ""
+   },
+   "file": "11_tickets/KN-117.md"
   }
  ]
 }

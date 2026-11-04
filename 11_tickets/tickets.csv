@@ -444,13 +444,16 @@ KN-112,Bridge の画面のトークンを正本に合わせる,課題,KN-5,未�
 KN-113,画面の試験の仕様の作り手（build_tasks.py）を直す,課題,KN-6,未着手,Claude（このセッション）,2026-11-13,基盤・試験,07_qa/test-specs/screens/*（64）と 07_qa/test-specs の 8 ファイルの作り手 05_flow/build_tasks.py が落ちる（KeyError: 'search'）。作り直せないので、正本（flow・機能）が変わっても試験の仕様が追いつかない。直すか、作り手を新しい仕組み（11_tickets・キャンバス）に置き換えるかを決めて直す。,"- [ ] 作り手が落ちない（か、置き換えて前の作り手を外す）
 - [ ] G38 の記録（known_stale の KN-113 の行）を外せる
 - [ ] CI が緑"
-KN-114,壊れていた自己試験 2 本を直す（contract・env_audit）,課題,KN-6,未着手,Claude（このセッション）,2026-11-13,基盤・試験,契約の検査（contract.mjs）と env の検査（env_audit.mjs）の自己試験が赤のまま、CI から回っていなかった。直して CI（G47）に入れる。,"- [ ] `pnpm ci:contract:selftest` が緑（自己試験の写しに row_rules.mjs を入れる）
-- [ ] `pnpm ci:env-audit:selftest` が緑
-- [ ] ci_scripts.json の known_broken から外し、G47 に入れる
-- [ ] CI が緑"
+KN-114,壊れていた自己試験 2 本を直す（contract・env_audit）,課題,KN-6,確認中,Claude（このセッション）,2026-11-13,基盤・試験,契約の検査（contract.mjs）と env の検査（env_audit.mjs）の自己試験が赤のまま、CI から回っていなかった。直して CI（G47）に入れる。,"- [x] `pnpm ci:contract:selftest` が緑（自己試験の写しに row_rules.mjs を入れた）
+- [x] `pnpm ci:env-audit:selftest` が緑（★自己試験ではなく検査の本体が壊れていた。下の申し送り）
+- [x] ci_scripts.json の known_broken から外し、G47 に入れた
+- [ ] CI が緑（手元で確かめた）"
 KN-115,Next.js の決まったファイルの足りないもの（global-error）,課題,KN-5,確認中,Claude（このセッション）,2026-11-13,基盤・画面,根の layout で落ちたときの受け皿（app/global-error.tsx）が無い（KN-106 で app/error.tsx は足した）。足して、決まったファイルがそろっているかを機械で見る。,"- [x] app/global-error.tsx（正本の E-PAGE-007 の文言・根の layout が読まれないので見た目と書体を自分で読む）
 - [x] 決まったファイル（error・global-error・not-found）がそろっているかの単体試験（`apps/web/test/k-app-files.test.ts`）
 - [ ] CI が緑（手元で本番の形に組み立てて確かめた）"
 KN-116,pnpm が付け替える Better Auth の部品の版をそろえるか決める,課題,KN-6,未着手,Claude（このセッション）,2026-11-13,基盤・試験,部品を足すたびに pnpm が @better-auth/utils を 0.4.2 → 0.5.1 に付け替える（lockfile の Better Auth の中の版がそろっていない）。いまは足した部品の分だけを lockfile に入れて付け替えを止めている。そろえるなら、ログインの試験を全部流してから入れる。,"- [ ] そろえるかを決める（高本さん）
 - [ ] そろえるなら、ログイン（packages/auth）の試験と API の試験が全部緑で入れる
+- [ ] CI が緑"
+KN-117,関門の外で process.env を読んでいる 21 か所を片付ける,課題,KN-6,未着手,Claude（このセッション）,2026-11-13,基盤・試験,G13（env の検査）が書き間違いで何も見ていなかった（KN-114 で直した）。直したら、関門（packages/config・例外 X-002）の外で process.env を読んでいる所が 21 か所出た（Bridge 16・画面 3・ログイン 2）。1 か所ずつ、config を通すか、正しい理由があれば例外台帳に書いて、記録（scripts/ci/env_baseline.json）を 0 にする。,"- [ ] 21 か所が、config を通すか、例外台帳（理由つき）に入る
+- [ ] scripts/ci/env_baseline.json の files が空（G13 が記録なしで緑）
 - [ ] CI が緑"

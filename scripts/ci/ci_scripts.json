@@ -14,8 +14,5 @@
   "scripts/ci/build_test_xlsx.py": "テストの表を xlsx に書き出す道具（検査ではない）",
   "scripts/ci/gen_ears_tests.mjs": "作り手（名前に test が入るだけ）。G38 が回す"
  },
- "known_broken": {
-  "ci:contract:selftest": { "ticket": "KN-114", "reason": "自己試験の写しに行の決まり（row_rules.mjs）が無く落ちる（KN-52 で足し忘れ）" },
-  "ci:env-audit:selftest": { "ticket": "KN-114", "reason": "自己試験が赤（B_KEY・C_KEY を拾う。期待と食い違う）" }
- }
+ "known_broken": {}
 }
