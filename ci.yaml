@@ -1,4 +1,4 @@
-# dagci の設定（D-128.132・KN-124）。GitHub の v3-gate.yml と同じ検査を、この台の容れ物の中で流す。
+# dagci の設定（D-128.132・D-128.135・KN-124）。GitHub の v3-gate.yml と同じ検査を、この台の容れ物の中で流す。GitHub の上では流さない（無料でずっと回す）
 #   段は手で写さず scripts/ci/ci_stages.py が v3-gate.yml から導く（ci_stages.py --check が 1 対 1 を確かめる・G52・KN-124）
 #   使い方は ai-team-delivery のスキルの references/ci.md。入口は <スキル>/scripts/ci/dagci/dagci
 version: 1

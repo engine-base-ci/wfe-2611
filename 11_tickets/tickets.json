@@ -185,1075 +185,6 @@
    "file": "11_tickets/KN-6.md"
   },
   {
-   "id": "KN-7",
-   "title": "節目① 1 周回る",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "",
-   "milestone": "節目①",
-   "area": "",
-   "assignee": "未定",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-125.167",
-    "D-126.23",
-    "D-128.118"
-   ],
-   "split": "",
-   "depends_on": [
-    "KN-1"
-   ],
-   "sections": {
-    "目的": "自分 1 人で「チケット → 確認 → 承認 → 実行 → 戻る」を 5 つの題材（応募文・見積・請求書・問い合わせの返信・メール）で通せるようにする。Kaname の芯が動く最初の節目。",
-    "完了の条件": "- [ ] 子のチケットが全部「完了」になっている\n- [ ] 5 つの題材それぞれで、チケットを作ってから成果物が外に出て記録が残るまでを、ステージングの実ブラウザで通した記録がある\n- [ ] 節目①の画面の正本の行が全部、行 ID を名前に持つ実ブラウザの試験で PASS",
-    "前提と制約": "- 前の節目が緑になるまで次の節目の画面に手を付けない（D-125.167）\n- 運営の配るものは節目①の分だけ（汎用のブラウザ操作と全社向けの業務の型・D-126.23）",
-    "実施事項": "子のチケット（KN-8〜KN-17）",
-    "テスト仕様と確認の結果": "",
-    "成果物": "",
-    "決定ログ": "- 目標の日は 11/20（D-128.118・2026-11-03 高本さん）\n- 節目①の範囲（D-125.167・D-126.23）",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-7.md"
-  },
-  {
-   "id": "KN-8",
-   "title": "ログインとはじめて",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-7",
-   "milestone": "節目①",
-   "area": "認証",
-   "assignee": "未定",
-   "due": "",
-   "decisions": [
-    "D-128.62",
-    "D-128.91"
-   ],
-   "split": "KN-59・KN-60・KN-61・KN-62・KN-63・KN-64",
-   "screens": [
-    "signup",
-    "verify-email",
-    "mfa-setup",
-    "login",
-    "password-reset"
-   ],
-   "depends_on": [
-    "KN-4",
-    "KN-5"
-   ],
-   "sections": {
-    "目的": "登録・メールの確認・ログイン・パスワードの再設定・安全の設定を新しい画面で作る。",
-    "完了の条件": "- [ ] 子のチケットが全部「完了」になっている\n- [ ] 正本の行（signup・verify-email・login・password-reset・mfa-setup）が全部 PASS",
-    "前提と制約": "",
-    "実施事項": "子のチケット：\n- KN-59（登録とメールの確認の口）\n- KN-60（ログインと 2 段階のコードの口）\n- KN-61（パスワードの再設定の口）\n- KN-62（安全の設定の口（パスキー・2 段階・パスワード・端末））\n- KN-63（画面：登録・メールの確認・ログイン・パスワードの再設定）\n- KN-64（画面：安全の設定）",
-    "テスト仕様と確認の結果": "",
-    "成果物": "",
-    "決定ログ": "",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-8.md"
-  },
-  {
-   "id": "KN-9",
-   "title": "自分の設定と PC",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-7",
-   "milestone": "節目①",
-   "area": "自分",
-   "assignee": "未定",
-   "due": "",
-   "decisions": [
-    "D-128.55",
-    "D-128.57",
-    "D-128.92",
-    "D-128.93"
-   ],
-   "split": "KN-65・KN-66・KN-67・KN-68・KN-69・KN-70",
-   "screens": [
-    "account",
-    "bridge-setup",
-    "credentials"
-   ],
-   "depends_on": [
-    "KN-4",
-    "KN-5"
-   ],
-   "sections": {
-    "目的": "自分の設定・預けたログイン情報（4 つの守り）・PC をつなぐ を新しい画面と API で作る。",
-    "完了の条件": "- [ ] 子のチケットが全部「完了」になっている\n- [ ] 正本の行（account・credentials・bridge-setup）が全部 PASS\n- [ ] 預けたログイン情報の 4 つの守り（D-128.57）の試験が通る",
-    "前提と制約": "",
-    "実施事項": "子のチケット：\n- KN-65（自分の設定の口）\n- KN-66（PC（Bridge）をつなぐ口）\n- KN-67（預けたログイン情報の口）\n- KN-68（画面：自分の設定）\n- KN-69（画面：PC をつなぐ）\n- KN-70（画面：預けたログイン情報）",
-    "テスト仕様と確認の結果": "",
-    "成果物": "",
-    "決定ログ": "",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-9.md"
-  },
-  {
-   "id": "KN-10",
-   "title": "チケット：一覧・探す・保存した検索条件・CSV の取り込み",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-7",
-   "milestone": "節目①",
-   "area": "チケット",
-   "assignee": "未定",
-   "due": "",
-   "decisions": [
-    "D-128.83",
-    "D-128.85"
-   ],
-   "split": "KN-71・KN-72・KN-73・KN-74・KN-75",
-   "screens": [
-    "tickets"
-   ],
-   "depends_on": [
-    "KN-2",
-    "KN-3",
-    "KN-5"
-   ],
-   "sections": {
-    "目的": "チケットの一覧（表示の切り替え・絞り込み・列）・探す・保存した検索条件・Backlog と汎用の CSV の取り込みを作る。",
-    "完了の条件": "- [ ] 子のチケットが全部「完了」になっている\n- [ ] 正本の行（tickets の一覧の分）が全部 PASS",
-    "前提と制約": "",
-    "実施事項": "子のチケット：\n- KN-71（一覧と絞り込みの口）\n- KN-72（探すと保存した検索条件の口）\n- KN-73（CSV の取り込みの口）\n- KN-74（知らせの口）\n- KN-75（画面：チケットの一覧・探す・取り込み）",
-    "テスト仕様と確認の結果": "",
-    "成果物": "",
-    "決定ログ": "",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-10.md"
-  },
-  {
-   "id": "KN-11",
-   "title": "チケット：1 件",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-7",
-   "milestone": "節目①",
-   "area": "チケット",
-   "assignee": "未定",
-   "due": "",
-   "decisions": [
-    "D-128.33",
-    "D-128.80",
-    "D-128.84"
-   ],
-   "split": "KN-76・KN-77・KN-78・KN-79・KN-80",
-   "screens": [
-    "tickets"
-   ],
-   "depends_on": [
-    "KN-10"
-   ],
-   "sections": {
-    "目的": "チケットの 1 件（本文と版・テスト仕様と確認・つながり・完了・消す／戻す）を作る。",
-    "完了の条件": "- [ ] 子のチケットが全部「完了」になっている\n- [ ] 正本の行（tickets の 1 件の分）が全部 PASS",
-    "前提と制約": "- 消したチケットは 30 日のあいだ戻せ、30 日後に本文・版・分類・やり取り・添付ごと完全に消す仕事（夜に回す）を作る。記録には「消した」だけ残す（D-128.116）",
-    "実施事項": "子のチケット：\n- KN-76（チケットを作る・読む・直す・消す／戻す・完了の口）\n- KN-77（本文の区画と版・資料の口）\n- KN-78（テスト仕様と確認の口）\n- KN-79（決定・つながり・やり取りの口）\n- KN-80（画面：チケットの 1 件）",
-    "テスト仕様と確認の結果": "",
-    "成果物": "",
-    "決定ログ": "",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-11.md"
-  },
-  {
-   "id": "KN-12",
-   "title": "チケット：分身と作業する",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-7",
-   "milestone": "節目①",
-   "area": "チケット",
-   "assignee": "未定",
-   "due": "",
-   "decisions": [
-    "D-128.32",
-    "D-128.33"
-   ],
-   "split": "KN-81・KN-82",
-   "screens": [
-    "tickets"
-   ],
-   "depends_on": [
-    "KN-11",
-    "KN-9"
-   ],
-   "sections": {
-    "目的": "右のパネルで分身と話し、差分を本文に出して反映し、確認をやり直す流れを作る。",
-    "完了の条件": "- [ ] 子のチケットが全部「完了」になっている\n- [ ] 正本の行（分身との作業の分）が全部 PASS",
-    "前提と制約": "",
-    "実施事項": "子のチケット：\n- KN-81（分身と作業する口）\n- KN-82（画面：右のパネルで分身と作業する）",
-    "テスト仕様と確認の結果": "",
-    "成果物": "",
-    "決定ログ": "",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-12.md"
-  },
-  {
-   "id": "KN-13",
-   "title": "承認待ち",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-7",
-   "milestone": "節目①",
-   "area": "承認",
-   "assignee": "未定",
-   "due": "",
-   "decisions": [
-    "D-128.86",
-    "D-128.87",
-    "D-128.89"
-   ],
-   "split": "KN-83・KN-84・KN-85",
-   "screens": [
-    "approvals"
-   ],
-   "depends_on": [
-    "KN-11"
-   ],
-   "sections": {
-    "目的": "承認待ちの一覧・続けて裁く・まとめて承認（固定の条件）・差し戻し・取り下げを作る。",
-    "完了の条件": "- [ ] 子のチケットが全部「完了」になっている\n- [ ] 正本の行（approvals）が全部 PASS",
-    "前提と制約": "",
-    "実施事項": "子のチケット：\n- KN-83（承認の 1 件の口）\n- KN-84（承認待ちの一覧とまとめて承認の口）\n- KN-85（画面：承認待ち）",
-    "テスト仕様と確認の結果": "",
-    "成果物": "",
-    "決定ログ": "",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-13.md"
-  },
-  {
-   "id": "KN-14",
-   "title": "分身の部屋",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-7",
-   "milestone": "節目①",
-   "area": "分身",
-   "assignee": "未定",
-   "due": "",
-   "decisions": [
-    "D-128.39",
-    "D-128.40",
-    "D-128.44",
-    "D-128.90"
-   ],
-   "split": "KN-86・KN-87・KN-88・KN-89・KN-90・KN-91",
-   "screens": [
-    "clone-chat",
-    "ai-activity"
-   ],
-   "depends_on": [
-    "KN-9"
-   ],
-   "sections": {
-    "目的": "分身の部屋（会話・知っていること・やったこと）を作る。",
-    "完了の条件": "- [ ] 子のチケットが全部「完了」になっている\n- [ ] 正本の行（clone-chat・ai-activity）が全部 PASS",
-    "前提と制約": "",
-    "実施事項": "子のチケット：\n- KN-86（会話の口）\n- KN-87（知っていること（記憶と覚えたいこと）の口）\n- KN-88（作ったものの口）\n- KN-89（やったことの口）\n- KN-90（画面：分身の部屋（会話と知っていること））\n- KN-91（画面：分身の部屋（やったこと））",
-    "テスト仕様と確認の結果": "",
-    "成果物": "",
-    "決定ログ": "",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-14.md"
-  },
-  {
-   "id": "KN-15",
-   "title": "実行（PC の仕事・関門・外に出す・止める）",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-7",
-   "milestone": "節目①",
-   "area": "実行",
-   "assignee": "未定",
-   "due": "",
-   "decisions": [
-    "D-127.9",
-    "D-128.57",
-    "D-128.98"
-   ],
-   "split": "KN-92・KN-93・KN-94",
-   "depends_on": [
-    "KN-13",
-    "KN-9"
-   ],
-   "sections": {
-    "目的": "承認したものを PC の分身が実行し、関門を通って外に出し、止める・実行待ち（24 時間で聞き直す）までを作る。",
-    "完了の条件": "- [ ] 子のチケットが全部「完了」になっている\n- [ ] 実行の流れの自動の試験と実ブラウザの試験が通る",
-    "前提と制約": "",
-    "実施事項": "子のチケット：\n- KN-92（PC が仕事を受けて返す口）\n- KN-93（実行の 1 件・任せる・試す・止める・やり直す・引き取るの口）\n- KN-94（承認から実行・外に出すまで（実行待ちは 24 時間で聞き直す））",
-    "テスト仕様と確認の結果": "",
-    "成果物": "",
-    "決定ログ": "",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-15.md"
-  },
-  {
-   "id": "KN-16",
-   "title": "運営の配るもの（節目①の分）",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-7",
-   "milestone": "節目①",
-   "area": "運営",
-   "assignee": "未定",
-   "due": "",
-   "decisions": [
-    "D-126.23",
-    "D-128.94",
-    "D-128.72"
-   ],
-   "split": "KN-95・KN-96・KN-97",
-   "screens": [
-    "ops-skills"
-   ],
-   "depends_on": [
-    "KN-3",
-    "KN-5"
-   ],
-   "sections": {
-    "目的": "汎用のブラウザ操作・全社向けの業務の型・ひな形・プランの値段と中身（案と決める人を分ける）を作る。",
-    "完了の条件": "- [ ] 子のチケットが全部「完了」になっている\n- [ ] 正本の行（ops-skills の節目①の分）が全部 PASS",
-    "前提と制約": "",
-    "実施事項": "子のチケット：\n- KN-95（運営の業務の型を配る口）\n- KN-96（運営のテンプレートと運営の操作の記録の口）\n- KN-97（画面：運営の配るもの）",
-    "テスト仕様と確認の結果": "",
-    "成果物": "",
-    "決定ログ": "",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-16.md"
-  },
-  {
-   "id": "KN-17",
-   "title": "5 つの題材を通す",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-7",
-   "milestone": "節目①",
-   "area": "題材",
-   "assignee": "未定",
-   "due": "",
-   "decisions": [
-    "D-125.167"
-   ],
-   "split": "KN-98・KN-99・KN-100・KN-101・KN-102",
-   "depends_on": [
-    "KN-12",
-    "KN-13",
-    "KN-14",
-    "KN-15",
-    "KN-16"
-   ],
-   "sections": {
-    "目的": "応募文・見積・請求書・問い合わせの返信・メールの 5 つを、チケットから外に出すまで通す。",
-    "完了の条件": "- [ ] 子のチケットが全部「完了」になっている\n- [ ] 5 つの題材の通しの記録（ステージング・実ブラウザ）がある",
-    "前提と制約": "",
-    "実施事項": "子のチケット：\n- KN-98（題材：応募文）\n- KN-99（題材：見積）\n- KN-100（題材：請求書）\n- KN-101（題材：問い合わせの返信）\n- KN-102（題材：メール）",
-    "テスト仕様と確認の結果": "",
-    "成果物": "",
-    "決定ログ": "",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-17.md"
-  },
-  {
-   "id": "KN-18",
-   "title": "節目② 会社で回す",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "",
-   "milestone": "節目②",
-   "area": "",
-   "assignee": "未定",
-   "due": "2026-11-30",
-   "decisions": [
-    "D-125.167",
-    "D-128.118"
-   ],
-   "split": "",
-   "depends_on": [
-    "KN-7"
-   ],
-   "sections": {
-    "目的": "ワークスペースの中で人とグループ・層・役割・決まり・ナレッジを使い、チケットを渡す・配る・上へ上げる・横渡しで回せるようにする。",
-    "完了の条件": "- [ ] 子のチケットが全部「完了」になっている\n- [ ] 管理者・マネージャー・メンバー・閲覧のみの 4 つの役で、見えてはいけないものが見えないことを実ブラウザで確かめた記録がある\n- [ ] 節目②の画面の正本の行が全部 PASS",
-    "前提と制約": "- 節目①が緑になってから画面に手を付ける（D-125.167）",
-    "実施事項": "子のチケット（KN-19〜KN-24）",
-    "テスト仕様と確認の結果": "",
-    "成果物": "",
-    "決定ログ": "- 目標の日は 11/30（仮）。節目①のあとに速さを見て確かめる（D-128.118・2026-11-03 高本さん）\n- 節目②の範囲（D-125.167）",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-18.md"
-  },
-  {
-   "id": "KN-19",
-   "title": "招待とメンバー・グループ・層",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-18",
-   "milestone": "節目②",
-   "area": "ワークスペース",
-   "assignee": "未定",
-   "due": "",
-   "decisions": [
-    "D-128.95",
-    "D-128.96",
-    "D-128.97"
-   ],
-   "split": "これから",
-   "screens": [
-    "invite-accept",
-    "members",
-    "member-detail",
-    "layers"
-   ],
-   "depends_on": [],
-   "apis": [
-    "resetMemberTwoFactor"
-   ],
-   "sections": {
-    "目的": "招く・役割・グループと層・兼務・できることを足す外す・止める・外すを作る。",
-    "完了の条件": "- [ ] 子のチケットが全部「完了」になっている\n- [ ] 正本の行（invite-accept・members・member-detail・layers）が全部 PASS",
-    "前提と制約": "",
-    "実施事項": "子のチケット（このあと切る）",
-    "テスト仕様と確認の結果": "",
-    "成果物": "",
-    "決定ログ": "",
-    "リスクと懸念": "",
-    "申し送り": "- 前の道すじ GET /api/auth-ext/invitations/:token・POST /api/auth-ext/invitations/:token/accept の中身を getInvitation・acceptInvitation に移して消す（KN-58 の行き先の表・08_api/auth-ext-routes.json）"
-   },
-   "file": "11_tickets/KN-19.md"
-  },
-  {
-   "id": "KN-20",
-   "title": "決まり（守ること・上に回す決まり・チケットの形）",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-18",
-   "milestone": "節目②",
-   "area": "ワークスペース",
-   "assignee": "未定",
-   "due": "",
-   "decisions": [
-    "D-128.87",
-    "D-128.95",
-    "D-128.111"
-   ],
-   "split": "これから",
-   "screens": [
-    "masters"
-   ],
-   "depends_on": [],
-   "apis": [
-    "makeKindTemplateFromTicket"
-   ],
-   "sections": {
-    "目的": "ワークスペースと層の守ること・上に回す決まり・チケットの形（種別と区画・段・軸・渡すとき）を作る。",
-    "完了の条件": "- [ ] 子のチケットが全部「完了」になっている\n- [ ] 正本の行（masters）が全部 PASS",
-    "前提と制約": "",
-    "実施事項": "子のチケット（このあと切る）",
-    "テスト仕様と確認の結果": "",
-    "成果物": "",
-    "決定ログ": "",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-20.md"
-  },
-  {
-   "id": "KN-21",
-   "title": "分身のルールと業務の型（会社・層の分）",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-18",
-   "milestone": "節目②",
-   "area": "分身",
-   "assignee": "未定",
-   "due": "",
-   "decisions": [
-    "D-126.23",
-    "D-128.89"
-   ],
-   "split": "これから",
-   "screens": [
-    "rules",
-    "work-types"
-   ],
-   "depends_on": [],
-   "apis": [
-    "listRules",
-    "createRule",
-    "checkRule"
-   ],
-   "sections": {
-    "目的": "会社・層のルールと業務の型、例外の申請・やり方を広げる申請を作る。",
-    "完了の条件": "- [ ] 子のチケットが全部「完了」になっている\n- [ ] 正本の行（rules・work-types）が全部 PASS",
-    "前提と制約": "",
-    "実施事項": "子のチケット（このあと切る）",
-    "テスト仕様と確認の結果": "",
-    "成果物": "",
-    "決定ログ": "",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-21.md"
-  },
-  {
-   "id": "KN-22",
-   "title": "チケットを会社で回す",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-18",
-   "milestone": "節目②",
-   "area": "チケット",
-   "assignee": "未定",
-   "due": "",
-   "decisions": [
-    "D-125.70",
-    "D-125.71",
-    "D-128.20"
-   ],
-   "split": "これから",
-   "screens": [
-    "tickets"
-   ],
-   "depends_on": [],
-   "apis": [
-    "createTicketHandover",
-    "answerTicketHandover",
-    "listHandoverRules"
-   ],
-   "sections": {
-    "目的": "渡す・配る・上へ上げる・横渡し（一緒に切り替えるもの）を作る。",
-    "完了の条件": "- [ ] 子のチケットが全部「完了」になっている\n- [ ] 渡す流れの自動の試験と実ブラウザの試験が通る",
-    "前提と制約": "",
-    "実施事項": "子のチケット（このあと切る）",
-    "テスト仕様と確認の結果": "",
-    "成果物": "",
-    "決定ログ": "",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-22.md"
-  },
-  {
-   "id": "KN-23",
-   "title": "ナレッジ",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-18",
-   "milestone": "節目②",
-   "area": "ナレッジ",
-   "assignee": "未定",
-   "due": "",
-   "decisions": [
-    "D-128.50",
-    "D-128.51",
-    "D-128.52",
-    "D-128.105",
-    "D-128.106"
-   ],
-   "split": "これから",
-   "screens": [
-    "knowledge"
-   ],
-   "depends_on": [],
-   "sections": {
-    "目的": "ナレッジ（ホーム・ことばで聞く・ページ・下書きと公開・版・使われ方・つながり・確かめる・しまう・直す案・取り込む）を作る。",
-    "完了の条件": "- [ ] 子のチケットが全部「完了」になっている\n- [ ] 正本の行（knowledge）が全部 PASS",
-    "前提と制約": "",
-    "実施事項": "子のチケット（このあと切る）",
-    "テスト仕様と確認の結果": "",
-    "成果物": "",
-    "決定ログ": "",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-23.md"
-  },
-  {
-   "id": "KN-24",
-   "title": "記録と設定",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-18",
-   "milestone": "節目②",
-   "area": "ワークスペース",
-   "assignee": "未定",
-   "due": "",
-   "decisions": [
-    "D-125.132",
-    "D-128.98",
-    "D-128.65"
-   ],
-   "split": "これから",
-   "screens": [
-    "audit",
-    "company-settings"
-   ],
-   "depends_on": [],
-   "sections": {
-    "目的": "記録・ワークスペースの設定・プランを変える・消す手続きを作る。",
-    "完了の条件": "- [ ] 子のチケットが全部「完了」になっている\n- [ ] 正本の行（audit・company-settings）が全部 PASS",
-    "前提と制約": "",
-    "実施事項": "子のチケット（このあと切る）",
-    "テスト仕様と確認の結果": "",
-    "成果物": "",
-    "決定ログ": "",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-24.md"
-  },
-  {
-   "id": "KN-25",
-   "title": "節目③ 外とつなぐ",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "",
-   "milestone": "節目③",
-   "area": "",
-   "assignee": "未定",
-   "due": "2026-11-30",
-   "decisions": [
-    "D-125.167",
-    "D-128.118"
-   ],
-   "split": "",
-   "depends_on": [
-    "KN-18"
-   ],
-   "sections": {
-    "目的": "取引先とクライアントの場所・検収、運営の請求とお知らせと停止・規約類をそろえ、外の人と一緒に使えるようにする。",
-    "完了の条件": "- [ ] 子のチケットが全部「完了」になっている\n- [ ] 取引先の人の役で、/portal/ の外に出られず、見せると決めたものだけが見えることを実ブラウザで確かめた記録がある\n- [ ] 節目③の画面の正本の行が全部 PASS",
-    "前提と制約": "- 節目②が緑になってから画面に手を付ける（D-125.167）\n- クライアントの場所を公開する前に、電気通信事業法の届出が要るか専門家に確かめる（D-125.164）",
-    "実施事項": "",
-    "テスト仕様と確認の結果": "",
-    "成果物": "",
-    "決定ログ": "- 目標の日は 11/30（仮）。節目①のあとに速さを見て確かめる（D-128.118・2026-11-03 高本さん）\n- 節目③の範囲（D-125.167）",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-25.md"
-  },
-  {
-   "id": "KN-26",
-   "title": "取引先と届いた依頼",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-25",
-   "milestone": "節目③",
-   "area": "取引先",
-   "assignee": "未定",
-   "due": "",
-   "decisions": [
-    "D-128.53",
-    "D-128.54",
-    "D-128.102"
-   ],
-   "split": "これから",
-   "screens": [
-    "clients",
-    "requests"
-   ],
-   "depends_on": [],
-   "apis": [
-    "listClients"
-   ],
-   "sections": {
-    "目的": "取引先（一覧・ページ・人と見せ方）と届いた依頼（受ける・詳しく聞く・断る）を作る。",
-    "完了の条件": "- [ ] 子のチケットが全部「完了」になっている\n- [ ] 正本の行（clients・requests）が全部 PASS",
-    "前提と制約": "",
-    "実施事項": "子のチケット（このあと切る）",
-    "テスト仕様と確認の結果": "",
-    "成果物": "",
-    "決定ログ": "",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-26.md"
-  },
-  {
-   "id": "KN-27",
-   "title": "クライアントの場所と検収",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-25",
-   "milestone": "節目③",
-   "area": "取引先",
-   "assignee": "未定",
-   "due": "",
-   "decisions": [
-    "D-128.100",
-    "D-128.101",
-    "D-128.103",
-    "D-128.104"
-   ],
-   "split": "これから",
-   "screens": [
-    "portal"
-   ],
-   "depends_on": [],
-   "apis": [
-    "requestAcceptance",
-    "updateTicketClientShare"
-   ],
-   "sections": {
-    "目的": "取引先の人の画面（確認してほしいもの・依頼・進んでいる仕事）と検収を作る。",
-    "完了の条件": "- [ ] 子のチケットが全部「完了」になっている\n- [ ] 正本の行（portal）が全部 PASS",
-    "前提と制約": "",
-    "実施事項": "子のチケット（このあと切る）",
-    "テスト仕様と確認の結果": "",
-    "成果物": "",
-    "決定ログ": "",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-27.md"
-  },
-  {
-   "id": "KN-28",
-   "title": "運営：ワークスペースの一覧・1 社・中を見る・止める",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-25",
-   "milestone": "節目③",
-   "area": "運営",
-   "assignee": "未定",
-   "due": "",
-   "decisions": [
-    "D-128.67",
-    "D-128.68",
-    "D-128.108"
-   ],
-   "split": "これから",
-   "screens": [
-    "ops-home",
-    "ops-tenant"
-   ],
-   "depends_on": [],
-   "sections": {
-    "目的": "運営のワークスペースの一覧・1 社・中を見る（理由・1 時間・見るだけ・顧客の記録にも）・止める／再開を作る。",
-    "完了の条件": "- [ ] 子のチケットが全部「完了」になっている\n- [ ] 正本の行（ops-home・ops-tenant）が全部 PASS",
-    "前提と制約": "",
-    "実施事項": "子のチケット（このあと切る）",
-    "テスト仕様と確認の結果": "",
-    "成果物": "",
-    "決定ログ": "",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-28.md"
-  },
-  {
-   "id": "KN-29",
-   "title": "運営：問い合わせ・お知らせ と 困ったとき・お知らせ",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-25",
-   "milestone": "節目③",
-   "area": "運営",
-   "assignee": "未定",
-   "due": "",
-   "decisions": [
-    "D-128.67",
-    "D-128.71",
-    "D-128.109"
-   ],
-   "split": "これから",
-   "screens": [
-    "ops-support",
-    "inquiry",
-    "notices",
-    "ops-notices"
-   ],
-   "depends_on": [],
-   "sections": {
-    "目的": "運営の受信箱とお知らせ（障害の状態・メンテ）と、顧客の困ったとき・お知らせを作る。",
-    "完了の条件": "- [ ] 子のチケットが全部「完了」になっている\n- [ ] 正本の行（ops-support・ops-notices・inquiry・notices）が全部 PASS",
-    "前提と制約": "",
-    "実施事項": "子のチケット（このあと切る）",
-    "テスト仕様と確認の結果": "",
-    "成果物": "",
-    "決定ログ": "",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-29.md"
-  },
-  {
-   "id": "KN-30",
-   "title": "お金（請求書・運営の請求と入金）",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-25",
-   "milestone": "節目③",
-   "area": "お金",
-   "assignee": "未定",
-   "due": "",
-   "decisions": [
-    "D-128.69",
-    "D-125.125"
-   ],
-   "split": "これから",
-   "screens": [
-    "billing",
-    "ops-billing"
-   ],
-   "depends_on": [],
-   "apis": [
-    "listOpsPlans",
-    "listPlanHistory",
-    "listPlanProposals",
-    "createPlanProposal",
-    "updatePlanProposal",
-    "getPlanProposalImpact",
-    "submitPlanProposal",
-    "decidePlanProposal",
-    "returnPlanProposal"
-   ],
-   "sections": {
-    "目的": "顧客の請求書と、運営の月ごとの請求・入金の記録を作る。",
-    "完了の条件": "- [ ] 子のチケットが全部「完了」になっている\n- [ ] 正本の行（billing・ops-billing）が全部 PASS",
-    "前提と制約": "",
-    "実施事項": "子のチケット（このあと切る）",
-    "テスト仕様と確認の結果": "",
-    "成果物": "",
-    "決定ログ": "",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-30.md"
-  },
-  {
-   "id": "KN-31",
-   "title": "運営の人",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-25",
-   "milestone": "節目③",
-   "area": "運営",
-   "assignee": "未定",
-   "due": "",
-   "decisions": [
-    "D-128.70"
-   ],
-   "split": "これから",
-   "screens": [
-    "ops-team"
-   ],
-   "depends_on": [],
-   "sections": {
-    "目的": "運営の人とできること（パスキーだけ）を作る。",
-    "完了の条件": "- [ ] 子のチケットが全部「完了」になっている\n- [ ] 正本の行（ops-team）が全部 PASS",
-    "前提と制約": "",
-    "実施事項": "子のチケット（このあと切る）",
-    "テスト仕様と確認の結果": "",
-    "成果物": "",
-    "決定ログ": "",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-31.md"
-  },
-  {
-   "id": "KN-32",
-   "title": "規約類と外に出す前の確かめ",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-25",
-   "milestone": "節目③",
-   "area": "法務",
-   "assignee": "未定",
-   "due": "",
-   "decisions": [
-    "D-125.162",
-    "D-125.164"
-   ],
-   "split": "これから",
-   "depends_on": [],
-   "sections": {
-    "目的": "利用規約・プライバシーの版と同意し直し、電気通信事業法の確かめをそろえる。",
-    "完了の条件": "- [ ] 子のチケットが全部「完了」になっている\n- [ ] 規約の版と同意の流れが動き、専門家の確かめの記録がある",
-    "前提と制約": "",
-    "実施事項": "子のチケット（このあと切る）",
-    "テスト仕様と確認の結果": "",
-    "成果物": "",
-    "決定ログ": "",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-32.md"
-  },
-  {
-   "id": "KN-33",
-   "title": "本番に出す",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "",
-   "milestone": "本番",
-   "area": "",
-   "assignee": "未定",
-   "due": "2026-11-30",
-   "decisions": [
-    "D-128.88",
-    "D-128.113",
-    "D-128.78",
-    "D-128.118"
-   ],
-   "split": "",
-   "depends_on": [
-    "KN-25"
-   ],
-   "sections": {
-    "目的": "守りの残りを 0 にし、外の人の確かめを通して、本番に出す。前の画面を外し、新しい画面だけにする。",
-    "完了の条件": "- [ ] 子のチケットが全部「完了」になっている\n- [ ] release-gate（`.github/workflows/release-gate.yml`）が緑\n- [ ] 本番のデプロイが release-gate の成功に結び付いている",
-    "前提と制約": "- 本番の前は守りの残りが全部 0（zt_gate --strict）\n- 外の人の確かめ（ZT13）で見つかったものは直してから出す",
-    "実施事項": "",
-    "テスト仕様と確認の結果": "",
-    "成果物": "",
-    "決定ログ": "- 目標の日は 11/30（仮）。節目①のあとに速さを見て確かめる（D-128.118・2026-11-03 高本さん）\n- 本番の前の関門（D-128.113）・外の確かめ（D-128.88 ZT13）・前の画面を外す（D-128.78）",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-33.md"
-  },
-  {
-   "id": "KN-34",
-   "title": "本番の前の関門を緑にする",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-33",
-   "milestone": "本番",
-   "area": "守り",
-   "assignee": "未定",
-   "due": "",
-   "decisions": [
-    "D-128.113"
-   ],
-   "split": "これから",
-   "depends_on": [],
-   "sections": {
-    "目的": "守りの残りと部品の弱点（moderate 以上）を 0 にし、release-gate を緑にする。",
-    "完了の条件": "- [ ] 子のチケットが全部「完了」になっている\n- [ ] release-gate が緑",
-    "前提と制約": "",
-    "実施事項": "子のチケット（このあと切る）",
-    "テスト仕様と確認の結果": "",
-    "成果物": "",
-    "決定ログ": "",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-34.md"
-  },
-  {
-   "id": "KN-35",
-   "title": "外の人の確かめ（ペネトレーションテスト）",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-33",
-   "milestone": "本番",
-   "area": "守り",
-   "assignee": "未定",
-   "due": "",
-   "decisions": [
-    "D-128.88"
-   ],
-   "split": "これから",
-   "depends_on": [],
-   "sections": {
-    "目的": "会社をまたぐ・権限の昇格・セッション・AI への指示の混入を外の人に突いてもらい、見つかったものを直す。",
-    "完了の条件": "- [ ] 子のチケットが全部「完了」になっている\n- [ ] 確かめの報告と、直したものの記録がある",
-    "前提と制約": "",
-    "実施事項": "子のチケット（このあと切る）",
-    "テスト仕様と確認の結果": "",
-    "成果物": "",
-    "決定ログ": "",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-35.md"
-  },
-  {
-   "id": "KN-36",
-   "title": "本番のデプロイを関門に結ぶ",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-33",
-   "milestone": "本番",
-   "area": "運用",
-   "assignee": "未定",
-   "due": "",
-   "decisions": [
-    "D-128.113"
-   ],
-   "split": "これから",
-   "depends_on": [],
-   "sections": {
-    "目的": "本番のデプロイを release-gate の成功に結び付ける（Vercel の設定・高本さん）。",
-    "完了の条件": "- [ ] 子のチケットが全部「完了」になっている\n- [ ] release-gate が赤のときに本番に出ないことを確かめた記録がある",
-    "前提と制約": "",
-    "実施事項": "子のチケット（このあと切る）",
-    "テスト仕様と確認の結果": "",
-    "成果物": "",
-    "決定ログ": "",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-36.md"
-  },
-  {
-   "id": "KN-37",
-   "title": "前の画面を外す",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-33",
-   "milestone": "本番",
-   "area": "画面",
-   "assignee": "未定",
-   "due": "",
-   "decisions": [
-    "D-128.78",
-    "D-127.3",
-    "D-128.117"
-   ],
-   "split": "これから",
-   "depends_on": [],
-   "sections": {
-    "目的": "新しい画面がそろったら前の画面と前の API を外し、画面の道すじの生成物（G27）を新しい flow にする。",
-    "完了の条件": "- [ ] 子のチケットが全部「完了」になっている\n- [ ] CI の G27（画面の道すじ）・G28（実ブラウザの証拠）が記録なしで緑（`scripts/ci/ui_baseline.json` の routes・op_gate を空にする）",
-    "前提と制約": "",
-    "実施事項": "子のチケット（このあと切る）",
-    "テスト仕様と確認の結果": "",
-    "成果物": "",
-    "決定ログ": "",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-37.md"
-  },
-  {
    "id": "KN-38",
    "title": "チケットの本体の表",
    "kind": "タスク",
@@ -1645,57 +576,6 @@
    "file": "11_tickets/KN-47.md"
   },
   {
-   "id": "KN-48",
-   "title": "後のフェーズ（第1フェーズの後に作るもの）",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "",
-   "milestone": "後のフェーズ",
-   "area": "仕様",
-   "assignee": "未定",
-   "due": "",
-   "decisions": [
-    "D-069.8",
-    "D-081.2",
-    "D-081.3",
-    "D-081.4",
-    "D-081.5",
-    "D-122.1",
-    "D-123.1",
-    "D-125.1",
-    "D-125.142",
-    "D-125.144",
-    "D-125.145",
-    "D-125.165",
-    "D-125.166",
-    "D-125.36",
-    "D-126.1",
-    "D-126.15",
-    "D-126.17",
-    "D-126.22",
-    "D-127.1",
-    "D-127.11",
-    "D-127.4",
-    "D-127.6",
-    "D-128.112",
-    "D-128.117",
-    "D-128.122"
-   ],
-   "split": "これから",
-   "sections": {
-    "目的": "後回しにした決定（flow.json の deferred・決定ログの「段階 2：」）を、日程から消さずに持っておく。第1フェーズが本番に出たら、ここから仕様づくりのチケットを切る。",
-    "完了の条件": "- [ ] 後回しの決定ごとに、仕様づくりのチケット（子）を切っている\n- [ ] 後のフェーズに回した API（`08_api/retired-endpoints.json` の D-128.112）を、どの子が作り直すか決めている",
-    "前提と制約": "- 第1フェーズ（KN-1〜KN-37）が本番に出るまで切らない（D-127.3）\n- 決定を足して後回しにしたら、ここの decisions に足す（CI の KC6 が見る）",
-    "実施事項": "子のチケット（第1フェーズの後に切る）",
-    "テスト仕様と確認の結果": "",
-    "成果物": "",
-    "決定ログ": "- 後回しは日程から消えない。11_tickets ではこのチケットが持つ（D-128.117・2026-11-03）",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-48.md"
-  },
-  {
    "id": "KN-49",
    "title": "CI の今ある赤を片付ける（しまった前の分解・前の画面・文書のずれ）",
    "kind": "タスク",
@@ -2037,2135 +917,6 @@
     "申し送り": ""
    },
    "file": "11_tickets/KN-58.md"
-  },
-  {
-   "id": "KN-59",
-   "title": "登録とメールの確認の口",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-8",
-   "milestone": "節目①",
-   "area": "API",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-128.62",
-    "D-128.91",
-    "D-001",
-    "D-002",
-    "D-125.135",
-    "D-125.162",
-    "D-125.167",
-    "D-042",
-    "D-125.136"
-   ],
-   "split": "",
-   "choke_points": [
-    "C2",
-    "C6"
-   ],
-   "depends_on": [
-    "KN-51",
-    "KN-52"
-   ],
-   "apis": [
-    "createSignup",
-    "resendSignupEmail",
-    "getSignupStatus",
-    "getCurrentTerms",
-    "verifySignup",
-    "consentToTerms"
-   ],
-   "sections": {
-    "目的": "登録（保留の申し込み）・確認のメール・確認・規約の同意を契約の口で作る（今の /api/auth-ext の登録の道すじを移す・KN-58 と一緒に）。",
-    "完了の条件": "- [ ] 契約の口が hooks（apps/api/src/hooks）か共通の処理で動き、まだの口の 501 で止まらない\n- [ ] 口ごとの生成の試験（apps/api/test/generated）の it.todo が全部本物の試験になって緑\n- [ ] 行の守り（RLS の場合表・G33）と権限の試験（G41）が、この口の分も緑\n- [ ] 契約 fuzz（G36）が、この口を回して緑\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] createSignup（POST /api/v1/auth/sign-up）\n- [ ] resendSignupEmail（POST /api/v1/auth/sign-up/resend）\n- [ ] getSignupStatus（GET /api/v1/auth/sign-up/status）\n- [ ] getCurrentTerms（GET /api/v1/auth/terms/current）\n- [ ] verifySignup（POST /api/v1/auth/sign-up/verify）\n- [ ] consentToTerms（POST /api/v1/auth/terms/consent）\n- [ ] 前の道すじ POST /api/auth-ext/resend-signup（apps/api/src/auth/ext.ts）の中身を resendSignupEmail に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ POST /api/auth-ext/sign-up（apps/api/src/auth/ext.ts）の中身を createSignup に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ GET /api/auth-ext/signup-status（apps/api/src/auth/ext.ts）の中身を getSignupStatus に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ POST /api/auth-ext/verify-signup（apps/api/src/auth/ext.ts）の中身を verifySignup に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| createSignup の振る舞い（EARS 6 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_auth_sign_up.test.ts` | |\n| resendSignupEmail の振る舞い（EARS 5 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_auth_sign_up_resend.test.ts` | |\n| getSignupStatus の振る舞い（EARS 4 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_auth_sign_up_status.test.ts` | |\n| getCurrentTerms の振る舞い（EARS 4 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_auth_terms_current.test.ts` | |\n| verifySignup の振る舞い（EARS 5 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_auth_sign_up_verify.test.ts` | |\n| consentToTerms の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_auth_terms_consent.test.ts` | |\n| 行の守り（他の会社・範囲の外の行が取れない） | ① 機械 | `pnpm ci:access-matrix`（G33） | |\n| 契約の外の入力でも 500 を返さない・答えの形が契約どおり | ① 機械 | `pnpm ci:schemathesis`（G36） | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-128.62・D-128.91・D-001・D-002・D-125.135・D-125.162・D-125.167・D-042・D-125.136",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-59.md"
-  },
-  {
-   "id": "KN-60",
-   "title": "ログインと 2 段階のコードの口",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-8",
-   "milestone": "節目①",
-   "area": "API",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-128.62",
-    "D-128.91",
-    "D-042",
-    "D-125.137",
-    "D-125.140",
-    "D-125.167"
-   ],
-   "split": "",
-   "choke_points": [
-    "C2"
-   ],
-   "depends_on": [
-    "KN-51",
-    "KN-52"
-   ],
-   "apis": [
-    "signInWithPassword",
-    "signOut",
-    "verifySignInCode",
-    "getServiceStatus",
-    "requestAdminRecovery"
-   ],
-   "sections": {
-    "目的": "パスワード＋2 段階のコードのログイン・ログアウト・止まっているときの知らせ・管理者に戻してもらう申し出を契約の口で作る。",
-    "完了の条件": "- [ ] 契約の口が hooks（apps/api/src/hooks）か共通の処理で動き、まだの口の 501 で止まらない\n- [ ] 口ごとの生成の試験（apps/api/test/generated）の it.todo が全部本物の試験になって緑\n- [ ] 行の守り（RLS の場合表・G33）と権限の試験（G41）が、この口の分も緑\n- [ ] 契約 fuzz（G36）が、この口を回して緑\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] signInWithPassword（POST /api/v1/auth/sign-in）\n- [ ] signOut（POST /api/v1/auth/sign-out）\n- [ ] verifySignInCode（POST /api/v1/auth/two-factor/verify）\n- [ ] getServiceStatus（GET /api/v1/auth/service-status）\n- [ ] requestAdminRecovery（POST /api/v1/auth/recovery/admin-request）\n- [ ] 前の道すじ POST /api/auth-ext/sign-in（apps/api/src/auth/ext.ts）の中身を signInWithPassword に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ POST /api/auth-ext/two-factor/verify（apps/api/src/auth/ext.ts）の中身を verifySignInCode に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| signInWithPassword の振る舞い（EARS 5 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_auth_sign_in.test.ts` | |\n| signOut の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_auth_sign_out.test.ts` | |\n| verifySignInCode の振る舞い（EARS 5 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_auth_two_factor_verify.test.ts` | |\n| getServiceStatus の振る舞い（EARS 4 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_auth_service_status.test.ts` | |\n| requestAdminRecovery の振る舞い（EARS 5 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_auth_recovery_admin_request.test.ts` | |\n| 行の守り（他の会社・範囲の外の行が取れない） | ① 機械 | `pnpm ci:access-matrix`（G33） | |\n| 契約の外の入力でも 500 を返さない・答えの形が契約どおり | ① 機械 | `pnpm ci:schemathesis`（G36） | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-128.62・D-128.91・D-042・D-125.137・D-125.140・D-125.167",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-60.md"
-  },
-  {
-   "id": "KN-61",
-   "title": "パスワードの再設定の口",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-8",
-   "milestone": "節目①",
-   "area": "API",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-128.62",
-    "D-128.91",
-    "D-042",
-    "D-125.140",
-    "D-125.167"
-   ],
-   "split": "",
-   "choke_points": [
-    "C2",
-    "C6"
-   ],
-   "depends_on": [
-    "KN-51",
-    "KN-52"
-   ],
-   "apis": [
-    "requestPasswordReset",
-    "resetPassword"
-   ],
-   "sections": {
-    "目的": "メールで届くリンクから新しいパスワードを決め、済んだら全部の端末と Bridge を切る。",
-    "完了の条件": "- [ ] 契約の口が hooks（apps/api/src/hooks）か共通の処理で動き、まだの口の 501 で止まらない\n- [ ] 口ごとの生成の試験（apps/api/test/generated）の it.todo が全部本物の試験になって緑\n- [ ] 行の守り（RLS の場合表・G33）と権限の試験（G41）が、この口の分も緑\n- [ ] 契約 fuzz（G36）が、この口を回して緑\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] requestPasswordReset（POST /api/v1/auth/password/forgot）\n- [ ] resetPassword（POST /api/v1/auth/password/reset）",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| requestPasswordReset の振る舞い（EARS 5 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_auth_password_forgot.test.ts` | |\n| resetPassword の振る舞い（EARS 5 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_auth_password_reset.test.ts` | |\n| 行の守り（他の会社・範囲の外の行が取れない） | ① 機械 | `pnpm ci:access-matrix`（G33） | |\n| 契約の外の入力でも 500 を返さない・答えの形が契約どおり | ① 機械 | `pnpm ci:schemathesis`（G36） | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-128.62・D-128.91・D-042・D-125.140・D-125.167",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-61.md"
-  },
-  {
-   "id": "KN-62",
-   "title": "安全の設定の口（パスキー・2 段階・パスワード・端末）",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-8",
-   "milestone": "節目①",
-   "area": "API",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-128.62",
-    "D-128.91",
-    "D-042",
-    "D-125.137",
-    "D-125.138",
-    "D-125.146",
-    "D-125.167",
-    "D-125.140",
-    "D-125.150",
-    "D-125.158"
-   ],
-   "split": "",
-   "choke_points": [
-    "C2",
-    "C8"
-   ],
-   "depends_on": [
-    "KN-51",
-    "KN-52"
-   ],
-   "apis": [
-    "getMySecurity",
-    "renamePasskey",
-    "deletePasskey",
-    "changePassword",
-    "listMySessions",
-    "revokeMySession",
-    "revokeOtherSessions",
-    "startTwoFactor",
-    "confirmTwoFactor",
-    "disableTwoFactor",
-    "regenerateBackupCodes"
-   ],
-   "sections": {
-    "目的": "自分のパスキー・2 段階・予備のコード・パスワード・ログインしている端末を見て直せる口を作る。",
-    "完了の条件": "- [ ] パスキーでも本人確認を取り直せる（KN-56 から移した）\n- [ ] 契約の口が hooks（apps/api/src/hooks）か共通の処理で動き、まだの口の 501 で止まらない\n- [ ] 口ごとの生成の試験（apps/api/test/generated）の it.todo が全部本物の試験になって緑\n- [ ] 行の守り（RLS の場合表・G33）と権限の試験（G41）が、この口の分も緑\n- [ ] 契約 fuzz（G36）が、この口を回して緑\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] パスキーでの本人確認の取り直し（KN-56 から移した）：取り直しの口（POST /auth/step-up）がパスキーの確かめ（Better Auth の passkey）も受け、通ったらセッションに時刻を付ける。試験はブラウザの仮の認証器（Playwright の WebAuthn）で\n- [ ] getMySecurity（GET /api/v1/me/security）\n- [ ] renamePasskey（PATCH /api/v1/me/passkeys/:id）\n- [ ] deletePasskey（DELETE /api/v1/me/passkeys/:id）\n- [ ] changePassword（PATCH /api/v1/me/password）\n- [ ] listMySessions（GET /api/v1/me/sessions）\n- [ ] revokeMySession（DELETE /api/v1/me/sessions/:id）\n- [ ] revokeOtherSessions（POST /api/v1/me/sessions/revoke-others）\n- [ ] startTwoFactor（POST /api/v1/me/two-factor/enable）\n- [ ] confirmTwoFactor（POST /api/v1/me/two-factor/confirm）\n- [ ] disableTwoFactor（DELETE /api/v1/me/two-factor）\n- [ ] regenerateBackupCodes（POST /api/v1/me/backup-codes）",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| getMySecurity の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_me_security.test.ts` | |\n| renamePasskey の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/patch_me_passkeys_id.test.ts` | |\n| deletePasskey の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/delete_me_passkeys_id.test.ts` | |\n| changePassword の振る舞い（EARS 6 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/patch_me_password.test.ts` | |\n| listMySessions の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_me_sessions.test.ts` | |\n| revokeMySession の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/delete_me_sessions_id.test.ts` | |\n| revokeOtherSessions の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_me_sessions_revoke_others.test.ts` | |\n| startTwoFactor の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_me_two_factor_enable.test.ts` | |\n| confirmTwoFactor の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_me_two_factor_confirm.test.ts` | |\n| disableTwoFactor の振る舞い（EARS 5 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/delete_me_two_factor.test.ts` | |\n| regenerateBackupCodes の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_me_backup_codes.test.ts` | |\n| 行の守り（他の会社・範囲の外の行が取れない） | ① 機械 | `pnpm ci:access-matrix`（G33） | |\n| 契約の外の入力でも 500 を返さない・答えの形が契約どおり | ① 機械 | `pnpm ci:schemathesis`（G36） | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-128.62・D-128.91・D-042・D-125.137・D-125.138・D-125.146・D-125.167・D-125.140・D-125.150・D-125.158",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-62.md"
-  },
-  {
-   "id": "KN-63",
-   "title": "画面：登録・メールの確認・ログイン・パスワードの再設定",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-8",
-   "milestone": "節目①",
-   "area": "画面",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-128.62",
-    "D-128.91"
-   ],
-   "split": "",
-   "choke_points": [
-    "C2"
-   ],
-   "depends_on": [
-    "KN-5",
-    "KN-59",
-    "KN-60",
-    "KN-61",
-    "KN-62"
-   ],
-   "screens": [
-    "signup",
-    "verify-email",
-    "login",
-    "password-reset"
-   ],
-   "sections": {
-    "目的": "キャンバスの土台（KN-5）の上に、登録からログインまでの 4 つの画面を作る。",
-    "完了の条件": "- [ ] 画面がキャンバス（04_design/canvas）と DESIGN-kaname.md のとおり（部品は画面の土台 KN-5 のもの）\n- [ ] 画面の仕様書（07_qa/test-specs/screens/<画面>.md）を新しい画面で書き直し、行が全部 PASS\n- [ ] 操作要素 1 つ＝1 行の実ブラウザの試験（行 ID を名前に持つ Playwright・G28）が通る\n- [ ] 空・読み込み中・失敗・権限が無い の 4 つの状態がある\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] 画面 signup：仕様書を書く → 作る → 実ブラウザの試験\n- [ ] 画面 verify-email：仕様書を書く → 作る → 実ブラウザの試験\n- [ ] 画面 login：仕様書を書く → 作る → 実ブラウザの試験\n- [ ] 画面 password-reset：仕様書を書く → 作る → 実ブラウザの試験",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 画面 signup の仕様書の行 | ① 機械＋③ 人 | `07_qa/test-specs/screens/signup.md`（新しい画面で書き直す） | |\n| 画面 signup の操作要素を実ブラウザで押した証拠 | ① 機械 | `pnpm ci:op-gate`（G28） | |\n| 画面 signup の見た目がキャンバスと合う | ② 半分 | visual-fidelity（スクリーンショットの比べ） | |\n| 画面 verify-email の仕様書の行 | ① 機械＋③ 人 | `07_qa/test-specs/screens/verify-email.md`（新しい画面で書き直す） | |\n| 画面 verify-email の操作要素を実ブラウザで押した証拠 | ① 機械 | `pnpm ci:op-gate`（G28） | |\n| 画面 verify-email の見た目がキャンバスと合う | ② 半分 | visual-fidelity（スクリーンショットの比べ） | |\n| 画面 login の仕様書の行 | ① 機械＋③ 人 | `07_qa/test-specs/screens/login.md`（新しい画面で書き直す） | |\n| 画面 login の操作要素を実ブラウザで押した証拠 | ① 機械 | `pnpm ci:op-gate`（G28） | |\n| 画面 login の見た目がキャンバスと合う | ② 半分 | visual-fidelity（スクリーンショットの比べ） | |\n| 画面 password-reset の仕様書の行 | ① 機械＋③ 人 | `07_qa/test-specs/screens/password-reset.md`（新しい画面で書き直す） | |\n| 画面 password-reset の操作要素を実ブラウザで押した証拠 | ① 機械 | `pnpm ci:op-gate`（G28） | |\n| 画面 password-reset の見た目がキャンバスと合う | ② 半分 | visual-fidelity（スクリーンショットの比べ） | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-128.62・D-128.91",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-63.md"
-  },
-  {
-   "id": "KN-64",
-   "title": "画面：安全の設定",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-8",
-   "milestone": "節目①",
-   "area": "画面",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-128.62",
-    "D-128.91"
-   ],
-   "split": "",
-   "choke_points": [
-    "C2"
-   ],
-   "depends_on": [
-    "KN-5",
-    "KN-59",
-    "KN-60",
-    "KN-61",
-    "KN-62"
-   ],
-   "screens": [
-    "mfa-setup"
-   ],
-   "sections": {
-    "目的": "パスキー・2 段階・予備のコード・端末の一覧の画面を作る（本人確認の取り直しのパスキーもここで・KN-56 の申し送り）。",
-    "完了の条件": "- [ ] 画面がキャンバス（04_design/canvas）と DESIGN-kaname.md のとおり（部品は画面の土台 KN-5 のもの）\n- [ ] 画面の仕様書（07_qa/test-specs/screens/<画面>.md）を新しい画面で書き直し、行が全部 PASS\n- [ ] 操作要素 1 つ＝1 行の実ブラウザの試験（行 ID を名前に持つ Playwright・G28）が通る\n- [ ] 空・読み込み中・失敗・権限が無い の 4 つの状態がある\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] 画面 mfa-setup：仕様書を書く → 作る → 実ブラウザの試験",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 画面 mfa-setup の仕様書の行 | ① 機械＋③ 人 | `07_qa/test-specs/screens/mfa-setup.md`（新しい画面で書き直す） | |\n| 画面 mfa-setup の操作要素を実ブラウザで押した証拠 | ① 機械 | `pnpm ci:op-gate`（G28） | |\n| 画面 mfa-setup の見た目がキャンバスと合う | ② 半分 | visual-fidelity（スクリーンショットの比べ） | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-128.62・D-128.91",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-64.md"
-  },
-  {
-   "id": "KN-65",
-   "title": "自分の設定の口",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-9",
-   "milestone": "節目①",
-   "area": "API",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-128.55",
-    "D-128.57",
-    "D-128.92",
-    "D-128.93",
-    "D-042",
-    "D-125.140",
-    "D-125.150",
-    "D-125.158",
-    "D-125.167"
-   ],
-   "split": "",
-   "choke_points": [
-    "C2"
-   ],
-   "depends_on": [
-    "KN-51",
-    "KN-52"
-   ],
-   "apis": [
-    "getMe",
-    "updateMe",
-    "uploadAvatar",
-    "requestEmailChange",
-    "verifyEmailChange",
-    "getNotificationSettings",
-    "updateNotificationSettings",
-    "copyNotificationSettings",
-    "listSetupTasks",
-    "dismissSetupTasks",
-    "getMyUsage",
-    "leaveWorkspace"
-   ],
-   "sections": {
-    "目的": "名前・顔・メールの変更・知らせの設定・はじめにやること・使用量・ワークスペースを抜ける、の口を作る。",
-    "完了の条件": "- [ ] 契約の口が hooks（apps/api/src/hooks）か共通の処理で動き、まだの口の 501 で止まらない\n- [ ] 口ごとの生成の試験（apps/api/test/generated）の it.todo が全部本物の試験になって緑\n- [ ] 行の守り（RLS の場合表・G33）と権限の試験（G41）が、この口の分も緑\n- [ ] 契約 fuzz（G36）が、この口を回して緑\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] getMe（GET /api/v1/me）\n- [ ] updateMe（PATCH /api/v1/me）\n- [ ] uploadAvatar（POST /api/v1/me/avatar）\n- [ ] requestEmailChange（POST /api/v1/me/email-change）\n- [ ] verifyEmailChange（POST /api/v1/me/email-change/verify）\n- [ ] getNotificationSettings（GET /api/v1/me/notification-settings）\n- [ ] updateNotificationSettings（PATCH /api/v1/me/notification-settings）\n- [ ] copyNotificationSettings（POST /api/v1/me/notification-settings/copy）\n- [ ] listSetupTasks（GET /api/v1/me/setup-tasks）\n- [ ] dismissSetupTasks（POST /api/v1/me/setup-tasks/dismiss）\n- [ ] getMyUsage（GET /api/v1/me/usage）\n- [ ] leaveWorkspace（DELETE /api/v1/me/workspaces/:id）\n- [ ] 前の道すじ GET /api/auth-ext/agent/usage（apps/api/src/auth/agent.ts）の中身を getMyUsage に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ GET /api/auth-ext/me（apps/api/src/auth/ext.ts）の中身を getMe に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ GET /api/auth-ext/setup-state（apps/api/src/auth/ext.ts）の中身を listSetupTasks に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| getMe の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_me.test.ts` | |\n| updateMe の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/patch_me.test.ts` | |\n| uploadAvatar の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_me_avatar.test.ts` | |\n| requestEmailChange の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_me_email_change.test.ts` | |\n| verifyEmailChange の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_me_email_change_verify.test.ts` | |\n| getNotificationSettings の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_me_notification_settings.test.ts` | |\n| updateNotificationSettings の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/patch_me_notification_settings.test.ts` | |\n| copyNotificationSettings の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_me_notification_settings_copy.test.ts` | |\n| listSetupTasks の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_me_setup_tasks.test.ts` | |\n| dismissSetupTasks の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_me_setup_tasks_dismiss.test.ts` | |\n| getMyUsage の振る舞い（EARS 6 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_me_usage.test.ts` | |\n| leaveWorkspace の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/delete_me_workspaces_id.test.ts` | |\n| 行の守り（他の会社・範囲の外の行が取れない） | ① 機械 | `pnpm ci:access-matrix`（G33） | |\n| 契約の外の入力でも 500 を返さない・答えの形が契約どおり | ① 機械 | `pnpm ci:schemathesis`（G36） | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-128.55・D-128.57・D-128.92・D-128.93・D-042・D-125.140・D-125.150・D-125.158・D-125.167",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-65.md"
-  },
-  {
-   "id": "KN-66",
-   "title": "PC（Bridge）をつなぐ口",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-9",
-   "milestone": "節目①",
-   "area": "API",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-128.55",
-    "D-128.57",
-    "D-128.92",
-    "D-128.93",
-    "D-004",
-    "D-015",
-    "D-055",
-    "D-125.142",
-    "D-125.143",
-    "D-125.146",
-    "D-125.167"
-   ],
-   "split": "",
-   "choke_points": [
-    "C1",
-    "C2"
-   ],
-   "depends_on": [
-    "KN-51",
-    "KN-52"
-   ],
-   "apis": [
-    "createPairingCode",
-    "claimPairingCode",
-    "listMyDevices",
-    "updateMyDevice",
-    "revokeMyDevice",
-    "sendHeartbeat",
-    "getLatestBridgeRelease",
-    "downloadBridgeRelease",
-    "reportUsage"
-   ],
-   "sections": {
-    "目的": "つなぐ番号・つないだ端末の一覧と外す・生存の知らせ・配布物・使用量の報告を契約の口で作る（今の /api/auth-ext/bridge の道すじを移す・KN-58 と一緒に）。",
-    "完了の条件": "- [ ] 契約の口が hooks（apps/api/src/hooks）か共通の処理で動き、まだの口の 501 で止まらない\n- [ ] 口ごとの生成の試験（apps/api/test/generated）の it.todo が全部本物の試験になって緑\n- [ ] 行の守り（RLS の場合表・G33）と権限の試験（G41）が、この口の分も緑\n- [ ] 契約 fuzz（G36）が、この口を回して緑\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] createPairingCode（POST /api/v1/bridge/pairing-codes）\n- [ ] claimPairingCode（POST /api/v1/bridge/claim）\n- [ ] listMyDevices（GET /api/v1/bridge/devices）\n- [ ] updateMyDevice（PATCH /api/v1/bridge/devices/:id）\n- [ ] revokeMyDevice（DELETE /api/v1/bridge/devices/:id）\n- [ ] sendHeartbeat（POST /api/v1/bridge/heartbeat）\n- [ ] getLatestBridgeRelease（GET /api/v1/bridge/releases/latest）\n- [ ] downloadBridgeRelease（GET /api/v1/bridge/releases/:name/file）\n- [ ] reportUsage（POST /api/v1/bridge/usage）\n- [ ] 前の道すじ POST /api/auth-ext/agent/bridge-revoke（apps/api/src/auth/ext.ts）の中身を revokeMyDevice に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ POST /api/auth-ext/bridge/claim（apps/api/src/auth/ext.ts）の中身を claimPairingCode に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ GET /api/auth-ext/bridge/download（apps/api/src/auth/ext.ts）の中身を downloadBridgeRelease に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ GET /api/auth-ext/bridge/file/:name（apps/api/src/auth/ext.ts）の中身を downloadBridgeRelease に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ POST /api/auth-ext/bridge/heartbeat（apps/api/src/auth/ext.ts）の中身を sendHeartbeat に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ GET /api/auth-ext/bridge/latest（apps/api/src/auth/ext.ts）の中身を getLatestBridgeRelease に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ POST /api/auth-ext/bridge/pair（apps/api/src/auth/ext.ts）の中身を createPairingCode に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ GET /api/auth-ext/bridge/state（apps/api/src/auth/ext.ts）の中身を listMyDevices に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| createPairingCode の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_bridge_pairing_codes.test.ts` | |\n| claimPairingCode の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_bridge_claim.test.ts` | |\n| listMyDevices の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_bridge_devices.test.ts` | |\n| updateMyDevice の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/patch_bridge_devices_id.test.ts` | |\n| revokeMyDevice の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/delete_bridge_devices_id.test.ts` | |\n| sendHeartbeat の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_bridge_heartbeat.test.ts` | |\n| getLatestBridgeRelease の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_bridge_releases_latest.test.ts` | |\n| downloadBridgeRelease の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_bridge_releases_name_file.test.ts` | |\n| reportUsage の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_bridge_usage.test.ts` | |\n| 行の守り（他の会社・範囲の外の行が取れない） | ① 機械 | `pnpm ci:access-matrix`（G33） | |\n| 契約の外の入力でも 500 を返さない・答えの形が契約どおり | ① 機械 | `pnpm ci:schemathesis`（G36） | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-128.55・D-128.57・D-128.92・D-128.93・D-004・D-015・D-055・D-125.142・D-125.143・D-125.146・D-125.167",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-66.md"
-  },
-  {
-   "id": "KN-67",
-   "title": "預けたログイン情報の口",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-9",
-   "milestone": "節目①",
-   "area": "API",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-128.55",
-    "D-128.57",
-    "D-128.92",
-    "D-128.93",
-    "D-017",
-    "D-041",
-    "D-125.148",
-    "D-125.149",
-    "D-125.151",
-    "D-125.167"
-   ],
-   "split": "",
-   "choke_points": [
-    "C2",
-    "C8"
-   ],
-   "depends_on": [
-    "KN-51",
-    "KN-52"
-   ],
-   "apis": [
-    "listCredentials",
-    "createCredential",
-    "updateCredential",
-    "deleteCredential",
-    "checkCredentialLogin",
-    "answerCredentialLoginCheck",
-    "resolveCredential",
-    "reportCredentialCheck"
-   ],
-   "sections": {
-    "目的": "ログイン情報を預ける・確かめる・PC の実行器だけが宛先の合うときに取り出す（D-128.57 の 4 つの守り）口を作る。",
-    "完了の条件": "- [ ] 契約の口が hooks（apps/api/src/hooks）か共通の処理で動き、まだの口の 501 で止まらない\n- [ ] 口ごとの生成の試験（apps/api/test/generated）の it.todo が全部本物の試験になって緑\n- [ ] 行の守り（RLS の場合表・G33）と権限の試験（G41）が、この口の分も緑\n- [ ] 契約 fuzz（G36）が、この口を回して緑\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] listCredentials（GET /api/v1/credentials）\n- [ ] createCredential（POST /api/v1/credentials）\n- [ ] updateCredential（PATCH /api/v1/credentials/:id）\n- [ ] deleteCredential（DELETE /api/v1/credentials/:id）\n- [ ] checkCredentialLogin（POST /api/v1/credentials/:id/login-check）\n- [ ] answerCredentialLoginCheck（POST /api/v1/credentials/:id/login-check/answer）\n- [ ] resolveCredential（POST /api/v1/bridge/credentials/resolve）\n- [ ] reportCredentialCheck（POST /api/v1/bridge/credentials/:id/check-result）\n- [ ] 前の道すじ POST /api/auth-ext/bridge/credentials/check-result（apps/api/src/auth/ext.ts）の中身を reportCredentialCheck に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ POST /api/auth-ext/bridge/credentials/resolve（apps/api/src/auth/ext.ts）の中身を resolveCredential に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ GET /api/auth-ext/vault/credentials（apps/api/src/auth/ext.ts）の中身を listCredentials に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ POST /api/auth-ext/vault/credentials（apps/api/src/auth/ext.ts）の中身を createCredential に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ POST /api/auth-ext/vault/credentials/:id/answer（apps/api/src/auth/ext.ts）の中身を answerCredentialLoginCheck に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ POST /api/auth-ext/vault/credentials/:id/login-check（apps/api/src/auth/ext.ts）の中身を checkCredentialLogin に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| listCredentials の振る舞い（EARS 6 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_credentials.test.ts` | |\n| createCredential の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_credentials.test.ts` | |\n| updateCredential の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/patch_credentials_id.test.ts` | |\n| deleteCredential の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/delete_credentials_id.test.ts` | |\n| checkCredentialLogin の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_credentials_id_login_check.test.ts` | |\n| answerCredentialLoginCheck の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_credentials_id_login_check_answer.test.ts` | |\n| resolveCredential の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_bridge_credentials_resolve.test.ts` | |\n| reportCredentialCheck の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_bridge_credentials_id_check_result.test.ts` | |\n| 行の守り（他の会社・範囲の外の行が取れない） | ① 機械 | `pnpm ci:access-matrix`（G33） | |\n| 契約の外の入力でも 500 を返さない・答えの形が契約どおり | ① 機械 | `pnpm ci:schemathesis`（G36） | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-128.55・D-128.57・D-128.92・D-128.93・D-017・D-041・D-125.148・D-125.149・D-125.151・D-125.167",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-67.md"
-  },
-  {
-   "id": "KN-68",
-   "title": "画面：自分の設定",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-9",
-   "milestone": "節目①",
-   "area": "画面",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-128.55",
-    "D-128.57",
-    "D-128.92",
-    "D-128.93"
-   ],
-   "split": "",
-   "choke_points": [
-    "C2"
-   ],
-   "depends_on": [
-    "KN-5",
-    "KN-65",
-    "KN-66",
-    "KN-67"
-   ],
-   "screens": [
-    "account"
-   ],
-   "sections": {
-    "目的": "自分の設定（プロフィール・ログインと安全・端末・所属するワークスペース）の画面を作る。",
-    "完了の条件": "- [ ] 画面がキャンバス（04_design/canvas）と DESIGN-kaname.md のとおり（部品は画面の土台 KN-5 のもの）\n- [ ] 画面の仕様書（07_qa/test-specs/screens/<画面>.md）を新しい画面で書き直し、行が全部 PASS\n- [ ] 操作要素 1 つ＝1 行の実ブラウザの試験（行 ID を名前に持つ Playwright・G28）が通る\n- [ ] 空・読み込み中・失敗・権限が無い の 4 つの状態がある\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] 画面 account：仕様書を書く → 作る → 実ブラウザの試験",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 画面 account の仕様書の行 | ① 機械＋③ 人 | `07_qa/test-specs/screens/account.md`（新しい画面で書き直す） | |\n| 画面 account の操作要素を実ブラウザで押した証拠 | ① 機械 | `pnpm ci:op-gate`（G28） | |\n| 画面 account の見た目がキャンバスと合う | ② 半分 | visual-fidelity（スクリーンショットの比べ） | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-128.55・D-128.57・D-128.92・D-128.93",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-68.md"
-  },
-  {
-   "id": "KN-69",
-   "title": "画面：PC をつなぐ",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-9",
-   "milestone": "節目①",
-   "area": "画面",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-128.55",
-    "D-128.57",
-    "D-128.92",
-    "D-128.93"
-   ],
-   "split": "",
-   "choke_points": [
-    "C2"
-   ],
-   "depends_on": [
-    "KN-5",
-    "KN-65",
-    "KN-66",
-    "KN-67"
-   ],
-   "screens": [
-    "bridge-setup"
-   ],
-   "sections": {
-    "目的": "PC をつなぐ画面（番号・つながった・切れている間の案内）を作る。",
-    "完了の条件": "- [ ] 画面がキャンバス（04_design/canvas）と DESIGN-kaname.md のとおり（部品は画面の土台 KN-5 のもの）\n- [ ] 画面の仕様書（07_qa/test-specs/screens/<画面>.md）を新しい画面で書き直し、行が全部 PASS\n- [ ] 操作要素 1 つ＝1 行の実ブラウザの試験（行 ID を名前に持つ Playwright・G28）が通る\n- [ ] 空・読み込み中・失敗・権限が無い の 4 つの状態がある\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] 画面 bridge-setup：仕様書を書く → 作る → 実ブラウザの試験",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 画面 bridge-setup の仕様書の行 | ① 機械＋③ 人 | `07_qa/test-specs/screens/bridge-setup.md`（新しい画面で書き直す） | |\n| 画面 bridge-setup の操作要素を実ブラウザで押した証拠 | ① 機械 | `pnpm ci:op-gate`（G28） | |\n| 画面 bridge-setup の見た目がキャンバスと合う | ② 半分 | visual-fidelity（スクリーンショットの比べ） | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-128.55・D-128.57・D-128.92・D-128.93",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-69.md"
-  },
-  {
-   "id": "KN-70",
-   "title": "画面：預けたログイン情報",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-9",
-   "milestone": "節目①",
-   "area": "画面",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-128.55",
-    "D-128.57",
-    "D-128.92",
-    "D-128.93"
-   ],
-   "split": "",
-   "choke_points": [
-    "C2"
-   ],
-   "depends_on": [
-    "KN-5",
-    "KN-65",
-    "KN-66",
-    "KN-67"
-   ],
-   "screens": [
-    "credentials"
-   ],
-   "sections": {
-    "目的": "預けたログイン情報の画面を作る。",
-    "完了の条件": "- [ ] 画面がキャンバス（04_design/canvas）と DESIGN-kaname.md のとおり（部品は画面の土台 KN-5 のもの）\n- [ ] 画面の仕様書（07_qa/test-specs/screens/<画面>.md）を新しい画面で書き直し、行が全部 PASS\n- [ ] 操作要素 1 つ＝1 行の実ブラウザの試験（行 ID を名前に持つ Playwright・G28）が通る\n- [ ] 空・読み込み中・失敗・権限が無い の 4 つの状態がある\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] 画面 credentials：仕様書を書く → 作る → 実ブラウザの試験",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 画面 credentials の仕様書の行 | ① 機械＋③ 人 | `07_qa/test-specs/screens/credentials.md`（新しい画面で書き直す） | |\n| 画面 credentials の操作要素を実ブラウザで押した証拠 | ① 機械 | `pnpm ci:op-gate`（G28） | |\n| 画面 credentials の見た目がキャンバスと合う | ② 半分 | visual-fidelity（スクリーンショットの比べ） | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-128.55・D-128.57・D-128.92・D-128.93",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-70.md"
-  },
-  {
-   "id": "KN-71",
-   "title": "一覧と絞り込みの口",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-10",
-   "milestone": "節目①",
-   "area": "API",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-128.83",
-    "D-128.85",
-    "D-064",
-    "D-068",
-    "D-125.13",
-    "D-125.167",
-    "D-125.49",
-    "D-125.64",
-    "D-125.61",
-    "D-125.97",
-    "D-125.7",
-    "D-125.98"
-   ],
-   "split": "",
-   "choke_points": [
-    "C2"
-   ],
-   "depends_on": [
-    "KN-51",
-    "KN-52"
-   ],
-   "apis": [
-    "getShell",
-    "listTickets",
-    "bulkUpdateTickets",
-    "getScopeOverview",
-    "listTicketKinds",
-    "listTicketStages",
-    "listClassAxes",
-    "listMembers"
-   ],
-   "sections": {
-    "目的": "チケットの一覧（表示の切り替え・絞り込み・列・まとめて直す）と、左のバー・上の帯の中身、選ぶための一覧を作る。",
-    "完了の条件": "- [ ] 契約の口が hooks（apps/api/src/hooks）か共通の処理で動き、まだの口の 501 で止まらない\n- [ ] 口ごとの生成の試験（apps/api/test/generated）の it.todo が全部本物の試験になって緑\n- [ ] 行の守り（RLS の場合表・G33）と権限の試験（G41）が、この口の分も緑\n- [ ] 契約 fuzz（G36）が、この口を回して緑\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] getShell（GET /api/v1/shell）\n- [ ] listTickets（GET /api/v1/tickets）\n- [ ] bulkUpdateTickets（POST /api/v1/tickets/bulk）\n- [ ] getScopeOverview（GET /api/v1/scopes/:id/overview）\n- [ ] listTicketKinds（GET /api/v1/ticket_kinds）\n- [ ] listTicketStages（GET /api/v1/ticket_stages）\n- [ ] listClassAxes（GET /api/v1/class_axes）\n- [ ] listMembers（GET /api/v1/members）",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| getShell の振る舞い（EARS 5 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_shell.test.ts` | |\n| listTickets の振る舞い（EARS 6 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_tickets.test.ts` | |\n| bulkUpdateTickets の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_tickets_bulk.test.ts` | |\n| getScopeOverview の振る舞い（EARS 6 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_scopes_id_overview.test.ts` | |\n| listTicketKinds の振る舞い（EARS 6 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_ticket_kinds.test.ts` | |\n| listTicketStages の振る舞い（EARS 6 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_ticket_stages.test.ts` | |\n| listClassAxes の振る舞い（EARS 6 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_class_axes.test.ts` | |\n| listMembers の振る舞い（EARS 6 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_members.test.ts` | |\n| 行の守り（他の会社・範囲の外の行が取れない） | ① 機械 | `pnpm ci:access-matrix`（G33） | |\n| 契約の外の入力でも 500 を返さない・答えの形が契約どおり | ① 機械 | `pnpm ci:schemathesis`（G36） | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-128.83・D-128.85・D-064・D-068・D-125.13・D-125.167・D-125.49・D-125.64・D-125.61・D-125.97・D-125.7・D-125.98",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-71.md"
-  },
-  {
-   "id": "KN-72",
-   "title": "探すと保存した検索条件の口",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-10",
-   "milestone": "節目①",
-   "area": "API",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-128.83",
-    "D-128.85",
-    "D-007",
-    "D-029",
-    "D-125.167",
-    "D-125.44",
-    "D-127.4",
-    "D-064",
-    "D-068",
-    "D-125.13",
-    "D-125.49",
-    "D-125.64"
-   ],
-   "split": "",
-   "choke_points": [
-    "C2"
-   ],
-   "depends_on": [
-    "KN-51",
-    "KN-52"
-   ],
-   "apis": [
-    "search",
-    "listSavedViews",
-    "createSavedView",
-    "updateSavedView",
-    "deleteSavedView"
-   ],
-   "sections": {
-    "目的": "探す（チケット・ページ・決定・自分の会話）と、保存した検索条件（作った人とマネージャーが直せる・D-128.119）を作る。",
-    "完了の条件": "- [ ] 契約の口が hooks（apps/api/src/hooks）か共通の処理で動き、まだの口の 501 で止まらない\n- [ ] 口ごとの生成の試験（apps/api/test/generated）の it.todo が全部本物の試験になって緑\n- [ ] 行の守り（RLS の場合表・G33）と権限の試験（G41）が、この口の分も緑\n- [ ] 契約 fuzz（G36）が、この口を回して緑\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] search（GET /api/v1/search）\n- [ ] listSavedViews（GET /api/v1/saved_views）\n- [ ] createSavedView（POST /api/v1/saved_views）\n- [ ] updateSavedView（PATCH /api/v1/saved_views/:id）\n- [ ] deleteSavedView（DELETE /api/v1/saved_views/:id）",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| search の振る舞い（EARS 5 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_search.test.ts` | |\n| listSavedViews の振る舞い（EARS 5 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_saved_views.test.ts` | |\n| createSavedView の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_saved_views.test.ts` | |\n| updateSavedView の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/patch_saved_views_id.test.ts` | |\n| deleteSavedView の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/delete_saved_views_id.test.ts` | |\n| 行の守り（他の会社・範囲の外の行が取れない） | ① 機械 | `pnpm ci:access-matrix`（G33） | |\n| 契約の外の入力でも 500 を返さない・答えの形が契約どおり | ① 機械 | `pnpm ci:schemathesis`（G36） | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-128.83・D-128.85・D-007・D-029・D-125.167・D-125.44・D-127.4・D-064・D-068・D-125.13・D-125.49・D-125.64",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-72.md"
-  },
-  {
-   "id": "KN-73",
-   "title": "CSV の取り込みの口",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-10",
-   "milestone": "節目①",
-   "area": "API",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-128.83",
-    "D-128.85",
-    "D-125.167",
-    "D-125.51",
-    "D-125.57",
-    "D-125.6"
-   ],
-   "split": "",
-   "choke_points": [
-    "C2",
-    "C4"
-   ],
-   "depends_on": [
-    "KN-51",
-    "KN-52"
-   ],
-   "apis": [
-    "createTicketImport",
-    "getTicketImport",
-    "commitTicketImport"
-   ],
-   "sections": {
-    "目的": "Backlog と汎用の CSV を取り込み、下書きを確定するまで取り込んだ人だけが見て直せる（D-128.119）口を作る。",
-    "完了の条件": "- [ ] 契約の口が hooks（apps/api/src/hooks）か共通の処理で動き、まだの口の 501 で止まらない\n- [ ] 口ごとの生成の試験（apps/api/test/generated）の it.todo が全部本物の試験になって緑\n- [ ] 行の守り（RLS の場合表・G33）と権限の試験（G41）が、この口の分も緑\n- [ ] 契約 fuzz（G36）が、この口を回して緑\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] createTicketImport（POST /api/v1/ticket_imports）\n- [ ] getTicketImport（GET /api/v1/ticket_imports/:id）\n- [ ] commitTicketImport（POST /api/v1/ticket_imports/:id/commit）",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| createTicketImport の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_ticket_imports.test.ts` | |\n| getTicketImport の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_ticket_imports_id.test.ts` | |\n| commitTicketImport の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_ticket_imports_id_commit.test.ts` | |\n| 行の守り（他の会社・範囲の外の行が取れない） | ① 機械 | `pnpm ci:access-matrix`（G33） | |\n| 契約の外の入力でも 500 を返さない・答えの形が契約どおり | ① 機械 | `pnpm ci:schemathesis`（G36） | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-128.83・D-128.85・D-125.167・D-125.51・D-125.57・D-125.6",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-73.md"
-  },
-  {
-   "id": "KN-74",
-   "title": "知らせの口",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-10",
-   "milestone": "節目①",
-   "area": "API",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-128.83",
-    "D-128.85",
-    "D-125.130",
-    "D-125.167",
-    "D-125.41"
-   ],
-   "split": "",
-   "choke_points": [
-    "C2"
-   ],
-   "depends_on": [
-    "KN-51",
-    "KN-52"
-   ],
-   "apis": [
-    "listNotifications",
-    "readNotification",
-    "readAllNotifications"
-   ],
-   "sections": {
-    "目的": "上の帯の知らせ（一覧・読んだ・全部読んだ）を作る。新しい端末の知らせ（KN-57）もここに出る。",
-    "完了の条件": "- [ ] 契約の口が hooks（apps/api/src/hooks）か共通の処理で動き、まだの口の 501 で止まらない\n- [ ] 口ごとの生成の試験（apps/api/test/generated）の it.todo が全部本物の試験になって緑\n- [ ] 行の守り（RLS の場合表・G33）と権限の試験（G41）が、この口の分も緑\n- [ ] 契約 fuzz（G36）が、この口を回して緑\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] listNotifications（GET /api/v1/notifications）\n- [ ] readNotification（PATCH /api/v1/notifications/:id）\n- [ ] readAllNotifications（POST /api/v1/notifications/read-all）",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| listNotifications の振る舞い（EARS 5 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_notifications.test.ts` | |\n| readNotification の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/patch_notifications_id.test.ts` | |\n| readAllNotifications の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_notifications_read_all.test.ts` | |\n| 行の守り（他の会社・範囲の外の行が取れない） | ① 機械 | `pnpm ci:access-matrix`（G33） | |\n| 契約の外の入力でも 500 を返さない・答えの形が契約どおり | ① 機械 | `pnpm ci:schemathesis`（G36） | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-128.83・D-128.85・D-125.130・D-125.167・D-125.41",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-74.md"
-  },
-  {
-   "id": "KN-75",
-   "title": "画面：チケットの一覧・探す・取り込み",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-10",
-   "milestone": "節目①",
-   "area": "画面",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-128.83",
-    "D-128.85"
-   ],
-   "split": "",
-   "choke_points": [
-    "C2"
-   ],
-   "depends_on": [
-    "KN-5",
-    "KN-71",
-    "KN-72",
-    "KN-73",
-    "KN-74"
-   ],
-   "screens": [
-    "tickets"
-   ],
-   "sections": {
-    "目的": "チケットの一覧の画面（表示の切り替え・絞り込み・保存した検索条件・CSV の取り込み）を作る。",
-    "完了の条件": "- [ ] 画面がキャンバス（04_design/canvas）と DESIGN-kaname.md のとおり（部品は画面の土台 KN-5 のもの）\n- [ ] 画面の仕様書（07_qa/test-specs/screens/<画面>.md）を新しい画面で書き直し、行が全部 PASS\n- [ ] 操作要素 1 つ＝1 行の実ブラウザの試験（行 ID を名前に持つ Playwright・G28）が通る\n- [ ] 空・読み込み中・失敗・権限が無い の 4 つの状態がある\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] 画面 tickets：仕様書を書く → 作る → 実ブラウザの試験",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 画面 tickets の仕様書の行 | ① 機械＋③ 人 | `07_qa/test-specs/screens/tickets.md`（新しい画面で書き直す） | |\n| 画面 tickets の操作要素を実ブラウザで押した証拠 | ① 機械 | `pnpm ci:op-gate`（G28） | |\n| 画面 tickets の見た目がキャンバスと合う | ② 半分 | visual-fidelity（スクリーンショットの比べ） | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-128.83・D-128.85",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-75.md"
-  },
-  {
-   "id": "KN-76",
-   "title": "チケットを作る・読む・直す・消す／戻す・完了の口",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-11",
-   "milestone": "節目①",
-   "area": "API",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-128.33",
-    "D-128.80",
-    "D-128.84",
-    "D-125.145",
-    "D-125.167",
-    "D-125.51",
-    "D-125.57",
-    "D-125.6",
-    "D-126.16",
-    "D-125.27",
-    "D-125.58",
-    "D-008",
-    "D-125.33",
-    "D-125.38",
-    "D-125.39",
-    "D-125.61",
-    "D-125.7",
-    "D-125.97",
-    "D-125.98",
-    "D-125.62",
-    "D-125.110",
-    "D-125.55",
-    "D-125.59",
-    "D-126.13"
-   ],
-   "split": "",
-   "choke_points": [
-    "C2",
-    "C6"
-   ],
-   "depends_on": [
-    "KN-51",
-    "KN-52"
-   ],
-   "apis": [
-    "createTicket",
-    "getTicket",
-    "updateTicket",
-    "previewTicketKindChange",
-    "previewTicketDelete",
-    "deleteTicket",
-    "restoreTicket",
-    "completeTicket",
-    "listWorkTypeCandidates"
-   ],
-   "sections": {
-    "目的": "チケットの 1 件の作る・読む・直す（期限と担当は理由が必須）・種別を変える前の確かめ・消す（子の扱い）・戻す・完了、を作る。",
-    "完了の条件": "- [ ] 契約の口が hooks（apps/api/src/hooks）か共通の処理で動き、まだの口の 501 で止まらない\n- [ ] 口ごとの生成の試験（apps/api/test/generated）の it.todo が全部本物の試験になって緑\n- [ ] 行の守り（RLS の場合表・G33）と権限の試験（G41）が、この口の分も緑\n- [ ] 契約 fuzz（G36）が、この口を回して緑\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] createTicket（POST /api/v1/tickets）\n- [ ] getTicket（GET /api/v1/tickets/:id）\n- [ ] updateTicket（PATCH /api/v1/tickets/:id）\n- [ ] previewTicketKindChange（GET /api/v1/tickets/:id/kind-change-preview）\n- [ ] previewTicketDelete（GET /api/v1/tickets/:id/delete-preview）\n- [ ] deleteTicket（DELETE /api/v1/tickets/:id）\n- [ ] restoreTicket（POST /api/v1/tickets/:id/restore）\n- [ ] completeTicket（POST /api/v1/tickets/:id/complete）\n- [ ] listWorkTypeCandidates（GET /api/v1/tickets/:id/work-type-candidates）",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| createTicket の振る舞い（EARS 9 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_tickets.test.ts` | |\n| getTicket の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_tickets_id.test.ts` | |\n| updateTicket の振る舞い（EARS 10 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/patch_tickets_id.test.ts` | |\n| previewTicketKindChange の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_tickets_id_kind_change_preview.test.ts` | |\n| previewTicketDelete の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_tickets_id_delete_preview.test.ts` | |\n| deleteTicket の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/delete_tickets_id.test.ts` | |\n| restoreTicket の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_tickets_id_restore.test.ts` | |\n| completeTicket の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_tickets_id_complete.test.ts` | |\n| listWorkTypeCandidates の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_tickets_id_work_type_candidates.test.ts` | |\n| 行の守り（他の会社・範囲の外の行が取れない） | ① 機械 | `pnpm ci:access-matrix`（G33） | |\n| 契約の外の入力でも 500 を返さない・答えの形が契約どおり | ① 機械 | `pnpm ci:schemathesis`（G36） | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-128.33・D-128.80・D-128.84・D-125.145・D-125.167・D-125.51・D-125.57・D-125.6・D-126.16・D-125.27・D-125.58・D-008・D-125.33・D-125.38・D-125.39・D-125.61・D-125.7・D-125.97・D-125.98・D-125.62・D-125.110・D-125.55・D-125.59・D-126.13",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-76.md"
-  },
-  {
-   "id": "KN-77",
-   "title": "本文の区画と版・資料の口",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-11",
-   "milestone": "節目①",
-   "area": "API",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-128.33",
-    "D-128.80",
-    "D-128.84",
-    "D-125.167",
-    "D-125.27",
-    "D-125.58"
-   ],
-   "split": "",
-   "choke_points": [
-    "C2",
-    "C4"
-   ],
-   "depends_on": [
-    "KN-51",
-    "KN-52"
-   ],
-   "apis": [
-    "updateTicketSection",
-    "listTicketVersions",
-    "restoreTicketVersion",
-    "listTicketReferences",
-    "listTicketArtifacts",
-    "getArtifactVersion",
-    "createTicketAttachment"
-   ],
-   "sections": {
-    "目的": "本文の区画を直して版を残す・前の版に戻す・参照・作ったもの・資料を付ける、を作る。",
-    "完了の条件": "- [ ] 契約の口が hooks（apps/api/src/hooks）か共通の処理で動き、まだの口の 501 で止まらない\n- [ ] 口ごとの生成の試験（apps/api/test/generated）の it.todo が全部本物の試験になって緑\n- [ ] 行の守り（RLS の場合表・G33）と権限の試験（G41）が、この口の分も緑\n- [ ] 契約 fuzz（G36）が、この口を回して緑\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] updateTicketSection（PATCH /api/v1/tickets/:id/sections/:key）\n- [ ] listTicketVersions（GET /api/v1/tickets/:id/versions）\n- [ ] restoreTicketVersion（POST /api/v1/tickets/:id/versions/:v/restore）\n- [ ] listTicketReferences（GET /api/v1/tickets/:id/references）\n- [ ] listTicketArtifacts（GET /api/v1/tickets/:id/artifacts）\n- [ ] getArtifactVersion（GET /api/v1/artifact_versions/:id）\n- [ ] createTicketAttachment（POST /api/v1/tickets/:id/attachments）\n- [ ] 前の道すじ GET /api/auth-ext/agent/artifacts/:id（apps/api/src/auth/artifacts.ts）の中身を getArtifactVersion に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| updateTicketSection の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/patch_tickets_id_sections_key.test.ts` | |\n| listTicketVersions の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_tickets_id_versions.test.ts` | |\n| restoreTicketVersion の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_tickets_id_versions_v_restore.test.ts` | |\n| listTicketReferences の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_tickets_id_references.test.ts` | |\n| listTicketArtifacts の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_tickets_id_artifacts.test.ts` | |\n| getArtifactVersion の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_artifact_versions_id.test.ts` | |\n| createTicketAttachment の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_tickets_id_attachments.test.ts` | |\n| 行の守り（他の会社・範囲の外の行が取れない） | ① 機械 | `pnpm ci:access-matrix`（G33） | |\n| 契約の外の入力でも 500 を返さない・答えの形が契約どおり | ① 機械 | `pnpm ci:schemathesis`（G36） | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-128.33・D-128.80・D-128.84・D-125.167・D-125.27・D-125.58",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-77.md"
-  },
-  {
-   "id": "KN-78",
-   "title": "テスト仕様と確認の口",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-11",
-   "milestone": "節目①",
-   "area": "API",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-128.33",
-    "D-128.80",
-    "D-128.84",
-    "D-125.167",
-    "D-125.17",
-    "D-125.79",
-    "D-125.82",
-    "D-125.83",
-    "D-012",
-    "D-037",
-    "D-040",
-    "D-125.103",
-    "D-125.152",
-    "D-125.19",
-    "D-125.85",
-    "D-126.18"
-   ],
-   "split": "",
-   "choke_points": [
-    "C2",
-    "C3"
-   ],
-   "depends_on": [
-    "KN-51",
-    "KN-52"
-   ],
-   "apis": [
-    "listTestSpecs",
-    "createTestSpec",
-    "updateTestSpec",
-    "deleteTestSpec",
-    "lintTestSpecs",
-    "suggestTestSpecs",
-    "listChecks",
-    "markHumanCheck"
-   ],
-   "sections": {
-    "目的": "チケットのテスト仕様（① 機械・② 半分・③ 人）と確認の結果、人の確認の印を作る。",
-    "完了の条件": "- [ ] 契約の口が hooks（apps/api/src/hooks）か共通の処理で動き、まだの口の 501 で止まらない\n- [ ] 口ごとの生成の試験（apps/api/test/generated）の it.todo が全部本物の試験になって緑\n- [ ] 行の守り（RLS の場合表・G33）と権限の試験（G41）が、この口の分も緑\n- [ ] 契約 fuzz（G36）が、この口を回して緑\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] listTestSpecs（GET /api/v1/tickets/:id/test-specs）\n- [ ] createTestSpec（POST /api/v1/tickets/:id/test-specs）\n- [ ] updateTestSpec（PATCH /api/v1/test_specs/:id）\n- [ ] deleteTestSpec（DELETE /api/v1/test_specs/:id）\n- [ ] lintTestSpecs（POST /api/v1/tickets/:id/test-specs/lint）\n- [ ] suggestTestSpecs（POST /api/v1/tickets/:id/test-specs/suggest）\n- [ ] listChecks（GET /api/v1/tickets/:id/checks）\n- [ ] markHumanCheck（POST /api/v1/checks/:id/human）",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| listTestSpecs の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_tickets_id_test_specs.test.ts` | |\n| createTestSpec の振る舞い（EARS 9 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_tickets_id_test_specs.test.ts` | |\n| updateTestSpec の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/patch_test_specs_id.test.ts` | |\n| deleteTestSpec の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/delete_test_specs_id.test.ts` | |\n| lintTestSpecs の振る舞い（EARS 9 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_tickets_id_test_specs_lint.test.ts` | |\n| suggestTestSpecs の振る舞い（EARS 9 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_tickets_id_test_specs_suggest.test.ts` | |\n| listChecks の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_tickets_id_checks.test.ts` | |\n| markHumanCheck の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_checks_id_human.test.ts` | |\n| 行の守り（他の会社・範囲の外の行が取れない） | ① 機械 | `pnpm ci:access-matrix`（G33） | |\n| 契約の外の入力でも 500 を返さない・答えの形が契約どおり | ① 機械 | `pnpm ci:schemathesis`（G36） | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-128.33・D-128.80・D-128.84・D-125.167・D-125.17・D-125.79・D-125.82・D-125.83・D-012・D-037・D-040・D-125.103・D-125.152・D-125.19・D-125.85・D-126.18",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-78.md"
-  },
-  {
-   "id": "KN-79",
-   "title": "決定・つながり・やり取りの口",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-11",
-   "milestone": "節目①",
-   "area": "API",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-128.33",
-    "D-128.80",
-    "D-128.84",
-    "D-125.167",
-    "D-125.40",
-    "D-125.63",
-    "D-125.7",
-    "D-125.98",
-    "D-125.131",
-    "D-125.29"
-   ],
-   "split": "",
-   "choke_points": [
-    "C2",
-    "C6"
-   ],
-   "depends_on": [
-    "KN-51",
-    "KN-52"
-   ],
-   "apis": [
-    "listTicketDecisions",
-    "createTicketDecision",
-    "updateTicketDecision",
-    "listTicketLinks",
-    "createTicketLink",
-    "deleteTicketLink",
-    "listTicketTimeline",
-    "createTicketMessage",
-    "updateTicketMessage",
-    "deleteTicketMessage",
-    "starTicketMessage"
-   ],
-   "sections": {
-    "目的": "チケットの決定ログ・ほかのチケットとのつながり・やり取り（星を付ける）を作る。",
-    "完了の条件": "- [ ] 契約の口が hooks（apps/api/src/hooks）か共通の処理で動き、まだの口の 501 で止まらない\n- [ ] 口ごとの生成の試験（apps/api/test/generated）の it.todo が全部本物の試験になって緑\n- [ ] 行の守り（RLS の場合表・G33）と権限の試験（G41）が、この口の分も緑\n- [ ] 契約 fuzz（G36）が、この口を回して緑\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] listTicketDecisions（GET /api/v1/tickets/:id/decisions）\n- [ ] createTicketDecision（POST /api/v1/tickets/:id/decisions）\n- [ ] updateTicketDecision（PATCH /api/v1/ticket_decisions/:id）\n- [ ] listTicketLinks（GET /api/v1/tickets/:id/links）\n- [ ] createTicketLink（POST /api/v1/tickets/:id/links）\n- [ ] deleteTicketLink（DELETE /api/v1/ticket_links/:id）\n- [ ] listTicketTimeline（GET /api/v1/tickets/:id/timeline）\n- [ ] createTicketMessage（POST /api/v1/tickets/:id/messages）\n- [ ] updateTicketMessage（PATCH /api/v1/ticket_messages/:id）\n- [ ] deleteTicketMessage（DELETE /api/v1/ticket_messages/:id）\n- [ ] starTicketMessage（POST /api/v1/ticket_messages/:id/star）",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| listTicketDecisions の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_tickets_id_decisions.test.ts` | |\n| createTicketDecision の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_tickets_id_decisions.test.ts` | |\n| updateTicketDecision の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/patch_ticket_decisions_id.test.ts` | |\n| listTicketLinks の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_tickets_id_links.test.ts` | |\n| createTicketLink の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_tickets_id_links.test.ts` | |\n| deleteTicketLink の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/delete_ticket_links_id.test.ts` | |\n| listTicketTimeline の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_tickets_id_timeline.test.ts` | |\n| createTicketMessage の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_tickets_id_messages.test.ts` | |\n| updateTicketMessage の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/patch_ticket_messages_id.test.ts` | |\n| deleteTicketMessage の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/delete_ticket_messages_id.test.ts` | |\n| starTicketMessage の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_ticket_messages_id_star.test.ts` | |\n| 行の守り（他の会社・範囲の外の行が取れない） | ① 機械 | `pnpm ci:access-matrix`（G33） | |\n| 契約の外の入力でも 500 を返さない・答えの形が契約どおり | ① 機械 | `pnpm ci:schemathesis`（G36） | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-128.33・D-128.80・D-128.84・D-125.167・D-125.40・D-125.63・D-125.7・D-125.98・D-125.131・D-125.29",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-79.md"
-  },
-  {
-   "id": "KN-80",
-   "title": "画面：チケットの 1 件",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-11",
-   "milestone": "節目①",
-   "area": "画面",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-128.33",
-    "D-128.80",
-    "D-128.84"
-   ],
-   "split": "",
-   "choke_points": [
-    "C2"
-   ],
-   "depends_on": [
-    "KN-5",
-    "KN-76",
-    "KN-77",
-    "KN-78",
-    "KN-79"
-   ],
-   "screens": [
-    "tickets"
-   ],
-   "sections": {
-    "目的": "チケットの 1 件の画面（本文と版・テスト仕様と確認・つながり・完了・消す／戻す）を作る。",
-    "完了の条件": "- [ ] 画面がキャンバス（04_design/canvas）と DESIGN-kaname.md のとおり（部品は画面の土台 KN-5 のもの）\n- [ ] 画面の仕様書（07_qa/test-specs/screens/<画面>.md）を新しい画面で書き直し、行が全部 PASS\n- [ ] 操作要素 1 つ＝1 行の実ブラウザの試験（行 ID を名前に持つ Playwright・G28）が通る\n- [ ] 空・読み込み中・失敗・権限が無い の 4 つの状態がある\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] 画面 tickets：仕様書を書く → 作る → 実ブラウザの試験",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 画面 tickets の仕様書の行 | ① 機械＋③ 人 | `07_qa/test-specs/screens/tickets.md`（新しい画面で書き直す） | |\n| 画面 tickets の操作要素を実ブラウザで押した証拠 | ① 機械 | `pnpm ci:op-gate`（G28） | |\n| 画面 tickets の見た目がキャンバスと合う | ② 半分 | visual-fidelity（スクリーンショットの比べ） | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-128.33・D-128.80・D-128.84",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-80.md"
-  },
-  {
-   "id": "KN-81",
-   "title": "分身と作業する口",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-12",
-   "milestone": "節目①",
-   "area": "API",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-128.32",
-    "D-128.33",
-    "D-007",
-    "D-024",
-    "D-037",
-    "D-125.147",
-    "D-125.152",
-    "D-125.154",
-    "D-125.167",
-    "D-126.18",
-    "D-125.27",
-    "D-125.58"
-   ],
-   "split": "",
-   "choke_points": [
-    "C2",
-    "C3",
-    "C4",
-    "C5"
-   ],
-   "depends_on": [
-    "KN-51",
-    "KN-52"
-   ],
-   "apis": [
-    "getTicketAgentSession",
-    "sendTicketAgentMessage",
-    "applyTicketAgentProposal"
-   ],
-   "sections": {
-    "目的": "右のパネルで分身と話し、差分の案を本文に反映する口を作る（分身は呼んだ人の権限の中で動く）。",
-    "完了の条件": "- [ ] 契約の口が hooks（apps/api/src/hooks）か共通の処理で動き、まだの口の 501 で止まらない\n- [ ] 口ごとの生成の試験（apps/api/test/generated）の it.todo が全部本物の試験になって緑\n- [ ] 行の守り（RLS の場合表・G33）と権限の試験（G41）が、この口の分も緑\n- [ ] 契約 fuzz（G36）が、この口を回して緑\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] getTicketAgentSession（GET /api/v1/tickets/:id/agent-session）\n- [ ] sendTicketAgentMessage（POST /api/v1/tickets/:id/agent-session/messages）\n- [ ] applyTicketAgentProposal（POST /api/v1/tickets/:id/agent-session/apply）",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| getTicketAgentSession の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_tickets_id_agent_session.test.ts` | |\n| sendTicketAgentMessage の振る舞い（EARS 10 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_tickets_id_agent_session_messages.test.ts` | |\n| applyTicketAgentProposal の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_tickets_id_agent_session_apply.test.ts` | |\n| 行の守り（他の会社・範囲の外の行が取れない） | ① 機械 | `pnpm ci:access-matrix`（G33） | |\n| 契約の外の入力でも 500 を返さない・答えの形が契約どおり | ① 機械 | `pnpm ci:schemathesis`（G36） | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-128.32・D-128.33・D-007・D-024・D-037・D-125.147・D-125.152・D-125.154・D-125.167・D-126.18・D-125.27・D-125.58",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-81.md"
-  },
-  {
-   "id": "KN-82",
-   "title": "画面：右のパネルで分身と作業する",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-12",
-   "milestone": "節目①",
-   "area": "画面",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-128.32",
-    "D-128.33"
-   ],
-   "split": "",
-   "choke_points": [
-    "C2"
-   ],
-   "depends_on": [
-    "KN-5",
-    "KN-81"
-   ],
-   "screens": [
-    "tickets"
-   ],
-   "sections": {
-    "目的": "右のパネルの会話・差分を本文に出す・反映する・確認をやり直す、を作る。",
-    "完了の条件": "- [ ] 画面がキャンバス（04_design/canvas）と DESIGN-kaname.md のとおり（部品は画面の土台 KN-5 のもの）\n- [ ] 画面の仕様書（07_qa/test-specs/screens/<画面>.md）を新しい画面で書き直し、行が全部 PASS\n- [ ] 操作要素 1 つ＝1 行の実ブラウザの試験（行 ID を名前に持つ Playwright・G28）が通る\n- [ ] 空・読み込み中・失敗・権限が無い の 4 つの状態がある\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] 画面 tickets：仕様書を書く → 作る → 実ブラウザの試験",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 画面 tickets の仕様書の行 | ① 機械＋③ 人 | `07_qa/test-specs/screens/tickets.md`（新しい画面で書き直す） | |\n| 画面 tickets の操作要素を実ブラウザで押した証拠 | ① 機械 | `pnpm ci:op-gate`（G28） | |\n| 画面 tickets の見た目がキャンバスと合う | ② 半分 | visual-fidelity（スクリーンショットの比べ） | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-128.32・D-128.33",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-82.md"
-  },
-  {
-   "id": "KN-83",
-   "title": "承認の 1 件の口",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-13",
-   "milestone": "節目①",
-   "area": "API",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-128.86",
-    "D-128.87",
-    "D-128.89",
-    "D-012",
-    "D-037",
-    "D-040",
-    "D-125.103",
-    "D-125.152",
-    "D-125.167",
-    "D-125.19",
-    "D-125.85",
-    "D-126.18",
-    "D-125.105"
-   ],
-   "split": "",
-   "choke_points": [
-    "C2",
-    "C5"
-   ],
-   "depends_on": [
-    "KN-51",
-    "KN-52"
-   ],
-   "apis": [
-    "getApproval",
-    "approveApproval",
-    "editApproval",
-    "returnApproval",
-    "stopApproval",
-    "withdrawApproval"
-   ],
-   "sections": {
-    "目的": "承認する（取り消せない操作は直前の本人確認）・直して承認・理由つきで戻す・止める・取り下げる、を作る。",
-    "完了の条件": "- [ ] 契約の口が hooks（apps/api/src/hooks）か共通の処理で動き、まだの口の 501 で止まらない\n- [ ] 口ごとの生成の試験（apps/api/test/generated）の it.todo が全部本物の試験になって緑\n- [ ] 行の守り（RLS の場合表・G33）と権限の試験（G41）が、この口の分も緑\n- [ ] 契約 fuzz（G36）が、この口を回して緑\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] getApproval（GET /api/v1/approvals/:id）\n- [ ] approveApproval（POST /api/v1/approvals/:id/approve）\n- [ ] editApproval（POST /api/v1/approvals/:id/edit）\n- [ ] returnApproval（POST /api/v1/approvals/:id/return）\n- [ ] stopApproval（POST /api/v1/approvals/:id/stop）\n- [ ] withdrawApproval（POST /api/v1/approvals/:id/withdraw）\n- [ ] 前の道すじ POST /api/auth-ext/agent/memory/proposals/:id/decide（apps/api/src/auth/agent.ts）の中身を approveApproval に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| getApproval の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_approvals_id.test.ts` | |\n| approveApproval の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_approvals_id_approve.test.ts` | |\n| editApproval の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_approvals_id_edit.test.ts` | |\n| returnApproval の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_approvals_id_return.test.ts` | |\n| stopApproval の振る舞い（EARS 10 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_approvals_id_stop.test.ts` | |\n| withdrawApproval の振る舞い（EARS 9 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_approvals_id_withdraw.test.ts` | |\n| 行の守り（他の会社・範囲の外の行が取れない） | ① 機械 | `pnpm ci:access-matrix`（G33） | |\n| 契約の外の入力でも 500 を返さない・答えの形が契約どおり | ① 機械 | `pnpm ci:schemathesis`（G36） | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-128.86・D-128.87・D-128.89・D-012・D-037・D-040・D-125.103・D-125.152・D-125.167・D-125.19・D-125.85・D-126.18・D-125.105",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-83.md"
-  },
-  {
-   "id": "KN-84",
-   "title": "承認待ちの一覧とまとめて承認の口",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-13",
-   "milestone": "節目①",
-   "area": "API",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-128.86",
-    "D-128.87",
-    "D-128.89",
-    "D-012",
-    "D-037",
-    "D-040",
-    "D-125.103",
-    "D-125.152",
-    "D-125.167",
-    "D-125.19",
-    "D-125.85",
-    "D-126.18"
-   ],
-   "split": "",
-   "choke_points": [
-    "C2"
-   ],
-   "depends_on": [
-    "KN-51",
-    "KN-52"
-   ],
-   "apis": [
-    "listApprovalQueue",
-    "listApprovalHistory",
-    "previewBulkApproval",
-    "bulkApprove"
-   ],
-   "sections": {
-    "目的": "承認待ち・済んだものの一覧と、条件（D-128.86）に合うものだけまとめて承認、を作る。",
-    "完了の条件": "- [ ] 契約の口が hooks（apps/api/src/hooks）か共通の処理で動き、まだの口の 501 で止まらない\n- [ ] 口ごとの生成の試験（apps/api/test/generated）の it.todo が全部本物の試験になって緑\n- [ ] 行の守り（RLS の場合表・G33）と権限の試験（G41）が、この口の分も緑\n- [ ] 契約 fuzz（G36）が、この口を回して緑\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] listApprovalQueue（GET /api/v1/approvals/queue）\n- [ ] listApprovalHistory（GET /api/v1/approvals/history）\n- [ ] previewBulkApproval（POST /api/v1/approvals/bulk/preview）\n- [ ] bulkApprove（POST /api/v1/approvals/bulk）\n- [ ] 前の道すじ GET /api/auth-ext/agent/memory/reviews（apps/api/src/auth/agent.ts）の中身を listApprovalQueue に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| listApprovalQueue の振る舞い（EARS 6 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_approvals_queue.test.ts` | |\n| listApprovalHistory の振る舞い（EARS 6 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_approvals_history.test.ts` | |\n| previewBulkApproval の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_approvals_bulk_preview.test.ts` | |\n| bulkApprove の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_approvals_bulk.test.ts` | |\n| 行の守り（他の会社・範囲の外の行が取れない） | ① 機械 | `pnpm ci:access-matrix`（G33） | |\n| 契約の外の入力でも 500 を返さない・答えの形が契約どおり | ① 機械 | `pnpm ci:schemathesis`（G36） | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-128.86・D-128.87・D-128.89・D-012・D-037・D-040・D-125.103・D-125.152・D-125.167・D-125.19・D-125.85・D-126.18",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-84.md"
-  },
-  {
-   "id": "KN-85",
-   "title": "画面：承認待ち",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-13",
-   "milestone": "節目①",
-   "area": "画面",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-128.86",
-    "D-128.87",
-    "D-128.89"
-   ],
-   "split": "",
-   "choke_points": [
-    "C2"
-   ],
-   "depends_on": [
-    "KN-5",
-    "KN-83",
-    "KN-84"
-   ],
-   "screens": [
-    "approvals"
-   ],
-   "sections": {
-    "目的": "承認待ちの画面を作る。",
-    "完了の条件": "- [ ] 画面がキャンバス（04_design/canvas）と DESIGN-kaname.md のとおり（部品は画面の土台 KN-5 のもの）\n- [ ] 画面の仕様書（07_qa/test-specs/screens/<画面>.md）を新しい画面で書き直し、行が全部 PASS\n- [ ] 操作要素 1 つ＝1 行の実ブラウザの試験（行 ID を名前に持つ Playwright・G28）が通る\n- [ ] 空・読み込み中・失敗・権限が無い の 4 つの状態がある\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] 画面 approvals：仕様書を書く → 作る → 実ブラウザの試験",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 画面 approvals の仕様書の行 | ① 機械＋③ 人 | `07_qa/test-specs/screens/approvals.md`（新しい画面で書き直す） | |\n| 画面 approvals の操作要素を実ブラウザで押した証拠 | ① 機械 | `pnpm ci:op-gate`（G28） | |\n| 画面 approvals の見た目がキャンバスと合う | ② 半分 | visual-fidelity（スクリーンショットの比べ） | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-128.86・D-128.87・D-128.89",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-85.md"
-  },
-  {
-   "id": "KN-86",
-   "title": "会話の口",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-14",
-   "milestone": "節目①",
-   "area": "API",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-128.39",
-    "D-128.40",
-    "D-128.44",
-    "D-128.90",
-    "D-125.147",
-    "D-125.167",
-    "D-125.6",
-    "D-007",
-    "D-024",
-    "D-037",
-    "D-125.152",
-    "D-125.154",
-    "D-126.18",
-    "D-128.122"
-   ],
-   "split": "",
-   "choke_points": [
-    "C2",
-    "C3",
-    "C4",
-    "C5"
-   ],
-   "depends_on": [
-    "KN-51",
-    "KN-52"
-   ],
-   "apis": [
-    "listConversations",
-    "createConversation",
-    "getConversation",
-    "updateConversation",
-    "deleteConversation",
-    "listConversationMessages",
-    "sendConversationMessage",
-    "answerAgentPermission",
-    "stopConversation",
-    "createConversationAttachment",
-    "streamConversation"
-   ],
-   "sections": {
-    "目的": "分身との会話（分ける・名前・星・記憶に残さない・消す・書きながらの返事・許可の 3 択・止める・資料）を契約の口で作る（今の /api/auth-ext/agent の道すじを移す・KN-58 と一緒に）。",
-    "完了の条件": "- [ ] 契約の口が hooks（apps/api/src/hooks）か共通の処理で動き、まだの口の 501 で止まらない\n- [ ] 口ごとの生成の試験（apps/api/test/generated）の it.todo が全部本物の試験になって緑\n- [ ] 行の守り（RLS の場合表・G33）と権限の試験（G41）が、この口の分も緑\n- [ ] 契約 fuzz（G36）が、この口を回して緑\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] listConversations（GET /api/v1/conversations）\n- [ ] createConversation（POST /api/v1/conversations）\n- [ ] getConversation（GET /api/v1/conversations/:id）\n- [ ] updateConversation（PATCH /api/v1/conversations/:id）\n- [ ] deleteConversation（DELETE /api/v1/conversations/:id）\n- [ ] listConversationMessages（GET /api/v1/conversations/:id/messages）\n- [ ] sendConversationMessage（POST /api/v1/conversations/:id/messages）\n- [ ] answerAgentPermission（POST /api/v1/conversations/:id/permissions/:pid）\n- [ ] stopConversation（POST /api/v1/conversations/:id/stop）\n- [ ] createConversationAttachment（POST /api/v1/conversations/:id/attachments）\n- [ ] streamConversation（GET /api/v1/conversations/:id/stream）\n- [ ] 前の道すじ POST /api/auth-ext/agent/answer（apps/api/src/auth/ext.ts）の中身を answerAgentPermission に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ POST /api/auth-ext/agent/answer2（apps/api/src/auth/agent.ts）の中身を answerAgentPermission に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ POST /api/auth-ext/agent/attachments（apps/api/src/auth/agent.ts）の中身を createConversationAttachment に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ GET /api/auth-ext/agent/conversations（apps/api/src/auth/agent.ts）の中身を listConversations に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ POST /api/auth-ext/agent/conversations（apps/api/src/auth/agent.ts）の中身を createConversation に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ DELETE /api/auth-ext/agent/conversations/:id（apps/api/src/auth/agent.ts）の中身を deleteConversation に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ PATCH /api/auth-ext/agent/conversations/:id（apps/api/src/auth/agent.ts）の中身を updateConversation に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ POST /api/auth-ext/agent/conversations/:id/read（apps/api/src/auth/agent.ts）の中身を updateConversation に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ GET /api/auth-ext/agent/messages（apps/api/src/auth/agent.ts）の中身を listConversationMessages に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ POST /api/auth-ext/agent/new（apps/api/src/auth/ext.ts）の中身を createConversation に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ POST /api/auth-ext/agent/say（apps/api/src/auth/ext.ts）の中身を sendConversationMessage に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ GET /api/auth-ext/agent/state（apps/api/src/auth/ext.ts）の中身を listConversationMessages に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ POST /api/auth-ext/agent/steer（apps/api/src/auth/agent.ts）の中身を sendConversationMessage に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ POST /api/auth-ext/agent/stop（apps/api/src/auth/agent.ts）の中身を stopConversation に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ GET /api/auth-ext/agent/stream（apps/api/src/auth/agent-stream.ts）の中身を streamConversation に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| listConversations の振る舞い（EARS 6 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_conversations.test.ts` | |\n| createConversation の振る舞い（EARS 9 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_conversations.test.ts` | |\n| getConversation の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_conversations_id.test.ts` | |\n| updateConversation の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/patch_conversations_id.test.ts` | |\n| deleteConversation の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/delete_conversations_id.test.ts` | |\n| listConversationMessages の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_conversations_id_messages.test.ts` | |\n| sendConversationMessage の振る舞い（EARS 10 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_conversations_id_messages.test.ts` | |\n| answerAgentPermission の振る舞い（EARS 9 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_conversations_id_permissions_pid.test.ts` | |\n| stopConversation の振る舞い（EARS 9 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_conversations_id_stop.test.ts` | |\n| createConversationAttachment の振る舞い（EARS 9 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_conversations_id_attachments.test.ts` | |\n| streamConversation の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_conversations_id_stream.test.ts` | |\n| 行の守り（他の会社・範囲の外の行が取れない） | ① 機械 | `pnpm ci:access-matrix`（G33） | |\n| 契約の外の入力でも 500 を返さない・答えの形が契約どおり | ① 機械 | `pnpm ci:schemathesis`（G36） | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-128.39・D-128.40・D-128.44・D-128.90・D-125.147・D-125.167・D-125.6・D-007・D-024・D-037・D-125.152・D-125.154・D-126.18",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-86.md"
-  },
-  {
-   "id": "KN-87",
-   "title": "知っていること（記憶と覚えたいこと）の口",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-14",
-   "milestone": "節目①",
-   "area": "API",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-128.39",
-    "D-128.40",
-    "D-128.44",
-    "D-128.90",
-    "D-007",
-    "D-024",
-    "D-037",
-    "D-125.147",
-    "D-125.152",
-    "D-125.154",
-    "D-125.167",
-    "D-126.18",
-    "D-025",
-    "D-030",
-    "D-125.108",
-    "D-125.111",
-    "D-125.31",
-    "D-126.12",
-    "D-127.11",
-    "D-105",
-    "D-125.118"
-   ],
-   "split": "",
-   "choke_points": [
-    "C2",
-    "C4",
-    "C5"
-   ],
-   "depends_on": [
-    "KN-51",
-    "KN-52"
-   ],
-   "apis": [
-    "getMyClone",
-    "updateMyClone",
-    "countKnows",
-    "listMemories",
-    "createMemory",
-    "updateMemory",
-    "deleteMemory",
-    "promoteMemoryToRule",
-    "listLearningCandidates",
-    "acceptLearningCandidate",
-    "dismissLearningCandidate",
-    "postponeLearningCandidate",
-    "requestRuleException"
-   ],
-   "sections": {
-    "目的": "分身の設定・記憶・覚えたいことの候補（受ける・外す・あとで・決まりの例外を頼む）を作る。",
-    "完了の条件": "- [ ] 契約の口が hooks（apps/api/src/hooks）か共通の処理で動き、まだの口の 501 で止まらない\n- [ ] 口ごとの生成の試験（apps/api/test/generated）の it.todo が全部本物の試験になって緑\n- [ ] 行の守り（RLS の場合表・G33）と権限の試験（G41）が、この口の分も緑\n- [ ] 契約 fuzz（G36）が、この口を回して緑\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] getMyClone（GET /api/v1/clones/me）\n- [ ] updateMyClone（PATCH /api/v1/clones/me）\n- [ ] countKnows（GET /api/v1/clones/me/knows/counts）\n- [ ] listMemories（GET /api/v1/memories）\n- [ ] createMemory（POST /api/v1/memories）\n- [ ] updateMemory（PATCH /api/v1/memories/:id）\n- [ ] deleteMemory（DELETE /api/v1/memories/:id）\n- [ ] promoteMemoryToRule（POST /api/v1/memories/:id/promote）\n- [ ] listLearningCandidates（GET /api/v1/learning_candidates）\n- [ ] acceptLearningCandidate（POST /api/v1/learning_candidates/:id/accept）\n- [ ] dismissLearningCandidate（POST /api/v1/learning_candidates/:id/dismiss）\n- [ ] postponeLearningCandidate（POST /api/v1/learning_candidates/:id/later）\n- [ ] requestRuleException（POST /api/v1/learning_candidates/:id/exception-request）\n- [ ] 前の道すじ POST /api/auth-ext/agent/default-mode（apps/api/src/auth/agent.ts）の中身を updateMyClone に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ DELETE /api/auth-ext/agent/memory/:id（apps/api/src/auth/agent.ts）の中身を deleteMemory に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ PATCH /api/auth-ext/agent/memory/:id（apps/api/src/auth/agent.ts）の中身を updateMemory に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ GET /api/auth-ext/agent/memory/digest（apps/api/src/auth/agent.ts）の中身を listLearningCandidates に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ POST /api/auth-ext/agent/memory/digest/:id/pick（apps/api/src/auth/agent.ts）の中身を acceptLearningCandidate に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ POST /api/auth-ext/agent/memory/digest/:id/undo（apps/api/src/auth/agent.ts）の中身を dismissLearningCandidate に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ POST /api/auth-ext/agent/memory/proposals/:id/send（apps/api/src/auth/agent.ts）の中身を promoteMemoryToRule に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| getMyClone の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_clones_me.test.ts` | |\n| updateMyClone の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/patch_clones_me.test.ts` | |\n| countKnows の振る舞い（EARS 6 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_clones_me_knows_counts.test.ts` | |\n| listMemories の振る舞い（EARS 6 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_memories.test.ts` | |\n| createMemory の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_memories.test.ts` | |\n| updateMemory の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/patch_memories_id.test.ts` | |\n| deleteMemory の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/delete_memories_id.test.ts` | |\n| promoteMemoryToRule の振る舞い（EARS 9 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_memories_id_promote.test.ts` | |\n| listLearningCandidates の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_learning_candidates.test.ts` | |\n| acceptLearningCandidate の振る舞い（EARS 9 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_learning_candidates_id_accept.test.ts` | |\n| dismissLearningCandidate の振る舞い（EARS 9 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_learning_candidates_id_dismiss.test.ts` | |\n| postponeLearningCandidate の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_learning_candidates_id_later.test.ts` | |\n| requestRuleException の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_learning_candidates_id_exception_request.test.ts` | |\n| 行の守り（他の会社・範囲の外の行が取れない） | ① 機械 | `pnpm ci:access-matrix`（G33） | |\n| 契約の外の入力でも 500 を返さない・答えの形が契約どおり | ① 機械 | `pnpm ci:schemathesis`（G36） | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-128.39・D-128.40・D-128.44・D-128.90・D-007・D-024・D-037・D-125.147・D-125.152・D-125.154・D-125.167・D-126.18・D-025・D-030・D-125.108・D-125.111・D-125.31・D-126.12・D-127.11・D-105・D-125.118",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-87.md"
-  },
-  {
-   "id": "KN-88",
-   "title": "作ったものの口",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-14",
-   "milestone": "節目①",
-   "area": "API",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-128.39",
-    "D-128.40",
-    "D-128.44",
-    "D-128.90"
-   ],
-   "split": "",
-   "choke_points": [
-    "C2",
-    "C4"
-   ],
-   "depends_on": [
-    "KN-51",
-    "KN-52"
-   ],
-   "apis": [
-    "createArtifactFromMessage",
-    "updateArtifact",
-    "restoreArtifactVersion"
-   ],
-   "sections": {
-    "目的": "会話から作ったもの（文書・表など）と、その版を作る。",
-    "完了の条件": "- [ ] 契約の口が hooks（apps/api/src/hooks）か共通の処理で動き、まだの口の 501 で止まらない\n- [ ] 口ごとの生成の試験（apps/api/test/generated）の it.todo が全部本物の試験になって緑\n- [ ] 行の守り（RLS の場合表・G33）と権限の試験（G41）が、この口の分も緑\n- [ ] 契約 fuzz（G36）が、この口を回して緑\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] createArtifactFromMessage（POST /api/v1/messages/:id/artifacts）\n- [ ] updateArtifact（PATCH /api/v1/artifacts/:id）\n- [ ] restoreArtifactVersion（POST /api/v1/artifact_versions/:id/restore）\n- [ ] 前の道すじ POST /api/auth-ext/agent/artifacts（apps/api/src/auth/artifacts.ts）の中身を createArtifactFromMessage に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ PATCH /api/auth-ext/agent/artifacts/:id（apps/api/src/auth/artifacts.ts）の中身を updateArtifact に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ POST /api/auth-ext/agent/artifacts/:id/revert（apps/api/src/auth/artifacts.ts）の中身を restoreArtifactVersion に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ POST /api/auth-ext/agent/artifacts/:id/versions（apps/api/src/auth/artifacts.ts）の中身を updateArtifact に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| createArtifactFromMessage の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_messages_id_artifacts.test.ts` | |\n| updateArtifact の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/patch_artifacts_id.test.ts` | |\n| restoreArtifactVersion の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_artifact_versions_id_restore.test.ts` | |\n| 行の守り（他の会社・範囲の外の行が取れない） | ① 機械 | `pnpm ci:access-matrix`（G33） | |\n| 契約の外の入力でも 500 を返さない・答えの形が契約どおり | ① 機械 | `pnpm ci:schemathesis`（G36） | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-128.39・D-128.40・D-128.44・D-128.90",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-88.md"
-  },
-  {
-   "id": "KN-89",
-   "title": "やったことの口",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-14",
-   "milestone": "節目①",
-   "area": "API",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-128.39",
-    "D-128.40",
-    "D-128.44",
-    "D-128.90",
-    "D-037",
-    "D-042",
-    "D-062",
-    "D-125.106",
-    "D-125.107",
-    "D-125.152",
-    "D-125.167",
-    "D-126.18"
-   ],
-   "split": "",
-   "choke_points": [
-    "C2"
-   ],
-   "depends_on": [
-    "KN-51",
-    "KN-52"
-   ],
-   "apis": [
-    "listCloneActivity",
-    "exportCloneActivity",
-    "getCloneGrowth",
-    "getCloneNow"
-   ],
-   "sections": {
-    "目的": "分身がやったこと・いまやっていること・育ち・書き出しを作る。",
-    "完了の条件": "- [ ] 契約の口が hooks（apps/api/src/hooks）か共通の処理で動き、まだの口の 501 で止まらない\n- [ ] 口ごとの生成の試験（apps/api/test/generated）の it.todo が全部本物の試験になって緑\n- [ ] 行の守り（RLS の場合表・G33）と権限の試験（G41）が、この口の分も緑\n- [ ] 契約 fuzz（G36）が、この口を回して緑\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] listCloneActivity（GET /api/v1/clones/me/activity）\n- [ ] exportCloneActivity（POST /api/v1/clones/me/activity/export）\n- [ ] getCloneGrowth（GET /api/v1/clones/me/growth）\n- [ ] getCloneNow（GET /api/v1/clones/me/now）",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| listCloneActivity の振る舞い（EARS 5 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_clones_me_activity.test.ts` | |\n| exportCloneActivity の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_clones_me_activity_export.test.ts` | |\n| getCloneGrowth の振る舞い（EARS 5 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_clones_me_growth.test.ts` | |\n| getCloneNow の振る舞い（EARS 5 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_clones_me_now.test.ts` | |\n| 行の守り（他の会社・範囲の外の行が取れない） | ① 機械 | `pnpm ci:access-matrix`（G33） | |\n| 契約の外の入力でも 500 を返さない・答えの形が契約どおり | ① 機械 | `pnpm ci:schemathesis`（G36） | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-128.39・D-128.40・D-128.44・D-128.90・D-037・D-042・D-062・D-125.106・D-125.107・D-125.152・D-125.167・D-126.18",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-89.md"
-  },
-  {
-   "id": "KN-90",
-   "title": "画面：分身の部屋（会話と知っていること）",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-14",
-   "milestone": "節目①",
-   "area": "画面",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-128.39",
-    "D-128.40",
-    "D-128.44",
-    "D-128.90"
-   ],
-   "split": "",
-   "choke_points": [
-    "C2"
-   ],
-   "depends_on": [
-    "KN-5",
-    "KN-86",
-    "KN-87",
-    "KN-88",
-    "KN-89"
-   ],
-   "screens": [
-    "clone-chat"
-   ],
-   "sections": {
-    "目的": "分身の部屋の会話と知っていることの画面を作る。",
-    "完了の条件": "- [ ] 画面がキャンバス（04_design/canvas）と DESIGN-kaname.md のとおり（部品は画面の土台 KN-5 のもの）\n- [ ] 画面の仕様書（07_qa/test-specs/screens/<画面>.md）を新しい画面で書き直し、行が全部 PASS\n- [ ] 操作要素 1 つ＝1 行の実ブラウザの試験（行 ID を名前に持つ Playwright・G28）が通る\n- [ ] 空・読み込み中・失敗・権限が無い の 4 つの状態がある\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] 画面 clone-chat：仕様書を書く → 作る → 実ブラウザの試験",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 画面 clone-chat の仕様書の行 | ① 機械＋③ 人 | `07_qa/test-specs/screens/clone-chat.md`（新しい画面で書き直す） | |\n| 画面 clone-chat の操作要素を実ブラウザで押した証拠 | ① 機械 | `pnpm ci:op-gate`（G28） | |\n| 画面 clone-chat の見た目がキャンバスと合う | ② 半分 | visual-fidelity（スクリーンショットの比べ） | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-128.39・D-128.40・D-128.44・D-128.90",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-90.md"
-  },
-  {
-   "id": "KN-91",
-   "title": "画面：分身の部屋（やったこと）",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-14",
-   "milestone": "節目①",
-   "area": "画面",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-128.39",
-    "D-128.40",
-    "D-128.44",
-    "D-128.90"
-   ],
-   "split": "",
-   "choke_points": [
-    "C2"
-   ],
-   "depends_on": [
-    "KN-5",
-    "KN-86",
-    "KN-87",
-    "KN-88",
-    "KN-89"
-   ],
-   "screens": [
-    "ai-activity"
-   ],
-   "sections": {
-    "目的": "分身の部屋のやったことの画面を作る。",
-    "完了の条件": "- [ ] 画面がキャンバス（04_design/canvas）と DESIGN-kaname.md のとおり（部品は画面の土台 KN-5 のもの）\n- [ ] 画面の仕様書（07_qa/test-specs/screens/<画面>.md）を新しい画面で書き直し、行が全部 PASS\n- [ ] 操作要素 1 つ＝1 行の実ブラウザの試験（行 ID を名前に持つ Playwright・G28）が通る\n- [ ] 空・読み込み中・失敗・権限が無い の 4 つの状態がある\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] 画面 ai-activity：仕様書を書く → 作る → 実ブラウザの試験",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 画面 ai-activity の仕様書の行 | ① 機械＋③ 人 | `07_qa/test-specs/screens/ai-activity.md`（新しい画面で書き直す） | |\n| 画面 ai-activity の操作要素を実ブラウザで押した証拠 | ① 機械 | `pnpm ci:op-gate`（G28） | |\n| 画面 ai-activity の見た目がキャンバスと合う | ② 半分 | visual-fidelity（スクリーンショットの比べ） | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-128.39・D-128.40・D-128.44・D-128.90",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-91.md"
-  },
-  {
-   "id": "KN-92",
-   "title": "PC が仕事を受けて返す口",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-15",
-   "milestone": "節目①",
-   "area": "API",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-127.9",
-    "D-128.57",
-    "D-128.98",
-    "D-125.156",
-    "D-125.157",
-    "D-125.167",
-    "D-125.42",
-    "D-126.15",
-    "D-007",
-    "D-024",
-    "D-037",
-    "D-125.147",
-    "D-125.152",
-    "D-125.154",
-    "D-126.18",
-    "D-128.122"
-   ],
-   "split": "",
-   "choke_points": [
-    "C2",
-    "C3",
-    "C4",
-    "C5"
-   ],
-   "depends_on": [
-    "KN-51",
-    "KN-52"
-   ],
-   "apis": [
-    "takeBridgeJob",
-    "getJobControl",
-    "reportJobProgress",
-    "reportBrowserState",
-    "askFromBridge",
-    "getBridgeQuestionAnswer",
-    "callKanameTool",
-    "putArtifactFromBridge",
-    "mirrorConversationEntries",
-    "finishBridgeJob",
-    "getFileForBridge",
-    "listMirrorTargets"
-   ],
-   "sections": {
-    "目的": "PC の Bridge が、渡された仕事だけを受け、進み具合・質問・道具・作ったもの・終わりを返す口を作る（口は全部 /bridge/ の下・ZT10）。",
-    "完了の条件": "- [ ] 契約の口が hooks（apps/api/src/hooks）か共通の処理で動き、まだの口の 501 で止まらない\n- [ ] 口ごとの生成の試験（apps/api/test/generated）の it.todo が全部本物の試験になって緑\n- [ ] 行の守り（RLS の場合表・G33）と権限の試験（G41）が、この口の分も緑\n- [ ] 契約 fuzz（G36）が、この口を回して緑\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] takeBridgeJob（POST /api/v1/bridge/jobs/take）\n- [ ] getJobControl（GET /api/v1/bridge/jobs/:id/control）\n- [ ] reportJobProgress（POST /api/v1/bridge/jobs/:id/progress）\n- [ ] reportBrowserState（POST /api/v1/bridge/jobs/:id/browser）\n- [ ] askFromBridge（POST /api/v1/bridge/jobs/:id/questions）\n- [ ] getBridgeQuestionAnswer（GET /api/v1/bridge/jobs/:id/questions/:qid）\n- [ ] callKanameTool（POST /api/v1/bridge/jobs/:id/tools/:name）\n- [ ] putArtifactFromBridge（POST /api/v1/bridge/jobs/:id/artifacts）\n- [ ] mirrorConversationEntries（POST /api/v1/bridge/jobs/:id/conversation-entries）\n- [ ] finishBridgeJob（POST /api/v1/bridge/jobs/:id/finish）\n- [ ] getFileForBridge（GET /api/v1/bridge/files/:ref）\n- [ ] listMirrorTargets（GET /api/v1/bridge/mirror-targets）\n- [ ] 前の道すじ POST /api/auth-ext/bridge/answer（apps/api/src/auth/ext.ts）の中身を getBridgeQuestionAnswer に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ POST /api/auth-ext/bridge/answer2（apps/api/src/auth/agent.ts）の中身を getBridgeQuestionAnswer に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ POST /api/auth-ext/bridge/artifact（apps/api/src/auth/agent-tools.ts）の中身を putArtifactFromBridge に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ POST /api/auth-ext/bridge/ask（apps/api/src/auth/ext.ts）の中身を askFromBridge に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ POST /api/auth-ext/bridge/attachment（apps/api/src/auth/agent.ts）の中身を getFileForBridge に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ POST /api/auth-ext/bridge/code（apps/api/src/auth/ext.ts）の中身を getBridgeQuestionAnswer に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ POST /api/auth-ext/bridge/control（apps/api/src/auth/agent.ts）の中身を getJobControl に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ POST /api/auth-ext/bridge/entries（apps/api/src/auth/agent.ts）の中身を mirrorConversationEntries に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ POST /api/auth-ext/bridge/finish（apps/api/src/auth/ext.ts）の中身を finishBridgeJob に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ POST /api/auth-ext/bridge/mirror-targets（apps/api/src/auth/agent.ts）の中身を listMirrorTargets に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ POST /api/auth-ext/bridge/partial（apps/api/src/auth/agent.ts）の中身を reportJobProgress に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ POST /api/auth-ext/bridge/progress（apps/api/src/auth/ext.ts）の中身を reportJobProgress に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ POST /api/auth-ext/bridge/steers（apps/api/src/auth/agent.ts）の中身を getJobControl に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ POST /api/auth-ext/bridge/take（apps/api/src/auth/ext.ts）の中身を takeBridgeJob に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ POST /api/auth-ext/bridge/tool（apps/api/src/auth/agent-tools.ts）の中身を callKanameTool に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）\n- [ ] 前の道すじ GET /api/auth-ext/files/:ref{.+}（apps/api/src/auth/agent.ts）の中身を getFileForBridge に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| takeBridgeJob の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_bridge_jobs_take.test.ts` | |\n| getJobControl の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_bridge_jobs_id_control.test.ts` | |\n| reportJobProgress の振る舞い（EARS 9 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_bridge_jobs_id_progress.test.ts` | |\n| reportBrowserState の振る舞い（EARS 9 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_bridge_jobs_id_browser.test.ts` | |\n| askFromBridge の振る舞い（EARS 9 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_bridge_jobs_id_questions.test.ts` | |\n| getBridgeQuestionAnswer の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_bridge_jobs_id_questions_qid.test.ts` | |\n| callKanameTool の振る舞い（EARS 9 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_bridge_jobs_id_tools_name.test.ts` | |\n| putArtifactFromBridge の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_bridge_jobs_id_artifacts.test.ts` | |\n| mirrorConversationEntries の振る舞い（EARS 9 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_bridge_jobs_id_conversation_entries.test.ts` | |\n| finishBridgeJob の振る舞い（EARS 9 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_bridge_jobs_id_finish.test.ts` | |\n| getFileForBridge の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_bridge_files_ref.test.ts` | |\n| listMirrorTargets の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_bridge_mirror_targets.test.ts` | |\n| 行の守り（他の会社・範囲の外の行が取れない） | ① 機械 | `pnpm ci:access-matrix`（G33） | |\n| 契約の外の入力でも 500 を返さない・答えの形が契約どおり | ① 機械 | `pnpm ci:schemathesis`（G36） | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-127.9・D-128.57・D-128.98・D-125.156・D-125.157・D-125.167・D-125.42・D-126.15・D-007・D-024・D-037・D-125.147・D-125.152・D-125.154・D-126.18",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-92.md"
-  },
-  {
-   "id": "KN-93",
-   "title": "実行の 1 件・任せる・試す・止める・やり直す・引き取るの口",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-15",
-   "milestone": "節目①",
-   "area": "API",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-127.9",
-    "D-128.57",
-    "D-128.98",
-    "D-125.156",
-    "D-125.157",
-    "D-125.167",
-    "D-125.42",
-    "D-126.15",
-    "D-125.144",
-    "D-125.4",
-    "D-125.105",
-    "D-066",
-    "D-068",
-    "D-125.143",
-    "D-125.76"
-   ],
-   "split": "",
-   "choke_points": [
-    "C1",
-    "C2",
-    "C3",
-    "C5",
-    "C6"
-   ],
-   "depends_on": [
-    "KN-51",
-    "KN-52"
-   ],
-   "apis": [
-    "getActionRun",
-    "listTicketRuns",
-    "delegateTicket",
-    "dryRunTicket",
-    "stopActionRun",
-    "retryActionRun",
-    "takeoverActionRun"
-   ],
-   "sections": {
-    "目的": "チケットを分身に任せる・宛先を自分にして試す・実行の 1 件・止める・やり直す・自分でやるに切り替える、を作る。",
-    "完了の条件": "- [ ] 契約の口が hooks（apps/api/src/hooks）か共通の処理で動き、まだの口の 501 で止まらない\n- [ ] 口ごとの生成の試験（apps/api/test/generated）の it.todo が全部本物の試験になって緑\n- [ ] 行の守り（RLS の場合表・G33）と権限の試験（G41）が、この口の分も緑\n- [ ] 契約 fuzz（G36）が、この口を回して緑\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] getActionRun（GET /api/v1/action_runs/:id）\n- [ ] listTicketRuns（GET /api/v1/tickets/:id/runs）\n- [ ] delegateTicket（POST /api/v1/tickets/:id/delegate）\n- [ ] dryRunTicket（POST /api/v1/tickets/:id/dry-run）\n- [ ] stopActionRun（POST /api/v1/action_runs/:id/stop）\n- [ ] retryActionRun（POST /api/v1/action_runs/:id/retry）\n- [ ] takeoverActionRun（POST /api/v1/action_runs/:id/takeover）\n- [ ] 前の道すじ POST /api/auth-ext/agent/resume（apps/api/src/auth/ext.ts）の中身を retryActionRun に移し、前の画面・Bridge の呼び先を替えて消す（KN-58）",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| getActionRun の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_action_runs_id.test.ts` | |\n| listTicketRuns の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_tickets_id_runs.test.ts` | |\n| delegateTicket の振る舞い（EARS 9 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_tickets_id_delegate.test.ts` | |\n| dryRunTicket の振る舞い（EARS 9 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_tickets_id_dry_run.test.ts` | |\n| stopActionRun の振る舞い（EARS 9 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_action_runs_id_stop.test.ts` | |\n| retryActionRun の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_action_runs_id_retry.test.ts` | |\n| takeoverActionRun の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_action_runs_id_takeover.test.ts` | |\n| 行の守り（他の会社・範囲の外の行が取れない） | ① 機械 | `pnpm ci:access-matrix`（G33） | |\n| 契約の外の入力でも 500 を返さない・答えの形が契約どおり | ① 機械 | `pnpm ci:schemathesis`（G36） | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-127.9・D-128.57・D-128.98・D-125.156・D-125.157・D-125.167・D-125.42・D-126.15・D-125.144・D-125.4・D-125.105・D-066・D-068・D-125.143・D-125.76",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-93.md"
-  },
-  {
-   "id": "KN-94",
-   "title": "承認から実行・外に出すまで（実行待ちは 24 時間で聞き直す）",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-15",
-   "milestone": "節目①",
-   "area": "流れ",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-127.9",
-    "D-128.57",
-    "D-128.98"
-   ],
-   "split": "",
-   "choke_points": [
-    "C1",
-    "C2",
-    "C5",
-    "C6"
-   ],
-   "depends_on": [
-    "KN-92",
-    "KN-93"
-   ],
-   "sections": {
-    "目的": "承認したものを PC の分身が実行し、関門（外に出す・通知・ファイル）を通って外に出す。PC が切れていたら実行待ちにして 24 時間で聞き直す。",
-    "完了の条件": "- [ ] 流れの自動の試験（ステージングで、本物の PC の Bridge か偽の Bridge を通す）が通る\n- [ ] 実ブラウザで流れを通した記録がある\n- [ ] 外に出すのは承認のあとだけ・関門を通る（迂回 0）\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] 流れの仕様（07_qa/test-specs/journeys/plan.json に行を足す）\n- [ ] 自動の試験\n- [ ] 実ブラウザで通す",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 承認から実行・外に出すまで（実行待ちは 24 時間で聞き直す） の流れ | ① 機械 | `apps/e2e/journeys`（plan.json の行） | |\n| 承認から実行・外に出すまで（実行待ちは 24 時間で聞き直す） を実ブラウザで通した記録 | ③ 人 | ステージングの記録 | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-127.9・D-128.57・D-128.98",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-94.md"
-  },
-  {
-   "id": "KN-95",
-   "title": "運営の業務の型を配る口",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-16",
-   "milestone": "節目①",
-   "area": "API",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-126.23",
-    "D-128.94",
-    "D-128.72",
-    "D-125.167",
-    "D-126.18",
-    "D-126.19",
-    "D-126.3",
-    "D-126.5"
-   ],
-   "split": "",
-   "choke_points": [
-    "C2",
-    "C4"
-   ],
-   "depends_on": [
-    "KN-51",
-    "KN-52"
-   ],
-   "apis": [
-    "listOpsWorkTypes",
-    "getOpsWorkType",
-    "uploadWorkTypePackage",
-    "getWorkTypeUpload",
-    "releaseOpsWorkType",
-    "rollbackOpsWorkType"
-   ],
-   "sections": {
-    "目的": "運営が全社向けの業務の型を上げ、確かめて配り、戻せる口を作る（節目①は運営の全社向けだけ）。",
-    "完了の条件": "- [ ] 契約の口が hooks（apps/api/src/hooks）か共通の処理で動き、まだの口の 501 で止まらない\n- [ ] 口ごとの生成の試験（apps/api/test/generated）の it.todo が全部本物の試験になって緑\n- [ ] 行の守り（RLS の場合表・G33）と権限の試験（G41）が、この口の分も緑\n- [ ] 契約 fuzz（G36）が、この口を回して緑\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] listOpsWorkTypes（GET /api/v1/ops/work_types）\n- [ ] getOpsWorkType（GET /api/v1/ops/work_types/:id）\n- [ ] uploadWorkTypePackage（POST /api/v1/ops/work_type_uploads）\n- [ ] getWorkTypeUpload（GET /api/v1/ops/work_type_uploads/:id）\n- [ ] releaseOpsWorkType（POST /api/v1/ops/work_types/:id/versions）\n- [ ] rollbackOpsWorkType（POST /api/v1/ops/work_types/:id/versions/:v/rollback）",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| listOpsWorkTypes の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_ops_work_types.test.ts` | |\n| getOpsWorkType の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_ops_work_types_id.test.ts` | |\n| uploadWorkTypePackage の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_ops_work_type_uploads.test.ts` | |\n| getWorkTypeUpload の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_ops_work_type_uploads_id.test.ts` | |\n| releaseOpsWorkType の振る舞い（EARS 9 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_ops_work_types_id_versions.test.ts` | |\n| rollbackOpsWorkType の振る舞い（EARS 9 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_ops_work_types_id_versions_v_rollback.test.ts` | |\n| 行の守り（他の会社・範囲の外の行が取れない） | ① 機械 | `pnpm ci:access-matrix`（G33） | |\n| 契約の外の入力でも 500 を返さない・答えの形が契約どおり | ① 機械 | `pnpm ci:schemathesis`（G36） | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-126.23・D-128.94・D-128.72・D-125.167・D-126.18・D-126.19・D-126.3・D-126.5",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-95.md"
-  },
-  {
-   "id": "KN-96",
-   "title": "運営のテンプレートと運営の操作の記録の口",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-16",
-   "milestone": "節目①",
-   "area": "API",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-126.23",
-    "D-128.94",
-    "D-128.72",
-    "D-125.167",
-    "D-125.72",
-    "D-126.18",
-    "D-126.19",
-    "D-126.3",
-    "D-126.5"
-   ],
-   "split": "",
-   "choke_points": [
-    "C2",
-    "C4",
-    "C6"
-   ],
-   "depends_on": [
-    "KN-51",
-    "KN-52"
-   ],
-   "apis": [
-    "listOpsTemplates",
-    "getOpsTemplate",
-    "releaseOpsTemplate",
-    "listOperations"
-   ],
-   "sections": {
-    "目的": "チケットの形などのテンプレートを配る口と、運営がしたことの一覧を作る。",
-    "完了の条件": "- [ ] 契約の口が hooks（apps/api/src/hooks）か共通の処理で動き、まだの口の 501 で止まらない\n- [ ] 口ごとの生成の試験（apps/api/test/generated）の it.todo が全部本物の試験になって緑\n- [ ] 行の守り（RLS の場合表・G33）と権限の試験（G41）が、この口の分も緑\n- [ ] 契約 fuzz（G36）が、この口を回して緑\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] listOpsTemplates（GET /api/v1/ops/templates）\n- [ ] getOpsTemplate（GET /api/v1/ops/templates/:id）\n- [ ] releaseOpsTemplate（POST /api/v1/ops/templates/:id/versions）\n- [ ] listOperations（GET /api/v1/ops/operations）",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| listOpsTemplates の振る舞い（EARS 6 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_ops_templates.test.ts` | |\n| getOpsTemplate の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_ops_templates_id.test.ts` | |\n| releaseOpsTemplate の振る舞い（EARS 8 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/post_ops_templates_id_versions.test.ts` | |\n| listOperations の振る舞い（EARS 7 本：2xx・401・403・404・422・429・形） | ① 機械 | `apps/api/test/generated/get_ops_operations.test.ts` | |\n| 行の守り（他の会社・範囲の外の行が取れない） | ① 機械 | `pnpm ci:access-matrix`（G33） | |\n| 契約の外の入力でも 500 を返さない・答えの形が契約どおり | ① 機械 | `pnpm ci:schemathesis`（G36） | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-126.23・D-128.94・D-128.72・D-125.167・D-125.72・D-126.18・D-126.19・D-126.3・D-126.5",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-96.md"
-  },
-  {
-   "id": "KN-97",
-   "title": "画面：運営の配るもの",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-16",
-   "milestone": "節目①",
-   "area": "画面",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-126.23",
-    "D-128.94",
-    "D-128.72"
-   ],
-   "split": "",
-   "choke_points": [
-    "C2"
-   ],
-   "depends_on": [
-    "KN-5",
-    "KN-95",
-    "KN-96"
-   ],
-   "screens": [
-    "ops-skills"
-   ],
-   "sections": {
-    "目的": "運営の配るもの（業務の型・テンプレート）の画面を作る。",
-    "完了の条件": "- [ ] 画面がキャンバス（04_design/canvas）と DESIGN-kaname.md のとおり（部品は画面の土台 KN-5 のもの）\n- [ ] 画面の仕様書（07_qa/test-specs/screens/<画面>.md）を新しい画面で書き直し、行が全部 PASS\n- [ ] 操作要素 1 つ＝1 行の実ブラウザの試験（行 ID を名前に持つ Playwright・G28）が通る\n- [ ] 空・読み込み中・失敗・権限が無い の 4 つの状態がある\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] 画面 ops-skills：仕様書を書く → 作る → 実ブラウザの試験",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 画面 ops-skills の仕様書の行 | ① 機械＋③ 人 | `07_qa/test-specs/screens/ops-skills.md`（新しい画面で書き直す） | |\n| 画面 ops-skills の操作要素を実ブラウザで押した証拠 | ① 機械 | `pnpm ci:op-gate`（G28） | |\n| 画面 ops-skills の見た目がキャンバスと合う | ② 半分 | visual-fidelity（スクリーンショットの比べ） | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-126.23・D-128.94・D-128.72",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-97.md"
-  },
-  {
-   "id": "KN-98",
-   "title": "題材：応募文",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-17",
-   "milestone": "節目①",
-   "area": "流れ",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-125.167"
-   ],
-   "split": "",
-   "choke_points": [
-    "C1",
-    "C2",
-    "C3",
-    "C5",
-    "C6"
-   ],
-   "depends_on": [
-    "KN-15"
-   ],
-   "sections": {
-    "目的": "応募文をチケットから作り、確かめ、承認して外に出すまでを通す。",
-    "完了の条件": "- [ ] 流れの自動の試験（ステージングで、本物の PC の Bridge か偽の Bridge を通す）が通る\n- [ ] 実ブラウザで流れを通した記録がある\n- [ ] 外に出すのは承認のあとだけ・関門を通る（迂回 0）\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] 流れの仕様（07_qa/test-specs/journeys/plan.json に行を足す）\n- [ ] 自動の試験\n- [ ] 実ブラウザで通す",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 題材：応募文 の流れ | ① 機械 | `apps/e2e/journeys`（plan.json の行） | |\n| 題材：応募文 を実ブラウザで通した記録 | ③ 人 | ステージングの記録 | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-125.167",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-98.md"
-  },
-  {
-   "id": "KN-99",
-   "title": "題材：見積",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-17",
-   "milestone": "節目①",
-   "area": "流れ",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-125.167"
-   ],
-   "split": "",
-   "choke_points": [
-    "C1",
-    "C2",
-    "C3",
-    "C5",
-    "C6"
-   ],
-   "depends_on": [
-    "KN-15"
-   ],
-   "sections": {
-    "目的": "見積をチケットから作り、確かめ、承認して外に出すまでを通す。",
-    "完了の条件": "- [ ] 流れの自動の試験（ステージングで、本物の PC の Bridge か偽の Bridge を通す）が通る\n- [ ] 実ブラウザで流れを通した記録がある\n- [ ] 外に出すのは承認のあとだけ・関門を通る（迂回 0）\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] 流れの仕様（07_qa/test-specs/journeys/plan.json に行を足す）\n- [ ] 自動の試験\n- [ ] 実ブラウザで通す",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 題材：見積 の流れ | ① 機械 | `apps/e2e/journeys`（plan.json の行） | |\n| 題材：見積 を実ブラウザで通した記録 | ③ 人 | ステージングの記録 | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-125.167",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-99.md"
-  },
-  {
-   "id": "KN-100",
-   "title": "題材：請求書",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-17",
-   "milestone": "節目①",
-   "area": "流れ",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-125.167"
-   ],
-   "split": "",
-   "choke_points": [
-    "C1",
-    "C2",
-    "C3",
-    "C5",
-    "C6"
-   ],
-   "depends_on": [
-    "KN-15"
-   ],
-   "sections": {
-    "目的": "請求書をチケットから作り、確かめ、承認して外に出すまでを通す。",
-    "完了の条件": "- [ ] 流れの自動の試験（ステージングで、本物の PC の Bridge か偽の Bridge を通す）が通る\n- [ ] 実ブラウザで流れを通した記録がある\n- [ ] 外に出すのは承認のあとだけ・関門を通る（迂回 0）\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] 流れの仕様（07_qa/test-specs/journeys/plan.json に行を足す）\n- [ ] 自動の試験\n- [ ] 実ブラウザで通す",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 題材：請求書 の流れ | ① 機械 | `apps/e2e/journeys`（plan.json の行） | |\n| 題材：請求書 を実ブラウザで通した記録 | ③ 人 | ステージングの記録 | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-125.167",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-100.md"
-  },
-  {
-   "id": "KN-101",
-   "title": "題材：問い合わせの返信",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-17",
-   "milestone": "節目①",
-   "area": "流れ",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-125.167"
-   ],
-   "split": "",
-   "choke_points": [
-    "C1",
-    "C2",
-    "C3",
-    "C5",
-    "C6"
-   ],
-   "depends_on": [
-    "KN-15"
-   ],
-   "sections": {
-    "目的": "問い合わせへの返信をチケットから作り、確かめ、承認して外に出すまでを通す。",
-    "完了の条件": "- [ ] 流れの自動の試験（ステージングで、本物の PC の Bridge か偽の Bridge を通す）が通る\n- [ ] 実ブラウザで流れを通した記録がある\n- [ ] 外に出すのは承認のあとだけ・関門を通る（迂回 0）\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] 流れの仕様（07_qa/test-specs/journeys/plan.json に行を足す）\n- [ ] 自動の試験\n- [ ] 実ブラウザで通す",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 題材：問い合わせの返信 の流れ | ① 機械 | `apps/e2e/journeys`（plan.json の行） | |\n| 題材：問い合わせの返信 を実ブラウザで通した記録 | ③ 人 | ステージングの記録 | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-125.167",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-101.md"
-  },
-  {
-   "id": "KN-102",
-   "title": "題材：メール",
-   "kind": "タスク",
-   "stage": "未着手",
-   "parent": "KN-17",
-   "milestone": "節目①",
-   "area": "流れ",
-   "assignee": "Claude（このセッション）",
-   "due": "2026-11-20",
-   "decisions": [
-    "D-125.167"
-   ],
-   "split": "",
-   "choke_points": [
-    "C1",
-    "C2",
-    "C3",
-    "C5",
-    "C6"
-   ],
-   "depends_on": [
-    "KN-15"
-   ],
-   "sections": {
-    "目的": "メールをチケットから作り、確かめ、承認して送るまでを通す。",
-    "完了の条件": "- [ ] 流れの自動の試験（ステージングで、本物の PC の Bridge か偽の Bridge を通す）が通る\n- [ ] 実ブラウザで流れを通した記録がある\n- [ ] 外に出すのは承認のあとだけ・関門を通る（迂回 0）\n- [ ] CI が緑",
-    "前提と制約": "- 決定ログで決まっていることは聞かずに進め、ここに「決定に従った」と残す。決まっていないことはまとまりごとにまとめて聞く（D-128.118）\n- 権限の言葉・本人確認・行の確かめは入口（KN-51・KN-52）が見る。hooks の中でも行の守り（RLS）が効く",
-    "実施事項": "- [ ] 流れの仕様（07_qa/test-specs/journeys/plan.json に行を足す）\n- [ ] 自動の試験\n- [ ] 実ブラウザで通す",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 題材：メール の流れ | ① 機械 | `apps/e2e/journeys`（plan.json の行） | |\n| 題材：メール を実ブラウザで通した記録 | ③ 人 | ステージングの記録 | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-125.167",
-    "リスクと懸念": "",
-    "申し送り": ""
-   },
-   "file": "11_tickets/KN-102.md"
   },
   {
    "id": "KN-103",
@@ -4881,6 +1632,860 @@
     "見つけたもの": "| 見つけたもの | 前からあったもの／自分のミス | どうした |\n|---|---|---|\n| v3-gate.yml で G27・G28 の番号が static と spec に 2 回ずつある | 前からあったもの | dagci の段は job の名前を付けて分けた。番号の直しはこのチケット |\n| ci.yaml の書式が prettier に合っていなかった | **自分のミス** | dagci の lint の段が赤にした。直した |\n| G38（生成物）と G43（秘密の混入）が git ls-files を -z 無しで読み、日本語の名前のファイル 68 本を開けずに黙って飛ばしていた | 前からあったもの（dagci の容れ物の中で初めて見えた） | -z で読むよう直した。目録に無かった生成物（05_flow/使ってもらい方.md）を足した。秘密の検査の自己試験に日本語の名前のファイルを足し、直す前の読み方で赤になるのを確かめた。G47 に W4（台本が -z 無しで読んだら赤）を足した |\n| 画面の試験の段で、立ち上げの手順の書き換えを誤り、立ち上がった後も赤で終わっていた | **自分のミス** | 立ち上げの命令を写さずに書き直した |\n| dagci で DB を使う検査が同時に流れ、同じ DB を取り合っていた | **自分のミス**（GitHub は job の中を順に流す、を写していなかった） | job ごとに Postgres を分け、job の中は順に流す |\n| 容れ物の Python 3.11 で schemathesis が落ちた | 環境の違い | GitHub と同じ 3.12 にそろえた |"
    },
    "file": "11_tickets/KN-124.md"
+  },
+  {
+   "id": "KN-125",
+   "title": "F1 登録してログインできる（流れのまとまり・まだ切っていない）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "",
+   "milestone": "流れ",
+   "area": "流れ",
+   "assignee": "未定",
+   "due": "",
+   "decisions": [
+    "D-001",
+    "D-002",
+    "D-042",
+    "D-125.135",
+    "D-125.136",
+    "D-125.137",
+    "D-125.138",
+    "D-125.140",
+    "D-125.146",
+    "D-125.150",
+    "D-125.158",
+    "D-125.162",
+    "D-125.167",
+    "D-128.62",
+    "D-128.91",
+    "D-128.125",
+    "D-128.126",
+    "D-128.136"
+   ],
+   "split": "これから",
+   "screens": [
+    "login",
+    "mfa-setup",
+    "password-reset",
+    "signup",
+    "verify-email"
+   ],
+   "apis": [
+    "changePassword",
+    "consentToTerms",
+    "createSignup",
+    "deletePasskey",
+    "getCurrentTerms",
+    "getMySecurity",
+    "getServiceStatus",
+    "getSignupStatus",
+    "renamePasskey",
+    "requestAdminRecovery",
+    "requestPasswordReset",
+    "resendSignupEmail",
+    "resetPassword",
+    "signInWithPassword",
+    "signOut",
+    "verifySignInCode",
+    "verifySignup"
+   ],
+   "depends_on": [],
+   "sections": {
+    "目的": "流れ F1「登録してログインできる」を、新しい形のチケット（利用者の 1 つの操作＝1 つの実装・ai-driven-process.md §3）に切るまでの入れ物。古い形の未着手のチケットから、画面・API・決定を引き継いだ（D-128.136）。",
+    "完了の条件": "- [ ] この流れの操作が、どれも新しい形のチケット（分類・目録で探した結果・実装の詳細・8 観点の分岐とテスト・状態 × 入口 × 利用者の状態の表）に切られている\n- [ ] 下の画面・API が、切ったチケットのどれかに移り、このまとまりから消えている\n- [ ] この流れの中間テストの組と統合テストが決まっている",
+    "前提と制約": "- 切るのは 1 つ先を並行で（今の流れを実装している間に）。一気に全部は切らない\n- 引き継いだ古いチケット：KN-8・KN-59・KN-60・KN-61・KN-62・KN-63・KN-64（11_tickets/_old/ に残す。切るときに目録として読む）"
+   },
+   "file": "11_tickets/KN-125.md"
+  },
+  {
+   "id": "KN-126",
+   "title": "F2 招かれて参加する（流れのまとまり・まだ切っていない）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "",
+   "milestone": "流れ",
+   "area": "流れ",
+   "assignee": "未定",
+   "due": "",
+   "decisions": [
+    "D-128.125",
+    "D-128.126",
+    "D-128.136"
+   ],
+   "split": "これから",
+   "screens": [
+    "invite-accept"
+   ],
+   "apis": [],
+   "depends_on": [],
+   "sections": {
+    "目的": "流れ F2「招かれて参加する」を、新しい形のチケット（利用者の 1 つの操作＝1 つの実装・ai-driven-process.md §3）に切るまでの入れ物。古い形の未着手のチケットから、画面・API・決定を引き継いだ（D-128.136）。",
+    "完了の条件": "- [ ] この流れの操作が、どれも新しい形のチケット（分類・目録で探した結果・実装の詳細・8 観点の分岐とテスト・状態 × 入口 × 利用者の状態の表）に切られている\n- [ ] 下の画面・API が、切ったチケットのどれかに移り、このまとまりから消えている\n- [ ] この流れの中間テストの組と統合テストが決まっている",
+    "前提と制約": "- 切るのは 1 つ先を並行で（今の流れを実装している間に）。一気に全部は切らない\n- 引き継いだ古いチケット：なし（画面だけを引き継いだ）（11_tickets/_old/ に残す。切るときに目録として読む）"
+   },
+   "file": "11_tickets/KN-126.md"
+  },
+  {
+   "id": "KN-127",
+   "title": "F3 使い始めの準備（流れのまとまり・まだ切っていない）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "",
+   "milestone": "流れ",
+   "area": "流れ",
+   "assignee": "未定",
+   "due": "",
+   "decisions": [
+    "D-004",
+    "D-015",
+    "D-017",
+    "D-041",
+    "D-055",
+    "D-125.142",
+    "D-125.143",
+    "D-125.146",
+    "D-125.148",
+    "D-125.149",
+    "D-125.151",
+    "D-125.167",
+    "D-128.55",
+    "D-128.57",
+    "D-128.92",
+    "D-128.93",
+    "D-128.125",
+    "D-128.126",
+    "D-128.136"
+   ],
+   "split": "これから",
+   "screens": [
+    "bridge-setup",
+    "credentials"
+   ],
+   "apis": [
+    "answerCredentialLoginCheck",
+    "checkCredentialLogin",
+    "claimPairingCode",
+    "createCredential",
+    "createPairingCode",
+    "deleteCredential",
+    "downloadBridgeRelease",
+    "getLatestBridgeRelease",
+    "listCredentials",
+    "listMyDevices",
+    "reportCredentialCheck",
+    "resolveCredential",
+    "revokeMyDevice",
+    "sendHeartbeat",
+    "updateCredential",
+    "updateMyDevice"
+   ],
+   "depends_on": [],
+   "sections": {
+    "目的": "流れ F3「使い始めの準備」を、新しい形のチケット（利用者の 1 つの操作＝1 つの実装・ai-driven-process.md §3）に切るまでの入れ物。古い形の未着手のチケットから、画面・API・決定を引き継いだ（D-128.136）。",
+    "完了の条件": "- [ ] この流れの操作が、どれも新しい形のチケット（分類・目録で探した結果・実装の詳細・8 観点の分岐とテスト・状態 × 入口 × 利用者の状態の表）に切られている\n- [ ] 下の画面・API が、切ったチケットのどれかに移り、このまとまりから消えている\n- [ ] この流れの中間テストの組と統合テストが決まっている",
+    "前提と制約": "- 切るのは 1 つ先を並行で（今の流れを実装している間に）。一気に全部は切らない\n- 引き継いだ古いチケット：KN-9・KN-66・KN-67・KN-69・KN-70（11_tickets/_old/ に残す。切るときに目録として読む）"
+   },
+   "file": "11_tickets/KN-127.md"
+  },
+  {
+   "id": "KN-128",
+   "title": "F4 チケットを作って中身を決める（流れのまとまり・まだ切っていない）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "",
+   "milestone": "流れ",
+   "area": "流れ",
+   "assignee": "未定",
+   "due": "",
+   "decisions": [
+    "D-008",
+    "D-012",
+    "D-037",
+    "D-040",
+    "D-125.6",
+    "D-125.7",
+    "D-125.17",
+    "D-125.19",
+    "D-125.27",
+    "D-125.33",
+    "D-125.38",
+    "D-125.39",
+    "D-125.51",
+    "D-125.55",
+    "D-125.57",
+    "D-125.58",
+    "D-125.59",
+    "D-125.61",
+    "D-125.62",
+    "D-125.79",
+    "D-125.82",
+    "D-125.83",
+    "D-125.85",
+    "D-125.97",
+    "D-125.98",
+    "D-125.103",
+    "D-125.110",
+    "D-125.145",
+    "D-125.152",
+    "D-125.167",
+    "D-126.13",
+    "D-126.16",
+    "D-126.18",
+    "D-128.32",
+    "D-128.33",
+    "D-128.39",
+    "D-128.40",
+    "D-128.44",
+    "D-128.80",
+    "D-128.83",
+    "D-128.84",
+    "D-128.85",
+    "D-128.90",
+    "D-128.125",
+    "D-128.126",
+    "D-128.136"
+   ],
+   "split": "これから",
+   "screens": [
+    "clone-chat",
+    "tickets"
+   ],
+   "apis": [
+    "applyTicketAgentProposal",
+    "bulkUpdateTickets",
+    "commitTicketImport",
+    "createConversation",
+    "createTestSpec",
+    "createTicket",
+    "createTicketAttachment",
+    "createTicketImport",
+    "createTicketLink",
+    "deleteTestSpec",
+    "deleteTicketLink",
+    "getArtifactVersion",
+    "getTicket",
+    "getTicketImport",
+    "lintTestSpecs",
+    "listChecks",
+    "listClassAxes",
+    "listClients",
+    "listMembers",
+    "listTestSpecs",
+    "listTicketArtifacts",
+    "listTicketKinds",
+    "listTicketLinks",
+    "listTicketReferences",
+    "listTicketStages",
+    "listTicketVersions",
+    "listWorkTypeCandidates",
+    "makeKindTemplateFromTicket",
+    "previewTicketKindChange",
+    "restoreTicketVersion",
+    "sendConversationMessage",
+    "suggestTestSpecs",
+    "updateTestSpec",
+    "updateTicketSection"
+   ],
+   "depends_on": [],
+   "sections": {
+    "目的": "流れ F4「チケットを作って中身を決める」を、新しい形のチケット（利用者の 1 つの操作＝1 つの実装・ai-driven-process.md §3）に切るまでの入れ物。古い形の未着手のチケットから、画面・API・決定を引き継いだ（D-128.136）。",
+    "完了の条件": "- [ ] この流れの操作が、どれも新しい形のチケット（分類・目録で探した結果・実装の詳細・8 観点の分岐とテスト・状態 × 入口 × 利用者の状態の表）に切られている\n- [ ] 下の画面・API が、切ったチケットのどれかに移り、このまとまりから消えている\n- [ ] この流れの中間テストの組と統合テストが決まっている",
+    "前提と制約": "- 切るのは 1 つ先を並行で（今の流れを実装している間に）。一気に全部は切らない\n- 引き継いだ古いチケット：KN-10・KN-11・KN-12・KN-73・KN-75・KN-76・KN-77・KN-78・KN-80・KN-82・KN-90（11_tickets/_old/ に残す。切るときに目録として読む）"
+   },
+   "file": "11_tickets/KN-128.md"
+  },
+  {
+   "id": "KN-129",
+   "title": "F5 AI に任せて、確かめて、終える（流れのまとまり・まだ切っていない）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "",
+   "milestone": "流れ",
+   "area": "流れ",
+   "assignee": "未定",
+   "due": "",
+   "decisions": [
+    "D-007",
+    "D-012",
+    "D-024",
+    "D-037",
+    "D-040",
+    "D-042",
+    "D-062",
+    "D-066",
+    "D-068",
+    "D-125.4",
+    "D-125.6",
+    "D-125.19",
+    "D-125.27",
+    "D-125.42",
+    "D-125.58",
+    "D-125.76",
+    "D-125.85",
+    "D-125.103",
+    "D-125.105",
+    "D-125.106",
+    "D-125.107",
+    "D-125.143",
+    "D-125.144",
+    "D-125.147",
+    "D-125.152",
+    "D-125.154",
+    "D-125.156",
+    "D-125.157",
+    "D-125.167",
+    "D-126.15",
+    "D-126.18",
+    "D-127.9",
+    "D-128.32",
+    "D-128.33",
+    "D-128.39",
+    "D-128.40",
+    "D-128.44",
+    "D-128.57",
+    "D-128.86",
+    "D-128.87",
+    "D-128.89",
+    "D-128.90",
+    "D-128.98",
+    "D-128.122",
+    "D-128.125",
+    "D-128.126",
+    "D-128.136"
+   ],
+   "split": "これから",
+   "screens": [
+    "ai-activity",
+    "approvals"
+   ],
+   "apis": [
+    "approveApproval",
+    "bulkApprove",
+    "callKanameTool",
+    "completeTicket",
+    "delegateTicket",
+    "dryRunTicket",
+    "editApproval",
+    "exportCloneActivity",
+    "finishBridgeJob",
+    "getActionRun",
+    "getApproval",
+    "getCloneGrowth",
+    "getCloneNow",
+    "getFileForBridge",
+    "getJobControl",
+    "getMyClone",
+    "getTicketAgentSession",
+    "listApprovalHistory",
+    "listApprovalQueue",
+    "listCloneActivity",
+    "listConversationMessages",
+    "listMirrorTargets",
+    "listTicketRuns",
+    "markHumanCheck",
+    "mirrorConversationEntries",
+    "previewBulkApproval",
+    "reportBrowserState",
+    "reportJobProgress",
+    "returnApproval",
+    "sendTicketAgentMessage",
+    "stopActionRun",
+    "stopApproval",
+    "stopConversation",
+    "streamConversation",
+    "takeBridgeJob",
+    "withdrawApproval"
+   ],
+   "depends_on": [],
+   "sections": {
+    "目的": "流れ F5「AI に任せて、確かめて、終える」を、新しい形のチケット（利用者の 1 つの操作＝1 つの実装・ai-driven-process.md §3）に切るまでの入れ物。古い形の未着手のチケットから、画面・API・決定を引き継いだ（D-128.136）。",
+    "完了の条件": "- [ ] この流れの操作が、どれも新しい形のチケット（分類・目録で探した結果・実装の詳細・8 観点の分岐とテスト・状態 × 入口 × 利用者の状態の表）に切られている\n- [ ] 下の画面・API が、切ったチケットのどれかに移り、このまとまりから消えている\n- [ ] この流れの中間テストの組と統合テストが決まっている",
+    "前提と制約": "- 切るのは 1 つ先を並行で（今の流れを実装している間に）。一気に全部は切らない\n- 引き継いだ古いチケット：KN-13・KN-14・KN-81・KN-83・KN-84・KN-85・KN-86・KN-89・KN-91・KN-92・KN-93（11_tickets/_old/ に残す。切るときに目録として読む）"
+   },
+   "file": "11_tickets/KN-129.md"
+  },
+  {
+   "id": "KN-130",
+   "title": "F6 自分で進める・話す・決める（流れのまとまり・まだ切っていない）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "",
+   "milestone": "流れ",
+   "area": "流れ",
+   "assignee": "未定",
+   "due": "",
+   "decisions": [
+    "D-125.7",
+    "D-125.29",
+    "D-125.40",
+    "D-125.63",
+    "D-125.98",
+    "D-125.131",
+    "D-125.167",
+    "D-128.33",
+    "D-128.80",
+    "D-128.84",
+    "D-128.125",
+    "D-128.126",
+    "D-128.136"
+   ],
+   "split": "これから",
+   "screens": [],
+   "apis": [
+    "createTicketDecision",
+    "createTicketMessage",
+    "deleteTicketMessage",
+    "listTicketDecisions",
+    "listTicketTimeline",
+    "starTicketMessage",
+    "updateTicketDecision",
+    "updateTicketMessage"
+   ],
+   "depends_on": [],
+   "sections": {
+    "目的": "流れ F6「自分で進める・話す・決める」を、新しい形のチケット（利用者の 1 つの操作＝1 つの実装・ai-driven-process.md §3）に切るまでの入れ物。古い形の未着手のチケットから、画面・API・決定を引き継いだ（D-128.136）。",
+    "完了の条件": "- [ ] この流れの操作が、どれも新しい形のチケット（分類・目録で探した結果・実装の詳細・8 観点の分岐とテスト・状態 × 入口 × 利用者の状態の表）に切られている\n- [ ] 下の画面・API が、切ったチケットのどれかに移り、このまとまりから消えている\n- [ ] この流れの中間テストの組と統合テストが決まっている",
+    "前提と制約": "- 切るのは 1 つ先を並行で（今の流れを実装している間に）。一気に全部は切らない\n- 引き継いだ古いチケット：KN-79（11_tickets/_old/ に残す。切るときに目録として読む）"
+   },
+   "file": "11_tickets/KN-130.md"
+  },
+  {
+   "id": "KN-131",
+   "title": "F7 毎日見る・探す・片付ける（流れのまとまり・まだ切っていない）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "",
+   "milestone": "流れ",
+   "area": "流れ",
+   "assignee": "未定",
+   "due": "",
+   "decisions": [
+    "D-007",
+    "D-029",
+    "D-064",
+    "D-068",
+    "D-125.7",
+    "D-125.13",
+    "D-125.41",
+    "D-125.44",
+    "D-125.49",
+    "D-125.61",
+    "D-125.64",
+    "D-125.97",
+    "D-125.98",
+    "D-125.130",
+    "D-125.167",
+    "D-127.4",
+    "D-128.83",
+    "D-128.85",
+    "D-128.125",
+    "D-128.126",
+    "D-128.136"
+   ],
+   "split": "これから",
+   "screens": [],
+   "apis": [
+    "createSavedView",
+    "deleteSavedView",
+    "deleteTicket",
+    "getScopeOverview",
+    "getShell",
+    "listNotifications",
+    "listSavedViews",
+    "listTickets",
+    "previewTicketDelete",
+    "readAllNotifications",
+    "readNotification",
+    "restoreTicket",
+    "retryActionRun",
+    "search",
+    "takeoverActionRun",
+    "updateSavedView",
+    "updateTicket"
+   ],
+   "depends_on": [],
+   "sections": {
+    "目的": "流れ F7「毎日見る・探す・片付ける」を、新しい形のチケット（利用者の 1 つの操作＝1 つの実装・ai-driven-process.md §3）に切るまでの入れ物。古い形の未着手のチケットから、画面・API・決定を引き継いだ（D-128.136）。",
+    "完了の条件": "- [ ] この流れの操作が、どれも新しい形のチケット（分類・目録で探した結果・実装の詳細・8 観点の分岐とテスト・状態 × 入口 × 利用者の状態の表）に切られている\n- [ ] 下の画面・API が、切ったチケットのどれかに移り、このまとまりから消えている\n- [ ] この流れの中間テストの組と統合テストが決まっている",
+    "前提と制約": "- 切るのは 1 つ先を並行で（今の流れを実装している間に）。一気に全部は切らない\n- 引き継いだ古いチケット：KN-71・KN-72・KN-74（11_tickets/_old/ に残す。切るときに目録として読む）"
+   },
+   "file": "11_tickets/KN-131.md"
+  },
+  {
+   "id": "KN-132",
+   "title": "F8 渡す・配る（流れのまとまり・まだ切っていない）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "",
+   "milestone": "流れ",
+   "area": "流れ",
+   "assignee": "未定",
+   "due": "",
+   "decisions": [
+    "D-125.70",
+    "D-125.71",
+    "D-128.20",
+    "D-128.125",
+    "D-128.126",
+    "D-128.136"
+   ],
+   "split": "これから",
+   "screens": [],
+   "apis": [
+    "answerTicketHandover",
+    "createTicketHandover",
+    "listHandoverRules"
+   ],
+   "depends_on": [],
+   "sections": {
+    "目的": "流れ F8「渡す・配る」を、新しい形のチケット（利用者の 1 つの操作＝1 つの実装・ai-driven-process.md §3）に切るまでの入れ物。古い形の未着手のチケットから、画面・API・決定を引き継いだ（D-128.136）。",
+    "完了の条件": "- [ ] この流れの操作が、どれも新しい形のチケット（分類・目録で探した結果・実装の詳細・8 観点の分岐とテスト・状態 × 入口 × 利用者の状態の表）に切られている\n- [ ] 下の画面・API が、切ったチケットのどれかに移り、このまとまりから消えている\n- [ ] この流れの中間テストの組と統合テストが決まっている",
+    "前提と制約": "- 切るのは 1 つ先を並行で（今の流れを実装している間に）。一気に全部は切らない\n- 引き継いだ古いチケット：KN-22（11_tickets/_old/ に残す。切るときに目録として読む）"
+   },
+   "file": "11_tickets/KN-132.md"
+  },
+  {
+   "id": "KN-133",
+   "title": "F9 会社のやり方を整える（流れのまとまり・まだ切っていない）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "",
+   "milestone": "流れ",
+   "area": "流れ",
+   "assignee": "未定",
+   "due": "",
+   "decisions": [
+    "D-007",
+    "D-024",
+    "D-025",
+    "D-030",
+    "D-037",
+    "D-105",
+    "D-125.31",
+    "D-125.108",
+    "D-125.111",
+    "D-125.118",
+    "D-125.147",
+    "D-125.152",
+    "D-125.154",
+    "D-125.167",
+    "D-126.12",
+    "D-126.18",
+    "D-126.23",
+    "D-127.11",
+    "D-128.39",
+    "D-128.40",
+    "D-128.44",
+    "D-128.50",
+    "D-128.51",
+    "D-128.52",
+    "D-128.87",
+    "D-128.89",
+    "D-128.90",
+    "D-128.95",
+    "D-128.105",
+    "D-128.106",
+    "D-128.111",
+    "D-128.125",
+    "D-128.126",
+    "D-128.136"
+   ],
+   "split": "これから",
+   "screens": [
+    "knowledge",
+    "layers",
+    "masters",
+    "rules",
+    "work-types"
+   ],
+   "apis": [
+    "acceptLearningCandidate",
+    "checkRule",
+    "countKnows",
+    "createMemory",
+    "deleteMemory",
+    "dismissLearningCandidate",
+    "listLearningCandidates",
+    "listMemories",
+    "postponeLearningCandidate",
+    "promoteMemoryToRule",
+    "requestRuleException",
+    "updateMemory"
+   ],
+   "depends_on": [],
+   "sections": {
+    "目的": "流れ F9「会社のやり方を整える」を、新しい形のチケット（利用者の 1 つの操作＝1 つの実装・ai-driven-process.md §3）に切るまでの入れ物。古い形の未着手のチケットから、画面・API・決定を引き継いだ（D-128.136）。",
+    "完了の条件": "- [ ] この流れの操作が、どれも新しい形のチケット（分類・目録で探した結果・実装の詳細・8 観点の分岐とテスト・状態 × 入口 × 利用者の状態の表）に切られている\n- [ ] 下の画面・API が、切ったチケットのどれかに移り、このまとまりから消えている\n- [ ] この流れの中間テストの組と統合テストが決まっている",
+    "前提と制約": "- 切るのは 1 つ先を並行で（今の流れを実装している間に）。一気に全部は切らない\n- 引き継いだ古いチケット：KN-20・KN-21・KN-23・KN-87（11_tickets/_old/ に残す。切るときに目録として読む）"
+   },
+   "file": "11_tickets/KN-133.md"
+  },
+  {
+   "id": "KN-134",
+   "title": "F10 人とアカウントを管理する（流れのまとまり・まだ切っていない）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "",
+   "milestone": "流れ",
+   "area": "流れ",
+   "assignee": "未定",
+   "due": "",
+   "decisions": [
+    "D-042",
+    "D-125.132",
+    "D-125.140",
+    "D-125.150",
+    "D-125.158",
+    "D-125.167",
+    "D-128.55",
+    "D-128.57",
+    "D-128.65",
+    "D-128.92",
+    "D-128.93",
+    "D-128.95",
+    "D-128.96",
+    "D-128.97",
+    "D-128.98",
+    "D-128.125",
+    "D-128.126",
+    "D-128.136"
+   ],
+   "split": "これから",
+   "screens": [
+    "account",
+    "audit",
+    "company-settings",
+    "member-detail",
+    "members"
+   ],
+   "apis": [
+    "copyNotificationSettings",
+    "dismissSetupTasks",
+    "getMe",
+    "getNotificationSettings",
+    "leaveWorkspace",
+    "listMySessions",
+    "listSetupTasks",
+    "requestEmailChange",
+    "revokeMySession",
+    "revokeOtherSessions",
+    "updateMe",
+    "updateNotificationSettings",
+    "uploadAvatar",
+    "verifyEmailChange"
+   ],
+   "depends_on": [],
+   "sections": {
+    "目的": "流れ F10「人とアカウントを管理する」を、新しい形のチケット（利用者の 1 つの操作＝1 つの実装・ai-driven-process.md §3）に切るまでの入れ物。古い形の未着手のチケットから、画面・API・決定を引き継いだ（D-128.136）。",
+    "完了の条件": "- [ ] この流れの操作が、どれも新しい形のチケット（分類・目録で探した結果・実装の詳細・8 観点の分岐とテスト・状態 × 入口 × 利用者の状態の表）に切られている\n- [ ] 下の画面・API が、切ったチケットのどれかに移り、このまとまりから消えている\n- [ ] この流れの中間テストの組と統合テストが決まっている",
+    "前提と制約": "- 切るのは 1 つ先を並行で（今の流れを実装している間に）。一気に全部は切らない\n- 引き継いだ古いチケット：KN-19・KN-24・KN-65・KN-68（11_tickets/_old/ に残す。切るときに目録として読む）"
+   },
+   "file": "11_tickets/KN-134.md"
+  },
+  {
+   "id": "KN-135",
+   "title": "F11 取引先と回す（流れのまとまり・まだ切っていない）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "",
+   "milestone": "流れ",
+   "area": "流れ",
+   "assignee": "未定",
+   "due": "",
+   "decisions": [
+    "D-128.53",
+    "D-128.54",
+    "D-128.100",
+    "D-128.101",
+    "D-128.102",
+    "D-128.103",
+    "D-128.104",
+    "D-128.125",
+    "D-128.126",
+    "D-128.136"
+   ],
+   "split": "これから",
+   "screens": [
+    "clients",
+    "portal",
+    "requests"
+   ],
+   "apis": [
+    "createRule",
+    "listRules",
+    "requestAcceptance",
+    "updateTicketClientShare"
+   ],
+   "depends_on": [],
+   "sections": {
+    "目的": "流れ F11「取引先と回す」を、新しい形のチケット（利用者の 1 つの操作＝1 つの実装・ai-driven-process.md §3）に切るまでの入れ物。古い形の未着手のチケットから、画面・API・決定を引き継いだ（D-128.136）。",
+    "完了の条件": "- [ ] この流れの操作が、どれも新しい形のチケット（分類・目録で探した結果・実装の詳細・8 観点の分岐とテスト・状態 × 入口 × 利用者の状態の表）に切られている\n- [ ] 下の画面・API が、切ったチケットのどれかに移り、このまとまりから消えている\n- [ ] この流れの中間テストの組と統合テストが決まっている",
+    "前提と制約": "- 切るのは 1 つ先を並行で（今の流れを実装している間に）。一気に全部は切らない\n- 引き継いだ古いチケット：KN-26・KN-27（11_tickets/_old/ に残す。切るときに目録として読む）"
+   },
+   "file": "11_tickets/KN-135.md"
+  },
+  {
+   "id": "KN-136",
+   "title": "F12 運営とのやり取り・運営が回す（流れのまとまり・まだ切っていない）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "",
+   "milestone": "流れ",
+   "area": "流れ",
+   "assignee": "未定",
+   "due": "",
+   "decisions": [
+    "D-125.72",
+    "D-125.125",
+    "D-125.167",
+    "D-126.3",
+    "D-126.5",
+    "D-126.18",
+    "D-126.19",
+    "D-126.23",
+    "D-128.67",
+    "D-128.68",
+    "D-128.69",
+    "D-128.70",
+    "D-128.71",
+    "D-128.72",
+    "D-128.94",
+    "D-128.108",
+    "D-128.109",
+    "D-128.125",
+    "D-128.126",
+    "D-128.136"
+   ],
+   "split": "これから",
+   "screens": [
+    "billing",
+    "inquiry",
+    "notices",
+    "ops-billing",
+    "ops-home",
+    "ops-notices",
+    "ops-skills",
+    "ops-support",
+    "ops-team",
+    "ops-tenant"
+   ],
+   "apis": [
+    "createPlanProposal",
+    "decidePlanProposal",
+    "getOpsTemplate",
+    "getOpsWorkType",
+    "getPlanProposalImpact",
+    "getWorkTypeUpload",
+    "listOperations",
+    "listOpsPlans",
+    "listOpsTemplates",
+    "listOpsWorkTypes",
+    "listPlanHistory",
+    "listPlanProposals",
+    "releaseOpsTemplate",
+    "releaseOpsWorkType",
+    "returnPlanProposal",
+    "rollbackOpsWorkType",
+    "submitPlanProposal",
+    "updatePlanProposal",
+    "uploadWorkTypePackage"
+   ],
+   "depends_on": [],
+   "sections": {
+    "目的": "流れ F12「運営とのやり取り・運営が回す」を、新しい形のチケット（利用者の 1 つの操作＝1 つの実装・ai-driven-process.md §3）に切るまでの入れ物。古い形の未着手のチケットから、画面・API・決定を引き継いだ（D-128.136）。",
+    "完了の条件": "- [ ] この流れの操作が、どれも新しい形のチケット（分類・目録で探した結果・実装の詳細・8 観点の分岐とテスト・状態 × 入口 × 利用者の状態の表）に切られている\n- [ ] 下の画面・API が、切ったチケットのどれかに移り、このまとまりから消えている\n- [ ] この流れの中間テストの組と統合テストが決まっている",
+    "前提と制約": "- 切るのは 1 つ先を並行で（今の流れを実装している間に）。一気に全部は切らない\n- 引き継いだ古いチケット：KN-16・KN-28・KN-29・KN-30・KN-31・KN-95・KN-96・KN-97（11_tickets/_old/ に残す。切るときに目録として読む）"
+   },
+   "file": "11_tickets/KN-136.md"
+  },
+  {
+   "id": "KN-137",
+   "title": "後のフェーズ・どの流れにも入らないもの（まだ切っていない）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "",
+   "milestone": "後",
+   "area": "流れ",
+   "assignee": "未定",
+   "due": "",
+   "decisions": [
+    "D-069.8",
+    "D-081.2",
+    "D-081.3",
+    "D-081.4",
+    "D-081.5",
+    "D-122.1",
+    "D-123.1",
+    "D-125.1",
+    "D-125.36",
+    "D-125.142",
+    "D-125.144",
+    "D-125.145",
+    "D-125.162",
+    "D-125.164",
+    "D-125.165",
+    "D-125.166",
+    "D-125.167",
+    "D-126.1",
+    "D-126.15",
+    "D-126.17",
+    "D-126.22",
+    "D-126.23",
+    "D-127.1",
+    "D-127.3",
+    "D-127.4",
+    "D-127.6",
+    "D-127.9",
+    "D-127.11",
+    "D-128.39",
+    "D-128.40",
+    "D-128.44",
+    "D-128.57",
+    "D-128.78",
+    "D-128.88",
+    "D-128.90",
+    "D-128.98",
+    "D-128.112",
+    "D-128.113",
+    "D-128.117",
+    "D-128.118",
+    "D-128.122",
+    "D-128.125",
+    "D-128.126",
+    "D-128.136"
+   ],
+   "split": "これから",
+   "screens": [],
+   "apis": [
+    "answerAgentPermission",
+    "askFromBridge",
+    "confirmTwoFactor",
+    "createArtifactFromMessage",
+    "createConversationAttachment",
+    "deleteConversation",
+    "disableTwoFactor",
+    "getBridgeQuestionAnswer",
+    "getConversation",
+    "getMyUsage",
+    "listConversations",
+    "putArtifactFromBridge",
+    "regenerateBackupCodes",
+    "reportUsage",
+    "resetMemberTwoFactor",
+    "restoreArtifactVersion",
+    "startTwoFactor",
+    "updateArtifact",
+    "updateConversation",
+    "updateMyClone"
+   ],
+   "depends_on": [],
+   "sections": {
+    "目的": "後のフェーズの行為だけを持つ API と、どの流れにも入らない古いまとまりを、新しい形のチケット（利用者の 1 つの操作＝1 つの実装・ai-driven-process.md §3）に切るまでの入れ物。古い形の未着手のチケットから、画面・API・決定を引き継いだ（D-128.136）。",
+    "完了の条件": "- [ ] この流れの操作が、どれも新しい形のチケット（分類・目録で探した結果・実装の詳細・8 観点の分岐とテスト・状態 × 入口 × 利用者の状態の表）に切られている\n- [ ] 下の画面・API が、切ったチケットのどれかに移り、このまとまりから消えている\n- [ ] この流れの中間テストの組と統合テストが決まっている",
+    "前提と制約": "- 切るのは 1 つ先を並行で（今の流れを実装している間に）。一気に全部は切らない\n- 引き継いだ古いチケット：KN-7・KN-15・KN-17・KN-18・KN-25・KN-32・KN-33・KN-34・KN-35・KN-36・KN-37・KN-48・KN-88・KN-94・KN-98・KN-99・KN-100・KN-101・KN-102（11_tickets/_old/ に残す。切るときに目録として読む）"
+   },
+   "file": "11_tickets/KN-137.md"
   }
  ]
 }

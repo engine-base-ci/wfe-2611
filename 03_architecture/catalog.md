@@ -135,24 +135,24 @@ API 363（作った 5・後のフェーズの行為だけ 20）・前の道す�
 | 口 | 道 | 何をするか | 流れ | 状態 | 持ち主のチケット |
 |---|---|---|---|---|---|
 | `acceptInvitation` | POST /api/v1/auth/invitations/:token/accept | 作成・実行（auth）— 招待を受けて参加する（今のアカウントで別のテナントにも）／規約に同意する（どの版に同意したかが残る） | F1,F2 | 契約だけ（501） |  |
-| `requestPasswordReset` | POST /api/v1/auth/password/forgot | 作成・実行（auth）— パスワードを再設定する | F1 | 契約だけ（501） | KN-61 |
-| `resetPassword` | POST /api/v1/auth/password/reset | 作成・実行（auth）— パスワードを再設定する | F1 | 契約だけ（501） | KN-61 |
-| `requestAdminRecovery` | POST /api/v1/auth/recovery/admin-request | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | F1 | 契約だけ（501） | KN-60 |
-| `getServiceStatus` | GET /api/v1/auth/service-status | 取得（auth）— ログインする（パスキー／パスワード＋2 段階） | F1 | 契約だけ（501） | KN-60 |
-| `signInWithPassword` | POST /api/v1/auth/sign-in | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | F1 | 契約だけ（501） | KN-60 |
-| `signOut` | POST /api/v1/auth/sign-out | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | F1 | 契約だけ（501） | KN-60 |
-| `createSignup` | POST /api/v1/auth/sign-up | 作成・実行（auth）— アカウントを作る（会社名が空なら本人の名前で個人のテナン／規約に同意する（どの版に同意したかが残る） | F1 | 契約だけ（501） | KN-59 |
-| `resendSignupEmail` | POST /api/v1/auth/sign-up/resend | 作成・実行（auth）— アカウントを作る（会社名が空なら本人の名前で個人のテナン | F1 | 契約だけ（501） | KN-59 |
-| `getSignupStatus` | GET /api/v1/auth/sign-up/status | 取得（auth）— アカウントを作る（会社名が空なら本人の名前で個人のテナン | F1 | 契約だけ（501） | KN-59 |
-| `verifySignup` | POST /api/v1/auth/sign-up/verify | 作成・実行（auth）— メールを確認して本人だと示す | F1 | 契約だけ（501） | KN-59 |
+| `requestPasswordReset` | POST /api/v1/auth/password/forgot | 作成・実行（auth）— パスワードを再設定する | F1 | 契約だけ（501） | KN-125 |
+| `resetPassword` | POST /api/v1/auth/password/reset | 作成・実行（auth）— パスワードを再設定する | F1 | 契約だけ（501） | KN-125 |
+| `requestAdminRecovery` | POST /api/v1/auth/recovery/admin-request | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | F1 | 契約だけ（501） | KN-125 |
+| `getServiceStatus` | GET /api/v1/auth/service-status | 取得（auth）— ログインする（パスキー／パスワード＋2 段階） | F1 | 契約だけ（501） | KN-125 |
+| `signInWithPassword` | POST /api/v1/auth/sign-in | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | F1 | 契約だけ（501） | KN-125 |
+| `signOut` | POST /api/v1/auth/sign-out | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | F1 | 契約だけ（501） | KN-125 |
+| `createSignup` | POST /api/v1/auth/sign-up | 作成・実行（auth）— アカウントを作る（会社名が空なら本人の名前で個人のテナン／規約に同意する（どの版に同意したかが残る） | F1 | 契約だけ（501） | KN-125 |
+| `resendSignupEmail` | POST /api/v1/auth/sign-up/resend | 作成・実行（auth）— アカウントを作る（会社名が空なら本人の名前で個人のテナン | F1 | 契約だけ（501） | KN-125 |
+| `getSignupStatus` | GET /api/v1/auth/sign-up/status | 取得（auth）— アカウントを作る（会社名が空なら本人の名前で個人のテナン | F1 | 契約だけ（501） | KN-125 |
+| `verifySignup` | POST /api/v1/auth/sign-up/verify | 作成・実行（auth）— メールを確認して本人だと示す | F1 | 契約だけ（501） | KN-125 |
 | `stepUp` | POST /api/v1/auth/step-up | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | F1 | 作った | KN-56 |
-| `consentToTerms` | POST /api/v1/auth/terms/consent | 作成・実行（auth）— 規約に同意する（どの版に同意したかが残る） | F1 | 契約だけ（501） | KN-59 |
-| `getCurrentTerms` | GET /api/v1/auth/terms/current | 取得（auth）— 規約に同意する（どの版に同意したかが残る） | F1 | 契約だけ（501） | KN-59 |
-| `verifySignInCode` | POST /api/v1/auth/two-factor/verify | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | F1 | 契約だけ（501） | KN-60 |
-| `renamePasskey` | PATCH /api/v1/me/passkeys/:id | 更新（me）— パスキーを設定する（パスワードの人は 2 段階認証を設定 | F1 | 契約だけ（501） | KN-62 |
-| `deletePasskey` | DELETE /api/v1/me/passkeys/:id | 削除（me）— パスキーを設定する（パスワードの人は 2 段階認証を設定 | F1 | 契約だけ（501） | KN-62 |
-| `changePassword` | PATCH /api/v1/me/password | 更新（me）— パスキーを設定する（パスワードの人は 2 段階認証を設定 | F1 | 契約だけ（501） | KN-62 |
-| `getMySecurity` | GET /api/v1/me/security | 取得（me）— 2段階認証を設定する／パスキーを設定する（パスワードの人は 2 段階認証を設定 | F1 | 契約だけ（501） | KN-62 |
+| `consentToTerms` | POST /api/v1/auth/terms/consent | 作成・実行（auth）— 規約に同意する（どの版に同意したかが残る） | F1 | 契約だけ（501） | KN-125 |
+| `getCurrentTerms` | GET /api/v1/auth/terms/current | 取得（auth）— 規約に同意する（どの版に同意したかが残る） | F1 | 契約だけ（501） | KN-125 |
+| `verifySignInCode` | POST /api/v1/auth/two-factor/verify | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | F1 | 契約だけ（501） | KN-125 |
+| `renamePasskey` | PATCH /api/v1/me/passkeys/:id | 更新（me）— パスキーを設定する（パスワードの人は 2 段階認証を設定 | F1 | 契約だけ（501） | KN-125 |
+| `deletePasskey` | DELETE /api/v1/me/passkeys/:id | 削除（me）— パスキーを設定する（パスワードの人は 2 段階認証を設定 | F1 | 契約だけ（501） | KN-125 |
+| `changePassword` | PATCH /api/v1/me/password | 更新（me）— パスキーを設定する（パスワードの人は 2 段階認証を設定 | F1 | 契約だけ（501） | KN-125 |
+| `getMySecurity` | GET /api/v1/me/security | 取得（me）— 2段階認証を設定する／パスキーを設定する（パスワードの人は 2 段階認証を設定 | F1 | 契約だけ（501） | KN-125 |
 | `listAuditEvents` | GET /api/v1/audit_events | 取得（audit_events）— 何をしたか追う（記録） | F10 | 契約だけ（501） |  |
 | `createExport` | POST /api/v1/exports | 作成・実行（exports）— 記録を書き出す（本人確認） | F10 | 契約だけ（501） |  |
 | `getExport` | GET /api/v1/exports/:id | 取得（exports）— 記録を書き出す（本人確認） | F10 | 契約だけ（501） |  |
@@ -160,20 +160,20 @@ API 363（作った 5・後のフェーズの行為だけ 20）・前の道す�
 | `revokeInvitation` | DELETE /api/v1/invitations/:id | 削除（invitations）— 人を招く（層・権限の束） | F10 | 契約だけ（501） |  |
 | `resendInvitation` | POST /api/v1/invitations/:id/resend | 作成・実行（invitations）— 人を招く（層・権限の束） | F10 | 契約だけ（501） |  |
 | `createInvitationLink` | POST /api/v1/invitations/link | 作成・実行（invitations）— 人を招く（層・権限の束） | F10 | 契約だけ（501） |  |
-| `getMe` | GET /api/v1/me | 取得（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 契約だけ（501） | KN-65 |
-| `updateMe` | PATCH /api/v1/me | 更新（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 契約だけ（501） | KN-65 |
-| `uploadAvatar` | POST /api/v1/me/avatar | 作成・実行（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 契約だけ（501） | KN-65 |
-| `requestEmailChange` | POST /api/v1/me/email-change | 作成・実行（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 契約だけ（501） | KN-65 |
-| `verifyEmailChange` | POST /api/v1/me/email-change/verify | 作成・実行（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 契約だけ（501） | KN-65 |
-| `getNotificationSettings` | GET /api/v1/me/notification-settings | 取得（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 契約だけ（501） | KN-65 |
-| `updateNotificationSettings` | PATCH /api/v1/me/notification-settings | 更新（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 契約だけ（501） | KN-65 |
-| `copyNotificationSettings` | POST /api/v1/me/notification-settings/copy | 作成・実行（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 契約だけ（501） | KN-65 |
-| `listMySessions` | GET /api/v1/me/sessions | 取得（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 契約だけ（501） | KN-62 |
-| `revokeMySession` | DELETE /api/v1/me/sessions/:id | 削除（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 契約だけ（501） | KN-62 |
-| `revokeOtherSessions` | POST /api/v1/me/sessions/revoke-others | 作成・実行（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 契約だけ（501） | KN-62 |
-| `listSetupTasks` | GET /api/v1/me/setup-tasks | 取得（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 契約だけ（501） | KN-65 |
-| `dismissSetupTasks` | POST /api/v1/me/setup-tasks/dismiss | 作成・実行（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 契約だけ（501） | KN-65 |
-| `leaveWorkspace` | DELETE /api/v1/me/workspaces/:id | 削除（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 契約だけ（501） | KN-65 |
+| `getMe` | GET /api/v1/me | 取得（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 契約だけ（501） | KN-134 |
+| `updateMe` | PATCH /api/v1/me | 更新（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 契約だけ（501） | KN-134 |
+| `uploadAvatar` | POST /api/v1/me/avatar | 作成・実行（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 契約だけ（501） | KN-134 |
+| `requestEmailChange` | POST /api/v1/me/email-change | 作成・実行（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 契約だけ（501） | KN-134 |
+| `verifyEmailChange` | POST /api/v1/me/email-change/verify | 作成・実行（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 契約だけ（501） | KN-134 |
+| `getNotificationSettings` | GET /api/v1/me/notification-settings | 取得（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 契約だけ（501） | KN-134 |
+| `updateNotificationSettings` | PATCH /api/v1/me/notification-settings | 更新（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 契約だけ（501） | KN-134 |
+| `copyNotificationSettings` | POST /api/v1/me/notification-settings/copy | 作成・実行（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 契約だけ（501） | KN-134 |
+| `listMySessions` | GET /api/v1/me/sessions | 取得（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 契約だけ（501） | KN-134 |
+| `revokeMySession` | DELETE /api/v1/me/sessions/:id | 削除（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 契約だけ（501） | KN-134 |
+| `revokeOtherSessions` | POST /api/v1/me/sessions/revoke-others | 作成・実行（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 契約だけ（501） | KN-134 |
+| `listSetupTasks` | GET /api/v1/me/setup-tasks | 取得（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 契約だけ（501） | KN-134 |
+| `dismissSetupTasks` | POST /api/v1/me/setup-tasks/dismiss | 作成・実行（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 契約だけ（501） | KN-134 |
+| `leaveWorkspace` | DELETE /api/v1/me/workspaces/:id | 削除（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 契約だけ（501） | KN-134 |
 | `getMember` | GET /api/v1/members/:id | 取得（members）— メンバーの所属（兼務）・権限を決める | F10 | 契約だけ（501） |  |
 | `removeMember` | DELETE /api/v1/members/:id | 削除（members）— 抜ける人の依存を片付ける | F10 | 契約だけ（501） |  |
 | `updateMemberGroups` | PATCH /api/v1/members/:id/groups | 更新（members）— メンバーの所属（兼務）・権限を決める | F10 | 契約だけ（501） |  |
@@ -200,7 +200,7 @@ API 363（作った 5・後のフェーズの行為だけ 20）・前の道す�
 | `acceptClientRequest` | POST /api/v1/client_requests/:id/accept | 作成・実行（client_requests）— 届いた依頼を受けてチケットにする／断る | F11 | 契約だけ（501） |  |
 | `declineClientRequest` | POST /api/v1/client_requests/:id/decline | 作成・実行（client_requests）— 届いた依頼を受けてチケットにする／断る | F11 | 契約だけ（501） |  |
 | `replyToClientRequest` | POST /api/v1/client_requests/:id/reply | 作成・実行（client_requests）— 届いた依頼を受けてチケットにする／断る | F11 | 契約だけ（501） |  |
-| `listClients` | GET /api/v1/clients | 取得（clients）— 振り分ける（責任者・期限・分類・親）。AI と相談しても／取引先を作り、担当者を招待する | F11,F4 | 契約だけ（501） | KN-26 |
+| `listClients` | GET /api/v1/clients | 取得（clients）— 振り分ける（責任者・期限・分類・親）。AI と相談しても／取引先を作り、担当者を招待する | F11,F4 | 契約だけ（501） | KN-128 |
 | `createClient` | POST /api/v1/clients | 作成・実行（clients）— 取引先を作り、担当者を招待する | F11 | 契約だけ（501） |  |
 | `getClient` | GET /api/v1/clients/:id | 取得（clients）— 取引先を作り、担当者を招待する | F11 | 契約だけ（501） |  |
 | `updateClient` | PATCH /api/v1/clients/:id | 更新（clients）— 取引先を作り、担当者を招待する | F11 | 契約だけ（501） |  |
@@ -219,10 +219,10 @@ API 363（作った 5・後のフェーズの行為だけ 20）・前の道す�
 | `postPortalRequestMessage` | POST /api/v1/portal/requests/:id/messages | 作成・実行（portal）— 依頼を出す・やり取りする | F11 | 契約だけ（501） |  |
 | `askPortalRequestQuestions` | POST /api/v1/portal/requests/questions | 作成・実行（portal）— 依頼を出す・やり取りする | F11 | 契約だけ（501） |  |
 | `getPortalTicket` | GET /api/v1/portal/tickets/:id | 取得（portal）— 進みと成果物を見る | F11 | 契約だけ（501） |  |
-| `listRules` | GET /api/v1/rules | 取得（rules）— 取引先を作り、担当者を招待する／ルールを置く（会社・層・個人・取引先） | F11,F9 | 契約だけ（501） | KN-21 |
-| `createRule` | POST /api/v1/rules | 作成・実行（rules）— 取引先を作り、担当者を招待する／ルールを置く（会社・層・個人・取引先） | F11,F9 | 契約だけ（501） | KN-21 |
-| `requestAcceptance` | POST /api/v1/tickets/:id/acceptances | 作成・実行（tickets）— 成果物を確認してもらう（検収を頼む） | F11 | 契約だけ（501） | KN-27 |
-| `updateTicketClientShare` | PATCH /api/v1/tickets/:id/client-share | 更新（tickets）— 成果物を確認してもらう（検収を頼む） | F11 | 契約だけ（501） | KN-27 |
+| `listRules` | GET /api/v1/rules | 取得（rules）— 取引先を作り、担当者を招待する／ルールを置く（会社・層・個人・取引先） | F11,F9 | 契約だけ（501） | KN-135 |
+| `createRule` | POST /api/v1/rules | 作成・実行（rules）— 取引先を作り、担当者を招待する／ルールを置く（会社・層・個人・取引先） | F11,F9 | 契約だけ（501） | KN-135 |
+| `requestAcceptance` | POST /api/v1/tickets/:id/acceptances | 作成・実行（tickets）— 成果物を確認してもらう（検収を頼む） | F11 | 契約だけ（501） | KN-135 |
+| `updateTicketClientShare` | PATCH /api/v1/tickets/:id/client-share | 更新（tickets）— 成果物を確認してもらう（検収を頼む） | F11 | 契約だけ（501） | KN-135 |
 | `listMyInquiries` | GET /api/v1/inquiries | 取得（inquiries）— 運営に問い合わせる | F12 | 契約だけ（501） |  |
 | `createInquiry` | POST /api/v1/inquiries | 作成・実行（inquiries）— 運営に問い合わせる | F12 | 契約だけ（501） |  |
 | `getMyInquiry` | GET /api/v1/inquiries/:id | 取得（inquiries）— 運営に問い合わせる | F12 | 契約だけ（501） |  |
@@ -251,27 +251,27 @@ API 363（作った 5・後のフェーズの行為だけ 20）・前の道す�
 | `updateOpsNotice` | PATCH /api/v1/ops/notices/:id | 更新（ops）— お知らせを出す | F12 | 契約だけ（501） |  |
 | `publishOpsNotice` | POST /api/v1/ops/notices/:id/publish | 作成・実行（ops）— お知らせを出す | F12 | 契約だけ（501） |  |
 | `addIncidentUpdate` | POST /api/v1/ops/notices/:id/updates | 作成・実行（ops）— お知らせを出す | F12 | 契約だけ（501） |  |
-| `listOperations` | GET /api/v1/ops/operations | 取得（ops）— 操作と業務の型を上げて版を出す（全社向け／会社向け） | F12 | 契約だけ（501） | KN-96 |
+| `listOperations` | GET /api/v1/ops/operations | 取得（ops）— 操作と業務の型を上げて版を出す（全社向け／会社向け） | F12 | 契約だけ（501） | KN-136 |
 | `closePeek` | DELETE /api/v1/ops/peeks/:id | 削除（ops）— ワークスペースの 1 社を扱う（いまの状態・メンバー・プ | F12 | 契約だけ（501） |  |
-| `listPlanHistory` | GET /api/v1/ops/plan_history | 取得（ops）— プランの値段・中身を変える案を作り、別の人が決める | F12 | 契約だけ（501） | KN-30 |
-| `listPlanProposals` | GET /api/v1/ops/plan_proposals | 取得（ops）— プランの値段・中身を変える案を作り、別の人が決める | F12 | 契約だけ（501） | KN-30 |
-| `createPlanProposal` | POST /api/v1/ops/plan_proposals | 作成・実行（ops）— プランの値段・中身を変える案を作り、別の人が決める | F12 | 契約だけ（501） | KN-30 |
-| `updatePlanProposal` | PATCH /api/v1/ops/plan_proposals/:id | 更新（ops）— プランの値段・中身を変える案を作り、別の人が決める | F12 | 契約だけ（501） | KN-30 |
-| `decidePlanProposal` | POST /api/v1/ops/plan_proposals/:id/decide | 作成・実行（ops）— プランの値段・中身を変える案を作り、別の人が決める | F12 | 契約だけ（501） | KN-30 |
-| `getPlanProposalImpact` | GET /api/v1/ops/plan_proposals/:id/impact | 取得（ops）— プランの値段・中身を変える案を作り、別の人が決める | F12 | 契約だけ（501） | KN-30 |
-| `returnPlanProposal` | POST /api/v1/ops/plan_proposals/:id/return | 作成・実行（ops）— プランの値段・中身を変える案を作り、別の人が決める | F12 | 契約だけ（501） | KN-30 |
-| `submitPlanProposal` | POST /api/v1/ops/plan_proposals/:id/submit | 作成・実行（ops）— プランの値段・中身を変える案を作り、別の人が決める | F12 | 契約だけ（501） | KN-30 |
-| `listOpsPlans` | GET /api/v1/ops/plans | 取得（ops）— プランの値段・中身を変える案を作り、別の人が決める | F12 | 契約だけ（501） | KN-30 |
+| `listPlanHistory` | GET /api/v1/ops/plan_history | 取得（ops）— プランの値段・中身を変える案を作り、別の人が決める | F12 | 契約だけ（501） | KN-136 |
+| `listPlanProposals` | GET /api/v1/ops/plan_proposals | 取得（ops）— プランの値段・中身を変える案を作り、別の人が決める | F12 | 契約だけ（501） | KN-136 |
+| `createPlanProposal` | POST /api/v1/ops/plan_proposals | 作成・実行（ops）— プランの値段・中身を変える案を作り、別の人が決める | F12 | 契約だけ（501） | KN-136 |
+| `updatePlanProposal` | PATCH /api/v1/ops/plan_proposals/:id | 更新（ops）— プランの値段・中身を変える案を作り、別の人が決める | F12 | 契約だけ（501） | KN-136 |
+| `decidePlanProposal` | POST /api/v1/ops/plan_proposals/:id/decide | 作成・実行（ops）— プランの値段・中身を変える案を作り、別の人が決める | F12 | 契約だけ（501） | KN-136 |
+| `getPlanProposalImpact` | GET /api/v1/ops/plan_proposals/:id/impact | 取得（ops）— プランの値段・中身を変える案を作り、別の人が決める | F12 | 契約だけ（501） | KN-136 |
+| `returnPlanProposal` | POST /api/v1/ops/plan_proposals/:id/return | 作成・実行（ops）— プランの値段・中身を変える案を作り、別の人が決める | F12 | 契約だけ（501） | KN-136 |
+| `submitPlanProposal` | POST /api/v1/ops/plan_proposals/:id/submit | 作成・実行（ops）— プランの値段・中身を変える案を作り、別の人が決める | F12 | 契約だけ（501） | KN-136 |
+| `listOpsPlans` | GET /api/v1/ops/plans | 取得（ops）— プランの値段・中身を変える案を作り、別の人が決める | F12 | 契約だけ（501） | KN-136 |
 | `getOpsShell` | GET /api/v1/ops/shell | 取得（ops）— 各ワークスペースの様子を見る（気にかける） | F12 | 契約だけ（501） |  |
-| `listOpsTemplates` | GET /api/v1/ops/templates | 取得（ops）— ひな形（層・マスタ）を作って配る | F12 | 契約だけ（501） | KN-96 |
-| `getOpsTemplate` | GET /api/v1/ops/templates/:id | 取得（ops）— ひな形（層・マスタ）を作って配る | F12 | 契約だけ（501） | KN-96 |
-| `releaseOpsTemplate` | POST /api/v1/ops/templates/:id/versions | 作成・実行（ops）— ひな形（層・マスタ）を作って配る | F12 | 契約だけ（501） | KN-96 |
-| `uploadWorkTypePackage` | POST /api/v1/ops/work_type_uploads | 作成・実行（ops）— 操作と業務の型を上げて版を出す（全社向け／会社向け） | F12 | 契約だけ（501） | KN-95 |
-| `getWorkTypeUpload` | GET /api/v1/ops/work_type_uploads/:id | 取得（ops）— 操作と業務の型を上げて版を出す（全社向け／会社向け） | F12 | 契約だけ（501） | KN-95 |
-| `listOpsWorkTypes` | GET /api/v1/ops/work_types | 取得（ops）— 操作と業務の型を上げて版を出す（全社向け／会社向け） | F12 | 契約だけ（501） | KN-95 |
-| `getOpsWorkType` | GET /api/v1/ops/work_types/:id | 取得（ops）— 操作と業務の型を上げて版を出す（全社向け／会社向け） | F12 | 契約だけ（501） | KN-95 |
-| `releaseOpsWorkType` | POST /api/v1/ops/work_types/:id/versions | 作成・実行（ops）— 操作と業務の型を上げて版を出す（全社向け／会社向け） | F12 | 契約だけ（501） | KN-95 |
-| `rollbackOpsWorkType` | POST /api/v1/ops/work_types/:id/versions/:v/rollback | 作成・実行（ops）— 操作と業務の型を上げて版を出す（全社向け／会社向け） | F12 | 契約だけ（501） | KN-95 |
+| `listOpsTemplates` | GET /api/v1/ops/templates | 取得（ops）— ひな形（層・マスタ）を作って配る | F12 | 契約だけ（501） | KN-136 |
+| `getOpsTemplate` | GET /api/v1/ops/templates/:id | 取得（ops）— ひな形（層・マスタ）を作って配る | F12 | 契約だけ（501） | KN-136 |
+| `releaseOpsTemplate` | POST /api/v1/ops/templates/:id/versions | 作成・実行（ops）— ひな形（層・マスタ）を作って配る | F12 | 契約だけ（501） | KN-136 |
+| `uploadWorkTypePackage` | POST /api/v1/ops/work_type_uploads | 作成・実行（ops）— 操作と業務の型を上げて版を出す（全社向け／会社向け） | F12 | 契約だけ（501） | KN-136 |
+| `getWorkTypeUpload` | GET /api/v1/ops/work_type_uploads/:id | 取得（ops）— 操作と業務の型を上げて版を出す（全社向け／会社向け） | F12 | 契約だけ（501） | KN-136 |
+| `listOpsWorkTypes` | GET /api/v1/ops/work_types | 取得（ops）— 操作と業務の型を上げて版を出す（全社向け／会社向け） | F12 | 契約だけ（501） | KN-136 |
+| `getOpsWorkType` | GET /api/v1/ops/work_types/:id | 取得（ops）— 操作と業務の型を上げて版を出す（全社向け／会社向け） | F12 | 契約だけ（501） | KN-136 |
+| `releaseOpsWorkType` | POST /api/v1/ops/work_types/:id/versions | 作成・実行（ops）— 操作と業務の型を上げて版を出す（全社向け／会社向け） | F12 | 契約だけ（501） | KN-136 |
+| `rollbackOpsWorkType` | POST /api/v1/ops/work_types/:id/versions/:v/rollback | 作成・実行（ops）— 操作と業務の型を上げて版を出す（全社向け／会社向け） | F12 | 契約だけ（501） | KN-136 |
 | `listOpsWorkspaces` | GET /api/v1/ops/workspaces | 取得（ops）— 各ワークスペースの様子を見る（気にかける） | F12 | 契約だけ（501） |  |
 | `getOpsWorkspace` | GET /api/v1/ops/workspaces/:id | 取得（ops）— ワークスペースの 1 社を扱う（いまの状態・メンバー・プ | F12 | 契約だけ（501） |  |
 | `listOpsWorkspaceAudit` | GET /api/v1/ops/workspaces/:id/audit | 取得（ops）— ワークスペースの 1 社を扱う（いまの状態・メンバー・プ | F12 | 契約だけ（501） |  |
@@ -291,120 +291,120 @@ API 363（作った 5・後のフェーズの行為だけ 20）・前の道す�
 | `changePlan` | POST /api/v1/workspace/plan | 作成・実行（workspace）— プラン・利用量・請求書を見る | F12 | 契約だけ（501） |  |
 | `listWorkspacePlans` | GET /api/v1/workspace/plans | 取得（workspace）— プラン・利用量・請求書を見る | F12 | 契約だけ（501） |  |
 | `getInvitation` | GET /api/v1/auth/invitations/:token | 取得（auth）— 招待を受けて参加する（今のアカウントで別のテナントにも） | F2 | 契約だけ（501） |  |
-| `claimPairingCode` | POST /api/v1/bridge/claim | 作成・実行（bridge）— 自分の PC をつなぐ | F3 | 契約だけ（501） | KN-66 |
-| `reportCredentialCheck` | POST /api/v1/bridge/credentials/:id/check-result | 作成・実行（bridge）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | KN-67 |
-| `resolveCredential` | POST /api/v1/bridge/credentials/resolve | 作成・実行（bridge）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | KN-67 |
-| `listMyDevices` | GET /api/v1/bridge/devices | 取得（bridge）— 自分の PC をつなぐ | F3 | 契約だけ（501） | KN-66 |
-| `updateMyDevice` | PATCH /api/v1/bridge/devices/:id | 更新（bridge）— 自分の PC をつなぐ | F3 | 契約だけ（501） | KN-66 |
-| `revokeMyDevice` | DELETE /api/v1/bridge/devices/:id | 削除（bridge）— 自分の PC をつなぐ | F3 | 契約だけ（501） | KN-66 |
-| `sendHeartbeat` | POST /api/v1/bridge/heartbeat | 作成・実行（bridge）— 自分の PC をつなぐ | F3 | 契約だけ（501） | KN-66 |
-| `createPairingCode` | POST /api/v1/bridge/pairing-codes | 作成・実行（bridge）— 自分の PC をつなぐ | F3 | 契約だけ（501） | KN-66 |
-| `downloadBridgeRelease` | GET /api/v1/bridge/releases/:name/file | 取得（bridge）— 自分の PC をつなぐ | F3 | 契約だけ（501） | KN-66 |
-| `getLatestBridgeRelease` | GET /api/v1/bridge/releases/latest | 取得（bridge）— 自分の PC をつなぐ | F3 | 契約だけ（501） | KN-66 |
-| `listCredentials` | GET /api/v1/credentials | 取得（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | KN-67 |
-| `createCredential` | POST /api/v1/credentials | 作成・実行（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | KN-67 |
-| `updateCredential` | PATCH /api/v1/credentials/:id | 更新（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | KN-67 |
-| `deleteCredential` | DELETE /api/v1/credentials/:id | 削除（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | KN-67 |
-| `checkCredentialLogin` | POST /api/v1/credentials/:id/login-check | 作成・実行（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | KN-67 |
-| `answerCredentialLoginCheck` | POST /api/v1/credentials/:id/login-check/answer | 作成・実行（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | KN-67 |
-| `createTicket` | POST /api/v1/tickets | 作成・実行（tickets）— 過去のチケットを複製して作る／見本のチケットを試す | F3,F4 | 契約だけ（501） | KN-76 |
-| `getArtifactVersion` | GET /api/v1/artifact_versions/:id | 取得（artifact_versions）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | KN-77 |
-| `listClassAxes` | GET /api/v1/class_axes | 取得（class_axes）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | KN-71 |
-| `createConversation` | POST /api/v1/conversations | 作成・実行（conversations）— 自分の AI と壁打ちしてチケットの案を作る／自分のAIとの会話を分けて始める・一覧から選んで続きを話 | F4 | 作った | KN-86 |
-| `sendConversationMessage` | POST /api/v1/conversations/:id/messages | 作成・実行（conversations）— 自分の AI と壁打ちしてチケットの案を作る／自分の AI に指示する・相談する（会話・添付・許可・成 | F4,F5 | 契約だけ（501） | KN-86 |
-| `listMembers` | GET /api/v1/members | 取得（members）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | KN-71 |
-| `updateTestSpec` | PATCH /api/v1/test_specs/:id | 更新（test_specs）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か | F4 | 契約だけ（501） | KN-78 |
-| `deleteTestSpec` | DELETE /api/v1/test_specs/:id | 削除（test_specs）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か | F4 | 契約だけ（501） | KN-78 |
-| `createTicketImport` | POST /api/v1/ticket_imports | 作成・実行（ticket_imports）— チケットを作る（画面で・下書きから） | F4 | 契約だけ（501） | KN-73 |
-| `getTicketImport` | GET /api/v1/ticket_imports/:id | 取得（ticket_imports）— チケットを作る（画面で・下書きから） | F4 | 契約だけ（501） | KN-73 |
-| `commitTicketImport` | POST /api/v1/ticket_imports/:id/commit | 作成・実行（ticket_imports）— チケットを作る（画面で・下書きから） | F4 | 契約だけ（501） | KN-73 |
-| `listTicketKinds` | GET /api/v1/ticket_kinds | 取得（ticket_kinds）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | KN-71 |
-| `makeKindTemplateFromTicket` | POST /api/v1/ticket_kinds/:id/template-from-ticket | 作成・実行（ticket_kinds）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | KN-20 |
-| `deleteTicketLink` | DELETE /api/v1/ticket_links/:id | 削除（ticket_links）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | KN-79 |
-| `listTicketStages` | GET /api/v1/ticket_stages | 取得（ticket_stages）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | KN-71 |
-| `getTicket` | GET /api/v1/tickets/:id | 取得（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | KN-76 |
-| `updateTicket` | PATCH /api/v1/tickets/:id | 更新（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても／期限間近・炎・詰まりを片付ける | F4,F6,F7 | 契約だけ（501） | KN-76 |
-| `applyTicketAgentProposal` | POST /api/v1/tickets/:id/agent-session/apply | 作成・実行（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | KN-81 |
-| `listTicketArtifacts` | GET /api/v1/tickets/:id/artifacts | 取得（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | KN-77 |
-| `createTicketAttachment` | POST /api/v1/tickets/:id/attachments | 作成・実行（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | KN-77 |
-| `listChecks` | GET /api/v1/tickets/:id/checks | 取得（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か | F4 | 契約だけ（501） | KN-78 |
-| `previewTicketKindChange` | GET /api/v1/tickets/:id/kind-change-preview | 取得（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | KN-76 |
-| `listTicketLinks` | GET /api/v1/tickets/:id/links | 取得（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | KN-79 |
-| `createTicketLink` | POST /api/v1/tickets/:id/links | 作成・実行（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | KN-79 |
-| `listTicketReferences` | GET /api/v1/tickets/:id/references | 取得（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | KN-77 |
-| `updateTicketSection` | PATCH /api/v1/tickets/:id/sections/:key | 更新（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | KN-77 |
-| `listTestSpecs` | GET /api/v1/tickets/:id/test-specs | 取得（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か | F4 | 契約だけ（501） | KN-78 |
-| `createTestSpec` | POST /api/v1/tickets/:id/test-specs | 作成・実行（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か | F4 | 契約だけ（501） | KN-78 |
-| `lintTestSpecs` | POST /api/v1/tickets/:id/test-specs/lint | 作成・実行（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か | F4 | 契約だけ（501） | KN-78 |
-| `suggestTestSpecs` | POST /api/v1/tickets/:id/test-specs/suggest | 作成・実行（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か | F4 | 契約だけ（501） | KN-78 |
-| `listTicketVersions` | GET /api/v1/tickets/:id/versions | 取得（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | KN-77 |
-| `restoreTicketVersion` | POST /api/v1/tickets/:id/versions/:v/restore | 作成・実行（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | KN-77 |
-| `listWorkTypeCandidates` | GET /api/v1/tickets/:id/work-type-candidates | 取得（tickets）— 業務の型を選ぶ（候補が 1 つなら自動・複数なら選ぶ） | F4 | 契約だけ（501） | KN-76 |
-| `bulkUpdateTickets` | POST /api/v1/tickets/bulk | 作成・実行（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても／期限間近・炎・詰まりを片付ける | F4,F7 | 契約だけ（501） | KN-71 |
-| `getActionRun` | GET /api/v1/action_runs/:id | 取得（action_runs）— AI に任せる | F5 | 契約だけ（501） | KN-93 |
-| `stopActionRun` | POST /api/v1/action_runs/:id/stop | 作成・実行（action_runs）— AI を止める・承認を取り下げる | F5 | 契約だけ（501） | KN-93 |
-| `getApproval` | GET /api/v1/approvals/:id | 取得（approvals）— 承認する／自分で直す／差し戻す／止める | F5 | 契約だけ（501） | KN-83 |
-| `approveApproval` | POST /api/v1/approvals/:id/approve | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止める | F5 | 契約だけ（501） | KN-83 |
-| `editApproval` | POST /api/v1/approvals/:id/edit | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止める | F5 | 契約だけ（501） | KN-83 |
-| `returnApproval` | POST /api/v1/approvals/:id/return | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止める | F5 | 契約だけ（501） | KN-83 |
-| `stopApproval` | POST /api/v1/approvals/:id/stop | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止める／AI を止める・承認を取り下げる | F5 | 契約だけ（501） | KN-83 |
-| `withdrawApproval` | POST /api/v1/approvals/:id/withdraw | 作成・実行（approvals）— AI を止める・承認を取り下げる | F5 | 契約だけ（501） | KN-83 |
-| `bulkApprove` | POST /api/v1/approvals/bulk | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止める | F5 | 契約だけ（501） | KN-84 |
-| `previewBulkApproval` | POST /api/v1/approvals/bulk/preview | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止める | F5 | 契約だけ（501） | KN-84 |
-| `listApprovalHistory` | GET /api/v1/approvals/history | 取得（approvals）— 承認する／自分で直す／差し戻す／止める | F5 | 契約だけ（501） | KN-84 |
-| `listApprovalQueue` | GET /api/v1/approvals/queue | 取得（approvals）— 承認する／自分で直す／差し戻す／止める | F5 | 契約だけ（501） | KN-84 |
-| `getFileForBridge` | GET /api/v1/bridge/files/:ref | 取得（bridge）— AI に任せる | F5 | 契約だけ（501） | KN-92 |
-| `reportBrowserState` | POST /api/v1/bridge/jobs/:id/browser | 作成・実行（bridge）— AI に任せる | F5 | 契約だけ（501） | KN-92 |
-| `getJobControl` | GET /api/v1/bridge/jobs/:id/control | 取得（bridge）— AI に任せる | F5 | 契約だけ（501） | KN-92 |
-| `mirrorConversationEntries` | POST /api/v1/bridge/jobs/:id/conversation-entries | 作成・実行（bridge）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 契約だけ（501） | KN-92 |
-| `finishBridgeJob` | POST /api/v1/bridge/jobs/:id/finish | 作成・実行（bridge）— AI に任せる | F5 | 契約だけ（501） | KN-92 |
-| `reportJobProgress` | POST /api/v1/bridge/jobs/:id/progress | 作成・実行（bridge）— AI に任せる | F5 | 契約だけ（501） | KN-92 |
-| `callKanameTool` | POST /api/v1/bridge/jobs/:id/tools/:name | 作成・実行（bridge）— AI に任せる | F5 | 契約だけ（501） | KN-92 |
-| `takeBridgeJob` | POST /api/v1/bridge/jobs/take | 作成・実行（bridge）— AI に任せる | F5 | 契約だけ（501） | KN-92 |
-| `listMirrorTargets` | GET /api/v1/bridge/mirror-targets | 取得（bridge）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 契約だけ（501） | KN-92 |
-| `markHumanCheck` | POST /api/v1/checks/:id/human | 作成・実行（checks）— 承認する／自分で直す／差し戻す／止める | F5 | 契約だけ（501） | KN-78 |
-| `getMyClone` | GET /api/v1/clones/me | 取得（clones）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 契約だけ（501） | KN-87 |
-| `listCloneActivity` | GET /api/v1/clones/me/activity | 取得（clones）— 分身がやったことを見る → チケットへ戻る | F5 | 契約だけ（501） | KN-89 |
-| `exportCloneActivity` | POST /api/v1/clones/me/activity/export | 作成・実行（clones）— 分身がやったことを見る → チケットへ戻る | F5 | 契約だけ（501） | KN-89 |
-| `getCloneGrowth` | GET /api/v1/clones/me/growth | 取得（clones）— 分身がやったことを見る → チケットへ戻る | F5 | 契約だけ（501） | KN-89 |
-| `getCloneNow` | GET /api/v1/clones/me/now | 取得（clones）— 分身がやったことを見る → チケットへ戻る | F5 | 契約だけ（501） | KN-89 |
-| `listConversationMessages` | GET /api/v1/conversations/:id/messages | 取得（conversations）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 契約だけ（501） | KN-86 |
-| `stopConversation` | POST /api/v1/conversations/:id/stop | 作成・実行（conversations）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 契約だけ（501） | KN-86 |
-| `streamConversation` | GET /api/v1/conversations/:id/stream | 取得（conversations）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 契約だけ（501） | KN-86 |
-| `getTicketAgentSession` | GET /api/v1/tickets/:id/agent-session | 取得（tickets）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 契約だけ（501） | KN-81 |
-| `sendTicketAgentMessage` | POST /api/v1/tickets/:id/agent-session/messages | 作成・実行（tickets）— 自分の AI に指示する・相談する（会話・添付・許可・成／自分のAIの許可に答える・許可のモードを選ぶ | F5 | 契約だけ（501） | KN-81 |
-| `completeTicket` | POST /api/v1/tickets/:id/complete | 作成・実行（tickets）— 完了にする（ナレッジ更新の候補を確定・作らない理由も残す | F5 | 契約だけ（501） | KN-76 |
-| `delegateTicket` | POST /api/v1/tickets/:id/delegate | 作成・実行（tickets）— AI に任せる | F5 | 契約だけ（501） | KN-93 |
-| `dryRunTicket` | POST /api/v1/tickets/:id/dry-run | 作成・実行（tickets）— 試し打ちする（宛先を自分に差し替えて確かめる） | F5 | 契約だけ（501） | KN-93 |
-| `listTicketRuns` | GET /api/v1/tickets/:id/runs | 取得（tickets）— AI に任せる | F5 | 契約だけ（501） | KN-93 |
-| `updateTicketDecision` | PATCH /api/v1/ticket_decisions/:id | 更新（ticket_decisions）— 決定を記録する（AI の候補を確定・直接書く） | F6 | 契約だけ（501） | KN-79 |
-| `updateTicketMessage` | PATCH /api/v1/ticket_messages/:id | 更新（ticket_messages）— チケットのスレッドで話す（@ で知らせる） | F6 | 契約だけ（501） | KN-79 |
-| `deleteTicketMessage` | DELETE /api/v1/ticket_messages/:id | 削除（ticket_messages）— チケットのスレッドで話す（@ で知らせる） | F6 | 契約だけ（501） | KN-79 |
-| `starTicketMessage` | POST /api/v1/ticket_messages/:id/star | 作成・実行（ticket_messages）— チケットのスレッドで話す（@ で知らせる） | F6 | 契約だけ（501） | KN-79 |
-| `listTicketDecisions` | GET /api/v1/tickets/:id/decisions | 取得（tickets）— 決定を記録する（AI の候補を確定・直接書く） | F6 | 契約だけ（501） | KN-79 |
-| `createTicketDecision` | POST /api/v1/tickets/:id/decisions | 作成・実行（tickets）— 決定を記録する（AI の候補を確定・直接書く） | F6 | 契約だけ（501） | KN-79 |
-| `createTicketMessage` | POST /api/v1/tickets/:id/messages | 作成・実行（tickets）— チケットのスレッドで話す（@ で知らせる） | F6 | 契約だけ（501） | KN-79 |
-| `listTicketTimeline` | GET /api/v1/tickets/:id/timeline | 取得（tickets）— チケットのスレッドで話す（@ で知らせる） | F6 | 契約だけ（501） | KN-79 |
-| `retryActionRun` | POST /api/v1/action_runs/:id/retry | 作成・実行（action_runs）— 止まった理由を見て一手を打つ（PC が閉じている・壊れた | F7 | 契約だけ（501） | KN-93 |
-| `takeoverActionRun` | POST /api/v1/action_runs/:id/takeover | 作成・実行（action_runs）— 止まった理由を見て一手を打つ（PC が閉じている・壊れた | F7 | 契約だけ（501） | KN-93 |
-| `listNotifications` | GET /api/v1/notifications | 取得（notifications）— 知らせを見てチケットへ行く | F7 | 契約だけ（501） | KN-74 |
-| `readNotification` | PATCH /api/v1/notifications/:id | 更新（notifications）— 知らせを見てチケットへ行く | F7 | 契約だけ（501） | KN-74 |
-| `readAllNotifications` | POST /api/v1/notifications/read-all | 作成・実行（notifications）— 知らせを見てチケットへ行く | F7 | 契約だけ（501） | KN-74 |
-| `listSavedViews` | GET /api/v1/saved_views | 取得（saved_views）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 契約だけ（501） | KN-72 |
-| `createSavedView` | POST /api/v1/saved_views | 作成・実行（saved_views）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 契約だけ（501） | KN-72 |
-| `updateSavedView` | PATCH /api/v1/saved_views/:id | 更新（saved_views）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 契約だけ（501） | KN-72 |
-| `deleteSavedView` | DELETE /api/v1/saved_views/:id | 削除（saved_views）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 契約だけ（501） | KN-72 |
-| `getScopeOverview` | GET /api/v1/scopes/:id/overview | 取得（scopes）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 契約だけ（501） | KN-71 |
-| `search` | GET /api/v1/search | 取得（search）— 探す（チケット・ナレッジのページ・決定・会話） | F7 | 契約だけ（501） | KN-72 |
-| `getShell` | GET /api/v1/shell | 取得（shell）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 契約だけ（501） | KN-71 |
-| `listTickets` | GET /api/v1/tickets | 取得（tickets）— 期限間近・炎・詰まりを片付ける／見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 契約だけ（501） | KN-71 |
-| `deleteTicket` | DELETE /api/v1/tickets/:id | 削除（tickets）— チケットを消す・アーカイブする（子孫の扱いを決める） | F7 | 契約だけ（501） | KN-76 |
-| `previewTicketDelete` | GET /api/v1/tickets/:id/delete-preview | 取得（tickets）— チケットを消す・アーカイブする（子孫の扱いを決める） | F7 | 契約だけ（501） | KN-76 |
-| `restoreTicket` | POST /api/v1/tickets/:id/restore | 作成・実行（tickets）— チケットを消す・アーカイブする（子孫の扱いを決める） | F7 | 契約だけ（501） | KN-76 |
-| `listHandoverRules` | GET /api/v1/handover_rules | 取得（handover_rules）— 渡されたものを受ける／断る（理由） | F8 | 契約だけ（501） | KN-22 |
-| `answerTicketHandover` | PATCH /api/v1/ticket_handovers/:id | 更新（ticket_handovers）— 渡されたものを受ける／断る（理由） | F8 | 契約だけ（501） | KN-22 |
-| `createTicketHandover` | POST /api/v1/tickets/:id/handovers | 作成・実行（tickets）— 上から配る（人・グループへ）／上へ上げる（判断を仰ぐ・上位の承認を求める・詰まりを上げ | F8 | 契約だけ（501） | KN-22 |
-| `countKnows` | GET /api/v1/clones/me/knows/counts | 取得（clones）— 自分の AI に教える（覚えて） | F9 | 契約だけ（501） | KN-87 |
+| `claimPairingCode` | POST /api/v1/bridge/claim | 作成・実行（bridge）— 自分の PC をつなぐ | F3 | 契約だけ（501） | KN-127 |
+| `reportCredentialCheck` | POST /api/v1/bridge/credentials/:id/check-result | 作成・実行（bridge）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | KN-127 |
+| `resolveCredential` | POST /api/v1/bridge/credentials/resolve | 作成・実行（bridge）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | KN-127 |
+| `listMyDevices` | GET /api/v1/bridge/devices | 取得（bridge）— 自分の PC をつなぐ | F3 | 契約だけ（501） | KN-127 |
+| `updateMyDevice` | PATCH /api/v1/bridge/devices/:id | 更新（bridge）— 自分の PC をつなぐ | F3 | 契約だけ（501） | KN-127 |
+| `revokeMyDevice` | DELETE /api/v1/bridge/devices/:id | 削除（bridge）— 自分の PC をつなぐ | F3 | 契約だけ（501） | KN-127 |
+| `sendHeartbeat` | POST /api/v1/bridge/heartbeat | 作成・実行（bridge）— 自分の PC をつなぐ | F3 | 契約だけ（501） | KN-127 |
+| `createPairingCode` | POST /api/v1/bridge/pairing-codes | 作成・実行（bridge）— 自分の PC をつなぐ | F3 | 契約だけ（501） | KN-127 |
+| `downloadBridgeRelease` | GET /api/v1/bridge/releases/:name/file | 取得（bridge）— 自分の PC をつなぐ | F3 | 契約だけ（501） | KN-127 |
+| `getLatestBridgeRelease` | GET /api/v1/bridge/releases/latest | 取得（bridge）— 自分の PC をつなぐ | F3 | 契約だけ（501） | KN-127 |
+| `listCredentials` | GET /api/v1/credentials | 取得（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | KN-127 |
+| `createCredential` | POST /api/v1/credentials | 作成・実行（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | KN-127 |
+| `updateCredential` | PATCH /api/v1/credentials/:id | 更新（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | KN-127 |
+| `deleteCredential` | DELETE /api/v1/credentials/:id | 削除（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | KN-127 |
+| `checkCredentialLogin` | POST /api/v1/credentials/:id/login-check | 作成・実行（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | KN-127 |
+| `answerCredentialLoginCheck` | POST /api/v1/credentials/:id/login-check/answer | 作成・実行（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | KN-127 |
+| `createTicket` | POST /api/v1/tickets | 作成・実行（tickets）— 過去のチケットを複製して作る／見本のチケットを試す | F3,F4 | 契約だけ（501） | KN-128 |
+| `getArtifactVersion` | GET /api/v1/artifact_versions/:id | 取得（artifact_versions）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | KN-128 |
+| `listClassAxes` | GET /api/v1/class_axes | 取得（class_axes）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | KN-128 |
+| `createConversation` | POST /api/v1/conversations | 作成・実行（conversations）— 自分の AI と壁打ちしてチケットの案を作る／自分のAIとの会話を分けて始める・一覧から選んで続きを話 | F4 | 作った | KN-128 |
+| `sendConversationMessage` | POST /api/v1/conversations/:id/messages | 作成・実行（conversations）— 自分の AI と壁打ちしてチケットの案を作る／自分の AI に指示する・相談する（会話・添付・許可・成 | F4,F5 | 契約だけ（501） | KN-128 |
+| `listMembers` | GET /api/v1/members | 取得（members）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | KN-128 |
+| `updateTestSpec` | PATCH /api/v1/test_specs/:id | 更新（test_specs）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か | F4 | 契約だけ（501） | KN-128 |
+| `deleteTestSpec` | DELETE /api/v1/test_specs/:id | 削除（test_specs）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か | F4 | 契約だけ（501） | KN-128 |
+| `createTicketImport` | POST /api/v1/ticket_imports | 作成・実行（ticket_imports）— チケットを作る（画面で・下書きから） | F4 | 契約だけ（501） | KN-128 |
+| `getTicketImport` | GET /api/v1/ticket_imports/:id | 取得（ticket_imports）— チケットを作る（画面で・下書きから） | F4 | 契約だけ（501） | KN-128 |
+| `commitTicketImport` | POST /api/v1/ticket_imports/:id/commit | 作成・実行（ticket_imports）— チケットを作る（画面で・下書きから） | F4 | 契約だけ（501） | KN-128 |
+| `listTicketKinds` | GET /api/v1/ticket_kinds | 取得（ticket_kinds）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | KN-128 |
+| `makeKindTemplateFromTicket` | POST /api/v1/ticket_kinds/:id/template-from-ticket | 作成・実行（ticket_kinds）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | KN-128 |
+| `deleteTicketLink` | DELETE /api/v1/ticket_links/:id | 削除（ticket_links）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | KN-128 |
+| `listTicketStages` | GET /api/v1/ticket_stages | 取得（ticket_stages）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | KN-128 |
+| `getTicket` | GET /api/v1/tickets/:id | 取得（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | KN-128 |
+| `updateTicket` | PATCH /api/v1/tickets/:id | 更新（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても／期限間近・炎・詰まりを片付ける | F4,F6,F7 | 契約だけ（501） | KN-131 |
+| `applyTicketAgentProposal` | POST /api/v1/tickets/:id/agent-session/apply | 作成・実行（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | KN-128 |
+| `listTicketArtifacts` | GET /api/v1/tickets/:id/artifacts | 取得（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | KN-128 |
+| `createTicketAttachment` | POST /api/v1/tickets/:id/attachments | 作成・実行（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | KN-128 |
+| `listChecks` | GET /api/v1/tickets/:id/checks | 取得（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か | F4 | 契約だけ（501） | KN-128 |
+| `previewTicketKindChange` | GET /api/v1/tickets/:id/kind-change-preview | 取得（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | KN-128 |
+| `listTicketLinks` | GET /api/v1/tickets/:id/links | 取得（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | KN-128 |
+| `createTicketLink` | POST /api/v1/tickets/:id/links | 作成・実行（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | KN-128 |
+| `listTicketReferences` | GET /api/v1/tickets/:id/references | 取得（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | KN-128 |
+| `updateTicketSection` | PATCH /api/v1/tickets/:id/sections/:key | 更新（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | KN-128 |
+| `listTestSpecs` | GET /api/v1/tickets/:id/test-specs | 取得（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か | F4 | 契約だけ（501） | KN-128 |
+| `createTestSpec` | POST /api/v1/tickets/:id/test-specs | 作成・実行（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か | F4 | 契約だけ（501） | KN-128 |
+| `lintTestSpecs` | POST /api/v1/tickets/:id/test-specs/lint | 作成・実行（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か | F4 | 契約だけ（501） | KN-128 |
+| `suggestTestSpecs` | POST /api/v1/tickets/:id/test-specs/suggest | 作成・実行（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か | F4 | 契約だけ（501） | KN-128 |
+| `listTicketVersions` | GET /api/v1/tickets/:id/versions | 取得（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | KN-128 |
+| `restoreTicketVersion` | POST /api/v1/tickets/:id/versions/:v/restore | 作成・実行（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | KN-128 |
+| `listWorkTypeCandidates` | GET /api/v1/tickets/:id/work-type-candidates | 取得（tickets）— 業務の型を選ぶ（候補が 1 つなら自動・複数なら選ぶ） | F4 | 契約だけ（501） | KN-128 |
+| `bulkUpdateTickets` | POST /api/v1/tickets/bulk | 作成・実行（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても／期限間近・炎・詰まりを片付ける | F4,F7 | 契約だけ（501） | KN-128 |
+| `getActionRun` | GET /api/v1/action_runs/:id | 取得（action_runs）— AI に任せる | F5 | 契約だけ（501） | KN-129 |
+| `stopActionRun` | POST /api/v1/action_runs/:id/stop | 作成・実行（action_runs）— AI を止める・承認を取り下げる | F5 | 契約だけ（501） | KN-129 |
+| `getApproval` | GET /api/v1/approvals/:id | 取得（approvals）— 承認する／自分で直す／差し戻す／止める | F5 | 契約だけ（501） | KN-129 |
+| `approveApproval` | POST /api/v1/approvals/:id/approve | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止める | F5 | 契約だけ（501） | KN-129 |
+| `editApproval` | POST /api/v1/approvals/:id/edit | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止める | F5 | 契約だけ（501） | KN-129 |
+| `returnApproval` | POST /api/v1/approvals/:id/return | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止める | F5 | 契約だけ（501） | KN-129 |
+| `stopApproval` | POST /api/v1/approvals/:id/stop | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止める／AI を止める・承認を取り下げる | F5 | 契約だけ（501） | KN-129 |
+| `withdrawApproval` | POST /api/v1/approvals/:id/withdraw | 作成・実行（approvals）— AI を止める・承認を取り下げる | F5 | 契約だけ（501） | KN-129 |
+| `bulkApprove` | POST /api/v1/approvals/bulk | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止める | F5 | 契約だけ（501） | KN-129 |
+| `previewBulkApproval` | POST /api/v1/approvals/bulk/preview | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止める | F5 | 契約だけ（501） | KN-129 |
+| `listApprovalHistory` | GET /api/v1/approvals/history | 取得（approvals）— 承認する／自分で直す／差し戻す／止める | F5 | 契約だけ（501） | KN-129 |
+| `listApprovalQueue` | GET /api/v1/approvals/queue | 取得（approvals）— 承認する／自分で直す／差し戻す／止める | F5 | 契約だけ（501） | KN-129 |
+| `getFileForBridge` | GET /api/v1/bridge/files/:ref | 取得（bridge）— AI に任せる | F5 | 契約だけ（501） | KN-129 |
+| `reportBrowserState` | POST /api/v1/bridge/jobs/:id/browser | 作成・実行（bridge）— AI に任せる | F5 | 契約だけ（501） | KN-129 |
+| `getJobControl` | GET /api/v1/bridge/jobs/:id/control | 取得（bridge）— AI に任せる | F5 | 契約だけ（501） | KN-129 |
+| `mirrorConversationEntries` | POST /api/v1/bridge/jobs/:id/conversation-entries | 作成・実行（bridge）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 契約だけ（501） | KN-129 |
+| `finishBridgeJob` | POST /api/v1/bridge/jobs/:id/finish | 作成・実行（bridge）— AI に任せる | F5 | 契約だけ（501） | KN-129 |
+| `reportJobProgress` | POST /api/v1/bridge/jobs/:id/progress | 作成・実行（bridge）— AI に任せる | F5 | 契約だけ（501） | KN-129 |
+| `callKanameTool` | POST /api/v1/bridge/jobs/:id/tools/:name | 作成・実行（bridge）— AI に任せる | F5 | 契約だけ（501） | KN-129 |
+| `takeBridgeJob` | POST /api/v1/bridge/jobs/take | 作成・実行（bridge）— AI に任せる | F5 | 契約だけ（501） | KN-129 |
+| `listMirrorTargets` | GET /api/v1/bridge/mirror-targets | 取得（bridge）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 契約だけ（501） | KN-129 |
+| `markHumanCheck` | POST /api/v1/checks/:id/human | 作成・実行（checks）— 承認する／自分で直す／差し戻す／止める | F5 | 契約だけ（501） | KN-129 |
+| `getMyClone` | GET /api/v1/clones/me | 取得（clones）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 契約だけ（501） | KN-129 |
+| `listCloneActivity` | GET /api/v1/clones/me/activity | 取得（clones）— 分身がやったことを見る → チケットへ戻る | F5 | 契約だけ（501） | KN-129 |
+| `exportCloneActivity` | POST /api/v1/clones/me/activity/export | 作成・実行（clones）— 分身がやったことを見る → チケットへ戻る | F5 | 契約だけ（501） | KN-129 |
+| `getCloneGrowth` | GET /api/v1/clones/me/growth | 取得（clones）— 分身がやったことを見る → チケットへ戻る | F5 | 契約だけ（501） | KN-129 |
+| `getCloneNow` | GET /api/v1/clones/me/now | 取得（clones）— 分身がやったことを見る → チケットへ戻る | F5 | 契約だけ（501） | KN-129 |
+| `listConversationMessages` | GET /api/v1/conversations/:id/messages | 取得（conversations）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 契約だけ（501） | KN-129 |
+| `stopConversation` | POST /api/v1/conversations/:id/stop | 作成・実行（conversations）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 契約だけ（501） | KN-129 |
+| `streamConversation` | GET /api/v1/conversations/:id/stream | 取得（conversations）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 契約だけ（501） | KN-129 |
+| `getTicketAgentSession` | GET /api/v1/tickets/:id/agent-session | 取得（tickets）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 契約だけ（501） | KN-129 |
+| `sendTicketAgentMessage` | POST /api/v1/tickets/:id/agent-session/messages | 作成・実行（tickets）— 自分の AI に指示する・相談する（会話・添付・許可・成／自分のAIの許可に答える・許可のモードを選ぶ | F5 | 契約だけ（501） | KN-129 |
+| `completeTicket` | POST /api/v1/tickets/:id/complete | 作成・実行（tickets）— 完了にする（ナレッジ更新の候補を確定・作らない理由も残す | F5 | 契約だけ（501） | KN-129 |
+| `delegateTicket` | POST /api/v1/tickets/:id/delegate | 作成・実行（tickets）— AI に任せる | F5 | 契約だけ（501） | KN-129 |
+| `dryRunTicket` | POST /api/v1/tickets/:id/dry-run | 作成・実行（tickets）— 試し打ちする（宛先を自分に差し替えて確かめる） | F5 | 契約だけ（501） | KN-129 |
+| `listTicketRuns` | GET /api/v1/tickets/:id/runs | 取得（tickets）— AI に任せる | F5 | 契約だけ（501） | KN-129 |
+| `updateTicketDecision` | PATCH /api/v1/ticket_decisions/:id | 更新（ticket_decisions）— 決定を記録する（AI の候補を確定・直接書く） | F6 | 契約だけ（501） | KN-130 |
+| `updateTicketMessage` | PATCH /api/v1/ticket_messages/:id | 更新（ticket_messages）— チケットのスレッドで話す（@ で知らせる） | F6 | 契約だけ（501） | KN-130 |
+| `deleteTicketMessage` | DELETE /api/v1/ticket_messages/:id | 削除（ticket_messages）— チケットのスレッドで話す（@ で知らせる） | F6 | 契約だけ（501） | KN-130 |
+| `starTicketMessage` | POST /api/v1/ticket_messages/:id/star | 作成・実行（ticket_messages）— チケットのスレッドで話す（@ で知らせる） | F6 | 契約だけ（501） | KN-130 |
+| `listTicketDecisions` | GET /api/v1/tickets/:id/decisions | 取得（tickets）— 決定を記録する（AI の候補を確定・直接書く） | F6 | 契約だけ（501） | KN-130 |
+| `createTicketDecision` | POST /api/v1/tickets/:id/decisions | 作成・実行（tickets）— 決定を記録する（AI の候補を確定・直接書く） | F6 | 契約だけ（501） | KN-130 |
+| `createTicketMessage` | POST /api/v1/tickets/:id/messages | 作成・実行（tickets）— チケットのスレッドで話す（@ で知らせる） | F6 | 契約だけ（501） | KN-130 |
+| `listTicketTimeline` | GET /api/v1/tickets/:id/timeline | 取得（tickets）— チケットのスレッドで話す（@ で知らせる） | F6 | 契約だけ（501） | KN-130 |
+| `retryActionRun` | POST /api/v1/action_runs/:id/retry | 作成・実行（action_runs）— 止まった理由を見て一手を打つ（PC が閉じている・壊れた | F7 | 契約だけ（501） | KN-131 |
+| `takeoverActionRun` | POST /api/v1/action_runs/:id/takeover | 作成・実行（action_runs）— 止まった理由を見て一手を打つ（PC が閉じている・壊れた | F7 | 契約だけ（501） | KN-131 |
+| `listNotifications` | GET /api/v1/notifications | 取得（notifications）— 知らせを見てチケットへ行く | F7 | 契約だけ（501） | KN-131 |
+| `readNotification` | PATCH /api/v1/notifications/:id | 更新（notifications）— 知らせを見てチケットへ行く | F7 | 契約だけ（501） | KN-131 |
+| `readAllNotifications` | POST /api/v1/notifications/read-all | 作成・実行（notifications）— 知らせを見てチケットへ行く | F7 | 契約だけ（501） | KN-131 |
+| `listSavedViews` | GET /api/v1/saved_views | 取得（saved_views）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 契約だけ（501） | KN-131 |
+| `createSavedView` | POST /api/v1/saved_views | 作成・実行（saved_views）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 契約だけ（501） | KN-131 |
+| `updateSavedView` | PATCH /api/v1/saved_views/:id | 更新（saved_views）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 契約だけ（501） | KN-131 |
+| `deleteSavedView` | DELETE /api/v1/saved_views/:id | 削除（saved_views）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 契約だけ（501） | KN-131 |
+| `getScopeOverview` | GET /api/v1/scopes/:id/overview | 取得（scopes）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 契約だけ（501） | KN-131 |
+| `search` | GET /api/v1/search | 取得（search）— 探す（チケット・ナレッジのページ・決定・会話） | F7 | 契約だけ（501） | KN-131 |
+| `getShell` | GET /api/v1/shell | 取得（shell）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 契約だけ（501） | KN-131 |
+| `listTickets` | GET /api/v1/tickets | 取得（tickets）— 期限間近・炎・詰まりを片付ける／見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 契約だけ（501） | KN-131 |
+| `deleteTicket` | DELETE /api/v1/tickets/:id | 削除（tickets）— チケットを消す・アーカイブする（子孫の扱いを決める） | F7 | 契約だけ（501） | KN-131 |
+| `previewTicketDelete` | GET /api/v1/tickets/:id/delete-preview | 取得（tickets）— チケットを消す・アーカイブする（子孫の扱いを決める） | F7 | 契約だけ（501） | KN-131 |
+| `restoreTicket` | POST /api/v1/tickets/:id/restore | 作成・実行（tickets）— チケットを消す・アーカイブする（子孫の扱いを決める） | F7 | 契約だけ（501） | KN-131 |
+| `listHandoverRules` | GET /api/v1/handover_rules | 取得（handover_rules）— 渡されたものを受ける／断る（理由） | F8 | 契約だけ（501） | KN-132 |
+| `answerTicketHandover` | PATCH /api/v1/ticket_handovers/:id | 更新（ticket_handovers）— 渡されたものを受ける／断る（理由） | F8 | 契約だけ（501） | KN-132 |
+| `createTicketHandover` | POST /api/v1/tickets/:id/handovers | 作成・実行（tickets）— 上から配る（人・グループへ）／上へ上げる（判断を仰ぐ・上位の承認を求める・詰まりを上げ | F8 | 契約だけ（501） | KN-132 |
+| `countKnows` | GET /api/v1/clones/me/knows/counts | 取得（clones）— 自分の AI に教える（覚えて） | F9 | 契約だけ（501） | KN-133 |
 | `askKnowledge` | POST /api/v1/knowledge/ask | 作成・実行（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `sendKnowledgeAnswerFeedback` | POST /api/v1/knowledge/ask/feedback | 作成・実行（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `getKnowledgeHome` | GET /api/v1/knowledge/home | 取得（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
@@ -438,20 +438,20 @@ API 363（作った 5・後のフェーズの行為だけ 20）・前の道す�
 | `restoreKnowledgeVersion` | POST /api/v1/knowledge_pages/:id/versions/:v/restore | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `createLayer` | POST /api/v1/layers | 作成・実行（layers）— グループを作る・直す（メンバーの中） | F9 | 契約だけ（501） |  |
 | `updateLayer` | PATCH /api/v1/layers/:id | 更新（layers）— グループを作る・直す（メンバーの中） | F9 | 契約だけ（501） |  |
-| `listLearningCandidates` | GET /api/v1/learning_candidates | 取得（learning_candidates）— 自分の AI に教える（覚えて）／上がってきた記憶と食い違いを確かめる | F9 | 契約だけ（501） | KN-87 |
-| `acceptLearningCandidate` | POST /api/v1/learning_candidates/:id/accept | 作成・実行（learning_candidates）— 自分の AI に教える（覚えて）／上がってきた記憶と食い違いを確かめる | F9 | 契約だけ（501） | KN-87 |
-| `dismissLearningCandidate` | POST /api/v1/learning_candidates/:id/dismiss | 作成・実行（learning_candidates）— 自分の AI に教える（覚えて）／上がってきた記憶と食い違いを確かめる | F9 | 契約だけ（501） | KN-87 |
-| `requestRuleException` | POST /api/v1/learning_candidates/:id/exception-request | 作成・実行（learning_candidates）— ルールを置く（会社・層・個人・取引先） | F9 | 契約だけ（501） | KN-87 |
-| `postponeLearningCandidate` | POST /api/v1/learning_candidates/:id/later | 作成・実行（learning_candidates）— 自分の AI に教える（覚えて） | F9 | 契約だけ（501） | KN-87 |
-| `listMemories` | GET /api/v1/memories | 取得（memories）— 自分の AI に教える（覚えて） | F9 | 契約だけ（501） | KN-87 |
-| `createMemory` | POST /api/v1/memories | 作成・実行（memories）— 自分の AI に教える（覚えて） | F9 | 契約だけ（501） | KN-87 |
-| `updateMemory` | PATCH /api/v1/memories/:id | 更新（memories）— 自分の AI に教える（覚えて） | F9 | 作った | KN-87 |
-| `deleteMemory` | DELETE /api/v1/memories/:id | 削除（memories）— 自分の AI に教える（覚えて） | F9 | 契約だけ（501） | KN-87 |
-| `promoteMemoryToRule` | POST /api/v1/memories/:id/promote | 作成・実行（memories）— ルールを置く（会社・層・個人・取引先）／自分の AI に教える（覚えて） | F9 | 契約だけ（501） | KN-87 |
+| `listLearningCandidates` | GET /api/v1/learning_candidates | 取得（learning_candidates）— 自分の AI に教える（覚えて）／上がってきた記憶と食い違いを確かめる | F9 | 契約だけ（501） | KN-133 |
+| `acceptLearningCandidate` | POST /api/v1/learning_candidates/:id/accept | 作成・実行（learning_candidates）— 自分の AI に教える（覚えて）／上がってきた記憶と食い違いを確かめる | F9 | 契約だけ（501） | KN-133 |
+| `dismissLearningCandidate` | POST /api/v1/learning_candidates/:id/dismiss | 作成・実行（learning_candidates）— 自分の AI に教える（覚えて）／上がってきた記憶と食い違いを確かめる | F9 | 契約だけ（501） | KN-133 |
+| `requestRuleException` | POST /api/v1/learning_candidates/:id/exception-request | 作成・実行（learning_candidates）— ルールを置く（会社・層・個人・取引先） | F9 | 契約だけ（501） | KN-133 |
+| `postponeLearningCandidate` | POST /api/v1/learning_candidates/:id/later | 作成・実行（learning_candidates）— 自分の AI に教える（覚えて） | F9 | 契約だけ（501） | KN-133 |
+| `listMemories` | GET /api/v1/memories | 取得（memories）— 自分の AI に教える（覚えて） | F9 | 契約だけ（501） | KN-133 |
+| `createMemory` | POST /api/v1/memories | 作成・実行（memories）— 自分の AI に教える（覚えて） | F9 | 契約だけ（501） | KN-133 |
+| `updateMemory` | PATCH /api/v1/memories/:id | 更新（memories）— 自分の AI に教える（覚えて） | F9 | 作った | KN-133 |
+| `deleteMemory` | DELETE /api/v1/memories/:id | 削除（memories）— 自分の AI に教える（覚えて） | F9 | 契約だけ（501） | KN-133 |
+| `promoteMemoryToRule` | POST /api/v1/memories/:id/promote | 作成・実行（memories）— ルールを置く（会社・層・個人・取引先）／自分の AI に教える（覚えて） | F9 | 契約だけ（501） | KN-133 |
 | `getRule` | GET /api/v1/rules/:id | 取得（rules）— ルールを置く（会社・層・個人・取引先） | F9 | 契約だけ（501） |  |
 | `updateRule` | PATCH /api/v1/rules/:id | 更新（rules）— ルールを置く（会社・層・個人・取引先） | F9 | 契約だけ（501） |  |
 | `deleteRule` | DELETE /api/v1/rules/:id | 削除（rules）— ルールを置く（会社・層・個人・取引先） | F9 | 契約だけ（501） |  |
-| `checkRule` | POST /api/v1/rules/check | 作成・実行（rules）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ／ルールを置く（会社・層・個人・取引先） | F9 | 契約だけ（501） | KN-21 |
+| `checkRule` | POST /api/v1/rules/check | 作成・実行（rules）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ／ルールを置く（会社・層・個人・取引先） | F9 | 契約だけ（501） | KN-133 |
 | `listScopes` | GET /api/v1/scopes | 取得（scopes）— グループを作る・直す（メンバーの中） | F9 | 契約だけ（501） |  |
 | `createScope` | POST /api/v1/scopes | 作成・実行（scopes）— グループを作る・直す（メンバーの中） | F9 | 契約だけ（501） |  |
 | `updateScope` | PATCH /api/v1/scopes/:id | 更新（scopes）— グループを作る・直す（メンバーの中） | F9 | 契約だけ（501） |  |
@@ -477,26 +477,26 @@ API 363（作った 5・後のフェーズの行為だけ 20）・前の道す�
 | `getTicketShape` | GET /api/v1/workspace/ticket-shape | 取得（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） |  |
 | `saveTicketShape` | PATCH /api/v1/workspace/ticket-shape | 更新（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） |  |
 | `previewTicketShapeChange` | POST /api/v1/workspace/ticket-shape/preview | 作成・実行（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） |  |
-| `restoreArtifactVersion` | POST /api/v1/artifact_versions/:id/restore | 作成・実行（artifact_versions）— 自分のAIの返事を成果物に書き出し、会話の横で開いて直す | （後のフェーズ） | 契約だけ（501） | KN-88 |
-| `updateArtifact` | PATCH /api/v1/artifacts/:id | 更新（artifacts）— 自分のAIの返事を成果物に書き出し、会話の横で開いて直す | （後のフェーズ） | 契約だけ（501） | KN-88 |
-| `putArtifactFromBridge` | POST /api/v1/bridge/jobs/:id/artifacts | 作成・実行（bridge）— 自分のAIの返事を成果物に書き出し、会話の横で開いて直す | （後のフェーズ） | 契約だけ（501） | KN-92 |
-| `askFromBridge` | POST /api/v1/bridge/jobs/:id/questions | 作成・実行（bridge）— 自分のAIの許可に答える・許可のモードを選ぶ | （後のフェーズ） | 契約だけ（501） | KN-92 |
-| `getBridgeQuestionAnswer` | GET /api/v1/bridge/jobs/:id/questions/:qid | 取得（bridge）— 自分のAIの許可に答える・許可のモードを選ぶ | （後のフェーズ） | 契約だけ（501） | KN-92 |
-| `reportUsage` | POST /api/v1/bridge/usage | 作成・実行（bridge）— 自分のAIの使用量（サブスクの 5 時間の枠・週の枠とい | （後のフェーズ） | 契約だけ（501） | KN-66 |
-| `updateMyClone` | PATCH /api/v1/clones/me | 更新（clones）— 自分のAIの許可に答える・許可のモードを選ぶ | （後のフェーズ） | 契約だけ（501） | KN-87 |
-| `listConversations` | GET /api/v1/conversations | 取得（conversations）— 自分のAIとの会話を分けて始める・一覧から選んで続きを話 | （後のフェーズ） | 契約だけ（501） | KN-86 |
-| `getConversation` | GET /api/v1/conversations/:id | 取得（conversations）— 自分のAIとの会話を分けて始める・一覧から選んで続きを話 | （後のフェーズ） | 契約だけ（501） | KN-86 |
-| `updateConversation` | PATCH /api/v1/conversations/:id | 更新（conversations）— 自分のAIとの会話を分けて始める・一覧から選んで続きを話 | （後のフェーズ） | 作った | KN-86 |
-| `deleteConversation` | DELETE /api/v1/conversations/:id | 削除（conversations）— 自分のAIとの会話を分けて始める・一覧から選んで続きを話 | （後のフェーズ） | 作った | KN-86 |
-| `createConversationAttachment` | POST /api/v1/conversations/:id/attachments | 作成・実行（conversations）— 資料や画像を付けて自分のAIに渡す | （後のフェーズ） | 契約だけ（501） | KN-86 |
-| `answerAgentPermission` | POST /api/v1/conversations/:id/permissions/:pid | 作成・実行（conversations）— 自分のAIの許可に答える・許可のモードを選ぶ | （後のフェーズ） | 契約だけ（501） | KN-86 |
-| `regenerateBackupCodes` | POST /api/v1/me/backup-codes | 作成・実行（me）— 2段階認証を設定する | （後のフェーズ） | 契約だけ（501） | KN-62 |
-| `disableTwoFactor` | DELETE /api/v1/me/two-factor | 削除（me）— 2段階認証を設定する | （後のフェーズ） | 契約だけ（501） | KN-62 |
-| `confirmTwoFactor` | POST /api/v1/me/two-factor/confirm | 作成・実行（me）— 2段階認証を設定する | （後のフェーズ） | 契約だけ（501） | KN-62 |
-| `startTwoFactor` | POST /api/v1/me/two-factor/enable | 作成・実行（me）— 2段階認証を設定する | （後のフェーズ） | 契約だけ（501） | KN-62 |
-| `getMyUsage` | GET /api/v1/me/usage | 取得（me）— 自分のAIの使用量（サブスクの 5 時間の枠・週の枠とい | （後のフェーズ） | 契約だけ（501） | KN-65 |
-| `resetMemberTwoFactor` | POST /api/v1/members/:id/two-factor/reset | 作成・実行（members）— 2段階認証を設定する | （後のフェーズ） | 契約だけ（501） | KN-19 |
-| `createArtifactFromMessage` | POST /api/v1/messages/:id/artifacts | 作成・実行（messages）— 自分のAIの返事を成果物に書き出し、会話の横で開いて直す | （後のフェーズ） | 契約だけ（501） | KN-88 |
+| `restoreArtifactVersion` | POST /api/v1/artifact_versions/:id/restore | 作成・実行（artifact_versions）— 自分のAIの返事を成果物に書き出し、会話の横で開いて直す | （後のフェーズ） | 契約だけ（501） | KN-137 |
+| `updateArtifact` | PATCH /api/v1/artifacts/:id | 更新（artifacts）— 自分のAIの返事を成果物に書き出し、会話の横で開いて直す | （後のフェーズ） | 契約だけ（501） | KN-137 |
+| `putArtifactFromBridge` | POST /api/v1/bridge/jobs/:id/artifacts | 作成・実行（bridge）— 自分のAIの返事を成果物に書き出し、会話の横で開いて直す | （後のフェーズ） | 契約だけ（501） | KN-137 |
+| `askFromBridge` | POST /api/v1/bridge/jobs/:id/questions | 作成・実行（bridge）— 自分のAIの許可に答える・許可のモードを選ぶ | （後のフェーズ） | 契約だけ（501） | KN-137 |
+| `getBridgeQuestionAnswer` | GET /api/v1/bridge/jobs/:id/questions/:qid | 取得（bridge）— 自分のAIの許可に答える・許可のモードを選ぶ | （後のフェーズ） | 契約だけ（501） | KN-137 |
+| `reportUsage` | POST /api/v1/bridge/usage | 作成・実行（bridge）— 自分のAIの使用量（サブスクの 5 時間の枠・週の枠とい | （後のフェーズ） | 契約だけ（501） | KN-137 |
+| `updateMyClone` | PATCH /api/v1/clones/me | 更新（clones）— 自分のAIの許可に答える・許可のモードを選ぶ | （後のフェーズ） | 契約だけ（501） | KN-137 |
+| `listConversations` | GET /api/v1/conversations | 取得（conversations）— 自分のAIとの会話を分けて始める・一覧から選んで続きを話 | （後のフェーズ） | 契約だけ（501） | KN-137 |
+| `getConversation` | GET /api/v1/conversations/:id | 取得（conversations）— 自分のAIとの会話を分けて始める・一覧から選んで続きを話 | （後のフェーズ） | 契約だけ（501） | KN-137 |
+| `updateConversation` | PATCH /api/v1/conversations/:id | 更新（conversations）— 自分のAIとの会話を分けて始める・一覧から選んで続きを話 | （後のフェーズ） | 作った | KN-137 |
+| `deleteConversation` | DELETE /api/v1/conversations/:id | 削除（conversations）— 自分のAIとの会話を分けて始める・一覧から選んで続きを話 | （後のフェーズ） | 作った | KN-137 |
+| `createConversationAttachment` | POST /api/v1/conversations/:id/attachments | 作成・実行（conversations）— 資料や画像を付けて自分のAIに渡す | （後のフェーズ） | 契約だけ（501） | KN-137 |
+| `answerAgentPermission` | POST /api/v1/conversations/:id/permissions/:pid | 作成・実行（conversations）— 自分のAIの許可に答える・許可のモードを選ぶ | （後のフェーズ） | 契約だけ（501） | KN-137 |
+| `regenerateBackupCodes` | POST /api/v1/me/backup-codes | 作成・実行（me）— 2段階認証を設定する | （後のフェーズ） | 契約だけ（501） | KN-137 |
+| `disableTwoFactor` | DELETE /api/v1/me/two-factor | 削除（me）— 2段階認証を設定する | （後のフェーズ） | 契約だけ（501） | KN-137 |
+| `confirmTwoFactor` | POST /api/v1/me/two-factor/confirm | 作成・実行（me）— 2段階認証を設定する | （後のフェーズ） | 契約だけ（501） | KN-137 |
+| `startTwoFactor` | POST /api/v1/me/two-factor/enable | 作成・実行（me）— 2段階認証を設定する | （後のフェーズ） | 契約だけ（501） | KN-137 |
+| `getMyUsage` | GET /api/v1/me/usage | 取得（me）— 自分のAIの使用量（サブスクの 5 時間の枠・週の枠とい | （後のフェーズ） | 契約だけ（501） | KN-137 |
+| `resetMemberTwoFactor` | POST /api/v1/members/:id/two-factor/reset | 作成・実行（members）— 2段階認証を設定する | （後のフェーズ） | 契約だけ（501） | KN-137 |
+| `createArtifactFromMessage` | POST /api/v1/messages/:id/artifacts | 作成・実行（messages）— 自分のAIの返事を成果物に書き出し、会話の横で開いて直す | （後のフェーズ） | 契約だけ（501） | KN-137 |
 
 ## 前の道すじ（契約の外・apps/api/src/auth/ext.ts）
 

@@ -109,12 +109,10 @@ PYS = "      - uses: actions/checkout@v4\n      - uses: actions/setup-python@v5\
 yml = f"""# .github/workflows/v3-gate.yml — Kaname CI ゲート {len(ALL_GATES)} 本（05_flow/build_testplan.py が生成。手で直さない）
 # 方針: {FG['policy']}
 # 段: static（静的・関門）→ database（実 Postgres・RLS・契約）／ spec（仕様の層・Python）／ task-gate（そのタスクの L1 行）→ e2e（has-ui）→ auto-merge
+# GitHub の上では自動で流さない（D-128.135）。CI はローカルの dagci（ci.yaml の段はこのファイルから導く・G52）。手で押したときだけ動く
 name: v3-gate
 on:
-  pull_request:
-    branches: [main]
-  push:
-    branches: [main]
+  workflow_dispatch:
 concurrency:
   group: ${{{{ github.workflow }}}}-${{{{ github.ref }}}}
   cancel-in-progress: true
