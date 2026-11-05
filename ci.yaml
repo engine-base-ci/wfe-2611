@@ -72,6 +72,39 @@ services:
     image: pgvector/pgvector:pg16
     env: { POSTGRES_PASSWORD: postgres, POSTGRES_DB: kaname_test, DAGCI_SERVICE: pg-spec }
     ports: [5432]
+  # 単体の試験（G3）を 6 つに分けて同時に流す。分けた 1 つずつが自分の Postgres を持つ（GitHub の unit-1〜unit-6 の job と同じ・D-128.140）
+  pg-unit-1:
+    image: pgvector/pgvector:pg16
+    env: { POSTGRES_PASSWORD: postgres, POSTGRES_DB: kaname_test, DAGCI_SERVICE: pg-unit-1 }
+    ports: [5432]
+  pg-unit-2:
+    image: pgvector/pgvector:pg16
+    env: { POSTGRES_PASSWORD: postgres, POSTGRES_DB: kaname_test, DAGCI_SERVICE: pg-unit-2 }
+    ports: [5432]
+  pg-unit-3:
+    image: pgvector/pgvector:pg16
+    env: { POSTGRES_PASSWORD: postgres, POSTGRES_DB: kaname_test, DAGCI_SERVICE: pg-unit-3 }
+    ports: [5432]
+  pg-unit-4:
+    image: pgvector/pgvector:pg16
+    env: { POSTGRES_PASSWORD: postgres, POSTGRES_DB: kaname_test, DAGCI_SERVICE: pg-unit-4 }
+    ports: [5432]
+  pg-unit-5:
+    image: pgvector/pgvector:pg16
+    env: { POSTGRES_PASSWORD: postgres, POSTGRES_DB: kaname_test, DAGCI_SERVICE: pg-unit-5 }
+    ports: [5432]
+  pg-unit-6:
+    image: pgvector/pgvector:pg16
+    env: { POSTGRES_PASSWORD: postgres, POSTGRES_DB: kaname_test, DAGCI_SERVICE: pg-unit-6 }
+    ports: [5432]
+
+# チケットの回（dagci run --ticket K-<n>・D-128.140）。普段はこれ：そのチケットの試験（tests: と、その口の権限の試験）と、
+#   変わった所に当たる段だけを流す（数分）。全部（回帰・単体の試験の 6 分けと合わせ）は取り込みの前だけ（dagci run --all）
+#   like：チケットの試験は単体の試験の 1 つ目の分けと同じ相手（pg-unit-1）と env で流す。その分けはチケットの回では流れない（skip）
+tickets:
+  cmd: python3 scripts/tickets/ticket_tests.py {id} --cmds
+  like: unit-1-g03
+  skip: ["unit-*"]
 
 defaults: { timeout: 1800 }
 red_patterns: ["FAIL", "★", "Error:", "✗"]

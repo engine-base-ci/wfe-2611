@@ -102,13 +102,57 @@ SPEC_GATES = [
     {"id": 52, "name": "ローカルの CI（dagci）の段が GitHub の検査と 1 対 1（ci.yaml の段は v3-gate.yml から導く・外す job は理由つき・K-47）", "script": "python3 scripts/ci/ci_stages.py --check", "job": "spec", "blocking": True},
     {"id": 48, "name": "新しい画面の実ブラウザの試験と、押した証拠（本番の形で組み立てた画面の上・行 ID の試験が全部の行で通る・記録なし・K-36）", "script": "BASE_URL=http://127.0.0.1:3124 pnpm --filter @kaname/web e2e:k && python3 scripts/ci/op_gate.py --spec 07_qa/test-specs/k --tickets 11_tickets/tickets.json --all", "job": "web", "blocking": True},
 ]
-ALL_GATES = [{**g, "job": "database" if g["id"] in (3, 4, 6, 12) else ("e2e" if g["id"] == 15 else "static")} for g in FG["merge_gates"]] + SPEC_GATES
-def step(g): return f'      - name: "G{g["id"]} {g["name"]}{" [CRITICAL]" if g["id"] in FG.get("kaname_critical_gates", []) else ""}"\n        if: ${{{{ !cancelled() }}}}\n        run: {g["script"]}\n'   # 前の検査が赤でも次の検査を流す（赤を全部いっぺんに見る。job は赤のまま）
+SPEC_GATES.append({"id": 53, "name": "試験はどれも 1 つのチケットに属する（単体の試験・実ブラウザの試験・口ごとの権限の試験の持ち主・チケットの実行の組み立て・D-128.140）", "script": "python3 scripts/ci/test_owner_gate.py --selftest && python3 scripts/ci/test_owner_gate.py && python3 scripts/tickets/ticket_tests.py --selftest", "job": "spec", "blocking": True})
+# ---------------------------------------------------------------- 単体の試験（G3）を 6 つに分けて同時に流す（D-128.140）
+#   全部（回帰）は取り込みの前だけ。分けた 1 つずつが自分の Postgres を持ち（GitHub は job ごと・dagci は pg-unit-<i>）、
+#   結果（vitest の blob。coverage も入る）を unit が集めて合わせ、同じ閾値（vitest.config.ts）を合わせた結果に当てる。
+#   分けた側は閾値を当てない（1 つ分の coverage は足りなくて当たり前）
+UNIT_SHARDS = 6
+UNIT_DIR = ".vitest-reports"
+def unit_shard_script(i): return (f"pnpm exec vitest run --coverage --shard={i}/{UNIT_SHARDS} --reporter=default --reporter=blob "
+                                  f"--outputFile.blob={UNIT_DIR}/blob-{i}-{UNIT_SHARDS}.json --coverage.reporter=text-summary "
+                                  + " ".join(f"--coverage.thresholds.{k}=0" for k in ("lines", "branches", "functions", "statements")))
+UNIT_MERGE = (f'n=$(ls {UNIT_DIR}/blob-*-{UNIT_SHARDS}.json 2>/dev/null | wc -l) && {{ [ "$n" -eq {UNIT_SHARDS} ] || {{ echo "★ FAIL 分けた単体の試験の結果が {UNIT_SHARDS} つのうち $n つしか無い"; exit 1; }}; }} && '
+              f"pnpm exec vitest run --merge-reports={UNIT_DIR} --coverage")
+ALL_GATES = [{**g, "job": "unit" if g["id"] == 3 else ("database" if g["id"] in (4, 6, 12) else ("e2e" if g["id"] == 15 else "static"))} for g in FG["merge_gates"]] + SPEC_GATES
+ALL_GATES = [{**g, "script": UNIT_MERGE, "name": g["name"] + f"（{UNIT_SHARDS} つに分けて流した結果を合わせ、閾値を当てる）"} if g["id"] == 3 else g for g in ALL_GATES]
+def yrun(script): return json.dumps(script, ensure_ascii=False) if re.search(r"[{}\[\]]|: |^[!&*|>%@`#]", script) else script   # YAML の素の値にできない命令は "…" で
+def step(g): return f'      - name: "G{g["id"]} {g["name"]}{" [CRITICAL]" if g["id"] in FG.get("kaname_critical_gates", []) else ""}"\n        if: ${{{{ !cancelled() }}}}\n        run: {yrun(g["script"])}\n'   # 前の検査が赤でも次の検査を流す（赤を全部いっぺんに見る。job は赤のまま）
+PG = """    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env: { POSTGRES_PASSWORD: postgres, POSTGRES_DB: kaname_test }
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    env:
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/kaname_test
+"""
 NODE = "      - uses: actions/checkout@v4\n      - uses: pnpm/action-setup@v4\n      - uses: actions/setup-node@v4\n        with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }\n      - run: pnpm install --frozen-lockfile\n"
 PYS = "      - uses: actions/checkout@v4\n      - uses: actions/setup-python@v5\n        with: { python-version: '3.12' }\n      - run: pip install pyyaml\n"
+UNIT_JOBS = "".join(f"""  unit-{i}:
+    runs-on: ubuntu-latest
+    # 単体の試験の {i}/{UNIT_SHARDS}（自分の Postgres の上で。結果は unit が合わせる・D-128.140）
+    needs: [static]
+{PG}    steps:
+{NODE}      - name: "G3.{i} 単体の試験の {i}/{UNIT_SHARDS}（自分の DB の上で。coverage の閾値は合わせた後に当てる）"
+        if: ${{{{ !cancelled() }}}}
+        run: {unit_shard_script(i)}
+      - uses: actions/upload-artifact@v4
+        if: ${{{{ !cancelled() }}}}
+        with: {{ name: vitest-blob-{i}, path: {UNIT_DIR}/, include-hidden-files: true, retention-days: 1 }}
+""" for i in range(1, UNIT_SHARDS + 1)) + f"""  unit:
+    runs-on: ubuntu-latest
+    # 分けた単体の試験の結果を合わせ、coverage の閾値（vitest.config.ts）を合わせた結果に当てる（DB は要らない）
+    needs: [{", ".join(f"unit-{i}" for i in range(1, UNIT_SHARDS + 1))}]
+    if: ${{{{ !cancelled() }}}}
+    steps:
+{NODE}      - uses: actions/download-artifact@v4
+        with: {{ pattern: vitest-blob-*, path: {UNIT_DIR}, merge-multiple: true }}
+{''.join(step(g) for g in ALL_GATES if g['job'] == 'unit')}"""
 yml = f"""# .github/workflows/v3-gate.yml — Kaname CI ゲート {len(ALL_GATES)} 本（05_flow/build_testplan.py が生成。手で直さない）
 # 方針: {FG['policy']}
-# 段: static（静的・関門）→ database（実 Postgres・RLS・契約）／ spec（仕様の層・Python）／ task-gate（そのタスクの L1 行）→ e2e（has-ui）→ auto-merge
+# 段: static（静的・関門）→ database（実 Postgres・RLS・契約）／ unit-1〜unit-{UNIT_SHARDS}（単体の試験を分けて同時に・それぞれ自分の Postgres）→ unit（合わせて coverage の閾値）／ spec（仕様の層・Python）／ task-gate（そのタスクの L1 行）→ e2e（has-ui）→ auto-merge
 # GitHub の上では自動で流さない（D-128.135）。CI はローカルの dagci（ci.yaml の段はこのファイルから導く・G52）。手で押したときだけ動く
 name: v3-gate
 on:
@@ -127,18 +171,9 @@ jobs:
   database:
     runs-on: ubuntu-latest
     needs: [static]
-    services:
-      postgres:
-        image: pgvector/pgvector:pg16
-        env: {{ POSTGRES_PASSWORD: postgres, POSTGRES_DB: kaname_test }}
-        ports: ['5432:5432']
-        options: >-
-          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-    env:
-      DATABASE_URL: postgres://postgres:postgres@localhost:5432/kaname_test
-    steps:
+{PG}    steps:
 {NODE}{''.join(step(g) for g in ALL_GATES if g['job'] == 'database')}
-  spec:
+{UNIT_JOBS}  spec:
     runs-on: ubuntu-latest
     # 仕様の層の検査は Python だけでなく pnpm の検査と DB の検査も呼ぶ（層の棚卸し G21）。database と同じ Postgres を付ける
     services:
@@ -184,7 +219,7 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
     if: contains(github.event.pull_request.labels.*.name, 'has-ui')
-    needs: [static, database, spec]
+    needs: [static, database, unit, spec]
     env:
       BASE_URL: ${{{{ secrets.STAGING_BASE_URL }}}}
     steps:
@@ -194,7 +229,7 @@ jobs:
         with: {{ name: playwright-report, path: apps/web/playwright-report/ }}
   auto-merge:
     runs-on: ubuntu-latest
-    needs: [static, database, spec, task-gate]
+    needs: [static, database, unit, spec, task-gate]
     if: github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'no-auto-merge')
     permissions: {{ contents: write, pull-requests: write }}
     steps:

@@ -46,6 +46,16 @@
     "D-128.112"
    ],
    "split": "",
+   "tests": [
+    "packages/db/src/index.test.ts",
+    "packages/db/test/audit.test.ts",
+    "packages/db/test/matrix.test.ts",
+    "packages/db/test/pool.test.ts",
+    "packages/db/test/qa-d.test.ts",
+    "packages/db/test/repository.test.ts",
+    "packages/db/test/role_password.test.ts",
+    "packages/db/test/self_only.test.ts"
+   ],
    "depends_on": [],
    "sections": {
     "目的": "ER 図 §16 の新しい表と、前からある表に足す列を migration にし、全部の表に行の守り（RLS）を付ける。契約の API が表の無さで止まらないようにする。",
@@ -84,6 +94,9 @@
    "split": "",
    "choke_points": [
     "C2"
+   ],
+   "tests": [
+    "packages/db/test/tickets.test.ts"
    ],
    "depends_on": [],
    "sections": {
@@ -124,6 +137,9 @@
    "choke_points": [
     "C2"
    ],
+   "tests": [
+    "packages/db/test/ticket_around.test.ts"
+   ],
    "depends_on": [
     "K-3"
    ],
@@ -161,6 +177,9 @@
    "split": "",
    "choke_points": [
     "C2"
+   ],
+   "tests": [
+    "packages/db/test/knowledge_clients.test.ts"
    ],
    "depends_on": [],
    "sections": {
@@ -241,6 +260,9 @@
    "choke_points": [
     "C2"
    ],
+   "tests": [
+    "packages/db/test/people_clone_ops.test.ts"
+   ],
    "depends_on": [],
    "sections": {
     "目的": "ワークスペースと人の表（ワークスペースへの所属・グループへの所属と兼務・規約の版と同意・知らせの設定・PC の接続コード）を作る。兼務を見える範囲に入れる。",
@@ -318,6 +340,10 @@
    "choke_points": [
     "C2"
    ],
+   "tests": [
+    "packages/db/test/approvals_clone.test.ts",
+    "packages/db/test/rls_drift.test.ts"
+   ],
    "depends_on": [],
    "sections": {
     "目的": "前からある表（承認・守ること・覚えていること・業務の型・分身）に、第1フェーズの列を足す。承認する人が、グループの外でも自分に来た承認とチケットを読めるようにする。",
@@ -359,6 +385,10 @@
    "split": "",
    "choke_points": [
     "C2"
+   ],
+   "tests": [
+    "packages/db/test/ops_grants.test.ts",
+    "packages/db/test/rls.test.ts"
    ],
    "depends_on": [],
    "sections": {
@@ -427,6 +457,9 @@
    "choke_points": [
     "C2"
    ],
+   "tests": [
+    "packages/db/test/matrix_breaks.test.ts"
+   ],
    "depends_on": [
     "K-3",
     "K-4",
@@ -466,6 +499,37 @@
     "D-128.113"
    ],
    "split": "",
+   "tests": [
+    "apps/api/test/agent_artifacts.test.ts",
+    "apps/api/test/agent_chat.test.ts",
+    "apps/api/test/agent_hooks.test.ts",
+    "apps/api/test/agent_memory.test.ts",
+    "apps/api/test/agent_stream.test.ts",
+    "apps/api/test/agent_tools.test.ts",
+    "apps/api/test/app.test.ts",
+    "apps/api/test/auth_ext.test.ts",
+    "apps/api/test/auth_routes.test.ts",
+    "apps/api/test/bridge_blocked.test.ts",
+    "apps/api/test/bridge_credentials.test.ts",
+    "apps/api/test/bridge_orphans.test.ts",
+    "apps/api/test/bridge_release.test.ts",
+    "apps/api/test/bridge_stream.test.ts",
+    "apps/api/test/bridge_take_wait.test.ts",
+    "apps/api/test/conventions.test.ts",
+    "apps/api/test/draft_credentials.test.ts",
+    "apps/api/test/errors.test.ts",
+    "apps/api/test/golive.test.ts",
+    "apps/api/test/login_check.test.ts",
+    "apps/api/test/memory_text.test.ts",
+    "apps/api/test/ops_alert.test.ts",
+    "apps/api/test/server.test.ts",
+    "apps/api/test/transcript_mirror.test.ts",
+    "apps/api/test/two_factor.test.ts",
+    "apps/api/test/vault_guard.test.ts",
+    "apps/api/test/vercel_entry.test.ts",
+    "packages/auth/test/auth.test.ts",
+    "packages/auth/test/flows.test.ts"
+   ],
    "depends_on": [
     "K-2"
    ],
@@ -502,6 +566,9 @@
    "choke_points": [
     "C2"
    ],
+   "tests": [
+    "apps/api/src/contract/authz.test.ts"
+   ],
    "depends_on": [
     "K-16"
    ],
@@ -535,6 +602,9 @@
    "split": "",
    "choke_points": [
     "C2"
+   ],
+   "tests": [
+    "apps/api/test/row_rules.test.ts"
    ],
    "depends_on": [
     "K-14"
@@ -571,6 +641,9 @@
    "choke_points": [
     "C2"
    ],
+   "tests": [
+    "packages/db/test/permissions_bundle.test.ts"
+   ],
    "depends_on": [
     "K-7"
    ],
@@ -604,6 +677,10 @@
    "split": "",
    "choke_points": [],
    "choke_none": "試験だけを書く。製品の外への経路は通らない",
+   "tests": [
+    "apps/api/test/authz_rows.test.ts",
+    "apps/api/test/qa-d.test.ts"
+   ],
    "depends_on": [
     "K-15"
    ],
@@ -672,6 +749,10 @@
    "choke_points": [
     "C2"
    ],
+   "tests": [
+    "apps/api/test/generated/post_auth_step_up.test.ts",
+    "apps/api/test/step_up.test.ts"
+   ],
    "depends_on": [
     "K-14"
    ],
@@ -709,6 +790,9 @@
    "split": "",
    "choke_points": [
     "C2"
+   ],
+   "tests": [
+    "packages/auth/test/session_watch.test.ts"
    ],
    "depends_on": [
     "K-14"
@@ -811,6 +895,9 @@
    "split": "",
    "choke_points": [],
    "choke_none": "画面の応答の見出しだけ。外に出す・書く関門には触らない",
+   "tests": [
+    "apps/web/test/security-headers.test.ts"
+   ],
    "depends_on": [],
    "sections": {
     "目的": "全部の画面の応答に、Content-Security-Policy・frame-ancestors・Referrer-Policy・HSTS を付ける（ゼロトラストの決まり ZT11）。",
@@ -844,6 +931,10 @@
    "split": "",
    "choke_points": [],
    "choke_none": "見た目の部品だけ。関門に触らない",
+   "tests": [
+    "apps/web/test/k-tokens.test.ts",
+    "apps/web/tests/components.spec.ts"
+   ],
    "depends_on": [],
    "sections": {
     "目的": "DESIGN-kaname.md のトークン（色・文字の段・角丸・余白・影）と基本の部品（ボタン・入力・選ぶ・表・札・タブ・知らせ）を apps/web に作る。生の色・文字サイズ・角丸を書かない。",
@@ -876,6 +967,10 @@
    "split": "",
    "choke_points": [],
    "choke_none": "画面の外枠だけ。中身は各画面のチケットの口から読む",
+   "tests": [
+    "apps/web/test/k-nav-model.test.ts",
+    "apps/web/tests/k-shell.spec.ts"
+   ],
    "depends_on": [
     "K-24"
    ],
@@ -911,6 +1006,10 @@
    "split": "",
    "choke_points": [],
    "choke_none": "表示だけ。関門に触らない",
+   "tests": [
+    "apps/web/test/k-error-of.test.ts",
+    "apps/web/tests/states.spec.ts"
+   ],
    "depends_on": [
     "K-24"
    ],
@@ -947,6 +1046,9 @@
    "split": "",
    "choke_points": [
     "C1"
+   ],
+   "tests": [
+    "apps/web/test/api-call.test.ts"
    ],
    "depends_on": [],
    "sections": {
@@ -1014,6 +1116,9 @@
    "split": "",
    "choke_points": [],
    "choke_none": "検査と生成物だけ。関門に触らない",
+   "tests": [
+    "apps/bridge/test/renderer.test.ts"
+   ],
    "depends_on": [],
    "sections": {
     "目的": "Bridge の画面のトークン（apps/bridge/src/renderer/tokens.css）が正本（DESIGN-kaname.md）より古い（書体が M PLUS 2・文字の段が前の値）。作り直して、Bridge の画面が崩れないことを確かめる。",
@@ -1044,6 +1149,9 @@
    "split": "",
    "choke_points": [],
    "choke_none": "検査と生成物だけ。関門に触らない",
+   "tests": [
+    "apps/web/test/k-app-files.test.ts"
+   ],
    "depends_on": [],
    "sections": {
     "目的": "根の layout で落ちたときの受け皿（app/global-error.tsx）が無い（K-26 で app/error.tsx は足した）。足して、決まったファイルがそろっているかを機械で見る。",
@@ -1104,6 +1212,39 @@
     "D-125.167"
    ],
    "split": "K-35・K-36・K-37・K-38・K-39・K-40・K-41・K-42・K-43・K-44・K-45",
+   "tests": [
+    "apps/bridge/src/modes.test.ts",
+    "apps/bridge/src/stream.test.ts",
+    "apps/bridge/test/awake.test.ts",
+    "apps/bridge/test/browser.test.ts",
+    "apps/bridge/test/env.test.ts",
+    "apps/bridge/test/guard.test.ts",
+    "apps/bridge/test/kaname-tools.test.ts",
+    "apps/bridge/test/login-check-2fa.test.ts",
+    "apps/bridge/test/login-check.test.ts",
+    "apps/bridge/test/loop.test.ts",
+    "apps/bridge/test/qa-a2.test.ts",
+    "apps/bridge/test/release.test.ts",
+    "apps/bridge/test/runner.test.ts",
+    "apps/bridge/test/transcript.test.ts",
+    "apps/bridge/test/two-factor.test.ts",
+    "apps/bridge/test/update.test.ts",
+    "apps/bridge/test/vault.test.ts",
+    "packages/actions/test/gateway.test.ts",
+    "packages/billing/test/billing.test.ts",
+    "packages/config/test/config.test.ts",
+    "packages/errors/test/errors.test.ts",
+    "packages/llm/test/gateway.test.ts",
+    "packages/notify/test/notify.test.ts",
+    "packages/notify/test/resend.test.ts",
+    "packages/notify/test/signature.test.ts",
+    "packages/runtime/test/process.test.ts",
+    "packages/secrets/test/infisical.live.test.ts",
+    "packages/secrets/test/infisical.test.ts",
+    "packages/secrets/test/secrets.test.ts",
+    "packages/storage/test/s3.test.ts",
+    "packages/storage/test/store.test.ts"
+   ],
    "depends_on": [],
    "sections": {
     "目的": "基盤の検査（G26・G36）を作り、行 ID を名前に持つ実ブラウザの試験の型とステージングをそろえる。",
@@ -1232,6 +1373,9 @@
    "split": "",
    "choke_points": [],
    "choke_none": "試験の型だけ。関門に触らない",
+   "tests": [
+    "apps/web/tests/k/showcase.spec.ts"
+   ],
    "depends_on": [
     "K-28"
    ],
@@ -1455,6 +1599,9 @@
    "split": "",
    "choke_points": [],
    "choke_none": "部品の版を替えるだけ。関門に触らない",
+   "tests": [
+    "packages/storage/test/s3-logger.test.ts"
+   ],
    "depends_on": [],
    "sections": {
     "目的": "@aws-sdk/client-s3 3.1132.0 が中で使う @smithy/core 3.34.1 が、ログの機密の伏せ方の不具合で非推奨になっていた（aws-sdk-js-v3 #8393）。直った版を含む client-s3 に上げ、ファイルの置き場の試験で確かめる。",
@@ -1717,6 +1864,19 @@
     "signOut",
     "verifySignInCode"
    ],
+   "tests": [
+    "apps/api/test/generated/delete_me_passkeys_id.test.ts",
+    "apps/api/test/generated/get_auth_service_status.test.ts",
+    "apps/api/test/generated/get_me_security.test.ts",
+    "apps/api/test/generated/patch_me_passkeys_id.test.ts",
+    "apps/api/test/generated/patch_me_password.test.ts",
+    "apps/api/test/generated/post_auth_password_forgot.test.ts",
+    "apps/api/test/generated/post_auth_password_reset.test.ts",
+    "apps/api/test/generated/post_auth_recovery_admin_request.test.ts",
+    "apps/api/test/generated/post_auth_sign_in.test.ts",
+    "apps/api/test/generated/post_auth_sign_out.test.ts",
+    "apps/api/test/generated/post_auth_two_factor_verify.test.ts"
+   ],
    "depends_on": [],
    "sections": {
     "目的": "流れ F1「登録してログインできる」を、新しい形のチケット（利用者の 1 つの操作＝1 つの実装・ai-driven-process.md §3）に切るまでの入れ物。古い形の未着手のチケットから、画面・API・決定を引き継いだ（D-128.136）。",
@@ -1754,6 +1914,11 @@
     "C1",
     "C2",
     "C6"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_auth_sign_up_status.test.ts",
+    "apps/api/test/generated/post_auth_sign_up.test.ts",
+    "apps/api/test/generated/post_auth_sign_up_resend.test.ts"
    ],
    "depends_on": [],
    "acts": [
@@ -1811,6 +1976,9 @@
     "C2",
     "C6"
    ],
+   "tests": [
+    "apps/api/test/generated/post_auth_sign_up_verify.test.ts"
+   ],
    "depends_on": [
     "K-51"
    ],
@@ -1864,6 +2032,10 @@
    "split": "",
    "choke_points": [
     "C2"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_auth_terms_current.test.ts",
+    "apps/api/test/generated/post_auth_terms_consent.test.ts"
    ],
    "depends_on": [
     "K-52"
@@ -1947,6 +2119,10 @@
     "invite-accept"
    ],
    "apis": [],
+   "tests": [
+    "apps/api/test/generated/get_auth_invitations_token.test.ts",
+    "apps/api/test/generated/post_auth_invitations_token_accept.test.ts"
+   ],
    "depends_on": [],
    "sections": {
     "目的": "流れ F2「招かれて参加する」を、新しい形のチケット（利用者の 1 つの操作＝1 つの実装・ai-driven-process.md §3）に切るまでの入れ物。古い形の未着手のチケットから、画面・API・決定を引き継いだ（D-128.136）。",
@@ -2003,6 +2179,18 @@
     "updateCredential",
     "updateMyDevice"
    ],
+   "tests": [
+    "apps/api/test/generated/delete_bridge_devices_id.test.ts",
+    "apps/api/test/generated/delete_credentials_id.test.ts",
+    "apps/api/test/generated/get_credentials.test.ts",
+    "apps/api/test/generated/patch_bridge_devices_id.test.ts",
+    "apps/api/test/generated/patch_credentials_id.test.ts",
+    "apps/api/test/generated/post_bridge_credentials_id_check_result.test.ts",
+    "apps/api/test/generated/post_bridge_credentials_resolve.test.ts",
+    "apps/api/test/generated/post_credentials.test.ts",
+    "apps/api/test/generated/post_credentials_id_login_check.test.ts",
+    "apps/api/test/generated/post_credentials_id_login_check_answer.test.ts"
+   ],
    "depends_on": [],
    "sections": {
     "目的": "流れ F3「使い始めの準備」を、新しい形のチケット（利用者の 1 つの操作＝1 つの実装・ai-driven-process.md §3）に切るまでの入れ物。古い形の未着手のチケットから、画面・API・決定を引き継いだ（D-128.136）。",
@@ -2047,6 +2235,14 @@
    "choke_points": [
     "C1",
     "C2"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_bridge_devices.test.ts",
+    "apps/api/test/generated/get_bridge_releases_latest.test.ts",
+    "apps/api/test/generated/get_bridge_releases_name_file.test.ts",
+    "apps/api/test/generated/post_bridge_claim.test.ts",
+    "apps/api/test/generated/post_bridge_heartbeat.test.ts",
+    "apps/api/test/generated/post_bridge_pairing_codes.test.ts"
    ],
    "depends_on": [
     "K-53"
@@ -2207,6 +2403,38 @@
     "updateTestSpec",
     "updateTicketSection"
    ],
+   "tests": [
+    "apps/api/test/generated/delete_test_specs_id.test.ts",
+    "apps/api/test/generated/delete_ticket_links_id.test.ts",
+    "apps/api/test/generated/get_artifact_versions_id.test.ts",
+    "apps/api/test/generated/get_class_axes.test.ts",
+    "apps/api/test/generated/get_clients.test.ts",
+    "apps/api/test/generated/get_ticket_imports_id.test.ts",
+    "apps/api/test/generated/get_ticket_stages.test.ts",
+    "apps/api/test/generated/get_tickets_id_artifacts.test.ts",
+    "apps/api/test/generated/get_tickets_id_checks.test.ts",
+    "apps/api/test/generated/get_tickets_id_kind_change_preview.test.ts",
+    "apps/api/test/generated/get_tickets_id_links.test.ts",
+    "apps/api/test/generated/get_tickets_id_references.test.ts",
+    "apps/api/test/generated/get_tickets_id_test_specs.test.ts",
+    "apps/api/test/generated/get_tickets_id_versions.test.ts",
+    "apps/api/test/generated/get_tickets_id_work_type_candidates.test.ts",
+    "apps/api/test/generated/patch_test_specs_id.test.ts",
+    "apps/api/test/generated/patch_tickets_id_sections_key.test.ts",
+    "apps/api/test/generated/post_conversations.test.ts",
+    "apps/api/test/generated/post_conversations_id_messages.test.ts",
+    "apps/api/test/generated/post_ticket_imports.test.ts",
+    "apps/api/test/generated/post_ticket_imports_id_commit.test.ts",
+    "apps/api/test/generated/post_ticket_kinds_id_template_from_ticket.test.ts",
+    "apps/api/test/generated/post_tickets_bulk.test.ts",
+    "apps/api/test/generated/post_tickets_id_agent_session_apply.test.ts",
+    "apps/api/test/generated/post_tickets_id_attachments.test.ts",
+    "apps/api/test/generated/post_tickets_id_links.test.ts",
+    "apps/api/test/generated/post_tickets_id_test_specs.test.ts",
+    "apps/api/test/generated/post_tickets_id_test_specs_lint.test.ts",
+    "apps/api/test/generated/post_tickets_id_test_specs_suggest.test.ts",
+    "apps/api/test/generated/post_tickets_id_versions_v_restore.test.ts"
+   ],
    "depends_on": [],
    "sections": {
     "目的": "流れ F4「チケットを作って中身を決める」を、新しい形のチケット（利用者の 1 つの操作＝1 つの実装・ai-driven-process.md §3）に切るまでの入れ物。古い形の未着手のチケットから、画面・API・決定を引き継いだ（D-128.136）。",
@@ -2257,6 +2485,13 @@
    "split": "",
    "choke_points": [
     "C2"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_members.test.ts",
+    "apps/api/test/generated/get_scopes.test.ts",
+    "apps/api/test/generated/get_ticket_kinds.test.ts",
+    "apps/api/test/generated/get_tickets_id.test.ts",
+    "apps/api/test/generated/post_tickets.test.ts"
    ],
    "depends_on": [
     "K-57"
@@ -2376,6 +2611,31 @@
     "streamConversation",
     "withdrawApproval"
    ],
+   "tests": [
+    "apps/api/test/generated/get_approvals_history.test.ts",
+    "apps/api/test/generated/get_bridge_files_ref.test.ts",
+    "apps/api/test/generated/get_bridge_mirror_targets.test.ts",
+    "apps/api/test/generated/get_clones_me.test.ts",
+    "apps/api/test/generated/get_clones_me_activity.test.ts",
+    "apps/api/test/generated/get_clones_me_growth.test.ts",
+    "apps/api/test/generated/get_clones_me_now.test.ts",
+    "apps/api/test/generated/get_conversations_id_messages.test.ts",
+    "apps/api/test/generated/get_conversations_id_stream.test.ts",
+    "apps/api/test/generated/get_tickets_id_agent_session.test.ts",
+    "apps/api/test/generated/post_action_runs_id_stop.test.ts",
+    "apps/api/test/generated/post_approvals_bulk.test.ts",
+    "apps/api/test/generated/post_approvals_bulk_preview.test.ts",
+    "apps/api/test/generated/post_approvals_id_edit.test.ts",
+    "apps/api/test/generated/post_approvals_id_stop.test.ts",
+    "apps/api/test/generated/post_approvals_id_withdraw.test.ts",
+    "apps/api/test/generated/post_bridge_jobs_id_browser.test.ts",
+    "apps/api/test/generated/post_bridge_jobs_id_conversation_entries.test.ts",
+    "apps/api/test/generated/post_checks_id_human.test.ts",
+    "apps/api/test/generated/post_clones_me_activity_export.test.ts",
+    "apps/api/test/generated/post_conversations_id_stop.test.ts",
+    "apps/api/test/generated/post_tickets_id_agent_session_messages.test.ts",
+    "apps/api/test/generated/post_tickets_id_dry_run.test.ts"
+   ],
    "depends_on": [],
    "sections": {
     "目的": "流れ F5「AI に任せて、確かめて、終える」を、新しい形のチケット（利用者の 1 つの操作＝1 つの実装・ai-driven-process.md §3）に切るまでの入れ物。古い形の未着手のチケットから、画面・API・決定を引き継いだ（D-128.136）。",
@@ -2426,6 +2686,16 @@
     "C2",
     "C3",
     "C5"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_action_runs_id.test.ts",
+    "apps/api/test/generated/get_bridge_jobs_id_control.test.ts",
+    "apps/api/test/generated/get_tickets_id_runs.test.ts",
+    "apps/api/test/generated/post_bridge_jobs_id_finish.test.ts",
+    "apps/api/test/generated/post_bridge_jobs_id_progress.test.ts",
+    "apps/api/test/generated/post_bridge_jobs_id_tools_name.test.ts",
+    "apps/api/test/generated/post_bridge_jobs_take.test.ts",
+    "apps/api/test/generated/post_tickets_id_delegate.test.ts"
    ],
    "depends_on": [
     "K-60"
@@ -2505,6 +2775,13 @@
    "choke_points": [
     "C2",
     "C6"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_approvals_id.test.ts",
+    "apps/api/test/generated/get_approvals_queue.test.ts",
+    "apps/api/test/generated/post_approvals_id_approve.test.ts",
+    "apps/api/test/generated/post_approvals_id_return.test.ts",
+    "apps/api/test/generated/post_tickets_id_complete.test.ts"
    ],
    "depends_on": [
     "K-62"
@@ -2643,6 +2920,16 @@
     "updateTicketDecision",
     "updateTicketMessage"
    ],
+   "tests": [
+    "apps/api/test/generated/delete_ticket_messages_id.test.ts",
+    "apps/api/test/generated/get_tickets_id_decisions.test.ts",
+    "apps/api/test/generated/get_tickets_id_timeline.test.ts",
+    "apps/api/test/generated/patch_ticket_decisions_id.test.ts",
+    "apps/api/test/generated/patch_ticket_messages_id.test.ts",
+    "apps/api/test/generated/post_ticket_messages_id_star.test.ts",
+    "apps/api/test/generated/post_tickets_id_decisions.test.ts",
+    "apps/api/test/generated/post_tickets_id_messages.test.ts"
+   ],
    "depends_on": [],
    "sections": {
     "目的": "流れ F6「自分で進める・話す・決める」を、新しい形のチケット（利用者の 1 つの操作＝1 つの実装・ai-driven-process.md §3）に切るまでの入れ物。古い形の未着手のチケットから、画面・API・決定を引き継いだ（D-128.136）。",
@@ -2705,6 +2992,25 @@
     "updateSavedView",
     "updateTicket"
    ],
+   "tests": [
+    "apps/api/test/generated/delete_saved_views_id.test.ts",
+    "apps/api/test/generated/delete_tickets_id.test.ts",
+    "apps/api/test/generated/get_notifications.test.ts",
+    "apps/api/test/generated/get_saved_views.test.ts",
+    "apps/api/test/generated/get_scopes_id_overview.test.ts",
+    "apps/api/test/generated/get_search.test.ts",
+    "apps/api/test/generated/get_shell.test.ts",
+    "apps/api/test/generated/get_tickets.test.ts",
+    "apps/api/test/generated/get_tickets_id_delete_preview.test.ts",
+    "apps/api/test/generated/patch_notifications_id.test.ts",
+    "apps/api/test/generated/patch_saved_views_id.test.ts",
+    "apps/api/test/generated/patch_tickets_id.test.ts",
+    "apps/api/test/generated/post_action_runs_id_retry.test.ts",
+    "apps/api/test/generated/post_action_runs_id_takeover.test.ts",
+    "apps/api/test/generated/post_notifications_read_all.test.ts",
+    "apps/api/test/generated/post_saved_views.test.ts",
+    "apps/api/test/generated/post_tickets_id_restore.test.ts"
+   ],
    "depends_on": [],
    "sections": {
     "目的": "流れ F7「毎日見る・探す・片付ける」を、新しい形のチケット（利用者の 1 つの操作＝1 つの実装・ai-driven-process.md §3）に切るまでの入れ物。古い形の未着手のチケットから、画面・API・決定を引き継いだ（D-128.136）。",
@@ -2737,6 +3043,11 @@
     "answerTicketHandover",
     "createTicketHandover",
     "listHandoverRules"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_handover_rules.test.ts",
+    "apps/api/test/generated/patch_ticket_handovers_id.test.ts",
+    "apps/api/test/generated/post_tickets_id_handovers.test.ts"
    ],
    "depends_on": [],
    "sections": {
@@ -2814,6 +3125,80 @@
     "requestRuleException",
     "updateMemory"
    ],
+   "tests": [
+    "apps/api/test/generated/delete_knowledge_pages_id_draft.test.ts",
+    "apps/api/test/generated/delete_memories_id.test.ts",
+    "apps/api/test/generated/delete_rules_id.test.ts",
+    "apps/api/test/generated/delete_workspace_escalation_rules_id.test.ts",
+    "apps/api/test/generated/delete_workspace_rules_id.test.ts",
+    "apps/api/test/generated/get_clones_me_knows_counts.test.ts",
+    "apps/api/test/generated/get_knowledge_home.test.ts",
+    "apps/api/test/generated/get_knowledge_imports_id.test.ts",
+    "apps/api/test/generated/get_knowledge_link_targets.test.ts",
+    "apps/api/test/generated/get_knowledge_pages.test.ts",
+    "apps/api/test/generated/get_knowledge_pages_id.test.ts",
+    "apps/api/test/generated/get_knowledge_pages_id_links.test.ts",
+    "apps/api/test/generated/get_knowledge_pages_id_markdown.test.ts",
+    "apps/api/test/generated/get_knowledge_pages_id_messages.test.ts",
+    "apps/api/test/generated/get_knowledge_pages_id_usage.test.ts",
+    "apps/api/test/generated/get_knowledge_pages_id_versions.test.ts",
+    "apps/api/test/generated/get_knowledge_proposals.test.ts",
+    "apps/api/test/generated/get_knowledge_tree.test.ts",
+    "apps/api/test/generated/get_knowledge_verifications.test.ts",
+    "apps/api/test/generated/get_learning_candidates.test.ts",
+    "apps/api/test/generated/get_memories.test.ts",
+    "apps/api/test/generated/get_rules_id.test.ts",
+    "apps/api/test/generated/get_ticket_kinds_template_updates.test.ts",
+    "apps/api/test/generated/get_work_types.test.ts",
+    "apps/api/test/generated/get_work_types_id.test.ts",
+    "apps/api/test/generated/get_work_types_id_versions.test.ts",
+    "apps/api/test/generated/get_workspace_rules.test.ts",
+    "apps/api/test/generated/get_workspace_ticket_shape.test.ts",
+    "apps/api/test/generated/patch_knowledge_pages_id.test.ts",
+    "apps/api/test/generated/patch_knowledge_pages_id_draft.test.ts",
+    "apps/api/test/generated/patch_layers_id.test.ts",
+    "apps/api/test/generated/patch_memories_id.test.ts",
+    "apps/api/test/generated/patch_rules_id.test.ts",
+    "apps/api/test/generated/patch_scopes_id.test.ts",
+    "apps/api/test/generated/patch_work_types_id_draft.test.ts",
+    "apps/api/test/generated/patch_workspace_escalation_rules_id.test.ts",
+    "apps/api/test/generated/patch_workspace_rules_id.test.ts",
+    "apps/api/test/generated/patch_workspace_ticket_shape.test.ts",
+    "apps/api/test/generated/post_knowledge_ask.test.ts",
+    "apps/api/test/generated/post_knowledge_ask_feedback.test.ts",
+    "apps/api/test/generated/post_knowledge_imports.test.ts",
+    "apps/api/test/generated/post_knowledge_imports_id_commit.test.ts",
+    "apps/api/test/generated/post_knowledge_pages.test.ts",
+    "apps/api/test/generated/post_knowledge_pages_id_archive.test.ts",
+    "apps/api/test/generated/post_knowledge_pages_id_attachments.test.ts",
+    "apps/api/test/generated/post_knowledge_pages_id_links.test.ts",
+    "apps/api/test/generated/post_knowledge_pages_id_messages.test.ts",
+    "apps/api/test/generated/post_knowledge_pages_id_publish.test.ts",
+    "apps/api/test/generated/post_knowledge_pages_id_unarchive.test.ts",
+    "apps/api/test/generated/post_knowledge_pages_id_verify.test.ts",
+    "apps/api/test/generated/post_knowledge_pages_id_versions_v_restore.test.ts",
+    "apps/api/test/generated/post_knowledge_proposals_id_accept.test.ts",
+    "apps/api/test/generated/post_knowledge_proposals_id_decline.test.ts",
+    "apps/api/test/generated/post_layers.test.ts",
+    "apps/api/test/generated/post_learning_candidates_id_accept.test.ts",
+    "apps/api/test/generated/post_learning_candidates_id_dismiss.test.ts",
+    "apps/api/test/generated/post_learning_candidates_id_exception_request.test.ts",
+    "apps/api/test/generated/post_learning_candidates_id_later.test.ts",
+    "apps/api/test/generated/post_memories.test.ts",
+    "apps/api/test/generated/post_memories_id_promote.test.ts",
+    "apps/api/test/generated/post_rules_check.test.ts",
+    "apps/api/test/generated/post_scopes.test.ts",
+    "apps/api/test/generated/post_ticket_kinds_template_updates_id_apply.test.ts",
+    "apps/api/test/generated/post_work_types.test.ts",
+    "apps/api/test/generated/post_work_types_id_copy.test.ts",
+    "apps/api/test/generated/post_work_types_id_release.test.ts",
+    "apps/api/test/generated/post_work_types_id_spread_requests.test.ts",
+    "apps/api/test/generated/post_work_types_id_try.test.ts",
+    "apps/api/test/generated/post_workspace_escalation_rules.test.ts",
+    "apps/api/test/generated/post_workspace_escalation_rules_preview.test.ts",
+    "apps/api/test/generated/post_workspace_rules.test.ts",
+    "apps/api/test/generated/post_workspace_ticket_shape_preview.test.ts"
+   ],
    "depends_on": [],
    "sections": {
     "目的": "流れ F9「会社のやり方を整える」を、新しい形のチケット（利用者の 1 つの操作＝1 つの実装・ai-driven-process.md §3）に切るまでの入れ物。古い形の未着手のチケットから、画面・API・決定を引き継いだ（D-128.136）。",
@@ -2876,6 +3261,45 @@
     "uploadAvatar",
     "verifyEmailChange"
    ],
+   "tests": [
+    "apps/api/test/generated/delete_invitations_id.test.ts",
+    "apps/api/test/generated/delete_me_sessions_id.test.ts",
+    "apps/api/test/generated/delete_me_workspaces_id.test.ts",
+    "apps/api/test/generated/delete_members_id.test.ts",
+    "apps/api/test/generated/delete_workspace_deletion.test.ts",
+    "apps/api/test/generated/get_audit_events.test.ts",
+    "apps/api/test/generated/get_exports_id.test.ts",
+    "apps/api/test/generated/get_me.test.ts",
+    "apps/api/test/generated/get_me_notification_settings.test.ts",
+    "apps/api/test/generated/get_me_sessions.test.ts",
+    "apps/api/test/generated/get_me_setup_tasks.test.ts",
+    "apps/api/test/generated/get_members_id.test.ts",
+    "apps/api/test/generated/get_members_id_remove_preview.test.ts",
+    "apps/api/test/generated/get_workspace.test.ts",
+    "apps/api/test/generated/get_workspace_members.test.ts",
+    "apps/api/test/generated/patch_me.test.ts",
+    "apps/api/test/generated/patch_me_notification_settings.test.ts",
+    "apps/api/test/generated/patch_members_id_groups.test.ts",
+    "apps/api/test/generated/patch_members_id_permissions.test.ts",
+    "apps/api/test/generated/patch_members_id_role.test.ts",
+    "apps/api/test/generated/patch_workspace.test.ts",
+    "apps/api/test/generated/patch_workspace_permissions.test.ts",
+    "apps/api/test/generated/post_exports.test.ts",
+    "apps/api/test/generated/post_invitations.test.ts",
+    "apps/api/test/generated/post_invitations_id_resend.test.ts",
+    "apps/api/test/generated/post_invitations_link.test.ts",
+    "apps/api/test/generated/post_me_avatar.test.ts",
+    "apps/api/test/generated/post_me_email_change.test.ts",
+    "apps/api/test/generated/post_me_email_change_verify.test.ts",
+    "apps/api/test/generated/post_me_notification_settings_copy.test.ts",
+    "apps/api/test/generated/post_me_sessions_revoke_others.test.ts",
+    "apps/api/test/generated/post_me_setup_tasks_dismiss.test.ts",
+    "apps/api/test/generated/post_members_id_nudge.test.ts",
+    "apps/api/test/generated/post_members_id_resume.test.ts",
+    "apps/api/test/generated/post_members_id_suspend.test.ts",
+    "apps/api/test/generated/post_workspace_deletion.test.ts",
+    "apps/api/test/generated/post_workspace_logo.test.ts"
+   ],
    "depends_on": [],
    "sections": {
     "目的": "流れ F10「人とアカウントを管理する」を、新しい形のチケット（利用者の 1 つの操作＝1 つの実装・ai-driven-process.md §3）に切るまでの入れ物。古い形の未着手のチケットから、画面・API・決定を引き継いだ（D-128.136）。",
@@ -2917,6 +3341,40 @@
     "listRules",
     "requestAcceptance",
     "updateTicketClientShare"
+   ],
+   "tests": [
+    "apps/api/test/generated/delete_client_contacts_id.test.ts",
+    "apps/api/test/generated/get_client_requests.test.ts",
+    "apps/api/test/generated/get_client_requests_id.test.ts",
+    "apps/api/test/generated/get_clients_id.test.ts",
+    "apps/api/test/generated/get_clients_id_activity.test.ts",
+    "apps/api/test/generated/get_clients_id_portal_preview.test.ts",
+    "apps/api/test/generated/get_clients_link_candidates.test.ts",
+    "apps/api/test/generated/get_portal.test.ts",
+    "apps/api/test/generated/get_portal_acceptances_id.test.ts",
+    "apps/api/test/generated/get_portal_notices.test.ts",
+    "apps/api/test/generated/get_portal_requests_id.test.ts",
+    "apps/api/test/generated/get_portal_tickets_id.test.ts",
+    "apps/api/test/generated/get_rules.test.ts",
+    "apps/api/test/generated/patch_client_contacts_id.test.ts",
+    "apps/api/test/generated/patch_client_requests_id.test.ts",
+    "apps/api/test/generated/patch_clients_id.test.ts",
+    "apps/api/test/generated/patch_clients_id_share.test.ts",
+    "apps/api/test/generated/patch_tickets_id_client_share.test.ts",
+    "apps/api/test/generated/post_acceptances_id_remind.test.ts",
+    "apps/api/test/generated/post_client_contacts_id_invitation.test.ts",
+    "apps/api/test/generated/post_client_requests_id_accept.test.ts",
+    "apps/api/test/generated/post_client_requests_id_decline.test.ts",
+    "apps/api/test/generated/post_client_requests_id_reply.test.ts",
+    "apps/api/test/generated/post_clients.test.ts",
+    "apps/api/test/generated/post_clients_id_contacts.test.ts",
+    "apps/api/test/generated/post_portal_acceptances_id_answer.test.ts",
+    "apps/api/test/generated/post_portal_attachments.test.ts",
+    "apps/api/test/generated/post_portal_requests.test.ts",
+    "apps/api/test/generated/post_portal_requests_id_messages.test.ts",
+    "apps/api/test/generated/post_portal_requests_questions.test.ts",
+    "apps/api/test/generated/post_rules.test.ts",
+    "apps/api/test/generated/post_tickets_id_acceptances.test.ts"
    ],
    "depends_on": [],
    "sections": {
@@ -2991,6 +3449,75 @@
     "submitPlanProposal",
     "updatePlanProposal",
     "uploadWorkTypePackage"
+   ],
+   "tests": [
+    "apps/api/test/generated/delete_ops_members_id.test.ts",
+    "apps/api/test/generated/delete_ops_peeks_id.test.ts",
+    "apps/api/test/generated/get_inquiries.test.ts",
+    "apps/api/test/generated/get_inquiries_id.test.ts",
+    "apps/api/test/generated/get_invoices_id_pdf.test.ts",
+    "apps/api/test/generated/get_notices.test.ts",
+    "apps/api/test/generated/get_ops_inquiries.test.ts",
+    "apps/api/test/generated/get_ops_inquiries_id.test.ts",
+    "apps/api/test/generated/get_ops_invoices.test.ts",
+    "apps/api/test/generated/get_ops_members.test.ts",
+    "apps/api/test/generated/get_ops_notices.test.ts",
+    "apps/api/test/generated/get_ops_notices_id.test.ts",
+    "apps/api/test/generated/get_ops_operations.test.ts",
+    "apps/api/test/generated/get_ops_plan_history.test.ts",
+    "apps/api/test/generated/get_ops_plan_proposals.test.ts",
+    "apps/api/test/generated/get_ops_plan_proposals_id_impact.test.ts",
+    "apps/api/test/generated/get_ops_plans.test.ts",
+    "apps/api/test/generated/get_ops_shell.test.ts",
+    "apps/api/test/generated/get_ops_templates.test.ts",
+    "apps/api/test/generated/get_ops_templates_id.test.ts",
+    "apps/api/test/generated/get_ops_work_type_uploads_id.test.ts",
+    "apps/api/test/generated/get_ops_work_types.test.ts",
+    "apps/api/test/generated/get_ops_work_types_id.test.ts",
+    "apps/api/test/generated/get_ops_workspaces.test.ts",
+    "apps/api/test/generated/get_ops_workspaces_id.test.ts",
+    "apps/api/test/generated/get_ops_workspaces_id_audit.test.ts",
+    "apps/api/test/generated/get_ops_workspaces_id_billing.test.ts",
+    "apps/api/test/generated/get_ops_workspaces_id_inquiries.test.ts",
+    "apps/api/test/generated/get_ops_workspaces_id_members.test.ts",
+    "apps/api/test/generated/get_service_status.test.ts",
+    "apps/api/test/generated/get_workspace_billing.test.ts",
+    "apps/api/test/generated/get_workspace_plans.test.ts",
+    "apps/api/test/generated/patch_ops_inquiries_id.test.ts",
+    "apps/api/test/generated/patch_ops_members_id.test.ts",
+    "apps/api/test/generated/patch_ops_notices_id.test.ts",
+    "apps/api/test/generated/patch_ops_plan_proposals_id.test.ts",
+    "apps/api/test/generated/patch_workspace_billing_contact.test.ts",
+    "apps/api/test/generated/post_inquiries.test.ts",
+    "apps/api/test/generated/post_inquiries_attachments.test.ts",
+    "apps/api/test/generated/post_inquiries_id_messages.test.ts",
+    "apps/api/test/generated/post_inquiries_id_resolve.test.ts",
+    "apps/api/test/generated/post_notices_id_read.test.ts",
+    "apps/api/test/generated/post_ops_inquiries_id_notes.test.ts",
+    "apps/api/test/generated/post_ops_inquiries_id_replies.test.ts",
+    "apps/api/test/generated/post_ops_invoices_export.test.ts",
+    "apps/api/test/generated/post_ops_invoices_id_payments.test.ts",
+    "apps/api/test/generated/post_ops_invoices_issue.test.ts",
+    "apps/api/test/generated/post_ops_members.test.ts",
+    "apps/api/test/generated/post_ops_notices.test.ts",
+    "apps/api/test/generated/post_ops_notices_id_publish.test.ts",
+    "apps/api/test/generated/post_ops_notices_id_updates.test.ts",
+    "apps/api/test/generated/post_ops_plan_proposals.test.ts",
+    "apps/api/test/generated/post_ops_plan_proposals_id_decide.test.ts",
+    "apps/api/test/generated/post_ops_plan_proposals_id_return.test.ts",
+    "apps/api/test/generated/post_ops_plan_proposals_id_submit.test.ts",
+    "apps/api/test/generated/post_ops_templates_id_versions.test.ts",
+    "apps/api/test/generated/post_ops_work_type_uploads.test.ts",
+    "apps/api/test/generated/post_ops_work_types_id_versions.test.ts",
+    "apps/api/test/generated/post_ops_work_types_id_versions_v_rollback.test.ts",
+    "apps/api/test/generated/post_ops_workspaces_export.test.ts",
+    "apps/api/test/generated/post_ops_workspaces_id_members_mid_resend_verification.test.ts",
+    "apps/api/test/generated/post_ops_workspaces_id_notices.test.ts",
+    "apps/api/test/generated/post_ops_workspaces_id_peeks.test.ts",
+    "apps/api/test/generated/post_ops_workspaces_id_plan.test.ts",
+    "apps/api/test/generated/post_ops_workspaces_id_resume.test.ts",
+    "apps/api/test/generated/post_ops_workspaces_id_stop.test.ts",
+    "apps/api/test/generated/post_workspace_plan.test.ts"
    ],
    "depends_on": [],
    "sections": {
@@ -3079,6 +3606,28 @@
     "updateArtifact",
     "updateConversation",
     "updateMyClone"
+   ],
+   "tests": [
+    "apps/api/test/generated/delete_conversations_id.test.ts",
+    "apps/api/test/generated/delete_me_two_factor.test.ts",
+    "apps/api/test/generated/get_bridge_jobs_id_questions_qid.test.ts",
+    "apps/api/test/generated/get_conversations.test.ts",
+    "apps/api/test/generated/get_conversations_id.test.ts",
+    "apps/api/test/generated/get_me_usage.test.ts",
+    "apps/api/test/generated/patch_artifacts_id.test.ts",
+    "apps/api/test/generated/patch_clones_me.test.ts",
+    "apps/api/test/generated/patch_conversations_id.test.ts",
+    "apps/api/test/generated/post_artifact_versions_id_restore.test.ts",
+    "apps/api/test/generated/post_bridge_jobs_id_artifacts.test.ts",
+    "apps/api/test/generated/post_bridge_jobs_id_questions.test.ts",
+    "apps/api/test/generated/post_bridge_usage.test.ts",
+    "apps/api/test/generated/post_conversations_id_attachments.test.ts",
+    "apps/api/test/generated/post_conversations_id_permissions_pid.test.ts",
+    "apps/api/test/generated/post_me_backup_codes.test.ts",
+    "apps/api/test/generated/post_me_two_factor_confirm.test.ts",
+    "apps/api/test/generated/post_me_two_factor_enable.test.ts",
+    "apps/api/test/generated/post_members_id_two_factor_reset.test.ts",
+    "apps/api/test/generated/post_messages_id_artifacts.test.ts"
    ],
    "depends_on": [],
    "sections": {

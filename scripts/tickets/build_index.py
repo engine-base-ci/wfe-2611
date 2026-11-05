@@ -10,6 +10,8 @@
     K4 決定 ID（decisions）が決定ログにある
     K5 作業の段は決まった値（未着手・作業中・保留・確認中・承認待ち・実行中・完了）
     K6 先に終わっている必要があるもの（depends_on）が実在し、輪になっていない
+  属性 tests:（そのチケットが持つ試験のファイル・glob 可）は、どの試験もちょうど 1 つのチケットに属するかを
+    scripts/ci/test_owner_gate.py（G53）が見る。チケット 1 枚の試験だけを流すのは scripts/tickets/ticket_tests.py（D-128.140）
 使い方: python3 scripts/tickets/build_index.py [--check]
 """
 from __future__ import annotations

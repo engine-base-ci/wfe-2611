@@ -11,7 +11,10 @@ try:
     P = J(f"{OUT}/test-plan.json"); M = J(f"{OUT}/ears-test-mapping.json"); A = J(f"{OUT}/access-matrix.json"); Y = open(a.workflow, encoding="utf-8").read()
 except FileNotFoundError as e: print(f"FAIL — 成果物が無い: {e}"); sys.exit(2)
 FG = J(a.gates); EARS = J(a.ears)["ac_seeds"]; T = J(a.tickets)["tickets"]; EN = J(a.entities); EN = EN.get("entities") or EN["items"]
-m = [g["name"] for g in FG["merge_gates"] if g["script"] not in Y]
+# G3（単体の試験と coverage）は、分けて同時に流し、結果を合わせて閾値を当てる形でもよい（unit-1〜unit-N → unit・D-128.140）
+SPLIT = {3: ["vitest run --coverage --shard=", "vitest run --merge-reports"]}
+present = lambda g: g["script"] in Y or (g["id"] in SPLIT and all(x in Y for x in SPLIT[g["id"]]))
+m = [g["name"] for g in FG["merge_gates"] if not present(g)]
 if m: fails.append(("TV1", f"v3-gate.yml に無い基盤ゲート {m[:5]}"))
 need = ["layer_audit.py --run", "qa-ladder.py validate", "qa-ladder.py gate", "--task", "error_catalog.py gate --catalog", f"--mocks {a.mocks} --spec {a.spec} --choke", f"skill_pkg_gate.py {a.skills}", "tv_gate.py"]
 m = [x for x in need if x not in Y]

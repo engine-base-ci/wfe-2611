@@ -1,0 +1,191 @@
+#!/usr/bin/env python3
+"""試験はどれも 1 つのチケットに属する（D-128.140）。
+
+  python3 scripts/ci/test_owner_gate.py             単体の試験のファイル・実ブラウザの試験（e2e:k）・口ごとの権限の試験が、
+                                                    どれもちょうど 1 つのチケット（11_tickets/K-*.md の tests:）に属するか
+  python3 scripts/ci/test_owner_gate.py --selftest  わざと壊した写しで、赤になるべきものが赤になるか
+  python3 scripts/ci/test_owner_gate.py --list      チケットごとの試験の数
+
+持ち主の決め方:
+  ・試験のファイル → tests: にそのファイル（glob も可）を書いたチケット
+  ・口ごとの権限の試験（apps/api/src/contract/authz.test.ts の「POST /api/v1/…」の行） → その口の生成した試験
+    （apps/api/test/generated/<口>.test.ts）を持つチケット。チケットの apis: の口は、そのチケットが持つ
+  ・まだ切っていないまとまり（split: これから）が持つ試験は、そのまとまりを切るまでチケットの実行（ticket_tests.py）に入らない
+赤になるもの:
+  TO1 どのチケットにも属さない試験のファイル（作ったチケットの tests: に書く）
+  TO2 2 つ以上のチケットに属する試験のファイル
+  TO3 tests: に書いたのに、どのファイルにも当たらない（消した・名前を変えた）
+  TO4 apis: に書いた口の、生成した試験を別のチケットが持つ（か、生成した試験が無い）
+  TO5 契約の口（08_api/endpoints.json）に生成した試験が無い・生成した試験が契約に無い口を指す（権限の試験の持ち主が決まらない）
+  TO6 切ったチケットが、apis: に無い口の生成した試験を持つ（口の持ち主は apis: が正本）
+"""
+from __future__ import annotations
+import json, os, re, subprocess, sys
+
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.join(ROOT, "scripts", "tickets"))
+import build_index  # noqa: E402
+
+AUTHZ = "apps/api/src/contract/authz.test.ts"
+GEN = "apps/api/test/generated/"
+WEB = "apps/web/"
+METHODS = ("GET", "POST", "PUT", "PATCH", "DELETE")
+
+_re: dict[str, re.Pattern] = {}
+
+
+def glob_re(pat: str) -> re.Pattern:
+    """** は 0 個以上のフォルダ、* は / を越えない、? は 1 文字"""
+    if pat not in _re:
+        out, i = "", 0
+        while i < len(pat):
+            if pat.startswith("**/", i):
+                out, i = out + r"(?:.*/)?", i + 3
+            elif pat.startswith("**", i):
+                out, i = out + r".*", i + 2
+            elif pat[i] == "*":
+                out, i = out + r"[^/]*", i + 1
+            elif pat[i] == "?":
+                out, i = out + r"[^/]", i + 1
+            else:
+                out, i = out + re.escape(pat[i]), i + 1
+        _re[pat] = re.compile(out + r"\Z")
+    return _re[pat]
+
+
+def repo_files() -> list[str]:
+    out = subprocess.run(["git", "ls-files", "-z", "-co", "--exclude-standard"], cwd=ROOT, capture_output=True, text=True).stdout
+    return sorted(p for p in out.split("\0") if p and os.path.exists(os.path.join(ROOT, p)))
+
+
+def unit_globs() -> list[str]:
+    """vitest.config.ts の include（試験のファイルの集め方は vitest と同じにする）"""
+    s = open(os.path.join(ROOT, "vitest.config.ts"), encoding="utf-8").read()
+    body = re.search(r"include:\s*\[(.*?)\]", s, flags=re.S).group(1)
+    return re.findall(r'"([^"]+)"', body)
+
+
+def e2e_globs() -> list[str]:
+    """apps/web の e2e:k（CI の G48 が流す実ブラウザの試験）が読むファイル"""
+    s = json.load(open(os.path.join(ROOT, WEB, "package.json"), encoding="utf-8"))["scripts"]["e2e:k"]
+    args = [a for a in s.split("playwright test", 1)[1].split() if not a.startswith("-")]
+    return [WEB + (a if a.endswith(".ts") else a.rstrip("/") + "/**/*.spec.ts") for a in args]
+
+
+def test_files(files: list[str] | None = None) -> list[str]:
+    files = repo_files() if files is None else files
+    pats = unit_globs() + e2e_globs()
+    return sorted(f for f in files if "/node_modules/" not in f and any(glob_re(p).match(f) for p in pats))
+
+
+def gen_op(path: str, by_route: dict[tuple[str, str], str]) -> str | None:
+    """生成した試験が指す口（endpointOf("…") か、頭の行の「POST /api/v1/…」）"""
+    s = open(os.path.join(ROOT, path), encoding="utf-8").read()
+    m = re.search(r'endpointOf\("(\w+)"\)', s)
+    if m:
+        return m.group(1)
+    m = re.search(r"\b(" + "|".join(METHODS) + r") (/api/v1/\S+)", s.split("\n", 1)[0])
+    return by_route.get((m.group(1), m.group(2))) if m else None
+
+
+def owners(tickets: list[dict], files: list[str]) -> tuple[dict[str, list[str]], list[str]]:
+    """ファイル → 持ち主のチケット（重なりも残す）・どのファイルにも当たらない tests: の行"""
+    out: dict[str, list[str]] = {}
+    dead = []
+    for t in tickets:
+        for pat in t.get("tests") or []:
+            hit = [f for f in files if glob_re(pat).match(f)]
+            if not hit:
+                dead.append(f"TO3 {t['id']} の tests: {pat} がどのファイルにも当たらない")
+            for f in hit:
+                if t["id"] not in out.setdefault(f, []):
+                    out[f].append(t["id"])
+    return out, dead
+
+
+def check(tickets: list[dict], files: list[str], gen_ops: dict[str, str | None], endpoints: list[str]) -> list[str]:
+    """tickets：チケット（id・split・apis・tests）／files：試験のファイル／gen_ops：生成した試験 → 口／endpoints：契約の口"""
+    own, bad = owners(tickets, files)
+    for f in files:
+        k = own.get(f, [])
+        if not k:
+            bad.append(f"TO1 {f} がどのチケットにも属さない（作ったチケットの tests: に書く）")
+        elif len(k) > 1:
+            bad.append(f"TO2 {f} が 2 つ以上のチケットに属する：{', '.join(k)}")
+    op_file = {op: f for f, op in gen_ops.items() if op}
+    for f, op in sorted(gen_ops.items()):
+        if op not in endpoints:
+            bad.append(f"TO5 {f} が契約に無い口 {op} を指す")
+    for op in endpoints:
+        if op not in op_file:
+            bad.append(f"TO5 契約の口 {op} に生成した試験（{GEN}）が無い（権限の試験の持ち主が決まらない）")
+    for t in tickets:
+        mine = {gen_ops.get(f) for f, k in own.items() if t["id"] in k and f in gen_ops}
+        for op in t.get("apis") or []:
+            f = op_file.get(op)
+            if not f or t["id"] not in own.get(f, []):
+                bad.append(f"TO4 {t['id']} の apis: の {op} の生成した試験を、{t['id']} が持っていない（{', '.join(own.get(f, [])) or '持ち主なし'}）")
+        if t.get("split") != "これから":
+            extra = sorted(op for op in mine if op and op not in (t.get("apis") or []))
+            for op in extra:
+                bad.append(f"TO6 {t['id']}（切ったチケット）が apis: に無い口 {op} の生成した試験を持つ")
+    return bad
+
+
+def load() -> tuple[list[dict], list[str], dict[str, str | None], list[str]]:
+    tickets = build_index.load()
+    files = test_files()
+    ep = json.load(open(os.path.join(ROOT, "08_api/endpoints.json"), encoding="utf-8"))["endpoints"]
+    by_route = {(e["method"], e["path"]): e["operation_id"] for e in ep}
+    gen = {f: gen_op(f, by_route) for f in files if f.startswith(GEN)}
+    return tickets, files, gen, [e["operation_id"] for e in ep]
+
+
+def selftest() -> int:
+    files = ["a/x.test.ts", "a/y.test.ts", GEN + "p.test.ts", GEN + "q.test.ts"]
+    gen = {GEN + "p.test.ts": "opP", GEN + "q.test.ts": "opQ"}
+    good = [{"id": "K-1", "tests": ["a/*.test.ts"]},
+            {"id": "K-2", "apis": ["opP"], "tests": [GEN + "p.test.ts"]},
+            {"id": "K-3", "split": "これから", "tests": [GEN + "q.test.ts"]}]
+    cases = {
+        "緑": (good, gen, ["opP", "opQ"], set()),
+        "TO1": ([good[0], good[1]], gen, ["opP", "opQ"], {"TO1"}),
+        "TO2": (good + [{"id": "K-4", "tests": ["a/x.test.ts"]}], gen, ["opP", "opQ"], {"TO2"}),
+        "TO3": (good + [{"id": "K-4", "tests": ["a/gone.test.ts"]}], gen, ["opP", "opQ"], {"TO3"}),
+        "TO4": ([good[0], {**good[1], "apis": ["opP", "opQ"]}, good[2]], gen, ["opP", "opQ"], {"TO4"}),
+        "TO5": (good, gen, ["opP", "opQ", "opR"], {"TO5"}),
+        "TO6": ([good[0], {**good[1], "tests": [GEN + "*.test.ts"]}], gen, ["opP", "opQ"], {"TO6"}),
+    }
+    ok = True
+    for name, (ts, g, eps, want) in cases.items():
+        got = {b.split()[0] for b in check(ts, files, g, eps)}
+        hit = got == want
+        ok &= hit
+        print(f"  {'緑' if hit else '★ 赤'} {name}：出たもの {sorted(got) or 'なし'}（あるべきもの {sorted(want) or 'なし'}）")
+    print("PASS — 壊した写しはどれも赤、正しい写しは緑" if ok else "FAIL — 赤になるべきものが赤にならない")
+    return 0 if ok else 1
+
+
+def main() -> int:
+    if "--selftest" in sys.argv:
+        return selftest()
+    tickets, files, gen, eps = load()
+    bad = check(tickets, files, gen, eps)
+    own, _ = owners(tickets, files)
+    per: dict[str, int] = {}
+    for f, k in own.items():
+        for x in k:
+            per[x] = per.get(x, 0) + 1
+    if "--list" in sys.argv:
+        by = {t["id"]: t for t in tickets}
+        for k in sorted(per, key=lambda x: int(x.split("-")[1])):
+            print(f"  {k:<5} {per[k]:>4} 本  {'（まだ切っていない：チケットの実行に入らない）' if by[k].get('split') == 'これから' else ''}{by[k]['title'][:40]}")
+    for b in bad:
+        print("  ★", b)
+    print(f"試験のファイル {len(files)} 本（生成した口ごとの試験 {len(gen)}・契約の口 {len(eps)}）・持ち主のチケット {len(per)} 枚")
+    print("FAIL — 持ち主の決まらない試験がある" if bad else "PASS — 試験はどれもちょうど 1 つのチケットに属する")
+    return 1 if bad else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

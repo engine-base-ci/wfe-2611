@@ -1,7 +1,7 @@
 {
  "version": "v3",
  "project": "Kaname",
- "created_at": "2026-11-04",
+ "created_at": "2026-11-05",
  "skill": "test-verification",
  "_doc": "05_flow/build_testplan.py が上流（tickets・EARS・entities・foundation_gates・choke-points・stack）から機械生成。手で直さない",
  "source": [
@@ -551,8 +551,8 @@
   },
   {
    "id": 3,
-   "name": "unit test + coverage",
-   "script": "pnpm test -- --coverage",
+   "name": "unit test + coverage（6 つに分けて流した結果を合わせ、閾値を当てる）",
+   "script": "n=$(ls .vitest-reports/blob-*-6.json 2>/dev/null | wc -l) && { [ \"$n\" -eq 6 ] || { echo \"★ FAIL 分けた単体の試験の結果が 6 つのうち $n つしか無い\"; exit 1; }; } && pnpm exec vitest run --merge-reports=.vitest-reports --coverage",
    "blocking": true,
    "detects": [
     "退行"
@@ -562,7 +562,7 @@
     "branches": 70
    },
    "owner_task": "T-F-03",
-   "job": "database"
+   "job": "unit"
   },
   {
    "id": 4,
@@ -1080,6 +1080,13 @@
    "name": "新しい画面の実ブラウザの試験と、押した証拠（本番の形で組み立てた画面の上・行 ID の試験が全部の行で通る・記録なし・K-36）",
    "script": "BASE_URL=http://127.0.0.1:3124 pnpm --filter @kaname/web e2e:k && python3 scripts/ci/op_gate.py --spec 07_qa/test-specs/k --tickets 11_tickets/tickets.json --all",
    "job": "web",
+   "blocking": true
+  },
+  {
+   "id": 53,
+   "name": "試験はどれも 1 つのチケットに属する（単体の試験・実ブラウザの試験・口ごとの権限の試験の持ち主・チケットの実行の組み立て・D-128.140）",
+   "script": "python3 scripts/ci/test_owner_gate.py --selftest && python3 scripts/ci/test_owner_gate.py && python3 scripts/tickets/ticket_tests.py --selftest",
+   "job": "spec",
    "blocking": true
   }
  ],
