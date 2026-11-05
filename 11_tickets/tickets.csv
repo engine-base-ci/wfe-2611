@@ -196,8 +196,8 @@ ai-team-delivery のスキルに入れた汎用の検査（wiring_gate.py・scri
 - [ ] visual_fidelity.mjs・wave_gate.py は、CI に入れるか、ci_scripts.json に回さない理由を書く（visual_fidelity は外の書体を読むので手で回す・K-28。wave_gate は前の作業の仕組み 07_tasks の Wave の締め）
 - [ ] G47 の自己試験に「自己試験を持たない、回っていない台本」を足し、赤になるのを確かめる
 - [ ] CI が緑"
-K-47,CI を act で流す（GitHub と同じ workflow を手元で無料で・チケットごとに全部を 1 回）,課題,K-32,作業中,実装,2026-11-13,基盤・試験,CI を GitHub と全く同じもの（.github/workflows の workflow）にし、GitHub を通さずに手元で act で流す（ずっと無料・D-128.147）。チケット 1 本ごとに workflow の全部を 1 回流し、緑なら取り込む。自作の実行器（dagci）はやめる。,"- [ ] act で .github/workflows/v3-gate.yml の全部の job が手元で流れ、緑になる（できない job があれば、理由と代わりのやり方を書いて高本さんに聞く）
-- [ ] わざと壊したコード（型の誤り）で act が赤になる（赤を出せる）
+K-47,CI を act で流す（GitHub と同じ workflow を手元で無料で・チケットごとに全部を 1 回）,課題,K-32,作業中,実装,2026-11-13,基盤・試験,CI を GitHub と全く同じもの（.github/workflows の workflow）にし、GitHub を通さずに手元で act で流す（ずっと無料・D-128.147）。チケット 1 本ごとに workflow の全部を 1 回流し、緑なら取り込む。自作の実行器（dagci）はやめる。,"- [x] act で .github/workflows/v3-gate.yml の全部の job が手元で流れ、緑になる（11 組すべて緑・15 分 24 秒・2026-11-05・取り込んだコミット 9840077 の木）
+- [x] わざと壊したコード（型の誤り）で act が赤になる（G2 が error TS2322 で赤・act の終わり方 1）
 - [x] コミットにチケットの番号（K-n）が無ければ赤になる検査を workflow に入れる（G55・scripts/ci/ticket_commit_gate.py・No Ticket, No Commit・D-128.147）
 - [x] dagci の設定と検査をやめる（ci.yaml・scripts/ci/ci_stages.py・G52 を消した）
 - [x] まだ作っていない API の試験で、試験用のサーバーを立ち上げない（D-128.148・gen_ears_tests.mjs。作っていない口 354 ファイルが約 880 秒 → 約 64 秒）
