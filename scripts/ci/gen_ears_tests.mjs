@@ -38,6 +38,9 @@ export function gen(root = ROOT) {
   const genericOk = new Set(existsSync(okPath) ? JSON.parse(readFileSync(okPath, "utf8")).ok.map((x) => x.op) : []);
   const built = (e) => hooked.has(e.implementation_path.split("::")[1]) || (tables.has(e.table) && genericOk.has(`${e.method} ${e.path}`));
   const epOf = new Map(eps.map((e) => [`${e.method} ${e.path}`, e]));
+  // 表の素の読み書き（generic）の口：authz.test.ts の 501 の確かめに入らない（packages/contracts/src/registry.ts が正本）
+  const regSrc = readFileSync(join(root, "packages/contracts/src/registry.ts"), "utf8");
+  const genericSet = new Set([...regSrc.matchAll(/"method": "(\w+)",\s*"path": "([^"]+)"[^{}]*?"generic": true/gs)].map((x) => `${x[1]} ${x[2]}`));
   // 本物の試験が別のファイルにある口（本物のログインの部品が要る など）。理由が空の行は使わない
   const elsePath = join(root, "07_qa/test-plan/ears-elsewhere.json");
   const elsewhere = new Map(
@@ -71,10 +74,24 @@ ${body.join("\n")}
 `);
       continue;
     }
-    const tests = isBuilt ? [] : [`  it("not_implemented_501", async () => {\n    // まだ作っていない口は、正しい役の人が呼んでも 501 で止まり、何も書かない（fail-closed・D-128.113）\n    const who = e.auth === "ops" ? "ops" : "boss";\n    if (e.auth === "public" || e.auth === "client" || e.auth === "device") return;\n    const before = await h.count("audit_events");\n    const r = await h.call(e, who, { ...(e.path.includes(":id") ? { id: "0193c5a0-0000-7000-8000-000000000000" } : {}), ...(e.method === "POST" || e.method === "PATCH" ? { body: {} } : {}) });\n    expect(r.status).toBe(501);\n    expect(await h.count("audit_events")).toBe(before);\n  });`];
+    if (!isBuilt) {
+      // まだ作っていない口：試験の置き場（it.todo）だけを置き、試験用のサーバーは立ち上げない（D-128.148）。
+      //   「501 で止まり何も書かない」は apps/api/src/contract/authz.test.ts の「まだ作っていない口は止まる」が全部の口を 1 回の立ち上げで確かめる
+      if (genericSet.has(rows[0].endpoint)) throw new Error(`${rows[0].endpoint} は表の素の読み書き（generic）で、まだ作っていない。authz.test.ts の 501 の確かめに入らないので、08_api/generic-ok.json に足すか振る舞いを作る`);
+      n += rows.length;
+      writeFileSync(join(root, file), `// 生成物（scripts/ci/gen_ears_tests.mjs ← 07_qa/test-plan/ears-test-mapping.json）。手で直さない。${rows[0].endpoint}
+// まだ作っていない口。501 で止まることは apps/api/src/contract/authz.test.ts が確かめる。作ったら本物の試験になる（D-128.148）
+import { describe, it } from "vitest";
+
+describe(${q(rows[0].endpoint)}, () => {
+${rows.map((x) => `  // ${x.ears_text.replace(/\n/g, " ")}\n  it.todo(${q(x.test_function)});`).join("\n")}
+});
+`);
+      continue;
+    }
+    const tests = [];
     tests.push(...rows.map((x) => {
       n++;
-      if (!isBuilt) return `  // まだ作っていない口。作ったら本物の試験になる：${x.ears_text.replace(/\n/g, " ")}\n  it.todo(${q(x.test_function)});`;
       const kind = kindOf(x.test_function);
       const skip = (kind === "rate_limited" && false) ? ".skip" : "";
       return `  it${skip}(${q(x.test_function)}, async () => {\n    // ${x.ears_text.replace(/\n/g, " ")}\n    ${CASE[kind](op)}\n  });`;

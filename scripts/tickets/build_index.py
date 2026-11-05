@@ -12,7 +12,7 @@
     K6 先に終わっている必要があるもの（depends_on）が実在し、輪になっていない
     K7 担当（assignee）は役（作る・精査・実装・テスター）か人の名前。AI のセッションの名前は書かない（D-128.145）
   属性 tests:（そのチケットが持つ試験のファイル・glob 可）は、どの試験もちょうど 1 つのチケットに属するかを
-    scripts/ci/test_owner_gate.py（G53）が見る。チケット 1 枚の試験だけを流すのは scripts/tickets/ticket_tests.py（D-128.140）
+    scripts/ci/test_owner_gate.py（G53）が見る
 使い方: python3 scripts/tickets/build_index.py [--check]
 """
 from __future__ import annotations

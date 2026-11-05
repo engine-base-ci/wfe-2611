@@ -3387,8 +3387,6 @@ decision_traceability:
     ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
   - file: 03_architecture/共通の決まり.md
     ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
-  - file: ci.yaml
-    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
   - file: 07_qa/test-patterns.local.json
     ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
   - file: 08_schedule/sprint.md
@@ -3506,8 +3504,6 @@ layer_checks:
   manual: スキルへの差分の一覧と当て方
 - file: apps/web/content/legal/*.md
   manual: 利用規約とプライバシーポリシーのひな形（D-128.137）。K-53 で画面に出し terms_versions に入れる。公開の前に専門家が確かめる
-- file: ci.yaml
-  check: python3 scripts/ci/ci_stages.py --check
 - file: 03_architecture/共通の決まり.md
   manual: 決定ログの共通の決まりの一覧（D-128.130）。中身は決定ログが正本で、決定を足したら 1 行足す。手で見る
 - file: 03_architecture/catalog.json

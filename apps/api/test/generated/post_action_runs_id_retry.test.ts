@@ -1,39 +1,22 @@
 // 生成物（scripts/ci/gen_ears_tests.mjs ← 07_qa/test-plan/ears-test-mapping.json）。手で直さない。POST /api/v1/action_runs/:id/retry
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { makeHarness, endpointOf, type Harness } from "../harness.js";
+// まだ作っていない口。501 で止まることは apps/api/src/contract/authz.test.ts が確かめる。作ったら本物の試験になる（D-128.148）
+import { describe, it } from "vitest";
 
-const e = endpointOf("retryActionRun");
-let h: Harness;
-beforeAll(async () => {
-  h = await makeHarness();
-});
-afterAll(async () => {
-  await h.close();
-});
 describe("POST /api/v1/action_runs/:id/retry", () => {
-  it("not_implemented_501", async () => {
-    // まだ作っていない口は、正しい役の人が呼んでも 501 で止まり、何も書かない（fail-closed・D-128.113）
-    const who = e.auth === "ops" ? "ops" : "boss";
-    if (e.auth === "public" || e.auth === "client" || e.auth === "device") return;
-    const before = await h.count("audit_events");
-    const r = await h.call(e, who, { ...(e.path.includes(":id") ? { id: "0193c5a0-0000-7000-8000-000000000000" } : {}), ...(e.method === "POST" || e.method === "PATCH" ? { body: {} } : {}) });
-    expect(r.status).toBe(501);
-    expect(await h.count("audit_events")).toBe(before);
-  });
-  // まだ作っていない口。作ったら本物の試験になる：EVENT-DRIVEN: WHEN POST /api/v1/action_runs/:id/retry が「理由ごとの直し方に沿って押す」として呼ばれたとき THEN Kaname は「—」を行い 2xx を返す
+  // EVENT-DRIVEN: WHEN POST /api/v1/action_runs/:id/retry が「理由ごとの直し方に沿って押す」として呼ばれたとき THEN Kaname は「—」を行い 2xx を返す
   it.todo("test_post_action_runs_id_retry_ok");
-  // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）
+  // UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）
   it.todo("test_post_action_runs_id_retry_rejected_401");
-  // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）
+  // UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）
   it.todo("test_post_action_runs_id_retry_rejected_403");
-  // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）
+  // UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）
   it.todo("test_post_action_runs_id_retry_not_found");
-  // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない
+  // UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない
   it.todo("test_post_action_runs_id_retry_rejected_422");
-  // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
+  // UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
   it.todo("test_post_action_runs_id_retry_rejected_422_2");
-  // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
+  // UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
   it.todo("test_post_action_runs_id_retry_rate_limited");
-  // まだ作っていない口。作ったら本物の試験になる：UBIQUITOUS: POST /api/v1/action_runs/:id/retry の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
+  // UBIQUITOUS: POST /api/v1/action_runs/:id/retry の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
   it.todo("test_post_action_runs_id_retry_shape");
 });

@@ -99,12 +99,13 @@ SPEC_GATES = [
     {"id": 46, "name": "使っている部品が技術の選定の記録と合う（package.json と selected-stack.json の packages を 1 対 1・D-128.123）", "script": "python3 scripts/ci/stack_gate.py --selftest && python3 scripts/ci/stack_gate.py", "job": "spec", "blocking": True},
     {"id": 47, "name": "書いた検査が CI から回る・検査の自己試験（ci_wiring_gate・エラーの参照・自己試験 6 本・D-128.123）", "script": "python3 scripts/ci/ci_wiring_gate.py --selftest && python3 scripts/ci/ci_wiring_gate.py && pnpm -s ci:errors-used && pnpm -s ci:errors-used:selftest && pnpm -s ci:sql-guard:selftest && pnpm -s ci:chat-one:selftest && pnpm -s ci:contract:selftest && pnpm -s ci:env-audit:selftest && python3 scripts/ci/qa_delta.py --selftest", "job": "spec", "blocking": True},
     {"id": 51, "name": "利用者の流れと DB の表の目録（行為はどれも 1 つの流れ・表はどれも目録に・凍結の表をコードが使わない・D-128.126・D-128.127）", "script": "python3 scripts/ci/flow_db_gate.py --selftest && python3 scripts/ci/flow_db_gate.py", "job": "spec", "blocking": True},
-    {"id": 52, "name": "ローカルの CI（dagci）の段が GitHub の検査と 1 対 1（ci.yaml の段は v3-gate.yml から導く・外す job は理由つき・K-47）", "script": "python3 scripts/ci/ci_stages.py --check", "job": "spec", "blocking": True},
     {"id": 48, "name": "新しい画面の実ブラウザの試験と、押した証拠（本番の形で組み立てた画面の上・行 ID の試験が全部の行で通る・記録なし・K-36）", "script": "BASE_URL=http://127.0.0.1:3124 pnpm --filter @kaname/web e2e:k && python3 scripts/ci/op_gate.py --spec 07_qa/test-specs/k --tickets 11_tickets/tickets.json --all", "job": "web", "blocking": True},
 ]
-SPEC_GATES.append({"id": 53, "name": "試験はどれも 1 つのチケットに属する（単体の試験・実ブラウザの試験・口ごとの権限の試験の持ち主・チケットの実行の組み立て・D-128.140）", "script": "python3 scripts/ci/test_owner_gate.py --selftest && python3 scripts/ci/test_owner_gate.py && python3 scripts/tickets/ticket_tests.py --selftest", "job": "spec", "blocking": True})
+SPEC_GATES.append({"id": 53, "name": "試験はどれも 1 つのチケットに属する（単体の試験・実ブラウザの試験・口ごとの権限の試験の持ち主・D-128.140）", "script": "python3 scripts/ci/test_owner_gate.py --selftest && python3 scripts/ci/test_owner_gate.py", "job": "spec", "blocking": True})
+SPEC_GATES.append({"id": 54, "name": "決定のトレース（決定ログの決めたことが導出物から逆引きできる・T1〜T12。手で流していたのを CI に入れた・D-128.147）", "script": "cp 01_hearing/要件一覧.md /tmp/req.md && python3 scripts/ci/trace_gate.py --index && cmp /tmp/req.md 01_hearing/要件一覧.md && python3 scripts/ci/trace_gate.py", "job": "spec", "blocking": True})
+SPEC_GATES.append({"id": 55, "name": "No Ticket, No Commit（コミットにチケットの番号・D-128.147・K-47）", "script": "python3 scripts/ci/ticket_commit_gate.py --selftest && python3 scripts/ci/ticket_commit_gate.py", "job": "spec", "blocking": True})
 # ---------------------------------------------------------------- 単体の試験（G3）を 6 つに分けて同時に流す（D-128.140）
-#   全部（回帰）は取り込みの前だけ。分けた 1 つずつが自分の Postgres を持ち（GitHub は job ごと・dagci は pg-unit-<i>）、
+#   全部（回帰）は取り込みの前だけ。分けた 1 つずつが自分の Postgres を持ち（GitHub でも act でも job ごと・DB の番号は割り当て）、
 #   結果（vitest の blob。coverage も入る）を unit が集めて合わせ、同じ閾値（vitest.config.ts）を合わせた結果に当てる。
 #   分けた側は閾値を当てない（1 つ分の coverage は足りなくて当たり前）
 UNIT_SHARDS = 6
@@ -118,23 +119,27 @@ ALL_GATES = [{**g, "job": "unit" if g["id"] == 3 else ("database" if g["id"] in 
 ALL_GATES = [{**g, "script": UNIT_MERGE, "name": g["name"] + f"（{UNIT_SHARDS} つに分けて流した結果を合わせ、閾値を当てる）"} if g["id"] == 3 else g for g in ALL_GATES]
 def yrun(script): return json.dumps(script, ensure_ascii=False) if re.search(r"[{}\[\]]|: |^[!&*|>%@`#]", script) else script   # YAML の素の値にできない命令は "…" で
 def step(g): return f'      - name: "G{g["id"]} {g["name"]}{" [CRITICAL]" if g["id"] in FG.get("kaname_critical_gates", []) else ""}"\n        if: ${{{{ !cancelled() }}}}\n        run: {yrun(g["script"])}\n'   # 前の検査が赤でも次の検査を流す（赤を全部いっぺんに見る。job は赤のまま）
-PG = """    services:
+# DB は組ごとに違う固定の番号を台に出す（K-47）。GitHub は組ごとに別の台なので番号は何でもよく、act は 1 台で組を同時に流し、
+#   組の容れ物を台の網に置く（DB には localhost:番号 でしかつながらず、割り当てた番号も渡さない）ので、組ごとに番号を分ける。
+#   database 5432・unit-<i> 5432+i・spec 5439
+def pg(port):
+    return f"""    services:
       postgres:
         image: pgvector/pgvector:pg16
-        env: { POSTGRES_PASSWORD: postgres, POSTGRES_DB: kaname_test }
-        ports: ['5432:5432']
+        env: {{ POSTGRES_PASSWORD: postgres, POSTGRES_DB: kaname_test }}
+        ports: ['{port}:5432']
         options: >-
           --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     env:
-      DATABASE_URL: postgres://postgres:postgres@localhost:5432/kaname_test
+      DATABASE_URL: postgres://postgres:postgres@localhost:{port}/kaname_test
 """
-NODE = "      - uses: actions/checkout@v4\n      - uses: pnpm/action-setup@v4\n      - uses: actions/setup-node@v4\n        with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }\n      - run: pnpm install --frozen-lockfile\n"
+NODE = "      - uses: actions/checkout@v4\n        with: { fetch-depth: 0 }\n      - uses: pnpm/action-setup@v4\n      - uses: actions/setup-node@v4\n        with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }\n      - run: pnpm install --frozen-lockfile\n"
 PYS = "      - uses: actions/checkout@v4\n      - uses: actions/setup-python@v5\n        with: { python-version: '3.12' }\n      - run: pip install pyyaml\n"
 UNIT_JOBS = "".join(f"""  unit-{i}:
     runs-on: ubuntu-latest
     # 単体の試験の {i}/{UNIT_SHARDS}（自分の Postgres の上で。結果は unit が合わせる・D-128.140）
     needs: [static]
-{PG}    steps:
+{pg(5432 + i)}    steps:
 {NODE}      - name: "G3.{i} 単体の試験の {i}/{UNIT_SHARDS}（自分の DB の上で。coverage の閾値は合わせた後に当てる）"
         if: ${{{{ !cancelled() }}}}
         run: {unit_shard_script(i)}
@@ -153,7 +158,7 @@ UNIT_JOBS = "".join(f"""  unit-{i}:
 yml = f"""# .github/workflows/v3-gate.yml — Kaname CI ゲート {len(ALL_GATES)} 本（05_flow/build_testplan.py が生成。手で直さない）
 # 方針: {FG['policy']}
 # 段: static（静的・関門）→ database（実 Postgres・RLS・契約）／ unit-1〜unit-{UNIT_SHARDS}（単体の試験を分けて同時に・それぞれ自分の Postgres）→ unit（合わせて coverage の閾値）／ spec（仕様の層・Python）／ task-gate（そのタスクの L1 行）→ e2e（has-ui）→ auto-merge
-# GitHub の上では自動で流さない（D-128.135）。CI はローカルの dagci（ci.yaml の段はこのファイルから導く・G52）。手で押したときだけ動く
+# GitHub の上では自動で流さない（D-128.135）。CI はこの workflow をそのまま手元で act で流す（D-128.147・K-47）。GitHub では手で押したときだけ動く
 name: v3-gate
 on:
   workflow_dispatch:
@@ -171,21 +176,12 @@ jobs:
   database:
     runs-on: ubuntu-latest
     needs: [static]
-{PG}    steps:
+{pg(5432)}    steps:
 {NODE}{''.join(step(g) for g in ALL_GATES if g['job'] == 'database')}
 {UNIT_JOBS}  spec:
     runs-on: ubuntu-latest
     # 仕様の層の検査は Python だけでなく pnpm の検査と DB の検査も呼ぶ（層の棚卸し G21）。database と同じ Postgres を付ける
-    services:
-      postgres:
-        image: pgvector/pgvector:pg16
-        env: {{ POSTGRES_PASSWORD: postgres, POSTGRES_DB: kaname_test }}
-        ports: ['5432:5432']
-        options: >-
-          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-    env:
-      DATABASE_URL: postgres://postgres:postgres@localhost:5432/kaname_test
-    steps:
+{pg(5439)}    steps:
 {NODE}      - uses: actions/setup-python@v5
         with: {{ python-version: '3.12' }}
       - run: pip install pyyaml

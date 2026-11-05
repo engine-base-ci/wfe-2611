@@ -1,35 +1,18 @@
 // 生成物（scripts/ci/gen_ears_tests.mjs ← 07_qa/test-plan/ears-test-mapping.json）。手で直さない。GET /api/v1/me/usage
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { makeHarness, endpointOf, type Harness } from "../harness.js";
+// まだ作っていない口。501 で止まることは apps/api/src/contract/authz.test.ts が確かめる。作ったら本物の試験になる（D-128.148）
+import { describe, it } from "vitest";
 
-const e = endpointOf("getMyUsage");
-let h: Harness;
-beforeAll(async () => {
-  h = await makeHarness();
-});
-afterAll(async () => {
-  await h.close();
-});
 describe("GET /api/v1/me/usage", () => {
-  it("not_implemented_501", async () => {
-    // まだ作っていない口は、正しい役の人が呼んでも 501 で止まり、何も書かない（fail-closed・D-128.113）
-    const who = e.auth === "ops" ? "ops" : "boss";
-    if (e.auth === "public" || e.auth === "client" || e.auth === "device") return;
-    const before = await h.count("audit_events");
-    const r = await h.call(e, who, { ...(e.path.includes(":id") ? { id: "0193c5a0-0000-7000-8000-000000000000" } : {}), ...(e.method === "POST" || e.method === "PATCH" ? { body: {} } : {}) });
-    expect(r.status).toBe(501);
-    expect(await h.count("audit_events")).toBe(before);
-  });
-  // まだ作っていない口。作ったら本物の試験になる：EVENT-DRIVEN: WHEN GET /api/v1/me/usage が「自分のAIの使用量を見る」として呼ばれたとき THEN Kaname は「agent_usage_snapshots の最新」を行い 2xx を返す（自動側：Bridge が Claude Code から受け取った使用量（5 時間の枠・週の枠・いつ戻るか）を出す。近い・達したら会話にも案内）
+  // EVENT-DRIVEN: WHEN GET /api/v1/me/usage が「自分のAIの使用量を見る」として呼ばれたとき THEN Kaname は「agent_usage_snapshots の最新」を行い 2xx を返す（自動側：Bridge が Claude Code から受け取った使用量（5 時間の枠・週の枠・いつ戻るか）を出す。近い・達したら会話にも案内）
   it.todo("test_get_me_usage_ok");
-  // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）
+  // UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）
   it.todo("test_get_me_usage_rejected_401");
-  // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）
+  // UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）
   it.todo("test_get_me_usage_rejected_403");
-  // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
+  // UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
   it.todo("test_get_me_usage_rejected_422");
-  // まだ作っていない口。作ったら本物の試験になる：UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
+  // UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
   it.todo("test_get_me_usage_rate_limited");
-  // まだ作っていない口。作ったら本物の試験になる：UBIQUITOUS: GET /api/v1/me/usage の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
+  // UBIQUITOUS: GET /api/v1/me/usage の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
   it.todo("test_get_me_usage_shape");
 });
