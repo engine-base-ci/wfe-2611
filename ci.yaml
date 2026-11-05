@@ -104,7 +104,7 @@ services:
 tickets:
   cmd: python3 scripts/tickets/ticket_tests.py {id} --cmds
   like: unit-1-g03
-  skip: ["unit-*"]
+  skip: ["unit-*", "spec-g27"] # 単体の分けた段は全部の回だけ。層の棚卸し（G27）はほかの検査を全部流し直すので、チケットの回では外す（全部の回で流す）
 
 defaults: { timeout: 1800 }
 red_patterns: ["FAIL", "★", "Error:", "✗"]

@@ -44,6 +44,15 @@ def uses(j: dict, action: str) -> list[dict]:
     return [st for st in j.get("steps") or [] if str(st.get("uses") or "").startswith(action + "@")]
 
 
+# 重い段だけ、変わったファイルで流すかを決める（dagci の --affected・チケットの回。全部の回はいつも流す・D-128.140）。
+#   軽い段（数秒）は既定のまま（どのファイルが変わっても流す）
+COMMON = ["packages/**", "package.json", "pnpm-lock.yaml", "pnpm-workspace.yaml", "tsconfig*.json", "vitest.config.ts"]
+WHEN = {
+    "web-g48": ["apps/web/**", "04_design/**", "07_qa/test-specs/k/**", *COMMON],
+    "database-g36": ["apps/api/**", "08_api/**", "packages/db/**", *COMMON],
+}
+
+
 def steps() -> list[dict]:
     wf = yaml.safe_load(open(WF, encoding="utf-8"))
     out = []
@@ -82,6 +91,8 @@ def steps() -> list[dict]:
                    "timeout": 3600 if job in ("database", "web") or job.startswith("unit") else 1800}
             if SHARD_JOB.fullmatch(job):
                 st_["heavy"] = False
+            if sid in WHEN:
+                st_["when"] = WHEN[sid]
             out.append(st_)
             prev = sid
         up = uses(j, "actions/upload-artifact")
