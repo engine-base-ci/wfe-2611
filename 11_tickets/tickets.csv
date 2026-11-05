@@ -326,3 +326,28 @@ K-72,F12 運営とのやり取り・運営が回す（流れのまとまり・�
 K-73,後のフェーズ・どの流れにも入らないもの（まだ切っていない）,タスク,,未着手,未定,,後・流れ,後のフェーズの行為だけを持つ API と、どの流れにも入らない古いまとまりを、新しい形のチケット（利用者の 1 つの操作＝1 つの実装・ai-driven-process.md §3）に切るまでの入れ物。古い形の未着手のチケットから、画面・API・決定を引き継いだ（D-128.136）。,"- [ ] この流れの操作が、どれも新しい形のチケット（分類・目録で探した結果・実装の詳細・8 観点の分岐とテスト・状態 × 入口 × 利用者の状態の表）に切られている
 - [ ] 下の画面・API が、切ったチケットのどれかに移り、このまとまりから消えている
 - [ ] この流れの中間テストの組と統合テストが決まっている"
+K-74,ログインする（パスキー、またはメールとパスワードと 2 段階のコードで入る。端末をなくしたら管理者に頼む）,タスク,K-50,未着手,未定,,F1・認証,"登録を済ませた人が、ログインの画面で **パスキー（指か顔）** で入るか、**メールとパスワード** を入れて入る。2 段階認証を付けている人は、続けて認証アプリの 6 けた（またはバックアップコード）を入れる。入ったら、元の画面（next）か、入口の振り分け（`afterLogin`）の先へ進む。
+
+ログアウトすると、その画面のセッションだけが閉じる。端末をなくして 6 けたもバックアップコードも無い人は、パスワードを通った直後に「管理者に戻してもらう」を押すと、管理者に知らせが届く。ログインの画面には、障害やメンテナンスのときだけ Kaname のいまの様子を出す。
+
+パスキーを **付ける** のはこのチケットではない（安全の設定・K-75）。このチケットは、付いているパスキーで **入る** までを持つ。","- 下の 2 つの表の「このチケット」のマスと、全部の分岐のテストが緑
+- 契約の口 `signInWithPassword`・`verifySignInCode`・`signOut`・`getServiceStatus`・`requestAdminRecovery` が 501 でない（apps/api/test/generated/ の 5 本の `it.todo` が本物のテストになって緑）
+- 前の道すじ `POST /api/auth-ext/sign-in`・`POST /api/auth-ext/two-factor/verify`（apps/api/src/auth/ext.ts）が消え、画面は契約の口と、パスキーの部品の口（`/api/auth/passkey/*`）だけを呼んでいる
+- 部品の口のうち、ロックと会社の止めを通らない道（`/api/auth/sign-in/email`・`/api/auth/two-factor/verify-totp`・`/api/auth/two-factor/verify-backup-code`・`/api/auth/sign-out`）が 404 になっている
+- 単体のテスト（下の表で「このチケット」が受け持つマスと、全部の分岐）が本物の DB と本物のブラウザ（パスキーは Playwright の仮の認証器）の上で緑
+- 手元の CI（dagci）が緑"
+K-75,パスキーを設定する（パスワードの人は 2 段階認証を設定する。パスキーの名前を変える・外す・パスワードを変える）,タスク,K-50,未着手,未定,,F1・認証,"ログインした本人が、安全の設定の画面で **パスキーを付ける**（いま使っている端末の指か顔で登録する）。パスキーを持たずパスワードで入る人は、代わりに **2 段階認証を付ける**（本人確認 → 認証アプリで QR を読み取る → 6 けたで確かめる → バックアップコード 10 個を 1 回だけ見せる・D-128.59・D-128.61）。
+
+同じ画面で、付いているパスキーの一覧・名前を変える・外す（最後の入り方は外せない）と、パスワードを変える（変えたらほかの端末と PC（Bridge）を切る）ができる。パスキーを付けたら、はじめにやることの「パスキー」に印が付く（D-125.146）。","- 下の 2 つの表の「このチケット」のマスと、全部の分岐のテストが緑
+- 契約の口 `getMySecurity`・`renamePasskey`・`deletePasskey`・`changePassword`・`startTwoFactor`・`confirmTwoFactor` が 501 でない（apps/api/test/generated/ の 6 本の `it.todo` が本物のテストになって緑）
+- 画面が部品の口を直に呼ぶ道（今の `authClient.twoFactor.enable`／`verifyTotp`）が消え、契約の口と、パスキーを付ける部品の口（`/api/auth/passkey/generate-register-options`・`/api/auth/passkey/verify-registration`）だけを呼んでいる
+- 本人確認の取り直しを通らない部品の道（`/api/auth/two-factor/enable`・`/two-factor/disable`・`/two-factor/generate-backup-codes`・`/change-password`・`/passkey/delete-passkey`・`/passkey/update-passkey`）が 404 になっている
+- 単体のテスト（下の表で「このチケット」が受け持つマスと、全部の分岐）が本物の DB と本物のブラウザ（パスキーは Playwright の仮の認証器）の上で緑
+- 手元の CI（dagci）が緑"
+K-76,パスワードを再設定する（メールのリンクから新しいパスワードを決め、全部の端末と PC を入り直しにする）,タスク,K-50,未着手,未定,,F1・認証,"パスワードを忘れた人が、再設定の画面でメールを入れて「再設定のメールを送る」を押すと、登録されていればリンクが 1 通届く（30 分・1 回だけ・D-128.62）。登録されているかどうかは画面に出さない。
+
+リンクを開いて新しいパスワードを 2 回入れると、パスワードが変わり、**全部のワークスペースの端末と PC（Bridge）が入り直しになる**（D-125.140）。ログインのロックも外れ、ログインの画面へ進む。期限切れ・使い終わった・新しく頼んだ後の前のリンクでは変えられず、頼み直しの案内を出す。","- 下の 2 つの表の「このチケット」のマスと、全部の分岐のテストが緑
+- 契約の口 `requestPasswordReset`・`resetPassword` が 501 でない（apps/api/test/generated/post_auth_password_forgot.test.ts・post_auth_password_reset.test.ts の `it.todo` が本物のテストになって緑）
+- 画面が部品の口を直に呼ぶ道（今の `authClient.requestPasswordReset`・`authClient.resetPassword`）が消え、契約の口だけを呼んでいる。部品の道（`/api/auth/request-password-reset`・`/api/auth/reset-password`・`/api/auth/reset-password/:token`）は 404（K-74 と同じ `disabledPaths`）
+- 単体のテスト（下の表で「このチケット」が受け持つマスと、全部の分岐）が本物の DB と本物のブラウザの上で緑
+- 手元の CI（dagci）が緑"

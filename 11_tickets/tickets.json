@@ -1851,32 +1851,8 @@
     "signup",
     "verify-email"
    ],
-   "apis": [
-    "changePassword",
-    "deletePasskey",
-    "getMySecurity",
-    "getServiceStatus",
-    "renamePasskey",
-    "requestAdminRecovery",
-    "requestPasswordReset",
-    "resetPassword",
-    "signInWithPassword",
-    "signOut",
-    "verifySignInCode"
-   ],
-   "tests": [
-    "apps/api/test/generated/delete_me_passkeys_id.test.ts",
-    "apps/api/test/generated/get_auth_service_status.test.ts",
-    "apps/api/test/generated/get_me_security.test.ts",
-    "apps/api/test/generated/patch_me_passkeys_id.test.ts",
-    "apps/api/test/generated/patch_me_password.test.ts",
-    "apps/api/test/generated/post_auth_password_forgot.test.ts",
-    "apps/api/test/generated/post_auth_password_reset.test.ts",
-    "apps/api/test/generated/post_auth_recovery_admin_request.test.ts",
-    "apps/api/test/generated/post_auth_sign_in.test.ts",
-    "apps/api/test/generated/post_auth_sign_out.test.ts",
-    "apps/api/test/generated/post_auth_two_factor_verify.test.ts"
-   ],
+   "apis": [],
+   "tests": [],
    "depends_on": [],
    "sections": {
     "目的": "流れ F1「登録してログインできる」を、新しい形のチケット（利用者の 1 つの操作＝1 つの実装・ai-driven-process.md §3）に切るまでの入れ物。古い形の未着手のチケットから、画面・API・決定を引き継いだ（D-128.136）。",
@@ -3588,7 +3564,6 @@
    "apis": [
     "answerAgentPermission",
     "askFromBridge",
-    "confirmTwoFactor",
     "createArtifactFromMessage",
     "createConversationAttachment",
     "deleteConversation",
@@ -3602,7 +3577,6 @@
     "reportUsage",
     "resetMemberTwoFactor",
     "restoreArtifactVersion",
-    "startTwoFactor",
     "updateArtifact",
     "updateConversation",
     "updateMyClone"
@@ -3624,8 +3598,6 @@
     "apps/api/test/generated/post_conversations_id_attachments.test.ts",
     "apps/api/test/generated/post_conversations_id_permissions_pid.test.ts",
     "apps/api/test/generated/post_me_backup_codes.test.ts",
-    "apps/api/test/generated/post_me_two_factor_confirm.test.ts",
-    "apps/api/test/generated/post_me_two_factor_enable.test.ts",
     "apps/api/test/generated/post_members_id_two_factor_reset.test.ts",
     "apps/api/test/generated/post_messages_id_artifacts.test.ts"
    ],
@@ -3636,6 +3608,221 @@
     "前提と制約": "- 切るのは 1 つ先を並行で（今の流れを実装している間に）。一気に全部は切らない\n- 引き継いだ古いチケット：KN-7・KN-15・KN-17・KN-18・KN-25・KN-32・KN-33・KN-34・KN-35・KN-36・KN-37・KN-48・KN-88・KN-94・KN-98・KN-99・KN-100・KN-101・KN-102（11_tickets/_old/ に残す。切るときに目録として読む）"
    },
    "file": "11_tickets/K-73.md"
+  },
+  {
+   "id": "K-74",
+   "title": "ログインする（パスキー、またはメールとパスワードと 2 段階のコードで入る。端末をなくしたら管理者に頼む）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-50",
+   "milestone": "F1",
+   "area": "認証",
+   "assignee": "未定",
+   "due": "",
+   "decisions": [
+    "D-042",
+    "D-051.2",
+    "D-087",
+    "D-125.126",
+    "D-125.137",
+    "D-125.138",
+    "D-125.140",
+    "D-125.141",
+    "D-125.150",
+    "D-125.162",
+    "D-128.55",
+    "D-128.59",
+    "D-128.60",
+    "D-128.61",
+    "D-128.63",
+    "D-128.70",
+    "D-128.91",
+    "D-128.119",
+    "D-128.120",
+    "D-128.121",
+    "D-128.125",
+    "D-128.130",
+    "D-128.133",
+    "D-128.137"
+   ],
+   "split": "",
+   "choke_points": [
+    "C2",
+    "C6"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_auth_sign_in.test.ts",
+    "apps/api/test/generated/post_auth_two_factor_verify.test.ts",
+    "apps/api/test/generated/post_auth_sign_out.test.ts",
+    "apps/api/test/generated/get_auth_service_status.test.ts",
+    "apps/api/test/generated/post_auth_recovery_admin_request.test.ts"
+   ],
+   "depends_on": [
+    "K-53"
+   ],
+   "acts": [
+    "A13"
+   ],
+   "screens": [
+    "login"
+   ],
+   "apis": [
+    "signInWithPassword",
+    "verifySignInCode",
+    "signOut",
+    "getServiceStatus",
+    "requestAdminRecovery"
+   ],
+   "sections": {
+    "目的": "登録を済ませた人が、ログインの画面で **パスキー（指か顔）** で入るか、**メールとパスワード** を入れて入る。2 段階認証を付けている人は、続けて認証アプリの 6 けた（またはバックアップコード）を入れる。入ったら、元の画面（next）か、入口の振り分け（`afterLogin`）の先へ進む。\n\nログアウトすると、その画面のセッションだけが閉じる。端末をなくして 6 けたもバックアップコードも無い人は、パスワードを通った直後に「管理者に戻してもらう」を押すと、管理者に知らせが届く。ログインの画面には、障害やメンテナンスのときだけ Kaname のいまの様子を出す。\n\nパスキーを **付ける** のはこのチケットではない（安全の設定・K-75）。このチケットは、付いているパスキーで **入る** までを持つ。",
+    "完了の条件": "- 下の 2 つの表の「このチケット」のマスと、全部の分岐のテストが緑\n- 契約の口 `signInWithPassword`・`verifySignInCode`・`signOut`・`getServiceStatus`・`requestAdminRecovery` が 501 でない（apps/api/test/generated/ の 5 本の `it.todo` が本物のテストになって緑）\n- 前の道すじ `POST /api/auth-ext/sign-in`・`POST /api/auth-ext/two-factor/verify`（apps/api/src/auth/ext.ts）が消え、画面は契約の口と、パスキーの部品の口（`/api/auth/passkey/*`）だけを呼んでいる\n- 部品の口のうち、ロックと会社の止めを通らない道（`/api/auth/sign-in/email`・`/api/auth/two-factor/verify-totp`・`/api/auth/two-factor/verify-backup-code`・`/api/auth/sign-out`）が 404 になっている\n- 単体のテスト（下の表で「このチケット」が受け持つマスと、全部の分岐）が本物の DB と本物のブラウザ（パスキーは Playwright の仮の認証器）の上で緑\n- 手元の CI（dagci）が緑",
+    "前提と制約": "分類: AUTH, MAIL\n\n- 流れ F1 登録してログインできる（K-50）。歩く骨格の 3 本（K-51〜K-53）の次\n- 依存：規約に同意する（K-53）。セッションができたときに規約の印（`sessions.terms_pending`）を立てるのは K-53 の hook で、このチケットのログインもその hook を通る\n- 本人確認の取り直し（`stepUp`）は K-19 が持つ。このチケットは使わない\n- セッションの見張り（操作が無い 12 時間・最長 7 日・国か端末が変わったら切る）は K-20 が持つ（D-128.120・D-128.121）。このチケットは、切られた後に入り直せることを持つ\n- パスキーを付ける・2 段階を付ける・パスワードを変えるは K-75、パスワードの再設定は K-76\n- テストはこのチケットを作る人がコードまで書き、実装する人は変えない（D-128.125）",
+    "実施事項": "### 作り方（実装の詳細）\n\n| 欄 | 中身 |\n|---|---|\n| 画面 | `apps/web/features/F1/login/`（新しい部品 `components/k` の TextField・Button・Callout と、4 つの状態 `components/k/states` で組む）。キャンバスの絵 `AuthLogin`・`Auth2FA`・`AuthQR`・`AuthRecover`。道は `/login`（`apps/web/app/(outside)/login/page.tsx` は薄い入れ物にし、中身をこのチケットで置き換える。K-53 の `/login?step=terms` はそのまま中で出し分ける）。パスキーを大きく先に、メールとパスワードはその下（D-128.59）。6 けたはそろうと自動で進む。パスワードの欄は見る・隠す（D-087）。いまの様子（障害・メンテナンス）は画面の上に帯で出す |\n| API | 契約の口 `signInWithPassword`（POST /api/v1/auth/sign-in・誰でも・10 回／分／IP・関門 C2）・`verifySignInCode`（POST /api/v1/auth/two-factor/verify・誰でも・パスワードを通った直後の待ちの印で・10 回／分／IP・関門 C2）・`signOut`（POST /api/v1/auth/sign-out・本人・60 回／分／人・関門 C2）・`getServiceStatus`（GET /api/v1/auth/service-status・誰でも・10 回／分／IP・関門なし）・`requestAdminRecovery`（POST /api/v1/auth/recovery/admin-request・誰でも・待ちの印で・10 回／分／IP・関門 C2 と知らせの C6）。振る舞いを `apps/api/src/features/F1/login/` に Hook（`before` で全部返す。`apps/api/src/hooks/auth.ts` の stepUp と同じ形）として書き、`apps/api/src/server.ts` の `contract.hooks` に足して 501 を外す。パスキーで入る口は部品のまま（`/api/auth/passkey/generate-authenticate-options`・`/api/auth/passkey/verify-authentication`・D-128.91） |\n| DB | 認証の表（schema `kaname_auth`・Better Auth が作る）：`\"user\"`（email・email_verified・two_factor_enabled）・`account`（provider_id = credential・password のハッシュ）・`session`（expires_at）・`two_factor`（secret・backup_codes・verified・failed_verification_count・locked_until）・`verification`（2 段階の待ちの印・パスキーのチャレンジ。expires_at）・**`passkey`（このチケットで部品を足すと `migrateAuth` が作る：name・public_key・user_id・credential_id・counter・device_type・backed_up・transports・aaguid・created_at）**。業務の表：`sessions`（migration 0004・0081・0083：revoked_at・revoke_reason_id・kind_id・device・country・last_ip・issued_at・last_seen_at・step_up_at と K-53 の terms_pending）・`app.login_attempts`（migration 0020：fails・first_failed_at・locked_until）・`members`（deleted_at・suspended_at・migration 0078）・`tenant_memberships`（status・migration 0075）・`subscriptions`（suspended_at・migration 0015）・`security_events`（migration 0003）・`notifications`（dedupe_key）・`status_incidents`（state・migration 0015／0078）・`notices`（state・maintenance_from／to・migration 0078）。**migration を 1 本足す**：① ログインの前に人と会社の止めを見る関数 `app.login_gate(p_auth_user_id text)`（返すのは ok・止めの理由 だけ）② 誰でも読めるいまの様子の関数 `app.public_service_status()`（公開したお知らせのうちメンテナンスの予定と、直っていない障害の state・題・時刻だけ。今の行の守り（policies/0015）はログインしていないと読めないため）③ 端末をなくしたときの頼みを残す関数 `app.request_admin_recovery(p_auth_user_id text)`（その人が入っているワークスペースごとに security_events に 1 行・管理者に知らせの行。1 時間に 1 回まで） |\n| 使う部品と版 | Better Auth 1.7.15（`@kaname/auth` の中だけ）と、足す **`@better-auth/passkey` 1.7.15**（中で `@simplewebauthn/server` 13・`@simplewebauthn/browser` 13。MIT）。画面は `apps/web/lib/auth/client.ts` に `passkeyClient()` を足す。Hono 4.10・pg 8.16・Next.js 15.5・React 19.1・react-hook-form 7.88・zod 4.6・テストは Vitest 3.2（口）と Playwright 1.63（画面。パスキーは CDP の WebAuthn の仮の認証器）。保存は関門 C2（`@kaname/db` の `withTenant` と、セッションの関数）・知らせは関門 C6（`@kaname/notify`） |\n| 使う既存の実装（目録で探した） | 前の道すじ `POST /api/auth-ext/sign-in`・`/two-factor/verify`（apps/api/src/auth/ext.ts）の中身：`signInWithLock`・`normalizeEmail`・`emailHash`・`EMAIL_RE`（packages/auth/src/signup.ts）・`app.login_failed`／`login_locked_until`／`login_ok`（migration 0020）・会社の人が無いときに閉じる処理（E-AUTH-007）・待ちの印を JSON で返す形（画面は別の origin で Bearer だけ・D-051.2）・コードの NFKC と空白の除き。ログアウトは `signOut`（packages/auth/src/resolver.ts）。セッションを写す hook と新しい端末の知らせ（packages/auth/src/index.ts の `databaseHooks.session.create.after` → `app.open_session`・`app.session_first_on_device`）。要求の解決は `createSessionResolver`。戻る先は `afterLogin`（apps/web/lib/after-login.ts）。画面のテストの道具は `apps/web/tests/_lib/api.ts` の `signupViaApi`・`loginAs`・`admin`・`totp`・`pwToggle`・`noOverflow`。これを契約の口に移し、前の道すじは消す |\n| 新しく作るもの | ① パスキーの部品を `createAuth` の plugins に足す（rpID と origin は `WEB_BASE_URL` から。チャレンジの Cookie は使えないので、2 段階の待ちの印と同じく値を JSON で受け渡す）② 人と会社の止めを、**パスワードでもパスキーでも通る 1 か所**に置く：`databaseHooks.session.create.before` で `app.login_gate` を見て、止めなら作らせない（今は前の道すじの中だけで見ていて、パスキーの道では見ていない）③ 部品の口のうち、ロックと止めを通らない道を `disabledPaths` で閉じる ④ 上の migration ⑤ errors.json に 3 件（人が止められている・会社が止められている・2 段階の待ちの印が切れた） |\n| 共通の決まり | エラーの文言は errors.json から引く（E-AUTH-001・002・004・007・E-VAL-008・009・E-PAGE-003・004・005 と、足す 3 件）・ログにパスワード・コード・待ちの印・メールを出さない・時刻は timestamptz で、ロックと期限の比べは DB の now()（D-128.130） |\n\n### 決めた判断\n\n- 止める場所は 1 か所：人が止められた（`members.suspended_at`）・会社が止められた（`subscriptions.suspended_at`・D-125.126）・会社の人が無い・抜けた（`members.deleted_at`・`tenant_memberships.status = 'left'`）は、セッションを作る前の hook で見る。パスキーの道もパスワードの道も同じ所を通る\n- パスワードの失敗は今のまま 5 回で 15 分ロック（`app.login_attempts`・E-AUTH-001／002）。無いメールでも同じように数え、同じ返事・同じくらいの時間で返す（D-042 の守りの決まり「有る無しを漏らさない」）\n- 2 段階の待ちの印は 5 分（契約の範囲どおり。部品の既定の 10 分を `twoFactorCookieMaxAge: 300` に直す）\n- 「この端末を信頼する」（30 日 6 けたを省く）は外す。D-128.60 は「あとは入るたびにアプリの 6 けたを打つ」と決めている。今の画面のチェックと口の `trust_device` はこのチケットで消す\n- パスキーで入る人には 6 けたを聞かない（D-128.60・D-125.138）\n- PC にパスキーが無いときは、ブラウザが出すスマホの QR で入る（パスキーの決まった仕組み。Kaname で作るものは無い）。入った後に「この PC にもパスキーを付ける？」を出し、押すと安全の設定（K-75）へ。共用の PC のために「付けない」も同じ大きさで出す（D-128.60）\n- ログアウトは、その画面のセッション（認証側と `sessions`）だけを閉じる。PC（Bridge）は閉じない（D-125.140 が全部切ると決めたのはパスワード変更・端末を外す・退会で、ログアウトは入っていない。Bridge は時間でも切らない D-128.121）\n- ログイン中の人がログインの画面を開いたら、入らせ直さずに今のアカウントの画面（next があればそこ）へ移す。別のアカウントで入りたいときはログアウトしてから\n- 戻る先（next）は Kaname の中の道だけ（`afterLogin` の決まりのまま）\n- 新しい端末の知らせ（画面とメール・D-125.140）は今の hook のまま。登録を確定した直後の最初のセッションには出さない（D-128.137・K-52 が受け持つ）。メールが送れなくてもログインは止めない\n- いまの様子が読めなくても、ログインは止めない（帯を出さないだけ）",
+    "テスト仕様と確認の結果": "### 状態 × 入口 × 利用者の状態\n\nアカウントの状態（DB の列から出した候補：`\"user\".two_factor_enabled`・`two_factor.verified`／`locked_until` → 2 段階あり・なし・コードのロック、`passkey` の行 → パスキーあり・なし、`account.password` → パスワードあり、`app.login_attempts.locked_until` → ロック中、`members.suspended_at` → 人が止められた、`subscriptions.suspended_at` → 会社が止められた、`members.deleted_at`・`tenant_memberships.status` → 抜けた・会社の人が無い、`verification.expires_at`（待ちの印）→ 待ちの印が切れた、`sessions.revoked_at`／`revoke_reason_id` → 切られた、K-53 の `sessions.terms_pending` → 規約の印、`kaname_auth.pending_signup` → 確認していない申し込みだけ）\n\n| アカウントの状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| パスワードだけ・2 段階あり | ログインの画面でメールとパスワード | ログインしていない | 6 けたの画面へ（待ちの印 5 分）。まだセッションは無い | このチケット | 単体（口・本物の DB）・単体（画面） |\n| 2 段階あり（待ちの印が期限内） | 6 けたを入れる | ログインしていない | 入る。next（中の道だけ）か入口の振り分けへ | このチケット | 単体（口・本物の DB）・単体（画面） |\n| 2 段階あり（待ちの印が切れた・5 分を過ぎた） | 6 けたを入れる | ログインしていない | 401・足すエラー（待ちの印が切れた）「最初からログインし直してください」。入れない | このチケット | 単体（口・本物の DB の時刻を進める）・単体（画面） |\n| 2 段階あり | 「端末をなくした」→ バックアップコード | ログインしていない | 入る。そのコードは使えなくなる（残りの数を出す） | このチケット | 単体（口・本物の DB） |\n| 2 段階あり（使ったバックアップコード） | 同じコードをもう一度 | ログインしていない | 401・E-AUTH-004。入れない | このチケット | 単体（口・本物の DB） |\n| 2 段階あり（コードもバックアップも無い） | 「管理者に戻してもらう」 | パスワードを通った直後（待ちの印あり） | 管理者に知らせが届き、記録に残る。画面は「管理者に頼みました。戻してもらったら、もう一度ログインしてください」 | このチケット | 単体（口・本物の DB）・単体（画面） |\n| 2 段階あり | 「管理者に戻してもらう」を待ちの印なしで直に呼ぶ | ログインしていない | 401・足すエラー（待ちの印が切れた）。知らせも記録も作らない | このチケット | 単体（口） |\n| 管理者が 2 段階を戻した後 | ログインの画面でメールとパスワード | ログインしていない | 6 けたを聞かずに入り、安全の設定へ（パスワードだけの人の扱い） | 管理者が戻す口 `resetMemberTwoFactor`（K-73 から切るチケット）・安全の設定（K-75） | — |\n| パスワードだけ・2 段階なし・パスキーなし | ログインの画面でメールとパスワード | ログインしていない | 入る。そのあと安全の設定を済ませるまでの扱いは K-75 の聞きたいこと 1 の答えのとおり | 安全の設定（K-75） | — |\n| パスキーあり（この PC にある） | 「パスキーで入る」 | ログインしていない | 指か顔で入る。6 けたは聞かない | このチケット | 単体（画面・仮の認証器）・単体（口：部品の口で作ったセッションが `sessions` に写る） |\n| パスキーあり（この PC に無い・スマホにある） | 「パスキーで入る」→ スマホで QR | ログインしていない | 入る。入った後に「この PC にもパスキーを付ける？」と「付けない」 | このチケット（付けるのは K-75） | 単体（画面：仮の認証器を外部の端末として） |\n| パスキーなし | 「パスキーで入る」 | ログインしていない | ブラウザが「使えるパスキーが無い」を出して戻る。画面は「メールとパスワードで入ってください」を出す。誰のアカウントかは言わない | このチケット | 単体（画面：仮の認証器を空で） |\n| ロック中（locked_until が未来） | 正しいメールとパスワード | ログインしていない | 429・E-AUTH-002・待つ秒数。正しくても入れない（サーバーが最後の砦） | このチケット | 単体（口・本物の DB）・単体（画面） |\n| ロック中 | パスワードを再設定する | ログインしていない | 再設定で鍵が外れる（聞きたいこと 3） | パスワードを再設定する（K-76） | — |\n| ロック中 | 「パスキーで入る」 | ログインしていない | 入れる（パスキーはパスワードのロックの外。フィッシングに強い入り方を止めない） | このチケット | 単体（画面・仮の認証器） |\n| 人が止められた（members.suspended_at） | パスワードでもパスキーでも | ログインしていない | 403・足すエラー（人が止められている）。セッションを作らない | このチケット | 単体（口・本物の DB：2 つの道） |\n| 会社が止められた（subscriptions.suspended_at・D-125.126） | パスワードでもパスキーでも | ログインしていない | 403・足すエラー（会社が止められている）。セッションを作らない。データは残る | このチケット | 単体（口・本物の DB：2 つの道） |\n| 会社の人が無い・抜けた（members.deleted_at・tenant_memberships.status = left） | パスワードでもパスキーでも | ログインしていない | 403・E-AUTH-007。セッションを作らない | このチケット | 単体（口・本物の DB：2 つの道） |\n| 登録していない・確認していない申し込みだけ | メールとパスワード | ログインしていない | 401・E-AUTH-001（違うパスワードと同じ文と同じくらいの時間）。失敗の数も同じように数える | このチケット | 単体（口・本物の DB・時間を測る） |\n| どれでも | ログインの画面を開く | ログイン中 | 入らせ直さず、今のアカウントの画面（next があればそこ）へ | このチケット | 単体（画面） |\n| どれでも | 招待やメールのリンクから `/login?next=…` を開く | 別のアカウントでログイン中 | 今のアカウントのまま。「いまは別のアカウントでログイン中です。切り替えるにはログアウトしてください」 | このチケット | 単体（画面） |\n| どれでも | 中の画面・ブックマークを開く | セッションが切れた（idle・max_age・国か端末が変わった） | ログインへ（E-PAGE-005・元の道を next に持つ）。入り直すと元の画面へ | このチケット（切るのは K-20） | 単体（画面：sessions を閉じてから開く） |\n| どれでも | 「ログアウト」 | ログイン中 | その画面のセッション（認証側と sessions）を閉じ、ログインへ。PC（Bridge）のセッションは残る | このチケット | 単体（口・本物の DB）・単体（画面） |\n| どれでも | ログアウトした後に戻る・ブックマークで中の画面 | ログインしていない | 中は見えず、ログインへ | このチケット | 単体（画面） |\n| どれでも | ログアウトした古いトークンで口を直に呼ぶ | ログインしていない | 401。何も書かない | このチケット | 単体（口） |\n| どれでも | 同じブラウザの別のタブでログアウトした後、残ったタブで押す | ログインしていない | 401・ログインへ。書きかけは画面に残る | このチケット | 単体（画面：2 つのタブ） |\n| どれでも | 国か端末が変わって切られた後に入り直す | ログインしていない | 普通に入れる。新しい端末なら知らせが 1 回 | このチケット | 単体（口・本物の DB） |\n| どれでも（別の端末で初めて） | ログインする | ログインしていない | 画面の知らせとメールが 1 通ずつ（D-125.140） | このチケット | 単体（口・本物の DB・送る部品を差し替え） |\n| どれでも（同じ端末で 2 回目） | ログインする | ログインしていない | 知らせない | このチケット | 単体（口・本物の DB） |\n| 登録を確定した直後（最初のセッション） | 確認のメールのリンク | ログインしていない | 新しい端末の知らせを送らない（D-128.137） | メールを確かめる（K-52） | — |\n| 規約の新しい版が出ている | ログインする | ログインしていない | 同意し直しの画面 | 規約に同意する（K-53） | — |\n| パスワードを変えた・再設定した後 | 別の端末に残っていた古いセッションで押す | ログイン中だった | 401・E-PAGE-005。入り直す | 安全の設定（K-75）・パスワードを再設定する（K-76） | — |\n| 複数のワークスペースに入っている（D-125.150） | ログインする | ログインしていない | どのワークスペースで入るか・止められたのが 1 つだけのとき | ワークスペースを切り替える（流れ F10・まだ切っていない） | — |\n| どれでも | ログインの画面を開く（障害中・status_incidents.state が resolved でない） | ログインしていない | 帯に「いま◯◯がつながりにくくなっています」と時刻。ログインはできる | このチケット | 単体（口・本物の DB）・単体（画面） |\n| どれでも | ログインの画面を開く（メンテナンス中・notices.maintenance_from〜to の間） | ログインしていない | 帯にメンテナンスの予定と終わる時刻（E-PAGE-004 の文） | このチケット | 単体（口・本物の DB の時刻を進める）・単体（画面） |\n| どれでも | 口を直に呼ぶ（部品の `/api/auth/sign-in/email` など、閉じた道） | ログインしていない | 404。ロックと止めを通らない道は無い | このチケット | 単体（口） |\n\n「—」は受け持ちのチケットでテストを書く。\n\n### 入力・失敗・操作の揺れ・守り\n\n| 観点 | 分岐 | 結果 | テスト |\n|---|---|---|---|\n| 入力 | メールかパスワードが空 | 422・E-VAL-008・欄の下に理由。DB は引かない（失敗の数にも入れない） | 単体（口・画面） |\n| 入力 | メールの形が違う | 422・E-VAL-004 | 単体（口） |\n| 入力 | メールの大文字小文字・前後と途中の空白・全角 | 正規化（`normalizeEmail`：NFKC・空白を除く・小文字）して同じ人として入れる。ロックの数も同じ人で数える | 単体（口・本物の DB） |\n| 入力 | パスワードの前後の空白 | 直さない（パスワードの一部として比べる） | 単体（口） |\n| 入力 | 6 けたが空・64 文字を超える | 422・E-VAL-009 | 単体（口・画面） |\n| 入力 | 6 けたの全角・間の空白・ハイフン | NFKC と空白の除きで同じコードとして扱う | 単体（口） |\n| 入力 | バックアップコードの大文字小文字・ハイフンの有無 | 部品の形にそろえてから比べる | 単体（口） |\n| 入力 | 戻る先（next）が外の道・`//` で始まる・`javascript:` | 外へは飛ばさず、入口の振り分けへ（`afterLogin`） | 単体（画面） |\n| 入力 | パスワードを見る・隠す（D-087） | 既定は隠す。押すと見え、送信で隠すに戻る | 単体（画面） |\n| 時間の流れ | ロックの 15 分の直前・ちょうど・直後 | 直前は 429、ちょうどと直後は入れる（DB の now()） | 単体（本物の DB の時刻を進める） |\n| 時間の流れ | 待ちの印の 5 分の直前・直後 | 直前は確かめる、直後は 401（足すエラー） | 単体（本物の DB の時刻を進める） |\n| 時間の流れ | 6 けたの 1 つ前のコード・2 つ前のコード | 1 つ前までは通す（E-AUTH-004 の決まり）、2 つ前は 401 | 単体（`totp` で時刻をずらして作る） |\n| 時間の流れ | 通った 6 けたを同じ 30 秒のうちにもう一度 | 2 回目は通さない | 単体（口・本物の DB） |\n| 時間の流れ | 6 けたを続けて違える | 聞きたいこと 2 の回数で止める（勧め 5 回で 15 分）。止まっている間は 429 | 単体（口・本物の DB） |\n| 失敗 | DB が落ちた | 500・E-PAGE-003。セッションは作らない | 単体（口） |\n| 失敗 | セッションを写す所（`app.open_session`）で失敗 | 認証側のセッションも閉じる。半分だけ入った状態を残さない。500・E-PAGE-003 | 単体（DB の関数を失敗させる） |\n| 失敗 | 新しい端末の知らせのメールが送れない | ログインは止めない。画面の知らせは残る。送れなかったことをログに残す | 単体（送る部品を失敗させる） |\n| 失敗 | 管理者への知らせが送れない | 頼みの記録（security_events）は残し、画面は「送れませんでした。もう一度押してください」。送れたとは言わない | 単体（送る部品を失敗させる） |\n| 失敗 | パスキーの確かめを本人がやめた・時間切れ（ブラウザの NotAllowedError） | 通常の画面に戻り「パスキーで入れませんでした。もう一度か、メールとパスワードで」。何も作らない | 単体（画面：仮の認証器で失敗させる） |\n| 失敗 | パスキーが使えないブラウザ | 「パスキーで入る」を出さず、メールとパスワードだけ | 単体（画面：WebAuthn を消す） |\n| 失敗 | パスキーの署名の回数（counter）が戻っている（写されたパスキーの疑い） | 部品が断る。入れない。security_events に残す | 単体（口：counter を書き換えて呼ぶ） |\n| 失敗 | いまの様子が読めない | 帯を出さないだけで、ログインは止めない | 単体（画面） |\n| 操作の揺れ | ログインを 2 回押し | セッションは 1 つ。失敗の数は 1 回分 | 単体（画面） |\n| 操作の揺れ | 6 けたがそろって自動で進むのと、Enter が重なる | 確かめは 1 回。セッションは 1 つ | 単体（画面） |\n| 操作の揺れ | 2 つのタブで同時にログイン | セッションは 2 つ（タブごとではなく同じブラウザの印で 1 つにはしない）。どちらも入れる | 単体（口・本物の DB・同時に 2 つ） |\n| 操作の揺れ | 「管理者に戻してもらう」を 2 回押す | 頼みの記録と知らせは 1 時間に 1 回まで。2 回目は「もう頼んであります」 | 単体（口・本物の DB） |\n| 操作の揺れ | 6 けたの画面で戻る・再読み込み | メールとパスワードの画面に戻る（待ちの印は画面のメモリだけに持つ） | 単体（画面） |\n| 守り | 1 分に 11 回（同じ IP・ログイン・6 けた・管理者に頼む・いまの様子） | 429・待つ秒数（retry_after_sec）。画面に待ち時間 | 単体（口・画面） |\n| 守り | 違うパスワードと、無いメール | 同じ文（E-AUTH-001）・同じくらいの時間（無いメールでもパスワードのハッシュを計算する） | 単体（口・時間を測る） |\n| 守り | 止められた・会社の人が無い の答え | パスワードが合ったときだけ出す。パスワードが違えば E-AUTH-001 のまま（止めの有無を探らせない） | 単体（口） |\n| 守り | 閉じた部品の道 | `/api/auth/sign-in/email`・`/two-factor/verify-totp`・`/two-factor/verify-backup-code`・`/sign-out` は 404（`disabledPaths`） | 単体（口） |\n| 守り | パスキーの宛先 | rpID と origin が Kaname の画面のときだけ通る。別のサイトから作った応答は断る | 単体（口：origin を変えて呼ぶ） |\n| 守り | ログ | パスワード・6 けた・バックアップコード・待ちの印・メールが出ない | 単体（ログを見る） |\n| 守り | 記録 | ログインの成功・失敗・ロック・止めで断った・管理者に頼んだ が security_events に残る（IP は地域だけ） | 単体（本物の DB） |\n| 守り | 関門 | 書くのは関門 C2（セッションの関数・`withTenant`）、知らせは関門 C6（`@kaname/notify`）だけ | 単体（CI の静的な検査） |\n| 守り | いまの様子の口が返すもの | 状態・題・時刻だけ。どのワークスペースのことも出さない | 単体（口） |\n\n### テストの型の受け\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-AUTH-01 誤ったパスワードと無いメール | 状態の表「登録していない・確認していない申し込みだけ」・守り「違うパスワードと、無いメール」「止められた・会社の人が無い の答え」 |\n| TP-AUTH-02 続けて失敗する | 状態の表「ロック中」（3 行。再設定で戻るは K-76）・時間の流れ「ロックの 15 分」「6 けたを続けて違える」 |\n| TP-AUTH-03 2 段階のコードの期限切れ・使い回し・誤り | 状態の表「待ちの印が切れた」「使ったバックアップコード」・時間の流れ「1 つ前のコード・2 つ前」「同じ 30 秒のうちにもう一度」 |\n| TP-AUTH-04 セッションが切れた・戻ってくる | 状態の表「中の画面・ブックマーク × セッションが切れた」（元の画面へ戻る・書きかけは残る） |\n| TP-AUTH-05 ログアウトした後に戻る・ブックマーク | 状態の表「ログアウトした後に戻る・ブックマーク」「古いトークンで口を直に」「別のタブでログアウトした後」 |\n| TP-AUTH-06 パスワードを変えた・端末を外した | 状態の表「パスワードを変えた・再設定した後 × 古いセッション」（受け持ち：K-75・K-76）。端末を外すは自分の設定（A74） |\n| TP-AUTH-08 戻す先が外の道 | 入力「戻る先（next）が外の道」 |\n| TP-AUTH-09 国・端末が変わった | 状態の表「国か端末が変わって切られた後に入り直す」「別の端末で初めて」（切るのは K-20） |\n| TP-MAIL-01 送れなかったとき | 失敗「新しい端末の知らせのメールが送れない」「管理者への知らせが送れない」 |\n| TP-MAIL-02 二重に出ない | 状態の表「同じ端末で 2 回目」・操作の揺れ「管理者に戻してもらうを 2 回押す」（notifications の dedupe_key） |\n| TP-MAIL-03 本文に秘密を入れない | 守り：新しい端末の知らせと管理者への知らせの本文に、パスワード・コード・待ちの印・IP の全部を入れない（単体で本文を見る） |\n\n要らない: TP-AUTH-07 このチケットは本人確認の取り直し（stepUp・15 分）を使わない。取り直しの口と期限は K-19 が持つ",
+    "成果物": "- 画面 `apps/web/features/F1/login/`・口 `apps/api/src/features/F1/login/`・`packages/auth/src/index.ts` の手直し（パスキーの部品・`session.create.before` の止め・`disabledPaths`・待ちの印 5 分・信頼する端末を外す）・migration（`app.login_gate`・`app.public_service_status`・`app.request_admin_recovery`）・errors.json に 3 件・単体のテスト（apps/api/test/generated/ の 5 本を本物にする・`apps/web/tests/screens/login.spec.ts` を置き換える）",
+    "決定ログ": "- ログインの入り方と画面（D-125.137・D-128.59・D-128.60）。2 段階はパスワードの人だけ・バックアップコード＋管理者による再設定（D-125.138・D-128.61）\n- セッションと新しい端末の知らせ（D-125.140）・最初のセッションには知らせない（D-128.137）\n- 止める場所を 1 か所にする・待ちの印 5 分・ログアウトで Bridge を切らない は、このチケットを切るときに決めた作り方。聞きたいことの答えで確かめる",
+    "リスクと懸念": "- 聞きたいこと 1：端末をなくした人が「管理者に戻してもらう」を押したとき、**ワークスペースの管理者が本人しかいない**（個人のワークスペース・1 人の会社）ときにどうするかが決定ログに無い。案は (a) 管理者が本人だけなら「管理者に頼む」は出さず、運営への問い合わせ（運営が本人を確かめて戻す・相手のワークスペースの記録に残る・D-128.70 の作法）を出す（勧め）(b) 何もしない（バックアップコードが無ければ戻れない）\n- 聞きたいこと 2：2 段階の 6 けたを何回間違えたら止めるか（部品の既定は 10 回で 15 分）。勧めは **5 回で 15 分**（パスワードのロック E-AUTH-002 と揃え、利用者に 1 つの決まりで説明できる）\n- 聞きたいこと 3：E-AUTH-002 の文「急ぐときはメールでロックを解除できます」の **解除のメールは作っていない**。案は (a) 文を「パスワードを再設定すると、すぐに入れます」に直し、再設定（K-76）でロックを外す（勧め。新しい口を作らずに済む）(b) ロックを外すだけのメールを作る\n- 聞きたいこと 4：複数のワークスペースの管理者がいる人の「管理者に戻してもらう」は、誰に届くか。勧めは **その人が入っている全部のワークスペースの管理者（本人を除く）に届き、誰か 1 人が戻せば済む**（2 段階はアカウント全体のもの・D-128.55）\n- 聞きたいこと 5：人が止められた・会社が止められたときの画面の文。勧めは「このアカウントは、いま止められています。ワークスペースの管理者に聞いてください」「このワークスペースは、いま止められています。データは残っています。管理者か運営に連絡してください」（D-128.63 の 何が起きたか・次にすること）\n- パスワードのロックは、他人のメールで 5 回間違えれば本人を 15 分止められる（止めの嫌がらせ）。パスキーの道はロックの外に置いたので、パスキーを持つ人は止まらない。パスキーを勧める（D-125.137）ことで小さくする\n- パスキーの部品はチャレンジを Cookie で持つが、画面は別の origin で Cookie を使わない（D-051.2）。2 段階の待ちの印と同じく、値を JSON で受け渡す作りにする。部品の版を上げたときに壊れやすいので、単体（画面・仮の認証器）で必ず通す\n- `app.open_session` は `auth_user_id` で人を 1 人だけ引く。複数のワークスペースに入る人（D-125.150）はどの行になるか決まらない。流れ F10 のワークスペースの切り替えで直す（このチケットでは 1 つのワークスペースの人で試す）\n- 契約の `requestAdminRecovery` の関門は C2 だけだが、管理者に知らせるので C6 も通る。このチケットは C2・C6 と書いた（契約の直しは申し送り）",
+    "申し送り": "- 進める人へ：テストのファイル 5 本（apps/api/test/generated/post_auth_sign_in.test.ts・post_auth_two_factor_verify.test.ts・post_auth_sign_out.test.ts・get_auth_service_status.test.ts・post_auth_recovery_admin_request.test.ts）と、口 5 本（signInWithPassword・verifySignInCode・signOut・getServiceStatus・requestAdminRecovery）を K-50 からこのチケットに移す。画面 login も K-50 から移す\n- 進める人へ：08_api/endpoints.json の `requestAdminRecovery` の choke_points に C6 を足す（管理者への知らせ）\n- K-75 へ：パスキーの部品（`@better-auth/passkey`）と `passkey` の表はこのチケットで足す。付ける画面と口は K-75。「この PC にもパスキーを付ける？」を押したら `/mfa-setup?add=passkey&next=…` を開く\n- K-76 へ：再設定が済んだら `app.login_ok`（ロックを消す）を呼ぶ（聞きたいこと 3 の勧め）\n- 管理者が 2 段階を戻す口 `resetMemberTwoFactor`（今は K-73）を切るチケットへ：このチケットの頼みの記録（security_events）と知らせから、戻す画面へつなぐ"
+   },
+   "file": "11_tickets/K-74.md"
+  },
+  {
+   "id": "K-75",
+   "title": "パスキーを設定する（パスワードの人は 2 段階認証を設定する。パスキーの名前を変える・外す・パスワードを変える）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-50",
+   "milestone": "F1",
+   "area": "認証",
+   "assignee": "未定",
+   "due": "",
+   "decisions": [
+    "D-042",
+    "D-051.2",
+    "D-087",
+    "D-125.137",
+    "D-125.138",
+    "D-125.139",
+    "D-125.140",
+    "D-125.141",
+    "D-125.146",
+    "D-125.150",
+    "D-128.55",
+    "D-128.59",
+    "D-128.60",
+    "D-128.61",
+    "D-128.62",
+    "D-128.91",
+    "D-128.119",
+    "D-128.121",
+    "D-128.125",
+    "D-128.130",
+    "D-128.133",
+    "D-128.137"
+   ],
+   "split": "",
+   "choke_points": [
+    "C2",
+    "C8"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_me_security.test.ts",
+    "apps/api/test/generated/patch_me_passkeys_id.test.ts",
+    "apps/api/test/generated/delete_me_passkeys_id.test.ts",
+    "apps/api/test/generated/patch_me_password.test.ts",
+    "apps/api/test/generated/post_me_two_factor_enable.test.ts",
+    "apps/api/test/generated/post_me_two_factor_confirm.test.ts"
+   ],
+   "depends_on": [
+    "K-74"
+   ],
+   "acts": [
+    "A97"
+   ],
+   "screens": [
+    "mfa-setup"
+   ],
+   "apis": [
+    "getMySecurity",
+    "renamePasskey",
+    "deletePasskey",
+    "changePassword",
+    "startTwoFactor",
+    "confirmTwoFactor"
+   ],
+   "sections": {
+    "目的": "ログインした本人が、安全の設定の画面で **パスキーを付ける**（いま使っている端末の指か顔で登録する）。パスキーを持たずパスワードで入る人は、代わりに **2 段階認証を付ける**（本人確認 → 認証アプリで QR を読み取る → 6 けたで確かめる → バックアップコード 10 個を 1 回だけ見せる・D-128.59・D-128.61）。\n\n同じ画面で、付いているパスキーの一覧・名前を変える・外す（最後の入り方は外せない）と、パスワードを変える（変えたらほかの端末と PC（Bridge）を切る）ができる。パスキーを付けたら、はじめにやることの「パスキー」に印が付く（D-125.146）。",
+    "完了の条件": "- 下の 2 つの表の「このチケット」のマスと、全部の分岐のテストが緑\n- 契約の口 `getMySecurity`・`renamePasskey`・`deletePasskey`・`changePassword`・`startTwoFactor`・`confirmTwoFactor` が 501 でない（apps/api/test/generated/ の 6 本の `it.todo` が本物のテストになって緑）\n- 画面が部品の口を直に呼ぶ道（今の `authClient.twoFactor.enable`／`verifyTotp`）が消え、契約の口と、パスキーを付ける部品の口（`/api/auth/passkey/generate-register-options`・`/api/auth/passkey/verify-registration`）だけを呼んでいる\n- 本人確認の取り直しを通らない部品の道（`/api/auth/two-factor/enable`・`/two-factor/disable`・`/two-factor/generate-backup-codes`・`/change-password`・`/passkey/delete-passkey`・`/passkey/update-passkey`）が 404 になっている\n- 単体のテスト（下の表で「このチケット」が受け持つマスと、全部の分岐）が本物の DB と本物のブラウザ（パスキーは Playwright の仮の認証器）の上で緑\n- 手元の CI（dagci）が緑",
+    "前提と制約": "分類: AUTH, CRUD, PERM\n\n- 流れ F1 登録してログインできる（K-50）\n- 依存：ログインする（K-74）。パスキーの部品（`@better-auth/passkey` 1.7.15）と `passkey` の表は K-74 が足す。このチケットは付ける・直す・外すと画面を持つ\n- 本人確認の取り直しの口（`stepUp`・15 分）は K-19 が持つ。このチケットは「直前の取り直しが無いと 403」を受けて、画面から取り直しの小窓を出す\n- 2 段階を付ける口（`startTwoFactor`・`confirmTwoFactor`）は、行為が後のフェーズの A04 になっているが、パスワードだけの人には必須（D-128.61）なので、A97 のこのチケットで作る。外す（`disableTwoFactor`）・バックアップコードを作り直す（`regenerateBackupCodes`）・管理者が戻す（`resetMemberTwoFactor`）は K-73 に残す\n- 入っている端末の一覧と切る（`listMySessions` など・A74）とはじめにやることの一覧（`listSetupTasks`）は流れ F10（K-70）\n- テストはこのチケットを作る人がコードまで書き、実装する人は変えない（D-128.125）",
+    "実施事項": "### 作り方（実装の詳細）\n\n| 欄 | 中身 |\n|---|---|\n| 画面 | `apps/web/features/F1/mfa-setup/`（新しい部品 `components/k` の TextField・Button・Callout・Dialog と、4 つの状態 `components/k/states` で組む）。キャンバスの絵 `MeLogin`・`MeLogin2FA`・`Me2FA`・`MeTotp`・`MeBackup`・`EdPasskey`・`AuthAddPasskey`。道は `/mfa-setup`（`apps/web/app/(outside)/mfa-setup/page.tsx` は薄い入れ物にし、中身をこのチケットで置き換える）。ログインが要る画面（ログインしていなければ `/login?next=/mfa-setup`）。パスキーを大きく先に、2 段階はその下（D-128.59）。QR は今の `qrcode` で作る。バックアップコードは写す・ファイルで保存（ブラウザのダウンロードだけ）・印刷。パスワードの欄は見る・隠す（D-087）。自分の設定 › ログインと安全（`/settings/security`）は同じ中身を使う |\n| API | 契約の口 `getMySecurity`（GET /api/v1/me/security・本人・120 回／分／人・関門 C8）・`renamePasskey`（PATCH /api/v1/me/passkeys/:id・本人・60 回／分／人・C2・C8）・`deletePasskey`（DELETE /api/v1/me/passkeys/:id・本人・取り直しが要る・C2・C8）・`changePassword`（PATCH /api/v1/me/password・本人・取り直しが要る・C2・C8）・`startTwoFactor`（POST /api/v1/me/two-factor/enable・本人・取り直しが要る・C2・C8）・`confirmTwoFactor`（POST /api/v1/me/two-factor/confirm・本人・C2・C8）。振る舞いを `apps/api/src/features/F1/mfa-setup/` に Hook として書き、`apps/api/src/server.ts` の `contract.hooks` に足して 501 を外す。取り直しの判定は契約の入口（`stepUpFresh`・apps/api/src/contract/permissions.ts）のまま。パスキーを付ける口は部品のまま |\n| DB | 認証の表（schema `kaname_auth`）：`passkey`（K-74 が足す：id・name・public_key・user_id・credential_id・counter・device_type・backed_up・transports・aaguid・created_at）・`two_factor`（secret・backup_codes（部品が鍵で包む）・verified・failed_verification_count・locked_until）・`\"user\"`（two_factor_enabled）・`account`（provider_id = credential・password）・`verification`（パスキーのチャレンジ）・`session`。業務の表：`sessions`（step_up_at・revoked_at・kind_id・migration 0004／0081／0083）・`security_events`・`members`（setup の印は流れ F10）。**migration を 1 本足す**：① 本人の入り方を数える関数 `app.login_methods(p_auth_user_id text)`（パスキーの数・パスワードの有無・2 段階の有無だけを返す security definer。業務の表からは認証の表を読めない D-128.119 ので、関数の中だけで読む）② パスワードだけで 2 段階の無い人のセッションに立てる印 `sessions.mfa_pending boolean not null default false`（聞きたいこと 1 の答えが (a) のとき） |\n| 使う部品と版 | Better Auth 1.7.15 の twoFactor（`enableTwoFactor`・`verifyTOTP`・`viewBackupCodes`（サーバーだけ）・`changePassword`）と `@better-auth/passkey` 1.7.15（`generatePasskeyRegistrationOptions`・`verifyPasskeyRegistration`・`listPasskeys`・`updatePasskey`・`deletePasskey`）。どちらも `@kaname/auth` の中だけ。画面は `passkeyClient()`・`qrcode`。Hono 4.10・pg 8.16・Next.js 15.5・React 19.1・react-hook-form 7.88・zod 4.6・テストは Vitest 3.2（口）と Playwright 1.63（画面・CDP の WebAuthn の仮の認証器）。保存は関門 C2、秘密は関門 C8 の決まり（中身を返さない・ログに出さない） |\n| 使う既存の実装（目録で探した） | `enableTotp`・`verifyTotp`（packages/auth/src/two_factor.ts）・`changePassword`（packages/auth/src/resolver.ts）・`app.revoke_sessions_for_auth_user`（migration 0060。全部のワークスペースの端末と Bridge を切る）・`app.record_security_event`（migration 0003）・取り直しの判定 `stepUpFresh`（apps/api/src/contract/permissions.ts）・今の画面の QR・ファイルで保存・写す（apps/web/app/(outside)/mfa-setup/page.tsx）・漏れたパスワードの照合（K-51 が作る）・画面のテストの道具（`apps/web/tests/_lib/api.ts` の `signupViaApi`・`loginAs`・`totp`・`pwToggle`・`admin`） |\n| 新しく作るもの | ① 上の migration ② 部品の道を閉じる（`disabledPaths`。K-74 と同じ所）③ 2 段階の確かめの後にバックアップコードを 1 回だけ返す（`viewBackupCodes` で引いて返し、二度と返さない）④ パスキーの名前の既定（端末の種類 `deviceOf` から「Chrome／macOS」など）⑤ 「最後の入り方は外せない」の判定（`app.login_methods`）⑥ errors.json に 4 件（最後の入り方は外せない・先に 2 段階を付ける・2 段階はもう付いている・このパスキーはもうこの端末に付いている） |\n| 共通の決まり | エラーの文言は errors.json から引く（E-AUTH-004・E-VAL-005・E-PAGE-001・002・003・005 と、足す 4 件）・ログに TOTP の鍵・QR の中身・バックアップコード・パスワード・公開鍵を出さない・時刻は timestamptz（D-128.130） |\n\n### 決めた判断\n\n- 付けるときの順番は D-128.61 のとおり：本人確認（取り直し）→ 認証アプリで QR を読み取る（この 1 回だけ）→ 6 けたで確かめる → バックアップコード 10 個（いまだけ表示・1 つ 1 回）\n- バックアップコードは確かめが通った後の答えで 1 回だけ返す。画面を閉じる・再読み込みすると二度と出ない（作り直しは `regenerateBackupCodes`・K-73）\n- 始めたが確かめていない途中（`two_factor.verified = false`）でもう一度始めたら、前の鍵は捨てて新しい QR を出す\n- パスキーで入る人には 2 段階を付けさせない（D-128.60）。パスキーを持つ人の画面では 2 段階の欄を「パスキーで入るので要りません」と出し、付けるボタンは出さない（任意で付ける D-128.61 の欄は残し、付けたい人は付けられる）\n- 最後の入り方は外せない：パスキーを外したら「パスキーが 0 本で、2 段階の無いパスワードだけ」になるときは 409（足すエラー：先に 2 段階を付ける）。パスワードも 2 段階も無いときは 409（足すエラー：最後の入り方は外せない）\n- パスワードを変えたら、全部のワークスペースのほかの端末と PC（Bridge）を切る（`app.revoke_sessions_for_auth_user`・D-125.140）。今の `changePassword` は 1 つのワークスペースの人（member）だけを切っていて、複数のワークスペースに入る人（D-125.150）の分が残るので直す。今の画面のセッションを残すかは聞きたいこと 3\n- 新しいパスワードは 12 文字以上・漏れたものは弾く（D-125.137）。K-51 の照合をそのまま使う\n- パスキーを付けたら、はじめにやることの「パスキー」に印（D-125.146）。印の付け方は流れ F10 の一覧が読む（ここはパスキーの数を返すだけ）\n- 自分の安全の設定の口は全部「本人だけ」。他の人のパスキーの ID は 404（有ることも漏らさない）",
+    "テスト仕様と確認の結果": "### 状態 × 入口 × 利用者の状態\n\n入り方の状態（DB の列から出した候補：`passkey` の行の数 → 無い・1 本・2 本以上・最後の 1 本、`two_factor.verified` → 無い・途中・付いている、`\"user\".two_factor_enabled`、`account.password` → パスワードあり、`sessions.step_up_at` → 取り直しから 15 分の内・外、`sessions.revoked_at` → 切られた、足す `sessions.mfa_pending` → 済ませる印、`verification.expires_at` → パスキーのチャレンジの期限）\n\n| 入り方の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| パスキー無し | 安全の設定の画面で「パスキーを付ける」 | ログイン中 | 指か顔で登録。一覧に出る（名前は端末から）。はじめにやることに印 | このチケット | 単体（画面・仮の認証器）・単体（口：getMySecurity の数） |\n| パスキー無し | ログインの後の「この PC にもパスキーを付ける？」（K-74） | ログイン中 | 同じ画面のパスキーを付ける所が開く。済んだら next へ | このチケット | 単体（画面） |\n| パスキー 1 本（この端末のもの） | もう一度「パスキーを付ける」 | ログイン中 | 部品が同じ端末を除く。足すエラー「このパスキーはもうこの端末に付いています」 | このチケット | 単体（画面・仮の認証器） |\n| パスキー 1 本 | 別の端末で「パスキーを付ける」 | ログイン中 | 2 本目が付く | このチケット | 単体（画面：仮の認証器を 2 つ） |\n| パスキーあり | 名前を変える | ログイン中 | 名前が変わる（別の GET で読み直して同じ） | このチケット | 単体（口・本物の DB）・単体（画面） |\n| パスキー 2 本以上 | 1 本を外す | ログイン中・取り直しから 15 分の内 | 外れる。そのパスキーではもう入れない | このチケット | 単体（口・本物の DB）・単体（画面・仮の認証器で入れないこと） |\n| パスキー最後の 1 本・パスワードあり・2 段階あり | 外す | ログイン中・取り直しの内 | 外れる（パスワード＋2 段階で入れる） | このチケット | 単体（口・本物の DB） |\n| パスキー最後の 1 本・パスワードあり・2 段階なし | 外す | ログイン中・取り直しの内 | 409・足すエラー（先に 2 段階を付ける）。外れない | このチケット | 単体（口・本物の DB）・単体（画面） |\n| パスキー最後の 1 本・パスワードなし | 外す | ログイン中・取り直しの内 | 409・足すエラー（最後の入り方は外せない） | このチケット | 単体（口・本物の DB：パスワードの行を消して作る） |\n| パスキーあり | 外す・パスワードを変える・2 段階を始める | ログイン中・取り直しから 15 分の外 | 403（取り直しが要る）。画面は取り直しの小窓を出し、通ったらそのまま続く | このチケット（取り直しの口は K-19） | 単体（口・本物の DB の時刻を進める）・単体（画面） |\n| 2 段階なし・パスキーなし | 「2 段階認証を付ける」 | ログイン中・取り直しの内 | QR と鍵の文字を出す（この 1 回だけ）。まだ付いていない（verified = false） | このチケット | 単体（口・本物の DB）・単体（画面） |\n| 2 段階 途中（verified = false） | 6 けたを入れる | ログイン中 | 付く（two_factor_enabled = true）。バックアップコード 10 個を 1 回だけ出す | このチケット | 単体（口・本物の DB）・単体（画面） |\n| 2 段階 途中 | 閉じて後でもう一度「付ける」 | ログイン中 | 前の鍵を捨てて新しい QR。前の QR の 6 けたは通らない | このチケット | 単体（口・本物の DB） |\n| 2 段階 付いている | もう一度「付ける」を口に直に | ログイン中 | 409・足すエラー（2 段階はもう付いている）。鍵は変わらない | このチケット | 単体（口） |\n| 2 段階 付いている | 確かめの口をもう一度（古いタブ） | ログイン中 | 409。バックアップコードは返さない | このチケット | 単体（口） |\n| 2 段階 付いている（バックアップコードを見た後） | 画面を再読み込み・戻る | ログイン中 | コードは二度と出ない。「作り直す」の案内（作り直しは K-73 の口） | このチケット | 単体（画面） |\n| 2 段階 付いている | 外す・バックアップコードを作り直す | ログイン中 | 外すは D-128.61 の決まり、作り直しは前のコードが使えなくなる | 後で切るチケット（K-73 の `disableTwoFactor`・`regenerateBackupCodes`） | — |\n| パスワードあり | パスワードを変える（今のパスワード・新しいパスワード 2 つ） | ログイン中・取り直しの内 | 変わる。全部のワークスペースのほかの端末と PC（Bridge）が切れる。今の画面は聞きたいこと 3 のとおり | このチケット | 単体（口・本物の DB：2 つのワークスペース・Bridge の行）・単体（画面） |\n| パスワードを変えた後 | 別の端末に残っていた古いセッションで押す | ログイン中だった | 401・E-PAGE-005。入り直す | このチケット | 単体（口・本物の DB） |\n| パスワードを変えた後 | 切られた PC（Bridge）が次に取りに来る | PC | 401。PC は「つなぎ直してください」を出す | このチケット（PC の画面は流れ F3） | 単体（口：Bridge の鍵で呼ぶ） |\n| パスワードだけ・2 段階なし・パスキーなし | ログインした直後 | ログイン中 | 聞きたいこと 1 の答えのとおり（勧め (a)：印 `mfa_pending` を立て、安全の設定の画面を出す。済むまで自分の安全の設定・ログアウト・自分の取得のほかの口は 403） | このチケット（印を立てる hook は K-74 と同じ所） | 単体（口・本物の DB）・単体（画面） |\n| パスワードだけ（印が立っている） | 2 段階かパスキーを付ける | ログイン中 | 印が下り、元の画面（next）へ | このチケット | 単体（口・本物の DB）・単体（画面） |\n| どれでも | 安全の設定の画面を開く・ブックマーク | ログインしていない・ログアウトした後 | 中は見えず `/login?next=/mfa-setup`。入ると戻る | このチケット | 単体（画面） |\n| 2 段階 途中・名前を書きかけ | 画面のまま長く置いて押す | セッションが切れた | 401・E-PAGE-005。入り直すと画面に戻る。書いた名前は画面に残る。2 段階は「もう一度 QR から」 | このチケット | 単体（画面・時刻を進める） |\n| どれでも | 他の人のパスキーの ID で名前を変える・外す | ログイン中 | 404・E-PAGE-001。何も変わらない | このチケット | 単体（口・本物の DB：2 人） |\n| パスキーあり | パスキーで入る | ログインしていない | 入れる | ログインする（K-74） | — |\n| 退会・止められた後 | 安全の設定の口を呼ぶ | ログイン中だった | 401（セッションが切れている） | 人とアカウントを管理する（流れ F10）・ログインする（K-74） | — |\n\n「—」は受け持ちのチケットでテストを書く。\n\n### 入力・失敗・操作の揺れ・守り\n\n| 観点 | 分岐 | 結果 | テスト |\n|---|---|---|---|\n| 入力 | パスキーの名前が空・前後の空白・全角 | 空は 422。前後の空白を除き、NFKC で保存 | 単体（口） |\n| 入力 | パスキーの名前の長さの上限（聞きたいこと 4 の勧め 40 文字）・HTML や制御文字 | 上限を超えたら 422。画面で動かない・保存は無害化 | 単体（口・画面） |\n| 入力 | 6 けたが空・5 けた・7 けた・全角・間の空白 | 空と桁違いは 422、全角と空白は直して比べる | 単体（口） |\n| 入力 | 6 けたが違う（時刻のずれ） | 422・E-AUTH-004「認証アプリの時刻が合っているか確かめてください」。1 つ前のコードまでは通す | 単体（`totp` で時刻をずらす） |\n| 入力 | 2 段階を始めるときのパスワードが違う | 401。始まらない（鍵を作らない） | 単体（口） |\n| 入力 | 新しいパスワード 11 文字／12 文字 | 11 は 422・E-VAL-005、12 は通る | 単体（口） |\n| 入力 | 新しいパスワードが漏れたもの | 422（K-51 と同じ照合・同じ文） | 単体（照合を差し替え） |\n| 入力 | 新しいパスワード 2 つが違う | 画面で止める（口には送らない） | 単体（画面） |\n| 入力 | 今のパスワードが違う | 401。変わらない。失敗は security_events に残す | 単体（口・本物の DB） |\n| 入力 | パスワードを見る・隠す（D-087） | 3 つの欄とも既定は隠す。押すと見える | 単体（画面） |\n| 入力 | 戻る先（next）が外の道 | 外へは飛ばさず、安全の設定の画面に留まる | 単体（画面） |\n| 時間の流れ | 取り直しから 14 分 59 秒・15 分・15 分 1 秒 | 内は通る、ちょうどと外は 403（DB の now()） | 単体（本物の DB の時刻を進める） |\n| 時間の流れ | パスキーのチャレンジの期限を過ぎてから端末で確かめる | 部品が断る。「もう一度付けてください」 | 単体（口：チャレンジの行の期限を過去にする） |\n| 時間の流れ | 2 段階を始めてから長く置いて確かめる | 鍵は残っていれば通る（6 けたは今の時刻で計算する） | 単体（本物の DB） |\n| 失敗 | 端末で本人がやめた・時間切れ（NotAllowedError） | 何も付かない。「パスキーを付けられませんでした。もう一度」 | 単体（画面：仮の認証器で失敗させる） |\n| 失敗 | パスキーが使えないブラウザ | 「パスキーを付ける」を出さず、2 段階を案内 | 単体（画面：WebAuthn を消す） |\n| 失敗 | 2 段階の確かめは通ったが、バックアップコードを返す所で失敗 | 付いたまま、コードは返せない。画面は「付きました。バックアップコードを作り直してください」（作り直しの口へ） | 単体（部品を失敗させる） |\n| 失敗 | パスワードは変わったが、端末を切る所（`app.revoke_sessions_for_auth_user`）で失敗 | 先に切ってから変える順にする（切れずに残るより、入り直しの方を選ぶ）。切る所で落ちたら変えない。500・E-PAGE-003 | 単体（DB の関数を失敗させる） |\n| 失敗 | DB が落ちた | 500・E-PAGE-003。画面の書きかけは残る | 単体（口・画面） |\n| 操作の揺れ | 「パスキーを付ける」を 2 回押し | 確かめは 1 回。パスキーは 1 本 | 単体（画面） |\n| 操作の揺れ | 2 つのタブで同時にパスキーを外す（最後の 2 本） | 1 本だけ外れ、後の方は 409（最後の入り方は外せない／先に 2 段階）。0 本にならない | 単体（口・本物の DB・同時に 2 つ） |\n| 操作の揺れ | 2 つのタブで同時に名前を変える | 後に保存した方が残る。どちらも別の GET で読み直して同じ | 単体（口・本物の DB・同時に 2 つ） |\n| 操作の揺れ | 6 けたを 2 回送る（自動で進むのと Enter） | 付くのは 1 回。バックアップコードは 1 回だけ返る | 単体（画面） |\n| 操作の揺れ | パスワードを変えるを 2 回押し | 変わるのは 1 回。2 回目は今のパスワードが違うので 401 | 単体（画面） |\n| 守り | ログインしていない人が 6 つの口を呼ぶ | 401。何も書かない | 単体（口） |\n| 守り | 見るだけの役の人（R4） | 自分の入り方は直せる（自分のものだけ）。他の人の分は 404 | 単体（口・本物の DB） |\n| 守り | 自分の安全の設定が返すもの | パスキーの名前・作った時刻・端末の種類、パスワードの有無、2 段階の有無、バックアップコードの残りの数だけ。公開鍵・TOTP の鍵・コードの中身は返さない | 単体（口） |\n| 守り | 1 分に 61 回（変える口）・121 回（見る口） | 429・待つ秒数 | 単体（口） |\n| 守り | 閉じた部品の道 | 上の 6 本は 404（`disabledPaths`） | 単体（口） |\n| 守り | DB の中 | TOTP の鍵とバックアップコードは部品が鍵で包んで持つ（平文で無い）。パスワードはハッシュだけ | 単体（本物の DB） |\n| 守り | ログ | TOTP の鍵・QR の中身・6 けた・バックアップコード・パスワードが出ない | 単体（ログを見る） |\n| 守り | 記録 | パスキーを付けた・外した・2 段階を付けた・パスワードを変えた が、その人の全部のワークスペースの security_events に残る | 単体（本物の DB） |\n| 守り | 関門 | 書くのは関門 C2・秘密は C8 の決まり（返さない・ログに出さない） | 単体（CI の静的な検査） |\n\n### テストの型の受け\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-AUTH-02 続けて失敗する | 入力「6 けたが違う」「今のパスワードが違う」・守り「1 分に 61 回」（2 段階の確かめの止めは部品の数え。回数は K-74 の聞きたいこと 2 と同じ答えに揃える） |\n| TP-AUTH-03 2 段階のコードの期限切れ・使い回し・誤り | 入力「6 けたが違う（時刻のずれ）」・状態の表「2 段階 途中 × 閉じて後でもう一度」（前の QR の 6 けたは通らない）「確かめの口をもう一度」 |\n| TP-AUTH-04 セッションが切れた・戻ってくる | 状態の表「画面のまま長く置いて押す × セッションが切れた」（入り直すと戻る・書きかけは残る） |\n| TP-AUTH-05 ログアウトした後に戻る・ブックマーク | 状態の表「安全の設定の画面を開く・ブックマーク × ログアウトした後」 |\n| TP-AUTH-06 パスワードを変えた・端末を外した | 状態の表「パスワードを変える」「パスワードを変えた後 × 古いセッション」「切られた PC（Bridge）」 |\n| TP-AUTH-07 本人確認の取り直しの期限 | 状態の表「取り直しから 15 分の外」・時間の流れ「14 分 59 秒・15 分・15 分 1 秒」 |\n| TP-AUTH-08 戻す先が外の道 | 入力「戻る先（next）が外の道」 |\n| TP-CRUD-01 2 人が同時に直す | 操作の揺れ「2 つのタブで同時に名前を変える」「同時にパスキーを外す」 |\n| TP-CRUD-02 消したものを古いリンクで | 状態の表「パスキー 2 本以上 × 1 本を外す」の後に、外したパスキーの ID で名前を変える → 404（単体（口）で続けて呼ぶ） |\n| TP-CRUD-04 2 回押し | 操作の揺れ「パスキーを付けるを 2 回押し」「6 けたを 2 回送る」「パスワードを変えるを 2 回押し」 |\n| TP-CRUD-05 保存の途中で失敗 | 失敗「バックアップコードを返す所で失敗」「端末を切る所で失敗」 |\n| TP-CRUD-06 書きかけで戻る・再読み込み・セッション切れ | 状態の表「画面のまま長く置いて押す」（名前の書きかけは残る）・「バックアップコードを見た後 × 再読み込み」 |\n| TP-PERM-01 役が合わない人 | 守り「ログインしていない人」「見るだけの役の人」（自分の分だけ直せる・他人は 404） |\n| TP-PERM-02 権限を外した直後に押す | 状態の表「退会・止められた後 × 口を呼ぶ」（401・受け持ちは F10 と K-74）・「パスワードを変えた後 × 古いセッション」（口で止まる） |\n| TP-PERM-03 他の会社の ID を直接指定する | 状態の表「他の人のパスキーの ID」（404・中身を返さない） |\n| TP-PERM-04 一覧・数・検索 | 守り「自分の安全の設定が返すもの」（自分の分だけ・他の人のパスキーが数に混ざらない。単体で 2 人を作って数を見る） |\n\n要らない: TP-AUTH-01 このチケットはログインの返事を作らない（誤ったパスワードと無いメールの揃え方は K-74）。今のパスワードの確かめはログイン中の本人だけが呼ぶ\n要らない: TP-AUTH-09 国・端末が変わったときに切るのはセッションの見張り（K-20）のまま。このチケットは切らない\n要らない: TP-CRUD-03 パスキーは外したら戻さない（戻す操作を持たない）。子の行も無い。付け直しは新しく付ける\n要らない: TP-PERM-05 自分の入り方は役で変わらない（どの役の人も自分の分は直せる）。付けた権限で効き方が変わる口が無い",
+    "成果物": "- 画面 `apps/web/features/F1/mfa-setup/`・口 `apps/api/src/features/F1/mfa-setup/`・migration（`app.login_methods`・`sessions.mfa_pending`）・`packages/auth/src/resolver.ts` の `changePassword` を全部のワークスペースで切る形に直す・`packages/auth/src/two_factor.ts` にバックアップコードを 1 回だけ引く関数・`disabledPaths` に 6 本・errors.json に 4 件・単体のテスト（apps/api/test/generated/ の 6 本を本物にする・`apps/web/tests/screens/mfa-setup.spec.ts` を置き換える）",
+    "決定ログ": "- パスキーを勧める・パスワードの人だけ 2 段階が必須（D-125.137・D-125.138・D-128.61）。付ける順番と、バックアップコードは 1 回だけ（D-128.59・D-128.61）\n- パスキーの人には 6 けたを付けない（D-128.60）・はじめにやることにパスキー（D-125.146・D-128.62）\n- 大事な操作での取り直し（D-125.139）・パスワード変更で画面も Bridge も全部切る（D-125.140）\n- 2 段階を付ける口をこのチケットで作る・最後の入り方の判定・先に切ってから変える は、このチケットを切るときに決めた作り方。聞きたいことの答えで確かめる",
+    "リスクと懸念": "- 聞きたいこと 1：パスキーを持たず 2 段階も無いパスワードだけの人（登録した直後の人は全員こうなる）は、いつ 2 段階を付けさせるかが決定ログに無い。D-128.61 は「パスワードだけで入る人は必須」、D-128.62 は「メールの確認 → 入り方（パスキーを勧める／パスワードなら 2 段階認証も）→ すぐ入る」、はじめにやること（D-125.146・D-128.62）は「閉じられる」。案は (a) ログインした直後に安全の設定の画面を出し、パスキーか 2 段階を付けるまで他の画面に進めない（勧め。D-128.61 の「必須」と D-128.62 の順番に合う。止め方は K-53 の規約の印と同じ形）(b) はじめにやることに出すだけで止めない (c) 登録してから 7 日など、猶予の後に止める\n- 聞きたいこと 2：パスキーを **付ける** のに本人確認の取り直しが要るか（D-125.139 の一覧に無い）。案は (a) 要る。ただしログインしてから 15 分の内はログインを取り直しとみなす（勧め。新しい入り方を足すのは乗っ取りの足場になるので）(b) 要らない\n- 聞きたいこと 3：パスワードを変えたとき、**変えた今の画面のセッション** も切るか。D-125.140 は「全部切る」。案は (a) 今の画面は残し、ほかの端末と PC（Bridge）を全部切る（勧め。変えた本人がその場で入り直しになるのを避ける。多くのサービスと同じ）(b) 今の画面も切ってログインへ戻す\n- 聞きたいこと 4：パスキーの名前の長さの上限（勧め 40 文字）\n- 聞きたいこと 5：パスキーを外したとき、そのパスキーで作ったセッションを切るか（勧め：切らない。パスキーは入り方で、端末を外すのは自分の設定の端末の一覧・A74）\n- 契約の C8（秘密の読み出し）は `packages/secrets` を通る関門だが、TOTP の鍵とバックアップコードは Better Auth が自分の鍵で包んで持つ（`packages/secrets` を通らない）。関門の検査で例外になるなら、例外の台帳（choke-point-exceptions.md）に理由（アカウント全体の秘密で、ワークスペースの鍵では包めない）と代わりの守り（返さない・ログに出さない・部品の暗号）を書く必要がある\n- 行為の A04（2 段階認証を設定する）は後のフェーズ（v2）だが、口 2 本をこのチケットで作る。flow.json の A04 と A97 の分け方が今の決定（D-128.61：パスワードだけの人は必須）と合っていない\n- パスキーの部品のチャレンジは Cookie で持つ。Cookie を使わない（D-051.2）ので、K-74 と同じく値を JSON で受け渡す。K-74 の作りに合わせる",
+    "申し送り": "- 進める人へ：テストのファイル 4 本（apps/api/test/generated/get_me_security.test.ts・patch_me_passkeys_id.test.ts・delete_me_passkeys_id.test.ts・patch_me_password.test.ts）と口 4 本（getMySecurity・renamePasskey・deletePasskey・changePassword）と画面 mfa-setup を K-50 からこのチケットに移す。**テストのファイル 2 本（apps/api/test/generated/post_me_two_factor_enable.test.ts・post_me_two_factor_confirm.test.ts）と口 2 本（startTwoFactor・confirmTwoFactor）は K-73 から移す**（D-128.61 で A97 に要るため）\n- K-73 に残すもの：`disableTwoFactor`・`regenerateBackupCodes`・`resetMemberTwoFactor`。切るときは、このチケットの「最後の入り方」の判定（`app.login_methods`）と、K-74 の「管理者に戻してもらう」の頼みを使う\n- K-74 へ：パスワードだけの人の印（聞きたいこと 1 が (a) のとき）は、K-74 と同じセッションができたときの hook で立てる\n- 流れ F10（K-70）へ：はじめにやることの「パスキー」の印は、このチケットの `getMySecurity` が返すパスキーの数で決める"
+   },
+   "file": "11_tickets/K-75.md"
+  },
+  {
+   "id": "K-76",
+   "title": "パスワードを再設定する（メールのリンクから新しいパスワードを決め、全部の端末と PC を入り直しにする）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-50",
+   "milestone": "F1",
+   "area": "認証",
+   "assignee": "未定",
+   "due": "",
+   "decisions": [
+    "D-042",
+    "D-051.2",
+    "D-087",
+    "D-125.137",
+    "D-125.138",
+    "D-125.140",
+    "D-125.150",
+    "D-128.62",
+    "D-128.63",
+    "D-128.91",
+    "D-128.121",
+    "D-128.125",
+    "D-128.130",
+    "D-128.133"
+   ],
+   "split": "",
+   "choke_points": [
+    "C2",
+    "C6"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_auth_password_forgot.test.ts",
+    "apps/api/test/generated/post_auth_password_reset.test.ts"
+   ],
+   "depends_on": [
+    "K-74"
+   ],
+   "acts": [
+    "A31"
+   ],
+   "screens": [
+    "password-reset"
+   ],
+   "apis": [
+    "requestPasswordReset",
+    "resetPassword"
+   ],
+   "sections": {
+    "目的": "パスワードを忘れた人が、再設定の画面でメールを入れて「再設定のメールを送る」を押すと、登録されていればリンクが 1 通届く（30 分・1 回だけ・D-128.62）。登録されているかどうかは画面に出さない。\n\nリンクを開いて新しいパスワードを 2 回入れると、パスワードが変わり、**全部のワークスペースの端末と PC（Bridge）が入り直しになる**（D-125.140）。ログインのロックも外れ、ログインの画面へ進む。期限切れ・使い終わった・新しく頼んだ後の前のリンクでは変えられず、頼み直しの案内を出す。",
+    "完了の条件": "- 下の 2 つの表の「このチケット」のマスと、全部の分岐のテストが緑\n- 契約の口 `requestPasswordReset`・`resetPassword` が 501 でない（apps/api/test/generated/post_auth_password_forgot.test.ts・post_auth_password_reset.test.ts の `it.todo` が本物のテストになって緑）\n- 画面が部品の口を直に呼ぶ道（今の `authClient.requestPasswordReset`・`authClient.resetPassword`）が消え、契約の口だけを呼んでいる。部品の道（`/api/auth/request-password-reset`・`/api/auth/reset-password`・`/api/auth/reset-password/:token`）は 404（K-74 と同じ `disabledPaths`）\n- 単体のテスト（下の表で「このチケット」が受け持つマスと、全部の分岐）が本物の DB と本物のブラウザの上で緑\n- 手元の CI（dagci）が緑",
+    "前提と制約": "分類: RESET, MAIL\n\n- 流れ F1 登録してログインできる（K-50）\n- 依存：ログインする（K-74）。ロック（`app.login_attempts`）と、部品の道を閉じる所（`disabledPaths`）は K-74 が持つ。このチケットは再設定でロックを外すことを持つ\n- ログイン中の人がパスワードを変えるのは安全の設定（K-75 の `changePassword`）。このチケットはログインしていない人の再設定だけ\n- 2 段階認証は再設定では外れない（外すのは管理者が戻す口・K-73）\n- テストはこのチケットを作る人がコードまで書き、実装する人は変えない（D-128.125）",
+    "実施事項": "### 作り方（実装の詳細）\n\n| 欄 | 中身 |\n|---|---|\n| 画面 | `apps/web/features/F1/password-reset/`（新しい部品 `components/k` の TextField・Button・Callout と、4 つの状態 `components/k/states` で組む）。キャンバスの絵 `AuthReset`。道は `/password-reset`（メールを入れる）と `/password-reset?token=…`（新しいパスワード）。`apps/web/app/(outside)/password-reset/page.tsx` は薄い入れ物にし、中身をこのチケットで置き換える。手がかり（token）を読んだら、すぐ URL から消す（`history.replaceState`。履歴と Referer に残さない）。パスワードの 2 つの欄は見る・隠す（D-087） |\n| API | 契約の口 `requestPasswordReset`（POST /api/v1/auth/password/forgot・誰でも・10 回／分／IP・関門 C2・C6）・`resetPassword`（POST /api/v1/auth/password/reset・リンクを持つ人・10 回／分／IP・関門 C2・C6）。振る舞いを `apps/api/src/features/F1/password-reset/` に Hook として書き、`apps/api/src/server.ts` の `contract.hooks` に足して 501 を外す。中では部品の `auth.api.requestPasswordReset`・`auth.api.resetPassword`（サーバーの呼び出し）を使う |\n| DB | 認証の表（schema `kaname_auth`）：`verification`（identifier `reset-password:<手がかり>`・value＝利用者の id・expires_at 30 分。使うと部品が消す）・`\"user\"`・`account`（password）・`session`（部品が再設定で全部消す `revokeSessionsOnPasswordReset`）・`pending_signup`（確認していない申し込みだけの人を見分ける）。業務の表：`sessions`（revoked_at・revoke_reason_id = password_changed・kind_id = bridge も）・`app.login_attempts`（再設定で消す）・`security_events`・`notifications`（dedupe_key）。**新しい表と migration は作らない**。部品の設定を 1 つ足す：`verification.storeIdentifier` の `reset-password` を `hashed`（手がかりを平文で DB に残さない） |\n| 使う部品と版 | Better Auth 1.7.15（`@kaname/auth` の中だけ・emailAndPassword の `sendResetPassword`・`resetPasswordTokenExpiresIn`・`revokeSessionsOnPasswordReset`・`onPasswordReset`）・Hono 4.10・pg 8.16・Next.js 15.5・React 19.1・react-hook-form 7.88・zod 4.6・テストは Vitest 3.2（口）と Playwright 1.63（画面）。メールは関門 C6（`@kaname/notify`）・保存は関門 C2 |\n| 使う既存の実装（目録で探した） | packages/auth/src/index.ts の `sendResetPassword`（文面・30 分）・`revokeSessionsOnPasswordReset: true`・`onPasswordReset` → `app.revoke_sessions_for_auth_user`（migration 0060。全部のワークスペースの端末と Bridge を切る）・`normalizeEmail`（packages/auth/src/signup.ts）・`emailHash` と `app.login_ok`（ロックを消す・migration 0020）・漏れたパスワードの照合（K-51 が作る）・今の画面の 3 つの状態（apps/web/app/(outside)/password-reset/page.tsx）・画面のテストの道具（`apps/web/tests/_lib/api.ts` の `signupViaApi`・`lastMailUrl(\"reset\", …)`・`mailLog`・`admin`・`pwToggle`・`bridgeRow`） |\n| 新しく作るもの | ① 新しく頼んだら前の再設定のリンクを使えなくする（`sendResetPassword` の中で、同じ人の前の `reset-password:` の行を消してから送る。部品は前の行を残すので、今は前のリンクも使えてしまう）② 再設定の前に端末を切る順（切ってから変える）③ 送るのを待たずに同じ時間で返す（部品は登録されているときだけメールを待つので、待ち時間で登録の有無が分かる）④ 再設定でロックを消す（`app.login_ok`）⑤ errors.json の E-AUTH-006 を「期限切れ・使用済み・新しく頼んだ後の前のリンク」に広げる |\n| 共通の決まり | エラーの文言は errors.json から引く（E-VAL-004・E-VAL-005・E-AUTH-006・E-PAGE-003・E-PAGE-006）・ログに手がかり・パスワード・メールを出さない（本番。本番以外でリンクを出すのは今の packages/auth のまま）・時刻は timestamptz で、期限の比べは DB の時刻（D-128.130） |\n\n### 決めた判断\n\n- 答えはいつも同じ：登録されていても、されていなくても、確認していない申し込みだけでも「登録されていれば、再設定のメールが届きます。届かなければ、もう一度送れます」（D-042 の守りの決まり）。送れたとは言わない\n- 確認していない申し込みだけの人には再設定のメールを送らない（まだ本人がいない。登録の確定はメールのリンク・K-52）\n- リンクは 30 分・1 回だけ（D-128.62・今の `resetPasswordTokenExpiresIn: 60 * 30`）。新しく頼んだら前のリンクは使えない\n- 再設定は「端末を切る → パスワードを変える」の順。変える所で失敗しても、切れた端末は入り直せばよい（安全な側に倒す）。切るのは全部のワークスペースの画面と PC（Bridge）（D-125.140・D-128.121：Bridge は時間では切らないが、パスワードの変更では切る）\n- 再設定が済んだら自動では入らない（ログインの画面へ）。2 段階を付けている人は、次のログインで 6 けたを聞かれる（再設定では 2 段階は外れない）\n- 再設定が済んだら、ログインのロック（`app.login_attempts`）を消す（K-74 の聞きたいこと 3 の勧め）\n- 新しいパスワードは 12 文字以上・漏れたものは弾く（D-125.137）。K-51 の照合をそのまま使う\n- ログイン中の人が再設定の画面を開いたら「ログイン中はここから変えられます」と安全の設定（K-75）へのリンクを出す（メールを送る欄は出したまま）",
+    "テスト仕様と確認の結果": "### 状態 × 入口 × 利用者の状態\n\n再設定のリンクの状態（DB の列から出した候補：`verification` の `reset-password:` の行 → 有る・無い、expires_at → 期限切れ、使うと消える → 使い終わった、同じ人の新しい行 → 前のリンク、`\"user\"`・`pending_signup` → 登録済み・登録していない・確認していない申し込みだけ、`\"user\".two_factor_enabled` → 2 段階あり、`app.login_attempts.locked_until` → ロック中、`members.suspended_at`・`subscriptions.suspended_at` → 止められた、`sessions.kind_id`・`revoked_at` → 画面と PC のセッション）\n\n| リンクの状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 無し（登録済みの人） | 再設定の画面でメールを送る | ログインしていない | 同じ答え。リンクが 1 通（30 分） | このチケット | 単体（口・本物の DB）・単体（画面） |\n| 無し（登録していないメール） | 再設定の画面でメールを送る | ログインしていない | 同じ答え・同じくらいの時間。メールは送らない。DB に何も残さない | このチケット | 単体（口・時間を測る） |\n| 無し（確認していない申し込みだけ） | 再設定の画面でメールを送る | ログインしていない | 同じ答え。再設定のメールは送らない | このチケット | 単体（口・本物の DB） |\n| 期限内 | メールのリンクを開き、新しいパスワードを 2 回 | ログインしていない | 変わる。全部のワークスペースの画面と PC のセッションが切れ、ロックが消え、ログインへ「新しいパスワードで入ってください」 | このチケット | 単体（口・本物の DB：2 つのワークスペース・Bridge の行・ロックの行）・単体（画面） |\n| 期限内 | リンクを別の端末・別のブラウザで開く | ログインしていない | 変えられる（同じ端末でなくてよい） | このチケット | 単体（画面：頼んだのと別のブラウザで開く） |\n| 期限内 | リンクを開く | ログイン中（同じ人） | 変えられる。変えたら今の画面のセッションも切れ、ログインへ | このチケット | 単体（画面） |\n| 期限内 | リンクを開く | 別のアカウントでログイン中 | リンクの人のパスワードが変わる。今のアカウントはそのまま。「別のアカウントでログイン中です。新しいパスワードで入るには、ログアウトしてください」 | このチケット | 単体（画面） |\n| 期限切れ（30 分を過ぎた） | リンクを開いて送る | どれでも | 410・E-AUTH-006「このリンクはもう使えません。もう一度、再設定メールを送ってください」とメールを送る欄へ。変わらない | このチケット | 単体（口・本物の DB の時刻を進める）・単体（画面） |\n| 使い終わった | 同じリンクをもう一度 | どれでも | 410・E-AUTH-006。変わらない | このチケット | 単体（口・本物の DB） |\n| 前のリンク（新しく頼んだ後） | 前のメールのリンク | どれでも | 410・E-AUTH-006。新しいリンクはそのまま使える | このチケット | 単体（口・本物の DB） |\n| 無い（でたらめ・古いブックマーク） | `/password-reset?token=…` を開く | どれでも | 410・E-PAGE-006。メールを送る欄へ。メールアドレスは出さない | このチケット | 単体（口）・単体（画面） |\n| 期限内・ロック中の人 | 再設定する | ログインしていない | 変わり、ロックが消える。すぐ新しいパスワードで入れる | このチケット | 単体（口・本物の DB） |\n| 期限内・2 段階ありの人 | 再設定した後にログイン | ログインしていない | 6 けたを聞かれる（2 段階は外れない） | ログインする（K-74） | 単体（口・本物の DB：two_factor_enabled が変わらない）はこのチケット |\n| 期限内・止められた人や会社 | 再設定する | ログインしていない | 変えられる（答えを揃えるため）。ログインは止めのまま | ログインする（K-74） | 単体（口：変わること）はこのチケット |\n| 再設定した後 | 別の端末に残っていた古いセッションで押す | ログイン中だった | 401・E-PAGE-005。入り直す | このチケット | 単体（口・本物の DB） |\n| 再設定した後 | PC（Bridge）が次に取りに来る | PC | 401。PC は「つなぎ直してください」 | このチケット（PC の画面は流れ F3） | 単体（口：Bridge の鍵で呼ぶ） |\n| どれでも | 再設定の画面を開く | ログイン中 | メールを送る欄と「ログイン中はここから変えられます」（安全の設定へ） | このチケット | 単体（画面） |\n| どれでも | ログインの画面の「パスワードをお忘れの方」 | ログインしていない | 再設定の画面が開く（入れたメールを引き継ぐ） | このチケット | 単体（画面） |\n| どれでも | 口を直に呼ぶ（部品の `/api/auth/reset-password` など） | ログインしていない | 404。契約の口しか無い | このチケット | 単体（口） |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 観点 | 分岐 | 結果 | テスト |\n|---|---|---|---|\n| 入力 | メールが空・形が違う | 422・E-VAL-004・欄の下に理由 | 単体（口・画面） |\n| 入力 | メールの大文字小文字・前後と途中の空白・全角 | 正規化（`normalizeEmail`）して同じ人に送る | 単体（口・本物の DB） |\n| 入力 | 新しいパスワード 11 文字／12 文字 | 11 は 422・E-VAL-005、12 は通る | 単体（口） |\n| 入力 | 新しいパスワードが漏れたもの | 422（K-51 と同じ照合・同じ文） | 単体（照合を差し替え） |\n| 入力 | 新しいパスワード 2 つが違う | 画面で止める（口には送らない） | 単体（画面） |\n| 入力 | 新しいパスワードが前と同じ | 聞きたいこと 2 の答えのとおり（勧め：通す） | 単体（口） |\n| 入力 | 手がかりが空・形が違う・前後の空白（メールソフトが付ける） | 空と形違いは 410・E-PAGE-006（形の違いで中身を探らせない）。前後の空白だけ除く | 単体（口） |\n| 入力 | パスワードを見る・隠す（D-087） | 2 つの欄とも既定は隠す。押すと見え、送信で隠すに戻る | 単体（画面） |\n| 時間の流れ | 期限の直前（29 分 59 秒）・ちょうど（30 分）・直後 | 直前は変わる、ちょうどと直後は 410（DB の時刻） | 単体（本物の DB の時刻を進める） |\n| 時間の流れ | 新しいパスワードの画面を開いたまま 30 分を過ぎてから送る | 410・E-AUTH-006。入れたパスワードは送らずに消す | 単体（画面・時刻を進める） |\n| 時間の流れ | 続けて 2 回頼む | 2 回目のリンクだけ使える | 単体（口・本物の DB） |\n| 失敗 | メールが送れない | 答えは同じ（登録の有無を漏らさない）。送れたとは言わず「届かなければ、もう一度送れます」。送れなかったことは記録とログに残す | 単体（送る部品を失敗させる）・単体（画面） |\n| 失敗 | 端末を切る所（`app.revoke_sessions_for_auth_user`）で失敗 | パスワードは変えない。500・E-PAGE-003。リンクはまだ使える（もう一度押せる） | 単体（DB の関数を失敗させる） |\n| 失敗 | 端末は切れたが、パスワードを変える所で失敗 | 500・E-PAGE-003。端末は切れたまま（安全な側）。リンクはまだ使える | 単体（部品を失敗させる） |\n| 失敗 | DB が落ちた | 500・E-PAGE-003。書いたパスワードは画面に残さない | 単体（口・画面） |\n| 操作の揺れ | 「再設定のメールを送る」を 2 回押し | メールは 1 通（聞きたいこと 1 の勧め：同じ人へは 60 秒に 1 通・notifications の dedupe_key）。答えは同じ | 単体（口・本物の DB）・単体（画面） |\n| 操作の揺れ | 同じリンクを 2 つのタブで同時に送る | 変わるのは 1 回（部品が行を 1 回だけ使う）。後の方は 410・E-AUTH-006 | 単体（口・本物の DB・同時に 2 つ） |\n| 操作の揺れ | 送った後に戻る・再読み込み | 「メールを送りました」の画面は残り、もう一度送れる。リンクの画面で再読み込みしても、手がかりは URL から消えているので「メールのリンクをもう一度開いてください」 | 単体（画面） |\n| 守り | 1 分に 11 回（同じ IP） | 429・待つ秒数（retry_after_sec）。画面に待ち時間 | 単体（口・画面） |\n| 守り | 登録の有無 | 答えの文・状態の番号・かかる時間が、登録済み・登録していない・申し込みだけで同じ（送るのを待たない） | 単体（口・時間を測る） |\n| 守り | DB の中 | 手がかりはハッシュだけ（`storeIdentifier: hashed`）。パスワードはハッシュだけ | 単体（本物の DB） |\n| 守り | URL の手がかり | 読んだら URL から消す。画面に外の読み込みを置かない（Referer で外へ出さない） | 単体（画面：history と Referer を見る） |\n| 守り | ログ | 手がかり・パスワード・メールが出ない（本番） | 単体（ログを見る） |\n| 守り | 記録 | 再設定を頼んだ・再設定した が、その人の全部のワークスペースの security_events に残る（登録していないメールでは何も残さない） | 単体（本物の DB） |\n| 守り | 関門 | 書くのは関門 C2、メールは関門 C6（`@kaname/notify`）だけ | 単体（CI の静的な検査） |\n\n### テストの型の受け\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-RESET-01 無いメールで再設定を頼む | 状態の表「無し（登録していないメール）」「無し（確認していない申し込みだけ）」・守り「登録の有無」・失敗「メールが送れない」（答えを変えない） |\n| TP-RESET-02 期限切れ・使い終わった・新しく頼んだ後の前のリンク | 状態の表「期限切れ」「使い終わった」「前のリンク」「無い（でたらめ）」・時間の流れ「期限の直前・ちょうど・直後」「続けて 2 回頼む」 |\n| TP-RESET-03 再設定したらほかのセッションが切れる | 状態の表「期限内 × 新しいパスワード」（全部のワークスペース・Bridge）「再設定した後 × 古いセッション」「PC が次に取りに来る」 |\n| TP-MAIL-01 送れなかったとき | 失敗「メールが送れない」（送れたと言わず、もう一度送れる） |\n| TP-MAIL-02 二重に出ない | 操作の揺れ「再設定のメールを送るを 2 回押し」 |\n| TP-MAIL-03 本文に秘密を入れない | 守り：再設定のメールの本文にパスワード・ほかの人の情報を入れない。リンクは 30 分で 1 回だけ（単体で本文を見る） |",
+    "成果物": "- 画面 `apps/web/features/F1/password-reset/`・口 `apps/api/src/features/F1/password-reset/`・`packages/auth/src/index.ts` の手直し（前のリンクを消す・切ってから変える・待たずに返す・ロックを消す・`storeIdentifier`・`disabledPaths` に 3 本）・errors.json の E-AUTH-006 の直し・単体のテスト（apps/api/test/generated/ の 2 本を本物にする・`apps/web/tests/screens/password-reset.spec.ts` を置き換える）",
+    "決定ログ": "- パスワードを忘れたら作り直しのリンク（30 分・1 回・D-128.62）。再設定で画面も Bridge も全部切る（D-125.140）\n- 登録の有無を漏らさない・IP ごとの上限（D-042・08_api/phase1/04_ログイン.md の守りの決まり）\n- 前のリンクを消す・切ってから変える・確認していない申し込みには送らない・再設定でロックを消す は、このチケットを切るときに決めた作り方。聞きたいことの答えで確かめる",
+    "リスクと懸念": "- 聞きたいこと 1：「再設定のメールを送る」を続けて押したときの間隔（決定ログに無い）。勧めは **同じ人へは 60 秒に 1 通**（それより早い 2 回目は送らず、答えは同じ）。前のリンクはどのみち使えなくなるので、届くのが遅れた前のメールで迷わせないため\n- 聞きたいこと 2：新しいパスワードが **前と同じ** でもよいか（決定ログに無い。今の画面の文は「前と同じパスワードです」と言うが、部品は弾いていない）。勧めは **通す**（12 文字以上と漏れたものの照合で足りる。前と同じを弾くには前のハッシュを持ち続ける必要がある）\n- 部品は、登録されているときだけメールを送るのを待ってから答える。待ち時間の差で登録の有無が分かるので、送るのを待たずに答える（送れなかったことは記録で拾う）。単体で時間を測って確かめる\n- 部品は新しく頼んでも前の再設定の行を消さない（前のリンクも 30 分は使える）。`sendResetPassword` の中で前の行を消す作りは、部品の版を上げたときに壊れやすいので、単体の「前のリンク」の行で必ず通す\n- 手がかりをハッシュで持つ設定（`storeIdentifier`）に変えると、変える前に送ったリンクは使えなくなる（出す時点で 30 分以内のものだけ）。出す時刻を選ぶ",
+    "申し送り": "- 進める人へ：テストのファイル 2 本（apps/api/test/generated/post_auth_password_forgot.test.ts・post_auth_password_reset.test.ts）と口 2 本（requestPasswordReset・resetPassword）と画面 password-reset を K-50 からこのチケットに移す\n- K-74 へ：部品の道を閉じる `disabledPaths` に、再設定の 3 本（`/request-password-reset`・`/reset-password`・`/reset-password/:token`）を足す。ロックを消すのはこのチケット（`app.login_ok`）\n- K-75 へ：パスワードを変える（`changePassword`）と再設定は、同じ「全部のワークスペースの端末と PC を切る」（`app.revoke_sessions_for_auth_user`）と同じ照合（12 文字・漏れたもの）を使う"
+   },
+   "file": "11_tickets/K-76.md"
   }
  ]
 }
