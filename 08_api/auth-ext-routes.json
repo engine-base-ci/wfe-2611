@@ -498,12 +498,6 @@
   },
   {
    "file": "apps/api/src/auth/ext.ts",
-   "method": "POST",
-   "route": "/api/auth-ext/resend-signup",
-   "to": "resendSignupEmail"
-  },
-  {
-   "file": "apps/api/src/auth/ext.ts",
    "method": "GET",
    "route": "/api/auth-ext/setup-state",
    "to": "listSetupTasks"
@@ -522,18 +516,6 @@
    "method": "POST",
    "route": "/api/auth-ext/sign-in",
    "to": "signInWithPassword"
-  },
-  {
-   "file": "apps/api/src/auth/ext.ts",
-   "method": "POST",
-   "route": "/api/auth-ext/sign-up",
-   "to": "createSignup"
-  },
-  {
-   "file": "apps/api/src/auth/ext.ts",
-   "method": "GET",
-   "route": "/api/auth-ext/signup-status",
-   "to": "getSignupStatus"
   },
   {
    "file": "apps/api/src/auth/ext.ts",

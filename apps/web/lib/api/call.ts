@@ -14,6 +14,10 @@ export type CallArgs<K extends OpName> = ([Ops[K]["params"]] extends [never]
     /** どの画面から呼んだか（記録とエラーの知らせに出る） */
     screenId?: string;
     signal?: AbortSignal;
+    /** 口が頭で受ける値（例：登録の申し込みの印 x-signup-token・K-51）。契約の parameters の in: header */
+    headers?: Record<string, string>;
+    /** 401 でも入り直しへ送らない（ログインしていない画面が「今ログインしているか」を確かめるとき・K-51） */
+    keepOn401?: boolean;
   };
 export interface CallOk<K extends OpName> {
   ok: true;
@@ -76,7 +80,7 @@ export async function call<K extends OpName>(op: K, args: CallArgs<K> = {} as Ca
     .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(String(v))}`)
     .join("&");
   const write = e.method !== "GET";
-  const headers: Record<string, string> = { accept: "application/json" };
+  const headers: Record<string, string> = { accept: "application/json", ...(args.headers ?? {}) };
   const token = getToken();
   if (token) headers["authorization"] = `Bearer ${token}`;
   if (args.screenId) headers["x-screen-id"] = args.screenId;
@@ -93,7 +97,7 @@ export async function call<K extends OpName>(op: K, args: CallArgs<K> = {} as Ca
       ...(args.signal ? { signal: args.signal } : {}),
     },
   );
-  if (res.status === 401) notifyUnauthorized();
+  if (res.status === 401 && !args.keepOn401) notifyUnauthorized();
   const json = (res.status === 204 ? {} : await res.json().catch(() => ({}))) as Record<string, unknown>;
   if (res.ok) {
     return {
@@ -105,6 +109,10 @@ export async function call<K extends OpName>(op: K, args: CallArgs<K> = {} as Ca
   }
   const code = String(json["code"] ?? json["error"] ?? res.status);
   const details = Array.isArray(json["details"]) ? (json["details"] as { field?: string; message?: string }[]) : [];
+  // 正本のエラー（KanameError）は項目を detail.field で返す。文言は正本の message（K-51）
+  const one = json["detail"] as { field?: unknown } | undefined;
+  if (one && typeof one.field === "string" && typeof json["message"] === "string")
+    details.push({ field: one.field, message: json["message"] });
   return {
     ok: false,
     status: res.status,

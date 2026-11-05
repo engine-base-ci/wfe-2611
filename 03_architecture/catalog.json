@@ -6,13 +6,13 @@
  ],
  "counts": {
   "api": 363,
-  "api_built": 5,
+  "api_built": 8,
   "api_only_later_phase": 20,
-  "legacy_routes": 43,
+  "legacy_routes": 40,
   "db": 142,
   "ui": 13,
   "packages": 13,
-  "errors": 142,
+  "errors": 146,
   "stack": 51,
   "env": 34
  },
@@ -477,7 +477,7 @@
    "tables": [
     "pending_signup"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-51"
    ]
@@ -494,7 +494,7 @@
    "tables": [
     "pending_signup"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-51"
    ]
@@ -511,7 +511,7 @@
    "tables": [
     "pending_signup"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-51"
    ]
@@ -5869,12 +5869,9 @@
   "/onboard/golive/pause",
   "/onboard/testrun",
   "/onboard/testrun/cancel",
-  "/resend-signup",
   "/setup-state",
   "/setup-step",
   "/sign-in",
-  "/sign-up",
-  "/signup-status",
   "/two-factor/verify",
   "/vault/credentials",
   "/vault/credentials/:id/answer",
@@ -7234,7 +7231,8 @@
    "file": "apps/web/components/k/field",
    "exports": [
     "TextField",
-    "TextArea"
+    "TextArea",
+    "PasswordField"
    ],
    "what": "入力（K-24・正本 components.input）。見出し・説明・理由（422 の項目ごとの理由）を 1 つの組にする（Base UI Field）"
   },

@@ -16,6 +16,7 @@ import { createRepository } from "@kaname/db/repository";
 import { MemoryVault, SecretsGateway } from "@kaname/secrets";
 import { createApp } from "../src/app.js";
 import { authExt } from "../src/auth/ext.js";
+import { pendingToken } from "./_pending.js";
 
 const DB_PKG = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "packages", "db");
 const ADMIN = process.env["DATABASE_URL"]!;
@@ -74,10 +75,8 @@ beforeAll(async () => {
 /** 登録 → 端末の登録（Bridge の鍵）。仕事はまだ並べない */
 async function paired() {
   const email = `${uniq()}@example.com`;
-  expect((await post("/api/auth-ext/sign-up", { email, password: PW, company_name: "K" })).status).toBe(201);
-  const mail = sent.filter((m) => m.to === email && m.kind === "verify").at(-1);
-  if (!mail) throw new Error("確認メールが出ていない");
-  const ver = await post("/api/auth-ext/verify-signup", { token: new URL(mail.url).searchParams.get("token") ?? "" });
+  const token = await pendingToken(AUTH_URL, "test-master", { email, password: PW, companyName: "K" });
+  const ver = await post("/api/auth-ext/verify-signup", { token });
   const H = { authorization: `Bearer ${((await ver.json()) as { data: { token: string } }).data.token}` };
   const pair = (await (await post("/api/auth-ext/bridge/pair", {}, H)).json()) as { data: { code: string } };
   const claim = (await (

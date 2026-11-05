@@ -490,6 +490,15 @@ SCREEN_API = {
 # 表の行ではない入力の形（K-19）。無い口は「表の名前＋Input」
 INPUTS = {
     "stepUp": ("StepUpInput", {"password": "string", "code": "string"}),
+    # 登録（K-51）：保留の申し込みに預ける 4 つだけ。会社名は空でよい（D-125.135）。表の列（pw_iv など）は入力に出さない
+    "createSignup": ("SignupInput", {"email": "string", "name": "string", "company_name": "string", "password": "string"}),
+    # 送り直しは申し込みの印（頭 x-signup-token）だけで引く。本文にメールを載せない（D-128.142）
+    "resendSignupEmail": ("SignupResendInput", {}),
+}
+# 頭（header）で受ける値（operationId → 名前）。URL に載せるとアクセスの記録に残るものは頭で渡す（D-128.142）
+HEADERS = {
+    "getSignupStatus": ["x-signup-token"],
+    "resendSignupEmail": ["x-signup-token"],
 }
 RESPONSES = {
     "getScopeOverview": ("ScopeOverview", {"by_stage": "array", "milestones": "array", "recent": "array", "total": "integer"}),
@@ -508,7 +517,10 @@ RESPONSES = {
     "getCloneGrowth": ("CloneGrowth", {"delegated": "integer", "passed_without_edit_rate": "number", "saved_hours": "number", "trend": "array", "often_fixed": "array"}),
     "countKnows": ("KnowsCounts", {"rules": "integer", "work_types": "integer", "memories": "integer", "candidates": "integer"}),
     "listCloneActivity": ("ActivityItem", {"kind": "string", "at": "string", "title": "string", "ticket_id": "string", "used": "array", "result": "string"}),
-    "getSignupStatus": ("SignupStatus", {"state": "string", "email": "string", "expires_at": "string"}),
+    # 型の後ろの ? は null を許す（申し込みが無い・期限が無いときは null）
+    "createSignup": ("SignupCreated", {"email": "string", "sent": "boolean", "mail_error": "string?", "mail_error_kind": "string?", "expires_at": "string", "signup_token": "string"}),
+    "resendSignupEmail": ("SignupResent", {"email": "string?", "sent": "boolean", "mail_error": "string?", "mail_error_kind": "string?", "pending": "boolean", "registered": "boolean", "expired": "boolean"}),
+    "getSignupStatus": ("SignupStatus", {"state": "string", "email": "string?", "expires_at": "string?"}),
     "getMySecurity": ("MySecurity", {"passkeys": "array", "has_password": "boolean", "two_factor": "boolean", "two_factor_required": "boolean", "backup_codes_left": "integer", "sessions": "array", "recent_events": "array"}),
     "startTwoFactor": ("TwoFactorSetup", {"otpauth_uri": "string", "secret_masked": "string", "expires_at": "string"}),
     "confirmTwoFactor": ("BackupCodes", {"codes": "array"}),

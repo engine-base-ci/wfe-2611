@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:2ad5fc3e6e32ac27
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:fe6156470535126e
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -287,6 +287,8 @@ export type ScopeMembershipsInput = { member_id?: string; is_primary?: boolean; 
 export type RoleBundleDefaults = { role?: string; target_kind_id?: string; ability_id?: string; scope_kind?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type RoleBundleDefaultsInput = { role?: string; target_kind_id?: string; ability_id?: string; scope_kind?: string };
 export type StepUpInput = { password?: string; code?: string };
+export type SignupInput = { email?: string; name?: string; company_name?: string; password?: string };
+export type SignupResendInput = Record<string, never>;
 export type ScopeOverview = { by_stage?: string[]; milestones?: string[]; recent?: string[]; total?: number };
 export type TicketKindChangePreview = { added_sections?: string[]; removed_sections?: string[]; moved_to_body?: string[]; checks_reset?: boolean };
 export type TicketDeletePreview = { children?: number; attachments?: number; artifacts?: number; restorable_until?: string };
@@ -302,7 +304,9 @@ export type CloneNow = { current?: Record<string, unknown>; next?: string[]; wai
 export type CloneGrowth = { delegated?: number; passed_without_edit_rate?: number; saved_hours?: number; trend?: string[]; often_fixed?: string[] };
 export type KnowsCounts = { rules?: number; work_types?: number; memories?: number; candidates?: number };
 export type ActivityItem = { kind?: string; at?: string; title?: string; ticket_id?: string; used?: string[]; result?: string };
-export type SignupStatus = { state?: string; email?: string; expires_at?: string };
+export type SignupCreated = { email?: string; sent?: boolean; mail_error?: string | null; mail_error_kind?: string | null; expires_at?: string; signup_token?: string };
+export type SignupResent = { email?: string | null; sent?: boolean; mail_error?: string | null; mail_error_kind?: string | null; pending?: boolean; registered?: boolean; expired?: boolean };
+export type SignupStatus = { state?: string; email?: string | null; expires_at?: string | null };
 export type MySecurity = { passkeys?: string[]; has_password?: boolean; two_factor?: boolean; two_factor_required?: boolean; backup_codes_left?: number; sessions?: string[]; recent_events?: string[] };
 export type TwoFactorSetup = { otpauth_uri?: string; secret_masked?: string; expires_at?: string };
 export type BackupCodes = { codes?: string[] };

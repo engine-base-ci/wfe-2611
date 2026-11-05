@@ -18,6 +18,13 @@ export const uniqEmail = () => MAIL_TO.replace("<uniq>", `qa-${uniq()}`);
 /** 「本当に送られるか」を見る行だけが使う宛先。抑止の接頭辞を付けないので実際に送出先へ出る */
 export const realMailEmail = () => MAIL_TO.replace("<uniq>", `delivered+${uniq()}`);
 
+/** ログに出る宛先の印（packages/auth の mailTag と同じ作り）。ログにメールアドレスそのものは出ない（K-51） */
+export const mailTag = (email: string): string =>
+  `宛先#${createHash("sha256")
+    .update(email.normalize("NFKC").replace(/\s+/g, "").trim().toLowerCase())
+    .digest("hex")
+    .slice(0, 12)}`;
+
 export async function api<T>(
   path: string,
   body?: unknown,
@@ -34,8 +41,9 @@ export async function api<T>(
 /** 申し込む → 確認のリンクを踏む → 会社ができて token が返る（D-088：登録が終わるのは確認の時点）。
  *  リンクは API のログから拾う（KANAME_API_LOG）。本物の流れをそのまま通すので、画面の前提もこれで揃う */
 export async function signupPending(company = "QA 社", email = uniqEmail()) {
-  const r = await api<{ data: { email: string; sent: boolean; mail_error: string | null } }>("/api/auth-ext/sign-up", {
+  const r = await api<{ data: { email: string; sent: boolean; mail_error: string | null } }>("/api/v1/auth/sign-up", {
     email,
+    name: company,
     password: PW,
     company_name: company,
   });
@@ -108,7 +116,7 @@ export function lastMailUrl(kind: "verify" | "reset", email: string): string | n
   if (!p) return null;
   const lines = readFileSync(p, "utf8")
     .split("\n")
-    .filter((l) => l.includes(`（${kind} → ${email}）`)); // 「送出先が無い」でも「リンク」でも拾う
+    .filter((l) => l.includes(`（${kind} → ${email}）`) || l.includes(`（${kind} → ${mailTag(email)}）`)); // 「送出先が無い」でも「リンク」でも拾う。宛先は印でも出る（K-51）
   const last = lines[lines.length - 1];
   const m = last ? /: (https?:\S+)/.exec(last) : null;
   return m ? m[1]! : null;
@@ -154,7 +162,7 @@ export function mailLog(email: string): { sent: string; failed: string } {
   if (!p) return { sent: "", failed: "" };
   const lines = readFileSync(p, "utf8")
     .split("\n")
-    .filter((l) => l.includes(email));
+    .filter((l) => l.includes(email) || l.includes(mailTag(email))); // ログの宛先は印（K-51・TP-REG-14）
   return {
     sent: lines.filter((l) => l.includes("[mail] 送った")).pop() ?? "",
     failed: lines.filter((l) => l.includes("[mail] 送れなかった")).pop() ?? "",

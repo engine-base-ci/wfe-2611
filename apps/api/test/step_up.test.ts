@@ -20,6 +20,7 @@ import { localDriver } from "@kaname/storage/local";
 import { ENDPOINTS } from "@kaname/contracts";
 import { createApp } from "../src/app.js";
 import { authExt } from "../src/auth/ext.js";
+import { pendingToken } from "./_pending.js";
 import { authHooks } from "../src/hooks/auth.js";
 
 const DB_PKG = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "packages", "db");
@@ -84,11 +85,10 @@ beforeAll(async () => {
 /** 登録（確認メールを通す）→ ログイン済みのトークン */
 async function signedIn() {
   const email = `${uniq()}@example.com`;
-  expect((await call("POST", "/api/auth-ext/sign-up", { email, password: PW, company_name: "K" })).status).toBe(201);
-  const mail = sent.filter((m) => m.to === email && m.kind === "verify").at(-1)!;
-  const ver = (await (
-    await call("POST", "/api/auth-ext/verify-signup", { token: new URL(mail.url).searchParams.get("token") })
-  ).json()) as { data: { token: string } };
+  const token = await pendingToken(AUTH_URL, "test-master", { email, password: PW, companyName: "K" });
+  const ver = (await (await call("POST", "/api/auth-ext/verify-signup", { token })).json()) as {
+    data: { token: string };
+  };
   const H = { authorization: `Bearer ${ver.data.token}` };
   const member = (
     await admin.query<{ member_id: string }>(

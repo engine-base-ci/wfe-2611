@@ -16,6 +16,7 @@ import { createRepository } from "@kaname/db/repository";
 import { MemoryVault, SecretsGateway } from "@kaname/secrets";
 import { createApp } from "../src/app.js";
 import { authExt } from "../src/auth/ext.js";
+import { pendingToken } from "./_pending.js";
 
 const DB_PKG = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "packages", "db");
 const ADMIN = process.env["DATABASE_URL"]!;
@@ -76,10 +77,7 @@ beforeAll(async () => {
 async function ready() {
   const email = `${uniq()}@example.com`;
   // 登録が終わるのはメールを確認した時点（D-088）。確認メールのリンクの token で verify-signup を通して初めて token が出る
-  expect((await post("/api/auth-ext/sign-up", { email, password: PW, company_name: "K" })).status).toBe(201);
-  const mail = sent.filter((m) => m.to === email && m.kind === "verify").at(-1);
-  if (!mail) throw new Error("確認メールが出ていない");
-  const vt = new URL(mail.url).searchParams.get("token") ?? "";
+  const vt = await pendingToken(AUTH_URL, "test-master", { email, password: PW, companyName: "K" });
   const ver = await post("/api/auth-ext/verify-signup", { token: vt });
   expect(ver.status).toBe(201);
   const token = ((await ver.json()) as { data: { token: string } }).data.token;

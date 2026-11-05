@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 363（作った 5・後のフェーズの行為だけ 20）・前の道すじ 43・表 142・画面の部品 13・共通の処理 13・エラー 142・部品 51・設定 34
+API 363（作った 8・後のフェーズの行為だけ 20）・前の道すじ 40・表 142・画面の部品 13・共通の処理 13・エラー 146・部品 51・設定 34
 
 ## 共通の処理
 
@@ -27,7 +27,7 @@ API 363（作った 5・後のフェーズの行為だけ 20）・前の道す�
 | ファイル | 出すもの | 何をするか |
 |---|---|---|
 | `apps/web/components/k/button` | Button | ボタン（K-24・正本 components.button-*）。1 画面に主ボタン（primary）は 1 つ。danger は取り消せない操作 |
-| `apps/web/components/k/field` | TextField, TextArea | 入力（K-24・正本 components.input）。見出し・説明・理由（422 の項目ごとの理由）を 1 つの組にする（Base UI Field） |
+| `apps/web/components/k/field` | TextField, TextArea, PasswordField | 入力（K-24・正本 components.input）。見出し・説明・理由（422 の項目ごとの理由）を 1 つの組にする（Base UI Field） |
 | `apps/web/components/k/select` | Select | 選ぶ（K-24・Base UI Select）。キーボード（↑↓・Enter・文字で飛ぶ）と読み上げは Base UI に任せる |
 | `apps/web/components/k/table` | Table | 表（K-24）。1 行 36px（D-128.13）。見出しの行は th（scope 付き）、表の名前は caption（読み上げが表の中身を言える） |
 | `apps/web/components/k/badge` | Badge | 札（K-24・D-052）。状態は淡い面と濃い文字の対。色だけで意味を伝えない（文字を必ず持つ） |
@@ -141,9 +141,9 @@ API 363（作った 5・後のフェーズの行為だけ 20）・前の道す�
 | `getServiceStatus` | GET /api/v1/auth/service-status | 取得（auth）— ログインする（パスキー／パスワード＋2 段階） | F1 | 契約だけ（501） | K-74 |
 | `signInWithPassword` | POST /api/v1/auth/sign-in | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | F1 | 契約だけ（501） | K-74 |
 | `signOut` | POST /api/v1/auth/sign-out | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | F1 | 契約だけ（501） | K-74 |
-| `createSignup` | POST /api/v1/auth/sign-up | 作成・実行（auth）— アカウントを作る（会社名が空なら本人の名前で個人のテナン／規約に同意する（どの版に同意したかが残る） | F1 | 契約だけ（501） | K-51 |
-| `resendSignupEmail` | POST /api/v1/auth/sign-up/resend | 作成・実行（auth）— アカウントを作る（会社名が空なら本人の名前で個人のテナン | F1 | 契約だけ（501） | K-51 |
-| `getSignupStatus` | GET /api/v1/auth/sign-up/status | 取得（auth）— アカウントを作る（会社名が空なら本人の名前で個人のテナン | F1 | 契約だけ（501） | K-51 |
+| `createSignup` | POST /api/v1/auth/sign-up | 作成・実行（auth）— アカウントを作る（会社名が空なら本人の名前で個人のテナン／規約に同意する（どの版に同意したかが残る） | F1 | 作った | K-51 |
+| `resendSignupEmail` | POST /api/v1/auth/sign-up/resend | 作成・実行（auth）— アカウントを作る（会社名が空なら本人の名前で個人のテナン | F1 | 作った | K-51 |
+| `getSignupStatus` | GET /api/v1/auth/sign-up/status | 取得（auth）— アカウントを作る（会社名が空なら本人の名前で個人のテナン | F1 | 作った | K-51 |
 | `verifySignup` | POST /api/v1/auth/sign-up/verify | 作成・実行（auth）— メールを確認して本人だと示す | F1 | 契約だけ（501） | K-52 |
 | `stepUp` | POST /api/v1/auth/step-up | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | F1 | 作った | K-19 |
 | `consentToTerms` | POST /api/v1/auth/terms/consent | 作成・実行（auth）— 規約に同意する（どの版に同意したかが残る） | F1 | 契約だけ（501） | K-53 |
@@ -532,12 +532,9 @@ API 363（作った 5・後のフェーズの行為だけ 20）・前の道す�
 - `/onboard/golive/pause`
 - `/onboard/testrun`
 - `/onboard/testrun/cancel`
-- `/resend-signup`
 - `/setup-state`
 - `/setup-step`
 - `/sign-in`
-- `/sign-up`
-- `/signup-status`
 - `/two-factor/verify`
 - `/vault/credentials`
 - `/vault/credentials/:id/answer`

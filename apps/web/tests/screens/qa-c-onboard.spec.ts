@@ -18,6 +18,7 @@ import {
   signupViaApi,
   totp,
   uniqEmail,
+  mailTag,
 } from "../_lib/api";
 import { startAgentBridge, type AgentBridge } from "../_lib/agent-bridge";
 
@@ -51,7 +52,11 @@ function mailLines(email: string, subject: string): string[] {
   if (!p) throw new Error("KANAME_API_LOG が無い（メールの行は API のログで確かめる）");
   return readFileSync(p, "utf8")
     .split("\n")
-    .filter((l) => l.startsWith("[mail]") && l.includes(`→ ${email}（${subject}）`));
+    .filter(
+      (l) =>
+        l.startsWith("[mail]") &&
+        (l.includes(`→ ${email}（${subject}）`) || l.includes(`→ ${mailTag(email)}（${subject}）`)),
+    ); // ログの宛先は印（K-51・TP-REG-14）
 }
 /** 送出先（Resend）が受け取りを拒む宛先：example.com は送出先が拒否する（_lib/api.ts の注記）。
  *  抑止の接頭辞（qa-）を付けないので、実際に送出先へ出して拒否が返る */
@@ -193,9 +198,7 @@ test("SCR-VERIFY-EMAIL-028 送れなかった確認のメールを「送った�
   await expect.poll(() => mailLines(email, subject).join("\n"), { timeout: 15_000 }).toContain("[mail] 送れなかった →");
   const lines = mailLines(email, subject);
   const failed = lines.find((l) => l.startsWith("[mail] 送れなかった"))!;
-  expect(failed, "宛先と理由が書かれる").toMatch(
-    new RegExp(`^\\[mail\\] 送れなかった → ${email.replace(/[.+]/g, "\\$&")}（.+）: .+`),
-  );
+  expect(failed, "宛先と理由が書かれる").toMatch(new RegExp(`^\\[mail\\] 送れなかった → ${mailTag(email)}（.+）: .+`));
   expect(
     lines.filter((l) => l.startsWith("[mail] 送った")),
     "「送った」は出ない",

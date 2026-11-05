@@ -18,6 +18,7 @@ import { ObjectStore } from "@kaname/storage";
 import { localDriver } from "@kaname/storage/local";
 import { createApp } from "../src/app.js";
 import { authExt } from "../src/auth/ext.js";
+import { pendingToken } from "./_pending.js";
 import { agentStreamRoutes } from "../src/auth/agent-stream.js";
 
 const DB_PKG = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "packages", "db");
@@ -91,11 +92,9 @@ afterAll(async () => {
 /** 登録（確認メールを通す）→ Bridge をつなぐ。画面の鍵と member id を返す */
 async function ready() {
   const email = `${uniq()}@example.com`;
-  expect((await req("POST", "/sign-up", { email, password: PW, company_name: "K" })).status).toBe(201);
-  const mail = sent.filter((m) => m.to === email && m.kind === "verify").at(-1)!;
-  const ver = await json<{ token: string }>(
-    req("POST", "/verify-signup", { token: new URL(mail.url).searchParams.get("token") }),
-  );
+  // 申し込みは直に置き、確認だけを通す（前の道すじ /sign-up は K-51 で契約の口に移した）
+  const token = await pendingToken(AUTH_URL, "test-master", { email, password: PW, companyName: "K" });
+  const ver = await json<{ token: string }>(req("POST", "/verify-signup", { token }));
   const H = { authorization: `Bearer ${ver.token}` };
   const pair = await json<{ code: string }>(req("POST", "/bridge/pair", {}, H));
   const claim = await json<{ session_id: string }>(

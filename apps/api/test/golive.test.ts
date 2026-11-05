@@ -17,6 +17,7 @@ import { ObjectStore } from "@kaname/storage";
 import { localDriver } from "@kaname/storage/local";
 import { createApp } from "../src/app.js";
 import { authExt } from "../src/auth/ext.js";
+import { pendingToken } from "./_pending.js";
 
 const DB_PKG = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "packages", "db");
 const ADMIN = process.env["DATABASE_URL"]!;
@@ -99,11 +100,9 @@ beforeAll(async () => {
 /** 会社を作り、5 テスト まで通した人にする。Bridge の行は bridge=true のとき */
 async function signUp(bridge = true) {
   const email = `${uniq()}@example.com`;
-  expect((await post("/sign-up", { email, password: PW, company_name: "K" })).status).toBe(201);
-  const mail = sent.filter((m) => m.to === email && m.kind === "verify").at(-1)!;
-  const ver = await json<{ token: string }>(
-    post("/verify-signup", { token: new URL(mail.url).searchParams.get("token") }),
-  );
+  // 申し込みは直に置き、確認だけを通す（前の道すじ /sign-up は K-51 で契約の口に移した）
+  const token = await pendingToken(AUTH_URL, "test-master", { email, password: PW, companyName: "K" });
+  const ver = await json<{ token: string }>(post("/verify-signup", { token }));
   const H = { authorization: `Bearer ${ver.token}` };
   const me = await json<{ member_id: string; tenant_id: string }>(req("GET", "/me", undefined, H));
   const scope = (await admin.query("select scope_id from members where id = $1", [me.member_id])).rows[0]

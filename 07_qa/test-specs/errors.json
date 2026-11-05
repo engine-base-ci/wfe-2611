@@ -3596,6 +3596,36 @@
    "severity": "medium"
   },
   {
+   "id": "E-LIM-005",
+   "class": "limit",
+   "where": {
+    "screen": "signup",
+    "state": "a"
+   },
+   "when": "同じところから短い間に送りすぎた（契約の口の回数の上限・429）。待つ秒数（retry_after_sec）を {秒} に入れて出す",
+   "false_when": "上限の内（登録なら 1 分に 10 回まで）",
+   "message": "送りすぎです。{秒}秒たってから、もう一度お試しください",
+   "action": "待ってから、もう一度押す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "signup の画面",
+    "steps": [
+     "同じところから 1 分に 11 回「次へ」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.146",
+    "D-128.142"
+   ]
+  },
+  {
    "id": "E-CONN-011",
    "class": "dependency",
    "where": {
@@ -4270,6 +4300,99 @@
    "source": [
     "D-128.61",
     "D-128.91"
+   ]
+  },
+  {
+   "id": "E-VAL-010",
+   "class": "validation",
+   "where": {
+    "screen": "signup",
+    "state": "a"
+   },
+   "when": "登録のときに名前が空（空白だけを含む）か 100 文字を超える",
+   "false_when": "前後の空白を除いて 1〜100 文字",
+   "message": "名前を入れてください",
+   "action": "入力し直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "signup の画面",
+    "steps": [
+     "名前を空のまま「次へ」を押す",
+     "名前を 101 文字にして「次へ」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.142",
+    "D-125.135"
+   ]
+  },
+  {
+   "id": "E-VAL-011",
+   "class": "validation",
+   "where": {
+    "screen": "signup",
+    "state": "a"
+   },
+   "when": "登録のパスワードが、漏れたことのあるパスワードの照合（Have I Been Pwned の範囲の問い合わせ）で見つかった",
+   "false_when": "照合で見つからない。照合のサービスが落ちている・答えの形が違うときは通して記録に残す（D-128.134）",
+   "message": "漏れたことのあるパスワードです。別のパスワードにしてください",
+   "action": "別のパスワードを入れ直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "signup の画面・照合を差し替える",
+    "steps": [
+     "照合が「漏れた」と答えるパスワードで「次へ」を押す"
+    ],
+    "needs": "照合の差し替え（試験の中だけ）"
+   },
+   "severity": "medium",
+   "source": [
+    "D-128.142",
+    "D-125.137",
+    "D-128.134"
+   ]
+  },
+  {
+   "id": "E-VAL-016",
+   "class": "validation",
+   "where": {
+    "screen": "signup",
+    "state": "a"
+   },
+   "when": "登録のときに会社・チームの名前が 100 文字を超える（前後の空白を除いて数える）",
+   "false_when": "空（個人のワークスペースになる・D-125.135）か、前後の空白を除いて 100 文字まで",
+   "message": "会社名は 100 文字までにしてください",
+   "action": "入力し直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "signup の画面",
+    "steps": [
+     "会社・チームの名前を 101 文字にして「次へ」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.146",
+    "D-128.142",
+    "D-125.135"
    ]
   },
   {

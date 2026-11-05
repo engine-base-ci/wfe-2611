@@ -14,6 +14,7 @@ import { createRepository } from "@kaname/db/repository";
 import { MemoryVault, SecretsGateway } from "@kaname/secrets";
 import { createApp } from "../src/app.js";
 import { authExt } from "../src/auth/ext.js";
+import { pendingToken } from "./_pending.js";
 
 const DB_PKG = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "packages", "db");
 const ADMIN = process.env["DATABASE_URL"]!;
@@ -32,13 +33,9 @@ const post = (path: string, body: unknown, headers: Record<string, string> = {})
 const uniq = () => `u${Date.now().toString(36)}${Math.floor(Math.random() * 1e4)}`;
 const PW = "correct-horse-battery-1";
 /** 登録は 2 段（D-088）：申し込み（201・まだ会社は無い）→ 確認メールのリンクを押す（verify-signup・ここで会社と本人ができ、そのまま入る） */
+//   申し込みは K-51 で契約の口（POST /api/v1/auth/sign-up）に移した。ここでは申し込みを直に置いて確認だけ通す（申し込みの振る舞いは features/F1/sign-up.test.ts）
 async function register(email: string, company: string, password = PW): Promise<{ token: string; userId: string }> {
-  const su = await post("/api/auth-ext/sign-up", { email, password, company_name: company });
-  expect(su.status, await su.clone().text()).toBe(201);
-  const key = email.normalize("NFKC").replace(/\s+/g, "").toLowerCase();
-  const mail = [...mails].reverse().find((m) => m.kind === "verify" && m.to === key);
-  expect(mail, `${key} に確認メールが出ていない`).toBeTruthy();
-  const token = new URL(mail!.url).searchParams.get("token")!;
+  const token = await pendingToken(AUTH_URL, "test-master", { email, password, companyName: company });
   const v = await post("/api/auth-ext/verify-signup", { token });
   expect(v.status, await v.clone().text()).toBe(201);
   const j = (await v.json()) as { data: { token: string; user_id: string } };
@@ -83,22 +80,11 @@ beforeAll(async () => {
 }, 60_000);
 
 describe("登録（T-U-01）", () => {
-  it("会社名とメールで申し込むと 201 と確認メール。リンクを押すと会社・根の層・代表・権限・自分のAI ができて入れる。メールは全角・空白・大文字を直して保存", async () => {
-    // eslint-disable-next-line no-irregular-whitespace -- 全角の空白を意図して入れる（表記ゆらぎ）
-    const raw = `　${uniq().toUpperCase()}＠Example.COM `;
-    const email = raw.normalize("NFKC").replace(/\s+/g, "").toLowerCase();
-    const r = await post("/api/auth-ext/sign-up", { email: raw, password: PW, company_name: "　株式会社テスト " });
-    expect(r.status).toBe(201);
-    const j0 = (await r.json()) as { data: { email: string; token?: string } };
-    expect(j0.data.email).toBe(email);
-    expect(j0.data.token).toBeUndefined(); // 申し込みの時点では入れない・会社もまだ無い（D-088）
+  it("確認のリンクを押すと会社・根の層・代表・権限・自分のAI ができて入れる", async () => {
+    const email = `${uniq()}@example.com`;
     const before = await admin.query('select count(*)::int as n from kaname_auth."user" where email = $1', [email]);
     expect(before.rows[0].n).toBe(0);
-    const mail = mails.find((m) => m.kind === "verify" && m.to === email);
-    expect(mail?.url).toContain("/verify-email?token=");
-    const v = await post("/api/auth-ext/verify-signup", { token: new URL(mail!.url).searchParams.get("token") });
-    expect(v.status).toBe(201);
-    const j = (await v.json()) as { data: { token: string; email: string } };
+    const j = await register(email, "株式会社テスト");
     const t = await admin.query(
       'select t.name from members m join tenants t on t.id = m.tenant_id where m.auth_user_id = (select id from kaname_auth."user" where email = $1)',
       [email],
@@ -112,23 +98,9 @@ describe("登録（T-U-01）", () => {
     expect(Number(n.rows[0].clones)).toBe(1);
     // 別 GET：発行された token で自分の会社が読める（別 GET 再取得）
     const me = await app.request("http://localhost/api/v1/members?limit=5", {
-      headers: { authorization: `Bearer ${j.data.token}` },
+      headers: { authorization: `Bearer ${j.token}` },
     });
     expect(me.status).toBe(200);
-  });
-  it("確認まで済んだメールは 409（E-CONF-001）・形式違いは 422（E-VAL-004）・会社名なしは 422", async () => {
-    const email = `${uniq()}@example.com`;
-    // 確認する前は何度でも申し込み直せる（D-088.3）。確認まで終わった人だけ 409
-    expect((await post("/api/auth-ext/sign-up", { email, password: PW, company_name: "A" })).status).toBe(201);
-    expect((await post("/api/auth-ext/sign-up", { email, password: PW, company_name: "A2" })).status).toBe(201);
-    await register(email, "A");
-    const dup = await post("/api/auth-ext/sign-up", { email: email.toUpperCase(), password: PW, company_name: "B" });
-    expect(dup.status).toBe(409);
-    expect(((await dup.json()) as { code: string }).code).toBe("E-CONF-001");
-    expect((await post("/api/auth-ext/sign-up", { email: "abc@", password: PW, company_name: "A" })).status).toBe(422);
-    expect(
-      (await post("/api/auth-ext/sign-up", { email: `${uniq()}@example.com`, password: PW, company_name: "" })).status,
-    ).toBe(422);
   });
 });
 

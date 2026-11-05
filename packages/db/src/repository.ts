@@ -423,6 +423,21 @@ export class Repository {
         ).rows[0]!.id,
     );
   }
+  /** セキュリティの出来事を残し、「落ち始め」かを返す（migration 0086・K-51）。
+   *  true＝最後の「確かめた」（ackKind の出来事）より後で最初の 1 件。呼んだ側はこのときだけ運営に知らせる */
+  securityEventOpening(tenantId: string, kind: string, ackKind: string, detail: Row = {}): Promise<boolean> {
+    return withTenant(
+      this.pool,
+      { tenantId, userId: null, role: "anonymous" },
+      async (c) =>
+        (
+          await c.query<{ first: boolean }>(
+            "select app.record_security_event_opening($1, $2, $3, $4::jsonb) as first",
+            [tenantId, kind, ackKind, JSON.stringify(detail)],
+          )
+        ).rows[0]!.first === true,
+    );
+  }
   /** 運営の証跡（運営テナントに書き、対象の会社の audit_events にも写す） */
   opsAudit(
     ctx: TenantContext,

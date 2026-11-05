@@ -146,10 +146,14 @@ for e in E:
     resp = {**props, **{k: dbtype(v) for k, v in sorted(dbc.items()) if k not in props}}   # 答えは DB の列を全部持つ（ER に無い列も）
     schemas[name] = {"type": "object", "properties": resp, "required": ["id"], "x-table": e["table_name"], "x-source": e["source"]}
     schemas[name + "Input"] = {"type": "object", "properties": {k: v for k, v in props.items() if k not in INTERNAL}}
+def _ftype(v):   # 型の後ろの ? は null を許す（K-51）
+    base = v[:-1] if v.endswith("?") else v
+    t = {"type": "array", "items": {"type": "object"}} if base == "array" else {"type": base}
+    return {**t, "nullable": True} if v.endswith("?") else t
 for _op, (_n, _props) in getattr(_sa, "INPUTS", {}).items():   # 表の行ではない入力の形（K-19）
-    schemas[_n] = {"type": "object", "properties": {k: {"type": v} for k, v in _props.items()}, "x-operation": _op}
+    schemas[_n] = {"type": "object", "properties": {k: _ftype(v) for k, v in _props.items()}, "x-operation": _op}
 for _op, (_n, _props) in _sa.RESPONSES.items():   # 表の行ではない答えの形（D-128.78）
-    schemas[_n] = {"type": "object", "properties": {k: ({"type": "array", "items": {"type": "object"}} if v == "array" else {"type": v}) for k, v in _props.items()}, "x-operation": _op}
+    schemas[_n] = {"type": "object", "properties": {k: _ftype(v) for k, v in _props.items()}, "x-operation": _op}
 # 列の名前は英小文字と _ だけ（ER 図で 2 つの列を「・」でつないだまま 1 つの名前になり、型のファイルが画面の組み立て（SWC）で読めなくなった・2026-11-03）
 _badnames = [f"{n}.{k}" for n, sc in schemas.items() for k in sc["properties"] if not re.match(r"^[a-z_][a-z0-9_]*$", k)]
 if _badnames: raise SystemExit(f"列の名前が英小文字と _ だけでない（03_architecture/ER図.md を直す）: {_badnames[:8]}")
@@ -173,6 +177,7 @@ for e in endpoints:
     op["parameters"] = [{"name": n, "in": "path", "required": True, "schema": {"type": "string", "format": "uuid"} if n == "id" else {"type": "string"}} for n in e["path_params"]]
     if e.get("operation_id") in _sa.QUERIES: op["parameters"] += qparams(_sa.QUERIES[e["operation_id"]] + (["cursor", "limit", "sort"] if e["returns_list"] else []), tname)
     elif e["returns_list"]: op["parameters"] += qparams(("scope_id", "cursor", "limit", "sort"), tname)
+    op["parameters"] += [{"name": h, "in": "header", "required": True, "schema": {"type": "string", "minLength": 32}} for h in getattr(_sa, "HEADERS", {}).get(e.get("operation_id"), [])]   # 頭で受ける値（K-51）
     if not op["parameters"]: del op["parameters"]
     tbl = "".join(w.capitalize() for w in tname.split("_"))
     _in = getattr(_sa, "INPUTS", {}).get(e.get("operation_id"), (f"{tbl}Input",))[0]
@@ -186,6 +191,7 @@ ts = ["// 生成物（05_flow/build_api.py）。手で直さない。OpenAPI 3.0
 def tst(p): return {"string": "string", "number": "number", "boolean": "boolean", "object": "Record<string, unknown>", "array": "string[]", "integer": "number"}.get(p.get("type"), "unknown") + (" | null" if p.get("nullable") else "")
 for n, sc in schemas.items():
     if n == "Error": continue
+    if not sc["properties"]: ts.append(f"export type {n} = Record<string, never>;"); continue   # 中身の無い入力（K-51 の送り直し）。{{}} は何でも通るので使わない
     ts.append(f"export type {n} = {{ " + "; ".join(f"{k}{'?' if k not in sc.get('required', []) else ''}: {tst(v)}" for k, v in sc["properties"].items()) + " };")
 ts.append(""); ts.append("export const ENDPOINTS = " + json.dumps([{"id": e["id"], "method": e["method"], "path": e["path"], "acts": e["acts"], "screens": e["screens"]} for e in endpoints], ensure_ascii=False, indent=1) + " as const;")
 # ---------------------------------------------------------------- 書き出し

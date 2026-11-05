@@ -57,7 +57,14 @@ export function createApp(o: AppOptions | string = {}): Hono<Vars> {
           .split(",")
           .map((x) => x.trim())
           .filter(Boolean),
-        allowHeaders: ["authorization", "content-type", "idempotency-key", "x-screen-id", "x-tenant-id"],
+        allowHeaders: [
+          "authorization",
+          "content-type",
+          "idempotency-key",
+          "x-screen-id",
+          "x-tenant-id",
+          "x-signup-token",
+        ], // x-signup-token：登録の申し込みの印（K-51）
         exposeHeaders: ["set-auth-token", "content-disposition"], // 成果物を落とすときのファイル名（D-106.7）
         credentials: true,
         maxAge: 600,

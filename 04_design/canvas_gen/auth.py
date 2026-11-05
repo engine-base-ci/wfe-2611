@@ -94,18 +94,18 @@ authpage("AuthSignup.dc.html", "アカウントを作る",
   + '<div>' + lab("メール") + inp("you@example.com", "takamoto@engine-base.example") + '</div>'
   + '<div>' + lab("名前") + inp("例：高本 聖斗", "高本 聖斗") + '</div>'
   + '<div>' + lab("会社・チームの名前", "（空なら、あなたの名前で個人のワークスペースになる。あとで人を招ける）") + inp("例：株式会社ENGINE BASE", "株式会社ENGINE BASE", True) + '</div>'
+  + '<div>' + lab("パスワード", "（12 文字以上。漏れたことのあるパスワードは使えない）") + inp("12 文字以上", "••••••••••••••", False, "password") + '</div>'
   + big("次へ（メールを確かめる）", "p", "AuthVerify.dc.html")
   + '<div style="font-size: 11px; color: %s; text-align: center">続けると <a href="#">利用規約</a> と <a href="#">プライバシー</a> に同意したことになる</div>' % MUTED
   + '<div style="border-top: 1px solid #EDF0F4; padding-top: 12px; font-size: 12px; text-align: center">アカウントがある方は <a href="AuthLogin.dc.html">ログイン</a></div>', 440)
-authpage("AuthVerify.dc.html", "メールを確かめる",
-  '<a href="AuthSignup.dc.html" style="font-size: 12px">← 戻る</a><b style="font-size: 18px; text-align: center">メールを確かめる</b>'
-  + '<div style="font-size: 13px; color: %s; text-align: center; line-height: 1.7">takamoto@engine-base.example に 6 けたの数字を送りました。10 分のあいだ使えます</div>' % MUTED
-  + boxes("38")
-  + '<div style="border-top: 1px solid #EDF0F4; padding-top: 14px; display: flex; flex-direction: column; gap: 10px"><b style="font-size: 14px">入り方を決める</b>'
-  + big(FP + "パスキーを作る（おすすめ）", "p", "OnHome.dc.html")
-  + '<div style="font-size: 11px; color: %s; text-align: center; margin-top: -4px">この PC の指紋・顔・ロックで入る。パスワードは要らない</div>' % MUTED
-  + big("パスワードにする", "s", "MeTotp.dc.html") + '<div style="font-size: 11px; color: %s; text-align: center; margin-top: -4px">パスワードだけで入るなら、2 段階認証も一緒に付ける</div></div>' % MUTED
-  + '<div style="font-size: 12px; text-align: center"><a href="#">メールが届かない</a>（迷惑メール・アドレスの打ち間違いを確かめる・送り直す）</div>', 440)
+# 待つ画面（D-128.142・K-51）：確定はメールのリンク。6 けたのコードの欄は無い。状態と送り直しは申し込みの印で引く
+authpage("AuthVerify.dc.html", "確認メールを送りました",
+  '<a href="AuthSignup.dc.html" style="font-size: 12px">← 戻る</a>'
+  + '<div style="display: flex; justify-content: center">' + icon("✉", NAVY, 44) + '</div>'
+  + '<b style="font-size: 18px; text-align: center">確認メールを送りました</b>'
+  + '<div style="font-size: 13px; color: %s; text-align: center; line-height: 1.7"><b style="color: #131B27">takamoto@engine-base.example</b> に確認のメールを送りました。<br>30 分以内にメールのリンクを押してください。押した時点で登録が終わります</div>' % MUTED
+  + big("送り直す", "s", "AuthVerify.dc.html")
+  + '<div style="font-size: 11px; color: %s; text-align: center">届かないときは、迷惑メールのフォルダと、アドレスの打ち間違いを確かめてください</div>' % MUTED, 440)
 authpage("AuthReset.dc.html", "パスワードを忘れた",
   '<a href="AuthLogin.dc.html" style="font-size: 12px">← ログインに戻る</a><b style="font-size: 18px">パスワードを作り直す</b>'
   + '<div style="display: flex; gap: 10px; align-items: flex-start; background: #F1FAF4; border: 1px solid #CDE8D5; border-radius: 8px; padding: 10px 12px; font-size: 13px">' + icon("✓", "#166534", 22) + '<span style="line-height: 1.7">登録されていれば、takamoto@engine-base.example に作り直しのリンクを送りました。30 分のあいだ、1 回だけ使えます</span></div>'

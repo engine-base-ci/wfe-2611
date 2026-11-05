@@ -7,6 +7,8 @@ import type { Auth } from "./index.js";
 export const normalizeEmail = (v: string): string => v.normalize("NFKC").replace(/\s+/g, "").trim().toLowerCase();
 export const emailHash = (email: string): string => createHash("sha256").update(normalizeEmail(email)).digest("hex");
 export const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+/** ログに宛先をそのまま出さない（K-51・TP-REG-14）。同じ宛先は同じ印になるので、送った／送れなかったを辿れる */
+export const mailTag = (email: string): string => `宛先#${emailHash(email).slice(0, 12)}`;
 
 export interface SignInResult {
   ok: boolean;

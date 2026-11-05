@@ -153,6 +153,32 @@
   opacity: 0.55;
   cursor: not-allowed;
 }
+/* パスワードの見る・隠す（D-087）。ボタンは欄の右の中に置き、的は 32px（24px 以上） */
+.k-pw {
+  position: relative;
+}
+.k-pw .k-input {
+  padding-right: calc(var(--k-s-md) + 32px);
+}
+.k-pw-toggle {
+  position: absolute;
+  top: 50%;
+  right: var(--k-s-xs);
+  transform: translateY(-50%);
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: var(--k-r-md);
+  background: transparent;
+  color: var(--k-on-surface-variant);
+  cursor: pointer;
+}
+.k-pw-toggle:hover {
+  color: var(--k-on-surface);
+  background: var(--k-surface-variant);
+}
 textarea.k-input {
   resize: vertical;
   min-height: 96px;

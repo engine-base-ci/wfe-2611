@@ -7,14 +7,17 @@ import { createMemberHub } from "@kaname/db/listen";
 import { createRepository } from "@kaname/db/repository";
 import { createAuth } from "@kaname/auth";
 import { createSessionResolver } from "@kaname/auth/resolver";
+import { mailTag } from "@kaname/auth/signup";
 import { ObjectStore, s3Client, s3Driver, type StorageDriver } from "@kaname/storage";
 import { createApp } from "./app.js";
 import { authExt } from "./auth/ext.js";
 import { InfisicalVault, MemoryVault, SecretsGateway, type Vault } from "@kaname/secrets";
-import { resendMail, signedMail } from "@kaname/notify";
+import { resendMail, signedMail, type MailLike } from "@kaname/notify";
+import { ActionGateway, RateLimiter } from "@kaname/actions";
 import { assertApiStartup } from "./startup.js";
 import { agentHooks } from "./hooks/agent.js";
 import { authHooks } from "./hooks/auth.js";
+import { signupHooks } from "./hooks/signup.js";
 import { nearLimitNotifier } from "./ops-alert.js";
 
 export interface BootOptions {
@@ -28,7 +31,16 @@ export interface BootOptions {
   poolMax?: { app: number; auth: number };
   /** 資料の置き場のドライバ（既定は S3 互換。開発で S3 が無いときはローカルのフォルダ・dev.ts） */
   storageDriver?: StorageDriver;
+  /** メールの送出先（関門 C6 の Resend の代わり・試験用）。署名と返信先は本番と同じく付ける */
+  mail?: MailLike;
+  /** 外への口（関門 C1）が使う fetch（試験用。本番は実の fetch） */
+  outboundFetch?: typeof fetch;
 }
+/** 外への口（関門 C1）の上限：1 分あたり。登録の照合は運営のテナント × 宛先 1 つにまとまるので、人の速さの既定（30）より大きくする */
+const OUTBOUND_PER_MINUTE = 600;
+/** 照合など、登録の途中で待つ外の答えの上限（遅い外で登録を止めない・TP-EXT-01） */
+const OUTBOUND_TIMEOUT_MS = 5_000;
+
 export interface Booted {
   app: ReturnType<typeof createApp>;
   report: StartupReport;
@@ -41,9 +53,8 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
   const repo = await createRepository(appPool);
   // メールの送出（関門 C6）：Resend の鍵があれば送る。無ければ URL をログに出す（開発）
   // 署名（会社名・代表者名・問い合わせ）と返信先（info@）は、ここで全部のメールに付ける（D-096・関門 C6）
-  const mail = config.resendApiKey
-    ? signedMail(resendMail(config.resendApiKey), config.operator, config.mailReplyTo)
-    : null;
+  const inner = o.mail ?? (config.resendApiKey ? resendMail(config.resendApiKey) : null);
+  const mail = inner ? signedMail(inner, config.operator, config.mailReplyTo) : null;
   // 送出は 1 か所。認証（再設定）と保留の申し込み（確認）の両方がこれを通る
   const mailer = mail
     ? async (m: { to: string; subject: string; text: string }) => {
@@ -52,15 +63,17 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
           // dev の自動テスト宛ては送らない（送出先の 1 日の上限を食い潰すため）。
           // 「送った」とは書かない。リンクは [auth] の行に出るので手順はそのまま通る
           if (config.mailSuppressPrefix && m.to.startsWith(config.mailSuppressPrefix)) {
-            console.log(`[mail] 送らなかった（dev の抑止 ${config.mailSuppressPrefix}）→ ${m.to}（${m.subject}）`);
+            console.log(
+              `[mail] 送らなかった（dev の抑止 ${config.mailSuppressPrefix}）→ ${mailTag(m.to)}（${m.subject}）`,
+            );
             return;
           }
           // send は投げずに { error } を返す。見ないと拒否されても「送った」になる（G-15）
           const r = await mail.send({ from: config.mailFrom, to: m.to, subject: m.subject, text: m.text }); // 署名と返信先は signedMail が付ける
           if (r.error) throw new Error(r.error.message);
-          console.log(`[mail] 送った → ${m.to}（${m.subject}）`);
+          console.log(`[mail] 送った → ${mailTag(m.to)}（${m.subject}）`);
         } catch (e) {
-          console.error(`[mail] 送れなかった → ${m.to}（${m.subject}）: ${(e as Error).message}`);
+          console.error(`[mail] 送れなかった → ${mailTag(m.to)}（${m.subject}）: ${(e as Error).message}`);
           throw e;
         }
       }
@@ -86,6 +99,15 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
   // 資料の置き場（関門 C4・D-104.11）。署名は資格情報の鍵とは別の用途の鍵から作る
   const objects = new ObjectStore(repo, o.storageDriver ?? s3, { signingSecret: `${config.authSecret}:files` });
   // 会話が変わった知らせを受ける 1 本（D-113・台帳 X-008）。URL が無ければ持たない（画面は見に行く形のまま）
+  // 外への口（関門 C1）。登録の漏れたパスワードの照合が通る（K-51）。宛先は照合のサービスだけ
+  const outboundHooks = {
+    policy: async () => "auto" as const,
+    destinationAllowed: async (r: { destination?: string }) => r.destination === "api.pwnedpasswords.com",
+  };
+  const limiter = new RateLimiter(OUTBOUND_PER_MINUTE);
+  const actions = o.outboundFetch
+    ? new ActionGateway(repo, outboundHooks, limiter, OUTBOUND_TIMEOUT_MS, o.outboundFetch)
+    : new ActionGateway(repo, outboundHooks, limiter, OUTBOUND_TIMEOUT_MS);
   const hub = config.listenDatabaseUrl ? createMemberHub({ url: config.listenDatabaseUrl }) : null;
   const close = async () => {
     await hub?.close();
@@ -106,7 +128,14 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
     resolve: createSessionResolver(auth, appPool),
     authExt: authExt({ auth, appPool, authPool, repo, secrets, objects, config, hub, ...(mailer ? { mailer } : {}) }),
     corsOrigin: config.webOrigins.join(","),
-    contract: { hooks: { ...agentHooks(appPool), ...authHooks(auth, appPool) } }, // 会話・記憶の契約の口は画面の口と同じ本体を通す。本人確認の取り直しはログインの部品に頼る（K-19）
+    // 会話・記憶の契約の口は画面の口と同じ本体を通す。本人確認の取り直しはログインの部品に頼る（K-19）。登録は K-51
+    contract: {
+      hooks: {
+        ...agentHooks(appPool),
+        ...authHooks(auth, appPool),
+        ...signupHooks({ authPool, repo, actions, ...(mailer ? { mailer } : {}), config }),
+      },
+    },
   });
   return { app, report, close };
 }

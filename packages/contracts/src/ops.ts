@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:2ad5fc3e6e32ac27
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:fe6156470535126e
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -30,8 +30,8 @@ export interface Ops {
   getServiceStatus: { params: never; query: never; body: never; data: T.ServiceStatus };
   signInWithPassword: { params: never; query: never; body: T.SessionsInput; data: T.Sessions };
   signOut: { params: never; query: never; body: T.SessionsInput; data: T.Sessions };
-  createSignup: { params: never; query: never; body: T.PendingSignupInput; data: T.PendingSignup };
-  resendSignupEmail: { params: never; query: never; body: T.PendingSignupInput; data: T.PendingSignup };
+  createSignup: { params: never; query: never; body: T.SignupInput; data: T.SignupCreated };
+  resendSignupEmail: { params: never; query: never; body: T.SignupResendInput; data: T.SignupResent };
   getSignupStatus: { params: never; query: never; body: never; data: T.SignupStatus };
   verifySignup: { params: never; query: never; body: T.PendingSignupInput; data: T.PendingSignup };
   stepUp: { params: never; query: never; body: T.StepUpInput; data: T.StepUp };

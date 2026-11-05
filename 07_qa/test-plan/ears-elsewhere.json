@@ -9,6 +9,32 @@
     "test_post_auth_step_up_rejected_401": "パスワードが空なら 422・ログインしていなければ 401",
     "test_post_auth_step_up_rejected_422_2": "パスワードが空なら 422"
    }
+  },
+  "createSignup": {
+   "file": "apps/api/test/features/F1/sign-up.test.ts",
+   "reason": "登録は、申し込みの印・漏れたパスワードの照合（関門 C1）・確認のメール（関門 C6）を本物の DB と差し込んだ送出先で確かめる。生成の試験の偽のセッションと土台では確かめられない（K-51）",
+   "covers": {
+    "test_post_auth_sign_up_ok": "K51-API-001 無し × 登録の画面から送る",
+    "test_post_auth_sign_up_ok_2": "K51-API-027 規約の版",
+    "test_post_auth_sign_up_rejected_422_2": "K51-API-011 メールが空・形が違う",
+    "test_post_auth_sign_up_rate_limited": "K51-API-023 1 分に 11 回"
+   }
+  },
+  "getSignupStatus": {
+   "file": "apps/api/test/features/F1/sign-up.test.ts",
+   "reason": "登録は、申し込みの印・漏れたパスワードの照合（関門 C1）・確認のメール（関門 C6）を本物の DB と差し込んだ送出先で確かめる。生成の試験の偽のセッションと土台では確かめられない（K-51）",
+   "covers": {
+    "test_get_auth_sign_up_status_ok": "K51-API-005 待つ画面の再読み込み",
+    "test_get_auth_sign_up_status_rejected_422": "K51-API-008 印が無い・知らない印"
+   }
+  },
+  "resendSignupEmail": {
+   "file": "apps/api/test/features/F1/sign-up.test.ts",
+   "reason": "登録は、申し込みの印・漏れたパスワードの照合（関門 C1）・確認のメール（関門 C6）を本物の DB と差し込んだ送出先で確かめる。生成の試験の偽のセッションと土台では確かめられない（K-51）",
+   "covers": {
+    "test_post_auth_sign_up_resend_ok": "K51-API-009 送り直す（期限内・印で）",
+    "test_post_auth_sign_up_resend_rejected_422_2": "K51-API-030 送り直しをメールで頼む"
+   }
   }
  }
 }

@@ -1,7 +1,7 @@
 {
  "meta": {
   "version": "v3.1",
-  "created_at": "2026-11-04",
+  "created_at": "2026-11-05",
   "_doc": "05_flow/build_functional.py が flow.json・ER図・モック・errors.json から生成。手で直さない。",
   "source": [
    "D-053.1",
@@ -45,10 +45,14 @@
     "E-MAIL-001",
     "E-MAIL-002",
     "E-MAIL-003",
+    "E-LIM-005",
     "E-CONF-011",
     "E-VAL-005",
     "E-VAL-006",
     "E-VAL-007",
+    "E-VAL-010",
+    "E-VAL-011",
+    "E-VAL-016",
     "E-INV-001",
     "E-INV-002"
    ],
@@ -395,6 +399,8 @@
    "ears_ac_seed": [
     "EVENT-DRIVEN: WHEN R1／R2 が「名前・メール・パスワード・会社名（空でもよい）を入れる」したとき THEN Kaname は「テナント（会社／個人）と本人を作る。保留の申し込みを暗号化して 30 分」を行う",
     "UNWANTED: IF 同じメールアドレスで登録済み THEN Kaname は「このメールアドレスは既に登録されています。ログインするか、パスワードを再設定してください」を出し、ログイン／パスワードを再設定（E-CONF-001）",
+    "UNWANTED: IF 同じところから短い間に送りすぎた（契約の口の回数の上限・429）。待つ秒数（retry_after_sec）を {秒} に入れて出す THEN Kaname は「送りすぎです。{秒}秒たってから、もう一度お試しください」を出し、待ってから、もう一度押す（E-LIM-005）",
+    "UNWANTED: IF 登録のパスワードが、漏れたことのあるパスワードの照合（Have I Been Pwned の範囲の問い合わせ）で見つかった THEN Kaname は「漏れたことのあるパスワードです。別のパスワードにしてください」を出し、別のパスワードを入れ直す（E-VAL-011）",
     "EVENT-DRIVEN: WHEN R1／R2 が「届いたリンクを押す」したとき THEN Kaname は「本人確認を記録してログインさせる」を行う",
     "EVENT-DRIVEN: WHEN R3／R4 が「招待の中身（会社・層・役割）を見て参加する」したとき THEN Kaname は「テナントへの所属を作り、層と権限の束を結ぶ」を行う",
     "EVENT-DRIVEN: WHEN R1／R2 が「見本（自分宛にメールを送る など）を開いて AI に任せてみる」したとき THEN Kaname は「—」を行う（自動側：見本のチケットを最初から並べる）",
@@ -406,7 +412,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-04",
+   "decided_at": "2026-11-05",
    "source": [
     "D-001",
     "D-001.5",
@@ -534,7 +540,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-04",
+   "decided_at": "2026-11-05",
    "source": [
     "D-026",
     "D-037",
@@ -623,7 +629,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-04",
+   "decided_at": "2026-11-05",
    "source": [
     "D-042",
     "D-053.3",
@@ -1526,7 +1532,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-04",
+   "decided_at": "2026-11-05",
    "source": [
     "D-002",
     "D-003.1",
@@ -1968,7 +1974,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-04",
+   "decided_at": "2026-11-05",
    "source": [
     "D-003.7",
     "D-004",
@@ -2513,7 +2519,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-04",
+   "decided_at": "2026-11-05",
    "source": [
     "D-003.7",
     "D-008.2",
@@ -2766,7 +2772,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-04",
+   "decided_at": "2026-11-05",
    "source": [
     "D-006.2",
     "D-010",
@@ -3084,7 +3090,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-04",
+   "decided_at": "2026-11-05",
    "source": [
     "D-003",
     "D-003.1",
@@ -3277,7 +3283,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-04",
+   "decided_at": "2026-11-05",
    "source": [
     "D-003.1",
     "D-003.3",
@@ -3923,7 +3929,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-04",
+   "decided_at": "2026-11-05",
    "source": [
     "D-003.1",
     "D-004.10",
@@ -4408,7 +4414,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-04",
+   "decided_at": "2026-11-05",
    "source": [
     "D-003",
     "D-003.1",
@@ -4496,8 +4502,12 @@
     "E-MOCK-032",
     "E-DISC-001",
     "E-MOCK-036",
+    "E-LIM-005",
     "E-VAL-005",
-    "E-VAL-006"
+    "E-VAL-006",
+    "E-VAL-010",
+    "E-VAL-011",
+    "E-VAL-016"
    ],
    "policies": [
     "C2",
@@ -4795,6 +4805,8 @@
    "ears_ac_seed": [
     "EVENT-DRIVEN: WHEN R1／R2／R3／R4 が「規約とプライバシーポリシーを読んで同意する」したとき THEN Kaname は「同意した版と時刻を残す。版が上がったら次のログインで同意を取り直す」を行う",
     "UNWANTED: IF 同じメールアドレスで登録済み THEN Kaname は「このメールアドレスは既に登録されています。ログインするか、パスワードを再設定してください」を出し、ログイン／パスワードを再設定（E-CONF-001）",
+    "UNWANTED: IF 同じところから短い間に送りすぎた（契約の口の回数の上限・429）。待つ秒数（retry_after_sec）を {秒} に入れて出す THEN Kaname は「送りすぎです。{秒}秒たってから、もう一度お試しください」を出し、待ってから、もう一度押す（E-LIM-005）",
+    "UNWANTED: IF 登録のパスワードが、漏れたことのあるパスワードの照合（Have I Been Pwned の範囲の問い合わせ）で見つかった THEN Kaname は「漏れたことのあるパスワードです。別のパスワードにしてください」を出し、別のパスワードを入れ直す（E-VAL-011）",
     "EVENT-DRIVEN: WHEN R1／R2／R3／R4 が「端末でパスキーを登録する／認証アプリを登録してバックアップコードを保管する」したとき THEN Kaname は「パスキーの公開鍵・TOTP の鍵を暗号化して保管」を行う",
     "UNWANTED: IF 2 段階認証のコードが違う（時刻のずれ・古いコード） THEN Kaname は「コードが違います。認証アプリの時刻が合っているか確かめてください」を出し、もう一度入力する／時刻を合わせる（E-AUTH-004）",
     "EVENT-DRIVEN: WHEN R1／R2 が「本人確認を取り直して書き出す」したとき THEN Kaname は「書き出した記録を残す」を行う",
@@ -4810,7 +4822,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-04",
+   "decided_at": "2026-11-05",
    "source": [
     "D-010.7",
     "D-015",
@@ -5353,7 +5365,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-04",
+   "decided_at": "2026-11-05",
    "source": [
     "D-003.7",
     "D-010",
@@ -5488,7 +5500,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-04",
+   "decided_at": "2026-11-05",
    "source": [
     "D-030",
     "D-030.10",
@@ -5663,7 +5675,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-04",
+   "decided_at": "2026-11-05",
    "source": [
     "D-002",
     "D-002.2",
@@ -6150,7 +6162,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-04",
+   "decided_at": "2026-11-05",
    "source": [
     "D-002",
     "D-002.2",
@@ -6511,7 +6523,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-04",
+   "decided_at": "2026-11-05",
    "source": [
     "D-006.5",
     "D-013.1",
@@ -6673,7 +6685,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-04",
+   "decided_at": "2026-11-05",
    "source": [
     "D-030.6",
     "D-037",
@@ -6804,7 +6816,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-04",
+   "decided_at": "2026-11-05",
    "source": [
     "D-010.7",
     "D-019.3",
@@ -6998,7 +7010,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-04",
+   "decided_at": "2026-11-05",
    "source": [
     "D-026",
     "D-026.2",
@@ -7202,7 +7214,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-04",
+   "decided_at": "2026-11-05",
    "source": [
     "D-125.121",
     "D-125.123",
@@ -7343,7 +7355,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-04",
+   "decided_at": "2026-11-05",
    "source": [
     "D-125.121",
     "D-125.122",
@@ -7565,7 +7577,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-04",
+   "decided_at": "2026-11-05",
    "source": [
     "D-007",
     "D-012",
@@ -7897,7 +7909,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-04",
+   "decided_at": "2026-11-05",
    "source": [
     "D-003.9",
     "D-007",
@@ -8018,7 +8030,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-04",
+   "decided_at": "2026-11-05",
    "source": [
     "D-013",
     "D-014",
@@ -8262,7 +8274,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-04",
+   "decided_at": "2026-11-05",
    "source": [
     "D-010",
     "D-038",
@@ -8373,7 +8385,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-04",
+   "decided_at": "2026-11-05",
    "source": [
     "D-004",
     "D-007",
@@ -8448,7 +8460,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-04",
+   "decided_at": "2026-11-05",
    "source": [
     "D-029",
     "D-025",
@@ -8514,7 +8526,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-04",
+   "decided_at": "2026-11-05",
    "source": [
     "D-015",
     "D-044",
@@ -8612,7 +8624,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-04",
+   "decided_at": "2026-11-05",
    "source": [
     "D-012",
     "D-043",
@@ -8680,7 +8692,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-04",
+   "decided_at": "2026-11-05",
    "source": [
     "D-002",
     "D-004",
@@ -8747,7 +8759,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-04",
+   "decided_at": "2026-11-05",
    "source": [
     "D-017",
     "D-042",

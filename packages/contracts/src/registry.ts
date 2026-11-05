@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:2ad5fc3e6e32ac27
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:fe6156470535126e
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -1231,9 +1231,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "createSignup",
     "table": "pending_signup",
     "kind": "create",
-    "input": "PendingSignupInput",
+    "input": "SignupInput",
     "success": 201,
-    "output": "PendingSignup",
+    "output": "SignupCreated",
     "outputList": false,
     "generic": false,
     "auth": "public",
@@ -1273,9 +1273,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "resendSignupEmail",
     "table": "pending_signup",
     "kind": "create",
-    "input": "PendingSignupInput",
+    "input": "SignupResendInput",
     "success": 201,
-    "output": "PendingSignup",
+    "output": "SignupResent",
     "outputList": false,
     "generic": false,
     "auth": "public",
@@ -16043,4 +16043,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     }
   }
 ];
-export const OPENAPI_HASH = "2ad5fc3e6e32ac27";
+export const OPENAPI_HASH = "fe6156470535126e";

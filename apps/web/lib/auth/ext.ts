@@ -57,30 +57,7 @@ export async function ext<T>(path: string, body?: unknown, method = "POST"): Pro
     });
   return json.data as T;
 }
-// 登録（D-088）：ここでは何も作られない。保留の申し込みが置かれ、確認のリンクが送られるだけ。
-// 送れたかどうか（sent）を返すので、画面は送れていないのに「送りました」と書かない
-export const signUp = (b: { email: string; password: string; company_name: string }) =>
-  ext<{ email: string; sent: boolean; mail_error: string | null; mail_error_kind: "recipient" | "provider" | null }>(
-    "/sign-up",
-    b,
-  );
-/** この申し込みがいまどうなっているか（登録済み／まだ有効／もう無い） */
-export const signupStatus = (email: string) =>
-  ext<{ state: "registered" | "pending" | "none"; expires_at: string | null }>(
-    `/signup-status?email=${encodeURIComponent(email)}`,
-    undefined,
-    "GET",
-  );
-/** 確認のリンクを送り直す */
-export const resendSignup = (email: string) =>
-  ext<{
-    email: string;
-    sent: boolean;
-    mail_error: string | null;
-    mail_error_kind: "recipient" | "provider" | null;
-    pending: boolean;
-    registered?: boolean;
-  }>("/resend-signup", { email });
+// 登録・待つ画面の状態・送り直しは契約の口（createSignup・getSignupStatus・resendSignupEmail）に移した（K-51・features/F1/sign-up）
 /** 確認：ここで初めて利用者と会社ができ、そのままログインする */
 export const verifySignup = (token: string) =>
   ext<{ token: string | null; user_id: string; email: string }>("/verify-signup", { token }).then(

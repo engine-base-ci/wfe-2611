@@ -7,6 +7,7 @@ import { PostgresDialect } from "kysely";
 import pg from "pg";
 import { uuidv7 } from "@kaname/db/id";
 import { optionalEnv } from "@kaname/config";
+import { mailTag } from "./signup.js";
 
 export interface AuthOptions {
   /** 認証ロール（kaname_auth）で接続する URL。schema auth に読み書きする */
@@ -156,7 +157,10 @@ export async function sendPendingVerification(
   p: { email: string; token: string },
 ): Promise<{ sent: boolean; error: string | null; url: string }> {
   const url = `${o.webBaseURL ?? o.baseURL}/verify-email?token=${encodeURIComponent(p.token)}`;
-  if (optionalEnv("NODE_ENV") !== "production") console.warn(`[auth] リンク（verify → ${p.email}）: ${url}`);
+  // ログにメールアドレスを出さない（宛先は印にする・K-51・TP-REG-14）。リンクは手元の開発の受信箱（/dev/mail）の代わりにだけ出し、
+  // 試験（NODE_ENV=test）と本番には出さない
+  const env = optionalEnv("NODE_ENV");
+  if (env !== "production" && env !== "test") console.warn(`[auth] リンク（verify → ${mailTag(p.email)}）: ${url}`);
   if (!o.mailer) return { sent: false, error: "メールの送出先が設定されていない", url };
   try {
     await o.mailer({

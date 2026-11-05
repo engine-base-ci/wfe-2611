@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。142 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。146 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -1998,6 +1998,24 @@ export const CATALOG: Record<string, CatalogEntry> = {
       "state": "x"
     }
   },
+  "E-LIM-005": {
+    "id": "E-LIM-005",
+    "cls": "limit",
+    "message": "送りすぎです。{秒}秒たってから、もう一度お試しください",
+    "action": "待ってから、もう一度押す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-LIM-005",
+    "must_not": true,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "signup",
+      "state": "a"
+    }
+  },
   "E-CONN-011": {
     "id": "E-CONN-011",
     "cls": "dependency",
@@ -2397,6 +2415,60 @@ export const CATALOG: Record<string, CatalogEntry> = {
     ],
     "where": {
       "screen": "login",
+      "state": "a"
+    }
+  },
+  "E-VAL-010": {
+    "id": "E-VAL-010",
+    "cls": "validation",
+    "message": "名前を入れてください",
+    "action": "入力し直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-VAL-010",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "signup",
+      "state": "a"
+    }
+  },
+  "E-VAL-011": {
+    "id": "E-VAL-011",
+    "cls": "validation",
+    "message": "漏れたことのあるパスワードです。別のパスワードにしてください",
+    "action": "別のパスワードを入れ直す",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-VAL-011",
+    "must_not": true,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "signup",
+      "state": "a"
+    }
+  },
+  "E-VAL-016": {
+    "id": "E-VAL-016",
+    "cls": "validation",
+    "message": "会社名は 100 文字までにしてください",
+    "action": "入力し直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-VAL-016",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "signup",
       "state": "a"
     }
   },
