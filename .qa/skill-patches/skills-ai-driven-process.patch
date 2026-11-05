@@ -1,6 +1,6 @@
-diff -ruN orig/acceptance-criteria/SKILL.md rel/acceptance-criteria/SKILL.md
+diff -ruN orig/acceptance-criteria/SKILL.md new/acceptance-criteria/SKILL.md
 --- orig/acceptance-criteria/SKILL.md	2026-11-04 13:26:40.924305793 +0000
-+++ rel/acceptance-criteria/SKILL.md	2026-11-05 00:51:34.068350394 +0000
++++ new/acceptance-criteria/SKILL.md	2026-11-04 13:29:30.133337967 +0000
 @@ -5,6 +5,20 @@
  builtin: true
  ---
@@ -22,9 +22,9 @@ diff -ruN orig/acceptance-criteria/SKILL.md rel/acceptance-criteria/SKILL.md
  ## 🎨 デザインシステム（design-system）— このスキルの責務（2026-09-16 追加）
  
  > 規約の正本: `~/.claude/rules/common/design-system.md` ／ 由来: lessons-learned **L-017**
-diff -ruN orig/ai-team-delivery/SKILL.md rel/ai-team-delivery/SKILL.md
+diff -ruN orig/ai-team-delivery/SKILL.md new/ai-team-delivery/SKILL.md
 --- orig/ai-team-delivery/SKILL.md	2026-11-04 13:26:40.976913479 +0000
-+++ rel/ai-team-delivery/SKILL.md	2026-11-05 00:51:34.102455727 +0000
++++ new/ai-team-delivery/SKILL.md	2026-11-05 00:16:32.497189437 +0000
 @@ -1,6 +1,6 @@
  ---
  name: ai-team-delivery
@@ -99,13 +99,14 @@ diff -ruN orig/ai-team-delivery/SKILL.md rel/ai-team-delivery/SKILL.md
  9. 仕様を書く人を増やすときは、生成器を区画に分けて鍵（`state.py lock <区画>`）を渡す。仕様の枝（S1・S2）は送る前に main を取り込む
  
  マージを PM の判断でしてよいかは **user が決める**。許可が無ければ聞く。
-@@ -187,18 +212,25 @@
+@@ -187,18 +212,26 @@
  
  | 誰が・いつ | すること |
  |---|---|
 -| メンバー：出す前 | コミット → `dagci check` を後ろで流す → 次の仕事へ。緑の要約（1 行）を報告に貼る。手元で verify_all を直に流さない |
 +| メンバー：出す前 | コミット → `dagci check` を後ろで流す → 次の仕事へ。緑の要約（1 行）を報告に貼る。手元で `verify`（ai-team.yaml の全部の検査）を直に流さない |
  | T（テストの書き手）| テストだけの枝で全部の段を流さない（実装が無いので必ず赤・列を埋める）。実装の枝に積んだ手元の木で自分のテスト・lint・型を確かめて D に渡す。全部の段は D が実装の枝で 1 回 |
++| メンバー：チケットを作っている間 | `dagci run --ticket <ID>`：そのチケットの試験と、変わった所に当たる段だけ（数分・ci.yaml の `tickets`・`references/ci.md` §4.5）。全部（回帰）は取り込みの前の `dagci run --all` だけ |
  | メンバー：試すとき | 自分のテスト・1 つの段だけ（`dagci run --only <段>`）。**列を通さない `--no-queue` は、ほかの回と重なって偽の赤を出す** |
  | PM：取り込み | `pm_merge.sh`（main への取り込みは列の先頭に割り込む・流れている回は止めない）→ `--deploy interim` |
  | PM：見回りのたび | `dagci queue`・`dagci doctor`（空き・キャッシュ・反映漏れ・古い札・selftest と判定の同等の古さ） |
@@ -128,7 +129,7 @@ diff -ruN orig/ai-team-delivery/SKILL.md rel/ai-team-delivery/SKILL.md
  
  ## 待ちを作らない（丁寧さと速さを両立する）
  
-@@ -298,10 +330,11 @@
+@@ -298,10 +331,11 @@
  | `references/protocol.md` | 起動・報告の形式・状態の移り方・立て直しの詳細 |
  | `references/roles/*.md` | メンバーに渡す（PM 自身は `pm.md`） |
  | `references/acceptance-sheet.md` | 検収・テスト表を作るとき |
@@ -142,9 +143,9 @@ diff -ruN orig/ai-team-delivery/SKILL.md rel/ai-team-delivery/SKILL.md
  | `assets/ai-team.example.yaml` | 設定の雛形 |
  | `assets/member-brief.md` / `assets/handoff-message.md` | メンバーに送る文の雛形 |
  | `assets/report-templates/` | 工程ごとの報告の雛形 |
-diff -ruN orig/ai-team-delivery/assets/ai-team.example.yaml rel/ai-team-delivery/assets/ai-team.example.yaml
+diff -ruN orig/ai-team-delivery/assets/ai-team.example.yaml new/ai-team-delivery/assets/ai-team.example.yaml
 --- orig/ai-team-delivery/assets/ai-team.example.yaml	2026-11-04 13:26:40.977516254 +0000
-+++ rel/ai-team-delivery/assets/ai-team.example.yaml	2026-11-05 00:51:34.102561083 +0000
++++ new/ai-team-delivery/assets/ai-team.example.yaml	2026-11-04 13:26:49.039470418 +0000
 @@ -3,50 +3,67 @@
  
  project: my-project
@@ -231,9 +232,9 @@ diff -ruN orig/ai-team-delivery/assets/ai-team.example.yaml rel/ai-team-delivery
  
  limits:
    l1_rows_per_session: 25
-diff -ruN orig/ai-team-delivery/assets/ci/ci-gates.example.yaml rel/ai-team-delivery/assets/ci/ci-gates.example.yaml
+diff -ruN orig/ai-team-delivery/assets/ci/ci-gates.example.yaml new/ai-team-delivery/assets/ci/ci-gates.example.yaml
 --- orig/ai-team-delivery/assets/ci/ci-gates.example.yaml	1970-01-01 00:00:00.000000000 +0000
-+++ rel/ai-team-delivery/assets/ci/ci-gates.example.yaml	2026-11-05 00:51:34.102631238 +0000
++++ new/ai-team-delivery/assets/ci/ci-gates.example.yaml	2026-11-05 01:00:16.546324581 +0000
 @@ -0,0 +1,43 @@
 +# ci-gates.yaml — 標準の検査（<skill>/scripts/gates/）の設定。プロジェクトの根に置く。使わない検査は節ごと消す（消した検査は「使っていない」で緑）。
 +# どれも「わざと壊すと赤になる」自己試験（--selftest）を持つ。CI の段に、自己試験と本体の両方を入れる（references/ci.md §「標準の検査」）。
@@ -269,7 +270,7 @@ diff -ruN orig/ai-team-delivery/assets/ci/ci-gates.example.yaml rel/ai-team-deli
 +# テストが開発者の台を決め打ちしていないか：テストとテストの手伝いのファイルで、環境の値が無いときに手元の接続先へ落ちる形
 +#   （process.env.DATABASE_URL ?? "postgres://…127.0.0.1:55433/…"・|| 'localhost:5432'・os.environ.get("X", "redis://localhost:6379")・${X:-localhost:5432}）、
 +#   環境から来た URL の口だけを書き換える形（u.port = …・.replace(":5432", …)）、決め打ちの手元の DB の URL を ファイル:行 で赤にする。
-+#   CI の相手は 127.0.0.1 ではない（容れ物の名前）。値が無ければ止める（throw・os.environ["X"]・${X:?}）（Kaname・2026-11-04）
++#   CI の相手は 127.0.0.1 ではない（容れ物の名前）。値が無ければ止める（throw・os.environ["X"]・${X:?}）（あるプロジェクト・2026-11-04）
 +devhost:
 +  tests: ["**/*.test.*", "**/*.spec.*", "**/test/**", "**/tests/**", "**/__tests__/**", "**/test_*.py", "**/*_test.py",
 +          "**/conftest.py", "**/vitest.config.*", "**/jest.config.*", "**/playwright.config.*", "**/test-utils/**", "**/testing/**"]
@@ -278,9 +279,9 @@ diff -ruN orig/ai-team-delivery/assets/ci/ci-gates.example.yaml rel/ai-team-deli
 +  # 例（ci/devhost_allow.yaml）:
 +  # - {path: apps/web/tests/_lib/fake-bridge.ts, contains: "127.0.0.1:3124", why: 試験の中で自分が立てる画面の口（相手ではない）}
 +  # - {path: vitest.config.ts, contains: DEV_TEST_DATABASE_URL, why: CI（CI=true）では使わない手元だけの既定}
-diff -ruN orig/ai-team-delivery/assets/ci/ci.example.yaml rel/ai-team-delivery/assets/ci/ci.example.yaml
+diff -ruN orig/ai-team-delivery/assets/ci/ci.example.yaml new/ai-team-delivery/assets/ci/ci.example.yaml
 --- orig/ai-team-delivery/assets/ci/ci.example.yaml	2026-11-04 13:26:40.978609155 +0000
-+++ rel/ai-team-delivery/assets/ci/ci.example.yaml	2026-11-05 00:51:34.102618645 +0000
++++ new/ai-team-delivery/assets/ci/ci.example.yaml	2026-11-05 01:00:16.545922570 +0000
 @@ -6,19 +6,42 @@
    base: main                    # 変わったファイルを数える起点（分岐点からの差）
    history: true                 # 容れ物の中に最小の git（base の木＋作業場の木）を作る
@@ -311,13 +312,13 @@ diff -ruN orig/ai-team-delivery/assets/ci/ci.example.yaml rel/ai-team-delivery/a
 +    TZ: UTC                     # GitHub の実行機と同じ
 +    LANG: C.UTF-8
 +    CI: "true"
-+    NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt   # Node は OS の証明書を読まない。中継が TLS を差し替える所で npm・pnpm だけ SELF_SIGNED_CERT_IN_CHAIN（2026-11-04 Kaname）
-+    SSL_CERT_FILE: /etc/ssl/certs/ca-certificates.crt         # uv が入れた Python も OS の証明書を読まない（CERTIFICATE_VERIFY_FAILED・Kaname の G46）
++    NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt   # Node は OS の証明書を読まない。中継が TLS を差し替える所で npm・pnpm だけ SELF_SIGNED_CERT_IN_CHAIN（2026-11-04 あるプロジェクト）
++    SSL_CERT_FILE: /etc/ssl/certs/ca-certificates.crt         # uv が入れた Python も OS の証明書を読まない（CERTIFICATE_VERIFY_FAILED・あるプロジェクトの G46）
 +    REQUESTS_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt    # requests・pip は自分の証明書の束を使う
 +    UV_NATIVE_TLS: "1"          # uv も OS の証明書を使う（Python を取りに行けずに error sending request）
 +    PIP_BREAK_SYSTEM_PACKAGES: "1"   # Debian の python3 に uv を入れるため
 +    VIRTUAL_ENV: /opt/py
-+    PATH: /opt/py/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin   # venv は PATH の先頭で使う。links を張ると venv と見なされず部品が見えない（Kaname の G27・G37・G52）
++    PATH: /opt/py/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin   # venv は PATH の先頭で使う。links を張ると venv と見なされず部品が見えない（あるプロジェクトの G27・G37・G52）
    steps:
 -    - apt-get update -qq && apt-get install -y -qq --no-install-recommends git curl ca-certificates xz-utils >/dev/null
 -    - curl -fsSL https://nodejs.org/dist/v22.19.0/node-v22.19.0-linux-$(dpkg --print-architecture | sed 's/amd64/x64/').tar.xz | tar -xJ -C /usr/local --strip-components=1
@@ -331,11 +332,11 @@ diff -ruN orig/ai-team-delivery/assets/ci/ci.example.yaml rel/ai-team-delivery/a
  
  env: {}                         # 全部の段に渡す環境（秘密は書かない。秘密は runner の側で渡す）
  
-@@ -29,11 +52,16 @@
+@@ -29,13 +52,25 @@
      run: npm_config_store_dir=/pnpm-store pnpm install --frozen-lockfile --prefer-offline
  
  services:                       # 段が使う相手（容れ物で起こし、段から名前で引ける）
-+  # GitHub の job ごとに別にする（同じ定義の相手は Dagger が 1 つにまとめる。dagci が DAGCI_SERVICE=<名前> を入れて分ける・Kaname の G3 と G27）
++  # GitHub の job ごとに別にする（同じ定義の相手は Dagger が 1 つにまとめる。dagci が DAGCI_SERVICE=<名前> を入れて分ける・あるプロジェクトの G3 と G27）
    postgres:
      image: postgres:16-alpine
      env: {POSTGRES_PASSWORD: ci, POSTGRES_DB: app}
@@ -347,8 +348,30 @@ diff -ruN orig/ai-team-delivery/assets/ci/ci.example.yaml rel/ai-team-delivery/a
 +
  defaults: {timeout: 1800}
  
++# チケットの回（dagci run --ticket ID・references/ci.md §4.5）。普段はそのチケットの試験と変わった所に当たる段だけ（数分）。
++#   全部（回帰）は取り込みの前に dagci run --all。cmd はそのチケットの試験の命令を 1 行に 1 つ出す（# の行は説明）
++# tickets:
++#   cmd: python3 scripts/tickets/ticket_tests.py {id} --cmds
++#   like: test-unit               # この段と同じ相手（services）と env で流す
++#   skip: ["test-unit*"]          # チケットの回では流さない段（全部を流す単体の試験）
++
  stages:
-@@ -63,3 +91,19 @@
+   - id: codegen
+     name: 生成物の作り直し
+@@ -54,6 +89,12 @@
+     name: 単体テスト
+     run: pnpm -s test
+     needs: [codegen]
++  # 単体テストが長いときは分けて同時に流す（§4.6）。分けた 1 つずつが自分の相手を持ち、結果を export、合わせる段が閾値を当てる
++  # - {id: test-unit-1, run: "pnpm exec vitest run --coverage --shard=1/2 --reporter=blob --coverage.thresholds.lines=0", needs: [codegen],
++  #    services: [pg-1], export: [/src/.vitest-reports], heavy: false}
++  # - {id: test-unit-2, run: "pnpm exec vitest run --coverage --shard=2/2 --reporter=blob --coverage.thresholds.lines=0", needs: [codegen],
++  #    services: [pg-2], export: [/src/.vitest-reports], heavy: false}
++  # - {id: test-unit-merge, run: "pnpm exec vitest run --merge-reports --coverage", needs: [test-unit-1, test-unit-2]}
+   - id: test-db
+     name: DB のテスト
+     run: DATABASE_URL=postgres://postgres:ci@postgres:5432/app pnpm -s test:db
+@@ -63,3 +104,19 @@
      name: 仕様の検査
      run: python3 scripts/ci/spec_gate.py   # Python 1 本の段は、読んだファイルが同じなら結果を使い回す
      when: ["docs/**", "scripts/ci/**"]
@@ -368,9 +391,9 @@ diff -ruN orig/ai-team-delivery/assets/ci/ci.example.yaml rel/ai-team-delivery/a
 +  - id: devhost
 +    name: テストが開発者の台を決め打ちしない（DB・相手の接続先は環境から）
 +    run: python3 scripts/ci/gates/devhost_gate.py
-diff -ruN orig/ai-team-delivery/references/adapter.md rel/ai-team-delivery/references/adapter.md
+diff -ruN orig/ai-team-delivery/references/adapter.md new/ai-team-delivery/references/adapter.md
 --- orig/ai-team-delivery/references/adapter.md	2026-11-04 13:26:40.980015309 +0000
-+++ rel/ai-team-delivery/references/adapter.md	2026-11-05 00:51:34.102163269 +0000
++++ new/ai-team-delivery/references/adapter.md	2026-11-04 13:26:49.040196488 +0000
 @@ -7,6 +7,23 @@
  最低限：チケットの正本・状態・検査のコマンド・作業境界・レーン・上限・証拠の置き場。
  **置く前に user に見せて合意する**（レーンの切り方は衝突を決めるので、PM の思い込みで決めない）。
@@ -395,19 +418,19 @@ diff -ruN orig/ai-team-delivery/references/adapter.md rel/ai-team-delivery/refer
  ## 2. チケットの項目一覧（verdict_check.py の --items）
  
  `state.py items <チケット>` が、設定 `ticket_fields` に従ってチケットの正本から項目を引く。
-diff -ruN orig/ai-team-delivery/references/ci.md rel/ai-team-delivery/references/ci.md
+diff -ruN orig/ai-team-delivery/references/ci.md new/ai-team-delivery/references/ci.md
 --- orig/ai-team-delivery/references/ci.md	2026-11-04 13:26:40.980158762 +0000
-+++ rel/ai-team-delivery/references/ci.md	2026-11-05 00:51:34.102193143 +0000
++++ new/ai-team-delivery/references/ci.md	2026-11-05 01:00:16.544428866 +0000
 @@ -43,14 +43,78 @@
  2. 初回の準備：`<スキル>/scripts/ci/dagci/dagci setup`（容れ物の道具・Dagger の CLI と SDK・エンジン。版は固定）
     会社の網が TLS を差し替える PC は `DAGCI_EXTRA_CA=auto`（macOS）か `DAGCI_EXTRA_CA=<PEM>` を付ける
     （エンジンが image を取れずに `x509: certificate signed by unknown authority` で落ちるのがこの場合）
 +   ★エンジンに証明書を渡すと、容れ物の中の apt・pip・curl は通るが、**Node（npm・pnpm）だけは OS の証明書を読まず** `SELF_SIGNED_CERT_IN_CHAIN` で落ちる。
-+   ci.yaml の toolbox.env に `NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt` を書く（雛形に入れてある・2026-11-04 Kaname）
++   ci.yaml の toolbox.env に `NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt` を書く（雛形に入れてある・2026-11-04 あるプロジェクト）
 +   uv（Python を取りに行く道具）も同じで、`UV_NATIVE_TLS=1` を付けないと `error sending request` で落ちる
 +   uv が入れた Python も同じで、`SSL_CERT_FILE: /etc/ssl/certs/ca-certificates.crt` を toolbox.env に書かないと、台本の https（registry への問い合わせなど）が `CERTIFICATE_VERIFY_FAILED` で落ちる
-+   ★Python を venv（例 `/opt/py`）に入れたら、toolbox.env の `PATH` の先頭に `/opt/py/bin` を置く。`ln -s /opt/py/bin/python /usr/local/bin/python3` のように別の場所へ links を張ると venv と見なされず、入れた部品（yaml など）が `No module named` で見えない。道具箱の最後に `python3 -c 'import sys; assert sys.prefix == "/opt/py"'` を置いて、ずれたら道具箱の時点で落とす（Kaname の G27・G37・G52 が赤だった・2026-11-04）
-+   ★容れ物の中では git の設定が既定になる。日本語の名前は `git ls-files` で `"\343..."` と化けるので、台本は `-z` で読む（Kaname の G38・G43 が 68 本を黙って飛ばしていた）
++   ★Python を venv（例 `/opt/py`）に入れたら、toolbox.env の `PATH` の先頭に `/opt/py/bin` を置く。`ln -s /opt/py/bin/python /usr/local/bin/python3` のように別の場所へ links を張ると venv と見なされず、入れた部品（yaml など）が `No module named` で見えない。道具箱の最後に `python3 -c 'import sys; assert sys.prefix == "/opt/py"'` を置いて、ずれたら道具箱の時点で落とす（あるプロジェクトの G27・G37・G52 が赤だった・2026-11-04）
++   ★容れ物の中では git の設定が既定になる。日本語の名前は `git ls-files` で `"\343..."` と化けるので、台本は `-z` で読む（あるプロジェクトの G38・G43 が 68 本を黙って飛ばしていた）
  3. 確かめ方：リポジトリの根で `dagci run --all` が「緑：<段の数> 段」になること
  
  **新しいプロジェクトに入れる**
@@ -442,7 +465,7 @@ diff -ruN orig/ai-team-delivery/references/ci.md rel/ai-team-delivery/references
 +元の image は言語の公式（node・python）にする。GitHub の実行機の image は容れ物として配られておらず、似せた image（act 用など）は数 GB〜数十 GB で、
 +版も入っている物の約束も固まらない。GitHub の実行機に最初からある物（Chrome・psql など）は、workflow とテストから見つけて足す。
 +
-+`dagci stages`（include から呼ぶ。中身は `scripts/ci/dagci/stages_from_github.py`・Kaname の `ci_stages.py` を汎用にした）は、毎回 workflow から段を導く：
++`dagci stages`（include から呼ぶ。中身は `scripts/ci/dagci/stages_from_github.py`・あるプロジェクトの `ci_stages.py` を汎用にした）は、毎回 workflow から段を導く：
 +- 手順のうち install の類（`pnpm install`・`pip install`・`playwright install`・apt）は道具箱・準備で済ませた物、
 +  組み立て（`build`）と後ろで立ち上げる手順は「後ろの段の前に毎回流す」、それ以外の `run:` が 1 段（id は `<job>-<名前>`・`G12 …` は `<job>-g12`）
 +- 相手のある job は手順を順に（前の段を needs に）。env の `localhost:<口>` は相手の名前に向ける（`DATABASE_URL=…@localhost:5432/…` → `…@<job>-postgres:5432/…`）
@@ -455,7 +478,7 @@ diff -ruN orig/ai-team-delivery/references/ci.md rel/ai-team-delivery/references
 +`dagci smoke` は道具箱と準備を作り、容れ物の中で次を 1 項目 1 行の 緑／赤 で出す（赤があれば終わり方 1。記録は `$DAGCI_HOME/smoke/<project>.json`・doctor が見る）。
 +**`dagci run --all` も最初にこれを流し、赤なら段を流さずに「流せない（健康診断が赤：…）」で止まる**（`--no-smoke`・`ci.smoke: false` で外す）。
 +
-+| 項目 | 見ること | 由来（Kaname・2026-11-04。どれも 30 分流してから見つかった） |
++| 項目 | 見ること | 由来（あるプロジェクト・2026-11-04。どれも 30 分流してから見つかった） |
 +|---|---|---|
 +| 道具箱・準備 | 作れるか。落ちたら命令の最後の行 | |
 +| Python | `python3` が venv と見なされているか（`sys.prefix`）・venv に入れた部品が全部 import できるか | links を張った venv の Python で yaml が見えなかった |
@@ -480,7 +503,7 @@ diff -ruN orig/ai-team-delivery/references/ci.md rel/ai-team-delivery/references
  
  ## 3. ci.yaml の形
  
-@@ -65,7 +129,9 @@
+@@ -65,12 +129,15 @@
  | `toolbox` | `from`（元の image。**python3 が要る**）・`env`・`steps`（image を作る命令） |
  | `env` | 全部の段に渡す環境。**秘密は書かない**（秘密は runner 側の環境で渡す） |
  | `prepare` | `[{name, inputs: [glob], run, caches: {名前: 置き場}}]`。inputs のファイルだけを入れて流すので、入力が同じなら使い回す（依存の部品） |
@@ -491,16 +514,61 @@ diff -ruN orig/ai-team-delivery/references/ci.md rel/ai-team-delivery/references
  | `caches` | `{名前: 置き場}`。全部の段に付ける、回をまたいで残す置き場（例 turbo の `.turbo`）。中身は使い回しの鍵に入らない |
  | `defaults` | 段の既定（例 `timeout: 1800`） |
  | `overrides` | `{段の id: {項目: 値}}`。include で導いた段の一部だけを変える |
-@@ -289,6 +355,8 @@
+ | `red_patterns` | 赤の段の出力から要の行を拾う正規表現 |
+ | `jobs` | 同時に流す段の数（既定 CPU の半分） |
++| `tickets` | チケットの回（`dagci run --ticket ID`・§4.5）。`{cmd: "{id} を含む命令", like: 段の id, skip: [段の id の glob], services, env, timeout}` |
+ | `stages` | 段の一覧（下表） |
+ 
+ 段の項目：
+@@ -84,7 +151,8 @@
+ | `when` | この glob に変わったファイルが当たれば流す（既定 `**`）。`!` で外す。`**`＝0 個以上のフォルダ |
+ | `always` | 変更に関係なく毎回 |
+ | `services` | 使う相手 |
+-| `export` | この段の容れ物の置き場を、needs に持つ下流へ渡す（例：この回の結果の memo） |
++| `export` | この段の容れ物の置き場を、needs に持つ下流へ渡す（例：この回の結果の memo・分けた試験の結果）。**export を持つ段は読んだものの照合（§4.3）で使い回さない**（使い回すと置き場の中身が無く、下流が足りない結果で流れる） |
++| `heavy` | 重い段（ほかの重い段と同時に流さない）。書かなければ記録の時間（`ci.heavy_seconds`）で決まる。`heavy: false` は記録が長くても重い段にしない（同時に流すために分けた段） |
+ | `trace` | 読んだファイルの記録（既定 true。§4.3） |
+ | `warn_only` | 赤でも数えない（注意） |
+ | `timeout` / `env` / `shell` | 上限の秒・環境・shell |
+@@ -113,6 +181,27 @@
+ - `--all`（取り込みの直前）では使わない。照合に漏れがあっても、main に入る前に必ず本当の結果が出る
+ - 置き場は台ごと（`$DAGCI_HOME/memo`）。台を足したら各台が自分で貯める
+ 
++### 4.5 チケットの回（`dagci run --ticket ID`）── 普段はこれ、全部は取り込みの前だけ
++試験はどれもどれか 1 つのチケットに属する（どのチケットのものかはプロジェクトが決める。システムはチケットの `tests:` と口の持ち主）。
++チケットを作っている間は、**そのチケットの試験と、変わった所に当たる段だけ**を流す（数分）。全部（回帰）は取り込みの直前に `--all`。
++```yaml
++tickets:
++  cmd: python3 scripts/tickets/ticket_tests.py {id} --cmds   # そのチケットの試験の命令を 1 行に 1 つ出す（# の行は説明）
++  like: unit-1                                             # この段と同じ相手（services）と env で流す（単体の試験の段）
++  skip: ["unit-*"]                                         # チケットの回では流さない段（全部を流す回帰の段）
++```
++- dagci が `cmd` を流し（`{id}` にチケットの ID）、出た命令を `&&` でつないだ段 `ticket-<ID>` を 1 本作る（毎回流す・使い回さない）。
++  命令が 1 つも出なければ「試験はまだ無い」と出して緑（黙って緑にしない）。`cmd` が失敗したら設定の誤り（終わり方 2）
++- ほかの段は `--affected` と同じ規則で選び（§4.1）、`skip` に当たる段は外す。読んだものの照合（§4.3）の使い回しも効く
++- `--ticket` と `--all` は一緒に使えない。チケットの回の結果は木の結果に残さない（`dagci await`・取り込みは全部の回だけを見る）
++- `dagci plan --ticket ID` で、流す命令と段を流さずに見る
++
++### 4.6 長い試験を分けて同時に流す（分けた 1 つずつが自分の相手を持つ）
++1 本の段が全体の時間を決めているとき（あるプロジェクトの単体の試験 34 分）は、試験の道具の分け（vitest `--shard=i/N`・pytest-split など）で
++N 本の段にし、**分けた 1 つずつに自分の相手（DB）を持たせる**（同じ DB を同時に作り直すと偽の赤）。分けた段は結果の置き場を `export` し、
++合わせる段が `needs` に全部を持って受け取り、合わせた結果に閾値（coverage など）を当てる。分けた段は `heavy: false`（同時に流すため）。
++GitHub の workflow では job ごとに分け（upload-artifact／download-artifact）、`dagci stages`・プロジェクトの導き方がそれを段に写す。
++
+ ### 4.4 台を増やす（`dagci shards` で見込み）
+ - **1 本の時間の下限は「作り直しの鎖 ＋ いちばん長い段」**。台を足しても 1 本は縮まない。台を足すと**同時に流せる本数**が増え、
+   待ちが短くなる。`dagci shards` が段ごとの記録の時間から、1〜6 台で分けたときの見込みと下限を出す
+@@ -289,6 +378,9 @@
  | 24 | 重い段（`heavy: true`・記録の時間の中央値が `ci.heavy_seconds`＝既定 30 秒以上）が 2 本 | 同時に 1 本だけ（台を取り合って時間切れにしない） |
  | 25 | 同時に流れる段が回をまたぐ置き場（caches）に書く | 置き場は段ごとに別（turbo の置き場の取り合いをしない） |
  | 26 | `dagci audit` | 揺れうる所（A1 同じ命令を同時に・A2 書き換えの後に作業場を数える・A3 短い時間の上限・A4 vitest に testTimeout が無い・A5 段の時間が上限に近い）を数える |
 +| 27 | 健康診断（`dagci smoke`）：起きない相手・落ちる smoke の確かめ・`run --all` | smoke が赤（相手・確かめの名前つき）・`run --all` は段を流さず「流せない（健康診断が赤）」で終わり方 3・起きる相手と通る確かめは緑 |
 +| 28 | workflow から段を導く（`dagci init-ci`・`dagci stages`） | 下書きが読める・段が workflow の手順と 1 対 1・相手は job ごと・localhost が相手の名前に・知らない action と理由の無い外しは赤 |
++| 29 | チケットの回（`run --ticket`） | `tickets.cmd` の命令を `like` の相手と env の 1 段で流し、`skip` の段（全部）は流さない。命令が赤なら赤・命令が無ければ「まだ無い」で緑・`--all` と一緒は設定の誤り（2） |
  
  **偽の赤の類と、その止め方**（2026-10-29 に止まった 5 種類から）
  | 類 | 止め方 |
-@@ -303,6 +371,7 @@
+@@ -303,6 +395,7 @@
  - エンジンの使い回しに上限：`engine.json` の gc（`DAGCI_ENGINE_MAX_CACHE`・既定 20GB）。VM は Mac の本当の空きを知らないので上限が要る。
    設定を変えたら `dagci engine restart`（この台の列の枠を全部取ってから入れ直す＝流れている回を壊さない）
  - doctor が「Mac の空き」「エンジンの使い回しの大きさ（上限が効いているか）」も出す
@@ -508,7 +576,7 @@ diff -ruN orig/ai-team-delivery/references/ci.md rel/ai-team-delivery/references
  
  - 場面 12 で回が違ったら、同じ回をもう 1 度流す。2 度とも違えば赤。2 度目に同じなら「揺れ」として段の名前と、どちらの側が赤だったかを記録に残し、
    selftest の出力と doctor（黄）に出す（隠さない。揺れた段はプロジェクトの検査の直し）。回ごとに書き足すので、途中で落ちても終わった回は残る
-@@ -310,3 +379,47 @@
+@@ -310,3 +403,47 @@
  - `dagci selftest`（約 30 分・場面 12 は記録を読むだけ）／`dagci selftest --parity`（重い。段の導出・流し方を変えたら流し直す）／`--only 1,2`
  - 記録：`$DAGCI_HOME/selftest/<project>.json`・`parity/<project>.json`。doctor がこれの古さを見る
  - **PM は見回りのたびに `dagci doctor`**（赤があれば終わり方 1）
@@ -516,13 +584,13 @@ diff -ruN orig/ai-team-delivery/references/ci.md rel/ai-team-delivery/references
 +## 14. 標準の検査（scripts/gates/）── どのプロジェクトにも入れる「検査の検査」
 +
 +プロジェクトの中身の検査（lint・型・テスト・仕様）は、プロジェクトごとに違う。ここにあるのは、**どのプロジェクトでも同じ形で起きる穴**を止める 4 本。
-+Kaname（Kaname の CI の G38・G46・G47・2026-11-04 の DB の赤）で実際に穴を見つけて作り、プロジェクトの名前を外して汎用にした。設定は根の `ci-gates.yaml`（雛形 `assets/ci/ci-gates.example.yaml`）。
++あるプロジェクト（あるプロジェクトの CI の G38・G46・G47・2026-11-04 の DB の赤）で実際に穴を見つけて作り、プロジェクトの名前を外して汎用にした。設定は根の `ci-gates.yaml`（雛形 `assets/ci/ci-gates.example.yaml`）。
 +
 +| 検査 | 止める穴 | 由来（見つけた穴） |
 +|---|---|---|
 +| `generated_gate.py` | 生成物が古い・手で直した生成物・落ちる生成器・目録に無い生成物 | 生成器を足したのに誰も回しておらず、テスト計画の数・契約の hash・画面のトークンが古いまま残った |
 +| `wiring_gate.py` | 書いた検査が CI のどこからも回っていない・壊れたと記録した検査が直っている | 検査の自己試験が赤のまま CI で回っていなかった。本体の条件の誤りで、ある検査が何も見ていなかった |
-+| `devhost_gate.py` | テストが開発者の台を決め打ちしている：環境の値が無いと手元の接続先に落ちる（`?? "postgres://…127.0.0.1:…"`・`|| 'localhost:5432'`・`os.environ.get("X", "…localhost…")`・`${X:-…}`）・環境の URL の口だけを書き換える・決め打ちの手元の DB の URL。ファイル:行で赤。例外は理由つきの記録（`allow_file`） | テストが `DATABASE_URL ?? "…127.0.0.1:55433…"` の開発者の DB に落ち、別のテストは 127.0.0.1 でない URL の口だけを替えていた。手元で緑・容れ物の CI でだけ赤（Kaname・2026-11-04） |
++| `devhost_gate.py` | テストが開発者の台を決め打ちしている：環境の値が無いと手元の接続先に落ちる（`?? "postgres://…127.0.0.1:…"`・`|| 'localhost:5432'`・`os.environ.get("X", "…localhost…")`・`${X:-…}`）・環境の URL の口だけを書き換える・決め打ちの手元の DB の URL。ファイル:行で赤。例外は理由つきの記録（`allow_file`） | テストが `DATABASE_URL ?? "…127.0.0.1:55433…"` の開発者の DB に落ち、別のテストは 127.0.0.1 でない URL の口だけを替えていた。手元で緑・容れ物の CI でだけ赤（あるプロジェクト・2026-11-04） |
 +| `deps_gate.py` | 上流の非推奨が記録に無い・lockfile に出て N 日未満の版が例外なしに入っている | `install --frozen-lockfile` は解き直さないので、「若い版を選ばない」設定が lockfile の若い版を止めていなかった |
 +
 +入れ方（ci.yaml の段の例。GitHub Actions なら同じ命令を step に書く）：
@@ -556,20 +624,43 @@ diff -ruN orig/ai-team-delivery/references/ci.md rel/ai-team-delivery/references
 +- 入れるときは、わざと壊した形で 1 回赤を見る（生成物の正本だけを変える・CI に無い台本を 1 つ置く）。自己試験だけで済ませない
 +- 中身の検査（関門・行の守り・契約など）はプロジェクトの検査。標準の検査は、それらが**回っているか・最新か**を見る側
 +
-diff -ruN orig/ai-team-delivery/scripts/ci/dagci/config.py rel/ai-team-delivery/scripts/ci/dagci/config.py
+diff -ruN orig/ai-team-delivery/scripts/ci/dagci/ci_cmds.py new/ai-team-delivery/scripts/ci/dagci/ci_cmds.py
+--- orig/ai-team-delivery/scripts/ci/dagci/ci_cmds.py	2026-11-04 13:26:40.984021122 +0000
++++ new/ai-team-delivery/scripts/ci/dagci/ci_cmds.py	2026-11-05 00:08:27.141926802 +0000
+@@ -143,7 +143,7 @@
+     os.makedirs(logd, exist_ok=True)
+     log = open(os.path.join(logd, os.path.basename(path).replace(".json", ".log")), "w")
+     entry = os.path.join(os.path.dirname(os.path.abspath(__file__)), "dagci")
+-    p = subprocess.Popen([entry, "run", "--summary-only", "--ticket", path, "--config", cfg.path], cwd=cfg.root,
++    p = subprocess.Popen([entry, "run", "--summary-only", "--queue-ticket", path, "--config", cfg.path], cwd=cfg.root,
+                          stdout=log, stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL, start_new_session=True)
+     t = json.load(open(path))
+     t["pid"] = p.pid          # 子が引き取るまでの間も、持ち主のいない札として片付けられないように
+diff -ruN orig/ai-team-delivery/scripts/ci/dagci/config.py new/ai-team-delivery/scripts/ci/dagci/config.py
 --- orig/ai-team-delivery/scripts/ci/dagci/config.py	2026-11-04 13:26:40.984267868 +0000
-+++ rel/ai-team-delivery/scripts/ci/dagci/config.py	2026-11-05 00:51:34.102916011 +0000
++++ new/ai-team-delivery/scripts/ci/dagci/config.py	2026-11-05 01:00:16.549576036 +0000
 @@ -17,7 +17,8 @@
  STAGE_KEYS = {"id", "name", "run", "needs", "when", "mutates", "group", "timeout", "env", "services",
                "trace", "export", "imports", "warn_only", "always", "shell", "heavy"}
  TOP_KEYS = {"version", "project", "include", "toolbox", "prepare", "workdir", "source", "git", "services",
 -            "env", "defaults", "caches", "stages", "red_patterns", "overrides", "jobs", "ci", "deploy", "selftest", "audit"}
 +            "env", "defaults", "caches", "stages", "red_patterns", "overrides", "jobs", "ci", "deploy", "selftest", "audit",
-+            "github", "smoke"}
++            "github", "smoke", "tickets"}
  
  
  class ConfigError(Exception):
-@@ -72,6 +73,7 @@
+@@ -41,7 +42,9 @@
+     warn_only: bool = False
+     always: bool = False
+     shell: str = "bash"
+-    heavy: bool = False      # 重い段（ほかの重い段と同時に流さない）。記録の時間からも決まる（ci.heavy_seconds）
++    # 重い段（ほかの重い段と同時に流さない）。書かなければ記録の時間から決まる（ci.heavy_seconds）。
++    #   heavy: false と書いた段は、記録の時間が長くても重い段にしない（同時に流すために分けた段・2026-11-05 あるプロジェクトの単体の試験の 6 分け）
++    heavy: bool | None = None
+ 
+     def fingerprint(self, base: str) -> str:
+         """結果の使い回しの鍵の一部（命令・環境・道具箱が同じか）"""
+@@ -72,6 +75,7 @@
  
      def toolbox_digest(self) -> str:
          keep = {k: self.raw.get(k) for k in ("toolbox", "prepare", "workdir", "env", "services", "git")}
@@ -577,10 +668,28 @@ diff -ruN orig/ai-team-delivery/scripts/ci/dagci/config.py rel/ai-team-delivery/
          return hashlib.sha256(json.dumps(keep, sort_keys=True, ensure_ascii=False).encode()).hexdigest()[:24]
  
  
-@@ -157,6 +159,12 @@
+@@ -124,7 +128,7 @@
+             timeout=int(d.get("timeout", 1800)), env={k: str(v) for k, v in (d.get("env") or {}).items()},
+             services=list(d.get("services", []) or []), trace=bool(d.get("trace", True)),
+             export=list(d.get("export", []) or []), warn_only=bool(d.get("warn_only", False)),
+-            always=bool(d.get("always", False)), shell=str(d.get("shell", "bash")), heavy=bool(d.get("heavy", False))))
++            always=bool(d.get("always", False)), shell=str(d.get("shell", "bash")), heavy=None if d.get("heavy") is None else bool(d["heavy"])))
+     if not stages:
+         raise ConfigError("段が 1 本も無い（include の命令が空を返した・stages が空）。0 段は緑にしない")
+     missing_over = set(overrides) - {s.id for s in stages}
+@@ -157,6 +161,21 @@
      for name, sv in (cfg.raw.get("services") or {}).items():
          if "image" not in sv:
              raise ConfigError(f"services.{name} に image が要る")
++    tk = cfg.raw.get("tickets")
++    if tk is not None:
++        if not isinstance(tk, dict) or "{id}" not in str(tk.get("cmd", "")):
++            raise ConfigError("tickets には cmd（{id} を含む命令。チケットの試験を流す命令を 1 行ずつ出す）が要る")
++        if tk.get("like") and tk["like"] not in known:
++            raise ConfigError(f"tickets.like が存在しない段を指している: {tk['like']}")
++        for sv in tk.get("services") or []:
++            if sv not in services:
++                raise ConfigError(f"tickets.services が services: に無い: {sv}")
 +    for i, c in enumerate(cfg.raw.get("smoke") or []):
 +        if not isinstance(c, (str, dict)) or (isinstance(c, dict) and "run" not in c):
 +            raise ConfigError(f"smoke の {i + 1} 番目には run が要る（文字列か {{name, run, services, env}}）")
@@ -590,9 +699,9 @@ diff -ruN orig/ai-team-delivery/scripts/ci/dagci/config.py rel/ai-team-delivery/
  
  
  def toposort(stages: list[Stage]) -> list[Stage]:
-diff -ruN orig/ai-team-delivery/scripts/ci/dagci/doctor.py rel/ai-team-delivery/scripts/ci/dagci/doctor.py
+diff -ruN orig/ai-team-delivery/scripts/ci/dagci/doctor.py new/ai-team-delivery/scripts/ci/dagci/doctor.py
 --- orig/ai-team-delivery/scripts/ci/dagci/doctor.py	2026-11-04 13:26:40.984689594 +0000
-+++ rel/ai-team-delivery/scripts/ci/dagci/doctor.py	2026-11-05 00:51:34.103106379 +0000
++++ new/ai-team-delivery/scripts/ci/dagci/doctor.py	2026-11-04 18:20:00.060929975 +0000
 @@ -7,6 +7,7 @@
      最後の CI      この台で最後に全部の段を流してからの経過・その結果                    記録なし＝赤／24 時間超・最後が赤＝黄
      selftest       dagci selftest の記録が緑で、今の dagci の中身で取られたものか         無い・赤＝赤／中身が変わった・24 時間超＝黄
@@ -638,9 +747,9 @@ diff -ruN orig/ai-team-delivery/scripts/ci/dagci/doctor.py rel/ai-team-delivery/
      import selftest
      sp = os.path.join(memo.home(), "selftest", f"{cfg.project}.json")
      if not os.path.exists(sp):
-diff -ruN orig/ai-team-delivery/scripts/ci/dagci/incontainer/smoke_probe.py rel/ai-team-delivery/scripts/ci/dagci/incontainer/smoke_probe.py
+diff -ruN orig/ai-team-delivery/scripts/ci/dagci/incontainer/smoke_probe.py new/ai-team-delivery/scripts/ci/dagci/incontainer/smoke_probe.py
 --- orig/ai-team-delivery/scripts/ci/dagci/incontainer/smoke_probe.py	1970-01-01 00:00:00.000000000 +0000
-+++ rel/ai-team-delivery/scripts/ci/dagci/incontainer/smoke_probe.py	2026-11-05 00:51:34.103045353 +0000
++++ new/ai-team-delivery/scripts/ci/dagci/incontainer/smoke_probe.py	2026-11-04 17:59:50.444746100 +0000
 @@ -0,0 +1,225 @@
 +#!/usr/bin/env python3
 +"""dagci smoke の容れ物の中の確かめ（dagci が呼ぶ）。1 項目ずつ JSON の 1 行で出す: {"ok": 真偽, "what": 項目, "msg": 中身}
@@ -867,9 +976,9 @@ diff -ruN orig/ai-team-delivery/scripts/ci/dagci/incontainer/smoke_probe.py rel/
 +            part()
 +        except Exception as ex:   # 確かめの途中の例外も赤で返す（素通りさせない）
 +            say(False, part.__name__, f"確かめが落ちた: {type(ex).__name__}: {ex}")
-diff -ruN orig/ai-team-delivery/scripts/ci/dagci/init_ci.py rel/ai-team-delivery/scripts/ci/dagci/init_ci.py
+diff -ruN orig/ai-team-delivery/scripts/ci/dagci/init_ci.py new/ai-team-delivery/scripts/ci/dagci/init_ci.py
 --- orig/ai-team-delivery/scripts/ci/dagci/init_ci.py	1970-01-01 00:00:00.000000000 +0000
-+++ rel/ai-team-delivery/scripts/ci/dagci/init_ci.py	2026-11-05 00:51:34.102933217 +0000
++++ new/ai-team-delivery/scripts/ci/dagci/init_ci.py	2026-11-04 18:25:51.900218590 +0000
 @@ -0,0 +1,413 @@
 +"""dagci init-ci — プロジェクトの GitHub の workflow と package.json などから、ci.yaml の下書きを作る。
 +
@@ -1284,10 +1393,14 @@ diff -ruN orig/ai-team-delivery/scripts/ci/dagci/init_ci.py rel/ai-team-delivery
 +        print("  ★", x)
 +    print("  次：dagci smoke（2 分の健康診断）→ dagci run --all")
 +    return 1 if d.fails else 0
-diff -ruN orig/ai-team-delivery/scripts/ci/dagci/main.py rel/ai-team-delivery/scripts/ci/dagci/main.py
+diff -ruN orig/ai-team-delivery/scripts/ci/dagci/main.py new/ai-team-delivery/scripts/ci/dagci/main.py
 --- orig/ai-team-delivery/scripts/ci/dagci/main.py	2026-11-04 13:26:40.985795860 +0000
-+++ rel/ai-team-delivery/scripts/ci/dagci/main.py	2026-11-05 00:51:34.102799040 +0000
-@@ -5,6 +5,9 @@
++++ new/ai-team-delivery/scripts/ci/dagci/main.py	2026-11-05 01:00:16.548138433 +0000
+@@ -2,9 +2,13 @@
+ """dagci — どのプロジェクトでも ci.yaml を書くだけで使える、自前の CI の実行器（Dagger の上で動く）。
+ 
+   dagci run   [--all] [--base REF] [--only ID,..] [--jobs N] [--shard I/N] [--no-cache] [--no-memo]
++  dagci run   --ticket ID                     チケット 1 枚の試験（ci.yaml の tickets.cmd）と、変わった所に当たる段だけ（数分）
    dagci plan  [--all] [--base REF]           流す段と理由を出すだけ（容れ物は動かさない）
    dagci verdict [--tree T] [--mode all]       その木が（この台で）緑で通ったかを終わり方で返す
    dagci timings [--last N]                    段ごとの所要時間（記録の平均・最大）
@@ -1297,7 +1410,7 @@ diff -ruN orig/ai-team-delivery/scripts/ci/dagci/main.py rel/ai-team-delivery/sc
  
    終わり方: 0＝全部緑（飛ばした段・注意の段は数えない）／1＝赤がある／2＝設定の誤り
    使い方の全体は references/ci.md。
-@@ -21,6 +24,9 @@
+@@ -21,6 +25,9 @@
  import time
  
  sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -1307,7 +1420,7 @@ diff -ruN orig/ai-team-delivery/scripts/ci/dagci/main.py rel/ai-team-delivery/sc
  
  import config as cfgmod  # noqa: E402
  import memo  # noqa: E402
-@@ -43,6 +49,14 @@
+@@ -43,6 +50,14 @@
          d = os.path.dirname(d)
  
  
@@ -1322,16 +1435,92 @@ diff -ruN orig/ai-team-delivery/scripts/ci/dagci/main.py rel/ai-team-delivery/sc
  def workspace_tree(root: str) -> str:
      """送る作業場（git が数えるファイルの今の中身）の木のハッシュ。未コミットの変更も入る"""
      import tempfile
-@@ -189,6 +203,8 @@
+@@ -78,6 +93,8 @@
+             raise cfgmod.ConfigError(f"--only に存在しない段: {sorted(unknown)}")
+     # 既定は全部の段（user の決定 2026-10-28：検査はトークンを使わないので、毎回全部を流す）。
+     # 変わった所だけは --affected で選べる（runner の順番待ちが長いときなど）
++    if getattr(a, "ticket", None):
++        return select_ticket(cfg, a, changed, only), mb
+     sel = planmod.select(cfg, changed, not a.affected, only)
+     if a.stages:   # 台を分けたとき：この台が受け持つ段（と、作業場を書き換える上流）だけ
+         keep = set(a.stages.split(","))
+@@ -97,6 +114,55 @@
+     return sel, mb
+ 
+ 
++def ticket_stage(cfg, tid: str) -> tuple[cfgmod.Stage, list[str]]:
++    """ci.yaml の tickets.cmd が出す命令（1 行 1 つ・# の行は説明）から、そのチケットの試験の段を作る。
++    相手（services）と env は tickets.like の段（単体の試験の段）と同じにする（tickets.services・env で足せる）"""
++    import shlex
++    tk = cfg.raw.get("tickets") or {}
++    if not tk.get("cmd"):
++        raise cfgmod.ConfigError("--ticket には ci.yaml の tickets: {cmd: ...} が要る（references/ci.md「チケットの試験だけ流す」）")
++    if not re.fullmatch(r"[A-Za-z0-9._-]+", tid):
++        raise cfgmod.ConfigError(f"--ticket の ID は英数と . _ - だけ: {tid}")
++    r = subprocess.run(tk["cmd"].replace("{id}", shlex.quote(tid)), shell=True, cwd=cfg.root, capture_output=True, text=True)
++    if r.returncode != 0:
++        raise cfgmod.ConfigError(f"tickets.cmd が失敗した（{tid}）: {(r.stderr or r.stdout).strip()[-400:]}")
++    cmds = [ln.strip() for ln in r.stdout.splitlines() if ln.strip() and not ln.strip().startswith("#")]
++    like = cfg.by_id().get(tk.get("like") or "")
++    env = {**(like.env if like else {}), **{k: str(v) for k, v in (tk.get("env") or {}).items()}}
++    svcs = list(dict.fromkeys((like.services if like else []) + list(tk.get("services") or [])))
++    # 試験が無いチケットも、流すものが無いことを 1 行で出して緑（何も流さずに黙って緑にしない）
++    run = " && ".join(cmds) if cmds else f"echo 'チケット {tid} の試験はまだ無い（tickets.cmd が命令を 1 つも出さなかった）'"
++    return cfgmod.Stage(id=f"ticket-{tid}", name=f"チケット {tid} の試験", run=run, group="ticket", always=True,
++                        timeout=int(tk.get("timeout", (like.timeout if like else 1800))), env=env, services=svcs,
++                        trace=False, heavy=False), cmds
++
++
++def select_ticket(cfg, a, changed, only):
++    """--ticket：そのチケットの試験の段＋変わった所に当たる段（--affected と同じ規則）。tickets.skip の段（全部を流す回帰）は外す。
++    読んだものの照合による使い回しは効かせる（取り込みの前の全部は --all で別に流す）"""
++    if a.all:
++        raise cfgmod.ConfigError("--ticket と --all は一緒に使えない（チケットの回と、取り込みの前の全部は別）")
++    st, cmds = ticket_stage(cfg, a.ticket)
++    if st.id in cfg.by_id():
++        raise cfgmod.ConfigError(f"段の id {st.id} がもう ci.yaml にある")
++    cfg.stages = cfgmod.toposort(cfg.stages + [st])
++    if not a.summary_only:
++        print(f"dagci：チケット {a.ticket} で流す試験（{len(cmds)} 本の命令）", flush=True)
++        for c in cmds or ["（無し）"]:
++            print(f"    {c[:300]}", flush=True)
++    sel = planmod.select(cfg, changed, False, only)
++    skip = [p for p in ((cfg.raw.get("tickets") or {}).get("skip") or [])]
++    drop = [s for s in sel.selected if s.id != st.id and planmod.matches(skip, s.id)]
++    keep = [s for s in sel.selected if s not in drop]
++    if st not in keep:
++        keep.append(st)
++    reason = {**sel.reason, st.id: f"チケット {a.ticket}"}
++    for s in drop:
++        reason[s.id] = "チケットの回では流さない（tickets.skip・全部は取り込みの前に）"
++    rest = [s for s in sel.skipped if s.id != st.id] + drop
++    return planmod.Selection(keep, rest, reason, sel.changed, f"ticket {a.ticket}（{sel.mode}）")
++
++
+ def history_path(project: str) -> str:
+     return os.path.join(memo.home(), "timings", f"{project}.jsonl")
+ 
+@@ -171,8 +237,8 @@
+     ticket = lock = None
+     if not a.no_queue:
+         slots = int((cfg.raw.get("ci") or {}).get("slots", 1))
+-        if a.ticket:
+-            ticket = a.ticket
++        if a.queue_ticket:
++            ticket = a.queue_ticket
+             localq.adopt(ticket)
+         else:
+             ticket = localq.enqueue({"project": cfg.project, "branch": branch_name(cfg.root), "tree": tree,
+@@ -189,6 +255,8 @@
                        no_cache=a.no_cache, memo=not (a.no_memo or sel.mode.startswith("all")), branch=branch_name(cfg.root), base_sha=mb,
                        run_dir=run_dir, files=files)
      opts.quiet = a.summary_only
-+    # 全部の段（30 分）の前に 2 分の健康診断。道具箱・網・相手の誤りを、段を流してから 1 つずつ見つけない（Kaname・2026-11-04）
++    # 全部の段（30 分）の前に 2 分の健康診断。道具箱・網・相手の誤りを、段を流してから 1 つずつ見つけない（あるプロジェクト・2026-11-04）
 +    opts.smoke = bool(a.all and not a.no_smoke and (cfg.raw.get("ci") or {}).get("smoke", True) is not False)
      # 同じ木の前の回で赤だった段は、本当に流し直す（赤を使い回さない）
      prev = localq.load_result(cfg.project, tree)
      if prev and not prev.get("green") and prev.get("run"):
-@@ -366,7 +382,7 @@
+@@ -366,7 +434,7 @@
  def main(argv=None) -> int:
      ap = argparse.ArgumentParser(prog="dagci", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
      ap.add_argument("command", choices=["run", "plan", "verdict", "timings", "queue", "await", "deploy", "shards",
@@ -1340,7 +1529,17 @@ diff -ruN orig/ai-team-delivery/scripts/ci/dagci/main.py rel/ai-team-delivery/sc
      ap.add_argument("target", nargs="?", help="deploy の環境の名前")
      ap.add_argument("--config")
      ap.add_argument("--all", action="store_true", help="全部の段を流す（既定。昔の書き方のため残す）")
-@@ -392,7 +408,22 @@
+@@ -379,7 +447,8 @@
+     ap.add_argument("--parity", action="store_true", help="selftest：判定の同等（元の検査と dagci を壊した写しで突き合わせる・重い）")
+     ap.add_argument("--no-queue", action="store_true", help="この台の待ちの列に並ばない（試しのとき）")
+     ap.add_argument("--summary-only", action="store_true", help="要約だけを出す（メンバーが受け取る形）")
+-    ap.add_argument("--ticket", help=argparse.SUPPRESS)
++    ap.add_argument("--queue-ticket", help=argparse.SUPPRESS)   # submit が後ろの回に渡す列の札
++    ap.add_argument("--ticket", help="run・plan：このチケットの試験（ci.yaml の tickets.cmd）と、変わった所に当たる段だけを流す")
+     ap.add_argument("--github", action="store_true", help="queue・await：GitHub の runner の列を見る（あとで足す形）")
+     ap.add_argument("--base", help="取り込み先（既定は ci.yaml の git.base）")
+     ap.add_argument("--only", help="この段（と上流）だけ。, 区切り")
+@@ -392,7 +461,22 @@
      ap.add_argument("--tree")
      ap.add_argument("--mode", default="")
      ap.add_argument("--last", type=int, default=5)
@@ -1363,7 +1562,7 @@ diff -ruN orig/ai-team-delivery/scripts/ci/dagci/main.py rel/ai-team-delivery/sc
      try:
          cfg = cfgmod.load(find_config(a.config))
      except cfgmod.ConfigError as ex:
-@@ -411,13 +442,18 @@
+@@ -411,13 +495,21 @@
          import audit
          return audit.run(cfg, a)
  
@@ -1380,12 +1579,15 @@ diff -ruN orig/ai-team-delivery/scripts/ci/dagci/main.py rel/ai-team-delivery/sc
 -                "check": cmd_check, "selftest": cmd_selftest, "doctor": cmd_doctor, "audit": cmd_audit}[a.command](cfg, a)
 +                "check": cmd_check, "selftest": cmd_selftest, "doctor": cmd_doctor, "audit": cmd_audit,
 +                "smoke": cmd_smoke}[a.command](cfg, a)
++    except cfgmod.ConfigError as ex:   # --ticket の命令の失敗・--only の誤りなど、流す前に分かる設定の誤り
++        print(f"設定の誤り: {ex}", file=sys.stderr)
++        return 2
      except RuntimeError as ex:   # gh・git の失敗は 1 行で（長い traceback を読ませない）
          print(f"dagci {a.command}: {ex}", file=sys.stderr)
          return 2
-diff -ruN orig/ai-team-delivery/scripts/ci/dagci/parity.py rel/ai-team-delivery/scripts/ci/dagci/parity.py
+diff -ruN orig/ai-team-delivery/scripts/ci/dagci/parity.py new/ai-team-delivery/scripts/ci/dagci/parity.py
 --- orig/ai-team-delivery/scripts/ci/dagci/parity.py	2026-11-04 13:26:40.986144349 +0000
-+++ rel/ai-team-delivery/scripts/ci/dagci/parity.py	2026-11-05 00:51:34.103324989 +0000
++++ new/ai-team-delivery/scripts/ci/dagci/parity.py	2026-11-04 13:26:49.041894402 +0000
 @@ -22,6 +22,22 @@
  HERE = os.path.dirname(os.path.abspath(__file__))
  
@@ -1421,9 +1623,9 @@ diff -ruN orig/ai-team-delivery/scripts/ci/dagci/parity.py rel/ai-team-delivery/
                             env={**os.environ, "CI": "true"}, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
          if broken:
              subprocess.run(shlex.split(adapter) + ["break", wt, json.dumps(broken, ensure_ascii=False)], cwd=wt,
-diff -ruN orig/ai-team-delivery/scripts/ci/dagci/runner.py rel/ai-team-delivery/scripts/ci/dagci/runner.py
+diff -ruN orig/ai-team-delivery/scripts/ci/dagci/runner.py new/ai-team-delivery/scripts/ci/dagci/runner.py
 --- orig/ai-team-delivery/scripts/ci/dagci/runner.py	2026-11-04 13:26:40.986349016 +0000
-+++ rel/ai-team-delivery/scripts/ci/dagci/runner.py	2026-11-05 00:51:34.103124677 +0000
++++ new/ai-team-delivery/scripts/ci/dagci/runner.py	2026-11-05 01:00:16.550730655 +0000
 @@ -54,6 +54,7 @@
      files: list[str] = field(default_factory=list)
      rerun: set = field(default_factory=set)   # 同じ木の前の回で赤だった段（Dagger の使い回しを使わず、本当に流し直す）
@@ -1450,12 +1652,25 @@ diff -ruN orig/ai-team-delivery/scripts/ci/dagci/runner.py rel/ai-team-delivery/
          for name, sv in (self.cfg.raw.get("services") or {}).items():
 -            ctr = c.container().from_(sv["image"])
 +            # 名前を容れ物に入れる。Dagger は定義（image・env・ports）が同じ service を 1 つの実体にまとめるので、これが無いと
-+            #   同じ書き方の相手（例：job ごとの Postgres）が 1 つになり、別の段が同じ DB を同時に入れ替えて偽の赤になる（Kaname の G3 と G27・2026-11-04）
++            #   同じ書き方の相手（例：job ごとの Postgres）が 1 つになり、別の段が同じ DB を同時に入れ替えて偽の赤になる（あるプロジェクトの G3 と G27・2026-11-04）
 +            ctr = c.container().from_(sv["image"]).with_env_variable("DAGCI_SERVICE", name)
              for k, v in (sv.get("env") or {}).items():
                  ctr = ctr.with_env_variable(k, str(v))
              for port in sv.get("ports") or []:
-@@ -322,6 +328,23 @@
+@@ -208,8 +214,10 @@
+         for name, path in (self.cfg.raw.get("caches") or {}).items():
+             run_ctr = run_ctr.with_mounted_cache(path, c.cache_volume(f"dagci-{self.cfg.project}-{name}-{s.id}"))
+         fp = s.fingerprint(f"{self.toolbox_fp}|{self.day}")
+-        use_memo = self.o.memo and s.trace and not imports and not self.o.no_cache and s.id not in self.o.rerun
+-        heavy = self.heavy_sem if (s.heavy or s.id in self.o.heavy) else _Null()
++        # export を持つ段（置き場を下流へ渡す段）は使い回さない。使い回すと置き場の中身が無く、下流が足りない結果で流れる
++        use_memo = (self.o.memo and s.trace and not imports and not s.export and not self.o.no_cache
++                    and s.id not in self.o.rerun)
++        heavy = self.heavy_sem if (s.heavy or (s.heavy is None and s.id in self.o.heavy)) else _Null()
+         async with heavy, sem:
+             t0 = time.monotonic()
+             try:
+@@ -322,6 +330,23 @@
              if not self.o.quiet:
                  print(f"  準備 道具箱 {timings['toolbox']:.1f}s・準備 {timings['prepare']:.1f}s・"
                        f"作業場 {timings['workspace']:.1f}s", flush=True)
@@ -1479,10 +1694,18 @@ diff -ruN orig/ai-team-delivery/scripts/ci/dagci/runner.py rel/ai-team-delivery/
              svcs = self.services(c)
              ws: dict = {None: w0}
              outs: dict = {}
-diff -ruN orig/ai-team-delivery/scripts/ci/dagci/selftest.py rel/ai-team-delivery/scripts/ci/dagci/selftest.py
+diff -ruN orig/ai-team-delivery/scripts/ci/dagci/selftest.py new/ai-team-delivery/scripts/ci/dagci/selftest.py
 --- orig/ai-team-delivery/scripts/ci/dagci/selftest.py	2026-11-04 13:26:40.987078994 +0000
-+++ rel/ai-team-delivery/scripts/ci/dagci/selftest.py	2026-11-05 00:51:34.102855496 +0000
-@@ -49,7 +49,7 @@
++++ new/ai-team-delivery/scripts/ci/dagci/selftest.py	2026-11-05 01:00:16.549230564 +0000
+@@ -12,6 +12,7 @@
+ import hashlib
+ import json
+ import os
++import re
+ import shutil
+ import signal
+ import subprocess
+@@ -49,7 +50,7 @@
    environments:
      interim: {run: "sh ./deploy.sh", secrets: {TOKEN: DAGCI_SELFTEST_TOKEN}}
      staging: {run: "true", when_missing: infra/staging.bicep}
@@ -1491,7 +1714,7 @@ diff -ruN orig/ai-team-delivery/scripts/ci/dagci/selftest.py rel/ai-team-deliver
  """
  
  
-@@ -453,6 +453,76 @@
+@@ -453,6 +454,111 @@
      return ok, "audit が 同じ命令の 2 段・書き換えの後に作業場を数える段・3 秒の上限 を数えた" if ok else f"rc={rc} {out[-300:]}"
  
  
@@ -1560,6 +1783,41 @@ diff -ruN orig/ai-team-delivery/scripts/ci/dagci/selftest.py rel/ai-team-deliver
 +                if ok else f"plan rc={rc3} {out3[-300:]}")
 +
 +
++def s29(c):
++    """チケットの回（run --ticket）：tickets.cmd が出した命令を 1 つの段で流し、tickets.skip の段（全部の回帰）は流さない。
++    命令が赤なら赤・命令が無ければ「まだ無い」と出して緑（D-128.140・あるプロジェクトの単体の試験をチケットごとに）"""
++    d = c.repo("echo 試しの段\n")
++    open(os.path.join(d, "tk.sh"), "w").write(textwrap.dedent("""\
++        echo "# $1 の試験"
++        case "$1" in
++          K-9) echo "echo チケット-$1-流した"; echo 'test -n "$DAGCI_TK"' ;;
++          K-RED) echo "echo 赤の命令-X29"; echo "exit 4" ;;
++        esac
++        """))
++    y = open(os.path.join(d, "ci.yaml")).read().replace("defaults:", textwrap.dedent("""\
++        tickets: {cmd: "sh ./tk.sh {id}", like: like, skip: ["full*"]}
++        defaults:"""))
++    open(os.path.join(d, "ci.yaml"), "w").write(y)
++    _yaml_stages(d, "  - {id: like, run: 'true', env: {DAGCI_TK: 'like の env'}}\n"
++                    "  - {id: full, run: 'echo 全部を流した-X29'}\n", commit=False)
++    subprocess.run(["git", "add", "-A"], cwd=d)
++    subprocess.run(["git", "-c", "user.email=t@e.invalid", "-c", "user.name=t", "commit", "-qm", "tickets"], cwd=d)
++    def log(out, sid):   # チケットの回は木の結果に残さない（全部の回だけが残す）。回の記録の置き場は出力の「記録:」から
++        m = re.search(r"記録: (\S+)", out)
++        p = os.path.join(m.group(1), f"{sid}.log") if m else ""
++        return open(p).read() if p and os.path.exists(p) else ""
++    rc, out = c.dagci(d, "run", "--ticket", "K-9", "--no-queue")
++    ok = rc == 0 and "チケット-K-9-流した" in log(out, "ticket-K-9") and "全部を流した-X29" not in log(out, "full") and "echo チケット-K-9-流した" in out
++    if not ok:
++        return False, f"K-9 rc={rc} {out[-300:]}"
++    rc2, out2 = c.dagci(d, "run", "--ticket", "K-RED", "--summary-only", "--no-queue")
++    rc3, out3 = c.dagci(d, "run", "--ticket", "K-NONE", "--no-queue")
++    rc4, out4 = c.dagci(d, "run", "--ticket", "K-9", "--all", "--no-queue")
++    ok = rc2 == 1 and "赤の命令-X29" in out2 and rc3 == 0 and "まだ無い" in log(out3, "ticket-K-NONE") and rc4 == 2
++    return ok, ("チケットの命令だけを like の相手と env で流し、skip の段（全部）は流さない。命令が赤なら赤・無ければ「まだ無い」で緑・--all と一緒は設定の誤り"
++                if ok else f"K-RED rc={rc2} K-NONE rc={rc3} --all rc={rc4} {out2[-200:]} {out3[-200:]}")
++
++
 +def yaml_load(text: str):
 +    import yaml
 +    return yaml.safe_load(text)
@@ -1568,18 +1826,19 @@ diff -ruN orig/ai-team-delivery/scripts/ci/dagci/selftest.py rel/ai-team-deliver
  def s00():
      r = subprocess.run([sys.executable, "-W", "ignore", "-m", "unittest", "discover", "-s", os.path.join(HERE, "tests")],
                         capture_output=True, text=True)
-@@ -487,6 +557,8 @@
+@@ -487,6 +593,9 @@
      ("24", "重い段は同時に流さない", lambda c, real: s24(c)),
      ("25", "置き場（caches）は段ごとに別", lambda c, real: s25(c)),
      ("26", "dagci audit が揺れうる所を数える", lambda c, real: s26(c)),
 +    ("27", "健康診断（dagci smoke）が外側の誤りを赤にし、run --all は段の前に止まる", lambda c, real: s27(c)),
 +    ("28", "workflow から ci.yaml の下書きと段を導く（init-ci・stages）", lambda c, real: s28(c)),
++    ("29", "チケットの回（run --ticket）はチケットの命令と変わった所だけ・全部の段は流さない", lambda c, real: s29(c)),
  ]
  
  
-diff -ruN orig/ai-team-delivery/scripts/ci/dagci/smoke.py rel/ai-team-delivery/scripts/ci/dagci/smoke.py
+diff -ruN orig/ai-team-delivery/scripts/ci/dagci/smoke.py new/ai-team-delivery/scripts/ci/dagci/smoke.py
 --- orig/ai-team-delivery/scripts/ci/dagci/smoke.py	1970-01-01 00:00:00.000000000 +0000
-+++ rel/ai-team-delivery/scripts/ci/dagci/smoke.py	2026-11-05 00:51:34.102821516 +0000
++++ new/ai-team-delivery/scripts/ci/dagci/smoke.py	2026-11-05 01:00:16.548513230 +0000
 @@ -0,0 +1,200 @@
 +"""dagci smoke — 2 分の健康診断。全部の段（30 分）を流す前に、プロジェクトの外側（道具箱・網・相手）の誤りを見つける。
 +
@@ -1593,7 +1852,7 @@ diff -ruN orig/ai-team-delivery/scripts/ci/dagci/smoke.py rel/ai-team-delivery/s
 +  https         使う registry（npm・PyPI）に、容れ物の中の curl・node・python3 のそれぞれでつながるか（証明書の読み方が道具ごとに違う）
 +  相手          services のどれもが起き、口（TCP）につながるか。postgres の image は pg_isready と select 1、redis は PING
 +  smoke         ci.yaml の smoke: に書いたプロジェクトの短い確かめ（例：移行が当たる）
-+由来（Kaname・2026-11-04）：venv の Python・TLS の中継・Chrome・同じ定義の相手・決め打ちの DB は、どれも 30 分流してから 1 つずつ見つかった。
++由来（あるプロジェクト・2026-11-04）：venv の Python・TLS の中継・Chrome・同じ定義の相手・決め打ちの DB は、どれも 30 分流してから 1 つずつ見つかった。
 +"""
 +from __future__ import annotations
 +
@@ -1781,12 +2040,12 @@ diff -ruN orig/ai-team-delivery/scripts/ci/dagci/smoke.py rel/ai-team-delivery/s
 +    reds = sum(1 for r in rows if not r["ok"])
 +    print(f"dagci smoke：{'緑' if ok else '赤'}（緑 {len(rows) - reds}・赤 {reds}・{secs:.0f} 秒）")
 +    return 0 if ok else 1
-diff -ruN orig/ai-team-delivery/scripts/ci/dagci/stages_from_github.py rel/ai-team-delivery/scripts/ci/dagci/stages_from_github.py
+diff -ruN orig/ai-team-delivery/scripts/ci/dagci/stages_from_github.py new/ai-team-delivery/scripts/ci/dagci/stages_from_github.py
 --- orig/ai-team-delivery/scripts/ci/dagci/stages_from_github.py	1970-01-01 00:00:00.000000000 +0000
-+++ rel/ai-team-delivery/scripts/ci/dagci/stages_from_github.py	2026-11-05 00:51:34.103088327 +0000
++++ new/ai-team-delivery/scripts/ci/dagci/stages_from_github.py	2026-11-05 01:00:16.550255896 +0000
 @@ -0,0 +1,341 @@
 +#!/usr/bin/env python3
-+"""dagci の段の一覧を、プロジェクトの GitHub の workflow から導く（手で写さない）。Kaname の scripts/ci/ci_stages.py を汎用にした。
++"""dagci の段の一覧を、プロジェクトの GitHub の workflow から導く（手で写さない）。あるプロジェクトの scripts/ci/ci_stages.py を汎用にした。
 +
 +  dagci stages            段の一覧を YAML で出す（ci.yaml の include から呼ぶ）。1 対 1 が崩れていれば赤で止まる（設定の誤り）
 +  dagci stages --check    workflow の手順が、どれも「段」「道具箱・準備で済ませた手順」「理由つきで外した物」の 1 つに入っているかを出す
@@ -1802,7 +2061,7 @@ diff -ruN orig/ai-team-delivery/scripts/ci/dagci/stages_from_github.py rel/ai-te
 +    job_setup: [正規表現]                      # job の中で、後ろの段の前に毎回流す手順（足す。既定は build と、後ろで立ち上げる手順）
 +
 +GitHub の job の写し方:
-+  services   → job ごとに別の相手 <job>-<名前>（同じ定義の相手を 1 つにまとめない・Kaname の G3 と G27・2026-11-04）
++  services   → job ごとに別の相手 <job>-<名前>（同じ定義の相手を 1 つにまとめない・あるプロジェクトの G3 と G27・2026-11-04）
 +               env と命令の localhost:<口>・127.0.0.1:<口> を相手の名前に向ける
 +  相手のある job → 手順を順に流す（前の段を needs に。同じ DB を同時に作り直さない）
 +  env        → workflow・job・手順の env を段の env に。${{ env.X }}・${{ matrix.X }}（最初の組）は値に置き換える
@@ -2126,9 +2385,9 @@ diff -ruN orig/ai-team-delivery/scripts/ci/dagci/stages_from_github.py rel/ai-te
 +
 +if __name__ == "__main__":
 +    sys.exit(main())
-diff -ruN orig/ai-team-delivery/scripts/ci/dagci/tests/test_github_stages.py rel/ai-team-delivery/scripts/ci/dagci/tests/test_github_stages.py
+diff -ruN orig/ai-team-delivery/scripts/ci/dagci/tests/test_github_stages.py new/ai-team-delivery/scripts/ci/dagci/tests/test_github_stages.py
 --- orig/ai-team-delivery/scripts/ci/dagci/tests/test_github_stages.py	1970-01-01 00:00:00.000000000 +0000
-+++ rel/ai-team-delivery/scripts/ci/dagci/tests/test_github_stages.py	2026-11-05 00:51:34.103219292 +0000
++++ new/ai-team-delivery/scripts/ci/dagci/tests/test_github_stages.py	2026-11-04 18:20:39.640641463 +0000
 @@ -0,0 +1,137 @@
 +"""workflow から段を導く（stages_from_github）と、ci.yaml の下書き（init_ci）の検査。容れ物も網も使わない。
 +   流し方: python3 -m unittest discover -s scripts/ci/dagci/tests   （PyYAML が要る）
@@ -2267,9 +2526,9 @@ diff -ruN orig/ai-team-delivery/scripts/ci/dagci/tests/test_github_stages.py rel
 +
 +if __name__ == "__main__":
 +    unittest.main()
-diff -ruN orig/ai-team-delivery/scripts/gates/_common.py rel/ai-team-delivery/scripts/gates/_common.py
+diff -ruN orig/ai-team-delivery/scripts/gates/_common.py new/ai-team-delivery/scripts/gates/_common.py
 --- orig/ai-team-delivery/scripts/gates/_common.py	1970-01-01 00:00:00.000000000 +0000
-+++ rel/ai-team-delivery/scripts/gates/_common.py	2026-11-05 00:51:34.103429906 +0000
++++ new/ai-team-delivery/scripts/gates/_common.py	2026-11-04 13:26:49.045015028 +0000
 @@ -0,0 +1,36 @@
 +"""標準の検査（scripts/gates/）の共通部分。設定はプロジェクトの根の ci-gates.yaml（雛形 assets/ci/ci-gates.example.yaml）。
 +
@@ -2307,12 +2566,12 @@ diff -ruN orig/ai-team-delivery/scripts/gates/_common.py rel/ai-team-delivery/sc
 +def not_used(section: str) -> int:
 +    print(f"PASS — ci-gates.yaml に {section}: が無い（この検査は使っていない）")
 +    return 0
-diff -ruN orig/ai-team-delivery/scripts/gates/deps_gate.py rel/ai-team-delivery/scripts/gates/deps_gate.py
+diff -ruN orig/ai-team-delivery/scripts/gates/deps_gate.py new/ai-team-delivery/scripts/gates/deps_gate.py
 --- orig/ai-team-delivery/scripts/gates/deps_gate.py	1970-01-01 00:00:00.000000000 +0000
-+++ rel/ai-team-delivery/scripts/gates/deps_gate.py	2026-11-05 00:51:34.103417126 +0000
++++ new/ai-team-delivery/scripts/gates/deps_gate.py	2026-11-05 01:00:16.553509134 +0000
 @@ -0,0 +1,222 @@
 +#!/usr/bin/env python3
-+"""部品（依存）の版の検査（標準の検査・Kaname の G46 の S4〜S6 から汎用にした）。設定は ci-gates.yaml の deps:。
++"""部品（依存）の版の検査（標準の検査・あるプロジェクトの G46 の S4〜S6 から汎用にした）。設定は ci-gates.yaml の deps:。
 +
 +  python3 <skill>/scripts/gates/deps_gate.py [--root <根>] [--config <ci-gates.yaml>]
 +  python3 <skill>/scripts/gates/deps_gate.py --selftest    手で作った lockfile と出た日で、赤にすべき物を赤にできるか
@@ -2533,12 +2792,12 @@ diff -ruN orig/ai-team-delivery/scripts/gates/deps_gate.py rel/ai-team-delivery/
 +    root = root_from_args()
 +    c = config(root, "deps")
 +    sys.exit(not_used("deps") if c is None else run(root, c, "--offline" in sys.argv))
-diff -ruN orig/ai-team-delivery/scripts/gates/devhost_gate.py rel/ai-team-delivery/scripts/gates/devhost_gate.py
+diff -ruN orig/ai-team-delivery/scripts/gates/devhost_gate.py new/ai-team-delivery/scripts/gates/devhost_gate.py
 --- orig/ai-team-delivery/scripts/gates/devhost_gate.py	1970-01-01 00:00:00.000000000 +0000
-+++ rel/ai-team-delivery/scripts/gates/devhost_gate.py	2026-11-05 00:51:34.103373682 +0000
++++ new/ai-team-delivery/scripts/gates/devhost_gate.py	2026-11-05 01:00:16.552758091 +0000
 @@ -0,0 +1,215 @@
 +#!/usr/bin/env python3
-+"""テストが開発者の台を決め打ちしていないか（標準の検査・Kaname の 2026-11-04 の赤から作った）。設定は ci-gates.yaml の devhost:。
++"""テストが開発者の台を決め打ちしていないか（標準の検査・あるプロジェクトの 2026-11-04 の赤から作った）。設定は ci-gates.yaml の devhost:。
 +
 +  python3 <skill>/scripts/gates/devhost_gate.py [--root <根>] [--config <ci-gates.yaml>]
 +  python3 <skill>/scripts/gates/devhost_gate.py --selftest    一時のリポジトリで、決め打ちの接続先・口だけの書き換えを赤にできるか
@@ -2552,7 +2811,7 @@ diff -ruN orig/ai-team-delivery/scripts/gates/devhost_gate.py rel/ai-team-delive
 +       u.port = "5433"・url.replace(/:\\d+\\//, ":5434/")・.replace(":5432", ...)・_replace(netloc=...)・re.sub(r":\\d+", ...)
 +  H3 テストの中の決め打ちの DB・相手の URL（postgres・mysql・redis・mongodb・amqp の localhost・127.0.0.1）を、環境から読まずに使う
 +  H4 例外の記録（allow）に理由が無い・もう何にも当たらない（記録から外す）
-+由来：Kaname の CI の赤（2026-11-04）。テストが process.env.DATABASE_URL ?? "postgres://…127.0.0.1:55433/…"（開発者の台の DB）に落ち、
++由来：あるプロジェクトの CI の赤（2026-11-04）。テストが process.env.DATABASE_URL ?? "postgres://…127.0.0.1:55433/…"（開発者の台の DB）に落ち、
 +  別のテストは 127.0.0.1 でない URL の口だけを替えていた。どちらも手元では緑、容れ物の CI でだけ赤。
 +
 +設定（ci-gates.yaml）:
@@ -2752,12 +3011,12 @@ diff -ruN orig/ai-team-delivery/scripts/gates/devhost_gate.py rel/ai-team-delive
 +    root = root_from_args()
 +    c = config(root, "devhost")
 +    sys.exit(not_used("devhost") if c is None else report(Gate(root, c)))
-diff -ruN orig/ai-team-delivery/scripts/gates/generated_gate.py rel/ai-team-delivery/scripts/gates/generated_gate.py
+diff -ruN orig/ai-team-delivery/scripts/gates/generated_gate.py new/ai-team-delivery/scripts/gates/generated_gate.py
 --- orig/ai-team-delivery/scripts/gates/generated_gate.py	1970-01-01 00:00:00.000000000 +0000
-+++ rel/ai-team-delivery/scripts/gates/generated_gate.py	2026-11-05 00:51:34.103400458 +0000
++++ new/ai-team-delivery/scripts/gates/generated_gate.py	2026-11-05 01:00:16.553224814 +0000
 @@ -0,0 +1,175 @@
 +#!/usr/bin/env python3
-+"""生成物が最新か（標準の検査・Kaname の G38 から汎用にした）。設定は ci-gates.yaml の generated:。
++"""生成物が最新か（標準の検査・あるプロジェクトの G38 から汎用にした）。設定は ci-gates.yaml の generated:。
 +
 +  python3 <skill>/scripts/gates/generated_gate.py [--root <根>] [--config <ci-gates.yaml>]
 +  python3 <skill>/scripts/gates/generated_gate.py --selftest    一時のリポジトリで、古い生成物・目録に無い生成物を赤にできるか
@@ -2931,12 +3190,12 @@ diff -ruN orig/ai-team-delivery/scripts/gates/generated_gate.py rel/ai-team-deli
 +    root = root_from_args()
 +    c = config(root, "generated")
 +    sys.exit(not_used("generated") if c is None else report(Gate(root, c)))
-diff -ruN orig/ai-team-delivery/scripts/gates/wiring_gate.py rel/ai-team-delivery/scripts/gates/wiring_gate.py
+diff -ruN orig/ai-team-delivery/scripts/gates/wiring_gate.py new/ai-team-delivery/scripts/gates/wiring_gate.py
 --- orig/ai-team-delivery/scripts/gates/wiring_gate.py	1970-01-01 00:00:00.000000000 +0000
-+++ rel/ai-team-delivery/scripts/gates/wiring_gate.py	2026-11-05 00:51:34.103443400 +0000
++++ new/ai-team-delivery/scripts/gates/wiring_gate.py	2026-11-05 01:00:16.553874084 +0000
 @@ -0,0 +1,146 @@
 +#!/usr/bin/env python3
-+"""書いた検査が CI から回っているか（標準の検査・Kaname の G47 から汎用にした）。設定は ci-gates.yaml の wiring:。
++"""書いた検査が CI から回っているか（標準の検査・あるプロジェクトの G47 から汎用にした）。設定は ci-gates.yaml の wiring:。
 +
 +  python3 <skill>/scripts/gates/wiring_gate.py [--root <根>] [--config <ci-gates.yaml>]
 +  python3 <skill>/scripts/gates/wiring_gate.py --selftest    一時のリポジトリで、どこからも回らない検査を赤にできるか
@@ -3081,9 +3340,9 @@ diff -ruN orig/ai-team-delivery/scripts/gates/wiring_gate.py rel/ai-team-deliver
 +    root = root_from_args()
 +    c = config(root, "wiring")
 +    sys.exit(not_used("wiring") if c is None else report(Gate(root, c)))
-diff -ruN orig/ai-team-delivery/scripts/pm_merge.sh rel/ai-team-delivery/scripts/pm_merge.sh
+diff -ruN orig/ai-team-delivery/scripts/pm_merge.sh new/ai-team-delivery/scripts/pm_merge.sh
 --- orig/ai-team-delivery/scripts/pm_merge.sh	2026-11-04 13:26:40.988215897 +0000
-+++ rel/ai-team-delivery/scripts/pm_merge.sh	2026-11-05 00:51:34.102687381 +0000
++++ new/ai-team-delivery/scripts/pm_merge.sh	2026-11-04 13:26:49.043809091 +0000
 @@ -15,7 +15,9 @@
  # 使い方:
  #   pm_merge.sh --repo <リポジトリ> --branch <ブランチ> --msg <コミットの文のファイル> \
@@ -3240,9 +3499,9 @@ diff -ruN orig/ai-team-delivery/scripts/pm_merge.sh rel/ai-team-delivery/scripts
 +  else echo "★push が止まった（push の手前の検査が赤など）。$base_branch はローカルだけ進んでいる。原因を直すまで次を入れない" >&2; exit 1; fi
  fi
  exit 0
-diff -ruN orig/ai-team-delivery/scripts/post_review_delta.py rel/ai-team-delivery/scripts/post_review_delta.py
+diff -ruN orig/ai-team-delivery/scripts/post_review_delta.py new/ai-team-delivery/scripts/post_review_delta.py
 --- orig/ai-team-delivery/scripts/post_review_delta.py	2026-11-04 13:26:40.988432325 +0000
-+++ rel/ai-team-delivery/scripts/post_review_delta.py	2026-11-05 00:51:34.102743280 +0000
++++ new/ai-team-delivery/scripts/post_review_delta.py	2026-11-04 18:38:44.665277050 +0000
 @@ -4,41 +4,84 @@
  由来：S3 の束（S1 の b-fix-4〜6 を含む）を入れたら、tests にいる 42 本と checks の T-A-C2 の受け入れ基準が
  黙って変わっていた。精査の合格もテストも古い要件のまま進むところだった。
@@ -3337,9 +3596,9 @@ diff -ruN orig/ai-team-delivery/scripts/post_review_delta.py rel/ai-team-deliver
      if a.freeze:
          bad = []
          for k in sorted(new):
-diff -ruN orig/ai-team-delivery/scripts/state.py rel/ai-team-delivery/scripts/state.py
+diff -ruN orig/ai-team-delivery/scripts/state.py new/ai-team-delivery/scripts/state.py
 --- orig/ai-team-delivery/scripts/state.py	2026-11-04 13:26:40.989076946 +0000
-+++ rel/ai-team-delivery/scripts/state.py	2026-11-05 00:51:34.103460906 +0000
++++ new/ai-team-delivery/scripts/state.py	2026-11-04 13:26:49.042765756 +0000
 @@ -94,6 +94,8 @@
          self.tf.update(self.cfg.get('ticket_fields') or {})
          self.limits = {'l1_rows_per_session': 25, 'screens_per_session': 1, 'max_loops': 3}
@@ -3422,9 +3681,9 @@ diff -ruN orig/ai-team-delivery/scripts/state.py rel/ai-team-delivery/scripts/st
      fcntl.flock(_lk, fcntl.LOCK_EX)
      cmds = {'doctor': cmd_doctor, 'show': cmd_show, 'next': cmd_next, 'start': cmd_start,
              'advance': cmd_advance, 'record': cmd_record, 'block': cmd_block, 'unblock': cmd_unblock,
-diff -ruN orig/ai-team-delivery/scripts/verdict_check.py rel/ai-team-delivery/scripts/verdict_check.py
+diff -ruN orig/ai-team-delivery/scripts/verdict_check.py new/ai-team-delivery/scripts/verdict_check.py
 --- orig/ai-team-delivery/scripts/verdict_check.py	2026-11-04 13:26:40.990272062 +0000
-+++ rel/ai-team-delivery/scripts/verdict_check.py	2026-11-05 00:51:34.102669300 +0000
++++ new/ai-team-delivery/scripts/verdict_check.py	2026-11-04 13:26:49.043688802 +0000
 @@ -16,7 +16,7 @@
  ORIGINS = {'見落とし', '直しで入った', '仕様の変更'}
  # 証拠らしさ：ファイル:行 ／ バッククォートのコマンド ／ 矢印つきの結果 ／ URL ／ 報告 JSON の場所
@@ -3434,9 +3693,9 @@ diff -ruN orig/ai-team-delivery/scripts/verdict_check.py rel/ai-team-delivery/sc
  FILE_LINE = re.compile(r'(?<![\w:/.()\[\]-])([\w./\-()\[\]]+\.[A-Za-z0-9]+):(\d+)')   # URL（http://127.0.0.1:3000）はファイルとして読まない
  COMMENT_ONLY = re.compile(r'^(//|#|--|/\*|\*|<!--|;)')
  EMPTY_EVIDENCE = re.compile(r'^\s*(確認した|確認済み?|問題なし|OK|済|-|ー|なし)?\s*$')
-diff -ruN orig/api-design/SKILL.md rel/api-design/SKILL.md
+diff -ruN orig/api-design/SKILL.md new/api-design/SKILL.md
 --- orig/api-design/SKILL.md	2026-11-04 13:26:40.942490817 +0000
-+++ rel/api-design/SKILL.md	2026-11-05 00:51:34.079942490 +0000
++++ new/api-design/SKILL.md	2026-11-04 13:29:30.134757874 +0000
 @@ -7,6 +7,19 @@
  
  ---
@@ -3457,9 +3716,9 @@ diff -ruN orig/api-design/SKILL.md rel/api-design/SKILL.md
  ## 🔗 決定のトレーサビリティ（decision-traceability）— このスキルの責務（2026-09-09 追加・必須・省略不可）
  
  > 規約の正本: `.claude/rules/common/decision-traceability.md`（ここと矛盾したら正本が勝つ）。
-diff -ruN orig/architecture-design/SKILL.md rel/architecture-design/SKILL.md
+diff -ruN orig/architecture-design/SKILL.md new/architecture-design/SKILL.md
 --- orig/architecture-design/SKILL.md	2026-11-04 13:26:40.947407527 +0000
-+++ rel/architecture-design/SKILL.md	2026-11-05 00:51:34.081557692 +0000
++++ new/architecture-design/SKILL.md	2026-11-05 01:00:16.541159478 +0000
 @@ -11,6 +11,20 @@
  
  ---
@@ -3481,9 +3740,52 @@ diff -ruN orig/architecture-design/SKILL.md rel/architecture-design/SKILL.md
  ## 🔗 決定のトレーサビリティ（decision-traceability）— このスキルの責務（2026-09-09 追加・必須・省略不可）
  
  > 規約の正本: `.claude/rules/common/decision-traceability.md`（ここと矛盾したら正本が勝つ）。
-diff -ruN orig/distributed-dev/SKILL.md rel/distributed-dev/SKILL.md
+@@ -40,11 +54,11 @@
+ | 3 | `dependency-boundaries.json` の**各境界**に `source` |
+ | 4 | `selected-stack.json` の各選定に `source`（なぜその技術かの決定） |
+ | 5 | STEP 5 の最終出力前に `trace_gate.py` の T1/T2 が緑であることを示す |
+-| 6 | **flow.json の `objects[]` と ER 図のテーブルを機械で突き合わせる（G20・`scripts/er_gate.py`）。** ER 図に「## オブジェクト ↔ テーブル」の表を置き、全オブジェクトに実体（テーブル）か `—`＋理由を書く。オブジェクトに紐づかないテーブル（マスタ・子表を除く）も落ちる。由来：Kaname で決定 D-069〜D-077（問い合わせ・請求・権限・出来事）を画面にしたのに ER 図が 9 節前で止まっていた。`reflect_in` に ER 図を書かなければ trace_gate は素通りする（T7 と同型）。**決定が新しいオブジェクトを生むたびに、flow.json → ER 図 → この検査、の順で必ず回す** |
++| 6 | **flow.json の `objects[]` と ER 図のテーブルを機械で突き合わせる（G20・`scripts/er_gate.py`）。** ER 図に「## オブジェクト ↔ テーブル」の表を置き、全オブジェクトに実体（テーブル）か `—`＋理由を書く。オブジェクトに紐づかないテーブル（マスタ・子表を除く）も落ちる。由来：あるプロジェクトで決定 D-069〜D-077（問い合わせ・請求・権限・出来事）を画面にしたのに ER 図が 9 節前で止まっていた。`reflect_in` に ER 図を書かなければ trace_gate は素通りする（T7 と同型）。**決定が新しいオブジェクトを生むたびに、flow.json → ER 図 → この検査、の順で必ず回す** |
+ 
+ ### 完了の証拠は 1 本（G21・2026-09-15・絶対）
+ 個別のゲートを手で選んで回した緑は、完了の証拠にしない。完了の報告は **`python3 scripts/ci/layer_audit.py --run` の出力を丸ごと貼る**（全成果物 × 機械の検査 or 手で見る理由。無い層は赤、手で見る層で参照が古いものは warn として一覧に残る）。
+-由来：Kaname で ゲートを全部緑にして「できた」と 3 回書き、そのたびに検査していない層（ER 図・設計書・エラー一覧）が決定 9 節ぶん古かった。ゲートは「検査した層が壊れていない」しか言わない。
++由来：あるプロジェクトで ゲートを全部緑にして「できた」と 3 回書き、そのたびに検査していない層（ER 図・設計書・エラー一覧）が決定 9 節ぶん古かった。ゲートは「検査した層が壊れていない」しか言わない。
+ このスキルで成果物を足したら、その回で `spec-dependencies.yaml` の `layer_checks` に行（`check` か `manual: 理由`）を足す。足していない成果物は `decision_traceability.products` から検出され赤になる。
+ gate に省略できる引数（`--mocks` `--spec` `--choke` `--er`）があるものは **全部渡す**。省いた検査は「飛ばした」であって「緑」ではない（error_catalog.py は既定で FAIL にした）。
+ 
+diff -ruN orig/architecture-design/scripts/er_gate.py new/architecture-design/scripts/er_gate.py
+--- orig/architecture-design/scripts/er_gate.py	2026-11-04 13:26:40.949764086 +0000
++++ new/architecture-design/scripts/er_gate.py	2026-11-05 01:00:16.542608955 +0000
+@@ -1,6 +1,6 @@
+ #!/usr/bin/env python3
+ """er_gate.py — flow.json の objects[] と ER 図のテーブルを機械で突き合わせる（G20）。
+-   由来（2026-09-15・Kaname）：決定 D-069〜D-077 で 問い合わせ・お知らせ・請求・プラン・権限・層・出来事の依存 を画面にしたのに、
++   由来（2026-09-15・あるプロジェクト）：決定 D-069〜D-077 で 問い合わせ・お知らせ・請求・プラン・権限・層・出来事の依存 を画面にしたのに、
+    ER 図は D-068 で止まっていた。trace_gate は reflect_in に ER 図を書かなければ素通りする（T7 と同型）。
+    列挙で守らず、オブジェクトの集合とテーブルの集合を双方向で照合する。
+    ER 図の「## オブジェクト ↔ テーブル」の表：| オブジェクト | `table` `table` … | 備考 |。テーブルが無いなら `—` と理由（備考が空なら FAIL）。
+diff -ruN orig/architecture-design/scripts/layer_audit.py new/architecture-design/scripts/layer_audit.py
+--- orig/architecture-design/scripts/layer_audit.py	2026-11-04 13:26:40.949971178 +0000
++++ new/architecture-design/scripts/layer_audit.py	2026-11-05 01:00:16.542986202 +0000
+@@ -1,12 +1,12 @@
+ #!/usr/bin/env python3
+ """layer_audit.py — 「検査していない層」を機械で出す（G21）。
+-   由来（2026-09-15・Kaname）：ゲートが全部緑でも、ER 図・設計書・エラー一覧は決定 9 節ぶん古かった。理由は、完了の定義が
++   由来（2026-09-15・あるプロジェクト）：ゲートが全部緑でも、ER 図・設計書・エラー一覧は決定 9 節ぶん古かった。理由は、完了の定義が
+    「手元にあるゲートの一覧」で、ゲートの無い層は誰も見ていなかったこと。人が層を覚えるのをやめ、
+    spec-dependencies.yaml の layer_checks に 全成果物 × 検査 を持ち、無い層を赤で出す。
+    layer_checks:
+      - file: 03_architecture/ER図.md
+        check: python3 scripts/ci/er_gate.py --flow 05_flow/flow.json --er 03_architecture/ER図.md   # 機械検査（exit 0 で緑）
+-     - file: 04_design/DESIGN-kaname.md
++     - file: 04_design/DESIGN-<プロジェクト>.md
+        manual: 色・書体のトークンは D-072 が最新。決定でトークンが増えたら手で更新（理由を書く）
+    検査：decision_traceability.products の全ファイルが layer_checks にある／check は実行して exit 0／manual は理由あり。
+    鮮度：ファイルが参照する最大の決定 ID が正本の最新 confirmed より小さいとき warn（manual の層は「古いかもしれない」と出す）。
+diff -ruN orig/distributed-dev/SKILL.md new/distributed-dev/SKILL.md
 --- orig/distributed-dev/SKILL.md	2026-11-04 13:26:40.961764523 +0000
-+++ rel/distributed-dev/SKILL.md	2026-11-05 00:51:34.085950843 +0000
++++ new/distributed-dev/SKILL.md	2026-11-04 13:29:30.140914590 +0000
 @@ -5,6 +5,19 @@
  builtin: true
  ---
@@ -3504,9 +3806,9 @@ diff -ruN orig/distributed-dev/SKILL.md rel/distributed-dev/SKILL.md
  ## 🎨 デザインシステム（design-system）— このスキルの責務（2026-09-16 追加）
  
  > 規約の正本: `~/.claude/rules/common/design-system.md` ／ 由来: lessons-learned **L-017**
-diff -ruN orig/e2e-journey-walkthrough/SKILL.md rel/e2e-journey-walkthrough/SKILL.md
+diff -ruN orig/e2e-journey-walkthrough/SKILL.md new/e2e-journey-walkthrough/SKILL.md
 --- orig/e2e-journey-walkthrough/SKILL.md	2026-11-04 13:26:40.966744079 +0000
-+++ rel/e2e-journey-walkthrough/SKILL.md	2026-11-05 00:51:34.086663379 +0000
++++ new/e2e-journey-walkthrough/SKILL.md	2026-11-04 13:29:30.139478453 +0000
 @@ -19,6 +19,19 @@
    v3.2 (2026-09-02): テスト・ラダー L1〜L5 (.claude/rules/common/test-ladder.md) 対応 — テストはタスク分解時に作り、staging で流す。
  ---
@@ -3527,9 +3829,9 @@ diff -ruN orig/e2e-journey-walkthrough/SKILL.md rel/e2e-journey-walkthrough/SKIL
  ## 🎨 デザインシステム（design-system）— このスキルの責務（2026-09-16 追加）
  
  > 規約の正本: `~/.claude/rules/common/design-system.md` ／ 由来: lessons-learned **L-017**
-diff -ruN orig/engineering-rules/SKILL.md rel/engineering-rules/SKILL.md
+diff -ruN orig/engineering-rules/SKILL.md new/engineering-rules/SKILL.md
 --- orig/engineering-rules/SKILL.md	2026-11-04 13:26:40.882412554 +0000
-+++ rel/engineering-rules/SKILL.md	2026-11-05 00:51:34.060869341 +0000
++++ new/engineering-rules/SKILL.md	2026-11-04 13:28:51.271454692 +0000
 @@ -2,10 +2,11 @@
  name: engineering-rules
  description: |
@@ -3551,9 +3853,9 @@ diff -ruN orig/engineering-rules/SKILL.md rel/engineering-rules/SKILL.md
  | `lessons-learned.md` | **事故の記録と検証ギャップ図鑑 G-01〜G-16**。新しい事故が出たらここに足す |
  | `test-ladder.md` | **テストラダー L1〜L5**。いつ・誰が・どの粒度でテストを作り流すか |
  | `choke-points.md` | **関門 C1〜C6**。外界に影響する経路を数本に絞り、迂回を CI で検出する |
-diff -ruN orig/engineering-rules/rules/common/ai-driven-process.md rel/engineering-rules/rules/common/ai-driven-process.md
+diff -ruN orig/engineering-rules/rules/common/ai-driven-process.md new/engineering-rules/rules/common/ai-driven-process.md
 --- orig/engineering-rules/rules/common/ai-driven-process.md	1970-01-01 00:00:00.000000000 +0000
-+++ rel/engineering-rules/rules/common/ai-driven-process.md	2026-11-05 00:51:34.060962288 +0000
++++ new/engineering-rules/rules/common/ai-driven-process.md	2026-11-04 13:27:56.079659126 +0000
 @@ -0,0 +1,153 @@
 +# AI 駆動の開発の進め方 — チケット・テスト・設計・役割・目録・CI の正本
 +
@@ -3708,9 +4010,21 @@ diff -ruN orig/engineering-rules/rules/common/ai-driven-process.md rel/engineeri
 +| jit-task-execution | 実装の役。テストを変えず、単体＋解禁された中間／統合を流してから渡す |
 +| distributed-dev | 実装パッケージにチケットの全欄（実装の詳細・分岐とテスト・目録で使うもの）を逐語で埋める |
 +| ai-team-delivery | 4 つの役・実装の前の OK・テスターの 1 回でまとめた差し戻し・手元の CI・1 つ先の並行の切り出し |
-diff -ruN orig/engineering-rules/rules/common/development-workflow.md rel/engineering-rules/rules/common/development-workflow.md
+diff -ruN orig/engineering-rules/rules/common/decision-traceability.md new/engineering-rules/rules/common/decision-traceability.md
+--- orig/engineering-rules/rules/common/decision-traceability.md	2026-11-04 13:26:40.884350410 +0000
++++ new/engineering-rules/rules/common/decision-traceability.md	2026-11-05 01:00:16.557203351 +0000
+@@ -9,7 +9,7 @@
+ 
+ ## 0. なぜこの規約が要るのか（由来）
+ 
+-目標管理製品（Kaname）の設計中、決定ログ 54 節のうち **35 節がどの成果物からも参照されていなかった**。
++目標管理製品（あるプロジェクト）の設計中、決定ログ 54 節のうち **35 節がどの成果物からも参照されていなかった**。
+ 落ちていたのは端の話ではない。
+ 
+ ```
+diff -ruN orig/engineering-rules/rules/common/development-workflow.md new/engineering-rules/rules/common/development-workflow.md
 --- orig/engineering-rules/rules/common/development-workflow.md	2026-11-04 13:26:40.884391348 +0000
-+++ rel/engineering-rules/rules/common/development-workflow.md	2026-11-05 00:51:34.061107381 +0000
++++ new/engineering-rules/rules/common/development-workflow.md	2026-11-04 13:28:51.266488116 +0000
 @@ -6,7 +6,12 @@
  
  ## Feature Implementation Workflow
@@ -3724,9 +4038,9 @@ diff -ruN orig/engineering-rules/rules/common/development-workflow.md rel/engine
     - **GitHub code search first:** Run `gh search repos` and `gh search code` to find existing implementations, templates, and patterns before writing anything new.
     - **Library docs second:** Use Context7 or primary vendor docs to confirm API behavior, package usage, and version-specific details before implementing.
     - **Exa only when the first two are insufficient:** Use Exa for broader web research or discovery after GitHub search and primary docs.
-diff -ruN orig/engineering-rules/rules/common/lessons-learned.md rel/engineering-rules/rules/common/lessons-learned.md
+diff -ruN orig/engineering-rules/rules/common/lessons-learned.md new/engineering-rules/rules/common/lessons-learned.md
 --- orig/engineering-rules/rules/common/lessons-learned.md	2026-11-04 13:26:40.884948621 +0000
-+++ rel/engineering-rules/rules/common/lessons-learned.md	2026-11-05 00:51:34.061147648 +0000
++++ new/engineering-rules/rules/common/lessons-learned.md	2026-11-04 13:28:51.267269099 +0000
 @@ -5,6 +5,7 @@
  > Detailed, topical guidance lives in the sibling rule files; this file is the index + the "why" so the lesson is not lost. Linked here:
  > - Auth middleware / server-data performance → [../web/performance.md](../web/performance.md)
@@ -3735,9 +4049,9 @@ diff -ruN orig/engineering-rules/rules/common/lessons-learned.md rel/engineering
  > - テスト・ラダー（L1〜L5）と段別の実行時点 → [test-ladder.md](./test-ladder.md)
  > - スキルの起動順（機械判定） → [skill-pipeline.yaml](./skill-pipeline.yaml)
  > - 検証ギャップ（描画≠動作・UI断線・単一防御層 等15類型）→ 本ファイル L-003（G-01〜G-15）
-diff -ruN orig/engineering-rules/rules/common/test-ladder.md rel/engineering-rules/rules/common/test-ladder.md
+diff -ruN orig/engineering-rules/rules/common/test-ladder.md new/engineering-rules/rules/common/test-ladder.md
 --- orig/engineering-rules/rules/common/test-ladder.md	2026-11-04 13:26:40.886284092 +0000
-+++ rel/engineering-rules/rules/common/test-ladder.md	2026-11-05 00:51:34.061213177 +0000
++++ new/engineering-rules/rules/common/test-ladder.md	2026-11-04 13:28:51.265527100 +0000
 @@ -8,6 +8,12 @@
  > e2e-journey-walkthrough / architecture-design / feature-decomposition / sprint-planning /
  > release-planning が参照する。**ここと矛盾する記述は、ここが勝つ。**
@@ -3769,9 +4083,9 @@ diff -ruN orig/engineering-rules/rules/common/test-ladder.md rel/engineering-rul
  
  | スキル | 責務 |
  |---|---|
-diff -ruN orig/engineering-rules/scripts/install.sh rel/engineering-rules/scripts/install.sh
+diff -ruN orig/engineering-rules/scripts/install.sh new/engineering-rules/scripts/install.sh
 --- orig/engineering-rules/scripts/install.sh	2026-11-04 13:26:40.897651231 +0000
-+++ rel/engineering-rules/scripts/install.sh	2026-11-05 00:51:34.062610672 +0000
++++ new/engineering-rules/scripts/install.sh	2026-11-05 00:51:20.129225612 +0000
 @@ -18,7 +18,7 @@
  check() {
    local ng=0
@@ -3800,9 +4114,9 @@ diff -ruN orig/engineering-rules/scripts/install.sh rel/engineering-rules/script
      echo "配置: $DEST（$(find "$DEST" -type f -name '*.md' | wc -l | tr -d ' ') ファイル）"
      echo
      check
-diff -ruN orig/feature-decomposition/SKILL.md rel/feature-decomposition/SKILL.md
+diff -ruN orig/feature-decomposition/SKILL.md new/feature-decomposition/SKILL.md
 --- orig/feature-decomposition/SKILL.md	2026-11-04 13:26:40.911953674 +0000
-+++ rel/feature-decomposition/SKILL.md	2026-11-05 00:51:34.065730676 +0000
++++ new/feature-decomposition/SKILL.md	2026-11-04 13:29:30.131421995 +0000
 @@ -11,6 +11,20 @@
  
  ---
@@ -3824,9 +4138,9 @@ diff -ruN orig/feature-decomposition/SKILL.md rel/feature-decomposition/SKILL.md
  ## 🔗 決定のトレーサビリティ（decision-traceability）— このスキルの責務（2026-09-09 追加・必須・省略不可）
  
  > 規約の正本: `.claude/rules/common/decision-traceability.md`（ここと矛盾したら正本が勝つ）。
-diff -ruN orig/functional-breakdown/SKILL.md rel/functional-breakdown/SKILL.md
+diff -ruN orig/functional-breakdown/SKILL.md new/functional-breakdown/SKILL.md
 --- orig/functional-breakdown/SKILL.md	2026-11-04 13:26:40.917991718 +0000
-+++ rel/functional-breakdown/SKILL.md	2026-11-05 00:51:34.066654540 +0000
++++ new/functional-breakdown/SKILL.md	2026-11-05 01:00:16.535390061 +0000
 @@ -9,6 +9,19 @@
  handoff_flow: "requirements-definition → architecture-design → design-md → ux-flow-design → ui-mockup → functional-breakdown → feature-decomposition → task-decomposition → human-grade-qa(test-plan) → 実装 → human-grade-qa(実走)"
  ---
@@ -3847,9 +4161,61 @@ diff -ruN orig/functional-breakdown/SKILL.md rel/functional-breakdown/SKILL.md
  ## 🎨 デザインシステム（design-system）— このスキルの責務（2026-09-16 追加）
  
  > 規約の正本: `~/.claude/rules/common/design-system.md` ／ 由来: lessons-learned **L-017**
-diff -ruN orig/human-grade-qa/SKILL.md rel/human-grade-qa/SKILL.md
+@@ -848,4 +861,4 @@
+ 
+ ## self_only（本人なら書ける）を出してはいけない表（2026-09-15 追加・必須）
+ 権限そのもの（permissions）・運営への許可（support_access_grants）・sessions・運営メンバー・招待には「本人なら権限なしで書ける」policy を機械生成しない。
+-出すと担当者が自分に権限を付与できる。Kaname の RLS 実表テスト（T-F-02）で発覚。build_functional.example.py の除外リストを参照。
++出すと担当者が自分に権限を付与できる。あるプロジェクトの RLS 実表テスト（T-F-02）で発覚。build_functional.example.py の除外リストを参照。
+diff -ruN orig/functional-breakdown/scripts/build_functional.example.py new/functional-breakdown/scripts/build_functional.example.py
+--- orig/functional-breakdown/scripts/build_functional.example.py	2026-11-04 13:26:40.920740452 +0000
++++ new/functional-breakdown/scripts/build_functional.example.py	2026-11-05 01:00:16.536482532 +0000
+@@ -115,11 +115,11 @@
+ a2s = F["act_to_screen"]
+ def ears_for(aid):
+     a, b = acts[aid], BP.get(aid, {})
+-    out = [f"EVENT-DRIVEN: WHEN {'／'.join(a['roles'])} が「{b.get('human') or a['act']}」したとき THEN Kaname は「{b.get('backstage', '')}」を行う" + (f"（自動側：{b['auto']}）" if b.get("auto") and b["auto"] != "—" else "")]
++    out = [f"EVENT-DRIVEN: WHEN {'／'.join(a['roles'])} が「{b.get('human') or a['act']}」したとき THEN システムは「{b.get('backstage', '')}」を行う" + (f"（自動側：{b['auto']}）" if b.get("auto") and b["auto"] != "—" else "")]
+     for e in ERR:
+         w = e.get("where", {})
+         if w.get("act") == aid or (w.get("screen") and w.get("screen") in a2s.get(aid, []) and e.get("must_not")):
+-            out.append(f"UNWANTED: IF {e['when']} THEN Kaname は「{e['message']}」を出し、{e['action']}（{e['id']}）")
++            out.append(f"UNWANTED: IF {e['when']} THEN システムは「{e['message']}」を出し、{e['action']}（{e['id']}）")
+     return out
+ features = []
+ for j in F["jobs"]:
+@@ -145,7 +145,7 @@
+     features.append({"id": f"F-{len(features)+1:03d}", "name": f"関門 {c['id']} {c['name']}", "category": "cross-cutting", "choke_point": c["id"], "acts": sorted(aid for aid, b in BP.items() if c["id"] in b.get("choke_points", [])),
+                      "happy_path": [f"外界に出る前に {c['name']} の関門を通る"], "error_paths": [e["id"] for e in ERR if e.get("where", {}).get("choke_point") == c["id"] or c["id"] in (e.get("covers") or [])],
+                      "policies": c.get("cross_cutting_handled_here", []), "notifications": [], "audit_logs": ["audit_events"], "access_roles": ["R1", "R2", "R3", "R4", "R6"], "external_services": [],
+-                     "related_screens": rs, "related_entities": [], "api_endpoints": [], "ears_ac_seed": [f"UBIQUITOUS: Kaname は {c['name']} を必ず関門 {c['id']} 経由で行い、{x} を関門の中で 1 回だけ処理する" for x in c.get("cross_cutting_handled_here", [])[:3]],
++                     "related_screens": rs, "related_entities": [], "api_endpoints": [], "ears_ac_seed": [f"UBIQUITOUS: システムは {c['name']} を必ず関門 {c['id']} 経由で行い、{x} を関門の中で 1 回だけ処理する" for x in c.get("cross_cutting_handled_here", [])[:3]],
+                      "checklist": [], "legacy_drift_notes": None, "status": "decided", "decided_at": TODAY, "source": c.get("source", [])})
+ 
+ # ---------------------------------------------------------------- roles
+@@ -187,7 +187,7 @@
+ json.dump(tm, open(f"{OUT}/traceability-matrix.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+ 
+ # ---------------------------------------------------------------- MD / HTML
+-md = [f"# Kaname 機能分解（functional-breakdown）v3.1 — {TODAY}", "", "> 信頼源は 07_functional/*.json（05_flow/build_functional.py が機械生成）。この文書は写し。", "",
++md = [f"# あるプロジェクト 機能分解（functional-breakdown）v3.1 — {TODAY}", "", "> 信頼源は 07_functional/*.json（05_flow/build_functional.py が機械生成）。この文書は写し。", "",
+       "## 完了サマリー", "", "| 種別 | 件数 | 根拠（source）| 備考 |", "|---|---|---|---|",
+       f"| エンティティ | {len(entities)} | 全件 | ER図 §1〜§14 の表から。table_name・tenant_isolation・access_control_policies |",
+       f"| 機能 | {len(features)} | 全件 | 用事 {sum(1 for f_ in features if f_['category']=='job')} ＋ 関門 {sum(1 for f_ in features if f_['category']!='job')}。api_endpoints（下書き）・ears_ac_seed |",
+@@ -204,8 +204,8 @@
+        f"- 未被覆：画面 {len(tm['summary']['uncovered_screens'])} ／ 機能 {len(tm['summary']['uncovered_features'])}", ""]
+ open(f"{OUT}/functional-breakdown.md", "w", encoding="utf-8").write("\n".join(md))
+ rows = lambda hdr, rs: "<table><thead><tr>" + "".join(f"<th>{h}</th>" for h in hdr) + "</tr></thead><tbody>" + "".join("<tr>" + "".join(f"<td>{c}</td>" for c in r) + "</tr>" for r in rs) + "</tbody></table>"
+-html = f"""<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>Kaname 機能分解 v3.1</title><style>body{{font-family:-apple-system,'Hiragino Sans',sans-serif;max-width:1100px;margin:32px auto;padding:0 20px;color:#1c2230;line-height:1.6}}table{{border-collapse:collapse;width:100%;font-size:13px;margin:10px 0 24px}}th,td{{border-bottom:1px solid #e3e6ec;padding:6px 8px;text-align:left;vertical-align:top}}th{{background:#f4f5f8}}code{{background:#f4f5f8;padding:1px 4px;border-radius:3px}}h2{{margin-top:36px}}</style></head><body>
+-<h1>Kaname 機能分解（functional-breakdown）v3.1</h1><p>{TODAY} · 信頼源は <code>07_functional/*.json</code>（機械生成）。エンティティ {len(entities)} ／ 機能 {len(features)} ／ ロール {len(roles)} ／ 画面 {len(screens)}</p>
++html = f"""<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>あるプロジェクト 機能分解 v3.1</title><style>body{{font-family:-apple-system,'Hiragino Sans',sans-serif;max-width:1100px;margin:32px auto;padding:0 20px;color:#1c2230;line-height:1.6}}table{{border-collapse:collapse;width:100%;font-size:13px;margin:10px 0 24px}}th,td{{border-bottom:1px solid #e3e6ec;padding:6px 8px;text-align:left;vertical-align:top}}th{{background:#f4f5f8}}code{{background:#f4f5f8;padding:1px 4px;border-radius:3px}}h2{{margin-top:36px}}</style></head><body>
++<h1>あるプロジェクト 機能分解（functional-breakdown）v3.1</h1><p>{TODAY} · 信頼源は <code>07_functional/*.json</code>（機械生成）。エンティティ {len(entities)} ／ 機能 {len(features)} ／ ロール {len(roles)} ／ 画面 {len(screens)}</p>
+ <h2>エンティティ</h2>{rows(["ID","テーブル","節","分離","方針","根拠"], [[e['id'], f"<code>{e['table_name']}</code>", e['section'], e['tenant_isolation']['type'], len(e['access_control_policies']), ' '.join(e['source'][:4])] for e in entities])}
+ <h2>機能</h2>{rows(["ID","機能","行為","画面","API 下書き","EARS","根拠"], [[f_['id'], f_['name'], ' '.join(f_['acts']), ' '.join(f_['related_screens']), len(f_['api_endpoints']), len(f_['ears_ac_seed']), ' '.join(f_['source'][:3])] for f_ in features])}
+ <h2>ロール</h2>{rows(["ID","ロール","画面数","制約（述語）"], [[r['id'], r['name'], len(r['screens']), '<br>'.join(f"{o['constraint']}：<code>{o['access_predicate_expr']}</code>" for o in r['object_constraints'])] for r in roles])}
+diff -ruN orig/human-grade-qa/SKILL.md new/human-grade-qa/SKILL.md
 --- orig/human-grade-qa/SKILL.md	2026-11-04 13:26:40.928540699 +0000
-+++ rel/human-grade-qa/SKILL.md	2026-11-05 00:51:34.068670125 +0000
++++ new/human-grade-qa/SKILL.md	2026-11-05 01:00:16.522008784 +0000
 @@ -25,6 +25,19 @@
  handoff_flow: "requirements-definition → architecture-design → design-md → ux-flow-design → ui-mockup → functional-breakdown → feature-decomposition → task-decomposition → human-grade-qa(test-plan) → 実装 → human-grade-qa(実走)"
  ---
@@ -3870,9 +4236,42 @@ diff -ruN orig/human-grade-qa/SKILL.md rel/human-grade-qa/SKILL.md
  ## 🎨 デザインシステム（design-system）— このスキルの責務（2026-09-16 追加）
  
  > 規約の正本: `~/.claude/rules/common/design-system.md` ／ 由来: lessons-learned **L-017**
-diff -ruN orig/jit-task-execution/SKILL.md rel/jit-task-execution/SKILL.md
+@@ -197,7 +210,7 @@
+ 
+ ### 完了の証拠は 1 本（G21・2026-09-15・絶対）
+ 個別のゲートを手で選んで回した緑は、完了の証拠にしない。完了の報告は **`python3 scripts/ci/layer_audit.py --run` の出力を丸ごと貼る**（全成果物 × 機械の検査 or 手で見る理由。無い層は赤、手で見る層で参照が古いものは warn として一覧に残る）。
+-由来：Kaname で ゲートを全部緑にして「できた」と 3 回書き、そのたびに検査していない層（ER 図・設計書・エラー一覧）が決定 9 節ぶん古かった。ゲートは「検査した層が壊れていない」しか言わない。
++由来：あるプロジェクトで ゲートを全部緑にして「できた」と 3 回書き、そのたびに検査していない層（ER 図・設計書・エラー一覧）が決定 9 節ぶん古かった。ゲートは「検査した層が壊れていない」しか言わない。
+ このスキルで成果物を足したら、その回で `spec-dependencies.yaml` の `layer_checks` に行（`check` か `manual: 理由`）を足す。足していない成果物は `decision_traceability.products` から検出され赤になる。
+ gate に省略できる引数（`--mocks` `--spec` `--choke` `--er`）があるものは **全部渡す**。省いた検査は「飛ばした」であって「緑」ではない（error_catalog.py は既定で FAIL にした）。
+ 
+@@ -1317,4 +1330,4 @@
+ 
+ ## 製品の中身（スキル等の資産）の正本 `skills.md` ── 2026-09-15 追加
+ コードでない資産（製品スキル・型）は `<spec>/skills.md` に 1 場面 1 行（11 列）。行は資産一式の `evals/scenarios.json` から機械生成し、
+-`qa_ladder.py validate` の SPEC_FILES に含める。落ちた資産は版を出せない（Kaname D-080）。
++`qa_ladder.py validate` の SPEC_FILES に含める。落ちた資産は版を出せない（あるプロジェクト D-080）。
+diff -ruN orig/human-grade-qa/scripts/layer_audit.py new/human-grade-qa/scripts/layer_audit.py
+--- orig/human-grade-qa/scripts/layer_audit.py	2026-11-04 13:26:40.937275153 +0000
++++ new/human-grade-qa/scripts/layer_audit.py	2026-11-05 01:00:16.525509325 +0000
+@@ -1,12 +1,12 @@
+ #!/usr/bin/env python3
+ """layer_audit.py — 「検査していない層」を機械で出す（G21）。
+-   由来（2026-09-15・Kaname）：ゲートが全部緑でも、ER 図・設計書・エラー一覧は決定 9 節ぶん古かった。理由は、完了の定義が
++   由来（2026-09-15・あるプロジェクト）：ゲートが全部緑でも、ER 図・設計書・エラー一覧は決定 9 節ぶん古かった。理由は、完了の定義が
+    「手元にあるゲートの一覧」で、ゲートの無い層は誰も見ていなかったこと。人が層を覚えるのをやめ、
+    spec-dependencies.yaml の layer_checks に 全成果物 × 検査 を持ち、無い層を赤で出す。
+    layer_checks:
+      - file: 03_architecture/ER図.md
+        check: python3 scripts/ci/er_gate.py --flow 05_flow/flow.json --er 03_architecture/ER図.md   # 機械検査（exit 0 で緑）
+-     - file: 04_design/DESIGN-kaname.md
++     - file: 04_design/DESIGN-<プロジェクト>.md
+        manual: 色・書体のトークンは D-072 が最新。決定でトークンが増えたら手で更新（理由を書く）
+    検査：decision_traceability.products の全ファイルが layer_checks にある／check は実行して exit 0／manual は理由あり。
+    鮮度：ファイルが参照する最大の決定 ID が正本の最新 confirmed より小さいとき warn（manual の層は「古いかもしれない」と出す）。
+diff -ruN orig/jit-task-execution/SKILL.md new/jit-task-execution/SKILL.md
 --- orig/jit-task-execution/SKILL.md	2026-11-04 13:26:40.958060834 +0000
-+++ rel/jit-task-execution/SKILL.md	2026-11-05 00:51:34.085100543 +0000
++++ new/jit-task-execution/SKILL.md	2026-11-04 13:29:30.140180344 +0000
 @@ -22,6 +22,20 @@
  handoff_flow: "requirements-definition → architecture-design → design-md → ux-flow-design → ui-mockup → functional-breakdown → feature-decomposition → task-decomposition → human-grade-qa(test-plan) → jit-task-execution(実装) → human-grade-qa(実走)"
  ---
@@ -3894,9 +4293,9 @@ diff -ruN orig/jit-task-execution/SKILL.md rel/jit-task-execution/SKILL.md
  ## 🎨 デザインシステム（design-system）— このスキルの責務（2026-09-16 追加）
  
  > 規約の正本: `~/.claude/rules/common/design-system.md` ／ 由来: lessons-learned **L-017**
-diff -ruN orig/task-decomposition/SKILL.md rel/task-decomposition/SKILL.md
+diff -ruN orig/task-decomposition/SKILL.md new/task-decomposition/SKILL.md
 --- orig/task-decomposition/SKILL.md	2026-11-04 13:26:40.900380515 +0000
-+++ rel/task-decomposition/SKILL.md	2026-11-05 00:51:34.062651188 +0000
++++ new/task-decomposition/SKILL.md	2026-11-05 01:00:16.517935524 +0000
 @@ -9,6 +9,21 @@
  handoff_flow: "requirements-definition → architecture-design → design-md → ux-flow-design → ui-mockup → functional-breakdown → feature-decomposition → task-decomposition → human-grade-qa(test-plan) → 実装 → human-grade-qa(実走)"
  ---
@@ -3919,9 +4318,84 @@ diff -ruN orig/task-decomposition/SKILL.md rel/task-decomposition/SKILL.md
  ## 🎨 デザインシステム（design-system）— このスキルの責務（2026-09-16 追加）
  
  > 規約の正本: `~/.claude/rules/common/design-system.md` ／ 由来: lessons-learned **L-017**
-diff -ruN orig/test-verification/SKILL.md rel/test-verification/SKILL.md
+@@ -1800,14 +1815,14 @@
+ 製品がスキル・テンプレート・型などの「中身」を運営の資産として持つなら、`deliverable_layer: content` の Group（例：S）を切る。
+ 1 資産 = 1 タスク。qa_rows.l1 は資産の一式が持つテスト場面（evals）から 1 場面 1 行で機械生成し、正本 `skills.md` に書く。
+ 検査（形式・禁止の中身・場面数・版）は CI と製品のアップロードで同じスクリプトを使う。td_gate の layer 順は content = polish と同じ段。
+-由来：Kaname D-080（器 D-078 は作ったが中身の形式・作り方・テストが無かった。user「スキルを格納して使える感じって言っていたよね」）。
++由来：あるプロジェクト D-080（器 D-078 は作ったが中身の形式・作り方・テストが無かった。user「スキルを格納して使える感じって言っていたよね」）。
+ 
+ ## 後回しは日程から消えない（2026-09-15 追加・必須）
+-決定ログの「段階 2：…」の文（`D-xxx.n`）と flow.json の `deferred` は、実装タスクにならないだけでなく**仕様づくりのタスクにもならず日程から消えていた**（Kaname・user「v2 のモックとか仕様書とかいつ作るの？」）。
++決定ログの「段階 2：…」の文（`D-xxx.n`）と flow.json の `deferred` は、実装タスクにならないだけでなく**仕様づくりのタスクにもならず日程から消えていた**（あるプロジェクト・user「v2 のモックとか仕様書とかいつ作るの？」）。
+ 文ごとに 1 タスク（Group V2・`deliverable_layer: spec`・正本 `spec-work.md` に 5 行：決定ログ／画面と行為／モック／DB と設計書／下流の再生成）を機械生成する。`td_gate.py` TD11 が「後回しの文に V2 のタスクが無い」を赤にする。段階 2 の実装タスクは、その仕様が flow の release に入った時点で通常の Group として生成される。
+ 
+ ## 正本を再生成しても「結果」列を消さない（2026-09-15 追加・必須）
+-tickets を再生成するとき L1 の正本（screens/*.md・rls-matrix.md 等）を丸ごと書き直してはいけない。行 ID ごとに既存の「結果」「備考」を引き継ぐ（test-ladder §9）。Kaname で W0 の 24 行の PASS／BLOCKED が消え、done のタスクのゲートが赤に戻った。
++tickets を再生成するとき L1 の正本（screens/*.md・rls-matrix.md 等）を丸ごと書き直してはいけない。行 ID ごとに既存の「結果」「備考」を引き継ぐ（test-ladder §9）。あるプロジェクトで W0 の 24 行の PASS／BLOCKED が消え、done のタスクのゲートが赤に戻った。
+ `build_tasks.example.py` の書き出しは既存ファイルの結果列を読んで残す。再生成後は done 済みタスクの `qa-ladder.py gate --task` を回して消えていないことを確かめる。状態（done）は `mark_done.py` のように gate PASS を条件に書き、再生成で todo に戻さない。
+ 
+ ## 段階 2 の実装タスク（2026-09-16 追加）
+diff -ruN orig/task-decomposition/assets/dispatch/dispatch.sh new/task-decomposition/assets/dispatch/dispatch.sh
+--- orig/task-decomposition/assets/dispatch/dispatch.sh	2026-11-04 13:26:40.901262468 +0000
++++ new/task-decomposition/assets/dispatch/dispatch.sh	2026-11-05 01:00:16.595300218 +0000
+@@ -20,4 +20,4 @@
+ PY
+ )
+ if [ "$PREVIEW" = 1 ]; then echo "$OUT"; exit 0; fi
+-D=/tmp/kaname-dispatch-$TID; mkdir -p "$D"; echo "$OUT" > "$D/CLAUDE.md"; echo "生成: $D/CLAUDE.md"; (cd "$D" && claude)
++D=/tmp/dispatch-$TID; mkdir -p "$D"; echo "$OUT" > "$D/CLAUDE.md"; echo "生成: $D/CLAUDE.md"; (cd "$D" && claude)
+diff -ruN orig/task-decomposition/scripts/build_tasks.example.py new/task-decomposition/scripts/build_tasks.example.py
+--- orig/task-decomposition/scripts/build_tasks.example.py	2026-11-04 13:26:40.902798418 +0000
++++ new/task-decomposition/scripts/build_tasks.example.py	2026-11-05 01:00:16.519685557 +0000
+@@ -124,8 +124,8 @@
+ for i, (name, src, h, files) in enumerate(US, 1):
+     tid = f"T-US-{i:02d}"; sp = f"{SPEC}/visual-fidelity-audit.md"; pre = f"USH-{i:02d}"
+     rows = [qrow(sp, pre, "共通", "共通シェル", f"{name[:30]}：共通シェルを含む全画面で scrollWidth - clientWidth <= 1（375・768・1024・1440）", "全画面", "各幅で開く", "溢れ 0・本文 720 以上（1180+）", "G-05", tid), qrow(sp, pre, "共通", "役割の出し分け", "役割を切り替えると data-roles の塊が切り替わり、錠前だけの画面が無い", "4 役割", "切替", "役割ごとの中身が出る（G15）", "", tid)] + g_rows(sp, pre, "共通", tid, set(), [], "ui")
+-    newtask(tid, name, "U-shared", "ui", "4_ui_foundation", "ui", [], category="frontend", hours=h, depends_on=["T-F-01", "T-F-05"] + A_ids[:1], choke_points=[], choke_rationale="画面の部品。外界に出ない（API は関門の先）", fcp={"new": files, "modify": ["apps/web/app/layout.tsx"], "shared_read": ["04_design/DESIGN-kaname.md", "06_mockup/_shell.py", "08_api/types.ts"], "forbidden": ["packages/**"]}, files_changed=[x + " (new)" for x in files],
+-            ac={"structural": [f"STATE-DRIVEN: WHILE アプリの枠で描画中 THEN {name[:40]} が DESIGN-kaname.md のトークンとモックのシェル（_shell.py）と一致する"], "functional": ["UBIQUITOUS: 共通シェルを含む全画面で横溢れ 0・本文 720 以上（1180+）", "UNWANTED: IF セッションが 401 なら入り直しに落ち、入力途中の内容は失わない"], "regression": REG_UI}, spec_links=["04_design/DESIGN-kaname.md", "06_mockup/_shell.py"], qa_rows={"l1": rows, "l2_flows": []}, scenarios=[{"name": "4 幅で開く", "steps": ["375/768/1024/1440 で全画面"], "expected": "溢れ 0"}], source=src)
++    newtask(tid, name, "U-shared", "ui", "4_ui_foundation", "ui", [], category="frontend", hours=h, depends_on=["T-F-01", "T-F-05"] + A_ids[:1], choke_points=[], choke_rationale="画面の部品。外界に出ない（API は関門の先）", fcp={"new": files, "modify": ["apps/web/app/layout.tsx"], "shared_read": ["04_design/DESIGN-<プロジェクト>.md", "06_mockup/_shell.py", "08_api/types.ts"], "forbidden": ["packages/**"]}, files_changed=[x + " (new)" for x in files],
++            ac={"structural": [f"STATE-DRIVEN: WHILE アプリの枠で描画中 THEN {name[:40]} が DESIGN-<プロジェクト>.md のトークンとモックのシェル（_shell.py）と一致する"], "functional": ["UBIQUITOUS: 共通シェルを含む全画面で横溢れ 0・本文 720 以上（1180+）", "UNWANTED: IF セッションが 401 なら入り直しに落ち、入力途中の内容は失わない"], "regression": REG_UI}, spec_links=["04_design/DESIGN-<プロジェクト>.md", "06_mockup/_shell.py"], qa_rows={"l1": rows, "l2_flows": []}, scenarios=[{"name": "4 幅で開く", "steps": ["375/768/1024/1440 で全画面"], "expected": "溢れ 0"}], source=src)
+ US_ids = [t["id"] for t in tasks if t["group"] == "U-shared"]
+ # ---------------------------------------------------------------- Group U-screen（画面ごと）
+ import re as _re2
+@@ -269,14 +269,14 @@
+ summary = {"total_tasks": len(tasks), "by_group": by("group"), "by_category": by("category"), "by_label": {"NEW": len(tasks)}, "by_deliverable_layer": by("deliverable_layer"), "by_phase": by("phase"),
+            "by_screen_coverage": {"covered_screens": len({s for t in tasks for s in t["screen_ids"]}), "total_screens": len(S), "uncovered_screens": [s for s in S if not any(s in t["screen_ids"] for t in tasks)]},
+            "total_estimate_hours_human": tot_h, "total_estimate_hours_ai_compute": tot_ai, "human_review_total_h": rv, "total_wall_clock_h_ai_parallel": round(sum(x["wall_clock_h_ai"] for x in waves), 1), "parallel_capacity": CAP, "calendar_days_ai": math.ceil(sum(x["wall_clock_h_ai"] for x in waves) / 6), "calendar_days_human": math.ceil(tot_h / 8), "total_estimate_hours": round(sum(t["estimate_hours"] for t in tasks), 1), "total_estimate_sessions": sum(t["estimate_sessions"] for t in tasks), "qa_rows_total": sum(len(t["qa_rows"]["l1"]) for t in tasks), "journeys": len(FD["journeys"])}
+-json.dump({"version": "v3.2", "project": "Kaname", "created_at": TODAY, "decomposition_mode": "api_first", "api_design_ref": {"openapi_path": "08_api/openapi.yaml", "screen_api_coverage_path": "08_api/screen-api-coverage.json", "contract_frozen_at": TODAY}, "_doc": "05_flow/build_tasks.py が機械生成。手で直さない。途中変更は差分（qa_delta.py）", "source": ["D-053.1", "D-036.4"], "summary": summary, "waves": waves, "tasks": tasks}, open("07_tasks/tickets.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+-json.dump({"meta": {"project": "Kaname", "created_at": TODAY, "skill_version": "v3.2-machine", "total_tasks": len(tasks)}, "context": {"project_type": "SaaS（マルチテナント・AI社員・運営）", "team_type": f"並列セッション {CAP}", "decomposition_granularity": "AI 8h 以内／1 PR", "done_definition": "3-tier AC 全 pass ＋ CI gate ＋ 結線（stub は完了でない）", "deliverable_layer_order": "foundation → backend → ui → integration → polish（content＝スキル制作は開発と並行）", "decomposition_mode": "api_first（複数クライアント・並列 AI・モック先行・RLS が多い）"},
++json.dump({"version": "v3.2", "project": "<プロジェクト名>", "created_at": TODAY, "decomposition_mode": "api_first", "api_design_ref": {"openapi_path": "08_api/openapi.yaml", "screen_api_coverage_path": "08_api/screen-api-coverage.json", "contract_frozen_at": TODAY}, "_doc": "05_flow/build_tasks.py が機械生成。手で直さない。途中変更は差分（qa_delta.py）", "source": ["D-053.1", "D-036.4"], "summary": summary, "waves": waves, "tasks": tasks}, open("07_tasks/tickets.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
++json.dump({"meta": {"project": "<プロジェクト名>", "created_at": TODAY, "skill_version": "v3.2-machine", "total_tasks": len(tasks)}, "context": {"project_type": "SaaS（マルチテナント・AI社員・運営）", "team_type": f"並列セッション {CAP}", "decomposition_granularity": "AI 8h 以内／1 PR", "done_definition": "3-tier AC 全 pass ＋ CI gate ＋ 結線（stub は完了でない）", "deliverable_layer_order": "foundation → backend → ui → integration → polish（content＝スキル制作は開発と並行）", "decomposition_mode": "api_first（複数クライアント・並列 AI・モック先行・RLS が多い）"},
+            "decision_log": [{"decision": "api_first（横切り）", "reason": "Web・Bridge・将来のアプリが同じ契約を叩き、AI が 10 並列で画面を作る。仕様は凍結済み", "alternatives": ["縦切り（垂直スライス）"], "tradeoffs": "触れるものが出るのは UI 並列の Wave まで遅い → 流れ J-01（登録〜はじめの設定）を最初の UI Wave に寄せて早く触れるようにする", "source": ["D-043.2", "D-053.1"]},
+                             {"decision": "L1 行をタスクと同時に機械生成", "reason": "実装後に全体を見て書くと細部が抜ける（test-ladder）", "alternatives": ["human-grade-qa で後からまとめて"], "tradeoffs": "行数が多い（機械生成なので保守は再生成）", "source": ["D-069.6"]}],
+            "task_patterns": [{"pattern_name": "関門先行 Foundation ＋ 用事ごとの API ＋ 画面ごとの UI ＋ 結線 I", "applicable_to": "モック先行・並列 AI の SaaS", "description": "F/D/A/U-shared/U-screen/I の 6 Group ＋ S（スキル制作・D-080）＋ V2（後回しの仕様づくり・D-081）、Wave は CAP で分割"}],
+            "risk_flags": [{"task_id": t["id"], "risk_type": "致命級（人のレビュー）", "description": t["title"][:50], "mitigation": "human_review_h を持つ。上流を故意に壊す検証"} for t in tasks if t["critical"]][:20],
+            "research": {"sources": [], "findings": ["機械生成のため件数は入力ではなく出力"], "research_date": TODAY}}, open("07_tasks/td-decisions.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+-md = [f"# Kaname v3 タスク分解結果（api_first・{TODAY}）", "", "## サマリー", "", f"- 総タスク数：{len(tasks)}（{' / '.join(f'{k} {v}' for k, v in summary['by_group'].items())}）", f"- 画面の被覆：{summary['by_screen_coverage']['covered_screens']}/{summary['by_screen_coverage']['total_screens']}", f"- L1 テスト行：{summary['qa_rows_total']}（正本 07_qa/test-specs）／ 流れ（L2）：{summary['journeys']}",
++md = [f"# あるプロジェクト v3 タスク分解結果（api_first・{TODAY}）", "", "## サマリー", "", f"- 総タスク数：{len(tasks)}（{' / '.join(f'{k} {v}' for k, v in summary['by_group'].items())}）", f"- 画面の被覆：{summary['by_screen_coverage']['covered_screens']}/{summary['by_screen_coverage']['total_screens']}", f"- L1 テスト行：{summary['qa_rows_total']}（正本 07_qa/test-specs）／ 流れ（L2）：{summary['journeys']}",
+       f"- 工数：Human {tot_h} h（{summary['calendar_days_human']} 日）／ AI 計算 {tot_ai} h ＋ 人のレビュー {rv} h → wall-clock {summary['total_wall_clock_h_ai_parallel']} h（{summary['calendar_days_ai']} 日・並列 {CAP}）", f"- Wave 数：{len(waves)}", "", "## Group 別タスク一覧", ""]
+ for g in order:
+     md += [f"### Group {g}", "", "| ID | タイトル | category | layer | Human h | AI h | wall-clock | wave | depends_on | L1 行 |", "|---|---|---|---|---|---|---|---|---|---|"] + [f"| {t['id']} | {t['title'][:50]} | {t['category']} | {t['deliverable_layer']} | {t['estimate_hours_human']} | {t['estimate_hours_ai']} | {t['wall_clock_h_ai']} | {t['wave']} | {len(t['depends_on'])} | {len(t['qa_rows']['l1'])} |" for t in tasks if t["group"] == g] + [""]
+@@ -284,12 +284,12 @@
+ for t in tasks:
+     md += [f"### {t['id']} {t['title']}", "", f"- group {t['group']} / layer {t['deliverable_layer']} / phase {t['phase']} / wave {t['wave']} / Human {t['estimate_hours_human']} h・AI {t['estimate_hours_ai']} h・wall-clock {t['wall_clock_h_ai']} h", f"- 行為 {' '.join(t['acts']) or '—'} / 画面 {' '.join(t['screen_ids']) or '—'} / 表 {' '.join(E[x]['table_name'] for x in t['entity_ids'][:6]) or '—'} / 関門 {' '.join(t['choke_points']) or '—（' + t['choke_points_rationale'] + '）'}", f"- 依存 {' '.join(t['depends_on'][:10]) or '—'}", f"- 根拠（逐語）：" + " ／ ".join(f"{d['id']}「{d['summary'][:60]}」" for d in t["decision_summaries"][:2]), "- 触るファイル：" + "、".join(t["files_changed"][:4]), "- AC（Tier 1）：" + " ／ ".join(x[:80] for x in t["acceptance_criteria"]["structural"][:2]), "- AC（Tier 2）：" + " ／ ".join(x[:80] for x in t["acceptance_criteria"]["functional"][:3]), f"- L1 行 {len(t['qa_rows']['l1'])}（{t['qa_rows']['l1'][:3]} …）／ L2 {t['qa_rows']['l2_flows'] or '—'}", f"- audit: {t['audit_md_path']}", ""]
+ open("07_tasks/TASK-CARDS.md", "w", encoding="utf-8").write("\n".join(md))
+-dep = [f"# v3 Dependencies / Wave Plan — Kaname（{TODAY}）", "", "| 指標 | 値 |", "|---|---|", f"| 総 task 数 | {len(tasks)} |", f"| Human 工数 | {tot_h} h |", f"| AI wall-clock | {summary['total_wall_clock_h_ai_parallel']} h（並列 {CAP}） |", "", "## Wave 構成", "", "| Wave | Group | task 数 | 並列 | Human h | AI 計算 h | wall-clock h |", "|---|---|---|---|---|---|---|"] + [f"| {x['wave']} | {x['group']} | {len(x['tasks'])} | {x['parallel']} | {x['estimate_hours_human']} | {x['estimate_hours_ai_compute']} | {x['wall_clock_h_ai']} |" for x in waves]
++dep = [f"# v3 Dependencies / Wave Plan — <プロジェクト名>（{TODAY}）", "", "| 指標 | 値 |", "|---|---|", f"| 総 task 数 | {len(tasks)} |", f"| Human 工数 | {tot_h} h |", f"| AI wall-clock | {summary['total_wall_clock_h_ai_parallel']} h（並列 {CAP}） |", "", "## Wave 構成", "", "| Wave | Group | task 数 | 並列 | Human h | AI 計算 h | wall-clock h |", "|---|---|---|---|---|---|---|"] + [f"| {x['wave']} | {x['group']} | {len(x['tasks'])} | {x['parallel']} | {x['estimate_hours_human']} | {x['estimate_hours_ai_compute']} | {x['wall_clock_h_ai']} |" for x in waves]
+ dep += ["", "## 依存 DAG", ""] + [f"- {t['id']} ← {' '.join(t['depends_on'][:8])}{' …' if len(t['depends_on']) > 8 else ''}" for t in tasks] + ["", "## CI gate", "", "lint / typecheck / coverage 80 / 契約テスト / endpoint 実在性 / 関門の迂回検出 / RLS を故意に壊す / mock-impl-diff / layer_audit / qa-ladder validate。全 PASS で auto-merge、1 つでも fail で retry、3 回で人へ。", ""]
+ open("07_tasks/DEPENDENCIES.md", "w", encoding="utf-8").write("\n".join(dep))
+ rows_ = lambda hdr, rs: "<table><thead><tr>" + "".join(f"<th>{h}</th>" for h in hdr) + "</tr></thead><tbody>" + "".join("<tr>" + "".join(f"<td>{c}</td>" for c in r) + "</tr>" for r in rs) + "</tbody></table>"
+-html = f"""<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>Kaname タスクカード v3</title><style>body{{font-family:-apple-system,'Hiragino Sans',sans-serif;max-width:1300px;margin:32px auto;padding:0 20px;color:#1c2230;line-height:1.6}}table{{border-collapse:collapse;width:100%;font-size:12px;margin:10px 0 24px}}th,td{{border-bottom:1px solid #e3e6ec;padding:5px 7px;text-align:left;vertical-align:top}}th{{background:#f4f5f8}}.bar{{display:inline-block;height:8px;background:#22345C;border-radius:4px}}.bar.ai{{background:#2e9e6b}}details{{margin:4px 0}}</style></head><body>
+-<h1>Kaname タスクカード（v3.2・api_first・{TODAY}）</h1><p>タスク {len(tasks)} ／ Wave {len(waves)} ／ L1 行 {summary['qa_rows_total']} ／ Human {tot_h} h ／ AI wall-clock {summary['total_wall_clock_h_ai_parallel']} h（並列 {CAP}）</p>
++html = f"""<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>あるプロジェクト タスクカード v3</title><style>body{{font-family:-apple-system,'Hiragino Sans',sans-serif;max-width:1300px;margin:32px auto;padding:0 20px;color:#1c2230;line-height:1.6}}table{{border-collapse:collapse;width:100%;font-size:12px;margin:10px 0 24px}}th,td{{border-bottom:1px solid #e3e6ec;padding:5px 7px;text-align:left;vertical-align:top}}th{{background:#f4f5f8}}.bar{{display:inline-block;height:8px;background:#22345C;border-radius:4px}}.bar.ai{{background:#2e9e6b}}details{{margin:4px 0}}</style></head><body>
++<h1>あるプロジェクト タスクカード（v3.2・api_first・{TODAY}）</h1><p>タスク {len(tasks)} ／ Wave {len(waves)} ／ L1 行 {summary['qa_rows_total']} ／ Human {tot_h} h ／ AI wall-clock {summary['total_wall_clock_h_ai_parallel']} h（並列 {CAP}）</p>
+ <h2>Wave（二軸）</h2>{rows_(["Wave","Group","task","並列","Human h","AI 計算 h","wall-clock h","Human 棒 ／ AI 棒"], [[x['wave'], x['group'], len(x['tasks']), x['parallel'], x['estimate_hours_human'], x['estimate_hours_ai_compute'], x['wall_clock_h_ai'], f'<span class="bar" style="width:{min(300, x["estimate_hours_human"]/3)}px"></span><br><span class="bar ai" style="width:{min(300, x["wall_clock_h_ai"]*10)}px"></span>'] for x in waves])}
+ <h2>タスク</h2>{''.join(f"<details><summary>{t['id']} {t['title']} — {t['group']} / wave {t['wave']} / Human {t['estimate_hours_human']}h・AI {t['wall_clock_h_ai']}h / L1 {len(t['qa_rows']['l1'])}</summary><p>行為 {' '.join(t['acts']) or '—'}／画面 {' '.join(t['screen_ids']) or '—'}／関門 {' '.join(t['choke_points']) or '—'}／依存 {' '.join(t['depends_on'][:8])}</p><p>根拠：{' ／ '.join(d['id'] + '「' + d['summary'][:70] + '」' for d in t['decision_summaries'][:2])}</p><ul>" + ''.join(f'<li>{x}</li>' for x in (t['acceptance_criteria']['structural'] + t['acceptance_criteria']['functional'])[:6]) + '</ul></details>' for t in tasks)}
+ </body></html>"""
+diff -ruN orig/test-verification/SKILL.md new/test-verification/SKILL.md
 --- orig/test-verification/SKILL.md	2026-11-04 13:26:40.971992544 +0000
-+++ rel/test-verification/SKILL.md	2026-11-05 00:51:34.088022562 +0000
++++ new/test-verification/SKILL.md	2026-11-05 01:00:16.598058083 +0000
 @@ -5,6 +5,19 @@
  builtin: true
  ---
@@ -3967,9 +4441,18 @@ diff -ruN orig/test-verification/SKILL.md rel/test-verification/SKILL.md
  ## 表記ゆらぎ・負荷を戦略に組み込む
  
  - **表記ゆらぎ**は unit で網羅する（正規化関数の入出力表）。E2E で全軸を回すと高い。
-diff -ruN orig/test-verification/references/test-patterns/AI.md rel/test-verification/references/test-patterns/AI.md
+@@ -985,7 +1016,7 @@
+ 出力：`<qa>/test-plan/test-plan.json`（信頼源）＋ `.md`＋`.html`、`ears-test-mapping.json`（EARS 1 文 = 1 test）、`access-matrix.json`（policy × 場合＝見える範囲／見えない層／他の会社／SET LOCAL 無し／権限なし）、`.github/workflows/v3-gate.yml`（基盤ゲート ＋ 仕様の層 ＋ task/<ID> ブランチの L1 行 ＋ auto-merge）。
+ 検査：`scripts/tv_gate.py`（TV1〜TV8）。layer_checks に登録し、完了の証拠は `layer_audit.py --run`。テストの枠組み（unit の道具）が selected-stack に無ければ決め打ちせず「未定・候補」と書いて user に確認する。
+ 
+-## EARS の対応表からテストを生成する（2026-09-16 追加・kaname T-A）
++## EARS の対応表からテストを生成する（2026-09-16 追加）
+ - `scripts/gen_ears_tests.mjs`：ears-test-mapping.json の 1 文 = 1 test（名前は test_function）。種類は関数名の語尾で固定（ok／shape／rejected_401／rejected_403／conflict／rejected_422／rate_limited／upstream_failed／not_found）。土台は `apps/api/test/harness.ts`（実 Postgres・migration・場合表の種・偽のセッション解決 `Bearer <who>`）。作成の body は場合表の種を契約の入力に絞って作る（手で body を書かない）
+ - `scripts/ears_mapping.mjs`＝G34（test_file と test_function の実在）。生成物が古ければ赤
+ - 「副作用なし」は行数で確かめる（before／after の count）。「副作用 → 記録の順」は effect を失敗させて 502 と行数不変で確かめる
+diff -ruN orig/test-verification/references/test-patterns/AI.md new/test-verification/references/test-patterns/AI.md
 --- orig/test-verification/references/test-patterns/AI.md	1970-01-01 00:00:00.000000000 +0000
-+++ rel/test-verification/references/test-patterns/AI.md	2026-11-05 00:51:34.089654839 +0000
++++ new/test-verification/references/test-patterns/AI.md	2026-11-05 01:00:16.529849594 +0000
 @@ -0,0 +1,10 @@
 +# AI の実行（AI）
 +
@@ -3977,13 +4460,13 @@ diff -ruN orig/test-verification/references/test-patterns/AI.md rel/test-verific
 +
 +| ID | 観点 | 分岐 | 期待する結果 | 段 | 出典 |
 +|---|---|---|---|---|---|
-+| TP-AI-01 | 守り | 外に出す前 | 人の承認が無ければ出さない | 単体・中間 | Kaname 2026-11-04 |
-+| TP-AI-02 | 利用者の状態 | 止める・取り下げ・PC が閉じている | 止まった理由と次の一手を出す | 単体・中間 | Kaname 2026-11-04 |
-+| TP-AI-03 | 守り | 利用量の上限を越えた | 止めて、いつ戻るかを出す | 単体 | Kaname 2026-11-04 |
-+| TP-AI-04 | 失敗 | 予期しない出力（とても長い・空・形が違う） | 落ちずに失敗として扱う | 単体 | Kaname 2026-11-04 |
-diff -ruN orig/test-verification/references/test-patterns/AUTH.md rel/test-verification/references/test-patterns/AUTH.md
++| TP-AI-01 | 守り | 外に出す前 | 人の承認が無ければ出さない | 単体・中間 | あるプロジェクト 2026-11-04 |
++| TP-AI-02 | 利用者の状態 | 止める・取り下げ・PC が閉じている | 止まった理由と次の一手を出す | 単体・中間 | あるプロジェクト 2026-11-04 |
++| TP-AI-03 | 守り | 利用量の上限を越えた | 止めて、いつ戻るかを出す | 単体 | あるプロジェクト 2026-11-04 |
++| TP-AI-04 | 失敗 | 予期しない出力（とても長い・空・形が違う） | 落ちずに失敗として扱う | 単体 | あるプロジェクト 2026-11-04 |
+diff -ruN orig/test-verification/references/test-patterns/AUTH.md new/test-verification/references/test-patterns/AUTH.md
 --- orig/test-verification/references/test-patterns/AUTH.md	1970-01-01 00:00:00.000000000 +0000
-+++ rel/test-verification/references/test-patterns/AUTH.md	2026-11-05 00:51:34.088760809 +0000
++++ new/test-verification/references/test-patterns/AUTH.md	2026-11-05 01:00:16.531363134 +0000
 @@ -0,0 +1,15 @@
 +# ログイン・セッション（AUTH）
 +
@@ -3994,15 +4477,15 @@ diff -ruN orig/test-verification/references/test-patterns/AUTH.md rel/test-verif
 +| TP-AUTH-01 | 守り | 誤ったパスワードと、無いメール | 同じ返事・同じくらいの時間（登録の有無を見せない） | 単体 | OWASP ASVS（認証・セッション） |
 +| TP-AUTH-02 | 守り | 続けて失敗する | 回数の上限・待ち時間。本人は再設定で戻れる | 単体 | OWASP ASVS（認証・セッション） |
 +| TP-AUTH-03 | 時間の流れ | 2 段階のコードの期限切れ・使い回し・誤り | どれも通さない。使い回しは 1 回目だけ | 単体 | OWASP ASVS（認証・セッション） |
-+| TP-AUTH-04 | 利用者の状態 | セッションが切れた・長く入っていない状態で操作する・戻ってくる | ログインへ案内し、入り直したら元の画面へ。書きかけは失わない | 単体・中間 | Kaname 2026-11-04 |
++| TP-AUTH-04 | 利用者の状態 | セッションが切れた・長く入っていない状態で操作する・戻ってくる | ログインへ案内し、入り直したら元の画面へ。書きかけは失わない | 単体・中間 | あるプロジェクト 2026-11-04 |
 +| TP-AUTH-05 | 入口 | ログアウトした後に、戻る・ブックマークで中の画面を開く | 中は見えず、ログインへ | 単体 | OWASP ASVS（認証・セッション） |
 +| TP-AUTH-06 | 時間の流れ | パスワードを変えた・端末を外した | ほかのセッションが切れる | 単体・中間 | OWASP ASVS（認証・セッション） |
 +| TP-AUTH-07 | 時間の流れ | 本人確認の取り直し（大事な操作の前）の期限 | 期限を過ぎたらもう一度確かめる | 単体 | OWASP ASVS（認証・セッション） |
 +| TP-AUTH-08 | 守り | ログインの後に戻す先が外の道 | 外へは飛ばさず、中の道だけに戻す | 単体 | OWASP Testing Guide |
-+| TP-AUTH-09 | 利用者の状態 | 国・端末が変わった | 決めたとおりに切る／記録する | 単体 | Kaname 2026-11-04 |
-diff -ruN orig/test-verification/references/test-patterns/CRUD.md rel/test-verification/references/test-patterns/CRUD.md
++| TP-AUTH-09 | 利用者の状態 | 国・端末が変わった | 決めたとおりに切る／記録する | 単体 | あるプロジェクト 2026-11-04 |
+diff -ruN orig/test-verification/references/test-patterns/CRUD.md new/test-verification/references/test-patterns/CRUD.md
 --- orig/test-verification/references/test-patterns/CRUD.md	1970-01-01 00:00:00.000000000 +0000
-+++ rel/test-verification/references/test-patterns/CRUD.md	2026-11-05 00:51:34.089085422 +0000
++++ new/test-verification/references/test-patterns/CRUD.md	2026-11-05 01:00:16.531812299 +0000
 @@ -0,0 +1,12 @@
 +# 作る・直す・消す（CRUD）
 +
@@ -4011,14 +4494,14 @@ diff -ruN orig/test-verification/references/test-patterns/CRUD.md rel/test-verif
 +| ID | 観点 | 分岐 | 期待する結果 | 段 | 出典 |
 +|---|---|---|---|---|---|
 +| TP-CRUD-01 | 操作の揺れ | 2 人が同時に直す | 後の人の保存は版のずれとして止め、どちらも失わない | 単体 | OWASP Testing Guide |
-+| TP-CRUD-02 | 時間の流れ | 消したものを古いリンクで開く・直す | 見つからない（消された・移された）の画面 | 単体 | Kaname 2026-11-04 |
-+| TP-CRUD-03 | 時間の流れ | 消す → 戻す、子のあるものを消す | 子の扱いを決めて書き、そのとおり | 単体 | Kaname 2026-11-04 |
++| TP-CRUD-02 | 時間の流れ | 消したものを古いリンクで開く・直す | 見つからない（消された・移された）の画面 | 単体 | あるプロジェクト 2026-11-04 |
++| TP-CRUD-03 | 時間の流れ | 消す → 戻す、子のあるものを消す | 子の扱いを決めて書き、そのとおり | 単体 | あるプロジェクト 2026-11-04 |
 +| TP-CRUD-04 | 操作の揺れ | 2 回押し | 1 つしかできない（冪等キー） | 単体 | OWASP Testing Guide |
 +| TP-CRUD-05 | 失敗 | 保存の途中で失敗 | 途中まで残らない（全部戻る） | 単体 | OWASP Testing Guide |
-+| TP-CRUD-06 | 入口 | 書きかけで戻る・再読み込み・セッション切れ | 書きかけが失われない | 単体 | Kaname 2026-11-04 |
-diff -ruN orig/test-verification/references/test-patterns/EXT.md rel/test-verification/references/test-patterns/EXT.md
++| TP-CRUD-06 | 入口 | 書きかけで戻る・再読み込み・セッション切れ | 書きかけが失われない | 単体 | あるプロジェクト 2026-11-04 |
+diff -ruN orig/test-verification/references/test-patterns/EXT.md new/test-verification/references/test-patterns/EXT.md
 --- orig/test-verification/references/test-patterns/EXT.md	1970-01-01 00:00:00.000000000 +0000
-+++ rel/test-verification/references/test-patterns/EXT.md	2026-11-05 00:51:34.089491797 +0000
++++ new/test-verification/references/test-patterns/EXT.md	2026-11-05 01:00:16.531984777 +0000
 @@ -0,0 +1,9 @@
 +# 外とのつなぎ（EXT）
 +
@@ -4026,12 +4509,12 @@ diff -ruN orig/test-verification/references/test-patterns/EXT.md rel/test-verifi
 +
 +| ID | 観点 | 分岐 | 期待する結果 | 段 | 出典 |
 +|---|---|---|---|---|---|
-+| TP-EXT-01 | 失敗 | 外のサービスが落ちた・遅い・時間切れ | 止めるか通すかを決めて書き、そのとおり。通すなら記録して知らせる | 単体 | Kaname 2026-11-04 |
++| TP-EXT-01 | 失敗 | 外のサービスが落ちた・遅い・時間切れ | 止めるか通すかを決めて書き、そのとおり。通すなら記録して知らせる | 単体 | あるプロジェクト 2026-11-04 |
 +| TP-EXT-02 | 失敗 | 外が想定外の形を返す | 落ちずに失敗として扱う | 単体 | OWASP Testing Guide |
 +| TP-EXT-03 | 操作の揺れ | 同じ通知が 2 回届く | 1 回分だけ反映 | 単体 | OWASP Testing Guide |
-diff -ruN orig/test-verification/references/test-patterns/FILE.md rel/test-verification/references/test-patterns/FILE.md
+diff -ruN orig/test-verification/references/test-patterns/FILE.md new/test-verification/references/test-patterns/FILE.md
 --- orig/test-verification/references/test-patterns/FILE.md	1970-01-01 00:00:00.000000000 +0000
-+++ rel/test-verification/references/test-patterns/FILE.md	2026-11-05 00:51:34.089245826 +0000
++++ new/test-verification/references/test-patterns/FILE.md	2026-11-05 01:00:16.530725349 +0000
 @@ -0,0 +1,11 @@
 +# ファイル（FILE）
 +
@@ -4041,12 +4524,12 @@ diff -ruN orig/test-verification/references/test-patterns/FILE.md rel/test-verif
 +|---|---|---|---|---|---|
 +| TP-FILE-01 | 入力 | 大きさの上限・0 バイト | 上限で止め、理由を出す | 単体 | OWASP Testing Guide |
 +| TP-FILE-02 | 守り | 拡張子と中身の種類が違う | 中身で見分けて止める | 単体 | OWASP Testing Guide |
-+| TP-FILE-03 | 入力 | 名前（日本語・記号・とても長い・同じ名前） | 化けず、上書きの扱いを決めて書く | 単体 | Kaname 2026-11-04 |
++| TP-FILE-03 | 入力 | 名前（日本語・記号・とても長い・同じ名前） | 化けず、上書きの扱いを決めて書く | 単体 | あるプロジェクト 2026-11-04 |
 +| TP-FILE-04 | 失敗 | 上げる途中で切れた・同時に上げる | 半端なファイルが残らない | 単体 | OWASP Testing Guide |
 +| TP-FILE-05 | 守り | 他の人のファイルの URL を直接開く | 見えない（期限つきの URL・権限の確認） | 単体 | OWASP ASVS（認証・セッション） |
-diff -ruN orig/test-verification/references/test-patterns/INV.md rel/test-verification/references/test-patterns/INV.md
+diff -ruN orig/test-verification/references/test-patterns/INV.md new/test-verification/references/test-patterns/INV.md
 --- orig/test-verification/references/test-patterns/INV.md	1970-01-01 00:00:00.000000000 +0000
-+++ rel/test-verification/references/test-patterns/INV.md	2026-11-05 00:51:34.088924426 +0000
++++ new/test-verification/references/test-patterns/INV.md	2026-11-05 01:00:16.529659042 +0000
 @@ -0,0 +1,11 @@
 +# 招待・参加（INV）
 +
@@ -4054,14 +4537,14 @@ diff -ruN orig/test-verification/references/test-patterns/INV.md rel/test-verifi
 +
 +| ID | 観点 | 分岐 | 期待する結果 | 段 | 出典 |
 +|---|---|---|---|---|---|
-+| TP-INV-01 | 時間の流れ | 招待の期限切れ・取り消し・使い終わった招待を開く | 参加できず、理由と次の一手 | 単体・中間 | Kaname 2026-11-04 |
-+| TP-INV-02 | 利用者の状態 | 招待されたメールと違うアカウントでログイン中に開く | 勝手に参加させない。どちらのアカウントで入るかの案内 | 単体・中間 | Kaname 2026-11-04 |
-+| TP-INV-03 | 対象の状態 | 既にメンバーの人が開く | 二重に参加させず、その会社へ案内 | 単体 | Kaname 2026-11-04 |
-+| TP-INV-04 | 時間の流れ | 招待した人が権限を失った・抜けた後に開く | 決めたとおり（使える／使えない） | 単体 | Kaname 2026-11-04 |
-+| TP-INV-05 | 操作の揺れ | 同じ人を 2 回招待する | 招待は 1 つ（前のものの扱いを決めて書く） | 単体 | Kaname 2026-11-04 |
-diff -ruN orig/test-verification/references/test-patterns/JOB.md rel/test-verification/references/test-patterns/JOB.md
++| TP-INV-01 | 時間の流れ | 招待の期限切れ・取り消し・使い終わった招待を開く | 参加できず、理由と次の一手 | 単体・中間 | あるプロジェクト 2026-11-04 |
++| TP-INV-02 | 利用者の状態 | 招待されたメールと違うアカウントでログイン中に開く | 勝手に参加させない。どちらのアカウントで入るかの案内 | 単体・中間 | あるプロジェクト 2026-11-04 |
++| TP-INV-03 | 対象の状態 | 既にメンバーの人が開く | 二重に参加させず、その会社へ案内 | 単体 | あるプロジェクト 2026-11-04 |
++| TP-INV-04 | 時間の流れ | 招待した人が権限を失った・抜けた後に開く | 決めたとおり（使える／使えない） | 単体 | あるプロジェクト 2026-11-04 |
++| TP-INV-05 | 操作の揺れ | 同じ人を 2 回招待する | 招待は 1 つ（前のものの扱いを決めて書く） | 単体 | あるプロジェクト 2026-11-04 |
+diff -ruN orig/test-verification/references/test-patterns/JOB.md new/test-verification/references/test-patterns/JOB.md
 --- orig/test-verification/references/test-patterns/JOB.md	1970-01-01 00:00:00.000000000 +0000
-+++ rel/test-verification/references/test-patterns/JOB.md	2026-11-05 00:51:34.089582162 +0000
++++ new/test-verification/references/test-patterns/JOB.md	2026-11-05 01:00:16.531106914 +0000
 @@ -0,0 +1,9 @@
 +# 時間で動く処理・待ち行列（JOB）
 +
@@ -4070,11 +4553,11 @@ diff -ruN orig/test-verification/references/test-patterns/JOB.md rel/test-verifi
 +| ID | 観点 | 分岐 | 期待する結果 | 段 | 出典 |
 +|---|---|---|---|---|---|
 +| TP-JOB-01 | 失敗 | 途中で止まった・再起動・やり直し | 二重にならず、続きから | 単体 | OWASP Testing Guide |
-+| TP-JOB-02 | 時間の流れ | 日付の変わり目・月末・タイムゾーン | 決めた時刻の扱い（保存は世界標準時・表示は現地）どおり | 単体 | Kaname 2026-11-04 |
++| TP-JOB-02 | 時間の流れ | 日付の変わり目・月末・タイムゾーン | 決めた時刻の扱い（保存は世界標準時・表示は現地）どおり | 単体 | あるプロジェクト 2026-11-04 |
 +| TP-JOB-03 | 時間の流れ | 処理の途中で対象が消えた | 落ちずに飛ばして記録 | 単体 | OWASP Testing Guide |
-diff -ruN orig/test-verification/references/test-patterns/LIST.md rel/test-verification/references/test-patterns/LIST.md
+diff -ruN orig/test-verification/references/test-patterns/LIST.md new/test-verification/references/test-patterns/LIST.md
 --- orig/test-verification/references/test-patterns/LIST.md	1970-01-01 00:00:00.000000000 +0000
-+++ rel/test-verification/references/test-patterns/LIST.md	2026-11-05 00:51:34.089175257 +0000
++++ new/test-verification/references/test-patterns/LIST.md	2026-11-05 01:00:16.529461959 +0000
 @@ -0,0 +1,10 @@
 +# 一覧・検索（LIST）
 +
@@ -4084,11 +4567,11 @@ diff -ruN orig/test-verification/references/test-patterns/LIST.md rel/test-verif
 +|---|---|---|---|---|---|
 +| TP-LIST-01 | 対象の状態 | 0 件・1 件・ページの境目の件数 | 空の画面・境目で抜けも重なりも無い | 単体 | OWASP Testing Guide |
 +| TP-LIST-02 | 対象の状態 | 並び替えの値が同じものが多い | ページをまたいでも並びが揺れない | 単体 | OWASP Testing Guide |
-+| TP-LIST-03 | 入口 | 絞り込みの組み合わせを URL で開き直す・共有する | 同じ結果が出る | 単体 | Kaname 2026-11-04 |
++| TP-LIST-03 | 入口 | 絞り込みの組み合わせを URL で開き直す・共有する | 同じ結果が出る | 単体 | あるプロジェクト 2026-11-04 |
 +| TP-LIST-04 | 入力 | 表記ゆれ・記号・とても長い語で探す | 正規化して探し、落ちない | 単体 | OWASP Testing Guide |
-diff -ruN orig/test-verification/references/test-patterns/MAIL.md rel/test-verification/references/test-patterns/MAIL.md
+diff -ruN orig/test-verification/references/test-patterns/MAIL.md new/test-verification/references/test-patterns/MAIL.md
 --- orig/test-verification/references/test-patterns/MAIL.md	1970-01-01 00:00:00.000000000 +0000
-+++ rel/test-verification/references/test-patterns/MAIL.md	2026-11-05 00:51:34.089343785 +0000
++++ new/test-verification/references/test-patterns/MAIL.md	2026-11-05 01:00:16.530932245 +0000
 @@ -0,0 +1,9 @@
 +# メール・通知（MAIL）
 +
@@ -4096,12 +4579,12 @@ diff -ruN orig/test-verification/references/test-patterns/MAIL.md rel/test-verif
 +
 +| ID | 観点 | 分岐 | 期待する結果 | 段 | 出典 |
 +|---|---|---|---|---|---|
-+| TP-MAIL-01 | 失敗 | 送れなかった | 送れたと嘘をつかず、送り直せる | 単体 | Kaname 2026-11-04 |
-+| TP-MAIL-02 | 操作の揺れ | 同じ知らせが二重に出る | 1 通だけ | 単体 | Kaname 2026-11-04 |
++| TP-MAIL-01 | 失敗 | 送れなかった | 送れたと嘘をつかず、送り直せる | 単体 | あるプロジェクト 2026-11-04 |
++| TP-MAIL-02 | 操作の揺れ | 同じ知らせが二重に出る | 1 通だけ | 単体 | あるプロジェクト 2026-11-04 |
 +| TP-MAIL-03 | 守り | 本文 | 秘密や他人の情報を入れない。リンクは期限つき | 単体 | OWASP ASVS（認証・セッション） |
-diff -ruN orig/test-verification/references/test-patterns/PAY.md rel/test-verification/references/test-patterns/PAY.md
+diff -ruN orig/test-verification/references/test-patterns/PAY.md new/test-verification/references/test-patterns/PAY.md
 --- orig/test-verification/references/test-patterns/PAY.md	1970-01-01 00:00:00.000000000 +0000
-+++ rel/test-verification/references/test-patterns/PAY.md	2026-11-05 00:51:34.089422397 +0000
++++ new/test-verification/references/test-patterns/PAY.md	2026-11-05 01:00:16.528053452 +0000
 @@ -0,0 +1,10 @@
 +# 支払い・請求（PAY）
 +
@@ -4109,13 +4592,13 @@ diff -ruN orig/test-verification/references/test-patterns/PAY.md rel/test-verifi
 +
 +| ID | 観点 | 分岐 | 期待する結果 | 段 | 出典 |
 +|---|---|---|---|---|---|
-+| TP-PAY-01 | 入力 | 金額の端数 | 決めた丸め方（例：税は請求書ごと・税率ごとに 1 回） | 単体 | Kaname 2026-11-04 |
++| TP-PAY-01 | 入力 | 金額の端数 | 決めた丸め方（例：税は請求書ごと・税率ごとに 1 回） | 単体 | あるプロジェクト 2026-11-04 |
 +| TP-PAY-02 | 操作の揺れ | 二重の請求・入金の二重記録 | 1 回だけ | 単体 | OWASP Testing Guide |
-+| TP-PAY-03 | 時間の流れ | プランを月の途中で変える | 決めた計算どおり | 単体 | Kaname 2026-11-04 |
++| TP-PAY-03 | 時間の流れ | プランを月の途中で変える | 決めた計算どおり | 単体 | あるプロジェクト 2026-11-04 |
 +| TP-PAY-04 | 守り | 外の決済の通知 | 署名を確かめ、順番が逆に届いても壊れない | 単体 | OWASP Testing Guide |
-diff -ruN orig/test-verification/references/test-patterns/PERM.md rel/test-verification/references/test-patterns/PERM.md
+diff -ruN orig/test-verification/references/test-patterns/PERM.md new/test-verification/references/test-patterns/PERM.md
 --- orig/test-verification/references/test-patterns/PERM.md	1970-01-01 00:00:00.000000000 +0000
-+++ rel/test-verification/references/test-patterns/PERM.md	2026-11-05 00:51:34.088990341 +0000
++++ new/test-verification/references/test-patterns/PERM.md	2026-11-05 01:00:16.528559707 +0000
 @@ -0,0 +1,11 @@
 +# 権限・役割（PERM）
 +
@@ -4124,13 +4607,13 @@ diff -ruN orig/test-verification/references/test-patterns/PERM.md rel/test-verif
 +| ID | 観点 | 分岐 | 期待する結果 | 段 | 出典 |
 +|---|---|---|---|---|---|
 +| TP-PERM-01 | 利用者の状態 | 役が合わない人 | 画面に見えない・押せない。口は 403 で、副作用は起きない | 単体 | OWASP ASVS（認証・セッション） |
-+| TP-PERM-02 | 時間の流れ | 権限を外した直後に、開いていた画面で押す | 口で止まる（画面の表示に頼らない） | 単体・中間 | Kaname 2026-11-04 |
++| TP-PERM-02 | 時間の流れ | 権限を外した直後に、開いていた画面で押す | 口で止まる（画面の表示に頼らない） | 単体・中間 | あるプロジェクト 2026-11-04 |
 +| TP-PERM-03 | 守り | 他の会社の ID を直接指定する | 見つからない扱い（403／404）で、中身は返らない | 単体 | OWASP ASVS（認証・セッション） |
 +| TP-PERM-04 | 守り | 一覧・数・検索 | 他の会社や見えないものが件数にも混ざらない | 単体 | OWASP ASVS（認証・セッション） |
-+| TP-PERM-05 | 時間の流れ | 権限を付けた直後 | 入り直さなくても効く（または効く時点を書く） | 単体・中間 | Kaname 2026-11-04 |
-diff -ruN orig/test-verification/references/test-patterns/README.md rel/test-verification/references/test-patterns/README.md
++| TP-PERM-05 | 時間の流れ | 権限を付けた直後 | 入り直さなくても効く（または効く時点を書く） | 単体・中間 | あるプロジェクト 2026-11-04 |
+diff -ruN orig/test-verification/references/test-patterns/README.md new/test-verification/references/test-patterns/README.md
 --- orig/test-verification/references/test-patterns/README.md	1970-01-01 00:00:00.000000000 +0000
-+++ rel/test-verification/references/test-patterns/README.md	2026-11-05 00:51:34.089808389 +0000
++++ new/test-verification/references/test-patterns/README.md	2026-11-04 13:26:49.035612073 +0000
 @@ -0,0 +1,20 @@
 +# テストの型（分類ごと）
 +
@@ -4152,9 +4635,9 @@ diff -ruN orig/test-verification/references/test-patterns/README.md rel/test-ver
 +| 時間で動く処理・待ち行列（JOB） | 3 | [JOB.md](JOB.md) |
 +| AI の実行（AI） | 4 | [AI.md](AI.md) |
 +| CI の台本（検査そのもの）（TOOL） | 3 | [TOOL.md](TOOL.md) |
-diff -ruN orig/test-verification/references/test-patterns/REG.md rel/test-verification/references/test-patterns/REG.md
+diff -ruN orig/test-verification/references/test-patterns/REG.md new/test-verification/references/test-patterns/REG.md
 --- orig/test-verification/references/test-patterns/REG.md	1970-01-01 00:00:00.000000000 +0000
-+++ rel/test-verification/references/test-patterns/REG.md	2026-11-05 00:51:34.088625280 +0000
++++ new/test-verification/references/test-patterns/REG.md	2026-11-05 01:00:16.529180260 +0000
 @@ -0,0 +1,20 @@
 +# 登録・本人確認（REG）
 +
@@ -4162,23 +4645,23 @@ diff -ruN orig/test-verification/references/test-patterns/REG.md rel/test-verifi
 +
 +| ID | 観点 | 分岐 | 期待する結果 | 段 | 出典 |
 +|---|---|---|---|---|---|
-+| TP-REG-01 | 対象の状態 | 登録が確定する時点（保留 → 確定） | どの操作で確定するかを書き、確定する前と後で何ができるかを分ける | 単体・中間 | Kaname 2026-11-04 |
-+| TP-REG-02 | 時間の流れ | 確認のリンクの期限が切れてから開く | 期限切れの画面と、やり直しの案内。申し込みは使えない | 単体・中間 | Kaname 2026-11-04 |
-+| TP-REG-03 | 時間の流れ | 確定した後に、同じ確認のリンクをもう一度開く | 「登録は済んでいます」とログインへの案内。二重に作らない | 単体・中間 | Kaname 2026-11-04 |
-+| TP-REG-04 | 時間の流れ | 送り直した後に、前のリンクを開く | 前のリンクは使えず、新しいメールのリンクへ案内 | 単体・中間 | Kaname 2026-11-04 |
-+| TP-REG-05 | 入口 | 確認のリンクを別の端末・別のブラウザで開く | 決めたとおり（確定できる／できない）に動く | 中間 | Kaname 2026-11-04 |
-+| TP-REG-06 | 利用者の状態 | ログイン中・別のアカウントでログイン中に、登録の画面や確認のリンクを開く | 勝手にアカウントを切り替えない。今のアカウントへの案内か、ログアウトの案内 | 単体・中間 | Kaname 2026-11-04 |
++| TP-REG-01 | 対象の状態 | 登録が確定する時点（保留 → 確定） | どの操作で確定するかを書き、確定する前と後で何ができるかを分ける | 単体・中間 | あるプロジェクト 2026-11-04 |
++| TP-REG-02 | 時間の流れ | 確認のリンクの期限が切れてから開く | 期限切れの画面と、やり直しの案内。申し込みは使えない | 単体・中間 | あるプロジェクト 2026-11-04 |
++| TP-REG-03 | 時間の流れ | 確定した後に、同じ確認のリンクをもう一度開く | 「登録は済んでいます」とログインへの案内。二重に作らない | 単体・中間 | あるプロジェクト 2026-11-04 |
++| TP-REG-04 | 時間の流れ | 送り直した後に、前のリンクを開く | 前のリンクは使えず、新しいメールのリンクへ案内 | 単体・中間 | あるプロジェクト 2026-11-04 |
++| TP-REG-05 | 入口 | 確認のリンクを別の端末・別のブラウザで開く | 決めたとおり（確定できる／できない）に動く | 中間 | あるプロジェクト 2026-11-04 |
++| TP-REG-06 | 利用者の状態 | ログイン中・別のアカウントでログイン中に、登録の画面や確認のリンクを開く | 勝手にアカウントを切り替えない。今のアカウントへの案内か、ログアウトの案内 | 単体・中間 | あるプロジェクト 2026-11-04 |
 +| TP-REG-07 | 守り | 登録済みのメールで登録する | 登録の有無を余計に見せない文言（ログインか再設定の案内だけ） | 単体 | OWASP ASVS（認証・セッション） |
-+| TP-REG-08 | 入力 | メールの大文字小文字・前後の空白・全角 | 正規化して同じ人として扱う | 単体 | Kaname 2026-11-04 |
++| TP-REG-08 | 入力 | メールの大文字小文字・前後の空白・全角 | 正規化して同じ人として扱う | 単体 | あるプロジェクト 2026-11-04 |
 +| TP-REG-09 | 入力 | 漏れたことのあるパスワード | 弾く。照合先が落ちたときの扱い（止める／通して記録）を決めて書く | 単体 | OWASP ASVS（認証・セッション） |
 +| TP-REG-10 | 入力 | パスワードの長さの境目の両側 | 短い側は弾き、境目は通す | 単体 | OWASP ASVS（認証・セッション） |
 +| TP-REG-11 | 守り | 同じ所から短い時間に何度も登録する | 回数の上限で止め、待つ時間を出す | 単体 | OWASP ASVS（認証・セッション） |
-+| TP-REG-12 | 操作の揺れ | 同じメールで同時に 2 回・2 回押し | 申し込みは 1 つ・メールは 1 通 | 単体 | Kaname 2026-11-04 |
-+| TP-REG-13 | 対象の状態 | 同意した規約の版と時刻 | 残る。規約が変わったら次のログインで同意し直す | 単体 | Kaname 2026-11-04 |
++| TP-REG-12 | 操作の揺れ | 同じメールで同時に 2 回・2 回押し | 申し込みは 1 つ・メールは 1 通 | 単体 | あるプロジェクト 2026-11-04 |
++| TP-REG-13 | 対象の状態 | 同意した規約の版と時刻 | 残る。規約が変わったら次のログインで同意し直す | 単体 | あるプロジェクト 2026-11-04 |
 +| TP-REG-14 | 守り | DB とログにパスワード・リンクの手がかりが平文で残らない | パスワードは包む・手がかりはハッシュだけ・ログに出さない | 単体 | OWASP ASVS（認証・セッション） |
-diff -ruN orig/test-verification/references/test-patterns/RESET.md rel/test-verification/references/test-patterns/RESET.md
+diff -ruN orig/test-verification/references/test-patterns/RESET.md new/test-verification/references/test-patterns/RESET.md
 --- orig/test-verification/references/test-patterns/RESET.md	1970-01-01 00:00:00.000000000 +0000
-+++ rel/test-verification/references/test-patterns/RESET.md	2026-11-05 00:51:34.088856279 +0000
++++ new/test-verification/references/test-patterns/RESET.md	2026-11-04 13:26:49.034552251 +0000
 @@ -0,0 +1,9 @@
 +# パスワードの再設定（RESET）
 +
@@ -4189,9 +4672,9 @@ diff -ruN orig/test-verification/references/test-patterns/RESET.md rel/test-veri
 +| TP-RESET-01 | 守り | 無いメールで再設定を頼む | 同じ返事（登録の有無を見せない） | 単体 | OWASP ASVS（認証・セッション） |
 +| TP-RESET-02 | 時間の流れ | 再設定のリンクの期限切れ・使い終わった・新しく頼んだ後の前のリンク | どれも使えず、頼み直しの案内 | 単体・中間 | OWASP ASVS（認証・セッション） |
 +| TP-RESET-03 | 時間の流れ | 再設定した | ほかのセッションが切れる | 単体 | OWASP ASVS（認証・セッション） |
-diff -ruN orig/test-verification/references/test-patterns/TOOL.md rel/test-verification/references/test-patterns/TOOL.md
+diff -ruN orig/test-verification/references/test-patterns/TOOL.md new/test-verification/references/test-patterns/TOOL.md
 --- orig/test-verification/references/test-patterns/TOOL.md	1970-01-01 00:00:00.000000000 +0000
-+++ rel/test-verification/references/test-patterns/TOOL.md	2026-11-05 00:51:34.089742596 +0000
++++ new/test-verification/references/test-patterns/TOOL.md	2026-11-05 01:00:16.531631565 +0000
 @@ -0,0 +1,9 @@
 +# CI の台本（検査そのもの）（TOOL）
 +
@@ -4199,12 +4682,12 @@ diff -ruN orig/test-verification/references/test-patterns/TOOL.md rel/test-verif
 +
 +| ID | 観点 | 分岐 | 期待する結果 | 段 | 出典 |
 +|---|---|---|---|---|---|
-+| TP-TOOL-01 | 入力 | 日本語の名前のファイル | 検査の台本が読み落とさない（git ls-files は -z で読む） | 単体 | Kaname 2026-11-04 |
-+| TP-TOOL-02 | 守り | 検査が何も見ていないのに緑 | 自己試験でわざと壊し、赤になるのを見る | 単体 | Kaname 2026-11-04 |
-+| TP-TOOL-03 | 失敗 | 容れ物の中と手元で設定・証明書・版が違う | 同じ結果になる（違いは設定で吸収して書く） | 単体 | Kaname 2026-11-04 |
-diff -ruN orig/test-verification/references/test-patterns/patterns.json rel/test-verification/references/test-patterns/patterns.json
++| TP-TOOL-01 | 入力 | 日本語の名前のファイル | 検査の台本が読み落とさない（git ls-files は -z で読む） | 単体 | あるプロジェクト 2026-11-04 |
++| TP-TOOL-02 | 守り | 検査が何も見ていないのに緑 | 自己試験でわざと壊し、赤になるのを見る | 単体 | あるプロジェクト 2026-11-04 |
++| TP-TOOL-03 | 失敗 | 容れ物の中と手元で設定・証明書・版が違う | 同じ結果になる（違いは設定で吸収して書く） | 単体 | あるプロジェクト 2026-11-04 |
+diff -ruN orig/test-verification/references/test-patterns/patterns.json new/test-verification/references/test-patterns/patterns.json
 --- orig/test-verification/references/test-patterns/patterns.json	1970-01-01 00:00:00.000000000 +0000
-+++ rel/test-verification/references/test-patterns/patterns.json	2026-11-05 00:51:34.088489194 +0000
++++ new/test-verification/references/test-patterns/patterns.json	2026-11-05 01:00:16.530405178 +0000
 @@ -0,0 +1,670 @@
 +{
 + "_doc": "テストの型のナレッジ（機械が読むシート）。チケットは分類（categories）を書き、その分類の型を全部「テストにある」か「要らない理由」で受ける。どちらも無ければ scripts/pattern_gate.py が赤。プロジェクトで新しく出た型は、プロジェクトの足し分（test-patterns.local.json）に書き、他でも効くものはここに戻す",
@@ -4242,7 +4725,7 @@ diff -ruN orig/test-verification/references/test-patterns/patterns.json rel/test
 +   "branch": "登録が確定する時点（保留 → 確定）",
 +   "expect": "どの操作で確定するかを書き、確定する前と後で何ができるかを分ける",
 +   "levels": "単体・中間",
-+   "source": "Kaname 2026-11-04"
++   "source": "あるプロジェクト 2026-11-04"
 +  },
 +  {
 +   "id": "TP-REG-02",
@@ -4251,7 +4734,7 @@ diff -ruN orig/test-verification/references/test-patterns/patterns.json rel/test
 +   "branch": "確認のリンクの期限が切れてから開く",
 +   "expect": "期限切れの画面と、やり直しの案内。申し込みは使えない",
 +   "levels": "単体・中間",
-+   "source": "Kaname 2026-11-04"
++   "source": "あるプロジェクト 2026-11-04"
 +  },
 +  {
 +   "id": "TP-REG-03",
@@ -4260,7 +4743,7 @@ diff -ruN orig/test-verification/references/test-patterns/patterns.json rel/test
 +   "branch": "確定した後に、同じ確認のリンクをもう一度開く",
 +   "expect": "「登録は済んでいます」とログインへの案内。二重に作らない",
 +   "levels": "単体・中間",
-+   "source": "Kaname 2026-11-04"
++   "source": "あるプロジェクト 2026-11-04"
 +  },
 +  {
 +   "id": "TP-REG-04",
@@ -4269,7 +4752,7 @@ diff -ruN orig/test-verification/references/test-patterns/patterns.json rel/test
 +   "branch": "送り直した後に、前のリンクを開く",
 +   "expect": "前のリンクは使えず、新しいメールのリンクへ案内",
 +   "levels": "単体・中間",
-+   "source": "Kaname 2026-11-04"
++   "source": "あるプロジェクト 2026-11-04"
 +  },
 +  {
 +   "id": "TP-REG-05",
@@ -4278,7 +4761,7 @@ diff -ruN orig/test-verification/references/test-patterns/patterns.json rel/test
 +   "branch": "確認のリンクを別の端末・別のブラウザで開く",
 +   "expect": "決めたとおり（確定できる／できない）に動く",
 +   "levels": "中間",
-+   "source": "Kaname 2026-11-04"
++   "source": "あるプロジェクト 2026-11-04"
 +  },
 +  {
 +   "id": "TP-REG-06",
@@ -4287,7 +4770,7 @@ diff -ruN orig/test-verification/references/test-patterns/patterns.json rel/test
 +   "branch": "ログイン中・別のアカウントでログイン中に、登録の画面や確認のリンクを開く",
 +   "expect": "勝手にアカウントを切り替えない。今のアカウントへの案内か、ログアウトの案内",
 +   "levels": "単体・中間",
-+   "source": "Kaname 2026-11-04"
++   "source": "あるプロジェクト 2026-11-04"
 +  },
 +  {
 +   "id": "TP-REG-07",
@@ -4305,7 +4788,7 @@ diff -ruN orig/test-verification/references/test-patterns/patterns.json rel/test
 +   "branch": "メールの大文字小文字・前後の空白・全角",
 +   "expect": "正規化して同じ人として扱う",
 +   "levels": "単体",
-+   "source": "Kaname 2026-11-04"
++   "source": "あるプロジェクト 2026-11-04"
 +  },
 +  {
 +   "id": "TP-REG-09",
@@ -4341,7 +4824,7 @@ diff -ruN orig/test-verification/references/test-patterns/patterns.json rel/test
 +   "branch": "同じメールで同時に 2 回・2 回押し",
 +   "expect": "申し込みは 1 つ・メールは 1 通",
 +   "levels": "単体",
-+   "source": "Kaname 2026-11-04"
++   "source": "あるプロジェクト 2026-11-04"
 +  },
 +  {
 +   "id": "TP-REG-13",
@@ -4350,7 +4833,7 @@ diff -ruN orig/test-verification/references/test-patterns/patterns.json rel/test
 +   "branch": "同意した規約の版と時刻",
 +   "expect": "残る。規約が変わったら次のログインで同意し直す",
 +   "levels": "単体",
-+   "source": "Kaname 2026-11-04"
++   "source": "あるプロジェクト 2026-11-04"
 +  },
 +  {
 +   "id": "TP-REG-14",
@@ -4395,7 +4878,7 @@ diff -ruN orig/test-verification/references/test-patterns/patterns.json rel/test
 +   "branch": "セッションが切れた・長く入っていない状態で操作する・戻ってくる",
 +   "expect": "ログインへ案内し、入り直したら元の画面へ。書きかけは失わない",
 +   "levels": "単体・中間",
-+   "source": "Kaname 2026-11-04"
++   "source": "あるプロジェクト 2026-11-04"
 +  },
 +  {
 +   "id": "TP-AUTH-05",
@@ -4440,7 +4923,7 @@ diff -ruN orig/test-verification/references/test-patterns/patterns.json rel/test
 +   "branch": "国・端末が変わった",
 +   "expect": "決めたとおりに切る／記録する",
 +   "levels": "単体",
-+   "source": "Kaname 2026-11-04"
++   "source": "あるプロジェクト 2026-11-04"
 +  },
 +  {
 +   "id": "TP-RESET-01",
@@ -4476,7 +4959,7 @@ diff -ruN orig/test-verification/references/test-patterns/patterns.json rel/test
 +   "branch": "招待の期限切れ・取り消し・使い終わった招待を開く",
 +   "expect": "参加できず、理由と次の一手",
 +   "levels": "単体・中間",
-+   "source": "Kaname 2026-11-04"
++   "source": "あるプロジェクト 2026-11-04"
 +  },
 +  {
 +   "id": "TP-INV-02",
@@ -4485,7 +4968,7 @@ diff -ruN orig/test-verification/references/test-patterns/patterns.json rel/test
 +   "branch": "招待されたメールと違うアカウントでログイン中に開く",
 +   "expect": "勝手に参加させない。どちらのアカウントで入るかの案内",
 +   "levels": "単体・中間",
-+   "source": "Kaname 2026-11-04"
++   "source": "あるプロジェクト 2026-11-04"
 +  },
 +  {
 +   "id": "TP-INV-03",
@@ -4494,7 +4977,7 @@ diff -ruN orig/test-verification/references/test-patterns/patterns.json rel/test
 +   "branch": "既にメンバーの人が開く",
 +   "expect": "二重に参加させず、その会社へ案内",
 +   "levels": "単体",
-+   "source": "Kaname 2026-11-04"
++   "source": "あるプロジェクト 2026-11-04"
 +  },
 +  {
 +   "id": "TP-INV-04",
@@ -4503,7 +4986,7 @@ diff -ruN orig/test-verification/references/test-patterns/patterns.json rel/test
 +   "branch": "招待した人が権限を失った・抜けた後に開く",
 +   "expect": "決めたとおり（使える／使えない）",
 +   "levels": "単体",
-+   "source": "Kaname 2026-11-04"
++   "source": "あるプロジェクト 2026-11-04"
 +  },
 +  {
 +   "id": "TP-INV-05",
@@ -4512,7 +4995,7 @@ diff -ruN orig/test-verification/references/test-patterns/patterns.json rel/test
 +   "branch": "同じ人を 2 回招待する",
 +   "expect": "招待は 1 つ（前のものの扱いを決めて書く）",
 +   "levels": "単体",
-+   "source": "Kaname 2026-11-04"
++   "source": "あるプロジェクト 2026-11-04"
 +  },
 +  {
 +   "id": "TP-PERM-01",
@@ -4530,7 +5013,7 @@ diff -ruN orig/test-verification/references/test-patterns/patterns.json rel/test
 +   "branch": "権限を外した直後に、開いていた画面で押す",
 +   "expect": "口で止まる（画面の表示に頼らない）",
 +   "levels": "単体・中間",
-+   "source": "Kaname 2026-11-04"
++   "source": "あるプロジェクト 2026-11-04"
 +  },
 +  {
 +   "id": "TP-PERM-03",
@@ -4557,7 +5040,7 @@ diff -ruN orig/test-verification/references/test-patterns/patterns.json rel/test
 +   "branch": "権限を付けた直後",
 +   "expect": "入り直さなくても効く（または効く時点を書く）",
 +   "levels": "単体・中間",
-+   "source": "Kaname 2026-11-04"
++   "source": "あるプロジェクト 2026-11-04"
 +  },
 +  {
 +   "id": "TP-CRUD-01",
@@ -4575,7 +5058,7 @@ diff -ruN orig/test-verification/references/test-patterns/patterns.json rel/test
 +   "branch": "消したものを古いリンクで開く・直す",
 +   "expect": "見つからない（消された・移された）の画面",
 +   "levels": "単体",
-+   "source": "Kaname 2026-11-04"
++   "source": "あるプロジェクト 2026-11-04"
 +  },
 +  {
 +   "id": "TP-CRUD-03",
@@ -4584,7 +5067,7 @@ diff -ruN orig/test-verification/references/test-patterns/patterns.json rel/test
 +   "branch": "消す → 戻す、子のあるものを消す",
 +   "expect": "子の扱いを決めて書き、そのとおり",
 +   "levels": "単体",
-+   "source": "Kaname 2026-11-04"
++   "source": "あるプロジェクト 2026-11-04"
 +  },
 +  {
 +   "id": "TP-CRUD-04",
@@ -4611,7 +5094,7 @@ diff -ruN orig/test-verification/references/test-patterns/patterns.json rel/test
 +   "branch": "書きかけで戻る・再読み込み・セッション切れ",
 +   "expect": "書きかけが失われない",
 +   "levels": "単体",
-+   "source": "Kaname 2026-11-04"
++   "source": "あるプロジェクト 2026-11-04"
 +  },
 +  {
 +   "id": "TP-LIST-01",
@@ -4638,7 +5121,7 @@ diff -ruN orig/test-verification/references/test-patterns/patterns.json rel/test
 +   "branch": "絞り込みの組み合わせを URL で開き直す・共有する",
 +   "expect": "同じ結果が出る",
 +   "levels": "単体",
-+   "source": "Kaname 2026-11-04"
++   "source": "あるプロジェクト 2026-11-04"
 +  },
 +  {
 +   "id": "TP-LIST-04",
@@ -4674,7 +5157,7 @@ diff -ruN orig/test-verification/references/test-patterns/patterns.json rel/test
 +   "branch": "名前（日本語・記号・とても長い・同じ名前）",
 +   "expect": "化けず、上書きの扱いを決めて書く",
 +   "levels": "単体",
-+   "source": "Kaname 2026-11-04"
++   "source": "あるプロジェクト 2026-11-04"
 +  },
 +  {
 +   "id": "TP-FILE-04",
@@ -4701,7 +5184,7 @@ diff -ruN orig/test-verification/references/test-patterns/patterns.json rel/test
 +   "branch": "送れなかった",
 +   "expect": "送れたと嘘をつかず、送り直せる",
 +   "levels": "単体",
-+   "source": "Kaname 2026-11-04"
++   "source": "あるプロジェクト 2026-11-04"
 +  },
 +  {
 +   "id": "TP-MAIL-02",
@@ -4710,7 +5193,7 @@ diff -ruN orig/test-verification/references/test-patterns/patterns.json rel/test
 +   "branch": "同じ知らせが二重に出る",
 +   "expect": "1 通だけ",
 +   "levels": "単体",
-+   "source": "Kaname 2026-11-04"
++   "source": "あるプロジェクト 2026-11-04"
 +  },
 +  {
 +   "id": "TP-MAIL-03",
@@ -4728,7 +5211,7 @@ diff -ruN orig/test-verification/references/test-patterns/patterns.json rel/test
 +   "branch": "金額の端数",
 +   "expect": "決めた丸め方（例：税は請求書ごと・税率ごとに 1 回）",
 +   "levels": "単体",
-+   "source": "Kaname 2026-11-04"
++   "source": "あるプロジェクト 2026-11-04"
 +  },
 +  {
 +   "id": "TP-PAY-02",
@@ -4746,7 +5229,7 @@ diff -ruN orig/test-verification/references/test-patterns/patterns.json rel/test
 +   "branch": "プランを月の途中で変える",
 +   "expect": "決めた計算どおり",
 +   "levels": "単体",
-+   "source": "Kaname 2026-11-04"
++   "source": "あるプロジェクト 2026-11-04"
 +  },
 +  {
 +   "id": "TP-PAY-04",
@@ -4764,7 +5247,7 @@ diff -ruN orig/test-verification/references/test-patterns/patterns.json rel/test
 +   "branch": "外のサービスが落ちた・遅い・時間切れ",
 +   "expect": "止めるか通すかを決めて書き、そのとおり。通すなら記録して知らせる",
 +   "levels": "単体",
-+   "source": "Kaname 2026-11-04"
++   "source": "あるプロジェクト 2026-11-04"
 +  },
 +  {
 +   "id": "TP-EXT-02",
@@ -4800,7 +5283,7 @@ diff -ruN orig/test-verification/references/test-patterns/patterns.json rel/test
 +   "branch": "日付の変わり目・月末・タイムゾーン",
 +   "expect": "決めた時刻の扱い（保存は世界標準時・表示は現地）どおり",
 +   "levels": "単体",
-+   "source": "Kaname 2026-11-04"
++   "source": "あるプロジェクト 2026-11-04"
 +  },
 +  {
 +   "id": "TP-JOB-03",
@@ -4818,7 +5301,7 @@ diff -ruN orig/test-verification/references/test-patterns/patterns.json rel/test
 +   "branch": "外に出す前",
 +   "expect": "人の承認が無ければ出さない",
 +   "levels": "単体・中間",
-+   "source": "Kaname 2026-11-04"
++   "source": "あるプロジェクト 2026-11-04"
 +  },
 +  {
 +   "id": "TP-AI-02",
@@ -4827,7 +5310,7 @@ diff -ruN orig/test-verification/references/test-patterns/patterns.json rel/test
 +   "branch": "止める・取り下げ・PC が閉じている",
 +   "expect": "止まった理由と次の一手を出す",
 +   "levels": "単体・中間",
-+   "source": "Kaname 2026-11-04"
++   "source": "あるプロジェクト 2026-11-04"
 +  },
 +  {
 +   "id": "TP-AI-03",
@@ -4836,7 +5319,7 @@ diff -ruN orig/test-verification/references/test-patterns/patterns.json rel/test
 +   "branch": "利用量の上限を越えた",
 +   "expect": "止めて、いつ戻るかを出す",
 +   "levels": "単体",
-+   "source": "Kaname 2026-11-04"
++   "source": "あるプロジェクト 2026-11-04"
 +  },
 +  {
 +   "id": "TP-AI-04",
@@ -4845,7 +5328,7 @@ diff -ruN orig/test-verification/references/test-patterns/patterns.json rel/test
 +   "branch": "予期しない出力（とても長い・空・形が違う）",
 +   "expect": "落ちずに失敗として扱う",
 +   "levels": "単体",
-+   "source": "Kaname 2026-11-04"
++   "source": "あるプロジェクト 2026-11-04"
 +  },
 +  {
 +   "id": "TP-TOOL-01",
@@ -4854,7 +5337,7 @@ diff -ruN orig/test-verification/references/test-patterns/patterns.json rel/test
 +   "branch": "日本語の名前のファイル",
 +   "expect": "検査の台本が読み落とさない（git ls-files は -z で読む）",
 +   "levels": "単体",
-+   "source": "Kaname 2026-11-04"
++   "source": "あるプロジェクト 2026-11-04"
 +  },
 +  {
 +   "id": "TP-TOOL-02",
@@ -4863,7 +5346,7 @@ diff -ruN orig/test-verification/references/test-patterns/patterns.json rel/test
 +   "branch": "検査が何も見ていないのに緑",
 +   "expect": "自己試験でわざと壊し、赤になるのを見る",
 +   "levels": "単体",
-+   "source": "Kaname 2026-11-04"
++   "source": "あるプロジェクト 2026-11-04"
 +  },
 +  {
 +   "id": "TP-TOOL-03",
@@ -4872,14 +5355,14 @@ diff -ruN orig/test-verification/references/test-patterns/patterns.json rel/test
 +   "branch": "容れ物の中と手元で設定・証明書・版が違う",
 +   "expect": "同じ結果になる（違いは設定で吸収して書く）",
 +   "levels": "単体",
-+   "source": "Kaname 2026-11-04"
++   "source": "あるプロジェクト 2026-11-04"
 +  }
 + ]
 +}
 \ No newline at end of file
-diff -ruN orig/test-verification/references/test-patterns/test-patterns.local.example.json rel/test-verification/references/test-patterns/test-patterns.local.example.json
+diff -ruN orig/test-verification/references/test-patterns/test-patterns.local.example.json new/test-verification/references/test-patterns/test-patterns.local.example.json
 --- orig/test-verification/references/test-patterns/test-patterns.local.example.json	1970-01-01 00:00:00.000000000 +0000
-+++ rel/test-verification/references/test-patterns/test-patterns.local.example.json	2026-11-05 00:51:34.089872842 +0000
++++ new/test-verification/references/test-patterns/test-patterns.local.example.json	2026-11-04 13:26:49.035692085 +0000
 @@ -0,0 +1,7 @@
 +{
 + "_doc": "プロジェクトの足し分の見本。プロジェクトの根（例 07_qa/test-patterns.local.json）に写して使う。他のプロジェクトでも効く型は、スキルの patterns.json に戻す",
@@ -4888,9 +5371,9 @@ diff -ruN orig/test-verification/references/test-patterns/test-patterns.local.ex
 +  {"id": "TP-REG-L01", "category": "REG", "axis": "入口", "branch": "（例）QR コードから登録の画面を開く", "expect": "（例）紹介元が残る", "levels": "単体", "source": "プロジェクト名 日付・どんな抜けから"}
 + ]
 +}
-diff -ruN orig/test-verification/references/ticket-example.md rel/test-verification/references/ticket-example.md
+diff -ruN orig/test-verification/references/ticket-example.md new/test-verification/references/ticket-example.md
 --- orig/test-verification/references/ticket-example.md	1970-01-01 00:00:00.000000000 +0000
-+++ rel/test-verification/references/ticket-example.md	2026-11-05 00:51:34.090317030 +0000
++++ new/test-verification/references/ticket-example.md	2026-11-04 13:28:24.476652984 +0000
 @@ -0,0 +1,121 @@
 +# チケットの見本：登録する（汎用・ai-driven-process.md §3 の形）
 +
@@ -5013,9 +5496,9 @@ diff -ruN orig/test-verification/references/ticket-example.md rel/test-verificat
 +- 上の 2 つの表の「このチケット」のマスと、全部の分岐のテストが緑
 +- 前の道すじと前の画面が消えている（あれば）
 +- 契約の口 `createSignup` が契約だけ（501）でない
-diff -ruN orig/test-verification/scripts/build_test_patterns.py rel/test-verification/scripts/build_test_patterns.py
+diff -ruN orig/test-verification/scripts/build_test_patterns.py new/test-verification/scripts/build_test_patterns.py
 --- orig/test-verification/scripts/build_test_patterns.py	1970-01-01 00:00:00.000000000 +0000
-+++ rel/test-verification/scripts/build_test_patterns.py	2026-11-05 00:51:34.090380125 +0000
++++ new/test-verification/scripts/build_test_patterns.py	2026-11-04 13:26:49.035892930 +0000
 @@ -0,0 +1,48 @@
 +#!/usr/bin/env python3
 +"""テストの型のナレッジ（references/test-patterns/patterns.json）から、分類ごとの表（人が読む版）を作る。手で表を直さない。
@@ -5065,9 +5548,73 @@ diff -ruN orig/test-verification/scripts/build_test_patterns.py rel/test-verific
 +
 +if __name__ == "__main__":
 +    sys.exit(main())
-diff -ruN orig/test-verification/scripts/pattern_gate.py rel/test-verification/scripts/pattern_gate.py
+diff -ruN orig/test-verification/scripts/build_testplan.example.py new/test-verification/scripts/build_testplan.example.py
+--- orig/test-verification/scripts/build_testplan.example.py	2026-11-04 13:26:40.973551220 +0000
++++ new/test-verification/scripts/build_testplan.example.py	2026-11-05 01:00:29.695005859 +0000
+@@ -84,10 +84,10 @@
+     {"id": 36, "name": "契約 fuzz（Schemathesis・openapi.yaml）", "script": "pnpm ci:schemathesis -- 08_api/openapi.yaml", "job": "database", "blocking": True},
+ ]
+ ALL_GATES = [{**g, "job": "database" if g["id"] in (3, 4, 6, 12) else ("e2e" if g["id"] == 15 else "static")} for g in FG["merge_gates"]] + SPEC_GATES
+-def step(g): return f'      - name: "G{g["id"]} {g["name"]}{" [CRITICAL]" if g["id"] in FG.get("kaname_critical_gates", []) else ""}"\n        run: {g["script"]}\n'
++def step(g): return f'      - name: "G{g["id"]} {g["name"]}{" [CRITICAL]" if g["id"] in FG.get("critical_gates", []) else ""}"\n        run: {g["script"]}\n'
+ NODE = "      - uses: actions/checkout@v4\n      - uses: pnpm/action-setup@v4\n        with: { version: '${{ env.PNPM_VERSION }}' }\n      - uses: actions/setup-node@v4\n        with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }\n      - run: pnpm install --frozen-lockfile\n"
+ PYS = "      - uses: actions/checkout@v4\n      - uses: actions/setup-python@v5\n        with: { python-version: '3.12' }\n      - run: pip install pyyaml\n"
+-yml = f"""# .github/workflows/v3-gate.yml — Kaname CI ゲート {len(ALL_GATES)} 本（05_flow/build_testplan.py が生成。手で直さない）
++yml = f"""# .github/workflows/v3-gate.yml — CI ゲート {len(ALL_GATES)} 本（05_flow/build_testplan.py が生成。手で直さない）
+ # 方針: {FG['policy']}
+ # 段: static（静的・関門）→ database（実 Postgres・RLS・契約）／ spec（仕様の層・Python）／ task-gate（そのタスクの L1 行）→ e2e（has-ui）→ auto-merge
+ name: v3-gate
+@@ -113,12 +113,12 @@
+     services:
+       postgres:
+         image: pgvector/pgvector:pg16
+-        env: {{ POSTGRES_PASSWORD: postgres, POSTGRES_DB: kaname_test }}
++        env: {{ POSTGRES_PASSWORD: postgres, POSTGRES_DB: app_test }}
+         ports: ['5432:5432']
+         options: >-
+           --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+     env:
+-      DATABASE_URL: postgres://postgres:postgres@localhost:5432/kaname_test
++      DATABASE_URL: postgres://postgres:postgres@localhost:5432/app_test
+     steps:
+ {NODE}{''.join(step(g) for g in ALL_GATES if g['job'] == 'database')}
+   spec:
+@@ -176,18 +176,18 @@
+           {"stage": "L3", "what": "Wave の L1＋L2 全部 ＋ 前 Wave の回帰（差分）", "where": "staging", "when": "Wave 締め", "gate": "completion_gate.sh"},
+           {"stage": "L4", "what": "正本 full ＋ 本番スモーク（prod-smoke.md）＋ 負荷実測", "where": "staging ＋ 本番（スモークのみ）", "when": "リリース前", "gate": "qa-coverage.py STATUS 完了"},
+           {"stage": "L5", "what": "full ＋ 正本の鮮度監査", "where": "staging", "when": "年次・大改修", "gate": "同上"}]
+-plan = {"version": "v3", "project": "Kaname", "created_at": TODAY, "skill": "test-verification", "_doc": "05_flow/build_testplan.py が上流（tickets・EARS・entities・foundation_gates・choke-points・stack）から機械生成。手で直さない", "source": SRC,
++plan = {"version": "v3", "project": "<プロジェクト名>", "created_at": TODAY, "skill": "test-verification", "_doc": "05_flow/build_testplan.py が上流（tickets・EARS・entities・foundation_gates・choke-points・stack）から機械生成。手で直さない", "source": SRC,
+         "inputs": {"tickets": len(TASKS), "l1_rows": sum(len(t["qa_rows"]["l1"]) for t in TASKS), "ears_endpoints": len(EARS), "ears_tests": len(mappings), "entities": len(EN), "policies": sum(len(e["access_control_policies"]) for e in EN), "access_cases": len(am), "errors": len(ERR), "journey_rows": len(JR), "critical_tasks": len(crit_tasks)},
+         "framework": FRAMEWORK, "tier_mapping": TIER_MAP, "risk": RISK, "not_tested": NOT_TESTED, "mock_strategy": MOCK, "ladder": LADDER,
+         "coverage": {"lines": FG["merge_gates"][2]["threshold"]["lines"], "branches": FG["merge_gates"][2]["threshold"]["branches"], "business_logic": 80, "utilities": 60, "note": "閾値は foundation_gates.json G3 から"},
+         "gates": ALL_GATES, "stages": {"static": "静的・関門（DB 不要）", "database": "実 Postgres（RLS・契約・coverage・access-matrix・EARS 対応）", "spec": "仕様の層（Python・G21/qa-ladder/エラー一覧/スキル/テスト計画）", "task-gate": "PR のブランチ task/<ID> の L1 行", "e2e": "has-ui ラベルの PR だけ・staging", "auto-merge": "static＋database＋spec＋task-gate が全部緑"},
+         "merge_criteria": ["G1〜G36 が全部緑（e2e は has-ui のときだけ）", "ears-test-mapping.json の test が全部存在（G34）", "access-matrix.json の全行 PASS（G33）", "そのタスクの qa_rows.l1 が全行 PASS か理由つき BLOCKED（G32）", "連続 3 回失敗で高本さんへ（foundation_gates.retry_protocol）"],
+         "change_follow_up": "仕様・チケットが途中で変わったら qa_delta.py --changed … --gate。EARS の差分は ears-test-mapping.json の差分として出す（全部作り直さない）",
+-        "critical_gates": FG.get("kaname_critical_gates", []), "retry_protocol": FG.get("retry_protocol", {}), "next_skill": "sprint-planning（S13）"}
++        "critical_gates": FG.get("critical_gates", []), "retry_protocol": FG.get("retry_protocol", {}), "next_skill": "sprint-planning（S13）"}
+ json.dump(plan, open(f"{OUT}/test-plan.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+ # ---------------------------------------------------------------- MD / HTML（JSON からの写し）
+ def tbl(h, rows): return "| " + " | ".join(h) + " |\n|" + "---|" * len(h) + "\n" + "".join("| " + " | ".join(str(c).replace("|", "／") for c in r) + " |\n" for r in rows)
+-md = [f"# Kaname テスト計画（v3・{TODAY}・機械生成）", "", f"> 05_flow/build_testplan.py が生成。信頼源は test-plan.json。根拠の決定：{' '.join(SRC)}", "",
++md = [f"# あるプロジェクト テスト計画（v3・{TODAY}・機械生成）", "", f"> 05_flow/build_testplan.py が生成。信頼源は test-plan.json。根拠の決定：{' '.join(SRC)}", "",
+       "## 入力", "", tbl(["項目", "数"], list(plan["inputs"].items())), "## 3-tier AC ↔ テストの段", "", tbl(["3-tier", "段", "道具", "ゲート", "梯子"], [[x["tier"], x["level"], x["tool"], x["gate"], x["ladder"]] for x in TIER_MAP]),
+       "## リスク", "", tbl(["領域", "リスク", "理由", "テスト", "優先"], [[x["area"], x["risk"], x["why"], x["tests"], x["priority"]] for x in RISK]), "## テストしないもの（理由つき）", ""] + [f"- {x}" for x in NOT_TESTED] + ["",
+       "## 枠組み", "", tbl(["用途", "道具"], list(FRAMEWORK.items())), "## モックの方針", "", tbl(["対象", "方針"], list(MOCK.items())), "## テスト・ラダー", "", tbl(["段", "何を", "どこで", "いつ", "ゲート"], [[x["stage"], x["what"], x["where"], x["when"], x["gate"]] for x in LADDER]),
+@@ -197,8 +197,8 @@
+       "## 途中変更", "", plan["change_follow_up"], "", "## 次", "", plan["next_skill"], ""]
+ open(f"{OUT}/test-plan.md", "w", encoding="utf-8").write("\n".join(md))
+ def hrows(h, rows): return "<table><thead><tr>" + "".join(f"<th>{html.escape(str(x))}</th>" for x in h) + "</tr></thead><tbody>" + "".join("<tr>" + "".join(f"<td>{html.escape(str(c))}</td>" for c in r) + "</tr>" for r in rows) + "</tbody></table>"
+-page = f"""<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>Kaname テスト計画</title><style>body{{font:14px/1.6 -apple-system,'Hiragino Sans',sans-serif;margin:32px;color:#1f2328;background:#fafaf8}}table{{border-collapse:collapse;margin:8px 0 20px;width:100%}}th,td{{border:1px solid #d9d6cf;padding:6px 10px;text-align:left;vertical-align:top;font-size:13px}}th{{background:#f0ede6}}h1{{font-size:22px}}h2{{font-size:17px;margin-top:28px;border-bottom:1px solid #d9d6cf;padding-bottom:4px}}code{{background:#eeece6;padding:1px 4px;border-radius:3px}}</style></head><body>
+-<h1>Kaname テスト計画（v3・{TODAY}）</h1><p>信頼源 test-plan.json（05_flow/build_testplan.py が生成）。tickets {len(TASKS)}／L1 行 {plan['inputs']['l1_rows']}／EARS test {len(mappings)}／RLS の場合 {len(am)}／CI ゲート {len(ALL_GATES)}</p>
++page = f"""<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>あるプロジェクト テスト計画</title><style>body{{font:14px/1.6 -apple-system,'Hiragino Sans',sans-serif;margin:32px;color:#1f2328;background:#fafaf8}}table{{border-collapse:collapse;margin:8px 0 20px;width:100%}}th,td{{border:1px solid #d9d6cf;padding:6px 10px;text-align:left;vertical-align:top;font-size:13px}}th{{background:#f0ede6}}h1{{font-size:22px}}h2{{font-size:17px;margin-top:28px;border-bottom:1px solid #d9d6cf;padding-bottom:4px}}code{{background:#eeece6;padding:1px 4px;border-radius:3px}}</style></head><body>
++<h1>あるプロジェクト テスト計画（v3・{TODAY}）</h1><p>信頼源 test-plan.json（05_flow/build_testplan.py が生成）。tickets {len(TASKS)}／L1 行 {plan['inputs']['l1_rows']}／EARS test {len(mappings)}／RLS の場合 {len(am)}／CI ゲート {len(ALL_GATES)}</p>
+ <h2>3-tier AC ↔ テストの段</h2>{hrows(["3-tier","段","道具","ゲート","梯子"], [[x["tier"],x["level"],x["tool"],x["gate"],x["ladder"]] for x in TIER_MAP])}
+ <h2>リスク</h2>{hrows(["領域","リスク","理由","テスト","優先"], [[x["area"],x["risk"],x["why"],x["tests"],x["priority"]] for x in RISK])}
+ <h2>テストしないもの</h2><ul>{''.join(f'<li>{html.escape(x)}</li>' for x in NOT_TESTED)}</ul>
+diff -ruN orig/test-verification/scripts/pattern_gate.py new/test-verification/scripts/pattern_gate.py
 --- orig/test-verification/scripts/pattern_gate.py	1970-01-01 00:00:00.000000000 +0000
-+++ rel/test-verification/scripts/pattern_gate.py	2026-11-05 00:51:34.091017314 +0000
++++ new/test-verification/scripts/pattern_gate.py	2026-11-04 13:26:49.036127380 +0000
 @@ -0,0 +1,67 @@
 +#!/usr/bin/env python3
 +"""チケットが、自分の分類のテストの型を全部受けているか（書いていない＝漏れ）。
@@ -5136,9 +5683,9 @@ diff -ruN orig/test-verification/scripts/pattern_gate.py rel/test-verification/s
 +
 +if __name__ == "__main__":
 +    sys.exit(main())
-diff -ruN orig/ticket-planning/SKILL.md rel/ticket-planning/SKILL.md
+diff -ruN orig/ticket-planning/SKILL.md new/ticket-planning/SKILL.md
 --- orig/ticket-planning/SKILL.md	2026-11-04 13:26:40.906282207 +0000
-+++ rel/ticket-planning/SKILL.md	2026-11-05 00:51:34.064246500 +0000
++++ new/ticket-planning/SKILL.md	2026-11-05 01:00:16.538564244 +0000
 @@ -11,6 +11,20 @@
  
  # ticket-planning ── タスクを、人と AI が拾えるチケットにする
@@ -5160,9 +5707,36 @@ diff -ruN orig/ticket-planning/SKILL.md rel/ticket-planning/SKILL.md
  ## このスキルの役割
  
  task-decomposition は「何を作るか」を T-xx に割る。ここは、それを **拾える形**にする。
-diff -ruN orig/ux-flow-design/SKILL.md rel/ux-flow-design/SKILL.md
+@@ -120,4 +134,4 @@
+ 
+ ## 可視化と後回し（2026-09-15 追加・必須）
+ - `build_tickets.py` は board.md／schedule.md／assign.md に加えて **`schedule.html`（ガント。行か棒を押すと右に詳細：根拠の決定の逐語・依存・行為と画面・モックへのリンク・Tier 2 の AC・L1 行・エラー・子チケット・Human／AI の二軸）** を出す。`ticket_gate.py` K9 が存在・鮮度・全 story の掲載を検査する。表だけの一覧は「可視化した」と言わない。
+-- 後回し（段階 2 以降）は日程から消えない。task-decomposition が決定ログの「段階 2：」の文と flow の deferred から「仕様づくり」のタスク（Group V2・層 spec）を作り、ここで他の story と同じに日程・担当が付く（td_gate TD11）。由来：Kaname で v2 の仕様づくりが日程に無かった（user「v2 のモックとか仕様書とかいつ作るの？」）。
++- 後回し（段階 2 以降）は日程から消えない。task-decomposition が決定ログの「段階 2：」の文と flow の deferred から「仕様づくり」のタスク（Group V2・層 spec）を作り、ここで他の story と同じに日程・担当が付く（td_gate TD11）。由来：あるプロジェクトで v2 の仕様づくりが日程に無かった（user「v2 のモックとか仕様書とかいつ作るの？」）。
+diff -ruN orig/ticket-planning/scripts/build_tickets.py new/ticket-planning/scripts/build_tickets.py
+--- orig/ticket-planning/scripts/build_tickets.py	2026-11-04 13:26:40.908262676 +0000
++++ new/ticket-planning/scripts/build_tickets.py	2026-11-05 01:00:16.539565102 +0000
+@@ -211,7 +211,7 @@
+                           "ac": (tasks_by_id.get(k) or {}).get("acceptance_criteria_inline", {}), "why": (tasks_by_id.get(k) or {}).get("why", ""), "summaries": (tasks_by_id.get(k) or {}).get("decision_summaries", []),
+                           "subs": [{"id": x["id"], "sub": x["sub"], "title": x["title"], "status": x["status"]} for x in subs if x["parent"] == k]} for k, s in stories.items()}}
+     js = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
+-    page = """<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>Kaname スケジュール（ガント）</title>
++    page = """<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>あるプロジェクト スケジュール（ガント）</title>
+ <style>
+ :root{--line:#d9d6cf;--ink:#1f2328;--sub:#6b6860;--bg:#fafaf8;--sur:#fff;--acc:#2f6f8f;--warn:#b7791f;--crit:#a23b3b}
+ *{box-sizing:border-box}body{margin:0;font:13px/1.5 -apple-system,'Hiragino Sans',sans-serif;color:var(--ink);background:var(--bg)}
+@@ -236,7 +236,7 @@
+ .num{font-variant-numeric:tabular-nums}.hint{color:var(--sub);font-size:12px}
+ @media (max-width:900px){.wrap{grid-template-columns:1fr}.pane{border-left:0;border-top:1px solid var(--line)}}
+ </style></head><body>
+-<header><h1>Kaname スケジュール</h1>
++<header><h1>あるプロジェクト スケジュール</h1>
+ <label>担当<select id="fA"><option value="">全部</option></select></label>
+ <label>層<select id="fL"><option value="">全部</option></select></label>
+ <label>epic<select id="fE"><option value="">全部</option></select></label>
+diff -ruN orig/ux-flow-design/SKILL.md new/ux-flow-design/SKILL.md
 --- orig/ux-flow-design/SKILL.md	2026-11-04 13:26:40.953204352 +0000
-+++ rel/ux-flow-design/SKILL.md	2026-11-05 00:51:34.083579301 +0000
++++ new/ux-flow-design/SKILL.md	2026-11-05 01:00:16.533525970 +0000
 @@ -9,6 +9,19 @@
  handoff_flow: "requirements-definition → architecture-design → design-md → **ux-flow-design** → ui-mockup → functional-breakdown → feature-decomposition → task-decomposition → human-grade-qa(test-plan) → 実装 → human-grade-qa(実走)"
  ---
@@ -5183,3 +5757,37 @@ diff -ruN orig/ux-flow-design/SKILL.md rel/ux-flow-design/SKILL.md
  ## 🎨 デザインシステム（design-system）— このスキルの責務（2026-09-16 追加）
  
  > 規約の正本: `~/.claude/rules/common/design-system.md` ／ 由来: lessons-learned **L-017**
+@@ -65,13 +78,13 @@
+ 
+ ### 完了の証拠は 1 本（G21・2026-09-15・絶対）
+ 個別のゲートを手で選んで回した緑は、完了の証拠にしない。完了の報告は **`python3 scripts/ci/layer_audit.py --run` の出力を丸ごと貼る**（全成果物 × 機械の検査 or 手で見る理由。無い層は赤、手で見る層で参照が古いものは warn として一覧に残る）。
+-由来：Kaname で ゲートを全部緑にして「できた」と 3 回書き、そのたびに検査していない層（ER 図・設計書・エラー一覧）が決定 9 節ぶん古かった。ゲートは「検査した層が壊れていない」しか言わない。
++由来：あるプロジェクトで ゲートを全部緑にして「できた」と 3 回書き、そのたびに検査していない層（ER 図・設計書・エラー一覧）が決定 9 節ぶん古かった。ゲートは「検査した層が壊れていない」しか言わない。
+ このスキルで成果物を足したら、その回で `spec-dependencies.yaml` の `layer_checks` に行（`check` か `manual: 理由`）を足す。足していない成果物は `decision_traceability.products` から検出され赤になる。
+ gate に省略できる引数（`--mocks` `--spec` `--choke` `--er`）があるものは **全部渡す**。省いた検査は「飛ばした」であって「緑」ではない（error_catalog.py は既定で FAIL にした）。
+ 
+ ### 決定の文ごとにオブジェクトを出す（T9・T10・2026-09-15 追加・必須）
+ 古い決定に表を後付けするときは `scripts/apply_clauses.py`：節ごとの提案 JSON（行・sources・out・new_objects）を並列の下書きで作り、機械で正本と導出物に適用する（59 節・373 文を 1 回で当てた実績）。提案の `doc` は .md と errors.json / selected-stack.json だけ。コードや治具は反映先にできない（`clauses_out` に理由）。
+-STEP 0 で `trace_gate.py` を回し、**T9（決めたことの表が無い決定）と T10（作る・配る・版・台帳・マスタ の文にオブジェクトが無い）を 0 にしてから** STEP 3（オブジェクト）に入る。決定を「行為の裏側（blueprint）」に書いただけで反映済みにしない。運営がアップロードする・配る・版を上げるものは必ず `objects[]` に載せ、画面と ER に出す。由来：Kaname §30 構築メタスキル群（運営の資産）が裏側の記述だけで緑になり、画面も DB も無かった。
++STEP 0 で `trace_gate.py` を回し、**T9（決めたことの表が無い決定）と T10（作る・配る・版・台帳・マスタ の文にオブジェクトが無い）を 0 にしてから** STEP 3（オブジェクト）に入る。決定を「行為の裏側（blueprint）」に書いただけで反映済みにしない。運営がアップロードする・配る・版を上げるものは必ず `objects[]` に載せ、画面と ER に出す。由来：あるプロジェクト §30 構築メタスキル群（運営の資産）が裏側の記述だけで緑になり、画面も DB も無かった。
+ 
+ ### 指摘から画面を足すな。先に全体照合（5 方向）を回す（2026-09-15 追加・必須・L-011）
+ 指摘が来たら、その画面を直す前に `scripts/coverage_review.py --flow flow.json --mocks <モック>` を回し、欠けを全部出してから直す。
+diff -ruN orig/ux-flow-design/scripts/layer_audit.py new/ux-flow-design/scripts/layer_audit.py
+--- orig/ux-flow-design/scripts/layer_audit.py	2026-11-04 13:26:40.954955824 +0000
++++ new/ux-flow-design/scripts/layer_audit.py	2026-11-05 01:00:16.534326945 +0000
+@@ -1,12 +1,12 @@
+ #!/usr/bin/env python3
+ """layer_audit.py — 「検査していない層」を機械で出す（G21）。
+-   由来（2026-09-15・Kaname）：ゲートが全部緑でも、ER 図・設計書・エラー一覧は決定 9 節ぶん古かった。理由は、完了の定義が
++   由来（2026-09-15・あるプロジェクト）：ゲートが全部緑でも、ER 図・設計書・エラー一覧は決定 9 節ぶん古かった。理由は、完了の定義が
+    「手元にあるゲートの一覧」で、ゲートの無い層は誰も見ていなかったこと。人が層を覚えるのをやめ、
+    spec-dependencies.yaml の layer_checks に 全成果物 × 検査 を持ち、無い層を赤で出す。
+    layer_checks:
+      - file: 03_architecture/ER図.md
+        check: python3 scripts/ci/er_gate.py --flow 05_flow/flow.json --er 03_architecture/ER図.md   # 機械検査（exit 0 で緑）
+-     - file: 04_design/DESIGN-kaname.md
++     - file: 04_design/DESIGN-<プロジェクト>.md
+        manual: 色・書体のトークンは D-072 が最新。決定でトークンが増えたら手で更新（理由を書く）
+    検査：decision_traceability.products の全ファイルが layer_checks にある／check は実行して exit 0／manual は理由あり。
+    鮮度：ファイルが参照する最大の決定 ID が正本の最新 confirmed より小さいとき warn（manual の層は「古いかもしれない」と出す）。
