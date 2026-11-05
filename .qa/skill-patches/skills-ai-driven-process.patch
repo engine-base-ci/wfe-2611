@@ -624,6 +624,35 @@ diff -ruN orig/ai-team-delivery/references/ci.md new/ai-team-delivery/references
 +- 入れるときは、わざと壊した形で 1 回赤を見る（生成物の正本だけを変える・CI に無い台本を 1 つ置く）。自己試験だけで済ませない
 +- 中身の検査（関門・行の守り・契約など）はプロジェクトの検査。標準の検査は、それらが**回っているか・最新か**を見る側
 +
+diff -ruN orig/ai-team-delivery/references/roles/t1-test-author.md new/ai-team-delivery/references/roles/t1-test-author.md
+--- orig/ai-team-delivery/references/roles/t1-test-author.md	2026-11-04 13:26:40.982515853 +0000
++++ new/ai-team-delivery/references/roles/t1-test-author.md	2026-11-05 03:01:07.132798779 +0000
+@@ -1,7 +1,7 @@
+ # 役割カード：T1 テスト作成（テスト先行）
+ 
+ あなたは、実装が始まる**前に**、そのチケットの L1 の行 1 つずつに対応するテストを書く。
+-この時点ではテストは**全部赤**でよい（赤であることが正しい）。実装（D）はあなたのテストを読むだけで、直せない。
++実装（D）はあなたのテストを読むだけで、直せない。テストは流さない（実装が無ければ落ちるのは当たり前で、流しても何も分からない）。
+ テストを後から実装に合わせて書くと、実装の誤りを正しいと追認するテストになる。それを構造で防ぐのがあなたの役目。
+ 
+ ## 着手のとき読むもの
+@@ -14,14 +14,14 @@
+ 2. 行ごとに 1 つのテストを書き、**テストの名前に行 ID を入れる**（報告 JSON から行 ID で引けるように）
+ 3. 「壊して確かめる」の行は、**壊した状態で赤になる**ことまでテストにする（正常系だけ書かない）
+ 4. 層を間違えない：DB・API は単体・契約・結合テスト、画面は実ブラウザのテスト、通しは流れのテスト
+-5. 実装が無いので落ちることを確かめ（落ち方が「実装が無い」であって、テストの書き間違いでないこと）、コミットする
++5. テストが**漏れなく**できているかを確かめる（チケットの表のどのマス・分類のどの型も、どれかのテストが受けている。型の受けは test-verification の pattern_gate）。型の検査（type-check）と書式だけ通して、コミットする
+ 6. **テストのファイルの一覧**を報告に書く（D がこれを変えていないかを PM と Q が見る）
+ 
+ ## 先読み（書く工程に入る前）
+ R1 が精査しているチケットを、テストのファイルは書かずに読む。行 ID ごとに「どのテストのファイルの、どのテストで確かめるか」「PASS の根拠（command-log か報告 JSON）」「BLOCKED の半分と理由」を表にし、**この文のままでは期待結果を書けない所**（置き場が作業境界に無い・名前が未定・関数の形が未定・流し方が未定）を type: ticket／test で書く。出すのは `.ai-team-out/<チケット>/r<n>/T1-plan.md`
+ 
+ ## 出すもの
+-`.ai-team-out/<チケット>/r<回>/T1.md`：行 ID → テストのファイル:名前 の対応表（全行）、いまの結果（赤であること）、書けなかった行と理由。
++`.ai-team-out/<チケット>/r<回>/T1.md`：行 ID → テストのファイル:名前 の対応表（全行）、書けなかった行と理由。
+ 
+ ## やってはいけないこと
+ - テストの文（describe / it の名前・コメント）に廃止語を書く。テストのファイルも廃止語の検査（Tier C）の対象。コミットの前に `spec-validator.py --tier c` を流す（2026-10-22・T-A-C2 回 13 で「テンプレ」が verify_all を赤にした）
 diff -ruN orig/ai-team-delivery/scripts/ci/dagci/ci_cmds.py new/ai-team-delivery/scripts/ci/dagci/ci_cmds.py
 --- orig/ai-team-delivery/scripts/ci/dagci/ci_cmds.py	2026-11-04 13:26:40.984021122 +0000
 +++ new/ai-team-delivery/scripts/ci/dagci/ci_cmds.py	2026-11-05 00:08:27.141926802 +0000
@@ -1395,7 +1424,7 @@ diff -ruN orig/ai-team-delivery/scripts/ci/dagci/init_ci.py new/ai-team-delivery
 +    return 1 if d.fails else 0
 diff -ruN orig/ai-team-delivery/scripts/ci/dagci/main.py new/ai-team-delivery/scripts/ci/dagci/main.py
 --- orig/ai-team-delivery/scripts/ci/dagci/main.py	2026-11-04 13:26:40.985795860 +0000
-+++ new/ai-team-delivery/scripts/ci/dagci/main.py	2026-11-05 01:00:16.548138433 +0000
++++ new/ai-team-delivery/scripts/ci/dagci/main.py	2026-11-05 01:10:55.914158386 +0000
 @@ -2,9 +2,13 @@
  """dagci — どのプロジェクトでも ci.yaml を書くだけで使える、自前の CI の実行器（Dagger の上で動く）。
  
@@ -1435,7 +1464,43 @@ diff -ruN orig/ai-team-delivery/scripts/ci/dagci/main.py new/ai-team-delivery/sc
  def workspace_tree(root: str) -> str:
      """送る作業場（git が数えるファイルの今の中身）の木のハッシュ。未コミットの変更も入る"""
      import tempfile
-@@ -78,6 +93,8 @@
+@@ -67,8 +82,34 @@
+     return b or "HEAD"
+ 
+ 
++def last_green(cfg) -> str | None:
++    """この台で全部の段が緑で通った記録のうち、今の HEAD の祖先で一番新しいコミット（チケットの回の比べる先）"""
++    vd = os.path.join(memo.home(), "verdicts", cfg.project)
++    best = None
++    for f in (os.listdir(vd) if os.path.isdir(vd) else []):
++        try:
++            v = json.load(open(os.path.join(vd, f)))
++        except (OSError, ValueError):
++            continue
++        h = v.get("head")
++        if v.get("mode") != "all" or not h:
++            continue
++        ok = subprocess.run(["git", "merge-base", "--is-ancestor", h, "HEAD"], cwd=cfg.root, capture_output=True).returncode == 0
++        if ok and (best is None or v["at"] > best[0]):
++            best = (v["at"], h)
++    return best[1] if best else None
++
++
+ def select(cfg, a):
+-    base_sha = planmod.resolve_base(cfg.root, a.base or cfg.base_ref)
++    # 比べる先：--base が無いとき、チケットの回は「この台で最後に全部緑だったコミット」（枝が取り込み先から大きく離れていても、
++    #   チケットで変えた所だけが選ばれる）。記録が無ければ ci.yaml の git.base。--base last-green でも同じ
++    want = a.base or ("last-green" if getattr(a, "ticket", None) else cfg.base_ref)
++    if want == "last-green":
++        lg = last_green(cfg)
++        if lg:
++            print(f"dagci：比べる先はこの台で最後に全部緑だったコミット {lg[:10]}", flush=True)
++        want = lg or cfg.base_ref
++    base_sha = planmod.resolve_base(cfg.root, want)
+     mb = planmod.merge_base(cfg.root, base_sha) if base_sha else None
+     changed = planmod.changed_files(cfg.root, base_sha) if base_sha else None
+     only = [x for x in (a.only or "").split(",") if x] or None
+@@ -78,6 +119,8 @@
              raise cfgmod.ConfigError(f"--only に存在しない段: {sorted(unknown)}")
      # 既定は全部の段（user の決定 2026-10-28：検査はトークンを使わないので、毎回全部を流す）。
      # 変わった所だけは --affected で選べる（runner の順番待ちが長いときなど）
@@ -1444,7 +1509,7 @@ diff -ruN orig/ai-team-delivery/scripts/ci/dagci/main.py new/ai-team-delivery/sc
      sel = planmod.select(cfg, changed, not a.affected, only)
      if a.stages:   # 台を分けたとき：この台が受け持つ段（と、作業場を書き換える上流）だけ
          keep = set(a.stages.split(","))
-@@ -97,6 +114,55 @@
+@@ -97,6 +140,55 @@
      return sel, mb
  
  
@@ -1500,7 +1565,7 @@ diff -ruN orig/ai-team-delivery/scripts/ci/dagci/main.py new/ai-team-delivery/sc
  def history_path(project: str) -> str:
      return os.path.join(memo.home(), "timings", f"{project}.jsonl")
  
-@@ -171,8 +237,8 @@
+@@ -171,8 +263,8 @@
      ticket = lock = None
      if not a.no_queue:
          slots = int((cfg.raw.get("ci") or {}).get("slots", 1))
@@ -1511,7 +1576,7 @@ diff -ruN orig/ai-team-delivery/scripts/ci/dagci/main.py new/ai-team-delivery/sc
              localq.adopt(ticket)
          else:
              ticket = localq.enqueue({"project": cfg.project, "branch": branch_name(cfg.root), "tree": tree,
-@@ -189,6 +255,8 @@
+@@ -189,6 +281,8 @@
                        no_cache=a.no_cache, memo=not (a.no_memo or sel.mode.startswith("all")), branch=branch_name(cfg.root), base_sha=mb,
                        run_dir=run_dir, files=files)
      opts.quiet = a.summary_only
@@ -1520,7 +1585,20 @@ diff -ruN orig/ai-team-delivery/scripts/ci/dagci/main.py new/ai-team-delivery/sc
      # 同じ木の前の回で赤だった段は、本当に流し直す（赤を使い回さない）
      prev = localq.load_result(cfg.project, tree)
      if prev and not prev.get("green") and prev.get("run"):
-@@ -366,7 +434,7 @@
+@@ -320,8 +414,11 @@
+     if not reds and not infra and sel.mode == "all":
+         vd = os.path.join(memo.home(), "verdicts", cfg.project)
+         os.makedirs(vd, exist_ok=True)
++        head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=cfg.root, capture_output=True, text=True).stdout.strip()
++        dirty = subprocess.run(["git", "status", "--porcelain"], cwd=cfg.root, capture_output=True, text=True).stdout.strip()
+         json.dump({"tree": tree, "mode": "all" if sel.mode.startswith("all") else sel.mode, "at": time.time(),
+-                   "run": run_dir, "stages": len(res)}, open(os.path.join(vd, f"{tree}.json"), "w"))
++                   "run": run_dir, "stages": len(res), "head": None if dirty else head},
++                  open(os.path.join(vd, f"{tree}.json"), "w"))
+     if a.summary and os.environ.get("GITHUB_STEP_SUMMARY"):
+         with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as f:
+             f.write(f"### dagci {cfg.project}（{sel.mode}）\n\n| 段 | 結果 | 秒 |\n|---|---|---|\n")
+@@ -366,7 +463,7 @@
  def main(argv=None) -> int:
      ap = argparse.ArgumentParser(prog="dagci", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
      ap.add_argument("command", choices=["run", "plan", "verdict", "timings", "queue", "await", "deploy", "shards",
@@ -1529,7 +1607,7 @@ diff -ruN orig/ai-team-delivery/scripts/ci/dagci/main.py new/ai-team-delivery/sc
      ap.add_argument("target", nargs="?", help="deploy の環境の名前")
      ap.add_argument("--config")
      ap.add_argument("--all", action="store_true", help="全部の段を流す（既定。昔の書き方のため残す）")
-@@ -379,7 +447,8 @@
+@@ -379,7 +476,8 @@
      ap.add_argument("--parity", action="store_true", help="selftest：判定の同等（元の検査と dagci を壊した写しで突き合わせる・重い）")
      ap.add_argument("--no-queue", action="store_true", help="この台の待ちの列に並ばない（試しのとき）")
      ap.add_argument("--summary-only", action="store_true", help="要約だけを出す（メンバーが受け取る形）")
@@ -1539,7 +1617,7 @@ diff -ruN orig/ai-team-delivery/scripts/ci/dagci/main.py new/ai-team-delivery/sc
      ap.add_argument("--github", action="store_true", help="queue・await：GitHub の runner の列を見る（あとで足す形）")
      ap.add_argument("--base", help="取り込み先（既定は ci.yaml の git.base）")
      ap.add_argument("--only", help="この段（と上流）だけ。, 区切り")
-@@ -392,7 +461,22 @@
+@@ -392,7 +490,22 @@
      ap.add_argument("--tree")
      ap.add_argument("--mode", default="")
      ap.add_argument("--last", type=int, default=5)
@@ -1562,7 +1640,7 @@ diff -ruN orig/ai-team-delivery/scripts/ci/dagci/main.py new/ai-team-delivery/sc
      try:
          cfg = cfgmod.load(find_config(a.config))
      except cfgmod.ConfigError as ex:
-@@ -411,13 +495,21 @@
+@@ -411,13 +524,21 @@
          import audit
          return audit.run(cfg, a)
  
@@ -3718,8 +3796,8 @@ diff -ruN orig/api-design/SKILL.md new/api-design/SKILL.md
  > 規約の正本: `.claude/rules/common/decision-traceability.md`（ここと矛盾したら正本が勝つ）。
 diff -ruN orig/architecture-design/SKILL.md new/architecture-design/SKILL.md
 --- orig/architecture-design/SKILL.md	2026-11-04 13:26:40.947407527 +0000
-+++ new/architecture-design/SKILL.md	2026-11-05 01:00:16.541159478 +0000
-@@ -11,6 +11,20 @@
++++ new/architecture-design/SKILL.md	2026-11-05 03:24:35.926122485 +0000
+@@ -11,6 +11,23 @@
  
  ---
  
@@ -3735,12 +3813,15 @@ diff -ruN orig/architecture-design/SKILL.md new/architecture-design/SKILL.md
 +- **目録の作り手**（API と DB・画面の部品・共通の処理・外とのつなぎと設定）を実物から機械で作る仕組みと、それが最新かを見る検査を CI に入れる
 +- CI は手元の実行器（ai-team-delivery の dagci）で GitHub と同等以上に回せるよう、段を workflow から機械で導く形にする
 +
++- **環境の数と名前を決め**（例：開発・staging・本番）、§5 の表のどの段をどの環境で流すかを書く。どの環境も本番と同じ migration・deploy・プロビジョニングで作れること
++- 正本 §6.1 の 8 つの型で **人がする準備を洗い出し**（該当 / 要らない理由）、task-decomposition に渡してチケットにする。秘密は名前の一覧だけを書き、値はどこにも書かない
++
 +---
 +
  ## 🔗 決定のトレーサビリティ（decision-traceability）— このスキルの責務（2026-09-09 追加・必須・省略不可）
  
  > 規約の正本: `.claude/rules/common/decision-traceability.md`（ここと矛盾したら正本が勝つ）。
-@@ -40,11 +54,11 @@
+@@ -40,11 +57,11 @@
  | 3 | `dependency-boundaries.json` の**各境界**に `source` |
  | 4 | `selected-stack.json` の各選定に `source`（なぜその技術かの決定） |
  | 5 | STEP 5 の最終出力前に `trace_gate.py` の T1/T2 が緑であることを示す |
@@ -3855,8 +3936,8 @@ diff -ruN orig/engineering-rules/SKILL.md new/engineering-rules/SKILL.md
  | `choke-points.md` | **関門 C1〜C6**。外界に影響する経路を数本に絞り、迂回を CI で検出する |
 diff -ruN orig/engineering-rules/rules/common/ai-driven-process.md new/engineering-rules/rules/common/ai-driven-process.md
 --- orig/engineering-rules/rules/common/ai-driven-process.md	1970-01-01 00:00:00.000000000 +0000
-+++ new/engineering-rules/rules/common/ai-driven-process.md	2026-11-04 13:27:56.079659126 +0000
-@@ -0,0 +1,153 @@
++++ new/engineering-rules/rules/common/ai-driven-process.md	2026-11-05 03:24:07.287234052 +0000
+@@ -0,0 +1,174 @@
 +# AI 駆動の開発の進め方 — チケット・テスト・設計・役割・目録・CI の正本
 +
 +> 2026-11-04 に作った。それまでの進め方（段ごとにタスクを割り、テストを一覧で持つ）では
@@ -3869,7 +3950,7 @@ diff -ruN orig/engineering-rules/rules/common/ai-driven-process.md new/engineeri
 +> どのプロジェクトでも同じ形で使う。プロジェクトごとに違うのは「流れの数と中身」「分類」「道具」だけで、
 +> それは各プロジェクトの設定（flows.json・ai-team.yaml・ci.yaml・test-patterns.local.json）に書く。
 +
-+## 1. 原則（7 行）
++## 1. 原則（8 行）
 +
 +1. **チケットは 1 つの実装。** 利用者の 1 つの操作を、画面・API・DB まで縦に通す。テストの一覧ではない。
 +2. **書いていない＝漏れ。** 分岐は 8 つの観点（§4）から出し、書いていないことは漏れとみなす。テストの数に上限は付けない。
@@ -3878,6 +3959,7 @@ diff -ruN orig/engineering-rules/rules/common/ai-driven-process.md new/engineeri
 +5. **設計は 3 段で決める。** はじめに 1 回・流れに入るとき・チケットを切るとき（§6）。全部を先に作らない。
 +6. **役は 4 つ。** 作る・精査・実装・テスター（§8）。人数だけ、詰まった役に寄せる。
 +7. **検査は手元の CI。** 実行器（dagci など）で GitHub と同等以上の検査を回し、緑のときだけ取り込む（§9）。
++8. **チケットはプロジェクトの仕事を全部。** AI がする作業だけでなく、人がする準備（アカウント・支払い・鍵の登録・ドメイン・外のサービスの申し込み・専門家の確認・CI を回す台）もチケットにする。担当は役か人の名前で書き、AI のセッションの名前は書かない（§3・§6.1）。
 +
 +## 2. 流れ（大分類）とチケットの分類
 +
@@ -3885,6 +3967,7 @@ diff -ruN orig/engineering-rules/rules/common/ai-driven-process.md new/engineeri
 +  行為（ux-flow-design の行為の背骨）を流れに並べ直して作る。**数はプロジェクトごとに違う**（決め打ちしない）。正本は `05_flow/flows.json` などのプロジェクトの 1 ファイル。
 +- 流れの中は **操作**（利用者の 1 つの操作）に割る。**操作 1 つ = チケット 1 本**。裏側だけのチケットは作らない（裏側はその操作のチケットの実装の詳細に書く）。
 +  ただし、どの流れにも属さない土台（関門・共通の処理・CI）は「共通」のチケットにしてよい。
++  **環境をそろえることと人がする準備**も「共通」のチケットにする（§6.1）。書いていない準備は漏れで、無いと統合のテストが流せない。
 +- チケットは **分類**（REG 登録・AUTH ログイン・RESET 再設定・INV 招待・PERM 権限・CRUD・LIST・FILE・MAIL・PAY・EXT 外とのつなぎ・JOB 時間で動く処理・AI・TOOL など）を持つ。
 +  分類ごとのテストの型は test-verification の `references/test-patterns/`（§4.3）。
 +- 分類（流れ）のチケットは **1 つ先を並行で切る**。今の流れを実装している間に、次の流れのチケットを作る人が切る（待ちを作らない）。一気に全部は切らない。
@@ -3897,7 +3980,8 @@ diff -ruN orig/engineering-rules/rules/common/ai-driven-process.md new/engineeri
 +
 +| 欄 | 書くこと |
 +|---|---|
-+| 何を作るか | 利用者の操作 1 つ。流れ・行為の ID・画面（screen-derivation の導出元）|
++| 何を作るか | 利用者の操作 1 つ。流れ・行為の ID・画面（screen-derivation の導出元）。準備のチケットは、そろえるもの（環境・アカウント・設定）|
++| 担当 | 役（作る・精査・実装・テスター）か人の名前。**AI のセッションや道具の名前は書かない**（誰がやっても同じ仕事として残すため）。人の準備は、その決定や支払いができる人 |
 +| 分類 | `分類: REG, MAIL` の形（§4.3 の型の分母になる）|
 +| 目録で探した結果 | 使うもの（API・表・画面の部品・共通の処理・外とのつなぎ）は依存として書く。作るものは「探したが無かった」ことと似たものとの違いを書く |
 +| 実装の詳細 | 使う DB（表・列・migration）／API（口・型・エラー ID）／OSS・SDK・ライブラリと**版**／作るファイルと関数／既存のコードを使うなら「この実装を使う」|
@@ -3907,6 +3991,8 @@ diff -ruN orig/engineering-rules/rules/common/ai-driven-process.md new/engineeri
 +| 完了の条件 | 単体の全行が緑・解禁された中間／統合が緑・CI 緑 |
 +
 +- **テストはチケットを作る人がコードまで作る**（テスト先行）。実装する人はテストを変えない。テストが間違っていると思ったら作る人に戻す。
++- **実装の前にテストを流して赤を確かめない。** 実装が無ければ落ちるのは当たり前で、流しても何も分からない。実装の前に確かめるのは、**テストが漏れなくできているか**（チケットの表のどのマス・分類のどの型も、どれかのテストが受けている）だけ。テストを流すのは実装したあとで、そこで通ることを確かめる（2026-11-05）。
++- テストのコードは、実装と同じときに取り込む（先に取り込まない）。だから CI が「まだ作っていないチケットのテスト」で赤になることは無い。
 +- **実装の前に OK を出す**：機械の検査（形・型の網羅・目録の参照・pattern_gate など）＋別の人 1 回（精査）。この 2 つが緑でないと実装に入らない。
 +- **既存のコードは、使うチケットで確かめる**。いま全部をテストし直さない。チケットを切るときに目録で見つけ、実装の詳細に「この実装を使う」と書き、そのチケットのテストで一緒に確かめる。
 +- 見本の形は test-verification の `references/ticket-example.md`。
@@ -3940,13 +4026,13 @@ diff -ruN orig/engineering-rules/rules/common/ai-driven-process.md new/engineeri
 +
 +## 5. テストの段（入れ子の 5 段）と L1〜L5 の対応
 +
-+| 段 | 何を見るか | 作る人・時点 | 流す時点 | test-ladder.md |
++| 段 | 何を見るか | 作る人・時点 | 流す時点（どこで） | test-ladder.md |
 +|---|---|---|---|---|
-+| **単体** | そのチケットの中身。§4 の分岐を全部・**本物の DB での口**・その画面の動作（ブラウザでの入力・バリデーション・エラーの表示まで）| チケットを作る人が、チケットと同時に | 実装した人が取り込む前に | **L1** |
-+| **中間** | いくつかのチケットを合わせ、一続きの操作として動くか（例：登録 → メールの確認 → 規約）| 流れに入るとき（どの組をつなぐかを決める）| 揃えた最後のチケットが取り込む前に | **L2**（runnable_after = 組のチケット）|
-+| **統合** | 流れの端から端まで | 流れに入るとき | 流れの最後のチケットが取り込む前に | **L2**（runnable_after = 流れの全チケット）|
-+| **流れをまたぐ** | ある流れの変更が別の流れに効くか（§2 の表の線・効き方の影響。変える前と後・別の組織に効かない）| 後から作る方の流れが | 両方の流れが揃ったとき | **L2**（runnable_after = 両方の流れ）|
-+| **回帰** | 上の全部を毎回（CI）| — | 取り込むたび・Wave／リリースの締め | **L3〜L5** |
++| **単体** | そのチケットの中身。§4 の分岐を全部・**本物の DB での口**・その画面の動作（ブラウザでの入力・バリデーション・エラーの表示まで）| チケットを作る人が、チケットと同時に | 実装した人が取り込む前に（開発の環境＝手元の CI の容れ物） | **L1** |
++| **中間** | いくつかのチケットを合わせ、一続きの操作として動くか（例：登録 → メールの確認 → 規約）| 流れに入るとき（どの組をつなぐかを決める）| 揃えた最後のチケットが取り込む前に（開発の環境） | **L2**（runnable_after = 組のチケット）|
++| **統合** | 流れの端から端まで | 流れに入るとき | 流れの最後のチケットが取り込む前に（**staging**） | **L2**（runnable_after = 流れの全チケット）|
++| **流れをまたぐ** | ある流れの変更が別の流れに効くか（§2 の表の線・効き方の影響。変える前と後・別の組織に効かない）| 後から作る方の流れが | 両方の流れが揃ったとき（**staging**） | **L2**（runnable_after = 両方の流れ）|
++| **回帰** | 上の全部を毎回（CI）| — | 取り込むたび（開発の環境）・Wave／リリースの締め（staging）・本番はスモークだけ | **L3〜L5** |
 +
 +- **歩く骨格**はテストと別の仕組みではない。**最初につなぐ中間テストと統合テストの道すじ**として決める（はじめに 1 回）。
 +  道すじの操作もどれも 1 本のチケットで、分岐と単体のテストを省かない。
@@ -3958,13 +4044,29 @@ diff -ruN orig/engineering-rules/rules/common/ai-driven-process.md new/engineeri
 +
 +| 時点 | 決めること |
 +|---|---|
-+| **はじめに 1 回** | アーキテクチャ・技術の選定・共通の決まり（日付と時刻・お金・ログ・エラー・フォルダ・命名・関門）・**DB の骨格**（境目の表と形）・歩く骨格の道すじ・CI |
++| **はじめに 1 回** | アーキテクチャ・技術の選定・共通の決まり（日付と時刻・お金・ログ・エラー・フォルダ・命名・関門）・**DB の骨格**（境目の表と形）・歩く骨格の道すじ・CI・**環境（開発・staging・本番など）と人の準備のチケット**（§6.1）|
 +| **流れに入るとき** | その流れの画面の導線・中間と統合の組・流れをまたぐ影響・その流れで使う表の形の確かめ直し |
 +| **チケットを切るとき** | そのチケットの口・型・列・エラー ID・使う部品と版・ファイルと関数 |
 +
 +- **全部の API・全部の表を先に作らない。** DB は骨格を先に決め、migration で育てる。API は契約（口と型）があってよいが、振る舞いはチケットで作る。
 +- 使わない表は消さずに**凍結**と印を付け、コードが使い始めたら CI で赤にする。使うときはその流れで形を確かめ直し、決めてもらってから骨格に移す。
 +- 共通の決まりは 1 枚（`03_architecture/共通の決まり.md` など）にまとめ、チケットはそれを参照する（チケットごとに決め直さない）。
++
++### 6.1 環境と人の準備（はじめに 1 回で切る）
++
++- **環境の数と名前はプロジェクトが決める**（例：開発・staging・本番）。どの段のテストをどの環境で流すかは §5 の表に従う。どの環境も、本番と同じ migration・deploy・プロビジョニングのコードで作れることを条件にする（test-ladder.md §5）。
++- 環境ごとに **「環境をそろえる」親チケット**を 1 本置き、子に **人がする準備を 1 つ 1 本**で切る。洗い出しの型（どれも「該当 / 要らない理由」を書く。空欄は漏れ）：
++  1. 外のサービスのアカウントを作る（DB・配布先・秘密の置き場・メール・置き場・監視 など）
++  2. 支払いとプラン（無料の範囲・上げる時期・誰の支払いか）
++  3. 鍵と秘密を登録する（**値はチャット・ファイル・コミットに書かない**。秘密の置き場か配布先の設定に人が入れる。チケットには設定の名前だけ）
++  4. ドメインと DNS・メールの送信元の確認
++  5. 運営の情報（会社名・住所・連絡先など、規約や画面に出すもの）
++  6. 専門家の確認（規約・プライバシーポリシー・特定商取引法の表示 など、出す前に要るもの）
++  7. CI を回す台（手元の CI の実行器が動く PC・必要な設定・最初のスモーク）
++  8. 本番の切り替え（本番の一式・有料のプランへの切り替え・公開の判断）
++- 準備のチケットの **実施事項** は、どの画面で何を押すか・入れる設定の名前（値は書かない）・できたことを確かめる方法（機械で確かめられるなら検査のコマンド）まで書く。人が読んでその通りにすれば終わる粒度にする。
++- 依存を張る：**統合と流れをまたぐテストのチケットは、staging をそろえる子チケットに depends_on を持つ**。準備が終わらないと、その段のテストは BLOCKED（理由つき）で残し、緑と言わない。
++- 本番の準備は、最初の公開のチケットに依存させ、早く作りすぎない（費用が出るものは使う時点で）。
 +
 +## 7. 目録（同じものを 2 つ作らない）
 +
@@ -3999,11 +4101,11 @@ diff -ruN orig/engineering-rules/rules/common/ai-driven-process.md new/engineeri
 +| ux-flow-design | 行為を **流れ**に並べ直す（数は決め打ちしない）。流れごとの導線と、流れをまたぐ効き方の影響の候補 |
 +| functional-breakdown | 行為・表・口から **目録の元**（どの流れがどの表を書く／読むか）を機械で出す |
 +| feature-decomposition | 機能を流れ × 操作に割る（操作 1 つ = チケット 1 本の候補）。歩く骨格の道すじと中間の組の案 |
-+| architecture-design | はじめに 1 回の設計（共通の決まり・DB の骨格・凍結・目録の作り手・CI の段の導き）|
++| architecture-design | はじめに 1 回の設計（共通の決まり・DB の骨格・凍結・目録の作り手・CI の段の導き・環境の数と名前と §6.1 の準備の洗い出し）|
 +| api-design | 契約は先に持ってよいが、振る舞いはチケットで。口ごとに持ち主のチケット・作ったか契約だけかを目録に出す |
 +| acceptance-criteria | AC を §4 の 8 観点と状態 × 入口 × 利用者の状態の表から出す。書いていないマスは漏れ |
-+| task-decomposition | チケット（§3）を切る。目録を探す・実装の詳細・分岐とテスト・依存・分類。テストのコードまで |
-+| ticket-planning | チケットを流れ（親）→ 操作（子）で持ち、中間・統合・流れをまたぐテストの解禁（runnable_after）と 1 つ先の切り出しを盤に出す |
++| task-decomposition | チケット（§3）を切る。目録を探す・実装の詳細・分岐とテスト・依存・分類。テストのコードまで。§6.1 の環境と人の準備もチケットにし、担当は役か人 |
++| ticket-planning | チケットを流れ（親）→ 操作（子）で持ち、中間・統合・流れをまたぐテストの解禁（runnable_after）と 1 つ先の切り出しを盤に出す。環境と人の準備のチケットも同じ盤に出し、担当が AI のセッションの名前なら赤にする |
 +| test-verification | テストの型のナレッジ（分類ごと）と pattern_gate・5 段と L1〜L5 の対応・チケットの見本 |
 +| human-grade-qa | 単体の画面の行（ブラウザでの入力・バリデーション・エラー時）を 11 列で。回帰（L3〜L5）の実行者 |
 +| e2e-journey-walkthrough | 統合と流れをまたぐテストを、揃った流れから順に通す |
@@ -4024,7 +4126,7 @@ diff -ruN orig/engineering-rules/rules/common/decision-traceability.md new/engin
  ```
 diff -ruN orig/engineering-rules/rules/common/development-workflow.md new/engineering-rules/rules/common/development-workflow.md
 --- orig/engineering-rules/rules/common/development-workflow.md	2026-11-04 13:26:40.884391348 +0000
-+++ new/engineering-rules/rules/common/development-workflow.md	2026-11-04 13:28:51.266488116 +0000
++++ new/engineering-rules/rules/common/development-workflow.md	2026-11-05 03:01:07.130619155 +0000
 @@ -6,7 +6,12 @@
  
  ## Feature Implementation Workflow
@@ -4038,6 +4140,17 @@ diff -ruN orig/engineering-rules/rules/common/development-workflow.md new/engine
     - **GitHub code search first:** Run `gh search repos` and `gh search code` to find existing implementations, templates, and patterns before writing anything new.
     - **Library docs second:** Use Context7 or primary vendor docs to confirm API behavior, package usage, and version-specific details before implementing.
     - **Exa only when the first two are insufficient:** Use Exa for broader web research or discovery after GitHub search and primary docs.
+@@ -22,8 +27,8 @@
+ 
+ 2. **TDD Approach**
+    - Use **tdd-guide** agent
+-   - Write tests first (RED)
+-   - Implement to pass tests (GREEN)
++   - Write tests first, with the ticket. Check only that they cover every branch the ticket owns — do not run them to see them fail
++   - Implement, then run the tests: they must pass
+    - Refactor (IMPROVE)
+    - Verify 80%+ coverage
+ 
 diff -ruN orig/engineering-rules/rules/common/lessons-learned.md new/engineering-rules/rules/common/lessons-learned.md
 --- orig/engineering-rules/rules/common/lessons-learned.md	2026-11-04 13:26:40.884948621 +0000
 +++ new/engineering-rules/rules/common/lessons-learned.md	2026-11-04 13:28:51.267269099 +0000
@@ -4051,7 +4164,7 @@ diff -ruN orig/engineering-rules/rules/common/lessons-learned.md new/engineering
  > - 検証ギャップ（描画≠動作・UI断線・単一防御層 等15類型）→ 本ファイル L-003（G-01〜G-15）
 diff -ruN orig/engineering-rules/rules/common/test-ladder.md new/engineering-rules/rules/common/test-ladder.md
 --- orig/engineering-rules/rules/common/test-ladder.md	2026-11-04 13:26:40.886284092 +0000
-+++ new/engineering-rules/rules/common/test-ladder.md	2026-11-04 13:28:51.265527100 +0000
++++ new/engineering-rules/rules/common/test-ladder.md	2026-11-05 03:16:13.437185204 +0000
 @@ -8,6 +8,12 @@
  > e2e-journey-walkthrough / architecture-design / feature-decomposition / sprint-planning /
  > release-planning が参照する。**ここと矛盾する記述は、ここが勝つ。**
@@ -4074,6 +4187,15 @@ diff -ruN orig/engineering-rules/rules/common/test-ladder.md new/engineering-rul
  | **L3 Wave** | 1 か月 | その Wave の L1+L2 を全部 + 前 Wave 以前の回帰（diff） | 同上（Wave タグで抽出） | sprint-planning（Wave 編成時に対象 ID を確定） | Wave 締めで、Wave 責任者 |
  | **L4 リリース** | 四半期 | 正本 full（画面別・ジャーニー・RLS・AI 実動・負荷）+ 本番スモーク | 同上 + `prod-smoke.md` | release-planning | リリース前に、リリース責任者。本番はスモークのみ |
  | **L5 製品全体** | 1 年 / 大改修 | 全正本の full + 正本自体の鮮度監査（画面取りこぼし・古い期待結果） | 全部 | human-grade-qa test-plan の全面改訂 | 年次 / 大改修前 |
+@@ -62,7 +68,7 @@
+ 
+ ## 5. 実行環境（staging）
+ 
+-- **L1〜L3 のブラウザ通し・ジャーニー・AI 実動は staging で流す。** ローカルのスタブ環境は単体・契約テストまで。
++- **どこで流すか（2026-11-05 改め）**：単体（L1）と中間（L2 のうち、いくつかのチケットの組）は、**開発の環境**（手元の CI の容れ物：本物の DB・本番の形で組み立てた画面・外のサービスは関門の差し込み口で差し替え）で流す。ブラウザの試験もここ。**統合と流れをまたぐ試験（L2 の残り）・L3** は **staging**（本物のメール・本物の置き場・本番と同じ migration と deploy）で流す。本番は L4 のスモークだけ。詳しくは [ai-driven-process.md](./ai-driven-process.md) §5
+ - **本番は L4 のスモーク（prod-smoke）だけ。** 本番のデータを触る通しはしない。
+ - staging の **構成は technology-agnostic に決め打ちしない**。`architecture-design` が **本番と同じ migration / deploy / プロビジョニングコードで作れる**ことを条件に決め、`selected-stack.json` の `environments.staging` と ADR に確定させる。**未確定のプロジェクトでは、この決定自体を最初のタスクとして起票する。**
+ - staging に無いもの（有料の外部プロバイダ等）は **BLOCKED（理由つき）** で残す。fake green にしない。
 @@ -83,7 +89,7 @@
  - 突合できない行（技術行・横断行）は `T-I-*`（Integration）へ寄せるか、L3 以上として扱う。
  - 適用の進み具合は `qa-coverage.py` の「段別」集計に出る（タスク列が空の L1 行数 = 未適用）。
@@ -4083,6 +4205,54 @@ diff -ruN orig/engineering-rules/rules/common/test-ladder.md new/engineering-rul
  
  | スキル | 責務 |
  |---|---|
+diff -ruN orig/engineering-rules/rules/common/testing.md new/engineering-rules/rules/common/testing.md
+--- orig/engineering-rules/rules/common/testing.md	2026-11-04 13:26:40.886306610 +0000
++++ new/engineering-rules/rules/common/testing.md	2026-11-05 03:01:07.129798097 +0000
+@@ -9,12 +9,12 @@
+ 
+ ## Test-Driven Development
+ 
+-MANDATORY workflow:
+-1. Write test first (RED)
+-2. Run test - it should FAIL
+-3. Write minimal implementation (GREEN)
+-4. Run test - it should PASS
+-5. Refactor (IMPROVE)
++MANDATORY workflow（進め方の正本は [ai-driven-process.md](./ai-driven-process.md) §3）:
++1. Write the tests with the ticket, before implementing — one per branch / cell the ticket owns
++2. Check the tests are complete (every cell and every test pattern of the ticket's categories is covered). **Do not run them to watch them fail** — before implementation they fail by definition, so that run tells nothing
++3. Implement
++4. Run the tests — they must PASS
++5. Refactor
+ 6. Verify coverage (80%+)
+ 
+ ## Troubleshooting Test Failures
+diff -ruN orig/engineering-rules/rules/zh/development-workflow.md new/engineering-rules/rules/zh/development-workflow.md
+--- orig/engineering-rules/rules/zh/development-workflow.md	2026-11-04 13:26:40.897089272 +0000
++++ new/engineering-rules/rules/zh/development-workflow.md	2026-11-05 03:01:07.131285938 +0000
+@@ -22,7 +22,7 @@
+ 
+ 2. **TDD 方法**
+    - 使用 **tdd-guide** 代理
+-   - 先写测试（RED）
++   - 随工单先写测试，只检查覆盖是否完整（不为看失败而运行）
+    - 实现以通过测试（GREEN）
+    - 重构（IMPROVE）
+    - 验证 80%+ 覆盖率
+diff -ruN orig/engineering-rules/rules/zh/testing.md new/engineering-rules/rules/zh/testing.md
+--- orig/engineering-rules/rules/zh/testing.md	2026-11-04 13:26:40.897601392 +0000
++++ new/engineering-rules/rules/zh/testing.md	2026-11-05 03:01:07.131019491 +0000
+@@ -10,8 +10,8 @@
+ ## 测试驱动开发
+ 
+ 强制工作流：
+-1. 先写测试（RED）
+-2. 运行测试 - 应该失败
++1. 随工单先写测试（覆盖工单的每个分支）
++2. 只检查测试是否覆盖完整——不要为了看它失败而运行（实现之前必然失败，运行没有意义）
+ 3. 编写最小实现（GREEN）
+ 4. 运行测试 - 应该通过
+ 5. 重构（IMPROVE）
 diff -ruN orig/engineering-rules/scripts/install.sh new/engineering-rules/scripts/install.sh
 --- orig/engineering-rules/scripts/install.sh	2026-11-04 13:26:40.897651231 +0000
 +++ new/engineering-rules/scripts/install.sh	2026-11-05 00:51:20.129225612 +0000
@@ -4295,8 +4465,8 @@ diff -ruN orig/jit-task-execution/SKILL.md new/jit-task-execution/SKILL.md
  > 規約の正本: `~/.claude/rules/common/design-system.md` ／ 由来: lessons-learned **L-017**
 diff -ruN orig/task-decomposition/SKILL.md new/task-decomposition/SKILL.md
 --- orig/task-decomposition/SKILL.md	2026-11-04 13:26:40.900380515 +0000
-+++ new/task-decomposition/SKILL.md	2026-11-05 01:00:16.517935524 +0000
-@@ -9,6 +9,21 @@
++++ new/task-decomposition/SKILL.md	2026-11-05 03:24:35.923152857 +0000
+@@ -9,6 +9,24 @@
  handoff_flow: "requirements-definition → architecture-design → design-md → ux-flow-design → ui-mockup → functional-breakdown → feature-decomposition → task-decomposition → human-grade-qa(test-plan) → 実装 → human-grade-qa(実走)"
  ---
  
@@ -4312,13 +4482,16 @@ diff -ruN orig/task-decomposition/SKILL.md new/task-decomposition/SKILL.md
 +- 分岐は 8 観点から出し、状態を持つものは **状態 × 入口 × 利用者の状態の表**（状態の候補は DB の列から）。どのマスにも結果・受け持ち・テスト
 +- **テストのコードまでこのスキル（作る役）が書く**。`qa_rows.l1` は単体、`runnable_after` で中間・統合・流れをまたぐテストの解禁を書く
 +- 一気に全部は切らない。**流れ（分類）ごとに、1 つ先を並行で**切る。見本は test-verification の `references/ticket-example.md`、型の受けは `scripts/pattern_gate.py` で緑にする
++- **プロジェクトの仕事を全部チケットにする**（正本 §6.1）。AI がする作業だけでなく、**人がする準備**（外のサービスのアカウント・支払いとプラン・鍵と秘密の登録・ドメインと DNS・運営の情報・専門家の確認・CI を回す台・本番の切り替え）も 1 つ 1 本で切る。環境ごとに「環境をそろえる」親を置き、子に準備を並べる。実施事項は、どの画面で何を押すか・入れる設定の名前（**値は書かない**）・できたことを確かめる方法まで
++- **担当は役（作る・精査・実装・テスター）か人の名前。** AI のセッションや道具の名前は書かない。人の準備の担当は、その決定や支払いができる人
++- 統合と流れをまたぐテストのチケットは、staging をそろえる子チケットに `depends_on` を張る（準備が終わるまでその段は BLOCKED・理由つき）
 +
 +---
 +
  ## 🎨 デザインシステム（design-system）— このスキルの責務（2026-09-16 追加）
  
  > 規約の正本: `~/.claude/rules/common/design-system.md` ／ 由来: lessons-learned **L-017**
-@@ -1800,14 +1815,14 @@
+@@ -1800,14 +1818,14 @@
  製品がスキル・テンプレート・型などの「中身」を運営の資産として持つなら、`deliverable_layer: content` の Group（例：S）を切る。
  1 資産 = 1 タスク。qa_rows.l1 は資産の一式が持つテスト場面（evals）から 1 場面 1 行で機械生成し、正本 `skills.md` に書く。
  検査（形式・禁止の中身・場面数・版）は CI と製品のアップロードで同じスクリプトを使う。td_gate の layer 順は content = polish と同じ段。
@@ -5373,8 +5546,8 @@ diff -ruN orig/test-verification/references/test-patterns/test-patterns.local.ex
 +}
 diff -ruN orig/test-verification/references/ticket-example.md new/test-verification/references/ticket-example.md
 --- orig/test-verification/references/ticket-example.md	1970-01-01 00:00:00.000000000 +0000
-+++ new/test-verification/references/ticket-example.md	2026-11-04 13:28:24.476652984 +0000
-@@ -0,0 +1,121 @@
++++ new/test-verification/references/ticket-example.md	2026-11-05 03:24:35.926924083 +0000
+@@ -0,0 +1,122 @@
 +# チケットの見本：登録する（汎用・ai-driven-process.md §3 の形）
 +
 +> どのプロジェクトでも同じ形で書く見本。ID・道・部品の名前はプロジェクトのものに置き換える。
@@ -5387,6 +5560,7 @@ diff -ruN orig/test-verification/references/ticket-example.md new/test-verificat
 +| 分類: REG, MAIL, EXT | テストの型の分類（references/test-patterns/）。登録・メール・外とのつなぎ |
 +| 歩く骨格 | 1 本目（中間テスト「登録 → メールの確認 → 規約」の 1 つ目） |
 +| 行為 | 例：A01 アカウントを作る |
++| 担当 | 役か人の名前（例：作る＝〈人の名前〉・実装＝〈人の名前〉）。AI のセッションの名前は書かない |
 +| 依存 | なし。次のチケット「メールを確かめる」とは、下の表のマスで受け持ちを分ける |
 +| 決定 | このチケットが従う決定ログの ID（例：個人の登録・パスワードの長さ・規約の同意と版・確かめていない人はやり直せる・共通の決まり） |
 +
@@ -5685,8 +5859,8 @@ diff -ruN orig/test-verification/scripts/pattern_gate.py new/test-verification/s
 +    sys.exit(main())
 diff -ruN orig/ticket-planning/SKILL.md new/ticket-planning/SKILL.md
 --- orig/ticket-planning/SKILL.md	2026-11-04 13:26:40.906282207 +0000
-+++ new/ticket-planning/SKILL.md	2026-11-05 01:00:16.538564244 +0000
-@@ -11,6 +11,20 @@
++++ new/ticket-planning/SKILL.md	2026-11-05 03:24:35.923958410 +0000
+@@ -11,6 +11,23 @@
  
  # ticket-planning ── タスクを、人と AI が拾えるチケットにする
  
@@ -5702,12 +5876,15 @@ diff -ruN orig/ticket-planning/SKILL.md new/ticket-planning/SKILL.md
 +- 盤に **1 つ先の流れの切り出し**（作る役の進み）を出し、詰まった役（作る・精査・実装・テスター）が分かるようにする
 +- チケットの欄（目録で探した結果・実装の詳細・分岐とテスト・分類）が空のチケットは赤（書いていない＝漏れ）
 +
++- 環境と人の準備のチケット（正本 §6.1）も同じ盤に出す（大分類「基盤」や「環境」の中）。人の準備が統合のテストを止めているときは、盤の上で止めている準備が分かるように出す
++- 担当（assignee）は役か人の名前だけ。AI のセッションや道具の名前（例：〈AI の名前〉・「このセッション」）なら検査で赤にする
++
 +---
 +
  ## このスキルの役割
  
  task-decomposition は「何を作るか」を T-xx に割る。ここは、それを **拾える形**にする。
-@@ -120,4 +134,4 @@
+@@ -120,4 +137,4 @@
  
  ## 可視化と後回し（2026-09-15 追加・必須）
  - `build_tickets.py` は board.md／schedule.md／assign.md に加えて **`schedule.html`（ガント。行か棒を押すと右に詳細：根拠の決定の逐語・依存・行為と画面・モックへのリンク・Tier 2 の AC・L1 行・エラー・子チケット・Human／AI の二軸）** を出す。`ticket_gate.py` K9 が存在・鮮度・全 story の掲載を検査する。表だけの一覧は「可視化した」と言わない。
@@ -5734,6 +5911,38 @@ diff -ruN orig/ticket-planning/scripts/build_tickets.py new/ticket-planning/scri
  <label>担当<select id="fA"><option value="">全部</option></select></label>
  <label>層<select id="fL"><option value="">全部</option></select></label>
  <label>epic<select id="fE"><option value="">全部</option></select></label>
+diff -ruN orig/ticket-planning/scripts/ticket_gate.py new/ticket-planning/scripts/ticket_gate.py
+--- orig/ticket-planning/scripts/ticket_gate.py	2026-11-04 13:26:40.908889910 +0000
++++ new/ticket-planning/scripts/ticket_gate.py	2026-11-05 03:24:55.583628453 +0000
+@@ -3,8 +3,10 @@
+  K1 親：story は epic の下、subtask は story の下  K2 依存：閉路なし・無い依存なし  K3 担当：割り当てられる人が居ない story が無い
+  K4 日程：全 story に start/finish  K5 関連：リンク切れ 0  K6 ID 固定：--prev の story ID が消えていない（dropped で残す）
+  K7 見積：既定値のままの story を warn（fail にしない）  K8 節目：超過を warn
+- K9 可視化：plan と同じ場所に schedule.html（ガント・押すと詳細）があり、plan より古くなく、全 story の ID を含む（一覧のままは拾えない）"""
+-import argparse, json, sys
++ K9 可視化：plan と同じ場所に schedule.html（ガント・押すと詳細）があり、plan より古くなく、全 story の ID を含む（一覧のままは拾えない）
++ K10 担当：assignee は役か人の名前。AI のセッションや道具の名前（claude・gpt・codex・copilot・「セッション」など）は書かない（チケットはプロジェクトの仕事。誰がやっても同じ仕事として残す）"""
++import argparse, json, re, sys
++AI_NAME = re.compile(r"claude|gpt|codex|copilot|gemini|セッション|session|\bAI\b", re.I)
+ from pathlib import Path
+ def main():
+     ap = argparse.ArgumentParser(); ap.add_argument("plan"); ap.add_argument("--prev"); ap.add_argument("--flow"); ap.add_argument("--mocks"); a = ap.parse_args()
+@@ -12,6 +14,8 @@
+     for t in P["tickets"]:
+         if t["kind"] == "story" and (not t.get("parent") or t["parent"] not in T or T[t["parent"]]["kind"] != "epic"): fails.append(("K1", f'{t["id"]} の親が epic でない'))
+         if t["kind"] == "subtask" and (t.get("parent") not in T or T[t["parent"]]["kind"] != "story"): fails.append(("K1", f'{t["id"]} の親が story でない'))
++    for t in P["tickets"]:
++        if AI_NAME.search(str(t.get("assignee") or "")): fails.append(("K10", f'{t["id"]} の担当 {t.get("assignee")!r} が AI のセッションや道具の名前（役か人の名前にする）'))
+     if s.get("cycle"): fails.append(("K2", f'依存の閉路: {s["cycle"]}'))
+     if s.get("ghost_dependencies"): fails.append(("K2", f'無い依存: {s["ghost_dependencies"]}'))
+     if s.get("unassignable"): fails.append(("K3", f'割り当てられる人が居ない: {s["unassignable"]}（名簿に技能を足すか、層を変える）'))
+@@ -34,5 +38,5 @@
+     for w in warns: print("  warn", w)
+     if fails:
+         print(f"FAIL — {len(fails)} 件"); [print(f"  [{g}] {m}") for g, m in fails]; return 2
+-    print("PASS — K1〜K6・K9 すべて緑（チケットとして拾える・押すと詳細）"); return 0
++    print("PASS — K1〜K6・K9・K10 すべて緑（チケットとして拾える・押すと詳細）"); return 0
+ if __name__ == "__main__": sys.exit(main())
 diff -ruN orig/ux-flow-design/SKILL.md new/ux-flow-design/SKILL.md
 --- orig/ux-flow-design/SKILL.md	2026-11-04 13:26:40.953204352 +0000
 +++ new/ux-flow-design/SKILL.md	2026-11-05 01:00:16.533525970 +0000

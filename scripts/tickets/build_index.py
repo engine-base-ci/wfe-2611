@@ -10,6 +10,7 @@
     K4 決定 ID（decisions）が決定ログにある
     K5 作業の段は決まった値（未着手・作業中・保留・確認中・承認待ち・実行中・完了）
     K6 先に終わっている必要があるもの（depends_on）が実在し、輪になっていない
+    K7 担当（assignee）は役（作る・精査・実装・テスター）か人の名前。AI のセッションの名前は書かない（D-128.145）
   属性 tests:（そのチケットが持つ試験のファイル・glob 可）は、どの試験もちょうど 1 つのチケットに属するかを
     scripts/ci/test_owner_gate.py（G53）が見る。チケット 1 枚の試験だけを流すのは scripts/tickets/ticket_tests.py（D-128.140）
 使い方: python3 scripts/tickets/build_index.py [--check]
@@ -58,6 +59,9 @@ def load() -> list[dict]:
     return sorted((parse(p) for p in glob.glob(os.path.join(DIR, "K-*.md"))), key=lambda t: int(t["id"].split("-")[1]))
 
 
+AI_SESSION = re.compile(r"claude|セッション|session|\bAI\b|gpt|codex|copilot", re.I)
+
+
 def check(ts: list[dict]) -> list[str]:
     bad = []
     ids = {}
@@ -104,6 +108,8 @@ def check(ts: list[dict]) -> list[str]:
         for d in t.get("depends_on", []):
             if d not in by:
                 bad.append(f"[K6] {t['id']} の先に要るもの {d} が無い")
+        if AI_SESSION.search(t.get("assignee") or ""):
+            bad.append(f"[K7] {t['id']} の担当 {t.get('assignee')!r} が AI のセッションの名前。役（作る・精査・実装・テスター）か人の名前にする")
     # 輪
     def cyc(a, path):
         for d in by[a].get("depends_on", []):
