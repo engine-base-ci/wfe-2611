@@ -71,7 +71,7 @@ for d in M['deprecated_terms']:
     allowed = d.get('allowed_in', [])
     hit = []
     for root, _, fs in os.walk('.'):
-        if any(x in root for x in ('.git', '__pycache__', 'node_modules', '.spec-sync')): continue
+        if any(x in root for x in ('.git', '__pycache__', 'node_modules', '.spec-sync', '.claude')): continue
         for f in fs:
             if not f.endswith(('.md', '.json', '.yaml', '.py', '.html')): continue
             p = os.path.join(root, f).replace('./', '')

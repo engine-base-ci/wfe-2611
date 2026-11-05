@@ -511,8 +511,10 @@ def main() -> int:
         for r in gates:
             cmd = str(r.get("gate"))
             try:
+                # 仕様の同期の回の印（SPEC_SYNC_RUN=1）を渡す。時間の期限（報告の新しさなど）を見る検査は、この印のときは期限を見ない。
+                #   期限は区切りの回（全部の検査）で見る。時間がたっただけで「決定が届いていない」にしない
                 rr = subprocess.run(cmd, shell=True, cwd=root, capture_output=True,
-                                    text=True, timeout=600)
+                                    text=True, timeout=600, env={**os.environ, "SPEC_SYNC_RUN": "1"})
             except Exception as e:  # noqa: BLE001
                 fails.append(f'{aid}: gate が起動できない（{cmd}）: {e}'); continue
             rows.append({"id": aid, "file": f"gate: {cmd}", "want": "gate",

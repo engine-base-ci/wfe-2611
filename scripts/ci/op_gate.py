@@ -136,7 +136,8 @@ def main() -> int:
     stats = {"checked": 0, "evidenced": 0, "blocked": 0, "na": 0}
     if reports and not by_id:
         fails.append(f"O4 報告が無いか空（{', '.join(reports)}）。Playwright を json reporter で流してから")
-    elif newest and (time.time() - newest) > cfg.get("report_max_age_h", 48) * 3600:
+    elif newest and os.environ.get("SPEC_SYNC_RUN") != "1" and (time.time() - newest) > cfg.get("report_max_age_h", 48) * 3600:
+        # 仕様の同期の回（SPEC_SYNC_RUN=1）では報告の新しさを見ない。新しさは区切りの回で見る（D-128.149）
         fails.append(f"O4 報告が {int((time.time() - newest) / 3600)} 時間前で古い（上限 {cfg.get('report_max_age_h', 48)} h）。流し直す")
     for tid in targets:
         t = tasks.get(tid)
