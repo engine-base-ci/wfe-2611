@@ -492,3 +492,6 @@ K-107,チケットごとの CI を、機械で出した影響の範囲の試験�
 - [ ] workflow に「範囲を絞る」入口（workflow_dispatch の入力など）があり、act_ci.sh から渡せる。GitHub でも同じ workflow で動く
 - [ ] 決まり（ai-driven-process.md §1 原則 7・§9）とスキル（ai-team-delivery の references/ci.md・act_ci.sh）を直し、.skill を作り直す
 - [ ] 範囲を絞った回と全部の回の両方が緑。小さなチケット（例：文言 1 か所）で時間が縮んだことを数字で出す"
+K-108,workflow の run の中で github.head_ref などの値を直に使っている所を env に移す（命令の注入の形・前からある物）,課題,K-1,未着手,作る,,基盤・試験,"K-107 の 2 回目の精査（2026-11-06）で見つかった、前からある物。.github/workflows/v3-gate.yml の task-gate に `echo ""TASK_ID=${{ github.head_ref }}""` があり、枝の名前に `$(...)` などを入れると命令が動く形（GitHub の案内でいう script injection）。今は pull_request で動かないので害は無いが、GitHub で pull_request を受けるようにした時点で穴になる。K-107 の CS-034 は inputs・needs の値だけを見ていて、github. の値は見ていない。","- [ ] workflow の run の中に、外から来る値（github.head_ref・github.event.*・inputs.*・needs.*.outputs.*）を `${{ }}` で直に書いている所が 0。どれも env で渡し、引用符で使う
+- [ ] その形を CI の検査で赤にする（K-107 の CS-034 を github. の値まで広げる）
+- [ ] workflow の全部（act）が緑"
