@@ -9434,6 +9434,8 @@ components:
           nullable: true
         signed_in:
           type: boolean
+        terms_pending:
+          type: boolean
       x-operation: verifySignup
     CurrentTerms:
       type: object

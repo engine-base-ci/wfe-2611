@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:0fed2bf4953d1d89
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:0879d9a916937c48
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -3510,6 +3510,7 @@ export const SignupVerified = z.strictObject({
   email: z.string().max(10000).optional(),
   token: z.string().max(10000).nullable().optional(),
   signed_in: z.boolean().optional(),
+  terms_pending: z.boolean().optional(),
 });
 export const CurrentTerms = z.strictObject({
   id: z.string().max(10000).optional(),

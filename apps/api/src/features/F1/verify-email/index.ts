@@ -16,6 +16,7 @@ import {
   authUserIdByEmail,
   claimPendingByToken,
   closeSessionsOf,
+  termsPendingOfNewSession,
   credentialHashOf,
   deleteAuthUser,
   dropHalfMadeCompany,
@@ -168,7 +169,9 @@ export function verifyEmailFeature(d: VerifyEmailDeps) {
       // 同意を移した後に、この本人のセッションの同意し直しの印を決め直す（K-53）。signUp でセッションができた時点では同意がまだ無く印が立つ。
       // 登録のときの版が今の版なら下り、登録と確定の間に新しい版が出ていれば立ったまま（次の画面で同意し直す）
       await d.appPool.query("select app.refresh_terms_pending($1)", [r.userId]);
-      return { userId: r.userId, token: r.token, ctx, name };
+      // 答えに返すこのセッションの印（K-53）。画面は true なら同意し直しの画面へ、false なら今の行き先へ移す
+      const termsPending = await termsPendingOfNewSession(d.authPool, d.appPool, r.userId);
+      return { userId: r.userId, token: r.token, ctx, name, termsPending };
     } catch (e) {
       throw new ConfirmFailed(r.userId, e);
     }
@@ -322,7 +325,13 @@ export function verifyEmailFeature(d: VerifyEmailDeps) {
       supportEmail: d.config.mailReplyTo || d.config.opsEmail,
     });
     // 答えに本人の id は入れない（email・token・signed_in だけ）
-    return ok({ email: p.email, token: signedIn ? done.token : null, signed_in: signedIn });
+    // 別のアカウントでログイン中（新しい本人のセッションは閉じた）なら印は返さない（false）
+    return ok({
+      email: p.email,
+      token: signedIn ? done.token : null,
+      signed_in: signedIn,
+      terms_pending: signedIn ? done.termsPending : false,
+    });
   };
 
   return { verify };

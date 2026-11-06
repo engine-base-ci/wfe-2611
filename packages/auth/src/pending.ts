@@ -298,6 +298,18 @@ export async function closeSessionsOf(authPool: pg.Pool, appPool: pg.Pool, userI
   await appPool.query("select app.revoke_sessions_for_auth_user($1, $2)", [userId, SIGNUP_OTHER_ACCOUNT]);
   await authPool.query('delete from kaname_auth.session where "userId" = $1', [userId]);
 }
+/** 確定でできたばかりのセッションの同意し直しの印（K-53）。セッション（最新の 1 つ）に印を決めて返す（app.mark_session_terms は
+ *  そのセッションの印を今の版で決め直し、立っていれば true。運営の人・Bridge は false）。セッションが無ければ false */
+export async function termsPendingOfNewSession(authPool: pg.Pool, appPool: pg.Pool, userId: string): Promise<boolean> {
+  const s = await authPool.query<{ id: string }>(
+    'select id from kaname_auth.session where "userId" = $1 order by "createdAt" desc limit 1',
+    [userId],
+  );
+  const id = s.rows[0]?.id;
+  if (!id) return false;
+  const r = await appPool.query<{ p: boolean }>("select app.mark_session_terms($1) as p", [id]);
+  return r.rows[0]?.p === true;
+}
 /** 作ったばかりの本人の会社の人（members）と会社。確定のときにできたセッションから引く（業務の表は会社の文脈が無いと読めないため、
  *  セッションの写しの関数 app.session_alive を通す）。セッションが無ければ null */
 export async function memberOfNewUser(

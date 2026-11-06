@@ -516,3 +516,52 @@ row(R["K53-UI-024"], async (page) => {
   await expect(page).toHaveURL(/\/login\?step=terms/);
   await expect(page.getByRole("heading", { level: 1, name: /規約/ })).toBeVisible();
 });
+
+// ---- 確定の直後（K-52 との継ぎ目・K-54 の中間テストで見つけた：K54-M1-07 途中でやめる）----
+//   確定の口 verifySignup の答えの terms_pending（確定の最後に決めたこのセッションの印）が true なら、「続ける」で同意し直しの画面へ移す。
+//   false なら今の行き先（チケットの画面）へ。口は網の手前で差し替える（口の振る舞いは K53-API-041）
+const VERIFY_PATH = "/api/v1/auth/sign-up/verify";
+const afterVerify = async (page: Page, termsPending: boolean) => {
+  const visited: string[] = [];
+  page.on("framenavigated", (f) => {
+    if (f === page.mainFrame()) visited.push(new URL(f.url()).pathname + new URL(f.url()).search);
+  });
+  await page.route(API_RE, async (route: Route, req: Request) => {
+    const u = new URL(req.url());
+    let reply: Reply;
+    if (req.method() === "POST" && u.pathname === VERIFY_PATH)
+      reply = {
+        status: 201,
+        body: {
+          data: { email: "k53-verify@example.com", token: SESSION, signed_in: true, terms_pending: termsPending },
+        },
+      };
+    else if (req.method() === "GET" && u.pathname === CURRENT_PATH) reply = { status: 200, body: { data: V2 } };
+    else if (req.method() === "GET" && /\/me$/.test(u.pathname))
+      reply = { status: 200, body: { data: { id: "u1", email: "k53-verify@example.com", name: "確定 する人" } } };
+    else reply = termsPending ? blocked : { status: 200, body: { data: [] } };
+    await route.fulfill({ status: reply.status, contentType: "application/json", body: JSON.stringify(reply.body) });
+  });
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  const res = await page.goto(`/verify-email?token=${encodeURIComponent(`k53-link-${uniq()}`)}`);
+  expect(res?.status()).toBe(200);
+  await expect(page.getByRole("heading", { level: 1, name: "登録できました" })).toBeVisible();
+  await page.getByRole("button", { name: "続ける", exact: true }).click();
+  return visited;
+};
+row(R["K53-UI-025"], async (page) => {
+  const visited = await afterVerify(page, true);
+  await expect(page).toHaveURL(/\/login\?step=terms/);
+  const u = new URL(page.url());
+  expect(u.searchParams.get("next"), "戻る先は今の行き先（チケットの画面）").toBe("/tickets");
+  await expect(page.getByRole("heading", { level: 1, name: /規約/ })).toBeVisible();
+  expect(
+    visited.filter((v) => v.startsWith("/tickets")),
+    "同意の前にチケットの画面へ行かない",
+  ).toEqual([]);
+});
+row(R["K53-UI-026"], async (page) => {
+  await afterVerify(page, false);
+  await expect(page).toHaveURL(/\/tickets(\?|$)/);
+  await expect(page).not.toHaveURL(/step=terms/);
+});

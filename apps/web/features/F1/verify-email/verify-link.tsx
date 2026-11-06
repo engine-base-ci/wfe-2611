@@ -5,6 +5,7 @@
 //        別のアカウントの登録のリンク／無い／待ってください（429）／調子が悪い（500）。文言は正本（errors.json）の 1 件。
 //   確認が済むまで中（初めの設定・チケットの画面）へ行く抜け道を出さない（D-088.4）。行き先は「続ける」（確定した後だけ）・ログイン・登録し直し・困ったとき
 import Link from "next/link";
+import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Button, Callout, Loading, PAGE_ERROR, errorText } from "@/components/k";
@@ -15,6 +16,7 @@ import { pendingRoute } from "@/lib/pending-route";
 import { AuthFrame } from "../sign-up/frame";
 import { waitText } from "../sign-up/wait-text";
 import { saveLinkToken } from "./store";
+import { termsStepHref } from "@/lib/terms-gate";
 
 /** 確定した後に入る画面（チケットの画面・K-60） */
 const AFTER = pendingRoute("/tickets", "K-60");
@@ -24,7 +26,7 @@ export const OTHER_ACCOUNT_NOW =
 
 type View =
   | { kind: "checking" }
-  | { kind: "ok" }
+  | { kind: "ok"; termsPending: boolean }
   | { kind: "other_now" }
   | { kind: "error"; code: string }
   | { kind: "wait"; sec: number | null };
@@ -36,7 +38,9 @@ const message = (code: string) => errorText(code).entry.message;
 async function decide(token: string): Promise<View | "enter"> {
   const r = await verifySignup(token).catch(() => null);
   if (!r) return { kind: "error", code: PAGE_ERROR.down };
-  if (r.ok) return r.data.signed_in ? { kind: "ok" } : { kind: "other_now" };
+  // 確定の直後に同意し直しの印が立っていれば（登録と確定の間に規約の新しい版が出た・K-53）、「続ける」で同意し直しの画面へ
+  if (r.ok)
+    return r.data.signed_in ? { kind: "ok", termsPending: r.data.terms_pending === true } : { kind: "other_now" };
   if (r.status === 429) return { kind: "wait", sec: r.retryAfterSec };
   // 確定済み：同じ人でログイン中なら、二重に作らずそのまま中へ（再読み込み・戻る）
   if (r.code === "E-CONF-011" && getToken()) {
@@ -83,7 +87,8 @@ export function VerifyLink({ token }: { token: string }) {
 
   const next = () => {
     saveLinkToken(null);
-    router.push(AFTER);
+    // 同意し直しの印が立っていれば、同意し直しの画面へ（戻る先は今の行き先）。立っていなければ今の行き先へ
+    router.push(view.kind === "ok" && view.termsPending ? (termsStepHref(AFTER) as Route) : AFTER);
   };
   return <AuthFrame foot="help">{body(view, next)}</AuthFrame>;
 }

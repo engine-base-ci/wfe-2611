@@ -1216,3 +1216,53 @@ describe("K-53 テスターのレビュー 2 回目で足した行（招待の�
     await expectOpen(t);
   });
 });
+
+describe("K-53 中間テスト（K-54）で見つけた継ぎ目（確定の答えの印）", () => {
+  /** 申し込みを置き、登録のときに基準の版に同意した形にする（K53-API-008・009 と同じ作り） */
+  const pendingFor = async (tag: string) => {
+    const e = email(tag);
+    const { token } = await putPending(authFixture.pool, MASTER_KEY, {
+      email: e,
+      name: "確定 する人",
+      companyName: `${RUN}-確定社`,
+      password: PW,
+    });
+    await admin.query(
+      "update kaname_auth.pending_signup set terms_version_id = $2, privacy_version_id = $3, consented_at = now() where email = $1",
+      [e, base.terms, base.privacy],
+    );
+    return { e, token };
+  };
+  const sessionPendingOf = async (e: string) =>
+    (
+      await admin.query<{ terms_pending: boolean }>(
+        `select s.terms_pending from sessions s join members m on m.id = s.member_id
+           join kaname_auth."user" u on u.id = m.auth_user_id
+          where u.email = $1 and s.revoked_at is null and s.kind_id <> 'bridge'`,
+        [e],
+      )
+    ).rows.map((x) => x.terms_pending);
+
+  it("K53-API-041 確定の答え（verifySignup）に terms_pending が入る：登録と確定の間に新しい版が出ていれば true（このセッションの印と同じ）、登録のときの版が今の版なら false", async () => {
+    // 同意済み（登録のときの版が今の版）→ false
+    const same = await pendingFor("verify-tp-same");
+    const r1 = await req("POST", "/api/v1/auth/sign-up/verify", { token: same.token });
+    expect(r1.status, await r1.clone().text()).toBe(201);
+    const d1 = ((await json(r1)).data ?? {}) as Record<string, unknown>;
+    expect(d1["terms_pending"], "同意済みなら false").toBe(false);
+    expect(await sessionPendingOf(same.e), "答えとセッションの印が同じ").toEqual([false]);
+    // 版が新しい（登録と確定の間に出た）→ true
+    const stale = await pendingFor("verify-tp-stale");
+    const v = await publishBoth("v2-verify-tp");
+    try {
+      const r2 = await req("POST", "/api/v1/auth/sign-up/verify", { token: stale.token });
+      expect(r2.status, await r2.clone().text()).toBe(201);
+      const d2 = ((await json(r2)).data ?? {}) as Record<string, unknown>;
+      expect(d2["terms_pending"], "版が新しいなら true").toBe(true);
+      expect(await sessionPendingOf(stale.e), "答えとセッションの印が同じ").toEqual([true]);
+      await expectBlocked(String(d2["token"]));
+    } finally {
+      await withdraw(v.terms, v.privacy);
+    }
+  });
+});

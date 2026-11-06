@@ -574,7 +574,8 @@ RESPONSES = {
     "resendSignupEmail": ("SignupResent", {"email": "string?", "sent": "boolean", "mail_error": "string?", "mail_error_kind": "string?", "pending": "boolean", "registered": "boolean", "expired": "boolean"}),
     "getSignupStatus": ("SignupStatus", {"state": "string", "email": "string?", "expires_at": "string?"}),
     # 確定した（K-52）。ふつうは token にログインの印・signed_in=true。別のアカウントでログイン中に確定したら token=null・signed_in=false（D-128.137）。本人の id は返さない
-    "verifySignup": ("SignupVerified", {"email": "string", "token": "string?", "signed_in": "boolean"}),
+    #   terms_pending（K-53）：確定の最後に refresh_terms_pending で決めたこのセッションの同意し直しの印。true なら画面は同意し直しの画面（/login?step=terms&next=…）へ
+    "verifySignup": ("SignupVerified", {"email": "string", "token": "string?", "signed_in": "boolean", "terms_pending": "boolean"}),
     # 規約の今の版（K-53）：kind ごとに 1 つ。作った人・運営のテナントの ID は返さない
     "getCurrentTerms": ("CurrentTerms", {"id": "string", "kind": "string", "version": "string", "url": "string", "published_at": "string"}),
     "consentToTerms": ("TermsConsented", {"consented": "boolean"}),
