@@ -69,6 +69,10 @@ def e2e_globs() -> list[str]:
     """apps/web の e2e:k（CI の G48 が流す実ブラウザの試験）が読むファイル"""
     s = json.load(open(os.path.join(ROOT, WEB, "package.json"), encoding="utf-8"))["scripts"]["e2e:k"]
     args = [a for a in s.split("playwright test", 1)[1].split() if not a.startswith("-")]
+    # workflow の段が直に流す実ブラウザの試験（G59 の中間テスト `pnpm --filter @kaname/web exec playwright test tests/skeleton`・K-54）
+    wf = open(os.path.join(ROOT, ".github/workflows/v3-gate.yml"), encoding="utf-8").read()
+    for m in re.finditer(r"--filter @kaname/web exec playwright test ([^\n&|;]+)", wf):
+        args += [a for a in m.group(1).split() if not a.startswith("-")]
     return [WEB + (a if a.endswith(".ts") else a.rstrip("/") + "/**/*.spec.ts") for a in args]
 
 

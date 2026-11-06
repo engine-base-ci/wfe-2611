@@ -103,6 +103,7 @@ SPEC_GATES = [
     {"id": 47, "name": "書いた検査が CI から回る・検査の自己試験（ci_wiring_gate・エラーの参照・自己試験 7 本・D-128.123）", "script": "python3 scripts/ci/ci_wiring_gate.py --selftest && python3 scripts/ci/ci_wiring_gate.py && pnpm -s ci:errors-used && pnpm -s ci:errors-used:selftest && pnpm -s ci:sql-guard:selftest && pnpm -s ci:chat-one:selftest && pnpm -s ci:contract:selftest && pnpm -s ci:env-audit:selftest && python3 scripts/ci/qa_delta.py --selftest && python3 scripts/ci/static_screens_test.py", "job": "spec", "blocking": True},
     {"id": 51, "name": "利用者の流れと DB の表の目録（行為はどれも 1 つの流れ・表はどれも目録に・凍結の表をコードが使わない・D-128.126・D-128.127）", "script": "python3 scripts/ci/flow_db_gate.py --selftest && python3 scripts/ci/flow_db_gate.py", "job": "spec", "blocking": True},
     {"id": 48, "name": "新しい画面の実ブラウザの試験と、押した証拠（本番の形で組み立てた画面の上・行 ID の試験が全部の行で通る・記録なし・K-36）", "script": "BASE_URL=http://127.0.0.1:3124 pnpm --filter @kaname/web e2e:k && python3 scripts/ci/op_gate.py --spec 07_qa/test-specs/k --tickets 11_tickets/tickets.json --all", "job": "web", "blocking": True},
+    {"id": 59, "name": "中間テスト（いくつかのチケットを合わせた一続きの操作・本物のブラウザと本物の口と DB・試験用の受け箱・K-54 から）", "script": "BASE_URL=http://127.0.0.1:3124 PW_REPORT=pw-reports/skeleton.json pnpm --filter @kaname/web exec playwright test tests/skeleton", "job": "web", "blocking": True},
 ]
 SPEC_GATES.append({"id": 53, "name": "試験はどれも 1 つのチケットに属する（単体の試験・実ブラウザの試験・口ごとの権限の試験の持ち主・D-128.140）", "script": "python3 scripts/ci/test_owner_gate.py --selftest && python3 scripts/ci/test_owner_gate.py", "job": "spec", "blocking": True})
 SPEC_GATES.append({"id": 54, "name": "決定のトレース（決定ログの決めたことが導出物から逆引きできる・T1〜T12。手で流していたのを CI に入れた・D-128.147）", "script": "cp 01_hearing/要件一覧.md /tmp/req.md && python3 scripts/ci/trace_gate.py --index && cmp /tmp/req.md 01_hearing/要件一覧.md && python3 scripts/ci/trace_gate.py", "job": "spec", "blocking": True})
@@ -253,6 +254,8 @@ jobs:
       API_BASE: http://127.0.0.1:3011
       NEXT_PUBLIC_API_BASE: http://127.0.0.1:3011
       KANAME_API_LOG: /tmp/api.log
+      # 試験用の受け箱（apps/web/tests/_lib/mailbox.ts・K-54）。API は Resend の SDK の行き先（RESEND_BASE_URL）をここにして、本物の送出の道でメールを出す
+      QA_MAILBOX_PORT: '3191'
       # 規約・プライバシーポリシーの文面のページ（K-53）が埋める値。試験の値（本番の値は K-85・K-86 が決める）
       OPERATOR_ADDRESS: 東京都千代田区試験 1-1
       LEGAL_COURT: 東京地方裁判所
@@ -262,7 +265,7 @@ jobs:
       LEGAL_STORAGE_PROVIDER: 試験の置き場
     steps:
 {NODE}      - run: pnpm --filter @kaname/web exec playwright install --with-deps chromium
-      - name: DB に migration を当て、API を立ち上げる（本物の口の画面の試験・K-53）
+      - name: DB に migration を当て、API を立ち上げる（本物の口の画面の試験・K-53。メールは試験用の受け箱へ・K-54）
         run: |
           pnpm db:migrate
           (env NODE_ENV=development PORT=3011 BASE_URL=http://127.0.0.1:3011 WEB_BASE_URL=http://127.0.0.1:3124 \
@@ -271,6 +274,7 @@ jobs:
             AUTH_SECRET=ci-web-secret-0123456789-abcdefghijklmnop SECRETS_MASTER_KEY=BwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwc= \
             STORAGE_ENDPOINT=http://127.0.0.1:9000 STORAGE_REGION=ap-northeast-1 STORAGE_BUCKET=kaname-ci STORAGE_ACCESS_KEY_ID=ci STORAGE_SECRET_ACCESS_KEY=ci \
             KANAME_DEV_FAKE_BUCKET=1 KANAME_DEV_STORAGE_DIR=/tmp/kaname-storage \
+            RESEND_API_KEY=re_qa_mailbox RESEND_BASE_URL=http://127.0.0.1:3191 \
             pnpm exec tsx apps/api/src/dev.ts > /tmp/api.log 2>&1 &)
           for i in $(seq 1 60); do curl -sf -o /dev/null http://127.0.0.1:3011/health && exit 0; sleep 2; done
           cat /tmp/api.log; exit 1
