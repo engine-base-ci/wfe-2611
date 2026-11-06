@@ -4,12 +4,12 @@
    "id": "K-1",
    "title": "基盤（どの節目にも要る土台）",
    "kind": "タスク",
-   "stage": "未着手",
+   "stage": "作業中",
    "parent": "",
    "milestone": "基盤",
    "area": "",
    "assignee": "未定",
-   "due": "2026-11-13",
+   "due": "2026-11-20",
    "decisions": [
     "D-125.167",
     "D-128.88",
@@ -35,7 +35,7 @@
    "id": "K-2",
    "title": "DB：新しい表の migration と行の守り（RLS）",
    "kind": "タスク",
-   "stage": "未着手",
+   "stage": "確認中",
    "parent": "K-1",
    "milestone": "基盤",
    "area": "DB",
@@ -488,7 +488,7 @@
    "id": "K-13",
    "title": "API の入口：権限の言葉の段と本人確認の取り直し",
    "kind": "タスク",
-   "stage": "未着手",
+   "stage": "確認中",
    "parent": "K-1",
    "milestone": "基盤",
    "area": "API",
@@ -555,7 +555,7 @@
    "milestone": "基盤",
    "area": "API",
    "assignee": "実装",
-   "due": "2026-11-13",
+   "due": "",
    "decisions": [
     "D-125.139",
     "D-128.70",
@@ -595,7 +595,7 @@
    "milestone": "基盤",
    "area": "API",
    "assignee": "実装",
-   "due": "2026-11-13",
+   "due": "",
    "decisions": [
     "D-128.88",
     "D-128.115"
@@ -632,7 +632,7 @@
    "milestone": "基盤",
    "area": "DB",
    "assignee": "実装",
-   "due": "2026-11-13",
+   "due": "",
    "decisions": [
     "D-125.117",
     "D-128.97",
@@ -670,7 +670,7 @@
    "milestone": "基盤",
    "area": "試験",
    "assignee": "実装",
-   "due": "2026-11-13",
+   "due": "",
    "decisions": [
     "D-128.88",
     "D-128.113"
@@ -702,7 +702,7 @@
    "id": "K-18",
    "title": "ログインまわりの道すじを契約へ・セッションの見張り",
    "kind": "タスク",
-   "stage": "未着手",
+   "stage": "確認中",
    "parent": "K-1",
    "milestone": "基盤",
    "area": "認証",
@@ -741,7 +741,7 @@
    "milestone": "基盤",
    "area": "認証",
    "assignee": "実装",
-   "due": "2026-11-13",
+   "due": "",
    "decisions": [
     "D-125.139",
     "D-125.140"
@@ -782,7 +782,7 @@
    "milestone": "基盤",
    "area": "認証",
    "assignee": "実装",
-   "due": "2026-11-13",
+   "due": "",
    "decisions": [
     "D-125.140",
     "D-128.120",
@@ -820,7 +820,7 @@
    "milestone": "基盤",
    "area": "認証",
    "assignee": "実装",
-   "due": "2026-11-13",
+   "due": "",
    "decisions": [
     "D-128.88",
     "D-128.113",
@@ -851,7 +851,7 @@
    "id": "K-22",
    "title": "画面の土台",
    "kind": "タスク",
-   "stage": "未着手",
+   "stage": "確認中",
    "parent": "K-1",
    "milestone": "基盤",
    "area": "画面",
@@ -886,7 +886,7 @@
    "milestone": "基盤",
    "area": "画面",
    "assignee": "実装",
-   "due": "2026-11-13",
+   "due": "",
    "decisions": [
     "D-128.78",
     "D-128.9",
@@ -922,7 +922,7 @@
    "milestone": "基盤",
    "area": "画面",
    "assignee": "実装",
-   "due": "2026-11-13",
+   "due": "",
    "decisions": [
     "D-128.78",
     "D-128.9",
@@ -959,7 +959,7 @@
    "milestone": "基盤",
    "area": "画面",
    "assignee": "実装",
-   "due": "2026-11-13",
+   "due": "",
    "decisions": [
     "D-128.78",
     "D-128.9",
@@ -997,7 +997,7 @@
    "milestone": "基盤",
    "area": "画面",
    "assignee": "実装",
-   "due": "2026-11-13",
+   "due": "",
    "decisions": [
     "D-128.78",
     "D-128.9",
@@ -1036,7 +1036,7 @@
    "milestone": "基盤",
    "area": "画面",
    "assignee": "実装",
-   "due": "2026-11-13",
+   "due": "",
    "decisions": [
     "D-128.78",
     "D-128.9",
@@ -1074,7 +1074,7 @@
    "milestone": "基盤",
    "area": "画面",
    "assignee": "実装",
-   "due": "2026-11-13",
+   "due": "",
    "decisions": [
     "D-128.78",
     "D-128.9",
@@ -1110,7 +1110,7 @@
    "milestone": "基盤",
    "area": "画面",
    "assignee": "実装",
-   "due": "2026-11-13",
+   "due": "",
    "decisions": [
     "D-128.123"
    ],
@@ -1143,7 +1143,7 @@
    "milestone": "基盤",
    "area": "画面",
    "assignee": "実装",
-   "due": "2026-11-13",
+   "due": "",
    "decisions": [
     "D-128.123"
    ],
@@ -1176,7 +1176,7 @@
    "milestone": "基盤",
    "area": "画面",
    "assignee": "実装",
-   "due": "2026-11-13",
+   "due": "",
    "decisions": [
     "D-128.123",
     "D-128.124"
@@ -1202,12 +1202,12 @@
    "id": "K-32",
    "title": "試験と CI の土台",
    "kind": "タスク",
-   "stage": "未着手",
+   "stage": "作業中",
    "parent": "K-1",
    "milestone": "基盤",
    "area": "試験",
    "assignee": "未定",
-   "due": "",
+   "due": "2026-11-13",
    "decisions": [
     "D-128.113",
     "D-125.167"
@@ -1302,7 +1302,7 @@
    "milestone": "基盤",
    "area": "試験",
    "assignee": "実装",
-   "due": "2026-11-13",
+   "due": "",
    "decisions": [
     "D-128.117"
    ],
@@ -1334,7 +1334,7 @@
    "milestone": "基盤",
    "area": "試験",
    "assignee": "実装",
-   "due": "2026-11-13",
+   "due": "",
    "decisions": [
     "D-128.113",
     "D-128.117"
@@ -1366,7 +1366,7 @@
    "milestone": "基盤",
    "area": "試験",
    "assignee": "実装",
-   "due": "2026-11-13",
+   "due": "",
    "decisions": [
     "D-128.113",
     "D-125.167"
@@ -1402,7 +1402,7 @@
    "milestone": "基盤",
    "area": "試験",
    "assignee": "実装",
-   "due": "2026-11-13",
+   "due": "2026-11-12",
    "decisions": [
     "D-128.113",
     "D-125.167",
@@ -1444,7 +1444,7 @@
    "milestone": "基盤",
    "area": "試験",
    "assignee": "実装",
-   "due": "2026-11-05",
+   "due": "",
    "decisions": [
     "D-128.123",
     "D-128.117"
@@ -1475,7 +1475,7 @@
    "milestone": "基盤",
    "area": "試験",
    "assignee": "実装",
-   "due": "2026-11-13",
+   "due": "",
    "decisions": [
     "D-128.123",
     "D-128.114",
@@ -1508,7 +1508,7 @@
    "milestone": "基盤",
    "area": "試験",
    "assignee": "実装",
-   "due": "2026-11-13",
+   "due": "",
    "decisions": [
     "D-128.123"
    ],
@@ -1538,7 +1538,7 @@
    "milestone": "基盤",
    "area": "試験",
    "assignee": "実装",
-   "due": "2026-11-13",
+   "due": "",
    "decisions": [
     "D-128.123"
    ],
@@ -1568,7 +1568,7 @@
    "milestone": "基盤",
    "area": "試験",
    "assignee": "実装",
-   "due": "2026-11-13",
+   "due": "",
    "decisions": [
     "D-128.123"
    ],
@@ -1600,7 +1600,7 @@
    "milestone": "基盤",
    "area": "試験",
    "assignee": "実装",
-   "due": "2026-11-20",
+   "due": "",
    "decisions": [
     "D-128.123",
     "D-128.124"
@@ -1634,7 +1634,7 @@
    "milestone": "基盤",
    "area": "試験",
    "assignee": "実装",
-   "due": "2026-11-13",
+   "due": "",
    "decisions": [
     "D-128.123",
     "D-128.124"
@@ -1666,7 +1666,7 @@
    "milestone": "基盤",
    "area": "試験",
    "assignee": "実装",
-   "due": "2026-11-13",
+   "due": "",
    "decisions": [
     "D-128.123",
     "D-128.117"
@@ -1699,7 +1699,7 @@
    "milestone": "基盤",
    "area": "試験",
    "assignee": "実装",
-   "due": "2026-11-13",
+   "due": "2026-11-08",
    "decisions": [
     "D-128.123"
    ],
@@ -1724,12 +1724,12 @@
    "id": "K-47",
    "title": "CI を act で流す（GitHub と同じ workflow を手元で無料で・チケットごとに全部を 1 回）",
    "kind": "課題",
-   "stage": "作業中",
+   "stage": "確認中",
    "parent": "K-32",
    "milestone": "基盤",
    "area": "試験",
    "assignee": "実装",
-   "due": "2026-11-13",
+   "due": "",
    "decisions": [
     "D-128.123",
     "D-128.135",
@@ -1761,7 +1761,7 @@
    "milestone": "基盤",
    "area": "試験",
    "assignee": "未定",
-   "due": "",
+   "due": "2026-11-09",
    "decisions": [
     "D-128.123",
     "D-128.132",
@@ -1787,12 +1787,12 @@
    "id": "K-49",
    "title": "開発の進め方を正本に替える：はじめに 1 回の整理（利用者の流れ・DB の骨格・境目・目録・共通の決まり）",
    "kind": "課題",
-   "stage": "作業中",
+   "stage": "確認中",
    "parent": "K-1",
    "milestone": "基盤",
    "area": "設計",
    "assignee": "実装",
-   "due": "2026-11-13",
+   "due": "",
    "decisions": [
     "D-128.125",
     "D-128.126",
@@ -1809,7 +1809,7 @@
    "depends_on": [],
    "sections": {
     "目的": "開発の進め方を正本（D-128.125）に替える。その最初の段「はじめに 1 回」で、Kaname 全体を整理し直す。流れ・契約・チケットを作り直し、DB は骨格を確かめる（D-128.126）。",
-    "完了の条件": "- [x] 利用者の流れ（大分類）12 本を記録し、第1フェーズの行為 73 がどれも 1 つの流れに入るのを機械で確かめる（05_flow/flows.json・FD1）\n- [x] DB の表 142 を目録で 骨格 75・中で使う 8・凍結 59 に分け、凍結の表をコードが使い始めたら赤にする（03_architecture/db-catalog.json・FD2〜FD4・D-128.127）\n- [x] 流れ同士の境目を決める：表の線を契約から機械で出し（03_architecture/flow-lines.json・境目の表 25・線 122）、契約に出ない効き方の影響 7 つを流れの記録に書く（effects・FD5・D-128.128）\n- [x] 目録の骨組みを実物から機械で作る（03_architecture/catalog.json・catalog.md・API 363〈作った 5・後のフェーズの行為だけ 20〉・前の道すじ 43・表 142・画面の部品 13・共通の処理 13・設定 34・D-128.129）\n- [x] 共通の決まりを決める（日付と時刻・お金・ログ・フォルダの切り方を D-128.130 で決め、全部の一覧を 03_architecture/共通の決まり.md に）\n- [x] 歩く骸骨の範囲を決める（操作 7 本＋統合テスト 1 本・05_flow/flows.json の walking_skeleton・D-128.131）\n- [ ] 未着手のチケット 84 枚を閉じ、流れの順（F1 から）にチケットを切り直す手順を決める\n- [ ] CI が緑",
+    "完了の条件": "- [x] 利用者の流れ（大分類）12 本を記録し、第1フェーズの行為 73 がどれも 1 つの流れに入るのを機械で確かめる（05_flow/flows.json・FD1）\n- [x] DB の表 142 を目録で 骨格 75・中で使う 8・凍結 59 に分け、凍結の表をコードが使い始めたら赤にする（03_architecture/db-catalog.json・FD2〜FD4・D-128.127）\n- [x] 流れ同士の境目を決める：表の線を契約から機械で出し（03_architecture/flow-lines.json・境目の表 25・線 122）、契約に出ない効き方の影響 7 つを流れの記録に書く（effects・FD5・D-128.128）\n- [x] 目録の骨組みを実物から機械で作る（03_architecture/catalog.json・catalog.md・API 363〈作った 5・後のフェーズの行為だけ 20〉・前の道すじ 43・表 142・画面の部品 13・共通の処理 13・設定 34・D-128.129）\n- [x] 共通の決まりを決める（日付と時刻・お金・ログ・フォルダの切り方を D-128.130 で決め、全部の一覧を 03_architecture/共通の決まり.md に）\n- [x] 歩く骸骨の範囲を決める（操作 7 本＋統合テスト 1 本・05_flow/flows.json の walking_skeleton・D-128.131）\n- [x] 未着手のチケット 84 枚を閉じ、流れの順（F1 から）にチケットを切り直す手順を決める（11_tickets/_old に移し、流れのまとまり K-50・K-55・K-56・K-59・K-61・K-66〜K-73 に引き継いだ・D-128.136）\n- [x] CI が緑（act・2026-11-06）",
     "前提と制約": "- 決定ログ・技術の選定・画面の絵・動いているコード（認証・新しい画面の部品・Bridge・CI）は残す（D-128.126）\n- 正本：https://claude.ai/artifact/GjrYuBnfvWrMdynf3oPcPk",
     "実施事項": "- [x] 05_flow/flows.json（12 の流れ・順番・歩く骸骨）\n- [x] 03_architecture/db-catalog.json（表の区分と理由）\n- [x] scripts/ci/flow_db_gate.py（G51・自己試験つき）\n- [x] 決定ログ D-128.125〜D-128.128\n- [x] 03_architecture/flow-lines.json（生成物・G38 の目録に登録）と flows.json の effects\n- [x] scripts/ci/build_catalog.py → 03_architecture/catalog.json・catalog.md（生成物・G38 の目録に登録）",
     "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 行為の漏れ・重なり・知らない行為を赤にする | ① 機械 | `python3 scripts/ci/flow_db_gate.py --selftest` | 緑 |\n| 凍結の表をコードが使ったら赤になる | ① 機械 | 一時的に `app.goals` を使うファイルを置いて G51 を流す | 赤（FD3）・ファイルを消すと緑 |\n| 今の流れと目録が合う | ① 機械 | `python3 scripts/ci/flow_db_gate.py` | 緑（流れ 12・行為 73・表 142） |",
@@ -1825,12 +1825,12 @@
    "id": "K-50",
    "title": "F1 登録してログインできる（流れのまとまり・まだ切っていない）",
    "kind": "タスク",
-   "stage": "未着手",
+   "stage": "作業中",
    "parent": "",
    "milestone": "流れ",
    "area": "流れ",
    "assignee": "未定",
-   "due": "",
+   "due": "2026-11-16",
    "decisions": [
     "D-001",
     "D-002",
@@ -1941,12 +1941,12 @@
    "id": "K-52",
    "title": "メールを確かめる（確認のメールのリンクを押した時点で登録を確定し、そのまま入る）",
    "kind": "タスク",
-   "stage": "未着手",
+   "stage": "作業中",
    "parent": "K-50",
    "milestone": "骨格",
    "area": "認証",
    "assignee": "未定",
-   "due": "",
+   "due": "2026-11-07",
    "decisions": [
     "D-088",
     "D-088.2",
@@ -2008,7 +2008,7 @@
    "milestone": "骨格",
    "area": "認証",
    "assignee": "未定",
-   "due": "",
+   "due": "2026-11-08",
    "decisions": [
     "D-125.128",
     "D-125.139",
@@ -2071,7 +2071,7 @@
    "milestone": "骨格",
    "area": "試験",
    "assignee": "未定",
-   "due": "",
+   "due": "2026-11-08",
    "decisions": [
     "D-128.125",
     "D-128.131",
@@ -2133,12 +2133,12 @@
    "id": "K-56",
    "title": "F3 使い始めの準備（流れのまとまり・まだ切っていない）",
    "kind": "タスク",
-   "stage": "未着手",
+   "stage": "作業中",
    "parent": "",
    "milestone": "流れ",
    "area": "流れ",
    "assignee": "未定",
-   "due": "",
+   "due": "2026-11-20",
    "decisions": [
     "D-004",
     "D-015",
@@ -2198,12 +2198,12 @@
    "id": "K-57",
    "title": "PC をつなぐ（Bridge を入れ、接続コードで自分の PC を結ぶ）",
    "kind": "タスク",
-   "stage": "未着手",
+   "stage": "作業中",
    "parent": "K-56",
    "milestone": "骨格",
    "area": "PC",
    "assignee": "未定",
-   "due": "",
+   "due": "2026-11-09",
    "decisions": [
     "D-015",
     "D-055",
@@ -2260,7 +2260,7 @@
    ],
    "sections": {
     "目的": "ログイン中の人が「PC をつなぐ」画面を開き、PC のプログラム（Bridge）を受け取って入れ、画面に出た**接続コード**（10 分・1 回だけ）を Bridge に渡すと、その PC がその人の PC として結ばれる。結ばれた Bridge は 1 分ごとに「生きている」と知らせ、画面は「つながっています」に変わる。これで自分の AI が PC で動ける（D-055・D-015）。\n\n**つながりが確定するのは、Bridge が接続コードを引き取った時点**（claimPairingCode）。その時点で PC の印ができ、コードは使い終わりになる。ただし画面が「つながっています」と出すのは、記録ができただけではなく、**最初の生きている知らせが届いてから**（D-090：つながっただけでは仕事は流れないことを画面に書く）。\n\nPC を外す・名前を変える（revokeMyDevice・updateMyDevice）は、このチケットではない（F3 のこれからのチケット「PC を外す・名前を変える」）。",
-    "完了の条件": "- 下の 2 つの表の「このチケット」のマスと、全部の分岐のテストが緑\n- 契約の口 6 本（createPairingCode・claimPairingCode・listMyDevices・sendHeartbeat・getLatestBridgeRelease・downloadBridgeRelease）が 501 でない\n- 前の道すじ `POST /api/auth-ext/bridge/pair`・`/bridge/claim`・`/bridge/heartbeat`・`GET /bridge/latest`・`/bridge/download`・`/bridge/file/:name`（apps/api/src/auth/ext.ts）と前の画面 `app/(wizard)/setup/bridge/page.tsx` が消えている\n- Bridge（apps/bridge）が新しい口だけを呼ぶ\n- 凍結の表 `app.bridge_pairings` を、どのコードも使っていない（CI の「凍結の表を使っていないか」が緑）\n- 単体のテスト（下の表で「このチケット」が受け持つマスと、全部の分岐）が本物の DB と本物のブラウザの上で緑\n- 中間テスト 2「PC をつなぐ → チケットを作る」（K-58）のうち、このチケットの分が通る\n- 手元の CI（.github/workflows を act で・D-128.147）が緑",
+    "完了の条件": "- 下の 2 つの表の「このチケット」のマスと、全部の分岐のテストが緑\n- 契約の口 6 本（createPairingCode・claimPairingCode・listMyDevices・sendHeartbeat・getLatestBridgeRelease・downloadBridgeRelease）が 501 でない\n- 前の道すじ `POST /api/auth-ext/bridge/pair`・`/bridge/claim`・`/bridge/heartbeat`・`GET /bridge/latest`・`/bridge/download`・`/bridge/file/:name`（apps/api/src/auth/ext.ts）と前の画面 `app/(wizard)/setup/bridge/page.tsx` が消えている\n- Bridge（apps/bridge）が新しい口だけを呼ぶ\n- 凍結の表 `app.bridge_pairings` を、どのコードも使っていない（CI の「凍結の表を使っていないか」が緑）\n- 単体のテスト（下の表で「このチケット」が受け持つマスと、全部の分岐）が本物の DB と本物のブラウザの上で緑\n- 中間テスト 2「PC をつなぐ → チケットを作る」（K-58）は、揃える最後のチケット K-60 が取り込む前に流す（このチケットの完了の条件には入れない・K-51・K-52 と同じ直し）\n- 手元の CI（.github/workflows を act で・D-128.147）が緑",
     "前提と制約": "分類: AUTH, PERM, FILE, EXT\n\n- 流れ F3 使い始めの準備（K-56）。歩く骨格の 4 つ目の操作（D-128.131）\n- 依存：K-53（規約に同意する）。同意が済んでいない人は、この画面の前で K-53 が止める\n- この画面は「段」ではなく、案内から開く画面（D-125.142・D-125.143）。入口は「はじめにやること」の一覧（D-125.146）・自分の AI と話そうとしたとき・右上の自分のメニュー\n- PC をつながなくても、チケットを作る・自分で進めることはできる（D-127.8 は K-60 が受け持つ）。この画面に「つながるまで先へ行けない」の道は作らない\n- テストはこのチケットを作る人がコードまで書き、実装する人は変えない（D-128.125）",
     "実施事項": "### 作り方（実装の詳細）\n\n| 欄 | 中身 |\n|---|---|\n| 画面 | `apps/web/features/F3/connect-pc/`（新しい部品 `components/k` の Button・Callout・Table・Badge・Empty／Loading／ErrorState／NoAccess で組む）。キャンバスの絵 `EdPC`（PC をつなぐの小窓：①常駐アプリを入れる ②アプリにこのコードを入れる ③試しに動かす）と `MePC`（つないでいる PC の一覧）。道は `/setup/bridge`（flow.json）。前の画面 `apps/web/app/(wizard)/setup/bridge/page.tsx` はこのチケットで置き換えて消す |\n| 画面の 3 つの出し分け | D-089 のとおり、①ブラウザで Bridge が入っていない＝受け取る道＋コード、②ブラウザで Bridge が入っている（この PC の中だけの口 `127.0.0.1:38617`）＝人にコードを打たせずボタン 1 つでつなぐ、③Bridge の窓の中（窓の印 `KanameBridge/<版>`）＝開いた時点で自分でつながる。見分け方は今の `apps/web/lib/bridge-presence.ts`（useWhere・pairViaLocal・download・wake・everSeen・inBridgeApp）をそのまま使う |\n| API | 契約の口 6 本。振る舞いを `apps/api/src/features/F3/connect-pc/` に hooks として書き、契約の 501 を外す。`createPairingCode`（POST /api/v1/bridge/pairing-codes・本人・60 回／分／人・関門 C1・C2）・`claimPairingCode`（POST /api/v1/bridge/claim・PC・回数は下の判断・関門 C1・C2）・`sendHeartbeat`（POST /api/v1/bridge/heartbeat・PC の印・60 回／分・関門 C1・C2）・`listMyDevices`（GET /api/v1/bridge/devices・本人・120 回／分）・`getLatestBridgeRelease`（GET /api/v1/bridge/releases/latest・120 回／分）・`downloadBridgeRelease`（GET /api/v1/bridge/releases/:name/file・120 回／分） |\n| 契約の入力の形を直す | 今の契約は claim と heartbeat の入力が sessions の表の形（SessionsInput）で、接続コード・生存の知らせの中身（自己診断 health・約束の版 protocol）が入らない。createPairingCode の入力も表の形（member_id・code_hash）で、外から入れさせてはいけない列がある。`08_api/phase1/05_自分の設定とPC.md` → `08_api/endpoints.json` → `packages/contracts/src/registry.ts`・`schemas.ts` を直して生成し直す：createPairingCode は空の入力、claimPairingCode は `{ code, device_label }`、sendHeartbeat は `{ health, protocol }`。出力は契約の PairingCode（code・expires_at）・BridgeClaim（device_token・device_id・member_id）・BridgeRelease（version・files・sha256・released_at） |\n| PC の印の解決（入口） | `apps/api/src/middleware/tenant.ts` の解決に、Bridge からの要求（今と同じ頭 `x-bridge-session` に PC の印を入れて送る。K-62 もこの頭を前提にしている）を足す。PC の印のハッシュで sessions の生きている行（kind_id='bridge'・revoked_at が空・deleted_at が空・人が抜けていない）を引き、役を `device` にする。国と端末が変わったら切る判定は `app.session_check`（0083）と同じ（D-128.120）。時間では切らない（D-128.121） |\n| DB | `bridge_pairing_codes`（migration 0075・コードはハッシュ `code_hash` だけ・期限 `expires_at` 10 分・使った時刻 `used_at`・使った PC `used_session_id`・アプリの役は直す・消すができない）を使う。`sessions`（0004：kind_id・device_label・last_seen_at・revoked_at・revoke_reason_id／0027：health・health_at／0057：browser／0083：country・device・last_ip）。migration `0085_bridge_pairing_codes.sql` を 1 本足す：①コードを出す関数 `app.bridge_code_new`（その人の前の使っていないコードを使えなくしてから 1 行足す）②引き取る関数 `app.bridge_code_claim`（期限内で使っていないコードだけを 1 回だけ使い終わりにし、同じ人・同じ PC の名前の古い行を切り、sessions に 1 行作り、受け箱に「PC がつながりました」を 1 件）③ sessions に PC の印のハッシュの列 `device_token_hash`。どちらも security definer（関門 C2 の外に生の insert を置かない） |\n| やめるもの | 凍結の表 `app.bridge_pairings`（0020・コードを平文で持つ）と関数 `app.bridge_pair_new`・`app.bridge_claim`（0034 の形）・`app.bridge_dev_claim`（0025）は使うのをやめる（表は凍結のまま残す） |\n| PC 側（Bridge） | `apps/bridge/src/main.ts` の `claim()`・`stillConnected()` を `POST /api/v1/bridge/claim`・`POST /api/v1/bridge/heartbeat` に替え、受け取った PC の印を `bridge.json`（userData）に置く。`apps/bridge/src/loop.ts` の生存の知らせ（HEARTBEAT_MS 60 秒）を新しい口に替える（仕事の受け取りなどほかの口は F5 のチケットで移す）。`apps/bridge/src/update.ts` の `fetchLatest` を `GET /api/v1/bridge/releases/latest` に替える |\n| 使う部品と版 | Hono ^4.10.0・@hono/node-server ^2.1.1・pg ^8.16.3（API）・Next.js ^15.5.28・React ^19.1.0・TanStack Query ^5.102.8・@base-ui/react 1.9.0（画面）・Electron ^33.2.1・electron-updater ^6.3.9（Bridge）・Vitest ^3.2.4・Playwright ^1.63.0（テスト）。コードと PC の印のハッシュは node:crypto の sha256（今の `hashToken`・packages/auth/src/invitations.ts）。コードと印の乱数は node:crypto の randomBytes |\n| 使う既存の実装（目録で探した） | 前の道すじ（apps/api/src/auth/ext.ts）の `/bridge/pair`・`/bridge/claim`・`/bridge/heartbeat`（古い Bridge に「古い」を足す `BRIDGE_PROTOCOL_MIN`・`OUTDATED_CHECK`）・`/bridge/latest`・`/bridge/download`・`/bridge/file/:name` の中身。配布物の目録の読み手 `apps/api/src/auth/bridge-release.ts`（readManifest・pickInstaller・pickUpdate・isListed・releaseFileResponse・legacyInstaller・目録 kaname-bridge.json）。DB の関数 `app.bridge_heartbeat`（0027）・`app.bridge_state`（0058・生きているのは最後の知らせから 75 秒）・`app.bridge_session_alive`（0036）・`app.setup_step_done`（はじめにやることの印）。設定の項目 `BRIDGE_RELEASE_DIR`・`BRIDGE_RELEASE_BASE`。試験の Bridge 役 `apps/web/tests/_lib/fake-bridge.ts`・`local-bridge.ts`。これを契約の口に移し、前の道すじは消す |\n| 新しく作るもの | PC の印の解決（目録に無い。似たもの：ext.ts の `bridgeSession` は sessions の id をそのまま鍵にしていて、画面の端末の一覧に出る id と同じ値になる）・コードを出す／引き取る関数・errors.json に足すエラー 2 つ（接続コードが使えない・まだ配布していない） |\n| 前の道すじで残すもの | `/bridge/state` は会話の画面など他の画面（useBridge・apps/web/lib/agent.ts）も読むので、このチケットでは消さない（F5 の画面が移るときに消す）。仕事の受け取りなどの Bridge の口（`/bridge/take` ほか）も F5 で移す。そのため ext.ts の `bridgeSession` も、このチケットで PC の印の解決に替える（前の鍵では通らない） |\n| 共通の決まり | エラーの文言は errors.json から引く（E-CONN-001・E-CONN-012・E-PAGE-005・E-PAGE-007）・ログに接続コードと PC の印を出さない・時刻は timestamptz（共通の決まり・D-128.130） |\n\n### 決めた判断\n\n- 接続コードは 10 分・1 回だけ（D-128.93）。新しいコードを出したら、その人の前の使っていないコードは使えなくする（今の `app.bridge_pair_new` と同じ振る舞い）\n- 引き取りの回数は 1 分に 5 回まで（D-089：総当たりを防ぐ）。契約の 60 回より厳しいので、入口の `limits`（apps/api/src/contract/deps.ts）で claimPairingCode だけ差し替え、契約の表記も直す\n- 違うコード・期限切れのコード・使い終わったコードは、同じ返事にする（どれかを見分けさせない）\n- 同じ人・同じ PC の名前でつなぎ直したら、古い行は切って 1 台 1 行にする（今の 0034 の振る舞い）\n- この PC の Bridge が別のアカウントでつながっているときは、本人が「このアカウントに切り替える」を押したときだけつなぎ直す（今の main.ts の `claim(code, allowSwitch)` の振る舞い。黙って切り替えると別の人に Bridge が乗っ取られる）\n- PC の印は時間では切らない。切れるのは PC を外す・パスワードを変える・人が抜ける・会社が止められる・国や端末が変わるとき（D-128.121・D-128.120）。ブラウザでログアウトしても Bridge はつながったまま（D-128.121。`08_api/phase1/05_自分の設定とPC.md` の「ログアウトで印も使えなくなる」は D-128.121 に合わせて直す）\n- つないだら受け箱に「PC がつながりました」を 1 件残す（契約の「つないだら本人に知らせる」・受け箱は D-128.92）。同じ PC で 2 回は残さない\n- 配布物は Kaname のサーバーから配り、まだ置いていなければ「まだ配布していません」と理由を返す（D-015・D-089）。新しい版は指紋（sha256）が合うときだけ入れ替える（D-109）\n- つないだら「はじめにやること」の「PC をつなぐ」に印を付ける（D-125.146。今の印の置き場 `members.setup_step` と `app.setup_step_done` を使う）\n- 下の「聞きたいこと」1〜3 は、推奨の案で作り方を書いた。違う答えなら作り方を直してから実装に入る",
     "テスト仕様と確認の結果": "### 状態 × 入口 × 利用者の状態\n\n接続コードの状態（DB の列から出した候補：期限 expires_at → 期限切れ、使った時刻 used_at → 使い終わり、出し直し → 前のコード）と、PC の状態（sessions の列から出した候補：last_seen_at → 生きている／眠っている、revoked_at・revoke_reason_id → 切れた（外した・パスワード・抜けた・止められた・国・端末）、同じ PC の別のアカウント）\n\n| 状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| PC 無し | 画面（ブラウザ・Bridge が入っていない） | ログイン中 | 受け取る道（Mac 用・Windows 用）と接続コードを出す。「アプリからの返事を待っています…」 | このチケット | 単体（画面）・単体（口・本物の DB） |\n| PC 無し | 画面（ブラウザ・Bridge が入っている） | ログイン中 | コードを人に打たせず、この PC の Bridge にボタン 1 つで渡してつなぐ | このチケット | 単体（画面・試験の Bridge 役） |\n| PC 無し | Bridge の窓の中 | ログイン中 | 開いた時点で自分でつながる（コードもダウンロードも出さない） | このチケット | 単体（画面・窓の印を付けて開く） |\n| PC 無し | 案内から（はじめにやること・会話の入口） | ログイン中 | この画面を開く。戻る先は案内を開いた画面 | このチケット | 単体（画面） |\n| PC 無し | 画面を開く | ログインしていない | ログインへ。入ったら PC をつなぐ画面に戻る | このチケット | 単体（画面） |\n| PC 無し | 画面を開いたまま | セッションが切れた | コードの発行で 401。「ログインが切れました」（E-PAGE-005）。入り直すと続きから | このチケット | 単体（画面） |\n| PC 無し | 画面を開く | 取引先の人・運営の人 | 見えない。口は 403 で、コードは出ない | このチケット | 単体（口・画面） |\n| コード（期限内・使っていない） | Bridge が引き取る | Bridge（印なし） | 確定する。PC の印を返し、コードは使い終わり。受け箱に 1 件 | このチケット | 単体（口・本物の DB） |\n| コード（期限内） | 画面を再読み込み・「新しいコード」 | ログイン中 | 新しいコードを出し、前のコードは使えなくなる | このチケット | 単体（口・本物の DB）・単体（画面） |\n| 前のコード（出し直した） | Bridge が前のコードを入れる | Bridge（印なし） | 「その接続コードは使えません」。新しく出たコードを案内 | このチケット | 単体（口・本物の DB） |\n| コード（期限切れ・10 分を過ぎた） | Bridge が引き取る | Bridge（印なし） | 「その接続コードは使えません」（違うコードと同じ返事） | このチケット | 単体（口・本物の DB の時刻を進める） |\n| コード（期限切れ） | 長く放っておいた画面 | ログイン中 | 期限が来たら画面が自分で新しいコードに替える | このチケット | 単体（画面・時刻を進める） |\n| コード（使い終わり） | 別の PC が同じコードを入れる | Bridge（印なし） | 「その接続コードは使えません」。先の PC だけがつながったまま | このチケット | 単体（口・本物の DB） |\n| コード（期限内） | 別の端末のブラウザで同じ人が画面を開く | ログイン中 | その端末でも新しいコードが出て、前の端末のコードは使えなくなる | このチケット | 単体（口・本物の DB） |\n| PC（つながって・生きている） | 画面を開く | ログイン中 | 「つながっています」・最後に見えた時刻・PC の名前・Bridge の版 | このチケット | 単体（画面）・単体（口） |\n| PC（つながって・生きている） | Bridge が生きている知らせ | Bridge（印あり） | 最後に見えた時刻が進む。自己診断の結果が残る。古い Bridge には「古い」を足す（E-CONN-012） | このチケット | 単体（口・本物の DB） |\n| PC（記録はあるが、まだ一度も知らせが無い） | 画面を開く | ログイン中 | 「つながっています」と出さない。「アプリからの返事を待っています…」（D-090） | このチケット | 単体（画面） |\n| PC（眠っている・最後の知らせから 75 秒より前） | 画面を開く | ログイン中 | 「切れています」（E-CONN-001）と直し方。Bridge を起こすボタン | このチケット | 単体（画面・時刻を進める） |\n| PC（眠っている） | Bridge が起きて知らせ | Bridge（印あり） | 画面が自分で「つながっています」に戻る | このチケット | 単体（画面・試験の Bridge 役） |\n| PC（つながっている） | 画面を開く | ログイン中（同じ PC で前に別のアカウントでつないだ） | 「この PC は別のアカウントでつながっています」。切り替えるを押したときだけつなぎ直す | このチケット | 単体（画面・試験の Bridge 役） |\n| PC（つながっている） | ブラウザでログアウト | ログアウトした | Bridge はつながったまま（D-128.121） | このチケット | 単体（口・本物の DB） |\n| PC（切れた・外した） | Bridge が生きている知らせ | Bridge（印は切れた） | 401。Bridge は印を捨て、「つなぎ直してください」を窓に出す | このチケット | 単体（口）・単体（Bridge） |\n| PC（外した） | 画面の「外す」 | ログイン中 | 外す（本人確認を取り直す） | PC を外す・名前を変える（F3 のこれから） | — |\n| PC（切れた・パスワードを変えた・再設定した） | Bridge が生きている知らせ | Bridge（印は切れた） | 401（今の app.revoke_all_sessions・0060 で全部切れる） | このチケット（口の 401）・パスワードの変更と再設定のチケット（切る側） | 単体（口・本物の DB） |\n| PC（切れた・人が抜けた・会社が止められた） | Bridge が生きている知らせ | 退会・停止の後 | 401（E-AUTH-005 の扱い） | このチケット（口の 401）・抜ける／止めるのチケット（切る側） | 単体（口・本物の DB） |\n| PC（切れた・国か端末が変わった） | Bridge が生きている知らせ | Bridge（別の国から） | 切って 401。セキュリティの出来事に残す（D-128.120） | このチケット | 単体（口・国の印を替える） |\n| PC（つながっている） | Bridge の窓で仕事を受け取る | Bridge（印あり） | 仕事を受け取る | AI に任せる（F5） | — |\n| PC（つながっている） | 別のワークスペースに切り替えて画面を開く | ログイン中（2 つの会社に入っている） | 下の「聞きたいこと」3 の推奨：いま入っているワークスペースの PC として出す | このチケット | 単体（口・本物の DB） |\n| 配布物（置いていない） | 受け取るを押す | ログイン中 | 「まだ配布していません」と理由（押しても何も起きない、を作らない） | このチケット | 単体（口・画面） |\n| 配布物（置いてある） | 受け取るを押す・Bridge が新しい版を見に来る | ログイン中・Bridge（印あり） | その OS のインストーラを渡す／版と指紋を返す | このチケット | 単体（口） |\n| 配布物（目録にあるのにファイルが無い） | 受け取るを押す | ログイン中 | 「まだ配布していません」と同じ扱い（今の legacyInstaller の探し方に落とす） | このチケット | 単体（口） |\n\n「—」は受け持ちのチケットでテストを書く。中間テスト 2（K-58）は、このうち 確定する・生きている知らせで「つながっています」になる を本物のブラウザと試験の Bridge 役でつなぐ。\n\n### 入力・失敗・操作の揺れ・守り\n\n| 観点 | 分岐 | 結果 | テスト |\n|---|---|---|---|\n| 入力 | 接続コードが空・形が違う・長すぎる | 422・欄ごとの理由（Bridge の窓に出す） | 単体（口・Bridge） |\n| 入力 | コードの大文字小文字・前後の空白・全角・区切りの「-」 | 正規化して同じコードとして扱う | 単体（口） |\n| 入力 | PC の名前が空・長すぎる・制御文字 | 空なら「この PC」、80 文字で切る、制御文字は消す | 単体（口） |\n| 入力 | createPairingCode に member_id・code_hash を入れてくる | 422（外から入れさせない） | 単体（口） |\n| 入力 | 生きている知らせの health が配列でない・約束の版が無い | 自己診断は空として扱い、約束の版が無ければ「古い」を足す | 単体（口） |\n| 入力 | OS（mac／win）と CPU（arm64／x64）が違う値 | 422（受け取る）／更新は返さない（新しい版） | 単体（口） |\n| 失敗 | 配布物の置き場（BRIDGE_RELEASE_BASE）に届かない・遅い | 「読み込めませんでした」（E-PAGE-007）。「まだ配布していません」と混ぜない | 単体（置き場を落とす） |\n| 失敗 | Bridge が Kaname に届かない | Bridge の窓に「Kaname につながりません」。コードは捨てず、もう一度押せる | 単体（Bridge） |\n| 失敗 | 目録（kaname-bridge.json）が壊れている・形が違う | 配っていない扱い（released: false）。500 にしない | 単体（目録を差し替え） |\n| 失敗 | 新しい版のファイルが途中で切れた・指紋が合わない | Bridge は入れ替えず、理由を出す（D-109） | 単体（Bridge・update.ts） |\n| 失敗 | DB が落ちた | 500 の画面。コードは途中まで残らない（引き取りは 1 つの処理で全部か何もしないか） | 単体（口） |\n| 操作の揺れ | 「つなぐ」の 2 回押し・画面を 2 つのタブで開く | コードは最後の 1 つだけが生きる。つながる PC は 1 行 | 単体（画面・口） |\n| 操作の揺れ | 同じコードで同時に 2 つの PC が引き取る | 1 つだけつながり、もう 1 つは「使えません」 | 単体（口・本物の DB） |\n| 操作の揺れ | Bridge が同じ引き取りを 2 回送る（返事が届かず送り直した） | PC は 1 行。2 回目は「使えません」（Bridge は 1 回目の印を持っていなければ、新しいコードでつなぎ直す） | 単体（口） |\n| 操作の揺れ | 生きている知らせが重なって 2 回届く | 最後に見えた時刻が進むだけ。行は増えない | 単体（口・本物の DB） |\n| 守り | 引き取りを 1 分に 6 回 | 429・待つ秒数（D-089：5 回まで） | 単体（口） |\n| 守り | コードを出すのを 1 分に 61 回 | 429・待つ秒数。画面に待ち時間 | 単体（口・画面） |\n| 守り | PC の印でコードを出す口・端末の一覧を呼ぶ／画面のログインで生きている知らせを呼ぶ | 403（役が合わない・ZT10） | 単体（口） |\n| 守り | 他の人・他の会社の PC の印で生きている知らせ | 401（自分の行しか動かない） | 単体（口・本物の DB） |\n| 守り | 端末の一覧 | 自分の PC だけ。他の人・他の会社の PC は件数にも入らない。PC の印（のハッシュ）を返さない | 単体（口・本物の DB） |\n| 守り | DB の中 | 接続コードも PC の印も平文で無い（ハッシュだけ・code_hash の長さの決まり） | 単体（本物の DB） |\n| 守り | ログ | 接続コードと PC の印が出ない | 単体（ログを見る） |\n| 守り | 配布物の名前に「../」や目録に無い名前 | 404。置き場の外を指させない（isListed） | 単体（口） |\n| 守り | この PC の中だけの口（38617）に外のサイトから | 403（許可した出どころ以外は居ることも教えない・今の local.ts） | 単体（Bridge） |\n\n### テストの型の受け\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-AUTH-01 誤ったものと、無いもの | 状態の表「前のコード」「期限切れ」「使い終わり」と入力の「形が違う」：どれも同じ返事 |\n| TP-AUTH-02 続けて失敗する | 守り「引き取りを 1 分に 6 回」（D-089 の 5 回まで） |\n| TP-AUTH-03 コードの期限切れ・使い回し・誤り | 状態の表「コード（期限切れ）」「コード（使い終わり）× 別の PC」「前のコード」 |\n| TP-AUTH-04 セッションが切れた状態で操作する | 状態の表「PC 無し × セッションが切れた」 |\n| TP-AUTH-05 ログアウトの後に戻る・ブックマーク | 状態の表「PC 無し × ログインしていない」（中は見えずログインへ） |\n| TP-AUTH-06 パスワードを変えた・端末を外した | 状態の表「PC（切れた・パスワード）」（このチケットは口の 401）・「PC（外した）」（PC を外す・名前を変える） |\n| TP-AUTH-08 ログインの後に戻す先 | 状態の表「PC 無し × ログインしていない」：戻す先は中の道 `/setup/bridge` だけ（外の道は捨てる） |\n| TP-AUTH-09 国・端末が変わった | 状態の表「PC（切れた・国か端末が変わった）」 |\n| TP-PERM-01 役が合わない人 | 状態の表「取引先の人・運営の人」・守り「PC の印でコードを出す口…」 |\n| TP-PERM-02 権限を外した直後に押す | 状態の表「PC（切れた・人が抜けた・会社が止められた）」：次の知らせで止まる |\n| TP-PERM-03 他の会社の ID を直接 | 守り「他の人・他の会社の PC の印で生きている知らせ」 |\n| TP-PERM-04 一覧・数 | 守り「端末の一覧」 |\n| TP-FILE-01 大きさ・0 バイト | 状態の表「配布物（目録にあるのにファイルが無い）」・失敗「途中で切れた・指紋が合わない」（大きさと指紋を Bridge が確かめる） |\n| TP-FILE-02 拡張子と中身が違う | 失敗「指紋が合わない」：中身を指紋で見分けて入れ替えない（D-109） |\n| TP-FILE-03 名前 | 守り「配布物の名前に「../」や目録に無い名前」 |\n| TP-FILE-04 途中で切れた | 失敗「新しい版のファイルが途中で切れた」 |\n| TP-FILE-05 他の人のファイルの URL を直接 | 配布物は人ごとのファイルではない。ログインしていない人が直に開くと 401（状態の表「ログインしていない」）・PC の印は聞きたいこと 1 の推奨 |\n| TP-EXT-01 外が落ちた・遅い | 失敗「配布物の置き場に届かない」「Bridge が Kaname に届かない」 |\n| TP-EXT-02 想定外の形 | 失敗「目録が壊れている」・入力「health が配列でない」 |\n| TP-EXT-03 同じ知らせが 2 回届く | 操作の揺れ「生きている知らせが重なって 2 回」「同じ引き取りを 2 回」 |\n\n要らない: TP-AUTH-07 契約で PC をつなぐ口は本人確認の取り直しを求めていない（step_up が無い・08_api/phase1/05）。取り直しが要る PC を外すは別のチケット\n要らない: TP-PERM-05 PC をつなげるかは役（社内の人か）だけで決まり、後から付ける権限で変わらないため",
@@ -2280,7 +2280,7 @@
    "milestone": "骨格",
    "area": "試験",
    "assignee": "未定",
-   "due": "",
+   "due": "2026-11-10",
    "decisions": [
     "D-128.125",
     "D-128.131",
@@ -2294,7 +2294,7 @@
    ],
    "sections": {
     "目的": "PC をつなぐ（K-57）とチケットを作る（K-60）を合わせ、使い始めた人が「PC をつないで、つながった印を見てから、最初のチケットを作る」まで、一続きの操作として通れるかを確かめる。歩く骨格の 2 つ目の中間テスト（D-128.131）。",
-    "完了の条件": "- [ ] 下の筋が全部、本物のブラウザ（Playwright）・本物の DB の上で緑\n- [ ] 中の操作のチケットの単体のテストが先に緑（この試験は、揃えた最後のチケット K-60 が取り込む前に流す）\n- [ ] 手元の CI（dagci）の段に入っている",
+    "完了の条件": "- [ ] 下の筋が全部、本物のブラウザ（Playwright）・本物の DB の上で緑\n- [ ] 中の操作のチケットの単体のテストが先に緑（この試験は、揃えた最後のチケット K-60 が取り込む前に流す）\n- [ ] 手元の CI（act・GitHub と同じ workflow の全部）の段に入っている",
     "前提と制約": "- 中の 1 本 1 本の分岐は単体のテストが受け持つ。ここは、つないだときにだけ出るもの（つながった印が次の画面にも出るか・PC の生死の判定がチケットの画面と合うか・使い始めの手順の進みが残るか）を見る\n- PC は試験用の PC の受け口（apps/web/tests/_lib/fake-bridge.ts）で立てる。75 秒の生死の境目は DB の時刻を進める（待たない）",
     "実施事項": "- 試験のファイル：`apps/e2e/tests/skeleton/m2-bridge-ticket.spec.ts`\n- 中間テスト 1（K-54）の正常の筋で作った人から始める（同じ準備の道具を使う）",
     "テスト仕様と確認の結果": "| 筋 | 操作 | 期待結果 | つなぎ目で見るもの |\n|---|---|---|---|\n| 正常 | PC をつなぐ（コードを出す → PC が受け取る）→ つながった印 → チケットを作る | チケットができ、画面に「この PC で動かせます」が出る | つないだ PC がチケットの画面の行き先として見える |\n| つないでからしばらく | つないで 74 秒・76 秒たってからチケットの画面を開く | 74 秒はつながっている、76 秒は閉じている表示（K-57 の境目と同じ） | 生死の判定が画面ごとにずれない |\n| PC を閉じたまま | つないだ後に PC を止め、チケットを作る | チケットは作れる。PC が閉じている案内が出る | 作ることは PC の有無に縛られない |\n| コードの期限切れ | コードを出して期限を過ぎてから PC が受け取る | PC 側に期限切れ。画面は新しいコードを出せる | 使い始めの手順が進まないまま止まらない |\n| 別のタブ | タブ A で PC をつなぎ、タブ B のチケットの画面を再読み込み | B にもつながった印が出る | つながりの状態が画面をまたいで同じ |\n| 使い始めの手順 | PC をつないでから、使い始めの画面に戻る | 「PC をつなぐ」が済みになっている | 手順の進みが残る |",
@@ -2309,12 +2309,12 @@
    "id": "K-59",
    "title": "F4 チケットを作って中身を決める（流れのまとまり・まだ切っていない）",
    "kind": "タスク",
-   "stage": "未着手",
+   "stage": "作業中",
    "parent": "",
    "milestone": "流れ",
    "area": "流れ",
    "assignee": "未定",
-   "due": "",
+   "due": "2026-11-17",
    "decisions": [
     "D-008",
     "D-012",
@@ -2445,12 +2445,12 @@
    "id": "K-60",
    "title": "チケットを作る（画面で題名・種別・担当者・期限と中身を書いて作る）",
    "kind": "タスク",
-   "stage": "未着手",
+   "stage": "作業中",
    "parent": "K-59",
    "milestone": "骨格",
    "area": "チケット",
    "assignee": "未定",
-   "due": "",
+   "due": "2026-11-10",
    "decisions": [
     "D-125.6",
     "D-125.30",
@@ -2531,7 +2531,7 @@
    "milestone": "流れ",
    "area": "流れ",
    "assignee": "未定",
-   "due": "",
+   "due": "2026-11-13",
    "decisions": [
     "D-007",
     "D-012",
@@ -2653,7 +2653,7 @@
    "milestone": "骨格",
    "area": "AI",
    "assignee": "未定",
-   "due": "",
+   "due": "2026-11-11",
    "decisions": [
     "D-090",
     "D-093",
@@ -2719,7 +2719,7 @@
    ],
    "sections": {
     "目的": "チケットの担当者が、チケットの詳細で「AI に任せる」を押すと、**その担当者の AI**（本人の PC の Bridge が動かす本人の Claude Code）に仕事が渡る。PC が仕事を受け取り、途中の様子を返し、要るときは Kaname の道具でチケットを読み、作ったもの（成果物）を返す。返ってきた成果物はチケットの「成果物」の区画に版つきで入り、チケットは **承認待ち** になる。\n\n**このチケットは外に何も出さない。** 送る・応募するなど外に出る実行は、人が承認してから（次のチケット「承認して完了する」K-63）。\n\n確定の時点は 2 つ。① 任せたことが確定するのは、仕事（bridge_jobs の行）と実行の記録（action_runs の行）を 1 回の書き込みで作り、チケットを「実行中」にした時点。② 成果物が確定するのは、PC から「終わった」と**中身のある結果**が届き、成果物の区画の新しい版と承認待ちの行を作った時点。",
-    "完了の条件": "- 下の 2 つの表の「このチケット」のマスと、全部の分岐のテストが緑\n- 契約の口 8 本（delegateTicket・takeBridgeJob・reportJobProgress・getJobControl・callKanameTool・finishBridgeJob・getActionRun・listTicketRuns）が 501 でない\n- 前の道すじ `POST /api/auth-ext/bridge/take`・`/bridge/progress`・`/bridge/finish`（apps/api/src/auth/ext.ts）・`/bridge/control`（apps/api/src/auth/agent.ts）・`/bridge/tool`（apps/api/src/auth/agent-tools.ts）が消え、Bridge（apps/bridge/src/loop.ts・kaname-tools.ts）が契約の口を呼んでいる。会話（chat）とログインの試し（login_check）の仕事も、前と同じに動く\n- 単体のテスト（下の表で「このチケット」が受け持つマスと、全部の分岐）が本物の DB と本物のブラウザの上で緑。Bridge の側は apps/bridge/test で緑\n- 中間テスト 3「AI に任せる → 承認して完了する」（K-64）のうち、このチケットの分が通る\n- 手元の CI（dagci）が緑",
+    "完了の条件": "- 下の 2 つの表の「このチケット」のマスと、全部の分岐のテストが緑\n- 契約の口 8 本（delegateTicket・takeBridgeJob・reportJobProgress・getJobControl・callKanameTool・finishBridgeJob・getActionRun・listTicketRuns）が 501 でない\n- 前の道すじ `POST /api/auth-ext/bridge/take`・`/bridge/progress`・`/bridge/finish`（apps/api/src/auth/ext.ts）・`/bridge/control`（apps/api/src/auth/agent.ts）・`/bridge/tool`（apps/api/src/auth/agent-tools.ts）が消え、Bridge（apps/bridge/src/loop.ts・kaname-tools.ts）が契約の口を呼んでいる。会話（chat）とログインの試し（login_check）の仕事も、前と同じに動く\n- 単体のテスト（下の表で「このチケット」が受け持つマスと、全部の分岐）が本物の DB と本物のブラウザの上で緑。Bridge の側は apps/bridge/test で緑\n- 中間テスト 3「AI に任せる → 承認して完了する」（K-64）は、揃える最後のチケット K-63 が取り込む前に流す（このチケットの完了の条件には入れない）\n- 手元の CI（act・GitHub と同じ workflow の全部）が緑",
     "前提と制約": "分類: AI, JOB, PERM, EXT\n\n- 流れ F5「AI に任せて、確かめて、終える」（K-61）。歩く骨格の 6 本目（D-128.131）\n- 依存：チケットを作る（K-60）。チケットの詳細の画面 `/tickets/[id]` と、担当者の決まったチケットがあること。PC をつなぐ（K-57）で、PC の印（ヘッダ `x-bridge-session`）から `ctx.role = \"device\"` になる入口ができていること（K-60 の前に揃う）\n- 次のチケット「承認して完了する」（K-63）とは、下の表のマスで受け持ちを分ける。承認・差し戻し・完了・承認の後の実行は K-63\n- ① 機械の検査と ② AI の判定（テスト仕様を流す）はこのチケットでは流さない。後の F5 のチケット「確認を流す」（K-61 から切る）が、成果物が届いた後・承認待ちの前に挟む\n- テストはこのチケットを作る人がコードまで書き、実装する人は変えない（D-128.125）",
     "実施事項": "### 作り方（実装の詳細）\n\n| 欄 | 中身 |\n|---|---|\n| 画面 | `apps/web/features/F5/delegate/`。チケットの詳細（K-60 の `/tickets/[id]`）の上の帯に「AI に任せる」のボタン、任せた後は「高本のAI が作っています」と途中の 1 行（reportJobProgress の status／progress の最新）、PC が閉じているときは「実行待ち・PC が閉じています」、止まったときは理由。実行の 1 件（右のパネルの「実行の記録」）。新しい部品 `components/k` の Button・Notice・Badge・states で組む。キャンバスの絵 `TicketDetail`・`StRunning`・`StFailed`・`TdRunLog`。様子は 3 秒ごとに getActionRun を読む（@tanstack/react-query 5.102 の refetchInterval。動いていないときは止める） |\n| API（人が呼ぶ） | `delegateTicket`（POST /api/v1/tickets/:id/delegate・member・60 回／分／人・関門 C2 C3 C5）・`listTicketRuns`（GET /api/v1/tickets/:id/runs・member・120 回／分）・`getActionRun`（GET /api/v1/action_runs/:id・member・120 回／分） |\n| API（PC が呼ぶ） | `takeBridgeJob`（POST /api/v1/bridge/jobs/take）・`reportJobProgress`（POST …/jobs/:id/progress）・`getJobControl`（GET …/jobs/:id/control・120 回／分）・`callKanameTool`（POST …/jobs/:id/tools/:name）・`finishBridgeJob`（POST …/jobs/:id/finish）。どれも device・60 回／分。振る舞いは `apps/api/src/features/F5/delegate/`（`index.ts` が `delegateHooks(pool)` を返し、apps/api/src/app.ts の hooks に足す。`people.ts`＝人が呼ぶ 3 本、`bridge.ts`＝PC が呼ぶ 5 本、`tools.ts`＝道具） |\n| 関門 | C2：書き込みはどれも DB の関数（security definer）を通し、会社をまたがない。C3・C5：モデルを呼ぶのとプロセスを起こすのは本人の PC の上（apps/bridge/src/runner.ts・proc.ts が本人の Claude Code を起こす）。Kaname のサーバーは @kaname/llm・@kaname/runtime を呼ばない（D-097・D-125.153） |\n| DB | 使う表：`bridge_jobs`（state_id：queued・running・asking・done・stopped・cancelled、stop_requested_at、tool_token_hash、kind、agent_session_id、result、stopped_reason）・`bridge_job_events`（kind：init・progress・status・tool・usage・limit・blocked・notice ほか）・`action_runs`（status_id・bridge_job_id・started_at・finished_at・error_summary）・`tickets`（stage_id・delegated_to_clone・assignee_member_id・deleted_at）・`ticket_stages`（running・awaiting_approval・doing）・`ticket_sections`／`ticket_section_versions`（区画 artifacts に版で入れる）・`ticket_messages`（kind system で「実行の記録」の 1 行・D-125.106）・`approvals`（kind artifact・approver_member_id＝担当者・decision は空）・`sessions`（kind_id bridge・last_seen_at・revoked_at） |\n| migration（1 本足す） | ⓪ 仕事を受け取った PC の列 `bridge_jobs.taken_session_id uuid references sessions(id)`（D-128.163。このチケットと K-91 のうち先に作る方が `add column if not exists` で足す）。仕事を受け取る口 takeBridgeJob が、受け取った PC の id を書く。PC が眠っていて待ちの仕事を受け取れないときは、チケットの仕事の行に「PC が起きるのを待っています」と出す（D-128.163）。K-91 が止めた仕事の「PC を外したので止まりました」もこのチケットの仕事の行に出す ① `bridge_jobs_kind_check` に `ticket` を足す。② `action_runs` に `ticket_id uuid references tickets(id)`・`phase text check (phase in ('make','execute'))` と索引 `(ticket_id, created_at)` を足す（execute は K-63 が使う）。③ 関数 `app.ticket_delegate(p_member, p_ticket)`（担当者か・走っている実行が無いか・PC をつないだことがあるか を中で判定し、仕事・実行の記録・段の変更を 1 回で書く。返すのは run_id と live）。④ `app.bridge_take_job` に ticket の仕事を足す（プロンプトはチケットの目的・完了の条件・前提と制約・相手・実施事項から組む。続きの id は同じチケットの前の実行から引く・D-125.157）。⑤ `app.bridge_finish_job` に ticket の分かれ道を足す（下の「決めた判断」）。⑥ `app.bridge_control` に「止める理由」を足す（チケットが消された・担当が替わった・本人がメンバーでない）。⑦ `app.bridge_tool_job` が ticket の仕事も返す。新しい表は作らない |\n| 道具（callKanameTool） | 道具の鍵（take で渡す `tool_token`、DB にはハッシュだけ）と PC の印の両方で、その仕事の間だけ・担当者の会社と権限の中だけで呼べる（D-110）。このチケットで足す道具は `ticket_read`（任された 1 枚のチケットの区画を読む）だけ。会話の仕事の道具（goal_set・ledger_set・duty_set・remember・draft_read）は今の中身のまま契約の口へ移す。`artifact_put`（ファイルで返す）は putArtifactFromBridge のチケットへ回し、このチケットでは成果物は finish の結果の文で返す |\n| 使う部品と版 | Hono 4.10（apps/api）・pg 8.16・zod 4（契約の BridgeJobsInput・BridgeJobEventsInput・ActionRunsInput。strictObject）・Next.js 15.5／React 19.1（apps/web）・@tanstack/react-query 5.102・Electron 33（apps/bridge）・本人の Claude Code（stream-json で完了のイベントを受ける・D-093）・Vitest 3.2・Playwright 1.63 |\n| 使う既存の実装（目録で探した） | 前の道すじの中身をそのまま契約の口へ移す：`/bridge/take`（ext.ts の takeJob・待ち受け 20 秒・`app.bridge_poll`・`app.bridge_sweep_orphans`・`app.bridge_blocked_domains`・`issueToolToken`・`app.bridge_job_memories`・古い Bridge を断る BRIDGE_PROTOCOL_MIN）、`/bridge/progress`（toolRecord・usageRecord・planRecord・blockedRecord・limitRecord と `app.bridge_progress`）、`/bridge/finish`（`app.bridge_finish_job`・`app.artifact_attach_job`・takeRemember・digest の扱い）、`/bridge/control`（agent.ts・`app.bridge_control`）、`/bridge/tool`（agent-tools.ts の TOOLS・`app.bridge_tool_job`・`app.agent_tool_audit`）。生きているかの判定 `app.bridge_session_alive`（0036）と「75 秒」の判定（0058 の bridge_state の live）。Bridge が空の結果を止まった扱いにする runner.ts（reason \"empty\" → 「Claude Code が何も返さずに終わりました」）。既存のテスト apps/api/test/bridge_orphans.test.ts・bridge_take_wait.test.ts・bridge_stream.test.ts・agent_tools.test.ts を契約の口に向け直して使う |\n| 新しく作るもの | チケットを任せる関数 `app.ticket_delegate`（目録に無い。似たものは会話の `app.agent_enqueue`：会話に積むだけで、担当者の判定・実行の記録・チケットの段を持たない）・道具 `ticket_read`・画面の帯 |\n| 共通の決まり | エラーの文言は errors.json から引く（E-CONN-001・E-CONN-002・E-CONN-010・E-CONN-012・E-TO-003・E-TO-004・E-SIG-001・E-SIG-002・E-SIG-003・E-LIM-010・E-AUTH-005）・ログにプロンプトと結果の全文を出さない・時刻は timestamptz で持ち日本時間で出す（D-128.130） |\n\n### 決めた判断\n\n- 任せられるのは、そのチケットを直せる権限の人なら誰でも（D-128.138）。動くのは**押した人の AI**（その人の PC）。担当者が押せば担当者の AI。誰の AI が動いたかを action_runs に残す。見るだけの人は任せられない\n- 実行者の欄は持たない。任せていることは `tickets.delegated_to_clone` とロボットの印・段（実行中）で出す（D-128.26・D-125.38）\n- PC を一度もつないでいない・外した人は、積まずに 409 で「PC をつなぐ」の案内へ（D-125.143・E-CONN-001）。つないだことがあり、いま閉じている（最後の知らせから 75 秒を過ぎた）ときは**積んで待つ**。PC が開いたら取る（E-CONN-002）。Bridge を閉じた直後（0〜75 秒）は、まだ「つながっている」と出るが、積んだ仕事は無くならない（E-TO-003）\n- 同じチケットに走っている実行（action_runs の status が queued・running・asking）がある間は、二つ目を積まない（409）\n- 止まったものは自動で再開しない（D-090）。続きから・やり直す・自分でやる は F7 の retryActionRun・takeoverActionRun\n- 終わりの扱い（G-15）：PC が「終わった」と言っても、結果が空なら完了と見なさず「止まった」にする（E-SIG-001）。Claude Code が合図を出さずに終わったら、Bridge が「何も返さずに終わりました」で止まったと送る（E-SIG-002・既存）。PC が落ちて何も来ないときは、最後の出来事から 10 分（確認待ちの間は 30 分）たったら、画面に「PC から 10 分知らせがありません。止まったとみなしています」と出す（D-110 の 10 分・E-TO-004）。行を「止まった」に書き換えるのは、次にその人の PC が取りに来たとき（`app.bridge_sweep_orphans`）か、本人が止めたとき。読む口（GET）は書き換えない\n- 結果が届いたら：成果物の区画（section_key artifacts）に新しい版を作り（edited_by_clone = true）、承認待ちの行（approvals：kind artifact・approver_member_id＝担当者・action_run_id）を作り、チケットを承認待ちにする。テスト仕様がまだ流れない骨格の間は、承認カードに「検査なし（まだ流していません）」と出す（D-125.56 にならう・下の「聞きたいこと」2）\n- 任せている間に担当が替わった（横渡し）・チケットが消された・担当者がメンバーでなくなった・書く権限を失ったときは、control が止めるを返し、その後に届いた結果は成果物にも承認待ちにもせず、実行を「止まった」として理由を残す（D-125.156・D-128.96）。担当者がメンバーから外れると PC の接続も切れ、PC の口は 410 になる（D-128.121・E-AUTH-005）\n- 作る段の仕事は、許可のモードを「聞く」（permission_mode manual）で渡し、台帳で禁止・銀行のドメインも一緒に渡す（既存の take のまま）。送信などの道具は本人に聞いてくる（D-093）。外に出す実行は承認の後（K-63）\n- 実行の記録はチケットのやり取りに 1 行（任せた・作り終えた・止まった と時刻）、細かいことは実行の 1 件（getActionRun）に出す（D-125.106）",
     "テスト仕様と確認の結果": "### 状態 × 入口 × 利用者の状態\n\n状態の候補（DB の列から出した）：tickets.stage_id（todo・doing・hold・checking・awaiting_approval・running・done）・tickets.deleted_at・tickets.assignee_member_id の変化、bridge_jobs.state_id（queued・running・asking・done・stopped・cancelled）・stop_requested_at、action_runs.status_id、sessions（kind bridge）の有無・revoked_at・last_seen_at（75 秒）、bridge_job_events の最後の created_at（10 分・30 分）\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 未着手・作業中・保留（走っている実行なし）／PC つながっている | チケットの詳細の「AI に任せる」 | 担当者でログイン中 | 仕事と実行の記録を作り、チケットは実行中。PC がすぐ取り、途中の 1 行が出る | このチケット | 単体（口・本物の DB）・単体（画面） |\n| 同じ／PC 閉じている（つないだことはある・最後の知らせから 75 秒を過ぎた） | 「AI に任せる」 | 担当者 | 積んで待つ。「実行待ち・PC が閉じています。PC を開いたら始めます」（E-CONN-002） | このチケット | 単体（口・本物の DB の時刻を進める）・単体（画面） |\n| 同じ／Bridge を閉じた直後（最後の知らせから 74 秒・76 秒） | 「AI に任せる」 | 担当者 | どちらも積む。74 秒は「つながっている」、76 秒は「実行待ち」。開き直したら取る（E-TO-003・G-12） | このチケット | 単体（本物の DB の時刻を 74 秒・76 秒に置く） |\n| 同じ／PC を一度もつないでいない・外した | 「AI に任せる」 | 担当者 | 409・積まない。「PC をつなぐ」の案内（E-CONN-001・D-125.143） | このチケット | 単体（口・画面） |\n| 待っている（queued） | PC が取りに来る（takeBridgeJob） | その人の PC | 1 件だけ渡す。2 台目・2 回目には渡さない | このチケット | 単体（本物の DB で同時に 2 本） |\n| 待っている | 古い Bridge が取りに来る | その人の PC | 渡さず、待ったまま。「Bridge を入れ直して」（E-CONN-012） | このチケット | 単体（口） |\n| 待っている | 別の人の PC が取りに来る | 他人の PC | 渡さない（その人の仕事だけ） | このチケット | 単体（本物の DB） |\n| 動いている（running） | PC が途中の様子を送る | その人の PC | 記録し、画面の 1 行が切り替わる | このチケット | 単体（口）・単体（画面） |\n| 動いている | PC が道具 ticket_read を呼ぶ | その人の PC（鍵が合う） | 任された 1 枚の区画だけを返す。証跡に残す | このチケット | 単体（口・本物の DB） |\n| 動いている | PC が中身のある結果で「終わった」 | その人の PC | 成果物の区画に新しい版・承認待ちの行・チケットは承認待ち。やり取りに 1 行 | このチケット | 単体（口・本物の DB） |\n| 動いている | PC が空の結果で「終わった」 | その人の PC | 完了と見なさず止まった。「結果を返さずに終わりました」（E-SIG-001） | このチケット | 単体（口） |\n| 動いている | Claude Code が合図なしで終わる | その人の PC | Bridge が「何も返さずに終わりました」で止まったと送る（E-SIG-002） | このチケット | 単体（apps/bridge/test） |\n| 動いている | Claude Code ログインしていない・使う量の枠に当たった | その人の PC | 止まった。理由と戻る時刻（E-CONN-010・E-LIM-010） | このチケット | 単体（apps/bridge/test・口） |\n| 動いている（最後の出来事から 10 分。確認待ちは 30 分） | 担当者が画面を開く | 担当者 | 「PC から 10 分知らせがありません。止まったとみなしています」。行は書き換えない（E-TO-004） | このチケット | 単体（本物の DB の時刻を 9 分 59 秒・10 分 1 秒に置く） |\n| 動いている（PC が落ちた後） | PC がつながり直して「何も動かしていない」と取りに来る | その人の PC | 残った仕事を理由つきで止め、やり取りに「ここで止まりました」。同じ仕事を二度動かさない | このチケット | 単体（既存 bridge_orphans.test.ts を向け直す） |\n| 動いている | PC が止める合図を見に来る（getJobControl） | その人の PC | 止める理由が無ければ stop: false | このチケット | 単体（口） |\n| 動いている | 担当者が「止める」を押す | 担当者 | 止める合図を立て、PC が受けて止まる | AI を止める（stopActionRun・K-61 から切る） | — |\n| 動いている | 担当が別の人に替わった | — | control が止めるを返す。後で届いた結果は成果物にせず、止まった「担当が替わったので止めました」 | このチケット | 単体（本物の DB） |\n| 動いている | チケットが消された | — | control が止めるを返す。結果は入れず、止まった「チケットが消されたので止めました」 | このチケット | 単体（本物の DB） |\n| 動いている | 担当者がメンバーから外れた・止められた | — | PC の接続が切れ、PC の口は 410。仕事は止まったで残る（E-AUTH-005・G-14） | このチケット（口の側）・外す操作は F8 | 単体（口・本物の DB） |\n| 動いている | 担当者の書く権限が無くなった（閲覧のみに） | — | 道具は 403。control が止めるを返し、結果は入れない | このチケット | 単体（本物の DB） |\n| 確認待ち（asking） | AI が「実行していいか」と聞いた | 担当者 | 本人が答える | 許可に答える（askFromBridge・K-61 から切る） | — |\n| 待っている・動いている・確認待ち | 「AI に任せる」をもう一度・別のタブで | 担当者 | 409・二つ目を積まない。今の実行を出す | このチケット | 単体（口・本物の DB で同時に 2 本）・単体（画面） |\n| 止まった（stopped）・やめた（cancelled） | 「AI に任せる」 | 担当者 | 新しく任せられる（前の実行は記録に残る） | このチケット | 単体（口） |\n| 止まった | 「続きから」「やり直す」「自分でやる」 | 担当者 | 決めた一手を打つ | 止まった理由を見て一手を打つ（retryActionRun・takeoverActionRun・K-67） | — |\n| 承認待ち | 「AI に任せる」 | 担当者 | 409「承認待ちです。承認の帯で決めてください」。ボタンは出さない | このチケット | 単体（口・画面） |\n| 承認待ち | 承認する・差し戻す | 担当者 | 承認・差し戻しを記録する | 承認して完了する（K-63） | — |\n| 完了 | 「AI に任せる」 | 担当者 | 409・ボタンは出さない | このチケット | 単体（口・画面） |\n| どれでも | 「AI に任せる」 | 担当者でないが直せる権限がある（作った人・マネージャー・同じグループの人） | 任せられる。押した人の PC に仕事が積まれ、記録に押した人が残る | このチケット | 単体（口・画面・本物の DB） |\n| どれでも | 「AI に任せる」 | 見るだけの権限 | ボタンは出さない。口は 403・何も積まない | このチケット | 単体（口・画面） |\n| どれでも | 直に API | ログインしていない・セッションが切れた | 401 | このチケット | 単体（口） |\n| どれでも | 直に API で別のワークスペースのチケット・実行の ID | ログイン中 | 404・中身を返さない | このチケット | 単体（口・本物の DB） |\n| 動いている | 実行の 1 件・実行の一覧を開く | 同じグループで見える人 | 状態・途中の様子・止まった理由が見える。見えないチケットの実行は出ない | このチケット | 単体（口・本物の DB） |\n| 動いている | 再読み込み・ブックマーク・別の端末で開く | 担当者 | 今の状態をそのまま出す。二重に積まない | このチケット | 単体（画面） |\n| どれでも | PC の口を PC の印なしで呼ぶ・画面のセッションで呼ぶ | ログイン中の人 | 403（device だけ） | このチケット | 単体（口） |\n| 待っている（queued） | PC が取りに来る（takeBridgeJob） | その人の PC | 渡すときに受け取った PC（`bridge_jobs.taken_session_id`）をその PC のセッションにする（K-91 の「外した PC の動いている仕事を止める」がこの列で決める・D-128.163） | このチケット | K62-API-101 |\n| 待っている（queued）・PC 閉じている | チケットの詳細を開く | 担当者 | 実行の 1 行に「PC が起きるのを待っています」 | このチケット | K62-UI-101 |\n| 止まった（その PC を外した・K-91） | チケットの詳細を開く | 担当者 | 実行の 1 行に「PC を外したので止まりました」（止めるのは K-91・出すのはこのチケット） | このチケット（出し方）・端末を外す（K-91・止め方） | K62-UI-102 |\n\n「—」は受け持ちのチケットでテストを書く。中間テスト 3（K-64）は、このうち 任せる → PC が取る → 結果 → 承認待ち と、PC が閉じていて開いたら取る を本物のブラウザと本物の Bridge（テスト用の Claude Code の代わり）でつなぐ。\n\n### 入力・失敗・操作の揺れ・守り\n\n| 観点 | 分岐 | 結果 | テスト |\n|---|---|---|---|\n| 入力 | チケットの id が uuid でない | 422 | 単体（口） |\n| 入力 | delegate の本文に知らない欄 | 422（契約が strictObject） | 単体（口） |\n| 入力 | progress の kind が決まった値でない | 422 | 単体（口） |\n| 入力 | progress の文が長すぎる（400 字・返事は 200000 字を超える） | 切って入れる（今のまま） | 単体（口） |\n| 入力 | finish の state が done・stopped・cancelled 以外 | 422 | 単体（口） |\n| 入力 | finish の結果が契約の上限（10000 字）を超える | 422。Bridge は止まった「結果が長すぎて受け取れません」で送り直す | 単体（口・apps/bridge/test） |\n| 入力 | 結果の文に HTML・制御文字 | 画面で動かない（react-markdown と rehype-sanitize で出す） | 単体（画面） |\n| 入力 | 道具の名前が無い・知らない | 422 | 単体（口） |\n| 失敗 | delegate の途中で DB が落ちた | 500。仕事・実行の記録・段の変更は 1 つも残らない | 単体（口・本物の DB） |\n| 失敗 | 途中の様子が届かない | Bridge は仕事を続ける（今のまま） | 単体（apps/bridge/test） |\n| 失敗 | finish が回線で届かない | Bridge が同じ冪等キーで送り直す。1 回分だけ入る | 単体（口・apps/bridge/test） |\n| 失敗 | PC が何も言わずに消えた | 10 分で画面に出す。次に取りに来たとき止める | 状態の表のとおり |\n| 失敗 | 結果の形が想定と違う（空・中身なし） | 落ちずに止まった扱い | 単体（口） |\n| 操作の揺れ | 「AI に任せる」を 2 回押し | 仕事は 1 つ | 単体（画面） |\n| 操作の揺れ | 2 つのタブで同時に任せる | 仕事は 1 つ・後の方は 409 | 単体（口・本物の DB） |\n| 操作の揺れ | 同じ finish が 2 回届く | 1 回分だけ。2 回目は最初の結果を返す（冪等キー）か、動いていない仕事なので 404 | 単体（口） |\n| 操作の揺れ | 任せた直後に戻る・再読み込み | 実行中の帯が出る。二重にならない | 単体（画面） |\n| 操作の揺れ | 会話（chat）の仕事が動いている間に任せる | 同じ PC が順に片づける。会話の順番待ちは変えない | 単体（本物の DB） |\n| 守り | 1 分に 61 回（delegate）・121 回（get） | 429・待つ秒数 | 単体（口） |\n| 守り | 担当者でない人 | 403・副作用なし | 状態の表のとおり |\n| 守り | 別のワークスペースの id | 404 | 状態の表のとおり |\n| 守り | 終わった仕事の道具の鍵・別の人の鍵 | 403・書けない | 単体（本物の DB） |\n| 守り | 道具の鍵が DB に平文で残らない | tool_token_hash だけ | 単体（本物の DB） |\n| 守り | ログ | プロンプトと結果の全文・道具の鍵が出ない | 単体（ログを見る） |\n| 守り | PC に資格情報を渡さない | take の答えに資格情報の値が無い | 単体（口） |\n| 守り | 道具の呼び出しの証跡 | 誰の仕事・どの道具・何を が audit_events に残る（関門 C2） | 単体（本物の DB） |\n\n### テストの型の受け\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-AI-01 外に出す前 | このチケットは外に出さない。作る段は許可のモード「聞く」と禁止のドメインつきで渡す（守り「PC に資格情報を渡さない」・決めた判断）。外に出す実行は承認の後（K-63 の状態の表） |\n| TP-AI-02 止める・取り下げ・PC が閉じている | 状態の表「PC 閉じている」「Bridge を閉じた直後」「止める合図」「担当が替わった」（止めるボタンは「AI を止める」が受け持ち） |\n| TP-AI-03 利用量の上限 | 状態の表「使う量の枠に当たった」（止まった・戻る時刻を出す・E-LIM-010） |\n| TP-AI-04 予期しない出力 | 状態の表「空の結果」「合図なしで終わる」・入力「finish の結果が上限を超える」・失敗「結果の形が想定と違う」 |\n| TP-JOB-01 途中で止まった・再起動 | 状態の表「PC がつながり直して取りに来る」（止めて残す・二度動かさない）・「待っている × 同時に 2 本」 |\n| TP-JOB-02 時刻の扱い | 状態の表「74 秒・76 秒」「9 分 59 秒・10 分 1 秒」。判定は DB の now() と timestamptz、画面は日本時間 |\n| TP-JOB-03 途中で対象が消えた | 状態の表「チケットが消された」「担当が替わった」 |\n| TP-PERM-01 役が合わない人 | 状態の表「担当者でない」・「PC の口を画面のセッションで呼ぶ」 |\n| TP-PERM-02 権限を外した直後 | 状態の表「書く権限が無くなった」「メンバーから外れた」（口で止まる） |\n| TP-PERM-03 他の会社の ID | 状態の表「別のワークスペースのチケット・実行の ID」 |\n| TP-PERM-04 一覧・数 | 状態の表「実行の 1 件・実行の一覧」（見えないチケットの実行は出ない・件数にも混ざらない） |\n| TP-PERM-05 権限を付けた直後 | 単体（本物の DB）：担当者にした直後に、入り直さずに任せられる（行の決まりは毎回 DB で見る） |\n| TP-EXT-01 外が落ちた・遅い | 失敗「PC が何も言わずに消えた」（10 分で画面に出し、止めるのは次に取りに来たとき）・「途中の様子が届かない」 |\n| TP-EXT-02 想定外の形 | 入力「progress の kind」「finish の state」・失敗「結果の形が想定と違う」 |\n| TP-EXT-03 同じ知らせが 2 回 | 操作の揺れ「同じ finish が 2 回届く」・失敗「finish が回線で届かない」 |",
@@ -2739,7 +2739,7 @@
    "milestone": "骨格",
    "area": "AI",
    "assignee": "未定",
-   "due": "",
+   "due": "2026-11-12",
    "decisions": [
     "D-012",
     "D-090",
@@ -2804,7 +2804,7 @@
    ],
    "sections": {
     "目的": "AI に任せたチケット（K-62）の成果物が承認待ちに並ぶ。承認する人（そのチケットの担当者）は、承認待ちの画面かチケットの詳細の帯で中身を見て、**承認する**か、理由を書いて**差し戻す**。承認したら、AI が外に出す実行（送る・応募する など）をする。実行が終わったら、担当者が完了の条件を確かめて**完了にする**。\n\n確定の時点は 3 つ。① 承認が確定するのは、承認の行に決めたこと（decision）と時刻が入った時点。決まった承認は変えられない（migration 0063 の approvals_once）。② 実行が確定するのは、承認の後の仕事を PC が「終わった」と返した時点。③ 完了が確定するのは、チケットが完了の段（done）になった時点。",
-    "完了の条件": "- 下の 2 つの表の「このチケット」のマスと、全部の分岐のテストが緑\n- 契約の口 5 本（listApprovalQueue・getApproval・approveApproval・returnApproval・completeTicket）が 501 でない\n- 単体のテスト（下の表で「このチケット」が受け持つマスと、全部の分岐）が本物の DB と本物のブラウザの上で緑\n- 中間テスト 3「AI に任せる → 承認して完了する」（K-64）が通る。統合テスト（登録 → … → 承認して完了・K-65）の最後の段が通る\n- 手元の CI（dagci）が緑",
+    "完了の条件": "- 下の 2 つの表の「このチケット」のマスと、全部の分岐のテストが緑\n- 契約の口 5 本（listApprovalQueue・getApproval・approveApproval・returnApproval・completeTicket）が 501 でない\n- 単体のテスト（下の表で「このチケット」が受け持つマスと、全部の分岐）が本物の DB と本物のブラウザの上で緑\n- 中間テスト 3「AI に任せる → 承認して完了する」（K-64）が通る。統合テスト（登録 → … → 承認して完了・K-65）の最後の段が通る\n- 手元の CI（act・GitHub と同じ workflow の全部）が緑",
     "前提と制約": "分類: AI, JOB, PERM, CRUD, MAIL\n\n- 流れ F5（K-61）。歩く骨格の 7 本目・最後（D-128.131）\n- 依存：AI に任せる（K-62）。承認待ちの行（approvals：kind artifact・approver_member_id＝担当者）・仕事を積む関数・PC が仕事を取る／返す口・action_runs.ticket_id と phase の列が揃っていること\n- 承認カードのボタンは 4 つ（承認して送る・自分で直す・差し戻す・止める・D-125.103・D-128.20）。このチケットで作るのは **承認する・差し戻す** の 2 つ。自分で直す（editApproval）・止める（stopApproval）・取り下げ（withdrawApproval）・まとめて承認・履歴は後の F5 のチケット\n- テスト仕様（① 機械・② AI・③ 人）を流すのは後の F5 のチケット。骨格の間、承認カードは「検査なし（まだ流していません）」と出す（K-62 と同じ）\n- テストはこのチケットを作る人がコードまで書き、実装する人は変えない（D-128.125）",
     "実施事項": "### 作り方（実装の詳細）\n\n| 欄 | 中身 |\n|---|---|\n| 画面 | `apps/web/features/F5/approve-complete/`。① 承認待ち `/approvals`：チケットの一覧と同じ表で「自分が決めるもの」を期限で区切って並べ、行の右端で 承認する／差し戻す（D-128.36）。取り消せない操作のものは「中身を見る」でチケットの詳細の帯へ。② チケットの詳細 `/tickets/[id]`：承認待ちのときだけ題名の下に「あなたの承認を待っています」の帯とボタン（D-128.20）。承認の後は「実行中」「実行待ち・PC が閉じています」、実行の後は「完了の条件を確かめて完了にしてください」と「完了にする」。新しい部品 `components/k` の table・Button・dialog（差し戻しの理由）・Notice で組む。キャンバスの絵 `Approvals`・`ApprovalsFocus`・`TicketDetail`・`StRunning` |\n| API | `listApprovalQueue`（GET /api/v1/approvals/queue・member・自分が承認する人の行だけ・120 回／分）・`getApproval`（GET /api/v1/approvals/:id・承認する人／担当者／マネージャー・120 回／分）・`approveApproval`（POST /api/v1/approvals/:id/approve・承認する人だけ・取り消せない操作は本人確認の取り直し・60 回／分・関門 C2）・`returnApproval`（POST /api/v1/approvals/:id/return・承認する人だけ・理由が必須・60 回／分・関門 C2）・`completeTicket`（POST /api/v1/tickets/:id/complete・担当者・60 回／分・関門 C2 C6）。振る舞いは `apps/api/src/features/F5/approve-complete/`（`index.ts` が `approveHooks(pool, notify)` を返す。`queue.ts`・`decide.ts`・`complete.ts`・`executed.ts`） |\n| 関門 | C2：書き込みはどれも DB の関数（security definer）を通す。承認・差し戻し・完了はそれぞれ 1 回の書き込みで、承認の行・仕事・チケットの段を一緒に変える。C6：完了の知らせは `@kaname/notify` の NotifyGateway.notify だけ（受け箱。メールは受け箱で読んでいないものを 30 分ごとにまとめる仕組みに任せる・D-128.92）。重ならないよう dedupe_key は `ticket-complete:<ticket_id>` |\n| DB | 使う表：`approvals`（decision：approve・return、decided_at、status_id：pending → approved・returned、resolved_at、return_reason、next_actor clone、irreversible、step_up_at、withdrawn_at、ticket_id、action_run_id、approver_member_id、human_checks）・`action_runs`（phase make・execute、status_id、ticket_id、bridge_job_id）・`bridge_jobs`（kind ticket）・`tickets`（stage_id・delegated_to_clone・deleted_at・parent_ticket_id）・`ticket_stages`（awaiting_approval・running・doing・done）・`ticket_sections`（todo・done のチェック）・`ticket_messages`（kind system の 1 行）・`notifications`（dedupe_key）・`sessions`（step_up_at・bridge の last_seen_at） |\n| migration（1 本足す） | ① 関数 `app.approval_decide(p_member, p_approval, p_decision, p_reason)`：承認する人か・まだ決まっていないか・取り下げられていないか を中で判定し、承認なら実行の仕事（action_runs phase execute・bridge_jobs kind ticket）を積んでチケットを実行中に、差し戻しなら理由つきで作り直しの仕事（phase make）を積んでチケットを実行中にする。② `app.bridge_take_job` の ticket の execute の仕事に「承認から 24 時間を過ぎていたら渡さない」を足す（下の「決めた判断」）。③ `app.ticket_complete(p_member, p_ticket)`：担当者か・段・チェック・子 を中で判定して完了の段にする。④ `app.bridge_finish_job` の ticket の execute の分かれ道（`executed.ts` から呼ぶ）。新しい表は作らない |\n| 使う部品と版 | Hono 4.10・pg 8.16・zod 4（契約の ApprovalsInput：差し戻しの理由は `note` で受ける・TicketsInput）・Next.js 15.5／React 19.1・@tanstack/react-query 5.102・Better Auth 1.7.15（本人確認の取り直しの時刻 sessions.step_up_at・migration 0081）・Vitest 3.2・Playwright 1.63 |\n| 使う既存の実装（目録で探した） | 契約の入口 apps/api/src/contract/op.ts（冪等キー・`requireStepUp()`・行の決まり rowAllowed）・本人確認の取り直しの判定 `stepUpFresh`（apps/api/src/contract/permissions.ts・15 分）・決まった承認を変えさせない `app.approval_once`（migration 0063。API はこの文言を 409 にする）・承認の行の制約（migration 0077：approvals_decided_ck・approvals_return_reason_ck・approvals_step_up_ck）・K-62 の仕事を積む関数と PC の口（take・finish・control）・`@kaname/notify` の NotifyGateway（packages/notify/src/index.ts）・既存のテスト packages/db/test/approvals_clone.test.ts |\n| 新しく作るもの | 承認・差し戻しの関数・完了の関数・実行の後の分かれ道・承認待ちの画面とチケットの帯（目録に無い。似たものは会話の許可 `/agent/answer`：1 回の「実行していいか」に答えるだけで、承認の行・実行の仕事・チケットの段を持たない） |\n| 共通の決まり | エラーの文言は errors.json から引く（E-CONF-003・E-GATE-001・E-CONN-002・E-SIG-003・E-AUTH-005・E-MOCK-006）・ログに成果物の中身を出さない・時刻は timestamptz で持ち日本時間で出す（D-128.130） |\n\n### 決めた判断\n\n- 承認できるのは承認待ちの行の承認する人（approver_member_id＝担当者・D-128.25）だけ。承認待ちの入口は「承認待ち」の画面とチケットの詳細の 2 つで、同じ口を呼ぶ（D-125.107・D-012）\n- 承認したら実行してよい。何もなしでは実行しない（D-125.19）。送る・応募するなど外に出る実行は取り消せない扱いにし、承認の前に本人確認を取り直す（直前 15 分以内なら省く・D-125.102・D-125.139）。猶予は置かず、承認したらすぐ実行の仕事を積む\n- PC が閉じているときに承認したら、実行待ちにして、PC が開いたらすぐ実行する。承認から 24 時間を過ぎていたら実行の前にもう一度聞く（D-127.9・D-128.98）。聞き直しは、決まった承認を変えずに（approvals_once）、新しい承認待ちの行を作って出す（note「承認から 24 時間を過ぎたので、実行の前にもう一度確かめてください」）。前の実行の仕事は「やめた」にする\n- 差し戻すには理由が要る（D-125.103・approvals_return_reason_ck）。差し戻したら、理由をつけて担当者の AI にもう一度作らせる（next_actor clone）。チケットは実行中に戻る\n- 実行が止まったら、自動で戻さない（D-090）。道具の途中で止まったら「途中だったので結末は分かりません」と出す（D-124・E-SIG-003）。チケットは作業中に戻し、理由を出す\n- 実行が終わったら、チケットを作業中に戻し、やり取りに 1 行（何をした・いつ・結果）を残す（D-125.106）。実行の後に先方の画面で確かめる（D-125.76）のは、後の F5 のチケット\n- 完了にできるのは担当者（D-125.59・D-128.25）。完了には 実施事項が全部チェック と 完了の条件を満たしたと確かめる の両方が要る（D-125.55）。承認待ち・実行中・確認中のチケットは完了にできない（D-128.49）\n- 完了したら、チケットのセッションを閉じる。次に任せるときは前の続きの id を使わず、新しく始める（D-125.155）",
     "テスト仕様と確認の結果": "### 状態 × 入口 × 利用者の状態\n\n状態の候補（DB の列から出した）：approvals.decision（空・approve・return・self_edit・stop）・status_id・decided_at（＋24 時間）・withdrawn_at・resolved_at・irreversible と step_up_at、action_runs.phase と status_id、bridge_jobs.state_id、tickets.stage_id（awaiting_approval・running・doing・done ほか）・deleted_at・parent_ticket_id、sessions.step_up_at（15 分）と bridge の last_seen_at（75 秒）\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 承認待ち（決まっていない） | 承認待ちの画面を開く | 承認する人 | 自分が決めるものだけ、期限で区切って並ぶ。数は左のメニューと同じ | このチケット | 単体（口・本物の DB）・単体（画面） |\n| 承認待ち | 行の「承認する」（取り消せる操作） | 承認する人 | 承認を記録し、実行の仕事を積む。チケットは実行中 | このチケット | 単体（口・本物の DB） |\n| 承認待ち（取り消せない操作） | 「承認して送る」 | 承認する人・本人確認が 15 分以内 | 承認を記録し（step_up_at）、実行の仕事を積む | このチケット | 単体（口・本物の DB） |\n| 承認待ち（取り消せない操作） | 「承認して送る」 | 承認する人・本人確認が 15 分を過ぎた（14 分 59 秒・15 分 1 秒） | 403 STEP_UP_REQUIRED。画面で取り直してから同じ押し直しで通る。承認は記録しない | このチケット | 単体（口・時刻を置く）・単体（画面） |\n| 承認待ち（取り消せない操作） | 承認待ちの画面の行 | 承認する人 | 行では押せず「中身を見る」でチケットの詳細の帯へ（D-128.36） | このチケット | 単体（画面） |\n| 承認待ち | 「差し戻す」と理由 | 承認する人 | 差し戻しを記録し、理由つきの作り直しの仕事を積む。チケットは実行中 | このチケット | 単体（口・本物の DB） |\n| 承認待ち | 「差し戻す」で理由が空 | 承認する人 | 422・欄の下に理由 | このチケット | 単体（口・画面） |\n| 承認待ち | 「自分で直す」「止める」 | 承認する人 | 直して確認をやり直す／止める | 自分で直す・止める（editApproval・stopApproval・K-61 から切る） | — |\n| 承認済み・実行の仕事が待っている（PC が閉じている） | チケットの詳細を開く | 担当者 | 「実行待ち・PC が閉じています。開いたらすぐ実行します。承認から 24 時間を過ぎたら、もう一度聞きます」（E-CONN-002） | このチケット | 単体（画面） |\n| 承認済み・実行の仕事が待っている（承認から 23 時間 59 分・24 時間 1 分） | PC が取りに来る | その人の PC | 24 時間以内は渡して実行する。過ぎていたら渡さず、新しい承認待ちで聞き直す。前の仕事はやめた | このチケット | 単体（本物の DB の時刻を置く） |\n| 承認済み・実行の仕事が待っている | 「承認を取り下げる」 | 承認する人 | 承認待ちに戻す（D-125.105） | 承認を取り下げる（withdrawApproval・K-61 から切る） | — |\n| 承認済み・実行中 | PC が中身のある結果で「終わった」 | その人の PC | 実行の記録を「終わった」に、チケットは作業中に戻り、やり取りに 1 行。「完了にする」が出る | このチケット | 単体（口・本物の DB） |\n| 承認済み・実行中 | PC が止まったと返す（道具の途中） | その人の PC | 自動で戻さない。「途中だったので結末は分かりません」（E-SIG-003）。チケットは作業中・理由を出す | このチケット | 単体（口・本物の DB） |\n| 承認済み・実行中（PC が落ちた） | PC がつながり直して取りに来る | その人の PC | 残った実行を止め、二度送らない（K-62 の後始末と同じ） | このチケット | 単体（本物の DB） |\n| 承認済み・実行が止まった | 「続きから」「やり直す」「自分でやる」 | 担当者 | 決めた一手を打つ | 止まった理由を見て一手を打つ（K-67） | — |\n| 承認済み（決まった） | 「承認する」をもう一度・別のタブで・別の人が同時に | 承認する人 | 409「この承認はもう処理されています」（E-CONF-003）。仕事は 1 つ | このチケット | 単体（口・本物の DB で同時に 2 本）・単体（画面） |\n| 差し戻し済み（決まった） | 「承認する」 | 承認する人 | 409・変えない | このチケット | 単体（口） |\n| 差し戻し済み・作り直しが届いた | 承認待ちの画面 | 承認する人 | 新しい承認待ちの行として並ぶ（前の行は差し戻しのまま残る） | このチケット | 単体（本物の DB） |\n| 取り下げ済み（withdrawn_at あり） | 「承認する」 | 承認する人 | 409・変えない | このチケット | 単体（本物の DB） |\n| 承認待ち | 承認する・差し戻す・開く | 承認する人でない（同じグループの人・作った人） | 承認待ちの一覧に出ない。getApproval は担当者・マネージャーなら見えるが押せない。口は 403・副作用なし | このチケット | 単体（口・画面） |\n| 承認待ち | 押す直前に承認する人から外された（担当が替わった・閲覧のみになった） | 開いていた画面のまま | 口で止まる（403）。画面の表示に頼らない | このチケット | 単体（口・本物の DB） |\n| 承認待ち | 押す直前にメンバーから外された・止められた | 開いていた画面のまま | 401（セッションが切れる・E-AUTH-005） | このチケット | 単体（口） |\n| 承認待ち（チケットが消された） | 古いリンク・承認待ちの画面で押す | 承認する人 | 404「このチケットは消されました」。承認も仕事も作らない | このチケット | 単体（口・画面） |\n| どれでも | 直に API で別のワークスペースの承認・チケットの ID | ログイン中 | 404・中身を返さない | このチケット | 単体（口・本物の DB） |\n| どれでも | 直に API | ログインしていない・セッションが切れた | 401 | このチケット | 単体（口） |\n| 作業中（実行が終わった）・実施事項が全部チェック・完了の条件を確かめた | 「完了にする」 | 担当者 | 完了の段に。やり取りに 1 行・知らせ（受け箱）・セッションを閉じる | このチケット | 単体（口・本物の DB）・単体（画面） |\n| 作業中・チェックが残っている | 「完了にする」 | 担当者 | 422・残っている項目を出す（D-125.55） | このチケット | 単体（口・画面） |\n| 作業中・終わっていない子がある | 「完了にする」 | 担当者 | 下の「聞きたいこと」3 の推奨：422・終わっていない子の一覧 | このチケット | 単体（口・本物の DB） |\n| 承認待ち・実行中・確認中 | 「完了にする」 | 担当者 | 409「承認待ち（実行中・確認中）のチケットは完了にできません」（D-128.49）。ボタンは出さない | このチケット | 単体（口・画面） |\n| 完了 | 「完了にする」をもう一度・別のタブで | 担当者 | 1 回分だけ。2 回目は最初の結果（冪等キー）か 409。知らせは 1 つ | このチケット | 単体（口） |\n| 作業中 | 「完了にする」 | 担当者でないが直せる権限がある（作った人・マネージャー・同じグループの人） | 完了できる（完了の条件は同じ）。記録に押した人が残る（D-128.138） | このチケット | 単体（口・画面・本物の DB） |\n| 作業中 | 「完了にする」 | 見るだけの権限 | ボタンは出さない。口は 403 | このチケット | 単体（口・画面） |\n| 完了 | 開き直す・もう一度任せる | 担当者 | 新しいセッションで始める | 開き直す（後の F5／F7 のチケット）・任せるのは K-62 | — |\n| 承認待ち・完了 | 再読み込み・ブックマーク・別の端末で開く | 承認する人・担当者 | 今の状態をそのまま出す。決めたものを二度は押させない | このチケット | 単体（画面） |\n\n「—」は受け持ちのチケットでテストを書く。中間テスト 3（K-64）は、このうち 承認 → 実行 → 完了、差し戻し → 作り直し → 承認、PC が閉じていて承認 → 開いたら実行 を本物のブラウザでつなぐ。\n\n### 入力・失敗・操作の揺れ・守り\n\n| 観点 | 分岐 | 結果 | テスト |\n|---|---|---|---|\n| 入力 | id が uuid でない | 422 | 単体（口） |\n| 入力 | 本文に知らない欄 | 422（契約が strictObject） | 単体（口） |\n| 入力 | 差し戻しの理由が空・空白だけ・全角空白だけ | 422（正規化してから判定） | 単体（口） |\n| 入力 | 差し戻しの理由が長い（2000 字を超える） | 422・欄の下に理由 | 単体（口・画面） |\n| 入力 | 差し戻しの理由に HTML・制御文字 | 画面で動かない・AI へは文として渡す | 単体 |\n| 入力 | 一覧の limit・cursor・sort が形違い | 422 | 単体（口） |\n| 失敗 | 承認の途中で DB が落ちた | 500。承認の記録・仕事・段の変更は 1 つも残らない | 単体（口・本物の DB） |\n| 失敗 | 完了の途中で DB が落ちた | 500。段は変わらず、知らせも出ない | 単体（口・本物の DB） |\n| 失敗 | 完了の知らせが送れない（受け箱に書けない） | 完了は残す。送れなかったことを notifications に残し（failed_at・retry_count）、送り直す | 単体（知らせの部品を失敗させる） |\n| 操作の揺れ | 「承認する」を 2 回押し | 承認は 1 回・仕事は 1 つ | 単体（画面） |\n| 操作の揺れ | 2 つのタブ・2 人が同時に承認と差し戻し | 先の 1 つだけ。後の方は 409（E-CONF-003） | 単体（口・本物の DB） |\n| 操作の揺れ | 本人確認を取り直して戻ってきた | 同じ押し直しで通り、二重にならない | 単体（画面） |\n| 操作の揺れ | 差し戻しの理由を書きかけで閉じる・再読み込み | 書きかけを失わない（その端末に残す） | 単体（画面） |\n| 守り | 1 分に 61 回（承認・差し戻し・完了）・121 回（一覧・1 件） | 429・待つ秒数 | 単体（口） |\n| 守り | 承認する人でない・担当者でない | 403・副作用なし | 状態の表のとおり |\n| 守り | 別のワークスペースの id | 404 | 状態の表のとおり |\n| 守り | 承認待ちの一覧と数 | 他の人・他の会社の承認待ちが一覧にも数にも混ざらない | 単体（本物の DB） |\n| 守り | 取り消せない操作 | 本人確認なしでは承認できない（approvals_step_up_ck が最後の砦） | 単体（本物の DB） |\n| 守り | 知らせの本文 | 成果物の中身・宛先のメールを入れない。チケットへのリンクだけ | 単体（知らせの中身を見る） |\n| 守り | 証跡 | 誰が・いつ・何を決めたか（承認・差し戻し・理由・完了）が audit_events に残る（関門 C2） | 単体（本物の DB） |\n\n### テストの型の受け\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-AI-01 外に出す前 | 状態の表「承認待ち × 承認して送る（本人確認）」。承認の行が approve になるまで実行の仕事を積まない・24 時間を過ぎたら聞き直す |\n| TP-AI-02 止める・取り下げ・PC が閉じている | 状態の表「実行待ち・PC が閉じています」「PC が止まったと返す」（止める・取り下げは受け持ちのチケット） |\n| TP-AI-03 利用量の上限 | 承認の後の実行で枠に当たったら、K-62 と同じ止まった扱い（理由と戻る時刻）。状態の表「PC が止まったと返す」で受ける |\n| TP-AI-04 予期しない出力 | 状態の表「PC が止まったと返す」。実行の結果が空なら K-62 と同じく完了と見なさず止まった（単体で空の結果を返す） |\n| TP-JOB-01 途中で止まった・再起動 | 状態の表「PC がつながり直して取りに来る」（二度送らない） |\n| TP-JOB-02 時刻の扱い | 状態の表「承認から 23 時間 59 分・24 時間 1 分」「本人確認 14 分 59 秒・15 分 1 秒」。判定は DB の now() と timestamptz、画面は日本時間 |\n| TP-JOB-03 途中で対象が消えた | 状態の表「承認待ち（チケットが消された）」。実行の仕事の後に消されたときは、PC が取りに来ても渡さず、止まった「チケットが消されたので」（単体・本物の DB） |\n| TP-PERM-01 役が合わない人 | 状態の表「承認する人でない」「担当者でない」 |\n| TP-PERM-02 権限を外した直後 | 状態の表「押す直前に承認する人から外された」「メンバーから外された」 |\n| TP-PERM-03 他の会社の ID | 状態の表「別のワークスペースの承認・チケットの ID」 |\n| TP-PERM-04 一覧・数 | 守り「承認待ちの一覧と数」 |\n| TP-PERM-05 権限を付けた直後 | 単体（本物の DB）：担当が替わって承認する人になった直後に、入り直さずに承認待ちに出て押せる |\n| TP-CRUD-01 2 人が同時に直す | 操作の揺れ「2 つのタブ・2 人が同時に承認と差し戻し」（approvals_once で先の 1 つ） |\n| TP-CRUD-02 消したものを古いリンクで | 状態の表「承認待ち（チケットが消された）× 古いリンク」 |\n| TP-CRUD-03 子のあるもの | 状態の表「作業中・終わっていない子がある × 完了にする」 |\n| TP-CRUD-04 2 回押し | 操作の揺れ「承認するを 2 回押し」・状態の表「完了 × もう一度」 |\n| TP-CRUD-05 保存の途中で失敗 | 失敗「承認の途中で DB が落ちた」「完了の途中で DB が落ちた」 |\n| TP-CRUD-06 書きかけで戻る・再読み込み | 操作の揺れ「差し戻しの理由を書きかけで閉じる・再読み込み」 |\n| TP-MAIL-01 送れなかったとき | 失敗「完了の知らせが送れない」 |\n| TP-MAIL-02 二重に出ない | 状態の表「完了 × もう一度」（知らせは 1 つ・dedupe_key） |\n| TP-MAIL-03 本文に秘密を入れない | 守り「知らせの本文」 |",
@@ -2824,7 +2824,7 @@
    "milestone": "骨格",
    "area": "試験",
    "assignee": "未定",
-   "due": "",
+   "due": "2026-11-12",
    "decisions": [
     "D-128.125",
     "D-128.131",
@@ -2838,7 +2838,7 @@
    ],
    "sections": {
     "目的": "AI に任せる（K-62）と承認して完了する（K-63）を合わせ、「チケットを AI に任せる → PC が仕事を受けて終える → 承認待ちに出る → 承認する → 完了する」まで、一続きの操作として通れるかを確かめる。歩く骨格の 3 つ目の中間テスト（D-128.131）。",
-    "完了の条件": "- [ ] 下の筋が全部、本物のブラウザ（Playwright）・本物の DB の上で緑\n- [ ] 中の操作のチケットの単体のテストが先に緑（この試験は、揃えた最後のチケット K-63 が取り込む前に流す）\n- [ ] 手元の CI（dagci）の段に入っている",
+    "完了の条件": "- [ ] 下の筋が全部、本物のブラウザ（Playwright）・本物の DB の上で緑\n- [ ] 中の操作のチケットの単体のテストが先に緑（この試験は、揃えた最後のチケット K-63 が取り込む前に流す）\n- [ ] 手元の CI（act・GitHub と同じ workflow の全部）の段に入っている",
     "前提と制約": "- 中の 1 本 1 本の分岐は単体のテストが受け持つ。ここは、つないだときにだけ出るもの（PC の結果が承認待ちに正しく渡るか・承認が実行の仕事になって PC に届くか・完了でチケットとセッションが閉じるか）を見る\n- PC は試験用の PC の受け口で立て、AI の答えは決まった答えを返す差し替えを使う（本物の AI は呼ばない）",
     "実施事項": "- 試験のファイル：`apps/e2e/tests/skeleton/m3-delegate-approve-complete.spec.ts`\n- 中間テスト 2（K-58）の正常の筋で作ったチケットから始める",
     "テスト仕様と確認の結果": "| 筋 | 操作 | 期待結果 | つなぎ目で見るもの |\n|---|---|---|---|\n| 正常 | 任せる → PC が受けて終える → 承認待ち → 承認 → PC が実行して終える → 完了 | チケットが完了になり、やったことの記録が残る | 作る段と実行する段がつながり、結果が 1 本の記録になる |\n| 差し戻し | 承認待ちで差し戻す（理由つき）→ PC が作り直す → もう一度承認待ち | 理由が PC に渡り、2 回目の結果が承認待ちに出る | 差し戻しの理由が次の仕事に渡る |\n| PC が閉じている | PC を止めてから任せる → あとで PC を開く | 任せた仕事は待ちに入り、PC を開くと受けて進む | 待ちが消えない・二重に受けない |\n| 合図なしで終わる | PC が結果を空のまま終える | 承認待ちに出さず「止まった」と出る | 空の結果を成功にしない（G-15） |\n| 承認から 24 時間 | 承認したあと PC が 24 時間受けない | もう一度承認を聞く行が出る | 古い承認で実行しない |\n| 途中で権限が無くなる | 任せたあと担当を外す → PC が結果を返す | 遅れた結果は捨てられ、承認待ちに出ない | 権限の変化がつなぎ目で効く（G-14） |\n| 完了の条件 | 実施事項に未完了がある状態で完了を押す | 完了できず、残りが出る | 承認の後でも完了の条件を確かめる |",
@@ -2858,7 +2858,7 @@
    "milestone": "骨格",
    "area": "試験",
    "assignee": "未定",
-   "due": "",
+   "due": "2026-11-13",
    "decisions": [
     "D-128.125",
     "D-128.131",
@@ -2873,7 +2873,7 @@
    ],
    "sections": {
     "目的": "歩く骨格の道すじ全体（D-128.131）を、初めての人として本物のブラウザで 1 回通す。登録する（K-51）から承認して完了する（K-63）まで、7 本のチケットがつながって、使い始めから最初の仕事が終わるまでが成り立つかを確かめる。最初の統合テスト。",
-    "完了の条件": "- [ ] 下の筋が全部、本物のブラウザ（Playwright）・本物の DB の上で緑\n- [ ] 中の操作のチケットの単体のテストが先に緑（この試験は、揃えた最後のチケット K-64 が取り込む前に流す）\n- [ ] 手元の CI（dagci）の段に入っている",
+    "完了の条件": "- [ ] 下の筋が全部、本物のブラウザ（Playwright）・本物の DB の上で緑\n- [ ] 中の操作のチケットの単体のテストが先に緑（この試験は、揃えた最後のチケット K-64 が取り込む前に流す）\n- [ ] 手元の CI（act・GitHub と同じ workflow の全部）の段に入っている",
     "前提と制約": "- 中間テスト 3 つ（K-54・K-58・K-64）が先に緑\n- 筋の数は絞る。分岐は単体と中間が受け持ち、ここは「端から端まで通ること」と、端から端でしか出ないもの（最初の人・最初の会社・最初の PC・最初のチケットがどれも初めての状態で並ぶこと）を見る\n- 本物の AI は呼ばず、決まった答えを返す差し替えを使う",
     "実施事項": "- 試験のファイル：`apps/e2e/tests/skeleton/integration-walking-skeleton.spec.ts`\n- 中間テストの準備の道具（受け箱・時刻を進める・PC の受け口・本人確認）をそのまま使う",
     "テスト仕様と確認の結果": "| 筋 | 操作 | 期待結果 | つなぎ目で見るもの |\n|---|---|---|---|\n| 正常 | 登録 → メールのリンク → 規約 → PC をつなぐ → チケットを作る → AI に任せる → 承認 → 完了 | 最初の仕事が完了になり、記録に最初の人・会社・PC・チケットがそろう | 7 本がつながる |\n| 別の端末で続ける | 登録とメールの確認は端末 A、PC をつなぐ所から端末 B | B で続けられ、最後まで通る | 途中で端末が変わっても状態が引き継がれる |\n| 途中で一度ログアウト | チケットを作った後にログアウト → ログインし直して任せる | 続きから進める | セッションをまたいでも途中の状態が残る |\n| 別の会社に漏れない | 同じ手順を別の人（別の会社）でも並べて流す | どちらの画面にも相手のものが出ない | 端から端で守りが効く |",
@@ -3643,7 +3643,7 @@
    "milestone": "F1",
    "area": "認証",
    "assignee": "未定",
-   "due": "",
+   "due": "2026-11-14",
    "decisions": [
     "D-042",
     "D-051.2",
@@ -3701,7 +3701,7 @@
    ],
    "sections": {
     "目的": "登録を済ませた人が、ログインの画面で **パスキー（指か顔）** で入るか、**メールとパスワード** を入れて入る。2 段階認証を付けている人は、続けて認証アプリの 6 けた（またはバックアップコード）を入れる。入ったら、元の画面（next）か、入口の振り分け（`afterLogin`）の先へ進む。\n\nログアウトすると、その画面のセッションだけが閉じる。端末をなくして 6 けたもバックアップコードも無い人は、パスワードを通った直後に「管理者に戻してもらう」を押すと、管理者に知らせが届く。ログインの画面には、障害やメンテナンスのときだけ Kaname のいまの様子を出す。\n\nパスキーを **付ける** のはこのチケットではない（安全の設定・K-75）。このチケットは、付いているパスキーで **入る** までを持つ。",
-    "完了の条件": "- 下の 2 つの表の「このチケット」のマスと、全部の分岐のテストが緑\n- 契約の口 `signInWithPassword`・`verifySignInCode`・`signOut`・`getServiceStatus`・`requestAdminRecovery` が 501 でない（apps/api/test/generated/ の 5 本の `it.todo` が本物のテストになって緑）\n- 前の道すじ `POST /api/auth-ext/sign-in`・`POST /api/auth-ext/two-factor/verify`（apps/api/src/auth/ext.ts）が消え、画面は契約の口と、パスキーの部品の口（`/api/auth/passkey/*`）だけを呼んでいる\n- 部品の口のうち、ロックと会社の止めを通らない道（`/api/auth/sign-in/email`・`/api/auth/two-factor/verify-totp`・`/api/auth/two-factor/verify-backup-code`・`/api/auth/sign-out`）が 404 になっている\n- 単体のテスト（下の表で「このチケット」が受け持つマスと、全部の分岐）が本物の DB と本物のブラウザ（パスキーは Playwright の仮の認証器）の上で緑\n- 手元の CI（dagci）が緑",
+    "完了の条件": "- 下の 2 つの表の「このチケット」のマスと、全部の分岐のテストが緑\n- 契約の口 `signInWithPassword`・`verifySignInCode`・`signOut`・`getServiceStatus`・`requestAdminRecovery` が 501 でない（apps/api/test/generated/ の 5 本の `it.todo` が本物のテストになって緑）\n- 前の道すじ `POST /api/auth-ext/sign-in`・`POST /api/auth-ext/two-factor/verify`（apps/api/src/auth/ext.ts）が消え、画面は契約の口と、パスキーの部品の口（`/api/auth/passkey/*`）だけを呼んでいる\n- 部品の口のうち、ロックと会社の止めを通らない道（`/api/auth/sign-in/email`・`/api/auth/two-factor/verify-totp`・`/api/auth/two-factor/verify-backup-code`・`/api/auth/sign-out`）が 404 になっている\n- 単体のテスト（下の表で「このチケット」が受け持つマスと、全部の分岐）が本物の DB と本物のブラウザ（パスキーは Playwright の仮の認証器）の上で緑\n- 手元の CI（act・GitHub と同じ workflow の全部）が緑",
     "前提と制約": "分類: AUTH, MAIL\n\n- 流れ F1 登録してログインできる（K-50）。歩く骨格の 3 本（K-51〜K-53）の次\n- 依存：規約に同意する（K-53）。セッションができたときに規約の印（`sessions.terms_pending`）を立てるのは K-53 の hook で、このチケットのログインもその hook を通る\n- 本人確認の取り直し（`stepUp`）は K-19 が持つ。このチケットは使わない\n- セッションの見張り（操作が無い 12 時間・最長 7 日・国か端末が変わったら切る）は K-20 が持つ（D-128.120・D-128.121）。このチケットは、切られた後に入り直せることを持つ\n- パスキーを付ける・2 段階を付ける・パスワードを変えるは K-75、パスワードの再設定は K-76\n- テストはこのチケットを作る人がコードまで書き、実装する人は変えない（D-128.125）",
     "実施事項": "### 作り方（実装の詳細）\n\n| 欄 | 中身 |\n|---|---|\n| 画面 | `apps/web/features/F1/login/`（新しい部品 `components/k` の TextField・Button・Callout と、4 つの状態 `components/k/states` で組む）。キャンバスの絵 `AuthLogin`・`Auth2FA`・`AuthQR`・`AuthRecover`。道は `/login`（`apps/web/app/(outside)/login/page.tsx` は薄い入れ物にし、中身をこのチケットで置き換える。K-53 の `/login?step=terms` はそのまま中で出し分ける）。パスキーを大きく先に、メールとパスワードはその下（D-128.59）。6 けたはそろうと自動で進む。パスワードの欄は見る・隠す（D-087）。いまの様子（障害・メンテナンス）は画面の上に帯で出す |\n| API | 契約の口 `signInWithPassword`（POST /api/v1/auth/sign-in・誰でも・10 回／分／IP・関門 C2）・`verifySignInCode`（POST /api/v1/auth/two-factor/verify・誰でも・パスワードを通った直後の待ちの印で・10 回／分／IP・関門 C2）・`signOut`（POST /api/v1/auth/sign-out・本人・60 回／分／人・関門 C2）・`getServiceStatus`（GET /api/v1/auth/service-status・誰でも・10 回／分／IP・関門なし）・`requestAdminRecovery`（POST /api/v1/auth/recovery/admin-request・誰でも・待ちの印で・10 回／分／IP・関門 C2 と知らせの C6）。振る舞いを `apps/api/src/features/F1/login/` に Hook（`before` で全部返す。`apps/api/src/hooks/auth.ts` の stepUp と同じ形）として書き、`apps/api/src/server.ts` の `contract.hooks` に足して 501 を外す。パスキーで入る口は部品のまま（`/api/auth/passkey/generate-authenticate-options`・`/api/auth/passkey/verify-authentication`・D-128.91） |\n| DB | 認証の表（schema `kaname_auth`・Better Auth が作る）：`\"user\"`（email・email_verified・two_factor_enabled）・`account`（provider_id = credential・password のハッシュ）・`session`（expires_at）・`two_factor`（secret・backup_codes・verified・failed_verification_count・locked_until）・`verification`（2 段階の待ちの印・パスキーのチャレンジ。expires_at）・**`passkey`（このチケットで部品を足すと `migrateAuth` が作る：name・public_key・user_id・credential_id・counter・device_type・backed_up・transports・aaguid・created_at）**。業務の表：`sessions`（migration 0004・0081・0083：revoked_at・revoke_reason_id・kind_id・device・country・last_ip・issued_at・last_seen_at・step_up_at と K-53 の terms_pending）・`app.login_attempts`（migration 0020：fails・first_failed_at・locked_until）・`members`（deleted_at・suspended_at・migration 0078）・`tenant_memberships`（status・migration 0075）・`subscriptions`（suspended_at・migration 0015）・`security_events`（migration 0003）・`notifications`（dedupe_key）・`status_incidents`（state・migration 0015／0078）・`notices`（state・maintenance_from／to・migration 0078）。**migration を 1 本足す**：① ログインの前に人と会社の止めを見る関数 `app.login_gate(p_auth_user_id text)`（返すのは ok・止めの理由 だけ）② 誰でも読めるいまの様子の関数 `app.public_service_status()`（公開したお知らせのうちメンテナンスの予定と、直っていない障害の state・題・時刻だけ。今の行の守り（policies/0015）はログインしていないと読めないため）③ 端末をなくしたときの頼みを残す関数 `app.request_admin_recovery(p_auth_user_id text)`（その人が入っているワークスペースごとに security_events に 1 行・管理者に知らせの行。1 時間に 1 回まで） |\n| 使う部品と版 | Better Auth 1.7.15（`@kaname/auth` の中だけ）と、足す **`@better-auth/passkey` 1.7.15**（中で `@simplewebauthn/server` 13・`@simplewebauthn/browser` 13。MIT）。画面は `apps/web/lib/auth/client.ts` に `passkeyClient()` を足す。Hono 4.10・pg 8.16・Next.js 15.5・React 19.1・react-hook-form 7.88・zod 4.6・テストは Vitest 3.2（口）と Playwright 1.63（画面。パスキーは CDP の WebAuthn の仮の認証器）。保存は関門 C2（`@kaname/db` の `withTenant` と、セッションの関数）・知らせは関門 C6（`@kaname/notify`） |\n| 使う既存の実装（目録で探した） | 前の道すじ `POST /api/auth-ext/sign-in`・`/two-factor/verify`（apps/api/src/auth/ext.ts）の中身：`signInWithLock`・`normalizeEmail`・`emailHash`・`EMAIL_RE`（packages/auth/src/signup.ts）・`app.login_failed`／`login_locked_until`／`login_ok`（migration 0020）・会社の人が無いときに閉じる処理（E-AUTH-007）・待ちの印を JSON で返す形（画面は別の origin で Bearer だけ・D-051.2）・コードの NFKC と空白の除き。ログアウトは `signOut`（packages/auth/src/resolver.ts）。セッションを写す hook と新しい端末の知らせ（packages/auth/src/index.ts の `databaseHooks.session.create.after` → `app.open_session`・`app.session_first_on_device`）。要求の解決は `createSessionResolver`。戻る先は `afterLogin`（apps/web/lib/after-login.ts）。画面のテストの道具は `apps/web/tests/_lib/api.ts` の `signupViaApi`・`loginAs`・`admin`・`totp`・`pwToggle`・`noOverflow`。これを契約の口に移し、前の道すじは消す |\n| 新しく作るもの | ① パスキーの部品を `createAuth` の plugins に足す（rpID と origin は `WEB_BASE_URL` から。チャレンジの Cookie は使えないので、2 段階の待ちの印と同じく値を JSON で受け渡す）② 人と会社の止めを、**パスワードでもパスキーでも通る 1 か所**に置く：`databaseHooks.session.create.before` で `app.login_gate` を見て、止めなら作らせない（今は前の道すじの中だけで見ていて、パスキーの道では見ていない）③ 部品の口のうち、ロックと止めを通らない道を `disabledPaths` で閉じる ④ 上の migration ⑤ errors.json に 3 件（人が止められている・会社が止められている・2 段階の待ちの印が切れた） |\n| 共通の決まり | エラーの文言は errors.json から引く（E-AUTH-001・002・004・007・E-VAL-008・009・E-PAGE-003・004・005 と、足す 3 件）・ログにパスワード・コード・待ちの印・メールを出さない・時刻は timestamptz で、ロックと期限の比べは DB の now()（D-128.130） |\n\n### 決めた判断\n\n- 止める場所は 1 か所：人が止められた（`members.suspended_at`）・会社が止められた（`subscriptions.suspended_at`・D-125.126）・会社の人が無い・抜けた（`members.deleted_at`・`tenant_memberships.status = 'left'`）は、セッションを作る前の hook で見る。パスキーの道もパスワードの道も同じ所を通る\n- パスワードの失敗は今のまま 5 回で 15 分ロック（`app.login_attempts`・E-AUTH-001／002）。無いメールでも同じように数え、同じ返事・同じくらいの時間で返す（D-042 の守りの決まり「有る無しを漏らさない」）\n- 2 段階の待ちの印は 5 分（契約の範囲どおり。部品の既定の 10 分を `twoFactorCookieMaxAge: 300` に直す）\n- 「この端末を信頼する」（30 日 6 けたを省く）は外す。D-128.60 は「あとは入るたびにアプリの 6 けたを打つ」と決めている。今の画面のチェックと口の `trust_device` はこのチケットで消す\n- パスキーで入る人には 6 けたを聞かない（D-128.60・D-125.138）\n- PC にパスキーが無いときは、ブラウザが出すスマホの QR で入る（パスキーの決まった仕組み。Kaname で作るものは無い）。入った後に「この PC にもパスキーを付ける？」を出し、押すと安全の設定（K-75）へ。共用の PC のために「付けない」も同じ大きさで出す（D-128.60）\n- ログアウトは、その画面のセッション（認証側と `sessions`）だけを閉じる。PC（Bridge）は閉じない（D-125.140 が全部切ると決めたのはパスワード変更・端末を外す・退会で、ログアウトは入っていない。Bridge は時間でも切らない D-128.121）\n- ログイン中の人がログインの画面を開いたら、入らせ直さずに今のアカウントの画面（next があればそこ）へ移す。別のアカウントで入りたいときはログアウトしてから\n- 戻る先（next）は Kaname の中の道だけ（`afterLogin` の決まりのまま）\n- 新しい端末の知らせ（画面とメール・D-125.140）は今の hook のまま。登録を確定した直後の最初のセッションには出さない（D-128.137・K-52 が受け持つ）。メールが送れなくてもログインは止めない\n- いまの様子が読めなくても、ログインは止めない（帯を出さないだけ）",
     "テスト仕様と確認の結果": "### 状態 × 入口 × 利用者の状態\n\nアカウントの状態（DB の列から出した候補：`\"user\".two_factor_enabled`・`two_factor.verified`／`locked_until` → 2 段階あり・なし・コードのロック、`passkey` の行 → パスキーあり・なし、`account.password` → パスワードあり、`app.login_attempts.locked_until` → ロック中、`members.suspended_at` → 人が止められた、`subscriptions.suspended_at` → 会社が止められた、`members.deleted_at`・`tenant_memberships.status` → 抜けた・会社の人が無い、`verification.expires_at`（待ちの印）→ 待ちの印が切れた、`sessions.revoked_at`／`revoke_reason_id` → 切られた、K-53 の `sessions.terms_pending` → 規約の印、`kaname_auth.pending_signup` → 確認していない申し込みだけ）\n\n| アカウントの状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| パスワードだけ・2 段階あり | ログインの画面でメールとパスワード | ログインしていない | 6 けたの画面へ（待ちの印 5 分）。まだセッションは無い | このチケット | 単体（口・本物の DB）・単体（画面） |\n| 2 段階あり（待ちの印が期限内） | 6 けたを入れる | ログインしていない | 入る。next（中の道だけ）か入口の振り分けへ | このチケット | 単体（口・本物の DB）・単体（画面） |\n| 2 段階あり（待ちの印が切れた・5 分を過ぎた） | 6 けたを入れる | ログインしていない | 401・足すエラー（待ちの印が切れた）「最初からログインし直してください」。入れない | このチケット | 単体（口・本物の DB の時刻を進める）・単体（画面） |\n| 2 段階あり | 「端末をなくした」→ バックアップコード | ログインしていない | 入る。そのコードは使えなくなる（残りの数を出す） | このチケット | 単体（口・本物の DB） |\n| 2 段階あり（使ったバックアップコード） | 同じコードをもう一度 | ログインしていない | 401・E-AUTH-004。入れない | このチケット | 単体（口・本物の DB） |\n| 2 段階あり（コードもバックアップも無い） | 「管理者に戻してもらう」 | パスワードを通った直後（待ちの印あり） | 管理者に知らせが届き、記録に残る。画面は「管理者に頼みました。戻してもらったら、もう一度ログインしてください」 | このチケット | 単体（口・本物の DB）・単体（画面） |\n| 2 段階あり | 「管理者に戻してもらう」を待ちの印なしで直に呼ぶ | ログインしていない | 401・足すエラー（待ちの印が切れた）。知らせも記録も作らない | このチケット | 単体（口） |\n| 管理者が 2 段階を戻した後 | ログインの画面でメールとパスワード | ログインしていない | 6 けたを聞かずに入り、安全の設定へ（パスワードだけの人の扱い） | 管理者が戻す口 `resetMemberTwoFactor`（K-73 から切るチケット）・安全の設定（K-75） | — |\n| パスワードだけ・2 段階なし・パスキーなし | ログインの画面でメールとパスワード | ログインしていない | 入る。そのあと安全の設定を済ませるまでの扱いは K-75 の聞きたいこと 1 の答えのとおり | 安全の設定（K-75） | — |\n| パスキーあり（この PC にある） | 「パスキーで入る」 | ログインしていない | 指か顔で入る。6 けたは聞かない | このチケット | 単体（画面・仮の認証器）・単体（口：部品の口で作ったセッションが `sessions` に写る） |\n| パスキーあり（この PC に無い・スマホにある） | 「パスキーで入る」→ スマホで QR | ログインしていない | 入る。入った後に「この PC にもパスキーを付ける？」と「付けない」 | このチケット（付けるのは K-75） | 単体（画面：仮の認証器を外部の端末として） |\n| パスキーなし | 「パスキーで入る」 | ログインしていない | ブラウザが「使えるパスキーが無い」を出して戻る。画面は「メールとパスワードで入ってください」を出す。誰のアカウントかは言わない | このチケット | 単体（画面：仮の認証器を空で） |\n| ロック中（locked_until が未来） | 正しいメールとパスワード | ログインしていない | 429・E-AUTH-002・待つ秒数。正しくても入れない（サーバーが最後の砦） | このチケット | 単体（口・本物の DB）・単体（画面） |\n| ロック中 | パスワードを再設定する | ログインしていない | 再設定で鍵が外れる（聞きたいこと 3） | パスワードを再設定する（K-76） | — |\n| ロック中 | 「パスキーで入る」 | ログインしていない | 入れる（パスキーはパスワードのロックの外。フィッシングに強い入り方を止めない） | このチケット | 単体（画面・仮の認証器） |\n| 人が止められた（members.suspended_at） | パスワードでもパスキーでも | ログインしていない | 403・足すエラー（人が止められている）。セッションを作らない | このチケット | 単体（口・本物の DB：2 つの道） |\n| 会社が止められた（subscriptions.suspended_at・D-125.126） | パスワードでもパスキーでも | ログインしていない | 403・足すエラー（会社が止められている）。セッションを作らない。データは残る | このチケット | 単体（口・本物の DB：2 つの道） |\n| 会社の人が無い・抜けた（members.deleted_at・tenant_memberships.status = left） | パスワードでもパスキーでも | ログインしていない | 403・E-AUTH-007。セッションを作らない | このチケット | 単体（口・本物の DB：2 つの道） |\n| 登録していない・確認していない申し込みだけ | メールとパスワード | ログインしていない | 401・E-AUTH-001（違うパスワードと同じ文と同じくらいの時間）。失敗の数も同じように数える | このチケット | 単体（口・本物の DB・時間を測る） |\n| どれでも | ログインの画面を開く | ログイン中 | 入らせ直さず、今のアカウントの画面（next があればそこ）へ | このチケット | 単体（画面） |\n| どれでも | 招待やメールのリンクから `/login?next=…` を開く | 別のアカウントでログイン中 | 今のアカウントのまま。「いまは別のアカウントでログイン中です。切り替えるにはログアウトしてください」 | このチケット | 単体（画面） |\n| どれでも | 中の画面・ブックマークを開く | セッションが切れた（idle・max_age・国か端末が変わった） | ログインへ（E-PAGE-005・元の道を next に持つ）。入り直すと元の画面へ | このチケット（切るのは K-20） | 単体（画面：sessions を閉じてから開く） |\n| どれでも | 「ログアウト」 | ログイン中 | その画面のセッション（認証側と sessions）を閉じ、ログインへ。PC（Bridge）のセッションは残る | このチケット | 単体（口・本物の DB）・単体（画面） |\n| どれでも | ログアウトした後に戻る・ブックマークで中の画面 | ログインしていない | 中は見えず、ログインへ | このチケット | 単体（画面） |\n| どれでも | ログアウトした古いトークンで口を直に呼ぶ | ログインしていない | 401。何も書かない | このチケット | 単体（口） |\n| どれでも | 同じブラウザの別のタブでログアウトした後、残ったタブで押す | ログインしていない | 401・ログインへ。書きかけは画面に残る | このチケット | 単体（画面：2 つのタブ） |\n| どれでも | 国か端末が変わって切られた後に入り直す | ログインしていない | 普通に入れる。新しい端末なら知らせが 1 回 | このチケット | 単体（口・本物の DB） |\n| どれでも（別の端末で初めて） | ログインする | ログインしていない | 画面の知らせとメールが 1 通ずつ（D-125.140） | このチケット | 単体（口・本物の DB・送る部品を差し替え） |\n| どれでも（同じ端末で 2 回目） | ログインする | ログインしていない | 知らせない | このチケット | 単体（口・本物の DB） |\n| 登録を確定した直後（最初のセッション） | 確認のメールのリンク | ログインしていない | 新しい端末の知らせを送らない（D-128.137） | メールを確かめる（K-52） | — |\n| 規約の新しい版が出ている | ログインする | ログインしていない | 同意し直しの画面 | 規約に同意する（K-53） | — |\n| パスワードを変えた・再設定した後 | 別の端末に残っていた古いセッションで押す | ログイン中だった | 401・E-PAGE-005。入り直す | 安全の設定（K-75）・パスワードを再設定する（K-76） | — |\n| 複数のワークスペースに入っている（D-125.150） | ログインする | ログインしていない | どのワークスペースで入るか・止められたのが 1 つだけのとき | ワークスペースを切り替える（流れ F10・まだ切っていない） | — |\n| どれでも | ログインの画面を開く（障害中・status_incidents.state が resolved でない） | ログインしていない | 帯に「いま◯◯がつながりにくくなっています」と時刻。ログインはできる | このチケット | 単体（口・本物の DB）・単体（画面） |\n| どれでも | ログインの画面を開く（メンテナンス中・notices.maintenance_from〜to の間） | ログインしていない | 帯にメンテナンスの予定と終わる時刻（E-PAGE-004 の文） | このチケット | 単体（口・本物の DB の時刻を進める）・単体（画面） |\n| どれでも | 口を直に呼ぶ（部品の `/api/auth/sign-in/email` など、閉じた道） | ログインしていない | 404。ロックと止めを通らない道は無い | このチケット | 単体（口） |\n\n「—」は受け持ちのチケットでテストを書く。\n\n### 入力・失敗・操作の揺れ・守り\n\n| 観点 | 分岐 | 結果 | テスト |\n|---|---|---|---|\n| 入力 | メールかパスワードが空 | 422・E-VAL-008・欄の下に理由。DB は引かない（失敗の数にも入れない） | 単体（口・画面） |\n| 入力 | メールの形が違う | 422・E-VAL-004 | 単体（口） |\n| 入力 | メールの大文字小文字・前後と途中の空白・全角 | 正規化（`normalizeEmail`：NFKC・空白を除く・小文字）して同じ人として入れる。ロックの数も同じ人で数える | 単体（口・本物の DB） |\n| 入力 | パスワードの前後の空白 | 直さない（パスワードの一部として比べる） | 単体（口） |\n| 入力 | 6 けたが空・64 文字を超える | 422・E-VAL-009 | 単体（口・画面） |\n| 入力 | 6 けたの全角・間の空白・ハイフン | NFKC と空白の除きで同じコードとして扱う | 単体（口） |\n| 入力 | バックアップコードの大文字小文字・ハイフンの有無 | 部品の形にそろえてから比べる | 単体（口） |\n| 入力 | 戻る先（next）が外の道・`//` で始まる・`javascript:` | 外へは飛ばさず、入口の振り分けへ（`afterLogin`） | 単体（画面） |\n| 入力 | パスワードを見る・隠す（D-087） | 既定は隠す。押すと見え、送信で隠すに戻る | 単体（画面） |\n| 時間の流れ | ロックの 15 分の直前・ちょうど・直後 | 直前は 429、ちょうどと直後は入れる（DB の now()） | 単体（本物の DB の時刻を進める） |\n| 時間の流れ | 待ちの印の 5 分の直前・直後 | 直前は確かめる、直後は 401（足すエラー） | 単体（本物の DB の時刻を進める） |\n| 時間の流れ | 6 けたの 1 つ前のコード・2 つ前のコード | 1 つ前までは通す（E-AUTH-004 の決まり）、2 つ前は 401 | 単体（`totp` で時刻をずらして作る） |\n| 時間の流れ | 通った 6 けたを同じ 30 秒のうちにもう一度 | 2 回目は通さない | 単体（口・本物の DB） |\n| 時間の流れ | 6 けたを続けて違える | 聞きたいこと 2 の回数で止める（勧め 5 回で 15 分）。止まっている間は 429 | 単体（口・本物の DB） |\n| 失敗 | DB が落ちた | 500・E-PAGE-003。セッションは作らない | 単体（口） |\n| 失敗 | セッションを写す所（`app.open_session`）で失敗 | 認証側のセッションも閉じる。半分だけ入った状態を残さない。500・E-PAGE-003 | 単体（DB の関数を失敗させる） |\n| 失敗 | 新しい端末の知らせのメールが送れない | ログインは止めない。画面の知らせは残る。送れなかったことをログに残す | 単体（送る部品を失敗させる） |\n| 失敗 | 管理者への知らせが送れない | 頼みの記録（security_events）は残し、画面は「送れませんでした。もう一度押してください」。送れたとは言わない | 単体（送る部品を失敗させる） |\n| 失敗 | パスキーの確かめを本人がやめた・時間切れ（ブラウザの NotAllowedError） | 通常の画面に戻り「パスキーで入れませんでした。もう一度か、メールとパスワードで」。何も作らない | 単体（画面：仮の認証器で失敗させる） |\n| 失敗 | パスキーが使えないブラウザ | 「パスキーで入る」を出さず、メールとパスワードだけ | 単体（画面：WebAuthn を消す） |\n| 失敗 | パスキーの署名の回数（counter）が戻っている（写されたパスキーの疑い） | 部品が断る。入れない。security_events に残す | 単体（口：counter を書き換えて呼ぶ） |\n| 失敗 | いまの様子が読めない | 帯を出さないだけで、ログインは止めない | 単体（画面） |\n| 操作の揺れ | ログインを 2 回押し | セッションは 1 つ。失敗の数は 1 回分 | 単体（画面） |\n| 操作の揺れ | 6 けたがそろって自動で進むのと、Enter が重なる | 確かめは 1 回。セッションは 1 つ | 単体（画面） |\n| 操作の揺れ | 2 つのタブで同時にログイン | セッションは 2 つ（タブごとではなく同じブラウザの印で 1 つにはしない）。どちらも入れる | 単体（口・本物の DB・同時に 2 つ） |\n| 操作の揺れ | 「管理者に戻してもらう」を 2 回押す | 頼みの記録と知らせは 1 時間に 1 回まで。2 回目は「もう頼んであります」 | 単体（口・本物の DB） |\n| 操作の揺れ | 6 けたの画面で戻る・再読み込み | メールとパスワードの画面に戻る（待ちの印は画面のメモリだけに持つ） | 単体（画面） |\n| 守り | 1 分に 11 回（同じ IP・ログイン・6 けた・管理者に頼む・いまの様子） | 429・待つ秒数（retry_after_sec）。画面に待ち時間 | 単体（口・画面） |\n| 守り | 違うパスワードと、無いメール | 同じ文（E-AUTH-001）・同じくらいの時間（無いメールでもパスワードのハッシュを計算する） | 単体（口・時間を測る） |\n| 守り | 止められた・会社の人が無い の答え | パスワードが合ったときだけ出す。パスワードが違えば E-AUTH-001 のまま（止めの有無を探らせない） | 単体（口） |\n| 守り | 閉じた部品の道 | `/api/auth/sign-in/email`・`/two-factor/verify-totp`・`/two-factor/verify-backup-code`・`/sign-out` は 404（`disabledPaths`） | 単体（口） |\n| 守り | パスキーの宛先 | rpID と origin が Kaname の画面のときだけ通る。別のサイトから作った応答は断る | 単体（口：origin を変えて呼ぶ） |\n| 守り | ログ | パスワード・6 けた・バックアップコード・待ちの印・メールが出ない | 単体（ログを見る） |\n| 守り | 記録 | ログインの成功・失敗・ロック・止めで断った・管理者に頼んだ が security_events に残る（IP は地域だけ） | 単体（本物の DB） |\n| 守り | 関門 | 書くのは関門 C2（セッションの関数・`withTenant`）、知らせは関門 C6（`@kaname/notify`）だけ | 単体（CI の静的な検査） |\n| 守り | いまの様子の口が返すもの | 状態・題・時刻だけ。どのワークスペースのことも出さない | 単体（口） |\n\n### テストの型の受け\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-AUTH-01 誤ったパスワードと無いメール | 状態の表「登録していない・確認していない申し込みだけ」・守り「違うパスワードと、無いメール」「止められた・会社の人が無い の答え」 |\n| TP-AUTH-02 続けて失敗する | 状態の表「ロック中」（3 行。再設定で戻るは K-76）・時間の流れ「ロックの 15 分」「6 けたを続けて違える」 |\n| TP-AUTH-03 2 段階のコードの期限切れ・使い回し・誤り | 状態の表「待ちの印が切れた」「使ったバックアップコード」・時間の流れ「1 つ前のコード・2 つ前」「同じ 30 秒のうちにもう一度」 |\n| TP-AUTH-04 セッションが切れた・戻ってくる | 状態の表「中の画面・ブックマーク × セッションが切れた」（元の画面へ戻る・書きかけは残る） |\n| TP-AUTH-05 ログアウトした後に戻る・ブックマーク | 状態の表「ログアウトした後に戻る・ブックマーク」「古いトークンで口を直に」「別のタブでログアウトした後」 |\n| TP-AUTH-06 パスワードを変えた・端末を外した | 状態の表「パスワードを変えた・再設定した後 × 古いセッション」（受け持ち：K-75・K-76）。端末を外すは自分の設定（A74） |\n| TP-AUTH-08 戻す先が外の道 | 入力「戻る先（next）が外の道」 |\n| TP-AUTH-09 国・端末が変わった | 状態の表「国か端末が変わって切られた後に入り直す」「別の端末で初めて」（切るのは K-20） |\n| TP-MAIL-01 送れなかったとき | 失敗「新しい端末の知らせのメールが送れない」「管理者への知らせが送れない」 |\n| TP-MAIL-02 二重に出ない | 状態の表「同じ端末で 2 回目」・操作の揺れ「管理者に戻してもらうを 2 回押す」（notifications の dedupe_key） |\n| TP-MAIL-03 本文に秘密を入れない | 守り：新しい端末の知らせと管理者への知らせの本文に、パスワード・コード・待ちの印・IP の全部を入れない（単体で本文を見る） |\n\n要らない: TP-AUTH-07 このチケットは本人確認の取り直し（stepUp・15 分）を使わない。取り直しの口と期限は K-19 が持つ",
@@ -3721,7 +3721,7 @@
    "milestone": "F1",
    "area": "認証",
    "assignee": "未定",
-   "due": "",
+   "due": "2026-11-15",
    "decisions": [
     "D-042",
     "D-051.2",
@@ -3780,7 +3780,7 @@
    ],
    "sections": {
     "目的": "ログインした本人が、安全の設定の画面で **パスキーを付ける**（いま使っている端末の指か顔で登録する）。パスキーを持たずパスワードで入る人は、代わりに **2 段階認証を付ける**（本人確認 → 認証アプリで QR を読み取る → 6 けたで確かめる → バックアップコード 10 個を 1 回だけ見せる・D-128.59・D-128.61）。\n\n同じ画面で、付いているパスキーの一覧・名前を変える・外す（最後の入り方は外せない）と、パスワードを変える（変えたらほかの端末と PC（Bridge）を切る）ができる。パスキーを付けたら、はじめにやることの「パスキー」に印が付く（D-125.146）。",
-    "完了の条件": "- 下の 2 つの表の「このチケット」のマスと、全部の分岐のテストが緑\n- 契約の口 `getMySecurity`・`renamePasskey`・`deletePasskey`・`changePassword`・`startTwoFactor`・`confirmTwoFactor` が 501 でない（apps/api/test/generated/ の 6 本の `it.todo` が本物のテストになって緑）\n- 画面が部品の口を直に呼ぶ道（今の `authClient.twoFactor.enable`／`verifyTotp`）が消え、契約の口と、パスキーを付ける部品の口（`/api/auth/passkey/generate-register-options`・`/api/auth/passkey/verify-registration`）だけを呼んでいる\n- 本人確認の取り直しを通らない部品の道（`/api/auth/two-factor/enable`・`/two-factor/disable`・`/two-factor/generate-backup-codes`・`/change-password`・`/passkey/delete-passkey`・`/passkey/update-passkey`）が 404 になっている\n- 単体のテスト（下の表で「このチケット」が受け持つマスと、全部の分岐）が本物の DB と本物のブラウザ（パスキーは Playwright の仮の認証器）の上で緑\n- 手元の CI（dagci）が緑",
+    "完了の条件": "- 下の 2 つの表の「このチケット」のマスと、全部の分岐のテストが緑\n- 契約の口 `getMySecurity`・`renamePasskey`・`deletePasskey`・`changePassword`・`startTwoFactor`・`confirmTwoFactor` が 501 でない（apps/api/test/generated/ の 6 本の `it.todo` が本物のテストになって緑）\n- 画面が部品の口を直に呼ぶ道（今の `authClient.twoFactor.enable`／`verifyTotp`）が消え、契約の口と、パスキーを付ける部品の口（`/api/auth/passkey/generate-register-options`・`/api/auth/passkey/verify-registration`）だけを呼んでいる\n- 本人確認の取り直しを通らない部品の道（`/api/auth/two-factor/enable`・`/two-factor/disable`・`/two-factor/generate-backup-codes`・`/change-password`・`/passkey/delete-passkey`・`/passkey/update-passkey`）が 404 になっている\n- 単体のテスト（下の表で「このチケット」が受け持つマスと、全部の分岐）が本物の DB と本物のブラウザ（パスキーは Playwright の仮の認証器）の上で緑\n- 手元の CI（act・GitHub と同じ workflow の全部）が緑",
     "前提と制約": "分類: AUTH, CRUD, PERM\n\n- 流れ F1 登録してログインできる（K-50）\n- 依存：ログインする（K-74）。パスキーの部品（`@better-auth/passkey` 1.7.15）と `passkey` の表は K-74 が足す。このチケットは付ける・直す・外すと画面を持つ\n- 本人確認の取り直しの口（`stepUp`・15 分）は K-19 が持つ。このチケットは「直前の取り直しが無いと 403」を受けて、画面から取り直しの小窓を出す\n- 2 段階を付ける口（`startTwoFactor`・`confirmTwoFactor`）は、行為が後のフェーズの A04 になっているが、パスワードだけの人には必須（D-128.61）なので、A97 のこのチケットで作る。外す（`disableTwoFactor`）・バックアップコードを作り直す（`regenerateBackupCodes`）・管理者が戻す（`resetMemberTwoFactor`）は K-73 に残す\n- 入っている端末の一覧と切る（`listMySessions` など・A74）とはじめにやることの一覧（`listSetupTasks`）は流れ F10（K-70）\n- テストはこのチケットを作る人がコードまで書き、実装する人は変えない（D-128.125）",
     "実施事項": "### 作り方（実装の詳細）\n\n| 欄 | 中身 |\n|---|---|\n| 画面 | `apps/web/features/F1/mfa-setup/`（新しい部品 `components/k` の TextField・Button・Callout・Dialog と、4 つの状態 `components/k/states` で組む）。キャンバスの絵 `MeLogin`・`MeLogin2FA`・`Me2FA`・`MeTotp`・`MeBackup`・`EdPasskey`・`AuthAddPasskey`。道は `/mfa-setup`（`apps/web/app/(outside)/mfa-setup/page.tsx` は薄い入れ物にし、中身をこのチケットで置き換える）。ログインが要る画面（ログインしていなければ `/login?next=/mfa-setup`）。パスキーを大きく先に、2 段階はその下（D-128.59）。QR は今の `qrcode` で作る。バックアップコードは写す・ファイルで保存（ブラウザのダウンロードだけ）・印刷。パスワードの欄は見る・隠す（D-087）。自分の設定 › ログインと安全（`/settings/security`）は同じ中身を使う |\n| API | 契約の口 `getMySecurity`（GET /api/v1/me/security・本人・120 回／分／人・関門 C8）・`renamePasskey`（PATCH /api/v1/me/passkeys/:id・本人・60 回／分／人・C2・C8）・`deletePasskey`（DELETE /api/v1/me/passkeys/:id・本人・取り直しが要る・C2・C8）・`changePassword`（PATCH /api/v1/me/password・本人・取り直しが要る・C2・C8）・`startTwoFactor`（POST /api/v1/me/two-factor/enable・本人・取り直しが要る・C2・C8）・`confirmTwoFactor`（POST /api/v1/me/two-factor/confirm・本人・C2・C8）。振る舞いを `apps/api/src/features/F1/mfa-setup/` に Hook として書き、`apps/api/src/server.ts` の `contract.hooks` に足して 501 を外す。取り直しの判定は契約の入口（`stepUpFresh`・apps/api/src/contract/permissions.ts）のまま。パスキーを付ける口は部品のまま |\n| DB | 認証の表（schema `kaname_auth`）：`passkey`（K-74 が足す：id・name・public_key・user_id・credential_id・counter・device_type・backed_up・transports・aaguid・created_at）・`two_factor`（secret・backup_codes（部品が鍵で包む）・verified・failed_verification_count・locked_until）・`\"user\"`（two_factor_enabled）・`account`（provider_id = credential・password）・`verification`（パスキーのチャレンジ）・`session`。業務の表：`sessions`（step_up_at・revoked_at・kind_id・migration 0004／0081／0083）・`security_events`・`members`（setup の印は流れ F10）。**migration `0092_login_methods.sql` を 1 本足す**（番号は 11_tickets/K-50.md の「migration の番号の予約」。packages/db/src/index.ts の MIGRATIONS にも足す）：① 本人の入り方を数える関数 `app.login_methods(p_auth_user_id text)`（パスキーの数・パスワードの有無・2 段階の有無だけを返す security definer。業務の表からは認証の表を読めない D-128.119 ので、関数の中だけで読む）② パスワードだけで 2 段階の無い人のセッションに立てる印 `sessions.mfa_pending boolean not null default false`（聞きたいこと 1 の答えが (a) のとき） |\n| 使う部品と版 | Better Auth 1.7.15 の twoFactor（`enableTwoFactor`・`verifyTOTP`・`viewBackupCodes`（サーバーだけ）・`changePassword`）と `@better-auth/passkey` 1.7.15（`generatePasskeyRegistrationOptions`・`verifyPasskeyRegistration`・`listPasskeys`・`updatePasskey`・`deletePasskey`）。どちらも `@kaname/auth` の中だけ。画面は `passkeyClient()`・`qrcode`。Hono 4.10・pg 8.16・Next.js 15.5・React 19.1・react-hook-form 7.88・zod 4.6・テストは Vitest 3.2（口）と Playwright 1.63（画面・CDP の WebAuthn の仮の認証器）。保存は関門 C2、秘密は関門 C8 の決まり（中身を返さない・ログに出さない） |\n| 使う既存の実装（目録で探した） | `enableTotp`・`verifyTotp`（packages/auth/src/two_factor.ts）・`changePassword`（packages/auth/src/resolver.ts）・`app.revoke_sessions_for_auth_user`（migration 0060。全部のワークスペースの端末と Bridge を切る）・`app.record_security_event`（migration 0003）・取り直しの判定 `stepUpFresh`（apps/api/src/contract/permissions.ts）・今の画面の QR・ファイルで保存・写す（apps/web/app/(outside)/mfa-setup/page.tsx）・漏れたパスワードの照合（K-51 が作る）・画面のテストの道具（`apps/web/tests/_lib/api.ts` の `signupViaApi`・`loginAs`・`totp`・`pwToggle`・`admin`） |\n| 新しく作るもの | ① 上の migration ② 部品の道を閉じる（`disabledPaths`。K-74 と同じ所）③ 2 段階の確かめの後にバックアップコードを 1 回だけ返す（`viewBackupCodes` で引いて返し、二度と返さない）④ パスキーの名前の既定（端末の種類 `deviceOf` から「Chrome／macOS」など）⑤ 「最後の入り方は外せない」の判定（`app.login_methods`）⑥ errors.json に 4 件（最後の入り方は外せない・先に 2 段階を付ける・2 段階はもう付いている・このパスキーはもうこの端末に付いている） |\n| 共通の決まり | エラーの文言は errors.json から引く（E-AUTH-004・E-VAL-005・E-PAGE-001・002・003・005 と、足す 4 件）・ログに TOTP の鍵・QR の中身・バックアップコード・パスワード・公開鍵を出さない・時刻は timestamptz（D-128.130） |\n\n### 決めた判断\n\n- 付けるときの順番は D-128.61 のとおり：本人確認（取り直し）→ 認証アプリで QR を読み取る（この 1 回だけ）→ 6 けたで確かめる → バックアップコード 10 個（いまだけ表示・1 つ 1 回）\n- バックアップコードは確かめが通った後の答えで 1 回だけ返す。画面を閉じる・再読み込みすると二度と出ない（作り直しは `regenerateBackupCodes`・K-73）\n- 始めたが確かめていない途中（`two_factor.verified = false`）でもう一度始めたら、前の鍵は捨てて新しい QR を出す\n- パスキーで入る人には 2 段階を付けさせない（D-128.60）。パスキーを持つ人の画面では 2 段階の欄を「パスキーで入るので要りません」と出し、付けるボタンは出さない（任意で付ける D-128.61 の欄は残し、付けたい人は付けられる）\n- 最後の入り方は外せない：パスキーを外したら「パスキーが 0 本で、2 段階の無いパスワードだけ」になるときは 409（足すエラー：先に 2 段階を付ける）。パスワードも 2 段階も無いときは 409（足すエラー：最後の入り方は外せない）\n- パスワードを変えたら、全部のワークスペースのほかの端末と PC（Bridge）を切る（`app.revoke_sessions_for_auth_user`・D-125.140）。今の `changePassword` は 1 つのワークスペースの人（member）だけを切っていて、複数のワークスペースに入る人（D-125.150）の分が残るので直す。今の画面のセッションを残すかは聞きたいこと 3\n- 新しいパスワードは 12 文字以上・漏れたものは弾く（D-125.137）。K-51 の照合をそのまま使う\n- パスキーを付けたら、はじめにやることの「パスキー」に印（D-125.146）。印の付け方は流れ F10 の一覧が読む（ここはパスキーの数を返すだけ）\n- 自分の安全の設定の口は全部「本人だけ」。他の人のパスキーの ID は 404（有ることも漏らさない）",
     "テスト仕様と確認の結果": "### 状態 × 入口 × 利用者の状態\n\n入り方の状態（DB の列から出した候補：`passkey` の行の数 → 無い・1 本・2 本以上・最後の 1 本、`two_factor.verified` → 無い・途中・付いている、`\"user\".two_factor_enabled`、`account.password` → パスワードあり、`sessions.step_up_at` → 取り直しから 15 分の内・外、`sessions.revoked_at` → 切られた、足す `sessions.mfa_pending` → 済ませる印、`verification.expires_at` → パスキーのチャレンジの期限）\n\n| 入り方の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| パスキー無し | 安全の設定の画面で「パスキーを付ける」 | ログイン中 | 指か顔で登録。一覧に出る（名前は端末から）。はじめにやることに印 | このチケット | 単体（画面・仮の認証器）・単体（口：getMySecurity の数） |\n| パスキー無し | ログインの後の「この PC にもパスキーを付ける？」（K-74） | ログイン中 | 同じ画面のパスキーを付ける所が開く。済んだら next へ | このチケット | 単体（画面） |\n| パスキー 1 本（この端末のもの） | もう一度「パスキーを付ける」 | ログイン中 | 部品が同じ端末を除く。足すエラー「このパスキーはもうこの端末に付いています」 | このチケット | 単体（画面・仮の認証器） |\n| パスキー 1 本 | 別の端末で「パスキーを付ける」 | ログイン中 | 2 本目が付く | このチケット | 単体（画面：仮の認証器を 2 つ） |\n| パスキーあり | 名前を変える | ログイン中 | 名前が変わる（別の GET で読み直して同じ） | このチケット | 単体（口・本物の DB）・単体（画面） |\n| パスキー 2 本以上 | 1 本を外す | ログイン中・取り直しから 15 分の内 | 外れる。そのパスキーではもう入れない | このチケット | 単体（口・本物の DB）・単体（画面・仮の認証器で入れないこと） |\n| パスキー最後の 1 本・パスワードあり・2 段階あり | 外す | ログイン中・取り直しの内 | 外れる（パスワード＋2 段階で入れる） | このチケット | 単体（口・本物の DB） |\n| パスキー最後の 1 本・パスワードあり・2 段階なし | 外す | ログイン中・取り直しの内 | 409・足すエラー（先に 2 段階を付ける）。外れない | このチケット | 単体（口・本物の DB）・単体（画面） |\n| パスキー最後の 1 本・パスワードなし | 外す | ログイン中・取り直しの内 | 409・足すエラー（最後の入り方は外せない） | このチケット | 単体（口・本物の DB：パスワードの行を消して作る） |\n| パスキーあり | 外す・パスワードを変える・2 段階を始める | ログイン中・取り直しから 15 分の外 | 403（取り直しが要る）。画面は取り直しの小窓を出し、通ったらそのまま続く | このチケット（取り直しの口は K-19） | 単体（口・本物の DB の時刻を進める）・単体（画面） |\n| 2 段階なし・パスキーなし | 「2 段階認証を付ける」 | ログイン中・取り直しの内 | QR と鍵の文字を出す（この 1 回だけ）。まだ付いていない（verified = false） | このチケット | 単体（口・本物の DB）・単体（画面） |\n| 2 段階 途中（verified = false） | 6 けたを入れる | ログイン中 | 付く（two_factor_enabled = true）。バックアップコード 10 個を 1 回だけ出す | このチケット | 単体（口・本物の DB）・単体（画面） |\n| 2 段階 途中 | 閉じて後でもう一度「付ける」 | ログイン中 | 前の鍵を捨てて新しい QR。前の QR の 6 けたは通らない | このチケット | 単体（口・本物の DB） |\n| 2 段階 付いている | もう一度「付ける」を口に直に | ログイン中 | 409・足すエラー（2 段階はもう付いている）。鍵は変わらない | このチケット | 単体（口） |\n| 2 段階 付いている | 確かめの口をもう一度（古いタブ） | ログイン中 | 409。バックアップコードは返さない | このチケット | 単体（口） |\n| 2 段階 付いている（バックアップコードを見た後） | 画面を再読み込み・戻る | ログイン中 | コードは二度と出ない。「作り直す」の案内（作り直しは K-73 の口） | このチケット | 単体（画面） |\n| 2 段階 付いている | 外す・バックアップコードを作り直す | ログイン中 | 外すは D-128.61 の決まり、作り直しは前のコードが使えなくなる | 後で切るチケット（K-73 の `disableTwoFactor`・`regenerateBackupCodes`） | — |\n| パスワードあり | パスワードを変える（今のパスワード・新しいパスワード 2 つ） | ログイン中・取り直しの内 | 変わる。全部のワークスペースのほかの端末と PC（Bridge）が切れる。今の画面は聞きたいこと 3 のとおり | このチケット | 単体（口・本物の DB：2 つのワークスペース・Bridge の行）・単体（画面） |\n| パスワードを変えた後 | 別の端末に残っていた古いセッションで押す | ログイン中だった | 401・E-PAGE-005。入り直す | このチケット | 単体（口・本物の DB） |\n| パスワードを変えた後 | 切られた PC（Bridge）が次に取りに来る | PC | 401。PC は「つなぎ直してください」を出す | このチケット（PC の画面は流れ F3） | 単体（口：Bridge の鍵で呼ぶ） |\n| パスワードだけ・2 段階なし・パスキーなし | ログインした直後 | ログイン中 | 聞きたいこと 1 の答えのとおり（勧め (a)：印 `mfa_pending` を立て、安全の設定の画面を出す。済むまで自分の安全の設定・ログアウト・自分の取得のほかの口は 403） | このチケット（印を立てる hook は K-74 と同じ所） | 単体（口・本物の DB）・単体（画面） |\n| パスワードだけ（印が立っている） | 2 段階かパスキーを付ける | ログイン中 | 印が下り、元の画面（next）へ | このチケット | 単体（口・本物の DB）・単体（画面） |\n| どれでも | 安全の設定の画面を開く・ブックマーク | ログインしていない・ログアウトした後 | 中は見えず `/login?next=/mfa-setup`。入ると戻る | このチケット | 単体（画面） |\n| パスキーも 2 段階も無い（登録の直後・印 mfa_pending が立っている） | ログインした直後 | ログイン中 | 安全の設定の画面に移り、パスキーか 2 段階を付けるまでほかの画面へ進めない（規約の同意し直しと同じ形・D-128.141） | このチケット | 単体（口・画面・本物の DB） |\n| 印 mfa_pending が立っている | ほかの画面の道を直に打つ・ブックマーク・戻る | ログイン中 | 安全の設定の画面に戻す。ほかの口は 403（印が立っている）で何もしない | このチケット | 単体（口・画面） |\n| 印 mfa_pending が立っている・付けている途中 | 途中でセッションが切れて入り直す | セッションが切れた → ログイン中 | 入り直すと安全の設定の画面から続ける。途中までの 2 段階の鍵は捨て、最初からやり直す（書きかけの名前は画面に残る） | このチケット | 単体（画面・本物の DB の時刻を進める） |\n| 印 mfa_pending が立っている・付けている途中 | 端末のパスキーの画面を閉じる・取り消す | ログイン中 | 何も登録しない。「パスキーを付けられませんでした。もう一度試すか、2 段階を使ってください」と出し、画面に残る | このチケット | 単体（画面・仮の認証器） |\n| 2 段階 途中（6 けたを入れる前） | 5 分を過ぎてから 6 けたを入れる | ログイン中 | 鍵の期限切れ。「時間が過ぎました。最初からやり直してください」で QR から出し直す | このチケット | 単体（口・本物の DB の時刻を進める） |\n| 付け終わった（印が下りた） | 安全の設定の画面の古いリンク・ブックマークをもう一度開く | ログイン中 | 付け終わった今の状態（パスキーの一覧・2 段階あり）を出す。やり直しを強いない | このチケット | 単体（画面） |\n| 印 mfa_pending が立っている | 別の端末で同時に付ける | ログイン中（2 つの端末） | 先に付け終わった方で印が下りる。もう一方は次の操作で今の状態を出す（二重に付けない） | このチケット | 単体（口・本物の DB） |\n| 印 mfa_pending が立っている | Bridge（PC）のセッション | PC がつながっている | 止めない（PC の仕事は人の印で止めない・D-128.137 と同じ考え） | このチケット | 単体（口） |\n| 2 段階 途中・名前を書きかけ | 画面のまま長く置いて押す | セッションが切れた | 401・E-PAGE-005。入り直すと画面に戻る。書いた名前は画面に残る。2 段階は「もう一度 QR から」 | このチケット | 単体（画面・時刻を進める） |\n| どれでも | 他の人のパスキーの ID で名前を変える・外す | ログイン中 | 404・E-PAGE-001。何も変わらない | このチケット | 単体（口・本物の DB：2 人） |\n| パスキーあり | パスキーで入る | ログインしていない | 入れる | ログインする（K-74） | — |\n| 退会・止められた後 | 安全の設定の口を呼ぶ | ログイン中だった | 401（セッションが切れている） | 人とアカウントを管理する（流れ F10）・ログインする（K-74） | — |\n| 取り直しが要る（外すが 403・STEP_UP_REQUIRED）・2 段階あり | パスキーの「外す」→ 取り直しの小窓 StepUpDialog | ログイン中・取り直しから 15 分の外 | 欄「パスワード」「6 けたのコード」。stepUp に { password, code }。通ったら小窓が閉じ、外すが続いて通る（onDone） | このチケット（小窓は K-91 も使う・D-128.162） | K75-UI-101 |\n| 取り直しが要る・2 段階なし（パスワードの人） | 取り直しの小窓 | ログイン中・取り直しの外 | 「6 けたのコード」は出ない。stepUp に { password } だけ。続けて外れる | このチケット | K75-UI-102 |\n| 取り直しの小窓が開いている | 違うパスワードで「確かめる」 | ログイン中 | 欄の下に E-AUTH-001 の文。小窓は閉じない。外すは続けない | このチケット | K75-UI-103 |\n| 取り直しの小窓が開いている・2 段階あり | 違う 6 けたで「確かめる」 | ログイン中 | 欄の下に E-AUTH-004 の文。小窓は閉じない。外すは続けない | このチケット | K75-UI-104 |\n| 取り直しの小窓が開いている | 「やめる」 | ログイン中 | 小窓が閉じる。stepUp も 2 回目の外すも呼ばない。パスキーは残る | このチケット | K75-UI-105 |\n\n「—」は受け持ちのチケットでテストを書く。\n\n### 入力・失敗・操作の揺れ・守り\n\n| 観点 | 分岐 | 結果 | テスト |\n|---|---|---|---|\n| 入力 | パスキーの名前が空・前後の空白・全角 | 空は 422。前後の空白を除き、NFKC で保存 | 単体（口） |\n| 入力 | パスキーの名前の長さの上限（聞きたいこと 4 の勧め 40 文字）・HTML や制御文字 | 上限を超えたら 422。画面で動かない・保存は無害化 | 単体（口・画面） |\n| 入力 | 6 けたが空・5 けた・7 けた・全角・間の空白 | 空と桁違いは 422、全角と空白は直して比べる | 単体（口） |\n| 入力 | 6 けたが違う（時刻のずれ） | 422・E-AUTH-004「認証アプリの時刻が合っているか確かめてください」。1 つ前のコードまでは通す | 単体（`totp` で時刻をずらす） |\n| 入力 | 2 段階を始めるときのパスワードが違う | 401。始まらない（鍵を作らない） | 単体（口） |\n| 入力 | 新しいパスワード 11 文字／12 文字 | 11 は 422・E-VAL-005、12 は通る | 単体（口） |\n| 入力 | 新しいパスワードが漏れたもの | 422（K-51 と同じ照合・同じ文） | 単体（照合を差し替え） |\n| 入力 | 新しいパスワード 2 つが違う | 画面で止める（口には送らない） | 単体（画面） |\n| 入力 | 今のパスワードが違う | 401。変わらない。失敗は security_events に残す | 単体（口・本物の DB） |\n| 入力 | パスワードを見る・隠す（D-087） | 3 つの欄とも既定は隠す。押すと見える | 単体（画面） |\n| 入力 | 戻る先（next）が外の道 | 外へは飛ばさず、安全の設定の画面に留まる | 単体（画面） |\n| 時間の流れ | 取り直しから 14 分 59 秒・15 分・15 分 1 秒 | 内は通る、ちょうどと外は 403（DB の now()） | 単体（本物の DB の時刻を進める） |\n| 時間の流れ | パスキーのチャレンジの期限を過ぎてから端末で確かめる | 部品が断る。「もう一度付けてください」 | 単体（口：チャレンジの行の期限を過去にする） |\n| 時間の流れ | 2 段階を始めてから長く置いて確かめる | 鍵は残っていれば通る（6 けたは今の時刻で計算する） | 単体（本物の DB） |\n| 失敗 | 端末で本人がやめた・時間切れ（NotAllowedError） | 何も付かない。「パスキーを付けられませんでした。もう一度」 | 単体（画面：仮の認証器で失敗させる） |\n| 失敗 | パスキーが使えないブラウザ | 「パスキーを付ける」を出さず、2 段階を案内 | 単体（画面：WebAuthn を消す） |\n| 失敗 | 2 段階の確かめは通ったが、バックアップコードを返す所で失敗 | 付いたまま、コードは返せない。画面は「付きました。バックアップコードを作り直してください」（作り直しの口へ） | 単体（部品を失敗させる） |\n| 失敗 | パスワードは変わったが、端末を切る所（`app.revoke_sessions_for_auth_user`）で失敗 | 先に切ってから変える順にする（切れずに残るより、入り直しの方を選ぶ）。切る所で落ちたら変えない。500・E-PAGE-003 | 単体（DB の関数を失敗させる） |\n| 失敗 | DB が落ちた | 500・E-PAGE-003。画面の書きかけは残る | 単体（口・画面） |\n| 操作の揺れ | 「パスキーを付ける」を 2 回押し | 確かめは 1 回。パスキーは 1 本 | 単体（画面） |\n| 操作の揺れ | 2 つのタブで同時にパスキーを外す（最後の 2 本） | 1 本だけ外れ、後の方は 409（最後の入り方は外せない／先に 2 段階）。0 本にならない | 単体（口・本物の DB・同時に 2 つ） |\n| 操作の揺れ | 2 つのタブで同時に名前を変える | 後に保存した方が残る。どちらも別の GET で読み直して同じ | 単体（口・本物の DB・同時に 2 つ） |\n| 操作の揺れ | 6 けたを 2 回送る（自動で進むのと Enter） | 付くのは 1 回。バックアップコードは 1 回だけ返る | 単体（画面） |\n| 操作の揺れ | パスワードを変えるを 2 回押し | 変わるのは 1 回。2 回目は今のパスワードが違うので 401 | 単体（画面） |\n| 守り | ログインしていない人が 6 つの口を呼ぶ | 401。何も書かない | 単体（口） |\n| 守り | 見るだけの役の人（R4） | 自分の入り方は直せる（自分のものだけ）。他の人の分は 404 | 単体（口・本物の DB） |\n| 守り | 自分の安全の設定が返すもの | パスキーの名前・作った時刻・端末の種類、パスワードの有無、2 段階の有無、バックアップコードの残りの数だけ。公開鍵・TOTP の鍵・コードの中身は返さない | 単体（口） |\n| 守り | 1 分に 61 回（変える口）・121 回（見る口） | 429・待つ秒数 | 単体（口） |\n| 守り | 閉じた部品の道 | 上の 6 本は 404（`disabledPaths`） | 単体（口） |\n| 守り | DB の中 | TOTP の鍵とバックアップコードは部品が鍵で包んで持つ（平文で無い）。パスワードはハッシュだけ | 単体（本物の DB） |\n| 守り | ログ | TOTP の鍵・QR の中身・6 けた・バックアップコード・パスワードが出ない | 単体（ログを見る） |\n| 守り | 記録 | パスキーを付けた・外した・2 段階を付けた・パスワードを変えた が、その人の全部のワークスペースの security_events に残る | 単体（本物の DB） |\n| 守り | 関門 | 書くのは関門 C2・秘密は C8 の決まり（返さない・ログに出さない） | 単体（CI の静的な検査） |\n\n### テストの型の受け\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-AUTH-02 続けて失敗する | 入力「6 けたが違う」「今のパスワードが違う」・守り「1 分に 61 回」（2 段階の確かめの止めは部品の数え。回数は K-74 の聞きたいこと 2 と同じ答えに揃える） |\n| TP-AUTH-03 2 段階のコードの期限切れ・使い回し・誤り | 入力「6 けたが違う（時刻のずれ）」・状態の表「2 段階 途中 × 閉じて後でもう一度」（前の QR の 6 けたは通らない）「確かめの口をもう一度」 |\n| TP-AUTH-04 セッションが切れた・戻ってくる | 状態の表「画面のまま長く置いて押す × セッションが切れた」（入り直すと戻る・書きかけは残る） |\n| TP-AUTH-05 ログアウトした後に戻る・ブックマーク | 状態の表「安全の設定の画面を開く・ブックマーク × ログアウトした後」 |\n| TP-AUTH-06 パスワードを変えた・端末を外した | 状態の表「パスワードを変える」「パスワードを変えた後 × 古いセッション」「切られた PC（Bridge）」 |\n| TP-AUTH-07 本人確認の取り直しの期限 | 状態の表「取り直しから 15 分の外」・時間の流れ「14 分 59 秒・15 分・15 分 1 秒」 |\n| TP-AUTH-08 戻す先が外の道 | 入力「戻る先（next）が外の道」 |\n| TP-CRUD-01 2 人が同時に直す | 操作の揺れ「2 つのタブで同時に名前を変える」「同時にパスキーを外す」 |\n| TP-CRUD-02 消したものを古いリンクで | 状態の表「パスキー 2 本以上 × 1 本を外す」の後に、外したパスキーの ID で名前を変える → 404（単体（口）で続けて呼ぶ） |\n| TP-CRUD-04 2 回押し | 操作の揺れ「パスキーを付けるを 2 回押し」「6 けたを 2 回送る」「パスワードを変えるを 2 回押し」 |\n| TP-CRUD-05 保存の途中で失敗 | 失敗「バックアップコードを返す所で失敗」「端末を切る所で失敗」 |\n| TP-CRUD-06 書きかけで戻る・再読み込み・セッション切れ | 状態の表「画面のまま長く置いて押す」（名前の書きかけは残る）・「バックアップコードを見た後 × 再読み込み」 |\n| TP-PERM-01 役が合わない人 | 守り「ログインしていない人」「見るだけの役の人」（自分の分だけ直せる・他人は 404） |\n| TP-PERM-02 権限を外した直後に押す | 状態の表「退会・止められた後 × 口を呼ぶ」（401・受け持ちは F10 と K-74）・「パスワードを変えた後 × 古いセッション」（口で止まる） |\n| TP-PERM-03 他の会社の ID を直接指定する | 状態の表「他の人のパスキーの ID」（404・中身を返さない） |\n| TP-PERM-04 一覧・数・検索 | 守り「自分の安全の設定が返すもの」（自分の分だけ・他の人のパスキーが数に混ざらない。単体で 2 人を作って数を見る） |\n\n要らない: TP-AUTH-01 このチケットはログインの返事を作らない（誤ったパスワードと無いメールの揃え方は K-74）。今のパスワードの確かめはログイン中の本人だけが呼ぶ\n要らない: TP-AUTH-09 国・端末が変わったときに切るのはセッションの見張り（K-20）のまま。このチケットは切らない\n要らない: TP-CRUD-03 パスキーは外したら戻さない（戻す操作を持たない）。子の行も無い。付け直しは新しく付ける\n要らない: TP-PERM-05 自分の入り方は役で変わらない（どの役の人も自分の分は直せる）。付けた権限で効き方が変わる口が無い",
@@ -3800,7 +3800,7 @@
    "milestone": "F1",
    "area": "認証",
    "assignee": "未定",
-   "due": "",
+   "due": "2026-11-16",
    "decisions": [
     "D-042",
     "D-051.2",
@@ -3843,7 +3843,7 @@
    ],
    "sections": {
     "目的": "パスワードを忘れた人が、再設定の画面でメールを入れて「再設定のメールを送る」を押すと、登録されていればリンクが 1 通届く（30 分・1 回だけ・D-128.62）。登録されているかどうかは画面に出さない。\n\nリンクを開いて新しいパスワードを 2 回入れると、パスワードが変わり、**全部のワークスペースの端末と PC（Bridge）が入り直しになる**（D-125.140）。ログインのロックも外れ、ログインの画面へ進む。期限切れ・使い終わった・新しく頼んだ後の前のリンクでは変えられず、頼み直しの案内を出す。",
-    "完了の条件": "- 下の 2 つの表の「このチケット」のマスと、全部の分岐のテストが緑\n- 契約の口 `requestPasswordReset`・`resetPassword` が 501 でない（apps/api/test/generated/post_auth_password_forgot.test.ts・post_auth_password_reset.test.ts の `it.todo` が本物のテストになって緑）\n- 画面が部品の口を直に呼ぶ道（今の `authClient.requestPasswordReset`・`authClient.resetPassword`）が消え、契約の口だけを呼んでいる。部品の道（`/api/auth/request-password-reset`・`/api/auth/reset-password`・`/api/auth/reset-password/:token`）は 404（K-74 と同じ `disabledPaths`）\n- 単体のテスト（下の表で「このチケット」が受け持つマスと、全部の分岐）が本物の DB と本物のブラウザの上で緑\n- 手元の CI（dagci）が緑",
+    "完了の条件": "- 下の 2 つの表の「このチケット」のマスと、全部の分岐のテストが緑\n- 契約の口 `requestPasswordReset`・`resetPassword` が 501 でない（apps/api/test/generated/post_auth_password_forgot.test.ts・post_auth_password_reset.test.ts の `it.todo` が本物のテストになって緑）\n- 画面が部品の口を直に呼ぶ道（今の `authClient.requestPasswordReset`・`authClient.resetPassword`）が消え、契約の口だけを呼んでいる。部品の道（`/api/auth/request-password-reset`・`/api/auth/reset-password`・`/api/auth/reset-password/:token`）は 404（K-74 と同じ `disabledPaths`）\n- 単体のテスト（下の表で「このチケット」が受け持つマスと、全部の分岐）が本物の DB と本物のブラウザの上で緑\n- 手元の CI（act・GitHub と同じ workflow の全部）が緑",
     "前提と制約": "分類: RESET, MAIL\n\n- 流れ F1 登録してログインできる（K-50）\n- 依存：ログインする（K-74）。ロック（`app.login_attempts`）と、部品の道を閉じる所（`disabledPaths`）は K-74 が持つ。このチケットは再設定でロックを外すことを持つ\n- ログイン中の人がパスワードを変えるのは安全の設定（K-75 の `changePassword`）。このチケットはログインしていない人の再設定だけ\n- 2 段階認証は再設定では外れない（外すのは管理者が戻す口・K-73）\n- テストはこのチケットを作る人がコードまで書き、実装する人は変えない（D-128.125）\n\n- （D-128.146）再設定のメールのログに出るメールアドレスを、登録と同じ「宛先#ハッシュ」の印に揃える。ログにメールアドレスが出たら赤になる検査を足す",
     "実施事項": "### 作り方（実装の詳細）\n\n| 欄 | 中身 |\n|---|---|\n| 画面 | `apps/web/features/F1/password-reset/`（新しい部品 `components/k` の TextField・Button・Callout と、4 つの状態 `components/k/states` で組む）。キャンバスの絵 `AuthReset`。道は `/password-reset`（メールを入れる）と `/password-reset?token=…`（新しいパスワード）。`apps/web/app/(outside)/password-reset/page.tsx` は薄い入れ物にし、中身をこのチケットで置き換える。手がかり（token）を読んだら、すぐ URL から消す（`history.replaceState`。履歴と Referer に残さない）。パスワードの 2 つの欄は見る・隠す（D-087） |\n| API | 契約の口 `requestPasswordReset`（POST /api/v1/auth/password/forgot・誰でも・10 回／分／IP・関門 C2・C6）・`resetPassword`（POST /api/v1/auth/password/reset・リンクを持つ人・10 回／分／IP・関門 C2・C6）。振る舞いを `apps/api/src/features/F1/password-reset/` に Hook として書き、`apps/api/src/server.ts` の `contract.hooks` に足して 501 を外す。中では部品の `auth.api.requestPasswordReset`・`auth.api.resetPassword`（サーバーの呼び出し）を使う |\n| DB | 認証の表（schema `kaname_auth`）：`verification`（identifier `reset-password:<手がかり>`・value＝利用者の id・expires_at 30 分。使うと部品が消す）・`\"user\"`・`account`（password）・`session`（部品が再設定で全部消す `revokeSessionsOnPasswordReset`）・`pending_signup`（確認していない申し込みだけの人を見分ける）。業務の表：`sessions`（revoked_at・revoke_reason_id = password_changed・kind_id = bridge も）・`app.login_attempts`（再設定で消す）・`security_events`・`notifications`（dedupe_key）。**新しい表と migration は作らない**。部品の設定を 1 つ足す：`verification.storeIdentifier` の `reset-password` を `hashed`（手がかりを平文で DB に残さない） |\n| 使う部品と版 | Better Auth 1.7.15（`@kaname/auth` の中だけ・emailAndPassword の `sendResetPassword`・`resetPasswordTokenExpiresIn`・`revokeSessionsOnPasswordReset`・`onPasswordReset`）・Hono 4.10・pg 8.16・Next.js 15.5・React 19.1・react-hook-form 7.88・zod 4.6・テストは Vitest 3.2（口）と Playwright 1.63（画面）。メールは関門 C6（`@kaname/notify`）・保存は関門 C2 |\n| 使う既存の実装（目録で探した） | packages/auth/src/index.ts の `sendResetPassword`（文面・30 分）・`revokeSessionsOnPasswordReset: true`・`onPasswordReset` → `app.revoke_sessions_for_auth_user`（migration 0060。全部のワークスペースの端末と Bridge を切る）・`normalizeEmail`（packages/auth/src/signup.ts）・`emailHash` と `app.login_ok`（ロックを消す・migration 0020）・漏れたパスワードの照合（K-51 が作る）・今の画面の 3 つの状態（apps/web/app/(outside)/password-reset/page.tsx）・画面のテストの道具（`apps/web/tests/_lib/api.ts` の `signupViaApi`・`lastMailUrl(\"reset\", …)`・`mailLog`・`admin`・`pwToggle`・`bridgeRow`） |\n| 新しく作るもの | ① 新しく頼んだら前の再設定のリンクを使えなくする（`sendResetPassword` の中で、同じ人の前の `reset-password:` の行を消してから送る。部品は前の行を残すので、今は前のリンクも使えてしまう）② 再設定の前に端末を切る順（切ってから変える）③ 送るのを待たずに同じ時間で返す（部品は登録されているときだけメールを待つので、待ち時間で登録の有無が分かる）④ 再設定でロックを消す（`app.login_ok`）⑤ errors.json の E-AUTH-006 を「期限切れ・使用済み・新しく頼んだ後の前のリンク」に広げる |\n| 共通の決まり | エラーの文言は errors.json から引く（E-VAL-004・E-VAL-005・E-AUTH-006・E-PAGE-003・E-PAGE-006）・ログに手がかり・パスワード・メールを出さない（本番。本番以外でリンクを出すのは今の packages/auth のまま）・時刻は timestamptz で、期限の比べは DB の時刻（D-128.130） |\n\n### 決めた判断\n\n- 答えはいつも同じ：登録されていても、されていなくても、確認していない申し込みだけでも「登録されていれば、再設定のメールが届きます。届かなければ、もう一度送れます」（D-042 の守りの決まり）。送れたとは言わない\n- 確認していない申し込みだけの人には再設定のメールを送らない（まだ本人がいない。登録の確定はメールのリンク・K-52）\n- リンクは 30 分・1 回だけ（D-128.62・今の `resetPasswordTokenExpiresIn: 60 * 30`）。新しく頼んだら前のリンクは使えない\n- 再設定は「端末を切る → パスワードを変える」の順。変える所で失敗しても、切れた端末は入り直せばよい（安全な側に倒す）。切るのは全部のワークスペースの画面と PC（Bridge）（D-125.140・D-128.121：Bridge は時間では切らないが、パスワードの変更では切る）\n- 再設定が済んだら自動では入らない（ログインの画面へ）。2 段階を付けている人は、次のログインで 6 けたを聞かれる（再設定では 2 段階は外れない）\n- 再設定が済んだら、ログインのロック（`app.login_attempts`）を消す（K-74 の聞きたいこと 3 の勧め）\n- 新しいパスワードは 12 文字以上・漏れたものは弾く（D-125.137）。K-51 の照合をそのまま使う\n- ログイン中の人が再設定の画面を開いたら「ログイン中はここから変えられます」と安全の設定（K-75）へのリンクを出す（メールを送る欄は出したまま）",
     "テスト仕様と確認の結果": "### 状態 × 入口 × 利用者の状態\n\n再設定のリンクの状態（DB の列から出した候補：`verification` の `reset-password:` の行 → 有る・無い、expires_at → 期限切れ、使うと消える → 使い終わった、同じ人の新しい行 → 前のリンク、`\"user\"`・`pending_signup` → 登録済み・登録していない・確認していない申し込みだけ、`\"user\".two_factor_enabled` → 2 段階あり、`app.login_attempts.locked_until` → ロック中、`members.suspended_at`・`subscriptions.suspended_at` → 止められた、`sessions.kind_id`・`revoked_at` → 画面と PC のセッション）\n\n| リンクの状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 無し（登録済みの人） | 再設定の画面でメールを送る | ログインしていない | 同じ答え。リンクが 1 通（30 分） | このチケット | 単体（口・本物の DB）・単体（画面） |\n| 無し（登録していないメール） | 再設定の画面でメールを送る | ログインしていない | 同じ答え・同じくらいの時間。メールは送らない。DB に何も残さない | このチケット | 単体（口・時間を測る） |\n| 無し（確認していない申し込みだけ） | 再設定の画面でメールを送る | ログインしていない | 同じ答え。再設定のメールは送らない | このチケット | 単体（口・本物の DB） |\n| 期限内 | メールのリンクを開き、新しいパスワードを 2 回 | ログインしていない | 変わる。全部のワークスペースの画面と PC のセッションが切れ、ロックが消え、ログインへ「新しいパスワードで入ってください」 | このチケット | 単体（口・本物の DB：2 つのワークスペース・Bridge の行・ロックの行）・単体（画面） |\n| 期限内 | リンクを別の端末・別のブラウザで開く | ログインしていない | 変えられる（同じ端末でなくてよい） | このチケット | 単体（画面：頼んだのと別のブラウザで開く） |\n| 期限内 | リンクを開く | ログイン中（同じ人） | 変えられる。変えたら今の画面のセッションも切れ、ログインへ | このチケット | 単体（画面） |\n| 期限内 | リンクを開く | 別のアカウントでログイン中 | リンクの人のパスワードが変わる。今のアカウントはそのまま。「別のアカウントでログイン中です。新しいパスワードで入るには、ログアウトしてください」 | このチケット | 単体（画面） |\n| 期限切れ（30 分を過ぎた） | リンクを開いて送る | どれでも | 410・E-AUTH-006「このリンクはもう使えません。もう一度、再設定メールを送ってください」とメールを送る欄へ。変わらない | このチケット | 単体（口・本物の DB の時刻を進める）・単体（画面） |\n| 使い終わった | 同じリンクをもう一度 | どれでも | 410・E-AUTH-006。変わらない | このチケット | 単体（口・本物の DB） |\n| 前のリンク（新しく頼んだ後） | 前のメールのリンク | どれでも | 410・E-AUTH-006。新しいリンクはそのまま使える | このチケット | 単体（口・本物の DB） |\n| 無い（でたらめ・古いブックマーク） | `/password-reset?token=…` を開く | どれでも | 410・E-PAGE-006。メールを送る欄へ。メールアドレスは出さない | このチケット | 単体（口）・単体（画面） |\n| 期限内・ロック中の人 | 再設定する | ログインしていない | 変わり、ロックが消える。すぐ新しいパスワードで入れる | このチケット | 単体（口・本物の DB） |\n| 期限内・2 段階ありの人 | 再設定した後にログイン | ログインしていない | 6 けたを聞かれる（2 段階は外れない） | ログインする（K-74） | 単体（口・本物の DB：two_factor_enabled が変わらない）はこのチケット |\n| 期限内・止められた人や会社 | 再設定する | ログインしていない | 変えられる（答えを揃えるため）。ログインは止めのまま | ログインする（K-74） | 単体（口：変わること）はこのチケット |\n| 再設定した後 | 別の端末に残っていた古いセッションで押す | ログイン中だった | 401・E-PAGE-005。入り直す | このチケット | 単体（口・本物の DB） |\n| 再設定した後 | PC（Bridge）が次に取りに来る | PC | 401。PC は「つなぎ直してください」 | このチケット（PC の画面は流れ F3） | 単体（口：Bridge の鍵で呼ぶ） |\n| どれでも | 再設定の画面を開く | ログイン中 | メールを送る欄と「ログイン中はここから変えられます」（安全の設定へ） | このチケット | 単体（画面） |\n| どれでも | ログインの画面の「パスワードをお忘れの方」 | ログインしていない | 再設定の画面が開く（入れたメールを引き継ぐ） | このチケット | 単体（画面） |\n| どれでも | 口を直に呼ぶ（部品の `/api/auth/reset-password` など） | ログインしていない | 404。契約の口しか無い | このチケット | 単体（口） |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 観点 | 分岐 | 結果 | テスト |\n|---|---|---|---|\n| 入力 | メールが空・形が違う | 422・E-VAL-004・欄の下に理由 | 単体（口・画面） |\n| 入力 | メールの大文字小文字・前後と途中の空白・全角 | 正規化（`normalizeEmail`）して同じ人に送る | 単体（口・本物の DB） |\n| 入力 | 新しいパスワード 11 文字／12 文字 | 11 は 422・E-VAL-005、12 は通る | 単体（口） |\n| 入力 | 新しいパスワードが漏れたもの | 422（K-51 と同じ照合・同じ文） | 単体（照合を差し替え） |\n| 入力 | 新しいパスワード 2 つが違う | 画面で止める（口には送らない） | 単体（画面） |\n| 入力 | 新しいパスワードが前と同じ | 聞きたいこと 2 の答えのとおり（勧め：通す） | 単体（口） |\n| 入力 | 手がかりが空・形が違う・前後の空白（メールソフトが付ける） | 空と形違いは 410・E-PAGE-006（形の違いで中身を探らせない）。前後の空白だけ除く | 単体（口） |\n| 入力 | パスワードを見る・隠す（D-087） | 2 つの欄とも既定は隠す。押すと見え、送信で隠すに戻る | 単体（画面） |\n| 時間の流れ | 期限の直前（29 分 59 秒）・ちょうど（30 分）・直後 | 直前は変わる、ちょうどと直後は 410（DB の時刻） | 単体（本物の DB の時刻を進める） |\n| 時間の流れ | 新しいパスワードの画面を開いたまま 30 分を過ぎてから送る | 410・E-AUTH-006。入れたパスワードは送らずに消す | 単体（画面・時刻を進める） |\n| 時間の流れ | 続けて 2 回頼む | 2 回目のリンクだけ使える | 単体（口・本物の DB） |\n| 失敗 | メールが送れない | 答えは同じ（登録の有無を漏らさない）。送れたとは言わず「届かなければ、もう一度送れます」。送れなかったことは記録とログに残す | 単体（送る部品を失敗させる）・単体（画面） |\n| 失敗 | 端末を切る所（`app.revoke_sessions_for_auth_user`）で失敗 | パスワードは変えない。500・E-PAGE-003。リンクはまだ使える（もう一度押せる） | 単体（DB の関数を失敗させる） |\n| 失敗 | 端末は切れたが、パスワードを変える所で失敗 | 500・E-PAGE-003。端末は切れたまま（安全な側）。リンクはまだ使える | 単体（部品を失敗させる） |\n| 失敗 | DB が落ちた | 500・E-PAGE-003。書いたパスワードは画面に残さない | 単体（口・画面） |\n| 操作の揺れ | 「再設定のメールを送る」を 2 回押し | メールは 1 通（聞きたいこと 1 の勧め：同じ人へは 60 秒に 1 通・notifications の dedupe_key）。答えは同じ | 単体（口・本物の DB）・単体（画面） |\n| 操作の揺れ | 同じリンクを 2 つのタブで同時に送る | 変わるのは 1 回（部品が行を 1 回だけ使う）。後の方は 410・E-AUTH-006 | 単体（口・本物の DB・同時に 2 つ） |\n| 操作の揺れ | 送った後に戻る・再読み込み | 「メールを送りました」の画面は残り、もう一度送れる。リンクの画面で再読み込みしても、手がかりは URL から消えているので「メールのリンクをもう一度開いてください」 | 単体（画面） |\n| 守り | 1 分に 11 回（同じ IP） | 429・待つ秒数（retry_after_sec）。画面に待ち時間 | 単体（口・画面） |\n| 守り | 登録の有無 | 答えの文・状態の番号・かかる時間が、登録済み・登録していない・申し込みだけで同じ（送るのを待たない） | 単体（口・時間を測る） |\n| 守り | DB の中 | 手がかりはハッシュだけ（`storeIdentifier: hashed`）。パスワードはハッシュだけ | 単体（本物の DB） |\n| 守り | URL の手がかり | 読んだら URL から消す。画面に外の読み込みを置かない（Referer で外へ出さない） | 単体（画面：history と Referer を見る） |\n| 守り | ログ | 手がかり・パスワード・メールが出ない（本番） | 単体（ログを見る） |\n| 守り | 記録 | 再設定を頼んだ・再設定した が、その人の全部のワークスペースの security_events に残る（登録していないメールでは何も残さない） | 単体（本物の DB） |\n| 守り | 関門 | 書くのは関門 C2、メールは関門 C6（`@kaname/notify`）だけ | 単体（CI の静的な検査） |\n\n### テストの型の受け\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-RESET-01 無いメールで再設定を頼む | 状態の表「無し（登録していないメール）」「無し（確認していない申し込みだけ）」・守り「登録の有無」・失敗「メールが送れない」（答えを変えない） |\n| TP-RESET-02 期限切れ・使い終わった・新しく頼んだ後の前のリンク | 状態の表「期限切れ」「使い終わった」「前のリンク」「無い（でたらめ）」・時間の流れ「期限の直前・ちょうど・直後」「続けて 2 回頼む」 |\n| TP-RESET-03 再設定したらほかのセッションが切れる | 状態の表「期限内 × 新しいパスワード」（全部のワークスペース・Bridge）「再設定した後 × 古いセッション」「PC が次に取りに来る」 |\n| TP-MAIL-01 送れなかったとき | 失敗「メールが送れない」（送れたと言わず、もう一度送れる） |\n| TP-MAIL-02 二重に出ない | 操作の揺れ「再設定のメールを送るを 2 回押し」 |\n| TP-MAIL-03 本文に秘密を入れない | 守り：再設定のメールの本文にパスワード・ほかの人の情報を入れない。リンクは 30 分で 1 回だけ（単体で本文を見る） |",
@@ -3863,7 +3863,7 @@
    "milestone": "基盤",
    "area": "環境",
    "assignee": "高本さん・実装",
-   "due": "",
+   "due": "2026-11-20",
    "decisions": [
     "D-097",
     "D-101",
@@ -3895,7 +3895,7 @@
    "milestone": "基盤",
    "area": "環境",
    "assignee": "高本さん",
-   "due": "",
+   "due": "2026-11-10",
    "decisions": [
     "D-097",
     "D-128.144",
@@ -3926,7 +3926,7 @@
    "milestone": "基盤",
    "area": "環境",
    "assignee": "高本さん",
-   "due": "",
+   "due": "2026-11-10",
    "decisions": [
     "D-101",
     "D-128.145"
@@ -3956,7 +3956,7 @@
    "milestone": "基盤",
    "area": "環境",
    "assignee": "高本さん",
-   "due": "",
+   "due": "2026-11-11",
    "decisions": [
     "D-097",
     "D-128.145"
@@ -3989,7 +3989,7 @@
    "milestone": "基盤",
    "area": "環境",
    "assignee": "高本さん",
-   "due": "",
+   "due": "2026-11-10",
    "decisions": [
     "D-096",
     "D-128.145"
@@ -4019,7 +4019,7 @@
    "milestone": "基盤",
    "area": "環境",
    "assignee": "高本さん",
-   "due": "",
+   "due": "2026-11-12",
    "decisions": [
     "D-097",
     "D-128.145"
@@ -4085,7 +4085,7 @@
    "milestone": "基盤",
    "area": "環境",
    "assignee": "高本さん",
-   "due": "",
+   "due": "2026-11-14",
    "decisions": [
     "D-097",
     "D-128.145"
@@ -4118,7 +4118,7 @@
    "milestone": "基盤",
    "area": "環境",
    "assignee": "高本さん",
-   "due": "",
+   "due": "2026-11-14",
    "decisions": [
     "D-096",
     "D-128.137",
@@ -4149,7 +4149,7 @@
    "milestone": "基盤",
    "area": "環境",
    "assignee": "高本さん",
-   "due": "",
+   "due": "2026-11-20",
    "decisions": [
     "D-128.137",
     "D-128.145"
@@ -4181,7 +4181,7 @@
    "milestone": "基盤",
    "area": "環境",
    "assignee": "高本さん",
-   "due": "",
+   "due": "2026-11-10",
    "decisions": [
     "D-128.132",
     "D-128.135",
@@ -4191,7 +4191,7 @@
    "choke_none": "人の準備。台に道具を入れるだけ",
    "depends_on": [],
    "sections": {
-    "目的": "手元の CI（dagci）を、借り物ではない台（Mac か Intel・AMD の PC）で回せるようにする。",
+    "目的": "手元の CI（act・GitHub と同じ workflow の全部）を、借り物ではない台（Mac か Intel・AMD の PC）で回せるようにする。",
     "完了の条件": "- [ ] 台を決めた（Mac なら Apple シリコンでも可）\n- [ ] Docker（Mac は colima か Docker Desktop）を入れ、起動したら立ち上がる\n- [ ] `dagci setup` を流した\n- [ ] リポジトリで `dagci smoke` が緑",
     "前提と制約": "- Mac は amd64 を Rosetta で動かす設定が要る（Linux 版 Chrome は amd64 だけ・ci.yaml の toolbox.platform）",
     "実施事項": "1. Mac：`brew install colima docker` → `colima start --vm-type vz --vz-rosetta`（ログインしたら起動する設定にする）。Docker Desktop なら設定の「Use Rosetta for x86/amd64 emulation」をオン\n2. スキル ai-team-delivery を入れる\n3. `~/.claude/skills/ai-team-delivery/scripts/ci/dagci/dagci setup`\n4. リポジトリで `dagci smoke`",
@@ -4207,7 +4207,7 @@
    "id": "K-88",
    "title": "検査の穴を 2 つ塞ぐ（手元の別の作業場所を読む・仕様の同期が時間がたっただけで赤）",
    "kind": "課題",
-   "stage": "作業中",
+   "stage": "確認中",
    "parent": "K-32",
    "milestone": "基盤",
    "area": "試験",
@@ -4223,7 +4223,7 @@
    "depends_on": [],
    "sections": {
     "目的": "K-51 の途中で見つけた検査の穴 2 つを、このチケットで塞ぐ（途中で見つけたものはチケットにする・D-128.147）。",
-    "完了の条件": "- [x] 仕様の検査（spec_check.py）が、手元の別の作業場所（.claude/worktrees）を読まない\n- [x] 仕様の同期（tier_d.py）が検査を呼ぶときに印（SPEC_SYNC_RUN=1）を渡し、実ブラウザの証拠の検査（op_gate.py）はその印のとき報告の新しさ（48 時間）を見ない（D-128.149）\n- [ ] workflow の全部（act）が緑",
+    "完了の条件": "- [x] 仕様の検査（spec_check.py）が、手元の別の作業場所（.claude/worktrees）を読まない\n- [x] 仕様の同期（tier_d.py）が検査を呼ぶときに印（SPEC_SYNC_RUN=1）を渡し、実ブラウザの証拠の検査（op_gate.py）はその印のとき報告の新しさ（48 時間）を見ない（D-128.149）\n- [x] workflow の全部（act）が緑（2026-11-06・このチケットのコミットを含む回が緑）",
     "前提と制約": "- 報告の新しさは workflow の全部を流す回で見る。仕様の同期では見ない",
     "実施事項": "- [x] scripts/ci/spec_check.py：歩くときに .claude を外す\n- [x] scripts/spec-sync/tier_d.py：検査に SPEC_SYNC_RUN=1 を渡す\n- [x] scripts/ci/op_gate.py：SPEC_SYNC_RUN=1 のとき O4 の新しさを見ない",
     "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 別の作業場所があっても仕様の検査が緑 | ① 機械 | `python3 scripts/ci/spec_check.py` | 緑 |\n| 報告が 48 時間を過ぎていても仕様の同期の D が緑 | ① 機械 | `python3 scripts/spec-sync/tier_d.py` | 緑 |\n| 仕様の同期の外では、報告が古いと赤のまま | ① 機械 | `python3 scripts/ci/op_gate.py --spec 07_qa/test-specs --tickets 07_tasks/tickets.json --task T-B-42` | 赤のまま（O4・期待どおり） |",
@@ -4241,7 +4241,7 @@
    "milestone": "F3",
    "area": "PC",
    "assignee": "未定",
-   "due": "",
+   "due": "2026-11-19",
    "decisions": [
     "D-017",
     "D-055",
@@ -4358,7 +4358,7 @@
    "milestone": "F3",
    "area": "PC",
    "assignee": "未定",
-   "due": "",
+   "due": "2026-11-20",
    "decisions": [
     "D-090",
     "D-125.139",
@@ -4425,7 +4425,7 @@
    "milestone": "F4",
    "area": "チケット",
    "assignee": "未定",
-   "due": "",
+   "due": "2026-11-17",
    "decisions": [
     "D-125.12",
     "D-125.13",
@@ -4506,7 +4506,7 @@
    "depends_on": [],
    "sections": {
     "目的": "act の結果の置き場（--artifact-server-path）は回の番号が毎回 1 で、前の回の単体の試験の結果（vitest-blob-1〜6）が残る。分けた 6 組が流れなかった回でも、合わせる段（G3）が前の回の結果を読んでしまい、本当は赤なのに緑に見えるおそれがある（K-57・K-60 の取り込みの途中で見つけた。途中で見つけたものはその場で直さずチケットにする・D-128.147）。",
-    "完了の条件": "- [x] act_ci.sh が回ごとに別の空の置き場を使う（--artifact-server-path を回の作業場に向ける。~/.actrc から置き場の行を外した）\n- [x] 結果を上げる組が流れなかった回では、結果を読む組が赤になる（下の確かめ）\n- [ ] workflow の全部（act）が緑",
+    "完了の条件": "- [x] act_ci.sh が回ごとに別の空の置き場を使う（--artifact-server-path を回の作業場に向ける。~/.actrc から置き場の行を外した）\n- [x] 結果を上げる組が流れなかった回では、結果を読む組が赤になる（下の確かめ）\n- [x] workflow の全部（act）が緑（2026-11-06・このチケットのコミットを含む回が緑）",
     "前提と制約": "- 置き場の場所は ~/.actrc の設定。workflow は変えない（台ごとの違いは act の設定に置く）",
     "実施事項": "- [x] ai-team-delivery の scripts/ci/act_ci.sh：回ごとに置き場を作り直す（references/ci.md も直した）\n- [x] スキルを入れ直し、.skill を作り直す",
     "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 前の回の結果が残っていても、組が流れなければ結果を読む組が赤 | ① 機械 | 小さな workflow（結果を上げる組 up・読む組 merge）で、1 回目は全部流し、2 回目は up を飛ばす。前の置き場を使い回す形では 2 回目が緑（0・誤り）、直した act_ci.sh では 2 回目の merge が赤（1） | 赤→緑を確かめた（古い形 old2=0、直した形 run2=1） |",
@@ -4534,7 +4534,7 @@
    "depends_on": [],
    "sections": {
     "目的": "K-57・K-60 は depends_on の K-52・K-53 がまだ無いのに、先に取り込もうとしていた。人が依存を思い出す形では漏れる（K-57・K-60 の取り込みの途中で見つけた。途中で見つけたものはその場で直さずチケットにする・D-128.147）。",
-    "完了の条件": "- [x] コミットの K-番号のチケットの depends_on に、まだ完了していない（取り込まれていない）実装のチケットがあれば CI が赤（チケットを切るだけ・文書だけのコミットは除く）\n- [x] PM の取り込みの手順（スキルの `~/.claude/skills/ai-team-delivery/scripts/pm_merge.sh`）が、取り込む前にこの検査を流す\n- [ ] workflow の全部（act）が緑",
+    "完了の条件": "- [x] コミットの K-番号のチケットの depends_on に、まだ完了していない（取り込まれていない）実装のチケットがあれば CI が赤（チケットを切るだけ・文書だけのコミットは除く）\n- [x] PM の取り込みの手順（スキルの `~/.claude/skills/ai-team-delivery/scripts/pm_merge.sh`）が、取り込む前にこの検査を流す\n- [x] workflow の全部（act）が緑（2026-11-06・このチケットのコミットを含む回が緑）",
     "前提と制約": "- **完了の決め方**：依存のチケットの番号が、確かめるコミットの**祖先**（`git merge-base --is-ancestor <依存の実装のコミット> <確かめるコミット>`）にある**実装のコミット**（下の見分け方で文書だけでないもの）のメッセージに入っていれば完了。チケットの stage（完了）は人が書く欄で遅れたり先走ったりするので、決め手にしない（食い違えば警告だけ出す）。枝の外（`hold/…`）にある実装は祖先でないので完了に数えない\n- **文書だけのコミットの見分け方**：そのコミットで変えたファイル（`git diff-tree --no-commit-id --name-only -r <sha>`）が全部、文書と生成物の置き場に入るなら「文書だけ」として見ない。置き場は `01_hearing/`・`11_tickets/`・`07_qa/test-plan/`・`07_qa/test-specs/**/*.md`・`03_architecture/catalog.*`・`08_api/*.md`・`README.md` と、scripts/ci/generated.json の作り手の outputs。1 つでもそれ以外（apps/・packages/・scripts/・.github/・migration など）を変えていれば「実装のコミット」として依存を見る\n- コミットの K-番号が複数あるときは、どの番号の依存も満たしていること",
     "実施事項": "- [x] スクリプト `scripts/ci/ticket_order_gate.py` を足す：`START..HEAD`（ticket_commit_gate.py と同じ起点）の各コミットについて、上の見分け方で実装のコミットだけを取り、メッセージの K-番号のチケット（11_tickets/tickets.json）の depends_on のどの番号も、そのコミットの祖先の実装のコミットのメッセージに入っていることを確かめる（上の「完了の決め方」）。`--selftest` で、依存が未完了の写しを作って赤になることを見る\n- [x] workflow の段：05_flow/build_testplan.py の SPEC_GATES に `G56 取り込む順（depends_on の実装が先に枝にある・K-94）`（job: spec・blocking）を足して、.github/workflows/v3-gate.yml を作り直す（手で直さない）\n- [x] `~/.claude/skills/ai-team-delivery/scripts/pm_merge.sh`（リポジトリの外・スキルのファイル）の取り込みの前に `python3 scripts/ci/ticket_order_gate.py` を流す\n- [x] ai-team-delivery と engineering-rules（ai-driven-process.md）に同じ検査を汎用で入れる",
     "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| depends_on が未完了のチケットの実装のコミットで赤 | ① 機械 | K-57 の実装を K-53 より先に積んだ枝で検査を流す | 赤。枝 hold/k57-k60 で「K-57 は K-53 に依存するが、K-53 の実装がまだ枝に入っていない」（ece8ec4・1f59698・a1dc099）と「K-89 は K-96 に依存」の 4 件 |\n| 依存の実装が枝の外（hold/…）にだけあると赤 | ① 機械 | 依存の実装のコミットが祖先でない写しで流す | 赤（--selftest の 2 つ目の形） |\n| 依存が全部完了なら緑 | ① 機械 | 依存のないチケットのコミットで流す | 緑。今の枝（b9d414e）で実装のコミット 4 本・違反 0 |\n| 文書だけのコミット（11_tickets・01_hearing・生成物だけ）は見ない | ① 機械 | 依存が未完了のチケットを切るだけのコミットで流して緑 | 緑。K-89〜K-92 を切った aa9744a などは見ない。作りかけでは日本語のファイル名が引用符で囲まれて文書と見分けられず 29 件の誤りが出たので、git に core.quotePath=false を渡すよう直した |\n| 自己試験 | ① 機械 | `--selftest` が赤になるべき写しを赤にする | 緑（selftest ok）。スキルの汎用版 gates/order_gate.py も selftest ok・設定（order:）が無ければ「使っていない」で緑 |",
@@ -4552,7 +4552,7 @@
    "milestone": "基盤",
    "area": "試験",
    "assignee": "実装",
-   "due": "",
+   "due": "2026-11-12",
    "decisions": [
     "D-128.120",
     "D-128.147"
@@ -4583,7 +4583,7 @@
    "milestone": "基盤",
    "area": "PC",
    "assignee": "実装",
-   "due": "",
+   "due": "2026-11-18",
    "decisions": [
     "D-128.147",
     "D-128.164"
@@ -4614,7 +4614,7 @@
    "milestone": "基盤",
    "area": "試験",
    "assignee": "実装",
-   "due": "",
+   "due": "2026-11-11",
    "decisions": [
     "D-128.147"
    ],
@@ -4642,7 +4642,7 @@
    "milestone": "基盤",
    "area": "試験",
    "assignee": "実装",
-   "due": "",
+   "due": "2026-11-13",
    "decisions": [
     "D-128.147"
    ],
@@ -4672,7 +4672,7 @@
    "milestone": "基盤",
    "area": "試験",
    "assignee": "実装",
-   "due": "",
+   "due": "2026-11-07",
    "decisions": [
     "D-128.147"
    ],
@@ -4712,7 +4712,7 @@
    ],
    "sections": {
     "目的": "手元の CI（act）は、終わるまで経過が見えず、結果は PM が記録を読んで報告するしかない。GitHub の Actions のように、組（job）ごと・段（step）ごとに「待ち・実行中・緑・赤・かかった時間」と、赤の段の記録の該当部分を、流れている最中に画面で見られるようにする（2026-11-06 高本さん「CICD の経過を GitHub みたいに可視化」）",
-    "完了の条件": "- [x] CI を流すと画面の口が立ち上がり、アプリの横の画面で開ける\n- [x] workflow の組と段が GitHub の Actions と同じ並び（needs の順）で出て、状態と時間が数秒ごとに変わる\n- [x] 赤の段は、その段の記録の該当部分が開ける\n- [x] 過去の回（コミット・始まり・終わり方）が一覧で見られる\n- [x] どのプロジェクトでも使える（ai-team-delivery の CI に入れる・workflow は変えない）\n- [ ] workflow の全部（act）が緑",
+    "完了の条件": "- [x] CI を流すと画面の口が立ち上がり、アプリの横の画面で開ける\n- [x] workflow の組と段が GitHub の Actions と同じ並び（needs の順）で出て、状態と時間が数秒ごとに変わる\n- [x] 赤の段は、その段の記録の該当部分が開ける\n- [x] 過去の回（コミット・始まり・終わり方）が一覧で見られる\n- [x] どのプロジェクトでも使える（ai-team-delivery の CI に入れる・workflow は変えない）\n- [x] workflow の全部（act）が緑（2026-11-06・このチケットのコミットを含む回が緑）",
     "前提と制約": "- 部品は入れない（標準の道具だけ）。記録は act が出すもの（組・段の始まりと終わり・成否）を読む\n- 回の記録は回ごとに別のファイルに残す（K-101 と合わせる）",
     "実施事項": "- [x] act の記録の形（--json か通常の記録）を確かめ、組・段・成否・時間を取り出す\n- [x] ai-team-delivery の scripts/ci/ に画面の台本を足し、act_ci.sh が回の記録をファイルに残して画面を立ち上げる\n- [x] references/ci.md に使い方を書く\n- [x] スキルを入れ直し、.skill を作り直す",
     "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 流れている最中に組・段の状態が変わる | ② 結合 | 小さな workflow（lint → unit・docs）を act_ci.sh で流し、14 秒後と終わった後に実ブラウザで画面を読む | 緑。途中は「実行中」で lint 緑・unit と docs 実行中、終わった後は「赤」で lint 緑・unit 赤・docs 緑 |\n| 赤の段の記録が開ける | ② 結合 | わざと落とす段を持つ workflow | 緑。赤の段「わざと落とす段」が記録（ここで落ちる・exitcode 3）を開いた状態で出た。Kaname の赤の回（7011d95）の記録でも unit-3・unit-6・unit の赤の段が出た |\n| 過去の回が一覧に出る | ② 結合 | 2 回分の記録を置いて一覧を見る・回を押して切り替える | 緑。新しい順に出て、押すと切り替わった。1440 と 375 の幅で横のはみ出し 0 |",
@@ -4740,7 +4740,7 @@
    "depends_on": [],
    "sections": {
     "目的": "act_ci.sh は終わるときに名前が act- で始まる容れ物を全部消すので、同時に流れている別の回の容れ物まで消す。結果の受け渡しの口（artifact server）の番号も回をまたいで同じで、2 回目は立ち上がらない。2026-11-06、K-100 の下調べの試しの act が流れていた CI の容れ物を消し、d394cc7 の CI の 2 組が赤になった（中身の失敗ではない）。act の容れ物の名前は workflow の名前と組の名前だけで決まり（act v0.2.89 の pkg/runner/run_context.go の jobContainerName）、組ごとの DB の番号も workflow に決め打ちなので、同じ workflow を同時に 2 回流すことは act ではそもそもできない。GitHub の concurrency（同じ組の回は順に並ぶ）と同じく、1 回ずつ順に流す",
-    "完了の条件": "- [x] act_ci.sh が台の上で 1 回ずつにする（鍵を取る。取れなければ「前の回が終わるのを待っています」と出して待つ）\n- [x] 同時に 2 回起こしても、2 回目は 1 回目が終わってから流れ、どちらも自分の結果どおりに終わる\n- [x] act を直に流さず、試しも act_ci.sh を通す、と references/ci.md に書く\n- [ ] workflow の全部（act）が緑",
+    "完了の条件": "- [x] act_ci.sh が台の上で 1 回ずつにする（鍵を取る。取れなければ「前の回が終わるのを待っています」と出して待つ）\n- [x] 同時に 2 回起こしても、2 回目は 1 回目が終わってから流れ、どちらも自分の結果どおりに終わる\n- [x] act を直に流さず、試しも act_ci.sh を通す、と references/ci.md に書く\n- [x] workflow の全部（act）が緑（2026-11-06・このチケットのコミットを含む回が緑）",
     "前提と制約": "- 台ごとの設定（~/.actrc）と workflow は変えない\n- 同時に流して速くするのは、組の同時の数（--concurrent-jobs）で行う",
     "実施事項": "- [x] act_ci.sh：flock で台に 1 つの鍵を取ってから流す（鍵の場所は ACT_CI_LOCK で変えられる）\n- [x] スキルを入れ直し、.skill を作り直す",
     "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 2 回を同時に起こしてどちらも自分の結果どおり | ② 結合 | 小さな workflow を 2 回同時に act_ci.sh で起こす（1 回目は緑・2 回目は赤になる形）。2 回目が待ってから流れること | 緑。2 回目は「前の回が終わるのを待っています」を出して待ち、1 回目（緑・終わり方 0）の 20 秒後に終わった（赤・終わり方 1）。直す前の形では、2026-11-06 に試しの act が流れていた CI の容れ物を消し、2 組が赤になった（赤の証拠） |",
@@ -4758,7 +4758,7 @@
    "milestone": "基盤",
    "area": "試験",
    "assignee": "実装",
-   "due": "",
+   "due": "2026-11-10",
    "decisions": [
     "D-128.147"
    ],
