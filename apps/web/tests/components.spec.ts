@@ -66,7 +66,9 @@ test("KN104-005 タブ：←→ で移り、選んだタブの中身だけが出
   await expect(page.getByRole("tab", { name: "記録" })).toBeFocused();
   await page.keyboard.press("Enter");
   await expect(page.getByRole("tab", { name: "記録" })).toHaveAttribute("aria-selected", "true");
-  await expect(page.getByRole("tabpanel")).toHaveText("記録のタブ");
+  // 切り替えの動きの間は、前の中身（inert）と新しい中身が一瞬並ぶ（K-113）。選んだタブに結びついた中身（aria-labelledby で名前が付く）だけを見る
+  await expect(page.getByRole("tabpanel", { name: "記録", exact: true })).toHaveText("記録のタブ");
+  await expect(page.getByRole("tabpanel", { name: "中身", exact: true })).toBeHidden();
   await expect(page.getByRole("tab", { name: "まだ" })).toHaveAttribute("aria-disabled", "true");
 });
 

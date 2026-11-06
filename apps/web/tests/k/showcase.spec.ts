@@ -19,7 +19,8 @@ const open = async (page: Page, tab?: "4 つの状態とエラー") => {
 const nav = (page: Page) => page.getByRole("navigation", { name: "メニュー", exact: true });
 const bar = (page: Page) => page.locator(".k-bar");
 const toast = (page: Page, text: string) => page.locator(".k-toast").filter({ hasText: text });
-const parts = (page: Page) => page.getByRole("tabpanel");
+// タブの中身。切り替えの動きの間は前の中身（inert）も一瞬並ぶので、inert でないものだけを見る（K-113）
+const parts = (page: Page) => page.getByRole("tabpanel").and(page.locator(":not([inert])"));
 
 row(R["KSC-00-001"], async (page) => {
   await open(page);
@@ -225,7 +226,7 @@ const innerTab = (id: string, name: string, text: string) =>
     const list = page.getByRole("tablist", { name: "チケットの中" });
     await list.getByRole("tab", { name }).click();
     await expect(list.getByRole("tab", { name })).toHaveAttribute("aria-selected", "true");
-    await expect(page.getByRole("tabpanel").getByText(text)).toBeVisible();
+    await expect(page.getByRole("tabpanel", { name, exact: true }).getByText(text)).toBeVisible();
   });
 innerTab("KSC-03-015", "中身", "中身のタブ");
 innerTab("KSC-03-016", "記録", "記録のタブ");
