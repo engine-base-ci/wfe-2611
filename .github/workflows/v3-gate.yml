@@ -1,10 +1,22 @@
-# .github/workflows/v3-gate.yml — Kaname CI ゲート 55 本（05_flow/build_testplan.py が生成。手で直さない）
+# .github/workflows/v3-gate.yml — Kaname CI ゲート 56 本（05_flow/build_testplan.py が生成。手で直さない）
 # 方針: ゲートが緑を維持できないなら次のスライスに進まない。旧jobrainはCIが全ゲート赤のまま進み、それが死因の一つ。
 # 段: static（静的・関門）→ database（実 Postgres・RLS・契約）／ unit-1〜unit-6（単体の試験を分けて同時に・それぞれ自分の Postgres）→ unit（合わせて coverage の閾値）／ spec（仕様の層・Python）／ task-gate（そのタスクの L1 行）→ e2e（has-ui）→ auto-merge
 # GitHub の上では自動で流さない（D-128.135）。CI はこの workflow をそのまま手元で act で流す（D-128.147・K-47）。GitHub では手で押したときだけ動く
+# G0（static の 5 段目）：チケットの CI の範囲（K-107・D-128.169）。全部は scope=full（既定）。act_ci.sh が scope=auto・base を渡した回だけ、
+#   unit-1〜6・database・web を影響の範囲に絞る（static・spec は毎回）。外から来る値は env で渡す（run の命令の文字に入れない）
 name: v3-gate
 on:
   workflow_dispatch:
+    inputs:
+      scope:
+        description: "チケットの CI の範囲（full＝全部・auto＝変えたファイルから影響の範囲だけ）"
+        type: choice
+        options: [full, auto]
+        default: full
+      base:
+        description: "比べる元（40 桁のコミット。auto のときだけ使う）"
+        type: string
+        default: ''
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -14,6 +26,16 @@ env:
 jobs:
   static:
     runs-on: ubuntu-latest
+    outputs:
+      full: ${{ steps.scope.outputs.full }}
+      unit: ${{ steps.scope.outputs.unit }}
+      database: ${{ steps.scope.outputs.database }}
+      web: ${{ steps.scope.outputs.web }}
+      unit_shards: ${{ steps.scope.outputs.unit_shards }}
+      unit_files: ${{ steps.scope.outputs.unit_files }}
+      migration_files: ${{ steps.scope.outputs.migration_files }}
+      coverage_args: ${{ steps.scope.outputs.coverage_args }}
+      base: ${{ steps.scope.outputs.base }}
     steps:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }
@@ -21,6 +43,12 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
       - run: pnpm install --frozen-lockfile
+      - name: "G0 チケットの CI の範囲（変えたファイル → 依存の地図 → 流す組と試験・K-107）"
+        id: scope
+        env:
+          CI_SCOPE_INPUT: ${{ inputs.scope || 'full' }}
+          CI_BASE_INPUT: ${{ inputs.base }}
+        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --github-output "$GITHUB_OUTPUT"
       - name: "G1 lint"
         if: ${{ !cancelled() }}
         run: pnpm lint
@@ -118,6 +146,7 @@ jobs:
   database:
     runs-on: ubuntu-latest
     needs: [static]
+    if: ${{ !cancelled() && needs.static.outputs.database == 'true' }}
     services:
       postgres:
         image: pgvector/pgvector:pg16
@@ -134,6 +163,11 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
       - run: pnpm install --frozen-lockfile
+      - name: "G58 migration の lint（Squawk・変えた・足した migration だけ・K-107）"
+        if: ${{ !cancelled() }}
+        env:
+          CI_MIGRATION_FILES: ${{ needs.static.outputs.migration_files }}
+        run: python3 scripts/ci/ci_scope.py run-squawk
       - name: "G4 RLS 全テーブル有効 [CRITICAL]"
         if: ${{ !cancelled() }}
         run: pnpm ci:rls-enabled
@@ -155,8 +189,9 @@ jobs:
 
   unit-1:
     runs-on: ubuntu-latest
-    # 単体の試験の 1/6（自分の Postgres の上で。結果は unit が合わせる・D-128.140）
+    # 単体の試験の 1/6（自分の Postgres の上で。結果は unit が合わせる・D-128.140）。組の数・流す試験は static の G0 が決める（K-107）
     needs: [static]
+    if: ${{ !cancelled() && needs.static.outputs.unit == 'true' }}
     services:
       postgres:
         image: pgvector/pgvector:pg16
@@ -173,16 +208,21 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
       - run: pnpm install --frozen-lockfile
-      - name: "G3.1 単体の試験の 1/6（自分の DB の上で。coverage の閾値は合わせた後に当てる）"
+      - name: "G3.1 単体の試験の 1 組目（自分の DB の上で。coverage の閾値は合わせた後に当てる）"
         if: ${{ !cancelled() }}
-        run: pnpm exec vitest run --coverage --shard=1/6 --reporter=default --reporter=blob --outputFile.blob=.vitest-reports/blob-1-6.json --coverage.reporter=text-summary --coverage.thresholds.lines=0 --coverage.thresholds.branches=0 --coverage.thresholds.functions=0 --coverage.thresholds.statements=0
+        env:
+          CI_UNIT_FILES: ${{ needs.static.outputs.unit_files }}
+          CI_COVERAGE_ARGS: ${{ needs.static.outputs.coverage_args }}
+          CI_UNIT_SHARDS: ${{ needs.static.outputs.unit_shards }}
+        run: python3 scripts/ci/ci_scope.py run-unit --shard 1
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with: { name: vitest-blob-1, path: .vitest-reports/, include-hidden-files: true, retention-days: 1 }
   unit-2:
     runs-on: ubuntu-latest
-    # 単体の試験の 2/6（自分の Postgres の上で。結果は unit が合わせる・D-128.140）
+    # 単体の試験の 2/6（自分の Postgres の上で。結果は unit が合わせる・D-128.140）。組の数・流す試験は static の G0 が決める（K-107）
     needs: [static]
+    if: ${{ !cancelled() && needs.static.outputs.unit == 'true' && fromJSON(needs.static.outputs.unit_shards) >= 2 }}
     services:
       postgres:
         image: pgvector/pgvector:pg16
@@ -199,16 +239,21 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
       - run: pnpm install --frozen-lockfile
-      - name: "G3.2 単体の試験の 2/6（自分の DB の上で。coverage の閾値は合わせた後に当てる）"
+      - name: "G3.2 単体の試験の 2 組目（自分の DB の上で。coverage の閾値は合わせた後に当てる）"
         if: ${{ !cancelled() }}
-        run: pnpm exec vitest run --coverage --shard=2/6 --reporter=default --reporter=blob --outputFile.blob=.vitest-reports/blob-2-6.json --coverage.reporter=text-summary --coverage.thresholds.lines=0 --coverage.thresholds.branches=0 --coverage.thresholds.functions=0 --coverage.thresholds.statements=0
+        env:
+          CI_UNIT_FILES: ${{ needs.static.outputs.unit_files }}
+          CI_COVERAGE_ARGS: ${{ needs.static.outputs.coverage_args }}
+          CI_UNIT_SHARDS: ${{ needs.static.outputs.unit_shards }}
+        run: python3 scripts/ci/ci_scope.py run-unit --shard 2
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with: { name: vitest-blob-2, path: .vitest-reports/, include-hidden-files: true, retention-days: 1 }
   unit-3:
     runs-on: ubuntu-latest
-    # 単体の試験の 3/6（自分の Postgres の上で。結果は unit が合わせる・D-128.140）
+    # 単体の試験の 3/6（自分の Postgres の上で。結果は unit が合わせる・D-128.140）。組の数・流す試験は static の G0 が決める（K-107）
     needs: [static]
+    if: ${{ !cancelled() && needs.static.outputs.unit == 'true' && fromJSON(needs.static.outputs.unit_shards) >= 3 }}
     services:
       postgres:
         image: pgvector/pgvector:pg16
@@ -225,16 +270,21 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
       - run: pnpm install --frozen-lockfile
-      - name: "G3.3 単体の試験の 3/6（自分の DB の上で。coverage の閾値は合わせた後に当てる）"
+      - name: "G3.3 単体の試験の 3 組目（自分の DB の上で。coverage の閾値は合わせた後に当てる）"
         if: ${{ !cancelled() }}
-        run: pnpm exec vitest run --coverage --shard=3/6 --reporter=default --reporter=blob --outputFile.blob=.vitest-reports/blob-3-6.json --coverage.reporter=text-summary --coverage.thresholds.lines=0 --coverage.thresholds.branches=0 --coverage.thresholds.functions=0 --coverage.thresholds.statements=0
+        env:
+          CI_UNIT_FILES: ${{ needs.static.outputs.unit_files }}
+          CI_COVERAGE_ARGS: ${{ needs.static.outputs.coverage_args }}
+          CI_UNIT_SHARDS: ${{ needs.static.outputs.unit_shards }}
+        run: python3 scripts/ci/ci_scope.py run-unit --shard 3
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with: { name: vitest-blob-3, path: .vitest-reports/, include-hidden-files: true, retention-days: 1 }
   unit-4:
     runs-on: ubuntu-latest
-    # 単体の試験の 4/6（自分の Postgres の上で。結果は unit が合わせる・D-128.140）
+    # 単体の試験の 4/6（自分の Postgres の上で。結果は unit が合わせる・D-128.140）。組の数・流す試験は static の G0 が決める（K-107）
     needs: [static]
+    if: ${{ !cancelled() && needs.static.outputs.unit == 'true' && fromJSON(needs.static.outputs.unit_shards) >= 4 }}
     services:
       postgres:
         image: pgvector/pgvector:pg16
@@ -251,16 +301,21 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
       - run: pnpm install --frozen-lockfile
-      - name: "G3.4 単体の試験の 4/6（自分の DB の上で。coverage の閾値は合わせた後に当てる）"
+      - name: "G3.4 単体の試験の 4 組目（自分の DB の上で。coverage の閾値は合わせた後に当てる）"
         if: ${{ !cancelled() }}
-        run: pnpm exec vitest run --coverage --shard=4/6 --reporter=default --reporter=blob --outputFile.blob=.vitest-reports/blob-4-6.json --coverage.reporter=text-summary --coverage.thresholds.lines=0 --coverage.thresholds.branches=0 --coverage.thresholds.functions=0 --coverage.thresholds.statements=0
+        env:
+          CI_UNIT_FILES: ${{ needs.static.outputs.unit_files }}
+          CI_COVERAGE_ARGS: ${{ needs.static.outputs.coverage_args }}
+          CI_UNIT_SHARDS: ${{ needs.static.outputs.unit_shards }}
+        run: python3 scripts/ci/ci_scope.py run-unit --shard 4
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with: { name: vitest-blob-4, path: .vitest-reports/, include-hidden-files: true, retention-days: 1 }
   unit-5:
     runs-on: ubuntu-latest
-    # 単体の試験の 5/6（自分の Postgres の上で。結果は unit が合わせる・D-128.140）
+    # 単体の試験の 5/6（自分の Postgres の上で。結果は unit が合わせる・D-128.140）。組の数・流す試験は static の G0 が決める（K-107）
     needs: [static]
+    if: ${{ !cancelled() && needs.static.outputs.unit == 'true' && fromJSON(needs.static.outputs.unit_shards) >= 5 }}
     services:
       postgres:
         image: pgvector/pgvector:pg16
@@ -277,16 +332,21 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
       - run: pnpm install --frozen-lockfile
-      - name: "G3.5 単体の試験の 5/6（自分の DB の上で。coverage の閾値は合わせた後に当てる）"
+      - name: "G3.5 単体の試験の 5 組目（自分の DB の上で。coverage の閾値は合わせた後に当てる）"
         if: ${{ !cancelled() }}
-        run: pnpm exec vitest run --coverage --shard=5/6 --reporter=default --reporter=blob --outputFile.blob=.vitest-reports/blob-5-6.json --coverage.reporter=text-summary --coverage.thresholds.lines=0 --coverage.thresholds.branches=0 --coverage.thresholds.functions=0 --coverage.thresholds.statements=0
+        env:
+          CI_UNIT_FILES: ${{ needs.static.outputs.unit_files }}
+          CI_COVERAGE_ARGS: ${{ needs.static.outputs.coverage_args }}
+          CI_UNIT_SHARDS: ${{ needs.static.outputs.unit_shards }}
+        run: python3 scripts/ci/ci_scope.py run-unit --shard 5
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with: { name: vitest-blob-5, path: .vitest-reports/, include-hidden-files: true, retention-days: 1 }
   unit-6:
     runs-on: ubuntu-latest
-    # 単体の試験の 6/6（自分の Postgres の上で。結果は unit が合わせる・D-128.140）
+    # 単体の試験の 6/6（自分の Postgres の上で。結果は unit が合わせる・D-128.140）。組の数・流す試験は static の G0 が決める（K-107）
     needs: [static]
+    if: ${{ !cancelled() && needs.static.outputs.unit == 'true' && fromJSON(needs.static.outputs.unit_shards) >= 6 }}
     services:
       postgres:
         image: pgvector/pgvector:pg16
@@ -303,16 +363,20 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
       - run: pnpm install --frozen-lockfile
-      - name: "G3.6 単体の試験の 6/6（自分の DB の上で。coverage の閾値は合わせた後に当てる）"
+      - name: "G3.6 単体の試験の 6 組目（自分の DB の上で。coverage の閾値は合わせた後に当てる）"
         if: ${{ !cancelled() }}
-        run: pnpm exec vitest run --coverage --shard=6/6 --reporter=default --reporter=blob --outputFile.blob=.vitest-reports/blob-6-6.json --coverage.reporter=text-summary --coverage.thresholds.lines=0 --coverage.thresholds.branches=0 --coverage.thresholds.functions=0 --coverage.thresholds.statements=0
+        env:
+          CI_UNIT_FILES: ${{ needs.static.outputs.unit_files }}
+          CI_COVERAGE_ARGS: ${{ needs.static.outputs.coverage_args }}
+          CI_UNIT_SHARDS: ${{ needs.static.outputs.unit_shards }}
+        run: python3 scripts/ci/ci_scope.py run-unit --shard 6
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with: { name: vitest-blob-6, path: .vitest-reports/, include-hidden-files: true, retention-days: 1 }
   unit:
     runs-on: ubuntu-latest
     # 分けた単体の試験の結果を合わせ、coverage の閾値（vitest.config.ts）を合わせた結果に当てる（DB は要らない）
-    needs: [unit-1, unit-2, unit-3, unit-4, unit-5, unit-6]
+    needs: [static, unit-1, unit-2, unit-3, unit-4, unit-5, unit-6]
     if: ${{ !cancelled() }}
     steps:
       - uses: actions/checkout@v4
@@ -322,10 +386,21 @@ jobs:
         with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
       - run: pnpm install --frozen-lockfile
       - uses: actions/download-artifact@v4
+        if: ${{ needs.static.outputs.unit == 'true' }}
         with: { pattern: vitest-blob-*, path: .vitest-reports, merge-multiple: true }
-      - name: "G3 unit test + coverage（6 つに分けて流した結果を合わせ、閾値を当てる）"
+      - name: "G3 unit test + coverage（分けて流した結果を合わせ、閾値を当て、決めた試験が全部流れたかを見る）"
         if: ${{ !cancelled() }}
-        run: "n=$(ls .vitest-reports/blob-*-6.json 2>/dev/null | wc -l) && { [ \"$n\" -eq 6 ] || { echo \"★ FAIL 分けた単体の試験の結果が 6 つのうち $n つしか無い\"; exit 1; }; } && pnpm exec vitest run --merge-reports=.vitest-reports --coverage"
+        env:
+          CI_UNIT_FILES: ${{ needs.static.outputs.unit_files }}
+          CI_COVERAGE_ARGS: ${{ needs.static.outputs.coverage_args }}
+          CI_UNIT_SHARDS: ${{ needs.static.outputs.unit_shards }}
+          CI_FULL: ${{ needs.static.outputs.full }}
+        run: |
+          [ -n "$CI_UNIT_SHARDS" ] || { echo "★ FAIL static の出力が空（G0 が流れていない）"; exit 1; }
+          if [ "$CI_UNIT_SHARDS" = "0" ]; then echo "流す試験 0 本（チケットの CI の範囲・G0）"; exit 0; fi
+          n=$(ls .vitest-reports/blob-*-"$CI_UNIT_SHARDS".json 2>/dev/null | wc -l)
+          [ "$n" -eq "$CI_UNIT_SHARDS" ] || { echo "★ FAIL 分けた単体の試験の結果が $CI_UNIT_SHARDS つのうち $n つしか無い"; exit 1; }
+          python3 scripts/ci/ci_scope.py run-merge && python3 scripts/ci/ci_scope.py check-count --report .vitest-reports/merged.json
   spec:
     runs-on: ubuntu-latest
     # 仕様の層の検査は Python だけでなく pnpm の検査と DB の検査も呼ぶ（層の棚卸し G21）。database と同じ Postgres を付ける
@@ -390,6 +465,9 @@ jobs:
       - name: "G56 取り込む順（depends_on の実装が先に枝にある・K-94）"
         if: ${{ !cancelled() }}
         run: python3 scripts/ci/ticket_order_gate.py --selftest && python3 scripts/ci/ticket_order_gate.py
+      - name: "G57 チケットの CI の範囲の台本の試験（K-107）"
+        if: ${{ !cancelled() }}
+        run: python3 scripts/ci/ci_scope_test.py && python3 scripts/ci/ticket_affects_test.py
 
   task-gate:
     runs-on: ubuntu-latest
@@ -410,6 +488,7 @@ jobs:
     runs-on: ubuntu-latest
     # 新しい画面（apps/web/components/k の上）の実ブラウザの試験。staging も札も要らない：CI の中で本番の形に組み立てて立ち上げる（K-36）
     needs: [static]
+    if: ${{ !cancelled() && needs.static.outputs.web == 'true' }}
     env:
       KANAME_DEV_PAGES: '1'
       NEXT_PUBLIC_KANAME_DEV_PAGES: '1'

@@ -11,9 +11,14 @@
     K5 作業の段は決まった値（未着手・作業中・保留・確認中・承認待ち・実行中・完了）
     K6 先に終わっている必要があるもの（depends_on）が実在し、輪になっていない
     K7 担当（assignee）は役（作る・精査・実装・テスター）か人の名前。AI のセッションの名前は書かない（D-128.145）
+    K8 影響の範囲（K-107・D-128.169）：affects の値はワークスペースのパッケージの名前（apps/*・packages/* の package.json の name。
+       [] は「パッケージに触らない」）、ci_wide の値は db・shared・ci・lockfile のどれか（古いチケットでも書いたなら見る）。
+       番号を数で比べ、K-108 から後の子の無いチケット（まだ切っていないまとまり split: これから は除く）は affects が要る。
+       チケットの CI（scripts/ci/ci_scope.py）が、書いた範囲と機械で出した範囲を突き合わせる
   属性 tests:（そのチケットが持つ試験のファイル・glob 可）は、どの試験もちょうど 1 つのチケットに属するかを
     scripts/ci/test_owner_gate.py（G53）が見る
 使い方: python3 scripts/tickets/build_index.py [--check]
+        python3 scripts/tickets/build_index.py --selftest   検査（K8）が作りもののチケットで赤を起こすか
 """
 from __future__ import annotations
 import csv, glob, io, json, os, re, sys
@@ -26,7 +31,8 @@ SECTIONS = ["目的", "完了の条件", "前提と制約", "実施事項", "テ
 
 
 def parse(path: str) -> dict:
-    s = open(path, encoding="utf-8").read()
+    with open(path, encoding="utf-8") as f:
+        s = f.read()
     m = re.match(r"^---\n(.*?)\n---\n(.*)$", s, flags=re.S)
     if not m:
         raise SystemExit(f"{path}: 上の属性（--- で囲む）が無い")
@@ -60,6 +66,42 @@ def load() -> list[dict]:
 
 
 AI_SESSION = re.compile(r"claude|セッション|session|\bAI\b|gpt|codex|copilot", re.I)
+AFFECTS_FROM = 108   # この番号から affects が要る（K-107 までは仕組みの前・scripts/ci/ci_scope.json の affects_required_from と同じ）
+CI_WIDE = {"db", "shared", "ci", "lockfile"}
+
+
+def packages() -> set[str]:
+    out = set()
+    for pj in glob.glob(os.path.join(ROOT, "apps", "*", "package.json")) + glob.glob(os.path.join(ROOT, "packages", "*", "package.json")):
+        with open(pj, encoding="utf-8") as f:
+            out.add(json.load(f)["name"])
+    return out
+
+
+def num(tid: str) -> int:
+    m = re.fullmatch(r"K-(\d+)", tid or "")
+    return int(m.group(1)) if m else -1
+
+
+def as_list(v) -> list:
+    return v if isinstance(v, list) else ([v] if v else [])
+
+
+def check_k8(ts: list[dict], kids: dict) -> list[str]:
+    bad = []
+    names = None
+    for t in ts:
+        if "affects" in t:
+            names = packages() if names is None else names
+            for n in as_list(t["affects"]):
+                if n not in names:
+                    bad.append(f"[K8] {t['id']} の affects {n!r} はワークスペースのパッケージの名前でない")
+        elif num(t["id"]) >= AFFECTS_FROM and t["id"] not in kids and t.get("split") != "これから":
+            bad.append(f"[K8] {t['id']} に影響の範囲（affects）が無い（K-{AFFECTS_FROM} から子の無いチケットに要る。パッケージに触らないなら affects: []）")
+        for c in as_list(t.get("ci_wide")):
+            if c not in CI_WIDE:
+                bad.append(f"[K8] {t['id']} の ci_wide {c!r} は決まった値（db・shared・ci・lockfile）でない")
+    return bad
 
 
 def check(ts: list[dict]) -> list[str]:
@@ -125,7 +167,26 @@ def check(ts: list[dict]) -> list[str]:
         if r:
             bad.append(f"[K6] 先に要るものが輪になっている：{' → '.join(r)}")
             break
+    bad += check_k8(ts, kids)
     return bad
+
+
+def selftest() -> int:
+    """K8 の赤を作りもののチケットで起こす（新しいチケットに affects が無い・無いパッケージ・決まった値でない ci_wide）"""
+    secs = {"目的": "試し", "完了の条件": "試し", "実施事項": "試し", "テスト仕様と確認の結果": "試し"}
+    def t(tid, **kw):
+        return {"id": tid, "title": "試し", "stage": "未着手", "parent": "", "assignee": "作る", "decisions": [], "depends_on": [],
+                "split": "", "sections": dict(secs), "file": f"11_tickets/{tid}.md", **kw}
+    cases = [([t("K-108")], 1), ([t("K-107")], 0), ([t("K-108", affects=[])], 0), ([t("K-1070", affects=["@kaname/nai"])], 1),
+             ([t("K-50", ci_wide=["zenbu"])], 1), ([t("K-108"), t("K-109", parent="K-108", affects=[])], 0)]
+    ng = 0
+    for ts, want in cases:
+        got = [m for m in check(ts) if m.startswith("[K8]")]
+        ok = len(got) == want
+        ng += not ok
+        print(f"  {'ok' if ok else 'NG'} K8 {[x['id'] for x in ts]} → 赤 {len(got)}（期待 {want}）" + "".join(f"\n      {m}" for m in got))
+    print(f"自己試験 K8：{'緑' if not ng else f'赤 {ng}'}")
+    return 1 if ng else 0
 
 
 def tree(ts: list[dict]) -> str:
@@ -147,6 +208,8 @@ def tree(ts: list[dict]) -> str:
 
 
 def main() -> int:
+    if "--selftest" in sys.argv:
+        return selftest()
     ts = load()
     bad = check(ts)
     leaves = [t for t in ts if t.get("split") != "これから" and not any((x.get("parent") or "") == t["id"] for x in ts)]

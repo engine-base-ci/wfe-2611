@@ -105,21 +105,37 @@ SPEC_GATES.append({"id": 53, "name": "試験はどれも 1 つのチケットに
 SPEC_GATES.append({"id": 54, "name": "決定のトレース（決定ログの決めたことが導出物から逆引きできる・T1〜T12。手で流していたのを CI に入れた・D-128.147）", "script": "cp 01_hearing/要件一覧.md /tmp/req.md && python3 scripts/ci/trace_gate.py --index && cmp /tmp/req.md 01_hearing/要件一覧.md && python3 scripts/ci/trace_gate.py", "job": "spec", "blocking": True})
 SPEC_GATES.append({"id": 55, "name": "No Ticket, No Commit（コミットにチケットの番号・D-128.147・K-47）", "script": "python3 scripts/ci/ticket_commit_gate.py --selftest && python3 scripts/ci/ticket_commit_gate.py", "job": "spec", "blocking": True})
 SPEC_GATES.append({"id": 56, "name": "取り込む順（depends_on の実装が先に枝にある・K-94）", "script": "python3 scripts/ci/ticket_order_gate.py --selftest && python3 scripts/ci/ticket_order_gate.py", "job": "spec", "blocking": True})
+SPEC_GATES.append({"id": 57, "name": "チケットの CI の範囲の台本の試験（K-107）", "script": "python3 scripts/ci/ci_scope_test.py && python3 scripts/ci/ticket_affects_test.py", "job": "spec", "blocking": True})
 # ---------------------------------------------------------------- 単体の試験（G3）を 6 つに分けて同時に流す（D-128.140）
 #   全部（回帰）は取り込みの前だけ。分けた 1 つずつが自分の Postgres を持ち（GitHub でも act でも job ごと・DB の番号は割り当て）、
 #   結果（vitest の blob。coverage も入る）を unit が集めて合わせ、同じ閾値（vitest.config.ts）を合わせた結果に当てる。
 #   分けた側は閾値を当てない（1 つ分の coverage は足りなくて当たり前）
+# チケットの CI の範囲（K-107・D-128.169）：static の G0（scripts/ci/ci_scope.py）が、変えたファイルから流す組・試験・組の数を決める。
+#   入力 scope の既定は full（GitHub で手で押したとき・入力を渡さないときは全部）。act_ci.sh が scope=auto を渡した回だけ絞る。
+#   ★外から来る値（入力・static の出力）は run の命令の文字に入れない。env に渡し、ci_scope.py が JSON で読んで引数の並びで流す
 UNIT_SHARDS = 6
 UNIT_DIR = ".vitest-reports"
-def unit_shard_script(i): return (f"pnpm exec vitest run --coverage --shard={i}/{UNIT_SHARDS} --reporter=default --reporter=blob "
-                                  f"--outputFile.blob={UNIT_DIR}/blob-{i}-{UNIT_SHARDS}.json --coverage.reporter=text-summary "
-                                  + " ".join(f"--coverage.thresholds.{k}=0" for k in ("lines", "branches", "functions", "statements")))
-UNIT_MERGE = (f'n=$(ls {UNIT_DIR}/blob-*-{UNIT_SHARDS}.json 2>/dev/null | wc -l) && {{ [ "$n" -eq {UNIT_SHARDS} ] || {{ echo "★ FAIL 分けた単体の試験の結果が {UNIT_SHARDS} つのうち $n つしか無い"; exit 1; }}; }} && '
-              f"pnpm exec vitest run --merge-reports={UNIT_DIR} --coverage")
+SO = "needs.static.outputs"
+UNIT_ENV = (f"          CI_UNIT_FILES: ${{{{ {SO}.unit_files }}}}\n          CI_COVERAGE_ARGS: ${{{{ {SO}.coverage_args }}}}\n"
+            f"          CI_UNIT_SHARDS: ${{{{ {SO}.unit_shards }}}}\n")
+UNIT_MERGE = ('[ -n "$CI_UNIT_SHARDS" ] || { echo "★ FAIL static の出力が空（G0 が流れていない）"; exit 1; }\n'
+              'if [ "$CI_UNIT_SHARDS" = "0" ]; then echo "流す試験 0 本（チケットの CI の範囲・G0）"; exit 0; fi\n'
+              f'n=$(ls {UNIT_DIR}/blob-*-"$CI_UNIT_SHARDS".json 2>/dev/null | wc -l)\n'
+              '[ "$n" -eq "$CI_UNIT_SHARDS" ] || { echo "★ FAIL 分けた単体の試験の結果が $CI_UNIT_SHARDS つのうち $n つしか無い"; exit 1; }\n'
+              f"python3 scripts/ci/ci_scope.py run-merge && python3 scripts/ci/ci_scope.py check-count --report {UNIT_DIR}/merged.json\n")
+SCOPE_STEP = ('      - name: "G0 チケットの CI の範囲（変えたファイル → 依存の地図 → 流す組と試験・K-107）"\n        id: scope\n'
+              "        env:\n          CI_SCOPE_INPUT: ${{ inputs.scope || 'full' }}\n          CI_BASE_INPUT: ${{ inputs.base }}\n"
+              '        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --github-output "$GITHUB_OUTPUT"\n')
+SCOPE_OUTPUTS = "    outputs:\n" + "".join(f"      {k}: ${{{{ steps.scope.outputs.{k} }}}}\n" for k in
+                                         ("full", "unit", "database", "web", "unit_shards", "unit_files", "migration_files", "coverage_args", "base"))
+SQUAWK_STEP = ('      - name: "G58 migration の lint（Squawk・変えた・足した migration だけ・K-107）"\n        if: ${{ !cancelled() }}\n'
+               f"        env:\n          CI_MIGRATION_FILES: ${{{{ {SO}.migration_files }}}}\n"
+               "        run: python3 scripts/ci/ci_scope.py run-squawk\n")
+def unit_if(i): return f"!cancelled() && {SO}.unit == 'true'" + (f" && fromJSON({SO}.unit_shards) >= {i}" if i > 1 else "")
 ALL_GATES = [{**g, "job": "unit" if g["id"] == 3 else ("database" if g["id"] in (4, 6, 12) else ("e2e" if g["id"] == 15 else "static"))} for g in FG["merge_gates"]] + SPEC_GATES
-ALL_GATES = [{**g, "script": UNIT_MERGE, "name": g["name"] + f"（{UNIT_SHARDS} つに分けて流した結果を合わせ、閾値を当てる）"} if g["id"] == 3 else g for g in ALL_GATES]
+ALL_GATES = [{**g, "script": UNIT_MERGE, "env": UNIT_ENV + f"          CI_FULL: ${{{{ {SO}.full }}}}\n", "name": g["name"] + f"（分けて流した結果を合わせ、閾値を当て、決めた試験が全部流れたかを見る）"} if g["id"] == 3 else g for g in ALL_GATES]
 def yrun(script): return json.dumps(script, ensure_ascii=False) if re.search(r"[{}\[\]]|: |^[!&*|>%@`#]", script) else script   # YAML の素の値にできない命令は "…" で
-def step(g): return f'      - name: "G{g["id"]} {g["name"]}{" [CRITICAL]" if g["id"] in FG.get("kaname_critical_gates", []) else ""}"\n        if: ${{{{ !cancelled() }}}}\n        run: {yrun(g["script"])}\n'   # 前の検査が赤でも次の検査を流す（赤を全部いっぺんに見る。job は赤のまま）
+def step(g): return f'      - name: "G{g["id"]} {g["name"]}{" [CRITICAL]" if g["id"] in FG.get("kaname_critical_gates", []) else ""}"\n        if: ${{{{ !cancelled() }}}}\n' + (f"        env:\n{g['env']}" if g.get("env") else "") + (f"        run: |\n" + "".join(f"          {l}\n" for l in g["script"].rstrip("\n").split("\n")) if "\n" in g["script"] else f"        run: {yrun(g['script'])}\n")   # 前の検査が赤でも次の検査を流す（赤を全部いっぺんに見る。job は赤のまま）
 # DB は組ごとに違う固定の番号を台に出す（K-47）。GitHub は組ごとに別の台なので番号は何でもよく、act は 1 台で組を同時に流し、
 #   組の容れ物を台の網に置く（DB には localhost:番号 でしかつながらず、割り当てた番号も渡さない）ので、組ごとに番号を分ける。
 #   database 5432・unit-<i> 5432+i・spec 5439
@@ -138,31 +154,46 @@ NODE = "      - uses: actions/checkout@v4\n        with: { fetch-depth: 0 }\n   
 PYS = "      - uses: actions/checkout@v4\n      - uses: actions/setup-python@v5\n        with: { python-version: '3.12' }\n      - run: pip install pyyaml\n"
 UNIT_JOBS = "".join(f"""  unit-{i}:
     runs-on: ubuntu-latest
-    # 単体の試験の {i}/{UNIT_SHARDS}（自分の Postgres の上で。結果は unit が合わせる・D-128.140）
+    # 単体の試験の {i}/{UNIT_SHARDS}（自分の Postgres の上で。結果は unit が合わせる・D-128.140）。組の数・流す試験は static の G0 が決める（K-107）
     needs: [static]
+    if: ${{{{ {unit_if(i)} }}}}
 {pg(5432 + i)}    steps:
-{NODE}      - name: "G3.{i} 単体の試験の {i}/{UNIT_SHARDS}（自分の DB の上で。coverage の閾値は合わせた後に当てる）"
+{NODE}      - name: "G3.{i} 単体の試験の {i} 組目（自分の DB の上で。coverage の閾値は合わせた後に当てる）"
         if: ${{{{ !cancelled() }}}}
-        run: {unit_shard_script(i)}
+        env:
+{UNIT_ENV}        run: python3 scripts/ci/ci_scope.py run-unit --shard {i}
       - uses: actions/upload-artifact@v4
         if: ${{{{ !cancelled() }}}}
         with: {{ name: vitest-blob-{i}, path: {UNIT_DIR}/, include-hidden-files: true, retention-days: 1 }}
 """ for i in range(1, UNIT_SHARDS + 1)) + f"""  unit:
     runs-on: ubuntu-latest
     # 分けた単体の試験の結果を合わせ、coverage の閾値（vitest.config.ts）を合わせた結果に当てる（DB は要らない）
-    needs: [{", ".join(f"unit-{i}" for i in range(1, UNIT_SHARDS + 1))}]
+    needs: [static, {", ".join(f"unit-{i}" for i in range(1, UNIT_SHARDS + 1))}]
     if: ${{{{ !cancelled() }}}}
     steps:
 {NODE}      - uses: actions/download-artifact@v4
+        if: ${{{{ {SO}.unit == 'true' }}}}
         with: {{ pattern: vitest-blob-*, path: {UNIT_DIR}, merge-multiple: true }}
 {''.join(step(g) for g in ALL_GATES if g['job'] == 'unit')}"""
 yml = f"""# .github/workflows/v3-gate.yml — Kaname CI ゲート {len(ALL_GATES)} 本（05_flow/build_testplan.py が生成。手で直さない）
 # 方針: {FG['policy']}
 # 段: static（静的・関門）→ database（実 Postgres・RLS・契約）／ unit-1〜unit-{UNIT_SHARDS}（単体の試験を分けて同時に・それぞれ自分の Postgres）→ unit（合わせて coverage の閾値）／ spec（仕様の層・Python）／ task-gate（そのタスクの L1 行）→ e2e（has-ui）→ auto-merge
 # GitHub の上では自動で流さない（D-128.135）。CI はこの workflow をそのまま手元で act で流す（D-128.147・K-47）。GitHub では手で押したときだけ動く
+# G0（static の 5 段目）：チケットの CI の範囲（K-107・D-128.169）。全部は scope=full（既定）。act_ci.sh が scope=auto・base を渡した回だけ、
+#   unit-1〜6・database・web を影響の範囲に絞る（static・spec は毎回）。外から来る値は env で渡す（run の命令の文字に入れない）
 name: v3-gate
 on:
   workflow_dispatch:
+    inputs:
+      scope:
+        description: "チケットの CI の範囲（full＝全部・auto＝変えたファイルから影響の範囲だけ）"
+        type: choice
+        options: [full, auto]
+        default: full
+      base:
+        description: "比べる元（40 桁のコミット。auto のときだけ使う）"
+        type: string
+        default: ''
 concurrency:
   group: ${{{{ github.workflow }}}}-${{{{ github.ref }}}}
   cancel-in-progress: true
@@ -172,13 +203,14 @@ env:
 jobs:
   static:
     runs-on: ubuntu-latest
-    steps:
-{NODE}{''.join(step(g) for g in ALL_GATES if g['job'] == 'static')}
+{SCOPE_OUTPUTS}    steps:
+{NODE}{SCOPE_STEP}{''.join(step(g) for g in ALL_GATES if g['job'] == 'static')}
   database:
     runs-on: ubuntu-latest
     needs: [static]
+    if: ${{{{ !cancelled() && {SO}.database == 'true' }}}}
 {pg(5432)}    steps:
-{NODE}{''.join(step(g) for g in ALL_GATES if g['job'] == 'database')}
+{NODE}{SQUAWK_STEP}{''.join(step(g) for g in ALL_GATES if g['job'] == 'database')}
 {UNIT_JOBS}  spec:
     runs-on: ubuntu-latest
     # 仕様の層の検査は Python だけでなく pnpm の検査と DB の検査も呼ぶ（層の棚卸し G21）。database と同じ Postgres を付ける
@@ -199,6 +231,7 @@ jobs:
     runs-on: ubuntu-latest
     # 新しい画面（apps/web/components/k の上）の実ブラウザの試験。staging も札も要らない：CI の中で本番の形に組み立てて立ち上げる（K-36）
     needs: [static]
+    if: ${{{{ !cancelled() && {SO}.web == 'true' }}}}
     env:
       KANAME_DEV_PAGES: '1'
       NEXT_PUBLIC_KANAME_DEV_PAGES: '1'

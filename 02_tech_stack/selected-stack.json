@@ -993,6 +993,10 @@
    "for": "記録にある名前のまま",
    "register": "(本文)"
   },
+  "squawk-cli": {
+   "for": "migration の lint（変えた・足した migration だけ・G58・K-107）",
+   "register": "dev_tools"
+  },
   "tailwind-merge": {
    "for": "Tailwind のクラスの重なりを解く（shadcn の土台）",
    "register": "stack.frontend.ui_primitives"

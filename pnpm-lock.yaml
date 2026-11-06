@@ -31,6 +31,9 @@ importers:
       prettier:
         specifier: ^3.6.2
         version: 3.9.6
+      squawk-cli:
+        specifier: 2.70.0
+        version: 2.70.0
       tsx:
         specifier: ^4.23.13
         version: 4.23.13
@@ -1733,6 +1736,45 @@ packages:
   '@smithy/types@4.18.0':
     resolution: {integrity: sha512-CgB6HHWer/vrKps24ulRIbpcpb7K4xAU7SkZ7YHzBPlwHsvsrCJFEXK421s+cJzX+ZrqtA/TuU5w1HzI7k9N8A==}
     engines: {node: '>=18.0.0'}
+
+  '@squawk-cli/darwin-arm64@2.70.0':
+    resolution: {integrity: sha512-A8ZdKTxRqtZAsd4P72ZQa3H2XwZU/jL3Nvq+DoK6yg8xbiSrhh0Byy42gOwXVx9xgc+x/+oZL+8nKflJwIntpA==}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@squawk-cli/darwin-x64@2.70.0':
+    resolution: {integrity: sha512-d7pYX/Y+PsKRf/A6NADP4u/4p40n/mFKLyY8MjwjnBGEhDjiT6AGgyDYrcAzF1PLxCGUmOYCKlfndW1CDrNNhA==}
+    cpu: [x64]
+    os: [darwin]
+
+  '@squawk-cli/linux-arm64-musl@2.70.0':
+    resolution: {integrity: sha512-HSA4k3O+HWTf7XV4uOjX6FrpL2Pvxt5euiQ5CNQgqKLHXwpq8GlQhlOR1WkRZ1CnEnwZ834Chd20Xz9IHTnwiA==}
+    cpu: [arm64]
+    os: [linux]
+    libc: [musl]
+
+  '@squawk-cli/linux-arm64@2.70.0':
+    resolution: {integrity: sha512-FE27n0/O4YszESnkmiCPpjRsFg22CK8fUxfgD4AtqAtb3hGFpIAe/ZRKvqZFiVB4GDAQAB42E3Iy2hoEPozZoA==}
+    cpu: [arm64]
+    os: [linux]
+    libc: [glibc]
+
+  '@squawk-cli/linux-x64-musl@2.70.0':
+    resolution: {integrity: sha512-UFjpC/TcNcFeglXrcPPZi59iD9ynNB8neW9DR55rT4IzAF3asQvOvKjMECUFlBno7a+Ch3V0BsZF2zY1iN+CUQ==}
+    cpu: [x64]
+    os: [linux]
+    libc: [musl]
+
+  '@squawk-cli/linux-x64@2.70.0':
+    resolution: {integrity: sha512-i+yYiUJAFM6LPGlaY81J3oY21i4y+UW3GKyNJZDOeZK9AClIp+FEZQNZ0ohJnFNks5/xktYB9UhO5iU46RuyPA==}
+    cpu: [x64]
+    os: [linux]
+    libc: [glibc]
+
+  '@squawk-cli/win32-x64@2.70.0':
+    resolution: {integrity: sha512-qs7s4Imajti+75GQDRFlBaM2Gv12HzXyQ6kCtlVR28SA/+pnWmg/mFBIOKz94fifdBGdGNoGw7H4znJOtmdqfQ==}
+    cpu: [x64]
+    os: [win32]
 
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
@@ -4441,6 +4483,10 @@ packages:
   sprintf-js@1.1.3:
     resolution: {integrity: sha512-Oo+0REFV59/rz3gfJNKQiBlwfHaSESl1pcGyABQsnnIfWOFt6JNj5gCog2U6MLZ//IGYD+nA8nI+mTShREReaA==}
 
+  squawk-cli@2.70.0:
+    resolution: {integrity: sha512-2MIi7E/0xTbG43cOoLGu4oqxAa1EMPgfY1TS2NV7eLaSm1kTrq3u0E1MRQOQii8J/AbyJU32zdodcsXk2/IJ3A==}
+    hasBin: true
+
   stackback@0.0.2:
     resolution: {integrity: sha512-1XMJE5fQo1jGH6Y/7ebnwPOBEkIEnT4QF32d5R1+VXdXveM0IBMJt8zfaxX1P3QhVwrYe+576+jkANtSS2mBbw==}
 
@@ -5105,9 +5151,9 @@ snapshots:
 
   '@bcoe/v8-coverage@1.0.2': {}
 
-  '@better-auth/core@1.7.15(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.12)(kysely@0.29.5)(nanostores@1.5.3)':
+  '@better-auth/core@1.7.15(@better-auth/utils@0.4.2)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.12)(kysely@0.29.5)(nanostores@1.5.3)':
     dependencies:
-      '@better-auth/utils': 0.5.1
+      '@better-auth/utils': 0.4.2
       '@better-fetch/fetch': 1.3.3
       '@standard-schema/spec': 1.1.0
       better-call: 1.4.4(zod@4.6.7)
@@ -5118,34 +5164,34 @@ snapshots:
 
   '@better-auth/drizzle-adapter@1.7.15(@better-auth/core@1.7.15(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.12)(kysely@0.29.5)(nanostores@1.5.3))(@better-auth/utils@0.5.1)':
     dependencies:
-      '@better-auth/core': 1.7.15(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.12)(kysely@0.29.5)(nanostores@1.5.3)
+      '@better-auth/core': 1.7.15(@better-auth/utils@0.4.2)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.12)(kysely@0.29.5)(nanostores@1.5.3)
       '@better-auth/utils': 0.5.1
 
   '@better-auth/kysely-adapter@1.7.15(@better-auth/core@1.7.15(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.12)(kysely@0.29.5)(nanostores@1.5.3))(@better-auth/utils@0.5.1)(kysely@0.29.5)':
     dependencies:
-      '@better-auth/core': 1.7.15(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.12)(kysely@0.29.5)(nanostores@1.5.3)
+      '@better-auth/core': 1.7.15(@better-auth/utils@0.4.2)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.12)(kysely@0.29.5)(nanostores@1.5.3)
       '@better-auth/utils': 0.5.1
     optionalDependencies:
       kysely: 0.29.5
 
   '@better-auth/memory-adapter@1.7.15(@better-auth/core@1.7.15(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.12)(kysely@0.29.5)(nanostores@1.5.3))(@better-auth/utils@0.5.1)':
     dependencies:
-      '@better-auth/core': 1.7.15(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.12)(kysely@0.29.5)(nanostores@1.5.3)
+      '@better-auth/core': 1.7.15(@better-auth/utils@0.4.2)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.12)(kysely@0.29.5)(nanostores@1.5.3)
       '@better-auth/utils': 0.5.1
 
   '@better-auth/mongo-adapter@1.7.15(@better-auth/core@1.7.15(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.12)(kysely@0.29.5)(nanostores@1.5.3))(@better-auth/utils@0.5.1)':
     dependencies:
-      '@better-auth/core': 1.7.15(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.12)(kysely@0.29.5)(nanostores@1.5.3)
+      '@better-auth/core': 1.7.15(@better-auth/utils@0.4.2)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.12)(kysely@0.29.5)(nanostores@1.5.3)
       '@better-auth/utils': 0.5.1
 
   '@better-auth/prisma-adapter@1.7.15(@better-auth/core@1.7.15(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.12)(kysely@0.29.5)(nanostores@1.5.3))(@better-auth/utils@0.5.1)':
     dependencies:
-      '@better-auth/core': 1.7.15(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.12)(kysely@0.29.5)(nanostores@1.5.3)
+      '@better-auth/core': 1.7.15(@better-auth/utils@0.4.2)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.12)(kysely@0.29.5)(nanostores@1.5.3)
       '@better-auth/utils': 0.5.1
 
   '@better-auth/telemetry@1.7.15(@better-auth/core@1.7.15(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.12)(kysely@0.29.5)(nanostores@1.5.3))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)':
     dependencies:
-      '@better-auth/core': 1.7.15(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.12)(kysely@0.29.5)(nanostores@1.5.3)
+      '@better-auth/core': 1.7.15(@better-auth/utils@0.4.2)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.12)(kysely@0.29.5)(nanostores@1.5.3)
       '@better-auth/utils': 0.5.1
       '@better-fetch/fetch': 1.3.3
 
@@ -5991,6 +6037,27 @@ snapshots:
     dependencies:
       tslib: 2.9.1
 
+  '@squawk-cli/darwin-arm64@2.70.0':
+    optional: true
+
+  '@squawk-cli/darwin-x64@2.70.0':
+    optional: true
+
+  '@squawk-cli/linux-arm64-musl@2.70.0':
+    optional: true
+
+  '@squawk-cli/linux-arm64@2.70.0':
+    optional: true
+
+  '@squawk-cli/linux-x64-musl@2.70.0':
+    optional: true
+
+  '@squawk-cli/linux-x64@2.70.0':
+    optional: true
+
+  '@squawk-cli/win32-x64@2.70.0':
+    optional: true
+
   '@standard-schema/spec@1.1.0': {}
 
   '@standard-schema/utils@0.3.0': {}
@@ -6756,7 +6823,7 @@ snapshots:
 
   better-auth@1.7.15(next@15.5.28(@playwright/test@1.63.0)(@types/node@24.13.5)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(pg@8.23.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(vitest@3.2.7(@types/debug@4.1.13)(@types/node@24.13.5)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.13)):
     dependencies:
-      '@better-auth/core': 1.7.15(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.12)(kysely@0.29.5)(nanostores@1.5.3)
+      '@better-auth/core': 1.7.15(@better-auth/utils@0.4.2)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.12)(kysely@0.29.5)(nanostores@1.5.3)
       '@better-auth/drizzle-adapter': 1.7.15(@better-auth/core@1.7.15(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.12)(kysely@0.29.5)(nanostores@1.5.3))(@better-auth/utils@0.5.1)
       '@better-auth/kysely-adapter': 1.7.15(@better-auth/core@1.7.15(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.12)(kysely@0.29.5)(nanostores@1.5.3))(@better-auth/utils@0.5.1)(kysely@0.29.5)
       '@better-auth/memory-adapter': 1.7.15(@better-auth/core@1.7.15(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.12)(kysely@0.29.5)(nanostores@1.5.3))(@better-auth/utils@0.5.1)
@@ -9285,6 +9352,16 @@ snapshots:
 
   sprintf-js@1.1.3:
     optional: true
+
+  squawk-cli@2.70.0:
+    optionalDependencies:
+      '@squawk-cli/darwin-arm64': 2.70.0
+      '@squawk-cli/darwin-x64': 2.70.0
+      '@squawk-cli/linux-arm64': 2.70.0
+      '@squawk-cli/linux-arm64-musl': 2.70.0
+      '@squawk-cli/linux-x64': 2.70.0
+      '@squawk-cli/linux-x64-musl': 2.70.0
+      '@squawk-cli/win32-x64': 2.70.0
 
   stackback@0.0.2: {}
 

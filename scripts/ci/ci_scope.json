@@ -1,0 +1,281 @@
+{
+ "_doc": "チケットの CI の範囲の決まり（K-107・D-128.169）。scripts/ci/ci_scope.py が読む。full＝触ったら全部・db＝DB の範囲（DB の組＋変えた migration の lint＋DB を使う試験を全部）・data_links＝import に出ないつながり（読む物 → 流す試験 tests か、読む src readers）・reads_ok＝ファイルを読む・子プロセスを起こすが data_links に書かなくてよい試験と src（理由つき）・no_test_paths＝試験が読まない文書（読んでいたら CS-044 が赤）。書いていない読み手は CS-029・CS-032 が赤",
+ "db": {
+  "paths": [
+   "packages/db/migrations/**",
+   "packages/db/policies/**",
+   "07_functional/entities.json",
+   "07_qa/test-plan/access-matrix.json"
+  ],
+  "migrations": [
+   "packages/db/migrations/**"
+  ],
+  "migration_list": {
+   "file": "packages/db/src/index.ts",
+   "entry": "^\\s*\"(\\d{4}_[^\"/]+\\.sql)\",?\\s*$"
+  },
+  "gateway": [
+   "packages/db/**"
+  ],
+  "markers": [
+   "from\\s+['\"]pg['\"]",
+   "\\bDATABASE_URL\\b"
+  ]
+ },
+ "full": {
+  "ci": [
+   ".github/**",
+   "05_flow/build_testplan.py",
+   "scripts/**",
+   ".act-ci.env",
+   "vitest.config.ts",
+   "apps/*/playwright.config.ts",
+   "eslint.config.mjs",
+   "tsconfig*.json",
+   "**/tsconfig*.json",
+   ".squawk.toml"
+  ],
+  "lockfile": [
+   "pnpm-lock.yaml",
+   "pnpm-workspace.yaml",
+   "package.json",
+   "**/package.json",
+   ".npmrc"
+  ]
+ },
+ "shared_min_dependents": 2,
+ "files_per_shard": 40,
+ "affects_required_from": 108,
+ "coverage_src": {
+  "include": [
+   "packages/*/src/**/*.ts",
+   "apps/*/src/**/*.ts"
+  ],
+  "exclude": [
+   "**/*.test.ts",
+   "**/*.d.ts",
+   "**/cli.ts",
+   "packages/contracts/src/types.ts",
+   "packages/errors/src/catalog.ts"
+  ]
+ },
+ "no_test_paths": [
+  "00_research/**",
+  "01_hearing/**",
+  "02_tech_stack/**",
+  "06_mockup/**",
+  "08_schedule/**",
+  "09_dispatch/**",
+  "10_skills/**",
+  "README.md"
+ ],
+ "data_links": [
+  {
+   "paths": [
+    "07_qa/test-plan/access-matrix.json"
+   ],
+   "tests": [
+    "packages/db/test/matrix.test.ts",
+    "packages/db/test/matrix_breaks.test.ts",
+    "packages/db/test/self_only.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "07_qa/test-specs/rls-matrix.md"
+   ],
+   "tests": [
+    "packages/db/test/self_only.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "07_functional/entities.json"
+   ],
+   "tests": [
+    "packages/db/test/rls_drift.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "08_api/endpoints.json"
+   ],
+   "tests": [
+    "apps/api/src/contract/authz.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "07_qa/test-plan/ears-elsewhere.json",
+    "11_tickets/tickets.json"
+   ],
+   "tests": [
+    "apps/api/test/authz_rows.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "07_qa/test-specs/errors.json"
+   ],
+   "tests": [
+    "apps/web/test/k-error-of.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/sign-up.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_auth_sign_up_status.test.ts",
+    "apps/api/test/generated/post_auth_sign_up.test.ts",
+    "apps/api/test/generated/post_auth_sign_up_resend.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/step_up.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_auth_step_up.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/web/app/**"
+   ],
+   "tests": [
+    "apps/web/test/k-app-files.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/web/styles/**",
+    "apps/web/components/k/**"
+   ],
+   "tests": [
+    "apps/web/test/k-tokens.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/auth/agent-tools.ts"
+   ],
+   "tests": [
+    "apps/api/test/bridge_credentials.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/bridge/src/**",
+    "apps/bridge/scripts/**"
+   ],
+   "tests": [
+    "apps/bridge/test/vault.test.ts",
+    "apps/bridge/test/login-check.test.ts",
+    "apps/bridge/test/renderer.test.ts",
+    "apps/bridge/test/release.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "packages/storage/src/s3.ts"
+   ],
+   "tests": [
+    "packages/storage/test/s3-logger.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "08_api/retired-endpoints.json"
+   ],
+   "tests": [
+    "apps/api/test/qa-d.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/bridge/test/update.test.ts": "自分で作った一時のファイルを読む",
+  "apps/bridge/test/guard.test.ts": "自分で作った一時のファイルを読む",
+  "apps/bridge/test/kaname-tools.test.ts": "自分で作った一時のファイル・台本を起こす",
+  "apps/bridge/test/qa-a2.test.ts": "自分で作った一時のファイル・台本を起こす",
+  "packages/secrets/test/infisical.live.test.ts": "本物の秘密の置き場の試験",
+  "apps/api/src/auth/bridge-release.ts": "配る Bridge の置き場（設定の dir）を読む。動いている間の物（設定の置き場・一時の作業場・ログ）を読む。リポジトリのファイルは読まない",
+  "apps/bridge/scripts/release.mjs": "Bridge の配る物を作る台本（apps/bridge/scripts/** は data_links で Bridge の試験を流す）",
+  "apps/bridge/src/browser.ts": "Bridge の動く台の物を見る（data_links の apps/bridge/src/** で Bridge の試験を流す）",
+  "apps/bridge/src/guard.ts": "同上（apps/bridge/src/**）",
+  "apps/bridge/src/install-claude.ts": "同上（apps/bridge/src/**）",
+  "apps/bridge/src/kaname-tools.ts": "同上（apps/bridge/src/**）",
+  "apps/bridge/src/login-check.ts": "同上（apps/bridge/src/**）",
+  "apps/bridge/src/login.ts": "同上（apps/bridge/src/**）",
+  "apps/bridge/src/main.ts": "同上（apps/bridge/src/**）",
+  "apps/bridge/src/proc.ts": "同上（apps/bridge/src/**）",
+  "apps/bridge/src/runner.ts": "同上（apps/bridge/src/**）",
+  "apps/bridge/src/transcript.ts": "同上（apps/bridge/src/**）",
+  "apps/bridge/src/update.ts": "同上（apps/bridge/src/**）",
+  "apps/bridge/test/browser.test.ts": "自分で作った一時の置き場を見る・自分のパッケージの package.json を import する（package.json は全部）",
+  "apps/bridge/test/login-check-2fa.test.ts": "台のブラウザがあるかを見る（リポジトリのファイルは読まない）",
+  "apps/bridge/test/loop.test.ts": "自分で作った一時の置き場が消えたかを見る",
+  "apps/e2e/write_results.mjs": "通しの試験の結果を正本に書き戻す台本（試験でない）",
+  "apps/web/app/(dev)/dev/mail/page.tsx": "開発の画面：API のログ（動いている間の物）を読む",
+  "apps/web/components/ai/markdown.tsx": "画面の部品を後から読み込む import（部品の名前・import の地図に出る）",
+  "apps/web/components/views/timeline.tsx": "画面の部品を後から読み込む import（相対のパス・import の地図に出る）",
+  "apps/web/write_results.mjs": "実ブラウザの試験の結果を正本に書き戻す台本（試験でない）",
+  "packages/db/src/ci.ts": "migration・行の守りの SQL を読む（db.paths・DB の範囲で DB を使う試験を全部流す）",
+  "packages/db/src/cli.ts": "道具の入口（引数のファイルを読み書きする・coverage の外）",
+  "packages/db/src/migrate.ts": "migration・行の守りの SQL を読む（db.paths・DB の範囲で DB を使う試験を全部流す）",
+  "packages/runtime/src/local.ts": "渡された命令を子プロセスで起こす（動いている間の物）",
+  "packages/storage/src/local.ts": "手元の置き場（動いている間の物）を読む",
+  "apps/web/tests/_lib/api.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
+  "apps/web/tests/_lib/browser.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
+  "apps/web/tests/_lib/row.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
+  "apps/web/tests/reachability.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
+  "apps/web/tests/screens/agent-chat.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
+  "apps/web/tests/screens/bridge-live.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
+  "apps/web/tests/screens/bridge-loop.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
+  "apps/web/tests/screens/clone-artifacts.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
+  "apps/web/tests/screens/clone-chat.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
+  "apps/web/tests/screens/clone-progress.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
+  "apps/web/tests/screens/qa-a1-chat.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
+  "apps/web/tests/screens/qa-b-infisical.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
+  "apps/web/tests/screens/qa-b-login-check.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
+  "apps/web/tests/screens/qa-c-onboard.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
+  "apps/web/tests/screens/setup-gate.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
+  "apps/web/tests/states.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）"
+ },
+ "jobs": {
+  "database": {
+   "packages": [
+    "@kaname/api",
+    "@kaname/actions",
+    "@kaname/auth",
+    "@kaname/billing",
+    "@kaname/config",
+    "@kaname/contracts",
+    "@kaname/db",
+    "@kaname/errors",
+    "@kaname/llm",
+    "@kaname/notify",
+    "@kaname/runtime",
+    "@kaname/secrets",
+    "@kaname/storage"
+   ],
+   "paths": [
+    "08_api/**",
+    "07_qa/test-plan/**",
+    "07_functional/entities.json"
+   ]
+  },
+  "web": {
+   "packages": [
+    "@kaname/web"
+   ],
+   "paths": [
+    "07_qa/test-specs/k/**",
+    "05_flow/flow.json",
+    "04_design/**",
+    "07_qa/test-specs/errors.json",
+    "11_tickets/tickets.json"
+   ]
+  }
+ }
+}

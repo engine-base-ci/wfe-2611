@@ -13,7 +13,7 @@
   "ui": 13,
   "packages": 13,
   "errors": 146,
-  "stack": 51,
+  "stack": 52,
   "env": 34
  },
  "api": [
@@ -7558,6 +7558,10 @@
    {
     "package": "sonner",
     "for": "記録にある名前のまま"
+   },
+   {
+    "package": "squawk-cli",
+    "for": "migration の lint（変えた・足した migration だけ・G58・K-107）"
    },
    {
     "package": "tailwind-merge",

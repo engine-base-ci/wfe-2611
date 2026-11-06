@@ -258,6 +258,7 @@
   "D-128.138",
   "D-128.139",
   "D-128.14",
+  "D-128.140",
   "D-128.141",
   "D-128.142",
   "D-128.143",
@@ -288,7 +289,10 @@
   "D-128.166",
   "D-128.167",
   "D-128.168",
+  "D-128.169",
   "D-128.17",
+  "D-128.170",
+  "D-128.171",
   "D-128.20",
   "D-128.25",
   "D-128.26",
@@ -599,8 +603,8 @@
   },
   {
    "id": 3,
-   "name": "unit test + coverage（6 つに分けて流した結果を合わせ、閾値を当てる）",
-   "script": "n=$(ls .vitest-reports/blob-*-6.json 2>/dev/null | wc -l) && { [ \"$n\" -eq 6 ] || { echo \"★ FAIL 分けた単体の試験の結果が 6 つのうち $n つしか無い\"; exit 1; }; } && pnpm exec vitest run --merge-reports=.vitest-reports --coverage",
+   "name": "unit test + coverage（分けて流した結果を合わせ、閾値を当て、決めた試験が全部流れたかを見る）",
+   "script": "[ -n \"$CI_UNIT_SHARDS\" ] || { echo \"★ FAIL static の出力が空（G0 が流れていない）\"; exit 1; }\nif [ \"$CI_UNIT_SHARDS\" = \"0\" ]; then echo \"流す試験 0 本（チケットの CI の範囲・G0）\"; exit 0; fi\nn=$(ls .vitest-reports/blob-*-\"$CI_UNIT_SHARDS\".json 2>/dev/null | wc -l)\n[ \"$n\" -eq \"$CI_UNIT_SHARDS\" ] || { echo \"★ FAIL 分けた単体の試験の結果が $CI_UNIT_SHARDS つのうち $n つしか無い\"; exit 1; }\npython3 scripts/ci/ci_scope.py run-merge && python3 scripts/ci/ci_scope.py check-count --report .vitest-reports/merged.json\n",
    "blocking": true,
    "detects": [
     "退行"
@@ -610,7 +614,8 @@
     "branches": 70
    },
    "owner_task": "T-F-03",
-   "job": "unit"
+   "job": "unit",
+   "env": "          CI_UNIT_FILES: ${{ needs.static.outputs.unit_files }}\n          CI_COVERAGE_ARGS: ${{ needs.static.outputs.coverage_args }}\n          CI_UNIT_SHARDS: ${{ needs.static.outputs.unit_shards }}\n          CI_FULL: ${{ needs.static.outputs.full }}\n"
   },
   {
    "id": 4,
@@ -1148,6 +1153,13 @@
    "id": 56,
    "name": "取り込む順（depends_on の実装が先に枝にある・K-94）",
    "script": "python3 scripts/ci/ticket_order_gate.py --selftest && python3 scripts/ci/ticket_order_gate.py",
+   "job": "spec",
+   "blocking": true
+  },
+  {
+   "id": 57,
+   "name": "チケットの CI の範囲の台本の試験（K-107）",
+   "script": "python3 scripts/ci/ci_scope_test.py && python3 scripts/ci/ticket_affects_test.py",
    "job": "spec",
    "blocking": true
   }

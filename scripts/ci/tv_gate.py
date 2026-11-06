@@ -12,7 +12,7 @@ try:
 except FileNotFoundError as e: print(f"FAIL — 成果物が無い: {e}"); sys.exit(2)
 FG = J(a.gates); EARS = J(a.ears)["ac_seeds"]; T = J(a.tickets)["tickets"]; EN = J(a.entities); EN = EN.get("entities") or EN["items"]
 # G3（単体の試験と coverage）は、分けて同時に流し、結果を合わせて閾値を当てる形でもよい（unit-1〜unit-N → unit・D-128.140）
-SPLIT = {3: ["vitest run --coverage --shard=", "vitest run --merge-reports"]}
+SPLIT = {3: ["ci_scope.py run-unit --shard", "ci_scope.py run-merge"]}   # 分けて流して合わせる（K-107：組の中の vitest の引数の並びは scripts/ci/ci_scope.py の unit_argv・merge_argv）
 present = lambda g: g["script"] in Y or (g["id"] in SPLIT and all(x in Y for x in SPLIT[g["id"]]))
 m = [g["name"] for g in FG["merge_gates"] if not present(g)]
 if m: fails.append(("TV1", f"v3-gate.yml に無い基盤ゲート {m[:5]}"))

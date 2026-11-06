@@ -486,12 +486,19 @@ K-106,予定日は実際にかかった時間から引く（根拠の数字が�
 - [ ] 予定に「どの数字から引いたか」が残り、根拠の無い予定日を検査で赤にする
 - [ ] スキル（ticket-planning・ai-team-delivery）と教訓に足し、.skill を作り直す
 - [ ] workflow の全部（act）が緑"
-K-107,チケットごとの CI を、機械で出した影響の範囲の試験＋型・lint に絞る（全部は migration・共通の部品・CI の設定・部品の版に触ったときと、段の締め・リリースの前）,課題,K-1,未着手,作る,,基盤・試験,"チケットの CI は workflow の全部（static・database・unit-1〜6 の試験 約 2,400 本・spec・web）を毎回流し、小さなチケットでも 15 分かかっていた。影響の範囲はチケットを切る時点で書く決まりが既にあり、毎回の全部は目的に対して無駄（D-128.169）。依存の地図で影響の範囲を機械で出し、そこだけ流す。抜けは区切りの全部で拾う。","- [ ] 変えたファイル → 依存の地図（パッケージの依存・import のつながり）→ 影響を受ける試験、を出す台本がある
-- [ ] チケットに書いた影響の範囲と、機械で出した範囲を突き合わせ、片方にしか無いものを赤にする
-- [ ] migration・共通の部品・CI の設定・部品の版（lockfile）に触ったときは全部を流す
-- [ ] workflow に「範囲を絞る」入口（workflow_dispatch の入力など）があり、act_ci.sh から渡せる。GitHub でも同じ workflow で動く
-- [ ] 決まり（ai-driven-process.md §1 原則 7・§9）とスキル（ai-team-delivery の references/ci.md・act_ci.sh）を直し、.skill を作り直す
-- [ ] 範囲を絞った回と全部の回の両方が緑。小さなチケット（例：文言 1 か所）で時間が縮んだことを数字で出す"
+K-107,チケットごとの CI を、機械で出した影響の範囲の試験＋型・lint に絞る（DB の形に触ったら DB を使う試験を全部。全部は共通の部品・CI の設定・部品の版に触ったときと、取り込み 5 本ごと・段の締め・リリースの前）,課題,K-1,確認中,作る,,基盤・試験,"チケットの CI は workflow の全部（static・database・unit-1〜6 の試験 約 2,400 本・spec・web）を毎回流し、小さなチケットでも 15 分かかっていた。影響の範囲はチケットを切る時点で書く決まりが既にあり、毎回の全部は目的に対して無駄（D-128.169）。依存の地図で影響の範囲を機械で出し、そこだけ流す。抜けは区切りの全部で拾う。
+
+import の地図に出ない「隠れた依存」のうち一番大きいのが DB の形（migration・SQL・行の守り・権限）。ここは粗く安全に選ぶ：DB の組（空の DB に全部当てる）＋ migration の lint ＋ **DB を使う試験を全部**。DB を使わない試験（純粋な関数・画面の部品だけの試験）は選ばない。研究（Willmor & Embury ICSM 2005：DB の状態を見ない選び方は安全でない／Shi・Zhao・Marinov ISSRE 2019：追えないファイルの変更は、影響する部品の試験を全部選ぶ形に落とすと安全）と実務（Nx：migration は明示の影響の決まりにし、分からない変更は全部／GitLab：migration は専用の検査の流れで DB に当てる／Google TAP：取り込む前は狭く、全部は取り込み 5 本ごと（まとめて 1 回）・段の締め・リリースの前）に合わせる。","- [ ] 変えたファイル → 依存の地図（パッケージの依存・import のつながり）→ 影響を受ける試験、を出す台本 `scripts/ci/ci_scope.py` がある
+- [ ] チケットに書いた影響の範囲（属性 `affects`・`ci_wide`）と、機械で出した範囲を突き合わせ、片方にしか無いものを赤にする
+- [ ] 共通の部品・CI の設定・部品の版（lockfile・package.json）に触ったときは全部を流す
+- [ ] migration・SQL・行の守り・権限に触ったときは「DB の範囲」：DB の組＋変えた migration の lint（Squawk）＋DB を使う試験を全部。DB を使わない試験は選ばない
+- [ ] workflow に「範囲を絞る」入口（workflow_dispatch の入力 `scope`・`base`）があり、act_ci.sh から渡せる。GitHub でも同じ workflow で動く（入力を渡さなければ全部）。外から来る値（入力・組の出力）は run の命令の文字に入れず env で渡す
+- [ ] 中間・統合の試験（kind: QA のチケットの tests）は、このチケットで depends_on がそろうなら範囲に入る（ai-driven-process §5・§9）
+- [ ] pm_merge.sh に `--full`・取り込み 5 本ごと（まとめて 1 回）・段の締め・リリースの前の全部と、赤のときの探し方・止めの外し方がある
+- [ ] 決まり（ai-driven-process.md §1 原則 7・§3 の表・§9）とスキル（ai-team-delivery の references/ci.md・act_ci.sh）を直し、.skill を作り直す
+- [ ] 下の「テスト仕様と確認の結果」の全部の行が緑（`python3 scripts/ci/ci_scope_test.py`・`python3 scripts/ci/ticket_affects_test.py`・`python3 <スキルの作業の写し>/scripts/tests/test_act_ci_scope.py`・`python3 <スキルの作業の写し>/scripts/tests/test_pm_merge_milestone.py`・結合 J1〜J5）
+- [ ] 範囲を絞った回と全部の回の両方が緑。小さなチケット（例：文言 1 か所）で時間が縮んだことを数字で出す（act_ci の回の記録 run.json の start・end）
+- [ ] 手元の CI（.github/workflows を act で・このチケットは CI の設定に触るので全部・D-128.147）が緑"
 K-108,workflow の run の中で github.head_ref などの値を直に使っている所を env に移す（命令の注入の形・前からある物）,課題,K-1,未着手,作る,,基盤・試験,"K-107 の 2 回目の精査（2026-11-06）で見つかった、前からある物。.github/workflows/v3-gate.yml の task-gate に `echo ""TASK_ID=${{ github.head_ref }}""` があり、枝の名前に `$(...)` などを入れると命令が動く形（GitHub の案内でいう script injection）。今は pull_request で動かないので害は無いが、GitHub で pull_request を受けるようにした時点で穴になる。K-107 の CS-034 は inputs・needs の値だけを見ていて、github. の値は見ていない。","- [ ] workflow の run の中に、外から来る値（github.head_ref・github.event.*・inputs.*・needs.*.outputs.*）を `${{ }}` で直に書いている所が 0。どれも env で渡し、引用符で使う
 - [ ] その形を CI の検査で赤にする（K-107 の CS-034 を github. の値まで広げる）
 - [ ] workflow の全部（act）が緑"
