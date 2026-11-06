@@ -104,6 +104,7 @@ SPEC_GATES = [
 SPEC_GATES.append({"id": 53, "name": "試験はどれも 1 つのチケットに属する（単体の試験・実ブラウザの試験・口ごとの権限の試験の持ち主・D-128.140）", "script": "python3 scripts/ci/test_owner_gate.py --selftest && python3 scripts/ci/test_owner_gate.py", "job": "spec", "blocking": True})
 SPEC_GATES.append({"id": 54, "name": "決定のトレース（決定ログの決めたことが導出物から逆引きできる・T1〜T12。手で流していたのを CI に入れた・D-128.147）", "script": "cp 01_hearing/要件一覧.md /tmp/req.md && python3 scripts/ci/trace_gate.py --index && cmp /tmp/req.md 01_hearing/要件一覧.md && python3 scripts/ci/trace_gate.py", "job": "spec", "blocking": True})
 SPEC_GATES.append({"id": 55, "name": "No Ticket, No Commit（コミットにチケットの番号・D-128.147・K-47）", "script": "python3 scripts/ci/ticket_commit_gate.py --selftest && python3 scripts/ci/ticket_commit_gate.py", "job": "spec", "blocking": True})
+SPEC_GATES.append({"id": 56, "name": "取り込む順（depends_on の実装が先に枝にある・K-94）", "script": "python3 scripts/ci/ticket_order_gate.py --selftest && python3 scripts/ci/ticket_order_gate.py", "job": "spec", "blocking": True})
 # ---------------------------------------------------------------- 単体の試験（G3）を 6 つに分けて同時に流す（D-128.140）
 #   全部（回帰）は取り込みの前だけ。分けた 1 つずつが自分の Postgres を持ち（GitHub でも act でも job ごと・DB の番号は割り当て）、
 #   結果（vitest の blob。coverage も入る）を unit が集めて合わせ、同じ閾値（vitest.config.ts）を合わせた結果に当てる。

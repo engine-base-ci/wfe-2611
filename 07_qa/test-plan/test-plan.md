@@ -84,7 +84,7 @@
 | L4 | 正本 full ＋ 本番スモーク（prod-smoke.md）＋ 負荷実測 | staging ＋ 本番（スモークのみ） | リリース前 | qa-coverage.py STATUS 完了 |
 | L5 | full ＋ 正本の鮮度監査 | staging | 年次・大改修 | 同上 |
 
-## CI ゲート 54 本（.github/workflows/v3-gate.yml）
+## CI ゲート 55 本（.github/workflows/v3-gate.yml）
 
 | # | 名前 | script | job | 致命 |
 |---|---|---|---|---|
@@ -142,6 +142,7 @@
 | G53 | 試験はどれも 1 つのチケットに属する（単体の試験・実ブラウザの試験・口ごとの権限の試験の持ち主・D-128.140） | `python3 scripts/ci/test_owner_gate.py --selftest && python3 scripts/ci/test_owner_gate.py` | spec |  |
 | G54 | 決定のトレース（決定ログの決めたことが導出物から逆引きできる・T1〜T12。手で流していたのを CI に入れた・D-128.147） | `cp 01_hearing/要件一覧.md /tmp/req.md && python3 scripts/ci/trace_gate.py --index && cmp /tmp/req.md 01_hearing/要件一覧.md && python3 scripts/ci/trace_gate.py` | spec |  |
 | G55 | No Ticket, No Commit（コミットにチケットの番号・D-128.147・K-47） | `python3 scripts/ci/ticket_commit_gate.py --selftest && python3 scripts/ci/ticket_commit_gate.py` | spec |  |
+| G56 | 取り込む順（depends_on の実装が先に枝にある・K-94） | `python3 scripts/ci/ticket_order_gate.py --selftest && python3 scripts/ci/ticket_order_gate.py` | spec |  |
 
 ## マージ可能の判断
 

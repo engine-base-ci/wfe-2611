@@ -1141,6 +1141,13 @@
    "script": "python3 scripts/ci/ticket_commit_gate.py --selftest && python3 scripts/ci/ticket_commit_gate.py",
    "job": "spec",
    "blocking": true
+  },
+  {
+   "id": 56,
+   "name": "取り込む順（depends_on の実装が先に枝にある・K-94）",
+   "script": "python3 scripts/ci/ticket_order_gate.py --selftest && python3 scripts/ci/ticket_order_gate.py",
+   "job": "spec",
+   "blocking": true
   }
  ],
  "stages": {
