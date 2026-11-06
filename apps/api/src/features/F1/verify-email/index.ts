@@ -2,8 +2,9 @@
 //   順番：使うの印を付ける（claimPendingByToken）→ 本人とテナントを作る（signUp。会社名が空なら名前を渡す・D-125.135）→ emailVerified を立てる
 //        → 同意を移す（terms_consents・関門 C2 の withTenant）→ 包んだパスワードを消す → 完了のメール（関門 C6）→ ログインの印を返す。
 //   印は 1 回だけ付く（同時に何回押しても確定は 1 回）。途中で失敗したら全部戻す：この確定で作った本人（id で指す）と、
-//   signUp の hook が作った会社の一式を app.drop_half_made_company で片付け、印を戻す。
-//   signUp が同じメールの重複で落ちた（確定の途中に別の道で本人ができた）ら、何も消さずに E-CONF-001。
+//   signUp の hook が作った会社の一式（会社は members.auth_user_id から引く）を kaname_auth.drop_half_made_company で片付け、印を戻す。
+//   この確定で作った本人かは、同じメールの本人のパスワードのアカウント（credential）が、いま開いたパスワードで合うかで見分ける
+//   （3 回目のレビュー M-A・M-B）。合わない本人（確定の途中に別の道でできた）は何も消さずに E-CONF-001。
 //   冪等キーは使わない：2 回目にログインの印を渡すと、リンクを持つ人なら誰でも入れてしまう（2 回目は E-CONF-011）。
 //   会社を作る hook（packages/auth の databaseHooks.user.create.after）は変えない（招待で入る人は会社を作らない）。
 //   確定の直後の最初のログインでは「新しい端末」の知らせを出さない（D-128.137）：signUp は端末の印（user-agent）を渡さずに作るので、
@@ -11,19 +12,21 @@
 //   ログにパスワード・メールアドレス・リンクの手がかりを出さない（TP-REG-14）
 import type { Auth } from "@kaname/auth";
 import {
+  authUserHasMembers,
+  authUserIdByEmail,
   claimPendingByToken,
   closeSessionsOf,
-  authUserHasMembers,
-  dbNow,
-  dropHalfMadeUser,
+  credentialHashOf,
+  deleteAuthUser,
+  dropHalfMadeCompany,
   emailOfUser,
+  halfMadeTenantOf,
   isRegistered,
   markEmailVerified,
   memberOfNewUser,
   openPendingPassword,
   releasePendingClaim,
   sealOffPending,
-  userMadeSince,
   type AuthPool,
   type ClaimedPending,
 } from "@kaname/auth/pending";
@@ -76,12 +79,11 @@ async function currentUser(a: HookArgs, d: VerifyEmailDeps): Promise<{ signedIn:
   }
 }
 
-/** 確定の途中の失敗。made は、この確定で作った本人の id（作る前に落ちたら null）・tenant はその会社（分かれば）。
- *  otherPath は、signUp が本人を足せなかった（同じメールの本人が別の道でできた）とき。何も消さない */
+/** 確定の途中の失敗。made は、この確定で作った本人の id（作る前に落ちたら null）。会社は片付けるときに members.auth_user_id から引く（M-C）。
+ *  otherPath は、同じメールの本人が別の道でできていた（パスワードが合わない・signUp が重複で落ちた）とき。何も消さない */
 class ConfirmFailed extends Error {
   constructor(
     readonly made: string | null,
-    readonly tenant: string | null,
     readonly reason: unknown,
     readonly otherPath = false,
   ) {
@@ -105,55 +107,83 @@ export function verifyEmailFeature(d: VerifyEmailDeps) {
     });
   };
 
-  /** signUp が落ちたとき、この確定で作った本人かを見分ける。Better Auth は「本人を足せなかった（重複）」も「足した後に会社を作る hook で
-   *  落ちた」も同じ FAILED_TO_CREATE_USER で返すので、DB で見分ける：確定を始めた後にできた同じメールの本人がいて、その人の会社の人が
-   *  どこにも無いなら、この確定で作って hook で落ちた本人。会社の人がいる（招待で入った など）・始める前からいる本人は、別の道の本人（消さない） */
-  const signUpFailed = async (email: string, since: Date, e: unknown): Promise<ConfirmFailed> => {
-    const code = (e as { body?: { code?: string } } | null)?.body?.code ?? "";
-    if (code.startsWith("USER_ALREADY_EXISTS")) return new ConfirmFailed(null, null, e, true);
-    const cand = await userMadeSince(d.authPool, email, since).catch(() => null);
-    if (cand) {
-      const left = await dropHalfMadeUserDryRun(cand);
-      if (left === "mine") return new ConfirmFailed(cand, null, e);
+  /** その本人が、この確定で作った本人か（3 回目のレビュー M-A・M-B）。members の有る無しや作った時刻では見分けない：
+   *  パスワードのアカウント（credential）が、いま開いたパスワードで合えば、この確定で作った本人（Better Auth の password.verify）。
+   *  合わなければ別の道の本人（消さない）。アカウントが無い本人は、会社を作る hook で落ちてアカウントを足す前に止まった本人
+   *  （ログインできず、会社の人もいない）なので、会社の人がどこにもいないときだけ、この確定で作った本人として片付ける。
+   *  照合が落ちたら消さない側に倒す */
+  const isMine = async (userId: string, password: string): Promise<boolean> => {
+    try {
+      const hash = await credentialHashOf(d.authPool, userId);
+      if (hash === null) return !(await authUserHasMembers(d.authPool, userId));
+      const ctx = await d.auth.$context;
+      return await ctx.password.verify({ hash, password });
+    } catch (e) {
+      console.error(`[verify-email] この確定で作った本人かを確かめられなかった: ${errName(e)}`);
+      return false;
     }
-    if (await isRegistered(d.authPool, email).catch(() => false)) return new ConfirmFailed(null, null, e, true);
-    return new ConfirmFailed(null, null, e);
   };
-  /** その本人の会社の人が残っているか（残っていれば別の道の本人）。読めなければ消さない側に倒す */
-  const dropHalfMadeUserDryRun = async (userId: string): Promise<"mine" | "other"> =>
-    (await authUserHasMembers(d.authPool, userId).catch(() => true)) ? "other" : "mine";
+  /** signUp が落ちたとき：同じメールの本人がいれば、パスワードで見分ける。いなければ何も作られていない。
+   *  ただし Better Auth が「本人を作れなかった」（FAILED_TO_CREATE_USER）で返したときは、パスワードのアカウントを足す前に止まっている
+   *  （signUpEmail はアカウントを本人の追加の後に足す）。そのとき同じメールの本人がアカウントを持っていれば、それは別の道で足された
+   *  アカウントなので、パスワードが同じでも消さない（同じパスワードで別の道から入った人を取り違えない・K52-API-039） */
+  const signUpFailed = async (email: string, password: string, e: unknown): Promise<ConfirmFailed> => {
+    const code = (e as { body?: { code?: string } } | null)?.body?.code ?? "";
+    if (code.startsWith("USER_ALREADY_EXISTS")) return new ConfirmFailed(null, e, true);
+    try {
+      const uid = await authUserIdByEmail(d.authPool, email);
+      if (!uid) return new ConfirmFailed(null, e);
+      if (code === "FAILED_TO_CREATE_USER" && (await credentialHashOf(d.authPool, uid)) !== null)
+        return new ConfirmFailed(null, e, true);
+      return (await isMine(uid, password)) ? new ConfirmFailed(uid, e) : new ConfirmFailed(null, e, true);
+    } catch (e2) {
+      // 本人がいるか分からない：消す相手を決められないので何も消さない
+      console.error(`[verify-email] 同じメールの本人を確かめられなかった: ${errName(e2)}`);
+      return new ConfirmFailed(null, e, true);
+    }
+  };
 
-  /** 確定の本体。失敗したら ConfirmFailed（この確定で作った本人の id・会社つき）を投げる */
+  /** 確定の本体。失敗したら ConfirmFailed（この確定で作った本人の id つき）を投げる */
   const confirm = async (p: ClaimedPending, password: string) => {
     const name = cleanText(p.name);
     const companyName = cleanText(p.companyName) || name; // 会社名が空なら本人の名前で個人のテナント（D-125.135）
-    const since = await dbNow(d.authPool); // 確定を始めた時刻（DB の時計・片付けの関数の「数分以内」と同じ）
     let r: Awaited<ReturnType<typeof signUp>>;
     try {
       r = await signUp(d.auth, { email: p.email, password, name, companyName });
     } catch (e) {
-      throw await signUpFailed(p.email, since, e);
+      throw await signUpFailed(p.email, password, e);
     }
-    let tenant: string | null = null;
     try {
       await markEmailVerified(d.authPool, r.userId);
       const m = await memberOfNewUser(d.authPool, d.appPool, r.userId);
       if (!m) throw new Error("確定した本人の会社の人が見つからない");
-      tenant = m.tenantId;
       const ctx: TenantContext = { tenantId: m.tenantId, userId: m.memberId, role: "member" };
       await moveConsents(ctx, r.userId, p);
       return { userId: r.userId, token: r.token, ctx, name };
     } catch (e) {
-      if (!tenant)
-        tenant = (await memberOfNewUser(d.authPool, d.appPool, r.userId).catch(() => null))?.tenantId ?? null;
-      throw new ConfirmFailed(r.userId, tenant, e);
+      throw new ConfirmFailed(r.userId, e);
     }
   };
 
-  /** 運営に知らせ（関門 C6）、セキュリティの記録（運営のテナント）に残す。メールアドレスは書かない。どちらが落ちても止めない */
-  const alertOps = async (what: string) => {
+  /** この確定で作った本人と、その会社の中身を片付ける（D-128.167）。会社は members.auth_user_id から引き（人がその本人 1 人だけの会社）、
+   *  片付けの関数の守りで外れて片付けられなかったら失敗として投げる（M-C：「片付けるはずのものが残っているのに何もしない」を成功にしない）。
+   *  本人は、会社の人がどこにも残っていないときだけ消す。残っていたら kept（確定の途中に別の道でその会社に入った）。
+   *  投げるときも、分かった会社の id を ids に残す（片付けの失敗の記録に使う） */
+  const cleanUp = async (userId: string, ids: { tenant_id: string | null }): Promise<"cleaned" | "kept"> => {
+    const tenant = await halfMadeTenantOf(d.authPool, userId);
+    ids.tenant_id = tenant;
+    if (tenant && !(await dropHalfMadeCompany(d.authPool, tenant, userId)))
+      throw new Error("作りかけの会社が片付けの守りで片付けられなかった");
+    if (await authUserHasMembers(d.authPool, userId)) return "kept";
+    await deleteAuthUser(d.authPool, userId);
+    return "cleaned";
+  };
+
+  /** 運営に知らせ（関門 C6）、セキュリティの記録（運営のテナント）に残す。detail は会社の id（tenant_id）と認証の本人の id（auth_user_id）。
+   *  メールアドレスは記録にも知らせにも書かない（M-D）。どちらが落ちても止めない */
+  const alertOps = async (what: string, ids: { tenant_id: string | null; auth_user_id: string | null }) => {
     try {
-      await d.repo.securityEvent(OPS_TENANT_ID, SIGNUP_CLEANUP_FAILED, null, null, { what });
+      await d.repo.securityEvent(OPS_TENANT_ID, SIGNUP_CLEANUP_FAILED, null, null, { what, ...ids });
     } catch (e) {
       console.error(`[verify-email] セキュリティの記録に残せなかった: ${errName(e)}`);
     }
@@ -162,7 +192,7 @@ export function verifyEmailFeature(d: VerifyEmailDeps) {
       .mailer({
         to: d.config.opsEmail,
         subject: "Kaname｜登録の確定の途中の片付けが落ちました",
-        text: `メールの確認のリンクで登録を確定する途中で落ち、そのあとの${what}ができませんでした。\n作りかけの会社・本人が残っているか、申し込みが使い終わりのままです。セキュリティの記録（${SIGNUP_CLEANUP_FAILED}）を確かめてください（K-52・D-128.167）。`,
+        text: `メールの確認のリンクで登録を確定する途中で落ち、そのあとの${what}ができませんでした。\n作りかけの会社・本人が残っているか、申し込みが使い終わりのままです。セキュリティの記録（${SIGNUP_CLEANUP_FAILED}）を確かめてください（K-52・D-128.167）。\n会社の id：${ids.tenant_id ?? "不明"}\n認証の本人の id：${ids.auth_user_id ?? "不明"}`,
       })
       .catch(() => console.error("[verify-email] 運営への知らせを送れなかった（片付けの失敗）"));
   };
@@ -227,29 +257,36 @@ export function verifyEmailFeature(d: VerifyEmailDeps) {
     try {
       done = await confirm(p, password);
     } catch (e) {
-      const f = e instanceof ConfirmFailed ? e : new ConfirmFailed(null, null, e);
+      const f = e instanceof ConfirmFailed ? e : new ConfirmFailed(null, e);
       console.error(`[verify-email] 確定できなかった: ${errName(f.reason)}`);
-      // 同じメールの本人が別の道でできた（signUp が重複で落ちた）：何も消さない。申し込みは使い終わりのまま（HIGH-1）
+      // 同じメールの本人が別の道でできた（パスワードが合わない・signUp が重複で落ちた）：何も消さない。申し込みは使い終わりのまま（HIGH-1・M-B）
       if (f.otherPath) {
         await afterwards("パスワードの片付け", () => sealOffPending(d.authPool, claim.tokenHash));
         return reply(409, "E-CONF-001");
       }
       // 途中まで残さない：この確定で作った本人と会社の中身を片付ける（会社は印を付けて残す・D-128.167）。
       // 片付けと印を戻すのは別々に。片付けが落ちたら印は戻さない（作りかけが残ったまま押し直させない）
+      const ids: { tenant_id: string | null } = { tenant_id: null };
       if (f.made) {
+        let done2: "cleaned" | "kept";
         try {
-          await dropHalfMadeUser(d.authPool, f.made, f.tenant);
+          done2 = await cleanUp(f.made, ids);
         } catch (e2) {
           console.error(`[verify-email] 作りかけを片付けられなかった: ${errName(e2)}`);
-          await alertOps("作りかけの会社と本人の片付け");
+          await alertOps("作りかけの会社と本人の片付け", { tenant_id: ids.tenant_id, auth_user_id: f.made });
           return reply(500, "E-PAGE-003");
+        }
+        // 本人は別の会社に入っている（確定の途中に招待などの別の道で入った）：本人は残し、二重に作らない
+        if (done2 === "kept") {
+          await afterwards("パスワードの片付け", () => sealOffPending(d.authPool, claim.tokenHash));
+          return reply(409, "E-CONF-001");
         }
       }
       try {
         await releasePendingClaim(d.authPool, claim.tokenHash);
       } catch (e3) {
         console.error(`[verify-email] 申し込みの印を戻せなかった: ${errName(e3)}`);
-        await alertOps("申し込みの印を戻す処理");
+        await alertOps("申し込みの印を戻す処理", { tenant_id: ids.tenant_id, auth_user_id: f.made });
       }
       return reply(500, "E-PAGE-003");
     }

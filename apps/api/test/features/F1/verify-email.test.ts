@@ -1077,9 +1077,10 @@ describe("K-52 確定の途中の失敗と、ログイン中かの見分け（�
 });
 
 describe("K-52 片付けの関数の守りと、確定を始めた後の招待（2 回目のレビュー HIGH-1・HIGH-2・D-128.167）", () => {
-  /** 片付けの関数は、確定の処理の役（認証の接続 kaname_auth）だけが呼べる。会社の id と本人の id で呼ぶ */
+  /** 片付けの関数は、確定の処理の役（認証の接続 kaname_auth）だけが呼べる。会社の id と本人の id で呼ぶ。
+   *  関数は kaname_auth のスキーマに置く（3 回目のレビュー：kaname_auth に app のスキーマの usage を渡さない・K52-API-049〜051） */
   const dropAs = (pool: pg.Pool, tenantId: string, authUserId: string) =>
-    pool.query("select app.drop_half_made_company($1::uuid, $2)", [tenantId, authUserId]);
+    pool.query("select kaname_auth.drop_half_made_company($1::uuid, $2)", [tenantId, authUserId]);
   const contents = async (tenantId: string): Promise<Record<string, number | Date | null>> => {
     const out: Record<string, number> = {};
     for (const table of ["members", "permissions", "clones"])
@@ -1197,5 +1198,361 @@ describe("K-52 片付けの関数の守りと、確定を始めた後の招待�
       ms.map((m) => m.tenant_id),
       "招いた会社の所属も残る",
     ).toEqual([bm.tenant_id]);
+  });
+});
+
+describe("K-52 片付けが落ちたとき・片付ける相手の見分け（3 回目のレビュー M-A・M-B・M-C・M-D・M-E）", () => {
+  const CLEANUP_FAILED = "signup_cleanup_failed"; // 片付けが落ちた出来事（security_events.kind_id）
+  const OTHER_PW = "another-horse-battery-9"; // 別の道の本人のパスワード（申し込みの PW と違う・M-B）
+  const dbNowAdmin = async () => (await admin.query<{ now: Date }>("select now() as now")).rows[0]!.now;
+  const tenantByName = async (name: string) =>
+    (
+      await admin.query<{ id: string; half_made_at: Date | null }>(
+        "select id, half_made_at from tenants where name = $1",
+        [name],
+      )
+    ).rows;
+  const countIn = async (table: "members" | "permissions" | "clones", tenantId: string) =>
+    (await admin.query(`select 1 from ${table} where tenant_id = $1`, [tenantId])).rowCount ?? 0;
+  /** 同意を移す所で落とす（K52-API-038 と同じ形）。会社と本人ができた後に確定を落とすための引き金。外す関数を返す */
+  const failAtConsents = async (name: string, e: string) => {
+    await admin.query(
+      "update kaname_auth.pending_signup set terms_version_id = $2, privacy_version_id = $3, consented_at = now() where email = $1",
+      [e, termsId, privacyId],
+    );
+    await admin.query(`create or replace function public.${name}() returns trigger language plpgsql as $$
+      begin
+        if exists (select 1 from kaname_auth."user" u where u.id = new.auth_user_id and u.email = '${e}') then
+          raise exception 'K-52 の試験：同意を移せない';
+        end if;
+        return new;
+      end $$`);
+    await admin.query(
+      `create trigger ${name} before insert on terms_consents for each row execute function public.${name}()`,
+    );
+    return async () => {
+      await admin.query(`drop trigger if exists ${name} on terms_consents`);
+      await admin.query(`drop function if exists public.${name}()`);
+    };
+  };
+  /** セッションの写し（public.sessions）への書き込みを、その会社の分だけ変える。mode=raise は落とす（セッションの hook が落ちる・M-A）、
+   *  mode=skip は黙って書かない（セッションが無く、会社がセッションから引けない・M-C）。外す関数を返す */
+  const tamperSessions = async (name: string, company: string, mode: "raise" | "skip") => {
+    const act = mode === "raise" ? "raise exception 'K-52 の試験：セッションを写せない'" : "return null";
+    await admin.query(`create or replace function public.${name}() returns trigger language plpgsql as $$
+      begin
+        if exists (select 1 from tenants t where t.id = new.tenant_id and t.name = '${company}') then ${act}; end if;
+        return new;
+      end $$`);
+    await admin.query(
+      `create trigger ${name} before insert on sessions for each row execute function public.${name}()`,
+    );
+    return async () => {
+      await admin.query(`drop trigger if exists ${name} on sessions`);
+      await admin.query(`drop function if exists public.${name}()`);
+    };
+  };
+  /** 片付けが落ちたことが残っているか：security_events に signup_cleanup_failed があり、detail に会社の id と認証の本人の id が入り、
+   *  メールアドレス（とその前半）は入らない（M-D）。運営への知らせ（alertOps・関門 C6）が出ていて、それにもメールアドレスが入らない */
+  const expectCleanupFailedRecorded = async (
+    since: Date,
+    tenantId: string,
+    userId: string,
+    e: string,
+    mailFrom: number,
+  ) => {
+    const ev = await admin.query<{ d: string }>(
+      "select detail::text as d from security_events where kind_id = $1 and occurred_at >= $2",
+      [CLEANUP_FAILED, since],
+    );
+    const mine = ev.rows.filter((x) => x.d.includes(tenantId) && x.d.includes(userId));
+    expect(
+      mine.length,
+      `security_events に ${CLEANUP_FAILED}（detail に会社の id と本人の id）`,
+    ).toBeGreaterThanOrEqual(1);
+    for (const x of mine) {
+      expect(x.d, "detail にメールアドレスを入れない（M-D）").not.toContain(e);
+      expect(x.d).not.toContain(e.split("@")[0]!);
+    }
+    const alerts = mailsTo(OPS_EMAIL, mailFrom);
+    expect(alerts.length, "運営への知らせ（alertOps）が出る").toBeGreaterThanOrEqual(1);
+    for (const m of alerts) expect(`${m.subject}\n${m.text}`, "知らせにメールアドレスを入れない").not.toContain(e);
+  };
+  /** 片付けが落ちたまま残った会社の中身と本人を、試験の後で消す（G-10。片付けの関数に頼らず、関数と同じ順で直に） */
+  const scrub = async (tenantId: string | null, userId: string | null) => {
+    if (tenantId) {
+      await admin.query("update tenants set half_made_at = coalesce(half_made_at, now()) where id = $1", [tenantId]);
+      for (const table of ["sessions", "notifications", "terms_consents", "clones", "permissions", "members", "scopes"])
+        await admin.query(`delete from ${table} where tenant_id = $1`, [tenantId]);
+    }
+    if (userId) await admin.query('delete from kaname_auth."user" where id = $1', [userId]);
+  };
+  /** 確定の本人の追加（1 本目）だけを勧告ロックで待たせ、その間に別の道の本人を足してから放す（K52-API-042 と同じ段取り） */
+  const raceWithOtherPath = async (
+    t: string,
+    e: string,
+    keys: [number, number],
+    name: string,
+    otherPath: () => Promise<void>,
+  ) => {
+    const [LOCK_KEY, FIRST_KEY] = keys;
+    const holder = await admin.connect();
+    await holder.query("select pg_advisory_lock($1)", [LOCK_KEY]);
+    await admin.query(`create or replace function kaname_auth.${name}() returns trigger language plpgsql as $$
+      begin
+        if new.email = '${e}' and pg_try_advisory_xact_lock(${FIRST_KEY}) then perform pg_advisory_xact_lock(${LOCK_KEY}); end if;
+        return new;
+      end $$`);
+    await admin.query(
+      `create trigger ${name} before insert on kaname_auth."user" for each row execute function kaname_auth.${name}()`,
+    );
+    let released = false;
+    try {
+      const pendingVerify = verify(t);
+      await expect
+        .poll(
+          async () =>
+            (
+              await admin.query("select 1 from pg_locks where locktype = 'advisory' and objid = $1 and not granted", [
+                LOCK_KEY,
+              ])
+            ).rowCount,
+          { timeout: 15_000 },
+        )
+        .toBe(1);
+      await otherPath();
+      await holder.query("select pg_advisory_unlock($1)", [LOCK_KEY]);
+      released = true;
+      return await pendingVerify;
+    } finally {
+      if (!released) await holder.query("select pg_advisory_unlock($1)", [LOCK_KEY]);
+      holder.release();
+      await admin.query(`drop trigger if exists ${name} on kaname_auth."user"`);
+      await admin.query(`drop function if exists kaname_auth.${name}()`);
+    }
+  };
+
+  it(`K52-API-043 片付け（会社の中身の片付け drop_half_made_company）が落ちる：500・E-PAGE-003。申し込みの印は戻さない。security_events に ${CLEANUP_FAILED}（detail に会社の id と本人の id・メールは入れない）。運営に知らせる（M-E・M-D）`, async () => {
+    const e = email("cleanup-company-fail");
+    const company = `${RUN}-片付けで落ちる社`;
+    const t = await pend("cleanup-company-fail", { company });
+    const undo = await failAtConsents("k52_cf_company", e);
+    const since = await dbNowAdmin();
+    const mailFrom = mails.length;
+    // 片付けを落とす：確定の処理の役（kaname_auth）から片付けの関数を呼べなくする（DB の権限を一時的に外す）
+    await admin.query("revoke execute on function kaname_auth.drop_half_made_company(uuid, text) from kaname_auth");
+    const spy = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    let tid: string | null = null;
+    let uid: string | null = null;
+    try {
+      const r = await verify(t);
+      expect(r.status, await r.clone().text()).toBe(500);
+      expect((await json(r))["code"]).toBe("E-PAGE-003");
+      const ts = await tenantByName(company);
+      expect(ts, "会社の行はある").toHaveLength(1);
+      tid = ts[0]!.id;
+      const left = await admin.query<{ u: string }>("select auth_user_id as u from members where tenant_id = $1", [
+        tid,
+      ]);
+      expect(left.rowCount, "片付けが落ちたので、人は残っている").toBe(1);
+      uid = left.rows[0]!.u;
+      expect((await pending(e))!.consumed_at, "印は戻さない（作りかけが残ったまま押し直させない）").not.toBeNull();
+      await expectCleanupFailedRecorded(since, tid, uid, e, mailFrom);
+    } finally {
+      spy.mockRestore();
+      await admin.query("grant execute on function kaname_auth.drop_half_made_company(uuid, text) to kaname_auth");
+      await undo();
+      await scrub(tid, uid);
+    }
+  });
+
+  it(`K52-API-044 片付け（認証の本人の削除）が落ちる：500・E-PAGE-003。申し込みの印は戻さない。security_events に ${CLEANUP_FAILED}（detail に会社の id と本人の id・メールは入れない）。運営に知らせる（M-E・M-D）`, async () => {
+    const e = email("cleanup-user-fail");
+    const company = `${RUN}-本人の片付けで落ちる社`;
+    const t = await pend("cleanup-user-fail", { company });
+    const undo = await failAtConsents("k52_cf_user", e);
+    const since = await dbNowAdmin();
+    const mailFrom = mails.length;
+    // 本人の削除を落とす：確定の処理の役（kaname_auth）から認証の本人の表を消せなくする（DB の権限を一時的に外す）
+    await admin.query('revoke delete on kaname_auth."user" from kaname_auth');
+    const spy = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    let tid: string | null = null;
+    let uid: string | null = null;
+    try {
+      const r = await verify(t);
+      expect(r.status, await r.clone().text()).toBe(500);
+      expect((await json(r))["code"]).toBe("E-PAGE-003");
+      const ts = await tenantByName(company);
+      expect(ts).toHaveLength(1);
+      tid = ts[0]!.id;
+      const users = await usersOf(e);
+      expect(users, "本人の削除が落ちたので、本人は残っている").toHaveLength(1);
+      uid = users[0]!.id;
+      expect((await pending(e))!.consumed_at, "印は戻さない").not.toBeNull();
+      await expectCleanupFailedRecorded(since, tid, uid, e, mailFrom);
+    } finally {
+      spy.mockRestore();
+      await admin.query('grant delete on kaname_auth."user" to kaname_auth');
+      await undo();
+      await scrub(tid, uid);
+    }
+  });
+
+  it("K52-API-045 会社ができた後（セッションの hook）で signUp が落ちる：E-CONF-001 にしない（500・E-PAGE-003）。この確定で作った本人は消え、会社は「作りかけで止めた」印付きで中身が片付く。印を戻し、押し直すと確定できる（M-A）", async () => {
+    const e = email("session-hook-fail");
+    const company = `${RUN}-セッションで落ちる社`;
+    const t = await pend("session-hook-fail", { company });
+    const undo = await tamperSessions("k52_session_raise", company, "raise");
+    const spy = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    try {
+      const r = await verify(t);
+      const j = await json(r);
+      expect(j["code"], "この確定で作った本人を、別の道の本人と取り違えない").not.toBe("E-CONF-001");
+      expect(r.status).toBe(500);
+      expect(j["code"]).toBe("E-PAGE-003");
+    } finally {
+      spy.mockRestore();
+      await undo();
+    }
+    expect(await usersOf(e), "この確定で作った本人は消える").toHaveLength(0);
+    const ts = await tenantByName(company);
+    expect(ts, "会社の行は消さない（D-128.167）").toHaveLength(1);
+    expect(ts[0]!.half_made_at, "「作りかけで止めた」印が付く").not.toBeNull();
+    for (const table of ["members", "permissions", "clones"] as const)
+      expect(await countIn(table, ts[0]!.id), `${table} は片付ける`).toBe(0);
+    expect((await pending(e))!.consumed_at, "印を戻す（もう一度押せば確定できる）").toBeNull();
+    const d = await verifyOk(t);
+    const ms = await membersOf(await userIdOf(String(d["email"])));
+    expect(ms.map((m) => m.tenant_name)).toEqual([company]);
+    const live = (await tenantByName(company)).filter((x) => x.half_made_at === null);
+    expect(live, "印の無い会社がちょうど 1 つ").toHaveLength(1);
+    expect(live[0]!.id).toBe(ms[0]!.tenant_id);
+  });
+
+  it("K52-API-046 確定の途中に、同じメールの本人が招待の受け入れ（別の道・パスワードが違う）でできる：その本人と所属を消さない。見分けは開いたパスワードで credential が合うか（M-B）", async () => {
+    const e = email("race-invite-otherpw");
+    const t = await pend("race-invite-otherpw");
+    const boss = await verifyOk(await pend("race-invite-otherpw-boss", { company: `${RUN}-招く会社 3` }));
+    const bm = (await membersOf(await userIdOf(String(boss["email"]))))[0]!;
+    const repo = await createRepository(fixturePool);
+    const inv = await createInvitation(
+      repo,
+      { tenantId: bm.tenant_id, userId: bm.id, role: "member" },
+      { email: e, roleId: "staff" },
+    );
+    let xId = "";
+    const spy = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    let r!: Response;
+    try {
+      r = await raceWithOtherPath(t, e, [52046, 52047], "k52_race_invite_pw", async () => {
+        const ac = await req("POST", `/api/auth-ext/invitations/${inv.token}/accept`, {
+          name: "招かれた 人",
+          password: OTHER_PW,
+        });
+        expect(ac.status, await ac.clone().text()).toBe(201);
+        const u = await usersOf(e);
+        expect(u, "招待で入った本人がいる（確定の本人はまだ足されていない）").toHaveLength(1);
+        xId = u[0]!.id;
+      });
+    } finally {
+      spy.mockRestore();
+    }
+    expect(r.status, await r.clone().text()).toBe(409);
+    expect((await json(r))["code"]).toBe("E-CONF-001");
+    expect(
+      (await usersOf(e)).map((u) => u.id),
+      "パスワードが違う本人（招待で入った人）は消さない",
+    ).toEqual([xId]);
+    expect(
+      (await membersOf(xId)).map((m) => m.tenant_id),
+      "その所属も消さない",
+    ).toEqual([bm.tenant_id]);
+    expect(await countIn("members", bm.tenant_id), "招いた会社の人は 2 人のまま").toBe(2);
+  });
+
+  it("K52-API-047 確定の途中に、同じメールの本人が別の道の登録（作ったばかりの 1 人の会社・パスワードが違う）でできる：会社の守り（数分以内・1 人・運営でない）を全部すり抜ける形でも、credential が合わない本人と会社は片付けない（M-B）", async () => {
+    const e = email("race-signup-otherpw");
+    const t = await pend("race-signup-otherpw");
+    const otherCompany = `${RUN}-別の道の 1 人の会社`;
+    let xId = "";
+    const spy = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    let r!: Response;
+    try {
+      r = await raceWithOtherPath(t, e, [52048, 52049], "k52_race_signup_pw", async () => {
+        const x = await signUp(authFixture.auth, {
+          email: e,
+          password: OTHER_PW,
+          name: "別の道 三郎",
+          companyName: otherCompany,
+        });
+        xId = x.userId;
+      });
+    } finally {
+      spy.mockRestore();
+    }
+    expect(r.status, await r.clone().text()).toBe(409);
+    expect((await json(r))["code"]).toBe("E-CONF-001");
+    expect(
+      (await usersOf(e)).map((u) => u.id),
+      "パスワードが違う本人は消さない",
+    ).toEqual([xId]);
+    const ts = await tenantByName(otherCompany);
+    expect(ts).toHaveLength(1);
+    expect(ts[0]!.half_made_at, "別の道の会社に「作りかけ」の印を付けない").toBeNull();
+    expect(
+      (await membersOf(xId)).map((m) => m.tenant_id),
+      "その所属も消さない",
+    ).toEqual([ts[0]!.id]);
+    for (const table of ["permissions", "clones"] as const)
+      expect(await countIn(table, ts[0]!.id), `${table} も消さない`).toBeGreaterThan(0);
+  });
+
+  it(`K52-API-048 片付けるものが残っているのに、会社がセッションから引けない（セッションが無い）：会社は members.auth_user_id から引いて片付ける。片付けられないなら 500・${CLEANUP_FAILED}・印を戻さない。「何も片付けずに印だけ戻す」にしない（M-C）`, async () => {
+    const e = email("no-session");
+    const company = `${RUN}-セッションの無い社`;
+    const t = await pend("no-session", { company });
+    const since = await dbNowAdmin();
+    const mailFrom = mails.length;
+    const undo = await tamperSessions("k52_session_skip", company, "skip");
+    const spy = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    try {
+      const r = await verify(t);
+      expect(r.status, await r.clone().text()).toBe(500);
+      expect((await json(r))["code"]).toBe("E-PAGE-003");
+    } finally {
+      spy.mockRestore();
+      await undo();
+    }
+    const ts = await tenantByName(company);
+    expect(ts, "会社の行はある").toHaveLength(1);
+    const tid = ts[0]!.id;
+    const users = await usersOf(e);
+    const leftMembers = await admin.query<{ u: string }>("select auth_user_id as u from members where tenant_id = $1", [
+      tid,
+    ]);
+    const consumed = (await pending(e))!.consumed_at;
+    const cleaned = ts[0]!.half_made_at !== null && leftMembers.rowCount === 0 && users.length === 0;
+    expect(
+      !cleaned && consumed === null,
+      "何も片付けずに印だけ戻してはいけない（作りかけが残ったまま押し直せる）",
+    ).toBe(false);
+    if (cleaned) {
+      // 片付けられた：印を戻し、押し直すと確定できる
+      expect(consumed, "片付けたら印を戻す").toBeNull();
+      const d = await verifyOk(t);
+      const ms = await membersOf(await userIdOf(String(d["email"])));
+      expect(ms.map((m) => m.tenant_name)).toEqual([company]);
+      expect((await tenantByName(company)).filter((x) => x.half_made_at === null)).toHaveLength(1);
+    } else {
+      // 片付けられなかった：印は戻さず、片付けの失敗として残し、運営に知らせる
+      expect(consumed, "印は戻さない").not.toBeNull();
+      const uid = users[0]?.id ?? leftMembers.rows[0]?.u ?? "";
+      expect(uid, "残った本人の id").not.toBe("");
+      try {
+        await expectCleanupFailedRecorded(since, tid, uid, e, mailFrom);
+      } finally {
+        await scrub(tid, users[0]?.id ?? null);
+      }
+    }
   });
 });

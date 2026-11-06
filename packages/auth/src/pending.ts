@@ -251,46 +251,45 @@ export type AuthPool = pg.Pool;
 export async function markEmailVerified(pool: pg.Pool, userId: string): Promise<void> {
   await pool.query('update kaname_auth."user" set "emailVerified" = true where id = $1', [userId]);
 }
-/** DB の今の時刻（確定を始めた時刻をこれで取る。片付けの関数の「作られて数分以内」と同じ時計・D-128.130） */
-export async function dbNow(pool: pg.Pool): Promise<Date> {
-  const r = await pool.query<{ now: Date }>("select now() as now");
-  return r.rows[0]!.now;
-}
-/** この確定で作った本人（メールが同じで、確定を始めた時刻より後にできた本人）。signUp の中（会社を作る hook）で落ちて id が返らなかったときに引く。
- *  呼ぶのは signUp が本人を足せた後に落ちたときだけ（本人を足せなかったとき＝重複は、ほかの道の本人なので引かない）。
- *  始めた時刻より前からいる本人は返さない */
-export async function userMadeSince(pool: pg.Pool, email: string, since: Date): Promise<string | null> {
-  const r = await pool.query<{ id: string }>(
-    'select id from kaname_auth."user" where email = $1 and "createdAt" >= $2 order by "createdAt" desc limit 1',
-    [normalizeEmail(email), since],
-  );
+/** そのメールの認証の本人の id（メールは正規化して引く）。無ければ null */
+export async function authUserIdByEmail(pool: pg.Pool, email: string): Promise<string | null> {
+  const r = await pool.query<{ id: string }>('select id from kaname_auth."user" where email = $1 limit 1', [
+    normalizeEmail(email),
+  ]);
   return r.rows[0]?.id ?? null;
 }
-/** その本人の会社の人（members）が、どこかの会社に残っているか（確定の処理の役だけが読める関数 app.auth_user_has_members・migration 0087） */
+/** その本人のパスワードのアカウント（Better Auth の credential）のハッシュ。アカウントが無ければ null（会社を作る hook で落ちた本人は、
+ *  アカウントを足す前に止まるので持たない）。ハッシュの照合は呼ぶ側が Better Auth の password.verify で行う */
+export async function credentialHashOf(pool: pg.Pool, userId: string): Promise<string | null> {
+  const r = await pool.query<{ password: string | null }>(
+    'select password from kaname_auth.account where "userId" = $1 and "providerId" = \'credential\' order by "createdAt" desc limit 1',
+    [userId],
+  );
+  return r.rows[0]?.password ?? null;
+}
+/** その本人の会社の人（members）が、どこかの会社に残っているか（確定の処理の役だけが呼べる kaname_auth.auth_user_has_members・migration 0087） */
 export async function authUserHasMembers(authPool: pg.Pool, userId: string): Promise<boolean> {
-  const r = await authPool.query<{ has: boolean }>("select app.auth_user_has_members($1) as has", [userId]);
+  const r = await authPool.query<{ has: boolean }>("select kaname_auth.auth_user_has_members($1) as has", [userId]);
   return r.rows[0]?.has === true;
 }
-/** 確定の途中で失敗したときの片付け（D-128.167）。この確定で作った本人（id で指す。メールで探して消さない）について、
- *  ① 会社が分かれば app.drop_half_made_company で、会社は消さずに「作りかけで止めた」印を付けて中身だけを片付ける（守りは関数の中で 3 重）
- *  ② その本人の会社の人がどの会社にも残っていないときだけ、認証の本人を消す（セッション・アカウントは外部キーの cascade で一緒に消える）。
- *  どちらも確定の処理の役（認証の接続 kaname_auth）で呼ぶ。片付けたかを返す（会社の中身・本人） */
-export async function dropHalfMadeUser(
-  authPool: pg.Pool,
-  userId: string,
-  tenantId: string | null,
-): Promise<{ company: boolean; user: boolean }> {
-  let company = false;
-  if (tenantId) {
-    const r = await authPool.query<{ n: number }>("select app.drop_half_made_company($1::uuid, $2) as n", [
-      tenantId,
-      userId,
-    ]);
-    company = (r.rows[0]?.n ?? 0) > 0;
-  }
-  if (await authUserHasMembers(authPool, userId)) return { company, user: false };
+/** この確定で作った本人の会社（片付ける相手）。セッションからでなく members.auth_user_id から引く（kaname_auth.half_made_tenant_of・M-C）。
+ *  人がその本人 1 人だけの会社だけを返す。無ければ null */
+export async function halfMadeTenantOf(authPool: pg.Pool, userId: string): Promise<string | null> {
+  const r = await authPool.query<{ id: string | null }>("select kaname_auth.half_made_tenant_of($1) as id", [userId]);
+  return r.rows[0]?.id ?? null;
+}
+/** 作りかけの会社に「作りかけで止めた」印を付けて中身を片付ける（kaname_auth.drop_half_made_company・守りは関数の中で 3 重・D-128.167）。
+ *  片付けたら true。守りで外れて何もしなかったら false */
+export async function dropHalfMadeCompany(authPool: pg.Pool, tenantId: string, userId: string): Promise<boolean> {
+  const r = await authPool.query<{ n: number }>("select kaname_auth.drop_half_made_company($1::uuid, $2) as n", [
+    tenantId,
+    userId,
+  ]);
+  return (r.rows[0]?.n ?? 0) > 0;
+}
+/** 認証の本人を消す（セッション・アカウントは外部キーの cascade で一緒に消える）。id で指す（メールで探して消さない） */
+export async function deleteAuthUser(authPool: pg.Pool, userId: string): Promise<void> {
   await authPool.query('delete from kaname_auth."user" where id = $1', [userId]);
-  return { company, user: true };
 }
 /** セッションを閉じる理由：別のアカウントでログイン中に確定した（ログアウトと分ける・migration 0087） */
 export const SIGNUP_OTHER_ACCOUNT = "signup_other_account";
