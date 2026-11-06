@@ -5085,8 +5085,8 @@
     "ci"
    ],
    "sections": {
-    "目的": "K-107 のテスターのレビュー（2026-11-06）の LOW をまとめた 1 本。どれも安全側（全部に倒れる・赤になる）で、すぐの害は無い。\n\n- L1：同じ値が 2 か所（108 の番号：build_index.py の AFFECTS_FROM と ci_scope.json／広げる理由の 4 つ：CI_WIDE と WIDE／パッケージの一覧：packages() と workspace()）\n- L2：比べる元の枝が 2 か所（.act-ci.env の ACT_BASE_BRANCH と pm_merge の --base・PM_MERGE_BASE）\n- L3：全部の回にも --passWithNoTests が付き、流れた数の突き合わせを全部の回で見ていない。全部の回でも 0 本なら赤\n- L4：vitest の globalSetup（packages/db/test/global-lock.ts）が全部に倒れるのは、たまたま @kaname/db が共通の部品だから。full.ci にはっきり書く\n- L6：チケットの番号をコミットの本文全体から拾うので、本文に別の番号があると全部に倒れる（題だけから拾う）\n- L7：unit の組の download-artifact の段に !cancelled() が無い（前からある）\n- act_ci.sh の .act-ci.env を eval せずに値を取り出す・`--base=\"$CI_BASE_INPUT\"` の形にする\n- L8：.squawk.toml の外した規則の数の記録（9 種ではなく 8 種）",
-    "完了の条件": "- [ ] 上の 8 つを直し、それぞれ試験の行で受ける\n- [ ] workflow の全部（act）が緑",
+    "目的": "K-107 のテスターのレビュー（2026-11-06）の LOW をまとめた 1 本。どれも安全側（全部に倒れる・赤になる）で、すぐの害は無い。\n\n- L1：同じ値が 2 か所（108 の番号：build_index.py の AFFECTS_FROM と ci_scope.json／広げる理由の 4 つ：CI_WIDE と WIDE／パッケージの一覧：packages() と workspace()）\n- L2：比べる元の枝が 2 か所（.act-ci.env の ACT_BASE_BRANCH と pm_merge の --base・PM_MERGE_BASE）\n- L3：全部の回にも --passWithNoTests が付き、流れた数の突き合わせを全部の回で見ていない。全部の回でも 0 本なら赤\n- L4：vitest の globalSetup（packages/db/test/global-lock.ts）が全部に倒れるのは、たまたま @kaname/db が共通の部品だから。full.ci にはっきり書く\n- L6：チケットの番号をコミットの本文全体から拾うので、本文に別の番号があると全部に倒れる（題だけから拾う）\n- L7：unit の組の download-artifact の段に !cancelled() が無い（前からある）\n- act_ci.sh の .act-ci.env を eval せずに値を取り出す・`--base=\"$CI_BASE_INPUT\"` の形にする\n- L8：.squawk.toml の外した規則の数の記録（9 種ではなく 8 種）\n- pm_merge.sh の終わり方：5 本目で --ci が無いとき・取り込んだ後に状態のファイルの書き込みが失敗したときは、取り込みは済んでいるのに 1 で終わる（ほかの 1 は「取り込んでいない」）。別の番号に分ける（K-107 のテスターの 2 回目のレビュー）",
+    "完了の条件": "- [ ] 上の 9 つを直し、それぞれ試験の行で受ける\n- [ ] workflow の全部（act）が緑",
     "前提と制約": "- 安全側の動き（全部に倒す・赤）は変えない",
     "実施事項": "- [ ] 作る役：試験の行",
     "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 全部の回で 0 本なら赤 | ① 単体 | 試験 0 本の写しで全部の回を流す | |",
