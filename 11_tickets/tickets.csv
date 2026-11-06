@@ -394,7 +394,6 @@ K-89,Claude Code を入れてログインする（PC の画面から Bridge に�
 
 前の「PC をつなぐ」画面（/setup/bridge/legacy・D-128.164）にある実装を使う（D-128.150）。新しい契約の口は作らない（自己診断は K-57 の口が運ぶ）。","- 下の 2 つの表の「このチケット」のマスと、全部の分岐のテストが緑（表の「テスト」の列の行 ID がどれも緑）
 - 前の画面 `apps/web/app/(wizard)/setup/bridge/legacy/page.tsx`（K-57 の取り込みの後の住所・D-128.164）の「Claude Code が要る」の部分（下の作り方の行）が、K-57 の新しい画面 `apps/web/features/F3/connect-pc/` の部品に移り、前の画面からその部分が消えている（前の画面のほかの部分は K-91 が移す。AI が使うブラウザの部分とその口は、後のフェーズの K-90 を作るまで前の画面に残し、前の画面を消すのも K-90・D-128.154・D-128.164）
-- 新しい画面から前の画面（/setup/bridge/legacy）への導線が 1 つある（D-128.164）
 - 前の画面の試験のうち、このチケットの分（下の「使う既存の実装」の試験）が新しい画面に向けて動き、緑
 - Bridge のログインの口・入れる口（apps/bridge/src/local.ts の /check・/install-claude・/install-progress・/login-claude・/login-code・/login-cancel）の単体のテストが緑
 - 単体のテスト（下の表で「このチケット」が受け持つマスと、全部の分岐）が本物の DB と本物のブラウザの上で緑
