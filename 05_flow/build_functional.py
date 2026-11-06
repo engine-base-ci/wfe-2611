@@ -162,7 +162,8 @@ for s in F["screens"]:
     h1 = re.search(r"<h1[^>]*>([^<]*)</h1>", html); h1 = h1.group(1).strip() if h1 else s["name"]
     subs = [x["label"] for x in sub.get(sid, [])]
     tb = tables_of(s["objects"])
-    apis = (apis_from_table(sid) if sid in _sa.SCREEN_API else [api_for_act(a, s) for a in s["acts"] if a in acts]) + [{"role": "transition", "method": "navigate", "path_draft": ROUTE_OF.get(t, f"/{t}"), "to_screen": t, "source": s["source"][:1]} for t in trans]
+    _static = getattr(_sa, "STATIC_SCREENS", {})
+    apis = ([] if sid in _static else apis_from_table(sid) if sid in _sa.SCREEN_API else [api_for_act(a, s) for a in s["acts"] if a in acts]) + [{"role": "transition", "method": "navigate", "path_draft": ROUTE_OF.get(t, f"/{t}"), "to_screen": t, "source": s["source"][:1]} for t in trans]
     screens.append({"id": sid, "name": s["name"], "purpose": s["purpose"], "acts": s["acts"], "objects": s["objects"], "primary_action": s.get("primary_action"),
                     "fields": [], "layout": NAV.get("layout", {}).get("by_screen", {}).get(sid, "single"), "actions": [s.get("primary_action")] if s.get("primary_action") else [],
                     "states": states, "transitions": trans, "responsive": "375/768/1024/1440（横溢れ 0・本文 720 以上）", "responsive_breakpoints": ["375", "768", "1024", "1440"],
@@ -235,7 +236,8 @@ for f_ in features:
 matrix = [{"screen_id": s["id"], "screen_name": s["name"], "features": f_by_s.get(s["id"], []), "entities": [f'{e} {_tbl_by_id[e]}' for e in s["related_entities"]],
            "related_apis": [f'{a["method"]} {a["path_draft"]}' for a in s["required_apis"]], "access_roles": s["access_roles"]} for s in screens]
 tm = {"version": "v3.1", "created_at": TODAY, "summary": {"screens_count": len(screens), "features_count": len(features), "entities_count": len(entities),
-      "uncovered_screens": [s["id"] for s in screens if not s["required_apis"]], "uncovered_features": [f_["id"] for f_ in features if not f_["related_screens"] and f_["category"] == "job"]},
+      "uncovered_screens": [s["id"] for s in screens if not s["required_apis"] and s["id"] not in getattr(_sa, "STATIC_SCREENS", {})],
+      "static_screens": [{"screen_id": k, "reason": v.get("reason", ""), "source": v.get("source", [])} for k, v in sorted(getattr(_sa, "STATIC_SCREENS", {}).items())], "uncovered_features": [f_["id"] for f_ in features if not f_["related_screens"] and f_["category"] == "job"]},
       "matrix": matrix, "screen_to_apis": [{"screen_id": s["id"], "screen_name": s["name"], "required_apis": [{k: v for k, v in a.items() if k in ("role", "method", "path_draft", "act", "to_screen")} for a in s["required_apis"]]} for s in screens],
       "entity_to_usages": [{"entity_id": e["id"], "entity_name": e["table_name"], "used_by_screens": [s["id"] for s in screens if e["id"] in s["related_entities"]], "used_by_features": [f_["id"] for f_ in features if e["id"] in f_["related_entities"]]} for e in entities],
       "feature_to_dependencies": [{"feature_id": f_["id"], "feature_name": f_["name"], "screens": f_["related_screens"], "entities": f_["related_entities"], "api_endpoints_draft": sorted({f'{a["method"]} {a["path_draft"]}' for a in f_["api_endpoints"]})} for f_ in features]}

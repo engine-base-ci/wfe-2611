@@ -3,10 +3,13 @@
  "skill": "api-design",
  "frozen_at": "2026-11-06",
  "summary": {
-  "total_screens": 35,
+  "total_screens": 36,
   "total_apis": 363,
   "coverage_rate": 1.0,
   "uncovered_screens": [],
+  "static_screens": [
+   "legal"
+  ],
   "acts_without_endpoint": []
  },
  "screens": [
@@ -46,6 +49,16 @@
    ],
    "coverage_status": "OK",
    "missing": []
+  },
+  {
+   "screen_id": "legal",
+   "screen_name": "規約・プライバシーポリシー",
+   "mock_path": null,
+   "required_apis": [],
+   "transitions": [],
+   "coverage_status": "STATIC",
+   "missing": [],
+   "static_reason": "規約・プライバシーポリシーの文面は、ひな形（apps/web/content/legal/<kind>-v<版>.md）と設定（legalValues）だけで埋め、DB も API も読まない。画面だけを立ち上げる CI の段でも開け、?v= で古い版も出せるようにするため。今の版の名前と url は、リンクを出す登録の画面と同意し直しの画面が getCurrentTerms で取る"
   },
   {
    "screen_id": "verify-email",

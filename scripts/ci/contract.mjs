@@ -168,6 +168,8 @@ export function gen(root = ROOT) {
       auth: e.auth?.role ?? "member", rateLimit: { perMinute: Number(rl?.[1] ?? 60), key: rl?.[2] ?? "user" },
       chokePoints: e.choke_points ?? [], errors: (e.outputs_4xx ?? []).map((x) => x.status), acts: e.acts ?? [], screens: e.screens ?? [],
       perm: permOf({ ...e, path: hono }, d.tag || slug(p).split("_")[0], m),
+      termsOpen: e.terms_open === true,
+      ignoresScope: e.list_ignores_scope === true,
     });
     const last = eps[eps.length - 1];
     const row = rowOf(root, last, last.perm.word);
@@ -209,6 +211,10 @@ export interface EndpointDef {
     /** 行に結ぶ言葉の確かめ（K-15・scripts/ci/row_rules.mjs）。:id の行を RLS の中で読み、見えなければ 404・sql が偽なら 403 */
     row: { table: string; sql: string } | null;
   };
+  /** 同意し直し（K-53）の間も止めない口（規約の 2 つ・ログアウト・自分の取得）。正本は 05_flow/screen_api.py の TERMS_OPEN_OPS */
+  termsOpen: boolean;
+  /** 一覧の scope_id（グループで絞る）を形だけ確かめて無視する口。正本は 05_flow/screen_api.py の LIST_OPS */
+  ignoresScope: boolean;
 }
 export const ENDPOINTS: readonly EndpointDef[] = ${JSON.stringify(eps, null, 2)};
 export const OPENAPI_HASH = "${h}";

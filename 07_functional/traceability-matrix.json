@@ -1,11 +1,21 @@
 {
  "version": "v3.1",
- "created_at": "2026-11-05",
+ "created_at": "2026-11-06",
  "summary": {
-  "screens_count": 72,
+  "screens_count": 73,
   "features_count": 32,
   "entities_count": 142,
   "uncovered_screens": [],
+  "static_screens": [
+   {
+    "screen_id": "legal",
+    "reason": "規約・プライバシーポリシーの文面は、ひな形（apps/web/content/legal/<kind>-v<版>.md）と設定（legalValues）だけで埋め、DB も API も読まない。画面だけを立ち上げる CI の段でも開け、?v= で古い版も出せるようにするため。今の版の名前と url は、リンクを出す登録の画面と同意し直しの画面が getCurrentTerms で取る",
+    "source": [
+     "D-128.137",
+     "D-128.146"
+    ]
+   }
+  ],
   "uncovered_features": []
  },
  "matrix": [
@@ -34,6 +44,25 @@
     "GET /api/auth/terms/current",
     "navigate /login"
    ],
+   "access_roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ]
+  },
+  {
+   "screen_id": "legal",
+   "screen_name": "規約・プライバシーポリシー",
+   "features": [
+    "F-012",
+    "F-026"
+   ],
+   "entities": [
+    "E-130 terms_versions",
+    "E-131 terms_consents"
+   ],
+   "related_apis": [],
    "access_roles": [
     "R1",
     "R2",
@@ -3382,6 +3411,11 @@
      "to_screen": "login"
     }
    ]
+  },
+  {
+   "screen_id": "legal",
+   "screen_name": "規約・プライバシーポリシー",
+   "required_apis": []
   },
   {
    "screen_id": "verify-email",
@@ -14108,7 +14142,8 @@
    "entity_id": "E-130",
    "entity_name": "terms_versions",
    "used_by_screens": [
-    "signup"
+    "signup",
+    "legal"
    ],
    "used_by_features": [
     "F-001",
@@ -14120,6 +14155,7 @@
    "entity_name": "terms_consents",
    "used_by_screens": [
     "signup",
+    "legal",
     "verify-email",
     "invite-accept",
     "login"
@@ -15091,6 +15127,7 @@
     "audit",
     "disclosure",
     "export",
+    "legal",
     "mfa-setup",
     "security-brief",
     "signup"
@@ -15132,6 +15169,7 @@
     "GET /api/disclosure_versions",
     "GET /api/members",
     "GET /api/sessions",
+    "GET /api/terms_versions",
     "POST /api/export_jobs",
     "POST /api/members"
    ]
@@ -15773,6 +15811,7 @@
     "knowledge",
     "layers",
     "ledger-def",
+    "legal",
     "llm-routes",
     "login",
     "masters",

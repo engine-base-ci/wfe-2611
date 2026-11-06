@@ -956,6 +956,15 @@
    "expand": "fill",
    "page": "auth"
   },
+  "LegalPage.dc.html": {
+   "expand": "fill",
+   "h": 900,
+   "page": "auth",
+   "title": "規約・プライバシーポリシー（文面）",
+   "w": 1440,
+   "x": 1520,
+   "y": 3420
+  },
   "OnHome.dc.html": {
    "x": 0,
    "y": 0,

@@ -718,7 +718,9 @@
     "E-LIM-010",
     "E-GATE-010",
     "E-GATE-011",
+    "E-CONF-012",
     "E-AUTH-007",
+    "E-AUTH-010",
     "E-CHAT-001",
     "E-CHAT-002",
     "E-CHAT-003",
@@ -729,7 +731,8 @@
     "E-SIG-003",
     "E-NF-003",
     "E-VAL-008",
-    "E-VAL-009"
+    "E-VAL-009",
+    "E-VAL-019"
    ],
    "policies": [
     "C2",
@@ -4530,6 +4533,7 @@
     "audit",
     "disclosure",
     "export",
+    "legal",
     "mfa-setup",
     "security-brief",
     "signup"
@@ -4578,6 +4582,28 @@
       "E-058",
       "E-055",
       "E-142"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.162",
+      "D-125.167"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A96",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/terms_versions",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-130",
+      "E-131"
      ],
      "choke_points": [
       "C2"
@@ -8227,6 +8253,7 @@
     "knowledge",
     "layers",
     "ledger-def",
+    "legal",
     "llm-routes",
     "login",
     "masters",

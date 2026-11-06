@@ -71,6 +71,9 @@ describe("招待（作る → 受ける → 取り消し）", () => {
     const si = await signIn(auth, email, password);
     const r = await createSessionResolver(auth, app)(bearer(si.token!));
     expect(r?.ctx).toEqual({ tenantId: S.tenantA, userId: member, role: "member", stepUpAt: null });
+    // 同意し直しの印（K-53）は ctx（DB に渡すテナントの文脈）に入れず、Resolved の termsPending に持つ。
+    //   招待で入った人は今の版に同意していない（招待の画面の同意は K-55）ので、ログインでできたセッションには印が立つ
+    expect(r?.termsPending, "招待で入った人は同意し直しの印が立つ（K-55 まで）").toBe(true);
     await expect(acceptInvitation(app, inv.token, su.user.id, "x")).rejects.toThrow(/無効|既に/); // 2 回目は無効
   });
   it("権限の無い担当者は招待を作れない。取り消した招待は即受けられない（G-14）", async () => {

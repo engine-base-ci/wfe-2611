@@ -20,6 +20,7 @@
     "@base-ui/react": "1.9.0",
     "@fontsource-variable/noto-sans-jp": "5.3.1",
     "@hookform/resolvers": "^5.9.1",
+    "@kaname/config": "workspace:*",
     "@kaname/contracts": "workspace:*",
     "@kaname/errors": "workspace:*",
     "@svar-ui/react-gantt": "^2.7.3",

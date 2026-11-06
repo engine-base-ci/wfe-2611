@@ -19,7 +19,7 @@ import { localDriver } from "@kaname/storage/local";
 import { createInvitation } from "@kaname/auth/invitations";
 import { createApp } from "../src/app.js";
 import { authExt } from "../src/auth/ext.js";
-import { keepAuth, verifiedUser } from "./_pending.js";
+import { agreeCurrentTerms, keepAuth, verifiedUser } from "./_pending.js";
 import { ARTIFACT_TEXT_MAX, titleOf } from "../src/auth/artifacts.js";
 
 const DB_PKG = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "packages", "db");
@@ -237,8 +237,13 @@ describe("成果物（D-106）", () => {
       { tenantId: t, userId: bossMember, role: "member" },
       { email: `${uniq()}@example.com`, roleId: "staff" },
     );
-    const staff = await json<{ token: string }>(
+    const staff = await json<{ token: string; member_id: string }>(
       post(`/invitations/${inv.token}/accept`, { name: "担当", password: PW }),
+    );
+    // 招待で入った人の同意は K-55。それまでは今の版に同意済みにする（K-53 の同意し直しの 403 で、見たいはずの 404 が隠れないように）
+    await agreeCurrentTerms(
+      (await admin.query("select auth_user_id from members where id = $1", [staff.member_id])).rows[0]
+        .auth_user_id as string,
     );
     const S = { authorization: `Bearer ${staff.token}` };
     const other = await signUp();

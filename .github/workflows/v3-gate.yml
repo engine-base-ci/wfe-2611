@@ -447,9 +447,9 @@ jobs:
       - name: "G46 使っている部品が技術の選定の記録と合う（package.json と selected-stack.json の packages を 1 対 1・D-128.123）"
         if: ${{ !cancelled() }}
         run: python3 scripts/ci/stack_gate.py --selftest && python3 scripts/ci/stack_gate.py
-      - name: "G47 書いた検査が CI から回る・検査の自己試験（ci_wiring_gate・エラーの参照・自己試験 6 本・D-128.123）"
+      - name: "G47 書いた検査が CI から回る・検査の自己試験（ci_wiring_gate・エラーの参照・自己試験 7 本・D-128.123）"
         if: ${{ !cancelled() }}
-        run: python3 scripts/ci/ci_wiring_gate.py --selftest && python3 scripts/ci/ci_wiring_gate.py && pnpm -s ci:errors-used && pnpm -s ci:errors-used:selftest && pnpm -s ci:sql-guard:selftest && pnpm -s ci:chat-one:selftest && pnpm -s ci:contract:selftest && pnpm -s ci:env-audit:selftest && python3 scripts/ci/qa_delta.py --selftest
+        run: python3 scripts/ci/ci_wiring_gate.py --selftest && python3 scripts/ci/ci_wiring_gate.py && pnpm -s ci:errors-used && pnpm -s ci:errors-used:selftest && pnpm -s ci:sql-guard:selftest && pnpm -s ci:chat-one:selftest && pnpm -s ci:contract:selftest && pnpm -s ci:env-audit:selftest && python3 scripts/ci/qa_delta.py --selftest && python3 scripts/ci/static_screens_test.py
       - name: "G51 利用者の流れと DB の表の目録（行為はどれも 1 つの流れ・表はどれも目録に・凍結の表をコードが使わない・D-128.126・D-128.127）"
         if: ${{ !cancelled() }}
         run: python3 scripts/ci/flow_db_gate.py --selftest && python3 scripts/ci/flow_db_gate.py
@@ -489,9 +489,31 @@ jobs:
     # 新しい画面（apps/web/components/k の上）の実ブラウザの試験。staging も札も要らない：CI の中で本番の形に組み立てて立ち上げる（K-36）
     needs: [static]
     if: ${{ !cancelled() && needs.static.outputs.web == 'true' }}
+    # 本物の口と DB を使う画面の試験（K-53 の K53-UI-023・024・D-128.172）のために、Postgres と API をこの組の中で立てる。
+    #   ほかの画面の試験は今までどおり口を網の手前で差し替える（page.route）ので、どちらの道も同じ組で流れる
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env: { POSTGRES_PASSWORD: postgres, POSTGRES_DB: kaname_test }
+        ports: ['5440:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     env:
       KANAME_DEV_PAGES: '1'
       NEXT_PUBLIC_KANAME_DEV_PAGES: '1'
+      # 画面の試験が本物の口を叩く先（apps/web/tests/_lib/api.ts の API_BASE・DATABASE_URL_ADMIN・KANAME_API_LOG）。画面は組み立てのときに口の先を埋める
+      DATABASE_URL: postgres://postgres:postgres@localhost:5440/kaname_test
+      DATABASE_URL_ADMIN: postgres://postgres:postgres@localhost:5440/kaname_test
+      API_BASE: http://127.0.0.1:3011
+      NEXT_PUBLIC_API_BASE: http://127.0.0.1:3011
+      KANAME_API_LOG: /tmp/api.log
+      # 規約・プライバシーポリシーの文面のページ（K-53）が埋める値。試験の値（本番の値は K-85・K-86 が決める）
+      OPERATOR_ADDRESS: 東京都千代田区試験 1-1
+      LEGAL_COURT: 東京地方裁判所
+      LEGAL_HOSTING_PROVIDER: 試験のホスティング
+      LEGAL_MAIL_PROVIDER: 試験のメール
+      LEGAL_SECRETS_PROVIDER: 試験の秘密の置き場
+      LEGAL_STORAGE_PROVIDER: 試験の置き場
     steps:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }
@@ -500,6 +522,12 @@ jobs:
         with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @kaname/web exec playwright install --with-deps chromium
+      - name: DB に migration を当て、API を立ち上げる（本物の口の画面の試験・K-53）
+        run: |
+          pnpm db:migrate
+          (env NODE_ENV=development PORT=3011 BASE_URL=http://127.0.0.1:3011 WEB_BASE_URL=http://127.0.0.1:3124             DATABASE_URL=postgres://kaname_app:kaname_app@localhost:5440/kaname_test             AUTH_DATABASE_URL=postgres://kaname_auth:kaname_auth@localhost:5440/kaname_test             AUTH_SECRET=ci-web-secret-0123456789-abcdefghijklmnop SECRETS_MASTER_KEY=BwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwc=             STORAGE_ENDPOINT=http://127.0.0.1:9000 STORAGE_REGION=ap-northeast-1 STORAGE_BUCKET=kaname-ci STORAGE_ACCESS_KEY_ID=ci STORAGE_SECRET_ACCESS_KEY=ci             KANAME_DEV_FAKE_BUCKET=1 KANAME_DEV_STORAGE_DIR=/tmp/kaname-storage             pnpm exec tsx apps/api/src/dev.ts > /tmp/api.log 2>&1 &)
+          for i in $(seq 1 60); do curl -sf -o /dev/null http://127.0.0.1:3011/health && exit 0; sleep 2; done
+          cat /tmp/api.log; exit 1
       - run: pnpm --filter @kaname/web build:test
       - name: 画面を立ち上げる
         run: |

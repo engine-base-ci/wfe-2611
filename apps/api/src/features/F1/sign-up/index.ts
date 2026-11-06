@@ -17,6 +17,7 @@ import {
 import type { TenantContext } from "@kaname/db/context";
 import type { Repository } from "@kaname/db/repository";
 import { classifyMailError } from "@kaname/notify/resend";
+import { kanameError } from "@kaname/errors";
 import type { HookArgs, HookReply } from "../../../contract/deps.js";
 import { fail, isReply, parseSignup } from "./input.js";
 import { checkPwned, registerPwned } from "./pwned.js";
@@ -101,11 +102,18 @@ export function signupFeature(d: SignupDeps) {
     if (isReply(parsed)) return parsed;
     // 確定した人だけ 409。確認していない申し込みは何度でもやり直せる（上書き・D-088.3）。文言のほかは何も返さない
     if (await isRegistered(pool, parsed.email)) return fail("E-CONF-001");
+    // 同意は登録の画面の中（続けると同意したことになる）。今の版を申し込みに残す（D-128.137）。利用規約かプライバシーポリシーの今の版が
+    // 無ければ登録を通さない（同意の記録が空の人を作らない・D-128.146）。運営が気づけるようにログに出す（メールアドレスは出さない）
+    const terms = await currentSignupTerms(pool);
+    if (!terms.termsVersionId || !terms.privacyVersionId) {
+      console.error(
+        "[signup] 規約の版が無いので登録を通さない（利用規約かプライバシーポリシーの今の版が無い・D-128.146）",
+      );
+      return { status: 500, body: kanameError("E-PAGE-003").toJSON() };
+    }
     const pwned = await checkPwned(d.actions, OPS_CTX, parsed.password);
     if (pwned.kind === "leaked") return fail("E-VAL-011", "password");
     if (pwned.kind === "unavailable") await pwnedUnavailable(pwned.reason);
-    // 同意は登録の画面の中（続けると同意したことになる）。今の版と時刻を申し込みに残す（D-128.137）
-    const terms = await currentSignupTerms(pool);
     const { token, expiresAt, signupToken } = await putPending(pool, d.config.secretsMasterKey, {
       ...parsed,
       consent: { ...terms, consentedAt: new Date() },

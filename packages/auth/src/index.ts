@@ -120,6 +120,9 @@ export function createAuth(o: AuthOptions): { auth: Auth; pool: pg.Pool } {
               ua.slice(0, 200) || null,
               null,
             ]);
+            // 同意し直しの印（K-53・D-125.162）：今の版の利用規約かプライバシーポリシーにまだ同意していなければ、このセッションに立てる。
+            //   パスワード・パスキー・2 段階の後・確認のメールで確定した直後のどれもこの hook を通る。Bridge のセッションには立てない（D-128.137）
+            await o.appPool.query("select app.mark_session_terms($1)", [session.id]);
             // 新しい端末でのログインは本人に知らせる（画面の知らせは DB の関数が作る・メールはここ・D-125.140）
             const nd = await o.appPool.query<{ is_new: boolean }>(
               "select is_new from app.session_first_on_device($1, null, $2, $3)",

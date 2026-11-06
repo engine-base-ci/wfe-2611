@@ -2,6 +2,7 @@
 import { call } from "@/lib/api/call";
 import { apiBase, getToken, notifyUnauthorized, setToken } from "@/lib/api/client";
 import { refreshSession } from "./client";
+import { noticeTermsRequired } from "@/lib/terms-gate";
 
 export interface ExtError {
   status: number;
@@ -31,6 +32,7 @@ export async function ext<T>(path: string, body?: unknown, method = "POST"): Pro
   const t = getToken();
   if (t) headers["authorization"] = `Bearer ${t}`;
   if (body !== undefined) headers["content-type"] = "application/json";
+  const sentAt = Date.now(); // 同意し直し（K-53）：同意できた時刻より前に出した要求の 403 は見ない
   const res = await fetch(`${apiBase()}/api/auth-ext${path}`, {
     method,
     headers,
@@ -47,6 +49,7 @@ export async function ext<T>(path: string, body?: unknown, method = "POST"): Pro
   // ログインが要る口で「入っていない」（鍵が切れた・会社の人が消えた）。空白のまま止めず、鍵を捨てて入り直しへ（D-086.4）。
   // ログインそのものの失敗（E-AUTH-001 等）は各画面が文言で出すので、ここでは UNAUTHENTICATED だけを見る
   if (res.status === 401 && json.code === "UNAUTHENTICATED") notifyUnauthorized();
+  noticeTermsRequired(res.status, json.code, json.message, sentAt); // 同意し直しが要る（K-53）
   if (!res.ok)
     throw new AuthExtError({
       status: res.status,
@@ -302,6 +305,7 @@ export async function agentAttach(file: File): Promise<{ id: string; name: strin
   const headers: Record<string, string> = { accept: "application/json" };
   const tk = getToken();
   if (tk) headers["authorization"] = `Bearer ${tk}`;
+  const sentAt = Date.now();
   const res = await fetch(`${apiBase()}/api/auth-ext/agent/attachments`, { method: "POST", headers, body: fd });
   const json = (await res.json().catch(() => ({}))) as {
     data?: { id: string; name: string; mime: string; size: number };
@@ -309,6 +313,7 @@ export async function agentAttach(file: File): Promise<{ id: string; name: strin
     message?: string;
   };
   if (res.status === 401 && json.code === "UNAUTHENTICATED") notifyUnauthorized();
+  noticeTermsRequired(res.status, json.code, json.message, sentAt); // 同意し直しが要る（K-53）
   if (!res.ok || !json.data)
     throw new AuthExtError({
       status: res.status,

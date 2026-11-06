@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:e9ce31d2e9f63d5e
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:0fed2bf4953d1d89
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -122,7 +122,7 @@ export type AccountEvents = { kind_id?: string | null; subject_type?: string | n
 export type AccountEventsInput = { kind_id?: string | null; subject_type?: string | null; subject_id?: string | null; requested_by?: string | null; status_id?: string | null; resolved_at?: string | null };
 export type AccountEventItems = { event_id?: string | null; object_kind?: string | null; disposition_id?: string | null; target_ref?: string | null; decided_by?: string | null; done_at?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; updated_by?: string | null };
 export type AccountEventItemsInput = { event_id?: string | null; object_kind?: string | null; disposition_id?: string | null; target_ref?: string | null; decided_by?: string | null; done_at?: string | null };
-export type Sessions = { member_id?: string; kind_id?: string; auth_session_id?: string | null; device_label?: string | null; ip_region?: string | null; issued_at?: string; last_seen_at?: string; revoked_at?: string | null; revoke_reason_id?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; browser?: string; cli_model?: string | null; country?: string | null; created_by?: string | null; deleted_at?: string | null; device?: string | null; health?: unknown | null; health_at?: string | null; last_ip?: string | null; step_up_at?: string | null; updated_by?: string | null };
+export type Sessions = { member_id?: string; kind_id?: string; auth_session_id?: string | null; device_label?: string | null; ip_region?: string | null; issued_at?: string; last_seen_at?: string; revoked_at?: string | null; revoke_reason_id?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; browser?: string; cli_model?: string | null; country?: string | null; created_by?: string | null; deleted_at?: string | null; device?: string | null; health?: unknown | null; health_at?: string | null; last_ip?: string | null; step_up_at?: string | null; terms_pending?: boolean; updated_by?: string | null };
 export type SessionsInput = { member_id?: string; kind_id?: string; auth_session_id?: string | null; device_label?: string | null; ip_region?: string | null; issued_at?: string; last_seen_at?: string; revoked_at?: string | null; revoke_reason_id?: string | null };
 export type SupportAccessGrants = { granted_by_member_id?: string | null; scope?: string; expires_at?: string; revoked_at?: string | null; ops_member_id?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; closed_at?: string | null; created_by?: string | null; deleted_at?: string | null; inquiry_id?: string | null; reason?: string | null; updated_by?: string | null };
 export type SupportAccessGrantsInput = { granted_by_member_id?: string | null; scope?: string; expires_at?: string; revoked_at?: string | null; ops_member_id?: string | null };
@@ -290,6 +290,7 @@ export type StepUpInput = { password?: string; code?: string };
 export type SignupInput = { email?: string; name?: string; company_name?: string; password?: string };
 export type SignupResendInput = Record<string, never>;
 export type SignupVerifyInput = { token?: string };
+export type TermsConsentInput = { agree?: boolean; terms_version_id?: string; privacy_version_id?: string };
 export type ScopeOverview = { by_stage?: string[]; milestones?: string[]; recent?: string[]; total?: number };
 export type TicketKindChangePreview = { added_sections?: string[]; removed_sections?: string[]; moved_to_body?: string[]; checks_reset?: boolean };
 export type TicketDeletePreview = { children?: number; attachments?: number; artifacts?: number; restorable_until?: string };
@@ -309,6 +310,8 @@ export type SignupCreated = { email?: string; sent?: boolean; mail_error?: strin
 export type SignupResent = { email?: string | null; sent?: boolean; mail_error?: string | null; mail_error_kind?: string | null; pending?: boolean; registered?: boolean; expired?: boolean };
 export type SignupStatus = { state?: string; email?: string | null; expires_at?: string | null };
 export type SignupVerified = { email?: string; token?: string | null; signed_in?: boolean };
+export type CurrentTerms = { id?: string; kind?: string; version?: string; url?: string; published_at?: string };
+export type TermsConsented = { consented?: boolean };
 export type MySecurity = { passkeys?: string[]; has_password?: boolean; two_factor?: boolean; two_factor_required?: boolean; backup_codes_left?: number; sessions?: string[]; recent_events?: string[] };
 export type TwoFactorSetup = { otpauth_uri?: string; secret_masked?: string; expires_at?: string };
 export type BackupCodes = { codes?: string[] };

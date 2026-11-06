@@ -165,6 +165,9 @@ export function verifyEmailFeature(d: VerifyEmailDeps) {
       if (!m) throw new Error("確定した本人の会社の人が見つからない");
       const ctx: TenantContext = { tenantId: m.tenantId, userId: m.memberId, role: "member" };
       await moveConsents(ctx, r.userId, p);
+      // 同意を移した後に、この本人のセッションの同意し直しの印を決め直す（K-53）。signUp でセッションができた時点では同意がまだ無く印が立つ。
+      // 登録のときの版が今の版なら下り、登録と確定の間に新しい版が出ていれば立ったまま（次の画面で同意し直す）
+      await d.appPool.query("select app.refresh_terms_pending($1)", [r.userId]);
       return { userId: r.userId, token: r.token, ctx, name };
     } catch (e) {
       throw new ConfirmFailed(r.userId, e);

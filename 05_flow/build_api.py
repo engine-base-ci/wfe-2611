@@ -42,12 +42,21 @@ def four(e):
     if auth: out.append({"status": 401, "code": "UNAUTHENTICATED", "body": {"error": "unauthenticated"}, "trigger": "セッションが無い・失効している（退会・停止・権限変更・パスワード変更で即失効）", "ears_form": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）"})
     if auth: out.append({"status": 403, "code": "FORBIDDEN", "body": {"error": "forbidden"}, "trigger": "権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした", "ears_form": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）"})
     if ":id" in e["path"]: out.append({"status": 404, "code": "NOT_FOUND", "body": {"error": "not_found"}, "trigger": "無い・消えた・取り消された（期限切れ・削除済み・他社の行）", "ears_form": "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）"})
-    custom = getattr(_sa, "ERRORS_4XX", {}).get(e.get("operation_id"))   # 口ごとの 4xx（K-52）。汎用の 409・422 の代わりに使う
-    if custom is not None: out.extend(dict(x) for x in custom)
-    if custom is None and e["method"] == "POST": out.append({"status": 409, "code": "CONFLICT", "body": {"error": "conflict"}, "trigger": "二重送信・同時編集・既に登録済み（冪等キーで防ぐ）", "ears_form": "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない"})
-    if custom is None and (e["method"] in ("POST", "PATCH") or ":id" in e["path"] or e["method"] == "GET"): out.append({"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形", "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"})
+    if e["method"] == "POST": out.append({"status": 409, "code": "CONFLICT", "body": {"error": "conflict"}, "trigger": "二重送信・同時編集・既に登録済み（冪等キーで防ぐ）", "ears_form": "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない"})
+    if e["method"] in ("POST", "PATCH") or ":id" in e["path"] or e["method"] == "GET": out.append({"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形", "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"})
+    # 口ごとの 4xx（K-52・K-53）。表の行は、同じ状態の番号の汎用の行をその場所で置き換え、ほかの番号の行は後ろに足す
+    custom = getattr(_sa, "ERRORS_4XX", {}).get(e.get("operation_id"))
+    if custom is not None:
+        for x in custom:
+            hit = [i for i, y in enumerate(out) if y["status"] == x["status"] and y.get("_generic", True)]
+            if hit: out[hit[0]] = {**dict(x), "_generic": False}
+            else: out.append({**dict(x), "_generic": False})
+        for y in out: y.pop("_generic", None)
     out.append({"status": 429, "code": "RATE_LIMITED", "body": {"error": "rate_limited", "retry_after_sec": 60}, "trigger": e["rate_limit"], "ears_form": f"UNWANTED: IF {e['rate_limit']} を超えたら、Kaname は 429 と retry_after_sec を返す"})
     if e["choke_points"] & {"C1", "C3", "C5"}: out.append({"status": 502, "code": "EXTERNAL_FAILED", "body": {"error": "external_failed"}, "trigger": "外部サービス・モデル・プロセスが失敗した／合図を出さずに終わった", "ears_form": "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す"})
+    # 同意し直し（K-53・D-125.162）：ログインの要る口は、同意し直しの印が立ったセッションでは 403・E-AUTH-010。規則で足す（口ごとに手で足さない）。
+    #   PC の印の口（device）には印が立たない（D-128.137）。規約の 2 つの口・ログアウト・自分の取得は止めない（正本は screen_api.py の TERMS_OPEN_OPS・契約の termsOpen）
+    if auth and e["auth"]["role"] != "device" and e.get("operation_id") not in _sa.TERMS_OPEN_OPS: out.append({"status": 403, "code": "E-AUTH-010", "body": {"error": "forbidden", "code": "E-AUTH-010"}, "trigger": "ログインしたときに今の版の利用規約かプライバシーポリシーに同意していない（同意し直しの印が立ったセッション）", "ears_form": "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない"})
     return out
 def ears(e):
     out = []
@@ -71,6 +80,8 @@ for (m, p), e in sorted(eps.items(), key=lambda kv: (kv[0][1], ["GET", "POST", "
     params = re.findall(r":(\w+)", p)
     e["access_control_policies"] = [pol["name"] for x in e["related_entities"] for pol in ent[x]["access_control_policies"] if (m == "GET" and "read" in pol["name"]) or (m != "GET" and "write" in pol["name"])]
     e["outputs_4xx"] = four(e); e["ears_ac_seed"] = ears(e)
+    e["terms_open"] = e.get("operation_id") in _sa.TERMS_OPEN_OPS   # 同意し直しの間も止めない口（K-53）。契約の termsOpen になる
+    e["list_ignores_scope"] = e.get("operation_id") in getattr(_sa, "LIST_OPS", set())   # 一覧の scope_id を形だけ見て無視する口（K-53）
     e["outward_side_effects"] = [chk[c]["name"] for c in sorted(e["choke_points"]) if c in chk and c != "C2"]
     e["side_effect_ordering"] = "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録" if m != "GET" else None
     e["choke_points"] = sorted(e["choke_points"]) if m != "GET" else sorted(e["choke_points"] & {"C4", "C8"})
@@ -78,7 +89,7 @@ for (m, p), e in sorted(eps.items(), key=lambda kv: (kv[0][1], ["GET", "POST", "
     e["implementation_path"] = f"apps/api/src/routes/{tname}.ts::" + (e["operation_id"] if e.get("operation_id") else f"{m.lower()}{''.join(w.capitalize() for w in tname.split('_'))}{'ById' if ':id' in p else ''}")
     if e.get("operation_id") in getattr(_sa, "PERMS", {}):   # 誰が呼べるか（ZT1）
         _pm = _sa.PERMS[e["operation_id"]]; e["permission"] = {"who": _pm[0], "scope": _pm[1], "step_up": _pm[2]}
-    e["path_params"] = params; e["returns_list"] = (m == "GET" and e["operation_id"].startswith(("list", "search"))) if e.get("operation_id") else (m == "GET" and ":id" not in p)
+    e["path_params"] = params; e["returns_list"] = (m == "GET" and (e["operation_id"].startswith(("list", "search")) or e["operation_id"] in getattr(_sa, "LIST_OPS", set()))) if e.get("operation_id") else (m == "GET" and ":id" not in p)
     e["inputs"] = {"path": params, "body": f"{tname} の入力（types.ts の {''.join(w.capitalize() for w in tname.split('_'))}Input）" if m in ("POST", "PATCH") else None, "query": ["scope_id", "cursor", "limit", "sort"] if m == "GET" and ":id" not in p else []}
     e["outputs_2xx"] = {"status": 201 if m == "POST" else 200, "body": f"{{ data: {''.join(w.capitalize() for w in tname.split('_'))}{'[]' if e['returns_list'] else ''}, meta?: {{ cursor, limit, total }} }}"}
     e["id"] = f"EP-{len(endpoints)+1:03d}"; e["feature_id"] = e["features"][0] if e["features"] else None
@@ -91,7 +102,8 @@ for s in S:
     if s["id"] not in V1: continue
     req = [{"role": a["role"], "endpoint": f'{a["method"]} {a["path_draft"].replace("/api/", BASE + "/")}', "act": a.get("act")} for a in s["required_apis"] if a["role"] != "transition"]
     have = {f'{e["method"]} {e["path"]}' for e in endpoints}; miss = [r["endpoint"] for r in req if r["endpoint"] not in have]
-    cov.append({"screen_id": s["id"], "screen_name": s["name"], "mock_path": s.get("mock_path"), "required_apis": req, "transitions": s.get("transitions", []), "coverage_status": "OK" if not miss and req else ("NG" if miss else "NONE"), "missing": miss})
+    _st = getattr(_sa, "STATIC_SCREENS", {}).get(s["id"])   # API を呼ばない画面の台帳（理由つき・検査は scripts/ci/static_screens.py）
+    cov.append({"screen_id": s["id"], "screen_name": s["name"], "mock_path": s.get("mock_path"), "required_apis": req, "transitions": s.get("transitions", []), "coverage_status": ("STATIC" if _st and not req else "NG") if _st else ("OK" if not miss and req else ("NG" if miss else "NONE")), "missing": miss, **({"static_reason": _st.get("reason", "")} if _st else {})})
 # ---------------------------------------------------------------- 逆カバレッジ（フィールド → 消費画面）
 INTERNAL_TABLES = {"search_embeddings": "検索用の内部の索引（段階 1 は作らない・D-099.2）。画面には元の行（記憶・台帳・証跡）が出る",
                    "bridge_jobs": "PC（Bridge）に仕事を渡す内部の順番待ち。画面には実行（action_runs）として出る（D-121.2）",
@@ -185,7 +197,9 @@ for e in endpoints:
     _in = getattr(_sa, "INPUTS", {}).get(e.get("operation_id"), (f"{tbl}Input",))[0]
     if e["method"] in ("POST", "PATCH"): op["requestBody"] = {"required": True, "content": {"application/json": {"schema": {"$ref": f"#/components/schemas/{_in}"}}}}
     ok = {"description": "成功", "content": {"application/json": {"schema": {"type": "object", "properties": {"data": {"type": "array", "items": {"$ref": f"#/components/schemas/{name}"}} if e["returns_list"] else {"$ref": f"#/components/schemas/{name}"}, "meta": {"type": "object", **({"properties": {k: {"type": v} for k, v in getattr(_sa, "META", {}).get(e.get("operation_id"), {}).items()}} if e.get("operation_id") in getattr(_sa, "META", {}) else {})}}}}}}
-    op["responses"] = {str(e["outputs_2xx"]["status"]): ok, **{str(x["status"]): {"description": x["code"], "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}} for x in e["outputs_4xx"]}}
+    _codes = {}
+    for x in e["outputs_4xx"]: _codes.setdefault(str(x["status"]), []).append(x["code"])   # 同じ番号の行（403 の FORBIDDEN と E-AUTH-010・K-53）は説明を 1 つにまとめる
+    op["responses"] = {str(e["outputs_2xx"]["status"]): ok, **{k: {"description": "／".join(dict.fromkeys(v)), "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}} for k, v in _codes.items()}}
     paths.setdefault(re.sub(r":(\w+)", r"{\1}", e["path"]), {})[e["method"].lower()] = op
 openapi = {"openapi": "3.0.3", "info": {"title": "Kaname API", "version": "1.0.0", "description": f"Mock-Driven Contract Generation。{TODAY} 凍結。信頼源は 08_api/endpoints.json。x-acts / x-screens / x-choke-points / x-source で行為・画面・関門・決定に辿れる"},
            "servers": [{"url": BASE}], "components": {"securitySchemes": {"session": {"type": "http", "scheme": "bearer", "description": "Better Auth のセッション。sessions 表を見て失効を判定"}}, "schemas": schemas}, "paths": paths}
@@ -211,7 +225,7 @@ json.dump({"meta": {"project": "Kaname", "created_at": TODAY, "skill_version": "
            "research": {"sources": [], "findings": ["契約は OpenAPI 3.0.3。x-acts / x-screens / x-choke-points / x-source で行為・画面・関門・決定に辿れる"], "research_date": TODAY}}, open(f"{OUT}/api-decisions.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 json.dump({"version": "v3", "skill": "api-design", "endpoints_count": len(endpoints), "ac_seeds": [{"endpoint": f'{e["method"]} {e["path"]}', "feature_id": e["feature_id"], "screen_ids": e["screens"], "acts": e["acts"], "ears_ac_seed": e["ears_ac_seed"], "source": e["source"]} for e in endpoints]}, open(f"{OUT}/ears-ac-seed.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 json.dump({"version": "v3", "skill": "api-design", "endpoints": [{"method": e["method"], "path": e["path"], "implementation_path": e["implementation_path"], "screen_ids_referencing": e["screens"], "acts": e["acts"]} for e in endpoints]}, open(f"{OUT}/lint-mapping.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-json.dump({"version": "v3.1", "skill": "api-design", "frozen_at": TODAY, "summary": {"total_screens": len(cov), "total_apis": len(endpoints), "coverage_rate": round(sum(1 for c in cov if c["coverage_status"] == "OK") / len(cov), 3), "uncovered_screens": [c["screen_id"] for c in cov if c["coverage_status"] != "OK"], "acts_without_endpoint": acts_without}, "screens": cov}, open(f"{OUT}/screen-api-coverage.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+json.dump({"version": "v3.1", "skill": "api-design", "frozen_at": TODAY, "summary": {"total_screens": len(cov), "total_apis": len(endpoints), "coverage_rate": round(sum(1 for c in cov if c["coverage_status"] in ("OK", "STATIC")) / len(cov), 3), "uncovered_screens": [c["screen_id"] for c in cov if c["coverage_status"] not in ("OK", "STATIC")], "static_screens": [c["screen_id"] for c in cov if c["coverage_status"] == "STATIC"], "acts_without_endpoint": acts_without}, "screens": cov}, open(f"{OUT}/screen-api-coverage.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 json.dump({"version": "v3.1", "skill": "api-design", "rule": "各レスポンスのフィールドは最低 1 つの画面で消費される。内部専用は internal=true と理由（暗黙除外なし）", "fields": consumption, "unconsumed": [f'{c["entity"]}.{c["field"]}' for c in unconsumed]}, open(f"{OUT}/api-field-consumption.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 md = [f"# Kaname API 設計書 v1.0（{TODAY} 凍結）", "", "> 信頼源は `08_api/endpoints.json` と `openapi.yaml`（05_flow/build_api.py が機械生成）。", "", "## 1. 設計方針", "", "- REST・独立 API 層（Hono・TypeScript）・契約は OpenAPI 3.0.3・URL 版（/api/v1）。Web・Bridge・将来のアプリが同じ契約を叩く（D-043・D-051）",
       "- 認証はトークンベース。失効は `sessions` 表（退会・停止・権限変更・パスワード変更で即失効）。API 層は冒頭で `SET LOCAL app.tenant_id / app.user_id / app.role`", "- 副作用の順序：認可 → ポリシー → 承認 → 副作用 → 記録。書き込み系 endpoint は関門（C1〜C8）を必ず通る", "- 運営（ops）は既定で顧客の行を読めない。`support_access_grants` があるときだけ", "",
@@ -231,4 +245,4 @@ html = f"""<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>Kan
 </body></html>"""
 open(f"{OUT}/api-spec.html", "w", encoding="utf-8").write(html)
 print(f"後のフェーズの画面 {len(deferred_screens)}（API は作らない・D-128.112）")
-print(f"endpoints {len(endpoints)} / 画面 OK {sum(1 for c in cov if c['coverage_status']=='OK')}/{len(cov)} / endpoint の無い行為 {len(acts_without)} {acts_without[:12]} / どの画面にも出ないフィールド {len(unconsumed)}")
+print(f"endpoints {len(endpoints)} / 画面 OK {sum(1 for c in cov if c['coverage_status']=='OK')}・API を呼ばない画面 {sum(1 for c in cov if c['coverage_status']=='STATIC')}/{len(cov)} / endpoint の無い行為 {len(acts_without)} {acts_without[:12]} / どの画面にも出ないフィールド {len(unconsumed)}")

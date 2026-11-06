@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/gen_routes.mjs ← 05_flow/flow.json）。手で直さない。flow:58237182664fa3dc
+// 生成物（scripts/ci/gen_routes.mjs ← 05_flow/flow.json）。手で直さない。flow:2927a69279508569
 export interface RouteDef {
   id: string;
   route: string;
@@ -154,6 +154,12 @@ export const ROUTES: readonly RouteDef[] = [
     "id": "knowledge",
     "route": "/knowledge",
     "needsLogin": true,
+    "release": "v1"
+  },
+  {
+    "id": "legal",
+    "route": "/legal/:kind",
+    "needsLogin": false,
     "release": "v1"
   },
   {

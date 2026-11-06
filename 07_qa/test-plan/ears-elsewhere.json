@@ -7,7 +7,8 @@
    "covers": {
     "test_post_auth_step_up_ok": "正しいパスワードで時刻が付き",
     "test_post_auth_step_up_rejected_401": "パスワードが空なら 422・ログインしていなければ 401",
-    "test_post_auth_step_up_rejected_422_2": "パスワードが空なら 422"
+    "test_post_auth_step_up_rejected_422_2": "パスワードが空なら 422",
+    "test_post_auth_step_up_terms_pending": "K53-API-005（stepUp の分）"
    }
   },
   "createSignup": {
@@ -46,6 +47,29 @@
     "test_post_auth_sign_up_verify_rejected_422": "K52-API-015 手がかりが無い・空",
     "test_post_auth_sign_up_verify_rate_limited": "K52-API-027 1 分に 11 回（同じ IP）",
     "test_post_auth_sign_up_verify_shape": "K52-API-031 関門"
+   }
+  },
+  "consentToTerms": {
+   "file": "apps/api/test/features/F1/terms.test.ts",
+   "reason": "規約の同意は、本物のログインの部品（Better Auth のセッションができたときの hook で立つ同意し直しの印）・本物の DB の今の版の関数（app.current_terms）と同意の行で確かめる。生成の試験の偽のセッションと土台では確かめられない（K-53）",
+   "covers": {
+    "test_post_auth_terms_consent_ok": "K53-API-004",
+    "test_post_auth_terms_consent_rejected_401": "K53-API-017",
+    "test_post_auth_terms_consent_conflict": "K53-API-013",
+    "test_post_auth_terms_consent_rejected_422": "K53-API-018",
+    "test_post_auth_terms_consent_rate_limited": "K53-API-027",
+    "test_post_auth_terms_consent_shape": "K53-API-030"
+   }
+  },
+  "getCurrentTerms": {
+   "file": "apps/api/test/features/F1/terms.test.ts",
+   "reason": "規約の同意は、本物のログインの部品（Better Auth のセッションができたときの hook で立つ同意し直しの印）・本物の DB の今の版の関数（app.current_terms）と同意の行で確かめる。生成の試験の偽のセッションと土台では確かめられない（K-53）",
+   "covers": {
+    "test_get_auth_terms_current_ok": "K53-API-016",
+    "test_get_auth_terms_current_rejected_422": "K53-API-022",
+    "test_get_auth_terms_current_rate_limited": "K53-API-028",
+    "test_get_auth_terms_current_server_error": "K53-API-033",
+    "test_get_auth_terms_current_shape": "K53-API-016"
    }
   }
  }

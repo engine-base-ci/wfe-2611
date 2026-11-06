@@ -11,6 +11,8 @@ describe("DELETE /api/v1/workspace/deletion", () => {
   it.todo("test_delete_workspace_deletion_rejected_403");
   // UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
   it.todo("test_delete_workspace_deletion_rate_limited");
+  // UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
+  it.todo("test_delete_workspace_deletion_terms_pending");
   // UBIQUITOUS: DELETE /api/v1/workspace/deletion の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
   it.todo("test_delete_workspace_deletion_shape");
 });

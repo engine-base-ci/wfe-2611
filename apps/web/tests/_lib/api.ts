@@ -3,6 +3,7 @@ import { createHash, createHmac } from "node:crypto";
 import { readFileSync } from "node:fs";
 import pg from "pg";
 import { expect, test, type Page } from "@playwright/test";
+import { agreeCurrentTerms as agreeTerms } from "../../../../packages/db/test/agree-terms";
 
 export const API = process.env["API_BASE"] ?? "http://127.0.0.1:3011";
 const ADMIN = process.env["DATABASE_URL_ADMIN"] ?? "postgres://postgres:postgres@127.0.0.1:55433/kaname_dev"; // 画面のテストは手元の画面（up.sh）と同じ DB を見る。単体テストの kaname_test とは分ける
@@ -155,7 +156,16 @@ export async function viewerViaApi() {
     password: PW,
   });
   if (r.status !== 200 && r.status !== 201) throw new Error(`accept ${r.status} ${JSON.stringify(r.json)}`);
+  // 招待で入る人の同意は K-55 の受け持ち。それまでは、この道具が今の版への同意を入れる（K-53 の同意し直しで止まらないように）
+  const u = await admin<{ id: string }>('select id from kaname_auth."user" where email = $1', [email]);
+  await agreeCurrentTerms(u[0]!.id);
   return { ...boss, token: r.json.data.token, email };
+}
+
+/** 今の版の利用規約とプライバシーポリシーに同意済みにし、その人のセッションの同意し直しの印を下ろす（K-53）。
+ *  登録（signupViaApi）は確定で申し込みの同意が移るので要らない。申し込みを通らずに人を作る道具だけが使う。SQL は packages/db/test/agree-terms.ts の 1 か所 */
+export async function agreeCurrentTerms(userId: string): Promise<void> {
+  await agreeTerms((sql, params = []) => admin(sql, params), userId);
 }
 
 /** API のログから、そのアドレス宛の送信の記録を読む（[mail] 送った／送れなかった） */

@@ -1,0 +1,64 @@
+/* 同意し直しの画面と文面のページ（K-53）。値は全部 --k-*（生の色・文字の大きさ・角丸を書かない） */
+.k-terms-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-s-sm);
+}
+.k-terms-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--k-s-sm);
+  padding: var(--k-s-sm) var(--k-s-md);
+  border: 1px solid var(--k-line);
+  border-radius: var(--k-r-card);
+  font-size: var(--k-text-body-sm);
+}
+.k-terms-version {
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-label-md);
+}
+.k-terms-check {
+  display: flex;
+  align-items: center;
+  gap: var(--k-s-sm);
+  font-size: var(--k-text-body-sm);
+}
+.k-terms-check input {
+  width: 18px;
+  height: 18px;
+  flex: none;
+}
+.k-terms-err {
+  margin: 0;
+}
+.k-auth[data-wide] .k-auth-card {
+  max-width: 760px;
+}
+.k-legal {
+  font-size: var(--k-text-body-sm);
+  line-height: 1.9;
+  overflow-wrap: anywhere;
+}
+.k-legal h1 {
+  text-align: left;
+}
+.k-legal h2 {
+  margin: var(--k-s-md) 0 var(--k-s-sm);
+  font-size: var(--k-text-h3);
+}
+.k-legal table {
+  width: 100%;
+  border-collapse: collapse;
+  display: block;
+  overflow-x: auto;
+}
+.k-legal th,
+.k-legal td {
+  border: 1px solid var(--k-line);
+  padding: var(--k-s-xs) var(--k-s-sm);
+  text-align: left;
+}

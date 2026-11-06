@@ -17,6 +17,8 @@ describe("POST /api/v1/rules/check", () => {
   it.todo("test_post_rules_check_rejected_422_2");
   // UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
   it.todo("test_post_rules_check_rate_limited");
+  // UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
+  it.todo("test_post_rules_check_terms_pending");
   // UBIQUITOUS: POST /api/v1/rules/check の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
   it.todo("test_post_rules_check_shape");
 });

@@ -8,11 +8,18 @@ import { LogIn } from "lucide-react";
 import { AuthFoot, OutsideLayout } from "@/components/outside/outside-layout";
 import { AuthExtError, signIn, verifyTwoFactor } from "@/lib/auth/ext";
 import { afterLogin } from "@/lib/after-login";
+import { ConsentTerms } from "@/features/F1/consent-terms/consent-terms";
 
 function LoginInner() {
-  const router = useRouter();
   const sp = useSearchParams();
-  const next = sp.get("next"); // 行き先は afterLogin が今のデータから決める（設定が済んでいない人を 今日 へ飛ばさない）
+  // 規約の同意し直し（K-53）はログインの画面の続き（/login?step=terms&next=…）として出す。新しい道は作らない
+  if (sp.get("step") === "terms") return <ConsentTerms next={sp.get("next")} />;
+  return <LoginForm next={sp.get("next")} />;
+}
+
+function LoginForm({ next }: { next: string | null }) {
+  const router = useRouter();
+  // 行き先は afterLogin が今のデータから決める（設定が済んでいない人を 今日 へ飛ばさない）
   const [state, setState] = useState<"n" | "m" | "e">("n");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

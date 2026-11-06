@@ -15,6 +15,8 @@ describe("POST /api/v1/ops/work_type_uploads", () => {
   it.todo("test_post_ops_work_type_uploads_rejected_422_2");
   // UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
   it.todo("test_post_ops_work_type_uploads_rate_limited");
+  // UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
+  it.todo("test_post_ops_work_type_uploads_terms_pending");
   // UNWANTED: IF スキルの一式に資格情報・会社名・個人名が混ざっている、テストの場面が 1 つでも失敗している、または版のメモが空のまま「出す」を押した THEN Kaname は「この版は出せません。テストで失敗した場面があります（外部サービスの規約変更）。直して再テストしてください」を返し、失敗した場面を見る／直して「上げてテストで動かす」（E-ACT-041）
   it.todo("test_post_ops_work_type_uploads_rejected_422_3");
   // UBIQUITOUS: POST /api/v1/ops/work_type_uploads の副作用は関門 C2・C4 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う

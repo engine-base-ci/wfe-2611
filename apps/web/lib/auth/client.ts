@@ -2,6 +2,10 @@
 import { createAuthClient } from "better-auth/react";
 import { twoFactorClient } from "better-auth/client/plugins";
 import { apiBase, getToken, setToken } from "@/lib/api/client";
+import { noticeTermsRequired } from "@/lib/terms-gate";
+
+/** 認証の部品の要求を出した時刻（要求の文脈ごと） */
+const SENT = new WeakMap<object, number>();
 
 export const authClient = createAuthClient({
   baseURL: apiBase(),
@@ -10,6 +14,14 @@ export const authClient = createAuthClient({
   fetchOptions: {
     credentials: "omit", // Cookie は使わない（Bearer だけ・D-051.2）
     auth: { type: "Bearer", token: () => getToken() ?? "" },
+    // 同意し直しが要る（K-53）：ほかの口と同じく、同意し直しの画面へ移す。要求を出した時刻を覚え、同意できた時刻より前の要求の 403 は見ない
+    onRequest: (ctx) => {
+      SENT.set(ctx, Date.now());
+    },
+    onError: (ctx) => {
+      const b = ctx.error as { code?: unknown; message?: unknown } | null;
+      noticeTermsRequired(ctx.response.status, b?.code, b?.message, SENT.get(ctx.request));
+    },
     onSuccess: (ctx) => {
       const t = ctx.response.headers.get("set-auth-token");
       if (t) setToken(t);

@@ -13,6 +13,8 @@ describe("GET /api/v1/knowledge/verifications", () => {
   it.todo("test_get_knowledge_verifications_rejected_422");
   // UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
   it.todo("test_get_knowledge_verifications_rate_limited");
+  // UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
+  it.todo("test_get_knowledge_verifications_terms_pending");
   // UBIQUITOUS: GET /api/v1/knowledge/verifications の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
   it.todo("test_get_knowledge_verifications_shape");
 });

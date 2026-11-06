@@ -19,6 +19,8 @@ describe("POST /api/v1/work_types/:id/copy", () => {
   it.todo("test_post_work_types_id_copy_rate_limited");
   // UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す
   it.todo("test_post_work_types_id_copy_upstream_failed");
+  // UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
+  it.todo("test_post_work_types_id_copy_terms_pending");
   // UBIQUITOUS: POST /api/v1/work_types/:id/copy の副作用は関門 C2・C3 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
   it.todo("test_post_work_types_id_copy_shape");
 });

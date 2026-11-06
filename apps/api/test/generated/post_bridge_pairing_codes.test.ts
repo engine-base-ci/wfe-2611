@@ -17,6 +17,8 @@ describe("POST /api/v1/bridge/pairing-codes", () => {
   it.todo("test_post_bridge_pairing_codes_rate_limited");
   // UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す
   it.todo("test_post_bridge_pairing_codes_upstream_failed");
+  // UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
+  it.todo("test_post_bridge_pairing_codes_terms_pending");
   // UBIQUITOUS: POST /api/v1/bridge/pairing-codes の副作用は関門 C1・C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
   it.todo("test_post_bridge_pairing_codes_shape");
 });

@@ -7,6 +7,7 @@ import type { Row, TableName } from "@kaname/db/repository";
 import type { Vars } from "../middleware/tenant.js";
 import type { ContractDeps, Hook, HookArgs } from "./deps.js";
 import { checkFor, stepUpFresh } from "./permissions.js";
+import { kanameError } from "@kaname/errors";
 export type { ContractDeps } from "./deps.js";
 
 const LIMIT_DEFAULT = 50;
@@ -43,6 +44,12 @@ const decodeCursor = (s: string | undefined): number | null => {
 const isRlsError = (e: unknown) => /row-level security|permission denied/.test(String(e));
 const pgCode = (e: unknown) => (e as { code?: string }).code ?? "";
 
+/** 同意し直しが要る（403・E-AUTH-010）。文は正本（errors.json）から引く */
+export const termsRequired = (c: Context) => {
+  const e = kanameError("E-AUTH-010").toJSON() as { message?: string };
+  return c.json({ error: "forbidden", code: "E-AUTH-010", message: e.message ?? "" }, 403);
+};
+
 export function op(deps: ContractDeps, operationId: string) {
   const e = ENDPOINTS.find((x) => x.operationId === operationId);
   if (!e) throw new Error(`契約に無い operation: ${operationId}`);
@@ -60,6 +67,10 @@ export function op(deps: ContractDeps, operationId: string) {
     // 2) 認証・3) 認可（役）
     if (def.auth !== "public") {
       if (ctx.role === "anonymous" || !ctx.userId) return err(c, 401, "unauthenticated", "UNAUTHENTICATED");
+      // 2.5) 同意し直し（K-53・D-125.162）：ログインしたときに今の版の規約に同意していないセッションは、規約の口・ログアウト・自分の取得の
+      //      ほかを止める。副作用の前・記録も書かない。画面の表示に頼らず口で止める（PC のセッションには印が立たない・D-128.137）
+      //      止めない口は契約の termsOpen（正本は 05_flow/screen_api.py の TERMS_OPEN_OPS）
+      if (c.get("termsPending") && !def.termsOpen) return termsRequired(c);
       // 役は契約の auth と合うものだけ通す（合わなければ止める・ZT2・ZT4・ZT10）
       //   ops：運営の人だけ ／ client：取引先の人だけ（/portal/ の API）／ device：PC の印だけ（/bridge/ の API）
       //   member：社内の人。取引先の人と PC の印は通さない。運営は「中を見る」の許可がある間だけ
@@ -103,7 +114,10 @@ export function op(deps: ContractDeps, operationId: string) {
       } catch {
         return err(c, 422, "validation_failed", "VALIDATION_ERROR", { details: [{ field: "body", message: "JSON" }] });
       }
-      const parsed = schema!.safeParse(raw);
+      // 口の前処理（K-53 の同意：同意の印が無いのを正本のエラーで返す・体の余計な項目を落とす）。前処理の後も、必ず契約の strict な形で確かめる
+      const pre = deps.hooks[operationId]?.input?.(raw);
+      if (pre && "reply" in pre) return c.json(pre.reply.body, pre.reply.status as 400);
+      const parsed = schema!.safeParse(pre ? pre.input : raw);
       if (!parsed.success)
         return err(c, 422, "validation_failed", "VALIDATION_ERROR", {
           details: parsed.error.issues.map((i) => ({ field: i.path.join(".") || "body", message: i.message })),
@@ -122,7 +136,7 @@ export function op(deps: ContractDeps, operationId: string) {
       if (offset === null) details.push({ field: "cursor", message: "不正" });
       if (q["scope_id"] !== undefined && !/^[0-9a-f-]{36}$/i.test(q["scope_id"]))
         details.push({ field: "scope_id", message: "uuid" });
-      else if (q["scope_id"] !== undefined && !repo.hasColumn(def.table as TableName, "scope_id"))
+      else if (q["scope_id"] !== undefined && !def.ignoresScope && !repo.hasColumn(def.table as TableName, "scope_id"))
         details.push({ field: "scope_id", message: "この一覧はグループで絞れない" });
       if (
         q["sort"] !== undefined &&

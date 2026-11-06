@@ -496,10 +496,44 @@ INPUTS = {
     "resendSignupEmail": ("SignupResendInput", {}),
     # 確認のリンクで確定する（K-52）：届いたメールのリンクの手がかりだけ。表の列（pw_iv など）は入力に出さない
     "verifySignup": ("SignupVerifyInput", {"token": "string"}),
+    # 規約に同意する（K-53）：同意の印と、同意する今の版（利用規約・プライバシーポリシー）の ID だけ。テナントと人はセッションから決める（体に入れても無視する）
+    "consentToTerms": ("TermsConsentInput", {"agree": "boolean", "terms_version_id": "string", "privacy_version_id": "string"}),
+}
+# get で始まるが並びを返す口（K-53）。一覧の問い合わせ（scope_id・cursor・limit・sort）は形だけ確かめて無視する
+LIST_OPS = {"getCurrentTerms"}
+# 同意し直しの間も止めない口（K-53・D-125.162）：規約の 2 つ・ログアウト・自分の取得。ここが正本で、契約（registry の termsOpen）に生成し、
+#   口の入口（apps/api/src/contract/op.ts）と 403・E-AUTH-010 の EARS の規則（05_flow/build_api.py の four()）がそれを読む
+TERMS_OPEN_OPS = {"consentToTerms", "getCurrentTerms", "signOut", "getMe"}
+
+# API を呼ばない画面の台帳（K-53・テスターのレビュー HIGH）。偽の API の対応を書かずに、理由つきでここに載せる。
+#   api_gate.py の A3・fb_gate.py の FB3・FB8 は、ここにあって scripts/ci/static_screens.py の S1〜S4 を満たす画面を被覆済みと数える
+#   （理由が空・SCREEN_API と両方に載る・code から辿れるコードが API を呼ぶ のどれかなら赤）。
+#   1 項目 = 画面 ID: {"reason": なぜ API を呼ばないか, "source": 根拠の決定, "code": 画面のコードの入口（apps/web の道・辿って調べる）}
+STATIC_SCREENS = {
+    "legal": {
+        "reason": "規約・プライバシーポリシーの文面は、ひな形（apps/web/content/legal/<kind>-v<版>.md）と設定（legalValues）だけで埋め、DB も API も読まない。画面だけを立ち上げる CI の段でも開け、?v= で古い版も出せるようにするため。今の版の名前と url は、リンクを出す登録の画面と同意し直しの画面が getCurrentTerms で取る",
+        "source": ["D-128.137", "D-128.146"],
+        "code": ["apps/web/app/(outside)/legal"],
+    },
 }
 # 口ごとの 4xx（operationId → 答えの並び）。ここにある口は、汎用の 409（冪等キー）・422 の代わりにこの並びを使う（429・502 は汎用のまま足す）。
 #   EARS の文には状態の番号を入れる（05_flow/build_testplan.py の classify() が番号で試験の名前を決める）
 ERRORS_4XX = {
+    # 規約に同意する（K-53・D-128.146）。版が古い（409・今の版の並び current）・同意の印が無い（422）。冪等キーは使わない（同じ版の 2 回目は 1 回目の行のまま）
+    "consentToTerms": [
+        {"status": 409, "code": "CONFLICT", "body": {"error": "conflict", "code": "E-CONF-012", "current": []}, "errors": ["E-CONF-012"],
+         "trigger": "同意する版が、押した時点の今の版でない（さらに新しい版が出た・出ていた版を取り下げた）",
+         "ears_form": "UNWANTED: IF 同意する版が今の版でないなら、Kaname は 409 と今の版の並び current を返し、同意の行を書かない"},
+        {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": ["E-VAL-019"],
+         "trigger": "同意の印（agree=true）が無い・版の ID が空か形が違うか無い版・利用規約とプライバシーポリシーの片方だけ",
+         "ears_form": "UNWANTED: IF 同意の印が無いか版の ID が受け付けられないなら、Kaname は 422 と項目ごとの理由（同意の印が無いときは E-VAL-019）を返し、同意の行を書かない"},
+    ],
+    # 今の版を読む（K-53）。DB が落ちたら中身を返さない
+    "getCurrentTerms": [
+        {"status": 500, "code": "E-PAGE-003", "body": {"error": "internal", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
+         "trigger": "今の版を読む DB が落ちた",
+         "ears_form": "UNWANTED: IF 今の版を読む DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、版も url も返さない"},
+    ],
     # 確認のリンクで確定する（K-52・D-088.9・D-128.146）。冪等キーは使わない：2 回目にログインの印を渡すと、リンクを持つ人なら誰でも入れてしまう
     "verifySignup": [
         {"status": 409, "code": "CONFLICT", "body": {"error": "conflict"}, "errors": ["E-CONF-011", "E-CONF-001", "E-AUTH-009"],
@@ -541,6 +575,9 @@ RESPONSES = {
     "getSignupStatus": ("SignupStatus", {"state": "string", "email": "string?", "expires_at": "string?"}),
     # 確定した（K-52）。ふつうは token にログインの印・signed_in=true。別のアカウントでログイン中に確定したら token=null・signed_in=false（D-128.137）。本人の id は返さない
     "verifySignup": ("SignupVerified", {"email": "string", "token": "string?", "signed_in": "boolean"}),
+    # 規約の今の版（K-53）：kind ごとに 1 つ。作った人・運営のテナントの ID は返さない
+    "getCurrentTerms": ("CurrentTerms", {"id": "string", "kind": "string", "version": "string", "url": "string", "published_at": "string"}),
+    "consentToTerms": ("TermsConsented", {"consented": "boolean"}),
     "getMySecurity": ("MySecurity", {"passkeys": "array", "has_password": "boolean", "two_factor": "boolean", "two_factor_required": "boolean", "backup_codes_left": "integer", "sessions": "array", "recent_events": "array"}),
     "startTwoFactor": ("TwoFactorSetup", {"otpauth_uri": "string", "secret_masked": "string", "expires_at": "string"}),
     "confirmTwoFactor": ("BackupCodes", {"codes": "array"}),

@@ -13,6 +13,8 @@ describe("PATCH /api/v1/me/password", () => {
   it.todo("test_patch_me_password_rejected_422");
   // UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
   it.todo("test_patch_me_password_rate_limited");
+  // UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
+  it.todo("test_patch_me_password_terms_pending");
   // UBIQUITOUS: PATCH /api/v1/me/password の副作用は関門 C2・C8 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
   it.todo("test_patch_me_password_shape");
 });

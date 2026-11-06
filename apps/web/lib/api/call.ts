@@ -3,6 +3,7 @@
 //   答えの扱いはどの画面でも同じ：401 は入り直し（入力途中は残す）・403 は権限が無い・404 は無い・422 は項目ごとの理由・429 は待つ秒数・501 はまだ作っていない口
 import { ENDPOINTS, type Ops, type OpName } from "@kaname/contracts";
 import { apiBase, getToken, notifyUnauthorized } from "./client";
+import { noticeTermsRequired } from "@/lib/terms-gate";
 
 export type CallArgs<K extends OpName> = ([Ops[K]["params"]] extends [never]
   ? { params?: undefined }
@@ -88,6 +89,7 @@ export async function call<K extends OpName>(op: K, args: CallArgs<K> = {} as Ca
     headers["content-type"] = "application/json";
     headers["idempotency-key"] = args.idempotencyKey ?? newKey();
   }
+  const sentAt = Date.now(); // 同意し直し（K-53）：同意できた時刻より前に出した要求の 403 は見ない
   const res = await fetch(
     `${apiBase()}${pathOf(e.path, args.params as Record<string, string> | undefined)}${q ? `?${q}` : ""}`,
     {
@@ -108,6 +110,8 @@ export async function call<K extends OpName>(op: K, args: CallArgs<K> = {} as Ca
     };
   }
   const code = String(json["code"] ?? json["error"] ?? res.status);
+  // 同意し直しが要る（K-53）：どの画面からでも同意し直しの画面へ移す
+  noticeTermsRequired(res.status, json["code"], json["message"], sentAt);
   const details = Array.isArray(json["details"]) ? (json["details"] as { field?: string; message?: string }[]) : [];
   // 正本のエラー（KanameError）は項目を detail.field で返す。文言は正本の message（K-51）
   const one = json["detail"] as { field?: unknown } | undefined;

@@ -206,6 +206,17 @@
           "source": [
             "D-095.2"
           ]
+        },
+        {
+          "id": "X-016",
+          "path": "apps/web/features/F1/consent-terms/legal-text.ts",
+          "reason": "規約・プライバシーポリシーの文面のページ（K-53）が、画面に同梱したひな形（apps/web/content/legal/*.md）を要求のときに読む。利用者のファイルではない",
+          "compensating_control": "読むのは apps/web/content/legal の <kind>-v<版>.md だけ（kind は terms・privacy の 2 つ・版は数だけ）・書かない・利用者由来のパスを受け取らない",
+          "expires_at": null,
+          "source": [
+            "D-128.137",
+            "D-128.146"
+          ]
         }
       ],
       "source": [

@@ -207,6 +207,31 @@
    "tests": [
     "apps/api/test/generated/post_auth_sign_up_verify.test.ts"
    ]
+  },
+  {
+   "paths": [
+    "apps/web/content/legal/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F1/terms.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/features/F1/consent-terms/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F1/terms.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_auth_terms_current.test.ts",
+    "apps/api/test/generated/post_auth_terms_consent.test.ts"
+   ]
   }
  ],
  "reads_ok": {
@@ -256,7 +281,9 @@
   "apps/web/tests/screens/qa-b-login-check.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
   "apps/web/tests/screens/qa-c-onboard.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
   "apps/web/tests/screens/setup-gate.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
-  "apps/web/tests/states.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）"
+  "apps/web/tests/states.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
+  "apps/web/features/F1/consent-terms/legal-text.ts": "文面のページが要求のときに自分のひな形（apps/web/content/legal/*.md）を読む（試験でない。中身のそろいは terms.test.ts の K53-API-035 が data_links で流れる・K-53）",
+  "apps/web/tests/features/F1/terms.spec.ts": "画面の試験（Playwright・CI の web の段）が施行日の行を読むためにひな形を読む（単体の試験の範囲の外）"
  },
  "jobs": {
   "database": {
@@ -290,7 +317,12 @@
     "05_flow/flow.json",
     "04_design/**",
     "07_qa/test-specs/errors.json",
-    "11_tickets/tickets.json"
+    "11_tickets/tickets.json",
+    "apps/api/src/**",
+    "packages/auth/src/**",
+    "packages/db/src/**",
+    "packages/db/migrations/**",
+    "packages/db/policies/**"
    ]
   }
  }

@@ -19,6 +19,7 @@ import { createApp } from "../src/app.js";
 import { assertApiStartup, startupChecks } from "../src/startup.js";
 import type { Hook } from "../src/contract/deps.js";
 import { makeHarness, type Harness } from "./harness.js";
+import { agreeCurrentTerms } from "./_pending.js";
 
 const DB_URL = process.env["DATABASE_URL"]!;
 const APP_URL = DB_URL.replace(/\/\/[^@]*@/, "//kaname_app:kaname_app@");
@@ -1473,6 +1474,7 @@ describe("G-14 口座状態の波及（本物の認証のセッション）", ()
       const pw = "correct-horse-battery-staple";
       const su = await auth.api.signUpEmail({ body: { name: "G-14", email, password: pw } });
       await admin.query("update members set auth_user_id = $1 where id = $2", [su.user.id, m]);
+      await agreeCurrentTerms(su.user.id); // 今の版に同意済みの人にする（K-53 の同意し直しで止まらないように）
       const web = await signIn(auth, email, pw);
       const bridge = await signIn(auth, email, pw, "Kaname-Bridge/0.1 (macOS)");
       const kinds = (

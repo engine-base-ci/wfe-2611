@@ -12,7 +12,8 @@ import { SCHEMAS } from "@kaname/contracts/schemas";
 import { createApp } from "../src/app.js";
 import type { ContractDeps, Hook } from "../src/contract/deps.js";
 
-export type Who = "boss" | "staff" | "ops" | "opsB" | "anon";
+/** pending：boss と同じ人で、同意し直しの印（K-53 の termsPending）が立ったセッション。生成の試験の terms_pending の型が使う */
+export type Who = "boss" | "staff" | "ops" | "opsB" | "pending" | "anon";
 // 接続先は DATABASE_URL だけ（vitest は vitest.config.ts が決める・契約 fuzz は fuzz.sh を呼ぶ人が渡す）。手元の DB に黙って当てない
 const DB_URL =
   process.env["DATABASE_URL"] ??
@@ -73,6 +74,7 @@ export async function makeHarness(): Promise<Harness> {
     staff: { tenantId: S.tenantA, userId: S.staffA, role: "member" },
     ops: { tenantId: S.opsTenant, userId: S.opsId, role: "ops", stepUpAt: new Date() }, // 対象の会社は x-tenant-id（call が表に合わせて入れる）。会社 a は許可あり
     opsB: { tenantId: S.tenantB, userId: S.opsId, role: "ops" }, // 会社 b は許可が期限切れ
+    pending: { tenantId: S.tenantA, userId: S.bossA, role: "member", stepUpAt: new Date() }, // 印が立っている（下の resolve が termsPending を返す）
   };
   const hooks: Record<string, Hook> = {};
   const limits: Record<string, number> = {};
@@ -80,9 +82,10 @@ export async function makeHarness(): Promise<Harness> {
   const hono = createApp({
     version: "test",
     repo,
-    resolveSession: async (c) => {
-      const t = c.req.header("authorization")?.replace(/^Bearer\s+/i, "") as Exclude<Who, "anon"> | undefined;
-      return t && who[t] ? who[t] : null;
+    // 印（termsPending）も返すので resolve（Resolved を返す形・K-53）で解く。印が立つのは pending だけ
+    resolve: async (headers) => {
+      const t = headers.get("authorization")?.replace(/^Bearer\s+/i, "") as Exclude<Who, "anon"> | undefined;
+      return t && who[t] ? { ctx: who[t], sessionId: "", authUserId: "", termsPending: t === "pending" } : null;
     },
     contract: deps,
   });

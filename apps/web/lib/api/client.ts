@@ -2,6 +2,7 @@
 // 401 は「入り直し」に落とす。入力途中の内容は draft（sessionStorage）に残して失わない
 import type { ApiError, ApiResponse } from "@kaname/contracts";
 import { WEB_ENV } from "@/lib/env";
+import { noticeTermsRequired } from "@/lib/terms-gate";
 import { ENDPOINTS, type EndpointDef, type EndpointKind } from "@kaname/contracts";
 
 export const apiBase = (): string => WEB_ENV.apiBase;
@@ -73,6 +74,7 @@ export async function request<T>(method: string, path: string, o: RequestOptions
     headers["content-type"] = "application/json";
     headers["idempotency-key"] = o.idempotencyKey ?? uuid();
   }
+  const sentAt = Date.now(); // 同意し直し（K-53）：同意できた時刻より前に出した要求の 403 は見ない
   const res = await fetch(`${apiBase()}${path}${qs}`, {
     method,
     headers,
@@ -83,7 +85,11 @@ export async function request<T>(method: string, path: string, o: RequestOptions
   }
   if (res.status === 204) return undefined as T;
   const json = (await res.json().catch(() => ({ error: "bad_response" }))) as unknown;
-  if (!res.ok) throw new ApiRequestError(res.status, json as ApiError);
+  if (!res.ok) {
+    const b = json as ApiError;
+    noticeTermsRequired(res.status, b.code, b.message, sentAt); // 同意し直しが要る（K-53）
+    throw new ApiRequestError(res.status, b);
+  }
   return json as T;
 }
 

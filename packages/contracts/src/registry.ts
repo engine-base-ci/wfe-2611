@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:e9ce31d2e9f63d5e
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:0fed2bf4953d1d89
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -31,6 +31,10 @@ export interface EndpointDef {
     /** 行に結ぶ言葉の確かめ（K-15・scripts/ci/row_rules.mjs）。:id の行を RLS の中で読み、見えなければ 404・sql が偽なら 403 */
     row: { table: string; sql: string } | null;
   };
+  /** 同意し直し（K-53）の間も止めない口（規約の 2 つ・ログアウト・自分の取得）。正本は 05_flow/screen_api.py の TERMS_OPEN_OPS */
+  termsOpen: boolean;
+  /** 一覧の scope_id（グループで絞る）を形だけ確かめて無視する口。正本は 05_flow/screen_api.py の LIST_OPS */
+  ignoresScope: boolean;
 }
 export const ENDPOINTS: readonly EndpointDef[] = [
   {
@@ -59,7 +63,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A123"
@@ -79,7 +84,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "acceptances",
         "sql": "exists (select 1 from tickets t where t.id = ticket_id and (t.assignee_member_id = app.user_id() or t.created_by = app.user_id() or app.manages_scope(t.scope_id)))"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -104,7 +111,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A104"
@@ -124,7 +132,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "action_runs",
         "sql": "true"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -151,7 +161,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A57"
@@ -171,7 +182,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "action_runs",
         "sql": "(created_by = app.user_id() or app.manages_scope(scope_id) or exists (select 1 from approvals a join tickets t on t.id = a.ticket_id where a.action_run_id = action_runs.id and t.assignee_member_id = app.user_id()))"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -200,7 +213,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A89"
@@ -220,7 +234,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "action_runs",
         "sql": "(created_by = app.user_id() or app.manages_scope(scope_id) or exists (select 1 from approvals a join tickets t on t.id = a.ticket_id where a.action_run_id = action_runs.id and t.assignee_member_id = app.user_id()))"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -247,7 +263,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A57"
@@ -267,7 +284,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "action_runs",
         "sql": "(created_by = app.user_id() or app.manages_scope(scope_id) or exists (select 1 from approvals a join tickets t on t.id = a.ticket_id where a.action_run_id = action_runs.id and t.assignee_member_id = app.user_id()))"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -291,7 +310,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A15"
@@ -311,7 +331,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "approvals",
         "sql": "(approver_member_id = app.user_id() or app.manages_scope(scope_id) or exists (select 1 from tickets t where t.id = ticket_id and (t.assignee_member_id = app.user_id() or t.created_by = app.user_id() or app.manages_scope(t.scope_id))))"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -338,7 +360,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A15"
@@ -358,7 +381,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "approvals",
         "sql": "approver_member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -385,7 +410,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A15"
@@ -405,7 +431,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "approvals",
         "sql": "approver_member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -432,7 +460,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A15"
@@ -452,7 +481,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "approvals",
         "sql": "approver_member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -481,7 +512,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A15",
@@ -502,7 +534,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "approvals",
         "sql": "(approver_member_id = app.user_id() or app.manages_scope(scope_id) or exists (select 1 from tickets t where t.id = ticket_id and (t.assignee_member_id = app.user_id() or t.created_by = app.user_id() or app.manages_scope(t.scope_id))))"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -531,7 +565,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A89"
@@ -551,7 +586,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "approvals",
         "sql": "approver_member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -577,7 +614,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A15"
@@ -594,7 +632,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -620,7 +660,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A15"
@@ -637,7 +678,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -660,7 +703,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A15"
@@ -677,7 +721,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -700,7 +746,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A15"
@@ -717,7 +764,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -741,7 +790,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A101"
@@ -761,7 +811,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "artifact_versions",
         "sql": "true"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -789,7 +841,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A95"
@@ -809,7 +862,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "artifact_versions",
         "sql": "owner_member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -836,7 +891,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A95"
@@ -856,7 +912,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "artifacts",
         "sql": "owner_member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -879,7 +937,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A33"
@@ -896,7 +955,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -934,7 +995,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -976,7 +1039,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -1018,7 +1083,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -1060,7 +1127,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -1101,7 +1170,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -1139,7 +1210,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -1180,7 +1253,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -1223,7 +1298,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": true,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -1265,7 +1342,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -1306,7 +1385,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -1344,7 +1425,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -1368,8 +1451,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "errors": [
       409,
-      410,
       422,
+      410,
       429
     ],
     "acts": [
@@ -1387,7 +1470,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -1413,7 +1498,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A13"
@@ -1430,7 +1516,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -1438,9 +1526,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "consentToTerms",
     "table": "terms_consents",
     "kind": "create",
-    "input": "TermsConsentsInput",
+    "input": "TermsConsentInput",
     "success": 201,
-    "output": "TermsConsents",
+    "output": "TermsConsented",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -1473,7 +1561,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": true,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -1483,8 +1573,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
-    "output": "TermsVersions",
-    "outputList": false,
+    "output": "CurrentTerms",
+    "outputList": true,
     "generic": false,
     "auth": "public",
     "rateLimit": {
@@ -1494,6 +1584,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "chokePoints": [],
     "errors": [
       422,
+      500,
       429
     ],
     "acts": [
@@ -1511,7 +1602,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": true,
+    "ignoresScope": true
   },
   {
     "method": "POST",
@@ -1552,7 +1645,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -1597,7 +1692,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -1642,7 +1739,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -1686,7 +1785,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -1710,7 +1811,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A09"
@@ -1727,7 +1829,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -1755,7 +1859,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A09"
@@ -1775,7 +1880,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "sessions",
         "sql": "member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "DELETE",
@@ -1803,7 +1910,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A09"
@@ -1823,7 +1931,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "sessions",
         "sql": "member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -1864,7 +1974,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -1909,7 +2021,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -1954,7 +2068,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -2001,7 +2117,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -2043,7 +2161,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -2090,7 +2210,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -2137,7 +2259,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -2184,7 +2308,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -2230,7 +2356,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -2272,7 +2400,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -2319,7 +2449,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -2365,7 +2497,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -2408,7 +2542,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -2436,7 +2572,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A09"
@@ -2453,7 +2590,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -2477,7 +2616,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A09"
@@ -2494,7 +2634,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -2518,7 +2660,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A09"
@@ -2535,7 +2678,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -2578,7 +2723,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -2605,7 +2752,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A15"
@@ -2625,7 +2773,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "checks",
         "sql": "exists (select 1 from approvals a where a.ticket_id = checks.ticket_id and a.approver_member_id = app.user_id() and a.deleted_at is null)"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -2648,7 +2798,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A103"
@@ -2665,7 +2816,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -2692,7 +2845,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A121"
@@ -2712,7 +2866,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "client_contacts",
         "sql": "(app.client_editable(client_contacts.client_id) or exists (select 1 from client_groups g where g.client_id = client_contacts.client_id and g.deleted_at is null and app.manages_scope(g.scope_id)))"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "DELETE",
@@ -2739,7 +2895,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A121"
@@ -2759,7 +2916,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "client_contacts",
         "sql": "(app.client_editable(client_contacts.client_id) or exists (select 1 from client_groups g where g.client_id = client_contacts.client_id and g.deleted_at is null and app.manages_scope(g.scope_id)))"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -2787,7 +2946,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A121"
@@ -2807,7 +2967,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "client_contacts",
         "sql": "(app.client_editable(client_contacts.client_id) or exists (select 1 from client_groups g where g.client_id = client_contacts.client_id and g.deleted_at is null and app.manages_scope(g.scope_id)))"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -2831,7 +2993,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A122"
@@ -2848,7 +3011,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -2873,7 +3038,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A122"
@@ -2893,7 +3059,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "client_requests",
         "sql": "true"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -2921,7 +3089,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A122"
@@ -2941,7 +3110,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "client_requests",
         "sql": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.client_visible(client_id) AND (app.client_editable(client_id) OR has_permission(current_setting('app.user_id', true)::uuid, 'client_requests', routed_scope_id, 'edit'))"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -2970,7 +3141,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A122"
@@ -2990,7 +3162,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "client_requests",
         "sql": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.client_visible(client_id) AND (app.client_editable(client_id) OR has_permission(current_setting('app.user_id', true)::uuid, 'client_requests', routed_scope_id, 'edit'))"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -3019,7 +3193,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A122"
@@ -3039,7 +3214,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "client_requests",
         "sql": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.client_visible(client_id) AND (app.client_editable(client_id) OR has_permission(current_setting('app.user_id', true)::uuid, 'client_requests', routed_scope_id, 'edit'))"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -3068,7 +3245,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A122"
@@ -3088,7 +3266,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "client_requests",
         "sql": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.client_visible(client_id) AND (app.client_editable(client_id) OR has_permission(current_setting('app.user_id', true)::uuid, 'client_requests', routed_scope_id, 'edit'))"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -3111,7 +3291,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A103",
@@ -3130,7 +3311,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -3157,7 +3340,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A121"
@@ -3174,7 +3358,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -3198,7 +3384,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A121"
@@ -3218,7 +3405,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "clients",
         "sql": "true"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -3245,7 +3434,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A121"
@@ -3265,7 +3455,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "clients",
         "sql": "(app.client_editable(clients.id) or exists (select 1 from client_groups g where g.client_id = clients.id and g.deleted_at is null and app.manages_scope(g.scope_id)))"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -3289,7 +3481,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A121"
@@ -3309,7 +3502,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "clients",
         "sql": "true"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -3337,7 +3532,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A121"
@@ -3357,7 +3553,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "clients",
         "sql": "(app.client_editable(clients.id) or exists (select 1 from client_groups g where g.client_id = clients.id and g.deleted_at is null and app.manages_scope(g.scope_id)))"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -3381,7 +3579,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A121"
@@ -3401,7 +3600,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "clients",
         "sql": "true"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -3428,7 +3629,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A121"
@@ -3448,7 +3650,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "clients",
         "sql": "(app.client_editable(clients.id) or exists (select 1 from client_groups g where g.client_id = clients.id and g.deleted_at is null and app.manages_scope(g.scope_id)))"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -3471,7 +3675,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A121"
@@ -3488,7 +3693,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -3514,7 +3721,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A20"
@@ -3531,7 +3739,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -3558,7 +3768,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A91"
@@ -3575,7 +3786,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -3598,7 +3811,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A53"
@@ -3615,7 +3829,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -3641,7 +3857,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A53"
@@ -3658,7 +3875,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -3681,7 +3900,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A53"
@@ -3698,7 +3918,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -3721,7 +3943,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A30"
@@ -3738,7 +3961,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -3761,7 +3986,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A53"
@@ -3778,7 +4004,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -3801,7 +4029,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A88"
@@ -3818,7 +4047,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -3846,7 +4077,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A100",
@@ -3864,7 +4096,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -3888,7 +4122,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A88"
@@ -3908,7 +4143,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "conversations",
         "sql": "owner_member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -3934,7 +4171,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A88"
@@ -3954,7 +4192,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "conversations",
         "sql": "owner_member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "DELETE",
@@ -3980,7 +4220,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A88"
@@ -4000,7 +4241,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "conversations",
         "sql": "owner_member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -4030,7 +4273,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A90"
@@ -4050,7 +4294,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "conversations",
         "sql": "owner_member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -4077,7 +4323,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A20"
@@ -4097,7 +4344,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "conversations",
         "sql": "owner_member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -4127,7 +4376,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A100",
@@ -4148,7 +4398,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "conversations",
         "sql": "owner_member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -4177,7 +4429,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A91"
@@ -4197,7 +4450,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "conversations",
         "sql": "owner_member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -4227,7 +4482,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A20"
@@ -4247,7 +4503,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "conversations",
         "sql": "owner_member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -4274,7 +4532,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A20"
@@ -4294,7 +4553,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "conversations",
         "sql": "owner_member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -4319,7 +4580,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A10"
@@ -4336,7 +4598,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -4363,7 +4627,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A10"
@@ -4380,7 +4645,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": "always",
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -4407,7 +4674,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A10"
@@ -4427,7 +4695,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "credentials",
         "sql": "owner_member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "DELETE",
@@ -4454,7 +4724,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A10"
@@ -4474,7 +4745,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "credentials",
         "sql": "owner_member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -4502,7 +4775,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A10"
@@ -4522,7 +4796,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "credentials",
         "sql": "owner_member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -4550,7 +4826,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A10"
@@ -4570,7 +4847,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "credentials",
         "sql": "owner_member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -4597,7 +4876,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A40"
@@ -4615,7 +4895,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": "always",
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -4641,7 +4923,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A40"
@@ -4661,7 +4944,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "export_jobs",
         "sql": "requested_by = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -4684,7 +4969,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A110"
@@ -4701,7 +4987,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -4724,7 +5012,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A67"
@@ -4741,7 +5030,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -4768,7 +5059,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A67"
@@ -4785,7 +5077,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -4809,7 +5103,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A67"
@@ -4829,7 +5124,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "inquiries",
         "sql": "opened_by_member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -4857,7 +5154,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A67"
@@ -4877,7 +5175,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "inquiries",
         "sql": "opened_by_member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -4905,7 +5205,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A67"
@@ -4925,7 +5226,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "inquiries",
         "sql": "opened_by_member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -4952,7 +5255,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A67"
@@ -4969,7 +5273,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -4996,7 +5302,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A36"
@@ -5013,7 +5320,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": "admin_role",
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "DELETE",
@@ -5040,7 +5349,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A36"
@@ -5057,7 +5367,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -5085,7 +5397,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A36"
@@ -5102,7 +5415,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -5129,7 +5444,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A36"
@@ -5146,7 +5462,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": "admin_role",
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -5170,7 +5488,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A69"
@@ -5187,7 +5506,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -5213,7 +5534,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A114"
@@ -5230,7 +5552,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -5256,7 +5580,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A114"
@@ -5273,7 +5598,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -5296,7 +5623,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A114"
@@ -5313,7 +5641,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -5336,7 +5666,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A114"
@@ -5353,7 +5684,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -5376,7 +5709,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A114"
@@ -5393,7 +5727,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -5420,7 +5756,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A114"
@@ -5440,7 +5777,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "knowledge_page_versions",
         "sql": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.kpage_writable(page_id)"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -5467,7 +5806,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A114"
@@ -5487,7 +5827,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "knowledge_page_versions",
         "sql": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.kpage_writable(page_id)"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -5510,7 +5852,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A114"
@@ -5527,7 +5870,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -5550,7 +5895,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A114"
@@ -5567,7 +5913,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -5593,7 +5941,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A114"
@@ -5610,7 +5959,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -5634,7 +5985,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A114"
@@ -5654,7 +6006,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "imports",
         "sql": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'imports', scope_id, 'edit')"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -5681,7 +6035,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A114"
@@ -5701,7 +6056,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "imports",
         "sql": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'imports', scope_id, 'edit')"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -5724,7 +6081,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A114"
@@ -5741,7 +6099,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -5767,7 +6127,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A114"
@@ -5784,7 +6145,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -5808,7 +6171,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A114"
@@ -5828,7 +6192,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "knowledge_pages",
         "sql": "true"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -5854,7 +6220,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A114"
@@ -5874,7 +6241,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "knowledge_pages",
         "sql": "app.kpage_writable(id)"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -5901,7 +6270,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A114"
@@ -5921,7 +6291,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "knowledge_pages",
         "sql": "app.kpage_writable(id)"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -5948,7 +6320,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A114"
@@ -5968,7 +6341,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "knowledge_pages",
         "sql": "app.kpage_writable(id)"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -5994,7 +6369,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A114"
@@ -6014,7 +6390,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "knowledge_pages",
         "sql": "app.kpage_writable(id)"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "DELETE",
@@ -6040,7 +6418,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A114"
@@ -6060,7 +6439,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "knowledge_pages",
         "sql": "app.kpage_writable(id)"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -6084,7 +6465,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A114"
@@ -6104,7 +6486,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "knowledge_pages",
         "sql": "true"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -6131,7 +6515,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A114"
@@ -6151,7 +6536,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "knowledge_pages",
         "sql": "app.kpage_writable(id)"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -6175,7 +6562,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A114"
@@ -6195,7 +6583,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "knowledge_pages",
         "sql": "true"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -6219,7 +6609,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A114"
@@ -6239,7 +6630,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "knowledge_pages",
         "sql": "true"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -6266,7 +6659,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A114"
@@ -6286,7 +6680,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "knowledge_pages",
         "sql": "true"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -6313,7 +6709,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A114"
@@ -6333,7 +6730,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "knowledge_pages",
         "sql": "app.kpage_writable(id)"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -6360,7 +6759,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A114"
@@ -6380,7 +6780,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "knowledge_pages",
         "sql": "app.kpage_writable(id)"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -6404,7 +6806,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A114"
@@ -6424,7 +6827,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "knowledge_pages",
         "sql": "true"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -6451,7 +6856,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A114"
@@ -6471,7 +6877,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "knowledge_pages",
         "sql": "app.kpage_writable(id)"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -6495,7 +6903,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A114"
@@ -6515,7 +6924,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "knowledge_pages",
         "sql": "true"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -6542,7 +6953,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A114"
@@ -6562,7 +6974,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "knowledge_pages",
         "sql": "app.kpage_writable(id)"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -6588,7 +7002,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A117"
@@ -6605,7 +7020,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -6631,7 +7048,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A117"
@@ -6648,7 +7066,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -6671,7 +7091,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A30",
@@ -6689,7 +7110,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -6716,7 +7139,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A30",
@@ -6737,7 +7161,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "learning_candidates",
         "sql": "owner_member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -6764,7 +7190,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A30",
@@ -6785,7 +7212,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "learning_candidates",
         "sql": "owner_member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -6812,7 +7241,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A131"
@@ -6832,7 +7262,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "learning_candidates",
         "sql": "owner_member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -6859,7 +7291,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A30"
@@ -6879,7 +7312,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "learning_candidates",
         "sql": "owner_member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -6919,7 +7354,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": true,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -6944,7 +7381,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A74"
@@ -6961,7 +7399,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -6987,7 +7427,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A74"
@@ -7004,7 +7445,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -7031,7 +7474,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A04"
@@ -7048,7 +7492,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": "always",
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -7074,7 +7520,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A74"
@@ -7091,7 +7538,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": "always",
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -7117,7 +7566,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A74"
@@ -7134,7 +7584,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -7157,7 +7609,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A74"
@@ -7174,7 +7627,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -7199,7 +7654,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A74"
@@ -7216,7 +7672,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -7242,7 +7700,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A74"
@@ -7259,7 +7718,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -7286,7 +7747,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A97"
@@ -7303,7 +7765,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "DELETE",
@@ -7330,7 +7794,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A97"
@@ -7347,7 +7812,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": "always",
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -7373,7 +7840,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A97"
@@ -7390,7 +7858,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": "always",
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -7415,7 +7885,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A04",
@@ -7433,7 +7904,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -7456,7 +7929,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A74"
@@ -7473,7 +7947,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "DELETE",
@@ -7499,7 +7975,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A74"
@@ -7519,7 +7996,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "sessions",
         "sql": "member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -7545,7 +8024,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A74"
@@ -7562,7 +8042,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -7585,7 +8067,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A74"
@@ -7602,7 +8085,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -7628,7 +8113,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A74"
@@ -7645,7 +8131,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "DELETE",
@@ -7670,7 +8158,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
-      429
+      429,
+      403
     ],
     "acts": [
       "A04"
@@ -7687,7 +8176,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": "always",
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -7714,7 +8205,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A04"
@@ -7731,7 +8223,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -7758,7 +8252,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A04"
@@ -7775,7 +8270,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": "always",
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -7798,7 +8295,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A94"
@@ -7815,7 +8313,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "DELETE",
@@ -7841,7 +8341,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A74"
@@ -7861,7 +8362,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "tenant_memberships",
         "sql": "member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -7884,7 +8387,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A103"
@@ -7901,7 +8405,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -7925,7 +8431,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A61"
@@ -7942,7 +8449,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "DELETE",
@@ -7968,7 +8477,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A62"
@@ -7985,7 +8495,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": "always",
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -8011,7 +8523,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A61"
@@ -8028,7 +8541,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": "always",
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -8056,7 +8571,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A36"
@@ -8073,7 +8589,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -8099,7 +8617,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A61"
@@ -8116,7 +8635,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": "always",
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -8140,7 +8661,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A62"
@@ -8157,7 +8679,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -8184,7 +8708,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A62"
@@ -8201,7 +8726,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": "always",
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -8227,7 +8754,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A61"
@@ -8244,7 +8772,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": "always",
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -8271,7 +8801,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A62"
@@ -8288,7 +8819,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": "always",
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -8316,7 +8849,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A04"
@@ -8334,7 +8868,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": "always",
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -8357,7 +8893,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A30"
@@ -8374,7 +8911,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -8400,7 +8939,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A30"
@@ -8417,7 +8957,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -8443,7 +8985,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A30"
@@ -8463,7 +9006,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "memories",
         "sql": "owner_member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "DELETE",
@@ -8489,7 +9034,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A30"
@@ -8509,7 +9055,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "memories",
         "sql": "owner_member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -8536,7 +9084,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A131",
@@ -8557,7 +9106,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "memories",
         "sql": "owner_member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -8585,7 +9136,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A95"
@@ -8605,7 +9157,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "messages",
         "sql": "exists (select 1 from conversations c where c.id = conversation_id and c.owner_member_id = app.user_id())"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -8628,7 +9182,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A68"
@@ -8645,7 +9200,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -8672,7 +9229,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A68"
@@ -8692,7 +9250,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "notices",
         "sql": "true"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -8715,7 +9275,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A109"
@@ -8732,7 +9293,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -8758,7 +9321,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A109"
@@ -8778,7 +9342,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "notifications",
         "sql": "member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -8804,7 +9370,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A109"
@@ -8821,7 +9388,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -8844,7 +9413,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A70"
@@ -8861,7 +9431,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "inquiry",
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -8885,7 +9457,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A70"
@@ -8902,7 +9475,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "inquiry",
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -8929,7 +9504,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A70"
@@ -8946,7 +9522,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "inquiry",
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -8974,7 +9552,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A70"
@@ -8991,7 +9570,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "inquiry",
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -9019,7 +9600,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A70"
@@ -9036,7 +9618,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "inquiry",
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -9059,7 +9643,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A72"
@@ -9076,7 +9661,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "money",
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -9103,7 +9690,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A72"
@@ -9120,7 +9708,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "money",
       "stepUp": "always",
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -9146,7 +9736,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A72"
@@ -9163,7 +9754,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "money",
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -9189,7 +9782,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A72"
@@ -9206,7 +9800,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "money",
       "stepUp": "always",
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -9231,7 +9827,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A134"
@@ -9248,7 +9845,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "ops_people",
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -9275,7 +9874,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A134"
@@ -9292,7 +9892,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "ops_people",
       "stepUp": "always",
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -9319,7 +9921,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A134"
@@ -9336,7 +9939,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "ops_people",
       "stepUp": "always",
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "DELETE",
@@ -9363,7 +9968,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A134"
@@ -9380,7 +9986,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "ops_people",
       "stepUp": "always",
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -9403,7 +10011,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A71"
@@ -9420,7 +10029,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "notice",
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -9447,7 +10058,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A71"
@@ -9464,7 +10076,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "notice",
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -9488,7 +10102,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A71"
@@ -9505,7 +10120,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "notice",
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -9532,7 +10149,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A71"
@@ -9549,7 +10167,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "notice",
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -9577,7 +10197,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A71"
@@ -9594,7 +10215,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "notice",
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -9622,7 +10245,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A71"
@@ -9639,7 +10263,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "notice",
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -9664,7 +10290,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A80"
@@ -9681,7 +10308,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "distribute",
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "DELETE",
@@ -9707,7 +10336,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A64"
@@ -9724,7 +10354,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "peek",
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -9749,7 +10381,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A133"
@@ -9766,7 +10399,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "plan_propose",
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -9791,7 +10426,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A133"
@@ -9808,7 +10444,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "plan_propose",
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -9836,7 +10474,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A133"
@@ -9853,7 +10492,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "plan_propose",
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -9881,7 +10522,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A133"
@@ -9898,7 +10540,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "plan_propose",
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -9927,7 +10571,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A133"
@@ -9944,7 +10589,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "plan_decide",
       "stepUp": "always",
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -9970,7 +10617,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A133"
@@ -9987,7 +10635,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "plan_propose",
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -10016,7 +10666,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A133"
@@ -10033,7 +10684,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "plan_decide",
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -10062,7 +10715,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A133"
@@ -10079,7 +10733,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "plan_propose",
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -10104,7 +10760,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A133"
@@ -10121,7 +10778,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "plan_propose",
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -10144,7 +10803,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A60"
@@ -10161,7 +10821,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "any",
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -10184,7 +10846,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A128"
@@ -10201,7 +10864,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "distribute",
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -10225,7 +10890,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A128"
@@ -10242,7 +10908,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "distribute",
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -10270,7 +10938,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A128"
@@ -10287,7 +10956,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "distribute",
       "stepUp": "always",
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -10314,7 +10985,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A80"
@@ -10331,7 +11003,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "distribute",
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -10357,7 +11031,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A80"
@@ -10374,7 +11049,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "distribute",
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -10399,7 +11076,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A80"
@@ -10416,7 +11094,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "distribute",
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -10442,7 +11122,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A80"
@@ -10459,7 +11140,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "distribute",
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -10487,7 +11170,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A80"
@@ -10504,7 +11188,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "distribute",
       "stepUp": "always",
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -10532,7 +11218,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A80"
@@ -10549,7 +11236,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "distribute",
       "stepUp": "always",
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -10572,7 +11261,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A60"
@@ -10589,7 +11279,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "any",
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -10613,7 +11305,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A64"
@@ -10630,7 +11323,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "any",
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -10654,7 +11349,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A64"
@@ -10671,7 +11367,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "any",
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -10695,7 +11393,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A64"
@@ -10712,7 +11411,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "money",
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -10736,7 +11437,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A64"
@@ -10753,7 +11455,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "inquiry",
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -10777,7 +11481,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A64"
@@ -10794,7 +11499,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "inquiry",
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -10821,7 +11528,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A64"
@@ -10838,7 +11546,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "inquiry",
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -10865,7 +11575,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A64"
@@ -10882,7 +11593,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "notice",
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -10909,7 +11622,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A64"
@@ -10926,7 +11640,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "peek",
       "stepUp": "always",
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -10953,7 +11669,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A64"
@@ -10970,7 +11687,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "money",
       "stepUp": "always",
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -10997,7 +11716,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A127"
@@ -11014,7 +11734,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "stop",
       "stepUp": "always",
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -11041,7 +11763,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A127"
@@ -11058,7 +11781,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "stop",
       "stepUp": "always",
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -11084,7 +11809,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A60"
@@ -11101,7 +11827,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": "any",
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -11124,7 +11852,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A125"
@@ -11141,7 +11870,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -11165,7 +11896,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A126"
@@ -11182,7 +11914,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -11210,7 +11944,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A126"
@@ -11227,7 +11962,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -11254,7 +11991,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A124"
@@ -11271,7 +12009,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -11294,7 +12034,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A125"
@@ -11311,7 +12052,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -11338,7 +12081,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A124"
@@ -11355,7 +12099,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -11379,7 +12125,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A124"
@@ -11396,7 +12143,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -11424,7 +12173,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A124"
@@ -11441,7 +12191,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -11468,7 +12220,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A124"
@@ -11485,7 +12238,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -11509,7 +12264,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A125"
@@ -11526,7 +12282,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -11549,7 +12307,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A121",
@@ -11568,7 +12327,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -11595,7 +12356,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A121",
@@ -11614,7 +12376,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -11638,7 +12402,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A131"
@@ -11658,7 +12423,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "policies",
         "sql": "true"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -11684,7 +12451,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A131"
@@ -11704,7 +12472,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "policies",
         "sql": "created_by = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "DELETE",
@@ -11730,7 +12500,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A131"
@@ -11750,7 +12521,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "policies",
         "sql": "created_by = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -11776,7 +12549,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A118",
@@ -11795,7 +12569,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -11818,7 +12594,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A58"
@@ -11835,7 +12612,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -11861,7 +12640,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A58"
@@ -11878,7 +12658,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -11904,7 +12686,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A58"
@@ -11924,7 +12707,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "saved_views",
         "sql": "(member_id = app.user_id() or app.manages_scope(scope_id))"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "DELETE",
@@ -11950,7 +12735,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A58"
@@ -11970,7 +12756,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "saved_views",
         "sql": "(member_id = app.user_id() or app.manages_scope(scope_id))"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -11993,7 +12781,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A117"
@@ -12010,7 +12799,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -12036,7 +12827,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A117"
@@ -12053,7 +12845,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -12079,7 +12873,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A117"
@@ -12096,7 +12891,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -12120,7 +12917,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A58"
@@ -12140,7 +12938,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "scopes",
         "sql": "true"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -12163,7 +12963,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A21"
@@ -12180,7 +12981,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -12203,7 +13006,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A68"
@@ -12220,7 +13024,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -12243,7 +13049,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A58"
@@ -12260,7 +13067,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -12288,7 +13097,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A102"
@@ -12308,7 +13118,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "test_specs",
         "sql": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.ticket_writable(ticket_id)"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "DELETE",
@@ -12336,7 +13148,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A102"
@@ -12356,7 +13169,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "test_specs",
         "sql": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.ticket_writable(ticket_id)"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -12382,7 +13197,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A108"
@@ -12402,7 +13218,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "ticket_decisions",
         "sql": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.ticket_writable(ticket_id)"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -12429,7 +13247,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A110"
@@ -12450,7 +13269,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "ticket_handovers",
         "sql": "to_member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -12477,7 +13298,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A99"
@@ -12494,7 +13316,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -12518,7 +13342,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A99"
@@ -12538,7 +13363,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "ticket_imports",
         "sql": "uploaded_by = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -12565,7 +13392,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A99"
@@ -12585,7 +13413,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "ticket_imports",
         "sql": "uploaded_by = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -12608,7 +13438,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A103"
@@ -12625,7 +13456,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -12652,7 +13485,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A101"
@@ -12669,7 +13503,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -12692,7 +13528,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A120"
@@ -12709,7 +13546,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -12736,7 +13575,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A120"
@@ -12753,7 +13593,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "DELETE",
@@ -12779,7 +13621,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A103"
@@ -12799,7 +13642,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "ticket_links",
         "sql": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.ticket_writable(from_ticket_id) AND app.ticket_visible(to_ticket_id)"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -12826,7 +13671,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A107"
@@ -12846,7 +13692,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "ticket_messages",
         "sql": "author_member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "DELETE",
@@ -12873,7 +13721,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A107"
@@ -12893,7 +13742,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "ticket_messages",
         "sql": "author_member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -12921,7 +13772,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A107"
@@ -12941,7 +13793,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "ticket_messages",
         "sql": "true"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -12964,7 +13818,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A103"
@@ -12981,7 +13836,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -13004,7 +13861,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A113",
@@ -13022,7 +13880,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -13048,7 +13908,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A129",
@@ -13067,7 +13928,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -13091,7 +13954,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A101"
@@ -13111,7 +13975,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "tickets",
         "sql": "true"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -13137,7 +14003,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A103",
@@ -13160,7 +14027,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "tickets",
         "sql": "app.ticket_writable(id)"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "DELETE",
@@ -13186,7 +14055,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A116"
@@ -13206,7 +14076,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "tickets",
         "sql": "((tickets.assignee_member_id = app.user_id() or tickets.created_by = app.user_id() or app.manages_scope(tickets.scope_id)) or deleted_by = app.user_id())"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -13234,7 +14106,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A123"
@@ -13254,7 +14127,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "tickets",
         "sql": "((tickets.assignee_member_id = app.user_id() or tickets.created_by = app.user_id() or app.manages_scope(tickets.scope_id)) or deleted_by = app.user_id())"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -13281,7 +14156,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A20"
@@ -13301,7 +14177,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "tickets",
         "sql": "true"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -13328,7 +14206,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A101"
@@ -13348,7 +14227,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "tickets",
         "sql": "app.ticket_writable(id)"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -13379,7 +14260,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A20",
@@ -13400,7 +14282,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "tickets",
         "sql": "app.ticket_writable(id)"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -13424,7 +14308,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A101"
@@ -13444,7 +14329,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "tickets",
         "sql": "true"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -13472,7 +14359,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A101"
@@ -13492,7 +14380,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "tickets",
         "sql": "app.ticket_writable(id)"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -13517,7 +14407,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A102"
@@ -13537,7 +14428,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "tickets",
         "sql": "true"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -13564,7 +14457,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A123"
@@ -13584,7 +14478,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "tickets",
         "sql": "((tickets.assignee_member_id = app.user_id() or tickets.created_by = app.user_id() or app.manages_scope(tickets.scope_id)) or deleted_by = app.user_id())"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -13612,7 +14508,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A106"
@@ -13632,7 +14529,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "tickets",
         "sql": "((tickets.assignee_member_id = app.user_id() or tickets.created_by = app.user_id() or app.manages_scope(tickets.scope_id)) or deleted_by = app.user_id())"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -13656,7 +14555,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A108"
@@ -13676,7 +14576,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "tickets",
         "sql": "true"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -13703,7 +14605,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A108"
@@ -13723,7 +14626,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "tickets",
         "sql": "app.ticket_writable(id)"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -13753,7 +14658,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A104"
@@ -13773,7 +14679,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "tickets",
         "sql": "((tickets.assignee_member_id = app.user_id() or tickets.created_by = app.user_id() or app.manages_scope(tickets.scope_id)) or deleted_by = app.user_id())"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -13797,7 +14705,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A116"
@@ -13817,7 +14726,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "tickets",
         "sql": "((tickets.assignee_member_id = app.user_id() or tickets.created_by = app.user_id() or app.manages_scope(tickets.scope_id)) or deleted_by = app.user_id())"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -13847,7 +14758,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A105"
@@ -13867,7 +14779,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "tickets",
         "sql": "((tickets.assignee_member_id = app.user_id() or tickets.created_by = app.user_id() or app.manages_scope(tickets.scope_id)) or deleted_by = app.user_id())"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -13895,7 +14809,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A111",
@@ -13918,7 +14833,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "tickets",
         "sql": "app.ticket_writable(id)"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -13942,7 +14859,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A103"
@@ -13962,7 +14880,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "tickets",
         "sql": "app.ticket_writable(id)"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -13986,7 +14906,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A103"
@@ -14006,7 +14927,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "tickets",
         "sql": "true"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -14033,7 +14956,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A103"
@@ -14053,7 +14977,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "tickets",
         "sql": "app.ticket_writable(id)"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -14081,7 +15007,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A107"
@@ -14101,7 +15028,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "tickets",
         "sql": "app.ticket_writable(id)"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -14125,7 +15054,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A101"
@@ -14145,7 +15075,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "tickets",
         "sql": "true"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -14172,7 +15104,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A116"
@@ -14193,7 +15126,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "tickets",
         "sql": "((tickets.assignee_member_id = app.user_id() or tickets.created_by = app.user_id() or app.manages_scope(tickets.scope_id)) or deleted_by = app.user_id())"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -14218,7 +15153,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A104"
@@ -14238,7 +15174,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "tickets",
         "sql": "true"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -14264,7 +15202,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A101"
@@ -14284,7 +15223,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "tickets",
         "sql": "app.ticket_writable(id)"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -14309,7 +15250,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A102"
@@ -14329,7 +15271,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "tickets",
         "sql": "true"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -14358,7 +15302,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A102"
@@ -14378,7 +15323,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "tickets",
         "sql": "app.ticket_writable(id)"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -14407,7 +15354,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A102"
@@ -14427,7 +15375,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "tickets",
         "sql": "app.ticket_writable(id)"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -14456,7 +15406,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A102"
@@ -14476,7 +15427,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "tickets",
         "sql": "app.ticket_writable(id)"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -14500,7 +15453,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A107"
@@ -14520,7 +15474,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "tickets",
         "sql": "true"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -14544,7 +15500,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A101"
@@ -14564,7 +15521,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "tickets",
         "sql": "true"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -14591,7 +15550,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A101"
@@ -14611,7 +15571,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "tickets",
         "sql": "app.ticket_writable(id)"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -14635,7 +15597,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A130"
@@ -14655,7 +15618,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "tickets",
         "sql": "true"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -14681,7 +15646,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A103",
@@ -14699,7 +15665,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -14723,7 +15691,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A119"
@@ -14740,7 +15709,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -14768,7 +15739,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A119"
@@ -14785,7 +15757,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -14810,7 +15784,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A119"
@@ -14830,7 +15805,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "skills",
         "sql": "true"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -14859,7 +15836,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A119"
@@ -14879,7 +15857,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "skills",
         "sql": "true"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -14907,7 +15887,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A119"
@@ -14927,7 +15908,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "skills",
         "sql": "owner_member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -14956,7 +15939,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A119"
@@ -14976,7 +15960,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "skills",
         "sql": "owner_member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -15005,7 +15991,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A119"
@@ -15025,7 +16012,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "skills",
         "sql": "owner_member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -15054,7 +16043,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A119"
@@ -15074,7 +16064,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "skills",
         "sql": "owner_member_id = app.user_id()"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -15099,7 +16091,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      502
+      502,
+      403
     ],
     "acts": [
       "A119"
@@ -15119,7 +16112,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "skills",
         "sql": "true"
       }
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -15142,7 +16137,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A75"
@@ -15159,7 +16155,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -15184,7 +16182,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A75"
@@ -15201,7 +16200,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -15224,7 +16225,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A69"
@@ -15241,7 +16243,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -15266,7 +16270,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A69"
@@ -15283,7 +16288,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -15309,7 +16316,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A75"
@@ -15326,7 +16334,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": "always",
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "DELETE",
@@ -15350,7 +16360,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
-      429
+      429,
+      403
     ],
     "acts": [
       "A75"
@@ -15367,7 +16378,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -15393,7 +16406,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A118"
@@ -15410,7 +16424,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -15436,7 +16452,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A118"
@@ -15453,7 +16470,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "DELETE",
@@ -15479,7 +16498,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A118"
@@ -15496,7 +16516,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -15522,7 +16544,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A118"
@@ -15539,7 +16562,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -15565,7 +16590,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A75"
@@ -15582,7 +16608,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -15605,7 +16633,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A36"
@@ -15622,7 +16651,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -15647,7 +16678,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A75"
@@ -15664,7 +16696,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": "always",
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -15690,7 +16724,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A69"
@@ -15707,7 +16742,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": "always",
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -15730,7 +16767,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A69"
@@ -15747,7 +16785,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -15770,7 +16810,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A118"
@@ -15787,7 +16828,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -15813,7 +16856,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A118"
@@ -15830,7 +16874,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -15856,7 +16902,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A118"
@@ -15873,7 +16920,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "DELETE",
@@ -15899,7 +16948,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A118"
@@ -15916,7 +16966,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "GET",
@@ -15939,7 +16991,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A118"
@@ -15956,7 +17009,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "PATCH",
@@ -15981,7 +17036,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A118"
@@ -15998,7 +17054,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   },
   {
     "method": "POST",
@@ -16024,7 +17082,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      403
     ],
     "acts": [
       "A118"
@@ -16041,7 +17100,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    }
+    },
+    "termsOpen": false,
+    "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "e9ce31d2e9f63d5e";
+export const OPENAPI_HASH = "0fed2bf4953d1d89";

@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 363（作った 8・後のフェーズの行為だけ 20）・前の道すじ 39・表 142・画面の部品 13・共通の処理 13・エラー 148・部品 52・設定 34
+API 363（作った 10・後のフェーズの行為だけ 20）・前の道すじ 39・表 142・画面の部品 13・共通の処理 13・エラー 151・部品 52・設定 39
 
 ## 共通の処理
 
@@ -146,8 +146,8 @@ API 363（作った 8・後のフェーズの行為だけ 20）・前の道す�
 | `getSignupStatus` | GET /api/v1/auth/sign-up/status | 取得（auth）— アカウントを作る（会社名が空なら本人の名前で個人のテナン | F1 | 作った | K-51 |
 | `verifySignup` | POST /api/v1/auth/sign-up/verify | 作成・実行（auth）— メールを確認して本人だと示す | F1 | 契約だけ（501） | K-52 |
 | `stepUp` | POST /api/v1/auth/step-up | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | F1 | 作った | K-19 |
-| `consentToTerms` | POST /api/v1/auth/terms/consent | 作成・実行（auth）— 規約に同意する（どの版に同意したかが残る） | F1 | 契約だけ（501） | K-53 |
-| `getCurrentTerms` | GET /api/v1/auth/terms/current | 取得（auth）— 規約に同意する（どの版に同意したかが残る） | F1 | 契約だけ（501） | K-53 |
+| `consentToTerms` | POST /api/v1/auth/terms/consent | 作成・実行（auth）— 規約に同意する（どの版に同意したかが残る） | F1 | 作った | K-53 |
+| `getCurrentTerms` | GET /api/v1/auth/terms/current | 取得（auth）— 規約に同意する（どの版に同意したかが残る） | F1 | 作った | K-53 |
 | `verifySignInCode` | POST /api/v1/auth/two-factor/verify | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | F1 | 契約だけ（501） | K-74 |
 | `renamePasskey` | PATCH /api/v1/me/passkeys/:id | 更新（me）— パスキーを設定する（パスワードの人は 2 段階認証を設定 | F1 | 契約だけ（501） | K-75 |
 | `deletePasskey` | DELETE /api/v1/me/passkeys/:id | 削除（me）— パスキーを設定する（パスワードの人は 2 段階認証を設定 | F1 | 契約だけ（501） | K-75 |
@@ -575,6 +575,11 @@ API 363（作った 8・後のフェーズの行為だけ 20）・前の道す�
 | `OPERATOR_REPRESENTATIVE` | 運営者の情報（D-096）。メールの署名・画面・特商法表記が同じ値を読む。電話はメールに載せない・住所はまだ持たない |
 | `OPERATOR_PHONE` | 運営者の情報（D-096）。メールの署名・画面・特商法表記が同じ値を読む。電話はメールに載せない・住所はまだ持たない |
 | `OPERATOR_ADDRESS` | 運営者の情報（D-096）。メールの署名・画面・特商法表記が同じ値を読む。電話はメールに載せない・住所はまだ持たない |
+| `LEGAL_COURT` | 既定は無い（事実と違う名前を出さない）。空のままだと文面のページは「文面を準備しています」を出す。本番の値は K-85・K-86 で決める |
+| `LEGAL_HOSTING_PROVIDER` | 既定は無い（事実と違う名前を出さない）。空のままだと文面のページは「文面を準備しています」を出す。本番の値は K-85・K-86 で決める |
+| `LEGAL_MAIL_PROVIDER` | 既定は無い（事実と違う名前を出さない）。空のままだと文面のページは「文面を準備しています」を出す。本番の値は K-85・K-86 で決める |
+| `LEGAL_SECRETS_PROVIDER` | 既定は無い（事実と違う名前を出さない）。空のままだと文面のページは「文面を準備しています」を出す。本番の値は K-85・K-86 で決める |
+| `LEGAL_STORAGE_PROVIDER` | 既定は無い（事実と違う名前を出さない）。空のままだと文面のページは「文面を準備しています」を出す。本番の値は K-85・K-86 で決める |
 | `MAIL_SUPPRESS_PREFIX` | staging／本番では空のまま（必ず送る） |
 | `BRIDGE_RELEASE_DIR` | 作った Bridge のインストーラを手元のフォルダから配る（開発だけ。staging／本番は空にして BRIDGE_RELEASE_BASE の置き場から配る） |
 | `BRIDGE_RELEASE_BASE` | 空＝まだ配布していない（画面は「まだ配布していません」と言い、自動更新も見に行かない） |

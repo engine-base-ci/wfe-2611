@@ -15,6 +15,8 @@ describe("GET /api/v1/ops/plan_proposals/:id/impact", () => {
   it.todo("test_get_ops_plan_proposals_id_impact_rejected_422");
   // UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
   it.todo("test_get_ops_plan_proposals_id_impact_rate_limited");
+  // UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
+  it.todo("test_get_ops_plan_proposals_id_impact_terms_pending");
   // UBIQUITOUS: GET /api/v1/ops/plan_proposals/:id/impact の副作用は関門 C2・C4・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
   it.todo("test_get_ops_plan_proposals_id_impact_shape");
 });

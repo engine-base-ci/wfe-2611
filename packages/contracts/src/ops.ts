@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:e9ce31d2e9f63d5e
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:0fed2bf4953d1d89
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -35,8 +35,8 @@ export interface Ops {
   getSignupStatus: { params: never; query: never; body: never; data: T.SignupStatus };
   verifySignup: { params: never; query: never; body: T.SignupVerifyInput; data: T.SignupVerified };
   stepUp: { params: never; query: never; body: T.StepUpInput; data: T.StepUp };
-  consentToTerms: { params: never; query: never; body: T.TermsConsentsInput; data: T.TermsConsents };
-  getCurrentTerms: { params: never; query: never; body: never; data: T.TermsVersions };
+  consentToTerms: { params: never; query: never; body: T.TermsConsentInput; data: T.TermsConsented };
+  getCurrentTerms: { params: never; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.CurrentTerms[] };
   verifySignInCode: { params: never; query: never; body: T.SessionsInput; data: T.Sessions };
   claimPairingCode: { params: never; query: never; body: T.SessionsInput; data: T.BridgeClaim };
   reportCredentialCheck: { params: { id: string }; query: never; body: T.CredentialsInput; data: T.Credentials };

@@ -4,6 +4,7 @@
 //   同意は画面の中（続けると利用規約とプライバシーに同意したことになる・D-128.137）。
 //   入力の確かめはこの画面でもする（ブラウザ標準の検証は使わない＝ noValidate。文言は正本 errors.json）。サーバーが最後の砦
 import Link from "next/link";
+import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { CATALOG } from "@kaname/errors/catalog";
@@ -11,7 +12,8 @@ import { Button, Callout, PasswordField, TextField, PAGE_ERROR, errorText } from
 import { call } from "@/lib/api/call";
 import { getToken } from "@/lib/api/client";
 import { pendingRoute } from "@/lib/pending-route";
-import { AuthFrame, PRIVACY_HREF, TERMS_HREF } from "./frame";
+import { AuthFrame } from "./frame";
+import { linksOf, useCurrentTerms } from "../consent-terms/current-terms";
 import { readDraft, saveDraft, saveTicket } from "./store";
 import { waitText } from "./wait-text";
 
@@ -51,6 +53,8 @@ export function SignupForm() {
   const sending = useRef(false);
   // ログイン中の人には登録させず、今のアカウントの画面へ移す。鍵が切れていれば（401）ふつうに登録の画面を出す
   const [checking, setChecking] = useState(true);
+  // 規約の行き先は今の版の url（K-53・getCurrentTerms）
+  const links = linksOf(useCurrentTerms());
 
   useEffect(() => {
     const d = readDraft();
@@ -120,9 +124,9 @@ export function SignupForm() {
     }
   };
 
-  if (checking) return <AuthFrame>{null}</AuthFrame>;
+  if (checking) return <AuthFrame links={links}>{null}</AuthFrame>;
   return (
-    <AuthFrame>
+    <AuthFrame links={links}>
       <h1>アカウントを作る</h1>
       <p className="k-auth-lead">登録したらすぐ使い始められる。設定の段はない</p>
       {banner?.kind === "registered" ? (
@@ -180,11 +184,11 @@ export function SignupForm() {
       </form>
       <p className="k-auth-note">
         続けると{" "}
-        <Link href={TERMS_HREF} target="_blank" rel="noopener">
+        <Link href={links.terms as Route} target="_blank" rel="noopener">
           利用規約
         </Link>{" "}
         と{" "}
-        <Link href={PRIVACY_HREF} target="_blank" rel="noopener">
+        <Link href={links.privacy as Route} target="_blank" rel="noopener">
           プライバシー
         </Link>{" "}
         に同意したことになる

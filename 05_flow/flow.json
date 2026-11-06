@@ -7779,7 +7779,8 @@
    "ledger-def"
   ],
   "A96": [
-   "signup"
+   "signup",
+   "legal"
   ],
   "A97": [
    "mfa-setup"
@@ -8101,6 +8102,34 @@
     "D-087.1",
     "D-088.1",
     "D-088.5"
+   ]
+  },
+  {
+   "id": "legal",
+   "name": "規約・プライバシーポリシー",
+   "acts": [
+    "A96"
+   ],
+   "purpose": "利用規約とプライバシーポリシーの今の版を、登録の前でも読める",
+   "primary_action": "読む",
+   "objects": [
+    "規約と同意"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "route": "/legal/:kind",
+   "release": "v1",
+   "milestone": 1,
+   "needs_login": false,
+   "has_shell": false,
+   "source": [
+    "D-125.162",
+    "D-128.137",
+    "D-128.146"
    ]
   },
   {

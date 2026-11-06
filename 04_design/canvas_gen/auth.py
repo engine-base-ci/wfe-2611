@@ -120,3 +120,12 @@ authpage("AuthInvite.dc.html", "招待されて入る",
   + '<div>' + lab("名前") + inp("例：木村 太郎", "木村 優", True) + '</div>'
   + big(FP + "パスキーを作って入る", "p", "OnHome.dc.html") + big("パスワードにする", "s", "MeTotp.dc.html")
   + '<div style="border-top: 1px solid #EDF0F4; padding-top: 12px; font-size: 12px; text-align: center; line-height: 1.7">もう Kaname のアカウントがある方は <a href="AuthLogin.dc.html">ログインして入る</a><br><span style="color: %s">招待は 11/08 まで ・ 心当たりがなければ、このページを閉じる</span></div>' % MUTED, 460)
+# 文面のページ（K-53・/legal/terms・/legal/privacy）：ログインを求めない。今の版のひな形を設定で埋めて出す。登録の画面と同意し直しの画面のリンクから開く
+authpage("LegalPage.dc.html", "規約・プライバシーポリシー",
+  '<a href="AuthSignup.dc.html" style="font-size: 12px">← 戻る</a>'
+  + '<b style="font-size: 22px">Kaname 利用規約</b>'
+  + '<div style="font-size: 12px; color: %s">第 1 版（2026 年 11 月 1 日 施行）</div>' % MUTED
+  + '<div style="font-size: 13px; line-height: 1.9">この利用規約（以下「本規約」）は、株式会社ENGINE BASE（以下「当社」）が提供する「Kaname」（以下「本サービス」）の利用の条件を定めるものです。本サービスを利用するすべての方は、本規約に同意したうえで本サービスを利用するものとします。</div>'
+  + '<b style="font-size: 15px">第 1 条（適用）</b>'
+  + '<div style="font-size: 13px; line-height: 1.9">1. 本規約は、利用者と当社との間の本サービスの利用に関わる一切の関係に適用されます。<br>2. 当社が本サービス上で示す個別の決まりは、本規約の一部を成します。</div>'
+  + '<div style="border-top: 1px solid #EDF0F4; padding-top: 12px; font-size: 12px; color: %s">株式会社ENGINE BASE ・ メール：info@engine-base.example</div>' % MUTED, 720)

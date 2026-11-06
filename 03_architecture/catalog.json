@@ -6,15 +6,15 @@
  ],
  "counts": {
   "api": 363,
-  "api_built": 8,
+  "api_built": 10,
   "api_only_later_phase": 20,
   "legacy_routes": 39,
   "db": 142,
   "ui": 13,
   "packages": 13,
-  "errors": 148,
+  "errors": 151,
   "stack": 52,
-  "env": 34
+  "env": 39
  },
  "api": [
   {
@@ -562,7 +562,7 @@
    "tables": [
     "terms_consents"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-53"
    ]
@@ -579,7 +579,7 @@
    "tables": [
     "terms_versions"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-53"
    ]
@@ -7723,6 +7723,26 @@
    {
     "name": "OPERATOR_ADDRESS",
     "what": "運営者の情報（D-096）。メールの署名・画面・特商法表記が同じ値を読む。電話はメールに載せない・住所はまだ持たない"
+   },
+   {
+    "name": "LEGAL_COURT",
+    "what": "既定は無い（事実と違う名前を出さない）。空のままだと文面のページは「文面を準備しています」を出す。本番の値は K-85・K-86 で決める"
+   },
+   {
+    "name": "LEGAL_HOSTING_PROVIDER",
+    "what": "既定は無い（事実と違う名前を出さない）。空のままだと文面のページは「文面を準備しています」を出す。本番の値は K-85・K-86 で決める"
+   },
+   {
+    "name": "LEGAL_MAIL_PROVIDER",
+    "what": "既定は無い（事実と違う名前を出さない）。空のままだと文面のページは「文面を準備しています」を出す。本番の値は K-85・K-86 で決める"
+   },
+   {
+    "name": "LEGAL_SECRETS_PROVIDER",
+    "what": "既定は無い（事実と違う名前を出さない）。空のままだと文面のページは「文面を準備しています」を出す。本番の値は K-85・K-86 で決める"
+   },
+   {
+    "name": "LEGAL_STORAGE_PROVIDER",
+    "what": "既定は無い（事実と違う名前を出さない）。空のままだと文面のページは「文面を準備しています」を出す。本番の値は K-85・K-86 で決める"
    },
    {
     "name": "MAIL_SUPPRESS_PREFIX",

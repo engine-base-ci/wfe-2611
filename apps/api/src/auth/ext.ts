@@ -15,7 +15,8 @@ import { Hono } from "hono";
 import type pg from "pg";
 import type { Auth } from "@kaname/auth";
 import { acceptInvitation, hashToken } from "@kaname/auth/invitations";
-import { createSessionResolver, signOut } from "@kaname/auth/resolver";
+import { createSessionResolver, signOut, type Resolved } from "@kaname/auth/resolver";
+import { termsRequired } from "../contract/op.js";
 import { EMAIL_RE, normalizeEmail, signInWithLock, signUp } from "@kaname/auth/signup";
 import type { Repository } from "@kaname/db/repository";
 import { withTenant } from "@kaname/db/context";
@@ -105,9 +106,30 @@ const OUTDATED_CHECK = {
   detail: "この PC の Bridge が古いので、自分のAI に仕事を渡せません。Bridge を入れ直してください",
   fix: "update",
 };
+/** 同意し直しの間も止めない前の道すじ（K-53）：自分の取得・ログイン・2 段階の確認・招待の下見と受諾（ログアウトは契約の口 signOut） */
+const TERMS_OPEN_EXT = [/^\/me$/, /^\/sign-in$/, /^\/two-factor\/verify$/, /^\/invitations\/[^/]+(\/accept)?$/];
 export function authExt(d: AuthExtDeps): Hono {
   const app = new Hono();
-  const resolve = createSessionResolver(d.auth, d.appPool);
+  const fresh = createSessionResolver(d.auth, d.appPool);
+  // 同じ要求の中では 1 回だけ解く（app.session_check を 2 回呼ばない・見張りの最後に見た時刻を 2 回進めない）。下の入口の止めが解いた結果を、
+  // 各 route と子の道すじ（agent.ts・agent-stream.ts）の resolve が先に使う。要求の頭（Headers）ごとに覚え、要求が終われば消える
+  const seen = new WeakMap<Headers, Promise<Resolved | null>>();
+  const resolve = (h: Headers): Promise<Resolved | null> => {
+    const hit = seen.get(h);
+    if (hit) return hit;
+    const p = fresh(h);
+    seen.set(h, p);
+    return p;
+  };
+  // 同意し直し（K-53・D-125.162）：印が立ったセッションは、止めない道のほかを 403・E-AUTH-010 で止める（契約の口の入口 op.ts と同じ決まり）。
+  //   全部の route より前に 1 つだけ置く。PC のセッション（x-bridge-session）は Better Auth のセッションでないので印を見ない（D-128.137）
+  app.use("*", async (c, next) => {
+    const path = c.req.path.replace(/^\/api\/auth-ext(?=\/|$)/, "") || "/";
+    if (TERMS_OPEN_EXT.some((re) => re.test(path))) return next();
+    const r = await resolve(c.req.raw.headers).catch(() => null);
+    if (r?.termsPending) return termsRequired(c);
+    return next();
+  });
 
   // 登録・待つ画面の状態・送り直しは契約の口（POST /api/v1/auth/sign-up・GET …/status・POST …/resend）に移した（K-51・apps/api/src/features/F1/sign-up/）。
   // 確認のリンクで確定するのも契約の口（POST /api/v1/auth/sign-up/verify・K-52・apps/api/src/features/F1/verify-email/）に移した
@@ -251,6 +273,8 @@ export function authExt(d: AuthExtDeps): Hono {
     // メンバーができた後にセッションを写す。先に認証の利用者を作るので、セッションの hook の時点ではまだメンバーが無い
     // （写さないと、参加した直後は何を押しても「ログインしてください」になる）
     await d.appPool.query("select app.open_sessions_for_user($1)", [u.userId]);
+    // 写したセッションにも同意し直しの印を決める（K-53）。招待の画面の中で同意を取るのは K-55。それまでは次の画面で同意し直しの画面を見る
+    await d.appPool.query("select app.refresh_terms_pending($1)", [u.userId]);
     return c.json({ data: { token: u.token, member_id: memberId } }, 201);
   });
 
@@ -929,7 +953,7 @@ export function authExt(d: AuthExtDeps): Hono {
   });
 
   // 会話の作り込み（D-104・D-105）の口は agent.ts
-  app.route("/", agentStreamRoutes({ resolve, hub: d.hub ?? null }));
+  app.route("/", agentStreamRoutes({ resolve, fresh, hub: d.hub ?? null }));
   app.route(
     "/",
     agentRoutes({

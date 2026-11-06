@@ -19,7 +19,7 @@ import { ObjectStore } from "@kaname/storage";
 import { localDriver } from "@kaname/storage/local";
 import { createApp } from "../src/app.js";
 import { authExt } from "../src/auth/ext.js";
-import { keepAuth, verifiedUser } from "./_pending.js";
+import { agreeCurrentTerms, keepAuth, verifiedUser } from "./_pending.js";
 import { createInvitation } from "@kaname/auth/invitations";
 
 const DB_PKG = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "packages", "db");
@@ -119,6 +119,11 @@ async function invite(bossMember: string) {
   );
   const ac = await json<{ token: string; member_id: string }>(
     post(`/invitations/${inv.token}/accept`, { name: `担当 ${uniq().slice(-4)}`, password: PW }),
+  );
+  // 招待で入った人の同意は K-55。それまでは今の版に同意済みにする（K-53 の同意し直しの 403 で止まらないように）
+  await agreeCurrentTerms(
+    (await admin.query("select auth_user_id from members where id = $1", [ac.member_id])).rows[0]
+      .auth_user_id as string,
   );
   const H = { authorization: `Bearer ${ac.token}` };
   return { H, B: await pairBridge(H), member: ac.member_id };

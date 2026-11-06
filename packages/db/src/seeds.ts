@@ -11,6 +11,8 @@ export async function seedAccessMatrix(c: pg.PoolClient): Promise<Seeded> {
   await c.query(
     "insert into tenants (id, tenant_id, name) values (app.ops_tenant_id(), app.ops_tenant_id(), '運営') on conflict do nothing",
   );
+  // truncate は terms_versions（運営のテナントに結ぶ）も消す。版が 1 つも無い状態は作らない（D-128.137）ので、種の第 1 版を入れ直す（migration 0088 と同じ関数）
+  await c.query("select app.seed_first_terms()");
   for (const m of ["member_kinds", "target_kinds", "abilities"])
     await c.query(`delete from ${m} where key like $1`, ["k9%"]); // 前回の場合表が入れた試し行
   const one = async (sql: string, p: unknown[] = []) => (await c.query<{ id: string }>(sql, p)).rows[0]!.id;

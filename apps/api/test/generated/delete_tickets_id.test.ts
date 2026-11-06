@@ -15,6 +15,8 @@ describe("DELETE /api/v1/tickets/:id", () => {
   it.todo("test_delete_tickets_id_rejected_422");
   // UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
   it.todo("test_delete_tickets_id_rate_limited");
+  // UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
+  it.todo("test_delete_tickets_id_terms_pending");
   // UBIQUITOUS: DELETE /api/v1/tickets/:id の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
   it.todo("test_delete_tickets_id_shape");
 });

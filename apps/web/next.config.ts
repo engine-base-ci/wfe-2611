@@ -7,7 +7,9 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   typedRoutes: true,
-  transpilePackages: ["@kaname/contracts"], // workspace は src（.ts）を export している
+  transpilePackages: ["@kaname/contracts", "@kaname/config"], // workspace は src（.ts）を export している
+  // 規約・プライバシーポリシーの文面のページ（K-53）は、ひな形（content/legal/*.md）を要求のときに読む。配布物にひな形を含める
+  outputFileTracingIncludes: { "/legal/[kind]": ["./content/legal/**"] },
   webpack: (config) => {
     // workspace の packages は NodeNext（import "./x.js" が x.ts を指す）。bundler にもその解決を教える
     config.resolve.extensionAlias = { ".js": [".ts", ".tsx", ".js"], ".mjs": [".mts", ".mjs"] };

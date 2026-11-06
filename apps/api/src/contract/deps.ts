@@ -18,6 +18,9 @@ export type HookReply = { status: number; body: unknown };
 export type EffectResult =
   { status: "done"; value?: unknown } | { status: "denied" | "failed"; reason: string; handoff: string };
 export interface Hook {
+  /** 入力の前処理（契約の形の確かめの前）。表記ゆらぎを直した体を受け、余計な項目を落とした体か、口の独自のエラーの答えを返す。
+   *  返した体も、入口が必ず契約の strict な形（schemas）で確かめる（前処理で形の確かめを飛ばさない） */
+  input?: (raw: unknown) => { input: Row } | { reply: HookReply };
   /** 認可の後・副作用の前：ポリシー判定・承認の確認。応答を返せば処理を止める（403 等） */
   before?: (a: HookArgs) => Promise<HookReply | void>;
   /** 外向きの副作用（関門 C1／C3〜C8 を通す）。記録（DB）の前。失敗なら 502（記録しない＝副作用の順序） */

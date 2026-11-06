@@ -137,6 +137,16 @@ describe("本人確認の取り直し（K-19）", () => {
     expect(ev.rowCount).toBe(1);
   });
 
+  it("K53-API-005（stepUp の分）同意し直しの印が立ったセッションでは、本人確認の取り直しの口も 403・E-AUTH-010 で止まり、時刻は付かない", async () => {
+    const { H, member } = await signedIn();
+    // 印は K-53 の migration の列（sessions.terms_pending）。ログインで立つ形の確かめは terms.test.ts の K53-API-002 が持つので、ここは直に立てる
+    await admin.query("update sessions set terms_pending = true where member_id = $1 and revoked_at is null", [member]);
+    const r = await call("POST", "/api/v1/auth/step-up", { password: PW }, H);
+    expect(r.status).toBe(403);
+    expect(((await r.json()) as { code: string }).code).toBe("E-AUTH-010");
+    expect(await stepUpAt(member)).toBeNull();
+  });
+
   it("パスワードが空なら 422・ログインしていなければ 401", async () => {
     const { H } = await signedIn();
     expect((await call("POST", "/api/v1/auth/step-up", {}, H)).status).toBe(422);

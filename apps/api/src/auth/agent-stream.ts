@@ -11,6 +11,8 @@ type Resolve = ReturnType<typeof createSessionResolver>;
 
 export interface AgentStreamDeps {
   resolve: Resolve;
+  /** 流しっぱなしの間の解き直し（G-14）。同じ要求の中で覚えた結果を使わず、毎回新しく解く。無ければ resolve */
+  fresh?: Resolve;
   hub: MemberHub | null;
   /** 生きている合図とログインの確かめの間隔（既定 25 秒）・1 本の長さ（既定 50 秒）・知らせをまとめる間（既定 60ms） */
   keepaliveMs?: number;
@@ -102,7 +104,7 @@ export function agentStreamRoutes(d: AgentStreamDeps): Hono {
           }
           if (Date.now() >= nextKeep) {
             nextKeep = Date.now() + keepaliveMs;
-            const still = await d.resolve(headers).catch(() => null);
+            const still = await (d.fresh ?? d.resolve)(headers).catch(() => null);
             if (!still?.ctx.userId || still.ctx.userId !== ses.ctx.userId) {
               await s.writeSSE({ event: "end", data: "unauthenticated" });
               break;

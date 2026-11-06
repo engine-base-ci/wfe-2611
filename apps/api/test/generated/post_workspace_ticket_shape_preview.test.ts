@@ -15,6 +15,8 @@ describe("POST /api/v1/workspace/ticket-shape/preview", () => {
   it.todo("test_post_workspace_ticket_shape_preview_rejected_422_2");
   // UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
   it.todo("test_post_workspace_ticket_shape_preview_rate_limited");
+  // UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
+  it.todo("test_post_workspace_ticket_shape_preview_terms_pending");
   // UBIQUITOUS: POST /api/v1/workspace/ticket-shape/preview の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
   it.todo("test_post_workspace_ticket_shape_preview_shape");
 });

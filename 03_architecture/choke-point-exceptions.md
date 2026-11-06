@@ -12,7 +12,7 @@
 3. **期限**を書く。恒久例外は `expires_at: null` とし、理由を明記する
 4. 解消したら削除せず「解消済（タスク ID）」に書き換える
 
-## 現在の例外（15 件・いずれも恒久）
+## 現在の例外（16 件・いずれも恒久）
 
 | ID | 関門 | 迂回箇所 | 理由 | 代替統制 | 期限 | 状態 |
 |----|-----|---------|------|---------|------|------|
@@ -31,8 +31,9 @@
 | X-013 | **C8 秘密** | `apps/bridge/src/env.ts` | Bridge は利用者の PC で動く別のアプリで、サーバーの起動設定（packages/config）を持たない。Bridge が自分で読む環境（基点の URL・PATH・SHELL など）はこのファイルの `bridgeEnv()` からだけ読む（K-42） | 読む名前は `BRIDGE_ENV_KEYS` に型で並べる。子に渡す環境は `childEnv` が許可リストに絞り、モデルの鍵（ANTHROPIC_ 等）は落とす（env.test.ts）。ほかのファイルで process.env を読めば G13 が赤 | 恒久 | 有効 |
 | X-014 | **C8 秘密** | `apps/bridge/src/guard.ts#HOOK_SOURCE` | 定数 HOOK_SOURCE の中身は、Bridge が書き出して Claude Code が別のプロセスで起こす子のプログラム（直前のフック）。子は Bridge の入口を読み込めず、渡された環境を読むのが機能そのもの（K-42） | 渡す環境は Bridge が `childEnv` で絞り、Bridge が決めた KANAME_* だけを足す。G13 はこの定数の文字列の範囲だけを見ず、範囲の外で読めば赤（env_audit の自己試験）。ファイル全体は除かない | 恒久 | 有効 |
 | X-015 | **C8 秘密** | `apps/bridge/src/kaname-tools.ts#MCP_SERVER_SOURCE` | 定数 MCP_SERVER_SOURCE の中身は、Bridge が書き出して Claude Code が別のプロセスで起こす子のプログラム（Kaname の道具のサーバー）。理由は X-014 と同じ（K-42） | X-014 と同じ | 恒久 | 有効 |
+| X-016 | **C4 ファイル** | `apps/web/features/F1/consent-terms/legal-text.ts` | 規約・プライバシーポリシーの文面のページ（K-53）が、画面に同梱したひな形（`apps/web/content/legal/*.md`）を要求のときに読む。DB も API も読まない（画面だけを立ち上げる CI の段でも開ける）。利用者のファイルではない | 読むのは `apps/web/content/legal` の `<kind>-v<版>.md` だけ（kind は terms・privacy の 2 つ・版は数だけ）・書かない・利用者由来のパスを受け取らない | 恒久 | 有効 |
 
-**例外件数：15（恒久 15 / 期限付き 0）**
+**例外件数：16（恒久 16 / 期限付き 0）**
 
 ## 過去の例外（解消済）
 

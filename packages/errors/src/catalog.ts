@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。148 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。151 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -2088,6 +2088,24 @@ export const CATALOG: Record<string, CatalogEntry> = {
       "state": "done"
     }
   },
+  "E-CONF-012": {
+    "id": "E-CONF-012",
+    "cls": "conflict",
+    "message": "規約の版が新しくなりました。新しい版を読んで同意してください",
+    "action": "新しい版を読んで、もう一度同意する",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-CONF-012",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "login",
+      "state": "terms"
+    }
+  },
   "E-SEC-001": {
     "id": "E-SEC-001",
     "cls": "dependency",
@@ -2195,6 +2213,25 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "verify-email",
       "state": "other_account"
+    }
+  },
+  "E-AUTH-010": {
+    "id": "E-AUTH-010",
+    "cls": "gate",
+    "message": "利用規約とプライバシーポリシーが新しくなりました。同意してから続けてください",
+    "action": "新しい版を読んで同意する／ログアウトする",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-AUTH-010",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "login",
+      "state": "terms"
     }
   },
   "E-CHAT-001": {
@@ -2507,6 +2544,24 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "signup",
       "state": "a"
+    }
+  },
+  "E-VAL-019": {
+    "id": "E-VAL-019",
+    "cls": "validation",
+    "message": "同意する場合は、チェックを入れてください",
+    "action": "チェックを入れて押し直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-VAL-019",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "login",
+      "state": "terms"
     }
   },
   "E-INV-001": {

@@ -35,6 +35,7 @@ def classify(line):
     form = line.split(":")[0]; s = re.search(r"\b(401|403|404|409|410|422|429|500|502)\b", line); code = s.group(1) if s else ""
     if form == "EVENT-DRIVEN": return form, code, "contract+integration", "backend-coverage", "ok"
     if form == "UBIQUITOUS": return form, code, "contract", "backend-coverage", "shape"
+    if "E-AUTH-010" in line: return form, code, "access（同意し直し・K-53）", "backend-access-matrix", "terms_pending"   # 役の 403 と混ぜない
     if code in ("401", "403"): return form, code, "access", "backend-access-matrix", "rejected_" + code
     if code == "429": return form, code, "unit", "backend-coverage", "rate_limited"
     if code == "502": return form, code, "integration（外部を切る・G-15）", "backend-coverage", "upstream_failed"
@@ -99,7 +100,7 @@ SPEC_GATES = [
     {"id": 37, "name": "デザインのトークンと新しい部品（正本どおり・明るい／暗いのコントラスト AA・生の値 D1〜D4）", "script": "python3 04_design/gen_tokens.py --web --check && python3 scripts/ci/design_gate.py --design 04_design/DESIGN-kaname.md --mocks apps/web/components/k --css apps/web/styles/k-tokens.css --part", "job": "spec", "blocking": True},
     {"id": 38, "name": "生成物が全部最新（作り手を全部回して、中身が変わる生成物・落ちる作り手・目録に無い生成物を赤にする・D-128.123）", "script": "python3 scripts/ci/generated_gate.py --selftest && python3 scripts/ci/generated_gate.py", "job": "spec", "blocking": True},
     {"id": 46, "name": "使っている部品が技術の選定の記録と合う（package.json と selected-stack.json の packages を 1 対 1・D-128.123）", "script": "python3 scripts/ci/stack_gate.py --selftest && python3 scripts/ci/stack_gate.py", "job": "spec", "blocking": True},
-    {"id": 47, "name": "書いた検査が CI から回る・検査の自己試験（ci_wiring_gate・エラーの参照・自己試験 6 本・D-128.123）", "script": "python3 scripts/ci/ci_wiring_gate.py --selftest && python3 scripts/ci/ci_wiring_gate.py && pnpm -s ci:errors-used && pnpm -s ci:errors-used:selftest && pnpm -s ci:sql-guard:selftest && pnpm -s ci:chat-one:selftest && pnpm -s ci:contract:selftest && pnpm -s ci:env-audit:selftest && python3 scripts/ci/qa_delta.py --selftest", "job": "spec", "blocking": True},
+    {"id": 47, "name": "書いた検査が CI から回る・検査の自己試験（ci_wiring_gate・エラーの参照・自己試験 7 本・D-128.123）", "script": "python3 scripts/ci/ci_wiring_gate.py --selftest && python3 scripts/ci/ci_wiring_gate.py && pnpm -s ci:errors-used && pnpm -s ci:errors-used:selftest && pnpm -s ci:sql-guard:selftest && pnpm -s ci:chat-one:selftest && pnpm -s ci:contract:selftest && pnpm -s ci:env-audit:selftest && python3 scripts/ci/qa_delta.py --selftest && python3 scripts/ci/static_screens_test.py", "job": "spec", "blocking": True},
     {"id": 51, "name": "利用者の流れと DB の表の目録（行為はどれも 1 つの流れ・表はどれも目録に・凍結の表をコードが使わない・D-128.126・D-128.127）", "script": "python3 scripts/ci/flow_db_gate.py --selftest && python3 scripts/ci/flow_db_gate.py", "job": "spec", "blocking": True},
     {"id": 48, "name": "新しい画面の実ブラウザの試験と、押した証拠（本番の形で組み立てた画面の上・行 ID の試験が全部の行で通る・記録なし・K-36）", "script": "BASE_URL=http://127.0.0.1:3124 pnpm --filter @kaname/web e2e:k && python3 scripts/ci/op_gate.py --spec 07_qa/test-specs/k --tickets 11_tickets/tickets.json --all", "job": "web", "blocking": True},
 ]
@@ -234,11 +235,45 @@ jobs:
     # 新しい画面（apps/web/components/k の上）の実ブラウザの試験。staging も札も要らない：CI の中で本番の形に組み立てて立ち上げる（K-36）
     needs: [static]
     if: ${{{{ !cancelled() && {SO}.web == 'true' }}}}
+    # 本物の口と DB を使う画面の試験（K-53 の K53-UI-023・024・D-128.172）のために、Postgres と API をこの組の中で立てる。
+    #   ほかの画面の試験は今までどおり口を網の手前で差し替える（page.route）ので、どちらの道も同じ組で流れる
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env: {{ POSTGRES_PASSWORD: postgres, POSTGRES_DB: kaname_test }}
+        ports: ['5440:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     env:
       KANAME_DEV_PAGES: '1'
       NEXT_PUBLIC_KANAME_DEV_PAGES: '1'
+      # 画面の試験が本物の口を叩く先（apps/web/tests/_lib/api.ts の API_BASE・DATABASE_URL_ADMIN・KANAME_API_LOG）。画面は組み立てのときに口の先を埋める
+      DATABASE_URL: postgres://postgres:postgres@localhost:5440/kaname_test
+      DATABASE_URL_ADMIN: postgres://postgres:postgres@localhost:5440/kaname_test
+      API_BASE: http://127.0.0.1:3011
+      NEXT_PUBLIC_API_BASE: http://127.0.0.1:3011
+      KANAME_API_LOG: /tmp/api.log
+      # 規約・プライバシーポリシーの文面のページ（K-53）が埋める値。試験の値（本番の値は K-85・K-86 が決める）
+      OPERATOR_ADDRESS: 東京都千代田区試験 1-1
+      LEGAL_COURT: 東京地方裁判所
+      LEGAL_HOSTING_PROVIDER: 試験のホスティング
+      LEGAL_MAIL_PROVIDER: 試験のメール
+      LEGAL_SECRETS_PROVIDER: 試験の秘密の置き場
+      LEGAL_STORAGE_PROVIDER: 試験の置き場
     steps:
 {NODE}      - run: pnpm --filter @kaname/web exec playwright install --with-deps chromium
+      - name: DB に migration を当て、API を立ち上げる（本物の口の画面の試験・K-53）
+        run: |
+          pnpm db:migrate
+          (env NODE_ENV=development PORT=3011 BASE_URL=http://127.0.0.1:3011 WEB_BASE_URL=http://127.0.0.1:3124 \
+            DATABASE_URL=postgres://kaname_app:kaname_app@localhost:5440/kaname_test \
+            AUTH_DATABASE_URL=postgres://kaname_auth:kaname_auth@localhost:5440/kaname_test \
+            AUTH_SECRET=ci-web-secret-0123456789-abcdefghijklmnop SECRETS_MASTER_KEY=BwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwc= \
+            STORAGE_ENDPOINT=http://127.0.0.1:9000 STORAGE_REGION=ap-northeast-1 STORAGE_BUCKET=kaname-ci STORAGE_ACCESS_KEY_ID=ci STORAGE_SECRET_ACCESS_KEY=ci \
+            KANAME_DEV_FAKE_BUCKET=1 KANAME_DEV_STORAGE_DIR=/tmp/kaname-storage \
+            pnpm exec tsx apps/api/src/dev.ts > /tmp/api.log 2>&1 &)
+          for i in $(seq 1 60); do curl -sf -o /dev/null http://127.0.0.1:3011/health && exit 0; sleep 2; done
+          cat /tmp/api.log; exit 1
       - run: pnpm --filter @kaname/web build:test
       - name: 画面を立ち上げる
         run: |

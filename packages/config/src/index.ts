@@ -108,7 +108,43 @@ export function requireEnv(name: EnvKey, env: Record<string, string | undefined>
   return v;
 }
 
+/** 規約・プライバシーポリシーの文面（K-53）に入れる値。運営者の情報（Config.operator と同じ）・返信の宛先・預ける先の事業者と合意の裁判所。
+ *  起動に要る値の確かめをしない純粋な関数（画面の文面のページも呼ぶ。loadConfig は起動に要る値が無いと投げるので画面から呼べない）。
+ *  預ける先と裁判所は既定を決め打ちしない（事実と違う事業者名を出さない・値は K-86 で専門家と決める）。無ければ null */
+export interface LegalValues {
+  operator: Config["operator"];
+  mailReplyTo: string;
+  legal: {
+    court: string | null;
+    hostingProvider: string | null;
+    mailProvider: string | null;
+    secretsProvider: string | null;
+    storageProvider: string | null;
+  };
+}
+export function legalValues(env: Record<string, string | undefined> = process.env): LegalValues {
+  return {
+    operator: {
+      service: "Kaname",
+      company: env["OPERATOR_COMPANY"] || "株式会社ENGINE BASE",
+      representative: env["OPERATOR_REPRESENTATIVE"] || "高本聖斗",
+      email: env["OPS_EMAIL"] || "info@engine-base.com",
+      phone: env["OPERATOR_PHONE"] || "090-1180-5989",
+      address: env["OPERATOR_ADDRESS"] || null,
+    },
+    mailReplyTo: env["MAIL_REPLY_TO"] || env["OPS_EMAIL"] || "info@engine-base.com",
+    legal: {
+      court: env["LEGAL_COURT"] || null,
+      hostingProvider: env["LEGAL_HOSTING_PROVIDER"] || null,
+      mailProvider: env["LEGAL_MAIL_PROVIDER"] || null,
+      secretsProvider: env["LEGAL_SECRETS_PROVIDER"] || null,
+      storageProvider: env["LEGAL_STORAGE_PROVIDER"] || null,
+    },
+  };
+}
+
 export function loadConfig(env: Record<string, string | undefined> = process.env): Config {
+  const legal = legalValues(env);
   const missing = REQUIRED.filter((k) => !env[k]);
   if (missing.length) throw new Error(`起動に要る設定が無い: ${missing.join(", ")}（.env.example を見る）`);
   const mk = env["SECRETS_MASTER_KEY"]!;
@@ -149,15 +185,8 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
       .filter(Boolean),
     mailFrom: env["MAIL_FROM"] || "Kaname <noreply@engine-base.com>",
     opsEmail: env["OPS_EMAIL"] || "info@engine-base.com",
-    mailReplyTo: env["MAIL_REPLY_TO"] || env["OPS_EMAIL"] || "info@engine-base.com",
-    operator: {
-      service: "Kaname",
-      company: env["OPERATOR_COMPANY"] || "株式会社ENGINE BASE",
-      representative: env["OPERATOR_REPRESENTATIVE"] || "高本聖斗",
-      email: env["OPS_EMAIL"] || "info@engine-base.com",
-      phone: env["OPERATOR_PHONE"] || "090-1180-5989",
-      address: env["OPERATOR_ADDRESS"] || null,
-    },
+    mailReplyTo: legal.mailReplyTo,
+    operator: legal.operator,
     mailSuppressPrefix: env["MAIL_SUPPRESS_PREFIX"] || "",
     bridgeReleaseBase: (env["BRIDGE_RELEASE_BASE"] || "").replace(/\/$/, ""),
     bridgeReleaseDir: env["BRIDGE_RELEASE_DIR"] || "",

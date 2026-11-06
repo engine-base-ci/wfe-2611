@@ -44,6 +44,10 @@ describe("POST /api/v1/conversations", () => {
     // UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す
     const who = e.auth === "ops" ? "ops" : "boss"; const a = await args(h, e, who); h.hooks["createConversation"] = { effect: async () => ({ status: "failed", reason: "外部が完了信号を出さなかった", handoff: "人が確認する" }) }; const before = await h.count(e.table); const r = await h.call(e, who, a); expect(r.status).toBe(502); const b = (await r.json()) as { code: string; handoff: string }; expect(b.code).toBe("EXTERNAL_FAILED"); expect(b.handoff).toBeTruthy(); expect(await h.count(e.table)).toBe(before); delete h.hooks["createConversation"];
   });
+  it("test_post_conversations_terms_pending", async () => {
+    // UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
+    const a = await args(h, e, e.auth === "ops" ? "ops" : "boss"); const before = await h.count(e.table); const r = await h.call(e, "pending", a); expect(r.status).toBe(403); expect(((await r.json()) as { code: string }).code).toBe("E-AUTH-010"); expect(await h.count(e.table)).toBe(before);
+  });
   it("test_post_conversations_shape", async () => {
     // UBIQUITOUS: POST /api/v1/conversations の副作用は関門 C2・C3 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
     const who = e.auth === "ops" ? "ops" : "boss"; const r = await h.call(e, who, await args(h, e, who)); const b = (await r.json()) as Record<string, unknown>; if (r.status < 300) { expect(b).toHaveProperty("data"); if (e.kind === "list") { expect(Array.isArray(b["data"])).toBe(true); expect(b["meta"]).toHaveProperty("limit"); } } else { expect(b).toHaveProperty("error"); expect(b).toHaveProperty("code"); }

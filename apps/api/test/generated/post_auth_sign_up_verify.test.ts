@@ -14,15 +14,15 @@ describe("POST /api/v1/auth/sign-up/verify", () => {
     // 本物の試験：apps/api/test/features/F1/verify-email.test.ts の「K52-API-010 確定済み × 同じリンクをもう一度 × ログインしていない」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F1/verify-email.test.ts", "utf8")).toContain("K52-API-010 確定済み × 同じリンクをもう一度 × ログインしていない");
   });
-  it("test_post_auth_sign_up_verify_gone", () => {
-    // UNWANTED: IF リンクが期限切れ・前のリンク・無いなら、Kaname は 410 と次の一手を返し、本人を作らない
-    // 本物の試験：apps/api/test/features/F1/verify-email.test.ts の「K52-API-005 保留中（期限切れ・30 分を過ぎた）」（同じ CI の G3 で流れる）
-    expect(readFileSync("apps/api/test/features/F1/verify-email.test.ts", "utf8")).toContain("K52-API-005 保留中（期限切れ・30 分を過ぎた）");
-  });
   it("test_post_auth_sign_up_verify_rejected_422", () => {
     // UNWANTED: IF 手がかりが無いか空なら、Kaname は 422 を返し、申し込みには触らない
     // 本物の試験：apps/api/test/features/F1/verify-email.test.ts の「K52-API-015 手がかりが無い・空」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F1/verify-email.test.ts", "utf8")).toContain("K52-API-015 手がかりが無い・空");
+  });
+  it("test_post_auth_sign_up_verify_gone", () => {
+    // UNWANTED: IF リンクが期限切れ・前のリンク・無いなら、Kaname は 410 と次の一手を返し、本人を作らない
+    // 本物の試験：apps/api/test/features/F1/verify-email.test.ts の「K52-API-005 保留中（期限切れ・30 分を過ぎた）」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F1/verify-email.test.ts", "utf8")).toContain("K52-API-005 保留中（期限切れ・30 分を過ぎた）");
   });
   it("test_post_auth_sign_up_verify_rate_limited", () => {
     // UNWANTED: IF 10/min/ip を超えたら、Kaname は 429 と retry_after_sec を返す

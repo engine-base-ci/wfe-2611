@@ -15,4 +15,6 @@ describe("GET /api/v1/invoices/:id/pdf", () => {
   it.todo("test_get_invoices_id_pdf_rejected_422");
   // UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
   it.todo("test_get_invoices_id_pdf_rate_limited");
+  // UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
+  it.todo("test_get_invoices_id_pdf_terms_pending");
 });

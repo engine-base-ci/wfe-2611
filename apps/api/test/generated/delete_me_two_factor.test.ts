@@ -11,6 +11,8 @@ describe("DELETE /api/v1/me/two-factor", () => {
   it.todo("test_delete_me_two_factor_rejected_403");
   // UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
   it.todo("test_delete_me_two_factor_rate_limited");
+  // UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
+  it.todo("test_delete_me_two_factor_terms_pending");
   // UBIQUITOUS: DELETE /api/v1/me/two-factor の副作用は関門 C2・C8 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
   it.todo("test_delete_me_two_factor_shape");
 });

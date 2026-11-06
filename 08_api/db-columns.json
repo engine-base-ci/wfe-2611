@@ -5910,6 +5910,10 @@
     "type": "uuid",
     "nullable": false
    },
+   "terms_pending": {
+    "type": "boolean",
+    "nullable": false
+   },
    "updated_at": {
     "type": "timestamp with time zone",
     "nullable": false

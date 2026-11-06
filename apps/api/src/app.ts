@@ -1,4 +1,5 @@
-import { Hono } from "hono";
+import { Hono, type Context } from "hono";
+import type { TenantContext } from "@kaname/db/context";
 import { cors } from "hono/cors";
 import { MIGRATIONS, checkMigrationOrder } from "@kaname/db";
 import type { Repository } from "@kaname/db/repository";
@@ -8,6 +9,7 @@ import type { Resolved } from "@kaname/auth/resolver";
 import { KanameError, recordErrorEvent } from "@kaname/errors";
 import { ENDPOINTS } from "@kaname/contracts";
 import { registerAll } from "./routes/index.js";
+import { termsRequired } from "./contract/op.js";
 import { defaultDeps } from "./contract/memory.js";
 import type { ContractDeps } from "./contract/deps.js";
 
@@ -23,6 +25,17 @@ const CONTRACT_PATHS = ENDPOINTS.map((e) => ({
   re: new RegExp(`^${e.path.replace(/:[a-z_]+/gi, "[^/]+")}$`),
 }));
 
+/** 同意し直しの間も通す認証の部品の口（K-53。/api/auth を外した道）。ほかは全部止める（新しく足した道は止まる側に倒す） */
+const AUTH_TERMS_OPEN = [
+  /^\/sign-in(\/.*)?$/,
+  /^\/sign-out$/,
+  /^\/get-session$/,
+  /^\/two-factor\/verify-(totp|backup-code|otp)$/,
+  /^\/request-password-reset$/,
+  /^\/reset-password(\/.*)?$/,
+  /^\/ok$/,
+];
+
 export function health(version = "0.1.0"): Health {
   const order = checkMigrationOrder(MIGRATIONS);
   return { ok: order.ok, version, migrations: { expected: MIGRATIONS, order: order.ok ? "ok" : "ng" } };
@@ -31,7 +44,7 @@ export function health(version = "0.1.0"): Health {
 export interface AppOptions {
   version?: string;
   repo?: Repository;
-  resolveSession?: SessionResolver;
+  resolveSession?: (c: Context) => Promise<TenantContext | null>;
   /** 認証（Better Auth）。/api/auth/* をこの handler に渡す */
   auth?: Auth;
   /** 要求の headers → 文脈（packages/auth の createSessionResolver）。resolveSession より優先 */
@@ -75,12 +88,33 @@ export function createApp(o: AppOptions | string = {}): Hono<Vars> {
     return c.json(h, h.ok ? 200 : 503);
   });
   // 認証の endpoint（sign-in／sign-up／2 段階／セッション）。境界 B2 の handler にそのまま渡す
-  if (opts.auth) app.on(["GET", "POST"], "/api/auth/*", (c) => opts.auth!.handler(c.req.raw));
+  //   同意し直し（K-53）：セッションの印が立った要求は、許可の一覧（同意し直しの画面に行くまでに要るもの）のほかを handler に渡さず 403・E-AUTH-010
+  //   （パスワードの変更・ほかのセッションの取り消し・2 段階を入れる なども止まる）。セッションの無い要求（ログインの前・再設定のメールから）はそのまま渡す
+  if (opts.auth)
+    app.on(["GET", "POST"], "/api/auth/*", async (c) => {
+      const sub = c.req.path.replace(/^\/api\/auth(?=\/|$)/, "") || "/";
+      const h = c.req.raw.headers;
+      if (opts.resolve && !AUTH_TERMS_OPEN.some((re) => re.test(sub)) && (h.get("authorization") || h.get("cookie"))) {
+        const r = await opts.resolve(h).catch(() => null);
+        if (r?.termsPending) return termsRequired(c);
+      }
+      return opts.auth!.handler(c.req.raw);
+    });
   if (opts.authExt) app.route("/api/auth-ext", opts.authExt);
   // /api/* 配下は全部テナント文脈を通る（SET LOCAL の網羅＝G6）
+  //   resolve は同意し直しの印（termsPending・K-53）も返す。resolveSession（文脈だけを返す古い形・試験の土台）は印の無いものとして包む
+  const legacy = opts.resolveSession;
   const resolver: SessionResolver | undefined = opts.resolve
-    ? async (c) => (await opts.resolve!(c.req.raw.headers))?.ctx ?? null
-    : opts.resolveSession;
+    ? async (c) => {
+        const r = await opts.resolve!(c.req.raw.headers);
+        return r ? { ctx: r.ctx, termsPending: r.termsPending } : null;
+      }
+    : legacy
+      ? async (c) => {
+          const ctx = await legacy(c);
+          return ctx ? { ctx, termsPending: false } : null;
+        }
+      : undefined;
   if (opts.repo) app.use("/api/*", tenantContext(opts.repo, resolver));
   if (opts.repo && opts.contract !== false) registerAll(app, defaultDeps(opts.contract ?? {}));
   // 契約にある道すじに、契約に無いメソッド（TRACE など）で来たら 405 と使えるメソッド（Allow）を返す（404 にしない・K-35）

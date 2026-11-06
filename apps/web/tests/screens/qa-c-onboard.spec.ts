@@ -283,7 +283,8 @@ test("SCR-INVITE-ACCEPT-026 ボタン「参加する」：担当者として・�
     await page.getByLabel("お名前").fill(role === "staff" ? "担当 太郎" : "閲覧 花子");
     await page.getByLabel("パスワード", { exact: true }).fill(PW);
     await page.getByRole("button", { name: "参加する" }).click();
-    await expect(page).toHaveURL(/\/setup\/bridge/, { timeout: 20_000 });
+    // K-55（招待の画面の中で同意を取る）までは、招待で入った人は今の版に同意していないので、同意し直しの画面に移る（K-53・D-128.137）
+    await expect(page).toHaveURL(/\/login\?step=terms/, { timeout: 20_000 });
     expect(
       await count("select count(*)::int as n from members where tenant_id = $1 and role_id = $2", [
         boss.tenantId,

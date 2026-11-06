@@ -7,6 +7,7 @@ import pg from "pg";
 import type { Auth } from "@kaname/auth";
 import { putPending } from "@kaname/auth/pending";
 import { signUp } from "@kaname/auth/signup";
+import { agreeCurrentTerms as agreeTerms } from "../../../packages/db/test/agree-terms.js";
 
 const pools = new Map<string, pg.Pool>();
 const poolOf = (url: string) => {
@@ -50,6 +51,13 @@ export async function verifiedUser(
     companyName: input.companyName || name,
   });
   await poolOf(authUrl).query('update kaname_auth."user" set "emailVerified" = true where id = $1', [r.userId]);
+  await agreeCurrentTerms(r.userId);
   if (!r.token) throw new Error("ログインの印が返らない");
   return { token: r.token, userId: r.userId, user_id: r.userId };
+}
+
+/** 今の版の利用規約とプライバシーポリシーに同意済みにする（K-53）。SQL は packages/db/test/agree-terms.ts の 1 か所 */
+export async function agreeCurrentTerms(userId: string, adminUrl = process.env["DATABASE_URL"]!): Promise<void> {
+  const db = poolOf(adminUrl);
+  await agreeTerms(async (sql, params) => (await db.query(sql, params)).rows, userId);
 }

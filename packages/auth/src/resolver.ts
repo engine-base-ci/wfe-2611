@@ -8,6 +8,9 @@ export interface Resolved {
   ctx: TenantContext;
   sessionId: string;
   authUserId: string;
+  /** 同意し直しの印（K-53）。立っている間は、規約の口・ログアウト・自分の取得のほかを止める。PC のセッションは常に false。
+   *  ctx（DB に渡すテナントの文脈）には入れない */
+  termsPending: boolean;
 }
 
 export function createSessionResolver(auth: Auth, appPool: pg.Pool) {
@@ -23,11 +26,15 @@ export function createSessionResolver(auth: Auth, appPool: pg.Pool) {
     const row = alive.rows[0];
     if (!row) return null; // 失効済み・会社に属していない・人が抜けた・見張りで閉じた
     // 直前の本人確認の時刻（K-14）。入口が 15 分以内かを見る
-    const su = await appPool.query<{ at: Date | null }>("select app.session_step_up_at($1) as at", [s.session.id]);
+    const su = await appPool.query<{ at: Date | null; terms: boolean }>(
+      "select app.session_step_up_at($1) as at, app.session_terms_pending($2) as terms",
+      [s.session.id, row.session_id],
+    );
     return {
       ctx: { tenantId: row.tenant_id, userId: row.member_id, role: "member", stepUpAt: su.rows[0]?.at ?? null },
       sessionId: row.session_id,
       authUserId: s.user.id,
+      termsPending: su.rows[0]?.terms === true,
     };
   };
 }

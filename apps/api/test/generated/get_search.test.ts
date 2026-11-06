@@ -13,4 +13,6 @@ describe("GET /api/v1/search", () => {
   it.todo("test_get_search_rejected_422");
   // UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
   it.todo("test_get_search_rate_limited");
+  // UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
+  it.todo("test_get_search_terms_pending");
 });
