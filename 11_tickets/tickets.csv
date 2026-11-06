@@ -471,3 +471,6 @@ K-101,手元の CI は 1 回ずつ順に流す（同時に流すとお互いを�
 - [x] 同時に 2 回起こしても、2 回目は 1 回目が終わってから流れ、どちらも自分の結果どおりに終わる
 - [x] act を直に流さず、試しも act_ci.sh を通す、と references/ci.md に書く
 - [ ] workflow の全部（act）が緑"
+K-102,契約の implementation_path を、実際に作られる入口のファイルに合わせる,課題,K-32,未着手,実装,,基盤・試験,08_api/endpoints.json・lint-mapping.json の implementation_path が、実際に契約から作られる入口のファイルと合っていない（例：verifySignup・createSignup は `apps/api/src/routes/pending_signup.ts` と書いてあるが、作られるのは `apps/api/src/routes/auth.ts`）。チケットを切るときに目録や契約から実装の場所を引くと、無いファイルを指す。K-52・K-53 のチケットを直す途中で見つけた（途中で見つけたものはチケットにする・D-128.147）。,"- [ ] 05_flow/build_api.py が出す implementation_path が、contract.mjs gen が作る入口のファイルと一致する
+- [ ] 全部の口で、implementation_path のファイルが実在するか、まだ作っていない口なら作られる予定の場所と一致することを機械で確かめる検査がある
+- [ ] workflow の全部（act）が緑"
