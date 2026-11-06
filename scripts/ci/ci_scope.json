@@ -191,6 +191,22 @@
    "tests": [
     "apps/api/test/qa-d.test.ts"
    ]
+  },
+  {
+   "paths": [
+    "apps/api/src/features/F1/verify-email/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F1/verify-email.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/verify-email.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_auth_sign_up_verify.test.ts"
+   ]
   }
  ],
  "reads_ok": {

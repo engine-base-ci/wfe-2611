@@ -9,8 +9,12 @@
 --   ④ 別のアカウントでログイン中に確定したとき、新しい本人のセッションを閉じる理由 signup_other_account（ログアウトと分ける・D-128.137）
 alter table kaname_auth.pending_signup add column if not exists replaced_token_hashes text[] not null default '{}';
 create index if not exists pending_signup_replaced_tokens on kaname_auth.pending_signup using gin (replaced_token_hashes);
+-- 包んだパスワードは確定・期限切れの後に空にする（②・TP-REG-14）。この表を読むのは認証の口だけで、空を前提に書き直してある
+-- squawk-ignore ban-drop-not-null
 alter table kaname_auth.pending_signup alter column pw_iv drop not null;
+-- squawk-ignore ban-drop-not-null
 alter table kaname_auth.pending_signup alter column pw_tag drop not null;
+-- squawk-ignore ban-drop-not-null
 alter table kaname_auth.pending_signup alter column pw_data drop not null;
 
 insert into revoke_reasons (key, label) values ('signup_other_account', '別のアカウントでログイン中に登録を確定した')
