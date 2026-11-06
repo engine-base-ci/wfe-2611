@@ -4847,7 +4847,9 @@
    "area": "DB",
    "assignee": "作る",
    "due": "",
-   "decisions": [],
+   "decisions": [
+    "D-128.171"
+   ],
    "split": "",
    "choke_points": [
     "C2"
@@ -4875,7 +4877,9 @@
    "area": "試験",
    "assignee": "作る",
    "due": "",
-   "decisions": [],
+   "decisions": [
+    "D-128.170"
+   ],
    "split": "",
    "choke_points": [],
    "choke_none": "チケットの予定日の検査を足すだけ。関門に触らない",
@@ -4929,7 +4933,9 @@
    "area": "試験",
    "assignee": "作る",
    "due": "",
-   "decisions": [],
+   "decisions": [
+    "D-128.171"
+   ],
    "split": "",
    "choke_points": [],
    "choke_none": "CI の workflow の書き方を直すだけ。関門に触らない",
