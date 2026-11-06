@@ -2009,7 +2009,7 @@
    "milestone": "F1",
    "area": "認証",
    "assignee": "未定",
-   "due": "2026-11-08",
+   "due": "2026-11-06",
    "decisions": [
     "D-125.128",
     "D-125.139",
@@ -2072,7 +2072,7 @@
    "milestone": "F1",
    "area": "試験",
    "assignee": "未定",
-   "due": "2026-11-08",
+   "due": "2026-11-06",
    "decisions": [
     "D-128.125",
     "D-128.131",
@@ -2204,7 +2204,7 @@
    "milestone": "F3",
    "area": "PC",
    "assignee": "未定",
-   "due": "2026-11-09",
+   "due": "2026-11-06",
    "decisions": [
     "D-015",
     "D-055",
@@ -2281,7 +2281,7 @@
    "milestone": "F3",
    "area": "試験",
    "assignee": "未定",
-   "due": "2026-11-10",
+   "due": "2026-11-06",
    "decisions": [
     "D-128.125",
     "D-128.131",
@@ -2451,7 +2451,7 @@
    "milestone": "F4",
    "area": "チケット",
    "assignee": "未定",
-   "due": "2026-11-10",
+   "due": "2026-11-06",
    "decisions": [
     "D-125.6",
     "D-125.30",
@@ -2654,7 +2654,7 @@
    "milestone": "F5",
    "area": "AI",
    "assignee": "未定",
-   "due": "2026-11-11",
+   "due": "2026-11-07",
    "decisions": [
     "D-090",
     "D-093",
@@ -2740,7 +2740,7 @@
    "milestone": "F5",
    "area": "AI",
    "assignee": "未定",
-   "due": "2026-11-12",
+   "due": "2026-11-07",
    "decisions": [
     "D-012",
     "D-090",
@@ -2825,7 +2825,7 @@
    "milestone": "F5",
    "area": "試験",
    "assignee": "未定",
-   "due": "2026-11-12",
+   "due": "2026-11-07",
    "decisions": [
     "D-128.125",
     "D-128.131",
@@ -2859,7 +2859,7 @@
    "milestone": "F5",
    "area": "試験",
    "assignee": "未定",
-   "due": "2026-11-13",
+   "due": "2026-11-07",
    "decisions": [
     "D-128.125",
     "D-128.131",
@@ -4787,7 +4787,7 @@
    "milestone": "段",
    "area": "流れ",
    "assignee": "未定",
-   "due": "2026-11-13",
+   "due": "2026-11-07",
    "decisions": [
     "D-128.131",
     "D-128.168"
@@ -4804,6 +4804,66 @@
     "決定ログ": "- 歩く骨格の範囲（D-128.131）。大分類をやる順の段にした（2026-11-06）"
    },
    "file": "11_tickets/K-103.md"
+  },
+  {
+   "id": "K-104",
+   "title": "作りかけで止めた会社を、運営の画面・請求・数え上げにも出さない（tenants の行の守りに half_made_at が空を足す・2 層目）",
+   "kind": "課題",
+   "stage": "未着手",
+   "parent": "K-1",
+   "milestone": "基盤",
+   "area": "DB",
+   "assignee": "作る",
+   "due": "",
+   "decisions": [
+    "D-128.167"
+   ],
+   "split": "",
+   "choke_points": [
+    "C2"
+   ],
+   "choke_none": "",
+   "depends_on": [
+    "K-52"
+   ],
+   "sections": {
+    "目的": "K-52 の 3 回目のレビュー（2026-11-06）で見つかった。D-128.167 は「作りかけで止めた会社（tenants.half_made_at が入っている）はどの画面にも出さない」と決めたが、K-52 の守りは会社の人の側の片付け（人とセッションを消す）の 1 層だけ。運営の口（listOpsWorkspaces・exportOpsWorkspaces・listOpsInvoices・issueOpsInvoices・openPeek）はいまは 501 で漏れていないが、1 本でも実装されると、人の有る無しに関係なく会社を並べるので出てしまう。0087 の注記「人のいない会社は許可を出せない」も誤り（運営の許可は運営の人が自分で開く・0078）。",
+    "完了の条件": "- [ ] ER 図 → entities.json の tenants の行の守り（tenants_tenant_read・tenants_ops_read_with_grant・tenants_permission_write）に `AND half_made_at IS NULL` が入り、gen_rls で作り直してある\n- [ ] security definer の関数は持ち主の権限で行の守りを通り抜けるので、運営の一覧・請求・数え上げの口を作るチケットの実装の詳細に「half_made_at が空の行だけ」と試験の行が書いてある（この課題の depends_on に入れてもらう）\n- [ ] 0087 の誤った注記を直す\n- [ ] workflow の全部（act）が緑",
+    "前提と制約": "- 仕様の変更なので、作る役が切って精査を通してから実装に入る\n- 運営の画面（openPeek・listOpsWorkspaces など）のチケットは、この課題に depends_on を持つ",
+    "実施事項": "- [ ] 作る役：ER 図・entities.json・試験の行（運営の許可を開いても印の付いた会社が読めない・会社の一覧に出ない）",
+    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 印の付いた会社は運営の許可を開いても読めない | ① 単体（本物の DB） | half_made_at を入れた会社に support_access_grants を開き、kaname_app で tenants を読む | |",
+    "成果物": "",
+    "決定ログ": "- 決定に従った：D-128.167"
+   },
+   "file": "11_tickets/K-104.md"
+  },
+  {
+   "id": "K-105",
+   "title": "app の security definer の関数の search_path に pg_temp を入れ、public の execute を見直す（前からあるもの）",
+   "kind": "課題",
+   "stage": "未着手",
+   "parent": "K-1",
+   "milestone": "基盤",
+   "area": "DB",
+   "assignee": "作る",
+   "due": "",
+   "decisions": [],
+   "split": "",
+   "choke_points": [
+    "C2"
+   ],
+   "choke_none": "",
+   "depends_on": [],
+   "sections": {
+    "目的": "K-52 の 3 回目のレビュー（2026-11-06）で見つかった、K-52 より前からある問題。app の関数は静的に数えて 176 個、直に呼べる security definer の関数が約 140 個ある。public から execute を外しているのは 4 個だけで、多くは p_member・p_tenant を引数で受けてそのまま信じる。また search_path に pg_temp が明示されていないので、SQL を流せる役が一時表で tenants・members を隠すと守りを偽って通せる形があり得る。K-52 では新しく作る 2 つの関数だけ kaname_auth に移して直した（決める人の判断）。",
+    "完了の条件": "- [ ] app の security definer の関数がすべて `set search_path = …, pg_temp` を持つ（CI の検査で、無いものを赤にする）\n- [ ] 関数ごとに、呼んでよい役（kaname_app・kaname_auth など）だけに execute を渡し、public から外す。呼び手が引数で本人を渡す関数は、本人の確かめ方を一覧にする\n- [ ] workflow の全部（act）が緑",
+    "前提と制約": "- 関数の数が多いので、作る役が一覧を作ってから分けて切ってよい",
+    "実施事項": "- [ ] 作る役：関数の一覧（security definer か・search_path・execute の渡し先・本人の受け方）を機械で出す",
+    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| pg_temp の無い security definer の関数が 0 | ① 単体（本物の DB） | pg_proc を引いて proconfig を見る | |",
+    "成果物": "",
+    "決定ログ": ""
+   },
+   "file": "11_tickets/K-105.md"
   }
  ]
 }
