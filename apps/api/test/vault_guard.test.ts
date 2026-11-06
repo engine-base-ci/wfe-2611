@@ -13,7 +13,7 @@ import { createRepository } from "@kaname/db/repository";
 import { MemoryVault, RateLimited, SecretsGateway, type Vault } from "@kaname/secrets";
 import { createApp } from "../src/app.js";
 import { authExt } from "../src/auth/ext.js";
-import { pendingToken } from "./_pending.js";
+import { keepAuth, verifiedUser } from "./_pending.js";
 
 const DB_PKG = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "packages", "db");
 const ADMIN = process.env["DATABASE_URL"]!;
@@ -29,14 +29,16 @@ beforeAll(async () => {
   await migrateAuth(ADMIN);
   const appPool = createPool({ databaseUrl: APP_URL, max: 3 });
   const repo = await createRepository(appPool);
-  const { auth } = createAuth({
-    authDatabaseUrl: AUTH_URL,
-    appPool,
-    secret: "test-secret-0123456789-abcdefghijklmnop",
-    baseURL: "http://localhost:3001",
-    webBaseURL: "http://localhost:3123",
-    mailer: async () => undefined,
-  });
+  const { auth } = keepAuth(
+    createAuth({
+      authDatabaseUrl: AUTH_URL,
+      appPool,
+      secret: "test-secret-0123456789-abcdefghijklmnop",
+      baseURL: "http://localhost:3001",
+      webBaseURL: "http://localhost:3123",
+      mailer: async () => undefined,
+    }),
+  );
   const authPool = new pg.Pool({ connectionString: AUTH_URL, max: 2 });
   build = (env, vault) =>
     createApp({
@@ -69,9 +71,8 @@ async function signedIn(app: ReturnType<typeof createApp>) {
       body: JSON.stringify(b),
     });
   const email = `qa-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}@example.com`;
-  const token = await pendingToken(AUTH_URL, "test-master", { email, password: PW, companyName: "K" });
-  const ver = await post("/api/auth-ext/verify-signup", { token });
-  const H = { authorization: `Bearer ${((await ver.json()) as { data: { token: string } }).data.token}` };
+  const ver = await verifiedUser(AUTH_URL, { email, password: PW, companyName: "K" });
+  const H = { authorization: `Bearer ${ver.token}` };
   const store = (b: unknown) => post("/api/auth-ext/vault/credentials", b, H);
   /** 預けたものの一覧（表に行ができていないことを見る） */
   const list = async () => {

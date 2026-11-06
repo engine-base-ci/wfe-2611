@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。146 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。148 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -52,8 +52,8 @@ export const CATALOG: Record<string, CatalogEntry> = {
   "E-AUTH-003": {
     "id": "E-AUTH-003",
     "cls": "auth",
-    "message": "このリンクは期限が切れています。新しい確認メールを送ります",
-    "action": "確認メールを送り直す",
+    "message": "リンクの期限が切れました。もう一度登録してください",
+    "action": "もう一度登録する",
     "undo": false,
     "severity": "medium",
     "support_code": "E-AUTH-003",
@@ -2158,6 +2158,43 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "login",
       "state": "e"
+    }
+  },
+  "E-AUTH-008": {
+    "id": "E-AUTH-008",
+    "cls": "auth",
+    "message": "このリンクは使えません。新しく届いたメールのリンクを開いてください",
+    "action": "新しく届いたメールのリンクを開く",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-AUTH-008",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "verify-email",
+      "state": "old_link"
+    }
+  },
+  "E-AUTH-009": {
+    "id": "E-AUTH-009",
+    "cls": "auth",
+    "message": "別のアカウントの登録のリンクです",
+    "action": "今のアカウントのまま使う／ログアウトしてから、そのアカウントでログインする",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-AUTH-009",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "verify-email",
+      "state": "other_account"
     }
   },
   "E-CHAT-001": {

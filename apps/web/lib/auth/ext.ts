@@ -1,4 +1,5 @@
 // /api/auth-ext（Kaname としての認証の段取り）を画面から呼ぶ。エラーは正本の形（code・message・一手）
+import { call } from "@/lib/api/call";
 import { apiBase, getToken, notifyUnauthorized, setToken } from "@/lib/api/client";
 import { refreshSession } from "./client";
 
@@ -58,11 +59,17 @@ export async function ext<T>(path: string, body?: unknown, method = "POST"): Pro
   return json.data as T;
 }
 // 登録・待つ画面の状態・送り直しは契約の口（createSignup・getSignupStatus・resendSignupEmail）に移した（K-51・features/F1/sign-up）
-/** 確認：ここで初めて利用者と会社ができ、そのままログインする */
-export const verifySignup = (token: string) =>
-  ext<{ token: string | null; user_id: string; email: string }>("/verify-signup", { token }).then(
-    (r) => (r.token && (setToken(r.token), refreshSession()), r),
-  );
+/** 確認のリンクで確定する（契約の口 verifySignup・POST /api/v1/auth/sign-up/verify・K-52）。ここで初めて利用者と会社ができる。
+ *  ログインの印が返ったら（signed_in）ブラウザに残す。別のアカウントでログイン中なら印は返らず、今のアカウントのまま（D-128.137）。
+ *  前の道すじ /api/auth-ext/verify-signup は K-52 で消した */
+export const verifySignup = async (token: string) => {
+  const r = await call("verifySignup", { body: { token }, keepOn401: true, screenId: "verify-email" });
+  if (r.ok && r.data.signed_in && r.data.token) {
+    setToken(r.data.token);
+    refreshSession(); // ログインの部品の見え方（セッションの印）にも新しいログインを知らせる
+  }
+  return r;
+};
 export const signIn = (b: { email: string; password: string }) =>
   ext<{ token: string | null; two_factor: boolean; two_factor_cookie: string | null }>("/sign-in", b).then(
     (r) => (r.token && (setToken(r.token), refreshSession()), r),

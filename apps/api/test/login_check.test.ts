@@ -17,7 +17,7 @@ import { ObjectStore } from "@kaname/storage";
 import { localDriver } from "@kaname/storage/local";
 import { createApp } from "../src/app.js";
 import { authExt } from "../src/auth/ext.js";
-import { pendingToken } from "./_pending.js";
+import { keepAuth, verifiedUser } from "./_pending.js";
 
 const DB_PKG = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "packages", "db");
 const ADMIN = process.env["DATABASE_URL"]!;
@@ -49,14 +49,16 @@ beforeAll(async () => {
   admin = new pg.Pool({ connectionString: ADMIN, max: 2 });
   const appPool = createPool({ databaseUrl: APP_URL, max: 3 });
   const repo = await createRepository(appPool);
-  const { auth } = createAuth({
-    authDatabaseUrl: AUTH_URL,
-    appPool,
-    secret: "test-secret-0123456789-abcdefghijklmnop",
-    baseURL: "http://localhost:3001",
-    webBaseURL: "http://localhost:3123",
-    mailer: async () => undefined,
-  });
+  const { auth } = keepAuth(
+    createAuth({
+      authDatabaseUrl: AUTH_URL,
+      appPool,
+      secret: "test-secret-0123456789-abcdefghijklmnop",
+      baseURL: "http://localhost:3001",
+      webBaseURL: "http://localhost:3123",
+      mailer: async () => undefined,
+    }),
+  );
   const secrets = new SecretsGateway(repo, new MemoryVault(), Buffer.alloc(32, 9));
   const objects = new ObjectStore(repo, localDriver(mkdtempSync(join(tmpdir(), "kaname-obj-"))), {
     signingSecret: "test-files",
@@ -89,8 +91,7 @@ beforeAll(async () => {
 async function ready(opts: { bridge?: boolean } = { bridge: true }) {
   const email = `${uniq()}@example.com`;
   // 申し込みは直に置き、確認だけを通す（前の道すじ /sign-up は K-51 で契約の口に移した）
-  const token = await pendingToken(AUTH_URL, "test-master", { email, password: PW, companyName: "K" });
-  const ver = await json<{ token: string }>(post("/verify-signup", { token }));
+  const ver = await verifiedUser(AUTH_URL, { email, password: PW, companyName: "K" });
   const H = { authorization: `Bearer ${ver.token}` };
   let B: Record<string, string> = {};
   if (opts.bridge) {

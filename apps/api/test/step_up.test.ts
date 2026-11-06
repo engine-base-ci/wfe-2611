@@ -20,7 +20,7 @@ import { localDriver } from "@kaname/storage/local";
 import { ENDPOINTS } from "@kaname/contracts";
 import { createApp } from "../src/app.js";
 import { authExt } from "../src/auth/ext.js";
-import { pendingToken } from "./_pending.js";
+import { keepAuth, verifiedUser } from "./_pending.js";
 import { authHooks } from "../src/hooks/auth.js";
 
 const DB_PKG = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "packages", "db");
@@ -46,14 +46,16 @@ beforeAll(async () => {
   admin = new pg.Pool({ connectionString: ADMIN, max: 2 });
   const appPool = createPool({ databaseUrl: APP_URL, max: 3 });
   const repo = await createRepository(appPool);
-  const { auth } = createAuth({
-    authDatabaseUrl: AUTH_URL,
-    appPool,
-    secret: "test-secret-0123456789-abcdefghijklmnop",
-    baseURL: "http://localhost:3001",
-    webBaseURL: "http://localhost:3123",
-    mailer: async () => undefined,
-  });
+  const { auth } = keepAuth(
+    createAuth({
+      authDatabaseUrl: AUTH_URL,
+      appPool,
+      secret: "test-secret-0123456789-abcdefghijklmnop",
+      baseURL: "http://localhost:3001",
+      webBaseURL: "http://localhost:3123",
+      mailer: async () => undefined,
+    }),
+  );
   authApi = auth.api;
   app = createApp({
     repo,
@@ -85,10 +87,7 @@ beforeAll(async () => {
 /** 登録（確認メールを通す）→ ログイン済みのトークン */
 async function signedIn() {
   const email = `${uniq()}@example.com`;
-  const token = await pendingToken(AUTH_URL, "test-master", { email, password: PW, companyName: "K" });
-  const ver = (await (await call("POST", "/api/auth-ext/verify-signup", { token })).json()) as {
-    data: { token: string };
-  };
+  const ver = { data: await verifiedUser(AUTH_URL, { email, password: PW, companyName: "K" }) };
   const H = { authorization: `Bearer ${ver.data.token}` };
   const member = (
     await admin.query<{ member_id: string }>(

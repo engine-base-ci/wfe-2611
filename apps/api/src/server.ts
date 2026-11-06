@@ -18,6 +18,7 @@ import { assertApiStartup } from "./startup.js";
 import { agentHooks } from "./hooks/agent.js";
 import { authHooks } from "./hooks/auth.js";
 import { signupHooks } from "./hooks/signup.js";
+import { verifyEmailHooks } from "./hooks/verify-email.js";
 import { nearLimitNotifier } from "./ops-alert.js";
 
 export interface BootOptions {
@@ -128,12 +129,13 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
     resolve: createSessionResolver(auth, appPool),
     authExt: authExt({ auth, appPool, authPool, repo, secrets, objects, config, hub, ...(mailer ? { mailer } : {}) }),
     corsOrigin: config.webOrigins.join(","),
-    // 会話・記憶の契約の口は画面の口と同じ本体を通す。本人確認の取り直しはログインの部品に頼る（K-19）。登録は K-51
+    // 会話・記憶の契約の口は画面の口と同じ本体を通す。本人確認の取り直しはログインの部品に頼る（K-19）。登録は K-51、確認のリンクで確定するのは K-52
     contract: {
       hooks: {
         ...agentHooks(appPool),
         ...authHooks(auth, appPool),
         ...signupHooks({ authPool, repo, actions, ...(mailer ? { mailer } : {}), config }),
+        ...verifyEmailHooks({ auth, authPool, appPool, repo, ...(mailer ? { mailer } : {}), config }),
       },
     },
   });

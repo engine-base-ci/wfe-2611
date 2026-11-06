@@ -6680,6 +6680,10 @@
     "type": "timestamp with time zone",
     "nullable": true
    },
+   "half_made_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
    "id": {
     "type": "uuid",
     "nullable": false

@@ -16,7 +16,7 @@ import { createRepository } from "@kaname/db/repository";
 import { MemoryVault, SecretsGateway } from "@kaname/secrets";
 import { createApp } from "../src/app.js";
 import { authExt } from "../src/auth/ext.js";
-import { pendingToken } from "./_pending.js";
+import { keepAuth, verifiedUser } from "./_pending.js";
 
 const DB_PKG = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "packages", "db");
 const ADMIN = process.env["DATABASE_URL"]!;
@@ -42,14 +42,16 @@ beforeAll(async () => {
   admin = new pg.Pool({ connectionString: ADMIN, max: 2 });
   const appPool = createPool({ databaseUrl: APP_URL, max: 3 });
   const repo = await createRepository(appPool);
-  const { auth } = createAuth({
-    authDatabaseUrl: AUTH_URL,
-    appPool,
-    secret: "test-secret-0123456789-abcdefghijklmnop",
-    baseURL: "http://localhost:3001",
-    webBaseURL: "http://localhost:3123",
-    mailer: async (m) => void mails.push(m),
-  });
+  const { auth } = keepAuth(
+    createAuth({
+      authDatabaseUrl: AUTH_URL,
+      appPool,
+      secret: "test-secret-0123456789-abcdefghijklmnop",
+      baseURL: "http://localhost:3001",
+      webBaseURL: "http://localhost:3123",
+      mailer: async (m) => void mails.push(m),
+    }),
+  );
   const secrets = new SecretsGateway(repo, new MemoryVault(), Buffer.alloc(32, 9));
   app = createApp({
     repo,
@@ -76,11 +78,8 @@ beforeAll(async () => {
 /** 登録 → 端末の登録（Bridge の鍵）→ 言う（仕事が並ぶ）→ Bridge が取る */
 async function ready() {
   const email = `${uniq()}@example.com`;
-  // 登録が終わるのはメールを確認した時点（D-088）。確認メールのリンクの token で verify-signup を通して初めて token が出る
-  const vt = await pendingToken(AUTH_URL, "test-master", { email, password: PW, companyName: "K" });
-  const ver = await post("/api/auth-ext/verify-signup", { token: vt });
-  expect(ver.status).toBe(201);
-  const token = ((await ver.json()) as { data: { token: string } }).data.token;
+  // 登録が終わるのはメールを確認した時点（D-088）。確定した本人は ./_pending.ts の verifiedUser で作る（確定の口の振る舞いは features/F1/verify-email.test.ts）
+  const { token } = await verifiedUser(AUTH_URL, { email, password: PW, companyName: "K" });
   const H = { authorization: `Bearer ${token}` };
   const pair = (await (await post("/api/auth-ext/bridge/pair", {}, H)).json()) as { data: { code: string } };
   const claim = (await (

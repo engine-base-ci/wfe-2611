@@ -1,4 +1,4 @@
-# Kaname API 設計書 v1.0（2026-11-05 凍結）
+# Kaname API 設計書 v1.0（2026-11-06 凍結）
 
 > 信頼源は `08_api/endpoints.json` と `openapi.yaml`（05_flow/build_api.py が機械生成）。
 
@@ -43,7 +43,7 @@
 | EP-028 | POST | `/api/v1/auth/sign-up` | 作成・実行（auth）— アカウントを作る（会社名が空なら本人の名前で個 | A01 A96 | 1 | public | C2 | 409 422 429 |
 | EP-029 | POST | `/api/v1/auth/sign-up/resend` | 作成・実行（auth）— アカウントを作る（会社名が空なら本人の名前で個 | A01 | 1 | public | C2 | 409 422 429 |
 | EP-030 | GET | `/api/v1/auth/sign-up/status` | 取得（auth）— アカウントを作る（会社名が空なら本人の名前で個人のテ | A01 | 1 | public |  | 422 429 |
-| EP-031 | POST | `/api/v1/auth/sign-up/verify` | 作成・実行（auth）— メールを確認して本人だと示す | A02 | 1 | public | C2 C6 | 409 422 429 |
+| EP-031 | POST | `/api/v1/auth/sign-up/verify` | 作成・実行（auth）— メールを確認して本人だと示す | A02 | 1 | public | C2 C6 | 409 410 422 429 |
 | EP-032 | POST | `/api/v1/auth/step-up` | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | A13 | 1 | member | C2 | 401 403 409 422 429 |
 | EP-033 | POST | `/api/v1/auth/terms/consent` | 作成・実行（auth）— 規約に同意する（どの版に同意したかが残る） | A96 | 1 | member | C2 | 401 403 409 422 429 |
 | EP-034 | GET | `/api/v1/auth/terms/current` | 取得（auth）— 規約に同意する（どの版に同意したかが残る） | A96 | 1 | public |  | 422 429 |
@@ -394,4 +394,4 @@
 
 ## 6. 変更履歴
 
-- v1.0 2026-11-05 凍結（endpoints 363）
+- v1.0 2026-11-06 凍結（endpoints 363）

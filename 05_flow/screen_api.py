@@ -494,6 +494,24 @@ INPUTS = {
     "createSignup": ("SignupInput", {"email": "string", "name": "string", "company_name": "string", "password": "string"}),
     # 送り直しは申し込みの印（頭 x-signup-token）だけで引く。本文にメールを載せない（D-128.142）
     "resendSignupEmail": ("SignupResendInput", {}),
+    # 確認のリンクで確定する（K-52）：届いたメールのリンクの手がかりだけ。表の列（pw_iv など）は入力に出さない
+    "verifySignup": ("SignupVerifyInput", {"token": "string"}),
+}
+# 口ごとの 4xx（operationId → 答えの並び）。ここにある口は、汎用の 409（冪等キー）・422 の代わりにこの並びを使う（429・502 は汎用のまま足す）。
+#   EARS の文には状態の番号を入れる（05_flow/build_testplan.py の classify() が番号で試験の名前を決める）
+ERRORS_4XX = {
+    # 確認のリンクで確定する（K-52・D-088.9・D-128.146）。冪等キーは使わない：2 回目にログインの印を渡すと、リンクを持つ人なら誰でも入れてしまう
+    "verifySignup": [
+        {"status": 409, "code": "CONFLICT", "body": {"error": "conflict"}, "errors": ["E-CONF-011", "E-CONF-001", "E-AUTH-009"],
+         "trigger": "確定済みのリンクをもう一度・前のリンクで新しいリンクが確定済み・別の道で登録済み・確定済みのリンクを別のアカウントでログイン中に開いた",
+         "ears_form": "UNWANTED: IF 確定済みのリンクがもう一度来たら、Kaname は 409 を返し、ログインの印を渡さず本人を二重に作らない"},
+        {"status": 410, "code": "GONE", "body": {"error": "gone"}, "errors": ["E-AUTH-003", "E-AUTH-008", "E-PAGE-006"],
+         "trigger": "リンクが期限切れ（30 分）・送り直す前の前のリンク・無い（掃除された・でたらめ）",
+         "ears_form": "UNWANTED: IF リンクが期限切れ・前のリンク・無いなら、Kaname は 410 と次の一手を返し、本人を作らない"},
+        {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": ["E-PAGE-006"],
+         "trigger": "手がかりが無い・空（前後の空白を除いて空）",
+         "ears_form": "UNWANTED: IF 手がかりが無いか空なら、Kaname は 422 を返し、申し込みには触らない"},
+    ],
 }
 # 頭（header）で受ける値（operationId → 名前）。URL に載せるとアクセスの記録に残るものは頭で渡す（D-128.142）
 HEADERS = {
@@ -521,6 +539,8 @@ RESPONSES = {
     "createSignup": ("SignupCreated", {"email": "string", "sent": "boolean", "mail_error": "string?", "mail_error_kind": "string?", "expires_at": "string", "signup_token": "string"}),
     "resendSignupEmail": ("SignupResent", {"email": "string?", "sent": "boolean", "mail_error": "string?", "mail_error_kind": "string?", "pending": "boolean", "registered": "boolean", "expired": "boolean"}),
     "getSignupStatus": ("SignupStatus", {"state": "string", "email": "string?", "expires_at": "string?"}),
+    # 確定した（K-52）。ふつうは token にログインの印・signed_in=true。別のアカウントでログイン中に確定したら token=null・signed_in=false（D-128.137）。本人の id は返さない
+    "verifySignup": ("SignupVerified", {"email": "string", "token": "string?", "signed_in": "boolean"}),
     "getMySecurity": ("MySecurity", {"passkeys": "array", "has_password": "boolean", "two_factor": "boolean", "two_factor_required": "boolean", "backup_codes_left": "integer", "sessions": "array", "recent_events": "array"}),
     "startTwoFactor": ("TwoFactorSetup", {"otpauth_uri": "string", "secret_masked": "string", "expires_at": "string"}),
     "confirmTwoFactor": ("BackupCodes", {"codes": "array"}),

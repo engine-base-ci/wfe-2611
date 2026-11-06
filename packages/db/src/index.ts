@@ -91,6 +91,7 @@ export const MIGRATIONS = [
   "0084_private_rows.sql",
   "0085_signup_consent.sql",
   "0086_security_event_opening.sql",
+  "0087_pending_replaced_tokens.sql",
 ] as const;
 
 /** migration 名の並びを検査する。重複・順序違い・4 桁でない名前があれば理由を返す。 */

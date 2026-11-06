@@ -18,7 +18,7 @@ import { ObjectStore } from "@kaname/storage";
 import { localDriver } from "@kaname/storage/local";
 import { createApp } from "../src/app.js";
 import { authExt } from "../src/auth/ext.js";
-import { pendingToken } from "./_pending.js";
+import { keepAuth, verifiedUser } from "./_pending.js";
 import { agentStreamRoutes } from "../src/auth/agent-stream.js";
 
 const DB_PKG = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "packages", "db");
@@ -49,14 +49,16 @@ beforeAll(async () => {
   admin = new pg.Pool({ connectionString: ADMIN, max: 2 });
   appPool = createPool({ databaseUrl: APP_URL, max: 3 });
   const repo = await createRepository(appPool);
-  ({ auth } = createAuth({
-    authDatabaseUrl: AUTH_URL,
-    appPool,
-    secret: "test-secret-0123456789-abcdefghijklmnop",
-    baseURL: "http://localhost:3001",
-    webBaseURL: "http://localhost:3123",
-    mailer: async () => undefined,
-  }));
+  ({ auth } = keepAuth(
+    createAuth({
+      authDatabaseUrl: AUTH_URL,
+      appPool,
+      secret: "test-secret-0123456789-abcdefghijklmnop",
+      baseURL: "http://localhost:3001",
+      webBaseURL: "http://localhost:3123",
+      mailer: async () => undefined,
+    }),
+  ));
   hub = createMemberHub({ url: APP_URL });
   const objects = new ObjectStore(repo, localDriver(mkdtempSync(join(tmpdir(), "kaname-obj-"))), {
     signingSecret: "test-files",
@@ -93,8 +95,7 @@ afterAll(async () => {
 async function ready() {
   const email = `${uniq()}@example.com`;
   // 申し込みは直に置き、確認だけを通す（前の道すじ /sign-up は K-51 で契約の口に移した）
-  const token = await pendingToken(AUTH_URL, "test-master", { email, password: PW, companyName: "K" });
-  const ver = await json<{ token: string }>(req("POST", "/verify-signup", { token }));
+  const ver = await verifiedUser(AUTH_URL, { email, password: PW, companyName: "K" });
   const H = { authorization: `Bearer ${ver.token}` };
   const pair = await json<{ code: string }>(req("POST", "/bridge/pair", {}, H));
   const claim = await json<{ session_id: string }>(

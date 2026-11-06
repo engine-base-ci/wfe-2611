@@ -8,11 +8,11 @@
   "api": 363,
   "api_built": 8,
   "api_only_later_phase": 20,
-  "legacy_routes": 40,
+  "legacy_routes": 39,
   "db": 142,
   "ui": 13,
   "packages": 13,
-  "errors": 146,
+  "errors": 148,
   "stack": 52,
   "env": 34
  },
@@ -5875,8 +5875,7 @@
   "/two-factor/verify",
   "/vault/credentials",
   "/vault/credentials/:id/answer",
-  "/vault/credentials/:id/login-check",
-  "/verify-signup"
+  "/vault/credentials/:id/login-check"
  ],
  "db": [
   {

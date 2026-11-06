@@ -14,7 +14,7 @@ import { createRepository } from "@kaname/db/repository";
 import { MemoryVault, SecretsGateway } from "@kaname/secrets";
 import { createApp } from "../src/app.js";
 import { authExt } from "../src/auth/ext.js";
-import { pendingToken } from "./_pending.js";
+import { keepAuth, verifiedUser } from "./_pending.js";
 
 const DB_PKG = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "packages", "db");
 const ADMIN = process.env["DATABASE_URL"]!;
@@ -32,14 +32,11 @@ const post = (path: string, body: unknown, headers: Record<string, string> = {})
   });
 const uniq = () => `u${Date.now().toString(36)}${Math.floor(Math.random() * 1e4)}`;
 const PW = "correct-horse-battery-1";
-/** 登録は 2 段（D-088）：申し込み（201・まだ会社は無い）→ 確認メールのリンクを押す（verify-signup・ここで会社と本人ができ、そのまま入る） */
+/** 登録は 2 段（D-088）：申し込み（201・まだ会社は無い）→ 確認メールのリンクを押す（契約の口 verifySignup・K-52。ここで会社と本人ができ、そのまま入る） */
 //   申し込みは K-51 で契約の口（POST /api/v1/auth/sign-up）に移した。ここでは申し込みを直に置いて確認だけ通す（申し込みの振る舞いは features/F1/sign-up.test.ts）
 async function register(email: string, company: string, password = PW): Promise<{ token: string; userId: string }> {
-  const token = await pendingToken(AUTH_URL, "test-master", { email, password, companyName: company });
-  const v = await post("/api/auth-ext/verify-signup", { token });
-  expect(v.status, await v.clone().text()).toBe(201);
-  const j = (await v.json()) as { data: { token: string; user_id: string } };
-  return { token: j.data.token, userId: j.data.user_id };
+  const v = await verifiedUser(AUTH_URL, { email, password, companyName: company });
+  return { token: v.token, userId: v.userId };
 }
 
 beforeAll(async () => {
@@ -48,14 +45,16 @@ beforeAll(async () => {
   admin = new pg.Pool({ connectionString: ADMIN, max: 2 });
   appPool = createPool({ databaseUrl: APP_URL, max: 3 });
   const repo = await createRepository(appPool);
-  const { auth } = createAuth({
-    authDatabaseUrl: AUTH_URL,
-    appPool,
-    secret: "test-secret-0123456789-abcdefghijklmnop",
-    baseURL: "http://localhost:3001",
-    webBaseURL: "http://localhost:3123",
-    mailer: async (m) => void mails.push(m),
-  });
+  const { auth } = keepAuth(
+    createAuth({
+      authDatabaseUrl: AUTH_URL,
+      appPool,
+      secret: "test-secret-0123456789-abcdefghijklmnop",
+      baseURL: "http://localhost:3001",
+      webBaseURL: "http://localhost:3123",
+      mailer: async (m) => void mails.push(m),
+    }),
+  );
   const secrets = new SecretsGateway(repo, new MemoryVault(), Buffer.alloc(32, 9));
   app = createApp({
     repo,

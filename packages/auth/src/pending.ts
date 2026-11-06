@@ -5,7 +5,7 @@ import type pg from "pg";
 import { normalizeEmail } from "./signup.js";
 
 export const PENDING_TTL_MIN = 30;
-
+// 前のリンクの手がかり（replaced_token_hashes）は、送り直すたびに伸びないよう最後の 10 件だけ残す（K-52・putPending と renewPendingLink の SQL）
 function key(masterKeyB64: string): Buffer {
   // 用途ごとに鍵を分ける（同じ master key を別の用途と共有しない）
   return Buffer.from(hkdfSync("sha256", Buffer.from(masterKeyB64, "base64"), Buffer.alloc(0), "pending-signup", 32));
@@ -39,6 +39,7 @@ export interface PendingConsent {
 }
 
 /** 申し込みを預ける。同じメールで再度来たら上書きし、前のリンクは使えなくする（再訪で詰まらせない・D-088.3）。
+ *  上書きした前のリンクの手がかり（ハッシュ）は replaced_token_hashes に移す。前のリンクを開いた人に「新しいリンクを」と案内するため（K-52・E-AUTH-008）。
  *  申し込みの印（signupToken）も新しく作る。登録を送ったブラウザにだけ返し、DB にはハッシュだけを置く（D-128.142）。
  *  上書きされた前の印は、もう今の申し込みを引けない */
 export async function putPending(
@@ -60,6 +61,7 @@ export async function putPending(
      on conflict (email) do update set
        name = excluded.name, company_name = excluded.company_name,
        pw_iv = excluded.pw_iv, pw_tag = excluded.pw_tag, pw_data = excluded.pw_data,
+       replaced_token_hashes = (array_append(kaname_auth.pending_signup.replaced_token_hashes, kaname_auth.pending_signup.token_hash))[greatest(1, cardinality(kaname_auth.pending_signup.replaced_token_hashes) + 1 - 10 + 1):],
        token_hash = excluded.token_hash, expires_at = excluded.expires_at,
        updated_at = now(), sent_at = null, send_error = null, consumed_at = null,
        signup_token_hash = excluded.signup_token_hash,
@@ -113,7 +115,7 @@ export async function pendingBySignupToken(pool: pg.Pool, signupToken: string): 
 }
 
 /** 送り直し：印の申し込みが期限内で確定していなければ、確認のリンクの手がかりを新しくする（前のリンクは使えなくなる）。
- *  印はそのまま（待つ画面は同じ印で引き続ける）。期限も 30 分に戻す。引けなければ null */
+ *  印はそのまま（待つ画面は同じ印で引き続ける）。期限も 30 分に戻す。前の手がかりは replaced_token_hashes に移す（K-52）。引けなければ null */
 export async function renewPendingLink(
   pool: pg.Pool,
   signupToken: string,
@@ -121,7 +123,9 @@ export async function renewPendingLink(
   const token = randomBytes(24).toString("base64url");
   const expiresAt = new Date(Date.now() + PENDING_TTL_MIN * 60_000);
   const r = await pool.query<{ email: string }>(
-    `update kaname_auth.pending_signup set token_hash = $2, expires_at = $3, updated_at = now(), sent_at = null, send_error = null
+    `update kaname_auth.pending_signup
+        set replaced_token_hashes = (array_append(replaced_token_hashes, token_hash))[greatest(1, cardinality(replaced_token_hashes) + 1 - 10 + 1):],
+            token_hash = $2, expires_at = $3, updated_at = now(), sent_at = null, send_error = null
       where signup_token_hash = $1 and consumed_at is null and expires_at > now() returning email`,
     [hashPendingToken(signupToken), hashPendingToken(token), expiresAt],
   );
@@ -151,28 +155,176 @@ export async function getPendingByEmail(pool: pg.Pool, email: string, masterKeyB
   return r.rows[0] ? row(r.rows[0], masterKeyB64) : null;
 }
 
-/** リンクの手がかりから引く。期限切れは null（画面は「新しいリンクを送る」へ） */
-export type ByToken =
-  | { kind: "ok"; pending: Pending }
-  | { kind: "done" } // もう確認した（二度押し・リロード）→ 入る画面へ
-  | { kind: "gone" }; // 期限切れか、そんなリンクは無い → はじめから
-export async function takePendingByToken(pool: pg.Pool, masterKeyB64: string, token: string): Promise<ByToken> {
-  const r = await pool.query(
-    "select email, name, company_name, pw_iv, pw_tag, pw_data, expires_at, consumed_at from kaname_auth.pending_signup where token_hash = $1",
-    [hashPendingToken(token)],
+/** 確認のリンクで確定するときに使う申し込みの中身。パスワードは包んだまま（開くのは確定の処理・K-52） */
+export interface ClaimedPending {
+  email: string;
+  name: string;
+  companyName: string;
+  sealed: { iv: string; tag: string; data: string };
+  termsVersionId: string | null;
+  privacyVersionId: string | null;
+  consentedAt: Date | null;
+}
+/** リンクの手がかりで引いた結果（K-52）。
+ *  claimed … いま使うの印を付けた（この 1 回だけが確定に進む）／ done … もう確定に使った（同じリンク・前のリンクのどちらも）
+ *  expired … 期限切れ（30 分・DB の now() で比べる）／ replaced … 送り直す前の前のリンク ／ gone … 無い（掃除された・でたらめ）
+ *  unusable … 使い終わりの印があるのに本人がいない（包んだパスワードが開けず空にした）。登録し直しの案内（E-PAGE-006） */
+export type ClaimResult =
+  | { kind: "claimed"; tokenHash: string; pending: ClaimedPending }
+  | { kind: "done"; email: string }
+  | { kind: "expired" }
+  | { kind: "replaced" }
+  | { kind: "unusable" }
+  | { kind: "gone" };
+/** 引くのと「使う」の印を 1 文で同時に行う（同時に 2 回押しても、確定に進むのは 1 回だけ・TP-REG-12） */
+export async function claimPendingByToken(pool: pg.Pool, token: string): Promise<ClaimResult> {
+  const h = hashPendingToken(token);
+  const r = await pool.query<{
+    email: string;
+    name: string;
+    company_name: string;
+    pw_iv: string;
+    pw_tag: string;
+    pw_data: string;
+    terms_version_id: string | null;
+    privacy_version_id: string | null;
+    consented_at: Date | null;
+  }>(
+    `update kaname_auth.pending_signup set consumed_at = now(), updated_at = now()
+      where token_hash = $1 and consumed_at is null and expires_at > now() and pw_data is not null
+      returning email, name, company_name, pw_iv, pw_tag, pw_data, terms_version_id, privacy_version_id, consented_at`,
+    [h],
   );
   const x = r.rows[0];
-  if (!x) return { kind: "gone" };
-  if (x.consumed_at) return { kind: "done" };
-  if (new Date(x.expires_at).getTime() <= Date.now()) return { kind: "gone" };
-  return { kind: "ok", pending: row(x, masterKeyB64) };
+  if (x)
+    return {
+      kind: "claimed",
+      tokenHash: h,
+      pending: {
+        email: x.email,
+        name: x.name,
+        companyName: x.company_name,
+        sealed: { iv: x.pw_iv, tag: x.pw_tag, data: x.pw_data },
+        termsVersionId: x.terms_version_id,
+        privacyVersionId: x.privacy_version_id,
+        consentedAt: x.consented_at,
+      },
+    };
+  // 印を付けられなかった：なぜかを見分ける。今の手がかりを先に、無ければ前の手がかり（GIN の索引が使える @> の形）で引く。
+  //   使い終わりの印があり、パスワードが空で、本人がいない＝開けなかった申し込み（確定の途中ならパスワードはまだ残っている）
+  const why = await pool.query<{
+    email: string;
+    current: boolean;
+    consumed: boolean;
+    expired: boolean;
+    unusable: boolean;
+  }>(
+    `select email, token_hash = $1 as current, consumed_at is not null as consumed, expires_at <= now() as expired,
+            (consumed_at is not null and pw_data is null
+              and not exists (select 1 from kaname_auth."user" u where u.email = p.email)) as unusable
+       from kaname_auth.pending_signup p
+      where token_hash = $1 or replaced_token_hashes @> array[$1]::text[]
+      order by (token_hash = $1) desc limit 1`,
+    [h],
+  );
+  const x2 = why.rows[0];
+  if (!x2) return { kind: "gone" };
+  if (x2.unusable) return { kind: "unusable" };
+  if (x2.consumed) return { kind: "done", email: x2.email };
+  if (!x2.current) return { kind: "replaced" };
+  return x2.expired ? { kind: "expired" } : { kind: "gone" };
 }
-/** 確認が済んだ印。行は消さない（消すと「もう済んでいる」と「期限切れ」が同じ見た目になる） */
-export async function consumePending(pool: pg.Pool, email: string): Promise<void> {
-  await pool.query("update kaname_auth.pending_signup set consumed_at = now() where email = $1", [
-    normalizeEmail(email),
-  ]);
+/** 確定の途中で失敗したら印を戻す（もう一度押せば確定できる・TP-CRUD-05） */
+export async function releasePendingClaim(pool: pg.Pool, tokenHash: string): Promise<void> {
+  await pool.query("update kaname_auth.pending_signup set consumed_at = null where token_hash = $1", [tokenHash]);
 }
+/** 確定が済んだ：包んだパスワードを空にする。行は「確定済み」と「期限切れ」を分けるために残す（migration 0023・0087） */
+export async function sealOffPending(pool: pg.Pool, tokenHash: string): Promise<void> {
+  await pool.query(
+    "update kaname_auth.pending_signup set pw_iv = null, pw_tag = null, pw_data = null, updated_at = now() where token_hash = $1",
+    [tokenHash],
+  );
+}
+/** 認証の接続（kaname_auth の表）。生の pg を業務の側に持ち込まないための名前（K-52・関門 C2） */
+export type AuthPool = pg.Pool;
+/** 確定した本人の印にメールの確認済みを立てる（確認のリンクを経て作ったので、この時点で確認済み） */
+export async function markEmailVerified(pool: pg.Pool, userId: string): Promise<void> {
+  await pool.query('update kaname_auth."user" set "emailVerified" = true where id = $1', [userId]);
+}
+/** DB の今の時刻（確定を始めた時刻をこれで取る。片付けの関数の「作られて数分以内」と同じ時計・D-128.130） */
+export async function dbNow(pool: pg.Pool): Promise<Date> {
+  const r = await pool.query<{ now: Date }>("select now() as now");
+  return r.rows[0]!.now;
+}
+/** この確定で作った本人（メールが同じで、確定を始めた時刻より後にできた本人）。signUp の中（会社を作る hook）で落ちて id が返らなかったときに引く。
+ *  呼ぶのは signUp が本人を足せた後に落ちたときだけ（本人を足せなかったとき＝重複は、ほかの道の本人なので引かない）。
+ *  始めた時刻より前からいる本人は返さない */
+export async function userMadeSince(pool: pg.Pool, email: string, since: Date): Promise<string | null> {
+  const r = await pool.query<{ id: string }>(
+    'select id from kaname_auth."user" where email = $1 and "createdAt" >= $2 order by "createdAt" desc limit 1',
+    [normalizeEmail(email), since],
+  );
+  return r.rows[0]?.id ?? null;
+}
+/** その本人の会社の人（members）が、どこかの会社に残っているか（確定の処理の役だけが読める関数 app.auth_user_has_members・migration 0087） */
+export async function authUserHasMembers(authPool: pg.Pool, userId: string): Promise<boolean> {
+  const r = await authPool.query<{ has: boolean }>("select app.auth_user_has_members($1) as has", [userId]);
+  return r.rows[0]?.has === true;
+}
+/** 確定の途中で失敗したときの片付け（D-128.167）。この確定で作った本人（id で指す。メールで探して消さない）について、
+ *  ① 会社が分かれば app.drop_half_made_company で、会社は消さずに「作りかけで止めた」印を付けて中身だけを片付ける（守りは関数の中で 3 重）
+ *  ② その本人の会社の人がどの会社にも残っていないときだけ、認証の本人を消す（セッション・アカウントは外部キーの cascade で一緒に消える）。
+ *  どちらも確定の処理の役（認証の接続 kaname_auth）で呼ぶ。片付けたかを返す（会社の中身・本人） */
+export async function dropHalfMadeUser(
+  authPool: pg.Pool,
+  userId: string,
+  tenantId: string | null,
+): Promise<{ company: boolean; user: boolean }> {
+  let company = false;
+  if (tenantId) {
+    const r = await authPool.query<{ n: number }>("select app.drop_half_made_company($1::uuid, $2) as n", [
+      tenantId,
+      userId,
+    ]);
+    company = (r.rows[0]?.n ?? 0) > 0;
+  }
+  if (await authUserHasMembers(authPool, userId)) return { company, user: false };
+  await authPool.query('delete from kaname_auth."user" where id = $1', [userId]);
+  return { company, user: true };
+}
+/** セッションを閉じる理由：別のアカウントでログイン中に確定した（ログアウトと分ける・migration 0087） */
+export const SIGNUP_OTHER_ACCOUNT = "signup_other_account";
+/** 作ったばかりの本人のセッションを閉じる（別のアカウントでログイン中に確定した・D-128.137）。Kaname の側も認証の側も */
+export async function closeSessionsOf(authPool: pg.Pool, appPool: pg.Pool, userId: string): Promise<void> {
+  await appPool.query("select app.revoke_sessions_for_auth_user($1, $2)", [userId, SIGNUP_OTHER_ACCOUNT]);
+  await authPool.query('delete from kaname_auth.session where "userId" = $1', [userId]);
+}
+/** 作ったばかりの本人の会社の人（members）と会社。確定のときにできたセッションから引く（業務の表は会社の文脈が無いと読めないため、
+ *  セッションの写しの関数 app.session_alive を通す）。セッションが無ければ null */
+export async function memberOfNewUser(
+  authPool: pg.Pool,
+  appPool: pg.Pool,
+  userId: string,
+): Promise<{ memberId: string; tenantId: string } | null> {
+  const s = await authPool.query<{ id: string }>(
+    'select id from kaname_auth.session where "userId" = $1 order by "createdAt" desc limit 1',
+    [userId],
+  );
+  const sid = s.rows[0]?.id;
+  if (!sid) return null;
+  const m = await appPool.query<{ member_id: string; tenant_id: string }>("select * from app.session_alive($1)", [sid]);
+  const x = m.rows[0];
+  return x ? { memberId: x.member_id, tenantId: x.tenant_id } : null;
+}
+/** 本人のメールアドレス（認証の表）。無ければ null */
+export async function emailOfUser(authPool: pg.Pool, userId: string): Promise<string | null> {
+  const r = await authPool.query<{ email: string }>('select email from kaname_auth."user" where id = $1', [userId]);
+  return r.rows[0]?.email ?? null;
+}
+/** 包んだパスワードを開く。鍵が替わっていれば投げる */
+export const openPendingPassword = (masterKeyB64: string, sealed: ClaimedPending["sealed"]): string =>
+  open_(masterKeyB64, sealed);
+
 export async function dropPending(pool: pg.Pool, email: string): Promise<void> {
   await pool.query("delete from kaname_auth.pending_signup where email = $1", [normalizeEmail(email)]);
 }

@@ -38,7 +38,7 @@ export async function api<T>(
   });
   return { status: res.status, json: (await res.json().catch(() => ({}))) as T };
 }
-/** 申し込む → 確認のリンクを踏む → 会社ができて token が返る（D-088：登録が終わるのは確認の時点）。
+/** 申し込む → 確認のリンクを踏む（契約の口 POST /api/v1/auth/sign-up/verify）→ 会社ができて token が返る（D-088：登録が終わるのは確認の時点）。
  *  リンクは API のログから拾う（KANAME_API_LOG）。本物の流れをそのまま通すので、画面の前提もこれで揃う */
 export async function signupPending(company = "QA 社", email = uniqEmail()) {
   const r = await api<{ data: { email: string; sent: boolean; mail_error: string | null } }>("/api/v1/auth/sign-up", {
@@ -61,21 +61,23 @@ export function pendingToken(email: string): string {
 /** 会社ごと登録して token を返す（画面の前提）。申し込み → 確認 まで通す */
 export async function signupViaApi(company = "QA 社", email = uniqEmail()) {
   await signupPending(company, email);
-  const r = await api<{ data: { token: string; user_id: string } }>("/api/auth-ext/verify-signup", {
+  // 確認のリンクを押す＝契約の口 verifySignup（K-52）。前の道すじ /api/auth-ext/verify-signup は K-52 で消した
+  const r = await api<{ data: { token: string; email: string; signed_in: boolean } }>("/api/v1/auth/sign-up/verify", {
     token: pendingToken(email),
   });
-  if (r.status !== 201) throw new Error(`verify-signup ${r.status} ${JSON.stringify(r.json)}`);
+  if (r.status !== 201) throw new Error(`sign-up/verify ${r.status} ${JSON.stringify(r.json)}`);
   const c = new pg.Client({ connectionString: ADMIN });
   await c.connect();
-  const m = await c.query<{ id: string; tenant_id: string; scope_id: string }>(
-    "select id, tenant_id, scope_id from members where auth_user_id = $1",
-    [r.json.data.user_id],
+  // 答えに本人の id は入らない（K-52 のレビューの L8）。メールで DB から引く
+  const m = await c.query<{ id: string; tenant_id: string; scope_id: string; auth_user_id: string }>(
+    'select m.id, m.tenant_id, m.scope_id, m.auth_user_id from members m join kaname_auth."user" u on u.id = m.auth_user_id where u.email = $1',
+    [email],
   );
   await c.end();
   return {
     email,
     token: r.json.data.token,
-    userId: r.json.data.user_id,
+    userId: m.rows[0]!.auth_user_id,
     memberId: m.rows[0]!.id,
     tenantId: m.rows[0]!.tenant_id,
     scopeId: m.rows[0]!.scope_id,

@@ -17,7 +17,6 @@ import type { Auth } from "@kaname/auth";
 import { acceptInvitation, hashToken } from "@kaname/auth/invitations";
 import { createSessionResolver, signOut } from "@kaname/auth/resolver";
 import { EMAIL_RE, normalizeEmail, signInWithLock, signUp } from "@kaname/auth/signup";
-import { consumePending, takePendingByToken } from "@kaname/auth/pending";
 import type { Repository } from "@kaname/db/repository";
 import { withTenant } from "@kaname/db/context";
 import type { SecretsGateway } from "@kaname/secrets";
@@ -111,44 +110,7 @@ export function authExt(d: AuthExtDeps): Hono {
   const resolve = createSessionResolver(d.auth, d.appPool);
 
   // 登録・待つ画面の状態・送り直しは契約の口（POST /api/v1/auth/sign-up・GET …/status・POST …/resend）に移した（K-51・apps/api/src/features/F1/sign-up/）。
-  // ここに残るのは確認（verify-signup・K-52 が契約の口に移す）
-  const already = async (email: string) =>
-    (await d.authPool.query('select 1 from kaname_auth."user" where email = $1', [email])).rowCount ?? 0;
-
-  // 確認（T-U-02・D-088.2）：ここで初めて 利用者・会社・層・代表・自分のAI ができ、そのままログインする
-  app.post("/verify-signup", async (c) => {
-    const b = (await c.req.json().catch(() => ({}))) as { token?: string };
-    const token = String(b.token ?? "");
-    if (!token) return bad(c, 422, "E-VAL-004", "リンクが正しくありません");
-    const found = await takePendingByToken(d.authPool, d.config.secretsMasterKey, token);
-    // もう確認した人（二度押し・リロード）は詰まらせず、入る画面へ送る
-    if (found.kind === "done")
-      return bad(c, 409, "E-CONF-011", "このメールアドレスの登録は確認まで終わっています。ログインしてください");
-    if (found.kind === "gone")
-      return bad(c, 410, "E-AUTH-003", "このリンクは期限が切れています。新しい確認メールを送ります", {
-        expired: true,
-      });
-    const p = found.pending;
-    if (await already(p.email)) {
-      await consumePending(d.authPool, p.email);
-      return bad(
-        c,
-        409,
-        "E-CONF-001",
-        "このメールアドレスは既に登録されています。ログインするか、パスワードを再設定してください",
-      );
-    }
-    const r = await signUp(d.auth, {
-      email: p.email,
-      password: p.password,
-      name: p.name,
-      companyName: p.companyName,
-    });
-    // 確認を経て作ったので、この時点で確認済み
-    await d.authPool.query('update kaname_auth."user" set "emailVerified" = true where id = $1', [r.userId]);
-    await consumePending(d.authPool, p.email);
-    return c.json({ data: { token: r.token, user_id: r.userId, email: p.email } }, 201);
-  });
+  // 確認のリンクで確定するのも契約の口（POST /api/v1/auth/sign-up/verify・K-52・apps/api/src/features/F1/verify-email/）に移した
 
   // ログイン（T-U-05）：5 回で 15 分ロック（E-AUTH-001／002）。2 段階なら token 無しで twoFactor=true
   app.post("/sign-in", async (c) => {

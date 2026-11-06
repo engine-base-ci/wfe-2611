@@ -1,8 +1,8 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:fe6156470535126e
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:e9ce31d2e9f63d5e
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
-export type Tenants = { name?: string; plan_id?: string | null; status_id?: string | null; live_at?: string | null; live_by?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; client_visibility_default?: string; created_by?: string | null; deleted_at?: string | null; deletion_requested_at?: string | null; logo_ref?: string | null; request_routing?: string | null; session_idle_hours?: number; session_max_days?: number; updated_by?: string | null };
+export type Tenants = { name?: string; plan_id?: string | null; status_id?: string | null; live_at?: string | null; live_by?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; client_visibility_default?: string; created_by?: string | null; deleted_at?: string | null; deletion_requested_at?: string | null; half_made_at?: string | null; logo_ref?: string | null; request_routing?: string | null; session_idle_hours?: number; session_max_days?: number; updated_by?: string | null };
 export type TenantsInput = { name?: string; plan_id?: string | null; status_id?: string | null; live_at?: string | null; live_by?: string | null };
 export type Scopes = { parent_id?: string | null; layer_id?: string | null; name?: string; ticket_prefix?: string | null; next_ticket_no?: number; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; updated_by?: string | null };
 export type ScopesInput = { parent_id?: string | null; layer_id?: string | null; name?: string; ticket_prefix?: string | null; next_ticket_no?: number };
@@ -289,6 +289,7 @@ export type RoleBundleDefaultsInput = { role?: string; target_kind_id?: string; 
 export type StepUpInput = { password?: string; code?: string };
 export type SignupInput = { email?: string; name?: string; company_name?: string; password?: string };
 export type SignupResendInput = Record<string, never>;
+export type SignupVerifyInput = { token?: string };
 export type ScopeOverview = { by_stage?: string[]; milestones?: string[]; recent?: string[]; total?: number };
 export type TicketKindChangePreview = { added_sections?: string[]; removed_sections?: string[]; moved_to_body?: string[]; checks_reset?: boolean };
 export type TicketDeletePreview = { children?: number; attachments?: number; artifacts?: number; restorable_until?: string };
@@ -307,6 +308,7 @@ export type ActivityItem = { kind?: string; at?: string; title?: string; ticket_
 export type SignupCreated = { email?: string; sent?: boolean; mail_error?: string | null; mail_error_kind?: string | null; expires_at?: string; signup_token?: string };
 export type SignupResent = { email?: string | null; sent?: boolean; mail_error?: string | null; mail_error_kind?: string | null; pending?: boolean; registered?: boolean; expired?: boolean };
 export type SignupStatus = { state?: string; email?: string | null; expires_at?: string | null };
+export type SignupVerified = { email?: string; token?: string | null; signed_in?: boolean };
 export type MySecurity = { passkeys?: string[]; has_password?: boolean; two_factor?: boolean; two_factor_required?: boolean; backup_codes_left?: number; sessions?: string[]; recent_events?: string[] };
 export type TwoFactorSetup = { otpauth_uri?: string; secret_masked?: string; expires_at?: string };
 export type BackupCodes = { codes?: string[] };

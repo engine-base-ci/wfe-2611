@@ -35,6 +35,18 @@
     "test_post_auth_sign_up_resend_ok": "K51-API-009 送り直す（期限内・印で）",
     "test_post_auth_sign_up_resend_rejected_422_2": "K51-API-030 送り直しをメールで頼む"
    }
+  },
+  "verifySignup": {
+   "file": "apps/api/test/features/F1/verify-email.test.ts",
+   "reason": "確認のリンクで確定するのは、本物のログインの部品（Better Auth の本人とセッション）・本物の DB の申し込みの行・差し込んだ送出先（関門 C6 の完了のメール）で確かめる。生成の試験の偽のセッションと土台では確かめられない（K-52）",
+   "covers": {
+    "test_post_auth_sign_up_verify_ok": "K52-API-001 保留中（期限内）× 確認のメールのリンク × ログインしていない",
+    "test_post_auth_sign_up_verify_conflict": "K52-API-010 確定済み × 同じリンクをもう一度 × ログインしていない",
+    "test_post_auth_sign_up_verify_gone": "K52-API-005 保留中（期限切れ・30 分を過ぎた）",
+    "test_post_auth_sign_up_verify_rejected_422": "K52-API-015 手がかりが無い・空",
+    "test_post_auth_sign_up_verify_rate_limited": "K52-API-027 1 分に 11 回（同じ IP）",
+    "test_post_auth_sign_up_verify_shape": "K52-API-031 関門"
+   }
   }
  }
 }

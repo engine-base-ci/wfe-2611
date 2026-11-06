@@ -914,8 +914,9 @@
    ],
    "ears_ac_seed": [
     "EVENT-DRIVEN: WHEN POST /api/v1/auth/sign-up/verify が「届いたリンクを押す」として呼ばれたとき THEN Kaname は「本人確認を記録してログインさせる」を行い 2xx を返す",
-    "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
-    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 確定済みのリンクがもう一度来たら、Kaname は 409 を返し、ログインの印を渡さず本人を二重に作らない",
+    "UNWANTED: IF リンクが期限切れ・前のリンク・無いなら、Kaname は 410 と次の一手を返し、本人を作らない",
+    "UNWANTED: IF 手がかりが無いか空なら、Kaname は 422 を返し、申し込みには触らない",
     "UNWANTED: IF 10/min/ip を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UBIQUITOUS: POST /api/v1/auth/sign-up/verify の副作用は関門 C2・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
    ],

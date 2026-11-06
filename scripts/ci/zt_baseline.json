@@ -3,7 +3,7 @@
  "metrics": {
   "rls_missing": 0,
   "open_read_child": 1,
-  "outside_routes": 87,
+  "outside_routes": 83,
   "session_idle": 0,
   "session_geo": 0,
   "csp": 0,

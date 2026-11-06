@@ -32,7 +32,7 @@ TIER_MAP = [
 def slug(ep):
     m, p = ep.split(" ", 1); return (m.lower() + "_" + re.sub(r"[^a-z0-9]+", "_", p.lower().replace("/api/v1/", "")).strip("_"))
 def classify(line):
-    form = line.split(":")[0]; s = re.search(r"\b(401|403|404|409|422|429|502)\b", line); code = s.group(1) if s else ""
+    form = line.split(":")[0]; s = re.search(r"\b(401|403|404|409|410|422|429|500|502)\b", line); code = s.group(1) if s else ""
     if form == "EVENT-DRIVEN": return form, code, "contract+integration", "backend-coverage", "ok"
     if form == "UBIQUITOUS": return form, code, "contract", "backend-coverage", "shape"
     if code in ("401", "403"): return form, code, "access", "backend-access-matrix", "rejected_" + code
@@ -40,6 +40,8 @@ def classify(line):
     if code == "502": return form, code, "integration（外部を切る・G-15）", "backend-coverage", "upstream_failed"
     if code == "409": return form, code, "unit（冪等）", "backend-coverage", "conflict"
     if code == "404": return form, code, "unit", "backend-coverage", "not_found"
+    if code == "410": return form, code, "unit（期限・使い終わり）", "backend-coverage", "gone"
+    if code == "500": return form, code, "unit（途中の失敗・全部戻す）", "backend-coverage", "server_error"
     return form, code, "unit（検証・表記ゆらぎ）", "backend-coverage", "rejected_422"
 task_by_text = {}
 for t in TASKS:

@@ -129,10 +129,10 @@
     "screen": "verify-email",
     "state": "x"
    },
-   "when": "確認メールのリンクが 24 時間を過ぎた・別の端末で使い切った",
-   "false_when": "24 時間以内の未使用リンク",
-   "message": "このリンクは期限が切れています。新しい確認メールを送ります",
-   "action": "確認メールを送り直す",
+   "when": "確認のメールのリンクが 30 分（D-088・PENDING_TTL_MIN）を過ぎた",
+   "false_when": "30 分の内で、まだ使っていないリンク",
+   "message": "リンクの期限が切れました。もう一度登録してください",
+   "action": "もう一度登録する",
    "undo": false,
    "layers": [
     "API",
@@ -142,14 +142,15 @@
    "reproduce": {
     "setup": "登録直後（未確認）",
     "steps": [
-     "リンクの発行時刻を 25 時間前にする",
+     "リンクの期限を 31 分前にする",
      "リンクを開く"
     ],
     "needs": "時刻の操作か DB 直接更新"
    },
    "severity": "medium",
    "source": [
-    "D-042"
+    "D-042",
+    "D-088"
    ]
   },
   {
@@ -3872,6 +3873,67 @@
     "D-074"
    ],
    "severity": "high"
+  },
+  {
+   "id": "E-AUTH-008",
+   "class": "auth",
+   "where": {
+    "screen": "verify-email",
+    "state": "old_link"
+   },
+   "when": "同じメールでもう一度登録した・「もう一度送る」で送り直した後に、前に届いたメールのリンクを開いた",
+   "false_when": "いちばん新しく届いたメールのリンク",
+   "message": "このリンクは使えません。新しく届いたメールのリンクを開いてください",
+   "action": "新しく届いたメールのリンクを開く",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "登録して確認のメールが届いた",
+    "steps": [
+     "同じメールでもう一度登録する（または「もう一度送る」を押す）",
+     "前に届いたメールのリンクを開く"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-128.146"
+   ]
+  },
+  {
+   "id": "E-AUTH-009",
+   "class": "auth",
+   "where": {
+    "screen": "verify-email",
+    "state": "other_account"
+   },
+   "when": "確認まで終わった登録のリンクを、別のアカウントでログインしている間に開いた",
+   "false_when": "ログインしていない・その登録の本人でログインしている",
+   "message": "別のアカウントの登録のリンクです",
+   "action": "今のアカウントのまま使う／ログアウトしてから、そのアカウントでログインする",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "登録を確認まで終えたリンクがある。別のアカウントでログインしている",
+    "steps": [
+     "そのリンクを開く"
+    ],
+    "needs": "アカウントが 2 つ"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.146",
+    "D-128.137"
+   ]
   },
   {
    "id": "E-CHAT-001",

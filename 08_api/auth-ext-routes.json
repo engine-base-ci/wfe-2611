@@ -546,12 +546,6 @@
    "method": "POST",
    "route": "/api/auth-ext/vault/credentials/:id/login-check",
    "to": "checkCredentialLogin"
-  },
-  {
-   "file": "apps/api/src/auth/ext.ts",
-   "method": "POST",
-   "route": "/api/auth-ext/verify-signup",
-   "to": "verifySignup"
   }
  ]
 }
