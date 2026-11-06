@@ -495,3 +495,6 @@ K-107,チケットごとの CI を、機械で出した影響の範囲の試験�
 K-108,workflow の run の中で github.head_ref などの値を直に使っている所を env に移す（命令の注入の形・前からある物）,課題,K-1,未着手,作る,,基盤・試験,"K-107 の 2 回目の精査（2026-11-06）で見つかった、前からある物。.github/workflows/v3-gate.yml の task-gate に `echo ""TASK_ID=${{ github.head_ref }}""` があり、枝の名前に `$(...)` などを入れると命令が動く形（GitHub の案内でいう script injection）。今は pull_request で動かないので害は無いが、GitHub で pull_request を受けるようにした時点で穴になる。K-107 の CS-034 は inputs・needs の値だけを見ていて、github. の値は見ていない。","- [ ] workflow の run の中に、外から来る値（github.head_ref・github.event.*・inputs.*・needs.*.outputs.*）を `${{ }}` で直に書いている所が 0。どれも env で渡し、引用符で使う
 - [ ] その形を CI の検査で赤にする（K-107 の CS-034 を github. の値まで広げる）
 - [ ] workflow の全部（act）が緑"
+K-109,手元の試験の DB と CI の database の組が 5432 番でぶつからないようにする,課題,K-1,未着手,作る,,基盤・試験,K-107 の実装（2026-11-06）で見つかった。v3-gate.yml の database の組は、DB の入れ物の番号をホストの 5432 番に出す（`ports: ['5432:5432']`）。台の上で実装の役が手元の試験のために Postgres（/usr/lib/postgresql/16）を 5432 番で立ち上げていると、CI の database の組が立ち上がらず、CI が止まる。unit の組は 5433〜5435 番などに分けてあるが、database の組だけ手元と同じ番号になっている。,"- [ ] 手元の試験の DB が動いていても、CI（act）の database の組が立ち上がる（番号を分けるか、ホストに出さない形にする）
+- [ ] GitHub でも同じ workflow で動く
+- [ ] workflow の全部（act）が緑"
