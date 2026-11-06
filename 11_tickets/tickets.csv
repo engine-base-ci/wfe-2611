@@ -510,3 +510,26 @@ K-110,CI の時間の無駄を測って消す（組を同時に流す数・型�
 - [ ] G27 の 133 秒の中身を測って、無駄があれば消す
 - [ ] 全部の回と範囲を絞った回の時間を、直す前と後で数字で出す
 - [ ] workflow の全部（act）が緑。GitHub でも同じ workflow で動く"
+K-111,CI の範囲を決める仕組みの見落とし 4 つ（フォルダごと読む書き方・読む印の種類・統合の試験 1 本で全部が試験ありになる・中間と統合の Playwright の試験）と関数の分け直し,課題,K-1,未着手,作る,,基盤・試験,"K-107 のテスターのレビュー（2026-11-06）で見つかった、これから起こりうる漏れ。どれも取り込み 5 本ごとの全部の回で拾えるので K-107 の取り込みは止めないが、範囲を絞った回では見落とす。
+
+- M2：`no_test_path_reads` はパスの文字がそのまま書いてあるときしか見つけない。`join(ROOT, ""11_tickets"")`・`""07_qa/test-specs""` のようにフォルダを指す書き方は赤にならない
+- M3：読む印に `require(`・`createRequire`・`import.meta.glob`・`globSync`・`opendir` が無く、調べるファイルの型に `.js`・`.mts`・`.cjs` が無い（例：apps/web/tests/_lib/agent-bridge.ts が createRequire で apps/bridge/dist を読む）
+- M4：`if ... or itests: continue` のため、統合の試験が 1 本あると、変えたどのコードも「試験の無いコード」の検査を通る
+- M7：中間・統合のチケットの tests: に Playwright の .spec.ts があると、単体の組の並びに入り、check-count が赤になる（黙って緑にはならないが壊れる）
+- 関数が長い：plan() 約 140 行・_decide()","- [ ] M2：文書の置き場の親のフォルダを指したときも赤
+- [ ] M3：読む印と型を足し、agent-bridge.ts を data_links か reads_ok に書く
+- [ ] M4：統合の試験は、それが実際に辿る src にだけ数える
+- [ ] M7：試験のファイルの型でふるい分け、実ブラウザの試験は web の組に回す
+- [ ] plan()・_decide() を「変えたファイルを分ける」「試験を決める」「試験の無いコード」に分ける
+- [ ] 各項目に試験の行・workflow の全部（act）が緑"
+K-112,CI の範囲を決める仕組みの小さな直し（同じ値の 2 か所・比べる元の枝の 2 か所・全部の回の 0 本・globalSetup・番号の拾い方・download-artifact・eval を使わない読み方）,課題,K-1,未着手,作る,,基盤・試験,"K-107 のテスターのレビュー（2026-11-06）の LOW をまとめた 1 本。どれも安全側（全部に倒れる・赤になる）で、すぐの害は無い。
+
+- L1：同じ値が 2 か所（108 の番号：build_index.py の AFFECTS_FROM と ci_scope.json／広げる理由の 4 つ：CI_WIDE と WIDE／パッケージの一覧：packages() と workspace()）
+- L2：比べる元の枝が 2 か所（.act-ci.env の ACT_BASE_BRANCH と pm_merge の --base・PM_MERGE_BASE）
+- L3：全部の回にも --passWithNoTests が付き、流れた数の突き合わせを全部の回で見ていない。全部の回でも 0 本なら赤
+- L4：vitest の globalSetup（packages/db/test/global-lock.ts）が全部に倒れるのは、たまたま @kaname/db が共通の部品だから。full.ci にはっきり書く
+- L6：チケットの番号をコミットの本文全体から拾うので、本文に別の番号があると全部に倒れる（題だけから拾う）
+- L7：unit の組の download-artifact の段に !cancelled() が無い（前からある）
+- act_ci.sh の .act-ci.env を eval せずに値を取り出す・`--base=""$CI_BASE_INPUT""` の形にする
+- L8：.squawk.toml の外した規則の数の記録（9 種ではなく 8 種）","- [ ] 上の 8 つを直し、それぞれ試験の行で受ける
+- [ ] workflow の全部（act）が緑"
