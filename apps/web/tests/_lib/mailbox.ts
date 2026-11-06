@@ -1,6 +1,6 @@
 // 試験用の受け箱（K-54）：Resend の口（POST /emails）の代わりに、届いたメールを手元で受け取る。
 //   API は本物の送出の道（関門 C6・packages/notify の resendMail → Resend の SDK）をそのまま通り、行き先だけがここになる：
-//   API を RESEND_API_KEY（試験の値）と RESEND_BASE_URL=http://127.0.0.1:<QA_MAILBOX_PORT> で立てる（SDK が読む行き先・本番は空）。
+//   API を RESEND_API_KEY（試験の値・既定 re_qa_mailbox・QA_MAILBOX_KEY。違う鍵は 401 で受けない）と RESEND_BASE_URL=http://127.0.0.1:<QA_MAILBOX_PORT> で立てる（SDK が読む行き先・本番は空）。
 //   本文（text）から確認のリンクを取り出して開く。画面に出たリンクや API のログ（_lib/api.ts の lastMailUrl）は使わない。
 //   探したが無かった：目録（03_architecture/catalog.json）の共通の処理・apps/web/tests/_lib・apps/api/test/_pending.ts に受け箱は無い。
 //   似たもの：lastMailUrl（api.ts）は API のログの「リンク」の行を読む。送ったメールそのもの（宛先・件名・本文・署名）ではなく、
@@ -18,6 +18,8 @@ export interface Mail {
 
 /** 受け箱の番号（API の RESEND_BASE_URL と同じにする） */
 export const MAILBOX_PORT = Number(process.env["QA_MAILBOX_PORT"] ?? 3191);
+/** 受け箱が受ける鍵（API の RESEND_API_KEY と同じ試験の値）。違う鍵・鍵無しは 401 で受けない（試験の鍵でこの道を通ったことまで確かめる） */
+export const MAILBOX_KEY = process.env["QA_MAILBOX_KEY"] ?? "re_qa_mailbox";
 
 const body = (req: IncomingMessage): Promise<string> =>
   new Promise((ok, ng) => {
@@ -32,6 +34,8 @@ const first = (v: unknown): string => (Array.isArray(v) ? String(v[0] ?? "") : S
 export class Mailbox {
   private server: Server | null = null;
   private readonly box: Mail[] = [];
+  /** 鍵が違って受けなかった数 */
+  refused = 0;
 
   /** 受け箱を開く。番号が使われていたら止める（別の受け箱にメールが流れると、届かないのと区別できない） */
   async open(port = MAILBOX_PORT): Promise<void> {
@@ -40,6 +44,11 @@ export class Mailbox {
       void (async () => {
         if (req.method !== "POST" || !(req.url ?? "").startsWith("/emails")) {
           res.writeHead(404, { "content-type": "application/json" }).end('{"message":"not found"}');
+          return;
+        }
+        if (req.headers["authorization"] !== `Bearer ${MAILBOX_KEY}`) {
+          this.refused += 1;
+          res.writeHead(401, { "content-type": "application/json" }).end('{"message":"invalid api key"}');
           return;
         }
         const j = JSON.parse((await body(req)) || "{}") as Record<string, unknown>;
@@ -83,8 +92,8 @@ export class Mailbox {
       if (got.length >= n) return got[n - 1]!;
       if (Date.now() > end)
         throw new Error(
-          `受け箱に ${to} 宛ての ${n} 通目（件名 ${subject}）が届かない（届いたのは ${got.length} 通）。` +
-            `API を RESEND_API_KEY と RESEND_BASE_URL=http://127.0.0.1:${MAILBOX_PORT} で立てているか確かめる`,
+          `受け箱に ${to} 宛ての ${n} 通目（件名 ${subject}）が届かない（届いたのは ${got.length} 通・鍵が違って受けなかったのは ${this.refused} 通）。` +
+            `API を RESEND_API_KEY=${MAILBOX_KEY} と RESEND_BASE_URL=http://127.0.0.1:${MAILBOX_PORT} で立てているか確かめる`,
         );
       await new Promise((r) => setTimeout(r, 100));
     }

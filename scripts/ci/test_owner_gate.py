@@ -69,16 +69,21 @@ def e2e_globs() -> list[str]:
     """apps/web の e2e:k（CI の G48 が流す実ブラウザの試験）が読むファイル"""
     s = json.load(open(os.path.join(ROOT, WEB, "package.json"), encoding="utf-8"))["scripts"]["e2e:k"]
     args = [a for a in s.split("playwright test", 1)[1].split() if not a.startswith("-")]
-    # workflow の段が直に流す実ブラウザの試験（G59 の中間テスト `pnpm --filter @kaname/web exec playwright test tests/skeleton`・K-54）
     wf = open(os.path.join(ROOT, ".github/workflows/v3-gate.yml"), encoding="utf-8").read()
+    return [WEB + (a if a.endswith(".ts") else a.rstrip("/") + "/**/*.spec.ts") for a in args] + workflow_globs(wf)
+
+
+def workflow_globs(wf: str) -> list[str]:
+    """workflow の段が直に流す実ブラウザの試験（G59 の中間テスト `pnpm --filter @kaname/web exec playwright test tests/skeleton`・K-54）"""
+    args = []
     for m in re.finditer(r"--filter @kaname/web exec playwright test ([^\n&|;]+)", wf):
         args += [a for a in m.group(1).split() if not a.startswith("-")]
     return [WEB + (a if a.endswith(".ts") else a.rstrip("/") + "/**/*.spec.ts") for a in args]
 
 
-def test_files(files: list[str] | None = None) -> list[str]:
+def test_files(files: list[str] | None = None, pats: list[str] | None = None) -> list[str]:
     files = repo_files() if files is None else files
-    pats = unit_globs() + e2e_globs()
+    pats = unit_globs() + e2e_globs() if pats is None else pats
     return sorted(f for f in files if "/node_modules/" not in f and any(glob_re(p).match(f) for p in pats))
 
 
@@ -163,6 +168,19 @@ def selftest() -> int:
     ok = True
     for name, (ts, g, eps, want) in cases.items():
         got = {b.split()[0] for b in check(ts, files, g, eps)}
+        hit = got == want
+        ok &= hit
+        print(f"  {'緑' if hit else '★ 赤'} {name}：出たもの {sorted(got) or 'なし'}（あるべきもの {sorted(want) or 'なし'}）")
+    # workflow の段が直に流す実ブラウザの試験の読み方（K-54）：正しい workflow なら中間テストのファイルに持ち主が付き、
+    #   道を壊した写し（段の道の名前違い・段が消えた）なら、そのチケットの tests: が当たらず TO3 で赤
+    spec = WEB + "tests/skeleton/m1.spec.ts"
+    wf_good = "run: BASE_URL=x pnpm --filter @kaname/web exec playwright test tests/skeleton\n"
+    wf_cases = {"緑（workflow の道）": (wf_good, set()),
+                "TO3（workflow の道の名前違い）": (wf_good.replace("tests/skeleton", "tests/skeletn"), {"TO3"}),
+                "TO3（workflow の段が無い）": ("run: pnpm --filter @kaname/web e2e:k\n", {"TO3"})}
+    for name, (wf, want) in wf_cases.items():
+        fs = test_files(files + [spec], ["a/*.test.ts", GEN + "*.test.ts"] + workflow_globs(wf))
+        got = {b.split()[0] for b in check(good + [{"id": "K-5", "tests": [spec]}], fs, gen, ["opP", "opQ"])}
         hit = got == want
         ok &= hit
         print(f"  {'緑' if hit else '★ 赤'} {name}：出たもの {sorted(got) or 'なし'}（あるべきもの {sorted(want) or 'なし'}）")

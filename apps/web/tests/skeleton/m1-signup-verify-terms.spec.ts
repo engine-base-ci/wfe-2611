@@ -155,6 +155,7 @@ test("K54-M1-01 正常：登録 → 受け箱のメールのリンク → 使い
   page,
 }) => {
   const w = person("正常");
+  const started = new Date((await admin<{ t: Date }>("select now() as t"))[0]!.t).getTime(); // DB の時刻で、試験を始めた時刻
   const before = await currentTerms();
   await signUpByForm(page, w);
   expect(await confirmed(w.email), "メールを確かめる前は本人を作らない").toEqual([]);
@@ -173,8 +174,12 @@ test("K54-M1-01 正常：登録 → 受け箱のメールのリンク → 使い
   expect(agreed.map((a) => a.terms_version_id).sort(), "登録で同意した今の版が本人に移る").toEqual(
     before.map((b) => b.id).sort(),
   );
-  for (const a of agreed)
-    expect(new Date(a.agreed_at).getTime(), "同意の時刻が残る").toBeLessThanOrEqual(Date.now() + 5_000);
+  for (const a of agreed) {
+    expect(a.agreed_at, "同意の時刻が残る（空でない）").not.toBeNull();
+    expect(new Date(a.agreed_at).getTime(), "同意の時刻は試験を始めた後（登録のときの同意）").toBeGreaterThanOrEqual(
+      started,
+    );
+  }
 });
 
 test("K54-M1-02 期限切れ：30 分を過ぎてからリンク → 期限切れの案内 → もう一度登録すると新しいメールが届き、通れる", async ({
@@ -240,9 +245,11 @@ test("K54-M1-04 確定済みでもう一度：同じリンクをもう一度 →
     await b.ctx.close();
   }
   // 確定したブラウザ（ログイン中）で同じリンク → 二重に作らない（もう一度「登録できました」にしない）。
-  //   行き先（中へ入るか・ログインの案内か）は K52-UI-010 が持つ。本物の口では自分の取得（GET /api/v1/me・K-70）が 501 なので、いまは案内が出る
+  //   行き先（中へ入るか・ログインの案内か）は K52-UI-010 が持つ。本物の口では自分の取得（GET /api/v1/me・K-70・K-121）が 501 なので、いまは案内が出る。
+  //   今出る文言そのもので確かめる：K-70 が入って中へ入るようになったら、ここが赤になって気づける（そのときこの行を直す）
   await openLink(page, url);
-  await expect(heading(page, /登録/)).toBeVisible();
+  await expect(heading(page, "登録は終わっています")).toBeVisible();
+  await expect(page.getByText(MSG.done)).toBeVisible();
   await expect(heading(page, "登録できました")).toHaveCount(0);
   expect(await confirmed(w.email), "本人は 1 人のまま").toHaveLength(1);
 });
