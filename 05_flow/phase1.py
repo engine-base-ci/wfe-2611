@@ -178,11 +178,15 @@ SCREEN_ADD = {
  "clients": ("取引先", "取引先と担当者を管理し、招待し、見せる項目の既定を決める", "取引先を足す", ["取引先", "招待", "ルール"], True, "/clients", ["D-125.121", "D-125.122"]),
  "requests": ("届いた依頼", "取引先からの依頼とやり取りを見て、受けてチケットにする／断る", "受けてチケットにする", ["依頼", "取引先", "チケット"], True, "/requests", ["D-125.123", "D-125.46"]),
  "ops-team": ("運営：運営の人", "運営の場所に入れる人と、できること（問い合わせ・中を見る・お金・止める・お知らせ・配るもの・値段の案・値段を決める・運営の人）を決める。パスキーでしか入れない", "運営の人を足す", ["運営メンバー"], True, "/ops/team", ["D-128.70"]),
+ "legal": ("規約・プライバシーポリシー", "利用規約とプライバシーポリシーの今の版を、登録の前でも読める", "読む", ["規約と同意"], False, "/legal/:kind", ["D-125.162", "D-128.137", "D-128.146"]),   # 文面のページ（K-53）。ログインを求めない・主ナビに出さない
  "portal": ("クライアントの場所", "取引先の人が依頼を出し、やり取りし、進みと成果物を見て検収する", "依頼を出す", ["依頼", "検収", "成果物"], True, "/portal", ["D-125.46", "D-125.121", "D-125.122", "D-125.124"]),
 }
 
+# 行為が裏側の表（BLUEPRINT）の画面のほかにも出る画面（K-53：規約に同意する A96 は、登録の画面と文面のページ legal の両方）
+ACT_MORE_SCREENS = {"A96": ["legal"]}
+
 MILESTONE_SCREENS = {
- 1: ["signup", "verify-email", "login", "password-reset", "mfa-setup", "account", "tickets", "approvals", "ai-activity", "clone-chat", "credentials", "bridge-setup", "ops-skills"],
+ 1: ["signup", "legal", "verify-email", "login", "password-reset", "mfa-setup", "account", "tickets", "approvals", "ai-activity", "clone-chat", "credentials", "bridge-setup", "ops-skills"],
  2: ["invite-accept", "masters", "layers", "members", "member-detail", "rules", "work-types", "knowledge", "audit", "company-settings"],
  3: ["clients", "requests", "portal", "inquiry", "notices", "billing", "ops-home", "ops-tenant", "ops-support", "ops-notices", "ops-billing", "ops-team"],
 }
@@ -367,6 +371,8 @@ def apply(G):
         if sid not in G["DEFERRED"]: G["DEFERRED"][sid] = DEFER_SCREEN[sid]
     G["MILESTONE_SCREENS"] = {sid: ms for ms, ids in MILESTONE_SCREENS.items() for sid in ids}
     G["ACT2SCREEN"] = {a: [v[1]] for a, v in G["BLUEPRINT"].items()}
+    for a, more in ACT_MORE_SCREENS.items():   # 1 つの行為が 2 つ目の画面にも出る（裏側の表の画面は 1 つのまま）
+        G["ACT2SCREEN"][a] = G["ACT2SCREEN"].get(a, []) + [x for x in more if x not in G["ACT2SCREEN"].get(a, [])]
 
     # もの
     objs = []

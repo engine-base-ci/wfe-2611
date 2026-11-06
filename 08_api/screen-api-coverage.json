@@ -51,16 +51,6 @@
    "missing": []
   },
   {
-   "screen_id": "legal",
-   "screen_name": "規約・プライバシーポリシー",
-   "mock_path": null,
-   "required_apis": [],
-   "transitions": [],
-   "coverage_status": "STATIC",
-   "missing": [],
-   "static_reason": "規約・プライバシーポリシーの文面は、ひな形（apps/web/content/legal/<kind>-v<版>.md）と設定（legalValues）だけで埋め、DB も API も読まない。画面だけを立ち上げる CI の段でも開け、?v= で古い版も出せるようにするため。今の版の名前と url は、リンクを出す登録の画面と同意し直しの画面が getCurrentTerms で取る"
-  },
-  {
    "screen_id": "verify-email",
    "screen_name": "メールを確認する",
    "mock_path": "06_mockup/v1/v1-verify-email.html",
@@ -3167,6 +3157,16 @@
    "transitions": [],
    "coverage_status": "OK",
    "missing": []
+  },
+  {
+   "screen_id": "legal",
+   "screen_name": "規約・プライバシーポリシー",
+   "mock_path": null,
+   "required_apis": [],
+   "transitions": [],
+   "coverage_status": "STATIC",
+   "missing": [],
+   "static_reason": "規約・プライバシーポリシーの文面は、ひな形（apps/web/content/legal/<kind>-v<版>.md）と設定（legalValues）だけで埋め、DB も API も読まない。画面だけを立ち上げる CI の段でも開け、?v= で古い版も出せるようにするため。今の版の名前と url は、リンクを出す登録の画面と同意し直しの画面が getCurrentTerms で取る"
   },
   {
    "screen_id": "portal",

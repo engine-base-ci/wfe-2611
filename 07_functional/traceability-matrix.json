@@ -52,25 +52,6 @@
    ]
   },
   {
-   "screen_id": "legal",
-   "screen_name": "規約・プライバシーポリシー",
-   "features": [
-    "F-012",
-    "F-026"
-   ],
-   "entities": [
-    "E-130 terms_versions",
-    "E-131 terms_consents"
-   ],
-   "related_apis": [],
-   "access_roles": [
-    "R1",
-    "R2",
-    "R3",
-    "R4"
-   ]
-  },
-  {
    "screen_id": "verify-email",
    "screen_name": "メールを確認する",
    "features": [
@@ -3329,6 +3310,25 @@
    ]
   },
   {
+   "screen_id": "legal",
+   "screen_name": "規約・プライバシーポリシー",
+   "features": [
+    "F-012",
+    "F-026"
+   ],
+   "entities": [
+    "E-130 terms_versions",
+    "E-131 terms_consents"
+   ],
+   "related_apis": [],
+   "access_roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ]
+  },
+  {
    "screen_id": "portal",
    "screen_name": "クライアントの場所",
    "features": [
@@ -3411,11 +3411,6 @@
      "to_screen": "login"
     }
    ]
-  },
-  {
-   "screen_id": "legal",
-   "screen_name": "規約・プライバシーポリシー",
-   "required_apis": []
   },
   {
    "screen_id": "verify-email",
@@ -11614,6 +11609,11 @@
    ]
   },
   {
+   "screen_id": "legal",
+   "screen_name": "規約・プライバシーポリシー",
+   "required_apis": []
+  },
+  {
    "screen_id": "portal",
    "screen_name": "クライアントの場所",
    "required_apis": [
@@ -14155,10 +14155,10 @@
    "entity_name": "terms_consents",
    "used_by_screens": [
     "signup",
-    "legal",
     "verify-email",
     "invite-accept",
-    "login"
+    "login",
+    "legal"
    ],
    "used_by_features": [
     "F-001",

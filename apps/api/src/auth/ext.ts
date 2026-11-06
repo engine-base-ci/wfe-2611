@@ -16,7 +16,7 @@ import type pg from "pg";
 import type { Auth } from "@kaname/auth";
 import { acceptInvitation, hashToken } from "@kaname/auth/invitations";
 import { createSessionResolver, signOut, type Resolved } from "@kaname/auth/resolver";
-import { termsRequired } from "../contract/op.js";
+import { sessionUnresolved, termsRequired } from "../contract/op.js";
 import { EMAIL_RE, normalizeEmail, signInWithLock, signUp } from "@kaname/auth/signup";
 import type { Repository } from "@kaname/db/repository";
 import { withTenant } from "@kaname/db/context";
@@ -126,7 +126,15 @@ export function authExt(d: AuthExtDeps): Hono {
   app.use("*", async (c, next) => {
     const path = c.req.path.replace(/^\/api\/auth-ext(?=\/|$)/, "") || "/";
     if (TERMS_OPEN_EXT.some((re) => re.test(path))) return next();
-    const r = await resolve(c.req.raw.headers).catch(() => null);
+    // セッションの付いていない要求（PC の x-bridge-session・ログインの前）はそのまま渡す。解こうとして落ちたら止める側に倒す（fail-closed）
+    const h = c.req.raw.headers;
+    if (!h.get("authorization") && !h.get("cookie")) return next();
+    let r: Resolved | null;
+    try {
+      r = await resolve(h);
+    } catch (e) {
+      return sessionUnresolved(c, "前の道すじ", e);
+    }
     if (r?.termsPending) return termsRequired(c);
     return next();
   });
@@ -273,8 +281,13 @@ export function authExt(d: AuthExtDeps): Hono {
     // メンバーができた後にセッションを写す。先に認証の利用者を作るので、セッションの hook の時点ではまだメンバーが無い
     // （写さないと、参加した直後は何を押しても「ログインしてください」になる）
     await d.appPool.query("select app.open_sessions_for_user($1)", [u.userId]);
-    // 写したセッションにも同意し直しの印を決める（K-53）。招待の画面の中で同意を取るのは K-55。それまでは次の画面で同意し直しの画面を見る
-    await d.appPool.query("select app.refresh_terms_pending($1)", [u.userId]);
+    // 受諾で写したセッションにだけ同意し直しの印を決める（K-53）。その人のほかのセッションは決め直さない（版が出た時点でログイン中の
+    // セッションはそのまま使える・D-125.162）。招待の画面の中で同意を取るのは K-55。それまでは次の画面で同意し直しの画面を見る
+    const copied = await d.authPool.query<{ id: string }>(
+      'select id from kaname_auth.session where "userId" = $1 and "expiresAt" > now()',
+      [u.userId],
+    );
+    for (const r of copied.rows) await d.appPool.query("select app.mark_session_terms($1)", [r.id]);
     return c.json({ data: { token: u.token, member_id: memberId } }, 201);
   });
 

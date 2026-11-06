@@ -337,77 +337,6 @@
    ]
   },
   {
-   "id": "legal",
-   "name": "規約・プライバシーポリシー",
-   "purpose": "利用規約とプライバシーポリシーの今の版を、登録の前でも読める",
-   "acts": [
-    "A96"
-   ],
-   "objects": [
-    "規約と同意"
-   ],
-   "primary_action": "読む",
-   "fields": [],
-   "layout": "single",
-   "actions": [
-    "読む"
-   ],
-   "states": [
-    {
-     "id": "n",
-     "label": "通常"
-    }
-   ],
-   "transitions": [],
-   "responsive": "375/768/1024/1440（横溢れ 0・本文 720 以上）",
-   "responsive_breakpoints": [
-    "375",
-    "768",
-    "1024",
-    "1440"
-   ],
-   "access_roles": [
-    "R1",
-    "R2",
-    "R3",
-    "R4"
-   ],
-   "edit_roles": [
-    "R1",
-    "R2",
-    "R3"
-   ],
-   "related_apis": [],
-   "required_apis": [],
-   "related_entities": [
-    "E-130",
-    "E-131"
-   ],
-   "mock_path": null,
-   "route": "/legal/:kind",
-   "meta_tags": {
-    "screen_id": "legal",
-    "screen_name": "規約・プライバシーポリシー",
-    "category": "outside",
-    "status": "decided",
-    "version": "v1"
-   },
-   "h1_text": "規約・プライバシーポリシー",
-   "kpi_labels": [],
-   "section_h2_texts": [],
-   "checklist": [],
-   "release": "v1",
-   "has_shell": false,
-   "legacy_drift_notes": null,
-   "status": "decided",
-   "decided_at": "2026-11-06",
-   "source": [
-    "D-125.162",
-    "D-128.137",
-    "D-128.146"
-   ]
-  },
-  {
    "id": "verify-email",
    "name": "メールを確認する",
    "purpose": "届いたリンクで本人であることを示し、そのままチケットの画面に入る",
@@ -45890,6 +45819,77 @@
    "decided_at": "2026-11-06",
    "source": [
     "D-128.70"
+   ]
+  },
+  {
+   "id": "legal",
+   "name": "規約・プライバシーポリシー",
+   "purpose": "利用規約とプライバシーポリシーの今の版を、登録の前でも読める",
+   "acts": [
+    "A96"
+   ],
+   "objects": [
+    "規約と同意"
+   ],
+   "primary_action": "読む",
+   "fields": [],
+   "layout": "single",
+   "actions": [
+    "読む"
+   ],
+   "states": [
+    {
+     "id": "n",
+     "label": "通常"
+    }
+   ],
+   "transitions": [],
+   "responsive": "375/768/1024/1440（横溢れ 0・本文 720 以上）",
+   "responsive_breakpoints": [
+    "375",
+    "768",
+    "1024",
+    "1440"
+   ],
+   "access_roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "edit_roles": [
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "related_apis": [],
+   "required_apis": [],
+   "related_entities": [
+    "E-130",
+    "E-131"
+   ],
+   "mock_path": null,
+   "route": "/legal/:kind",
+   "meta_tags": {
+    "screen_id": "legal",
+    "screen_name": "規約・プライバシーポリシー",
+    "category": "outside",
+    "status": "decided",
+    "version": "v1"
+   },
+   "h1_text": "規約・プライバシーポリシー",
+   "kpi_labels": [],
+   "section_h2_texts": [],
+   "checklist": [],
+   "release": "v1",
+   "has_shell": false,
+   "legacy_drift_notes": null,
+   "status": "decided",
+   "decided_at": "2026-11-06",
+   "source": [
+    "D-125.162",
+    "D-128.137",
+    "D-128.146"
    ]
   },
   {

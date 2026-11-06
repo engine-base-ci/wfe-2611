@@ -32,6 +32,8 @@ import { createAuth } from "@kaname/auth";
 import { signInWithLock, signUp } from "@kaname/auth/signup";
 import { enableTotp, signIn, verifyTotp } from "@kaname/auth/two_factor";
 import { putPending } from "@kaname/auth/pending";
+import { createInvitation } from "@kaname/auth/invitations";
+import { createRepository } from "@kaname/db/repository";
 import { createPool } from "@kaname/db/pool";
 import type { Config } from "@kaname/config";
 import type { MailLike } from "@kaname/notify";
@@ -1104,5 +1106,113 @@ describe("K-53 運営の人は同意し直しで止めない（D-128.172）", ()
     } finally {
       await withdraw(v.terms, v.privacy);
     }
+  });
+});
+
+describe("K-53 テスターのレビュー 2 回目で足した行（招待の受諾の印・入口の止めの fail-closed）", () => {
+  it("K53-API-039 古い版だけ × 招待を受けて新しいセッション B ができる・版が出る前から開いていたセッション A がある：A は止まらず（D-125.162）、B だけ止まる。受諾は写した B にだけ印を立てる（その人の全部のセッションを決め直さない）", async () => {
+    const boss = await person("invite-boss");
+    const v = await publishBoth("v2-invite");
+    const tag = `${RUN}-invite-a`; // 受ける人の名前（下の仕掛けが、この名前の member が入った瞬間だけ動く）
+    const fn = `app.k53_seed_session_a_${RUN.replace(/[^a-z0-9]/g, "_")}`;
+    // 版が出る前から開いていたセッション A を置く仕掛け。今の DB は 1 人が 2 つの会社に入れず、招待の受諾は認証の人を新しく作るので、
+    // 受諾の前から A を持つ人は道すじからは作れない。受諾の中で member が入った瞬間に、同じ人の生きている画面のセッション A
+    // （印は下りたまま・発行は 1 時間前）を置き、受諾がその後に A の印を触らないことを見る（終わったら必ず外す・G-10）
+    await admin.query(
+      `create function ${fn}() returns trigger language plpgsql security definer set search_path = public as $$
+       begin
+         insert into sessions (tenant_id, member_id, kind_id, auth_session_id, issued_at, last_seen_at, terms_pending)
+         values (new.tenant_id, new.id, 'web', '${tag}-session-a', now() - interval '1 hour', now() - interval '1 hour', false);
+         return new;
+       end $$`,
+    );
+    await admin.query(
+      `create trigger k53_seed_session_a after insert on members for each row when (new.display_name = '${tag}') execute function ${fn}()`,
+    );
+    try {
+      const repo = await createRepository(fixturePool);
+      const inv = await createInvitation(
+        repo,
+        { tenantId: boss.tenantId, userId: boss.memberId, role: "member" },
+        { email: email("invite-a"), roleId: "staff" },
+      );
+      const ac = await req("POST", `/api/auth-ext/invitations/${inv.token}/accept`, { name: tag, password: PW });
+      expect(ac.status, await ac.clone().text()).toBe(201);
+      const d = (await json(ac)).data as { token: string; member_id: string };
+      const a = await admin.query<{ id: string; terms_pending: boolean }>(
+        "select id, terms_pending from sessions where auth_session_id = $1",
+        [`${tag}-session-a`],
+      );
+      expect(a.rows[0]?.terms_pending, "版が出る前から開いていたセッション A は印が下りたまま（D-125.162）").toBe(
+        false,
+      );
+      const readA = await appRole.query<{ p: boolean }>("select app.session_terms_pending($1) as p", [a.rows[0]!.id]);
+      expect(readA.rows[0]?.p, "A は止まらない").toBe(false);
+      // 受諾で写したセッション B は、今の版に同意していないので止まる（招待の画面の中で同意を取るのは K-55）
+      const b = await admin.query<{ terms_pending: boolean }>(
+        "select terms_pending from sessions where member_id = $1 and revoked_at is null and auth_session_id <> $2",
+        [d.member_id, `${tag}-session-a`],
+      );
+      expect(
+        b.rows.map((x) => x.terms_pending),
+        "受諾で写したセッション B にだけ印が立つ",
+      ).toEqual([true]);
+      await expectBlocked(d.token);
+    } finally {
+      await admin.query("drop trigger if exists k53_seed_session_a on members");
+      await admin.query(`drop function if exists ${fn}()`);
+      await withdraw(v.terms, v.privacy);
+    }
+  });
+
+  it("K53-API-040 入口の止め × セッションを解く所が失敗する（DB の一時的な権限の外し）：止める側に倒す。/api/auth/change-password・前の道すじは通さず 503・E-PAGE-003（fail-closed）。パスワードは変わらず、接続コードも作らない", async () => {
+    const errors = JSON.parse(
+      readFileSync(join(HERE, "..", "..", "..", "..", "..", "07_qa", "test-specs", "errors.json"), "utf8"),
+    ) as { errors: { id: string; message: string }[] };
+    const down = errors.errors.find((e) => e.id === "E-PAGE-003")!.message;
+    const p = await person("fail-closed");
+    const t = await login(p);
+    const pairsBefore = Number(
+      (
+        await admin.query<{ n: string }>("select count(*) as n from app.bridge_pairings where member_id = $1", [
+          p.memberId,
+        ])
+      ).rows[0]!.n,
+    );
+    // セッションを解く所（packages/auth の resolver が読む app.session_terms_pending）を、アプリの接続から一時的に呼べなくする
+    await admin.query("revoke execute on function app.session_terms_pending(uuid) from kaname_app");
+    const spy = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    try {
+      const cp = await req(
+        "POST",
+        "/api/auth/change-password",
+        { currentPassword: PW, newPassword: "changed-horse-battery-3", revokeOtherSessions: true },
+        { headers: bearer(t) },
+      );
+      expect(cp.status, `/api/auth/change-password: ${await cp.clone().text()}`).toBe(503);
+      const cj = await json(cp);
+      expect(cj["code"]).toBe("E-PAGE-003");
+      expect(cj["message"]).toBe(down);
+      const ext = await req("POST", "/api/auth-ext/bridge/pair", {}, { headers: bearer(t) });
+      expect(ext.status, `/api/auth-ext/bridge/pair: ${await ext.clone().text()}`).toBe(503);
+      expect((await json(ext))["code"]).toBe("E-PAGE-003");
+    } finally {
+      spy.mockRestore();
+      await admin.query("grant execute on function app.session_terms_pending(uuid) to kaname_app");
+    }
+    expect(
+      (await signInWithLock(authFixture.auth, fixturePool, p.email, PW, WEB_UA)).ok,
+      "パスワードは変わっていない（認証の部品に渡していない）",
+    ).toBe(true);
+    const pairsAfter = Number(
+      (
+        await admin.query<{ n: string }>("select count(*) as n from app.bridge_pairings where member_id = $1", [
+          p.memberId,
+        ])
+      ).rows[0]!.n,
+    );
+    expect(pairsAfter, "接続コードを作らない").toBe(pairsBefore);
+    // 戻すと、ふつうに通る（止める側に倒すのは解けなかったときだけ）
+    await expectOpen(t);
   });
 });

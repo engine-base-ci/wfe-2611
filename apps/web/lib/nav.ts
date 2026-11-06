@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/gen_routes.mjs ← 05_flow/flow.json navigation／screens／product_states）。手で直さない。flow:454c3359270513c9
+// 生成物（scripts/ci/gen_routes.mjs ← 05_flow/flow.json navigation／screens／product_states）。手で直さない。flow:6f5bf7ac1fa9cdfd
 export interface NavSection { key: string; label: string; icon: string; screens: string[] }
 export interface SubItem { label: string; desc: string; group?: string; state?: string }
 export interface ScreenMeta { id: string; name: string; route: string; needsLogin: boolean; hasShell: boolean; roles: string[]; purpose: string; primaryAction: string; release: string }
@@ -9,7 +9,7 @@ export interface NavData {
   productStates: readonly ProductState[]; screens: Record<ScreenId, ScreenMeta>; roles: readonly { id: RoleId; name: string }[];
 }
 export type RoleId = "R1" | "R2" | "R3" | "R4" | "R6";
-export type ScreenId = "signup" | "legal" | "verify-email" | "invite-accept" | "mfa-setup" | "billing-setup" | "login" | "password-reset" | "onboard-interview" | "onboard-draft" | "bridge-setup" | "credentials" | "onboard-testrun" | "onboard-golive" | "today" | "approvals" | "clone-thread" | "tasks" | "clone-chat" | "ai-activity" | "records" | "record-detail" | "goals" | "goal-allocation" | "goal-edit" | "my-progress" | "review" | "hypotheses" | "duties" | "ledger-def" | "company-model" | "automation-repair" | "audit" | "policies" | "members" | "ai-staff" | "ai-staff-detail" | "security-brief" | "disclosure" | "export" | "account-close" | "ops-support" | "ops-home" | "ops-catalog" | "account" | "company-settings" | "llm-routes" | "app-setup" | "import" | "services" | "ops-services" | "ops-skills" | "inquiry" | "notices" | "billing" | "ops-notices" | "ops-billing" | "ops-llm" | "ops-disclosure" | "ops-tenant" | "ops-review" | "ops-audit" | "member-detail" | "tickets" | "masters" | "layers" | "rules" | "work-types" | "knowledge" | "clients" | "requests" | "ops-team" | "portal";
+export type ScreenId = "signup" | "verify-email" | "invite-accept" | "mfa-setup" | "billing-setup" | "login" | "password-reset" | "onboard-interview" | "onboard-draft" | "bridge-setup" | "credentials" | "onboard-testrun" | "onboard-golive" | "today" | "approvals" | "clone-thread" | "tasks" | "clone-chat" | "ai-activity" | "records" | "record-detail" | "goals" | "goal-allocation" | "goal-edit" | "my-progress" | "review" | "hypotheses" | "duties" | "ledger-def" | "company-model" | "automation-repair" | "audit" | "policies" | "members" | "ai-staff" | "ai-staff-detail" | "security-brief" | "disclosure" | "export" | "account-close" | "ops-support" | "ops-home" | "ops-catalog" | "account" | "company-settings" | "llm-routes" | "app-setup" | "import" | "services" | "ops-services" | "ops-skills" | "inquiry" | "notices" | "billing" | "ops-notices" | "ops-billing" | "ops-llm" | "ops-disclosure" | "ops-tenant" | "ops-review" | "ops-audit" | "member-detail" | "tickets" | "masters" | "layers" | "rules" | "work-types" | "knowledge" | "clients" | "requests" | "ops-team" | "legal" | "portal";
 export const NAV: NavData = {
   "sections": [
     {
@@ -518,22 +518,6 @@ export const NAV: NavData = {
       ],
       "purpose": "名前・メール・パスワードと会社名（空なら個人のテナント）で使い始める。規約に同意する",
       "primaryAction": "はじめる",
-      "release": "v1"
-    },
-    "legal": {
-      "id": "legal",
-      "name": "規約・プライバシーポリシー",
-      "route": "/legal/:kind",
-      "needsLogin": false,
-      "hasShell": false,
-      "roles": [
-        "R1",
-        "R2",
-        "R3",
-        "R4"
-      ],
-      "purpose": "利用規約とプライバシーポリシーの今の版を、登録の前でも読める",
-      "primaryAction": "読む",
       "release": "v1"
     },
     "verify-email": {
@@ -1536,6 +1520,22 @@ export const NAV: NavData = {
       ],
       "purpose": "運営の場所に入れる人と、できること（問い合わせ・中を見る・お金・止める・お知らせ・配るもの・値段の案・値段を決める・運営の人）を決める。パスキーでしか入れない",
       "primaryAction": "運営の人を足す",
+      "release": "v1"
+    },
+    "legal": {
+      "id": "legal",
+      "name": "規約・プライバシーポリシー",
+      "route": "/legal/:kind",
+      "needsLogin": false,
+      "hasShell": false,
+      "roles": [
+        "R1",
+        "R2",
+        "R3",
+        "R4"
+      ],
+      "purpose": "利用規約とプライバシーポリシーの今の版を、登録の前でも読める",
+      "primaryAction": "読む",
       "release": "v1"
     },
     "portal": {

@@ -9,7 +9,7 @@ import type { Resolved } from "@kaname/auth/resolver";
 import { KanameError, recordErrorEvent } from "@kaname/errors";
 import { ENDPOINTS } from "@kaname/contracts";
 import { registerAll } from "./routes/index.js";
-import { termsRequired } from "./contract/op.js";
+import { sessionUnresolved, termsRequired } from "./contract/op.js";
 import { defaultDeps } from "./contract/memory.js";
 import type { ContractDeps } from "./contract/deps.js";
 
@@ -95,7 +95,13 @@ export function createApp(o: AppOptions | string = {}): Hono<Vars> {
       const sub = c.req.path.replace(/^\/api\/auth(?=\/|$)/, "") || "/";
       const h = c.req.raw.headers;
       if (opts.resolve && !AUTH_TERMS_OPEN.some((re) => re.test(sub)) && (h.get("authorization") || h.get("cookie"))) {
-        const r = await opts.resolve(h).catch(() => null);
+        // 解こうとして落ちたら handler に渡さず止める側に倒す（fail-closed・503・E-PAGE-003）。解けて null（セッションが無い）はそのまま渡す
+        let r: Resolved | null;
+        try {
+          r = await opts.resolve(h);
+        } catch (e) {
+          return sessionUnresolved(c, "認証の部品の口", e);
+        }
         if (r?.termsPending) return termsRequired(c);
       }
       return opts.auth!.handler(c.req.raw);

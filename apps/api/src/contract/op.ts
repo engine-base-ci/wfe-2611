@@ -50,6 +50,13 @@ export const termsRequired = (c: Context) => {
   return c.json({ error: "forbidden", code: "E-AUTH-010", message: e.message ?? "" }, 403);
 };
 
+/** 入口の止めでセッションを解けなかった（K-53）：止める側に倒して 503・E-PAGE-003。ログには理由の種類だけ（メール・IP・トークンを出さない） */
+export const sessionUnresolved = (c: Context, where: string, e: unknown) => {
+  console.error(`[terms] ${where}：セッションを解けなかったので止めた（${(e as Error)?.name ?? "Error"}）`);
+  const x = kanameError("E-PAGE-003").toJSON() as { message?: string; action?: string };
+  return c.json({ error: "unavailable", code: "E-PAGE-003", message: x.message ?? "", action: x.action ?? "" }, 503);
+};
+
 export function op(deps: ContractDeps, operationId: string) {
   const e = ENDPOINTS.find((x) => x.operationId === operationId);
   if (!e) throw new Error(`契約に無い operation: ${operationId}`);

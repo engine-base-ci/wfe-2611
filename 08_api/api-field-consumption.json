@@ -11761,10 +11761,10 @@
    "field": "member_id",
    "consumed_by_screens": [
     "signup",
-    "legal",
     "verify-email",
     "invite-accept",
-    "login"
+    "login",
+    "legal"
    ],
    "internal": false,
    "reason": null
@@ -11774,10 +11774,10 @@
    "field": "auth_user_id",
    "consumed_by_screens": [
     "signup",
-    "legal",
     "verify-email",
     "invite-accept",
-    "login"
+    "login",
+    "legal"
    ],
    "internal": false,
    "reason": null
@@ -11787,10 +11787,10 @@
    "field": "terms_version_id",
    "consumed_by_screens": [
     "signup",
-    "legal",
     "verify-email",
     "invite-accept",
-    "login"
+    "login",
+    "legal"
    ],
    "internal": false,
    "reason": null
@@ -11800,10 +11800,10 @@
    "field": "agreed_at",
    "consumed_by_screens": [
     "signup",
-    "legal",
     "verify-email",
     "invite-accept",
-    "login"
+    "login",
+    "legal"
    ],
    "internal": false,
    "reason": null
@@ -11813,10 +11813,10 @@
    "field": "ip",
    "consumed_by_screens": [
     "signup",
-    "legal",
     "verify-email",
     "invite-accept",
-    "login"
+    "login",
+    "legal"
    ],
    "internal": false,
    "reason": null

@@ -17,7 +17,6 @@
    "frequency": "毎日・何度も",
    "screens": [
     "signup",
-    "legal",
     "verify-email",
     "mfa-setup",
     "billing-setup",
@@ -71,7 +70,8 @@
     "work-types",
     "knowledge",
     "clients",
-    "requests"
+    "requests",
+    "legal"
    ],
    "nav": [
     "tickets",
@@ -136,7 +136,6 @@
    "frequency": "毎日",
    "screens": [
     "signup",
-    "legal",
     "verify-email",
     "mfa-setup",
     "billing-setup",
@@ -192,7 +191,8 @@
     "work-types",
     "knowledge",
     "clients",
-    "requests"
+    "requests",
+    "legal"
    ],
    "nav": [
     "tickets",
@@ -259,7 +259,6 @@
    "frequency": "毎日",
    "screens": [
     "signup",
-    "legal",
     "invite-accept",
     "mfa-setup",
     "login",
@@ -284,7 +283,8 @@
     "tickets",
     "rules",
     "work-types",
-    "knowledge"
+    "knowledge",
+    "legal"
    ],
    "nav": [
     "tickets",
@@ -342,7 +342,6 @@
    "frequency": "依頼のたび",
    "screens": [
     "signup",
-    "legal",
     "invite-accept",
     "mfa-setup",
     "login",
@@ -357,6 +356,7 @@
     "app-setup",
     "notices",
     "tickets",
+    "legal",
     "portal"
    ],
    "nav": [
@@ -446,13 +446,6 @@
  ],
  "matrix": {
   "signup": {
-   "R1": "edit",
-   "R2": "edit",
-   "R3": "edit",
-   "R4": "view",
-   "R6": "-"
-  },
-  "legal": {
    "R1": "edit",
    "R2": "edit",
    "R3": "edit",
@@ -948,6 +941,13 @@
    "R3": "-",
    "R4": "-",
    "R6": "edit"
+  },
+  "legal": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "edit",
+   "R4": "view",
+   "R6": "-"
   },
   "portal": {
    "R1": "-",
