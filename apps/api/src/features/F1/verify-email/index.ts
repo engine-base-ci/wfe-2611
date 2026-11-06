@@ -80,12 +80,15 @@ async function currentUser(a: HookArgs, d: VerifyEmailDeps): Promise<{ signedIn:
 }
 
 /** 確定の途中の失敗。made は、この確定で作った本人の id（作る前に落ちたら null）。会社は片付けるときに members.auth_user_id から引く（M-C）。
- *  otherPath は、同じメールの本人が別の道でできていた（パスワードが合わない・signUp が重複で落ちた）とき。何も消さない */
+ *  otherPath は、同じメールの本人が別の道でできていた（パスワードが合わない・signUp が重複で落ちた）とき。何も消さない。
+ *  unsure は、この確定で作った本人かを確かめられなかった（照合や本人の読み出しが落ちた）とき。消さない側に倒し、片付けの失敗と同じに
+ *  運営に知らせる（4 回目のレビュー MEDIUM-1）。中身は分かった本人の id（分からなければ null） */
 class ConfirmFailed extends Error {
   constructor(
     readonly made: string | null,
     readonly reason: unknown,
     readonly otherPath = false,
+    readonly unsure: { authUserId: string | null } | null = null,
   ) {
     super("確定の途中で失敗した");
   }
@@ -111,8 +114,8 @@ export function verifyEmailFeature(d: VerifyEmailDeps) {
    *  パスワードのアカウント（credential）が、いま開いたパスワードで合えば、この確定で作った本人（Better Auth の password.verify）。
    *  合わなければ別の道の本人（消さない）。アカウントが無い本人は、会社を作る hook で落ちてアカウントを足す前に止まった本人
    *  （ログインできず、会社の人もいない）なので、会社の人がどこにもいないときだけ、この確定で作った本人として片付ける。
-   *  照合が落ちたら消さない側に倒す */
-  const isMine = async (userId: string, password: string): Promise<boolean> => {
+   *  照合が落ちたら null（確かめられなかった。呼ぶ側が消さない側に倒して運営に知らせる・MEDIUM-1） */
+  const isMine = async (userId: string, password: string): Promise<boolean | null> => {
     try {
       const hash = await credentialHashOf(d.authPool, userId);
       if (hash === null) return !(await authUserHasMembers(d.authPool, userId));
@@ -120,7 +123,7 @@ export function verifyEmailFeature(d: VerifyEmailDeps) {
       return await ctx.password.verify({ hash, password });
     } catch (e) {
       console.error(`[verify-email] この確定で作った本人かを確かめられなかった: ${errName(e)}`);
-      return false;
+      return null;
     }
   };
   /** signUp が落ちたとき：同じメールの本人がいれば、パスワードで見分ける。いなければ何も作られていない。
@@ -130,17 +133,20 @@ export function verifyEmailFeature(d: VerifyEmailDeps) {
   const signUpFailed = async (email: string, password: string, e: unknown): Promise<ConfirmFailed> => {
     const code = (e as { body?: { code?: string } } | null)?.body?.code ?? "";
     if (code.startsWith("USER_ALREADY_EXISTS")) return new ConfirmFailed(null, e, true);
+    let uid: string | null = null;
     try {
-      const uid = await authUserIdByEmail(d.authPool, email);
+      uid = await authUserIdByEmail(d.authPool, email);
       if (!uid) return new ConfirmFailed(null, e);
       if (code === "FAILED_TO_CREATE_USER" && (await credentialHashOf(d.authPool, uid)) !== null)
         return new ConfirmFailed(null, e, true);
-      return (await isMine(uid, password)) ? new ConfirmFailed(uid, e) : new ConfirmFailed(null, e, true);
     } catch (e2) {
-      // 本人がいるか分からない：消す相手を決められないので何も消さない
+      // 本人がいるか分からない：消す相手を決められないので何も消さず、確かめられなかったとして運営に知らせる（MEDIUM-1）
       console.error(`[verify-email] 同じメールの本人を確かめられなかった: ${errName(e2)}`);
-      return new ConfirmFailed(null, e, true);
+      return new ConfirmFailed(null, e, false, { authUserId: uid });
     }
+    const mine = await isMine(uid, password);
+    if (mine === null) return new ConfirmFailed(null, e, false, { authUserId: uid });
+    return mine ? new ConfirmFailed(uid, e) : new ConfirmFailed(null, e, true);
   };
 
   /** 確定の本体。失敗したら ConfirmFailed（この確定で作った本人の id つき）を投げる */
@@ -263,6 +269,16 @@ export function verifyEmailFeature(d: VerifyEmailDeps) {
       if (f.otherPath) {
         await afterwards("パスワードの片付け", () => sealOffPending(d.authPool, claim.tokenHash));
         return reply(409, "E-CONF-001");
+      }
+      // この確定で作った本人かを確かめられなかった：消さない側に倒す。片付けの失敗と同じに、運営に知らせて印は戻さない（MEDIUM-1）
+      if (f.unsure) {
+        const uid = f.unsure.authUserId;
+        const tenant = uid ? await halfMadeTenantOf(d.authPool, uid).catch(() => null) : null;
+        await alertOps("この確定で作った本人かの見分け（何も片付けていない）", {
+          tenant_id: tenant,
+          auth_user_id: uid,
+        });
+        return reply(500, "E-PAGE-003");
       }
       // 途中まで残さない：この確定で作った本人と会社の中身を片付ける（会社は印を付けて残す・D-128.167）。
       // 片付けと印を戻すのは別々に。片付けが落ちたら印は戻さない（作りかけが残ったまま押し直させない）

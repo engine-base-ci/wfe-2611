@@ -42,6 +42,32 @@ import { CATALOG } from "@kaname/errors";
 import type { Config } from "@kaname/config";
 import type { MailLike } from "@kaname/notify";
 import { bootApi, type BootOptions } from "../../../src/server.js";
+import type * as PendingModule from "@kaname/auth/pending";
+
+// 本人の見分け（パスワードの照合）の差し込み口（4 回目のレビュー MEDIUM-1・K52-API-053〜055）。
+//   @kaname/auth/pending の 2 つの部品を、そのまま通す包みに替える（ふだんの振る舞いは変えない）。
+//   ・credentialHashOf … 呼ばれた本人の id を数える（照合の分岐に入ったかを確かめる）。throwCredential が立っている間は投げる（照合が例外になる）
+//   ・authUserIdByEmail … throwLookupFor のメールで投げる（signUpFailed の e2 の catch）
+const probe = vi.hoisted(() => ({
+  credentialCalls: [] as string[],
+  throwCredential: false,
+  throwLookupFor: new Set<string>(),
+}));
+vi.mock("@kaname/auth/pending", async (importOriginal) => {
+  const m = await importOriginal<typeof PendingModule>();
+  return {
+    ...m,
+    credentialHashOf: async (...a: Parameters<typeof m.credentialHashOf>) => {
+      probe.credentialCalls.push(a[1]);
+      if (probe.throwCredential) throw new Error("K-52 の試験：パスワードのアカウントを読めない");
+      return m.credentialHashOf(...a);
+    },
+    authUserIdByEmail: async (...a: Parameters<typeof m.authUserIdByEmail>) => {
+      if (probe.throwLookupFor.has(a[1].toLowerCase())) throw new Error("K-52 の試験：同じメールの本人を引けない");
+      return m.authUserIdByEmail(...a);
+    },
+  };
+});
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const DB_PKG = join(HERE, "..", "..", "..", "..", "..", "packages", "db");
@@ -1553,6 +1579,179 @@ describe("K-52 片付けが落ちたとき・片付ける相手の見分け（3 
       } finally {
         await scrub(tid, users[0]?.id ?? null);
       }
+    }
+  });
+
+  /** 照合で確かめられなかったときの記録（MEDIUM-1）：security_events に signup_cleanup_failed があり、detail に tenant_id と auth_user_id の
+   *  2 つの欄がある（分かっていればその id・分からなければ null）。メールアドレスは入れない。運営に知らせる */
+  const expectUnconfirmedRecorded = async (
+    since: Date,
+    ids: { tenant_id: string; auth_user_id: string },
+    e: string,
+    mailFrom: number,
+  ) => {
+    const ev = await admin.query<{ d: Record<string, unknown>; t: string }>(
+      "select detail as d, detail::text as t from security_events where kind_id = $1 and occurred_at >= $2",
+      [CLEANUP_FAILED, since],
+    );
+    const mine = ev.rows.filter(
+      (x) =>
+        "tenant_id" in x.d &&
+        "auth_user_id" in x.d &&
+        [null, ids.tenant_id].includes(x.d["tenant_id"] as string | null) &&
+        [null, ids.auth_user_id].includes(x.d["auth_user_id"] as string | null),
+    );
+    expect(
+      mine.length,
+      `security_events に ${CLEANUP_FAILED}（detail に tenant_id と auth_user_id）`,
+    ).toBeGreaterThanOrEqual(1);
+    for (const x of mine) {
+      expect(x.t, "detail にメールアドレスを入れない").not.toContain(e);
+      expect(x.t).not.toContain(e.split("@")[0]!);
+    }
+    const alerts = mailsTo(OPS_EMAIL, mailFrom);
+    expect(alerts.length, "運営への知らせ（alertOps）が出る").toBeGreaterThanOrEqual(1);
+    for (const m of alerts) expect(`${m.subject}\n${m.text}`, "知らせにメールアドレスを入れない").not.toContain(e);
+  };
+  /** 確かめられなかったときに残るもの：本人も会社の中身も消さない・印は戻さない。残った会社と本人の id を返す（後で消す） */
+  const expectNothingDropped = async (e: string, company: string) => {
+    const users = await usersOf(e);
+    expect(users, "本人を消さない（消さない側に倒す）").toHaveLength(1);
+    const ts = await tenantByName(company);
+    expect(ts).toHaveLength(1);
+    expect(ts[0]!.half_made_at, "会社に印を付けない").toBeNull();
+    expect(await countIn("members", ts[0]!.id), "会社の人を片付けない").toBe(1);
+    expect((await pending(e))!.consumed_at, "印は戻さない").not.toBeNull();
+    return { tenant_id: ts[0]!.id, auth_user_id: users[0]!.id };
+  };
+
+  it("K52-API-053 照合が合わない（同じメールの本人に credential があるが、いま開いたパスワードで合わない）：消さない・409・E-CONF-001。照合の分岐に入ったことを、照合の部品の呼び出しと、合うときの対照で確かめる（4 回目のレビュー MEDIUM-1）", async () => {
+    // 段取り：確定の signUp が本人とパスワードのアカウントを足したあと、セッションの hook で落とす（code は FAILED_TO_CREATE_USER にならない）。
+    //   アカウントを足す所で、パスワードのハッシュを別のパスワード（OTHER_PW）のものに差し替える → 照合は合わない
+    //   OTHER_PW のハッシュは、別のメールで OTHER_PW の本人を作って借りる
+    const x = await signUp(authFixture.auth, {
+      email: email("mismatch-hash-src"),
+      password: OTHER_PW,
+      name: "照合 用",
+      companyName: `${RUN}-照合用の会社`,
+    });
+    const otherPwHash = (
+      await admin.query<{ p: string }>(
+        `select password as p from kaname_auth.account where "userId" = $1 and "providerId" = 'credential'`,
+        [x.userId],
+      )
+    ).rows[0]!.p;
+
+    const e = email("pw-mismatch");
+    const company = `${RUN}-照合が合わない社`;
+    const t = await pend("pw-mismatch", { company });
+    await admin.query(`create or replace function kaname_auth.k52_swap_hash() returns trigger language plpgsql as $$
+      begin
+        if new."providerId" = 'credential' and exists (select 1 from kaname_auth."user" u where u.id = new."userId" and u.email = '${e}') then
+          new.password := '${otherPwHash}';
+        end if;
+        return new;
+      end $$`);
+    await admin.query(
+      "create trigger k52_swap_hash before insert on kaname_auth.account for each row execute function kaname_auth.k52_swap_hash()",
+    );
+    const undo = await tamperSessions("k52_session_raise_mm", company, "raise");
+    const spy = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    const callsFrom = probe.credentialCalls.length;
+    let uid = "";
+    let tid = "";
+    try {
+      const r = await verify(t);
+      expect(r.status, await r.clone().text()).toBe(409);
+      expect((await json(r))["code"]).toBe("E-CONF-001");
+      const users = await usersOf(e);
+      expect(users, "合わない本人は消さない").toHaveLength(1);
+      uid = users[0]!.id;
+      expect(probe.credentialCalls.slice(callsFrom), "照合の部品（credentialHashOf）がこの本人で呼ばれた").toContain(
+        uid,
+      );
+      const ts = await tenantByName(company);
+      expect(ts).toHaveLength(1);
+      tid = ts[0]!.id;
+      expect(ts[0]!.half_made_at, "会社に印を付けない").toBeNull();
+      expect(await countIn("members", tid), "会社の人を片付けない").toBe(1);
+    } finally {
+      spy.mockRestore();
+      await undo();
+      await admin.query("drop trigger if exists k52_swap_hash on kaname_auth.account");
+      await admin.query("drop function if exists kaname_auth.k52_swap_hash()");
+      await scrub(tid || null, uid || null);
+    }
+    // 対照：同じ段取りでハッシュを差し替えない（照合が合う）と、この確定で作った本人として片付く（500・本人が消える）。
+    //   照合でなく「アカウントがあるから別の道」と決める道を通っていれば、こちらも 409 になる
+    const e2 = email("pw-match");
+    const company2 = `${RUN}-照合が合う社`;
+    const t2 = await pend("pw-match", { company: company2 });
+    const undo2 = await tamperSessions("k52_session_raise_ok", company2, "raise");
+    const spy2 = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    try {
+      const r2 = await verify(t2);
+      expect(r2.status, await r2.clone().text()).toBe(500);
+      expect(await usersOf(e2), "照合が合えば、この確定で作った本人として消える").toHaveLength(0);
+    } finally {
+      spy2.mockRestore();
+      await undo2();
+    }
+  });
+
+  it(`K52-API-054 照合が例外になる（credential の読み出しが投げる）：消さない側に倒し、500・E-PAGE-003。${CLEANUP_FAILED}（detail は tenant_id と auth_user_id・メールなし）・運営に知らせる・印を戻さない（4 回目のレビュー MEDIUM-1）`, async () => {
+    const e = email("pw-throw");
+    const company = `${RUN}-照合が投げる社`;
+    const t = await pend("pw-throw", { company });
+    const undo = await tamperSessions("k52_session_raise_th", company, "raise");
+    const since = await dbNowAdmin();
+    const mailFrom = mails.length;
+    const callsFrom = probe.credentialCalls.length;
+    const spy = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    probe.throwCredential = true;
+    let ids: { tenant_id: string; auth_user_id: string } | null = null;
+    try {
+      const r = await verify(t);
+      expect(r.status, await r.clone().text()).toBe(500);
+      expect((await json(r))["code"]).toBe("E-PAGE-003");
+      expect(probe.credentialCalls.length, "照合の部品が呼ばれた（その中で投げた）").toBeGreaterThan(callsFrom);
+      ids = await expectNothingDropped(e, company);
+      await expectUnconfirmedRecorded(since, ids, e, mailFrom);
+    } finally {
+      probe.throwCredential = false;
+      spy.mockRestore();
+      await undo();
+      if (!ids) {
+        const u = (await usersOf(e))[0]?.id ?? null;
+        await scrub((await tenantByName(company))[0]?.id ?? null, u);
+      } else await scrub(ids.tenant_id, ids.auth_user_id);
+    }
+  });
+
+  it(`K52-API-055 signUp が落ちた後に同じメールの本人を引けない（signUpFailed の e2 の catch）：消さない側に倒し、500・E-PAGE-003。${CLEANUP_FAILED}（detail は tenant_id と auth_user_id・メールなし）・運営に知らせる・印を戻さない（4 回目のレビュー MEDIUM-1）`, async () => {
+    const e = email("lookup-throw");
+    const company = `${RUN}-本人を引けない社`;
+    const t = await pend("lookup-throw", { company });
+    const undo = await tamperSessions("k52_session_raise_lk", company, "raise");
+    const since = await dbNowAdmin();
+    const mailFrom = mails.length;
+    const spy = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    probe.throwLookupFor.add(e.toLowerCase());
+    let ids: { tenant_id: string; auth_user_id: string } | null = null;
+    try {
+      const r = await verify(t);
+      expect(r.status, await r.clone().text()).toBe(500);
+      expect((await json(r))["code"]).toBe("E-PAGE-003");
+      ids = await expectNothingDropped(e, company);
+      await expectUnconfirmedRecorded(since, ids, e, mailFrom);
+    } finally {
+      probe.throwLookupFor.delete(e.toLowerCase());
+      spy.mockRestore();
+      await undo();
+      if (!ids) {
+        const u = (await usersOf(e))[0]?.id ?? null;
+        await scrub((await tenantByName(company))[0]?.id ?? null, u);
+      } else await scrub(ids.tenant_id, ids.auth_user_id);
     }
   });
 });
