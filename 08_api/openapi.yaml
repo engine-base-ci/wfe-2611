@@ -2457,6 +2457,10 @@ components:
         updated_at:
           type: string
           format: date-time
+        approval_id:
+          type: string
+          format: uuid
+          nullable: true
         created_by:
           type: string
           format: uuid
@@ -2465,9 +2469,16 @@ components:
           type: string
           format: date-time
           nullable: true
+        phase:
+          type: string
+          nullable: true
         scope_id:
           type: string
           format: uuid
+        ticket_id:
+          type: string
+          format: uuid
+          nullable: true
         updated_by:
           type: string
           format: uuid
@@ -2883,6 +2894,10 @@ components:
         stop_requested_at:
           type: string
           format: date-time
+          nullable: true
+        taken_session_id:
+          type: string
+          format: uuid
           nullable: true
         updated_by:
           type: string
@@ -3866,6 +3881,13 @@ components:
         updated_at:
           type: string
           format: date-time
+        alive_at:
+          type: string
+          format: date-time
+          nullable: true
+        bridge_version:
+          type: string
+          nullable: true
         browser:
           type: string
         cli_model:
@@ -3885,6 +3907,9 @@ components:
         device:
           type: string
           nullable: true
+        device_token_hash:
+          type: string
+          nullable: true
         health:
           nullable: true
         health_at:
@@ -3893,6 +3918,10 @@ components:
           nullable: true
         last_ip:
           type: string
+          nullable: true
+        machine_id:
+          type: string
+          format: uuid
           nullable: true
         step_up_at:
           type: string
@@ -9190,6 +9219,59 @@ components:
         discard:
           type: boolean
       x-operation: saveMyTicketDraft
+    TicketDelegateInput:
+      type: object
+      properties: {}
+      x-operation: delegateTicket
+    BridgeTakeInput:
+      type: object
+      properties:
+        wait_sec:
+          type: integer
+        protocol:
+          type: integer
+        idle:
+          type: boolean
+      x-operation: takeBridgeJob
+    BridgeProgressInput:
+      type: object
+      properties:
+        seq:
+          type: integer
+        kind:
+          type: string
+        text:
+          type: string
+          maxLength: 1000000
+        agent_session_id:
+          type: string
+        model:
+          type: string
+        tool: {}
+        usage: {}
+        todos: {}
+        windows: {}
+        blocked: {}
+      x-operation: reportJobProgress
+    BridgeFinishInput:
+      type: object
+      properties:
+        state:
+          type: string
+        result:
+          type: string
+          maxLength: 200000
+        reason:
+          type: string
+          maxLength: 2000
+        agent_session_id:
+          type: string
+      x-operation: finishBridgeJob
+    BridgeToolInput:
+      type: object
+      properties:
+        input: {}
+      x-operation: callKanameTool
     ScopeOverview:
       type: object
       properties:
@@ -9691,6 +9773,8 @@ components:
           type: object
         assignee:
           type: object
+        can:
+          type: object
       x-operation: getTicket
     TicketKindChoice:
       type: object
@@ -9725,29 +9809,85 @@ components:
       properties:
         job:
           type: object
-        allowed_tools:
-          type: array
-          items:
-            type: object
         forbidden_domains:
           type: array
           items:
             type: object
-        rules:
-          type: array
-          items:
-            type: object
+        next_ms:
+          type: integer
+        outdated:
+          type: boolean
       x-operation: takeBridgeJob
     JobControl:
       type: object
       properties:
         stop:
           type: boolean
+        reason:
+          type: string
         steers:
           type: array
           items:
             type: object
       x-operation: getJobControl
+    TicketDelegation:
+      type: object
+      properties:
+        run_id:
+          type: string
+        job_id:
+          type: string
+        status:
+          type: string
+        pc:
+          type: string
+      x-operation: delegateTicket
+    BridgeFinish:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        outcome:
+          type: string
+      x-operation: finishBridgeJob
+    BridgeToolResult:
+      type: object
+      properties:
+        result:
+          type: any
+      x-operation: callKanameTool
+    ActionRunView:
+      type: object
+      properties:
+        id:
+          type: string
+        ticket_id:
+          type: string
+        phase:
+          type: string
+        status:
+          type: string
+        by:
+          type: object
+        pc:
+          type: string
+        silent:
+          type: boolean
+        last_event_at:
+          type: string
+        progress:
+          type: string
+        stopped_reason:
+          type: string
+        return_reason:
+          type: string
+        started_at:
+          type: string
+        finished_at:
+          type: string
+        checks:
+          type: object
+      x-operation: listTicketRuns
     ResolvedCredential:
       type: object
       properties:
@@ -10664,7 +10804,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/ActionRuns'
+                    $ref: '#/components/schemas/ActionRunView'
                   meta:
                     type: object
         '401':
@@ -13654,7 +13794,9 @@ paths:
         schema:
           type: string
           enum:
+          - alive_at
           - auth_session_id
+          - bridge_version
           - browser
           - cli_model
           - country
@@ -13663,6 +13805,7 @@ paths:
           - deleted_at
           - device
           - device_label
+          - device_token_hash
           - health
           - health_at
           - id
@@ -13671,6 +13814,7 @@ paths:
           - kind_id
           - last_ip
           - last_seen_at
+          - machine_id
           - member_id
           - revoke_reason_id
           - revoked_at
@@ -14517,7 +14661,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BridgeJobsInput'
+              $ref: '#/components/schemas/BridgeFinishInput'
       responses:
         '201':
           description: 成功
@@ -14527,7 +14671,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/BridgeJobs'
+                    $ref: '#/components/schemas/BridgeFinish'
                   meta:
                     type: object
         '401':
@@ -14609,7 +14753,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BridgeJobEventsInput'
+              $ref: '#/components/schemas/BridgeProgressInput'
       responses:
         '201':
           description: 成功
@@ -14868,12 +15012,18 @@ paths:
         required: true
         schema:
           type: string
+      - name: x-kaname-tool-token
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 32
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ActionRunsInput'
+              $ref: '#/components/schemas/BridgeToolInput'
       responses:
         '201':
           description: 成功
@@ -14883,7 +15033,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/ActionRuns'
+                    $ref: '#/components/schemas/BridgeToolResult'
                   meta:
                     type: object
         '401':
@@ -14958,7 +15108,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BridgeJobsInput'
+              $ref: '#/components/schemas/BridgeTakeInput'
       responses:
         '201':
           description: 成功
@@ -17461,6 +17611,7 @@ paths:
           enum:
           - action_kind_id
           - ai_employee_id
+          - approval_id
           - bridge_job_id
           - choke_point_id
           - cost
@@ -17472,6 +17623,7 @@ paths:
           - finished_at
           - id
           - mode_id
+          - phase
           - procedure_id
           - scope_id
           - service_id
@@ -17479,6 +17631,7 @@ paths:
           - status_id
           - task_id
           - tenant_id
+          - ticket_id
           - tokens_in
           - tokens_out
           - updated_at
@@ -24677,7 +24830,9 @@ paths:
         schema:
           type: string
           enum:
+          - alive_at
           - auth_session_id
+          - bridge_version
           - browser
           - cli_model
           - country
@@ -24686,6 +24841,7 @@ paths:
           - deleted_at
           - device
           - device_label
+          - device_token_hash
           - health
           - health_at
           - id
@@ -24694,6 +24850,7 @@ paths:
           - kind_id
           - last_ip
           - last_seen_at
+          - machine_id
           - member_id
           - revoke_reason_id
           - revoked_at
@@ -37077,8 +37234,8 @@ paths:
       - D-125.167
       - D-125.42
       - D-126.15
-      x-permission: assignee
-      x-permission-scope: 担当者だけが自分の分身に任せられる
+      x-permission: write
+      x-permission-scope: そのチケットを直せる人なら誰でも（D-128.138）。動くのは押した人の AI（その人の PC）
       x-step-up: false
       security:
       - session: []
@@ -37094,7 +37251,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ActionRunsInput'
+              $ref: '#/components/schemas/TicketDelegateInput'
       responses:
         '201':
           description: 成功
@@ -37104,7 +37261,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/ActionRuns'
+                    $ref: '#/components/schemas/TicketDelegation'
                   meta:
                     type: object
         '401':
@@ -37988,6 +38145,7 @@ paths:
           enum:
           - action_kind_id
           - ai_employee_id
+          - approval_id
           - bridge_job_id
           - choke_point_id
           - cost
@@ -37999,6 +38157,7 @@ paths:
           - finished_at
           - id
           - mode_id
+          - phase
           - procedure_id
           - scope_id
           - service_id
@@ -38006,6 +38165,7 @@ paths:
           - status_id
           - task_id
           - tenant_id
+          - ticket_id
           - tokens_in
           - tokens_out
           - updated_at
@@ -38021,7 +38181,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/ActionRuns'
+                      $ref: '#/components/schemas/ActionRunView'
                   meta:
                     type: object
         '401':

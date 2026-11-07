@@ -21,7 +21,7 @@ import {
 import { cleanLabel, newCode, newDeviceToken, normalizeCode, normalizeMachineId, sha256 } from "./code.js";
 
 /** この版より古い Bridge には仕事を渡さない（apps/bridge/src/loop.ts の BRIDGE_PROTOCOL と揃える） */
-export const BRIDGE_PROTOCOL_MIN = 4;
+export const BRIDGE_PROTOCOL_MIN = 5;
 /** 古い Bridge のとき、自己診断に足す 1 行（画面は fix=update を見て入れ直しを案内する・E-CONN-012） */
 export const OUTDATED_CHECK = {
   name: "Bridge が新しい",

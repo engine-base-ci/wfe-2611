@@ -46,6 +46,8 @@ export interface CallErr {
   fields: Record<string, string>;
   /** 429 のとき、何秒待てばよいか */
   retryAfterSec: number | null;
+  /** 答えの体そのもの（口が足した値を読む：409・E-CONF-013 の今の run_id など・K-62） */
+  body: Record<string, unknown>;
 }
 export type CallResult<K extends OpName> = CallOk<K> | CallErr;
 
@@ -125,6 +127,7 @@ export async function call<K extends OpName>(op: K, args: CallArgs<K> = {} as Ca
     message: typeof json["message"] === "string" ? json["message"] : null,
     fields: Object.fromEntries(details.filter((d) => d.field).map((d) => [d.field!, d.message ?? ""])),
     retryAfterSec: typeof json["retry_after_sec"] === "number" ? json["retry_after_sec"] : null,
+    body: json,
   };
 }
 

@@ -513,17 +513,7 @@ export function agentRoutes(d: AgentDeps): Hono {
     if (!r?.ok) return (await alive(sid)) ? bad(c, 404, "JOB_NOT_FOUND", "その仕事は動いていません") : GONE(c);
     return c.json({ data: { ok: true } });
   });
-  // 止める・止めずに直すの合図（D-104.9）。動いている間、数秒おきに見る
-  app.post("/bridge/control", async (c) => {
-    const sid = await bridgeSession(c);
-    if (!sid) return bad(c, 401, "UNAUTHENTICATED", "この Bridge は分かりません");
-    const b = (await c.req.json().catch(() => ({}))) as { job_id?: unknown };
-    if (typeof b.job_id !== "string" || !UUID.test(b.job_id))
-      return bad(c, 422, "VALIDATION_FAILED", "仕事の id が要ります");
-    const r = await q1<{ v: unknown }>("select app.bridge_control($1, $2) as v", [sid, b.job_id]);
-    if (!r?.v) return (await alive(sid)) ? bad(c, 404, "JOB_NOT_FOUND", "その仕事は見つかりません") : GONE(c);
-    return c.json({ data: r.v });
-  });
+  // 止める合図は契約の口 GET /api/v1/bridge/jobs/:id/control に移した（K-62）
   // 区切りで一言を取りに来る（D-104.9）。ここで本人の吹き出しになる
   app.post("/bridge/steers", async (c) => {
     const sid = await bridgeSession(c);

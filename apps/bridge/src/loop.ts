@@ -5,7 +5,8 @@ import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, join } from "node:path";
 import { readGuardLog, writeHook } from "./guard";
-import { writeMcpServer, type KanameTools } from "./kaname-tools";
+import { toolDefsFor, writeMcpServer, type KanameTools } from "./kaname-tools";
+import { startToolRelay, type RelayJob, type ToolRelay } from "./tool-relay";
 import { dedicatedBrowser } from "./browser";
 import { aiEntries, joinResponse, sessionFile, sizeOf } from "./transcript";
 import { runClaude, stopCurrent, type Answer, type Finish, type Guard, type Job } from "./runner";
@@ -24,7 +25,14 @@ const CONTROL_POLL_MS = 1_500;
 const PARTIAL_MS = 400;
 /** Kaname と話す約束の版。問い合わせの答え・止めずに直す・禁止の関門など、やりとりの形を変えたら上げる。
  *  API はこれより古い Bridge に仕事を渡さない（古い版が答えを落としていた・2026-09-28） */
-export const BRIDGE_PROTOCOL = 4;
+export const BRIDGE_PROTOCOL = 5;
+/** 結果の上限（Kaname の finish が受ける長さ・K-62）。超えたら送らずに止まったとする */
+export const RESULT_MAX = 200_000;
+export const RESULT_TOO_LONG = "結果が長すぎて受け取れません";
+/** finish が届かない（回線・Kaname の一時的な不調）ときに同じ冪等キーで送り直す回数と間（結末は捨てない・K-62） */
+const FINISH_TRIES = 8;
+const FINISH_RETRY_MS = [300, 600, 1_200, 2_400, 5_000, 10_000, 20_000];
+
 /** ブラウザを使えなかったときに会話へ残す 1 行（D-119）。何をすれば直るかまで書く */
 export const BROWSER_OFF_NOTICE = {
   chrome:
@@ -43,11 +51,11 @@ function prepareGuard(jobId: string): Guard {
   return { hookPath: writeHook(dir), log: join(dir, `${jobId}.log`), nodeBin: process.execPath };
 }
 
-/** Kaname の道具のサーバーの置き場（D-110）。中身が同じなら書き直さない */
-function prepareTools(apiBase: string): KanameTools {
+/** Kaname の道具のサーバーの置き場（D-110）。中身が同じなら書き直さない。送り先は Bridge の手元の口（PC の印は渡さない・K-62） */
+function prepareTools(relayUrl: string): KanameTools {
   const dir = join(tmpdir(), "kaname-tools");
   mkdirSync(dir, { recursive: true });
-  return { serverPath: writeMcpServer(dir), nodeBin: process.execPath, apiBase };
+  return { serverPath: writeMcpServer(dir), nodeBin: process.execPath, apiBase: relayUrl };
 }
 
 export interface LoopDeps {
@@ -96,16 +104,24 @@ export function startLoop(d: LoopDeps): () => void {
   let stopped = false;
   // 止めたら待ち受け中の問い合わせも切る（つなぎ直した後に古い輪が仕事を取らない）
   const abort = new AbortController();
-  const call = async <T>(path: string, body: unknown): Promise<{ data: T; next_ms?: number } | null> => {
+  const call = async <T>(
+    path: string,
+    body: unknown,
+    method: "POST" | "GET" = "POST",
+  ): Promise<{ data: T; next_ms?: number } | null> => {
     const sid = d.sessionId();
     if (!sid || stopped) return null;
     try {
-      // 契約の口（/v1/…・K-57 で生きている知らせを移した）と、まだ移していない口（/api/auth-ext/…・F5 で移す）
+      // 契約の口（/v1/…・K-57・K-62 で移した）と、まだ移していない口（/api/auth-ext/…）
       const prefix = path.startsWith("/v1/") ? "/api" : "/api/auth-ext";
       const r = await fetch(`${d.apiBase}${prefix}${path}`, {
-        method: "POST",
-        headers: { "content-type": "application/json", "x-bridge-session": sid, "user-agent": BRIDGE_UA },
-        body: JSON.stringify(body),
+        method,
+        headers: {
+          ...(method === "POST" ? { "content-type": "application/json" } : {}),
+          "x-bridge-session": sid,
+          "user-agent": BRIDGE_UA,
+        },
+        ...(method === "POST" ? { body: JSON.stringify(body) } : {}),
         signal: abort.signal,
       });
       if (!r.ok) {
@@ -130,6 +146,49 @@ export function startLoop(d: LoopDeps): () => void {
   };
   const post = async <T>(path: string, body: unknown): Promise<T | null> => (await call<T>(path, body))?.data ?? null;
   const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
+  const jobPath = (id: string, what: string) => `/v1/bridge/jobs/${encodeURIComponent(id)}/${what}`;
+
+  /** 結末を返す（K-62）。届かない・Kaname が一時的に落ちている（5xx）ときは、同じ冪等キーで送り直す（1 回分だけ入る）。
+   *  鍵が通らない（401／403／410）・仕事がもう無い（404）・形が違う（422）は送り直さない */
+  const finish = async (jobId: string, body: Record<string, unknown>): Promise<void> => {
+    const key = `finish-${jobId}`;
+    for (let i = 0; i < FINISH_TRIES && !stopped; i++) {
+      const sid = d.sessionId();
+      if (!sid) return;
+      try {
+        const r = await fetch(`${d.apiBase}/api${jobPath(jobId, "finish")}`, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            "x-bridge-session": sid,
+            "user-agent": BRIDGE_UA,
+            "idempotency-key": key,
+          },
+          body: JSON.stringify(body),
+          signal: abort.signal,
+        });
+        if (r.ok || r.status === 404 || r.status === 422) return;
+        if ([401, 403, 410].includes(r.status)) {
+          state.lastError = "この端末の接続は切れています。つなぎ直してください";
+          state.alive = false;
+          d.onGone();
+          d.onChange({ ...state });
+          return;
+        }
+      } catch {
+        if (stopped) return;
+      }
+      await sleep(FINISH_RETRY_MS[Math.min(i, FINISH_RETRY_MS.length - 1)]!);
+    }
+  };
+
+  // 道具の中継（K-62）：道具のサーバーは鍵だけを持ってここへ送る。PC の印は Bridge が足す。要るときに 1 回だけ起こす
+  let relayJob: RelayJob | null = null;
+  let relay: Promise<ToolRelay> | null = null;
+  const relayUrl = async (): Promise<string> => {
+    relay ??= startToolRelay({ apiBase: d.apiBase, deviceToken: d.sessionId, current: () => relayJob });
+    return (await relay).url;
+  };
 
   // 生きている知らせは 1 本ずつ、出した順に送る。追い越すと古い自己診断が新しいものを上書きする
   // （起動直後の 1 回目が遅れて、仕事の後に送った「Chrome とつながっていない」を消していた・2026-09-30 実例）
@@ -158,16 +217,23 @@ export function startLoop(d: LoopDeps): () => void {
   /** 仕事を取りに行く（1 回）。取れたら動かして結末を返す。次に聞くまでの間を返す */
   const tick = async (): Promise<number> => {
     // 取りに行く＝この PC はいま何も動かしていない（1 件ずつ順に動かす）。残った仕事の後始末を Kaname に頼む
-    const r = await call<Job | null>("/bridge/take", {
+    const r = await call<{
+      job: Job | null;
+      forbidden_domains?: Job["blocked"];
+      next_ms?: number;
+      outdated?: boolean;
+    }>("/v1/bridge/jobs/take", {
       wait_sec: TAKE_WAIT_SEC,
       protocol: BRIDGE_PROTOCOL,
       idle: true,
     });
     if (!r) return RETRY_MS;
-    if ((r as { outdated?: boolean }).outdated) d.onOutdated?.();
+    const got = r.data ?? { job: null };
+    if (got.outdated) d.onOutdated?.();
     alive(); // 問い合わせが通った＝生きている（Kaname 側も同じ 1 回で知らせを受けている）
-    const job = r.data;
-    if (!job) return typeof r.next_ms === "number" && r.next_ms >= 0 ? r.next_ms : RETRY_MS;
+    // 台帳で禁止・銀行のドメインは仕事の外で一緒に届く（D-107.1）。見張りは仕事に持たせる
+    const job: Job | null = got.job ? { ...got.job, blocked: got.forbidden_domains ?? got.job.blocked ?? [] } : null;
+    if (!job) return typeof got.next_ms === "number" && got.next_ms >= 0 ? got.next_ms : RETRY_MS;
     state.working = job.job_id;
     d.onChange({ ...state });
     // 預けたログイン情報で 1 回だけ入ってみる仕事（D-117.1）：AI は起こさない。鍵は受け取り口の中だけ。結果は種類と理由だけを返す
@@ -194,9 +260,7 @@ export function startLoop(d: LoopDeps): () => void {
     let sent: Promise<unknown> = Promise.resolve();
     const progress = (kind: string, body: Record<string, unknown>): void => {
       const n = ++seq;
-      sent = sent
-        .then(() => post("/bridge/progress", { job_id: job.job_id, seq: n, kind, ...body }))
-        .catch(() => undefined);
+      sent = sent.then(() => post(jobPath(job.job_id, "progress"), { seq: n, kind, ...body })).catch(() => undefined);
     };
     // 自分のAI の文を記録と同じ id で写す（D-112）。途中経過と同じ列で、結末より先に届ける
     // 同じ返答の文は 1 つの吹き出しに（D-115）。この仕事の中で返答ごとに覚えておく
@@ -235,10 +299,12 @@ export function startLoop(d: LoopDeps): () => void {
       while (controlling && !stopped) {
         await sleep(CONTROL_POLL_MS);
         if (!controlling) break;
-        const c = await post<{ stop: boolean }>("/bridge/control", { job_id: job.job_id });
+        const c = (await call<{ stop: boolean; reason?: string | null }>(jobPath(job.job_id, "control"), null, "GET"))
+          ?.data;
         if (!c) continue;
         if (c.stop) {
-          stopCurrent("あなたが止めました");
+          // 理由が付いていればその理由で止める（チケットが消された・押した人が直せなくなった・K-62）
+          stopCurrent(c.reason || "あなたが止めました");
           break;
         }
       }
@@ -266,6 +332,11 @@ export function startLoop(d: LoopDeps): () => void {
     let browserWasOff = false; // 使えなかったか（知らせは 1 回）
     const dedicated =
       browser === "dedicated" ? dedicatedBrowser(d.dataDir ?? join(tmpdir(), "kaname-bridge"), process.execPath) : null;
+    // 道具の鍵がある仕事は、手元の口を今の仕事に向ける（チケットは ticket_read だけ・会話は会話の道具）
+    const tools = job.tool_token ? prepareTools(await relayUrl()) : null;
+    relayJob = job.tool_token
+      ? { jobId: job.job_id, toolToken: job.tool_token, tools: toolDefsFor(job.kind ?? "chat").map((t) => t.name) }
+      : null;
     const f: Finish = await runClaude(
       { ...job, prompt, browser },
       {
@@ -337,7 +408,14 @@ export function startLoop(d: LoopDeps): () => void {
         // 確認・問い合わせは画面に出して、本人の答えを待つ（D-093.3・D-104.5・D-104.14）。答えが無ければ許可しない
         ask: async (q) => {
           // 会話の無い仕事（記憶のまとめ）は答える画面が無い。道具は使わずに答えてもらう
-          if (!job.conversation_id) return { allow: false, note: "この仕事では道具を使わず、文だけで答えてください" };
+          if (!job.conversation_id)
+            return {
+              allow: false,
+              note:
+                job.kind === "ticket"
+                  ? "この仕事では外に出す道具は使わず、作ったものを最後の返事の本文で返してください"
+                  : "この仕事では道具を使わず、文だけで答えてください",
+            };
           const asked = await post<{ ok: boolean }>("/bridge/ask", {
             job_id: job.job_id,
             request_id: q.requestId,
@@ -362,9 +440,10 @@ export function startLoop(d: LoopDeps): () => void {
       undefined,
       dir ? [dir] : [],
       guard,
-      job.tool_token ? prepareTools(d.apiBase) : null,
+      tools,
       dedicated,
     );
+    relayJob = null;
     if (guardTimer) clearInterval(guardTimer);
     readGuard();
     if (guard) {
@@ -377,12 +456,15 @@ export function startLoop(d: LoopDeps): () => void {
     if (dir) rmSync(dir, { recursive: true, force: true });
     await sent;
     // 使った量（D-100.1）は結末より先に届ける（結末の後は仕事が閉じて受け取られない）
-    if (f.usage) await post("/bridge/progress", { job_id: job.job_id, seq: ++seq, kind: "usage", usage: f.usage });
-    await post("/bridge/finish", {
-      job_id: job.job_id,
-      state: f.state,
-      ...(f.state === "done" ? { result: f.result } : { reason: f.reason }),
-      agent_session_id: f.agent_session_id,
+    if (f.usage) await post(jobPath(job.job_id, "progress"), { seq: ++seq, kind: "usage", usage: f.usage });
+    // 結果が長すぎるものは送らずに止まったとする（Kaname は 200000 字まで受ける・K-62）
+    const tooLong = f.state === "done" && (f.result ?? "").length > RESULT_MAX;
+    await finish(job.job_id, {
+      state: tooLong ? "stopped" : f.state,
+      ...(f.state === "done" && !tooLong
+        ? { result: f.result }
+        : { reason: tooLong ? RESULT_TOO_LONG : "reason" in f ? f.reason : undefined }),
+      ...(f.agent_session_id ? { agent_session_id: f.agent_session_id } : {}),
     });
     state.working = null;
     d.onChange({ ...state });
@@ -476,6 +558,7 @@ export function startLoop(d: LoopDeps): () => void {
     stopped = true;
     abort.abort();
     clearInterval(h);
+    void relay?.then((x) => x.close()).catch(() => undefined);
   };
 }
 

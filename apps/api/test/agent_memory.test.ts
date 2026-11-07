@@ -11,7 +11,7 @@ import { dirname, join } from "node:path";
 import { migrate } from "@kaname/db/migrate";
 import { migrateAuth } from "@kaname/auth/migrate";
 import { createAuth } from "@kaname/auth";
-import { createSessionResolver } from "@kaname/auth/resolver";
+import { createDeviceResolver, createSessionResolver } from "@kaname/auth/resolver";
 import { createPool } from "@kaname/db/pool";
 import { createRepository } from "@kaname/db/repository";
 import { MemoryVault, SecretsGateway } from "@kaname/secrets";
@@ -22,6 +22,9 @@ import { authExt } from "../src/auth/ext.js";
 import { agreeCurrentTerms, keepAuth, verifiedUser } from "./_pending.js";
 import { createInvitation } from "@kaname/auth/invitations";
 import { pairForTest, pairMemberForTest } from "./bridge_pair.js";
+import { isMovedBridgePath, oldBridge, type OldBridge } from "./bridge_contract.js";
+import { withDevice } from "../src/middleware/tenant.js";
+import { delegateHooks } from "../src/hooks/delegate.js";
 
 const DB_PKG = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "packages", "db");
 const ADMIN = process.env["DATABASE_URL"]!;
@@ -32,12 +35,17 @@ const sent: { to: string; url: string; kind: string }[] = [];
 let app: ReturnType<typeof createApp>;
 let admin: pg.Pool;
 const X = "/api/auth-ext";
+// 前の道すじ 5 本（take・progress・finish・control・tool）は契約の口へ向け直す（K-62・apps/api/test/bridge_contract.ts）
+let ob: OldBridge | undefined;
+const viaContract = (): OldBridge => (ob ??= oldBridge(app));
 const req = (method: string, path: string, body?: unknown, headers: Record<string, string> = {}) =>
-  app.request(`http://localhost${X}${path}`, {
-    method,
-    headers: { "content-type": "application/json", ...headers },
-    ...(body === undefined ? {} : { body: JSON.stringify(body) }),
-  });
+  isMovedBridgePath(path)
+    ? viaContract().call(path, body, headers)
+    : app.request(`http://localhost${X}${path}`, {
+        method,
+        headers: { "content-type": "application/json", ...headers },
+        ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+      });
 const post = (path: string, body: unknown, h: Record<string, string> = {}) => req("POST", path, body, h);
 const json = async <T>(r: Response | Promise<Response>) => ((await (await r).json()) as { data: T }).data;
 const uniq = () => `qa-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
@@ -66,7 +74,9 @@ beforeAll(async () => {
   app = createApp({
     repo,
     auth,
-    resolve: createSessionResolver(auth, appPool),
+    // PC の口は契約の口（K-57・K-62）。PC の印で解き、振る舞いは delegate の hooks
+    resolve: withDevice(createSessionResolver(auth, appPool), createDeviceResolver(appPool)) as never,
+    contract: { hooks: delegateHooks(appPool) },
     authExt: authExt({
       auth,
       appPool,
@@ -126,7 +136,7 @@ async function invite(bossMember: string) {
 /** 会話を 1 本作り、昨日のことにする（まとめは昨日までを読む） */
 async function talkedYesterday(H: Record<string, string>, B: Record<string, string>, text: string, reply: string) {
   const s = await json<{ conversation_id: string; job_id: string }>(post("/agent/say", { text }, H));
-  await post("/bridge/take", { protocol: 4 }, B);
+  await post("/bridge/take", { protocol: 5 }, B);
   await post("/bridge/finish", { job_id: s.job_id, state: "done", result: reply }, B);
   await admin.query("update messages set created_at = created_at - interval '1 day' where conversation_id = $1", [
     s.conversation_id,
@@ -154,7 +164,7 @@ const fence = (o: unknown) => `整理しました。\n\n\`\`\`json\n${JSON.strin
 async function runDigest(H: Record<string, string>, B: Record<string, string>, answer: string) {
   const st = await json<{ digest_id: string }>(post("/agent/memory/digest", {}, H));
   const t = await json<{ job_id: string; prompt: string; conversation_id: string | null } | null>(
-    post("/bridge/take", { protocol: 4 }, B),
+    post("/bridge/take", { protocol: 5 }, B),
   );
   expect(t?.conversation_id, "会話の画面には出さない仕事").toBeNull();
   await post("/bridge/finish", { job_id: t!.job_id, state: "done", result: answer }, B);
@@ -167,7 +177,7 @@ describe("「覚えて」はその場で（D-105.1）", () => {
     const s = await json<{ conversation_id: string; job_id: string }>(
       post("/agent/say", { text: "請求書は税込を先に書くって覚えて" }, H),
     );
-    await post("/bridge/take", { protocol: 4 }, B);
+    await post("/bridge/take", { protocol: 5 }, B);
     await post(
       "/bridge/finish",
       { job_id: s.job_id, state: "done", result: "わかりました。\n\n[[覚える: 請求書は税込を先に書く]]" },
@@ -190,7 +200,7 @@ describe("「覚えて」はその場で（D-105.1）", () => {
     const s2 = await json<{ job_id: string }>(
       post("/agent/say", { text: "これは覚えないで", conversation_id: inc.conversation_id }, H),
     );
-    await post("/bridge/take", { protocol: 4 }, B);
+    await post("/bridge/take", { protocol: 5 }, B);
     await post("/bridge/finish", { job_id: s2.job_id, state: "done", result: "はい。[[覚える: 残さない会話の話]]" }, B);
     expect(
       (await admin.query("select count(*)::int as n from memories where body = '残さない会話の話'")).rows[0].n,
@@ -209,7 +219,7 @@ describe("毎朝のまとめ（D-105.2〜D-105.5）", () => {
     const x = await json<{ job_id: string }>(
       post("/agent/say", { text: "社外秘の話", conversation_id: incog.conversation_id }, H),
     );
-    await post("/bridge/take", { protocol: 4 }, B);
+    await post("/bridge/take", { protocol: 5 }, B);
     await post("/bridge/finish", { job_id: x.job_id, state: "done", result: "了解" }, B);
     await admin.query("update messages set created_at = created_at - interval '1 day' where conversation_id = $1", [
       incog.conversation_id,
@@ -382,7 +392,7 @@ describe("上の層へ上げる候補と確認待ち（D-105.6・D-105.9）", ()
     // 効く（D-105.7・D-105.8）：会話の仕事を取ると、上の層の決まりが本人の記憶より先に、強い順で渡る
     await post("/agent/say", { text: "締め日はいつ？" }, b.H);
     const t = await json<{ memories: { kind: string; scope: string; personal: boolean; body: string }[] }>(
-      post("/bridge/take", { protocol: 4 }, b.B),
+      post("/bridge/take", { protocol: 5 }, b.B),
     );
     const bodies = t.memories.map((m) => `${m.personal ? "本人" : "上"}:${m.body}`);
     expect(bodies[0], "上の層の決まりがいちばん強い").toBe("上:月末締め");

@@ -27,20 +27,37 @@ beforeAll(async () => {
     let raw = "";
     req.on("data", (c) => (raw += c));
     req.on("end", () => {
-      const path = (req.url ?? "").replace("/api/auth-ext", "");
+      // 仕事の 5 本（取る・様子・終わる・合図・道具）は契約の口（/api/v1/bridge/jobs/…・K-62）。前の道すじの名前に戻して数える
+      //   （仕事の id は道すじから体の job_id に戻す。期待は前のまま）
+      const url = req.url ?? "";
+      const moved = /^\/api\/v1\/bridge\/jobs\/(?:take|([^/]+)\/(progress|finish|control))$/.exec(url);
+      const path = moved ? `/bridge/${moved[2] ?? "take"}` : url.replace("/api/auth-ext", "").replace("/api/v1", "");
       const send = (data: unknown, status = 200) => {
         res.writeHead(status, { "content-type": "application/json" });
         res.end(JSON.stringify({ data }));
       };
       if (path === "/files/a1") return res.end("日付,金額\n9/1,1000\n");
-      const body = raw ? (JSON.parse(raw) as Record<string, unknown>) : {};
+      const body = {
+        ...(raw ? (JSON.parse(raw) as Record<string, unknown>) : {}),
+        ...(moved?.[1] ? { job_id: moved[1] } : {}),
+      };
       posted.push({ path, body });
       const hook = onPath[path];
       if (hook) {
         delete onPath[path];
         hook();
       }
-      if (path === "/bridge/take") return send(req.headers["x-bridge-session"] === sid ? (jobs.shift() ?? null) : null);
+      // 取る口の答えは契約の形（data.job・forbidden_domains・next_ms）
+      if (path === "/bridge/take")
+        return send(
+          {
+            job: req.headers["x-bridge-session"] === sid ? (jobs.shift() ?? null) : null,
+            forbidden_domains: [],
+            next_ms: 50,
+            outdated: false,
+          },
+          201,
+        );
       if (path === "/bridge/control") return send({ stop: control.stop });
       if (path === "/bridge/steers") {
         const s = steers;

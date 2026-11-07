@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:0bed4702c7312a30
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:f18fdd1173cdcdbc
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -96,7 +96,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
-    "output": "ActionRuns",
+    "output": "ActionRunView",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -2224,9 +2224,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "finishBridgeJob",
     "table": "bridge_jobs",
     "kind": "create",
-    "input": "BridgeJobsInput",
+    "input": "BridgeFinishInput",
     "success": 201,
-    "output": "BridgeJobs",
+    "output": "BridgeFinish",
     "outputList": false,
     "generic": false,
     "auth": "device",
@@ -2273,7 +2273,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "reportJobProgress",
     "table": "bridge_job_events",
     "kind": "create",
-    "input": "BridgeJobEventsInput",
+    "input": "BridgeProgressInput",
     "success": 201,
     "output": "BridgeJobEvents",
     "outputList": false,
@@ -2414,9 +2414,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "callKanameTool",
     "table": "action_runs",
     "kind": "create",
-    "input": "ActionRunsInput",
+    "input": "BridgeToolInput",
     "success": 201,
-    "output": "ActionRuns",
+    "output": "BridgeToolResult",
     "outputList": false,
     "generic": false,
     "auth": "device",
@@ -2463,7 +2463,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "takeBridgeJob",
     "table": "bridge_jobs",
     "kind": "create",
-    "input": "BridgeJobsInput",
+    "input": "BridgeTakeInput",
     "success": 201,
     "output": "BridgeJob",
     "outputList": false,
@@ -14734,9 +14734,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "delegateTicket",
     "table": "action_runs",
     "kind": "create",
-    "input": "ActionRunsInput",
+    "input": "TicketDelegateInput",
     "success": 201,
-    "output": "ActionRuns",
+    "output": "TicketDelegation",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -14766,7 +14766,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "tickets"
     ],
     "perm": {
-      "word": "assignee",
+      "word": "write",
       "target": null,
       "ability": null,
       "scope": "workspace",
@@ -14775,7 +14775,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "stepUp": null,
       "row": {
         "table": "tickets",
-        "sql": "((tickets.assignee_member_id = app.user_id() or tickets.created_by = app.user_id() or app.manages_scope(tickets.scope_id)) or deleted_by = app.user_id())"
+        "sql": "app.ticket_writable(id)"
       }
     },
     "termsOpen": false,
@@ -15236,7 +15236,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
-    "output": "ActionRuns",
+    "output": "ActionRunView",
     "outputList": true,
     "generic": false,
     "auth": "member",
@@ -17203,4 +17203,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "0bed4702c7312a30";
+export const OPENAPI_HASH = "f18fdd1173cdcdbc";

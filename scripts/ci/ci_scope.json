@@ -258,6 +258,22 @@
     "apps/api/test/generated/post_me_ticket_drafts.test.ts",
     "apps/api/test/generated/post_tickets.test.ts"
    ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F5/delegate.test.ts",
+    "apps/api/test/features/F5/delegate-bridge.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_action_runs_id.test.ts",
+    "apps/api/test/generated/get_bridge_jobs_id_control.test.ts",
+    "apps/api/test/generated/get_tickets_id_runs.test.ts",
+    "apps/api/test/generated/post_bridge_jobs_id_finish.test.ts",
+    "apps/api/test/generated/post_bridge_jobs_id_progress.test.ts",
+    "apps/api/test/generated/post_bridge_jobs_id_tools_name.test.ts",
+    "apps/api/test/generated/post_bridge_jobs_take.test.ts",
+    "apps/api/test/generated/post_tickets_id_delegate.test.ts"
+   ]
   }
  ],
  "reads_ok": {

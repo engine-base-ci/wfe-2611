@@ -5057,6 +5057,133 @@
     "D-125.50"
    ],
    "support_code": "VAL-015"
+  },
+  {
+   "id": "E-CONF-013",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "running"
+   },
+   "when": "同じチケットにいま走っている実行（待っている・動いている・確認待ち）があるのに、もう一度・別のタブで「AI に任せる」を押した",
+   "false_when": "走っている実行が無い（止まった・やめた・終わった）",
+   "message": "このチケットはいま自分のAI が作っています。今の実行の様子を見てください",
+   "action": "今の実行の様子を見る",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "任せたチケット（PC が取る前）",
+    "steps": [
+     "別のタブでもう一度「AI に任せる」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.138",
+    "D-125.143"
+   ],
+   "support_code": "CONF-013"
+  },
+  {
+   "id": "E-CONF-014",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "awaiting_approval"
+   },
+   "when": "承認待ち・確認中・実行中・完了のチケットで「AI に任せる」を押した（開いている間に段が変わった）",
+   "false_when": "未着手・作業中・保留",
+   "message": "いまの段のチケットは AI に任せられません（承認待ち・確認中・実行中・完了）。チケットの帯で次の一手を選んでください",
+   "action": "承認の帯で決める",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "承認待ちのチケットを開いておく",
+    "steps": [
+     "「AI に任せる」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.138",
+    "D-128.25"
+   ],
+   "support_code": "CONF-014"
+  },
+  {
+   "id": "E-SIG-004",
+   "class": "no_signal",
+   "where": {
+    "screen": "tickets",
+    "state": "stopped"
+   },
+   "when": "PC が「終わった」と言ったが、結果が空（空白だけ・欄が無い）だった",
+   "false_when": "中身のある結果が届いた",
+   "message": "自分のAI が結果を返さずに終わりました。完了とは見なしていません",
+   "action": "もう一度 AI に任せる／自分でやる",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB",
+    "UI"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "任せたチケット（PC が取った）",
+    "steps": [
+     "結果を空で「終わった」と送る"
+    ],
+    "needs": "つないだ PC（偽の Bridge でよい）"
+   },
+   "severity": "medium",
+   "source": [
+    "D-128.138",
+    "D-066"
+   ],
+   "support_code": "SIG-004"
+  },
+  {
+   "id": "E-TO-005",
+   "class": "timeout",
+   "where": {
+    "screen": "tickets",
+    "state": "running"
+   },
+   "when": "任せた仕事の最後の出来事から 10 分（確認待ちの間は 30 分）PC から何も届かない",
+   "false_when": "10 分（確認待ちは 30 分）以内に途中の様子が届いている",
+   "message": "PC から 10 分知らせがありません。止まったとみなしています。PC の Bridge が動いているか確かめてください",
+   "action": "PC の Bridge が動いているか確かめる",
+   "undo": false,
+   "layers": [
+    "API",
+    "UI"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "任せたチケット（PC が取った）",
+    "steps": [
+     "最後の出来事の時刻を 10 分 1 秒前にして詳細を開く"
+    ],
+    "needs": "なし（DB の時刻を動かす）"
+   },
+   "severity": "medium",
+   "source": [
+    "D-128.138",
+    "D-128.163"
+   ],
+   "support_code": "TO-005"
   }
  ],
  "meta": {

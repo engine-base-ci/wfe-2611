@@ -1,11 +1,15 @@
 "use client";
 // チケットの詳細（K-60 では読むだけ・道 /tickets/[id]）。番号・題名・種別・段・担当者・期限と、区画の本文（版 1）。
-//   本文は文字として出す（HTML やスクリプトを動かさない）。直す・AI に任せるは後のチケット（K-62 が上の帯にボタンを足す）
-import { useEffect, useState } from "react";
+//   本文は文字として出す（HTML やスクリプトを動かさない）。見出しの下に AI に任せるの帯、右に実行の記録（K-62・apps/web/features/F5/delegate/）
+import { useCallback, useEffect, useState } from "react";
 import { Badge, ErrorState, Loading } from "@/components/k";
 import { PAGE_ERROR, errorCodeOf } from "@/components/k/error-of";
 import { call } from "@/lib/api/call";
 import { getToken } from "@/lib/api/client";
+import { DelegateBand } from "@/features/F5/delegate/delegate-band";
+import { RunLog } from "@/features/F5/delegate/run-log";
+import { useRuns } from "@/features/F5/delegate/use-run";
+import "@/features/F5/delegate/delegate.css";
 import { TicketShell } from "./ticket-shell";
 
 interface Detail {
@@ -19,8 +23,12 @@ interface Detail {
   };
   sections: { key: string; label: string; body: { text?: string } | null; version: number }[];
   kind: { name: string } | null;
-  stage: { name: string } | null;
+  stage: { key?: string | null; name: string } | null;
   assignee: { display_name: string } | null;
+  /** 見ている人ができること（K-62 が delegate を足す） */
+  can?: { delegate?: boolean } | null;
+  /** 承認待ちの承認（K-63 が足す）。can_decide＝見ている人が承認する人か */
+  approval?: { id: string; can_decide: boolean } | null;
 }
 
 /** 前からある外枠（AppShell）に載せる（D-128.151） */
@@ -36,20 +44,26 @@ function DetailBody({ id }: { id: string }) {
   const [d, setD] = useState<Detail | null>(null);
   const [code, setCode] = useState<string | null>(null);
   const here = `/tickets/${id}`;
+  const valid = /^[0-9a-f-]{36}$/i.test(id);
+  const load = useCallback(
+    () =>
+      call("getTicket", { params: { id }, screenId: "tickets" }).then((r) => {
+        if (r.ok) setD(r.data as unknown as Detail);
+        else setCode(errorCodeOf(r));
+      }),
+    [id],
+  );
   useEffect(() => {
     if (!getToken()) {
       window.location.replace(`/login?next=${encodeURIComponent(here)}`);
       return;
     }
-    if (!/^[0-9a-f-]{36}$/i.test(id)) {
+    if (!valid) {
       setCode(PAGE_ERROR.notFound);
       return;
     }
-    void call("getTicket", { params: { id }, screenId: "tickets" }).then((r) => {
-      if (r.ok) setD(r.data as unknown as Detail);
-      else setCode(errorCodeOf(r));
-    });
-  }, [id, here]);
+    void load();
+  }, [here, valid, load]);
   if (code)
     return (
       <ErrorState
@@ -59,6 +73,11 @@ function DetailBody({ id }: { id: string }) {
       />
     );
   if (!d) return <Loading />;
+  return <DetailView id={id} d={d} reload={load} />;
+}
+
+function DetailView({ id, d, reload }: { id: string; d: Detail; reload: () => Promise<void> }) {
+  const runs = useRuns(id);
   const t = d.ticket;
   return (
     <section className="k-root k-page" aria-labelledby="ticket-title">
@@ -74,12 +93,30 @@ function DetailBody({ id }: { id: string }) {
           {t.start_on ? `・開始 ${t.start_on}` : ""}・優先度 {t.priority === "high" ? "高" : "中"}
         </p>
       </header>
-      {d.sections.map((s) => (
-        <section key={s.key} className="k-section" aria-label={s.label}>
-          <h2>{s.label}</h2>
-          <p className="k-pre">{s.body?.text ?? ""}</p>
-        </section>
-      ))}
+      <DelegateBand
+        ticket={{
+          id,
+          stageKey: d.stage?.key ?? null,
+          canDelegate: d.can?.delegate === true,
+          canDecide: d.approval?.can_decide === true,
+        }}
+        run={runs.current}
+        onRun={runs.follow}
+        onChanged={async () => {
+          await Promise.all([reload(), runs.reload()]);
+        }}
+      />
+      <div className="k62-layout">
+        <div>
+          {d.sections.map((s) => (
+            <section key={s.key} className="k-section" aria-label={s.label}>
+              <h2>{s.label}</h2>
+              <p className="k-pre">{s.body?.text ?? ""}</p>
+            </section>
+          ))}
+        </div>
+        <RunLog runs={runs.runs} />
+      </div>
     </section>
   );
 }

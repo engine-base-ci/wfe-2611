@@ -8,82 +8,266 @@
     <link rel="stylesheet" href="./tokens.css" />
     <style>
       /* 色・寸法はここに書かない。tokens.css（正本から機械生成）の var() だけを読む */
-      * { box-sizing: border-box; margin: 0; padding: 0 }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
       body {
-        background: var(--surface); color: var(--on-surface);
-        font-family: var(--font-sans); font-size: var(--text-body); line-height: var(--lh-body);
+        background: var(--surface);
+        color: var(--on-surface);
+        font-family: var(--font-sans);
+        font-size: var(--text-body);
+        line-height: var(--lh-body);
         padding: var(--s-md) var(--s-lg) var(--s-md);
         min-height: 100vh;
       }
-      h1 { font-size: var(--text-h1); line-height: var(--lh-h1); font-weight: 700; letter-spacing: -0.01em }
-      .lead { font-size: var(--text-body-sm); line-height: var(--lh-body-sm); color: var(--on-surface-variant); margin-top: var(--s-xs) }
-      section { margin-top: var(--s-md); padding-top: var(--s-md); border-top: 1px solid var(--line) }
-      h2 { font-size: var(--text-label-md); letter-spacing: 0.05em; font-weight: 600; color: var(--on-surface-variant) }
-      .row { display: flex; gap: var(--s-sm); align-items: center; margin-top: var(--s-sm) }
-      .row.end { justify-content: flex-end; gap: var(--s-xs); margin-top: var(--s-sm) }
+      h1 {
+        font-size: var(--text-h1);
+        line-height: var(--lh-h1);
+        font-weight: 700;
+        letter-spacing: -0.01em;
+      }
+      .lead {
+        font-size: var(--text-body-sm);
+        line-height: var(--lh-body-sm);
+        color: var(--on-surface-variant);
+        margin-top: var(--s-xs);
+      }
+      section {
+        margin-top: var(--s-md);
+        padding-top: var(--s-md);
+        border-top: 1px solid var(--line);
+      }
+      h2 {
+        font-size: var(--text-label-md);
+        letter-spacing: 0.05em;
+        font-weight: 600;
+        color: var(--on-surface-variant);
+      }
+      .row {
+        display: flex;
+        gap: var(--s-sm);
+        align-items: center;
+        margin-top: var(--s-sm);
+      }
+      .row.end {
+        justify-content: flex-end;
+        gap: var(--s-xs);
+        margin-top: var(--s-sm);
+      }
 
       input {
-        flex: 1; height: 40px; padding: 0 12px;
-        font-family: ui-monospace, Menlo, monospace; font-size: var(--text-h3); letter-spacing: 0.14em;
-        background: var(--card); color: inherit;
-        border: 1px solid var(--line); border-radius: var(--r-md);
+        flex: 1;
+        height: 40px;
+        padding: 0 12px;
+        font-family: ui-monospace, Menlo, monospace;
+        font-size: var(--text-h3);
+        letter-spacing: 0.14em;
+        background: var(--card);
+        color: inherit;
+        border: 1px solid var(--line);
+        border-radius: var(--r-md);
       }
-      input:hover { border-color: var(--neutral) }
+      input:hover {
+        border-color: var(--neutral);
+      }
       /* AI が使うブラウザ（D-119.2）：選ぶのは 1 つ。選択肢は文で説明する */
-      .pick { list-style: none; padding: 0; margin: var(--s-sm) 0 0; display: grid; gap: var(--s-xs) }
-      .pick li { display: block; padding: 0; border-top: 0 }
-      .pick label { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; cursor: pointer;
-                    border: 1px solid var(--line); border-radius: var(--r-md); background: var(--card) }
-      .pick label:hover { border-color: var(--neutral) }
-      .pick label:has(input:checked) { border-color: var(--primary) }
-      .pick input { flex: none; width: 16px; height: 16px; margin: 3px 0 0; accent-color: var(--primary) }
-      .pick input:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px }
-      input:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; border-color: var(--primary) }
+      .pick {
+        list-style: none;
+        padding: 0;
+        margin: var(--s-sm) 0 0;
+        display: grid;
+        gap: var(--s-xs);
+      }
+      .pick li {
+        display: block;
+        padding: 0;
+        border-top: 0;
+      }
+      .pick label {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        padding: 10px 12px;
+        cursor: pointer;
+        border: 1px solid var(--line);
+        border-radius: var(--r-md);
+        background: var(--card);
+      }
+      .pick label:hover {
+        border-color: var(--neutral);
+      }
+      .pick label:has(input:checked) {
+        border-color: var(--primary);
+      }
+      .pick input {
+        flex: none;
+        width: 16px;
+        height: 16px;
+        margin: 3px 0 0;
+        accent-color: var(--primary);
+      }
+      .pick input:focus-visible {
+        outline: 2px solid var(--primary);
+        outline-offset: 2px;
+      }
+      input:focus-visible {
+        outline: 2px solid var(--primary);
+        outline-offset: 1px;
+        border-color: var(--primary);
+      }
 
       /* ボタンは 3 段。濃い面は 1 画面に 1 つだけ（1 画面 1 主アクション） */
       button {
-        display: inline-flex; align-items: center; gap: 6px;
-        height: 34px; padding: 0 12px; border: 1px solid transparent; border-radius: var(--r-md);
-        background: var(--primary); color: var(--on-primary);
-        font-family: inherit; font-size: var(--text-label-md); font-weight: 600; letter-spacing: 0.04em;
-        cursor: pointer; white-space: nowrap; transition: background var(--dur, 0.15s), border-color var(--dur, 0.15s);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        height: 34px;
+        padding: 0 12px;
+        border: 1px solid transparent;
+        border-radius: var(--r-md);
+        background: var(--primary);
+        color: var(--on-primary);
+        font-family: inherit;
+        font-size: var(--text-label-md);
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        cursor: pointer;
+        white-space: nowrap;
+        transition:
+          background var(--dur, 0.15s),
+          border-color var(--dur, 0.15s);
       }
-      button svg { flex: none; width: 14px; height: 14px }
-      button:hover { background: var(--primary-hover) }
-      button:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px }
-      button[disabled] { opacity: 0.55; cursor: not-allowed }
+      button svg {
+        flex: none;
+        width: 14px;
+        height: 14px;
+      }
+      button:hover {
+        background: var(--primary-hover);
+      }
+      button:focus-visible {
+        outline: 2px solid var(--primary);
+        outline-offset: 2px;
+      }
+      button[disabled] {
+        opacity: 0.55;
+        cursor: not-allowed;
+      }
       /* 控えめ：輪郭だけ */
-      button.q { background: var(--card); color: var(--on-surface); border-color: var(--line) }
-      button.q:hover { background: var(--surface-variant); border-color: var(--neutral) }
+      button.q {
+        background: var(--card);
+        color: var(--on-surface);
+        border-color: var(--line);
+      }
+      button.q:hover {
+        background: var(--surface-variant);
+        border-color: var(--neutral);
+      }
       /* 最も軽い：面も輪郭も無い */
-      button.t { background: transparent; color: var(--on-surface-variant); border-color: transparent; padding: 0 8px }
-      button.t:hover { background: var(--line-soft); color: var(--on-surface) }
+      button.t {
+        background: transparent;
+        color: var(--on-surface-variant);
+        border-color: transparent;
+        padding: 0 8px;
+      }
+      button.t:hover {
+        background: var(--line-soft);
+        color: var(--on-surface);
+      }
       /* 入力欄の横に並ぶものだけ入力欄と同じ高さ */
-      button.lg { height: 40px; padding: 0 18px; font-size: var(--text-body-sm); letter-spacing: 0 }
+      button.lg {
+        height: 40px;
+        padding: 0 18px;
+        font-size: var(--text-body-sm);
+        letter-spacing: 0;
+      }
 
-      .msg { margin-top: var(--s-sm); padding: 8px 10px; border-radius: var(--r-md); font-size: var(--text-body-sm) }
-      .msg.ok { background: var(--st-success-container); color: var(--st-on-success-container) }
-      .msg.ng { background: var(--st-warning-container); color: var(--st-on-warning-container) }
+      .msg {
+        margin-top: var(--s-sm);
+        padding: 8px 10px;
+        border-radius: var(--r-md);
+        font-size: var(--text-body-sm);
+      }
+      .msg.ok {
+        background: var(--st-success-container);
+        color: var(--st-on-success-container);
+      }
+      .msg.ng {
+        background: var(--st-warning-container);
+        color: var(--st-on-warning-container);
+      }
 
-      ul { list-style: none; margin-top: var(--s-sm) }
-      .steps { margin: var(--s-sm) 0 0 18px; font-size: var(--text-body-sm); color: var(--on-surface-variant) }
-      .steps li { display: list-item; border: 0; padding: 2px 0 }
-      .steps a { color: var(--primary); font-weight: 600 }
-      #login-box { margin-top: var(--s-sm); padding-top: var(--s-sm); border-top: 1px solid var(--line-soft) }
-      li { display: flex; gap: var(--s-sm); align-items: flex-start; padding: 7px 0; border-top: 1px solid var(--line-soft); font-size: var(--text-body-sm) }
-      li:first-child { border-top: 0 }
-      li svg { flex: none; width: 16px; height: 16px; margin-top: 2px }
-      li.ok svg { color: var(--st-success) }
-      li.ng svg { color: var(--st-warning) }
-      .d { display: block; color: var(--on-surface-variant); font-size: var(--text-label-md); letter-spacing: 0; margin-top: 2px }
-      footer { margin-top: var(--s-md); padding-top: var(--s-sm); border-top: 1px solid var(--line-soft);
-               font-size: var(--text-label-xs); letter-spacing: 0.06em; color: var(--on-surface-variant) }
+      ul {
+        list-style: none;
+        margin-top: var(--s-sm);
+      }
+      .steps {
+        margin: var(--s-sm) 0 0 18px;
+        font-size: var(--text-body-sm);
+        color: var(--on-surface-variant);
+      }
+      .steps li {
+        display: list-item;
+        border: 0;
+        padding: 2px 0;
+      }
+      .steps a {
+        color: var(--primary);
+        font-weight: 600;
+      }
+      #login-box {
+        margin-top: var(--s-sm);
+        padding-top: var(--s-sm);
+        border-top: 1px solid var(--line-soft);
+      }
+      li {
+        display: flex;
+        gap: var(--s-sm);
+        align-items: flex-start;
+        padding: 7px 0;
+        border-top: 1px solid var(--line-soft);
+        font-size: var(--text-body-sm);
+      }
+      li:first-child {
+        border-top: 0;
+      }
+      li svg {
+        flex: none;
+        width: 16px;
+        height: 16px;
+        margin-top: 2px;
+      }
+      li.ok svg {
+        color: var(--st-success);
+      }
+      li.ng svg {
+        color: var(--st-warning);
+      }
+      .d {
+        display: block;
+        color: var(--on-surface-variant);
+        font-size: var(--text-label-md);
+        letter-spacing: 0;
+        margin-top: 2px;
+      }
+      footer {
+        margin-top: var(--s-md);
+        padding-top: var(--s-sm);
+        border-top: 1px solid var(--line-soft);
+        font-size: var(--text-label-xs);
+        letter-spacing: 0.06em;
+        color: var(--on-surface-variant);
+      }
     </style>
   </head>
   <body>
     <header>
       <h1>Kaname Bridge</h1>
-      <p class="lead">このパソコンで、あなたのブラウザ・あなたのサブスクのまま Kaname の仕事を動かします。API は使いません。</p>
+      <p class="lead">
+        このパソコンで、あなたのブラウザ・あなたのサブスクのまま Kaname の仕事を動かします。API は使いません。
+      </p>
     </header>
 
     <main>
@@ -99,18 +283,53 @@
 
       <section aria-labelledby="h-check">
         <h2 id="h-check">自己診断</h2>
-        <ul id="checks"><li><span class="d">確かめています…</span></li></ul>
+        <ul id="checks">
+          <li><span class="d">確かめています…</span></li>
+        </ul>
         <div id="need" hidden>
           <div class="msg ng" id="need-why"></div>
           <div class="row">
-            <button id="install"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M5 21h14"/></svg> Claude Code を入れる</button>
-            <button class="t" id="login"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/></svg> ログインする</button>
+            <button id="install">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M12 3v12" />
+                <path d="m7 11 5 5 5-5" />
+                <path d="M5 21h14" />
+              </svg>
+              Claude Code を入れる
+            </button>
+            <button class="t" id="login">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                <path d="m10 17 5-5-5-5" />
+                <path d="M15 12H3" />
+              </svg>
+              ログインする
+            </button>
           </div>
           <span class="d" id="install-log" aria-live="polite"></span>
           <!-- ログインはここで終わらせる。ターミナルは開かない（D-091.3） -->
           <div id="login-box" hidden>
             <ol class="steps">
-              <li>ブラウザが開きます。開かないときは <a id="login-url" href="#" target="_blank" rel="noreferrer">この入口</a> を押してください</li>
+              <li>
+                ブラウザが開きます。開かないときは
+                <a id="login-url" href="#" target="_blank" rel="noreferrer">この入口</a> を押してください
+              </li>
               <li>承認すると画面にコードが出ます。それを下に貼って「決定」</li>
             </ol>
             <div class="row">
@@ -121,8 +340,39 @@
           </div>
         </div>
         <div class="row end">
-          <button class="t" id="recheck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg> もう一度確かめる</button>
-          <button class="q" id="open"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg> Kaname を開く</button>
+          <button class="t" id="recheck">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M3 12a9 9 0 0 1 15-6.7L21 8" />
+              <path d="M21 3v5h-5" />
+              <path d="M21 12a9 9 0 0 1-15 6.7L3 16" />
+              <path d="M3 21v-5h5" />
+            </svg>
+            もう一度確かめる
+          </button>
+          <button class="q" id="open">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M15 3h6v6" />
+              <path d="M10 14 21 3" />
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+            </svg>
+            Kaname を開く
+          </button>
         </div>
       </section>
 
@@ -130,9 +380,31 @@
         <h2 id="h-browser">AI が使うブラウザ</h2>
         <span class="d">Kaname の「自分の PC をつなぐ」画面でも同じ値を変えられます</span>
         <ul class="pick" id="browser">
-          <li><label><input type="radio" name="browser" value="chrome" /><span>自分の Chrome（Claude in Chrome）<span class="d">いつもの Chrome とそのログインの状態をそのまま使います。拡張機能「Claude in Chrome」が要ります</span></span></label></li>
-          <li><label><input type="radio" name="browser" value="dedicated" /><span>Bridge 専用のブラウザ<span class="d">いつもの Chrome とは別のログインの状態で動きます。Chrome を閉じていても使えます</span></span></label></li>
-          <li><label><input type="radio" name="browser" value="off" /><span>使わない<span class="d">AI はブラウザを開きません</span></span></label></li>
+          <li>
+            <label
+              ><input type="radio" name="browser" value="chrome" /><span
+                >自分の Chrome（Claude in Chrome）<span class="d"
+                  >いつもの Chrome とそのログインの状態をそのまま使います。拡張機能「Claude in Chrome」が要ります</span
+                ></span
+              ></label
+            >
+          </li>
+          <li>
+            <label
+              ><input type="radio" name="browser" value="dedicated" /><span
+                >Bridge 専用のブラウザ<span class="d"
+                  >いつもの Chrome とは別のログインの状態で動きます。Chrome を閉じていても使えます</span
+                ></span
+              ></label
+            >
+          </li>
+          <li>
+            <label
+              ><input type="radio" name="browser" value="off" /><span
+                >使わない<span class="d">AI はブラウザを開きません</span></span
+              ></label
+            >
+          </li>
         </ul>
         <span class="d" id="browser-msg" aria-live="polite"></span>
       </section>

@@ -216,6 +216,99 @@
     "test_post_me_ticket_drafts_terms_pending": "K60-API-043",
     "test_post_me_ticket_drafts_shape": "K60-API-038"
    }
+  },
+  "delegateTicket": {
+   "file": "apps/api/test/features/F5/delegate.test.ts",
+   "reason": "K-62 の人の口は、任せる関数（app.ticket_delegate）がチケットの段・走っている実行・押した人の PC（アカウント全体）を本物の DB で確かめ、仕事・実行の記録・段・やり取りを 1 つの処理で書く。生成の試験の土台（偽のセッション・表の種の入力）では確かめられない（K-62）",
+   "covers": {
+    "test_post_tickets_id_delegate_ok": "K62-API-001",
+    "test_post_tickets_id_delegate_rejected_401": "K62-API-025",
+    "test_post_tickets_id_delegate_rejected_403": "K62-API-024",
+    "test_post_tickets_id_delegate_not_found": "K62-API-026",
+    "test_post_tickets_id_delegate_conflict": "K62-API-020",
+    "test_post_tickets_id_delegate_rejected_422": "K62-API-030",
+    "test_post_tickets_id_delegate_rate_limited": "K62-API-034",
+    "test_post_tickets_id_delegate_shape": "K62-API-001"
+   }
+  },
+  "getActionRun": {
+   "file": "apps/api/test/features/F5/delegate.test.ts",
+   "reason": "K-62 の人の口は、任せる関数（app.ticket_delegate）がチケットの段・走っている実行・押した人の PC（アカウント全体）を本物の DB で確かめ、仕事・実行の記録・段・やり取りを 1 つの処理で書く。生成の試験の土台（偽のセッション・表の種の入力）では確かめられない（K-62）",
+   "covers": {
+    "test_get_action_runs_id_ok": "K62-API-027",
+    "test_get_action_runs_id_rejected_401": "K62-API-025",
+    "test_get_action_runs_id_not_found": "K62-API-026",
+    "test_get_action_runs_id_rejected_422": "K62-API-030",
+    "test_get_action_runs_id_rate_limited": "K62-API-034",
+    "test_get_action_runs_id_shape": "K62-API-027"
+   }
+  },
+  "listTicketRuns": {
+   "file": "apps/api/test/features/F5/delegate.test.ts",
+   "reason": "K-62 の人の口は、任せる関数（app.ticket_delegate）がチケットの段・走っている実行・押した人の PC（アカウント全体）を本物の DB で確かめ、仕事・実行の記録・段・やり取りを 1 つの処理で書く。生成の試験の土台（偽のセッション・表の種の入力）では確かめられない（K-62）",
+   "covers": {
+    "test_get_tickets_id_runs_ok": "K62-API-027",
+    "test_get_tickets_id_runs_rejected_401": "K62-API-025",
+    "test_get_tickets_id_runs_not_found": "K62-API-026",
+    "test_get_tickets_id_runs_rate_limited": "K62-API-034",
+    "test_get_tickets_id_runs_shape": "K62-API-027"
+   }
+  },
+  "takeBridgeJob": {
+   "file": "apps/api/test/features/F5/delegate-bridge.test.ts",
+   "reason": "K-62 の PC の口は、本物の PC の印（引き取りで返った kpc_…）と、その仕事を受け取った PC（taken_session_id）・道具の鍵・チケットの区画を本物の DB で確かめる。生成の試験の土台（偽のセッション・表の種の入力）では確かめられない（K-62）",
+   "covers": {
+    "test_post_bridge_jobs_take_ok": "K62-API-029",
+    "test_post_bridge_jobs_take_rejected_401": "K62-API-039",
+    "test_post_bridge_jobs_take_rate_limited": "K62-API-053",
+    "test_post_bridge_jobs_take_shape": "K62-API-029"
+   }
+  },
+  "reportJobProgress": {
+   "file": "apps/api/test/features/F5/delegate-bridge.test.ts",
+   "reason": "K-62 の PC の口は、本物の PC の印（引き取りで返った kpc_…）と、その仕事を受け取った PC（taken_session_id）・道具の鍵・チケットの区画を本物の DB で確かめる。生成の試験の土台（偽のセッション・表の種の入力）では確かめられない（K-62）",
+   "covers": {
+    "test_post_bridge_jobs_id_progress_ok": "K62-API-008",
+    "test_post_bridge_jobs_id_progress_rejected_401": "K62-API-018",
+    "test_post_bridge_jobs_id_progress_not_found": "K62-API-050",
+    "test_post_bridge_jobs_id_progress_rejected_422_2": "K62-API-032",
+    "test_post_bridge_jobs_id_progress_rate_limited": "K62-API-053",
+    "test_post_bridge_jobs_id_progress_shape": "K62-API-008"
+   }
+  },
+  "getJobControl": {
+   "file": "apps/api/test/features/F5/delegate-bridge.test.ts",
+   "reason": "K-62 の PC の口は、本物の PC の印（引き取りで返った kpc_…）と、その仕事を受け取った PC（taken_session_id）・道具の鍵・チケットの区画を本物の DB で確かめる。生成の試験の土台（偽のセッション・表の種の入力）では確かめられない（K-62）",
+   "covers": {
+    "test_get_bridge_jobs_id_control_ok": "K62-API-015",
+    "test_get_bridge_jobs_id_control_rejected_401": "K62-API-039",
+    "test_get_bridge_jobs_id_control_not_found": "K62-API-050",
+    "test_get_bridge_jobs_id_control_rate_limited": "K62-API-053",
+    "test_get_bridge_jobs_id_control_shape": "K62-API-015"
+   }
+  },
+  "callKanameTool": {
+   "file": "apps/api/test/features/F5/delegate-bridge.test.ts",
+   "reason": "K-62 の PC の口は、本物の PC の印（引き取りで返った kpc_…）と、その仕事を受け取った PC（taken_session_id）・道具の鍵・チケットの区画を本物の DB で確かめる。生成の試験の土台（偽のセッション・表の種の入力）では確かめられない（K-62）",
+   "covers": {
+    "test_post_bridge_jobs_id_tools_name_ok": "K62-API-009",
+    "test_post_bridge_jobs_id_tools_name_rejected_401": "K62-API-018",
+    "test_post_bridge_jobs_id_tools_name_rejected_403": "K62-API-036",
+    "test_post_bridge_jobs_id_tools_name_rejected_422_2": "K62-API-032",
+    "test_post_bridge_jobs_id_tools_name_shape": "K62-API-009"
+   }
+  },
+  "finishBridgeJob": {
+   "file": "apps/api/test/features/F5/delegate-bridge.test.ts",
+   "reason": "K-62 の PC の口は、本物の PC の印（引き取りで返った kpc_…）と、その仕事を受け取った PC（taken_session_id）・道具の鍵・チケットの区画を本物の DB で確かめる。生成の試験の土台（偽のセッション・表の種の入力）では確かめられない（K-62）",
+   "covers": {
+    "test_post_bridge_jobs_id_finish_ok": "K62-API-010",
+    "test_post_bridge_jobs_id_finish_rejected_401": "K62-API-039",
+    "test_post_bridge_jobs_id_finish_not_found": "K62-API-050",
+    "test_post_bridge_jobs_id_finish_rejected_422": "K62-API-035",
+    "test_post_bridge_jobs_id_finish_rejected_422_2": "K62-API-032",
+    "test_post_bridge_jobs_id_finish_shape": "K62-API-010"
+   }
   }
  }
 }

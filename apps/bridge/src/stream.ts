@@ -168,6 +168,7 @@ export function label(tool: string): string {
   if (tool === "TodoWrite") return "手順を立てています";
   // Kaname の道具（D-110）。たたき台に置いている・直している
   const KANAME: Record<string, string> = {
+    ticket_read: "チケットを読んでいます",
     draft_read: "たたき台を読んでいます",
     goal_set: "たたき台に目標を置いています",
     goal_remove: "目標を外しています",

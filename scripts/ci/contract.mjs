@@ -95,6 +95,7 @@ export function parseComponents(yaml) {
     if (sec === "props" && (m = /^        (\w+): \*(\w+)$/.exec(l))) { out[name].props[m[1]] = anchors[m[2]] ?? {}; prop = null; continue; }
     if (sec === "props" && prop && (m = /^          (type|format): (\S+)/.exec(l))) { out[name].props[prop][m[1]] = m[2]; continue; }
     if (sec === "props" && prop && /^          nullable: true/.test(l)) { out[name].props[prop].nullable = true; continue; }
+    if (sec === "props" && prop && (m = /^          maxLength: (\d+)/.exec(l))) { out[name].props[prop].maxLength = Number(m[1]); continue; } // 長い文（K-62・string:N）
     if (sec === "props" && prop && (m = /^            type: (\S+)/.exec(l))) { out[name].props[prop].items = m[1]; continue; }
   }
   return out;
@@ -116,7 +117,8 @@ function zodOf(p) {
   if (p.type === "string" && p.format === "uuid") return "z.uuid()";
   if (p.type === "string" && p.format === "date-time") return "z.iso.datetime({ offset: true })";
   if (p.type === "string" && p.format === "date") return "z.iso.date()";
-  if (p.type === "string") return "z.string().max(10000)";
+  // maxLength があればその長さまで（K-62：返事・結果のように 10000 字より長い文・作り手の型 string:N）
+  if (p.type === "string") return `z.string().max(${Number.isInteger(p.maxLength) ? p.maxLength : 10000})`;
   if (p.type === "integer") return "z.number().int()";
   if (p.type === "number") return "z.number()";
   if (p.type === "boolean") return "z.boolean()";
