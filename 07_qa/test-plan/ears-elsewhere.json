@@ -143,7 +143,9 @@
     "test_get_bridge_releases_name_file_rejected_422": "K57-API-023",
     "test_get_bridge_releases_name_file_upstream_failed": "K57-API-024",
     "test_get_bridge_releases_name_file_terms_pending": "K57-API-050",
-    "test_get_bridge_releases_name_file_shape": "K57-API-021"
+    "test_get_bridge_releases_name_file_shape": "K57-API-021",
+    "test_get_bridge_releases_name_file_rejected_403": "K57-API-055",
+    "test_get_bridge_releases_name_file_rate_limited": "K57-API-056"
    }
   }
  }

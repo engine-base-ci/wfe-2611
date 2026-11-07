@@ -14,15 +14,21 @@ describe("GET /api/v1/bridge/releases/:name/file", () => {
     // 本物の試験：apps/api/test/features/F3/connect-pc.test.ts の「K57-API-027」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F3/connect-pc.test.ts", "utf8")).toContain("K57-API-027");
   });
-  // 本物の試験はまだ無い（apps/api/test/features/F3/connect-pc.test.ts）：UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）
-  it.todo("test_get_bridge_releases_name_file_rejected_403");
+  it("test_get_bridge_releases_name_file_rejected_403", () => {
+    // UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）
+    // 本物の試験：apps/api/test/features/F3/connect-pc.test.ts の「K57-API-055」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F3/connect-pc.test.ts", "utf8")).toContain("K57-API-055");
+  });
   it("test_get_bridge_releases_name_file_rejected_422", () => {
     // UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
     // 本物の試験：apps/api/test/features/F3/connect-pc.test.ts の「K57-API-023」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F3/connect-pc.test.ts", "utf8")).toContain("K57-API-023");
   });
-  // 本物の試験はまだ無い（apps/api/test/features/F3/connect-pc.test.ts）：UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
-  it.todo("test_get_bridge_releases_name_file_rate_limited");
+  it("test_get_bridge_releases_name_file_rate_limited", () => {
+    // UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
+    // 本物の試験：apps/api/test/features/F3/connect-pc.test.ts の「K57-API-056」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F3/connect-pc.test.ts", "utf8")).toContain("K57-API-056");
+  });
   it("test_get_bridge_releases_name_file_upstream_failed", () => {
     // UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す
     // 本物の試験：apps/api/test/features/F3/connect-pc.test.ts の「K57-API-024」（同じ CI の G3 で流れる）

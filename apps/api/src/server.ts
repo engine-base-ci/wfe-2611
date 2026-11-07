@@ -10,7 +10,7 @@ import { createDeviceResolver, createSessionResolver } from "@kaname/auth/resolv
 import { mailTag } from "@kaname/auth/signup";
 import { withDevice } from "./middleware/tenant.js";
 import { bridgeHooks } from "./hooks/bridge.js";
-import { ObjectStore, s3Client, s3Driver, type StorageDriver } from "@kaname/storage";
+import { ObjectStore, s3Client, s3Driver, s3Presigner, type StorageDriver } from "@kaname/storage";
 import { createApp } from "./app.js";
 import { authExt } from "./auth/ext.js";
 import { InfisicalVault, MemoryVault, SecretsGateway, type Vault } from "@kaname/secrets";
@@ -98,10 +98,15 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
   const vault =
     o.vault ?? (config.infisical ? new InfisicalVault({ ...config.infisical, onNearLimit }) : new MemoryVault());
   const secrets = new SecretsGateway(repo, vault, Buffer.from(config.secretsMasterKey, "base64"));
-  const s3 = s3Driver(s3Client(config.storage), config.storage.bucket);
+  const s3c = s3Client(config.storage);
+  const s3 = s3Driver(s3c, config.storage.bucket);
   const bucketExists = o.bucketExists ?? s3.exists;
-  // 資料の置き場（関門 C4・D-104.11）。署名は資格情報の鍵とは別の用途の鍵から作る
-  const objects = new ObjectStore(repo, o.storageDriver ?? s3, { signingSecret: `${config.authSecret}:files` });
+  // 資料の置き場（関門 C4・D-104.11）。署名は資格情報の鍵とは別の用途の鍵から作る。
+  //   外の置き場（Bridge の配布物・BRIDGE_RELEASE_BASE）の期限つき URL は、置き場の仕組み（S3 の署名つき URL）で作る（D-128.160）
+  const objects = new ObjectStore(repo, o.storageDriver ?? s3, {
+    signingSecret: `${config.authSecret}:files`,
+    externalSigner: s3Presigner(s3c, config.storage.endpoint),
+  });
   // 会話が変わった知らせを受ける 1 本（D-113・台帳 X-008）。URL が無ければ持たない（画面は見に行く形のまま）
   // 外への口（関門 C1）。登録の漏れたパスワードの照合が通る（K-51）。宛先は照合のサービスだけ
   const outboundHooks = {

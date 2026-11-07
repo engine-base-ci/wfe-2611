@@ -32,6 +32,22 @@ export const OUTDATED_CHECK = {
 };
 /** 自己診断の行は 50 まで（大きすぎる知らせで行を膨らませない） */
 const HEALTH_MAX = 50;
+/** 自己診断の 1 行の文字の上限（名前・説明・直し方・エラーの ID） */
+const CHECK_TEXT_MAX = { name: 80, detail: 500, fix: 40, code: 20 } as const;
+/** 自己診断の 1 行は name・ok・detail・fix・code だけを、文字（ok は真偽）にして長さで切って残す。ほかの欄・入れ子・名前の無い行は捨てる */
+function cleanCheck(x: unknown): { name: string; ok: boolean; detail?: string; fix?: string; code?: string } | null {
+  if (!x || typeof x !== "object" || Array.isArray(x)) return null;
+  const o = x as Record<string, unknown>;
+  const text = (v: unknown, max: number) => (typeof v === "string" ? [...v].slice(0, max).join("") : undefined);
+  const name = text(o["name"], CHECK_TEXT_MAX.name);
+  if (!name || typeof o["ok"] !== "boolean") return null;
+  const out: { name: string; ok: boolean; detail?: string; fix?: string; code?: string } = { name, ok: o["ok"] };
+  for (const k of ["detail", "fix", "code"] as const) {
+    const v = text(o[k], CHECK_TEXT_MAX[k]);
+    if (v !== undefined) out[k] = v;
+  }
+  return out;
+}
 
 export interface ConnectPcDeps {
   appPool: pg.Pool;
@@ -53,16 +69,24 @@ const OS = new Set(["mac", "win"]);
 const ARCH = new Set(["arm64", "x64"]);
 
 export function connectPcHooks(d: ConnectPcDeps): Record<string, Hook> {
-  const fileUrl = (from: "dir" | "base", name: string) =>
-    from === "dir"
-      ? `/api/v1/bridge/releases/${encodeURIComponent(name)}/file`
-      : `${d.release.base.replace(/\/$/, "")}/${name}`;
-  /** 配布物を渡す。手元のフォルダならファイルをそのまま流す。外の置き場なら短い期限の署名 URL を 200 で返す（D-128.153。302 の転送はしない） */
+  /** 外の置き場のファイルの期限つき URL（関門 C4 が置き場の仕組みで作る・D-128.153・D-128.160）。
+   *  作れない（置き場の口が無い）は E-PAGE-007、渡せない名前は null（呼び手が 404 にする） */
+  const signed = async (ctx: TenantContext, name: string) => {
+    const s = await d.objects.signExternal(ctx, d.release.base, name);
+    if (s.status === "done") return { ok: true as const, url: s.value.url, expiresAt: s.value.expiresAt };
+    return { ok: false as const, reply: s.status === "failed" ? fromCatalog("E-PAGE-007") : null };
+  };
+  /** 新しい版の中身の受け取り先：手元のフォルダなら Kaname の口、外の置き場なら期限つき URL */
+  const fileUrl = async (ctx: TenantContext, from: "dir" | "base", name: string) => {
+    if (from === "dir") return { ok: true as const, url: `/api/v1/bridge/releases/${encodeURIComponent(name)}/file` };
+    return signed(ctx, name);
+  };
+  /** 配布物を渡す。手元のフォルダならファイルをそのまま流す。外の置き場なら短い期限の URL を 200 で返す（D-128.153。302 の転送はしない） */
   const give = async (ctx: TenantContext, from: "dir" | "base", name: string): Promise<HookReply | null> => {
     if (from === "base") {
-      const s = await d.objects.signExternal(ctx, d.release.base, name);
-      if (s.status !== "done") return null;
-      return { status: 200, body: { data: { url: s.value.url, expires_at: s.value.expiresAt.toISOString() } } };
+      const s = await signed(ctx, name);
+      if (!s.ok) return s.reply;
+      return { status: 200, body: { data: { url: s.url, expires_at: s.expiresAt.toISOString() } } };
     }
     const r = releaseFileResponse(d.release.dir, name);
     return r ? { status: 200, body: null, raw: r } : null;
@@ -111,7 +135,12 @@ export function connectPcHooks(d: ConnectPcDeps): Record<string, Hook> {
         if (!sid) return { status: 401, body: { error: "unauthenticated", code: "UNAUTHENTICATED" } };
         const outdated = !(Number(a.input["protocol"]) >= BRIDGE_PROTOCOL_MIN);
         const raw = a.input["health"];
-        const health = Array.isArray(raw) ? raw.filter((x) => x && typeof x === "object").slice(0, HEALTH_MAX) : [];
+        const health = Array.isArray(raw)
+          ? raw
+              .map(cleanCheck)
+              .filter((x) => x !== null)
+              .slice(0, HEALTH_MAX)
+          : [];
         const withVersion = outdated ? [...health, OUTDATED_CHECK] : health;
         const version = typeof a.input["version"] === "string" ? a.input["version"].slice(0, 40) : null;
         const ok = await d.appPool.query<{ ok: boolean }>("select app.bridge_beat($1, $2::jsonb, $3) as ok", [
@@ -139,6 +168,8 @@ export function connectPcHooks(d: ConnectPcDeps): Record<string, Hook> {
         const os = a.c.req.query("os") ?? "";
         const arch = a.c.req.query("arch") ?? "";
         const f = OS.has(os) && ARCH.has(arch) ? pickUpdate(s.m, os as "mac" | "win", arch as "arm64" | "x64") : null;
+        const link = f ? await fileUrl(a.ctx, s.from, f.name) : null;
+        if (link && !link.ok && link.reply) return link.reply;
         return {
           status: 200,
           body: {
@@ -146,7 +177,7 @@ export function connectPcHooks(d: ConnectPcDeps): Record<string, Hook> {
               released: true,
               version: s.m.version,
               released_at: s.m.released_at,
-              update: f ? { name: f.name, url: fileUrl(s.from, f.name), sha256: f.sha256, size: f.size } : null,
+              update: f && link?.ok ? { name: f.name, url: link.url, sha256: f.sha256, size: f.size } : null,
             },
           },
         };

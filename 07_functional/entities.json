@@ -6011,6 +6011,22 @@
     {
      "name": "revoke_reason_id",
      "note": null
+    },
+    {
+     "name": "device_token_hash",
+     "note": "PC の印の sha256・K-57"
+    },
+    {
+     "name": "alive_at",
+     "note": "最初の生きている知らせ・D-090"
+    },
+    {
+     "name": "bridge_version",
+     "note": null
+    },
+    {
+     "name": "machine_id",
+     "note": "この PC の印・D-128.174"
     }
    ],
    "relations": [
@@ -6070,7 +6086,7 @@
     }
    ],
    "legacy_drift_notes": null,
-   "note": "**★新設（D-076.1・G-14）。**端末の一覧。退会・停止・権限変更・パスワード変更で **全行を即 revoked** にし、API と Bridge はこの表を見て拒否する（発行済みトークンの有効期限に頼らない） / **`health`** / **`health_at`**（Bridge が返した自己診断。Bridge の中で完結させない ← D-090.7）。`last_seen_at` は生存の知らせで動き、75 秒来なければ画面は「切れています」← D-090.8 / **`browser`**（chrome／dedicated／off。この端末で AI が使うブラウザ。Kaname が正本で、PC の画面か Bridge の窓で変える ← D-120.1） / **`country`**（国。配布先の印 x-vercel-ip-country）・**`device`**（ブラウザの種類／OS）・**`last_ip`**（記録だけ）。国か端末が変わったら閉じる・同じ国の中の IP の変化は security_events に記録だけ。操作が無い 12 時間・最長 7 日は画面のセッションだけ（Bridge は時間では切らない）← D-128.120・D-128.121",
+   "note": "**★新設（D-076.1・G-14）。**端末の一覧。退会・停止・権限変更・パスワード変更で **全行を即 revoked** にし、API と Bridge はこの表を見て拒否する（発行済みトークンの有効期限に頼らない） / **`health`** / **`health_at`**（Bridge が返した自己診断。Bridge の中で完結させない ← D-090.7）。`last_seen_at` は生存の知らせで動き、75 秒来なければ画面は「切れています」← D-090.8 / **`browser`**（chrome／dedicated／off。この端末で AI が使うブラウザ。Kaname が正本で、PC の画面か Bridge の窓で変える ← D-120.1） / **`country`**（国。配布先の印 x-vercel-ip-country）・**`device`**（ブラウザの種類／OS）・**`last_ip`**（記録だけ）。国か端末が変わったら閉じる・同じ国の中の IP の変化は security_events に記録だけ。操作が無い 12 時間・最長 7 日は画面のセッションだけ（Bridge は時間では切らない）← D-128.120・D-128.121 / Bridge の行（K-57・0089）：**`device_token_hash`**（PC の印 kpc_… の sha256。印そのものは持たない・一意）・**`alive_at`**（最初の生きている知らせが届いた時刻。届くまで「つながっています」と言わない ← D-090）・**`bridge_version`**・**`machine_id`**（同じ人の同じ印でつなぎ直したときだけ前の行を切る。古い Bridge は空 ← D-128.174）",
    "status": "decided",
    "decided_at": "2026-11-07",
    "source": [
@@ -6078,11 +6094,13 @@
     "D-076",
     "D-076.1",
     "D-076.13",
+    "D-090",
     "D-090.7",
     "D-090.8",
     "D-120.1",
     "D-128.120",
-    "D-128.121"
+    "D-128.121",
+    "D-128.174"
    ]
   },
   {

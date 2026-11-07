@@ -211,6 +211,35 @@ row(R["K57-UI-008"], async (page) => {
   await expect(page.getByRole("link", { name: "戻る" })).toHaveCount(0);
 });
 
+row(R["K57-UI-021"], async (page) => {
+  await mockApi(page);
+  // ブラウザは道の中のタブ・改行を落として読む。落とすと「//外」になるもの・「/\\外」・「//外」は、どれも外の道として捨てる
+  for (const q of [
+    "/%09/evil.example/",
+    "/%0A/evil.example/",
+    "/%0D%0A/evil.example",
+    "/%5Cevil.example/",
+    "//evil.example/",
+    "/\t/evil.example",
+  ]) {
+    await open(page, `?from=${q.startsWith("/%") ? q : encodeURIComponent(q)}`);
+    await expect(heading(page), q).toBeVisible();
+    await expect(page.getByRole("link", { name: "戻る" }), q).toHaveCount(0);
+  }
+  // 中の道は問いと # まで含めて、そのまま戻る先になる
+  await open(page, `?from=${encodeURIComponent("/tickets?x=1#a")}`);
+  await expect(page.getByRole("link", { name: "戻る" })).toHaveAttribute("href", "/tickets?x=1#a");
+});
+
+row(R["K57-UI-022"], async (page) => {
+  await mockApi(page);
+  await open(page);
+  await expect(heading(page)).toBeVisible();
+  await page.getByRole("link", { name: "前の設定の画面" }).click();
+  await expect(page).toHaveURL(/\/setup\/bridge\/legacy$/);
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+});
+
 row(R["K57-UI-009"], async (page) => {
   await mockApi(page, { token: false });
   await page.goto("/setup/bridge");

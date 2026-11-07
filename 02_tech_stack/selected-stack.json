@@ -833,6 +833,10 @@
    "for": "ファイルの置き場（S3 互換）",
    "register": "stack.storage.access_method"
   },
+  "@aws-sdk/s3-request-presigner": {
+   "for": "外の置き場（Bridge の配布物）の期限つき URL を置き場の仕組み（S3 の署名つき URL・SigV4）で作る（関門 C4・D-128.160）",
+   "register": "stack.storage.access_method"
+  },
   "@better-auth/utils": {
    "for": "ログインの部品の中の道具",
    "register": "stack.auth.service"

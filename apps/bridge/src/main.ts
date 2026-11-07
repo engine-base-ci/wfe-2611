@@ -7,7 +7,7 @@ import { app, BrowserWindow, ipcMain, powerSaveBlocker, shell } from "electron";
 import { createAwake } from "./awake";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
+import { chmodSync, readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { startLocalServer } from "./local";
 import { BRIDGE_UA, claimCode, defaultDeviceLabel, loadMachineId } from "./pairing";
@@ -47,9 +47,11 @@ const readState = (): State => {
     return { connected: false, deviceLabel: defaultLabel() };
   }
 };
+/** bridge.json は PC の印（kpc_…）を持つので、持ち主だけが読み書きできる形（0600）で書く。前の版が作った広い権限のファイルも直す */
 const writeState = (s: State): void => {
-  mkdirSync(dirname(STATE_PATH), { recursive: true });
-  writeFileSync(STATE_PATH, JSON.stringify(s, null, 2), "utf8");
+  mkdirSync(dirname(STATE_PATH), { recursive: true, mode: 0o700 });
+  writeFileSync(STATE_PATH, JSON.stringify(s, null, 2), { encoding: "utf8", mode: 0o600 });
+  chmodSync(STATE_PATH, 0o600); // mode は新しく作るときだけ効く。今あるファイルも狭める
 };
 /** PC の名前の既定はこの PC のホスト名（D-128.174） */
 const defaultLabel = (): string => defaultDeviceLabel();
@@ -264,6 +266,12 @@ function keepRunning(): void {
 }
 
 void app.whenReady().then(() => {
+  // 前の版が広い権限で作った bridge.json（PC の印を持つ）を、起きたときに持ち主だけのものに狭める
+  try {
+    if (existsSync(STATE_PATH)) chmodSync(STATE_PATH, 0o600);
+  } catch {
+    // 狭められなくても動きは止めない（次に書くときにもう一度狭める）
+  }
   keepRunning();
   // この PC の中だけの口を開く。Kaname の画面はこれで「Bridge が入っている」を知る（D-089.8）
   startLocalServer({

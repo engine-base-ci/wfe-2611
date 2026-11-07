@@ -15,9 +15,23 @@ import { CATALOG } from "@kaname/errors/catalog";
 const CATALOG_IDS: Record<string, unknown> = CATALOG;
 
 const SELF = "/setup/bridge";
-/** 戻る先は中の道だけ（外の道は捨てる・TP-AUTH-08） */
-export const safeFrom = (v: string | null): string | null =>
-  v && v.startsWith("/") && !v.startsWith("//") && !v.startsWith("/\\") ? v : null;
+/** 前の画面（D-128.150・D-128.164）。K-89・K-90・K-91 が新しい画面へ移し終えたら消す */
+const LEGACY = "/setup/bridge/legacy";
+/** 戻る先は中の道だけ（外の道は捨てる・TP-AUTH-08）。ブラウザと同じ読み方（new URL(v, 今の origin)）で読み、
+ *  同じ origin のときだけ使う（タブ・改行を落とすと "//外" になる・"/\\外"・"//外" も外として捨てる）。返すのは道・問い・#だけ */
+export function safeFrom(
+  v: string | null,
+  origin: string = typeof window === "undefined" ? "" : window.location.origin,
+): string | null {
+  if (!v || !origin || !v.startsWith("/")) return null;
+  let u: URL;
+  try {
+    u = new URL(v, origin);
+  } catch {
+    return null;
+  }
+  return u.origin === origin ? `${u.pathname}${u.search}${u.hash}` : null;
+}
 
 type Code = { code: string; expiresAt: number };
 type Problem =
@@ -249,6 +263,18 @@ export function ConnectPc({ from }: { from: string | null }) {
           </ul>
         </section>
       ) : null}
+
+      {/* 前の画面への導線（D-128.164）：Claude Code を入れてログインする・AI が使うブラウザを選ぶ・端末を外すは、
+          それぞれのチケット（K-89・K-90・K-91）が新しい画面へ移すまで前の画面にある */}
+      <section className="k-section" aria-label="ほかの設定">
+        <p className="k-desc">
+          Claude Code を入れてログインする・AI が使うブラウザを選ぶ・PC を外すは、
+          <a className="k-link" href={LEGACY}>
+            前の設定の画面
+          </a>
+          で行えます。
+        </p>
+      </section>
     </main>
   );
 }

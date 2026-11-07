@@ -10,7 +10,9 @@ import { createServer } from "node:http";
 import type { AddressInfo } from "node:net";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { s3Client, s3Presigner } from "@kaname/storage";
 import { makeFixture, nextIp, type Fixture, type Person } from "../fixture.js";
+import { FAKE_S3, startFakeS3 } from "../../fake-s3.js";
 
 const ALPHABET = /^[23456789ABCDEFGHJKMNPQRSTUVWXYZ]{6}$/;
 const sha = (s: string) => createHash("sha256").update(s).digest("hex");
@@ -511,39 +513,72 @@ describe("K-57 配布物（受け取る・新しい版を見に来る）", () =>
     expect(r.status).toBe(401);
   });
 
-  it("K57-API-047 配布物（外の置き場 BRIDGE_RELEASE_BASE）× 受け取る：200 で短い期限の署名 URL（url・expires_at）を返す。302 にしない。目録に無い OS は署名を作らず 404（E-CONN-014・D-128.153）", async () => {
+  it("K57-API-047 配布物（外の置き場 BRIDGE_RELEASE_BASE）× 受け取る：200 で置き場の仕組みが作った短い期限の URL（url・expires_at）を返す。302 にしない。その URL で本当に取れ、期限切れ・書き換えた URL は置き場に断られる。目録に無い名前は URL を作らず 404（E-CONN-014・D-128.153・D-128.160）", async () => {
+    // 置き場は S3 互換（path-style：<endpoint>/<バケット>/<頭>）。試験の偽の S3（apps/api/test/fake-s3.ts）は、
+    //   SigV4 の期限つき URL を AWS の仕様どおりに計算し直して確かめる（署名した AWS SDK とは別の作り）
     const { dir, bytes } = RELEASE();
-    const manifest = readFileSync(join(dir, "kaname-bridge.json"), "utf8");
-    // 目録は置き場の頭の下（base/kaname-bridge.json）
-    const srv = createServer((q, s) => {
-      if (q.url === "/k57-store/kaname-bridge.json")
-        s.writeHead(200, { "content-type": "application/json" }).end(manifest);
-      else s.writeHead(404).end();
+    const manifest = readFileSync(join(dir, "kaname-bridge.json"));
+    const fake = await startFakeS3();
+    const endpoint = fake.endpoint;
+    const client = s3Client({
+      endpoint,
+      region: FAKE_S3.region,
+      bucket: "k57-bridge",
+      accessKeyId: FAKE_S3.accessKeyId,
+      secretAccessKey: FAKE_S3.secretAccessKey,
     });
-    await new Promise<void>((ok) => srv.listen(0, "127.0.0.1", () => ok()));
+    const NAME = "Kaname-Bridge-1.4.0-arm64.dmg";
+    const prefix = `k57-${randomUUID()}`;
+    fake.objects.set(`k57-bridge/${prefix}/kaname-bridge.json`, { body: manifest, public: true });
+    fake.objects.set(`k57-bridge/${prefix}/${NAME}`, { body: bytes });
+    f.signer.current = s3Presigner(client, endpoint);
     try {
-      const base = `http://127.0.0.1:${(srv.address() as AddressInfo).port}/k57-store`;
+      const base = `${endpoint}/k57-bridge/${prefix}`;
       set("", base);
       const p = await newPerson();
       const before = Date.now();
       const r = await f.req("GET", "/bridge/releases/mac/file", { headers: p.auth });
-      expect(r.status).toBe(200);
+      expect(r.status, await r.clone().text()).toBe(200);
       expect(r.headers.get("location")).toBeNull();
       const d = (await json(r)).data as { url: string; expires_at: string };
       const u = new URL(d.url);
-      expect(`${u.origin}${u.pathname}`).toBe(`${base}/Kaname-Bridge-1.4.0-arm64.dmg`);
-      expect(u.searchParams.get("exp")).toMatch(/^\d+$/);
-      expect(u.searchParams.get("sig")).toMatch(/^[A-Za-z0-9_-]{20,}$/);
+      expect(`${u.origin}${u.pathname}`).toBe(`${base}/${NAME}`);
+      // 署名は置き場の仕組み（SigV4）。Kaname の鍵の自前の署名（exp・sig）ではない（D-128.160）
+      expect(u.searchParams.get("X-Amz-Algorithm")).toBe("AWS4-HMAC-SHA256");
+      expect(u.searchParams.has("sig")).toBe(false);
       const left = new Date(d.expires_at).getTime() - before;
       expect(left).toBeGreaterThan(0);
       expect(left).toBeLessThanOrEqual(10 * 60_000); // 短い期限（10 分まで）
-      // 目録に載っていない名前は署名を作らず 404
+      expect(Number(u.searchParams.get("X-Amz-Expires")) * 1000).toBeLessThanOrEqual(10 * 60_000);
+      // その URL で本当に取れる（置き場が署名を確かめて中身を返す）
+      const got = await fetch(d.url);
+      expect(got.status).toBe(200);
+      expect(Buffer.from(await got.arrayBuffer()).equals(bytes)).toBe(true);
+      // 書き換えた URL は断られる：署名・別のファイル・期限を延ばす
+      const sigBad = new URL(d.url);
+      const sv = sigBad.searchParams.get("X-Amz-Signature")!;
+      sigBad.searchParams.set("X-Amz-Signature", `${sv[0] === "0" ? "1" : "0"}${sv.slice(1)}`);
+      expect((await fetch(sigBad)).status).toBe(403);
+      const other = new URL(d.url);
+      other.pathname = other.pathname.replace(NAME, "Kaname-Bridge-1.4.0-arm64-mac.zip");
+      expect((await fetch(other)).status).toBe(403);
+      const longer = new URL(d.url);
+      longer.searchParams.set("X-Amz-Expires", "604800");
+      expect((await fetch(longer)).status).toBe(403);
+      // 期限切れは断られる（偽の S3 の時計を期限の後へ進める。眠らない）
+      const exp = new Date(d.expires_at).getTime();
+      fake.setNow(() => exp + 1_000);
+      expect((await fetch(d.url)).status).toBe(403);
+      expect(fake.denied).toContain("期限切れ");
+      fake.setNow(() => exp - 1_000); // 期限の直前は取れる（G-12）
+      expect((await fetch(d.url)).status).toBe(200);
+      // 目録に載っていない名前は URL を作らず 404
       const miss = await f.req("GET", "/bridge/releases/Other-1.0.0.dmg/file", { headers: p.auth });
       expect(miss.status).toBe(404);
-      expect(bytes.length).toBeGreaterThan(0);
     } finally {
+      f.signer.current = null;
       set("", "");
-      await new Promise<void>((ok) => srv.close(() => ok()));
+      await fake.close();
     }
   });
 
@@ -566,6 +601,37 @@ describe("K-57 配布物（受け取る・新しい版を見に来る）", () =>
     } finally {
       set("", "");
       await new Promise<void>((ok) => srv.close(() => ok()));
+    }
+  });
+
+  it("K57-API-055 守り：配布物の受け取りを取引先の人・運営の人が呼ぶ：403 で、置き場の URL も中身も返さない（役が合わない）", async () => {
+    const { dir } = RELEASE();
+    set(dir);
+    try {
+      const p = await newPerson();
+      for (const role of ["client", "ops"] as const) {
+        const r = await f.req("GET", "/bridge/releases/mac/file", { headers: f.as(p, role) });
+        expect(r.status, role).toBe(403);
+        const text = await r.text();
+        expect(text, role).not.toContain("Kaname-Bridge");
+      }
+    } finally {
+      set("");
+    }
+  });
+
+  it("K57-API-056 守り：配布物の受け取りを 1 分に 121 回：429・待つ秒数（120 回までは受け取れる）", async () => {
+    const { dir } = RELEASE();
+    set(dir);
+    try {
+      const p = await newPerson();
+      for (let i = 0; i < 120; i++)
+        expect((await f.req("GET", "/bridge/releases/mac/file", { headers: p.auth })).status).toBe(200);
+      const r = await f.req("GET", "/bridge/releases/mac/file", { headers: p.auth });
+      expect(r.status).toBe(429);
+      expect((await json(r))["retry_after_sec"]).toBeGreaterThan(0);
+    } finally {
+      set("");
     }
   });
 });

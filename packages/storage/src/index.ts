@@ -20,6 +20,12 @@ export interface StoreOptions {
   maxBytes?: number; // 既定 50MB（E-LIM-002）
   signingSecret: string;
   defaultRetentionDays?: number | null;
+  /** 外の置き場の期限つき URL を、置き場の仕組み（S3 の署名つき URL）で作る口（D-128.160）。無ければ外の置き場の URL は出さない */
+  externalSigner?: ExternalSigner;
+}
+/** 外の置き場（S3 互換）のファイルの期限つき URL を、置き場自身の署名（SigV4）で作る。置き場の外の URL なら null（作らない） */
+export interface ExternalSigner {
+  presignGet(url: URL, ttlSeconds: number): Promise<string | null>;
 }
 export type Outcome<T> =
   | { status: "done"; value: T; auditId?: string | undefined }
@@ -143,7 +149,8 @@ export class ObjectStore {
       auditId: await this.audit(ctx, "sign", ref, { exp }),
     };
   }
-  /** 外の置き場（運営の配布物・BRIDGE_RELEASE_BASE）のファイルへの短い期限の署名 URL（D-128.153）。
+  /** 外の置き場（運営の配布物・BRIDGE_RELEASE_BASE）のファイルへの短い期限の URL（D-128.153）。
+   *  署名は Kaname の鍵ではなく置き場の仕組み（S3 の期限つき URL）で作る（D-128.160）。
    *  名前は目録に載ったものだけを呼び手が渡す（英数と . _ - だけ）。誰に出したかを証跡に残す */
   async signExternal(
     ctx: TenantContext,
@@ -153,13 +160,22 @@ export class ObjectStore {
   ): Promise<Outcome<{ url: string; expiresAt: Date }>> {
     if (!base || !EXTERNAL_NAME.test(name) || name.includes(".."))
       return { status: "denied", reason: "このファイルは渡せません", handoff: "運営に問い合わせる" };
-    const exp = Math.floor(Date.now() / 1000) + Math.min(Math.max(ttlSeconds, 10), 3600);
-    const key = `external:${base.replace(/\/$/, "")}/${name}`;
-    const url = `${base.replace(/\/$/, "")}/${encodeURIComponent(name)}?exp=${exp}&sig=${this.sign(key, exp)}`;
+    if (!this.o.externalSigner)
+      return { status: "failed", reason: "外の置き場の URL を作れません", handoff: "運営に問い合わせる" };
+    const ttl = Math.min(Math.max(Math.floor(ttlSeconds), 10), 3600);
+    let target: URL;
+    try {
+      target = new URL(`${base.replace(/\/$/, "")}/${encodeURIComponent(name)}`);
+    } catch {
+      return { status: "denied", reason: "このファイルは渡せません", handoff: "運営に問い合わせる" };
+    }
+    const at = Date.now();
+    const url = await this.o.externalSigner.presignGet(target, ttl);
+    if (!url) return { status: "denied", reason: "このファイルは渡せません", handoff: "運営に問い合わせる" };
     return {
       status: "done",
-      value: { url, expiresAt: new Date(exp * 1000) },
-      auditId: await this.audit(ctx, "sign_external", null, { name, exp }),
+      value: { url, expiresAt: new Date(at + ttl * 1000) },
+      auditId: await this.audit(ctx, "sign_external", null, { name, ttl }),
     };
   }
   private sign(ref: string, exp: number): string {
@@ -174,4 +190,4 @@ export class ObjectStore {
   }
 }
 
-export { s3Client, s3Driver, ensureBucket, type S3Settings, type S3Like } from "./s3.js";
+export { s3Client, s3Driver, s3Presigner, ensureBucket, type S3Settings, type S3Like } from "./s3.js";

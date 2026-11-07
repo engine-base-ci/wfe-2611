@@ -9,7 +9,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { ObjectStore } from "@kaname/storage";
+import { ObjectStore, type ExternalSigner } from "@kaname/storage";
 import { localDriver } from "@kaname/storage/local";
 import { migrate } from "@kaname/db/migrate";
 import { createPool } from "@kaname/db/pool";
@@ -45,6 +45,8 @@ export interface Fixture {
   limits: Record<string, number>;
   hooks: Record<string, Hook>;
   release: { dir: string; base: string };
+  /** 外の置き場の期限つき URL を作る口（D-128.160）。試験が偽の S3 の署名の口を差す。null なら URL を作らない（受け取りは 404） */
+  signer: { current: ExternalSigner | null };
   company: (name: string, prefix?: string) => Promise<{ tenantId: string; rootScope: string }>;
   person: (
     tenantId: string,
@@ -73,8 +75,10 @@ export async function makeFixture(extra: HookFactory[] = []): Promise<Fixture> {
   const repo = await createRepository(pool);
   const release = { dir: "", base: "" };
   // 外の置き場の署名 URL を出す関門 C4（D-128.153）。試験の鍵は試験だけのもの
+  const signer: { current: ExternalSigner | null } = { current: null };
   const objects = new ObjectStore(repo, localDriver(mkdtempSync(join(tmpdir(), "k57-obj-"))), {
     signingSecret: "k57-test-files",
+    externalSigner: { presignGet: async (u, ttl) => (signer.current ? signer.current.presignGet(u, ttl) : null) },
   });
   const limits: Record<string, number> = {};
   const hooks: Record<string, Hook> = {};
@@ -153,6 +157,7 @@ export async function makeFixture(extra: HookFactory[] = []): Promise<Fixture> {
     limits,
     hooks,
     release,
+    signer,
     company,
     person,
     alsoIn,

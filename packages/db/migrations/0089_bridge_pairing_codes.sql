@@ -24,11 +24,11 @@ create or replace function app.account_members(p_member uuid) returns setof uuid
 language sql stable security definer set search_path = public, app, pg_temp as $$
   with me as (
     select coalesce(m.auth_user_id, (select tm.auth_user_id from tenant_memberships tm where tm.member_id = m.id and tm.auth_user_id is not null limit 1)) as au
-    from members m where m.id = p_member
+    from members m where m.id = p_member and m.deleted_at is null
   )
   select p_member
   union
-  select m.id from members m, me where me.au is not null and m.auth_user_id = me.au
+  select m.id from members m, me where me.au is not null and m.auth_user_id = me.au and m.deleted_at is null
   union
   select tm.member_id from tenant_memberships tm, me where me.au is not null and tm.auth_user_id = me.au and tm.deleted_at is null
 $$;
@@ -188,5 +188,6 @@ grant execute on function app.bridge_state(uuid) to kaname_app;
 -- 前の形（平文のコード・sessions の id が鍵）は使わせない
 revoke execute on function app.bridge_pair_new(uuid, uuid) from kaname_app;
 revoke execute on function app.bridge_claim(text, text) from kaname_app;
+revoke execute on function app.bridge_dev_claim(uuid, text) from kaname_app;   -- 0025 の開発用の引き取り（平文のコード）も使うのをやめた
 
 insert into app.schema_migrations (name) values ('0089_bridge_pairing_codes.sql') on conflict do nothing;

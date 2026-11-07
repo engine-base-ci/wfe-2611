@@ -13,7 +13,7 @@
   "ui": 13,
   "packages": 13,
   "errors": 153,
-  "stack": 52,
+  "stack": 53,
   "env": 39
  },
  "api": [
@@ -7391,6 +7391,10 @@
    {
     "package": "@aws-sdk/client-s3",
     "for": "ファイルの置き場（S3 互換）"
+   },
+   {
+    "package": "@aws-sdk/s3-request-presigner",
+    "for": "外の置き場（Bridge の配布物）の期限つき URL を置き場の仕組み（S3 の署名つき URL・SigV4）で作る（関門 C4・D-128.160）"
    },
    {
     "package": "@better-auth/utils",
