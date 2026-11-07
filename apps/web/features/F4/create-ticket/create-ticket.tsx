@@ -4,7 +4,7 @@
 //   ブラウザ標準の検証は使わない（noValidate）：理由は欄の下に、正本の文言か入口の理由で出す（G-01・G-08）
 //   書きかけはサーバーとこの PC に残す（draft.ts）。ログインが切れても・戻っても・再読み込みしても続きから書ける
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
-import { Button, Callout, ErrorState, Select, TextArea, TextField } from "@/components/k";
+import { Button, Callout, ErrorState, Loading, Select, TextArea, TextField } from "@/components/k";
 import { PAGE_ERROR, errorText } from "@/components/k/error-of";
 import { call, type CallErr } from "@/lib/api/call";
 import { DraftStore, loadDraft, tabDraftId, type DraftBody, type SaveState } from "./draft";
@@ -77,23 +77,29 @@ export function CreateTicket({
   const [problem, setProblem] = useState<string | null>(null);
   const [wait, setWait] = useState<number | null>(null);
   const loaded = useRef(false);
+  /** 続きの下書きを読み終えたか。読み終えるまで欄を出さない（読み終えた中身で、先に書いた欄を上書きしない・K-60） */
+  const [ready, setReady] = useState(false);
   const kind = choices.kinds.find((k) => k.id === d.kind_id);
 
   // 続きから書く（サーバー → この PC の写し）。無ければ既定（種別はタスク・グループは書ける最初のグループ）
   useEffect(() => {
     let alive = true;
-    void loadDraft(owner).then((got) => {
-      if (!alive) return;
-      source.current = got?.sourceId ?? null;
-      const task = choices.kinds.find((k) => k.name === "タスク") ?? choices.kinds[0];
-      setD({
-        ...EMPTY,
-        kind_id: task?.id ?? null,
-        scope_id: choices.scopes[0]?.id ?? null,
-        ...(got?.body ?? {}),
+    // 読めなくても（網が切れた・口が落ちた）、空の作る面を開く（D-128.62：書けないままにしない）
+    void loadDraft(owner)
+      .catch(() => null)
+      .then((got) => {
+        if (!alive) return;
+        source.current = got?.sourceId ?? null;
+        const task = choices.kinds.find((k) => k.name === "タスク") ?? choices.kinds[0];
+        setD({
+          ...EMPTY,
+          kind_id: task?.id ?? null,
+          scope_id: choices.scopes[0]?.id ?? null,
+          ...(got?.body ?? {}),
+        });
+        loaded.current = true;
+        setReady(true);
       });
-      loaded.current = true;
-    });
     return () => {
       alive = false;
     };
@@ -200,7 +206,8 @@ export function CreateTicket({
       <p className="k-desc">
         書きかけは保存され、戻る・再読み込み・ログインが切れた後も、ほかの端末からも続きを書けます。
       </p>
-      <form noValidate onSubmit={(e) => void submit(e)}>
+      {!ready ? <Loading label="書きかけを読み込んでいます…" delayMs={0} /> : null}
+      <form noValidate onSubmit={(e) => void submit(e)} hidden={!ready}>
         <Select
           label="グループ"
           name="scope_id"

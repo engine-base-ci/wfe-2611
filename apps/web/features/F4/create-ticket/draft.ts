@@ -52,6 +52,8 @@ const write = (k: string, v: string | null, store: () => Storage): void => {
   }
 };
 const local = () => window.localStorage;
+/** 作る口の前に下書きを残すのを待つ上限（ミリ秒）。越えたら残せなかったと知らせて作る */
+const FLUSH_WAIT_MS = 5_000;
 const session = () => window.sessionStorage;
 
 /** 写しを読む。読めない JSON・形の違う中身は無いのと同じ（作る面は開く・K60-UI-035） */
@@ -83,8 +85,9 @@ export function tabDraftId(o: DraftOwner): string {
 export async function loadDraft(o: DraftOwner): Promise<{ body: DraftBody; sourceId: string | null } | null> {
   const id = tabDraftId(o);
   const copy = readCopy(o);
-  const r = await call("listMyTicketDrafts", { screenId: "tickets" });
-  const list = r.ok ? (r.data as unknown as { draft_id: string; body: DraftBody | null }[]) : [];
+  // 一覧の口が通信の失敗で落ちても（例外）、この PC の写し（本人の鍵）があれば、それを出して作る面を開く（D-128.62）
+  const r = await call("listMyTicketDrafts", { screenId: "tickets" }).catch(() => null);
+  const list = r?.ok ? (r.data as unknown as { draft_id: string; body: DraftBody | null }[]) : [];
   const mine = list.find((d) => d.draft_id === id);
   if (mine?.body) return { body: mine.body, sourceId: null };
   if (copy && copy.id === id) return { body: copy.body, sourceId: null };
@@ -119,7 +122,8 @@ export class DraftStore {
     this.timer = undefined;
     const id = tabDraftId(this.o);
     write(COPY_KEY(this.o), JSON.stringify({ id, body }), local);
-    return this.send(body);
+    // 作る口の前の保存は待ちすぎない（遅い・届かないときは「残せませんでした」と知らせて作る・D-128.62）
+    return this.send(body, FLUSH_WAIT_MS);
   }
 
   /** 作る口を呼んだ：この後の保存は送らない（作った後に届く保存は捨てる・H2）。作れなかったら reopen で戻す */
@@ -146,14 +150,26 @@ export class DraftStore {
     this.timer = undefined;
   }
 
-  private async send(body: DraftBody): Promise<SaveState> {
+  /** 残す。断られた（429・500）・届かない（網が切れた）・待ちすぎた は「残せなかった」にして、呼び手は先へ進む（作る口は止めない） */
+  private async send(body: DraftBody, timeoutMs?: number): Promise<SaveState> {
     if (this.sealed) return "saved";
     const mine = ++this.seq;
-    const r = await call("saveMyTicketDraft", {
-      body: { draft_id: tabDraftId(this.o), body: body as Record<string, unknown> },
-      screenId: "tickets",
-    });
-    const state: SaveState = r.ok ? "saved" : r.kind === "unauthenticated" ? "expired" : "failed";
+    let state: SaveState;
+    // 待ちすぎたら打ち切る。打ち切りは setTimeout で数える（画面の時計で進められる・AbortSignal.timeout は使わない）
+    const ac = timeoutMs ? new AbortController() : null;
+    const stop = ac ? setTimeout(() => ac.abort(), timeoutMs) : undefined;
+    try {
+      const r = await call("saveMyTicketDraft", {
+        body: { draft_id: tabDraftId(this.o), body: body as Record<string, unknown> },
+        screenId: "tickets",
+        ...(ac ? { signal: ac.signal } : {}),
+      });
+      state = r.ok ? "saved" : r.kind === "unauthenticated" ? "expired" : "failed";
+    } catch {
+      state = "failed";
+    } finally {
+      if (stop) clearTimeout(stop);
+    }
     if (mine === this.seq && !this.sealed) this.onState(state);
     return state;
   }

@@ -703,6 +703,93 @@ row(R["K60-UI-038"], async (page) => {
   await expect(titleBox(next)).toHaveValue("");
 });
 
+row(R["K60-UI-039"], async (page) => {
+  // 下書きを残す口が 429・500・通信の失敗（fetch が例外）・答えない、のどれでも「作る」でチケットはできる（下書きは作るのを止めない・D-128.62）。
+  //   作る口の答えを止めている間に「残せなかった」と知らせ、開けたら詳細へ移る（作る口は 1 回）
+  for (const how of ["429", "500", "network", "hang"] as const) {
+    const ctx = await page.context().browser()!.newContext();
+    try {
+      const tab = await ctx.newPage();
+      const m = await mockApi(tab);
+      if (how === "429")
+        m.on.saveDraft = () => ({
+          status: 429,
+          body: { error: "rate_limited", code: "RATE_LIMITED", retry_after_sec: 60 },
+        });
+      if (how === "500") m.on.saveDraft = () => ({ status: 500, body: { error: "internal", code: null } });
+      if (how === "network")
+        await tab.route(/\/api\/v1\/me\/ticket-drafts$/, (route) =>
+          route.request().method() === "POST" ? route.abort("failed") : route.fallback(),
+        );
+      if (how === "hang") {
+        // 答えない。作る前の保存を待つのは 5 秒まで（時計を進めて確かめる・実際の時間では待たない）
+        await tab.clock.install();
+        await tab.route(/\/api\/v1\/me\/ticket-drafts$/, (route) =>
+          route.request().method() === "POST" ? new Promise<void>(() => undefined) : route.fallback(),
+        );
+      }
+      await open(tab);
+      await loaded(tab);
+      await fillAll(tab);
+      m.hold = gate();
+      await create(tab).click();
+      if (how === "hang") await tab.clock.runFor(5_000);
+      await expect.poll(() => m.creates.length, how).toBe(1);
+      await expect(tab.getByText(/下書きをサーバーに残せませんでした/).first(), how).toBeVisible();
+      m.hold.open();
+      await expect(tab, how).toHaveURL(new RegExp(`/tickets/${ID}$`));
+      expect(m.creates, how).toHaveLength(1);
+    } finally {
+      await ctx.close();
+    }
+  }
+});
+
+row(R["K60-UI-040"], async (page) => {
+  // 続きの下書きの一覧の答えを止める（手で開ける・時間で待たない）
+  const m = await mockApi(page);
+  const slow = gate();
+  await page.route(/\/api\/v1\/me\/ticket-drafts$/, async (route) => {
+    if (route.request().method() === "GET") await slow.wait;
+    await route.fallback();
+  });
+  await open(page);
+  await expect(page.getByText("書きかけを読み込んでいます…")).toBeVisible();
+  await expect(titleBox(page), "読み終えるまで欄を出さない").toHaveCount(0);
+  slow.open();
+  await loaded(page);
+  await fillAll(page, { title: "読み終えた後に書いた題名" });
+  await expect(titleBox(page)).toHaveValue("読み終えた後に書いた題名");
+  await create(page).click();
+  await expect(page).toHaveURL(new RegExp(`/tickets/${ID}$`));
+  expect(m.creates[0]).toMatchObject({
+    title: "読み終えた後に書いた題名",
+    assignee_member_id: MATE,
+    due_on: jst(3),
+  });
+});
+
+row(R["K60-UI-041"], async (page) => {
+  // 下書きの一覧の口が通信の失敗で落ちても、この PC の写し（本人の鍵）があれば、それを出して作る面が開く（D-128.62）
+  const m = await mockApi(page);
+  await open(page);
+  await loaded(page);
+  await titleBox(page).fill("写しにある題名");
+  await page.getByRole("textbox", { name: "目的", exact: true }).fill("写しにある本文");
+  await expect
+    .poll(async () => (await draftCopies(page)).some((c) => c.store === "local" && c.value.includes("写しにある本文")))
+    .toBe(true);
+  m.drafts.clear(); // サーバーの分では出せないようにする
+  await page.route(/\/api\/v1\/me\/ticket-drafts$/, (route) =>
+    route.request().method() === "GET" ? route.abort("failed") : route.fallback(),
+  );
+  await page.reload();
+  await expect(form(page)).toBeVisible();
+  await loaded(page);
+  await expect(titleBox(page)).toHaveValue("写しにある題名");
+  await expect(page.getByRole("textbox", { name: "目的", exact: true })).toHaveValue("写しにある本文");
+});
+
 row(R["K60-UI-021"], async (page) => {
   const m = await mockApi(page);
   m.on.create = () => ({
