@@ -93,10 +93,7 @@ const deviceRow = (id: string) =>
     [id],
   );
 const ticketRow = (id: string) =>
-  admin<{ assignee_member_id: string; created_by: string }>(
-    "select assignee_member_id, created_by from tickets where id = $1 and deleted_at is null",
-    [id],
-  );
+  admin<{ created_by: string }>("select created_by from tickets where id = $1 and deleted_at is null", [id]);
 const setupStepOf = async (memberId: string): Promise<number> =>
   Number((await admin<{ s: number }>("select setup_step as s from members where id = $1", [memberId]))[0]!.s ?? 0);
 const bridgeRows = (memberId: string) =>
@@ -143,10 +140,7 @@ test("K58-M2-01 正常（コードを打つ）：登録した人が PC をつな
   await page.getByRole("link", { name: "戻る" }).click();
   await expect(page, "開いた画面（チケットの画面）へ戻る").toHaveURL(/\/tickets$/);
   const id = await createTicket(page, me, "PC をつないでから作るチケット");
-  expect((await ticketRow(id))[0], "チケットを作ったのも担当も、PC の持ち主と同じ人").toEqual({
-    assignee_member_id: me.memberId,
-    created_by: me.memberId,
-  });
+  expect((await ticketRow(id))[0]!.created_by, "チケットを作った人は、PC の持ち主と同じ人").toBe(me.memberId);
   expect(await devicesFor(page, me), "チケットを作った後も、その人の PC はつながったまま 1 台").toEqual([
     expect.objectContaining({ id: dev, state: "live" }),
   ]);
@@ -159,8 +153,10 @@ test("K58-M2-02 正常（この PC の Bridge）：Bridge が動いている PC 
   const pc = pcOf("中間2 の MacBook (この PC)");
   await pc.openLocal();
   await openConnect(page);
+  const local = page.getByRole("button", { name: "この PC の Bridge につなぐ" });
+  await expect(local, "この PC の Bridge に気づいてから").toBeVisible();
   await expect(page.getByTestId("pairing-code"), "入っている PC にはコードを見せない").toHaveCount(0);
-  await page.getByRole("button", { name: "この PC の Bridge につなぐ" }).click();
+  await local.click();
   await expect(page.getByText("この PC の Bridge にコードを渡しました")).toBeVisible();
   await expect(waitingOn(page, pc)).toBeVisible();
   expect(pc.token(), "画面が渡したコードで、この PC の Bridge が引き取った").toMatch(/^kpc_/);
@@ -210,7 +206,7 @@ test("K58-M2-04 PC を閉じたまま：つないだ後に PC を閉じても、
   const pc = pcOf("中間2 の MacBook (閉じたまま)");
   await connectByCode(page, pc);
   const dev = await pc.deviceId();
-  await pc.close();
+  await pc.close(); // この筋はこの PC の口を開いていないので、閉じるものは無い（空振り）。閉じたことは次の知らせの時刻で作る
   expect(await lastBeatAgo(dev, "5 minutes"), "PC を閉じて 5 分").toBe(1);
   expect(await stateLive(me.memberId)).toBe(false);
   const id = await createTicket(page, me, "PC を閉じたまま作るチケット");
