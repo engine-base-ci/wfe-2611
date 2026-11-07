@@ -19,3 +19,26 @@ export async function elapseSignup(email: string, by: string): Promise<number> {
   );
   return r.length;
 }
+
+/** その人（アカウント）の接続コード（bridge_pairing_codes・K-57）の時刻を `by` だけ進める（＝出してから `by` たった）。動かした行の数を返す（K-58）。
+ *  コードは 10 分で切れる（expires_at）。作った・期限の前後をそのまま残して一緒にずらす */
+export async function elapsePairingCodes(memberId: string, by: string): Promise<number> {
+  const r = await admin<{ id: string }>(
+    `update bridge_pairing_codes
+        set expires_at = expires_at - $2::interval,
+            created_at = created_at - $2::interval
+      where member_id = $1 and used_at is null and deleted_at is null returning id`,
+    [memberId, by],
+  );
+  return r.length;
+}
+
+/** PC の最後の生きている知らせ（sessions.last_seen_at・K-57）を「いまから `ago` 前」にする（＝PC を閉じて `ago` たった）。動かした行の数を返す（K-58）。
+ *  PC の生死は最後の知らせから 75 秒で決まる（app.bridge_devices・app.bridge_state）。最初の知らせの時刻（alive_at）は動かさない */
+export async function lastBeatAgo(deviceId: string, ago: string): Promise<number> {
+  const r = await admin<{ id: string }>(
+    "update sessions set last_seen_at = now() - $2::interval where id = $1 and kind_id = 'bridge' returning id",
+    [deviceId, ago],
+  );
+  return r.length;
+}
