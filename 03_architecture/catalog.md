@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 365（作った 22・後のフェーズの行為だけ 20）・前の道すじ 33・表 143・画面の部品 13・共通の処理 13・エラー 157・部品 53・設定 39
+API 365（作った 22・後のフェーズの行為だけ 20）・前の道すじ 33・表 144・画面の部品 13・共通の処理 13・エラー 157・部品 53・設定 39
 
 ## 共通の処理
 
@@ -119,6 +119,7 @@ API 365（作った 22・後のフェーズの行為だけ 20）・前の道す�
 | `test_specs` | skeleton | F4 |  |  |
 | `ticket_decisions` | skeleton | F6 |  |  |
 | `ticket_drafts` | internal |  |  |  |
+| `ticket_drafts_used` | internal |  |  |  |
 | `ticket_handovers` | skeleton | F8 |  |  |
 | `ticket_imports` | skeleton | F4 |  |  |
 | `ticket_kinds` | skeleton | F9 | F4 | ○ |

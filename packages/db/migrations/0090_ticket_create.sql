@@ -18,6 +18,16 @@ create table if not exists app.ticket_drafts (
 -- アプリの役は表に直に触れない（下の関数だけ）
 revoke all on app.ticket_drafts from kaname_app;
 
+-- 作るときに使った下書きの id（このタブの draft_id と、続きとして出した元の source_draft_id）。作った後に届いた保存は残さない（黙って捨てる・K-60）
+create table if not exists app.ticket_drafts_used (
+  tenant_id uuid not null references tenants(id),
+  member_id uuid not null references members(id),
+  draft_id uuid not null,
+  used_at timestamptz not null default now(),
+  primary key (tenant_id, member_id, draft_id)
+);
+revoke all on app.ticket_drafts_used from kaname_app;
+
 -- 同じワークスペースの、抜けていない・止められていない人か
 create or replace function app.ticket_member_ok(p_tenant uuid, p_member uuid) returns boolean
 language sql stable security definer set search_path = public, app, pg_temp as $$
@@ -29,7 +39,7 @@ language sql stable security definer set search_path = public, app, pg_temp as $
   )
 $$;
 revoke all on function app.ticket_member_ok(uuid, uuid) from public;
-grant execute on function app.ticket_member_ok(uuid, uuid) to kaname_app;
+-- 呼ぶのは security definer の app.ticket_create の中だけ。アプリの役には渡さない（D-128.171）
 
 -- 作る。答えは { ok, id, number } か { ok:false, status, code, field, detail }（確かめで止めたとき。何も書いていない）
 create or replace function app.ticket_create(p jsonb) returns jsonb
@@ -113,10 +123,14 @@ begin
                 'ticket_created:' || v_id || ':' || nm, v_me);
     end if;
   end loop;
-  -- 下書きを使って作ったなら、その下書きを片付ける
-  if nullif(p->>'draft_id', '') is not null then
-    delete from app.ticket_drafts where tenant_id = v_tenant and member_id = v_me and draft_id = (p->>'draft_id')::uuid;
-  end if;
+  -- 下書きを使って作ったなら、その下書きと、続きとして出した元の下書きを片付け（本人の分だけ）、使った id として覚える
+  --   （作る前に送った保存が、作った後に届いても残さない。覚えた id は 30 日で片付ける）
+  for nm in select (x)::uuid from unnest(array[nullif(p->>'draft_id', ''), nullif(p->>'source_draft_id', '')]) as x where x is not null loop
+    delete from app.ticket_drafts where tenant_id = v_tenant and member_id = v_me and draft_id = nm;
+    insert into app.ticket_drafts_used (tenant_id, member_id, draft_id) values (v_tenant, v_me, nm)
+      on conflict (tenant_id, member_id, draft_id) do update set used_at = now();
+  end loop;
+  delete from app.ticket_drafts_used where tenant_id = v_tenant and member_id = v_me and used_at < now() - interval '30 days';
   return jsonb_build_object('ok', true, 'id', v_id, 'number', v_number);
 end $$;
 revoke all on function app.ticket_create(jsonb) from public;
@@ -130,6 +144,10 @@ begin
   if v_tenant is null or v_me is null or not app.member_ok() then raise exception '本人の文脈が無い' using errcode = '42501'; end if;
   if p_discard then
     delete from app.ticket_drafts where tenant_id = v_tenant and member_id = v_me and draft_id = p_draft;
+    return jsonb_build_object('draft_id', p_draft, 'body', null, 'saved_at', null);
+  end if;
+  -- 作るときに使った下書きの id への保存は残さない（作った後に届いた保存・K-60）。捨てたのと同じ答えを返す
+  if exists (select 1 from app.ticket_drafts_used u where u.tenant_id = v_tenant and u.member_id = v_me and u.draft_id = p_draft) then
     return jsonb_build_object('draft_id', p_draft, 'body', null, 'saved_at', null);
   end if;
   insert into app.ticket_drafts (tenant_id, member_id, draft_id, body, saved_at)

@@ -6,6 +6,7 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { randomUUID } from "node:crypto";
 import { ticketHooks } from "../../../src/hooks/tickets.js";
+import { checkCreate, todayJst } from "../../../src/features/F4/create-ticket/input.js";
 import { makeFixture, type Fixture, type Person } from "../fixture.js";
 
 let f: Fixture;
@@ -210,19 +211,23 @@ describe("K-60 チケットを作る：状態 × 入口 × 利用者の状態（
     const r = await create(writer, body({ parent_ticket_id: theirs["id"] }));
     expect(r.status).toBe(404);
     expect(await r.text()).not.toContain("秘密");
+    // 同じ会社でも、他の人（mate）が取り込んでいる途中の下書きのチケットは、取り込んだ本人にしか見えない（D-128.119）
     const imp = (
-      await f.admin
-        .query<{ id: string }>("insert into ticket_imports (tenant_id, created_by) values ($1, $2) returning id", [
-          T.tenantId,
-          mate.id,
-        ])
-        .catch(() => ({ rows: [] as { id: string }[] }))
-    ).rows[0];
-    if (imp) {
-      const d = await createOk(mate);
-      await f.admin.query("update tickets set draft_import_id = $2 where id = $1", [d["id"], imp.id]);
-      expect((await create(writer, body({ parent_ticket_id: d["id"] }))).status).toBe(404);
-    }
+      await f.admin.query<{ id: string }>(
+        "insert into ticket_imports (tenant_id, uploaded_by, scope_id, source, created_by) values ($1, $2, $3, 'generic', $2) returning id",
+        [T.tenantId, mate.id, T.rootScope],
+      )
+    ).rows[0]!;
+    const d = await createOk(mate, body({ title: "取り込み中の秘密の題名" }));
+    await f.admin.query("update tickets set draft_import_id = $2 where id = $1", [d["id"], imp.id]);
+    const before = await ticketsIn(T.tenantId);
+    const r2 = await create(writer, body({ parent_ticket_id: d["id"] }));
+    expect(r2.status).toBe(404);
+    expect((await json(r2))["code"]).toBe("E-PAGE-001");
+    expect(
+      JSON.stringify(await f.req("GET", `/tickets/${d["id"]}`, { headers: writer.auth }).then((x) => x.json())),
+    ).not.toContain("秘密");
+    expect(await ticketsIn(T.tenantId), "子は増えない").toBe(before);
   });
 
   it("K60-API-013 種別（消した・書いている間に消された）× 「作る」：422（E-VAL-014）・種別を選び直す", async () => {
@@ -338,11 +343,22 @@ describe("K-60 入力・失敗・操作の揺れ・守り", () => {
   });
 
   it("K60-API-023 入力：期限が今日より前：422（E-VAL-012・D-128.138）。今日は作れる。開始は過去も入れられる", async () => {
-    const r = await create(writer, body({ due_on: jst(-1) }));
+    // 今日の日付は試験の外から渡す（日本時間の 0 時をまたいでも落ちない）。境目そのものは checkCreate と todayJst で見る
+    const today = "2026-11-07";
+    const base = { ...body(), due_on: today };
+    const yesterday = checkCreate({ ...base, due_on: "2026-11-06" }, today);
+    expect(yesterday.ok).toBe(false);
+    expect(yesterday.ok ? [] : yesterday.details.map((x) => x.code)).toContain("E-VAL-012");
+    expect(checkCreate(base, today).ok, "今日は作れる").toBe(true);
+    expect(checkCreate({ ...base, start_on: "2026-10-01" }, today).ok, "開始は過去も入れられる").toBe(true);
+    // 日本時間の 0 時の境目（UTC 15:00）
+    expect(todayJst(new Date("2026-11-06T14:59:59.999Z"))).toBe("2026-11-06");
+    expect(todayJst(new Date("2026-11-06T15:00:00.000Z"))).toBe("2026-11-07");
+    // 口でも止まる。0 時をまたいでも結果が変わらない幅（2 日前・2 日後）で見る
+    const r = await create(writer, body({ due_on: jst(-2) }));
     expect(r.status).toBe(422);
     expect((await json(r))["code"]).toBe("E-VAL-012");
-    await createOk(writer, body({ due_on: jst(0) }));
-    await createOk(writer, body({ start_on: jst(-30), due_on: jst(1) }));
+    await createOk(writer, body({ start_on: jst(-30), due_on: jst(2) }));
   });
 
   it("K60-API-024 入力：優先度「高」で理由が空：422（D-125.33）", async () => {
@@ -575,6 +591,110 @@ describe("K-60 書きかけの下書き（サーバーに残す・D-128.138）",
     });
     expect(r.status).toBe(403);
     expect((await f.req("GET", "/me/ticket-drafts")).status).toBe(401);
+  });
+
+  it("K60-API-044 新しいタブで別のタブの下書きを続きとして出して作る：その元の下書き（source_draft_id）も同じ処理で消える。他の人の同じ id の下書きは消さない", async () => {
+    const tab = randomUUID();
+    const source = randomUUID();
+    for (const [id, title] of [
+      [tab, "このタブ"],
+      [source, "前のタブ"],
+    ] as const)
+      expect(
+        (await f.req("POST", "/me/ticket-drafts", { body: { draft_id: id, body: { title } }, headers: writer.auth }))
+          .status,
+      ).toBe(201);
+    // 別の人が同じ id の下書きを持っていても、消すのは作った本人の分だけ
+    await f.req("POST", "/me/ticket-drafts", {
+      body: { draft_id: source, body: { title: "別の人" } },
+      headers: mate.auth,
+    });
+    await createOk(writer, body({ draft_id: tab, source_draft_id: source }));
+    const mine = (await json(await f.req("GET", "/me/ticket-drafts", { headers: writer.auth }))).data as unknown as {
+      draft_id: string;
+    }[];
+    expect(mine.map((d) => d.draft_id)).not.toContain(tab);
+    expect(mine.map((d) => d.draft_id)).not.toContain(source);
+    const theirs = (await json(await f.req("GET", "/me/ticket-drafts", { headers: mate.auth }))).data as unknown as {
+      draft_id: string;
+    }[];
+    expect(theirs.map((d) => d.draft_id)).toContain(source);
+    // 形の違う id は 422（作らない）
+    const before = await ticketsIn(T.tenantId);
+    const bad = await create(writer, body({ source_draft_id: "前のタブ" }));
+    expect(bad.status).toBe(422);
+    expect(fields(await json(bad))).toContain("source_draft_id");
+    expect(await ticketsIn(T.tenantId)).toBe(before);
+  });
+
+  it("K60-API-045 日本語で大きな下書き（文字数は 100,000 より少ないが、UTF-8 のバイト数が DB の上限 200,000 を越える）：500 でなく 422。残らない", async () => {
+    const id = randomUUID();
+    // くり返しの無い日本語（漢字を決まった順に散らす・縮めても小さくならない）80,000 文字。UTF-8 で 240,000 バイト
+    let x = 12345;
+    const text = Array.from({ length: 80_000 }, () => {
+      x = (x * 1103515245 + 12345) % 2147483648;
+      return String.fromCodePoint(0x4e00 + (x % 0x5000));
+    }).join("");
+    const big = { title: "大きな下書き", sections: { purpose: text } };
+    expect(JSON.stringify(big).length).toBeLessThan(100_000);
+    expect(Buffer.byteLength(JSON.stringify(big), "utf8")).toBeGreaterThan(200_000);
+    const spy = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    let r: Response;
+    try {
+      r = await f.req("POST", "/me/ticket-drafts", { body: { draft_id: id, body: big }, headers: writer.auth });
+    } finally {
+      spy.mockRestore();
+    }
+    expect(r.status, await r.clone().text()).toBe(422);
+    expect(fields(await json(r))).toContain("body");
+    const list = (await json(await f.req("GET", "/me/ticket-drafts", { headers: writer.auth }))).data as unknown as {
+      draft_id: string;
+    }[];
+    expect(list.map((d) => d.draft_id)).not.toContain(id);
+    // 英数字なら同じくらいの文字数でも残せる（止めるのはバイト数）
+    const ok = await f.req("POST", "/me/ticket-drafts", {
+      body: { draft_id: randomUUID(), body: { title: "a", sections: { purpose: "a".repeat(80_000) } } },
+      headers: writer.auth,
+    });
+    expect(ok.status, await ok.clone().text()).toBe(201);
+  });
+
+  it("K60-API-046 作る前に送った保存が、作った後に処理される：作るときに使った draft_id・source_draft_id にもう一度保存しても、下書きは残らない", async () => {
+    const tab = randomUUID();
+    const source = randomUUID();
+    for (const id of [tab, source])
+      await f.req("POST", "/me/ticket-drafts", { body: { draft_id: id, body: { title: "前" } }, headers: writer.auth });
+    await createOk(writer, body({ draft_id: tab, source_draft_id: source }));
+    // 作る前に出していた保存が、作った後にサーバーに届いた
+    for (const id of [tab, source]) {
+      const r = await f.req("POST", "/me/ticket-drafts", {
+        body: { draft_id: id, body: { title: "作った後に届いた保存" } },
+        headers: writer.auth,
+      });
+      // 作るときに使った id への保存は、残さずに黙って捨てる（201・body と saved_at が null・K-60.md の H2b）
+      expect(r.status, await r.clone().text()).toBe(201);
+      expect((await json(r)).data).toMatchObject({ draft_id: id, body: null, saved_at: null });
+    }
+    const list = (await json(await f.req("GET", "/me/ticket-drafts", { headers: writer.auth }))).data as unknown as {
+      draft_id: string;
+      body: { title?: string };
+    }[];
+    expect(list.map((d) => d.draft_id)).not.toContain(tab);
+    expect(list.map((d) => d.draft_id)).not.toContain(source);
+    expect(JSON.stringify(list)).not.toContain("作った後に届いた保存");
+    // 別の人は、同じ id でも残せる（覚えるのは作った本人の使った id だけ）
+    const other = await f.req("POST", "/me/ticket-drafts", {
+      body: { draft_id: tab, body: { title: "別の人" } },
+      headers: mate.auth,
+    });
+    expect(other.status).toBe(201);
+  });
+
+  it("K60-API-047 守り（M1）：アプリの役は app.ticket_member_ok を直に呼べない（呼ぶのは app.ticket_create の中だけ・D-128.171）", async () => {
+    const priv = await f.admin.query<{ member_ok: boolean; can_create: boolean }>(
+      "select has_function_privilege('kaname_app', 'app.ticket_member_ok(uuid,uuid)', 'execute') as member_ok, has_function_privilege('kaname_app', 'app.ticket_create(jsonb)', 'execute') as can_create",
+    );
+    expect(priv.rows[0]).toEqual({ member_ok: false, can_create: true });
   });
 });
 

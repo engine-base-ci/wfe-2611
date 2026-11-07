@@ -1,6 +1,9 @@
-// 書きかけの下書き（K-60・D-128.138・D-128.62）。サーバーに残し（どの端末でも続きが書ける）、この PC にも写しを置く（ログインが切れても消えない）。
-//   タブごとに下書きの id を持つ（sessionStorage）。2 つのタブで上書きし合わない。ワークスペースごとに分けて残し、作れたら消す
+// 書きかけの下書き（K-60・D-128.138・D-128.62）。サーバーに残し（どの端末でも続きが書ける）、この PC にも写しを置く。
+//   写しとタブの下書きの id の鍵は「ワークスペース × 本人」（共有の PC で別の人に見せない・H1）。本人が分かるまでは読まない・書かない。
+//   ログアウトとログイン切れで kaname.ticket-draft で始まる鍵は全部消す（lib/api/client の clearDraftCopies）。
+//   タブごとに下書きの id を持つ（sessionStorage）。2 つのタブで上書きし合わない。作れたら消し、作った後に届く保存は送らない
 import { call } from "@/lib/api/call";
+import { DRAFT_COPY_PREFIX } from "@/lib/api/client";
 
 export interface DraftBody {
   scope_id?: string | null;
@@ -15,8 +18,17 @@ export interface DraftBody {
   sections?: Record<string, string>;
   notify_member_ids?: string[];
 }
-const TAB_KEY = (ws: string) => `kaname.ticket-draft-id:${ws}`;
-const COPY_KEY = (ws: string) => `kaname.ticket-draft:${ws}`;
+/** 誰の下書きか（ワークスペース＝会社の id・本人＝member の id） */
+export interface DraftOwner {
+  workspace: string;
+  member: string;
+}
+/** 下書きをサーバーに残せたか（残せなかったら画面が知らせる・D-128.62） */
+export type SaveState = "saved" | "failed" | "expired";
+
+const TAB_KEY = (o: DraftOwner) => `${DRAFT_COPY_PREFIX}-id:${o.workspace}:${o.member}`;
+const COPY_KEY = (o: DraftOwner) => `${DRAFT_COPY_PREFIX}:${o.workspace}:${o.member}`;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const uuid = (): string =>
   typeof crypto !== "undefined" && "randomUUID" in crypto
     ? crypto.randomUUID()
@@ -24,63 +36,125 @@ const uuid = (): string =>
         (Number(c) ^ ((Math.random() * 16) >> (Number(c) / 4))).toString(16),
       );
 
-const read = (k: string, store: Storage): string | null => {
+const read = (k: string, store: () => Storage): string | null => {
   try {
-    return store.getItem(k);
+    return store().getItem(k);
   } catch {
     return null;
   }
 };
-const write = (k: string, v: string | null, store: Storage): void => {
+const write = (k: string, v: string | null, store: () => Storage): void => {
   try {
-    if (v === null) store.removeItem(k);
-    else store.setItem(k, v);
+    if (v === null) store().removeItem(k);
+    else store().setItem(k, v);
   } catch {
     /* 残せない環境（非公開の窓）でも、サーバーの下書きは残る */
   }
 };
+const local = () => window.localStorage;
+const session = () => window.sessionStorage;
+
+/** 写しを読む。読めない JSON・形の違う中身は無いのと同じ（作る面は開く・K60-UI-035） */
+function readCopy(o: DraftOwner): { id: string; body: DraftBody } | null {
+  const raw = read(COPY_KEY(o), local);
+  if (!raw) return null;
+  try {
+    const v = JSON.parse(raw) as unknown;
+    if (!v || typeof v !== "object") return null;
+    const { id, body } = v as { id?: unknown; body?: unknown };
+    if (typeof id !== "string" || !body || typeof body !== "object" || Array.isArray(body)) return null;
+    return { id, body: body as DraftBody };
+  } catch {
+    return null;
+  }
+}
 
 /** このタブの下書きの id（無ければ作る） */
-export function tabDraftId(ws: string): string {
-  const have = read(TAB_KEY(ws), window.sessionStorage);
-  if (have) return have;
+export function tabDraftId(o: DraftOwner): string {
+  const have = read(TAB_KEY(o), session);
+  if (have && UUID.test(have)) return have;
   const id = uuid();
-  write(TAB_KEY(ws), id, window.sessionStorage);
+  write(TAB_KEY(o), id, session);
   return id;
 }
 
-/** 続きの下書き：このタブの id の写し → サーバーのこのタブの id → サーバーの一番新しいもの（新しいタブで開いたとき） */
-export async function loadDraft(ws: string): Promise<{ id: string; body: DraftBody } | null> {
-  const id = tabDraftId(ws);
-  const copy = read(COPY_KEY(ws), window.localStorage);
-  const local = copy ? (JSON.parse(copy) as { id: string; body: DraftBody }) : null;
+/** 続きの下書き：サーバーのこのタブの id → この PC の写し（同じ id） → サーバーの一番新しいもの（新しいタブで開いたとき）。
+ *  別のタブの下書きを続きとして出したら、その id を sourceId に返す（作る口が source_draft_id で消す・H2） */
+export async function loadDraft(o: DraftOwner): Promise<{ body: DraftBody; sourceId: string | null } | null> {
+  const id = tabDraftId(o);
+  const copy = readCopy(o);
   const r = await call("listMyTicketDrafts", { screenId: "tickets" });
-  const list = r.ok ? (r.data as unknown as { draft_id: string; body: DraftBody }[]) : [];
+  const list = r.ok ? (r.data as unknown as { draft_id: string; body: DraftBody | null }[]) : [];
   const mine = list.find((d) => d.draft_id === id);
-  if (mine) return { id, body: mine.body };
-  if (local && local.id === id) return local;
-  // 別のタブ・別の端末で書いていたもの：このタブはまだ何も書いていなければ、それを続きとして出す（id はこのタブのまま・上書きし合わない）
-  const latest = list[0];
-  return latest ? { id, body: latest.body } : local ? { id, body: local.body } : null;
+  if (mine?.body) return { body: mine.body, sourceId: null };
+  if (copy && copy.id === id) return { body: copy.body, sourceId: null };
+  const latest = list.find((d) => d.body && d.draft_id !== id);
+  if (latest?.body) return { body: latest.body, sourceId: latest.draft_id };
+  return copy ? { body: copy.body, sourceId: null } : null;
 }
 
-let timer: ReturnType<typeof setTimeout> | undefined;
-/** 書くたびに残す（この PC にはすぐ・サーバーには少し待ってから） */
-export function saveDraft(ws: string, body: DraftBody, waitMs = 600): void {
-  const id = tabDraftId(ws);
-  write(COPY_KEY(ws), JSON.stringify({ id, body }), window.localStorage);
-  if (timer) clearTimeout(timer);
-  timer = setTimeout(() => {
-    void call("saveMyTicketDraft", {
-      body: { draft_id: id, body: body as Record<string, unknown> },
+/** 1 つの作る面の下書き。書くたびに残し（この PC にはすぐ・サーバーには少し待ってから）、作る前にすぐ残し、作ったら閉じる */
+export class DraftStore {
+  private timer: ReturnType<typeof setTimeout> | undefined;
+  private sealed = false;
+  private seq = 0;
+  constructor(
+    private readonly o: DraftOwner,
+    private readonly onState: (s: SaveState) => void,
+    private readonly waitMs = 600,
+  ) {}
+
+  /** 書いた中身を残す（サーバーへは少し待ってから・まとめて 1 回） */
+  save(body: DraftBody): void {
+    if (this.sealed) return;
+    const id = tabDraftId(this.o);
+    write(COPY_KEY(this.o), JSON.stringify({ id, body }), local);
+    if (this.timer) clearTimeout(this.timer);
+    this.timer = setTimeout(() => void this.send(body), this.waitMs);
+  }
+
+  /** 作る前に：待っている保存を止め、今の中身をすぐサーバーへ残して答えを待つ（ログイン切れでも続きが出る・H1） */
+  async flush(body: DraftBody): Promise<SaveState> {
+    if (this.timer) clearTimeout(this.timer);
+    this.timer = undefined;
+    const id = tabDraftId(this.o);
+    write(COPY_KEY(this.o), JSON.stringify({ id, body }), local);
+    return this.send(body);
+  }
+
+  /** 作る口を呼んだ：この後の保存は送らない（作った後に届く保存は捨てる・H2）。作れなかったら reopen で戻す */
+  seal(): void {
+    this.sealed = true;
+    if (this.timer) clearTimeout(this.timer);
+    this.timer = undefined;
+    this.seq++; // 送っている途中の保存の答えは読まない
+  }
+  reopen(): void {
+    this.sealed = false;
+  }
+
+  /** 作れたら消す（サーバーの下書きは作る口が同じ処理で消す） */
+  clear(): void {
+    this.seal();
+    write(COPY_KEY(this.o), null, local);
+    write(TAB_KEY(this.o), null, session);
+  }
+
+  /** 画面を閉じた・離れた */
+  dispose(): void {
+    if (this.timer) clearTimeout(this.timer);
+    this.timer = undefined;
+  }
+
+  private async send(body: DraftBody): Promise<SaveState> {
+    if (this.sealed) return "saved";
+    const mine = ++this.seq;
+    const r = await call("saveMyTicketDraft", {
+      body: { draft_id: tabDraftId(this.o), body: body as Record<string, unknown> },
       screenId: "tickets",
     });
-  }, waitMs);
-}
-
-/** 作れたら消す（サーバーの下書きは作る口が同じ処理で消す） */
-export function clearDraft(ws: string): void {
-  if (timer) clearTimeout(timer);
-  write(COPY_KEY(ws), null, window.localStorage);
-  write(TAB_KEY(ws), null, window.sessionStorage);
+    const state: SaveState = r.ok ? "saved" : r.kind === "unauthenticated" ? "expired" : "failed";
+    if (mine === this.seq && !this.sealed) this.onState(state);
+    return state;
+  }
 }

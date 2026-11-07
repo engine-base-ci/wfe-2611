@@ -7,7 +7,7 @@ import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { Button, Callout, ErrorState, Select, TextArea, TextField } from "@/components/k";
 import { PAGE_ERROR, errorText } from "@/components/k/error-of";
 import { call, type CallErr } from "@/lib/api/call";
-import { clearDraft, loadDraft, saveDraft, type DraftBody } from "./draft";
+import { DraftStore, loadDraft, tabDraftId, type DraftBody, type SaveState } from "./draft";
 
 export interface KindChoice {
   id: string;
@@ -15,7 +15,10 @@ export interface KindChoice {
   sections: { key: string; label: string; mode: string; hint: string | null }[];
 }
 export interface Choices {
+  /** 本人の会社の id（下書きの写しの鍵・グループが 1 つも無くても決まる） */
   workspace: string;
+  /** 本人（member の id）。下書きの写しの鍵は本人ごと（共有の PC で別の人に見せない・H1） */
+  member: string;
   scopes: { id: string; name: string }[];
   kinds: KindChoice[];
   members: { id: string; display_name: string }[];
@@ -57,8 +60,18 @@ export function CreateTicket({
   onClose: () => void;
   onExpired: () => void;
 }) {
-  const ws = choices.workspace;
+  const owner = useMemo(
+    () => ({ workspace: choices.workspace, member: choices.member }),
+    [choices.workspace, choices.member],
+  );
   const [d, setD] = useState<DraftBody>(EMPTY);
+  const [saveState, setSaveState] = useState<SaveState>("saved");
+  const store = useMemo(() => new DraftStore(owner, setSaveState), [owner]);
+  useEffect(() => () => store.dispose(), [store]);
+  /** 続きとして出した別のタブの下書きの id（作る口に source_draft_id で渡して消す・H2） */
+  const source = useRef<string | null>(null);
+  /** 作る口を呼んでいる間（2 回押しを、描き直しを待たずに止める） */
+  const sending = useRef(false);
   const [fields, setFields] = useState<Fields>({});
   const [busy, setBusy] = useState(false);
   const [problem, setProblem] = useState<string | null>(null);
@@ -69,8 +82,9 @@ export function CreateTicket({
   // 続きから書く（サーバー → この PC の写し）。無ければ既定（種別はタスク・グループは書ける最初のグループ）
   useEffect(() => {
     let alive = true;
-    void loadDraft(ws).then((got) => {
+    void loadDraft(owner).then((got) => {
       if (!alive) return;
+      source.current = got?.sourceId ?? null;
       const task = choices.kinds.find((k) => k.name === "タスク") ?? choices.kinds[0];
       setD({
         ...EMPTY,
@@ -83,12 +97,12 @@ export function CreateTicket({
     return () => {
       alive = false;
     };
-  }, [ws, choices.kinds, choices.scopes]);
+  }, [owner, choices.kinds, choices.scopes]);
 
   const set = (patch: Partial<DraftBody>) => {
     setD((cur) => {
       const next = { ...cur, ...patch };
-      if (loaded.current) saveDraft(ws, next);
+      if (loaded.current) store.save(next);
       return next;
     });
   };
@@ -132,14 +146,20 @@ export function CreateTicket({
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
-    if (busy) return;
+    if (sending.current) return;
     setProblem(null);
     setWait(null);
     const f = checkForm(d, kind);
     setFields(f);
     if (Object.keys(f).length) return;
+    sending.current = true;
     setBusy(true);
     try {
+      // 作る前に、今の中身をサーバーの下書きへすぐ残し、答えを待つ（作る口でログインが切れても、入り直すと続きが出る・H1）
+      const saved = await store.flush(d);
+      if (saved === "expired") return onExpired();
+      // ここから先の保存は送らない（作った後に届く保存で下書きが生えない・H2）
+      store.seal();
       const sections = Object.fromEntries(
         Object.entries(d.sections ?? {}).filter(([k, v]) => v.trim() && kind?.sections.some((s) => s.key === k)),
       );
@@ -156,14 +176,19 @@ export function CreateTicket({
           ...(d.parent_ticket_id ? { parent_ticket_id: d.parent_ticket_id } : {}),
           sections,
           notify_member_ids: d.notify_member_ids ?? [],
-          draft_id: sessionDraftId(ws),
+          draft_id: tabDraftId(owner),
+          ...(source.current ? { source_draft_id: source.current } : {}),
         },
         screenId: "tickets",
       });
-      if (!r.ok) return fromServer(r);
-      clearDraft(ws);
+      if (!r.ok) {
+        store.reopen(); // 作れなかった：書き続けられるよう、保存を戻す
+        return fromServer(r);
+      }
+      store.clear();
       onCreated(String((r.data as { id: string }).id));
     } finally {
+      sending.current = false;
       setBusy(false);
     }
   };
@@ -309,6 +334,11 @@ export function CreateTicket({
             続けて作りました。{wait} 秒たってから、もう一度押してください。書いたものは残っています。
           </Callout>
         ) : null}
+        {saveState === "failed" ? (
+          <Callout tone="warn" title="下書きをサーバーに残せませんでした">
+            書いたものはこの画面に残っています。このまま書き続けると、もう一度残します。閉じる前に「作る」を押すか、時間をおいて開き直してください。
+          </Callout>
+        ) : null}
         {problem ? <ErrorState code={problem} /> : null}
         <div className="k-row">
           <Button type="submit" loading={busy}>
@@ -321,13 +351,4 @@ export function CreateTicket({
       </form>
     </section>
   );
-}
-
-/** このタブの下書きの id（作る口に渡すと、作れたときにサーバーの下書きが同じ処理で消える） */
-function sessionDraftId(ws: string): string {
-  try {
-    return window.sessionStorage.getItem(`kaname.ticket-draft-id:${ws}`) ?? "";
-  } catch {
-    return "";
-  }
 }

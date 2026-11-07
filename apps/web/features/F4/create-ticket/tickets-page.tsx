@@ -7,6 +7,7 @@ import { Button, Empty, ErrorState, Loading } from "@/components/k";
 import { PAGE_ERROR, errorCodeOf } from "@/components/k/error-of";
 import { call } from "@/lib/api/call";
 import { getToken } from "@/lib/api/client";
+import { me } from "@/lib/auth/ext";
 import { CreateTicket, type Choices, type KindChoice } from "./create-ticket";
 import { TicketShell } from "./ticket-shell";
 
@@ -17,6 +18,15 @@ type Load =
   | { state: "ok"; choices: Choices; writable: boolean; rows: Row[] };
 
 export async function loadChoices(): Promise<Load> {
+  // 本人と本人の会社（下書きの写しの鍵・H1）。分からないうちは作る面を出さない（写しを読まない・書かない）
+  let who: Awaited<ReturnType<typeof me>>;
+  try {
+    who = await me();
+  } catch (e) {
+    // 入っていない（401）は入り直しへ（lib/auth/ext が鍵と写しを捨てる）。ほかは「読み込めませんでした」
+    const status = (e as { status?: number }).status;
+    return { state: "error", code: status === 401 ? PAGE_ERROR.sessionExpired : PAGE_ERROR.loadFailed };
+  }
   const [scopes, kinds, members, list] = await Promise.all([
     call("listScopes", { screenId: "tickets" }),
     call("listTicketKinds", { screenId: "tickets" }),
@@ -33,7 +43,8 @@ export async function loadChoices(): Promise<Load> {
     writable: writableIds.size > 0,
     rows,
     choices: {
-      workspace: all[0]?.tenant_id ?? "ws",
+      workspace: String(who.tenant_id),
+      member: String(who.member_id),
       scopes: all.filter((s) => writableIds.has(s.id)).map((s) => ({ id: s.id, name: s.name })),
       kinds: kinds.data as unknown as KindChoice[],
       // 担当者に選べるのは、抜けていない・止められていない人だけ

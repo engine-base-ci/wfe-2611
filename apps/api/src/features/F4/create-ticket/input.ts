@@ -82,6 +82,10 @@ export function checkCreate(input: Record<string, unknown>, today: string): Chec
   const draft = input["draft_id"];
   if (draft !== undefined && draft !== "" && (typeof draft !== "string" || !UUID.test(draft)))
     d.push({ field: "draft_id", message: "uuid" });
+  // 続きとして出した元の下書き（別のタブ・別の端末で書いていたもの）。作ったら同じ処理で消す（本人の分だけ・K-60）
+  const source = input["source_draft_id"];
+  if (source !== undefined && source !== "" && (typeof source !== "string" || !UUID.test(source)))
+    d.push({ field: "source_draft_id", message: "uuid" });
   if (d.length) return { ok: false, details: d };
   return {
     ok: true,
@@ -99,6 +103,7 @@ export function checkCreate(input: Record<string, unknown>, today: string): Chec
       sections,
       notify_member_ids: notify,
       draft_id: draft || null,
+      source_draft_id: source || null,
     },
   };
 }

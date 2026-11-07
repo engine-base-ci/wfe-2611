@@ -66,18 +66,56 @@ const MEMBERS = [
 const jst = (days = 0) => new Date(Date.now() + 9 * 3600_000 + days * 86400_000).toISOString().slice(0, 10);
 
 type Reply = { status: number; body: unknown };
+/** 手で開ける待ち（時間で待たない）。open() するまで、作る口の答えを返さない */
+interface Gate {
+  wait: Promise<void>;
+  open: () => void;
+}
+const gate = (): Gate => {
+  let open = () => undefined as void;
+  const wait = new Promise<void>((r) => (open = r));
+  return { wait, open };
+};
 interface Mock {
   creates: Record<string, unknown>[];
+  /** 下書きの置き場。鍵は「ワークスペース」（高本）か「ワークスペース~人の id」（同じワークスペースの別の人） */
   drafts: Map<string, Map<string, { body: unknown; saved_at: string }>>;
   draftSaves: Record<string, unknown>[];
-  on: { create: () => Reply; kinds: () => Reply; scopes: () => Reply; list: () => Reply; detail: () => Reply };
+  /** 作る口の答えを止めておく（2 回押し・作った後に届く保存を確かめる）。null なら止めない */
+  hold: Gate | null;
+  /** 次に届いた下書きの保存を 1 本だけ止めておく（作る前に出した保存が、作った後にサーバーで処理される）。止めたら null に戻る */
+  holdSave: Gate | null;
+  /** 止めて届いた保存の数・処理を終えた数 */
+  heldSaves: { arrived: number; done: number };
+  /** 作るときに使った下書きの id（本物と同じく、作った後にその id へ保存が来ても残さない） */
+  usedDrafts: Set<string>;
+  on: {
+    create: () => Reply;
+    kinds: () => Reply;
+    scopes: () => Reply;
+    list: () => Reply;
+    detail: () => Reply;
+    /** 下書きを残す口の答えを差し替える（null ならふつうに残す） */
+    saveDraft: () => Reply | null;
+  };
 }
+/** 鍵（Bearer tok-<ワークスペース>[~<人の id>]）から、どのワークスペースの誰か。人の id が無ければ高本（ME） */
+const whoOf = (authorization: string | undefined, ws: string) => {
+  const t = (authorization ?? "").replace("Bearer tok-", "");
+  const [w, member] = t ? t.split("~") : [ws, undefined];
+  return { ws: w || ws, member: member || ME, key: member && member !== ME ? `${w}~${member}` : w || ws };
+};
+const tokenOf = (ws: string, member = ME) => (member === ME ? `tok-${ws}` : `tok-${ws}~${member}`);
 async function mockApi(page: Page | BrowserContext, o: { ws?: string; token?: boolean; m?: Mock } = {}): Promise<Mock> {
   const ws = o.ws ?? WS_A;
   const m: Mock = o.m ?? {
     creates: [],
     drafts: new Map(),
     draftSaves: [],
+    hold: null,
+    holdSave: null,
+    heldSaves: { arrived: 0, done: 0 },
+    usedDrafts: new Set(),
     on: {
       create: () => ({ status: 201, body: { data: { id: ID, number: "EG-133", title: "請求書を送る" } } }),
       kinds: () => ({ status: 200, body: { data: KINDS, meta: { limit: 2 } } }),
@@ -112,35 +150,86 @@ async function mockApi(page: Page | BrowserContext, o: { ws?: string; token?: bo
           },
         },
       }),
+      saveDraft: () => null,
     },
   };
   if (o.token !== false) await page.addInitScript((t) => window.localStorage.setItem("kaname.token", t), `tok-${ws}`);
   await page.route(API_RE, async (route: Route, req: Request) => {
     const u = new URL(req.url());
     const p = u.pathname;
-    const wsOf = (req.headers()["authorization"] ?? "").replace("Bearer tok-", "") || ws;
+    const auth = req.headers()["authorization"];
+    const who = whoOf(auth, ws);
     let reply: Reply = { status: 404, body: { error: "not_found", code: "NOT_FOUND" } };
-    if (p === "/api/v1/scopes") reply = m.on.scopes();
+    // 本物と同じく、鍵の人のセッションと役を返す（鍵が無ければ入っていない）
+    if (p === "/api/auth/get-session")
+      reply = auth
+        ? {
+            status: 200,
+            body: {
+              session: { id: `s-${who.member}`, userId: who.member, token: "t", expiresAt: "2099-01-01T00:00:00Z" },
+              user: { id: who.member, email: `${who.member}@example.com`, name: "人", emailVerified: true },
+            },
+          }
+        : { status: 200, body: null };
+    else if (p === "/api/auth-ext/me")
+      reply = auth
+        ? {
+            status: 200,
+            body: {
+              data: {
+                member_id: who.member,
+                tenant_id: who.ws,
+                display_name: MEMBERS.find((x) => x.id === who.member)?.display_name ?? "人",
+                role_id: "staff",
+              },
+            },
+          }
+        : { status: 401, body: { error: "unauthenticated", code: "UNAUTHENTICATED" } };
+    else if (p === "/api/v1/scopes") reply = m.on.scopes();
     else if (p === "/api/v1/ticket_kinds") reply = m.on.kinds();
     else if (p === "/api/v1/members") reply = { status: 200, body: { data: MEMBERS, meta: { limit: 200 } } };
     else if (p === "/api/v1/tickets" && req.method() === "GET") reply = m.on.list();
     else if (p === "/api/v1/tickets" && req.method() === "POST") {
-      m.creates.push(req.postDataJSON() as Record<string, unknown>);
-      await new Promise((r) => setTimeout(r, 200)); // 答えを待つ間（2 回押しを確かめる）
+      const b = req.postDataJSON() as Record<string, unknown>;
+      m.creates.push(b);
       reply = m.on.create();
+      // 本物と同じく、作れたら同じ処理で、このタブの下書きと、続きとして出した元の下書き（source_draft_id）を消す
+      if (reply.status === 201) {
+        const mine = m.drafts.get(who.key);
+        for (const k of ["draft_id", "source_draft_id"])
+          if (typeof b[k] === "string") {
+            mine?.delete(b[k] as string);
+            m.usedDrafts.add(`${who.key}|${b[k] as string}`);
+          }
+      }
+      if (m.hold) await m.hold.wait; // 答えを返すのは試験が開けてから
     } else if (p === `/api/v1/tickets/${ID}`) reply = m.on.detail();
     else if (p === "/api/v1/me/ticket-drafts") {
-      const mine = m.drafts.get(wsOf) ?? new Map();
-      m.drafts.set(wsOf, mine);
-      if (req.method() === "POST") {
+      const mine = m.drafts.get(who.key) ?? new Map();
+      m.drafts.set(who.key, mine);
+      const failed = req.method() === "POST" ? m.on.saveDraft() : null;
+      if (failed) reply = failed;
+      else if (req.method() === "POST") {
         const b = req.postDataJSON() as { draft_id: string; body?: unknown; discard?: boolean };
-        m.draftSaves.push(b);
-        if (b.discard) mine.delete(b.draft_id);
-        else mine.set(b.draft_id, { body: b.body ?? {}, saved_at: new Date().toISOString() });
-        reply = {
-          status: 201,
-          body: { data: { draft_id: b.draft_id, body: b.body ?? {}, saved_at: new Date().toISOString() } },
-        };
+        const held = m.holdSave;
+        if (held) {
+          m.holdSave = null;
+          m.heldSaves.arrived += 1;
+          await held.wait; // サーバーで処理されるのは試験が開けてから（その間に作る）
+        }
+        m.draftSaves.push({ ...b, by: who.key });
+        if (held) m.heldSaves.done += 1;
+        if (!b.discard && m.usedDrafts.has(`${who.key}|${b.draft_id}`))
+          // 本物と同じく、作るときに使った id の保存は残さず、黙って捨てる（201・body と saved_at が null・K-60.md の H2b）
+          reply = { status: 201, body: { data: { draft_id: b.draft_id, body: null, saved_at: null } } };
+        else {
+          if (b.discard) mine.delete(b.draft_id);
+          else mine.set(b.draft_id, { body: b.body ?? {}, saved_at: new Date().toISOString() });
+          reply = {
+            status: 201,
+            body: { data: { draft_id: b.draft_id, body: b.body ?? {}, saved_at: new Date().toISOString() } },
+          };
+        }
       } else
         reply = {
           status: 200,
@@ -150,7 +239,12 @@ async function mockApi(page: Page | BrowserContext, o: { ws?: string; token?: bo
           },
         };
     }
-    await route.fulfill({ status: reply.status, contentType: "application/json", body: JSON.stringify(reply.body) });
+    // 止めていた保存は、答える前に画面が移って要求が取り消されていることがある（サーバーでは処理済み・答える先が無い）
+    await route
+      .fulfill({ status: reply.status, contentType: "application/json", body: JSON.stringify(reply.body) })
+      .catch((e: unknown) => {
+        if (!/abort|cancel|closed|handled/i.test(String(e))) throw e;
+      });
   });
   return m;
 }
@@ -188,6 +282,23 @@ const fillAll = async (page: Page, o: { title?: string; due?: string } = {}) => 
   await page.getByRole("textbox", { name: "実施事項", exact: true }).fill("作る・送る");
 };
 const create = (page: Page) => page.getByRole("button", { name: "作る", exact: true });
+/** 続きの下書きを読み終えた（読み終えると種別に既定のタスクが入る）。空であることを確かめる前に待つ */
+const loaded = (page: Page) => expect(page.getByRole("combobox", { name: "種別" })).toContainText(/タスク|課題/);
+const titleBox = (page: Page) => page.getByRole("textbox", { name: "題名", exact: true });
+/** この PC に置いた下書きの写しと、タブの下書きの id（kaname.ticket-draft で始まる鍵） */
+const draftCopies = (page: Page) =>
+  page.evaluate(() => {
+    const out: { store: "local" | "session"; key: string; value: string }[] = [];
+    for (const [store, s] of [
+      ["local", window.localStorage],
+      ["session", window.sessionStorage],
+    ] as const)
+      for (let i = 0; i < s.length; i++) {
+        const key = s.key(i) ?? "";
+        if (key.startsWith("kaname.ticket-draft")) out.push({ store, key, value: s.getItem(key) ?? "" });
+      }
+    return out;
+  });
 
 row(R["K60-UI-000"], async (page) => {
   await mockApi(page);
@@ -380,6 +491,8 @@ row(R["K60-UI-017"], async (page) => {
   await fillAll(page, { title: "切れる前に書いた題名" });
   await create(page).click();
   await expect(page).toHaveURL(/\/login\?next=%2Ftickets%3Fnew%3D1$/);
+  // ログインが切れたら、この PC の写しとタブの下書きの id は消す（共有の PC で次の人に見せない・H1）。続きはサーバーの下書きから出す
+  await expect.poll(() => draftCopies(page)).toEqual([]);
   // 入り直した（鍵が戻った）後、作る面を開くと書きかけが続きから出る
   await page.evaluate((t) => window.localStorage.setItem("kaname.token", t), `tok-${WS_A}`);
   await page.goto("/tickets?new=1");
@@ -425,17 +538,169 @@ row(R["K60-UI-019"], async (page) => {
 });
 
 row(R["K60-UI-020"], async (page) => {
+  const context = page.context();
+  const m = await mockApi(context);
+  // 前のタブで書きかけを残す（タブは閉じずに置いておく。行の道具が最後にこのタブを撮る）
+  await open(page);
+  await titleBox(page).fill("前のタブの書きかけ");
+  await expect.poll(() => m.drafts.get(WS_A)?.size ?? 0).toBe(1);
+  // 新しいタブで開くと、前のタブの書きかけが続きとして出る。書き足して作る
+  const tab = await context.newPage();
+  await open(tab);
+  await expect(titleBox(tab)).toHaveValue("前のタブの書きかけ");
+  await fillAll(tab);
+  await create(tab).click();
+  await expect(tab).toHaveURL(new RegExp(`/tickets/${ID}$`));
+  // 続きとして出した元の下書きも、サーバーから消えている
+  expect(m.drafts.get(WS_A)?.size ?? 0).toBe(0);
+  // 再読み込み・戻る：二重にできない。戻ると作る面は空
+  await tab.reload();
+  await expect(tab.getByRole("heading", { level: 1, name: "請求書を送る" })).toBeVisible();
+  await tab.goBack();
+  await expect(form(tab)).toBeVisible();
+  await expect(titleBox(tab)).toHaveValue("");
+  // 次に（別のタブで）開いても、作る面は空
+  const next = await context.newPage();
+  await open(next);
+  await expect(form(next)).toBeVisible();
+  await loaded(next);
+  await expect(titleBox(next)).toHaveValue("");
+  expect(m.creates).toHaveLength(1);
+});
+
+row(R["K60-UI-032"], async (page) => {
+  // 共有の PC：A（高本）がログアウトし、同じタブで同じワークスペースの B（山田）が入る。鍵は最初の 1 回だけ A のものを置く
+  //   （ログアウトで鍵が消えた後に、開き直しで A の鍵を置き直さない）
+  await page.addInitScript((t) => {
+    if (window.localStorage.getItem("k60.seeded")) return;
+    window.localStorage.setItem("k60.seeded", "1");
+    window.localStorage.setItem("kaname.token", t);
+  }, tokenOf(WS_A));
+  const m = await mockApi(page, { token: false });
+  await open(page);
+  await loaded(page);
+  await titleBox(page).fill("A の書きかけ");
+  await page.getByRole("textbox", { name: "目的", exact: true }).fill("A の本文");
+  await expect.poll(() => JSON.stringify([...(m.drafts.get(WS_A)?.values() ?? [])])).toContain("A の本文");
+  const copyA = (await draftCopies(page)).find((c) => c.store === "local" && c.value.includes("A の本文"));
+  expect(copyA, "A の写しがこの PC にある").toBeTruthy();
+  // A がログアウトする（鍵が消える）→ ログインへ
+  await page.evaluate(() => window.localStorage.removeItem("kaname.token"));
+  await page.goto("/tickets?new=1");
+  await expect(page).toHaveURL(/\/login\?next=/);
+  // 同じタブで B が入る
+  await page.evaluate((t) => window.localStorage.setItem("kaname.token", t), tokenOf(WS_A, MATE));
+  await open(page);
+  await loaded(page);
+  await expect(titleBox(page)).toHaveValue("");
+  await expect(page.getByRole("textbox", { name: "目的", exact: true })).toHaveValue("");
+  // B が書く。B の下書きは B のところにだけ残り、A の中身は混ざらない
+  await titleBox(page).fill("B の書きかけ");
+  const bKey = `${WS_A}~${MATE}`;
+  await expect.poll(() => JSON.stringify([...(m.drafts.get(bKey)?.values() ?? [])])).toContain("B の書きかけ");
+  expect(JSON.stringify([...(m.drafts.get(bKey)?.values() ?? [])])).not.toContain("A の");
+  await expect(page.getByRole("textbox", { name: "目的", exact: true })).toHaveValue("");
+  // A の下書きに B の中身は入らない（A のものは A のまま）
+  const a = JSON.stringify([...(m.drafts.get(WS_A)?.values() ?? [])]);
+  expect(a).not.toContain("B の");
+  // 写しの鍵は本人ごと：B の写しは A の写しと別の鍵で、1 つの写しに 2 人の中身が混ざらない
+  const copies = await draftCopies(page);
+  const copyB = copies.find((c) => c.store === "local" && c.value.includes("B の書きかけ"));
+  expect(copyB, "B の写しがこの PC にある").toBeTruthy();
+  expect(copyB!.key).not.toBe(copyA!.key);
+  expect(copies.filter((c) => c.value.includes("A の") && c.value.includes("B の"))).toEqual([]);
+});
+
+row(R["K60-UI-033"], async (page) => {
+  // 作った後に届いた保存は、下書きを残さない（サーバーの下書きが作った後にまた生えない）
+  const m = await mockApi(page.context());
+  await page.clock.install();
+  await open(page);
+  await fillAll(page);
+  // 時計を止め、1 文字足す（下書きをサーバーに残すのを待っている間に「作る」を押す）
+  await page.clock.pauseAt(new Date(Date.now() + 60_000));
+  await page.getByRole("textbox", { name: "実施事項", exact: true }).press("End");
+  await page.getByRole("textbox", { name: "実施事項", exact: true }).pressSequentially("。");
+  m.hold = gate();
+  await create(page).click();
+  await expect.poll(() => m.creates.length).toBe(1);
+  const savesAtCreate = m.draftSaves.length;
+  await page.clock.runFor(10_000); // 待っていた保存の時計を進める（作る口はまだ答えていない）
+  m.hold.open();
+  await page.clock.resume();
+  await expect(page).toHaveURL(new RegExp(`/tickets/${ID}$`));
+  expect(
+    m.draftSaves.slice(savesAtCreate).filter((x) => !x["discard"]),
+    "作った後に残す保存は送らない",
+  ).toEqual([]);
+  expect(m.drafts.get(WS_A)?.size ?? 0).toBe(0);
+  // 次に開くと作る面は空
+  const next = await page.context().newPage();
+  await open(next);
+  await loaded(next);
+  await expect(titleBox(next)).toHaveValue("");
+});
+
+row(R["K60-UI-034"], async (page) => {
+  // 下書きをサーバーに残せなかったら知らせる（何が起きたか・書いたものは消えないこと・D-128.62）。残せたら消える
+  const m = await mockApi(page);
+  let fail = true;
+  m.on.saveDraft = () => (fail ? { status: 500, body: { error: "internal", code: null } } : null);
+  await open(page);
+  await loaded(page);
+  await titleBox(page).fill("残せない題名");
+  const notice = page.getByText(/下書きをサーバーに残せませんでした/);
+  await expect(notice).toBeVisible();
+  await expect(page.getByText(/書いたものは.*残っています/).first()).toBeVisible();
+  await expect(titleBox(page)).toHaveValue("残せない題名");
+  fail = false;
+  await titleBox(page).fill("残せる題名");
+  await expect.poll(() => JSON.stringify([...(m.drafts.get(WS_A)?.values() ?? [])])).toContain("残せる題名");
+  await expect(notice).toHaveCount(0);
+});
+
+row(R["K60-UI-035"], async (page) => {
+  // この PC の写しが壊れていても（読めない JSON・形の違う中身）、作る面は開いて書ける
   const m = await mockApi(page);
   await open(page);
+  await loaded(page);
+  await titleBox(page).fill("写しを作る");
+  await expect.poll(async () => (await draftCopies(page)).filter((c) => c.store === "local").length).toBeGreaterThan(0);
+  m.drafts.clear(); // サーバーには無く、写しだけがある
+  for (const bad of ["{壊れた", JSON.stringify({ id: 1, body: "文字" }), "null"]) {
+    await page.evaluate((v) => {
+      for (let i = 0; i < window.localStorage.length; i++) {
+        const k = window.localStorage.key(i) ?? "";
+        if (k.startsWith("kaname.ticket-draft")) window.localStorage.setItem(k, v);
+      }
+    }, bad);
+    await page.reload();
+    await expect(form(page), bad).toBeVisible();
+    await loaded(page);
+    await titleBox(page).fill(`壊れた写しの後 ${bad.length}`);
+    await expect(titleBox(page)).toHaveValue(`壊れた写しの後 ${bad.length}`);
+  }
+});
+
+row(R["K60-UI-038"], async (page) => {
+  // 作る前に送った保存が、作った後にサーバーで処理される：次に開いた作る面は空（作るときに使った id の保存は残らない）
+  const m = await mockApi(page.context());
+  await open(page);
+  await loaded(page);
+  m.holdSave = gate();
+  const held = m.holdSave;
+  await titleBox(page).fill("作る前に送った保存");
+  await expect.poll(() => m.heldSaves.arrived).toBe(1); // 保存が 1 本、サーバーの手前で止まっている
   await fillAll(page);
   await create(page).click();
   await expect(page).toHaveURL(new RegExp(`/tickets/${ID}$`));
-  await page.reload();
-  await expect(page.getByRole("heading", { level: 1, name: "請求書を送る" })).toBeVisible();
-  await page.goBack();
-  await expect(form(page)).toBeVisible();
-  await expect(page.getByRole("textbox", { name: "題名", exact: true })).toHaveValue("");
-  expect(m.creates).toHaveLength(1);
+  held.open(); // 作った後に、止めていた保存をサーバーで処理する
+  await expect.poll(() => m.heldSaves.done).toBe(1);
+  expect(m.drafts.get(WS_A)?.size ?? 0).toBe(0);
+  const next = await page.context().newPage();
+  await open(next);
+  await loaded(next);
+  await expect(titleBox(next)).toHaveValue("");
 });
 
 row(R["K60-UI-021"], async (page) => {
@@ -492,7 +757,11 @@ row(R["K60-UI-024"], async (page) => {
   const m = await mockApi(page);
   await open(page);
   await fillAll(page);
+  m.hold = gate(); // 1 回目の答えを返す前に 2 回目を押す
   await create(page).dblclick();
+  await expect.poll(() => m.creates.length).toBe(1);
+  await expect(create(page)).toBeDisabled();
+  m.hold.open();
   await expect(page).toHaveURL(new RegExp(`/tickets/${ID}$`));
   expect(m.creates).toHaveLength(1);
 });

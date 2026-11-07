@@ -23,6 +23,8 @@ const fromCatalog = (code: string, field: string, message?: string): HookReply =
   };
 };
 const LIST_MAX = 200;
+/** 下書きの大きさの上限（UTF-8 のバイト数）。DB の上限（pg_column_size(body) <= 200,000）より小さいところで 422 にする（文字数では測らない） */
+const DRAFT_MAX_BYTES = 180_000;
 
 export function createTicketHooks(appPool: pg.Pool): Record<string, Hook> {
   return {
@@ -101,10 +103,19 @@ export function createTicketHooks(appPool: pg.Pool): Record<string, Hook> {
     listScopes: {
       before: async (a: HookArgs) => {
         const rows = (await a.repo.table("scopes").list(a.ctx, { limit: LIST_MAX })).filter((s) => !s["deleted_at"]);
-        const writable: string[] = [];
-        if (a.ctx.role === "member")
-          for (const s of rows)
-            if (await a.repo.can(a.ctx, "tickets", String(s["id"]), "edit")) writable.push(String(s["id"]));
+        // チケットを書けるグループ：グループごとに聞かず、1 回の SQL で（has_permission を並びに当てる）
+        const ids = rows.map((s) => String(s["id"]));
+        const writable =
+          a.ctx.role === "member" && ids.length
+            ? await withTenant(appPool, a.ctx, async (cl) =>
+                (
+                  await cl.query<{ id: string }>(
+                    "select s.id::text as id from unnest($1::uuid[]) as s(id) where has_permission(app.user_id(), 'tickets', s.id, 'edit')",
+                    [ids],
+                  )
+                ).rows.map((r) => r.id),
+              )
+            : [];
         return { status: 200, body: { data: rows, meta: { limit: LIST_MAX, writable } } };
       },
     },
@@ -160,7 +171,7 @@ export function createTicketHooks(appPool: pg.Pool): Record<string, Hook> {
           });
         const discard = a.input["discard"] === true;
         const body = a.input["body"] ?? {};
-        if (!discard && JSON.stringify(body).length > 100_000)
+        if (!discard && Buffer.byteLength(JSON.stringify(body), "utf8") > DRAFT_MAX_BYTES)
           return fail(422, "validation_failed", "VALIDATION_ERROR", {
             details: [{ field: "body", message: "下書きが大きすぎます" }],
           });

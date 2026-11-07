@@ -312,7 +312,8 @@
   "apps/web/features/F1/consent-terms/legal-text.ts": "文面のページが要求のときに自分のひな形（apps/web/content/legal/*.md）を読む（試験でない。中身のそろいは terms.test.ts の K53-API-035 が data_links で流れる・K-53）",
   "apps/web/tests/features/F1/terms.spec.ts": "画面の試験（Playwright・CI の web の段）が施行日の行を読むためにひな形を読む（単体の試験の範囲の外）",
   "apps/api/test/features/F3/connect-pc.test.ts": "自分で作った一時の置き場（配る Bridge の目録 kaname-bridge.json）を読む。リポジトリのファイルは読まない",
-  "apps/bridge/src/pairing.ts": "同上（apps/bridge/src/**）。この PC の印（userData の machine-id）を読む"
+  "apps/bridge/src/pairing.ts": "同上（apps/bridge/src/**）。この PC の印（userData の machine-id）を読む",
+  "apps/web/test/k60-draft-signout.test.ts": "試験の中で lib/auth/session・lib/api/client を動的 import する（vi.mock の後に読むため）。ファイルは読まない"
  },
  "jobs": {
   "database": {

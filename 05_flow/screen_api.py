@@ -509,7 +509,7 @@ INPUTS = {
     "createTicket": ("TicketCreateInput", {"scope_id": "string", "kind_id": "string", "title": "string", "assignee_member_id": "string",
                                            "due_on": "string", "start_on": "string", "priority": "string", "priority_reason": "string",
                                            "parent_ticket_id": "string", "estimate_minutes": "any", "sections": "object",
-                                           "notify_member_ids": "array", "draft_id": "string"}),
+                                           "notify_member_ids": "array", "draft_id": "string", "source_draft_id": "string"}),   # source_draft_id：続きとして出した元の下書き（作ったら消す・K-60)
     "saveMyTicketDraft": ("TicketDraftInput", {"draft_id": "string", "body": "object", "discard": "boolean"}),
 }
 # get で始まるが並びを返す口（K-53）。一覧の問い合わせ（scope_id・cursor・limit・sort）は形だけ確かめて無視する

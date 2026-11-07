@@ -11,7 +11,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { CATALOG } from "@kaname/errors/catalog";
 import { Button, Callout, Loading, PAGE_ERROR } from "@/components/k";
 import { call } from "@/lib/api/call";
-import { getToken, setToken } from "@/lib/api/client";
+import { clearDraftCopies, getToken, setToken } from "@/lib/api/client";
 import { pendingRoute } from "@/lib/pending-route";
 import { clearTermsReason, markTermsAgreed, termsReason } from "@/lib/terms-gate";
 import { AuthFrame } from "../sign-up/frame";
@@ -141,6 +141,7 @@ export function ConsentTerms({ next }: { next: string | null }) {
   const signOut = async () => {
     await call("signOut", { keepOn401: true, screenId: "login" }).catch(() => null);
     setToken(null);
+    clearDraftCopies(); // ログアウトはどこからでも、この PC の書きかけの写しを消す（lib/auth の signOut と同じ・K-60 H1）
     clearTermsReason();
     // 戻るで同意し直しの画面を開いても中は出さない（ログインの印が無いのでログインへ移す）。履歴は残す（push）
     router.push("/login" as Route);

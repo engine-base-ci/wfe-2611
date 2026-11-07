@@ -2,7 +2,7 @@
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
 import { authClient } from "./client";
-import { setToken } from "@/lib/api/client";
+import { clearDraftCopies, setToken } from "@/lib/api/client";
 
 /** 今のセッション。無ければ null（読み込み中は undefined） */
 export function useSession() {
@@ -26,4 +26,5 @@ export function RequireSession({ children, fallback }: { children: ReactNode; fa
 export async function signOut(): Promise<void> {
   await authClient.signOut();
   setToken(null);
+  clearDraftCopies(); // この PC の書きかけの写し（K-60）。共有の PC で次の人に見せない
 }
