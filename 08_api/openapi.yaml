@@ -3856,14 +3856,18 @@ components:
           nullable: true
         device_token_hash: &id363
           type: string
+          nullable: true
         alive_at: &id364
           type: string
           format: date-time
+          nullable: true
         bridge_version: &id365
-          type: integer
+          type: string
+          nullable: true
         machine_id: &id366
           type: string
           format: uuid
+          nullable: true
         id:
           type: string
           format: uuid
@@ -13587,7 +13591,9 @@ paths:
         schema:
           type: string
           enum:
+          - alive_at
           - auth_session_id
+          - bridge_version
           - browser
           - cli_model
           - country
@@ -13596,6 +13602,7 @@ paths:
           - deleted_at
           - device
           - device_label
+          - device_token_hash
           - health
           - health_at
           - id
@@ -13604,6 +13611,7 @@ paths:
           - kind_id
           - last_ip
           - last_seen_at
+          - machine_id
           - member_id
           - revoke_reason_id
           - revoked_at
@@ -24610,7 +24618,9 @@ paths:
         schema:
           type: string
           enum:
+          - alive_at
           - auth_session_id
+          - bridge_version
           - browser
           - cli_model
           - country
@@ -24619,6 +24629,7 @@ paths:
           - deleted_at
           - device
           - device_label
+          - device_token_hash
           - health
           - health_at
           - id
@@ -24627,6 +24638,7 @@ paths:
           - kind_id
           - last_ip
           - last_seen_at
+          - machine_id
           - member_id
           - revoke_reason_id
           - revoked_at

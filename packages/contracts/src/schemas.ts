@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:e1424d19d56f6008
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:49c61bdd2b93eaf4
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -1444,10 +1444,10 @@ export const Sessions = z.strictObject({
   last_seen_at: z.iso.datetime({ offset: true }).optional(),
   revoked_at: z.iso.datetime({ offset: true }).nullable().optional(),
   revoke_reason_id: z.string().max(10000).nullable().optional(),
-  device_token_hash: z.string().max(10000).optional(),
-  alive_at: z.iso.datetime({ offset: true }).optional(),
-  bridge_version: z.number().int().optional(),
-  machine_id: z.uuid().optional(),
+  device_token_hash: z.string().max(10000).nullable().optional(),
+  alive_at: z.iso.datetime({ offset: true }).nullable().optional(),
+  bridge_version: z.string().max(10000).nullable().optional(),
+  machine_id: z.uuid().nullable().optional(),
   id: z.uuid(),
   tenant_id: z.uuid().optional(),
   created_at: z.iso.datetime({ offset: true }).optional(),
@@ -1475,10 +1475,10 @@ export const SessionsInput = z.strictObject({
   last_seen_at: z.iso.datetime({ offset: true }).optional(),
   revoked_at: z.iso.datetime({ offset: true }).nullable().optional(),
   revoke_reason_id: z.string().max(10000).nullable().optional(),
-  device_token_hash: z.string().max(10000).optional(),
-  alive_at: z.iso.datetime({ offset: true }).optional(),
-  bridge_version: z.number().int().optional(),
-  machine_id: z.uuid().optional(),
+  device_token_hash: z.string().max(10000).nullable().optional(),
+  alive_at: z.iso.datetime({ offset: true }).nullable().optional(),
+  bridge_version: z.string().max(10000).nullable().optional(),
+  machine_id: z.uuid().nullable().optional(),
 });
 export const SupportAccessGrants = z.strictObject({
   granted_by_member_id: z.uuid().nullable().optional(),

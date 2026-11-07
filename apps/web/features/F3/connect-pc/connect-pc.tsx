@@ -24,13 +24,22 @@ export function safeFrom(
   origin: string = typeof window === "undefined" ? "" : window.location.origin,
 ): string | null {
   if (!v || !origin || !v.startsWith("/")) return null;
-  let u: URL;
+  let out: string;
   try {
-    u = new URL(v, origin);
+    const u = new URL(v, origin);
+    if (u.origin !== origin) return null;
+    out = `${u.pathname}${u.search}${u.hash}`;
   } catch {
     return null;
   }
-  return u.origin === origin ? `${u.pathname}${u.search}${u.hash}` : null;
+  // 道を整えると "//外" "/\\外" になるもの（/.//外・/..//外・/a/..//外・/%2e//外・/./\\外）は、href に置くと外の origin になる。捨てる
+  if (out.startsWith("//") || out.startsWith("/\\")) return null;
+  // 返す値そのものを、もう一度同じ読み方で読み直して同じ origin か確かめる
+  try {
+    return new URL(out, origin).origin === origin ? out : null;
+  } catch {
+    return null;
+  }
 }
 
 type Code = { code: string; expiresAt: number };

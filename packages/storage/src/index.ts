@@ -35,6 +35,20 @@ export const MAX_BYTES_DEFAULT = 50 * 1024 * 1024;
 export const EXTERNAL_TTL_SEC = 300;
 const EXTERNAL_NAME = /^[A-Za-z0-9][A-Za-z0-9._-]{0,200}$/;
 
+/** 期限つき URL の期限：署名の時刻（X-Amz-Date）＋長さ（X-Amz-Expires）。読めなければ呼んだ時刻＋ttl */
+function expiresOf(url: string, at: number, ttl: number): Date {
+  try {
+    const q = new URL(url).searchParams;
+    const m = /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z$/.exec(q.get("X-Amz-Date") ?? "");
+    const sec = Number(q.get("X-Amz-Expires"));
+    if (m && Number.isInteger(sec) && sec > 0)
+      return new Date(Date.UTC(+m[1]!, +m[2]! - 1, +m[3]!, +m[4]!, +m[5]!, +m[6]!) + sec * 1000);
+  } catch {
+    // 下で呼んだ時刻から出す
+  }
+  return new Date(at + ttl * 1000);
+}
+
 /** 参照は必ずテナントの名前空間の中（tenants/<tenant_id>/<uuid>）。文字列連結で他社の鍵を作れない */
 export function refOf(tenantId: string, id: string): string {
   return `tenants/${tenantId}/${id}`;
@@ -171,10 +185,16 @@ export class ObjectStore {
     }
     const at = Date.now();
     const url = await this.o.externalSigner.presignGet(target, ttl);
-    if (!url) return { status: "denied", reason: "このファイルは渡せません", handoff: "運営に問い合わせる" };
+    // 置き場の頭（BRIDGE_RELEASE_BASE）が置き場の出どころの下に無い・path-style でない＝設定の誤り。配っていない（404）と混ぜず、届かない側に倒す
+    if (!url)
+      return {
+        status: "failed",
+        reason: "外の置き場の設定が置き場と合いません",
+        handoff: "運営が置き場の設定を確かめる",
+      };
     return {
       status: "done",
-      value: { url, expiresAt: new Date(at + ttl * 1000) },
+      value: { url, expiresAt: expiresOf(url, at, ttl) },
       auditId: await this.audit(ctx, "sign_external", null, { name, ttl }),
     };
   }

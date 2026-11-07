@@ -221,8 +221,14 @@ row(R["K57-UI-021"], async (page) => {
     "/%5Cevil.example/",
     "//evil.example/",
     "/\t/evil.example",
+    "/.//evil.example",
+    "/..//evil.example",
+    "/a/..//evil.example",
+    "/%2e//evil.example",
+    "/./\\evil.example",
   ]) {
-    await open(page, `?from=${q.startsWith("/%") ? q : encodeURIComponent(q)}`);
+    // 先の 4 つ（%09・%0A・%0D%0A・%5C）は問いに打ったままの形で送る。ほかは値そのもの（"/%2e//…" も文字のまま）を送る
+    await open(page, `?from=${/^\/%(09|0A|0D|5C)/.test(q) ? q : encodeURIComponent(q)}`);
     await expect(heading(page), q).toBeVisible();
     await expect(page.getByRole("link", { name: "戻る" }), q).toHaveCount(0);
   }

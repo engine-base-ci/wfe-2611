@@ -14,6 +14,7 @@ import { s3Client, s3Presigner } from "@kaname/storage";
 import { makeFixture, nextIp, type Fixture, type Person } from "../fixture.js";
 import { FAKE_S3, startFakeS3 } from "../../fake-s3.js";
 
+const FIXED_IP = "198.51.100.57";
 const ALPHABET = /^[23456789ABCDEFGHJKMNPQRSTUVWXYZ]{6}$/;
 const sha = (s: string) => createHash("sha256").update(s).digest("hex");
 let f: Fixture;
@@ -550,6 +551,12 @@ describe("K-57 配布物（受け取る・新しい版を見に来る）", () =>
       expect(left).toBeGreaterThan(0);
       expect(left).toBeLessThanOrEqual(10 * 60_000); // 短い期限（10 分まで）
       expect(Number(u.searchParams.get("X-Amz-Expires")) * 1000).toBeLessThanOrEqual(10 * 60_000);
+      // 返す期限は、置き場の署名の時刻（X-Amz-Date）＋長さ（X-Amz-Expires）と同じ（Kaname の時計で別に数えない）
+      const ad = /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z$/.exec(u.searchParams.get("X-Amz-Date") ?? "")!;
+      expect(new Date(d.expires_at).getTime()).toBe(
+        Date.UTC(+ad[1]!, +ad[2]! - 1, +ad[3]!, +ad[4]!, +ad[5]!, +ad[6]!) +
+          Number(u.searchParams.get("X-Amz-Expires")) * 1000,
+      );
       // その URL で本当に取れる（置き場が署名を確かめて中身を返す）
       const got = await fetch(d.url);
       expect(got.status).toBe(200);
@@ -604,13 +611,49 @@ describe("K-57 配布物（受け取る・新しい版を見に来る）", () =>
     }
   });
 
+  // 配布物の試験は 1 つの IP から呼ぶ（上限は人ごと。共有の IP の順番を進めて、ほかの試験の IP の上限と重ねない）
+  it("K57-API-057 失敗：置き場の頭（BRIDGE_RELEASE_BASE）が置き場の出どころと違う・path-style でない（設定の誤り）：URL を作らず「読み込めませんでした」（E-PAGE-007）。「まだ配布していません」（E-CONN-014）と混ぜない（新しい版の受け取り先も同じ）", async () => {
+    const { dir } = RELEASE();
+    const manifest = readFileSync(join(dir, "kaname-bridge.json"));
+    const store = await startFakeS3(); // 署名の口が向いている置き場
+    const other = await startFakeS3(); // 目録を置いた別の出どころ（設定の誤り）
+    const client = s3Client({
+      endpoint: store.endpoint,
+      region: FAKE_S3.region,
+      bucket: "k57-bridge",
+      accessKeyId: FAKE_S3.accessKeyId,
+      secretAccessKey: FAKE_S3.secretAccessKey,
+    });
+    f.signer.current = s3Presigner(client, store.endpoint);
+    try {
+      const p = await newPerson();
+      // ① 別の出どころ ② 同じ出どころでもバケットの下でない（path-style でない：道がバケットだけ）
+      other.objects.set("k57-bridge/rel/kaname-bridge.json", { body: manifest, public: true });
+      store.objects.set("kaname-bridge.json", { body: manifest, public: true });
+      for (const base of [`${other.endpoint}/k57-bridge/rel`, store.endpoint]) {
+        set("", base);
+        const d = await f.req("GET", "/bridge/releases/mac/file", { headers: p.auth, ip: FIXED_IP });
+        expect(d.status, base).toBe(503);
+        expect((await json(d))["code"], base).toBe("E-PAGE-007");
+        const l = await f.req("GET", "/bridge/releases/latest?os=mac&arch=arm64", { headers: p.auth, ip: FIXED_IP });
+        expect(l.status, base).toBe(503);
+        expect((await json(l))["code"], base).toBe("E-PAGE-007");
+      }
+    } finally {
+      f.signer.current = null;
+      set("", "");
+      await store.close();
+      await other.close();
+    }
+  });
+
   it("K57-API-055 守り：配布物の受け取りを取引先の人・運営の人が呼ぶ：403 で、置き場の URL も中身も返さない（役が合わない）", async () => {
     const { dir } = RELEASE();
     set(dir);
     try {
       const p = await newPerson();
       for (const role of ["client", "ops"] as const) {
-        const r = await f.req("GET", "/bridge/releases/mac/file", { headers: f.as(p, role) });
+        const r = await f.req("GET", "/bridge/releases/mac/file", { headers: f.as(p, role), ip: FIXED_IP });
         expect(r.status, role).toBe(403);
         const text = await r.text();
         expect(text, role).not.toContain("Kaname-Bridge");
@@ -626,8 +669,8 @@ describe("K-57 配布物（受け取る・新しい版を見に来る）", () =>
     try {
       const p = await newPerson();
       for (let i = 0; i < 120; i++)
-        expect((await f.req("GET", "/bridge/releases/mac/file", { headers: p.auth })).status).toBe(200);
-      const r = await f.req("GET", "/bridge/releases/mac/file", { headers: p.auth });
+        expect((await f.req("GET", "/bridge/releases/mac/file", { headers: p.auth, ip: FIXED_IP })).status).toBe(200);
+      const r = await f.req("GET", "/bridge/releases/mac/file", { headers: p.auth, ip: FIXED_IP });
       expect(r.status).toBe(429);
       expect((await json(r))["retry_after_sec"]).toBeGreaterThan(0);
     } finally {
