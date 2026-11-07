@@ -58,6 +58,7 @@
     "test_post_auth_terms_consent_conflict": "K53-API-013",
     "test_post_auth_terms_consent_rejected_422": "K53-API-018",
     "test_post_auth_terms_consent_rate_limited": "K53-API-027",
+    "test_post_auth_terms_consent_rejected_403": "K53-API-034",
     "test_post_auth_terms_consent_shape": "K53-API-030"
    }
   },
@@ -70,6 +71,150 @@
     "test_get_auth_terms_current_rate_limited": "K53-API-028",
     "test_get_auth_terms_current_server_error": "K53-API-033",
     "test_get_auth_terms_current_shape": "K53-API-016"
+   }
+  },
+  "createPairingCode": {
+   "file": "apps/api/test/features/F3/connect-pc.test.ts",
+   "reason": "K-57 の口は本物の PC の印の解決と本物の振る舞い（hooks）・接続コードの期限と 1 回だけ・配布物の置き場が要る。生成の試験の土台（偽のセッション・表の種の入力）では確かめられない（K-57）",
+   "covers": {
+    "test_post_bridge_pairing_codes_ok": "K57-API-001",
+    "test_post_bridge_pairing_codes_rejected_401": "K57-API-045",
+    "test_post_bridge_pairing_codes_rejected_403": "K57-API-002",
+    "test_post_bridge_pairing_codes_rejected_422": "K57-API-034",
+    "test_post_bridge_pairing_codes_rejected_422_2": "K57-API-031",
+    "test_post_bridge_pairing_codes_rate_limited": "K57-API-039",
+    "test_post_bridge_pairing_codes_terms_pending": "K57-API-050",
+    "test_post_bridge_pairing_codes_shape": "K57-API-001"
+   }
+  },
+  "claimPairingCode": {
+   "file": "apps/api/test/features/F3/connect-pc.test.ts",
+   "reason": "K-57 の口は本物の PC の印の解決と本物の振る舞い（hooks）・接続コードの期限と 1 回だけ・配布物の置き場が要る。生成の試験の土台（偽のセッション・表の種の入力）では確かめられない（K-57）",
+   "covers": {
+    "test_post_bridge_claim_ok": "K57-API-003",
+    "test_post_bridge_claim_rejected_422": "K57-API-036",
+    "test_post_bridge_claim_rejected_422_2": "K57-API-028",
+    "test_post_bridge_claim_rate_limited": "K57-API-038",
+    "test_post_bridge_claim_upstream_failed": "K57-API-033",
+    "test_post_bridge_claim_shape": "K57-API-003"
+   }
+  },
+  "sendHeartbeat": {
+   "file": "apps/api/test/features/F3/connect-pc.test.ts",
+   "reason": "K-57 の口は本物の PC の印の解決と本物の振る舞い（hooks）・接続コードの期限と 1 回だけ・配布物の置き場が要る。生成の試験の土台（偽のセッション・表の種の入力）では確かめられない（K-57）",
+   "covers": {
+    "test_post_bridge_heartbeat_ok": "K57-API-009",
+    "test_post_bridge_heartbeat_rejected_401": "K57-API-014",
+    "test_post_bridge_heartbeat_rejected_403": "K57-API-040",
+    "test_post_bridge_heartbeat_rejected_422": "K57-API-037",
+    "test_post_bridge_heartbeat_rejected_422_2": "K57-API-032",
+    "test_post_bridge_heartbeat_shape": "K57-API-009"
+   }
+  },
+  "listMyDevices": {
+   "file": "apps/api/test/features/F3/connect-pc.test.ts",
+   "reason": "K-57 の口は本物の PC の印の解決と本物の振る舞い（hooks）・接続コードの期限と 1 回だけ・配布物の置き場が要る。生成の試験の土台（偽のセッション・表の種の入力）では確かめられない（K-57）",
+   "covers": {
+    "test_get_bridge_devices_ok": "K57-API-042",
+    "test_get_bridge_devices_rejected_401": "K57-API-045",
+    "test_get_bridge_devices_rejected_403": "K57-API-040",
+    "test_get_bridge_devices_terms_pending": "K57-API-050",
+    "test_get_bridge_devices_shape": "K57-API-042"
+   }
+  },
+  "getLatestBridgeRelease": {
+   "file": "apps/api/test/features/F3/connect-pc.test.ts",
+   "reason": "K-57 の口は本物の PC の印の解決と本物の振る舞い（hooks）・接続コードの期限と 1 回だけ・配布物の置き場が要る。生成の試験の土台（偽のセッション・表の種の入力）では確かめられない（K-57）",
+   "covers": {
+    "test_get_bridge_releases_latest_ok": "K57-API-021",
+    "test_get_bridge_releases_latest_rejected_401": "K57-API-045",
+    "test_get_bridge_releases_latest_rejected_422": "K57-API-023",
+    "test_get_bridge_releases_latest_upstream_failed": "K57-API-024",
+    "test_get_bridge_releases_latest_terms_pending": "K57-API-050",
+    "test_get_bridge_releases_latest_shape": "K57-API-021"
+   }
+  },
+  "downloadBridgeRelease": {
+   "file": "apps/api/test/features/F3/connect-pc.test.ts",
+   "reason": "K-57 の口は本物の PC の印の解決と本物の振る舞い（hooks）・接続コードの期限と 1 回だけ・配布物の置き場が要る。生成の試験の土台（偽のセッション・表の種の入力）では確かめられない（K-57）",
+   "covers": {
+    "test_get_bridge_releases_name_file_ok": "K57-API-021",
+    "test_get_bridge_releases_name_file_rejected_401": "K57-API-027",
+    "test_get_bridge_releases_name_file_rejected_422": "K57-API-023",
+    "test_get_bridge_releases_name_file_upstream_failed": "K57-API-024",
+    "test_get_bridge_releases_name_file_terms_pending": "K57-API-050",
+    "test_get_bridge_releases_name_file_shape": "K57-API-021"
+   }
+  },
+  "createTicket": {
+   "file": "apps/api/test/features/F4/create-ticket.test.ts",
+   "reason": "K-60 の口は本物の振る舞い（hooks）と、種別の必須の区画・期限が今日より前でない・同じ会社の確かめが要る。生成の試験の土台（表の種の入力）では確かめられない（K-60）",
+   "covers": {
+    "test_post_tickets_ok": "K60-API-001",
+    "test_post_tickets_ok_3": "K60-API-001",
+    "test_post_tickets_rejected_401": "K60-API-042",
+    "test_post_tickets_rejected_403": "K60-API-005",
+    "test_post_tickets_rejected_422": "K60-API-008",
+    "test_post_tickets_rejected_422_2": "K60-API-025",
+    "test_post_tickets_rate_limited": "K60-API-031",
+    "test_post_tickets_terms_pending": "K60-API-043",
+    "test_post_tickets_shape": "K60-API-001"
+   }
+  },
+  "listTicketKinds": {
+   "file": "apps/api/test/features/F4/create-ticket.test.ts",
+   "reason": "K-60 の口は本物の振る舞い（hooks）と、種別の必須の区画・期限が今日より前でない・同じ会社の確かめが要る。生成の試験の土台（表の種の入力）では確かめられない（K-60）",
+   "covers": {
+    "test_get_ticket_kinds_ok": "K60-API-034",
+    "test_get_ticket_kinds_rejected_401": "K60-API-042",
+    "test_get_ticket_kinds_rejected_403": "K60-API-042",
+    "test_get_ticket_kinds_terms_pending": "K60-API-043",
+    "test_get_ticket_kinds_shape": "K60-API-034"
+   }
+  },
+  "listScopes": {
+   "file": "apps/api/test/features/F4/create-ticket.test.ts",
+   "reason": "K-60 の口は本物の振る舞い（hooks）と、種別の必須の区画・期限が今日より前でない・同じ会社の確かめが要る。生成の試験の土台（表の種の入力）では確かめられない（K-60）",
+   "covers": {
+    "test_get_scopes_ok": "K60-API-033",
+    "test_get_scopes_rejected_401": "K60-API-042",
+    "test_get_scopes_rejected_403": "K60-API-042",
+    "test_get_scopes_terms_pending": "K60-API-043",
+    "test_get_scopes_shape": "K60-API-033"
+   }
+  },
+  "getTicket": {
+   "file": "apps/api/test/features/F4/create-ticket.test.ts",
+   "reason": "K-60 の口は本物の振る舞い（hooks）と、種別の必須の区画・期限が今日より前でない・同じ会社の確かめが要る。生成の試験の土台（表の種の入力）では確かめられない（K-60）",
+   "covers": {
+    "test_get_tickets_id_ok": "K60-API-001",
+    "test_get_tickets_id_rejected_401": "K60-API-042",
+    "test_get_tickets_id_rejected_403": "K60-API-042",
+    "test_get_tickets_id_not_found": "K60-API-037",
+    "test_get_tickets_id_terms_pending": "K60-API-043",
+    "test_get_tickets_id_shape": "K60-API-001"
+   }
+  },
+  "listMyTicketDrafts": {
+   "file": "apps/api/test/features/F4/create-ticket.test.ts",
+   "reason": "K-60 の口は本物の振る舞い（hooks）と、種別の必須の区画・期限が今日より前でない・同じ会社の確かめが要る。生成の試験の土台（表の種の入力）では確かめられない（K-60）",
+   "covers": {
+    "test_get_me_ticket_drafts_ok": "K60-API-038",
+    "test_get_me_ticket_drafts_rejected_401": "K60-API-041",
+    "test_get_me_ticket_drafts_rejected_403": "K60-API-039",
+    "test_get_me_ticket_drafts_terms_pending": "K60-API-043",
+    "test_get_me_ticket_drafts_shape": "K60-API-038"
+   }
+  },
+  "saveMyTicketDraft": {
+   "file": "apps/api/test/features/F4/create-ticket.test.ts",
+   "reason": "K-60 の口は本物の振る舞い（hooks）と、種別の必須の区画・期限が今日より前でない・同じ会社の確かめが要る。生成の試験の土台（表の種の入力）では確かめられない（K-60）",
+   "covers": {
+    "test_post_me_ticket_drafts_ok": "K60-API-038",
+    "test_post_me_ticket_drafts_rejected_403": "K60-API-041",
+    "test_post_me_ticket_drafts_rejected_422": "K60-API-040",
+    "test_post_me_ticket_drafts_terms_pending": "K60-API-043",
+    "test_post_me_ticket_drafts_shape": "K60-API-038"
    }
   }
  }

@@ -40,9 +40,10 @@ export function row(r: SpecRow | undefined, body: (page: Page, info: TestInfo) =
 
 const CONTROL =
   /^\s*- (button|link|tab|radio|textbox|searchbox|combobox|checkbox|switch|menuitem|option|slider|spinbutton) "((?:[^"\\]|\\.)*)"/;
-/** 画面の操作要素（読み上げの木にある、押せる・入れられるもの）を（役割, 名前）で集める */
-export async function controlsOf(page: Page): Promise<{ role: string; name: string }[]> {
-  const snap = await page.locator("body").ariaSnapshot();
+/** 画面の操作要素（読み上げの木にある、押せる・入れられるもの）を（役割, 名前）で集める。
+ *  scope で範囲を絞れる（前からある外枠に載せた画面は、外枠の要素を外枠の試験に任せ、本文だけを見る） */
+export async function controlsOf(page: Page, scope = "body"): Promise<{ role: string; name: string }[]> {
+  const snap = await page.locator(scope).ariaSnapshot();
   const out = new Map<string, { role: string; name: string }>();
   for (const ln of snap.split("\n")) {
     const m = CONTROL.exec(ln);
@@ -52,9 +53,9 @@ export async function controlsOf(page: Page): Promise<{ role: string; name: stri
 }
 
 /** 操作要素のうち、仕様に行の無いもの */
-export async function missingRows(page: Page, rows: SpecRow[]): Promise<string[]> {
+export async function missingRows(page: Page, rows: SpecRow[], scope = "body"): Promise<string[]> {
   const have = new Set(rows.map((r) => `${r.role}|${r.name}`));
-  return (await controlsOf(page))
+  return (await controlsOf(page, scope))
     .filter((c) => !have.has(`${c.role}|${c.name}`))
     .map((c) => `（${c.role}）「${c.name}」`);
 }

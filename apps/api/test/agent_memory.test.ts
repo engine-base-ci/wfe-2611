@@ -21,6 +21,7 @@ import { createApp } from "../src/app.js";
 import { authExt } from "../src/auth/ext.js";
 import { agreeCurrentTerms, keepAuth, verifiedUser } from "./_pending.js";
 import { createInvitation } from "@kaname/auth/invitations";
+import { pairForTest, pairMemberForTest } from "./bridge_pair.js";
 
 const DB_PKG = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "packages", "db");
 const ADMIN = process.env["DATABASE_URL"]!;
@@ -91,21 +92,15 @@ async function ready() {
   // 申し込みは直に置き、確認だけを通す（前の道すじ /sign-up は K-51 で契約の口に移した）
   const ver = await verifiedUser(AUTH_URL, { email, password: PW, companyName: "K" });
   const H = { authorization: `Bearer ${ver.token}` };
-  const pair = await json<{ code: string }>(post("/bridge/pair", {}, H));
-  const claim = await json<{ session_id: string }>(
-    post("/bridge/claim", { code: pair.code, device_label: "QA の PC" }),
-  );
-  const B = { "x-bridge-session": claim.session_id };
-  const member = (await admin.query("select member_id from sessions where id = $1", [claim.session_id])).rows[0]
+  const bp = await pairForTest(admin, email);
+  const B = { "x-bridge-session": bp.token };
+  const member = (await admin.query("select member_id from sessions where id = $1", [bp.sid])).rows[0]
     .member_id as string;
   return { H, B, member };
 }
-async function pairBridge(H: Record<string, string>) {
-  const pair = await json<{ code: string }>(post("/bridge/pair", {}, H));
-  const claim = await json<{ session_id: string }>(
-    post("/bridge/claim", { code: pair.code, device_label: "QA の PC" }),
-  );
-  return { "x-bridge-session": claim.session_id };
+async function pairBridge(member: string) {
+  const bp = await pairMemberForTest(admin, member);
+  return { "x-bridge-session": bp.token };
 }
 /** 同じ会社に担当者を 1 人招く（招待を受ける → ログインの鍵） */
 async function invite(bossMember: string) {
@@ -126,7 +121,7 @@ async function invite(bossMember: string) {
       .auth_user_id as string,
   );
   const H = { authorization: `Bearer ${ac.token}` };
-  return { H, B: await pairBridge(H), member: ac.member_id };
+  return { H, B: await pairBridge(ac.member_id), member: ac.member_id };
 }
 /** 会話を 1 本作り、昨日のことにする（まとめは昨日までを読む） */
 async function talkedYesterday(H: Record<string, string>, B: Record<string, string>, text: string, reply: string) {
@@ -289,7 +284,7 @@ describe("毎朝のまとめ（D-105.2〜D-105.5）", () => {
     const { H, B } = await ready();
     await talkedYesterday(H, B, "何か", "はい");
     await admin.query(
-      "update sessions set last_seen_at = now() - interval '10 minutes', issued_at = now() - interval '10 minutes' where id = $1",
+      "update sessions set last_seen_at = now() - interval '10 minutes', issued_at = now() - interval '10 minutes' where device_token_hash = encode(sha256(convert_to($1, 'UTF8')), 'hex')",
       [B["x-bridge-session"]],
     );
     const r = await post("/agent/memory/digest", {}, H);

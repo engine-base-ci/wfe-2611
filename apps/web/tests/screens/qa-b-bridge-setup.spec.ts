@@ -1,3 +1,4 @@
+// D-128.150：前の「PC をつなぐ」画面（/setup/bridge/legacy）の試験。消さずに残し、K-89・K-90・K-91 がこの画面と試験を使う。接続コードの口は K-57 の契約の口に替えた
 // QA 担当 B：「自分のPCをつなぐ」（/setup/bridge・T-U-09）の状態と操作、共通の枠（T-US-01）の上の帯の操作を実ブラウザで確かめる。
 // この画面は この PC の Bridge（127.0.0.1:38617 の /ping・/check・/pair・/install-claude・/login-claude・/login-code）にも聞く。
 // 本人の本物の Bridge は止めない（hideRealBridge）。この PC の口は page.route で偽の答えを返して状態を作る（試験のブラウザの中だけ）。
@@ -10,6 +11,7 @@ import {
   bridgeBeat,
   bridgeTake,
   claimBridge,
+  deviceRowId,
   hideRealBridge,
   loginAs,
   setupStep,
@@ -32,9 +34,14 @@ function gate() {
   const p = new Promise<void>((ok) => (open = ok));
   return { wait: p, open };
 }
-/** 本物の Bridge と同じに、画面が渡した接続コードを Kaname の口で引き取る（端末の行ができ、段 1 が通る） */
-const claimWith = (label: string) => async (code: string) =>
-  (await api("/api/auth-ext/bridge/claim", { code, device_label: label })).status === 201;
+/** 本物の Bridge と同じに、画面が渡した接続コードを Kaname の口で引き取る（端末の行ができ、段 1 が通る）。
+ *  本物の Bridge は引き取ったらすぐ生きている知らせを送る（K-57：「つながっています」は最初の知らせから・D-090） */
+const claimWith = (label: string) => async (code: string) => {
+  const c = await api<{ data: { device_token: string } }>("/api/v1/bridge/claim", { code, device_label: label });
+  if (c.status !== 201) return false;
+  await bridgeBeat(c.json.data.device_token);
+  return true;
+};
 const stepOf = async (memberId: string) =>
   (await admin<{ s: number }>("select setup_step as s from members where id = $1", [memberId]))[0]!.s;
 const browserOf = async (memberId: string) =>
@@ -49,16 +56,18 @@ const steps = (page: Page) => page.getByRole("list", { name: "手順" }).locator
 /** つながった人（端末の行・知らせが来ている・この PC の口が答える）。health を渡すと Bridge の自己診断として返す */
 async function connected(page: Page, health?: { name: string; ok: boolean; detail?: string }[], step = 1) {
   const u = await signupViaApi();
-  const sid = await claimBridge(u.token, "MacBook Pro（QA-B つながった）");
-  await bridgeBeat(sid, health);
+  const token = await claimBridge(u.token, "MacBook Pro（QA-B つながった）");
+  await bridgeBeat(token, health);
+  // 画面と DB の行は sessions の id、Bridge の口は PC の印（K-57 で分けた・D-128.137）
+  const sid = await deviceRowId(token);
   await setupStep(u.memberId, step);
   await hideRealBridge(page);
   await localBridge(page, { label: "MacBook Pro（QA-B つながった）" });
   await loginAs(page, u.token);
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/setup/bridge");
+  await page.goto("/setup/bridge/legacy");
   await expect(page.locator('[data-state="ok"]')).toBeVisible({ timeout: 20_000 });
-  return { u, sid };
+  return { u, sid, token };
 }
 
 test("BRG-02-001 SCR-BRIDGE-SETUP-059 状態「接続中（ブラウザ・未インストール）」：手順バー・見出し・受け取る（macOS／Windows）・開く・許可の 3 つ・何をするか／しないか が出て、接続コードは本物（引き取れる）", async ({
@@ -68,7 +77,7 @@ test("BRG-02-001 SCR-BRIDGE-SETUP-059 状態「接続中（ブラウザ・未イ
   const u = await signupViaApi();
   await loginAs(page, u.token);
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/setup/bridge");
+  await page.goto("/setup/bridge/legacy");
   await expect(page.locator("h1")).toHaveText("自分のPCをつなぐ");
   await expect(steps(page)).toHaveCount(6);
   await expect(steps(page)).toHaveText([
@@ -94,11 +103,11 @@ test("BRG-02-001 SCR-BRIDGE-SETUP-059 状態「接続中（ブラウザ・未イ
   // 次へは押せず、何をすれば進めるかが出る
   await expect(page.locator("[data-wiz-next-go]")).toBeDisabled();
   await expect(page.locator("[data-wiz-next-note]")).toHaveText("PC の Bridge がつながると進めます");
-  // 接続コード：モックの KNM-4821 の決め打ちではなく、Kaname が発行した本物の番号（引き取れる）
+  // 接続コード：モックの KNM-4821 の決め打ちではなく、Kaname が発行した本物の番号（K-57 の英数字 6 けた・引き取れる）
   await page.getByText("うまくつながらないとき（接続コードを手で入れる）").click();
   const code = (await page.locator("[data-pair-code]").innerText()).trim();
-  expect(code).toMatch(/^KNM-\d{4}$/);
-  const c = await api<{ data: { connected: boolean } }>("/api/auth-ext/bridge/claim", {
+  expect(code).toMatch(/^[23456789ABCDEFGHJKMNPQRSTUVWXYZ]{6}$/);
+  const c = await api<{ data: { connected: boolean } }>("/api/v1/bridge/claim", {
     code,
     device_label: "QA-B 確かめ",
   });
@@ -120,7 +129,7 @@ test("SCR-BRIDGE-SETUP-060 SCR-BRIDGE-SETUP-096 状態「ブラウザ・Bridge �
   });
   await loginAs(page, u.token);
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/setup/bridge");
+  await page.goto("/setup/bridge/legacy");
   const ins = page.locator('[data-where="installed"]');
   await expect(ins).toBeVisible({ timeout: 20_000 });
   await expect(ins).toContainText("この PC で Bridge が動いています。");
@@ -132,7 +141,9 @@ test("SCR-BRIDGE-SETUP-060 SCR-BRIDGE-SETUP-096 状態「ブラウザ・Bridge �
   await expect(page.locator("[data-pair-code]"), "コードも見せない").toHaveCount(0);
   await expect(page.locator("[data-connect-here]")).toBeVisible();
   await expect.poll(() => seen.codes.length, { timeout: 15_000 }).toBe(1);
-  expect(seen.codes[0], "画面が発行した接続コードをそのまま Bridge に渡す").toMatch(/^KNM-\d{4}$/);
+  expect(seen.codes[0], "画面が発行した接続コードをそのまま Bridge に渡す").toMatch(
+    /^[23456789ABCDEFGHJKMNPQRSTUVWXYZ]{6}$/,
+  );
   // 096：つながる前に「接続を確かめる」を押す → この PC を見直し、まだつながっていないと出る
   const recheck = page.getByRole("button", { name: "接続を確かめる" });
   await recheck.click();
@@ -167,7 +178,7 @@ test("BRG-01-001 SCR-BRIDGE-SETUP-061 状態「アプリ（Bridge の窓）の�
     });
     await loginAs(page, u.token);
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto("/setup/bridge");
+    await page.goto("/setup/bridge/legacy");
     await expect(page.locator("h1")).toHaveText("自分のPCをつなぐ");
     const app = page.locator('[data-where="app"]');
     await expect(app).toBeVisible({ timeout: 20_000 });
@@ -200,7 +211,7 @@ test("BRG-01-002 BRG-02-002 BRG-04-002 SCR-BRIDGE-SETUP-072 SCR-BRIDGE-SETUP-080
   });
   await loginAs(page, u.token);
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/setup/bridge");
+  await page.goto("/setup/bridge/legacy");
   try {
     await expect(page.locator("h1")).toHaveText("自分のPCをつなぐ");
     const box = page.locator("[data-need-claude]");
@@ -236,12 +247,15 @@ test("SCR-BRIDGE-SETUP-062 状態「切れている（知らせが来ていな�
   page,
 }) => {
   const u = await signupViaApi();
-  const sid = await claimBridge(u.token, "MacBook Pro（QA-B 寝ている）");
-  await admin("update sessions set last_seen_at = now() - interval '7 minutes' where id = $1", [sid]);
+  const token = await claimBridge(u.token, "MacBook Pro（QA-B 寝ている）");
+  await bridgeBeat(token); // 一度は知らせが来た PC（K-57：知らせの無い PC は「まだ」で、「切れている」ではない）
+  await admin("update sessions set last_seen_at = now() - interval '7 minutes' where id = $1", [
+    await deviceRowId(token),
+  ]);
   await hideRealBridge(page); // この PC の Bridge は返事をしない（閉じている）
   await loginAs(page, u.token);
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/setup/bridge");
+  await page.goto("/setup/bridge/legacy");
   const slp = page.locator('[data-state="slp"]');
   await expect(slp).toBeVisible({ timeout: 20_000 });
   await expect(page.locator("h1")).toHaveText("自分のPCをつなぐ");
@@ -265,19 +279,20 @@ test("SCR-BRIDGE-SETUP-089 SCR-BRIDGE-SETUP-090 状態「接続中」：手順�
   const u = await signupViaApi();
   await loginAs(page, u.token);
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/setup/bridge");
+  await page.goto("/setup/bridge/legacy");
   await expect(page.locator('[data-where="web"]')).toBeVisible({ timeout: 20_000 });
   const one = page.getByRole("link", { name: "1. PCをつなぐ" });
   await expect(one).toHaveAttribute("aria-current", "step");
-  await one.click();
-  await expect(page).toHaveURL(/\/setup\/bridge$/);
-  await expect(page.locator("h1")).toHaveText("自分のPCをつなぐ");
   const two = page.getByRole("button", { name: "2. 話す（まだ開けません。押すと理由が出ます）" });
   await two.click();
   await expect(page.locator("[data-step-note]")).toHaveText(
     /^「2\. 話す」は、いまの段「1\. PCをつなぐ」で\s*PC の Bridge がつながると開きます$/,
   );
+  await expect(page).toHaveURL(/\/setup\/bridge\/legacy$/);
+  // 「1. PCをつなぐ」の行き先 /setup/bridge は K-57 の新しい画面（D-128.150：前の画面は /setup/bridge/legacy に残した）
+  await one.click();
   await expect(page).toHaveURL(/\/setup\/bridge$/);
+  await expect(page.locator("h1")).toHaveText("PC をつなぐ");
 });
 
 test("SCR-BRIDGE-SETUP-090 SCR-BRIDGE-SETUP-091 SCR-BRIDGE-SETUP-092 状態「つながった」（段 3 まで通した人）：手順バーの 2・3・4 を押すとそれぞれの画面が開く（200・h1）。5・6 は届いていない段として、いまの段で何をすれば開くかが出る", async ({
@@ -289,7 +304,7 @@ test("SCR-BRIDGE-SETUP-090 SCR-BRIDGE-SETUP-091 SCR-BRIDGE-SETUP-092 状態「�
     ["3. たたき台", /\/onboard\/draft$/, "たたき台を確かめる"],
     ["4. ログイン情報", /\/settings\/credentials$/, "ログイン情報を預ける"],
   ] as const) {
-    await page.goto("/setup/bridge");
+    await page.goto("/setup/bridge/legacy");
     await expect(page.locator('[data-state="ok"]')).toBeVisible({ timeout: 20_000 });
     await page.getByRole("link", { name: new RegExp(`^(（済）)?${name}$`) }).click();
     await expect(page).toHaveURL(url, { timeout: 15_000 });
@@ -297,7 +312,7 @@ test("SCR-BRIDGE-SETUP-090 SCR-BRIDGE-SETUP-091 SCR-BRIDGE-SETUP-092 状態「�
     expect((await page.request.get(page.url())).status(), "実在ルート（200）").toBe(200);
   }
   // 5・6 は届いていない段（押しても 404 にせず、いまの段で何をすれば開くかを言う・D-116.2）
-  await page.goto("/setup/bridge");
+  await page.goto("/setup/bridge/legacy");
   // 進み具合（段 3 まで）が読めてから押す（読めていない間は 1 段目扱いの文が出る）
   await expect(page.locator("ol[aria-label='手順'] li", { hasText: "3. たたき台" })).toHaveClass(/st-success/, {
     timeout: 15_000,
@@ -421,7 +436,7 @@ test("SCR-BRIDGE-SETUP-103 状態「つながった・AI が Chrome を使えな
     )
     .toContain('"ok":false');
   await localBridge(page);
-  await page.goto("/setup/bridge");
+  await page.goto("/setup/bridge/legacy");
   const row = page.locator("tr[data-check]", { hasText: CHROME_CHECK });
   await expect(row).toHaveAttribute("data-check", "ng", { timeout: 20_000 });
   const off = page.locator("[data-browser-off]");
@@ -479,14 +494,15 @@ test("USH-01-057 AI がまだ無い時点（PS0）の上の帯の「PC をつな
   await expect(link).toHaveAttribute("href", "/setup/bridge");
   await link.click();
   await expect(page).toHaveURL(/\/setup\/bridge$/, { timeout: 15_000 });
-  await expect(page.locator("h1")).toHaveText("自分のPCをつなぐ", { timeout: 15_000 });
+  // /setup/bridge は K-57 の新しい画面（D-128.150）
+  await expect(page.locator("h1")).toHaveText("PC をつなぐ", { timeout: 15_000 });
   expect((await page.request.get(page.url())).status(), "実在ルート（200）").toBe(200);
 });
 
 test("SCR-BRIDGE-SETUP-070 状態「つながった」：「この端末を外す」は確かめてから外す。やめると何も変わらず、外すとその端末の鍵が失効して Bridge は仕事を取れなくなる", async ({
   page,
 }) => {
-  const { u, sid } = await connected(page);
+  const { u, sid, token } = await connected(page);
   const btn = page.locator(`[data-bridge-revoke="${sid}"]`);
   await expect(btn).toHaveText("この端末を外す");
   // やめる → 何も変わらない
@@ -511,7 +527,7 @@ test("SCR-BRIDGE-SETUP-070 状態「つながった」：「この端末を外�
         (await admin<{ r: string | null }>("select revoked_at as r from sessions where id = $1", [sid]))[0]!.r,
     )
     .not.toBeNull();
-  expect((await bridgeTake(sid)).status, "外した鍵では仕事を取れない").toBe(410);
+  expect((await bridgeTake(token)).status, "外した鍵では仕事を取れない").toBe(410);
   void u;
 });
 
@@ -525,7 +541,7 @@ async function connectedAs(
   const sid = await claimBridge(u.token, "MacBook Pro（QA-B 状態）");
   if (o.old)
     // 約束の版を送らない（古い）Bridge の知らせ
-    await fetch(`${API}/api/auth-ext/bridge/heartbeat`, {
+    await fetch(`${API}/api/v1/bridge/heartbeat`, {
       method: "POST",
       headers: { "content-type": "application/json", "x-bridge-session": sid },
       body: JSON.stringify({ health: [] }),
@@ -537,7 +553,7 @@ async function connectedAs(
   await localBridge(page, { label: "MacBook Pro（QA-B 状態）" });
   await loginAs(page, u.token);
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/setup/bridge");
+  await page.goto("/setup/bridge/legacy");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("自分のPCをつなぐ", { timeout: 20_000 });
 }
 

@@ -2,6 +2,8 @@
 // 配布の画面の案内（BRG-06-011・BRG-06-013 の画面の側）、作業中の 1 行（CHT-27-005）を実ブラウザで押して確かめる。
 // 期待は正本（packages/errors のエラー一覧・決定ログ D-090／D-104.15／D-104.8・モック）から書く（G-09）。
 // Bridge は本物の輪（apps/bridge の loop）を回し、CLI だけ偽物（scripts/dev/fake-claude-demo.mjs）に差す。
+// D-128.150：自己診断の表・Claude Code のログイン・受け取りの部品を見る試験は、前の「PC をつなぐ」画面（/setup/bridge/legacy）を開く。
+//   生きている知らせは K-57 の契約の口（/api/v1/bridge/heartbeat）。仕事の口（/api/auth-ext/bridge/take ほか）は F5 で移す
 // 偽の CLI に無い振る舞い（ログインしていない）は、この試験の中で一時フォルダに小さな CLI を書いて差す（本物の行の形・stream.ts の実測）。
 // 本人の本物の Bridge は止めない。画面からだけ見えなくする（hideRealBridge）。
 import { chmodSync, mkdirSync, writeFileSync } from "node:fs";
@@ -412,7 +414,7 @@ test("E-CONN-010-A E-CONN-010-B E-CONN-010-C ログインしていない PC に�
       "login-code": () => ((loggedIn = true), { ok: true, message: "ログインできました。これで仕事を渡せます" }),
     },
   );
-  await page.goto("/setup/bridge");
+  await page.goto("/setup/bridge/legacy");
   const login = page.locator("[data-login-claude]");
   await expect(login, "C 一手が押せる").toBeVisible({ timeout: 20_000 });
   await login.click();
@@ -432,9 +434,9 @@ test("E-CONN-010-A E-CONN-010-B E-CONN-010-C ログインしていない PC に�
 });
 
 // ---------------------------------------------------------------- E-CONN-012 Bridge が古い
-/** 約束の版を送らない（古い）Bridge が生きている知らせを送る */
+/** 約束の版を送らない（古い）Bridge が生きている知らせを送る（契約の口 sendHeartbeat・K-57。sid は PC の印） */
 const oldBeat = (sid: string) =>
-  fetch(`${API}/api/auth-ext/bridge/heartbeat`, {
+  fetch(`${API}/api/v1/bridge/heartbeat`, {
     method: "POST",
     headers: { "content-type": "application/json", "x-bridge-session": sid },
     body: JSON.stringify({ health: [] }),
@@ -506,6 +508,8 @@ test("E-CONN-012-C SCR-BRIDGE-SETUP-105 SCR-BRIDGE-SETUP-106 「Bridge が古い
   await localBridge(page, () => []);
   await bar.getByRole("link", { name: "PC の状態を見る" }).click();
   await expect(page).toHaveURL(/\/setup\/bridge$/);
+  // 自己診断の表と入れ直す受け取り口は、前の画面（/setup/bridge/legacy・D-128.150。K-89〜K-91 が使う）にある。K-57 の新しい画面には無い
+  await page.goto("/setup/bridge/legacy");
   const row = page.locator("tr[data-check]", { hasText: "Bridge が新しい" });
   await expect(row).toHaveAttribute("data-check", "ng", { timeout: 20_000 });
   await expect(row).toContainText("Bridge を入れ直してください");
@@ -514,12 +518,12 @@ test("E-CONN-012-C SCR-BRIDGE-SETUP-105 SCR-BRIDGE-SETUP-106 「Bridge が古い
   await expect(re, "入れ直すための受け取り口が、この画面から押せる").toBeVisible({ timeout: 5_000 });
   await expect(re).toContainText("この PC の Bridge が古いので、自分のAI に仕事を渡せません。");
   const got = page.waitForResponse(
-    (r) => r.url().includes("/bridge/download?os=mac") && r.request().method() === "GET",
+    (r) => r.url().includes("/api/v1/bridge/releases/mac/file") && r.request().method() === "GET",
     { timeout: 15_000 },
   );
   await re.locator('[data-download="mac"]').click();
   expect((await got).status(), "macOS 版の受け取りが始まる").toBeLessThan(400);
-  await page.goto("/setup/bridge");
+  await page.goto("/setup/bridge/legacy");
   await expect(re).toBeVisible({ timeout: 20_000 });
   // 今の配布物は macOS 版だけ（apps/bridge/release の目録）。Windows 版は押すと理由が出て、コマンドは出さない
   await re.locator('[data-download="win"]').click();
@@ -775,7 +779,7 @@ test("BRG-06-011 署名が済むまでは OS の警告が出るが手順は変�
   const u = await signupViaApi();
   await setupStep(u.memberId, 1);
   await loginAs(page, u.token);
-  await page.goto("/setup/bridge");
+  await page.goto("/setup/bridge/legacy");
   const lead = page.locator("[data-install-lead]");
   await expect(lead.locator("li"), "手順は変えない（3 つ）").toHaveCount(3, { timeout: 15_000 });
   const w = page.locator("details[data-os-warning]");
@@ -816,7 +820,7 @@ test("BRG-06-013 Bridge の自己診断で無いもの（Claude Code・Chrome）
     { name: "本人のサブスクの Claude Code がある", ok: false, detail: "この PC にありません", fix: "install" },
     { name: "Kaname につながる", ok: true, detail: API },
   ]);
-  await page.goto("/setup/bridge");
+  await page.goto("/setup/bridge/legacy");
   const cc = page.locator("tr[data-check]", { hasText: "本人のサブスクの Claude Code がある" });
   await expect(cc).toHaveAttribute("data-check", "ng", { timeout: 20_000 });
   await expect(cc).toContainText("できません");

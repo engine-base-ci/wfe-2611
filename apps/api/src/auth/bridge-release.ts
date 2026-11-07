@@ -88,6 +88,34 @@ export async function readManifest(cfg: {
   return cached.m ? { m: cached.m, from: "base" } : null;
 }
 
+/** 目録の状態（K-57）。置き場に届かない・遅い（unreachable）と、配っていない（none）を混ぜない。
+ *  届かないときは覚えない（次の要求でもう一度見に行く）。壊れた目録・形が違う目録は配っていない扱い */
+export type ReleaseState =
+  { state: "ok"; m: ReleaseManifest; from: "dir" | "base" } | { state: "none" } | { state: "unreachable" };
+export async function releaseState(cfg: { dir?: string; base?: string }): Promise<ReleaseState> {
+  if (cfg.dir) {
+    try {
+      const m = parseManifest(JSON.parse(readFileSync(join(cfg.dir, MANIFEST), "utf8")));
+      if (m) return { state: "ok", m, from: "dir" };
+    } catch {
+      /* 目録がまだ無い・壊れている＝配っていない（置き場の URL も見る） */
+    }
+  }
+  const base = (cfg.base ?? "").replace(/\/$/, "");
+  if (!base) return { state: "none" };
+  if (cached && cached.base === base && Date.now() - cached.at <= CACHE_MS)
+    return cached.m ? { state: "ok", m: cached.m, from: "base" } : { state: "none" };
+  try {
+    const r = await fetch(`${base}/${MANIFEST}`, { signal: AbortSignal.timeout(5_000) });
+    if (r.status >= 500) return { state: "unreachable" };
+    const m = r.ok ? parseManifest(await r.json().catch(() => null)) : null;
+    cached = { base, at: Date.now(), m };
+    return m ? { state: "ok", m, from: "base" } : { state: "none" };
+  } catch {
+    return { state: "unreachable" };
+  }
+}
+
 /** 自分で入れ替える中身（その OS と CPU のもの。無ければ同じ OS の別の CPU は渡さない） */
 export function pickUpdate(m: ReleaseManifest, os: BridgeOs, arch: BridgeArch): ReleaseFile | null {
   return m.files.find((f) => f.platform === os && f.arch === arch && f.kind === "app") ?? null;

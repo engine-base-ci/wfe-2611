@@ -5,14 +5,14 @@
   "D-128.129"
  ],
  "counts": {
-  "api": 363,
-  "api_built": 10,
+  "api": 365,
+  "api_built": 22,
   "api_only_later_phase": 20,
-  "legacy_routes": 39,
-  "db": 142,
+  "legacy_routes": 33,
+  "db": 143,
   "ui": 13,
   "packages": 13,
-  "errors": 151,
+  "errors": 157,
   "stack": 52,
   "env": 39
  },
@@ -613,7 +613,7 @@
    "tables": [
     "sessions"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-57"
    ]
@@ -664,7 +664,7 @@
    "tables": [
     "sessions"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-57"
    ]
@@ -732,7 +732,7 @@
    "tables": [
     "sessions"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-57"
    ]
@@ -930,7 +930,7 @@
    "tables": [
     "bridge_pairing_codes"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-57"
    ]
@@ -947,7 +947,7 @@
    "tables": [
     "sessions"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-57"
    ]
@@ -964,7 +964,7 @@
    "tables": [
     "sessions"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-57"
    ]
@@ -2783,6 +2783,40 @@
    ]
   },
   {
+   "op": "listMyTicketDrafts",
+   "method": "GET",
+   "path": "/api/v1/me/ticket-drafts",
+   "what": "取得（me）— チケットを作る（画面で・下書きから）",
+   "flows": [
+    "F4"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "tenant_memberships"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-60"
+   ]
+  },
+  {
+   "op": "saveMyTicketDraft",
+   "method": "POST",
+   "path": "/api/v1/me/ticket-drafts",
+   "what": "作成・実行（me）— チケットを作る（画面で・下書きから）",
+   "flows": [
+    "F4"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "tenant_memberships"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-60"
+   ]
+  },
+  {
    "op": "disableTwoFactor",
    "method": "DELETE",
    "path": "/api/v1/me/two-factor",
@@ -4368,7 +4402,7 @@
    "tables": [
     "scopes"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-60"
    ]
@@ -4600,7 +4634,7 @@
    "tables": [
     "ticket_kinds"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-60"
    ]
@@ -4767,7 +4801,7 @@
    "tables": [
     "tickets"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-60"
    ]
@@ -4784,7 +4818,7 @@
    "tables": [
     "tickets"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-60"
    ]
@@ -5848,16 +5882,10 @@
   "/bridge/answer",
   "/bridge/ask",
   "/bridge/browser",
-  "/bridge/claim",
   "/bridge/code",
   "/bridge/credentials/check-result",
   "/bridge/credentials/resolve",
-  "/bridge/download",
-  "/bridge/file/:name",
   "/bridge/finish",
-  "/bridge/heartbeat",
-  "/bridge/latest",
-  "/bridge/pair",
   "/bridge/progress",
   "/bridge/state",
   "/bridge/take",
@@ -7021,10 +7049,11 @@
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）",
    "writes": [
-    "F10"
+    "F10",
+    "F4"
    ],
    "reads": [],
-   "boundary": false
+   "boundary": true
   },
   {
    "table": "tenants",
@@ -7083,6 +7112,14 @@
    "writes": [
     "F6"
    ],
+   "reads": [],
+   "boundary": false
+  },
+  {
+   "table": "ticket_drafts",
+   "class": "internal",
+   "why": "書きかけのチケットの下書き（app スキーマ・アプリの役は直に触れない）。作る口と下書きの口が関門 C2 の関数（app.ticket_draft_save・app.ticket_drafts_mine・app.ticket_create）で使う（K-60・D-128.138）",
+   "writes": [],
    "reads": [],
    "boundary": false
   },

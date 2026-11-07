@@ -4,6 +4,7 @@
 // Bridge のアプリの中で開いている人に「macOS 版をダウンロード」と出すのは明らかにおかしい（もう入っている）。
 // user「アプリの時とブラウザの時で分けれないの？ いるとするとアプリのインストール動線じゃない？」
 import { useEffect, useState } from "react";
+import { fetchFile } from "@/lib/api/call";
 
 /** この PC の Bridge を起こす（D-015.8）。インストーラが OS に登録した kaname-bridge:// を叩く。
  *  入っていなければ何も起きないので、呼んだ側が数秒見て「見つからない」と言う（黙って待たせない） */
@@ -36,20 +37,27 @@ export function wake(): void {
   }
 }
 
-/** インストーラを受け取る（Kaname のサーバーから配る・D-015.6）。
- *  実物がまだ無ければ、その理由を返す（押しても何も起きない、を作らない） */
-export async function download(os: "mac" | "win", apiBase: string): Promise<{ ok: boolean; message: string }> {
-  try {
-    const r = await fetch(`${apiBase}/api/auth-ext/bridge/download?os=${os}`, { redirect: "follow" });
-    if (r.ok) {
-      window.location.href = `${apiBase}/api/auth-ext/bridge/download?os=${os}`; // 実物へ
-      return { ok: true, message: "ダウンロードが始まります" };
-    }
-    const j = (await r.json().catch(() => ({}))) as { message?: string };
-    return { ok: false, message: j.message ?? "いま受け取れません" };
-  } catch (e) {
-    return { ok: false, message: e instanceof Error ? e.message : "Kaname に届きません" };
+/** インストーラを受け取る（契約の口 downloadBridgeRelease・K-57・D-128.153）。
+ *  置き場が外なら短い期限の署名 URL を普通のリンクとして開く。手元のフォルダなら中身をそのまま保存させる。
+ *  受け取れなければ正本のエラー ID を返す（押しても何も起きない、を作らない） */
+export async function getInstaller(
+  os: "mac" | "win",
+): Promise<{ ok: true } | { ok: false; status: number; code: string }> {
+  const r = await fetchFile("downloadBridgeRelease", { name: os });
+  if (!r.ok) return r;
+  const a = document.createElement("a");
+  if (r.kind === "link") {
+    a.href = r.url;
+    a.rel = "noopener";
+  } else {
+    a.href = URL.createObjectURL(r.blob);
+    a.download = os === "mac" ? "Kaname-Bridge.dmg" : "Kaname-Bridge-Setup.exe";
+    setTimeout(() => URL.revokeObjectURL(a.href), 10_000);
   }
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  return { ok: true };
 }
 
 /** Bridge がこの PC の中だけで開いている口（apps/bridge/src/local.ts と同じ番号） */

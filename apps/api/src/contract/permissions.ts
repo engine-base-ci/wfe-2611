@@ -29,6 +29,8 @@ export const CHECKS: Record<string, Check> = {
   //   ops:any は運営の人なら誰でも（運営の人の行があること）
   // 行に結ぶ言葉：この段では社内の人であること（役は 2 の段で確かめた）。:id の行は 4.1 で perm.row を確かめる（一覧・作るは RLS が絞る）
   self: async ({ ctx }) => ctx.role === "member",
+  // 本人か、本人がつないだ PC の印（PC が自分で新しい版を見に来る・D-109・D-128.137）。PC の口は /bridge/ の下だけ（ZT10）
+  self_or_device: async ({ ctx }) => ctx.role === "member" || ctx.role === "device",
   read: async ({ ctx }) => ctx.role === "member" || ctx.role === "ops",
   write: async ({ ctx }) => ctx.role === "member",
   assignee: async ({ ctx }) => ctx.role === "member",

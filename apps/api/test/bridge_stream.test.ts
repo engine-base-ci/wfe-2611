@@ -17,6 +17,7 @@ import { MemoryVault, SecretsGateway } from "@kaname/secrets";
 import { createApp } from "../src/app.js";
 import { authExt } from "../src/auth/ext.js";
 import { keepAuth, verifiedUser } from "./_pending.js";
+import { pairForTest } from "./bridge_pair.js";
 
 const DB_PKG = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "packages", "db");
 const ADMIN = process.env["DATABASE_URL"]!;
@@ -81,12 +82,8 @@ async function ready() {
   // 登録が終わるのはメールを確認した時点（D-088）。確定した本人は ./_pending.ts の verifiedUser で作る（確定の口の振る舞いは features/F1/verify-email.test.ts）
   const { token } = await verifiedUser(AUTH_URL, { email, password: PW, companyName: "K" });
   const H = { authorization: `Bearer ${token}` };
-  const pair = (await (await post("/api/auth-ext/bridge/pair", {}, H)).json()) as { data: { code: string } };
-  const claim = (await (
-    await post("/api/auth-ext/bridge/claim", { code: pair.data.code, device_label: "QA の PC" })
-  ).json()) as { data: { session_id: string } };
-  const sid = claim.data.session_id;
-  const B = { "x-bridge-session": sid };
+  const bp = await pairForTest(admin, email);
+  const B = { "x-bridge-session": bp.token };
   const say = (await (await post("/api/auth-ext/agent/say", { text: "請求書を送っておいて" }, H)).json()) as {
     data: { job_id: string; conversation_id: string };
   };

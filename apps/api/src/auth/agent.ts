@@ -4,6 +4,7 @@
 //   Bridge の口：書きながらの返事（partial）・止める／直すの合図（control）・資料の署名 URL（attachment）・答え（answer2）
 // 判定は DB の関数（security definer）の中。読む側で生の select をすると行レベルの制御に弾かれ、例外にならず 0 件になる
 import { Hono } from "hono";
+import { createDeviceResolver } from "@kaname/auth/resolver";
 import type pg from "pg";
 import type { TenantContext } from "@kaname/db/context";
 import type { ObjectStore } from "@kaname/storage";
@@ -449,10 +450,14 @@ export function agentRoutes(d: AgentDeps): Hono {
   });
 
   // ---- Bridge の口
-  const bridgeSession = (c: { req: { raw: Request } }) => {
-    const h = c.req.raw.headers.get("x-bridge-session") ?? "";
-    return UUID.test(h) ? h : null;
-  };
+  // PC の印（K-57）で生きている PC の行を引く。頭があるのに解けない印は、無い PC の行を指す（「生きているか」で 410・Bridge は印を捨てる）
+  const resolveDevice = createDeviceResolver(d.appPool);
+  // PC の印の形か、前の形（sessions の id）の鍵なら、解けなければ 410（Bridge は捨ててつなぎ直す）。それ以外の形は 401
+  const KEY_SHAPE = /^(kpc_[A-Za-z0-9_-]{43}|[0-9a-f-]{36})$/i;
+  const bridgeSession = async (c: { req: { raw: Request } }) =>
+    KEY_SHAPE.test(c.req.raw.headers.get("x-bridge-session") ?? "")
+      ? ((await resolveDevice(c.req.raw.headers))?.sessionId ?? "00000000-0000-4000-8000-000000000000")
+      : null;
   const alive = async (sid: string) =>
     (await q1<{ ok: boolean }>("select app.bridge_session_alive($1) as ok", [sid]))?.ok === true;
   const GONE = (c: Parameters<typeof bad>[0]) =>
@@ -460,7 +465,7 @@ export function agentRoutes(d: AgentDeps): Hono {
   // 書きながら出る返事の途中（D-104.8）
   // 自分のAI の文を写す（D-112）。本人の PC の Claude Code の記録と同じ id。同じ id は二度入れない
   app.post("/bridge/entries", async (c) => {
-    const sid = bridgeSession(c);
+    const sid = await bridgeSession(c);
     if (!sid) return bad(c, 401, "UNAUTHENTICATED", "この Bridge は分かりません");
     const b = (await c.req.json().catch(() => ({}))) as {
       conversation_id?: unknown;
@@ -488,14 +493,14 @@ export function agentRoutes(d: AgentDeps): Hono {
   });
   // 取り戻す先（D-112）：直近の本人の会話と、そこで使った Claude Code の session
   app.post("/bridge/mirror-targets", async (c) => {
-    const sid = bridgeSession(c);
+    const sid = await bridgeSession(c);
     if (!sid) return bad(c, 401, "UNAUTHENTICATED", "この Bridge は分かりません");
     if (!(await alive(sid))) return GONE(c);
     const r = await q1<{ v: unknown }>("select app.bridge_mirror_targets($1) as v", [sid]);
     return c.json({ data: r?.v ?? [] });
   });
   app.post("/bridge/partial", async (c) => {
-    const sid = bridgeSession(c);
+    const sid = await bridgeSession(c);
     if (!sid) return bad(c, 401, "UNAUTHENTICATED", "この Bridge は分かりません");
     const b = (await c.req.json().catch(() => ({}))) as { job_id?: unknown; text?: unknown };
     if (typeof b.job_id !== "string" || !UUID.test(b.job_id))
@@ -510,7 +515,7 @@ export function agentRoutes(d: AgentDeps): Hono {
   });
   // 止める・止めずに直すの合図（D-104.9）。動いている間、数秒おきに見る
   app.post("/bridge/control", async (c) => {
-    const sid = bridgeSession(c);
+    const sid = await bridgeSession(c);
     if (!sid) return bad(c, 401, "UNAUTHENTICATED", "この Bridge は分かりません");
     const b = (await c.req.json().catch(() => ({}))) as { job_id?: unknown };
     if (typeof b.job_id !== "string" || !UUID.test(b.job_id))
@@ -521,7 +526,7 @@ export function agentRoutes(d: AgentDeps): Hono {
   });
   // 区切りで一言を取りに来る（D-104.9）。ここで本人の吹き出しになる
   app.post("/bridge/steers", async (c) => {
-    const sid = bridgeSession(c);
+    const sid = await bridgeSession(c);
     if (!sid) return bad(c, 401, "UNAUTHENTICATED", "この Bridge は分かりません");
     const b = (await c.req.json().catch(() => ({}))) as { job_id?: unknown; reply?: unknown };
     if (typeof b.job_id !== "string" || !UUID.test(b.job_id))
@@ -533,7 +538,7 @@ export function agentRoutes(d: AgentDeps): Hono {
   });
   // 資料の期限つき署名 URL（D-104.11）。その仕事に付いたものだけ。保存先の鍵は渡さない
   app.post("/bridge/attachment", async (c) => {
-    const sid = bridgeSession(c);
+    const sid = await bridgeSession(c);
     if (!sid) return bad(c, 401, "UNAUTHENTICATED", "この Bridge は分かりません");
     const b = (await c.req.json().catch(() => ({}))) as { job_id?: unknown; attachment_id?: unknown };
     if (
@@ -581,7 +586,7 @@ export function agentRoutes(d: AgentDeps): Hono {
   });
   // 答え（許すか・一言・問い合わせの答え）を Bridge が取りに来る
   app.post("/bridge/answer2", async (c) => {
-    const sid = bridgeSession(c);
+    const sid = await bridgeSession(c);
     if (!sid) return bad(c, 401, "UNAUTHENTICATED", "この Bridge は分かりません");
     const b = (await c.req.json().catch(() => ({}))) as { job_id?: unknown; request_id?: unknown };
     if (typeof b.job_id !== "string" || !UUID.test(b.job_id) || typeof b.request_id !== "string")

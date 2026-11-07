@@ -17,6 +17,7 @@ import { MemoryVault, SecretsGateway } from "@kaname/secrets";
 import { createApp } from "../src/app.js";
 import { authExt } from "../src/auth/ext.js";
 import { keepAuth, verifiedUser } from "./_pending.js";
+import { pairForTest } from "./bridge_pair.js";
 
 const DB_PKG = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "packages", "db");
 const ADMIN = process.env["DATABASE_URL"]!;
@@ -79,11 +80,8 @@ async function paired() {
   const email = `${uniq()}@example.com`;
   const ver = await verifiedUser(AUTH_URL, { email, password: PW, companyName: "K" });
   const H = { authorization: `Bearer ${ver.token}` };
-  const pair = (await (await post("/api/auth-ext/bridge/pair", {}, H)).json()) as { data: { code: string } };
-  const claim = (await (
-    await post("/api/auth-ext/bridge/claim", { code: pair.data.code, device_label: "QA の PC" })
-  ).json()) as { data: { session_id: string } };
-  return { H, B: { "x-bridge-session": claim.data.session_id }, sid: claim.data.session_id };
+  const bp = await pairForTest(admin, email);
+  return { H, B: { "x-bridge-session": bp.token }, sid: bp.sid };
 }
 const take = async (B: Record<string, string>, body: unknown) => {
   const t0 = Date.now();

@@ -307,12 +307,6 @@
   {
    "file": "apps/api/src/auth/ext.ts",
    "method": "POST",
-   "route": "/api/auth-ext/bridge/claim",
-   "to": "claimPairingCode"
-  },
-  {
-   "file": "apps/api/src/auth/ext.ts",
-   "method": "POST",
    "route": "/api/auth-ext/bridge/code",
    "to": "getBridgeQuestionAnswer"
   },
@@ -335,22 +329,10 @@
    "to": "resolveCredential"
   },
   {
-   "file": "apps/api/src/auth/ext.ts",
-   "method": "GET",
-   "route": "/api/auth-ext/bridge/download",
-   "to": "downloadBridgeRelease"
-  },
-  {
    "file": "apps/api/src/auth/agent.ts",
    "method": "POST",
    "route": "/api/auth-ext/bridge/entries",
    "to": "mirrorConversationEntries"
-  },
-  {
-   "file": "apps/api/src/auth/ext.ts",
-   "method": "GET",
-   "route": "/api/auth-ext/bridge/file/:name",
-   "to": "downloadBridgeRelease"
   },
   {
    "file": "apps/api/src/auth/ext.ts",
@@ -359,28 +341,10 @@
    "to": "finishBridgeJob"
   },
   {
-   "file": "apps/api/src/auth/ext.ts",
-   "method": "POST",
-   "route": "/api/auth-ext/bridge/heartbeat",
-   "to": "sendHeartbeat"
-  },
-  {
-   "file": "apps/api/src/auth/ext.ts",
-   "method": "GET",
-   "route": "/api/auth-ext/bridge/latest",
-   "to": "getLatestBridgeRelease"
-  },
-  {
    "file": "apps/api/src/auth/agent.ts",
    "method": "POST",
    "route": "/api/auth-ext/bridge/mirror-targets",
    "to": "listMirrorTargets"
-  },
-  {
-   "file": "apps/api/src/auth/ext.ts",
-   "method": "POST",
-   "route": "/api/auth-ext/bridge/pair",
-   "to": "createPairingCode"
   },
   {
    "file": "apps/api/src/auth/agent.ts",

@@ -96,7 +96,6 @@ export const acceptInvitation = (token: string, b: { name: string; password: str
   ext<{ token: string | null; member_id: string }>(`/invitations/${encodeURIComponent(token)}/accept`, b).then(
     (r) => (r.token && (setToken(r.token), refreshSession()), r),
   );
-export const bridgePair = () => ext<{ code: string; expires_in_sec: number }>("/bridge/pair", {});
 export type TwoFactorKind = "none" | "totp" | "sms" | "email" | "push";
 export const storeCredential = (b: {
   service_name: string;

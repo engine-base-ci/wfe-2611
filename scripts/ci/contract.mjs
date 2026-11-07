@@ -91,6 +91,7 @@ export function parseComponents(yaml) {
     if ((m = /^      x-table: (\S+)/.exec(l))) { out[name].table = m[1]; continue; }
     if (sec === "req" && (m = /^      - (\w+)/.exec(l))) { out[name].required.push(m[1]); continue; }
     if (sec === "props" && (m = /^        (\w+):(?: &(\w+))?$/.exec(l))) { prop = m[1]; propAnchor = m[2] ?? null; out[name].props[prop] = {}; if (propAnchor) anchors[propAnchor] = out[name].props[prop]; continue; }
+    if (sec === "props" && (m = /^        (\w+): \{\}$/.exec(l))) { out[name].props[m[1]] = {}; prop = null; continue; } // 形を問わない欄（z.unknown()・K-57）
     if (sec === "props" && (m = /^        (\w+): \*(\w+)$/.exec(l))) { out[name].props[m[1]] = anchors[m[2]] ?? {}; prop = null; continue; }
     if (sec === "props" && prop && (m = /^          (type|format): (\S+)/.exec(l))) { out[name].props[prop][m[1]] = m[2]; continue; }
     if (sec === "props" && prop && /^          nullable: true/.test(l)) { out[name].props[prop].nullable = true; continue; }

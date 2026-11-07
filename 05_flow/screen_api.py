@@ -25,6 +25,9 @@ SCREEN_API = {
         ("POST", "/tickets/:id/restore", "A116", T, "restoreTicket", ["audit_events"]),
         ("POST", "/tickets/:id/complete", "A106", T, "completeTicket", ["knowledge_pages", "ticket_decisions"]),
         ("POST", "/tickets/bulk", "A103|A113", T, "bulkUpdateTickets", ["ticket_messages"]),
+        # 書きかけの下書き（D-128.138：サーバーに残し、どの端末でも続きが書ける。作った本人のワークスペースごと）
+        ("GET", "/me/ticket-drafts", "A99", "tenant_memberships", "listMyTicketDrafts", []),
+        ("POST", "/me/ticket-drafts", "A99", "tenant_memberships", "saveMyTicketDraft", []),
         ("POST", "/ticket_imports", "A99", "ticket_imports", "createTicketImport", []),
         ("GET", "/ticket_imports/:id", "A99", "ticket_imports", "getTicketImport", []),
         ("POST", "/ticket_imports/:id/commit", "A99", "ticket_imports", "commitTicketImport", [T]),
@@ -498,6 +501,16 @@ INPUTS = {
     "verifySignup": ("SignupVerifyInput", {"token": "string"}),
     # 規約に同意する（K-53）：同意の印と、同意する今の版（利用規約・プライバシーポリシー）の ID だけ。テナントと人はセッションから決める（体に入れても無視する）
     "consentToTerms": ("TermsConsentInput", {"agree": "boolean", "terms_version_id": "string", "privacy_version_id": "string"}),
+    # K-57：PC をつなぐ。コードを出すのは空の入力（持ち主・ハッシュは外から入れさせない）。型が any の欄は形を問わず受け、口が扱う
+    "createPairingCode": ("PairingCodeInput", {}),
+    "claimPairingCode": ("BridgeClaimInput", {"code": "string", "device_label": "string", "machine_id": "string"}),   # machine_id：この PC の印（UUID・D-128.174）。古い Bridge は送らない
+    "sendHeartbeat": ("BridgeHeartbeatInput", {"health": "any", "protocol": "any", "version": "string"}),
+    # K-60：チケットを作る。番号・消した人・取り込みの下書きは入れさせない。区画は鍵 → 本文。知らせる人は最初から選べる（D-128.138）
+    "createTicket": ("TicketCreateInput", {"scope_id": "string", "kind_id": "string", "title": "string", "assignee_member_id": "string",
+                                           "due_on": "string", "start_on": "string", "priority": "string", "priority_reason": "string",
+                                           "parent_ticket_id": "string", "estimate_minutes": "any", "sections": "object",
+                                           "notify_member_ids": "array", "draft_id": "string"}),
+    "saveMyTicketDraft": ("TicketDraftInput", {"draft_id": "string", "body": "object", "discard": "boolean"}),
 }
 # get で始まるが並びを返す口（K-53）。一覧の問い合わせ（scope_id・cursor・limit・sort）は形だけ確かめて無視する
 LIST_OPS = {"getCurrentTerms"}
@@ -589,8 +602,16 @@ RESPONSES = {
     "listSetupTasks": ("SetupTask", {"key": "string", "label": "string", "done": "boolean", "href": "string"}),
     "getNotificationSettings": ("NotificationSettings", {"email_digest": "boolean", "quiet_hours": "object", "paused_until": "string", "urgent_override": "array", "events": "array"}),
     "createPairingCode": ("PairingCode", {"code": "string", "expires_at": "string"}),
-    "getLatestBridgeRelease": ("BridgeRelease", {"version": "string", "files": "array", "sha256": "object", "released_at": "string"}),
+    "getLatestBridgeRelease": ("BridgeRelease", {"released": "boolean", "version": "string", "released_at": "string", "update": "object"}),
     "claimPairingCode": ("BridgeClaim", {"device_token": "string", "device_id": "string", "member_id": "string"}),
+    # 置き場が外なら短い期限の署名 URL（D-128.153）。手元のフォルダならファイルそのもの（JSON ではない）
+    "downloadBridgeRelease": ("BridgeReleaseLink", {"url": "string", "expires_at": "string"}),
+    "sendHeartbeat": ("BridgeHeartbeat", {"ok": "boolean", "browser": "string", "outdated": "boolean"}),
+    "listMyDevices": ("BridgeDevice", {"id": "string", "device_label": "string", "state": "string", "last_seen_at": "string", "connected_at": "string", "version": "string", "health": "array", "revoke_reason": "string"}),
+    "getTicket": ("TicketDetail", {"ticket": "object", "sections": "array", "kind": "object", "stage": "object", "assignee": "object"}),
+    "listTicketKinds": ("TicketKindChoice", {"id": "string", "name": "string", "color": "string", "position": "integer", "is_builtin": "boolean", "sections": "array"}),
+    "listMyTicketDrafts": ("TicketDraft", {"draft_id": "string", "body": "object", "saved_at": "string"}),
+    "saveMyTicketDraft": ("TicketDraft", {"draft_id": "string", "body": "object", "saved_at": "string"}),
     "takeBridgeJob": ("BridgeJob", {"job": "object", "allowed_tools": "array", "forbidden_domains": "array", "rules": "array"}),
     "getJobControl": ("JobControl", {"stop": "boolean", "steers": "array"}),
     "resolveCredential": ("ResolvedCredential", {"ref": "string", "ciphertext_for_executor": "string", "destinations": "array", "expires_at": "string"}),
@@ -645,11 +666,16 @@ RESPONSES = {
 # 一覧の答えの meta に足す数（数だけの API を作らず、一覧の 1 回目で返す・D-128.111）
 META = {
     "listTickets": {"counts": "object"},
+    "listScopes": {"writable": "array"},   # チケットを書けるグループの id（K-60）
     "listApprovalQueue": {"counts": "object"},
     "listClients": {"counts": "object"},
     "listOpsWorkspaces": {"summary": "object"},
     "listOpsInquiries": {"counts": "object"},
     "listOpsInvoices": {"summary": "object"},
+}
+# 上限の差し替え（operationId → 1 分あたりの回数と鍵）。無い口は public 10/ip・GET 120/user・それ以外 60/user
+RATES = {
+    "claimPairingCode": "5/min/ip",   # 総当たりを防ぐ（D-089）
 }
 # 一覧の絞り込み（operationId → query の名前）。cursor・limit・sort はいつも付く
 QUERIES = {
@@ -706,6 +732,8 @@ PERMS = {
     "restoreTicket": ("assignee", "消した本人と、そのグループのマネージャー・管理者（D-128.84）", False),
     "completeTicket": ("assignee", "担当者とマネージャー", False),
     "bulkUpdateTickets": ("write", "1 件ずつ updateTicket と同じ権限で確かめ、権限の無い行は外して理由を返す", False),
+    "listMyTicketDrafts": ("self", "自分の下書きだけ（いま入っているワークスペースの分）", False),
+    "saveMyTicketDraft": ("self", "自分の下書きだけ", False),
     "createTicketImport": ("write", "取り込む先のグループに書ける人", False),
     "getTicketImport": ("self", "取り込んだ本人", False),
     "commitTicketImport": ("self", "取り込んだ本人（確定のときに取り込む先の権限をもう一度確かめる）", False),
@@ -878,10 +906,10 @@ PERMS = {
     "listMyDevices": ("self", "自分の PC だけ", False),
     "updateMyDevice": ("self", "自分の PC だけ（名前・いつも使う）", False),
     "revokeMyDevice": ("self", "自分の PC だけ。外すとその PC の仕事は止まり、預けたログイン情報も取り出せなくなる", True),
-    "getLatestBridgeRelease": ("self", "ログインしている人（版と指紋を返す・D-109）", False),
-    "downloadBridgeRelease": ("self", "ログインしている人（期限つきの署名 URL）", False),
+    "getLatestBridgeRelease": ("self_or_device", "ログインしている人と、つないだ PC の印（PC が自分で新しい版を見に来る・D-109・D-128.137）", False),
+    "downloadBridgeRelease": ("self_or_device", "ログインしている人と、つないだ PC の印（D-128.137）。置き場が外なら短い期限の署名 URL（D-128.153）", False),
     # PC（Bridge）が呼ぶ。本人のセッションに結ばれた PC の印で呼び、本人が切られたら止まる
-    "claimPairingCode": ("device", "接続コードを持つ PC（1 回だけ・10 分）。つないだら本人に知らせる", False),
+    "claimPairingCode": ("public", "接続コードを持つ PC（まだ PC の印が無い。コードそのものが鍵：1 回だけ・10 分・1 分に 5 回まで・D-089・D-128.93）。つないだら本人に知らせる", False),
     "sendHeartbeat": ("device", "その人の PC", False),
     "reportUsage": ("device", "その人の PC（その人の使った量だけ）", False),
     "takeBridgeJob": ("device", "その人の PC に渡された仕事だけ。使えない道具と止めるサイト（D-107）を一緒に渡す", False),

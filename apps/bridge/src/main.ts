@@ -9,9 +9,9 @@ import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
-import { hostname } from "node:os";
 import { startLocalServer } from "./local";
-import { startLoop, type Browser, type LoopState } from "./loop";
+import { BRIDGE_UA, claimCode, defaultDeviceLabel, loadMachineId } from "./pairing";
+import { BRIDGE_PROTOCOL, startLoop, type Browser, type LoopState } from "./loop";
 import { stopCurrent, isRunning, findClaude, warmShellPath, chromeState } from "./runner";
 import { brokenInstall, installClaude } from "./install-claude";
 import { authStatus, cancelLogin, startLogin, submitCode } from "./login";
@@ -31,7 +31,8 @@ interface State {
   connected: boolean;
   deviceLabel: string;
   connectedAt?: string;
-  /** claim で受け取った bridge の session。これを鍵に Kaname と話す（D-090） */
+  /** 引き取りで 1 回だけ受け取った PC の印（"kpc_…"・K-57・D-128.137）。これを鍵に Kaname と話す（D-090）。
+   *  前の形（sessions の id）を覚えていたら、Kaname が 410 を返して捨てさせる（つなぎ直す） */
   sessionId?: string;
   /** AI が使うブラウザ（D-119.2）。既定は本人の Chrome（Claude in Chrome） */
   browser?: Browser;
@@ -50,18 +51,16 @@ const writeState = (s: State): void => {
   mkdirSync(dirname(STATE_PATH), { recursive: true });
   writeFileSync(STATE_PATH, JSON.stringify(s, null, 2), "utf8");
 };
-function defaultLabel(): string {
-  const os = process.platform === "darwin" ? "macOS" : process.platform === "win32" ? "Windows" : process.platform;
-  return `${hostname()}（${os}）`;
-}
+/** PC の名前の既定はこの PC のホスト名（D-128.174） */
+const defaultLabel = (): string => defaultDeviceLabel();
 
 /** いま覚えている鍵が Kaname でまだ通るか（通れば、この PC は別のアカウントでつながったまま） */
 async function stillConnected(sessionId: string): Promise<boolean> {
   try {
-    const r = await fetch(`${API_BASE}/api/auth-ext/bridge/heartbeat`, {
+    const r = await fetch(`${API_BASE}/api/v1/bridge/heartbeat`, {
       method: "POST",
-      headers: { "content-type": "application/json", "x-bridge-session": sessionId },
-      body: JSON.stringify({}),
+      headers: { "content-type": "application/json", "x-bridge-session": sessionId, "user-agent": BRIDGE_UA },
+      body: JSON.stringify({ protocol: BRIDGE_PROTOCOL }),
       signal: AbortSignal.timeout(5000),
     });
     return r.ok;
@@ -85,20 +84,14 @@ async function claim(
       message:
         "この PC の Bridge は、すでに別のアカウントでつながっています。このアカウントに切り替えるなら「このアカウントに切り替える」を押してください",
     };
-  const res = await fetch(`${API_BASE}/api/auth-ext/bridge/claim`, {
-    method: "POST",
-    headers: { "content-type": "application/json", accept: "application/json" },
-    body: JSON.stringify({ code, device_label: st.deviceLabel }),
-  }).catch((e: Error) => e);
-  if (res instanceof Error) return { ok: false, message: `Kaname につながりません（${res.message}）` };
-  const json = (await res.json().catch(() => ({}))) as { data?: { session_id?: string }; message?: string };
-  if (!res.ok) return { ok: false, message: json.message ?? `うまくいきませんでした（${res.status}）` };
-  writeState({
-    ...st,
-    connected: true,
-    connectedAt: new Date().toISOString(),
-    ...(json.data?.session_id ? { sessionId: json.data.session_id } : {}),
+  // 引き取り（K-57）：契約の口 POST /api/v1/bridge/claim。返る PC の印は 1 回だけ。コードは捨てない（届かなければもう一度押せる）
+  //   この PC の印（machine_id・D-128.174）を一緒に送る。同じ人が同じ PC でつなぎ直したときだけ、Kaname は前のつながりを切る
+  const r = await claimCode(API_BASE, code, {
+    label: st.deviceLabel,
+    machineId: loadMachineId(app.getPath("userData")),
   });
+  if (!r.ok) return r;
+  writeState({ ...st, connected: true, connectedAt: new Date().toISOString(), sessionId: r.token });
   return { ok: true };
 }
 
@@ -213,7 +206,7 @@ ipcMain.handle("bridge:set-browser", async (_e, b: string) => {
   try {
     const r = await fetch(`${API_BASE}/api/auth-ext/bridge/browser`, {
       method: "POST",
-      headers: { "content-type": "application/json", "x-bridge-session": sid },
+      headers: { "content-type": "application/json", "x-bridge-session": sid, "user-agent": BRIDGE_UA },
       body: JSON.stringify({ browser: b }),
       signal: AbortSignal.timeout(5000),
     });
@@ -330,6 +323,7 @@ void app.whenReady().then(() => {
     isPackaged: app.isPackaged,
     dir: join(app.getPath("userData"), "updates"),
     isBusy: isRunning,
+    deviceToken: () => readState().sessionId ?? null, // つないだ PC の印で新しい版を見る（K-57・D-128.137）
     onNote: (t) => {
       for (const w of BrowserWindow.getAllWindows())
         w.webContents.send("bridge:install-step", { text: t, state: "done" });

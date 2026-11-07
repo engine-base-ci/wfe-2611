@@ -253,6 +253,17 @@ const current = async () => {
   return (await json(r)).data as Item[];
 };
 
+/** 本人の PC を 1 台つなぐ（K-57 の契約の口：画面のログインでコードを出し、Bridge がそのコードを引き取る）。返す token は PC の印（x-bridge-session に載せる） */
+const pairPc = async (web: string, label: string) => {
+  const code = await req("POST", "/api/v1/bridge/pairing-codes", {}, { headers: bearer(web) });
+  expect(code.status, await code.clone().text()).toBe(201);
+  const c = ((await json(code)).data as { code: string }).code;
+  const claim = await req("POST", "/api/v1/bridge/claim", { code: c, device_label: label });
+  expect(claim.status, await claim.clone().text()).toBe(201);
+  const d = (await json(claim)).data as { device_token: string; device_id: string };
+  return { token: d.device_token, deviceId: d.device_id };
+};
+
 beforeAll(async () => {
   await migrate(ADMIN, DB_PKG);
   await migrateAuth(ADMIN);
@@ -425,27 +436,57 @@ describe("K-53 規約に同意する：同意の状態 × 入口 × 利用者の
   it("K53-API-006 古い版だけ × Bridge のセッション（PC の常駐）：印を立てず止めない（D-128.137）。画面のセッションだけ止める", async () => {
     const p = await person("bridge");
     const web = await login(p);
-    const pair = await req("POST", "/api/auth-ext/bridge/pair", {}, { headers: bearer(web) });
-    expect(pair.status).toBe(201);
-    const code = ((await json(pair)).data as { code: string }).code;
-    const claim = await req("POST", "/api/auth-ext/bridge/claim", { code, device_label: "K-53 の PC" });
-    expect(claim.status).toBe(201);
-    const sid = ((await json(claim)).data as { session_id: string }).session_id;
+    const pc = await pairPc(web, "K-53 の PC");
     const v = await publishBoth("v2-bridge");
     try {
       const again = await login(p);
       await expectBlocked(again);
       const beat = await req(
         "POST",
-        "/api/auth-ext/bridge/heartbeat",
-        { protocol: 4 },
-        { headers: { "x-bridge-session": sid } },
+        "/api/v1/bridge/heartbeat",
+        { health: [], protocol: 4 },
+        { headers: { "x-bridge-session": pc.token } },
       );
-      expect(beat.status, await beat.clone().text()).toBe(200);
+      expect(beat.status, await beat.clone().text()).toBe(201);
       const s = await admin.query<{ terms_pending: boolean }>("select terms_pending from sessions where id = $1", [
-        sid,
+        pc.deviceId,
       ]);
       expect(s.rows[0]?.terms_pending).toBe(false);
+    } finally {
+      await withdraw(v.terms, v.privacy);
+    }
+  });
+
+  it("K57-API-049 同意し直しが要るセッション × /api/auth/*（認証の部品の口）に PC の印の頭（x-bridge-session）を付ける：PC の印の解決に回らず、画面のログインで解いて 403・E-AUTH-010。パスワードは変わらない（K-57 の withDevice で止めを抜けない）", async () => {
+    const p = await person("auth-bridge-header");
+    const pc = await pairPc(await login(p), "K-57 の PC（頭）");
+    const v = await publishBoth("v2-auth-bridge-header");
+    try {
+      const t = await login(p);
+      await expectBlocked(t);
+      // 本人の本物の PC の印・形だけ合う印・形の違う値の 3 つ。どれでも止めを抜けない
+      for (const head of [pc.token, `kpc_${"A".repeat(43)}`, "not-a-device-token"]) {
+        const r = await req(
+          "POST",
+          "/api/auth/change-password",
+          { currentPassword: PW, newPassword: "changed-horse-battery-9", revokeOtherSessions: true },
+          { headers: { ...bearer(t), "x-bridge-session": head } },
+        );
+        expect(r.status, `${head.slice(0, 8)}: ${await r.clone().text()}`).toBe(403);
+        expect((await json(r))["code"], head.slice(0, 8)).toBe(NEW_TERMS_REQUIRED);
+      }
+      expect(
+        (await signInWithLock(authFixture.auth, fixturePool, p.email, PW, WEB_UA)).ok,
+        "パスワードは変わっていない（認証の部品に渡していない）",
+      ).toBe(true);
+      // PC の印そのものは同意し直しの印を見ない（Bridge は止めない・D-128.137）
+      const beat = await req(
+        "POST",
+        "/api/v1/bridge/heartbeat",
+        { health: [], protocol: 4 },
+        { headers: { "x-bridge-session": pc.token } },
+      );
+      expect(beat.status, await beat.clone().text()).toBe(201);
     } finally {
       await withdraw(v.terms, v.privacy);
     }
@@ -978,19 +1019,15 @@ describe("K-53 精査で足した行（DB が落ちた・2 段階の後のログ
     }
   });
 
-  it("K53-API-034 同意の口 × PC の印（Bridge のセッション）で呼ぶ：本人のログインではないので 401。同意の行は書かない（K-57 が PC の印を device の役に解くようになったら 403 に付け替える）", async () => {
+  it("K53-API-034 同意の口 × PC の印（Bridge のセッション）で呼ぶ：本人のログインではなく PC（device の役）なので 403（役が合わない）。同意の行は書かない", async () => {
     const p = await person("pc-consent");
     const web = await login(p);
-    const pair = await req("POST", "/api/auth-ext/bridge/pair", {}, { headers: bearer(web) });
-    expect(pair.status).toBe(201);
-    const code = ((await json(pair)).data as { code: string }).code;
-    const claim = await req("POST", "/api/auth-ext/bridge/claim", { code, device_label: "K-53 の PC（同意）" });
-    expect(claim.status).toBe(201);
-    const sid = ((await json(claim)).data as { session_id: string }).session_id;
+    const pc = await pairPc(web, "K-53 の PC（同意）");
     const before = (await consentsOf(p.userId)).length;
-    const r = await req("POST", CONSENT, agreeTo(base), { headers: { "x-bridge-session": sid } });
-    // K-53 の時点の契約の入口（apps/api/src/server.ts の resolve）は画面のログインしか解かないので、PC の印は「ログインしていない」＝ 401
-    expect(r.status, await r.clone().text()).toBe(401);
+    const r = await req("POST", CONSENT, agreeTo(base), { headers: { "x-bridge-session": pc.token } });
+    // 契約の入口は PC の印を device の役に解く（K-57・apps/api/src/server.ts の withDevice）。同意の口は本人の口なので device は役が合わない＝ 403
+    expect(r.status, await r.clone().text()).toBe(403);
+    expect((await json(r))["code"], "同意し直しの止めではなく、役の止め").not.toBe(NEW_TERMS_REQUIRED);
     expect((await consentsOf(p.userId)).length, "何も書かない").toBe(before);
   });
 
@@ -1165,7 +1202,7 @@ describe("K-53 テスターのレビュー 2 回目で足した行（招待の�
     }
   });
 
-  it("K53-API-040 入口の止め × セッションを解く所が失敗する（DB の一時的な権限の外し）：止める側に倒す。/api/auth/change-password・前の道すじは通さず 503・E-PAGE-003（fail-closed）。パスワードは変わらず、接続コードも作らない", async () => {
+  it("K53-API-040 入口の止め × セッションを解く所が失敗する（DB の一時的な権限の外し）：止める側に倒す。/api/auth/change-password・契約の口（接続コードを出す）・前の道すじは通さず 503・E-PAGE-003（fail-closed）。パスワードは変わらず、接続コードも作らない", async () => {
     const errors = JSON.parse(
       readFileSync(join(HERE, "..", "..", "..", "..", "..", "07_qa", "test-specs", "errors.json"), "utf8"),
     ) as { errors: { id: string; message: string }[] };
@@ -1174,7 +1211,7 @@ describe("K-53 テスターのレビュー 2 回目で足した行（招待の�
     const t = await login(p);
     const pairsBefore = Number(
       (
-        await admin.query<{ n: string }>("select count(*) as n from app.bridge_pairings where member_id = $1", [
+        await admin.query<{ n: string }>("select count(*) as n from bridge_pairing_codes where member_id = $1", [
           p.memberId,
         ])
       ).rows[0]!.n,
@@ -1193,8 +1230,13 @@ describe("K-53 テスターのレビュー 2 回目で足した行（招待の�
       const cj = await json(cp);
       expect(cj["code"]).toBe("E-PAGE-003");
       expect(cj["message"]).toBe(down);
-      const ext = await req("POST", "/api/auth-ext/bridge/pair", {}, { headers: bearer(t) });
-      expect(ext.status, `/api/auth-ext/bridge/pair: ${await ext.clone().text()}`).toBe(503);
+      // 契約の口（接続コードを出す・K-57）：入口の解決（withDevice → 画面のログイン）が落ちたら通さない
+      const pc = await req("POST", "/api/v1/bridge/pairing-codes", {}, { headers: bearer(t) });
+      expect(pc.status, `/api/v1/bridge/pairing-codes: ${await pc.clone().text()}`).toBe(503);
+      expect((await json(pc))["code"]).toBe("E-PAGE-003");
+      // 前の道すじ（/api/auth-ext の入口の止め）：残っている口（/bridge/state・F5 で移す）でも通さない
+      const ext = await req("GET", "/api/auth-ext/bridge/state", undefined, { headers: bearer(t) });
+      expect(ext.status, `/api/auth-ext/bridge/state: ${await ext.clone().text()}`).toBe(503);
       expect((await json(ext))["code"]).toBe("E-PAGE-003");
     } finally {
       spy.mockRestore();
@@ -1206,7 +1248,7 @@ describe("K-53 テスターのレビュー 2 回目で足した行（招待の�
     ).toBe(true);
     const pairsAfter = Number(
       (
-        await admin.query<{ n: string }>("select count(*) as n from app.bridge_pairings where member_id = $1", [
+        await admin.query<{ n: string }>("select count(*) as n from bridge_pairing_codes where member_id = $1", [
           p.memberId,
         ])
       ).rows[0]!.n,

@@ -11,6 +11,7 @@ import { aiEntries, joinResponse, sessionFile, sizeOf } from "./transcript";
 import { runClaude, stopCurrent, type Answer, type Finish, type Guard, type Job } from "./runner";
 import { runLoginCheck } from "./login-check";
 import { label, phaseText, type Entry } from "./stream";
+import { BRIDGE_UA } from "./pairing";
 
 const ANSWER_POLL_MS = 1_500;
 const ANSWER_WAIT_MS = 30 * 60_000; // 確認に 30 分答えが無ければ許可しない（勝手に許可しない・止まったことは理由に出す）
@@ -99,9 +100,11 @@ export function startLoop(d: LoopDeps): () => void {
     const sid = d.sessionId();
     if (!sid || stopped) return null;
     try {
-      const r = await fetch(`${d.apiBase}/api/auth-ext${path}`, {
+      // 契約の口（/v1/…・K-57 で生きている知らせを移した）と、まだ移していない口（/api/auth-ext/…・F5 で移す）
+      const prefix = path.startsWith("/v1/") ? "/api" : "/api/auth-ext";
+      const r = await fetch(`${d.apiBase}${prefix}${path}`, {
         method: "POST",
-        headers: { "content-type": "application/json", "x-bridge-session": sid },
+        headers: { "content-type": "application/json", "x-bridge-session": sid, "user-agent": BRIDGE_UA },
         body: JSON.stringify(body),
         signal: abort.signal,
       });
@@ -133,7 +136,7 @@ export function startLoop(d: LoopDeps): () => void {
   let beating: Promise<void> = Promise.resolve();
   const beat = (): Promise<void> => (beating = beating.then(beatOnce, beatOnce));
   const beatOnce = async (): Promise<void> => {
-    const ok = await post<{ ok: boolean; browser?: Browser | null }>("/bridge/heartbeat", {
+    const ok = await post<{ ok: boolean; browser?: Browser | null }>("/v1/bridge/heartbeat", {
       health: await d.health(),
       protocol: BRIDGE_PROTOCOL,
     });

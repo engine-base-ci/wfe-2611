@@ -85,7 +85,9 @@ export function op(deps: ContractDeps, operationId: string) {
       if (def.auth === "client" && ctx.role !== "client") return err(c, 403, "forbidden", "FORBIDDEN");
       if (def.auth === "device" && ctx.role !== "device") return err(c, 403, "forbidden", "FORBIDDEN");
       if (def.auth === "member") {
-        if (ctx.role === "client" || ctx.role === "device") return err(c, 403, "forbidden", "FORBIDDEN");
+        // PC の印は、本人か PC の印で呼べる口（self_or_device）だけ通す
+        if (ctx.role === "client" || (ctx.role === "device" && def.perm.word !== "self_or_device"))
+          return err(c, 403, "forbidden", "FORBIDDEN");
         if (ctx.role === "ops" && !(await repo.opsAllowed(ctx))) return err(c, 403, "forbidden", "FORBIDDEN");
       }
     }
@@ -159,7 +161,8 @@ export function op(deps: ContractDeps, operationId: string) {
       };
     }
     // 5) 冪等（POST）。同じキーで同時に来た要求は、先に来た 1 本の結果を待って同じ結果を返す（記録は 1 回）
-    const idem = def.kind === "create" ? c.req.header("idempotency-key") : undefined;
+    const idem =
+      def.kind === "create" && !deps.hooks[operationId]?.noIdempotency ? c.req.header("idempotency-key") : undefined;
     const idemKey = idem ? `${ctx.tenantId}:${ctx.userId}:${def.path}:${idem}` : null;
     const inputHash = hashOf(input);
     if (idemKey) {
@@ -193,6 +196,7 @@ export function op(deps: ContractDeps, operationId: string) {
       );
     try {
       const r = await run;
+      if (r.raw) return r.raw; // ファイルを流す・置き場へ渡す（冪等の器には入れない）
       if (idemKey && r.status < 300) deps.idempotency.set(idemKey, r);
       return c.json(r.body, r.status as 200);
     } finally {
@@ -201,7 +205,7 @@ export function op(deps: ContractDeps, operationId: string) {
   };
 }
 
-export type Reply = { status: number; body: unknown };
+export type Reply = { status: number; body: unknown; raw?: Response };
 /** 同じ冪等キーで処理中の要求（キーに会社・本人を含む）。終わったら消え、結果は idempotency の器に残る */
 const INFLIGHT = new Map<string, Promise<(Reply & { hash: string }) | undefined>>();
 const fail = (status: number, error: string, code: string, extra: Partial<ErrBody> = {}): Reply => ({

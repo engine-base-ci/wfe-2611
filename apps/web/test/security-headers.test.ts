@@ -19,7 +19,7 @@ describe("画面の守りの見出し（ZT11）", () => {
     expect(csp).toContain("script-src 'self' 'nonce-abc123' 'strict-dynamic'");
     expect(csp).not.toMatch(/script-src[^;]*'unsafe-inline'/);
     expect(csp).not.toContain("'unsafe-eval'");
-    expect(csp).toContain("connect-src 'self' https://api.kaname.example");
+    expect(csp).toContain("connect-src 'self' https://api.kaname.example http://127.0.0.1:38617"); // この PC の Bridge の口（K-57）
     expect(csp).toContain("object-src 'none'");
     expect(csp).toContain("upgrade-insecure-requests");
   });

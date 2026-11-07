@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Kaname API
   version: 1.0.0
-  description: Mock-Driven Contract Generation。2026-11-06 凍結。信頼源は 08_api/endpoints.json。x-acts / x-screens / x-choke-points / x-source で行為・画面・関門・決定に辿れる
+  description: Mock-Driven Contract Generation。2026-11-07 凍結。信頼源は 08_api/endpoints.json。x-acts / x-screens / x-choke-points / x-source で行為・画面・関門・決定に辿れる
 servers:
 - url: /api/v1
 components:
@@ -9129,6 +9129,67 @@ components:
         privacy_version_id:
           type: string
       x-operation: consentToTerms
+    PairingCodeInput:
+      type: object
+      properties: {}
+      x-operation: createPairingCode
+    BridgeClaimInput:
+      type: object
+      properties:
+        code:
+          type: string
+        device_label:
+          type: string
+        machine_id:
+          type: string
+      x-operation: claimPairingCode
+    BridgeHeartbeatInput:
+      type: object
+      properties:
+        health: {}
+        protocol: {}
+        version:
+          type: string
+      x-operation: sendHeartbeat
+    TicketCreateInput:
+      type: object
+      properties:
+        scope_id:
+          type: string
+        kind_id:
+          type: string
+        title:
+          type: string
+        assignee_member_id:
+          type: string
+        due_on:
+          type: string
+        start_on:
+          type: string
+        priority:
+          type: string
+        priority_reason:
+          type: string
+        parent_ticket_id:
+          type: string
+        estimate_minutes: {}
+        sections:
+          type: object
+        notify_member_ids:
+          type: array
+        draft_id:
+          type: string
+      x-operation: createTicket
+    TicketDraftInput:
+      type: object
+      properties:
+        draft_id:
+          type: string
+        body:
+          type: object
+        discard:
+          type: boolean
+      x-operation: saveMyTicketDraft
     ScopeOverview:
       type: object
       properties:
@@ -9556,16 +9617,14 @@ components:
     BridgeRelease:
       type: object
       properties:
+        released:
+          type: boolean
         version:
           type: string
-        files:
-          type: array
-          items:
-            type: object
-        sha256:
-          type: object
         released_at:
           type: string
+        update:
+          type: object
       x-operation: getLatestBridgeRelease
     BridgeClaim:
       type: object
@@ -9577,6 +9636,90 @@ components:
         member_id:
           type: string
       x-operation: claimPairingCode
+    BridgeReleaseLink:
+      type: object
+      properties:
+        url:
+          type: string
+        expires_at:
+          type: string
+      x-operation: downloadBridgeRelease
+    BridgeHeartbeat:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        browser:
+          type: string
+        outdated:
+          type: boolean
+      x-operation: sendHeartbeat
+    BridgeDevice:
+      type: object
+      properties:
+        id:
+          type: string
+        device_label:
+          type: string
+        state:
+          type: string
+        last_seen_at:
+          type: string
+        connected_at:
+          type: string
+        version:
+          type: string
+        health:
+          type: array
+          items:
+            type: object
+        revoke_reason:
+          type: string
+      x-operation: listMyDevices
+    TicketDetail:
+      type: object
+      properties:
+        ticket:
+          type: object
+        sections:
+          type: array
+          items:
+            type: object
+        kind:
+          type: object
+        stage:
+          type: object
+        assignee:
+          type: object
+      x-operation: getTicket
+    TicketKindChoice:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        color:
+          type: string
+        position:
+          type: integer
+        is_builtin:
+          type: boolean
+        sections:
+          type: array
+          items:
+            type: object
+      x-operation: listTicketKinds
+    TicketDraft:
+      type: object
+      properties:
+        draft_id:
+          type: string
+        body:
+          type: object
+        saved_at:
+          type: string
+      x-operation: saveMyTicketDraft
     BridgeJob:
       type: object
       properties:
@@ -13200,6 +13343,7 @@ paths:
       x-choke-points:
       - C1
       - C2
+      - C4
       x-source:
       - D-004
       - D-004.1
@@ -13224,17 +13368,16 @@ paths:
       - D-125.143
       - D-125.146
       - D-125.167
-      x-permission: device
-      x-permission-scope: 接続コードを持つ PC（1 回だけ・10 分）。つないだら本人に知らせる
+      x-permission: public
+      x-permission-scope: 接続コードを持つ PC（まだ PC の印が無い。コードそのものが鍵：1 回だけ・10 分・1 分に 5 回まで・D-089・D-128.93）。つないだら本人に知らせる
       x-step-up: false
-      security:
-      - session: []
+      security: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SessionsInput'
+              $ref: '#/components/schemas/BridgeClaimInput'
       responses:
         '201':
           description: 成功
@@ -13247,18 +13390,6 @@ paths:
                     $ref: '#/components/schemas/BridgeClaim'
                   meta:
                     type: object
-        '401':
-          description: UNAUTHENTICATED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '403':
-          description: FORBIDDEN
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
         '409':
           description: CONFLICT
           content:
@@ -13472,7 +13603,8 @@ paths:
       - A09
       x-screens:
       - bridge-setup
-      x-choke-points: []
+      x-choke-points:
+      - C4
       x-source:
       - D-004
       - D-004.1
@@ -13558,7 +13690,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Sessions'
+                      $ref: '#/components/schemas/BridgeDevice'
                   meta:
                     type: object
         '401':
@@ -13604,6 +13736,7 @@ paths:
       x-choke-points:
       - C1
       - C2
+      - C4
       x-source:
       - D-004
       - D-004.1
@@ -13706,6 +13839,7 @@ paths:
       x-choke-points:
       - C1
       - C2
+      - C4
       x-source:
       - D-004
       - D-004.1
@@ -13873,6 +14007,7 @@ paths:
       x-choke-points:
       - C1
       - C2
+      - C4
       x-source:
       - D-004
       - D-004.1
@@ -13907,7 +14042,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SessionsInput'
+              $ref: '#/components/schemas/BridgeHeartbeatInput'
       responses:
         '201':
           description: 成功
@@ -13917,7 +14052,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Sessions'
+                    $ref: '#/components/schemas/BridgeHeartbeat'
                   meta:
                     type: object
         '401':
@@ -15039,6 +15174,7 @@ paths:
       x-choke-points:
       - C1
       - C2
+      - C4
       x-source:
       - D-004
       - D-004.1
@@ -15073,7 +15209,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BridgePairingCodesInput'
+              $ref: '#/components/schemas/PairingCodeInput'
       responses:
         '201':
           description: 成功
@@ -15132,7 +15268,8 @@ paths:
       - A09
       x-screens:
       - bridge-setup
-      x-choke-points: []
+      x-choke-points:
+      - C4
       x-source:
       - D-004
       - D-004.1
@@ -15157,8 +15294,8 @@ paths:
       - D-125.143
       - D-125.146
       - D-125.167
-      x-permission: self
-      x-permission-scope: ログインしている人（期限つきの署名 URL）
+      x-permission: self_or_device
+      x-permission-scope: ログインしている人と、つないだ PC の印（D-128.137）。置き場が外なら短い期限の署名 URL（D-128.153）
       x-step-up: false
       security:
       - session: []
@@ -15177,7 +15314,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Sessions'
+                    $ref: '#/components/schemas/BridgeReleaseLink'
                   meta:
                     type: object
         '401':
@@ -15220,7 +15357,8 @@ paths:
       - A09
       x-screens:
       - bridge-setup
-      x-choke-points: []
+      x-choke-points:
+      - C4
       x-source:
       - D-004
       - D-004.1
@@ -15245,8 +15383,8 @@ paths:
       - D-125.143
       - D-125.146
       - D-125.167
-      x-permission: self
-      x-permission-scope: ログインしている人（版と指紋を返す・D-109）
+      x-permission: self_or_device
+      x-permission-scope: ログインしている人と、つないだ PC の印（PC が自分で新しい版を見に来る・D-109・D-128.137）
       x-step-up: false
       security:
       - session: []
@@ -24936,6 +25074,166 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /api/v1/me/ticket-drafts:
+    get:
+      operationId: listMyTicketDrafts
+      summary: 取得（me）— チケットを作る（画面で・下書きから）
+      tags:
+      - tenant_memberships
+      x-acts:
+      - A99
+      x-screens:
+      - tickets
+      x-choke-points: []
+      x-source:
+      - D-125.167
+      - D-125.51
+      - D-125.57
+      - D-125.6
+      x-permission: self
+      x-permission-scope: 自分の下書きだけ（いま入っているワークスペースの分）
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: cursor
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          pattern: ^[0-9]{1,9}$
+      - name: limit
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 200
+      - name: sort
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          enum:
+          - auth_user_id
+          - created_at
+          - created_by
+          - deleted_at
+          - id
+          - joined_at
+          - member_id
+          - role
+          - status
+          - tenant_id
+          - updated_at
+          - updated_by
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TicketDraft'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      operationId: saveMyTicketDraft
+      summary: 作成・実行（me）— チケットを作る（画面で・下書きから）
+      tags:
+      - tenant_memberships
+      x-acts:
+      - A99
+      x-screens:
+      - tickets
+      x-choke-points:
+      - C2
+      x-source:
+      - D-125.167
+      - D-125.51
+      - D-125.57
+      - D-125.6
+      x-permission: self
+      x-permission-scope: 自分の下書きだけ
+      x-step-up: false
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketDraftInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TicketDraft'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: CONFLICT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /api/v1/me/two-factor:
     delete:
       operationId: disableTwoFactor
@@ -33434,6 +33732,9 @@ paths:
                       $ref: '#/components/schemas/Scopes'
                   meta:
                     type: object
+                    properties:
+                      writable:
+                        type: array
         '401':
           description: UNAUTHENTICATED
           content:
@@ -34521,7 +34822,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/TicketKinds'
+                      $ref: '#/components/schemas/TicketKindChoice'
                   meta:
                     type: object
         '401':
@@ -35413,7 +35714,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TicketsInput'
+              $ref: '#/components/schemas/TicketCreateInput'
       responses:
         '201':
           description: 成功
@@ -35492,7 +35793,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Tickets'
+                    $ref: '#/components/schemas/TicketDetail'
                   meta:
                     type: object
         '401':

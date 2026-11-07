@@ -14,8 +14,11 @@ describe("POST /api/v1/auth/terms/consent", () => {
     // 本物の試験：apps/api/test/features/F1/terms.test.ts の「K53-API-017」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F1/terms.test.ts", "utf8")).toContain("K53-API-017");
   });
-  // 本物の試験はまだ無い（apps/api/test/features/F1/terms.test.ts）：UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）
-  it.todo("test_post_auth_terms_consent_rejected_403");
+  it("test_post_auth_terms_consent_rejected_403", () => {
+    // UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）
+    // 本物の試験：apps/api/test/features/F1/terms.test.ts の「K53-API-034」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F1/terms.test.ts", "utf8")).toContain("K53-API-034");
+  });
   it("test_post_auth_terms_consent_conflict", () => {
     // UNWANTED: IF 同意する版が今の版でないなら、Kaname は 409 と今の版の並び current を返し、同意の行を書かない
     // 本物の試験：apps/api/test/features/F1/terms.test.ts の「K53-API-013」（同じ CI の G3 で流れる）

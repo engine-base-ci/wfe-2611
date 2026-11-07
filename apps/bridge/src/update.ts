@@ -18,6 +18,7 @@ import {
 } from "node:fs";
 import { basename, dirname, join } from "node:path";
 import { ask } from "./proc";
+import { BRIDGE_UA } from "./pairing";
 
 export const BUNDLE_ID = "com.enginebase.kaname.bridge";
 const HOUR_MS = 60 * 60_000;
@@ -51,9 +52,12 @@ export async function fetchLatest(
   os: "mac" | "win",
   arch: "arm64" | "x64",
   current: string,
+  /** つないだ PC の印（K-57・D-128.137）。新しい版を見る口は、ログインした人か PC の印でしか呼べない */
+  deviceToken?: string | null,
 ): Promise<UpdateInfo | null> {
-  const r = await fetch(`${apiBase}/api/auth-ext/bridge/latest?os=${os}&arch=${arch}`, {
+  const r = await fetch(`${apiBase}/api/v1/bridge/releases/latest?os=${os}&arch=${arch}`, {
     signal: AbortSignal.timeout(15_000),
+    headers: deviceToken ? { "x-bridge-session": deviceToken, "user-agent": BRIDGE_UA } : {},
   });
   if (!r.ok) throw new Error(`Kaname が ${r.status}`);
   const j = (await r.json()) as {
@@ -81,12 +85,12 @@ export async function fetchLatest(
 /**
  * 受け取って指紋と大きさを確かめる。合えば置いた場所を返す。合わなければ消して投げる（中途半端なものを残さない）
  */
-export async function download(u: UpdateInfo, dir: string): Promise<string> {
+export async function download(u: UpdateInfo, dir: string, headers: Record<string, string> = {}): Promise<string> {
   mkdirSync(dir, { recursive: true });
   const dest = join(dir, u.name);
   const part = `${dest}.part`;
   rmSync(part, { force: true });
-  const r = await fetch(u.url, { signal: AbortSignal.timeout(DOWNLOAD_TIMEOUT_MS) });
+  const r = await fetch(u.url, { signal: AbortSignal.timeout(DOWNLOAD_TIMEOUT_MS), headers });
   if (!r.ok || !r.body) throw new Error(`受け取れませんでした（${r.status}）`);
   const hash = createHash("sha256");
   let size = 0;
@@ -197,6 +201,8 @@ export interface UpdaterDeps {
   relaunch?: (bundle: string) => string[];
   /** 入れ替えを待つ相手の pid（既定は自分）。テストで差す */
   pid?: number;
+  /** つないだ PC の印（K-57）。無ければ新しい版を見に行かない（まだつないでいない） */
+  deviceToken?: () => string | null;
 }
 
 export interface Updater {
@@ -259,13 +265,17 @@ export function startUpdater(d: UpdaterDeps): Updater {
   const check = async (): Promise<void> => {
     if (!os || stopped) return;
     try {
-      const u = await fetchLatest(d.apiBase, os, arch, d.currentVersion);
+      const token = d.deviceToken ? d.deviceToken() : null;
+      if (d.deviceToken && !token) return; // まだつないでいない
+      const u = await fetchLatest(d.apiBase, os, arch, d.currentVersion, token);
       if (!u || staged === u.version || stopped) return;
       const why = blocker(u);
       if (why) return note(`skip-${u.version}`, why);
       let file: string;
       try {
-        file = await download(u, d.dir); // 受け取るたびに指紋と大きさを確かめる
+        // PC の印は Kaname 自身の置き場にだけ渡す（別の置き場の URL には送らない）
+        const own = token && new URL(u.url).origin === new URL(d.apiBase).origin;
+        file = await download(u, d.dir, own ? { "x-bridge-session": token, "user-agent": BRIDGE_UA } : {}); // 受け取るたびに指紋と大きさを確かめる
       } catch (e) {
         const m = e instanceof Error ? e.message : "不明";
         if (/指紋|大きさ|Kaname Bridge ではありません|版が目録|開けません/.test(m)) throw e;

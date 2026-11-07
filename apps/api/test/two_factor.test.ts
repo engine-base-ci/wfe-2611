@@ -18,6 +18,7 @@ import { localDriver } from "@kaname/storage/local";
 import { createApp } from "../src/app.js";
 import { authExt } from "../src/auth/ext.js";
 import { keepAuth, verifiedUser } from "./_pending.js";
+import { pairForTest } from "./bridge_pair.js";
 
 const DB_PKG = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "packages", "db");
 const ADMIN = process.env["DATABASE_URL"]!;
@@ -93,11 +94,8 @@ async function ready() {
   // 申し込みは直に置き、確認だけを通す（前の道すじ /sign-up は K-51 で契約の口に移した）
   const ver = await verifiedUser(AUTH_URL, { email, password: PW, companyName: "K" });
   const H = { authorization: `Bearer ${ver.token}` };
-  const pair = await json<{ code: string }>(post("/bridge/pair", {}, H));
-  const claim = await json<{ session_id: string }>(
-    post("/bridge/claim", { code: pair.code, device_label: "QA の PC" }),
-  );
-  const B = { "x-bridge-session": claim.session_id };
+  const bp = await pairForTest(admin, email);
+  const B = { "x-bridge-session": bp.token };
   const store = (extra: Record<string, unknown> = {}) =>
     post(
       "/vault/credentials",
@@ -114,7 +112,7 @@ async function ready() {
     json<{ job_id: string; kind: string; credential_id: string | null } | null>(
       post("/bridge/take", { protocol: 4 }, B),
     );
-  return { H, B, store, list, take, member: claim, email };
+  return { H, B, store, list, take, member: { session_id: bp.sid }, email };
 }
 
 describe("CHT-39-001 預けるときに 2 段階の種類を選べる（D-117.2）", () => {
