@@ -4576,17 +4576,18 @@
    ],
    "split": "",
    "choke_points": [],
-   "choke_none": "試験の土台を直すだけ。関門に触らない",
+   "choke_none": "K-129 の土台の直しの上で前の画面の試験を通すだけ。関門に触らない",
    "depends_on": [
-    "K-57"
+    "K-57",
+    "K-129"
    ],
    "sections": {
     "目的": "画面の試験の土台（apps/web/tests/_lib/api.ts の claimBridge・signupViaApi の後の API 呼び出し）が、画面のログインの鍵で node から API を呼ぶ。node の fetch は Playwright の Chromium と user-agent が違うので、セッションの見張り（D-128.120：端末＝ブラウザの種類や OS が変わったら切る）が端末が変わったと見て画面のログインを切り、ログインの画面に戻される。前の「PC をつなぐ」画面の試験 9 本がこれで赤（070 を除く）（K-57・K-60 の取り込みの途中で見つけた。途中で見つけたものはその場で直さずチケットにする・D-128.147）。",
     "完了の条件": "- [ ] 下の 9 本の試験が緑\n- [ ] セッションの見張りそのものは変えていない（守りを弱めない）\n- [ ] workflow の全部（act）が緑",
-    "前提と制約": "- 依存：K-57（前の画面が /setup/bridge/legacy にあり、試験がそこを開く形になってから）\n- 赤になる 9 本（hold/k57-k60 の取り込みの回で、ログインの画面に戻されて `[data-state=\"ok\"]`・`[data-connected]` が見つからない）：`apps/web/tests/screens/qa-b-bridge-setup.spec.ts` の SCR-BRIDGE-SETUP-062・SCR-BRIDGE-SETUP-090／091／092・SCR-BRIDGE-SETUP-100・SCR-BRIDGE-SETUP-097／098／099・SCR-BRIDGE-SETUP-101／102・SCR-BRIDGE-SETUP-104・SCR-BRIDGE-SETUP-107・SCR-BRIDGE-SETUP-108・SCR-BRIDGE-SETUP-109（試験の数で 9 本。060・096 は K-96、103 は K-97 の原因。070「この端末を外す」は K-91 が前の画面から消して新しい画面の remove-pc.spec.ts に書き直すので、ここでは数えない）\n- セッションの見張りは変えない（D-128.120）",
-    "実施事項": "- [ ] **直し方は 1 つに決める：試験の土台の node からの呼び出しを、画面のブラウザと同じ端末として送る。** `apps/web/playwright.config.ts` の `use.userAgent` に決まった UA（`TEST_UA`・Chromium の UA）を置き、`apps/web/tests/_lib/api.ts` の `api()`・`admin` 以外の口を呼ぶ道具（claimBridge・bridgeBeat・setupStep の前提作りを含む）がどれも `user-agent: TEST_UA` を付けて送る。国の頭（x-vercel-ip-country）も付けない（両方とも同じ）。別のログインを作る案（前提は別のセッションで作る）は、試験の中で人を 2 回ログインさせて遅くなるので採らない\n- [ ] 上の 9 本を流して緑を見る。わざと UA を外して赤に戻ることも見る",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 前提を作った後も画面のログインが切れない | ② 結合 | 上の 9 本を流す | |\n| 土台の UA を外すと同じ赤に戻る（直した所が原因だった） | ② 結合 | TEST_UA を外して 1 本流す | |",
-    "成果物": "- apps/web/playwright.config.ts・apps/web/tests/_lib/api.ts",
+    "前提と制約": "- 依存：K-57（前の画面が /setup/bridge/legacy にあり、試験がそこを開く形になってから）・K-129（土台の UA の直し。同じ原因の直しは K-129 で 1 回だけ入れる・2026-11-07 PM の判断）\n- 赤になる 9 本（hold/k57-k60 の取り込みの回で、ログインの画面に戻されて `[data-state=\"ok\"]`・`[data-connected]` が見つからない）：`apps/web/tests/screens/qa-b-bridge-setup.spec.ts` の SCR-BRIDGE-SETUP-062・SCR-BRIDGE-SETUP-090／091／092・SCR-BRIDGE-SETUP-100・SCR-BRIDGE-SETUP-097／098／099・SCR-BRIDGE-SETUP-101／102・SCR-BRIDGE-SETUP-104・SCR-BRIDGE-SETUP-107・SCR-BRIDGE-SETUP-108・SCR-BRIDGE-SETUP-109（試験の数で 9 本。060・096 は K-96、103 は K-97 の原因。070「この端末を外す」は K-91 が前の画面から消して新しい画面の remove-pc.spec.ts に書き直すので、ここでは数えない）\n- セッションの見張りは変えない（D-128.120）",
+    "実施事項": "- [ ] 土台の直し（playwright.config.ts の `use.userAgent` の `TEST_UA`・apps/web/tests/_lib/api.ts の UA をブラウザと同じにする）は K-129 で入れる。このチケットでは同じ直しを入れない\n- [ ] K-129 の直しの上で、上の 9 本を流して緑を見る。わざと UA を外して赤に戻ることも見る",
+    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 前提を作った後も画面のログインが切れない | ② 結合 | 上の 9 本を流す | |\n| 土台の UA を外すと同じ赤に戻る（K-129 の直した所が原因だった） | ② 結合 | TEST_UA を外して 1 本流す | |",
+    "成果物": "- 9 本の結果の記録（直しの成果物は K-129）",
     "決定ログ": "- 決定に従った：D-128.120・D-128.147"
    },
    "file": "11_tickets/K-95.md"
@@ -5677,8 +5678,8 @@
    "sections": {
     "目的": "画面の試験の土台 `signupViaApi`（apps/web/tests/_lib/api.ts）で作った人のログインの印（token）を、試験はまず node から使う（`claimBridge`・`startAgentBridge`（apps/web/tests/_lib/agent-bridge.ts）・`api()` に token を渡す呼び出し）。確定の口は端末の印を持たずにセッションを作り、セッションの端末は最初に使われたときに決まる（D-128.137）。そのため端末は node の fetch の user-agent になり、そのあとブラウザ（Playwright の Chromium）で画面を開くと、セッションの見張り（D-128.120：端末＝ブラウザの種類や OS が変わったら切る）が「端末が変わった」と見て切り、ログインの画面に戻される。\n\nこれで `apps/web/tests/screens/bridge-loop.spec.ts` と `apps/web/tests/screens/qa-a2-chat-errors.spec.ts` の多くが通らない（K-57 で変えていない BRG-03-004 も赤）。K-57 の作業中に見つけた、前からある物（途中で見つけたものはその場で直さずチケットにする・D-128.147）。",
     "完了の条件": "- [ ] 土台が node から呼ぶときも、ブラウザと同じ端末の印（user-agent）で送る。土台の中で token を使う呼び出しがどれも同じ 1 つの決まった値を使う\n- [ ] bridge-loop.spec.ts と qa-a2-chat-errors.spec.ts のうち、この原因で赤だった試験が、ログインの画面に戻されずに進む（ほかの原因で赤のものは、その原因を名指しして別のチケットにする）\n- [ ] わざと土台の user-agent を外すと、同じ赤（ログインの画面に戻される）に戻る\n- [ ] セッションの見張り（packages/auth/src/resolver.ts・app.session_check）は変えていない（守りを弱めない）\n- [ ] チケットの CI（act）が緑",
-    "前提と制約": "- **K-95 と同じ原因・同じ直し方**：K-95 は前の画面（/setup/bridge/legacy）の試験 qa-b-bridge-setup.spec.ts の 9 本を、同じ直し方（playwright.config.ts の `use.userAgent` に決まった UA `TEST_UA` を置き、土台の node からの呼び出しにも付ける）で直すと決めている。直す場所（apps/web/tests/_lib/api.ts・playwright.config.ts）が同じなので、**直しは 1 回にする**（2 つのチケットで同じ所を別々に直さない・L-008）。このチケットで直しを入れる場合、K-95 はその上で 9 本を流して確かめるだけになる。どちらで直しを入れるか、K-95 の depends_on をこのチケットに向けるかは、切るときに決める人に聞く\n- K-95 は K-57 に依存する（前の画面が /setup/bridge/legacy に移ってから）。このチケットは前の画面に頼らないので、依存は置かない\n- **K-128 との重なり**：K-128 は登録の画面を通って人を作る道具 newcomer.ts（K-58）に、K-54 の試験の中の登録の手順を寄せる。newcomer.ts はブラウザでログインするので、この問題は起きない。このチケットは API で人を作る signupViaApi の側で、直す所は重ならない（どちらもどちらに依存しない）。signupViaApi を newcomer.ts に置き換える案は、試験 1 本ごとに画面の登録を通して遅くなるので採らない\n- 国の頭（x-vercel-ip-country）は土台もブラウザも付けない（両方とも同じ）\n- bridge-loop.spec.ts・qa-a2-chat-errors.spec.ts は、いまどのチケットの tests: にも属していない。試験の持ち主は切るときに決める（G53）",
-    "実施事項": "- [ ] 作る役：土台の中で token を使って node から呼ぶ所を全文検索して一覧にする（api.ts の `api()`・`claimBridge`・agent-bridge.ts の fetch ほか）\n- [ ] 作る役：この原因で赤の試験の ID を、2 つのファイルから流して数える（ほかの原因の赤と分ける）\n- [ ] 作る役：K-95 と直しを 1 回にする形を決める人に聞き、答えを決定ログとこのチケットに書く",
+    "前提と制約": "- **K-95 と同じ原因・同じ直し方。直しはこのチケットで 1 回だけ入れる**（2026-11-07 PM の判断・L-008：2 つのチケットで同じ所を別々に直さない）。直し＝playwright.config.ts の `use.userAgent` に決まった UA `TEST_UA`（ブラウザと同じ）を置き、apps/web/tests/_lib/api.ts ほか土台の node からの呼び出し（`api()`・`admin` 以外の口を呼ぶ道具：claimBridge・bridgeBeat・startAgentBridge などの前提作りを含む）も同じ UA で送る。別のログインを作る案（前提は別のセッションで作る）は、試験の中で人を 2 回ログインさせて遅くなるので採らない（K-95 から移した）。K-95 は depends_on にこのチケットを持ち、この直しの上で前の画面（/setup/bridge/legacy）の試験 qa-b-bridge-setup.spec.ts の 9 本を通すだけにする\n- K-95 は K-57 に依存する（前の画面が /setup/bridge/legacy に移ってから）。このチケットは前の画面に頼らないので、依存は置かず先に進める\n- **K-128 との重なり**：K-128 は登録の画面を通って人を作る道具 newcomer.ts（K-58）に、K-54 の試験の中の登録の手順を寄せる。newcomer.ts はブラウザでログインするので、この問題は起きない。このチケットは API で人を作る signupViaApi の側で、直す所は重ならない（どちらもどちらに依存しない）。signupViaApi を newcomer.ts に置き換える案は、試験 1 本ごとに画面の登録を通して遅くなるので採らない\n- 国の頭（x-vercel-ip-country）は土台もブラウザも付けない（両方とも同じ）\n- bridge-loop.spec.ts・qa-a2-chat-errors.spec.ts は、いまどのチケットの tests: にも属していない。試験の持ち主は切るときに決める（G53）",
+    "実施事項": "- [ ] 作る役：土台の中で token を使って node から呼ぶ所を全文検索して一覧にする（api.ts の `api()`・`claimBridge`・agent-bridge.ts の fetch ほか）\n- [ ] 作る役：この原因で赤の試験の ID を、2 つのファイルから流して数える（ほかの原因の赤と分ける）\n- [ ] 作る役：直しを入れたら K-95 の 9 本も流し、この原因の赤が消えたかを K-95 に書き渡す",
     "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 前提を node で作ったあとも、画面のログインが切れない | ② 中間 | bridge-loop.spec.ts の BRG-03-004 ほか、数えた試験を流す | |\n| 土台の UA を外すと同じ赤に戻る（直した所が原因だった） | ② 中間 | TEST_UA を外して BRG-03-004 を 1 本流す | |\n| セッションの見張りを変えていない | ① 単体 | packages/auth・app.session_check の差分が無いことを見る | |",
     "成果物": "",
     "決定ログ": "- 決定に従った：D-128.120・D-128.137・D-128.147"
