@@ -232,6 +232,19 @@
     "apps/api/test/generated/get_auth_terms_current.test.ts",
     "apps/api/test/generated/post_auth_terms_consent.test.ts"
    ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F3/connect-pc.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_bridge_devices.test.ts",
+    "apps/api/test/generated/get_bridge_releases_latest.test.ts",
+    "apps/api/test/generated/get_bridge_releases_name_file.test.ts",
+    "apps/api/test/generated/post_bridge_claim.test.ts",
+    "apps/api/test/generated/post_bridge_heartbeat.test.ts",
+    "apps/api/test/generated/post_bridge_pairing_codes.test.ts"
+   ]
   }
  ],
  "reads_ok": {
@@ -239,6 +252,7 @@
   "apps/bridge/test/guard.test.ts": "自分で作った一時のファイルを読む",
   "apps/bridge/test/kaname-tools.test.ts": "自分で作った一時のファイル・台本を起こす",
   "apps/bridge/test/qa-a2.test.ts": "自分で作った一時のファイル・台本を起こす",
+  "apps/bridge/test/pairing.test.ts": "自分で作った一時のファイル（この PC の印の置き場・D-128.174）を読む",
   "packages/secrets/test/infisical.live.test.ts": "本物の秘密の置き場の試験",
   "apps/api/src/auth/bridge-release.ts": "配る Bridge の置き場（設定の dir）を読む。動いている間の物（設定の置き場・一時の作業場・ログ）を読む。リポジトリのファイルは読まない",
   "apps/bridge/scripts/release.mjs": "Bridge の配る物を作る台本（apps/bridge/scripts/** は data_links で Bridge の試験を流す）",
@@ -283,7 +297,9 @@
   "apps/web/tests/screens/setup-gate.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
   "apps/web/tests/states.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
   "apps/web/features/F1/consent-terms/legal-text.ts": "文面のページが要求のときに自分のひな形（apps/web/content/legal/*.md）を読む（試験でない。中身のそろいは terms.test.ts の K53-API-035 が data_links で流れる・K-53）",
-  "apps/web/tests/features/F1/terms.spec.ts": "画面の試験（Playwright・CI の web の段）が施行日の行を読むためにひな形を読む（単体の試験の範囲の外）"
+  "apps/web/tests/features/F1/terms.spec.ts": "画面の試験（Playwright・CI の web の段）が施行日の行を読むためにひな形を読む（単体の試験の範囲の外）",
+  "apps/api/test/features/F3/connect-pc.test.ts": "自分で作った一時の置き場（配る Bridge の目録 kaname-bridge.json）を読む。リポジトリのファイルは読まない",
+  "apps/bridge/src/pairing.ts": "同上（apps/bridge/src/**）。この PC の印（userData の machine-id）を読む"
  },
  "jobs": {
   "database": {

@@ -93,6 +93,7 @@ export const MIGRATIONS = [
   "0086_security_event_opening.sql",
   "0087_pending_replaced_tokens.sql",
   "0088_terms_consent.sql",
+  "0089_bridge_pairing_codes.sql",
 ] as const;
 
 /** migration 名の並びを検査する。重複・順序違い・4 桁でない名前があれば理由を返す。 */

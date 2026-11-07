@@ -25,6 +25,9 @@ export type Outcome<T> =
   | { status: "done"; value: T; auditId?: string | undefined }
   | { status: "denied" | "failed"; reason: string; handoff: string; auditId?: string | undefined };
 export const MAX_BYTES_DEFAULT = 50 * 1024 * 1024;
+/** 外の置き場の署名 URL の既定の期限（5 分・D-128.153） */
+export const EXTERNAL_TTL_SEC = 300;
+const EXTERNAL_NAME = /^[A-Za-z0-9][A-Za-z0-9._-]{0,200}$/;
 
 /** 参照は必ずテナントの名前空間の中（tenants/<tenant_id>/<uuid>）。文字列連結で他社の鍵を作れない */
 export function refOf(tenantId: string, id: string): string {
@@ -138,6 +141,25 @@ export class ObjectStore {
       status: "done",
       value: { url, expiresAt: new Date(exp * 1000) },
       auditId: await this.audit(ctx, "sign", ref, { exp }),
+    };
+  }
+  /** 外の置き場（運営の配布物・BRIDGE_RELEASE_BASE）のファイルへの短い期限の署名 URL（D-128.153）。
+   *  名前は目録に載ったものだけを呼び手が渡す（英数と . _ - だけ）。誰に出したかを証跡に残す */
+  async signExternal(
+    ctx: TenantContext,
+    base: string,
+    name: string,
+    ttlSeconds = EXTERNAL_TTL_SEC,
+  ): Promise<Outcome<{ url: string; expiresAt: Date }>> {
+    if (!base || !EXTERNAL_NAME.test(name) || name.includes(".."))
+      return { status: "denied", reason: "このファイルは渡せません", handoff: "運営に問い合わせる" };
+    const exp = Math.floor(Date.now() / 1000) + Math.min(Math.max(ttlSeconds, 10), 3600);
+    const key = `external:${base.replace(/\/$/, "")}/${name}`;
+    const url = `${base.replace(/\/$/, "")}/${encodeURIComponent(name)}?exp=${exp}&sig=${this.sign(key, exp)}`;
+    return {
+      status: "done",
+      value: { url, expiresAt: new Date(exp * 1000) },
+      auditId: await this.audit(ctx, "sign_external", null, { name, exp }),
     };
   }
   private sign(ref: string, exp: number): string {

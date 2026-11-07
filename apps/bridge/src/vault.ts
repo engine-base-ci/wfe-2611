@@ -2,6 +2,7 @@
 //   Kaname の関門 C8 が解いた値を「いま動いている仕事」のためだけに受け取り、使う間（use の中）だけ持ち、終わったら捨てる。
 //   ディスクに書かない・ログに出さない・AI には渡さない（AI が持つのは参照 ID だけ。道具の引数にも載せない：guard.ts D-107.7）。
 //   受け取りが途中で切れた・中身が欠けている・届かないときは成功にしない（G-15・G-11）。理由は値を含まない文で返す
+import { BRIDGE_UA } from "./pairing";
 export interface Credential {
   login: string;
   password: string;
@@ -42,7 +43,7 @@ async function fetchCredential(d: VaultDeps, jobId: string, credentialId: string
   try {
     r = await fetch(`${d.apiBase}/api/auth-ext/bridge/credentials/resolve`, {
       method: "POST",
-      headers: { "content-type": "application/json", "x-bridge-session": sid },
+      headers: { "content-type": "application/json", "x-bridge-session": sid, "user-agent": BRIDGE_UA },
       body: JSON.stringify({ job_id: jobId, credential_id: credentialId }),
       signal: ctl.signal,
     });

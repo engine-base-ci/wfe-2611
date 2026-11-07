@@ -1,8 +1,8 @@
 // Bridge がこの PC の中だけで開く小さな口（127.0.0.1）。Kaname の画面が「Bridge が動いているか」を知るために使う。
 // これがあると、入れてある人には ダウンロードの案内も 接続コードの手入力も 要らなくなる（D-089.8）。
 // 外からは開けない：ループバックにだけ bind し、許可した画面の出どころ（origin）以外は CORS で断る。
-// 接続コードは 4 桁なので総当たりを防ぐ：1 分に 5 回まで。
-import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
+// 接続コード（英数字 6 けた・K-57）を受ける口も、総当たりを防ぐ：1 分に 5 回まで。
+import { createServer, type IncomingMessage, type Server, type ServerResponse } from "node:http";
 import { bridgeEnv } from "./env";
 
 export const LOCAL_PORT = 38617;
@@ -39,7 +39,7 @@ interface Deps {
   loginCancel: () => void;
 }
 
-export function startLocalServer(d: Deps): void {
+export function startLocalServer(d: Deps, port: number = LOCAL_PORT): Server {
   const server = createServer((req: IncomingMessage, res: ServerResponse) => {
     const origin = req.headers.origin ?? "";
     const allowed = ORIGINS.includes(origin);
@@ -109,5 +109,6 @@ export function startLocalServer(d: Deps): void {
     // 既に同じ Bridge が動いているだけなら黙って諦める（2 つ目の窓は開かない）
     if (e.code !== "EADDRINUSE") console.error("[bridge] ローカルの口を開けませんでした", e.message);
   });
-  server.listen(LOCAL_PORT, "127.0.0.1");
+  server.listen(port, "127.0.0.1");
+  return server;
 }

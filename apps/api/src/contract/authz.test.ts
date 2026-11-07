@@ -124,7 +124,12 @@ describe("権限の試験：役の段（契約の全 API）", () => {
     expect(bad).toEqual([]);
   });
 
-  const cases = ENDPOINTS.flatMap((e) => MUST_STOP[e.auth].map((role) => [e, role] as const));
+  // 本人か PC の印で呼べる口（self_or_device・K-57）は、PC の印を止めない
+  const cases = ENDPOINTS.flatMap((e) =>
+    MUST_STOP[e.auth]
+      .filter((role) => !(role === "device" && e.perm.word === "self_or_device"))
+      .map((role) => [e, role] as const),
+  );
   it.each(cases.map(([e, role]) => [`${e.method} ${e.path}`, e.auth, role, e] as const))(
     "%s（%s）は %s を止め、副作用に届かせない",
     async (_name, _auth, role, e) => {

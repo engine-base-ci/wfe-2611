@@ -1,8 +1,8 @@
 {
  "meta": {
   "version": "v3.1",
-  "created_at": "2026-11-06",
-  "frozen_at": "2026-11-06",
+  "created_at": "2026-11-07",
+  "frozen_at": "2026-11-07",
   "base_url": "/api/v1",
   "_doc": "05_flow/build_api.py が機械生成。手で直さない。凍結後の変更は決定（ADR）＋影響解析",
   "source": [
@@ -4555,7 +4555,8 @@
    ],
    "choke_points": [
     "C1",
-    "C2"
+    "C2",
+    "C4"
    ],
    "source": [
     "D-004",
@@ -4588,32 +4589,14 @@
    "table": "sessions",
    "operation_id": "claimPairingCode",
    "auth": {
-    "role": "device",
-    "scheme": "device（PC の印。本人の sessions に結ばれ、本人が切られたら止まる）"
+    "role": "public",
+    "scheme": "none"
    },
-   "rate_limit": "60/min/user",
+   "rate_limit": "5/min/ip",
    "access_control_policies": [
     "sessions_permission_write"
    ],
    "outputs_4xx": [
-    {
-     "status": 401,
-     "code": "UNAUTHENTICATED",
-     "body": {
-      "error": "unauthenticated"
-     },
-     "trigger": "セッションが無い・失効している（退会・停止・権限変更・パスワード変更で即失効）",
-     "ears_form": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）"
-    },
-    {
-     "status": 403,
-     "code": "FORBIDDEN",
-     "body": {
-      "error": "forbidden"
-     },
-     "trigger": "権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした",
-     "ears_form": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）"
-    },
     {
      "status": 409,
      "code": "CONFLICT",
@@ -4640,8 +4623,8 @@
       "error": "rate_limited",
       "retry_after_sec": 60
      },
-     "trigger": "60/min/user",
-     "ears_form": "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す"
+     "trigger": "5/min/ip",
+     "ears_form": "UNWANTED: IF 5/min/ip を超えたら、Kaname は 429 と retry_after_sec を返す"
     },
     {
      "status": 502,
@@ -4655,25 +4638,24 @@
    ],
    "ears_ac_seed": [
     "EVENT-DRIVEN: WHEN POST /api/v1/bridge/claim が「Bridge を入れてつなぐ」として呼ばれたとき THEN Kaname は「Bridge と本人を結ぶ。つながったら自分の AI が話せる」を行い 2xx を返す",
-    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
-    "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UNWANTED: IF 5/min/ip を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す",
-    "UBIQUITOUS: POST /api/v1/bridge/claim の副作用は関門 C1・C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+    "UBIQUITOUS: POST /api/v1/bridge/claim の副作用は関門 C1・C2・C4 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
    ],
    "terms_open": false,
    "list_ignores_scope": false,
    "outward_side_effects": [
-    "ネットワーク"
+    "ネットワーク",
+    "ファイル / オブジェクト"
    ],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
    "description": "作成・実行（bridge）— 自分の PC をつなぐ",
    "implementation_path": "apps/api/src/routes/sessions.ts::claimPairingCode",
    "permission": {
-    "who": "device",
-    "scope": "接続コードを持つ PC（1 回だけ・10 分）。つないだら本人に知らせる",
+    "who": "public",
+    "scope": "接続コードを持つ PC（まだ PC の印が無い。コードそのものが鍵：1 回だけ・10 分・1 分に 5 回まで・D-089・D-128.93）。つないだら本人に知らせる",
     "step_up": false
    },
    "path_params": [],
@@ -4984,7 +4966,9 @@
     "E-048",
     "E-061"
    ],
-   "choke_points": [],
+   "choke_points": [
+    "C4"
+   ],
    "source": [
     "D-004",
     "D-004.1",
@@ -5092,12 +5076,13 @@
     "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
-    "UBIQUITOUS: GET /api/v1/bridge/devices の副作用は関門 C1・C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+    "UBIQUITOUS: GET /api/v1/bridge/devices の副作用は関門 C1・C2・C4 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
    ],
    "terms_open": false,
    "list_ignores_scope": false,
    "outward_side_effects": [
-    "ネットワーク"
+    "ネットワーク",
+    "ファイル / オブジェクト"
    ],
    "side_effect_ordering": null,
    "description": "取得（bridge）— 自分の PC をつなぐ",
@@ -5140,7 +5125,8 @@
    ],
    "choke_points": [
     "C1",
-    "C2"
+    "C2",
+    "C4"
    ],
    "source": [
     "D-004",
@@ -5257,12 +5243,13 @@
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
-    "UBIQUITOUS: PATCH /api/v1/bridge/devices/:id の副作用は関門 C1・C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+    "UBIQUITOUS: PATCH /api/v1/bridge/devices/:id の副作用は関門 C1・C2・C4 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
    ],
    "terms_open": false,
    "list_ignores_scope": false,
    "outward_side_effects": [
-    "ネットワーク"
+    "ネットワーク",
+    "ファイル / オブジェクト"
    ],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
    "description": "更新（bridge）— 自分の PC をつなぐ",
@@ -5306,7 +5293,8 @@
    ],
    "choke_points": [
     "C1",
-    "C2"
+    "C2",
+    "C4"
    ],
    "source": [
     "D-004",
@@ -5424,12 +5412,13 @@
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
-    "UBIQUITOUS: DELETE /api/v1/bridge/devices/:id の副作用は関門 C1・C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+    "UBIQUITOUS: DELETE /api/v1/bridge/devices/:id の副作用は関門 C1・C2・C4 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
    ],
    "terms_open": false,
    "list_ignores_scope": false,
    "outward_side_effects": [
-    "ネットワーク"
+    "ネットワーク",
+    "ファイル / オブジェクト"
    ],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
    "description": "削除（bridge）— 自分の PC をつなぐ",
@@ -5600,7 +5589,8 @@
    ],
    "choke_points": [
     "C1",
-    "C2"
+    "C2",
+    "C4"
    ],
    "source": [
     "D-004",
@@ -5706,12 +5696,13 @@
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す",
-    "UBIQUITOUS: POST /api/v1/bridge/heartbeat の副作用は関門 C1・C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+    "UBIQUITOUS: POST /api/v1/bridge/heartbeat の副作用は関門 C1・C2・C4 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
    ],
    "terms_open": false,
    "list_ignores_scope": false,
    "outward_side_effects": [
-    "ネットワーク"
+    "ネットワーク",
+    "ファイル / オブジェクト"
    ],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
    "description": "作成・実行（bridge）— 自分の PC をつなぐ",
@@ -7401,7 +7392,8 @@
    ],
    "choke_points": [
     "C1",
-    "C2"
+    "C2",
+    "C4"
    ],
    "source": [
     "D-004",
@@ -7516,12 +7508,13 @@
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
-    "UBIQUITOUS: POST /api/v1/bridge/pairing-codes の副作用は関門 C1・C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+    "UBIQUITOUS: POST /api/v1/bridge/pairing-codes の副作用は関門 C1・C2・C4 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
    ],
    "terms_open": false,
    "list_ignores_scope": false,
    "outward_side_effects": [
-    "ネットワーク"
+    "ネットワーク",
+    "ファイル / オブジェクト"
    ],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
    "description": "作成・実行（bridge）— 自分の PC をつなぐ",
@@ -7557,7 +7550,9 @@
    "related_entities": [
     "E-061"
    ],
-   "choke_points": [],
+   "choke_points": [
+    "C4"
+   ],
    "source": [
     "D-004",
     "D-004.1",
@@ -7664,19 +7659,20 @@
     "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
-    "UBIQUITOUS: GET /api/v1/bridge/releases/:name/file の副作用は関門 C1・C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+    "UBIQUITOUS: GET /api/v1/bridge/releases/:name/file の副作用は関門 C1・C2・C4 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
    ],
    "terms_open": false,
    "list_ignores_scope": false,
    "outward_side_effects": [
-    "ネットワーク"
+    "ネットワーク",
+    "ファイル / オブジェクト"
    ],
    "side_effect_ordering": null,
    "description": "取得（bridge）— 自分の PC をつなぐ",
    "implementation_path": "apps/api/src/routes/sessions.ts::downloadBridgeRelease",
    "permission": {
-    "who": "self",
-    "scope": "ログインしている人（期限つきの署名 URL）",
+    "who": "self_or_device",
+    "scope": "ログインしている人と、つないだ PC の印（D-128.137）。置き場が外なら短い期限の署名 URL（D-128.153）",
     "step_up": false
    },
    "path_params": [
@@ -7714,7 +7710,9 @@
    "related_entities": [
     "E-061"
    ],
-   "choke_points": [],
+   "choke_points": [
+    "C4"
+   ],
    "source": [
     "D-004",
     "D-004.1",
@@ -7821,19 +7819,20 @@
     "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
-    "UBIQUITOUS: GET /api/v1/bridge/releases/latest の副作用は関門 C1・C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+    "UBIQUITOUS: GET /api/v1/bridge/releases/latest の副作用は関門 C1・C2・C4 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
    ],
    "terms_open": false,
    "list_ignores_scope": false,
    "outward_side_effects": [
-    "ネットワーク"
+    "ネットワーク",
+    "ファイル / オブジェクト"
    ],
    "side_effect_ordering": null,
    "description": "取得（bridge）— 自分の PC をつなぐ",
    "implementation_path": "apps/api/src/routes/sessions.ts::getLatestBridgeRelease",
    "permission": {
-    "who": "self",
-    "scope": "ログインしている人（版と指紋を返す・D-109）",
+    "who": "self_or_device",
+    "scope": "ログインしている人と、つないだ PC の印（PC が自分で新しい版を見に来る・D-109・D-128.137）",
     "step_up": false
    },
    "path_params": [],

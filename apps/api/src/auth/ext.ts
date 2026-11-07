@@ -3,20 +3,13 @@
 // 契約（08_api）の外なのは、認証の操作が Better Auth の口に属するため（T-F-05）。画面のタスク T-U-01〜05／09／10 が使う
 import { agentToolRoutes, issueToolToken } from "./agent-tools.js";
 import { AGENT_CONVENTIONS, BROWSER_CHECK_PROMPT, BROWSERS, ONBOARD_REMEMBER, type Browser } from "./conventions.js";
-import {
-  isListed,
-  legacyInstaller,
-  pickInstaller,
-  pickUpdate,
-  readManifest,
-  releaseFileResponse,
-} from "./bridge-release.js";
 import { Hono } from "hono";
 import type pg from "pg";
 import type { Auth } from "@kaname/auth";
 import { acceptInvitation, hashToken } from "@kaname/auth/invitations";
-import { createSessionResolver, signOut, type Resolved } from "@kaname/auth/resolver";
+import { createDeviceResolver, createSessionResolver, signOut, type Resolved } from "@kaname/auth/resolver";
 import { sessionUnresolved, termsRequired } from "../contract/op.js";
+import { BRIDGE_PROTOCOL_MIN } from "../features/F3/connect-pc/hooks.js";
 import { EMAIL_RE, normalizeEmail, signInWithLock, signUp } from "@kaname/auth/signup";
 import type { Repository } from "@kaname/db/repository";
 import { withTenant } from "@kaname/db/context";
@@ -97,15 +90,8 @@ export function hostOf(v: string): string | null {
     );
   return m ? m[1]!.toLowerCase() : null;
 }
-/** この版より古い Bridge には仕事を渡さない（apps/bridge/src/loop.ts の BRIDGE_PROTOCOL と揃える） */
-export const BRIDGE_PROTOCOL_MIN = 4;
-/** 古い Bridge のとき、自己診断に足す 1 行（画面は fix=update を見て入れ直しを案内する） */
-const OUTDATED_CHECK = {
-  name: "Bridge が新しい",
-  ok: false,
-  detail: "この PC の Bridge が古いので、自分のAI に仕事を渡せません。Bridge を入れ直してください",
-  fix: "update",
-};
+/** この版より古い Bridge には仕事を渡さない（定義は features/F3/connect-pc/hooks.ts・K-57 に移した） */
+export { BRIDGE_PROTOCOL_MIN };
 /** 同意し直しの間も止めない前の道すじ（K-53）：自分の取得・ログイン・2 段階の確認・招待の下見と受諾（ログアウトは契約の口 signOut） */
 const TERMS_OPEN_EXT = [/^\/me$/, /^\/sign-in$/, /^\/two-factor\/verify$/, /^\/invitations\/[^/]+(\/accept)?$/];
 export function authExt(d: AuthExtDeps): Hono {
@@ -291,17 +277,6 @@ export function authExt(d: AuthExtDeps): Hono {
     return c.json({ data: { token: u.token, member_id: memberId } }, 201);
   });
 
-  // Bridge の接続コード（T-U-09）：ログイン済みの会員だけ。10 分で失効。Bridge 側の claim は T-I-*
-  app.post("/bridge/pair", async (c) => {
-    const s = await resolve(c.req.raw.headers);
-    if (!s?.ctx.tenantId || !s.ctx.userId) return bad(c, 401, "UNAUTHENTICATED", "ログインしてください");
-    const r = await d.appPool.query<{ code: string }>("select app.bridge_pair_new($1, $2) as code", [
-      s.ctx.tenantId,
-      s.ctx.userId,
-    ]);
-    return c.json({ data: { code: r.rows[0]!.code, expires_in_sec: 600 } }, 201);
-  });
-
   // はじめの設定の進み具合（T-U-09〜・D-089）。1 PCをつなぐ → 6 本番へ。0 は「まだ何もしていない」。
   // 画面はこれを見て、通していない人を今いる段へ戻す（入口・アプリの枠の両方）
   app.get("/setup-state", async (c) => {
@@ -325,30 +300,6 @@ export function authExt(d: AuthExtDeps): Hono {
       b.step,
     ]);
     return c.json({ data: { step: r.rows[0]!.v, total: 6 } });
-  });
-
-  // Bridge が接続コードを引き取る（T-B-02）。Bridge 本体から呼ぶ本番の口。
-  // 引き取れたら、その人の端末として sessions に 1 行つき、はじめの設定の段 1 が通る（D-089）
-  app.post("/bridge/claim", async (c) => {
-    const b = (await c.req.json().catch(() => ({}))) as { code?: string; device_label?: string };
-    const code = (b.code ?? "").trim().toUpperCase();
-    if (!/^KNM-\d{4}$/.test(code))
-      return bad(c, 422, "VALIDATION_FAILED", "接続コードの形が違います（KNM-0000 の形）", { field: "code" });
-    const label = (b.device_label ?? "").slice(0, 80) || "この PC";
-    const r = await d.appPool.query<{ session_id: string | null }>("select app.bridge_claim($1, $2) as session_id", [
-      code,
-      label,
-    ]);
-    const sid = r.rows[0]?.session_id ?? null;
-    if (!sid)
-      return bad(
-        c,
-        410,
-        "PAIR_CODE_INVALID",
-        "その接続コードは使えません（10 分で失効します。画面を開き直すと新しい番号が出ます）",
-      );
-    // Bridge はこの session の id を鍵に、この後の 生存の知らせ／仕事の受け取り／結末 を話す（D-090）
-    return c.json({ data: { connected: true, device_label: label, session_id: sid } }, 201);
   });
 
   // ---- 画面が話す口（自分のAIに言う・止まったものを選び直す・D-090）
@@ -468,71 +419,6 @@ export function authExt(d: AuthExtDeps): Hono {
     return c.json({ data: r.rows[0]!.s });
   });
 
-  // Bridge の配布（T-B-06・D-015.6）。**Kaname のサーバーから配る**。顧客に外のサービスを見せない。
-  // 実物がまだ無いときは、そう言う（押しても何も起きない・嘘の「ダウンロード中」を作らない）
-  const RELEASE = { mac: "Kaname-Bridge.dmg", win: "Kaname-Bridge-Setup.exe" } as const;
-  const releaseCfg = () => ({ dir: d.config.bridgeReleaseDir ?? "", base: d.config.bridgeReleaseBase ?? "" });
-  app.get("/bridge/download", async (c) => {
-    const os = (c.req.query("os") ?? "") as keyof typeof RELEASE;
-    if (!RELEASE[os]) return bad(c, 422, "VALIDATION_FAILED", "mac か win を指定してください", { field: "os" });
-    // 目録（D-109）があれば、そこに載ったインストーラを配る
-    const rel = await readManifest(releaseCfg());
-    const inst = rel ? pickInstaller(rel.m, os) : null;
-    if (rel && inst) {
-      if (rel.from === "dir") {
-        const r = releaseFileResponse(d.config.bridgeReleaseDir ?? "", inst.name);
-        if (r) return r; // 目録にあるのに実物が無い → 下の従来の探し方に落とす
-      } else return c.redirect(`${(d.config.bridgeReleaseBase ?? "").replace(/\/$/, "")}/${inst.name}`, 302);
-    }
-    // 手元のフォルダに置いてあれば、そこから配る（署名と置き場が決まる前でも人は入れられる）
-    const pick = legacyInstaller(d.config.bridgeReleaseDir ?? "", os);
-    if (pick) {
-      const r = releaseFileResponse(d.config.bridgeReleaseDir ?? "", pick);
-      if (r) return r;
-    }
-    const base = d.config.bridgeReleaseBase ?? "";
-    if (!base)
-      return bad(
-        c,
-        404,
-        "BRIDGE_NOT_RELEASED",
-        "まだ配布していません。署名と置き場の用意ができたら、ここから入れられるようになります",
-      );
-    return c.redirect(`${base}/${RELEASE[os]}`, 302);
-  });
-  // 新しい版を Bridge が自分で見に来る先（D-109）。いまの版と、その OS・CPU の中身の場所・指紋（sha256）・大きさを返す。
-  // 目録が無ければ released: false（Bridge は何もしない）
-  app.get("/bridge/latest", async (c) => {
-    const rel = await readManifest(releaseCfg());
-    if (!rel) return c.json({ data: { released: false } });
-    const os = c.req.query("os");
-    const arch = c.req.query("arch");
-    const f =
-      (os === "mac" || os === "win") && (arch === "arm64" || arch === "x64") ? pickUpdate(rel.m, os, arch) : null;
-    const url = !f
-      ? null
-      : rel.from === "dir"
-        ? `/api/auth-ext/bridge/file/${encodeURIComponent(f.name)}`
-        : `${(d.config.bridgeReleaseBase ?? "").replace(/\/$/, "")}/${f.name}`;
-    return c.json({
-      data: {
-        released: true,
-        version: rel.m.version,
-        released_at: rel.m.released_at,
-        update: f && url ? { name: f.name, url, sha256: f.sha256, size: f.size } : null,
-      },
-    });
-  });
-  // 目録に載ったファイルだけ手元のフォルダから流す（名前で置き場の外を指させない・D-109）
-  app.get("/bridge/file/:name", async (c) => {
-    const dir = d.config.bridgeReleaseDir ?? "";
-    const rel = dir ? await readManifest({ dir }) : null;
-    const name = c.req.param("name");
-    const f = rel ? isListed(rel.m, name) : null;
-    if (!f) return bad(c, 404, "NOT_FOUND", "その配布物はありません");
-    return releaseFileResponse(dir, f.name) ?? bad(c, 404, "NOT_FOUND", "その配布物はありません");
-  });
-
   // 「新しい会話」（D-062）。いまの 1 本を閉じる。次に言ったことが新しい 1 本になる（前のやりとりは残る）
   app.post("/agent/new", async (c) => {
     const ses = await resolve(c.req.raw.headers);
@@ -609,10 +495,16 @@ export function authExt(d: AuthExtDeps): Hono {
   });
 
   // ---- Bridge が話す口（T-B-03・D-090）。鍵は claim で受け取った bridge の session id
-  const bridgeSession = async (c: { req: { raw: Request } }) => {
-    const h = c.req.raw.headers.get("x-bridge-session") ?? "";
-    return /^[0-9a-f-]{36}$/i.test(h) ? h : null;
-  };
+  // PC の印（K-57）：引き取りで 1 回だけ渡した印のハッシュで、生きている PC の行を引く。sessions の id は鍵にしない（画面の一覧に出る値なので）
+  const resolveDevice = createDeviceResolver(d.appPool);
+  // PC の印の形か、前の形（sessions の id）の鍵なら、解けなければ 410（Bridge は捨ててつなぎ直す）。それ以外の形は 401
+  const KEY_SHAPE = /^(kpc_[A-Za-z0-9_-]{43}|[0-9a-f-]{36})$/i;
+  //   頭が無ければ null（401）。頭があるのに解けない印（切れた・外した・知らない）は、無い PC の行を指す（各口の「生きているか」で 410 になり、Bridge は印を捨てる・G-14）
+  const NO_DEVICE = "00000000-0000-4000-8000-000000000000";
+  const bridgeSession = async (c: { req: { raw: Request } }) =>
+    KEY_SHAPE.test(c.req.raw.headers.get("x-bridge-session") ?? "")
+      ? ((await resolveDevice(c.req.raw.headers))?.sessionId ?? NO_DEVICE)
+      : null;
   /** 鍵が生きているか。切れた・退会した・つなぎ直した鍵は 410（Bridge はこれで鍵を捨てる・G-14）。
    *  「仕事が無い（404）」と混ぜない：混ぜると古い仕事 id の 404 で鍵まで捨ててしまう */
   const bridgeAlive = async (sid: string): Promise<boolean> =>
@@ -625,24 +517,6 @@ export function authExt(d: AuthExtDeps): Hono {
   const GONE = (c: Parameters<typeof bad>[0]) =>
     bad(c, 410, "SESSION_GONE", "この端末の接続は切れています。つなぎ直してください");
 
-  // 生きている、と知らせる（最後の応答が本当に動く）＋ 自己診断の結果を返す
-  app.post("/bridge/heartbeat", async (c) => {
-    const sid = await bridgeSession(c);
-    if (!sid) return bad(c, 401, "UNAUTHENTICATED", "この Bridge は分かりません");
-    const b = (await c.req.json().catch(() => ({}))) as { health?: unknown; protocol?: unknown };
-    // 古い Bridge（約束の版を送らない・古い）は、自己診断に「古い」を足して画面に出す（E-CONN-012）
-    const old = !(Number(b.protocol) >= BRIDGE_PROTOCOL_MIN);
-    const health = Array.isArray(b.health) ? (b.health as unknown[]) : [];
-    const withVersion = old ? [...health, OUTDATED_CHECK] : health;
-    const r = await d.appPool.query<{ ok: boolean }>("select app.bridge_heartbeat($1, $2::jsonb) as ok", [
-      sid,
-      b.health === undefined && !old ? null : JSON.stringify(withVersion),
-    ]);
-    if (!r.rows[0]?.ok) return bad(c, 410, "SESSION_GONE", "この端末の接続は切れています。つなぎ直してください");
-    // この端末で AI が使うブラウザ（D-120.1）。Bridge の窓に同じ値を出す
-    const br = await d.appPool.query<{ b: string | null }>("select app.bridge_browser($1) as b", [sid]);
-    return c.json({ data: { ok: true, browser: br.rows[0]?.b ?? null } });
-  });
   // Bridge の窓から選び直す（Kaname の画面で変えたのと同じ・D-120.1）
   app.post("/bridge/browser", async (c) => {
     const sid = await bridgeSession(c);

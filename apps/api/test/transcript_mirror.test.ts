@@ -17,6 +17,7 @@ import { localDriver } from "@kaname/storage/local";
 import { createApp } from "../src/app.js";
 import { authExt } from "../src/auth/ext.js";
 import { keepAuth, verifiedUser } from "./_pending.js";
+import { pairForTest } from "./bridge_pair.js";
 
 const DB_PKG = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "packages", "db");
 const ADMIN = process.env["DATABASE_URL"]!;
@@ -87,12 +88,9 @@ async function ready() {
   // 申し込みは直に置き、確認だけを通す（前の道すじ /sign-up は K-51 で契約の口に移した）
   const ver = await verifiedUser(AUTH_URL, { email, password: PW, companyName: "K" });
   const H = { authorization: `Bearer ${ver.token}` };
-  const pair = await json<{ code: string }>(post("/bridge/pair", {}, H));
-  const claim = await json<{ session_id: string }>(
-    post("/bridge/claim", { code: pair.code, device_label: "QA の PC" }),
-  );
-  const B = { "x-bridge-session": claim.session_id };
-  const member = (await admin.query("select member_id from sessions where id = $1", [claim.session_id])).rows[0]
+  const bp = await pairForTest(admin, email);
+  const B = { "x-bridge-session": bp.token };
+  const member = (await admin.query("select member_id from sessions where id = $1", [bp.sid])).rows[0]
     .member_id as string;
   return { H, B, member };
 }

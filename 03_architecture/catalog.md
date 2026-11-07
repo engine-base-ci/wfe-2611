@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 363（作った 10・後のフェーズの行為だけ 20）・前の道すじ 39・表 142・画面の部品 13・共通の処理 13・エラー 151・部品 52・設定 39
+API 363（作った 16・後のフェーズの行為だけ 20）・前の道すじ 33・表 142・画面の部品 13・共通の処理 13・エラー 153・部品 52・設定 39
 
 ## 共通の処理
 
@@ -291,16 +291,16 @@ API 363（作った 10・後のフェーズの行為だけ 20）・前の道す�
 | `changePlan` | POST /api/v1/workspace/plan | 作成・実行（workspace）— プラン・利用量・請求書を見る | F12 | 契約だけ（501） |  |
 | `listWorkspacePlans` | GET /api/v1/workspace/plans | 取得（workspace）— プラン・利用量・請求書を見る | F12 | 契約だけ（501） |  |
 | `getInvitation` | GET /api/v1/auth/invitations/:token | 取得（auth）— 招待を受けて参加する（今のアカウントで別のテナントにも） | F2 | 契約だけ（501） |  |
-| `claimPairingCode` | POST /api/v1/bridge/claim | 作成・実行（bridge）— 自分の PC をつなぐ | F3 | 契約だけ（501） | K-57 |
+| `claimPairingCode` | POST /api/v1/bridge/claim | 作成・実行（bridge）— 自分の PC をつなぐ | F3 | 作った | K-57 |
 | `reportCredentialCheck` | POST /api/v1/bridge/credentials/:id/check-result | 作成・実行（bridge）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | K-56 |
 | `resolveCredential` | POST /api/v1/bridge/credentials/resolve | 作成・実行（bridge）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | K-56 |
-| `listMyDevices` | GET /api/v1/bridge/devices | 取得（bridge）— 自分の PC をつなぐ | F3 | 契約だけ（501） | K-57 |
+| `listMyDevices` | GET /api/v1/bridge/devices | 取得（bridge）— 自分の PC をつなぐ | F3 | 作った | K-57 |
 | `updateMyDevice` | PATCH /api/v1/bridge/devices/:id | 更新（bridge）— 自分の PC をつなぐ | F3 | 契約だけ（501） | K-90 |
 | `revokeMyDevice` | DELETE /api/v1/bridge/devices/:id | 削除（bridge）— 自分の PC をつなぐ | F3 | 契約だけ（501） | K-91 |
-| `sendHeartbeat` | POST /api/v1/bridge/heartbeat | 作成・実行（bridge）— 自分の PC をつなぐ | F3 | 契約だけ（501） | K-57 |
-| `createPairingCode` | POST /api/v1/bridge/pairing-codes | 作成・実行（bridge）— 自分の PC をつなぐ | F3 | 契約だけ（501） | K-57 |
-| `downloadBridgeRelease` | GET /api/v1/bridge/releases/:name/file | 取得（bridge）— 自分の PC をつなぐ | F3 | 契約だけ（501） | K-57 |
-| `getLatestBridgeRelease` | GET /api/v1/bridge/releases/latest | 取得（bridge）— 自分の PC をつなぐ | F3 | 契約だけ（501） | K-57 |
+| `sendHeartbeat` | POST /api/v1/bridge/heartbeat | 作成・実行（bridge）— 自分の PC をつなぐ | F3 | 作った | K-57 |
+| `createPairingCode` | POST /api/v1/bridge/pairing-codes | 作成・実行（bridge）— 自分の PC をつなぐ | F3 | 作った | K-57 |
+| `downloadBridgeRelease` | GET /api/v1/bridge/releases/:name/file | 取得（bridge）— 自分の PC をつなぐ | F3 | 作った | K-57 |
+| `getLatestBridgeRelease` | GET /api/v1/bridge/releases/latest | 取得（bridge）— 自分の PC をつなぐ | F3 | 作った | K-57 |
 | `listCredentials` | GET /api/v1/credentials | 取得（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | K-56 |
 | `createCredential` | POST /api/v1/credentials | 作成・実行（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | K-56 |
 | `updateCredential` | PATCH /api/v1/credentials/:id | 更新（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | K-56 |
@@ -511,16 +511,10 @@ API 363（作った 10・後のフェーズの行為だけ 20）・前の道す�
 - `/bridge/answer`
 - `/bridge/ask`
 - `/bridge/browser`
-- `/bridge/claim`
 - `/bridge/code`
 - `/bridge/credentials/check-result`
 - `/bridge/credentials/resolve`
-- `/bridge/download`
-- `/bridge/file/:name`
 - `/bridge/finish`
-- `/bridge/heartbeat`
-- `/bridge/latest`
-- `/bridge/pair`
 - `/bridge/progress`
 - `/bridge/state`
 - `/bridge/take`

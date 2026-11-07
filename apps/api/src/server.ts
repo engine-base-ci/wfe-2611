@@ -6,8 +6,10 @@ import { createPool } from "@kaname/db/pool";
 import { createMemberHub } from "@kaname/db/listen";
 import { createRepository } from "@kaname/db/repository";
 import { createAuth } from "@kaname/auth";
-import { createSessionResolver } from "@kaname/auth/resolver";
+import { createDeviceResolver, createSessionResolver } from "@kaname/auth/resolver";
 import { mailTag } from "@kaname/auth/signup";
+import { withDevice } from "./middleware/tenant.js";
+import { bridgeHooks } from "./hooks/bridge.js";
 import { ObjectStore, s3Client, s3Driver, type StorageDriver } from "@kaname/storage";
 import { createApp } from "./app.js";
 import { authExt } from "./auth/ext.js";
@@ -127,7 +129,8 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
     version: o.version ?? "0.1.0",
     repo,
     auth,
-    resolve: createSessionResolver(auth, appPool),
+    // 画面のログインか、PC の印（x-bridge-session・K-57）で文脈を決める
+    resolve: withDevice(createSessionResolver(auth, appPool), createDeviceResolver(appPool)),
     authExt: authExt({ auth, appPool, authPool, repo, secrets, objects, config, hub, ...(mailer ? { mailer } : {}) }),
     corsOrigin: config.webOrigins.join(","),
     // 会話・記憶の契約の口は画面の口と同じ本体を通す。本人確認の取り直しはログインの部品に頼る（K-19）。登録は K-51、確認のリンクで確定するのは K-52、規約の今の版と同意は K-53
@@ -138,6 +141,11 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
         ...signupHooks({ authPool, repo, actions, ...(mailer ? { mailer } : {}), config }),
         ...verifyEmailHooks({ auth, authPool, appPool, repo, ...(mailer ? { mailer } : {}), config }),
         ...consentTermsHooks({ appPool }),
+        ...bridgeHooks({
+          appPool,
+          release: { dir: config.bridgeReleaseDir ?? "", base: config.bridgeReleaseBase ?? "" },
+          objects,
+        }),
       },
     },
   });

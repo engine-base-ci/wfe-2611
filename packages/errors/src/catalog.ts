@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。151 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。153 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -2744,6 +2744,42 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "*",
       "state": "offline"
+    }
+  },
+  "E-CONN-013": {
+    "id": "E-CONN-013",
+    "cls": "validation",
+    "message": "その接続コードは使えません。Kaname の「PC をつなぐ」の画面に出ている、新しいコードを入れてください",
+    "action": "画面の新しいコードを入れ直す",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "CONN-013",
+    "must_not": false,
+    "layers": [
+      "Bridge",
+      "API"
+    ],
+    "where": {
+      "screen": "bridge-setup",
+      "state": "code_invalid"
+    }
+  },
+  "E-CONN-014": {
+    "id": "E-CONN-014",
+    "cls": "not_found",
+    "message": "まだ配布していません。署名と置き場の用意ができたら、ここから入れられるようになります",
+    "action": "待つ（用意ができたら知らせる）",
+    "undo": false,
+    "severity": "low",
+    "support_code": "CONN-014",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "bridge-setup",
+      "state": "not_released"
     }
   }
 };

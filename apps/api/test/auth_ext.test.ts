@@ -224,13 +224,11 @@ describe("招待（T-U-03）", () => {
 });
 
 describe("Bridge の接続コードと資格情報（T-U-09／10）", () => {
-  it("BRG-02-001 ログイン済みなら KNM-#### の接続コード。未ログインは 401", async () => {
+  it("BRG-02-001 前の道すじ（/api/auth-ext/bridge/pair・平文の KNM-#### のコード）は無い。接続コードは契約の口（K-57・connect-pc.test.ts）", async () => {
     const email = `${uniq()}@example.com`;
     const { token } = await register(email, "E");
     const r = await post("/api/auth-ext/bridge/pair", {}, { authorization: `Bearer ${token}` });
-    expect(r.status).toBe(201);
-    expect(((await r.json()) as { data: { code: string } }).data.code).toMatch(/^KNM-\d{4}$/);
-    expect((await post("/api/auth-ext/bridge/pair", {})).status).toBe(401);
+    expect(r.status).toBe(404);
   });
   it("資格情報を預けると表には vault_ref だけ。平文はどこにも無い", async () => {
     const email = `${uniq()}@example.com`;

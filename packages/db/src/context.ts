@@ -8,6 +8,8 @@ export interface TenantContext {
   role: "member" | "ops" | "client" | "device" | "anonymous";
   /** 直前の本人確認の時刻（sessions.step_up_at・K-14）。無ければ未確認 */
   stepUpAt?: Date | null;
+  /** PC の印で来た要求の、その PC の行（sessions.id・role: device のときだけ・K-57） */
+  sessionId?: string | null;
 }
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;

@@ -75,7 +75,7 @@ for (m, p), e in sorted(eps.items(), key=lambda kv: (kv[0][1], ["GET", "POST", "
     if e.get("operation_id") in getattr(_sa, "PERMS", {}):   # ログインの要否は画面ではなく API ごとの権限で決める（ZT1・ZT2）
         _who = _sa.PERMS[e["operation_id"]][0]; role = "public" if _who == "public" else ("ops" if _who.startswith("ops:") else ("device" if _who == "device" else ("client" if _who == "client" else "member")))
     e["auth"] = {"role": role, "scheme": "none" if role == "public" else ("device（PC の印。本人の sessions に結ばれ、本人が切られたら止まる）" if role == "device" else "session（Better Auth・sessions 表を見る。app.tenant_id / app.user_id / app.role を SET LOCAL）")}
-    e["rate_limit"] = "10/min/ip" if role == "public" else ("120/min/user" if m == "GET" else "60/min/user")
+    e["rate_limit"] = getattr(_sa, "RATES", {}).get(e.get("operation_id")) or ("10/min/ip" if role == "public" else ("120/min/user" if m == "GET" else "60/min/user"))
     tname = e.get("table") or (p.split("/")[3] if len(p.split("/")) > 3 else "")
     params = re.findall(r":(\w+)", p)
     e["access_control_policies"] = [pol["name"] for x in e["related_entities"] for pol in ent[x]["access_control_policies"] if (m == "GET" and "read" in pol["name"]) or (m != "GET" and "write" in pol["name"])]
@@ -165,7 +165,7 @@ def _ftype(v):   # 型の後ろの ? は null を許す（K-51）
     t = {"type": "array", "items": {"type": "object"}} if base == "array" else {"type": base}
     return {**t, "nullable": True} if v.endswith("?") else t
 for _op, (_n, _props) in getattr(_sa, "INPUTS", {}).items():   # 表の行ではない入力の形（K-19）
-    schemas[_n] = {"type": "object", "properties": {k: _ftype(v) for k, v in _props.items()}, "x-operation": _op}
+    schemas[_n] = {"type": "object", "properties": {k: ({} if v == "any" else {"type": "array"} if v == "array" else _ftype(v)) for k, v in _props.items()}, "x-operation": _op}   # any：形を問わず受け、口が扱う（K-57）
 for _op, (_n, _props) in _sa.RESPONSES.items():   # 表の行ではない答えの形（D-128.78）
     schemas[_n] = {"type": "object", "properties": {k: _ftype(v) for k, v in _props.items()}, "x-operation": _op}
 # 列の名前は英小文字と _ だけ（ER 図で 2 つの列を「・」でつないだまま 1 つの名前になり、型のファイルが画面の組み立て（SWC）で読めなくなった・2026-11-03）

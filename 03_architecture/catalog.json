@@ -6,13 +6,13 @@
  ],
  "counts": {
   "api": 363,
-  "api_built": 10,
+  "api_built": 16,
   "api_only_later_phase": 20,
-  "legacy_routes": 39,
+  "legacy_routes": 33,
   "db": 142,
   "ui": 13,
   "packages": 13,
-  "errors": 151,
+  "errors": 153,
   "stack": 52,
   "env": 39
  },
@@ -613,7 +613,7 @@
    "tables": [
     "sessions"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-57"
    ]
@@ -664,7 +664,7 @@
    "tables": [
     "sessions"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-57"
    ]
@@ -732,7 +732,7 @@
    "tables": [
     "sessions"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-57"
    ]
@@ -930,7 +930,7 @@
    "tables": [
     "bridge_pairing_codes"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-57"
    ]
@@ -947,7 +947,7 @@
    "tables": [
     "sessions"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-57"
    ]
@@ -964,7 +964,7 @@
    "tables": [
     "sessions"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-57"
    ]
@@ -5848,16 +5848,10 @@
   "/bridge/answer",
   "/bridge/ask",
   "/bridge/browser",
-  "/bridge/claim",
   "/bridge/code",
   "/bridge/credentials/check-result",
   "/bridge/credentials/resolve",
-  "/bridge/download",
-  "/bridge/file/:name",
   "/bridge/finish",
-  "/bridge/heartbeat",
-  "/bridge/latest",
-  "/bridge/pair",
   "/bridge/progress",
   "/bridge/state",
   "/bridge/take",

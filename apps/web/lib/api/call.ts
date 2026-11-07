@@ -127,3 +127,39 @@ export async function call<K extends OpName>(op: K, args: CallArgs<K> = {} as Ca
     retryAfterSec: typeof json["retry_after_sec"] === "number" ? json["retry_after_sec"] : null,
   };
 }
+
+/** ファイルを受け取る口（K-57 の配布物）。ログインの鍵を付けて呼ぶ。
+ *  置き場が外なら答えは JSON の短い期限の署名 URL（{ url, expires_at }・D-128.153）、手元のフォルダならファイルそのもの。
+ *  失敗なら正本の ID を返す */
+export type FileReply =
+  | { ok: true; kind: "link"; url: string; expiresAt: string | null }
+  | { ok: true; kind: "blob"; blob: Blob }
+  | { ok: false; status: number; code: string };
+export async function fetchFile<K extends OpName>(op: K, params: Record<string, string>): Promise<FileReply> {
+  const e = BY_OP.get(op);
+  if (!e) throw new Error(`契約に無い口: ${String(op)}`);
+  const token = getToken();
+  try {
+    const r = await fetch(`${apiBase()}${pathOf(e.path, params)}`, {
+      headers: token ? { authorization: `Bearer ${token}` } : {},
+    });
+    if (r.ok && (r.headers.get("content-type") ?? "").includes("application/json")) {
+      const j = (await r.json().catch(() => ({}))) as { data?: { url?: unknown; expires_at?: unknown } };
+      const url = typeof j.data?.url === "string" ? j.data.url : "";
+      // 署名 URL は http(s) だけを開く（ほかの形は開かない）
+      if (!/^https?:\/\//.test(url)) return { ok: false, status: r.status, code: "E-PAGE-007" };
+      return {
+        ok: true,
+        kind: "link",
+        url,
+        expiresAt: typeof j.data?.expires_at === "string" ? j.data.expires_at : null,
+      };
+    }
+    if (r.ok) return { ok: true, kind: "blob", blob: await r.blob() };
+    if (r.status === 401) notifyUnauthorized();
+    const j = (await r.json().catch(() => ({}))) as { code?: unknown };
+    return { ok: false, status: r.status, code: typeof j.code === "string" ? j.code : String(r.status) };
+  } catch {
+    return { ok: false, status: 0, code: "E-PAGE-007" };
+  }
+}

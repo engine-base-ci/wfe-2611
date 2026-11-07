@@ -19,7 +19,7 @@ from __future__ import annotations
 import glob, importlib.util, os, re, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-WORDS = {"public", "read", "write", "assignee", "approver", "recipient", "self", "manager", "admin", "client", "device"}
+WORDS = {"public", "read", "write", "assignee", "approver", "recipient", "self", "manager", "admin", "client", "device", "self_or_device"}
 OPS_CAPS = {"any", "inquiry", "peek", "money", "stop", "notice", "distribute", "plan_propose", "plan_decide", "ops_people"}
 # 本人確認を取り直す操作（D-125.139・D-128.68・D-128.70）。表に出てきたら step_up が要る
 STEP_UP_REQUIRED = {"approveApproval", "createCredential", "updateCredential", "updateMemberRole", "updateMemberPermissions",
@@ -29,6 +29,8 @@ STEP_UP_REQUIRED = {"approveApproval", "createCredential", "updateCredential", "
                     "updateMemberGroups", "suspendMember", "resumeMember", "removeMember", "updateWorkspacePermissions",
                     "changePlan", "requestWorkspaceDeletion", "createInvitations", "createInvitationLink",
                     "changeOpsWorkspacePlan", "resumeWorkspace", "issueOpsInvoices", "addOpsMember", "updateOpsMemberCaps", "removeOpsMember"}
+# PC がまだ印を持たないうちに呼ぶ口（接続コードそのものが鍵・1 分 5 回・10 分・1 回だけ・D-089・D-128.93・K-57）
+BRIDGE_PUBLIC = {"claimPairingCode"}
 PUBLIC_OK = {"signup", "verify-email", "login", "password-reset", "invite-accept"}   # ログイン前の画面だけが public を使える
 
 
@@ -53,11 +55,12 @@ def design_fails(sa) -> list[str]:
             if sid.startswith("ops-") and not who.startswith("ops:"): fails.append(f"[ZT9] 運営の画面 {sid} の {opid} が ops: でない（{who}）")
             if not sid.startswith("ops-") and who.startswith("ops:"): fails.append(f"[ZT9] 顧客の画面 {sid} の {opid} が ops: を使っている")
             if who == "device" and not path.startswith("/bridge/"): fails.append(f"[ZT10] {opid} は PC の印（device）で呼ぶのに /bridge/ の下に無い")
-            if path.startswith("/bridge/") and who not in ("device", "self"): fails.append(f"[ZT10] {opid}（/bridge/）は device か self でなければならない")
+            if path.startswith("/bridge/") and who not in ("device", "self", "self_or_device") and opid not in BRIDGE_PUBLIC: fails.append(f"[ZT10] {opid}（/bridge/）は device か self でなければならない")
+            if who == "self_or_device" and not path.startswith("/bridge/"): fails.append(f"[ZT10] {opid} は PC の印でも呼ぶのに /bridge/ の下に無い")
             if who == "client" and not path.startswith("/portal"): fails.append(f"[ZT4] {opid} は取引先の人（client）が呼ぶのに /portal/ の下に無い")
             if path.startswith("/portal") and who != "client": fails.append(f"[ZT4] {opid}（/portal/）は client でなければならない")
             if sid == "portal" and who != "client": fails.append(f"[ZT4] クライアントの場所の {opid} が client でない（{who}）")
-            if who == "public" and sid not in PUBLIC_OK: fails.append(f"[ZT1] ログイン前ではない画面 {sid} の {opid} が public になっている")
+            if who == "public" and sid not in PUBLIC_OK and opid not in BRIDGE_PUBLIC: fails.append(f"[ZT1] ログイン前ではない画面 {sid} の {opid} が public になっている")
     # ZT3（設計）：ログイン済みなら誰でも読める（authenticated・true）のは、本当のマスタ（全社で共通の一覧・運営が配る版）だけ。
     #   それ以外の表がそうなっていると、別の会社の行が読める（子の表は親の見え方に従わせる・D-128.115）。直すチケットが決まっているものだけ残りとして許す
     import json, importlib.util as _u

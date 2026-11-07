@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Kaname API
   version: 1.0.0
-  description: Mock-Driven Contract Generation。2026-11-06 凍結。信頼源は 08_api/endpoints.json。x-acts / x-screens / x-choke-points / x-source で行為・画面・関門・決定に辿れる
+  description: Mock-Driven Contract Generation。2026-11-07 凍結。信頼源は 08_api/endpoints.json。x-acts / x-screens / x-choke-points / x-source で行為・画面・関門・決定に辿れる
 servers:
 - url: /api/v1
 components:
@@ -9129,6 +9129,28 @@ components:
         privacy_version_id:
           type: string
       x-operation: consentToTerms
+    PairingCodeInput:
+      type: object
+      properties: {}
+      x-operation: createPairingCode
+    BridgeClaimInput:
+      type: object
+      properties:
+        code:
+          type: string
+        device_label:
+          type: string
+        machine_id:
+          type: string
+      x-operation: claimPairingCode
+    BridgeHeartbeatInput:
+      type: object
+      properties:
+        health: {}
+        protocol: {}
+        version:
+          type: string
+      x-operation: sendHeartbeat
     ScopeOverview:
       type: object
       properties:
@@ -9556,16 +9578,14 @@ components:
     BridgeRelease:
       type: object
       properties:
+        released:
+          type: boolean
         version:
           type: string
-        files:
-          type: array
-          items:
-            type: object
-        sha256:
-          type: object
         released_at:
           type: string
+        update:
+          type: object
       x-operation: getLatestBridgeRelease
     BridgeClaim:
       type: object
@@ -9577,6 +9597,46 @@ components:
         member_id:
           type: string
       x-operation: claimPairingCode
+    BridgeReleaseLink:
+      type: object
+      properties:
+        url:
+          type: string
+        expires_at:
+          type: string
+      x-operation: downloadBridgeRelease
+    BridgeHeartbeat:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        browser:
+          type: string
+        outdated:
+          type: boolean
+      x-operation: sendHeartbeat
+    BridgeDevice:
+      type: object
+      properties:
+        id:
+          type: string
+        device_label:
+          type: string
+        state:
+          type: string
+        last_seen_at:
+          type: string
+        connected_at:
+          type: string
+        version:
+          type: string
+        health:
+          type: array
+          items:
+            type: object
+        revoke_reason:
+          type: string
+      x-operation: listMyDevices
     BridgeJob:
       type: object
       properties:
@@ -13200,6 +13260,7 @@ paths:
       x-choke-points:
       - C1
       - C2
+      - C4
       x-source:
       - D-004
       - D-004.1
@@ -13224,17 +13285,16 @@ paths:
       - D-125.143
       - D-125.146
       - D-125.167
-      x-permission: device
-      x-permission-scope: 接続コードを持つ PC（1 回だけ・10 分）。つないだら本人に知らせる
+      x-permission: public
+      x-permission-scope: 接続コードを持つ PC（まだ PC の印が無い。コードそのものが鍵：1 回だけ・10 分・1 分に 5 回まで・D-089・D-128.93）。つないだら本人に知らせる
       x-step-up: false
-      security:
-      - session: []
+      security: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SessionsInput'
+              $ref: '#/components/schemas/BridgeClaimInput'
       responses:
         '201':
           description: 成功
@@ -13247,18 +13307,6 @@ paths:
                     $ref: '#/components/schemas/BridgeClaim'
                   meta:
                     type: object
-        '401':
-          description: UNAUTHENTICATED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '403':
-          description: FORBIDDEN
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
         '409':
           description: CONFLICT
           content:
@@ -13472,7 +13520,8 @@ paths:
       - A09
       x-screens:
       - bridge-setup
-      x-choke-points: []
+      x-choke-points:
+      - C4
       x-source:
       - D-004
       - D-004.1
@@ -13558,7 +13607,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Sessions'
+                      $ref: '#/components/schemas/BridgeDevice'
                   meta:
                     type: object
         '401':
@@ -13604,6 +13653,7 @@ paths:
       x-choke-points:
       - C1
       - C2
+      - C4
       x-source:
       - D-004
       - D-004.1
@@ -13706,6 +13756,7 @@ paths:
       x-choke-points:
       - C1
       - C2
+      - C4
       x-source:
       - D-004
       - D-004.1
@@ -13873,6 +13924,7 @@ paths:
       x-choke-points:
       - C1
       - C2
+      - C4
       x-source:
       - D-004
       - D-004.1
@@ -13907,7 +13959,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SessionsInput'
+              $ref: '#/components/schemas/BridgeHeartbeatInput'
       responses:
         '201':
           description: 成功
@@ -13917,7 +13969,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Sessions'
+                    $ref: '#/components/schemas/BridgeHeartbeat'
                   meta:
                     type: object
         '401':
@@ -15039,6 +15091,7 @@ paths:
       x-choke-points:
       - C1
       - C2
+      - C4
       x-source:
       - D-004
       - D-004.1
@@ -15073,7 +15126,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BridgePairingCodesInput'
+              $ref: '#/components/schemas/PairingCodeInput'
       responses:
         '201':
           description: 成功
@@ -15132,7 +15185,8 @@ paths:
       - A09
       x-screens:
       - bridge-setup
-      x-choke-points: []
+      x-choke-points:
+      - C4
       x-source:
       - D-004
       - D-004.1
@@ -15157,8 +15211,8 @@ paths:
       - D-125.143
       - D-125.146
       - D-125.167
-      x-permission: self
-      x-permission-scope: ログインしている人（期限つきの署名 URL）
+      x-permission: self_or_device
+      x-permission-scope: ログインしている人と、つないだ PC の印（D-128.137）。置き場が外なら短い期限の署名 URL（D-128.153）
       x-step-up: false
       security:
       - session: []
@@ -15177,7 +15231,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Sessions'
+                    $ref: '#/components/schemas/BridgeReleaseLink'
                   meta:
                     type: object
         '401':
@@ -15220,7 +15274,8 @@ paths:
       - A09
       x-screens:
       - bridge-setup
-      x-choke-points: []
+      x-choke-points:
+      - C4
       x-source:
       - D-004
       - D-004.1
@@ -15245,8 +15300,8 @@ paths:
       - D-125.143
       - D-125.146
       - D-125.167
-      x-permission: self
-      x-permission-scope: ログインしている人（版と指紋を返す・D-109）
+      x-permission: self_or_device
+      x-permission-scope: ログインしている人と、つないだ PC の印（PC が自分で新しい版を見に来る・D-109・D-128.137）
       x-step-up: false
       security:
       - session: []

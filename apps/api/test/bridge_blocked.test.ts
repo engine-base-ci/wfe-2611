@@ -8,7 +8,7 @@ import { dirname, join } from "node:path";
 import { migrate } from "@kaname/db/migrate";
 import { migrateAuth } from "@kaname/auth/migrate";
 import { createAuth } from "@kaname/auth";
-import { createSessionResolver } from "@kaname/auth/resolver";
+import { createDeviceResolver, createSessionResolver } from "@kaname/auth/resolver";
 import { createPool } from "@kaname/db/pool";
 import { createRepository } from "@kaname/db/repository";
 import { MemoryVault, SecretsGateway } from "@kaname/secrets";
@@ -17,6 +17,16 @@ import { localDriver } from "@kaname/storage/local";
 import { createApp } from "../src/app.js";
 import { authExt } from "../src/auth/ext.js";
 import { keepAuth, verifiedUser } from "./_pending.js";
+import { pairForTest } from "./bridge_pair.js";
+import { withDevice } from "../src/middleware/tenant.js";
+import { bridgeHooks } from "../src/hooks/bridge.js";
+/** 生きている知らせ（契約の口 POST /api/v1/bridge/heartbeat・K-57） */
+const heartbeat = (body: unknown, h: Record<string, string>) =>
+  app.request("http://localhost/api/v1/bridge/heartbeat", {
+    method: "POST",
+    headers: { "content-type": "application/json", ...h },
+    body: JSON.stringify(body),
+  });
 
 const DB_PKG = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "packages", "db");
 const ADMIN = process.env["DATABASE_URL"]!;
@@ -61,7 +71,9 @@ beforeAll(async () => {
   app = createApp({
     repo,
     auth,
-    resolve: createSessionResolver(auth, appPool),
+    // 生きている知らせは契約の口（K-57）。PC の印で解き、振る舞いは connect-pc の hooks
+    resolve: withDevice(createSessionResolver(auth, appPool), createDeviceResolver(appPool)) as never,
+    contract: { hooks: bridgeHooks({ appPool, release: { dir: "", base: "" }, objects }) },
     authExt: authExt({
       auth,
       appPool,
@@ -87,12 +99,9 @@ async function ready() {
   // 申し込みは直に置き、確認だけを通す（前の道すじ /sign-up は K-51 で契約の口に移した）
   const ver = await verifiedUser(AUTH_URL, { email, password: PW, companyName: "K" });
   const H = { authorization: `Bearer ${ver.token}` };
-  const pair = await json<{ code: string }>(post("/bridge/pair", {}, H));
-  const claim = await json<{ session_id: string }>(
-    post("/bridge/claim", { code: pair.code, device_label: "QA の PC" }),
-  );
-  const B = { "x-bridge-session": claim.session_id };
-  const member = (await admin.query("select member_id from sessions where id = $1", [claim.session_id])).rows[0]
+  const bp = await pairForTest(admin, email);
+  const B = { "x-bridge-session": bp.token };
+  const member = (await admin.query("select member_id from sessions where id = $1", [bp.sid])).rows[0]
     .member_id as string;
   return { H, B, member };
 }
@@ -159,7 +168,7 @@ describe("古い Bridge には仕事を渡さない（E-CONN-012）", () => {
     const s = await json<{ job_id: string }>(post("/agent/say", { text: "こんにちは" }, H));
     const old = (await (await post("/bridge/take", {}, B)).json()) as { data: unknown; outdated?: boolean };
     expect(old).toMatchObject({ data: null, outdated: true });
-    expect((await post("/bridge/heartbeat", { health: [{ name: "Claude Code", ok: true }] }, B)).status).toBe(200);
+    expect((await heartbeat({ health: [{ name: "Claude Code", ok: true }] }, B)).status).toBe(201);
     const st = await json<{ health: { name: string; ok: boolean; fix?: string }[] }>(
       req("GET", "/bridge/state", undefined, H),
     );
@@ -167,7 +176,7 @@ describe("古い Bridge には仕事を渡さない（E-CONN-012）", () => {
     // 新しい版なら同じ仕事が渡り、「古い」は消える
     const job = await json<{ job_id: string }>(post("/bridge/take", { protocol: 4 }, B));
     expect(job.job_id).toBe(s.job_id);
-    await post("/bridge/heartbeat", { health: [{ name: "Claude Code", ok: true }], protocol: 4 }, B);
+    await heartbeat({ health: [{ name: "Claude Code", ok: true }], protocol: 4 }, B);
     const st2 = await json<{ health: { fix?: string }[] }>(req("GET", "/bridge/state", undefined, H));
     expect(st2.health.some((h) => h.fix === "update")).toBe(false);
   });
@@ -212,7 +221,11 @@ describe("AI が使うブラウザを Kaname で選ぶ（D-120）", () => {
     expect((await post("/agent/browser", { browser: "firefox" }, H)).status).toBe(422);
     const st = await json<{ browser: string }>(req("GET", "/bridge/state", undefined, H));
     expect(st.browser).toBe("off");
-    expect(await json(post("/bridge/heartbeat", { health: [], protocol: 4 }, B))).toEqual({ ok: true, browser: "off" });
+    expect(await json(heartbeat({ health: [], protocol: 4 }, B))).toEqual({
+      ok: true,
+      browser: "off",
+      outdated: false,
+    });
     const s2 = await json<{ job_id: string }>(post("/agent/say", { text: "もう一度" }, H));
     expect(await json(post("/bridge/take", { protocol: 4 }, B))).toMatchObject({ job_id: s2.job_id, browser: "off" });
     await post("/bridge/finish", { job_id: s2.job_id, state: "done", result: "はい" }, B);
@@ -223,7 +236,7 @@ describe("AI が使うブラウザを Kaname で選ぶ（D-120）", () => {
   });
   it("CHT-37-011 もう一度確かめるは会話に属さない Chrome の仕事になり、押し重ねても 1 件。PC が閉じていれば断る", async () => {
     const { H, B, member } = await ready();
-    await post("/bridge/heartbeat", { health: [], protocol: 4 }, B);
+    await heartbeat({ health: [], protocol: 4 }, B);
     const a = await post("/agent/browser-check", {}, H);
     expect(a.status).toBe(201);
     const { job_id } = ((await a.json()) as { data: { job_id: string } }).data;

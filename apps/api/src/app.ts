@@ -5,7 +5,7 @@ import { MIGRATIONS, checkMigrationOrder } from "@kaname/db";
 import type { Repository } from "@kaname/db/repository";
 import { tenantContext, type SessionResolver, type Vars } from "./middleware/tenant.js";
 import type { Auth } from "@kaname/auth";
-import type { Resolved } from "@kaname/auth/resolver";
+import { DEVICE_TOKEN_HEADER, type Resolved } from "@kaname/auth/resolver";
 import { KanameError, recordErrorEvent } from "@kaname/errors";
 import { ENDPOINTS } from "@kaname/contracts";
 import { registerAll } from "./routes/index.js";
@@ -96,9 +96,13 @@ export function createApp(o: AppOptions | string = {}): Hono<Vars> {
       const h = c.req.raw.headers;
       if (opts.resolve && !AUTH_TERMS_OPEN.some((re) => re.test(sub)) && (h.get("authorization") || h.get("cookie"))) {
         // 解こうとして落ちたら handler に渡さず止める側に倒す（fail-closed・503・E-PAGE-003）。解けて null（セッションが無い）はそのまま渡す
+        // 認証の部品の口は画面のログインの口。PC の印の頭（x-bridge-session・K-57）を外して、画面のログインで解く
+        //   （頭を付けると PC の印の解決に回り、解けずに null＝「セッションが無い」として同意し直しの止めを抜けてしまう）
+        const web = new Headers(h);
+        web.delete(DEVICE_TOKEN_HEADER);
         let r: Resolved | null;
         try {
-          r = await opts.resolve(h);
+          r = await opts.resolve(web);
         } catch (e) {
           return sessionUnresolved(c, "認証の部品の口", e);
         }

@@ -20,6 +20,7 @@ import { createApp } from "../src/app.js";
 import { authExt } from "../src/auth/ext.js";
 import { keepAuth, verifiedUser } from "./_pending.js";
 import { agentStreamRoutes } from "../src/auth/agent-stream.js";
+import { pairForTest } from "./bridge_pair.js";
 
 const DB_PKG = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "packages", "db");
 const ADMIN = process.env["DATABASE_URL"]!;
@@ -97,13 +98,10 @@ async function ready() {
   // 申し込みは直に置き、確認だけを通す（前の道すじ /sign-up は K-51 で契約の口に移した）
   const ver = await verifiedUser(AUTH_URL, { email, password: PW, companyName: "K" });
   const H = { authorization: `Bearer ${ver.token}` };
-  const pair = await json<{ code: string }>(req("POST", "/bridge/pair", {}, H));
-  const claim = await json<{ session_id: string }>(
-    req("POST", "/bridge/claim", { code: pair.code, device_label: "QA の PC" }),
-  );
-  const member = (await admin.query("select member_id from sessions where id = $1", [claim.session_id])).rows[0]
+  const bp = await pairForTest(admin, email);
+  const member = (await admin.query("select member_id from sessions where id = $1", [bp.sid])).rows[0]
     .member_id as string;
-  return { H, B: { "x-bridge-session": claim.session_id }, member };
+  return { H, B: { "x-bridge-session": bp.token }, member };
 }
 
 /** SSE を読む：届いた event 名を順に貯める。stop で読むのをやめる */

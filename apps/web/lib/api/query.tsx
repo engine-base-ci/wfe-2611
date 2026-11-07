@@ -19,7 +19,8 @@ export function ApiProvider({ children }: { children: ReactNode }) {
       if (fired || path.startsWith("/login")) return;
       fired = true;
       client.clear();
-      router.replace(`/login?next=${encodeURIComponent(path)}`);
+      // 戻す先は、開いていた画面の印（?new=1・?from= など）まで含める（入り直したら続きから・K-57・K-60）
+      router.replace(`/login?next=${encodeURIComponent(path + window.location.search)}`);
     });
     return () => setUnauthorizedHandler(null);
   }, [client, router, path]);

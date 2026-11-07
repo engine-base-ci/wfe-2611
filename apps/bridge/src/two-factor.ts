@@ -4,6 +4,7 @@
 //   本人が入れたコードは Kaname の答えの行に一時的に置かれ、Bridge が取った時点で消える（AI の会話にも記録にも出ない）。
 //   10 分返事が無ければ頼むのをやめる（null）。呼ぶ側が理由つきで止める。勝手に何度も頼まない
 import { createHmac, randomUUID } from "node:crypto";
+import { BRIDGE_UA } from "./pairing";
 
 /** RFC 6238 の TOTP（SHA-1・30 秒・6 桁）。鍵は Base32 */
 export function totpCode(secretBase32: string, at = Date.now()): string {
@@ -39,7 +40,7 @@ async function call(d: AskDeps, path: string, body: unknown): Promise<Record<str
   try {
     const r = await fetch(`${d.apiBase}/api/auth-ext${path}`, {
       method: "POST",
-      headers: { "content-type": "application/json", "x-bridge-session": sid },
+      headers: { "content-type": "application/json", "x-bridge-session": sid, "user-agent": BRIDGE_UA },
       body: JSON.stringify(body),
     });
     if (!r.ok) return null;

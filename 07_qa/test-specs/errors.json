@@ -4863,6 +4863,71 @@
     "D-128.78"
    ],
    "support_code": "PAGE-008"
+  },
+  {
+   "id": "E-CONN-013",
+   "class": "validation",
+   "where": {
+    "screen": "bridge-setup",
+    "state": "code_invalid"
+   },
+   "when": "Bridge に入れた接続コードが使えない（違う・10 分を過ぎた・もう使った・新しいコードを出し直した）。どれかは見分けさせない（総当たりを防ぐ・D-089）",
+   "false_when": "期限内で使っていないコード",
+   "message": "その接続コードは使えません。Kaname の「PC をつなぐ」の画面に出ている、新しいコードを入れてください",
+   "action": "画面の新しいコードを入れ直す",
+   "undo": false,
+   "layers": [
+    "Bridge",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "PC をつなぐの画面",
+    "steps": [
+     "コードを出す",
+     "11 分たってから Bridge に入れる"
+    ],
+    "needs": "DB の時刻の操作"
+   },
+   "severity": "medium",
+   "source": [
+    "D-089",
+    "D-128.93",
+    "D-128.137"
+   ],
+   "support_code": "CONN-013"
+  },
+  {
+   "id": "E-CONN-014",
+   "class": "not_found",
+   "where": {
+    "screen": "bridge-setup",
+    "state": "not_released"
+   },
+   "when": "PC のプログラム（Bridge）をまだ配布していない（置き場が無い・目録に無い・目録にあるのにファイルが無い）",
+   "false_when": "配布物が置いてある",
+   "message": "まだ配布していません。署名と置き場の用意ができたら、ここから入れられるようになります",
+   "action": "待つ（用意ができたら知らせる）",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "BRIDGE_RELEASE_DIR と BRIDGE_RELEASE_BASE が空",
+    "steps": [
+     "受け取るを押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-015",
+    "D-089",
+    "D-109"
+   ],
+   "support_code": "CONN-014"
   }
  ],
  "meta": {

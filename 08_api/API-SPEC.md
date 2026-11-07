@@ -1,4 +1,4 @@
-# Kaname API 設計書 v1.0（2026-11-06 凍結）
+# Kaname API 設計書 v1.0（2026-11-07 凍結）
 
 > 信頼源は `08_api/endpoints.json` と `openapi.yaml`（05_flow/build_api.py が機械生成）。
 
@@ -48,14 +48,14 @@
 | EP-033 | POST | `/api/v1/auth/terms/consent` | 作成・実行（auth）— 規約に同意する（どの版に同意したかが残る） | A96 | 1 | member | C2 | 401 403 409 422 429 |
 | EP-034 | GET | `/api/v1/auth/terms/current` | 取得（auth）— 規約に同意する（どの版に同意したかが残る） | A96 | 1 | public |  | 422 500 429 |
 | EP-035 | POST | `/api/v1/auth/two-factor/verify` | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | A13 | 1 | public | C2 | 409 422 429 |
-| EP-036 | POST | `/api/v1/bridge/claim` | 作成・実行（bridge）— 自分の PC をつなぐ | A09 | 1 | device | C1 C2 | 401 403 409 422 429 502 |
+| EP-036 | POST | `/api/v1/bridge/claim` | 作成・実行（bridge）— 自分の PC をつなぐ | A09 | 1 | public | C1 C2 C4 | 409 422 429 502 |
 | EP-037 | POST | `/api/v1/bridge/credentials/:id/check-result` | 作成・実行（bridge）— 設定（ログイン情報・API キー・決まった | A10 | 1 | device | C2 C8 | 401 403 404 409 422 429 |
 | EP-038 | POST | `/api/v1/bridge/credentials/resolve` | 作成・実行（bridge）— 設定（ログイン情報・API キー・決まった | A10 | 1 | device | C2 C8 | 401 403 409 422 429 |
-| EP-039 | GET | `/api/v1/bridge/devices` | 取得（bridge）— 自分の PC をつなぐ | A09 | 1 | member |  | 401 403 422 429 502 403 |
-| EP-040 | PATCH | `/api/v1/bridge/devices/:id` | 更新（bridge）— 自分の PC をつなぐ | A09 | 1 | member | C1 C2 | 401 403 404 422 429 502 403 |
-| EP-041 | DELETE | `/api/v1/bridge/devices/:id` | 削除（bridge）— 自分の PC をつなぐ | A09 | 1 | member | C1 C2 | 401 403 404 422 429 502 403 |
+| EP-039 | GET | `/api/v1/bridge/devices` | 取得（bridge）— 自分の PC をつなぐ | A09 | 1 | member | C4 | 401 403 422 429 502 403 |
+| EP-040 | PATCH | `/api/v1/bridge/devices/:id` | 更新（bridge）— 自分の PC をつなぐ | A09 | 1 | member | C1 C2 C4 | 401 403 404 422 429 502 403 |
+| EP-041 | DELETE | `/api/v1/bridge/devices/:id` | 削除（bridge）— 自分の PC をつなぐ | A09 | 1 | member | C1 C2 C4 | 401 403 404 422 429 502 403 |
 | EP-042 | GET | `/api/v1/bridge/files/:ref` | 取得（bridge）— AI に任せる | A104 | 1 | device |  | 401 403 422 429 502 |
-| EP-043 | POST | `/api/v1/bridge/heartbeat` | 作成・実行（bridge）— 自分の PC をつなぐ | A09 | 1 | device | C1 C2 | 401 403 409 422 429 502 |
+| EP-043 | POST | `/api/v1/bridge/heartbeat` | 作成・実行（bridge）— 自分の PC をつなぐ | A09 | 1 | device | C1 C2 C4 | 401 403 409 422 429 502 |
 | EP-044 | POST | `/api/v1/bridge/jobs/:id/artifacts` | 作成・実行（bridge）— 自分のAIの返事を成果物に書き出し、会話の | A95 | 1 | device | C2 C4 | 401 403 404 409 422 429 |
 | EP-045 | POST | `/api/v1/bridge/jobs/:id/browser` | 作成・実行（bridge）— AI に任せる | A104 | 1 | device | C2 C3 C5 | 401 403 404 409 422 429 502 |
 | EP-046 | GET | `/api/v1/bridge/jobs/:id/control` | 取得（bridge）— AI に任せる | A104 | 1 | device |  | 401 403 404 422 429 502 |
@@ -67,9 +67,9 @@
 | EP-052 | POST | `/api/v1/bridge/jobs/:id/tools/:name` | 作成・実行（bridge）— AI に任せる | A104 | 1 | device | C2 C3 C5 | 401 403 404 409 422 429 502 |
 | EP-053 | POST | `/api/v1/bridge/jobs/take` | 作成・実行（bridge）— AI に任せる | A104 | 1 | device | C2 C3 C5 | 401 403 409 422 429 502 |
 | EP-054 | GET | `/api/v1/bridge/mirror-targets` | 取得（bridge）— 自分の AI に指示する・相談する（会話・添付・ | A20 | 1 | device | C4 | 401 403 422 429 502 |
-| EP-055 | POST | `/api/v1/bridge/pairing-codes` | 作成・実行（bridge）— 自分の PC をつなぐ | A09 | 1 | member | C1 C2 | 401 403 409 422 429 502 403 |
-| EP-056 | GET | `/api/v1/bridge/releases/:name/file` | 取得（bridge）— 自分の PC をつなぐ | A09 | 1 | member |  | 401 403 422 429 502 403 |
-| EP-057 | GET | `/api/v1/bridge/releases/latest` | 取得（bridge）— 自分の PC をつなぐ | A09 | 1 | member |  | 401 403 422 429 502 403 |
+| EP-055 | POST | `/api/v1/bridge/pairing-codes` | 作成・実行（bridge）— 自分の PC をつなぐ | A09 | 1 | member | C1 C2 C4 | 401 403 409 422 429 502 403 |
+| EP-056 | GET | `/api/v1/bridge/releases/:name/file` | 取得（bridge）— 自分の PC をつなぐ | A09 | 1 | member | C4 | 401 403 422 429 502 403 |
+| EP-057 | GET | `/api/v1/bridge/releases/latest` | 取得（bridge）— 自分の PC をつなぐ | A09 | 1 | member | C4 | 401 403 422 429 502 403 |
 | EP-058 | POST | `/api/v1/bridge/usage` | 作成・実行（bridge）— 自分のAIの使用量（サブスクの 5 時間の | A94 | 1 | device | C2 | 401 403 409 422 429 |
 | EP-059 | POST | `/api/v1/checks/:id/human` | 作成・実行（checks）— 承認する／自分で直す／差し戻す／止める | A15 | 1 | member | C2 | 401 403 404 409 422 429 403 |
 | EP-060 | GET | `/api/v1/class_axes` | 取得（class_axes）— 振り分ける（責任者・期限・分類・親）。A | A103 | 1 | member |  | 401 403 422 429 403 |
@@ -394,4 +394,4 @@
 
 ## 6. 変更履歴
 
-- v1.0 2026-11-06 凍結（endpoints 363）
+- v1.0 2026-11-07 凍結（endpoints 363）

@@ -11,6 +11,9 @@ export interface HeaderOptions {
   dev: boolean;
 }
 
+/** Bridge のこの PC の中だけの口（apps/bridge/src/local.ts の LOCAL_PORT） */
+export const BRIDGE_LOCAL = "http://127.0.0.1:38617";
+
 export function contentSecurityPolicy(o: HeaderOptions): string {
   const api = new URL(o.apiBase).origin;
   const d: Record<string, string[]> = {
@@ -20,9 +23,11 @@ export function contentSecurityPolicy(o: HeaderOptions): string {
     "style-src": ["'self'", "'unsafe-inline'"],
     "img-src": ["'self'", "data:", "blob:", api],
     "font-src": ["'self'", "data:"],
-    "connect-src": ["'self'", api, ...(o.dev ? ["ws:"] : [])],
+    // この PC の Bridge が開く小さな口（ループバックだけ・apps/bridge/src/local.ts）。Bridge が居るかを見て、コードを打たずにつなぐ（D-089・K-57）
+    "connect-src": ["'self'", api, BRIDGE_LOCAL, ...(o.dev ? ["ws:"] : [])],
     "media-src": ["'self'", "blob:", api],
-    "frame-src": ["'none'"],
+    // Bridge を起こす（kaname-bridge:// を見えない枠で叩く・D-015.8）。ほかの枠は開かない
+    "frame-src": ["kaname-bridge:"],
     "frame-ancestors": ["'none'"],
     "object-src": ["'none'"],
     "base-uri": ["'self'"],

@@ -14,7 +14,8 @@ export interface HookArgs {
   /** 条件つきの本人確認（取り消せない承認・管理者として招く など・D-125.139）。直前 15 分以内でなければ 403 の応答を返す */
   requireStepUp?: () => HookReply | void;
 }
-export type HookReply = { status: number; body: unknown };
+/** raw：JSON でない答え（ファイルを流す・別の置き場へ渡す・K-57）。あれば body の代わりにそのまま返す */
+export type HookReply = { status: number; body: unknown; raw?: Response };
 export type EffectResult =
   { status: "done"; value?: unknown } | { status: "denied" | "failed"; reason: string; handoff: string };
 export interface Hook {
@@ -27,6 +28,8 @@ export interface Hook {
   effect?: (a: HookArgs) => Promise<EffectResult>;
   /** 記録の後（通知など。失敗しても応答は返す） */
   after?: (a: HookArgs, row: Row | Row[]) => Promise<void>;
+  /** 冪等の器に答えを残さない（答えに 1 回だけ渡す秘密が入る口・K-57 の PC の印） */
+  noIdempotency?: boolean;
 }
 export interface Limiter {
   take(key: string): boolean;

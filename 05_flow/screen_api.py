@@ -498,6 +498,10 @@ INPUTS = {
     "verifySignup": ("SignupVerifyInput", {"token": "string"}),
     # 規約に同意する（K-53）：同意の印と、同意する今の版（利用規約・プライバシーポリシー）の ID だけ。テナントと人はセッションから決める（体に入れても無視する）
     "consentToTerms": ("TermsConsentInput", {"agree": "boolean", "terms_version_id": "string", "privacy_version_id": "string"}),
+    # K-57：PC をつなぐ。コードを出すのは空の入力（持ち主・ハッシュは外から入れさせない）。型が any の欄は形を問わず受け、口が扱う
+    "createPairingCode": ("PairingCodeInput", {}),
+    "claimPairingCode": ("BridgeClaimInput", {"code": "string", "device_label": "string", "machine_id": "string"}),   # machine_id：この PC の印（UUID・D-128.174）。古い Bridge は送らない
+    "sendHeartbeat": ("BridgeHeartbeatInput", {"health": "any", "protocol": "any", "version": "string"}),
 }
 # get で始まるが並びを返す口（K-53）。一覧の問い合わせ（scope_id・cursor・limit・sort）は形だけ確かめて無視する
 LIST_OPS = {"getCurrentTerms"}
@@ -589,8 +593,12 @@ RESPONSES = {
     "listSetupTasks": ("SetupTask", {"key": "string", "label": "string", "done": "boolean", "href": "string"}),
     "getNotificationSettings": ("NotificationSettings", {"email_digest": "boolean", "quiet_hours": "object", "paused_until": "string", "urgent_override": "array", "events": "array"}),
     "createPairingCode": ("PairingCode", {"code": "string", "expires_at": "string"}),
-    "getLatestBridgeRelease": ("BridgeRelease", {"version": "string", "files": "array", "sha256": "object", "released_at": "string"}),
+    "getLatestBridgeRelease": ("BridgeRelease", {"released": "boolean", "version": "string", "released_at": "string", "update": "object"}),
     "claimPairingCode": ("BridgeClaim", {"device_token": "string", "device_id": "string", "member_id": "string"}),
+    # 置き場が外なら短い期限の署名 URL（D-128.153）。手元のフォルダならファイルそのもの（JSON ではない）
+    "downloadBridgeRelease": ("BridgeReleaseLink", {"url": "string", "expires_at": "string"}),
+    "sendHeartbeat": ("BridgeHeartbeat", {"ok": "boolean", "browser": "string", "outdated": "boolean"}),
+    "listMyDevices": ("BridgeDevice", {"id": "string", "device_label": "string", "state": "string", "last_seen_at": "string", "connected_at": "string", "version": "string", "health": "array", "revoke_reason": "string"}),
     "takeBridgeJob": ("BridgeJob", {"job": "object", "allowed_tools": "array", "forbidden_domains": "array", "rules": "array"}),
     "getJobControl": ("JobControl", {"stop": "boolean", "steers": "array"}),
     "resolveCredential": ("ResolvedCredential", {"ref": "string", "ciphertext_for_executor": "string", "destinations": "array", "expires_at": "string"}),
@@ -650,6 +658,10 @@ META = {
     "listOpsWorkspaces": {"summary": "object"},
     "listOpsInquiries": {"counts": "object"},
     "listOpsInvoices": {"summary": "object"},
+}
+# 上限の差し替え（operationId → 1 分あたりの回数と鍵）。無い口は public 10/ip・GET 120/user・それ以外 60/user
+RATES = {
+    "claimPairingCode": "5/min/ip",   # 総当たりを防ぐ（D-089）
 }
 # 一覧の絞り込み（operationId → query の名前）。cursor・limit・sort はいつも付く
 QUERIES = {
@@ -878,10 +890,10 @@ PERMS = {
     "listMyDevices": ("self", "自分の PC だけ", False),
     "updateMyDevice": ("self", "自分の PC だけ（名前・いつも使う）", False),
     "revokeMyDevice": ("self", "自分の PC だけ。外すとその PC の仕事は止まり、預けたログイン情報も取り出せなくなる", True),
-    "getLatestBridgeRelease": ("self", "ログインしている人（版と指紋を返す・D-109）", False),
-    "downloadBridgeRelease": ("self", "ログインしている人（期限つきの署名 URL）", False),
+    "getLatestBridgeRelease": ("self_or_device", "ログインしている人と、つないだ PC の印（PC が自分で新しい版を見に来る・D-109・D-128.137）", False),
+    "downloadBridgeRelease": ("self_or_device", "ログインしている人と、つないだ PC の印（D-128.137）。置き場が外なら短い期限の署名 URL（D-128.153）", False),
     # PC（Bridge）が呼ぶ。本人のセッションに結ばれた PC の印で呼び、本人が切られたら止まる
-    "claimPairingCode": ("device", "接続コードを持つ PC（1 回だけ・10 分）。つないだら本人に知らせる", False),
+    "claimPairingCode": ("public", "接続コードを持つ PC（まだ PC の印が無い。コードそのものが鍵：1 回だけ・10 分・1 分に 5 回まで・D-089・D-128.93）。つないだら本人に知らせる", False),
     "sendHeartbeat": ("device", "その人の PC", False),
     "reportUsage": ("device", "その人の PC（その人の使った量だけ）", False),
     "takeBridgeJob": ("device", "その人の PC に渡された仕事だけ。使えない道具と止めるサイト（D-107）を一緒に渡す", False),

@@ -41,11 +41,11 @@ let fileHits = 0;
 beforeAll(async () => {
   server = createServer((req, res) => {
     const u = new URL(req.url ?? "/", "http://x");
-    if (u.pathname === "/api/auth-ext/bridge/latest") {
+    if (u.pathname === "/api/v1/bridge/releases/latest") {
       res.setHeader("content-type", "application/json");
       return res.end(JSON.stringify({ data: latest }));
     }
-    const m = /^\/api\/auth-ext\/bridge\/file\/(.+)$/.exec(u.pathname);
+    const m = /^\/api\/v1\/bridge\/releases\/(.+)\/file$/.exec(u.pathname);
     const b = m ? files[decodeURIComponent(m[1]!)] : undefined;
     if (!b) {
       res.statusCode = 404;
@@ -68,7 +68,7 @@ const publish = (version: string, name: string, body: Buffer, over: Partial<{ sh
     version,
     update: {
       name,
-      url: `/api/auth-ext/bridge/file/${encodeURIComponent(name)}`,
+      url: `/api/v1/bridge/releases/${encodeURIComponent(name)}/file`,
       sha256: over.sha256 ?? sha(body),
       size: over.size ?? body.length,
     },
@@ -91,7 +91,7 @@ describe("BRG-06-018 受け取って指紋を確かめる（D-109.4）", () => {
     publish("0.260928.1530", "Kaname-Bridge-0.260928.1530-arm64-mac.zip", body);
     const u = (await fetchLatest(api, "mac", "arm64", "0.1.0"))!;
     expect(u).toMatchObject({ version: "0.260928.1530", sha256: sha(body), size: body.length });
-    expect(u.url).toBe(`${api}/api/auth-ext/bridge/file/Kaname-Bridge-0.260928.1530-arm64-mac.zip`);
+    expect(u.url).toBe(`${api}/api/v1/bridge/releases/Kaname-Bridge-0.260928.1530-arm64-mac.zip/file`);
     const dir = mkdtempSync(join(tmpdir(), "kaname-up-"));
     const p = await download(u, dir);
     expect(readFileSync(p).equals(body)).toBe(true);
@@ -108,7 +108,7 @@ describe("BRG-06-018 受け取って指紋を確かめる（D-109.4）", () => {
     const base: UpdateInfo = {
       version: "9.9.9",
       name,
-      url: `${api}/api/auth-ext/bridge/file/${name}`,
+      url: `${api}/api/v1/bridge/releases/${name}/file`,
       sha256: sha(Buffer.from("other")),
       size: body.length,
     };
