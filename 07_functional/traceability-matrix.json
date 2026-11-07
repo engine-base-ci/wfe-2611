@@ -2879,6 +2879,7 @@
     "E-094 attachments",
     "E-050 artifacts",
     "E-052 audit_events",
+    "E-129 tenant_memberships",
     "E-051 artifact_versions",
     "E-038 approvals",
     "E-049 messages",
@@ -2913,6 +2914,8 @@
     "POST /api/tickets/:id/complete",
     "POST /api/tickets/bulk",
     "POST /api/tickets/bulk",
+    "GET /api/me/ticket-drafts",
+    "POST /api/me/ticket-drafts",
     "POST /api/ticket_imports",
     "GET /api/ticket_imports/:id",
     "POST /api/ticket_imports/:id/commit",
@@ -10661,6 +10664,18 @@
     },
     {
      "act": "A99",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/me/ticket-drafts"
+    },
+    {
+     "act": "A99",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/me/ticket-drafts"
+    },
+    {
+     "act": "A99",
      "role": "action",
      "method": "POST",
      "path_draft": "/api/ticket_imports"
@@ -14127,16 +14142,22 @@
     "account",
     "ops-tenant",
     "member-detail",
+    "tickets",
     "clients"
    ],
    "used_by_features": [
     "F-001",
     "F-002",
     "F-004",
+    "F-005",
+    "F-006",
     "F-010",
+    "F-013",
     "F-016",
     "F-017",
-    "F-021"
+    "F-021",
+    "F-023",
+    "F-024"
    ]
   },
   {
@@ -14718,6 +14739,7 @@
     "E-124",
     "E-126",
     "E-128",
+    "E-129",
     "E-134",
     "E-135",
     "E-136",
@@ -14805,6 +14827,7 @@
     "E-124",
     "E-126",
     "E-128",
+    "E-129",
     "E-135",
     "E-136",
     "E-137",
@@ -15245,6 +15268,7 @@
     "E-125",
     "E-126",
     "E-128",
+    "E-129",
     "E-133",
     "E-135",
     "E-136",
@@ -15694,6 +15718,7 @@
     "E-124",
     "E-126",
     "E-128",
+    "E-129",
     "E-135",
     "E-136",
     "E-137",
@@ -15755,6 +15780,7 @@
     "E-124",
     "E-126",
     "E-128",
+    "E-129",
     "E-135",
     "E-136",
     "E-137",

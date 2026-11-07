@@ -245,6 +245,19 @@
     "apps/api/test/generated/post_bridge_heartbeat.test.ts",
     "apps/api/test/generated/post_bridge_pairing_codes.test.ts"
    ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F4/create-ticket.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_me_ticket_drafts.test.ts",
+    "apps/api/test/generated/get_scopes.test.ts",
+    "apps/api/test/generated/get_ticket_kinds.test.ts",
+    "apps/api/test/generated/get_tickets_id.test.ts",
+    "apps/api/test/generated/post_me_ticket_drafts.test.ts",
+    "apps/api/test/generated/post_tickets.test.ts"
+   ]
   }
  ],
  "reads_ok": {

@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:49c61bdd2b93eaf4
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:879cd9d0d8233010
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -8145,6 +8145,95 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   },
   {
+    "method": "GET",
+    "path": "/api/v1/me/ticket-drafts",
+    "operationId": "listMyTicketDrafts",
+    "table": "tenant_memberships",
+    "kind": "list",
+    "input": null,
+    "success": 200,
+    "output": "TicketDraft",
+    "outputList": true,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 120,
+      "key": "user"
+    },
+    "chokePoints": [],
+    "errors": [
+      401,
+      403,
+      422,
+      429,
+      403
+    ],
+    "acts": [
+      "A99"
+    ],
+    "screens": [
+      "tickets"
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
+    },
+    "termsOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/me/ticket-drafts",
+    "operationId": "saveMyTicketDraft",
+    "table": "tenant_memberships",
+    "kind": "create",
+    "input": "TicketDraftInput",
+    "success": 201,
+    "output": "TicketDraft",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "chokePoints": [
+      "C2"
+    ],
+    "errors": [
+      401,
+      403,
+      409,
+      422,
+      429,
+      403
+    ],
+    "acts": [
+      "A99"
+    ],
+    "screens": [
+      "tickets"
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
+    },
+    "termsOpen": false,
+    "ignoresScope": false
+  },
+  {
     "method": "DELETE",
     "path": "/api/v1/me/two-factor",
     "operationId": "disableTwoFactor",
@@ -13434,7 +13523,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
-    "output": "TicketKinds",
+    "output": "TicketKindChoice",
     "outputList": true,
     "generic": false,
     "auth": "member",
@@ -13899,7 +13988,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "createTicket",
     "table": "tickets",
     "kind": "create",
-    "input": "TicketsInput",
+    "input": "TicketCreateInput",
     "success": 201,
     "output": "Tickets",
     "outputList": false,
@@ -13949,7 +14038,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
-    "output": "Tickets",
+    "output": "TicketDetail",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -17114,4 +17203,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "49c61bdd2b93eaf4";
+export const OPENAPI_HASH = "879cd9d0d8233010";

@@ -4928,6 +4928,135 @@
     "D-109"
    ],
    "support_code": "CONN-014"
+  },
+  {
+   "id": "E-VAL-012",
+   "class": "validation",
+   "where": {
+    "screen": "tickets",
+    "state": "create"
+   },
+   "when": "チケットの最終期限に、今日より前の日を入れた（開始は過去でもよい）",
+   "false_when": "今日か、それより後の日",
+   "message": "期限は今日か、それより後の日にしてください",
+   "action": "期限を入れ直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットを作る",
+    "steps": [
+     "期限に昨日を入れて作る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.138"
+   ],
+   "support_code": "VAL-012"
+  },
+  {
+   "id": "E-VAL-013",
+   "class": "validation",
+   "where": {
+    "screen": "tickets",
+    "state": "create"
+   },
+   "when": "種別の必須の区画（タスクなら目的・完了の条件・実施事項）が空のまま作ろうとした",
+   "false_when": "必須の区画が全部書いてある",
+   "message": "この区画は書かないと作れません",
+   "action": "区画を書く",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットを作る",
+    "steps": [
+     "目的を空のまま作る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.51",
+    "D-125.53",
+    "D-128.117",
+    "D-128.138"
+   ],
+   "support_code": "VAL-013"
+  },
+  {
+   "id": "E-VAL-014",
+   "class": "validation",
+   "where": {
+    "screen": "tickets",
+    "state": "create"
+   },
+   "when": "選んだ担当者・種別・知らせる人が、書いている間に選べなくなった（抜けた・止められた・種別が消された）",
+   "false_when": "選べる人・種別",
+   "message": "選んだものが、いまは選べなくなりました。選び直してください。書いたものは残っています",
+   "action": "選び直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットを作る",
+    "steps": [
+     "担当者を選ぶ",
+     "別の画面でその人を止める",
+     "作る"
+    ],
+    "needs": "2 人"
+   },
+   "severity": "medium",
+   "source": [
+    "D-125.41",
+    "D-125.30"
+   ],
+   "support_code": "VAL-014"
+  },
+  {
+   "id": "E-VAL-015",
+   "class": "validation",
+   "where": {
+    "screen": "tickets",
+    "state": "create"
+   },
+   "when": "親に選んだチケットの下に入れると、親子が 3 段を超える",
+   "false_when": "3 段まで",
+   "message": "チケットの親子は 3 段までです。ほかの親を選んでください",
+   "action": "親を選び直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "3 段の子を持つチケット",
+    "steps": [
+     "その 3 段目を親にして作る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.50"
+   ],
+   "support_code": "VAL-015"
   }
  ],
  "meta": {

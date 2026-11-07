@@ -525,6 +525,10 @@
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）"
   },
+  "ticket_drafts": {
+   "class": "internal",
+   "why": "書きかけのチケットの下書き（app スキーマ・アプリの役は直に触れない）。作る口と下書きの口が関門 C2 の関数（app.ticket_draft_save・app.ticket_drafts_mine・app.ticket_create）で使う（K-60・D-128.138）"
+  },
   "ticket_handovers": {
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）"

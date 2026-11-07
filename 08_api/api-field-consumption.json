@@ -11748,6 +11748,7 @@
     "account",
     "ops-tenant",
     "member-detail",
+    "tickets",
     "clients"
    ],
    "internal": false,
@@ -11763,6 +11764,7 @@
     "account",
     "ops-tenant",
     "member-detail",
+    "tickets",
     "clients"
    ],
    "internal": false,
@@ -11778,6 +11780,7 @@
     "account",
     "ops-tenant",
     "member-detail",
+    "tickets",
     "clients"
    ],
    "internal": false,
@@ -11793,6 +11796,7 @@
     "account",
     "ops-tenant",
     "member-detail",
+    "tickets",
     "clients"
    ],
    "internal": false,
@@ -11808,6 +11812,7 @@
     "account",
     "ops-tenant",
     "member-detail",
+    "tickets",
     "clients"
    ],
    "internal": false,

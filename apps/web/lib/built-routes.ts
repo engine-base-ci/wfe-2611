@@ -27,6 +27,8 @@ export const BUILT_ROUTES: readonly string[] = [
   "/setup/bridge",
   "/setup/bridge/legacy",
   "/signup",
+  "/tickets",
+  "/tickets/:id",
   "/verify-email",
 ] as const;
 

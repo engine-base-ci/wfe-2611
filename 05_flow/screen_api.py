@@ -25,6 +25,9 @@ SCREEN_API = {
         ("POST", "/tickets/:id/restore", "A116", T, "restoreTicket", ["audit_events"]),
         ("POST", "/tickets/:id/complete", "A106", T, "completeTicket", ["knowledge_pages", "ticket_decisions"]),
         ("POST", "/tickets/bulk", "A103|A113", T, "bulkUpdateTickets", ["ticket_messages"]),
+        # 書きかけの下書き（D-128.138：サーバーに残し、どの端末でも続きが書ける。作った本人のワークスペースごと）
+        ("GET", "/me/ticket-drafts", "A99", "tenant_memberships", "listMyTicketDrafts", []),
+        ("POST", "/me/ticket-drafts", "A99", "tenant_memberships", "saveMyTicketDraft", []),
         ("POST", "/ticket_imports", "A99", "ticket_imports", "createTicketImport", []),
         ("GET", "/ticket_imports/:id", "A99", "ticket_imports", "getTicketImport", []),
         ("POST", "/ticket_imports/:id/commit", "A99", "ticket_imports", "commitTicketImport", [T]),
@@ -502,6 +505,12 @@ INPUTS = {
     "createPairingCode": ("PairingCodeInput", {}),
     "claimPairingCode": ("BridgeClaimInput", {"code": "string", "device_label": "string", "machine_id": "string"}),   # machine_id：この PC の印（UUID・D-128.174）。古い Bridge は送らない
     "sendHeartbeat": ("BridgeHeartbeatInput", {"health": "any", "protocol": "any", "version": "string"}),
+    # K-60：チケットを作る。番号・消した人・取り込みの下書きは入れさせない。区画は鍵 → 本文。知らせる人は最初から選べる（D-128.138）
+    "createTicket": ("TicketCreateInput", {"scope_id": "string", "kind_id": "string", "title": "string", "assignee_member_id": "string",
+                                           "due_on": "string", "start_on": "string", "priority": "string", "priority_reason": "string",
+                                           "parent_ticket_id": "string", "estimate_minutes": "any", "sections": "object",
+                                           "notify_member_ids": "array", "draft_id": "string"}),
+    "saveMyTicketDraft": ("TicketDraftInput", {"draft_id": "string", "body": "object", "discard": "boolean"}),
 }
 # get で始まるが並びを返す口（K-53）。一覧の問い合わせ（scope_id・cursor・limit・sort）は形だけ確かめて無視する
 LIST_OPS = {"getCurrentTerms"}
@@ -599,6 +608,10 @@ RESPONSES = {
     "downloadBridgeRelease": ("BridgeReleaseLink", {"url": "string", "expires_at": "string"}),
     "sendHeartbeat": ("BridgeHeartbeat", {"ok": "boolean", "browser": "string", "outdated": "boolean"}),
     "listMyDevices": ("BridgeDevice", {"id": "string", "device_label": "string", "state": "string", "last_seen_at": "string", "connected_at": "string", "version": "string", "health": "array", "revoke_reason": "string"}),
+    "getTicket": ("TicketDetail", {"ticket": "object", "sections": "array", "kind": "object", "stage": "object", "assignee": "object"}),
+    "listTicketKinds": ("TicketKindChoice", {"id": "string", "name": "string", "color": "string", "position": "integer", "is_builtin": "boolean", "sections": "array"}),
+    "listMyTicketDrafts": ("TicketDraft", {"draft_id": "string", "body": "object", "saved_at": "string"}),
+    "saveMyTicketDraft": ("TicketDraft", {"draft_id": "string", "body": "object", "saved_at": "string"}),
     "takeBridgeJob": ("BridgeJob", {"job": "object", "allowed_tools": "array", "forbidden_domains": "array", "rules": "array"}),
     "getJobControl": ("JobControl", {"stop": "boolean", "steers": "array"}),
     "resolveCredential": ("ResolvedCredential", {"ref": "string", "ciphertext_for_executor": "string", "destinations": "array", "expires_at": "string"}),
@@ -653,6 +666,7 @@ RESPONSES = {
 # 一覧の答えの meta に足す数（数だけの API を作らず、一覧の 1 回目で返す・D-128.111）
 META = {
     "listTickets": {"counts": "object"},
+    "listScopes": {"writable": "array"},   # チケットを書けるグループの id（K-60）
     "listApprovalQueue": {"counts": "object"},
     "listClients": {"counts": "object"},
     "listOpsWorkspaces": {"summary": "object"},
@@ -718,6 +732,8 @@ PERMS = {
     "restoreTicket": ("assignee", "消した本人と、そのグループのマネージャー・管理者（D-128.84）", False),
     "completeTicket": ("assignee", "担当者とマネージャー", False),
     "bulkUpdateTickets": ("write", "1 件ずつ updateTicket と同じ権限で確かめ、権限の無い行は外して理由を返す", False),
+    "listMyTicketDrafts": ("self", "自分の下書きだけ（いま入っているワークスペースの分）", False),
+    "saveMyTicketDraft": ("self", "自分の下書きだけ", False),
     "createTicketImport": ("write", "取り込む先のグループに書ける人", False),
     "getTicketImport": ("self", "取り込んだ本人", False),
     "commitTicketImport": ("self", "取り込んだ本人（確定のときに取り込む先の権限をもう一度確かめる）", False),

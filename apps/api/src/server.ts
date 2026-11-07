@@ -10,6 +10,7 @@ import { createDeviceResolver, createSessionResolver } from "@kaname/auth/resolv
 import { mailTag } from "@kaname/auth/signup";
 import { withDevice } from "./middleware/tenant.js";
 import { bridgeHooks } from "./hooks/bridge.js";
+import { ticketHooks } from "./hooks/tickets.js";
 import { ObjectStore, s3Client, s3Driver, s3Presigner, type StorageDriver } from "@kaname/storage";
 import { createApp } from "./app.js";
 import { authExt } from "./auth/ext.js";
@@ -151,6 +152,7 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
           release: { dir: config.bridgeReleaseDir ?? "", base: config.bridgeReleaseBase ?? "" },
           objects,
         }),
+        ...ticketHooks(appPool),
       },
     },
   });

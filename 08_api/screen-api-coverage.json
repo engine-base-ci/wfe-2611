@@ -4,7 +4,7 @@
  "frozen_at": "2026-11-07",
  "summary": {
   "total_screens": 36,
-  "total_apis": 363,
+  "total_apis": 365,
   "coverage_rate": 1.0,
   "uncovered_screens": [],
   "static_screens": [
@@ -2322,6 +2322,16 @@
      "role": "action",
      "endpoint": "POST /api/v1/tickets/bulk",
      "act": "A113"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/me/ticket-drafts",
+     "act": "A99"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/me/ticket-drafts",
+     "act": "A99"
     },
     {
      "role": "action",

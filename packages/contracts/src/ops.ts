@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:49c61bdd2b93eaf4
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:879cd9d0d8233010
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -175,6 +175,8 @@ export interface Ops {
   revokeOtherSessions: { params: never; query: never; body: T.SessionsInput; data: T.Sessions };
   listSetupTasks: { params: never; query: { "scope_id"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.SetupTask[] };
   dismissSetupTasks: { params: never; query: never; body: T.MembersInput; data: T.Members };
+  listMyTicketDrafts: { params: never; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TicketDraft[] };
+  saveMyTicketDraft: { params: never; query: never; body: T.TicketDraftInput; data: T.TicketDraft };
   disableTwoFactor: { params: never; query: never; body: never; data: T.SecurityEvents };
   confirmTwoFactor: { params: never; query: never; body: T.SecurityEventsInput; data: T.BackupCodes };
   startTwoFactor: { params: never; query: never; body: T.SecurityEventsInput; data: T.TwoFactorSetup };
@@ -289,7 +291,7 @@ export interface Ops {
   createTicketImport: { params: never; query: never; body: T.TicketImportsInput; data: T.TicketImports };
   getTicketImport: { params: { id: string }; query: never; body: never; data: T.TicketImports };
   commitTicketImport: { params: { id: string }; query: never; body: T.TicketImportsInput; data: T.TicketImports };
-  listTicketKinds: { params: never; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TicketKinds[] };
+  listTicketKinds: { params: never; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TicketKindChoice[] };
   makeKindTemplateFromTicket: { params: { id: string }; query: never; body: T.KindSectionsInput; data: T.KindSections };
   listKindTemplateUpdates: { params: never; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TenantDistributions[] };
   applyKindTemplateUpdate: { params: { id: string }; query: never; body: T.KindSectionsInput; data: T.KindSections };
@@ -299,8 +301,8 @@ export interface Ops {
   starTicketMessage: { params: { id: string }; query: never; body: T.TicketMessagesInput; data: T.TicketMessages };
   listTicketStages: { params: never; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TicketStages[] };
   listTickets: { params: never; query: { "view"?: string | number; "scope_id"?: string | number; "q"?: string | number; "kind_id"?: string | number; "stage_id"?: string | number; "assignee_id"?: string | number; "client_id"?: string | number; "due_from"?: string | number; "due_to"?: string | number; "start_from"?: string | number; "start_to"?: string | number; "overdue"?: string | number; "fire"?: string | number; "parent"?: string | number; "fields"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Tickets[] };
-  createTicket: { params: never; query: never; body: T.TicketsInput; data: T.Tickets };
-  getTicket: { params: { id: string }; query: never; body: never; data: T.Tickets };
+  createTicket: { params: never; query: never; body: T.TicketCreateInput; data: T.Tickets };
+  getTicket: { params: { id: string }; query: never; body: never; data: T.TicketDetail };
   updateTicket: { params: { id: string }; query: never; body: T.TicketsInput; data: T.Tickets };
   deleteTicket: { params: { id: string }; query: never; body: never; data: T.Tickets };
   requestAcceptance: { params: { id: string }; query: never; body: T.AcceptancesInput; data: T.Acceptances };
