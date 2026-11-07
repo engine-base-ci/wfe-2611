@@ -600,3 +600,23 @@ K-127,CI の範囲を決める台本が、コミットの文に番号が出た�
 K-128,中間テストの「人を作る」手順を 1 つにする（K-54 の試験の中の登録の手順を newcomer.ts に寄せる）,課題,K-1,未着手,作る,,基盤・試験,K-58 の作る役（2026-11-07）が作った試験の道具 apps/web/tests/_lib/newcomer.ts（登録の画面 → 受け箱のリンク → 続ける → /tickets でログインの印を持った人を作る）と、K-54 の試験 m1-signup-verify-terms.spec.ts の中の登録の手順が、同じ組み立てを 2 か所に持っている（DRY・L-008）。,"- [ ] K-54 の試験が newcomer.ts を使う形になり、7 本とも緑のまま
 - [ ] 同じ組み立て（登録 → リンク → 続ける）を全文検索し、ほかの試験も寄せる
 - [ ] チケットの CI（act）が緑"
+K-129,画面の試験の土台が node の端末の印でログインを使い始め、ブラウザで開くと「端末が変わった」で切られる（bridge-loop・qa-a2-chat-errors が通らない）,課題,K-32,未着手,作る,,基盤・試験,"画面の試験の土台 `signupViaApi`（apps/web/tests/_lib/api.ts）で作った人のログインの印（token）を、試験はまず node から使う（`claimBridge`・`startAgentBridge`（apps/web/tests/_lib/agent-bridge.ts）・`api()` に token を渡す呼び出し）。確定の口は端末の印を持たずにセッションを作り、セッションの端末は最初に使われたときに決まる（D-128.137）。そのため端末は node の fetch の user-agent になり、そのあとブラウザ（Playwright の Chromium）で画面を開くと、セッションの見張り（D-128.120：端末＝ブラウザの種類や OS が変わったら切る）が「端末が変わった」と見て切り、ログインの画面に戻される。
+
+これで `apps/web/tests/screens/bridge-loop.spec.ts` と `apps/web/tests/screens/qa-a2-chat-errors.spec.ts` の多くが通らない（K-57 で変えていない BRG-03-004 も赤）。K-57 の作業中に見つけた、前からある物（途中で見つけたものはその場で直さずチケットにする・D-128.147）。","- [ ] 土台が node から呼ぶときも、ブラウザと同じ端末の印（user-agent）で送る。土台の中で token を使う呼び出しがどれも同じ 1 つの決まった値を使う
+- [ ] bridge-loop.spec.ts と qa-a2-chat-errors.spec.ts のうち、この原因で赤だった試験が、ログインの画面に戻されずに進む（ほかの原因で赤のものは、その原因を名指しして別のチケットにする）
+- [ ] わざと土台の user-agent を外すと、同じ赤（ログインの画面に戻される）に戻る
+- [ ] セッションの見張り（packages/auth/src/resolver.ts・app.session_check）は変えていない（守りを弱めない）
+- [ ] チケットの CI（act）が緑"
+K-130,新しい「PC をつなぐ」画面に「Bridge が古い（入れ直しが要る）」の表示と入れ直す受け取り口が無い（前の画面 /setup/bridge/legacy にだけある）,課題,K-56,未着手,作る,,F3・PC,"流れ F3「使い始めの準備」の行為「PC をつなぐ」（A09）の画面 bridge-setup。K-57 で作った新しい画面（apps/web/app/(wizard)/setup/bridge/page.tsx → apps/web/features/F3/connect-pc/）には、Bridge の自己診断で「Bridge が新しい」が ✗（fix=update）のときの表示（「つながっていますが、Bridge が古いので仕事を渡せません」）と、入れ直す受け取り口（`[data-bridge-reinstall]` の macOS 版・Windows 版）が無い。前の画面（/setup/bridge/legacy）にはある。
+
+会話の帯の「Bridge が古い」（E-CONN-012）の一手「PC の状態を見る」は /setup/bridge（新しい画面）へ行くので、行った先に入れ直す道が無い。試験 E-CONN-012-C・SCR-BRIDGE-SETUP-105／106（apps/web/tests/screens/qa-a2-chat-errors.spec.ts）は、いまは前の画面を開き直して確かめている。
+
+根拠の決定：
+- D-090：Bridge の自己診断は Kaname に送って画面に出す。つながっただけでは仕事は流れないことを画面に書く（古い Bridge には仕事を渡さない）
+- D-109：Bridge が自分で入れ替えられないときは、入れ替えず「新しい版があります。入れ直してください」と受け取り口を案内する
+- D-128.150：前の画面の 3 つの機能（Claude Code を入れる K-89・ブラウザを選ぶ K-90・端末を外す K-91）は F3 のチケットにしたが、この「Bridge が古い」の表示はどのチケットにも入っていなかった
+
+K-57 の作業中に見つけた、前からある物（途中で見つけたものはその場で直さずチケットにする・D-128.147）。","- [ ] 新しい画面が、つながった PC の自己診断で「Bridge が新しい」が ✗ のとき、理由（古いので仕事を渡せない・書いたことは溜めておき入れ直した後に順に片づける）と、入れ直す受け取り口（macOS 版・Windows 版）を出す。新しい Bridge なら出さない
+- [ ] E-CONN-012-C・SCR-BRIDGE-SETUP-105／106 が、前の画面を開き直さずに、帯の一手から行った新しい画面の上で緑
+- [ ] 前の画面の実装は消さない（D-128.150。消すのは K-89〜K-91 の後）
+- [ ] チケットの CI（act）が緑"
