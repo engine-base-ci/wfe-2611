@@ -84,7 +84,7 @@
 | L4 | 正本 full ＋ 本番スモーク（prod-smoke.md）＋ 負荷実測 | staging ＋ 本番（スモークのみ） | リリース前 | qa-coverage.py STATUS 完了 |
 | L5 | full ＋ 正本の鮮度監査 | staging | 年次・大改修 | 同上 |
 
-## CI ゲート 57 本（.github/workflows/v3-gate.yml）
+## CI ゲート 58 本（.github/workflows/v3-gate.yml）
 
 | # | 名前 | script | job | 致命 |
 |---|---|---|---|---|
@@ -150,6 +150,7 @@ python3 scripts/ci/ci_scope.py run-merge && python3 scripts/ci/ci_scope.py check
 | G55 | No Ticket, No Commit（コミットにチケットの番号・D-128.147・K-47） | `python3 scripts/ci/ticket_commit_gate.py --selftest && python3 scripts/ci/ticket_commit_gate.py` | spec |  |
 | G56 | 取り込む順（depends_on の実装が先に枝にある・K-94） | `python3 scripts/ci/ticket_order_gate.py --selftest && python3 scripts/ci/ticket_order_gate.py` | spec |  |
 | G57 | チケットの CI の範囲の台本の試験（K-107） | `python3 scripts/ci/ci_scope_test.py && python3 scripts/ci/ticket_affects_test.py` | spec |  |
+| G60 | 決める人の決定の行が、決める人への問い合わせの答えの記録と結びつく（130 番の決定から照らす・129 番までは答えの記録が無いので外す・K-103・L-014） | `python3 scripts/ci/decision_source_gate.py --selftest && python3 scripts/ci/decision_source_gate.py --log 01_hearing/決定ログ_進行中.md --answers 01_hearing/decider-answers.jsonl --label 高本さん --since D-130` | spec |  |
 
 ## マージ可能の判断
 
