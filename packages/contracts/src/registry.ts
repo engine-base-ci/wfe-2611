@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:27abecf0c9be707b
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:a458c48f95e7ee91
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -69,7 +69,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A123"
@@ -120,7 +121,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A104"
@@ -173,7 +175,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A57"
@@ -228,7 +231,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A89"
@@ -281,7 +285,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A57"
@@ -331,7 +336,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A15"
@@ -384,7 +390,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A15"
@@ -437,7 +444,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A15"
@@ -490,7 +498,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A15"
@@ -545,7 +554,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A15",
@@ -601,7 +611,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A89"
@@ -651,7 +662,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A15"
@@ -698,7 +710,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A15"
@@ -742,7 +755,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A15"
@@ -786,7 +800,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A15"
@@ -833,7 +848,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A101"
@@ -887,7 +903,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A95"
@@ -940,7 +957,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A95"
@@ -990,7 +1008,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A33"
@@ -1031,7 +1050,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "chokePoints": [],
     "errors": [
       422,
-      429
+      429,
+      503
     ],
     "acts": [
       "A03"
@@ -1075,7 +1095,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       409,
       422,
-      429
+      429,
+      503
     ],
     "acts": [
       "A03",
@@ -1121,7 +1142,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       409,
       422,
-      429
+      429,
+      503
     ],
     "acts": [
       "A31"
@@ -1166,7 +1188,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       409,
       422,
-      429
+      429,
+      503
     ],
     "acts": [
       "A31"
@@ -1210,7 +1233,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       409,
       422,
-      429
+      429,
+      503
     ],
     "acts": [
       "A13"
@@ -1251,7 +1275,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "chokePoints": [],
     "errors": [
       422,
-      429
+      429,
+      503
     ],
     "acts": [
       "A13"
@@ -1295,7 +1320,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       409,
       422,
-      429
+      429,
+      503
     ],
     "acts": [
       "A13"
@@ -1341,7 +1367,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      503
     ],
     "acts": [
       "A13"
@@ -1386,7 +1413,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       500,
-      429
+      429,
+      503
     ],
     "acts": [
       "A01",
@@ -1431,7 +1459,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       409,
       422,
-      429
+      429,
+      503
     ],
     "acts": [
       "A01"
@@ -1472,7 +1501,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "chokePoints": [],
     "errors": [
       422,
-      429
+      429,
+      503
     ],
     "acts": [
       "A01"
@@ -1519,7 +1549,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       410,
       500,
-      429
+      429,
+      503
     ],
     "acts": [
       "A02"
@@ -1566,7 +1597,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A13"
@@ -1613,7 +1645,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       500,
-      429
+      429,
+      503
     ],
     "acts": [
       "A96"
@@ -1655,7 +1688,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       422,
       500,
-      429
+      429,
+      503
     ],
     "acts": [
       "A96"
@@ -1699,7 +1733,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       409,
       422,
-      429
+      429,
+      503
     ],
     "acts": [
       "A13"
@@ -1746,7 +1781,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      502
+      502,
+      503
     ],
     "acts": [
       "A09"
@@ -1796,7 +1832,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      503
     ],
     "acts": [
       "A10"
@@ -1843,7 +1880,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      503
     ],
     "acts": [
       "A10"
@@ -1890,7 +1928,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A09"
@@ -1942,7 +1981,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A09"
@@ -1997,7 +2037,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A09"
@@ -2044,7 +2085,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      502
+      502,
+      503
     ],
     "acts": [
       "A104"
@@ -2093,7 +2135,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      502
+      502,
+      503
     ],
     "acts": [
       "A09"
@@ -2143,7 +2186,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      429
+      429,
+      503
     ],
     "acts": [
       "A95"
@@ -2195,7 +2239,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      502
+      502,
+      503
     ],
     "acts": [
       "A104"
@@ -2242,7 +2287,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      502
+      502,
+      503
     ],
     "acts": [
       "A104"
@@ -2294,7 +2340,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      502
+      502,
+      503
     ],
     "acts": [
       "A20"
@@ -2346,7 +2393,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      502
+      502,
+      503
     ],
     "acts": [
       "A104"
@@ -2398,7 +2446,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      502
+      502,
+      503
     ],
     "acts": [
       "A104"
@@ -2449,7 +2498,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      502
+      502,
+      503
     ],
     "acts": [
       "A91"
@@ -2497,7 +2547,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      502
+      502,
+      503
     ],
     "acts": [
       "A91"
@@ -2549,7 +2600,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      502
+      502,
+      503
     ],
     "acts": [
       "A104"
@@ -2598,7 +2650,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      502
+      502,
+      503
     ],
     "acts": [
       "A104"
@@ -2646,7 +2699,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      502
+      502,
+      503
     ],
     "acts": [
       "A20"
@@ -2696,7 +2750,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A09"
@@ -2746,7 +2801,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       503,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A09"
@@ -2794,7 +2850,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       503,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A09"
@@ -2840,7 +2897,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
-      429
+      429,
+      503
     ],
     "acts": [
       "A94"
@@ -2890,7 +2948,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A15"
@@ -2937,7 +2996,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A103"
@@ -2987,7 +3047,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A121"
@@ -3040,7 +3101,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A121"
@@ -3094,7 +3156,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A121"
@@ -3144,7 +3207,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A122"
@@ -3192,7 +3256,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A122"
@@ -3246,7 +3311,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A122"
@@ -3301,7 +3367,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A122"
@@ -3356,7 +3423,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A122"
@@ -3411,7 +3479,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A122"
@@ -3458,7 +3527,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A103",
@@ -3508,7 +3578,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A121"
@@ -3555,7 +3626,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A121"
@@ -3608,7 +3680,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A121"
@@ -3658,7 +3731,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A121"
@@ -3712,7 +3786,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A121"
@@ -3762,7 +3837,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A121"
@@ -3815,7 +3891,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A121"
@@ -3862,7 +3939,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A121"
@@ -3909,7 +3987,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A20"
@@ -3957,7 +4036,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A91"
@@ -4001,7 +4081,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A53"
@@ -4048,7 +4129,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A53"
@@ -4092,7 +4174,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A53"
@@ -4136,7 +4219,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A30"
@@ -4180,7 +4264,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A53"
@@ -4224,7 +4309,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A88"
@@ -4273,7 +4359,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A100",
@@ -4321,7 +4408,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A88"
@@ -4373,7 +4461,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A88"
@@ -4425,7 +4514,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A88"
@@ -4481,7 +4571,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A90"
@@ -4534,7 +4625,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A20"
@@ -4590,7 +4682,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A100",
@@ -4647,7 +4740,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A91"
@@ -4703,7 +4797,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A20"
@@ -4756,7 +4851,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A20"
@@ -4807,7 +4903,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A10"
@@ -4855,7 +4952,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A10"
@@ -4905,7 +5003,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A10"
@@ -4958,7 +5057,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A10"
@@ -5012,7 +5112,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A10"
@@ -5066,7 +5167,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A10"
@@ -5117,7 +5219,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A40"
@@ -5167,7 +5270,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A40"
@@ -5214,7 +5318,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A110"
@@ -5258,7 +5363,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A67"
@@ -5306,7 +5412,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A67"
@@ -5353,7 +5460,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A67"
@@ -5407,7 +5515,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A67"
@@ -5461,7 +5570,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A67"
@@ -5512,7 +5622,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A67"
@@ -5560,7 +5671,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A36"
@@ -5610,7 +5722,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A36"
@@ -5661,7 +5774,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A36"
@@ -5709,7 +5823,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A36"
@@ -5756,7 +5871,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A69"
@@ -5803,7 +5919,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A114"
@@ -5850,7 +5967,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A114"
@@ -5894,7 +6012,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A114"
@@ -5938,7 +6057,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A114"
@@ -5982,7 +6102,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A114"
@@ -6032,7 +6153,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A114"
@@ -6085,7 +6207,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A114"
@@ -6132,7 +6255,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A114"
@@ -6176,7 +6300,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A114"
@@ -6223,7 +6348,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A114"
@@ -6270,7 +6396,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A114"
@@ -6323,7 +6450,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A114"
@@ -6374,7 +6502,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A114"
@@ -6421,7 +6550,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A114"
@@ -6468,7 +6598,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A114"
@@ -6520,7 +6651,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A114"
@@ -6573,7 +6705,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A114"
@@ -6626,7 +6759,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A114"
@@ -6678,7 +6812,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A114"
@@ -6730,7 +6865,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A114"
@@ -6780,7 +6916,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A114"
@@ -6833,7 +6970,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A114"
@@ -6883,7 +7021,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A114"
@@ -6933,7 +7072,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A114"
@@ -6986,7 +7126,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A114"
@@ -7039,7 +7180,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A114"
@@ -7092,7 +7234,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A114"
@@ -7142,7 +7285,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A114"
@@ -7195,7 +7339,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A114"
@@ -7245,7 +7390,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A114"
@@ -7298,7 +7444,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A114"
@@ -7348,7 +7495,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A117"
@@ -7397,7 +7545,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A117"
@@ -7441,7 +7590,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A30",
@@ -7492,7 +7642,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A30",
@@ -7546,7 +7697,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A30",
@@ -7600,7 +7752,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A131"
@@ -7653,7 +7806,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A30"
@@ -7699,7 +7853,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429
+      429,
+      503
     ],
     "acts": [
       "A74"
@@ -7745,7 +7900,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A74"
@@ -7792,7 +7948,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A74"
@@ -7840,7 +7997,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A04"
@@ -7887,7 +8045,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A74"
@@ -7934,7 +8093,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A74"
@@ -7980,7 +8140,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A74"
@@ -8026,7 +8187,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A74"
@@ -8073,7 +8235,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A74"
@@ -8123,7 +8286,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A97"
@@ -8173,7 +8337,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A97"
@@ -8220,7 +8385,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A97"
@@ -8266,7 +8432,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A04",
@@ -8311,7 +8478,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A74"
@@ -8360,7 +8528,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A74"
@@ -8410,7 +8579,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A74"
@@ -8456,7 +8626,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A74"
@@ -8503,7 +8674,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A74"
@@ -8547,7 +8719,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A99"
@@ -8594,7 +8767,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A99"
@@ -8640,7 +8814,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A04"
@@ -8688,7 +8863,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A04"
@@ -8736,7 +8912,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A04"
@@ -8780,7 +8957,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A94"
@@ -8829,7 +9007,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A74"
@@ -8878,7 +9057,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A103"
@@ -8925,7 +9105,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A61"
@@ -8974,7 +9155,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A62"
@@ -9023,7 +9205,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A61"
@@ -9074,7 +9257,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A36"
@@ -9123,7 +9307,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A61"
@@ -9170,7 +9355,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A62"
@@ -9220,7 +9406,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A62"
@@ -9269,7 +9456,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A61"
@@ -9319,7 +9507,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A62"
@@ -9370,7 +9559,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A04"
@@ -9415,7 +9605,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A30"
@@ -9462,7 +9653,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A30"
@@ -9511,7 +9703,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A30"
@@ -9563,7 +9756,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A30"
@@ -9616,7 +9810,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A131",
@@ -9671,7 +9866,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A95"
@@ -9718,7 +9914,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A68"
@@ -9768,7 +9965,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A68"
@@ -9817,7 +10015,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A109"
@@ -9866,7 +10065,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A109"
@@ -9916,7 +10116,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A109"
@@ -9960,7 +10161,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A70"
@@ -10007,7 +10209,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A70"
@@ -10057,7 +10260,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A70"
@@ -10108,7 +10312,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A70"
@@ -10159,7 +10364,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A70"
@@ -10203,7 +10409,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A72"
@@ -10253,7 +10460,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A72"
@@ -10300,7 +10508,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A72"
@@ -10347,7 +10556,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A72"
@@ -10393,7 +10603,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A134"
@@ -10441,7 +10652,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A134"
@@ -10491,7 +10703,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A134"
@@ -10541,7 +10754,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A134"
@@ -10585,7 +10799,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A71"
@@ -10633,7 +10848,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A71"
@@ -10680,7 +10896,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A71"
@@ -10730,7 +10947,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A71"
@@ -10781,7 +10999,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A71"
@@ -10832,7 +11051,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A71"
@@ -10878,7 +11098,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A80"
@@ -10927,7 +11148,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A64"
@@ -10975,7 +11197,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A133"
@@ -11021,7 +11244,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A133"
@@ -11070,7 +11294,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A133"
@@ -11121,7 +11346,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A133"
@@ -11173,7 +11399,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A133"
@@ -11222,7 +11449,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A133"
@@ -11274,7 +11502,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A133"
@@ -11326,7 +11555,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A133"
@@ -11372,7 +11602,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A133"
@@ -11416,7 +11647,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A60"
@@ -11460,7 +11692,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A128"
@@ -11507,7 +11740,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A128"
@@ -11558,7 +11792,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A128"
@@ -11606,7 +11841,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A80"
@@ -11655,7 +11891,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A80"
@@ -11703,7 +11940,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A80"
@@ -11752,7 +11990,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A80"
@@ -11803,7 +12042,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A80"
@@ -11854,7 +12094,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A80"
@@ -11898,7 +12139,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A60"
@@ -11945,7 +12187,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A64"
@@ -11992,7 +12235,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A64"
@@ -12039,7 +12283,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A64"
@@ -12086,7 +12331,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A64"
@@ -12134,7 +12380,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A64"
@@ -12185,7 +12432,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A64"
@@ -12235,7 +12483,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A64"
@@ -12285,7 +12534,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A64"
@@ -12335,7 +12585,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A64"
@@ -12385,7 +12636,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A127"
@@ -12435,7 +12687,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A127"
@@ -12482,7 +12735,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A60"
@@ -12526,7 +12780,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A125"
@@ -12573,7 +12828,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A126"
@@ -12624,7 +12880,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A126"
@@ -12672,7 +12929,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A124"
@@ -12716,7 +12974,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A125"
@@ -12764,7 +13023,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A124"
@@ -12811,7 +13071,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A124"
@@ -12862,7 +13123,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A124"
@@ -12910,7 +13172,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A124"
@@ -12957,7 +13220,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A125"
@@ -13003,7 +13267,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A121",
@@ -13053,7 +13318,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A121",
@@ -13102,7 +13368,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A131"
@@ -13154,7 +13421,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A131"
@@ -13206,7 +13474,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A131"
@@ -13256,7 +13525,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A118",
@@ -13302,7 +13572,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A58"
@@ -13349,7 +13620,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A58"
@@ -13398,7 +13670,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A58"
@@ -13450,7 +13723,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A58"
@@ -13499,7 +13773,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A117"
@@ -13546,7 +13821,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A117"
@@ -13595,7 +13871,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A117"
@@ -13642,7 +13919,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A58"
@@ -13689,7 +13967,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A21"
@@ -13733,7 +14012,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A68"
@@ -13777,7 +14057,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A58"
@@ -13828,7 +14109,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A102"
@@ -13882,7 +14164,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A102"
@@ -13934,7 +14217,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A108"
@@ -13987,7 +14271,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A110"
@@ -14039,7 +14324,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A99"
@@ -14086,7 +14372,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A99"
@@ -14139,7 +14426,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A99"
@@ -14186,7 +14474,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A103"
@@ -14236,7 +14525,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A101"
@@ -14280,7 +14570,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A120"
@@ -14330,7 +14621,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A120"
@@ -14379,7 +14671,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A103"
@@ -14432,7 +14725,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A107"
@@ -14485,7 +14779,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A107"
@@ -14539,7 +14834,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A107"
@@ -14586,7 +14882,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A103"
@@ -14636,7 +14933,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A113",
@@ -14685,7 +14983,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       404,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A129",
@@ -14734,7 +15033,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A101"
@@ -14786,7 +15086,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A103",
@@ -14841,7 +15142,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A116"
@@ -14895,7 +15197,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A123"
@@ -14948,7 +15251,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A20"
@@ -15001,7 +15305,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A101"
@@ -15058,7 +15363,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A20",
@@ -15110,7 +15416,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A101"
@@ -15164,7 +15471,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A101"
@@ -15215,7 +15523,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A102"
@@ -15268,7 +15577,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A123"
@@ -15322,7 +15632,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A106"
@@ -15372,7 +15683,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A108"
@@ -15425,7 +15737,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A108"
@@ -15481,7 +15794,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A104"
@@ -15531,7 +15845,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A116"
@@ -15587,7 +15902,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A105"
@@ -15641,7 +15957,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A111",
@@ -15694,7 +16011,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A103"
@@ -15744,7 +16062,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A103"
@@ -15797,7 +16116,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A103"
@@ -15851,7 +16171,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A107"
@@ -15901,7 +16222,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A101"
@@ -15954,7 +16276,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A116"
@@ -16007,7 +16330,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A104"
@@ -16059,7 +16383,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A101"
@@ -16110,7 +16435,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A102"
@@ -16165,7 +16491,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A102"
@@ -16220,7 +16547,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A102"
@@ -16275,7 +16603,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A102"
@@ -16325,7 +16654,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A107"
@@ -16375,7 +16705,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A101"
@@ -16428,7 +16759,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A101"
@@ -16479,7 +16811,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A130"
@@ -16529,7 +16862,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A103",
@@ -16575,7 +16909,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A119"
@@ -16624,7 +16959,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A119"
@@ -16672,7 +17008,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A119"
@@ -16727,7 +17064,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A119"
@@ -16781,7 +17119,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A119"
@@ -16836,7 +17175,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A119"
@@ -16891,7 +17231,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A119"
@@ -16946,7 +17287,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A119"
@@ -16997,7 +17339,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       502,
-      403
+      403,
+      503
     ],
     "acts": [
       "A119"
@@ -17044,7 +17387,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A75"
@@ -17090,7 +17434,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A75"
@@ -17134,7 +17479,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A69"
@@ -17180,7 +17526,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A69"
@@ -17227,7 +17574,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A75"
@@ -17272,7 +17620,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A75"
@@ -17319,7 +17668,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A118"
@@ -17368,7 +17718,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A118"
@@ -17417,7 +17768,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A118"
@@ -17464,7 +17816,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A118"
@@ -17511,7 +17864,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A75"
@@ -17555,7 +17909,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A36"
@@ -17601,7 +17956,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A75"
@@ -17648,7 +18004,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A69"
@@ -17692,7 +18049,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A69"
@@ -17736,7 +18094,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A118"
@@ -17783,7 +18142,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A118"
@@ -17832,7 +18192,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A118"
@@ -17881,7 +18242,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A118"
@@ -17925,7 +18287,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A118"
@@ -17971,7 +18334,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A118"
@@ -18018,7 +18382,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       429,
-      403
+      403,
+      503
     ],
     "acts": [
       "A118"
@@ -18040,4 +18405,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "27abecf0c9be707b";
+export const OPENAPI_HASH = "a458c48f95e7ee91";

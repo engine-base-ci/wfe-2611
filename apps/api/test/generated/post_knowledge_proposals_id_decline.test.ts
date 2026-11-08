@@ -19,6 +19,8 @@ describe("POST /api/v1/knowledge/proposals/:id/decline", () => {
   it.todo("test_post_knowledge_proposals_id_decline_rate_limited");
   // UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
   it.todo("test_post_knowledge_proposals_id_decline_terms_pending");
+  // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
+  it.todo("test_post_knowledge_proposals_id_decline_session_unresolved");
   // UBIQUITOUS: POST /api/v1/knowledge/proposals/:id/decline の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
   it.todo("test_post_knowledge_proposals_id_decline_shape");
 });

@@ -36,4 +36,8 @@ describe("GET /api/v1/audit_events", () => {
     // UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
     const a = await args(h, e, e.auth === "ops" ? "ops" : "boss"); const before = await h.count(e.table); const r = await h.call(e, "pending", a); expect(r.status).toBe(403); expect(((await r.json()) as { code: string }).code).toBe("E-AUTH-010"); expect(await h.count(e.table)).toBe(before);
   });
+  it("test_get_audit_events_session_unresolved", async () => {
+    // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
+    const a = await args(h, e, e.auth === "ops" ? "ops" : "boss"); const before = await h.count(e.table); const r = await h.call(e, "down", a); expect(r.status).toBe(503); expect(((await r.json()) as { code: string }).code).toBe("E-PAGE-003"); expect(await h.count(e.table)).toBe(before);
+  });
 });

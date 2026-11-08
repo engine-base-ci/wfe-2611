@@ -19,6 +19,8 @@ describe("POST /api/v1/ops/notices/:id/updates", () => {
   it.todo("test_post_ops_notices_id_updates_rate_limited");
   // UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
   it.todo("test_post_ops_notices_id_updates_terms_pending");
+  // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
+  it.todo("test_post_ops_notices_id_updates_session_unresolved");
   // UNWANTED: IF お知らせの公開で対象の会社が 0 件（プラン未選択・該当なし）、公開日時が過去、または全社通知の送出が一部失敗した THEN Kaname は「対象の会社がありません。プランか会社を選んでください」を返し、対象を選び直す／失敗した分を再送する（E-ACT-038）
   it.todo("test_post_ops_notices_id_updates_rejected_422_3");
   // UBIQUITOUS: POST /api/v1/ops/notices/:id/updates の副作用は関門 C2・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う

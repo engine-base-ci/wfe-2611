@@ -54,6 +54,11 @@ describe("GET /api/v1/bridge/releases/:name/file", () => {
     // 本物の試験：apps/api/test/features/F3/connect-pc.test.ts の「K57-API-050」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F3/connect-pc.test.ts", "utf8")).toContain("K57-API-050");
   });
+  it("test_get_bridge_releases_name_file_session_unresolved", () => {
+    // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
+    // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-032」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-032");
+  });
   it("test_get_bridge_releases_name_file_shape", () => {
     // UBIQUITOUS: GET /api/v1/bridge/releases/:name/file の副作用は関門 C1・C2・C4 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
     // 本物の試験：apps/api/test/features/F3/connect-pc.test.ts の「K57-API-021」（同じ CI の G3 で流れる）

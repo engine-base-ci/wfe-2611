@@ -57,6 +57,8 @@ def four(e):
     # 同意し直し（K-53・D-125.162）：ログインの要る口は、同意し直しの印が立ったセッションでは 403・E-AUTH-010。規則で足す（口ごとに手で足さない）。
     #   PC の印の口（device）には印が立たない（D-128.137）。規約の 2 つの口・ログアウト・自分の取得は止めない（正本は screen_api.py の TERMS_OPEN_OPS・契約の termsOpen）
     if auth and e["auth"]["role"] != "device" and e.get("operation_id") not in _sa.TERMS_OPEN_OPS: out.append({"status": 403, "code": "E-AUTH-010", "body": {"error": "forbidden", "code": "E-AUTH-010"}, "trigger": "ログインしたときに今の版の利用規約かプライバシーポリシーに同意していない（同意し直しの印が立ったセッション）", "ears_form": "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない"})
+    # 入口でセッションを解けない（K-53・K-144 ⑬）：全部の口で止める側に倒して 503・E-PAGE-003。口ごとの ERRORS_4XX の後に足す（前に足すと 503 E-PAGE-007 の行に置き換えられて消える）
+    out.append({"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "trigger": "入口でセッションを解く所が落ちた（止める側に倒す・K-53）", "ears_form": "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない"})
     return out
 def ears(e):
     out = []

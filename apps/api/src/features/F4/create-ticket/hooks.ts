@@ -5,6 +5,7 @@
 //   getTicket：読むだけの詳細（属性・区画・種別・段・担当者） ／ listMyTicketDrafts・saveMyTicketDraft：書きかけの下書き（サーバーに残す・D-128.138）
 // ログに題名と本文を出さない（共通の決まり）
 import type pg from "pg";
+import { isUuid } from "@kaname/contracts";
 import { withTenant } from "@kaname/db/context";
 import type { Row } from "@kaname/db/repository";
 import { KanameError } from "@kaname/errors";
@@ -165,7 +166,8 @@ export function createTicketHooks(appPool: pg.Pool): Record<string, Hook> {
     saveMyTicketDraft: {
       before: async (a: HookArgs) => {
         const id = a.input["draft_id"];
-        if (typeof id !== "string" || !/^[0-9a-f-]{36}$/i.test(id))
+        // 入口と同じ正式な uuid の確かめ（入口が先に断るので重ねの確かめ・K-144）
+        if (typeof id !== "string" || !isUuid(id))
           return fail(422, "validation_failed", "VALIDATION_ERROR", {
             details: [{ field: "draft_id", message: "uuid" }],
           });

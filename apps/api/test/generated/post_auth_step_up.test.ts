@@ -30,6 +30,11 @@ describe("POST /api/v1/auth/step-up", () => {
     // 本物の試験：apps/api/test/step_up.test.ts の「K53-API-005（stepUp の分）」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/step_up.test.ts", "utf8")).toContain("K53-API-005（stepUp の分）");
   });
+  it("test_post_auth_step_up_session_unresolved", () => {
+    // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
+    // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-032」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-032");
+  });
   // 本物の試験はまだ無い（apps/api/test/step_up.test.ts）：UBIQUITOUS: POST /api/v1/auth/step-up の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
   it.todo("test_post_auth_step_up_shape");
 });

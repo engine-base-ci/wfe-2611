@@ -33,6 +33,11 @@ describe("POST /api/v1/bridge/heartbeat", () => {
   it.todo("test_post_bridge_heartbeat_rate_limited");
   // 本物の試験はまだ無い（apps/api/test/features/F3/connect-pc.test.ts）：UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す
   it.todo("test_post_bridge_heartbeat_upstream_failed");
+  it("test_post_bridge_heartbeat_session_unresolved", () => {
+    // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
+    // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-032」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-032");
+  });
   it("test_post_bridge_heartbeat_shape", () => {
     // UBIQUITOUS: POST /api/v1/bridge/heartbeat の副作用は関門 C1・C2・C4 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
     // 本物の試験：apps/api/test/features/F3/connect-pc.test.ts の「K57-API-009」（同じ CI の G3 で流れる）

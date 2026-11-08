@@ -9,6 +9,8 @@ describe("GET /api/v1/auth/invitations/:token", () => {
   it.todo("test_get_auth_invitations_token_rejected_422");
   // UNWANTED: IF 10/min/ip を超えたら、Kaname は 429 と retry_after_sec を返す
   it.todo("test_get_auth_invitations_token_rate_limited");
+  // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
+  it.todo("test_get_auth_invitations_token_session_unresolved");
   // UBIQUITOUS: GET /api/v1/auth/invitations/:token の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
   it.todo("test_get_auth_invitations_token_shape");
 });

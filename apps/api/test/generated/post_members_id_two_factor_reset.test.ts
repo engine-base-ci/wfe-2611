@@ -19,6 +19,8 @@ describe("POST /api/v1/members/:id/two-factor/reset", () => {
   it.todo("test_post_members_id_two_factor_reset_rate_limited");
   // UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
   it.todo("test_post_members_id_two_factor_reset_terms_pending");
+  // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
+  it.todo("test_post_members_id_two_factor_reset_session_unresolved");
   // UBIQUITOUS: POST /api/v1/members/:id/two-factor/reset の副作用は関門 C2・C8 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
   it.todo("test_post_members_id_two_factor_reset_shape");
 });

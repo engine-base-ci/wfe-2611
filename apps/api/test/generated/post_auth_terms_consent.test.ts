@@ -39,6 +39,11 @@ describe("POST /api/v1/auth/terms/consent", () => {
     // 本物の試験：apps/api/test/features/F1/terms.test.ts の「K53-API-027」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F1/terms.test.ts", "utf8")).toContain("K53-API-027");
   });
+  it("test_post_auth_terms_consent_session_unresolved", () => {
+    // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
+    // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-032」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-032");
+  });
   it("test_post_auth_terms_consent_shape", () => {
     // UBIQUITOUS: POST /api/v1/auth/terms/consent の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
     // 本物の試験：apps/api/test/features/F1/terms.test.ts の「K53-API-030」（同じ CI の G3 で流れる）
