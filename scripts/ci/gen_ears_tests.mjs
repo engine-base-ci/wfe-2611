@@ -7,7 +7,7 @@ const ROOT = process.cwd();
 const OUTDIR = "apps/api/test/generated";
 
 const kindOf = (fn) => {
-  const m = /_(ok|shape|rejected_401|rejected_403|rejected_422|terms_pending|conflict|rate_limited|upstream_failed|not_found)(?:_\d+)?$/.exec(fn);
+  const m = /_(ok|shape|rejected_401|rejected_403|rejected_422|terms_pending|session_unresolved|unavailable|conflict|rate_limited|upstream_failed|not_found)(?:_\d+)?$/.exec(fn);
   return m ? m[1] : "ok";
 };
 const q = (s) => JSON.stringify(s);
@@ -24,6 +24,12 @@ const CASE = {
   rejected_422: () => `${WHO} if (e.kind === "list") { const r = await h.call(e, who, { query: { limit: "0" } }); expect(r.status).toBe(422); return; } if (e.kind === "get" || e.kind === "delete") { const r = await h.call(e, who, { id: "not-a-uuid" }); expect(r.status).toBe(422); return; } const a = await args(h, e, who); const before = await h.count(e.table); const r = await h.call(e, who, { ...a, body: { __unknown_field: "x", id: 12345 } }); expect(r.status).toBe(422); const b = (await r.json()) as { code: string; details: unknown[] }; expect(b.code).toBe("VALIDATION_ERROR"); expect(b.details.length).toBeGreaterThan(0); expect(await h.count(e.table)).toBe(before); const r2 = await h.call(e, who, { ...a, body: "{not json" }); expect(r2.status).toBe(422);`,
   rate_limited: (op) => `${WHO} h.limits[${q(op)}] = 2; const a = await args(h, e, who); await h.call(e, who, a); await h.call(e, who, a); const before = await h.count(e.table); const r = await h.call(e, who, a); expect(r.status).toBe(429); const b = (await r.json()) as { code: string; retry_after_sec: number }; expect(b.code).toBe("RATE_LIMITED"); expect(b.retry_after_sec).toBeGreaterThan(0); expect(await h.count(e.table)).toBe(before); delete h.limits[${q(op)}];`,
   upstream_failed: (op) => `${WHO} const a = await args(h, e, who); h.hooks[${q(op)}] = { effect: async () => ({ status: "failed", reason: "外部が完了信号を出さなかった", handoff: "人が確認する" }) }; const before = await h.count(e.table); const r = await h.call(e, who, a); expect(r.status).toBe(502); const b = (await r.json()) as { code: string; handoff: string }; expect(b.code).toBe("EXTERNAL_FAILED"); expect(b.handoff).toBeTruthy(); expect(await h.count(e.table)).toBe(before); delete h.hooks[${q(op)}];`,
+  // 入口でセッションを解けない（K-53・K-144 回 6）：harness の who の down は resolve が落ちる。全部の口が 503・E-PAGE-003 で止まり、表の行の数は変わらない
+  session_unresolved: () => `const a = await args(h, e, e.auth === "ops" ? "ops" : "boss"); const before = await h.count(e.table); const r = await h.call(e, "down", a); expect(r.status).toBe(503); expect(((await r.json()) as { code: string }).code).toBe("E-PAGE-003"); expect(await h.count(e.table)).toBe(before);`,
+  // 口ごとの 503（置き場に届かない など）は口ごとに起こし方が違うので、土台では作らない。本物の試験を ears-elsewhere の covers に結ぶ
+  unavailable: () => {
+    throw new Error("口ごとの 503（unavailable）は生成の試験の土台では起こせない。本物の試験を 07_qa/test-plan/ears-elsewhere.json の covers に結ぶ");
+  },
   not_found: () => `if (e.kind === "list" || e.kind === "create") return; ${WHO} const r = await h.call(e, who, { ...(await args(h, e, who)), id: "0193c5a0-0000-7000-8000-000000000000" }); expect(r.status).toBe(404);`,
 };
 
@@ -61,9 +67,13 @@ export function gen(root = ROOT) {
     if (away) {
       const body = rows.map((x) => {
         n++;
-        const mark = away.covers?.[x.test_function];
+        // covers の値は「本物の試験の題」（口の file の中）か {file, mark}（別のファイル。1 つの口の試験が何枚かに分かれるとき・K-144 回 6）
+        const c = away.covers?.[x.test_function];
+        const mark = typeof c === "string" ? c : c?.mark;
+        const file = typeof c === "object" && c?.file ? c.file : away.file;
         if (!mark) return `  // 本物の試験はまだ無い（${away.file}）：${x.ears_text.replace(/\n/g, " ")}\n  it.todo(${q(x.test_function)});`;
-        return `  it(${q(x.test_function)}, () => {\n    // ${x.ears_text.replace(/\n/g, " ")}\n    // 本物の試験：${away.file} の「${mark}」（同じ CI の G3 で流れる）\n    expect(readFileSync(${q(away.file)}, "utf8")).toContain(${q(mark)});\n  });`;
+        if (!existsSync(join(root, file))) throw new Error(`ears-elsewhere の ${op}.covers.${x.test_function} が指すファイルが無い：${file}`);
+        return `  it(${q(x.test_function)}, () => {\n    // ${x.ears_text.replace(/\n/g, " ")}\n    // 本物の試験：${file} の「${mark}」（同じ CI の G3 で流れる）\n    expect(readFileSync(${q(file)}, "utf8")).toContain(${q(mark)});\n  });`;
       });
       writeFileSync(join(root, file), `// 生成物（scripts/ci/gen_ears_tests.mjs ← 07_qa/test-plan/ears-test-mapping.json・ears-elsewhere.json）。手で直さない。${rows[0].endpoint}
 // ${away.reason}

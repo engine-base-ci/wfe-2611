@@ -4,7 +4,7 @@
 //   成功の data の形は入口と同じ zod（packages/contracts/src/schemas.ts・z.strictObject。知らない欄も、null を許さない欄の null も赤）。
 //   契約そのもの（openapi の additionalProperties・format: uuid・応答の並び）は scripts/ci/contract_shape_test.py が見る。
 //   決まり（D-129.42）：uuid の欄は入口で正式な uuid の形を確かめ、違えば 422（欄の名前・理由 "uuid"）。中で 500 にしない。知らない項目も 422
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { randomUUID } from "node:crypto";
 import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -12,6 +12,7 @@ import { join } from "node:path";
 import { ENDPOINTS } from "@kaname/contracts/registry";
 import { SCHEMAS } from "@kaname/contracts/schemas";
 import { s3Client, s3Presigner } from "@kaname/storage";
+import { createApp } from "../../../src/app.js";
 import { agentHooks } from "../../../src/hooks/agent.js";
 import { ticketHooks } from "../../../src/hooks/tickets.js";
 import { makeFixture, nextIp, type Fixture, type Person } from "../fixture.js";
@@ -518,5 +519,58 @@ describe("K-144 ⑫ 入口が uuid の道の値と問い合わせを確かめる
     expect(uuidReason(await json(bad), name)).toBe("uuid");
     const good = await hit(op, where, name, randomUUID());
     expect(good.status).toBe(501);
+  });
+});
+
+describe("K-144 ⑬ 類 C（回 6）：入口がセッションを解けないとき、全部の口が 503・E-PAGE-003 で止まる。契約の 503 にある", () => {
+  it("K144-API-032 セッションを解く所が落ちる（apps/api/src/middleware/tenant.ts → sessionUnresolved）：契約の全部の口（public も）が 503・E-PAGE-003。中の理由を出さず、振る舞い（hooks）に届かない。どの口の契約の並びにも 503 がある", async () => {
+    let reached = 0;
+    const hooks = Object.fromEntries(
+      ENDPOINTS.map((e) => [
+        e.operationId,
+        {
+          before: async () => {
+            reached++;
+            return { status: 418, body: {} };
+          },
+        },
+      ]),
+    );
+    const app = createApp({
+      version: "test",
+      repo: {} as never, // セッションを解く所で止まるので、表には届かない
+      resolve: async () => {
+        throw new Error("K-144 の試験：セッションを解けない");
+      },
+      contract: { hooks },
+    });
+    const spy = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    const bad: string[] = [];
+    try {
+      for (const e of ENDPOINTS) {
+        const path = e.path.replace(/:(\w+)/g, (_, n: string) => (e.uuidParams.includes(n) ? randomUUID() : `x-${n}`));
+        const r = await app.request(`http://localhost${path}`, {
+          method: e.method,
+          headers: { "content-type": "application/json", authorization: "Bearer k144" },
+          ...(["POST", "PATCH", "PUT"].includes(e.method) ? { body: "{}" } : {}),
+        });
+        const text = await r.text();
+        const code = (() => {
+          try {
+            return (JSON.parse(text) as { code?: string }).code;
+          } catch {
+            return undefined;
+          }
+        })();
+        if (r.status !== 503 || code !== "E-PAGE-003")
+          bad.push(`${e.operationId}：${r.status} ${code ?? text.slice(0, 40)}`);
+        if (text.includes("K-144 の試験")) bad.push(`${e.operationId}：中の理由が答えに出た`);
+        if (!e.errors.includes(503)) bad.push(`${e.operationId}：契約の並び（${e.errors.join(",")}）に 503 が無い`);
+      }
+    } finally {
+      spy.mockRestore();
+    }
+    expect(bad).toEqual([]);
+    expect(reached, "振る舞い（hooks）に届いた").toBe(0);
   });
 });

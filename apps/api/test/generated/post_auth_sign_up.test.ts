@@ -21,8 +21,11 @@ describe("POST /api/v1/auth/sign-up", () => {
     // 本物の試験：apps/api/test/features/F1/sign-up.test.ts の「K51-API-011 メールが空・形が違う」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F1/sign-up.test.ts", "utf8")).toContain("K51-API-011 メールが空・形が違う");
   });
-  // 本物の試験はまだ無い（apps/api/test/features/F1/sign-up.test.ts）：UNWANTED: IF 規約の版を読む DB か申し込みを書く DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、申し込みを作らずメールも送らない
-  it.todo("test_post_auth_sign_up_server_error");
+  it("test_post_auth_sign_up_server_error", () => {
+    // UNWANTED: IF 規約の版を読む DB か申し込みを書く DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、申し込みを作らずメールも送らない
+    // 本物の試験：apps/api/test/features/F1/sign-up.test.ts の「K51-API-021」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F1/sign-up.test.ts", "utf8")).toContain("K51-API-021");
+  });
   it("test_post_auth_sign_up_rate_limited", () => {
     // UNWANTED: IF 10/min/ip を超えたら、Kaname は 429 と retry_after_sec を返す
     // 本物の試験：apps/api/test/features/F1/sign-up.test.ts の「K51-API-023 1 分に 11 回」（同じ CI の G3 で流れる）

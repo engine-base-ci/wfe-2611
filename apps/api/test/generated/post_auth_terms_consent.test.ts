@@ -29,8 +29,11 @@ describe("POST /api/v1/auth/terms/consent", () => {
     // 本物の試験：apps/api/test/features/F1/terms.test.ts の「K53-API-018」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F1/terms.test.ts", "utf8")).toContain("K53-API-018");
   });
-  // 本物の試験はまだ無い（apps/api/test/features/F1/terms.test.ts）：UNWANTED: IF 同意を書く DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、同意の行もセッションの印も変えない
-  it.todo("test_post_auth_terms_consent_server_error");
+  it("test_post_auth_terms_consent_server_error", () => {
+    // UNWANTED: IF 同意を書く DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、同意の行もセッションの印も変えない
+    // 本物の試験：apps/api/test/features/F1/terms.test.ts の「K53-API-024」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F1/terms.test.ts", "utf8")).toContain("K53-API-024");
+  });
   it("test_post_auth_terms_consent_rate_limited", () => {
     // UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
     // 本物の試験：apps/api/test/features/F1/terms.test.ts の「K53-API-027」（同じ CI の G3 で流れる）

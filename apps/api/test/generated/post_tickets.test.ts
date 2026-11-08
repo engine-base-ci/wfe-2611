@@ -36,8 +36,11 @@ describe("POST /api/v1/tickets", () => {
     // 本物の試験：apps/api/test/features/F4/create-ticket.test.ts の「K60-API-025」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F4/create-ticket.test.ts", "utf8")).toContain("K60-API-025");
   });
-  // 本物の試験はまだ無い（apps/api/test/features/F4/create-ticket.test.ts）：UNWANTED: IF 親のチケットが無いか見えないなら、Kaname は 404 と E-PAGE-001 を返し、チケットを作らない
-  it.todo("test_post_tickets_not_found");
+  it("test_post_tickets_not_found", () => {
+    // UNWANTED: IF 親のチケットが無いか見えないなら、Kaname は 404 と E-PAGE-001 を返し、チケットを作らない
+    // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-019」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-019");
+  });
   it("test_post_tickets_rate_limited", () => {
     // UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
     // 本物の試験：apps/api/test/features/F4/create-ticket.test.ts の「K60-API-031」（同じ CI の G3 で流れる）

@@ -205,6 +205,17 @@ def statuses_in(block: str, cat: dict[str, int], defs: dict[str, str] | None = N
     return s
 
 
+
+def returns_raw(text: str) -> bool:
+    """返す答え（status の鍵を持つ物の書き方）に鍵 raw があるか。`raw: <値>` と省略形 `raw`（, か } が続く）の両方を拾う。
+    引数・変数の名前の raw、型の `raw?:`（; で区切る型の書き方）は拾わない（K144-SHAPE-011・回 6）"""
+    for obj in re.findall(r"\{[^{}]*\}", text):
+        if not re.search(r"(?:^\{|,)\s*status\s*:", obj):
+            continue
+        if re.search(r"(?:^\{|,)\s*raw\s*(?::|,|\})", obj):
+            return True
+    return False
+
 class ContractShapeTest(unittest.TestCase):
     # ---- 作り手が書ける形（R1 #3）
     def test_K144_SHAPE_001_input_and_answer_types_are_in_the_generator_vocabulary(self) -> None:
@@ -384,15 +395,26 @@ class ContractShapeTest(unittest.TestCase):
         self.assertEqual(missing, [], "口が返すのに契約に無い状態コード")
 
     def test_K144_SHAPE_011_raw_answers_declare_a_non_json_content(self) -> None:
-        """JSON でなくファイルそのものを返す口（振る舞いに raw: がある）は、200 に JSON 以外の中身の形を書いている"""
-        bad = []
+        """JSON でなくファイルそのものを返す口（返す答え HookReply に鍵 raw がある）は、200 に JSON 以外の中身の形を書いている。
+        回 6：拾うのは「status の鍵を持つ物の中の raw の鍵」だけ（`raw: r` と省略形 `{ raw }`・`, raw }`）。引数や変数の名前 raw・型の `raw?:` は数えない"""
+        # 拾い方そのものの確かめ（前の拾い方 \braw: は引数の名前を拾い、省略形を見落とした）
+        for sample in ("return { status: 200, body: null, raw: r };", "return { status: 200, body: null, raw };",
+                       "return { raw, status: 200, body: null };"):
+            self.assertTrue(returns_raw(sample), f"返す答えの raw を拾えていない：{sample}")
+        for sample in ("export function parse(raw: unknown) { return { status: 422, body: {} }; }",
+                       "const raw = a.input.x; return { status: 200, body: raw };",
+                       "type R = { status: number; body: unknown; raw?: Response };"):
+            self.assertFalse(returns_raw(sample), f"答えでない raw を拾った：{sample}")
+        bad: list[str] = []
+        found: list[str] = []
         for op_id, (block, defs) in hook_regions().items():
             text = block + "".join(v for k, v in defs.items() if re.search(rf"\b{k}\(", block))
-            if re.search(r"\braw:", text):
+            if returns_raw(text):
+                found.append(op_id)
                 ok = operation(op_id)[2]["responses"].get("200", {}).get("content", {})
                 if not any(k != "application/json" for k in ok):
                     bad.append(op_id)
-        self.assertIn("downloadBridgeRelease", [o for o, (b, d) in hook_regions().items() if "give(" in b])
+        self.assertIn("downloadBridgeRelease", found, "ファイルを返す口を拾えていない（拾い方が壊れた）")
         self.assertEqual(bad, [], "ファイルを返すのに 200 が JSON だけ")
 
     def test_K144_SHAPE_017_every_built_op_has_an_entrance_uuid_row(self) -> None:
@@ -464,6 +486,66 @@ class ContractShapeTest(unittest.TestCase):
         """画面とサーバーの型（08_api/types.ts）も契約に合う：色は null がある・下書きの id は文字"""
         self.assertRegex(TYPES, r"export type TicketKindChoice = \{[^}]*\bcolor\?: string \| null;")
         self.assertRegex(TYPES, r"export type TicketDraftInput = \{[^}]*\bdraft_id\?: string;")
+
+    def test_K144_SHAPE_018_every_op_declares_the_entrance_503(self) -> None:
+        """回 6（類 C の続き）：/api/* の全部の口が通る入口（apps/api/src/middleware の tenantContext）が返す状態コード（セッションを解けないときの
+        503・E-PAGE-003＝op.ts の sessionUnresolved）を、契約の全部の口の responses と endpoints.json の outputs_4xx（EARS の文つき）に書いている。
+        生成の試験で本物の試験が別のファイルにある口（ears-elsewhere）は、その 503 の文の試験を covers に結んでいる（it.todo にしない）"""
+        op_src = (ROOT / "apps/api/src/contract/op.ts").read_text(encoding="utf-8")
+        mw = "".join(f.read_text(encoding="utf-8") for f in sorted((ROOT / "apps/api/src/middleware").glob("*.ts")) if ".test." not in f.name)
+        helpers = set(re.findall(r"export const (\w+) = \(c: Context", op_src))
+        statuses: dict[int, set[str]] = {}
+        for h in helpers:
+            if not re.search(rf"\b{h}\(", mw):
+                continue
+            body = re.search(rf"export const {h} = \(c: Context.*?\n\}};", op_src, re.S)
+            self.assertIsNotNone(body, f"op.ts の {h} の中身を読めない")
+            codes = set(re.findall(r'code: "([A-Z]-[A-Z]+-\d{3}|[A-Z_]+)"', body.group(0))) | set(re.findall(r'kanameError\("([A-Z]-[A-Z]+-\d{3})"\)', body.group(0)))  # type: ignore[union-attr]
+            for st in re.findall(r"\},\s*(\d{3})\s*\)", body.group(0)):  # type: ignore[union-attr]
+                statuses.setdefault(int(st), set()).update(codes)
+        statuses |= {int(st): set() for st in re.findall(r"c\.json\([^;]*?,\s*(\d{3})\s*\)", mw)}
+        self.assertIn(503, statuses, "入口（middleware）の 503 を拾えていない（拾い方が壊れた）")
+        self.assertIn("E-PAGE-003", statuses[503])
+        missing = []
+        for path, methods in OA["paths"].items():
+            if not path.startswith("/"):
+                continue
+            for method, op in methods.items():
+                if not isinstance(op, dict) or "operationId" not in op:
+                    continue
+                for st, codes in statuses.items():
+                    r = op.get("responses", {}).get(str(st))
+                    if r is None:
+                        missing.append(f"{op['operationId']} {st}")
+                    elif not all(c in r.get("description", "") for c in codes):
+                        missing.append(f"{op['operationId']} {st} の説明に {'・'.join(sorted(codes))} が無い")
+        self.assertEqual(missing, [], "入口が全部の口で返すのに契約に無い状態コード")
+        no_ears = [e.get("operation_id") or e["implementation_path"].split("::")[1] for e in EPS
+                   if not any(x["status"] == 503 and x.get("code") == "E-PAGE-003" and "503" in x.get("ears_form", "") for x in e["outputs_4xx"])]
+        self.assertEqual(no_ears, [], "endpoints.json の outputs_4xx に入口の 503・E-PAGE-003（EARS の文つき）が無い口")
+        mapping = json.loads((ROOT / "07_qa/test-plan/ears-test-mapping.json").read_text(encoding="utf-8"))["mappings"]
+        away = json.loads((ROOT / "07_qa/test-plan/ears-elsewhere.json").read_text(encoding="utf-8"))["ops"]
+        op_of = {f"{e['method']} {e['path']}": e["implementation_path"].split("::")[1] for e in EPS}
+        loose = [m["test_function"] for m in mapping
+                 if m["http_code"] == "503" and "E-PAGE-003" in m["ears_text"] and op_of.get(m["endpoint"]) in away
+                 and m["test_function"] not in away[op_of[m["endpoint"]]].get("covers", {})]
+        self.assertEqual(loose, [], "本物の試験が別のファイルにある口の、入口の 503 の生成の試験が covers に結ばれていない（it.todo のまま）")
+
+    def test_K144_SHAPE_019_no_hand_rolled_loose_uuid_check(self) -> None:
+        """回 6（類 B の続き・L-008）：画面（apps/web）と口（apps/api/src）は、id の形を自前の緩い正規表現（[0-9a-f-]{36}）で確かめない。
+        入口と同じ正式な uuid の確かめ（版と variant の桁まで）を使う。緩いと、入口が 422 で断る id を画面は「ある」とみなし、
+        「見つからない」でなく「読み込めない」を出す（/tickets/<版の桁が 0 の 36 字>）。前の道すじ apps/api/src/auth は K-145 の受け持ちなので外す"""
+        loose = re.compile(r"\[0-9a-f(?:A-F)?-\]\{36\}")
+        bad = []
+        for base in ("apps/web", "apps/api/src"):
+            for f in sorted((ROOT / base).rglob("*.ts*")):
+                rel = f.relative_to(ROOT).as_posix()
+                if "node_modules" in rel or "/.next/" in rel or re.search(r"(\.test\.|\.spec\.|/tests?/)", rel) or rel.startswith("apps/api/src/auth/"):
+                    continue
+                for i, line in enumerate(f.read_text(encoding="utf-8").splitlines(), 1):
+                    if loose.search(line):
+                        bad.append(f"{rel}:{i}")
+        self.assertEqual(bad, [], "id の形を緩い正規表現で確かめている（入口と同じ isUuid を使う）")
 
 
 if __name__ == "__main__":

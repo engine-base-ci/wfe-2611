@@ -18893,11 +18893,11 @@
     "bridge-setup"
    ],
    "ears_form": "UNWANTED",
-   "http_code": "",
+   "http_code": "503",
    "ears_text": "UNWANTED: IF 配布物の置き場に届かないなら、Kaname は 503 と E-PAGE-007 を返し、空を成功にしない",
    "test_file": "apps/api/test/generated/get_bridge_releases_name_file.test.ts",
-   "test_function": "test_get_bridge_releases_name_file_rejected_422_2",
-   "test_level": "unit（検証・表記ゆらぎ）",
+   "test_function": "test_get_bridge_releases_name_file_unavailable",
+   "test_level": "結合（届かない・止める側に倒す・G-15）",
    "gate": "backend-coverage",
    "ladder": "L1",
    "tasks": []
@@ -19320,11 +19320,11 @@
     "bridge-setup"
    ],
    "ears_form": "UNWANTED",
-   "http_code": "",
+   "http_code": "503",
    "ears_text": "UNWANTED: IF 配布物の置き場に届かないなら、Kaname は 503 と E-PAGE-007 を返し、「配っていない」と答えない",
    "test_file": "apps/api/test/generated/get_bridge_releases_latest.test.ts",
-   "test_function": "test_get_bridge_releases_latest_rejected_422_2",
-   "test_level": "unit（検証・表記ゆらぎ）",
+   "test_function": "test_get_bridge_releases_latest_unavailable",
+   "test_level": "結合（届かない・止める側に倒す・G-15）",
    "gate": "backend-coverage",
    "ladder": "L1",
    "tasks": []

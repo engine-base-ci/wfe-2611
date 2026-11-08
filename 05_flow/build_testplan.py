@@ -32,7 +32,7 @@ TIER_MAP = [
 def slug(ep):
     m, p = ep.split(" ", 1); return (m.lower() + "_" + re.sub(r"[^a-z0-9]+", "_", p.lower().replace("/api/v1/", "")).strip("_"))
 def classify(line):
-    form = line.split(":")[0]; s = re.search(r"\b(401|403|404|409|410|422|429|500|502)\b", line); code = s.group(1) if s else ""
+    form = line.split(":")[0]; s = re.search(r"\b(401|403|404|409|410|422|429|500|502|503)\b", line); code = s.group(1) if s else ""
     if form == "EVENT-DRIVEN": return form, code, "contract+integration", "backend-coverage", "ok"
     if form == "UBIQUITOUS": return form, code, "contract", "backend-coverage", "shape"
     if "E-AUTH-010" in line: return form, code, "access（同意し直し・K-53）", "backend-access-matrix", "terms_pending"   # 役の 403 と混ぜない
@@ -43,6 +43,8 @@ def classify(line):
     if code == "404": return form, code, "unit", "backend-coverage", "not_found"
     if code == "410": return form, code, "unit（期限・使い終わり）", "backend-coverage", "gone"
     if code == "500": return form, code, "unit（途中の失敗・全部戻す）", "backend-coverage", "server_error"
+    if code == "503" and "E-PAGE-003" in line: return form, code, "unit（入口でセッションを解けない・止める側に倒す・K-53）", "backend-coverage", "session_unresolved"   # 全部の口（K-144 回 6）
+    if code == "503": return form, code, "結合（届かない・止める側に倒す・G-15）", "backend-coverage", "unavailable"   # K-144 回 6：前は 422 に分けていた
     return form, code, "unit（検証・表記ゆらぎ）", "backend-coverage", "rejected_422"
 task_by_text = {}
 for t in TASKS:

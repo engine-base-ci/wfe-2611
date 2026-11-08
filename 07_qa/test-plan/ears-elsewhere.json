@@ -1,5 +1,5 @@
 {
- "_doc": "生成の試験（apps/api/test/generated）の土台は偽のセッションなので、本物のログインの部品が要る口の振る舞いは別のファイルで確かめる。ここに書いた口の生成の試験は、covers（試験の名前 → 本物の試験の題）に書いた行は、その本物の試験があることを確かめ、無い場合は it.todo のまま残す（scripts/ci/gen_ears_tests.mjs）。理由が空の行は使わない",
+ "_doc": "生成の試験（apps/api/test/generated）の土台は偽のセッションなので、本物のログインの部品が要る口の振る舞いは別のファイルで確かめる。ここに書いた口の生成の試験は、covers（試験の名前 → 本物の試験の題）に書いた行は、その本物の試験があることを確かめ、無い場合は it.todo のまま残す（scripts/ci/gen_ears_tests.mjs）。理由が空の行は使わない。covers の値は本物の試験の題（file の中）か、{file, mark}（同じ口の本物の試験が別のファイルにあるとき・K-144）",
  "ops": {
   "stepUp": {
    "file": "apps/api/test/step_up.test.ts",
@@ -8,7 +8,11 @@
     "test_post_auth_step_up_ok": "正しいパスワードで時刻が付き",
     "test_post_auth_step_up_rejected_401": "パスワードが空なら 422・ログインしていなければ 401",
     "test_post_auth_step_up_rejected_422_2": "パスワードが空なら 422",
-    "test_post_auth_step_up_terms_pending": "K53-API-005（stepUp の分）"
+    "test_post_auth_step_up_terms_pending": "K53-API-005（stepUp の分）",
+    "test_post_auth_step_up_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
    }
   },
   "createSignup": {
@@ -18,7 +22,12 @@
     "test_post_auth_sign_up_ok": "K51-API-001 無し × 登録の画面から送る",
     "test_post_auth_sign_up_ok_2": "K51-API-027 規約の版",
     "test_post_auth_sign_up_rejected_422_2": "K51-API-011 メールが空・形が違う",
-    "test_post_auth_sign_up_rate_limited": "K51-API-023 1 分に 11 回"
+    "test_post_auth_sign_up_rate_limited": "K51-API-023 1 分に 11 回",
+    "test_post_auth_sign_up_server_error": "K51-API-021",
+    "test_post_auth_sign_up_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
    }
   },
   "getSignupStatus": {
@@ -26,7 +35,11 @@
    "reason": "登録は、申し込みの印・漏れたパスワードの照合（関門 C1）・確認のメール（関門 C6）を本物の DB と差し込んだ送出先で確かめる。生成の試験の偽のセッションと土台では確かめられない（K-51）",
    "covers": {
     "test_get_auth_sign_up_status_ok": "K51-API-005 待つ画面の再読み込み",
-    "test_get_auth_sign_up_status_rejected_422": "K51-API-008 印が無い・知らない印"
+    "test_get_auth_sign_up_status_rejected_422": "K51-API-008 印が無い・知らない印",
+    "test_get_auth_sign_up_status_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
    }
   },
   "resendSignupEmail": {
@@ -34,7 +47,11 @@
    "reason": "登録は、申し込みの印・漏れたパスワードの照合（関門 C1）・確認のメール（関門 C6）を本物の DB と差し込んだ送出先で確かめる。生成の試験の偽のセッションと土台では確かめられない（K-51）",
    "covers": {
     "test_post_auth_sign_up_resend_ok": "K51-API-009 送り直す（期限内・印で）",
-    "test_post_auth_sign_up_resend_rejected_422_2": "K51-API-030 送り直しをメールで頼む"
+    "test_post_auth_sign_up_resend_rejected_422_2": "K51-API-030 送り直しをメールで頼む",
+    "test_post_auth_sign_up_resend_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
    }
   },
   "verifySignup": {
@@ -46,7 +63,12 @@
     "test_post_auth_sign_up_verify_gone": "K52-API-005 保留中（期限切れ・30 分を過ぎた）",
     "test_post_auth_sign_up_verify_rejected_422": "K52-API-015 手がかりが無い・空",
     "test_post_auth_sign_up_verify_rate_limited": "K52-API-027 1 分に 11 回（同じ IP）",
-    "test_post_auth_sign_up_verify_shape": "K52-API-031 関門"
+    "test_post_auth_sign_up_verify_shape": "K52-API-031 関門",
+    "test_post_auth_sign_up_verify_server_error": "K52-API-022",
+    "test_post_auth_sign_up_verify_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
    }
   },
   "consentToTerms": {
@@ -59,7 +81,12 @@
     "test_post_auth_terms_consent_rejected_422": "K53-API-018",
     "test_post_auth_terms_consent_rate_limited": "K53-API-027",
     "test_post_auth_terms_consent_rejected_403": "K53-API-034",
-    "test_post_auth_terms_consent_shape": "K53-API-030"
+    "test_post_auth_terms_consent_shape": "K53-API-030",
+    "test_post_auth_terms_consent_server_error": "K53-API-024",
+    "test_post_auth_terms_consent_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
    }
   },
   "getCurrentTerms": {
@@ -70,7 +97,11 @@
     "test_get_auth_terms_current_rejected_422": "K53-API-022",
     "test_get_auth_terms_current_rate_limited": "K53-API-028",
     "test_get_auth_terms_current_server_error": "K53-API-033",
-    "test_get_auth_terms_current_shape": "K53-API-016"
+    "test_get_auth_terms_current_shape": "K53-API-016",
+    "test_get_auth_terms_current_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
    }
   },
   "createPairingCode": {
@@ -84,7 +115,11 @@
     "test_post_bridge_pairing_codes_rejected_422_2": "K57-API-031",
     "test_post_bridge_pairing_codes_rate_limited": "K57-API-039",
     "test_post_bridge_pairing_codes_terms_pending": "K57-API-050",
-    "test_post_bridge_pairing_codes_shape": "K57-API-001"
+    "test_post_bridge_pairing_codes_shape": "K57-API-001",
+    "test_post_bridge_pairing_codes_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
    }
   },
   "claimPairingCode": {
@@ -96,7 +131,11 @@
     "test_post_bridge_claim_rejected_422_2": "K57-API-028",
     "test_post_bridge_claim_rate_limited": "K57-API-038",
     "test_post_bridge_claim_upstream_failed": "K57-API-033",
-    "test_post_bridge_claim_shape": "K57-API-003"
+    "test_post_bridge_claim_shape": "K57-API-003",
+    "test_post_bridge_claim_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
    }
   },
   "sendHeartbeat": {
@@ -108,7 +147,11 @@
     "test_post_bridge_heartbeat_rejected_403": "K57-API-040",
     "test_post_bridge_heartbeat_rejected_422": "K57-API-037",
     "test_post_bridge_heartbeat_rejected_422_2": "K57-API-032",
-    "test_post_bridge_heartbeat_shape": "K57-API-009"
+    "test_post_bridge_heartbeat_shape": "K57-API-009",
+    "test_post_bridge_heartbeat_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
    }
   },
   "listMyDevices": {
@@ -119,7 +162,11 @@
     "test_get_bridge_devices_rejected_401": "K57-API-045",
     "test_get_bridge_devices_rejected_403": "K57-API-040",
     "test_get_bridge_devices_terms_pending": "K57-API-050",
-    "test_get_bridge_devices_shape": "K57-API-042"
+    "test_get_bridge_devices_shape": "K57-API-042",
+    "test_get_bridge_devices_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
    }
   },
   "getLatestBridgeRelease": {
@@ -131,7 +178,15 @@
     "test_get_bridge_releases_latest_rejected_422": "K57-API-023",
     "test_get_bridge_releases_latest_upstream_failed": "K57-API-024",
     "test_get_bridge_releases_latest_terms_pending": "K57-API-050",
-    "test_get_bridge_releases_latest_shape": "K57-API-021"
+    "test_get_bridge_releases_latest_shape": "K57-API-021",
+    "test_get_bridge_releases_latest_unavailable": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-004"
+    },
+    "test_get_bridge_releases_latest_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
    }
   },
   "downloadBridgeRelease": {
@@ -145,7 +200,23 @@
     "test_get_bridge_releases_name_file_terms_pending": "K57-API-050",
     "test_get_bridge_releases_name_file_shape": "K57-API-021",
     "test_get_bridge_releases_name_file_rejected_403": "K57-API-055",
-    "test_get_bridge_releases_name_file_rate_limited": "K57-API-056"
+    "test_get_bridge_releases_name_file_rate_limited": "K57-API-056",
+    "test_get_bridge_releases_name_file_not_found": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-002"
+    },
+    "test_get_bridge_releases_name_file_not_found_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-001"
+    },
+    "test_get_bridge_releases_name_file_unavailable": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-004"
+    },
+    "test_get_bridge_releases_name_file_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
    }
   },
   "createTicket": {
@@ -160,7 +231,15 @@
     "test_post_tickets_rejected_422_2": "K60-API-025",
     "test_post_tickets_rate_limited": "K60-API-031",
     "test_post_tickets_terms_pending": "K60-API-043",
-    "test_post_tickets_shape": "K60-API-001"
+    "test_post_tickets_shape": "K60-API-001",
+    "test_post_tickets_not_found": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-019"
+    },
+    "test_post_tickets_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
    }
   },
   "listTicketKinds": {
@@ -171,7 +250,11 @@
     "test_get_ticket_kinds_rejected_401": "K60-API-042",
     "test_get_ticket_kinds_rejected_403": "K60-API-042",
     "test_get_ticket_kinds_terms_pending": "K60-API-043",
-    "test_get_ticket_kinds_shape": "K60-API-034"
+    "test_get_ticket_kinds_shape": "K60-API-034",
+    "test_get_ticket_kinds_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
    }
   },
   "listScopes": {
@@ -182,7 +265,11 @@
     "test_get_scopes_rejected_401": "K60-API-042",
     "test_get_scopes_rejected_403": "K60-API-042",
     "test_get_scopes_terms_pending": "K60-API-043",
-    "test_get_scopes_shape": "K60-API-033"
+    "test_get_scopes_shape": "K60-API-033",
+    "test_get_scopes_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
    }
   },
   "getTicket": {
@@ -194,7 +281,11 @@
     "test_get_tickets_id_rejected_403": "K60-API-042",
     "test_get_tickets_id_not_found": "K60-API-037",
     "test_get_tickets_id_terms_pending": "K60-API-043",
-    "test_get_tickets_id_shape": "K60-API-001"
+    "test_get_tickets_id_shape": "K60-API-001",
+    "test_get_tickets_id_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
    }
   },
   "listMyTicketDrafts": {
@@ -205,7 +296,11 @@
     "test_get_me_ticket_drafts_rejected_401": "K60-API-041",
     "test_get_me_ticket_drafts_rejected_403": "K60-API-039",
     "test_get_me_ticket_drafts_terms_pending": "K60-API-043",
-    "test_get_me_ticket_drafts_shape": "K60-API-038"
+    "test_get_me_ticket_drafts_shape": "K60-API-038",
+    "test_get_me_ticket_drafts_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
    }
   },
   "saveMyTicketDraft": {
@@ -216,7 +311,11 @@
     "test_post_me_ticket_drafts_rejected_403": "K60-API-041",
     "test_post_me_ticket_drafts_rejected_422": "K60-API-040",
     "test_post_me_ticket_drafts_terms_pending": "K60-API-043",
-    "test_post_me_ticket_drafts_shape": "K60-API-038"
+    "test_post_me_ticket_drafts_shape": "K60-API-038",
+    "test_post_me_ticket_drafts_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
    }
   }
  }

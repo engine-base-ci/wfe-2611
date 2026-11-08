@@ -24,8 +24,11 @@ describe("POST /api/v1/auth/sign-up/verify", () => {
     // 本物の試験：apps/api/test/features/F1/verify-email.test.ts の「K52-API-005 保留中（期限切れ・30 分を過ぎた）」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F1/verify-email.test.ts", "utf8")).toContain("K52-API-005 保留中（期限切れ・30 分を過ぎた）");
   });
-  // 本物の試験はまだ無い（apps/api/test/features/F1/verify-email.test.ts）：UNWANTED: IF 確定の途中で DB か認証が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、ログインの印を渡さない
-  it.todo("test_post_auth_sign_up_verify_server_error");
+  it("test_post_auth_sign_up_verify_server_error", () => {
+    // UNWANTED: IF 確定の途中で DB か認証が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、ログインの印を渡さない
+    // 本物の試験：apps/api/test/features/F1/verify-email.test.ts の「K52-API-022」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F1/verify-email.test.ts", "utf8")).toContain("K52-API-022");
+  });
   it("test_post_auth_sign_up_verify_rate_limited", () => {
     // UNWANTED: IF 10/min/ip を超えたら、Kaname は 429 と retry_after_sec を返す
     // 本物の試験：apps/api/test/features/F1/verify-email.test.ts の「K52-API-027 1 分に 11 回（同じ IP）」（同じ CI の G3 で流れる）

@@ -21,8 +21,11 @@ describe("GET /api/v1/bridge/releases/latest", () => {
     // 本物の試験：apps/api/test/features/F3/connect-pc.test.ts の「K57-API-023」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F3/connect-pc.test.ts", "utf8")).toContain("K57-API-023");
   });
-  // 本物の試験はまだ無い（apps/api/test/features/F3/connect-pc.test.ts）：UNWANTED: IF 配布物の置き場に届かないなら、Kaname は 503 と E-PAGE-007 を返し、「配っていない」と答えない
-  it.todo("test_get_bridge_releases_latest_rejected_422_2");
+  it("test_get_bridge_releases_latest_unavailable", () => {
+    // UNWANTED: IF 配布物の置き場に届かないなら、Kaname は 503 と E-PAGE-007 を返し、「配っていない」と答えない
+    // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-004」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-004");
+  });
   // 本物の試験はまだ無い（apps/api/test/features/F3/connect-pc.test.ts）：UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
   it.todo("test_get_bridge_releases_latest_rate_limited");
   it("test_get_bridge_releases_latest_upstream_failed", () => {
