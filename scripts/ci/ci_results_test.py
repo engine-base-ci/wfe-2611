@@ -27,11 +27,22 @@
         ref が読めない（無い ref・空・git でない）なら赤（守りの所で読めないなら止める側）。
         ref に台帳が無い（台帳を入れる回）なら、台帳の行はどれも、その ref の版の試験の仕様（git show <ref>:<ファイル>）で
         「CI の印の無い PASS」の行に当たらなければ赤（入れる回に紛れて増やせない）。CI の spec の段は必ずこの引数を付け、ref は static の段の G0（scope）が出す本線との分かれ目 "${{ needs.static.outputs.base }}"（main の名前は決め打ちにしない）
+  読む行と PASS の読み方（K-143 回 5・PM の判断 2026-11-08 17:40 ③）：qa-ladder（scripts/ci/qa-ladder.py）と同じ読み手にそろえる。
+      見出しの ID の列は「ID」「行 ID」「ＩＤ」「Id」、結果の列は「結果」を含む名前・「status」「Status」。外側の「|」が無い表・末尾の「|」が無い行も読む。
+      ドットの付いたディレクトリの中のファイルも読む。PASS と読むのは NFKC で揃えて大小を問わず PASS・FIXED・OK・合格・完了（**PASS**・✅ PASS も）。
+      印つきの形は「PASS（CI <sha>）」「FAIL（CI <sha>）」ちょうどだけで、それ以外の PASS らしい書き方は手で書いた PASS として赤。
+      「PASS（該当なし…）」は該当なし（N/A）と読む（PASS に数えず、台帳にも載せない・op_gate と同じ）。qa-ladder の status_of も同じに読む
+      同じファイルの同じ行 ID の PASS が 2 行以上あれば赤（台帳の行と同じ番号の新しい行で通さない・④）
+  --ledger-base-ref <ref> --target-ref <取り込む先>（PM の判断 2026-11-08 15:58・17:40 ①②）：
+      ・<ref> は <取り込む先> の先祖で、HEAD と違うコミットでなければ赤（比べる元を枝が選べない）。--target-ref が無い・読めないなら赤
+      ・本線の版と同じ印のまま（同じファイル・行 ID・結果の文字）の行は記録を見直さない（取り込みの台本が write の後に check を流してから本線に入れたので確かめ済み）
+      ・枝で足した・変えた印と、--records の記録のファイルの追加・変更は、<ref>..HEAD のコミットのうち本文に
+        「Results-Written-By: ci_results.py write CI <40 字の sha>」を持つコミット（取り込みの台本の書き込み）で入ったものだけ通す。それ以外は赤
   scripts/ci/op_gate.py --pending-from-report：結果が空の行は、今の回の報告で passed なら未実施にしない（取り込みの台本が後で書く）。
       failed なら赤・報告に無いなら前のとおり「未実施（結果が空）」
 使い方: python3 scripts/ci/ci_results_test.py
 """
-import contextlib, io, json, re, subprocess, sys, tempfile, unittest
+import contextlib, io, json, os, re, subprocess, sys, tempfile, unittest
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -211,6 +222,59 @@ class LedgerTest(Base):
         self.assertIn("K57-UI-001", shrunk[0])
 
 
+class ReaderTest(Base):
+    """読む行と PASS の読み方を qa-ladder と同じ読み手にそろえる（PM の判断 2026-11-08 17:40 ③④・N/A）"""
+
+    def test_K143_CI_023_other_pass_spellings_are_hand_written(self):
+        """K143-CI-023 PASS の別の書き方（**PASS**・pass・Pass・ＰＡＳＳ・✅ PASS・OK・合格・FIXED・完了）と、飾った印（**PASS**（CI …））は、どれも手で書いた PASS として赤"""
+        vals = ["**PASS**", "pass", "Pass", "ＰＡＳＳ", "✅ PASS", "OK", "合格", "FIXED", "完了", "**PASS**（CI abcdef1）"]
+        self.spec.write_text(HEAD + "".join(row(f"K62-UI-{i:03d}", v) for i, v in enumerate(vals, 1)), encoding="utf-8")
+        self.record_of({f"K62-UI-{i:03d}": "pass" for i in range(1, len(vals) + 1)})
+        got = self.problems()
+        for i, v in enumerate(vals, 1):
+            self.assertTrue(any(f"K62-UI-{i:03d}" in g for g in got), f"{v} が赤にならない：{got}")
+
+    def test_K143_CI_024_header_names_are_read(self):
+        """K143-CI-024 見出しの名前：ID の列「行 ID」「ＩＤ」「Id」、結果の列「結果（CI）」「結果列」「status」の表も読み、印の無い PASS を赤にする"""
+        for idh, resh in [("行 ID", "結果"), ("ＩＤ", "結果（CI）"), ("Id", "結果列"), ("ID", "status")]:
+            self.spec.write_text(f"| {idh} | 項目 | {resh} |\n|---|---|---|\n| K62-UI-001 | 押す | PASS |\n", encoding="utf-8")
+            got = self.problems()
+            self.assertEqual(len(got), 1, f"{idh}・{resh}：{got}")
+
+    def test_K143_CI_025_tables_without_outer_pipes_are_read(self):
+        """K143-CI-025 表の形：外側の「|」が無い表・末尾の「|」が無い行も読み、印の無い PASS を赤にする"""
+        self.spec.write_text("ID | 項目 | 結果\n---|---|---\nK62-UI-001 | 押す | PASS\n", encoding="utf-8")
+        self.assertEqual(len(self.problems()), 1)
+        self.spec.write_text("| ID | 項目 | 結果 |\n|---|---|---|\n| K62-UI-002 | 押す | PASS\n", encoding="utf-8")
+        got = self.problems()
+        self.assertEqual(len(got), 1, got)
+        self.assertIn("K62-UI-002", got[0])
+
+    def test_K143_CI_026_dot_directories_are_read(self):
+        """K143-CI-026 ドットの付いたディレクトリの中の試験の仕様も読む（`**/*.md` で集める）"""
+        d = self.t / "specs" / ".x"
+        d.mkdir(parents=True)
+        (d / "a.md").write_text(HEAD + row("K62-UI-001", "PASS"), encoding="utf-8")
+        got = cr.check([str(self.t / "specs" / "**" / "*.md")], self.rec, None, None)
+        self.assertEqual(len(got), 1, got)
+        self.assertIn(".x", got[0])
+
+    def test_K143_CI_028_duplicate_id_of_ledger_row_is_red(self):
+        """K143-CI-028 台帳の行と同じ番号の新しい行（同じファイル・同じ行 ID の PASS が 2 行）は赤（台帳の鍵で新しい行を通さない・17:40 ④）"""
+        self.spec.write_text(HEAD + row("K57-UI-001", "PASS") + row("K57-UI-001", "PASS"), encoding="utf-8")
+        got = self.problems({"rows": [{"file": str(self.spec), "id": "K57-UI-001"}]}, {"rows": [{"file": str(self.spec), "id": "K57-UI-001"}]})
+        self.assertTrue(got, "同じ番号の 2 行目が通る")
+        self.assertTrue(all("K57-UI-001" in g for g in got), got)
+
+    def test_K143_CI_030_not_applicable_rows(self):
+        """K143-CI-030 「PASS（該当なし…）」は該当なし（N/A）と読む：PASS に数えず、印も台帳も要らない。台帳に載っていたら赤（台帳から消す）"""
+        self.spec.write_text(HEAD + row("K62-UI-001", "PASS（該当なし：この画面に入力が無い）"), encoding="utf-8")
+        self.assertEqual(self.problems(), [])
+        got = self.problems({"rows": [{"file": str(self.spec), "id": "K62-UI-001"}]}, {"rows": [{"file": str(self.spec), "id": "K62-UI-001"}]})
+        self.assertEqual(len(got), 1, got)
+        self.assertIn("台帳", got[0])
+
+
 class NameTest(Base):
     def test_K143_CI_018_japanese_file_name_is_read(self):
         """K143-CI-018 日本語の名前の試験の仕様のファイルも読み落とさない（glob で集める・印の無い PASS を赤にする）"""
@@ -238,6 +302,32 @@ class RepoTest(unittest.TestCase):
         self.assertTrue(m and int(m.group(1)) >= len(ledger["rows"]) > 0, r.stdout)
         # 容れ物の中（まっさらな写し）と手元で同じ結果：台帳のファイルは作業場所の頭からの道で持つ（/ で始めない）
         self.assertTrue(all(not x["file"].startswith("/") for x in ledger["rows"]))
+        # 「PASS（該当なし…）」の行は台帳に載せない（N/A と読む・PM の判断 17:40）
+        na = set()
+        for f in {x["file"] for x in ledger["rows"]}:
+            for _, rid, res, _ in cr.spec_rows((ROOT / f).read_text(encoding="utf-8")):
+                if res.startswith("PASS（該当なし"):
+                    na.add((f, rid))
+        self.assertFalse(na & {(x["file"], x["id"]) for x in ledger["rows"]}, "該当なしの行が台帳にある")
+
+    def test_K143_CI_027_reads_every_row_qa_ladder_counts_as_passed(self):
+        """K143-CI-027 qa-ladder が passed と数える行は、どれも G61 も PASS と読む（qa-ladder が読む行 ⊂ G61 が読む行）。
+        「PASS（該当なし…）」は両方とも N/A（status_of が na・G61 も PASS に数えない）"""
+        import importlib.util  # noqa: PLC0415
+
+        spec_ = importlib.util.spec_from_file_location("qa_ladder", HERE / "qa-ladder.py")
+        ql = importlib.util.module_from_spec(spec_)
+        spec_.loader.exec_module(ql)
+        self.assertEqual(ql.status_of("PASS（該当なし：入力が無い）"), "na")
+        ladder = {(r["file"], r["id"]) for r in ql.load_spec_rows(ROOT / "07_qa/test-specs") if r["status"] == "passed"}
+        self.assertTrue(ladder, "qa-ladder が passed と数える行が 1 つも無い（何も見ていない）")
+        ours = set()
+        for f in cr.spec_files([str(ROOT / "07_qa/test-specs/**/*.md")]):
+            rel = os.path.relpath(f, ROOT / "07_qa/test-specs")
+            for _, rid, res, _ in cr.spec_rows(Path(f).read_text(encoding="utf-8")):
+                if cr.is_pass(res):
+                    ours.add((rel, rid))
+        self.assertFalse(sorted(ladder - ours)[:20], "qa-ladder が passed と数えるのに G61 が PASS と読まない行")
 
     def test_K143_CI_015_cli_names_rows_and_exits_1(self):
         """K143-CI-015 コマンドで流すと、赤の行を「★」で 1 行ずつ出して exit 1。緑なら PASS と数で exit 0"""
@@ -256,25 +346,51 @@ class RepoTest(unittest.TestCase):
             self.assertIn("PASS", ok.stdout)
 
     def test_K143_CI_016_wired_into_ci(self):
-        """K143-CI-016 CI から回る：v3-gate.yml の web の段で e2e:k の後に record を流し、op_gate を --pending-from-report で流す。
-        検査（check）と、この自己試験を CI の段で流す。段の一覧は 05_flow/build_testplan.py が持つ"""
+        """K143-CI-016 CI から回る：web の段で e2e:k の後に record を流し、op_gate を --pending-from-report で流し、記録（07_qa/ci-results）を artifacts に出す。
+        spec の段は自分の中で scope の台本を流して本線との分かれ目を出し、check に env（CI_LEDGER_BASE）で渡す（run の文字に ${{ … }} を入れない・K107-CS-034）。
+        check は --ledger・--ledger-base-ref "$CI_LEDGER_BASE"・--target-ref を持つ。自己試験も流す。段の一覧は 05_flow/build_testplan.py が持つ"""
+        import yaml  # noqa: PLC0415
+
         wf = (ROOT / ".github/workflows/v3-gate.yml").read_text(encoding="utf-8")
-        i_e2e = wf.find("e2e:k")
-        i_rec = wf.find("scripts/ci/ci_results.py record", i_e2e)
-        i_op = wf.find("scripts/ci/op_gate.py", i_e2e)
+        jobs = yaml.safe_load(wf)["jobs"]
+        web = "\n".join(st.get("run", "") for st in jobs["web"]["steps"])
+        i_e2e = web.find("e2e:k")
+        i_rec = web.find("scripts/ci/ci_results.py record", i_e2e)
+        i_op = web.find("scripts/ci/op_gate.py", i_e2e)
         self.assertGreater(i_rec, i_e2e, "e2e:k の後に record")
         self.assertGreater(i_op, i_rec, "record の後に op_gate")
-        self.assertRegex(wf, r"op_gate\.py[^\n]*--pending-from-report")
-        self.assertRegex(wf, r"scripts/ci/ci_results\.py check[^\n]*--ledger [^\n]*--ledger-base-ref \"\$\{\{ needs\.static\.outputs\.base \}\}\"",
-                         "検査の段は台帳と、static の段が出す本線との分かれ目（main の決め打ちでなく）を必ず付ける")
+        self.assertRegex(web, r"op_gate\.py[^\n]*--pending-from-report")
+        up = [st for st in jobs["web"]["steps"] if "upload-artifact" in str(st.get("uses", "")) and "07_qa/ci-results" in str(st.get("with", {}).get("path", ""))]
+        self.assertEqual(len(up), 1, "web の段は記録（07_qa/ci-results）を artifacts に出す（取り込みの台本が写す元）")
+        self.assertNotIn("failure()", str(up[0].get("if", "")), "記録は緑の回にこそ要る（落ちた回だけにしない）")
+        spec = jobs["spec"]
+        scope = [st for st in spec["steps"] if "scripts/ci/ci_scope.py" in st.get("run", "") and "--github-output" in st.get("run", "")]
+        self.assertEqual(len(scope), 1, "spec の段は自分の中で scope の台本を流して本線との分かれ目を出す")
+        sid = scope[0].get("id")
+        self.assertTrue(sid)
+        g61 = [st for st in spec["steps"] if "scripts/ci/ci_results.py check" in st.get("run", "")]
+        self.assertEqual(len(g61), 1)
+        self.assertGreater(spec["steps"].index(g61[0]), spec["steps"].index(scope[0]), "分かれ目を出してから check")
+        run = g61[0]["run"]
+        self.assertRegex(run, r"--ledger 07_qa/test-plan/result-ledger\.json")
+        self.assertRegex(run, r'--ledger-base-ref "\$CI_LEDGER_BASE"')
+        self.assertRegex(run, r"--target-ref \S+")
+        self.assertNotRegex(run, r"\$\{\{", "run の文字に ${{ … }} を入れない（K107-CS-034）")
+        self.assertEqual(g61[0]["env"]["CI_LEDGER_BASE"].replace(" ", ""), "${{steps.%s.outputs.base}}" % sid)
         self.assertNotRegex(wf, r"ci_results\.py check[^\n]*--ledger-base-ref main\b")
-        # その ref の出どころ：static の段の G0（scope）が base を出し、spec の段はそれを待つ
-        self.assertRegex(wf, r"\n      base: \$\{\{ steps\.scope\.outputs\.base \}\}")
-        spec_job = wf[wf.index("\n  spec:"):]
-        head = spec_job[: spec_job.index("steps:")]
-        self.assertRegex(head, r"needs: \[?[^\n]*\bstatic\b", "spec の段は static の段を待つ（outputs.base を読む）")
-        self.assertRegex(wf, r"python3 scripts/ci/ci_results_test\.py")
+        self.assertTrue(any("python3 scripts/ci/ci_results_test.py" in st.get("run", "") for st in spec["steps"]))
         self.assertIn("ci_results.py", (ROOT / "05_flow/build_testplan.py").read_text(encoding="utf-8"))
+
+    def test_K143_CI_022_spec_runs_even_if_static_is_red(self):
+        """K143-CI-022 static の段が赤でも spec の段の検査は流れる：spec の段は needs を持たず（static を待たない）、組の if も置かない（K107-CS-034 の決まり）。
+        段の中の検査にも static の結果を見る if が無い"""
+        import yaml  # noqa: PLC0415
+
+        spec = yaml.safe_load((ROOT / ".github/workflows/v3-gate.yml").read_text(encoding="utf-8"))["jobs"]["spec"]
+        self.assertNotIn("needs", spec, "spec の段は static を待たない（static の赤で丸ごと飛ばされない）")
+        self.assertNotIn("if", spec)
+        for st in spec["steps"]:
+            self.assertNotIn("needs.static", str(st.get("if", "")), st.get("name"))
 
 
 def git(cwd, *args):
@@ -306,10 +422,22 @@ class LedgerBaseTest(unittest.TestCase):
         git(self.t, "add", "-A")
         git(self.t, "commit", "-q", "-m", msg)
 
-    def check(self, ref="main"):
-        r = subprocess.run([sys.executable, str(HERE / "ci_results.py"), "check", "--specs", "specs/*.md", "--records", "rec",
-                            "--ledger", "ledger.json", "--ledger-base-ref", ref], cwd=self.t, capture_output=True, text=True)
+    def check(self, ref="main", target="main"):
+        args = [sys.executable, str(HERE / "ci_results.py"), "check", "--specs", "specs/*.md", "--records", "rec",
+                "--ledger", "ledger.json", "--ledger-base-ref", ref]
+        if target is not None:
+            args += ["--target-ref", target]
+        r = subprocess.run(args, cwd=self.t, capture_output=True, text=True)
         return r.returncode, r.stdout + r.stderr
+
+    def put_record(self, sha, rows):
+        (self.t / "rec").mkdir(exist_ok=True)
+        (self.t / "rec" / f"{sha}.json").write_text(json.dumps({"sha": sha, "made_by": "ci_results.py record", "at": "x", "rows": rows}), encoding="utf-8")
+
+    def write_commit(self, sha, msg="K-1 results: 結果の欄を CI の記録から書く"):
+        """取り込みの台本の書き込みのコミット（本文に Results-Written-By を持つ）"""
+        git(self.t, "add", "-A")
+        git(self.t, "commit", "-q", "-m", msg, "-m", f"Results-Written-By: ci_results.py write CI {sha}")
 
     def test_K143_CI_019_ledger_grows_against_base_ref_is_red(self):
         """K143-CI-019 本線（main）に台帳がある：作業の枝で台帳に行を足すと、コマンドが足した行を名指しして exit 1。減らすのは exit 0"""
@@ -364,6 +492,82 @@ class LedgerBaseTest(unittest.TestCase):
             self.assertIn(rid, out)
         bad = [ln for ln in out.splitlines() if "★" in ln]
         self.assertFalse([ln for ln in bad if "K57-UI-001" in ln], "本線で印の無い PASS だった行は赤にしない")
+
+    def test_K143_CI_033_same_mark_as_base_is_not_rechecked(self):
+        """K143-CI-033 本線と同じ印（PM の判断 15:58）：--ledger-base-ref を付けたときだけ、本線の版と同じ印のまま（同じファイル・行 ID・結果の文字）の行は
+        記録を見直さない（取り込みの台本が write の後に check を流してから本線に入れたので確かめ済み）。付けないときは記録と照らす"""
+        self.spec.write_text(HEAD + row("K57-UI-001", "PASS（CI abcdef1）"), encoding="utf-8")
+        self.put_ledger([])
+        self.commit("本線：印つきの行（記録はこの写しに無い）")
+        git(self.t, "switch", "-q", "-c", "work")
+        (self.t / "notes.txt").write_text("枝の別の変更", encoding="utf-8")
+        self.commit("枝：結果の欄は変えない")
+        code, out = self.check()
+        self.assertEqual(code, 0, out)
+        r = subprocess.run([sys.executable, str(HERE / "ci_results.py"), "check", "--specs", "specs/*.md", "--records", "rec",
+                            "--ledger", "ledger.json"], cwd=self.t, capture_output=True, text=True)
+        self.assertEqual(r.returncode, 1, r.stdout)   # 本線と比べないときは記録と照らす（記録が無いので赤）
+
+    def test_K143_CI_029_reverting_to_old_mark_is_red(self):
+        """K143-CI-029 古い印へ戻す：本線で「FAIL（CI dddddd2）」の行を、枝の普通のコミットで前の回の「PASS（CI aaaaaa1）」に書き戻すと赤（記録が pass でも）"""
+        a, d = "aaaaaa1" + "0" * 33, "dddddd2" + "0" * 33
+        self.put_record(a, {"K57-UI-001": "pass"})
+        self.put_record(d, {"K57-UI-001": "fail"})
+        self.spec.write_text(HEAD + row("K57-UI-001", "FAIL（CI dddddd2）"), encoding="utf-8")
+        self.put_ledger([])
+        self.commit("本線：最新の回で落ちた")
+        git(self.t, "switch", "-q", "-c", "work")
+        self.spec.write_text(HEAD + row("K57-UI-001", "PASS（CI aaaaaa1）"), encoding="utf-8")
+        self.commit("枝：前の回の PASS に戻す")
+        code, out = self.check()
+        self.assertEqual(code, 1, out)
+        self.assertIn("K57-UI-001", out)
+
+    def test_K143_CI_031_marks_and_records_only_from_write_commit(self):
+        """K143-CI-031 記録の出どころ（17:40 ①）：枝が足した印と記録のファイルは、取り込みの台本の書き込みのコミット（Results-Written-By）で入ったものだけ通す。
+        普通のコミットで記録を手で置き、印を書くと赤。書き込みのコミットなら緑"""
+        sha = "abcdef1" + "1" * 33
+        self.spec.write_text(HEAD + row("K62-UI-001"), encoding="utf-8")
+        self.put_ledger([])
+        self.commit("本線")
+        git(self.t, "switch", "-q", "-c", "forged")
+        self.put_record(sha, {"K62-UI-001": "pass"})
+        self.spec.write_text(HEAD + row("K62-UI-001", "PASS（CI abcdef1）"), encoding="utf-8")
+        self.commit("枝：記録を手で置いて印を書く")
+        code, out = self.check()
+        self.assertEqual(code, 1, out)
+        self.assertIn("K62-UI-001", out)
+        git(self.t, "switch", "-q", "main")
+        git(self.t, "switch", "-q", "-c", "written")
+        self.put_record(sha, {"K62-UI-001": "pass"})
+        self.spec.write_text(HEAD + row("K62-UI-001", "PASS（CI abcdef1）"), encoding="utf-8")
+        self.write_commit(sha)
+        code, out = self.check()
+        self.assertEqual(code, 0, out)
+
+    def test_K143_CI_032_base_ref_must_be_ancestor_of_target_and_not_head(self):
+        """K143-CI-032 比べる元（17:40 ②）：--ledger-base-ref が HEAD と同じ・取り込む先（--target-ref）の先祖でない・--target-ref が無い／読めないなら赤"""
+        self.spec.write_text(HEAD + row("K57-UI-001", "PASS"), encoding="utf-8")
+        self.put_ledger(["K57-UI-001"])
+        self.commit("本線")
+        git(self.t, "switch", "-q", "-c", "atk")
+        self.spec.write_text(HEAD + row("K57-UI-001", "PASS") + row("K57-UI-002", "PASS"), encoding="utf-8")
+        self.put_ledger(["K57-UI-001", "K57-UI-002"])
+        self.commit("枝：手で書いた PASS を台帳に足す")
+        head = git(self.t, "rev-parse", "HEAD").strip()
+        code, out = self.check(head)   # 比べる元を枝の先（HEAD）にすり替える
+        self.assertEqual(code, 1, out)
+        git(self.t, "switch", "-q", "-c", "other", "main")
+        (self.t / "x.txt").write_text("取り込む先に無いコミット", encoding="utf-8")
+        self.commit("取り込む先の先祖でないコミット")
+        stray = git(self.t, "rev-parse", "HEAD").strip()
+        git(self.t, "switch", "-q", "atk")
+        code, out = self.check(stray)
+        self.assertEqual(code, 1, out)
+        code, out = self.check("main", target=None)
+        self.assertEqual(code, 1, out)
+        code, out = self.check("main", target="無い-枝")
+        self.assertEqual(code, 1, out)
 
 
 class OpGateTest(unittest.TestCase):

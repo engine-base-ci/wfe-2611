@@ -702,11 +702,11 @@ K-143,試験の仕様の「結果」の欄を手で書く形が残っている�
 2. 手で書いた PASS を赤にする検査（スキル ai-team-delivery の `scripts/gates/result_gate.py` の形）が、Kaname の `.github/workflows/v3-gate.yml` の段に無い（K-103 で decision_source_gate（G60）は入れたが result_gate は入れなかった・PM の入れ漏れ）
 3. 結果の欄を CI の記録から書く台本が無い。CI はまっさらな写しで流すので、写しの中で書いた結果は残らない
 
-このままだと、手で書いた PASS が CI を通り、流していない試験が「通った」に見える。","- [ ] Kaname の台本 `scripts/ci/ci_results.py`（record・write・check）と、op_gate の `--pending-from-report` を作り、`scripts/ci/ci_results_test.py` の K143-CI-001〜021 が緑
+このままだと、手で書いた PASS が CI を通り、流していない試験が「通った」に見える。","- [ ] Kaname の台本 `scripts/ci/ci_results.py`（record・write・check）と、op_gate の `--pending-from-report` を作り、`scripts/ci/ci_results_test.py` の K143-CI-001〜033 が緑（K-107 の K107-CS-034 も緑）
 - [ ] 26 か所の「PASS に書き換える」を、delegate.md:6 と同じ「結果の列は手で書かない。取り込む前の CI の記録から機械で書く（CI の回の印つき）」の形に直す（前書き 3 つ・errors.md の 23 行）。`grep -rn ""PASS に書き換える"" 07_qa/` が 0 件
 - [ ] 台帳 `07_qa/test-plan/result-ledger.json` を作る（今ある印の無い PASS：36 ファイル・2593 行。`grep -rc ""| PASS"" 07_qa/test-specs --include=*.md` の合計）。流し直して印を付けるのは K-150
-- [ ] v3-gate.yml の段：web の段（G48）を `e2e:k → ci_results.py record → op_gate.py --pending-from-report` に、spec の段に `needs: [static]` を足し、`ci_results.py check --ledger 07_qa/test-plan/result-ledger.json --ledger-base-ref ""${{ needs.static.outputs.base }}""`（07_qa/test-specs のどの仕様のファイルも・台帳つき・static の段の G0 が出す本線との分かれ目と比べる）と自己試験を足す。段の一覧は `05_flow/build_testplan.py` に足して生成物を作り直す
-- [ ] 取り込みの台本 pm_merge.sh が呼ぶ設定（ai-team.yaml の `results`）を置く。pm_merge.sh に口を足すのは PM がスキル側でする（このチケットの外）
+- [ ] v3-gate.yml の段：web の段（G48）を `e2e:k → ci_results.py record → op_gate.py --pending-from-report` にし、記録 `07_qa/ci-results` を artifacts に出す段（upload-artifact・緑の回も）を足す。spec の段は needs を持たず（static の赤で飛ばされない）、段の中で scope の台本（scripts/ci/ci_scope.py・static の G0 と同じ入力）を流して本線との分かれ目を出し、`ci_results.py check --specs '07_qa/test-specs/**/*.md' --ledger 07_qa/test-plan/result-ledger.json --ledger-base-ref ""$CI_LEDGER_BASE"" --target-ref <取り込む先>` を env `CI_LEDGER_BASE: ${{ steps.<その段の id>.outputs.base }}` で流す（run の文字に `${{ … }}` を入れない・K107-CS-034）と自己試験を足す。段の一覧は `05_flow/build_testplan.py` に足して生成物を作り直す
+- [ ] 取り込みの台本 pm_merge.sh が呼ぶ設定（ai-team.yaml の `results`）を置く。台本の順は「緑の回の記録を写す → write → `Results-Written-By` つきでそのチケットの番号でコミット → check（--ledger-base-ref・--target-ref つき）→ 本線へ」（PM の判断 17:40 ⑤）。pm_merge.sh に口を足すのは PM がスキル側でする（このチケットの外）
 - [ ] チケットの CI（act）が緑"
 K-144,K-57・K-60 の口で、契約（openapi）と実際の振る舞いが食い違っている（fuzz を広げて見つかった 4 件と、同じ形のずれ全部）,課題,K-103,未着手,作る,2026-11-09,基盤・契約,"K-62 で契約の fuzz（G36・Schemathesis）の的を K-57・K-60 の口まで広げたら、前から食い違っていた所が 4 件見つかった（K-62 の 8 本の口はどれも緑）。どれも「契約の書き方」と「口の実際の振る舞い」がずれていて、fuzz が赤になる。K-62 の完了の条件は「広げた範囲で fuzz が緑」なので、これを先に直す（決める人の決定：起票して K-62 の前に入れる・2026-11-08 answer=c8bb89cac057）。
 
