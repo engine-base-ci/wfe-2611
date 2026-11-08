@@ -348,7 +348,8 @@ class RepoTest(unittest.TestCase):
     def test_K143_CI_016_wired_into_ci(self):
         """K143-CI-016 CI から回る：web の段で e2e:k の後に record を流し、op_gate を --pending-from-report で流し、記録（07_qa/ci-results）を artifacts に出す。
         spec の段は自分の中で scope の台本を流して本線との分かれ目を出し、check に env（CI_LEDGER_BASE）で渡す（run の文字に ${{ … }} を入れない・K107-CS-034）。
-        check は --ledger・--ledger-base-ref "$CI_LEDGER_BASE"・--target-ref を持つ。自己試験も流す。段の一覧は 05_flow/build_testplan.py が持つ"""
+        check は --ledger・--ledger-base-ref "$CI_LEDGER_BASE"・--target-ref "$CI_TARGET_REF"（workflow_dispatch の入力 target を env で・枝の中のファイルから読まない）を持つ。
+        自己試験も流す。段の一覧は 05_flow/build_testplan.py が持つ"""
         import yaml  # noqa: PLC0415
 
         wf = (ROOT / ".github/workflows/v3-gate.yml").read_text(encoding="utf-8")
@@ -377,6 +378,15 @@ class RepoTest(unittest.TestCase):
         self.assertRegex(run, r"--target-ref \S+")
         self.assertNotRegex(run, r"\$\{\{", "run の文字に ${{ … }} を入れない（K107-CS-034）")
         self.assertEqual(g61[0]["env"]["CI_LEDGER_BASE"].replace(" ", ""), "${{steps.%s.outputs.base}}" % sid)
+        # 取り込む先（--target-ref）は、枝の中のファイル（.act-ci.env・ai-team.yaml など）でなく、workflow_dispatch の入力 target
+        #   （act_ci.sh が台の側で決める比べる元の枝の名前）から env で渡す（PM の判断 2026-11-08 17:52）
+        on = yaml.safe_load(wf).get("on") or yaml.safe_load(wf).get(True)
+        self.assertIn("target", on["workflow_dispatch"]["inputs"], "workflow_dispatch に入力 target がある")
+        self.assertRegex(run, r'--target-ref "\$CI_TARGET_REF"')
+        self.assertEqual(g61[0]["env"]["CI_TARGET_REF"].replace(" ", ""), "${{inputs.target}}")
+        step_text = json.dumps(g61[0], ensure_ascii=False)
+        for f in (".act-ci.env", "ai-team.yaml"):
+            self.assertNotIn(f, step_text, f"取り込む先を枝の中の {f} から読まない")
         self.assertNotRegex(wf, r"ci_results\.py check[^\n]*--ledger-base-ref main\b")
         self.assertTrue(any("python3 scripts/ci/ci_results_test.py" in st.get("run", "") for st in spec["steps"]))
         self.assertIn("ci_results.py", (ROOT / "05_flow/build_testplan.py").read_text(encoding="utf-8"))
