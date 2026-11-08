@@ -309,6 +309,76 @@
     "test_post_bridge_jobs_id_finish_rejected_422_2": "K62-API-032",
     "test_post_bridge_jobs_id_finish_shape": "K62-API-010"
    }
+  },
+  "listApprovalQueue": {
+   "file": "apps/api/test/features/F5/approve-complete.test.ts",
+   "reason": "承認と完了は、本物の DB の関数（app.approval_decide・app.ticket_complete）と本物の PC の印（K-57）と差し込んだ受け箱（関門 C6）で確かめる。生成の試験の偽のセッションと土台では確かめられない（K-63）",
+   "covers": {
+    "test_get_approvals_queue_ok": "K63-API-001",
+    "test_get_approvals_queue_rejected_401": "K63-API-026",
+    "test_get_approvals_queue_rejected_422": "K63-API-040",
+    "test_get_approvals_queue_rate_limited": "K63-API-046",
+    "test_get_approvals_queue_shape": "K63-API-001",
+    "test_get_approvals_queue_rejected_403": "K63-API-064"
+   }
+  },
+  "getApproval": {
+   "file": "apps/api/test/features/F5/approve-complete.test.ts",
+   "reason": "承認と完了は、本物の DB の関数（app.approval_decide・app.ticket_complete）と本物の PC の印（K-57）と差し込んだ受け箱（関門 C6）で確かめる。生成の試験の偽のセッションと土台では確かめられない（K-63）",
+   "covers": {
+    "test_get_approvals_id_ok": "K63-API-050",
+    "test_get_approvals_id_rejected_401": "K63-API-026",
+    "test_get_approvals_id_rejected_403": "K63-API-021",
+    "test_get_approvals_id_not_found": "K63-API-025",
+    "test_get_approvals_id_rejected_422": "K63-API-038",
+    "test_get_approvals_id_rate_limited": "K63-API-046",
+    "test_get_approvals_id_shape": "K63-API-050"
+   }
+  },
+  "approveApproval": {
+   "file": "apps/api/test/features/F5/approve-complete.test.ts",
+   "reason": "承認と完了は、本物の DB の関数（app.approval_decide・app.ticket_complete）と本物の PC の印（K-57）と差し込んだ受け箱（関門 C6）で確かめる。生成の試験の偽のセッションと土台では確かめられない（K-63）",
+   "covers": {
+    "test_post_approvals_id_approve_ok": "K63-API-002",
+    "test_post_approvals_id_approve_rejected_401": "K63-API-026",
+    "test_post_approvals_id_approve_rejected_403": "K63-API-021",
+    "test_post_approvals_id_approve_not_found": "K63-API-025",
+    "test_post_approvals_id_approve_conflict": "K63-API-016",
+    "test_post_approvals_id_approve_rejected_422": "K63-API-039",
+    "test_post_approvals_id_approve_rejected_422_2": "K63-API-059",
+    "test_post_approvals_id_approve_rate_limited": "K63-API-045",
+    "test_post_approvals_id_approve_shape": "K63-API-049"
+   }
+  },
+  "returnApproval": {
+   "file": "apps/api/test/features/F5/approve-complete.test.ts",
+   "reason": "承認と完了は、本物の DB の関数（app.approval_decide・app.ticket_complete）と本物の PC の印（K-57）と差し込んだ受け箱（関門 C6）で確かめる。生成の試験の偽のセッションと土台では確かめられない（K-63）",
+   "covers": {
+    "test_post_approvals_id_return_ok": "K63-API-006",
+    "test_post_approvals_id_return_rejected_401": "K63-API-026",
+    "test_post_approvals_id_return_rejected_403": "K63-API-021",
+    "test_post_approvals_id_return_not_found": "K63-API-025",
+    "test_post_approvals_id_return_conflict": "K63-API-020",
+    "test_post_approvals_id_return_rejected_422": "K63-API-007",
+    "test_post_approvals_id_return_rate_limited": "K63-API-045",
+    "test_post_approvals_id_return_shape": "K63-API-049",
+    "test_post_approvals_id_return_rejected_422_2": "K63-API-062"
+   }
+  },
+  "completeTicket": {
+   "file": "apps/api/test/features/F5/approve-complete.test.ts",
+   "reason": "承認と完了は、本物の DB の関数（app.approval_decide・app.ticket_complete）と本物の PC の印（K-57）と差し込んだ受け箱（関門 C6）で確かめる。生成の試験の偽のセッションと土台では確かめられない（K-63）",
+   "covers": {
+    "test_post_tickets_id_complete_ok": "K63-API-027",
+    "test_post_tickets_id_complete_rejected_401": "K63-API-026",
+    "test_post_tickets_id_complete_rejected_403": "K63-API-034",
+    "test_post_tickets_id_complete_not_found": "K63-API-025",
+    "test_post_tickets_id_complete_conflict": "K63-API-032",
+    "test_post_tickets_id_complete_rejected_422": "K63-API-028",
+    "test_post_tickets_id_complete_rate_limited": "K63-API-045",
+    "test_post_tickets_id_complete_shape": "K63-API-027",
+    "test_post_tickets_id_complete_rejected_422_2": "K63-API-063"
+   }
   }
  }
 }

@@ -111,7 +111,20 @@ export function op(deps: ContractDeps, operationId: string) {
     // 4.1) 行に結ぶ言葉（K-15・ZT4）：:id の行を行の守りの中で読み、見えなければ 404（無いのと同じ）・言葉の中の人でなければ 403
     //      本人・担当者・承認する人・受ける人・マネージャー・書ける人。条件は契約の perm.row（scripts/ci/row_rules.mjs）
     if (id !== null && def.perm.row && def.auth === "member") {
-      const r = await repo.rowAllowed(ctx, def.perm.row.table, id, def.perm.row.sql);
+      // 守りの判定の所で例外になったら通さず止める側に倒す（fail-closed・503・E-PAGE-003・K-63）
+      let r: Awaited<ReturnType<typeof repo.rowAllowed>>;
+      try {
+        r = await repo.rowAllowed(ctx, def.perm.row.table, id, def.perm.row.sql);
+      } catch (ex) {
+        console.error(
+          `[contract] ${operationId} の行の守りで例外：止める側に倒した（${(ex as Error)?.name ?? "Error"}）`,
+        );
+        const x = kanameError("E-PAGE-003").toJSON() as { message?: string; action?: string };
+        return c.json(
+          { error: "unavailable", code: "E-PAGE-003", message: x.message ?? "", action: x.action ?? "" },
+          503,
+        );
+      }
       if (r === "missing") return err(c, 404, "not_found", "NOT_FOUND");
       if (r === "denied") return err(c, 403, "forbidden", "FORBIDDEN");
     }

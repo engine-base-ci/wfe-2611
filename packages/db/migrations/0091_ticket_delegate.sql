@@ -1,4 +1,4 @@
--- 0091 AI に任せる（K-62・D-090・D-093・D-110・D-125.106・D-125.143・D-125.156・D-125.157・D-128.25・D-128.26・D-128.137・D-128.138・D-128.163・D-128.171・D-128.175・D-128.176）
+-- 0091 AI に任せる（K-62・D-090・D-093・D-110・D-125.106・D-125.143・D-125.156・D-125.157・D-128.25・D-128.26・D-128.137・D-128.138・D-128.163・D-128.171・D-128.176・D-128.177）
 --   番号は 11_tickets/K-50.md の予約では 0095（K-92・K-75・K-91・K-89 の 0091〜0094 の後）。この作業場所の土台（K-57・K-60 の控え）は 0090 までなので、
 --   取り込みのときに 0095_ticket_delegate.sql へ付け替える（K-57・K-60 の 0087・0088 → 0089・0090 と同じやり方・packages/db/src/index.ts と最後の行も直す）。
 --   新しい表は作らない。足すのは 列（bridge_jobs.taken_session_id・action_runs.ticket_id／phase／approval_id）と関数。
@@ -428,7 +428,7 @@ begin
       end if;
       insert into ticket_section_versions (tenant_id, ticket_id, section_id, version, body, edited_by, edited_by_clone, created_by)
         values (t.tenant_id, t.id, v_sec, v_ver, v_body, r.created_by, true, r.created_by);
-      -- 承認待ち（承認するのは結果が届いた時点の担当者・D-128.25）。骨格では AI の成果物の承認は全部取り消せない扱い（D-128.176）
+      -- 承認待ち（承認するのは結果が届いた時点の担当者・D-128.25）。骨格では AI の成果物の承認は全部取り消せない扱い（D-128.177）
       insert into approvals (tenant_id, scope_id, ticket_id, kind, action_run_id, requested_by, approver_member_id, status_id,
                              subject_type, subject_id, irreversible, created_by)
         values (t.tenant_id, t.scope_id, t.id, 'artifact', r.id, r.created_by, t.assignee_member_id, 'pending',

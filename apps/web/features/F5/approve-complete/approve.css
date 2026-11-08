@@ -1,0 +1,58 @@
+/* 承認して完了する（K-63）：承認待ちの表・チケットの詳細の帯・小窓。狭い幅では折り返し、横にはみ出さない（K63-UI-001・036） */
+.k63-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--k-space-3, 12px);
+}
+.k63-count {
+  font-variant-numeric: tabular-nums;
+}
+.k63-title {
+  display: grid;
+  gap: 2px;
+  overflow-wrap: anywhere;
+}
+.k63-acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-space-2, 8px);
+  align-items: center;
+}
+.k63-empty {
+  margin: 0;
+}
+.k63-band {
+  display: grid;
+  gap: var(--k-space-3, 12px);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.k63-band p {
+  margin: 0;
+}
+.k63-artifact {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  margin: 0;
+  padding: var(--k-space-3, 12px);
+  border: 1px solid var(--k-border, #d0d4dc);
+  border-radius: var(--k-radius-2, 6px);
+  max-width: 100%;
+}
+.k63-list {
+  margin: 0;
+  padding-left: 1.2em;
+  display: grid;
+  gap: 4px;
+}
+.k63-checks {
+  display: grid;
+  gap: var(--k-space-2, 8px);
+}
+.k63-checks label {
+  display: flex;
+  gap: var(--k-space-2, 8px);
+  align-items: flex-start;
+  overflow-wrap: anywhere;
+}

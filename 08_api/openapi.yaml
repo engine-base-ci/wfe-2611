@@ -6855,6 +6855,14 @@ components:
           type: string
           format: date-time
         client_share: {}
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+        completed_by:
+          type: string
+          format: uuid
+          nullable: true
         deleted_at:
           type: string
           format: date-time
@@ -9272,6 +9280,26 @@ components:
       properties:
         input: {}
       x-operation: callKanameTool
+    ApprovalApproveInput:
+      type: object
+      properties: {}
+      x-operation: approveApproval
+    ApprovalReturnInput:
+      type: object
+      properties:
+        note:
+          type: string
+      x-operation: returnApproval
+    TicketCompleteInput:
+      type: object
+      properties:
+        todo_checked:
+          type: array
+        todo_version:
+          type: integer
+        conditions_confirmed:
+          type: boolean
+      x-operation: completeTicket
     ScopeOverview:
       type: object
       properties:
@@ -9403,15 +9431,25 @@ components:
           type: string
         from_member_id:
           type: string
+        from_name:
+          type: string
         check_summary:
           type: string
         due_on:
           type: string
+          nullable: true
         decide_inline:
+          type: boolean
+        irreversible:
           type: boolean
         primary_action:
           type: string
         secondary_action:
+          type: string
+        note:
+          type: string
+          nullable: true
+        created_at:
           type: string
       x-operation: listApprovalQueue
     ApprovalDetail:
@@ -9431,17 +9469,39 @@ components:
           type: array
           items:
             type: object
+        check_summary:
+          type: string
         cautions:
           type: array
           items:
             type: object
         irreversible:
           type: boolean
+        can_decide:
+          type: boolean
         chain:
           type: array
           items:
             type: object
       x-operation: getApproval
+    ApprovalDecided:
+      type: object
+      properties:
+        id:
+          type: string
+        decision:
+          type: string
+        decided_at:
+          type: string
+        status_id:
+          type: string
+        ticket_id:
+          type: string
+        run_id:
+          type: string
+        pc:
+          type: string
+      x-operation: returnApproval
     BulkApprovalPreview:
       type: object
       properties:
@@ -9775,6 +9835,12 @@ components:
           type: object
         can:
           type: object
+        approval:
+          type: object
+          nullable: true
+        completed:
+          type: object
+          nullable: true
       x-operation: getTicket
     TicketKindChoice:
       type: object
@@ -11226,8 +11292,8 @@ paths:
       - D-125.85
       - D-126.18
       x-permission: approver
-      x-permission-scope: 承認する人だけ。取り消せない操作は直前の本人確認
-      x-step-up: irreversible
+      x-permission-scope: 承認する人だけ。本人確認は取り直さない（D-128.177）
+      x-step-up: false
       security:
       - session: []
       parameters:
@@ -11242,7 +11308,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApprovalsInput'
+              $ref: '#/components/schemas/ApprovalApproveInput'
       responses:
         '201':
           description: 成功
@@ -11252,7 +11318,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Approvals'
+                    $ref: '#/components/schemas/ApprovalDecided'
                   meta:
                     type: object
         '401':
@@ -11274,13 +11340,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: CONFLICT
+          description: E-CONF-003
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -11434,7 +11506,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApprovalsInput'
+              $ref: '#/components/schemas/ApprovalReturnInput'
       responses:
         '201':
           description: 成功
@@ -11444,7 +11516,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Approvals'
+                    $ref: '#/components/schemas/ApprovalDecided'
                   meta:
                     type: object
         '401':
@@ -11466,13 +11538,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: CONFLICT
+          description: E-CONF-003
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -17310,6 +17388,8 @@ paths:
           - assignee_member_id
           - client_id
           - client_share
+          - completed_at
+          - completed_by
           - created_at
           - created_by
           - delegated_to_clone
@@ -34189,6 +34269,8 @@ paths:
           - assignee_member_id
           - client_id
           - client_share
+          - completed_at
+          - completed_by
           - created_at
           - created_by
           - delegated_to_clone
@@ -35774,6 +35856,8 @@ paths:
           - assignee_member_id
           - client_id
           - client_share
+          - completed_at
+          - completed_by
           - created_at
           - created_by
           - delegated_to_clone
@@ -36962,8 +37046,8 @@ paths:
       - D-125.167
       - D-125.55
       - D-125.59
-      x-permission: assignee
-      x-permission-scope: 担当者とマネージャー
+      x-permission: write
+      x-permission-scope: そのチケットを直せる人（担当者・書ける権限の人・D-128.138）
       x-step-up: false
       security:
       - session: []
@@ -36979,7 +37063,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TicketsInput'
+              $ref: '#/components/schemas/TicketCompleteInput'
       responses:
         '201':
           description: 成功
@@ -37018,6 +37102,12 @@ paths:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:

@@ -85,8 +85,12 @@ export const RULES = {
 };
 /** 口ごとに言葉の中の人が違うもの（screen_api.py の範囲の説明） */
 export const OP_RULES = {
-  // 承認する人。担当者とマネージャーは読むだけ
-  getApproval: `(approver_member_id = ${ME} or app.manages_scope(scope_id) or ${VIA_TICKET()})`,
+  // 承認する人。担当者・作った人・マネージャー・AI に任せた人（requested_by）は読むだけ（K-63・M2。RLS と app.approval_detail と同じ人たち）
+  getApproval: `(approver_member_id = ${ME} or requested_by = ${ME} or app.manages_scope(scope_id) or ${VIA_TICKET()})`,
+  // 承認・差し戻しができるのは、そのチケットの今の担当者だけ（K-63・H3）。RULES.approver は替えない（ほかの口に効かせない）
+  //   担当者かは行の守りの外で引く（app.ticket_assignee_is_me・0092。RLS の approvals_read と同じ関数）
+  approveApproval: `app.ticket_assignee_is_me(ticket_id)`,
+  returnApproval: `app.ticket_assignee_is_me(ticket_id)`,
   // 承認する人・担当者・マネージャー
   stopApproval: `(approver_member_id = ${ME} or app.manages_scope(scope_id) or ${VIA_TICKET()})`,
   // 取り消せる業務の型は、見えるものなら誰でも自分用に複製できる

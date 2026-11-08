@@ -1001,12 +1001,16 @@
     },
     {
      "status": 409,
-     "code": "CONFLICT",
+     "code": "E-CONF-003",
      "body": {
-      "error": "conflict"
+      "error": "conflict",
+      "code": "E-CONF-003"
      },
-     "trigger": "二重送信・同時編集・既に登録済み（冪等キーで防ぐ）",
-     "ears_form": "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない"
+     "errors": [
+      "E-CONF-003"
+     ],
+     "trigger": "もう決まった・取り下げた承認をもう一度・別のタブで承認した",
+     "ears_form": "UNWANTED: IF 承認がもう決まっているか取り下げられているなら、Kaname は 409 と E-CONF-003 を返し、実行の仕事を積まない"
     },
     {
      "status": 422,
@@ -1015,8 +1019,22 @@
       "error": "validation_failed",
       "details": []
      },
-     "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形",
-     "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+     "errors": [],
+     "trigger": "承認の id が uuid でない・本文に知らない欄",
+     "ears_form": "UNWANTED: IF 承認の id が uuid でないか本文に知らない欄があるなら、Kaname は 422 と項目ごとの理由を返し、何も書かない"
+    },
+    {
+     "status": 503,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "dependency",
+      "code": "E-PAGE-003"
+     },
+     "errors": [
+      "E-PAGE-003"
+     ],
+     "trigger": "承認する人か・書けるかの判定の所で例外になった",
+     "ears_form": "UNWANTED: IF 守りの判定の所で例外になったなら、Kaname は 503 と E-PAGE-003 を返し、何も書かない"
     },
     {
      "status": 429,
@@ -1044,8 +1062,9 @@
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
-    "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
-    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 承認がもう決まっているか取り下げられているなら、Kaname は 409 と E-CONF-003 を返し、実行の仕事を積まない",
+    "UNWANTED: IF 承認の id が uuid でないか本文に知らない欄があるなら、Kaname は 422 と項目ごとの理由を返し、何も書かない",
+    "UNWANTED: IF 守りの判定の所で例外になったなら、Kaname は 503 と E-PAGE-003 を返し、何も書かない",
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
     "UBIQUITOUS: POST /api/v1/approvals/:id/approve の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
@@ -1058,8 +1077,8 @@
    "implementation_path": "apps/api/src/routes/approvals.ts::approveApproval",
    "permission": {
     "who": "approver",
-    "scope": "承認する人だけ。取り消せない操作は直前の本人確認",
-    "step_up": "irreversible"
+    "scope": "承認する人だけ。本人確認は取り直さない（D-128.177）",
+    "step_up": false
    },
    "path_params": [
     "id"
@@ -1312,12 +1331,16 @@
     },
     {
      "status": 409,
-     "code": "CONFLICT",
+     "code": "E-CONF-003",
      "body": {
-      "error": "conflict"
+      "error": "conflict",
+      "code": "E-CONF-003"
      },
-     "trigger": "二重送信・同時編集・既に登録済み（冪等キーで防ぐ）",
-     "ears_form": "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない"
+     "errors": [
+      "E-CONF-003"
+     ],
+     "trigger": "もう決まった・取り下げた承認を差し戻した",
+     "ears_form": "UNWANTED: IF 承認がもう決まっているか取り下げられているなら、Kaname は 409 と E-CONF-003 を返し、作り直しの仕事を積まない"
     },
     {
      "status": 422,
@@ -1326,8 +1349,25 @@
       "error": "validation_failed",
       "details": []
      },
-     "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形",
-     "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+     "errors": [
+      "E-VAL-020",
+      "E-VAL-021"
+     ],
+     "trigger": "差し戻す理由が空・空白だけ（E-VAL-020）・2000 文字を超える（E-VAL-021）・本文に知らない欄",
+     "ears_form": "UNWANTED: IF 差し戻す理由が空か 2000 文字を超えるなら、Kaname は 422 と欄 note の理由（E-VAL-020・E-VAL-021）を返し、何も書かない"
+    },
+    {
+     "status": 503,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "dependency",
+      "code": "E-PAGE-003"
+     },
+     "errors": [
+      "E-PAGE-003"
+     ],
+     "trigger": "承認する人か・書けるかの判定の所で例外になった",
+     "ears_form": "UNWANTED: IF 守りの判定の所で例外になったなら、Kaname は 503 と E-PAGE-003 を返し、何も書かない"
     },
     {
      "status": 429,
@@ -1355,8 +1395,9 @@
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
-    "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
-    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 承認がもう決まっているか取り下げられているなら、Kaname は 409 と E-CONF-003 を返し、作り直しの仕事を積まない",
+    "UNWANTED: IF 差し戻す理由が空か 2000 文字を超えるなら、Kaname は 422 と欄 note の理由（E-VAL-020・E-VAL-021）を返し、何も書かない",
+    "UNWANTED: IF 守りの判定の所で例外になったなら、Kaname は 503 と E-PAGE-003 を返し、何も書かない",
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
     "UBIQUITOUS: POST /api/v1/approvals/:id/return の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
@@ -43205,10 +43246,16 @@
      "status": 409,
      "code": "CONFLICT",
      "body": {
-      "error": "conflict"
+      "error": "conflict",
+      "code": "E-CONF-016"
      },
-     "trigger": "二重送信・同時編集・既に登録済み（冪等キーで防ぐ）",
-     "ears_form": "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない"
+     "errors": [
+      "E-CONF-016",
+      "E-CONF-017",
+      "E-CONF-018"
+     ],
+     "trigger": "承認待ち・実行中・確認中・走っている実行がある（E-CONF-016）／開いた後に実施事項が書き換わった（E-CONF-017）／もう完了している（E-CONF-018）",
+     "ears_form": "UNWANTED: IF チケットが承認待ち・実行中・確認中か、実施事項が書き換わったか、もう完了しているなら、Kaname は 409 と理由（E-CONF-016・E-CONF-017・E-CONF-018）を返し、何も変えない"
     },
     {
      "status": 422,
@@ -43217,8 +43264,26 @@
       "error": "validation_failed",
       "details": []
      },
-     "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形",
-     "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+     "errors": [
+      "E-VAL-022",
+      "E-VAL-023",
+      "E-VAL-024"
+     ],
+     "trigger": "実施事項が残っている（E-VAL-022）・完了の条件を確かめていない（E-VAL-023）・終わっていない子がある（E-VAL-024）・形が違う",
+     "ears_form": "UNWANTED: IF 実施事項が残っているか、完了の条件を確かめていないか、終わっていない子があるなら、Kaname は 422 と項目ごとの理由（E-VAL-022〜024）を返し、何も変えない"
+    },
+    {
+     "status": 503,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "dependency",
+      "code": "E-PAGE-003"
+     },
+     "errors": [
+      "E-PAGE-003"
+     ],
+     "trigger": "直せるかの判定の所で例外になった",
+     "ears_form": "UNWANTED: IF 守りの判定の所で例外になったなら、Kaname は 503 と E-PAGE-003 を返し、何も変えない"
     },
     {
      "status": 429,
@@ -43246,8 +43311,9 @@
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
-    "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
-    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF チケットが承認待ち・実行中・確認中か、実施事項が書き換わったか、もう完了しているなら、Kaname は 409 と理由（E-CONF-016・E-CONF-017・E-CONF-018）を返し、何も変えない",
+    "UNWANTED: IF 実施事項が残っているか、完了の条件を確かめていないか、終わっていない子があるなら、Kaname は 422 と項目ごとの理由（E-VAL-022〜024）を返し、何も変えない",
+    "UNWANTED: IF 守りの判定の所で例外になったなら、Kaname は 503 と E-PAGE-003 を返し、何も変えない",
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
     "UBIQUITOUS: POST /api/v1/tickets/:id/complete の副作用は関門 C2・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
@@ -43261,8 +43327,8 @@
    "description": "作成・実行（tickets）— 完了にする（ナレッジ更新の候補を確定・作らない理由も残す",
    "implementation_path": "apps/api/src/routes/tickets.ts::completeTicket",
    "permission": {
-    "who": "assignee",
-    "scope": "担当者とマネージャー",
+    "who": "write",
+    "scope": "そのチケットを直せる人（担当者・書ける権限の人・D-128.138）",
     "step_up": false
    },
    "path_params": [

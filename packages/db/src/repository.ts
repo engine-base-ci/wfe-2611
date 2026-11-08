@@ -258,7 +258,11 @@ export class Repository {
         `select (${sql}) as ok from ${ident(table)} where id = $1 limit 1`,
         [id],
       );
-      if (!r.rows[0]) return "missing";
+      if (!r.rows[0]) {
+        // 見えないのが「呼んだ人が今の社内の人でない（抜けた）」からなら、無いのではなく権限なし（403・行があるかは教えない）
+        const m = await c.query<{ ok: boolean }>("select app.member_ok() as ok");
+        return ctx.role === "member" && m.rows[0]?.ok === false ? "denied" : "missing";
+      }
       return r.rows[0].ok === true ? "ok" : "denied";
     });
   }

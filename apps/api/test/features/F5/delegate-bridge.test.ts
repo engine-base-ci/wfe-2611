@@ -46,7 +46,7 @@ const approvalsOf = (t: string) =>
     decision: string | null;
     irreversible: boolean;
   }>(
-    // 承認待ちの行の形は K-63 が前提にする（status_id pending・irreversible は骨格では true・D-128.176）
+    // 承認待ちの行の形は K-63 が前提にする（status_id pending・irreversible は骨格では true・D-128.177）
     "select kind, status_id, approver_member_id, action_run_id, decision, irreversible from approvals where ticket_id = $1",
     [t],
   );
@@ -95,7 +95,7 @@ describe("K-62 AI に任せる：PC が取る・様子を返す・終わる（PC
     expect((await k.q("select state_id from bridge_jobs where id = $1", [d.job_id]))[0]!["state_id"]).toBe("queued");
   });
 
-  it("K62-API-045 待っている × 別の会社の人の PC・押した人でない担当者の PC が取りに来る：どちらも job は null（自分の仕事を持たない人）。取るのは押した人のアカウントの PC だけ（D-128.138・D-128.175）", async () => {
+  it("K62-API-045 待っている × 別の会社の人の PC・押した人でない担当者の PC が取りに来る：どちらも job は null（自分の仕事を持たない人）。取るのは押した人のアカウントの PC だけ（D-128.138・D-128.176）", async () => {
     const { p, pc } = await fresh("任せた人");
     const assignee = await fresh("担当だけの人"); // 担当者。自分では任せていない
     const stranger = await k.f.person(k.O.tenantId, k.O.rootScope, { name: "別の会社の人", ticketAbility: "edit" });
@@ -413,7 +413,7 @@ describe("K-62 AI に任せる：PC が取る・様子を返す・終わる（PC
     expect(await data(await k.run(p, d.run_id))).toMatchObject({ status: "stopped", stopped_reason: MSG.pcGone });
   });
 
-  it("K62-API-049 待っている（承認の後の実行・K-63 が積んだ行）× PC が取る：行の prompt と agent_session_id をそのまま渡す（組み直さない・D-128.175）", async () => {
+  it("K62-API-049 待っている（承認の後の実行・K-63 が積んだ行）× PC が取る：行の prompt と agent_session_id をそのまま渡す（組み直さない・D-128.176）", async () => {
     const { p, pc } = await fresh("実行を待つ人");
     const t = await k.ticket(p);
     // K-63 の承認の関数が積む形を、ここでは DB に直に置く（ticket_delegate と同じ引き方で prompt と続きの id を入れた行）

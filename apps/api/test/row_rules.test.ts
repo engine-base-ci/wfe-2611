@@ -42,15 +42,38 @@ describe("行に結ぶ言葉の条件（K-15）", () => {
     },
   );
 
-  it("承認：承認する人だけが承認できる。外の人は denied", async () => {
+  // K-63（PM の決め）：承認する人は今のチケットの担当者から引く。承認の行の approver_member_id ではなく、担当を替えて確かめる
+  it("承認：今の担当者だけが承認・差し戻しできる。担当が替わったら前の担当者は denied", async () => {
     const id = await h.freshRow("approvals");
-    await admin.query("update approvals set approver_member_id = $1 where id = $2", [h.S.staffA, id]);
-    const r = sqlOf("approveApproval");
-    expect(await h.repo.rowAllowed(staff, r.table, id, r.sql)).toBe("ok");
-    await admin.query("update approvals set approver_member_id = $1 where id = $2", [h.S.bossA, id]);
-    expect(await h.repo.rowAllowed(staff, r.table, id, r.sql)).not.toBe("ok");
+    const t = await h.freshRow("tickets");
+    await admin.query("update approvals set ticket_id = $1 where id = $2", [t, id]);
+    await admin.query("update tickets set assignee_member_id = $1 where id = $2", [h.S.staffA, t]);
+    for (const op of ["approveApproval", "returnApproval"]) {
+      const r = sqlOf(op);
+      expect(await h.repo.rowAllowed(staff, r.table, id, r.sql), op).toBe("ok");
+    }
+    await admin.query("update tickets set assignee_member_id = $1 where id = $2", [h.S.bossA, t]);
+    for (const op of ["approveApproval", "returnApproval"]) {
+      const r = sqlOf(op);
+      expect(await h.repo.rowAllowed(staff, r.table, id, r.sql), op).not.toBe("ok");
+    }
   });
 
+  it("承認の 1 件：AI に任せた人（requested_by）も読める（ほかの条件では通らない形で確かめる）", async () => {
+    const id = await h.freshRow("approvals");
+    const t = await h.freshRow("tickets");
+    // チケットの担当者と作った人・承認する人を staff 以外にし、マネージャーの条件にも当たらない形にする
+    await admin.query("update tickets set assignee_member_id = $1, created_by = $1 where id = $2", [h.S.bossA, t]);
+    await admin.query("update approvals set ticket_id = $1, approver_member_id = $2, requested_by = $2 where id = $3", [
+      t,
+      h.S.bossA,
+      id,
+    ]);
+    const r = sqlOf("getApproval");
+    expect(await h.repo.rowAllowed(staff, r.table, id, r.sql)).not.toBe("ok");
+    await admin.query("update approvals set requested_by = $1 where id = $2", [h.S.staffA, id]);
+    expect(await h.repo.rowAllowed(staff, r.table, id, r.sql)).toBe("ok");
+  });
   it("引き継ぎ：渡された相手だけが答えられる", async () => {
     const id = await h.freshRow("ticket_handovers");
     const r = sqlOf("answerTicketHandover");

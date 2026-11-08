@@ -307,8 +307,8 @@ POLICIES: dict[str, list[dict]] = {
     # ---- 承認（K-9・D-128.86・D-128.87・D-128.89）：承認する人・頼んだ人・担当者（チケットを読める人）・マネージャー
     "approvals": [
         {"name": "approvals_read", "operation": "select", "role": "member",
-         "predicate": f"tenant_id = {T} AND (scope_id = ANY(visible_scopes({U})) OR approver_member_id = {U} OR requested_by = {U} OR (ticket_id IS NOT NULL AND app.ticket_visible(ticket_id)))",
-         "rationale": "見えるグループの人・承認する人（グループの外でも）・頼んだ人・元のチケットを読める人", "source": ["D-128.86", "D-128.115"]},
+         "predicate": f"tenant_id = {T} AND (scope_id = ANY(visible_scopes({U})) OR approver_member_id = {U} OR requested_by = {U} OR (ticket_id IS NOT NULL AND app.ticket_visible(ticket_id)) OR (ticket_id IS NOT NULL AND app.ticket_assignee_is_me(ticket_id)))",
+         "rationale": "見えるグループの人・承認する人（グループの外でも。今のチケットの担当者も・K-63）・頼んだ人（AI に任せた人）・元のチケットを読める人", "source": ["D-128.86", "D-128.115", "D-128.25"]},
         {"name": "approvals_request", "operation": "insert", "role": "member",
          "predicate": f"tenant_id = {T} AND requested_by = {U} AND (ticket_id IS NULL OR app.ticket_writable(ticket_id))",
          "rationale": "自分として頼む。チケットの承認は、そのチケットに書ける人が頼む", "source": ["D-128.86"]},

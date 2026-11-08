@@ -96,6 +96,7 @@ export const MIGRATIONS = [
   "0089_bridge_pairing_codes.sql",
   "0090_ticket_create.sql",
   "0091_ticket_delegate.sql",
+  "0092_approve_complete.sql",
 ] as const;
 
 /** migration 名の並びを検査する。重複・順序違い・4 桁でない名前があれば理由を返す。 */

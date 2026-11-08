@@ -3765,11 +3765,12 @@
      "name": "approvals_read",
      "operation": "select",
      "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND (scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid)) OR approver_member_id = current_setting('app.user_id', true)::uuid OR requested_by = current_setting('app.user_id', true)::uuid OR (ticket_id IS NOT NULL AND app.ticket_visible(ticket_id)))",
-     "rationale": "見えるグループの人・承認する人（グループの外でも）・頼んだ人・元のチケットを読める人",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND (scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid)) OR approver_member_id = current_setting('app.user_id', true)::uuid OR requested_by = current_setting('app.user_id', true)::uuid OR (ticket_id IS NOT NULL AND app.ticket_visible(ticket_id)) OR (ticket_id IS NOT NULL AND app.ticket_assignee_is_me(ticket_id)))",
+     "rationale": "見えるグループの人・承認する人（グループの外でも。今のチケットの担当者も・K-63）・頼んだ人（AI に任せた人）・元のチケットを読める人",
      "source": [
       "D-128.86",
-      "D-128.115"
+      "D-128.115",
+      "D-128.25"
      ]
     },
     {

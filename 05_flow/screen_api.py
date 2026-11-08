@@ -519,6 +519,10 @@ INPUTS = {
     # 返事・結果の文は長い（string:N は N 字まで・K-62）。途中の様子の文は口が 200000 字（返事）・400 字（1 行）に切る
     "finishBridgeJob": ("BridgeFinishInput", {"state": "string", "result": "string:200000", "reason": "string:2000", "agent_session_id": "string"}),
     "callKanameTool": ("BridgeToolInput", {"input": "any"}),
+    # K-63：承認の体は空（決めた人・時刻・状態は入れさせない）。差し戻しは理由だけ。完了は実施事項の番号の並び・読んだ todo の版・完了の条件を確かめた印
+    "approveApproval": ("ApprovalApproveInput", {}),
+    "returnApproval": ("ApprovalReturnInput", {"note": "string"}),
+    "completeTicket": ("TicketCompleteInput", {"todo_checked": "array", "todo_version": "integer", "conditions_confirmed": "boolean"}),
 }
 # get で始まるが並びを返す口（K-53）。一覧の問い合わせ（scope_id・cursor・limit・sort）は形だけ確かめて無視する
 LIST_OPS = {"getCurrentTerms"}
@@ -540,6 +544,40 @@ STATIC_SCREENS = {
 # 口ごとの 4xx（operationId → 答えの並び）。ここにある口は、汎用の 409（冪等キー）・422 の代わりにこの並びを使う（429・502 は汎用のまま足す）。
 #   EARS の文には状態の番号を入れる（05_flow/build_testplan.py の classify() が番号で試験の名前を決める）
 ERRORS_4XX = {
+    # 承認して完了する（K-63・D-128.138・D-128.177）。決まった承認（409・E-CONF-003）・理由が空／長すぎる（422・E-VAL-020／021）・守りの所で例外（503・E-PAGE-003）
+    "approveApproval": [
+        {"status": 409, "code": "E-CONF-003", "body": {"error": "conflict", "code": "E-CONF-003"}, "errors": ["E-CONF-003"],
+         "trigger": "もう決まった・取り下げた承認をもう一度・別のタブで承認した",
+         "ears_form": "UNWANTED: IF 承認がもう決まっているか取り下げられているなら、Kaname は 409 と E-CONF-003 を返し、実行の仕事を積まない"},
+        {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": [],
+         "trigger": "承認の id が uuid でない・本文に知らない欄",
+         "ears_form": "UNWANTED: IF 承認の id が uuid でないか本文に知らない欄があるなら、Kaname は 422 と項目ごとの理由を返し、何も書かない"},
+        {"status": 503, "code": "E-PAGE-003", "body": {"error": "dependency", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
+         "trigger": "承認する人か・書けるかの判定の所で例外になった",
+         "ears_form": "UNWANTED: IF 守りの判定の所で例外になったなら、Kaname は 503 と E-PAGE-003 を返し、何も書かない"},
+    ],
+    "returnApproval": [
+        {"status": 409, "code": "E-CONF-003", "body": {"error": "conflict", "code": "E-CONF-003"}, "errors": ["E-CONF-003"],
+         "trigger": "もう決まった・取り下げた承認を差し戻した",
+         "ears_form": "UNWANTED: IF 承認がもう決まっているか取り下げられているなら、Kaname は 409 と E-CONF-003 を返し、作り直しの仕事を積まない"},
+        {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": ["E-VAL-020", "E-VAL-021"],
+         "trigger": "差し戻す理由が空・空白だけ（E-VAL-020）・2000 文字を超える（E-VAL-021）・本文に知らない欄",
+         "ears_form": "UNWANTED: IF 差し戻す理由が空か 2000 文字を超えるなら、Kaname は 422 と欄 note の理由（E-VAL-020・E-VAL-021）を返し、何も書かない"},
+        {"status": 503, "code": "E-PAGE-003", "body": {"error": "dependency", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
+         "trigger": "承認する人か・書けるかの判定の所で例外になった",
+         "ears_form": "UNWANTED: IF 守りの判定の所で例外になったなら、Kaname は 503 と E-PAGE-003 を返し、何も書かない"},
+    ],
+    "completeTicket": [
+        {"status": 409, "code": "CONFLICT", "body": {"error": "conflict", "code": "E-CONF-016"}, "errors": ["E-CONF-016", "E-CONF-017", "E-CONF-018"],
+         "trigger": "承認待ち・実行中・確認中・走っている実行がある（E-CONF-016）／開いた後に実施事項が書き換わった（E-CONF-017）／もう完了している（E-CONF-018）",
+         "ears_form": "UNWANTED: IF チケットが承認待ち・実行中・確認中か、実施事項が書き換わったか、もう完了しているなら、Kaname は 409 と理由（E-CONF-016・E-CONF-017・E-CONF-018）を返し、何も変えない"},
+        {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": ["E-VAL-022", "E-VAL-023", "E-VAL-024"],
+         "trigger": "実施事項が残っている（E-VAL-022）・完了の条件を確かめていない（E-VAL-023）・終わっていない子がある（E-VAL-024）・形が違う",
+         "ears_form": "UNWANTED: IF 実施事項が残っているか、完了の条件を確かめていないか、終わっていない子があるなら、Kaname は 422 と項目ごとの理由（E-VAL-022〜024）を返し、何も変えない"},
+        {"status": 503, "code": "E-PAGE-003", "body": {"error": "dependency", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
+         "trigger": "直せるかの判定の所で例外になった",
+         "ears_form": "UNWANTED: IF 守りの判定の所で例外になったなら、Kaname は 503 と E-PAGE-003 を返し、何も変えない"},
+    ],
     # AI に任せる（K-62・D-128.138）。PC をつないでいない（積まない）・走っている実行がある（今の run_id）・承認待ち／完了。冪等キーは汎用のまま
     "delegateTicket": [
         {"status": 409, "code": "CONFLICT", "body": {"error": "conflict", "code": "E-CONF-013", "run_id": ""}, "errors": ["E-CONN-001", "E-CONF-013", "E-CONF-014"],
@@ -593,8 +631,11 @@ RESPONSES = {
     "lintTestSpecs": ("TestSpecLint", {"missing": "array", "warnings": "array"}),
     "completeTicket": ("TicketCompletion", {"ticket": "object", "knowledge_candidates": "array", "skipped_reason": "string"}),
     "bulkUpdateTickets": ("BulkResult", {"updated": "array", "skipped": "array"}),
-    "listApprovalQueue": ("ApprovalQueueItem", {"kind": "string", "id": "string", "ticket_id": "string", "ticket_number": "string", "title": "string", "from_member_id": "string", "check_summary": "string", "due_on": "string", "decide_inline": "boolean", "primary_action": "string", "secondary_action": "string"}),
-    "getApproval": ("ApprovalDetail", {"approval": "object", "ticket": "object", "operation": "object", "message_text": "string", "artifact_version": "object", "checks": "array", "cautions": "array", "irreversible": "boolean", "chain": "array"}),
+    "listApprovalQueue": ("ApprovalQueueItem", {"kind": "string", "id": "string", "ticket_id": "string", "ticket_number": "string", "title": "string", "from_member_id": "string", "from_name": "string", "check_summary": "string", "due_on": "string?", "decide_inline": "boolean", "irreversible": "boolean", "primary_action": "string", "secondary_action": "string", "note": "string?", "created_at": "string"}),
+    "getApproval": ("ApprovalDetail", {"approval": "object", "ticket": "object", "operation": "object", "message_text": "string", "artifact_version": "object", "checks": "array", "check_summary": "string", "cautions": "array", "irreversible": "boolean", "can_decide": "boolean", "chain": "array"}),
+    # K-63：承認・差し戻しの答え（pc は K-62 の delegateTicket と同じ live／asleep）
+    "approveApproval": ("ApprovalDecided", {"id": "string", "decision": "string", "decided_at": "string", "status_id": "string", "ticket_id": "string", "run_id": "string", "pc": "string"}),
+    "returnApproval": ("ApprovalDecided", {"id": "string", "decision": "string", "decided_at": "string", "status_id": "string", "ticket_id": "string", "run_id": "string", "pc": "string"}),
     "previewBulkApproval": ("BulkApprovalPreview", {"eligible": "array", "excluded": "array"}),
     "bulkApprove": ("BulkResult", {"updated": "array", "skipped": "array"}),
     "getCloneNow": ("CloneNow", {"current": "object", "next": "array", "waiting_approvals": "integer", "stopped": "integer"}),
@@ -628,7 +669,7 @@ RESPONSES = {
     "sendHeartbeat": ("BridgeHeartbeat", {"ok": "boolean", "browser": "string", "outdated": "boolean"}),
     "listMyDevices": ("BridgeDevice", {"id": "string", "device_label": "string", "state": "string", "last_seen_at": "string", "connected_at": "string", "version": "string", "health": "array", "revoke_reason": "string"}),
     # can：見ている人ができること（K-62 が delegate を足す・D-128.138）
-    "getTicket": ("TicketDetail", {"ticket": "object", "sections": "array", "kind": "object", "stage": "object", "assignee": "object", "can": "object"}),
+    "getTicket": ("TicketDetail", {"ticket": "object", "sections": "array", "kind": "object", "stage": "object", "assignee": "object", "can": "object", "approval": "object?", "completed": "object?"}),
     "listTicketKinds": ("TicketKindChoice", {"id": "string", "name": "string", "color": "string", "position": "integer", "is_builtin": "boolean", "sections": "array"}),
     "listMyTicketDrafts": ("TicketDraft", {"draft_id": "string", "body": "object", "saved_at": "string"}),
     "saveMyTicketDraft": ("TicketDraft", {"draft_id": "string", "body": "object", "saved_at": "string"}),
@@ -761,7 +802,7 @@ PERMS = {
     "previewTicketDelete": ("assignee", "担当者・作成者・マネージャー", False),
     "deleteTicket": ("assignee", "担当者・作成者・マネージャー（子の扱いを選ぶ）", False),
     "restoreTicket": ("assignee", "消した本人と、そのグループのマネージャー・管理者（D-128.84）", False),
-    "completeTicket": ("assignee", "担当者とマネージャー", False),
+    "completeTicket": ("write", "そのチケットを直せる人（担当者・書ける権限の人・D-128.138）", False),
     "bulkUpdateTickets": ("write", "1 件ずつ updateTicket と同じ権限で確かめ、権限の無い行は外して理由を返す", False),
     "listMyTicketDrafts": ("self", "自分の下書きだけ（いま入っているワークスペースの分）", False),
     "saveMyTicketDraft": ("self", "自分の下書きだけ", False),
@@ -818,7 +859,7 @@ PERMS = {
     # 承認待ち
     "listApprovalQueue": ("self", "自分が決めるものだけ", False),
     "getApproval": ("approver", "承認する人。担当者とマネージャーは読むだけ", False),
-    "approveApproval": ("approver", "承認する人だけ。取り消せない操作は直前の本人確認", "irreversible"),
+    "approveApproval": ("approver", "承認する人だけ。本人確認は取り直さない（D-128.177）", False),
     "editApproval": ("approver", "承認する人", False),
     "returnApproval": ("approver", "承認する人（理由が必須）", False),
     "stopApproval": ("approver", "承認する人・担当者・マネージャー", False),

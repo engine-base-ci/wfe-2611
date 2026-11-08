@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:f18fdd1173cdcdbc
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:a9b2090911aff2b9
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -9,9 +9,9 @@ export interface Ops {
   stopActionRun: { params: { id: string }; query: never; body: T.ActionRunsInput; data: T.ActionRuns };
   takeoverActionRun: { params: { id: string }; query: never; body: T.ActionRunsInput; data: T.ActionRuns };
   getApproval: { params: { id: string }; query: never; body: never; data: T.ApprovalDetail };
-  approveApproval: { params: { id: string }; query: never; body: T.ApprovalsInput; data: T.Approvals };
+  approveApproval: { params: { id: string }; query: never; body: T.ApprovalApproveInput; data: T.ApprovalDecided };
   editApproval: { params: { id: string }; query: never; body: T.ApprovalsInput; data: T.Approvals };
-  returnApproval: { params: { id: string }; query: never; body: T.ApprovalsInput; data: T.Approvals };
+  returnApproval: { params: { id: string }; query: never; body: T.ApprovalReturnInput; data: T.ApprovalDecided };
   stopApproval: { params: { id: string }; query: never; body: T.ApprovalsInput; data: T.Approvals };
   withdrawApproval: { params: { id: string }; query: never; body: T.ApprovalsInput; data: T.Approvals };
   bulkApprove: { params: never; query: never; body: T.ApprovalsInput; data: T.BulkResult };
@@ -313,7 +313,7 @@ export interface Ops {
   createTicketAttachment: { params: { id: string }; query: never; body: T.AttachmentsInput; data: T.Attachments };
   listChecks: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Checks[] };
   updateTicketClientShare: { params: { id: string }; query: never; body: T.TicketsInput; data: T.Tickets };
-  completeTicket: { params: { id: string }; query: never; body: T.TicketsInput; data: T.TicketCompletion };
+  completeTicket: { params: { id: string }; query: never; body: T.TicketCompleteInput; data: T.TicketCompletion };
   listTicketDecisions: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TicketDecisions[] };
   createTicketDecision: { params: { id: string }; query: never; body: T.TicketDecisionsInput; data: T.TicketDecisions };
   delegateTicket: { params: { id: string }; query: never; body: T.TicketDelegateInput; data: T.TicketDelegation };

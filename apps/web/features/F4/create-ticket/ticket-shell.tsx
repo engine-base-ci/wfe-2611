@@ -8,11 +8,12 @@ import { AppShell, ShellProvider } from "@/components/shell";
 import { useMyRoles } from "@/lib/auth/role";
 import type { RoleId } from "@/lib/nav.legacy";
 
-export function TicketShell({ children }: { children: ReactNode }) {
+/** counts：左のメニューの数（承認待ちの数・K-63）。画面 ID → 数 */
+export function TicketShell({ children, counts }: { children: ReactNode; counts?: Record<string, number> }) {
   const { roles } = useMyRoles();
   const role = (roles?.[0] ?? "R1") as RoleId;
   return (
-    <ShellProvider screenId={null} role={role}>
+    <ShellProvider screenId={null} role={role} {...(counts ? { counts } : {})}>
       <AppShell panel={false}>
         <div data-ticket-shell>{children}</div>
       </AppShell>

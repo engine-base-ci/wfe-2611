@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:f18fdd1173cdcdbc
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:a9b2090911aff2b9
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -329,7 +329,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "stepUp": null,
       "row": {
         "table": "approvals",
-        "sql": "(approver_member_id = app.user_id() or app.manages_scope(scope_id) or exists (select 1 from tickets t where t.id = ticket_id and (t.assignee_member_id = app.user_id() or t.created_by = app.user_id() or app.manages_scope(t.scope_id))))"
+        "sql": "(approver_member_id = app.user_id() or requested_by = app.user_id() or app.manages_scope(scope_id) or exists (select 1 from tickets t where t.id = ticket_id and (t.assignee_member_id = app.user_id() or t.created_by = app.user_id() or app.manages_scope(t.scope_id))))"
       }
     },
     "termsOpen": false,
@@ -341,9 +341,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "approveApproval",
     "table": "approvals",
     "kind": "create",
-    "input": "ApprovalsInput",
+    "input": "ApprovalApproveInput",
     "success": 201,
-    "output": "Approvals",
+    "output": "ApprovalDecided",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -360,6 +360,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      503,
       429,
       403
     ],
@@ -376,10 +377,10 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": "irreversible",
+      "stepUp": null,
       "row": {
         "table": "approvals",
-        "sql": "approver_member_id = app.user_id()"
+        "sql": "app.ticket_assignee_is_me(ticket_id)"
       }
     },
     "termsOpen": false,
@@ -441,9 +442,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "returnApproval",
     "table": "approvals",
     "kind": "create",
-    "input": "ApprovalsInput",
+    "input": "ApprovalReturnInput",
     "success": 201,
-    "output": "Approvals",
+    "output": "ApprovalDecided",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -460,6 +461,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      503,
       429,
       403
     ],
@@ -479,7 +481,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "stepUp": null,
       "row": {
         "table": "approvals",
-        "sql": "approver_member_id = app.user_id()"
+        "sql": "app.ticket_assignee_is_me(ticket_id)"
       }
     },
     "termsOpen": false,
@@ -14586,7 +14588,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "completeTicket",
     "table": "tickets",
     "kind": "create",
-    "input": "TicketsInput",
+    "input": "TicketCompleteInput",
     "success": 201,
     "output": "TicketCompletion",
     "outputList": false,
@@ -14606,6 +14608,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      503,
       429,
       403
     ],
@@ -14616,7 +14619,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "tickets"
     ],
     "perm": {
-      "word": "assignee",
+      "word": "write",
       "target": null,
       "ability": null,
       "scope": "workspace",
@@ -14625,7 +14628,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "stepUp": null,
       "row": {
         "table": "tickets",
-        "sql": "((tickets.assignee_member_id = app.user_id() or tickets.created_by = app.user_id() or app.manages_scope(tickets.scope_id)) or deleted_by = app.user_id())"
+        "sql": "app.ticket_writable(id)"
       }
     },
     "termsOpen": false,
@@ -17203,4 +17206,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "f18fdd1173cdcdbc";
+export const OPENAPI_HASH = "a9b2090911aff2b9";

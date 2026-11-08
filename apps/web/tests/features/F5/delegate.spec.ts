@@ -62,7 +62,7 @@ interface Mock {
   runReads: number;
   stage: { key: string; name: string };
   canDelegate: boolean;
-  /** getTicket の approval（K-63 が足す）。can_decide＝見ている人が承認する人か（D-128.177） */
+  /** getTicket の approval（K-63 が足す）。can_decide＝見ている人が承認する人か（D-128.178） */
   approval: { id: string; can_decide: boolean } | null;
   runs: Run[];
   /** getActionRun が返す順（読むたびに 1 つ進み、最後のものを返し続ける） */
@@ -228,7 +228,7 @@ row(R["K62-UI-007"], async (page) => {
 });
 
 row(R["K62-UI-008"], async (page) => {
-  // 承認待ちの帯は 1 つ（D-128.177）：承認する人でない人には K-62 の「承認待ちです」の帯を出す
+  // 承認待ちの帯は 1 つ（D-128.178）：承認する人でない人には K-62 の「承認待ちです」の帯を出す
   const made = run({ status: "done", finished_at: "2026-11-07T01:20:00Z" });
   await mockApi(
     page,
@@ -247,7 +247,7 @@ row(R["K62-UI-008"], async (page) => {
 });
 
 row(R["K62-UI-024"], async (page) => {
-  // 承認する人が見ているときは K-63 の承認の帯だけ。K-62 の「承認待ちです」の帯は出さない（同じ人に 2 つ並ばない・D-128.177）
+  // 承認する人が見ているときは K-63 の承認の帯だけ。K-62 の「承認待ちです」の帯は出さない（同じ人に 2 つ並ばない・D-128.178）
   const made = run({ status: "done", finished_at: "2026-11-07T01:20:00Z" });
   await mockApi(
     page,
@@ -449,7 +449,7 @@ row(R["K62-UI-023"], async (page) => {
 });
 
 row(R["K62-UI-025"], async (page) => {
-  // 承認の後の実行（phase execute）の間は K-62 の帯を出さない（K-63 の帯だけ・D-128.177）。段は K-63 に合わせる（止まったら作業中）
+  // 承認の後の実行（phase execute）の間は K-62 の帯を出さない（K-63 の帯だけ・D-128.178）。段は K-63 に合わせる（止まったら作業中）
   const cases = [
     {
       r: run({ phase: "execute", status: "running", progress: "先方に送っています" }),
@@ -478,7 +478,7 @@ row(R["K62-UI-025"], async (page) => {
 });
 
 row(R["K62-UI-026"], async (page) => {
-  // 差し戻しの後の作り直し（phase make）の間は K-62 の帯だけ。K-63 の帯（「作り直しています」）は出さない（D-128.177）
+  // 差し戻しの後の作り直し（phase make）の間は K-62 の帯だけ。K-63 の帯（「作り直しています」）は出さない（D-128.178）
   const remake = run({ phase: "make", status: "running", progress: "差し戻しの理由に沿って直しています" });
   await mockApi(
     page,

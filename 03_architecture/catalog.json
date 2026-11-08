@@ -6,13 +6,13 @@
  ],
  "counts": {
   "api": 365,
-  "api_built": 30,
+  "api_built": 35,
   "api_only_later_phase": 20,
   "legacy_routes": 30,
   "db": 143,
   "ui": 13,
   "packages": 13,
-  "errors": 161,
+  "errors": 169,
   "stack": 52,
   "env": 39
  },
@@ -112,7 +112,7 @@
    "tables": [
     "approvals"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-63"
    ]
@@ -129,7 +129,7 @@
    "tables": [
     "approvals"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-63"
    ]
@@ -163,7 +163,7 @@
    "tables": [
     "approvals"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-63"
    ]
@@ -265,7 +265,7 @@
    "tables": [
     "approvals"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-63"
    ]
@@ -5007,7 +5007,7 @@
    "tables": [
     "tickets"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-63"
    ]

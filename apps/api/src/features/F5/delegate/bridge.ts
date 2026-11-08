@@ -4,6 +4,7 @@
 //   書くのは関門 C2 の関数だけ（app.bridge_take_job・app.bridge_progress・app.bridge_control・app.bridge_finish_job・0091）。
 //   progress・control・finish はその仕事を受け取った PC からだけ（ほかの PC は 404・D-128.163）。ログにプロンプト・結果・鍵・印を出さない
 import type pg from "pg";
+import { withTenant } from "@kaname/db/context";
 import type { Hook, HookArgs, HookReply } from "../../../contract/deps.js";
 import { issueToolToken } from "../../../auth/agent-tools.js";
 import { AGENT_CONVENTIONS } from "../../../auth/conventions.js";
@@ -85,6 +86,8 @@ export function bridgeJobHooks(pool: pg.Pool): Record<string, Hook> {
           };
         // 「いま何も動かしていない」：その PC が受け取ったまま残った仕事だけ理由つきで止める（D-128.163）
         if (a.input["idle"] === true) await pool.query("select app.bridge_sweep_orphans($1)", [sid]);
+        // 承認の後の実行の片付け（K-63）：承認から 24 時間を過ぎた・チケットが消された・任せた人が使えない待ちの実行は渡さずに止める（24 時間なら聞き直す）
+        await withTenant(pool, a.ctx, (cl) => cl.query("select app.ticket_execute_expire($1)", [sid]));
         // 台帳で禁止・銀行のドメイン（D-107.1）。どの仕事にも渡す。資格情報は渡さない（D-107.7）
         const forbidden = (await one<unknown[]>("select app.bridge_blocked_domains() as v", [])) ?? [];
         const until = Date.now() + (hot ? wait * 1000 : 0);
