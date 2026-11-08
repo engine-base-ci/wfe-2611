@@ -693,12 +693,15 @@ K-142,操作の実証の検査 G48（scripts/ci/op_gate.py）が、観点「操�
 - [ ] 今の仕様（07_qa/test-specs/k）でこの直しを当てたときに赤になる行を一覧にし、どのチケットの行かを書く（直すのはそれぞれのチケット・このチケットでは結果を書き込まない）
 - [ ] 検査の自己試験で、観点「守り」「失敗」「操作の揺れ」の行の結果を空にすると赤になる
 - [ ] チケットの CI（act）が緑"
-K-144,K-57・K-60 の口 4 本で、契約（openapi）と実際の振る舞いが食い違っている（fuzz を広げて見つかった）,課題,K-103,未着手,作る,2026-11-08,基盤・契約,"K-62 で契約の fuzz（G36・Schemathesis）の的を K-57・K-60 の口まで広げたら、前から食い違っていた所が 4 件見つかった（K-62 の 8 本の口はどれも緑）。どれも「契約の書き方」と「口の実際の振る舞い」がずれていて、fuzz が赤になる。K-62 の完了の条件は「広げた範囲で fuzz が緑」なので、これを先に直す（決める人の決定：起票して K-62 の前に入れる・2026-11-08 answer=c8bb89cac057）。
+K-144,K-57・K-60 の口で、契約（openapi）と実際の振る舞いが食い違っている（fuzz を広げて見つかった 4 件と、同じ形のずれ全部）,課題,K-103,未着手,作る,2026-11-09,基盤・契約,"K-62 で契約の fuzz（G36・Schemathesis）の的を K-57・K-60 の口まで広げたら、前から食い違っていた所が 4 件見つかった（K-62 の 8 本の口はどれも緑）。どれも「契約の書き方」と「口の実際の振る舞い」がずれていて、fuzz が赤になる。K-62 の完了の条件は「広げた範囲で fuzz が緑」なので、これを先に直す（決める人の決定：起票して K-62 の前に入れる・2026-11-08 answer=c8bb89cac057）。
 
 1. `GET /bridge/releases/{name}/file`（K-57）：配布物が無いとき 404 を返すが、契約に 404 が無い
 2. `GET /ticket_kinds`（K-60）：`color` が null を返す（DB の列は null を許す）が、契約は文字（string）
 3. `POST /bridge/pairing-codes`（K-57）：知らない項目を 422 で断るが、契約に `additionalProperties: false` が無い
-4. `POST /me/ticket-drafts`（K-60）：`draft_id` が uuid でないと 422 で断るが、契約に `format: uuid` が無い","- [ ] 4 件とも、契約が口の実際の振る舞いを書いている（直す向きは下の「実施事項」）。生成物（openapi・registry・types・test-plan）を作り手で作り直してある
-- [ ] 4 件それぞれに、契約の形を確かめる試験の行がある（下の表）
-- [ ] K-62 の fuzz の的（K-62 の枝の apps/api/test/fuzz/server.ts）を当てたときに、この 4 件で赤にならない（K-62 の取り込みの前に K-62 の作業場所で確かめる）
-- [ ] チケットの CI（act・このチケットの範囲）が緑"
+4. `POST /me/ticket-drafts`（K-60）：`draft_id` が uuid でないと 422 で断るが、契約に `format: uuid` が無い
+
+**4 件はどれも「類」の 1 件**（精査 R1 回 1・L-008）。fuzz が 1 本ずつしか赤にしなかったのは例の数（-n 30・seed 固定）のたまたまで、同じ形のずれが入力の形全部・ほかの uuid の欄・同じ口のほかの応答・ほかの答えの null にある。決める人の決定 D-129.42（ゼロトラスト：uuid の欄は契約に format: uuid を書いて入口で厳しく確かめる・入力の形は知らない項目を許さない・同じ形のずれは K-144 で全部そろえる）に従い、**類ごとに全部**このチケットでそろえる。","- [ ] 下の「直すもの」の 4 つの類（A 入力の知らない項目・B uuid の欄・C 契約に無い応答と入力・D 答えの null）が、契約（05_flow/screen_api.py → 作り手 → 08_api/openapi.yaml）と入口に入っている。生成物（openapi・types・endpoints・registry・schemas・ops・test-plan・ears の生成の試験）を作り手で作り直してある（手で直さない）
+- [ ] 下の表の試験の行が全部緑：`python3 scripts/ci/contract_shape_test.py`（K144-SHAPE-001〜014）と、本物の DB の `apps/api/test/features/contract/k144-contract.test.ts`（K144-API-001〜021）・`apps/api/test/features/F1/terms.test.ts` の K53-API-021
+- [ ] 前からある試験（K-53・K-57・K-60 の口の試験・apps/api/test/generated・画面の型）が緑のまま（影響は「消す・変える物を使っている所」の表）
+- [ ] K-62 の fuzz の的（K-62 の枝の apps/api/test/fuzz/server.ts）を当てたときに、K-57・K-60 の口で赤にならない（K-62 の取り込みの前に K-62 の作業場所で確かめる。fuzz は K-62 の完了の条件。このチケットでは静的な形の試験と本物の DB の試験で受ける）
+- [ ] チケットの CI（act・ci_wide: ci なので workflow の全部）が緑"
