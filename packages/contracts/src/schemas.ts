@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:8d812499d677e3de
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:27abecf0c9be707b
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -1006,7 +1006,7 @@ export const CredentialsInput = z.strictObject({
 });
 export const Conversations = z.strictObject({
   title: z.string().max(10000).nullable().optional(),
-  participant_member_ids: z.array(z.string()).nullable().optional(),
+  participant_member_ids: z.array(z.uuid()).nullable().optional(),
   area: z.string().max(10000).nullable().optional(),
   subject_type: z.string().max(10000).nullable().optional(),
   parent_conversation_id: z.uuid().nullable().optional(),
@@ -1029,7 +1029,7 @@ export const Conversations = z.strictObject({
 });
 export const ConversationsInput = z.strictObject({
   title: z.string().max(10000).nullable().optional(),
-  participant_member_ids: z.array(z.string()).nullable().optional(),
+  participant_member_ids: z.array(z.uuid()).nullable().optional(),
   area: z.string().max(10000).nullable().optional(),
   subject_type: z.string().max(10000).nullable().optional(),
   parent_conversation_id: z.uuid().nullable().optional(),
@@ -1055,7 +1055,7 @@ export const BridgeJobs = z.strictObject({
   model: z.string().max(10000).nullable().optional(),
   effort: z.string().max(10000).nullable().optional(),
   tools: z.array(z.string()).nullable().optional(),
-  attachment_ids: z.array(z.string()).nullable().optional(),
+  attachment_ids: z.array(z.uuid()).nullable().optional(),
   steer_seq: z.number().int().optional(),
   tool_token_hash: z.string().max(10000).nullable().optional(),
   browser: z.string().max(10000).nullable().optional(),
@@ -1086,7 +1086,7 @@ export const BridgeJobsInput = z.strictObject({
   model: z.string().max(10000).nullable().optional(),
   effort: z.string().max(10000).nullable().optional(),
   tools: z.array(z.string()).nullable().optional(),
-  attachment_ids: z.array(z.string()).nullable().optional(),
+  attachment_ids: z.array(z.uuid()).nullable().optional(),
   steer_seq: z.number().int().optional(),
   tool_token_hash: z.string().max(10000).nullable().optional(),
   browser: z.string().max(10000).nullable().optional(),
@@ -1111,6 +1111,7 @@ export const BridgeJobEvents = z.strictObject({
   kind: z.string().max(10000).optional(),
   seq: z.number().int().optional(),
   request_id: z.string().max(10000).nullable().optional(),
+  payload: z.unknown().optional(),
   id: z.uuid(),
   tenant_id: z.uuid().optional(),
   created_at: z.iso.datetime({ offset: true }).optional(),
@@ -1281,6 +1282,7 @@ export const AuditEvents = z.strictObject({
   target_type: z.string().max(10000).optional(),
   target_id: z.string().max(10000).nullable().optional(),
   choke_point_id: z.string().max(10000).nullable().optional(),
+  payload: z.unknown().optional(),
   occurred_at: z.iso.datetime({ offset: true }).optional(),
   id: z.uuid(),
   tenant_id: z.uuid().optional(),
@@ -1545,7 +1547,7 @@ export const Distributions = z.strictObject({
   key: z.string().max(10000).optional(),
   name: z.string().max(10000).nullable().optional(),
   current_version: z.number().int().nullable().optional(),
-  plan_ids: z.array(z.string()).nullable().optional(),
+  plan_ids: z.array(z.uuid()).nullable().optional(),
   is_locked: z.boolean().nullable().optional(),
   id: z.uuid(),
   tenant_id: z.uuid().optional(),
@@ -1560,7 +1562,7 @@ export const DistributionsInput = z.strictObject({
   key: z.string().max(10000).optional(),
   name: z.string().max(10000).nullable().optional(),
   current_version: z.number().int().nullable().optional(),
-  plan_ids: z.array(z.string()).nullable().optional(),
+  plan_ids: z.array(z.uuid()).nullable().optional(),
   is_locked: z.boolean().nullable().optional(),
 });
 export const DistributionVersions = z.strictObject({
@@ -1694,6 +1696,7 @@ export const OpsAuditEvents = z.strictObject({
   target_type: z.string().max(10000).optional(),
   target_id: z.string().max(10000).nullable().optional(),
   grant_id: z.uuid().nullable().optional(),
+  payload: z.unknown().optional(),
   occurred_at: z.iso.datetime({ offset: true }).optional(),
   id: z.uuid(),
   tenant_id: z.uuid().optional(),
@@ -1719,6 +1722,7 @@ export const SecurityEvents = z.strictObject({
   step_up_failed: z.string().max(10000).optional(),
   member_id: z.uuid().nullable().optional(),
   ip_region: z.string().max(10000).nullable().optional(),
+  detail: z.unknown().optional(),
   occurred_at: z.iso.datetime({ offset: true }).optional(),
   id: z.uuid(),
   tenant_id: z.uuid().optional(),
@@ -1766,7 +1770,7 @@ export const Notices = z.strictObject({
   kind_id: z.string().max(10000).nullable().optional(),
   title: z.string().max(10000).nullable().optional(),
   body: z.string().max(10000).nullable().optional(),
-  target_plan_ids: z.array(z.string()).nullable().optional(),
+  target_plan_ids: z.array(z.uuid()).nullable().optional(),
   target_tenant_id: z.uuid().nullable().optional(),
   publish_at: z.iso.datetime({ offset: true }).nullable().optional(),
   published_by: z.uuid().nullable().optional(),
@@ -1788,7 +1792,7 @@ export const NoticesInput = z.strictObject({
   kind_id: z.string().max(10000).nullable().optional(),
   title: z.string().max(10000).nullable().optional(),
   body: z.string().max(10000).nullable().optional(),
-  target_plan_ids: z.array(z.string()).nullable().optional(),
+  target_plan_ids: z.array(z.uuid()).nullable().optional(),
   target_tenant_id: z.uuid().nullable().optional(),
   publish_at: z.iso.datetime({ offset: true }).nullable().optional(),
   published_by: z.uuid().nullable().optional(),
@@ -2050,6 +2054,7 @@ export const ErrorEvents = z.strictObject({
   error_code: z.string().max(10000).optional(),
   member_id: z.uuid().nullable().optional(),
   screen_id: z.string().max(10000).nullable().optional(),
+  context: z.unknown().optional(),
   shown_at: z.iso.datetime({ offset: true }).optional(),
   next_action_taken_at: z.iso.datetime({ offset: true }).nullable().optional(),
   id: z.uuid(),
@@ -2122,6 +2127,7 @@ export const Invitations = z.strictObject({
   email: z.string().max(10000).optional(),
   scope_id: z.uuid().nullable().optional(),
   role_id: z.string().max(10000).nullable().optional(),
+  permission_preset: z.unknown().optional(),
   token_hash: z.string().max(10000).optional(),
   expires_at: z.iso.datetime({ offset: true }).optional(),
   accepted_member_id: z.uuid().nullable().optional(),
@@ -2222,7 +2228,7 @@ export const Skills = z.strictObject({
   name: z.string().max(10000).nullable().optional(),
   purpose: z.string().max(10000).nullable().optional(),
   current_version: z.number().int().nullable().optional(),
-  plan_ids: z.array(z.string()).nullable().optional(),
+  plan_ids: z.array(z.uuid()).nullable().optional(),
   visibility_id: z.string().max(10000).nullable().optional(),
   id: z.uuid(),
   tenant_id: z.uuid().optional(),
@@ -2240,7 +2246,7 @@ export const SkillsInput = z.strictObject({
   name: z.string().max(10000).nullable().optional(),
   purpose: z.string().max(10000).nullable().optional(),
   current_version: z.number().int().nullable().optional(),
-  plan_ids: z.array(z.string()).nullable().optional(),
+  plan_ids: z.array(z.uuid()).nullable().optional(),
   visibility_id: z.string().max(10000).nullable().optional(),
 });
 export const SkillVersions = z.strictObject({
@@ -2533,6 +2539,7 @@ export const TicketSections = z.strictObject({
   ticket_id: z.uuid().optional(),
   section_key: z.string().max(10000).optional(),
   position: z.number().int().optional(),
+  body: z.unknown().optional(),
   version: z.number().int().optional(),
   id: z.uuid(),
   tenant_id: z.uuid().optional(),
@@ -2552,6 +2559,7 @@ export const TicketSectionVersions = z.strictObject({
   ticket_id: z.uuid().optional(),
   section_id: z.uuid().optional(),
   version: z.number().int().optional(),
+  body: z.unknown().optional(),
   edited_by: z.uuid().nullable().optional(),
   edited_at: z.iso.datetime({ offset: true }).optional(),
   edited_by_clone: z.boolean().optional(),
@@ -2711,6 +2719,7 @@ export const TestSpecs = z.strictObject({
   check_kind: z.string().max(10000).optional(),
   title: z.string().max(10000).optional(),
   judge_type: z.string().max(10000).nullable().optional(),
+  params: z.unknown().optional(),
   version: z.number().int().optional(),
   off_reason: z.string().max(10000).nullable().optional(),
   id: z.uuid(),
@@ -2736,6 +2745,7 @@ export const Checks = z.strictObject({
   artifact_version_id: z.uuid().nullable().optional(),
   attempt: z.number().int().optional(),
   result: z.string().max(10000).optional(),
+  evidence: z.unknown().optional(),
   runner: z.string().max(10000).optional(),
   checked_by_member_id: z.uuid().nullable().optional(),
   id: z.uuid(),
@@ -2789,9 +2799,10 @@ export const TicketMessages = z.strictObject({
   author_member_id: z.uuid().nullable().optional(),
   kind: z.string().max(10000).optional(),
   body: z.string().max(10000).nullable().optional(),
-  mentions: z.array(z.string()).optional(),
+  mentions: z.array(z.uuid()).optional(),
   changes: z.unknown().nullable().optional(),
   quote_of_id: z.uuid().nullable().optional(),
+  reactions: z.unknown().optional(),
   id: z.uuid(),
   tenant_id: z.uuid().optional(),
   created_at: z.iso.datetime({ offset: true }).optional(),
@@ -2805,7 +2816,7 @@ export const TicketMessagesInput = z.strictObject({
   author_member_id: z.uuid().nullable().optional(),
   kind: z.string().max(10000).optional(),
   body: z.string().max(10000).nullable().optional(),
-  mentions: z.array(z.string()).optional(),
+  mentions: z.array(z.uuid()).optional(),
   changes: z.unknown().nullable().optional(),
   quote_of_id: z.uuid().nullable().optional(),
   reactions: z.unknown().optional(),
@@ -2877,6 +2888,7 @@ export const KnowledgePageVersions = z.strictObject({
   page_id: z.uuid().optional(),
   version: z.number().int().optional(),
   kind: z.string().max(10000).optional(),
+  body: z.unknown().optional(),
   note: z.string().max(10000).nullable().optional(),
   author_member_id: z.uuid().nullable().optional(),
   proposed_from_ticket_id: z.uuid().nullable().optional(),
@@ -2925,6 +2937,7 @@ export const Clients = z.strictObject({
   name: z.string().max(10000).optional(),
   owner_member_id: z.uuid().nullable().optional(),
   visibility: z.string().max(10000).optional(),
+  default_share: z.unknown().optional(),
   routing: z.string().max(10000).nullable().optional(),
   email_domain: z.string().max(10000).nullable().optional(),
   id: z.uuid(),
@@ -2989,6 +3002,7 @@ export const ClientRequests = z.strictObject({
   state: z.string().max(10000).optional(),
   ticket_id: z.uuid().nullable().optional(),
   routed_scope_id: z.uuid().nullable().optional(),
+  questions: z.unknown().optional(),
   decline_reason: z.string().max(10000).nullable().optional(),
   id: z.uuid(),
   tenant_id: z.uuid().optional(),
@@ -3166,6 +3180,7 @@ export const TicketHandovers = z.strictObject({
   reason: z.string().max(10000).nullable().optional(),
   ask: z.string().max(10000).nullable().optional(),
   reply_due: z.iso.datetime({ offset: true }).nullable().optional(),
+  switch: z.unknown().optional(),
   state: z.string().max(10000).optional(),
   decline_reason: z.string().max(10000).nullable().optional(),
   decided_at: z.iso.datetime({ offset: true }).nullable().optional(),
@@ -3196,6 +3211,8 @@ export const SavedViews = z.strictObject({
   name: z.string().max(10000).optional(),
   share: z.string().max(10000).optional(),
   scope_id: z.uuid().nullable().optional(),
+  filters: z.unknown().optional(),
+  columns: z.unknown().optional(),
   density: z.string().max(10000).optional(),
   id: z.uuid(),
   tenant_id: z.uuid().optional(),
@@ -3217,7 +3234,9 @@ export const TicketImports = z.strictObject({
   uploaded_by: z.uuid().optional(),
   scope_id: z.uuid().optional(),
   source: z.string().max(10000).optional(),
+  mapping: z.unknown().optional(),
   rows: z.number().int().optional(),
+  errors: z.unknown().optional(),
   state: z.string().max(10000).optional(),
   committed_at: z.iso.datetime({ offset: true }).nullable().optional(),
   id: z.uuid(),
@@ -3242,6 +3261,8 @@ export const LearningCandidates = z.strictObject({
   trigger: z.string().max(10000).optional(),
   proposed_as: z.string().max(10000).optional(),
   text: z.string().max(10000).optional(),
+  evidence: z.unknown().optional(),
+  check_result: z.unknown().optional(),
   decided_by: z.uuid().nullable().optional(),
   state: z.string().max(10000).optional(),
   decided_at: z.iso.datetime({ offset: true }).nullable().optional(),
@@ -3292,7 +3313,7 @@ export const BridgePairingCodesInput = z.strictObject({
 export const NotificationSettings = z.strictObject({
   email_digest: z.boolean().optional(),
   quiet_hours: z.record(z.string(), z.unknown()).optional(),
-  paused_until: z.string().max(10000).optional(),
+  paused_until: z.string().max(10000).nullable().optional(),
   urgent_override: z.array(z.unknown()).optional(),
   events: z.array(z.unknown()).optional(),
 });
@@ -3307,6 +3328,7 @@ export const OpsPlanProposals = z.strictObject({
   plan_id: z.uuid().optional(),
   from_version: z.number().int().nullable().optional(),
   to_version: z.number().int().nullable().optional(),
+  changes: z.unknown().optional(),
   existing_policy: z.string().max(10000).optional(),
   notice_days: z.number().int().nullable().optional(),
   new_from: z.iso.date().nullable().optional(),
@@ -3395,8 +3417,8 @@ export const SignupVerifyInput = z.strictObject({
 });
 export const TermsConsentInput = z.strictObject({
   agree: z.boolean().optional(),
-  terms_version_id: z.string().max(10000).optional(),
-  privacy_version_id: z.string().max(10000).optional(),
+  terms_version_id: z.uuid().optional(),
+  privacy_version_id: z.uuid().optional(),
 });
 export const PairingCodeInput = z.strictObject({
 
@@ -3404,7 +3426,7 @@ export const PairingCodeInput = z.strictObject({
 export const BridgeClaimInput = z.strictObject({
   code: z.string().max(10000).optional(),
   device_label: z.string().max(10000).optional(),
-  machine_id: z.string().max(10000).optional(),
+  machine_id: z.uuid().nullable().optional(),
 });
 export const BridgeHeartbeatInput = z.strictObject({
   health: z.unknown().optional(),
@@ -3412,23 +3434,23 @@ export const BridgeHeartbeatInput = z.strictObject({
   version: z.string().max(10000).optional(),
 });
 export const TicketCreateInput = z.strictObject({
-  scope_id: z.string().max(10000).optional(),
-  kind_id: z.string().max(10000).optional(),
+  scope_id: z.uuid().optional(),
+  kind_id: z.uuid().optional(),
   title: z.string().max(10000).optional(),
-  assignee_member_id: z.string().max(10000).optional(),
+  assignee_member_id: z.uuid().optional(),
   due_on: z.string().max(10000).optional(),
   start_on: z.string().max(10000).optional(),
   priority: z.string().max(10000).optional(),
   priority_reason: z.string().max(10000).optional(),
-  parent_ticket_id: z.string().max(10000).optional(),
+  parent_ticket_id: z.uuid().optional(),
   estimate_minutes: z.unknown().optional(),
   sections: z.record(z.string(), z.unknown()).optional(),
-  notify_member_ids: z.array(z.unknown()).optional(),
-  draft_id: z.string().max(10000).optional(),
-  source_draft_id: z.string().max(10000).optional(),
+  notify_member_ids: z.array(z.uuid()).optional(),
+  draft_id: z.uuid().optional(),
+  source_draft_id: z.uuid().optional(),
 });
 export const TicketDraftInput = z.strictObject({
-  draft_id: z.string().max(10000).optional(),
+  draft_id: z.uuid().optional(),
   body: z.record(z.string(), z.unknown()).optional(),
   discard: z.boolean().optional(),
 });
@@ -3462,7 +3484,7 @@ export const TimelineItem = z.strictObject({
   at: z.string().max(10000).optional(),
   actor_member_id: z.string().max(10000).optional(),
   message: z.record(z.string(), z.unknown()).optional(),
-  changes: z.array(z.unknown()).optional(),
+  changes: z.array(z.unknown()).nullable().optional(),
   run: z.record(z.string(), z.unknown()).optional(),
 });
 export const TestSpecLint = z.strictObject({
@@ -3481,7 +3503,7 @@ export const BulkResult = z.strictObject({
 export const ApprovalQueueItem = z.strictObject({
   kind: z.string().max(10000).optional(),
   id: z.string().max(10000).optional(),
-  ticket_id: z.string().max(10000).optional(),
+  ticket_id: z.string().max(10000).nullable().optional(),
   ticket_number: z.string().max(10000).optional(),
   title: z.string().max(10000).optional(),
   from_member_id: z.string().max(10000).optional(),
@@ -3617,12 +3639,13 @@ export const BridgeRelease = z.strictObject({
   released: z.boolean().optional(),
   version: z.string().max(10000).optional(),
   released_at: z.string().max(10000).optional(),
-  update: z.record(z.string(), z.unknown()).optional(),
+  update: z.record(z.string(), z.unknown()).nullable().optional(),
 });
 export const BridgeClaim = z.strictObject({
   device_token: z.string().max(10000).optional(),
   device_id: z.string().max(10000).optional(),
   member_id: z.string().max(10000).optional(),
+  device_label: z.string().max(10000).optional(),
 });
 export const BridgeReleaseLink = z.strictObject({
   url: z.string().max(10000).optional(),
@@ -3630,38 +3653,38 @@ export const BridgeReleaseLink = z.strictObject({
 });
 export const BridgeHeartbeat = z.strictObject({
   ok: z.boolean().optional(),
-  browser: z.string().max(10000).optional(),
+  browser: z.string().max(10000).nullable().optional(),
   outdated: z.boolean().optional(),
 });
 export const BridgeDevice = z.strictObject({
   id: z.string().max(10000).optional(),
-  device_label: z.string().max(10000).optional(),
+  device_label: z.string().max(10000).nullable().optional(),
   state: z.string().max(10000).optional(),
-  last_seen_at: z.string().max(10000).optional(),
+  last_seen_at: z.string().max(10000).nullable().optional(),
   connected_at: z.string().max(10000).optional(),
-  version: z.string().max(10000).optional(),
+  version: z.string().max(10000).nullable().optional(),
   health: z.array(z.unknown()).optional(),
-  revoke_reason: z.string().max(10000).optional(),
+  revoke_reason: z.string().max(10000).nullable().optional(),
 });
 export const TicketDetail = z.strictObject({
   ticket: z.record(z.string(), z.unknown()).optional(),
   sections: z.array(z.unknown()).optional(),
-  kind: z.record(z.string(), z.unknown()).optional(),
-  stage: z.record(z.string(), z.unknown()).optional(),
-  assignee: z.record(z.string(), z.unknown()).optional(),
+  kind: z.record(z.string(), z.unknown()).nullable().optional(),
+  stage: z.record(z.string(), z.unknown()).nullable().optional(),
+  assignee: z.record(z.string(), z.unknown()).nullable().optional(),
 });
 export const TicketKindChoice = z.strictObject({
   id: z.string().max(10000).optional(),
   name: z.string().max(10000).optional(),
-  color: z.string().max(10000).optional(),
+  color: z.string().max(10000).nullable().optional(),
   position: z.number().int().optional(),
   is_builtin: z.boolean().optional(),
   sections: z.array(z.unknown()).optional(),
 });
 export const TicketDraft = z.strictObject({
   draft_id: z.string().max(10000).optional(),
-  body: z.record(z.string(), z.unknown()).optional(),
-  saved_at: z.string().max(10000).optional(),
+  body: z.record(z.string(), z.unknown()).nullable().optional(),
+  saved_at: z.string().max(10000).nullable().optional(),
 });
 export const BridgeJob = z.strictObject({
   job: z.record(z.string(), z.unknown()).optional(),
@@ -3677,20 +3700,20 @@ export const ResolvedCredential = z.strictObject({
   ref: z.string().max(10000).optional(),
   ciphertext_for_executor: z.string().max(10000).optional(),
   destinations: z.array(z.unknown()).optional(),
-  expires_at: z.string().max(10000).optional(),
+  expires_at: z.string().max(10000).nullable().optional(),
 });
 export const WorkTypeUploadCheck = z.strictObject({
   package: z.record(z.string(), z.unknown()).optional(),
   checks: z.array(z.unknown()).optional(),
   passed: z.boolean().optional(),
   test_scenarios: z.number().int().optional(),
-  changelog: z.string().max(10000).optional(),
+  changelog: z.string().max(10000).nullable().optional(),
 });
 export const PlanProposalImpact = z.strictObject({
   tenants: z.number().int().optional(),
   monthly_revenue_diff: z.number().int().optional(),
   existing_from: z.string().max(10000).optional(),
-  new_from: z.string().max(10000).optional(),
+  new_from: z.string().max(10000).nullable().optional(),
   by_workspace: z.array(z.unknown()).optional(),
 });
 export const RuleCheck = z.strictObject({
@@ -3742,7 +3765,7 @@ export const EscalationPreview = z.strictObject({
 export const ExportStatus = z.strictObject({
   status: z.string().max(10000).optional(),
   url: z.string().max(10000).optional(),
-  expires_at: z.string().max(10000).optional(),
+  expires_at: z.string().max(10000).nullable().optional(),
 });
 export const WorkspaceSettings = z.strictObject({
   workspace: z.record(z.string(), z.unknown()).optional(),
@@ -3755,9 +3778,9 @@ export const WorkspaceSettings = z.strictObject({
 });
 export const PlanChoice = z.strictObject({
   plan_id: z.string().max(10000).optional(),
-  name: z.string().max(10000).optional(),
-  price_monthly: z.number().int().optional(),
-  limits: z.record(z.string(), z.unknown()).optional(),
+  name: z.string().max(10000).nullable().optional(),
+  price_monthly: z.number().int().nullable().optional(),
+  limits: z.record(z.string(), z.unknown()).nullable().optional(),
   current: z.boolean().optional(),
   can_choose: z.boolean().optional(),
   reason: z.string().max(10000).optional(),
@@ -3778,7 +3801,7 @@ export const ClientRow = z.strictObject({
   name: z.string().max(10000).optional(),
   summary: z.string().max(10000).optional(),
   groups: z.array(z.unknown()).optional(),
-  owner_member_id: z.string().max(10000).optional(),
+  owner_member_id: z.string().max(10000).nullable().optional(),
   visibility: z.string().max(10000).optional(),
   active_tickets: z.number().int().optional(),
   open_requests: z.number().int().optional(),
@@ -3832,7 +3855,7 @@ export const PortalRequest = z.strictObject({
 export const PortalTicket = z.strictObject({
   title: z.string().max(10000).optional(),
   stage: z.string().max(10000).optional(),
-  due_on: z.string().max(10000).optional(),
+  due_on: z.string().max(10000).nullable().optional(),
   artifacts: z.array(z.unknown()).optional(),
   messages: z.array(z.unknown()).optional(),
   sections: z.array(z.unknown()).optional(),
@@ -3841,8 +3864,8 @@ export const PortalAcceptance = z.strictObject({
   acceptance: z.record(z.string(), z.unknown()).optional(),
   artifact: z.record(z.string(), z.unknown()).optional(),
   preview_url: z.string().max(10000).optional(),
-  message: z.string().max(10000).optional(),
-  due_on: z.string().max(10000).optional(),
+  message: z.string().max(10000).nullable().optional(),
+  due_on: z.string().max(10000).nullable().optional(),
 });
 export const KnowledgeHome = z.strictObject({
   to_verify: z.array(z.unknown()).optional(),

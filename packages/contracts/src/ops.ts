@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:8d812499d677e3de
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:27abecf0c9be707b
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -59,7 +59,7 @@ export interface Ops {
   listMirrorTargets: { params: never; query: { "scope_id"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Conversations[] };
   createPairingCode: { params: never; query: never; body: T.PairingCodeInput; data: T.PairingCode };
   downloadBridgeRelease: { params: { name: string }; query: never; body: never; data: T.BridgeReleaseLink };
-  getLatestBridgeRelease: { params: never; query: never; body: never; data: T.BridgeRelease };
+  getLatestBridgeRelease: { params: never; query: { "os"?: string | number; "arch"?: string | number }; body: never; data: T.BridgeRelease };
   reportUsage: { params: never; query: never; body: T.AgentUsageSnapshotsInput; data: T.AgentUsageSnapshots };
   markHumanCheck: { params: { id: string }; query: never; body: T.ChecksInput; data: T.Checks };
   listClassAxes: { params: never; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.ClassAxes[] };

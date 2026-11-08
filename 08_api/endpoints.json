@@ -1,8 +1,8 @@
 {
  "meta": {
   "version": "v3.1",
-  "created_at": "2026-11-07",
-  "frozen_at": "2026-11-07",
+  "created_at": "2026-11-08",
+  "frozen_at": "2026-11-08",
   "base_url": "/api/v1",
   "_doc": "05_flow/build_api.py が機械生成。手で直さない。凍結後の変更は決定（ADR）＋影響解析",
   "source": [
@@ -3729,6 +3729,19 @@
      "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
     },
     {
+     "status": 500,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "internal",
+      "code": "E-PAGE-003"
+     },
+     "errors": [
+      "E-PAGE-003"
+     ],
+     "trigger": "規約の版を読む DB か申し込みを書く DB が落ちた",
+     "ears_form": "UNWANTED: IF 規約の版を読む DB か申し込みを書く DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、申し込みを作らずメールも送らない"
+    },
+    {
      "status": 429,
      "code": "RATE_LIMITED",
      "body": {
@@ -3744,6 +3757,7 @@
     "EVENT-DRIVEN: WHEN POST /api/v1/auth/sign-up が「規約とプライバシーポリシーを読んで同意する」として呼ばれたとき THEN Kaname は「同意した版と時刻を残す。版が上がったら次のログインで同意を取り直す」を行い 2xx を返す",
     "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 規約の版を読む DB か申し込みを書く DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、申し込みを作らずメールも送らない",
     "UNWANTED: IF 10/min/ip を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UBIQUITOUS: POST /api/v1/auth/sign-up の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
    ],
@@ -4042,6 +4056,19 @@
      "ears_form": "UNWANTED: IF リンクが期限切れ・前のリンク・無いなら、Kaname は 410 と次の一手を返し、本人を作らない"
     },
     {
+     "status": 500,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "internal",
+      "code": "E-PAGE-003"
+     },
+     "errors": [
+      "E-PAGE-003"
+     ],
+     "trigger": "確定の途中で DB か認証の仕組みが落ちた",
+     "ears_form": "UNWANTED: IF 確定の途中で DB か認証が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、ログインの印を渡さない"
+    },
+    {
      "status": 429,
      "code": "RATE_LIMITED",
      "body": {
@@ -4057,6 +4084,7 @@
     "UNWANTED: IF 確定済みのリンクがもう一度来たら、Kaname は 409 を返し、ログインの印を渡さず本人を二重に作らない",
     "UNWANTED: IF 手がかりが無いか空なら、Kaname は 422 を返し、申し込みには触らない",
     "UNWANTED: IF リンクが期限切れ・前のリンク・無いなら、Kaname は 410 と次の一手を返し、本人を作らない",
+    "UNWANTED: IF 確定の途中で DB か認証が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、ログインの印を渡さない",
     "UNWANTED: IF 10/min/ip を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UBIQUITOUS: POST /api/v1/auth/sign-up/verify の副作用は関門 C2・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
    ],
@@ -4294,6 +4322,19 @@
      "ears_form": "UNWANTED: IF 同意の印が無いか版の ID が受け付けられないなら、Kaname は 422 と項目ごとの理由（同意の印が無いときは E-VAL-019）を返し、同意の行を書かない"
     },
     {
+     "status": 500,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "internal",
+      "code": "E-PAGE-003"
+     },
+     "errors": [
+      "E-PAGE-003"
+     ],
+     "trigger": "同意を書く DB（今の版を読む・同意の行を書く）が落ちた",
+     "ears_form": "UNWANTED: IF 同意を書く DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、同意の行もセッションの印も変えない"
+    },
+    {
      "status": 429,
      "code": "RATE_LIMITED",
      "body": {
@@ -4310,6 +4351,7 @@
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 同意する版が今の版でないなら、Kaname は 409 と今の版の並び current を返し、同意の行を書かない",
     "UNWANTED: IF 同意の印が無いか版の ID が受け付けられないなら、Kaname は 422 と項目ごとの理由（同意の印が無いときは E-VAL-019）を返し、同意の行を書かない",
+    "UNWANTED: IF 同意を書く DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、同意の行もセッションの印も変えない",
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UBIQUITOUS: POST /api/v1/auth/terms/consent の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
    ],
@@ -7618,8 +7660,44 @@
       "error": "validation_failed",
       "details": []
      },
-     "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形",
-     "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+     "trigger": "小文字だけの知らない名前（mac・win のどちらでもない）",
+     "ears_form": "UNWANTED: IF 名前が小文字だけで mac・win のどちらでもないなら、Kaname は 422 と欄 name を返す"
+    },
+    {
+     "status": 404,
+     "code": "NOT_FOUND",
+     "body": {
+      "error": "not_found",
+      "code": "NOT_FOUND"
+     },
+     "trigger": "目録に無い名前・置き場の外を指す名前",
+     "ears_form": "UNWANTED: IF 名前が目録に無いか置き場の外を指すなら、Kaname は 404 と NOT_FOUND を返し、ファイルを渡さない"
+    },
+    {
+     "status": 404,
+     "code": "E-CONN-014",
+     "body": {
+      "error": "not_found",
+      "code": "E-CONN-014"
+     },
+     "errors": [
+      "E-CONN-014"
+     ],
+     "trigger": "その OS（mac・win）の配布物が無い",
+     "ears_form": "UNWANTED: IF その OS の配布物が無いなら、Kaname は 404 と E-CONN-014 を返す"
+    },
+    {
+     "status": 503,
+     "code": "E-PAGE-007",
+     "body": {
+      "error": "unavailable",
+      "code": "E-PAGE-007"
+     },
+     "errors": [
+      "E-PAGE-007"
+     ],
+     "trigger": "配布物の置き場に届かない",
+     "ears_form": "UNWANTED: IF 配布物の置き場に届かないなら、Kaname は 503 と E-PAGE-007 を返し、空を成功にしない"
     },
     {
      "status": 429,
@@ -7655,7 +7733,10 @@
     "EVENT-DRIVEN: WHEN GET /api/v1/bridge/releases/:name/file が「Bridge を入れてつなぐ」として呼ばれたとき THEN Kaname は「Bridge と本人を結ぶ。つながったら自分の AI が話せる」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
-    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 名前が小文字だけで mac・win のどちらでもないなら、Kaname は 422 と欄 name を返す",
+    "UNWANTED: IF 名前が目録に無いか置き場の外を指すなら、Kaname は 404 と NOT_FOUND を返し、ファイルを渡さない",
+    "UNWANTED: IF その OS の配布物が無いなら、Kaname は 404 と E-CONN-014 を返す",
+    "UNWANTED: IF 配布物の置き場に届かないなら、Kaname は 503 と E-PAGE-007 を返し、空を成功にしない",
     "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
@@ -7782,6 +7863,19 @@
      "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
     },
     {
+     "status": 503,
+     "code": "E-PAGE-007",
+     "body": {
+      "error": "unavailable",
+      "code": "E-PAGE-007"
+     },
+     "errors": [
+      "E-PAGE-007"
+     ],
+     "trigger": "配布物の置き場に届かない",
+     "ears_form": "UNWANTED: IF 配布物の置き場に届かないなら、Kaname は 503 と E-PAGE-007 を返し、「配っていない」と答えない"
+    },
+    {
      "status": 429,
      "code": "RATE_LIMITED",
      "body": {
@@ -7816,6 +7910,7 @@
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 配布物の置き場に届かないなら、Kaname は 503 と E-PAGE-007 を返し、「配っていない」と答えない",
     "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
@@ -41408,6 +41503,19 @@
      "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
     },
     {
+     "status": 404,
+     "code": "E-PAGE-001",
+     "body": {
+      "error": "not_found",
+      "code": "E-PAGE-001"
+     },
+     "errors": [
+      "E-PAGE-001"
+     ],
+     "trigger": "親のチケットが無い・消えた・見えない",
+     "ears_form": "UNWANTED: IF 親のチケットが無いか見えないなら、Kaname は 404 と E-PAGE-001 を返し、チケットを作らない"
+    },
+    {
      "status": 429,
      "code": "RATE_LIMITED",
      "body": {
@@ -41436,6 +41544,7 @@
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 親のチケットが無いか見えないなら、Kaname は 404 と E-PAGE-001 を返し、チケットを作らない",
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
     "UBIQUITOUS: POST /api/v1/tickets の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"

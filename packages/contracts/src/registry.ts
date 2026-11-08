@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:8d812499d677e3de
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:27abecf0c9be707b
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -15,6 +15,8 @@ export interface EndpointDef {
   outputList: boolean;
   auth: "member" | "ops" | "client" | "device" | "public";
   rateLimit: { perMinute: number; key: "user" | "ip" };
+  /** 契約で format: uuid の道の値と問い合わせの名前（入口が正式な uuid か確かめる・D-129.42・K-144） */
+  uuidParams: string[];
   chokePoints: string[];
   errors: number[];
   acts: string[];
@@ -53,6 +55,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C6"
@@ -104,6 +109,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -152,6 +160,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -202,6 +213,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C5"
@@ -254,6 +268,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -304,6 +321,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -351,6 +371,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -401,6 +424,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -451,6 +477,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -501,6 +530,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C5"
@@ -554,6 +586,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C5"
@@ -606,6 +641,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -652,6 +688,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -698,6 +735,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -741,6 +779,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -784,6 +823,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -831,6 +873,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C4"
@@ -882,6 +927,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C4"
@@ -932,6 +980,10 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "member_id",
+      "ticket_id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -975,6 +1027,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 10,
       "key": "ip"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       422,
@@ -1015,6 +1068,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 10,
       "key": "ip"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -1059,6 +1113,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 10,
       "key": "ip"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2",
       "C6"
@@ -1103,6 +1158,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 10,
       "key": "ip"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2",
       "C6"
@@ -1147,6 +1203,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 10,
       "key": "ip"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -1190,6 +1247,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 10,
       "key": "ip"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       422,
@@ -1230,6 +1288,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 10,
       "key": "ip"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -1273,6 +1332,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -1318,12 +1378,14 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 10,
       "key": "ip"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
     "errors": [
       409,
       422,
+      500,
       429
     ],
     "acts": [
@@ -1362,6 +1424,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 10,
       "key": "ip"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -1405,6 +1468,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 10,
       "key": "ip"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       422,
@@ -1445,6 +1509,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 10,
       "key": "ip"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2",
       "C6"
@@ -1453,6 +1518,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       410,
+      500,
       429
     ],
     "acts": [
@@ -1490,6 +1556,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -1536,6 +1603,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -1544,6 +1612,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      500,
       429
     ],
     "acts": [
@@ -1581,6 +1650,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 10,
       "key": "ip"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       422,
@@ -1622,6 +1692,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 10,
       "key": "ip"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -1665,6 +1736,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 5,
       "key": "ip"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C1",
       "C2",
@@ -1711,6 +1783,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C8"
@@ -1758,6 +1833,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2",
       "C8"
@@ -1804,6 +1880,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C4"
     ],
@@ -1850,6 +1927,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C1",
       "C2",
@@ -1902,6 +1982,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C1",
       "C2",
@@ -1954,6 +2037,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -1997,6 +2081,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C1",
       "C2",
@@ -2045,6 +2130,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C4"
@@ -2092,6 +2180,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C3",
@@ -2141,6 +2232,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -2185,6 +2279,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C3",
@@ -2234,6 +2331,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C3",
@@ -2283,6 +2383,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C3",
@@ -2332,6 +2435,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C5"
@@ -2380,6 +2486,10 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id",
+      "qid"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -2424,6 +2534,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C3",
@@ -2473,6 +2586,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2",
       "C3",
@@ -2521,6 +2635,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "scope_id"
+    ],
     "chokePoints": [
       "C4"
     ],
@@ -2566,6 +2683,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C1",
       "C2",
@@ -2615,6 +2733,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C4"
     ],
@@ -2622,6 +2741,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
+      404,
+      404,
+      503,
       429,
       502,
       403
@@ -2661,6 +2783,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C4"
     ],
@@ -2668,6 +2791,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
+      503,
       429,
       502,
       403
@@ -2707,6 +2831,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -2752,6 +2877,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -2802,6 +2930,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -2845,6 +2974,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C6"
@@ -2895,6 +3027,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C6"
@@ -2945,6 +3080,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C6"
@@ -2996,6 +3134,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "client_id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -3040,6 +3181,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -3088,6 +3232,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C3"
@@ -3139,6 +3286,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C3"
@@ -3191,6 +3341,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C3"
@@ -3243,6 +3396,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C3"
@@ -3295,6 +3451,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -3340,6 +3497,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2",
       "C6"
@@ -3387,6 +3545,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -3434,6 +3595,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C6"
@@ -3484,6 +3648,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -3531,6 +3698,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C6"
@@ -3582,6 +3752,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -3629,6 +3802,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C6"
@@ -3679,6 +3855,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -3722,6 +3899,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C4"
     ],
@@ -3768,6 +3946,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2",
       "C5"
@@ -3815,6 +3994,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -3858,6 +4038,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -3904,6 +4085,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -3947,6 +4129,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -3990,6 +4173,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -4033,6 +4217,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -4076,6 +4261,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2",
       "C3"
@@ -4125,6 +4311,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -4172,6 +4361,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -4221,6 +4413,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -4270,6 +4465,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C4",
@@ -4323,6 +4521,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C4"
     ],
@@ -4373,6 +4574,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C3",
@@ -4427,6 +4631,10 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id",
+      "pid"
+    ],
     "chokePoints": [
       "C2",
       "C5"
@@ -4479,6 +4687,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C3",
@@ -4532,6 +4743,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C4"
     ],
@@ -4582,6 +4796,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "tenant_id"
+    ],
     "chokePoints": [
       "C8"
     ],
@@ -4627,6 +4844,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2",
       "C8"
@@ -4674,6 +4892,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C8"
@@ -4724,6 +4945,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C8"
@@ -4774,6 +4998,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C8"
@@ -4825,6 +5052,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C8"
@@ -4876,6 +5106,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2",
       "C4"
@@ -4924,6 +5155,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C4"
     ],
@@ -4973,6 +5207,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -5016,6 +5251,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -5059,6 +5295,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2",
       "C6"
@@ -5106,6 +5343,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -5153,6 +5393,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C6"
@@ -5204,6 +5447,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C6"
@@ -5255,6 +5501,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2",
       "C6"
@@ -5302,6 +5549,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2",
       "C6"
@@ -5349,6 +5597,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C6"
@@ -5396,6 +5647,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C6"
@@ -5444,6 +5698,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2",
       "C6"
@@ -5491,6 +5746,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -5535,6 +5793,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -5581,6 +5840,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -5627,6 +5887,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -5670,6 +5931,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -5713,6 +5975,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -5756,6 +6019,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -5806,6 +6072,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -5856,6 +6125,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -5899,6 +6169,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -5942,6 +6213,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -5988,6 +6260,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -6035,6 +6310,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -6085,6 +6363,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "scope_id",
+      "parent_id",
+      "owner_id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -6128,6 +6411,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -6174,6 +6458,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -6221,6 +6508,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -6270,6 +6560,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -6320,6 +6613,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -6370,6 +6666,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -6419,6 +6718,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -6468,6 +6770,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -6515,6 +6820,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -6565,6 +6873,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -6612,6 +6923,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -6659,6 +6973,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -6709,6 +7026,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -6759,6 +7079,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -6809,6 +7132,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -6856,6 +7182,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -6906,6 +7235,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -6953,6 +7285,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -7003,6 +7338,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -7049,6 +7385,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -7095,6 +7434,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -7139,6 +7479,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -7190,6 +7533,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -7241,6 +7587,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -7291,6 +7640,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -7341,6 +7693,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -7383,6 +7736,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -7428,6 +7782,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -7474,6 +7829,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2",
       "C8"
@@ -7521,6 +7877,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -7567,6 +7924,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -7613,6 +7971,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "tenant_id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -7656,6 +8017,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -7701,6 +8063,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -7747,6 +8110,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C8"
@@ -7794,6 +8160,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C8"
@@ -7841,6 +8210,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2",
       "C8"
@@ -7887,6 +8257,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C8"
     ],
@@ -7933,6 +8304,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -7976,6 +8348,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -8025,6 +8400,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -8071,6 +8447,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "scope_id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -8114,6 +8493,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -8160,6 +8540,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -8203,6 +8584,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -8249,6 +8631,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2",
       "C8"
@@ -8294,6 +8677,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2",
       "C8"
@@ -8341,6 +8725,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2",
       "C8"
@@ -8388,6 +8773,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -8431,6 +8817,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -8480,6 +8869,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "scope_id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -8523,6 +8915,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -8567,6 +8962,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -8613,6 +9011,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -8659,6 +9060,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C6"
@@ -8707,6 +9111,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -8753,6 +9160,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -8797,6 +9207,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -8844,6 +9257,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -8890,6 +9306,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -8937,6 +9356,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C8"
@@ -8986,6 +9408,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -9029,6 +9452,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -9075,6 +9499,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -9124,6 +9551,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -9173,6 +9603,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -9224,6 +9657,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C4"
@@ -9275,6 +9711,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -9318,6 +9755,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -9368,6 +9808,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "actor_member_id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -9411,6 +9854,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -9460,6 +9906,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -9506,6 +9953,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -9549,6 +9997,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -9593,6 +10044,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C6"
@@ -9640,6 +10094,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C6"
@@ -9688,6 +10145,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C6"
@@ -9736,6 +10196,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -9779,6 +10240,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -9826,6 +10290,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -9872,6 +10337,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -9918,6 +10384,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C4"
     ],
@@ -9963,6 +10430,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2",
       "C4"
@@ -10010,6 +10478,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C4"
@@ -10057,6 +10528,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C4"
@@ -10104,6 +10578,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -10147,6 +10622,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2",
       "C6"
@@ -10194,6 +10670,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -10238,6 +10717,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C6"
@@ -10285,6 +10767,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C6"
@@ -10333,6 +10818,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C6"
@@ -10381,6 +10869,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C4"
     ],
@@ -10426,6 +10915,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -10472,6 +10964,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "plan_id"
+    ],
     "chokePoints": [
       "C4"
     ],
@@ -10517,6 +11012,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C4"
     ],
@@ -10562,6 +11058,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2",
       "C4",
@@ -10610,6 +11107,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C4",
@@ -10658,6 +11158,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C4",
@@ -10707,6 +11210,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C4"
     ],
@@ -10753,6 +11259,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C4",
@@ -10802,6 +11311,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C4",
@@ -10851,6 +11363,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C4"
     ],
@@ -10896,6 +11409,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -10939,6 +11453,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -10982,6 +11497,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -11026,6 +11544,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C6"
@@ -11074,6 +11595,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2",
       "C4"
@@ -11121,6 +11643,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C4"
     ],
@@ -11167,6 +11692,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "scope_id"
+    ],
     "chokePoints": [
       "C4"
     ],
@@ -11212,6 +11740,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C4"
     ],
@@ -11258,6 +11789,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C4"
@@ -11306,6 +11840,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C4"
@@ -11354,6 +11891,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -11397,6 +11935,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -11441,6 +11982,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -11485,6 +12029,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -11529,6 +12076,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -11573,6 +12123,10 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id",
+      "scope_id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -11617,6 +12171,10 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id",
+      "mid"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -11664,6 +12222,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -11711,6 +12272,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -11758,6 +12322,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -11805,6 +12372,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -11852,6 +12422,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -11899,6 +12472,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -11945,6 +12519,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -11988,6 +12563,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -12032,6 +12610,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C6"
@@ -12080,6 +12661,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2",
       "C6"
@@ -12127,6 +12709,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -12170,6 +12753,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2",
       "C6"
@@ -12217,6 +12801,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -12261,6 +12848,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C6"
@@ -12309,6 +12899,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2",
       "C6"
@@ -12356,6 +12947,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -12400,6 +12994,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "client_id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -12445,6 +13042,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2",
       "C6"
@@ -12494,6 +13092,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -12541,6 +13142,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -12590,6 +13194,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -12639,6 +13246,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -12687,6 +13295,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -12730,6 +13339,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -12776,6 +13386,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -12825,6 +13438,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -12874,6 +13490,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "layer_id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -12917,6 +13536,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -12963,6 +13583,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -13009,6 +13632,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -13056,6 +13682,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -13099,6 +13726,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -13142,6 +13770,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -13185,6 +13814,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C3"
@@ -13236,6 +13868,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C3"
@@ -13287,6 +13922,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -13336,6 +13974,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C6"
@@ -13387,6 +14028,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2",
       "C4"
@@ -13434,6 +14076,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -13481,6 +14126,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -13531,6 +14179,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -13574,6 +14223,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -13621,6 +14273,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -13664,6 +14317,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -13711,6 +14367,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -13760,6 +14419,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C6"
@@ -13810,6 +14472,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C6"
@@ -13860,6 +14525,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C6"
@@ -13911,6 +14579,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -13954,6 +14623,13 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "scope_id",
+      "kind_id",
+      "stage_id",
+      "assignee_id",
+      "client_id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -13998,6 +14674,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -14006,6 +14683,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      404,
       429,
       403
     ],
@@ -14046,6 +14724,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -14093,6 +14774,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -14145,6 +14829,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -14194,6 +14881,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C6"
@@ -14245,6 +14935,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C4"
     ],
@@ -14295,6 +14988,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -14345,6 +15041,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C3",
@@ -14400,6 +15099,10 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id",
+      "scope_id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -14447,6 +15150,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C4"
@@ -14498,6 +15204,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -14546,6 +15255,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C6"
@@ -14596,6 +15308,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C6"
@@ -14647,6 +15362,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -14694,6 +15412,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -14744,6 +15465,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C3",
@@ -14797,6 +15521,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -14844,6 +15571,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C1",
       "C2",
@@ -14897,6 +15627,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C6"
@@ -14951,6 +15684,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -14998,6 +15734,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -15045,6 +15784,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -15095,6 +15837,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C6"
@@ -15146,6 +15891,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -15193,6 +15941,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -15244,6 +15995,10 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id",
+      "scope_id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -15292,6 +16047,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -15341,6 +16099,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -15389,6 +16150,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C3"
@@ -15441,6 +16205,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C3"
@@ -15493,6 +16260,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C3"
@@ -15545,6 +16315,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -15592,6 +16365,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -15639,6 +16415,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -15689,6 +16468,10 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id",
+      "scope_id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -15736,6 +16519,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -15783,6 +16567,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -15827,6 +16612,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2",
       "C3"
@@ -15875,6 +16661,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -15923,6 +16712,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C3"
@@ -15975,6 +16767,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C3"
@@ -16026,6 +16821,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C3"
@@ -16078,6 +16876,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C3"
@@ -16130,6 +16931,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2",
       "C3"
@@ -16182,6 +16986,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
@@ -16230,6 +17037,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -16273,6 +17081,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -16318,6 +17127,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -16361,6 +17171,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -16406,6 +17217,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -16452,6 +17264,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -16496,6 +17309,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -16542,6 +17356,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -16588,6 +17405,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -16634,6 +17454,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -16680,6 +17501,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -16726,6 +17548,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -16769,6 +17592,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -16814,6 +17638,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -16860,6 +17685,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -16903,6 +17729,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -16946,6 +17773,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -16992,6 +17820,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -17038,6 +17869,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [
+      "id"
+    ],
     "chokePoints": [
       "C2"
     ],
@@ -17084,6 +17918,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [],
     "errors": [
       401,
@@ -17127,6 +17962,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -17172,6 +18008,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 60,
       "key": "user"
     },
+    "uuidParams": [],
     "chokePoints": [
       "C2"
     ],
@@ -17203,4 +18040,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "8d812499d677e3de";
+export const OPENAPI_HASH = "27abecf0c9be707b";

@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Kaname API
   version: 1.0.0
-  description: Mock-Driven Contract Generation。2026-11-07 凍結。信頼源は 08_api/endpoints.json。x-acts / x-screens / x-choke-points / x-source で行為・画面・関門・決定に辿れる
+  description: Mock-Driven Contract Generation。2026-11-08 凍結。信頼源は 08_api/endpoints.json。x-acts / x-screens / x-choke-points / x-source で行為・画面・関門・決定に辿れる
 servers:
 - url: /api/v1
 components:
@@ -90,6 +90,7 @@ components:
         status_id: *id003
         live_at: *id004
         live_by: *id005
+      additionalProperties: false
     Scopes:
       type: object
       properties:
@@ -145,6 +146,7 @@ components:
         name: *id008
         ticket_prefix: *id009
         next_ticket_no: *id010
+      additionalProperties: false
     MemberKinds:
       type: object
       properties:
@@ -174,6 +176,7 @@ components:
       properties:
         key: *id011
         label: *id012
+      additionalProperties: false
     Members:
       type: object
       properties:
@@ -274,6 +277,7 @@ components:
         agent_permission_mode: *id019
         agent_model: *id020
         agent_effort: *id021
+      additionalProperties: false
     SetupSteps:
       type: object
       properties:
@@ -303,6 +307,7 @@ components:
       properties:
         n: *id022
         label: *id023
+      additionalProperties: false
     Clones:
       type: object
       properties:
@@ -349,6 +354,7 @@ components:
       properties:
         owner_member_id: *id024
         persona: *id025
+      additionalProperties: false
     AiEmployees:
       type: object
       properties:
@@ -410,6 +416,7 @@ components:
         template_ref: *id028
         paused_at: *id029
         paused_reason: *id030
+      additionalProperties: false
     GoalKinds:
       type: object
       properties:
@@ -443,6 +450,7 @@ components:
         key: *id031
         label: *id032
         progress_strategy: *id033
+      additionalProperties: false
     Units:
       type: object
       properties:
@@ -499,6 +507,7 @@ components:
         symbol: *id036
         value_type_id: *id037
         decimals: *id038
+      additionalProperties: false
     RollupKinds:
       type: object
       properties:
@@ -528,6 +537,7 @@ components:
       properties:
         key: *id039
         label: *id040
+      additionalProperties: false
     Goals:
       type: object
       properties:
@@ -617,6 +627,7 @@ components:
         target_value: *id048
         unit_id: *id049
         origin_id: *id050
+      additionalProperties: false
     GoalAllocations:
       type: object
       properties:
@@ -671,6 +682,7 @@ components:
         assignee_member_id: *id052
         allocated_value: *id053
         agreement_status_id: *id054
+      additionalProperties: false
     GoalContributions:
       type: object
       properties:
@@ -725,6 +737,7 @@ components:
         parent_goal_id: *id056
         hypothesis_id: *id057
         verdict_id: *id058
+      additionalProperties: false
     GoalVersions:
       type: object
       properties:
@@ -786,6 +799,7 @@ components:
         snapshot: *id061
         changed_at: *id062
         changed_by: *id063
+      additionalProperties: false
     Hypotheses:
       type: object
       properties:
@@ -837,6 +851,7 @@ components:
         goal_id: *id064
         statement: *id065
         evidence: *id066
+      additionalProperties: false
     Measures:
       type: object
       properties:
@@ -889,6 +904,7 @@ components:
         hypothesis_id: *id067
         statement: *id068
         expected_effect: *id069
+      additionalProperties: false
     Validations:
       type: object
       properties:
@@ -943,6 +959,7 @@ components:
         measured_value: *id071
         verdict_id: *id072
         measured_at: *id073
+      additionalProperties: false
     LedgerDefinitions:
       type: object
       properties:
@@ -995,6 +1012,7 @@ components:
         kind_id: *id074
         name: *id075
         json_schema: *id076
+      additionalProperties: false
     LedgerFields:
       type: object
       properties:
@@ -1066,6 +1084,7 @@ components:
         order_no: *id083
         is_filterable: *id084
         is_sortable: *id085
+      additionalProperties: false
     LedgerStages:
       type: object
       properties:
@@ -1119,6 +1138,7 @@ components:
         label: *id088
         order_no: *id089
         rules: *id090
+      additionalProperties: false
     LedgerViews:
       type: object
       properties:
@@ -1175,6 +1195,7 @@ components:
         filters: *id093
         sorts: *id094
         columns: *id095
+      additionalProperties: false
     LedgerRecords:
       type: object
       properties:
@@ -1251,6 +1272,7 @@ components:
         goal_id: *id101
         measure_id: *id102
         data: *id103
+      additionalProperties: false
     Duties:
       type: object
       properties:
@@ -1311,6 +1333,7 @@ components:
         definition_md: *id106
         constraints: *id107
         visibility_id: *id108
+      additionalProperties: false
     DutyVersions:
       type: object
       properties:
@@ -1365,6 +1388,7 @@ components:
         snapshot: *id110
         changed_by: *id111
         change_reason: *id112
+      additionalProperties: false
     LearnedProcedures:
       type: object
       properties:
@@ -1434,6 +1458,7 @@ components:
         avg_ms: *id117
         fail_count: *id118
         last_verified_at: *id119
+      additionalProperties: false
     ProcedureSteps:
       type: object
       properties:
@@ -1488,6 +1513,7 @@ components:
         order_no: *id121
         intent_ja: *id122
         is_variable: *id123
+      additionalProperties: false
     MemoryKinds:
       type: object
       properties:
@@ -1517,6 +1543,7 @@ components:
       properties:
         key: *id124
         label: *id125
+      additionalProperties: false
     Memories:
       type: object
       properties:
@@ -1626,6 +1653,7 @@ components:
         approved_at: *id134
         digest_id: *id135
         superseded_by: *id136
+      additionalProperties: false
     MemoryDigests:
       type: object
       properties:
@@ -1705,6 +1733,7 @@ components:
         bridge_job_id: *id143
         started_at: *id144
         finished_at: *id145
+      additionalProperties: false
     MemoryProposals:
       type: object
       properties:
@@ -1782,6 +1811,7 @@ components:
         conflict_group_id: *id151
         evidence: *id152
         decided_at: *id153
+      additionalProperties: false
     EmbeddingModels:
       type: object
       properties:
@@ -1827,6 +1857,7 @@ components:
         state_id: *id157
         artifact_url: *id158
         sha256: *id159
+      additionalProperties: false
     SearchEmbeddings:
       type: object
       properties:
@@ -1871,6 +1902,7 @@ components:
         target_id: *id161
         model_id: *id162
         chunk_no: *id163
+      additionalProperties: false
     Tasks:
       type: object
       properties:
@@ -1977,6 +2009,7 @@ components:
         planned_for: *id176
         blocked_reason_id: *id177
         blocked_since: *id178
+      additionalProperties: false
     TaskHandovers:
       type: object
       properties:
@@ -2041,6 +2074,7 @@ components:
         mode_id: *id182
         agreement_status_id: *id183
         reason: *id184
+      additionalProperties: false
     DailyPlans:
       type: object
       properties:
@@ -2103,6 +2137,7 @@ components:
         committed_at: *id188
         closed_at: *id189
         carry_over: *id190
+      additionalProperties: false
     Triggers:
       type: object
       properties:
@@ -2165,6 +2200,7 @@ components:
         on_missed_id: *id194
         ttl_minutes: *id195
         enabled: *id196
+      additionalProperties: false
     Policies:
       type: object
       properties:
@@ -2264,6 +2300,7 @@ components:
         mode_id: *id199
         params: *id200
         is_locked: *id201
+      additionalProperties: false
     Approvals:
       type: object
       properties:
@@ -2385,6 +2422,7 @@ components:
         status_id: *id205
         resolved_at: *id206
         note: *id207
+      additionalProperties: false
     ActionRuns:
       type: object
       properties:
@@ -2496,6 +2534,7 @@ components:
         duty_id: *id221
         mode_id: *id222
         bridge_job_id: *id223
+      additionalProperties: false
     ServiceRegistry:
       type: object
       properties:
@@ -2552,6 +2591,7 @@ components:
         domain: *id225
         automation_verdict_id: *id226
         notes: *id227
+      additionalProperties: false
     CredentialKinds:
       type: object
       properties:
@@ -2581,6 +2621,7 @@ components:
       properties:
         key: *id228
         label: *id229
+      additionalProperties: false
     Credentials:
       type: object
       properties:
@@ -2689,6 +2730,7 @@ components:
         provider_id: *id234
         owner_member_id: *id235
         revoked_at: *id236
+      additionalProperties: false
     Conversations:
       type: object
       properties:
@@ -2789,6 +2831,7 @@ components:
         starred_at: *id247
         incognito: *id248
         last_read_at: *id249
+      additionalProperties: false
     BridgeJobs:
       type: object
       properties:
@@ -2920,6 +2963,7 @@ components:
         browser: *id265
         started_at: *id266
         finished_at: *id267
+      additionalProperties: false
     BridgeJobStates:
       type: object
       properties:
@@ -2951,6 +2995,7 @@ components:
       properties:
         key: *id268
         label: *id269
+      additionalProperties: false
     BridgeJobEvents:
       type: object
       properties:
@@ -3019,6 +3064,7 @@ components:
         seq: *id273
         request_id: *id274
         payload: *id275
+      additionalProperties: false
     PermissionRules:
       type: object
       properties:
@@ -3086,6 +3132,7 @@ components:
         decision_id: *id279
         bridge_job_event_id: *id280
         revoked_at: *id281
+      additionalProperties: false
     AgentUsageSnapshots:
       type: object
       properties:
@@ -3146,6 +3193,7 @@ components:
         utilization: *id284
         resets_at: *id285
         observed_at: *id286
+      additionalProperties: false
     Messages:
       type: object
       properties:
@@ -3252,6 +3300,7 @@ components:
         transcript_uuid: *id300
         undo_action_run_id: *id301
         read_at: *id302
+      additionalProperties: false
     Artifacts:
       type: object
       properties:
@@ -3341,6 +3390,7 @@ components:
         current_version: *id310
         source_conversation_id: *id311
         source_job_id: *id312
+      additionalProperties: false
     ArtifactVersions:
       type: object
       properties:
@@ -3407,6 +3457,7 @@ components:
         owner_member_id: *id315
         reverted_from: *id316
         note: *id317
+      additionalProperties: false
     AuditEvents:
       type: object
       properties:
@@ -3471,6 +3522,7 @@ components:
         choke_point_id: *id323
         payload: *id324
         occurred_at: *id325
+      additionalProperties: false
     SessionKinds:
       type: object
       properties:
@@ -3500,6 +3552,7 @@ components:
       properties:
         key: *id326
         label: *id327
+      additionalProperties: false
     RevokeReasons:
       type: object
       properties:
@@ -3529,6 +3582,7 @@ components:
       properties:
         key: *id328
         label: *id329
+      additionalProperties: false
     Layers:
       type: object
       properties:
@@ -3574,6 +3628,7 @@ components:
         key: *id330
         label: *id331
         order_no: *id332
+      additionalProperties: false
     TargetKinds:
       type: object
       properties:
@@ -3603,6 +3658,7 @@ components:
       properties:
         key: *id333
         label: *id334
+      additionalProperties: false
     Abilities:
       type: object
       properties:
@@ -3632,6 +3688,7 @@ components:
       properties:
         key: *id335
         label: *id336
+      additionalProperties: false
     Permissions:
       type: object
       properties:
@@ -3696,6 +3753,7 @@ components:
         ability_id: *id339
         granted_by: *id340
         revoked_at: *id341
+      additionalProperties: false
     AccountEvents:
       type: object
       properties:
@@ -3761,6 +3819,7 @@ components:
         requested_by: *id345
         status_id: *id346
         resolved_at: *id347
+      additionalProperties: false
     AccountEventItems:
       type: object
       properties:
@@ -3824,6 +3883,7 @@ components:
         target_ref: *id351
         decided_by: *id352
         done_at: *id353
+      additionalProperties: false
     Sessions:
       type: object
       properties:
@@ -3949,6 +4009,7 @@ components:
         alive_at: *id364
         bridge_version: *id365
         machine_id: *id366
+      additionalProperties: false
     SupportAccessGrants:
       type: object
       properties:
@@ -4022,6 +4083,7 @@ components:
         expires_at: *id369
         revoked_at: *id370
         ops_member_id: *id371
+      additionalProperties: false
     RetentionHolds:
       type: object
       properties:
@@ -4076,6 +4138,7 @@ components:
         record_ref: *id373
         retain_until: *id374
         legal_basis: *id375
+      additionalProperties: false
     ErasureCertificates:
       type: object
       properties:
@@ -4128,6 +4191,7 @@ components:
       properties:
         issued_at: *id376
         sent_to: *id377
+      additionalProperties: false
     Distributions:
       type: object
       properties:
@@ -4198,6 +4262,7 @@ components:
         current_version: *id381
         plan_ids: *id382
         is_locked: *id383
+      additionalProperties: false
     DistributionVersions:
       type: object
       properties:
@@ -4249,6 +4314,7 @@ components:
         released_at: *id386
         released_by: *id387
         change_reason: *id388
+      additionalProperties: false
     TenantDistributions:
       type: object
       properties:
@@ -4310,6 +4376,7 @@ components:
         enabled: *id391
         override: *id392
         disabled_by: *id393
+      additionalProperties: false
     ServiceRegistryVersions:
       type: object
       properties:
@@ -4370,6 +4437,7 @@ components:
         automation_verdict_id: *id395
         reason: *id396
         released_at: *id397
+      additionalProperties: false
     ServiceRequests:
       type: object
       properties:
@@ -4432,6 +4500,7 @@ components:
         requested_by: *id400
         verdict_id: *id401
         decided_at: *id402
+      additionalProperties: false
     ReviewRequests:
       type: object
       properties:
@@ -4504,6 +4573,7 @@ components:
         reviewer_ops_member_id: *id407
         decided_at: *id408
         reason: *id409
+      additionalProperties: false
     OpsMembers:
       type: object
       properties:
@@ -4562,6 +4632,7 @@ components:
         member_id: *id410
         ops_role_id: *id411
         revoked_at: *id412
+      additionalProperties: false
     OpsAuditEvents:
       type: object
       properties:
@@ -4633,6 +4704,7 @@ components:
         grant_id: *id418
         payload: *id419
         occurred_at: *id420
+      additionalProperties: false
     SecurityEvents:
       type: object
       properties:
@@ -4698,6 +4770,7 @@ components:
         ip_region: *id425
         detail: *id426
         occurred_at: *id427
+      additionalProperties: false
     Inquiries:
       type: object
       properties:
@@ -4770,6 +4843,7 @@ components:
         conversation_id: *id431
         assignee_ops_member_id: *id432
         ai_first_answered_at: *id433
+      additionalProperties: false
     Notices:
       type: object
       properties:
@@ -4862,6 +4936,7 @@ components:
         target_tenant_id: *id438
         publish_at: *id439
         published_by: *id440
+      additionalProperties: false
     NoticeDeliveries:
       type: object
       properties:
@@ -4919,6 +4994,7 @@ components:
         member_id: *id442
         delivered_at: *id443
         read_at: *id444
+      additionalProperties: false
     StatusIncidents:
       type: object
       properties:
@@ -4994,6 +5070,7 @@ components:
         started_at: *id448
         resolved_at: *id449
         note: *id450
+      additionalProperties: false
     NotificationPreferences:
       type: object
       properties:
@@ -5050,6 +5127,7 @@ components:
         event_kind_id: *id452
         channel_id: *id453
         enabled: *id454
+      additionalProperties: false
     Notifications:
       type: object
       properties:
@@ -5121,6 +5199,7 @@ components:
         sent_at: *id459
         failed_at: *id460
         retry_count: *id461
+      additionalProperties: false
     Plans:
       type: object
       properties:
@@ -5180,6 +5259,7 @@ components:
         price_monthly: *id464
         limits: *id465
         current_version: *id466
+      additionalProperties: false
     PlanVersions:
       type: object
       properties:
@@ -5220,6 +5300,7 @@ components:
         plan_id: *id467
         snapshot: *id468
         released_at: *id469
+      additionalProperties: false
     Subscriptions:
       type: object
       properties:
@@ -5297,6 +5378,7 @@ components:
         payment_method_id: *id476
         stripe_customer_ref: *id477
         stripe_subscription_ref: *id478
+      additionalProperties: false
     PlanChangeRequests:
       type: object
       properties:
@@ -5368,6 +5450,7 @@ components:
         dependencies_event_id: *id483
         decided_by_ops_member_id: *id484
         decided_at: *id485
+      additionalProperties: false
     UsageMeters:
       type: object
       properties:
@@ -5426,6 +5509,7 @@ components:
         period_start: *id487
         value: *id488
         limit_value: *id489
+      additionalProperties: false
     Invoices:
       type: object
       properties:
@@ -5509,6 +5593,7 @@ components:
         pdf_ref: *id497
         stripe_invoice_ref: *id498
         hosted_url: *id499
+      additionalProperties: false
     Payments:
       type: object
       properties:
@@ -5574,6 +5659,7 @@ components:
         method_id: *id503
         recorded_by_ops_member_id: *id504
         stripe_payment_ref: *id505
+      additionalProperties: false
     ErrorEvents:
       type: object
       properties:
@@ -5636,6 +5722,7 @@ components:
         context: *id509
         shown_at: *id510
         next_action_taken_at: *id511
+      additionalProperties: false
     Imports:
       type: object
       properties:
@@ -5704,6 +5791,7 @@ components:
         status_id: *id515
         applied_at: *id516
         applied_by: *id517
+      additionalProperties: false
     Integrations:
       type: object
       properties:
@@ -5781,6 +5869,7 @@ components:
         status_id: *id522
         connected_at: *id523
         revoked_at: *id524
+      additionalProperties: false
     Invitations:
       type: object
       properties:
@@ -5850,6 +5939,7 @@ components:
         expires_at: *id528
         accepted_member_id: *id529
         revoked_at: *id530
+      additionalProperties: false
     PendingSignup:
       type: object
       properties:
@@ -5906,6 +5996,7 @@ components:
         sent_at: *id536
         send_error: *id537
         consumed_at: *id538
+      additionalProperties: false
     ExportJobs:
       type: object
       properties:
@@ -5969,6 +6060,7 @@ components:
         status_id: *id541
         expires_at: *id542
         downloaded_at: *id543
+      additionalProperties: false
     Attachments:
       type: object
       properties:
@@ -6047,6 +6139,7 @@ components:
         name: *id548
         uploaded_by: *id549
         scanned_at: *id550
+      additionalProperties: false
     Skills:
       type: object
       properties:
@@ -6121,6 +6214,7 @@ components:
         current_version: *id555
         plan_ids: *id556
         visibility_id: *id557
+      additionalProperties: false
     SkillVersions:
       type: object
       properties:
@@ -6182,6 +6276,7 @@ components:
         test_result: *id561
         released_at: *id562
         released_by: *id563
+      additionalProperties: false
     SkillTestRuns:
       type: object
       properties:
@@ -6244,6 +6339,7 @@ components:
         started_at: *id567
         finished_at: *id568
         result: *id569
+      additionalProperties: false
     SkillAttachments:
       type: object
       properties:
@@ -6316,6 +6412,7 @@ components:
         enabled: *id574
         disabled_by: *id575
         attached_at: *id576
+      additionalProperties: false
     PaymentMethods:
       type: object
       properties:
@@ -6380,6 +6477,7 @@ components:
         last4: *id580
         expires_on: *id581
         registered_at: *id582
+      additionalProperties: false
     BillingEvents:
       type: object
       properties:
@@ -6443,6 +6541,7 @@ components:
         received_at: *id586
         processed_at: *id587
         signature_ok: *id588
+      additionalProperties: false
     LlmRoutes:
       type: object
       properties:
@@ -6510,6 +6609,7 @@ components:
         credential_id: *id592
         managed_allowed_by_ops_member_id: *id593
         managed_allowed_at: *id594
+      additionalProperties: false
     LlmCapabilities:
       type: object
       properties:
@@ -6556,6 +6656,7 @@ components:
         provider_id: *id597
         capability_id: *id598
         supported: *id599
+      additionalProperties: false
     PushDevices:
       type: object
       properties:
@@ -6621,6 +6722,7 @@ components:
         app_version: *id603
         last_seen_at: *id604
         revoked_at: *id605
+      additionalProperties: false
     DisclosureVersions:
       type: object
       properties:
@@ -6688,6 +6790,7 @@ components:
         dpa_ref: *id608
         released_by: *id609
         notice_id: *id610
+      additionalProperties: false
     Subprocessors:
       type: object
       properties:
@@ -6758,6 +6861,7 @@ components:
         effective_from: *id615
         announced_at: *id616
         retired_at: *id617
+      additionalProperties: false
     Tickets:
       type: object
       properties:
@@ -6889,6 +6993,7 @@ components:
         priority_reason: *id636
         deleted_by: *id637
         draft_import_id: *id638
+      additionalProperties: false
     TicketSections:
       type: object
       properties:
@@ -6941,6 +7046,7 @@ components:
         section_key: *id640
         position: *id641
         body: *id642
+      additionalProperties: false
     TicketSectionVersions:
       type: object
       properties:
@@ -7002,6 +7108,7 @@ components:
         edited_by: *id646
         edited_at: *id647
         edited_by_clone: *id648
+      additionalProperties: false
     TicketKinds:
       type: object
       properties:
@@ -7055,6 +7162,7 @@ components:
         color: *id650
         position: *id651
         is_builtin: *id652
+      additionalProperties: false
     KindSections:
       type: object
       properties:
@@ -7121,6 +7229,7 @@ components:
         mode: *id656
         position: *id657
         default_test_specs: *id658
+      additionalProperties: false
     TicketStages:
       type: object
       properties:
@@ -7170,6 +7279,7 @@ components:
         name: *id659
         position: *id660
         is_fixed: *id661
+      additionalProperties: false
     ClassAxes:
       type: object
       properties:
@@ -7219,6 +7329,7 @@ components:
         name: *id663
         is_builtin: *id664
         position: *id665
+      additionalProperties: false
     ClassValues:
       type: object
       properties:
@@ -7269,6 +7380,7 @@ components:
         label: *id667
         color: *id668
         position: *id669
+      additionalProperties: false
     TicketClassValues:
       type: object
       properties:
@@ -7314,6 +7426,7 @@ components:
       properties:
         ticket_id: *id670
         value_id: *id671
+      additionalProperties: false
     HandoverRules:
       type: object
       properties:
@@ -7363,6 +7476,7 @@ components:
         target: *id672
         axis_id: *id673
         mode: *id674
+      additionalProperties: false
     TestSpecs:
       type: object
       properties:
@@ -7423,6 +7537,7 @@ components:
         judge_type: *id678
         params: *id679
         off_reason: *id680
+      additionalProperties: false
     Checks:
       type: object
       properties:
@@ -7493,6 +7608,7 @@ components:
         evidence: *id687
         runner: *id688
         checked_by_member_id: *id689
+      additionalProperties: false
     TicketDecisions:
       type: object
       properties:
@@ -7564,6 +7680,7 @@ components:
         source_message_id: *id695
         superseded_by_id: *id696
         promoted_to: *id697
+      additionalProperties: false
     TicketMessages:
       type: object
       properties:
@@ -7635,6 +7752,7 @@ components:
         changes: *id703
         quote_of_id: *id704
         reactions: *id705
+      additionalProperties: false
     ReferenceLogs:
       type: object
       properties:
@@ -7702,6 +7820,7 @@ components:
         url: *id710
         title: *id711
         seen_at: *id712
+      additionalProperties: false
     KnowledgePages:
       type: object
       properties:
@@ -7796,6 +7915,7 @@ components:
         form: *id723
         archived_at: *id724
         archived_to_page_id: *id725
+      additionalProperties: false
     KnowledgePageVersions:
       type: object
       properties:
@@ -7888,6 +8008,7 @@ components:
         decided_at: *id736
         published_by: *id737
         published_at: *id738
+      additionalProperties: false
     KnowledgeLinks:
       type: object
       properties:
@@ -7918,6 +8039,7 @@ components:
         anchor:
           type: string
           nullable: true
+      additionalProperties: false
     Clients:
       type: object
       properties:
@@ -7978,6 +8100,7 @@ components:
         default_share: *id742
         routing: *id743
         email_domain: *id744
+      additionalProperties: false
     ClientGroups:
       type: object
       properties:
@@ -8022,6 +8145,7 @@ components:
       type: object
       properties:
         client_id: *id745
+      additionalProperties: false
     ClientContacts:
       type: object
       properties:
@@ -8080,6 +8204,7 @@ components:
         role: *id749
         member_id: *id750
         cc_role: *id751
+      additionalProperties: false
     ClientRequests:
       type: object
       properties:
@@ -8157,6 +8282,7 @@ components:
         routed_scope_id: *id759
         questions: *id760
         decline_reason: *id761
+      additionalProperties: false
     Acceptances:
       type: object
       properties:
@@ -8234,6 +8360,7 @@ components:
         comment: *id768
         decided_at: *id769
         reminded_at: *id770
+      additionalProperties: false
     TenantMemberships:
       type: object
       properties:
@@ -8291,6 +8418,7 @@ components:
         role: *id773
         status: *id774
         joined_at: *id775
+      additionalProperties: false
     TermsVersions:
       type: object
       properties:
@@ -8340,6 +8468,7 @@ components:
         kind: *id776
         url: *id777
         published_at: *id778
+      additionalProperties: false
     TermsConsents:
       type: object
       properties:
@@ -8397,6 +8526,7 @@ components:
         terms_version_id: *id781
         agreed_at: *id782
         ip: *id783
+      additionalProperties: false
     Passkeys:
       type: object
       properties:
@@ -8449,6 +8579,7 @@ components:
         transports: *id788
         last_used_at: *id789
         revoked_at: *id790
+      additionalProperties: false
     Operations:
       type: object
       properties:
@@ -8499,6 +8630,7 @@ components:
         name: *id792
         kind: *id793
         current_version: *id794
+      additionalProperties: false
     TicketLinks:
       type: object
       properties:
@@ -8548,6 +8680,7 @@ components:
         from_ticket_id: *id795
         to_ticket_id: *id796
         kind: *id797
+      additionalProperties: false
     TicketHandovers:
       type: object
       properties:
@@ -8633,6 +8766,7 @@ components:
         state: *id807
         decline_reason: *id808
         decided_at: *id809
+      additionalProperties: false
     SavedViews:
       type: object
       properties:
@@ -8691,6 +8825,7 @@ components:
         filters: *id813
         columns: *id814
         density: *id815
+      additionalProperties: false
     TicketImports:
       type: object
       properties:
@@ -8755,6 +8890,7 @@ components:
         errors: *id820
         state: *id821
         committed_at: *id822
+      additionalProperties: false
     LearningCandidates:
       type: object
       properties:
@@ -8834,6 +8970,7 @@ components:
         decided_at: *id831
         result_type: *id832
         result_id: *id833
+      additionalProperties: false
     BridgePairingCodes:
       type: object
       properties:
@@ -8892,6 +9029,7 @@ components:
         expires_at: *id836
         used_at: *id837
         used_session_id: *id838
+      additionalProperties: false
     NotificationSettings:
       type: object
       properties:
@@ -8901,6 +9039,7 @@ components:
           type: object
         paused_until:
           type: string
+          nullable: true
         urgent_override:
           type: array
           items:
@@ -8924,6 +9063,7 @@ components:
           format: date-time
           nullable: true
         urgent_override: {}
+      additionalProperties: false
     OpsPlanProposals:
       type: object
       properties:
@@ -9011,6 +9151,7 @@ components:
         state: *id849
         decided_at: *id850
         return_reason: *id851
+      additionalProperties: false
     ScopeMemberships:
       type: object
       properties:
@@ -9071,6 +9212,7 @@ components:
         role: *id854
         since: *id855
         changed_by: *id856
+      additionalProperties: false
     RoleBundleDefaults:
       type: object
       properties:
@@ -9109,6 +9251,7 @@ components:
         target_kind_id: *id858
         ability_id: *id859
         scope_kind: *id860
+      additionalProperties: false
     StepUpInput:
       type: object
       properties:
@@ -9116,6 +9259,7 @@ components:
           type: string
         code:
           type: string
+      additionalProperties: false
       x-operation: stepUp
     SignupInput:
       type: object
@@ -9128,16 +9272,19 @@ components:
           type: string
         password:
           type: string
+      additionalProperties: false
       x-operation: createSignup
     SignupResendInput:
       type: object
       properties: {}
+      additionalProperties: false
       x-operation: resendSignupEmail
     SignupVerifyInput:
       type: object
       properties:
         token:
           type: string
+      additionalProperties: false
       x-operation: verifySignup
     TermsConsentInput:
       type: object
@@ -9146,12 +9293,16 @@ components:
           type: boolean
         terms_version_id:
           type: string
+          format: uuid
         privacy_version_id:
           type: string
+          format: uuid
+      additionalProperties: false
       x-operation: consentToTerms
     PairingCodeInput:
       type: object
       properties: {}
+      additionalProperties: false
       x-operation: createPairingCode
     BridgeClaimInput:
       type: object
@@ -9162,6 +9313,9 @@ components:
           type: string
         machine_id:
           type: string
+          format: uuid
+          nullable: true
+      additionalProperties: false
       x-operation: claimPairingCode
     BridgeHeartbeatInput:
       type: object
@@ -9170,18 +9324,22 @@ components:
         protocol: {}
         version:
           type: string
+      additionalProperties: false
       x-operation: sendHeartbeat
     TicketCreateInput:
       type: object
       properties:
         scope_id:
           type: string
+          format: uuid
         kind_id:
           type: string
+          format: uuid
         title:
           type: string
         assignee_member_id:
           type: string
+          format: uuid
         due_on:
           type: string
         start_on:
@@ -9192,25 +9350,34 @@ components:
           type: string
         parent_ticket_id:
           type: string
+          format: uuid
         estimate_minutes: {}
         sections:
           type: object
         notify_member_ids:
           type: array
+          items:
+            type: string
+            format: uuid
         draft_id:
           type: string
+          format: uuid
         source_draft_id:
           type: string
+          format: uuid
+      additionalProperties: false
       x-operation: createTicket
     TicketDraftInput:
       type: object
       properties:
         draft_id:
           type: string
+          format: uuid
         body:
           type: object
         discard:
           type: boolean
+      additionalProperties: false
       x-operation: saveMyTicketDraft
     ScopeOverview:
       type: object
@@ -9289,6 +9456,7 @@ components:
           type: array
           items:
             type: object
+          nullable: true
         run:
           type: object
       x-operation: listTicketTimeline
@@ -9337,6 +9505,7 @@ components:
           type: string
         ticket_id:
           type: string
+          nullable: true
         ticket_number:
           type: string
         title:
@@ -9647,6 +9816,7 @@ components:
           type: string
         update:
           type: object
+          nullable: true
       x-operation: getLatestBridgeRelease
     BridgeClaim:
       type: object
@@ -9656,6 +9826,8 @@ components:
         device_id:
           type: string
         member_id:
+          type: string
+        device_label:
           type: string
       x-operation: claimPairingCode
     BridgeReleaseLink:
@@ -9673,6 +9845,7 @@ components:
           type: boolean
         browser:
           type: string
+          nullable: true
         outdated:
           type: boolean
       x-operation: sendHeartbeat
@@ -9683,20 +9856,24 @@ components:
           type: string
         device_label:
           type: string
+          nullable: true
         state:
           type: string
         last_seen_at:
           type: string
+          nullable: true
         connected_at:
           type: string
         version:
           type: string
+          nullable: true
         health:
           type: array
           items:
             type: object
         revoke_reason:
           type: string
+          nullable: true
       x-operation: listMyDevices
     TicketDetail:
       type: object
@@ -9709,10 +9886,13 @@ components:
             type: object
         kind:
           type: object
+          nullable: true
         stage:
           type: object
+          nullable: true
         assignee:
           type: object
+          nullable: true
       x-operation: getTicket
     TicketKindChoice:
       type: object
@@ -9723,6 +9903,7 @@ components:
           type: string
         color:
           type: string
+          nullable: true
         position:
           type: integer
         is_builtin:
@@ -9739,8 +9920,10 @@ components:
           type: string
         body:
           type: object
+          nullable: true
         saved_at:
           type: string
+          nullable: true
       x-operation: saveMyTicketDraft
     BridgeJob:
       type: object
@@ -9783,6 +9966,7 @@ components:
             type: object
         expires_at:
           type: string
+          nullable: true
       x-operation: resolveCredential
     WorkTypeUploadCheck:
       type: object
@@ -9799,6 +9983,7 @@ components:
           type: integer
         changelog:
           type: string
+          nullable: true
       x-operation: getWorkTypeUpload
     PlanProposalImpact:
       type: object
@@ -9811,6 +9996,7 @@ components:
           type: string
         new_from:
           type: string
+          nullable: true
         by_workspace:
           type: array
           items:
@@ -9959,6 +10145,7 @@ components:
           type: string
         expires_at:
           type: string
+          nullable: true
       x-operation: getExport
     WorkspaceSettings:
       type: object
@@ -9989,10 +10176,13 @@ components:
           type: string
         name:
           type: string
+          nullable: true
         price_monthly:
           type: integer
+          nullable: true
         limits:
           type: object
+          nullable: true
         current:
           type: boolean
         can_choose:
@@ -10039,6 +10229,7 @@ components:
             type: object
         owner_member_id:
           type: string
+          nullable: true
         visibility:
           type: string
         active_tickets:
@@ -10171,6 +10362,7 @@ components:
           type: string
         due_on:
           type: string
+          nullable: true
         artifacts:
           type: array
           items:
@@ -10195,8 +10387,10 @@ components:
           type: string
         message:
           type: string
+          nullable: true
         due_on:
           type: string
+          nullable: true
       x-operation: getPortalAcceptance
     KnowledgeHome:
       type: object
@@ -12280,11 +12474,13 @@ paths:
         allowEmptyValue: true
         schema:
           type: string
+          format: uuid
       - name: ticket_id
         in: query
         allowEmptyValue: true
         schema:
           type: string
+          format: uuid
       - name: from
         in: query
         allowEmptyValue: true
@@ -12888,6 +13084,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '500':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
           content:
@@ -13068,6 +13270,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '500':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
           content:
@@ -13203,6 +13411,12 @@ paths:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -14809,6 +15023,7 @@ paths:
         required: true
         schema:
           type: string
+          format: uuid
       responses:
         '200':
           description: 成功
@@ -15343,6 +15558,10 @@ paths:
                     $ref: '#/components/schemas/BridgeReleaseLink'
                   meta:
                     type: object
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
         '401':
           description: UNAUTHENTICATED
           content:
@@ -15357,6 +15576,18 @@ paths:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND／E-CONN-014
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-007
           content:
             application/json:
               schema:
@@ -15414,6 +15645,17 @@ paths:
       x-step-up: false
       security:
       - session: []
+      parameters:
+      - name: os
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+      - name: arch
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
       responses:
         '200':
           description: 成功
@@ -15440,6 +15682,12 @@ paths:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-007
           content:
             application/json:
               schema:
@@ -15966,6 +16214,7 @@ paths:
         allowEmptyValue: true
         schema:
           type: string
+          format: uuid
       - name: cursor
         in: query
         allowEmptyValue: true
@@ -18623,6 +18872,7 @@ paths:
         required: true
         schema:
           type: string
+          format: uuid
       requestBody:
         required: true
         content:
@@ -18973,6 +19223,7 @@ paths:
         allowEmptyValue: true
         schema:
           type: string
+          format: uuid
       - name: cursor
         in: query
         allowEmptyValue: true
@@ -21588,6 +21839,7 @@ paths:
         allowEmptyValue: true
         schema:
           type: string
+          format: uuid
       - name: topic
         in: query
         allowEmptyValue: true
@@ -21598,6 +21850,7 @@ paths:
         allowEmptyValue: true
         schema:
           type: string
+          format: uuid
       - name: state
         in: query
         allowEmptyValue: true
@@ -24210,6 +24463,7 @@ paths:
         allowEmptyValue: true
         schema:
           type: string
+          format: uuid
       responses:
         '200':
           description: 成功
@@ -27314,6 +27568,7 @@ paths:
         allowEmptyValue: true
         schema:
           type: string
+          format: uuid
       - name: cursor
         in: query
         allowEmptyValue: true
@@ -29313,6 +29568,7 @@ paths:
         allowEmptyValue: true
         schema:
           type: string
+          format: uuid
       - name: cursor
         in: query
         allowEmptyValue: true
@@ -31587,6 +31843,7 @@ paths:
         required: true
         schema:
           type: string
+          format: uuid
       requestBody:
         required: true
         content:
@@ -32916,6 +33173,7 @@ paths:
         allowEmptyValue: true
         schema:
           type: string
+          format: uuid
       - name: cursor
         in: query
         allowEmptyValue: true
@@ -33717,6 +33975,7 @@ paths:
         allowEmptyValue: true
         schema:
           type: string
+          format: uuid
       - name: cursor
         in: query
         allowEmptyValue: true
@@ -35569,21 +35828,25 @@ paths:
         allowEmptyValue: true
         schema:
           type: string
+          format: uuid
       - name: stage_id
         in: query
         allowEmptyValue: true
         schema:
           type: string
+          format: uuid
       - name: assignee_id
         in: query
         allowEmptyValue: true
         schema:
           type: string
+          format: uuid
       - name: client_id
         in: query
         allowEmptyValue: true
         schema:
           type: string
+          format: uuid
       - name: due_from
         in: query
         allowEmptyValue: true
@@ -35777,6 +36040,12 @@ paths:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: E-PAGE-001
           content:
             application/json:
               schema:

@@ -1,7 +1,7 @@
 // 契約の 1 operation を Hono の handler にする。順序は固定：上限（429）→ 認証（401）→ 認可（403）→ 入力の検証（422・表記ゆらぎの正規化）→ 冪等（409／再送は最初の結果）→ hooks.before → 副作用（hooks.effect・失敗は 502 で記録しない）→ 記録（関門 C2）→ hooks.after
 import { createHash } from "node:crypto";
 import type { Context } from "hono";
-import { ENDPOINTS, type EndpointDef } from "@kaname/contracts";
+import { ENDPOINTS, isUuid, type EndpointDef } from "@kaname/contracts";
 import { SCHEMAS } from "@kaname/contracts/schemas";
 import type { Row, TableName } from "@kaname/db/repository";
 import type { Vars } from "../middleware/tenant.js";
@@ -57,6 +57,23 @@ export const sessionUnresolved = (c: Context, where: string, e: unknown) => {
   return c.json({ error: "unavailable", code: "E-PAGE-003", message: x.message ?? "", action: x.action ?? "" }, 503);
 };
 
+/** 入口の uuid（D-129.42・K-144）：契約で format: uuid の道の値と問い合わせ（registry の uuidParams）が正式な uuid か。
+ *  道の値は届いたまま確かめる（中で使う値と同じもの）。問い合わせの空の値（?x=）は指定なし。*_ids はカンマ区切りの中身を 1 つずつ */
+function uuidParamIssues(c: Ctx, def: EndpointDef): { field: string; message: string }[] {
+  const out: { field: string; message: string }[] = [];
+  for (const name of def.uuidParams) {
+    const inPath = def.path.includes(`:${name}`);
+    const v = inPath ? (c.req.param(name) ?? "") : (c.req.query(name) ?? "");
+    if (!inPath && v === "") continue;
+    const values = !inPath && name.endsWith("_ids") ? v.split(",") : [v];
+    if (!values.every(isUuid)) out.push({ field: name, message: "uuid" });
+  }
+  return out;
+}
+/** 体の確かめの理由：uuid の形で落ちた欄は "uuid"（道の値と同じ。zod の英語の文を出さない）。ほかは zod のまま */
+const issueMessage = (i: { code: string; message: string; format?: string }) =>
+  i.code === "invalid_format" && i.format === "uuid" ? "uuid" : i.message;
+
 export function op(deps: ContractDeps, operationId: string) {
   const e = ENDPOINTS.find((x) => x.operationId === operationId);
   if (!e) throw new Error(`契約に無い operation: ${operationId}`);
@@ -91,6 +108,10 @@ export function op(deps: ContractDeps, operationId: string) {
         if (ctx.role === "ops" && !(await repo.opsAllowed(ctx))) return err(c, 403, "forbidden", "FORBIDDEN");
       }
     }
+    // 3.0) 入口の uuid（D-129.42・K-144）：道の値と問い合わせの id を、id で行を引く権限の確かめ（3.1・4.1）とまだ作っていない口の 501 より前に
+    //      正式な uuid か確かめる。形の違う id が DB の ::uuid に届いて 500 にならないように
+    const badIds = uuidParamIssues(c, def);
+    if (badIds.length) return err(c, 422, "validation_failed", "VALIDATION_ERROR", { details: badIds });
     // 3.1) 権限の言葉の段（K-14）：admin の能力・運営のできること など。行に結ぶ言葉は 4.1 で :id の行を読んで確かめる（K-15）
     if (def.auth !== "public") {
       const check = checkFor(def.perm.word);
@@ -105,9 +126,8 @@ export function op(deps: ContractDeps, operationId: string) {
     if (!deps.hooks[operationId] && (!def.generic || !repo.hasColumn(def.table as TableName, "id")))
       return err(c, 501, "not_implemented", "NOT_IMPLEMENTED", { message: "契約にある口だが、まだ作っていない" });
     // 4) 入力
+    //    道の id は 3.0 で正式な uuid と確かめ済み（:id は契約で format: uuid）
     const id = def.path.includes(":id") ? (c.req.param("id") ?? "") : null;
-    if (id !== null && !/^[0-9a-f-]{36}$/i.test(id))
-      return err(c, 422, "validation_failed", "VALIDATION_ERROR", { details: [{ field: "id", message: "uuid" }] });
     // 4.1) 行に結ぶ言葉（K-15・ZT4）：:id の行を行の守りの中で読み、見えなければ 404（無いのと同じ）・言葉の中の人でなければ 403
     //      本人・担当者・承認する人・受ける人・マネージャー・書ける人。条件は契約の perm.row（scripts/ci/row_rules.mjs）
     if (id !== null && def.perm.row && def.auth === "member") {
@@ -123,13 +143,13 @@ export function op(deps: ContractDeps, operationId: string) {
       } catch {
         return err(c, 422, "validation_failed", "VALIDATION_ERROR", { details: [{ field: "body", message: "JSON" }] });
       }
-      // 口の前処理（K-53 の同意：同意の印が無いのを正本のエラーで返す・体の余計な項目を落とす）。前処理の後も、必ず契約の strict な形で確かめる
+      // 口の前処理（K-53 の同意：同意の印が無いのを正本のエラーで返す）。前処理の後も、必ず契約の strict な形で確かめる（知らない項目は 422・K-144）
       const pre = deps.hooks[operationId]?.input?.(raw);
       if (pre && "reply" in pre) return c.json(pre.reply.body, pre.reply.status as 400);
       const parsed = schema!.safeParse(pre ? pre.input : raw);
       if (!parsed.success)
         return err(c, 422, "validation_failed", "VALIDATION_ERROR", {
-          details: parsed.error.issues.map((i) => ({ field: i.path.join(".") || "body", message: i.message })),
+          details: parsed.error.issues.map((i) => ({ field: i.path.join(".") || "body", message: issueMessage(i) })),
         });
       input = parsed.data as Row;
     }
@@ -143,8 +163,7 @@ export function op(deps: ContractDeps, operationId: string) {
       if (!Number.isInteger(limit) || limit < 1 || limit > LIMIT_MAX)
         details.push({ field: "limit", message: `1〜${LIMIT_MAX}` });
       if (offset === null) details.push({ field: "cursor", message: "不正" });
-      if (q["scope_id"] !== undefined && !/^[0-9a-f-]{36}$/i.test(q["scope_id"]))
-        details.push({ field: "scope_id", message: "uuid" });
+      if (q["scope_id"] !== undefined && !isUuid(q["scope_id"])) details.push({ field: "scope_id", message: "uuid" });
       else if (q["scope_id"] !== undefined && !def.ignoresScope && !repo.hasColumn(def.table as TableName, "scope_id"))
         details.push({ field: "scope_id", message: "この一覧はグループで絞れない" });
       if (

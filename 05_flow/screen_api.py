@@ -489,7 +489,7 @@ SCREEN_API = {
 }
 
 
-# 表の行ではない答えの形（operationId → 名前と項目）。項目の型は string／integer／boolean／object／array
+# 表の行ではない答えの形（operationId → 名前と項目）。項目の型は string／integer／number／boolean／object／array／uuid／uuid[]（後ろの ? は null 可）
 # 表の行ではない入力の形（K-19）。無い口は「表の名前＋Input」
 INPUTS = {
     "stepUp": ("StepUpInput", {"password": "string", "code": "string"}),
@@ -500,17 +500,17 @@ INPUTS = {
     # 確認のリンクで確定する（K-52）：届いたメールのリンクの手がかりだけ。表の列（pw_iv など）は入力に出さない
     "verifySignup": ("SignupVerifyInput", {"token": "string"}),
     # 規約に同意する（K-53）：同意の印と、同意する今の版（利用規約・プライバシーポリシー）の ID だけ。テナントと人はセッションから決める（体に入れても無視する）
-    "consentToTerms": ("TermsConsentInput", {"agree": "boolean", "terms_version_id": "string", "privacy_version_id": "string"}),
+    "consentToTerms": ("TermsConsentInput", {"agree": "boolean", "terms_version_id": "uuid", "privacy_version_id": "uuid"}),
     # K-57：PC をつなぐ。コードを出すのは空の入力（持ち主・ハッシュは外から入れさせない）。型が any の欄は形を問わず受け、口が扱う
     "createPairingCode": ("PairingCodeInput", {}),
-    "claimPairingCode": ("BridgeClaimInput", {"code": "string", "device_label": "string", "machine_id": "string"}),   # machine_id：この PC の印（UUID・D-128.174）。古い Bridge は送らない
+    "claimPairingCode": ("BridgeClaimInput", {"code": "string", "device_label": "string", "machine_id": "uuid?"}),   # machine_id：この PC の印（UUID・D-128.174）。古い Bridge は送らない（null も受ける）
     "sendHeartbeat": ("BridgeHeartbeatInput", {"health": "any", "protocol": "any", "version": "string"}),
     # K-60：チケットを作る。番号・消した人・取り込みの下書きは入れさせない。区画は鍵 → 本文。知らせる人は最初から選べる（D-128.138）
-    "createTicket": ("TicketCreateInput", {"scope_id": "string", "kind_id": "string", "title": "string", "assignee_member_id": "string",
+    "createTicket": ("TicketCreateInput", {"scope_id": "uuid", "kind_id": "uuid", "title": "string", "assignee_member_id": "uuid",
                                            "due_on": "string", "start_on": "string", "priority": "string", "priority_reason": "string",
-                                           "parent_ticket_id": "string", "estimate_minutes": "any", "sections": "object",
-                                           "notify_member_ids": "array", "draft_id": "string", "source_draft_id": "string"}),   # source_draft_id：続きとして出した元の下書き（作ったら消す・K-60)
-    "saveMyTicketDraft": ("TicketDraftInput", {"draft_id": "string", "body": "object", "discard": "boolean"}),
+                                           "parent_ticket_id": "uuid", "estimate_minutes": "any", "sections": "object",
+                                           "notify_member_ids": "uuid[]", "draft_id": "uuid", "source_draft_id": "uuid"}),   # source_draft_id：続きとして出した元の下書き（作ったら消す・K-60)
+    "saveMyTicketDraft": ("TicketDraftInput", {"draft_id": "uuid", "body": "object", "discard": "boolean"}),
 }
 # get で始まるが並びを返す口（K-53）。一覧の問い合わせ（scope_id・cursor・limit・sort）は形だけ確かめて無視する
 LIST_OPS = {"getCurrentTerms"}
@@ -540,6 +540,9 @@ ERRORS_4XX = {
         {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": ["E-VAL-019"],
          "trigger": "同意の印（agree=true）が無い・版の ID が空か形が違うか無い版・利用規約とプライバシーポリシーの片方だけ",
          "ears_form": "UNWANTED: IF 同意の印が無いか版の ID が受け付けられないなら、Kaname は 422 と項目ごとの理由（同意の印が無いときは E-VAL-019）を返し、同意の行を書かない"},
+        {"status": 500, "code": "E-PAGE-003", "body": {"error": "internal", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
+         "trigger": "同意を書く DB（今の版を読む・同意の行を書く）が落ちた",
+         "ears_form": "UNWANTED: IF 同意を書く DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、同意の行もセッションの印も変えない"},
     ],
     # 今の版を読む（K-53）。DB が落ちたら中身を返さない
     "getCurrentTerms": [
@@ -558,7 +561,53 @@ ERRORS_4XX = {
         {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": ["E-PAGE-006"],
          "trigger": "手がかりが無い・空（前後の空白を除いて空）",
          "ears_form": "UNWANTED: IF 手がかりが無いか空なら、Kaname は 422 を返し、申し込みには触らない"},
+        {"status": 500, "code": "E-PAGE-003", "body": {"error": "internal", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
+         "trigger": "確定の途中で DB か認証の仕組みが落ちた",
+         "ears_form": "UNWANTED: IF 確定の途中で DB か認証が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、ログインの印を渡さない"},
     ],
+    # 登録の申し込み（K-51・K-144）。規約の版を読む DB が落ちたら申し込みを作らない（汎用の 409・422 はそのまま）
+    "createSignup": [
+        {"status": 500, "code": "E-PAGE-003", "body": {"error": "internal", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
+         "trigger": "規約の版を読む DB か申し込みを書く DB が落ちた",
+         "ears_form": "UNWANTED: IF 規約の版を読む DB か申し込みを書く DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、申し込みを作らずメールも送らない"},
+    ],
+    # 配布物を受け取る（K-57・K-144）。目録に無い名前・その OS の配布物が無い・知らない名前・置き場に届かない
+    "downloadBridgeRelease": [
+        {"status": 404, "code": "NOT_FOUND", "body": {"error": "not_found", "code": "NOT_FOUND"},
+         "trigger": "目録に無い名前・置き場の外を指す名前",
+         "ears_form": "UNWANTED: IF 名前が目録に無いか置き場の外を指すなら、Kaname は 404 と NOT_FOUND を返し、ファイルを渡さない"},
+        {"status": 404, "code": "E-CONN-014", "body": {"error": "not_found", "code": "E-CONN-014"}, "errors": ["E-CONN-014"],
+         "trigger": "その OS（mac・win）の配布物が無い",
+         "ears_form": "UNWANTED: IF その OS の配布物が無いなら、Kaname は 404 と E-CONN-014 を返す"},
+        {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []},
+         "trigger": "小文字だけの知らない名前（mac・win のどちらでもない）",
+         "ears_form": "UNWANTED: IF 名前が小文字だけで mac・win のどちらでもないなら、Kaname は 422 と欄 name を返す"},
+        {"status": 503, "code": "E-PAGE-007", "body": {"error": "unavailable", "code": "E-PAGE-007"}, "errors": ["E-PAGE-007"],
+         "trigger": "配布物の置き場に届かない",
+         "ears_form": "UNWANTED: IF 配布物の置き場に届かないなら、Kaname は 503 と E-PAGE-007 を返し、空を成功にしない"},
+    ],
+    # 新しい版を見る（K-57・K-144）。置き場に届かなければ 503（空を「配っていない」にしない）
+    "getLatestBridgeRelease": [
+        {"status": 503, "code": "E-PAGE-007", "body": {"error": "unavailable", "code": "E-PAGE-007"}, "errors": ["E-PAGE-007"],
+         "trigger": "配布物の置き場に届かない",
+         "ears_form": "UNWANTED: IF 配布物の置き場に届かないなら、Kaname は 503 と E-PAGE-007 を返し、「配っていない」と答えない"},
+    ],
+    # チケットを作る（K-60・K-144）。親が無い・見えない
+    "createTicket": [
+        {"status": 404, "code": "E-PAGE-001", "body": {"error": "not_found", "code": "E-PAGE-001"}, "errors": ["E-PAGE-001"],
+         "trigger": "親のチケットが無い・消えた・見えない",
+         "ears_form": "UNWANTED: IF 親のチケットが無いか見えないなら、Kaname は 404 と E-PAGE-001 を返し、チケットを作らない"},
+    ],
+}
+# JSON でなくファイルそのものを返す口（operationId → 200 の application/octet-stream の中身の形・K-144）。JSON の答えと並べて契約に書く
+RAW_200 = {
+    "downloadBridgeRelease": {"type": "string", "format": "binary"},   # 手元のフォルダの配布物はファイルそのもの。外の置き場なら JSON の期限つき URL
+}
+# 答えの欄が、その口の表の null を許す列と同じ名前でも null を返さないもの（"op.欄" → 理由）。ここに無い欄は表のとおり null 可にする（K-144）
+NOT_NULL_ANSWERS = {
+    "listMyDevices.health": "口が coalesce で空の並び [] を返し、null にはしない（sessions.health は null 可）",
+    "claimPairingCode.device_label": "口が cleanLabel で空なら「この PC」にそろえて返し、null にはしない（sessions.device_label は null 可）",
+    "stepUp.step_up_at": "口が本人確認を取り直したその時刻を返し、null にはしない（sessions.step_up_at は null 可）",
 }
 # 頭（header）で受ける値（operationId → 名前）。URL に載せるとアクセスの記録に残るものは頭で渡す（D-128.142）
 HEADERS = {
@@ -570,11 +619,11 @@ RESPONSES = {
     "previewTicketKindChange": ("TicketKindChangePreview", {"added_sections": "array", "removed_sections": "array", "moved_to_body": "array", "checks_reset": "boolean"}),
     "previewTicketDelete": ("TicketDeletePreview", {"children": "integer", "attachments": "integer", "artifacts": "integer", "restorable_until": "string"}),
     "search": ("SearchHit", {"kind": "string", "id": "string", "title": "string", "snippet": "string", "url": "string"}),
-    "listTicketTimeline": ("TimelineItem", {"kind": "string", "at": "string", "actor_member_id": "string", "message": "object", "changes": "array", "run": "object"}),
+    "listTicketTimeline": ("TimelineItem", {"kind": "string", "at": "string", "actor_member_id": "string", "message": "object", "changes": "array?", "run": "object"}),
     "lintTestSpecs": ("TestSpecLint", {"missing": "array", "warnings": "array"}),
     "completeTicket": ("TicketCompletion", {"ticket": "object", "knowledge_candidates": "array", "skipped_reason": "string"}),
     "bulkUpdateTickets": ("BulkResult", {"updated": "array", "skipped": "array"}),
-    "listApprovalQueue": ("ApprovalQueueItem", {"kind": "string", "id": "string", "ticket_id": "string", "ticket_number": "string", "title": "string", "from_member_id": "string", "check_summary": "string", "due_on": "string", "decide_inline": "boolean", "primary_action": "string", "secondary_action": "string"}),
+    "listApprovalQueue": ("ApprovalQueueItem", {"kind": "string", "id": "string", "ticket_id": "string?", "ticket_number": "string", "title": "string", "from_member_id": "string", "check_summary": "string", "due_on": "string", "decide_inline": "boolean", "primary_action": "string", "secondary_action": "string"}),
     "getApproval": ("ApprovalDetail", {"approval": "object", "ticket": "object", "operation": "object", "message_text": "string", "artifact_version": "object", "checks": "array", "cautions": "array", "irreversible": "boolean", "chain": "array"}),
     "previewBulkApproval": ("BulkApprovalPreview", {"eligible": "array", "excluded": "array"}),
     "bulkApprove": ("BulkResult", {"updated": "array", "skipped": "array"}),
@@ -600,23 +649,23 @@ RESPONSES = {
     "getMe": ("Me", {"member": "object", "workspaces": "array"}),
     "getMyUsage": ("MyUsage", {"five_hour": "object", "month": "object", "by_workspace": "array", "notify_at_percent": "integer", "on_exhausted": "string"}),
     "listSetupTasks": ("SetupTask", {"key": "string", "label": "string", "done": "boolean", "href": "string"}),
-    "getNotificationSettings": ("NotificationSettings", {"email_digest": "boolean", "quiet_hours": "object", "paused_until": "string", "urgent_override": "array", "events": "array"}),
+    "getNotificationSettings": ("NotificationSettings", {"email_digest": "boolean", "quiet_hours": "object", "paused_until": "string?", "urgent_override": "array", "events": "array"}),
     "createPairingCode": ("PairingCode", {"code": "string", "expires_at": "string"}),
-    "getLatestBridgeRelease": ("BridgeRelease", {"released": "boolean", "version": "string", "released_at": "string", "update": "object"}),
-    "claimPairingCode": ("BridgeClaim", {"device_token": "string", "device_id": "string", "member_id": "string"}),
+    "getLatestBridgeRelease": ("BridgeRelease", {"released": "boolean", "version": "string", "released_at": "string", "update": "object?"}),   # その OS・CPU の更新が無いと update: null
+    "claimPairingCode": ("BridgeClaim", {"device_token": "string", "device_id": "string", "member_id": "string", "device_label": "string"}),
     # 置き場が外なら短い期限の署名 URL（D-128.153）。手元のフォルダならファイルそのもの（JSON ではない）
     "downloadBridgeRelease": ("BridgeReleaseLink", {"url": "string", "expires_at": "string"}),
-    "sendHeartbeat": ("BridgeHeartbeat", {"ok": "boolean", "browser": "string", "outdated": "boolean"}),
-    "listMyDevices": ("BridgeDevice", {"id": "string", "device_label": "string", "state": "string", "last_seen_at": "string", "connected_at": "string", "version": "string", "health": "array", "revoke_reason": "string"}),
-    "getTicket": ("TicketDetail", {"ticket": "object", "sections": "array", "kind": "object", "stage": "object", "assignee": "object"}),
-    "listTicketKinds": ("TicketKindChoice", {"id": "string", "name": "string", "color": "string", "position": "integer", "is_builtin": "boolean", "sections": "array"}),
-    "listMyTicketDrafts": ("TicketDraft", {"draft_id": "string", "body": "object", "saved_at": "string"}),
-    "saveMyTicketDraft": ("TicketDraft", {"draft_id": "string", "body": "object", "saved_at": "string"}),
+    "sendHeartbeat": ("BridgeHeartbeat", {"ok": "boolean", "browser": "string?", "outdated": "boolean"}),
+    "listMyDevices": ("BridgeDevice", {"id": "string", "device_label": "string?", "state": "string", "last_seen_at": "string?", "connected_at": "string", "version": "string?", "health": "array", "revoke_reason": "string?"}),
+    "getTicket": ("TicketDetail", {"ticket": "object", "sections": "array", "kind": "object?", "stage": "object?", "assignee": "object?"}),
+    "listTicketKinds": ("TicketKindChoice", {"id": "string", "name": "string", "color": "string?", "position": "integer", "is_builtin": "boolean", "sections": "array"}),
+    "listMyTicketDrafts": ("TicketDraft", {"draft_id": "string", "body": "object?", "saved_at": "string?"}),
+    "saveMyTicketDraft": ("TicketDraft", {"draft_id": "string", "body": "object?", "saved_at": "string?"}),   # 捨てた・使い終わった下書きは body・saved_at が null
     "takeBridgeJob": ("BridgeJob", {"job": "object", "allowed_tools": "array", "forbidden_domains": "array", "rules": "array"}),
     "getJobControl": ("JobControl", {"stop": "boolean", "steers": "array"}),
-    "resolveCredential": ("ResolvedCredential", {"ref": "string", "ciphertext_for_executor": "string", "destinations": "array", "expires_at": "string"}),
-    "getWorkTypeUpload": ("WorkTypeUploadCheck", {"package": "object", "checks": "array", "passed": "boolean", "test_scenarios": "integer", "changelog": "string"}),
-    "getPlanProposalImpact": ("PlanProposalImpact", {"tenants": "integer", "monthly_revenue_diff": "integer", "existing_from": "string", "new_from": "string", "by_workspace": "array"}),
+    "resolveCredential": ("ResolvedCredential", {"ref": "string", "ciphertext_for_executor": "string", "destinations": "array", "expires_at": "string?"}),
+    "getWorkTypeUpload": ("WorkTypeUploadCheck", {"package": "object", "checks": "array", "passed": "boolean", "test_scenarios": "integer", "changelog": "string?"}),
+    "getPlanProposalImpact": ("PlanProposalImpact", {"tenants": "integer", "monthly_revenue_diff": "integer", "existing_from": "string", "new_from": "string?", "by_workspace": "array"}),
     "checkRule": ("RuleCheck", {"conflicts": "array", "similar": "array", "needs_approval_from": "string", "warnings": "array"}),
     "getWorkspaceMembers": ("WorkspaceMembers", {"groups": "array", "invitations": "array", "alerts": "array", "count": "integer"}),
     "createInvitationLink": ("InvitationLink", {"url": "string", "expires_at": "string"}),
@@ -624,12 +673,12 @@ RESPONSES = {
     "previewMemberRemoval": ("MemberRemovalPreview", {"tickets": "array", "handovers_cancelled": "array", "approvals_reassigned": "array", "sole_approver": "array", "deleted": "array", "kept": "array", "restorable_until": "string"}),
     "getWorkspaceRules": ("WorkspaceRules", {"rules": "array", "rules_by_layer": "array", "escalations": "array", "work_types": "array"}),
     "previewEscalationRule": ("EscalationPreview", {"matched_last_month": "integer", "examples": "array"}),
-    "getExport": ("ExportStatus", {"status": "string", "url": "string", "expires_at": "string"}),
+    "getExport": ("ExportStatus", {"status": "string", "url": "string", "expires_at": "string?"}),
     "getWorkspaceSettings": ("WorkspaceSettings", {"workspace": "object", "plan": "object", "subscription": "object", "price_change": "object", "permissions": "array", "fixed_rules": "array", "deletion": "object"}),
-    "listWorkspacePlans": ("PlanChoice", {"plan_id": "string", "name": "string", "price_monthly": "integer", "limits": "object", "current": "boolean", "can_choose": "boolean", "reason": "string", "effective_from": "string"}),
+    "listWorkspacePlans": ("PlanChoice", {"plan_id": "string", "name": "string?", "price_monthly": "integer?", "limits": "object?", "current": "boolean", "can_choose": "boolean", "reason": "string", "effective_from": "string"}),
     "getBilling": ("Billing", {"payee": "object", "billing_contact": "object", "terms": "string", "invoices": "array"}),
     "downloadInvoicePdf": ("SignedUrl", {"url": "string", "expires_at": "string"}),
-    "listClients": ("ClientRow", {"id": "string", "name": "string", "summary": "string", "groups": "array", "owner_member_id": "string", "visibility": "string", "active_tickets": "integer", "open_requests": "integer", "waiting_acceptances": "integer", "last_activity_at": "string"}),
+    "listClients": ("ClientRow", {"id": "string", "name": "string", "summary": "string", "groups": "array", "owner_member_id": "string?", "visibility": "string", "active_tickets": "integer", "open_requests": "integer", "waiting_acceptances": "integer", "last_activity_at": "string"}),
     "listClientLinkCandidates": ("ClientLinkCandidate", {"ticket_id": "string", "number": "string", "title": "string", "reason": "string"}),
     "getClient": ("ClientDetail", {"client": "object", "groups": "array", "contacts": "array", "todo": "array", "rules": "array", "knowledge": "array", "counts": "object"}),
     "listClientActivity": ("ClientActivityItem", {"at": "string", "actor": "object", "kind": "string", "text": "string", "ticket_id": "string", "client_visible": "boolean"}),
@@ -638,8 +687,8 @@ RESPONSES = {
     "getPortalHome": ("PortalHome", {"to_review": "array", "requests": "array", "tickets": "array"}),
     "askPortalRequestQuestions": ("PortalQuestions", {"available": "boolean", "questions": "array"}),
     "getPortalRequest": ("PortalRequest", {"request": "object", "messages": "array"}),
-    "getPortalTicket": ("PortalTicket", {"title": "string", "stage": "string", "due_on": "string", "artifacts": "array", "messages": "array", "sections": "array"}),
-    "getPortalAcceptance": ("PortalAcceptance", {"acceptance": "object", "artifact": "object", "preview_url": "string", "message": "string", "due_on": "string"}),
+    "getPortalTicket": ("PortalTicket", {"title": "string", "stage": "string", "due_on": "string?", "artifacts": "array", "messages": "array", "sections": "array"}),
+    "getPortalAcceptance": ("PortalAcceptance", {"acceptance": "object", "artifact": "object", "preview_url": "string", "message": "string?", "due_on": "string?"}),
     "getKnowledgeHome": ("KnowledgeHome", {"to_verify": "array", "proposals": "array", "recent": "array", "popular": "array", "count": "integer"}),
     "getKnowledgeTree": ("KnowledgeTree", {"places": "array", "topics": "array", "archived": "integer"}),
     "askKnowledge": ("KnowledgeAnswer", {"mode": "string", "answer": "string", "citations": "array", "hits": "array"}),
@@ -697,6 +746,7 @@ QUERIES = {
     "listPlanProposals": ["state"],
     "listPlanHistory": ["plan_id"],
     "getNotificationSettings": ["tenant_id"],
+    "getLatestBridgeRelease": ["os", "arch"],   # 一覧でない口の問い合わせ（K-144）。値が違えば update: null
     "listAuditEvents": ["q", "kind", "member_id", "ticket_id", "from", "to"],
     "listScopes": ["layer_id"],
     "listClientActivity": ["client_visible"],

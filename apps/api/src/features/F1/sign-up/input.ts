@@ -33,17 +33,17 @@ export const fail = (code: string, field?: string): HookReply => {
   return { status: e.status, body: e.toJSON() };
 };
 /** 入力を確かめる。通れば直した値、通らなければ 422 の答え */
-export function parseSignup(raw: Record<string, unknown>, rawPassword: unknown): SignupInput | HookReply {
-  const typed = cleanText(raw["email"]);
+export function parseSignup(body: Record<string, unknown>, rawPassword: unknown): SignupInput | HookReply {
+  const typed = cleanText(body["email"]);
   // 途中の空白は打ち間違い（「a b@example.com」を ab@ にしない）。前後の空白・全角・大文字は直す
   const email = /\s/.test(typed) ? "" : normalizeEmail(typed);
   if (!EMAIL_RE.test(email)) return fail("E-VAL-004", "email");
-  const name = cleanText(raw["name"]);
+  const name = cleanText(body["name"]);
   if (!name || length(name) > NAME_MAX) return fail("E-VAL-010", "name");
-  const companyName = cleanText(raw["company_name"]);
+  const companyName = cleanText(body["company_name"]);
   if (length(companyName) > COMPANY_MAX) return fail("E-VAL-016", "company_name");
   // パスワードは表記ゆらぎを直さない（打ったとおりに預ける）。契約の入口が直す前の値を使う
-  const password = typeof rawPassword === "string" ? rawPassword : String(raw["password"] ?? "");
+  const password = typeof rawPassword === "string" ? rawPassword : String(body["password"] ?? "");
   if (length(password) < PASSWORD_MIN) return fail("E-VAL-005", "password");
   return { email, name, companyName, password };
 }

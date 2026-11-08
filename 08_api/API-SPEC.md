@@ -1,4 +1,4 @@
-# Kaname API 設計書 v1.0（2026-11-07 凍結）
+# Kaname API 設計書 v1.0（2026-11-08 凍結）
 
 > 信頼源は `08_api/endpoints.json` と `openapi.yaml`（05_flow/build_api.py が機械生成）。
 
@@ -40,12 +40,12 @@
 | EP-025 | GET | `/api/v1/auth/service-status` | 取得（auth）— ログインする（パスキー／パスワード＋2 段階） | A13 | 1 | public |  | 422 429 |
 | EP-026 | POST | `/api/v1/auth/sign-in` | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | A13 | 1 | public | C2 | 409 422 429 |
 | EP-027 | POST | `/api/v1/auth/sign-out` | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | A13 | 1 | member | C2 | 401 403 409 422 429 |
-| EP-028 | POST | `/api/v1/auth/sign-up` | 作成・実行（auth）— アカウントを作る（会社名が空なら本人の名前で個 | A01 A96 | 1 | public | C2 | 409 422 429 |
+| EP-028 | POST | `/api/v1/auth/sign-up` | 作成・実行（auth）— アカウントを作る（会社名が空なら本人の名前で個 | A01 A96 | 1 | public | C2 | 409 422 500 429 |
 | EP-029 | POST | `/api/v1/auth/sign-up/resend` | 作成・実行（auth）— アカウントを作る（会社名が空なら本人の名前で個 | A01 | 1 | public | C2 | 409 422 429 |
 | EP-030 | GET | `/api/v1/auth/sign-up/status` | 取得（auth）— アカウントを作る（会社名が空なら本人の名前で個人のテ | A01 | 1 | public |  | 422 429 |
-| EP-031 | POST | `/api/v1/auth/sign-up/verify` | 作成・実行（auth）— メールを確認して本人だと示す | A02 | 1 | public | C2 C6 | 409 422 410 429 |
+| EP-031 | POST | `/api/v1/auth/sign-up/verify` | 作成・実行（auth）— メールを確認して本人だと示す | A02 | 1 | public | C2 C6 | 409 422 410 500 429 |
 | EP-032 | POST | `/api/v1/auth/step-up` | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | A13 | 1 | member | C2 | 401 403 409 422 429 403 |
-| EP-033 | POST | `/api/v1/auth/terms/consent` | 作成・実行（auth）— 規約に同意する（どの版に同意したかが残る） | A96 | 1 | member | C2 | 401 403 409 422 429 |
+| EP-033 | POST | `/api/v1/auth/terms/consent` | 作成・実行（auth）— 規約に同意する（どの版に同意したかが残る） | A96 | 1 | member | C2 | 401 403 409 422 500 429 |
 | EP-034 | GET | `/api/v1/auth/terms/current` | 取得（auth）— 規約に同意する（どの版に同意したかが残る） | A96 | 1 | public |  | 422 500 429 |
 | EP-035 | POST | `/api/v1/auth/two-factor/verify` | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | A13 | 1 | public | C2 | 409 422 429 |
 | EP-036 | POST | `/api/v1/bridge/claim` | 作成・実行（bridge）— 自分の PC をつなぐ | A09 | 1 | public | C1 C2 C4 | 409 422 429 502 |
@@ -68,8 +68,8 @@
 | EP-053 | POST | `/api/v1/bridge/jobs/take` | 作成・実行（bridge）— AI に任せる | A104 | 1 | device | C2 C3 C5 | 401 403 409 422 429 502 |
 | EP-054 | GET | `/api/v1/bridge/mirror-targets` | 取得（bridge）— 自分の AI に指示する・相談する（会話・添付・ | A20 | 1 | device | C4 | 401 403 422 429 502 |
 | EP-055 | POST | `/api/v1/bridge/pairing-codes` | 作成・実行（bridge）— 自分の PC をつなぐ | A09 | 1 | member | C1 C2 C4 | 401 403 409 422 429 502 403 |
-| EP-056 | GET | `/api/v1/bridge/releases/:name/file` | 取得（bridge）— 自分の PC をつなぐ | A09 | 1 | member | C4 | 401 403 422 429 502 403 |
-| EP-057 | GET | `/api/v1/bridge/releases/latest` | 取得（bridge）— 自分の PC をつなぐ | A09 | 1 | member | C4 | 401 403 422 429 502 403 |
+| EP-056 | GET | `/api/v1/bridge/releases/:name/file` | 取得（bridge）— 自分の PC をつなぐ | A09 | 1 | member | C4 | 401 403 422 404 404 503 429 502 403 |
+| EP-057 | GET | `/api/v1/bridge/releases/latest` | 取得（bridge）— 自分の PC をつなぐ | A09 | 1 | member | C4 | 401 403 422 503 429 502 403 |
 | EP-058 | POST | `/api/v1/bridge/usage` | 作成・実行（bridge）— 自分のAIの使用量（サブスクの 5 時間の | A94 | 1 | device | C2 | 401 403 409 422 429 |
 | EP-059 | POST | `/api/v1/checks/:id/human` | 作成・実行（checks）— 承認する／自分で直す／差し戻す／止める | A15 | 1 | member | C2 | 401 403 404 409 422 429 403 |
 | EP-060 | GET | `/api/v1/class_axes` | 取得（class_axes）— 振り分ける（責任者・期限・分類・親）。A | A103 | 1 | member |  | 401 403 422 429 403 |
@@ -311,7 +311,7 @@
 | EP-296 | POST | `/api/v1/ticket_messages/:id/star` | 作成・実行（ticket_messages）— チケットのスレッドで話す | A107 | 1 | member | C2 C6 | 401 403 404 409 422 429 403 |
 | EP-297 | GET | `/api/v1/ticket_stages` | 取得（ticket_stages）— 振り分ける（責任者・期限・分類・親 | A103 | 1 | member |  | 401 403 422 429 403 |
 | EP-298 | GET | `/api/v1/tickets` | 取得（tickets）— 期限間近・炎・詰まりを片付ける／見え方を切り替 | A113 A58 | 1 | member |  | 401 403 422 429 403 |
-| EP-299 | POST | `/api/v1/tickets` | 作成・実行（tickets）— 過去のチケットを複製して作る／見本のチケ | A129 A98 A99 | 1 | member | C2 | 401 403 409 422 429 403 |
+| EP-299 | POST | `/api/v1/tickets` | 作成・実行（tickets）— 過去のチケットを複製して作る／見本のチケ | A129 A98 A99 | 1 | member | C2 | 401 403 409 422 404 429 403 |
 | EP-300 | GET | `/api/v1/tickets/:id` | 取得（tickets）— チケットの中身（区画）を書く・直す | A101 | 1 | member |  | 401 403 404 422 429 403 |
 | EP-301 | PATCH | `/api/v1/tickets/:id` | 更新（tickets）— 振り分ける（責任者・期限・分類・親）。AI と | A103 A113 A115 A17 | 1 | member | C2 | 401 403 404 422 429 403 |
 | EP-302 | DELETE | `/api/v1/tickets/:id` | 削除（tickets）— チケットを消す・アーカイブする（子孫の扱いを決 | A116 | 1 | member | C2 | 401 403 404 422 429 403 |
@@ -396,4 +396,4 @@
 
 ## 6. 変更履歴
 
-- v1.0 2026-11-07 凍結（endpoints 365）
+- v1.0 2026-11-08 凍結（endpoints 365）
