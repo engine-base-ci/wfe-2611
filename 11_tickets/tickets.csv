@@ -738,15 +738,16 @@ K-146,チケットを切る時点で決める人に聞くことを出し切る�
 - [x] ③ 精査の手順：`~/.claude/skills/ai-team-delivery/references/roles/r1-ticket-review.md:18`（決まっていない振る舞い）・`assets/brief/types.yaml:63`・`~/.claude/skills/ticket-planning/SKILL.md:35`
 - [x] ⑤ 答えの記録を和で移す台本：`~/.claude/skills/ai-team-delivery/scripts/gates/answers_merge.py`（merge・check・`--selftest`）
 - [x] ⑥ found own の表示：`~/.claude/skills/ai-team-delivery/scripts/flow.py:484`（f 文字列で `{tid}` が埋まる）
+- [x] ③ の「した証拠」の検査（D-129.53・スキル側・PM が入れた）：`state.py` は設定 `review.prior_impl_field` があるとき、頭に `prior_impl:`（`なし` か `<枝>@<sha>`）が無いチケットを精査に入れない。`scripts/gates/review_map_gate.py` が R1／R2 の報告の「## 突き合わせた分かれ道」の表をその sha で確かめ、verdict_check から呼ばれる（スキルの試験 107 本緑）
 - [x] ⑦ 教訓：`~/.claude/rules/common/lessons-learned.md:674` の L-015 と `~/.claude/rules/common/ai-driven-process.md:69` の 4 点
 
 残り（Kaname 側・このチケットで作る）：
-- [ ] ① 共通の決まり：`03_architecture/共通の決まり.md` に、入力の確かめ方（D-129.42）・作った口は全部契約の fuzz に当てる（D-095・K-62 の fuzz_targets）・消したものの扱い（D-129.43 を一般化）の行を足す。ほかに全体に効く項目を洗い出し、決める人に聞く項目は 1 枚のページ `01_hearing/聞くこと_K-146.md`（表の列「問い」「答えの決定」）でまとめて出し、答えを決定ログに書いてページに番号を書く（K146-CI-007）
+- [ ] ① 共通の決まり（聞くことが 0 件なら問いのページに「聞くことなし」と理由を書く・答え待ちの問いが残っている間は K-146 を取り込まない）：`03_architecture/共通の決まり.md` に、入力の確かめ方（D-129.42）・作った口は全部契約の fuzz に当てる（D-095・K-62 の fuzz_targets）・消したものの扱い（D-129.43 を一般化）の行を足す。ほかに全体に効く項目を洗い出し、決める人に聞く項目は 1 枚のページ `01_hearing/聞くこと_K-146.md`（表の列「問い」「答えの決定」）でまとめて出し、答えを決定ログに書いてページに番号を書く（K146-CI-007）
 - [ ] ② と ⑤ の検査を Kaname の CI に入れる：写し `scripts/ci/ticket_rows_gate.py`・`scripts/ci/answers_merge.py`、着手前のチケットだけに当てる `scripts/ci/ticket_rows_ci.py`、spec の段に G60 の隣の 2 段（K146-CI-001〜006）
-- [ ] 入れた時点の赤を直す：着手前のチケットの今の赤 11 件（K-62・K-63・K-74・K-89・K-146 の行）を、起きる結果の書き方に直す（K146-CI-003）
-- [ ] ③ の「した証拠」の検査（D-129.53）：スキル側の台本（下の実施事項）を PM がスキルに入れる。Kaname 側は無い
-- [ ] ④ K-63・K-64 を ①〜③ で洗い直す：先にある実装（k63i・k64）と突き合わせた節をチケットに足し、聞くことは ① の 1 枚のページにまとめて 1 回で出す（K146-CI-008）
-- [ ] answers_merge の check は、比べる版が読めない・空なら赤にする（写しとスキルの両方・スキル側は PM。K146-CI-005）
+- [ ] 入れた時点の赤を直す：取り込む前に `python3 scripts/ci/ticket_rows_ci.py` が出す着手前のチケットの赤を全部直す（件数は決め打ちしない。今は K-63・K-74・K-89。K-62 は K-62 の枝で直してあり先に入る）。K-63 は本線の版の行を最小で直し、k63-cut の書き直しが入るときはその版が勝つ（そちらも CI で同じ検査を通る・K146-CI-003）
+- [ ] ③ の Kaname 側：`ai-team.yaml` に `review: {prior_impl_field: prior_impl}` を足す（K-146 の頭は `prior_impl: なし`）
+- [ ] ④ K-63・K-64 を ①〜③ で洗い直す：先にある実装（k63-impl・k64-make の版）と突き合わせた結果を、問いのページ `01_hearing/聞くこと_K-146.md` の表（列「チケット」「ファイル:行@sha」「チケットの行」）に書く（K-63.md・K-64.md には書かない。それぞれの作る役が次の作るの段で写す）。聞くことは同じページにまとめて 1 回で出す（K146-CI-008）
+- [ ] answers_merge の check は、比べる版が読めないなら赤・base が空（全部を流す回）なら取り込む先の枝（--target・CI_TARGET_REF）と比べ、両方空なら赤（写しとスキルの両方・スキル側は PM。K146-CI-005）
 - [ ] スキルを直したら、スキルの試験を流して緑・skills の zip を作り直す（.pytest_cache を入れない・PM）
 - [ ] `scripts/ci/ticket_process_test.py` の K146-CI-001〜008 が緑・チケットの CI（act）が緑"
 K-147,見た目の最初を「明るい」にする（Mac などのシステムの設定に引っ張られない）。切り替えは自分の設定で、設定はアカウントに持たせる,課題,K-1,未着手,作る,2026-11-12,基盤・画面の土台,"決める人の決定 D-129.45（2026-11-08）：見た目の最初は「システムに合わせる」ではなく**明るい**に統一する。いまは K-24 の作りで、選んでいない人（cookie が無い人）は OS（Mac など）の設定に合わせて暗くなる（`apps/web/lib/theme.ts` の `parseTheme` の既定が `system`・`styles/k-tokens.css:220` の `@media (prefers-color-scheme: dark)`）。staging の登録の画面を見た決める人が「なんで暗くなっているの」と気づいた。

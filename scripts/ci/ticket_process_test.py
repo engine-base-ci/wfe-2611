@@ -11,15 +11,18 @@
       targets(tickets_dir: Path) -> list[Path]
       python3 scripts/ci/ticket_rows_ci.py [--dir 11_tickets]：赤の行を出して exit 1、無ければ「PASS」と当てた枚数で exit 0
   scripts/ci/answers_merge.py      スキル ai-team-delivery の scripts/gates/answers_merge.py の写し（merge・check・--selftest）
-      python3 scripts/ci/answers_merge.py check 01_hearing/decider-answers.jsonl --base <本線との分かれ目>：
+      python3 scripts/ci/answers_merge.py check 01_hearing/decider-answers.jsonl --base <本線との分かれ目> --target <取り込む先の枝>：
+      base が空（全部を流す回）なら --target と比べ、両方空なら赤（PM の判断 2026-11-08「K-146 精査回 2」）。
       その版の記録にあった id が今の記録に全部あるか（落としていれば id を出して exit 1）。比べる版が読めない（無い ref）・空なら赤
       （スキルの今の版は読めない ref を黙って飛ばす。写しとスキルの両方を直す）
   v3-gate.yml の spec の段（作り手 05_flow/build_testplan.py）：G60 の隣に「answers_merge check」と「ticket_rows_ci」の段。
       answers_merge の --base は、spec の段の中の scope の段（K-143 で置く・ci_scope.py --github-output）が出す base を
-      env CI_ANSWERS_BASE で渡す（run の文字に ${{ … }} を入れない・K107-CS-034）
+      env CI_ANSWERS_BASE で、取り込む先は workflow_dispatch の入力 target を env CI_TARGET_REF で渡す（run の文字に ${{ … }} を入れない・K107-CS-034）
   03_architecture/共通の決まり.md：入力の確かめ方（D-129.42）・作った口は全部契約の fuzz に当てる・消したものの扱い（D-129.43 を一般化）の行
-  01_hearing/聞くこと_K-146.md：決める人に聞く項目の 1 枚のページ。表の列「問い」「答えの決定」。答えの決定は決定ログにある D-… の番号
-  11_tickets/K-63.md・K-64.md：節「## 先にある実装との突き合わせ」（表の列「ファイル:行」「チケットの行」・1 行以上）。ticket_rows_gate も緑
+  01_hearing/聞くこと_K-146.md：決める人に聞く項目の 1 枚のページ。表の列「問い」「答えの決定」。答えの決定は決定ログにある D-… の番号。
+      聞くことが 0 件なら、ページに「聞くことなし」と理由（1 文）を書く。
+      ④ の突き合わせの結果も同じページの表（列「チケット」「ファイル:行@sha」「チケットの行」）に書く。sha は突き合わせた版（k63-impl・k64-make）のコミット。
+      チケット K-63.md・K-64.md には書かない（それぞれの作る役が次の作るの段で写す）
 使い方: python3 scripts/ci/ticket_process_test.py
 """
 import json, re, subprocess, sys, tempfile, unittest
@@ -96,7 +99,7 @@ class RowsCiTest(unittest.TestCase):
 
 class RepoTest(unittest.TestCase):
     def test_K146_CI_003_real_pending_tickets_are_green(self):
-        """K146-CI-003 本物の 11_tickets の着手前のチケットに当てて緑（入れた時点の赤：K-62・K-63・K-74・K-89・K-146 の行を直してから入れる）"""
+        """K146-CI-003 本物の 11_tickets の着手前のチケットに当てて緑（取り込む前に ticket_rows_ci が出す着手前のチケットの赤を全部直してから入れる）"""
         r = subprocess.run([sys.executable, str(HERE / "ticket_rows_ci.py"), "--dir", "11_tickets"], cwd=ROOT, capture_output=True, text=True)
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
 
@@ -122,7 +125,8 @@ class RepoTest(unittest.TestCase):
         scope = [st for st in steps if "scripts/ci/ci_scope.py" in st.get("run", "") and "--github-output" in st.get("run", "")]
         self.assertEqual(len(scope), 1, "spec の段の中の scope の段（K-143）")
         run = steps[am[0]]["run"]
-        self.assertRegex(run, r'answers_merge\.py check 01_hearing/decider-answers\.jsonl --base "\$CI_ANSWERS_BASE"')
+        self.assertRegex(run, r'answers_merge\.py check 01_hearing/decider-answers\.jsonl --base "\$CI_ANSWERS_BASE" --target "\$CI_TARGET_REF"')
+        self.assertEqual(steps[am[0]]["env"]["CI_TARGET_REF"].replace(" ", ""), "${{inputs.target}}")
         self.assertNotRegex(run, r"\$\{\{")
         self.assertEqual(steps[am[0]]["env"]["CI_ANSWERS_BASE"].replace(" ", ""), "${{steps.%s.outputs.base}}" % scope[0]["id"])
         self.assertIn("python3 scripts/ci/ticket_process_test.py", "\n".join(st.get("run", "") for st in steps))
@@ -132,7 +136,8 @@ class RepoTest(unittest.TestCase):
 
     def test_K146_CI_007_common_rules_and_question_page(self):
         """K146-CI-007 ① 共通の決まりに、入力の確かめ方（D-129.42）・作った口は全部契約の fuzz に当てる・消したものの扱い（D-129.43）の行がある。
-        決める人に聞く項目の 1 枚のページ（01_hearing/聞くこと_K-146.md）の問いには、どれも決定ログにある答えの決定の番号が付いている"""
+        決める人に聞く項目の 1 枚のページ（01_hearing/聞くこと_K-146.md）の問いには、どれも決定ログにある答えの決定の番号が付いている（答え待ちの問いが残る間は取り込まない）。
+        聞くことが 0 件なら「聞くことなし」と理由がある"""
         rules = (ROOT / "03_architecture/共通の決まり.md").read_text(encoding="utf-8")
         rows = [ln for ln in rules.splitlines() if ln.startswith("| ")]
         self.assertTrue(any("D-129.42" in ln for ln in rows), "入力の確かめ方の行")
@@ -153,7 +158,10 @@ class RepoTest(unittest.TestCase):
                 continue
             if "問い" in head and "答えの決定" in head:
                 qs.append((cells[head.index("問い")], cells[head.index("答えの決定")]))
-        self.assertTrue(qs, "問いの表が無い")
+        if not qs:
+            m = re.search(r"聞くことなし[：:（(]?\s*(\S.{4,})", page)
+            self.assertTrue(m, "問いの表が無く、「聞くことなし」と理由も無い")
+            return
         for q, ans in qs:
             ids = re.findall(r"D-\d+(?:\.\d+)?", ans)
             self.assertTrue(ids, f"問い「{q[:30]}」に答えの決定が無い")
@@ -161,22 +169,42 @@ class RepoTest(unittest.TestCase):
                 self.assertIn(f"| {i} |", log, f"{i} が決定ログに無い")
 
     def test_K146_CI_008_k63_k64_washed_against_code(self):
-        """K146-CI-008 ④ K-63・K-64 は、先にある実装との突き合わせの節（ファイル:行 → チケットの行）を持ち、ticket_rows_gate も緑"""
+        """K146-CI-008 ④ K-63・K-64 の突き合わせの結果は、問いのページの表（チケット・ファイル:行@sha・チケットの行）にある。どちらのチケットも 1 行以上。
+        sha は git に在るコミットで（git cat-file）、ファイル:行 はその sha の版に在る（行の数がそれ以上）。チケットの md には書かない"""
+        page = (ROOT / "01_hearing/聞くこと_K-146.md").read_text(encoding="utf-8")
+        head, rows = None, []
+        for ln in page.splitlines():
+            if not ln.startswith("|"):
+                head = None
+                continue
+            cells = [c.strip() for c in ln.strip().strip("|").split("|")]
+            if head is None:
+                head = cells
+                continue
+            if all(re.fullmatch(r":?-{2,}:?", c) for c in cells if c):
+                continue
+            if {"チケット", "ファイル:行@sha", "チケットの行"} <= set(head):
+                rows.append((cells[head.index("チケット")], cells[head.index("ファイル:行@sha")], cells[head.index("チケットの行")]))
         for t in ("K-63", "K-64"):
-            text = (ROOT / f"11_tickets/{t}.md").read_text(encoding="utf-8")
-            self.assertIn("## 先にある実装との突き合わせ", text, t)
-            sec = text.split("## 先にある実装との突き合わせ", 1)[1].split("\n## ", 1)[0]
-            rows = [ln for ln in sec.splitlines() if ln.startswith("| ") and not ln.startswith("| ファイル") and not ln.startswith("|---")]
-            self.assertTrue(rows, f"{t}：突き合わせた分かれ道が 1 行も無い")
-            for ln in rows:
-                self.assertRegex(ln.split("|")[1], r"\S+:\d+", f"{t}：ファイル:行 の形でない：{ln[:60]}")
-            r = subprocess.run([sys.executable, str(HERE / "ticket_rows_gate.py"), f"11_tickets/{t}.md"], cwd=ROOT, capture_output=True, text=True)
-            self.assertEqual(r.returncode, 0, f"{t}: {r.stdout}")
-
+            mine = [r for r in rows if r[0] == t]
+            self.assertTrue(mine, f"{t}：突き合わせた分かれ道が 1 行も無い")
+            for _, loc, trow in mine:
+                m = re.fullmatch(r"`?([^`:@\s]+):(\d+)@([0-9a-f]{7,40})`?", loc)
+                self.assertTrue(m, f"{t}：ファイル:行@sha の形でない：{loc}")
+                path, line, sha = m.group(1), int(m.group(2)), m.group(3)
+                ok = subprocess.run(["git", "cat-file", "-e", f"{sha}^{{commit}}"], cwd=ROOT, capture_output=True)
+                self.assertEqual(ok.returncode, 0, f"{t}：{sha} が git に無い")
+                body = subprocess.run(["git", "show", f"{sha}:{path}"], cwd=ROOT, capture_output=True, text=True)
+                self.assertEqual(body.returncode, 0, f"{t}：{path} が {sha} に無い")
+                self.assertGreaterEqual(len(body.stdout.splitlines()), line, f"{t}：{path}:{line} が {sha} に無い")
+                self.assertTrue(trow.strip(), f"{t}：{loc} に結ぶチケットの行が空")
+        for t in ("K-63", "K-64"):
+            self.assertNotIn("## 先にある実装との突き合わせ", (ROOT / f"11_tickets/{t}.md").read_text(encoding="utf-8"),
+                             f"{t}.md には書かない（作る役が次の作るの段で写す）")
 
 class AnswersTest(unittest.TestCase):
     def test_K146_CI_005_answers_check_finds_dropped_ids(self):
-        """K146-CI-005 ⑤ answers_merge check：本線の版にあった答えの id を今の記録が落としていれば、その id を出して exit 1。和で足したもの（増えた）は exit 0。比べる版が読めない・空なら赤"""
+        """K146-CI-005 ⑤ answers_merge check：本線の版にあった答えの id を今の記録が落としていれば、その id を出して exit 1。和で足したもの（増えた）は exit 0。比べる版が読めないなら赤。base が空なら --target と比べ、両方空なら赤"""
         with tempfile.TemporaryDirectory() as t:
             t = Path(t)
             git(t, "init", "-q", "-b", "main")
@@ -196,11 +224,19 @@ class AnswersTest(unittest.TestCase):
             r = subprocess.run([sys.executable, str(HERE / "answers_merge.py"), "check", str(f), "--base", "main", "--repo", str(t)],
                                capture_output=True, text=True)
             self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
-            # 比べる版が読めない（無い ref）・空なら赤（黙って通さない）。ファイルがまだ無かった版（git show が無いと言う）とは分ける
-            for base in ("無い-ref", ""):
-                r = subprocess.run([sys.executable, str(HERE / "answers_merge.py"), "check", str(f), "--base", base, "--repo", str(t)],
-                                   capture_output=True, text=True)
-                self.assertNotEqual(r.returncode, 0, f"base「{base}」: {r.stdout}{r.stderr}")
+            # 比べる版が読めない（無い ref）なら赤（黙って通さない）。ファイルがまだ無かった版（git show が無いと言う）とは分ける
+            r = subprocess.run([sys.executable, str(HERE / "answers_merge.py"), "check", str(f), "--base", "無い-ref", "--repo", str(t)],
+                               capture_output=True, text=True)
+            self.assertNotEqual(r.returncode, 0, r.stdout + r.stderr)
+            # base が空（全部を流す回）なら取り込む先（--target）と比べる。両方空なら赤
+            f.write_text(json.dumps({"id": "aaa111", "at": "2026-11-08T10:00"}) + "\n", encoding="utf-8")
+            r = subprocess.run([sys.executable, str(HERE / "answers_merge.py"), "check", str(f), "--base", "", "--target", "main", "--repo", str(t)],
+                               capture_output=True, text=True)
+            self.assertEqual(r.returncode, 1, r.stdout + r.stderr)
+            self.assertIn("bbb222", r.stdout + r.stderr)
+            r = subprocess.run([sys.executable, str(HERE / "answers_merge.py"), "check", str(f), "--base", "", "--target", "", "--repo", str(t)],
+                               capture_output=True, text=True)
+            self.assertNotEqual(r.returncode, 0, r.stdout + r.stderr)
 
 
 if __name__ == "__main__":
