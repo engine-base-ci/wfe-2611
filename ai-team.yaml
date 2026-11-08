@@ -14,10 +14,12 @@ ticket_fields:
   group: area
 
 # いまの段階（2026-11-08 決める人）：段 1 歩く骨格＝K-103 の子のチケット
+# 2026-11-08 決める人：段階を広げて土台（K-1 の子孫）も入れる（D-129.49）
 scope:
   field: parent
-  value: K-103
-  label: 段 1 歩く骨格
+  values: [K-103, K-1]
+  descendants: true
+  label: 段 1 歩く骨格と土台
 
 # ── 進める順番（B1〜B7・2026-11-08 決める人の決定）
 flow:
