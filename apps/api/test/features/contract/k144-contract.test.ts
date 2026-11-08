@@ -1,6 +1,6 @@
 // K-144「K-57・K-60 の口で、契約（openapi）と実際の振る舞いをそろえる」の単体の試験（口・本物の DB）。
 // 名前の頭の行 ID（K144-API-…）は 11_tickets/K-144.md の表のマスに 1 対 1 で結ぶ。テストはチケットを作る人が書き、実装する人は変えない（D-128.125）。
-//   答えを、契約から作った生成物で確かめる：状態コードは registry（packages/contracts/src/registry.ts の success・errors）、
+//   答えを、作り手が契約から作った registry と zod で確かめる：状態コードは registry（packages/contracts/src/registry.ts の success・errors）、
 //   成功の data の形は入口と同じ zod（packages/contracts/src/schemas.ts・z.strictObject。知らない欄も、null を許さない欄の null も赤）。
 //   契約そのもの（openapi の additionalProperties・format: uuid・応答の並び）は scripts/ci/contract_shape_test.py が見る。
 //   決まり（D-129.42）：uuid の欄は入口で正式な uuid の形を確かめ、違えば 422（欄の名前・理由 "uuid"）。中で 500 にしない。知らない項目も 422

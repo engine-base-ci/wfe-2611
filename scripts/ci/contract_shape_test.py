@@ -43,11 +43,10 @@ TYPES = (ROOT / "08_api" / "types.ts").read_text(encoding="utf-8")
 # INPUTS・RESPONSES の欄の型の名前として作り手（05_flow/build_api.py の _ftype）が表せるもの。後ろの ? は null を許す（any には付けない）
 VOCAB = {"string", "integer", "number", "boolean", "object", "array", "uuid", "uuid[]"}
 
-# K-57・K-60 の口（このチケットで契約を振る舞いにそろえる口）と、その振る舞いを書いたファイル
-HOOK_FILES = [
-    ROOT / "apps/api/src/features/F3/connect-pc/hooks.ts",
-    ROOT / "apps/api/src/features/F4/create-ticket/hooks.ts",
-]
+# 口の振る舞い（hooks）の入口。ここに並ぶ口が全部、拾う対象（K-57・K-60 だけでなく今ある口の全部・PM の続きの指示 2026-11-08）
+HOOKS_DIR = ROOT / "apps/api/src/hooks"
+# 共通の処理（apps/api/src/contract/op.ts）のうち、hooks から呼ばれて状態コードを返すもの
+SHARED_HELPERS = {"unwritable": {403, 404}}
 
 
 def operation(op_id: str) -> tuple[str, str, dict]:
@@ -105,15 +104,103 @@ def hook_blocks(src: str) -> dict[str, str]:
     return out
 
 
-def statuses_in(block: str, cat: dict[str, int]) -> set[int]:
-    """口の中身が返しうる状態コード：数の literal（status: 404・fail(404, …)）・正本の ID（fromCatalog("E-…")）・invalid(…)＝422"""
-    s = {int(x) for x in re.findall(r"status:\s*(\d{3})", block)}
-    s |= {int(x) for x in re.findall(r"\bfail\(\s*(\d{3})", block)}
-    for code in re.findall(r'fromCatalog\(\s*"(E-[A-Z]+-\d{3})"', block):
-        assert code in cat, f"エラーの正本に {code} が無い"
-        s.add(cat[code])
-    if re.search(r"\binvalid\(", block):
-        s.add(422)
+_DEF = re.compile(r"^(\s*)(?:export\s+)?(?:const\s+(\w+)\s*(?::[^=]*)?=|(?:async\s+)?function\s+(\w+))", re.M)
+
+
+def definitions(src: str) -> dict[str, str]:
+    """ファイルの中の名前つきの定義（const・function。入れ子も）→ その中身（次の同じ深さかより浅い定義・return { の行まで）"""
+    lines = src.split("\n")
+    out: dict[str, str] = {}
+    for i, line in enumerate(lines):
+        m = _DEF.match(line)
+        if not m:
+            continue
+        ind = len(m.group(1))
+        if line.rstrip().endswith(";"):
+            out[m.group(2) or m.group(3)] = line  # 1 行で終わる定義（const OS = new Set([…]);）
+            continue
+        j = i + 1
+        while j < len(lines):
+            n = lines[j]
+            k = len(n) - len(n.lstrip())
+            if n.strip() and k <= ind and re.match(r"\s*(?:export\s+|const\s|let\s|(?:async\s+)?function\s|return\s|\}\s*$|\};?\s*$)", n):
+                break
+            j += 1
+        body = "\n".join(lines[i:j + 1])
+        if not hook_blocks(body):  # 口を並べる工場（connectPcHooks など）は定義として辿らない（口ごとに分けて見る）
+            out[m.group(2) or m.group(3)] = body
+    return out
+
+
+def _imported_files(path: pathlib.Path, src: str) -> list[pathlib.Path]:
+    """そのファイルが相対で import するファイル（.js → .ts）と、同じフォルダの .ts（入力の確かめが別のファイルにある口）"""
+    out = []
+    for rel in re.findall(r'from\s+"(\.{1,2}/[^"]+)"', src):
+        f = (path.parent / rel).resolve()
+        f = f.with_suffix(".ts") if f.suffix == ".js" else f
+        if f.exists() and "contract" not in f.parts[-2:]:
+            out.append(f)
+            out += [g for g in sorted(f.parent.glob("*.ts")) if g != f and not g.name.endswith(".test.ts")]
+    return list(dict.fromkeys(out))
+
+
+def hook_regions() -> dict[str, tuple[str, dict[str, str]]]:
+    """今ある口の全部（apps/api/src/hooks/*.ts に並ぶ口）→（振る舞いの中身・そこから呼べる定義）。
+    中身の書き方は 3 つ：その場の { before: async … }／機能のフォルダの hooks に預ける { ...h["op"] }／機能の関数に預ける { before: f.name, input: fn }"""
+    out: dict[str, tuple[str, dict[str, str]]] = {}
+    for hf in sorted(HOOKS_DIR.glob("*.ts")):
+        src = hf.read_text(encoding="utf-8")
+        files = [hf] + _imported_files(hf, src)
+        defs: dict[str, str] = {}
+        texts = {}
+        for f in files:
+            t = f.read_text(encoding="utf-8")
+            texts[f] = t
+            for k, v in definitions(t).items():
+                defs.setdefault(k, v)
+        for op_id, block in hook_blocks(src).items():
+            out[op_id] = (block, defs)
+        for m in re.finditer(r"(\w+):\s*\{([^{}]*)\}", src):
+            op_id, body = m.group(1), m.group(2)
+            if op_id in out and "before:" not in body and "...h[" not in body:
+                continue
+            parts = []
+            for ref in re.findall(r'\.\.\.h\["(\w+)"\]', body):
+                for f in files[1:]:
+                    b = hook_blocks(texts[f]).get(ref)
+                    if b:
+                        parts.append(b)
+            for name in re.findall(r"(?:before|input|after):\s*(?:\w+\.)?(\w+)", body):
+                if name in defs:
+                    parts.append(defs[name])
+            if parts:
+                out[op_id] = ("\n".join(parts), defs)
+    assert out, "hooks の口が 1 本も拾えない（apps/api/src/hooks の書き方が変わった）"
+    return out
+
+
+def statuses_in(block: str, cat: dict[str, int], defs: dict[str, str] | None = None, depth: int = 3) -> set[int]:
+    """口の中身が返しうる状態コード（機械で拾う）：
+    数の literal（status: 404）・状態を最初の引数に取る関数の呼び出し（fail(404, …)・reply(410, …)・fromCatalog(500, …)・ok(201, …)）・
+    正本の ID だけを渡す呼び出し（fromCatalog("E-…")・fail("E-…")。kanameError は体を作るだけなので数えない）・
+    同じファイル群の定義の呼び出し（invalid(…)・serverDown()・parseSignup(…)・大文字の定数 NO_TOKEN など。depth 段まで辿る）・
+    共通の処理（unwritable）"""
+    defs = defs or {}
+    s = {int(x) for x in re.findall(r"\bstatus:\s*(\d{3})\b", block)}
+    s |= {int(x) for x in re.findall(r"\b\w+\(\s*([1-5]\d\d)\s*,", block)}
+    for code in re.findall(r'\b(\w+)\(\s*"(E-[A-Z]+-\d{3})"', block):
+        if code[0] in ("kanameError", "KanameError"):
+            continue
+        assert code[1] in cat, f"エラーの正本に {code[1]} が無い"
+        s.add(cat[code[1]])
+    for name, extra in SHARED_HELPERS.items():
+        if re.search(rf"\b{name}\(", block):
+            s |= extra
+    if depth > 0:
+        for name, body in defs.items():
+            used = re.search(rf"\b{name}\(", block) or (name.isupper() and re.search(rf"\b{name}\b", block))
+            if used and body not in block:
+                s |= statuses_in(body, cat, defs, depth - 1)
     return s
 
 
@@ -226,25 +313,37 @@ class ContractShapeTest(unittest.TestCase):
         self.assertIn("E-PAGE-001", r["404"]["description"])
 
     def test_K144_SHAPE_010_every_status_a_hook_returns_is_in_the_contract(self) -> None:
-        """K-57・K-60 の口の振る舞い（hooks）が返しうる状態コードは、全部その口の契約の responses にある（機械で拾う）"""
+        """今ある口の全部（apps/api/src/hooks に並ぶ口）の振る舞いが返しうる状態コードは、全部その口の契約の responses にある（機械で拾う）。
+        K-57・K-60 の口に限らない（同意の口の 500 E-PAGE-003 など・PM の続きの指示 2026-11-08）"""
         cat = catalog_status()
+        regions = hook_regions()
+        for op_id in ("createPairingCode", "downloadBridgeRelease", "createTicket", "consentToTerms", "getCurrentTerms",
+                      "createSignup", "verifySignup", "stepUp", "createConversation"):
+            self.assertIn(op_id, regions, f"{op_id} の振る舞いを拾えていない（拾い方が壊れた）")
+        self.assertIn(500, statuses_in(regions["consentToTerms"][0], cat, regions["consentToTerms"][1]), "同意の口の serverDown（500）を拾えていない")
+        # 口の振る舞いを足す所（apps/api/src/server.ts の hooks）は、全部 apps/api/src/hooks のファイルから来る（拾う対象の外に口を置かない）
+        server = (ROOT / "apps/api/src/server.ts").read_text(encoding="utf-8")
+        used = set(re.findall(r"\.\.\.(\w+Hooks)\(", server))
+        here = {n for f in HOOKS_DIR.glob("*.ts") for n in re.findall(r"export function (\w+Hooks)\(", f.read_text(encoding="utf-8"))}
+        self.assertTrue(used, "apps/api/src/server.ts の hooks を読めない")
+        self.assertEqual(sorted(used - here), [], "apps/api/src/hooks の外から足している口の振る舞い")
         missing = []
-        for f in HOOK_FILES:
-            for op_id, block in hook_blocks(f.read_text(encoding="utf-8")).items():
-                declared = {int(k) for k in operation(op_id)[2]["responses"]}
-                for s in sorted(statuses_in(block, cat) - declared):
-                    missing.append(f"{op_id} {s}（{f.relative_to(ROOT)}）")
+        for op_id, (block, defs) in sorted(regions.items()):
+            declared = {int(k) for k in operation(op_id)[2]["responses"]}
+            for st in sorted(statuses_in(block, cat, defs) - declared):
+                missing.append(f"{op_id} {st}")
         self.assertEqual(missing, [], "口が返すのに契約に無い状態コード")
 
     def test_K144_SHAPE_011_raw_answers_declare_a_non_json_content(self) -> None:
-        """JSON でなくファイルそのものを返す口（hooks の raw:）は、200 に JSON 以外の中身の形を書いている"""
+        """JSON でなくファイルそのものを返す口（振る舞いに raw: がある）は、200 に JSON 以外の中身の形を書いている"""
         bad = []
-        for f in HOOK_FILES:
-            for op_id, block in hook_blocks(f.read_text(encoding="utf-8")).items():
-                if re.search(r"\braw:", block) or "give(" in block:
-                    ok = operation(op_id)[2]["responses"]["200"].get("content", {})
-                    if not any(k != "application/json" for k in ok):
-                        bad.append(op_id)
+        for op_id, (block, defs) in hook_regions().items():
+            text = block + "".join(v for k, v in defs.items() if re.search(rf"\b{k}\(", block))
+            if re.search(r"\braw:", text):
+                ok = operation(op_id)[2]["responses"].get("200", {}).get("content", {})
+                if not any(k != "application/json" for k in ok):
+                    bad.append(op_id)
+        self.assertIn("downloadBridgeRelease", [o for o, (b, d) in hook_regions().items() if "give(" in b])
         self.assertEqual(bad, [], "ファイルを返すのに 200 が JSON だけ")
 
     # ---- 答えの null（R1 #7）
