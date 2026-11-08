@@ -12,6 +12,7 @@ import { join } from "node:path";
 import { ENDPOINTS } from "@kaname/contracts/registry";
 import { SCHEMAS } from "@kaname/contracts/schemas";
 import { s3Client, s3Presigner } from "@kaname/storage";
+import { agentHooks } from "../../../src/hooks/agent.js";
 import { ticketHooks } from "../../../src/hooks/tickets.js";
 import { makeFixture, nextIp, type Fixture, type Person } from "../fixture.js";
 import { FAKE_S3, startFakeS3 } from "../../fake-s3.js";
@@ -127,7 +128,7 @@ const ticketsOf = () => count("select count(*) as n from tickets where tenant_id
 const draftsOf = () => count("select count(*) as n from app.ticket_drafts where member_id = $1", [writer.id]);
 
 beforeAll(async () => {
-  f = await makeFixture([ticketHooks]);
+  f = await makeFixture([ticketHooks, agentHooks]);
   f.limits["createTicket"] = 10_000;
   f.limits["saveMyTicketDraft"] = 10_000;
   f.limits["createPairingCode"] = 10_000;
@@ -445,5 +446,77 @@ describe("K-144 ④ uuid の欄（D-129.42）：入口が正式な uuid の形�
       expect(fields(await json(m)), v).toContain("scope_id");
       await conforms("listMembers", m);
     }
+  });
+});
+
+// 入口の uuid の確かめ ⑫（回 3・R1 #9）：作った口ごとの、uuid の道の値と問い合わせ（registry の uuidParams）。
+//   作った口＝hooks がある口か、表の素の読み書きで表がある口（apps/api/src/contract/op.ts の 501 の条件の外）。
+//   この並びは scripts/ci/contract_shape_test.py の K144-SHAPE-017 が、契約から機械で出した「作った口 × uuid の値」と 1 対 1 で突き合わせる
+export const UUID_PARAM_CASES = [
+  ["K144-API-022", "getTicket", "path", "id"],
+  ["K144-API-023", "updateConversation", "path", "id"],
+  ["K144-API-024", "deleteConversation", "path", "id"],
+  ["K144-API-025", "updateMemory", "path", "id"],
+  ["K144-API-026", "listMembers", "query", "scope_id"],
+  ["K144-API-027", "listScopes", "query", "layer_id"],
+  ["K144-API-028", "listAuditEvents", "query", "member_id"],
+  ["K144-API-029", "listAuditEvents", "query", "ticket_id"],
+] as const;
+// まだ作っていない口（501）の代表：形の違う id は 422 が 501 より先（PM の決め 2026-11-08 09:22・D-129.42）
+export const UNBUILT_UUID_CASE = ["answerAgentPermission", "path", "pid"] as const;
+const BODIES: Record<string, unknown> = { updateConversation: { title: "名前" }, updateMemory: { body: "覚えること" } };
+/** その口を、uuid の値 name を value にして叩く（ほかの道の値は正しい uuid） */
+const hit = (op: string, where: "path" | "query", name: string, value: string) => {
+  const d = def(op);
+  let path = d.path.replace(/^\/api\/v1/, "");
+  path = path.replace(/:(\w+)/g, (_m, p: string) =>
+    where === "path" && p === name ? encodeURIComponent(value) : randomUUID(),
+  );
+  if (where === "query") path += `?${name}=${encodeURIComponent(value)}`;
+  const body = d.method === "GET" || d.method === "DELETE" ? undefined : (BODIES[op] ?? {});
+  return f.req(d.method, path, { headers: writer.auth, ...(body === undefined ? {} : { body }) });
+};
+
+describe("K-144 ⑫ 入口が uuid の道の値と問い合わせを確かめる（registry の uuidParams・権限の確かめより前・D-129.42）", () => {
+  for (const [row, op, where, name] of UUID_PARAM_CASES) {
+    it(`${row} ${op} の ${where === "path" ? "道の値 :" : "問い合わせ ?"}${name}：uuid でない（36 個のハイフン・版の桁が 0）は 422・欄 ${name}・理由 uuid。正しい uuid は 422 にしない${where === "query" ? "・空の値は指定なし" : ""}`, async () => {
+      expect(def(op).errors).toContain(422);
+      for (const v of ["------------------------------------", "3fa85f64-5717-0562-b3fc-2c963f66afa6", "not-a-uuid"]) {
+        const r = await hit(op, where, name, v);
+        expect(r.status, `${op} ${name}=${v}`).toBe(422);
+        expect(fields(await json(r)), `${op} ${name}=${v}`).toContain(name);
+        expect(uuidReason(await json(r), name), `${op} ${name}=${v}`).toBe("uuid");
+        await conforms(op, r);
+      }
+      const good = await hit(op, where, name, randomUUID());
+      expect(good.status, `${op} ${name}=正しい uuid`).not.toBe(422);
+      await conforms(op, good);
+      if (where === "query") {
+        const empty = await hit(op, where, name, "");
+        expect(empty.status, `${op} ${name}=（空）`).not.toBe(422);
+        await conforms(op, empty);
+      }
+    });
+  }
+
+  it("K144-API-030 listScopes の ?layer_id：空の値と正しい uuid は 200（絞り込みは K-92。入口は形だけを確かめる）", async () => {
+    for (const v of ["", randomUUID()]) {
+      const r = await f.req("GET", `/scopes?layer_id=${v}`, { headers: writer.auth });
+      expect(r.status, JSON.stringify(v)).toBe(200);
+      await conforms("listScopes", r);
+    }
+    const m = await f.req("GET", `/members?scope_id=${T.rootScope}`, { headers: writer.auth });
+    expect(m.status).toBe(200);
+    await conforms("listMembers", m);
+  });
+
+  it("K144-API-031 まだ作っていない口（answerAgentPermission の :pid）：形の違う id は 422 が 501 より先（欄 pid・理由 uuid）。正しい uuid なら 501", async () => {
+    const [op, where, name] = UNBUILT_UUID_CASE;
+    const bad = await hit(op, where, name, "------------------------------------");
+    expect(bad.status).toBe(422);
+    expect(fields(await json(bad))).toContain(name);
+    expect(uuidReason(await json(bad), name)).toBe("uuid");
+    const good = await hit(op, where, name, randomUUID());
+    expect(good.status).toBe(501);
   });
 });

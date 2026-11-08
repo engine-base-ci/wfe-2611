@@ -395,6 +395,32 @@ class ContractShapeTest(unittest.TestCase):
         self.assertIn("downloadBridgeRelease", [o for o, (b, d) in hook_regions().items() if "give(" in b])
         self.assertEqual(bad, [], "ファイルを返すのに 200 が JSON だけ")
 
+    def test_K144_SHAPE_017_every_built_op_has_an_entrance_uuid_row(self) -> None:
+        """回 3（R1 #9）：作った口（hooks がある口か、表の素の読み書きで表がある口＝op.ts の 501 の外）の uuid の道の値と問い合わせは、
+        全部 apps/api/test/features/contract/k144-contract.test.ts の UUID_PARAM_CASES に 422 の行がある（数えて 1 対 1）。
+        まだ作っていない口の代表 UNBUILT_UUID_CASE（422 が 501 より先）は、本当にまだ作っていない口の uuid の値を指す"""
+        built = set(hook_regions())
+        generic: dict[str, tuple[bool, str]] = {}
+        for b in re.split(r"\n  \{\n", REGISTRY):
+            m = re.search(r'"operationId":\s*"(\w+)"', b)
+            if m:
+                g = re.search(r'"generic":\s*(true|false)', b)
+                t = re.search(r'"table":\s*"(\w+)"', b)
+                generic[m.group(1)] = (bool(g and g.group(1) == "true"), t.group(1) if t else "")
+        built |= {o for o, (g, t) in generic.items() if g and "id" in DBC.get(t, {})}
+        want = {(o, i, n) for o, i, n, _sc in self._id_params() if o in built}
+        src = (ROOT / "apps/api/test/features/contract/k144-contract.test.ts").read_text(encoding="utf-8")
+        block = re.search(r"UUID_PARAM_CASES = \[(.*?)\] as const;", src, re.S)
+        self.assertIsNotNone(block, "UUID_PARAM_CASES が無い")
+        got = set(re.findall(r'\["K144-API-\d{3}",\s*"(\w+)",\s*"(path|query)",\s*"(\w+)"\]', block.group(1)))  # type: ignore[union-attr]
+        self.assertEqual(sorted(want - got), [], "作った口の uuid の値なのに、入口の 422 の行が無い")
+        self.assertEqual(sorted(got - want), [], "作った口の uuid の値でないものが行にある（口が消えたか、まだ作っていない）")
+        u = re.search(r'UNBUILT_UUID_CASE = \["(\w+)",\s*"(path|query)",\s*"(\w+)"\]', src)
+        self.assertIsNotNone(u, "UNBUILT_UUID_CASE が無い")
+        o, i, n = u.groups()  # type: ignore[union-attr]
+        self.assertNotIn(o, built, f"{o} はもう作った口（まだ作っていない口の代表を選び直す）")
+        self.assertIn((o, i, n), {(a, b, c) for a, b, c, _ in self._id_params()}, f"{o} の {n} は uuid の値でない")
+
     # ---- 答えの null（R1 #7）
     def test_K144_SHAPE_012_answers_that_return_null_are_nullable(self) -> None:
         """口が null を返す欄（読んで洗い出したもの）は nullable。PC の引き取りは名前（device_label）も返す"""
