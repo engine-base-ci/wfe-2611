@@ -22,6 +22,7 @@
   01_hearing/聞くこと_K-146.md：決める人に聞く項目の 1 枚のページ。表の列「問い」「答えの決定」。答えの決定は決定ログにある D-… の番号。
       聞くことが 0 件なら、ページに「聞くことなし」と理由（1 文）を書く。
       ④ の突き合わせの結果も同じページの表（列「チケット」「ファイル:行@sha」「チケットの行」）に書く。sha は突き合わせた版（k63-impl・k64-make）のコミット。
+      そのチケットが着手前の間は sha とファイル:行の在りかまで、取り込み済み（stage: 完了）になったら形だけを確かめる。
       チケット K-63.md・K-64.md には書かない（それぞれの作る役が次の作るの段で写す）
 使い方: python3 scripts/ci/ticket_process_test.py
 """
@@ -170,7 +171,9 @@ class RepoTest(unittest.TestCase):
 
     def test_K146_CI_008_k63_k64_washed_against_code(self):
         """K146-CI-008 ④ K-63・K-64 の突き合わせの結果は、問いのページの表（チケット・ファイル:行@sha・チケットの行）にある。どちらのチケットも 1 行以上。
-        sha は git に在るコミットで（git cat-file）、ファイル:行 はその sha の版に在る（行の数がそれ以上）。チケットの md には書かない"""
+        そのチケットが着手前の間（stage が完了でない）は、sha が git に在るコミットで（git cat-file・無ければ赤）、ファイル:行 がその版に在る（行の数がそれ以上）。
+        取り込み済み（stage: 完了）になったら、形（ファイル:行@sha・チケットの行が空でない）だけを見る（控えの枝は取り込みで消えてよい・PM の判断「K-146 精査回 3 #2」）。
+        チケットの md には書かない"""
         page = (ROOT / "01_hearing/聞くこと_K-146.md").read_text(encoding="utf-8")
         head, rows = None, []
         for ln in page.splitlines():
@@ -186,18 +189,22 @@ class RepoTest(unittest.TestCase):
             if {"チケット", "ファイル:行@sha", "チケットの行"} <= set(head):
                 rows.append((cells[head.index("チケット")], cells[head.index("ファイル:行@sha")], cells[head.index("チケットの行")]))
         for t in ("K-63", "K-64"):
+            ticket = (ROOT / f"11_tickets/{t}.md").read_text(encoding="utf-8")
+            done = re.search(r"^stage:\s*完了\s*$", ticket, re.M) is not None
             mine = [r for r in rows if r[0] == t]
             self.assertTrue(mine, f"{t}：突き合わせた分かれ道が 1 行も無い")
             for _, loc, trow in mine:
                 m = re.fullmatch(r"`?([^`:@\s]+):(\d+)@([0-9a-f]{7,40})`?", loc)
                 self.assertTrue(m, f"{t}：ファイル:行@sha の形でない：{loc}")
+                self.assertTrue(trow.strip(), f"{t}：{loc} に結ぶチケットの行が空")
+                if done:
+                    continue   # 取り込み済み：形だけを見る（明示の分岐）
                 path, line, sha = m.group(1), int(m.group(2)), m.group(3)
                 ok = subprocess.run(["git", "cat-file", "-e", f"{sha}^{{commit}}"], cwd=ROOT, capture_output=True)
-                self.assertEqual(ok.returncode, 0, f"{t}：{sha} が git に無い")
+                self.assertEqual(ok.returncode, 0, f"{t}（着手前）：{sha} が git に無い（控えの枝を消した？）")
                 body = subprocess.run(["git", "show", f"{sha}:{path}"], cwd=ROOT, capture_output=True, text=True)
-                self.assertEqual(body.returncode, 0, f"{t}：{path} が {sha} に無い")
-                self.assertGreaterEqual(len(body.stdout.splitlines()), line, f"{t}：{path}:{line} が {sha} に無い")
-                self.assertTrue(trow.strip(), f"{t}：{loc} に結ぶチケットの行が空")
+                self.assertEqual(body.returncode, 0, f"{t}（着手前）：{path} が {sha} に無い")
+                self.assertGreaterEqual(len(body.stdout.splitlines()), line, f"{t}（着手前）：{path}:{line} が {sha} に無い")
         for t in ("K-63", "K-64"):
             self.assertNotIn("## 先にある実装との突き合わせ", (ROOT / f"11_tickets/{t}.md").read_text(encoding="utf-8"),
                              f"{t}.md には書かない（作る役が次の作るの段で写す）")
